@@ -1471,24 +1471,28 @@ func _vegetation() -> void:
 	_scatter(_cross_mesh(1.7, 1.4, 4), bm, bushes, 110.0, true)
 	print("vegetacao: capim=%d arbustos=%d coqueiros+=%d" % [grass.size(), bushes.size(), placed.size()])
 
-# ------------------------------------------------------------------ serra (v0.6.1)
-# Ferradura atrás da vila e nos costões. O miolo da baía e a caixa jogável ficam em zero.
+# ------------------------------------------------------------------ serra (v0.6.2)
+# Ferradura: rampa longa e baixa atrás da vila (floresta) e costões curtos nas pontas.
+# A caixa jogável e a boca da baía ficam em zero. A rampa é limitada a ~39° no corredor
+# da rua; rocha só nos paredões estreitos, fora desse eixo.
 const MTN_RIDGES: Array = [
-	[-210.0, 85.0, -70.0, 148.0, 82.0, 108.0, 76.0],
-	[-70.0, 148.0, 55.0, 178.0, 108.0, 116.0, 84.0],
-	[55.0, 178.0, 175.0, 152.0, 116.0, 100.0, 78.0],
-	[175.0, 152.0, 275.0, 108.0, 100.0, 74.0, 68.0],
-	[-210.0, 85.0, -235.0, 5.0, 82.0, 66.0, 60.0],
-	[-235.0, 5.0, -200.0, -78.0, 66.0, 40.0, 52.0],
-	[275.0, 108.0, 258.0, 8.0, 74.0, 76.0, 62.0],
-	[258.0, 8.0, 220.0, -80.0, 76.0, 44.0, 56.0],
-	[-90.0, 74.0, 15.0, 90.0, 26.0, 44.0, 38.0],
-	[15.0, 90.0, 135.0, 76.0, 44.0, 28.0, 36.0],
-	[-150.0, 92.0, -88.0, 28.0, 42.0, 24.0, 30.0],
-	[145.0, 86.0, 175.0, 22.0, 36.0, 26.0, 32.0],
-	[-120.0, 102.0, -66.0, 74.0, 38.0, 24.0, 28.0],
+	[-160.0, 180.0, -20.0, 460.0, 40.0, 260.0, 420.0],
+	[-20.0, 200.0, 70.0, 540.0, 55.0, 320.0, 440.0],
+	[90.0, 180.0, 200.0, 500.0, 40.0, 250.0, 400.0],
+	[40.0, 320.0, 90.0, 580.0, 80.0, 360.0, 300.0],
+	[-90.0, 280.0, -10.0, 500.0, 60.0, 240.0, 280.0],
+	[150.0, 260.0, 230.0, 470.0, 50.0, 220.0, 280.0],
+	[-40.0, 140.0, 60.0, 280.0, 16.0, 90.0, 220.0],
+	[80.0, 150.0, 170.0, 300.0, 18.0, 100.0, 220.0],
+	[-80.0, 620.0, 40.0, 860.0, 150.0, 210.0, 360.0],
+	[70.0, 640.0, 190.0, 880.0, 140.0, 190.0, 340.0],
+	[-190.0, 150.0, -240.0, 20.0, 96.0, 72.0, 80.0],
+	[-240.0, 20.0, -205.0, -80.0, 72.0, 46.0, 54.0],
+	[290.0, 140.0, 260.0, 10.0, 80.0, 86.0, 64.0],
+	[260.0, 10.0, 220.0, -82.0, 86.0, 48.0, 52.0],
+	[-200.0, 100.0, -170.0, 24.0, 48.0, 64.0, 16.0],
+	[245.0, 90.0, 270.0, 18.0, 42.0, 58.0, 16.0],
 ]
-
 func _hermite(u: float) -> float:
 	u = clampf(u, 0.0, 1.0)
 	return u * u * (3.0 - 2.0 * u)
@@ -1506,36 +1510,49 @@ func _mtn_raw(x: float, z: float, scale: float) -> float:
 	var h := 0.0
 	for r in MTN_RIDGES:
 		h = maxf(h, _ridge(x, z, float(r[0]), float(r[1]), float(r[2]), float(r[3]), float(r[4]), float(r[5]), float(r[6]) * scale))
-	if h > 3.0:
-		h += sin(x * 0.065) * cos(z * 0.048) * 4.0 * _hermite((h - 6.0) / 18.0)
-		h += sin(x * 0.13 + z * 0.09) * 1.6 * _hermite((h - 10.0) / 12.0)
+	if h > 4.0:
+		var cover := _hermite((h - 6.0) / 24.0)
+		h += sin(x * 0.016) * cos(z * 0.012) * 7.0 * cover
+		h += sin(x * 0.033 + 1.2) * cos(z * 0.027) * 3.5 * cover
 	return maxf(0.0, h)
 
 func _mtn_mask(x: float, z: float) -> float:
 	if z < -18.0 and x >= -40.0 and x <= 150.0:
 		return 0.0
-	if x >= -60.0 and x <= 124.0 and z < 67.0:
+	if x >= -60.0 and x <= 124.0 and z < 66.0:
 		return 0.0
-	if x > -78.0 and x < 145.0:
-		return _hermite((z - 69.0) / 16.0)
-	if x < -60.0:
-		return _hermite((-60.0 - x) / 18.0)
-	return _hermite((x - 124.0) / 18.0)
+	return 1.0
 
 func _mtn(x: float, z: float) -> float:
-	return _mtn_raw(x, z, 1.0) * _mtn_mask(x, z)
+	if _mtn_mask(x, z) <= 0.0:
+		return 0.0
+	var h := _mtn_raw(x, z, 1.0)
+	# A encosta da rua sobe junto com a distância, senão a vista passa por cima
+	# de um patamar baixo e o centro do quadro fica só céu.
+	if x > -140.0 and x < 220.0 and z > 64.0:
+		var rise := z - 64.0
+		var cap := rise * 0.88
+		var floor_h := cap * 0.96
+		floor_h += sin(x * 0.016 + 0.4) * cos(z * 0.01) * minf(rise * 0.045, 14.0)
+		floor_h += sin(x * 0.006 + z * 0.0035) * minf(rise * 0.03, 12.0)
+		var side := 1.0
+		if x < -90.0:
+			side = clampf((x + 140.0) / 50.0, 0.0, 1.0)
+		elif x > 160.0:
+			side = clampf((220.0 - x) / 60.0, 0.0, 1.0)
+		h = lerpf(h, maxf(h, floor_h), side)
+		h = minf(h, cap + 14.0)
+	return maxf(0.0, h)
 
 func _mtn_far_h(x: float, z: float) -> float:
-	var dx := x - 35.0
-	var dz := z - 30.0
+	var dx := x - 40.0
+	var dz := z - 10.0
 	var dist := sqrt(dx * dx + dz * dz)
-	if dist < 175.0:
+	if dist < 500.0:
 		return 0.0
-	var k := (dist - 95.0) / dist
-	var ix := 35.0 + dx * k
-	var iz := 30.0 + dz * k
-	var h := _mtn_raw(ix, iz, 1.3) * _mtn_mask(ix, iz) * 0.48
-	if _mtn(x, z) > 24.0:
+	var k := 440.0 / dist
+	var h := _mtn_raw(40.0 + dx * k, 10.0 + dz * k, 1.0) * 0.55
+	if _mtn(x, z) > 22.0:
 		return 0.0
 	return h
 
@@ -1555,17 +1572,18 @@ func _mtn_material(aerial: float, far_fade: float) -> ShaderMaterial:
 		sm.set_shader_parameter("has_rough", 1.0)
 	sm.set_shader_parameter("aerial", aerial)
 	sm.set_shader_parameter("far_fade", far_fade)
+	sm.set_shader_parameter("forest_bias", 0.85 if far_fade > 0.4 else 0.0)
 	return sm
 
-func _mtn_build(step: float, far: bool) -> ArrayMesh:
+func _mtn_in_near(x: float, z: float) -> bool:
+	return x > -152.0 and x < 232.0 and z > 60.0 and z < 196.0
+
+func _mtn_build_rect(x0: float, x1: float, z0: float, z1: float, step: float, far: bool) -> ArrayMesh:
 	var st := SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
-	var x0 := -360.0 if far else -250.0
-	var x1 := 420.0 if far else 310.0
-	var z0 := -180.0 if far else -110.0
-	var z1 := 360.0 if far else 250.0
 	var nx := int((x1 - x0) / step)
 	var nz := int((z1 - z0) / step)
+	var added := 0
 	for iz in nz:
 		for ix in nx:
 			var xa := x0 + float(ix) * step
@@ -1589,13 +1607,27 @@ func _mtn_build(step: float, far: bool) -> ArrayMesh:
 				_mtn_corner(xb, zb, hs[2], far),
 				_mtn_corner(xa, zb, hs[3], far),
 			]
+			var norms: Array[Vector3] = [
+				_mtn_up(xa, za, far), _mtn_up(xb, za, far),
+				_mtn_up(xb, zb, far), _mtn_up(xa, zb, far),
+			]
 			for idx in [0, 1, 2, 0, 2, 3]:
 				var v: Vector3 = pts[idx]
+				st.set_normal(norms[idx])
 				st.set_uv(Vector2(v.x * 0.02, v.z * 0.02))
 				st.add_vertex(v)
-	st.generate_normals()
-	st.index()
+			added += 1
+	if added == 0:
+		return ArrayMesh.new()
 	return st.commit()
+
+func _mtn_up(x: float, z: float, far: bool) -> Vector3:
+	var e := 3.0
+	var hx1 := _mtn_far_h(x + e, z) if far else _mtn(x + e, z)
+	var hx0 := _mtn_far_h(x - e, z) if far else _mtn(x - e, z)
+	var hz1 := _mtn_far_h(x, z + e) if far else _mtn(x, z + e)
+	var hz0 := _mtn_far_h(x, z - e) if far else _mtn(x, z - e)
+	return Vector3(-(hx1 - hx0), e * 2.0, -(hz1 - hz0)).normalized()
 
 func _mtn_corner(x: float, z: float, h: float, far: bool) -> Vector3:
 	if far:
@@ -1608,134 +1640,138 @@ func _mtn_corner(x: float, z: float, h: float, far: bool) -> Vector3:
 			return Vector3(x, g - 0.9, z)
 	return Vector3(x, h, z)
 
-func _mtn_show(mesh: ArrayMesh, mat: Material, begin: float, end: float, shadows: bool) -> void:
+func _mtn_show(mesh: ArrayMesh, mat: Material, shadows: bool) -> void:
+	if mesh.get_surface_count() == 0:
+		return
 	var mi := MeshInstance3D.new()
 	mi.mesh = mesh
 	mi.material_override = mat
 	mi.gi_mode = GeometryInstance3D.GI_MODE_DISABLED
 	mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_ON if shadows else GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-	mi.visibility_range_begin = begin
-	mi.visibility_range_begin_margin = 60.0
-	mi.visibility_range_end = end
-	mi.visibility_range_end_margin = 70.0
-	mi.visibility_range_fade_mode = GeometryInstance3D.VISIBILITY_RANGE_FADE_SELF
-	mi.extra_cull_margin = 8.0
+	mi.extra_cull_margin = 16.0
 	add_child(mi)
 
-func _tree_card_tex() -> Texture2D:
-	var w := 128
-	var h := 256
-	var img := Image.create(w, h, false, Image.FORMAT_RGBA8)
-	img.fill(Color(0, 0, 0, 0))
-	for y in range(8, 100):
-		var k := float(y - 8) / 92.0
-		var half := lerpf(6.5, 3.6, k)
-		for x in range(50, 78):
-			var e := absf(float(x) - 64.0) / half
-			if e > 1.0:
-				continue
-			var a := 1.0 if e < 0.65 else clampf((1.0 - e) / 0.35, 0.0, 1.0)
-			img.set_pixel(x, y, Color(0.36, 0.24, 0.12, a))
-	var blobs: Array = [
-		[64.0, 150.0, 46.0, 58.0, 0.20, 0.52, 0.16],
-		[46.0, 164.0, 30.0, 40.0, 0.26, 0.60, 0.18],
-		[84.0, 158.0, 28.0, 42.0, 0.16, 0.46, 0.14],
-		[64.0, 190.0, 34.0, 40.0, 0.28, 0.64, 0.20],
-		[38.0, 138.0, 20.0, 26.0, 0.22, 0.54, 0.16],
-		[92.0, 136.0, 18.0, 24.0, 0.15, 0.44, 0.13],
-		[64.0, 214.0, 22.0, 26.0, 0.32, 0.68, 0.22],
-		[54.0, 126.0, 24.0, 22.0, 0.18, 0.48, 0.14],
-		[76.0, 122.0, 20.0, 20.0, 0.16, 0.42, 0.13],
-	]
-	for b in blobs:
-		var cx := float(b[0])
-		var cy := float(b[1])
-		var rx := float(b[2])
-		var ry := float(b[3])
-		var cr := float(b[4])
-		var cg := float(b[5])
-		var cb := float(b[6])
-		for y2 in range(int(cy - ry), int(cy + ry) + 1):
-			if y2 < 0 or y2 >= h:
-				continue
-			for x2 in range(int(cx - rx), int(cx + rx) + 1):
-				if x2 < 0 or x2 >= w:
-					continue
-				var nx := (float(x2) - cx) / rx
-				var ny := (float(y2) - cy) / ry
-				var d2 := nx * nx + ny * ny
-				if d2 > 1.0:
-					continue
-				var edge := sqrt(d2)
-				var a2 := 1.0 if edge < 0.7 else clampf((1.0 - edge) / 0.3, 0.0, 1.0)
-				var speck := 0.84 + 0.16 * sin(float(x2) * 1.7 + float(y2) * 0.9)
-				var pix := img.get_pixel(x2, y2)
-				var rr := cr * speck
-				var gg := cg * speck
-				var bb := cb * speck
-				if pix.a > 0.04:
-					rr = lerpf(rr, pix.r, 0.4)
-					gg = lerpf(gg, pix.g, 0.4)
-					bb = lerpf(bb, pix.b, 0.4)
-					a2 = maxf(a2, pix.a)
-				img.set_pixel(x2, y2, Color(rr, gg, bb, a2))
-	return ImageTexture.create_from_image(img)
+func _canopy_blob(st: SurfaceTool, center: Vector3, rx: float, ry: float, rz: float, col: Color, crown: float) -> void:
+	var top := center + Vector3(0, ry, 0)
+	var bot := center + Vector3(0, -ry * 0.72, 0)
+	var px := center + Vector3(rx, 0, 0)
+	var nx := center + Vector3(-rx, 0, 0)
+	var pz := center + Vector3(0, 0, rz)
+	var nz := center + Vector3(0, 0, -rz)
+	var pts: Array[Vector3] = [top, bot, px, nx, pz, nz]
+	var faces: Array = [[0, 4, 2], [0, 2, 5], [0, 5, 3], [0, 3, 4], [1, 2, 4], [1, 5, 2], [1, 3, 5], [1, 4, 3]]
+	for f in faces:
+		for k in 3:
+			var p: Vector3 = pts[int(f[k])]
+			var shade := 0.72 + 0.4 * clampf((p.y - center.y) / ry + 0.2, 0.0, 1.0)
+			var c := Color(col.r * shade, col.g * shade, col.b * shade, crown if p.y > center.y + ry * 0.35 else 0.0)
+			st.set_color(c)
+			st.set_normal((p - center).normalized())
+			st.add_vertex(p)
+
+func _canopy_mesh() -> ArrayMesh:
+	var st := SurfaceTool.new()
+	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var leaf := Color(0.08, 0.32, 0.07)
+	var deep := Color(0.04, 0.18, 0.04)
+	var sun := Color(0.20, 0.46, 0.10)
+	_canopy_blob(st, Vector3(0, 0.28, 0), 0.78, 0.26, 0.72, leaf, 0.0)
+	_canopy_blob(st, Vector3(0.48, 0.24, 0.10), 0.48, 0.20, 0.42, deep, 0.0)
+	_canopy_blob(st, Vector3(-0.46, 0.26, 0.14), 0.46, 0.20, 0.40, leaf, 0.0)
+	_canopy_blob(st, Vector3(0.06, 0.26, -0.46), 0.44, 0.18, 0.40, deep, 0.0)
+	_canopy_blob(st, Vector3(-0.10, 0.22, 0.44), 0.42, 0.18, 0.38, sun, 0.0)
+	_canopy_blob(st, Vector3(0.04, 0.42, 0.02), 0.40, 0.18, 0.36, sun, 1.0)
+	return st.commit()
+
+func _mtn_slope_y(x: float, z: float) -> float:
+	var e := 4.0
+	var hx := _mtn(x + e, z) - _mtn(x - e, z)
+	var hz := _mtn(x, z + e) - _mtn(x, z - e)
+	return (2.0 * e) / sqrt(hx * hx + 4.0 * e * e + hz * hz)
+
+func _mtn_push_tree(xfs: Array[Transform3D], cols: Array[Color], rng: RandomNumberGenerator, x: float, z: float, crest: bool) -> bool:
+	var h := _mtn(x, z)
+	if h < 5.0:
+		return false
+	if crest:
+		if h > 420.0:
+			return false
+	elif h > 280.0:
+		return false
+	if _mtn_slope_y(x, z) < 0.62:
+		return false
+	var s := rng.randf_range(8.5, 14.0) if not crest else rng.randf_range(16.0, 26.0)
+	var sy := s * rng.randf_range(0.36, 0.55)
+	var flower := rng.randf() < 0.08
+	var tint := Color(rng.randf_range(0.62, 1.05), rng.randf_range(0.85, 1.15), rng.randf_range(0.5, 0.85), 0.0)
+	if flower:
+		var kind := rng.randi() % 3
+		if kind == 0:
+			tint = Color(0.82, 0.32, 0.52, 1.0)
+		elif kind == 1:
+			tint = Color(0.9, 0.74, 0.18, 1.0)
+		else:
+			tint = Color(0.52, 0.26, 0.68, 1.0)
+	var basis := Basis(Vector3.UP, rng.randf() * TAU).scaled(Vector3(s, sy, s * rng.randf_range(0.82, 1.12)))
+	xfs.append(Transform3D(basis, Vector3(x, h - sy * 0.62, z)))
+	cols.append(tint)
+	return true
 
 func _mtn_trees() -> void:
-	var tex := _tree_card_tex()
 	mtn_tree_mat = ShaderMaterial.new()
 	mtn_tree_mat.shader = load("res://shaders/tree_card.gdshader")
-	mtn_tree_mat.set_shader_parameter("tex", tex)
-	mtn_tree_mat.set_shader_parameter("aerial", 0.4)
-	var quad := QuadMesh.new()
-	quad.size = Vector2(1, 1)
-	quad.orientation = PlaneMesh.FACE_Z
+	var mesh := _canopy_mesh()
 	var near: Array[Transform3D] = []
 	var near_c: Array[Color] = []
 	var far_t: Array[Transform3D] = []
 	var far_c: Array[Color] = []
 	var rng := RandomNumberGenerator.new()
 	rng.seed = 461
-	var cap_near := 780 if Quality.hd else 640
-	var cap_far := 280 if Quality.hd else 220
-	var tints: Array[Color] = [
-		Color(0.72, 0.95, 0.62),
-		Color(0.58, 0.86, 0.5),
-		Color(0.84, 1.0, 0.7),
-		Color(0.48, 0.74, 0.42),
-		Color(0.66, 0.9, 0.55),
+	var cap_near := 3400 if Quality.hd else 2600
+	var cap_far := 900 if Quality.hd else 650
+	# Primeiro a encosta que a rua vê, senão o limite estoura nos flancos.
+	var bands: Array = [
+		[-8.0, 155.0, 70.0, 340.0, 4.2],
+		[-150.0, 250.0, 68.0, 320.0, 6.8],
 	]
-	for _i in 4200:
-		if near.size() >= cap_near and far_t.size() >= cap_far:
-			break
-		var x := rng.randf_range(-230.0, 280.0)
-		var z := rng.randf_range(-70.0, 230.0)
-		var h := _mtn(x, z)
-		if h < 8.0 or h > 62.0:
-			continue
-		var e := 5.0
-		var hx := _mtn(x + e, z) - _mtn(x - e, z)
-		var hz := _mtn(x, z + e) - _mtn(x, z - e)
-		var ny := (2.0 * e) / sqrt(hx * hx + 4.0 * e * e + hz * hz)
-		if ny < 0.62:
-			continue
-		var dist := Vector2(x - 35.0, z - 30.0).length()
-		var tw := rng.randf_range(6.5, 11.5)
-		var th := rng.randf_range(9.0, 16.5)
-		var tint: Color = tints[rng.randi() % tints.size()]
-		tint.a = clampf((h - 14.0) / 46.0, 0.05, 1.0)
-		var xf := Transform3D(Basis.IDENTITY.scaled(Vector3(tw, th, 1.0)), Vector3(x, h + th * 0.5 - 0.4, z))
-		if dist > 165.0 and far_t.size() < cap_far and rng.randf() < 0.55:
-			var big := Transform3D(Basis.IDENTITY.scaled(Vector3(tw * 1.7, th * 1.55, 1.0)), Vector3(x, h + th * 0.78, z))
-			var pale := tint.lerp(Color(0.7, 0.78, 0.72), 0.35)
-			pale.a = tint.a
-			far_t.append(big)
-			far_c.append(pale)
-		elif near.size() < cap_near:
-			near.append(xf)
-			near_c.append(tint)
-	_mtn_cards("Arvores", quad, near, near_c, 0.0, 360.0, 0.45)
-	_mtn_cards("ArvoresLonge", quad, far_t, far_c, 180.0, 1000.0, 0.72)
+	for b in bands:
+		var x := float(b[0])
+		while x < float(b[1]) and near.size() < cap_near:
+			var z := float(b[2])
+			while z < float(b[3]) and near.size() < cap_near:
+				_mtn_push_tree(near, near_c, rng, x + rng.randf_range(-1.1, 1.1), z + rng.randf_range(-1.1, 1.1), false)
+				z += float(b[4])
+			x += float(b[4])
+	for r in MTN_RIDGES:
+		var ax := float(r[0])
+		var az := float(r[1])
+		var bx := float(r[2])
+		var bz := float(r[3])
+		var length := Vector2(bx - ax, bz - az).length()
+		var steps := int(length / 2.8)
+		for i in steps:
+			if near.size() >= cap_near and far_t.size() >= cap_far:
+				break
+			var t := float(i) / float(maxi(steps, 1))
+			var px := lerpf(ax, bx, t) + rng.randf_range(-1.6, 1.6)
+			var pz := lerpf(az, bz, t) + rng.randf_range(-1.6, 1.6)
+			var dist := Vector2(px - 35.0, pz - 30.0).length()
+			if dist < 175.0:
+				if near.size() < cap_near:
+					_mtn_push_tree(near, near_c, rng, px, pz, true)
+			elif far_t.size() < cap_far:
+				_mtn_push_tree(far_t, far_c, rng, px, pz, true)
+	var x2 := -230.0
+	while x2 < 280.0 and far_t.size() < cap_far:
+		var z2 := -60.0
+		while z2 < 230.0 and far_t.size() < cap_far:
+			if not _mtn_in_near(x2, z2) and rng.randf() < 0.55:
+				_mtn_push_tree(far_t, far_c, rng, x2 + rng.randf_range(-2.0, 2.0), z2 + rng.randf_range(-2.0, 2.0), false)
+			z2 += 8.5
+		x2 += 8.5
+	_mtn_cards("Copas", mesh, near, near_c, 0.0, 520.0, 0.28)
+	_mtn_cards("CopasLonge", mesh, far_t, far_c, 160.0, 1000.0, 0.7)
+	print("serra: copas perto=%d longe=%d" % [near.size(), far_t.size()])
 
 func _mtn_cards(node_name: String, mesh: Mesh, xfs: Array[Transform3D], cols: Array[Color], begin: float, end: float, aerial: float) -> void:
 	if xfs.is_empty():
@@ -1766,16 +1802,41 @@ func _mtn_cards(node_name: String, mesh: Mesh, xfs: Array[Transform3D], cols: Ar
 	add_child(mi)
 
 func _mountains() -> void:
-	mtn_mid_mat = _mtn_material(0.2, 0.0)
-	mtn_far_mat = _mtn_material(0.78, 0.66)
-	var step := 5.0 if Quality.hd else 6.0
-	var mid := _mtn_build(step, false)
-	var far := _mtn_build(18.0, true)
-	_mtn_show(mid, mtn_mid_mat, 0.0, 680.0, true)
-	_mtn_show(far, mtn_far_mat, 140.0, 1100.0, false)
+	mtn_mid_mat = _mtn_material(0.18, 0.0)
+	mtn_far_mat = _mtn_material(0.72, 0.9)
+	var near_step := 3.2 if Quality.hd else 3.6
+	var mid_step := 9.0 if Quality.hd else 11.0
+	var tris := 0
+	var near := _mtn_build_rect(-150.0, 230.0, 62.0, 220.0, near_step, false)
+	_mtn_show(near, mtn_mid_mat, true)
+	tris += near.get_faces().size() / 3
+	# Pedaços pequenos: uma malha única enorme some no llvmpipe.
+	var slabs: Array = [
+		[-340.0, 50.0, 210.0, 360.0],
+		[50.0, 420.0, 210.0, 360.0],
+		[-340.0, 50.0, 350.0, 530.0],
+		[50.0, 420.0, 350.0, 530.0],
+		[-340.0, 50.0, 520.0, 720.0],
+		[50.0, 420.0, 520.0, 720.0],
+		[-420.0, -145.0, -120.0, 210.0],
+		[210.0, 480.0, -120.0, 210.0],
+	]
+	for s in slabs:
+		var slab := _mtn_build_rect(float(s[0]), float(s[1]), float(s[2]), float(s[3]), mid_step, false)
+		_mtn_show(slab, mtn_mid_mat, false)
+		tris += slab.get_faces().size() / 3
+	var far_tris := 0
+	var far_slabs: Array = [
+		[-480.0, 80.0, 560.0, 900.0],
+		[80.0, 560.0, 560.0, 900.0],
+	]
+	for s2 in far_slabs:
+		var far_slab := _mtn_build_rect(float(s2[0]), float(s2[1]), float(s2[2]), float(s2[3]), 26.0, true)
+		_mtn_show(far_slab, mtn_far_mat, false)
+		far_tris += far_slab.get_faces().size() / 3
 	_mtn_trees()
 	# Fora da caixa jogável (paredes em z=56, x=-48 e x=104). Não cruzam rua, praia nem a boca da baía.
 	B.wall(self, Vector3(168, 18, 2.4), Vector3(30, 7.0, 63.0))
 	B.wall(self, Vector3(2.4, 18, 78), Vector3(-64, 7.0, 24.0))
 	B.wall(self, Vector3(2.4, 18, 78), Vector3(120, 7.0, 24.0))
-	print("serra: tris mid=%d far=%d" % [mid.get_faces().size() / 3, far.get_faces().size() / 3])
+	print("serra: tris encosta=%d longe=%d" % [tris, far_tris])

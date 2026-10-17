@@ -98,7 +98,7 @@ glTF 1k em `assets/models/` (normal/ARM reduzidos para 512) e glTF 2k em `assets
 - `assets/tex*/calcada_*` — pedra portuguesa em ondas (`tools/gen_calcada.py`)
 - `assets/tex/palm_frond.png` (faixa antiga) e o folíolo com recorte gerado em runtime (`scripts/palm.gd`); `assets/tex_hd/grass_tuft.png`, `assets/tex_hd/bush.png`, `light_stone_*`, `white_plaster_*` (albedo e, na 1k, a normal reduzida de `grey_plaster_02`), `icon.png` (`tools/gen_textures.py`, `tools/gen_hd.py`)
 - Buganvílias da rua: cartões coloridos em MultiMesh (código), sem asset externo
-- Cartões de árvore da serra (v0.6.1): copa e tronco pintados em runtime (`scripts/world.gd`), sem asset externo
+- Copas da serra (v0.6.2): aglomerados low-poly sem tronco, gerados em runtime (`scripts/world.gd`), sem asset externo
 - Coqueiros, telhados, casas, igreja, quiosque e o restante da arquitetura são geometria procedural em GDScript (`scripts/`).
 
 ## Ferramentas

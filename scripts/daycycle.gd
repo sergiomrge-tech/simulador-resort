@@ -1,6 +1,6 @@
 extends Node
-## Ciclo dia/noite. O céu usa Sky.PROCESS_MODE_INCREMENTAL e só é atualizado
-## a cada 10 minutos de jogo (céu em tempo real trava em GPU fraca/llvmpipe).
+## Ciclo dia/noite. O céu usa qualidade média e só é refeito a cada 10 minutos
+## de jogo (tempo real trava em GPU fraca/llvmpipe; incremental deixava o horizonte preto).
 
 var sun: DirectionalLight3D
 var moon: DirectionalLight3D
@@ -32,7 +32,7 @@ func setup(parent: Node3D) -> void:
 	sky_mat.ground_horizon_color = Color(0.6, 0.75, 0.85)
 	var sky := Sky.new()
 	sky.sky_material = sky_mat
-	sky.process_mode = Sky.PROCESS_MODE_INCREMENTAL
+	sky.process_mode = Sky.PROCESS_MODE_QUALITY
 	sky.radiance_size = Sky.RADIANCE_SIZE_64
 	env = Environment.new()
 	env.background_mode = Environment.BG_SKY
