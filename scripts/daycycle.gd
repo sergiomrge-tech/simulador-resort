@@ -69,6 +69,16 @@ func setup(parent: Node3D) -> void:
 	moon.shadow_enabled = false
 	moon.rotation_degrees = Vector3(-50, 30, 0)
 	parent.add_child(moon)
+	if not Core.weather_changed.is_connected(_on_weather):
+		Core.weather_changed.connect(_on_weather)
+
+func _on_weather(_kind: String) -> void:
+	apply()
+
+func _bell(h: float, a: float, b: float) -> float:
+	var mid := (a + b) * 0.5
+	var half := maxf(0.2, (b - a) * 0.5)
+	return clampf(1.0 - absf(h - mid) / half, 0.0, 1.0)
 
 func _process(_d: float) -> void:
 	var slot := int(Core.minutes / 10.0) + Core.day * 1000
@@ -106,11 +116,35 @@ func apply() -> void:
 	sky_mat.ground_horizon_color = k[1].darkened(0.1)
 	sky_mat.sun_angle_max = 20.0
 	env.ambient_light_energy = k[4]
-	env.fog_light_color = k[1].lerp(Color(0.7, 0.8, 0.9), 0.4)
 	var night := clampf(1.0 - k[3] / 0.6, 0.0, 1.0)
-	moon.light_energy = 0.22 * night
-	env.ambient_light_sky_contribution = 0.55
-	env.ambient_light_color = k[2].lerp(Color(1.0, 0.95, 0.85), 0.5) if k[3] > 0.05 else Color(0.25, 0.3, 0.45)
+	var golden := _bell(h, 16.4, 18.5)
+	var rain := Core.weather == "rain"
+	var fog_c: Color = k[1].lerp(Color(0.72, 0.82, 0.9), 0.35)
+	if rain:
+		fog_c = Color(0.55, 0.6, 0.66)
+		sun.light_energy *= 0.42
+		sun.light_color = sun.light_color.lerp(Color(0.75, 0.78, 0.82), 0.65)
+	elif golden > 0.05:
+		sun.light_color = sun.light_color.lerp(Color(1.0, 0.62, 0.32), golden * 0.55)
+		sun.light_energy *= lerpf(1.0, 0.82, golden)
+	env.fog_light_color = fog_c
+	env.fog_density = 0.0048 if rain else lerpf(0.0014, 0.0028, golden)
+	env.fog_aerial_perspective = 0.35
+	env.tonemap_mode = Environment.TONE_MAPPER_FILMIC
+	env.tonemap_exposure = (1.12 if not rain else 0.9) * lerpf(1.0, 1.08, golden)
+	env.adjustment_enabled = true
+	env.adjustment_saturation = (0.82 if rain else lerpf(1.05, 1.28, golden))
+	env.adjustment_contrast = lerpf(1.04, 1.1, golden)
+	env.adjustment_brightness = 0.94 if rain else 1.0
+	env.volumetric_fog_albedo = fog_c
+	env.volumetric_fog_density = 0.012 if rain else lerpf(0.004, 0.008, maxf(golden, night * 0.7))
+	env.volumetric_fog_emission = fog_c * (0.15 if rain else 0.05)
+	env.glow_intensity = 0.22 if rain else lerpf(0.4, 0.75, night)
+	env.glow_bloom = 0.08 if night > 0.4 else 0.05
+	moon.light_energy = (0.15 if rain else 0.42) * night
+	moon.light_color = Color(0.65, 0.74, 1.0)
+	env.ambient_light_sky_contribution = 0.35 if rain else 0.55
+	env.ambient_light_color = Color(0.55, 0.58, 0.62) if rain else (k[2].lerp(Color(1.0, 0.86, 0.62), golden * 0.45) if k[3] > 0.05 else Color(0.22, 0.28, 0.45))
 	if world:
 		world.set_night(night)
 	get_tree().call_group("audio", "set_night", night)

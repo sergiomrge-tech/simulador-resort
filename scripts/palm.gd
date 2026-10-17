@@ -3,22 +3,16 @@ class_name Palm
 ## Coqueiro procedural: tronco curvo com anéis + folhas (textura com alpha) + cocos.
 
 static var _variants := []
-static var _frond_mat: StandardMaterial3D
+static var _frond_mat: ShaderMaterial
 static var _bark_mat: StandardMaterial3D
 static var _coco_mat: StandardMaterial3D
 
 static func _mats() -> void:
 	if _frond_mat:
 		return
-	_frond_mat = StandardMaterial3D.new()
-	_frond_mat.albedo_texture = load("res://assets/tex/palm_frond.png")
-	_frond_mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA_SCISSOR
-	_frond_mat.alpha_scissor_threshold = 0.4
-	_frond_mat.cull_mode = BaseMaterial3D.CULL_DISABLED
-	_frond_mat.roughness = 0.75
-	_frond_mat.albedo_color = Color(1.0, 1.0, 0.95)
-	_frond_mat.backlight_enabled = true
-	_frond_mat.backlight = Color(0.25, 0.35, 0.1)
+	_frond_mat = ShaderMaterial.new()
+	_frond_mat.shader = load("res://shaders/palm_wind.gdshader")
+	_frond_mat.set_shader_parameter("tex", load("res://assets/tex/palm_frond.png"))
 	_bark_mat = StandardMaterial3D.new()
 	_bark_mat.albedo_texture = B.tex("palm_tree_bark")
 	_bark_mat.normal_enabled = true

@@ -3,7 +3,6 @@ extends Node3D
 ## Dona Rita na barraca, e os clientes do quiosque onde o herói trabalha.
 
 const GuestScript := preload("res://scripts/guest.gd")
-const KIOSK_ITEMS := [["Coco gelado", 8], ["Caipirinha", 15], ["Petiscos", 22]]
 const KIOSK_OPEN := 8.0 * 60.0
 const KIOSK_CLOSE := 18.0 * 60.0
 const KIOSK_PATIENCE := 90.0      # min de jogo esperando no balcão
@@ -116,8 +115,8 @@ func spawn_customer() -> Node3D:
 	g.spot = spot
 	g.state = "kwalk"
 	g.timer = KIOSK_PATIENCE
-	var it: Array = KIOSK_ITEMS[rng.randi() % KIOSK_ITEMS.size()]
-	g.set_meta("item", it)
+	var dish: String = Economy.KIOSK_MENU[rng.randi() % Economy.KIOSK_MENU.size()]
+	g.set_meta("dish", dish)
 	var route: Array = [] if from_beach else world.village_points.kiosk_approach.slice(1)
 	route.append(spot.pos + Vector3(0, 0, 1.2))
 	route.append(spot.pos)
@@ -163,18 +162,28 @@ func kiosk_prompt() -> String:
 		if not kiosk_open():
 			return tr("Quiosque fechado (abre 08:00–18:00)")
 		return tr("Quiosque: aguardando clientes")
-	var it: Array = w[0].get_meta("item")
-	return tr("Servir %s (%s)") % [tr(it[0]), Core.fmt_money(it[1])]
+	var dish: String = str(w[0].get_meta("dish"))
+	var d: Dictionary = Economy.dish(dish)
+	if not Core.can_make(dish):
+		return tr("Sem %s no estoque") % tr(str(d.name))
+	return tr("Servir %s (%s)") % [tr(str(d.name)), Core.fmt_money(int(d.price))]
 
 func kiosk_serve() -> bool:
 	var w := waiting_customers()
 	if w.is_empty():
 		return false
 	var g = w[0]
-	var it: Array = g.get_meta("item")
+	var dish: String = str(g.get_meta("dish"))
+	if not Core.can_make(dish):
+		Core.note_stockout(dish)
+		_leave(g)
+		return false
 	var tip := 2 if g.timer > KIOSK_PATIENCE * 0.6 else 0
-	Core.kiosk_sale(it[0], it[1] + tip)
+	Core.sell_dish(dish, "kiosk")
+	if tip > 0:
+		Core.book(tip, tr("Gorjeta do quiosque"), "gorjeta", false)
 	get_tree().call_group("audio", "sfx", "coin", -8.0)
+	g.play("Interact")
 	_leave(g)
 	return true
 

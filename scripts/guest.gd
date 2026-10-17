@@ -76,7 +76,7 @@ func play(an: String) -> void:
 	if an == _cur_anim:
 		return
 	if _anim.has_animation(an):
-		_anim.play(an, 0.25)
+		_anim.play(an, 0.35)
 		_cur_anim = an
 		_anim.speed_scale = clampf(Core.speed_mult, 1.0, 4.0)
 

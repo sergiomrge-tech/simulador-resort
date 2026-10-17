@@ -11,8 +11,7 @@ var hint_l: Label
 var prompt_l: Label
 var crosshair: Control
 var toasts: VBoxContainer
-var shop: PanelContainer
-var shop_info: Label
+var shop: Control
 var btn_interact: Button
 var btn_shop: Button
 var joy_base := Vector2.ZERO
@@ -33,8 +32,11 @@ var obj_draw: Control
 var obj_target := Vector3.INF
 var obj_text := ""
 var _pad_used := false
+var office: OfficeUI
+var compass: Control
 
 func _ready() -> void:
+	add_to_group("hud")
 	layer = 5
 	root = Control.new()
 	root.set_anchors_preset(Control.PRESET_FULL_RECT)
@@ -116,6 +118,8 @@ func _ready() -> void:
 	root.add_child(joy_draw)
 	_build_shop()
 	_build_objective()
+	_build_compass()
+	Core.day_closed.connect(func(s): office.show_day_summary(s))
 	touch = Quality.is_touch()
 	if not touch:
 		# PC: sem joystick/botões de toque; dicas de teclado no rodapé
@@ -178,55 +182,30 @@ func _button(t: String, pos: Vector2, sz: Vector2, preset: int, c: Color, radius
 	return b
 
 func _build_shop() -> void:
-	shop = PanelContainer.new()
-	shop.set_anchors_preset(Control.PRESET_CENTER)
-	shop.position = Vector2(-300, -200)
-	shop.size = Vector2(600, 400)
-	shop.add_theme_stylebox_override("panel", _style(Color(0.98, 0.95, 0.88, 0.97), 22))
-	root.add_child(shop)
-	var vb := VBoxContainer.new()
-	vb.add_theme_constant_override("separation", 14)
-	shop.add_child(vb)
-	var t := _label(vb, "Loja da Pousada", 36, Color(0.05, 0.4, 0.45))
-	t.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	shop_info = _label(vb, "", 24, Color(0.2, 0.15, 0.1))
-	shop_info.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	shop_info.custom_minimum_size = Vector2(560, 150)
-	var buy := Button.new()
-	buy.text = tr("Comprar rede (%s)") % Core.fmt_money(Core.REDE_PRICE)
-	buy.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
-	buy.custom_minimum_size = Vector2(0, 70)
-	buy.focus_mode = Control.FOCUS_NONE
-	buy.add_theme_font_size_override("font_size", 28)
-	vb.add_child(buy)
-	buy.pressed.connect(_buy_rede)
-	var close := Button.new()
-	close.text = "Fechar"
-	close.custom_minimum_size = Vector2(0, 60)
-	close.focus_mode = Control.FOCUS_NONE
-	close.add_theme_font_size_override("font_size", 26)
-	vb.add_child(close)
-	close.pressed.connect(toggle_shop)
+	office = OfficeUI.new()
+	shop = office
+	root.add_child(office)
+	office.attach_summary(root)
 	shop.visible = false
-	_touch_buttons.append([buy, _buy_rede])
-	_touch_buttons.append([close, toggle_shop])
 
-func _buy_rede() -> void:
-	if Core.buy_rede():
-		get_tree().call_group("audio", "sfx", "coin")
-	_update_shop()
+func open_office(tab: String = "caixa", room_id: int = -1) -> void:
+	office.show_tab(tab, room_id)
+	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 
-func _update_shop() -> void:
-	shop_info.text = tr("Rede de algodão colorida pendurada entre dois coqueiros na praia.\nDeixa os hóspedes mais felizes (+estrelas) e aumenta a diária.\n\nInstaladas: %d / %d      Saldo: %s") % [Core.redes, Core.MAX_REDES, Core.fmt_money(Core.money)]
+func show_summary(data: Dictionary) -> void:
+	office.show_day_summary(data)
 
 func toggle_shop() -> void:
-	shop.visible = not shop.visible
 	if shop.visible:
-		_update_shop()
+		shop.visible = false
+	else:
+		office.show_tab(office.tab if office.tab != "" else "caixa")
 		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 		if _pad_used:
-			shop.find_children("*", "Button", true, false)[0].grab_focus()
-	elif not touch and not get_tree().paused:
+			var buttons := shop.find_children("*", "Button", true, false)
+			if not buttons.is_empty():
+				buttons[0].grab_focus()
+	if not shop.visible and not touch and not get_tree().paused and Core.in_game:
 		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 	get_tree().call_group("audio", "sfx", "click")
 
@@ -264,6 +243,8 @@ func _process(delta: float) -> void:
 		_update_objective()
 	crosshair.queue_redraw()
 	obj_draw.queue_redraw()
+	if compass:
+		compass.queue_redraw()
 
 func _hint() -> String:
 	for r in Core.rooms:
@@ -410,6 +391,11 @@ func objective() -> Array:
 			return [tr("Turno no quiosque às 08:00"), kc, 6.0]
 		if village.kiosk_open() and pp.distance_to(kc) > 30.0:
 			return [tr("Turno no quiosque"), kc, 6.0]
+	if Core.menu_blocked() and world.get("market"):
+		return [tr("Estoque baixo: mercadinho"), world.market.global_position, 4.0]
+	for r in Core.rooms:
+		if int(r.upgrades.get("clima", 0)) == 0 and Core.money >= Economy.next_cost("clima", 0):
+			return [tr("Melhorar o Bangalô %d") % (r.id + 1), Vector3(world.BUNG_X[r.id], 0.6, world.BUNG_Z), 6.0]
 	return ["", Vector3.INF, 0.0]
 
 func _update_objective() -> void:
@@ -463,3 +449,32 @@ func _draw_objective() -> void:
 
 func get_theme_default_font() -> Font:
 	return ThemeDB.fallback_font
+
+func _build_compass() -> void:
+	compass = Control.new()
+	compass.set_anchors_preset(Control.PRESET_FULL_RECT)
+	compass.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	compass.draw.connect(_draw_compass)
+	root.add_child(compass)
+
+func _draw_compass() -> void:
+	if player == null or not Core.in_game or not visible:
+		return
+	var body := player as Node3D
+	var fwd: Vector3 = -body.global_transform.basis.z
+	var head := fposmod(rad_to_deg(atan2(fwd.x, -fwd.z)), 360.0)
+	var vs := root.get_viewport_rect().size
+	var cx := vs.x * 0.5
+	var y := 86.0
+	var px := 2.4
+	compass.draw_rect(Rect2(cx - 130, y - 14, 260, 28), Color(0.02, 0.12, 0.16, 0.45))
+	var marks := [["N", 0.0], ["L", 90.0], ["S", 180.0], ["O", 270.0]]
+	for m in marks:
+		var delta := wrapf(float(m[1]) - head, -180.0, 180.0)
+		if absf(delta) > 70.0:
+			continue
+		var x := cx + delta * px
+		compass.draw_string(get_theme_default_font(), Vector2(x - 8, y + 6), str(m[0]), HORIZONTAL_ALIGNMENT_LEFT, -1, 18, Color(1, 0.92, 0.7))
+	compass.draw_line(Vector2(cx, y - 12), Vector2(cx, y + 12), Color(1, 0.85, 0.35), 2.0)
+	var wind := tr("chuva") if Core.weather == "rain" else tr("sol")
+	compass.draw_string(get_theme_default_font(), Vector2(cx + 138, y + 4), wind, HORIZONTAL_ALIGNMENT_LEFT, -1, 16, Color(0.85, 0.95, 1))

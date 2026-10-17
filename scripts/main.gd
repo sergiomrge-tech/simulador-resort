@@ -34,6 +34,10 @@ const SHOTS := {
 	"aerea": [Vector3(26.0, 34.0, -52.0), 196.0, -30.0, 16.0],
 	"menu": [Vector3(0, 0, 0), 0.0, 0.0, 17.3],
 	"config": [Vector3(0, 0, 0), 0.0, 0.0, 17.3],
+	"estoque": [Vector3(68.5, 0.2, 27.5), 12.0, -6.0, 11.0],
+	"upgrade": [Vector3(-12.3, 0.25, -6.2), 56.0, -16.0, 17.2],
+	"bangalo_up": [Vector3(-12.3, 0.25, -6.2), 56.0, -16.0, 17.3],
+	"resumo": [Vector3(6.0, 0, 26.0), 20.0, 0.0, 20.5],
 }
 
 func _ready() -> void:
@@ -200,7 +204,7 @@ func go_to_sleep(fainted: bool) -> void:
 	_sleeping = true
 	menus.fade(func():
 		if fainted:
-			Core.add_money(-20, tr("Você adormeceu de cansaço na rua"))
+			Core.add_money(-20, tr("Você adormeceu de cansaço na rua"), "multa")
 		Core.sleep()
 		_place_at_home()
 		day.force_update()
@@ -261,6 +265,18 @@ func _run_shot(n: String) -> void:
 		hud._hint_t = 0.0
 		await get_tree().process_frame
 		await get_tree().process_frame
+	if n == "estoque":
+		hud.open_office("insumos")
+	elif n == "upgrade":
+		_dress_room(0)
+		hud.open_office("bangalo", 0)
+	elif n == "bangalo_up":
+		_dress_room(0)
+	elif n == "resumo":
+		hud.show_summary(_demo_summary())
+	if n in ["estoque", "upgrade", "bangalo_up", "resumo"]:
+		for i in 10:
+			await get_tree().process_frame
 	var img := get_viewport().get_texture().get_image()
 	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path("res://shots"))
 	var out: String = args.get("out", "res://shots/%s.png" % n)
@@ -293,3 +309,24 @@ func _stage_guests() -> void:
 	w.position = Vector3(-10.5, 0, 4.0)
 	w.rotation.y = PI
 	w.play("Walk_Loop")
+
+func _dress_room(id: int) -> void:
+	for cat in Economy.UPGRADES:
+		Core.rooms[id].upgrades[cat] = Economy.max_tier(cat)
+	world.apply_room_look(id)
+
+func _demo_summary() -> Dictionary:
+	return {
+		"day": 1,
+		"income": 248,
+		"expense": 338,
+		"cats": {"diaria": 158, "bar": 44, "quiosque": 26, "gorjeta": 20, "insumo": 18, "upgrade": 320},
+		"lines": [
+			{"a": 158, "r": "Check-in Lia (Bangalô 1)", "c": "diaria"},
+			{"a": 22, "r": "Bar: Caipirinha", "c": "bar"},
+			{"a": 26, "r": "Quiosque: Petiscos", "c": "quiosque"},
+			{"a": 20, "r": "Gorjeta", "c": "gorjeta"},
+			{"a": -18, "r": "Coco ×6", "c": "insumo"},
+			{"a": -320, "r": "Ventilador de teto · Bangalô 1", "c": "upgrade"},
+		],
+	}

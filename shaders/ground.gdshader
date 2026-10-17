@@ -7,6 +7,7 @@ uniform sampler2D wet_nor : hint_normal, filter_linear_mipmap, repeat_enable;
 uniform float tile = 0.22;
 uniform float wet_start = -27.0;
 uniform float wet_end = -34.0;
+uniform float rain_wet = 0.0;
 varying vec3 wpos;
 float hash(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
 float noise(vec2 p){
@@ -24,6 +25,7 @@ void fragment(){
 	dry = dry * vec3(1.22, 1.12, 0.95);  // areia clara e quente do Nordeste
 	vec3 wet = texture(wet_tex, uv * 0.8).rgb * 0.85;
 	float w = smoothstep(wet_start, wet_end, wpos.z + (noise(wpos.xz * 0.2) - 0.5) * 2.5);
+	w = max(w, rain_wet * (0.42 + 0.2 * noise(wpos.xz * 0.15)));
 	ALBEDO = mix(dry, wet, w);
 	vec3 nd = texture(dry_nor, uv).rgb;
 	vec3 nw = texture(wet_nor, uv * 0.8).rgb;

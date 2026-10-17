@@ -3,7 +3,7 @@ extends Node3D
 
 const POOL_MIN := Vector2(-6, 0)     # buraco da piscina (x,z) alinhado à grade de 2 m
 const POOL_MAX := Vector2(6, 8)
-const BUNG_X := [-14.0, -21.5]
+var BUNG_X: Array = [-14.0, -21.5]
 const BUNG_Z := -8.0
 const BAR_C := Vector3(13, 0, -13)
 const SHORE_Z := -32.5
@@ -15,6 +15,9 @@ var rede_nodes: Array = []
 var desk: Interactable
 var ocean_mat: ShaderMaterial
 var pool_floor_mat: ShaderMaterial
+var sand_mat: ShaderMaterial
+var rain: GPUParticles3D
+var _birds: Array = []
 var points := {}                  # pontos nomeados para rotas
 var pool_spots: Array = []        # [{pos, rot, anim}]
 var bar_spots: Array = []
@@ -23,6 +26,7 @@ var guests_mgr: Node              # definido pelo main
 var M := {}
 
 func _ready() -> void:
+	add_to_group("world")
 	_materials()
 	_ground()
 	_ocean()
@@ -42,9 +46,13 @@ func _ready() -> void:
 	_route_points()
 	Core.room_changed.connect(_on_room_changed)
 	Core.redes_changed.connect(_on_redes_changed)
+	Core.bungalow_built.connect(_on_bungalow_built)
+	Core.weather_changed.connect(_on_weather)
 	for r in Core.rooms:
 		_on_room_changed(r.id)
 	_on_redes_changed(Core.redes)
+	_birds_spawn()
+	_weather_fx()
 
 func _materials() -> void:
 	M.plaster = B.mat("white_plaster", 0.5, Color(1, 1, 1), 0.9)
@@ -116,6 +124,8 @@ func _ground() -> void:
 	sm.set_shader_parameter("wet_nor", B.nor("damp_beach_sand"))
 	sm.set_shader_parameter("wet_start", -25.0)
 	sm.set_shader_parameter("wet_end", -31.0)
+	sm.set_shader_parameter("rain_wet", 0.0)
+	sand_mat = sm
 	mi.material_override = sm
 	mi.name = "Ground"
 	add_child(mi)
@@ -360,6 +370,7 @@ func _umbrella(p: Vector3, r: float) -> void:
 
 # ------------------------------------------------------------------ bangalôs
 func _bungalow(i: int, c: Vector3) -> void:
+	var _child_mark := get_child_count()
 	var y0 := 0.25
 	var w := 5.6
 	var d := 5.0
@@ -463,6 +474,13 @@ func _bungalow(i: int, c: Vector3) -> void:
 	points["room%d_door" % i] = Vector3(c.x + 1.4, 0.25, zb + 1.2)
 	points["room%d_in" % i] = Vector3(c.x + 1.4, 0.25, zb - 1.0)
 	points["room%d_front" % i] = Vector3(c.x + 1.4, 0, -4.5)
+	room.look = {}
+	_upgrade_meshes(room, c, y0, bed_c, x0, x1, zf, zb, h)
+	_upgrade_sign(i, c, y0, x0)
+	var nodes := []
+	for idx in range(_child_mark, get_child_count()):
+		nodes.append(get_child(idx))
+	room.nodes = nodes
 	room_nodes.append(room)
 
 func _bwall_x(x0: float, x1: float, z: float, h: float, gaps: Array, y0: float) -> void:
@@ -491,6 +509,205 @@ func _on_room_changed(id: int) -> void:
 	rn.clean.visible = r.state == "free"
 	for k in rn.dirty:
 		rn.dirty[k].visible = r.state == "dirty" and r.dirty.get(k, false)
+	apply_room_look(id)
+
+func _look(room: Dictionary, cat: String, tier: int, node: Node3D) -> void:
+	if not room.look.has(cat):
+		room.look[cat] = []
+	room.look[cat].append({"n": node, "t": tier})
+	node.visible = false
+
+func _upgrade_meshes(room: Dictionary, c: Vector3, y0: float, bed_c: Vector3, x0: float, x1: float, zf: float, zb: float, h: float) -> void:
+	var mattress := B.box(self, Vector3(1.84, 0.14, 2.16), bed_c + Vector3(0, 0.64, 0), M.linen)
+	_look(room, "cama", 1, mattress)
+	var canopy := Node3D.new()
+	add_child(canopy)
+	for sx in [-0.95, 0.95]:
+		for sz in [-1.05, 1.05]:
+			B.box(canopy, Vector3(0.06, 1.45, 0.06), bed_c + Vector3(sx, 1.4, sz), M.oak)
+	B.box(canopy, Vector3(2.1, 0.05, 2.35), bed_c + Vector3(0, 2.12, 0), M.linen_sand)
+	B.box(canopy, Vector3(2.05, 0.85, 0.04), bed_c + Vector3(0, 1.65, -1.05), M.linen_teal)
+	_look(room, "cama", 2, canopy)
+	var blanket := B.box(self, Vector3(1.45, 0.045, 1.1), bed_c + Vector3(0.05, 0.72, -0.2), M.linen_teal)
+	_look(room, "roupa", 1, blanket)
+	var linens := Node3D.new()
+	add_child(linens)
+	B.box(linens, Vector3(1.7, 0.035, 2.0), bed_c + Vector3(0, 0.76, 0), B.flat(Color(0.98, 0.98, 0.96)))
+	B.box(linens, Vector3(0.42, 0.14, 0.3), bed_c + Vector3(-0.55, 0.86, 0.72), B.flat(Color(0.82, 0.38, 0.32)))
+	B.box(linens, Vector3(0.42, 0.14, 0.3), bed_c + Vector3(0.55, 0.86, 0.72), B.flat(Color(0.95, 0.78, 0.35)))
+	_look(room, "roupa", 2, linens)
+	var decor := Node3D.new()
+	add_child(decor)
+	B.box(decor, Vector3(2.2, 0.02, 1.5), Vector3(c.x + 0.3, y0 + 0.02, c.z + 0.2), B.flat(Color(0.55, 0.2, 0.16)))
+	B.box(decor, Vector3(0.85, 0.55, 0.04), Vector3(c.x - 0.2, y0 + 1.7, zf + 0.06), B.flat(Color(0.2, 0.45, 0.55)))
+	_look(room, "decor", 1, decor)
+	var lounge := Node3D.new()
+	add_child(lounge)
+	B.cyl(lounge, 0.08, 0.12, 1.05, Vector3(c.x + 1.9, y0 + 0.55, c.z + 1.45), M.oak, 8)
+	B.sphere(lounge, 0.16, Vector3(c.x + 1.9, y0 + 1.15, c.z + 1.45), B.flat(Color(1.0, 0.93, 0.72), 0.4))
+	B.model(lounge, "potted_plant_01", Vector3(c.x - 2.1, y0, zb - 0.4), 0.4, 0.8)
+	_look(room, "decor", 2, lounge)
+	var fan := Node3D.new()
+	add_child(fan)
+	fan.position = Vector3(c.x, y0 + h - 0.18, c.z)
+	B.cyl(fan, 0.07, 0.07, 0.1, Vector3.ZERO, M.dark, 8)
+	for k in 3:
+		var pivot := Node3D.new()
+		fan.add_child(pivot)
+		pivot.rotation.y = k * TAU / 3.0
+		B.box(pivot, Vector3(0.82, 0.02, 0.14), Vector3(0.4, -0.05, 0), B.flat(Color(0.9, 0.9, 0.93)))
+	room.fan = fan
+	_look(room, "clima", 1, fan)
+	var ac := Node3D.new()
+	add_child(ac)
+	B.box(ac, Vector3(0.26, 0.28, 0.72), Vector3(x1 - 0.12, y0 + 2.15, c.z + 0.2), B.flat(Color(0.93, 0.94, 0.96)))
+	B.box(ac, Vector3(0.05, 0.08, 0.48), Vector3(x1 - 0.26, y0 + 2.05, c.z + 0.2), B.flat(Color(0.15, 0.2, 0.22)))
+	_look(room, "clima", 2, ac)
+	var bath := Node3D.new()
+	add_child(bath)
+	B.box(bath, Vector3(0.05, 0.7, 0.42), Vector3(x0 + 0.16, y0 + 1.5, c.z - 1.35), B.flat(Color(0.75, 0.86, 0.92), 0.15, 0.55))
+	B.box(bath, Vector3(0.46, 0.04, 0.08), Vector3(x0 + 0.28, y0 + 1.12, c.z - 0.75), M.oak)
+	B.box(bath, Vector3(0.26, 0.38, 0.05), Vector3(x0 + 0.3, y0 + 0.85, c.z - 0.75), M.linen)
+	_look(room, "banho", 1, bath)
+	var vanity := Node3D.new()
+	add_child(vanity)
+	B.box(vanity, Vector3(0.48, 0.72, 1.05), Vector3(x0 + 0.42, y0 + 0.36, c.z - 1.25), M.stone)
+	B.box(vanity, Vector3(0.36, 0.08, 0.36), Vector3(x0 + 0.55, y0 + 0.76, c.z - 1.25), B.flat(Color(0.86, 0.9, 0.93), 0.2))
+	B.box(vanity, Vector3(0.06, 1.35, 0.85), Vector3(x1 - 0.2, y0 + 0.85, zf + 0.4), M.linen_teal)
+	_look(room, "banho", 2, vanity)
+
+func _upgrade_sign(i: int, c: Vector3, y0: float, x0: float) -> void:
+	var p := Vector3(x0 - 0.45, y0 + 1.35, c.z)
+	B.box(self, Vector3(0.08, 0.7, 0.9), p, M.planks)
+	B.label(self, "MELHORIAS", p + Vector3(-0.06, 0, 0), 28, Color(0.15, 0.35, 0.4), Color(1, 1, 1, 0.85), PI * 0.5)
+	var it := Interactable.new()
+	var cs := CollisionShape3D.new()
+	var sh := BoxShape3D.new()
+	sh.size = Vector3(0.8, 1.2, 1.2)
+	cs.shape = sh
+	it.add_child(cs)
+	it.position = p
+	var room_id := i
+	it.prompt_fn = func() -> String:
+		return tr("Melhorias do Bangalô %d (%s)") % [room_id + 1, Core.fmt_money(Core.nightly_rate(room_id))]
+	it.action_fn = func() -> void:
+		get_tree().call_group("hud", "open_office", "bangalo", room_id)
+	add_child(it)
+
+func apply_room_look(id: int) -> void:
+	if id < 0 or id >= room_nodes.size() or id >= Core.rooms.size():
+		return
+	var look: Dictionary = room_nodes[id].get("look", {})
+	var u: Dictionary = Core.rooms[id].upgrades
+	for cat in look:
+		var tier := int(u.get(cat, 0))
+		for e in look[cat]:
+			var n: Node3D = e.n
+			if is_instance_valid(n):
+				n.visible = tier >= int(e.t)
+
+func upgrade_visible(room_id: int, cat: String, tier: int) -> bool:
+	if room_id < 0 or room_id >= room_nodes.size():
+		return false
+	for e in room_nodes[room_id].get("look", {}).get(cat, []):
+		if int(e.t) == tier and is_instance_valid(e.n):
+			return bool(e.n.visible)
+	return false
+
+func _ensure_bung_x(n: int) -> void:
+	while BUNG_X.size() < n:
+		BUNG_X.append(float(BUNG_X[-1]) - 8.0)
+
+func _on_bungalow_built(id: int) -> void:
+	_ensure_bung_x(id + 1)
+	if room_nodes.size() == id:
+		_bungalow(id, Vector3(float(BUNG_X[id]), 0, BUNG_Z))
+	_on_room_changed(id)
+
+func sync_bungalows() -> void:
+	_ensure_bung_x(Core.rooms.size())
+	while room_nodes.size() > Core.rooms.size():
+		_drop_bungalow(room_nodes.size() - 1)
+	while room_nodes.size() < Core.rooms.size():
+		var i := room_nodes.size()
+		_bungalow(i, Vector3(float(BUNG_X[i]), 0, BUNG_Z))
+	for r in Core.rooms:
+		_on_room_changed(int(r.id))
+
+func _drop_bungalow(i: int) -> void:
+	var rn: Dictionary = room_nodes[i]
+	var doomed := {}
+	for n in rn.get("nodes", []):
+		doomed[n] = true
+	var keep := []
+	for e in lanterns:
+		if not doomed.has(e[0]):
+			keep.append(e)
+	lanterns = keep
+	for n in rn.get("nodes", []):
+		if is_instance_valid(n):
+			n.queue_free()
+	room_nodes.remove_at(i)
+
+func _birds_spawn() -> void:
+	var mat := B.flat(Color(0.12, 0.12, 0.14))
+	for i in 5:
+		var mi := MeshInstance3D.new()
+		var qm := QuadMesh.new()
+		qm.size = Vector2(0.62, 0.14)
+		mi.mesh = qm
+		mi.material_override = mat
+		add_child(mi)
+		_birds.append({"n": mi, "a": float(i) * 1.2, "r": 7.0 + float(i) * 1.6, "y": 8.5 + float(i) * 0.35, "cx": -4.0 + float(i) * 3.0, "cz": -8.0})
+
+func _weather_fx() -> void:
+	rain = GPUParticles3D.new()
+	rain.amount = 500
+	rain.lifetime = 1.05
+	rain.visibility_aabb = AABB(Vector3(-90, -8, -50), Vector3(220, 40, 180))
+	var pm := ParticleProcessMaterial.new()
+	pm.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_BOX
+	pm.emission_box_extents = Vector3(70, 0.5, 50)
+	pm.direction = Vector3(0.2, -1, 0.05)
+	pm.spread = 6.0
+	pm.initial_velocity_min = 16.0
+	pm.initial_velocity_max = 24.0
+	pm.gravity = Vector3(0, -8, 0)
+	rain.process_material = pm
+	var qm := QuadMesh.new()
+	qm.size = Vector2(0.025, 0.42)
+	var rm := B.flat(Color(0.75, 0.82, 0.9, 0.65), 0.2)
+	rm.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	rm.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	qm.material = rm
+	rain.draw_pass_1 = qm
+	rain.position = Vector3(20, 16, 8)
+	rain.emitting = false
+	rain.visible = false
+	add_child(rain)
+	_on_weather(Core.weather)
+
+func _on_weather(kind: String) -> void:
+	var wet := kind == "rain"
+	if rain:
+		rain.emitting = wet
+		rain.visible = wet
+	if sand_mat:
+		sand_mat.set_shader_parameter("rain_wet", 0.62 if wet else 0.0)
+
+func _process(delta: float) -> void:
+	var t := Time.get_ticks_msec() * 0.001
+	for b in _birds:
+		var n: MeshInstance3D = b.n
+		if not is_instance_valid(n):
+			continue
+		var a: float = t * 0.32 + float(b.a)
+		n.position = Vector3(float(b.cx) + cos(a) * float(b.r), float(b.y) + sin(a * 2.0) * 0.35, float(b.cz) + sin(a) * float(b.r) * 0.55)
+		n.rotation.y = -a
+	for rn in room_nodes:
+		var fan: Node3D = rn.get("fan")
+		if fan and is_instance_valid(fan) and fan.visible:
+			fan.rotation.y += delta * 2.2
 
 # ------------------------------------------------------------------ bar
 func _bar() -> void:

@@ -26,7 +26,9 @@ Com os assets já importados:
 godot --headless --audio-driver Dummy --path . -- --loop-test
 ```
 
-O ciclo (check-in, estadia, limpeza, rede, save/load, quiosque, dormir) imprime `LOOP_TEST PASS` e sai com código 0. Use `user://` de teste (`user://test_save.json`); o save normal do jogador não é apagado.
+O ciclo (check-in, estadia, limpeza, rede, save/load, quiosque, dormir, estoque, upgrade de quarto e novo bangalô) imprime `LOOP_TEST PASS` e sai com código 0. Use `user://` de teste (`user://test_save.json`); o save normal do jogador não é apagado.
+
+Os preços, diárias, margens e salários estão só em `scripts/economy.gd`. No jogo, a tecla B abre o escritório (caixa do dia, insumos, melhorias, equipe). O mercadinho fica na padaria da vila; a placa de melhorias fica na lateral de cada bangalô. Dormir mostra o fechamento do dia.
 
 ## Exportar para Windows
 

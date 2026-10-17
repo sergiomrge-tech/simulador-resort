@@ -100,7 +100,7 @@ func _arrive_state(g) -> void:
 				g.timer = rng.randf_range(30.0, 50.0)
 				var drinks := rng.randi_range(1, 3)
 				for k in drinks:
-					Core.bar_sale(rng.randi_range(12, 24))
+					Core.serve_bar()
 				get_tree().call_group("audio", "sfx", "glass")
 			else:
 				g.timer = rng.randf_range(60.0, 100.0)
@@ -132,7 +132,7 @@ func checkin_front() -> bool:
 	_refresh_queue()
 	g.room = room
 	Core.occupy_room(room, g.gid)
-	Core.add_money(Core.nightly_rate(), tr("Check-in %s (Bangalô %d)") % [g.gname, room + 1])
+	Core.add_money(Core.nightly_rate(room), tr("Check-in %s (Bangalô %d)") % [g.gname, room + 1], "diaria")
 	get_tree().call_group("audio", "sfx", "coin")
 	g.state = "to_room"
 	g.plan = ["pool", "bar"]
@@ -209,17 +209,23 @@ func _back_to_hub(g) -> Array:
 		return [Vector3(8.6, 0.12, p.z), Vector3(8.6, 0.12, -2.2), world.points.deck_s, world.points.hub_sw]
 	return [Vector3(-10.5, 0, p.z), world.points.hub_sw]
 
-func _checkout(g, start: Array) -> void:
+func _stay_rating(wait_min: float, room_id: int) -> float:
 	var rating := 5.0
-	rating -= maxf(0.0, (g.wait_min - 30.0) / 45.0)
+	rating -= maxf(0.0, (wait_min - 30.0) / 45.0)
 	rating += Core.redes * 0.15
+	rating += Core.room_comfort(room_id)
+	if Core.weather == "rain":
+		rating -= Economy.RAIN_RATING
 	rating += rng.randf_range(-0.4, 0.3)
-	rating = clampf(rating, 1.0, 5.0)
+	return clampf(rating, 1.0, 5.0)
+
+func _checkout(g, start: Array) -> void:
+	var rating := _stay_rating(g.wait_min, g.room)
 	var tip := int(round(rating * 4.0))
 	Core.vacate_room(g.room)
 	Core.add_rating(rating)
 	Core.guests_served += 1
-	Core.add_money(tip, tr("%s fez check-out ★%.1f, gorjeta") % [g.gname, rating])
+	Core.add_money(tip, tr("%s fez check-out ★%.1f, gorjeta") % [g.gname, rating], "gorjeta")
 	get_tree().call_group("audio", "sfx", "coin")
 	g.state = "leaving"
 	g.room = -1
@@ -246,18 +252,18 @@ func on_sleep(_day: int) -> void:
 	for g in guests.duplicate():
 		if g.room >= 0:
 			_release_spot(g)
-			var rating := clampf(4.6 - maxf(0.0, (g.wait_min - 30.0) / 45.0) + Core.redes * 0.15 + rng.randf_range(-0.4, 0.3), 1.0, 5.0)
+			var rating := _stay_rating(g.wait_min, g.room)
+			rating = clampf(rating - 0.4, 1.0, 5.0)
 			Core.vacate_room(g.room)
 			Core.add_rating(rating)
 			Core.guests_served += 1
 			var tip := int(round(rating * 4.0))
-			Core.money += tip
+			Core.book(tip, tr("Gorjeta noturna"), "gorjeta", false)
 			total += tip
 			outs += 1
 		guests.erase(g)
 		g.queue_free()
 	queue.clear()
 	spawn_in = 30.0
-	Core.money_changed.emit(Core.money)
 	if outs > 0:
 		Core.toast.emit(tr("Durante a noite, %d hóspede(s) fizeram check-out. Gorjetas %s") % [outs, Core.fmt_money(total, true)], "money")

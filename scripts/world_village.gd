@@ -16,6 +16,8 @@ var kiosk_spots: Array = []
 var bed: Interactable
 var home_wake := Vector3(HOME_C.x - 0.8, 0.2, HOME_C.z - 0.6)
 var bench_spots: Array = []
+var market: Interactable
+var quest_board: Interactable
 var VM := {}
 
 func _ready() -> void:
@@ -136,6 +138,17 @@ func _houses() -> void:
 	B.model(self, "wicker_basket_02", pc + Vector3(-2.6, 0.0, 4.4), 0.0, 1.0)
 	B.model(self, "plastic_crate_01", pc + Vector3(3.5, 0.0, 4.2), 0.5, 1.0)
 	B.model(self, "Shelf_01", pc + Vector3(2.6, 0.0, 4.0), PI, 1.0)
+	market = Interactable.new()
+	market.name = "Mercadinho"
+	var mcs := CollisionShape3D.new()
+	var msh := BoxShape3D.new()
+	msh.size = Vector3(3.2, 2.0, 1.2)
+	mcs.shape = msh
+	market.add_child(mcs)
+	market.position = pc + Vector3(0, 1.1, 4.7)
+	market.prompt_fn = func() -> String: return tr("Comprar insumos no mercadinho")
+	market.action_fn = func() -> void: get_tree().call_group("hud", "open_office", "insumos", -1)
+	add_child(market)
 	# fileira do lado de dentro (porta para a rua, -Z)
 	var south := [[44.0, 7.0, true], [52.0, 6.5, false], [60.0, 7.5, false], [90.0, 7.0, true], [97.5, 5.5, false]]
 	for hh in south:
@@ -316,7 +329,13 @@ func _quiosque() -> void:
 	B.box(self, Vector3(3.6, 0.6, 0.08), c + Vector3(0, y0 + 2.5, 2.42), M.planks)
 	B.label(self, "Quiosque Maré Alta", c + Vector3(0, y0 + 2.5, 2.48), 64, Color(1.0, 0.95, 0.8), Color(0.25, 0.12, 0.02, 1.0))
 	B.box(self, Vector3(3.9, 0.42, 0.05), c + Vector3(0, y0 + 0.72, 2.33), M.dark)
-	B.label(self, "Coco gelado R$ 8 · Caipirinha R$ 15 · Petiscos R$ 22", c + Vector3(0, y0 + 0.72, 2.37), 44, Color(1, 0.95, 0.8), Color(0, 0, 0, 0.6))
+	var board := ""
+	for dish_id in Economy.KIOSK_MENU:
+		var dish: Dictionary = Economy.dish(dish_id)
+		if board != "":
+			board += " · "
+		board += "%s %s" % [tr(str(dish.name)), Core.fmt_money(int(dish.price))]
+	B.label(self, board, c + Vector3(0, y0 + 0.72, 2.37), 36, Color(1, 0.95, 0.8), Color(0, 0, 0, 0.6))
 	for k in 2:
 		B.model(self, "plastic_monobloc_chair_01", c + Vector3(-3.5 + k * 7.0, 0, 4.5), PI + (0.4 if k == 0 else -0.4), 1.0)
 	kiosk_counter = Interactable.new()
@@ -364,6 +383,27 @@ func _barraca() -> void:
 	B.model(self, "plastic_crate_01", c + Vector3(1.8, 0, -1.4), 0.3, 1.0)
 	B.model(self, "plastic_monobloc_chair_01", c + Vector3(2.4, 0, -0.4), 2.5, 1.0)
 	village_points.barraca = c + Vector3(-1.6, 0, -0.6)
+	quest_board = Interactable.new()
+	quest_board.name = "DonaRita"
+	var qcs := CollisionShape3D.new()
+	var qsh := BoxShape3D.new()
+	qsh.size = Vector3(1.4, 1.8, 1.2)
+	qcs.shape = qsh
+	quest_board.add_child(qcs)
+	quest_board.position = c + Vector3(-1.6, 1.0, 0.4)
+	quest_board.prompt_fn = func() -> String:
+		var st := str(Core.quests.get("cocos_rita", ""))
+		if st == "done":
+			return ""
+		if st == "":
+			return tr("Dona Rita: aceitar encomenda de cocos")
+		return tr("Dona Rita: entregar cocos")
+	quest_board.action_fn = func() -> void:
+		if str(Core.quests.get("cocos_rita", "")) == "":
+			Core.accept_quest("cocos_rita")
+		else:
+			Core.complete_quest("cocos_rita")
+	add_child(quest_board)
 
 func _umbrella_hd(p: Vector3, r: float) -> void:
 	_umbrella(p, r)
