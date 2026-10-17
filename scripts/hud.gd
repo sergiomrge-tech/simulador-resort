@@ -1,0 +1,465 @@
+extends CanvasLayer
+## Interface: dinheiro, estrelas, relógio, dica, avisos, joystick, botão Interagir e Loja.
+
+var player: Node
+var guests: Node
+var root: Control
+var money_l: Label
+var stars_l: Label
+var clock_l: Label
+var hint_l: Label
+var prompt_l: Label
+var crosshair: Control
+var toasts: VBoxContainer
+var shop: PanelContainer
+var shop_info: Label
+var btn_interact: Button
+var btn_shop: Button
+var joy_base := Vector2.ZERO
+var joy_knob := Vector2.ZERO
+var joy_id := -1
+var look_id := -1
+var joy_radius := 110.0
+var joy_draw: Control
+var _hint_t := 0.0
+var _touch_buttons: Array = []    # [Control, Callable]
+var touch := true
+var menus: CanvasLayer          # menu principal / pausa / configurações
+var world: Node3D
+var village: Node3D
+var keys_l: Label
+var obj_l: Label
+var obj_draw: Control
+var obj_target := Vector3.INF
+var obj_text := ""
+var _pad_used := false
+
+func _ready() -> void:
+	layer = 5
+	root = Control.new()
+	root.set_anchors_preset(Control.PRESET_FULL_RECT)
+	root.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(root)
+	var th := Theme.new()
+	th.default_font_size = 26
+	root.theme = th
+	# painel de status
+	var top := PanelContainer.new()
+	top.position = Vector2(18, 14)
+	top.add_theme_stylebox_override("panel", _style(Color(0.02, 0.18, 0.22, 0.72), 18))
+	root.add_child(top)
+	var hb := HBoxContainer.new()
+	hb.add_theme_constant_override("separation", 26)
+	top.add_child(hb)
+	money_l = _label(hb, "R$ 300", 30, Color(0.75, 1.0, 0.7))
+	stars_l = _label(hb, "★ 3.0", 30, Color(1.0, 0.86, 0.35))
+	clock_l = _label(hb, "", 30, Color(1, 1, 1))
+	clock_l.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
+	money_l.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
+	stars_l.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
+	# dica
+	hint_l = Label.new()
+	hint_l.set_anchors_preset(Control.PRESET_CENTER_TOP)
+	hint_l.position = Vector2(-330, 124)
+	hint_l.size = Vector2(660, 60)
+	hint_l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	hint_l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	hint_l.add_theme_font_size_override("font_size", 22)
+	hint_l.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.85))
+	hint_l.add_theme_constant_override("outline_size", 8)
+	hint_l.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	root.add_child(hint_l)
+	# mira e texto de interação
+	crosshair = Control.new()
+	crosshair.set_anchors_preset(Control.PRESET_CENTER)
+	crosshair.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	crosshair.draw.connect(func():
+		crosshair.draw_circle(Vector2.ZERO, 4.0, Color(1, 1, 1, 0.9))
+		crosshair.draw_arc(Vector2.ZERO, 7.0, 0, TAU, 20, Color(0, 0, 0, 0.5), 1.5))
+	root.add_child(crosshair)
+	prompt_l = Label.new()
+	prompt_l.set_anchors_preset(Control.PRESET_CENTER)
+	prompt_l.position = Vector2(-300, 26)
+	prompt_l.size = Vector2(600, 50)
+	prompt_l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	prompt_l.add_theme_font_size_override("font_size", 28)
+	prompt_l.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.9))
+	prompt_l.add_theme_constant_override("outline_size", 10)
+	prompt_l.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	root.add_child(prompt_l)
+	# avisos
+	toasts = VBoxContainer.new()
+	toasts.set_anchors_preset(Control.PRESET_TOP_RIGHT)
+	toasts.position = Vector2(-470, 90)
+	toasts.size = Vector2(450, 300)
+	toasts.alignment = BoxContainer.ALIGNMENT_BEGIN
+	toasts.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	root.add_child(toasts)
+	# botões
+	btn_shop = _button("Loja", Vector2(-170, 14), Vector2(150, 64), Control.PRESET_TOP_RIGHT, Color(0.9, 0.55, 0.15, 0.9))
+	btn_shop.pressed.connect(toggle_shop)
+	btn_interact = _button("Interagir", Vector2(-250, -250), Vector2(210, 210), Control.PRESET_BOTTOM_RIGHT, Color(0.1, 0.55, 0.55, 0.85), 105)
+	btn_interact.pressed.connect(func(): player.interact())
+	var btn_menu := _button("☰", Vector2(-260, 14), Vector2(76, 64), Control.PRESET_TOP_RIGHT, Color(0.1, 0.3, 0.4, 0.9))
+	btn_menu.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
+	var open_menu := func():
+		if menus and not get_tree().paused:
+			menus.toggle_pause()
+	btn_menu.pressed.connect(open_menu)
+	_touch_buttons = [[btn_shop, toggle_shop], [btn_interact, func(): player.interact()], [btn_menu, open_menu]]
+	set_meta("btn_menu", btn_menu)
+	# joystick
+	joy_draw = Control.new()
+	joy_draw.set_anchors_preset(Control.PRESET_FULL_RECT)
+	joy_draw.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	joy_draw.draw.connect(_draw_joy)
+	root.add_child(joy_draw)
+	_build_shop()
+	_build_objective()
+	touch = Quality.is_touch()
+	if not touch:
+		# PC: sem joystick/botões de toque; dicas de teclado no rodapé
+		btn_interact.visible = false
+		btn_shop.visible = false
+		joy_draw.visible = false
+		btn_menu.visible = false
+		keys_l = Label.new()
+		_update_keys_hint()
+		Quality.changed.connect(_update_keys_hint)
+		keys_l.set_anchors_preset(Control.PRESET_CENTER_BOTTOM)
+		keys_l.position = Vector2(-520, -52)
+		keys_l.size = Vector2(1040, 40)
+		keys_l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		keys_l.add_theme_font_size_override("font_size", 20)
+		keys_l.add_theme_color_override("font_color", Color(1, 1, 1, 0.85))
+		keys_l.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.8))
+		keys_l.add_theme_constant_override("outline_size", 6)
+		keys_l.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		root.add_child(keys_l)
+	Core.money_changed.connect(func(v): money_l.text = Core.fmt_money(v))
+	Core.stars_changed.connect(func(v): stars_l.text = "★ %.1f" % v)
+	Core.time_changed.connect(func(d, _m): clock_l.text = tr("Dia %d  %s") % [d, Core.clock_text()])
+	Core.toast.connect(show_toast)
+	money_l.text = Core.fmt_money(Core.money)
+	stars_l.text = "★ %.1f" % Core.stars()
+
+func _style(c: Color, r: int) -> StyleBoxFlat:
+	var s := StyleBoxFlat.new()
+	s.bg_color = c
+	s.set_corner_radius_all(r)
+	s.content_margin_left = 18
+	s.content_margin_right = 18
+	s.content_margin_top = 8
+	s.content_margin_bottom = 8
+	return s
+
+func _label(parent: Node, t: String, fs: int, c: Color) -> Label:
+	var l := Label.new()
+	l.text = t
+	l.add_theme_font_size_override("font_size", fs)
+	l.add_theme_color_override("font_color", c)
+	parent.add_child(l)
+	return l
+
+func _button(t: String, pos: Vector2, sz: Vector2, preset: int, c: Color, radius := 18) -> Button:
+	var b := Button.new()
+	b.text = t
+	b.set_anchors_preset(preset)
+	b.position = pos
+	b.size = sz
+	b.focus_mode = Control.FOCUS_NONE
+	b.add_theme_font_size_override("font_size", 30)
+	for st in ["normal", "hover", "pressed"]:
+		var s := _style(c if st != "pressed" else c.lightened(0.25), radius)
+		s.border_color = Color(1, 1, 1, 0.6)
+		s.set_border_width_all(3)
+		b.add_theme_stylebox_override(st, s)
+	root.add_child(b)
+	return b
+
+func _build_shop() -> void:
+	shop = PanelContainer.new()
+	shop.set_anchors_preset(Control.PRESET_CENTER)
+	shop.position = Vector2(-300, -200)
+	shop.size = Vector2(600, 400)
+	shop.add_theme_stylebox_override("panel", _style(Color(0.98, 0.95, 0.88, 0.97), 22))
+	root.add_child(shop)
+	var vb := VBoxContainer.new()
+	vb.add_theme_constant_override("separation", 14)
+	shop.add_child(vb)
+	var t := _label(vb, "Loja da Pousada", 36, Color(0.05, 0.4, 0.45))
+	t.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	shop_info = _label(vb, "", 24, Color(0.2, 0.15, 0.1))
+	shop_info.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	shop_info.custom_minimum_size = Vector2(560, 150)
+	var buy := Button.new()
+	buy.text = tr("Comprar rede (%s)") % Core.fmt_money(Core.REDE_PRICE)
+	buy.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
+	buy.custom_minimum_size = Vector2(0, 70)
+	buy.focus_mode = Control.FOCUS_NONE
+	buy.add_theme_font_size_override("font_size", 28)
+	vb.add_child(buy)
+	buy.pressed.connect(_buy_rede)
+	var close := Button.new()
+	close.text = "Fechar"
+	close.custom_minimum_size = Vector2(0, 60)
+	close.focus_mode = Control.FOCUS_NONE
+	close.add_theme_font_size_override("font_size", 26)
+	vb.add_child(close)
+	close.pressed.connect(toggle_shop)
+	shop.visible = false
+	_touch_buttons.append([buy, _buy_rede])
+	_touch_buttons.append([close, toggle_shop])
+
+func _buy_rede() -> void:
+	if Core.buy_rede():
+		get_tree().call_group("audio", "sfx", "coin")
+	_update_shop()
+
+func _update_shop() -> void:
+	shop_info.text = tr("Rede de algodão colorida pendurada entre dois coqueiros na praia.\nDeixa os hóspedes mais felizes (+estrelas) e aumenta a diária.\n\nInstaladas: %d / %d      Saldo: %s") % [Core.redes, Core.MAX_REDES, Core.fmt_money(Core.money)]
+
+func toggle_shop() -> void:
+	shop.visible = not shop.visible
+	if shop.visible:
+		_update_shop()
+		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+		if _pad_used:
+			shop.find_children("*", "Button", true, false)[0].grab_focus()
+	elif not touch and not get_tree().paused:
+		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+	get_tree().call_group("audio", "sfx", "click")
+
+func show_toast(text: String, kind: String) -> void:
+	var p := PanelContainer.new()
+	var c := Color(0.02, 0.2, 0.25, 0.8)
+	if kind == "money":
+		c = Color(0.08, 0.38, 0.12, 0.85)
+	elif kind == "bad":
+		c = Color(0.5, 0.1, 0.08, 0.85)
+	elif kind == "good":
+		c = Color(0.05, 0.42, 0.45, 0.85)
+	p.add_theme_stylebox_override("panel", _style(c, 12))
+	p.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var l := _label(p, text, 21, Color.WHITE)
+	l.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
+	l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	l.custom_minimum_size = Vector2(410, 0)
+	toasts.add_child(p)
+	while toasts.get_child_count() > 5:
+		toasts.get_child(0).free()
+	var tw := create_tween()
+	tw.tween_interval(4.5)
+	tw.tween_property(p, "modulate:a", 0.0, 0.6)
+	tw.tween_callback(p.queue_free)
+
+func _process(delta: float) -> void:
+	var f = player.focus if player else null
+	prompt_l.text = f.get_prompt() if f else ""
+	btn_interact.modulate = Color(1, 1, 1, 1.0 if f else 0.55)
+	_hint_t -= delta
+	if _hint_t <= 0.0:
+		_hint_t = 0.5
+		hint_l.text = _hint()
+		_update_objective()
+	crosshair.queue_redraw()
+	obj_draw.queue_redraw()
+
+func _hint() -> String:
+	for r in Core.rooms:
+		if r.state == "dirty":
+			var falta := []
+			if r.dirty.cama: falta.append(tr("arrume a cama"))
+			if r.dirty.toalhas: falta.append(tr("recolha as toalhas"))
+			if r.dirty.lixo: falta.append(tr("jogue o lixo fora"))
+			return tr("Bangalô %d sujo: %s.") % [r.id + 1, ", ".join(falta)]
+	if guests and guests.queue_size() > 0:
+		if Core.free_room() >= 0:
+			return tr("Hóspede esperando! Vá ao balcão da recepção e faça o check-in.")
+		return tr("Hóspedes esperando, mas nenhum bangalô livre.")
+	if village and not village.waiting_customers().is_empty():
+		return tr("Clientes esperando no quiosque!")
+	if Core.money >= Core.REDE_PRICE and Core.redes < Core.MAX_REDES:
+		return tr("Dica: compre uma rede na Loja para ganhar estrelas.")
+	return tr("Aproveite a brisa... novos hóspedes chegam em breve.")
+
+# ------------------------------------------------------------------ toque
+func _input(e: InputEvent) -> void:
+	if e is InputEventScreenTouch:
+		if e.pressed:
+			for tb in _touch_buttons:
+				var c: Control = tb[0]
+				if c.is_visible_in_tree() and c.get_global_rect().has_point(e.position):
+					tb[1].call()
+					get_viewport().set_input_as_handled()
+					return
+			if shop.visible:
+				get_viewport().set_input_as_handled()
+				return
+			var vw := root.get_viewport_rect().size.x
+			if e.position.x < vw * 0.42 and joy_id == -1:
+				joy_id = e.index
+				joy_base = e.position
+				joy_knob = e.position
+			elif look_id == -1:
+				look_id = e.index
+			get_viewport().set_input_as_handled()
+		else:
+			if e.index == joy_id:
+				joy_id = -1
+				player.move_input = Vector2.ZERO
+			elif e.index == look_id:
+				look_id = -1
+		joy_draw.queue_redraw()
+	elif e is InputEventScreenDrag:
+		if e.index == joy_id:
+			var d: Vector2 = e.position - joy_base
+			d = d.limit_length(joy_radius)
+			joy_knob = joy_base + d
+			player.move_input = Vector2(d.x, -d.y) / joy_radius
+			joy_draw.queue_redraw()
+		elif e.index == look_id:
+			player.look_delta(e.relative, true)
+		get_viewport().set_input_as_handled()
+	elif e is InputEventMouseButton and e.pressed and e.button_index == MOUSE_BUTTON_LEFT:
+		_pad_used = false
+		if not shop.visible and not get_tree().paused and Core.in_game and Input.mouse_mode != Input.MOUSE_MODE_CAPTURED and not _over_button(e.position):
+			Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+	elif (e is InputEventKey or e is InputEventJoypadButton) and e.is_pressed() and not e.is_echo():
+		if e is InputEventJoypadButton:
+			_pad_used = true
+		if e is InputEventKey and e.physical_keycode == KEY_F11:
+			Quality.toggle_fullscreen()
+			return
+		if not Core.in_game or not visible:
+			return
+		if e.is_action("pause") and not get_tree().paused:
+			if shop.visible:
+				toggle_shop()
+			elif menus:
+				menus.toggle_pause()
+			get_viewport().set_input_as_handled()
+		elif get_tree().paused:
+			return
+		elif e.is_action("shop") or (shop.visible and e is InputEventJoypadButton and e.button_index == JOY_BUTTON_B):
+			toggle_shop()
+		elif e.is_action("interact") and not shop.visible:
+			player.interact()
+
+func _over_button(p: Vector2) -> bool:
+	for tb in _touch_buttons:
+		var c: Control = tb[0]
+		if c.is_visible_in_tree() and c.get_global_rect().has_point(p):
+			return true
+	return false
+
+func _draw_joy() -> void:
+	var vs := root.get_viewport_rect().size
+	var base := joy_base if joy_id != -1 else Vector2(170, vs.y - 170)
+	var knob := joy_knob if joy_id != -1 else base
+	joy_draw.draw_circle(base, joy_radius, Color(1, 1, 1, 0.12))
+	joy_draw.draw_arc(base, joy_radius, 0, TAU, 48, Color(1, 1, 1, 0.45), 3.0)
+	joy_draw.draw_circle(knob, 46, Color(1, 1, 1, 0.45))
+
+
+func _update_keys_hint() -> void:
+	if keys_l == null:
+		return
+	keys_l.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
+	var mv := "%s%s%s%s" % [Quality.key_name("move_forward"), Quality.key_name("move_left"), Quality.key_name("move_back"), Quality.key_name("move_right")]
+	keys_l.text = tr("%s andar  ·  Mouse olhar  ·  %s interagir  ·  %s loja  ·  %s correr  ·  Esc menu  ·  F11 tela cheia") % [mv, Quality.key_name("interact"), Quality.key_name("shop"), Quality.key_name("sprint")]
+
+# ------------------------------------------------------------------ objetivo + seta
+func _build_objective() -> void:
+	obj_l = Label.new()
+	obj_l.set_anchors_preset(Control.PRESET_TOP_LEFT)
+	obj_l.position = Vector2(20, 78)
+	obj_l.size = Vector2(560, 40)
+	obj_l.add_theme_font_size_override("font_size", 23)
+	obj_l.add_theme_color_override("font_color", Color(1.0, 0.92, 0.55))
+	obj_l.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.85))
+	obj_l.add_theme_constant_override("outline_size", 8)
+	obj_l.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	obj_l.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
+	root.add_child(obj_l)
+	obj_draw = Control.new()
+	obj_draw.set_anchors_preset(Control.PRESET_FULL_RECT)
+	obj_draw.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	obj_draw.draw.connect(_draw_objective)
+	root.add_child(obj_draw)
+
+func objective() -> Array:
+	# [texto, posição alvo, distância mínima para mostrar a seta]
+	if world == null or player == null:
+		return ["", Vector3.INF, 0.0]
+	var pp: Vector3 = player.global_position
+	var home: Vector3 = world.bed.global_position if world.get("bed") else Vector3.INF
+	if Core.can_sleep() and home != Vector3.INF:
+		return [tr("Já é tarde: volte para casa e durma"), home, 2.5]
+	for r in Core.rooms:
+		if r.state == "dirty":
+			var bc := Vector3(world.BUNG_X[r.id], 0.6, world.BUNG_Z)
+			return [tr("Limpar o Bangalô %d") % (r.id + 1), bc, 5.0]
+	if guests and guests.queue_size() > 0 and Core.free_room() >= 0:
+		return [tr("Check-in na recepção"), world.desk.global_position, 3.5]
+	if village:
+		var kc: Vector3 = world.kiosk_counter.global_position
+		if not village.waiting_customers().is_empty():
+			return [tr("Turno no quiosque: clientes esperando"), kc, 4.0]
+		if Core.minutes < 8.0 * 60.0:
+			return [tr("Turno no quiosque às 08:00"), kc, 6.0]
+		if village.kiosk_open() and pp.distance_to(kc) > 30.0:
+			return [tr("Turno no quiosque"), kc, 6.0]
+	return ["", Vector3.INF, 0.0]
+
+func _update_objective() -> void:
+	var o := objective()
+	obj_text = o[0]
+	obj_target = o[1]
+	if obj_text == "":
+		obj_l.text = ""
+		return
+	var d: float = player.global_position.distance_to(obj_target) if player else 0.0
+	obj_l.text = "➤ %s  (%d m)" % [obj_text, int(d)] if d > float(o[2]) else "➤ " + obj_text
+	obj_l.set_meta("min_d", o[2])
+
+func _draw_objective() -> void:
+	if obj_target == Vector3.INF or player == null or not Core.in_game:
+		return
+	var cam: Camera3D = get_viewport().get_camera_3d()
+	if cam == null:
+		return
+	var d: float = player.global_position.distance_to(obj_target)
+	if d < float(obj_l.get_meta("min_d", 3.0)):
+		return
+	var vs := root.get_viewport_rect().size
+	var tp := obj_target + Vector3(0, 1.2, 0)
+	var behind := cam.is_position_behind(tp)
+	var sp := cam.unproject_position(tp)
+	var col := Color(1.0, 0.85, 0.3, 0.95)
+	var margin := 60.0
+	var inside := not behind and sp.x > margin and sp.x < vs.x - margin and sp.y > margin and sp.y < vs.y - margin
+	if inside:
+		# marcador sobre o alvo
+		var pts := PackedVector2Array([sp + Vector2(0, -16), sp + Vector2(11, 0), sp + Vector2(0, 16), sp + Vector2(-11, 0)])
+		obj_draw.draw_colored_polygon(pts, col)
+		obj_draw.draw_polyline(pts + PackedVector2Array([pts[0]]), Color(0, 0, 0, 0.6), 2.0)
+		obj_draw.draw_string(get_theme_default_font(), sp + Vector2(-30, 38), "%d m" % int(d), HORIZONTAL_ALIGNMENT_CENTER, 60, 20, Color.WHITE)
+		return
+	# seta na borda da tela apontando para o alvo
+	var c := vs * 0.5
+	var dir := (sp - c)
+	if behind:
+		dir = -dir
+	if dir.length() < 1.0:
+		dir = Vector2(0, 1)
+	dir = dir.normalized()
+	var r := minf(vs.x, vs.y) * 0.42
+	var p := c + dir * r
+	var n := Vector2(-dir.y, dir.x)
+	var tri := PackedVector2Array([p + dir * 26, p - dir * 12 + n * 18, p - dir * 12 - n * 18])
+	obj_draw.draw_colored_polygon(tri, col)
+	obj_draw.draw_polyline(tri + PackedVector2Array([tri[0]]), Color(0, 0, 0, 0.6), 2.0)
+
+func get_theme_default_font() -> Font:
+	return ThemeDB.fallback_font

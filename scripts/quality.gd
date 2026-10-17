@@ -1,0 +1,327 @@
+extends Node
+## Configurações do jogo (autoload "Quality"): vídeo, áudio, controles e idioma.
+## No PC (Forward+) liga SDFGI, SSIL, SSR, SSAO, neblina volumétrica, sombras 4096 suaves e texturas 2k.
+## No celular (renderer Mobile) mantém o caminho leve da v0.1.
+
+signal changed
+
+const PRESETS := ["Baixo", "Médio", "Alto", "Ultra"]
+const CFG := "user://settings.cfg"
+const RESOLUTIONS := [Vector2i(1280, 720), Vector2i(1600, 900), Vector2i(1920, 1080), Vector2i(2560, 1440), Vector2i(3840, 2160)]
+const WINDOW_MODES := ["Janela", "Tela cheia (sem bordas)", "Tela cheia exclusiva"]
+const REBINDABLE := ["move_forward", "move_back", "move_left", "move_right", "interact", "shop", "sprint"]
+const ACTION_NAMES := {"move_forward": "Andar para frente", "move_back": "Andar para trás", "move_left": "Andar para a esquerda",
+	"move_right": "Andar para a direita", "interact": "Interagir", "shop": "Loja", "sprint": "Correr"}
+
+var hd := false               # Forward+ ativo (PC)
+var preset := 3               # 0..3 — Ultra é o padrão no PC
+var scale := 1.0              # escala de resolução 3D (FSR abaixo de 1)
+var vsync := true
+var window_mode := 1          # 0 janela, 1 sem bordas, 2 exclusiva
+var resolution := 2           # índice em RESOLUTIONS (modo janela)
+var fov := 75.0
+var vol_master := 1.0
+var vol_music := 0.8
+var vol_sfx := 1.0
+var sensitivity := 1.0
+var invert_y := false
+var language := "pt"
+var keybinds := {}            # ação -> physical_keycode
+
+var env: Environment
+var sun: DirectionalLight3D
+
+func _ready() -> void:
+	process_mode = Node.PROCESS_MODE_ALWAYS
+	hd = RenderingServer.get_current_rendering_method() == "forward_plus"
+	if not hd:
+		preset = 1
+	language = "pt" if OS.get_locale_language() == "pt" else "en"
+	_ensure_inputs()
+	_load()
+	I18n.install()
+	apply_language()
+	apply_keybinds()
+	apply_audio()
+	_apply_window()
+
+var fullscreen: bool:
+	get: return window_mode != 0
+
+func is_touch() -> bool:
+	return OS.has_feature("mobile")
+
+# ------------------------------------------------------------------ persistência
+func _load() -> void:
+	var c := ConfigFile.new()
+	if c.load(CFG) != OK:
+		return
+	preset = clampi(int(c.get_value("video", "preset", preset)), 0, 3)
+	scale = clampf(float(c.get_value("video", "scale", scale)), 0.5, 1.0)
+	vsync = bool(c.get_value("video", "vsync", vsync))
+	window_mode = clampi(int(c.get_value("video", "window_mode", window_mode)), 0, 2)
+	resolution = clampi(int(c.get_value("video", "resolution", resolution)), 0, RESOLUTIONS.size() - 1)
+	fov = clampf(float(c.get_value("video", "fov", fov)), 60.0, 100.0)
+	vol_master = clampf(float(c.get_value("audio", "master", vol_master)), 0.0, 1.0)
+	vol_music = clampf(float(c.get_value("audio", "music", vol_music)), 0.0, 1.0)
+	vol_sfx = clampf(float(c.get_value("audio", "sfx", vol_sfx)), 0.0, 1.0)
+	sensitivity = clampf(float(c.get_value("controls", "sensitivity", sensitivity)), 0.2, 3.0)
+	invert_y = bool(c.get_value("controls", "invert_y", invert_y))
+	language = str(c.get_value("general", "language", language))
+	var kb = c.get_value("controls", "keys", {})
+	if typeof(kb) == TYPE_DICTIONARY:
+		keybinds = kb
+
+func save() -> void:
+	var c := ConfigFile.new()
+	c.set_value("video", "preset", preset)
+	c.set_value("video", "scale", scale)
+	c.set_value("video", "vsync", vsync)
+	c.set_value("video", "window_mode", window_mode)
+	c.set_value("video", "resolution", resolution)
+	c.set_value("video", "fov", fov)
+	c.set_value("audio", "master", vol_master)
+	c.set_value("audio", "music", vol_music)
+	c.set_value("audio", "sfx", vol_sfx)
+	c.set_value("controls", "sensitivity", sensitivity)
+	c.set_value("controls", "invert_y", invert_y)
+	c.set_value("controls", "keys", keybinds)
+	c.set_value("general", "language", language)
+	c.save(CFG)
+
+# ------------------------------------------------------------------ entrada (teclado + controle)
+func _add_key(action: String, key: Key) -> void:
+	var e := InputEventKey.new()
+	e.physical_keycode = key
+	InputMap.action_add_event(action, e)
+
+func _add_joy_axis(action: String, axis: JoyAxis, v: float) -> void:
+	var e := InputEventJoypadMotion.new()
+	e.axis = axis
+	e.axis_value = v
+	InputMap.action_add_event(action, e)
+
+func _add_joy_btn(action: String, b: JoyButton) -> void:
+	var e := InputEventJoypadButton.new()
+	e.button_index = b
+	InputMap.action_add_event(action, e)
+
+func _ensure_inputs() -> void:
+	for a in ["move_forward", "move_back", "move_left", "move_right", "interact", "shop", "sprint", "pause",
+			"look_left", "look_right", "look_up", "look_down"]:
+		if not InputMap.has_action(a):
+			InputMap.add_action(a, 0.2)
+	if InputMap.action_get_events("sprint").is_empty():
+		_add_key("sprint", KEY_SHIFT)
+	if InputMap.action_get_events("pause").is_empty():
+		_add_key("pause", KEY_ESCAPE)
+	_add_joy_axis("move_forward", JOY_AXIS_LEFT_Y, -1.0)
+	_add_joy_axis("move_back", JOY_AXIS_LEFT_Y, 1.0)
+	_add_joy_axis("move_left", JOY_AXIS_LEFT_X, -1.0)
+	_add_joy_axis("move_right", JOY_AXIS_LEFT_X, 1.0)
+	_add_joy_axis("look_left", JOY_AXIS_RIGHT_X, -1.0)
+	_add_joy_axis("look_right", JOY_AXIS_RIGHT_X, 1.0)
+	_add_joy_axis("look_up", JOY_AXIS_RIGHT_Y, -1.0)
+	_add_joy_axis("look_down", JOY_AXIS_RIGHT_Y, 1.0)
+	_add_joy_btn("interact", JOY_BUTTON_A)
+	_add_joy_btn("shop", JOY_BUTTON_Y)
+	_add_joy_btn("pause", JOY_BUTTON_START)
+	_add_joy_btn("sprint", JOY_BUTTON_LEFT_STICK)
+
+func key_for(action: String) -> int:
+	for e in InputMap.action_get_events(action):
+		if e is InputEventKey:
+			return e.physical_keycode if e.physical_keycode != 0 else e.keycode
+	return 0
+
+func key_name(action: String) -> String:
+	var k := key_for(action)
+	if k == 0:
+		return "—"
+	if DisplayServer.get_name() == "headless":
+		return OS.get_keycode_string(k)
+	return OS.get_keycode_string(DisplayServer.keyboard_get_keycode_from_physical(k))
+
+func rebind(action: String, physical: int) -> void:
+	keybinds[action] = physical
+	apply_keybinds()
+	save()
+
+func reset_keys() -> void:
+	keybinds = {}
+	var defaults := {"move_forward": KEY_W, "move_back": KEY_S, "move_left": KEY_A, "move_right": KEY_D, "interact": KEY_E, "shop": KEY_B, "sprint": KEY_SHIFT}
+	for a in defaults:
+		_set_key(a, defaults[a])
+	save()
+
+func _set_key(action: String, physical: int) -> void:
+	for e in InputMap.action_get_events(action):
+		if e is InputEventKey:
+			InputMap.action_erase_event(action, e)
+	_add_key(action, physical)
+
+func apply_keybinds() -> void:
+	for a in keybinds:
+		if InputMap.has_action(a):
+			_set_key(a, int(keybinds[a]))
+
+# ------------------------------------------------------------------ idioma e áudio
+func set_language(l: String) -> void:
+	language = l
+	apply_language()
+	save()
+	changed.emit()
+
+func apply_language() -> void:
+	TranslationServer.set_locale("en" if language == "en" else "pt_BR")
+
+func set_volume(bus: String, v: float) -> void:
+	match bus:
+		"Master": vol_master = v
+		"Music": vol_music = v
+		"SFX": vol_sfx = v
+	apply_audio()
+	save()
+
+func apply_audio() -> void:
+	var a = load("res://scripts/audio.gd")
+	a.ensure_buses()
+	for pair in [["Master", vol_master], ["Music", vol_music], ["SFX", vol_sfx]]:
+		var i := AudioServer.get_bus_index(pair[0])
+		if i >= 0:
+			AudioServer.set_bus_volume_db(i, linear_to_db(maxf(pair[1], 0.0001)))
+			AudioServer.set_bus_mute(i, pair[1] <= 0.001)
+
+# ------------------------------------------------------------------ janela
+func _apply_window() -> void:
+	if DisplayServer.get_name() == "headless" or is_touch():
+		return
+	DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_ENABLED if vsync else DisplayServer.VSYNC_DISABLED)
+	if _has_shot_arg():
+		return
+	match window_mode:
+		0:
+			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
+			var r: Vector2i = RESOLUTIONS[resolution]
+			var scr := DisplayServer.screen_get_size()
+			r = Vector2i(mini(r.x, scr.x), mini(r.y, scr.y))
+			DisplayServer.window_set_size(r)
+			DisplayServer.window_set_position(DisplayServer.screen_get_position() + (scr - r) / 2)
+		1:
+			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
+		2:
+			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_EXCLUSIVE_FULLSCREEN)
+
+func _has_shot_arg() -> bool:
+	for a in OS.get_cmdline_user_args():
+		if a.begins_with("--shot") or a.begins_with("--loop-test"):
+			return true
+	return false
+
+func toggle_fullscreen() -> void:
+	window_mode = 0 if window_mode != 0 else 1
+	_apply_window()
+	save()
+	changed.emit()
+
+func set_window_mode(m: int) -> void:
+	window_mode = clampi(m, 0, 2)
+	_apply_window()
+	save()
+	changed.emit()
+
+func set_resolution(i: int) -> void:
+	resolution = clampi(i, 0, RESOLUTIONS.size() - 1)
+	_apply_window()
+	save()
+
+func set_preset(p: int) -> void:
+	preset = clampi(p, 0, 3)
+	apply()
+	save()
+
+func set_scale(s: float) -> void:
+	scale = clampf(s, 0.5, 1.0)
+	apply()
+	save()
+
+func set_vsync(v: bool) -> void:
+	vsync = v
+	_apply_window()
+	save()
+
+func set_fov(f: float) -> void:
+	fov = clampf(f, 60.0, 100.0)
+	save()
+	changed.emit()
+
+func set_sensitivity(s: float) -> void:
+	sensitivity = clampf(s, 0.2, 3.0)
+	save()
+
+func set_invert_y(v: bool) -> void:
+	invert_y = v
+	save()
+
+# ------------------------------------------------------------------ gráficos
+func setup(e: Environment, s: DirectionalLight3D) -> void:
+	env = e
+	sun = s
+	apply()
+
+func apply() -> void:
+	if env == null:
+		return
+	var vp := get_viewport()
+	if not hd:
+		changed.emit()
+		return
+	var p := preset
+	# anti-aliasing e escala
+	vp.msaa_3d = [Viewport.MSAA_DISABLED, Viewport.MSAA_2X, Viewport.MSAA_2X, Viewport.MSAA_4X][p]
+	vp.screen_space_aa = Viewport.SCREEN_SPACE_AA_FXAA if p == 0 else Viewport.SCREEN_SPACE_AA_DISABLED
+	vp.use_taa = p >= 2
+	vp.scaling_3d_mode = Viewport.SCALING_3D_MODE_FSR2 if scale < 0.99 else Viewport.SCALING_3D_MODE_BILINEAR
+	vp.scaling_3d_scale = scale
+	vp.mesh_lod_threshold = [2.0, 1.0, 1.0, 0.5][p]
+	vp.positional_shadow_atlas_size = [2048, 2048, 4096, 4096][p]
+	# sombras
+	RenderingServer.directional_shadow_atlas_set_size(2048 if p == 0 else 4096, true)
+	RenderingServer.directional_soft_shadow_filter_set_quality([RenderingServer.SHADOW_QUALITY_SOFT_LOW, RenderingServer.SHADOW_QUALITY_SOFT_MEDIUM, RenderingServer.SHADOW_QUALITY_SOFT_HIGH, RenderingServer.SHADOW_QUALITY_SOFT_ULTRA][p])
+	RenderingServer.positional_soft_shadow_filter_set_quality([RenderingServer.SHADOW_QUALITY_HARD, RenderingServer.SHADOW_QUALITY_SOFT_LOW, RenderingServer.SHADOW_QUALITY_SOFT_MEDIUM, RenderingServer.SHADOW_QUALITY_SOFT_HIGH][p])
+	if sun:
+		sun.directional_shadow_mode = DirectionalLight3D.SHADOW_PARALLEL_2_SPLITS if p == 0 else DirectionalLight3D.SHADOW_PARALLEL_4_SPLITS
+		sun.directional_shadow_max_distance = [50.0, 80.0, 110.0, 150.0][p]
+		sun.shadow_blur = 1.0
+		sun.light_angular_distance = 0.5 if p >= 2 else 0.0
+	# efeitos de tela e GI
+	env.ssao_enabled = p >= 1
+	env.ssao_radius = 1.2
+	env.ssao_intensity = 1.6
+	env.ssao_power = 1.4
+	env.ssil_enabled = p >= 3
+	env.ssil_intensity = 0.8
+	env.ssr_enabled = p >= 2
+	env.ssr_max_steps = 48 if p == 2 else 96
+	env.ssr_fade_in = 0.2
+	env.sdfgi_enabled = p >= 2
+	env.sdfgi_use_occlusion = true
+	env.sdfgi_cascades = 4 if p == 2 else 6
+	env.sdfgi_min_cell_size = 0.2 if p == 2 else 0.15
+	env.sdfgi_energy = 1.0
+	env.sdfgi_bounce_feedback = 0.5
+	env.volumetric_fog_enabled = p >= 2
+	env.volumetric_fog_density = 0.0035
+	env.volumetric_fog_albedo = Color(0.95, 0.95, 1.0)
+	env.volumetric_fog_anisotropy = 0.6
+	env.volumetric_fog_length = 80.0
+	env.volumetric_fog_ambient_inject = 0.3
+	env.volumetric_fog_sky_affect = 0.15
+	env.glow_enabled = true
+	env.glow_intensity = 0.45
+	env.glow_bloom = 0.06
+	RenderingServer.environment_set_ssao_quality(RenderingServer.ENV_SSAO_QUALITY_MEDIUM if p < 3 else RenderingServer.ENV_SSAO_QUALITY_HIGH, true, 0.5, 2, 50, 300)
+	RenderingServer.environment_set_ssil_quality(RenderingServer.ENV_SSIL_QUALITY_MEDIUM if p < 3 else RenderingServer.ENV_SSIL_QUALITY_HIGH, true, 0.5, 4, 50, 300)
+	RenderingServer.environment_set_sdfgi_ray_count(RenderingServer.ENV_SDFGI_RAY_COUNT_64 if p < 3 else RenderingServer.ENV_SDFGI_RAY_COUNT_96)
+	RenderingServer.environment_set_volumetric_fog_volume_size(64 if p == 2 else 128, 64 if p == 2 else 96)
+	changed.emit()

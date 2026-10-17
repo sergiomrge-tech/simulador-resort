@@ -1,0 +1,9 @@
+All audio CC0 (public domain) from OpenGameArt.org:
+- music_bossa.ogg: "Bossa Town" https://opengameart.org/content/bossa-town (CC0)
+- ocean_loop.ogg: "Beach Ocean Waves" (jasinski, freesound 18363) https://opengameart.org/content/beach-ocean-waves (CC0)
+- crickets_loop.ogg: https://opengameart.org/content/crickets-ambient-noise-loopable (CC0)
+- bird1/bird2.ogg: https://opengameart.org/content/birdcricketfrog-and-mosquito-sounds (CC0)
+- other SFX: "100 CC0 SFX #2" https://opengameart.org/content/100-cc0-sfx-2 (CC0)
+- dog.ogg: https://opengameart.org/content/dog-barking-mono (CC0)
+- village_murmur.ogg: https://opengameart.org/content/crowd-shoutingspeaking-ambience (CC0, filtrado)
+- seagull1/2.ogg: https://opengameart.org/content/solo-seagull-sound-effects (CC0)
