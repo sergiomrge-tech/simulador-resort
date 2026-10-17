@@ -1,0 +1,34 @@
+MARÉ ALTA RESORT — versão PC v0.2.0 (Windows 10/11 64-bit, placa com Vulkan)
+=============================================================================
+
+INSTALAÇÃO (sem usar o disco C:)
+1. Extraia este zip para o disco D:, por exemplo:  D:\Games\MareAltaResort\
+2. Dê dois cliques em  Jogar_portatil_D.bat
+   -> saves, configurações e cache de shaders ficam em D:\Games\MareAltaResort\userdata\
+   (Se abrir o MareAltaResort.exe direto, o jogo funciona igual, mas grava os saves em
+    %APPDATA%\Maré Alta Resort no C: — poucos KB + cache de shaders.)
+3. A primeira abertura pode demorar alguns segundos a mais (compilação de shaders).
+   O driver NVIDIA guarda o próprio cache em %LOCALAPPDATA%\NVIDIA (no C:); dá para limitar
+   em Painel de Controle NVIDIA > Configurações 3D > Tamanho do cache de shader.
+
+Os dois arquivos MareAltaResort.exe e MareAltaResort.pck precisam ficar na mesma pasta.
+O Windows SmartScreen pode avisar "editor desconhecido" (o exe não é assinado): Mais informações > Executar assim mesmo.
+
+CONTROLES
+  Teclado/mouse: WASD andar · Mouse olhar · E interagir · B loja · Shift correr · Esc pausa · F11 tela cheia
+  Controle (Xbox/PlayStation): analógico esq. anda · dir. olha · A interagir · Y loja · Start pausa · L3 correr
+  Teclas podem ser trocadas em Configurações > Controles.
+
+COMO JOGAR
+  Você mora numa casinha azul da vila de pescadores e acorda às 06:30.
+  Vá pela calçada de pedra portuguesa até o Quiosque Maré Alta na praia (abre 08:00–18:00) e sirva
+  coco gelado, caipirinha e petiscos (E no balcão). Ajude também na pousada: check-in na recepção,
+  limpeza dos bangalôs e compra de redes na Loja. A seta amarela mostra o próximo objetivo.
+  Depois das 20:00 volte para casa e durma na cama: o dia avança e o jogo salva.
+
+GRÁFICOS
+  Padrão: Ultra (SDFGI, SSIL, SSR, SSAO, neblina volumétrica, sombras 4096 suaves, TAA + MSAA 4x, texturas 2K).
+  Em Configurações > Vídeo: presets Baixo/Médio/Alto/Ultra, modo de janela, resolução, V-Sync,
+  escala 3D com FSR 2 e campo de visão. Se o FPS cair em 1440p, use escala 3D 77–85%.
+
+Assets CC0: Poly Haven, ambientCG, Kenney, Quaternius (ver assets/audio/CREDITS.txt no código-fonte).
