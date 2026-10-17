@@ -12,6 +12,8 @@ Você mora numa casinha da vila e acorda às 06:30. Desce pela calçada de pedra
 - **Mundo:**
   - pousada com piscina (cáusticas), bangalôs, bar de praia e mar com espuma e refração
   - vila com rua de paralelepípedo, casas coloniais coloridas, igreja com sino, praça, padaria, barraca de praia, jangadas e postes que acendem à noite
+- **Interiores (v0.4):** bangalôs mobiliados com modelos PBR realistas-estilizados (Poly Haven, até 2K): cama entalhada com dossel de voal, ventilador de teto, espelho ornamentado, cadeira de balanço, almofadas, quadro, lamparina e plantas; cada melhoria muda o quarto de forma visível.
+- **Interface (v0.4):** fonte Nunito grande e legível em 1080p/1440p, painéis arredondados em tons de areia e madeira, ícones, escritório e fechamento do dia em cartões; escala da interface ajustável (75–150 %).
 - **Vida:** hóspedes com rotina (fila, quarto, piscina, bar, check-out), moradores andando pelas calçadas e clientes no quiosque.
 - **Pronto para Steam:**
   - menu principal, 3 slots de save e pausa
@@ -47,7 +49,7 @@ godot --headless --path . -- --loop-test      # ciclo completo: check-in, estadi
 |---|---|---|
 | Andar / olhar | WASD / mouse | analógico esquerdo / direito |
 | Interagir | E | A |
-| Loja | B | Y |
+| Escritório (caixa, insumos, melhorias, equipe) | B | Y |
 | Correr | Shift | L3 |
 | Pausa | Esc | Start |
 | Tela cheia | F11 | — |
@@ -59,9 +61,10 @@ scripts/   GDScript: core (economia/save), world + world_village (mundo procedur
 shaders/   oceano, piscina e cáusticas, areia, folhagem, hóspedes
 tests/     loop_test.gd
 tools/     fetch_assets.* e geradores de textura (Python)
-docs/      GDD.md, STEAM_PLAN.md
+docs/      GDD.md, STEAM_PLAN.md, DEV_NOTES.md, feedback/ (capturas e respostas ao feedback)
+assets/    fonts/ (Nunito, OFL) e ui/icons/ (game-icons.net) ficam no git; texturas e modelos vêm do fetch
 ```
 
 ## Licenças
 - **Código:** © Sérgio Cancella. Todos os direitos reservados, a menos que um arquivo `LICENSE` diga outra coisa.
-- **Assets de terceiros:** todos CC0. Veja [`CREDITS.md`](CREDITS.md).
+- **Assets de terceiros:** CC0, exceto a fonte Nunito (SIL OFL 1.1) e os ícones do game-icons.net (CC BY 3.0). Veja [`CREDITS.md`](CREDITS.md).

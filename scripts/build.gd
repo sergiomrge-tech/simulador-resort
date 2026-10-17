@@ -232,6 +232,7 @@ static func label(parent: Node, text: String, pos: Vector3, size := 64, col := C
 	var l := Label3D.new()
 	l.text = text
 	l.font_size = size
+	l.font = UiTheme.bold()
 	l.pixel_size = 0.005
 	l.modulate = col
 	l.outline_modulate = outline

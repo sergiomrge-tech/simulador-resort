@@ -42,31 +42,35 @@ func _ready() -> void:
 	root.set_anchors_preset(Control.PRESET_FULL_RECT)
 	root.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(root)
-	var th := Theme.new()
-	th.default_font_size = 26
-	root.theme = th
+	root.theme = UiTheme.get_theme()
 	# painel de status
 	var top := PanelContainer.new()
 	top.position = Vector2(18, 14)
-	top.add_theme_stylebox_override("panel", _style(Color(0.02, 0.18, 0.22, 0.72), 18))
+	var ts := UiTheme.box(Color(0.03, 0.17, 0.2, 0.78), 20, Color(1, 0.9, 0.7, 0.35), 2, 8, 18)
+	top.add_theme_stylebox_override("panel", ts)
 	root.add_child(top)
 	var hb := HBoxContainer.new()
 	hb.add_theme_constant_override("separation", 26)
 	top.add_child(hb)
-	money_l = _label(hb, "R$ 300", 30, Color(0.75, 1.0, 0.7))
-	stars_l = _label(hb, "★ 3.0", 30, Color(1.0, 0.86, 0.35))
-	clock_l = _label(hb, "", 30, Color(1, 1, 1))
+	hb.add_child(_hud_icon("caixa", Color(0.75, 1.0, 0.7)))
+	money_l = _label(hb, "R$ 300", 32, Color(0.75, 1.0, 0.7))
+	stars_l = _label(hb, "★ 3.0", 32, Color(1.0, 0.86, 0.35))
+	clock_l = _label(hb, "", 32, Color(1, 1, 1))
+	for l in [money_l, stars_l, clock_l]:
+		l.add_theme_font_override("font", UiTheme.bold())
 	clock_l.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
 	money_l.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
 	stars_l.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
 	# dica
 	hint_l = Label.new()
 	hint_l.set_anchors_preset(Control.PRESET_CENTER_TOP)
-	hint_l.position = Vector2(-330, 124)
-	hint_l.size = Vector2(660, 60)
+	hint_l.position = Vector2(-400, 122)
+	hint_l.size = Vector2(800, 60)
 	hint_l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	hint_l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	hint_l.add_theme_font_size_override("font_size", 22)
+	hint_l.add_theme_font_size_override("font_size", 25)
+	hint_l.add_theme_font_override("font", UiTheme.bold())
+	hint_l.add_theme_color_override("font_color", Color(1, 0.98, 0.94))
 	hint_l.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.85))
 	hint_l.add_theme_constant_override("outline_size", 8)
 	hint_l.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -81,10 +85,15 @@ func _ready() -> void:
 	root.add_child(crosshair)
 	prompt_l = Label.new()
 	prompt_l.set_anchors_preset(Control.PRESET_CENTER)
-	prompt_l.position = Vector2(-300, 26)
-	prompt_l.size = Vector2(600, 50)
+	prompt_l.position = Vector2(-380, 30)
+	prompt_l.size = Vector2(760, 52)
+	prompt_l.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	var pst := UiTheme.box(Color(0.03, 0.15, 0.18, 0.82), 26, Color(1.0, 0.85, 0.45, 0.8), 2, 6, 22)
+	prompt_l.add_theme_stylebox_override("normal", pst)
+	prompt_l.add_theme_font_override("font", UiTheme.bold())
+	prompt_l.add_theme_color_override("font_color", Color(1, 0.97, 0.9))
 	prompt_l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	prompt_l.add_theme_font_size_override("font_size", 28)
+	prompt_l.add_theme_font_size_override("font_size", 30)
 	prompt_l.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.9))
 	prompt_l.add_theme_constant_override("outline_size", 10)
 	prompt_l.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -92,8 +101,9 @@ func _ready() -> void:
 	# avisos
 	toasts = VBoxContainer.new()
 	toasts.set_anchors_preset(Control.PRESET_TOP_RIGHT)
-	toasts.position = Vector2(-470, 90)
-	toasts.size = Vector2(450, 300)
+	toasts.position = Vector2(-500, 96)
+	toasts.size = Vector2(480, 300)
+	toasts.add_theme_constant_override("separation", 8)
 	toasts.alignment = BoxContainer.ALIGNMENT_BEGIN
 	toasts.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	root.add_child(toasts)
@@ -131,21 +141,27 @@ func _ready() -> void:
 		_update_keys_hint()
 		Quality.changed.connect(_update_keys_hint)
 		keys_l.set_anchors_preset(Control.PRESET_CENTER_BOTTOM)
-		keys_l.position = Vector2(-520, -52)
-		keys_l.size = Vector2(1040, 40)
+		keys_l.position = Vector2(-600, -58)
+		keys_l.size = Vector2(1200, 44)
+		keys_l.grow_horizontal = Control.GROW_DIRECTION_BOTH
+		keys_l.add_theme_stylebox_override("normal", UiTheme.box(Color(0.03, 0.15, 0.18, 0.6), 20, Color(), 0, 0, 18))
 		keys_l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		keys_l.add_theme_font_size_override("font_size", 20)
+		keys_l.add_theme_font_size_override("font_size", 21)
 		keys_l.add_theme_color_override("font_color", Color(1, 1, 1, 0.85))
 		keys_l.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.8))
 		keys_l.add_theme_constant_override("outline_size", 6)
 		keys_l.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		root.add_child(keys_l)
+		_update_keys_hint()
 	Core.money_changed.connect(func(v): money_l.text = Core.fmt_money(v))
 	Core.stars_changed.connect(func(v): stars_l.text = "★ %.1f" % v)
 	Core.time_changed.connect(func(d, _m): clock_l.text = tr("Dia %d  %s") % [d, Core.clock_text()])
 	Core.toast.connect(show_toast)
 	money_l.text = Core.fmt_money(Core.money)
 	stars_l.text = "★ %.1f" % Core.stars()
+	# escritório e fechamento por cima de bússola, seta de objetivo e rodapé
+	root.move_child(office, root.get_child_count() - 1)
+	root.move_child(office.summary, root.get_child_count() - 1)
 
 func _style(c: Color, r: int) -> StyleBoxFlat:
 	var s := StyleBoxFlat.new()
@@ -156,6 +172,25 @@ func _style(c: Color, r: int) -> StyleBoxFlat:
 	s.content_margin_top = 8
 	s.content_margin_bottom = 8
 	return s
+
+## Ajusta a largura do rótulo (com fundo arredondado) ao texto, centralizado na âncora.
+func _hug(l: Label, fs: int, top: float, pad: float) -> void:
+	var f: Font = l.get_theme_font("font")
+	var w := f.get_string_size(l.text, HORIZONTAL_ALIGNMENT_LEFT, -1, fs).x + pad
+	l.offset_left = -w * 0.5
+	l.offset_right = w * 0.5
+	l.offset_top = top
+	l.offset_bottom = top + fs * 1.6
+
+func _hud_icon(id: String, c: Color) -> TextureRect:
+	var t := TextureRect.new()
+	t.texture = UiTheme.icon(id)
+	t.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	t.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	t.custom_minimum_size = Vector2(34, 34)
+	t.self_modulate = c
+	t.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	return t
 
 func _label(parent: Node, t: String, fs: int, c: Color) -> Label:
 	var l := Label.new()
@@ -218,12 +253,13 @@ func show_toast(text: String, kind: String) -> void:
 		c = Color(0.5, 0.1, 0.08, 0.85)
 	elif kind == "good":
 		c = Color(0.05, 0.42, 0.45, 0.85)
-	p.add_theme_stylebox_override("panel", _style(c, 12))
+	p.add_theme_stylebox_override("panel", UiTheme.box(c, 16, Color(1, 1, 1, 0.25), 2, 6, 16))
 	p.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	var l := _label(p, text, 21, Color.WHITE)
+	var l := _label(p, text, 23, Color.WHITE)
+	l.add_theme_font_override("font", UiTheme.bold())
 	l.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
 	l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	l.custom_minimum_size = Vector2(410, 0)
+	l.custom_minimum_size = Vector2(440, 0)
 	toasts.add_child(p)
 	while toasts.get_child_count() > 5:
 		toasts.get_child(0).free()
@@ -234,7 +270,13 @@ func show_toast(text: String, kind: String) -> void:
 
 func _process(delta: float) -> void:
 	var f = player.focus if player else null
-	prompt_l.text = f.get_prompt() if f else ""
+	var ptxt: String = f.get_prompt() if f else ""
+	if ptxt != "" and not touch:
+		ptxt = "[%s]  %s" % [Quality.key_name("interact"), ptxt]
+	if ptxt != prompt_l.text:
+		prompt_l.text = ptxt
+		_hug(prompt_l, 30, 30.0, 56.0)
+	prompt_l.visible = ptxt != ""
 	btn_interact.modulate = Color(1, 1, 1, 1.0 if f else 0.55)
 	_hint_t -= delta
 	if _hint_t <= 0.0:
@@ -348,15 +390,18 @@ func _update_keys_hint() -> void:
 		return
 	keys_l.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
 	var mv := "%s%s%s%s" % [Quality.key_name("move_forward"), Quality.key_name("move_left"), Quality.key_name("move_back"), Quality.key_name("move_right")]
-	keys_l.text = tr("%s andar  ·  Mouse olhar  ·  %s interagir  ·  %s loja  ·  %s correr  ·  Esc menu  ·  F11 tela cheia") % [mv, Quality.key_name("interact"), Quality.key_name("shop"), Quality.key_name("sprint")]
+	keys_l.text = tr("%s andar  ·  Mouse olhar  ·  %s interagir  ·  %s escritório  ·  %s correr  ·  Esc menu  ·  F11 tela cheia") % [mv, Quality.key_name("interact"), Quality.key_name("shop"), Quality.key_name("sprint")]
+	if keys_l.is_inside_tree():
+		_hug(keys_l, 21, -58.0, 44.0)
 
 # ------------------------------------------------------------------ objetivo + seta
 func _build_objective() -> void:
 	obj_l = Label.new()
 	obj_l.set_anchors_preset(Control.PRESET_TOP_LEFT)
-	obj_l.position = Vector2(20, 78)
-	obj_l.size = Vector2(560, 40)
-	obj_l.add_theme_font_size_override("font_size", 23)
+	obj_l.position = Vector2(22, 84)
+	obj_l.size = Vector2(640, 40)
+	obj_l.add_theme_font_size_override("font_size", 26)
+	obj_l.add_theme_font_override("font", UiTheme.bold())
 	obj_l.add_theme_color_override("font_color", Color(1.0, 0.92, 0.55))
 	obj_l.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.85))
 	obj_l.add_theme_constant_override("outline_size", 8)
@@ -448,7 +493,7 @@ func _draw_objective() -> void:
 	obj_draw.draw_polyline(tri + PackedVector2Array([tri[0]]), Color(0, 0, 0, 0.6), 2.0)
 
 func get_theme_default_font() -> Font:
-	return ThemeDB.fallback_font
+	return UiTheme.bold()
 
 func _build_compass() -> void:
 	compass = Control.new()
@@ -474,7 +519,7 @@ func _draw_compass() -> void:
 		if absf(delta) > 70.0:
 			continue
 		var x := cx + delta * px
-		compass.draw_string(get_theme_default_font(), Vector2(x - 8, y + 6), str(m[0]), HORIZONTAL_ALIGNMENT_LEFT, -1, 18, Color(1, 0.92, 0.7))
+		compass.draw_string(get_theme_default_font(), Vector2(x - 8, y + 6), str(m[0]), HORIZONTAL_ALIGNMENT_LEFT, -1, 21, Color(1, 0.92, 0.7))
 	compass.draw_line(Vector2(cx, y - 12), Vector2(cx, y + 12), Color(1, 0.85, 0.35), 2.0)
 	var wind := tr("chuva") if Core.weather == "rain" else tr("sol")
 	compass.draw_string(get_theme_default_font(), Vector2(cx + 138, y + 4), wind, HORIZONTAL_ALIGNMENT_LEFT, -1, 16, Color(0.85, 0.95, 1))

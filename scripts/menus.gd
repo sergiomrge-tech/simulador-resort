@@ -32,9 +32,7 @@ func _ready() -> void:
 	root.set_anchors_preset(Control.PRESET_FULL_RECT)
 	root.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(root)
-	var th := Theme.new()
-	th.default_font_size = 26
-	root.theme = th
+	root.theme = UiTheme.get_theme()
 	fade_rect = ColorRect.new()
 	fade_rect.color = Color(0, 0, 0, 0)
 	fade_rect.set_anchors_preset(Control.PRESET_FULL_RECT)
@@ -391,6 +389,8 @@ func _build_settings() -> Control:
 		_check(r, Quality.vsync, func(on): Quality.set_vsync(on))
 	r = _row(vid, "Escala 3D (FSR 2)")
 	_slider(r, 50, 100, 5, Quality.scale * 100.0, func(v): Quality.set_scale(v / 100.0), func(v): return "%d%%" % int(v))
+	r = _row(vid, "Escala da interface")
+	_slider(r, 75, 150, 5, Quality.ui_scale * 100.0, func(v): Quality.set_ui_scale(v / 100.0), func(v): return "%d%%" % int(v))
 	r = _row(vid, "Campo de visão (FOV)")
 	_slider(r, 60, 100, 1, Quality.fov, func(v): Quality.set_fov(v), func(v): return "%d°" % int(v))
 	# --- áudio

@@ -61,7 +61,7 @@ func _materials() -> void:
 	M.planks = B.mat("weathered_planks", 0.45, Color(1, 0.95, 0.88), 0.85)
 	M.deckwood = B.mat("weathered_planks", 0.5, Color(0.85, 0.7, 0.55), 0.85)
 	M.oak = B.mat("oak_wood_planks", 0.6, Color(1, 1, 1), 0.6)
-	M.bamboo = B.mat("bamboo_wall", 0.45, Color(1, 0.97, 0.9), 0.85)
+	M.bamboo = B.mat("bamboo_wall", 0.45, Color(1.28, 1.2, 1.06), 0.85)
 	M.linen = B.mat("rough_linen", 1.2, Color(0.97, 0.96, 0.93), 0.95)
 	M.linen_teal = B.mat("rough_linen", 1.2, Color(0.35, 0.75, 0.78), 0.95)
 	M.linen_sand = B.mat("rough_linen", 1.2, Color(0.9, 0.82, 0.68), 0.95)
@@ -73,6 +73,18 @@ func _materials() -> void:
 	M.thatch = thatch
 	M.post = B.mat("palm_tree_bark", 0.8, Color(0.8, 0.7, 0.6), 0.9)
 	M.dark = B.flat(Color(0.12, 0.09, 0.07), 0.9)
+	# v0.4: materiais de interior (madeira escura, piso, tapete, rattan, voal)
+	M.darkwood = B.mat("dark_wooden_planks", 0.9, Color(1, 0.92, 0.85), 0.6)
+	M.floor_in = B.mat("brown_planks_05", 0.42, Color(1, 0.97, 0.92), 0.7)
+	M.rug = B.mat("fabric_pattern_07", 1.1, Color(1, 0.95, 0.9), 0.95)
+	M.rug_teal = B.mat("fabric_pattern_07", 1.1, Color(0.55, 0.85, 0.85), 0.95)
+	M.rattan = B.mat("rattan", 1.6, Color(1, 0.95, 0.85), 0.8)
+	M.duvet = B.mat("rough_linen", 1.6, Color(1.0, 0.99, 0.97), 0.95)
+	var voile := B.mat("rough_linen", 1.4, Color(1, 1, 1, 0.55), 0.95).duplicate()
+	voile.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA_DEPTH_PRE_PASS
+	voile.cull_mode = BaseMaterial3D.CULL_DISABLED
+	M.voile = voile
+	M.ceramic = B.flat(Color(0.95, 0.95, 0.93), 0.15)
 
 # ------------------------------------------------------------------ chão
 func _height(x: float, z: float) -> float:
@@ -348,12 +360,15 @@ func _lounger(p: Vector3, rot: float) -> void:
 	n.position = p
 	n.rotation.y = rot
 	add_child(n)
-	B.box(n, Vector3(0.7, 0.08, 1.9), Vector3(0, 0.3, 0), M.oak)
-	B.box(n, Vector3(0.66, 0.08, 0.7), Vector3(0, 0.55, -0.85), M.oak).rotation.x = -0.7
-	B.box(n, Vector3(0.62, 0.06, 1.3), Vector3(0, 0.37, 0.25), M.linen_teal)
-	for sx in [-0.3, 0.3]:
-		for sz in [-0.8, 0.8]:
-			B.box(n, Vector3(0.06, 0.3, 0.06), Vector3(sx, 0.15, sz), M.oak)
+	# v0.4: espreguiçadeira de rattan com colchonete de linho e almofada
+	B.box(n, Vector3(0.72, 0.1, 1.9), Vector3(0, 0.3, 0), M.rattan)
+	B.box(n, Vector3(0.68, 0.1, 0.72), Vector3(0, 0.56, -0.86), M.rattan).rotation.x = -0.7
+	B.box(n, Vector3(0.64, 0.09, 1.25), Vector3(0, 0.39, 0.28), M.linen_teal)
+	B.box(n, Vector3(0.6, 0.08, 0.62), Vector3(0, 0.62, -0.8), M.linen_teal).rotation.x = -0.7
+	B.box(n, Vector3(0.44, 0.12, 0.22), Vector3(0, 0.82, -1.02), M.linen).rotation.x = -0.6
+	for sx in [-0.31, 0.31]:
+		for sz in [-0.82, 0.82]:
+			B.cyl(n, 0.03, 0.035, 0.3, Vector3(sx, 0.15, sz), M.darkwood, 8)
 
 func _umbrella(p: Vector3, r: float) -> void:
 	B.cyl(self, 0.04, 0.05, 2.4, p + Vector3(0, 1.2, 0), M.oak, 8)
@@ -400,26 +415,34 @@ func _bungalow(i: int, c: Vector3) -> void:
 	# interior: cama de casal
 	var room := {"clean": Node3D.new(), "dirty": {}, "light": null}
 	var bed_c := Vector3(c.x - 1.2, y0, c.z - 0.2)
-	B.box(self, Vector3(1.8, 0.35, 2.2), bed_c + Vector3(0, 0.175, 0), M.oak, true)
-	B.box(self, Vector3(1.9, 1.0, 0.1), bed_c + Vector3(0, 0.5, 1.12), M.oak)       # cabeceira
-	B.box(self, Vector3(1.72, 0.22, 2.1), bed_c + Vector3(0, 0.46, 0), M.linen)       # colchão
-	B.model(self, "side_table_01", Vector3(c.x - 2.55, y0, c.z + 1.4), 0.0, 1.0)
-	B.model(self, "wooden_lantern_01", Vector3(c.x - 2.55, y0 + 0.62, c.z + 1.4), 0.0, 0.8)
+	# v0.4: piso de tábuas por dentro, cama entalhada (Poly Haven) e criado-mudo pintado
+	B.box(self, Vector3(w - 0.1, 0.02, d - 0.1), Vector3(c.x, y0 + 0.012, c.z), M.floor_in)
+	B.wall(self, Vector3(1.9, 0.7, 2.2), bed_c + Vector3(0, 0.35, 0))
+	B.model(self, "painted_wooden_nightstand", Vector3(c.x - 2.45, y0, c.z + 1.55), PI, 1.0)
+	B.model(self, "wooden_lantern_01", Vector3(c.x - 2.42, y0 + 0.62, c.z + 1.6), 0.4, 0.75)
 	B.model(self, "potted_plant_02", Vector3(c.x + 2.2, y0, c.z - 2.0), 0.0, 0.9)
+	B.model(self, "wicker_basket_02", Vector3(c.x + 2.3, y0, c.z + 0.2), 0.6, 1.0)
+	var lamp := OmniLight3D.new()
+	lamp.position = Vector3(c.x - 2.42, y0 + 0.9, c.z + 1.55)
+	lamp.omni_range = 2.6
+	lamp.light_energy = 0.9
+	lamp.light_color = Color(1.0, 0.7, 0.4)
+	add_child(lamp)
+	lanterns.append([lamp, null, 0.9, true])
 	# estado limpo
 	var cl: Node3D = room.clean
 	add_child(cl)
-	B.box(cl, Vector3(1.76, 0.04, 1.5), bed_c + Vector3(0, 0.59, -0.3), M.linen_sand)
-	for sx in [-0.42, 0.42]:
-		B.box(cl, Vector3(0.62, 0.14, 0.4), bed_c + Vector3(sx, 0.66, 0.82), M.linen)
-	B.box(cl, Vector3(0.5, 0.08, 0.32), bed_c + Vector3(-0.3, 0.65, -0.7), M.linen_teal)
-	B.box(cl, Vector3(0.5, 0.08, 0.32), bed_c + Vector3(0.3, 0.65, -0.7), M.linen_teal)
+	# cama pronta: peseira dobrada e toalhas enroladas (colchão da GothicBed fica a ~0,46 m)
+	B.box(cl, Vector3(1.3, 0.025, 0.42), bed_c + Vector3(0, 0.475, -0.62), M.linen_sand)
+	for sx in [-0.22, 0.22]:
+		var towel := B.cyl(cl, 0.075, 0.075, 0.42, bed_c + Vector3(sx, 0.56, -0.62), M.linen_teal, 16)
+		towel.rotation.x = PI * 0.5
 	# estado sujo: cama bagunçada / toalhas no chão / lixo
 	var dc := Node3D.new()
 	add_child(dc)
-	B.box(dc, Vector3(1.6, 0.05, 1.3), bed_c + Vector3(0.15, 0.6, -0.1), M.linen_sand).rotation = Vector3(0.05, 0.4, 0.1)
-	B.box(dc, Vector3(0.9, 0.12, 0.7), bed_c + Vector3(-0.4, 0.66, -0.5), M.linen_sand).rotation = Vector3(0.3, -0.5, 0.2)
-	B.box(dc, Vector3(0.62, 0.14, 0.4), bed_c + Vector3(0.5, 0.64, 0.2), M.linen).rotation = Vector3(0.1, 0.9, 0.3)
+	B.box(dc, Vector3(1.3, 0.04, 1.1), bed_c + Vector3(0.1, 0.49, -0.1), M.linen_sand).rotation = Vector3(0.05, 0.4, 0.06)
+	B.box(dc, Vector3(0.8, 0.1, 0.6), bed_c + Vector3(-0.3, 0.53, -0.45), M.linen_sand).rotation = Vector3(0.25, -0.5, 0.15)
+	B.box(dc, Vector3(0.55, 0.13, 0.36), bed_c + Vector3(0.4, 0.54, 0.2), M.linen).rotation = Vector3(0.1, 0.9, 0.3)
 	B.box(dc, Vector3(0.62, 0.14, 0.4), bed_c + Vector3(-1.05, 0.08, 0.6), M.linen).rotation = Vector3(0.0, 0.3, 0.1)
 	var dt := Node3D.new()
 	add_child(dt)
@@ -466,10 +489,12 @@ func _bungalow(i: int, c: Vector3) -> void:
 	# luz interna e da varanda
 	var l := OmniLight3D.new()
 	l.position = Vector3(c.x, y0 + 2.3, c.z)
-	l.omni_range = 5.5
-	l.light_color = Color(1.0, 0.78, 0.5)
+	l.omni_range = 6.5
+	l.light_color = Color(1.0, 0.8, 0.56)
+	l.shadow_enabled = Quality.hd
+	l.shadow_blur = 1.5
 	add_child(l)
-	lanterns.append([l, null, 1.2, true])
+	lanterns.append([l, null, 2.0, true])
 	B.label(self, "BANGALÔ %d" % (i + 1), Vector3(c.x + 1.4, y0 + 2.45, zb + 0.15), 48, Color(1, 0.95, 0.85), Color(0.2, 0.12, 0.05, 0.9))
 	points["room%d_door" % i] = Vector3(c.x + 1.4, 0.25, zb + 1.2)
 	points["room%d_in" % i] = Vector3(c.x + 1.4, 0.25, zb - 1.0)
@@ -511,70 +536,120 @@ func _on_room_changed(id: int) -> void:
 		rn.dirty[k].visible = r.state == "dirty" and r.dirty.get(k, false)
 	apply_room_look(id)
 
-func _look(room: Dictionary, cat: String, tier: int, node: Node3D) -> void:
+## Registra um nó visível a partir do nível `tier` (e até `max_t`, para trocar móveis entre níveis).
+func _look(room: Dictionary, cat: String, tier: int, node: Node3D, max_t := 99) -> void:
 	if not room.look.has(cat):
 		room.look[cat] = []
-	room.look[cat].append({"n": node, "t": tier})
+	room.look[cat].append({"n": node, "t": tier, "max": max_t})
 	node.visible = false
 
 func _upgrade_meshes(room: Dictionary, c: Vector3, y0: float, bed_c: Vector3, x0: float, x1: float, zf: float, zb: float, h: float) -> void:
-	var mattress := B.box(self, Vector3(1.84, 0.14, 2.16), bed_c + Vector3(0, 0.64, 0), M.linen)
-	_look(room, "cama", 1, mattress)
+	# --- cama: casal entalhada (nível 0) → king mais larga (1) → king com dossel de voal (2)
+	var bed0 := B.model(self, "GothicBed_01", bed_c, PI, 1.0)
+	bed0.scale = Vector3(1.12, 1.0, 1.06)
+	_look(room, "cama", 0, bed0, 0)
+	var bed1 := B.model(self, "GothicBed_01", bed_c, PI, 1.0)
+	bed1.scale = Vector3(1.3, 1.0, 1.1)
+	_look(room, "cama", 1, bed1)
 	var canopy := Node3D.new()
 	add_child(canopy)
-	for sx in [-0.95, 0.95]:
-		for sz in [-1.05, 1.05]:
-			B.box(canopy, Vector3(0.06, 1.45, 0.06), bed_c + Vector3(sx, 1.4, sz), M.oak)
-	B.box(canopy, Vector3(2.1, 0.05, 2.35), bed_c + Vector3(0, 2.12, 0), M.linen_sand)
-	B.box(canopy, Vector3(2.05, 0.85, 0.04), bed_c + Vector3(0, 1.65, -1.05), M.linen_teal)
+	for sx in [-1.0, 1.0]:
+		for sz in [-1.0, 1.0]:
+			B.cyl(canopy, 0.045, 0.055, 2.35, bed_c + Vector3(sx * 1.02, 1.175, sz * 1.15), M.darkwood, 10)
+	for sz in [-1.0, 1.0]:
+		B.box(canopy, Vector3(2.12, 0.07, 0.07), bed_c + Vector3(0, 2.35, sz * 1.15), M.darkwood)
+	for sx in [-1.0, 1.0]:
+		B.box(canopy, Vector3(0.07, 0.07, 2.36), bed_c + Vector3(sx * 1.02, 2.35, 0), M.darkwood)
+	# voal amarrado nos quatro cantos + faixa no alto
+	for sx in [-1.0, 1.0]:
+		for sz in [-1.0, 1.0]:
+			var drape := B.box(canopy, Vector3(0.34, 2.15, 0.02), bed_c + Vector3(sx * 0.9, 1.25, sz * 1.17), M.voile)
+			drape.rotation.y = sx * sz * 0.35
+	B.box(canopy, Vector3(2.12, 0.3, 2.36), bed_c + Vector3(0, 2.2, 0), M.voile)
 	_look(room, "cama", 2, canopy)
-	var blanket := B.box(self, Vector3(1.45, 0.045, 1.1), bed_c + Vector3(0.05, 0.72, -0.2), M.linen_teal)
-	_look(room, "roupa", 1, blanket)
+	# --- enxoval: manta estampada (1) → edredom de linho e almofadas (2)
+	var blanket := B.box(self, Vector3(1.5, 0.025, 0.7), bed_c + Vector3(0, 0.48, -0.45), M.rug)
+	_look(room, "roupa", 1, blanket, 1)
 	var linens := Node3D.new()
 	add_child(linens)
-	B.box(linens, Vector3(1.7, 0.035, 2.0), bed_c + Vector3(0, 0.76, 0), B.flat(Color(0.98, 0.98, 0.96)))
-	B.box(linens, Vector3(0.42, 0.14, 0.3), bed_c + Vector3(-0.55, 0.86, 0.72), B.flat(Color(0.82, 0.38, 0.32)))
-	B.box(linens, Vector3(0.42, 0.14, 0.3), bed_c + Vector3(0.55, 0.86, 0.72), B.flat(Color(0.95, 0.78, 0.35)))
+	B.box(linens, Vector3(1.55, 0.03, 0.55), bed_c + Vector3(0, 0.49, -0.6), M.rug_teal)
+	B.model(linens, "throw_pillows_01", bed_c + Vector3(0.12, 0.47, 0.5), PI, 0.8)
 	_look(room, "roupa", 2, linens)
+	# --- decoração: tapete, quadro e vaso (1) → cadeira de balanço, planta e lamparina (2)
 	var decor := Node3D.new()
 	add_child(decor)
-	B.box(decor, Vector3(2.2, 0.02, 1.5), Vector3(c.x + 0.3, y0 + 0.02, c.z + 0.2), B.flat(Color(0.55, 0.2, 0.16)))
-	B.box(decor, Vector3(0.85, 0.55, 0.04), Vector3(c.x - 0.2, y0 + 1.7, zf + 0.06), B.flat(Color(0.2, 0.45, 0.55)))
+	B.box(decor, Vector3(2.0, 0.015, 1.4), Vector3(c.x + 0.6, y0 + 0.03, c.z - 0.3), M.rug)
+	B.box(decor, Vector3(2.1, 0.01, 1.5), Vector3(c.x + 0.6, y0 + 0.025, c.z - 0.3), M.darkwood)
+	B.model(decor, "hanging_picture_frame_02", Vector3(bed_c.x, y0 + 1.75, zb - 0.08), PI, 1.1)
+	B.model(decor, "ceramic_vase_02", Vector3(c.x - 2.55, y0 + 0.62, c.z + 1.42), 0.0, 0.8)
 	_look(room, "decor", 1, decor)
 	var lounge := Node3D.new()
 	add_child(lounge)
-	B.cyl(lounge, 0.08, 0.12, 1.05, Vector3(c.x + 1.9, y0 + 0.55, c.z + 1.45), M.oak, 8)
-	B.sphere(lounge, 0.16, Vector3(c.x + 1.9, y0 + 1.15, c.z + 1.45), B.flat(Color(1.0, 0.93, 0.72), 0.4))
-	B.model(lounge, "potted_plant_01", Vector3(c.x - 2.1, y0, zb - 0.4), 0.4, 0.8)
+	B.model(lounge, "Rockingchair_01", Vector3(c.x + 1.75, y0, c.z - 1.55), PI + 0.6, 1.0)
+	B.model(lounge, "side_table_01", Vector3(c.x + 2.3, y0, c.z - 0.75), 0.0, 0.9)
+	B.model(lounge, "vintage_oil_lamp", Vector3(c.x + 2.3, y0 + 0.5, c.z - 0.75), 0.0, 0.6)
+	var plant := B.model(lounge, "pachira_aquatica_01", Vector3(c.x - 2.0, y0, zb - 0.45), 0.4, 1.0)
+	_keep_parts(plant, ["_d"])
+	var ll := OmniLight3D.new()
+	ll.position = Vector3(c.x + 2.3, y0 + 1.0, c.z - 0.75)
+	ll.omni_range = 3.0
+	ll.light_energy = 1.1
+	ll.light_color = Color(1.0, 0.68, 0.38)
+	lounge.add_child(ll)
 	_look(room, "decor", 2, lounge)
-	var fan := Node3D.new()
-	add_child(fan)
-	fan.position = Vector3(c.x, y0 + h - 0.18, c.z)
-	B.cyl(fan, 0.07, 0.07, 0.1, Vector3.ZERO, M.dark, 8)
-	for k in 3:
-		var pivot := Node3D.new()
-		fan.add_child(pivot)
-		pivot.rotation.y = k * TAU / 3.0
-		B.box(pivot, Vector3(0.82, 0.02, 0.14), Vector3(0.4, -0.05, 0), B.flat(Color(0.9, 0.9, 0.93)))
-	room.fan = fan
-	_look(room, "clima", 1, fan)
+	# --- clima: ventilador de teto (1) → ar-condicionado split (2)
+	var fan_root := Node3D.new()
+	add_child(fan_root)
+	fan_root.position = Vector3(c.x + 0.3, y0 + h, c.z - 0.2)
+	var fan_m := B.model(fan_root, "ceiling_fan", Vector3.ZERO, 0.0, 0.85)
+	var blades := fan_m.find_child("ceiling_fan_blades", true, false) as Node3D
+	room.fan = blades if blades else fan_m
+	_look(room, "clima", 1, fan_root)
 	var ac := Node3D.new()
 	add_child(ac)
-	B.box(ac, Vector3(0.26, 0.28, 0.72), Vector3(x1 - 0.12, y0 + 2.15, c.z + 0.2), B.flat(Color(0.93, 0.94, 0.96)))
-	B.box(ac, Vector3(0.05, 0.08, 0.48), Vector3(x1 - 0.26, y0 + 2.05, c.z + 0.2), B.flat(Color(0.15, 0.2, 0.22)))
+	var acp := Vector3(x1 - 0.13, y0 + 2.12, c.z + 0.2)
+	B.box(ac, Vector3(0.22, 0.3, 0.86), acp, B.flat(Color(0.95, 0.96, 0.97), 0.35))
+	B.box(ac, Vector3(0.03, 0.05, 0.74), acp + Vector3(-0.115, -0.1, 0), B.flat(Color(0.25, 0.3, 0.32), 0.5))
+	B.box(ac, Vector3(0.02, 0.02, 0.08), acp + Vector3(-0.115, 0.08, 0.32), B.flat(Color(0.2, 0.9, 0.5), 0.3))
 	_look(room, "clima", 2, ac)
+	# --- banheiro: espelho e toalheiro (1) → bancada de pedra com cuba (2)
 	var bath := Node3D.new()
 	add_child(bath)
-	B.box(bath, Vector3(0.05, 0.7, 0.42), Vector3(x0 + 0.16, y0 + 1.5, c.z - 1.35), B.flat(Color(0.75, 0.86, 0.92), 0.15, 0.55))
-	B.box(bath, Vector3(0.46, 0.04, 0.08), Vector3(x0 + 0.28, y0 + 1.12, c.z - 0.75), M.oak)
-	B.box(bath, Vector3(0.26, 0.38, 0.05), Vector3(x0 + 0.3, y0 + 0.85, c.z - 0.75), M.linen)
+	B.model(bath, "ornate_mirror_01", Vector3(x0 + 0.08, y0 + 1.55, c.z - 1.3), PI * 0.5, 1.2)
+	B.box(bath, Vector3(0.06, 0.04, 0.5), Vector3(x0 + 0.1, y0 + 1.12, c.z - 0.55), M.darkwood)
+	B.box(bath, Vector3(0.05, 0.42, 0.34), Vector3(x0 + 0.12, y0 + 0.9, c.z - 0.55), M.linen_teal)
 	_look(room, "banho", 1, bath)
 	var vanity := Node3D.new()
 	add_child(vanity)
-	B.box(vanity, Vector3(0.48, 0.72, 1.05), Vector3(x0 + 0.42, y0 + 0.36, c.z - 1.25), M.stone)
-	B.box(vanity, Vector3(0.36, 0.08, 0.36), Vector3(x0 + 0.55, y0 + 0.76, c.z - 1.25), B.flat(Color(0.86, 0.9, 0.93), 0.2))
-	B.box(vanity, Vector3(0.06, 1.35, 0.85), Vector3(x1 - 0.2, y0 + 0.85, zf + 0.4), M.linen_teal)
+	B.box(vanity, Vector3(0.5, 0.06, 1.1), Vector3(x0 + 0.3, y0 + 0.82, c.z - 1.3), M.stone)
+	B.box(vanity, Vector3(0.46, 0.76, 1.04), Vector3(x0 + 0.3, y0 + 0.4, c.z - 1.3), M.darkwood)
+	B.cyl(vanity, 0.2, 0.15, 0.12, Vector3(x0 + 0.32, y0 + 0.91, c.z - 1.3), M.ceramic, 24)
+	B.model(vanity, "ceramic_vase_02", Vector3(x0 + 0.28, y0 + 0.85, c.z - 0.9), 0.0, 0.55)
+	B.model(vanity, "wicker_basket_01", Vector3(x0 + 0.3, y0 + 0.85, c.z - 1.7), 0.0, 0.7)
+	B.box(vanity, Vector3(0.04, 1.6, 0.9), Vector3(x1 - 0.2, y0 + 0.95, zf + 0.5), M.voile)
 	_look(room, "banho", 2, vanity)
+
+## Deixa só as malhas cujo nome contém um dos sufixos (modelos da Poly Haven com variações lado a lado)
+## e recentraliza o que sobrou na origem do nó.
+func _keep_parts(n: Node3D, keep: Array) -> void:
+	var kept := AABB()
+	var first := true
+	for mi in n.find_children("*", "MeshInstance3D", true, false):
+		var ok := false
+		for k in keep:
+			if String(mi.name).ends_with(k):
+				ok = true
+		if not ok:
+			mi.queue_free()
+			continue
+		var bb: AABB = mi.transform * mi.get_aabb()
+		kept = bb if first else kept.merge(bb)
+		first = false
+	if not first:
+		var ctr := kept.get_center()
+		for ch in n.get_children():
+			if ch is Node3D:
+				ch.position -= Vector3(ctr.x, 0, ctr.z)
 
 func _upgrade_sign(i: int, c: Vector3, y0: float, x0: float) -> void:
 	var p := Vector3(x0 - 0.45, y0 + 1.35, c.z)
@@ -604,7 +679,7 @@ func apply_room_look(id: int) -> void:
 		for e in look[cat]:
 			var n: Node3D = e.n
 			if is_instance_valid(n):
-				n.visible = tier >= int(e.t)
+				n.visible = tier >= int(e.t) and tier <= int(e.get("max", 99))
 
 func upgrade_visible(room_id: int, cat: String, tier: int) -> bool:
 	if room_id < 0 or room_id >= room_nodes.size():

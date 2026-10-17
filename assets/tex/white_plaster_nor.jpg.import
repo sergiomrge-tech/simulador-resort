@@ -4,16 +4,15 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://d3pntysdy7ffp"
 path.s3tc="res://.godot/imported/white_plaster_nor.jpg-3d6c861fe3864e7a531295c2fd6344ed.s3tc.ctex"
-path.etc2="res://.godot/imported/white_plaster_nor.jpg-3d6c861fe3864e7a531295c2fd6344ed.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc", "etc2_astc"],
+"imported_formats": ["s3tc_bptc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/tex/white_plaster_nor.jpg"
-dest_files=["res://.godot/imported/white_plaster_nor.jpg-3d6c861fe3864e7a531295c2fd6344ed.s3tc.ctex", "res://.godot/imported/white_plaster_nor.jpg-3d6c861fe3864e7a531295c2fd6344ed.etc2.ctex"]
+dest_files=["res://.godot/imported/white_plaster_nor.jpg-3d6c861fe3864e7a531295c2fd6344ed.s3tc.ctex"]
 
 [params]
 
