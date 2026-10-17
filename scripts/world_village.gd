@@ -63,8 +63,9 @@ func _street() -> void:
 		var z_side: float = STREET_Z + side * 2.9
 		B.platform(self, Vector3(L, 0.3, 1.8), Vector3(cx, 0.0, z_side), VM.calcada, 0.35)
 		B.box(self, Vector3(L, 0.32, 0.22), Vector3(cx, 0.0, STREET_Z + side * 2.05), VM.curb)
-	# acesso da calçada até o quiosque (passa entre a pousada e as casas)
-	B.box(self, Vector3(2.4, 0.06, 34.0), Vector3(38, 0.03, 9.2), VM.calcada)
+	# acesso da calçada até a areia; para antes do quiosque para não virar um tapete na praia
+	B.box(self, Vector3(2.4, 0.06, 24.0), Vector3(38, 0.03, 15.0), VM.calcada)
+	B.box(self, Vector3(1.5, 0.04, 4.5), Vector3(38, 0.035, 2.4), M.deckwood)
 	# calçadinhas das portas
 	village_points.street_w = Vector3(2.5, 0.15, STREET_Z - 2.9)
 
@@ -323,6 +324,9 @@ func _quiosque() -> void:
 	for i in 8:
 		B.cyl(self, 0.04, 0.045, 0.28, c + Vector3(-1.4 + i * 0.38, y0 + 1.35, -1.9), B.flat(cols[i % 4], 0.15, 0.05), 8)
 	_fruit_row(c + Vector3(-1.5, y0 + ch + 0.14, 1.85))
+	var snack_y := y0 + ch + 0.1
+	_coconut_cup(self, c + Vector3(-0.55, snack_y, 2.22))
+	_petisco_plate(self, c + Vector3(0.5, snack_y, 2.22))
 	var coco := B.flat(Color(0.42, 0.52, 0.16), 0.6)
 	for k in 5:
 		B.sphere(self, 0.11, c + Vector3(0.35 + (k % 3) * 0.24, y0 + ch + 0.14, 2.05), coco)
@@ -339,7 +343,8 @@ func _quiosque() -> void:
 	for k in 2:
 		var tp := c + Vector3(-4.4 + k * 8.8, 0, 4.6)
 		B.model(self, "outdoor_table_chair_set_01", tp, 0.2 if k == 0 else -0.4, 1.0)
-		_umbrella(tp, 1.45, Color(0.95, 0.78, 0.35) if k == 0 else Color(0.12, 0.55, 0.58))
+		_umbrella(tp, 1.45, Color(0.95, 0.78, 0.35) if k == 0 else Color(0.12, 0.55, 0.58), k == 1)
+		_table_bites(tp + Vector3(0, 0.75, 0))
 	kiosk_counter = Interactable.new()
 	var cs := CollisionShape3D.new()
 	var sh := BoxShape3D.new()
@@ -382,7 +387,8 @@ func _barraca() -> void:
 	for k in 3:
 		var tp := c + Vector3(-2.0 + k * 2.2, 0, 3.6)
 		B.model(self, "outdoor_table_chair_set_01", tp, k * 0.7, 1.0)
-		_umbrella_hd(tp + Vector3(0, 0, 0), 1.5)
+		_umbrella(tp, 1.5, Color(0.95, 0.82, 0.28) if k != 1 else Color(0.16, 0.48, 0.7), k == 2)
+		_table_bites(tp + Vector3(0, 0.75, 0))
 	B.model(self, "plastic_crate_01", c + Vector3(1.8, 0, -1.4), 0.3, 1.0)
 	B.model(self, "plastic_monobloc_chair_01", c + Vector3(2.4, 0, -0.4), 2.5, 1.0)
 	village_points.barraca = c + Vector3(-1.6, 0, -0.6)

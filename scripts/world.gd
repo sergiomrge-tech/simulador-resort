@@ -355,7 +355,7 @@ func _pool() -> void:
 	# guarda-sóis da piscina
 	var ui := 0
 	for p in [Vector3(-7.6, 0.12, 2.5), Vector3(7.6, 0.12, 2.5), Vector3(-7.6, 0.12, 5.1), Vector3(7.6, 0.12, 5.1)]:
-		_umbrella(p, 1.35, umbrella_tints[ui % umbrella_tints.size()])
+		_umbrella(p, 1.35, umbrella_tints[ui % umbrella_tints.size()], ui == 2)
 		ui += 1
 
 func _lounger(p: Vector3, rot: float) -> void:
@@ -373,37 +373,163 @@ func _lounger(p: Vector3, rot: float) -> void:
 		for sz in [-0.82, 0.82]:
 			B.cyl(n, 0.03, 0.035, 0.3, Vector3(sx, 0.15, sz), M.darkwood, 8)
 
-func _umbrella(p: Vector3, r: float, tint := Color(0.86, 0.22, 0.18)) -> void:
+var _parasol_mats := {}
+var _thatch_parasol: Material
+
+## Guarda-sol redondo: gomos de tecido que cedem entre as varetas, franja e listras (ou sapê).
+func _umbrella(p: Vector3, r: float, tint := Color(0.86, 0.22, 0.18), thatch := false) -> void:
 	var n := Node3D.new()
 	n.position = p
 	add_child(n)
-	B.cyl(n, 0.035, 0.048, 2.05, Vector3(0, 1.02, 0), M.darkwood, 10)
-	var cloth: StandardMaterial3D = M.linen.duplicate()
-	cloth.albedo_color = tint
-	cloth.cull_mode = BaseMaterial3D.CULL_DISABLED
-	cloth.roughness = 0.72
-	var top := MeshInstance3D.new()
-	var cm := CylinderMesh.new()
-	cm.top_radius = 0.05
-	cm.bottom_radius = r
-	cm.height = 0.38
-	cm.radial_segments = 18
-	top.mesh = cm
-	top.material_override = cloth
-	top.position = Vector3(0, 2.12, 0)
-	n.add_child(top)
-	for i in 8:
-		var a := TAU * float(i) / 8.0
-		var rib_m := B.box(n, Vector3(0.018, 0.018, r * 0.92), Vector3(cos(a) * r * 0.38, 2.02, sin(a) * r * 0.38), M.darkwood)
-		rib_m.rotation.y = -a
-		rib_m.rotation.x = 0.16
-	var fringe: StandardMaterial3D = cloth.duplicate()
-	fringe.albedo_color = tint.lightened(0.18)
-	for i in 12:
-		var a2 := TAU * float(i) / 12.0
-		var flap := B.box(n, Vector3(r * 0.22, 0.14, 0.02), Vector3(cos(a2) * r * 0.9, 1.84, sin(a2) * r * 0.9), fringe)
-		flap.rotation.y = -a2
-	B.sphere(n, 0.055, Vector3(0, 2.36, 0), M.oak)
+	var hub_y := 2.02
+	B.cyl(n, 0.03, 0.042, hub_y, Vector3(0, hub_y * 0.5, 0), M.darkwood, 12)
+	B.cyl(n, 0.075, 0.075, 0.05, Vector3(0, hub_y - 0.01, 0), M.oak, 12)
+	B.sphere(n, 0.042, Vector3(0, hub_y + 0.05, 0), M.oak)
+	var panels := 8 if thatch else 12
+	var drop := 0.58 if thatch else 0.40
+	var sag := 0.20 if thatch else 0.13
+	var canopy := MeshInstance3D.new()
+	canopy.mesh = _parasol_canopy(r, panels, drop, sag, thatch)
+	canopy.position = Vector3(0, hub_y, 0)
+	canopy.material_override = _thatch_parasol_mat() if thatch else _stripe_mat(tint)
+	n.add_child(canopy)
+	var ribs := MeshInstance3D.new()
+	ribs.mesh = _parasol_ribs(r, panels, drop)
+	ribs.position = Vector3(0, hub_y, 0)
+	ribs.material_override = M.darkwood
+	n.add_child(ribs)
+
+func _parasol_point(a0: float, a1: float, across: float, radial: float, radius: float, drop: float, sag: float) -> Vector3:
+	var ang := lerpf(a0, a1, across)
+	var rr := radial * radius
+	var y := -drop * pow(radial, 1.2)
+	y -= sin(across * PI) * sag * radial * radial
+	return Vector3(cos(ang) * rr, y, sin(ang) * rr)
+
+func _parasol_canopy(radius: float, panels: int, drop: float, sag: float, thatch: bool) -> ArrayMesh:
+	var st := SurfaceTool.new()
+	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var rings := 7
+	var across_n := 3
+	for p in panels:
+		var a0 := TAU * float(p) / float(panels)
+		var a1 := TAU * float(p + 1) / float(panels)
+		for ring in rings:
+			var r0 := float(ring) / float(rings)
+			var r1 := float(ring + 1) / float(rings)
+			for k in across_n:
+				var u0 := float(k) / float(across_n)
+				var u1 := float(k + 1) / float(across_n)
+				var q := [
+					_parasol_point(a0, a1, u0, r0, radius, drop, sag),
+					_parasol_point(a0, a1, u1, r0, radius, drop, sag),
+					_parasol_point(a0, a1, u1, r1, radius, drop, sag),
+					_parasol_point(a0, a1, u0, r1, radius, drop, sag),
+				]
+				var uv := []
+				for qi in 4:
+					var radial: float = r0 if qi < 2 else r1
+					var across: float = u0 if qi == 0 or qi == 3 else u1
+					var v := radial * (2.2 if thatch else 3.4)
+					if not thatch and p % 2 == 1:
+						v += 0.5
+					uv.append(Vector2(across, v))
+				for idx in [0, 1, 2, 0, 2, 3]:
+					st.set_uv(uv[idx])
+					st.add_vertex(q[idx])
+		if not thatch:
+			for k in 5:
+				var u0 := float(k) / 5.0
+				var u1 := float(k + 1) / 5.0
+				var rim0 := _parasol_point(a0, a1, u0, 1.0, radius, drop, sag)
+				var rim1 := _parasol_point(a0, a1, u1, 1.0, radius, drop, sag)
+				var scallop := sin(lerpf(u0, u1, 0.5) * PI)
+				var hang0 := 0.04 + 0.1 * sin(u0 * PI)
+				var hang1 := 0.04 + 0.1 * sin(u1 * PI)
+				hang0 = maxf(hang0, 0.035 + 0.09 * scallop)
+				hang1 = maxf(hang1, 0.035 + 0.09 * scallop)
+				var h0 := rim0 + Vector3(0, -hang0, 0)
+				var h1 := rim1 + Vector3(0, -hang1, 0)
+				var fuv := Vector2(0.5, 3.6 if p % 2 == 0 else 4.1)
+				st.set_uv(fuv); st.add_vertex(rim0)
+				st.set_uv(fuv); st.add_vertex(rim1)
+				st.set_uv(fuv); st.add_vertex(h1)
+				st.set_uv(fuv); st.add_vertex(rim0)
+				st.set_uv(fuv); st.add_vertex(h1)
+				st.set_uv(fuv); st.add_vertex(h0)
+	st.generate_normals()
+	return st.commit()
+
+func _parasol_ribs(radius: float, panels: int, drop: float) -> ArrayMesh:
+	var st := SurfaceTool.new()
+	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	for p in panels:
+		var ang := TAU * float(p) / float(panels)
+		var side := Vector3(-sin(ang), 0, cos(ang)) * 0.011
+		var up := Vector3(0, 0.012, 0)
+		for s in 5:
+			var t0 := float(s) / 5.0
+			var t1 := float(s + 1) / 5.0
+			var p0 := Vector3(cos(ang) * radius * t0, -drop * pow(t0, 1.2) + 0.02, sin(ang) * radius * t0)
+			var p1 := Vector3(cos(ang) * radius * t1, -drop * pow(t1, 1.2) + 0.02, sin(ang) * radius * t1)
+			var q := [p0 - side + up, p0 + side + up, p1 + side + up, p1 - side + up]
+			for idx in [0, 1, 2, 0, 2, 3]:
+				st.set_uv(Vector2(float(idx), t0))
+				st.add_vertex(q[idx])
+	st.generate_normals()
+	return st.commit()
+
+func _stripe_mat(tint: Color) -> Material:
+	var key := tint.to_html()
+	if _parasol_mats.has(key):
+		return _parasol_mats[key]
+	var img := Image.create(1024, 512, false, Image.FORMAT_RGB8)
+	var alt := tint.lightened(0.42) if tint.get_luminance() < 0.72 else tint.darkened(0.22)
+	var bands := 8
+	var bh := int(512 / bands)
+	for i in bands:
+		var col: Color = tint if i % 2 == 0 else alt
+		img.fill_rect(Rect2i(0, i * bh, 1024, bh), col)
+	for y in range(0, 512, 5):
+		img.fill_rect(Rect2i(0, y, 1024, 1), Color(0, 0, 0, 1).lerp(tint, 0.82))
+	var tex := ImageTexture.create_from_image(img)
+	var m := StandardMaterial3D.new()
+	m.albedo_texture = tex
+	m.roughness = 0.84
+	m.cull_mode = BaseMaterial3D.CULL_DISABLED
+	m.texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
+	_parasol_mats[key] = m
+	return m
+
+func _thatch_parasol_mat() -> Material:
+	if _thatch_parasol == null:
+		var m: StandardMaterial3D = M.thatch.duplicate()
+		m.uv1_scale = Vector3(1.6, 2.4, 1)
+		m.cull_mode = BaseMaterial3D.CULL_DISABLED
+		_thatch_parasol = m
+	return _thatch_parasol
+
+func _coconut_cup(parent: Node, pos: Vector3) -> Node3D:
+	var n := Node3D.new()
+	n.position = pos
+	parent.add_child(n)
+	var shell := B.flat(Color(0.42, 0.26, 0.12), 0.55)
+	B.sphere(n, 0.09, Vector3(0, 0.07, 0), shell, Vector3(1.05, 0.82, 1.05))
+	B.sphere(n, 0.04, Vector3(0, 0.13, 0), B.flat(Color(0.96, 0.94, 0.88), 0.35))
+	var straw := B.cyl(n, 0.007, 0.007, 0.2, Vector3(0.02, 0.2, 0), B.flat(Color(0.85, 0.2, 0.16), 0.4), 6)
+	straw.rotation.z = -0.55
+	return n
+
+func _petisco_plate(parent: Node, pos: Vector3) -> Node3D:
+	var n := Node3D.new()
+	n.position = pos
+	parent.add_child(n)
+	B.cyl(n, 0.15, 0.13, 0.02, Vector3(0, 0.015, 0), B.flat(Color(0.95, 0.94, 0.9), 0.28), 16)
+	var bits := [Color(0.82, 0.42, 0.14), Color(0.72, 0.16, 0.12), Color(0.9, 0.72, 0.28), Color(0.45, 0.62, 0.22)]
+	for i in 5:
+		var a := TAU * float(i) / 5.0
+		B.sphere(n, 0.026, Vector3(cos(a) * 0.06, 0.04, sin(a) * 0.06), B.flat(bits[i % 4], 0.5))
+	return n
 
 # ------------------------------------------------------------------ bangalôs
 func _bungalow(i: int, c: Vector3) -> void:
@@ -842,11 +968,18 @@ func _bar() -> void:
 		var face := atan2(-s.x, -s.z)   # olhando para o balcão
 		B.model(self, "bar_chair_round_01", c + s + Vector3(0, y0, 0), face, 1.0)
 		bar_spots.append({"pos": c + s + Vector3(0, y0 + 0.28, 0), "rot": face, "anim": "Sitting_Idle_Loop", "busy": false})
+	var top_y := y0 + ch + 0.08
+	_coconut_cup(self, c + Vector3(-0.85, top_y, -2.22))
+	_petisco_plate(self, c + Vector3(0.85, top_y, -2.22))
+	_coconut_cup(self, c + Vector3(-2.25, top_y, -0.55))
+	_petisco_plate(self, c + Vector3(-2.25, top_y, 0.7))
 	# mesas na areia, cada uma com guarda-sol
 	B.model(self, "outdoor_table_chair_set_01", c + Vector3(-5.5, 0, 3.5), 0.4, 1.0)
-	_umbrella(c + Vector3(-5.5, 0, 3.5), 1.55, Color(0.95, 0.78, 0.35))
+	_umbrella(c + Vector3(-5.5, 0, 3.5), 1.55, Color(0.95, 0.78, 0.35), true)
+	_table_bites(c + Vector3(-5.5, 0.75, 3.5))
 	B.model(self, "outdoor_table_chair_set_01", c + Vector3(-5.8, 0, -3.0), -0.3, 1.0)
 	_umbrella(c + Vector3(-5.8, 0, -3.0), 1.55, Color(0.12, 0.55, 0.58))
+	_table_bites(c + Vector3(-5.8, 0.75, -3.0))
 	_cooler(c + Vector3(2.6, 0.1, -1.6), 0.4)
 	_fruit_row(c + Vector3(-0.2, y0 + ch + 0.16, 2.0))
 	_chalkboard(c + Vector3(3.15, y0 + 1.2, -2.2), 0.4, "CARDÁPIO", _menu_lines(Economy.BAR_MENU))
@@ -894,6 +1027,10 @@ func _cooler(p: Vector3, rot: float) -> void:
 	top.rotation.x = -0.5
 	B.box(n, Vector3(0.16, 0.04, 0.08), Vector3(0, 0.28, 0.22), lid)
 
+func _table_bites(p: Vector3) -> void:
+	_coconut_cup(self, p + Vector3(-0.12, 0, 0.04))
+	_petisco_plate(self, p + Vector3(0.14, 0, -0.05))
+
 func _fruit_row(origin: Vector3) -> void:
 	var cols := [Color(0.95, 0.55, 0.1), Color(0.9, 0.2, 0.18), Color(0.75, 0.85, 0.2), Color(0.95, 0.75, 0.15)]
 	for i in 4:
@@ -927,7 +1064,7 @@ func _beach_props() -> void:
 	var tints := [Color(0.86, 0.22, 0.18), Color(0.95, 0.78, 0.35), Color(0.95, 0.95, 0.9), Color(0.12, 0.55, 0.58), Color(0.2, 0.38, 0.72), Color(0.9, 0.45, 0.25)]
 	for i in spots.size():
 		var p: Vector3 = spots[i]
-		_umbrella(p, 1.7, tints[i % tints.size()])
+		_umbrella(p, 1.7, tints[i % tints.size()], i % 3 == 2)
 		_lounger(p + Vector3(-0.85, 0, 0.7), PI + 0.18)
 		_lounger(p + Vector3(0.85, 0, 0.7), PI - 0.12)
 		if i % 2 == 0:

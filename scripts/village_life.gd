@@ -140,8 +140,10 @@ func _kiosk_tick(dmin: float) -> void:
 					g.play("Sitting_Idle_Loop")
 			"kwait":
 				g.timer -= dmin
-				if g.timer < KIOSK_PATIENCE * 0.4:
+				if g.timer < KIOSK_PATIENCE * 0.22:
 					g.play("Sitting_Talking_Loop")
+				else:
+					g.play("Eat")
 				if g.timer <= 0.0:
 					kiosk_lost += 1
 					Core.toast.emit(tr("Um cliente cansou de esperar no quiosque."), "bad")

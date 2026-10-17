@@ -14,8 +14,8 @@ Você mora numa casinha da vila e acorda às 06:30. Desce pela calçada de pedra
   - vila com rua de paralelepípedo, casas coloniais coloridas, igreja com sino, praça, padaria, barraca de praia, jangadas e postes que acendem à noite
 - **Interiores (v0.4):** bangalôs mobiliados com modelos PBR realistas-estilizados (Poly Haven, até 2K): cama entalhada com dossel de voal, ventilador de teto, espelho ornamentado, cadeira de balanço, almofadas, quadro, lamparina e plantas; cada melhoria muda o quarto de forma visível.
 - **Interface (v0.4):** fonte Nunito grande e legível em 1080p/1440p, painéis arredondados em tons de areia e madeira, ícones, escritório e fechamento do dia em cartões; escala da interface ajustável (75–150 %). Menus de pausa, configurações e o cartão de check-in da recepção usam o mesmo tema.
-- **Praia e quiosque (v0.5):** areia molhada na linha d'água, arrebentação, guarda-sóis, espreguiçadeiras, vegetação e detalhes de praia; quiosque com balcão de madeira, banquetas, prateleira, lousa, cooler e luzes.
-- **Hóspedes (v0.5):** AnimationTree com transições suaves (parado, conversa, andar, correr, sentar, nadar, beber), passada alinhada à velocidade e olhar na direção do jogador. Biblioteca CC0 Quaternius (sem Mixamo).
+- **Praia e quiosque (v0.5.1):** sombrinhas redondas de tecido listrado (gomos que cedem, varetas e franja) e algumas de palha; areia bege clara com ondulação; areia molhada na linha d'água, arrebentação, espreguiçadeiras e quiosque com balcão, banquetas, lousa e petiscos.
+- **Hóspedes (v0.5.1):** AnimationTree com transições suaves (parado, conversa, andar, correr, sentar, nadar, beber) e comer levando a mão à boca. Passada alinhada à velocidade e olhar na direção do jogador. Biblioteca CC0 Quaternius (sem Mixamo).
 - **Vida:** hóspedes com rotina (fila, quarto, piscina, bar, check-out), moradores andando pelas calçadas e clientes no quiosque.
 - **Pronto para Steam:**
   - menu principal, 3 slots de save e pausa

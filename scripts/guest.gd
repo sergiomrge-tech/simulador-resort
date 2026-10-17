@@ -35,6 +35,9 @@ var _move_speed := 0.0
 var _skel: Skeleton3D
 var _look_pt: Marker3D
 var _cup: Node3D
+var _food: Node3D
+var _eating := false
+var _eat_t := 0.0
 var _mesh_insts: Array = []
 
 # m/s da animação em speed_scale 1 (ciclo in-place do Quaternius UAL, CC0).
@@ -112,6 +115,8 @@ func _state_for(an: String) -> String:
 			return "SwimIdle"
 		"Interact":
 			return "Drink"
+		"Eat", "Eating":
+			return "Sit"
 		_:
 			return ""
 
@@ -137,6 +142,13 @@ func _build_anim(model: Node3D) -> void:
 		_cup = _make_cup()
 		att.add_child(_cup)
 		_cup.visible = false
+		_food = _make_food()
+		att.add_child(_food)
+		var eat := SkeletonModifier3D.new()
+		eat.name = "EatArm"
+		eat.set_script(load("res://scripts/eat_arm.gd"))
+		eat.guest = self
+		_skel.add_child(eat)
 	var sm := AnimationNodeStateMachine.new()
 	var specs := {
 		"Idle": "Idle_Loop", "Talk": "Idle_Talking_Loop", "Walk": "Walk_Loop", "Jog": "Jog_Fwd_Loop",
@@ -190,6 +202,10 @@ func _arm_tree() -> void:
 	if _playback == null:
 		_tree.active = false
 		return
+	if _eating:
+		_state = ""
+		_go_state("Sit")
+		return
 	if _state != "":
 		_playback.start(_state)
 
@@ -213,6 +229,60 @@ func _make_cup() -> Node3D:
 	n.add_child(cup)
 	return n
 
+func _make_food() -> Node3D:
+	var n := Node3D.new()
+	var shell := StandardMaterial3D.new()
+	shell.albedo_color = Color(0.46, 0.28, 0.13)
+	shell.roughness = 0.62
+	var s := MeshInstance3D.new()
+	var sm := SphereMesh.new()
+	sm.radius = 0.042
+	sm.height = 0.068
+	sm.radial_segments = 10
+	sm.rings = 6
+	s.mesh = sm
+	s.material_override = shell
+	s.position = Vector3(0.0, 0.045, 0.06)
+	n.add_child(s)
+	var top := MeshInstance3D.new()
+	var tm := SphereMesh.new()
+	tm.radius = 0.02
+	tm.height = 0.02
+	tm.radial_segments = 8
+	tm.rings = 4
+	top.mesh = tm
+	var wm := StandardMaterial3D.new()
+	wm.albedo_color = Color(0.96, 0.94, 0.88)
+	wm.roughness = 0.4
+	top.material_override = wm
+	top.position = Vector3(0.0, 0.075, 0.06)
+	n.add_child(top)
+	var straw := MeshInstance3D.new()
+	var cm := CylinderMesh.new()
+	cm.top_radius = 0.004
+	cm.bottom_radius = 0.004
+	cm.height = 0.09
+	cm.radial_segments = 6
+	straw.mesh = cm
+	var rm := StandardMaterial3D.new()
+	rm.albedo_color = Color(0.86, 0.18, 0.14)
+	rm.roughness = 0.4
+	straw.material_override = rm
+	straw.position = Vector3(0.01, 0.1, 0.055)
+	straw.rotation.z = -0.65
+	n.add_child(straw)
+	n.visible = false
+	return n
+
+func _set_eating(on: bool) -> void:
+	_eating = on
+	if not on:
+		_eat_t = 0.0
+	if _food:
+		_food.visible = on
+	if _cup and on:
+		_cup.visible = false
+
 func _go_state(st: String) -> void:
 	if st == "" or st == _state:
 		return
@@ -228,8 +298,10 @@ func _go_state(st: String) -> void:
 		_playback.travel(st)
 	_state = st
 	_cur_anim = st
+	if st != "Sit" and st != "SitTalk":
+		_set_eating(false)
 	if _cup:
-		_cup.visible = st == "Drink" or st == "SitTalk"
+		_cup.visible = (st == "Drink" or st == "SitTalk") and not _eating
 
 func _sync_rate() -> void:
 	if _tree == null or _state == "":
@@ -261,6 +333,12 @@ func _update_look() -> void:
 func play(an: String) -> void:
 	if _anim == null:
 		return
+	if an == "Eat" or an == "Eating":
+		_set_eating(true)
+		_go_state("Sit")
+		return
+	if _eating:
+		_set_eating(false)
 	var st := _state_for(an)
 	if st == "":
 		var clip := _clip(an)
@@ -293,6 +371,8 @@ func is_moving() -> bool:
 	return not _route.is_empty()
 
 func _process(delta: float) -> void:
+	if _eating:
+		_eat_t += delta
 	var prev := position
 	if _route.is_empty():
 		_move_speed = 0.0

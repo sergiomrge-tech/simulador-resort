@@ -1,6 +1,6 @@
 extends Node3D
 ## Monta a cena: mundo + vila, hóspedes, moradores, jogador, HUD, menus, ciclo dia/noite e áudio.
-## Argumentos de teste (após --):  --shot=<nome>  --loop-test  --newgame  --mute  --quality=N  --hidehud  --empty  --out=
+## Argumentos de teste (após --):  --shot=<nome>  --loop-test  --tour  --newgame  --mute  --quality=N  --hidehud  --empty  --out=
 
 var world: Node3D
 var guests: Node3D
@@ -15,6 +15,10 @@ var args := {}
 var _sleeping := false
 var allow_faint := true
 var _t := 0.0
+var _touring := false
+var _tour_t := 0.0
+var _tour_posed := false
+var _tour_walker: Node3D
 
 const SHOTS := {
 	# nome: [posição, yaw, pitch, hora]
@@ -24,18 +28,21 @@ const SHOTS := {
 	"bangalo": [Vector3(-6.5, 0, -16.5), 128.0, 4.0, 15.5],
 	"interior": [Vector3(-12.3, 0.25, -6.2), 56.0, -16.0, 14.0],
 	"bar": [Vector3(5.5, 0, -19.0), 236.0, 2.0, 16.6],
-	"praia": [Vector3(-24, 1.5, -16.5), -18.0, -10.0, 17.2],
+	"praia": [Vector3(-24, 1.5, -16.5), -18.0, -6.0, 16.7],
+	"praia_meio": [Vector3(-24, 1.5, -16.5), -18.0, -6.0, 11.5],
 	"agua": [Vector3(-8.0, 1.45, -19.5), 132.0, -16.0, 17.15],
 	"balcao": [Vector3(35.6, 1.55, -8.8), 152.0, -12.0, 16.9],
 	"npc_anda": [Vector3(2.6, 1.2, 7.4), -138.0, -8.0, 10.4],
 	"npc_senta": [Vector3(-5.0, 1.2, 1.6), -97.0, -10.0, 16.8],
-	"npc_bar": [Vector3(7.0, 1.25, -15.4), 65.0, -8.0, 17.1],
+	"npc_bar": [Vector3(13.0, 1.65, -19.4), 180.0, -9.0, 16.8],
+	"sombrinha": [Vector3(-24.0, 4.6, -17.0), 45.0, -29.9, 11.2],
+	"sombrinha_sape": [Vector3(-2.6, 4.4, -19.4), 42.9, -30.0, 16.6],
 	"pausa": [Vector3(-14, 0.6, -18), -30.0, -6.0, 17.2],
 	"noite": [Vector3(6.0, 0, 26.0), 20.0, 0.0, 20.5],
 	"vila": [Vector3(39.5, 0.15, 29.0), -84.0, -2.0, 15.5],
 	"praca": [Vector3(68.6, 0.2, 35.0), 205.0, 5.0, 16.4],
 	"casa": [Vector3(47.7, 0.27, 23.0), 52.0, -16.0, 7.0],
-	"quiosque": [Vector3(33.2, 0.4, -6.2), -28.0, -6.0, 16.8],
+	"quiosque": [Vector3(37.2, 1.35, -7.8), -17.7, -4.4, 16.8],
 	"noite_vila": [Vector3(56.0, 0.15, 29.4), -80.0, 0.0, 20.6],
 	"aerea": [Vector3(26.0, 34.0, -52.0), 196.0, -30.0, 16.0],
 	"menu": [Vector3(0, 0, 0), 0.0, 0.0, 17.3],
@@ -51,7 +58,7 @@ func _ready() -> void:
 		var kv: PackedStringArray = a.trim_prefix("--").split("=", true, 1)
 		args[kv[0]] = kv[1] if kv.size() > 1 else "1"
 	Core.in_game = false
-	var testing := args.has("shot") or args.has("loop-test")
+	var testing := args.has("shot") or args.has("loop-test") or args.has("tour")
 	if testing:
 		Core.SAVE_PATH = "user://test_save.json"
 		Quality.language = "en" if args.get("lang", "pt") == "en" else "pt"
@@ -122,6 +129,8 @@ func _ready() -> void:
 		var t = load("res://tests/loop_test.gd").new()
 		add_child(t)
 		t.run(self)
+	elif args.has("tour"):
+		_run_tour()
 	else:
 		_enter_menu()
 
@@ -218,6 +227,20 @@ func go_to_sleep(fainted: bool) -> void:
 
 func _process(delta: float) -> void:
 	_t += delta
+	if _touring:
+		_tour_t += delta
+		if not _tour_posed and _tour_t > 0.2:
+			_tour_posed = true
+			_eat_at_bar()
+			for c in village.customers:
+				c.play("Eat")
+			for g in guests.get_children():
+				if g == _tour_walker or not g.has_method("play"):
+					continue
+				if g.global_position.y > 0.2 and g.global_position.distance_to(world.BAR_C) >= 5.5 and g._state != "Sit":
+					g.play("Sitting_Idle_Loop")
+		_apply_tour_cam()
+		return
 	if menu_cam and menu_cam.current:
 		_update_menu_cam(_t)
 	if Core.in_game and allow_faint and not get_tree().paused and not _sleeping:
@@ -259,7 +282,9 @@ func _run_shot(n: String) -> void:
 					c._route.clear()
 					c.state = "kwait"
 					c.rotation.y = c.spot.rot
-					c.play("Sitting_Talking_Loop" if k == 0 else "Sitting_Idle_Loop")
+					c.play("Eat")
+		if n == "npc_bar":
+			_eat_at_bar()
 		if n == "npc_anda":
 			var walker = guests._make_guest()
 			walker.position = Vector3(-6.0, 0.0, 5.0)
@@ -278,10 +303,10 @@ func _run_shot(n: String) -> void:
 	if n == "recepcao":
 		hud.show_desk_card(tr("Fazer check-in de %s") % "Ana")
 	elif n == "npc_bar":
-		for g in guests.get_children():
-			if g is Node3D and g.global_position.distance_to(world.BAR_C) < 6.0:
-				g.play("Sitting_Talking_Loop")
-				break
+		_eat_at_bar()
+	elif n == "quiosque" or n == "balcao":
+		for c in village.customers:
+			c.play("Eat")
 	elif n == "pausa":
 		menus.toggle_pause()
 	if n == "estoque":
@@ -293,8 +318,9 @@ func _run_shot(n: String) -> void:
 		_dress_room(0)
 	elif n == "resumo":
 		hud.show_summary(_demo_summary())
-	if n in ["estoque", "upgrade", "bangalo_up", "resumo", "pausa", "recepcao", "npc_bar", "npc_anda", "npc_senta"]:
-		for i in 12:
+	if n in ["estoque", "upgrade", "bangalo_up", "resumo", "pausa", "recepcao", "npc_bar", "npc_anda", "npc_senta", "quiosque", "balcao"]:
+		var extra := 36 if n in ["npc_bar", "quiosque", "balcao"] else 12
+		for i in extra:
 			await get_tree().process_frame
 	if n == "npc_anda":
 		for c in guests.get_children():
@@ -311,6 +337,72 @@ func _run_shot(n: String) -> void:
 	img.save_png(out)
 	print("SHOT_SAVED ", out)
 	get_tree().quit()
+
+func _eat_at_bar() -> void:
+	for g in guests.get_children():
+		if g is Node3D and g.global_position.y > 0.2 and g.global_position.distance_to(world.BAR_C) < 5.5:
+			g.play("Eat")
+
+func _aim_cam(pos: Vector3, target: Vector3) -> void:
+	var d := target - pos
+	player.global_position = pos
+	player.yaw = atan2(-d.x, -d.z)
+	player.pitch = atan2(d.y, Vector2(d.x, d.z).length())
+	player._apply_look()
+
+func _run_tour() -> void:
+	Core.paused = true
+	Core.in_game = true
+	Core.minutes = 16.6 * 60.0
+	menus.in_menu = false
+	hud.visible = false
+	guests.enabled = false
+	village.enabled = false
+	day.force_update()
+	player.set_physics_process(false)
+	player.cam.current = true
+	_stage_guests()
+	_eat_at_bar()
+	_tour_walker = guests._make_guest()
+	_tour_walker.position = Vector3(-4.0, 0.0, 8.0)
+	_tour_walker.go([Vector3(20.0, 0.0, 6.5)])
+	for off in [Vector3(-0.85, 0.32, 0.7), Vector3(0.85, 0.32, 0.7)]:
+		var sitter = guests._make_guest()
+		sitter.position = Vector3(-6.0, 0.0, -23.0) + off
+		sitter.rotation.y = PI
+		sitter.play("Sitting_Idle_Loop")
+	var kc = village.spawn_customer()
+	if kc:
+		kc.position = kc.spot.pos
+		kc._route.clear()
+		kc.state = "kwait"
+		kc.rotation.y = kc.spot.rot
+		kc.play("Eat")
+	_touring = true
+	_tour_t = 0.0
+	_apply_tour_cam()
+
+func _apply_tour_cam() -> void:
+	var t := _tour_t
+	var pos := Vector3.ZERO
+	var look := Vector3.ZERO
+	if t < 4.0:
+		var u := t / 4.0
+		pos = Vector3(-8.0, 1.75, 12.2).lerp(Vector3(3.2, 1.65, 11.0), u)
+		look = (_tour_walker.global_position + Vector3(0, 1.05, 0)) if _tour_walker else Vector3(0, 1.0, 7.0)
+	elif t < 8.0:
+		var u := (t - 4.0) / 4.0
+		pos = Vector3(15.2, 1.7, -19.8).lerp(Vector3(10.6, 1.55, -19.3), u)
+		look = Vector3(13.0, 1.05, -15.7)
+	elif t < 12.0:
+		var u := (t - 8.0) / 4.0
+		pos = Vector3(-10.4, 1.55, -19.0).lerp(Vector3(-2.2, 1.42, -19.4), u)
+		look = Vector3(-6.0, 0.75, -22.3)
+	else:
+		var u := clampf((t - 12.0) / 4.0, 0.0, 1.0)
+		pos = Vector3(-16.0, 1.7, -21.5).lerp(Vector3(-3.0, 1.9, -20.0), u)
+		look = Vector3(-8.0, 0.1, -33.2)
+	_aim_cam(pos, look)
 
 func _stage_guests() -> void:
 	Core.redes = 2
