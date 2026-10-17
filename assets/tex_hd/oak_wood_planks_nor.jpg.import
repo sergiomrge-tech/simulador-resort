@@ -4,16 +4,15 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://bl53flbwm0ji8"
 path.s3tc="res://.godot/imported/oak_wood_planks_nor.jpg-cf5444b20cad80fd8a46e5b27897f09f.s3tc.ctex"
-path.etc2="res://.godot/imported/oak_wood_planks_nor.jpg-cf5444b20cad80fd8a46e5b27897f09f.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc", "etc2_astc"],
+"imported_formats": ["s3tc_bptc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/tex_hd/oak_wood_planks_nor.jpg"
-dest_files=["res://.godot/imported/oak_wood_planks_nor.jpg-cf5444b20cad80fd8a46e5b27897f09f.s3tc.ctex", "res://.godot/imported/oak_wood_planks_nor.jpg-cf5444b20cad80fd8a46e5b27897f09f.etc2.ctex"]
+dest_files=["res://.godot/imported/oak_wood_planks_nor.jpg-cf5444b20cad80fd8a46e5b27897f09f.s3tc.ctex"]
 
 [params]
 

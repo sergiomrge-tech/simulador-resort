@@ -4,16 +4,15 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://dyjgml4q45x1h"
 path.s3tc="res://.godot/imported/WoodenChair_01_arm_2k.jpg-7035cdfa91f2177c1dd1c13b8b9f3036.s3tc.ctex"
-path.etc2="res://.godot/imported/WoodenChair_01_arm_2k.jpg-7035cdfa91f2177c1dd1c13b8b9f3036.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc", "etc2_astc"],
+"imported_formats": ["s3tc_bptc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/models_hd/WoodenChair_01/textures/WoodenChair_01_arm_2k.jpg"
-dest_files=["res://.godot/imported/WoodenChair_01_arm_2k.jpg-7035cdfa91f2177c1dd1c13b8b9f3036.s3tc.ctex", "res://.godot/imported/WoodenChair_01_arm_2k.jpg-7035cdfa91f2177c1dd1c13b8b9f3036.etc2.ctex"]
+dest_files=["res://.godot/imported/WoodenChair_01_arm_2k.jpg-7035cdfa91f2177c1dd1c13b8b9f3036.s3tc.ctex"]
 
 [params]
 

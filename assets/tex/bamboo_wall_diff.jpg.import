@@ -4,16 +4,15 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://c3rb1wnm6wi0l"
 path.s3tc="res://.godot/imported/bamboo_wall_diff.jpg-00ebca3b4d1bd440688534b126ee4beb.s3tc.ctex"
-path.etc2="res://.godot/imported/bamboo_wall_diff.jpg-00ebca3b4d1bd440688534b126ee4beb.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc", "etc2_astc"],
+"imported_formats": ["s3tc_bptc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/tex/bamboo_wall_diff.jpg"
-dest_files=["res://.godot/imported/bamboo_wall_diff.jpg-00ebca3b4d1bd440688534b126ee4beb.s3tc.ctex", "res://.godot/imported/bamboo_wall_diff.jpg-00ebca3b4d1bd440688534b126ee4beb.etc2.ctex"]
+dest_files=["res://.godot/imported/bamboo_wall_diff.jpg-00ebca3b4d1bd440688534b126ee4beb.s3tc.ctex"]
 
 [params]
 

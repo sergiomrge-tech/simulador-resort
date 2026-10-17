@@ -4,16 +4,15 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://dcm566sbjaarj"
 path.s3tc="res://.godot/imported/planter_pot_clay_nor_gl_2k.jpg-4680eba538dd77e710a2bb56b2a34eff.s3tc.ctex"
-path.etc2="res://.godot/imported/planter_pot_clay_nor_gl_2k.jpg-4680eba538dd77e710a2bb56b2a34eff.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc", "etc2_astc"],
+"imported_formats": ["s3tc_bptc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/models_hd/planter_pot_clay/textures/planter_pot_clay_nor_gl_2k.jpg"
-dest_files=["res://.godot/imported/planter_pot_clay_nor_gl_2k.jpg-4680eba538dd77e710a2bb56b2a34eff.s3tc.ctex", "res://.godot/imported/planter_pot_clay_nor_gl_2k.jpg-4680eba538dd77e710a2bb56b2a34eff.etc2.ctex"]
+dest_files=["res://.godot/imported/planter_pot_clay_nor_gl_2k.jpg-4680eba538dd77e710a2bb56b2a34eff.s3tc.ctex"]
 
 [params]
 

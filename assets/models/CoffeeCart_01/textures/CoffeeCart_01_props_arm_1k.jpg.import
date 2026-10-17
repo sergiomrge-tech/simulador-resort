@@ -4,16 +4,15 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://b0hmhuo228bn6"
 path.s3tc="res://.godot/imported/CoffeeCart_01_props_arm_1k.jpg-264dda9093d7f7cd89dfe9cd4b399e2d.s3tc.ctex"
-path.etc2="res://.godot/imported/CoffeeCart_01_props_arm_1k.jpg-264dda9093d7f7cd89dfe9cd4b399e2d.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc", "etc2_astc"],
+"imported_formats": ["s3tc_bptc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/models/CoffeeCart_01/textures/CoffeeCart_01_props_arm_1k.jpg"
-dest_files=["res://.godot/imported/CoffeeCart_01_props_arm_1k.jpg-264dda9093d7f7cd89dfe9cd4b399e2d.s3tc.ctex", "res://.godot/imported/CoffeeCart_01_props_arm_1k.jpg-264dda9093d7f7cd89dfe9cd4b399e2d.etc2.ctex"]
+dest_files=["res://.godot/imported/CoffeeCart_01_props_arm_1k.jpg-264dda9093d7f7cd89dfe9cd4b399e2d.s3tc.ctex"]
 
 [params]
 

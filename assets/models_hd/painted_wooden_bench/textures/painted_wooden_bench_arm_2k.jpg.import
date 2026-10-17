@@ -4,16 +4,15 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://dbcqojhr22v35"
 path.s3tc="res://.godot/imported/painted_wooden_bench_arm_2k.jpg-5bcccf767e8a5813ac93bec52370463b.s3tc.ctex"
-path.etc2="res://.godot/imported/painted_wooden_bench_arm_2k.jpg-5bcccf767e8a5813ac93bec52370463b.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc", "etc2_astc"],
+"imported_formats": ["s3tc_bptc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/models_hd/painted_wooden_bench/textures/painted_wooden_bench_arm_2k.jpg"
-dest_files=["res://.godot/imported/painted_wooden_bench_arm_2k.jpg-5bcccf767e8a5813ac93bec52370463b.s3tc.ctex", "res://.godot/imported/painted_wooden_bench_arm_2k.jpg-5bcccf767e8a5813ac93bec52370463b.etc2.ctex"]
+dest_files=["res://.godot/imported/painted_wooden_bench_arm_2k.jpg-5bcccf767e8a5813ac93bec52370463b.s3tc.ctex"]
 
 [params]
 

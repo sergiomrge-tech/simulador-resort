@@ -193,8 +193,12 @@ func _build_main() -> Control:
 	gt.fill_from = Vector2(0, 0)
 	gt.fill_to = Vector2(1, 0)
 	grad.texture = gt
+	# LEFT_WIDE tem âncoras verticais diferentes: size é descartado. A largura vai no offset.
 	grad.set_anchors_preset(Control.PRESET_LEFT_WIDE)
-	grad.size = Vector2(900, 2000)
+	grad.offset_left = 0.0
+	grad.offset_right = 900.0
+	grad.offset_top = 0.0
+	grad.offset_bottom = 0.0
 	grad.custom_minimum_size = Vector2(900, 0)
 	grad.stretch_mode = TextureRect.STRETCH_SCALE
 	grad.mouse_filter = Control.MOUSE_FILTER_IGNORE

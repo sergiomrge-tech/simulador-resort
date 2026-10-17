@@ -4,16 +4,15 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://xgdb76mde1su"
 path.s3tc="res://.godot/imported/light_stone_diff.jpg-61752e2a4df46974d20c8b22cec931a1.s3tc.ctex"
-path.etc2="res://.godot/imported/light_stone_diff.jpg-61752e2a4df46974d20c8b22cec931a1.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc", "etc2_astc"],
+"imported_formats": ["s3tc_bptc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/tex_hd/light_stone_diff.jpg"
-dest_files=["res://.godot/imported/light_stone_diff.jpg-61752e2a4df46974d20c8b22cec931a1.s3tc.ctex", "res://.godot/imported/light_stone_diff.jpg-61752e2a4df46974d20c8b22cec931a1.etc2.ctex"]
+dest_files=["res://.godot/imported/light_stone_diff.jpg-61752e2a4df46974d20c8b22cec931a1.s3tc.ctex"]
 
 [params]
 

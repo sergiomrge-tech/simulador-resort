@@ -4,16 +4,15 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://db4jebl6g38kn"
 path.s3tc="res://.godot/imported/bamboo_wall_nor.jpg-78d1104777b0785a250f7cfbd53a15ca.s3tc.ctex"
-path.etc2="res://.godot/imported/bamboo_wall_nor.jpg-78d1104777b0785a250f7cfbd53a15ca.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc", "etc2_astc"],
+"imported_formats": ["s3tc_bptc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/tex_hd/bamboo_wall_nor.jpg"
-dest_files=["res://.godot/imported/bamboo_wall_nor.jpg-78d1104777b0785a250f7cfbd53a15ca.s3tc.ctex", "res://.godot/imported/bamboo_wall_nor.jpg-78d1104777b0785a250f7cfbd53a15ca.etc2.ctex"]
+dest_files=["res://.godot/imported/bamboo_wall_nor.jpg-78d1104777b0785a250f7cfbd53a15ca.s3tc.ctex"]
 
 [params]
 

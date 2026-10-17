@@ -4,16 +4,15 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://cjqkrrq4dunn8"
 path.s3tc="res://.godot/imported/white_stucco_nor.jpg-e5559eb1552af22e131852a40fbfd4e1.s3tc.ctex"
-path.etc2="res://.godot/imported/white_stucco_nor.jpg-e5559eb1552af22e131852a40fbfd4e1.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc", "etc2_astc"],
+"imported_formats": ["s3tc_bptc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/tex_hd/white_stucco_nor.jpg"
-dest_files=["res://.godot/imported/white_stucco_nor.jpg-e5559eb1552af22e131852a40fbfd4e1.s3tc.ctex", "res://.godot/imported/white_stucco_nor.jpg-e5559eb1552af22e131852a40fbfd4e1.etc2.ctex"]
+dest_files=["res://.godot/imported/white_stucco_nor.jpg-e5559eb1552af22e131852a40fbfd4e1.s3tc.ctex"]
 
 [params]
 

@@ -4,16 +4,15 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://iqhiimbo856w"
 path.s3tc="res://.godot/imported/blue_floor_tiles_01_rough.jpg-bcd6959b083ffe8e53897a27642e13b9.s3tc.ctex"
-path.etc2="res://.godot/imported/blue_floor_tiles_01_rough.jpg-bcd6959b083ffe8e53897a27642e13b9.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc", "etc2_astc"],
+"imported_formats": ["s3tc_bptc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/tex_hd/blue_floor_tiles_01_rough.jpg"
-dest_files=["res://.godot/imported/blue_floor_tiles_01_rough.jpg-bcd6959b083ffe8e53897a27642e13b9.s3tc.ctex", "res://.godot/imported/blue_floor_tiles_01_rough.jpg-bcd6959b083ffe8e53897a27642e13b9.etc2.ctex"]
+dest_files=["res://.godot/imported/blue_floor_tiles_01_rough.jpg-bcd6959b083ffe8e53897a27642e13b9.s3tc.ctex"]
 
 [params]
 

@@ -4,16 +4,15 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://b6tcgov8as5at"
 path.s3tc="res://.godot/imported/CashRegister_01_glass_diff_2k.jpg-1f6d7ed5e0123c4e0cab2a7da9fc9655.s3tc.ctex"
-path.etc2="res://.godot/imported/CashRegister_01_glass_diff_2k.jpg-1f6d7ed5e0123c4e0cab2a7da9fc9655.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc", "etc2_astc"],
+"imported_formats": ["s3tc_bptc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/models_hd/CashRegister_01/textures/CashRegister_01_glass_diff_2k.jpg"
-dest_files=["res://.godot/imported/CashRegister_01_glass_diff_2k.jpg-1f6d7ed5e0123c4e0cab2a7da9fc9655.s3tc.ctex", "res://.godot/imported/CashRegister_01_glass_diff_2k.jpg-1f6d7ed5e0123c4e0cab2a7da9fc9655.etc2.ctex"]
+dest_files=["res://.godot/imported/CashRegister_01_glass_diff_2k.jpg-1f6d7ed5e0123c4e0cab2a7da9fc9655.s3tc.ctex"]
 
 [params]
 

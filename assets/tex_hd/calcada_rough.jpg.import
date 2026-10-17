@@ -4,16 +4,15 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://dqtxv15012l14"
 path.s3tc="res://.godot/imported/calcada_rough.jpg-d66b4c9a953b1534aec29d64620fe679.s3tc.ctex"
-path.etc2="res://.godot/imported/calcada_rough.jpg-d66b4c9a953b1534aec29d64620fe679.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc", "etc2_astc"],
+"imported_formats": ["s3tc_bptc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/tex_hd/calcada_rough.jpg"
-dest_files=["res://.godot/imported/calcada_rough.jpg-d66b4c9a953b1534aec29d64620fe679.s3tc.ctex", "res://.godot/imported/calcada_rough.jpg-d66b4c9a953b1534aec29d64620fe679.etc2.ctex"]
+dest_files=["res://.godot/imported/calcada_rough.jpg-d66b4c9a953b1534aec29d64620fe679.s3tc.ctex"]
 
 [params]
 

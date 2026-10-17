@@ -4,16 +4,15 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://cr3w62rv0qfh4"
 path.s3tc="res://.godot/imported/oak_wood_planks_rough.jpg-340e6c02e19c26716d98c2a8f7ba6c1c.s3tc.ctex"
-path.etc2="res://.godot/imported/oak_wood_planks_rough.jpg-340e6c02e19c26716d98c2a8f7ba6c1c.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc", "etc2_astc"],
+"imported_formats": ["s3tc_bptc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/tex_hd/oak_wood_planks_rough.jpg"
-dest_files=["res://.godot/imported/oak_wood_planks_rough.jpg-340e6c02e19c26716d98c2a8f7ba6c1c.s3tc.ctex", "res://.godot/imported/oak_wood_planks_rough.jpg-340e6c02e19c26716d98c2a8f7ba6c1c.etc2.ctex"]
+dest_files=["res://.godot/imported/oak_wood_planks_rough.jpg-340e6c02e19c26716d98c2a8f7ba6c1c.s3tc.ctex"]
 
 [params]
 

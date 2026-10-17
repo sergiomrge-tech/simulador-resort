@@ -106,6 +106,18 @@ func _add_joy_btn(action: String, b: JoyButton) -> void:
 	e.button_index = b
 	InputMap.action_add_event(action, e)
 
+func _has_joy_motion(action: String) -> bool:
+	for e in InputMap.action_get_events(action):
+		if e is InputEventJoypadMotion:
+			return true
+	return false
+
+func _has_joy_button(action: String) -> bool:
+	for e in InputMap.action_get_events(action):
+		if e is InputEventJoypadButton:
+			return true
+	return false
+
 func _ensure_inputs() -> void:
 	for a in ["move_forward", "move_back", "move_left", "move_right", "interact", "shop", "sprint", "pause",
 			"look_left", "look_right", "look_up", "look_down"]:
@@ -115,18 +127,21 @@ func _ensure_inputs() -> void:
 		_add_key("sprint", KEY_SHIFT)
 	if InputMap.action_get_events("pause").is_empty():
 		_add_key("pause", KEY_ESCAPE)
-	_add_joy_axis("move_forward", JOY_AXIS_LEFT_Y, -1.0)
-	_add_joy_axis("move_back", JOY_AXIS_LEFT_Y, 1.0)
-	_add_joy_axis("move_left", JOY_AXIS_LEFT_X, -1.0)
-	_add_joy_axis("move_right", JOY_AXIS_LEFT_X, 1.0)
-	_add_joy_axis("look_left", JOY_AXIS_RIGHT_X, -1.0)
-	_add_joy_axis("look_right", JOY_AXIS_RIGHT_X, 1.0)
-	_add_joy_axis("look_up", JOY_AXIS_RIGHT_Y, -1.0)
-	_add_joy_axis("look_down", JOY_AXIS_RIGHT_Y, 1.0)
-	_add_joy_btn("interact", JOY_BUTTON_A)
-	_add_joy_btn("shop", JOY_BUTTON_Y)
-	_add_joy_btn("pause", JOY_BUTTON_START)
-	_add_joy_btn("sprint", JOY_BUTTON_LEFT_STICK)
+	# Sem essa guarda, um reload do autoload soma os eixos e o analógico anda/olha em dobro.
+	if not _has_joy_motion("move_forward"):
+		_add_joy_axis("move_forward", JOY_AXIS_LEFT_Y, -1.0)
+		_add_joy_axis("move_back", JOY_AXIS_LEFT_Y, 1.0)
+		_add_joy_axis("move_left", JOY_AXIS_LEFT_X, -1.0)
+		_add_joy_axis("move_right", JOY_AXIS_LEFT_X, 1.0)
+		_add_joy_axis("look_left", JOY_AXIS_RIGHT_X, -1.0)
+		_add_joy_axis("look_right", JOY_AXIS_RIGHT_X, 1.0)
+		_add_joy_axis("look_up", JOY_AXIS_RIGHT_Y, -1.0)
+		_add_joy_axis("look_down", JOY_AXIS_RIGHT_Y, 1.0)
+	if not _has_joy_button("interact"):
+		_add_joy_btn("interact", JOY_BUTTON_A)
+		_add_joy_btn("shop", JOY_BUTTON_Y)
+		_add_joy_btn("pause", JOY_BUTTON_START)
+		_add_joy_btn("sprint", JOY_BUTTON_LEFT_STICK)
 
 func key_for(action: String) -> int:
 	for e in InputMap.action_get_events(action):

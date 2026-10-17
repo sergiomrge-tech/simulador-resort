@@ -64,6 +64,7 @@ func new_game() -> void:
 	guests_served = 0
 	bar_sales_total = 0
 	tutorial_step = 0
+	_reset_bar_batch()
 	reset_rooms(2)
 	_emit_all()
 
@@ -131,6 +132,9 @@ func _flush_bar() -> void:
 	if _bar_batch_count > 0:
 		var txt := (tr("Bar do Coqueiro: %d venda") if _bar_batch_count == 1 else tr("Bar do Coqueiro: %d vendas")) % _bar_batch_count
 		toast.emit("%s  %s" % [txt, fmt_money(_bar_batch_value, true)], "money")
+	_reset_bar_batch()
+
+func _reset_bar_batch() -> void:
 	_bar_batch_count = 0
 	_bar_batch_value = 0
 	_bar_batch_t = -1.0
@@ -294,7 +298,10 @@ func load_game() -> bool:
 	f.close()
 	if typeof(data) != TYPE_DICTIONARY or int(data.get("v", 0)) < 1:
 		return false
+	if typeof(data.get("rooms")) != TYPE_ARRAY or typeof(data.get("ratings")) != TYPE_ARRAY:
+		return false
 	money = int(data.money)
+	_reset_bar_batch()
 	ratings = data.ratings
 	day = int(data.day)
 	minutes = float(data.minutes)

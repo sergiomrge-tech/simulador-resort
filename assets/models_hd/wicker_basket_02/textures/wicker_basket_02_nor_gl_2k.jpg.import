@@ -4,16 +4,15 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://clj78p3yvga64"
 path.s3tc="res://.godot/imported/wicker_basket_02_nor_gl_2k.jpg-0c339fa690388356d2689f704c60f1e7.s3tc.ctex"
-path.etc2="res://.godot/imported/wicker_basket_02_nor_gl_2k.jpg-0c339fa690388356d2689f704c60f1e7.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc", "etc2_astc"],
+"imported_formats": ["s3tc_bptc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/models_hd/wicker_basket_02/textures/wicker_basket_02_nor_gl_2k.jpg"
-dest_files=["res://.godot/imported/wicker_basket_02_nor_gl_2k.jpg-0c339fa690388356d2689f704c60f1e7.s3tc.ctex", "res://.godot/imported/wicker_basket_02_nor_gl_2k.jpg-0c339fa690388356d2689f704c60f1e7.etc2.ctex"]
+dest_files=["res://.godot/imported/wicker_basket_02_nor_gl_2k.jpg-0c339fa690388356d2689f704c60f1e7.s3tc.ctex"]
 
 [params]
 

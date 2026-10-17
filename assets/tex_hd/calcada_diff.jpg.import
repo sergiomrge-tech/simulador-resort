@@ -4,16 +4,15 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://b7efno5kdsu05"
 path.s3tc="res://.godot/imported/calcada_diff.jpg-9b75b6637f4ce5d918ea425c420cdfbd.s3tc.ctex"
-path.etc2="res://.godot/imported/calcada_diff.jpg-9b75b6637f4ce5d918ea425c420cdfbd.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc", "etc2_astc"],
+"imported_formats": ["s3tc_bptc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/tex_hd/calcada_diff.jpg"
-dest_files=["res://.godot/imported/calcada_diff.jpg-9b75b6637f4ce5d918ea425c420cdfbd.s3tc.ctex", "res://.godot/imported/calcada_diff.jpg-9b75b6637f4ce5d918ea425c420cdfbd.etc2.ctex"]
+dest_files=["res://.godot/imported/calcada_diff.jpg-9b75b6637f4ce5d918ea425c420cdfbd.s3tc.ctex"]
 
 [params]
 

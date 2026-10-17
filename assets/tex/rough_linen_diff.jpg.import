@@ -4,16 +4,15 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://bff6jprsrnun3"
 path.s3tc="res://.godot/imported/rough_linen_diff.jpg-1cd2fcc520995af16b1cee309f8df6ec.s3tc.ctex"
-path.etc2="res://.godot/imported/rough_linen_diff.jpg-1cd2fcc520995af16b1cee309f8df6ec.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc", "etc2_astc"],
+"imported_formats": ["s3tc_bptc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/tex/rough_linen_diff.jpg"
-dest_files=["res://.godot/imported/rough_linen_diff.jpg-1cd2fcc520995af16b1cee309f8df6ec.s3tc.ctex", "res://.godot/imported/rough_linen_diff.jpg-1cd2fcc520995af16b1cee309f8df6ec.etc2.ctex"]
+dest_files=["res://.godot/imported/rough_linen_diff.jpg-1cd2fcc520995af16b1cee309f8df6ec.s3tc.ctex"]
 
 [params]
 

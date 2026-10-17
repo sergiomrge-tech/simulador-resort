@@ -4,16 +4,15 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://dnmmp3yin2i0b"
 path.s3tc="res://.godot/imported/rough_linen_rough.jpg-f8794176cb65391d5791150d12bc1d85.s3tc.ctex"
-path.etc2="res://.godot/imported/rough_linen_rough.jpg-f8794176cb65391d5791150d12bc1d85.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc", "etc2_astc"],
+"imported_formats": ["s3tc_bptc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/tex_hd/rough_linen_rough.jpg"
-dest_files=["res://.godot/imported/rough_linen_rough.jpg-f8794176cb65391d5791150d12bc1d85.s3tc.ctex", "res://.godot/imported/rough_linen_rough.jpg-f8794176cb65391d5791150d12bc1d85.etc2.ctex"]
+dest_files=["res://.godot/imported/rough_linen_rough.jpg-f8794176cb65391d5791150d12bc1d85.s3tc.ctex"]
 
 [params]
 

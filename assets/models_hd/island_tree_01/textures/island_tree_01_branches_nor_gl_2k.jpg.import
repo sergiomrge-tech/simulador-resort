@@ -4,16 +4,15 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://cki2pbso2wr5v"
 path.s3tc="res://.godot/imported/island_tree_01_branches_nor_gl_2k.jpg-0e8083c647105e209b4acc36a9191ab0.s3tc.ctex"
-path.etc2="res://.godot/imported/island_tree_01_branches_nor_gl_2k.jpg-0e8083c647105e209b4acc36a9191ab0.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc", "etc2_astc"],
+"imported_formats": ["s3tc_bptc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/models_hd/island_tree_01/textures/island_tree_01_branches_nor_gl_2k.jpg"
-dest_files=["res://.godot/imported/island_tree_01_branches_nor_gl_2k.jpg-0e8083c647105e209b4acc36a9191ab0.s3tc.ctex", "res://.godot/imported/island_tree_01_branches_nor_gl_2k.jpg-0e8083c647105e209b4acc36a9191ab0.etc2.ctex"]
+dest_files=["res://.godot/imported/island_tree_01_branches_nor_gl_2k.jpg-0e8083c647105e209b4acc36a9191ab0.s3tc.ctex"]
 
 [params]
 

@@ -4,16 +4,15 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://dbbfm2723hy78"
 path.s3tc="res://.godot/imported/white_stucco_diff.jpg-ab87645deb42eb0d3bbfc7a1216d80c7.s3tc.ctex"
-path.etc2="res://.godot/imported/white_stucco_diff.jpg-ab87645deb42eb0d3bbfc7a1216d80c7.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc", "etc2_astc"],
+"imported_formats": ["s3tc_bptc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/tex_hd/white_stucco_diff.jpg"
-dest_files=["res://.godot/imported/white_stucco_diff.jpg-ab87645deb42eb0d3bbfc7a1216d80c7.s3tc.ctex", "res://.godot/imported/white_stucco_diff.jpg-ab87645deb42eb0d3bbfc7a1216d80c7.etc2.ctex"]
+dest_files=["res://.godot/imported/white_stucco_diff.jpg-ab87645deb42eb0d3bbfc7a1216d80c7.s3tc.ctex"]
 
 [params]
 

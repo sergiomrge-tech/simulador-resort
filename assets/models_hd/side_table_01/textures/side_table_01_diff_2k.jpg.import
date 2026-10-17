@@ -4,16 +4,15 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://btjffavj0m8nu"
 path.s3tc="res://.godot/imported/side_table_01_diff_2k.jpg-1c45da0f3af9cee2c9820f6ecc355194.s3tc.ctex"
-path.etc2="res://.godot/imported/side_table_01_diff_2k.jpg-1c45da0f3af9cee2c9820f6ecc355194.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc", "etc2_astc"],
+"imported_formats": ["s3tc_bptc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/models_hd/side_table_01/textures/side_table_01_diff_2k.jpg"
-dest_files=["res://.godot/imported/side_table_01_diff_2k.jpg-1c45da0f3af9cee2c9820f6ecc355194.s3tc.ctex", "res://.godot/imported/side_table_01_diff_2k.jpg-1c45da0f3af9cee2c9820f6ecc355194.etc2.ctex"]
+dest_files=["res://.godot/imported/side_table_01_diff_2k.jpg-1c45da0f3af9cee2c9820f6ecc355194.s3tc.ctex"]
 
 [params]
 

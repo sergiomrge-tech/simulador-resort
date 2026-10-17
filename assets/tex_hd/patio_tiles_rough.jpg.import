@@ -4,16 +4,15 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://2k2tpsmnr2yq"
 path.s3tc="res://.godot/imported/patio_tiles_rough.jpg-5cf4bb884ef46b2069b793d74a832621.s3tc.ctex"
-path.etc2="res://.godot/imported/patio_tiles_rough.jpg-5cf4bb884ef46b2069b793d74a832621.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc", "etc2_astc"],
+"imported_formats": ["s3tc_bptc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/tex_hd/patio_tiles_rough.jpg"
-dest_files=["res://.godot/imported/patio_tiles_rough.jpg-5cf4bb884ef46b2069b793d74a832621.s3tc.ctex", "res://.godot/imported/patio_tiles_rough.jpg-5cf4bb884ef46b2069b793d74a832621.etc2.ctex"]
+dest_files=["res://.godot/imported/patio_tiles_rough.jpg-5cf4bb884ef46b2069b793d74a832621.s3tc.ctex"]
 
 [params]
 

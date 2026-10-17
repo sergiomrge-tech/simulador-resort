@@ -4,16 +4,15 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://dogiaa6l31j6k"
 path.s3tc="res://.godot/imported/island_tree_01_diff_2k.jpg-85b8e5bb815d59d5b91d22a39e3a33e4.s3tc.ctex"
-path.etc2="res://.godot/imported/island_tree_01_diff_2k.jpg-85b8e5bb815d59d5b91d22a39e3a33e4.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc", "etc2_astc"],
+"imported_formats": ["s3tc_bptc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/models_hd/island_tree_01/textures/island_tree_01_diff_2k.jpg"
-dest_files=["res://.godot/imported/island_tree_01_diff_2k.jpg-85b8e5bb815d59d5b91d22a39e3a33e4.s3tc.ctex", "res://.godot/imported/island_tree_01_diff_2k.jpg-85b8e5bb815d59d5b91d22a39e3a33e4.etc2.ctex"]
+dest_files=["res://.godot/imported/island_tree_01_diff_2k.jpg-85b8e5bb815d59d5b91d22a39e3a33e4.s3tc.ctex"]
 
 [params]
 

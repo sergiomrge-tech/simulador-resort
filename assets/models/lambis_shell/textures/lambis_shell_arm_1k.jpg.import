@@ -4,16 +4,15 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://lkuuiw1gk1i4"
 path.s3tc="res://.godot/imported/lambis_shell_arm_1k.jpg-9a2372c330d5e108f3def5e77f56e6e8.s3tc.ctex"
-path.etc2="res://.godot/imported/lambis_shell_arm_1k.jpg-9a2372c330d5e108f3def5e77f56e6e8.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc", "etc2_astc"],
+"imported_formats": ["s3tc_bptc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/models/lambis_shell/textures/lambis_shell_arm_1k.jpg"
-dest_files=["res://.godot/imported/lambis_shell_arm_1k.jpg-9a2372c330d5e108f3def5e77f56e6e8.s3tc.ctex", "res://.godot/imported/lambis_shell_arm_1k.jpg-9a2372c330d5e108f3def5e77f56e6e8.etc2.ctex"]
+dest_files=["res://.godot/imported/lambis_shell_arm_1k.jpg-9a2372c330d5e108f3def5e77f56e6e8.s3tc.ctex"]
 
 [params]
 

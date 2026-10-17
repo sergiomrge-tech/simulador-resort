@@ -4,16 +4,15 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://cj1rsxv8n8ri8"
 path.s3tc="res://.godot/imported/reed_roof_04_nor.jpg-527f8d184d72600cd6679ead2605cabc.s3tc.ctex"
-path.etc2="res://.godot/imported/reed_roof_04_nor.jpg-527f8d184d72600cd6679ead2605cabc.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc", "etc2_astc"],
+"imported_formats": ["s3tc_bptc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/tex/reed_roof_04_nor.jpg"
-dest_files=["res://.godot/imported/reed_roof_04_nor.jpg-527f8d184d72600cd6679ead2605cabc.s3tc.ctex", "res://.godot/imported/reed_roof_04_nor.jpg-527f8d184d72600cd6679ead2605cabc.etc2.ctex"]
+dest_files=["res://.godot/imported/reed_roof_04_nor.jpg-527f8d184d72600cd6679ead2605cabc.s3tc.ctex"]
 
 [params]
 

@@ -4,16 +4,15 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://f1onf0k54usj"
 path.s3tc="res://.godot/imported/weathered_planks_nor.jpg-0fdbe6e2fda0c8daeb9896a75a61cbe2.s3tc.ctex"
-path.etc2="res://.godot/imported/weathered_planks_nor.jpg-0fdbe6e2fda0c8daeb9896a75a61cbe2.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc", "etc2_astc"],
+"imported_formats": ["s3tc_bptc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/tex/weathered_planks_nor.jpg"
-dest_files=["res://.godot/imported/weathered_planks_nor.jpg-0fdbe6e2fda0c8daeb9896a75a61cbe2.s3tc.ctex", "res://.godot/imported/weathered_planks_nor.jpg-0fdbe6e2fda0c8daeb9896a75a61cbe2.etc2.ctex"]
+dest_files=["res://.godot/imported/weathered_planks_nor.jpg-0fdbe6e2fda0c8daeb9896a75a61cbe2.s3tc.ctex"]
 
 [params]
 

@@ -4,16 +4,15 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://bludcin35aoce"
 path.s3tc="res://.godot/imported/planter_pot_clay_diff_1k.jpg-2dcf433a6aabaa82d14e79ecf192c43f.s3tc.ctex"
-path.etc2="res://.godot/imported/planter_pot_clay_diff_1k.jpg-2dcf433a6aabaa82d14e79ecf192c43f.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc", "etc2_astc"],
+"imported_formats": ["s3tc_bptc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/models/planter_pot_clay/textures/planter_pot_clay_diff_1k.jpg"
-dest_files=["res://.godot/imported/planter_pot_clay_diff_1k.jpg-2dcf433a6aabaa82d14e79ecf192c43f.s3tc.ctex", "res://.godot/imported/planter_pot_clay_diff_1k.jpg-2dcf433a6aabaa82d14e79ecf192c43f.etc2.ctex"]
+dest_files=["res://.godot/imported/planter_pot_clay_diff_1k.jpg-2dcf433a6aabaa82d14e79ecf192c43f.s3tc.ctex"]
 
 [params]
 

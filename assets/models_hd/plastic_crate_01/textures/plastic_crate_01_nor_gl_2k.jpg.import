@@ -4,16 +4,15 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://ce007ujcubm2q"
 path.s3tc="res://.godot/imported/plastic_crate_01_nor_gl_2k.jpg-60f2c6b0d0236eb3c0bbb7ad47d4c659.s3tc.ctex"
-path.etc2="res://.godot/imported/plastic_crate_01_nor_gl_2k.jpg-60f2c6b0d0236eb3c0bbb7ad47d4c659.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc", "etc2_astc"],
+"imported_formats": ["s3tc_bptc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/models_hd/plastic_crate_01/textures/plastic_crate_01_nor_gl_2k.jpg"
-dest_files=["res://.godot/imported/plastic_crate_01_nor_gl_2k.jpg-60f2c6b0d0236eb3c0bbb7ad47d4c659.s3tc.ctex", "res://.godot/imported/plastic_crate_01_nor_gl_2k.jpg-60f2c6b0d0236eb3c0bbb7ad47d4c659.etc2.ctex"]
+dest_files=["res://.godot/imported/plastic_crate_01_nor_gl_2k.jpg-60f2c6b0d0236eb3c0bbb7ad47d4c659.s3tc.ctex"]
 
 [params]
 

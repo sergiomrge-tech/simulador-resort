@@ -4,16 +4,15 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://db4tp4bf6y81e"
 path.s3tc="res://.godot/imported/clay_roof_tiles_02_nor.jpg-b5d7050744f6fc017fecc87fa8e6aa5f.s3tc.ctex"
-path.etc2="res://.godot/imported/clay_roof_tiles_02_nor.jpg-b5d7050744f6fc017fecc87fa8e6aa5f.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc", "etc2_astc"],
+"imported_formats": ["s3tc_bptc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/tex_hd/clay_roof_tiles_02_nor.jpg"
-dest_files=["res://.godot/imported/clay_roof_tiles_02_nor.jpg-b5d7050744f6fc017fecc87fa8e6aa5f.s3tc.ctex", "res://.godot/imported/clay_roof_tiles_02_nor.jpg-b5d7050744f6fc017fecc87fa8e6aa5f.etc2.ctex"]
+dest_files=["res://.godot/imported/clay_roof_tiles_02_nor.jpg-b5d7050744f6fc017fecc87fa8e6aa5f.s3tc.ctex"]
 
 [params]
 

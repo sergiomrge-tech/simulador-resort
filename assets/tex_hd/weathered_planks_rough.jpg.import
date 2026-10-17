@@ -4,16 +4,15 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://c7kb4td5qk8wo"
 path.s3tc="res://.godot/imported/weathered_planks_rough.jpg-413a2f9e5dd9a8fcad72fa595b59ea62.s3tc.ctex"
-path.etc2="res://.godot/imported/weathered_planks_rough.jpg-413a2f9e5dd9a8fcad72fa595b59ea62.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc", "etc2_astc"],
+"imported_formats": ["s3tc_bptc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/tex_hd/weathered_planks_rough.jpg"
-dest_files=["res://.godot/imported/weathered_planks_rough.jpg-413a2f9e5dd9a8fcad72fa595b59ea62.s3tc.ctex", "res://.godot/imported/weathered_planks_rough.jpg-413a2f9e5dd9a8fcad72fa595b59ea62.etc2.ctex"]
+dest_files=["res://.godot/imported/weathered_planks_rough.jpg-413a2f9e5dd9a8fcad72fa595b59ea62.s3tc.ctex"]
 
 [params]
 

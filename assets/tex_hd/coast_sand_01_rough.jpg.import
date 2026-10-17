@@ -4,16 +4,15 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://c50fyrs0eknof"
 path.s3tc="res://.godot/imported/coast_sand_01_rough.jpg-3ef78c3e2cd05d0bd0a55984a4d7f22d.s3tc.ctex"
-path.etc2="res://.godot/imported/coast_sand_01_rough.jpg-3ef78c3e2cd05d0bd0a55984a4d7f22d.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc", "etc2_astc"],
+"imported_formats": ["s3tc_bptc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/tex_hd/coast_sand_01_rough.jpg"
-dest_files=["res://.godot/imported/coast_sand_01_rough.jpg-3ef78c3e2cd05d0bd0a55984a4d7f22d.s3tc.ctex", "res://.godot/imported/coast_sand_01_rough.jpg-3ef78c3e2cd05d0bd0a55984a4d7f22d.etc2.ctex"]
+dest_files=["res://.godot/imported/coast_sand_01_rough.jpg-3ef78c3e2cd05d0bd0a55984a4d7f22d.s3tc.ctex"]
 
 [params]
 

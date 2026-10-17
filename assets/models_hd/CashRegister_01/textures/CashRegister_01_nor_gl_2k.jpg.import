@@ -4,16 +4,15 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://hgcsfie3silk"
 path.s3tc="res://.godot/imported/CashRegister_01_nor_gl_2k.jpg-7d7387cf2702955f56d4e9ee48ed9ac5.s3tc.ctex"
-path.etc2="res://.godot/imported/CashRegister_01_nor_gl_2k.jpg-7d7387cf2702955f56d4e9ee48ed9ac5.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc", "etc2_astc"],
+"imported_formats": ["s3tc_bptc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/models_hd/CashRegister_01/textures/CashRegister_01_nor_gl_2k.jpg"
-dest_files=["res://.godot/imported/CashRegister_01_nor_gl_2k.jpg-7d7387cf2702955f56d4e9ee48ed9ac5.s3tc.ctex", "res://.godot/imported/CashRegister_01_nor_gl_2k.jpg-7d7387cf2702955f56d4e9ee48ed9ac5.etc2.ctex"]
+dest_files=["res://.godot/imported/CashRegister_01_nor_gl_2k.jpg-7d7387cf2702955f56d4e9ee48ed9ac5.s3tc.ctex"]
 
 [params]
 

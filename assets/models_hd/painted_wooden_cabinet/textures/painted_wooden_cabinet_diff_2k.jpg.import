@@ -4,16 +4,15 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://cpaorg1co8t1c"
 path.s3tc="res://.godot/imported/painted_wooden_cabinet_diff_2k.jpg-cc281b6caa9aec255e2ede2a7d799a65.s3tc.ctex"
-path.etc2="res://.godot/imported/painted_wooden_cabinet_diff_2k.jpg-cc281b6caa9aec255e2ede2a7d799a65.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc", "etc2_astc"],
+"imported_formats": ["s3tc_bptc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/models_hd/painted_wooden_cabinet/textures/painted_wooden_cabinet_diff_2k.jpg"
-dest_files=["res://.godot/imported/painted_wooden_cabinet_diff_2k.jpg-cc281b6caa9aec255e2ede2a7d799a65.s3tc.ctex", "res://.godot/imported/painted_wooden_cabinet_diff_2k.jpg-cc281b6caa9aec255e2ede2a7d799a65.etc2.ctex"]
+dest_files=["res://.godot/imported/painted_wooden_cabinet_diff_2k.jpg-cc281b6caa9aec255e2ede2a7d799a65.s3tc.ctex"]
 
 [params]
 

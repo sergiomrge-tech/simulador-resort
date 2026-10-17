@@ -4,16 +4,15 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://ojcsxfi464ua"
 path.s3tc="res://.godot/imported/bar_chair_round_01_nor_gl_2k.jpg-aa204fc13c279a08c5e76c8815b96a82.s3tc.ctex"
-path.etc2="res://.godot/imported/bar_chair_round_01_nor_gl_2k.jpg-aa204fc13c279a08c5e76c8815b96a82.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc", "etc2_astc"],
+"imported_formats": ["s3tc_bptc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/models_hd/bar_chair_round_01/textures/bar_chair_round_01_nor_gl_2k.jpg"
-dest_files=["res://.godot/imported/bar_chair_round_01_nor_gl_2k.jpg-aa204fc13c279a08c5e76c8815b96a82.s3tc.ctex", "res://.godot/imported/bar_chair_round_01_nor_gl_2k.jpg-aa204fc13c279a08c5e76c8815b96a82.etc2.ctex"]
+dest_files=["res://.godot/imported/bar_chair_round_01_nor_gl_2k.jpg-aa204fc13c279a08c5e76c8815b96a82.s3tc.ctex"]
 
 [params]
 

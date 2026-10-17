@@ -4,16 +4,15 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://bx1gogtyd0wpv"
 path.s3tc="res://.godot/imported/terracotta_floor_tiles_nor.jpg-e6ede3aaf9daa8be8aad207a88af6878.s3tc.ctex"
-path.etc2="res://.godot/imported/terracotta_floor_tiles_nor.jpg-e6ede3aaf9daa8be8aad207a88af6878.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc", "etc2_astc"],
+"imported_formats": ["s3tc_bptc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/tex_hd/terracotta_floor_tiles_nor.jpg"
-dest_files=["res://.godot/imported/terracotta_floor_tiles_nor.jpg-e6ede3aaf9daa8be8aad207a88af6878.s3tc.ctex", "res://.godot/imported/terracotta_floor_tiles_nor.jpg-e6ede3aaf9daa8be8aad207a88af6878.etc2.ctex"]
+dest_files=["res://.godot/imported/terracotta_floor_tiles_nor.jpg-e6ede3aaf9daa8be8aad207a88af6878.s3tc.ctex"]
 
 [params]
 

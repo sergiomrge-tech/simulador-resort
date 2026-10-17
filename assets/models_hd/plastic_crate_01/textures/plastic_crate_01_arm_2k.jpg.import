@@ -4,16 +4,15 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://c4ta6xu22h6bj"
 path.s3tc="res://.godot/imported/plastic_crate_01_arm_2k.jpg-7c01961ec95eea9a7327174da3d3579f.s3tc.ctex"
-path.etc2="res://.godot/imported/plastic_crate_01_arm_2k.jpg-7c01961ec95eea9a7327174da3d3579f.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc", "etc2_astc"],
+"imported_formats": ["s3tc_bptc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/models_hd/plastic_crate_01/textures/plastic_crate_01_arm_2k.jpg"
-dest_files=["res://.godot/imported/plastic_crate_01_arm_2k.jpg-7c01961ec95eea9a7327174da3d3579f.s3tc.ctex", "res://.godot/imported/plastic_crate_01_arm_2k.jpg-7c01961ec95eea9a7327174da3d3579f.etc2.ctex"]
+dest_files=["res://.godot/imported/plastic_crate_01_arm_2k.jpg-7c01961ec95eea9a7327174da3d3579f.s3tc.ctex"]
 
 [params]
 

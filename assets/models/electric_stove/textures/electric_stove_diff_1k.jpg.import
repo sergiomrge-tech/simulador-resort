@@ -4,16 +4,15 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://vqp80dqiu0bh"
 path.s3tc="res://.godot/imported/electric_stove_diff_1k.jpg-8a5d32036c9c2c82e14199d0dc8b28d4.s3tc.ctex"
-path.etc2="res://.godot/imported/electric_stove_diff_1k.jpg-8a5d32036c9c2c82e14199d0dc8b28d4.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc", "etc2_astc"],
+"imported_formats": ["s3tc_bptc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/models/electric_stove/textures/electric_stove_diff_1k.jpg"
-dest_files=["res://.godot/imported/electric_stove_diff_1k.jpg-8a5d32036c9c2c82e14199d0dc8b28d4.s3tc.ctex", "res://.godot/imported/electric_stove_diff_1k.jpg-8a5d32036c9c2c82e14199d0dc8b28d4.etc2.ctex"]
+dest_files=["res://.godot/imported/electric_stove_diff_1k.jpg-8a5d32036c9c2c82e14199d0dc8b28d4.s3tc.ctex"]
 
 [params]
 

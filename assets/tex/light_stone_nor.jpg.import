@@ -4,16 +4,15 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://btfprttqpkgmk"
 path.s3tc="res://.godot/imported/light_stone_nor.jpg-d0d0b16da16da72fb1472066a9f0c8ec.s3tc.ctex"
-path.etc2="res://.godot/imported/light_stone_nor.jpg-d0d0b16da16da72fb1472066a9f0c8ec.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc", "etc2_astc"],
+"imported_formats": ["s3tc_bptc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/tex/light_stone_nor.jpg"
-dest_files=["res://.godot/imported/light_stone_nor.jpg-d0d0b16da16da72fb1472066a9f0c8ec.s3tc.ctex", "res://.godot/imported/light_stone_nor.jpg-d0d0b16da16da72fb1472066a9f0c8ec.etc2.ctex"]
+dest_files=["res://.godot/imported/light_stone_nor.jpg-d0d0b16da16da72fb1472066a9f0c8ec.s3tc.ctex"]
 
 [params]
 

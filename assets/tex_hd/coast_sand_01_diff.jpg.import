@@ -4,16 +4,15 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://cn6icnauf40mw"
 path.s3tc="res://.godot/imported/coast_sand_01_diff.jpg-adc2c1918119e83d4078d4883d887f9d.s3tc.ctex"
-path.etc2="res://.godot/imported/coast_sand_01_diff.jpg-adc2c1918119e83d4078d4883d887f9d.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc", "etc2_astc"],
+"imported_formats": ["s3tc_bptc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/tex_hd/coast_sand_01_diff.jpg"
-dest_files=["res://.godot/imported/coast_sand_01_diff.jpg-adc2c1918119e83d4078d4883d887f9d.s3tc.ctex", "res://.godot/imported/coast_sand_01_diff.jpg-adc2c1918119e83d4078d4883d887f9d.etc2.ctex"]
+dest_files=["res://.godot/imported/coast_sand_01_diff.jpg-adc2c1918119e83d4078d4883d887f9d.s3tc.ctex"]
 
 [params]
 

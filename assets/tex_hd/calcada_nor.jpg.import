@@ -4,16 +4,15 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://dgy08my6sv8rb"
 path.s3tc="res://.godot/imported/calcada_nor.jpg-e32903e48c1828a983c7a5625e4da8bc.s3tc.ctex"
-path.etc2="res://.godot/imported/calcada_nor.jpg-e32903e48c1828a983c7a5625e4da8bc.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc", "etc2_astc"],
+"imported_formats": ["s3tc_bptc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/tex_hd/calcada_nor.jpg"
-dest_files=["res://.godot/imported/calcada_nor.jpg-e32903e48c1828a983c7a5625e4da8bc.s3tc.ctex", "res://.godot/imported/calcada_nor.jpg-e32903e48c1828a983c7a5625e4da8bc.etc2.ctex"]
+dest_files=["res://.godot/imported/calcada_nor.jpg-e32903e48c1828a983c7a5625e4da8bc.s3tc.ctex"]
 
 [params]
 

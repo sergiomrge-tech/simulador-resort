@@ -4,16 +4,15 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://b61cdvnqu5ij"
 path.s3tc="res://.godot/imported/outdoor_table_chair_set_01_table_diff_1k.jpg-605d7d8ee0a8d6083204b36780bde72e.s3tc.ctex"
-path.etc2="res://.godot/imported/outdoor_table_chair_set_01_table_diff_1k.jpg-605d7d8ee0a8d6083204b36780bde72e.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc", "etc2_astc"],
+"imported_formats": ["s3tc_bptc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/models/outdoor_table_chair_set_01/textures/outdoor_table_chair_set_01_table_diff_1k.jpg"
-dest_files=["res://.godot/imported/outdoor_table_chair_set_01_table_diff_1k.jpg-605d7d8ee0a8d6083204b36780bde72e.s3tc.ctex", "res://.godot/imported/outdoor_table_chair_set_01_table_diff_1k.jpg-605d7d8ee0a8d6083204b36780bde72e.etc2.ctex"]
+dest_files=["res://.godot/imported/outdoor_table_chair_set_01_table_diff_1k.jpg-605d7d8ee0a8d6083204b36780bde72e.s3tc.ctex"]
 
 [params]
 

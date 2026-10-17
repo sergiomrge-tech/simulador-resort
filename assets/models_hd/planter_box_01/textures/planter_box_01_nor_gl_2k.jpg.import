@@ -4,16 +4,15 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://kj4yy6w2npmx"
 path.s3tc="res://.godot/imported/planter_box_01_nor_gl_2k.jpg-90b1efc5f0b6e894fdccd8492a860f5f.s3tc.ctex"
-path.etc2="res://.godot/imported/planter_box_01_nor_gl_2k.jpg-90b1efc5f0b6e894fdccd8492a860f5f.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc", "etc2_astc"],
+"imported_formats": ["s3tc_bptc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/models_hd/planter_box_01/textures/planter_box_01_nor_gl_2k.jpg"
-dest_files=["res://.godot/imported/planter_box_01_nor_gl_2k.jpg-90b1efc5f0b6e894fdccd8492a860f5f.s3tc.ctex", "res://.godot/imported/planter_box_01_nor_gl_2k.jpg-90b1efc5f0b6e894fdccd8492a860f5f.etc2.ctex"]
+dest_files=["res://.godot/imported/planter_box_01_nor_gl_2k.jpg-90b1efc5f0b6e894fdccd8492a860f5f.s3tc.ctex"]
 
 [params]
 

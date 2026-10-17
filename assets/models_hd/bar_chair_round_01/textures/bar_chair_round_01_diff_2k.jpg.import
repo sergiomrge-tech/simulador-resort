@@ -4,16 +4,15 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://bada2ckoe8wjv"
 path.s3tc="res://.godot/imported/bar_chair_round_01_diff_2k.jpg-0a1e23f0b4ac2acc3f366724e83c3e5a.s3tc.ctex"
-path.etc2="res://.godot/imported/bar_chair_round_01_diff_2k.jpg-0a1e23f0b4ac2acc3f366724e83c3e5a.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc", "etc2_astc"],
+"imported_formats": ["s3tc_bptc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/models_hd/bar_chair_round_01/textures/bar_chair_round_01_diff_2k.jpg"
-dest_files=["res://.godot/imported/bar_chair_round_01_diff_2k.jpg-0a1e23f0b4ac2acc3f366724e83c3e5a.s3tc.ctex", "res://.godot/imported/bar_chair_round_01_diff_2k.jpg-0a1e23f0b4ac2acc3f366724e83c3e5a.etc2.ctex"]
+dest_files=["res://.godot/imported/bar_chair_round_01_diff_2k.jpg-0a1e23f0b4ac2acc3f366724e83c3e5a.s3tc.ctex"]
 
 [params]
 

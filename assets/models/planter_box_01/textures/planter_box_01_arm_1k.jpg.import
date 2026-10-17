@@ -4,16 +4,15 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://163yrugd5grj"
 path.s3tc="res://.godot/imported/planter_box_01_arm_1k.jpg-442c66e22b26113e367a0e4985261df0.s3tc.ctex"
-path.etc2="res://.godot/imported/planter_box_01_arm_1k.jpg-442c66e22b26113e367a0e4985261df0.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc", "etc2_astc"],
+"imported_formats": ["s3tc_bptc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/models/planter_box_01/textures/planter_box_01_arm_1k.jpg"
-dest_files=["res://.godot/imported/planter_box_01_arm_1k.jpg-442c66e22b26113e367a0e4985261df0.s3tc.ctex", "res://.godot/imported/planter_box_01_arm_1k.jpg-442c66e22b26113e367a0e4985261df0.etc2.ctex"]
+dest_files=["res://.godot/imported/planter_box_01_arm_1k.jpg-442c66e22b26113e367a0e4985261df0.s3tc.ctex"]
 
 [params]
 
