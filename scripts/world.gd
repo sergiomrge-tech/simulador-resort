@@ -1472,7 +1472,7 @@ func _vegetation() -> void:
 	_scatter(_cross_mesh(1.7, 1.4, 4), bm, bushes, 110.0, true)
 	print("vegetacao: capim=%d arbustos=%d coqueiros+=%d" % [grass.size(), bushes.size(), placed.size()])
 
-# ------------------------------------------------------------------ serra (v0.6.4)
+# ------------------------------------------------------------------ serra (v0.6.5)
 # A crista da rua fica mais baixa e mais longe, para o céu e a serra azulada
 # aparecerem por cima dos telhados. A caixa jogável e a boca da baía ficam em zero.
 const MTN_RIDGES: Array = [
@@ -1493,12 +1493,12 @@ const MTN_RIDGES: Array = [
 	[250.0, 30.0, 280.0, -25.0, 28.0, 48.0, 16.0],
 ]
 const CROWN_COLS: Array[Color] = [
-	Color(0.42, 0.48, 0.40),
-	Color(0.48, 0.54, 0.44),
-	Color(0.52, 0.58, 0.48),
-	Color(0.40, 0.46, 0.40),
-	Color(0.46, 0.50, 0.42),
-	Color(0.36, 0.42, 0.36),
+	Color(0.32, 0.46, 0.26),
+	Color(0.36, 0.52, 0.28),
+	Color(0.40, 0.56, 0.30),
+	Color(0.30, 0.44, 0.26),
+	Color(0.34, 0.50, 0.28),
+	Color(0.28, 0.40, 0.22),
 ]
 
 func _hermite(u: float) -> float:

@@ -73,32 +73,31 @@ void vertex() {
 void fragment() {
 	vec3 n = normalize(wnor);
 	float slope = clamp(n.y, 0.0, 1.0);
-	// Rocha a partir de ~47° (n.y = cos). A encosta da vila fica abaixo disso.
-	float rock_w = smoothstep(0.68, 0.42, slope);
+	// Rocha só em paredão quase vertical. A crista larga continua floresta.
+	float rock_w = smoothstep(0.38, 0.16, slope);
 	float grass_w = smoothstep(8.0, 1.5, wpos.y) * smoothstep(0.78, 0.96, slope) * (1.0 - rock_w);
 
 	vec3 canopy = canopy_alb(wpos.xz);
-	// Oliva / verde-azulado. O 0.62 no azul deixava a encosta iluminada lima.
-	canopy *= vec3(0.86, 0.50, 1.16);
+	// Oliva. Verde acima do vermelho e do azul: o inverso vira roxo.
+	canopy *= vec3(0.94, 1.02, 0.72);
 	float macro = fbm(wpos.xz * 0.0032 + vec2(2.0, 0.4));
-	canopy *= mix(vec3(0.90, 0.84, 0.92), vec3(1.0, 0.90, 1.02), macro);
+	canopy *= mix(vec3(0.80, 0.92, 0.74), vec3(0.96, 1.04, 0.82), macro);
 	canopy *= mix(0.90, 1.0, fbm(wpos.xz * 0.011));
+	canopy.g = max(canopy.g, max(canopy.r, canopy.b) + 0.015);
 	canopy = max(canopy, vec3(0.1176, 0.1686, 0.0863)); // #1e2b16
 
-	vec3 rock = tri(rock_tex, 0.045) * vec3(0.70, 0.68, 0.64);
-	vec3 col = mix(canopy, canopy * vec3(0.96, 0.98, 0.94), grass_w * 0.22);
-	col = mix(col, rock, rock_w);
+	vec3 rock = tri(rock_tex, 0.045) * vec3(0.62, 0.60, 0.54);
+	vec3 col = mix(canopy, canopy * vec3(0.96, 1.0, 0.90), grass_w * 0.22);
 
-	// A névoa de verdade é a do ambiente (depois da luz). Aqui só dessatura,
-	// esfria e escurece com a distância, para a crista não acender acima do céu.
+	// Longe: silhueta verde-azulada. Sem o cinza quente, que lia como pedra.
 	float dist = length(VERTEX);
-	float air = smoothstep(160.0, 920.0, dist);
-	float far = clamp(air * (0.25 + aerial) + far_fade * air, 0.0, 1.0);
-	float luma = dot(col, vec3(0.28, 0.58, 0.14));
-	col = mix(col, vec3(luma * 0.92, luma, luma * 0.85), far * 0.5);
-	col = mix(col, col * vec3(0.88, 0.94, 1.06), far * 0.35);
-	col = mix(col, haze_color, far * 0.32);
-	col *= mix(1.0, 0.86, far);
+	float air = smoothstep(220.0, 980.0, dist);
+	float far = clamp(air * (0.2 + aerial) + far_fade * air, 0.0, 1.0);
+	rock_w *= 1.0 - smoothstep(0.2, 0.65, far);
+	col = mix(col, rock, rock_w);
+	vec3 far_green = vec3(0.36, 0.48, 0.46);
+	col = mix(col, far_green, smoothstep(0.12, 0.9, far) * 0.66);
+	col *= mix(1.0, 0.9, far);
 	float mist = clamp(smoothstep(110.0, 260.0, wpos.y) * dawn, 0.0, 0.42);
 	col = mix(col, mist_color, mist * (1.0 - night * 0.5));
 	ALBEDO = col;
