@@ -19,6 +19,7 @@ var _touring := false
 var _tour_t := 0.0
 var _tour_posed := false
 var _tour_walker: Node3D
+var _tour_kind := ""
 
 const SHOTS := {
 	# nome: [posição, yaw, pitch, hora]
@@ -39,11 +40,15 @@ const SHOTS := {
 	"sombrinha_sape": [Vector3(-2.6, 4.4, -19.4), 42.9, -30.0, 16.6],
 	"pausa": [Vector3(-14, 0.6, -18), -30.0, -6.0, 17.2],
 	"noite": [Vector3(6.0, 0, 26.0), 20.0, 0.0, 20.5],
-	"vila": [Vector3(39.5, 0.15, 29.0), -84.0, -2.0, 15.5],
-	"praca": [Vector3(68.6, 0.2, 35.0), 205.0, 5.0, 16.4],
-	"casa": [Vector3(47.7, 0.27, 23.0), 52.0, -16.0, 7.0],
+	"vila": [Vector3(49.0, 1.58, 30.15), -77.9, 1.2, 10.5],
+	"praca": [Vector3(66.8, 1.62, 36.0), -139.1, 14.4, 16.2],
+	"casa": [Vector3(43.7, 1.5, 22.9), -54.3, -6.0, 10.2],
+	"casa_ext": [Vector3(46.4, 1.58, 29.4), 1.5, 7.6, 10.4],
+	"barcos": [Vector3(70.5, 1.25, -23.2), -47.4, -9.1, 16.4],
+	"vila_anda": [Vector3(49.0, 1.58, 30.15), -77.9, 1.2, 10.6],
+	"palmeira": [Vector3(22.5, 2.8, -1.5), -52.4, 17.6, 11.0],
 	"quiosque": [Vector3(37.2, 1.35, -7.8), -17.7, -4.4, 16.8],
-	"noite_vila": [Vector3(56.0, 0.15, 29.4), -80.0, 0.0, 20.6],
+	"noite_vila": [Vector3(49.0, 1.58, 30.15), -77.9, 1.2, 21.2],
 	"aerea": [Vector3(26.0, 34.0, -52.0), 196.0, -30.0, 16.0],
 	"menu": [Vector3(0, 0, 0), 0.0, 0.0, 17.3],
 	"config": [Vector3(0, 0, 0), 0.0, 0.0, 17.3],
@@ -274,6 +279,8 @@ func _run_shot(n: String) -> void:
 	# cenário de vida: hóspedes na fila, na piscina e no bar; quarto sujo; redes
 	if not args.has("empty"):
 		_stage_guests()
+		if n in ["vila", "noite_vila", "vila_anda", "praca", "casa", "casa_ext", "barcos", "palmeira"]:
+			_stage_village(n)
 		if n == "quiosque" or n == "balcao":
 			for k in 2:
 				var c = village.spawn_customer()
@@ -351,6 +358,9 @@ func _aim_cam(pos: Vector3, target: Vector3) -> void:
 	player._apply_look()
 
 func _run_tour() -> void:
+	if str(args.get("tour", "")) == "vila":
+		_run_village_tour()
+		return
 	Core.paused = true
 	Core.in_game = true
 	Core.minutes = 16.6 * 60.0
@@ -383,6 +393,9 @@ func _run_tour() -> void:
 	_apply_tour_cam()
 
 func _apply_tour_cam() -> void:
+	if _tour_kind == "vila":
+		_apply_village_tour_cam()
+		return
 	var t := _tour_t
 	var pos := Vector3.ZERO
 	var look := Vector3.ZERO
@@ -403,6 +416,92 @@ func _apply_tour_cam() -> void:
 		pos = Vector3(-16.0, 1.7, -21.5).lerp(Vector3(-3.0, 1.9, -20.0), u)
 		look = Vector3(-8.0, 0.1, -33.2)
 	_aim_cam(pos, look)
+
+func _run_village_tour() -> void:
+	Core.paused = true
+	Core.in_game = true
+	Core.minutes = 10.5 * 60.0
+	menus.in_menu = false
+	hud.visible = false
+	guests.enabled = false
+	village.enabled = false
+	day.force_update()
+	player.set_physics_process(false)
+	player.cam.current = true
+	_stage_village("vila_anda")
+	_touring = true
+	_tour_kind = "vila"
+	_tour_t = 0.0
+	_apply_tour_cam()
+
+func _apply_village_tour_cam() -> void:
+	var t := _tour_t
+	var pos := Vector3.ZERO
+	var look := Vector3.ZERO
+	if t < 3.5:
+		var u := t / 3.5
+		pos = Vector3(49.6, 1.68, 27.9).lerp(Vector3(52.4, 1.62, 28.5), u)
+		look = Vector3(46.2, 2.15, 22.4)
+	elif t < 8.0:
+		var u := (t - 3.5) / 4.5
+		pos = Vector3(54.0, 1.62, 28.7).lerp(Vector3(78.0, 1.62, 28.55), u)
+		look = pos + Vector3(6.0, 0.4, -5.4)
+	elif t < 12.5:
+		var u := (t - 8.0) / 4.5
+		pos = Vector3(67.2, 1.68, 36.0).lerp(Vector3(71.5, 1.75, 38.2), u)
+		look = Vector3(76.2, 5.8, 49.2)
+	else:
+		var u := clampf((t - 12.5) / 5.5, 0.0, 1.0)
+		pos = Vector3(39.2, 1.62, 24.0).lerp(Vector3(37.6, 1.55, -6.2), u)
+		look = Vector3(38.2, 1.35, pos.z - 6.5)
+	_aim_cam(pos, look)
+
+func _stage_village(n: String) -> void:
+	village.set_process(false)
+	var walkers: Array = village.walkers
+	if n == "casa" or n == "casa_ext" or n == "palmeira" or n == "barcos":
+		for g in walkers:
+			g.position = Vector3(8.0, 0.15, 27.1)
+			g._route.clear()
+			g.visible = n == "barcos"
+		if n == "barcos" and walkers.size() > 0:
+			var fisher: Node3D = walkers[0]
+			fisher.position = Vector3(66.5, 0.05, -24.2)
+			fisher.rotation.y = 0.4
+			fisher.visible = true
+			fisher.play("Idle_Loop")
+		return
+	if n == "praca":
+		var pts := [Vector3(69.2, 0.2, 37.2), Vector3(73.5, 0.2, 36.6), Vector3(79.0, 0.2, 37.8), Vector3(71.0, 0.2, 40.6)]
+		for i in walkers.size():
+			var g: Node3D = walkers[i]
+			if i < pts.size():
+				g.visible = true
+				g.position = pts[i]
+				g.go([pts[(i + 1) % pts.size()]])
+			else:
+				g.position = Vector3(8.0, 0.15, 27.1)
+				g._route.clear()
+				g.visible = false
+		return
+	for i in walkers.size():
+		var g2: Node3D = walkers[i]
+		g2.visible = true
+		if i >= 6:
+			g2.position = Vector3(10.0, 0.15, 27.1)
+			g2._route.clear()
+			g2.visible = false
+			continue
+		if i < 2:
+			g2.position = Vector3(61.2 + float(i) * 0.8, 0.15, 27.35)
+			g2.rotation.y = PI if i == 0 else 0.0
+			g2._route.clear()
+			g2.play("Idle_Talking_Loop")
+			continue
+		var dir := 1.0 if i % 2 == 0 else -1.0
+		var lane := 27.2 if i % 2 == 0 else 32.8
+		g2.position = Vector3(54.0 + float(i) * 3.6, 0.15, lane)
+		g2.go([g2.position + Vector3(14.0 * dir, 0.0, 0.0)])
 
 func _stage_guests() -> void:
 	Core.redes = 2

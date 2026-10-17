@@ -50,6 +50,7 @@ const IDLE_RADIUS := 0.42
 const PLAYER_RADIUS := 0.72
 const MAX_SIDESTEP := 0.55
 const POOL_PAD := 1.45          # deck em volta da água (world.gd POOL_MIN/MAX)
+var block_rects: Array = []    # Rect2 (x, z) das casas; a vila preenche
 
 func setup(id: int, rng: RandomNumberGenerator) -> void:
 	gid = id
@@ -420,7 +421,7 @@ func _process(delta: float) -> void:
 		var nxt_ideal := _ideal + Vector3(flat.x / dist, 0.0, flat.z / dist) * adv
 		nxt_ideal.y = _ideal.y + to.y * (adv / dist)
 		if not _waypoint_is_swim(target):
-			nxt_ideal = _slide_out_of_pool(_ideal, nxt_ideal)
+			nxt_ideal = _slide_out_of_blocks(_ideal, _slide_out_of_pool(_ideal, nxt_ideal))
 		_ideal = nxt_ideal
 	if not _route.is_empty():
 		var dnow := _ideal.distance_to(_route[0])
@@ -457,11 +458,11 @@ func _process(delta: float) -> void:
 				offset = offset.normalized() * MAX_SIDESTEP
 			desired = _ideal + offset
 			desired.y = _ideal.y
-			desired = _slide_out_of_pool(_ideal, desired)
+			desired = _slide_out_of_blocks(_ideal, _slide_out_of_pool(_ideal, desired))
 	var blend := minf(1.0, delta * 10.0 * maxf(Core.speed_mult, 1.0))
 	var nxt := position.lerp(desired, blend)
 	if not swimming:
-		nxt = _slide_out_of_pool(position, nxt)
+		nxt = _slide_out_of_blocks(position, _slide_out_of_pool(position, nxt))
 	var face := nxt - position
 	face.y = 0
 	if face.length() < 0.02:
@@ -665,6 +666,38 @@ func _around(a: Vector3, b: Vector3) -> Array:
 	for k in 4:
 		seq3.append(corners[(nearest + k) % 4])
 	return seq3
+
+func _slide_out_of_blocks(from: Vector3, to: Vector3) -> Vector3:
+	if block_rects.is_empty():
+		return to
+	var p := to
+	for _pass in 2:
+		for r in block_rects:
+			var rect: Rect2 = r
+			if not rect.has_point(Vector2(p.x, p.z)):
+				continue
+			var dl := p.x - rect.position.x
+			var dr := rect.end.x - p.x
+			var dz0 := p.z - rect.position.y
+			var dz1 := rect.end.y - p.z
+			if dl <= dr and dl <= dz0 and dl <= dz1:
+				p.x = rect.position.x - 0.06
+			elif dr <= dz0 and dr <= dz1:
+				p.x = rect.end.x + 0.06
+			elif dz0 <= dz1:
+				p.z = rect.position.y - 0.06
+			else:
+				p.z = rect.end.y + 0.06
+	if from.distance_squared_to(p) < 0.000001 and rect_contains_any(to):
+		return from
+	return p
+
+func rect_contains_any(p: Vector3) -> bool:
+	var q := Vector2(p.x, p.z)
+	for r in block_rects:
+		if (r as Rect2).has_point(q):
+			return true
+	return false
 
 func _slide_out_of_pool(from: Vector3, to: Vector3) -> Vector3:
 	if not _in_pool(to):

@@ -19,6 +19,9 @@ var bench_spots: Array = []
 var market: Interactable
 var quest_board: Interactable
 var VM := {}
+var block_rects: Array = []
+var _bloom_xf: Array = []
+var _bloom_col: Array = []
 
 func _ready() -> void:
 	super._ready()
@@ -33,6 +36,7 @@ func _ready() -> void:
 	_street_lamps()
 	_village_palms()
 	_village_routes()
+	_finish_blooms()
 
 func _village_materials() -> void:
 	VM.road = B.mat("cobblestone_floor_04", 0.4, Color(0.92, 0.9, 0.86), 0.9)
@@ -44,13 +48,117 @@ func _village_materials() -> void:
 	VM.trim = B.mat("white_stucco", 0.5, Color(0.97, 0.96, 0.93), 0.85)
 	VM.floor = B.mat("terracotta_floor_tiles", 0.7, Color(1, 1, 1), 0.6)
 	VM.door = B.mat("weathered_planks", 0.9, Color(0.45, 0.28, 0.16), 0.7)
-	VM.glass = B.flat(Color(0.12, 0.16, 0.2), 0.08, 0.3)
+	var glass := StandardMaterial3D.new()
+	glass.albedo_color = Color(0.62, 0.78, 0.88, 0.7)
+	glass.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	glass.roughness = 0.08
+	glass.metallic = 0.04
+	glass.emission_enabled = true
+	glass.emission = Color(1.0, 0.64, 0.3)
+	glass.emission_energy_multiplier = 0.0
+	glass.cull_mode = BaseMaterial3D.CULL_DISABLED
+	VM.glass = glass
 
 func stucco(c: Color) -> Material:
 	return B.mat("white_stucco", 0.5, c, 0.88)
 
 func wood_tint(c: Color) -> Material:
 	return B.mat("weathered_planks", 0.9, c, 0.7)
+
+func _block(c: Vector3, w: float, d: float, pad := 0.42) -> void:
+	block_rects.append(Rect2(c.x - w * 0.5 - pad, c.z - d * 0.5 - pad, w + pad * 2.0, d + pad * 2.0))
+
+func _occlude(c: Vector3, w: float, d: float, h: float) -> void:
+	var occ := OccluderInstance3D.new()
+	var box := BoxOccluder3D.new()
+	box.size = Vector3(w, h, d)
+	occ.occluder = box
+	occ.position = c + Vector3(0, h * 0.5, 0)
+	add_child(occ)
+
+func _bloom(p: Vector3, yaw: float, col: Color, s := 1.0) -> void:
+	var basis := Basis(Vector3.UP, yaw).scaled(Vector3(s, s * 1.15, s))
+	_bloom_xf.append(Transform3D(basis, p))
+	_bloom_col.append(col)
+
+func _flower_box(p: Vector3, yaw: float, col: Color) -> void:
+	var wood := wood_tint(Color(0.4, 0.24, 0.12))
+	B.box(self, Vector3(0.95, 0.16, 0.28), p, wood, false, yaw)
+	for i in 4:
+		var ox := -0.3 + float(i) * 0.2
+		_bloom(p + Vector3(cos(yaw) * ox, 0.16, -sin(yaw) * ox), yaw, col, 0.55)
+
+func _juliet(c: Vector3, front: float, w: float, d: float) -> void:
+	var wood := wood_tint(Color(0.38, 0.22, 0.12))
+	var x := c.x - w * 0.22
+	var z := c.z + front * (d * 0.5 + 0.16)
+	B.box(self, Vector3(1.35, 0.05, 0.06), Vector3(x, 1.15, z), wood)
+	for sx in [-0.62, 0.62]:
+		B.box(self, Vector3(0.045, 0.42, 0.045), Vector3(x + sx, 1.34, z), wood)
+	_flower_box(Vector3(x, 1.08, z + front * 0.12), 0.0 if front > 0.0 else PI, Color(0.9, 0.25, 0.45))
+
+func _bougainvillea(p: Vector3, yaw: float) -> void:
+	var cols := [Color(0.86, 0.12, 0.42), Color(0.95, 0.42, 0.12), Color(0.62, 0.18, 0.72), Color(0.96, 0.82, 0.88)]
+	for i in 8:
+		var ang := yaw + float(i) * 0.55
+		var h := 0.35 + float(i % 4) * 0.28
+		_bloom(p + Vector3(cos(ang) * 0.28, h, sin(ang) * 0.22), ang, cols[i % cols.size()], 1.15 + float(i % 3) * 0.15)
+	for i in 5:
+		var ang2 := yaw + float(i) * 0.9
+		_bloom(p + Vector3(cos(ang2) * 0.18, 0.25 + float(i) * 0.22, sin(ang2) * 0.16), ang2 + 0.4, Color(0.16, 0.42, 0.16), 1.35)
+
+func _finish_blooms() -> void:
+	if _bloom_xf.is_empty():
+		return
+	var quad := QuadMesh.new()
+	quad.size = Vector2(0.7, 0.85)
+	quad.orientation = PlaneMesh.FACE_Z
+	var mm := MultiMesh.new()
+	mm.transform_format = MultiMesh.TRANSFORM_3D
+	mm.use_colors = true
+	mm.mesh = quad
+	mm.instance_count = _bloom_xf.size()
+	for i in _bloom_xf.size():
+		mm.set_instance_transform(i, _bloom_xf[i])
+		mm.set_instance_color(i, _bloom_col[i])
+	var mi := MultiMeshInstance3D.new()
+	mi.multimesh = mm
+	var blob := Image.create(64, 64, false, Image.FORMAT_RGBA8)
+	for y in 64:
+		for x in 64:
+			var dx := (float(x) - 31.5) / 28.0
+			var dy := (float(y) - 31.5) / 28.0
+			var r := sqrt(dx * dx + dy * dy)
+			var a := clampf(1.0 - smoothstep(0.55, 1.0, r), 0.0, 1.0)
+			blob.set_pixel(x, y, Color(1, 1, 1, a))
+	var mat := StandardMaterial3D.new()
+	mat.albedo_texture = ImageTexture.create_from_image(blob)
+	mat.vertex_color_use_as_albedo = true
+	mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA_SCISSOR
+	mat.alpha_scissor_threshold = 0.35
+	mat.cull_mode = BaseMaterial3D.CULL_DISABLED
+	mat.roughness = 0.72
+	mi.material_override = mat
+	mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	add_child(mi)
+
+func _fence(a: Vector3, b: Vector3) -> void:
+	var wood := wood_tint(Color(0.42, 0.26, 0.14))
+	var dir := b - a
+	var L := Vector2(dir.x, dir.z).length()
+	if L < 0.4:
+		return
+	var n := maxi(int(L / 1.5), 1)
+	var yaw := atan2(dir.x, dir.z)
+	for i in n + 1:
+		var t := float(i) / float(n)
+		var p := a.lerp(b, t)
+		B.box(self, Vector3(0.08, 0.95, 0.08), p + Vector3(0, 0.48, 0), wood)
+	var mid := a.lerp(b, 0.5)
+	var rail := B.box(self, Vector3(0.06, 0.06, L), mid + Vector3(0, 0.72, 0), wood, false, yaw)
+	rail.rotation.y = yaw
+	var rail2 := B.box(self, Vector3(0.05, 0.05, L), mid + Vector3(0, 0.38, 0), wood)
+	rail2.rotation.y = yaw
 
 # ------------------------------------------------------------------ rua e calçadas
 func _street() -> void:
@@ -66,8 +174,11 @@ func _street() -> void:
 	# acesso da calçada até a areia; para antes do quiosque para não virar um tapete na praia
 	B.box(self, Vector3(2.4, 0.06, 24.0), Vector3(38, 0.03, 15.0), VM.calcada)
 	B.box(self, Vector3(1.5, 0.04, 4.5), Vector3(38, 0.035, 2.4), M.deckwood)
-	# calçadinhas das portas
 	village_points.street_w = Vector3(2.5, 0.15, STREET_Z - 2.9)
+	# bancos na faixa entre a calçada e as fachadas (fora da linha dos moradores)
+	for spot in [[Vector3(58.5, 0.1, 25.85), 0.0], [Vector3(86.0, 0.1, 25.85), 0.0], [Vector3(50.0, 0.1, 34.55), PI], [Vector3(93.0, 0.1, 34.55), PI]]:
+		B.model(self, "painted_wooden_bench", spot[0], spot[1], 1.0)
+		bench_spots.append({"pos": spot[0] + Vector3(0, 0.05, 0), "rot": spot[1], "anim": "Sitting_Idle_Loop", "busy": false})
 
 func _facade(c: Vector3, n: Vector3, half: float, offset: float, kind: String, col: Color, base_y := 0.0) -> void:
 	# porta ou janela embutida numa fachada (casas fechadas)
@@ -81,9 +192,12 @@ func _facade(c: Vector3, n: Vector3, half: float, offset: float, kind: String, c
 	else:
 		B.box(self, Vector3(1.35, 1.6, 0.08), p + Vector3(0, base_y + 1.75, 0), VM.trim, false, rot)
 		B.box(self, Vector3(1.1, 1.35, 0.06), p + Vector3(0, base_y + 1.75, 0) + n * 0.01, VM.glass, false, rot)
-		for s in [-1.0, 1.0]:   # venezianas abertas
-			var sh := B.box(self, Vector3(0.56, 1.35, 0.05), p + t * s * 0.86 + Vector3(0, base_y + 1.75, 0) + n * 0.04, wood_tint(col), false, rot)
-			sh.name = "shutter"
+		for s in [-1.0, 1.0]:
+			var hinge := Node3D.new()
+			hinge.position = p + t * s * 0.62 + Vector3(0, base_y + 1.75, 0) + n * 0.02
+			hinge.rotation.y = rot + s * 1.05
+			add_child(hinge)
+			B.box(hinge, Vector3(0.5, 1.28, 0.04), Vector3(s * 0.25, 0, 0.02), wood_tint(col))
 		B.box(self, Vector3(1.5, 0.08, 0.2), p + Vector3(0, base_y + 0.98, 0) + n * 0.06, VM.trim, false, rot)
 
 func _house(c: Vector3, w: float, d: float, front: float, col: Color, shutter: Color, porch: bool, sign_text := "") -> void:
@@ -103,7 +217,15 @@ func _house(c: Vector3, w: float, d: float, front: float, col: Color, shutter: C
 	_facade(c, -n, d * 0.5, 0.0, "window", shutter)
 	_facade(c, Vector3(1, 0, 0), w * 0.5, 0.0, "window", shutter)
 	_facade(c, Vector3(-1, 0, 0), w * 0.5, 0.0, "window", shutter)
-	B.hip_roof(self, c + Vector3(0, h + 0.05, 0), w + 1.0, d + 1.0, 1.9, VM.clay, 0.12)
+	B.hip_roof(self, c + Vector3(0, h + 0.05, 0), w + 1.75, d + 1.75, 2.05, VM.clay, 0.14)
+	_block(c, w, d, 0.4)
+	_occlude(c, w * 0.9, d * 0.9, h * 0.9)
+	var win_x := c.x - w * 0.22
+	if porch:
+		_flower_box(Vector3(win_x, 1.02, c.z + front * (d * 0.5 + 0.2)), 0.0 if front > 0.0 else PI, Color(0.92, 0.28, 0.48).lerp(shutter, 0.35))
+	else:
+		_juliet(c, front, w, d)
+	_bougainvillea(c + Vector3(w * 0.46, 0.15, front * d * 0.28), front * 0.6)
 	if porch:
 		var pz := c.z + front * (d * 0.5 + 0.75)
 		B.platform(self, Vector3(w - 0.6, 0.18, 1.5), Vector3(c.x, 0.0, pz), stucco(Color(0.75, 0.42, 0.3)), 0.3)
@@ -185,18 +307,28 @@ func _hero_house() -> void:
 			B.box(self, Vector3(0.34, h, 0.34), Vector3(sx, y0 + h * 0.5, sz), VM.trim)
 	B.box(self, Vector3(w + 0.16, 0.26, d + 0.16), Vector3(c.x, y0 + h - 0.1, c.z), VM.trim)
 	B.box(self, Vector3(w - 0.2, 0.06, d - 0.2), Vector3(c.x, y0 + h - 0.05, c.z), M.planks)
-	B.hip_roof(self, Vector3(c.x, y0 + h + 0.05, c.z), w + 1.0, d + 1.0, 2.0, VM.clay, 0.12)
+	B.hip_roof(self, Vector3(c.x, y0 + h + 0.05, c.z), w + 1.8, d + 1.8, 2.15, VM.clay, 0.14)
+	_block(c, w, d, 0.38)
+	_occlude(c, w * 0.85, d * 0.85, h * 0.85)
+	_bougainvillea(Vector3(x0 + 0.2, 0.2, zf - 0.4), 0.8)
+	# vidro das janelas (a porta fica aberta)
+	B.box(self, Vector3(1.35, 1.22, 0.04), Vector3(c.x - 1.7, y0 + 1.65, zf), VM.glass)
+	B.box(self, Vector3(2.15, 1.4, 0.04), Vector3(c.x - 1.4, y0 + 1.6, zb), VM.glass)
+	B.box(self, Vector3(0.04, 1.22, 1.15), Vector3(x0, y0 + 1.65, c.z), VM.glass)
 	B.label(self, "Casa", Vector3(c.x + 1.7, y0 + 2.75, zf + 0.2), 44, Color(1, 1, 1), Color(0.1, 0.25, 0.35, 0.9))
 	# porta de madeira aberta
 	var door := B.box(self, Vector3(0.06, 2.2, 1.15), Vector3(c.x + 2.35, y0 + 1.1, zf - 0.55), wood_tint(Color(0.1, 0.45, 0.55)))
 	door.name = "door"
-	# interior: cama, cozinha, mesa, guarda-roupa, tapete
-	var bc := Vector3(c.x - 2.2, y0, zb + 1.4)
-	B.box(self, Vector3(1.5, 0.35, 2.1), bc + Vector3(0, 0.175, 0.4), M.oak, true)
-	B.box(self, Vector3(1.6, 0.9, 0.08), bc + Vector3(0, 0.45, -0.68), M.oak)
-	B.box(self, Vector3(1.42, 0.2, 2.0), bc + Vector3(0, 0.45, 0.4), M.linen)
-	B.box(self, Vector3(1.46, 0.05, 1.3), bc + Vector3(0, 0.57, 0.75), B.mat("rough_linen", 1.2, Color(0.95, 0.6, 0.3), 0.95))
-	B.box(self, Vector3(0.9, 0.14, 0.4), bc + Vector3(0, 0.62, -0.35), M.linen)
+	# interior no mesmo nível dos bangalôs: cama entalhada, criado-mudo, estante, cozinha
+	var bc := Vector3(c.x - 2.15, y0, zb + 1.55)
+	var gothic := B.model(self, "GothicBed_01", bc + Vector3(0.15, 0, 0.55), PI, 1.0)
+	gothic.scale = Vector3(0.95, 1.0, 0.92)
+	B.model(self, "throw_pillows_01", bc + Vector3(0.05, 0.5, -0.15), 0.0, 0.7)
+	B.model(self, "painted_wooden_nightstand", bc + Vector3(1.15, 0, -0.15), PI * 0.5, 0.95)
+	B.model(self, "vintage_oil_lamp", bc + Vector3(1.15, 0.62, -0.1), 0.4, 0.5)
+	B.model(self, "Shelf_01", Vector3(x0 + 0.85, y0, c.z + 0.2), PI * 0.5, 0.9)
+	B.model(self, "hanging_picture_frame_02", Vector3(bc.x, y0 + 1.7, zb + 0.12), 0.0, 0.85)
+	B.model(self, "ceramic_vase_02", bc + Vector3(1.15, 0.62, 0.35), 0.2, 0.65)
 	bed = Interactable.new()
 	var cs := CollisionShape3D.new()
 	var sh := BoxShape3D.new()
@@ -206,8 +338,14 @@ func _hero_house() -> void:
 	bed.position = bc + Vector3(0, 0.6, 0.4)
 	bed.name = "Bed"
 	add_child(bed)
-	B.model(self, "painted_wooden_cabinet", Vector3(x0 + 0.45, y0, c.z + 1.6), PI * 0.5, 1.0)
+	B.model(self, "painted_wooden_cabinet", Vector3(x0 + 0.42, y0, c.z + 1.7), PI * 0.5, 1.0)
+	B.model(self, "Rockingchair_01", Vector3(c.x - 0.15, y0, c.z + 1.35), 0.5, 0.85)
+	B.model(self, "pachira_aquatica_01", Vector3(x0 + 0.55, y0, zb + 0.55), 0.3, 0.85)
 	B.model(self, "electric_stove", Vector3(x1 - 0.5, y0, zb + 1.0), -PI * 0.5, 1.0)
+	var fan_root := Node3D.new()
+	fan_root.position = Vector3(c.x, y0 + h - 0.02, c.z)
+	add_child(fan_root)
+	B.model(fan_root, "ceiling_fan", Vector3.ZERO, 0.2, 0.72)
 	B.box(self, Vector3(0.65, 0.9, 2.2), Vector3(x1 - 0.45, y0 + 0.45, zb + 2.7), M.oak, true)
 	B.box(self, Vector3(0.7, 0.05, 2.3), Vector3(x1 - 0.45, y0 + 0.92, zb + 2.7), VM.curb)
 	B.box(self, Vector3(0.45, 0.04, 0.4), Vector3(x1 - 0.45, y0 + 0.95, zb + 3.2), B.flat(Color(0.75, 0.78, 0.8), 0.25, 0.8))
@@ -242,6 +380,8 @@ func _church_and_praca() -> void:
 	var blue := stucco(Color(0.2, 0.42, 0.72))
 	var yellow := stucco(Color(0.98, 0.8, 0.3))
 	B.box(self, Vector3(w, h, d), c + Vector3(0, h * 0.5, 0), white, true)
+	_block(c, w, d, 0.5)
+	_occlude(c, w * 0.92, d * 0.92, h)
 	B.box(self, Vector3(w + 0.06, 0.8, d + 0.06), c + Vector3(0, 0.4, 0), blue)
 	for sx in [-1.0, 1.0]:
 		B.box(self, Vector3(0.5, h, 0.5), c + Vector3(sx * w * 0.5, h * 0.5, -d * 0.5), yellow)
@@ -270,6 +410,10 @@ func _church_and_praca() -> void:
 	# torre
 	var tc := c + Vector3(w * 0.5 + 1.6, 0, -d * 0.5 + 1.6)
 	B.box(self, Vector3(3.2, 13.0, 3.2), tc + Vector3(0, 6.5, 0), white, true)
+	_block(tc, 3.2, 3.2, 0.35)
+	_occlude(tc, 3.0, 3.0, 12.5)
+	B.box(self, Vector3(4.4, 0.16, 1.1), c + Vector3(0, 0.1, -d * 0.5 - 0.55), VM.curb)
+	B.box(self, Vector3(3.2, 0.16, 0.7), c + Vector3(0, 0.22, -d * 0.5 - 0.95), VM.curb)
 	B.box(self, Vector3(3.3, 0.7, 3.3), tc + Vector3(0, 0.35, 0), blue)
 	for k in [4.5, 9.0, 12.8]:
 		B.box(self, Vector3(3.45, 0.3, 3.45), tc + Vector3(0, k, 0), yellow)
@@ -472,6 +616,130 @@ func _jangada2(p: Vector3, rot: float) -> void:
 	j.add_child(sail)
 	B.wall(self, Vector3(2.0, 2.0, 6.5), p + Vector3(0, 1.4, 0), rot)
 
+func _fishing_boat(p: Vector3, rot: float, paint: Color) -> void:
+	var j := Node3D.new()
+	j.position = p
+	j.rotation.y = rot
+	add_child(j)
+	var hull := MeshInstance3D.new()
+	hull.mesh = _boat_mesh()
+	var hm := wood_tint(paint).duplicate() as StandardMaterial3D
+	hm.cull_mode = BaseMaterial3D.CULL_DISABLED
+	hull.material_override = hm
+	j.add_child(hull)
+	var trim := wood_tint(Color(0.93, 0.9, 0.82))
+	B.box(j, Vector3(1.15, 0.06, 0.28), Vector3(0, 0.42, 0.2), trim)
+	B.box(j, Vector3(0.9, 0.06, 0.22), Vector3(0, 0.4, -0.85), trim)
+	B.model(j, "wooden_crate_01", Vector3(-0.15, 0.48, 1.15), 0.2, 0.55)
+	B.model(j, "wooden_bucket_01", Vector3(0.28, 0.42, 0.55), 0.5, 0.45)
+	B.cyl(j, 0.035, 0.04, 2.4, Vector3(0.05, 1.45, -0.15), M.oak, 6)
+	var sail := MeshInstance3D.new()
+	var sst := SurfaceTool.new()
+	sst.begin(Mesh.PRIMITIVE_TRIANGLES)
+	for v in [Vector3(0.05, 0.7, -0.15), Vector3(0.05, 2.55, -0.15), Vector3(0.05, 0.85, 1.35)]:
+		sst.set_normal(Vector3.RIGHT)
+		sst.set_uv(Vector2(v.z, v.y) * 0.4)
+		sst.add_vertex(v)
+	sail.mesh = sst.commit()
+	var smat: StandardMaterial3D = B.mat("rough_linen", 1.2, Color(0.96, 0.94, 0.88), 0.9).duplicate() as StandardMaterial3D
+	smat.cull_mode = BaseMaterial3D.CULL_DISABLED
+	sail.material_override = smat
+	j.add_child(sail)
+	B.wall(self, Vector3(1.7, 0.7, 4.6), p + Vector3(0, 0.35, 0.1), rot)
+
+func _boat_mesh() -> ArrayMesh:
+	if VM.has("boat"):
+		return VM.boat
+	var st := SurfaceTool.new()
+	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var secs := [
+		[-2.55, 0.06, 0.42, 0.58],
+		[-1.85, 0.38, 0.06, 0.5],
+		[-0.7, 0.68, 0.0, 0.46],
+		[0.55, 0.74, 0.0, 0.44],
+		[1.7, 0.58, 0.02, 0.48],
+		[2.4, 0.32, 0.1, 0.52],
+	]
+	for i in secs.size() - 1:
+		var a: Array = secs[i]
+		var b_: Array = secs[i + 1]
+		var pts := []
+		for s in [a, b_]:
+			pts.append(Vector3(-s[1], s[3], s[0]))
+			pts.append(Vector3(s[1], s[3], s[0]))
+			pts.append(Vector3(0, s[2], s[0]))
+			pts.append(Vector3(-s[1] * 0.62, s[2] + 0.16, s[0]))
+			pts.append(Vector3(s[1] * 0.62, s[2] + 0.16, s[0]))
+		# pts: 0 L, 1 R, 2 K, 3 iL, 4 iR  then +5 for next section
+		_boat_quad(st, pts[0], pts[5], pts[7], pts[2])
+		_boat_quad(st, pts[1], pts[2], pts[7], pts[6])
+		_boat_quad(st, pts[3], pts[8], pts[9], pts[4])
+		_boat_quad(st, pts[0], pts[3], pts[8], pts[5])
+		_boat_quad(st, pts[1], pts[6], pts[9], pts[4])
+	st.generate_normals()
+	var mesh := st.commit()
+	VM.boat = mesh
+	return mesh
+
+func _boat_quad(st: SurfaceTool, a: Vector3, b: Vector3, c: Vector3, d: Vector3) -> void:
+	var n: Vector3 = (b - a).cross(d - a)
+	if n.length_squared() < 0.00001:
+		n = Vector3.UP
+	else:
+		n = n.normalized()
+	for v in [a, b, c, a, c, d]:
+		st.set_normal(n)
+		st.set_uv(Vector2(v.x * 0.8 + 0.5, v.z * 0.25 + 0.5))
+		st.add_vertex(v)
+
+func _net(a: Vector3, b: Vector3) -> void:
+	var wood := wood_tint(Color(0.35, 0.22, 0.12))
+	var ay := _height(a.x, a.z)
+	var by := _height(b.x, b.z)
+	B.cyl(self, 0.04, 0.05, 1.5, Vector3(a.x, ay + 0.75, a.z), wood, 6)
+	B.cyl(self, 0.04, 0.05, 1.5, Vector3(b.x, by + 0.75, b.z), wood, 6)
+	var st := SurfaceTool.new()
+	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var n := 8
+	var prev := []
+	for k in n + 1:
+		var t := float(k) / float(n)
+		var p := a.lerp(b, t)
+		p.y = lerpf(ay, by, t) + 1.35 - sin(t * PI) * 0.55
+		var side := (b - a).cross(Vector3.UP).normalized()
+		if side.length_squared() < 0.01:
+			side = Vector3.RIGHT
+		var l := p
+		var r := p + Vector3(0, -0.7, 0) + side * 0.02
+		if k > 0:
+			for v in [[prev[0], Vector2(t - 1.0 / n, 0)], [l, Vector2(t, 0)], [r, Vector2(t, 1)], [prev[0], Vector2(t - 1.0 / n, 0)], [r, Vector2(t, 1)], [prev[1], Vector2(t - 1.0 / n, 1)]]:
+				st.set_normal(Vector3.UP)
+				st.set_uv(v[1])
+				st.add_vertex(v[0])
+		prev = [l, r]
+	var mi := MeshInstance3D.new()
+	mi.mesh = st.commit()
+	mi.material_override = _net_mat()
+	mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	add_child(mi)
+
+func _net_mat() -> Material:
+	if VM.has("net"):
+		return VM.net
+	var img := Image.create(128, 64, false, Image.FORMAT_RGBA8)
+	for y in 64:
+		for x in 128:
+			var on := (x % 8) < 2 or (y % 8) < 2
+			img.set_pixel(x, y, Color(0.78, 0.7, 0.5, 0.9) if on else Color(0, 0, 0, 0))
+	var m := StandardMaterial3D.new()
+	m.albedo_texture = ImageTexture.create_from_image(img)
+	m.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA_SCISSOR
+	m.alpha_scissor_threshold = 0.4
+	m.cull_mode = BaseMaterial3D.CULL_DISABLED
+	m.roughness = 0.9
+	VM.net = m
+	return m
+
 func _village_props() -> void:
 	var bike_spots := [[Vector3(57.6, 0.15, 25.6), 0.0, Color(0.8, 0.15, 0.15)], [Vector3(66.2, 0.15, 25.6), 0.1, Color(0.1, 0.4, 0.75)],
 		[Vector3(48.4, 0.15, 34.4), PI, Color(0.95, 0.75, 0.1)], [Vector3(84.2, 0.15, 25.7), -0.1, Color(0.15, 0.55, 0.3)], [Vector3(70.5, 0.25, 36.0), PI * 0.5, Color(0.9, 0.9, 0.9)]]
@@ -480,14 +748,28 @@ func _village_props() -> void:
 	for k in 3:
 		var x := 52.0 + k * 13.0
 		_jangada2(Vector3(x, _height(x, -29.5) - 0.12, -29.5), 0.3 - k * 0.25)
+	var boats := [[Vector3(58.5, 0, -27.2), 0.35, Color(0.2, 0.45, 0.62)], [Vector3(74.0, 0, -26.6), -0.4, Color(0.72, 0.22, 0.16)], [Vector3(88.5, 0, -27.4), 0.15, Color(0.85, 0.72, 0.28)]]
+	for b in boats:
+		var bp: Vector3 = b[0]
+		bp.y = _height(bp.x, bp.z) - 0.05
+		_fishing_boat(bp, b[1], b[2])
+	_net(Vector3(63.2, 0, -25.4), Vector3(67.4, 0, -24.6))
+	_net(Vector3(80.0, 0, -25.2), Vector3(84.2, 0, -24.2))
+	for cr in [Vector3(60.4, 0, -25.6), Vector3(70.2, 0, -25.2), Vector3(85.5, 0, -25.0)]:
+		B.model(self, "wooden_crate_01", Vector3(cr.x, _height(cr.x, cr.z), cr.z), cr.x * 0.1, 0.85)
+		B.model(self, "wicker_basket_02", Vector3(cr.x + 0.7, _height(cr.x, cr.z), cr.z + 0.3), 0.4, 0.9)
 	for k in 6:
 		var x2 := 50.0 + k * 9.0
 		B.model(self, ["potted_plant_01", "potted_plant_04", "planter_pot_clay"][k % 3], Vector3(x2 + 2.8, 0.15, 26.4), 0.0, 1.0)
+	_fence(Vector3(50.2, 0, 16.6), Vector3(66.5, 0, 16.6))
+	_fence(Vector3(76.2, 0, 16.6), Vector3(99.2, 0, 16.6))
+	_fence(Vector3(41.2, 0, 43.2), Vector3(63.5, 0, 43.2))
+	_fence(Vector3(86.5, 0, 43.2), Vector3(100.5, 0, 43.2))
 	if Quality.hd:
-		B.model(self, "coast_rocks_01", Vector3(101, -0.5, -25), 0.6, 1.0)
-		B.model(self, "coast_rocks_01", Vector3(-44, -0.5, -25.5), 2.2, 1.0)
 		for k in 18:
 			var sp := Vector2(40 + k * 3.4, 15.0 if k % 2 == 0 else 45.5)
+			if sp.y > 42.0 and sp.x > 64.0 and sp.x < 86.0:
+				continue
 			B.model(self, ["shrub_01", "shrub_02", "shrub_03"][k % 3], Vector3(sp.x, 0, sp.y), k * 1.3, 0.9)
 
 func _village_palms() -> void:
@@ -512,6 +794,8 @@ func _village_palms() -> void:
 			continue
 		Palm.spawn(self, Vector3(p.x, _height(p.x, p.y) - 0.05, p.y), 3000 + placed)
 		placed += 1
+	# coqueiro de referência para o close da copa (fora da calçada do quiosque)
+	Palm.spawn(self, Vector3(33.2, _height(33.2, -9.5) - 0.05, -9.5), 4242)
 
 func _street_lamps() -> void:
 	var spots := []
@@ -537,27 +821,27 @@ func _street_lamps() -> void:
 			B.cyl(self, 0.06, 0.09, 4.2, p + Vector3(0, 2.1, 0), B.flat(Color(0.12, 0.14, 0.13), 0.5, 0.6), 10)
 		var glow := MeshInstance3D.new()
 		var sm := SphereMesh.new()
-		sm.radius = 0.12
-		sm.height = 0.24
+		sm.radius = 0.22
+		sm.height = 0.44
 		glow.mesh = sm
 		var gm := StandardMaterial3D.new()
-		gm.albedo_color = Color(1, 0.85, 0.6)
+		gm.albedo_color = Color(1, 0.86, 0.55)
 		gm.emission_enabled = true
-		gm.emission = Color(1.0, 0.75, 0.4)
+		gm.emission = Color(1.0, 0.72, 0.32)
 		gm.emission_energy_multiplier = 0.0
+		gm.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 		glow.material_override = gm
 		glow.position = p + Vector3(0, top, 0)
+		glow.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		add_child(glow)
-		if Quality.hd:
-			var l := OmniLight3D.new()
-			l.position = p + Vector3(0, top - 0.2, 0)
-			l.omni_range = 9.0
-			l.light_color = Color(1.0, 0.75, 0.45)
-			l.light_energy = 0.0
-			add_child(l)
-			lanterns.append([l, gm, 1.8, false])
-		else:
-			lanterns.append([null, gm, 0.0, false])
+		var l := OmniLight3D.new()
+		l.position = p + Vector3(0, top - 0.15, 0)
+		l.omni_range = 11.0
+		l.light_color = Color(1.0, 0.74, 0.42)
+		l.light_energy = 0.0
+		l.shadow_enabled = false
+		add_child(l)
+		lanterns.append([l, gm, 2.6, false])
 
 # ------------------------------------------------------------------ rotas dos moradores
 func _village_routes() -> void:
@@ -575,3 +859,7 @@ func _village_routes() -> void:
 
 func set_night(t: float) -> void:
 	super.set_night(t)
+	if VM.has("glass"):
+		var glass: StandardMaterial3D = VM.glass
+		glass.emission_energy_multiplier = 7.0 * t
+		glass.albedo_color = Color(0.62, 0.78, 0.88, 0.7).lerp(Color(1.0, 0.7, 0.35, 0.95), t)

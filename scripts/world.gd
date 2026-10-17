@@ -430,33 +430,46 @@ func _parasol_canopy(radius: float, panels: int, drop: float, sag: float, thatch
 				for qi in 4:
 					var radial: float = r0 if qi < 2 else r1
 					var across: float = u0 if qi == 0 or qi == 3 else u1
-					var v := radial * (2.2 if thatch else 3.4)
+					# u atravessa o gomo (listras radiais); v só acompanha o raio, sem anéis
+					var u := across * 0.48 + 0.01
 					if not thatch and p % 2 == 1:
-						v += 0.5
-					uv.append(Vector2(across, v))
+						u += 0.5
+					var v := radial * (2.4 if thatch else 0.92)
+					uv.append(Vector2(u, v))
 				for idx in [0, 1, 2, 0, 2, 3]:
 					st.set_uv(uv[idx])
 					st.add_vertex(q[idx])
 		if not thatch:
-			for k in 5:
-				var u0 := float(k) / 5.0
-				var u1 := float(k + 1) / 5.0
+			for k in 6:
+				var u0 := float(k) / 6.0
+				var u1 := float(k + 1) / 6.0
 				var rim0 := _parasol_point(a0, a1, u0, 1.0, radius, drop, sag)
 				var rim1 := _parasol_point(a0, a1, u1, 1.0, radius, drop, sag)
-				var scallop := sin(lerpf(u0, u1, 0.5) * PI)
-				var hang0 := 0.04 + 0.1 * sin(u0 * PI)
-				var hang1 := 0.04 + 0.1 * sin(u1 * PI)
-				hang0 = maxf(hang0, 0.035 + 0.09 * scallop)
-				hang1 = maxf(hang1, 0.035 + 0.09 * scallop)
-				var h0 := rim0 + Vector3(0, -hang0, 0)
-				var h1 := rim1 + Vector3(0, -hang1, 0)
-				var fuv := Vector2(0.5, 3.6 if p % 2 == 0 else 4.1)
-				st.set_uv(fuv); st.add_vertex(rim0)
-				st.set_uv(fuv); st.add_vertex(rim1)
-				st.set_uv(fuv); st.add_vertex(h1)
-				st.set_uv(fuv); st.add_vertex(rim0)
-				st.set_uv(fuv); st.add_vertex(h1)
-				st.set_uv(fuv); st.add_vertex(h0)
+				var hang0 := 0.12 + 0.16 * sin(u0 * PI)
+				var hang1 := 0.12 + 0.16 * sin(u1 * PI)
+				var out0 := Vector3(rim0.x, 0, rim0.z)
+				var out1 := Vector3(rim1.x, 0, rim1.z)
+				if out0.length() > 0.01:
+					out0 = out0.normalized() * 0.05
+				if out1.length() > 0.01:
+					out1 = out1.normalized() * 0.05
+				var h0 := rim0 + out0 + Vector3(0, -hang0, 0)
+				var h1 := rim1 + out1 + Vector3(0, -hang1, 0)
+				var fu0 := u0 * 0.48 + 0.01
+				var fu1 := u1 * 0.48 + 0.01
+				if p % 2 == 1:
+					fu0 += 0.5
+					fu1 += 0.5
+				var uv0 := Vector2(fu0, 0.9)
+				var uv1 := Vector2(fu1, 0.9)
+				var uvh0 := Vector2(fu0, 1.02)
+				var uvh1 := Vector2(fu1, 1.02)
+				st.set_uv(uv0); st.add_vertex(rim0)
+				st.set_uv(uv1); st.add_vertex(rim1)
+				st.set_uv(uvh1); st.add_vertex(h1)
+				st.set_uv(uv0); st.add_vertex(rim0)
+				st.set_uv(uvh1); st.add_vertex(h1)
+				st.set_uv(uvh0); st.add_vertex(h0)
 	st.generate_normals()
 	return st.commit()
 
@@ -483,15 +496,20 @@ func _stripe_mat(tint: Color) -> Material:
 	var key := tint.to_html()
 	if _parasol_mats.has(key):
 		return _parasol_mats[key]
-	var img := Image.create(1024, 512, false, Image.FORMAT_RGB8)
-	var alt := tint.lightened(0.42) if tint.get_luminance() < 0.72 else tint.darkened(0.22)
-	var bands := 8
-	var bh := int(512 / bands)
-	for i in bands:
-		var col: Color = tint if i % 2 == 0 else alt
-		img.fill_rect(Rect2i(0, i * bh, 1024, bh), col)
-	for y in range(0, 512, 5):
-		img.fill_rect(Rect2i(0, y, 1024, 1), Color(0, 0, 0, 1).lerp(tint, 0.82))
+	# Faixas verticais: cada gomo amostra uma metade (par = cor, ímpar = invertida).
+	# Como o UV.x é constante ao longo do raio, as listras saem do mastro até a barra — não formam alvo.
+	var img := Image.create(1024, 256, false, Image.FORMAT_RGB8)
+	var alt := Color(0.97, 0.95, 0.91) if tint.get_luminance() < 0.62 else tint.darkened(0.32)
+	var half := 512
+	var bands := 4
+	var bw := int(half / bands)
+	for side in 2:
+		for i in bands:
+			var col: Color = tint if (i + side) % 2 == 0 else alt
+			img.fill_rect(Rect2i(side * half + i * bw, 0, bw, 256), col)
+	for y in range(0, 256, 7):
+		for x in 1024:
+			img.set_pixel(x, y, img.get_pixel(x, y).darkened(0.045))
 	var tex := ImageTexture.create_from_image(img)
 	var m := StandardMaterial3D.new()
 	m.albedo_texture = tex
