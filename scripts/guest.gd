@@ -3,14 +3,24 @@ extends Node3D
 
 signal arrived
 
-const SKINS := [Color(0.95, 0.78, 0.62), Color(0.80, 0.58, 0.42), Color(0.62, 0.42, 0.28), Color(0.42, 0.28, 0.18)]
+const SKINS := [
+	Color(0.96, 0.80, 0.68), Color(0.86, 0.68, 0.52), Color(0.72, 0.52, 0.38),
+	Color(0.55, 0.36, 0.26), Color(0.40, 0.26, 0.18), Color(0.28, 0.18, 0.13),
+]
 const SHIRTS := [Color(0.95, 0.45, 0.2), Color(0.15, 0.55, 0.75), Color(0.95, 0.85, 0.3), Color(0.9, 0.9, 0.88), Color(0.85, 0.25, 0.35), Color(0.3, 0.7, 0.45), Color(0.55, 0.35, 0.7)]
 const SHORTS := [Color(0.15, 0.25, 0.5), Color(0.85, 0.8, 0.65), Color(0.2, 0.2, 0.22), Color(0.3, 0.55, 0.65), Color(0.75, 0.3, 0.2)]
-const HAIRS := [Color(0.08, 0.06, 0.05), Color(0.3, 0.18, 0.08), Color(0.75, 0.6, 0.35), Color(0.55, 0.55, 0.55)]
+const HAIRS := [Color(0.08, 0.05, 0.03), Color(0.22, 0.12, 0.06), Color(0.55, 0.38, 0.18), Color(0.45, 0.42, 0.38), Color(0.12, 0.07, 0.04)]
 const NAMES := ["Ana", "João", "Maria", "Pedro", "Luiza", "Rafael", "Camila", "Bruno", "Juliana", "Thiago", "Beatriz", "Lucas", "Fernanda", "Gabriel", "Larissa", "Diego"]
 
 static var _scene: PackedScene
 static var _mat: ShaderMaterial
+static var _roster: Array = []
+static var _skin_tex: Texture2D
+static var _skin_nor: Texture2D
+static var _cloth_tex: Texture2D
+static var _eye_tex: Texture2D
+static var _hair_tex: Texture2D
+static var _logged := false
 
 var gid := 0
 var gname := "Hóspede"
@@ -27,58 +37,588 @@ var _ideal := Vector3.ZERO   # posição na rota, antes do desvio lateral
 var _stuck := 0.0
 var _prev_dist := INF
 var _anim: AnimationPlayer
+var _tree: AnimationTree
+var _playback: AnimationNodeStateMachinePlayback
 var _cur_anim := ""
+var _state := ""
+var _move_speed := 0.0
+var _skel: Skeleton3D
+var _look_pt: Marker3D
+var _cup: Node3D
+var _food: Node3D
+var _eating := false
+var _eat_t := 0.0
 var _mesh_insts: Array = []
+var _human := false
+var _blink_mi: MeshInstance3D
+var _blink_i := -1
+var _blink_phase := 0.0
+var _blink_wait := 3.0
+var _buckets := {}
+var _shoe := Color(0.14, 0.10, 0.08)
+
+# m/s da animação em speed_scale 1 (ciclo in-place do Quaternius UAL, CC0).
+const WALK_REF := 1.05
+const JOG_REF := 2.55
+const SWIM_REF := 1.15
 
 const NPC_RADIUS := 0.62
 const IDLE_RADIUS := 0.42
 const PLAYER_RADIUS := 0.72
 const MAX_SIDESTEP := 0.55
 const POOL_PAD := 1.45          # deck em volta da água (world.gd POOL_MIN/MAX)
+var block_rects: Array = []    # Rect2 (x, z) das casas; a vila preenche
 
-func setup(id: int, rng: RandomNumberGenerator) -> void:
+func setup(id: int, rng: RandomNumberGenerator, role: String = "", variant: String = "") -> void:
 	gid = id
 	gname = NAMES[rng.randi() % NAMES.size()]
-	if _scene == null:
+	_blink_wait = rng.randf_range(1.6, 4.5)
+	var people := "res://assets/people/people.glb"
+	if _scene == null and ResourceLoader.exists(people):
+		_scene = load(people)
+		_load_roster()
+		_load_textures()
+	var human := _scene != null and _roster.size() > 0
+	if not human and _scene == null:
 		_scene = load("res://assets/models/ual/guest.glb")
 		_mat = ShaderMaterial.new()
 		_mat.shader = load("res://shaders/guest.gdshader")
 	var m: Node3D = _scene.instantiate()
 	add_child(m)
-	for mi in m.find_children("*", "MeshInstance3D", true, false):
-		mi.material_override = _mat
-		_mesh_insts.append(mi)
-	set_colors(SKINS[rng.randi() % SKINS.size()], SHIRTS[rng.randi() % SHIRTS.size()], SHORTS[rng.randi() % SHORTS.size()], HAIRS[rng.randi() % HAIRS.size()])
+	if human:
+		_human = true
+		_pick_variant(m, rng, role, variant)
+		set_colors(SKINS[rng.randi() % SKINS.size()], SHIRTS[rng.randi() % SHIRTS.size()], SHORTS[rng.randi() % SHORTS.size()], HAIRS[rng.randi() % HAIRS.size()])
+	else:
+		for mi in m.find_children("*", "MeshInstance3D", true, false):
+			mi.material_override = _mat
+			_mesh_insts.append(mi)
+		set_colors(SKINS[rng.randi() % SKINS.size()], SHIRTS[rng.randi() % SHIRTS.size()], SHORTS[rng.randi() % SHORTS.size()], HAIRS[rng.randi() % HAIRS.size()])
 	var aps := m.find_children("*", "AnimationPlayer", true, false)
 	if aps.size() > 0:
 		_anim = aps[0]
 		for an in _anim.get_animation_list():
-			if an.ends_with("_Loop"):
+			if an.ends_with("_Loop") or an.ends_with("Idle") or an.ends_with("Walk"):
 				_anim.get_animation(an).loop_mode = Animation.LOOP_LINEAR
 	speed = rng.randf_range(1.2, 1.5)
 	add_to_group("npc")
 	_ideal = position
+	_build_anim(m)
 	play("Idle_Loop")
 
 func set_colors(skin: Color, shirt: Color, shorts: Color, hair: Color) -> void:
+	if not _human:
+		for mi in _mesh_insts:
+			mi.set_instance_shader_parameter("skin", skin)
+			mi.set_instance_shader_parameter("shirt", shirt)
+			mi.set_instance_shader_parameter("shorts", shorts)
+			mi.set_instance_shader_parameter("hair", hair)
+		return
+	for mat in _buckets.get("skin", []):
+		mat.albedo_color = skin
+		mat.subsurf_scatter_transmittance_color = skin.lightened(0.22)
+		mat.subsurf_scatter_strength = lerpf(0.18, 0.38, skin.get_luminance())
+	for mat in _buckets.get("top", []):
+		mat.albedo_color = shirt
+	for mat in _buckets.get("bottom", []):
+		mat.albedo_color = shorts
+	for mat in _buckets.get("hair", []) + _buckets.get("haircard", []):
+		mat.albedo_color = hair
+	for mat in _buckets.get("shoes", []):
+		mat.albedo_color = _shoe
+
+func _load_roster() -> void:
+	if _roster.size() > 0:
+		return
+	var f := FileAccess.open("res://assets/people/roster.json", FileAccess.READ)
+	if f == null:
+		return
+	var data = JSON.parse_string(f.get_as_text())
+	if data is Array:
+		_roster = data
+
+func _load_textures() -> void:
+	if _skin_tex != null:
+		return
+	_skin_tex = load("res://assets/people/skin_albedo.png")
+	_skin_nor = load("res://assets/people/skin_normal.png")
+	_cloth_tex = load("res://assets/people/cloth.png")
+	_eye_tex = load("res://assets/people/eye.png")
+	_hair_tex = load("res://assets/people/hair_alpha.png")
+
+func _pick_variant(model: Node3D, rng: RandomNumberGenerator, role: String, variant: String) -> void:
+	var spec: Dictionary = _roster[rng.randi() % _roster.size()]
+	if variant != "":
+		for s in _roster:
+			if str(s.get("id", "")) == variant:
+				spec = s
+				break
+	elif role != "":
+		for s in _roster:
+			if str(s.get("role", "")) == role:
+				spec = s
+				break
+	var cid := str(spec.get("id", "ana"))
+	var sc := float(spec.get("scale", 1.0))
+	scale = Vector3(sc, sc, sc)
+	var shoes: Array = spec.get("shoes", [0.14, 0.1, 0.08])
+	_shoe = Color(float(shoes[0]), float(shoes[1]), float(shoes[2]))
+	if role != "":
+		var sk: Array = spec.get("skin", [0.8, 0.6, 0.5])
+		var hr: Array = spec.get("hair", [0.1, 0.06, 0.04])
+		var tp: Array = spec.get("top", [0.9, 0.9, 0.9])
+		var bt: Array = spec.get("bottom", [0.15, 0.15, 0.2])
+		# Cores de uniforme ficam guardadas; set_colors logo depois pode trocar.
+		set_meta("staff_skin", Color(float(sk[0]), float(sk[1]), float(sk[2])))
+		set_meta("staff_hair", Color(float(hr[0]), float(hr[1]), float(hr[2])))
+		set_meta("staff_top", Color(float(tp[0]), float(tp[1]), float(tp[2])))
+		set_meta("staff_bottom", Color(float(bt[0]), float(bt[1]), float(bt[2])))
+	var meshes := model.find_children("*", "MeshInstance3D", true, false)
+	var drop: Array = []
+	for mi in meshes:
+		var n := str(mi.name)
+		if n.begins_with(cid + "_"):
+			_mesh_insts.append(mi)
+		else:
+			drop.append(mi)
+	for mi in drop:
+		mi.queue_free()
+	_buckets = {"skin": [], "top": [], "bottom": [], "shoes": [], "hair": [], "haircard": [], "eyes": [], "teeth": []}
 	for mi in _mesh_insts:
-		mi.set_instance_shader_parameter("skin", skin)
-		mi.set_instance_shader_parameter("shirt", shirt)
-		mi.set_instance_shader_parameter("shorts", shorts)
-		mi.set_instance_shader_parameter("hair", hair)
+		_dress(mi)
+		_ranges(mi)
+		_find_blink(mi)
+	_bind_humanoid(model)
+	if not _logged:
+		_logged = true
+		var names: PackedStringArray = []
+		for mi in _mesh_insts:
+			names.append(str(mi.name))
+		print("PEOPLE ", cid, " ", " ".join(names), " blink ", _blink_i)
+
+func _dress(mi: MeshInstance3D) -> void:
+	var mesh := mi.mesh
+	if mesh == null:
+		return
+	for s in mesh.get_surface_count():
+		var src := mesh.surface_get_material(s)
+		var label := ""
+		if src:
+			label = str(src.resource_name) if str(src.resource_name) != "" else str(src.name)
+		var kind := _kind_of(label)
+		var mat := _make_mat(kind)
+		mi.set_surface_override_material(s, mat)
+		if not _buckets.has(kind):
+			_buckets[kind] = []
+		_buckets[kind].append(mat)
+
+func _kind_of(label: String) -> String:
+	var n := label.to_lower()
+	if "haircard" in n:
+		return "haircard"
+	if "hair" in n:
+		return "hair"
+	if "eye" in n:
+		return "eyes"
+	if "teeth" in n or "tooth" in n:
+		return "teeth"
+	if "shoe" in n:
+		return "shoes"
+	if "bottom" in n:
+		return "bottom"
+	if "top" in n:
+		return "top"
+	return "skin"
+
+func _make_mat(kind: String) -> StandardMaterial3D:
+	var mat := StandardMaterial3D.new()
+	mat.roughness = 0.72
+	if kind == "skin":
+		mat.albedo_texture = _skin_tex
+		mat.normal_enabled = _skin_nor != null
+		mat.normal_texture = _skin_nor
+		mat.normal_scale = 0.35
+		mat.roughness = 0.52
+		mat.subsurf_scatter_enabled = true
+		mat.subsurf_scatter_skin_mode = true
+		mat.subsurf_scatter_strength = 0.28
+		mat.subsurf_scatter_transmittance_enabled = true
+		mat.subsurf_scatter_transmittance_depth = 0.08
+	elif kind == "eyes":
+		mat.albedo_texture = _eye_tex
+		mat.roughness = 0.08
+		mat.metallic_specular = 0.7
+		mat.clearcoat_enabled = true
+		mat.clearcoat = 0.65
+		mat.clearcoat_roughness = 0.12
+	elif kind == "teeth":
+		mat.albedo_color = Color(0.93, 0.91, 0.86)
+		mat.roughness = 0.38
+	elif kind == "hair":
+		mat.albedo_texture = _hair_tex
+		mat.roughness = 0.58
+		mat.cull_mode = BaseMaterial3D.CULL_DISABLED
+	elif kind == "haircard":
+		mat.albedo_texture = _hair_tex
+		mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA_SCISSOR
+		mat.alpha_scissor_threshold = 0.45
+		mat.alpha_antialiasing_mode = BaseMaterial3D.ALPHA_ANTIALIASING_ALPHA_TO_COVERAGE
+		mat.cull_mode = BaseMaterial3D.CULL_DISABLED
+		mat.roughness = 0.62
+	else:
+		mat.albedo_texture = _cloth_tex
+		mat.roughness = 0.78
+	return mat
+
+func _ranges(mi: MeshInstance3D) -> void:
+	var n := str(mi.name).to_lower()
+	mi.visibility_range_fade_mode = GeometryInstance3D.VISIBILITY_RANGE_FADE_SELF
+	if "lod2" in n:
+		mi.visibility_range_begin = 24.0
+		mi.visibility_range_begin_margin = 4.0
+		mi.visibility_range_end = 72.0
+		mi.visibility_range_end_margin = 6.0
+		mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	elif "lod1" in n:
+		mi.visibility_range_begin = 12.0
+		mi.visibility_range_begin_margin = 3.0
+		mi.visibility_range_end = 32.0
+		mi.visibility_range_end_margin = 4.0
+	elif "eyes" in n or "teeth" in n:
+		mi.visibility_range_end = 14.0
+		mi.visibility_range_end_margin = 2.0
+	elif "haircard" in n:
+		mi.visibility_range_end = 18.0
+		mi.visibility_range_end_margin = 3.0
+	elif "_hair" in n:
+		mi.visibility_range_end = 30.0
+		mi.visibility_range_end_margin = 3.0
+	else:
+		mi.visibility_range_end = 16.0
+		mi.visibility_range_end_margin = 2.5
+
+func _find_blink(mi: MeshInstance3D) -> void:
+	if _blink_mi != null or mi.mesh == null:
+		return
+	if "lod" in str(mi.name):
+		return
+	var mesh := mi.mesh
+	for i in mesh.get_blend_shape_count():
+		if str(mesh.get_blend_shape_name(i)) == "blink":
+			_blink_mi = mi
+			_blink_i = i
+			return
+
+func _tick_blink(delta: float) -> void:
+	if _blink_mi == null or not is_instance_valid(_blink_mi):
+		return
+	if _blink_phase <= 0.0:
+		_blink_wait -= delta
+		if _blink_wait <= 0.0:
+			_blink_phase = 0.16
+			_blink_wait = randf_range(2.4, 6.2)
+		_blink_mi.set_blend_shape_value(_blink_i, 0.0)
+		return
+	_blink_phase -= delta
+	var u := 1.0 - clampf(_blink_phase / 0.16, 0.0, 1.0)
+	_blink_mi.set_blend_shape_value(_blink_i, sin(u * PI))
+
+func _bind_humanoid(model: Node3D) -> void:
+	var skels := model.find_children("*", "Skeleton3D", true, false)
+	if skels.is_empty():
+		return
+	var skel: Skeleton3D = skels[0]
+	var prof := SkeletonProfileHumanoid.new()
+	var map := BoneMap.new()
+	map.profile = prof
+	var n_ok := 0
+	for i in prof.bone_size:
+		var bn := str(prof.get_bone_name(i))
+		if skel.find_bone(bn) >= 0:
+			map.set_skeleton_bone_name(bn, bn)
+			n_ok += 1
+	# Os clipes já foram exportados nestes nomes, no mesmo descanso do UAL.
+	# O AnimationMixer, se receber o BoneMap, reaplica o descanso de referência
+	# do perfil e torce o braço. O mapa fica no esqueleto para o perfil humanóide.
+	skel.set_meta("humanoid_bonemap", map)
+	if not _logged:
+		print("HUMANOID_BONES ", n_ok)
+
+func _clip(an: String) -> String:
+	if _anim == null:
+		return ""
+	if _anim.has_animation(an):
+		return an
+	if an.ends_with("_Loop") and _anim.has_animation(an.trim_suffix("_Loop")):
+		return an.trim_suffix("_Loop")
+	return ""
+
+func _state_for(an: String) -> String:
+	var key := an
+	if not _clip(key).is_empty() and key.ends_with("_Loop") and not _anim.has_animation(key):
+		key = key.trim_suffix("_Loop")
+	match key:
+		"Idle_Loop", "Idle":
+			return "Idle"
+		"Idle_Talking_Loop", "Idle_Talking":
+			return "Talk"
+		"Walk_Loop", "Walk", "Walk_Formal_Loop", "Walk_Formal":
+			return "Walk"
+		"Jog_Fwd_Loop", "Jog_Fwd":
+			return "Jog"
+		"Sitting_Idle_Loop", "Sitting_Idle":
+			return "Sit"
+		"Sitting_Talking_Loop", "Sitting_Talking":
+			return "SitTalk"
+		"Swim_Fwd_Loop", "Swim_Fwd":
+			return "Swim"
+		"Swim_Idle_Loop", "Swim_Idle":
+			return "SwimIdle"
+		"Interact":
+			return "Drink"
+		"Eat", "Eating":
+			return "Sit"
+		_:
+			return ""
+
+func _build_anim(model: Node3D) -> void:
+	if _anim == null:
+		return
+	var skels := model.find_children("*", "Skeleton3D", true, false)
+	if skels.size() > 0:
+		_skel = skels[0]
+		_look_pt = Marker3D.new()
+		_look_pt.name = "LookPoint"
+		add_child(_look_pt)
+		var look := LookAtModifier3D.new()
+		look.bone_name = "Head" if _skel.find_bone("Head") >= 0 else "head"
+		look.use_angle_limitation = true
+		look.primary_limit_angle = deg_to_rad(50.0)
+		look.secondary_limit_angle = deg_to_rad(22.0)
+		_skel.add_child(look)
+		look.target_node = look.get_path_to(_look_pt)
+		var att := BoneAttachment3D.new()
+		att.bone_name = "RightHand" if _skel.find_bone("RightHand") >= 0 else "hand_r"
+		_skel.add_child(att)
+		_cup = _make_cup()
+		att.add_child(_cup)
+		_cup.visible = false
+		_food = _make_food()
+		att.add_child(_food)
+		var eat := SkeletonModifier3D.new()
+		eat.name = "EatArm"
+		eat.set_script(load("res://scripts/eat_arm.gd"))
+		eat.guest = self
+		_skel.add_child(eat)
+	var sm := AnimationNodeStateMachine.new()
+	var specs := {
+		"Idle": "Idle_Loop", "Talk": "Idle_Talking_Loop", "Walk": "Walk_Loop", "Jog": "Jog_Fwd_Loop",
+		"Sit": "Sitting_Idle_Loop", "SitTalk": "Sitting_Talking_Loop",
+		"Swim": "Swim_Fwd_Loop", "SwimIdle": "Swim_Idle_Loop", "Drink": "Interact",
+	}
+	var order := ["Idle", "Talk", "Walk", "Jog", "Sit", "SitTalk", "Swim", "SwimIdle", "Drink"]
+	var added := {}
+	var i := 0
+	for st in order:
+		var clip := _clip(specs[st])
+		if clip == "":
+			continue
+		var bt := AnimationNodeBlendTree.new()
+		var node := AnimationNodeAnimation.new()
+		node.animation = clip
+		var rate := AnimationNodeTimeScale.new()
+		bt.add_node("clip", node)
+		bt.add_node("rate", rate)
+		bt.connect_node("rate", 0, "clip")
+		bt.connect_node("output", 0, "rate")
+		sm.add_node(st, bt, Vector2(200.0 * (i % 3), 140.0 * int(i / 3)))
+		added[st] = true
+		i += 1
+	if not added.has("Idle"):
+		return
+	var enter := AnimationNodeStateMachineTransition.new()
+	enter.xfade_time = 0.2
+	sm.add_transition("Start", "Idle", enter)
+	for a in added.keys():
+		for b in added.keys():
+			if a == b:
+				continue
+			var tr := AnimationNodeStateMachineTransition.new()
+			tr.xfade_time = 0.28
+			sm.add_transition(a, b, tr)
+	_tree = AnimationTree.new()
+	_tree.name = "GuestTree"
+	add_child(_tree)
+	_tree.anim_player = _tree.get_path_to(_anim)
+	_tree.tree_root = sm
+	_tree.active = true
+	_playback = _tree.get("parameters/playback")
+	if _playback == null:
+		call_deferred("_arm_tree")
+
+func _arm_tree() -> void:
+	if _tree == null:
+		return
+	_playback = _tree.get("parameters/playback")
+	if _playback == null:
+		_tree.active = false
+		return
+	if _eating:
+		_state = ""
+		_go_state("Sit")
+		return
+	if _state != "":
+		_playback.start(_state)
+
+func _make_cup() -> Node3D:
+	var n := Node3D.new()
+	var cup := MeshInstance3D.new()
+	var cm := CylinderMesh.new()
+	cm.top_radius = 0.034
+	cm.bottom_radius = 0.026
+	cm.height = 0.08
+	cm.radial_segments = 8
+	cup.mesh = cm
+	var mat := StandardMaterial3D.new()
+	mat.albedo_color = Color(0.15, 0.55, 0.42)
+	mat.roughness = 0.18
+	mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	mat.albedo_color.a = 0.85
+	cup.material_override = mat
+	cup.position = Vector3(0.0, 0.06, 0.06)
+	cup.rotation.x = 0.4
+	n.add_child(cup)
+	return n
+
+func _make_food() -> Node3D:
+	var n := Node3D.new()
+	var shell := StandardMaterial3D.new()
+	shell.albedo_color = Color(0.46, 0.28, 0.13)
+	shell.roughness = 0.62
+	var s := MeshInstance3D.new()
+	var sm := SphereMesh.new()
+	sm.radius = 0.042
+	sm.height = 0.068
+	sm.radial_segments = 10
+	sm.rings = 6
+	s.mesh = sm
+	s.material_override = shell
+	s.position = Vector3(0.0, 0.045, 0.06)
+	n.add_child(s)
+	var top := MeshInstance3D.new()
+	var tm := SphereMesh.new()
+	tm.radius = 0.02
+	tm.height = 0.02
+	tm.radial_segments = 8
+	tm.rings = 4
+	top.mesh = tm
+	var wm := StandardMaterial3D.new()
+	wm.albedo_color = Color(0.96, 0.94, 0.88)
+	wm.roughness = 0.4
+	top.material_override = wm
+	top.position = Vector3(0.0, 0.075, 0.06)
+	n.add_child(top)
+	var straw := MeshInstance3D.new()
+	var cm := CylinderMesh.new()
+	cm.top_radius = 0.004
+	cm.bottom_radius = 0.004
+	cm.height = 0.09
+	cm.radial_segments = 6
+	straw.mesh = cm
+	var rm := StandardMaterial3D.new()
+	rm.albedo_color = Color(0.86, 0.18, 0.14)
+	rm.roughness = 0.4
+	straw.material_override = rm
+	straw.position = Vector3(0.01, 0.1, 0.055)
+	straw.rotation.z = -0.65
+	n.add_child(straw)
+	n.visible = false
+	return n
+
+func _set_eating(on: bool) -> void:
+	_eating = on
+	if not on:
+		_eat_t = 0.0
+	if _food:
+		_food.visible = on
+	if _cup and on:
+		_cup.visible = false
+
+func _go_state(st: String) -> void:
+	if st == "" or st == _state:
+		return
+	if _playback == null:
+		var clip := _clip(st)
+		if clip != "" and _anim.has_animation(clip):
+			_anim.play(clip, 0.3)
+			_cur_anim = clip
+		return
+	if _state == "":
+		_playback.start(st)
+	else:
+		_playback.travel(st)
+	_state = st
+	_cur_anim = st
+	if st != "Sit" and st != "SitTalk":
+		_set_eating(false)
+	if _cup:
+		_cup.visible = (st == "Drink" or st == "SitTalk") and not _eating
+
+func _sync_rate() -> void:
+	if _tree == null or _state == "":
+		return
+	var scale := 1.0
+	if _state == "Walk" and _move_speed > 0.2:
+		scale = clampf(_move_speed / WALK_REF, 0.7, 5.0)
+	elif _state == "Jog" and _move_speed > 0.2:
+		scale = clampf(_move_speed / JOG_REF, 0.7, 5.0)
+	elif _state == "Swim" and _move_speed > 0.2:
+		scale = clampf(_move_speed / SWIM_REF, 0.7, 5.0)
+	_tree.set("parameters/%s/rate/scale" % _state, scale)
+
+func _update_look() -> void:
+	if _look_pt == null:
+		return
+	var ahead := global_position - global_transform.basis.z * 3.5 + Vector3(0, 1.5, 0)
+	var pl: Node3D = Core.player_ref
+	if is_instance_valid(pl) and pl.visible and Core.in_game:
+		var to := pl.global_position - global_position
+		to.y = 0.0
+		var dist := to.length()
+		var face := -global_transform.basis.z
+		face.y = 0.0
+		if dist > 0.45 and dist < 8.0 and face.length() > 0.01 and face.normalized().dot(to / dist) > -0.2:
+			ahead = pl.global_position + Vector3(0, 1.45, 0)
+	_look_pt.global_position = ahead
 
 func play(an: String) -> void:
 	if _anim == null:
 		return
-	# o importador do Godot remove o sufixo _Loop (e já marca a animação como loop)
-	if not _anim.has_animation(an) and an.ends_with("_Loop"):
-		an = an.trim_suffix("_Loop")
-	if an == _cur_anim:
+	if an == "Eat" or an == "Eating":
+		_set_eating(true)
+		_go_state("Sit")
 		return
-	if _anim.has_animation(an):
-		_anim.play(an, 0.35)
-		_cur_anim = an
-		_anim.speed_scale = clampf(Core.speed_mult, 1.0, 4.0)
+	if _eating:
+		_set_eating(false)
+	var st := _state_for(an)
+	if st == "":
+		var clip := _clip(an)
+		if clip != "" and clip != _cur_anim:
+			_anim.play(clip, 0.3)
+			_cur_anim = clip
+		return
+	_go_state(st)
+
+func _locomote(swimming: bool) -> void:
+	if swimming:
+		_go_state("Swim")
+		return
+	if _state == "Jog" and _move_speed > 1.7:
+		return
+	if _move_speed > 2.15:
+		_go_state("Jog")
+	else:
+		_go_state("Walk")
 
 func go(route: Array) -> void:
 	_ideal = position
@@ -86,13 +626,20 @@ func go(route: Array) -> void:
 	_prev_dist = INF
 	_route = _expand_route(route)
 	if not _route.is_empty():
-		play("Swim_Fwd_Loop" if _in_water_motion() else "Walk_Loop")
+		_locomote(_in_water_motion())
 
 func is_moving() -> bool:
 	return not _route.is_empty()
 
 func _process(delta: float) -> void:
+	if _eating:
+		_eat_t += delta
+	_tick_blink(delta)
+	var prev := position
 	if _route.is_empty():
+		_move_speed = 0.0
+		_sync_rate()
+		_update_look()
 		return
 	var target: Vector3 = _route[0]
 	var to := target - _ideal
@@ -135,7 +682,7 @@ func _process(delta: float) -> void:
 		var nxt_ideal := _ideal + Vector3(flat.x / dist, 0.0, flat.z / dist) * adv
 		nxt_ideal.y = _ideal.y + to.y * (adv / dist)
 		if not _waypoint_is_swim(target):
-			nxt_ideal = _slide_out_of_pool(_ideal, nxt_ideal)
+			nxt_ideal = _slide_out_of_blocks(_ideal, _slide_out_of_pool(_ideal, nxt_ideal))
 		_ideal = nxt_ideal
 	if not _route.is_empty():
 		var dnow := _ideal.distance_to(_route[0])
@@ -158,7 +705,7 @@ func _process(delta: float) -> void:
 		if not _route.is_empty():
 			target = _route[0]
 	var swimming := _in_water_motion()
-	play("Swim_Fwd_Loop" if swimming else "Walk_Loop")
+	_locomote(swimming)
 	var desired := _ideal
 	if not swimming:
 		var sep := _separation()
@@ -172,11 +719,11 @@ func _process(delta: float) -> void:
 				offset = offset.normalized() * MAX_SIDESTEP
 			desired = _ideal + offset
 			desired.y = _ideal.y
-			desired = _slide_out_of_pool(_ideal, desired)
+			desired = _slide_out_of_blocks(_ideal, _slide_out_of_pool(_ideal, desired))
 	var blend := minf(1.0, delta * 10.0 * maxf(Core.speed_mult, 1.0))
 	var nxt := position.lerp(desired, blend)
 	if not swimming:
-		nxt = _slide_out_of_pool(position, nxt)
+		nxt = _slide_out_of_blocks(position, _slide_out_of_pool(position, nxt))
 	var face := nxt - position
 	face.y = 0
 	if face.length() < 0.02:
@@ -186,6 +733,10 @@ func _process(delta: float) -> void:
 		var yaw := atan2(face.x, face.z)
 		rotation.y = lerp_angle(rotation.y, yaw, minf(1.0, delta * 8.0 * maxf(Core.speed_mult, 1.0)))
 	position = nxt
+	_move_speed = Vector2(position.x - prev.x, position.z - prev.z).length() / maxf(delta, 0.0001)
+	_locomote(swimming)
+	_sync_rate()
+	_update_look()
 
 # ------------------------------------------------------------------ desvio e piscina
 func _world() -> Node:
@@ -376,6 +927,38 @@ func _around(a: Vector3, b: Vector3) -> Array:
 	for k in 4:
 		seq3.append(corners[(nearest + k) % 4])
 	return seq3
+
+func _slide_out_of_blocks(from: Vector3, to: Vector3) -> Vector3:
+	if block_rects.is_empty():
+		return to
+	var p := to
+	for _pass in 2:
+		for r in block_rects:
+			var rect: Rect2 = r
+			if not rect.has_point(Vector2(p.x, p.z)):
+				continue
+			var dl := p.x - rect.position.x
+			var dr := rect.end.x - p.x
+			var dz0 := p.z - rect.position.y
+			var dz1 := rect.end.y - p.z
+			if dl <= dr and dl <= dz0 and dl <= dz1:
+				p.x = rect.position.x - 0.06
+			elif dr <= dz0 and dr <= dz1:
+				p.x = rect.end.x + 0.06
+			elif dz0 <= dz1:
+				p.z = rect.position.y - 0.06
+			else:
+				p.z = rect.end.y + 0.06
+	if from.distance_squared_to(p) < 0.000001 and rect_contains_any(to):
+		return from
+	return p
+
+func rect_contains_any(p: Vector3) -> bool:
+	var q := Vector2(p.x, p.z)
+	for r in block_rects:
+		if (r as Rect2).has_point(q):
+			return true
+	return false
 
 func _slide_out_of_pool(from: Vector3, to: Vector3) -> Vector3:
 	if not _in_pool(to):

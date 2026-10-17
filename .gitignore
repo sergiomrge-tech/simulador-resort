@@ -34,6 +34,9 @@ assets/models_hd/**/*.gltf
 assets/models_hd/**/*.bin
 assets/models_hd/**/*.jpg
 
+# MakeHuman CC0 baixado por tools/gen_people.py (não versionar; o script baixa de novo)
+tools/.mh_cache/
+
 # sistema
 .DS_Store
 Thumbs.db

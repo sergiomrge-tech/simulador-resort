@@ -1,6 +1,6 @@
 # Créditos e licenças
 
-Todo o conteúdo de terceiros deste projeto é **CC0 1.0 (domínio público)**. Nenhuma atribuição é exigida, mas fica aqui o agradecimento.
+Quase todo o conteúdo de terceiros deste projeto é **CC0 1.0 (domínio público)**. As exceções são a fonte Nunito (SIL OFL 1.1) e os ícones do game-icons.net (CC BY 3.0, atribuição obrigatória), listados no fim.
 
 ## Texturas — Poly Haven (CC0)
 Baixadas por `tools/fetch_assets.*` para `assets/tex/` (1k, normal 512) e `assets/tex_hd/` (2k, rugosidade 1k).
@@ -21,7 +21,13 @@ Baixadas por `tools/fetch_assets.*` para `assets/tex/` (1k, normal 512) e `asset
 | `terracotta_floor_tiles` | https://polyhaven.com/a/terracotta_floor_tiles | CC0 |
 | `weathered_planks` | https://polyhaven.com/a/weathered_planks | CC0 |
 | `white_stucco` | https://polyhaven.com/a/white_stucco | CC0 |
+| `fabric_pattern_07` | https://polyhaven.com/a/fabric_pattern_07 | CC0 |
+| `brown_planks_05` | https://polyhaven.com/a/brown_planks_05 | CC0 |
+| `dark_wooden_planks` | https://polyhaven.com/a/dark_wooden_planks | CC0 |
 | `grey_plaster_02` (vira `white_plaster` via `tools/gen_*.py`) | https://polyhaven.com/a/grey_plaster_02 | CC0 |
+| `forest_floor` (v0.6.1, encostas da serra) | https://polyhaven.com/a/forest_floor | CC0 |
+| `leafy_grass` (v0.6.1, encostas da serra) | https://polyhaven.com/a/leafy_grass | CC0 |
+| `rock_face` (v0.6.1, faces de rocha) | https://polyhaven.com/a/rock_face | CC0 |
 
 ## Modelos 3D — Poly Haven (CC0)
 glTF 1k em `assets/models/` (normal/ARM reduzidos para 512) e glTF 2k em `assets/models_hd/`.
@@ -58,13 +64,27 @@ glTF 1k em `assets/models/` (normal/ARM reduzidos para 512) e glTF 2k em `assets
 | `wooden_crate_01` | https://polyhaven.com/a/wooden_crate_01 | CC0 |
 | `wooden_lantern_01` | https://polyhaven.com/a/wooden_lantern_01 | CC0 |
 | `wooden_stool_01` | https://polyhaven.com/a/wooden_stool_01 | CC0 |
+| `GothicBed_01` (v0.4, interior dos bangalôs) | https://polyhaven.com/a/GothicBed_01 | CC0 |
+| `painted_wooden_nightstand` (v0.4, interior dos bangalôs) | https://polyhaven.com/a/painted_wooden_nightstand | CC0 |
+| `ceiling_fan` (v0.4, interior dos bangalôs) | https://polyhaven.com/a/ceiling_fan | CC0 |
+| `ornate_mirror_01` (v0.4, interior dos bangalôs) | https://polyhaven.com/a/ornate_mirror_01 | CC0 |
+| `ceramic_vase_02` (v0.4, interior dos bangalôs) | https://polyhaven.com/a/ceramic_vase_02 | CC0 |
+| `hanging_picture_frame_02` (v0.4, interior dos bangalôs) | https://polyhaven.com/a/hanging_picture_frame_02 | CC0 |
+| `Rockingchair_01` (v0.4, interior dos bangalôs) | https://polyhaven.com/a/Rockingchair_01 | CC0 |
+| `throw_pillows_01` (v0.4, interior dos bangalôs) | https://polyhaven.com/a/throw_pillows_01 | CC0 |
+| `vintage_oil_lamp` (v0.4, interior dos bangalôs) | https://polyhaven.com/a/vintage_oil_lamp | CC0 |
+| `pachira_aquatica_01` (v0.4, interior dos bangalôs) | https://polyhaven.com/a/pachira_aquatica_01 | CC0 |
 | `island_tree_01` (só PC/HD) | https://polyhaven.com/a/island_tree_01 | CC0 |
 | `coast_rocks_01` (só PC/HD) | https://polyhaven.com/a/coast_rocks_01 | CC0 |
 
-## Personagens — Quaternius (CC0)
+## Personagens — MakeHuman (CC0) + Quaternius (CC0)
+
+Os corpos de v0.7.0 são gerados por `python3 tools/gen_people.py` (Blender em linha de comando). O MPFB2 não entra no pipeline: o script usa a mesma malha base hm08 e os mesmos alvos de macro que o MakeHuman publica em CC0. Não há assets da Mixamo.
+
 | Asset | Fonte | Licença |
 |---|---|---|
-| Universal Animation Library (manequim + animações), `assets/models/ual/guest.glb` (zonas de cor adicionadas com `tools/color_zones.py`; incluído no repositório) | https://quaternius.com/packs/universalanimationlibrary.html | CC0 |
+| Malha base hm08, alvos de macro (idade, peso, ancestralidade), seios e shape key de piscar (`eye-left/right-closure`). Saída em `assets/people/people.glb` (12 variações, LOD0 ~27k tris, LOD1/LOD2) mais `skin_albedo.png`, `skin_normal.png`, `cloth.png`, `eye.png`, `hair_alpha.png` | MakeHuman — base mesh e assets em CC0 (setembro de 2020). Copyright Data Collection AB, Joel Palmius, Jonas Hauquier; origem Manuel Bastioni. http://www.makehumancommunity.org/ | CC0 |
+| Esqueleto e clipes (idle, walk, jog, sit, talk, swim e o restante da biblioteca). Os ossos foram renomeados para o perfil humanóide; o `BoneMap` fica no esqueleto. O manequim low-poly original continua em `assets/models/ual/guest.glb` só como fonte do rig | Universal Animation Library, Quaternius — https://quaternius.com/packs/universalanimationlibrary.html | CC0 |
 
 ## Áudio — OpenGameArt (CC0), incluído em `assets/audio/`
 | Arquivo | Fonte | Licença |
@@ -80,8 +100,18 @@ glTF 1k em `assets/models/` (normal/ARM reduzidos para 512) e glTF 2k em `assets
 
 ## Gerados proceduralmente (código deste repositório)
 - `assets/tex*/calcada_*` — pedra portuguesa em ondas (`tools/gen_calcada.py`)
-- `assets/tex/palm_frond.png`, `assets/tex_hd/grass_tuft.png`, `assets/tex_hd/bush.png`, `light_stone_*`, `white_plaster_*`, `icon.png` (`tools/gen_textures.py`, `tools/gen_hd.py`)
+- `assets/tex/palm_frond.png` (faixa antiga) e o folíolo com recorte gerado em runtime (`scripts/palm.gd`); `assets/tex_hd/grass_tuft.png`, `assets/tex_hd/bush.png`, `light_stone_*`, `white_plaster_*` (albedo e, na 1k, a normal reduzida de `grey_plaster_02`), `icon.png` (`tools/gen_textures.py`, `tools/gen_hd.py`)
+- Buganvílias da rua: cartões coloridos em MultiMesh (código), sem asset externo
+- Copa da serra (v0.6.5): textura de copa vista de cima gerada em `tools/gen_canopy.py` (`assets/tex/canopy_*`); cúpulas low-poly em runtime (`scripts/world.gd`), sem asset externo
 - Coqueiros, telhados, casas, igreja, quiosque e o restante da arquitetura são geometria procedural em GDScript (`scripts/`).
 
 ## Ferramentas
 - Godot Engine 4.5.1 (MIT) — https://godotengine.org
+
+## v0.4 — material, fonte e ícones
+
+| Asset | Fonte | Licença |
+|---|---|---|
+| `rattan` (Wicker002, 2K) em `assets/tex*/rattan_*` | https://ambientcg.com/a/Wicker002 | CC0 |
+| Fonte Nunito (`assets/fonts/Nunito.ttf`, texto da licença em `assets/fonts/OFL.txt`) | https://fonts.google.com/specimen/Nunito — Vernon Adams, Cyreal, Jacques Le Bailly | SIL Open Font License 1.1 |
+| Ícones da interface (`assets/ui/icons/*.svg`) | https://game-icons.net — autores Delapouite e Lorc (lista em `assets/ui/icons/CREDITS.txt`) | CC BY 3.0 (atribuição obrigatória; fundo preto removido) |

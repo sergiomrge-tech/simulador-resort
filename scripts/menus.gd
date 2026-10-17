@@ -32,9 +32,7 @@ func _ready() -> void:
 	root.set_anchors_preset(Control.PRESET_FULL_RECT)
 	root.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(root)
-	var th := Theme.new()
-	th.default_font_size = 26
-	root.theme = th
+	root.theme = UiTheme.get_theme()
 	fade_rect = ColorRect.new()
 	fade_rect.color = Color(0, 0, 0, 0)
 	fade_rect.set_anchors_preset(Control.PRESET_FULL_RECT)
@@ -76,7 +74,7 @@ func _panel(sz: Vector2) -> PanelContainer:
 	p.position = -sz * 0.5
 	p.size = sz
 	p.custom_minimum_size = sz
-	p.add_theme_stylebox_override("panel", _style(C_BG, 24))
+	p.add_theme_stylebox_override("panel", UiTheme.box(UiTheme.SAND, 22, UiTheme.WOOD, 3, 18, 20))
 	root.add_child(p)
 	var vb := VBoxContainer.new()
 	vb.name = "VB"
@@ -91,8 +89,9 @@ func _title(parent: Node, t: String, fs := 40) -> Label:
 	var l := Label.new()
 	l.text = t
 	l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	l.add_theme_font_override("font", UiTheme.bold())
 	l.add_theme_font_size_override("font_size", fs)
-	l.add_theme_color_override("font_color", C_TITLE)
+	l.add_theme_color_override("font_color", UiTheme.TEAL)
 	parent.add_child(l)
 	return l
 
@@ -108,6 +107,7 @@ func _btn(parent: Node, t: String, cb: Callable, h := 62, fs := 28, col := Color
 	var b := Button.new()
 	b.text = t
 	b.custom_minimum_size = Vector2(0, h)
+	b.add_theme_font_override("font", UiTheme.bold())
 	b.add_theme_font_size_override("font_size", fs)
 	b.add_theme_color_override("font_color", Color.WHITE)
 	b.add_theme_color_override("font_hover_color", Color.WHITE)
@@ -391,6 +391,8 @@ func _build_settings() -> Control:
 		_check(r, Quality.vsync, func(on): Quality.set_vsync(on))
 	r = _row(vid, "Escala 3D (FSR 2)")
 	_slider(r, 50, 100, 5, Quality.scale * 100.0, func(v): Quality.set_scale(v / 100.0), func(v): return "%d%%" % int(v))
+	r = _row(vid, "Escala da interface")
+	_slider(r, 75, 150, 5, Quality.ui_scale * 100.0, func(v): Quality.set_ui_scale(v / 100.0), func(v): return "%d%%" % int(v))
 	r = _row(vid, "Campo de visão (FOV)")
 	_slider(r, 60, 100, 1, Quality.fov, func(v): Quality.set_fov(v), func(v): return "%d°" % int(v))
 	# --- áudio

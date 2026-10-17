@@ -2,7 +2,7 @@ class_name I18n
 ## Traduções PT-BR (chave) -> inglês, montadas em tempo de execução.
 
 const EN := {
-	"%s andar  ·  Mouse olhar  ·  %s interagir  ·  %s loja  ·  %s correr  ·  Esc menu  ·  F11 tela cheia": "%s move  ·  Mouse look  ·  %s interact  ·  %s shop  ·  %s sprint  ·  Esc menu  ·  F11 fullscreen",
+	"%s andar  ·  Mouse olhar  ·  %s interagir  ·  %s escritório  ·  %s correr  ·  Esc menu  ·  F11 tela cheia": "%s move  ·  Mouse look  ·  %s interact  ·  %s office  ·  %s sprint  ·  Esc menu  ·  F11 fullscreen",
 	"%s cansou de esperar e foi embora ★1.5": "%s got tired of waiting and left ★1.5",
 	"%s chegou à recepção!": "%s arrived at the front desk!",
 	"%s fez check-out ★%.1f, gorjeta": "%s checked out ★%.1f, tip",
@@ -25,6 +25,7 @@ const EN := {
 	"Celular: modo leve fixo (renderer Mobile).": "Phone: fixed lightweight mode (Mobile renderer).",
 	"Check-in %s (Bangalô %d)": "Check-in %s (Bungalow %d)",
 	"Check-in na recepção": "Check-in at the front desk",
+	"Recepção": "Front desk",
 	"Clientes esperando no quiosque!": "Customers waiting at the kiosk!",
 	"Coco gelado R$ 8 · Caipirinha R$ 15 · Petiscos R$ 22": "Iced coconut R$ 8 · Caipirinha R$ 15 · Snacks R$ 22",
 	"Comprar rede (%s)": "Buy hammock (%s)",
@@ -219,6 +220,29 @@ const EN := {
 	"Missões": "Quests",
 	"Multas": "Fines",
 	"Outros": "Other",
+	"B abre e fecha o escritório  ·  Esc volta ao jogo": "B opens and closes the office  ·  Esc returns to the game",
+	"Entradas de hoje": "Today's income",
+	"Saídas de hoje": "Today's expenses",
+	"Por categoria": "By category",
+	"Ainda sem movimento hoje.": "No activity yet today.",
+	"%s cada · fardo %s": "%s each · pack %s",
+	"Redes %d/%d": "Hammocks %d/%d",
+	"estoque %d": "stock %d",
+	"+1": "+1",
+	"margem %s · custo %s": "margin %s · cost %s",
+	"pronto": "ready",
+	"falta insumo": "out of stock",
+	"Diária deste quarto": "This room's nightly rate",
+	"no máximo · +%s": "maxed · +%s",
+	"Melhorar  %s": "Upgrade  %s",
+	"Comprar  %s": "Buy  %s",
+	"Construir  %s": "Build  %s",
+	"salário %s/dia": "wage %s/day",
+	"Missões da vila": "Village quests",
+	"Entradas": "Income",
+	"Saídas": "Expenses",
+	"Resultado": "Result",
+	"Escala da interface": "Interface scale",
 }
 
 static func install() -> void:

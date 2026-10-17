@@ -1,6 +1,6 @@
 extends Node
-## Ciclo dia/noite. O céu usa Sky.PROCESS_MODE_INCREMENTAL e só é atualizado
-## a cada 10 minutos de jogo (céu em tempo real trava em GPU fraca/llvmpipe).
+## Ciclo dia/noite. O céu usa qualidade média e só é refeito a cada 10 minutos
+## de jogo (tempo real trava em GPU fraca/llvmpipe; incremental deixava o horizonte preto).
 
 var sun: DirectionalLight3D
 var moon: DirectionalLight3D
@@ -16,8 +16,9 @@ const KEYS := [
 	[6.0, Color(0.25, 0.35, 0.6), Color(0.98, 0.62, 0.42), Color(1.0, 0.6, 0.35), 0.5, 0.5],
 	[8.0, Color(0.22, 0.48, 0.85), Color(0.75, 0.85, 0.95), Color(1.0, 0.9, 0.75), 1.15, 0.8],
 	[12.0, Color(0.16, 0.45, 0.88), Color(0.68, 0.83, 0.96), Color(1.0, 0.97, 0.9), 1.35, 0.9],
-	[16.0, Color(0.2, 0.46, 0.85), Color(0.78, 0.84, 0.92), Color(1.0, 0.88, 0.7), 1.2, 0.85],
-	[17.6, Color(0.28, 0.36, 0.65), Color(1.0, 0.58, 0.32), Color(1.0, 0.55, 0.28), 0.7, 0.6],
+	[16.0, Color(0.25, 0.48, 0.82), Color(0.90, 0.78, 0.62), Color(1.0, 0.86, 0.68), 1.12, 0.82],
+	[17.2, Color(0.32, 0.40, 0.68), Color(0.96, 0.70, 0.48), Color(1.0, 0.78, 0.55), 0.95, 0.7],
+	[17.6, Color(0.28, 0.32, 0.55), Color(0.85, 0.55, 0.40), Color(1.0, 0.68, 0.46), 0.7, 0.55],
 	[18.6, Color(0.1, 0.12, 0.3), Color(0.55, 0.3, 0.3), Color(0.9, 0.4, 0.3), 0.05, 0.35],
 	[19.5, Color(0.02, 0.04, 0.10), Color(0.06, 0.09, 0.16), Color(0.5, 0.6, 1.0), 0.0, 0.25],
 	[24.0, Color(0.02, 0.04, 0.10), Color(0.06, 0.09, 0.16), Color(0.5, 0.6, 1.0), 0.0, 0.25],
@@ -31,7 +32,7 @@ func setup(parent: Node3D) -> void:
 	sky_mat.ground_horizon_color = Color(0.6, 0.75, 0.85)
 	var sky := Sky.new()
 	sky.sky_material = sky_mat
-	sky.process_mode = Sky.PROCESS_MODE_INCREMENTAL
+	sky.process_mode = Sky.PROCESS_MODE_QUALITY
 	sky.radiance_size = Sky.RADIANCE_SIZE_64
 	env = Environment.new()
 	env.background_mode = Environment.BG_SKY
@@ -117,7 +118,8 @@ func apply() -> void:
 	sky_mat.sun_angle_max = 20.0
 	env.ambient_light_energy = k[4]
 	var night := clampf(1.0 - k[3] / 0.6, 0.0, 1.0)
-	var golden := _bell(h, 16.4, 18.5)
+	var golden := _bell(h, 15.8, 18.6)
+	var dawn := _bell(h, 5.1, 8.0)
 	var rain := Core.weather == "rain"
 	var fog_c: Color = k[1].lerp(Color(0.72, 0.82, 0.9), 0.35)
 	if rain:
@@ -125,15 +127,16 @@ func apply() -> void:
 		sun.light_energy *= 0.42
 		sun.light_color = sun.light_color.lerp(Color(0.75, 0.78, 0.82), 0.65)
 	elif golden > 0.05:
-		sun.light_color = sun.light_color.lerp(Color(1.0, 0.62, 0.32), golden * 0.55)
-		sun.light_energy *= lerpf(1.0, 0.82, golden)
+		sun.light_color = sun.light_color.lerp(Color(1.0, 0.78, 0.52), golden * 0.28)
+		sun.light_energy *= lerpf(1.0, 0.9, golden)
+		sky_mat.sun_angle_max = lerpf(20.0, 28.0, golden)
 	env.fog_light_color = fog_c
-	env.fog_density = 0.0048 if rain else lerpf(0.0014, 0.0028, golden)
-	env.fog_aerial_perspective = 0.35
+	env.fog_density = 0.0048 if rain else lerpf(0.00145, 0.0026, golden)
+	env.fog_aerial_perspective = 0.42
 	env.tonemap_mode = Environment.TONE_MAPPER_FILMIC
 	env.tonemap_exposure = (1.12 if not rain else 0.9) * lerpf(1.0, 1.08, golden)
 	env.adjustment_enabled = true
-	env.adjustment_saturation = (0.82 if rain else lerpf(1.05, 1.28, golden))
+	env.adjustment_saturation = (0.82 if rain else lerpf(1.02, 1.08, golden))
 	env.adjustment_contrast = lerpf(1.04, 1.1, golden)
 	env.adjustment_brightness = 0.94 if rain else 1.0
 	env.volumetric_fog_albedo = fog_c
@@ -144,7 +147,8 @@ func apply() -> void:
 	moon.light_energy = (0.15 if rain else 0.42) * night
 	moon.light_color = Color(0.65, 0.74, 1.0)
 	env.ambient_light_sky_contribution = 0.35 if rain else 0.55
-	env.ambient_light_color = Color(0.55, 0.58, 0.62) if rain else (k[2].lerp(Color(1.0, 0.86, 0.62), golden * 0.45) if k[3] > 0.05 else Color(0.22, 0.28, 0.45))
+	env.ambient_light_color = Color(0.55, 0.58, 0.62) if rain else (k[2].lerp(Color(1.0, 0.9, 0.75), golden * 0.22) if k[3] > 0.05 else Color(0.22, 0.28, 0.45))
 	if world:
 		world.set_night(night)
+		world.set_atmosphere(night, dawn, fog_c)
 	get_tree().call_group("audio", "set_night", night)

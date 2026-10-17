@@ -33,6 +33,26 @@ a=np.asarray(g).astype(np.float32); a=(a-a.mean())/ (a.std()+1e-3)
 base=np.array([244,240,232],np.float32)
 out=np.clip(base[None,None,:]+a[...,None]*6,0,255).astype(np.uint8)
 Image.fromarray(out).save(T+'white_plaster_diff.jpg',quality=90)
+# normal 1k obrigatória em runtime (B.nor). A HD fica em tex_hd; o fetch às vezes só deixa o .import.
+_nor_cands = [
+    T+'grey_plaster_02_nor.jpg',
+    os.path.join(ROOT, 'assets', 'tex_hd', 'white_plaster_nor.jpg'),
+    os.path.join(ROOT, 'assets', 'tex_hd', 'grey_plaster_02_nor.jpg'),
+]
+for _cand in _nor_cands:
+    if os.path.exists(_cand):
+        Image.open(_cand).convert('RGB').resize((1024, 1024), Image.Resampling.LANCZOS).save(T+'white_plaster_nor.jpg', quality=90)
+        print('white_plaster_nor', _cand)
+        break
+_rough_cands = [
+    T+'grey_plaster_02_rough.jpg',
+    os.path.join(ROOT, 'assets', 'tex_hd', 'white_plaster_rough.jpg'),
+]
+if not os.path.exists(T+'white_plaster_rough.jpg'):
+    for _cand in _rough_cands:
+        if os.path.exists(_cand):
+            Image.open(_cand).convert('L').resize((1024, 1024), Image.Resampling.LANCZOS).save(T+'white_plaster_rough.jpg', quality=90)
+            break
 # --- app icon 512
 S=512; ic=Image.new('RGB',(S,S)); p=ic.load()
 for y in range(S):

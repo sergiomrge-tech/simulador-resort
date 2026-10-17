@@ -26,6 +26,7 @@ var vol_sfx := 1.0
 var sensitivity := 1.0
 var invert_y := false
 var language := "pt"
+var ui_scale := 1.0           # escala da interface (0.75–1.5)
 var keybinds := {}            # ação -> physical_keycode
 
 var env: Environment
@@ -44,6 +45,8 @@ func _ready() -> void:
 	apply_keybinds()
 	apply_audio()
 	_apply_window()
+	ThemeDB.fallback_font = UiTheme.font()
+	UiTheme.apply_scale(get_tree(), ui_scale)
 
 var fullscreen: bool:
 	get: return window_mode != 0
@@ -68,6 +71,7 @@ func _load() -> void:
 	sensitivity = clampf(float(c.get_value("controls", "sensitivity", sensitivity)), 0.2, 3.0)
 	invert_y = bool(c.get_value("controls", "invert_y", invert_y))
 	language = str(c.get_value("general", "language", language))
+	ui_scale = clampf(float(c.get_value("general", "ui_scale", ui_scale)), 0.75, 1.5)
 	var kb = c.get_value("controls", "keys", {})
 	if typeof(kb) == TYPE_DICTIONARY:
 		keybinds = kb
@@ -87,6 +91,7 @@ func save() -> void:
 	c.set_value("controls", "invert_y", invert_y)
 	c.set_value("controls", "keys", keybinds)
 	c.set_value("general", "language", language)
+	c.set_value("general", "ui_scale", ui_scale)
 	c.save(CFG)
 
 # ------------------------------------------------------------------ entrada (teclado + controle)
@@ -258,6 +263,11 @@ func set_preset(p: int) -> void:
 func set_scale(s: float) -> void:
 	scale = clampf(s, 0.5, 1.0)
 	apply()
+	save()
+
+func set_ui_scale(s: float) -> void:
+	ui_scale = clampf(s, 0.75, 1.5)
+	UiTheme.apply_scale(get_tree(), ui_scale)
 	save()
 
 func set_vsync(v: bool) -> void:

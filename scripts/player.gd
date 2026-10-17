@@ -33,7 +33,7 @@ func _ready() -> void:
 	cam.fov = Quality.fov if Quality.hd else 72.0
 	Quality.changed.connect(func(): cam.fov = Quality.fov if Quality.hd else 72.0)
 	cam.near = 0.05
-	cam.far = 600.0
+	cam.far = 1100.0
 	add_child(cam)
 	cam.current = true
 	ray = RayCast3D.new()

@@ -21,13 +21,23 @@ API = "https://api.polyhaven.com/files/"
 # texturas Poly Haven (slug == nome do arquivo no jogo, exceto grey_plaster_02 -> white_plaster via gerador)
 TEXTURES = ["bamboo_wall", "blue_floor_tiles_01", "clay_roof_tiles_02", "coast_sand_01", "cobblestone_floor_04",
             "damp_beach_sand", "oak_wood_planks", "palm_tree_bark", "patio_tiles", "reed_roof_04", "rough_linen",
-            "terracotta_floor_tiles", "weathered_planks", "white_stucco", "grey_plaster_02"]
+            "terracotta_floor_tiles", "weathered_planks", "white_stucco", "grey_plaster_02",
+            # v0.4: tapete, piso interno e madeira escura dos móveis
+            "fabric_pattern_07", "brown_planks_05", "dark_wooden_planks",
+            # v0.6.1: serra (floresta, grama tropical, rocha)
+            "forest_floor", "leafy_grass", "rock_face"]
 MODELS = ["CashRegister_01", "CoffeeCart_01", "Shelf_01", "WoodenChair_01", "WoodenTable_01", "bar_chair_round_01",
           "electric_stove", "lambis_shell", "lifebuoy", "outdoor_table_chair_set_01", "painted_wooden_bench",
           "painted_wooden_cabinet", "planter_box_01", "planter_pot_clay", "plastic_crate_01", "plastic_monobloc_chair_01",
           "potted_plant_01", "potted_plant_02", "potted_plant_04", "shrub_01", "shrub_02", "shrub_03", "side_table_01",
           "street_lamp_01", "wicker_basket_01", "wicker_basket_02", "wooden_bucket_01", "wooden_crate_01",
-          "wooden_lantern_01", "wooden_stool_01"]
+          "wooden_lantern_01", "wooden_stool_01",
+          # v0.4: mobília realista-estilizada dos bangalôs (Poly Haven, CC0)
+          "GothicBed_01", "painted_wooden_nightstand", "ceiling_fan", "ornate_mirror_01",
+          "ceramic_vase_02", "hanging_picture_frame_02", "Rockingchair_01", "throw_pillows_01",
+          "vintage_oil_lamp", "pachira_aquatica_01"]
+# ambientCG (CC0): materiais que a Poly Haven não tem (palha trançada/rattan)
+AMBIENTCG = {"Wicker002": "rattan"}
 MODELS_HD_ONLY = ["island_tree_01", "coast_rocks_01"]   # só PC (pesados)
 
 FORCE = "--force" in sys.argv
@@ -66,6 +76,8 @@ def cap(path, size=2048):
 def texture(slug):
     files = json.loads(get(API + slug))
     def url(kind, res):
+        if kind == "Diffuse" and kind not in files:
+            kind = next(k for k in ("diff", "col_1", "col_01") if k in files)   # tecidos com variações de cor
         return files[kind][res]["jpg"]["url"]
     jobs = [
         (url("Diffuse", "1k"), f"{A}/tex/{slug}_diff.jpg", 1024),
@@ -100,12 +112,35 @@ def model(slug, res, base, small_maps=False):
                 cap(dst, 2048)
     print("model ok", base, slug, res)
 
+def ambientcg(asset, name):
+    import zipfile, io
+    dst = f"{A}/tex_hd/{name}_diff.jpg"
+    if os.path.exists(dst) and not FORCE:
+        return
+    data = get(f"https://ambientcg.com/get?file={asset}_2K-JPG.zip")
+    z = zipfile.ZipFile(io.BytesIO(data))
+    for zn in z.namelist():
+        kind = {"_Color.jpg": "diff", "_NormalGL.jpg": "nor", "_Roughness.jpg": "rough"}
+        for suf, k in kind.items():
+            if zn.endswith(suf):
+                out = f"{A}/tex_hd/{name}_{k}.jpg"
+                with open(out, "wb") as f:
+                    f.write(z.read(zn))
+                cap(out, 2048 if k != "rough" else 1024)
+                if k in ("diff", "nor"):
+                    from PIL import Image
+                    small = f"{A}/tex/{name}_{k}.jpg"
+                    im = Image.open(out).convert("RGB")
+                    im.resize((1024, 1024) if k == "diff" else (512, 512), Image.LANCZOS).save(small, quality=90)
+    print("tex  ok (ambientCG)", asset, "->", name)
+
 def main():
     only = sys.argv[sys.argv.index("--only") + 1] if "--only" in sys.argv else ""
     with ThreadPoolExecutor(6) as ex:
         futs = []
         if only in ("", "tex"):
             futs += [ex.submit(texture, s) for s in TEXTURES]
+            futs += [ex.submit(ambientcg, k, v) for k, v in AMBIENTCG.items()]
         if only in ("", "models"):
             futs += [ex.submit(model, s, "1k", "models", True) for s in MODELS]
             futs += [ex.submit(model, s, "2k", "models_hd") for s in MODELS + MODELS_HD_ONLY]
@@ -118,7 +153,7 @@ def main():
                 print("ERRO:", e)
     if only in ("", "tex"):
         # texturas procedurais / derivadas (reboco branco, pedra clara, folha do coqueiro, capim, arbusto, calçada, ícone)
-        for t in ("gen_textures.py", "gen_hd.py", "gen_calcada.py"):
+        for t in ("gen_textures.py", "gen_hd.py", "gen_calcada.py", "gen_canopy.py"):
             print("gerando", t)
             subprocess.check_call([sys.executable, os.path.join(ROOT, "tools", t)], cwd=ROOT)
         for s in ("diff", "nor"):

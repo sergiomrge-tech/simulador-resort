@@ -18,19 +18,30 @@ func _ready() -> void:
 	rng.seed = 2026
 	Core.slept.connect(on_sleep)
 	# barman fixo atrás do balcão
-	bartender = _make_guest()
+	bartender = _make_guest("bartender")
 	bartender.position = world.points.bartender
 	bartender.rotation.y = -PI * 0.5
-	bartender.set_colors(Color(0.62, 0.42, 0.28), Color(0.95, 0.95, 0.92), Color(0.2, 0.2, 0.22), Color(0.08, 0.06, 0.05))
+	bartender.set_colors(Color(0.45, 0.30, 0.20), Color(0.95, 0.95, 0.92), Color(0.12, 0.12, 0.14), Color(0.06, 0.04, 0.03))
 	bartender.play("Idle_Talking_Loop")
+	# Recepção e camareira ficam fora da fila de check-in.
+	var desk := _make_guest("receptionist")
+	desk.position = Vector3(0.15, 0.0, 14.28)
+	desk.rotation.y = 0.0
+	desk.set_colors(Color(0.84, 0.64, 0.50), Color(0.94, 0.94, 0.96), Color(0.12, 0.16, 0.32), Color(0.22, 0.12, 0.06))
+	desk.play("Idle_Talking_Loop")
+	var house := _make_guest("housekeeper")
+	house.position = Vector3(-6.4, 0.0, 6.2)
+	house.rotation.y = 0.6
+	house.set_colors(Color(0.62, 0.44, 0.32), Color(0.86, 0.90, 0.92), Color(0.18, 0.28, 0.42), Color(0.08, 0.05, 0.03))
+	house.play("Idle_Loop")
 	world.desk.prompt_fn = desk_prompt
 	world.desk.action_fn = checkin_front
 
-func _make_guest() -> Node3D:
+func _make_guest(role: String = "", variant: String = "") -> Node3D:
 	var g := Node3D.new()
 	g.set_script(GuestScript)
 	add_child(g)
-	g.setup(next_id, rng)
+	g.setup(next_id, rng, role, variant)
 	next_id += 1
 	return g
 
