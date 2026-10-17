@@ -153,7 +153,7 @@ def main():
                 print("ERRO:", e)
     if only in ("", "tex"):
         # texturas procedurais / derivadas (reboco branco, pedra clara, folha do coqueiro, capim, arbusto, calçada, ícone)
-        for t in ("gen_textures.py", "gen_hd.py", "gen_calcada.py"):
+        for t in ("gen_textures.py", "gen_hd.py", "gen_calcada.py", "gen_canopy.py"):
             print("gerando", t)
             subprocess.check_call([sys.executable, os.path.join(ROOT, "tools", t)], cwd=ROOT)
         for s in ("diff", "nor"):

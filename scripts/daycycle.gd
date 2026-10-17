@@ -131,8 +131,8 @@ func apply() -> void:
 		sun.light_energy *= lerpf(1.0, 0.9, golden)
 		sky_mat.sun_angle_max = lerpf(20.0, 28.0, golden)
 	env.fog_light_color = fog_c
-	env.fog_density = 0.0048 if rain else lerpf(0.0014, 0.0028, golden)
-	env.fog_aerial_perspective = 0.35
+	env.fog_density = 0.0048 if rain else lerpf(0.00145, 0.0026, golden)
+	env.fog_aerial_perspective = 0.42
 	env.tonemap_mode = Environment.TONE_MAPPER_FILMIC
 	env.tonemap_exposure = (1.12 if not rain else 0.9) * lerpf(1.0, 1.08, golden)
 	env.adjustment_enabled = true
@@ -150,5 +150,5 @@ func apply() -> void:
 	env.ambient_light_color = Color(0.55, 0.58, 0.62) if rain else (k[2].lerp(Color(1.0, 0.9, 0.75), golden * 0.22) if k[3] > 0.05 else Color(0.22, 0.28, 0.45))
 	if world:
 		world.set_night(night)
-		world.set_atmosphere(night, dawn)
+		world.set_atmosphere(night, dawn, fog_c)
 	get_tree().call_group("audio", "set_night", night)

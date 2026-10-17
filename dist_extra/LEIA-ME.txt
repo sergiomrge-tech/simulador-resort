@@ -1,4 +1,4 @@
-MARÉ ALTA RESORT — versão PC v0.6.2 (Windows 10/11 64-bit, placa com Vulkan)
+MARÉ ALTA RESORT — versão PC v0.6.3 (Windows 10/11 64-bit, placa com Vulkan)
 =============================================================================
 
 INSTALAÇÃO (sem usar o disco C:)
