@@ -17,10 +17,10 @@ func _process_modification() -> void:
 	if sk == null:
 		return
 	if _upper < 0:
-		_upper = sk.find_bone("upperarm_r")
-		_lower = sk.find_bone("lowerarm_r")
-		_hand = sk.find_bone("hand_r")
-		_head = sk.find_bone("Head")
+		_upper = _bone(sk, ["RightUpperArm", "upperarm_r"])
+		_lower = _bone(sk, ["RightLowerArm", "lowerarm_r"])
+		_hand = _bone(sk, ["RightHand", "hand_r"])
+		_head = _bone(sk, ["Head", "head"])
 		if _upper < 0 or _lower < 0 or _hand < 0:
 			return
 		var ru := sk.get_bone_global_rest(_upper).origin
@@ -56,6 +56,13 @@ func _process_modification() -> void:
 	sk.set_bone_global_pose(_upper, _aim(up, shoulder, elbow))
 	sk.set_bone_global_pose(_lower, _aim(lo, elbow, wrist))
 	sk.set_bone_global_pose(_hand, _aim(ha, wrist, wrist + (wrist - elbow).normalized() * 0.08))
+
+func _bone(sk: Skeleton3D, names: Array) -> int:
+	for n in names:
+		var i := sk.find_bone(str(n))
+		if i >= 0:
+			return i
+	return -1
 
 func _aim(pose: Transform3D, origin: Vector3, toward: Vector3) -> Transform3D:
 	var y := toward - origin

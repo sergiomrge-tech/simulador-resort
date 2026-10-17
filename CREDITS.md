@@ -77,10 +77,14 @@ glTF 1k em `assets/models/` (normal/ARM reduzidos para 512) e glTF 2k em `assets
 | `island_tree_01` (só PC/HD) | https://polyhaven.com/a/island_tree_01 | CC0 |
 | `coast_rocks_01` (só PC/HD) | https://polyhaven.com/a/coast_rocks_01 | CC0 |
 
-## Personagens — Quaternius (CC0)
+## Personagens — MakeHuman (CC0) + Quaternius (CC0)
+
+Os corpos de v0.7.0 são gerados por `python3 tools/gen_people.py` (Blender em linha de comando). O MPFB2 não entra no pipeline: o script usa a mesma malha base hm08 e os mesmos alvos de macro que o MakeHuman publica em CC0. Não há assets da Mixamo.
+
 | Asset | Fonte | Licença |
 |---|---|---|
-| Universal Animation Library (manequim + animações), `assets/models/ual/guest.glb` (zonas de cor adicionadas com `tools/color_zones.py`; incluído no repositório) | https://quaternius.com/packs/universalanimationlibrary.html | CC0 |
+| Malha base hm08, alvos de macro (idade, peso, ancestralidade), seios e shape key de piscar (`eye-left/right-closure`). Saída em `assets/people/people.glb` (12 variações, LOD0 ~27k tris, LOD1/LOD2) mais `skin_albedo.png`, `skin_normal.png`, `cloth.png`, `eye.png`, `hair_alpha.png` | MakeHuman — base mesh e assets em CC0 (setembro de 2020). Copyright Data Collection AB, Joel Palmius, Jonas Hauquier; origem Manuel Bastioni. http://www.makehumancommunity.org/ | CC0 |
+| Esqueleto e clipes (idle, walk, jog, sit, talk, swim e o restante da biblioteca). Os ossos foram renomeados para o perfil humanóide; o `BoneMap` fica no esqueleto. O manequim low-poly original continua em `assets/models/ual/guest.glb` só como fonte do rig | Universal Animation Library, Quaternius — https://quaternius.com/packs/universalanimationlibrary.html | CC0 |
 
 ## Áudio — OpenGameArt (CC0), incluído em `assets/audio/`
 | Arquivo | Fonte | Licença |

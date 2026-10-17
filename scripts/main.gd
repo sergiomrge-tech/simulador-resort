@@ -35,7 +35,7 @@ const SHOTS := {
 	"balcao": [Vector3(35.6, 1.55, -8.8), 152.0, -12.0, 16.9],
 	"npc_anda": [Vector3(2.6, 1.2, 7.4), -138.0, -8.0, 10.4],
 	"npc_senta": [Vector3(-5.0, 1.2, 1.6), -97.0, -10.0, 16.8],
-	"npc_bar": [Vector3(13.0, 1.65, -19.4), 180.0, -9.0, 16.8],
+	"npc_bar": [Vector3(12.6, 0.0, -18.3), 180.0, -8.0, 16.8],
 	"sombrinha": [Vector3(-24.0, 4.6, -17.0), 45.0, -29.9, 11.2],
 	"sombrinha_sape": [Vector3(-2.6, 4.4, -19.4), 42.9, -30.0, 16.6],
 	"pausa": [Vector3(-14, 0.6, -18), -30.0, -6.0, 17.2],
@@ -45,7 +45,7 @@ const SHOTS := {
 	"casa": [Vector3(43.7, 1.5, 22.9), -54.3, -6.0, 10.2],
 	"casa_ext": [Vector3(46.4, 1.58, 29.4), 1.5, 7.6, 10.4],
 	"barcos": [Vector3(70.5, 1.25, -23.2), -47.4, -9.1, 16.4],
-	"vila_anda": [Vector3(49.0, 1.58, 30.15), -77.9, 1.2, 10.6],
+	"vila_anda": [Vector3(56.2, 0.0, 29.6), -70.0, -6.0, 10.6],
 	"palmeira": [Vector3(22.5, 2.8, -1.5), -52.4, 17.6, 11.0],
 	"quiosque": [Vector3(37.2, 1.35, -7.8), -17.7, -4.4, 16.8],
 	"noite_vila": [Vector3(49.0, 1.58, 30.15), -77.9, 1.2, 21.2],
@@ -60,6 +60,9 @@ const SHOTS := {
 	"upgrade": [Vector3(-12.3, 0.25, -6.2), 56.0, -16.0, 17.2],
 	"bangalo_up": [Vector3(-12.3, 0.25, -6.2), 56.0, -16.0, 17.3],
 	"resumo": [Vector3(6.0, 0, 26.0), 20.0, 0.0, 20.5],
+	"lineup": [Vector3(0.0, 0.0, -17.65), 0.0, -12.0, 11.0],
+	"recepcionista": [Vector3(0.7, 0.0, 16.7), 13.0, -6.0, 10.4],
+	"praia_hospedes": [Vector3(-26.5, 0.0, -18.05), 34.0, -16.0, 16.6],
 }
 
 func _ready() -> void:
@@ -67,7 +70,7 @@ func _ready() -> void:
 		var kv: PackedStringArray = a.trim_prefix("--").split("=", true, 1)
 		args[kv[0]] = kv[1] if kv.size() > 1 else "1"
 	Core.in_game = false
-	var testing := args.has("shot") or args.has("loop-test") or args.has("tour")
+	var testing := args.has("shot") or args.has("loop-test") or args.has("tour") or args.has("people-demo")
 	if testing:
 		Core.SAVE_PATH = "user://test_save.json"
 		Quality.language = "en" if args.get("lang", "pt") == "en" else "pt"
@@ -140,6 +143,8 @@ func _ready() -> void:
 		t.run(self)
 	elif args.has("tour"):
 		_run_tour()
+	elif args.has("people-demo"):
+		_run_people_demo()
 	else:
 		_enter_menu()
 
@@ -281,8 +286,12 @@ func _run_shot(n: String) -> void:
 	if args.has("hidehud"):
 		hud.visible = false
 	# cenário de vida: hóspedes na fila, na piscina e no bar; quarto sujo; redes
-	if not args.has("empty"):
+	if n == "lineup":
+		_stage_lineup()
+	elif not args.has("empty"):
 		_stage_guests()
+		if n == "praia_hospedes" or n == "praia":
+			_stage_loungers()
 		if n in ["vila", "noite_vila", "vila_anda", "praca", "casa", "casa_ext", "barcos", "palmeira", "serra_dia", "serra_praia", "serra_ouro", "serra_alvorada"]:
 			_stage_village(n)
 		if n == "quiosque" or n == "balcao":
@@ -519,7 +528,67 @@ func _stage_village(n: String) -> void:
 		var dir := 1.0 if i % 2 == 0 else -1.0
 		var lane := 27.2 if i % 2 == 0 else 32.8
 		g2.position = Vector3(54.0 + float(i) * 3.6, 0.15, lane)
-		g2.go([g2.position + Vector3(14.0 * dir, 0.0, 0.0)])
+		if n == "vila_anda" and i == 2:
+			g2.position = Vector3(59.4, 0.0, 28.5)
+			g2.go([Vector3(54.0, 0.0, 28.7)])
+		else:
+			g2.go([g2.position + Vector3(14.0 * dir, 0.0, 0.0)])
+
+func _stage_lineup() -> void:
+	var ids := ["ana", "maria", "joao", "pedro"]
+	for i in ids.size():
+		var g = guests._make_guest("", ids[i])
+		g.position = Vector3(-0.96 + float(i) * 0.64, 0.0, -19.55)
+		g.rotation.y = 0.0
+		g.play("Idle_Loop" if i != 2 else "Idle_Talking_Loop")
+
+func _stage_loungers() -> void:
+	var seats := [
+		[Vector3(-28.85, 0.34, -20.25), PI + 0.18, "luiza"],
+		[Vector3(-27.15, 0.34, -20.25), PI - 0.12, "diego"],
+		[Vector3(-17.85, 0.34, -21.25), PI + 0.18, "fernanda"],
+		[Vector3(-16.15, 0.34, -21.25), PI - 0.12, "rafael"],
+	]
+	for s in seats:
+		var g = guests._make_guest("", s[2])
+		g.position = s[0]
+		g.position.y = 0.02
+		g.rotation.y = s[1]
+		g.play("Sitting_Idle_Loop")
+
+func _run_people_demo() -> void:
+	Core.in_game = true
+	menus.in_menu = false
+	hud.visible = false
+	guests.enabled = false
+	village.enabled = false
+	Core.minutes = 11.0 * 60.0
+	day.force_update()
+	player.set_physics_process(false)
+	player.set_view(Vector3(0.0, 0.0, -16.4), 0.0, -6.0)
+	var sit = guests._make_guest("", "ana")
+	sit.position = Vector3(-1.05, 0.02, -18.9)
+	sit.rotation.y = 0.35
+	sit.play("Sitting_Idle_Loop")
+	var talk = guests._make_guest("", "maria")
+	talk.position = Vector3(0.15, 0.0, -19.15)
+	talk.rotation.y = -0.45
+	talk.play("Idle_Talking_Loop")
+	var stand = guests._make_guest("", "bruno")
+	stand.position = Vector3(1.25, 0.0, -19.35)
+	stand.rotation.y = 0.25
+	stand.play("Idle_Loop")
+	var walker = guests._make_guest("", "joao")
+	walker.position = Vector3(-3.6, 0.0, -18.35)
+	walker.speed = 0.55
+	walker.go([Vector3(4.2, 0.0, -18.55)])
+	var movie := false
+	for a in OS.get_cmdline_args():
+		if "write-movie" in str(a):
+			movie = true
+	if not movie:
+		await get_tree().create_timer(14.0).timeout
+		get_tree().quit()
 
 func _stage_guests() -> void:
 	Core.redes = 2
