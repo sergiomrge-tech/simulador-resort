@@ -1472,17 +1472,17 @@ func _vegetation() -> void:
 	_scatter(_cross_mesh(1.7, 1.4, 4), bm, bushes, 110.0, true)
 	print("vegetacao: capim=%d arbustos=%d coqueiros+=%d" % [grass.size(), bushes.size(), placed.size()])
 
-# ------------------------------------------------------------------ serra (v0.6.3)
-# Três cristas recuadas atrás da vila. A encosta da rua é baixa (~40 m a 150 m);
-# o pico distante fica mais alto e azulado. A caixa jogável e a boca da baía ficam em zero.
+# ------------------------------------------------------------------ serra (v0.6.4)
+# A crista da rua fica mais baixa e mais longe, para o céu e a serra azulada
+# aparecerem por cima dos telhados. A caixa jogável e a boca da baía ficam em zero.
 const MTN_RIDGES: Array = [
 	[-90.0, 92.0, 180.0, 100.0, 7.0, 11.0, 48.0],
-	[-110.0, 145.0, 200.0, 165.0, 42.0, 68.0, 88.0],
-	[-70.0, 175.0, 170.0, 200.0, 50.0, 78.0, 80.0],
-	[20.0, 210.0, 150.0, 240.0, 36.0, 58.0, 75.0],
-	[-160.0, 310.0, 30.0, 370.0, 90.0, 145.0, 140.0],
-	[10.0, 345.0, 190.0, 410.0, 100.0, 135.0, 130.0],
-	[-90.0, 420.0, 140.0, 470.0, 80.0, 120.0, 120.0],
+	[-120.0, 168.0, 220.0, 198.0, 22.0, 34.0, 78.0],
+	[-70.0, 205.0, 185.0, 238.0, 26.0, 40.0, 72.0],
+	[15.0, 240.0, 165.0, 278.0, 18.0, 30.0, 66.0],
+	[-160.0, 320.0, 40.0, 385.0, 70.0, 108.0, 125.0],
+	[15.0, 355.0, 195.0, 420.0, 78.0, 112.0, 115.0],
+	[-90.0, 430.0, 145.0, 485.0, 58.0, 88.0, 105.0],
 	[-120.0, 560.0, 160.0, 740.0, 240.0, 300.0, 210.0],
 	[-20.0, 620.0, 100.0, 780.0, 220.0, 270.0, 180.0],
 	[-210.0, 90.0, -250.0, -10.0, 48.0, 36.0, 55.0],
@@ -1493,12 +1493,12 @@ const MTN_RIDGES: Array = [
 	[250.0, 30.0, 280.0, -25.0, 28.0, 48.0, 16.0],
 ]
 const CROWN_COLS: Array[Color] = [
-	Color(0.165, 0.239, 0.110),
-	Color(0.227, 0.322, 0.122),
-	Color(0.290, 0.392, 0.141),
-	Color(0.192, 0.267, 0.145),
-	Color(0.243, 0.298, 0.125),
-	Color(0.145, 0.208, 0.090),
+	Color(0.42, 0.48, 0.40),
+	Color(0.48, 0.54, 0.44),
+	Color(0.52, 0.58, 0.48),
+	Color(0.40, 0.46, 0.40),
+	Color(0.46, 0.50, 0.42),
+	Color(0.36, 0.42, 0.36),
 ]
 
 func _hermite(u: float) -> float:
@@ -1548,15 +1548,19 @@ func _mtn_material(aerial: float, far_fade: float) -> ShaderMaterial:
 func _mtn_build_rect(x0: float, x1: float, z0: float, z1: float, step: float) -> ArrayMesh:
 	var st := SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
-	var nx := int((x1 - x0) / step)
-	var nz := int((z1 - z0) / step)
+	# O último quad encosta em x1/z1. int() deixava um vão de até um step
+	# (a fenda preta em x=50 na vista da rua).
+	var nx := int(ceil((x1 - x0) / step - 0.0001))
+	var nz := int(ceil((z1 - z0) / step - 0.0001))
 	var added := 0
 	for iz in nz:
 		for ix in nx:
 			var xa := x0 + float(ix) * step
 			var za := z0 + float(iz) * step
-			var xb := xa + step
-			var zb := za + step
+			var xb := minf(xa + step, x1)
+			var zb := minf(za + step, z1)
+			if xb - xa < 0.05 or zb - za < 0.05:
+				continue
 			var hs: Array[float] = [_mtn(xa, za), _mtn(xb, za), _mtn(xb, zb), _mtn(xa, zb)]
 			var hmax := maxf(maxf(hs[0], hs[1]), maxf(hs[2], hs[3]))
 			if hmax < 1.2:
@@ -1761,12 +1765,12 @@ func _mountains() -> void:
 	var slabs: Array = [
 		[-160.0, 50.0, 64.0, 170.0, step_near, 0],
 		[50.0, 230.0, 64.0, 170.0, step_near, 0],
-		[-160.0, 50.0, 160.0, 270.0, step_near, 0],
-		[50.0, 230.0, 160.0, 270.0, step_near, 0],
-		[-210.0, 50.0, 250.0, 370.0, 8.0, 1],
-		[50.0, 250.0, 250.0, 370.0, 8.0, 1],
-		[-210.0, 50.0, 360.0, 490.0, 8.0, 1],
-		[50.0, 250.0, 360.0, 490.0, 8.0, 1],
+		[-160.0, 50.0, 170.0, 270.0, step_near, 0],
+		[50.0, 230.0, 170.0, 270.0, step_near, 0],
+		[-210.0, 50.0, 270.0, 370.0, 8.0, 1],
+		[50.0, 250.0, 270.0, 370.0, 8.0, 1],
+		[-210.0, 50.0, 370.0, 490.0, 8.0, 1],
+		[50.0, 250.0, 370.0, 490.0, 8.0, 1],
 	]
 	for s in slabs:
 		var mat := near_mat if int(s[5]) == 0 else mid_mat

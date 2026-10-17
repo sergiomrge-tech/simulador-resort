@@ -34,6 +34,29 @@ float fbm(vec2 p) {
 	a += noise(p * 4.1 + vec2(8.0, 2.2)) * 0.15;
 	return a;
 }
+vec2 rot2(vec2 p, float a) {
+	float c = cos(a);
+	float s = sin(a);
+	return vec2(c * p.x - s * p.y, s * p.x + c * p.y);
+}
+// Duas escalas giradas. O peso muda devagar, então a repetição da cúpula não alinha.
+float tile_w(vec2 xz) {
+	return smoothstep(0.30, 0.70, fbm(xz * 0.0065 + vec2(4.2, 1.1)));
+}
+vec3 canopy_alb(vec2 xz) {
+	vec2 uv_a = xz * tile;
+	vec2 uv_b = rot2(xz, 0.9) * (tile * 1.67) + vec2(0.37, 0.19);
+	vec3 a = texture(canopy_tex, uv_a).rgb;
+	vec3 b = texture(canopy_tex, uv_b).rgb;
+	return mix(a, b, tile_w(xz));
+}
+vec3 canopy_nrm(vec2 xz) {
+	vec2 uv_a = xz * tile;
+	vec2 uv_b = rot2(xz, 0.9) * (tile * 1.67) + vec2(0.37, 0.19);
+	vec3 a = texture(canopy_nor, uv_a).rgb * 2.0 - 1.0;
+	vec3 b = texture(canopy_nor, uv_b).rgb * 2.0 - 1.0;
+	return normalize(mix(a, b, tile_w(xz)));
+}
 vec3 tri(sampler2D tex, float sc) {
 	vec3 bn = abs(normalize(wnor));
 	bn /= (bn.x + bn.y + bn.z + 0.0001);
@@ -54,15 +77,16 @@ void fragment() {
 	float rock_w = smoothstep(0.68, 0.42, slope);
 	float grass_w = smoothstep(8.0, 1.5, wpos.y) * smoothstep(0.78, 0.96, slope) * (1.0 - rock_w);
 
-	vec2 uv = wpos.xz * tile;
-	vec3 canopy = texture(canopy_tex, uv).rgb;
-	canopy *= vec3(0.95, 1.02, 0.62);
+	vec3 canopy = canopy_alb(wpos.xz);
+	// Oliva / verde-azulado. O 0.62 no azul deixava a encosta iluminada lima.
+	canopy *= vec3(0.86, 0.50, 1.16);
 	float macro = fbm(wpos.xz * 0.0032 + vec2(2.0, 0.4));
-	canopy *= mix(vec3(0.78, 0.88, 0.70), vec3(1.0, 1.08, 0.78), macro);
-	canopy *= mix(0.86, 1.0, fbm(wpos.xz * 0.011));
+	canopy *= mix(vec3(0.90, 0.84, 0.92), vec3(1.0, 0.90, 1.02), macro);
+	canopy *= mix(0.90, 1.0, fbm(wpos.xz * 0.011));
+	canopy = max(canopy, vec3(0.1176, 0.1686, 0.0863)); // #1e2b16
 
 	vec3 rock = tri(rock_tex, 0.045) * vec3(0.70, 0.68, 0.64);
-	vec3 col = mix(canopy, canopy * vec3(0.92, 1.0, 0.78), grass_w * 0.28);
+	vec3 col = mix(canopy, canopy * vec3(0.96, 0.98, 0.94), grass_w * 0.22);
 	col = mix(col, rock, rock_w);
 
 	// A névoa de verdade é a do ambiente (depois da luz). Aqui só dessatura,
@@ -73,17 +97,20 @@ void fragment() {
 	float luma = dot(col, vec3(0.28, 0.58, 0.14));
 	col = mix(col, vec3(luma * 0.92, luma, luma * 0.85), far * 0.5);
 	col = mix(col, col * vec3(0.88, 0.94, 1.06), far * 0.35);
-	col *= mix(1.0, 0.82, far);
+	col = mix(col, haze_color, far * 0.32);
+	col *= mix(1.0, 0.86, far);
 	float mist = clamp(smoothstep(110.0, 260.0, wpos.y) * dawn, 0.0, 0.42);
 	col = mix(col, mist_color, mist * (1.0 - night * 0.5));
 	ALBEDO = col;
 
-	vec3 tn = texture(canopy_nor, uv).rgb * 2.0 - 1.0;
+	vec3 tn = canopy_nrm(wpos.xz);
 	vec3 t = normalize(cross(n, vec3(0.0, 0.0, 1.0)));
 	vec3 b = cross(n, t);
 	tn.y = -tn.y;
 	vec3 rn = tri(rock_nor, 0.045) * 2.0 - 1.0;
 	vec3 wn = normalize(t * tn.x + b * tn.y + n * tn.z);
+	// O relevo da copa só sugere volume. Sozinho, a meia-lua vira sombra preta.
+	wn = normalize(mix(n, wn, 0.38));
 	wn = normalize(mix(wn, n + vec3(rn.x, 0.0, rn.y) * 0.35, rock_w));
 	NORMAL = normalize((VIEW_MATRIX * vec4(wn, 0.0)).xyz);
 	ROUGHNESS = mix(0.94, 0.8, rock_w);
@@ -95,6 +122,7 @@ void light() {
 	// um verde oliva, em vez do ambiente azul do céu.
 	float nd = dot(NORMAL, LIGHT);
 	float wrap = clamp(nd * 0.5 + 0.5, 0.0, 1.0);
-	DIFFUSE_LIGHT += LIGHT_COLOR * wrap * wrap * ATTENUATION;
+	float shade = max(wrap * wrap, 0.16);
+	DIFFUSE_LIGHT += LIGHT_COLOR * shade * ATTENUATION;
 	SPECULAR_LIGHT = vec3(0.0);
 }

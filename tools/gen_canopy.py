@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """Copa de Mata Atlântica vista de cima (CC0, gerada aqui).
 
-Albedo em sRGB na faixa #2a4028–#4d6b3a, com cúpulas arredondadas, AO nas frestas
-e um normal map de relevo. O jogo amostra isso no plano XZ da encosta.
+Albedo em sRGB, oliva/verde-azulado, nunca abaixo de #1e2b16. O relevo das
+cúpulas é suave: AO fraco e normal quase plano, para o tile não desenhar
+meias-luas pretas. O shader ainda mistura duas escalas de UV.
 """
 import os
 import numpy as np
@@ -10,16 +11,29 @@ from PIL import Image
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 N = 1024
-# sRGB
+# sRGB, um pouco mais azul que o oliva amarelo — o sol clareia por cima
 PAL = np.array([
-    [42, 61, 28],
-    [58, 82, 31],
-    [77, 104, 40],
-    [49, 68, 36],
-    [61, 74, 32],
-    [36, 52, 24],
-    [70, 90, 38],
+    [42, 58, 38],
+    [54, 74, 46],
+    [68, 90, 54],
+    [48, 66, 44],
+    [58, 74, 46],
+    [34, 50, 34],
+    [62, 82, 50],
 ], dtype=np.float32)
+FLOOR = np.array([30, 43, 22], dtype=np.float32)
+
+
+def blur_wrap(a: np.ndarray, r: int) -> np.ndarray:
+    k = 2 * r + 1
+    acc = np.zeros_like(a)
+    for d in range(-r, r + 1):
+        acc += np.roll(a, d, axis=0)
+    tmp = acc / k
+    acc = np.zeros_like(a)
+    for d in range(-r, r + 1):
+        acc += np.roll(tmp, d, axis=1)
+    return acc / k
 
 
 def main() -> None:
@@ -59,18 +73,20 @@ def main() -> None:
         # centro um pouco mais claro, ainda dentro da faixa
         lift = (w ** 2)[:, :, None] * 10.0
         col = np.clip(col + lift, 0, 255)
-    # AO: fresta escura, topo da cúpula só um pouco mais claro
-    hmax = max(float(height.max()), 1.0)
-    ao = 0.58 + 0.42 * (height / hmax)
+    # AO fraco: a fresta fica oliva, não preta
+    soft = blur_wrap(height, 6)
+    hmax = max(float(soft.max()), 1.0)
+    ao = 0.86 + 0.14 * (soft / hmax)
     col *= ao[:, :, None]
-    grain = rng.normal(0.0, 2.2, size=col.shape).astype(np.float32)
-    col = np.clip(col + grain, 28, 118)
-    # normal: altura em pixels, R = +X, G = +Z, B = cima
-    hx = (np.roll(height, -1, axis=1) - np.roll(height, 1, axis=1)) * 0.5
-    hz = (np.roll(height, -1, axis=0) - np.roll(height, 1, axis=0)) * 0.5
-    nx = -hx
-    nz = -hz
-    ny = np.ones_like(height) * 0.95
+    grain = rng.normal(0.0, 1.6, size=col.shape).astype(np.float32)
+    col = np.clip(col + grain, 0, 112)
+    col = np.maximum(col, FLOOR)
+    # normal suave. A borda da cúpula não pode virar um terminador preto.
+    hx = (np.roll(soft, -1, axis=1) - np.roll(soft, 1, axis=1)) * 0.5
+    hz = (np.roll(soft, -1, axis=0) - np.roll(soft, 1, axis=0)) * 0.5
+    nx = -hx * 0.22
+    nz = -hz * 0.22
+    ny = np.ones_like(height) * 4.0
     ln = np.sqrt(nx * nx + ny * ny + nz * nz)
     nmap = np.stack(((nx / ln) * 0.5 + 0.5, (nz / ln) * 0.5 + 0.5, (ny / ln) * 0.5 + 0.5), axis=-1)
     nmap = np.clip(nmap * 255.0, 0, 255).astype(np.uint8)

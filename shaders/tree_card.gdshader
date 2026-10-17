@@ -28,7 +28,7 @@ void vertex() {
 
 void fragment() {
 	float up = clamp(wnor.y * 0.7 + 0.28, 0.0, 1.0);
-	vec3 col = albedo * mix(0.62, 1.0, up);
+	vec3 col = albedo * mix(0.78, 1.0, up);
 	float dist = length(VERTEX);
 	float air = clamp(smoothstep(200.0, 860.0, dist) * aerial, 0.0, 0.8);
 	float luma = dot(col, vec3(0.30, 0.52, 0.18));
@@ -42,7 +42,8 @@ void fragment() {
 }
 
 void light() {
-	float wrap = clamp(dot(NORMAL, LIGHT) * 0.5 + 0.5, 0.0, 1.0);
-	DIFFUSE_LIGHT += LIGHT_COLOR * wrap * wrap * ATTENUATION;
+	float nd = dot(NORMAL, LIGHT);
+	float wrap = clamp(nd * 0.4 + 0.62, 0.0, 1.0);
+	DIFFUSE_LIGHT += LIGHT_COLOR * wrap * ATTENUATION;
 	SPECULAR_LIGHT = vec3(0.0);
 }
