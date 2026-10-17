@@ -119,6 +119,7 @@ func apply() -> void:
 	env.ambient_light_energy = k[4]
 	var night := clampf(1.0 - k[3] / 0.6, 0.0, 1.0)
 	var golden := _bell(h, 15.8, 18.6)
+	var dawn := _bell(h, 5.1, 8.0)
 	var rain := Core.weather == "rain"
 	var fog_c: Color = k[1].lerp(Color(0.72, 0.82, 0.9), 0.35)
 	if rain:
@@ -149,4 +150,5 @@ func apply() -> void:
 	env.ambient_light_color = Color(0.55, 0.58, 0.62) if rain else (k[2].lerp(Color(1.0, 0.9, 0.75), golden * 0.22) if k[3] > 0.05 else Color(0.22, 0.28, 0.45))
 	if world:
 		world.set_night(night)
+		world.set_atmosphere(night, dawn)
 	get_tree().call_group("audio", "set_night", night)

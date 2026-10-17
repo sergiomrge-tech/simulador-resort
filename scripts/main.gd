@@ -49,6 +49,10 @@ const SHOTS := {
 	"palmeira": [Vector3(22.5, 2.8, -1.5), -52.4, 17.6, 11.0],
 	"quiosque": [Vector3(37.2, 1.35, -7.8), -17.7, -4.4, 16.8],
 	"noite_vila": [Vector3(49.0, 1.58, 30.15), -77.9, 1.2, 21.2],
+	"serra_dia": [Vector3(58.0, 2.2, 28.5), -175.0, 12.2, 10.8],
+	"serra_praia": [Vector3(8.0, 2.0, -24.0), -165.4, 9.3, 11.2],
+	"serra_ouro": [Vector3(-18.0, 6.5, -36.0), -159.1, 8.2, 17.15],
+	"serra_alvorada": [Vector3(20.0, 4.5, -18.0), -172.8, 11.5, 6.35],
 	"aerea": [Vector3(26.0, 34.0, -52.0), 196.0, -30.0, 16.0],
 	"menu": [Vector3(0, 0, 0), 0.0, 0.0, 17.3],
 	"config": [Vector3(0, 0, 0), 0.0, 0.0, 17.3],
@@ -123,7 +127,7 @@ func _ready() -> void:
 	world.bed.action_fn = _bed_use
 	menu_cam = Camera3D.new()
 	menu_cam.fov = 60.0
-	menu_cam.far = 800.0
+	menu_cam.far = 1200.0
 	add_child(menu_cam)
 	day.force_update()
 	if args.has("shot"):
@@ -279,7 +283,7 @@ func _run_shot(n: String) -> void:
 	# cenário de vida: hóspedes na fila, na piscina e no bar; quarto sujo; redes
 	if not args.has("empty"):
 		_stage_guests()
-		if n in ["vila", "noite_vila", "vila_anda", "praca", "casa", "casa_ext", "barcos", "palmeira"]:
+		if n in ["vila", "noite_vila", "vila_anda", "praca", "casa", "casa_ext", "barcos", "palmeira", "serra_dia", "serra_praia", "serra_ouro", "serra_alvorada"]:
 			_stage_village(n)
 		if n == "quiosque" or n == "balcao":
 			for k in 2:
@@ -459,6 +463,20 @@ func _apply_village_tour_cam() -> void:
 func _stage_village(n: String) -> void:
 	village.set_process(false)
 	var walkers: Array = village.walkers
+	if n.begins_with("serra_"):
+		var ahead := [Vector3(63.5, 0.15, 33.1), Vector3(69.2, 0.15, 32.6)]
+		for i in walkers.size():
+			var sg: Node3D = walkers[i]
+			if n == "serra_dia" and i < ahead.size():
+				sg.visible = true
+				sg.position = ahead[i]
+				sg._route.clear()
+				sg.rotation.y = PI * 0.5
+				sg.play("Idle_Loop")
+			else:
+				sg.visible = false
+				sg._route.clear()
+		return
 	if n == "casa" or n == "casa_ext" or n == "palmeira" or n == "barcos":
 		for g in walkers:
 			g.position = Vector3(8.0, 0.15, 27.1)

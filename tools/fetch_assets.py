@@ -23,7 +23,9 @@ TEXTURES = ["bamboo_wall", "blue_floor_tiles_01", "clay_roof_tiles_02", "coast_s
             "damp_beach_sand", "oak_wood_planks", "palm_tree_bark", "patio_tiles", "reed_roof_04", "rough_linen",
             "terracotta_floor_tiles", "weathered_planks", "white_stucco", "grey_plaster_02",
             # v0.4: tapete, piso interno e madeira escura dos móveis
-            "fabric_pattern_07", "brown_planks_05", "dark_wooden_planks"]
+            "fabric_pattern_07", "brown_planks_05", "dark_wooden_planks",
+            # v0.6.1: serra (floresta, grama tropical, rocha)
+            "forest_floor", "leafy_grass", "rock_face"]
 MODELS = ["CashRegister_01", "CoffeeCart_01", "Shelf_01", "WoodenChair_01", "WoodenTable_01", "bar_chair_round_01",
           "electric_stove", "lambis_shell", "lifebuoy", "outdoor_table_chair_set_01", "painted_wooden_bench",
           "painted_wooden_cabinet", "planter_box_01", "planter_pot_clay", "plastic_crate_01", "plastic_monobloc_chair_01",

@@ -17,6 +17,7 @@ Você mora numa casinha da vila e acorda às 06:30. Desce pela calçada de pedra
 - **Praia e quiosque (v0.5.1):** sombrinhas redondas de tecido listrado (gomos que cedem, varetas e franja) e algumas de palha; areia bege clara com ondulação; areia molhada na linha d'água, arrebentação, espreguiçadeiras e quiosque com balcão, banquetas, lousa e petiscos.
 - **Hóspedes (v0.5.1):** AnimationTree com transições suaves (parado, conversa, andar, correr, sentar, nadar, beber) e comer levando a mão à boca. Passada alinhada à velocidade e olhar na direção do jogador. Biblioteca CC0 Quaternius (sem Mixamo).
 - **Vila (v0.6):** casas coloniais de reboco pastel com beiral de telha, venezianas, floreiras e buganvílias; calçada de pedra portuguesa com meio-fio; igreja e praça; padaria/mercadinho ligado aos insumos; barcos de pesca, redes e caixotes; casa do herói mobiliada como os bangalôs; moradores que contornam as casas; janelas e postes acesos à noite.
+- **Serra (v0.6.1):** morros de Mata Atlântica em ferradura atrás da vila e nos costões da baía (o mar continua aberto). Malha de heightmap com triplanar de floresta, grama e rocha (CC0, até 2K), cartões de árvore e uma camada distante que some na névoa; neblina nos cumes ao alvorecer.
 - **Vida:** hóspedes com rotina (fila, quarto, piscina, bar, check-out), moradores andando pelas calçadas e clientes no quiosque.
 - **Pronto para Steam:**
   - menu principal, 3 slots de save e pausa

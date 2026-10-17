@@ -25,6 +25,9 @@ Baixadas por `tools/fetch_assets.*` para `assets/tex/` (1k, normal 512) e `asset
 | `brown_planks_05` | https://polyhaven.com/a/brown_planks_05 | CC0 |
 | `dark_wooden_planks` | https://polyhaven.com/a/dark_wooden_planks | CC0 |
 | `grey_plaster_02` (vira `white_plaster` via `tools/gen_*.py`) | https://polyhaven.com/a/grey_plaster_02 | CC0 |
+| `forest_floor` (v0.6.1, encostas da serra) | https://polyhaven.com/a/forest_floor | CC0 |
+| `leafy_grass` (v0.6.1, encostas da serra) | https://polyhaven.com/a/leafy_grass | CC0 |
+| `rock_face` (v0.6.1, faces de rocha) | https://polyhaven.com/a/rock_face | CC0 |
 
 ## Modelos 3D — Poly Haven (CC0)
 glTF 1k em `assets/models/` (normal/ARM reduzidos para 512) e glTF 2k em `assets/models_hd/`.
@@ -95,6 +98,7 @@ glTF 1k em `assets/models/` (normal/ARM reduzidos para 512) e glTF 2k em `assets
 - `assets/tex*/calcada_*` — pedra portuguesa em ondas (`tools/gen_calcada.py`)
 - `assets/tex/palm_frond.png` (faixa antiga) e o folíolo com recorte gerado em runtime (`scripts/palm.gd`); `assets/tex_hd/grass_tuft.png`, `assets/tex_hd/bush.png`, `light_stone_*`, `white_plaster_*` (albedo e, na 1k, a normal reduzida de `grey_plaster_02`), `icon.png` (`tools/gen_textures.py`, `tools/gen_hd.py`)
 - Buganvílias da rua: cartões coloridos em MultiMesh (código), sem asset externo
+- Cartões de árvore da serra (v0.6.1): copa e tronco pintados em runtime (`scripts/world.gd`), sem asset externo
 - Coqueiros, telhados, casas, igreja, quiosque e o restante da arquitetura são geometria procedural em GDScript (`scripts/`).
 
 ## Ferramentas

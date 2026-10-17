@@ -22,6 +22,10 @@ var points := {}                  # pontos nomeados para rotas
 var pool_spots: Array = []        # [{pos, rot, anim}]
 var bar_spots: Array = []
 var guests_mgr: Node              # definido pelo main
+var mtn_mid_mat: ShaderMaterial
+var mtn_far_mat: ShaderMaterial
+var mtn_tree_mat: ShaderMaterial
+var mtn_tree_mats: Array = []
 
 var M := {}
 
@@ -53,6 +57,7 @@ func _ready() -> void:
 	_on_redes_changed(Core.redes)
 	_birds_spawn()
 	_weather_fx()
+	_mountains()
 
 func _materials() -> void:
 	M.plaster = B.mat("white_plaster", 0.5, Color(1, 1, 1), 0.9)
@@ -1276,6 +1281,16 @@ func _lantern_posts() -> void:
 		add_child(l)
 		lanterns.append([l, gm, 1.3, false])
 
+func set_atmosphere(night: float, dawn: float) -> void:
+	if mtn_mid_mat:
+		mtn_mid_mat.set_shader_parameter("dawn", dawn)
+		mtn_mid_mat.set_shader_parameter("night", night)
+	if mtn_far_mat:
+		mtn_far_mat.set_shader_parameter("dawn", dawn)
+		mtn_far_mat.set_shader_parameter("night", night)
+	for tm in mtn_tree_mats:
+		(tm as ShaderMaterial).set_shader_parameter("dawn", dawn)
+
 func set_night(t: float) -> void:
 	for e in lanterns:
 		var k: float = maxf(t, 0.5) if e[3] else t   # luz interna acesa de dia (sem GI no mobile)
@@ -1455,3 +1470,312 @@ func _vegetation() -> void:
 			bushes.append(Transform3D(Basis(Vector3.UP, rng.randf() * TAU).scaled(Vector3(s, s, s)), Vector3(p.x, _height(p.x, p.y) - 0.05, p.y)))
 	_scatter(_cross_mesh(1.7, 1.4, 4), bm, bushes, 110.0, true)
 	print("vegetacao: capim=%d arbustos=%d coqueiros+=%d" % [grass.size(), bushes.size(), placed.size()])
+
+# ------------------------------------------------------------------ serra (v0.6.1)
+# Ferradura atrás da vila e nos costões. O miolo da baía e a caixa jogável ficam em zero.
+const MTN_RIDGES: Array = [
+	[-210.0, 85.0, -70.0, 148.0, 82.0, 108.0, 76.0],
+	[-70.0, 148.0, 55.0, 178.0, 108.0, 116.0, 84.0],
+	[55.0, 178.0, 175.0, 152.0, 116.0, 100.0, 78.0],
+	[175.0, 152.0, 275.0, 108.0, 100.0, 74.0, 68.0],
+	[-210.0, 85.0, -235.0, 5.0, 82.0, 66.0, 60.0],
+	[-235.0, 5.0, -200.0, -78.0, 66.0, 40.0, 52.0],
+	[275.0, 108.0, 258.0, 8.0, 74.0, 76.0, 62.0],
+	[258.0, 8.0, 220.0, -80.0, 76.0, 44.0, 56.0],
+	[-90.0, 74.0, 15.0, 90.0, 26.0, 44.0, 38.0],
+	[15.0, 90.0, 135.0, 76.0, 44.0, 28.0, 36.0],
+	[-150.0, 92.0, -88.0, 28.0, 42.0, 24.0, 30.0],
+	[145.0, 86.0, 175.0, 22.0, 36.0, 26.0, 32.0],
+	[-120.0, 102.0, -66.0, 74.0, 38.0, 24.0, 28.0],
+]
+
+func _hermite(u: float) -> float:
+	u = clampf(u, 0.0, 1.0)
+	return u * u * (3.0 - 2.0 * u)
+
+func _ridge(x: float, z: float, ax: float, az: float, bx: float, bz: float, ha: float, hb: float, width: float) -> float:
+	var abx := bx - ax
+	var abz := bz - az
+	var t := clampf(((x - ax) * abx + (z - az) * abz) / (abx * abx + abz * abz), 0.0, 1.0)
+	var dx := x - (ax + abx * t)
+	var dz := z - (az + abz * t)
+	var d := sqrt(dx * dx + dz * dz)
+	return lerpf(ha, hb, t) * _hermite(1.0 - d / width)
+
+func _mtn_raw(x: float, z: float, scale: float) -> float:
+	var h := 0.0
+	for r in MTN_RIDGES:
+		h = maxf(h, _ridge(x, z, float(r[0]), float(r[1]), float(r[2]), float(r[3]), float(r[4]), float(r[5]), float(r[6]) * scale))
+	if h > 3.0:
+		h += sin(x * 0.065) * cos(z * 0.048) * 4.0 * _hermite((h - 6.0) / 18.0)
+		h += sin(x * 0.13 + z * 0.09) * 1.6 * _hermite((h - 10.0) / 12.0)
+	return maxf(0.0, h)
+
+func _mtn_mask(x: float, z: float) -> float:
+	if z < -18.0 and x >= -40.0 and x <= 150.0:
+		return 0.0
+	if x >= -60.0 and x <= 124.0 and z < 67.0:
+		return 0.0
+	if x > -78.0 and x < 145.0:
+		return _hermite((z - 69.0) / 16.0)
+	if x < -60.0:
+		return _hermite((-60.0 - x) / 18.0)
+	return _hermite((x - 124.0) / 18.0)
+
+func _mtn(x: float, z: float) -> float:
+	return _mtn_raw(x, z, 1.0) * _mtn_mask(x, z)
+
+func _mtn_far_h(x: float, z: float) -> float:
+	var dx := x - 35.0
+	var dz := z - 30.0
+	var dist := sqrt(dx * dx + dz * dz)
+	if dist < 175.0:
+		return 0.0
+	var k := (dist - 95.0) / dist
+	var ix := 35.0 + dx * k
+	var iz := 30.0 + dz * k
+	var h := _mtn_raw(ix, iz, 1.3) * _mtn_mask(ix, iz) * 0.48
+	if _mtn(x, z) > 24.0:
+		return 0.0
+	return h
+
+func _mtn_material(aerial: float, far_fade: float) -> ShaderMaterial:
+	var sm := ShaderMaterial.new()
+	sm.shader = load("res://shaders/mountain.gdshader")
+	sm.set_shader_parameter("forest_tex", B.tex("forest_floor"))
+	sm.set_shader_parameter("forest_nor", B.nor("forest_floor"))
+	sm.set_shader_parameter("grass_tex", B.tex("leafy_grass"))
+	sm.set_shader_parameter("grass_nor", B.nor("leafy_grass"))
+	sm.set_shader_parameter("rock_tex", B.tex("rock_face"))
+	sm.set_shader_parameter("rock_nor", B.nor("rock_face"))
+	var rough := B.rough_tex("forest_floor")
+	if rough:
+		sm.set_shader_parameter("forest_rough", rough)
+		sm.set_shader_parameter("rock_rough", B.rough_tex("rock_face"))
+		sm.set_shader_parameter("has_rough", 1.0)
+	sm.set_shader_parameter("aerial", aerial)
+	sm.set_shader_parameter("far_fade", far_fade)
+	return sm
+
+func _mtn_build(step: float, far: bool) -> ArrayMesh:
+	var st := SurfaceTool.new()
+	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var x0 := -360.0 if far else -250.0
+	var x1 := 420.0 if far else 310.0
+	var z0 := -180.0 if far else -110.0
+	var z1 := 360.0 if far else 250.0
+	var nx := int((x1 - x0) / step)
+	var nz := int((z1 - z0) / step)
+	for iz in nz:
+		for ix in nx:
+			var xa := x0 + float(ix) * step
+			var za := z0 + float(iz) * step
+			var xb := xa + step
+			var zb := za + step
+			var hs: Array[float] = [
+				_mtn_far_h(xa, za) if far else _mtn(xa, za),
+				_mtn_far_h(xb, za) if far else _mtn(xb, za),
+				_mtn_far_h(xb, zb) if far else _mtn(xb, zb),
+				_mtn_far_h(xa, zb) if far else _mtn(xa, zb),
+			]
+			var hmax := maxf(maxf(hs[0], hs[1]), maxf(hs[2], hs[3]))
+			if hmax < 2.0:
+				continue
+			if far and minf(minf(hs[0], hs[1]), minf(hs[2], hs[3])) < 2.0:
+				continue
+			var pts: Array[Vector3] = [
+				_mtn_corner(xa, za, hs[0], far),
+				_mtn_corner(xb, za, hs[1], far),
+				_mtn_corner(xb, zb, hs[2], far),
+				_mtn_corner(xa, zb, hs[3], far),
+			]
+			for idx in [0, 1, 2, 0, 2, 3]:
+				var v: Vector3 = pts[idx]
+				st.set_uv(Vector2(v.x * 0.02, v.z * 0.02))
+				st.add_vertex(v)
+	st.generate_normals()
+	st.index()
+	return st.commit()
+
+func _mtn_corner(x: float, z: float, h: float, far: bool) -> Vector3:
+	if far:
+		return Vector3(x, h, z)
+	if h < 1.5:
+		return Vector3(x, -2.4, z)
+	if x >= -132.0 and x <= 132.0 and z >= -62.0 and z <= 112.0:
+		var g := _height(x, z)
+		if h < g + 1.5:
+			return Vector3(x, g - 0.9, z)
+	return Vector3(x, h, z)
+
+func _mtn_show(mesh: ArrayMesh, mat: Material, begin: float, end: float, shadows: bool) -> void:
+	var mi := MeshInstance3D.new()
+	mi.mesh = mesh
+	mi.material_override = mat
+	mi.gi_mode = GeometryInstance3D.GI_MODE_DISABLED
+	mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_ON if shadows else GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	mi.visibility_range_begin = begin
+	mi.visibility_range_begin_margin = 60.0
+	mi.visibility_range_end = end
+	mi.visibility_range_end_margin = 70.0
+	mi.visibility_range_fade_mode = GeometryInstance3D.VISIBILITY_RANGE_FADE_SELF
+	mi.extra_cull_margin = 8.0
+	add_child(mi)
+
+func _tree_card_tex() -> Texture2D:
+	var w := 128
+	var h := 256
+	var img := Image.create(w, h, false, Image.FORMAT_RGBA8)
+	img.fill(Color(0, 0, 0, 0))
+	for y in range(8, 100):
+		var k := float(y - 8) / 92.0
+		var half := lerpf(6.5, 3.6, k)
+		for x in range(50, 78):
+			var e := absf(float(x) - 64.0) / half
+			if e > 1.0:
+				continue
+			var a := 1.0 if e < 0.65 else clampf((1.0 - e) / 0.35, 0.0, 1.0)
+			img.set_pixel(x, y, Color(0.36, 0.24, 0.12, a))
+	var blobs: Array = [
+		[64.0, 150.0, 46.0, 58.0, 0.20, 0.52, 0.16],
+		[46.0, 164.0, 30.0, 40.0, 0.26, 0.60, 0.18],
+		[84.0, 158.0, 28.0, 42.0, 0.16, 0.46, 0.14],
+		[64.0, 190.0, 34.0, 40.0, 0.28, 0.64, 0.20],
+		[38.0, 138.0, 20.0, 26.0, 0.22, 0.54, 0.16],
+		[92.0, 136.0, 18.0, 24.0, 0.15, 0.44, 0.13],
+		[64.0, 214.0, 22.0, 26.0, 0.32, 0.68, 0.22],
+		[54.0, 126.0, 24.0, 22.0, 0.18, 0.48, 0.14],
+		[76.0, 122.0, 20.0, 20.0, 0.16, 0.42, 0.13],
+	]
+	for b in blobs:
+		var cx := float(b[0])
+		var cy := float(b[1])
+		var rx := float(b[2])
+		var ry := float(b[3])
+		var cr := float(b[4])
+		var cg := float(b[5])
+		var cb := float(b[6])
+		for y2 in range(int(cy - ry), int(cy + ry) + 1):
+			if y2 < 0 or y2 >= h:
+				continue
+			for x2 in range(int(cx - rx), int(cx + rx) + 1):
+				if x2 < 0 or x2 >= w:
+					continue
+				var nx := (float(x2) - cx) / rx
+				var ny := (float(y2) - cy) / ry
+				var d2 := nx * nx + ny * ny
+				if d2 > 1.0:
+					continue
+				var edge := sqrt(d2)
+				var a2 := 1.0 if edge < 0.7 else clampf((1.0 - edge) / 0.3, 0.0, 1.0)
+				var speck := 0.84 + 0.16 * sin(float(x2) * 1.7 + float(y2) * 0.9)
+				var pix := img.get_pixel(x2, y2)
+				var rr := cr * speck
+				var gg := cg * speck
+				var bb := cb * speck
+				if pix.a > 0.04:
+					rr = lerpf(rr, pix.r, 0.4)
+					gg = lerpf(gg, pix.g, 0.4)
+					bb = lerpf(bb, pix.b, 0.4)
+					a2 = maxf(a2, pix.a)
+				img.set_pixel(x2, y2, Color(rr, gg, bb, a2))
+	return ImageTexture.create_from_image(img)
+
+func _mtn_trees() -> void:
+	var tex := _tree_card_tex()
+	mtn_tree_mat = ShaderMaterial.new()
+	mtn_tree_mat.shader = load("res://shaders/tree_card.gdshader")
+	mtn_tree_mat.set_shader_parameter("tex", tex)
+	mtn_tree_mat.set_shader_parameter("aerial", 0.4)
+	var quad := QuadMesh.new()
+	quad.size = Vector2(1, 1)
+	quad.orientation = PlaneMesh.FACE_Z
+	var near: Array[Transform3D] = []
+	var near_c: Array[Color] = []
+	var far_t: Array[Transform3D] = []
+	var far_c: Array[Color] = []
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 461
+	var cap_near := 780 if Quality.hd else 640
+	var cap_far := 280 if Quality.hd else 220
+	var tints: Array[Color] = [
+		Color(0.72, 0.95, 0.62),
+		Color(0.58, 0.86, 0.5),
+		Color(0.84, 1.0, 0.7),
+		Color(0.48, 0.74, 0.42),
+		Color(0.66, 0.9, 0.55),
+	]
+	for _i in 4200:
+		if near.size() >= cap_near and far_t.size() >= cap_far:
+			break
+		var x := rng.randf_range(-230.0, 280.0)
+		var z := rng.randf_range(-70.0, 230.0)
+		var h := _mtn(x, z)
+		if h < 8.0 or h > 62.0:
+			continue
+		var e := 5.0
+		var hx := _mtn(x + e, z) - _mtn(x - e, z)
+		var hz := _mtn(x, z + e) - _mtn(x, z - e)
+		var ny := (2.0 * e) / sqrt(hx * hx + 4.0 * e * e + hz * hz)
+		if ny < 0.62:
+			continue
+		var dist := Vector2(x - 35.0, z - 30.0).length()
+		var tw := rng.randf_range(6.5, 11.5)
+		var th := rng.randf_range(9.0, 16.5)
+		var tint: Color = tints[rng.randi() % tints.size()]
+		tint.a = clampf((h - 14.0) / 46.0, 0.05, 1.0)
+		var xf := Transform3D(Basis.IDENTITY.scaled(Vector3(tw, th, 1.0)), Vector3(x, h + th * 0.5 - 0.4, z))
+		if dist > 165.0 and far_t.size() < cap_far and rng.randf() < 0.55:
+			var big := Transform3D(Basis.IDENTITY.scaled(Vector3(tw * 1.7, th * 1.55, 1.0)), Vector3(x, h + th * 0.78, z))
+			var pale := tint.lerp(Color(0.7, 0.78, 0.72), 0.35)
+			pale.a = tint.a
+			far_t.append(big)
+			far_c.append(pale)
+		elif near.size() < cap_near:
+			near.append(xf)
+			near_c.append(tint)
+	_mtn_cards("Arvores", quad, near, near_c, 0.0, 360.0, 0.45)
+	_mtn_cards("ArvoresLonge", quad, far_t, far_c, 180.0, 1000.0, 0.72)
+
+func _mtn_cards(node_name: String, mesh: Mesh, xfs: Array[Transform3D], cols: Array[Color], begin: float, end: float, aerial: float) -> void:
+	if xfs.is_empty():
+		return
+	var mm := MultiMesh.new()
+	mm.transform_format = MultiMesh.TRANSFORM_3D
+	mm.use_custom_data = true
+	mm.mesh = mesh
+	mm.instance_count = xfs.size()
+	for i in xfs.size():
+		mm.set_instance_transform(i, xfs[i])
+		mm.set_instance_custom_data(i, cols[i])
+	var mi := MultiMeshInstance3D.new()
+	mi.name = node_name
+	mi.multimesh = mm
+	var mat := mtn_tree_mat.duplicate() as ShaderMaterial
+	mat.set_shader_parameter("aerial", aerial)
+	mi.material_override = mat
+	mtn_tree_mats.append(mat)
+	mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	mi.gi_mode = GeometryInstance3D.GI_MODE_DISABLED
+	mi.visibility_range_begin = begin
+	mi.visibility_range_begin_margin = 50.0
+	mi.visibility_range_end = end
+	mi.visibility_range_end_margin = 60.0
+	mi.visibility_range_fade_mode = GeometryInstance3D.VISIBILITY_RANGE_FADE_SELF
+	mi.extra_cull_margin = 12.0
+	add_child(mi)
+
+func _mountains() -> void:
+	mtn_mid_mat = _mtn_material(0.2, 0.0)
+	mtn_far_mat = _mtn_material(0.78, 0.66)
+	var step := 5.0 if Quality.hd else 6.0
+	var mid := _mtn_build(step, false)
+	var far := _mtn_build(18.0, true)
+	_mtn_show(mid, mtn_mid_mat, 0.0, 680.0, true)
+	_mtn_show(far, mtn_far_mat, 140.0, 1100.0, false)
+	_mtn_trees()
+	# Fora da caixa jogável (paredes em z=56, x=-48 e x=104). Não cruzam rua, praia nem a boca da baía.
+	B.wall(self, Vector3(168, 18, 2.4), Vector3(30, 7.0, 63.0))
+	B.wall(self, Vector3(2.4, 18, 78), Vector3(-64, 7.0, 24.0))
+	B.wall(self, Vector3(2.4, 18, 78), Vector3(120, 7.0, 24.0))
+	print("serra: tris mid=%d far=%d" % [mid.get_faces().size() / 3, far.get_faces().size() / 3])
