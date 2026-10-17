@@ -27,8 +27,20 @@ var _ideal := Vector3.ZERO   # posição na rota, antes do desvio lateral
 var _stuck := 0.0
 var _prev_dist := INF
 var _anim: AnimationPlayer
+var _tree: AnimationTree
+var _playback: AnimationNodeStateMachinePlayback
 var _cur_anim := ""
+var _state := ""
+var _move_speed := 0.0
+var _skel: Skeleton3D
+var _look_pt: Marker3D
+var _cup: Node3D
 var _mesh_insts: Array = []
+
+# m/s da animação em speed_scale 1 (ciclo in-place do Quaternius UAL, CC0).
+const WALK_REF := 1.05
+const JOG_REF := 2.55
+const SWIM_REF := 1.15
 
 const NPC_RADIUS := 0.62
 const IDLE_RADIUS := 0.42
@@ -53,11 +65,12 @@ func setup(id: int, rng: RandomNumberGenerator) -> void:
 	if aps.size() > 0:
 		_anim = aps[0]
 		for an in _anim.get_animation_list():
-			if an.ends_with("_Loop"):
+			if an.ends_with("_Loop") or an.ends_with("Idle") or an.ends_with("Walk"):
 				_anim.get_animation(an).loop_mode = Animation.LOOP_LINEAR
 	speed = rng.randf_range(1.2, 1.5)
 	add_to_group("npc")
 	_ideal = position
+	_build_anim(m)
 	play("Idle_Loop")
 
 func set_colors(skin: Color, shirt: Color, shorts: Color, hair: Color) -> void:
@@ -67,18 +80,206 @@ func set_colors(skin: Color, shirt: Color, shorts: Color, hair: Color) -> void:
 		mi.set_instance_shader_parameter("shorts", shorts)
 		mi.set_instance_shader_parameter("hair", hair)
 
+func _clip(an: String) -> String:
+	if _anim == null:
+		return ""
+	if _anim.has_animation(an):
+		return an
+	if an.ends_with("_Loop") and _anim.has_animation(an.trim_suffix("_Loop")):
+		return an.trim_suffix("_Loop")
+	return ""
+
+func _state_for(an: String) -> String:
+	var key := an
+	if not _clip(key).is_empty() and key.ends_with("_Loop") and not _anim.has_animation(key):
+		key = key.trim_suffix("_Loop")
+	match key:
+		"Idle_Loop", "Idle":
+			return "Idle"
+		"Idle_Talking_Loop", "Idle_Talking":
+			return "Talk"
+		"Walk_Loop", "Walk", "Walk_Formal_Loop", "Walk_Formal":
+			return "Walk"
+		"Jog_Fwd_Loop", "Jog_Fwd":
+			return "Jog"
+		"Sitting_Idle_Loop", "Sitting_Idle":
+			return "Sit"
+		"Sitting_Talking_Loop", "Sitting_Talking":
+			return "SitTalk"
+		"Swim_Fwd_Loop", "Swim_Fwd":
+			return "Swim"
+		"Swim_Idle_Loop", "Swim_Idle":
+			return "SwimIdle"
+		"Interact":
+			return "Drink"
+		_:
+			return ""
+
+func _build_anim(model: Node3D) -> void:
+	if _anim == null:
+		return
+	var skels := model.find_children("*", "Skeleton3D", true, false)
+	if skels.size() > 0:
+		_skel = skels[0]
+		_look_pt = Marker3D.new()
+		_look_pt.name = "LookPoint"
+		add_child(_look_pt)
+		var look := LookAtModifier3D.new()
+		look.bone_name = "Head"
+		look.use_angle_limitation = true
+		look.primary_limit_angle = deg_to_rad(50.0)
+		look.secondary_limit_angle = deg_to_rad(22.0)
+		_skel.add_child(look)
+		look.target_node = look.get_path_to(_look_pt)
+		var att := BoneAttachment3D.new()
+		att.bone_name = "hand_r"
+		_skel.add_child(att)
+		_cup = _make_cup()
+		att.add_child(_cup)
+		_cup.visible = false
+	var sm := AnimationNodeStateMachine.new()
+	var specs := {
+		"Idle": "Idle_Loop", "Talk": "Idle_Talking_Loop", "Walk": "Walk_Loop", "Jog": "Jog_Fwd_Loop",
+		"Sit": "Sitting_Idle_Loop", "SitTalk": "Sitting_Talking_Loop",
+		"Swim": "Swim_Fwd_Loop", "SwimIdle": "Swim_Idle_Loop", "Drink": "Interact",
+	}
+	var order := ["Idle", "Talk", "Walk", "Jog", "Sit", "SitTalk", "Swim", "SwimIdle", "Drink"]
+	var added := {}
+	var i := 0
+	for st in order:
+		var clip := _clip(specs[st])
+		if clip == "":
+			continue
+		var bt := AnimationNodeBlendTree.new()
+		var node := AnimationNodeAnimation.new()
+		node.animation = clip
+		var rate := AnimationNodeTimeScale.new()
+		bt.add_node("clip", node)
+		bt.add_node("rate", rate)
+		bt.connect_node("rate", 0, "clip")
+		bt.connect_node("output", 0, "rate")
+		sm.add_node(st, bt, Vector2(200.0 * (i % 3), 140.0 * int(i / 3)))
+		added[st] = true
+		i += 1
+	if not added.has("Idle"):
+		return
+	var enter := AnimationNodeStateMachineTransition.new()
+	enter.xfade_time = 0.2
+	sm.add_transition("Start", "Idle", enter)
+	for a in added.keys():
+		for b in added.keys():
+			if a == b:
+				continue
+			var tr := AnimationNodeStateMachineTransition.new()
+			tr.xfade_time = 0.28
+			sm.add_transition(a, b, tr)
+	_tree = AnimationTree.new()
+	_tree.name = "GuestTree"
+	add_child(_tree)
+	_tree.anim_player = _tree.get_path_to(_anim)
+	_tree.tree_root = sm
+	_tree.active = true
+	_playback = _tree.get("parameters/playback")
+	if _playback == null:
+		call_deferred("_arm_tree")
+
+func _arm_tree() -> void:
+	if _tree == null:
+		return
+	_playback = _tree.get("parameters/playback")
+	if _playback == null:
+		_tree.active = false
+		return
+	if _state != "":
+		_playback.start(_state)
+
+func _make_cup() -> Node3D:
+	var n := Node3D.new()
+	var cup := MeshInstance3D.new()
+	var cm := CylinderMesh.new()
+	cm.top_radius = 0.034
+	cm.bottom_radius = 0.026
+	cm.height = 0.08
+	cm.radial_segments = 8
+	cup.mesh = cm
+	var mat := StandardMaterial3D.new()
+	mat.albedo_color = Color(0.15, 0.55, 0.42)
+	mat.roughness = 0.18
+	mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	mat.albedo_color.a = 0.85
+	cup.material_override = mat
+	cup.position = Vector3(0.0, 0.06, 0.06)
+	cup.rotation.x = 0.4
+	n.add_child(cup)
+	return n
+
+func _go_state(st: String) -> void:
+	if st == "" or st == _state:
+		return
+	if _playback == null:
+		var clip := _clip(st)
+		if clip != "" and _anim.has_animation(clip):
+			_anim.play(clip, 0.3)
+			_cur_anim = clip
+		return
+	if _state == "":
+		_playback.start(st)
+	else:
+		_playback.travel(st)
+	_state = st
+	_cur_anim = st
+	if _cup:
+		_cup.visible = st == "Drink" or st == "SitTalk"
+
+func _sync_rate() -> void:
+	if _tree == null or _state == "":
+		return
+	var scale := 1.0
+	if _state == "Walk" and _move_speed > 0.2:
+		scale = clampf(_move_speed / WALK_REF, 0.7, 5.0)
+	elif _state == "Jog" and _move_speed > 0.2:
+		scale = clampf(_move_speed / JOG_REF, 0.7, 5.0)
+	elif _state == "Swim" and _move_speed > 0.2:
+		scale = clampf(_move_speed / SWIM_REF, 0.7, 5.0)
+	_tree.set("parameters/%s/rate/scale" % _state, scale)
+
+func _update_look() -> void:
+	if _look_pt == null:
+		return
+	var ahead := global_position - global_transform.basis.z * 3.5 + Vector3(0, 1.5, 0)
+	var pl: Node3D = Core.player_ref
+	if is_instance_valid(pl) and pl.visible and Core.in_game:
+		var to := pl.global_position - global_position
+		to.y = 0.0
+		var dist := to.length()
+		var face := -global_transform.basis.z
+		face.y = 0.0
+		if dist > 0.45 and dist < 8.0 and face.length() > 0.01 and face.normalized().dot(to / dist) > -0.2:
+			ahead = pl.global_position + Vector3(0, 1.45, 0)
+	_look_pt.global_position = ahead
+
 func play(an: String) -> void:
 	if _anim == null:
 		return
-	# o importador do Godot remove o sufixo _Loop (e já marca a animação como loop)
-	if not _anim.has_animation(an) and an.ends_with("_Loop"):
-		an = an.trim_suffix("_Loop")
-	if an == _cur_anim:
+	var st := _state_for(an)
+	if st == "":
+		var clip := _clip(an)
+		if clip != "" and clip != _cur_anim:
+			_anim.play(clip, 0.3)
+			_cur_anim = clip
 		return
-	if _anim.has_animation(an):
-		_anim.play(an, 0.35)
-		_cur_anim = an
-		_anim.speed_scale = clampf(Core.speed_mult, 1.0, 4.0)
+	_go_state(st)
+
+func _locomote(swimming: bool) -> void:
+	if swimming:
+		_go_state("Swim")
+		return
+	if _state == "Jog" and _move_speed > 1.7:
+		return
+	if _move_speed > 2.15:
+		_go_state("Jog")
+	else:
+		_go_state("Walk")
 
 func go(route: Array) -> void:
 	_ideal = position
@@ -86,13 +287,17 @@ func go(route: Array) -> void:
 	_prev_dist = INF
 	_route = _expand_route(route)
 	if not _route.is_empty():
-		play("Swim_Fwd_Loop" if _in_water_motion() else "Walk_Loop")
+		_locomote(_in_water_motion())
 
 func is_moving() -> bool:
 	return not _route.is_empty()
 
 func _process(delta: float) -> void:
+	var prev := position
 	if _route.is_empty():
+		_move_speed = 0.0
+		_sync_rate()
+		_update_look()
 		return
 	var target: Vector3 = _route[0]
 	var to := target - _ideal
@@ -158,7 +363,7 @@ func _process(delta: float) -> void:
 		if not _route.is_empty():
 			target = _route[0]
 	var swimming := _in_water_motion()
-	play("Swim_Fwd_Loop" if swimming else "Walk_Loop")
+	_locomote(swimming)
 	var desired := _ideal
 	if not swimming:
 		var sep := _separation()
@@ -186,6 +391,10 @@ func _process(delta: float) -> void:
 		var yaw := atan2(face.x, face.z)
 		rotation.y = lerp_angle(rotation.y, yaw, minf(1.0, delta * 8.0 * maxf(Core.speed_mult, 1.0)))
 	position = nxt
+	_move_speed = Vector2(position.x - prev.x, position.z - prev.z).length() / maxf(delta, 0.0001)
+	_locomote(swimming)
+	_sync_rate()
+	_update_look()
 
 # ------------------------------------------------------------------ desvio e piscina
 func _world() -> Node:

@@ -19,17 +19,23 @@ var _t := 0.0
 const SHOTS := {
 	# nome: [posição, yaw, pitch, hora]
 	"entrada": [Vector3(1.5, 0, 34), 4.0, -3.0, 9.5],
-	"recepcao": [Vector3(-1.6, 0.12, 13.4), 200.0, -6.0, 10.0],
+	"recepcao": [Vector3(0.35, 0.12, 17.9), 182.0, -8.0, 10.4],
 	"piscina": [Vector3(-8.4, 0.12, 10.4), -52.0, -14.0, 11.0],
 	"bangalo": [Vector3(-6.5, 0, -16.5), 128.0, 4.0, 15.5],
 	"interior": [Vector3(-12.3, 0.25, -6.2), 56.0, -16.0, 14.0],
 	"bar": [Vector3(5.5, 0, -19.0), 236.0, 2.0, 16.6],
-	"praia": [Vector3(-16, 0, -27.5), -78.0, 0.0, 17.3],
+	"praia": [Vector3(-24, 1.5, -16.5), -18.0, -10.0, 17.2],
+	"agua": [Vector3(-8.0, 1.45, -19.5), 132.0, -16.0, 17.15],
+	"balcao": [Vector3(35.6, 1.55, -8.8), 152.0, -12.0, 16.9],
+	"npc_anda": [Vector3(2.6, 1.2, 7.4), -138.0, -8.0, 10.4],
+	"npc_senta": [Vector3(-5.0, 1.2, 1.6), -97.0, -10.0, 16.8],
+	"npc_bar": [Vector3(7.0, 1.25, -15.4), 65.0, -8.0, 17.1],
+	"pausa": [Vector3(-14, 0.6, -18), -30.0, -6.0, 17.2],
 	"noite": [Vector3(6.0, 0, 26.0), 20.0, 0.0, 20.5],
 	"vila": [Vector3(39.5, 0.15, 29.0), -84.0, -2.0, 15.5],
 	"praca": [Vector3(68.6, 0.2, 35.0), 205.0, 5.0, 16.4],
 	"casa": [Vector3(47.7, 0.27, 23.0), 52.0, -16.0, 7.0],
-	"quiosque": [Vector3(33.6, 0, -5.4), -32.0, -4.0, 10.5],
+	"quiosque": [Vector3(33.2, 0.4, -6.2), -28.0, -6.0, 16.8],
 	"noite_vila": [Vector3(56.0, 0.15, 29.4), -80.0, 0.0, 20.6],
 	"aerea": [Vector3(26.0, 34.0, -52.0), 196.0, -30.0, 16.0],
 	"menu": [Vector3(0, 0, 0), 0.0, 0.0, 17.3],
@@ -245,7 +251,7 @@ func _run_shot(n: String) -> void:
 	# cenário de vida: hóspedes na fila, na piscina e no bar; quarto sujo; redes
 	if not args.has("empty"):
 		_stage_guests()
-		if n == "quiosque":
+		if n == "quiosque" or n == "balcao":
 			for k in 2:
 				var c = village.spawn_customer()
 				if c:
@@ -253,7 +259,11 @@ func _run_shot(n: String) -> void:
 					c._route.clear()
 					c.state = "kwait"
 					c.rotation.y = c.spot.rot
-					c.play("Idle_Loop")
+					c.play("Sitting_Talking_Loop" if k == 0 else "Sitting_Idle_Loop")
+		if n == "npc_anda":
+			var walker = guests._make_guest()
+			walker.position = Vector3(-6.0, 0.0, 5.0)
+			walker.go([Vector3(80.0, 0.0, 2.0)])
 	await get_tree().create_timer(0.3).timeout
 	for i in 25:
 		await get_tree().process_frame
@@ -265,6 +275,15 @@ func _run_shot(n: String) -> void:
 		hud._hint_t = 0.0
 		await get_tree().process_frame
 		await get_tree().process_frame
+	if n == "recepcao":
+		hud.show_desk_card(tr("Fazer check-in de %s") % "Ana")
+	elif n == "npc_bar":
+		for g in guests.get_children():
+			if g is Node3D and g.global_position.distance_to(world.BAR_C) < 6.0:
+				g.play("Sitting_Talking_Loop")
+				break
+	elif n == "pausa":
+		menus.toggle_pause()
 	if n == "estoque":
 		hud.open_office("insumos")
 	elif n == "upgrade":
@@ -274,8 +293,17 @@ func _run_shot(n: String) -> void:
 		_dress_room(0)
 	elif n == "resumo":
 		hud.show_summary(_demo_summary())
-	if n in ["estoque", "upgrade", "bangalo_up", "resumo"]:
-		for i in 10:
+	if n in ["estoque", "upgrade", "bangalo_up", "resumo", "pausa", "recepcao", "npc_bar", "npc_anda", "npc_senta"]:
+		for i in 12:
+			await get_tree().process_frame
+	if n == "npc_anda":
+		for c in guests.get_children():
+			if c.has_method("is_moving") and c.is_moving():
+				c._route.clear()
+				c.position = Vector3(0.15, 0.0, 4.7)
+				c.rotation.y = deg_to_rad(-25.0)
+				break
+		for i in 2:
 			await get_tree().process_frame
 	var img := get_viewport().get_texture().get_image()
 	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path("res://shots"))

@@ -25,6 +25,7 @@ const EN := {
 	"Celular: modo leve fixo (renderer Mobile).": "Phone: fixed lightweight mode (Mobile renderer).",
 	"Check-in %s (Bangalô %d)": "Check-in %s (Bungalow %d)",
 	"Check-in na recepção": "Check-in at the front desk",
+	"Recepção": "Front desk",
 	"Clientes esperando no quiosque!": "Customers waiting at the kiosk!",
 	"Coco gelado R$ 8 · Caipirinha R$ 15 · Petiscos R$ 22": "Iced coconut R$ 8 · Caipirinha R$ 15 · Snacks R$ 22",
 	"Comprar rede (%s)": "Buy hammock (%s)",

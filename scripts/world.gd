@@ -134,8 +134,8 @@ func _ground() -> void:
 	sm.set_shader_parameter("dry_nor", B.nor("coast_sand_01"))
 	sm.set_shader_parameter("wet_tex", B.tex("damp_beach_sand"))
 	sm.set_shader_parameter("wet_nor", B.nor("damp_beach_sand"))
-	sm.set_shader_parameter("wet_start", -25.0)
-	sm.set_shader_parameter("wet_end", -31.0)
+	sm.set_shader_parameter("wet_start", -23.5)
+	sm.set_shader_parameter("wet_end", -33.2)
 	sm.set_shader_parameter("rain_wet", 0.0)
 	sand_mat = sm
 	mi.material_override = sm
@@ -342,6 +342,7 @@ func _pool() -> void:
 	B.wall(self, Vector3(0.2, 2, wz), Vector3(POOL_MAX.x, 1, c.z))
 	B.wall(self, Vector3(wx, 1, wz), Vector3(c.x, -0.5, c.z))
 	# espreguiçadeiras e boia
+	var umbrella_tints := [Color(0.86, 0.22, 0.18), Color(0.95, 0.78, 0.35), Color(0.12, 0.55, 0.58), Color(0.95, 0.95, 0.9)]
 	for side in [-1.0, 1.0]:
 		for i in 3:
 			var p := Vector3(side * 7.6, 0.12, 1.2 + i * 2.6)
@@ -352,8 +353,10 @@ func _pool() -> void:
 	B.model(self, "lifebuoy", Vector3(6.6, 0.95, 8.65), 0.0, 1.0).rotation.x = -PI * 0.5
 	B.box(self, Vector3(0.12, 1.4, 0.12), Vector3(6.6, 0.75, 8.9), M.planks)
 	# guarda-sóis da piscina
+	var ui := 0
 	for p in [Vector3(-7.6, 0.12, 2.5), Vector3(7.6, 0.12, 2.5), Vector3(-7.6, 0.12, 5.1), Vector3(7.6, 0.12, 5.1)]:
-		_umbrella(p, 1.4)
+		_umbrella(p, 1.35, umbrella_tints[ui % umbrella_tints.size()])
+		ui += 1
 
 func _lounger(p: Vector3, rot: float) -> void:
 	var n := Node3D.new()
@@ -370,18 +373,37 @@ func _lounger(p: Vector3, rot: float) -> void:
 		for sz in [-0.82, 0.82]:
 			B.cyl(n, 0.03, 0.035, 0.3, Vector3(sx, 0.15, sz), M.darkwood, 8)
 
-func _umbrella(p: Vector3, r: float) -> void:
-	B.cyl(self, 0.04, 0.05, 2.4, p + Vector3(0, 1.2, 0), M.oak, 8)
+func _umbrella(p: Vector3, r: float, tint := Color(0.86, 0.22, 0.18)) -> void:
+	var n := Node3D.new()
+	n.position = p
+	add_child(n)
+	B.cyl(n, 0.035, 0.048, 2.05, Vector3(0, 1.02, 0), M.darkwood, 10)
+	var cloth: StandardMaterial3D = M.linen.duplicate()
+	cloth.albedo_color = tint
+	cloth.cull_mode = BaseMaterial3D.CULL_DISABLED
+	cloth.roughness = 0.72
 	var top := MeshInstance3D.new()
 	var cm := CylinderMesh.new()
-	cm.top_radius = 0.02
+	cm.top_radius = 0.05
 	cm.bottom_radius = r
-	cm.height = 0.7
-	cm.radial_segments = 14
+	cm.height = 0.38
+	cm.radial_segments = 18
 	top.mesh = cm
-	top.material_override = M.thatch
-	top.position = p + Vector3(0, 2.45, 0)
-	add_child(top)
+	top.material_override = cloth
+	top.position = Vector3(0, 2.12, 0)
+	n.add_child(top)
+	for i in 8:
+		var a := TAU * float(i) / 8.0
+		var rib_m := B.box(n, Vector3(0.018, 0.018, r * 0.92), Vector3(cos(a) * r * 0.38, 2.02, sin(a) * r * 0.38), M.darkwood)
+		rib_m.rotation.y = -a
+		rib_m.rotation.x = 0.16
+	var fringe: StandardMaterial3D = cloth.duplicate()
+	fringe.albedo_color = tint.lightened(0.18)
+	for i in 12:
+		var a2 := TAU * float(i) / 12.0
+		var flap := B.box(n, Vector3(r * 0.22, 0.14, 0.02), Vector3(cos(a2) * r * 0.9, 1.84, sin(a2) * r * 0.9), fringe)
+		flap.rotation.y = -a2
+	B.sphere(n, 0.055, Vector3(0, 2.36, 0), M.oak)
 
 # ------------------------------------------------------------------ bangalôs
 func _bungalow(i: int, c: Vector3) -> void:
@@ -795,7 +817,7 @@ func _bar() -> void:
 	B.hip_roof(self, c + Vector3(0, y0 + 2.9, 0), 7.4, 7.4, 3.0, M.thatch, 0.22)
 	# balcão em U (aberto atrás, lado +X)
 	var ch := 1.1
-	var cm: Material = M.bamboo
+	var cm: Material = M.darkwood
 	B.box(self, Vector3(0.6, ch, 4.4), c + Vector3(-2.0, y0 + ch * 0.5, 0), cm, true)
 	B.box(self, Vector3(4.0, ch, 0.6), c + Vector3(0, y0 + ch * 0.5, -2.0), cm, true)
 	B.box(self, Vector3(4.0, ch, 0.6), c + Vector3(0, y0 + ch * 0.5, 2.0), cm, true)
@@ -820,9 +842,18 @@ func _bar() -> void:
 		var face := atan2(-s.x, -s.z)   # olhando para o balcão
 		B.model(self, "bar_chair_round_01", c + s + Vector3(0, y0, 0), face, 1.0)
 		bar_spots.append({"pos": c + s + Vector3(0, y0 + 0.28, 0), "rot": face, "anim": "Sitting_Idle_Loop", "busy": false})
-	# mesas na areia
+	# mesas na areia, cada uma com guarda-sol
 	B.model(self, "outdoor_table_chair_set_01", c + Vector3(-5.5, 0, 3.5), 0.4, 1.0)
+	_umbrella(c + Vector3(-5.5, 0, 3.5), 1.55, Color(0.95, 0.78, 0.35))
 	B.model(self, "outdoor_table_chair_set_01", c + Vector3(-5.8, 0, -3.0), -0.3, 1.0)
+	_umbrella(c + Vector3(-5.8, 0, -3.0), 1.55, Color(0.12, 0.55, 0.58))
+	_cooler(c + Vector3(2.6, 0.1, -1.6), 0.4)
+	_fruit_row(c + Vector3(-0.2, y0 + ch + 0.16, 2.0))
+	_chalkboard(c + Vector3(3.15, y0 + 1.2, -2.2), 0.4, "CARDÁPIO", _menu_lines(Economy.BAR_MENU))
+	B.model(self, "wooden_lantern_01", c + Vector3(0, y0 + 2.35, 0), 0.0, 1.0)
+	_string_lights(c + Vector3(-2.5, y0 + 2.55, -2.5), c + Vector3(2.5, y0 + 2.55, -2.5), 7)
+	_string_lights(c + Vector3(-2.5, y0 + 2.55, -2.5), c + Vector3(-2.5, y0 + 2.55, 2.5), 6)
+	_string_lights(c + Vector3(-2.5, y0 + 2.55, 2.5), c + Vector3(2.5, y0 + 2.55, 2.5), 7)
 	# placa
 	B.box(self, Vector3(3.2, 0.6, 0.08), c + Vector3(0, y0 + 2.55, -2.86), M.planks)
 	B.label(self, "Bar do Coqueiro", c + Vector3(0, y0 + 2.55, -2.92), 64, Color(1.0, 0.95, 0.8), Color(0.25, 0.12, 0.02, 1.0), PI)
@@ -836,14 +867,73 @@ func _bar() -> void:
 	add_child(l)
 	lanterns.append([l, null, 1.8, false])
 
+func _bulb_mat() -> StandardMaterial3D:
+	var m: StandardMaterial3D = B.flat(Color(1.0, 0.86, 0.45), 0.25).duplicate()
+	m.emission_enabled = true
+	m.emission = Color(1.0, 0.72, 0.32)
+	m.emission_energy_multiplier = 1.6
+	return m
+
+func _string_lights(a: Vector3, b: Vector3, count: int) -> void:
+	var mat := _bulb_mat()
+	for i in count:
+		var t := float(i + 1) / float(count + 1)
+		var p := a.lerp(b, t)
+		p.y -= sin(t * PI) * 0.16
+		B.sphere(self, 0.04, p, mat)
+
+func _cooler(p: Vector3, rot: float) -> void:
+	var n := Node3D.new()
+	n.position = p
+	n.rotation.y = rot
+	add_child(n)
+	var body := B.flat(Color(0.85, 0.9, 0.92), 0.35)
+	var lid := B.flat(Color(0.15, 0.45, 0.55), 0.4)
+	B.box(n, Vector3(0.7, 0.42, 0.42), Vector3(0, 0.21, 0), body)
+	var top := B.box(n, Vector3(0.72, 0.06, 0.44), Vector3(0, 0.45, -0.02), lid)
+	top.rotation.x = -0.5
+	B.box(n, Vector3(0.16, 0.04, 0.08), Vector3(0, 0.28, 0.22), lid)
+
+func _fruit_row(origin: Vector3) -> void:
+	var cols := [Color(0.95, 0.55, 0.1), Color(0.9, 0.2, 0.18), Color(0.75, 0.85, 0.2), Color(0.95, 0.75, 0.15)]
+	for i in 4:
+		B.sphere(self, 0.07, origin + Vector3(float(i) * 0.16, 0, 0), B.flat(cols[i], 0.45))
+
+func _menu_lines(ids: Array) -> PackedStringArray:
+	var lines := PackedStringArray()
+	for id in ids:
+		var d: Dictionary = Economy.dish(str(id))
+		lines.append("%s   %s" % [tr(str(d.name)), Core.fmt_money(int(d.price))])
+	return lines
+
+func _chalkboard(pos: Vector3, rot: float, title: String, lines: PackedStringArray) -> void:
+	var n := Node3D.new()
+	n.position = pos
+	n.rotation.y = rot
+	add_child(n)
+	B.box(n, Vector3(1.2, 1.5, 0.08), Vector3.ZERO, M.darkwood)
+	B.box(n, Vector3(1.02, 1.28, 0.03), Vector3(0, 0, 0.04), B.flat(Color(0.1, 0.22, 0.18), 0.9))
+	B.label(n, title, Vector3(0, 0.46, 0.07), 36, Color(0.95, 0.9, 0.7), Color(0, 0, 0, 0))
+	var body := ""
+	for ln in lines:
+		if body != "":
+			body += "\n"
+		body += ln
+	B.label(n, body, Vector3(0, -0.08, 0.07), 26, Color(0.9, 0.96, 0.88), Color(0, 0, 0, 0))
+
 # ------------------------------------------------------------------ praia
 func _beach_props() -> void:
 	var spots := [Vector3(-28, 0, -21), Vector3(-17, 0, -22), Vector3(-6, 0, -23), Vector3(4, 0, -22), Vector3(24, 0, -21), Vector3(33, 0, -22)]
+	var tints := [Color(0.86, 0.22, 0.18), Color(0.95, 0.78, 0.35), Color(0.95, 0.95, 0.9), Color(0.12, 0.55, 0.58), Color(0.2, 0.38, 0.72), Color(0.9, 0.45, 0.25)]
 	for i in spots.size():
 		var p: Vector3 = spots[i]
-		_umbrella(p, 1.6)
-		_lounger(p + Vector3(-0.8, 0, 0.6), PI + 0.15)
-		_lounger(p + Vector3(0.8, 0, 0.6), PI - 0.15)
+		_umbrella(p, 1.7, tints[i % tints.size()])
+		_lounger(p + Vector3(-0.85, 0, 0.7), PI + 0.18)
+		_lounger(p + Vector3(0.85, 0, 0.7), PI - 0.12)
+		if i % 2 == 0:
+			B.box(self, Vector3(0.45, 0.03, 0.7), p + Vector3(0.2, 0.02, 1.7), M.linen_teal)
+			_cooler(p + Vector3(1.7, 0, 1.5), 0.6)
+		B.model(self, "wicker_basket_02", p + Vector3(-1.6, 0, 1.4), 0.8, 0.8)
 	# jangada na areia
 	var j := Node3D.new()
 	j.position = Vector3(-9, -0.42, -30.2)
@@ -868,6 +958,37 @@ func _beach_props() -> void:
 	# conchas e baldes
 	B.model(self, "lambis_shell", Vector3(-3, -0.2, -27.5), 1.2, 1.5)
 	B.model(self, "wooden_bucket_01", Vector3(6, 0, -19.5), 0.0, 1.0)
+	_shore_details()
+
+func _shore_details() -> void:
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 19
+	for i in 8:
+		var x := rng.randf_range(-40.0, 42.0)
+		var z := rng.randf_range(-30.5, -26.5)
+		B.model(self, "lambis_shell", Vector3(x, _height(x, z), z), rng.randf() * TAU, rng.randf_range(0.7, 1.4))
+	var rock: Material = M.stone
+	for i in 9:
+		var x := rng.randf_range(-38.0, 40.0)
+		var z := rng.randf_range(-31.2, -27.2)
+		var s := rng.randf_range(0.12, 0.28)
+		B.sphere(self, s, Vector3(x, _height(x, z) + s * 0.35, z), rock, Vector3(1.3, 0.7, 1.1))
+	for i in 4:
+		var x2 := -32.0 + float(i) * 16.0
+		var log := B.cyl(self, 0.08, 0.11, rng.randf_range(1.6, 2.6), Vector3(x2, _height(x2, -28.5) + 0.08, -28.5 + float(i) * 0.4), M.post, 8)
+		log.rotation.z = PI * 0.5
+		log.rotation.y = rng.randf_range(-0.4, 0.4)
+	var shrubs := ["shrub_01", "shrub_02", "shrub_03"]
+	for i in 7:
+		var x3 := rng.randf_range(-40.0, 40.0)
+		var z3 := rng.randf_range(-18.0, -12.0)
+		B.model(self, shrubs[i % 3], Vector3(x3, _height(x3, z3), z3), rng.randf() * TAU, rng.randf_range(0.45, 0.7))
+	for spot in [Vector3(-42, 0, -16), Vector3(44, 0, -15), Vector3(-38, 0, 6)]:
+		B.model(self, "island_tree_01", Vector3(spot.x, _height(spot.x, spot.z), spot.z), spot.x * 0.1, 0.9)
+	# bola e toalha soltas na areia
+	var ball := B.sphere(self, 0.16, Vector3(8.5, 0.16, -20.5), B.flat(Color(0.95, 0.35, 0.25), 0.4))
+	ball.scale = Vector3(1.0, 1.0, 1.0)
+	B.box(self, Vector3(0.7, 0.025, 1.3), Vector3(18.0, 0.02, -23.5), M.linen_sand)
 
 func _palms() -> void:
 	var excl := [Rect2(-6, 12, 12, 8), Rect2(-10, -4, 20, 16), Rect2(-25.5, -12.5, 15, 9), Rect2(8.5, -18, 9, 10),

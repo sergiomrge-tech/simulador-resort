@@ -16,8 +16,9 @@ const KEYS := [
 	[6.0, Color(0.25, 0.35, 0.6), Color(0.98, 0.62, 0.42), Color(1.0, 0.6, 0.35), 0.5, 0.5],
 	[8.0, Color(0.22, 0.48, 0.85), Color(0.75, 0.85, 0.95), Color(1.0, 0.9, 0.75), 1.15, 0.8],
 	[12.0, Color(0.16, 0.45, 0.88), Color(0.68, 0.83, 0.96), Color(1.0, 0.97, 0.9), 1.35, 0.9],
-	[16.0, Color(0.2, 0.46, 0.85), Color(0.78, 0.84, 0.92), Color(1.0, 0.88, 0.7), 1.2, 0.85],
-	[17.6, Color(0.28, 0.36, 0.65), Color(1.0, 0.58, 0.32), Color(1.0, 0.55, 0.28), 0.7, 0.6],
+	[16.0, Color(0.22, 0.42, 0.78), Color(0.95, 0.72, 0.48), Color(1.0, 0.72, 0.42), 1.05, 0.78],
+	[17.2, Color(0.32, 0.34, 0.62), Color(1.0, 0.5, 0.22), Color(1.0, 0.48, 0.18), 0.85, 0.62],
+	[17.6, Color(0.28, 0.3, 0.55), Color(0.95, 0.42, 0.22), Color(1.0, 0.42, 0.16), 0.62, 0.5],
 	[18.6, Color(0.1, 0.12, 0.3), Color(0.55, 0.3, 0.3), Color(0.9, 0.4, 0.3), 0.05, 0.35],
 	[19.5, Color(0.02, 0.04, 0.10), Color(0.06, 0.09, 0.16), Color(0.5, 0.6, 1.0), 0.0, 0.25],
 	[24.0, Color(0.02, 0.04, 0.10), Color(0.06, 0.09, 0.16), Color(0.5, 0.6, 1.0), 0.0, 0.25],
@@ -117,7 +118,7 @@ func apply() -> void:
 	sky_mat.sun_angle_max = 20.0
 	env.ambient_light_energy = k[4]
 	var night := clampf(1.0 - k[3] / 0.6, 0.0, 1.0)
-	var golden := _bell(h, 16.4, 18.5)
+	var golden := _bell(h, 15.8, 18.6)
 	var rain := Core.weather == "rain"
 	var fog_c: Color = k[1].lerp(Color(0.72, 0.82, 0.9), 0.35)
 	if rain:
@@ -125,8 +126,9 @@ func apply() -> void:
 		sun.light_energy *= 0.42
 		sun.light_color = sun.light_color.lerp(Color(0.75, 0.78, 0.82), 0.65)
 	elif golden > 0.05:
-		sun.light_color = sun.light_color.lerp(Color(1.0, 0.62, 0.32), golden * 0.55)
-		sun.light_energy *= lerpf(1.0, 0.82, golden)
+		sun.light_color = sun.light_color.lerp(Color(1.0, 0.5, 0.18), golden * 0.72)
+		sun.light_energy *= lerpf(1.0, 0.78, golden)
+		sky_mat.sun_angle_max = lerpf(20.0, 32.0, golden)
 	env.fog_light_color = fog_c
 	env.fog_density = 0.0048 if rain else lerpf(0.0014, 0.0028, golden)
 	env.fog_aerial_perspective = 0.35

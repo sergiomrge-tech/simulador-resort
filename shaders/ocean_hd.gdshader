@@ -62,12 +62,19 @@ void fragment(){
 	vec3 water = mix(shallow, deep, clamp(thick / 5.0 + far_t * 0.6, 0.0, 1.0));
 	float absorb = 1.0 - exp(-thick * 1.5);
 	vec3 col = mix(behind * mix(vec3(1.0), shallow, 0.8) * 0.85, water, absorb);
-	// espuma: na beira (pouca profundidade), na arrebentação e nas cristas
-	float edge = 1.0 - smoothstep(0.0, 0.12 + n2 * 0.18, thick);
-	float shore = clamp(1.0 - (shore_z - wpos.z) / 3.5, 0.0, 1.0);
-	float band = sin((wpos.z - shore_z) * 2.2 + t * 1.8 + n1 * 3.0) * 0.5 + 0.5;
-	float foam = edge * smoothstep(0.35, 0.75, n3 + 0.3) + shore * smoothstep(0.62, 0.95, band * (0.55 + n2 * 0.6)) * 0.85;
-	foam += smoothstep(0.16, 0.28, crest) * 0.25 * n2;
+	// espuma: borda rasa, duas linhas de arrebentação subindo a praia, cristas
+	float edge = 1.0 - smoothstep(0.0, 0.16 + n2 * 0.14, thick);
+	float shore_d = shore_z - wpos.z;
+	float scallop = noise(vec2(wpos.x * 0.16, t * 0.22));
+	float foam = edge * smoothstep(0.25, 0.7, n3 + 0.25);
+	for (int i = 0; i < 3; i++) {
+		float spd = 0.16 + float(i) * 0.05;
+		float phase = fract(shore_d * 0.2 - t * spd + float(i) * 0.33 + scallop * 0.18);
+		float line = smoothstep(0.0, 0.05, phase) * (1.0 - smoothstep(0.07, 0.28, phase));
+		float reach = smoothstep(9.0, 0.15, shore_d);
+		foam += line * reach * (0.85 - float(i) * 0.18);
+	}
+	foam += smoothstep(0.14, 0.26, crest) * 0.28 * n2;
 	foam = clamp(foam, 0.0, 1.0);
 	col = mix(col, foam_col, foam);
 	col *= mix(1.0, 0.3, night);

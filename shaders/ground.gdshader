@@ -24,12 +24,22 @@ void fragment(){
 	dry *= mix(0.92, 1.07, var);
 	dry = dry * vec3(1.22, 1.12, 0.95);  // areia clara e quente do Nordeste
 	vec3 wet = texture(wet_tex, uv * 0.8).rgb * 0.85;
-	float w = smoothstep(wet_start, wet_end, wpos.z + (noise(wpos.xz * 0.2) - 0.5) * 2.5);
+	float shore_n = (noise(wpos.xz * 0.11) - 0.5) * 3.4 + (noise(wpos.xz * 0.33) - 0.5) * 1.6;
+	float w = smoothstep(wet_start, wet_end, wpos.z + shore_n);
 	w = max(w, rain_wet * (0.42 + 0.2 * noise(wpos.xz * 0.15)));
-	ALBEDO = mix(dry, wet, w);
+	vec3 col = mix(dry, wet * vec3(0.72, 0.78, 0.8), w);
+	// linha de espuma que a onda deixa na areia molhada
+	float wash = smoothstep(0.28, 0.48, w) * (1.0 - smoothstep(0.55, 0.82, w));
+	wash *= smoothstep(0.35, 0.75, noise(vec2(wpos.x * 0.42, wpos.z * 0.9)));
+	col = mix(col, vec3(0.94, 0.95, 0.93), wash * 0.7);
+	// conchinhas miúdas na areia seca
+	float speckle = step(0.985, noise(wpos.xz * 3.7));
+	col = mix(col, vec3(0.85, 0.8, 0.7), speckle * (1.0 - w));
+	ALBEDO = col;
 	vec3 nd = texture(dry_nor, uv).rgb;
 	vec3 nw = texture(wet_nor, uv * 0.8).rgb;
 	NORMAL_MAP = mix(nd, nw, w);
-	NORMAL_MAP_DEPTH = 0.8;
-	ROUGHNESS = mix(0.95, 0.35, w);
+	NORMAL_MAP_DEPTH = mix(0.7, 1.05, w);
+	ROUGHNESS = mix(0.97, 0.18, w);
+	SPECULAR = mix(0.12, 0.62, w);
 }

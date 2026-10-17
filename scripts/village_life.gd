@@ -118,8 +118,7 @@ func spawn_customer() -> Node3D:
 	var dish: String = Economy.KIOSK_MENU[rng.randi() % Economy.KIOSK_MENU.size()]
 	g.set_meta("dish", dish)
 	var route: Array = [] if from_beach else world.village_points.kiosk_approach.slice(1)
-	route.append(spot.pos + Vector3(0, 0, 1.2))
-	route.append(spot.pos)
+	route.append(Vector3(spot.pos.x, 0.1, spot.pos.z + 0.85))
 	g.go(route)
 	customers.append(g)
 	return g
@@ -136,12 +135,13 @@ func _kiosk_tick(dmin: float) -> void:
 			"kwalk":
 				if not g.is_moving():
 					g.state = "kwait"
+					g.position = g.spot.pos
 					g.rotation.y = g.spot.rot
-					g.play("Idle_Loop")
+					g.play("Sitting_Idle_Loop")
 			"kwait":
 				g.timer -= dmin
 				if g.timer < KIOSK_PATIENCE * 0.4:
-					g.play("Idle_Talking_Loop")
+					g.play("Sitting_Talking_Loop")
 				if g.timer <= 0.0:
 					kiosk_lost += 1
 					Core.toast.emit(tr("Um cliente cansou de esperar no quiosque."), "bad")
@@ -154,6 +154,7 @@ func _kiosk_tick(dmin: float) -> void:
 func _leave(g) -> void:
 	g.spot.busy = false
 	g.state = "kleave"
+	g.position.y = 0.1
 	g.go([g.position + Vector3(0, 0, 2.5), Vector3(rng.randf_range(44, 90), 0, rng.randf_range(-25, -21))])
 
 func kiosk_prompt() -> String:
@@ -184,6 +185,7 @@ func kiosk_serve() -> bool:
 		Core.book(tip, tr("Gorjeta do quiosque"), "gorjeta", false)
 	get_tree().call_group("audio", "sfx", "coin", -8.0)
 	g.play("Interact")
+	g.position = g.spot.pos
 	_leave(g)
 	return true
 

@@ -53,10 +53,15 @@ void fragment(){
 	float n1 = noise(uv + vec2(t * 0.15, t * 0.31));
 	float n2 = noise(uv * 2.3 - vec2(t * 0.22, t * 0.12));
 	NORMAL = normalize(NORMAL + vec3((n1 - 0.5) * 0.25, 0.0, (n2 - 0.5) * 0.25));
-	// espuma na arrebentação e nas cristas
-	float shore = clamp(1.0 - (shore_z - wpos.z) / 5.0, 0.0, 1.0);
-	float band = sin((wpos.z - shore_z) * 2.2 + t * 1.8 + n1 * 3.0) * 0.5 + 0.5;
-	float foam = shore * smoothstep(0.45, 0.9, band * (0.6 + n2 * 0.6));
+	// duas linhas de arrebentação e cristas
+	float shore_d = shore_z - wpos.z;
+	float scallop = noise(vec2(wpos.x * 0.16, t * 0.22));
+	float foam = 0.0;
+	for (int i = 0; i < 3; i++) {
+		float phase = fract(shore_d * 0.2 - t * (0.16 + float(i) * 0.05) + float(i) * 0.33 + scallop * 0.18);
+		float line = smoothstep(0.0, 0.05, phase) * (1.0 - smoothstep(0.07, 0.28, phase));
+		foam += line * smoothstep(9.0, 0.15, shore_d) * (0.9 - float(i) * 0.2);
+	}
 	foam += smoothstep(0.12, 0.22, crest) * 0.35 * n2;
 	foam = clamp(foam, 0.0, 1.0);
 	col = mix(col, foam_col, foam);

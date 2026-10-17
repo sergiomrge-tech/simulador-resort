@@ -9,6 +9,9 @@ var stars_l: Label
 var clock_l: Label
 var hint_l: Label
 var prompt_l: Label
+var desk_card: PanelContainer
+var desk_body: Label
+var _desk_hold := ""
 var crosshair: Control
 var toasts: VBoxContainer
 var shop: Control
@@ -98,6 +101,7 @@ func _ready() -> void:
 	prompt_l.add_theme_constant_override("outline_size", 10)
 	prompt_l.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	root.add_child(prompt_l)
+	_build_desk_card()
 	# avisos
 	toasts = VBoxContainer.new()
 	toasts.set_anchors_preset(Control.PRESET_TOP_RIGHT)
@@ -268,15 +272,69 @@ func show_toast(text: String, kind: String) -> void:
 	tw.tween_property(p, "modulate:a", 0.0, 0.6)
 	tw.tween_callback(p.queue_free)
 
+func _build_desk_card() -> void:
+	desk_card = PanelContainer.new()
+	desk_card.set_anchors_preset(Control.PRESET_CENTER)
+	desk_card.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	desk_card.visible = false
+	desk_card.add_theme_stylebox_override("panel", UiTheme.box(UiTheme.SAND, 20, UiTheme.WOOD, 3, 14, 18))
+	var vb := VBoxContainer.new()
+	vb.add_theme_constant_override("separation", 6)
+	desk_card.add_child(vb)
+	var title := Label.new()
+	title.text = tr("Recepção")
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	title.add_theme_font_override("font", UiTheme.bold())
+	title.add_theme_font_size_override("font_size", 30)
+	title.add_theme_color_override("font_color", UiTheme.TEAL)
+	vb.add_child(title)
+	desk_body = Label.new()
+	desk_body.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	desk_body.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	desk_body.custom_minimum_size = Vector2(420, 0)
+	desk_body.add_theme_font_override("font", UiTheme.font())
+	desk_body.add_theme_font_size_override("font_size", 24)
+	desk_body.add_theme_color_override("font_color", UiTheme.TEXT)
+	vb.add_child(desk_body)
+	root.add_child(desk_card)
+
+func show_desk_card(text: String) -> void:
+	_desk_hold = text
+	_apply_desk_card(text)
+
+func _apply_desk_card(text: String) -> void:
+	if desk_card == null:
+		return
+	desk_body.text = text
+	desk_card.visible = text != ""
+	desk_card.reset_size()
+	var sz := desk_card.get_combined_minimum_size()
+	desk_card.offset_left = -sz.x * 0.5
+	desk_card.offset_right = sz.x * 0.5
+	desk_card.offset_top = 48.0
+	desk_card.offset_bottom = 48.0 + sz.y
+	prompt_l.visible = false
+
 func _process(delta: float) -> void:
 	var f = player.focus if player else null
 	var ptxt: String = f.get_prompt() if f else ""
-	if ptxt != "" and not touch:
-		ptxt = "[%s]  %s" % [Quality.key_name("interact"), ptxt]
-	if ptxt != prompt_l.text:
-		prompt_l.text = ptxt
-		_hug(prompt_l, 30, 30.0, 56.0)
-	prompt_l.visible = ptxt != ""
+	var at_desk := f != null and str(f.name) == "Desk" and ptxt != ""
+	if _desk_hold != "":
+		_apply_desk_card(_desk_hold)
+	elif at_desk:
+		var line := ptxt
+		if not touch:
+			line = "[%s]  %s" % [Quality.key_name("interact"), ptxt]
+		_apply_desk_card(line)
+	else:
+		if desk_card:
+			desk_card.visible = false
+		if ptxt != "" and not touch:
+			ptxt = "[%s]  %s" % [Quality.key_name("interact"), ptxt]
+		if ptxt != prompt_l.text:
+			prompt_l.text = ptxt
+			_hug(prompt_l, 30, 30.0, 56.0)
+		prompt_l.visible = ptxt != ""
 	btn_interact.modulate = Color(1, 1, 1, 1.0 if f else 0.55)
 	_hint_t -= delta
 	if _hint_t <= 0.0:

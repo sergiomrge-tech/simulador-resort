@@ -313,31 +313,33 @@ func _quiosque() -> void:
 			B.cyl(self, 0.12, 0.15, 2.8, c + Vector3(sx * 2.4, y0 + 1.4, sz * 2.4), M.post, 8)
 	B.hip_roof(self, c + Vector3(0, y0 + 2.8, 0), 6.6, 6.6, 2.8, M.thatch, 0.22)
 	var ch := 1.1
-	B.box(self, Vector3(4.6, ch, 0.6), c + Vector3(0, y0 + ch * 0.5, 2.0), M.bamboo, true)       # balcão de frente (+Z)
-	B.box(self, Vector3(0.6, ch, 3.4), c + Vector3(-2.0, y0 + ch * 0.5, 0.5), M.bamboo, true)
-	B.box(self, Vector3(0.6, ch, 3.4), c + Vector3(2.0, y0 + ch * 0.5, 0.5), M.bamboo, true)
-	B.box(self, Vector3(4.9, 0.07, 0.85), c + Vector3(0, y0 + ch + 0.035, 2.0), M.oak)
-	B.box(self, Vector3(4.2, 1.5, 0.35), c + Vector3(0, y0 + 0.75, -2.1), M.oak)              # prateleira atrás
-	var cols := [Color(0.2, 0.55, 0.2), Color(0.85, 0.85, 0.9), Color(0.65, 0.4, 0.1)]
-	for i in 9:
-		B.cyl(self, 0.045, 0.05, 0.3, c + Vector3(-1.6 + i * 0.4, y0 + 1.65, -2.1), B.flat(cols[i % 3], 0.15, 0.1), 8)
+	var wood: Material = M.darkwood
+	B.box(self, Vector3(4.6, ch, 0.6), c + Vector3(0, y0 + ch * 0.5, 2.0), wood, true)
+	B.box(self, Vector3(0.6, ch, 3.4), c + Vector3(-2.0, y0 + ch * 0.5, 0.5), wood, true)
+	B.box(self, Vector3(0.6, ch, 3.4), c + Vector3(2.0, y0 + ch * 0.5, 0.5), wood, true)
+	B.box(self, Vector3(4.9, 0.08, 0.9), c + Vector3(0, y0 + ch + 0.04, 2.0), M.oak)
+	B.model(self, "Shelf_01", c + Vector3(0, y0, -1.85), 0.0, 1.0)
+	var cols := [Color(0.15, 0.45, 0.22), Color(0.85, 0.88, 0.9), Color(0.55, 0.28, 0.1), Color(0.7, 0.1, 0.16)]
+	for i in 8:
+		B.cyl(self, 0.04, 0.045, 0.28, c + Vector3(-1.4 + i * 0.38, y0 + 1.35, -1.9), B.flat(cols[i % 4], 0.15, 0.05), 8)
+	_fruit_row(c + Vector3(-1.5, y0 + ch + 0.14, 1.85))
 	var coco := B.flat(Color(0.42, 0.52, 0.16), 0.6)
-	for k in 7:
-		B.sphere(self, 0.13, c + Vector3(-1.4 + (k % 4) * 0.28, y0 + ch + 0.18 + (k / 4) * 0.2, 2.0), coco)
-	B.model(self, "plastic_crate_01", c + Vector3(1.4, y0, -1.2), 0.0, 1.0)
-	B.model(self, "wooden_bucket_01", c + Vector3(1.6, y0 + ch + 0.07, 2.0), 0.0, 0.7)
+	for k in 5:
+		B.sphere(self, 0.11, c + Vector3(0.35 + (k % 3) * 0.24, y0 + ch + 0.14, 2.05), coco)
+	B.model(self, "wooden_bucket_01", c + Vector3(1.55, y0 + ch + 0.02, 1.9), 0.4, 0.65)
+	_cooler(c + Vector3(2.15, y0, 0.2), 1.2)
+	B.model(self, "plastic_crate_01", c + Vector3(-1.5, y0, -0.4), 0.2, 1.0)
 	B.box(self, Vector3(3.6, 0.6, 0.08), c + Vector3(0, y0 + 2.5, 2.42), M.planks)
 	B.label(self, "Quiosque Maré Alta", c + Vector3(0, y0 + 2.5, 2.48), 64, Color(1.0, 0.95, 0.8), Color(0.25, 0.12, 0.02, 1.0))
-	B.box(self, Vector3(3.9, 0.42, 0.05), c + Vector3(0, y0 + 0.72, 2.33), M.dark)
-	var board := ""
-	for dish_id in Economy.KIOSK_MENU:
-		var dish: Dictionary = Economy.dish(dish_id)
-		if board != "":
-			board += " · "
-		board += "%s %s" % [tr(str(dish.name)), Core.fmt_money(int(dish.price))]
-	B.label(self, board, c + Vector3(0, y0 + 0.72, 2.37), 36, Color(1, 0.95, 0.8), Color(0, 0, 0, 0.6))
+	_chalkboard(c + Vector3(2.35, y0 + 1.15, 0.9), PI * 0.5, "HOJE", _menu_lines(Economy.KIOSK_MENU))
+	B.model(self, "wooden_lantern_01", c + Vector3(0, y0 + 2.25, 0.2), 0.0, 1.1)
+	_string_lights(c + Vector3(-2.3, y0 + 2.45, 2.3), c + Vector3(2.3, y0 + 2.45, 2.3), 8)
+	_string_lights(c + Vector3(-2.3, y0 + 2.45, -2.3), c + Vector3(-2.3, y0 + 2.45, 2.3), 6)
+	_string_lights(c + Vector3(2.3, y0 + 2.45, -2.3), c + Vector3(2.3, y0 + 2.45, 2.3), 6)
 	for k in 2:
-		B.model(self, "plastic_monobloc_chair_01", c + Vector3(-3.5 + k * 7.0, 0, 4.5), PI + (0.4 if k == 0 else -0.4), 1.0)
+		var tp := c + Vector3(-4.4 + k * 8.8, 0, 4.6)
+		B.model(self, "outdoor_table_chair_set_01", tp, 0.2 if k == 0 else -0.4, 1.0)
+		_umbrella(tp, 1.45, Color(0.95, 0.78, 0.35) if k == 0 else Color(0.12, 0.55, 0.58))
 	kiosk_counter = Interactable.new()
 	var cs := CollisionShape3D.new()
 	var sh := BoxShape3D.new()
@@ -348,8 +350,9 @@ func _quiosque() -> void:
 	kiosk_counter.name = "KioskCounter"
 	add_child(kiosk_counter)
 	for k in 3:
-		var p := c + Vector3(-1.3 + k * 1.3, 0.1, 3.0)
-		kiosk_spots.append({"pos": p, "rot": PI, "busy": false})
+		var p := c + Vector3(-1.2 + k * 1.2, y0, 2.85)
+		B.model(self, "bar_chair_round_01", p, PI, 1.0)
+		kiosk_spots.append({"pos": p + Vector3(0, 0.28, 0), "rot": PI, "busy": false})
 	village_points.kiosk_work = c + Vector3(0, 0.1, 0.8)
 	var l := OmniLight3D.new()
 	l.position = c + Vector3(0, 2.5, 0)
