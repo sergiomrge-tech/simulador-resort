@@ -1578,4 +1578,4 @@ func _map_details() -> void :
 			var piece: = B.box(self, Vector3(0.45, 0.5 if j % 2 == 0 else 0.35, 0.02), cp, B.flat(D.FLAG_COLS[(j + k) % D.FLAG_COLS.size()], 0.95))
 			piece.rotation.z = rng.randf_range(-0.08, 0.08)
 	for k in 12:
-		B.model(self, "island_tree_01", Vector3(4.0 + k * 9.0 + rng.randf_range(-2, 2), 0, BACK_Z + 14.5 + rng.randf_range(-1, 2)), rng.randf() * TAU, rng.randf_range(0.8, 1.2))
+		B.model(self, "island_tree_01", Vector3(4.0 + k * 9.0 + rng.randf_range(-2, 2), 0, BACK_Z + 14.5 + rng.randf_range(-1, 2)), rng.randf() * TAU, rng.randf_range(1.6, 2.2))
