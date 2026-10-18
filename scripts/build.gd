@@ -67,11 +67,72 @@ static func flat(c: Color, rough: = 0.8, metal: = 0.0) -> StandardMaterial3D:
 	return m
 
 
+static var _rboxes: = {}
+
+## Caixa com cantos arredondados (v0.7.1 — regra do projeto: nada de visual low poly).
+## Faces planas, bordas suaves com normais contínuas. Cacheada por tamanho.
+static func rounded_box(size: Vector3) -> Mesh:
+	var key: = Vector3i(roundi(size.x * 200.0), roundi(size.y * 200.0), roundi(size.z * 200.0))
+	if _rboxes.has(key):
+		return _rboxes[key]
+	var h: = size * 0.5
+	var r: = clampf(minf(size.x, minf(size.y, size.z)) * 0.2, 0.006, 0.045)
+	var axis_coords: = func(hh: float) -> PackedFloat32Array:
+		return PackedFloat32Array([-hh, -hh + r * 0.3, -hh + r, hh - r, hh - r * 0.3, hh])
+	var cx: PackedFloat32Array = axis_coords.call(h.x)
+	var cy: PackedFloat32Array = axis_coords.call(h.y)
+	var cz: PackedFloat32Array = axis_coords.call(h.z)
+	var inner: = h - Vector3.ONE * r
+	var st: = SurfaceTool.new()
+	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var faces: = [
+		[Vector3(1, 0, 0), 1, 2], [Vector3(-1, 0, 0), 2, 1], [Vector3(0, 1, 0), 2, 0],
+		[Vector3(0, -1, 0), 0, 2], [Vector3(0, 0, 1), 0, 1], [Vector3(0, 0, -1), 1, 0],
+	]
+	var coords: = [cx, cy, cz]
+	for f in faces:
+		var n: Vector3 = f[0]
+		var ua: int = f[1]
+		var va: int = f[2]
+		var ca: PackedFloat32Array = coords[ua]
+		var cb: PackedFloat32Array = coords[va]
+		var grid: = []
+		for j in cb.size():
+			var row: = []
+			for i in ca.size():
+				var v: = Vector3.ZERO
+				v[ua] = ca[i]
+				v[va] = cb[j]
+				var na: int = 3 - ua - va
+				v[na] = h[na] * signf(n[na])
+				var inn: = v.clamp(- inner, inner)
+				var d: = v - inn
+				var nd: = d.normalized() if d.length() > 0.00001 else n
+				row.append([inn + nd * r, nd])
+			grid.append(row)
+		for j in cb.size() - 1:
+			for i in ca.size() - 1:
+				var q: = [grid[j][i], grid[j][i + 1], grid[j + 1][i + 1], grid[j + 1][i]]
+				var e1: Vector3 = q[1][0] - q[0][0]
+				var e2: Vector3 = q[3][0] - q[0][0]
+				var flip: = e1.cross(e2).dot(n) < 0.0
+				var order: = [0, 1, 2, 0, 2, 3] if not flip else [0, 2, 1, 0, 3, 2]
+				for k in order:
+					st.set_normal(q[k][1])
+					st.set_uv(Vector2(q[k][0][ua], q[k][0][va]))
+					st.add_vertex(q[k][0])
+	var mesh: = st.commit()
+	_rboxes[key] = mesh
+	return mesh
+
 static func box(parent: Node, size: Vector3, pos: Vector3, m: Material, collide: = false, rot_y: = 0.0) -> MeshInstance3D:
 	var mi: = MeshInstance3D.new()
-	var bm: = BoxMesh.new()
-	bm.size = size
-	mi.mesh = bm
+	if Toon.enabled() and minf(size.x, minf(size.y, size.z)) >= 0.03:
+		mi.mesh = rounded_box(size)
+	else:
+		var bm: = BoxMesh.new()
+		bm.size = size
+		mi.mesh = bm
 	mi.material_override = m
 	mi.position = pos
 	mi.rotation.y = rot_y
@@ -92,7 +153,8 @@ static func cyl(parent: Node, r_top: float, r_bot: float, h: float, pos: Vector3
 	cm.top_radius = r_top
 	cm.bottom_radius = r_bot
 	cm.height = h
-	cm.radial_segments = segs
+	# nada de low poly: cilindros redondos (só formas de 3-5 lados, como setas, ficam como estão)
+	cm.radial_segments = segs if segs <= 5 else maxi(segs * 2, 24 if maxf(r_top, r_bot) > 0.08 else 16)
 	cm.rings = 1
 	mi.mesh = cm
 	mi.material_override = m
@@ -105,8 +167,8 @@ static func sphere(parent: Node, r: float, pos: Vector3, m: Material, scale: = V
 	var sm: = SphereMesh.new()
 	sm.radius = r
 	sm.height = r * 2.0
-	sm.radial_segments = 12
-	sm.rings = 6
+	sm.radial_segments = 32 if r > 0.05 else 20
+	sm.rings = 16 if r > 0.05 else 10
 	mi.mesh = sm
 	mi.material_override = m
 	mi.position = pos

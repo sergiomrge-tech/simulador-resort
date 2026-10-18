@@ -582,9 +582,30 @@ func show_day_summary(data: Dictionary) -> void :
 	close.custom_minimum_size = Vector2(320, 58)
 	close.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	close.add_theme_font_size_override("font_size", T.FS_H2)
-	close.pressed.connect( func(): summary.visible = false)
+	close.pressed.connect(close_summary)
 	summary_body.add_child(close)
+	var hint: = _lbl(summary_body, tr("E / Enter / Esc para continuar"), T.FS_SMALL, T.TEXT_SOFT)
+	hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	summary.visible = true
+	# v0.7.1: o mouse estava preso na câmera e não dava para clicar em "Continuar" — o jogo parecia travado
+	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+	close.call_deferred("grab_focus")
+	_summary_t = 15.0
+
+var _summary_t: = 0.0
+
+func close_summary() -> void :
+	if not summary.visible:
+		return
+	summary.visible = false
+	if Core.in_game and not get_tree().paused and not OS.has_feature("mobile"):
+		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+
+func _process(delta: float) -> void :
+	if summary and summary.visible:
+		_summary_t -= delta
+		if _summary_t <= 0.0:
+			close_summary()
 
 func _buy(id: String, qty: int) -> void :
 	Core.buy_supply(id, qty)

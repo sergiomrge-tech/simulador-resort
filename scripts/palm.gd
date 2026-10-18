@@ -28,7 +28,7 @@ static func _build(seed_: int) -> ArrayMesh:
 	var st: = SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
 	var rings: = 16
-	var segs: = 9
+	var segs: = 18
 	var pts: = []
 	for i in rings + 1:
 		var t: = float(i) / rings

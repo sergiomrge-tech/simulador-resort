@@ -54,6 +54,12 @@ const SHOTS: = {
 	"resort": [Vector3(26.0, 34.0, -52.0), 196.0, -30.0, 16.0], 
 	"neon": [Vector3(37.4, 1.6, -4.6), -10.0, 6.0, 19.6], 
 	"rosto": [Vector3(38.0, 0.0, -11.9), 180.0, -14.0, 10.5], 
+	"vila_nova": [Vector3(52.0, 30.0, 98.0), 0.0, -38.0, 15.5], 
+	"rua_tras": [Vector3(20.0, 0.15, 64.0), -90.0, -2.0, 16.0], 
+	"feira": [Vector3(34.0, 0.15, 55.5), 0.0, -8.0, 10.0], 
+	"pier": [Vector3(72.0, 0.3, -23.5), 0.0, -3.0, 17.3], 
+	"farol_noite": [Vector3(88.0, 0.2, -27.0), -56.0, 6.0, 20.6], 
+	"mesas": [Vector3(37.0, 1.2, -1.0), 10.0, -18.0, 10.5], 
 	"noite_vila": [Vector3(49.0, 1.58, 30.15), -77.9, 1.2, 21.2], 
 	"serra_dia": [Vector3(58.0, 2.2, 28.5), -175.0, 12.2, 10.8], 
 	"serra_praia": [Vector3(8.0, 2.0, -24.0), -165.4, 9.3, 11.2], 
@@ -299,15 +305,25 @@ func _run_shot(n: String) -> void :
 		_stage_guests()
 		if n in ["vila", "noite_vila", "vila_anda", "praca", "casa", "casa_ext", "barcos", "palmeira", "serra_dia", "serra_praia", "serra_ouro", "serra_alvorada"]:
 			_stage_village(n)
-		if n == "quiosque" or n == "balcao" or n == "rosto":
-			for k in 2:
+		if n == "quiosque" or n == "balcao" or n == "rosto" or n == "mesas":
+			if n == "mesas":
+				Core.unlocked["kiosk_tables"] = true
+				world.refresh_areas()
+			for k in (5 if n == "mesas" else 2):
 				var c = village.spawn_customer()
 				if c:
 					c.position = c.spot.pos
 					c._route.clear()
 					c.state = "kwait"
 					c.rotation.y = c.spot.rot
-					c.play("Eat")
+					c.timer = 90.0
+					if n == "mesas" and k % 2 == 1:
+						c.state = "keat"
+						c.set_meta("eat", 30.0)
+						c.consume(k == 1)
+					else:
+						c.show_order(village._order_text(c))
+						c.play("Sitting_Idle_Loop")
 		if n == "npc_bar":
 			_eat_at_bar()
 		if n == "npc_anda":
@@ -329,9 +345,8 @@ func _run_shot(n: String) -> void :
 		hud.show_desk_card(tr("Fazer check-in de %s") % "Ana")
 	elif n == "npc_bar":
 		_eat_at_bar()
-	elif n == "quiosque" or n == "balcao" or n == "rosto":
-		for c in village.customers:
-			c.play("Eat")
+	elif n == "quiosque" or n == "balcao" or n == "rosto" or n == "mesas":
+		pass
 	elif n == "pausa":
 		menus.toggle_pause()
 	if n == "celular":
@@ -347,7 +362,7 @@ func _run_shot(n: String) -> void :
 		_dress_room(0)
 	elif n == "resumo":
 		hud.show_summary(_demo_summary())
-	if n in ["estoque", "upgrade", "bangalo_up", "resumo", "pausa", "recepcao", "npc_bar", "npc_anda", "npc_senta", "quiosque", "balcao", "rosto", "celular", "celular_home"]:
+	if n in ["estoque", "upgrade", "bangalo_up", "resumo", "pausa", "recepcao", "npc_bar", "npc_anda", "npc_senta", "quiosque", "balcao", "rosto", "celular", "celular_home", "mesas"]:
 		var extra: = 36 if n in ["npc_bar", "quiosque", "balcao", "celular", "celular_home"] else 12
 		for i in extra:
 			await get_tree().process_frame

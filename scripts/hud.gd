@@ -88,16 +88,17 @@ func _ready() -> void :
 		crosshair.draw_arc(Vector2.ZERO, 7.0, 0, TAU, 20, Color(0, 0, 0, 0.5), 1.5))
 	root.add_child(crosshair)
 	prompt_l = Label.new()
-	prompt_l.set_anchors_preset(Control.PRESET_CENTER)
-	prompt_l.position = Vector2(-380, 30)
+	# v0.7.1: aviso de interação pequeno e embaixo, para não tampar o centro da tela
+	prompt_l.set_anchors_preset(Control.PRESET_CENTER_BOTTOM)
+	prompt_l.position = Vector2(-380, -130)
 	prompt_l.size = Vector2(760, 52)
 	prompt_l.grow_horizontal = Control.GROW_DIRECTION_BOTH
-	var pst: = UiTheme.box(Color(0.03, 0.15, 0.18, 0.82), 26, Color(1.0, 0.85, 0.45, 0.8), 2, 6, 22)
+	var pst: = UiTheme.box(Color(0.03, 0.15, 0.18, 0.62), 18, Color(1.0, 0.85, 0.45, 0.5), 1, 3, 14)
 	prompt_l.add_theme_stylebox_override("normal", pst)
 	prompt_l.add_theme_font_override("font", UiTheme.bold())
 	prompt_l.add_theme_color_override("font_color", Color(1, 0.97, 0.9))
 	prompt_l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	prompt_l.add_theme_font_size_override("font_size", 30)
+	prompt_l.add_theme_font_size_override("font_size", 21)
 	prompt_l.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.9))
 	prompt_l.add_theme_constant_override("outline_size", 10)
 	prompt_l.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -279,7 +280,7 @@ func show_toast(text: String, kind: String) -> void :
 
 func _build_desk_card() -> void :
 	desk_card = PanelContainer.new()
-	desk_card.set_anchors_preset(Control.PRESET_CENTER)
+	desk_card.set_anchors_preset(Control.PRESET_CENTER_BOTTOM)
 	desk_card.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	desk_card.visible = false
 	desk_card.add_theme_stylebox_override("panel", UiTheme.box(UiTheme.SAND, 20, UiTheme.WOOD, 3, 14, 18))
@@ -316,8 +317,8 @@ func _apply_desk_card(text: String) -> void :
 	var sz: = desk_card.get_combined_minimum_size()
 	desk_card.offset_left = - sz.x * 0.5
 	desk_card.offset_right = sz.x * 0.5
-	desk_card.offset_top = 48.0
-	desk_card.offset_bottom = 48.0 + sz.y
+	desk_card.offset_top = -100.0 - sz.y
+	desk_card.offset_bottom = -100.0
 	prompt_l.visible = false
 
 func _process(delta: float) -> void :
@@ -338,7 +339,7 @@ func _process(delta: float) -> void :
 			ptxt = "[%s]  %s" % [Quality.key_name("interact"), ptxt]
 		if ptxt != prompt_l.text:
 			prompt_l.text = ptxt
-			_hug(prompt_l, 30, 30.0, 56.0)
+			_hug(prompt_l, 21, -122.0, 36.0)
 		prompt_l.visible = ptxt != ""
 	btn_interact.modulate = Color(1, 1, 1, 1.0 if f else 0.55)
 	_hint_t -= delta
@@ -417,7 +418,7 @@ func _input(e: InputEvent) -> void :
 		get_viewport().set_input_as_handled()
 	elif e is InputEventMouseButton and e.pressed and e.button_index == MOUSE_BUTTON_LEFT:
 		_pad_used = false
-		if not shop.visible and not get_tree().paused and Core.in_game and Input.mouse_mode != Input.MOUSE_MODE_CAPTURED and not _over_button(e.position):
+		if not shop.visible and not (office and office.summary.visible) and not get_tree().paused and Core.in_game and Input.mouse_mode != Input.MOUSE_MODE_CAPTURED and not _over_button(e.position):
 			Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 	elif (e is InputEventKey or e is InputEventJoypadButton) and e.is_pressed() and not e.is_echo():
 		if e is InputEventJoypadButton:
@@ -426,6 +427,11 @@ func _input(e: InputEvent) -> void :
 			Quality.toggle_fullscreen()
 			return
 		if not Core.in_game or not visible:
+			return
+		if office and office.summary.visible:
+			if e.is_action("interact") or e.is_action("pause") or e.is_action("ui_accept"):
+				office.close_summary()
+				get_viewport().set_input_as_handled()
 			return
 		if e.is_action("pause") and not get_tree().paused:
 			if shop.visible and phone.app != "":

@@ -187,6 +187,7 @@ func run(m) -> void :
 	if check(kp.begins_with("Servir"), "prompt do quiosque: '%s'" % kp):
 		main.player.interact()
 	check(Core.kiosk_sales_count == 1 and Core.money > km0, "venda no quiosque: %s" % Core.fmt_money(Core.money - km0, true))
+	check(kc.state == "keat", "cliente atendido fica comendo/bebendo")
 
 	Core.speed_mult = 1.0
 	Core.minutes = 15.0 * 60.0

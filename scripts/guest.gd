@@ -38,6 +38,8 @@ var _cup: Node3D
 var _food: Node3D
 var _eating: = false
 var _eat_t: = 0.0
+## true = leva o copo/coco à boca em vez da comida (v0.7.1)
+var _consume_drink: = false
 var _mesh_insts: Array = []
 var _skin: = Color(0.8, 0.6, 0.45)
 var _face: Node3D
@@ -287,9 +289,9 @@ func _set_eating(on: bool) -> void :
 	if not on:
 		_eat_t = 0.0
 	if _food:
-		_food.visible = on
-	if _cup and on:
-		_cup.visible = false
+		_food.visible = on and not _consume_drink
+	if _cup:
+		_cup.visible = on and _consume_drink
 
 func _go_state(st: String) -> void :
 	if st == "" or st == _state:
@@ -309,7 +311,7 @@ func _go_state(st: String) -> void :
 	if st != "Sit" and st != "SitTalk":
 		_set_eating(false)
 	if _cup:
-		_cup.visible = (st == "Drink" or st == "SitTalk") and not _eating
+		_cup.visible = ((st == "Drink" or st == "SitTalk") and not _eating) or (_eating and _consume_drink)
 
 func _sync_rate() -> void :
 	if _tree == null or _state == "":
@@ -811,3 +813,60 @@ func _caricature(rng: RandomNumberGenerator) -> void :
 	elif roll < 0.7:
 		var flower: = B.sphere(_face, 0.035, Vector3(0.1, 0.19, 0.03), B.flat(Color(1.0, 0.4, 0.65), 0.6))
 		B.sphere(_face, 0.014, flower.position + Vector3(0.012, 0.0, 0.022), B.flat(Color(1.0, 0.9, 0.3), 0.6))
+
+
+# ------------------------------------------------------------------ v0.7.1: cardápio e balão de pedido
+var _menu_card: Node3D
+var _bubble: Label3D
+
+## Mostra/esconde o cardapinho na mão direita (cliente escolhendo).
+func show_menu(on: bool) -> void :
+	if not on:
+		if _menu_card:
+			_menu_card.queue_free()
+			_menu_card = null
+		return
+	if _menu_card or _skel == null:
+		return
+	var att: = BoneAttachment3D.new()
+	att.bone_name = "hand_r"
+	_skel.add_child(att)
+	_menu_card = att
+	var card: = Node3D.new()
+	card.position = Vector3(0.0, 0.1, 0.04)
+	card.rotation = Vector3(0.0, 0.0, 0.3)
+	att.add_child(card)
+	B.box(card, Vector3(0.2, 0.28, 0.012), Vector3.ZERO, B.flat(Color(1.0, 0.45, 0.35), 0.8))
+	B.box(card, Vector3(0.17, 0.25, 0.014), Vector3(0, 0, 0.002), B.flat(Color(0.99, 0.95, 0.85), 0.9))
+	for k in 4:
+		B.box(card, Vector3(0.12, 0.012, 0.016), Vector3(-0.01, 0.07 - k * 0.045, 0.004), B.flat(Color(0.35, 0.28, 0.22), 0.9))
+
+## Balão sobre a cabeça com o pedido; urgente = vermelho (quase indo embora). Texto vazio esconde.
+func show_order(text: String, urgent: = false) -> void :
+	if text == "":
+		if _bubble:
+			_bubble.queue_free()
+			_bubble = null
+		return
+	if _bubble == null:
+		_bubble = Label3D.new()
+		_bubble.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+		_bubble.font = UiTheme.bold()
+		_bubble.font_size = 46
+		_bubble.pixel_size = 0.0055
+		_bubble.outline_size = 34
+		_bubble.no_depth_test = true
+		_bubble.render_priority = 10
+		_bubble.fixed_size = false
+		_bubble.position = Vector3(0, 2.15, 0)
+		add_child(_bubble)
+	_bubble.text = text
+	_bubble.modulate = Color(0.2, 0.12, 0.08)
+	_bubble.outline_modulate = Color(1.0, 0.55, 0.5) if urgent else Color(1, 1, 1)
+
+
+## Cliente atendido: senta comendo (prato na mão) ou bebendo (copo/coco), levando à boca. (v0.7.1)
+func consume(drink: bool) -> void :
+	_consume_drink = drink
+	play("Eat")
+	_set_eating(true)

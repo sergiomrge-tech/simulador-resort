@@ -175,11 +175,14 @@ func _ocean() -> void :
 	mi.name = "Ocean"
 	add_child(mi)
 
+## Limites do mapa. v0.7.1: a vila cresceu para o norte (até z 78) e há uma passagem para o píer em x 70–74.
+const PIER_X: = 72.0
 func _bounds() -> void :
-	B.wall(self, Vector3(160, 4, 1), Vector3(28, 1.5, -30.5))
-	B.wall(self, Vector3(160, 4, 1), Vector3(28, 1.5, 56))
-	B.wall(self, Vector3(1, 4, 90), Vector3(-48, 1.5, 12))
-	B.wall(self, Vector3(1, 4, 90), Vector3(104, 1.5, 12))
+	B.wall(self, Vector3(PIER_X - 1.6 + 52.0, 4, 1), Vector3((-52.0 + PIER_X - 1.6) * 0.5, 1.5, -30.5))
+	B.wall(self, Vector3(112.0 - PIER_X - 1.6, 4, 1), Vector3((PIER_X + 1.6 + 112.0) * 0.5, 1.5, -30.5))
+	B.wall(self, Vector3(170, 4, 1), Vector3(30, 1.5, 78))
+	B.wall(self, Vector3(1, 4, 112), Vector3(-48, 1.5, 23))
+	B.wall(self, Vector3(1, 4, 112), Vector3(112, 1.5, 23))
 
 func _strip(a: Vector2, b_: Vector2, w: float, m: Material, y: = 0.025) -> void :
 	var d: = b_ - a
@@ -1365,7 +1368,7 @@ func route_exit(room: int) -> Array:
 	return [points["room%d_door" % room], points["room%d_front" % room], points.hub_sw, points.hub_nw, points.hub_w_exit, points.exit_join, points.spawn]
 
 
-const VEG_EXCL: = [Rect2(-5.8, 12, 11.6, 8.2), Rect2(-9.4, -3.4, 18.8, 14.8), Rect2(-25.6, -12.2, 15.2, 8.6), 
+const VEG_EXCL: = [Rect2(-2.0, 16.0, 40.0, 30.0), Rect2(-3.0, 33.0, 113.0, 44.0), Rect2(20.0, -27.0, 40.0, 6.0), Rect2(-36.0, -26.0, 12.0, 12.0), Rect2(-5.8, 12, 11.6, 8.2), Rect2(-9.4, -3.4, 18.8, 14.8), Rect2(-25.6, -12.2, 15.2, 8.6), 
 	Rect2(-1.8, 19, 3.6, 28), Rect2(-11.8, -5.8, 2.6, 33), Rect2(-24.8, -5.8, 15.2, 2.6), Rect2(-11.8, 24.6, 12.2, 2.8), 
 	Rect2(8.4, -17.6, 9.2, 9.2), Rect2(8.0, -11.0, 4.2, 9.0), Rect2(-1.2, -17, 2.4, 15), Rect2(1.0, 38.5, 5.5, 3), 
 	Rect2(1.0, 25.8, 98, 8.4), Rect2(41.5, 16.5, 56, 9.2), Rect2(39, 34, 58, 9.5), Rect2(65, 34, 20, 20), Rect2(36.4, -16, 3.2, 43), 
@@ -1483,7 +1486,7 @@ func _vegetation() -> void :
 
 
 const MTN_RIDGES: Array = [
-	[-90.0, 92.0, 180.0, 100.0, 7.0, 11.0, 48.0], 
+	[-90.0, 116.0, 180.0, 124.0, 7.0, 11.0, 44.0], 
 	[-120.0, 168.0, 220.0, 198.0, 22.0, 34.0, 78.0], 
 	[-70.0, 205.0, 185.0, 238.0, 26.0, 40.0, 72.0], 
 	[15.0, 240.0, 165.0, 278.0, 18.0, 30.0, 66.0], 
@@ -1524,7 +1527,8 @@ func _ridge(x: float, z: float, ax: float, az: float, bx: float, bz: float, ha: 
 func _mtn_mask(x: float, z: float) -> float:
 	if z < -18.0 and x >= -40.0 and x <= 150.0:
 		return 0.0
-	if x >= -60.0 and x <= 124.0 and z < 66.0:
+	# v0.7.1: a vila vai até z ~76; a serra começa depois
+	if x >= -60.0 and x <= 124.0 and z < 84.0:
 		return 0.0
 	return 1.0
 

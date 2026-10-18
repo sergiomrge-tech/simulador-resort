@@ -20,6 +20,9 @@ var market: Interactable
 var quest_board: Interactable
 var VM: = {}
 var _kiosk_board: Node3D
+var _open_sign: Label3D
+var _lighthouse: Node3D
+var _night: = 0.0
 var _kiosk_menu_c: = Vector3.ZERO
 var block_rects: Array = []
 var _bloom_xf: Array = []
@@ -39,7 +42,10 @@ func _ready() -> void :
 	_street_lamps()
 	_village_palms()
 	_village_routes()
+	_village_expansion()
+	_beach_life()
 	_finish_blooms()
+	Core.time_changed.connect(_on_time)
 
 func _village_materials() -> void :
 	VM.road = B.mat("cobblestone_floor_04", 0.4, Color(0.92, 0.9, 0.86), 0.9)
@@ -454,6 +460,10 @@ func _church_and_praca() -> void :
 
 func _quiosque() -> void :
 	var c: = KIOSK_C
+	# v0.7.1: ninguém atravessa o quiosque — área bloqueada para os moradores (os bancos da frente ficam fora)
+	block_rects.append(Rect2(c.x - 2.95, c.z - 3.05, 5.9, 5.35))
+	block_rects.append(Rect2(c.x + 3.0, c.z - 2.2, 1.3, 3.6))
+	block_rects.append(Rect2(c.x - 4.6, c.z - 3.4, 1.6, 3.6))
 	B.platform(self, Vector3(5.6, 0.2, 5.6), c, M.deckwood, 0.45)
 	var y0: = 0.1
 	for sx in [-1.0, 1.0]:
@@ -488,14 +498,13 @@ func _quiosque() -> void :
 	_kiosk_menu_c = c
 	_refresh_kiosk_board()
 	B.model(self, "wooden_lantern_01", c + Vector3(0, y0 + 2.25, 0.2), 0.0, 1.1)
+	# v0.7.1: o quiosque já começa com uma mesinha; "Mesas e guarda-sóis" traz mais duas com guarda-sol
+	_kiosk_table(c + Vector3(-4.4, 0, 4.6), "", Color(0.95, 0.78, 0.35), false)
 	_area("kiosk_tables", func():
-		for k in 2:
-			var tp: = c + Vector3(-4.4 + k * 8.8, 0, 4.6)
-			B.model(self, "outdoor_table_chair_set_01", tp, 0.0, 1.0)
-			_umbrella(tp, 1.45, Color(0.95, 0.78, 0.35) if k == 0 else Color(0.12, 0.55, 0.58), k == 1)
-			_table_bites(tp + Vector3(0, 0.75, 0))
-			var seat: = tp + Vector3(-0.85 if k == 0 else 0.85, 0, 0)
-			kiosk_spots.append({"pos": seat + Vector3(0, 0.3, 0), "rot": PI * 0.5 if k == 0 else - PI * 0.5, "busy": false, "need": "kiosk_tables", "anim": "Sitting_Idle_Loop"}))
+		_kiosk_table(c + Vector3(4.4, 0, 4.6), "kiosk_tables", Color(0.12, 0.55, 0.58), true)
+		_kiosk_table(c + Vector3(-4.6, 0, 8.6), "kiosk_tables", Color(1.0, 0.45, 0.35), true))
+	_kiosk_details(c, y0)
+	_area("drinks", func(): _kiosk_drinks(c, y0))
 	_area("neon", func(): _kiosk_neon(c, y0))
 	_area("grill", func(): _kiosk_grill(c, y0))
 	kiosk_counter = Interactable.new()
@@ -519,6 +528,20 @@ func _quiosque() -> void :
 	add_child(l)
 	lanterns.append([l, null, 1.6, false])
 
+
+## Mesa com duas cadeiras (dois lugares de cliente) e, opcionalmente, guarda-sol.
+func _kiosk_table(tp: Vector3, need: String, umb: Color, umbrella: bool) -> void :
+	B.model(self, "outdoor_table_chair_set_01", tp, 0.0, 1.0)
+	if umbrella:
+		_umbrella(tp, 1.45, umb, false)
+	_table_bites(tp + Vector3(0, 0.78, 0))
+	# cardapinho em pé na mesa
+	var menu: = B.box(self, Vector3(0.16, 0.22, 0.02), tp + Vector3(0, 0.9, 0), B.flat(Color(1.0, 0.45, 0.35), 0.8))
+	menu.rotation.x = -0.2
+	for sx in [-1.0, 1.0]:
+		var seat: = tp + Vector3(sx * 0.85, 0, 0)
+		kiosk_spots.append({"pos": seat + Vector3(0, 0.02, 0), "rot": - sx * PI * 0.5, "busy": false, "need": need, "anim": "Sitting_Idle_Loop", "table": true})
+	_block(tp, 1.2, 0.9, 0.15)
 
 ## Quadro-negro do quiosque: mostra só os pratos liberados.
 func _refresh_kiosk_board() -> void :
@@ -935,7 +958,7 @@ func _village_routes() -> void :
 		[Vector3(4, 0.15, zn), Vector3(37, 0.15, zn), Vector3(70, 0.15, zn), Vector3(97, 0.15, zn)], 
 		[Vector3(97, 0.15, zs), Vector3(64, 0.15, zs), Vector3(30, 0.15, zs), Vector3(4, 0.15, zs)], 
 		[Vector3(67.5, 0.2, 35.6), Vector3(82.5, 0.2, 35.6), Vector3(82.5, 0.2, 42.6), Vector3(67.5, 0.2, 42.6), Vector3(67.5, 0.2, 35.6)], 
-		[Vector3(38, 0.05, zn), Vector3(38, 0.05, 5.0), Vector3(38, 0.05, -7.5), Vector3(48, 0, -22), Vector3(90, 0, -24)], 
+		[Vector3(38, 0.05, zn), Vector3(38, 0.05, 5.0), Vector3(38, 0.05, -7.0), Vector3(43.8, 0, -8.2), Vector3(44.2, 0, -17.0), Vector3(48, 0, -22), Vector3(90, 0, -24)], 
 		[Vector3(30, 0.15, zn), Vector3(55, 0.15, zn), Vector3(55, 0.15, zs), Vector3(85, 0.15, zs)], 
 	]
 	village_points.kiosk_approach = [Vector3(38, 0.15, zn), Vector3(38, 0.05, 5.0), Vector3(38, 0.05, -8.0)]
@@ -943,7 +966,289 @@ func _village_routes() -> void :
 
 func set_night(t: float) -> void :
 	super.set_night(t)
+	_night = t
+	if _lighthouse:
+		var beam: = _lighthouse.get_node_or_null("Beam")
+		if beam:
+			beam.visible = t > 0.3
+		for ch in _lighthouse.get_children():
+			if ch is SpotLight3D:
+				ch.light_energy = 6.0 * t
 	if VM.has("glass"):
 		var glass: StandardMaterial3D = VM.glass
 		glass.emission_energy_multiplier = 7.0 * t
 		glass.albedo_color = Color(0.62, 0.78, 0.88, 0.7).lerp(Color(1.0, 0.7, 0.35, 0.95), t)
+
+
+# ------------------------------------------------------------------ v0.7.1: quiosque cheio de detalhes
+func _kiosk_details(c: Vector3, y0: float) -> void :
+	var thatch_c: = Color(0.96, 0.75, 0.38)
+	D.thatch_fringe(self, c, 3.32, y0 + 2.86, thatch_c, 0.26)
+	for pair in [[Vector3(-3.1, 0, 3.1), Vector3(3.1, 0, 3.1)], [Vector3(3.1, 0, -3.1), Vector3(3.1, 0, 3.1)], [Vector3(-3.1, 0, -3.1), Vector3(-3.1, 0, 3.1)]]:
+		D.bunting(self, c + pair[0] + Vector3(0, y0 + 2.3, 0), c + pair[1] + Vector3(0, y0 + 2.3, 0), 0.25, 0.42)
+	# frutas penduradas nas vigas
+	D.bananas(self, c + Vector3(-1.7, y0 + 2.35, 1.7))
+	D.bananas(self, c + Vector3(1.75, y0 + 2.35, -1.6))
+	for k in 3:
+		var cc: = c + Vector3(-0.6 + k * 0.6, y0 + 2.45, -2.25)
+		B.cyl(self, 0.008, 0.008, 0.35, cc + Vector3(0, -0.15, 0), D.m(Color(0.5, 0.35, 0.2)), 4)
+		B.sphere(self, 0.13, cc + Vector3(0, -0.4, 0), D.m(Color(0.45, 0.68, 0.22), 0.6), Vector3(1, 1.1, 1))
+	# balcão
+	var top: = c + Vector3(0, y0 + 1.18, 2.0)
+	D.tip_jar(self, top + Vector3(1.6, 0, 0.15))
+	D.straw_cup(self, top + Vector3(1.25, 0, 0.1))
+	D.cup_stack(self, top + Vector3(-1.95, 0, 0.0), Color(1.0, 0.9, 0.3))
+	D.cup_stack(self, top + Vector3(-1.75, 0, 0.12), Color(0.3, 0.8, 1.0))
+	D.blender(self, top + Vector3(-1.2, 0, -0.15))
+	D.pineapple(self, top + Vector3(1.95, 0, -0.1))
+	B.box(self, Vector3(0.14, 0.12, 0.08), top + Vector3(-0.15, 0.06, 0.2), D.m(Color(0.95, 0.95, 0.98)))
+	D.radio(self, c + Vector3(-1.1, y0 + 1.82, -1.9), 0.0)
+	# frente do balcão: bambu e cocos cortados
+	for k in 15:
+		B.cyl(self, 0.05, 0.05, 1.0, c + Vector3(-2.2 + k * 0.315, y0 + 0.52, 2.33), D.m(Color(0.9, 0.76, 0.42)), 6)
+	for k in 3:
+		var half: = B.sphere(self, 0.12, c + Vector3(-1.3 + k * 1.3, y0 + 0.75, 2.4), D.m(Color(0.55, 0.36, 0.2)), Vector3(1, 1, 0.45))
+		B.sphere(half, 0.1, Vector3(0, 0, 0.05), D.m(Color(0.98, 0.96, 0.9)), Vector3(1, 1, 0.4))
+	_open_sign = D.open_sign(self, c + Vector3(1.65, y0 + 2.3, 2.5), 0.0)
+	# em volta
+	D.coconut_pile(self, c + Vector3(3.7, 0.05, 0.8), 10)
+	D.coconut_pile(self, c + Vector3(3.4, 0.05, -1.6), 6)
+	var cart: = Node3D.new()
+	cart.position = c + Vector3(-3.9, 0.05, -0.4)
+	cart.rotation.y = 0.5
+	add_child(cart)
+	B.box(cart, Vector3(0.7, 0.35, 1.0), Vector3(0, 0.45, 0), D.m(Color(0.25, 0.55, 0.85)))
+	var wheel: = B.cyl(cart, 0.18, 0.18, 0.08, Vector3(0, 0.18, 0.62), D.m(Color(0.2, 0.2, 0.22)), 12)
+	wheel.rotation.z = PI * 0.5
+	for sx in [-1.0, 1.0]:
+		B.box(cart, Vector3(0.05, 0.05, 0.9), Vector3(sx * 0.25, 0.55, -0.75), D.m(Color(0.6, 0.45, 0.3)))
+	D.coconut_pile(cart, Vector3(0, 0.55, 0), 5)
+	D.surfboard(self, c + Vector3(-2.75, 0.05, -2.75), 0.6, Color(1.0, 0.45, 0.35))
+	D.surfboard(self, c + Vector3(-2.35, 0.05, -2.95), 0.9, Color(0.2, 0.75, 0.95), 0.32)
+	D.surfboard(self, c + Vector3(-1.95, 0.05, -3.05), 1.2, Color(1.0, 0.85, 0.25), 0.38)
+	D.trash_bin(self, c + Vector3(3.1, 0.05, 2.8))
+	D.trash_bin(self, c + Vector3(3.6, 0.05, 2.8), Color(0.2, 0.55, 0.9))
+	B.model(self, "lifebuoy", c + Vector3(2.48, y0 + 1.8, 2.48), PI * 0.25, 0.8).rotation.x = PI * 0.5
+	D.signpost(self, c + Vector3(-3.4, 0.05, 4.2), [["Vila", - PI * 0.5, Color(0.2, 0.55, 0.85)], ["Pousada", PI, Color(1.0, 0.45, 0.35)], ["Praia", PI * 0.5, Color(0.2, 0.7, 0.45)]])
+	for tp in [Vector3(-3.0, 0, 3.4), Vector3(3.0, 0, 3.6), Vector3(-3.4, 0, -2.6), Vector3(3.5, 0, -3.0)]:
+		var l: = D.tiki_torch(self, c + tp + Vector3(0, 0.05, 0))
+		lanterns.append([l, null, 1.6, false])
+	# caminho de tábuas até a calçada
+	for k in 8:
+		var plank: = B.box(self, Vector3(1.6, 0.06, 0.4), c + Vector3(rng_off(k) * 0.15, 0.04, 3.6 + k * 0.75), M.deckwood)
+		plank.rotation.y = rng_off(k + 3) * 0.08
+
+func rng_off(k: int) -> float:
+	return sin(float(k) * 12.9898) * 2.0 - 1.0 if k % 2 == 0 else cos(float(k) * 7.31)
+
+## Expansão "drinks": garrafas, limões e taças com guarda-chuvinha.
+func _kiosk_drinks(c: Vector3, y0: float) -> void :
+	var top: = c + Vector3(0, y0 + 1.18, 2.0)
+	for k in 3:
+		var g: = top + Vector3(0.45 + k * 0.22, 0, 0.18)
+		B.cyl(self, 0.04, 0.025, 0.1, g + Vector3(0, 0.05, 0), D.m(Color(0.9, 1.0, 0.75, 0.75), 0.1), 10)
+		B.cyl(self, 0.002, 0.002, 0.12, g + Vector3(0.02, 0.14, 0), D.m(Color(0.4, 0.3, 0.2)), 4)
+		B.cyl(self, 0.0, 0.05, 0.03, g + Vector3(0.02, 0.2, 0), D.m(D.FLAG_COLS[k * 2 % D.FLAG_COLS.size()]), 8)
+	var crate_p: = c + Vector3(-1.9, y0, -0.9)
+	B.box(self, Vector3(0.5, 0.25, 0.35), crate_p + Vector3(0, 0.125, 0), D.m(Color(0.85, 0.65, 0.4)))
+	for k in 8:
+		B.sphere(self, 0.04, crate_p + Vector3(-0.18 + (k % 4) * 0.12, 0.27, -0.08 + (k / 4) * 0.14), D.m(Color(0.45, 0.85, 0.25), 0.5))
+	for k in 4:
+		B.cyl(self, 0.045, 0.05, 0.32, c + Vector3(-1.4 + k * 0.2, y0 + 1.3, -1.95), D.m(Color(0.95, 0.95, 0.9, 0.8), 0.15), 8)
+	var sign_p: = c + Vector3(-2.38, y0 + 1.75, 0.9)
+	B.box(self, Vector3(0.06, 0.5, 1.1), sign_p, D.m(Color(0.25, 0.65, 0.35)))
+	var l: = B.label(self, "CAIPIRINHA", sign_p + Vector3(-0.04, 0.08, 0), 40, Color.WHITE, Color(0.1, 0.3, 0.15), - PI * 0.5)
+	l.pixel_size = 0.0035
+	var l2: = B.label(self, Core.fmt_money(int(Economy.dish("caipirinha").price)), sign_p + Vector3(-0.04, -0.12, 0), 48, Color(1.0, 0.95, 0.4), Color(0.1, 0.3, 0.15), - PI * 0.5)
+	l2.pixel_size = 0.0035
+
+func _on_time(_d: int, _m: float) -> void :
+	if _open_sign:
+		var open: bool = Core.minutes >= 8.0 * 60.0 and Core.minutes < Core.kiosk_close_min()
+		var txt: = "ABERTO" if open else "FECHADO"
+		if _open_sign.text != txt:
+			_open_sign.text = txt
+			_open_sign.modulate = Color(0.15, 0.6, 0.25) if open else Color(0.8, 0.2, 0.15)
+
+func _process(delta: float) -> void :
+	super._process(delta)
+	if _lighthouse and _night > 0.05:
+		_lighthouse.rotation.y += delta * 0.8
+
+# ------------------------------------------------------------------ v0.7.1: vila maior
+const BACK_Z: = 64.0
+const CROSS_X: = 1.5
+const SHOP_SIGNS: = ["Farmácia", "Peixaria do Tonho", "Sorveteria Gelato", "Posto de Saúde", "Escola Municipal", "Correios", "Bar do Zé", "Barbearia", "Lojinha de Artesanato", "Açaí da Praia"]
+
+func _road(a: Vector3, b: Vector3) -> void :
+	var horizontal: = absf(b.x - a.x) > absf(b.z - a.z)
+	var L: = a.distance_to(b)
+	var c: = (a + b) * 0.5
+	if horizontal:
+		B.box(self, Vector3(L, 0.05, 4.0), Vector3(c.x, 0.02, c.z), VM.road)
+		for side in [-1.0, 1.0]:
+			B.platform(self, Vector3(L, 0.3, 1.8), Vector3(c.x, 0.0, c.z + side * 2.9), VM.calcada, 0.35)
+			B.box(self, Vector3(L, 0.32, 0.22), Vector3(c.x, 0.0, c.z + side * 2.05), VM.curb)
+	else:
+		B.box(self, Vector3(4.0, 0.05, L), Vector3(c.x, 0.02, c.z), VM.road)
+		for side in [-1.0, 1.0]:
+			B.platform(self, Vector3(1.8, 0.3, L), Vector3(c.x + side * 2.9, 0.0, c.z), VM.calcada, 0.35)
+			B.box(self, Vector3(0.22, 0.32, L), Vector3(c.x + side * 2.05, 0.0, c.z), VM.curb)
+
+func _add_lamp(p: Vector3) -> void :
+	B.model(self, "street_lamp_01", p, 0.0, 1.0)
+	var glow: = MeshInstance3D.new()
+	var sm: = SphereMesh.new()
+	sm.radius = 0.22
+	sm.height = 0.44
+	glow.mesh = sm
+	var gm: = StandardMaterial3D.new()
+	gm.albedo_color = Color(1, 0.86, 0.55)
+	gm.emission_enabled = true
+	gm.emission = Color(1.0, 0.72, 0.32)
+	gm.emission_energy_multiplier = 0.0
+	gm.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	glow.material_override = gm
+	glow.position = p + Vector3(0, 3.5, 0)
+	add_child(glow)
+	var l: = OmniLight3D.new()
+	l.position = p + Vector3(0, 3.35, 0)
+	l.omni_range = 11.0
+	l.light_color = Color(1.0, 0.74, 0.42)
+	l.light_energy = 0.0
+	add_child(l)
+	lanterns.append([l, gm, 2.6, false])
+
+func _village_expansion() -> void :
+	var rng: = RandomNumberGenerator.new()
+	rng.seed = 1717
+	# ruas novas: a da pousada (sobe do mar até a rua de trás) e a rua de trás, paralela à principal
+	_road(Vector3(CROSS_X, 0, STREET_Z + 2.1), Vector3(CROSS_X, 0, BACK_Z - 2.1))
+	_road(Vector3(-1.0, 0, BACK_Z), Vector3(109.0, 0, BACK_Z))
+	_road(Vector3(104.0, 0, STREET_Z + 2.1), Vector3(104.0, 0, BACK_Z - 2.1))
+	var x1: = 99.0
+	B.box(self, Vector3(109.0 - x1, 0.05, 4.0), Vector3((x1 + 109.0) * 0.5, 0.02, STREET_Z), VM.road)
+	var si: = 0
+	var ci: = 3
+	# rua principal, lado oeste (perto da pousada)
+	for hh in [[12.0, 7.0], [20.5, 7.5], [28.5, 6.5]]:
+		_house(Vector3(hh[0], 0, 21.2), hh[1], 7.0, 1.0, HOUSE_COLS[ci % HOUSE_COLS.size()], SHUT_COLS[ci % SHUT_COLS.size()], ci % 2 == 0)
+		ci += 1
+	for hh in [[10.0, 7.0], [18.0, 7.0], [26.0, 6.5], [34.0, 6.0]]:
+		var sign_t: = ""
+		if hh[0] == 18.0:
+			sign_t = SHOP_SIGNS[si]
+			si += 1
+		_house(Vector3(hh[0], 0, 38.8), hh[1], 7.0, -1.0, HOUSE_COLS[ci % HOUSE_COLS.size()], SHUT_COLS[(ci + 1) % SHUT_COLS.size()], ci % 3 == 0, sign_t)
+		ci += 1
+	# rua de trás: lado sul (de costas para a praça e a feira) e lado norte
+	for x in [10.0, 18.0, 26.0, 34.0, 42.0, 50.0, 58.0, 92.0, 100.0]:
+		var sign_a: = ""
+		if int(x) % 16 == 2 and si < SHOP_SIGNS.size():
+			sign_a = SHOP_SIGNS[si]
+			si += 1
+		_house(Vector3(x, 0, BACK_Z - 6.6), rng.randf_range(6.0, 7.2), 6.6, 1.0, HOUSE_COLS[ci % HOUSE_COLS.size()], SHUT_COLS[ci % SHUT_COLS.size()], rng.randf() < 0.4, sign_a)
+		ci += 1
+	var x2: = 6.0
+	while x2 < 106.0:
+		var sign_b: = ""
+		if rng.randf() < 0.45 and si < SHOP_SIGNS.size():
+			sign_b = SHOP_SIGNS[si]
+			si += 1
+		var w: = rng.randf_range(6.0, 7.4)
+		_house(Vector3(x2, 0, BACK_Z + 6.6), w, 6.6, -1.0, HOUSE_COLS[ci % HOUSE_COLS.size()], SHUT_COLS[(ci + 2) % SHUT_COLS.size()], rng.randf() < 0.45, sign_b)
+		ci += 1
+		x2 += 8.0
+	# feira entre a rua principal e a rua de trás
+	var feira_c: = Vector3(34.0, 0, 48.0)
+	B.platform(self, Vector3(24.0, 0.15, 7.0), feira_c, VM.calcada, 0.3)
+	var goods: = [[Color(1.0, 0.35, 0.3), Color(1.0, 0.75, 0.2), Color(0.4, 0.8, 0.3)], [Color(0.9, 0.85, 0.3), Color(0.95, 0.55, 0.2)], [Color(0.55, 0.3, 0.7), Color(0.3, 0.6, 0.25), Color(1.0, 0.4, 0.5)], [Color(0.6, 0.85, 0.95), Color(0.95, 0.95, 0.9)]]
+	var aw: = [Color(1.0, 0.35, 0.3), Color(0.2, 0.6, 0.95), Color(0.3, 0.75, 0.4), Color(1.0, 0.7, 0.2), Color(0.85, 0.4, 0.85)]
+	for k in 5:
+		var sp: = feira_c + Vector3(-9.6 + k * 4.8, 0.08, -1.4)
+		D.stall(self, sp, 0.0, aw[k], goods[k % goods.size()])
+		_block(sp, 2.6, 1.6, 0.3)
+	B.label(self, "FEIRA DA VILA", feira_c + Vector3(0, 3.4, -2.6), 90, Color(1.0, 0.95, 0.6), Color(0.45, 0.2, 0.05, 1.0), PI)
+	for sx in [-1.0, 1.0]:
+		B.cyl(self, 0.08, 0.08, 3.6, feira_c + Vector3(sx * 11.6, 1.8, -2.6), D.m(Color(0.6, 0.42, 0.25)), 8)
+	D.bunting(self, feira_c + Vector3(-11.6, 3.3, -2.6), feira_c + Vector3(11.6, 3.3, -2.6), 0.6, 0.5)
+	# bandeirinhas atravessando as ruas
+	var bx: = 46.0
+	while bx < 100.0:
+		D.bunting(self, Vector3(bx, 4.6, STREET_Z - 3.6), Vector3(bx + 4.0, 4.6, STREET_Z + 3.6), 0.7)
+		bx += 9.0
+	bx = 4.0
+	while bx < 104.0:
+		D.bunting(self, Vector3(bx, 4.4, BACK_Z - 3.6), Vector3(bx + 3.0, 4.4, BACK_Z + 3.6), 0.6)
+		bx += 12.0
+	# postes de luz de madeira com fios
+	var prev: = Vector3.INF
+	var px: = 0.0
+	while px < 110.0:
+		var top: = D.power_pole(self, Vector3(px, 0, BACK_Z - 3.9))
+		if prev != Vector3.INF:
+			for o in [-0.6, 0.0, 0.6]:
+				D.wire(self, prev + Vector3(o, 0, 0), top + Vector3(o, 0, 0), 0.5)
+		prev = top
+		px += 15.0
+	# postes de iluminação nas ruas novas
+	var lx: = 6.0
+	while lx < 106.0:
+		_add_lamp(Vector3(lx, 0.15, BACK_Z + 3.5))
+		lx += 14.0
+	for lz in [40.0, 52.0]:
+		_add_lamp(Vector3(CROSS_X - 3.5, 0.15, lz))
+		_add_lamp(Vector3(104.0 + 3.5, 0.15, lz))
+	# caixinhas de correio, bancos, bichos
+	for k in 8:
+		D.mailbox(self, Vector3(9.0 + k * 12.0, 0.15, BACK_Z + 2.4), 0.0)
+	D.cat(self, Vector3(20.5, 0.3, 25.2), 0.4, Color(0.95, 0.6, 0.25))
+	D.cat(self, Vector3(62.0, 0.3, 26.0), -1.2, Color(0.2, 0.2, 0.22))
+	D.cat(self, Vector3(42.0, 0.3, BACK_Z - 2.6), 2.0, Color(0.95, 0.95, 0.92))
+	D.dog(self, Vector3(66.0, 0.15, 33.6), 1.4, Color(0.75, 0.55, 0.32))
+	D.dog(self, Vector3(30.0, 0.15, BACK_Z + 2.8), -0.6, Color(0.95, 0.9, 0.82))
+	for k in 4:
+		var bp: = Vector3(16.0 + k * 22.0, 0.1, BACK_Z + 2.4)
+		B.model(self, "painted_wooden_bench", bp, PI, 1.0)
+		bench_spots.append({"pos": bp + Vector3(0, 0.05, 0), "rot": PI, "anim": "Sitting_Idle_Loop", "busy": false})
+	for k in 6:
+		_bike(Vector3(14.0 + k * 15.0, 0.15, BACK_Z - 2.6), PI * 0.5, D.FLAG_COLS[k % D.FLAG_COLS.size()])
+	# píer e farol
+	D.pier(self, Vector3(PIER_X, -0.25, -22.0), 27.0, 2.6)
+	var ramp: = B.wall(self, Vector3(2.6, 0.2, 2.2), Vector3(PIER_X, 0.12, -21.6))
+	ramp.rotation.x = 0.12
+	for sx in [-1.0, 1.0]:
+		B.wall(self, Vector3(0.2, 3.0, 28.0), Vector3(PIER_X + sx * 1.35, 1.6, -36.0))
+	B.wall(self, Vector3(5.0, 3.0, 0.2), Vector3(PIER_X, 1.6, -50.7))
+	for sx in [-1.0, 1.0]:
+		B.wall(self, Vector3(0.2, 3.0, 3.2), Vector3(PIER_X + sx * 2.5, 1.6, -48.6))
+	_lighthouse = D.lighthouse(self, Vector3(108.0, 0.0, -40.0))
+	# caminhos novos dos moradores
+	var bn: = BACK_Z - 2.9
+	var bs: = BACK_Z + 2.9
+	village_paths.append([Vector3(-1, 0.15, bn), Vector3(30, 0.15, bn), Vector3(70, 0.15, bn), Vector3(107, 0.15, bn)])
+	village_paths.append([Vector3(107, 0.15, bs), Vector3(60, 0.15, bs), Vector3(20, 0.15, bs), Vector3(-1, 0.15, bs)])
+	village_paths.append([Vector3(CROSS_X + 2.9, 0.15, STREET_Z + 3.5), Vector3(CROSS_X + 2.9, 0.15, bn)])
+	village_paths.append([Vector3(104 - 2.9, 0.15, bn), Vector3(104 - 2.9, 0.15, STREET_Z + 3.5)])
+	village_paths.append([feira_c + Vector3(-11, 0.15, 1.6), feira_c + Vector3(11, 0.15, 1.6), feira_c + Vector3(11, 0.15, 2.8), feira_c + Vector3(-11, 0.15, 2.8)])
+	village_paths.append([Vector3(PIER_X, 0.4, -24.0), Vector3(PIER_X, 0.4, -46.0)])
+
+# ------------------------------------------------------------------ v0.7.1: vida na praia
+func _beach_life() -> void :
+	var spots: = [Vector3(28, 0, -21.5), Vector3(47, 0, -22.5), Vector3(22, 0, -24.0), Vector3(95, 0, -22.0), Vector3(-36, 0, -21.0)]
+	for i in spots.size():
+		var p: Vector3 = spots[i]
+		p.y = _height(p.x, p.z)
+		D.beach_spot(self, p, 50 + i)
+	D.sand_castle(self, Vector3(33.0, _height(33, -24.5), -24.5))
+	D.volley_net(self, Vector3(-30.0, 0.0, -20.0), 0.0)
+	var rng: = RandomNumberGenerator.new()
+	rng.seed = 99
+	for k in 14:
+		var sp: = Vector3(rng.randf_range(-40, 100), 0, rng.randf_range(-28.5, -25.5))
+		sp.y = _height(sp.x, sp.z)
+		D.starfish(self, sp, [Color(1.0, 0.5, 0.35), Color(1.0, 0.8, 0.3), Color(0.95, 0.4, 0.6)][k % 3])
+	for k in 7:
+		var cp: = Vector3(rng.randf_range(-35, 100), 0, rng.randf_range(-29.0, -26.0))
+		cp.y = _height(cp.x, cp.z) + 0.01
+		D.crab(self, cp, rng.randf_range(1.0, 2.2))
