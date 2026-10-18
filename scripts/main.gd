@@ -347,8 +347,8 @@ func _run_shot(n: String) -> void :
 		_dress_room(0)
 	elif n == "resumo":
 		hud.show_summary(_demo_summary())
-	if n in ["estoque", "upgrade", "bangalo_up", "resumo", "pausa", "recepcao", "npc_bar", "npc_anda", "npc_senta", "quiosque", "balcao", "rosto"]:
-		var extra: = 36 if n in ["npc_bar", "quiosque", "balcao"] else 12
+	if n in ["estoque", "upgrade", "bangalo_up", "resumo", "pausa", "recepcao", "npc_bar", "npc_anda", "npc_senta", "quiosque", "balcao", "rosto", "celular", "celular_home"]:
+		var extra: = 36 if n in ["npc_bar", "quiosque", "balcao", "celular", "celular_home"] else 12
 		for i in extra:
 			await get_tree().process_frame
 	if n == "npc_anda":

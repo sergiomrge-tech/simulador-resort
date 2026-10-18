@@ -106,7 +106,7 @@ func _ready() -> void :
 	Core.upgrades_changed.connect(func(_r): _refresh_if_open())
 
 func _place() -> void :
-	var vs: = size
+	var vs: = get_viewport_rect().size if size.x < 10.0 else size
 	_phone.size = Vector2(W, minf(H, vs.y - 30.0))
 	_phone.position = Vector2(vs.x - W - 60.0, (vs.y - _phone.size.y) * 0.5)
 
@@ -120,6 +120,7 @@ func open(which: String = "", arg: int = -1) -> void :
 		room_focus = arg
 	app = which
 	visible = true
+	move_to_front()
 	_place()
 	refresh()
 	if _tween:
@@ -296,6 +297,8 @@ func refresh() -> void :
 	var list: = VBoxContainer.new()
 	list.add_theme_constant_override("separation", 10)
 	list.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	# largura fixa: sem isto os textos longos empurram os cartões para fora da tela do celular
+	list.custom_minimum_size.x = W - 28.0 - 24.0 - 10.0
 	m.add_child(list)
 	match app:
 		"expansoes":
@@ -412,7 +415,7 @@ func _app_expansions(list: VBoxContainer) -> void :
 			if st[0] == "ready":
 				_btn(r2, tr("Comprar"), func(): Core.buy_expansion(id), Color(1.0, 0.45, 0.35))
 			else:
-				_chip(r2, str(st[1]), Color.WHITE, BAD if st[0] == "money" else Color(0.55, 0.55, 0.62))
+				_lbl(c, str(st[1]), 14, BAD if st[0] == "money" else INK_SOFT, true, true)
 
 func _app_market(list: VBoxContainer) -> void :
 	_lbl(list, tr("Entrega na hora no quiosque. Fardos de %d.") % Economy.PACK, 15, INK_SOFT, false, true)
@@ -509,11 +512,11 @@ func _app_staff(list: VBoxContainer) -> void :
 		_lbl(v, tr(str(s.name)), 18, INK, true, true)
 		_lbl(v, tr(str(s.blurb)), 14, INK_SOFT, false, true)
 		var r2: = _row(c, 8)
-		_expand(_lbl(r2, tr("Contratar %s · salário %s/dia") % [Core.fmt_money(int(s.hire)), Core.fmt_money(int(s.wage))], 14, INK, true))
+		_expand(_lbl(r2, tr("Contratar %s · salário %s/dia") % [Core.fmt_money(int(s.hire)), Core.fmt_money(int(s.wage))], 14, INK, true, true))
 		if hired:
 			_chip(r2, tr("✓ Na equipe"), Color.WHITE, GOOD)
 		elif need != "" and not Core.has(need):
-			_chip(r2, tr("Precisa: %s") % tr(str(Economy.EXPANSIONS[need].name)), Color.WHITE, Color(0.55, 0.55, 0.62))
+			_lbl(c, tr("Precisa de: %s") % tr(str(Economy.EXPANSIONS[need].name)), 14, INK_SOFT, true, true)
 		else:
 			_btn(r2, tr("Contratar"), func(): Core.hire(role), Color(0.6, 0.4, 0.9), Core.money >= int(s.hire))
 

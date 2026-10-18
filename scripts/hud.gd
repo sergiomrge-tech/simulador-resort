@@ -346,6 +346,12 @@ func _process(delta: float) -> void :
 		_hint_t = 0.5
 		hint_l.text = _hint()
 		_update_objective()
+	# com o celular aberto, some o que ficaria por baixo/por cima dele
+	var phone_open: bool = shop != null and shop.visible
+	hint_l.visible = not phone_open
+	if keys_l:
+		keys_l.visible = not phone_open and not touch
+	crosshair.visible = not phone_open
 	crosshair.queue_redraw()
 	obj_draw.queue_redraw()
 	if compass:
