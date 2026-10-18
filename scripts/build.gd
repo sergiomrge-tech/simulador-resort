@@ -116,7 +116,9 @@ static func rounded_box(size: Vector3) -> Mesh:
 				var e1: Vector3 = q[1][0] - q[0][0]
 				var e2: Vector3 = q[3][0] - q[0][0]
 				var flip: = e1.cross(e2).dot(n) < 0.0
-				var order: = [0, 1, 2, 0, 2, 3] if not flip else [0, 2, 1, 0, 3, 2]
+				# Godot desenha a face da frente no sentido horário: sem isso as caixas ficavam do avesso
+				# (a parede de perto sumia e dava para ver o interior — "paredes transparentes")
+				var order: = [0, 2, 1, 0, 3, 2] if not flip else [0, 1, 2, 0, 2, 3]
 				for k in order:
 					st.set_normal(q[k][1])
 					st.set_uv(Vector2(q[k][0][ua], q[k][0][va]))
@@ -124,6 +126,40 @@ static func rounded_box(size: Vector3) -> Mesh:
 	var mesh: = st.commit()
 	_rboxes[key] = mesh
 	return mesh
+
+## Godot considera "frente" o triângulo em sentido horário. Acerta a ordem de cada triângulo
+## (malha sem índice) para a normal apontar para fora — senão a face some vista de fora.
+static func fix_winding(arr: Array) -> Array:
+	var v: PackedVector3Array = arr[Mesh.ARRAY_VERTEX]
+	var n: PackedVector3Array = arr[Mesh.ARRAY_NORMAL]
+	var uv = arr[Mesh.ARRAY_TEX_UV]
+	var has_uv: = uv is PackedVector2Array and (uv as PackedVector2Array).size() == v.size()
+	var i: = 0
+	while i + 2 < v.size():
+		var fn: = (v[i + 1] - v[i]).cross(v[i + 2] - v[i])
+		var want: = n[i] + n[i + 1] + n[i + 2]
+		if fn.dot(want) > 0.0:
+			var tv: = v[i + 1]
+			v[i + 1] = v[i + 2]
+			v[i + 2] = tv
+			var tn: = n[i + 1]
+			n[i + 1] = n[i + 2]
+			n[i + 2] = tn
+			if has_uv:
+				var tu: Vector2 = uv[i + 1]
+				uv[i + 1] = uv[i + 2]
+				uv[i + 2] = tu
+		i += 3
+	arr[Mesh.ARRAY_VERTEX] = v
+	arr[Mesh.ARRAY_NORMAL] = n
+	if has_uv:
+		arr[Mesh.ARRAY_TEX_UV] = uv
+	return arr
+
+static func cw_mesh(arr: Array) -> ArrayMesh:
+	var am: = ArrayMesh.new()
+	am.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, fix_winding(arr))
+	return am
 
 static func box(parent: Node, size: Vector3, pos: Vector3, m: Material, collide: = false, rot_y: = 0.0) -> MeshInstance3D:
 	var mi: = MeshInstance3D.new()
@@ -289,7 +325,7 @@ static func arch(parent: Node, center: Vector3, r_in: float, r_out: float, depth
 			st.set_normal(- no)
 			st.add_vertex(v)
 	var mi: = MeshInstance3D.new()
-	mi.mesh = st.commit()
+	mi.mesh = cw_mesh(st.commit_to_arrays())
 	mi.material_override = m
 	mi.position = center
 	mi.rotation.y = rot_y
@@ -374,7 +410,7 @@ static func _detailed_roof_mesh(w: float, d: float, peak: float, thickness: floa
 			st.set_normal(en)
 			st.set_uv(Vector2(vv.x + vv.z, vv.y * 3.0) * 0.55)
 			st.add_vertex(vv)
-	var arr: = st.commit_to_arrays()
+	var arr: = fix_winding(st.commit_to_arrays())
 	var im: = ImporterMesh.new()
 	im.add_surface(Mesh.PRIMITIVE_TRIANGLES, arr)
 	im.generate_lods(25.0, 60.0, [])
