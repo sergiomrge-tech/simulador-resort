@@ -1,0 +1,6356 @@
+[
+ {
+  "codigo": "CEN-001",
+  "categoria": "CEN",
+  "chave": "details.m",
+  "nome": "M",
+  "fonte": "details.gd (código)",
+  "usos": [
+   {
+    "arquivo": "details.gd",
+    "linha": 11,
+    "funcao": "m"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-002",
+  "categoria": "CEN",
+  "chave": "details.multimesh",
+  "nome": "Multimesh",
+  "fonte": "details.gd (código)",
+  "usos": [
+   {
+    "arquivo": "details.gd",
+    "linha": 29,
+    "funcao": "multimesh"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-003",
+  "categoria": "CEN",
+  "chave": "details.bunting",
+  "nome": "Bunting",
+  "fonte": "details.gd (código)",
+  "usos": [
+   {
+    "arquivo": "details.gd",
+    "linha": 55,
+    "funcao": "bunting"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-004",
+  "categoria": "CEN",
+  "chave": "details.thatch_fringe",
+  "nome": "Thatch fringe",
+  "fonte": "details.gd (código)",
+  "usos": [
+   {
+    "arquivo": "details.gd",
+    "linha": 87,
+    "funcao": "thatch_fringe"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-005",
+  "categoria": "CEN",
+  "chave": "details.tiki_torch",
+  "nome": "Tiki torch",
+  "fonte": "details.gd (código)",
+  "usos": [
+   {
+    "arquivo": "details.gd",
+    "linha": 113,
+    "funcao": "tiki_torch"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-006",
+  "categoria": "CEN",
+  "chave": "details.signpost",
+  "nome": "Signpost",
+  "fonte": "details.gd (código)",
+  "usos": [
+   {
+    "arquivo": "details.gd",
+    "linha": 129,
+    "funcao": "signpost"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-007",
+  "categoria": "CEN",
+  "chave": "details.surfboard",
+  "nome": "Surfboard",
+  "fonte": "details.gd (código)",
+  "usos": [
+   {
+    "arquivo": "details.gd",
+    "linha": 146,
+    "funcao": "surfboard"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-008",
+  "categoria": "CEN",
+  "chave": "details.towel",
+  "nome": "Towel",
+  "fonte": "details.gd (código)",
+  "usos": [
+   {
+    "arquivo": "details.gd",
+    "linha": 156,
+    "funcao": "towel"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-009",
+  "categoria": "CEN",
+  "chave": "details.coconut_pile",
+  "nome": "Coconut pile",
+  "fonte": "details.gd (código)",
+  "usos": [
+   {
+    "arquivo": "details.gd",
+    "linha": 162,
+    "funcao": "coconut_pile"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-010",
+  "categoria": "CEN",
+  "chave": "details.bananas",
+  "nome": "Bananas",
+  "fonte": "details.gd (código)",
+  "usos": [
+   {
+    "arquivo": "details.gd",
+    "linha": 180,
+    "funcao": "bananas"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-011",
+  "categoria": "CEN",
+  "chave": "details.pineapple",
+  "nome": "Pineapple",
+  "fonte": "details.gd (código)",
+  "usos": [
+   {
+    "arquivo": "details.gd",
+    "linha": 186,
+    "funcao": "pineapple"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-012",
+  "categoria": "CEN",
+  "chave": "details.cup_stack",
+  "nome": "Cup stack",
+  "fonte": "details.gd (código)",
+  "usos": [
+   {
+    "arquivo": "details.gd",
+    "linha": 189,
+    "funcao": "cup_stack"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-013",
+  "categoria": "CEN",
+  "chave": "details.blender",
+  "nome": "Blender",
+  "fonte": "details.gd (código)",
+  "usos": [
+   {
+    "arquivo": "details.gd",
+    "linha": 193,
+    "funcao": "blender"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-014",
+  "categoria": "CEN",
+  "chave": "details.tip_jar",
+  "nome": "Tip jar",
+  "fonte": "details.gd (código)",
+  "usos": [
+   {
+    "arquivo": "details.gd",
+    "linha": 197,
+    "funcao": "tip_jar"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-015",
+  "categoria": "CEN",
+  "chave": "details.straw_cup",
+  "nome": "Straw cup",
+  "fonte": "details.gd (código)",
+  "usos": [
+   {
+    "arquivo": "details.gd",
+    "linha": 202,
+    "funcao": "straw_cup"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-016",
+  "categoria": "CEN",
+  "chave": "details.radio",
+  "nome": "Radio",
+  "fonte": "details.gd (código)",
+  "usos": [
+   {
+    "arquivo": "details.gd",
+    "linha": 205,
+    "funcao": "radio"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-017",
+  "categoria": "CEN",
+  "chave": "details.trash_bin",
+  "nome": "Trash bin",
+  "fonte": "details.gd (código)",
+  "usos": [
+   {
+    "arquivo": "details.gd",
+    "linha": 208,
+    "funcao": "trash_bin"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-018",
+  "categoria": "CEN",
+  "chave": "details.open_sign",
+  "nome": "Open sign",
+  "fonte": "details.gd (código)",
+  "usos": [
+   {
+    "arquivo": "details.gd",
+    "linha": 211,
+    "funcao": "open_sign"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-019",
+  "categoria": "CEN",
+  "chave": "details.sand_castle",
+  "nome": "Sand castle",
+  "fonte": "details.gd (código)",
+  "usos": [
+   {
+    "arquivo": "details.gd",
+    "linha": 224,
+    "funcao": "sand_castle"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-020",
+  "categoria": "CEN",
+  "chave": "details.starfish",
+  "nome": "Starfish",
+  "fonte": "details.gd (código)",
+  "usos": [
+   {
+    "arquivo": "details.gd",
+    "linha": 235,
+    "funcao": "starfish"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-021",
+  "categoria": "CEN",
+  "chave": "details.crab",
+  "nome": "Crab",
+  "fonte": "details.gd (código)",
+  "usos": [
+   {
+    "arquivo": "details.gd",
+    "linha": 238,
+    "funcao": "crab"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-022",
+  "categoria": "CEN",
+  "chave": "details.volley_net",
+  "nome": "Volley net",
+  "fonte": "details.gd (código)",
+  "usos": [
+   {
+    "arquivo": "details.gd",
+    "linha": 262,
+    "funcao": "volley_net"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-023",
+  "categoria": "CEN",
+  "chave": "details.beach_spot",
+  "nome": "Beach spot",
+  "fonte": "details.gd (código)",
+  "usos": [
+   {
+    "arquivo": "details.gd",
+    "linha": 280,
+    "funcao": "beach_spot"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-024",
+  "categoria": "CEN",
+  "chave": "details.power_pole",
+  "nome": "Power pole",
+  "fonte": "details.gd (código)",
+  "usos": [
+   {
+    "arquivo": "details.gd",
+    "linha": 297,
+    "funcao": "power_pole"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-025",
+  "categoria": "CEN",
+  "chave": "details.wire",
+  "nome": "Wire",
+  "fonte": "details.gd (código)",
+  "usos": [
+   {
+    "arquivo": "details.gd",
+    "linha": 304,
+    "funcao": "wire"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-026",
+  "categoria": "CEN",
+  "chave": "details.stall",
+  "nome": "Stall",
+  "fonte": "details.gd (código)",
+  "usos": [
+   {
+    "arquivo": "details.gd",
+    "linha": 319,
+    "funcao": "stall"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-027",
+  "categoria": "CEN",
+  "chave": "details.mailbox",
+  "nome": "Mailbox",
+  "fonte": "details.gd (código)",
+  "usos": [
+   {
+    "arquivo": "details.gd",
+    "linha": 351,
+    "funcao": "mailbox"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-028",
+  "categoria": "CEN",
+  "chave": "details.cat",
+  "nome": "Cat",
+  "fonte": "details.gd (código)",
+  "usos": [
+   {
+    "arquivo": "details.gd",
+    "linha": 355,
+    "funcao": "cat"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-029",
+  "categoria": "CEN",
+  "chave": "details.dog",
+  "nome": "Dog",
+  "fonte": "details.gd (código)",
+  "usos": [
+   {
+    "arquivo": "details.gd",
+    "linha": 365,
+    "funcao": "dog"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-030",
+  "categoria": "CEN",
+  "chave": "details.pier",
+  "nome": "Pier",
+  "fonte": "details.gd (código)",
+  "usos": [
+   {
+    "arquivo": "details.gd",
+    "linha": 377,
+    "funcao": "pier"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-031",
+  "categoria": "CEN",
+  "chave": "details.lighthouse",
+  "nome": "Lighthouse",
+  "fonte": "details.gd (código)",
+  "usos": [
+   {
+    "arquivo": "details.gd",
+    "linha": 398,
+    "funcao": "lighthouse"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-032",
+  "categoria": "CEN",
+  "chave": "build.tex",
+  "nome": "Tex",
+  "fonte": "build.gd (código)",
+  "usos": [
+   {
+    "arquivo": "build.gd",
+    "linha": 16,
+    "funcao": "tex"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-033",
+  "categoria": "CEN",
+  "chave": "build.nor",
+  "nome": "Nor",
+  "fonte": "build.gd (código)",
+  "usos": [
+   {
+    "arquivo": "build.gd",
+    "linha": 20,
+    "funcao": "nor"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-034",
+  "categoria": "CEN",
+  "chave": "build.rough_tex",
+  "nome": "Rough tex",
+  "fonte": "build.gd (código)",
+  "usos": [
+   {
+    "arquivo": "build.gd",
+    "linha": 24,
+    "funcao": "rough_tex"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-035",
+  "categoria": "CEN",
+  "chave": "build.mat",
+  "nome": "Mat",
+  "fonte": "build.gd (código)",
+  "usos": [
+   {
+    "arquivo": "build.gd",
+    "linha": 29,
+    "funcao": "mat"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-036",
+  "categoria": "CEN",
+  "chave": "build.flat",
+  "nome": "Flat",
+  "fonte": "build.gd (código)",
+  "usos": [
+   {
+    "arquivo": "build.gd",
+    "linha": 56,
+    "funcao": "flat"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-037",
+  "categoria": "CEN",
+  "chave": "build.rounded_box",
+  "nome": "Rounded box",
+  "fonte": "build.gd (código)",
+  "usos": [
+   {
+    "arquivo": "build.gd",
+    "linha": 74,
+    "funcao": "rounded_box"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-038",
+  "categoria": "CEN",
+  "chave": "build.fix_winding",
+  "nome": "Fix winding",
+  "fonte": "build.gd (código)",
+  "usos": [
+   {
+    "arquivo": "build.gd",
+    "linha": 132,
+    "funcao": "fix_winding"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-039",
+  "categoria": "CEN",
+  "chave": "build.cw_mesh",
+  "nome": "Cw mesh",
+  "fonte": "build.gd (código)",
+  "usos": [
+   {
+    "arquivo": "build.gd",
+    "linha": 159,
+    "funcao": "cw_mesh"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-040",
+  "categoria": "CEN",
+  "chave": "build.box",
+  "nome": "Box",
+  "fonte": "build.gd (código)",
+  "usos": [
+   {
+    "arquivo": "build.gd",
+    "linha": 164,
+    "funcao": "box"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-041",
+  "categoria": "CEN",
+  "chave": "build.cyl",
+  "nome": "Cyl",
+  "fonte": "build.gd (código)",
+  "usos": [
+   {
+    "arquivo": "build.gd",
+    "linha": 186,
+    "funcao": "cyl"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-042",
+  "categoria": "CEN",
+  "chave": "build.sphere",
+  "nome": "Sphere",
+  "fonte": "build.gd (código)",
+  "usos": [
+   {
+    "arquivo": "build.gd",
+    "linha": 201,
+    "funcao": "sphere"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-043",
+  "categoria": "CEN",
+  "chave": "build.wall",
+  "nome": "Wall",
+  "fonte": "build.gd (código)",
+  "usos": [
+   {
+    "arquivo": "build.gd",
+    "linha": 216,
+    "funcao": "wall"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-044",
+  "categoria": "CEN",
+  "chave": "build.platform",
+  "nome": "Platform",
+  "fonte": "build.gd (código)",
+  "usos": [
+   {
+    "arquivo": "build.gd",
+    "linha": 229,
+    "funcao": "platform"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-045",
+  "categoria": "CEN",
+  "chave": "build.hip_roof",
+  "nome": "Hip roof",
+  "fonte": "build.gd (código)",
+  "usos": [
+   {
+    "arquivo": "build.gd",
+    "linha": 253,
+    "funcao": "hip_roof"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-046",
+  "categoria": "CEN",
+  "chave": "build.arch",
+  "nome": "Arch",
+  "fonte": "build.gd (código)",
+  "usos": [
+   {
+    "arquivo": "build.gd",
+    "linha": 314,
+    "funcao": "arch"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-047",
+  "categoria": "CEN",
+  "chave": "build.model",
+  "nome": "Model",
+  "fonte": "build.gd (código)",
+  "usos": [
+   {
+    "arquivo": "build.gd",
+    "linha": 500,
+    "funcao": "model"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-048",
+  "categoria": "CEN",
+  "chave": "build.label",
+  "nome": "Label",
+  "fonte": "build.gd (código)",
+  "usos": [
+   {
+    "arquivo": "build.gd",
+    "linha": 534,
+    "funcao": "label"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-049",
+  "categoria": "CEN",
+  "chave": "build.has_model",
+  "nome": "Has model",
+  "fonte": "build.gd (código)",
+  "usos": [
+   {
+    "arquivo": "build.gd",
+    "linha": 555,
+    "funcao": "has_model"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-050",
+  "categoria": "CEN",
+  "chave": "build.aabb_of",
+  "nome": "Aabb of",
+  "fonte": "build.gd (código)",
+  "usos": [
+   {
+    "arquivo": "build.gd",
+    "linha": 561,
+    "funcao": "aabb_of"
+   }
+  ]
+ },
+ {
+  "codigo": "DSH-001",
+  "categoria": "DSH",
+  "chave": "coco_gelado",
+  "nome": "Coco gelado",
+  "fonte": "economy.gd",
+  "usos": [
+   {
+    "arquivo": "economy.gd",
+    "linha": 178,
+    "funcao": ""
+   }
+  ],
+  "preco": "12"
+ },
+ {
+  "codigo": "DSH-002",
+  "categoria": "DSH",
+  "chave": "caipirinha",
+  "nome": "Caipirinha",
+  "fonte": "economy.gd",
+  "usos": [
+   {
+    "arquivo": "economy.gd",
+    "linha": 63,
+    "funcao": ""
+   }
+  ],
+  "preco": "22"
+ },
+ {
+  "codigo": "DSH-003",
+  "categoria": "DSH",
+  "chave": "petiscos",
+  "nome": "Petiscos",
+  "fonte": "economy.gd",
+  "usos": [
+   {
+    "arquivo": "economy.gd",
+    "linha": 63,
+    "funcao": ""
+   }
+  ],
+  "preco": "26"
+ },
+ {
+  "codigo": "DSH-004",
+  "categoria": "DSH",
+  "chave": "suco",
+  "nome": "Suco da fruta",
+  "fonte": "economy.gd",
+  "usos": [
+   {
+    "arquivo": "economy.gd",
+    "linha": 181,
+    "funcao": ""
+   }
+  ],
+  "preco": "14"
+ },
+ {
+  "codigo": "EVT-001",
+  "categoria": "EVT",
+  "chave": "calor",
+  "nome": "Dia de calor",
+  "fonte": "economy.gd",
+  "usos": [
+   {
+    "arquivo": "economy.gd",
+    "linha": 200,
+    "funcao": ""
+   }
+  ],
+  "descricao": "Todo mundo quer coco e suco gelado: mais clientes e pedidos de bebidas frescas."
+ },
+ {
+  "codigo": "EVT-002",
+  "categoria": "EVT",
+  "chave": "lua",
+  "nome": "Noite de lua cheia",
+  "fonte": "economy.gd",
+  "usos": [
+   {
+    "arquivo": "economy.gd",
+    "linha": 201,
+    "funcao": ""
+   }
+  ],
+  "descricao": "À noite o bar e o quiosque lotam. Deixe estoque para o fim da tarde."
+ },
+ {
+  "codigo": "EXP-001",
+  "categoria": "EXP",
+  "chave": "kiosk_tables",
+  "nome": "Mesas e guarda-sóis",
+  "fonte": "economy.gd",
+  "usos": [
+   {
+    "arquivo": "economy.gd",
+    "linha": 32,
+    "funcao": ""
+   }
+  ],
+  "custo": "180",
+  "estrelas": "0.0",
+  "descricao": "+2 lugares no quiosque e clientes chegando mais rápido."
+ },
+ {
+  "codigo": "EXP-002",
+  "categoria": "EXP",
+  "chave": "drinks",
+  "nome": "Licença de drinks",
+  "fonte": "economy.gd",
+  "usos": [
+   {
+    "arquivo": "economy.gd",
+    "linha": 36,
+    "funcao": ""
+   }
+  ],
+  "custo": "260",
+  "estrelas": "0.0",
+  "descricao": "Libera a caipirinha no cardápio do quiosque."
+ },
+ {
+  "codigo": "EXP-003",
+  "categoria": "EXP",
+  "chave": "neon",
+  "nome": "Letreiro neon",
+  "fonte": "economy.gd",
+  "usos": [
+   {
+    "arquivo": "economy.gd",
+    "linha": 40,
+    "funcao": ""
+   }
+  ],
+  "custo": "150",
+  "estrelas": "0.0",
+  "descricao": "O quiosque fica aberto até 21:00, com luzes coloridas."
+ },
+ {
+  "codigo": "EXP-004",
+  "categoria": "EXP",
+  "chave": "grill",
+  "nome": "Chapa de petiscos",
+  "fonte": "economy.gd",
+  "usos": [
+   {
+    "arquivo": "economy.gd",
+    "linha": 44,
+    "funcao": ""
+   }
+  ],
+  "custo": "380",
+  "estrelas": "3.4",
+  "descricao": "Libera os petiscos de peixe (o prato mais caro)."
+ },
+ {
+  "codigo": "EXP-005",
+  "categoria": "EXP",
+  "chave": "bar",
+  "nome": "Bar do Coqueiro",
+  "fonte": "economy.gd",
+  "usos": [
+   {
+    "arquivo": "economy.gd",
+    "linha": 48,
+    "funcao": ""
+   }
+  ],
+  "custo": "1200",
+  "estrelas": "3.6",
+  "descricao": "Um bar de praia com barman. Banhistas sentam e pedem drinks sozinhos."
+ },
+ {
+  "codigo": "EXP-006",
+  "categoria": "EXP",
+  "chave": "pousada",
+  "nome": "Pousada: recepção + bangalô",
+  "fonte": "economy.gd",
+  "usos": [
+   {
+    "arquivo": "economy.gd",
+    "linha": 52,
+    "funcao": ""
+   }
+  ],
+  "custo": "2400",
+  "estrelas": "3.8",
+  "descricao": "Recepção e o primeiro bangalô. Hóspedes pagam diária e dão gorjeta."
+ },
+ {
+  "codigo": "EXP-007",
+  "categoria": "EXP",
+  "chave": "pool",
+  "nome": "Piscina",
+  "fonte": "economy.gd",
+  "usos": [
+   {
+    "arquivo": "economy.gd",
+    "linha": 56,
+    "funcao": ""
+   }
+  ],
+  "custo": "2000",
+  "estrelas": "4.0",
+  "descricao": "Piscina com espreguiçadeiras. Hóspedes ficam mais felizes (+★)."
+ },
+ {
+  "codigo": "MOD-001",
+  "categoria": "MOD",
+  "chave": "Camera_01",
+  "nome": "Camera 01",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [
+   {
+    "arquivo": "guest.gd",
+    "linha": 853,
+    "funcao": "_caricature"
+   }
+  ],
+  "arquivo_modelo": "assets/models/Camera_01/Camera_01.gltf"
+ },
+ {
+  "codigo": "MOD-002",
+  "categoria": "MOD",
+  "chave": "CashRegister_01",
+  "nome": "Cash register 01",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [
+   {
+    "arquivo": "props.gd",
+    "linha": 44,
+    "funcao": "_init_builders"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 291,
+    "funcao": "_reception"
+   }
+  ],
+  "arquivo_modelo": "assets/models/CashRegister_01/CashRegister_01.gltf",
+  "tambem_procedural": true
+ },
+ {
+  "codigo": "MOD-003",
+  "categoria": "MOD",
+  "chave": "CoffeeCart_01",
+  "nome": "Coffee cart 01",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [
+   {
+    "arquivo": "props.gd",
+    "linha": 44,
+    "funcao": "_init_builders"
+   },
+   {
+    "arquivo": "world_village.gd",
+    "linha": 583,
+    "funcao": "_church_and_praca"
+   }
+  ],
+  "arquivo_modelo": "assets/models/CoffeeCart_01/CoffeeCart_01.gltf",
+  "tambem_procedural": true
+ },
+ {
+  "codigo": "MOD-004",
+  "categoria": "MOD",
+  "chave": "GothicBed_01",
+  "nome": "Gothic bed 01",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [
+   {
+    "arquivo": "props.gd",
+    "linha": 40,
+    "funcao": "_init_builders"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 762,
+    "funcao": "_upgrade_meshes"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 765,
+    "funcao": "_upgrade_meshes"
+   },
+   {
+    "arquivo": "world_village.gd",
+    "linha": 457,
+    "funcao": "_hero_house"
+   }
+  ],
+  "arquivo_modelo": "assets/models/GothicBed_01/GothicBed_01.gltf",
+  "tambem_procedural": true
+ },
+ {
+  "codigo": "MOD-005",
+  "categoria": "MOD",
+  "chave": "Rockingchair_01",
+  "nome": "Rockingchair 01",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [
+   {
+    "arquivo": "props.gd",
+    "linha": 41,
+    "funcao": "_init_builders"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 802,
+    "funcao": "_upgrade_meshes"
+   },
+   {
+    "arquivo": "world_village.gd",
+    "linha": 475,
+    "funcao": "_hero_house"
+   }
+  ],
+  "arquivo_modelo": "assets/models/Rockingchair_01/Rockingchair_01.gltf",
+  "tambem_procedural": true
+ },
+ {
+  "codigo": "MOD-006",
+  "categoria": "MOD",
+  "chave": "Shelf_01",
+  "nome": "Shelf 01",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [
+   {
+    "arquivo": "props.gd",
+    "linha": 31,
+    "funcao": "_init_builders"
+   },
+   {
+    "arquivo": "world_village.gd",
+    "linha": 394,
+    "funcao": "_houses"
+   },
+   {
+    "arquivo": "world_village.gd",
+    "linha": 462,
+    "funcao": "_hero_house"
+   }
+  ],
+  "arquivo_modelo": "assets/models/Shelf_01/Shelf_01.gltf",
+  "tambem_procedural": true
+ },
+ {
+  "codigo": "MOD-007",
+  "categoria": "MOD",
+  "chave": "WoodenChair_01",
+  "nome": "Wooden chair 01",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [
+   {
+    "arquivo": "props.gd",
+    "linha": 30,
+    "funcao": "_init_builders"
+   }
+  ],
+  "arquivo_modelo": "assets/models/WoodenChair_01/WoodenChair_01.gltf",
+  "tambem_procedural": true
+ },
+ {
+  "codigo": "MOD-008",
+  "categoria": "MOD",
+  "chave": "WoodenTable_01",
+  "nome": "Wooden table 01",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [
+   {
+    "arquivo": "props.gd",
+    "linha": 27,
+    "funcao": "_init_builders"
+   },
+   {
+    "arquivo": "world_village.gd",
+    "linha": 486,
+    "funcao": "_hero_house"
+   }
+  ],
+  "arquivo_modelo": "assets/models/WoodenTable_01/WoodenTable_01.gltf",
+  "tambem_procedural": true
+ },
+ {
+  "codigo": "MOD-009",
+  "categoria": "MOD",
+  "chave": "alarm_clock_01",
+  "nome": "Alarm clock 01",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 630,
+    "funcao": "_bungalow"
+   }
+  ],
+  "arquivo_modelo": "assets/models/alarm_clock_01/alarm_clock_01.gltf"
+ },
+ {
+  "codigo": "MOD-010",
+  "categoria": "MOD",
+  "chave": "bananas",
+  "nome": "Bananas",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [
+   {
+    "arquivo": "details.gd",
+    "linha": 184,
+    "funcao": "bananas"
+   }
+  ],
+  "arquivo_modelo": "assets/models/bananas/bananas.gltf"
+ },
+ {
+  "codigo": "MOD-011",
+  "categoria": "MOD",
+  "chave": "bar_chair_round_01",
+  "nome": "Bar chair round 01",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [
+   {
+    "arquivo": "props.gd",
+    "linha": 26,
+    "funcao": "_init_builders"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 1034,
+    "funcao": "_bar"
+   },
+   {
+    "arquivo": "world_village.gd",
+    "linha": 644,
+    "funcao": "_quiosque"
+   }
+  ],
+  "arquivo_modelo": "assets/models/bar_chair_round_01/bar_chair_round_01.gltf",
+  "tambem_procedural": true
+ },
+ {
+  "codigo": "MOD-012",
+  "categoria": "MOD",
+  "chave": "boombox",
+  "nome": "Boombox",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [
+   {
+    "arquivo": "details.gd",
+    "linha": 206,
+    "funcao": "radio"
+   }
+  ],
+  "arquivo_modelo": "assets/models/boombox/boombox.gltf"
+ },
+ {
+  "codigo": "MOD-013",
+  "categoria": "MOD",
+  "chave": "carved_wooden_plate",
+  "nome": "Carved wooden plate",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 576,
+    "funcao": "_petisco_plate"
+   }
+  ],
+  "arquivo_modelo": "assets/models/carved_wooden_plate/carved_wooden_plate.gltf"
+ },
+ {
+  "codigo": "MOD-014",
+  "categoria": "MOD",
+  "chave": "ceiling_fan",
+  "nome": "Ceiling fan",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [
+   {
+    "arquivo": "props.gd",
+    "linha": 42,
+    "funcao": "_init_builders"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 625,
+    "funcao": "_bungalow"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 818,
+    "funcao": "_upgrade_meshes"
+   },
+   {
+    "arquivo": "world_village.gd",
+    "linha": 481,
+    "funcao": "_hero_house"
+   }
+  ],
+  "arquivo_modelo": "assets/models/ceiling_fan/ceiling_fan.gltf",
+  "tambem_procedural": true
+ },
+ {
+  "codigo": "MOD-015",
+  "categoria": "MOD",
+  "chave": "ceramic_pot",
+  "nome": "Ceramic pot",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [
+   {
+    "arquivo": "world_village.gd",
+    "linha": 1239,
+    "funcao": "_back_bar"
+   }
+  ],
+  "arquivo_modelo": "assets/models/ceramic_pot/ceramic_pot.gltf"
+ },
+ {
+  "codigo": "MOD-016",
+  "categoria": "MOD",
+  "chave": "ceramic_vase_02",
+  "nome": "Ceramic vase 02",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [
+   {
+    "arquivo": "props.gd",
+    "linha": 39,
+    "funcao": "_init_builders"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 798,
+    "funcao": "_upgrade_meshes"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 841,
+    "funcao": "_upgrade_meshes"
+   },
+   {
+    "arquivo": "world_village.gd",
+    "linha": 464,
+    "funcao": "_hero_house"
+   }
+  ],
+  "arquivo_modelo": "assets/models/ceramic_vase_02/ceramic_vase_02.gltf",
+  "tambem_procedural": true
+ },
+ {
+  "codigo": "MOD-017",
+  "categoria": "MOD",
+  "chave": "coast_land_rocks_02",
+  "nome": "Coast land rocks 02",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [
+   {
+    "arquivo": "details.gd",
+    "linha": 400,
+    "funcao": "lighthouse"
+   }
+  ],
+  "arquivo_modelo": "assets/models/coast_land_rocks_02/coast_land_rocks_02.gltf"
+ },
+ {
+  "codigo": "MOD-018",
+  "categoria": "MOD",
+  "chave": "coast_land_rocks_03",
+  "nome": "Coast land rocks 03",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [
+   {
+    "arquivo": "details.gd",
+    "linha": 400,
+    "funcao": "lighthouse"
+   }
+  ],
+  "arquivo_modelo": "assets/models/coast_land_rocks_03/coast_land_rocks_03.gltf"
+ },
+ {
+  "codigo": "MOD-019",
+  "categoria": "MOD",
+  "chave": "coast_rocks_02",
+  "nome": "Coast rocks 02",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [
+   {
+    "arquivo": "details.gd",
+    "linha": 400,
+    "funcao": "lighthouse"
+   }
+  ],
+  "arquivo_modelo": "assets/models/coast_rocks_02/coast_rocks_02.gltf"
+ },
+ {
+  "codigo": "MOD-020",
+  "categoria": "MOD",
+  "chave": "coast_rocks_03",
+  "nome": "Coast rocks 03",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [
+   {
+    "arquivo": "details.gd",
+    "linha": 400,
+    "funcao": "lighthouse"
+   }
+  ],
+  "arquivo_modelo": "assets/models/coast_rocks_03/coast_rocks_03.gltf"
+ },
+ {
+  "codigo": "MOD-021",
+  "categoria": "MOD",
+  "chave": "coast_rocks_05",
+  "nome": "Coast rocks 05",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [
+   {
+    "arquivo": "details.gd",
+    "linha": 400,
+    "funcao": "lighthouse"
+   },
+   {
+    "arquivo": "details.gd",
+    "linha": 404,
+    "funcao": "lighthouse"
+   }
+  ],
+  "arquivo_modelo": "assets/models/coast_rocks_05/coast_rocks_05.gltf"
+ },
+ {
+  "codigo": "MOD-022",
+  "categoria": "MOD",
+  "chave": "croissant",
+  "nome": "Croissant",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 577,
+    "funcao": "_petisco_plate"
+   }
+  ],
+  "arquivo_modelo": "assets/models/croissant/croissant.gltf"
+ },
+ {
+  "codigo": "MOD-023",
+  "categoria": "MOD",
+  "chave": "electric_stove",
+  "nome": "Electric stove",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [
+   {
+    "arquivo": "props.gd",
+    "linha": 43,
+    "funcao": "_init_builders"
+   },
+   {
+    "arquivo": "world_village.gd",
+    "linha": 477,
+    "funcao": "_hero_house"
+   },
+   {
+    "arquivo": "world_village.gd",
+    "linha": 712,
+    "funcao": "_kiosk_grill"
+   }
+  ],
+  "arquivo_modelo": "assets/models/electric_stove/electric_stove.gltf",
+  "tambem_procedural": true
+ },
+ {
+  "codigo": "MOD-024",
+  "categoria": "MOD",
+  "chave": "fancy_picture_frame_01",
+  "nome": "Fancy picture frame 01",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 626,
+    "funcao": "_bungalow"
+   }
+  ],
+  "arquivo_modelo": "assets/models/fancy_picture_frame_01/fancy_picture_frame_01.gltf"
+ },
+ {
+  "codigo": "MOD-025",
+  "categoria": "MOD",
+  "chave": "fishermans_hat",
+  "nome": "Fishermans hat",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [
+   {
+    "arquivo": "guest.gd",
+    "linha": 843,
+    "funcao": "_caricature"
+   }
+  ],
+  "arquivo_modelo": "assets/models/fishermans_hat/fishermans_hat.gltf"
+ },
+ {
+  "codigo": "MOD-026",
+  "categoria": "MOD",
+  "chave": "flower_gazania",
+  "nome": "Flower gazania",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [
+   {
+    "arquivo": "guest.gd",
+    "linha": 845,
+    "funcao": "_caricature"
+   }
+  ],
+  "arquivo_modelo": "assets/models/flower_gazania/flower_gazania.gltf"
+ },
+ {
+  "codigo": "MOD-027",
+  "categoria": "MOD",
+  "chave": "food_apple_01",
+  "nome": "Food apple 01",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [
+   {
+    "arquivo": "details.gd",
+    "linha": 338,
+    "funcao": "stall"
+   },
+   {
+    "arquivo": "details.gd",
+    "linha": 340,
+    "funcao": "stall"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 674,
+    "funcao": "_bungalow"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 1101,
+    "funcao": "_fruit_row"
+   }
+  ],
+  "arquivo_modelo": "assets/models/food_apple_01/food_apple_01.gltf"
+ },
+ {
+  "codigo": "MOD-028",
+  "categoria": "MOD",
+  "chave": "food_avocado_01",
+  "nome": "Food avocado 01",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [
+   {
+    "arquivo": "details.gd",
+    "linha": 338,
+    "funcao": "stall"
+   },
+   {
+    "arquivo": "details.gd",
+    "linha": 340,
+    "funcao": "stall"
+   }
+  ],
+  "arquivo_modelo": "assets/models/food_avocado_01/food_avocado_01.gltf"
+ },
+ {
+  "codigo": "MOD-029",
+  "categoria": "MOD",
+  "chave": "food_kiwi_01",
+  "nome": "Food kiwi 01",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [
+   {
+    "arquivo": "details.gd",
+    "linha": 338,
+    "funcao": "stall"
+   },
+   {
+    "arquivo": "details.gd",
+    "linha": 340,
+    "funcao": "stall"
+   }
+  ],
+  "arquivo_modelo": "assets/models/food_kiwi_01/food_kiwi_01.gltf"
+ },
+ {
+  "codigo": "MOD-030",
+  "categoria": "MOD",
+  "chave": "food_lime_01",
+  "nome": "Food lime 01",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [
+   {
+    "arquivo": "details.gd",
+    "linha": 338,
+    "funcao": "stall"
+   },
+   {
+    "arquivo": "details.gd",
+    "linha": 340,
+    "funcao": "stall"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 1101,
+    "funcao": "_fruit_row"
+   },
+   {
+    "arquivo": "world_village.gd",
+    "linha": 1274,
+    "funcao": "_kiosk_drinks"
+   }
+  ],
+  "arquivo_modelo": "assets/models/food_lime_01/food_lime_01.gltf"
+ },
+ {
+  "codigo": "MOD-031",
+  "categoria": "MOD",
+  "chave": "food_lychee_01",
+  "nome": "Food lychee 01",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [
+   {
+    "arquivo": "details.gd",
+    "linha": 338,
+    "funcao": "stall"
+   },
+   {
+    "arquivo": "details.gd",
+    "linha": 340,
+    "funcao": "stall"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 579,
+    "funcao": "_petisco_plate"
+   }
+  ],
+  "arquivo_modelo": "assets/models/food_lychee_01/food_lychee_01.gltf"
+ },
+ {
+  "codigo": "MOD-032",
+  "categoria": "MOD",
+  "chave": "food_pears_asian_01",
+  "nome": "Food pears asian 01",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [
+   {
+    "arquivo": "details.gd",
+    "linha": 338,
+    "funcao": "stall"
+   },
+   {
+    "arquivo": "details.gd",
+    "linha": 340,
+    "funcao": "stall"
+   }
+  ],
+  "arquivo_modelo": "assets/models/food_pears_asian_01/food_pears_asian_01.gltf"
+ },
+ {
+  "codigo": "MOD-033",
+  "categoria": "MOD",
+  "chave": "food_pomegranate_01",
+  "nome": "Food pomegranate 01",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [
+   {
+    "arquivo": "details.gd",
+    "linha": 338,
+    "funcao": "stall"
+   },
+   {
+    "arquivo": "details.gd",
+    "linha": 340,
+    "funcao": "stall"
+   }
+  ],
+  "arquivo_modelo": "assets/models/food_pomegranate_01/food_pomegranate_01.gltf"
+ },
+ {
+  "codigo": "MOD-034",
+  "categoria": "MOD",
+  "chave": "hanging_picture_frame_02",
+  "nome": "Hanging picture frame 02",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [
+   {
+    "arquivo": "props.gd",
+    "linha": 42,
+    "funcao": "_init_builders"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 797,
+    "funcao": "_upgrade_meshes"
+   },
+   {
+    "arquivo": "world_village.gd",
+    "linha": 463,
+    "funcao": "_hero_house"
+   }
+  ],
+  "arquivo_modelo": "assets/models/hanging_picture_frame_02/hanging_picture_frame_02.gltf",
+  "tambem_procedural": true
+ },
+ {
+  "codigo": "MOD-035",
+  "categoria": "MOD",
+  "chave": "jug_01",
+  "nome": "Jug 01",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [
+   {
+    "arquivo": "world_village.gd",
+    "linha": 1239,
+    "funcao": "_back_bar"
+   }
+  ],
+  "arquivo_modelo": "assets/models/jug_01/jug_01.gltf"
+ },
+ {
+  "codigo": "MOD-036",
+  "categoria": "MOD",
+  "chave": "lambis_shell",
+  "nome": "Lambis shell",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [
+   {
+    "arquivo": "details.gd",
+    "linha": 236,
+    "funcao": "starfish"
+   },
+   {
+    "arquivo": "props.gd",
+    "linha": 39,
+    "funcao": "_init_builders"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 292,
+    "funcao": "_reception"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 1025,
+    "funcao": "_bar"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 1162,
+    "funcao": "_beach_props"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 1172,
+    "funcao": "_shore_details"
+   }
+  ],
+  "arquivo_modelo": "assets/models/lambis_shell/lambis_shell.gltf",
+  "tambem_procedural": true
+ },
+ {
+  "codigo": "MOD-037",
+  "categoria": "MOD",
+  "chave": "lemon",
+  "nome": "Lemon",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [
+   {
+    "arquivo": "details.gd",
+    "linha": 338,
+    "funcao": "stall"
+   },
+   {
+    "arquivo": "details.gd",
+    "linha": 340,
+    "funcao": "stall"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 1101,
+    "funcao": "_fruit_row"
+   }
+  ],
+  "arquivo_modelo": "assets/models/lemon/lemon.gltf"
+ },
+ {
+  "codigo": "MOD-038",
+  "categoria": "MOD",
+  "chave": "lifebuoy",
+  "nome": "Lifebuoy",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [
+   {
+    "arquivo": "details.gd",
+    "linha": 392,
+    "funcao": "pier"
+   },
+   {
+    "arquivo": "props.gd",
+    "linha": 43,
+    "funcao": "_init_builders"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 378,
+    "funcao": "_pool"
+   },
+   {
+    "arquivo": "world_village.gd",
+    "linha": 1216,
+    "funcao": "_kiosk_details"
+   }
+  ],
+  "arquivo_modelo": "assets/models/lifebuoy/lifebuoy.gltf",
+  "tambem_procedural": true
+ },
+ {
+  "codigo": "MOD-039",
+  "categoria": "MOD",
+  "chave": "ornate_mirror_01",
+  "nome": "Ornate mirror 01",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [
+   {
+    "arquivo": "props.gd",
+    "linha": 42,
+    "funcao": "_init_builders"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 628,
+    "funcao": "_bungalow"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 832,
+    "funcao": "_upgrade_meshes"
+   }
+  ],
+  "arquivo_modelo": "assets/models/ornate_mirror_01/ornate_mirror_01.gltf",
+  "tambem_procedural": true
+ },
+ {
+  "codigo": "MOD-040",
+  "categoria": "MOD",
+  "chave": "outdoor_table_chair_set_01",
+  "nome": "Outdoor table chair set 01",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [
+   {
+    "arquivo": "props.gd",
+    "linha": 27,
+    "funcao": "_init_builders"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 1042,
+    "funcao": "_bar"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 1045,
+    "funcao": "_bar"
+   },
+   {
+    "arquivo": "world_village.gd",
+    "linha": 657,
+    "funcao": "_kiosk_table"
+   },
+   {
+    "arquivo": "world_village.gd",
+    "linha": 764,
+    "funcao": "_barraca"
+   }
+  ],
+  "arquivo_modelo": "assets/models/outdoor_table_chair_set_01/outdoor_table_chair_set_01.gltf",
+  "tambem_procedural": true
+ },
+ {
+  "codigo": "MOD-041",
+  "categoria": "MOD",
+  "chave": "pachira_aquatica_01",
+  "nome": "Pachira aquatica 01",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [
+   {
+    "arquivo": "props.gd",
+    "linha": 38,
+    "funcao": "_init_builders"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 805,
+    "funcao": "_upgrade_meshes"
+   },
+   {
+    "arquivo": "world_village.gd",
+    "linha": 476,
+    "funcao": "_hero_house"
+   }
+  ],
+  "arquivo_modelo": "assets/models/pachira_aquatica_01/pachira_aquatica_01.gltf",
+  "tambem_procedural": true
+ },
+ {
+  "codigo": "MOD-042",
+  "categoria": "MOD",
+  "chave": "painted_wooden_bench",
+  "nome": "Painted wooden bench",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [
+   {
+    "arquivo": "props.gd",
+    "linha": 41,
+    "funcao": "_init_builders"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 2099,
+    "funcao": "_reception_details"
+   },
+   {
+    "arquivo": "world_village.gd",
+    "linha": 209,
+    "funcao": "_street"
+   },
+   {
+    "arquivo": "world_village.gd",
+    "linha": 578,
+    "funcao": "_church_and_praca"
+   },
+   {
+    "arquivo": "world_village.gd",
+    "linha": 1433,
+    "funcao": "_village_expansion"
+   }
+  ],
+  "arquivo_modelo": "assets/models/painted_wooden_bench/painted_wooden_bench.gltf",
+  "tambem_procedural": true
+ },
+ {
+  "codigo": "MOD-043",
+  "categoria": "MOD",
+  "chave": "painted_wooden_cabinet",
+  "nome": "Painted wooden cabinet",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [
+   {
+    "arquivo": "props.gd",
+    "linha": 41,
+    "funcao": "_init_builders"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 624,
+    "funcao": "_bungalow"
+   },
+   {
+    "arquivo": "world_village.gd",
+    "linha": 474,
+    "funcao": "_hero_house"
+   }
+  ],
+  "arquivo_modelo": "assets/models/painted_wooden_cabinet/painted_wooden_cabinet.gltf",
+  "tambem_procedural": true
+ },
+ {
+  "codigo": "MOD-044",
+  "categoria": "MOD",
+  "chave": "painted_wooden_chair_01",
+  "nome": "Painted wooden chair 01",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [
+   {
+    "arquivo": "props.gd",
+    "linha": 29,
+    "funcao": "_init_builders"
+   },
+   {
+    "arquivo": "world_village.gd",
+    "linha": 367,
+    "funcao": "_house"
+   }
+  ],
+  "arquivo_modelo": "assets/models/painted_wooden_chair_01/painted_wooden_chair_01.gltf",
+  "tambem_procedural": true
+ },
+ {
+  "codigo": "MOD-045",
+  "categoria": "MOD",
+  "chave": "painted_wooden_nightstand",
+  "nome": "Painted wooden nightstand",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [
+   {
+    "arquivo": "props.gd",
+    "linha": 40,
+    "funcao": "_init_builders"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 619,
+    "funcao": "_bungalow"
+   },
+   {
+    "arquivo": "world_village.gd",
+    "linha": 460,
+    "funcao": "_hero_house"
+   }
+  ],
+  "arquivo_modelo": "assets/models/painted_wooden_nightstand/painted_wooden_nightstand.gltf",
+  "tambem_procedural": true
+ },
+ {
+  "codigo": "MOD-046",
+  "categoria": "MOD",
+  "chave": "planter_box_01",
+  "nome": "Planter box 01",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [
+   {
+    "arquivo": "props.gd",
+    "linha": 38,
+    "funcao": "_init_builders"
+   },
+   {
+    "arquivo": "world_village.gd",
+    "linha": 492,
+    "funcao": "_hero_house"
+   },
+   {
+    "arquivo": "world_village.gd",
+    "linha": 581,
+    "funcao": "_church_and_praca"
+   }
+  ],
+  "arquivo_modelo": "assets/models/planter_box_01/planter_box_01.gltf",
+  "tambem_procedural": true
+ },
+ {
+  "codigo": "MOD-047",
+  "categoria": "MOD",
+  "chave": "planter_pot_clay",
+  "nome": "Planter pot clay",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [
+   {
+    "arquivo": "props.gd",
+    "linha": 37,
+    "funcao": "_init_builders"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 295,
+    "funcao": "_reception"
+   },
+   {
+    "arquivo": "world_village.gd",
+    "linha": 1053,
+    "funcao": "_village_props"
+   },
+   {
+    "arquivo": "world_village.gd",
+    "linha": 1704,
+    "funcao": "_map_details"
+   }
+  ],
+  "arquivo_modelo": "assets/models/planter_pot_clay/planter_pot_clay.gltf",
+  "tambem_procedural": true
+ },
+ {
+  "codigo": "MOD-048",
+  "categoria": "MOD",
+  "chave": "plastic_crate_01",
+  "nome": "Plastic crate 01",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [
+   {
+    "arquivo": "props.gd",
+    "linha": 33,
+    "funcao": "_init_builders"
+   },
+   {
+    "arquivo": "world_village.gd",
+    "linha": 393,
+    "funcao": "_houses"
+   },
+   {
+    "arquivo": "world_village.gd",
+    "linha": 614,
+    "funcao": "_quiosque"
+   },
+   {
+    "arquivo": "world_village.gd",
+    "linha": 767,
+    "funcao": "_barraca"
+   }
+  ],
+  "arquivo_modelo": "assets/models/plastic_crate_01/plastic_crate_01.gltf",
+  "tambem_procedural": true
+ },
+ {
+  "codigo": "MOD-049",
+  "categoria": "MOD",
+  "chave": "plastic_crate_02",
+  "nome": "Plastic crate 02",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [
+   {
+    "arquivo": "details.gd",
+    "linha": 293,
+    "funcao": "beach_spot"
+   }
+  ],
+  "arquivo_modelo": "assets/models/plastic_crate_02/plastic_crate_02.gltf"
+ },
+ {
+  "codigo": "MOD-050",
+  "categoria": "MOD",
+  "chave": "plastic_monobloc_chair_01",
+  "nome": "Plastic monobloc chair 01",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [
+   {
+    "arquivo": "props.gd",
+    "linha": 28,
+    "funcao": "_init_builders"
+   },
+   {
+    "arquivo": "world_village.gd",
+    "linha": 768,
+    "funcao": "_barraca"
+   }
+  ],
+  "arquivo_modelo": "assets/models/plastic_monobloc_chair_01/plastic_monobloc_chair_01.gltf",
+  "tambem_procedural": true
+ },
+ {
+  "codigo": "MOD-051",
+  "categoria": "MOD",
+  "chave": "pot_enamel_01",
+  "nome": "Pot enamel 01",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [
+   {
+    "arquivo": "world_village.gd",
+    "linha": 1239,
+    "funcao": "_back_bar"
+   }
+  ],
+  "arquivo_modelo": "assets/models/pot_enamel_01/pot_enamel_01.gltf"
+ },
+ {
+  "codigo": "MOD-052",
+  "categoria": "MOD",
+  "chave": "potted_plant_01",
+  "nome": "Potted plant 01",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [
+   {
+    "arquivo": "props.gd",
+    "linha": 36,
+    "funcao": "_init_builders"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 2101,
+    "funcao": "_reception_details"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 2102,
+    "funcao": "_reception_details"
+   },
+   {
+    "arquivo": "world_village.gd",
+    "linha": 370,
+    "funcao": "_house"
+   },
+   {
+    "arquivo": "world_village.gd",
+    "linha": 1053,
+    "funcao": "_village_props"
+   },
+   {
+    "arquivo": "world_village.gd",
+    "linha": 1704,
+    "funcao": "_map_details"
+   }
+  ],
+  "arquivo_modelo": "assets/models/potted_plant_01/potted_plant_01.gltf",
+  "tambem_procedural": true
+ },
+ {
+  "codigo": "MOD-053",
+  "categoria": "MOD",
+  "chave": "potted_plant_02",
+  "nome": "Potted plant 02",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [
+   {
+    "arquivo": "props.gd",
+    "linha": 36,
+    "funcao": "_init_builders"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 293,
+    "funcao": "_reception"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 294,
+    "funcao": "_reception"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 621,
+    "funcao": "_bungalow"
+   },
+   {
+    "arquivo": "world_village.gd",
+    "linha": 1704,
+    "funcao": "_map_details"
+   }
+  ],
+  "arquivo_modelo": "assets/models/potted_plant_02/potted_plant_02.gltf",
+  "tambem_procedural": true
+ },
+ {
+  "codigo": "MOD-054",
+  "categoria": "MOD",
+  "chave": "potted_plant_04",
+  "nome": "Potted plant 04",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [
+   {
+    "arquivo": "props.gd",
+    "linha": 37,
+    "funcao": "_init_builders"
+   },
+   {
+    "arquivo": "world_village.gd",
+    "linha": 368,
+    "funcao": "_house"
+   },
+   {
+    "arquivo": "world_village.gd",
+    "linha": 491,
+    "funcao": "_hero_house"
+   },
+   {
+    "arquivo": "world_village.gd",
+    "linha": 1053,
+    "funcao": "_village_props"
+   },
+   {
+    "arquivo": "world_village.gd",
+    "linha": 1704,
+    "funcao": "_map_details"
+   }
+  ],
+  "arquivo_modelo": "assets/models/potted_plant_04/potted_plant_04.gltf",
+  "tambem_procedural": true
+ },
+ {
+  "codigo": "MOD-055",
+  "categoria": "MOD",
+  "chave": "rock_07",
+  "nome": "Rock 07",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 1178,
+    "funcao": "_shore_details"
+   }
+  ],
+  "arquivo_modelo": "assets/models/rock_07/rock_07.gltf"
+ },
+ {
+  "codigo": "MOD-056",
+  "categoria": "MOD",
+  "chave": "rock_09",
+  "nome": "Rock 09",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 1178,
+    "funcao": "_shore_details"
+   }
+  ],
+  "arquivo_modelo": "assets/models/rock_09/rock_09.gltf"
+ },
+ {
+  "codigo": "MOD-057",
+  "categoria": "MOD",
+  "chave": "side_table_01",
+  "nome": "Side table 01",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [
+   {
+    "arquivo": "props.gd",
+    "linha": 40,
+    "funcao": "_init_builders"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 611,
+    "funcao": "_bungalow"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 803,
+    "funcao": "_upgrade_meshes"
+   }
+  ],
+  "arquivo_modelo": "assets/models/side_table_01/side_table_01.gltf",
+  "tambem_procedural": true
+ },
+ {
+  "codigo": "MOD-058",
+  "categoria": "MOD",
+  "chave": "street_lamp_01",
+  "nome": "Street lamp 01",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [
+   {
+    "arquivo": "props.gd",
+    "linha": 44,
+    "funcao": "_init_builders"
+   },
+   {
+    "arquivo": "world_village.gd",
+    "linha": 1108,
+    "funcao": "_street_lamps"
+   },
+   {
+    "arquivo": "world_village.gd",
+    "linha": 1109,
+    "funcao": "_street_lamps"
+   },
+   {
+    "arquivo": "world_village.gd",
+    "linha": 1320,
+    "funcao": "_add_lamp"
+   }
+  ],
+  "arquivo_modelo": "assets/models/street_lamp_01/street_lamp_01.gltf",
+  "tambem_procedural": true
+ },
+ {
+  "codigo": "MOD-059",
+  "categoria": "MOD",
+  "chave": "throw_pillows_01",
+  "nome": "Throw pillows 01",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [
+   {
+    "arquivo": "props.gd",
+    "linha": 43,
+    "funcao": "_init_builders"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 790,
+    "funcao": "_upgrade_meshes"
+   },
+   {
+    "arquivo": "world_village.gd",
+    "linha": 459,
+    "funcao": "_hero_house"
+   }
+  ],
+  "arquivo_modelo": "assets/models/throw_pillows_01/throw_pillows_01.gltf",
+  "tambem_procedural": true
+ },
+ {
+  "codigo": "MOD-060",
+  "categoria": "MOD",
+  "chave": "trashbag",
+  "nome": "Trashbag",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 666,
+    "funcao": "_bungalow"
+   }
+  ],
+  "arquivo_modelo": "assets/models/trashbag/trashbag.gltf"
+ },
+ {
+  "codigo": "MOD-061",
+  "categoria": "MOD",
+  "chave": "vintage_oil_lamp",
+  "nome": "Vintage oil lamp",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [
+   {
+    "arquivo": "props.gd",
+    "linha": 34,
+    "funcao": "_init_builders"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 804,
+    "funcao": "_upgrade_meshes"
+   },
+   {
+    "arquivo": "world_village.gd",
+    "linha": 461,
+    "funcao": "_hero_house"
+   }
+  ],
+  "arquivo_modelo": "assets/models/vintage_oil_lamp/vintage_oil_lamp.gltf",
+  "tambem_procedural": true
+ },
+ {
+  "codigo": "MOD-062",
+  "categoria": "MOD",
+  "chave": "vintage_suitcase",
+  "nome": "Vintage suitcase",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 629,
+    "funcao": "_bungalow"
+   }
+  ],
+  "arquivo_modelo": "assets/models/vintage_suitcase/vintage_suitcase.gltf"
+ },
+ {
+  "codigo": "MOD-063",
+  "categoria": "MOD",
+  "chave": "wall_clock",
+  "nome": "Wall clock",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 627,
+    "funcao": "_bungalow"
+   }
+  ],
+  "arquivo_modelo": "assets/models/wall_clock/wall_clock.gltf"
+ },
+ {
+  "codigo": "MOD-064",
+  "categoria": "MOD",
+  "chave": "wicker_basket_01",
+  "nome": "Wicker basket 01",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [
+   {
+    "arquivo": "details.gd",
+    "linha": 183,
+    "funcao": "bananas"
+   },
+   {
+    "arquivo": "props.gd",
+    "linha": 35,
+    "funcao": "_init_builders"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 296,
+    "funcao": "_reception"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 842,
+    "funcao": "_upgrade_meshes"
+   },
+   {
+    "arquivo": "world_village.gd",
+    "linha": 489,
+    "funcao": "_hero_house"
+   }
+  ],
+  "arquivo_modelo": "assets/models/wicker_basket_01/wicker_basket_01.gltf",
+  "tambem_procedural": true
+ },
+ {
+  "codigo": "MOD-065",
+  "categoria": "MOD",
+  "chave": "wicker_basket_02",
+  "nome": "Wicker basket 02",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [
+   {
+    "arquivo": "details.gd",
+    "linha": 209,
+    "funcao": "trash_bin"
+   },
+   {
+    "arquivo": "details.gd",
+    "linha": 344,
+    "funcao": "stall"
+   },
+   {
+    "arquivo": "props.gd",
+    "linha": 35,
+    "funcao": "_init_builders"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 622,
+    "funcao": "_bungalow"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 1139,
+    "funcao": "_beach_props"
+   },
+   {
+    "arquivo": "world_village.gd",
+    "linha": 392,
+    "funcao": "_houses"
+   },
+   {
+    "arquivo": "world_village.gd",
+    "linha": 1050,
+    "funcao": "_village_props"
+   }
+  ],
+  "arquivo_modelo": "assets/models/wicker_basket_02/wicker_basket_02.gltf",
+  "tambem_procedural": true
+ },
+ {
+  "codigo": "MOD-066",
+  "categoria": "MOD",
+  "chave": "wooden_bowl_01",
+  "nome": "Wooden bowl 01",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [
+   {
+    "arquivo": "props.gd",
+    "linha": 39,
+    "funcao": "_init_builders"
+   },
+   {
+    "arquivo": "world_village.gd",
+    "linha": 489,
+    "funcao": "_hero_house"
+   }
+  ],
+  "arquivo_modelo": "assets/models/wooden_bowl_01/wooden_bowl_01.gltf",
+  "tambem_procedural": true
+ },
+ {
+  "codigo": "MOD-067",
+  "categoria": "MOD",
+  "chave": "wooden_bowl_02",
+  "nome": "Wooden bowl 02",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [
+   {
+    "arquivo": "world_village.gd",
+    "linha": 1239,
+    "funcao": "_back_bar"
+   }
+  ],
+  "arquivo_modelo": "assets/models/wooden_bowl_02/wooden_bowl_02.gltf"
+ },
+ {
+  "codigo": "MOD-068",
+  "categoria": "MOD",
+  "chave": "wooden_bucket_01",
+  "nome": "Wooden bucket 01",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [
+   {
+    "arquivo": "details.gd",
+    "linha": 393,
+    "funcao": "pier"
+   },
+   {
+    "arquivo": "props.gd",
+    "linha": 31,
+    "funcao": "_init_builders"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 612,
+    "funcao": "_bungalow"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 1026,
+    "funcao": "_bar"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 1163,
+    "funcao": "_beach_props"
+   },
+   {
+    "arquivo": "world_village.gd",
+    "linha": 612,
+    "funcao": "_quiosque"
+   },
+   {
+    "arquivo": "world_village.gd",
+    "linha": 924,
+    "funcao": "_fishing_boat"
+   }
+  ],
+  "arquivo_modelo": "assets/models/wooden_bucket_01/wooden_bucket_01.gltf",
+  "tambem_procedural": true
+ },
+ {
+  "codigo": "MOD-069",
+  "categoria": "MOD",
+  "chave": "wooden_bucket_02",
+  "nome": "Wooden bucket 02",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [
+   {
+    "arquivo": "details.gd",
+    "linha": 230,
+    "funcao": "sand_castle"
+   }
+  ],
+  "arquivo_modelo": "assets/models/wooden_bucket_02/wooden_bucket_02.gltf"
+ },
+ {
+  "codigo": "MOD-070",
+  "categoria": "MOD",
+  "chave": "wooden_crate_01",
+  "nome": "Wooden crate 01",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [
+   {
+    "arquivo": "props.gd",
+    "linha": 32,
+    "funcao": "_init_builders"
+   },
+   {
+    "arquivo": "world_village.gd",
+    "linha": 391,
+    "funcao": "_houses"
+   },
+   {
+    "arquivo": "world_village.gd",
+    "linha": 923,
+    "funcao": "_fishing_boat"
+   },
+   {
+    "arquivo": "world_village.gd",
+    "linha": 1049,
+    "funcao": "_village_props"
+   },
+   {
+    "arquivo": "world_village.gd",
+    "linha": 1597,
+    "funcao": "_landmark_details"
+   }
+  ],
+  "arquivo_modelo": "assets/models/wooden_crate_01/wooden_crate_01.gltf",
+  "tambem_procedural": true
+ },
+ {
+  "codigo": "MOD-071",
+  "categoria": "MOD",
+  "chave": "wooden_crate_02",
+  "nome": "Wooden crate 02",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [
+   {
+    "arquivo": "details.gd",
+    "linha": 349,
+    "funcao": "stall"
+   },
+   {
+    "arquivo": "world_village.gd",
+    "linha": 1272,
+    "funcao": "_kiosk_drinks"
+   }
+  ],
+  "arquivo_modelo": "assets/models/wooden_crate_02/wooden_crate_02.gltf"
+ },
+ {
+  "codigo": "MOD-072",
+  "categoria": "MOD",
+  "chave": "wooden_lantern_01",
+  "nome": "Wooden lantern 01",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [
+   {
+    "arquivo": "props.gd",
+    "linha": 34,
+    "funcao": "_init_builders"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 620,
+    "funcao": "_bungalow"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 1051,
+    "funcao": "_bar"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 1301,
+    "funcao": "_lantern_posts"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 1996,
+    "funcao": "_bungalow_details"
+   },
+   {
+    "arquivo": "world_village.gd",
+    "linha": 622,
+    "funcao": "_quiosque"
+   }
+  ],
+  "arquivo_modelo": "assets/models/wooden_lantern_01/wooden_lantern_01.gltf",
+  "tambem_procedural": true
+ },
+ {
+  "codigo": "MOD-073",
+  "categoria": "MOD",
+  "chave": "wooden_stool_01",
+  "nome": "Wooden stool 01",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [
+   {
+    "arquivo": "props.gd",
+    "linha": 26,
+    "funcao": "_init_builders"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 610,
+    "funcao": "_bungalow"
+   },
+   {
+    "arquivo": "world_village.gd",
+    "linha": 367,
+    "funcao": "_house"
+   },
+   {
+    "arquivo": "world_village.gd",
+    "linha": 487,
+    "funcao": "_hero_house"
+   },
+   {
+    "arquivo": "world_village.gd",
+    "linha": 488,
+    "funcao": "_hero_house"
+   }
+  ],
+  "arquivo_modelo": "assets/models/wooden_stool_01/wooden_stool_01.gltf",
+  "tambem_procedural": true
+ },
+ {
+  "codigo": "MOD-074",
+  "categoria": "MOD",
+  "chave": "k:boat-row-large",
+  "nome": "Boat row large",
+  "fonte": "Kenney (CC0)",
+  "usos": [
+   {
+    "arquivo": "world_village.gd",
+    "linha": 920,
+    "funcao": "_fishing_boat"
+   }
+  ],
+  "arquivo_modelo": "assets/models/kenney/boat-row-large.glb"
+ },
+ {
+  "codigo": "MOD-075",
+  "categoria": "MOD",
+  "chave": "k:bottle-large",
+  "nome": "Bottle large",
+  "fonte": "Kenney (CC0)",
+  "usos": [
+   {
+    "arquivo": "world_village.gd",
+    "linha": 1239,
+    "funcao": "_back_bar"
+   },
+   {
+    "arquivo": "world_village.gd",
+    "linha": 1246,
+    "funcao": "_back_bar"
+   },
+   {
+    "arquivo": "world_village.gd",
+    "linha": 1276,
+    "funcao": "_kiosk_drinks"
+   }
+  ],
+  "arquivo_modelo": "assets/models/kenney/bottle-large.glb"
+ },
+ {
+  "codigo": "MOD-076",
+  "categoria": "MOD",
+  "chave": "k:bottle-oil",
+  "nome": "Bottle oil",
+  "fonte": "Kenney (CC0)",
+  "usos": [
+   {
+    "arquivo": "world_village.gd",
+    "linha": 1239,
+    "funcao": "_back_bar"
+   }
+  ],
+  "arquivo_modelo": "assets/models/kenney/bottle-oil.glb"
+ },
+ {
+  "codigo": "MOD-077",
+  "categoria": "MOD",
+  "chave": "k:bottle",
+  "nome": "Bottle",
+  "fonte": "Kenney (CC0)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 671,
+    "funcao": "_bungalow"
+   },
+   {
+    "arquivo": "world_village.gd",
+    "linha": 1239,
+    "funcao": "_back_bar"
+   },
+   {
+    "arquivo": "world_village.gd",
+    "linha": 1246,
+    "funcao": "_back_bar"
+   },
+   {
+    "arquivo": "world_village.gd",
+    "linha": 1248,
+    "funcao": "_back_bar"
+   }
+  ],
+  "arquivo_modelo": "assets/models/kenney/bottle.glb"
+ },
+ {
+  "codigo": "MOD-078",
+  "categoria": "MOD",
+  "chave": "k:bread",
+  "nome": "Bread",
+  "fonte": "Kenney (CC0)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 578,
+    "funcao": "_petisco_plate"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 675,
+    "funcao": "_bungalow"
+   }
+  ],
+  "arquivo_modelo": "assets/models/kenney/bread.glb"
+ },
+ {
+  "codigo": "MOD-079",
+  "categoria": "MOD",
+  "chave": "k:cocktail",
+  "nome": "Cocktail",
+  "fonte": "Kenney (CC0)",
+  "usos": [
+   {
+    "arquivo": "details.gd",
+    "linha": 203,
+    "funcao": "straw_cup"
+   },
+   {
+    "arquivo": "world_village.gd",
+    "linha": 1270,
+    "funcao": "_kiosk_drinks"
+   }
+  ],
+  "arquivo_modelo": "assets/models/kenney/cocktail.glb"
+ },
+ {
+  "codigo": "MOD-080",
+  "categoria": "MOD",
+  "chave": "k:coconut-half",
+  "nome": "Coconut half",
+  "fonte": "Kenney (CC0)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 567,
+    "funcao": "_coconut_cup"
+   },
+   {
+    "arquivo": "world_village.gd",
+    "linha": 1196,
+    "funcao": "_kiosk_details"
+   }
+  ],
+  "arquivo_modelo": "assets/models/kenney/coconut-half.glb"
+ },
+ {
+  "codigo": "MOD-081",
+  "categoria": "MOD",
+  "chave": "k:coconut",
+  "nome": "Coconut",
+  "fonte": "Kenney (CC0)",
+  "usos": [
+   {
+    "arquivo": "details.gd",
+    "linha": 176,
+    "funcao": "coconut_pile"
+   },
+   {
+    "arquivo": "real.gd",
+    "linha": 46,
+    "funcao": "place"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 1029,
+    "funcao": "_bar"
+   },
+   {
+    "arquivo": "world_village.gd",
+    "linha": 611,
+    "funcao": "_quiosque"
+   },
+   {
+    "arquivo": "world_village.gd",
+    "linha": 1181,
+    "funcao": "_kiosk_details"
+   }
+  ],
+  "arquivo_modelo": "assets/models/kenney/coconut.glb"
+ },
+ {
+  "codigo": "MOD-082",
+  "categoria": "MOD",
+  "chave": "k:cup",
+  "nome": "Cup",
+  "fonte": "Kenney (CC0)",
+  "usos": [
+   {
+    "arquivo": "details.gd",
+    "linha": 191,
+    "funcao": "cup_stack"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 667,
+    "funcao": "_bungalow"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 670,
+    "funcao": "_bungalow"
+   }
+  ],
+  "arquivo_modelo": "assets/models/kenney/cup.glb"
+ },
+ {
+  "codigo": "MOD-083",
+  "categoria": "MOD",
+  "chave": "k:flag-pennant",
+  "nome": "Flag pennant",
+  "fonte": "Kenney (CC0)",
+  "usos": [
+   {
+    "arquivo": "details.gd",
+    "linha": 229,
+    "funcao": "sand_castle"
+   }
+  ],
+  "arquivo_modelo": "assets/models/kenney/flag-pennant.glb"
+ },
+ {
+  "codigo": "MOD-084",
+  "categoria": "MOD",
+  "chave": "k:frappe",
+  "nome": "Frappe",
+  "fonte": "Kenney (CC0)",
+  "usos": [
+   {
+    "arquivo": "details.gd",
+    "linha": 194,
+    "funcao": "blender"
+   },
+   {
+    "arquivo": "details.gd",
+    "linha": 195,
+    "funcao": "blender"
+   }
+  ],
+  "arquivo_modelo": "assets/models/kenney/frappe.glb"
+ },
+ {
+  "codigo": "MOD-085",
+  "categoria": "MOD",
+  "chave": "k:glass",
+  "nome": "Glass",
+  "fonte": "Kenney (CC0)",
+  "usos": [
+   {
+    "arquivo": "details.gd",
+    "linha": 198,
+    "funcao": "tip_jar"
+   }
+  ],
+  "arquivo_modelo": "assets/models/kenney/glass.glb"
+ },
+ {
+  "codigo": "MOD-086",
+  "categoria": "MOD",
+  "chave": "k:log_large",
+  "nome": "Log large",
+  "fonte": "Kenney (CC0)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 1182,
+    "funcao": "_shore_details"
+   }
+  ],
+  "arquivo_modelo": "assets/models/kenney/log_large.glb"
+ },
+ {
+  "codigo": "MOD-087",
+  "categoria": "MOD",
+  "chave": "k:orange",
+  "nome": "Orange",
+  "fonte": "Kenney (CC0)",
+  "usos": [
+   {
+    "arquivo": "details.gd",
+    "linha": 338,
+    "funcao": "stall"
+   },
+   {
+    "arquivo": "details.gd",
+    "linha": 340,
+    "funcao": "stall"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 1101,
+    "funcao": "_fruit_row"
+   }
+  ],
+  "arquivo_modelo": "assets/models/kenney/orange.glb"
+ },
+ {
+  "codigo": "MOD-088",
+  "categoria": "MOD",
+  "chave": "k:pineapple",
+  "nome": "Pineapple",
+  "fonte": "Kenney (CC0)",
+  "usos": [
+   {
+    "arquivo": "details.gd",
+    "linha": 187,
+    "funcao": "pineapple"
+   }
+  ],
+  "arquivo_modelo": "assets/models/kenney/pineapple.glb"
+ },
+ {
+  "codigo": "MOD-089",
+  "categoria": "MOD",
+  "chave": "k:rock_smallA",
+  "nome": "Rock small a",
+  "fonte": "Kenney (CC0)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 1178,
+    "funcao": "_shore_details"
+   }
+  ],
+  "arquivo_modelo": "assets/models/kenney/rock_smallA.glb"
+ },
+ {
+  "codigo": "MOD-090",
+  "categoria": "MOD",
+  "chave": "k:rock_smallB",
+  "nome": "Rock small b",
+  "fonte": "Kenney (CC0)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 1178,
+    "funcao": "_shore_details"
+   }
+  ],
+  "arquivo_modelo": "assets/models/kenney/rock_smallB.glb"
+ },
+ {
+  "codigo": "MOD-091",
+  "categoria": "MOD",
+  "chave": "k:tool-paddle",
+  "nome": "Tool paddle",
+  "fonte": "Kenney (CC0)",
+  "usos": [
+   {
+    "arquivo": "details.gd",
+    "linha": 231,
+    "funcao": "sand_castle"
+   }
+  ],
+  "arquivo_modelo": "assets/models/kenney/tool-paddle.glb"
+ },
+ {
+  "codigo": "MOD-092",
+  "categoria": "MOD",
+  "chave": "g:cap",
+  "nome": "Cap",
+  "fonte": "Gerado no Blender (tools/gen_*.py)",
+  "usos": [
+   {
+    "arquivo": "guest.gd",
+    "linha": 840,
+    "funcao": "_caricature"
+   }
+  ],
+  "arquivo_modelo": "assets/models/gen/cap.glb"
+ },
+ {
+  "codigo": "MOD-093",
+  "categoria": "MOD",
+  "chave": "g:cat",
+  "nome": "Cat",
+  "fonte": "Gerado no Blender (tools/gen_*.py)",
+  "usos": [
+   {
+    "arquivo": "details.gd",
+    "linha": 361,
+    "funcao": "cat"
+   }
+  ],
+  "arquivo_modelo": "assets/models/gen/cat.glb"
+ },
+ {
+  "codigo": "MOD-094",
+  "categoria": "MOD",
+  "chave": "g:crab",
+  "nome": "Crab",
+  "fonte": "Gerado no Blender (tools/gen_*.py)",
+  "usos": [
+   {
+    "arquivo": "details.gd",
+    "linha": 244,
+    "funcao": "crab"
+   }
+  ],
+  "arquivo_modelo": "assets/models/gen/crab.glb"
+ },
+ {
+  "codigo": "MOD-095",
+  "categoria": "MOD",
+  "chave": "g:dog",
+  "nome": "Dog",
+  "fonte": "Gerado no Blender (tools/gen_*.py)",
+  "usos": [
+   {
+    "arquivo": "details.gd",
+    "linha": 371,
+    "funcao": "dog"
+   }
+  ],
+  "arquivo_modelo": "assets/models/gen/dog.glb"
+ },
+ {
+  "codigo": "MOD-096",
+  "categoria": "MOD",
+  "chave": "g:sandcastle",
+  "nome": "Sandcastle",
+  "fonte": "Gerado no Blender (tools/gen_*.py)",
+  "usos": [
+   {
+    "arquivo": "details.gd",
+    "linha": 226,
+    "funcao": "sand_castle"
+   }
+  ],
+  "arquivo_modelo": "assets/models/gen/sandcastle.glb"
+ },
+ {
+  "codigo": "MOD-097",
+  "categoria": "MOD",
+  "chave": "g:strawhat_blue",
+  "nome": "Strawhat blue",
+  "fonte": "Gerado no Blender (tools/gen_*.py)",
+  "usos": [
+   {
+    "arquivo": "guest.gd",
+    "linha": 836,
+    "funcao": "_caricature"
+   }
+  ],
+  "arquivo_modelo": "assets/models/gen/strawhat_blue.glb"
+ },
+ {
+  "codigo": "MOD-098",
+  "categoria": "MOD",
+  "chave": "g:strawhat_dark",
+  "nome": "Strawhat dark",
+  "fonte": "Gerado no Blender (tools/gen_*.py)",
+  "usos": [
+   {
+    "arquivo": "guest.gd",
+    "linha": 836,
+    "funcao": "_caricature"
+   }
+  ],
+  "arquivo_modelo": "assets/models/gen/strawhat_dark.glb"
+ },
+ {
+  "codigo": "MOD-099",
+  "categoria": "MOD",
+  "chave": "g:strawhat_red",
+  "nome": "Strawhat red",
+  "fonte": "Gerado no Blender (tools/gen_*.py)",
+  "usos": [
+   {
+    "arquivo": "guest.gd",
+    "linha": 836,
+    "funcao": "_caricature"
+   }
+  ],
+  "arquivo_modelo": "assets/models/gen/strawhat_red.glb"
+ },
+ {
+  "codigo": "MOD-100",
+  "categoria": "MOD",
+  "chave": "g:sunglasses",
+  "nome": "Sunglasses",
+  "fonte": "Gerado no Blender (tools/gen_*.py)",
+  "usos": [
+   {
+    "arquivo": "guest.gd",
+    "linha": 848,
+    "funcao": "_caricature"
+   }
+  ],
+  "arquivo_modelo": "assets/models/gen/sunglasses.glb"
+ },
+ {
+  "codigo": "MOD-101",
+  "categoria": "MOD",
+  "chave": "g:surfboard",
+  "nome": "Surfboard",
+  "fonte": "Gerado no Blender (tools/gen_*.py)",
+  "usos": [
+   {
+    "arquivo": "details.gd",
+    "linha": 152,
+    "funcao": "surfboard"
+   }
+  ],
+  "arquivo_modelo": "assets/models/gen/surfboard.glb"
+ },
+ {
+  "codigo": "MOD-102",
+  "categoria": "MOD",
+  "chave": "g:towel",
+  "nome": "Towel",
+  "fonte": "Gerado no Blender (tools/gen_*.py)",
+  "usos": [
+   {
+    "arquivo": "details.gd",
+    "linha": 158,
+    "funcao": "towel"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 646,
+    "funcao": "_bungalow"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 651,
+    "funcao": "_bungalow"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 654,
+    "funcao": "_bungalow"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 657,
+    "funcao": "_bungalow"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 660,
+    "funcao": "_bungalow"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 661,
+    "funcao": "_bungalow"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 662,
+    "funcao": "_bungalow"
+   }
+  ],
+  "arquivo_modelo": "assets/models/gen/towel.glb"
+ },
+ {
+  "codigo": "NAT-001",
+  "categoria": "NAT",
+  "chave": "q:Bush_Common",
+  "nome": "Bush common",
+  "fonte": "Quaternius (CC0)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 1183,
+    "funcao": "_shore_details"
+   },
+   {
+    "arquivo": "world_village.gd",
+    "linha": 1063,
+    "funcao": "_village_props"
+   }
+  ],
+  "arquivo_modelo": "assets/models/qnat/Bush_Common.gltf"
+ },
+ {
+  "codigo": "NAT-002",
+  "categoria": "NAT",
+  "chave": "q:Bush_Common_Flowers",
+  "nome": "Bush common flowers",
+  "fonte": "Quaternius (CC0)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 1183,
+    "funcao": "_shore_details"
+   },
+   {
+    "arquivo": "world_village.gd",
+    "linha": 1063,
+    "funcao": "_village_props"
+   }
+  ],
+  "arquivo_modelo": "assets/models/qnat/Bush_Common_Flowers.gltf"
+ },
+ {
+  "codigo": "NAT-003",
+  "categoria": "NAT",
+  "chave": "q:Clover_1",
+  "nome": "Clover 1",
+  "fonte": "Quaternius (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/qnat/Clover_1.gltf"
+ },
+ {
+  "codigo": "NAT-004",
+  "categoria": "NAT",
+  "chave": "q:Clover_2",
+  "nome": "Clover 2",
+  "fonte": "Quaternius (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/qnat/Clover_2.gltf"
+ },
+ {
+  "codigo": "NAT-005",
+  "categoria": "NAT",
+  "chave": "q:CommonTree_1",
+  "nome": "Common tree 1",
+  "fonte": "Quaternius (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/qnat/CommonTree_1.gltf"
+ },
+ {
+  "codigo": "NAT-006",
+  "categoria": "NAT",
+  "chave": "q:CommonTree_2",
+  "nome": "Common tree 2",
+  "fonte": "Quaternius (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/qnat/CommonTree_2.gltf"
+ },
+ {
+  "codigo": "NAT-007",
+  "categoria": "NAT",
+  "chave": "q:CommonTree_3",
+  "nome": "Common tree 3",
+  "fonte": "Quaternius (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/qnat/CommonTree_3.gltf"
+ },
+ {
+  "codigo": "NAT-008",
+  "categoria": "NAT",
+  "chave": "q:CommonTree_4",
+  "nome": "Common tree 4",
+  "fonte": "Quaternius (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/qnat/CommonTree_4.gltf"
+ },
+ {
+  "codigo": "NAT-009",
+  "categoria": "NAT",
+  "chave": "q:CommonTree_5",
+  "nome": "Common tree 5",
+  "fonte": "Quaternius (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/qnat/CommonTree_5.gltf"
+ },
+ {
+  "codigo": "NAT-010",
+  "categoria": "NAT",
+  "chave": "q:DeadTree_1",
+  "nome": "Dead tree 1",
+  "fonte": "Quaternius (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/qnat/DeadTree_1.gltf"
+ },
+ {
+  "codigo": "NAT-011",
+  "categoria": "NAT",
+  "chave": "q:DeadTree_2",
+  "nome": "Dead tree 2",
+  "fonte": "Quaternius (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/qnat/DeadTree_2.gltf"
+ },
+ {
+  "codigo": "NAT-012",
+  "categoria": "NAT",
+  "chave": "q:DeadTree_3",
+  "nome": "Dead tree 3",
+  "fonte": "Quaternius (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/qnat/DeadTree_3.gltf"
+ },
+ {
+  "codigo": "NAT-013",
+  "categoria": "NAT",
+  "chave": "q:DeadTree_4",
+  "nome": "Dead tree 4",
+  "fonte": "Quaternius (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/qnat/DeadTree_4.gltf"
+ },
+ {
+  "codigo": "NAT-014",
+  "categoria": "NAT",
+  "chave": "q:DeadTree_5",
+  "nome": "Dead tree 5",
+  "fonte": "Quaternius (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/qnat/DeadTree_5.gltf"
+ },
+ {
+  "codigo": "NAT-015",
+  "categoria": "NAT",
+  "chave": "q:Fern_1",
+  "nome": "Fern 1",
+  "fonte": "Quaternius (CC0)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 1183,
+    "funcao": "_shore_details"
+   },
+   {
+    "arquivo": "world_village.gd",
+    "linha": 1063,
+    "funcao": "_village_props"
+   }
+  ],
+  "arquivo_modelo": "assets/models/qnat/Fern_1.gltf"
+ },
+ {
+  "codigo": "NAT-016",
+  "categoria": "NAT",
+  "chave": "q:Flower_3_Group",
+  "nome": "Flower 3 group",
+  "fonte": "Quaternius (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/qnat/Flower_3_Group.gltf"
+ },
+ {
+  "codigo": "NAT-017",
+  "categoria": "NAT",
+  "chave": "q:Flower_3_Single",
+  "nome": "Flower 3 single",
+  "fonte": "Quaternius (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/qnat/Flower_3_Single.gltf"
+ },
+ {
+  "codigo": "NAT-018",
+  "categoria": "NAT",
+  "chave": "q:Flower_4_Group",
+  "nome": "Flower 4 group",
+  "fonte": "Quaternius (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/qnat/Flower_4_Group.gltf"
+ },
+ {
+  "codigo": "NAT-019",
+  "categoria": "NAT",
+  "chave": "q:Flower_4_Single",
+  "nome": "Flower 4 single",
+  "fonte": "Quaternius (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/qnat/Flower_4_Single.gltf"
+ },
+ {
+  "codigo": "NAT-020",
+  "categoria": "NAT",
+  "chave": "q:Grass_Common_Short",
+  "nome": "Grass common short",
+  "fonte": "Quaternius (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/qnat/Grass_Common_Short.gltf"
+ },
+ {
+  "codigo": "NAT-021",
+  "categoria": "NAT",
+  "chave": "q:Grass_Common_Tall",
+  "nome": "Grass common tall",
+  "fonte": "Quaternius (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/qnat/Grass_Common_Tall.gltf"
+ },
+ {
+  "codigo": "NAT-022",
+  "categoria": "NAT",
+  "chave": "q:Grass_Wispy_Short",
+  "nome": "Grass wispy short",
+  "fonte": "Quaternius (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/qnat/Grass_Wispy_Short.gltf"
+ },
+ {
+  "codigo": "NAT-023",
+  "categoria": "NAT",
+  "chave": "q:Grass_Wispy_Tall",
+  "nome": "Grass wispy tall",
+  "fonte": "Quaternius (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/qnat/Grass_Wispy_Tall.gltf"
+ },
+ {
+  "codigo": "NAT-024",
+  "categoria": "NAT",
+  "chave": "q:Mushroom_Common",
+  "nome": "Mushroom common",
+  "fonte": "Quaternius (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/qnat/Mushroom_Common.gltf"
+ },
+ {
+  "codigo": "NAT-025",
+  "categoria": "NAT",
+  "chave": "q:Mushroom_Laetiporus",
+  "nome": "Mushroom laetiporus",
+  "fonte": "Quaternius (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/qnat/Mushroom_Laetiporus.gltf"
+ },
+ {
+  "codigo": "NAT-026",
+  "categoria": "NAT",
+  "chave": "q:Pebble_Round_1",
+  "nome": "Pebble round 1",
+  "fonte": "Quaternius (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/qnat/Pebble_Round_1.gltf"
+ },
+ {
+  "codigo": "NAT-027",
+  "categoria": "NAT",
+  "chave": "q:Pebble_Round_2",
+  "nome": "Pebble round 2",
+  "fonte": "Quaternius (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/qnat/Pebble_Round_2.gltf"
+ },
+ {
+  "codigo": "NAT-028",
+  "categoria": "NAT",
+  "chave": "q:Pebble_Round_3",
+  "nome": "Pebble round 3",
+  "fonte": "Quaternius (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/qnat/Pebble_Round_3.gltf"
+ },
+ {
+  "codigo": "NAT-029",
+  "categoria": "NAT",
+  "chave": "q:Pebble_Round_4",
+  "nome": "Pebble round 4",
+  "fonte": "Quaternius (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/qnat/Pebble_Round_4.gltf"
+ },
+ {
+  "codigo": "NAT-030",
+  "categoria": "NAT",
+  "chave": "q:Pebble_Round_5",
+  "nome": "Pebble round 5",
+  "fonte": "Quaternius (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/qnat/Pebble_Round_5.gltf"
+ },
+ {
+  "codigo": "NAT-031",
+  "categoria": "NAT",
+  "chave": "q:Pebble_Square_1",
+  "nome": "Pebble square 1",
+  "fonte": "Quaternius (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/qnat/Pebble_Square_1.gltf"
+ },
+ {
+  "codigo": "NAT-032",
+  "categoria": "NAT",
+  "chave": "q:Pebble_Square_2",
+  "nome": "Pebble square 2",
+  "fonte": "Quaternius (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/qnat/Pebble_Square_2.gltf"
+ },
+ {
+  "codigo": "NAT-033",
+  "categoria": "NAT",
+  "chave": "q:Pebble_Square_3",
+  "nome": "Pebble square 3",
+  "fonte": "Quaternius (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/qnat/Pebble_Square_3.gltf"
+ },
+ {
+  "codigo": "NAT-034",
+  "categoria": "NAT",
+  "chave": "q:Pebble_Square_4",
+  "nome": "Pebble square 4",
+  "fonte": "Quaternius (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/qnat/Pebble_Square_4.gltf"
+ },
+ {
+  "codigo": "NAT-035",
+  "categoria": "NAT",
+  "chave": "q:Pebble_Square_5",
+  "nome": "Pebble square 5",
+  "fonte": "Quaternius (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/qnat/Pebble_Square_5.gltf"
+ },
+ {
+  "codigo": "NAT-036",
+  "categoria": "NAT",
+  "chave": "q:Pebble_Square_6",
+  "nome": "Pebble square 6",
+  "fonte": "Quaternius (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/qnat/Pebble_Square_6.gltf"
+ },
+ {
+  "codigo": "NAT-037",
+  "categoria": "NAT",
+  "chave": "q:Petal_1",
+  "nome": "Petal 1",
+  "fonte": "Quaternius (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/qnat/Petal_1.gltf"
+ },
+ {
+  "codigo": "NAT-038",
+  "categoria": "NAT",
+  "chave": "q:Petal_2",
+  "nome": "Petal 2",
+  "fonte": "Quaternius (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/qnat/Petal_2.gltf"
+ },
+ {
+  "codigo": "NAT-039",
+  "categoria": "NAT",
+  "chave": "q:Petal_3",
+  "nome": "Petal 3",
+  "fonte": "Quaternius (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/qnat/Petal_3.gltf"
+ },
+ {
+  "codigo": "NAT-040",
+  "categoria": "NAT",
+  "chave": "q:Petal_4",
+  "nome": "Petal 4",
+  "fonte": "Quaternius (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/qnat/Petal_4.gltf"
+ },
+ {
+  "codigo": "NAT-041",
+  "categoria": "NAT",
+  "chave": "q:Petal_5",
+  "nome": "Petal 5",
+  "fonte": "Quaternius (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/qnat/Petal_5.gltf"
+ },
+ {
+  "codigo": "NAT-042",
+  "categoria": "NAT",
+  "chave": "q:Pine_1",
+  "nome": "Pine 1",
+  "fonte": "Quaternius (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/qnat/Pine_1.gltf"
+ },
+ {
+  "codigo": "NAT-043",
+  "categoria": "NAT",
+  "chave": "q:Pine_2",
+  "nome": "Pine 2",
+  "fonte": "Quaternius (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/qnat/Pine_2.gltf"
+ },
+ {
+  "codigo": "NAT-044",
+  "categoria": "NAT",
+  "chave": "q:Pine_3",
+  "nome": "Pine 3",
+  "fonte": "Quaternius (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/qnat/Pine_3.gltf"
+ },
+ {
+  "codigo": "NAT-045",
+  "categoria": "NAT",
+  "chave": "q:Pine_4",
+  "nome": "Pine 4",
+  "fonte": "Quaternius (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/qnat/Pine_4.gltf"
+ },
+ {
+  "codigo": "NAT-046",
+  "categoria": "NAT",
+  "chave": "q:Pine_5",
+  "nome": "Pine 5",
+  "fonte": "Quaternius (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/qnat/Pine_5.gltf"
+ },
+ {
+  "codigo": "NAT-047",
+  "categoria": "NAT",
+  "chave": "q:Plant_1",
+  "nome": "Plant 1",
+  "fonte": "Quaternius (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/qnat/Plant_1.gltf"
+ },
+ {
+  "codigo": "NAT-048",
+  "categoria": "NAT",
+  "chave": "q:Plant_1_Big",
+  "nome": "Plant 1 big",
+  "fonte": "Quaternius (CC0)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 1183,
+    "funcao": "_shore_details"
+   },
+   {
+    "arquivo": "world_village.gd",
+    "linha": 1063,
+    "funcao": "_village_props"
+   }
+  ],
+  "arquivo_modelo": "assets/models/qnat/Plant_1_Big.gltf"
+ },
+ {
+  "codigo": "NAT-049",
+  "categoria": "NAT",
+  "chave": "q:Plant_7",
+  "nome": "Plant 7",
+  "fonte": "Quaternius (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/qnat/Plant_7.gltf"
+ },
+ {
+  "codigo": "NAT-050",
+  "categoria": "NAT",
+  "chave": "q:Plant_7_Big",
+  "nome": "Plant 7 big",
+  "fonte": "Quaternius (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/qnat/Plant_7_Big.gltf"
+ },
+ {
+  "codigo": "NAT-051",
+  "categoria": "NAT",
+  "chave": "q:RockPath_Round_Small_1",
+  "nome": "Rock path round small 1",
+  "fonte": "Quaternius (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/qnat/RockPath_Round_Small_1.gltf"
+ },
+ {
+  "codigo": "NAT-052",
+  "categoria": "NAT",
+  "chave": "q:RockPath_Round_Small_2",
+  "nome": "Rock path round small 2",
+  "fonte": "Quaternius (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/qnat/RockPath_Round_Small_2.gltf"
+ },
+ {
+  "codigo": "NAT-053",
+  "categoria": "NAT",
+  "chave": "q:RockPath_Round_Small_3",
+  "nome": "Rock path round small 3",
+  "fonte": "Quaternius (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/qnat/RockPath_Round_Small_3.gltf"
+ },
+ {
+  "codigo": "NAT-054",
+  "categoria": "NAT",
+  "chave": "q:RockPath_Round_Thin",
+  "nome": "Rock path round thin",
+  "fonte": "Quaternius (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/qnat/RockPath_Round_Thin.gltf"
+ },
+ {
+  "codigo": "NAT-055",
+  "categoria": "NAT",
+  "chave": "q:RockPath_Round_Wide",
+  "nome": "Rock path round wide",
+  "fonte": "Quaternius (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/qnat/RockPath_Round_Wide.gltf"
+ },
+ {
+  "codigo": "NAT-056",
+  "categoria": "NAT",
+  "chave": "q:RockPath_Square_Small_1",
+  "nome": "Rock path square small 1",
+  "fonte": "Quaternius (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/qnat/RockPath_Square_Small_1.gltf"
+ },
+ {
+  "codigo": "NAT-057",
+  "categoria": "NAT",
+  "chave": "q:RockPath_Square_Small_2",
+  "nome": "Rock path square small 2",
+  "fonte": "Quaternius (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/qnat/RockPath_Square_Small_2.gltf"
+ },
+ {
+  "codigo": "NAT-058",
+  "categoria": "NAT",
+  "chave": "q:RockPath_Square_Small_3",
+  "nome": "Rock path square small 3",
+  "fonte": "Quaternius (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/qnat/RockPath_Square_Small_3.gltf"
+ },
+ {
+  "codigo": "NAT-059",
+  "categoria": "NAT",
+  "chave": "q:RockPath_Square_Thin",
+  "nome": "Rock path square thin",
+  "fonte": "Quaternius (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/qnat/RockPath_Square_Thin.gltf"
+ },
+ {
+  "codigo": "NAT-060",
+  "categoria": "NAT",
+  "chave": "q:RockPath_Square_Wide",
+  "nome": "Rock path square wide",
+  "fonte": "Quaternius (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/qnat/RockPath_Square_Wide.gltf"
+ },
+ {
+  "codigo": "NAT-061",
+  "categoria": "NAT",
+  "chave": "q:Rock_Medium_1",
+  "nome": "Rock medium 1",
+  "fonte": "Quaternius (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/qnat/Rock_Medium_1.gltf"
+ },
+ {
+  "codigo": "NAT-062",
+  "categoria": "NAT",
+  "chave": "q:Rock_Medium_2",
+  "nome": "Rock medium 2",
+  "fonte": "Quaternius (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/qnat/Rock_Medium_2.gltf"
+ },
+ {
+  "codigo": "NAT-063",
+  "categoria": "NAT",
+  "chave": "q:Rock_Medium_3",
+  "nome": "Rock medium 3",
+  "fonte": "Quaternius (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/qnat/Rock_Medium_3.gltf"
+ },
+ {
+  "codigo": "NAT-064",
+  "categoria": "NAT",
+  "chave": "q:TwistedTree_1",
+  "nome": "Twisted tree 1",
+  "fonte": "Quaternius (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/qnat/TwistedTree_1.gltf"
+ },
+ {
+  "codigo": "NAT-065",
+  "categoria": "NAT",
+  "chave": "q:TwistedTree_2",
+  "nome": "Twisted tree 2",
+  "fonte": "Quaternius (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/qnat/TwistedTree_2.gltf"
+ },
+ {
+  "codigo": "NAT-066",
+  "categoria": "NAT",
+  "chave": "q:TwistedTree_3",
+  "nome": "Twisted tree 3",
+  "fonte": "Quaternius (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/qnat/TwistedTree_3.gltf"
+ },
+ {
+  "codigo": "NAT-067",
+  "categoria": "NAT",
+  "chave": "q:TwistedTree_4",
+  "nome": "Twisted tree 4",
+  "fonte": "Quaternius (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/qnat/TwistedTree_4.gltf"
+ },
+ {
+  "codigo": "NAT-068",
+  "categoria": "NAT",
+  "chave": "q:TwistedTree_5",
+  "nome": "Twisted tree 5",
+  "fonte": "Quaternius (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/qnat/TwistedTree_5.gltf"
+ },
+ {
+  "codigo": "NOU-001",
+  "categoria": "NOU",
+  "chave": "ArmChair_01",
+  "nome": "Arm chair 01",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/ArmChair_01/ArmChair_01.gltf"
+ },
+ {
+  "codigo": "NOU-002",
+  "categoria": "NOU",
+  "chave": "Barrel_01",
+  "nome": "Barrel 01",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/Barrel_01/Barrel_01.gltf"
+ },
+ {
+  "codigo": "NOU-003",
+  "categoria": "NOU",
+  "chave": "Barrel_02",
+  "nome": "Barrel 02",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/Barrel_02/Barrel_02.gltf"
+ },
+ {
+  "codigo": "NOU-004",
+  "categoria": "NOU",
+  "chave": "Chandelier_03",
+  "nome": "Chandelier 03",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/Chandelier_03/Chandelier_03.gltf"
+ },
+ {
+  "codigo": "NOU-005",
+  "categoria": "NOU",
+  "chave": "ClassicNightstand_01",
+  "nome": "Classic nightstand 01",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/ClassicNightstand_01/ClassicNightstand_01.gltf"
+ },
+ {
+  "codigo": "NOU-006",
+  "categoria": "NOU",
+  "chave": "GreenChair_01",
+  "nome": "Green chair 01",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/GreenChair_01/GreenChair_01.gltf"
+ },
+ {
+  "codigo": "NOU-007",
+  "categoria": "NOU",
+  "chave": "Lantern_01",
+  "nome": "Lantern 01",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/Lantern_01/Lantern_01.gltf"
+ },
+ {
+  "codigo": "NOU-008",
+  "categoria": "NOU",
+  "chave": "Ottoman_01",
+  "nome": "Ottoman 01",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/Ottoman_01/Ottoman_01.gltf"
+ },
+ {
+  "codigo": "NOU-009",
+  "categoria": "NOU",
+  "chave": "Ukulele_01",
+  "nome": "Ukulele 01",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/Ukulele_01/Ukulele_01.gltf"
+ },
+ {
+  "codigo": "NOU-010",
+  "categoria": "NOU",
+  "chave": "WoodenTable_02",
+  "nome": "Wooden table 02",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/WoodenTable_02/WoodenTable_02.gltf"
+ },
+ {
+  "codigo": "NOU-011",
+  "categoria": "NOU",
+  "chave": "anthurium_botany_01",
+  "nome": "Anthurium botany 01",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/anthurium_botany_01/anthurium_botany_01.gltf"
+ },
+ {
+  "codigo": "NOU-012",
+  "categoria": "NOU",
+  "chave": "antique_ceramic_vase_01",
+  "nome": "Antique ceramic vase 01",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/antique_ceramic_vase_01/antique_ceramic_vase_01.gltf"
+ },
+ {
+  "codigo": "NOU-013",
+  "categoria": "NOU",
+  "chave": "bark_debris_01",
+  "nome": "Bark debris 01",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/bark_debris_01/bark_debris_01.gltf"
+ },
+ {
+  "codigo": "NOU-014",
+  "categoria": "NOU",
+  "chave": "barrel_03",
+  "nome": "Barrel 03",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/barrel_03/barrel_03.gltf"
+ },
+ {
+  "codigo": "NOU-015",
+  "categoria": "NOU",
+  "chave": "book_encyclopedia_set_01",
+  "nome": "Book encyclopedia set 01",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/book_encyclopedia_set_01/book_encyclopedia_set_01.gltf"
+ },
+ {
+  "codigo": "NOU-016",
+  "categoria": "NOU",
+  "chave": "boulder_01",
+  "nome": "Boulder 01",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/boulder_01/boulder_01.gltf"
+ },
+ {
+  "codigo": "NOU-017",
+  "categoria": "NOU",
+  "chave": "brass_candleholders",
+  "nome": "Brass candleholders",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/brass_candleholders/brass_candleholders.gltf"
+ },
+ {
+  "codigo": "NOU-018",
+  "categoria": "NOU",
+  "chave": "brass_diya_lantern",
+  "nome": "Brass diya lantern",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/brass_diya_lantern/brass_diya_lantern.gltf"
+ },
+ {
+  "codigo": "NOU-019",
+  "categoria": "NOU",
+  "chave": "brass_goblets",
+  "nome": "Brass goblets",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/brass_goblets/brass_goblets.gltf"
+ },
+ {
+  "codigo": "NOU-020",
+  "categoria": "NOU",
+  "chave": "brass_pan_01",
+  "nome": "Brass pan 01",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/brass_pan_01/brass_pan_01.gltf"
+ },
+ {
+  "codigo": "NOU-021",
+  "categoria": "NOU",
+  "chave": "brass_pot_01",
+  "nome": "Brass pot 01",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/brass_pot_01/brass_pot_01.gltf"
+ },
+ {
+  "codigo": "NOU-022",
+  "categoria": "NOU",
+  "chave": "brass_vase_01",
+  "nome": "Brass vase 01",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/brass_vase_01/brass_vase_01.gltf"
+ },
+ {
+  "codigo": "NOU-023",
+  "categoria": "NOU",
+  "chave": "caged_hanging_light",
+  "nome": "Caged hanging light",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/caged_hanging_light/caged_hanging_light.gltf"
+ },
+ {
+  "codigo": "NOU-024",
+  "categoria": "NOU",
+  "chave": "calathea_orbifolia_01",
+  "nome": "Calathea orbifolia 01",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/calathea_orbifolia_01/calathea_orbifolia_01.gltf"
+ },
+ {
+  "codigo": "NOU-025",
+  "categoria": "NOU",
+  "chave": "cardboard_box_01",
+  "nome": "Cardboard box 01",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/cardboard_box_01/cardboard_box_01.gltf"
+ },
+ {
+  "codigo": "NOU-026",
+  "categoria": "NOU",
+  "chave": "carrot_cake",
+  "nome": "Carrot cake",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/carrot_cake/carrot_cake.gltf"
+ },
+ {
+  "codigo": "NOU-027",
+  "categoria": "NOU",
+  "chave": "carved_wooden_elephant",
+  "nome": "Carved wooden elephant",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/carved_wooden_elephant/carved_wooden_elephant.gltf"
+ },
+ {
+  "codigo": "NOU-028",
+  "categoria": "NOU",
+  "chave": "ceramic_vase_01",
+  "nome": "Ceramic vase 01",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/ceramic_vase_01/ceramic_vase_01.gltf"
+ },
+ {
+  "codigo": "NOU-029",
+  "categoria": "NOU",
+  "chave": "ceramic_vase_03",
+  "nome": "Ceramic vase 03",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/ceramic_vase_03/ceramic_vase_03.gltf"
+ },
+ {
+  "codigo": "NOU-030",
+  "categoria": "NOU",
+  "chave": "ceramic_vase_04",
+  "nome": "Ceramic vase 04",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/ceramic_vase_04/ceramic_vase_04.gltf"
+ },
+ {
+  "codigo": "NOU-031",
+  "categoria": "NOU",
+  "chave": "chinese_stool",
+  "nome": "Chinese stool",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/chinese_stool/chinese_stool.gltf"
+ },
+ {
+  "codigo": "NOU-032",
+  "categoria": "NOU",
+  "chave": "coffee_table_round_01",
+  "nome": "Coffee table round 01",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/coffee_table_round_01/coffee_table_round_01.gltf"
+ },
+ {
+  "codigo": "NOU-033",
+  "categoria": "NOU",
+  "chave": "dining_chair_02",
+  "nome": "Dining chair 02",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/dining_chair_02/dining_chair_02.gltf"
+ },
+ {
+  "codigo": "NOU-034",
+  "categoria": "NOU",
+  "chave": "dining_table",
+  "nome": "Dining table",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/dining_table/dining_table.gltf"
+ },
+ {
+  "codigo": "NOU-035",
+  "categoria": "NOU",
+  "chave": "dry_branches_medium_01",
+  "nome": "Dry branches medium 01",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/dry_branches_medium_01/dry_branches_medium_01.gltf"
+ },
+ {
+  "codigo": "NOU-036",
+  "categoria": "NOU",
+  "chave": "fern_02",
+  "nome": "Fern 02",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/fern_02/fern_02.gltf"
+ },
+ {
+  "codigo": "NOU-037",
+  "categoria": "NOU",
+  "chave": "fire_hydrant",
+  "nome": "Fire hydrant",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/fire_hydrant/fire_hydrant.gltf"
+ },
+ {
+  "codigo": "NOU-038",
+  "categoria": "NOU",
+  "chave": "fish_knife",
+  "nome": "Fish knife",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/fish_knife/fish_knife.gltf"
+ },
+ {
+  "codigo": "NOU-039",
+  "categoria": "NOU",
+  "chave": "flower_ursinia",
+  "nome": "Flower ursinia",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/flower_ursinia/flower_ursinia.gltf"
+ },
+ {
+  "codigo": "NOU-040",
+  "categoria": "NOU",
+  "chave": "folding_wooden_stool",
+  "nome": "Folding wooden stool",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/folding_wooden_stool/folding_wooden_stool.gltf"
+ },
+ {
+  "codigo": "NOU-041",
+  "categoria": "NOU",
+  "chave": "garden_gnome",
+  "nome": "Garden gnome",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/garden_gnome/garden_gnome.gltf"
+ },
+ {
+  "codigo": "NOU-042",
+  "categoria": "NOU",
+  "chave": "grass_bermuda_01",
+  "nome": "Grass bermuda 01",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/grass_bermuda_01/grass_bermuda_01.gltf"
+ },
+ {
+  "codigo": "NOU-043",
+  "categoria": "NOU",
+  "chave": "grass_medium_01",
+  "nome": "Grass medium 01",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/grass_medium_01/grass_medium_01.gltf"
+ },
+ {
+  "codigo": "NOU-044",
+  "categoria": "NOU",
+  "chave": "grass_medium_02",
+  "nome": "Grass medium 02",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/grass_medium_02/grass_medium_02.gltf"
+ },
+ {
+  "codigo": "NOU-045",
+  "categoria": "NOU",
+  "chave": "hamburger_buns",
+  "nome": "Hamburger buns",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/hamburger_buns/hamburger_buns.gltf"
+ },
+ {
+  "codigo": "NOU-046",
+  "categoria": "NOU",
+  "chave": "hanging_industrial_lamp",
+  "nome": "Hanging industrial lamp",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/hanging_industrial_lamp/hanging_industrial_lamp.gltf"
+ },
+ {
+  "codigo": "NOU-047",
+  "categoria": "NOU",
+  "chave": "hanging_picture_frame_01",
+  "nome": "Hanging picture frame 01",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/hanging_picture_frame_01/hanging_picture_frame_01.gltf"
+ },
+ {
+  "codigo": "NOU-048",
+  "categoria": "NOU",
+  "chave": "hanging_picture_frame_03",
+  "nome": "Hanging picture frame 03",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/hanging_picture_frame_03/hanging_picture_frame_03.gltf"
+ },
+ {
+  "codigo": "NOU-049",
+  "categoria": "NOU",
+  "chave": "island_tree_02",
+  "nome": "Island tree 02",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/island_tree_02/island_tree_02.gltf"
+ },
+ {
+  "codigo": "NOU-050",
+  "categoria": "NOU",
+  "chave": "lantern_chandelier_01",
+  "nome": "Lantern chandelier 01",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/lantern_chandelier_01/lantern_chandelier_01.gltf"
+ },
+ {
+  "codigo": "NOU-051",
+  "categoria": "NOU",
+  "chave": "life_jacket",
+  "nome": "Life jacket",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/life_jacket/life_jacket.gltf"
+ },
+ {
+  "codigo": "NOU-052",
+  "categoria": "NOU",
+  "chave": "mantel_clock_01",
+  "nome": "Mantel clock 01",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/mantel_clock_01/mantel_clock_01.gltf"
+ },
+ {
+  "codigo": "NOU-053",
+  "categoria": "NOU",
+  "chave": "metal_jug",
+  "nome": "Metal jug",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/metal_jug/metal_jug.gltf"
+ },
+ {
+  "codigo": "NOU-054",
+  "categoria": "NOU",
+  "chave": "metal_stool_01",
+  "nome": "Metal stool 01",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/metal_stool_01/metal_stool_01.gltf"
+ },
+ {
+  "codigo": "NOU-055",
+  "categoria": "NOU",
+  "chave": "metal_trash_can",
+  "nome": "Metal trash can",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/metal_trash_can/metal_trash_can.gltf"
+ },
+ {
+  "codigo": "NOU-056",
+  "categoria": "NOU",
+  "chave": "modified_thermos",
+  "nome": "Modified thermos",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/modified_thermos/modified_thermos.gltf"
+ },
+ {
+  "codigo": "NOU-057",
+  "categoria": "NOU",
+  "chave": "modular_electricity_poles",
+  "nome": "Modular electricity poles",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/modular_electricity_poles/modular_electricity_poles.gltf"
+ },
+ {
+  "codigo": "NOU-058",
+  "categoria": "NOU",
+  "chave": "modular_street_seating",
+  "nome": "Modular street seating",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/modular_street_seating/modular_street_seating.gltf"
+ },
+ {
+  "codigo": "NOU-059",
+  "categoria": "NOU",
+  "chave": "modular_wooden_pier",
+  "nome": "Modular wooden pier",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/modular_wooden_pier/modular_wooden_pier.gltf"
+ },
+ {
+  "codigo": "NOU-060",
+  "categoria": "NOU",
+  "chave": "ocean_buoy",
+  "nome": "Ocean buoy",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/ocean_buoy/ocean_buoy.gltf"
+ },
+ {
+  "codigo": "NOU-061",
+  "categoria": "NOU",
+  "chave": "old_bed_frame",
+  "nome": "Old bed frame",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/old_bed_frame/old_bed_frame.gltf"
+ },
+ {
+  "codigo": "NOU-062",
+  "categoria": "NOU",
+  "chave": "painted_wooden_cabinet_02",
+  "nome": "Painted wooden cabinet 02",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/painted_wooden_cabinet_02/painted_wooden_cabinet_02.gltf"
+ },
+ {
+  "codigo": "NOU-063",
+  "categoria": "NOU",
+  "chave": "painted_wooden_chair_02",
+  "nome": "Painted wooden chair 02",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/painted_wooden_chair_02/painted_wooden_chair_02.gltf"
+ },
+ {
+  "codigo": "NOU-064",
+  "categoria": "NOU",
+  "chave": "painted_wooden_shelves",
+  "nome": "Painted wooden shelves",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/painted_wooden_shelves/painted_wooden_shelves.gltf"
+ },
+ {
+  "codigo": "NOU-065",
+  "categoria": "NOU",
+  "chave": "painted_wooden_sofa",
+  "nome": "Painted wooden sofa",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/painted_wooden_sofa/painted_wooden_sofa.gltf"
+ },
+ {
+  "codigo": "NOU-066",
+  "categoria": "NOU",
+  "chave": "painted_wooden_stool",
+  "nome": "Painted wooden stool",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/painted_wooden_stool/painted_wooden_stool.gltf"
+ },
+ {
+  "codigo": "NOU-067",
+  "categoria": "NOU",
+  "chave": "painted_wooden_table",
+  "nome": "Painted wooden table",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/painted_wooden_table/painted_wooden_table.gltf"
+ },
+ {
+  "codigo": "NOU-068",
+  "categoria": "NOU",
+  "chave": "periwinkle_plant",
+  "nome": "Periwinkle plant",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/periwinkle_plant/periwinkle_plant.gltf"
+ },
+ {
+  "codigo": "NOU-069",
+  "categoria": "NOU",
+  "chave": "planter_box_02",
+  "nome": "Planter box 02",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/planter_box_02/planter_box_02.gltf"
+ },
+ {
+  "codigo": "NOU-070",
+  "categoria": "NOU",
+  "chave": "planter_box_03",
+  "nome": "Planter box 03",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/planter_box_03/planter_box_03.gltf"
+ },
+ {
+  "codigo": "NOU-071",
+  "categoria": "NOU",
+  "chave": "plastic_crate_03",
+  "nome": "Plastic crate 03",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/plastic_crate_03/plastic_crate_03.gltf"
+ },
+ {
+  "codigo": "NOU-072",
+  "categoria": "NOU",
+  "chave": "rollershutter_window_01",
+  "nome": "Rollershutter window 01",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/rollershutter_window_01/rollershutter_window_01.gltf"
+ },
+ {
+  "codigo": "NOU-073",
+  "categoria": "NOU",
+  "chave": "round_wooden_table_01",
+  "nome": "Round wooden table 01",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/round_wooden_table_01/round_wooden_table_01.gltf"
+ },
+ {
+  "codigo": "NOU-074",
+  "categoria": "NOU",
+  "chave": "round_wooden_table_02",
+  "nome": "Round wooden table 02",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/round_wooden_table_02/round_wooden_table_02.gltf"
+ },
+ {
+  "codigo": "NOU-075",
+  "categoria": "NOU",
+  "chave": "rubber_duck_toy",
+  "nome": "Rubber duck toy",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/rubber_duck_toy/rubber_duck_toy.gltf"
+ },
+ {
+  "codigo": "NOU-076",
+  "categoria": "NOU",
+  "chave": "sand_rocks_small_01",
+  "nome": "Sand rocks small 01",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/sand_rocks_small_01/sand_rocks_small_01.gltf"
+ },
+ {
+  "codigo": "NOU-077",
+  "categoria": "NOU",
+  "chave": "seadogs_compass",
+  "nome": "Seadogs compass",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/seadogs_compass/seadogs_compass.gltf"
+ },
+ {
+  "codigo": "NOU-078",
+  "categoria": "NOU",
+  "chave": "ship_pinnace",
+  "nome": "Ship pinnace",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/ship_pinnace/ship_pinnace.gltf"
+ },
+ {
+  "codigo": "NOU-079",
+  "categoria": "NOU",
+  "chave": "shrub_01",
+  "nome": "Shrub 01",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/shrub_01/shrub_01.gltf"
+ },
+ {
+  "codigo": "NOU-080",
+  "categoria": "NOU",
+  "chave": "shrub_02",
+  "nome": "Shrub 02",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/shrub_02/shrub_02.gltf"
+ },
+ {
+  "codigo": "NOU-081",
+  "categoria": "NOU",
+  "chave": "shrub_03",
+  "nome": "Shrub 03",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/shrub_03/shrub_03.gltf"
+ },
+ {
+  "codigo": "NOU-082",
+  "categoria": "NOU",
+  "chave": "shrub_04",
+  "nome": "Shrub 04",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/shrub_04/shrub_04.gltf"
+ },
+ {
+  "codigo": "NOU-083",
+  "categoria": "NOU",
+  "chave": "side_table_tall_01",
+  "nome": "Side table tall 01",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/side_table_tall_01/side_table_tall_01.gltf"
+ },
+ {
+  "codigo": "NOU-084",
+  "categoria": "NOU",
+  "chave": "small_wooden_table_01",
+  "nome": "Small wooden table 01",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/small_wooden_table_01/small_wooden_table_01.gltf"
+ },
+ {
+  "codigo": "NOU-085",
+  "categoria": "NOU",
+  "chave": "sofa_02",
+  "nome": "Sofa 02",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/sofa_02/sofa_02.gltf"
+ },
+ {
+  "codigo": "NOU-086",
+  "categoria": "NOU",
+  "chave": "standing_chalkboard_01",
+  "nome": "Standing chalkboard 01",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/standing_chalkboard_01/standing_chalkboard_01.gltf"
+ },
+ {
+  "codigo": "NOU-087",
+  "categoria": "NOU",
+  "chave": "stone_01",
+  "nome": "Stone 01",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/stone_01/stone_01.gltf"
+ },
+ {
+  "codigo": "NOU-088",
+  "categoria": "NOU",
+  "chave": "stone_fire_pit",
+  "nome": "Stone fire pit",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/stone_fire_pit/stone_fire_pit.gltf"
+ },
+ {
+  "codigo": "NOU-089",
+  "categoria": "NOU",
+  "chave": "street_lamp_02",
+  "nome": "Street lamp 02",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/street_lamp_02/street_lamp_02.gltf"
+ },
+ {
+  "codigo": "NOU-090",
+  "categoria": "NOU",
+  "chave": "sweet_potato",
+  "nome": "Sweet potato",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/sweet_potato/sweet_potato.gltf"
+ },
+ {
+  "codigo": "NOU-091",
+  "categoria": "NOU",
+  "chave": "tea_set_01",
+  "nome": "Tea set 01",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/tea_set_01/tea_set_01.gltf"
+ },
+ {
+  "codigo": "NOU-092",
+  "categoria": "NOU",
+  "chave": "treasure_chest",
+  "nome": "Treasure chest",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/treasure_chest/treasure_chest.gltf"
+ },
+ {
+  "codigo": "NOU-093",
+  "categoria": "NOU",
+  "chave": "tree_stump_01",
+  "nome": "Tree stump 01",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/tree_stump_01/tree_stump_01.gltf"
+ },
+ {
+  "codigo": "NOU-094",
+  "categoria": "NOU",
+  "chave": "utility_box_01",
+  "nome": "Utility box 01",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/utility_box_01/utility_box_01.gltf"
+ },
+ {
+  "codigo": "NOU-095",
+  "categoria": "NOU",
+  "chave": "vintage_binocular",
+  "nome": "Vintage binocular",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/vintage_binocular/vintage_binocular.gltf"
+ },
+ {
+  "codigo": "NOU-096",
+  "categoria": "NOU",
+  "chave": "vintage_cabinet_01",
+  "nome": "Vintage cabinet 01",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/vintage_cabinet_01/vintage_cabinet_01.gltf"
+ },
+ {
+  "codigo": "NOU-097",
+  "categoria": "NOU",
+  "chave": "vintage_day_bed",
+  "nome": "Vintage day bed",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/vintage_day_bed/vintage_day_bed.gltf"
+ },
+ {
+  "codigo": "NOU-098",
+  "categoria": "NOU",
+  "chave": "vintage_radio_transceiver",
+  "nome": "Vintage radio transceiver",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/vintage_radio_transceiver/vintage_radio_transceiver.gltf"
+ },
+ {
+  "codigo": "NOU-099",
+  "categoria": "NOU",
+  "chave": "watering_can_metal_01",
+  "nome": "Watering can metal 01",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/watering_can_metal_01/watering_can_metal_01.gltf"
+ },
+ {
+  "codigo": "NOU-100",
+  "categoria": "NOU",
+  "chave": "wine_barrel_01",
+  "nome": "Wine barrel 01",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/wine_barrel_01/wine_barrel_01.gltf"
+ },
+ {
+  "codigo": "NOU-101",
+  "categoria": "NOU",
+  "chave": "wine_bottles_01",
+  "nome": "Wine bottles 01",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/wine_bottles_01/wine_bottles_01.gltf"
+ },
+ {
+  "codigo": "NOU-102",
+  "categoria": "NOU",
+  "chave": "wooden_barrels_01",
+  "nome": "Wooden barrels 01",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/wooden_barrels_01/wooden_barrels_01.gltf"
+ },
+ {
+  "codigo": "NOU-103",
+  "categoria": "NOU",
+  "chave": "wooden_bookshelf_worn",
+  "nome": "Wooden bookshelf worn",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/wooden_bookshelf_worn/wooden_bookshelf_worn.gltf"
+ },
+ {
+  "codigo": "NOU-104",
+  "categoria": "NOU",
+  "chave": "wooden_candlestick",
+  "nome": "Wooden candlestick",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/wooden_candlestick/wooden_candlestick.gltf"
+ },
+ {
+  "codigo": "NOU-105",
+  "categoria": "NOU",
+  "chave": "wooden_cutting_board",
+  "nome": "Wooden cutting board",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/wooden_cutting_board/wooden_cutting_board.gltf"
+ },
+ {
+  "codigo": "NOU-106",
+  "categoria": "NOU",
+  "chave": "wooden_display_shelves_01",
+  "nome": "Wooden display shelves 01",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/wooden_display_shelves_01/wooden_display_shelves_01.gltf"
+ },
+ {
+  "codigo": "NOU-107",
+  "categoria": "NOU",
+  "chave": "wooden_picnic_table",
+  "nome": "Wooden picnic table",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/wooden_picnic_table/wooden_picnic_table.gltf"
+ },
+ {
+  "codigo": "NOU-108",
+  "categoria": "NOU",
+  "chave": "wooden_spoon",
+  "nome": "Wooden spoon",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/wooden_spoon/wooden_spoon.gltf"
+ },
+ {
+  "codigo": "NOU-109",
+  "categoria": "NOU",
+  "chave": "wooden_stool_02",
+  "nome": "Wooden stool 02",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/wooden_stool_02/wooden_stool_02.gltf"
+ },
+ {
+  "codigo": "NOU-110",
+  "categoria": "NOU",
+  "chave": "wooden_table_02",
+  "nome": "Wooden table 02",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/wooden_table_02/wooden_table_02.gltf"
+ },
+ {
+  "codigo": "NOU-111",
+  "categoria": "NOU",
+  "chave": "k:barrel",
+  "nome": "Barrel",
+  "fonte": "Kenney (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/kenney/barrel.glb"
+ },
+ {
+  "codigo": "NOU-112",
+  "categoria": "NOU",
+  "chave": "k:boat-row-small",
+  "nome": "Boat row small",
+  "fonte": "Kenney (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/kenney/boat-row-small.glb"
+ },
+ {
+  "codigo": "NOU-113",
+  "categoria": "NOU",
+  "chave": "k:bowl",
+  "nome": "Bowl",
+  "fonte": "Kenney (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/kenney/bowl.glb"
+ },
+ {
+  "codigo": "NOU-114",
+  "categoria": "NOU",
+  "chave": "k:campfire_logs",
+  "nome": "Campfire logs",
+  "fonte": "Kenney (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/kenney/campfire_logs.glb"
+ },
+ {
+  "codigo": "NOU-115",
+  "categoria": "NOU",
+  "chave": "k:campfire_stones",
+  "nome": "Campfire stones",
+  "fonte": "Kenney (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/kenney/campfire_stones.glb"
+ },
+ {
+  "codigo": "NOU-116",
+  "categoria": "NOU",
+  "chave": "k:canoe",
+  "nome": "Canoe",
+  "fonte": "Kenney (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/kenney/canoe.glb"
+ },
+ {
+  "codigo": "NOU-117",
+  "categoria": "NOU",
+  "chave": "k:canoe_paddle",
+  "nome": "Canoe paddle",
+  "fonte": "Kenney (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/kenney/canoe_paddle.glb"
+ },
+ {
+  "codigo": "NOU-118",
+  "categoria": "NOU",
+  "chave": "k:crate-bottles",
+  "nome": "Crate bottles",
+  "fonte": "Kenney (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/kenney/crate-bottles.glb"
+ },
+ {
+  "codigo": "NOU-119",
+  "categoria": "NOU",
+  "chave": "k:cup-tea",
+  "nome": "Cup tea",
+  "fonte": "Kenney (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/kenney/cup-tea.glb"
+ },
+ {
+  "codigo": "NOU-120",
+  "categoria": "NOU",
+  "chave": "k:fish-bones",
+  "nome": "Fish bones",
+  "fonte": "Kenney (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/kenney/fish-bones.glb"
+ },
+ {
+  "codigo": "NOU-121",
+  "categoria": "NOU",
+  "chave": "k:fish",
+  "nome": "Fish",
+  "fonte": "Kenney (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/kenney/fish.glb"
+ },
+ {
+  "codigo": "NOU-122",
+  "categoria": "NOU",
+  "chave": "k:flag",
+  "nome": "Flag",
+  "fonte": "Kenney (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/kenney/flag.glb"
+ },
+ {
+  "codigo": "NOU-123",
+  "categoria": "NOU",
+  "chave": "k:flower_purpleB",
+  "nome": "Flower purple b",
+  "fonte": "Kenney (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/kenney/flower_purpleB.glb"
+ },
+ {
+  "codigo": "NOU-124",
+  "categoria": "NOU",
+  "chave": "k:flower_redA",
+  "nome": "Flower red a",
+  "fonte": "Kenney (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/kenney/flower_redA.glb"
+ },
+ {
+  "codigo": "NOU-125",
+  "categoria": "NOU",
+  "chave": "k:flower_yellowB",
+  "nome": "Flower yellow b",
+  "fonte": "Kenney (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/kenney/flower_yellowB.glb"
+ },
+ {
+  "codigo": "NOU-126",
+  "categoria": "NOU",
+  "chave": "k:ice-cream-cup",
+  "nome": "Ice cream cup",
+  "fonte": "Kenney (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/kenney/ice-cream-cup.glb"
+ },
+ {
+  "codigo": "NOU-127",
+  "categoria": "NOU",
+  "chave": "k:lily_large",
+  "nome": "Lily large",
+  "fonte": "Kenney (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/kenney/lily_large.glb"
+ },
+ {
+  "codigo": "NOU-128",
+  "categoria": "NOU",
+  "chave": "k:loaf-round",
+  "nome": "Loaf round",
+  "fonte": "Kenney (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/kenney/loaf-round.glb"
+ },
+ {
+  "codigo": "NOU-129",
+  "categoria": "NOU",
+  "chave": "k:loaf",
+  "nome": "Loaf",
+  "fonte": "Kenney (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/kenney/loaf.glb"
+ },
+ {
+  "codigo": "NOU-130",
+  "categoria": "NOU",
+  "chave": "k:mushroom_red",
+  "nome": "Mushroom red",
+  "fonte": "Kenney (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/kenney/mushroom_red.glb"
+ },
+ {
+  "codigo": "NOU-131",
+  "categoria": "NOU",
+  "chave": "k:palm-bend",
+  "nome": "Palm bend",
+  "fonte": "Kenney (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/kenney/palm-bend.glb"
+ },
+ {
+  "codigo": "NOU-132",
+  "categoria": "NOU",
+  "chave": "k:palm-detailed-bend",
+  "nome": "Palm detailed bend",
+  "fonte": "Kenney (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/kenney/palm-detailed-bend.glb"
+ },
+ {
+  "codigo": "NOU-133",
+  "categoria": "NOU",
+  "chave": "k:palm-detailed-straight",
+  "nome": "Palm detailed straight",
+  "fonte": "Kenney (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/kenney/palm-detailed-straight.glb"
+ },
+ {
+  "codigo": "NOU-134",
+  "categoria": "NOU",
+  "chave": "k:palm-straight",
+  "nome": "Palm straight",
+  "fonte": "Kenney (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/kenney/palm-straight.glb"
+ },
+ {
+  "codigo": "NOU-135",
+  "categoria": "NOU",
+  "chave": "k:plant_bush",
+  "nome": "Plant bush",
+  "fonte": "Kenney (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/kenney/plant_bush.glb"
+ },
+ {
+  "codigo": "NOU-136",
+  "categoria": "NOU",
+  "chave": "k:plant_bushDetailed",
+  "nome": "Plant bush detailed",
+  "fonte": "Kenney (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/kenney/plant_bushDetailed.glb"
+ },
+ {
+  "codigo": "NOU-137",
+  "categoria": "NOU",
+  "chave": "k:plant_bushLarge",
+  "nome": "Plant bush large",
+  "fonte": "Kenney (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/kenney/plant_bushLarge.glb"
+ },
+ {
+  "codigo": "NOU-138",
+  "categoria": "NOU",
+  "chave": "k:rock_largeB",
+  "nome": "Rock large b",
+  "fonte": "Kenney (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/kenney/rock_largeB.glb"
+ },
+ {
+  "codigo": "NOU-139",
+  "categoria": "NOU",
+  "chave": "k:rock_largeC",
+  "nome": "Rock large c",
+  "fonte": "Kenney (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/kenney/rock_largeC.glb"
+ },
+ {
+  "codigo": "NOU-140",
+  "categoria": "NOU",
+  "chave": "k:rock_smallC",
+  "nome": "Rock small c",
+  "fonte": "Kenney (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/kenney/rock_smallC.glb"
+ },
+ {
+  "codigo": "NOU-141",
+  "categoria": "NOU",
+  "chave": "k:rock_smallF",
+  "nome": "Rock small f",
+  "fonte": "Kenney (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/kenney/rock_smallF.glb"
+ },
+ {
+  "codigo": "NOU-142",
+  "categoria": "NOU",
+  "chave": "k:ship-medium",
+  "nome": "Ship medium",
+  "fonte": "Kenney (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/kenney/ship-medium.glb"
+ },
+ {
+  "codigo": "NOU-143",
+  "categoria": "NOU",
+  "chave": "k:ship-small",
+  "nome": "Ship small",
+  "fonte": "Kenney (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/kenney/ship-small.glb"
+ },
+ {
+  "codigo": "NOU-144",
+  "categoria": "NOU",
+  "chave": "k:stone_largeB",
+  "nome": "Stone large b",
+  "fonte": "Kenney (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/kenney/stone_largeB.glb"
+ },
+ {
+  "codigo": "NOU-145",
+  "categoria": "NOU",
+  "chave": "k:stone_largeC",
+  "nome": "Stone large c",
+  "fonte": "Kenney (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/kenney/stone_largeC.glb"
+ },
+ {
+  "codigo": "NOU-146",
+  "categoria": "NOU",
+  "chave": "k:stump_round",
+  "nome": "Stump round",
+  "fonte": "Kenney (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/kenney/stump_round.glb"
+ },
+ {
+  "codigo": "NOU-147",
+  "categoria": "NOU",
+  "chave": "k:tent_smallOpen",
+  "nome": "Tent small open",
+  "fonte": "Kenney (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/kenney/tent_smallOpen.glb"
+ },
+ {
+  "codigo": "NOU-148",
+  "categoria": "NOU",
+  "chave": "k:watermelon",
+  "nome": "Watermelon",
+  "fonte": "Kenney (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/kenney/watermelon.glb"
+ },
+ {
+  "codigo": "PRC-001",
+  "categoria": "PRC",
+  "chave": "stool",
+  "nome": "Stool",
+  "fonte": "props.gd (código)",
+  "usos": [
+   {
+    "arquivo": "props.gd",
+    "linha": 81,
+    "funcao": "stool"
+   }
+  ]
+ },
+ {
+  "codigo": "PRC-002",
+  "categoria": "PRC",
+  "chave": "chair",
+  "nome": "Chair",
+  "fonte": "props.gd (código)",
+  "usos": [
+   {
+    "arquivo": "props.gd",
+    "linha": 102,
+    "funcao": "chair"
+   }
+  ]
+ },
+ {
+  "codigo": "PRC-003",
+  "categoria": "PRC",
+  "chave": "round_table",
+  "nome": "Round table",
+  "fonte": "props.gd (código)",
+  "usos": [
+   {
+    "arquivo": "props.gd",
+    "linha": 117,
+    "funcao": "round_table"
+   }
+  ]
+ },
+ {
+  "codigo": "PRC-004",
+  "categoria": "PRC",
+  "chave": "table_set",
+  "nome": "Table set",
+  "fonte": "props.gd (código)",
+  "usos": [
+   {
+    "arquivo": "props.gd",
+    "linha": 131,
+    "funcao": "table_set"
+   }
+  ]
+ },
+ {
+  "codigo": "PRC-005",
+  "categoria": "PRC",
+  "chave": "table_rect",
+  "nome": "Table rect",
+  "fonte": "props.gd (código)",
+  "usos": [
+   {
+    "arquivo": "props.gd",
+    "linha": 140,
+    "funcao": "table_rect"
+   }
+  ]
+ },
+ {
+  "codigo": "PRC-006",
+  "categoria": "PRC",
+  "chave": "bench",
+  "nome": "Bench",
+  "fonte": "props.gd (código)",
+  "usos": [
+   {
+    "arquivo": "props.gd",
+    "linha": 152,
+    "funcao": "bench"
+   }
+  ]
+ },
+ {
+  "codigo": "PRC-007",
+  "categoria": "PRC",
+  "chave": "rocking_chair",
+  "nome": "Rocking chair",
+  "fonte": "props.gd (código)",
+  "usos": [
+   {
+    "arquivo": "props.gd",
+    "linha": 157,
+    "funcao": "rocking_chair"
+   }
+  ]
+ },
+ {
+  "codigo": "PRC-008",
+  "categoria": "PRC",
+  "chave": "shelf",
+  "nome": "Shelf",
+  "fonte": "props.gd (código)",
+  "usos": [
+   {
+    "arquivo": "props.gd",
+    "linha": 164,
+    "funcao": "shelf"
+   }
+  ]
+ },
+ {
+  "codigo": "PRC-009",
+  "categoria": "PRC",
+  "chave": "bucket",
+  "nome": "Bucket",
+  "fonte": "props.gd (código)",
+  "usos": [
+   {
+    "arquivo": "props.gd",
+    "linha": 176,
+    "funcao": "bucket"
+   }
+  ]
+ },
+ {
+  "codigo": "PRC-010",
+  "categoria": "PRC",
+  "chave": "crate",
+  "nome": "Crate",
+  "fonte": "props.gd (código)",
+  "usos": [
+   {
+    "arquivo": "props.gd",
+    "linha": 182,
+    "funcao": "crate"
+   }
+  ]
+ },
+ {
+  "codigo": "PRC-011",
+  "categoria": "PRC",
+  "chave": "lantern",
+  "nome": "Lantern",
+  "fonte": "props.gd (código)",
+  "usos": [
+   {
+    "arquivo": "props.gd",
+    "linha": 189,
+    "funcao": "lantern"
+   }
+  ]
+ },
+ {
+  "codigo": "PRC-012",
+  "categoria": "PRC",
+  "chave": "basket",
+  "nome": "Basket",
+  "fonte": "props.gd (código)",
+  "usos": [
+   {
+    "arquivo": "props.gd",
+    "linha": 195,
+    "funcao": "basket"
+   }
+  ]
+ },
+ {
+  "codigo": "PRC-013",
+  "categoria": "PRC",
+  "chave": "stove",
+  "nome": "Stove",
+  "fonte": "props.gd (código)",
+  "usos": [
+   {
+    "arquivo": "props.gd",
+    "linha": 200,
+    "funcao": "stove"
+   }
+  ]
+ },
+ {
+  "codigo": "PRC-014",
+  "categoria": "PRC",
+  "chave": "register",
+  "nome": "Register",
+  "fonte": "props.gd (código)",
+  "usos": [
+   {
+    "arquivo": "props.gd",
+    "linha": 226,
+    "funcao": "register"
+   }
+  ]
+ },
+ {
+  "codigo": "PRC-015",
+  "categoria": "PRC",
+  "chave": "coffee_cart",
+  "nome": "Coffee cart",
+  "fonte": "props.gd (código)",
+  "usos": [
+   {
+    "arquivo": "props.gd",
+    "linha": 234,
+    "funcao": "coffee_cart"
+   }
+  ]
+ },
+ {
+  "codigo": "PRC-016",
+  "categoria": "PRC",
+  "chave": "plant",
+  "nome": "Plant",
+  "fonte": "props.gd (código)",
+  "usos": [
+   {
+    "arquivo": "props.gd",
+    "linha": 244,
+    "funcao": "plant"
+   }
+  ]
+ },
+ {
+  "codigo": "PRC-017",
+  "categoria": "PRC",
+  "chave": "planter_box",
+  "nome": "Planter box",
+  "fonte": "props.gd (código)",
+  "usos": [
+   {
+    "arquivo": "props.gd",
+    "linha": 253,
+    "funcao": "planter_box"
+   }
+  ]
+ },
+ {
+  "codigo": "PRC-018",
+  "categoria": "PRC",
+  "chave": "shell",
+  "nome": "Shell",
+  "fonte": "props.gd (código)",
+  "usos": [
+   {
+    "arquivo": "props.gd",
+    "linha": 259,
+    "funcao": "shell"
+   }
+  ]
+ },
+ {
+  "codigo": "PRC-019",
+  "categoria": "PRC",
+  "chave": "vase",
+  "nome": "Vase",
+  "fonte": "props.gd (código)",
+  "usos": [
+   {
+    "arquivo": "props.gd",
+    "linha": 264,
+    "funcao": "vase"
+   }
+  ]
+ },
+ {
+  "codigo": "PRC-020",
+  "categoria": "PRC",
+  "chave": "bowl",
+  "nome": "Bowl",
+  "fonte": "props.gd (código)",
+  "usos": [
+   {
+    "arquivo": "props.gd",
+    "linha": 281,
+    "funcao": "bowl"
+   }
+  ]
+ },
+ {
+  "codigo": "PRC-021",
+  "categoria": "PRC",
+  "chave": "mirror",
+  "nome": "Mirror",
+  "fonte": "props.gd (código)",
+  "usos": [
+   {
+    "arquivo": "props.gd",
+    "linha": 286,
+    "funcao": "mirror"
+   }
+  ]
+ },
+ {
+  "codigo": "PRC-022",
+  "categoria": "PRC",
+  "chave": "picture",
+  "nome": "Picture",
+  "fonte": "props.gd (código)",
+  "usos": [
+   {
+    "arquivo": "props.gd",
+    "linha": 290,
+    "funcao": "picture"
+   }
+  ]
+ },
+ {
+  "codigo": "PRC-023",
+  "categoria": "PRC",
+  "chave": "pillows",
+  "nome": "Pillows",
+  "fonte": "props.gd (código)",
+  "usos": [
+   {
+    "arquivo": "props.gd",
+    "linha": 296,
+    "funcao": "pillows"
+   }
+  ]
+ },
+ {
+  "codigo": "PRC-024",
+  "categoria": "PRC",
+  "chave": "lifebuoy",
+  "nome": "Lifebuoy",
+  "fonte": "props.gd (código)",
+  "usos": [
+   {
+    "arquivo": "props.gd",
+    "linha": 299,
+    "funcao": "lifebuoy"
+   }
+  ]
+ },
+ {
+  "codigo": "PRC-025",
+  "categoria": "PRC",
+  "chave": "bed",
+  "nome": "Bed",
+  "fonte": "props.gd (código)",
+  "usos": [
+   {
+    "arquivo": "props.gd",
+    "linha": 320,
+    "funcao": "bed"
+   }
+  ]
+ },
+ {
+  "codigo": "PRC-026",
+  "categoria": "PRC",
+  "chave": "nightstand",
+  "nome": "Nightstand",
+  "fonte": "props.gd (código)",
+  "usos": [
+   {
+    "arquivo": "props.gd",
+    "linha": 356,
+    "funcao": "nightstand"
+   }
+  ]
+ },
+ {
+  "codigo": "PRC-027",
+  "categoria": "PRC",
+  "chave": "oil_lamp",
+  "nome": "Oil lamp",
+  "fonte": "props.gd (código)",
+  "usos": [
+   {
+    "arquivo": "props.gd",
+    "linha": 371,
+    "funcao": "oil_lamp"
+   }
+  ]
+ },
+ {
+  "codigo": "PRC-028",
+  "categoria": "PRC",
+  "chave": "cabinet",
+  "nome": "Cabinet",
+  "fonte": "props.gd (código)",
+  "usos": [
+   {
+    "arquivo": "props.gd",
+    "linha": 384,
+    "funcao": "cabinet"
+   }
+  ]
+ },
+ {
+  "codigo": "PRC-029",
+  "categoria": "PRC",
+  "chave": "ceiling_fan",
+  "nome": "Ceiling fan",
+  "fonte": "props.gd (código)",
+  "usos": [
+   {
+    "arquivo": "props.gd",
+    "linha": 402,
+    "funcao": "ceiling_fan"
+   }
+  ]
+ },
+ {
+  "codigo": "PRC-030",
+  "categoria": "PRC",
+  "chave": "street_lamp",
+  "nome": "Street lamp",
+  "fonte": "props.gd (código)",
+  "usos": [
+   {
+    "arquivo": "props.gd",
+    "linha": 411,
+    "funcao": "street_lamp"
+   }
+  ]
+ },
+ {
+  "codigo": "PRC-031",
+  "categoria": "PRC",
+  "chave": "island_tree",
+  "nome": "Island tree",
+  "fonte": "props.gd (código)",
+  "usos": [
+   {
+    "arquivo": "props.gd",
+    "linha": 416,
+    "funcao": "island_tree"
+   }
+  ]
+ },
+ {
+  "codigo": "PRT-001",
+  "categoria": "PRT",
+  "chave": "ubc/Hair_Beard.gltf",
+  "nome": "Hair beard",
+  "fonte": "Quaternius UBC/UAL (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/ubc/Hair_Beard.gltf"
+ },
+ {
+  "codigo": "PRT-002",
+  "categoria": "PRT",
+  "chave": "ubc/Hair_Buns.gltf",
+  "nome": "Hair buns",
+  "fonte": "Quaternius UBC/UAL (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/ubc/Hair_Buns.gltf"
+ },
+ {
+  "codigo": "PRT-003",
+  "categoria": "PRT",
+  "chave": "ubc/Hair_Buzzed.gltf",
+  "nome": "Hair buzzed",
+  "fonte": "Quaternius UBC/UAL (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/ubc/Hair_Buzzed.gltf"
+ },
+ {
+  "codigo": "PRT-004",
+  "categoria": "PRT",
+  "chave": "ubc/Hair_BuzzedFemale.gltf",
+  "nome": "Hair buzzed female",
+  "fonte": "Quaternius UBC/UAL (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/ubc/Hair_BuzzedFemale.gltf"
+ },
+ {
+  "codigo": "PRT-005",
+  "categoria": "PRT",
+  "chave": "ubc/Hair_Long.gltf",
+  "nome": "Hair long",
+  "fonte": "Quaternius UBC/UAL (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/ubc/Hair_Long.gltf"
+ },
+ {
+  "codigo": "PRT-006",
+  "categoria": "PRT",
+  "chave": "ubc/Hair_SimpleParted.gltf",
+  "nome": "Hair simple parted",
+  "fonte": "Quaternius UBC/UAL (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/ubc/Hair_SimpleParted.gltf"
+ },
+ {
+  "codigo": "PRT-007",
+  "categoria": "PRT",
+  "chave": "ubc/Superhero_Female_FullBody.gltf",
+  "nome": "Superhero female full body",
+  "fonte": "Quaternius UBC/UAL (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/ubc/Superhero_Female_FullBody.gltf"
+ },
+ {
+  "codigo": "PRT-008",
+  "categoria": "PRT",
+  "chave": "ubc/Superhero_Male_FullBody.gltf",
+  "nome": "Superhero male full body",
+  "fonte": "Quaternius UBC/UAL (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/ubc/Superhero_Male_FullBody.gltf"
+ },
+ {
+  "codigo": "PRT-009",
+  "categoria": "PRT",
+  "chave": "ual/guest.glb",
+  "nome": "Guest",
+  "fonte": "Quaternius UBC/UAL (CC0)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/ual/guest.glb"
+ },
+ {
+  "codigo": "QST-001",
+  "categoria": "QST",
+  "chave": "cocos_rita",
+  "nome": "Cocos da Dona Rita",
+  "fonte": "economy.gd",
+  "usos": [
+   {
+    "arquivo": "economy.gd",
+    "linha": 107,
+    "funcao": ""
+   }
+  ],
+  "quem": "Dona Rita",
+  "onde": "Barraca, no fim da praia",
+  "recompensa": "50",
+  "descricao": "A barraca compra 4 cocos do seu estoque."
+ },
+ {
+  "codigo": "QST-002",
+  "categoria": "QST",
+  "chave": "peixe_ze",
+  "nome": "Peixe fresco do Seu Zé",
+  "fonte": "economy.gd",
+  "usos": [
+   {
+    "arquivo": "economy.gd",
+    "linha": 113,
+    "funcao": ""
+   }
+  ],
+  "quem": "Seu Zé",
+  "onde": "Início do píer",
+  "recompensa": "75",
+  "descricao": "Seu Zé quer 3 peixes para o almoço. Pesque no fim do píer e entregue."
+ },
+ {
+  "codigo": "QST-003",
+  "categoria": "QST",
+  "chave": "paes_padre",
+  "nome": "Quermesse da igreja",
+  "fonte": "economy.gd",
+  "usos": [
+   {
+    "arquivo": "economy.gd",
+    "linha": 119,
+    "funcao": ""
+   }
+  ],
+  "quem": "Padre Tomé",
+  "onde": "Em frente à igreja",
+  "recompensa": "90",
+  "descricao": "Padre Tomé precisa de 6 pães para a festa de São Pedro."
+ },
+ {
+  "codigo": "QST-004",
+  "categoria": "QST",
+  "chave": "frutas_lourdes",
+  "nome": "Geleia da Dona Lourdes",
+  "fonte": "economy.gd",
+  "usos": [
+   {
+    "arquivo": "economy.gd",
+    "linha": 125,
+    "funcao": ""
+   }
+  ],
+  "quem": "Dona Lourdes",
+  "onde": "Padaria e Mercadinho",
+  "recompensa": "85",
+  "descricao": "A padaria quer 8 frutas para a geleia da casa."
+ },
+ {
+  "codigo": "STF-001",
+  "categoria": "STF",
+  "chave": "atendente",
+  "nome": "Atendente do quiosque",
+  "fonte": "economy.gd",
+  "usos": [
+   {
+    "arquivo": "economy.gd",
+    "linha": 82,
+    "funcao": ""
+   }
+  ],
+  "contratacao": "240",
+  "salario": "30",
+  "descricao": "Serve um cliente do quiosque a cada 14 min, mesmo sem você. Salário no fim do dia."
+ },
+ {
+  "codigo": "STF-002",
+  "categoria": "STF",
+  "chave": "camareira",
+  "nome": "Camareira",
+  "fonte": "economy.gd",
+  "usos": [
+   {
+    "arquivo": "economy.gd",
+    "linha": 89,
+    "funcao": ""
+   }
+  ],
+  "contratacao": "220",
+  "salario": "36",
+  "descricao": "Limpa um item de bangalô a cada 20 min. Salário no fim do dia."
+ },
+ {
+  "codigo": "STF-003",
+  "categoria": "STF",
+  "chave": "bartender",
+  "nome": "Bartender",
+  "fonte": "economy.gd",
+  "usos": [
+   {
+    "arquivo": "economy.gd",
+    "linha": 96,
+    "funcao": ""
+   }
+  ],
+  "contratacao": "260",
+  "salario": "42",
+  "descricao": "Os preços do bar sobem 15%. Salário no fim do dia."
+ },
+ {
+  "codigo": "SUP-001",
+  "categoria": "SUP",
+  "chave": "coco",
+  "nome": "Coco",
+  "fonte": "economy.gd",
+  "usos": [
+   {
+    "arquivo": "economy.gd",
+    "linha": 110,
+    "funcao": ""
+   }
+  ],
+  "custo": "3"
+ },
+ {
+  "codigo": "SUP-002",
+  "categoria": "SUP",
+  "chave": "frutas",
+  "nome": "Frutas",
+  "fonte": "economy.gd",
+  "usos": [
+   {
+    "arquivo": "economy.gd",
+    "linha": 128,
+    "funcao": ""
+   }
+  ],
+  "custo": "2"
+ },
+ {
+  "codigo": "SUP-003",
+  "categoria": "SUP",
+  "chave": "cachaca",
+  "nome": "Cachaça",
+  "fonte": "economy.gd",
+  "usos": [
+   {
+    "arquivo": "economy.gd",
+    "linha": 37,
+    "funcao": ""
+   }
+  ],
+  "custo": "6"
+ },
+ {
+  "codigo": "SUP-004",
+  "categoria": "SUP",
+  "chave": "gelo",
+  "nome": "Gelo",
+  "fonte": "economy.gd",
+  "usos": [
+   {
+    "arquivo": "economy.gd",
+    "linha": 160,
+    "funcao": ""
+   }
+  ],
+  "custo": "1"
+ },
+ {
+  "codigo": "SUP-005",
+  "categoria": "SUP",
+  "chave": "peixe",
+  "nome": "Peixe",
+  "fonte": "economy.gd",
+  "usos": [
+   {
+    "arquivo": "economy.gd",
+    "linha": 45,
+    "funcao": ""
+   }
+  ],
+  "custo": "7"
+ },
+ {
+  "codigo": "SUP-006",
+  "categoria": "SUP",
+  "chave": "pao",
+  "nome": "Pão",
+  "fonte": "economy.gd",
+  "usos": [
+   {
+    "arquivo": "economy.gd",
+    "linha": 122,
+    "funcao": ""
+   }
+  ],
+  "custo": "2"
+ },
+ {
+  "codigo": "UPG-001",
+  "categoria": "UPG",
+  "chave": "clima_0",
+  "nome": "Clima — nível 0: Janela aberta",
+  "fonte": "economy.gd",
+  "usos": [
+   {
+    "arquivo": "economy.gd",
+    "linha": 219,
+    "funcao": ""
+   }
+  ],
+  "custo": "0",
+  "diaria_extra": "0"
+ },
+ {
+  "codigo": "UPG-002",
+  "categoria": "UPG",
+  "chave": "clima_1",
+  "nome": "Clima — nível 1: Ventilador de teto",
+  "fonte": "economy.gd",
+  "usos": [
+   {
+    "arquivo": "economy.gd",
+    "linha": 219,
+    "funcao": ""
+   }
+  ],
+  "custo": "320",
+  "diaria_extra": "22"
+ },
+ {
+  "codigo": "UPG-003",
+  "categoria": "UPG",
+  "chave": "clima_2",
+  "nome": "Clima — nível 2: Ar-condicionado",
+  "fonte": "economy.gd",
+  "usos": [
+   {
+    "arquivo": "economy.gd",
+    "linha": 219,
+    "funcao": ""
+   }
+  ],
+  "custo": "640",
+  "diaria_extra": "64"
+ },
+ {
+  "codigo": "UPG-004",
+  "categoria": "UPG",
+  "chave": "roupa_0",
+  "nome": "Enxoval — nível 0: Lençol simples",
+  "fonte": "economy.gd",
+  "usos": [
+   {
+    "arquivo": "economy.gd",
+    "linha": 227,
+    "funcao": ""
+   }
+  ],
+  "custo": "0",
+  "diaria_extra": "0"
+ },
+ {
+  "codigo": "UPG-005",
+  "categoria": "UPG",
+  "chave": "roupa_1",
+  "nome": "Enxoval — nível 1: Algodão colorido",
+  "fonte": "economy.gd",
+  "usos": [
+   {
+    "arquivo": "economy.gd",
+    "linha": 227,
+    "funcao": ""
+   }
+  ],
+  "custo": "360",
+  "diaria_extra": "24"
+ },
+ {
+  "codigo": "UPG-006",
+  "categoria": "UPG",
+  "chave": "roupa_2",
+  "nome": "Enxoval — nível 2: Linho da pousada",
+  "fonte": "economy.gd",
+  "usos": [
+   {
+    "arquivo": "economy.gd",
+    "linha": 227,
+    "funcao": ""
+   }
+  ],
+  "custo": "720",
+  "diaria_extra": "72"
+ },
+ {
+  "codigo": "UPG-007",
+  "categoria": "UPG",
+  "chave": "cama_0",
+  "nome": "Cama — nível 0: Cama de casal",
+  "fonte": "economy.gd",
+  "usos": [
+   {
+    "arquivo": "economy.gd",
+    "linha": 235,
+    "funcao": ""
+   }
+  ],
+  "custo": "0",
+  "diaria_extra": "0"
+ },
+ {
+  "codigo": "UPG-008",
+  "categoria": "UPG",
+  "chave": "cama_1",
+  "nome": "Cama — nível 1: Colchão king",
+  "fonte": "economy.gd",
+  "usos": [
+   {
+    "arquivo": "economy.gd",
+    "linha": 235,
+    "funcao": ""
+   }
+  ],
+  "custo": "480",
+  "diaria_extra": "34"
+ },
+ {
+  "codigo": "UPG-009",
+  "categoria": "UPG",
+  "chave": "cama_2",
+  "nome": "Cama — nível 2: Cama com dossel",
+  "fonte": "economy.gd",
+  "usos": [
+   {
+    "arquivo": "economy.gd",
+    "linha": 235,
+    "funcao": ""
+   }
+  ],
+  "custo": "960",
+  "diaria_extra": "98"
+ },
+ {
+  "codigo": "UPG-010",
+  "categoria": "UPG",
+  "chave": "decor_0",
+  "nome": "Decoração — nível 0: Básico",
+  "fonte": "economy.gd",
+  "usos": [
+   {
+    "arquivo": "economy.gd",
+    "linha": 243,
+    "funcao": ""
+   }
+  ],
+  "custo": "0",
+  "diaria_extra": "0"
+ },
+ {
+  "codigo": "UPG-011",
+  "categoria": "UPG",
+  "chave": "decor_1",
+  "nome": "Decoração — nível 1: Tapete e quadro",
+  "fonte": "economy.gd",
+  "usos": [
+   {
+    "arquivo": "economy.gd",
+    "linha": 243,
+    "funcao": ""
+   }
+  ],
+  "custo": "340",
+  "diaria_extra": "22"
+ },
+ {
+  "codigo": "UPG-012",
+  "categoria": "UPG",
+  "chave": "decor_2",
+  "nome": "Decoração — nível 2: Lounge e luminária",
+  "fonte": "economy.gd",
+  "usos": [
+   {
+    "arquivo": "economy.gd",
+    "linha": 243,
+    "funcao": ""
+   }
+  ],
+  "custo": "680",
+  "diaria_extra": "66"
+ },
+ {
+  "codigo": "UPG-013",
+  "categoria": "UPG",
+  "chave": "banho_0",
+  "nome": "Banheiro — nível 0: Chuveiro simples",
+  "fonte": "economy.gd",
+  "usos": [
+   {
+    "arquivo": "economy.gd",
+    "linha": 57,
+    "funcao": ""
+   }
+  ],
+  "custo": "0",
+  "diaria_extra": "0"
+ },
+ {
+  "codigo": "UPG-014",
+  "categoria": "UPG",
+  "chave": "banho_1",
+  "nome": "Banheiro — nível 1: Espelho e toalheiro",
+  "fonte": "economy.gd",
+  "usos": [
+   {
+    "arquivo": "economy.gd",
+    "linha": 57,
+    "funcao": ""
+   }
+  ],
+  "custo": "400",
+  "diaria_extra": "28"
+ },
+ {
+  "codigo": "UPG-015",
+  "categoria": "UPG",
+  "chave": "banho_2",
+  "nome": "Banheiro — nível 2: Banheiro em pedra",
+  "fonte": "economy.gd",
+  "usos": [
+   {
+    "arquivo": "economy.gd",
+    "linha": 57,
+    "funcao": ""
+   }
+  ],
+  "custo": "800",
+  "diaria_extra": "80"
+ },
+ {
+  "codigo": "VIP-001",
+  "categoria": "VIP",
+  "chave": "marcel",
+  "nome": "Chef Marcel",
+  "fonte": "economy.gd",
+  "usos": [
+   {
+    "arquivo": "economy.gd",
+    "linha": 135,
+    "funcao": ""
+   }
+  ],
+  "descricao": "Chef francês em férias"
+ },
+ {
+  "codigo": "VIP-002",
+  "categoria": "VIP",
+  "chave": "luna",
+  "nome": "Luna Influencer",
+  "fonte": "economy.gd",
+  "usos": [
+   {
+    "arquivo": "economy.gd",
+    "linha": 136,
+    "funcao": ""
+   }
+  ],
+  "descricao": "Faz stories de tudo"
+ },
+ {
+  "codigo": "VIP-003",
+  "categoria": "VIP",
+  "chave": "brasa",
+  "nome": "Capitão Brasa",
+  "fonte": "economy.gd",
+  "usos": [
+   {
+    "arquivo": "economy.gd",
+    "linha": 137,
+    "funcao": ""
+   }
+  ],
+  "descricao": "Pirata aposentado"
+ },
+ {
+  "codigo": "VIP-004",
+  "categoria": "VIP",
+  "chave": "cora",
+  "nome": "Dra. Cora",
+  "fonte": "economy.gd",
+  "usos": [
+   {
+    "arquivo": "economy.gd",
+    "linha": 138,
+    "funcao": ""
+   }
+  ],
+  "descricao": "Bióloga marinha"
+ },
+ {
+  "codigo": "VIP-005",
+  "categoria": "VIP",
+  "chave": "djmare",
+  "nome": "DJ Maré",
+  "fonte": "economy.gd",
+  "usos": [
+   {
+    "arquivo": "economy.gd",
+    "linha": 139,
+    "funcao": ""
+   }
+  ],
+  "descricao": "Toca nas festas da praia"
+ },
+ {
+  "codigo": "VIP-006",
+  "categoria": "VIP",
+  "chave": "kai",
+  "nome": "Kai Onda",
+  "fonte": "economy.gd",
+  "usos": [
+   {
+    "arquivo": "economy.gd",
+    "linha": 140,
+    "funcao": ""
+   }
+  ],
+  "descricao": "Campeão de surfe"
+ },
+ {
+  "codigo": "VIP-007",
+  "categoria": "VIP",
+  "chave": "zefa",
+  "nome": "Dona Zefa",
+  "fonte": "economy.gd",
+  "usos": [
+   {
+    "arquivo": "economy.gd",
+    "linha": 141,
+    "funcao": ""
+   }
+  ],
+  "descricao": "Cem anos, ainda dança forró"
+ },
+ {
+  "codigo": "VIP-008",
+  "categoria": "VIP",
+  "chave": "bento",
+  "nome": "Mestre Bento",
+  "fonte": "economy.gd",
+  "usos": [
+   {
+    "arquivo": "economy.gd",
+    "linha": 142,
+    "funcao": ""
+   }
+  ],
+  "descricao": "Capoeirista lendário"
+ },
+ {
+  "codigo": "VIP-009",
+  "categoria": "VIP",
+  "chave": "tiao",
+  "nome": "Poeta Tião",
+  "fonte": "economy.gd",
+  "usos": [
+   {
+    "arquivo": "economy.gd",
+    "linha": 143,
+    "funcao": ""
+   }
+  ],
+  "descricao": "Rima com tudo"
+ },
+ {
+  "codigo": "VIP-010",
+  "categoria": "VIP",
+  "chave": "valentina",
+  "nome": "Valentina Cruz",
+  "fonte": "economy.gd",
+  "usos": [
+   {
+    "arquivo": "economy.gd",
+    "linha": 144,
+    "funcao": ""
+   }
+  ],
+  "descricao": "Atriz de novela"
+ },
+ {
+  "codigo": "VIP-011",
+  "categoria": "VIP",
+  "chave": "mike",
+  "nome": "Mike, o turista",
+  "fonte": "economy.gd",
+  "usos": [
+   {
+    "arquivo": "economy.gd",
+    "linha": 145,
+    "funcao": ""
+   }
+  ],
+  "descricao": "Americano apaixonado por coco"
+ },
+ {
+  "codigo": "VIP-012",
+  "categoria": "VIP",
+  "chave": "prefeito",
+  "nome": "Sr. Prefeito",
+  "fonte": "economy.gd",
+  "usos": [
+   {
+    "arquivo": "economy.gd",
+    "linha": 146,
+    "funcao": ""
+   }
+  ],
+  "descricao": "Veio inspecionar o quiosque"
+ }
+]

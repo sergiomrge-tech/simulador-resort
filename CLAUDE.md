@@ -62,6 +62,10 @@ Base de trabalho: v0.6.5 recuperada; versões atuais em `project.godot` / `expor
 - DirectX 12: opção "API gráfica" grava um `override.cfg` ao lado do .exe (com volta automática para o Vulkan).
 - DLSS **não existe na Godot**. O upscaler é o FSR 2.2 / FSR 1, na opção "Upscaling" + "Escala 3D".
 
+## 🏷️ Sala dos Códigos — catálogo de itens
+- Todo item do jogo tem um código estável (MOD-017, DSH-002, EXP-005…) em `docs/ITENS.md` / `docs/itens.json`. O usuário pode pedir mudanças citando o código.
+- O registro `docs/itens_registro.json` garante que o código nunca muda. **Depois de adicionar modelo, prato, expansão etc., rode `python3 tools/gen_item_catalog.py`** e comite os três arquivos.
+
 ## 🧪 Sala da Conferência — antes de entregar
 1. `godot --headless --check-only -s scripts/X.gd` em todo script editado. Erros "Identifier not found: Core/Quality/Economy" são normais (autoloads). Qualquer outro erro bloqueia.
 2. Erros já cometidos: função duplicada no mesmo arquivo (`oil_lamp`); `var w: = M.algo` sem tipo (use `var w: Material = ...`).
