@@ -27,6 +27,8 @@ done
 [ "$faltando" = 0 ] || { echo "Abortado: asset faltando. Rode tools/fetch_assets.py e confira a rede."; exit 1; }
 
 echo "-- 4/6 exportar"
+python3 tools/prune_export.py apply
+trap 'python3 tools/prune_export.py restore' EXIT
 mkdir -p build/win
 rm -f build/win/MareAltaResort.exe build/win/MareAltaResort.pck
 "$GODOT" --headless --path . --export-release "Windows Desktop" build/win/MareAltaResort.exe 2>&1 | tail -3

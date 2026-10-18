@@ -1,9 +1,17 @@
-MARÉ ALTA RESORT — v0.7.4
+MARÉ ALTA RESORT — v0.8.0
 =========================
 Abra pelo atalho "Maré Alta Resort" na área de trabalho ou no menu Iniciar.
 Saves, configurações e cache ficam em userdata\ dentro da pasta do jogo.
 
-NOVO NA 0.7.4
+NOVO NA 0.8.0
+- MODELOS REAIS (CC0, Poly Haven e Kenney) no lugar de bolas e caixas: frutas, garrafas, jarros, cocos, taças e drinques,
+  abacaxi, bananas num cesto de vime, caixotes, barris, pedras, troncos, barcos a remo, mesas, cadeiras, bancos, cama,
+  fogão e plantas. Prancha de surfe modelada de verdade. Texturas com compressão de GPU (usa bem menos memória).
+- QUIOSQUE: pratos são PREPARADOS no balcão (segure E); pedidos com vários itens; preços ajustáveis no celular
+  (Cardápio) que mexem na demanda; estoque estraga (gelo, frutas, peixe, pão) e dá para comprar freezer; eventos do dia
+  (onda de calor, lua cheia).
+- MUNDO: missões da Dona Rita, Seu Zé, Padre e Lourdes (celular > Missões), pesca no píer, montes de cocos para
+  coletar, álbum de celebridades VIP com recompensas (celular > Álbum).
 - JOGABILIDADE: sequência de atendimentos rápidos vira COMBO (até x5) com gorjeta extra; clientes VIP (balão
   dourado com ★) pagam gorjeta generosa e dão nota máxima; um ônibus de turistas chega uma vez por dia (11h–15h)
   e enche o quiosque; META DO DIA (atender 8+ clientes, cresce com as expansões) paga R$ 40. O prompt do balcão
