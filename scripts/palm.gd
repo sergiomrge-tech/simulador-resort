@@ -6,6 +6,24 @@ static var _variants: = []
 static var _frond_mat: ShaderMaterial
 static var _bark_mat: StandardMaterial3D
 static var _coco_mat: StandardMaterial3D
+static var _coco_mat_real: Material
+static var _coco_mesh_cache: Mesh
+
+static func _coco_mesh() -> Mesh:
+	if _coco_mesh_cache == null:
+		var ps: PackedScene = load("res://assets/models/kenney/coconut.glb") if ResourceLoader.exists("res://assets/models/kenney/coconut.glb") else null
+		if ps == null:
+			return null
+		var inst: Node = ps.instantiate()
+		var mis: = inst.find_children("*", "MeshInstance3D", true, false)
+		if mis.is_empty():
+			return null
+		_coco_mesh_cache = (mis[0] as MeshInstance3D).mesh
+		var m0: Material = _coco_mesh_cache.surface_get_material(0)
+		_coco_mat_real = Toon.toonify(m0) if m0 else _coco_mat
+		if _coco_mat_real is BaseMaterial3D and m0 is BaseMaterial3D:
+			(_coco_mat_real as BaseMaterial3D).albedo_color = (m0 as BaseMaterial3D).albedo_color * Color(0.9, 1.0, 0.8)   # sem o clareamento do toon (virava laranja)
+	return _coco_mesh_cache
 static var _leaflet_tex: Texture2D
 
 static func _mats() -> void :
@@ -89,18 +107,19 @@ static func _build(seed_: int) -> ArrayMesh:
 	sf.set_material(_frond_mat)
 	sf.commit(am)
 
-	var sc: = SurfaceTool.new()
-	var sm: = SphereMesh.new()
-	sm.radius = 0.13
-	sm.height = 0.3
-	sm.radial_segments = 8
-	sm.rings = 4
-	for k in rng.randi_range(3, 6):
-		var a2: = rng.randf() * TAU
-		var off: = crown + Vector3(cos(a2) * 0.22, -0.25 - rng.randf() * 0.15, sin(a2) * 0.22)
-		sc.append_from(sm, 0, Transform3D(Basis(), off))
-	sc.set_material(_coco_mat)
-	sc.commit(am)
+	# cocos reais (Kenney, CC0, suavizados) em cacho sob a copa
+	var cm: = _coco_mesh()
+	if cm != null:
+		var sc: = SurfaceTool.new()
+		var cb: AABB = cm.get_aabb()
+		var k0: = 0.42 / maxf(cb.size.y, 0.001)
+		for k in rng.randi_range(4, 7):
+			var a2: = rng.randf() * TAU
+			var off: = crown + Vector3(cos(a2) * 0.24, -0.3 - rng.randf() * 0.2, sin(a2) * 0.24)
+			var bs: = Basis.from_euler(Vector3(rng.randf_range(-0.5, 0.5), rng.randf() * TAU, rng.randf_range(-0.5, 0.5))).scaled(Vector3.ONE * k0)
+			sc.append_from(cm, 0, Transform3D(bs, off - bs * cb.get_center()))
+		sc.set_material(_coco_mat_real)
+		sc.commit(am)
 	return am
 
 static func _frond_center(crown: Vector3, dirh: Vector3, s: float, L: float, up0: float, droop: float) -> Vector3:
