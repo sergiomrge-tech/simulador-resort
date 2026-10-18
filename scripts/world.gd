@@ -1875,7 +1875,7 @@ func _area(id: String, builder: Callable) -> Node3D:
 	return node
 
 func _lot_post(parent: Node3D, p: Vector3) -> void :
-	B.cyl(parent, 0.06, 0.07, 1.0, p + Vector3(0, 0.5, 0), M.get("post", B.flat(Color(0.55, 0.4, 0.25))), 6)
+	B.cyl(parent, 0.06, 0.07, 1.0, p + Vector3(0, 0.5, 0), M.get("post", B.flat(Color(0.55, 0.4, 0.25))), 14)
 
 ## Cerquinha de estacas com corda e uma placa "Lote à venda" com o nome e o preço da expansão.
 func _lot(id: String, c: Vector3, size: Vector2, sign_pos: Vector3, sign_rot: float) -> Node3D:
@@ -1884,17 +1884,24 @@ func _lot(id: String, c: Vector3, size: Vector2, sign_pos: Vector3, sign_rot: fl
 	add_child(n)
 	var hx: = size.x * 0.5
 	var hz: = size.y * 0.5
-	var rope: = B.flat(Color(0.95, 0.55, 0.15), 0.8)
+	var rope: = B.flat(Color(0.8, 0.66, 0.42), 0.95)   # corda de sisal (era um tubo laranja liso)
 	var corners: = [Vector3(-hx, 0, -hz), Vector3(hx, 0, -hz), Vector3(hx, 0, hz), Vector3(-hx, 0, hz)]
 	for i in 4:
 		var a: Vector3 = c + corners[i]
 		var b_: Vector3 = c + corners[(i + 1) % 4]
 		var steps: = maxi(1, int(a.distance_to(b_) / 2.5))
 		for k in steps:
-			_lot_post(n, a.lerp(b_, float(k) / steps))
-		var mid: = (a + b_) * 0.5 + Vector3(0, 0.8, 0)
-		var seg: = B.box(n, Vector3(a.distance_to(b_), 0.05, 0.05), mid, rope)
-		seg.rotation.y = - atan2(b_.z - a.z, b_.x - a.x)
+			var p0: Vector3 = a.lerp(b_, float(k) / steps)
+			var p1: Vector3 = a.lerp(b_, float(k + 1) / steps)
+			_lot_post(n, p0)
+			# a corda cai um pouco entre as estacas (3 trechos, raio de 14 mm)
+			var q0: = p0 + Vector3(0, 0.92, 0)
+			var q1: = p1 + Vector3(0, 0.92, 0)
+			var m1: = q0.lerp(q1, 0.33) - Vector3(0, 0.1, 0)
+			var m2: = q0.lerp(q1, 0.67) - Vector3(0, 0.1, 0)
+			B._beam(n, q0, m1, 0.014, rope)
+			B._beam(n, m1, m2, 0.014, rope)
+			B._beam(n, m2, q1, 0.014, rope)
 	var board: = Node3D.new()
 	board.position = sign_pos
 	board.rotation.y = sign_rot
@@ -1907,7 +1914,8 @@ func _lot(id: String, c: Vector3, size: Vector2, sign_pos: Vector3, sign_rot: fl
 	var e: Dictionary = Economy.EXPANSIONS[id]
 	var t1: = B.label(board, tr("LOTE À VENDA"), Vector3(0, 2.25, 0.07), 70, Color(0.85, 0.22, 0.15), Color(1, 1, 1, 0.9))
 	t1.set_meta("keep", true)
-	B.label(board, tr(str(e.name)), Vector3(0, 1.85, 0.07), 56, Color(0.2, 0.15, 0.1), Color(1, 1, 1, 0.9))
+	var lot_name: String = tr(str(e.name))
+	B.label(board, lot_name, Vector3(0, 1.85, 0.07), mini(56, int(780.0 / maxf(float(lot_name.length()), 1.0))), Color(0.2, 0.15, 0.1), Color(1, 1, 1, 0.9))   # nomes longos cabem na placa
 	B.label(board, Core.fmt_money(int(e.cost)), Vector3(0, 1.45, 0.07), 74, Color(0.1, 0.5, 0.25), Color(1, 1, 1, 0.9))
 	B.label(board, tr("Compre pelo celular (B)"), Vector3(0, 1.12, 0.07), 40, Color(0.35, 0.28, 0.2), Color(1, 1, 1, 0.9))
 	lots[id] = n
