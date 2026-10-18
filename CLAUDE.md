@@ -11,6 +11,7 @@ Base de trabalho: v0.6.5 recuperada; versões atuais em `project.godot` / `expor
 
 ## 🚪 Hall de entrada — regras fixas do Sergio
 - **Nada de low poly**, principalmente móveis, casas e pessoas. Cilindro/esfera com poucos lados, caixa crua e corpo facetado são proibidos.
+- **REGRA (18/10/2026): nada de "bolas e quadrados".** Nenhum objeto do jogo pode ser só esfera, caixa ou cilindro montados por código (frutas = esfera, garrafa = cilindro, caixote = caixa são proibidos). **Todo objeto vem de um modelo real baixado da web (CC0)**, com malha detalhada. Antes de criar qualquer prop, **busque o asset**: Poly Haven (API `api.polyhaven.com`), Quaternius, KayKit, ambientCG, itch.io, OpenGameArt. Só monte por código o que não existe pronto (ex.: parede, piso, telhado), e mesmo assim com textura e relevo. Registre a fonte em `CREDITS.md` e o asset em `tools/fetch_assets.py`.
 - Visual cartoon colorido, iluminação quente e neon, personagens caricatos, gestão pelo celular.
 - O jogo começa só com o quiosque e evolui por expansões.
 - Quiosque abre às 8h e fecha às 18h (21h com neon); depois do horário não chega cliente.
