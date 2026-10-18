@@ -256,6 +256,70 @@ def sunglasses():
     bpy.ops.object.join()
     export("sunglasses")
 
+def _box(name, size, loc, m, bevel=0.012, rot=(0, 0, 0), sub=0):
+    bpy.ops.mesh.primitive_cube_add(size=1, location=loc, rotation=rot)
+    ob = bpy.context.active_object
+    ob.name = name
+    ob.scale = size
+    bpy.ops.object.transform_apply(scale=True, rotation=False)
+    bv = ob.modifiers.new("bv", "BEVEL")
+    bv.width = bevel
+    bv.segments = 3
+    bpy.ops.object.modifier_apply(modifier=bv.name)
+    if sub:
+        _smooth(ob, sub)
+    else:
+        bpy.ops.object.shade_smooth()
+    ob.data.materials.append(m)
+    return ob
+
+def lounger():
+    """Espreguiçadeira de praia: estrutura de madeira com ripas, encosto reclinável, colchonete arredondado, travesseiro e rodinhas.
+    Frente do modelo = -Y do Blender (vira +Z no glTF); cabeceira em +Y. Comprimento 1,9 m, largura 0,72 m."""
+    _fresh()
+    wood_img = os.path.join(ROOT, "assets", "tex", "oak_wood_planks_diff.jpg")
+    wood = mat("madeira", (0.85, 0.62, 0.38), 0.7, wood_img)
+    pano = mat("colchao", (0.1, 0.62, 0.72), 0.85)
+    faixa = mat("faixa", (0.97, 0.97, 0.95), 0.85)
+    preto = mat("borracha", (0.12, 0.12, 0.13), 0.6)
+    parts = []
+    W, L = 0.72, 1.9
+    # longarinas laterais do assento e pernas torneadas
+    for sx in (-1, 1):
+        parts.append(_box("rail", (0.05, 1.2, 0.07), (sx * (W / 2 - 0.03), -0.28, 0.33), wood))
+        parts.append(_box("rail_enc", (0.05, 0.85, 0.07), (sx * (W / 2 - 0.03), 0.62, 0.52), wood, rot=(math.radians(-38), 0, 0)))
+        for y in (-0.82, 0.12):
+            bpy.ops.mesh.primitive_cylinder_add(radius=0.026, depth=0.33, vertices=24, location=(sx * (W / 2 - 0.03), y, 0.165))
+            lg = bpy.context.active_object
+            bpy.ops.object.shade_smooth()
+            lg.data.materials.append(wood)
+            parts.append(lg)
+    # ripas do assento
+    for k in range(11):
+        parts.append(_box("ripa", (W - 0.02, 0.085, 0.02), (0, -0.84 + k * 0.105, 0.375), wood, 0.006))
+    # ripas do encosto (inclinado ~38 graus)
+    a = math.radians(38)
+    for k in range(7):
+        t = 0.1 + k * 0.115
+        parts.append(_box("ripa_enc", (W - 0.02, 0.085, 0.02), (0, 0.33 + t * math.cos(a), 0.37 + t * math.sin(a)), wood, 0.006, rot=(math.radians(-38), 0, 0)))
+    # colchonete do assento e do encosto (cantos bem arredondados), com faixa branca
+    parts.append(_box("col_assento", (W - 0.08, 1.12, 0.07), (0, -0.28, 0.43), pano, 0.03, sub=2))
+    parts.append(_box("faixa_assento", (W - 0.07, 0.1, 0.075), (0, -0.28, 0.435), faixa, 0.03, sub=1))
+    parts.append(_box("col_encosto", (W - 0.08, 0.78, 0.07), (0, 0.33 + 0.5 * math.cos(a) * 0.82 + 0.02, 0.43 + 0.5 * math.sin(a) * 0.82 - 0.0), pano, 0.03, rot=(math.radians(-38), 0, 0), sub=2))
+    parts.append(_box("travesseiro", (0.5, 0.26, 0.1), (0, 0.33 + 0.74 * math.cos(a) + 0.05, 0.43 + 0.74 * math.sin(a) + 0.07), faixa, 0.045, rot=(math.radians(-38), 0, 0), sub=2))
+    # rodinhas traseiras (lado do encosto fica em +Y; rodas na frente do assento = -Y não, nas pernas de +Y)
+    for sx in (-1, 1):
+        bpy.ops.mesh.primitive_cylinder_add(radius=0.06, depth=0.035, vertices=24, location=(sx * (W / 2 + 0.005), 0.12, 0.06), rotation=(0, math.radians(90), 0))
+        w = bpy.context.active_object
+        bpy.ops.object.shade_smooth()
+        w.data.materials.append(preto)
+        parts.append(w)
+    for o in parts:
+        o.select_set(True)
+    bpy.context.view_layer.objects.active = parts[0]
+    bpy.ops.object.join()
+    export("lounger")
+
 towel()
 sandcastle()
 strawhat("strawhat_red", (0.9, 0.2, 0.2))
@@ -263,4 +327,5 @@ strawhat("strawhat_blue", (0.12, 0.5, 0.75))
 strawhat("strawhat_dark", (0.18, 0.18, 0.22))
 cap()
 sunglasses()
+lounger()
 print("gen_beach_props ok")

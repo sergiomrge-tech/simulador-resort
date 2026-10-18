@@ -389,14 +389,13 @@ func _lounger(p: Vector3, rot: float) -> void :
 	n.rotation.y = rot
 	add_child(n)
 
-	B.box(n, Vector3(0.72, 0.1, 1.9), Vector3(0, 0.3, 0), M.rattan)
-	B.box(n, Vector3(0.68, 0.1, 0.72), Vector3(0, 0.56, -0.86), M.rattan).rotation.x = -0.7
-	B.box(n, Vector3(0.64, 0.09, 1.25), Vector3(0, 0.39, 0.28), M.linen_teal)
-	B.box(n, Vector3(0.6, 0.08, 0.62), Vector3(0, 0.62, -0.8), M.linen_teal).rotation.x = -0.7
-	B.box(n, Vector3(0.44, 0.12, 0.22), Vector3(0, 0.82, -1.02), M.linen).rotation.x = -0.6
-	for sx in [-0.31, 0.31]:
-		for sz in [-0.82, 0.82]:
-			B.cyl(n, 0.03, 0.035, 0.3, Vector3(sx, 0.15, sz), M.darkwood, 8)
+	# revisão visual 18/10/2026: espreguiçadeira modelada no Blender (tools/gen_beach_props.py) no lugar das caixas.
+	# No modelo a cabeceira fica em +Z do glTF? Não: a frente é +Z e a cabeceira -Z, como no código antigo (encosto em z = -0,86).
+	var lg: = Real.place(n, "g:lounger", Vector3.ZERO, -1.0, 0.0)
+	if lg == null:
+		B.box(n, Vector3(0.72, 0.1, 1.9), Vector3(0, 0.3, 0), M.rattan)
+		B.box(n, Vector3(0.68, 0.1, 0.72), Vector3(0, 0.56, -0.86), M.rattan).rotation.x = -0.7
+		B.box(n, Vector3(0.64, 0.09, 1.25), Vector3(0, 0.39, 0.28), M.linen_teal)
 	# v0.7.2: toalha listrada dobrada, rodinhas e chinelos
 	for k in 4:
 		B.box(n, Vector3(0.5, 0.025, 0.11), Vector3(0, 0.45, 0.62 + k * 0.11), B.flat(D.FLAG_COLS[(k + int(p.x)) % D.FLAG_COLS.size()] if k % 2 == 0 else Color.WHITE, 0.9))
