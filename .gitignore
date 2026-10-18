@@ -41,3 +41,4 @@ __pycache__/
 .autoconverted/
 assets/models/**/textures/
 export_presets.cfg.bak
+assets/models/qnat/

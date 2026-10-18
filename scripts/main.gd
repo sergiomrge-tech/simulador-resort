@@ -313,6 +313,15 @@ func _run_shot(n: String) -> void :
 		player.set_view(s[0], s[1], s[2])
 	if args.has("hidehud"):
 		hud.visible = false
+	if args.has("gallery"):
+		# depuração: --gallery=chave1,chave2,... enfileira modelos (chaves do Real: nome, k:nome, q:nome, g:nome) diante da câmera
+		var keys: PackedStringArray = str(args.gallery).split(",")
+		var yaw_r: float = deg_to_rad(float(s[1]))
+		var fwd: = Vector3(-sin(yaw_r), 0, -cos(yaw_r))
+		var right: = Vector3(cos(yaw_r), 0, -sin(yaw_r))
+		var base_p: Vector3 = s[0] + fwd * 3.2 - Vector3(0, 1.6, 0)
+		for gi in keys.size():
+			Real.place(world, keys[gi], base_p + right * (float(gi) - keys.size() * 0.5 + 0.5) * 1.6, 1.2, 0.0)
 	if args.has("noroof"):
 		# depuração: esconde telhado e bandeirinhas do quiosque para ver o balcão de cima
 		await get_tree().process_frame

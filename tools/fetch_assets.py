@@ -202,6 +202,36 @@ def kenney(url, names):
     shutil.rmtree(tmp, ignore_errors=True)
     print("kenney ok", url.split("/")[-1], len(have))
 
+
+def quaternius_nature():
+    """Stylized Nature MegaKit [Standard] (Quaternius, CC0) pelo itch.io: pasta glTF -> assets/models/qnat/ (chave "q:Nome")."""
+    import zipfile, io, http.cookiejar, urllib.parse, re
+    out = f"{A}/models/qnat"
+    if os.path.exists(f"{out}/Bush_Common.gltf") and not FORCE:
+        print("qnat skip")
+        return
+    base = "https://quaternius.itch.io/stylized-nature-megakit"
+    jar = http.cookiejar.CookieJar()
+    op = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(jar))
+    def call(url, data=None):
+        req = urllib.request.Request(url, data=urllib.parse.urlencode(data).encode() if data is not None else None, headers=UA)
+        return op.open(req, timeout=120).read()
+    def csrf(html):
+        return re.search(r'csrf_token" value="([^"]+)', html.decode("utf-8", "ignore")).group(1)
+    page = call(base)
+    dl = json.loads(call(base + "/download_url", {"csrf_token": csrf(page)}))["url"]
+    dlpage = call(dl)
+    upload = re.search(r'data-upload_id="(\d+)"', dlpage.decode("utf-8", "ignore")).group(1)
+    fj = json.loads(call(f"{base}/file/{upload}?source=view_game&as_props=1&after_download_lightbox=true", {"csrf_token": csrf(dlpage)}))
+    z = zipfile.ZipFile(io.BytesIO(get(fj["url"])))
+    os.makedirs(out, exist_ok=True)
+    for n in z.namelist():
+        parts = n.split("/")
+        if "glTF" in parts and not n.endswith("/"):
+            with open(f"{out}/{parts[-1]}", "wb") as f:
+                f.write(z.read(n))
+    print("qnat ok", len(os.listdir(out)))
+
 def ambientcg(asset, name):
     import zipfile, io
     dst = f"{A}/tex_hd/{name}_diff.jpg"
@@ -235,6 +265,7 @@ def main():
             futs += [ex.submit(model, s, "1k", "models", True) for s in MODELS + MODELS_EXTRA]
             futs += [ex.submit(model, s, "2k", "models_hd") for s in MODELS + MODELS_EXTRA + MODELS_HD_ONLY]
             futs += [ex.submit(kenney, u, n) for u, n in KENNEY.items()]
+            futs.append(ex.submit(quaternius_nature))
         errs = 0
         for f in futs:
             try:

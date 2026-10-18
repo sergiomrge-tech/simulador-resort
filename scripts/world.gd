@@ -1162,11 +1162,11 @@ func _shore_details() -> void :
 	for i in 4:
 		var x2: = -32.0 + float(i) * 16.0
 		Real.place(self, "k:log_large", Vector3(x2, _height(x2, -28.5) - 0.02, -28.5 + float(i) * 0.4), 0.0, rng.randf_range(-0.4, 0.4), Color(0.85, 0.75, 0.65), rng.randf_range(1.6, 2.6))
-	var shrubs: = ["shrub_01", "shrub_02", "shrub_03"]
+	var shrubs: = ["q:Bush_Common", "q:Bush_Common_Flowers", "q:Plant_1_Big", "q:Fern_1"]
 	for i in 7:
 		var x3: = rng.randf_range(-40.0, 40.0)
 		var z3: = rng.randf_range(-18.0, -12.0)
-		B.model(self, shrubs[i % 3], Vector3(x3, _height(x3, z3), z3), rng.randf() * TAU, rng.randf_range(0.45, 0.7))
+		Real.place(self, shrubs[i % 4], Vector3(x3, _height(x3, z3), z3), rng.randf_range(0.7, 1.1), rng.randf() * TAU)
 	for spot in [Vector3(-42, 0, -16), Vector3(44, 0, -15), Vector3(-38, 0, 6)]:
 		B.model(self, "island_tree_01", Vector3(spot.x, _height(spot.x, spot.z), spot.z), spot.x * 0.1, 0.9)
 

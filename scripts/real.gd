@@ -7,6 +7,8 @@ class_name Real
 static var _cache: = {}
 
 static func path_of(key: String) -> String:
+	if key.begins_with("q:"):
+		return "res://assets/models/qnat/%s.gltf" % key.substr(2)
 	if key.begins_with("g:"):
 		return "res://assets/models/gen/%s.glb" % key.substr(2)
 	if key.begins_with("k:"):
@@ -40,6 +42,8 @@ static func place(parent: Node, key: String, pos: Vector3, height: float, rot_y:
 			var sm: Material = mesh.surface_get_material(si)
 			if sm:
 				var tm: Material = Toon.toonify(sm)
+				if key.begins_with("q:") and tm is BaseMaterial3D and sm is BaseMaterial3D:
+					(tm as BaseMaterial3D).albedo_color = (sm as BaseMaterial3D).albedo_color   # já são estilizados: sem o clareamento do toonify
 				if tm is BaseMaterial3D and tint != Color.WHITE:
 					(tm as BaseMaterial3D).albedo_color = (tm as BaseMaterial3D).albedo_color * tint
 				(mi as MeshInstance3D).set_surface_override_material(si, tm)

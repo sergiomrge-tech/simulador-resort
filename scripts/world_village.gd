@@ -1060,7 +1060,7 @@ func _village_props() -> void :
 			var sp: = Vector2(40 + k * 3.4, 15.0 if k % 2 == 0 else 45.5)
 			if sp.y > 42.0 and sp.x > 64.0 and sp.x < 86.0:
 				continue
-			B.model(self, ["shrub_01", "shrub_02", "shrub_03"][k % 3], Vector3(sp.x, 0, sp.y), k * 1.3, 0.9)
+			Real.place(self, ["q:Bush_Common", "q:Bush_Common_Flowers", "q:Plant_1_Big", "q:Fern_1"][k % 4], Vector3(sp.x, 0, sp.y), 1.0, k * 1.3)
 
 func _village_palms() -> void :
 
