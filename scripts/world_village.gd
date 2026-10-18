@@ -19,11 +19,14 @@ var bench_spots: Array = []
 var market: Interactable
 var quest_board: Interactable
 var VM: = {}
+var _kiosk_board: Node3D
+var _kiosk_menu_c: = Vector3.ZERO
 var block_rects: Array = []
 var _bloom_xf: Array = []
 var _bloom_col: Array = []
 
 func _ready() -> void :
+	add_to_group("world_dyn")
 	super._ready()
 	_village_materials()
 	_street()
@@ -479,16 +482,22 @@ func _quiosque() -> void :
 	B.model(self, "plastic_crate_01", c + Vector3(-1.5, y0, -0.4), 0.2, 1.0)
 	B.box(self, Vector3(3.6, 0.6, 0.08), c + Vector3(0, y0 + 2.5, 2.42), M.planks)
 	B.label(self, "Quiosque Maré Alta", c + Vector3(0, y0 + 2.5, 2.48), 64, Color(1.0, 0.95, 0.8), Color(0.25, 0.12, 0.02, 1.0))
-	_chalkboard(c + Vector3(2.35, y0 + 1.15, 0.9), PI * 0.5, "HOJE", _menu_lines(Economy.KIOSK_MENU))
+	_kiosk_board = Node3D.new()
+	_kiosk_board.name = "KioskMenuBoard"
+	add_child(_kiosk_board)
+	_kiosk_menu_c = c
+	_refresh_kiosk_board()
 	B.model(self, "wooden_lantern_01", c + Vector3(0, y0 + 2.25, 0.2), 0.0, 1.1)
-	_string_lights(c + Vector3(-2.3, y0 + 2.45, 2.3), c + Vector3(2.3, y0 + 2.45, 2.3), 8)
-	_string_lights(c + Vector3(-2.3, y0 + 2.45, -2.3), c + Vector3(-2.3, y0 + 2.45, 2.3), 6)
-	_string_lights(c + Vector3(2.3, y0 + 2.45, -2.3), c + Vector3(2.3, y0 + 2.45, 2.3), 6)
-	for k in 2:
-		var tp: = c + Vector3(-4.4 + k * 8.8, 0, 4.6)
-		B.model(self, "outdoor_table_chair_set_01", tp, 0.2 if k == 0 else -0.4, 1.0)
-		_umbrella(tp, 1.45, Color(0.95, 0.78, 0.35) if k == 0 else Color(0.12, 0.55, 0.58), k == 1)
-		_table_bites(tp + Vector3(0, 0.75, 0))
+	_area("kiosk_tables", func():
+		for k in 2:
+			var tp: = c + Vector3(-4.4 + k * 8.8, 0, 4.6)
+			B.model(self, "outdoor_table_chair_set_01", tp, 0.0, 1.0)
+			_umbrella(tp, 1.45, Color(0.95, 0.78, 0.35) if k == 0 else Color(0.12, 0.55, 0.58), k == 1)
+			_table_bites(tp + Vector3(0, 0.75, 0))
+			var seat: = tp + Vector3(-0.85 if k == 0 else 0.85, 0, 0)
+			kiosk_spots.append({"pos": seat + Vector3(0, 0.3, 0), "rot": PI * 0.5 if k == 0 else - PI * 0.5, "busy": false, "need": "kiosk_tables", "anim": "Sitting_Idle_Loop"}))
+	_area("neon", func(): _kiosk_neon(c, y0))
+	_area("grill", func(): _kiosk_grill(c, y0))
 	kiosk_counter = Interactable.new()
 	var cs: = CollisionShape3D.new()
 	var sh: = BoxShape3D.new()
@@ -498,10 +507,10 @@ func _quiosque() -> void :
 	kiosk_counter.position = c + Vector3(0, y0 + 0.9, 2.0)
 	kiosk_counter.name = "KioskCounter"
 	add_child(kiosk_counter)
-	for k in 3:
-		var p: = c + Vector3(-1.2 + k * 1.2, y0, 2.85)
+	for k in 2:
+		var p: = c + Vector3(-0.7 + k * 1.4, y0, 2.85)
 		B.model(self, "bar_chair_round_01", p, PI, 1.0)
-		kiosk_spots.append({"pos": p + Vector3(0, 0.28, 0), "rot": PI, "busy": false})
+		kiosk_spots.insert(k, {"pos": p + Vector3(0, 0.28, 0), "rot": PI, "busy": false, "need": ""})
 	village_points.kiosk_work = c + Vector3(0, 0.1, 0.8)
 	var l: = OmniLight3D.new()
 	l.position = c + Vector3(0, 2.5, 0)
@@ -510,6 +519,81 @@ func _quiosque() -> void :
 	add_child(l)
 	lanterns.append([l, null, 1.6, false])
 
+
+## Quadro-negro do quiosque: mostra só os pratos liberados.
+func _refresh_kiosk_board() -> void :
+	if _kiosk_board == null:
+		return
+	for ch in _kiosk_board.get_children():
+		ch.queue_free()
+	var c: = _kiosk_menu_c
+	var before: = get_child_count()
+	_chalkboard(c + Vector3(2.35, 0.1 + 1.15, 0.9), PI * 0.5, "HOJE", _menu_lines(Core.kiosk_menu()))
+	for k in get_children().slice(before):
+		k.reparent(_kiosk_board, false)
+
+func on_areas_changed() -> void :
+	_refresh_kiosk_board()
+
+## Letreiro neon (expansão "neon"): tubos coloridos que brilham, mais cordões de luz.
+func _kiosk_neon(c: Vector3, y0: float) -> void :
+	_string_lights(c + Vector3(-2.3, y0 + 2.45, 2.3), c + Vector3(2.3, y0 + 2.45, 2.3), 8)
+	_string_lights(c + Vector3(-2.3, y0 + 2.45, -2.3), c + Vector3(-2.3, y0 + 2.45, 2.3), 6)
+	_string_lights(c + Vector3(2.3, y0 + 2.45, -2.3), c + Vector3(2.3, y0 + 2.45, 2.3), 6)
+	var pink: = P.glow(Color(1.0, 0.25, 0.65), 4.0)
+	var cyan: = P.glow(Color(0.2, 0.95, 1.0), 4.0)
+	var back: = B.box(self, Vector3(3.4, 0.9, 0.08), c + Vector3(0, y0 + 3.55, 2.5), B.flat(Color(0.12, 0.1, 0.16), 0.6))
+	back.rotation.x = -0.12
+	var l: = B.label(self, "MARÉ ALTA", c + Vector3(0, y0 + 3.62, 2.58), 120, Color(1.0, 0.45, 0.8), Color(1.0, 0.2, 0.6, 0.9))
+	l.rotation.x = -0.12
+	l.shaded = false
+	l.outline_size = 18
+	for sx in [-1.0, 1.0]:
+		B.box(self, Vector3(0.06, 0.7, 0.06), c + Vector3(sx * 1.6, y0 + 3.55, 2.56), cyan)
+	B.box(self, Vector3(3.2, 0.05, 0.05), c + Vector3(0, y0 + 3.15, 2.6), cyan)
+	B.box(self, Vector3(1.6, 0.04, 0.04), c + Vector3(0, y0 + 3.98, 2.5), pink)
+	var nl: = OmniLight3D.new()
+	nl.position = c + Vector3(0, y0 + 3.3, 3.2)
+	nl.light_color = Color(1.0, 0.4, 0.75)
+	nl.omni_range = 7.0
+	nl.light_energy = 0.0
+	add_child(nl)
+	lanterns.append([nl, null, 2.2, false])
+
+## Chapa de petiscos (expansão "grill"): fogão, panela e pratos de peixe frito.
+func _kiosk_grill(c: Vector3, y0: float) -> void :
+	B.model(self, "electric_stove", c + Vector3(1.3, y0, -1.3), 0.0, 0.9)
+	var pan: = B.cyl(self, 0.18, 0.15, 0.06, c + Vector3(1.1, y0 + 0.86, -1.2), B.flat(Color(0.15, 0.15, 0.17), 0.4), 14)
+	pan.name = "Pan"
+	for k in 3:
+		B.sphere(self, 0.06, c + Vector3(1.04 + k * 0.06, y0 + 0.9, -1.2), B.flat(Color(0.95, 0.65, 0.25)), Vector3(1.6, 0.6, 1.0))
+	_petisco_plate(self, c + Vector3(-1.2, y0 + 1.2, 2.22))
+	var smoke: = GPUParticles3D.new()
+	var pm: = ParticleProcessMaterial.new()
+	pm.direction = Vector3.UP
+	pm.spread = 12.0
+	pm.initial_velocity_min = 0.3
+	pm.initial_velocity_max = 0.6
+	pm.gravity = Vector3(0, 0.15, 0)
+	pm.scale_min = 0.4
+	pm.scale_max = 1.0
+	pm.color = Color(1, 1, 1, 0.35)
+	smoke.process_material = pm
+	var qm: = SphereMesh.new()
+	qm.radius = 0.08
+	qm.height = 0.16
+	qm.radial_segments = 6
+	qm.rings = 3
+	var sm: = StandardMaterial3D.new()
+	sm.albedo_color = Color(1, 1, 1, 0.35)
+	sm.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	sm.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	qm.material = sm
+	smoke.draw_pass_1 = qm
+	smoke.amount = 10
+	smoke.lifetime = 2.0
+	smoke.position = c + Vector3(1.1, y0 + 0.95, -1.2)
+	add_child(smoke)
 
 func _barraca() -> void :
 	var c: = Vector3(62, 0, -20)

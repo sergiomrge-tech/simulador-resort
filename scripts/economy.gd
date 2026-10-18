@@ -1,21 +1,68 @@
 class_name Economy
-
-
-
-
-
-
-
-
-
-
+## Todos os números da progressão do Maré Alta. Não espalhar preço, diária ou salário pelo código.
+##
+## v0.7 — modo carreira: o jogo começa só com um quiosque simples na praia (coco gelado e suco).
+## Cada expansão (EXPANSIONS) é comprada pelo celular e aparece no mundo no lugar de um lote à venda.
+## Caixa típico do dia 1: ~18 clientes no quiosque × ~R$ 13 ≈ R$ 230, menos ~R$ 70 de insumos.
 
 const BASE_NIGHTLY: = 100
 const STAR_BONUS: = 12.0
 const HAMMOCK_BONUS: = 8
 const HAMMOCK_PRICE: = 150
 const HAMMOCK_MAX: = 4
-const START_MONEY: = 300
+const START_MONEY: = 150
+
+## Nota que o cliente do quiosque dá: atendido rápido / atendido devagar / foi embora sem ser atendido.
+const KIOSK_RATING_FAST: = 4.8
+const KIOSK_RATING_SLOW: = 3.6
+const KIOSK_RATING_LOST: = 2.0
+## Horário do quiosque. O letreiro neon estende o fechamento até 21:00.
+const KIOSK_OPEN_H: = 8.0
+const KIOSK_CLOSE_H: = 18.0
+const KIOSK_CLOSE_NEON_H: = 21.0
+## Intervalo entre clientes do quiosque (minutos de jogo). Mesas e guarda-sóis aceleram.
+const KIOSK_SPAWN: = Vector2(22.0, 42.0)
+const KIOSK_SPAWN_TABLES: = Vector2(14.0, 30.0)
+## Atendente do quiosque serve um cliente a cada X minutos de jogo.
+const HELPER_MINUTES: = 14.0
+
+## Expansões em ordem de progressão. "req" = ids que precisam estar comprados; "stars" = nota mínima.
+## "area" liga a expansão a um pedaço do mundo (world.gd mostra/esconde e põe um lote à venda no lugar).
+const EXPANSIONS: = {
+	"kiosk_tables": {
+		"name": "Mesas e guarda-sóis", "cost": 180, "req": [], "stars": 0.0, "icon": "quiosque",
+		"blurb": "+2 lugares no quiosque e clientes chegando mais rápido.",
+	},
+	"drinks": {
+		"name": "Licença de drinks", "cost": 260, "req": [], "stars": 0.0, "icon": "cachaca",
+		"blurb": "Libera a caipirinha no cardápio do quiosque.",
+	},
+	"neon": {
+		"name": "Letreiro neon", "cost": 150, "req": ["kiosk_tables"], "stars": 0.0, "icon": "novo",
+		"blurb": "O quiosque fica aberto até 21:00, com luzes coloridas.",
+	},
+	"grill": {
+		"name": "Chapa de petiscos", "cost": 380, "req": ["kiosk_tables"], "stars": 3.4, "icon": "peixe",
+		"blurb": "Libera os petiscos de peixe (o prato mais caro).",
+	},
+	"bar": {
+		"name": "Bar do Coqueiro", "cost": 1200, "req": ["grill", "drinks"], "stars": 3.6, "icon": "bar", "area": "bar",
+		"blurb": "Um bar de praia com barman. Banhistas sentam e pedem drinks sozinhos.",
+	},
+	"pousada": {
+		"name": "Pousada: recepção + bangalô", "cost": 2400, "req": ["bar"], "stars": 3.8, "icon": "bangalo", "area": "pousada",
+		"blurb": "Recepção e o primeiro bangalô. Hóspedes pagam diária e dão gorjeta.",
+	},
+	"pool": {
+		"name": "Piscina", "cost": 2000, "req": ["pousada"], "stars": 4.0, "rooms": 2, "icon": "banho", "area": "pool",
+		"blurb": "Piscina com espreguiçadeiras. Hóspedes ficam mais felizes (+★).",
+	},
+}
+const EXPANSION_ORDER: = ["kiosk_tables", "drinks", "neon", "grill", "bar", "pousada", "pool"]
+## Pratos liberados por expansão (o resto já vem no quiosque inicial).
+const DISH_UNLOCK: = {"caipirinha": "drinks", "petiscos": "grill"}
+## Bônus de nota da estadia quando a piscina existe.
+const POOL_RATING: = 0.2
 
 
 const COMFORT_PER_TIER: = 0.06
@@ -32,18 +79,27 @@ const BARTENDER_MARKUP: = 0.15
 const MAID_MINUTES: = 20.0
 
 const STAFF: = {
+	"atendente": {
+		"name": "Atendente do quiosque",
+		"hire": 240,
+		"wage": 30,
+		"req": "kiosk_tables",
+		"blurb": "Serve um cliente do quiosque a cada 14 min, mesmo sem você. Salário no fim do dia.",
+	},
 	"camareira": {
-		"name": "Camareira", 
-		"hire": 220, 
-		"wage": 36, 
-		"blurb": "Limpa um item de bangalô a cada 20 min. Salário no fim do dia.", 
-	}, 
+		"name": "Camareira",
+		"hire": 220,
+		"wage": 36,
+		"req": "pousada",
+		"blurb": "Limpa um item de bangalô a cada 20 min. Salário no fim do dia.",
+	},
 	"bartender": {
-		"name": "Bartender", 
-		"hire": 260, 
-		"wage": 42, 
-		"blurb": "Os preços do bar sobem 15%. Salário no fim do dia.", 
-	}, 
+		"name": "Bartender",
+		"hire": 260,
+		"wage": 42,
+		"req": "bar",
+		"blurb": "Os preços do bar sobem 15%. Salário no fim do dia.",
+	},
 }
 
 const QUESTS: = {
@@ -68,8 +124,9 @@ const SUPPLIES: = {
 
 
 
+## Despensa de abertura do quiosque (presente, não entra no caixa): dá para a manhã do dia 1.
 const START_STOCK: = {
-	"coco": 6, "frutas": 10, "cachaca": 6, "gelo": 10, "peixe": 6, "pao": 6, 
+	"coco": 12, "frutas": 12, "cachaca": 0, "gelo": 18, "peixe": 0, "pao": 0,
 }
 
 
@@ -83,7 +140,7 @@ const DISHES: = {
 	"petiscos": {"name": "Petiscos", "price": 26, "uses": {"peixe": 1, "pao": 1, "frutas": 1}}, 
 	"suco": {"name": "Suco da fruta", "price": 14, "uses": {"frutas": 2, "gelo": 1}}, 
 }
-const KIOSK_MENU: = ["coco_gelado", "caipirinha", "petiscos"]
+const KIOSK_MENU: = ["coco_gelado", "suco", "caipirinha", "petiscos"]
 const BAR_MENU: = ["coco_gelado", "caipirinha", "petiscos", "suco"]
 const PACK: = 6
 

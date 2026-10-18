@@ -13,6 +13,9 @@ var next_id: = 1
 var spawn_in: = 8.0
 var enabled: = true
 var bartender: Node3D
+## v0.7: banhistas que só vão ao bar (antes da pousada existir, o bar vive deles).
+var visit_in: = 15.0
+const MAX_VISITORS: = 4
 
 func _ready() -> void :
 	rng.seed = 2026
@@ -23,6 +26,8 @@ func _ready() -> void :
 	bartender.rotation.y = - PI * 0.5
 	bartender.set_colors(Color(0.62, 0.42, 0.28), Color(0.95, 0.95, 0.92), Color(0.2, 0.2, 0.22), Color(0.08, 0.06, 0.05))
 	bartender.play("Idle_Talking_Loop")
+	add_to_group("world_dyn")
+	on_areas_changed()
 	world.desk.prompt_fn = desk_prompt
 	world.desk.action_fn = checkin_front
 
@@ -38,7 +43,13 @@ func _process(delta: float) -> void :
 	var dmin: = delta * Core.minutes_per_sec * Core.speed_mult
 	if enabled:
 		var h: = Core.minutes / 60.0
-		if h >= 7.0 and h < 21.0:
+		if Core.has("bar") and h >= 9.0 and h < 22.0:
+			visit_in -= dmin
+			if visit_in <= 0.0:
+				visit_in = rng.randf_range(18.0, 34.0) if Core.rooms.is_empty() else rng.randf_range(30.0, 55.0)
+				if _visitor_count() < MAX_VISITORS:
+					spawn_bar_visitor()
+		if Core.has("pousada") and not Core.rooms.is_empty() and h >= 7.0 and h < 21.0:
 			spawn_in -= dmin
 			if spawn_in <= 0.0:
 				if queue.size() < MAX_QUEUE:
@@ -59,6 +70,45 @@ func spawn_guest() -> Node3D:
 		Core.toast.emit(tr("%s chegou à recepção!") % g.gname, "info")
 		get_tree().call_group("audio", "sfx", "bell")
 	return g
+
+func on_areas_changed() -> void :
+	if bartender:
+		bartender.visible = Core.has("bar")
+
+func _visitor_count() -> int:
+	var n: = 0
+	for g in guests:
+		if g.has_meta("visitor"):
+			n += 1
+	return n
+
+## Banhista que sai da praia, senta no bar, toma de 1 a 3 drinks e vai embora.
+func spawn_bar_visitor() -> Node3D:
+	var s: = _free_spot(world.bar_spots)
+	if s.is_empty():
+		return null
+	var g: = _make_guest()
+	g.set_meta("visitor", true)
+	g.room = -1
+	g.position = Vector3(rng.randf_range(20.0, 30.0), 0.0, rng.randf_range(-26.0, -22.0))
+	s.busy = true
+	g.spot = s
+	g.state = "to_activity"
+	g.plan = []
+	guests.append(g)
+	var near: Vector3 = s.pos + (s.pos - world.BAR_C).normalized() * 0.9
+	near.y = 0.1
+	g.go([Vector3(world.BAR_C.x + 5.5, 0.05, world.BAR_C.z - 4.0), near, s.pos])
+	return g
+
+func _visitor_leave(g) -> void :
+	_release_spot(g)
+	g.visible = true
+	g.state = "leaving"
+	var p: Vector3 = g.position
+	var out: Vector3 = p + (p - world.BAR_C).normalized() * 1.2
+	out.y = 0.05
+	g.go([out, Vector3(world.BAR_C.x + 5.5, 0.05, world.BAR_C.z - 4.0), Vector3(rng.randf_range(22.0, 34.0), 0.0, -24.5)])
 
 func _refresh_queue() -> void :
 	for i in queue.size():
@@ -160,8 +210,12 @@ func _release_spot(g) -> void :
 		g.spot = {}
 
 func _next_activity(g) -> void :
+	if g.has_meta("visitor"):
+		_visitor_leave(g)
+		return
 	var from_room: bool = g.state == "rest"
 	_release_spot(g)
+	g.plan = g.plan.filter(func(a): return (a != "pool" or Core.has("pool")) and (a != "bar" or Core.has("bar")))
 	if g.plan.is_empty():
 		g.plan = ["checkout"]
 	var act: String = g.plan.pop_front()
@@ -214,6 +268,8 @@ func _stay_rating(wait_min: float, room_id: int) -> float:
 	rating -= maxf(0.0, (wait_min - 30.0) / 45.0)
 	rating += Core.redes * 0.15
 	rating += Core.room_comfort(room_id)
+	if Core.has("pool"):
+		rating += Economy.POOL_RATING
 	if Core.weather == "rain":
 		rating -= Economy.RAIN_RATING
 	rating += rng.randf_range(-0.4, 0.3)

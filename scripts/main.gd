@@ -202,8 +202,8 @@ func _begin_play(fresh: bool) -> void :
 	if not Quality.is_touch():
 		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 	if fresh:
-		Core.toast.emit(tr("Bom dia! Você mora na vila e trabalha no quiosque da praia. Siga a seta amarela."), "good")
-		Core.toast.emit(tr("Ajude também na pousada: check-in na recepção e limpeza dos bangalôs."), "info")
+		Core.toast.emit(tr("Bom dia! Hoje você abre o seu quiosque na praia. Siga a seta amarela."), "good")
+		Core.toast.emit(tr("Junte dinheiro e compre expansões pelo celular (%s): mesas, drinks, bar, pousada...") % Quality.key_name("shop"), "info")
 	else:
 		Core.toast.emit(tr("Bem-vindo de volta! Dia %d") % Core.day, "info")
 

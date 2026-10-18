@@ -16,6 +16,7 @@ var kiosk_spawn_in: = 10.0
 var kiosk_lost: = 0
 
 func _ready() -> void :
+	add_to_group("kiosk")
 	rng.seed = 7171
 	var n_walk: = 14 if Quality.hd else 6
 	for i in n_walk:
@@ -114,14 +115,16 @@ func _outside_blocks(p: Vector3) -> Vector3:
 
 
 func kiosk_open() -> bool:
-	return Core.minutes >= KIOSK_OPEN and Core.minutes < KIOSK_CLOSE
+	return Core.minutes >= KIOSK_OPEN and Core.minutes < Core.kiosk_close_min()
 
 func waiting_customers() -> Array:
 	return customers.filter( func(c): return c.state == "kwait")
 
 func _free_spot() -> int:
 	for i in world.kiosk_spots.size():
-		if not world.kiosk_spots[i].busy:
+		var sp: Dictionary = world.kiosk_spots[i]
+		var need: = str(sp.get("need", ""))
+		if not sp.busy and (need == "" or Core.has(need)):
 			return i
 	return -1
 
@@ -138,7 +141,8 @@ func spawn_customer() -> Node3D:
 	g.spot = spot
 	g.state = "kwalk"
 	g.timer = KIOSK_PATIENCE
-	var dish: String = Economy.KIOSK_MENU[rng.randi() % Economy.KIOSK_MENU.size()]
+	var menu: Array = Core.kiosk_menu()
+	var dish: String = str(menu[rng.randi() % menu.size()])
 	g.set_meta("dish", dish)
 	var route: Array = [] if from_beach else world.village_points.kiosk_approach.slice(1)
 	route.append(Vector3(spot.pos.x, 0.1, spot.pos.z + 0.85))
@@ -150,8 +154,9 @@ func _kiosk_tick(dmin: float) -> void :
 	if enabled and kiosk_open():
 		kiosk_spawn_in -= dmin
 		if kiosk_spawn_in <= 0.0:
-			kiosk_spawn_in = rng.randf_range(22.0, 45.0)
-			if waiting_customers().size() < 3:
+			var rngv: Vector2 = Economy.KIOSK_SPAWN_TABLES if Core.has("kiosk_tables") else Economy.KIOSK_SPAWN
+			kiosk_spawn_in = rng.randf_range(rngv.x, rngv.y)
+			if waiting_customers().size() < world.kiosk_spots.size():
 				spawn_customer()
 	for g in customers.duplicate():
 		match g.state:
@@ -169,7 +174,8 @@ func _kiosk_tick(dmin: float) -> void :
 					g.play("Eat")
 				if g.timer <= 0.0:
 					kiosk_lost += 1
-					Core.toast.emit(tr("Um cliente cansou de esperar no quiosque."), "bad")
+					Core.add_rating(Economy.KIOSK_RATING_LOST)
+					Core.toast.emit(tr("Um cliente cansou de esperar no quiosque. ★%.1f") % Economy.KIOSK_RATING_LOST, "bad")
 					_leave(g)
 			"kleave":
 				if not g.is_moving():
@@ -204,8 +210,12 @@ func kiosk_serve() -> bool:
 		Core.note_stockout(dish)
 		_leave(g)
 		return false
-	var tip: = 2 if g.timer > KIOSK_PATIENCE * 0.6 else 0
+	var fast: bool = g.timer > KIOSK_PATIENCE * 0.6
+	var tip: = 2 if fast else 0
+	if Core.has("kiosk_tables") and fast:
+		tip += 1
 	Core.sell_dish(dish, "kiosk")
+	Core.add_rating(Economy.KIOSK_RATING_FAST if fast else Economy.KIOSK_RATING_SLOW)
 	if tip > 0:
 		Core.book(tip, tr("Gorjeta do quiosque"), "gorjeta", false)
 	get_tree().call_group("audio", "sfx", "coin", -8.0)
@@ -213,6 +223,12 @@ func kiosk_serve() -> bool:
 	g.position = g.spot.pos
 	_leave(g)
 	return true
+
+## Atendente contratado: serve o primeiro cliente esperando (chamado por Core a cada HELPER_MINUTES).
+func helper_serve() -> void :
+	if not kiosk_open() or waiting_customers().is_empty():
+		return
+	kiosk_serve()
 
 func _on_slept(_d: int) -> void :
 	for g in customers.duplicate():

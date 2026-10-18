@@ -27,6 +27,8 @@ static func rough_tex(n: String) -> Texture2D:
 
 
 static func mat(n: String, scale: = 0.5, tint: = Color.WHITE, rough: = 0.85, triplanar: = true) -> StandardMaterial3D:
+	if Toon.enabled():
+		return Toon.material(n, scale, tint, rough)
 	var key: = "%s|%s|%s|%s|%s" % [n, scale, tint.to_html(), rough, triplanar]
 	if _mats.has(key):
 		return _mats[key]
@@ -52,6 +54,8 @@ static func mat(n: String, scale: = 0.5, tint: = Color.WHITE, rough: = 0.85, tri
 	return m
 
 static func flat(c: Color, rough: = 0.8, metal: = 0.0) -> StandardMaterial3D:
+	if Toon.enabled():
+		return Toon.flat(c, rough, metal)
 	var key: = "flat|%s|%s|%s" % [c.to_html(), rough, metal]
 	if _mats.has(key):
 		return _mats[key]
@@ -208,6 +212,13 @@ static func hip_roof(parent: Node, center: Vector3, w: float, d: float, peak: fl
 
 
 static func model(parent: Node, n: String, pos: Vector3, rot_y: = 0.0, s: = 1.0) -> Node3D:
+	if Toon.enabled() and P.has(n):
+		var pr: = P.build(n)
+		pr.position = pos
+		pr.rotation.y = rot_y
+		pr.scale = Vector3.ONE * s
+		parent.add_child(pr)
+		return pr
 	if not _scenes.has(n):
 
 		var hdp: = "res://assets/models_hd/%s/%s.gltf" % [n, n]
@@ -222,6 +233,12 @@ static func model(parent: Node, n: String, pos: Vector3, rot_y: = 0.0, s: = 1.0)
 		parent.add_child(empty)
 		return empty
 	var inst: Node3D = ps.instantiate()
+	if Toon.enabled():
+		for mi in inst.find_children("*", "MeshInstance3D", true, false):
+			for si in mi.mesh.get_surface_count():
+				var sm: Material = mi.mesh.surface_get_material(si)
+				if sm:
+					mi.set_surface_override_material(si, Toon.toonify(sm))
 	inst.position = pos
 	inst.rotation.y = rot_y
 	inst.scale = Vector3.ONE * s
@@ -244,6 +261,8 @@ static func label(parent: Node, text: String, pos: Vector3, size: = 64, col: = C
 	return l
 
 static func has_model(n: String) -> bool:
+	if Toon.enabled() and P.has(n):
+		return true
 	return ResourceLoader.exists("res://assets/models/%s/%s.gltf" % [n, n]) or (Quality.hd and ResourceLoader.exists("res://assets/models_hd/%s/%s.gltf" % [n, n]))
 
 

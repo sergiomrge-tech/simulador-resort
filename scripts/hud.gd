@@ -36,6 +36,7 @@ var obj_target: = Vector3.INF
 var obj_text: = ""
 var _pad_used: = false
 var office: OfficeUI
+var phone: PhoneUI
 var compass: Control
 
 func _ready() -> void :
@@ -222,13 +223,17 @@ func _button(t: String, pos: Vector2, sz: Vector2, preset: int, c: Color, radius
 
 func _build_shop() -> void :
 	office = OfficeUI.new()
-	shop = office
 	root.add_child(office)
 	office.attach_summary(root)
+	office.visible = false
+	phone = PhoneUI.new()
+	root.add_child(phone)
+	shop = phone
 	shop.visible = false
 
+## Abre o celular direto num app (os nomes das abas do antigo escritório ainda funcionam).
 func open_office(tab: String = "caixa", room_id: int = -1) -> void :
-	office.show_tab(tab, room_id)
+	phone.open(PhoneUI.app_for_tab(tab), room_id)
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 
 func show_summary(data: Dictionary) -> void :
@@ -236,9 +241,9 @@ func show_summary(data: Dictionary) -> void :
 
 func toggle_shop() -> void :
 	if shop.visible:
-		shop.visible = false
+		phone.close()
 	else:
-		office.show_tab(office.tab if office.tab != "" else "caixa")
+		phone.open(phone.app)
 		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 		if _pad_used:
 			var buttons: = shop.find_children("*", "Button", true, false)
@@ -415,14 +420,21 @@ func _input(e: InputEvent) -> void :
 		if not Core.in_game or not visible:
 			return
 		if e.is_action("pause") and not get_tree().paused:
-			if shop.visible:
+			if shop.visible and phone.app != "":
+				phone.back()
+			elif shop.visible:
 				toggle_shop()
 			elif menus:
 				menus.toggle_pause()
 			get_viewport().set_input_as_handled()
 		elif get_tree().paused:
 			return
-		elif e.is_action("shop") or (shop.visible and e is InputEventJoypadButton and e.button_index == JOY_BUTTON_B):
+		elif shop.visible and e is InputEventJoypadButton and e.button_index == JOY_BUTTON_B:
+			if phone.app != "":
+				phone.back()
+			else:
+				toggle_shop()
+		elif e.is_action("shop"):
 			toggle_shop()
 		elif e.is_action("interact") and not shop.visible:
 			player.interact()
@@ -448,7 +460,7 @@ func _update_keys_hint() -> void :
 		return
 	keys_l.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
 	var mv: = "%s%s%s%s" % [Quality.key_name("move_forward"), Quality.key_name("move_left"), Quality.key_name("move_back"), Quality.key_name("move_right")]
-	keys_l.text = tr("%s andar  ·  Mouse olhar  ·  %s interagir  ·  %s escritório  ·  %s correr  ·  Esc menu  ·  F11 tela cheia") % [mv, Quality.key_name("interact"), Quality.key_name("shop"), Quality.key_name("sprint")]
+	keys_l.text = tr("%s andar  ·  Mouse olhar  ·  %s interagir  ·  %s celular  ·  %s correr  ·  Esc menu  ·  F11 tela cheia") % [mv, Quality.key_name("interact"), Quality.key_name("shop"), Quality.key_name("sprint")]
 	if keys_l.is_inside_tree():
 		_hug(keys_l, 21, -58.0, 44.0)
 
@@ -490,6 +502,11 @@ func objective() -> Array:
 		var kc: Vector3 = world.kiosk_counter.global_position
 		if not village.waiting_customers().is_empty():
 			return [tr("Turno no quiosque: clientes esperando"), kc, 4.0]
+	for id in Economy.EXPANSION_ORDER:
+		if Core.expansion_state(id)[0] == "ready":
+			return [tr("Dá para comprar: %s — abra o celular (%s)") % [tr(str(Economy.EXPANSIONS[id].name)), Quality.key_name("shop")], Vector3.INF, 0.0]
+	if village:
+		var kc: Vector3 = world.kiosk_counter.global_position
 		if Core.minutes < 8.0 * 60.0:
 			return [tr("Turno no quiosque às 08:00"), kc, 6.0]
 		if village.kiosk_open() and pp.distance_to(kc) > 30.0:
@@ -499,6 +516,10 @@ func objective() -> Array:
 	for r in Core.rooms:
 		if int(r.upgrades.get("clima", 0)) == 0 and Core.money >= Economy.next_cost("clima", 0):
 			return [tr("Melhorar o Bangalô %d") % (r.id + 1), Vector3(world.BUNG_X[r.id], 0.6, world.BUNG_Z), 6.0]
+	var nx: = Core.next_expansion()
+	if nx != "":
+		var st: Array = Core.expansion_state(nx)
+		return [tr("Meta: %s · %s") % [tr(str(Economy.EXPANSIONS[nx].name)), str(st[1])], Vector3.INF, 0.0]
 	return ["", Vector3.INF, 0.0]
 
 func _update_objective() -> void :
@@ -507,6 +528,10 @@ func _update_objective() -> void :
 	obj_target = o[1]
 	if obj_text == "":
 		obj_l.text = ""
+		return
+	if obj_target == Vector3.INF:
+		obj_l.text = "➤ " + obj_text
+		obj_l.set_meta("min_d", o[2])
 		return
 	var d: float = player.global_position.distance_to(obj_target) if player else 0.0
 	obj_l.text = "➤ %s  (%d m)" % [obj_text, int(d)] if d > float(o[2]) else "➤ " + obj_text

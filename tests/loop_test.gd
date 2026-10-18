@@ -41,6 +41,58 @@ func aim(pos: Vector3, yaw: float, pitch: float) -> String:
 	var f = main.player.focus
 	return f.get_prompt() if f else ""
 
+## v0.7: começa só com o quiosque, compra as expansões em ordem e vê cada área aparecer no mundo.
+## No fim deixa o estado igual ao jogo antigo (2 bangalôs, despensa cheia) para o resto do teste.
+func career_test() -> void :
+	var w = main.world
+	check(Core.rooms.is_empty() and not Core.has("pousada"), "novo jogo começa só com o quiosque")
+	check(Core.money == Economy.START_MONEY, "dinheiro inicial %s" % Core.fmt_money(Core.money))
+	check( not w.areas.pousada.visible and w.lots.pousada.visible, "pousada é um lote à venda")
+	check( not w.areas.bar.visible and w.lots.bar.visible, "bar é um lote à venda")
+	check( not w.areas.pool.visible and w.lots.pool.visible, "piscina é um lote à venda")
+	check( not w.areas.kiosk_tables.visible and not w.areas.neon.visible, "quiosque começa simples")
+	check(Core.kiosk_menu() == ["coco_gelado", "suco"], "cardápio inicial: coco gelado e suco")
+	check(Core.expansion_state("bar")[0] == "locked", "bar bloqueado no início")
+	check( not main.guests.bartender.visible, "barman ainda não existe")
+	check(Core.expansion_state("kiosk_tables")[0] == "money", "mesas exigem juntar dinheiro no 1º dia")
+	Core.money = 200
+	check(Core.expansion_state("kiosk_tables")[0] == "ready", "mesas já dá para comprar")
+	check(Core.buy_expansion("kiosk_tables"), "comprou mesas e guarda-sóis")
+	await frames(2)
+	check(w.areas.kiosk_tables.visible, "mesas apareceram no quiosque")
+	check( not Core.buy_expansion("pousada"), "pousada recusada sem requisitos")
+	check(Core.expansion_state("grill")[0] == "locked", "chapa exige nota mínima")
+	Core.ratings = [5.0, 5.0, 5.0]
+	Core.money = 20000
+	for id in Economy.EXPANSION_ORDER:
+		if id == "pool":
+			check(Core.expansion_state("pool")[0] == "locked", "piscina exige 2 bangalôs")
+			check(Core.build_bungalow(), "segundo bangalô construído")
+		if not Core.has(id):
+			check(Core.buy_expansion(id), "comprou %s" % id)
+	await frames(2)
+	for id in ["bar", "pousada", "pool", "neon", "grill"]:
+		check(w.areas[id].visible and (not w.lots.has(id) or not w.lots[id].visible), "área %s visível" % id)
+	check(main.guests.bartender.visible, "barman no bar")
+	check(Core.kiosk_menu().size() == 4, "cardápio completo no quiosque")
+	check(Core.rooms.size() == 2 and w.room_nodes.size() == 2, "dois bangalôs no mundo")
+	var visitor = main.guests.spawn_bar_visitor()
+	check(visitor != null and visitor.has_meta("visitor"), "banhista indo ao bar")
+	main.guests.guests.erase(visitor)
+	visitor.spot.busy = false
+	visitor.queue_free()
+	Core.save_game()
+	Core.unlocked = {}
+	check(Core.load_game() and Core.has("pool") and Core.has("kiosk_tables"), "save guardou as expansões")
+	# volta ao estado do jogo antigo para o resto do teste
+	Core.money = 300
+	Core.ratings = [3.0, 3.0, 3.0]
+	Core.stock = {"coco": 6, "frutas": 10, "cachaca": 6, "gelo": 10, "peixe": 6, "pao": 6}
+	Core.stock_changed.emit()
+	Core.ledger_today = []
+	Core.day_income = 0
+	Core.day_expense = 0
+
 func run(m) -> void :
 	main = m
 	var watchdog: = get_tree().create_timer(230.0)
@@ -55,8 +107,10 @@ func run(m) -> void :
 	check(main.village.walkers.size() > 0, "moradores na vila: %d" % main.village.walkers.size())
 	check(Core.minutes == Core.WAKE_MIN, "novo jogo começa às 06:30")
 	check(main.player.global_position.distance_to(main.world.home_wake) < 1.5, "herói acorda em casa")
+	await career_test()
 	var g = main.guests
 	g.enabled = false
+	main.village.enabled = false
 	Core.speed_mult = 30.0
 	var money0: = Core.money
 	var stars0: = Core.stars()

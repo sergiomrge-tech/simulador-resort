@@ -27,6 +27,9 @@ var mtn_tree_mat: ShaderMaterial
 var mtn_tree_mats: Array = []
 
 var M: = {}
+## v0.7: pedaços do mundo liberados por expansão (id da expansão -> Node3D) e o lote à venda de cada um.
+var areas: = {}
+var lots: = {}
 
 func _ready() -> void :
 	add_to_group("world")
@@ -35,11 +38,12 @@ func _ready() -> void :
 	_ocean()
 	_bounds()
 	_paths()
-	_reception()
-	_pool()
-	for i in BUNG_X.size():
+	_area("pousada", _reception)
+	_area("pool", _pool)
+	_ensure_bung_x(Core.rooms.size())
+	for i in Core.rooms.size():
 		_bungalow(i, Vector3(BUNG_X[i], 0, BUNG_Z))
-	_bar()
+	_area("bar", _bar)
 	_beach_props()
 	_palms()
 	_vegetation()
@@ -51,12 +55,15 @@ func _ready() -> void :
 	Core.redes_changed.connect(_on_redes_changed)
 	Core.bungalow_built.connect(_on_bungalow_built)
 	Core.weather_changed.connect(_on_weather)
+	Core.expansion_bought.connect(_on_expansion)
 	for r in Core.rooms:
 		_on_room_changed(r.id)
 	_on_redes_changed(Core.redes)
 	_birds_spawn()
 	_weather_fx()
 	_mountains()
+	_build_lots()
+	call_deferred("refresh_areas")
 
 func _materials() -> void :
 	M.plaster = B.mat("white_plaster", 0.5, Color(1, 1, 1), 0.9)
@@ -1791,3 +1798,88 @@ func _mountains() -> void :
 	B.wall(self, Vector3(2.4, 18, 78), Vector3(-64, 7.0, 24.0))
 	B.wall(self, Vector3(2.4, 18, 78), Vector3(120, 7.0, 24.0))
 	print("serra: tris encosta=%d" % tris)
+
+
+# ------------------------------------------------------------------ v0.7: áreas e lotes à venda
+## Roda um construtor e move tudo o que ele criou para um nó próprio, que pode ser ligado/desligado.
+func _area(id: String, builder: Callable) -> Node3D:
+	var before: = get_child_count()
+	builder.call()
+	var kids: = get_children().slice(before)
+	var node: Node3D = areas.get(id)
+	if node == null:
+		node = Node3D.new()
+		node.name = "Area_" + id
+		add_child(node)
+		areas[id] = node
+	for k in kids:
+		if k != node:
+			k.reparent(node, false)
+	return node
+
+func _lot_post(parent: Node3D, p: Vector3) -> void :
+	B.cyl(parent, 0.06, 0.07, 1.0, p + Vector3(0, 0.5, 0), M.get("post", B.flat(Color(0.55, 0.4, 0.25))), 6)
+
+## Cerquinha de estacas com corda e uma placa "Lote à venda" com o nome e o preço da expansão.
+func _lot(id: String, c: Vector3, size: Vector2, sign_pos: Vector3, sign_rot: float) -> Node3D:
+	var n: = Node3D.new()
+	n.name = "Lot_" + id
+	add_child(n)
+	var hx: = size.x * 0.5
+	var hz: = size.y * 0.5
+	var rope: = B.flat(Color(0.95, 0.55, 0.15), 0.8)
+	var corners: = [Vector3(-hx, 0, -hz), Vector3(hx, 0, -hz), Vector3(hx, 0, hz), Vector3(-hx, 0, hz)]
+	for i in 4:
+		var a: Vector3 = c + corners[i]
+		var b_: Vector3 = c + corners[(i + 1) % 4]
+		var steps: = maxi(1, int(a.distance_to(b_) / 2.5))
+		for k in steps:
+			_lot_post(n, a.lerp(b_, float(k) / steps))
+		var mid: = (a + b_) * 0.5 + Vector3(0, 0.8, 0)
+		var seg: = B.box(n, Vector3(a.distance_to(b_), 0.05, 0.05), mid, rope)
+		seg.rotation.y = - atan2(b_.z - a.z, b_.x - a.x)
+	var board: = Node3D.new()
+	board.position = sign_pos
+	board.rotation.y = sign_rot
+	n.add_child(board)
+	var wood: = B.flat(Color(0.62, 0.42, 0.24), 0.9)
+	for sx in [-1.0, 1.0]:
+		B.box(board, Vector3(0.14, 2.2, 0.14), Vector3(sx * 1.25, 1.1, 0), wood)
+	B.box(board, Vector3(3.0, 1.5, 0.12), Vector3(0, 1.75, 0), B.flat(Color(0.98, 0.93, 0.8), 0.9))
+	B.box(board, Vector3(3.2, 0.16, 0.16), Vector3(0, 2.55, 0), B.flat(Color(0.9, 0.3, 0.22), 0.8))
+	var e: Dictionary = Economy.EXPANSIONS[id]
+	var t1: = B.label(board, tr("LOTE À VENDA"), Vector3(0, 2.25, 0.07), 70, Color(0.85, 0.22, 0.15), Color(1, 1, 1, 0.9))
+	t1.set_meta("keep", true)
+	B.label(board, tr(str(e.name)), Vector3(0, 1.85, 0.07), 56, Color(0.2, 0.15, 0.1), Color(1, 1, 1, 0.9))
+	B.label(board, Core.fmt_money(int(e.cost)), Vector3(0, 1.45, 0.07), 74, Color(0.1, 0.5, 0.25), Color(1, 1, 1, 0.9))
+	B.label(board, tr("Compre pelo celular (B)"), Vector3(0, 1.12, 0.07), 40, Color(0.35, 0.28, 0.2), Color(1, 1, 1, 0.9))
+	lots[id] = n
+	return n
+
+func _build_lots() -> void :
+	_lot("bar", BAR_C, Vector2(8.4, 8.4), BAR_C + Vector3(-4.6, 0, 1.0), - PI * 0.5)
+	_lot("pousada", Vector3(0, 0, 16), Vector2(11.4, 8.4), Vector3(2.6, 0, 20.8), 0.0)
+	var pool_lot: = _lot("pool", Vector3(0, 0, 4), Vector2(18.4, 13.4), Vector3(0, 0, 10.9), 0.0)
+	# tampa o buraco da piscina com areia enquanto ela não existe
+	var filler: = B.box(pool_lot, Vector3(POOL_MAX.x - POOL_MIN.x + 0.4, 0.4, POOL_MAX.y - POOL_MIN.y + 0.4), 
+		Vector3((POOL_MIN.x + POOL_MAX.x) * 0.5, -0.19, (POOL_MIN.y + POOL_MAX.y) * 0.5), sand_patch_mat(), true)
+	filler.name = "PoolFiller"
+
+func sand_patch_mat() -> Material:
+	return B.flat(Color(0.96, 0.86, 0.62), 0.95)
+
+func _set_live(n: Node3D, on: bool) -> void :
+	if n == null:
+		return
+	n.visible = on
+	n.process_mode = Node.PROCESS_MODE_INHERIT if on else Node.PROCESS_MODE_DISABLED
+
+func _on_expansion(_id: String) -> void :
+	refresh_areas()
+
+func refresh_areas() -> void :
+	for id in areas:
+		var owned: bool = Core.has(id)
+		_set_live(areas[id], owned)
+		_set_live(lots.get(id), not owned)
+	get_tree().call_group("world_dyn", "on_areas_changed")

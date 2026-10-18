@@ -16,10 +16,11 @@ signal bungalow_built(room_id: int)
 signal staff_changed
 signal day_closed(summary: Dictionary)
 signal weather_changed(kind: String)
+signal expansion_bought(id: String)
 
 var SAVE_PATH: = "user://save_slot1.json"
 var slot: int = 1
-const SAVE_VERSION: = 3
+const SAVE_VERSION: = 4
 const WAKE_MIN: = 390.0
 const SLEEP_FROM: = 20.0 * 60.0
 const MAX_REDES: = Economy.HAMMOCK_MAX
@@ -49,7 +50,8 @@ var day_income: int = 0
 var day_expense: int = 0
 var last_summary: Dictionary = {}
 var stockouts: int = 0
-var staff: = {"camareira": false, "bartender": false}
+var staff: = {"atendente": false, "camareira": false, "bartender": false}
+var unlocked: = {}
 var quests: = {}
 var weather: = "sun"
 
@@ -58,11 +60,12 @@ var _bar_batch_count: = 0
 var _bar_batch_value: = 0
 var _bar_batch_t: = -1.0
 var _maid_acc: = 0.0
+var _helper_acc: = 0.0
 
 func _ready() -> void :
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	_reset_economy()
-	reset_rooms(2)
+	reset_rooms(0)
 
 func _blank_room(i: int) -> Dictionary:
 	return {"id": i, "state": "free", "guest": -1, 
@@ -81,9 +84,10 @@ func _reset_economy() -> void :
 	day_expense = 0
 	last_summary = {}
 	stockouts = 0
-	staff = {"camareira": false, "bartender": false}
+	staff = {"atendente": false, "camareira": false, "bartender": false}
 	quests = {}
 	_maid_acc = 0.0
+	_helper_acc = 0.0
 	if weather != "sun":
 		weather = "sun"
 		weather_changed.emit(weather)
@@ -102,8 +106,10 @@ func new_game() -> void :
 	tutorial_step = 0
 	_reset_bar_batch()
 	_reset_economy()
-	reset_rooms(2)
+	unlocked = {}
+	reset_rooms(0)
 	_emit_all()
+	expansion_bought.emit("")
 	if is_inside_tree():
 		get_tree().call_group("world", "sync_bungalows")
 
@@ -134,6 +140,11 @@ func _process(delta: float) -> void :
 		if _maid_acc >= Economy.MAID_MINUTES:
 			_maid_acc = 0.0
 			_maid_sweep()
+	if bool(staff.get("atendente", false)):
+		_helper_acc += delta * minutes_per_sec * speed_mult
+		if _helper_acc >= Economy.HELPER_MINUTES:
+			_helper_acc = 0.0
+			get_tree().call_group("kiosk", "helper_serve")
 	_autosave_t += delta
 	if _autosave_t > 45.0 and in_game:
 		_autosave_t = 0.0
@@ -392,8 +403,75 @@ func can_make(id: String) -> bool:
 			return false
 	return true
 
+# ------------------------------------------------------------------ progressão (v0.7)
+func has(id: String) -> bool:
+	return bool(unlocked.get(id, false))
+
+func dish_unlocked(id: String) -> bool:
+	return not Economy.DISH_UNLOCK.has(id) or has(str(Economy.DISH_UNLOCK[id]))
+
+func kiosk_menu() -> Array:
+	return Economy.KIOSK_MENU.filter(func(d): return dish_unlocked(d))
+
+func bar_menu() -> Array:
+	return Economy.BAR_MENU.filter(func(d): return dish_unlocked(d))
+
+func kiosk_close_min() -> float:
+	return (Economy.KIOSK_CLOSE_NEON_H if has("neon") else Economy.KIOSK_CLOSE_H) * 60.0
+
+## "owned" | "ready" (pode comprar agora) | "money" (falta dinheiro) | "locked" (falta requisito). Motivo em [1].
+func expansion_state(id: String) -> Array:
+	if has(id):
+		return ["owned", ""]
+	var e: Dictionary = Economy.EXPANSIONS[id]
+	for r in e.get("req", []):
+		if not has(str(r)):
+			return ["locked", tr("Precisa de: %s") % tr(str(Economy.EXPANSIONS[r].name))]
+	if stars() + 0.001 < float(e.get("stars", 0.0)):
+		return ["locked", tr("Precisa de ★ %.1f (agora ★ %.1f)") % [float(e.stars), stars()]]
+	if rooms.size() < int(e.get("rooms", 0)):
+		return ["locked", tr("Precisa de %d bangalôs") % int(e.rooms)]
+	if money < int(e.cost):
+		return ["money", tr("Faltam %s") % fmt_money(int(e.cost) - money)]
+	return ["ready", ""]
+
+## Próxima expansão ainda não comprada, na ordem da campanha ("" quando tudo foi comprado).
+func next_expansion() -> String:
+	for id in Economy.EXPANSION_ORDER:
+		if not has(id):
+			return id
+	return ""
+
+func buy_expansion(id: String) -> bool:
+	if not Economy.EXPANSIONS.has(id):
+		return false
+	var st: = expansion_state(id)
+	if st[0] == "owned":
+		return false
+	if st[0] != "ready":
+		toast.emit(str(st[1]), "bad")
+		return false
+	var e: Dictionary = Economy.EXPANSIONS[id]
+	unlocked[id] = true
+	book( - int(e.cost), tr(str(e.name)), "upgrade", true)
+	if id == "pousada" and rooms.is_empty():
+		rooms.append(_blank_room(0))
+		bungalow_built.emit(0)
+		room_changed.emit(0)
+	expansion_bought.emit(id)
+	toast.emit(tr("Nova conquista: %s!") % tr(str(e.name)), "good")
+	get_tree().call_group("audio", "sfx", "bell")
+	save_game()
+	return true
+
+## Usado por saves antigos (v0.6.x) e pelo teste: libera tudo.
+func unlock_all() -> void :
+	for id in Economy.EXPANSIONS:
+		unlocked[id] = true
+	expansion_bought.emit("")
+
 func menu_blocked() -> bool:
-	for id in Economy.KIOSK_MENU:
+	for id in kiosk_menu():
 		if not can_make(id):
 			return true
 	return false
@@ -428,11 +506,11 @@ func sell_dish(id: String, channel: String) -> int:
 
 func serve_bar() -> int:
 	var ready: Array = []
-	for id in Economy.BAR_MENU:
+	for id in bar_menu():
 		if can_make(id):
 			ready.append(id)
 	if ready.is_empty():
-		note_stockout(str(Economy.BAR_MENU[0]))
+		note_stockout(str(bar_menu()[0]))
 		return 0
 	return maxi(0, sell_dish(str(ready[randi() % ready.size()]), "bar"))
 
@@ -469,6 +547,9 @@ func upgrade_room(id: int, cat: String) -> bool:
 	return true
 
 func build_bungalow() -> bool:
+	if not has("pousada"):
+		toast.emit(tr("Compre a pousada primeiro (celular → Expansões)."), "bad")
+		return false
 	if rooms.size() >= Economy.BUNGALOW_MAX:
 		toast.emit(tr("A pousada já tem o máximo de bangalôs."), "info")
 		return false
@@ -487,6 +568,10 @@ func hire(role: String) -> bool:
 		return false
 	if bool(staff.get(role, false)):
 		toast.emit(tr("Já contratado: %s") % tr(str(Economy.STAFF[role].name)), "info")
+		return false
+	var need: = str(Economy.STAFF[role].get("req", ""))
+	if need != "" and not has(need):
+		toast.emit(tr("Precisa de: %s") % tr(str(Economy.EXPANSIONS[need].name)), "bad")
 		return false
 	var cost: = int(Economy.STAFF[role].hire)
 	if money < cost:
@@ -535,7 +620,7 @@ func save_game() -> void :
 		"staff": staff.duplicate(), "quests": quests.duplicate(), 
 		"weather": weather, "ledger": ledger_today.duplicate(true), 
 		"day_in": day_income, "day_out": day_expense, 
-		"summary": last_summary.duplicate(true), 
+		"summary": last_summary.duplicate(true), "unlocked": unlocked.duplicate(), 
 		"saved_at": Time.get_datetime_string_from_system(false, true), 
 	}
 	if is_instance_valid(player_ref) and player_ref.is_inside_tree():
@@ -597,6 +682,16 @@ func load_game() -> bool:
 	ledger_today = led if typeof(led) == TYPE_ARRAY else []
 	var ls = data.get("summary", {})
 	last_summary = ls if typeof(ls) == TYPE_DICTIONARY else {}
+	unlocked = {}
+	if int(data.get("v", 0)) < 4:
+		for id in Economy.EXPANSIONS:
+			unlocked[id] = true
+	else:
+		var ul = data.get("unlocked", {})
+		if typeof(ul) == TYPE_DICTIONARY:
+			for k in ul:
+				if Economy.EXPANSIONS.has(k):
+					unlocked[k] = bool(ul[k])
 	reset_rooms(data.rooms.size())
 	for i in data.rooms.size():
 		rooms[i].state = data.rooms[i].state
@@ -610,6 +705,7 @@ func load_game() -> bool:
 	stock_changed.emit()
 	staff_changed.emit()
 	weather_changed.emit(weather)
+	expansion_bought.emit("")
 	if is_inside_tree():
 		get_tree().call_group("world", "sync_bungalows")
 	return true
