@@ -199,6 +199,38 @@ func run(m) -> void :
 	check(main.village.daily_goal() >= 8, "meta diária: %d clientes" % main.village.daily_goal())
 	check(main.village.combo >= 1, "combo após atendimento rápido: x%d" % main.village.combo)
 
+	# v0.7.5: preço ajustável, estoque que estraga, freezer e eventos do dia
+	var base_p: = int(Economy.dish("coco_gelado").price)
+	check(Core.price_of("coco_gelado") == base_p, "preço padrão do coco: %d" % base_p)
+	Core.set_price_tier("coco_gelado", 4)
+	check(Core.price_of("coco_gelado") == int(round(base_p * 1.5)), "preço ×1,5 do coco: %d" % Core.price_of("coco_gelado"))
+	check(Core.demand_factor() < 1.0, "preço alto reduz a demanda: %.2f" % Core.demand_factor())
+	Core.set_price_tier("coco_gelado", 0)
+	check(Core.demand_factor() > 1.0 and Core.price_rating_adjust() >= 0.0, "preço baixo atrai mais clientes: %.2f" % Core.demand_factor())
+	Core.set_price_tier("coco_gelado", 2)
+	Core.stock["gelo"] = 20
+	Core.stock["peixe"] = 10
+	Core.freezer = false
+	Core.spoil_stock()
+	var gelo1: int = int(Core.stock["gelo"])
+	check(gelo1 < 20 and gelo1 >= 12, "gelo estraga à noite: 20 -> %d" % gelo1)
+	Core.stock["gelo"] = 20
+	Core.freezer = true
+	Core.spoil_stock()
+	check(int(Core.stock["gelo"]) > gelo1, "freezer reduz a perda: 20 -> %d" % int(Core.stock["gelo"]))
+	Core.freezer = false
+	var ev_seen: = {}
+	var d0: = Core.day
+	Core.day = 5
+	for i in 60:
+		Core.roll_day_event()
+		ev_seen[Core.day_event] = true
+	Core.day = d0
+	Core.day_event = ""
+	check(ev_seen.has("calor") and ev_seen.has("lua") and ev_seen.has(""), "eventos do dia sorteados: %s" % str(ev_seen.keys()))
+	Core.stock["gelo"] = 18
+	Core.stock["peixe"] = 10
+
 	Core.speed_mult = 1.0
 	Core.minutes = 15.0 * 60.0
 	var bed_from: = Vector3(main.world.HOME_C.x - 2.2, 0.2, main.world.HOME_C.z + 0.9)

@@ -50,6 +50,10 @@ const SHOTS: = {
 	"quiosque": [Vector3(37.2, 1.35, -7.8), -17.7, -4.4, 16.8], 
 	"celular": [Vector3(37.2, 1.35, -7.8), -17.7, -4.4, 10.5], 
 	"celular_home": [Vector3(37.2, 1.35, -7.8), -17.7, -4.4, 10.5], 
+	"cel_cardapio": [Vector3(37.2, 1.35, -7.8), -17.7, -4.4, 10.5], 
+	"cel_mercado": [Vector3(37.2, 1.35, -7.8), -17.7, -4.4, 10.5], 
+	"cel_album": [Vector3(37.2, 1.35, -7.8), -17.7, -4.4, 10.5], 
+	"cel_missoes": [Vector3(37.2, 1.35, -7.8), -17.7, -4.4, 10.5], 
 	"lote": [Vector3(4.0, 1.6, 30.0), 10.0, -6.0, 15.0], 
 	"resort": [Vector3(26.0, 34.0, -52.0), 196.0, -30.0, 16.0], 
 	"neon": [Vector3(37.4, 1.6, -4.6), -10.0, 6.0, 19.6], 
@@ -373,6 +377,8 @@ func _run_shot(n: String) -> void :
 		hud.open_office("expansoes")
 	elif n == "celular_home":
 		hud.open_office("")
+	elif n.begins_with("cel_"):
+		hud.open_office(n.substr(4))
 	if n == "estoque":
 		hud.open_office("insumos")
 	elif n == "upgrade":
@@ -382,7 +388,7 @@ func _run_shot(n: String) -> void :
 		_dress_room(0)
 	elif n == "resumo":
 		hud.show_summary(_demo_summary())
-	if n in ["estoque", "upgrade", "bangalo_up", "resumo", "pausa", "recepcao", "npc_bar", "npc_anda", "npc_senta", "quiosque", "balcao", "rosto", "celular", "celular_home", "mesas"]:
+	if n in ["estoque", "upgrade", "bangalo_up", "resumo", "pausa", "recepcao", "npc_bar", "npc_anda", "npc_senta", "quiosque", "balcao", "rosto", "celular", "celular_home", "mesas", "cel_cardapio", "cel_mercado", "cel_album", "cel_missoes"]:
 		var extra: = 36 if n in ["npc_bar", "quiosque", "balcao", "celular", "celular_home"] else 12
 		for i in extra:
 			await get_tree().process_frame

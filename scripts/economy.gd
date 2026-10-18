@@ -148,6 +148,18 @@ const DISH_STAGES: = {
 	"petiscos": [["Fritar o peixe", 1.4], ["Montar o prato", 0.9]],
 }
 const TAP_BURST: = 0.16
+## Preço ajustável por prato (v0.7.5): multiplicadores, demanda de clientes para cada nível e estoque que estraga.
+const PRICE_TIERS: = [0.7, 0.85, 1.0, 1.2, 1.5]
+const PRICE_DEFAULT_TIER: = 2
+const DEMAND_BY_TIER: = [1.25, 1.12, 1.0, 0.85, 0.65]
+## Fração do que sobrou no estoque que estraga durante a noite (o freezer corta pela metade).
+const SPOIL: = {"gelo": 0.25, "frutas": 0.2, "peixe": 0.4, "pao": 0.3}
+const FREEZER_COST: = 300
+## Eventos do dia, sorteados ao acordar: sem evento 55%, calor 30%, lua cheia 15%.
+const DAY_EVENTS: = {
+	"calor": {"name": "Dia de calor", "blurb": "Todo mundo quer coco e suco gelado: mais clientes e pedidos de bebidas frescas."},
+	"lua": {"name": "Noite de lua cheia", "blurb": "À noite o bar e o quiosque lotam. Deixe estoque para o fim da tarde."},
+}
 const KIOSK_MENU: = ["coco_gelado", "suco", "caipirinha", "petiscos"]
 const BAR_MENU: = ["coco_gelado", "caipirinha", "petiscos", "suco"]
 const PACK: = 6

@@ -54,6 +54,10 @@ var staff: = {"atendente": false, "camareira": false, "bartender": false}
 var unlocked: = {}
 var quests: = {}
 var weather: = "sun"
+## v0.7.5: preço por prato (nível 0-4), freezer, evento do dia e álbum de clientes famosos.
+var price_tier: = {}
+var freezer: = false
+var day_event: = ""
 
 var _autosave_t: = 0.0
 var _bar_batch_count: = 0
@@ -86,6 +90,9 @@ func _reset_economy() -> void :
 	stockouts = 0
 	staff = {"atendente": false, "camareira": false, "bartender": false}
 	quests = {}
+	price_tier = {}
+	freezer = false
+	day_event = ""
 	_maid_acc = 0.0
 	_helper_acc = 0.0
 	if weather != "sun":
@@ -278,12 +285,14 @@ func sleep() -> void :
 	minutes = WAKE_MIN
 	_pay_wages()
 	force_flush_bar()
+	spoil_stock()
 	slept.emit(day)
 	last_summary = _snapshot_ledger()
 	_reset_day_ledger()
 	day_closed.emit(last_summary)
 	time_changed.emit(day, minutes)
 	toast.emit(tr("Bom dia! Dia %d") % day, "info")
+	roll_day_event()
 	save_game()
 
 func _pay_wages() -> void :
@@ -484,9 +493,89 @@ func note_stockout(id: String) -> void :
 		name = str(Economy.dish(id).name)
 	toast.emit(tr("Sem estoque para %s") % tr(name), "bad")
 
-## Preço de venda atual do prato (v0.7.5: o jogador ajusta pelo celular).
+## Preço de venda atual do prato (o jogador ajusta pelo celular, em 5 níveis).
+func price_tier_of(id: String) -> int:
+	return clampi(int(price_tier.get(id, Economy.PRICE_DEFAULT_TIER)), 0, Economy.PRICE_TIERS.size() - 1)
+
 func price_of(id: String) -> int:
-	return int(Economy.dish(id).price)
+	return maxi(1, int(round(float(Economy.dish(id).price) * float(Economy.PRICE_TIERS[price_tier_of(id)]))))
+
+func set_price_tier(id: String, tier: int) -> void :
+	if not Economy.DISHES.has(id):
+		return
+	price_tier[id] = clampi(tier, 0, Economy.PRICE_TIERS.size() - 1)
+	stock_changed.emit()
+
+## Média dos multiplicadores de preço do cardápio do quiosque.
+func avg_price_mult() -> float:
+	var m: Array = kiosk_menu()
+	if m.is_empty():
+		return 1.0
+	var t: = 0.0
+	for d in m:
+		t += float(Economy.PRICE_TIERS[price_tier_of(d)])
+	return t / float(m.size())
+
+## Quanto o preço atrai (ou afasta) clientes: > 1 = mais clientes. Inclui o evento do dia.
+func demand_factor() -> float:
+	var m: Array = kiosk_menu()
+	var f: = 1.0
+	if not m.is_empty():
+		f = 0.0
+		for d in m:
+			f += float(Economy.DEMAND_BY_TIER[price_tier_of(d)])
+		f /= float(m.size())
+	if day_event == "calor":
+		f *= 1.25
+	return f
+
+## Ajuste na nota de quem foi atendido: preço salgado reclama, preço camarada agrada.
+func price_rating_adjust() -> float:
+	var a: = avg_price_mult()
+	if a >= 1.35:
+		return -0.9
+	if a >= 1.1:
+		return -0.3
+	if a <= 0.8:
+		return 0.15
+	return 0.0
+
+## Evento do dia: sorteado ao acordar (nunca no dia 1). Avisa o jogador.
+func roll_day_event() -> void :
+	day_event = ""
+	if day > 1:
+		var r: = randf()
+		if r < 0.30:
+			day_event = "calor"
+		elif r < 0.45:
+			day_event = "lua"
+	if day_event != "":
+		var e: Dictionary = Economy.DAY_EVENTS[day_event]
+		toast.emit("%s: %s" % [tr(str(e.name)), tr(str(e.blurb))], "info")
+
+## Estoque que sobra estraga durante a noite (gelo derrete, peixe e pão passam do ponto).
+func spoil_stock() -> void :
+	var lost: = []
+	for id in Economy.SPOIL:
+		var have: = int(stock.get(id, 0))
+		if have <= 0:
+			continue
+		var rate: = float(Economy.SPOIL[id]) * (0.5 if freezer else 1.0)
+		var n: = mini(have, int(round(float(have) * rate)))
+		if n > 0:
+			stock[id] = have - n
+			lost.append("%d %s" % [n, tr(str(Economy.SUPPLIES[id].name)).to_lower()])
+	if not lost.is_empty():
+		stock_changed.emit()
+		toast.emit(tr("Estragou durante a noite: %s.") % ", ".join(lost), "bad")
+
+func buy_freezer() -> bool:
+	if freezer or money < Economy.FREEZER_COST:
+		return false
+	freezer = true
+	book( - Economy.FREEZER_COST, tr("Freezer"), "compra", true)
+	stock_changed.emit()
+	return true
 
 ## Chamado quando um cliente VIP é atendido (álbum de clientes famosos).
 func vip_served(_id: String) -> void :
@@ -627,6 +716,7 @@ func save_game() -> void :
 		"stock": stock.duplicate(), "stockouts": stockouts, 
 		"staff": staff.duplicate(), "quests": quests.duplicate(), 
 		"weather": weather, "ledger": ledger_today.duplicate(true), 
+		"ptier": price_tier.duplicate(), "freezer": freezer, "event": day_event, 
 		"day_in": day_income, "day_out": day_expense, 
 		"summary": last_summary.duplicate(true), "unlocked": unlocked.duplicate(), 
 		"saved_at": Time.get_datetime_string_from_system(false, true), 
@@ -682,6 +772,10 @@ func load_game() -> bool:
 	if typeof(stf) == TYPE_DICTIONARY:
 		for k in staff.keys():
 			staff[k] = bool(stf.get(k, false))
+	var pt = data.get("ptier", {})
+	price_tier = pt.duplicate() if typeof(pt) == TYPE_DICTIONARY else {}
+	freezer = bool(data.get("freezer", false))
+	day_event = str(data.get("event", ""))
 	var qs = data.get("quests", {})
 	quests = qs if typeof(qs) == TYPE_DICTIONARY else {}
 	day_income = int(data.get("day_in", 0))

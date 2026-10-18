@@ -47,6 +47,9 @@ func _process(delta: float) -> void :
 			visit_in -= dmin
 			if visit_in <= 0.0:
 				visit_in = rng.randf_range(18.0, 34.0) if Core.rooms.is_empty() else rng.randf_range(30.0, 55.0)
+				visit_in /= Core.demand_factor()
+				if Core.day_event == "lua" and h >= 17.0:
+					visit_in *= 0.5
 				if _visitor_count() < MAX_VISITORS:
 					spawn_bar_visitor()
 		if Core.has("pousada") and not Core.rooms.is_empty() and h >= 7.0 and h < 21.0:

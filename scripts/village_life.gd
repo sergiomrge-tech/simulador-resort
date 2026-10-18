@@ -180,7 +180,7 @@ func spawn_customer() -> Node3D:
 	g.state = "kwalk"
 	g.timer = KIOSK_PATIENCE
 	var menu: Array = Core.kiosk_menu()
-	var dish: String = str(menu[rng.randi() % menu.size()])
+	var dish: String = _pick_dish(menu)
 	g.set_meta("dish", dish)
 	# quiosque cheio (ou mesas compradas) = pedidos maiores
 	var items: Array = [dish]
@@ -221,7 +221,9 @@ func _kiosk_tick(dmin: float) -> void :
 		kiosk_spawn_in -= dmin
 		if kiosk_spawn_in <= 0.0:
 			var rngv: Vector2 = Economy.KIOSK_SPAWN_TABLES if Core.has("kiosk_tables") else Economy.KIOSK_SPAWN
-			kiosk_spawn_in = rng.randf_range(rngv.x, rngv.y)
+			kiosk_spawn_in = rng.randf_range(rngv.x, rngv.y) / Core.demand_factor()
+			if Core.day_event == "lua" and Core.minutes >= 17.0 * 60.0:
+				kiosk_spawn_in *= 0.6
 			if rush_left > 0:
 				rush_left -= 1
 				kiosk_spawn_in = rng.randf_range(2.5, 5.0)
@@ -284,6 +286,21 @@ func _order(g) -> void :
 	g.set_meta("urgent", false)
 	g.show_order(_order_text(g))
 	g.play("Sitting_Talking_Loop")
+
+## Sorteia o prato; em dia de calor coco e suco saem muito mais.
+func _pick_dish(menu: Array) -> String:
+	var total: = 0.0
+	var ws: Array = []
+	for d in menu:
+		var w: = 2.5 if (Core.day_event == "calor" and (d == "coco_gelado" or d == "suco")) else 1.0
+		ws.append(w)
+		total += w
+	var r: = rng.randf() * total
+	for i in menu.size():
+		r -= float(ws[i])
+		if r <= 0.0:
+			return str(menu[i])
+	return str(menu[menu.size() - 1])
 
 func _items(g) -> Array:
 	return g.get_meta("items", [str(g.get_meta("dish", ""))])
@@ -430,7 +447,10 @@ func _complete_order(g, last_dish: String) -> void :
 			Core.toast.emit(tr("Combo x%d! +R$ %d de gorjeta") % [combo, tip], "good")
 	else:
 		combo = maxi(0, combo - 1)
-	Core.add_rating(Economy.KIOSK_RATING_FAST if fast else Economy.KIOSK_RATING_SLOW)
+	var adj: = Core.price_rating_adjust()
+	Core.add_rating(clampf((Economy.KIOSK_RATING_FAST if fast else Economy.KIOSK_RATING_SLOW) + adj, 1.0, 5.0))
+	if adj <= -0.3 and rng.randf() < 0.4:
+		Core.toast.emit(tr("Cliente reclamou: \"Tá caro!\" Baixe os preços no Cardápio do celular."), "bad")
 	var rev: = int(g.get_meta("revenue", 0))
 	if g.get_meta("vip", false) and rev > 0:
 		var vip_tip: = rev + 5

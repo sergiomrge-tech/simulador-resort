@@ -153,6 +153,8 @@ static func app_for_tab(tab: String) -> String:
 			return "caixa"
 		"expansoes":
 			return "expansoes"
+		"cardapio", "mercado", "album", "missoes":
+			return tab
 	return ""
 
 # ------------------------------------------------------------------ helpers de UI
@@ -435,21 +437,43 @@ func _app_market(list: VBoxContainer) -> void :
 		_lbl(v, tr("Estoque: %d  ·  %s cada") % [int(Core.stock.get(id, 0)), Core.fmt_money(int(sup.cost))] + ("" if used else "  ·  " + tr("ainda não usa")), 14, INK_SOFT, false, true)
 		var cost: = int(sup.cost) * Economy.PACK
 		_btn(r, "+%d\n%s" % [Economy.PACK, Core.fmt_money(cost)], func(): Core.buy_supply(id, Economy.PACK), Color(0.15, 0.72, 0.45), Core.money >= cost)
+		if Economy.SPOIL.has(id):
+			_lbl(c, tr("Estraga %d%% do que sobrar por noite%s") % [int(round(float(Economy.SPOIL[id]) * (0.5 if Core.freezer else 1.0) * 100.0)), tr(" (freezer ligado)") if Core.freezer else ""], 13, BAD if not Core.freezer else INK_SOFT, false, true)
+	var fc: = _card(list, Color(0.9, 1.0, 0.92, 0.95) if Core.freezer else Color(1, 1, 1, 0.94))
+	var fr: = _row(fc, 10)
+	_badge(fr, "gelo", Color(0.2, 0.6, 0.95), 40)
+	var fv: = VBoxContainer.new()
+	fv.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	fr.add_child(fv)
+	_lbl(fv, tr("Freezer"), 18, INK, true)
+	_lbl(fv, tr("Metade do estoque deixa de estragar durante a noite."), 14, INK_SOFT, false, true)
+	if Core.freezer:
+		_lbl(fr, tr("✓ Seu"), 16, GOOD, true)
+	else:
+		_btn(fr, Core.fmt_money(Economy.FREEZER_COST), func(): Core.buy_freezer(), Color(0.2, 0.6, 0.95), Core.money >= Economy.FREEZER_COST)
 
 func _app_menu(list: VBoxContainer) -> void :
+	var ev: = str(Core.day_event)
+	if ev != "":
+		var ec: = _card(list, Color(1.0, 0.96, 0.78, 0.97))
+		_lbl(ec, tr(str(Economy.DAY_EVENTS[ev].name)), 18, INK, true)
+		_lbl(ec, tr(str(Economy.DAY_EVENTS[ev].blurb)), 14, INK_SOFT, false, true)
+	_lbl(list, tr("Ajuste o preço de cada prato: barato atrai mais gente, caro rende mais por cliente mas pode irritar."), 14, INK_SOFT, false, true)
 	for id in Economy.DISHES:
 		var d: Dictionary = Economy.DISHES[id]
 		var ok: = Core.dish_unlocked(id)
 		var c: = _card(list, Color(1, 1, 1, 0.94) if ok else Color(0.92, 0.92, 0.95, 0.9))
 		var r: = _row(c, 10)
 		_expand(_lbl(r, tr(str(d.name)), 18, INK if ok else INK_SOFT, true))
-		_lbl(r, Core.fmt_money(int(d.price)), 18, GOOD if ok else INK_SOFT, true)
+		var price: = Core.price_of(id)
+		_lbl(r, Core.fmt_money(price), 18, GOOD if ok else INK_SOFT, true)
 		var where: = []
 		if id in Core.kiosk_menu():
 			where.append(tr("quiosque"))
 		if Core.has("bar") and id in Core.bar_menu():
 			where.append(tr("bar"))
-		var info: = tr("Custo %s · margem %s") % [Core.fmt_money(Economy.dish_cost(id)), Core.fmt_money(Economy.dish_margin(id))]
+		var margin: = price - Economy.dish_cost(id)
+		var info: = tr("Custo %s · margem %s") % [Core.fmt_money(Economy.dish_cost(id)), Core.fmt_money(margin)]
 		if not ok:
 			info = tr("Bloqueado: compre %s") % tr(str(Economy.EXPANSIONS[Economy.DISH_UNLOCK[id]].name))
 		elif where.is_empty():
@@ -457,6 +481,14 @@ func _app_menu(list: VBoxContainer) -> void :
 		else:
 			info += "  ·  " + ", ".join(where)
 		_lbl(c, info, 14, INK_SOFT, false, true)
+		if ok:
+			var pr: = _row(c, 6)
+			var t: = Core.price_tier_of(id)
+			_btn(pr, "−", func(): Core.set_price_tier(id, t - 1), Color(0.35, 0.55, 0.95), t > 0)
+			var ml: = _lbl(pr, "×%.2f" % float(Economy.PRICE_TIERS[t]), 17, INK, true)
+			ml.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+			_expand(ml)
+			_btn(pr, "+", func(): Core.set_price_tier(id, t + 1), Color(1.0, 0.55, 0.2), t < Economy.PRICE_TIERS.size() - 1)
 		if ok and not Core.can_make(id):
 			_lbl(c, tr("Sem insumos! Compre no Mercado."), 14, BAD, true)
 
