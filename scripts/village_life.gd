@@ -27,6 +27,8 @@ var served_today: = 0
 var goal_paid: = false
 var rush_done: = false
 var rush_left: = 0
+## Preparo em andamento no balcão: {g, dish, stage, p, away}. Vazio = nada sendo preparado.
+var prep: = {}
 
 func _ready() -> void :
 	add_to_group("kiosk")
@@ -63,7 +65,7 @@ func _ready() -> void :
 	cart.set_colors(Color(0.8, 0.58, 0.42), Color(0.9, 0.9, 0.88), Color(0.15, 0.25, 0.5), Color(0.3, 0.18, 0.08))
 	cart.play("Idle_Loop")
 	world.kiosk_counter.prompt_fn = kiosk_prompt
-	world.kiosk_counter.action_fn = kiosk_serve
+	world.kiosk_counter.action_fn = kiosk_action
 	Core.slept.connect(_on_slept)
 
 func _make() -> Node3D:
@@ -103,6 +105,26 @@ func _process(delta: float) -> void :
 		var jitter: = Vector3(rng.randf_range(-0.35, 0.35), 0, rng.randf_range(-0.35, 0.35))
 		g.go([_outside_blocks(path[nxt] + jitter)])
 	_kiosk_tick(dmin)
+	_prep_tick(delta)
+
+## Segurar E no balcão adianta o preparo; se o jogador sai de perto por 2 s, o preparo é perdido.
+func _prep_tick(delta: float) -> void :
+	if prep.is_empty():
+		return
+	if not is_instance_valid(prep.g) or prep.g.state != "kwait":
+		prep = {}
+		return
+	var pl = get_parent().get("player")
+	var on: bool = pl != null and pl.focus == world.kiosk_counter
+	if on:
+		prep.away = 0.0
+		if Input.is_action_pressed("interact"):
+			prep_advance(delta)
+	else:
+		prep.away = float(prep.away) + delta
+		if float(prep.away) > 2.0:
+			prep = {}
+			Core.toast.emit(tr("Preparo cancelado: fique de frente para o balcão."), "info")
 
 func _outside_blocks(p: Vector3) -> Vector3:
 	var rects: Array = world.block_rects
@@ -160,6 +182,16 @@ func spawn_customer() -> Node3D:
 	var menu: Array = Core.kiosk_menu()
 	var dish: String = str(menu[rng.randi() % menu.size()])
 	g.set_meta("dish", dish)
+	# quiosque cheio (ou mesas compradas) = pedidos maiores
+	var items: Array = [dish]
+	var extra_p: = (0.12 if Core.has("kiosk_tables") else 0.0) + 0.1 * float(customers.size())
+	if rng.randf() < minf(extra_p, 0.4):
+		items.append(str(menu[rng.randi() % menu.size()]))
+		if Core.stars() >= 4.0 and rng.randf() < 0.25:
+			items.append(str(menu[rng.randi() % menu.size()]))
+	g.set_meta("items", items)
+	g.set_meta("delivered", 0)
+	g.set_meta("revenue", 0)
 	if rng.randf() < VIP_CHANCE and Core.stars() >= 3.0:
 		g.set_meta("vip", true)
 	var route: Array = [] if from_beach else world.village_points.kiosk_approach.slice(1)
@@ -220,11 +252,11 @@ func _kiosk_tick(dmin: float) -> void :
 					_order(g)
 			"kwait":
 				g.timer -= dmin
-				var urgent: bool = g.timer < KIOSK_PATIENCE * 0.3
+				var urgent: bool = g.timer < _patience(g) * 0.3
 				if urgent and not g.get_meta("urgent", false):
 					g.set_meta("urgent", true)
 					g.show_order(_order_text(g), true)
-				if g.timer < KIOSK_PATIENCE * 0.22:
+				if g.timer < _patience(g) * 0.22:
 					g.play("Sitting_Talking_Loop")
 				else:
 					g.play("Sitting_Idle_Loop")
@@ -248,16 +280,29 @@ func _kiosk_tick(dmin: float) -> void :
 func _order(g) -> void :
 	g.show_menu(false)
 	g.state = "kwait"
-	g.timer = KIOSK_PATIENCE
+	g.timer = _patience(g)
 	g.set_meta("urgent", false)
 	g.show_order(_order_text(g))
 	g.play("Sitting_Talking_Loop")
 
+func _items(g) -> Array:
+	return g.get_meta("items", [str(g.get_meta("dish", ""))])
+
+## Pedidos maiores dão mais tempo para o cliente esperar.
+func _patience(g) -> float:
+	return KIOSK_PATIENCE * (1.0 + 0.45 * float(_items(g).size() - 1))
+
+func _remaining(g) -> Array:
+	return _items(g).slice(int(g.get_meta("delivered", 0)))
+
 func _order_text(g) -> String:
-	var dish: = str(g.get_meta("dish", ""))
-	if dish == "" or not Economy.DISHES.has(dish):
+	var names: Array = []
+	for d in _remaining(g):
+		if Economy.DISHES.has(d):
+			names.append(tr(str(Economy.dish(d).name)))
+	if names.is_empty():
 		return "?"
-	return ("★ " if g.get_meta("vip", false) else "") + tr(str(Economy.dish(dish).name)) + "!"
+	return ("★ " if g.get_meta("vip", false) else "") + " + ".join(names) + "!"
 
 func _leave(g) -> void :
 	g.play("Sitting_Idle_Loop")
@@ -268,25 +313,43 @@ func _leave(g) -> void :
 	g.position.y = 0.1
 	g.go([g.position + Vector3(0, 0, 2.5), Vector3(rng.randf_range(44, 90), 0, rng.randf_range(-25, -21))])
 
-func kiosk_prompt() -> String:
+func _next_customer():
 	var w: = waiting_customers()
 	if w.is_empty():
+		return null
+	# quem está para perder a paciência vai primeiro
+	w.sort_custom( func(a, b): return a.timer < b.timer)
+	return w[0]
+
+func _bar(p: float) -> String:
+	var n: = clampi(int(round(p * 8.0)), 0, 8)
+	return "▰".repeat(n) + "▱".repeat(8 - n)
+
+func kiosk_prompt() -> String:
+	if not prep.is_empty():
+		var st: Array = Economy.DISH_STAGES[prep.dish]
+		return "%s  %s  (%d/%d)  ·  %s" % [tr(str(st[prep.stage][0])), _bar(float(prep.p)), int(prep.stage) + 1, st.size(), tr("segure E")]
+	var g = _next_customer()
+	if g == null:
 		if customers.any(func(c): return c.state == "kchoose"):
 			return tr("Cliente olhando o cardápio...")
 		if not kiosk_open():
 			return tr("Quiosque fechado (abre 08:00–18:00)")
 		return tr("Quiosque: aguardando clientes")
-	var dish: String = str(w[0].get_meta("dish"))
+	var rem: Array = _remaining(g)
+	var dish: String = str(rem[0])
 	var d: Dictionary = Economy.dish(dish)
 	if not Core.can_make(dish):
 		return tr("Sem %s no estoque") % tr(str(d.name))
 	var extra: = ""
-	if w[0].get_meta("vip", false):
+	if rem.size() > 1:
+		extra += "  +%d" % (rem.size() - 1)
+	if g.get_meta("vip", false):
 		extra += "  ★ VIP"
 	if combo >= 2:
 		extra += "  ·  Combo x%d" % combo
 	extra += "  ·  " + tr("Meta %d/%d") % [mini(served_today, daily_goal()), daily_goal()]
-	return tr("Servir %s (%s)") % [tr(str(d.name)), Core.fmt_money(int(d.price))] + extra
+	return tr("Preparar %s (%s)") % [tr(str(d.name)), Core.fmt_money(Core.price_of(dish))] + extra
 
 ## Quantos clientes atender por dia para ganhar a meta: cresce com as expansões compradas.
 func daily_goal() -> int:
@@ -296,18 +359,67 @@ func daily_goal() -> int:
 			n += 1
 	return 8 + 2 * n
 
-func kiosk_serve() -> bool:
-	var w: = waiting_customers()
-	if w.is_empty():
+## Aperta E no balcão: começa o preparo do próximo prato; com o preparo andando, cada toque adianta um pedaço.
+func kiosk_action() -> bool:
+	if not prep.is_empty() and is_instance_valid(prep.g) and prep.g.state == "kwait":
+		prep_advance(Economy.TAP_BURST * _stage_secs())
+		return true
+	prep = {}
+	var g = _next_customer()
+	if g == null:
 		return false
-	var g = w[0]
-	var dish: String = str(g.get_meta("dish"))
+	var dish: String = str(_remaining(g)[0])
 	if not Core.can_make(dish):
 		Core.note_stockout(dish)
+		combo = 0
 		_leave(g)
 		return false
-	var fast: bool = g.timer > KIOSK_PATIENCE * 0.6
-	var tip: = 2 if fast else 0
+	prep = {"g": g, "dish": dish, "stage": 0, "p": 0.0, "away": 0.0}
+	prep_advance(Economy.TAP_BURST * _stage_secs())
+	return true
+
+func _stage_secs() -> float:
+	if prep.is_empty():
+		return 1.0
+	return float(Economy.DISH_STAGES[prep.dish][prep.stage][1])
+
+## Avança o preparo em "sec" segundos de trabalho (segurar E no jogo; o teste chama direto).
+func prep_advance(sec: float) -> void :
+	if prep.is_empty():
+		return
+	var stages: Array = Economy.DISH_STAGES[prep.dish]
+	prep.p = float(prep.p) + sec / float(stages[prep.stage][1])
+	while float(prep.p) >= 1.0 and not prep.is_empty():
+		prep.p = float(prep.p) - 1.0
+		prep.stage = int(prep.stage) + 1
+		get_tree().call_group("audio", "sfx", "click", -10.0, 1.0 + 0.12 * float(prep.stage))
+		if int(prep.stage) >= stages.size():
+			var g = prep.g
+			var dish: String = prep.dish
+			prep = {}
+			_deliver_item(g, dish)
+			return
+
+## Entrega um prato do pedido; o último fecha o atendimento (nota, gorjeta, combo, meta).
+func _deliver_item(g, dish: String) -> bool:
+	if not Core.can_make(dish):
+		Core.note_stockout(dish)
+		combo = 0
+		_leave(g)
+		return false
+	var price: = Core.sell_dish(dish, "kiosk")
+	g.set_meta("revenue", int(g.get_meta("revenue", 0)) + maxi(price, 0))
+	g.set_meta("delivered", int(g.get_meta("delivered", 0)) + 1)
+	get_tree().call_group("audio", "sfx", "glass", -8.0)
+	if _remaining(g).is_empty():
+		_complete_order(g, dish)
+	else:
+		g.show_order(_order_text(g), g.get_meta("urgent", false))
+	return true
+
+func _complete_order(g, last_dish: String) -> void :
+	var fast: bool = g.timer > _patience(g) * 0.6
+	var tip: = (2 if fast else 0) * _items(g).size()
 	if Core.has("kiosk_tables") and fast:
 		tip += 1
 	# sequência: cada atendimento rápido seguido sobe o combo (até x5) e rende gorjeta extra
@@ -318,13 +430,14 @@ func kiosk_serve() -> bool:
 			Core.toast.emit(tr("Combo x%d! +R$ %d de gorjeta") % [combo, tip], "good")
 	else:
 		combo = maxi(0, combo - 1)
-	var price: = Core.sell_dish(dish, "kiosk")
 	Core.add_rating(Economy.KIOSK_RATING_FAST if fast else Economy.KIOSK_RATING_SLOW)
-	if g.get_meta("vip", false) and price > 0:
-		var vip_tip: = price + 5
+	var rev: = int(g.get_meta("revenue", 0))
+	if g.get_meta("vip", false) and rev > 0:
+		var vip_tip: = rev + 5
 		Core.book(vip_tip, tr("Cliente VIP: gorjeta generosa"), "gorjeta", false)
 		Core.add_rating(5.0)
 		Core.toast.emit(tr("Cliente VIP encantado! +R$ %d de gorjeta") % vip_tip, "good")
+		Core.vip_served(g.get_meta("vip_id", ""))
 	if tip > 0:
 		Core.book(tip, tr("Gorjeta do quiosque"), "gorjeta", false)
 	served_today += 1
@@ -339,7 +452,17 @@ func kiosk_serve() -> bool:
 	g.show_order("")
 	g.state = "keat"
 	g.set_meta("eat", rng.randf_range(EAT_MIN.x, EAT_MIN.y))
-	g.consume(dish != "petiscos")
+	g.consume(last_dish != "petiscos")
+
+## Serve o pedido inteiro de uma vez (atendente contratado e testes).
+func kiosk_serve() -> bool:
+	var g = _next_customer()
+	if g == null:
+		return false
+	prep = {}
+	for d in _remaining(g).duplicate():
+		if g.state != "kwait" or not _deliver_item(g, str(d)):
+			return false
 	return true
 
 ## Atendente contratado: serve o primeiro cliente esperando (chamado por Core a cada HELPER_MINUTES).
@@ -359,3 +482,4 @@ func _on_slept(_d: int) -> void :
 	goal_paid = false
 	rush_done = false
 	rush_left = 0
+	prep = {}

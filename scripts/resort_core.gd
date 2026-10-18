@@ -484,6 +484,14 @@ func note_stockout(id: String) -> void :
 		name = str(Economy.dish(id).name)
 	toast.emit(tr("Sem estoque para %s") % tr(name), "bad")
 
+## Preço de venda atual do prato (v0.7.5: o jogador ajusta pelo celular).
+func price_of(id: String) -> int:
+	return int(Economy.dish(id).price)
+
+## Chamado quando um cliente VIP é atendido (álbum de clientes famosos).
+func vip_served(_id: String) -> void :
+	pass
+
 func sell_dish(id: String, channel: String) -> int:
 	if not Economy.DISHES.has(id):
 		return -1
@@ -494,7 +502,7 @@ func sell_dish(id: String, channel: String) -> int:
 	for ing in uses:
 		stock[ing] = int(stock[ing]) - int(uses[ing])
 	stock_changed.emit()
-	var price: = int(Economy.dish(id).price)
+	var price: = price_of(id)
 	if channel == "bar" and bool(staff.get("bartender", false)):
 		price = int(round(float(price) * (1.0 + Economy.BARTENDER_MARKUP)))
 	var nm: = str(Economy.dish(id).name)

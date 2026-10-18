@@ -140,6 +140,14 @@ const DISHES: = {
 	"petiscos": {"name": "Petiscos", "price": 26, "uses": {"peixe": 1, "pao": 1, "frutas": 1}}, 
 	"suco": {"name": "Suco da fruta", "price": 14, "uses": {"frutas": 2, "gelo": 1}}, 
 }
+## Preparo no balcão (v0.7.5): etapas por prato [rótulo, segundos segurando E]. Cada toque em E adianta um pedaço.
+const DISH_STAGES: = {
+	"coco_gelado": [["Cortar o coco", 1.0]],
+	"suco": [["Espremer as frutas", 1.0], ["Misturar com gelo", 0.8]],
+	"caipirinha": [["Amassar o limão", 0.8], ["Pôr cachaça e gelo", 0.8], ["Agitar a coqueteleira", 1.0]],
+	"petiscos": [["Fritar o peixe", 1.4], ["Montar o prato", 0.9]],
+}
+const TAP_BURST: = 0.16
 const KIOSK_MENU: = ["coco_gelado", "suco", "caipirinha", "petiscos"]
 const BAR_MENU: = ["coco_gelado", "caipirinha", "petiscos", "suco"]
 const PACK: = 6

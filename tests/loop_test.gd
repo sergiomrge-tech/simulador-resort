@@ -184,9 +184,16 @@ func run(m) -> void :
 	check(kc != null and await wait_until( func(): return kc.state == "kwait", 30.0), "cliente esperando no balcão")
 	var km0: = Core.money
 	var kp: String = await aim(main.world.KIOSK_C + Vector3(0, 0.12, 0.4), 180.0, -32.0)
-	if check(kp.begins_with("Servir"), "prompt do quiosque: '%s'" % kp):
+	if check(kp.begins_with("Preparar"), "prompt do quiosque: '%s'" % kp):
 		main.player.interact()
-	check(Core.kiosk_sales_count == 1 and Core.money > km0, "venda no quiosque: %s" % Core.fmt_money(Core.money - km0, true))
+		check(not main.village.prep.is_empty(), "preparo começou ao apertar E")
+		var tries: = 0
+		while kc.state == "kwait" and tries < 8:
+			if main.village.prep.is_empty():
+				main.village.kiosk_action()
+			main.village.prep_advance(30.0)
+			tries += 1
+	check(Core.kiosk_sales_count >= 1 and Core.money > km0, "venda no quiosque: %s (%d itens)" % [Core.fmt_money(Core.money - km0, true), Core.kiosk_sales_count])
 	check(kc.state == "keat", "cliente atendido fica comendo/bebendo")
 	check(main.village.served_today == 1, "contador de atendimentos do dia: %d" % main.village.served_today)
 	check(main.village.daily_goal() >= 8, "meta diária: %d clientes" % main.village.daily_goal())

@@ -1,0 +1,29 @@
+MARÉ ALTA RESORT — v0.7.4
+=========================
+Abra pelo atalho "Maré Alta Resort" na área de trabalho ou no menu Iniciar.
+Saves, configurações e cache ficam em userdata\ dentro da pasta do jogo.
+
+NOVO NA 0.7.4
+- JOGABILIDADE: sequência de atendimentos rápidos vira COMBO (até x5) com gorjeta extra; clientes VIP (balão
+  dourado com ★) pagam gorjeta generosa e dão nota máxima; um ônibus de turistas chega uma vez por dia (11h–15h)
+  e enche o quiosque; META DO DIA (atender 8+ clientes, cresce com as expansões) paga R$ 40. O prompt do balcão
+  mostra combo e progresso da meta.
+- CASAS: reboco pintado com manchas e relevo, telhas de barro em fileiras, soleira de pedra, verga com pedra-chave,
+  mísulas sob as janelas, marquise de telha sobre as portas; tábuas com veio e pregos, azulejo e calçamento de pedra.
+- Texturas do Poly Haven que faltavam (areia, azulejo, rocha, copa da serra) voltaram.
+
+NOVO NA 0.7.3
+- CORRIGIDO: paredes e móveis transparentes (as caixas estavam com as faces do avesso).
+- CORRIGIDO: chão tremendo ao andar (linhas de contorno tracejadas e degraus entre os caminhos).
+- CORRIGIDO: objetos flutuando (garrafas e rádio do quiosque agora numa prateleira, pranchas num suporte,
+  cordas dos vasos e cocos até a viga, bicicleta remontada, rede com cordas certas).
+- Móveis da casa mais detalhados: cama com cabeceira de ripas e colcha de retalhos, criado-mudo com gavetas,
+  abajur, armário com portas almofadadas, mesa com toalhinha, fogão com forno.
+- Pessoas novas, com corpo, rosto e cabelo reais (Quaternius, CC0): 8 estilos de cabelo, barba, chapéus, camisas e
+  bermudas estampadas, e as animações de sentar, comer e beber.
+- Metade dos pedestres na vila; pedestres contornam mesas e cadeiras.
+- Configurações > Vídeo: API gráfica (Vulkan ou DirectX 12) e Upscaling (FSR 1.0 / FSR 2.2).
+  Obs.: o DLSS da NVIDIA não existe na engine Godot; o FSR 2.2 faz o mesmo papel em qualquer placa.
+
+Controles: WASD · mouse · E interagir · B celular · Shift correr · Esc pausa/voltar · F11 tela cheia
+Dica de desempenho: Configurações > Vídeo > Upscaling FSR 2.2 e Escala 3D entre 67% e 77% se o FPS cair.
