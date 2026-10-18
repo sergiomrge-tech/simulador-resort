@@ -5,6 +5,9 @@ class_name D
 
 const FLAG_COLS: = [Color(1.0, 0.3, 0.3), Color(1.0, 0.82, 0.2), Color(0.2, 0.7, 1.0), Color(0.35, 0.85, 0.4), Color(1.0, 0.5, 0.8), Color(0.65, 0.4, 0.95), Color(1.0, 0.6, 0.2)]
 
+const ANIMAL_YAW: = -PI * 0.5   # modelos Quaternius olham para +X
+const CRAB_YAW: = 0.0
+
 static func m(c: Color, r: = 0.85) -> Material:
 	return B.flat(c, r)
 
@@ -149,8 +152,10 @@ static func surfboard(parent: Node, p: Vector3, rot: float, col: Color, lean: = 
 		h.rotation.x = -PI * 0.5
 
 static func towel(parent: Node, p: Vector3, rot: float, a: Color, b: Color) -> void :
-	for i in 5:
-		B.box(parent, Vector3(0.9, 0.012, 0.34), p + Vector3(0, 0.01, 0).rotated(Vector3.UP, rot) + Vector3(-0.68 + i * 0.34, 0, 0).rotated(Vector3.UP, rot + PI * 0.5), m(a if i % 2 == 0 else b), false, rot)
+	# toalha de pano ondulado com listras (modelo gerado no Blender: tools/gen_beach_props.py), cor = mistura das duas cores
+	var h: = Real.place(parent, "g:towel", p, 0.0, rot, a.lerp(b, 0.25), 1.9)
+	if h == null:
+		B.box(parent, Vector3(0.9, 0.012, 1.9), p + Vector3(0, 0.01, 0), m(a), false, rot)
 
 static func coconut_pile(parent: Node, p: Vector3, n: = 9) -> void :
 	# cocos reais (Kenney CC0) empilhados em pirâmide
@@ -215,19 +220,15 @@ static func open_sign(parent: Node, p: Vector3, rot: float) -> Label3D:
 
 # ------------------------------------------------------------------ praia
 static func sand_castle(parent: Node, p: Vector3) -> void :
-	var sand: = m(Color(0.95, 0.8, 0.52))
-	B.cyl(parent, 0.45, 0.55, 0.3, p + Vector3(0, 0.15, 0), sand, 12)
-	for k in 4:
-		var a: = TAU * k / 4.0 + 0.4
-		B.cyl(parent, 0.13, 0.15, 0.45, p + Vector3(cos(a) * 0.36, 0.42, sin(a) * 0.36), sand, 8)
-		B.cyl(parent, 0.0, 0.14, 0.15, p + Vector3(cos(a) * 0.36, 0.72, sin(a) * 0.36), sand, 8)
-	B.cyl(parent, 0.18, 0.2, 0.55, p + Vector3(0, 0.55, 0), sand, 8)
-	B.cyl(parent, 0.008, 0.008, 0.3, p + Vector3(0, 0.95, 0), m(Color(0.4, 0.3, 0.2)), 4)
-	B.box(parent, Vector3(0.14, 0.09, 0.01), p + Vector3(0.07, 1.05, 0), m(Color(1.0, 0.3, 0.3)))
-	var bucket: = B.cyl(parent, 0.1, 0.08, 0.14, p + Vector3(0.75, 0.07, 0.2), m(Color(1.0, 0.85, 0.2), 0.4), 10)
-	bucket.rotation.z = 1.2
-	var shovel: = B.box(parent, Vector3(0.04, 0.4, 0.02), p + Vector3(0.6, 0.03, -0.4), m(Color(0.2, 0.6, 1.0), 0.4))
-	shovel.rotation = Vector3(PI * 0.5, 0.6, 0)
+	# castelo de areia modelado no Blender (tools/gen_beach_props.py) + balde e pá reais
+	var h: = Real.place(parent, "g:sandcastle", p, 1.1, 0.4)
+	if h == null:
+		return
+	var fl: = Real.place(parent, "k:flag-pennant", p + Vector3(0.0, 1.05, 0.0), 0.35, 0.0, Color(1.0, 0.4, 0.35))
+	Real.place(parent, "wooden_bucket_02", p + Vector3(0.85, 0.0, 0.25), 0.2, 0.5, Color(1.0, 0.85, 0.25))
+	var sh: = Real.place(parent, "k:tool-paddle", p + Vector3(0.7, 0.03, -0.45), 0.0, 0.6, Color(0.5, 0.8, 1.0), 0.4)
+	if sh:
+		sh.rotation.x = PI * 0.5 - 0.05
 
 static func starfish(parent: Node, p: Vector3, col: = Color(1.0, 0.5, 0.35)) -> void :
 	Real.place(parent, "lambis_shell", p, 0.13, p.x * 3.0, col.lerp(Color.WHITE, 0.6))
@@ -237,15 +238,10 @@ static func crab(parent: Node, p: Vector3, range_m: = 1.6) -> Node3D:
 	c.position = p
 	c.rotation.y = randf() * TAU
 	parent.add_child(c)
-	var red: = m(Color(1.0, 0.35, 0.25), 0.6)
-	B.sphere(c, 0.09, Vector3(0, 0.06, 0), red, Vector3(1.3, 0.55, 1.0))
-	for sx in [-1.0, 1.0]:
-		B.sphere(c, 0.04, Vector3(sx * 0.13, 0.07, 0.07), red, Vector3(1.2, 0.8, 1.0))
-		B.sphere(c, 0.018, Vector3(sx * 0.035, 0.12, 0.06), m(Color.WHITE, 0.4))
-		B.sphere(c, 0.009, Vector3(sx * 0.035, 0.125, 0.075), m(Color(0.05, 0.05, 0.05), 0.3))
-		for k in 3:
-			var leg: = B.box(c, Vector3(0.08, 0.012, 0.012), Vector3(sx * 0.1, 0.03, -0.03 + k * 0.03), red)
-			leg.rotation.z = sx * 0.4
+	# caranguejo real (OpenGameArt, CC0), de lado como os caranguejos andam
+	var h: = Real.place(c, "g:crab", Vector3.ZERO, 0.0, 0.0, Color(0.9, 0.62, 0.55), 0.34)
+	if h:
+		h.rotation.y = CRAB_YAW
 	if parent.is_inside_tree():
 		_crab_walk(c, range_m)
 	else:
@@ -291,8 +287,8 @@ static func beach_spot(parent: Node, p: Vector3, seed_: int) -> void :
 	var r: = rng.randf() * TAU
 	towel(parent, p + Vector3(cos(r) * 1.2, 0, sin(r) * 1.2), r, c2, Color.WHITE)
 	towel(parent, p + Vector3(cos(r + 1.2) * 1.3, 0, sin(r + 1.2) * 1.3), r + 1.2, c1, Color(1.0, 0.95, 0.6))
-	B.box(parent, Vector3(0.45, 0.32, 0.3), p + Vector3(cos(r + 2.8) * 0.8, 0.16, sin(r + 2.8) * 0.8), m(Color(0.95, 0.95, 0.98)), false, r)
-	B.box(parent, Vector3(0.47, 0.06, 0.32), p + Vector3(cos(r + 2.8) * 0.8, 0.34, sin(r + 2.8) * 0.8), m(Color(0.2, 0.55, 0.95)), false, r)
+	var cp: = p + Vector3(cos(r + 2.8) * 0.8, 0, sin(r + 2.8) * 0.8)
+	Real.place(parent, "plastic_crate_02", cp, 0.32, r, Color(0.8, 0.9, 1.0))
 
 # ------------------------------------------------------------------ vila
 ## Poste de luz de madeira com cruzeta (os fios são ligados com wire()).
@@ -323,10 +319,10 @@ static func stall(parent: Node, p: Vector3, rot: float, awning: Color, goods: Ar
 	piv.position = p
 	piv.rotation.y = rot
 	parent.add_child(piv)
-	var wood: = m(Color(0.75, 0.52, 0.3))
+	var wood: = B.mat("weathered_planks", 0.6, Color(1.0, 0.85, 0.65), 0.85)
 	for sx in [-1.0, 1.0]:
 		for sz in [-1.0, 1.0]:
-			B.cyl(piv, 0.04, 0.04, 2.3, Vector3(sx * 1.2, 1.15, sz * 0.7), wood, 6)
+			B.cyl(piv, 0.045, 0.05, 2.3, Vector3(sx * 1.2, 1.15, sz * 0.7), wood, 16)
 	B.box(piv, Vector3(2.5, 0.08, 1.5), Vector3(0, 0.85, 0), wood)
 	B.box(piv, Vector3(2.5, 0.75, 0.05), Vector3(0, 0.45, 0.72), m(Color(0.95, 0.9, 0.78)))
 	for i in 6:
@@ -336,44 +332,43 @@ static func stall(parent: Node, p: Vector3, rot: float, awning: Color, goods: Ar
 		B.box(piv, Vector3(0.44, 0.22, 0.02), Vector3(-1.1 + i * 0.44, 2.2, 0.99), m(awning if i % 2 == 0 else Color.WHITE))
 	var rng: = RandomNumberGenerator.new()
 	rng.seed = int(p.x * 7.0 + p.z * 3.0)
-	for k in 10:
-		var g: Color = goods[k % goods.size()]
-		B.sphere(piv, rng.randf_range(0.07, 0.11), Vector3(-1.0 + (k % 5) * 0.5, 0.97, -0.25 + (k / 5) * 0.4), m(g, 0.6))
-	B.box(piv, Vector3(0.3, 0.2, 0.3), Vector3(0.9, 0.99, -0.4), m(Color(0.9, 0.7, 0.4)))
+	# frutas reais (Poly Haven / Kenney, CC0) em cestas e soltas no balcão; cada barraca vende 3 tipos
+	var kinds: = ["k:orange", "food_apple_01", "food_lime_01", "lemon", "food_pomegranate_01", "food_lychee_01", "food_avocado_01", "food_pears_asian_01", "food_kiwi_01"]
+	var base_k: = int(absf(p.x) * 0.37) % kinds.size()
+	var hs: = {"k:orange": 0.1, "food_apple_01": 0.1, "food_lime_01": 0.08, "lemon": 0.09, "food_pomegranate_01": 0.1, "food_lychee_01": 0.06, "food_avocado_01": 0.11, "food_pears_asian_01": 0.11, "food_kiwi_01": 0.06}
+	for bi in 3:
+		var key: String = kinds[(base_k + bi * 2) % kinds.size()]
+		var bx: = -0.85 + bi * 0.85
+		Real.place(piv, "wicker_basket_02", Vector3(bx, 0.89, -0.2), 0.16, rng.randf() * TAU, Color.WHITE, 0.55)
+		for f in 6:
+			var ang: = rng.randf() * TAU
+			var rr: = rng.randf() * 0.16
+			Real.place(piv, key, Vector3(bx + cos(ang) * rr, 1.0 + (f % 2) * 0.05, -0.2 + sin(ang) * rr), float(hs[key]), rng.randf() * TAU)
+	Real.place(piv, "wooden_crate_02", Vector3(0.9, 0.89, -0.4), 0.0, 0.2, Color.WHITE, 0.4)
 
 static func mailbox(parent: Node, p: Vector3, rot: float) -> void :
 	B.cyl(parent, 0.04, 0.04, 1.0, p + Vector3(0, 0.5, 0), m(Color(0.4, 0.3, 0.2)), 6)
 	B.box(parent, Vector3(0.3, 0.25, 0.42), p + Vector3(0, 1.1, 0), m(Color(1.0, 0.85, 0.2)), false, rot)
 
 static func cat(parent: Node, p: Vector3, rot: float, col: Color) -> void :
+	# gato real (Quaternius Animal Pack Vol.2, CC0, suavizado no Blender)
 	var piv: = Node3D.new()
 	piv.position = p
 	piv.rotation.y = rot
 	parent.add_child(piv)
-	B.sphere(piv, 0.13, Vector3(0, 0.13, 0), m(col), Vector3(1.0, 0.85, 1.4))
-	B.sphere(piv, 0.09, Vector3(0, 0.24, 0.16), m(col))
-	for sx in [-1.0, 1.0]:
-		var ear: = B.cyl(piv, 0.0, 0.035, 0.07, Vector3(sx * 0.05, 0.33, 0.16), m(col), 4)
-		ear.rotation.z = - sx * 0.2
-		B.sphere(piv, 0.018, Vector3(sx * 0.035, 0.26, 0.24), m(Color(0.3, 0.8, 0.3), 0.3))
-	var tail: = B.cyl(piv, 0.02, 0.025, 0.3, Vector3(0, 0.22, -0.2), m(col), 6)
-	tail.rotation.x = -0.6
+	var h: = Real.place(piv, "g:cat", Vector3.ZERO, 0.42, ANIMAL_YAW, Color.WHITE.lerp(col, 0.35))
+	if h == null:
+		B.sphere(piv, 0.13, Vector3(0, 0.13, 0), m(col), Vector3(1.0, 0.85, 1.4))
 
 static func dog(parent: Node, p: Vector3, rot: float, col: Color) -> void :
+	# cachorro real (Quaternius Animal Pack Vol.2, CC0, suavizado no Blender)
 	var piv: = Node3D.new()
 	piv.position = p
 	piv.rotation.y = rot
 	parent.add_child(piv)
-	B.sphere(piv, 0.18, Vector3(0, 0.32, 0), m(col), Vector3(1.0, 0.9, 1.6))
-	B.sphere(piv, 0.13, Vector3(0, 0.5, 0.28), m(col))
-	B.sphere(piv, 0.05, Vector3(0, 0.47, 0.41), m(col.darkened(0.2)), Vector3(1, 0.8, 1.2))
-	B.sphere(piv, 0.02, Vector3(0, 0.49, 0.46), m(Color(0.05, 0.05, 0.05)))
-	for sx in [-1.0, 1.0]:
-		B.sphere(piv, 0.05, Vector3(sx * 0.1, 0.52, 0.25), m(col.darkened(0.3)), Vector3(0.6, 1.4, 0.6))
-		for sz in [-1.0, 1.0]:
-			B.cyl(piv, 0.035, 0.035, 0.26, Vector3(sx * 0.09, 0.13, sz * 0.15), m(col), 6)
-	var tail: = B.cyl(piv, 0.02, 0.03, 0.22, Vector3(0, 0.45, -0.3), m(col), 6)
-	tail.rotation.x = -0.9
+	var h: = Real.place(piv, "g:dog", Vector3.ZERO, 0.62, ANIMAL_YAW, Color.WHITE.lerp(col, 0.5))
+	if h == null:
+		B.sphere(piv, 0.18, Vector3(0, 0.32, 0), m(col), Vector3(1.0, 0.9, 1.6))
 
 # ------------------------------------------------------------------ marcos
 ## Píer de madeira mar adentro (from = ponta na areia, para -Z).
@@ -399,18 +394,19 @@ static func pier(parent: Node, from: Vector3, length: float, width: = 2.4) -> vo
 
 ## Farol listrado com a luz que gira à noite. Devolve o nó da lanterna (o mundo gira e acende).
 static func lighthouse(parent: Node, p: Vector3) -> Node3D:
-	var rock: = m(Color(0.58, 0.55, 0.62))
+	# base de pedras reais (Poly Haven, CC0) em volta e sob o farol
+	var rks: = ["coast_land_rocks_02", "coast_rocks_03", "coast_rocks_05", "coast_land_rocks_03", "coast_rocks_02", "coast_rocks_03"]
 	for k in 6:
 		var a: = TAU * k / 6.0
-		B.sphere(parent, 2.4 - (k % 2) * 0.6, p + Vector3(cos(a) * 3.0, 0.2, sin(a) * 3.0), rock, Vector3(1.2, 0.6, 1.0))
-	B.sphere(parent, 3.4, p + Vector3(0, -0.6, 0), rock, Vector3(1.0, 0.5, 1.0))
+		Real.place(parent, rks[k], p + Vector3(cos(a) * 3.0, -0.4, sin(a) * 3.0), 2.6 - (k % 2) * 0.5, a * 1.7, Color(0.95, 0.93, 1.0))
+	Real.place(parent, "coast_rocks_05", p + Vector3(0, -0.7, 0), 2.6, 0.5, Color(0.95, 0.93, 1.0), 6.8)
 	var h: = 14.0
 	var bands: = 7
 	for i in bands:
 		var t0: = float(i) / bands
 		var r0: = lerpf(1.6, 1.05, t0)
 		var r1: = lerpf(1.6, 1.05, float(i + 1) / bands)
-		B.cyl(parent, r1, r0, h / bands, p + Vector3(0, 1.0 + (float(i) + 0.5) * h / bands, 0), m(Color(0.95, 0.25, 0.22) if i % 2 == 0 else Color(0.98, 0.97, 0.94)), 18)
+		B.cyl(parent, r1, r0, h / bands, p + Vector3(0, 1.0 + (float(i) + 0.5) * h / bands, 0), B.mat("white_plaster", 0.5, Color(1.0, 0.45, 0.4) if i % 2 == 0 else Color(1.0, 0.99, 0.96), 0.8), 32)
 	var top: = p + Vector3(0, 1.0 + h, 0)
 	B.cyl(parent, 1.5, 1.5, 0.2, top + Vector3(0, 0.1, 0), m(Color(0.2, 0.22, 0.25)), 18)
 	B.cyl(parent, 0.85, 0.85, 1.3, top + Vector3(0, 0.85, 0), m(Color(0.85, 0.95, 1.0, 0.5), 0.1), 14)

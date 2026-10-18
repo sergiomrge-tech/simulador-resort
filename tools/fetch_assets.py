@@ -232,6 +232,25 @@ def quaternius_nature():
                 f.write(z.read(n))
     print("qnat ok", len(os.listdir(out)))
 
+def animals_gen():
+    """Gato/cachorro (Quaternius Animal Pack Vol.2, CC0) e caranguejo ("methodical pixel", CC0) pelo OpenGameArt -> assets/models/gen/*.glb
+    (suavizados no Blender por tools/smooth_animals.py / convert_crab.py); toalha e castelo de areia saem de tools/gen_beach_props.py."""
+    import zipfile, io, tempfile
+    gen = f"{A}/models/gen"
+    os.makedirs(gen, exist_ok=True)
+    tmp = tempfile.mkdtemp(prefix="animais_")
+    if FORCE or not (os.path.exists(f"{gen}/cat.glb") and os.path.exists(f"{gen}/dog.glb")):
+        z = zipfile.ZipFile(io.BytesIO(get("https://opengameart.org/sites/default/files/Animal%20Pack%20Vol.2%20by%20%40Quaternius.zip")))
+        z.extractall(tmp)
+        blends = os.path.join(tmp, "Animal Pack Vol.2 by @Quaternius", "Blends")
+        subprocess.check_call([sys.executable, os.path.join(ROOT, "tools", "smooth_animals.py"), blends, gen, "Cat", "Dog"])
+    if FORCE or not os.path.exists(f"{gen}/crab.glb"):
+        z = zipfile.ZipFile(io.BytesIO(get("https://opengameart.org/sites/default/files/crab_0.zip")))
+        z.extractall(tmp)
+        subprocess.check_call([sys.executable, os.path.join(ROOT, "tools", "convert_crab.py"), os.path.join(tmp, "crab", "crab.blend"), f"{gen}/crab.glb"])
+    if FORCE or not os.path.exists(f"{gen}/towel.glb"):
+        subprocess.check_call([sys.executable, os.path.join(ROOT, "tools", "gen_beach_props.py")])
+
 def ambientcg(asset, name):
     import zipfile, io
     dst = f"{A}/tex_hd/{name}_diff.jpg"
@@ -266,6 +285,7 @@ def main():
             futs += [ex.submit(model, s, "2k", "models_hd") for s in MODELS + MODELS_EXTRA + MODELS_HD_ONLY]
             futs += [ex.submit(kenney, u, n) for u, n in KENNEY.items()]
             futs.append(ex.submit(quaternius_nature))
+            futs.append(ex.submit(animals_gen))
         errs = 0
         for f in futs:
             try:

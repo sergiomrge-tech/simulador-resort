@@ -116,3 +116,6 @@ glTF 1k em `assets/models/` (normal/ARM reduzidos para 512) e glTF 2k em `assets
 - **Poly Haven (CC0)**: frutas (lemon, food_apple_01, food_lime_01, food_lychee_01, bananas...), croissant, jarros, vasos, cestos de vime, caixotes, móveis, plantas e pedras listados em `MODELS_EXTRA` de `tools/fetch_assets.py`. https://polyhaven.com
 - **Kenney Food Kit e Pirate Kit (CC0)**: coco, drinque, frappé, taça, peixe, pão, abacaxi, garrafas, barcos a remo, palmeiras, barris. https://kenney.nl — suavizados no Blender por `tools/smooth_kenney.py`.
 - **Quaternius — Stylized Nature MegaKit [Standard] (CC0)**: arbustos, samambaias, plantas, flores, árvores e pedras (`assets/models/qnat/`, chave `q:Nome`). https://quaternius.com/packs/stylizednaturemegakit.html
+- **Quaternius — Animal Pack Vol.2 (CC0)**: gato e cachorro (`assets/models/gen/cat.glb`, `dog.glb`), do .blend original, suavizados por `tools/smooth_animals.py`. https://opengameart.org/content/animated-animales-low-poly
+- **"methodical pixel" — Crab low poly (CC0)**: caranguejo (`assets/models/gen/crab.glb`, `tools/convert_crab.py`). https://opengameart.org/content/crab-low-poly-animated-3d-model
+- **Gerados no Blender** (não existem prontos grátis): toalha de praia e castelo de areia (`tools/gen_beach_props.py`), prancha de surfe (`tools/gen_surfboard.py`).
