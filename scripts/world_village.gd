@@ -190,24 +190,108 @@ func _street() -> void :
 		bench_spots.append({"pos": spot[0] + Vector3(0, 0.05, 0), "rot": spot[1], "anim": "Sitting_Idle_Loop", "busy": false})
 
 func _facade(c: Vector3, n: Vector3, half: float, offset: float, kind: String, col: Color, base_y: = 0.0) -> void :
-
+	# v0.7.2: portas almofadadas com bandeira e degrau; janelas com caixilho em cruz e venezianas ripadas
 	var t: = Vector3( - n.z, 0, n.x)
 	var rot: = atan2(n.x, n.z)
 	var p: = c + n * (half + 0.03) + t * offset
+	var leaf_m: = wood_tint(col)
+	var dark: = wood_tint(col.darkened(0.35))
+	var piv: = Node3D.new()
+	piv.position = p + Vector3(0, base_y, 0)
+	piv.rotation.y = rot
+	add_child(piv)
 	if kind == "door":
-		B.box(self, Vector3(1.3, 2.45, 0.08), p + Vector3(0, base_y + 1.22, 0), VM.trim, false, rot)
-		B.box(self, Vector3(1.05, 2.25, 0.1), p + Vector3(0, base_y + 1.12, 0) + n * 0.02, wood_tint(col), false, rot)
-		B.box(self, Vector3(0.5, 0.05, 0.04), p + Vector3(0, base_y + 1.6, 0) + n * 0.08, VM.door, false, rot)
+		B.box(piv, Vector3(1.36, 2.95, 0.1), Vector3(0, 1.47, 0), VM.trim)
+		B.box(piv, Vector3(1.05, 2.2, 0.1), Vector3(0, 1.1, 0.03), leaf_m)
+		for py in [0.55, 1.15, 1.75]:
+			for px in [-0.24, 0.24]:
+				B.box(piv, Vector3(0.36, 0.42, 0.04), Vector3(px, py, 0.09), dark)
+				B.box(piv, Vector3(0.28, 0.34, 0.04), Vector3(px, py, 0.11), leaf_m)
+		B.sphere(piv, 0.04, Vector3(0.38, 1.05, 0.14), B.flat(Color(0.95, 0.78, 0.3), 0.25, 0.6))
+		B.box(piv, Vector3(1.05, 0.45, 0.06), Vector3(0, 2.48, 0.02), VM.glass)
+		for k in 3:
+			B.box(piv, Vector3(0.03, 0.42, 0.05), Vector3(-0.26 + k * 0.26, 2.48, 0.06), VM.trim)
+		B.box(piv, Vector3(1.6, 0.14, 0.5), Vector3(0, 0.07, 0.26), VM.curb)
+		# numero da casa e luminária de parede
+		var num: = absi(int(c.x * 3.0 + c.z)) % 300 + 1
+		B.box(piv, Vector3(0.24, 0.18, 0.03), Vector3(-0.9, 1.9, 0.04), B.flat(Color(0.15, 0.4, 0.75), 0.4))
+		var nl: = B.label(piv, str(num), Vector3(-0.9, 1.9, 0.062), 32, Color.WHITE, Color(0.1, 0.25, 0.5, 1))
+		nl.pixel_size = 0.004
+		B.box(piv, Vector3(0.08, 0.08, 0.2), Vector3(0.9, 2.55, 0.1), dark)
+		B.cyl(piv, 0.09, 0.07, 0.22, Vector3(0.9, 2.45, 0.22), VM.glass, 10)
+		B.cyl(piv, 0.11, 0.02, 0.08, Vector3(0.9, 2.6, 0.22), dark, 10)
 	else:
-		B.box(self, Vector3(1.35, 1.6, 0.08), p + Vector3(0, base_y + 1.75, 0), VM.trim, false, rot)
-		B.box(self, Vector3(1.1, 1.35, 0.06), p + Vector3(0, base_y + 1.75, 0) + n * 0.01, VM.glass, false, rot)
-		for s in [-1.0, 1.0]:
+		B.box(piv, Vector3(1.4, 1.65, 0.1), Vector3(0, 1.75, 0), VM.trim)
+		B.box(piv, Vector3(1.1, 1.35, 0.06), Vector3(0, 1.75, 0.01), VM.glass)
+		# caixilho em cruz
+		B.box(piv, Vector3(0.05, 1.35, 0.06), Vector3(0, 1.75, 0.04), VM.trim)
+		B.box(piv, Vector3(1.1, 0.05, 0.06), Vector3(0, 1.9, 0.04), VM.trim)
+		B.box(piv, Vector3(1.62, 0.09, 0.24), Vector3(0, 0.95, 0.08), VM.trim)
+		B.box(piv, Vector3(1.55, 0.12, 0.14), Vector3(0, 2.62, 0.04), VM.trim)
+		# venezianas abertas com ripas
+		for sd in [-1.0, 1.0]:
 			var hinge: = Node3D.new()
-			hinge.position = p + t * s * 0.62 + Vector3(0, base_y + 1.75, 0) + n * 0.02
-			hinge.rotation.y = rot + s * 1.05
-			add_child(hinge)
-			B.box(hinge, Vector3(0.5, 1.28, 0.04), Vector3(s * 0.25, 0, 0.02), wood_tint(col))
-		B.box(self, Vector3(1.5, 0.08, 0.2), p + Vector3(0, base_y + 0.98, 0) + n * 0.06, VM.trim, false, rot)
+			hinge.position = Vector3(sd * 0.64, 1.75, 0.04)
+			hinge.rotation.y = sd * 1.05
+			piv.add_child(hinge)
+			B.box(hinge, Vector3(0.52, 1.32, 0.035), Vector3(sd * 0.26, 0, 0.02), leaf_m)
+			for k in 9:
+				var slat: = B.box(hinge, Vector3(0.42, 0.06, 0.03), Vector3(sd * 0.26, -0.52 + k * 0.13, 0.045), dark)
+				slat.rotation.x = 0.5
+		# grade de ferro baixinha
+		var iron: = B.flat(Color(0.12, 0.12, 0.14), 0.5, 0.4)
+		B.box(piv, Vector3(1.2, 0.03, 0.03), Vector3(0, 1.32, 0.14), iron)
+		for k in 7:
+			B.box(piv, Vector3(0.025, 0.32, 0.025), Vector3(-0.54 + k * 0.18, 1.16, 0.14), iron)
+
+## Detalhes extras de uma casa: cornija dupla, faixa colorida, caibros, calha, chaminé, antena, ar-condicionado.
+func _house_extras(c: Vector3, w: float, d: float, h: float, front: float, col: Color, shutter: Color) -> void :
+	var rng: = RandomNumberGenerator.new()
+	rng.seed = int(c.x * 17.0 + c.z * 5.0)
+	B.box(self, Vector3(w + 0.06, 0.26, d + 0.06), c + Vector3(0, h - 0.45, 0), stucco(shutter.lightened(0.45)))
+	B.box(self, Vector3(w + 0.32, 0.1, d + 0.32), c + Vector3(0, h + 0.06, 0), VM.trim)
+	# caibros aparentes sob o beiral (frente e fundos)
+	var xfs: = []
+	var k: = - w * 0.5 - 0.6
+	while k <= w * 0.5 + 0.6:
+		for sz in [-1.0, 1.0]:
+			xfs.append(Transform3D(Basis(), c + Vector3(k, h + 0.0, sz * (d * 0.5 + 0.45))))
+		k += 0.55
+	var rm: = BoxMesh.new()
+	rm.size = Vector3(0.09, 0.12, 0.9)
+	D.multimesh(self, rm, xfs, [], wood_tint(Color(0.5, 0.3, 0.16)))
+	# calha e cano na frente
+	var gz: = c.z + front * (d * 0.5 + 0.86)
+	var gm: = B.flat(Color(0.88, 0.88, 0.85), 0.5, 0.3)
+	var gut: = B.cyl(self, 0.06, 0.06, w + 1.7, Vector3(c.x, h + 0.02, gz), gm, 12)
+	gut.rotation.z = PI * 0.5
+	B.cyl(self, 0.045, 0.045, h, Vector3(c.x + w * 0.5 + 0.8, h * 0.5, gz), gm, 10)
+	if rng.randf() < 0.45:
+		var chx: = c.x + rng.randf_range(- w * 0.25, w * 0.25)
+		B.box(self, Vector3(0.6, 1.4, 0.6), Vector3(chx, h + 1.6, c.z - front * d * 0.18), stucco(col.darkened(0.15)))
+		B.box(self, Vector3(0.75, 0.12, 0.75), Vector3(chx, h + 2.35, c.z - front * d * 0.18), VM.trim)
+	if rng.randf() < 0.3:
+		var ax: = c.x - w * 0.3
+		var az: = c.z
+		B.cyl(self, 0.02, 0.02, 1.6, Vector3(ax, h + 2.4, az), gm, 6)
+		for j in 4:
+			var bar: = B.box(self, Vector3(0.9 - j * 0.15, 0.02, 0.02), Vector3(ax, h + 2.8 + j * 0.15, az), gm)
+			bar.rotation.y = 0.3
+	if rng.randf() < 0.35:
+		var side: = 1.0 if rng.randf() < 0.5 else -1.0
+		B.box(self, Vector3(0.28, 0.5, 0.75), Vector3(c.x + side * (w * 0.5 + 0.16), 2.4, c.z), B.flat(Color(0.95, 0.95, 0.95), 0.5))
+		var grille: = B.cyl(self, 0.2, 0.2, 0.03, Vector3(c.x + side * (w * 0.5 + 0.31), 2.4, c.z), B.flat(Color(0.3, 0.3, 0.32), 0.5), 16)
+		grille.rotation.z = PI * 0.5
+	# relógio de luz ao lado da porta
+	B.box(self, Vector3(0.35, 0.45, 0.14), c + Vector3(- w * 0.42 * front, 1.5, front * (d * 0.5 + 0.08)), B.flat(Color(0.75, 0.78, 0.8), 0.5))
+	# vaso pendurado
+	if rng.randf() < 0.5:
+		var vp: = c + Vector3(w * 0.1 * front, 2.6, front * (d * 0.5 + 0.35))
+		B.cyl(self, 0.005, 0.005, 0.5, vp + Vector3(0, 0.25, 0), B.flat(Color(0.3, 0.25, 0.2)), 4)
+		B.cyl(self, 0.14, 0.1, 0.18, vp, B.flat(Color(0.85, 0.45, 0.3), 0.8), 14)
+		for j in 5:
+			var lf: = B.sphere(self, 0.07, vp + Vector3(cos(j) * 0.12, -0.05 - (j % 2) * 0.12, sin(j) * 0.12), B.flat(Color(0.3, 0.72, 0.3)))
+			lf.scale = Vector3(1, 1.5, 1)
 
 func _house(c: Vector3, w: float, d: float, front: float, col: Color, shutter: Color, porch: bool, sign_text: = "") -> void :
 	var h: = 3.5
@@ -227,6 +311,7 @@ func _house(c: Vector3, w: float, d: float, front: float, col: Color, shutter: C
 	_facade(c, Vector3(1, 0, 0), w * 0.5, 0.0, "window", shutter)
 	_facade(c, Vector3(-1, 0, 0), w * 0.5, 0.0, "window", shutter)
 	B.hip_roof(self, c + Vector3(0, h + 0.05, 0), w + 1.75, d + 1.75, 2.05, VM.clay, 0.14)
+	_house_extras(c, w, d, h, front, col, shutter)
 	_block(c, w, d, 0.4)
 	_occlude(c, w * 0.9, d * 0.9, h * 0.9)
 	var win_x: = c.x - w * 0.22

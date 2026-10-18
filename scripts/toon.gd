@@ -132,6 +132,7 @@ static func material(n: String, scale: float, tint: Color, rough: float) -> Stan
 	if _mats.has(key):
 		return _mats[key]
 	var m: = _base(resolve_color(n, tint), rough)
+	m.resource_name = n
 	var tex: = pattern(pattern_kind(n))
 	if tex:
 		m.albedo_texture = tex

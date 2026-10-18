@@ -210,7 +210,142 @@ static func platform(parent: Node, size: Vector3, pos: Vector3, m: Material, bev
 	return mi
 
 
+static var _roofs: = {}
+
+## Telhado de quatro águas detalhado (v0.7.2): telhas de barro em fileiras onduladas com cumeeira
+## e espigões, ou sapê em camadas desfiadas. O estilo vem do material (nome da textura antiga).
 static func hip_roof(parent: Node, center: Vector3, w: float, d: float, peak: float, m: Material, thickness: = 0.18) -> MeshInstance3D:
+	var style: = ""
+	if Toon.enabled() and m:
+		if m.resource_name == "clay_roof_tiles_02":
+			style = "clay"
+		elif m.resource_name == "reed_roof_04":
+			style = "thatch"
+	if style == "":
+		return _hip_roof_flat(parent, center, w, d, peak, m, thickness)
+	var key: = "%s|%d|%d|%d|%d" % [style, roundi(w * 4.0), roundi(d * 4.0), roundi(peak * 4.0), roundi(thickness * 50.0)]
+	if not _roofs.has(key):
+		_roofs[key] = _detailed_roof_mesh(w, d, peak, thickness, style)
+	var mi: = MeshInstance3D.new()
+	mi.mesh = _roofs[key]
+	mi.material_override = m
+	mi.position = center
+	parent.add_child(mi)
+	var hx: = w * 0.5
+	var hz: = d * 0.5
+	var ridge: = maxf(0.0, (w - d) * 0.5)
+	var cap_m: Material = flat(Color(0.85, 0.36, 0.24), 0.8) if style == "clay" else flat(Color(0.78, 0.55, 0.26), 0.95)
+	var cap_r: = 0.09 if style == "clay" else 0.16
+	var r1: = Vector3(- ridge, peak, 0)
+	var r2: = Vector3(ridge, peak, 0)
+	if ridge > 0.05:
+		_beam(mi, r1, r2, cap_r, cap_m)
+	for pair in [[Vector3(- hx, 0, - hz), r1], [Vector3(- hx, 0, hz), r1], [Vector3(hx, 0, - hz), r2], [Vector3(hx, 0, hz), r2]]:
+		_beam(mi, pair[0], pair[1] + Vector3(0, 0.02, 0), cap_r * 0.8, cap_m)
+	return mi
+
+## Peça cilíndrica arredondada entre dois pontos (cumeeira, espigão, viga).
+static func _beam(parent: Node, a: Vector3, b: Vector3, r: float, m: Material) -> MeshInstance3D:
+	var mi: = MeshInstance3D.new()
+	var cm: = CapsuleMesh.new()
+	cm.radius = r
+	cm.height = a.distance_to(b) + r * 2.0
+	cm.radial_segments = 16
+	cm.rings = 4
+	mi.mesh = cm
+	mi.material_override = m
+	parent.add_child(mi)
+	var dir: = (b - a).normalized()
+	var up: = Vector3.UP if absf(dir.dot(Vector3.UP)) < 0.95 else Vector3.RIGHT
+	var bas: = Basis.looking_at(dir, up)
+	mi.transform = Transform3D(bas * Basis(Vector3.RIGHT, PI * 0.5), (a + b) * 0.5)
+	return mi
+
+static func _detailed_roof_mesh(w: float, d: float, peak: float, thickness: float, style: String) -> Mesh:
+	var hx: = w * 0.5
+	var hz: = d * 0.5
+	var ridge: = maxf(0.0, (w - d) * 0.5)
+	var a: = Vector3(- hx, 0, - hz)
+	var b_: = Vector3(hx, 0, - hz)
+	var c: = Vector3(hx, 0, hz)
+	var dd: = Vector3(- hx, 0, hz)
+	var r1: = Vector3(- ridge, peak, 0)
+	var r2: = Vector3(ridge, peak, 0)
+	# [base0, base1, topo0, topo1]
+	var faces: = [[a, b_, r1, r2], [b_, c, r2, r2], [c, dd, r2, r1], [dd, a, r1, r1]]
+	var st: = SurfaceTool.new()
+	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var tile_w: = 0.26 if style == "clay" else 0.5
+	var course: = 0.34 if style == "clay" else 0.3
+	for f in faces:
+		var p0: Vector3 = f[0]
+		var p1: Vector3 = f[1]
+		var q0: Vector3 = f[2]
+		var q1: Vector3 = f[3]
+		var L: = p0.distance_to(p1)
+		var S: = ((p0 + p1) * 0.5).distance_to((q0 + q1) * 0.5)
+		var n: Vector3 = (p1 - p0).cross(q0.lerp(q1, 0.5) - p0).normalized()
+		if n.y < 0:
+			n = - n
+		var nu: = clampi(int(L / tile_w * (4.0 if style == "clay" else 1.5)), 6, 220)
+		var nv: = clampi(int(S / course * 3.0), 4, 80)
+		var grid: = []
+		for j in nv + 1:
+			var v: = float(j) / nv
+			var row: = []
+			for i in nu + 1:
+				var u: = float(i) / nu
+				var base: = p0.lerp(p1, u).lerp(q0.lerp(q1, u), v)
+				var along: = u * L
+				var up_s: = v * S
+				var fcourse: = fposmod(up_s / course, 1.0)
+				var disp: = 0.0
+				if style == "clay":
+					disp = 0.045 * absf(sin(PI * along / tile_w)) + 0.028 * (1.0 - fcourse)
+				else:
+					var jag: = 0.5 + 0.5 * sin(along * 7.3 + floor(up_s / course) * 2.1) * sin(along * 3.1)
+					disp = 0.07 * pow(1.0 - fcourse, 1.6) * (0.6 + 0.4 * jag)
+				# perto da borda e do topo a ondulação some (para fechar com a cumeeira e o beiral)
+				disp *= clampf(v * 12.0, 0.25, 1.0) * clampf((1.0 - v) * 10.0, 0.0, 1.0)
+				row.append(base + n * disp)
+			grid.append(row)
+		for j in nv:
+			for i in nu:
+				var q: = [grid[j][i], grid[j][i + 1], grid[j + 1][i + 1], grid[j + 1][i]]
+				var fn: Vector3 = (q[1] - q[0]).cross(q[3] - q[0])
+				var flip: = fn.dot(n) < 0.0
+				var tris: = [[0, 1, 2], [0, 2, 3]] if not flip else [[0, 2, 1], [0, 3, 2]]
+				for t in tris:
+					var tn: Vector3 = (q[t[1]] - q[t[0]]).cross(q[t[2]] - q[t[0]]).normalized()
+					if tn.length() < 0.5:
+						tn = n
+					tn = tn.lerp(n, 0.35).normalized()
+					for k in t:
+						st.set_normal(tn)
+						st.set_uv(Vector2(q[k].x + q[k].z, q[k].y) * 0.55)
+						st.add_vertex(q[k])
+		# lado de baixo (forro) e a espessura do beiral
+		var u0: = p0 - Vector3(0, thickness, 0)
+		var u1: = p1 - Vector3(0, thickness, 0)
+		var w0: = q0 - Vector3(0, thickness, 0)
+		var w1: = q1 - Vector3(0, thickness, 0)
+		for tri in [[u0, w0, u1], [u1, w0, w1]]:
+			for vv in tri:
+				st.set_normal(Vector3.DOWN)
+				st.set_uv(Vector2(vv.x, vv.z) * 0.55)
+				st.add_vertex(vv)
+		var en: = (p1 - p0).cross(Vector3.DOWN).normalized()
+		for vv in [p0, u0, p1, p1, u0, u1]:
+			st.set_normal(en)
+			st.set_uv(Vector2(vv.x + vv.z, vv.y * 3.0) * 0.55)
+			st.add_vertex(vv)
+	var arr: = st.commit_to_arrays()
+	var im: = ImporterMesh.new()
+	im.add_surface(Mesh.PRIMITIVE_TRIANGLES, arr)
+	im.generate_lods(25.0, 60.0, [])
+	return im.get_mesh()
+
+static func _hip_roof_flat(parent: Node, center: Vector3, w: float, d: float, peak: float, m: Material, thickness: = 0.18) -> MeshInstance3D:
 	var st: = SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
 	var hx: = w * 0.5

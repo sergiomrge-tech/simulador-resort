@@ -62,8 +62,8 @@ func setup(parent: Node3D) -> void :
 	sun.shadow_enabled = true
 	sun.directional_shadow_mode = DirectionalLight3D.SHADOW_PARALLEL_2_SPLITS
 	sun.directional_shadow_max_distance = 45.0
-	sun.shadow_bias = 0.04
-	sun.shadow_normal_bias = 1.2
+	sun.shadow_bias = 0.08
+	sun.shadow_normal_bias = 2.0
 	sun.shadow_blur = 1.2
 	parent.add_child(sun)
 	moon = DirectionalLight3D.new()

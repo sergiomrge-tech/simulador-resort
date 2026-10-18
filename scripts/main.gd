@@ -60,6 +60,15 @@ const SHOTS: = {
 	"pier": [Vector3(72.0, 0.3, -23.5), 0.0, -3.0, 17.3], 
 	"farol_noite": [Vector3(88.0, 0.2, -27.0), -56.0, 6.0, 20.6], 
 	"mesas": [Vector3(37.0, 1.2, -1.0), 10.0, -18.0, 10.5], 
+	"quiosque_ext": [Vector3(44.0, 0.2, -4.0), 33.7, -8.0, 11.0], 
+	"bar_ext": [Vector3(20.0, 0.2, -6.0), 45.0, -8.0, 11.0], 
+	"recepcao_ext": [Vector3(6.0, 0.2, 27.0), 28.6, -6.0, 11.0], 
+	"bangalo_ext": [Vector3(-6.0, 0.2, -1.0), 48.8, -6.0, 11.0], 
+	"casa_vila": [Vector3(57.0, 0.2, 29.0), 20.6, -2.0, 11.0], 
+	"padaria": [Vector3(74.0, 0.2, 29.5), 20.0, -2.0, 11.0], 
+	"igreja": [Vector3(70.0, 0.2, 36.5), -159.0, 8.0, 11.0], 
+	"barraca": [Vector3(66.0, 0.2, -12.0), 26.6, -8.0, 11.0], 
+	"farol": [Vector3(95.0, 0.2, -27.0), -60.0, 10.0, 11.0], 
 	"noite_vila": [Vector3(49.0, 1.58, 30.15), -77.9, 1.2, 21.2], 
 	"serra_dia": [Vector3(58.0, 2.2, 28.5), -175.0, 12.2, 10.8], 
 	"serra_praia": [Vector3(8.0, 2.0, -24.0), -165.4, 9.3, 11.2], 
@@ -295,7 +304,7 @@ func _run_shot(n: String) -> void :
 	if args.has("hidehud"):
 		hud.visible = false
 
-	if n in ["resort", "neon", "bar", "piscina", "recepcao", "bangalo", "interior", "upgrade", "bangalo_up", "npc_bar", "npc_anda", "npc_senta", "entrada", "noite", "praia"] or args.has("full"):
+	if n in ["quiosque_ext", "bar_ext", "recepcao_ext", "bangalo_ext", "resort", "neon", "bar", "piscina", "recepcao", "bangalo", "interior", "upgrade", "bangalo_up", "npc_bar", "npc_anda", "npc_senta", "entrada", "noite", "praia"] or args.has("full"):
 		Core.unlock_all()
 		if Core.rooms.size() < 2:
 			Core.reset_rooms(2)
