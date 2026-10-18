@@ -6,13 +6,51 @@ instance uniform vec4 shirt : source_color = vec4(0.9, 0.3, 0.3, 1.0);
 instance uniform vec4 shorts : source_color = vec4(0.2, 0.3, 0.6, 1.0);
 instance uniform vec4 hair : source_color = vec4(0.1, 0.07, 0.05, 1.0);
 uniform vec4 sandals : source_color = vec4(0.25, 0.15, 0.08, 1.0);
+// v0.7.3: estampa da camisa (0 lisa, 1 listras, 2 bolinhas, 3 floral havaiana, 4 xadrez) e cor secundária
+instance uniform float pattern = 0.0;
+instance uniform vec4 shirt2 : source_color = vec4(1.0, 1.0, 1.0, 1.0);
+instance uniform float shorts_pattern = 0.0;
 varying float zone;
-void vertex(){ zone = COLOR.r * 255.0 / 32.0; }
+varying vec3 opos;
+void vertex(){ zone = COLOR.r * 255.0 / 32.0; opos = VERTEX; }
+
+float flower(vec2 p) {
+	vec2 g = fract(p) - 0.5;
+	float a = atan(g.y, g.x);
+	float r = length(g);
+	float petals = 0.22 + 0.09 * cos(a * 5.0);
+	float f = 1.0 - smoothstep(petals - 0.02, petals, r);
+	float center = 1.0 - smoothstep(0.06, 0.08, r);
+	return max(f, center * 2.0);
+}
 void fragment(){
 	vec3 c = skin.rgb;
 	float r = 0.6;
-	if (zone > 0.5 && zone < 1.5) { c = shirt.rgb; r = 0.85; }
-	else if (zone > 1.5 && zone < 2.5) { c = shorts.rgb; r = 0.9; }
+	if (zone > 0.5 && zone < 1.5) {
+		c = shirt.rgb; r = 0.85;
+		int pt = int(pattern + 0.5);
+		if (pt == 1) {
+			c = mix(c, shirt2.rgb, step(0.5, fract(opos.y * 14.0)));
+		} else if (pt == 2) {
+			vec2 q = vec2(opos.x * 18.0 + opos.z * 18.0, opos.y * 18.0);
+			c = mix(c, shirt2.rgb, 1.0 - step(0.28, length(fract(q) - 0.5)));
+		} else if (pt == 3) {
+			vec2 q = vec2(opos.x * 9.0 + opos.z * 9.0, opos.y * 9.0);
+			float f = flower(q) + flower(q + vec2(0.5, 0.37));
+			c = mix(c, shirt2.rgb, clamp(f, 0.0, 1.0));
+			c = mix(c, vec3(1.0, 0.92, 0.3), step(1.5, f));
+		} else if (pt == 4) {
+			float a = step(0.5, fract(opos.x * 8.0 + opos.z * 8.0));
+			float b = step(0.5, fract(opos.y * 8.0));
+			c = mix(c, shirt2.rgb, (a + b) * 0.35);
+		}
+	}
+	else if (zone > 1.5 && zone < 2.5) {
+		c = shorts.rgb; r = 0.9;
+		if (shorts_pattern > 0.5) {
+			c = mix(c, c * 0.7 + vec3(0.25), step(0.82, fract((opos.x + opos.z) * 6.0)) );
+		}
+	}
 	else if (zone > 2.5 && zone < 3.5) { c = hair.rgb; r = 0.5; }
 	else if (zone > 3.5) { c = sandals.rgb; r = 0.7; }
 	// v0.7 cartoon: cores um pouco mais saturadas

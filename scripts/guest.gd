@@ -44,6 +44,9 @@ var _mesh_insts: Array = []
 var _skin: = Color(0.8, 0.6, 0.45)
 var _face: Node3D
 var _rng_seed: = 0
+var _hair_col: = Color(0.1, 0.07, 0.05)
+var _skin_parts: Array = []
+var _hair_parts: Array = []
 
 
 const WALK_REF: = 1.05
@@ -85,8 +88,15 @@ func setup(id: int, rng: RandomNumberGenerator) -> void :
 
 func set_colors(skin: Color, shirt: Color, shorts: Color, hair: Color) -> void :
 	_skin = skin
+	_hair_col = hair
 	if _face and _face.has_meta("nose"):
 		(_face.get_meta("nose") as MeshInstance3D).material_override = B.flat(skin.darkened(0.06), 0.7)
+	for n in _skin_parts:
+		if is_instance_valid(n):
+			n.material_override = B.flat(skin.darkened(0.04), 0.7)
+	for n in _hair_parts:
+		if is_instance_valid(n):
+			n.material_override = B.flat(hair.lightened(0.05), 0.55)
 	for mi in _mesh_insts:
 		mi.set_instance_shader_parameter("skin", skin)
 		mi.set_instance_shader_parameter("shirt", shirt)
@@ -797,6 +807,7 @@ func _caricature(rng: RandomNumberGenerator) -> void :
 		var corner: = B.box(_face, Vector3(0.016, 0.01, 0.01), Vector3(sx * 0.031, 0.064, 0.087), B.flat(Color(0.55, 0.12, 0.15), 0.6))
 		corner.rotation.z = sx * 0.6
 	var roll: = rng.randf()
+	_people_details(rng, roll < 0.62)
 	if roll < 0.3:
 		var straw: = B.flat(Color(0.98, 0.84, 0.45), 0.9)
 		B.cyl(_face, 0.24, 0.24, 0.018, Vector3(0, 0.215, 0.0), straw, 18)
@@ -870,3 +881,106 @@ func consume(drink: bool) -> void :
 	_consume_drink = drink
 	play("Eat")
 	_set_eating(true)
+
+
+# ------------------------------------------------------------------ v0.7.3: gente com mais detalhe
+const HAIR_STYLES: = ["curto", "franja", "rabo", "coque", "black", "longo", "careca", "topete"]
+const PRINT_COLS: = [Color(1, 1, 1), Color(1.0, 0.9, 0.3), Color(0.15, 0.2, 0.35), Color(1.0, 0.45, 0.6), Color(0.3, 0.85, 0.75)]
+
+## Cabelo com volume, orelhas, cílios, bigode/barba, brincos e colar; estampa da roupa e altura variada.
+func _people_details(rng: RandomNumberGenerator, has_hat: bool) -> void :
+	if _face == null or _skel == null:
+		return
+	var skin_m: = B.flat(_skin.darkened(0.04), 0.7)
+	var hair_m: = B.flat(_hair_col.lightened(0.05), 0.55)
+	var black: = B.flat(Color(0.06, 0.05, 0.08), 0.3)
+	# orelhas
+	for sx in [-1.0, 1.0]:
+		var ear: = B.sphere(_face, 0.03, Vector3(sx * 0.105, 0.105, -0.005), skin_m, Vector3(0.45, 0.85, 0.65))
+		_skin_parts.append(ear)
+	# cabelo
+	var style: String = HAIR_STYLES[rng.randi() % HAIR_STYLES.size()]
+	if has_hat and style in ["black", "coque", "topete"]:
+		style = "curto"
+	var parts: = []
+	match style:
+		"curto":
+			parts.append(B.sphere(_face, 0.118, Vector3(0, 0.14, -0.012), hair_m, Vector3(1.0, 0.72, 1.06)))
+		"franja":
+			parts.append(B.sphere(_face, 0.12, Vector3(0, 0.14, -0.012), hair_m, Vector3(1.02, 0.75, 1.06)))
+			var fr: = B.box(_face, Vector3(0.17, 0.05, 0.05), Vector3(0, 0.185, 0.085), hair_m)
+			fr.rotation.x = -0.4
+			parts.append(fr)
+		"rabo":
+			parts.append(B.sphere(_face, 0.12, Vector3(0, 0.14, -0.012), hair_m, Vector3(1.02, 0.74, 1.06)))
+			var tie: = B.sphere(_face, 0.03, Vector3(0, 0.13, -0.12), B.flat(PRINT_COLS[rng.randi() % PRINT_COLS.size()], 0.5))
+			parts.append(B.sphere(_face, 0.05, Vector3(0, 0.06, -0.15), hair_m, Vector3(0.8, 1.9, 0.8)))
+			tie.name = "Xuxinha"
+		"coque":
+			parts.append(B.sphere(_face, 0.118, Vector3(0, 0.14, -0.012), hair_m, Vector3(1.0, 0.72, 1.06)))
+			parts.append(B.sphere(_face, 0.06, Vector3(0, 0.25, -0.07), hair_m))
+		"black":
+			parts.append(B.sphere(_face, 0.165, Vector3(0, 0.17, -0.03), hair_m, Vector3(1.05, 0.95, 1.0)))
+			for k in 10:
+				var a: = TAU * k / 10.0
+				parts.append(B.sphere(_face, 0.06, Vector3(cos(a) * 0.14, 0.17 + sin(a * 2.0) * 0.04, sin(a) * 0.12 - 0.03), hair_m))
+		"longo":
+			parts.append(B.sphere(_face, 0.122, Vector3(0, 0.14, -0.012), hair_m, Vector3(1.04, 0.76, 1.08)))
+			parts.append(B.box(_face, Vector3(0.22, 0.26, 0.06), Vector3(0, 0.0, -0.1), hair_m))
+			for sx in [-1.0, 1.0]:
+				parts.append(B.box(_face, Vector3(0.04, 0.2, 0.08), Vector3(sx * 0.105, 0.03, -0.04), hair_m))
+		"topete":
+			parts.append(B.sphere(_face, 0.115, Vector3(0, 0.14, -0.02), hair_m, Vector3(1.0, 0.68, 1.0)))
+			var top: = B.sphere(_face, 0.07, Vector3(0, 0.22, 0.05), hair_m, Vector3(1.1, 0.8, 1.4))
+			top.rotation.x = -0.4
+			parts.append(top)
+		_:
+			pass
+	_hair_parts.append_array(parts)
+	# cílios, bigode/barba, brincos
+	if rng.randf() < 0.45:
+		for sx in [-1.0, 1.0]:
+			var lash: = B.box(_face, Vector3(0.05, 0.008, 0.01), Vector3(sx * 0.04, 0.152, 0.098), black)
+			lash.rotation.z = sx * 0.25
+	var facial: = rng.randf()
+	if facial < 0.15:
+		var mus: = B.box(_face, Vector3(0.07, 0.018, 0.02), Vector3(0, 0.072, 0.098), hair_m)
+		mus.name = "Bigode"
+		_hair_parts.append(mus)
+	elif facial < 0.25:
+		var beard: = B.sphere(_face, 0.085, Vector3(0, 0.05, 0.035), hair_m, Vector3(1.15, 0.75, 0.9))
+		_hair_parts.append(beard)
+	if rng.randf() < 0.3:
+		var gold: = B.flat(Color(1.0, 0.82, 0.3), 0.25, 0.7)
+		for sx in [-1.0, 1.0]:
+			B.sphere(_face, 0.012, Vector3(sx * 0.108, 0.07, 0.0), gold)
+	# colar de contas no pescoço
+	if rng.randf() < 0.25:
+		var att: = BoneAttachment3D.new()
+		att.bone_name = "neck_01"
+		_skel.add_child(att)
+		var bead_c: Color = PRINT_COLS[rng.randi() % PRINT_COLS.size()]
+		for k in 12:
+			var a: = TAU * k / 12.0
+			B.sphere(att, 0.012, Vector3(cos(a) * 0.075, -0.03 + absf(sin(a * 0.5)) * -0.03, sin(a) * 0.07 + 0.01), B.flat(bead_c if k % 2 == 0 else Color(1, 1, 1), 0.4))
+	# estampa da roupa
+	var pat: = 0.0
+	var roll: = rng.randf()
+	if roll < 0.2:
+		pat = 1.0
+	elif roll < 0.32:
+		pat = 2.0
+	elif roll < 0.48:
+		pat = 3.0
+	elif roll < 0.56:
+		pat = 4.0
+	var p2: Color = PRINT_COLS[rng.randi() % PRINT_COLS.size()]
+	for mi in _mesh_insts:
+		mi.set_instance_shader_parameter("pattern", pat)
+		mi.set_instance_shader_parameter("shirt2", p2)
+		mi.set_instance_shader_parameter("shorts_pattern", 1.0 if rng.randf() < 0.3 else 0.0)
+	# altura variada
+	var h: = rng.randf_range(0.92, 1.08)
+	for c in get_children():
+		if c is Node3D and c.find_children("*", "Skeleton3D", true, false).size() > 0:
+			(c as Node3D).scale = Vector3(lerpf(1.0, h, 0.6), h, lerpf(1.0, h, 0.6))

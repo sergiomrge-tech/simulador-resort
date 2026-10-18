@@ -69,6 +69,7 @@ const SHOTS: = {
 	"igreja": [Vector3(70.0, 0.2, 36.5), -159.0, 8.0, 11.0], 
 	"barraca": [Vector3(66.0, 0.2, -12.0), 26.6, -8.0, 11.0], 
 	"farol": [Vector3(95.0, 0.2, -27.0), -60.0, 10.0, 11.0], 
+	"galera": [Vector3(30.0, -0.35, -15.0), 0.0, -2.0, 10.5], 
 	"noite_vila": [Vector3(49.0, 1.58, 30.15), -77.9, 1.2, 21.2], 
 	"serra_dia": [Vector3(58.0, 2.2, 28.5), -175.0, 12.2, 10.8], 
 	"serra_praia": [Vector3(8.0, 2.0, -24.0), -165.4, 9.3, 11.2], 
@@ -333,6 +334,12 @@ func _run_shot(n: String) -> void :
 					else:
 						c.show_order(village._order_text(c))
 						c.play("Sitting_Idle_Loop")
+		if n == "galera":
+			for k in 8:
+				var gg = guests._make_guest()
+				gg.position = Vector3(26.6 + k * 0.95, 0.0, -19.0)
+				gg.rotation.y = 0.0
+				gg.play("Idle_Loop" if k % 3 else "Idle_Talking_Loop")
 		if n == "npc_bar":
 			_eat_at_bar()
 		if n == "npc_anda":
