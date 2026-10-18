@@ -66,5 +66,7 @@ Base de trabalho: v0.6.5 recuperada; versões atuais em `project.godot` / `expor
 2. Erros já cometidos: função duplicada no mesmo arquivo (`oil_lamp`); `var w: = M.algo` sem tipo (use `var w: Material = ...`).
 3. Prints: `./shot.sh nome` ou câmera livre com `--cam=x,y,z,yaw,pitch[,hora]` (ver `main.gd`). Olhe de perto paredes, móveis, pessoas e chão.
 4. `tests/loop_test.gd` precisa dar LOOP_TEST PASS.
-5. Versão em `project.godot`, `export_presets.cfg` e `installer/setup.nsi`; depois exporte, rode o `makensis`, entregue no PC e faça o push.
-6. Arquivos acima de 30 MB para o PC: primeiro `SendUserFile`, depois commit com o `fileUuid`.
+5. **Assets baixados não vão no git** (`assets/tex*`, `assets/models/**/*.gltf` ficam no `.gitignore`). Antes de exportar, rode `python3 tools/fetch_assets.py` e `godot --headless --import`; sem isso o instalador sai sem texturas ("Resource file not found: res://assets/tex/...") e o log do `shot` mostra o erro. Confira com `grep -c "not found" shots/X.log` = 0.
+6. Móveis do Poly Haven (cama gótica preta etc.) testados no lugar dos construídos por código: destoam da paleta colorida. Em modo toon os de `props.gd` têm prioridade; não troque sem comparar render lado a lado.
+7. Versão em `project.godot`, `export_presets.cfg` e `installer/setup.nsi`; depois exporte, rode o `makensis`, entregue no PC e faça o push.
+8. Arquivos acima de 30 MB para o PC: primeiro `SendUserFile`, depois commit com o `fileUuid`.
