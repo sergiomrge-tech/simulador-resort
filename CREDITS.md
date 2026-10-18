@@ -111,3 +111,7 @@ glTF 1k em `assets/models/` (normal/ARM reduzidos para 512) e glTF 2k em `assets
 | `rattan` (Wicker002, 2K) em `assets/tex*/rattan_*` | https://ambientcg.com/a/Wicker002 | CC0 |
 | Fonte Nunito (`assets/fonts/Nunito.ttf`, texto da licença em `assets/fonts/OFL.txt`) | https://fonts.google.com/specimen/Nunito — Vernon Adams, Cyreal, Jacques Le Bailly | SIL Open Font License 1.1 |
 | Ícones da interface (`assets/ui/icons/*.svg`) | https://game-icons.net — autores Delapouite e Lorc (lista em `assets/ui/icons/CREDITS.txt`) | CC BY 3.0 (atribuição obrigatória; fundo preto removido) |
+
+## v0.8 — modelos reais (regra "nada de bolas e quadrados")
+- **Poly Haven (CC0)**: frutas (lemon, food_apple_01, food_lime_01, food_lychee_01, bananas...), croissant, jarros, vasos, cestos de vime, caixotes, móveis, plantas e pedras listados em `MODELS_EXTRA` de `tools/fetch_assets.py`. https://polyhaven.com
+- **Kenney Food Kit e Pirate Kit (CC0)**: coco, drinque, frappé, taça, peixe, pão, abacaxi, garrafas, barcos a remo, palmeiras, barris. https://kenney.nl — suavizados no Blender por `tools/smooth_kenney.py`.

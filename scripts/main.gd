@@ -312,6 +312,16 @@ func _run_shot(n: String) -> void :
 		player.set_view(s[0], s[1], s[2])
 	if args.has("hidehud"):
 		hud.visible = false
+	if args.has("noroof"):
+		# depuração: esconde telhado e bandeirinhas do quiosque para ver o balcão de cima
+		await get_tree().process_frame
+		for gi in world.find_children("*", "GeometryInstance3D", true, false):
+			var gp: Vector3 = gi.global_position
+			var gb: AABB = gi.get_aabb() if gi is MeshInstance3D else AABB()
+			var top: float = gp.y + gb.position.y + gb.size.y
+			var bot: float = gp.y + gb.position.y
+			if absf(gp.x - 38.0) < 5.5 and absf(gp.z + 11.0) < 5.5 and (bot > 1.9 or gi is MultiMeshInstance3D or (top > 2.2 and gb.size.x > 3.0)):
+				gi.visible = false
 
 	if n in ["quiosque_ext", "bar_ext", "recepcao_ext", "bangalo_ext", "resort", "neon", "bar", "piscina", "recepcao", "bangalo", "interior", "upgrade", "bangalo_up", "npc_bar", "npc_anda", "npc_senta", "entrada", "noite", "praia"] or args.has("full"):
 		Core.unlock_all()

@@ -151,10 +151,9 @@ static func towel(parent: Node, p: Vector3, rot: float, a: Color, b: Color) -> v
 		B.box(parent, Vector3(0.9, 0.012, 0.34), p + Vector3(0, 0.01, 0).rotated(Vector3.UP, rot) + Vector3(-0.68 + i * 0.34, 0, 0).rotated(Vector3.UP, rot + PI * 0.5), m(a if i % 2 == 0 else b), false, rot)
 
 static func coconut_pile(parent: Node, p: Vector3, n: = 9) -> void :
+	# cocos reais (Kenney CC0) empilhados em pirâmide
 	var rng: = RandomNumberGenerator.new()
 	rng.seed = int(p.x * 31.0 + p.z)
-	var green: = m(Color(0.42, 0.68, 0.2), 0.6)
-	var brown: = m(Color(0.55, 0.36, 0.2), 0.7)
 	var layer: = 0
 	var placed: = 0
 	while placed < n:
@@ -164,61 +163,42 @@ static func coconut_pile(parent: Node, p: Vector3, n: = 9) -> void :
 				break
 			var a: = TAU * k / cnt + layer
 			var r: = 0.0 if cnt == 1 else 0.3 - layer * 0.1
-			B.sphere(parent, 0.15, p + Vector3(cos(a) * r, 0.13 + layer * 0.22, sin(a) * r), green if rng.randf() < 0.75 else brown, Vector3(1, 1.1, 1))
+			var tint: = Color(1.0, 1.0, 1.0) if rng.randf() < 0.75 else Color(0.85, 0.7, 0.55)
+			Real.place(parent, "k:coconut", p + Vector3(cos(a) * r, layer * 0.2, sin(a) * r), 0.24, rng.randf() * TAU, tint)
 			placed += 1
 		layer += 1
 
 static func bananas(parent: Node, p: Vector3) -> void :
-	B.cyl(parent, 0.012, 0.012, 0.5, p + Vector3(0, 0.25, 0), m(Color(0.5, 0.35, 0.2)), 4)
-	for k in 7:
-		var a: = TAU * k / 7.0
-		var b: = B.cyl(parent, 0.03, 0.022, 0.2, p + Vector3(cos(a) * 0.07, -0.05 - (k % 3) * 0.05, sin(a) * 0.07), m(Color(1.0, 0.86, 0.25), 0.5), 6)
-		b.rotation = Vector3(cos(a) * 0.5, 0, - sin(a) * 0.5)
+	# cesto de vime pendurado na viga por uma corda grossa, com bananas reais dentro
+	B.cyl(parent, 0.014, 0.014, 0.5, p + Vector3(0, 0.25, 0), m(Color(0.55, 0.4, 0.25)), 8)
+	Real.place(parent, "wicker_basket_01", p + Vector3(0, -0.2, 0), 0.2, 0.0, Color.WHITE, 0.42)
+	Real.place(parent, "bananas", p + Vector3(0, -0.12, 0), 0.12, 0.6)
 
 static func pineapple(parent: Node, p: Vector3) -> void :
-	B.sphere(parent, 0.09, p + Vector3(0, 0.11, 0), m(Color(0.95, 0.65, 0.2), 0.6), Vector3(1, 1.4, 1))
-	for k in 6:
-		var lf: = B.box(parent, Vector3(0.025, 0.16, 0.01), p + Vector3(0, 0.3, 0), m(Color(0.25, 0.65, 0.25)))
-		lf.rotation = Vector3(0.4, TAU * k / 6.0, 0)
+	Real.place(parent, "k:pineapple", p, 0.32)
 
 static func cup_stack(parent: Node, p: Vector3, col: Color) -> void :
-	for k in 5:
-		B.cyl(parent, 0.045, 0.035, 0.1, p + Vector3(0, 0.05 + k * 0.025, 0), m(col, 0.4), 10)
+	for k in 3:
+		Real.place(parent, "k:cup", p + Vector3(0.0, k * 0.012, 0.0), 0.12, k * 0.7, col.lerp(Color.WHITE, 0.5))
 
 static func blender(parent: Node, p: Vector3) -> void :
-	B.box(parent, Vector3(0.16, 0.12, 0.16), p + Vector3(0, 0.06, 0), m(Color(0.95, 0.35, 0.3)))
-	B.cyl(parent, 0.07, 0.055, 0.22, p + Vector3(0, 0.23, 0), m(Color(0.85, 0.95, 1.0, 0.7), 0.1), 10)
-	B.cyl(parent, 0.06, 0.05, 0.12, p + Vector3(0, 0.18, 0), m(Color(1.0, 0.65, 0.3), 0.4), 10)
-	B.cyl(parent, 0.075, 0.075, 0.03, p + Vector3(0, 0.355, 0), m(Color(0.2, 0.2, 0.22)), 10)
+	Real.place(parent, "k:frappe", p + Vector3(-0.07, 0, 0), 0.24)
+	Real.place(parent, "k:frappe", p + Vector3(0.09, 0, 0.03), 0.22, 1.0, Color(1.0, 0.8, 0.8))
 
 static func tip_jar(parent: Node, p: Vector3) -> void :
-	B.cyl(parent, 0.06, 0.06, 0.16, p + Vector3(0, 0.08, 0), m(Color(0.8, 0.95, 1.0, 0.6), 0.1), 12)
-	for k in 3:
-		B.cyl(parent, 0.025, 0.025, 0.006, p + Vector3(-0.02 + k * 0.02, 0.02 + k * 0.012, 0), m(Color(1.0, 0.8, 0.2), 0.3), 10)
-	var l: = B.label(parent, "GORJETA", p + Vector3(0, 0.08, 0.062), 18, Color(0.2, 0.15, 0.1), Color(1, 1, 1, 0.9))
+	Real.place(parent, "k:glass", p, 0.2, 0.0, Color(1.0, 0.95, 0.7))
+	var l: = B.label(parent, "GORJETA", p + Vector3(0, 0.1, 0.07), 18, Color(0.2, 0.15, 0.1), Color(1, 1, 1, 0.9))
 	l.pixel_size = 0.0025
 
 static func straw_cup(parent: Node, p: Vector3) -> void :
-	B.cyl(parent, 0.04, 0.035, 0.12, p + Vector3(0, 0.06, 0), m(Color(0.3, 0.75, 0.9), 0.5), 10)
-	var cols: = [Color(1, 0.3, 0.4), Color(1, 0.85, 0.2), Color(0.3, 0.9, 0.5), Color(1, 1, 1)]
-	for k in 6:
-		var s: = B.cyl(parent, 0.006, 0.006, 0.24, p + Vector3(cos(k) * 0.02, 0.18, sin(k) * 0.02), m(cols[k % 4], 0.4), 4)
-		s.rotation = Vector3(cos(k) * 0.15, 0, sin(k) * 0.15)
+	Real.place(parent, "k:cocktail", p, 0.24)
 
 static func radio(parent: Node, p: Vector3, rot: float) -> void :
-	var r: = B.box(parent, Vector3(0.34, 0.2, 0.12), p + Vector3(0, 0.1, 0), m(Color(0.2, 0.7, 0.7)), false, rot)
-	for sx in [-1.0, 1.0]:
-		var sp: = B.cyl(r, 0.055, 0.055, 0.02, Vector3(sx * 0.09, 0, 0.06), m(Color(0.15, 0.15, 0.18)), 12)
-		sp.rotation.x = PI * 0.5
-	var ant: = B.cyl(r, 0.005, 0.005, 0.3, Vector3(0.12, 0.22, 0), m(Color(0.7, 0.7, 0.75)), 4)
-	ant.rotation.z = -0.4
-	B.box(r, Vector3(0.2, 0.025, 0.02), Vector3(0, 0.12, 0), m(Color(0.15, 0.15, 0.18)))
+	Real.place(parent, "boombox", p, 0.0, rot, Color.WHITE, 0.36)
 
 static func trash_bin(parent: Node, p: Vector3, col: = Color(0.25, 0.65, 0.35)) -> void :
-	B.cyl(parent, 0.26, 0.22, 0.8, p + Vector3(0, 0.4, 0), m(col), 12)
-	B.cyl(parent, 0.28, 0.28, 0.06, p + Vector3(0, 0.82, 0), m(col.darkened(0.2)), 12)
+	Real.place(parent, "wicker_basket_02", p, 0.6, 0.0, col.lerp(Color.WHITE, 0.6))
 
-## Placa "ABERTO / FECHADO" pendurada. Devolve o Label3D para o mundo atualizar.
 static func open_sign(parent: Node, p: Vector3, rot: float) -> Label3D:
 	var piv: = Node3D.new()
 	piv.position = p
@@ -248,12 +228,8 @@ static func sand_castle(parent: Node, p: Vector3) -> void :
 	shovel.rotation = Vector3(PI * 0.5, 0.6, 0)
 
 static func starfish(parent: Node, p: Vector3, col: = Color(1.0, 0.5, 0.35)) -> void :
-	for k in 5:
-		var arm: = B.box(parent, Vector3(0.05, 0.02, 0.14), p + Vector3(0, 0.012, 0), m(col, 0.7))
-		arm.rotation.y = TAU * k / 5.0
-		arm.position += Vector3(sin(TAU * k / 5.0), 0, cos(TAU * k / 5.0)) * 0.06
+	Real.place(parent, "lambis_shell", p, 0.13, p.x * 3.0, col.lerp(Color.WHITE, 0.6))
 
-## Caranguejo que anda de lado, para lá e para cá.
 static func crab(parent: Node, p: Vector3, range_m: = 1.6) -> Node3D:
 	var c: = Node3D.new()
 	c.position = p

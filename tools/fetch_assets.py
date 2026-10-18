@@ -38,6 +38,52 @@ MODELS = ["CashRegister_01", "CoffeeCart_01", "Shelf_01", "WoodenChair_01", "Woo
           "vintage_oil_lamp", "pachira_aquatica_01"]
 # ambientCG (CC0): materiais que a Poly Haven não tem (palha trançada/rattan)
 AMBIENTCG = {"Wicker002": "rattan"}
+
+# v0.8 (regra "nada de bolas e quadrados"): modelos reais do Poly Haven (CC0) para todos os objetos do jogo, só 1k para não pesar.
+MODELS_EXTRA = [
+    "boombox", "lambis_shell", "lifebuoy", "ocean_buoy", "wicker_basket_01", "wicker_basket_02", "trashbag", "planter_pot_clay",
+    "potted_plant_01", "potted_plant_02", "potted_plant_04", "vintage_oil_lamp", "vintage_radio_transceiver", "sweet_potato",
+    # frutas, pães e cozinha
+    "food_apple_01", "bananas", "lemon", "food_lime_01", "food_lychee_01", "food_kiwi_01", "food_avocado_01",
+    "food_pomegranate_01", "food_pears_asian_01", "croissant", "hamburger_buns", "carrot_cake", "wooden_cutting_board",
+    "wooden_bowl_02", "carved_wooden_plate", "wooden_spoon", "jug_01", "wine_bottles_01", "brass_goblets", "tea_set_01",
+    "metal_jug", "modified_thermos", "pot_enamel_01", "brass_pan_01", "brass_pot_01", "ceramic_pot", "fish_knife",
+    # recipientes
+    "Barrel_01", "Barrel_02", "barrel_03", "wooden_barrels_01", "wine_barrel_01", "wooden_crate_02", "plastic_crate_02",
+    "plastic_crate_03", "wooden_bucket_02", "metal_trash_can", "watering_can_metal_01", "treasure_chest", "cardboard_box_01",
+    "ceramic_vase_01", "ceramic_vase_03", "ceramic_vase_04", "brass_vase_01", "antique_ceramic_vase_01", "planter_box_02", "planter_box_03",
+    # móveis
+    "WoodenTable_02", "wooden_table_02", "round_wooden_table_01", "round_wooden_table_02", "wooden_picnic_table",
+    "painted_wooden_table", "dining_table", "folding_wooden_stool", "wooden_stool_02", "painted_wooden_chair_02",
+    "dining_chair_02", "vintage_day_bed", "old_bed_frame", "painted_wooden_cabinet_02", "painted_wooden_shelves",
+    "wooden_display_shelves_01", "vintage_cabinet_01", "wooden_bookshelf_worn", "ClassicNightstand_01",
+    "small_wooden_table_01", "coffee_table_round_01", "side_table_tall_01", "painted_wooden_sofa", "sofa_02", "ArmChair_01",
+    "Ottoman_01", "GreenChair_01", "metal_stool_01", "chinese_stool", "modular_street_seating", "painted_wooden_stool",
+    # luz e decoração
+    "Lantern_01", "street_lamp_02", "caged_hanging_light", "hanging_industrial_lamp", "wooden_candlestick", "brass_candleholders",
+    "brass_diya_lantern", "lantern_chandelier_01", "Chandelier_03", "standing_chalkboard_01", "fancy_picture_frame_01",
+    "hanging_picture_frame_01", "hanging_picture_frame_03", "wall_clock", "garden_gnome", "rubber_duck_toy", "Ukulele_01",
+    "vintage_suitcase", "seadogs_compass", "vintage_binocular", "fishermans_hat", "life_jacket", "alarm_clock_01",
+    "book_encyclopedia_set_01", "mantel_clock_01", "carved_wooden_elephant",
+    # plantas e pedras
+    "shrub_04", "grass_medium_01", "grass_medium_02", "grass_bermuda_01", "fern_02", "calathea_orbifolia_01",
+    "anthurium_botany_01", "flower_gazania", "flower_ursinia", "periwinkle_plant", "island_tree_02", 
+    "tree_stump_01", "dry_branches_medium_01", "bark_debris_01",
+    "coast_rocks_02", "coast_rocks_03", "coast_rocks_05", "boulder_01", "rock_07", "rock_09", "stone_01", "sand_rocks_small_01",
+    "coast_land_rocks_02", "coast_land_rocks_03",
+    # estruturas e navios
+    "modular_wooden_pier", "stone_fire_pit", "utility_box_01", "fire_hydrant", "modular_electricity_poles", "ship_pinnace",
+    "rollershutter_window_01",
+]
+# Kenney (CC0): só o que o Poly Haven não tem (coco, drinques, peixe, barcos, palmeiras, bandeiras). {zip: [arquivos .glb]}
+KENNEY = {
+    "https://kenney.nl/media/pages/assets/food-kit/83086fa91c-1719418518/kenney_food-kit.zip": [
+        "coconut", "coconut-half", "cocktail", "frappe", "glass", "fish", "fish-bones", "loaf", "loaf-round", "bread",
+        "pineapple", "watermelon", "orange", "bottle-oil", "ice-cream-cup", "cup", "cup-tea", "bowl"],
+    "https://kenney.nl/media/pages/assets/pirate-kit/e6d4bb1525-1771333093/kenney_pirate-kit.zip": [
+        "boat-row-small", "boat-row-large", "palm-detailed-bend", "palm-detailed-straight", "palm-bend", "palm-straight",
+        "flag", "flag-pennant", "tool-paddle", "barrel", "crate-bottles", "bottle", "bottle-large", "ship-small", "ship-medium"],
+}
 MODELS_HD_ONLY = ["island_tree_01", "coast_rocks_01"]   # só PC (pesados)
 
 FORCE = "--force" in sys.argv
@@ -118,6 +164,39 @@ def model(slug, res, base, small_maps=False):
                 cap(dst, 2048)
     print("model ok", base, slug, res)
 
+
+def kenney(url, names):
+    """Baixa o pack Kenney (CC0), extrai num cache e suaviza no Blender (tools/smooth_kenney.py); sem bpy copia o GLB cru."""
+    import zipfile, io, shutil, tempfile
+    out = f"{A}/models/kenney"
+    todo = [n for n in names if FORCE or not os.path.exists(f"{out}/{n}.glb")]
+    if not todo:
+        print("kenney skip", url.split("/")[-1])
+        return
+    tmp = tempfile.mkdtemp(prefix="kenney_")
+    z = zipfile.ZipFile(io.BytesIO(get(url)))
+    z.extractall(tmp)
+    src = None
+    for dp, dn, fn in os.walk(tmp):
+        if os.path.basename(dp) == "GLB format":
+            src = dp
+    os.makedirs(out, exist_ok=True)
+    have = [n for n in todo if os.path.exists(f"{src}/{n}.glb")]
+    for n in todo:
+        if n not in have:
+            print("  kenney: não achei", n)
+    try:
+        import bpy  # noqa: F401
+        subprocess.check_call([sys.executable, os.path.join(ROOT, "tools", "smooth_kenney.py"), src, out] + have,
+                              stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    except ImportError:
+        print("  AVISO: sem bpy, copiando GLB cru (facetado, textura externa)")
+        for n in have:
+            shutil.copyfile(f"{src}/{n}.glb", f"{out}/{n}.glb")
+        shutil.copytree(f"{src}/Textures", f"{out}/Textures", dirs_exist_ok=True)
+    shutil.rmtree(tmp, ignore_errors=True)
+    print("kenney ok", url.split("/")[-1], len(have))
+
 def ambientcg(asset, name):
     import zipfile, io
     dst = f"{A}/tex_hd/{name}_diff.jpg"
@@ -148,8 +227,9 @@ def main():
             futs += [ex.submit(texture, s) for s in TEXTURES]
             futs += [ex.submit(ambientcg, k, v) for k, v in AMBIENTCG.items()]
         if only in ("", "models"):
-            futs += [ex.submit(model, s, "1k", "models", True) for s in MODELS]
-            futs += [ex.submit(model, s, "2k", "models_hd") for s in MODELS + MODELS_HD_ONLY]
+            futs += [ex.submit(model, s, "1k", "models", True) for s in MODELS + MODELS_EXTRA]
+            futs += [ex.submit(model, s, "2k", "models_hd") for s in MODELS + MODELS_EXTRA + MODELS_HD_ONLY]
+            futs += [ex.submit(kenney, u, n) for u, n in KENNEY.items()]
         errs = 0
         for f in futs:
             try:

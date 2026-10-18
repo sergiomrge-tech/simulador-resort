@@ -563,10 +563,8 @@ func _coconut_cup(parent: Node, pos: Vector3) -> Node3D:
 	var n: = Node3D.new()
 	n.position = pos
 	parent.add_child(n)
-	var shell: = B.flat(Color(0.42, 0.26, 0.12), 0.55)
-	B.sphere(n, 0.09, Vector3(0, 0.07, 0), shell, Vector3(1.05, 0.82, 1.05))
-	B.sphere(n, 0.04, Vector3(0, 0.13, 0), B.flat(Color(0.96, 0.94, 0.88), 0.35))
-	var straw: = B.cyl(n, 0.007, 0.007, 0.2, Vector3(0.02, 0.2, 0), B.flat(Color(0.85, 0.2, 0.16), 0.4), 6)
+	Real.place(n, "k:coconut-half", Vector3.ZERO, 0.15)
+	var straw: = B.cyl(n, 0.012, 0.012, 0.22, Vector3(0.03, 0.2, 0), B.flat(Color(0.85, 0.2, 0.16), 0.4), 8)
 	straw.rotation.z = -0.55
 	return n
 
@@ -574,11 +572,10 @@ func _petisco_plate(parent: Node, pos: Vector3) -> Node3D:
 	var n: = Node3D.new()
 	n.position = pos
 	parent.add_child(n)
-	B.cyl(n, 0.15, 0.13, 0.02, Vector3(0, 0.015, 0), B.flat(Color(0.95, 0.94, 0.9), 0.28), 16)
-	var bits: = [Color(0.82, 0.42, 0.14), Color(0.72, 0.16, 0.12), Color(0.9, 0.72, 0.28), Color(0.45, 0.62, 0.22)]
-	for i in 5:
-		var a: = TAU * float(i) / 5.0
-		B.sphere(n, 0.026, Vector3(cos(a) * 0.06, 0.04, sin(a) * 0.06), B.flat(bits[i % 4], 0.5))
+	Real.place(n, "carved_wooden_plate", Vector3.ZERO, 0.0, 0.0, Color.WHITE, 0.34)
+	Real.place(n, "croissant", Vector3(-0.05, 0.02, 0.03), 0.06, 0.4)
+	Real.place(n, "k:bread", Vector3(0.06, 0.02, -0.03), 0.07, 1.4)
+	Real.place(n, "food_lychee_01", Vector3(0.0, 0.02, 0.08), 0.05)
 	return n
 
 
@@ -1083,9 +1080,10 @@ func _table_bites(p: Vector3) -> void :
 	_petisco_plate(self, p + Vector3(0.14, 0, -0.05))
 
 func _fruit_row(origin: Vector3) -> void :
-	var cols: = [Color(0.95, 0.55, 0.1), Color(0.9, 0.2, 0.18), Color(0.75, 0.85, 0.2), Color(0.95, 0.75, 0.15)]
+	# frutas reais (Poly Haven / Kenney, CC0) sobre o balcão; origin.y era o centro de uma esfera de 7 cm
+	var keys: = ["lemon", "k:orange", "food_apple_01", "food_lime_01"]
 	for i in 4:
-		B.sphere(self, 0.07, origin + Vector3(float(i) * 0.16, 0, 0), B.flat(cols[i], 0.45))
+		Real.place(self, keys[i], origin + Vector3(float(i) * 0.16, -0.08, 0), 0.11, float(i) * 1.3)
 
 func _menu_lines(ids: Array) -> PackedStringArray:
 	var lines: = PackedStringArray()
