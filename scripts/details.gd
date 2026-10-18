@@ -385,17 +385,34 @@ static func pier(parent: Node, from: Vector3, length: float, width: = 2.4) -> vo
 	var wood: = B.mat("weathered_planks", 0.6, Color(0.9, 0.7, 0.5), 0.85)
 	var post: = m(Color(0.45, 0.32, 0.22))
 	var c: = from + Vector3(0, 0, - length * 0.5)
-	B.box(parent, Vector3(width, 0.14, length), c + Vector3(0, 0.55, 0), wood, true)
-	var k: = 0.0
-	while k <= length:
-		for sx in [-1.0, 1.0]:
-			B.cyl(parent, 0.12, 0.13, 3.4, from + Vector3(sx * (width * 0.5 - 0.05), -1.1, - k), post, 8)
-			B.cyl(parent, 0.05, 0.05, 1.0, from + Vector3(sx * (width * 0.5 - 0.05), 1.1, - k), post, 6)
-		k += 3.0
-	for sx in [-1.0, 1.0]:
-		B.box(parent, Vector3(0.06, 0.06, length), c + Vector3(sx * (width * 0.5 - 0.05), 1.5, 0), post)
 	var end: = from + Vector3(0, 0.62, - length + 1.0)
-	B.box(parent, Vector3(width + 2.0, 0.14, 3.0), end + Vector3(0, -0.07, 0), wood, true)
+	# píer de tábuas individuais, estacas com corda e plataforma final: módulos do Blender (tools/gen_code_props.py)
+	var segs: = int(floor((length - 3.0) / 3.0))
+	var ok: = false
+	for i in segs:
+		var sg: = Real.place(parent, "g:pier_segment", from + Vector3(0, -2.8, - i * 3.0), -1.0, 0.0, Color.WHITE, 0.0, false)
+		if sg == null:
+			break
+		sg.rotation.y = PI    # +Y do Blender (mar) vira -Z no glTF; o módulo já aponta para o mar
+		sg.rotation.y = 0.0
+		sg.scale.x = width / 2.4
+		ok = true
+	if ok:
+		end = from + Vector3(0, 0.62, - float(segs) * 3.0 - 1.5)
+		var ep: = Real.place(parent, "g:pier_end", end + Vector3(0, -3.42, 0), -1.0, 0.0, Color.WHITE, 0.0, false)
+		if ep:
+			ep.scale.x = (width + 2.0) / 4.4
+	else:
+		B.box(parent, Vector3(width, 0.14, length), c + Vector3(0, 0.55, 0), wood, true)
+		var k: = 0.0
+		while k <= length:
+			for sx in [-1.0, 1.0]:
+				B.cyl(parent, 0.12, 0.13, 3.4, from + Vector3(sx * (width * 0.5 - 0.05), -1.1, - k), post, 8)
+				B.cyl(parent, 0.05, 0.05, 1.0, from + Vector3(sx * (width * 0.5 - 0.05), 1.1, - k), post, 6)
+			k += 3.0
+		for sx in [-1.0, 1.0]:
+			B.box(parent, Vector3(0.06, 0.06, length), c + Vector3(sx * (width * 0.5 - 0.05), 1.5, 0), post)
+		B.box(parent, Vector3(width + 2.0, 0.14, 3.0), end + Vector3(0, -0.07, 0), wood, true)
 	B.model(parent, "lifebuoy", end + Vector3(1.6, 0.9, 0), 0.0, 1.0).rotation.x = PI * 0.5
 	B.model(parent, "wooden_bucket_01", end + Vector3(-1.4, 0.0, 0.6), 0.0, 0.8)
 	var rod: = B.cyl(parent, 0.01, 0.015, 2.2, end + Vector3(-1.2, 0.9, -0.8), m(Color(0.3, 0.2, 0.15)), 4)
@@ -411,15 +428,18 @@ static func lighthouse(parent: Node, p: Vector3) -> Node3D:
 	Real.place(parent, "coast_rocks_05", p + Vector3(0, -0.7, 0), 2.6, 0.5, Color(0.95, 0.93, 1.0), 6.8)
 	var h: = 14.0
 	var bands: = 7
-	for i in bands:
+	# torre, soco, galeria, lanterna e cúpula: modelo do Blender (tools/gen_code_props.py). Sem ele, cai no construtor antigo.
+	var tower: = Real.place(parent, "g:lighthouse", p + Vector3(0, 1.0, 0), -1.0, 0.0, Color.WHITE, 0.0, false)
+	for i in (0 if tower else bands):
 		var t0: = float(i) / bands
 		var r0: = lerpf(1.6, 1.05, t0)
 		var r1: = lerpf(1.6, 1.05, float(i + 1) / bands)
 		B.cyl(parent, r1, r0, h / bands, p + Vector3(0, 1.0 + (float(i) + 0.5) * h / bands, 0), B.mat("white_plaster", 0.5, Color(1.0, 0.45, 0.4) if i % 2 == 0 else Color(1.0, 0.99, 0.96), 0.8), 32)
 	var top: = p + Vector3(0, 1.0 + h, 0)
-	B.cyl(parent, 1.5, 1.5, 0.2, top + Vector3(0, 0.1, 0), m(Color(0.2, 0.22, 0.25)), 18)
-	B.cyl(parent, 0.85, 0.85, 1.3, top + Vector3(0, 0.85, 0), m(Color(0.85, 0.95, 1.0, 0.5), 0.1), 14)
-	B.cyl(parent, 0.1, 1.05, 0.9, top + Vector3(0, 1.95, 0), m(Color(0.95, 0.25, 0.22)), 14)
+	if tower == null:
+		B.cyl(parent, 1.5, 1.5, 0.2, top + Vector3(0, 0.1, 0), m(Color(0.2, 0.22, 0.25)), 18)
+		B.cyl(parent, 0.1, 1.05, 0.9, top + Vector3(0, 1.95, 0), m(Color(0.95, 0.25, 0.22)), 14)
+	B.cyl(parent, 0.82, 0.82, 1.3, top + Vector3(0, 0.85, 0), m(Color(0.85, 0.95, 1.0, 0.5), 0.1), 24)
 	var lamp: = Node3D.new()
 	lamp.name = "LighthouseLamp"
 	lamp.position = top + Vector3(0, 0.85, 0)

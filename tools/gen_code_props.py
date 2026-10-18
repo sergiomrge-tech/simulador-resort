@@ -446,8 +446,151 @@ def ceiling_fan():
     join(parts, "ventilador")
     export("ceiling_fan")
 
+# ---------------------------------------------------------------- farol
+def lighthouse():
+    """Farol listrado de 14 m (7 faixas vermelhas e brancas) com soco de pedra, porta em arco, janelinhas, galeria com guarda-corpo,
+    lanterna com 8 montantes e cúpula vermelha com para-raios. Base em z=0 (o soco fica sobre as pedras); topo da torre em z=14.
+    O vidro e a luz giratória continuam no código (a luz precisa girar e acender)."""
+    fresh()
+    stucco = tex("white_stucco_diff.jpg")
+    red = mat("faixa_vermelha", (1.0, 0.42, 0.36), 0.75, stucco)
+    white = mat("faixa_branca", (1.0, 0.99, 0.96), 0.75, stucco)
+    stone = mat("pedra", (0.82, 0.8, 0.76), 0.9, tex("light_stone_diff.jpg"))
+    dark = mat("escuro", (0.1, 0.12, 0.16), 0.6)
+    wood = mat("madeira", (0.45, 0.3, 0.18), 0.8, tex("dark_wooden_planks_diff.jpg"))
+    iron = mat("ferro", (0.16, 0.17, 0.2), 0.5, metal=0.5)
+    domemat = mat("cupula", (0.92, 0.2, 0.17), 0.45)
+    parts = []
+    # soco de pedra com degrau
+    parts.append(lathe([(0.0, 0.0), (1.95, 0.0), (1.95, 0.35), (1.82, 0.4), (1.82, 0.65), (1.7, 0.7), (0.0, 0.7)], stone, verts=48, uvscale=0.4))
+    # torre em 7 faixas (raio 1,6 -> 1,05) com anel de moldura entre as faixas
+    bands = 7
+    h = 14.0
+    def rad(z):
+        return 1.6 + (1.05 - 1.6) * (z / h)
+    for i in range(bands):
+        z0, z1 = i * h / bands, (i + 1) * h / bands
+        m = red if i % 2 == 0 else white
+        prof = [(0.0, z0)] + [(rad(z0 + (z1 - z0) * k / 4) + 0.012 * math.sin(math.pi * k / 4), z0 + (z1 - z0) * k / 4) for k in range(5)] + [(0.0, z1)]
+        parts.append(lathe(prof, m, verts=48, uvscale=0.35))
+        if i < bands - 1:
+            r = rad(z1)
+            parts.append(lathe([(0.0, z1 - 0.045), (r + 0.045, z1 - 0.045), (r + 0.06, z1 - 0.02), (r + 0.06, z1 + 0.02), (r + 0.045, z1 + 0.045), (0.0, z1 + 0.045)], white, verts=48, uvscale=0.3))
+    # porta em arco (frente = -Y) e janelinhas
+    bpy.ops.mesh.primitive_cylinder_add(radius=0.42, depth=0.2, vertices=24, location=(0, -1.62, 1.55), rotation=(math.radians(90), 0, 0))
+    arc = bpy.context.active_object
+    bpy.ops.object.shade_smooth()
+    arc.data.materials.append(wood)
+    parts.append(arc)
+    parts.append(box((0.84, 0.2, 0.85), (0, -1.62, 1.05), wood, 0.02))
+    for z in (4.0, 7.2, 10.3, 12.4):
+        r = rad(z)
+        bpy.ops.mesh.primitive_cylinder_add(radius=0.16, depth=0.12, vertices=20, location=(0, -(r + 0.01), z), rotation=(math.radians(90), 0, 0))
+        w = bpy.context.active_object
+        w.scale = (1.0, 1.0, 1.0)
+        bpy.ops.object.shade_smooth()
+        w.data.materials.append(dark)
+        parts.append(w)
+        parts.append(box((0.5, 0.05, 0.06), (0, -(r + 0.02), z - 0.2), stone, 0.01))
+    # galeria (laje) e guarda-corpo
+    parts.append(lathe([(0.0, 13.9), (1.62, 13.9), (1.75, 14.0), (1.75, 14.18), (0.0, 14.18)], stone, verts=48, uvscale=0.4))
+    parts.append(lathe([(0.0, 14.18), (1.58, 14.18), (1.58, 14.22), (0.0, 14.22)], iron, verts=48))
+    n = 24
+    for k in range(n):
+        a = k * 2 * math.pi / n
+        parts.append(tube((math.cos(a) * 1.55, math.sin(a) * 1.55, 14.2), (math.cos(a) * 1.55, math.sin(a) * 1.55, 15.1), 0.022, iron, verts=8))
+    bpy.ops.mesh.primitive_torus_add(major_radius=1.55, minor_radius=0.04, major_segments=48, minor_segments=10, location=(0, 0, 15.1))
+    t1 = bpy.context.active_object
+    bpy.ops.object.shade_smooth()
+    t1.data.materials.append(iron)
+    parts.append(t1)
+    # lanterna: 8 montantes e aros (o vidro fica no código)
+    for k in range(8):
+        a = k * math.pi / 4 + math.pi / 8
+        parts.append(tube((math.cos(a) * 0.86, math.sin(a) * 0.86, 14.2), (math.cos(a) * 0.86, math.sin(a) * 0.86, 15.5), 0.035, iron, verts=10))
+    for z in (14.2, 15.5):
+        bpy.ops.mesh.primitive_torus_add(major_radius=0.86, minor_radius=0.05, major_segments=40, minor_segments=10, location=(0, 0, z))
+        tr = bpy.context.active_object
+        bpy.ops.object.shade_smooth()
+        tr.data.materials.append(iron)
+        parts.append(tr)
+    # cúpula vermelha com beiral, bola e para-raios
+    parts.append(lathe([(0.0, 15.5), (1.12, 15.5), (1.14, 15.56), (1.0, 15.62), (0.85, 15.9), (0.6, 16.2), (0.3, 16.42), (0.12, 16.5), (0.0, 16.52)], domemat, verts=40, uvscale=0.4))
+    bpy.ops.mesh.primitive_uv_sphere_add(radius=0.1, location=(0, 0, 16.55))
+    ball = bpy.context.active_object
+    bpy.ops.object.shade_smooth()
+    ball.data.materials.append(iron)
+    parts.append(ball)
+    parts.append(tube((0, 0, 16.55), (0, 0, 17.4), 0.015, iron, verts=8))
+    join(parts, "farol")
+    export("lighthouse")
+
+# ---------------------------------------------------------------- píer
+def _pier_deck(w, l, y0, planks_mat, post_mat, rope_mat, rail=True, parts=None, post_ys=(0.0,), end_cap=False):
+    """Tabuado de tábuas individuais (levemente desiguais) sobre 3 vigas e estacas com corda."""
+    rnd = random.Random(11)
+    n = max(2, int(round(l / 0.26)))
+    pw = l / n
+    for i in range(n):
+        yc = y0 + (i + 0.5) * pw
+        dz = rnd.uniform(-0.004, 0.004)
+        parts.append(box((w, pw - 0.012, 0.075), (0, yc, 3.42 - 0.04 + dz), planks_mat, 0.008, uv=0.6))
+    for sx in (-w * 0.5 + 0.12, 0.0, w * 0.5 - 0.12):
+        parts.append(box((0.14, l, 0.14), (sx, y0 + l / 2, 3.25), post_mat, 0.015))
+
+def pier_segment():
+    """Módulo de 3 m do píer (frente +Y do Blender = para o mar): deck de tábuas, 2 estacas de 3,4 m com anéis de corda, mourões e corrimão de corda."""
+    fresh()
+    wood = mat("tabua", (0.9, 0.72, 0.52), 0.85, tex("weathered_planks_diff.jpg") if os.path.exists(tex("weathered_planks_diff.jpg")) else tex("oak_wood_planks_diff.jpg"))
+    post = mat("estaca", (0.5, 0.36, 0.25), 0.9, tex("palm_tree_bark_diff.jpg") if os.path.exists(tex("palm_tree_bark_diff.jpg")) else tex("oak_wood_planks_diff.jpg"))
+    rope = mat("corda", (0.66, 0.52, 0.32), 0.95)
+    parts = []
+    W, L = 2.4, 3.0
+    _pier_deck(W, L, 0.0, wood, post, rope, parts=parts)
+    for sx in (-1, 1):
+        x = sx * (W * 0.5 - 0.05)
+        # estaca roliça (3,4 m) com topo arredondado e anéis de corda
+        parts.append(lathe([(0.0, 0.0), (0.11, 0.0), (0.13, 0.4), (0.125, 3.0), (0.13, 3.4), (0.09, 3.46), (0.0, 3.48)], post, loc=(x, 0.0, 0.0), verts=20, uvscale=0.8))
+        for z in (3.1, 3.3):
+            parts.append(lathe([(0.0, z - 0.02), (0.14, z - 0.02), (0.15, z), (0.14, z + 0.02), (0.0, z + 0.02)], rope, loc=(x, 0.0, 0.0), verts=20, uvscale=0.4))
+        # mourão do corrimão
+        parts.append(lathe([(0.0, 3.42), (0.055, 3.42), (0.05, 4.1), (0.065, 4.2), (0.0, 4.24)], post, loc=(x, 0.0, 0.0), verts=14, uvscale=0.8))
+        # corrimão: dois cabos de corda ligando ao próximo mourão (+3 m), com caimento
+        for zr, sag in ((4.1, 0.18), (3.75, 0.14)):
+            prev = (x, 0.0, zr)
+            for k in range(1, 9):
+                t = k / 8
+                nxt = (x, 3.0 * t, zr - sag * 4 * t * (1 - t))
+                parts.append(tube(prev, nxt, 0.016, rope, verts=8))
+                prev = nxt
+    join(parts, "pier_segment")
+    export("pier_segment")
+
+def pier_end():
+    """Plataforma final do píer (4,4 x 3 m, centrada na origem) com 4 estacas altas, bitas e corda. Deck a 3,42 m do pé das estacas."""
+    fresh()
+    wood = mat("tabua", (0.9, 0.72, 0.52), 0.85, tex("weathered_planks_diff.jpg") if os.path.exists(tex("weathered_planks_diff.jpg")) else tex("oak_wood_planks_diff.jpg"))
+    post = mat("estaca", (0.5, 0.36, 0.25), 0.9, tex("palm_tree_bark_diff.jpg") if os.path.exists(tex("palm_tree_bark_diff.jpg")) else tex("oak_wood_planks_diff.jpg"))
+    rope = mat("corda", (0.66, 0.52, 0.32), 0.95)
+    iron = mat("ferro", (0.18, 0.18, 0.2), 0.5, metal=0.6)
+    parts = []
+    W, L = 4.4, 3.0
+    _pier_deck(W, L, -L / 2, wood, post, rope, parts=parts)
+    for sx in (-1, 1):
+        for sy in (-1, 1):
+            x, y = sx * (W / 2 - 0.12), sy * (L / 2 - 0.12)
+            parts.append(lathe([(0.0, 0.0), (0.12, 0.0), (0.14, 0.4), (0.135, 3.0), (0.15, 3.6), (0.1, 3.7), (0.0, 3.72)], post, loc=(x, y, 0.0), verts=20, uvscale=0.8))
+            parts.append(lathe([(0.0, 3.1), (0.16, 3.1), (0.17, 3.14), (0.16, 3.18), (0.0, 3.18)], rope, loc=(x, y, 0.0), verts=20, uvscale=0.4))
+    # bitas de amarração
+    for sx in (-1, 1):
+        x = sx * (W / 2 - 0.35)
+        parts.append(lathe([(0.0, 3.42), (0.09, 3.42), (0.07, 3.5), (0.06, 3.62), (0.11, 3.7), (0.11, 3.76), (0.0, 3.78)], iron, loc=(x, L / 2 - 0.4, 0.0), verts=20))
+    join(parts, "pier_end")
+    export("pier_end")
+
 ALL = {"tiki_torch": tiki_torch, "signpost_post": signpost_post, "sign_arrow": sign_arrow, "open_sign": open_sign,
-       "volley_net": volley_net, "power_pole": power_pole, "mailbox": mailbox, "starfish": starfish, "ceiling_fan": ceiling_fan}
+       "volley_net": volley_net, "power_pole": power_pole, "mailbox": mailbox, "starfish": starfish, "ceiling_fan": ceiling_fan,
+       "lighthouse": lighthouse, "pier_segment": pier_segment, "pier_end": pier_end}
 if __name__ == "__main__":
     names = sys.argv[1:] or list(ALL)
     for n in names:
