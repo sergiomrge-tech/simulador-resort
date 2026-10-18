@@ -28,7 +28,7 @@ void vertex() {
 
 void fragment() {
 	float up = clamp(wnor.y * 0.7 + 0.28, 0.0, 1.0);
-	vec3 col = albedo * mix(0.78, 1.0, up);
+	vec3 col = albedo * mix(0.62, 0.9, step(0.55, up));
 	float dist = length(VERTEX);
 	float air = clamp(smoothstep(200.0, 860.0, dist) * aerial, 0.0, 0.8);
 	float luma = dot(col, vec3(0.30, 0.52, 0.18));

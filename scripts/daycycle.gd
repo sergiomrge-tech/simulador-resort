@@ -10,18 +10,20 @@ var world: Node3D
 var _last_slot: = -1
 
 
+## [hora, céu topo, horizonte, cor do sol, energia do sol, luz ambiente] — paleta cartoon (v0.7):
+## céu azul-turquesa forte de dia, pôr do sol laranja-rosado, noite azul-violeta (nunca preta).
 const KEYS: = [
-	[0.0, Color(0.02, 0.04, 0.1), Color(0.06, 0.09, 0.16), Color(0.5, 0.6, 1.0), 0.0, 0.25], 
-	[5.0, Color(0.03, 0.05, 0.12), Color(0.1, 0.12, 0.2), Color(0.6, 0.6, 0.9), 0.0, 0.28], 
-	[6.0, Color(0.25, 0.35, 0.6), Color(0.98, 0.62, 0.42), Color(1.0, 0.6, 0.35), 0.5, 0.5], 
-	[8.0, Color(0.22, 0.48, 0.85), Color(0.75, 0.85, 0.95), Color(1.0, 0.9, 0.75), 1.15, 0.8], 
-	[12.0, Color(0.16, 0.45, 0.88), Color(0.68, 0.83, 0.96), Color(1.0, 0.97, 0.9), 1.35, 0.9], 
-	[16.0, Color(0.25, 0.48, 0.82), Color(0.9, 0.78, 0.62), Color(1.0, 0.86, 0.68), 1.12, 0.82], 
-	[17.2, Color(0.32, 0.4, 0.68), Color(0.96, 0.7, 0.48), Color(1.0, 0.78, 0.55), 0.95, 0.7], 
-	[17.6, Color(0.28, 0.32, 0.55), Color(0.85, 0.55, 0.4), Color(1.0, 0.68, 0.46), 0.7, 0.55], 
-	[18.6, Color(0.1, 0.12, 0.3), Color(0.55, 0.3, 0.3), Color(0.9, 0.4, 0.3), 0.05, 0.35], 
-	[19.5, Color(0.02, 0.04, 0.1), Color(0.06, 0.09, 0.16), Color(0.5, 0.6, 1.0), 0.0, 0.25], 
-	[24.0, Color(0.02, 0.04, 0.1), Color(0.06, 0.09, 0.16), Color(0.5, 0.6, 1.0), 0.0, 0.25], 
+	[0.0, Color(0.06, 0.08, 0.26), Color(0.2, 0.18, 0.42), Color(0.55, 0.6, 1.0), 0.0, 0.42], 
+	[5.0, Color(0.08, 0.1, 0.3), Color(0.3, 0.22, 0.45), Color(0.6, 0.6, 0.95), 0.0, 0.45], 
+	[6.0, Color(0.3, 0.42, 0.85), Color(1.0, 0.6, 0.55), Color(1.0, 0.65, 0.45), 0.6, 0.6], 
+	[8.0, Color(0.15, 0.55, 1.0), Color(0.7, 0.92, 1.0), Color(1.0, 0.95, 0.82), 1.2, 0.9], 
+	[12.0, Color(0.1, 0.52, 1.0), Color(0.62, 0.9, 1.0), Color(1.0, 0.98, 0.92), 1.35, 0.95], 
+	[16.0, Color(0.16, 0.52, 0.98), Color(0.85, 0.85, 0.85), Color(1.0, 0.9, 0.72), 1.2, 0.9], 
+	[17.2, Color(0.3, 0.42, 0.9), Color(1.0, 0.68, 0.5), Color(1.0, 0.78, 0.55), 1.0, 0.8], 
+	[17.6, Color(0.36, 0.3, 0.75), Color(1.0, 0.52, 0.45), Color(1.0, 0.65, 0.45), 0.75, 0.7], 
+	[18.6, Color(0.2, 0.15, 0.48), Color(0.85, 0.35, 0.45), Color(0.95, 0.45, 0.4), 0.08, 0.55], 
+	[19.5, Color(0.06, 0.08, 0.26), Color(0.22, 0.18, 0.42), Color(0.55, 0.6, 1.0), 0.0, 0.42], 
+	[24.0, Color(0.06, 0.08, 0.26), Color(0.2, 0.18, 0.42), Color(0.55, 0.6, 1.0), 0.0, 0.42], 
 ]
 
 func setup(parent: Node3D) -> void :
@@ -131,23 +133,25 @@ func apply() -> void :
 		sun.light_energy *= lerpf(1.0, 0.9, golden)
 		sky_mat.sun_angle_max = lerpf(20.0, 28.0, golden)
 	env.fog_light_color = fog_c
-	env.fog_density = 0.0048 if rain else lerpf(0.00145, 0.0026, golden)
+	env.fog_density = 0.0048 if rain else lerpf(0.0011, 0.002, golden)
 	env.fog_aerial_perspective = 0.42
 	env.tonemap_mode = Environment.TONE_MAPPER_FILMIC
-	env.tonemap_exposure = (1.12 if not rain else 0.9) * lerpf(1.0, 1.08, golden)
+	env.tonemap_white = 3.5
+	env.tonemap_exposure = (1.05 if not rain else 0.88) * lerpf(1.0, 1.05, golden)
 	env.adjustment_enabled = true
-	env.adjustment_saturation = (0.82 if rain else lerpf(1.02, 1.08, golden))
-	env.adjustment_contrast = lerpf(1.04, 1.1, golden)
+	env.adjustment_saturation = (0.95 if rain else lerpf(1.32, 1.4, golden))
+	env.adjustment_contrast = lerpf(1.06, 1.1, golden)
 	env.adjustment_brightness = 0.94 if rain else 1.0
 	env.volumetric_fog_albedo = fog_c
 	env.volumetric_fog_density = 0.012 if rain else lerpf(0.004, 0.008, maxf(golden, night * 0.7))
 	env.volumetric_fog_emission = fog_c * (0.15 if rain else 0.05)
-	env.glow_intensity = 0.22 if rain else lerpf(0.4, 0.75, night)
+	env.glow_intensity = 0.22 if rain else lerpf(0.45, 1.1, night)
 	env.glow_bloom = 0.08 if night > 0.4 else 0.05
 	moon.light_energy = (0.15 if rain else 0.42) * night
 	moon.light_color = Color(0.65, 0.74, 1.0)
-	env.ambient_light_sky_contribution = 0.35 if rain else 0.55
-	env.ambient_light_color = Color(0.55, 0.58, 0.62) if rain else (k[2].lerp(Color(1.0, 0.9, 0.75), golden * 0.22) if k[3] > 0.05 else Color(0.22, 0.28, 0.45))
+	env.ambient_light_sky_contribution = 0.35 if rain else 0.45
+	# sombra cartoon: azulada/lilás em vez de cinza
+	env.ambient_light_color = Color(0.55, 0.58, 0.66) if rain else (Color(0.62, 0.68, 0.95).lerp(Color(1.0, 0.75, 0.7), golden * 0.4) if k[3] > 0.05 else Color(0.3, 0.32, 0.65))
 	if world:
 		world.set_night(night)
 		world.set_atmosphere(night, dawn, fog_c)

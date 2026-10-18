@@ -1,5 +1,5 @@
 shader_type spatial;
-render_mode cull_disabled;
+render_mode cull_disabled, diffuse_toon, specular_toon;
 // Capim e arbustos (MultiMesh) com balanço de vento.
 uniform sampler2D tex : source_color, filter_linear_mipmap, repeat_disable;
 uniform float sway = 0.12;
@@ -15,7 +15,7 @@ void vertex(){
 void fragment(){
 	vec4 c = texture(tex, UV);
 	if (c.a < 0.45) discard;
-	ALBEDO = c.rgb * tint * mix(1.05, 0.6, UV.y);
+	ALBEDO = c.rgb * tint * mix(1.08, 0.78, smoothstep(0.55, 0.65, UV.y));
 	ROUGHNESS = 0.8;
 	BACKLIGHT = vec3(0.25, 0.3, 0.1);
 }

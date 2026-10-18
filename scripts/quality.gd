@@ -303,16 +303,18 @@ func apply() -> void :
 		return
 	var p: = preset
 
-	vp.msaa_3d = [Viewport.MSAA_DISABLED, Viewport.MSAA_2X, Viewport.MSAA_2X, Viewport.MSAA_4X][p]
-	vp.screen_space_aa = Viewport.SCREEN_SPACE_AA_FXAA if p == 0 else Viewport.SCREEN_SPACE_AA_DISABLED
-	vp.use_taa = p >= 2
+	# v0.7: o contorno cartoon lê profundidade/normais da tela, o que não funciona com MSAA.
+	# FXAA suaviza as linhas sem borrar as cores chapadas (TAA borraria).
+	vp.msaa_3d = Viewport.MSAA_DISABLED
+	vp.screen_space_aa = Viewport.SCREEN_SPACE_AA_FXAA
+	vp.use_taa = false
 	vp.scaling_3d_mode = Viewport.SCALING_3D_MODE_FSR2 if scale < 0.99 else Viewport.SCALING_3D_MODE_BILINEAR
 	vp.scaling_3d_scale = scale
 	vp.mesh_lod_threshold = [2.0, 1.0, 1.0, 0.5][p]
 	vp.positional_shadow_atlas_size = [2048, 2048, 4096, 4096][p]
 
 	RenderingServer.directional_shadow_atlas_set_size(2048 if p == 0 else 4096, true)
-	RenderingServer.directional_soft_shadow_filter_set_quality([RenderingServer.SHADOW_QUALITY_SOFT_LOW, RenderingServer.SHADOW_QUALITY_SOFT_MEDIUM, RenderingServer.SHADOW_QUALITY_SOFT_HIGH, RenderingServer.SHADOW_QUALITY_SOFT_ULTRA][p])
+	RenderingServer.directional_soft_shadow_filter_set_quality([RenderingServer.SHADOW_QUALITY_SOFT_LOW, RenderingServer.SHADOW_QUALITY_SOFT_LOW, RenderingServer.SHADOW_QUALITY_SOFT_MEDIUM, RenderingServer.SHADOW_QUALITY_SOFT_MEDIUM][p])
 	RenderingServer.positional_soft_shadow_filter_set_quality([RenderingServer.SHADOW_QUALITY_HARD, RenderingServer.SHADOW_QUALITY_SOFT_LOW, RenderingServer.SHADOW_QUALITY_SOFT_MEDIUM, RenderingServer.SHADOW_QUALITY_SOFT_HIGH][p])
 	if sun:
 		sun.directional_shadow_mode = DirectionalLight3D.SHADOW_PARALLEL_2_SPLITS if p == 0 else DirectionalLight3D.SHADOW_PARALLEL_4_SPLITS
@@ -320,31 +322,21 @@ func apply() -> void :
 		sun.shadow_blur = 1.0
 		sun.light_angular_distance = 0.5 if p >= 2 else 0.0
 
+	# v0.7 cartoon: sombras nítidas, oclusão leve, sem GI/SSR/neblina volumétrica (achatariam as cores)
 	env.ssao_enabled = p >= 1
-	env.ssao_radius = 1.2
-	env.ssao_intensity = 1.6
-	env.ssao_power = 1.4
-	env.ssil_enabled = p >= 3
-	env.ssil_intensity = 0.8
-	env.ssr_enabled = p >= 2
-	env.ssr_max_steps = 48 if p == 2 else 96
-	env.ssr_fade_in = 0.2
-	env.sdfgi_enabled = p >= 2
-	env.sdfgi_use_occlusion = true
-	env.sdfgi_cascades = 4 if p == 2 else 6
-	env.sdfgi_min_cell_size = 0.2 if p == 2 else 0.15
-	env.sdfgi_energy = 1.0
-	env.sdfgi_bounce_feedback = 0.5
-	env.volumetric_fog_enabled = p >= 2
-	env.volumetric_fog_density = 0.0035
-	env.volumetric_fog_albedo = Color(0.95, 0.95, 1.0)
-	env.volumetric_fog_anisotropy = 0.6
-	env.volumetric_fog_length = 80.0
-	env.volumetric_fog_ambient_inject = 0.3
-	env.volumetric_fog_sky_affect = 0.15
+	env.ssao_radius = 0.9
+	env.ssao_intensity = 0.9
+	env.ssao_power = 1.2
+	env.ssil_enabled = false
+	env.ssr_enabled = false
+	env.sdfgi_enabled = false
+	env.volumetric_fog_enabled = false
 	env.glow_enabled = true
-	env.glow_intensity = 0.45
-	env.glow_bloom = 0.06
+	env.glow_intensity = 0.55
+	env.glow_bloom = 0.04
+	if sun:
+		sun.light_angular_distance = 0.0
+		sun.shadow_blur = 0.6
 	RenderingServer.environment_set_ssao_quality(RenderingServer.ENV_SSAO_QUALITY_MEDIUM if p < 3 else RenderingServer.ENV_SSAO_QUALITY_HIGH, true, 0.5, 2, 50, 300)
 	RenderingServer.environment_set_ssil_quality(RenderingServer.ENV_SSIL_QUALITY_MEDIUM if p < 3 else RenderingServer.ENV_SSIL_QUALITY_HIGH, true, 0.5, 4, 50, 300)
 	RenderingServer.environment_set_sdfgi_ray_count(RenderingServer.ENV_SDFGI_RAY_COUNT_64 if p < 3 else RenderingServer.ENV_SDFGI_RAY_COUNT_96)

@@ -39,6 +39,9 @@ var _food: Node3D
 var _eating: = false
 var _eat_t: = 0.0
 var _mesh_insts: Array = []
+var _skin: = Color(0.8, 0.6, 0.45)
+var _face: Node3D
+var _rng_seed: = 0
 
 
 const WALK_REF: = 1.05
@@ -75,9 +78,13 @@ func setup(id: int, rng: RandomNumberGenerator) -> void :
 	add_to_group("npc")
 	_ideal = position
 	_build_anim(m)
+	_caricature(rng)
 	play("Idle_Loop")
 
 func set_colors(skin: Color, shirt: Color, shorts: Color, hair: Color) -> void :
+	_skin = skin
+	if _face and _face.has_meta("nose"):
+		(_face.get_meta("nose") as MeshInstance3D).material_override = B.flat(skin.darkened(0.06), 0.7)
 	for mi in _mesh_insts:
 		mi.set_instance_shader_parameter("skin", skin)
 		mi.set_instance_shader_parameter("shirt", shirt)
@@ -749,3 +756,58 @@ func _separation() -> Vector3:
 		if dist2 > 0.001 and dist2 < PLAYER_RADIUS:
 			push += (d2 / dist2) * ((PLAYER_RADIUS - dist2) / PLAYER_RADIUS)
 	return push
+
+
+# ------------------------------------------------------------------ v0.7: rosto e acessórios cartoon
+## Cabeça maior, olhos grandes, nariz e sorriso, mais um acessório sorteado (chapéu, boné, óculos).
+## Tudo preso no osso "Head" (Y para cima, Z para frente no espaço do osso).
+func _caricature(rng: RandomNumberGenerator) -> void :
+	if _skel == null:
+		return
+	var hs: = SkeletonModifier3D.new()
+	hs.set_script(load("res://scripts/head_scaler.gd"))
+	hs.head_scale = rng.randf_range(1.3, 1.45)
+	_skel.add_child(hs)
+	var att: = BoneAttachment3D.new()
+	att.bone_name = "Head"
+	_skel.add_child(att)
+	_face = Node3D.new()
+	att.add_child(_face)
+	var white: = B.flat(Color(1, 1, 1), 0.4)
+	var black: = B.flat(Color(0.06, 0.05, 0.08), 0.3)
+	var glasses: = rng.randf() < 0.22
+	for sx in [-1.0, 1.0]:
+		if glasses:
+			var lens: = B.box(_face, Vector3(0.06, 0.04, 0.02), Vector3(sx * 0.042, 0.125, 0.094), B.flat([Color(0.08, 0.08, 0.1), Color(0.9, 0.2, 0.4), Color(0.1, 0.4, 0.8)][rng.randi() % 3], 0.2))
+			lens.rotation.y = sx * 0.12
+		else:
+			B.sphere(_face, 0.028, Vector3(sx * 0.04, 0.128, 0.082), white, Vector3(1.0, 1.15, 0.55))
+			B.sphere(_face, 0.014, Vector3(sx * 0.038, 0.124, 0.096), black, Vector3(1.0, 1.1, 0.55))
+		var brow: = B.box(_face, Vector3(0.045, 0.01, 0.012), Vector3(sx * 0.042, 0.164, 0.088), black)
+		brow.rotation.z = - sx * rng.randf_range(0.0, 0.25)
+	if glasses:
+		B.box(_face, Vector3(0.03, 0.008, 0.01), Vector3(0, 0.13, 0.1), black)
+	var nose: = B.sphere(_face, 0.026, Vector3(0, 0.095, 0.098), B.flat(_skin.darkened(0.06), 0.7), Vector3(1.0, 1.0, 1.0) * rng.randf_range(0.85, 1.35))
+	_face.set_meta("nose", nose)
+	var mouth: = B.box(_face, Vector3(0.05, 0.012, 0.01), Vector3(0, 0.058, 0.09), B.flat(Color(0.55, 0.12, 0.15), 0.6))
+	mouth.rotation.x = -0.2
+	for sx in [-1.0, 1.0]:
+		var corner: = B.box(_face, Vector3(0.016, 0.01, 0.01), Vector3(sx * 0.031, 0.064, 0.087), B.flat(Color(0.55, 0.12, 0.15), 0.6))
+		corner.rotation.z = sx * 0.6
+	var roll: = rng.randf()
+	if roll < 0.3:
+		var straw: = B.flat(Color(0.98, 0.84, 0.45), 0.9)
+		B.cyl(_face, 0.24, 0.24, 0.018, Vector3(0, 0.215, 0.0), straw, 18)
+		B.cyl(_face, 0.11, 0.125, 0.11, Vector3(0, 0.27, -0.005), straw, 14)
+		B.cyl(_face, 0.127, 0.127, 0.028, Vector3(0, 0.235, -0.005), B.flat([Color(0.9, 0.25, 0.25), Color(0.15, 0.55, 0.75), Color(0.2, 0.2, 0.25)][rng.randi() % 3], 0.6), 14)
+	elif roll < 0.52:
+		var cap_c: Color = [Color(1.0, 0.4, 0.3), Color(0.2, 0.6, 1.0), Color(1.0, 0.85, 0.2), Color(0.3, 0.8, 0.45)][rng.randi() % 4]
+		B.sphere(_face, 0.125, Vector3(0, 0.2, -0.005), B.flat(cap_c, 0.7), Vector3(1.0, 0.62, 1.05))
+		var visor: = B.box(_face, Vector3(0.17, 0.014, 0.12), Vector3(0, 0.2, 0.15), B.flat(cap_c.darkened(0.15), 0.7))
+		visor.rotation.x = 0.12
+	elif roll < 0.62:
+		var bucket: Color = [Color(0.95, 0.95, 0.9), Color(0.55, 0.8, 0.95)][rng.randi() % 2]
+		B.cyl(_face, 0.115, 0.17, 0.1, Vector3(0, 0.235, -0.005), B.flat(bucket, 0.8), 14)
+	elif roll < 0.7:
+		var flower: = B.sphere(_face, 0.035, Vector3(0.1, 0.19, 0.03), B.flat(Color(1.0, 0.4, 0.65), 0.6))
+		B.sphere(_face, 0.014, flower.position + Vector3(0.012, 0.0, 0.022), B.flat(Color(1.0, 0.9, 0.3), 0.6))

@@ -48,6 +48,12 @@ const SHOTS: = {
 	"vila_anda": [Vector3(49.0, 1.58, 30.15), -77.9, 1.2, 10.6], 
 	"palmeira": [Vector3(22.5, 2.8, -1.5), -52.4, 17.6, 11.0], 
 	"quiosque": [Vector3(37.2, 1.35, -7.8), -17.7, -4.4, 16.8], 
+	"celular": [Vector3(37.2, 1.35, -7.8), -17.7, -4.4, 10.5], 
+	"celular_home": [Vector3(37.2, 1.35, -7.8), -17.7, -4.4, 10.5], 
+	"lote": [Vector3(4.0, 1.6, 30.0), 10.0, -6.0, 15.0], 
+	"resort": [Vector3(26.0, 34.0, -52.0), 196.0, -30.0, 16.0], 
+	"neon": [Vector3(37.4, 1.6, -4.6), -10.0, 6.0, 19.6], 
+	"rosto": [Vector3(38.0, 0.0, -11.9), 180.0, -14.0, 10.5], 
 	"noite_vila": [Vector3(49.0, 1.58, 30.15), -77.9, 1.2, 21.2], 
 	"serra_dia": [Vector3(58.0, 2.2, 28.5), -175.0, 12.2, 10.8], 
 	"serra_praia": [Vector3(8.0, 2.0, -24.0), -165.4, 9.3, 11.2], 
@@ -105,6 +111,7 @@ func _ready() -> void :
 	player = CharacterBody3D.new()
 	player.set_script(load("res://scripts/player.gd"))
 	add_child(player)
+	Toon.attach_outline(player.cam)
 	Core.player_ref = player
 	_place_at_home()
 	audio.player = player
@@ -129,6 +136,7 @@ func _ready() -> void :
 	menu_cam.fov = 60.0
 	menu_cam.far = 1200.0
 	add_child(menu_cam)
+	Toon.attach_outline(menu_cam)
 	day.force_update()
 	if args.has("shot"):
 		_run_shot(args.shot)
@@ -281,11 +289,17 @@ func _run_shot(n: String) -> void :
 	if args.has("hidehud"):
 		hud.visible = false
 
+	if n in ["resort", "neon", "bar", "piscina", "recepcao", "bangalo", "interior", "upgrade", "bangalo_up", "npc_bar", "npc_anda", "npc_senta", "entrada", "noite", "praia"] or args.has("full"):
+		Core.unlock_all()
+		if Core.rooms.size() < 2:
+			Core.reset_rooms(2)
+			world.sync_bungalows()
+		world.refresh_areas()
 	if not args.has("empty"):
 		_stage_guests()
 		if n in ["vila", "noite_vila", "vila_anda", "praca", "casa", "casa_ext", "barcos", "palmeira", "serra_dia", "serra_praia", "serra_ouro", "serra_alvorada"]:
 			_stage_village(n)
-		if n == "quiosque" or n == "balcao":
+		if n == "quiosque" or n == "balcao" or n == "rosto":
 			for k in 2:
 				var c = village.spawn_customer()
 				if c:
@@ -315,11 +329,15 @@ func _run_shot(n: String) -> void :
 		hud.show_desk_card(tr("Fazer check-in de %s") % "Ana")
 	elif n == "npc_bar":
 		_eat_at_bar()
-	elif n == "quiosque" or n == "balcao":
+	elif n == "quiosque" or n == "balcao" or n == "rosto":
 		for c in village.customers:
 			c.play("Eat")
 	elif n == "pausa":
 		menus.toggle_pause()
+	if n == "celular":
+		hud.open_office("expansoes")
+	elif n == "celular_home":
+		hud.open_office("")
 	if n == "estoque":
 		hud.open_office("insumos")
 	elif n == "upgrade":
@@ -329,7 +347,7 @@ func _run_shot(n: String) -> void :
 		_dress_room(0)
 	elif n == "resumo":
 		hud.show_summary(_demo_summary())
-	if n in ["estoque", "upgrade", "bangalo_up", "resumo", "pausa", "recepcao", "npc_bar", "npc_anda", "npc_senta", "quiosque", "balcao"]:
+	if n in ["estoque", "upgrade", "bangalo_up", "resumo", "pausa", "recepcao", "npc_bar", "npc_anda", "npc_senta", "quiosque", "balcao", "rosto"]:
 		var extra: = 36 if n in ["npc_bar", "quiosque", "balcao"] else 12
 		for i in extra:
 			await get_tree().process_frame
@@ -528,6 +546,10 @@ func _stage_guests() -> void :
 	Core.money_changed.emit(Core.money)
 	Core.ratings = [4.5, 4.0, 4.6, 4.2]
 	Core.stars_changed.emit(Core.stars())
+	if not Core.has("pousada"):
+		Core.money = 214
+		Core.money_changed.emit(Core.money)
+		return
 	Core.vacate_room(1)
 	for k in 2:
 		var g = guests.spawn_guest()

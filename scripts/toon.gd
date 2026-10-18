@@ -169,6 +169,75 @@ static func toonify(mt: Material) -> Material:
 		return s
 	return mt
 
+## Tufo de capim desenhado: 7 folhas pontudas em dois verdes, base mais escura.
+static func grass_tex() -> Texture2D:
+	if _patterns.has("grass_tex"):
+		return _patterns["grass_tex"]
+	var w: = 128
+	var h: = 128
+	var img: = Image.create(w, h, true, Image.FORMAT_RGBA8)
+	img.fill(Color(0, 0, 0, 0))
+	var rng: = RandomNumberGenerator.new()
+	rng.seed = 42
+	var greens: = [Color(0.36, 0.78, 0.3), Color(0.5, 0.88, 0.34), Color(0.26, 0.66, 0.28)]
+	for k in 7:
+		var base_x: = 20.0 + k * 14.0 + rng.randf_range(-4, 4)
+		var tip_x: = base_x + rng.randf_range(-22, 22)
+		var tip_y: = rng.randf_range(6, 40)
+		var half: = rng.randf_range(5.0, 8.0)
+		var col: Color = greens[k % greens.size()]
+		for y in range(int(tip_y), h):
+			var t: = (float(y) - tip_y) / (h - tip_y)
+			var cx: = lerpf(tip_x, base_x, pow(t, 0.7))
+			var hw: = half * t
+			for x in range(int(cx - hw), int(cx + hw) + 1):
+				if x >= 0 and x < w:
+					var c: = col.darkened(0.25 * smoothstep(0.7, 1.0, t))
+					img.set_pixel(x, y, c)
+	img.generate_mipmaps()
+	var tex: = ImageTexture.create_from_image(img)
+	_patterns["grass_tex"] = tex
+	return tex
+
+## Arbusto desenhado: bolas de folhagem sobrepostas com uma flor ou outra.
+static func bush_tex() -> Texture2D:
+	if _patterns.has("bush_tex"):
+		return _patterns["bush_tex"]
+	var s: = 128
+	var img: = Image.create(s, s, true, Image.FORMAT_RGBA8)
+	img.fill(Color(0, 0, 0, 0))
+	var rng: = RandomNumberGenerator.new()
+	rng.seed = 7
+	var blobs: = []
+	for k in 9:
+		blobs.append([Vector2(rng.randf_range(28, 100), rng.randf_range(40, 110)), rng.randf_range(16, 28)])
+	blobs.sort_custom(func(a, b): return a[0].y < b[0].y)
+	for b in blobs:
+		var c: Vector2 = b[0]
+		var r: float = b[1]
+		for y in range(int(c.y - r), int(c.y + r) + 1):
+			for x in range(int(c.x - r), int(c.x + r) + 1):
+				if x < 0 or y < 0 or x >= s or y >= s:
+					continue
+				var d: = Vector2(x, y).distance_to(c)
+				if d <= r:
+					var lit: = (Vector2(x, y) - c).dot(Vector2(-0.5, -0.8)) / r
+					var col: = Color(0.28, 0.68, 0.3) if lit < 0.15 else Color(0.42, 0.82, 0.34)
+					if d > r - 2.5:
+						col = Color(0.18, 0.48, 0.24)
+					img.set_pixel(x, y, col)
+	for k in 6:
+		var fc: = Vector2(rng.randf_range(30, 98), rng.randf_range(35, 100))
+		var fcol: Color = [Color(1.0, 0.45, 0.6), Color(1.0, 0.85, 0.3), Color(1.0, 1.0, 1.0)][k % 3]
+		for y in range(int(fc.y) - 3, int(fc.y) + 4):
+			for x in range(int(fc.x) - 3, int(fc.x) + 4):
+				if x >= 0 and y >= 0 and x < s and y < s and img.get_pixel(x, y).a > 0.5 and Vector2(x, y).distance_to(fc) < 3.2:
+					img.set_pixel(x, y, fcol)
+	img.generate_mipmaps()
+	var tex: = ImageTexture.create_from_image(img)
+	_patterns["bush_tex"] = tex
+	return tex
+
 ## Contorno em tela cheia preso à câmera.
 static func attach_outline(cam: Camera3D) -> MeshInstance3D:
 	if cam == null or RenderingServer.get_current_rendering_method() != "forward_plus":

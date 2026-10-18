@@ -359,12 +359,14 @@ func _hint() -> String:
 			if r.dirty.toalhas: falta.append(tr("recolha as toalhas"))
 			if r.dirty.lixo: falta.append(tr("jogue o lixo fora"))
 			return tr("Bangalô %d sujo: %s.") % [r.id + 1, ", ".join(falta)]
-	if guests and guests.queue_size() > 0:
+	if guests and guests.queue_size() > 0 and Core.has("pousada"):
 		if Core.free_room() >= 0:
 			return tr("Hóspede esperando! Vá ao balcão da recepção e faça o check-in.")
 		return tr("Hóspedes esperando, mas nenhum bangalô livre.")
 	if village and not village.waiting_customers().is_empty():
 		return tr("Clientes esperando no quiosque!")
+	if not Core.has("pousada"):
+		return tr("Atenda rápido: clientes felizes dão estrelas, e estrelas liberam expansões.")
 	if Core.money >= Core.REDE_PRICE and Core.redes < Core.MAX_REDES:
 		return tr("Dica: compre uma rede na Loja para ganhar estrelas.")
 	return tr("Aproveite a brisa... novos hóspedes chegam em breve.")

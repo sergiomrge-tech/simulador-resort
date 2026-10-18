@@ -1442,10 +1442,10 @@ func _vegetation() -> void :
 
 	var gm: = ShaderMaterial.new()
 	gm.shader = load("res://shaders/foliage.gdshader")
-	gm.set_shader_parameter("tex", load("res://assets/tex_hd/grass_tuft.png"))
+	gm.set_shader_parameter("tex", Toon.grass_tex())
 	gm.set_shader_parameter("sway", 0.08)
 	var grass: = []
-	for i in 38000:
+	for i in 22000:
 		var p: = Vector2(rng.randf_range(-62, 100), rng.randf_range(-22, 54))
 		var n: = noise.get_noise_2d(p.x, p.y)
 		var beach: = clampf((p.y + 22.0) / 10.0, 0.0, 1.0)
@@ -1458,7 +1458,7 @@ func _vegetation() -> void :
 
 	var bm: = ShaderMaterial.new()
 	bm.shader = load("res://shaders/foliage.gdshader")
-	bm.set_shader_parameter("tex", load("res://assets/tex_hd/bush.png"))
+	bm.set_shader_parameter("tex", Toon.bush_tex())
 	bm.set_shader_parameter("sway", 0.03)
 	var bushes: = []
 	for r in VEG_EXCL:

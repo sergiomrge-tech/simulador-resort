@@ -14,14 +14,8 @@ static func _mats() -> void :
 	_frond_mat = ShaderMaterial.new()
 	_frond_mat.shader = load("res://shaders/palm_wind.gdshader")
 	_frond_mat.set_shader_parameter("tex", _leaflet_texture())
-	_bark_mat = StandardMaterial3D.new()
-	_bark_mat.albedo_texture = B.tex("palm_tree_bark")
-	_bark_mat.normal_enabled = true
-	_bark_mat.normal_texture = B.nor("palm_tree_bark")
-	_bark_mat.roughness = 0.9
-	_coco_mat = StandardMaterial3D.new()
-	_coco_mat.albedo_color = Color(0.42, 0.5, 0.18)
-	_coco_mat.roughness = 0.6
+	_bark_mat = B.mat("palm_tree_bark", 1.4, Color.WHITE, 0.9)
+	_coco_mat = B.flat(Color(0.5, 0.7, 0.2), 0.6)
 
 static func _build(seed_: int) -> ArrayMesh:
 	_mats()
