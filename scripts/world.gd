@@ -622,10 +622,12 @@ func _bungalow(i: int, c: Vector3) -> void :
 	# decoração real (Poly Haven, CC0): armário, ventilador de teto, quadros, espelho, mala e despertador
 	Real.place(self, "painted_wooden_cabinet", Vector3(c.x + 2.45, y0, c.z - 1.0), 1.6, -PI * 0.5, Color.WHITE, 0.0)
 	# o modelo real do ventilador tem pás pretas (ficava um X preto no teto): usa o construtor com pás de madeira clara
-	var fan: Node3D = P.build("ceiling_fan")
-	fan.position = Vector3(c.x + 0.2, y0 + h - 0.42, c.z)
-	fan.scale = Vector3.ONE * 1.25
-	add_child(fan)
+	var fan: Node3D = Real.place(self, "g:ceiling_fan", Vector3(c.x + 0.2, y0 + h - 0.46 * 1.25, c.z), -1.25, 0.0, Color.WHITE, 0.0, true)
+	if fan == null:
+		fan = P.build("ceiling_fan")
+		fan.position = Vector3(c.x + 0.2, y0 + h - 0.42, c.z)
+		fan.scale = Vector3.ONE * 1.25
+		add_child(fan)
 	Real.place(self, "fancy_picture_frame_01", Vector3(c.x + 2.58, y0 + 1.5, c.z + 0.8), 0.0, -PI * 0.5, Color.WHITE, 0.75)
 	Real.place(self, "wall_clock", Vector3(c.x + 2.58, y0 + 1.75, c.z - 0.5), 0.0, -PI * 0.5, Color.WHITE, 0.32)
 	Real.place(self, "ornate_mirror_01", Vector3(c.x - 0.3, y0 + 1.0, zb - 0.2), 0.9, PI, Color.WHITE, 0.0)

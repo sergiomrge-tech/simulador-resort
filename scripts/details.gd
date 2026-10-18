@@ -111,10 +111,10 @@ static func thatch_fringe(parent: Node, c: Vector3, half: float, y: float, col: 
 
 ## Tocha tiki de bambu. Devolve a luz (o mundo liga à noite).
 static func tiki_torch(parent: Node, p: Vector3) -> OmniLight3D:
-	B.cyl(parent, 0.045, 0.06, 1.7, p + Vector3(0, 0.85, 0), m(Color(0.86, 0.7, 0.4)), 8)
-	for y in [0.4, 0.9, 1.4]:
-		B.cyl(parent, 0.065, 0.065, 0.04, p + Vector3(0, y, 0), m(Color(0.6, 0.45, 0.25)), 8)
-	B.cyl(parent, 0.11, 0.07, 0.22, p + Vector3(0, 1.78, 0), m(Color(0.5, 0.35, 0.2)), 10)
+	# haste de bambu com nós, cordas e copo de barro: modelo do Blender (tools/gen_code_props.py)
+	if Real.place(parent, "g:tiki_torch", p, -1.0, 0.0, Color.WHITE, 0.0, false) == null:
+		B.cyl(parent, 0.045, 0.06, 1.7, p + Vector3(0, 0.85, 0), m(Color(0.86, 0.7, 0.4)), 8)
+		B.cyl(parent, 0.11, 0.07, 0.22, p + Vector3(0, 1.78, 0), m(Color(0.5, 0.35, 0.2)), 10)
 	var flame: = B.sphere(parent, 0.11, p + Vector3(0, 1.98, 0), P.glow(Color(1.0, 0.55, 0.15), 4.0), Vector3(0.8, 1.6, 0.8))
 	flame.name = "TikiFlame"
 	var l: = OmniLight3D.new()
@@ -127,7 +127,8 @@ static func tiki_torch(parent: Node, p: Vector3) -> OmniLight3D:
 
 ## Poste com placas-seta: arrows = [[texto, ângulo, cor], ...]
 static func signpost(parent: Node, p: Vector3, arrows: Array) -> void :
-	B.cyl(parent, 0.06, 0.07, 2.6, p + Vector3(0, 1.3, 0), m(Color(0.6, 0.42, 0.25)), 8)
+	if Real.place(parent, "g:signpost_post", p, -1.0, 0.0, Color.WHITE, 0.0, false) == null:
+		B.cyl(parent, 0.06, 0.07, 2.6, p + Vector3(0, 1.3, 0), m(Color(0.6, 0.42, 0.25)), 8)
 	var y: = 2.3
 	for a in arrows:
 		var piv: = Node3D.new()
@@ -135,11 +136,12 @@ static func signpost(parent: Node, p: Vector3, arrows: Array) -> void :
 		piv.rotation.y = float(a[1])
 		parent.add_child(piv)
 		var col: Color = a[2]
-		B.box(piv, Vector3(1.3, 0.3, 0.05), Vector3(0.7, 0, 0), m(col))
-		var tip: = B.cyl(piv, 0.0, 0.21, 0.05, Vector3(1.42, 0, 0), m(col), 3)
-		tip.rotation = Vector3(PI * 0.5, 0, PI * 0.5)
+		if Real.place(piv, "g:sign_arrow", Vector3(0, -0.15, 0), -1.0, 0.0, col.lerp(Color.WHITE, 0.3), 0.0, false) == null:
+			B.box(piv, Vector3(1.3, 0.3, 0.05), Vector3(0.7, 0, 0), m(col))
+			var tip: = B.cyl(piv, 0.0, 0.21, 0.05, Vector3(1.42, 0, 0), m(col), 3)
+			tip.rotation = Vector3(PI * 0.5, 0, PI * 0.5)
 		for side in [1.0, -1.0]:
-			var l: = B.label(piv, str(a[0]), Vector3(0.68, 0, side * 0.03), 44, Color.WHITE, col.darkened(0.5))
+			var l: = B.label(piv, str(a[0]), Vector3(0.68, 0, side * 0.034), 44, Color.WHITE, col.darkened(0.5))
 			l.rotation.y = 0.0 if side > 0 else PI
 		y -= 0.42
 
@@ -213,10 +215,11 @@ static func open_sign(parent: Node, p: Vector3, rot: float) -> Label3D:
 	piv.position = p
 	piv.rotation.y = rot
 	parent.add_child(piv)
-	for sx in [-1.0, 1.0]:
-		B.box(piv, Vector3(0.01, 0.25, 0.01), Vector3(sx * 0.25, 0.15, 0), m(Color(0.3, 0.25, 0.2)))
-	B.box(piv, Vector3(0.7, 0.26, 0.04), Vector3(0, -0.08, 0), m(Color(0.98, 0.95, 0.85)))
-	var l: = B.label(piv, "ABERTO", Vector3(0, -0.08, 0.025), 40, Color(0.15, 0.6, 0.25), Color(1, 1, 1, 0.9))
+	if Real.place(piv, "g:open_sign", Vector3(0, -0.21, 0), -1.0, 0.0, Color.WHITE, 0.0, false) == null:
+		for sx in [-1.0, 1.0]:
+			B.box(piv, Vector3(0.01, 0.25, 0.01), Vector3(sx * 0.25, 0.15, 0), m(Color(0.3, 0.25, 0.2)))
+		B.box(piv, Vector3(0.7, 0.26, 0.04), Vector3(0, -0.08, 0), m(Color(0.98, 0.95, 0.85)))
+	var l: = B.label(piv, "ABERTO", Vector3(0, -0.08, 0.034), 40, Color(0.15, 0.6, 0.25), Color(1, 1, 1, 0.9))
 	l.pixel_size = 0.004
 	return l
 
@@ -233,7 +236,8 @@ static func sand_castle(parent: Node, p: Vector3) -> void :
 		sh.rotation.x = PI * 0.5 - 0.05
 
 static func starfish(parent: Node, p: Vector3, col: = Color(1.0, 0.5, 0.35)) -> void :
-	Real.place(parent, "lambis_shell", p, 0.13, p.x * 3.0, col.lerp(Color.WHITE, 0.6))
+	if Real.place(parent, "g:starfish", p, -1.0, p.x * 3.0, col, 0.0, true) == null:
+		Real.place(parent, "lambis_shell", p, 0.13, p.x * 3.0, col.lerp(Color.WHITE, 0.6))
 
 static func crab(parent: Node, p: Vector3, range_m: = 1.6) -> Node3D:
 	var c: = Node3D.new()
@@ -264,11 +268,12 @@ static func volley_net(parent: Node, c: Vector3, rot: float) -> void :
 	piv.position = c
 	piv.rotation.y = rot
 	parent.add_child(piv)
-	for sx in [-1.0, 1.0]:
-		B.cyl(piv, 0.05, 0.05, 2.5, Vector3(sx * 4.0, 1.25, 0), m(Color(0.95, 0.95, 0.95)), 8)
-	B.box(piv, Vector3(8.0, 0.08, 0.02), Vector3(0, 2.4, 0), m(Color(0.95, 0.95, 0.95)))
-	var net: = B.box(piv, Vector3(8.0, 0.8, 0.01), Vector3(0, 1.98, 0), m(Color(0.15, 0.15, 0.18, 0.55)))
-	net.name = "Net"
+	if Real.place(piv, "g:volley_net", Vector3.ZERO, -1.0, 0.0, Color.WHITE, 0.0, false) == null:
+		for sx in [-1.0, 1.0]:
+			B.cyl(piv, 0.05, 0.05, 2.5, Vector3(sx * 4.0, 1.25, 0), m(Color(0.95, 0.95, 0.95)), 8)
+		B.box(piv, Vector3(8.0, 0.08, 0.02), Vector3(0, 2.4, 0), m(Color(0.95, 0.95, 0.95)))
+		var net: = B.box(piv, Vector3(8.0, 0.8, 0.01), Vector3(0, 1.98, 0), m(Color(0.15, 0.15, 0.18, 0.55)))
+		net.name = "Net"
 	B.sphere(piv, 0.11, Vector3(1.2, 0.11, 2.0), m(Color(1.0, 0.9, 0.3), 0.5))
 	# linhas da quadra na areia
 	for sz in [-4.0, 4.0]:
@@ -295,11 +300,12 @@ static func beach_spot(parent: Node, p: Vector3, seed_: int) -> void :
 # ------------------------------------------------------------------ vila
 ## Poste de luz de madeira com cruzeta (os fios são ligados com wire()).
 static func power_pole(parent: Node, p: Vector3) -> Vector3:
-	B.cyl(parent, 0.1, 0.13, 7.0, p + Vector3(0, 3.5, 0), m(Color(0.5, 0.36, 0.24)), 8)
-	B.box(parent, Vector3(1.4, 0.1, 0.1), p + Vector3(0, 6.6, 0), m(Color(0.45, 0.32, 0.22)))
-	for sx in [-0.6, 0.0, 0.6]:
-		B.cyl(parent, 0.03, 0.04, 0.12, p + Vector3(sx, 6.72, 0), m(Color(0.9, 0.95, 1.0), 0.3), 6)
-	return p + Vector3(0, 6.75, 0)
+	if Real.place(parent, "g:power_pole", p, -1.0, 0.0, Color.WHITE, 0.0, false) == null:
+		B.cyl(parent, 0.1, 0.13, 7.0, p + Vector3(0, 3.5, 0), m(Color(0.5, 0.36, 0.24)), 8)
+		B.box(parent, Vector3(1.4, 0.1, 0.1), p + Vector3(0, 6.6, 0), m(Color(0.45, 0.32, 0.22)))
+		for sx in [-0.6, 0.0, 0.6]:
+			B.cyl(parent, 0.03, 0.04, 0.12, p + Vector3(sx, 6.72, 0), m(Color(0.9, 0.95, 1.0), 0.3), 6)
+	return p + Vector3(0, 6.82, 0)
 
 static func wire(parent: Node, a: Vector3, b: Vector3, sag: = 0.6) -> void :
 	var segs: = 8
@@ -349,8 +355,9 @@ static func stall(parent: Node, p: Vector3, rot: float, awning: Color, goods: Ar
 	Real.place(piv, "wooden_crate_02", Vector3(0.9, 0.89, -0.4), 0.0, 0.2, Color.WHITE, 0.4)
 
 static func mailbox(parent: Node, p: Vector3, rot: float) -> void :
-	B.cyl(parent, 0.04, 0.04, 1.0, p + Vector3(0, 0.5, 0), m(Color(0.4, 0.3, 0.2)), 6)
-	B.box(parent, Vector3(0.3, 0.25, 0.42), p + Vector3(0, 1.1, 0), m(Color(1.0, 0.85, 0.2)), false, rot)
+	if Real.place(parent, "g:mailbox", p, -1.0, rot, Color.WHITE, 0.0, false) == null:
+		B.cyl(parent, 0.04, 0.04, 1.0, p + Vector3(0, 0.5, 0), m(Color(0.4, 0.3, 0.2)), 6)
+		B.box(parent, Vector3(0.3, 0.25, 0.42), p + Vector3(0, 1.1, 0), m(Color(1.0, 0.85, 0.2)), false, rot)
 
 static func cat(parent: Node, p: Vector3, rot: float, col: Color) -> void :
 	# gato real (Quaternius Animal Pack Vol.2, CC0, suavizado no Blender)

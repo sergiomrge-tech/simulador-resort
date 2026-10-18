@@ -250,6 +250,8 @@ def animals_gen():
         subprocess.check_call([sys.executable, os.path.join(ROOT, "tools", "convert_crab.py"), os.path.join(tmp, "crab", "crab.blend"), f"{gen}/crab.glb"])
     if FORCE or not os.path.exists(f"{gen}/towel.glb"):
         subprocess.check_call([sys.executable, os.path.join(ROOT, "tools", "gen_beach_props.py")])
+    if FORCE or not os.path.exists(f"{gen}/tiki_torch.glb"):
+        subprocess.check_call([sys.executable, os.path.join(ROOT, "tools", "gen_code_props.py")])
 
 def ambientcg(asset, name):
     import zipfile, io
