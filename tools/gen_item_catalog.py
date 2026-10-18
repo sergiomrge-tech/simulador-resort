@@ -24,6 +24,8 @@ Categorias (prefixo):
   NOU  modelo baixado mas ainda sem uso no código (disponível)
   TEX  textura/material (assets/tex, tex_hd)   AUD  som/música   ICO  ícone de interface
   FNT  fonte                                   SHD  shader        ANI  animação de personagem
+  PCA  peça construída por código dentro de uma função (caixa, cilindro, parede, telhado…)
+  MAT  material nomeado M.xxx (textura + cor)  COR  cor de paleta (pele, camisa, cabelo…)
   SCR  script (módulo do jogo)                 PES  nome de personagem (moradores/hóspedes)
 """
 import json, os, re, sys
@@ -290,6 +292,60 @@ for it in items:
     if it["categoria"] == "SUP" and it["chave"] in spoil:
         it["estraga_por_dia"] = spoil[it["chave"]]
 
+
+# ---------------------------------------------------------------- materiais M.xxx
+mat_defs = {}
+for f, lines in SRC.items():
+    for i, ln in enumerate(lines):
+        m = re.match(r"\s*M\.(\w+)\s*=\s*(.*)", ln)
+        if m and m.group(1) not in mat_defs:
+            mat_defs[m.group(1)] = (f, i + 1, m.group(2).strip()[:110])
+for name, (f, ln, expr) in sorted(mat_defs.items()):
+    usos = []
+    pat = re.compile(r"\bM\." + name + r"\b")
+    for ff, lines in SRC.items():
+        for i, l2 in enumerate(lines):
+            if pat.search(l2) and not re.match(r"\s*M\." + name + r"\s*=", l2):
+                usos.append({"arquivo": ff, "linha": i + 1, "funcao": enclosing_func(lines, i)})
+    add("MAT", name, humanize(name), "%s:%d" % (f, ln), usos, {"definicao": expr})
+
+# ---------------------------------------------------------------- paletas de cor dos personagens
+gtxt = "\n".join(SRC["guest.gd"])
+for pal, rot in (("SKINS", "Pele"), ("SHIRTS", "Camisa"), ("SHORTS", "Bermuda"), ("HAIRS", "Cabelo"), ("PRINT_COLS", "Estampa")):
+    m = re.search(r"const %s: = \[(.*?)\]\n" % pal, gtxt, re.S)
+    if m:
+        for n, c in enumerate(re.findall(r"Color\(([^)]*)\)", m.group(1))):
+            add("COR", "%s_%d" % (pal, n), "%s %d" % (rot, n + 1), "guest.gd", [], {"rgb": c.replace(" ", "")})
+
+# ---------------------------------------------------------------- peças construídas por código (dentro das funções)
+PIECE = re.compile(r"\b(B\.(?:box|cyl|sphere|wall|platform|hip_roof|arch|label|_beam|rounded_box|model)|Real\.place|D\.[a-z_]+|P\.build|MeshInstance3D\.new)\(")
+PIECE_FILES = ("world.gd", "world_village.gd", "details.gd", "build.gd", "props.gd", "palm.gd", "guest.gd", "people.gd", "main.gd", "guests.gd", "village_life.gd")
+ordinals = {}
+for f in PIECE_FILES:
+    lines = SRC.get(f, [])
+    for i, ln in enumerate(lines):
+        st = ln.strip()
+        if st.startswith("#") or st.startswith("func ") or st.startswith("static func "):
+            continue
+        for m in PIECE.finditer(ln):
+            fn = enclosing_func(lines, i) or "(topo)"
+            callee = m.group(1)
+            k = (f, fn, callee)
+            ordinals[k] = ordinals.get(k, 0) + 1
+            args = ln[m.end():].strip().rstrip(")")[:110]
+            mat = re.search(r"\bM\.(\w+)", ln)
+            lit = re.search(r'"([^"]{3,40})"', ln)
+            comentario = ""
+            if i > 0 and lines[i - 1].strip().startswith("#"):
+                comentario = lines[i - 1].strip().lstrip("# ")[:90]
+            indent = len(ln) - len(ln.lstrip("\t"))
+            laco = any(re.match(r"\t{0,%d}(for|while)\b" % (indent - 1), lines[j].lstrip("\n")[:indent + 6].replace("\t", "\t")) and (len(lines[j]) - len(lines[j].lstrip("\t"))) < indent for j in range(max(0, i - 6), i))
+            nome = (lit.group(1) if lit and "Real.place" in callee or (lit and "model" in callee) else callee.split(".")[-1] + (" " + mat.group(1) if mat else ""))
+            add("PCA", "%s|%s|%s|%d" % (f, fn, callee, ordinals[k]), nome.replace("_", " "),
+                "%s (código)" % f, [{"arquivo": f, "linha": i + 1, "funcao": fn}],
+                {"chamada": callee, "args": args, "material": mat.group(1) if mat else "", "em_laco": laco,
+                 "comentario": comentario})
+
 # ---------------------------------------------------------------- saída
 items.sort(key=lambda d: (d["categoria"], d["codigo"]))
 os.makedirs("docs", exist_ok=True)
@@ -307,6 +363,8 @@ TITULOS = [
     ("NOU", "Modelos baixados ainda sem uso (disponíveis)"),
     ("TEX", "Texturas e materiais"), ("AUD", "Sons e músicas"), ("ICO", "Ícones de interface"),
     ("FNT", "Fontes"), ("SHD", "Shaders"), ("ANI", "Animações dos personagens"),
+    ("PCA", "Peças construídas por código (uma linha = uma peça; ver coluna Função)"),
+    ("MAT", "Materiais nomeados (M.xxx)"), ("COR", "Cores de paleta dos personagens"),
     ("SCR", "Scripts (módulos do jogo)"), ("PES", "Nomes de personagens"),
 ]
 by = {}
@@ -323,7 +381,13 @@ for cat, titulo in TITULOS:
     if not lst:
         continue
     out += ["## %s — %s (%d)" % (cat, titulo, len(lst)), ""]
-    if cat in ("MOD", "NAT", "NOU", "PRC", "CEN", "PRT", "TEX", "AUD", "ICO", "FNT", "SHD", "ANI", "SCR", "PES"):
+    if cat == "PCA":
+        out += ["| Código | Peça | Função | Chamada | Material | Linha | Obs |", "|---|---|---|---|---|---|---|"]
+        for d in lst:
+            u = d["usos"][0]
+            obs = (d.get("comentario") or "") + (" [em laço]" if d.get("em_laco") else "")
+            out.append("| %s | %s | `%s` | `%s` | %s | %s:%d | %s |" % (d["codigo"], d["nome"], u["funcao"], d["chamada"], d["material"] or "—", u["arquivo"], u["linha"], obs.replace("|", "/")))
+    elif cat in ("MOD", "NAT", "NOU", "PRC", "CEN", "PRT", "TEX", "AUD", "ICO", "FNT", "SHD", "ANI", "SCR", "PES", "PCA", "MAT", "COR"):
         out += ["| Código | Nome | Chave | Fonte | Usado em |", "|---|---|---|---|---|"]
         for d in lst:
             u = d["usos"]

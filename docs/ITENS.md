@@ -2,7 +2,7 @@
 
 Gerado por `python3 tools/gen_item_catalog.py` — **não edite à mão**. Os códigos ficam em `docs/itens_registro.json` e nunca mudam. Para pedir uma alteração, cite o código (ex.: "troque o modelo de MOD-017").
 
-Total: 851 itens. MOD 102 · NAT 68 · PRC 31 · CEN 261 · PRT 9 · DSH 4 · SUP 6 · EXP 7 · STF 3 · UPG 15 · QST 4 · VIP 12 · EVT 2 · NOU 148 · TEX 28 · AUD 20 · ICO 31 · FNT 1 · SHD 12 · ANI 43 · SCR 28 · PES 16
+Total: 1795 itens. MOD 102 · NAT 68 · PRC 31 · CEN 261 · PRT 9 · DSH 4 · SUP 6 · EXP 7 · STF 3 · UPG 15 · QST 4 · VIP 12 · EVT 2 · NOU 148 · TEX 28 · AUD 20 · ICO 31 · FNT 1 · SHD 12 · ANI 43 · PCA 892 · MAT 24 · COR 28 · SCR 28 · PES 16
 
 ## MOD — Modelos 3D em uso (reais, baixados da web) (102)
 
@@ -910,6 +910,965 @@ Total: 851 itens. MOD 102 · NAT 68 · PRC 31 · CEN 261 · PRT 9 · DSH 4 · SU
 | ANI-041 | Sword idle | `Sword_Idle` | UAL (Quaternius CC0) | — |
 | ANI-042 | Walk formal loop | `Walk_Formal_Loop` | UAL (Quaternius CC0) | guest.gd:124 |
 | ANI-043 | Walk loop | `Walk_Loop` | UAL (Quaternius CC0) | guest.gd:124, guest.gd:174, main.gd:635 |
+
+## PCA — Peças construídas por código (uma linha = uma peça; ver coluna Função) (892)
+
+| Código | Peça | Função | Chamada | Material | Linha | Obs |
+|---|---|---|---|---|---|---|
+| PCA-001 | new | `_ground` | `MeshInstance3D.new` | — | world.gd:146 |  |
+| PCA-002 | wall | `_ground` | `B.wall` | — | world.gd:162 |  |
+| PCA-003 | wall | `_ground` | `B.wall` | — | world.gd:163 |  |
+| PCA-004 | wall | `_ground` | `B.wall` | — | world.gd:164 |  |
+| PCA-005 | wall | `_ground` | `B.wall` | — | world.gd:165 |  |
+| PCA-006 | wall | `_ground` | `B.wall` | — | world.gd:166 |  |
+| PCA-007 | new | `_ocean` | `MeshInstance3D.new` | — | world.gd:174 |  |
+| PCA-008 | wall | `_bounds` | `B.wall` | — | world.gd:187 |  |
+| PCA-009 | wall | `_bounds` | `B.wall` | — | world.gd:188 |  |
+| PCA-010 | wall | `_bounds` | `B.wall` | — | world.gd:189 |  |
+| PCA-011 | wall | `_bounds` | `B.wall` | — | world.gd:190 |  |
+| PCA-012 | wall | `_bounds` | `B.wall` | — | world.gd:191 |  |
+| PCA-013 | box | `_strip` | `B.box` | — | world.gd:200 |  |
+| PCA-014 | box teal | `_wall_x` | `B.box` | teal | world.gd:235 |  [em laço] |
+| PCA-015 | box plaster | `_wall_x` | `B.box` | plaster | world.gd:237 |  |
+| PCA-016 | box teal | `_wall_x` | `B.box` | teal | world.gd:240 |  |
+| PCA-017 | box teal | `_wall_x` | `B.box` | teal | world.gd:241 |  |
+| PCA-018 | box teal | `_wall_x` | `B.box` | teal | world.gd:242 |  |
+| PCA-019 | box plaster | `_wall_piece` | `B.box` | plaster | world.gd:262 |  |
+| PCA-020 | box terracotta | `_wall_piece` | `B.box` | terracotta | world.gd:264 |  |
+| PCA-021 | platform stone | `_reception` | `B.platform` | stone | world.gd:270 |  |
+| PCA-022 | box azulejo | `_reception` | `B.box` | azulejo | world.gd:271 |  |
+| PCA-023 | box plaster | `_reception` | `B.box` | plaster | world.gd:280 |  [em laço] |
+| PCA-024 | box planks | `_reception` | `B.box` | planks | world.gd:282 |  |
+| PCA-025 | hip roof thatch | `_reception` | `B.hip_roof` | thatch | world.gd:283 |  |
+| PCA-026 | thatch fringe | `_reception` | `D.thatch_fringe` | — | world.gd:284 |  |
+| PCA-027 | box planks | `_reception` | `B.box` | planks | world.gd:287 |  |
+| PCA-028 | box oak | `_reception` | `B.box` | oak | world.gd:288 |  |
+| PCA-029 | box terracotta | `_reception` | `B.box` | terracotta | world.gd:289 |  |
+| PCA-030 | box teal | `_reception` | `B.box` | teal | world.gd:290 |  |
+| PCA-031 | CashRegister 01 | `_reception` | `B.model` | — | world.gd:291 |  |
+| PCA-032 | lambis shell | `_reception` | `B.model` | — | world.gd:292 |  |
+| PCA-033 | potted plant 02 | `_reception` | `B.model` | — | world.gd:293 |  |
+| PCA-034 | potted plant 02 | `_reception` | `B.model` | — | world.gd:294 |  |
+| PCA-035 | planter pot clay | `_reception` | `B.model` | — | world.gd:295 |  |
+| PCA-036 | wicker basket 01 | `_reception` | `B.model` | — | world.gd:296 |  |
+| PCA-037 | box oak | `_reception` | `B.box` | oak | world.gd:298 |  |
+| PCA-038 | box teal | `_reception` | `B.box` | teal | world.gd:300 |  [em laço] |
+| PCA-039 | label | `_reception` | `B.label` | — | world.gd:301 |  |
+| PCA-040 | box stone | `_pool` | `B.box` | stone | world.gd:328 |  |
+| PCA-041 | box stone | `_pool` | `B.box` | stone | world.gd:329 |  |
+| PCA-042 | box stone | `_pool` | `B.box` | stone | world.gd:330 |  |
+| PCA-043 | box stone | `_pool` | `B.box` | stone | world.gd:331 |  |
+| PCA-044 | box | `_pool` | `B.box` | — | world.gd:334 |  |
+| PCA-045 | box | `_pool` | `B.box` | — | world.gd:335 |  |
+| PCA-046 | box | `_pool` | `B.box` | — | world.gd:336 |  |
+| PCA-047 | box | `_pool` | `B.box` | — | world.gd:337 |  |
+| PCA-048 | box | `_pool` | `B.box` | — | world.gd:346 |  |
+| PCA-049 | box | `_pool` | `B.box` | — | world.gd:347 |  |
+| PCA-050 | box | `_pool` | `B.box` | — | world.gd:348 |  |
+| PCA-051 | box | `_pool` | `B.box` | — | world.gd:349 |  |
+| PCA-052 | box | `_pool` | `B.box` | — | world.gd:350 |  |
+| PCA-053 | new | `_pool` | `MeshInstance3D.new` | — | world.gd:352 |  |
+| PCA-054 | wall | `_pool` | `B.wall` | — | world.gd:364 |  |
+| PCA-055 | wall | `_pool` | `B.wall` | — | world.gd:365 |  |
+| PCA-056 | wall | `_pool` | `B.wall` | — | world.gd:366 |  |
+| PCA-057 | wall | `_pool` | `B.wall` | — | world.gd:367 |  |
+| PCA-058 | wall | `_pool` | `B.wall` | — | world.gd:368 |  |
+| PCA-059 | lifebuoy | `_pool` | `B.model` | — | world.gd:378 |  |
+| PCA-060 | box planks | `_pool` | `B.box` | planks | world.gd:379 |  |
+| PCA-061 | box rattan | `_lounger` | `B.box` | rattan | world.gd:392 |  |
+| PCA-062 | box rattan | `_lounger` | `B.box` | rattan | world.gd:393 |  |
+| PCA-063 | box linen teal | `_lounger` | `B.box` | linen_teal | world.gd:394 |  |
+| PCA-064 | box linen teal | `_lounger` | `B.box` | linen_teal | world.gd:395 |  |
+| PCA-065 | box linen | `_lounger` | `B.box` | linen | world.gd:396 |  |
+| PCA-066 | cyl darkwood | `_lounger` | `B.cyl` | darkwood | world.gd:399 |  [em laço] |
+| PCA-067 | box | `_lounger` | `B.box` | — | world.gd:402 |  [em laço] |
+| PCA-068 | cyl darkwood | `_lounger` | `B.cyl` | darkwood | world.gd:404 |  [em laço] |
+| PCA-069 | box | `_lounger` | `B.box` | — | world.gd:407 |  [em laço] |
+| PCA-070 | cyl darkwood | `_umbrella` | `B.cyl` | darkwood | world.gd:418 |  |
+| PCA-071 | cyl oak | `_umbrella` | `B.cyl` | oak | world.gd:419 |  |
+| PCA-072 | sphere oak | `_umbrella` | `B.sphere` | oak | world.gd:420 |  |
+| PCA-073 | new | `_umbrella` | `MeshInstance3D.new` | — | world.gd:424 |  |
+| PCA-074 | new | `_umbrella` | `MeshInstance3D.new` | — | world.gd:429 |  |
+| PCA-075 | k:coconut-half | `_coconut_cup` | `Real.place` | — | world.gd:567 |  |
+| PCA-076 | cyl | `_coconut_cup` | `B.cyl` | — | world.gd:568 |  |
+| PCA-077 | carved wooden plate | `_petisco_plate` | `Real.place` | — | world.gd:576 |  |
+| PCA-078 | croissant | `_petisco_plate` | `Real.place` | — | world.gd:577 |  |
+| PCA-079 | k:bread | `_petisco_plate` | `Real.place` | — | world.gd:578 |  |
+| PCA-080 | food lychee 01 | `_petisco_plate` | `Real.place` | — | world.gd:579 |  |
+| PCA-081 | platform deckwood | `_bungalow` | `B.platform` | deckwood | world.gd:589 |  |
+| PCA-082 | box post | `_bungalow` | `B.box` | post | world.gd:592 |  [em laço] |
+| PCA-083 | cyl post | `_bungalow` | `B.cyl` | post | world.gd:604 |  [em laço] |
+| PCA-084 | box planks | `_bungalow` | `B.box` | planks | world.gd:605 |  |
+| PCA-085 | hip roof thatch | `_bungalow` | `B.hip_roof` | thatch | world.gd:606 |  |
+| PCA-086 | thatch fringe | `_bungalow` | `D.thatch_fringe` | — | world.gd:607 |  |
+| PCA-087 | wooden stool 01 | `_bungalow` | `B.model` | — | world.gd:610 |  |
+| PCA-088 | side table 01 | `_bungalow` | `B.model` | — | world.gd:611 |  |
+| PCA-089 | wooden bucket 01 | `_bungalow` | `B.model` | — | world.gd:612 |  |
+| PCA-090 | box floor in | `_bungalow` | `B.box` | floor_in | world.gd:617 |  |
+| PCA-091 | wall | `_bungalow` | `B.wall` | — | world.gd:618 |  |
+| PCA-092 | painted wooden nightstand | `_bungalow` | `B.model` | — | world.gd:619 |  |
+| PCA-093 | wooden lantern 01 | `_bungalow` | `B.model` | — | world.gd:620 |  |
+| PCA-094 | potted plant 02 | `_bungalow` | `B.model` | — | world.gd:621 |  |
+| PCA-095 | wicker basket 02 | `_bungalow` | `B.model` | — | world.gd:622 |  |
+| PCA-096 | painted wooden cabinet | `_bungalow` | `Real.place` | — | world.gd:624 | decoração real (Poly Haven, CC0): armário, ventilador de teto, quadros, espelho, mala e de |
+| PCA-097 | ceiling fan | `_bungalow` | `Real.place` | — | world.gd:625 |  |
+| PCA-098 | fancy picture frame 01 | `_bungalow` | `Real.place` | — | world.gd:626 |  |
+| PCA-099 | wall clock | `_bungalow` | `Real.place` | — | world.gd:627 |  |
+| PCA-100 | ornate mirror 01 | `_bungalow` | `Real.place` | — | world.gd:628 |  |
+| PCA-101 | vintage suitcase | `_bungalow` | `Real.place` | — | world.gd:629 |  |
+| PCA-102 | alarm clock 01 | `_bungalow` | `Real.place` | — | world.gd:630 |  |
+| PCA-103 | box linen sand | `_bungalow` | `B.box` | linen_sand | world.gd:642 |  |
+| PCA-104 | g:towel | `_bungalow` | `Real.place` | — | world.gd:646 |  [em laço] |
+| PCA-105 | box linen sand | `_bungalow` | `B.box` | linen_sand | world.gd:650 |  |
+| PCA-106 | g:towel | `_bungalow` | `Real.place` | — | world.gd:651 |  |
+| PCA-107 | g:towel | `_bungalow` | `Real.place` | — | world.gd:654 |  |
+| PCA-108 | g:towel | `_bungalow` | `Real.place` | — | world.gd:657 |  |
+| PCA-109 | g:towel | `_bungalow` | `Real.place` | — | world.gd:660 |  |
+| PCA-110 | g:towel | `_bungalow` | `Real.place` | — | world.gd:661 |  |
+| PCA-111 | g:towel | `_bungalow` | `Real.place` | — | world.gd:662 |  |
+| PCA-112 | trashbag | `_bungalow` | `Real.place` | — | world.gd:666 | lixo real (Poly Haven / Kenney, CC0): saco, copos, garrafa, resto de fruta, pão |
+| PCA-113 | k:cup | `_bungalow` | `Real.place` | — | world.gd:667 |  |
+| PCA-114 | k:cup | `_bungalow` | `Real.place` | — | world.gd:670 |  |
+| PCA-115 | k:bottle | `_bungalow` | `Real.place` | — | world.gd:671 |  |
+| PCA-116 | food apple 01 | `_bungalow` | `Real.place` | — | world.gd:674 |  |
+| PCA-117 | k:bread | `_bungalow` | `Real.place` | — | world.gd:675 |  |
+| PCA-118 | label | `_bungalow` | `B.label` | — | world.gd:712 |  |
+| PCA-119 | GothicBed 01 | `_upgrade_meshes` | `B.model` | — | world.gd:762 |  |
+| PCA-120 | GothicBed 01 | `_upgrade_meshes` | `B.model` | — | world.gd:765 |  |
+| PCA-121 | cyl darkwood | `_upgrade_meshes` | `B.cyl` | darkwood | world.gd:772 |  [em laço] |
+| PCA-122 | box darkwood | `_upgrade_meshes` | `B.box` | darkwood | world.gd:774 |  [em laço] |
+| PCA-123 | box darkwood | `_upgrade_meshes` | `B.box` | darkwood | world.gd:776 |  [em laço] |
+| PCA-124 | box voile | `_upgrade_meshes` | `B.box` | voile | world.gd:780 |  [em laço] |
+| PCA-125 | box voile | `_upgrade_meshes` | `B.box` | voile | world.gd:782 |  |
+| PCA-126 | box rug | `_upgrade_meshes` | `B.box` | rug | world.gd:785 |  |
+| PCA-127 | box rug teal | `_upgrade_meshes` | `B.box` | rug_teal | world.gd:789 |  |
+| PCA-128 | throw pillows 01 | `_upgrade_meshes` | `B.model` | — | world.gd:790 |  |
+| PCA-129 | box rug | `_upgrade_meshes` | `B.box` | rug | world.gd:795 |  |
+| PCA-130 | box darkwood | `_upgrade_meshes` | `B.box` | darkwood | world.gd:796 |  |
+| PCA-131 | hanging picture frame 02 | `_upgrade_meshes` | `B.model` | — | world.gd:797 |  |
+| PCA-132 | ceramic vase 02 | `_upgrade_meshes` | `B.model` | — | world.gd:798 |  |
+| PCA-133 | Rockingchair 01 | `_upgrade_meshes` | `B.model` | — | world.gd:802 |  |
+| PCA-134 | side table 01 | `_upgrade_meshes` | `B.model` | — | world.gd:803 |  |
+| PCA-135 | vintage oil lamp | `_upgrade_meshes` | `B.model` | — | world.gd:804 |  |
+| PCA-136 | pachira aquatica 01 | `_upgrade_meshes` | `B.model` | — | world.gd:805 |  |
+| PCA-137 | ceiling fan | `_upgrade_meshes` | `B.model` | — | world.gd:818 |  |
+| PCA-138 | box | `_upgrade_meshes` | `B.box` | — | world.gd:825 |  |
+| PCA-139 | box | `_upgrade_meshes` | `B.box` | — | world.gd:826 |  |
+| PCA-140 | box | `_upgrade_meshes` | `B.box` | — | world.gd:827 |  |
+| PCA-141 | ornate mirror 01 | `_upgrade_meshes` | `B.model` | — | world.gd:832 |  |
+| PCA-142 | box darkwood | `_upgrade_meshes` | `B.box` | darkwood | world.gd:833 |  |
+| PCA-143 | box linen teal | `_upgrade_meshes` | `B.box` | linen_teal | world.gd:834 |  |
+| PCA-144 | box stone | `_upgrade_meshes` | `B.box` | stone | world.gd:838 |  |
+| PCA-145 | box darkwood | `_upgrade_meshes` | `B.box` | darkwood | world.gd:839 |  |
+| PCA-146 | cyl ceramic | `_upgrade_meshes` | `B.cyl` | ceramic | world.gd:840 |  |
+| PCA-147 | ceramic vase 02 | `_upgrade_meshes` | `B.model` | — | world.gd:841 |  |
+| PCA-148 | wicker basket 01 | `_upgrade_meshes` | `B.model` | — | world.gd:842 |  |
+| PCA-149 | box voile | `_upgrade_meshes` | `B.box` | voile | world.gd:843 |  |
+| PCA-150 | box planks | `_upgrade_sign` | `B.box` | planks | world.gd:870 |  |
+| PCA-151 | label | `_upgrade_sign` | `B.label` | — | world.gd:871 |  |
+| PCA-152 | new | `_birds_spawn` | `MeshInstance3D.new` | — | world.gd:944 |  [em laço] |
+| PCA-153 | platform deckwood | `_bar` | `B.platform` | deckwood | world.gd:1004 |  |
+| PCA-154 | cyl post | `_bar` | `B.cyl` | post | world.gd:1008 |  [em laço] |
+| PCA-155 | hip roof thatch | `_bar` | `B.hip_roof` | thatch | world.gd:1009 |  |
+| PCA-156 | box | `_bar` | `B.box` | — | world.gd:1013 |  |
+| PCA-157 | box | `_bar` | `B.box` | — | world.gd:1014 |  |
+| PCA-158 | box | `_bar` | `B.box` | — | world.gd:1015 |  |
+| PCA-159 | box oak | `_bar` | `B.box` | oak | world.gd:1016 |  |
+| PCA-160 | box oak | `_bar` | `B.box` | oak | world.gd:1017 |  |
+| PCA-161 | box oak | `_bar` | `B.box` | oak | world.gd:1018 |  |
+| PCA-162 | box oak | `_bar` | `B.box` | oak | world.gd:1020 |  |
+| PCA-163 | cyl | `_bar` | `B.cyl` | — | world.gd:1024 |  [em laço] |
+| PCA-164 | lambis shell | `_bar` | `B.model` | — | world.gd:1025 |  |
+| PCA-165 | wooden bucket 01 | `_bar` | `B.model` | — | world.gd:1026 |  |
+| PCA-166 | k:coconut | `_bar` | `Real.place` | — | world.gd:1029 |  [em laço] |
+| PCA-167 | bar chair round 01 | `_bar` | `B.model` | — | world.gd:1034 |  [em laço] |
+| PCA-168 | outdoor table chair set 01 | `_bar` | `B.model` | — | world.gd:1042 |  |
+| PCA-169 | outdoor table chair set 01 | `_bar` | `B.model` | — | world.gd:1045 |  |
+| PCA-170 | wooden lantern 01 | `_bar` | `B.model` | — | world.gd:1051 |  |
+| PCA-171 | box planks | `_bar` | `B.box` | planks | world.gd:1056 |  |
+| PCA-172 | label | `_bar` | `B.label` | — | world.gd:1057 |  |
+| PCA-173 | label | `_bar` | `B.label` | — | world.gd:1058 |  |
+| PCA-174 | box planks | `_bar` | `B.box` | planks | world.gd:1059 |  |
+| PCA-175 | sphere | `_string_lights` | `B.sphere` | — | world.gd:1081 |  [em laço] |
+| PCA-176 | box | `_cooler` | `B.box` | — | world.gd:1090 |  |
+| PCA-177 | box | `_cooler` | `B.box` | — | world.gd:1091 |  |
+| PCA-178 | box | `_cooler` | `B.box` | — | world.gd:1093 |  |
+| PCA-179 | place | `_fruit_row` | `Real.place` | — | world.gd:1103 |  [em laço] |
+| PCA-180 | box darkwood | `_chalkboard` | `B.box` | darkwood | world.gd:1117 |  |
+| PCA-181 | box | `_chalkboard` | `B.box` | — | world.gd:1118 |  |
+| PCA-182 | label | `_chalkboard` | `B.label` | — | world.gd:1119 |  |
+| PCA-183 | label | `_chalkboard` | `B.label` | — | world.gd:1125 |  |
+| PCA-184 | box linen teal | `_beach_props` | `B.box` | linen_teal | world.gd:1137 |  [em laço] |
+| PCA-185 | wicker basket 02 | `_beach_props` | `B.model` | — | world.gd:1139 |  |
+| PCA-186 | cyl post | `_beach_props` | `B.cyl` | post | world.gd:1146 |  [em laço] |
+| PCA-187 | cyl oak | `_beach_props` | `B.cyl` | oak | world.gd:1147 |  |
+| PCA-188 | new | `_beach_props` | `MeshInstance3D.new` | — | world.gd:1148 |  |
+| PCA-189 | wall | `_beach_props` | `B.wall` | — | world.gd:1160 |  |
+| PCA-190 | lambis shell | `_beach_props` | `B.model` | — | world.gd:1162 |  |
+| PCA-191 | wooden bucket 01 | `_beach_props` | `B.model` | — | world.gd:1163 |  |
+| PCA-192 | lambis shell | `_shore_details` | `B.model` | — | world.gd:1172 |  [em laço] |
+| PCA-193 | place | `_shore_details` | `Real.place` | — | world.gd:1179 |  [em laço] |
+| PCA-194 | k:log large | `_shore_details` | `Real.place` | — | world.gd:1182 |  [em laço] |
+| PCA-195 | place | `_shore_details` | `Real.place` | — | world.gd:1187 |  [em laço] |
+| PCA-196 | island tree 01 | `_shore_details` | `B.model` | — | world.gd:1189 |  [em laço] |
+| PCA-197 | sphere | `_shore_details` | `B.sphere` | — | world.gd:1191 |  |
+| PCA-198 | box linen sand | `_shore_details` | `B.box` | linen_sand | world.gd:1193 |  |
+| PCA-199 | new | `_redes` | `MeshInstance3D.new` | — | world.gd:1278 |  |
+| PCA-200 |  beam | `_redes` | `B._beam` | — | world.gd:1286 |  [em laço] |
+| PCA-201 | box oak | `_lantern_posts` | `B.box` | oak | world.gd:1299 |  [em laço] |
+| PCA-202 | box oak | `_lantern_posts` | `B.box` | oak | world.gd:1300 |  [em laço] |
+| PCA-203 | wooden lantern 01 | `_lantern_posts` | `B.model` | — | world.gd:1301 |  [em laço] |
+| PCA-204 | new | `_lantern_posts` | `MeshInstance3D.new` | — | world.gd:1302 |  [em laço] |
+| PCA-205 | box post | `_signs` | `B.box` | post | world.gd:1350 |  |
+| PCA-206 | box post | `_signs` | `B.box` | post | world.gd:1351 |  |
+| PCA-207 | box planks | `_signs` | `B.box` | planks | world.gd:1352 |  |
+| PCA-208 | label | `_signs` | `B.label` | — | world.gd:1353 |  |
+| PCA-209 | label | `_signs` | `B.label` | — | world.gd:1354 |  |
+| PCA-210 | new | `_mtn_show` | `MeshInstance3D.new` | — | world.gd:1646 |  |
+| PCA-211 | wall | `_mountains` | `B.wall` | — | world.gd:1831 |  |
+| PCA-212 | wall | `_mountains` | `B.wall` | — | world.gd:1832 |  |
+| PCA-213 | wall | `_mountains` | `B.wall` | — | world.gd:1833 |  |
+| PCA-214 | cyl get | `_lot_post` | `B.cyl` | get | world.gd:1855 |  |
+| PCA-215 | box | `_lot` | `B.box` | — | world.gd:1873 |  |
+| PCA-216 | box | `_lot` | `B.box` | — | world.gd:1881 |  [em laço] |
+| PCA-217 | box | `_lot` | `B.box` | — | world.gd:1882 |  |
+| PCA-218 | box | `_lot` | `B.box` | — | world.gd:1883 |  |
+| PCA-219 | label | `_lot` | `B.label` | — | world.gd:1885 |  |
+| PCA-220 | label | `_lot` | `B.label` | — | world.gd:1887 |  |
+| PCA-221 | label | `_lot` | `B.label` | — | world.gd:1888 |  |
+| PCA-222 | label | `_lot` | `B.label` | — | world.gd:1889 |  |
+| PCA-223 | box | `_build_lots` | `B.box` | — | world.gd:1898 | tampa o buraco da piscina com areia enquanto ela não existe |
+| PCA-224 |  beam | `hut_details` | `B._beam` | — | world.gd:1933 |  [em laço] |
+| PCA-225 |  beam | `hut_details` | `B._beam` | — | world.gd:1937 |  [em laço] |
+| PCA-226 | new | `hut_details` | `MeshInstance3D.new` | — | world.gd:1945 |  [em laço] |
+| PCA-227 |  beam | `hut_details` | `B._beam` | — | world.gd:1957 |  [em laço] |
+| PCA-228 | multimesh | `hut_details` | `D.multimesh` | — | world.gd:1968 |  |
+| PCA-229 | cyl | `_bungalow_details` | `B.cyl` | — | world.gd:1980 |  [em laço] |
+| PCA-230 |  beam | `_bungalow_details` | `B._beam` | — | world.gd:1983 |  [em laço] |
+| PCA-231 |  beam | `_bungalow_details` | `B._beam` | — | world.gd:1984 |  |
+| PCA-232 | box deckwood | `_bungalow_details` | `B.box` | deckwood | world.gd:1987 |  [em laço] |
+| PCA-233 | box | `_bungalow_details` | `B.box` | — | world.gd:1990 |  [em laço] |
+| PCA-234 | box | `_bungalow_details` | `B.box` | — | world.gd:1992 |  [em laço] |
+| PCA-235 | box | `_bungalow_details` | `B.box` | — | world.gd:1993 |  |
+| PCA-236 | cyl | `_bungalow_details` | `B.cyl` | — | world.gd:1995 |  |
+| PCA-237 | wooden lantern 01 | `_bungalow_details` | `B.model` | — | world.gd:1996 |  |
+| PCA-238 | box | `_bungalow_details` | `B.box` | — | world.gd:1997 |  |
+| PCA-239 | label | `_bungalow_details` | `B.label` | — | world.gd:1998 |  |
+| PCA-240 | cyl bamboo | `_bungalow_details` | `B.cyl` | bamboo | world.gd:2003 |  [em laço] |
+| PCA-241 | cyl | `_bungalow_details` | `B.cyl` | — | world.gd:2007 |  |
+| PCA-242 |  beam | `_bungalow_details` | `B._beam` | — | world.gd:2008 |  |
+| PCA-243 | cyl | `_bungalow_details` | `B.cyl` | — | world.gd:2009 |  |
+| PCA-244 | box | `_bungalow_details` | `B.box` | — | world.gd:2010 |  |
+| PCA-245 | cyl | `_bungalow_details` | `B.cyl` | — | world.gd:2014 |  [em laço] |
+| PCA-246 | sphere | `_bungalow_details` | `B.sphere` | — | world.gd:2015 |  [em laço] |
+| PCA-247 |  beam | `_pool_details` | `B._beam` | — | world.gd:2023 |  [em laço] |
+| PCA-248 |  beam | `_pool_details` | `B._beam` | — | world.gd:2024 |  [em laço] |
+| PCA-249 |  beam | `_pool_details` | `B._beam` | — | world.gd:2025 |  [em laço] |
+| PCA-250 | box | `_pool_details` | `B.box` | — | world.gd:2027 |  [em laço] |
+| PCA-251 | new | `_pool_details` | `MeshInstance3D.new` | — | world.gd:2035 |  [em laço] |
+| PCA-252 | sphere | `_pool_details` | `B.sphere` | — | world.gd:2046 |  |
+| PCA-253 | sphere | `_pool_details` | `B.sphere` | — | world.gd:2048 |  [em laço] |
+| PCA-254 | sphere | `_pool_details` | `B.sphere` | — | world.gd:2054 |  [em laço] |
+| PCA-255 | cyl | `_pool_details` | `B.cyl` | — | world.gd:2059 |  [em laço] |
+| PCA-256 | cyl darkwood | `_pool_details` | `B.cyl` | darkwood | world.gd:2060 |  [em laço] |
+| PCA-257 | cyl | `_pool_details` | `B.cyl` | — | world.gd:2061 |  [em laço] |
+| PCA-258 | cyl | `_pool_details` | `B.cyl` | — | world.gd:2062 |  [em laço] |
+| PCA-259 | cyl darkwood | `_pool_details` | `B.cyl` | darkwood | world.gd:2065 |  |
+| PCA-260 | box | `_pool_details` | `B.box` | — | world.gd:2066 |  |
+| PCA-261 | label | `_pool_details` | `B.label` | — | world.gd:2067 |  |
+| PCA-262 | box stone | `_reception_details` | `B.box` | stone | world.gd:2074 |  [em laço] |
+| PCA-263 | box | `_reception_details` | `B.box` | — | world.gd:2075 |  |
+| PCA-264 | box planks | `_reception_details` | `B.box` | planks | world.gd:2078 |  [em laço] |
+| PCA-265 | sphere | `_reception_details` | `B.sphere` | — | world.gd:2080 |  [em laço] |
+| PCA-266 | cyl post | `_reception_details` | `B.cyl` | post | world.gd:2083 |  |
+| PCA-267 |  beam post | `_reception_details` | `B._beam` | post | world.gd:2084 |  |
+| PCA-268 | box | `_reception_details` | `B.box` | — | world.gd:2085 |  |
+| PCA-269 | label | `_reception_details` | `B.label` | — | world.gd:2086 |  |
+| PCA-270 | box | `_reception_details` | `B.box` | — | world.gd:2090 |  |
+| PCA-271 | cyl | `_reception_details` | `B.cyl` | — | world.gd:2092 |  [em laço] |
+| PCA-272 |  beam | `_reception_details` | `B._beam` | — | world.gd:2093 |  |
+| PCA-273 | box | `_reception_details` | `B.box` | — | world.gd:2094 |  |
+| PCA-274 | box | `_reception_details` | `B.box` | — | world.gd:2095 |  |
+| PCA-275 | box | `_reception_details` | `B.box` | — | world.gd:2096 |  |
+| PCA-276 | box | `_reception_details` | `B.box` | — | world.gd:2098 |  [em laço] |
+| PCA-277 | painted wooden bench | `_reception_details` | `B.model` | — | world.gd:2099 |  |
+| PCA-278 | sphere | `_reception_details` | `B.sphere` | — | world.gd:2100 |  |
+| PCA-279 | potted plant 01 | `_reception_details` | `B.model` | — | world.gd:2101 |  |
+| PCA-280 | potted plant 01 | `_reception_details` | `B.model` | — | world.gd:2102 |  |
+| PCA-281 | box | `_flower_box` | `B.box` | — | world_village.gd:102 |  |
+| PCA-282 | box | `_juliet` | `B.box` | — | world_village.gd:111 |  |
+| PCA-283 | box | `_juliet` | `B.box` | — | world_village.gd:113 |  [em laço] |
+| PCA-284 | cyl | `_bougainvillea` | `B.cyl` | — | world_village.gd:122 |  |
+| PCA-285 | cyl | `_bougainvillea` | `B.cyl` | — | world_village.gd:123 |  |
+| PCA-286 | cyl | `_bougainvillea` | `B.cyl` | — | world_village.gd:124 |  |
+| PCA-287 | box | `_bougainvillea` | `B.box` | — | world_village.gd:127 |  [em laço] |
+| PCA-288 | box | `_bougainvillea` | `B.box` | — | world_village.gd:129 |  [em laço] |
+| PCA-289 | cyl | `_bougainvillea` | `B.cyl` | — | world_village.gd:133 |  [em laço] |
+| PCA-290 | box | `_fence` | `B.box` | — | world_village.gd:185 |  [em laço] |
+| PCA-291 | box | `_fence` | `B.box` | — | world_village.gd:187 |  |
+| PCA-292 | box | `_fence` | `B.box` | — | world_village.gd:189 |  |
+| PCA-293 | box | `_street` | `B.box` | — | world_village.gd:198 |  |
+| PCA-294 | platform | `_street` | `B.platform` | — | world_village.gd:201 |  [em laço] |
+| PCA-295 | box | `_street` | `B.box` | — | world_village.gd:202 |  [em laço] |
+| PCA-296 | box | `_street` | `B.box` | — | world_village.gd:204 |  |
+| PCA-297 | box deckwood | `_street` | `B.box` | deckwood | world_village.gd:205 |  |
+| PCA-298 | painted wooden bench | `_street` | `B.model` | — | world_village.gd:209 |  [em laço] |
+| PCA-299 | box | `_facade` | `B.box` | — | world_village.gd:224 |  |
+| PCA-300 | box | `_facade` | `B.box` | — | world_village.gd:225 |  |
+| PCA-301 | box | `_facade` | `B.box` | — | world_village.gd:228 |  [em laço] |
+| PCA-302 | box | `_facade` | `B.box` | — | world_village.gd:229 |  [em laço] |
+| PCA-303 | sphere | `_facade` | `B.sphere` | — | world_village.gd:230 |  |
+| PCA-304 | box | `_facade` | `B.box` | — | world_village.gd:231 |  |
+| PCA-305 | box | `_facade` | `B.box` | — | world_village.gd:233 |  [em laço] |
+| PCA-306 | box | `_facade` | `B.box` | — | world_village.gd:234 |  |
+| PCA-307 | box | `_facade` | `B.box` | — | world_village.gd:236 | marquise de telha sobre a porta, com duas mãos-francesas |
+| PCA-308 | box | `_facade` | `B.box` | — | world_village.gd:238 |  |
+| PCA-309 | box | `_facade` | `B.box` | — | world_village.gd:240 |  [em laço] |
+| PCA-310 | box | `_facade` | `B.box` | — | world_village.gd:244 |  |
+| PCA-311 | label | `_facade` | `B.label` | — | world_village.gd:245 |  |
+| PCA-312 | box | `_facade` | `B.box` | — | world_village.gd:247 |  |
+| PCA-313 | cyl | `_facade` | `B.cyl` | — | world_village.gd:248 |  |
+| PCA-314 | cyl | `_facade` | `B.cyl` | — | world_village.gd:249 |  |
+| PCA-315 | box | `_facade` | `B.box` | — | world_village.gd:251 |  |
+| PCA-316 | box | `_facade` | `B.box` | — | world_village.gd:252 |  |
+| PCA-317 | box | `_facade` | `B.box` | — | world_village.gd:254 | caixilho em cruz |
+| PCA-318 | box | `_facade` | `B.box` | — | world_village.gd:255 |  |
+| PCA-319 | box | `_facade` | `B.box` | — | world_village.gd:256 |  |
+| PCA-320 | box | `_facade` | `B.box` | — | world_village.gd:257 |  |
+| PCA-321 | box | `_facade` | `B.box` | — | world_village.gd:259 | verga com pedra-chave, cimalha e mísulas sob o peitoril |
+| PCA-322 | box | `_facade` | `B.box` | — | world_village.gd:260 |  |
+| PCA-323 | box | `_facade` | `B.box` | — | world_village.gd:262 |  [em laço] |
+| PCA-324 | box | `_facade` | `B.box` | — | world_village.gd:263 |  [em laço] |
+| PCA-325 | box | `_facade` | `B.box` | — | world_village.gd:270 |  [em laço] |
+| PCA-326 | box | `_facade` | `B.box` | — | world_village.gd:272 |  [em laço] |
+| PCA-327 | box | `_facade` | `B.box` | — | world_village.gd:276 |  |
+| PCA-328 | box | `_facade` | `B.box` | — | world_village.gd:278 |  [em laço] |
+| PCA-329 | box | `_house_extras` | `B.box` | — | world_village.gd:284 |  |
+| PCA-330 | box | `_house_extras` | `B.box` | — | world_village.gd:285 |  |
+| PCA-331 | multimesh | `_house_extras` | `D.multimesh` | — | world_village.gd:295 |  |
+| PCA-332 | cyl | `_house_extras` | `B.cyl` | — | world_village.gd:299 |  |
+| PCA-333 | cyl | `_house_extras` | `B.cyl` | — | world_village.gd:301 |  |
+| PCA-334 | box | `_house_extras` | `B.box` | — | world_village.gd:304 |  |
+| PCA-335 | box | `_house_extras` | `B.box` | — | world_village.gd:305 |  |
+| PCA-336 | cyl | `_house_extras` | `B.cyl` | — | world_village.gd:309 |  |
+| PCA-337 | box | `_house_extras` | `B.box` | — | world_village.gd:311 |  [em laço] |
+| PCA-338 | box | `_house_extras` | `B.box` | — | world_village.gd:315 |  |
+| PCA-339 | cyl | `_house_extras` | `B.cyl` | — | world_village.gd:316 |  |
+| PCA-340 | box | `_house_extras` | `B.box` | — | world_village.gd:319 | relógio de luz ao lado da porta |
+| PCA-341 | cyl | `_house_extras` | `B.cyl` | — | world_village.gd:323 |  |
+| PCA-342 | cyl | `_house_extras` | `B.cyl` | — | world_village.gd:325 |  [em laço] |
+| PCA-343 | cyl | `_house_extras` | `B.cyl` | — | world_village.gd:327 |  |
+| PCA-344 | sphere | `_house_extras` | `B.sphere` | — | world_village.gd:329 |  [em laço] |
+| PCA-345 | box | `_house` | `B.box` | — | world_village.gd:334 |  |
+| PCA-346 | box | `_house` | `B.box` | — | world_village.gd:336 |  |
+| PCA-347 | box | `_house` | `B.box` | — | world_village.gd:337 |  |
+| PCA-348 | box | `_house` | `B.box` | — | world_village.gd:338 |  |
+| PCA-349 | box | `_house` | `B.box` | — | world_village.gd:341 |  [em laço] |
+| PCA-350 | hip roof | `_house` | `B.hip_roof` | — | world_village.gd:350 |  |
+| PCA-351 | platform | `_house` | `B.platform` | — | world_village.gd:362 |  |
+| PCA-352 | cyl | `_house` | `B.cyl` | — | world_village.gd:364 |  [em laço] |
+| PCA-353 | box | `_house` | `B.box` | — | world_village.gd:365 |  |
+| PCA-354 | painted wooden chair 01 | `_house` | `B.model` | — | world_village.gd:367 |  |
+| PCA-355 | potted plant 04 | `_house` | `B.model` | — | world_village.gd:368 |  |
+| PCA-356 | potted plant 01 | `_house` | `B.model` | — | world_village.gd:370 |  |
+| PCA-357 | box | `_house` | `B.box` | — | world_village.gd:372 |  |
+| PCA-358 | label | `_house` | `B.label` | — | world_village.gd:373 |  |
+| PCA-359 | box | `_houses` | `B.box` | — | world_village.gd:389 |  |
+| PCA-360 | wooden crate 01 | `_houses` | `B.model` | — | world_village.gd:391 |  |
+| PCA-361 | wicker basket 02 | `_houses` | `B.model` | — | world_village.gd:392 |  |
+| PCA-362 | plastic crate 01 | `_houses` | `B.model` | — | world_village.gd:393 |  |
+| PCA-363 | Shelf 01 | `_houses` | `B.model` | — | world_village.gd:394 |  |
+| PCA-364 | platform | `_hero_house` | `B.platform` | — | world_village.gd:421 |  |
+| PCA-365 | box | `_hero_house` | `B.box` | — | world_village.gd:440 |  [em laço] |
+| PCA-366 | box | `_hero_house` | `B.box` | — | world_village.gd:441 |  |
+| PCA-367 | box planks | `_hero_house` | `B.box` | planks | world_village.gd:442 |  |
+| PCA-368 | hip roof | `_hero_house` | `B.hip_roof` | — | world_village.gd:443 |  |
+| PCA-369 | box | `_hero_house` | `B.box` | — | world_village.gd:448 |  |
+| PCA-370 | box | `_hero_house` | `B.box` | — | world_village.gd:449 |  |
+| PCA-371 | box | `_hero_house` | `B.box` | — | world_village.gd:450 |  |
+| PCA-372 | label | `_hero_house` | `B.label` | — | world_village.gd:451 |  |
+| PCA-373 | box | `_hero_house` | `B.box` | — | world_village.gd:453 |  |
+| PCA-374 | GothicBed 01 | `_hero_house` | `B.model` | — | world_village.gd:457 |  |
+| PCA-375 | throw pillows 01 | `_hero_house` | `B.model` | — | world_village.gd:459 |  |
+| PCA-376 | painted wooden nightstand | `_hero_house` | `B.model` | — | world_village.gd:460 |  |
+| PCA-377 | vintage oil lamp | `_hero_house` | `B.model` | — | world_village.gd:461 |  |
+| PCA-378 | Shelf 01 | `_hero_house` | `B.model` | — | world_village.gd:462 |  |
+| PCA-379 | hanging picture frame 02 | `_hero_house` | `B.model` | — | world_village.gd:463 |  |
+| PCA-380 | ceramic vase 02 | `_hero_house` | `B.model` | — | world_village.gd:464 |  |
+| PCA-381 | painted wooden cabinet | `_hero_house` | `B.model` | — | world_village.gd:474 |  |
+| PCA-382 | Rockingchair 01 | `_hero_house` | `B.model` | — | world_village.gd:475 |  |
+| PCA-383 | pachira aquatica 01 | `_hero_house` | `B.model` | — | world_village.gd:476 |  |
+| PCA-384 | electric stove | `_hero_house` | `B.model` | — | world_village.gd:477 |  |
+| PCA-385 | ceiling fan | `_hero_house` | `B.model` | — | world_village.gd:481 |  |
+| PCA-386 | box oak | `_hero_house` | `B.box` | oak | world_village.gd:482 |  |
+| PCA-387 | box | `_hero_house` | `B.box` | — | world_village.gd:483 |  |
+| PCA-388 | box | `_hero_house` | `B.box` | — | world_village.gd:484 |  |
+| PCA-389 | box oak | `_hero_house` | `B.box` | oak | world_village.gd:485 |  |
+| PCA-390 | WoodenTable 01 | `_hero_house` | `B.model` | — | world_village.gd:486 |  |
+| PCA-391 | wooden stool 01 | `_hero_house` | `B.model` | — | world_village.gd:487 |  |
+| PCA-392 | wooden stool 01 | `_hero_house` | `B.model` | — | world_village.gd:488 |  |
+| PCA-393 | wooden bowl 01 | `_hero_house` | `B.model` | — | world_village.gd:489 |  |
+| PCA-394 | box | `_hero_house` | `B.box` | — | world_village.gd:490 |  |
+| PCA-395 | potted plant 04 | `_hero_house` | `B.model` | — | world_village.gd:491 |  |
+| PCA-396 | planter box 01 | `_hero_house` | `B.model` | — | world_village.gd:492 |  |
+| PCA-397 | platform | `_church_and_praca` | `B.platform` | — | world_village.gd:507 |  |
+| PCA-398 | box | `_church_and_praca` | `B.box` | — | world_village.gd:515 |  |
+| PCA-399 | box | `_church_and_praca` | `B.box` | — | world_village.gd:518 |  |
+| PCA-400 | box | `_church_and_praca` | `B.box` | — | world_village.gd:520 |  [em laço] |
+| PCA-401 | box | `_church_and_praca` | `B.box` | — | world_village.gd:521 |  |
+| PCA-402 | new | `_church_and_praca` | `MeshInstance3D.new` | — | world_village.gd:531 |  |
+| PCA-403 | hip roof | `_church_and_praca` | `B.hip_roof` | — | world_village.gd:537 |  |
+| PCA-404 | box | `_church_and_praca` | `B.box` | — | world_village.gd:539 |  |
+| PCA-405 | sphere | `_church_and_praca` | `B.sphere` | — | world_village.gd:542 |  |
+| PCA-406 | box | `_church_and_praca` | `B.box` | — | world_village.gd:545 |  |
+| PCA-407 | box | `_church_and_praca` | `B.box` | — | world_village.gd:548 |  |
+| PCA-408 | box | `_church_and_praca` | `B.box` | — | world_village.gd:549 |  |
+| PCA-409 | box | `_church_and_praca` | `B.box` | — | world_village.gd:550 |  |
+| PCA-410 | box | `_church_and_praca` | `B.box` | — | world_village.gd:552 |  [em laço] |
+| PCA-411 | box | `_church_and_praca` | `B.box` | — | world_village.gd:554 |  [em laço] |
+| PCA-412 | hip roof | `_church_and_praca` | `B.hip_roof` | — | world_village.gd:555 |  |
+| PCA-413 | box | `_church_and_praca` | `B.box` | — | world_village.gd:556 |  |
+| PCA-414 | box | `_church_and_praca` | `B.box` | — | world_village.gd:557 |  |
+| PCA-415 | label | `_church_and_praca` | `B.label` | — | world_village.gd:558 |  |
+| PCA-416 | cyl | `_church_and_praca` | `B.cyl` | — | world_village.gd:563 |  |
+| PCA-417 | island tree 01 | `_church_and_praca` | `B.model` | — | world_village.gd:565 |  |
+| PCA-418 | wall | `_church_and_praca` | `B.wall` | — | world_village.gd:571 |  |
+| PCA-419 | painted wooden bench | `_church_and_praca` | `B.model` | — | world_village.gd:578 |  [em laço] |
+| PCA-420 | planter box 01 | `_church_and_praca` | `B.model` | — | world_village.gd:581 |  [em laço] |
+| PCA-421 | CoffeeCart 01 | `_church_and_praca` | `B.model` | — | world_village.gd:583 |  |
+| PCA-422 | platform deckwood | `_quiosque` | `B.platform` | deckwood | world_village.gd:593 |  |
+| PCA-423 | cyl post | `_quiosque` | `B.cyl` | post | world_village.gd:597 |  [em laço] |
+| PCA-424 | hip roof thatch | `_quiosque` | `B.hip_roof` | thatch | world_village.gd:598 |  |
+| PCA-425 | box | `_quiosque` | `B.box` | — | world_village.gd:601 |  |
+| PCA-426 | box | `_quiosque` | `B.box` | — | world_village.gd:602 |  |
+| PCA-427 | box | `_quiosque` | `B.box` | — | world_village.gd:603 |  |
+| PCA-428 | box oak | `_quiosque` | `B.box` | oak | world_village.gd:604 |  |
+| PCA-429 | k:coconut | `_quiosque` | `Real.place` | — | world_village.gd:611 |  [em laço] |
+| PCA-430 | wooden bucket 01 | `_quiosque` | `B.model` | — | world_village.gd:612 |  |
+| PCA-431 | plastic crate 01 | `_quiosque` | `B.model` | — | world_village.gd:614 |  |
+| PCA-432 | box planks | `_quiosque` | `B.box` | planks | world_village.gd:615 |  |
+| PCA-433 | label | `_quiosque` | `B.label` | — | world_village.gd:616 |  |
+| PCA-434 | wooden lantern 01 | `_quiosque` | `B.model` | — | world_village.gd:622 |  |
+| PCA-435 | bar chair round 01 | `_quiosque` | `B.model` | — | world_village.gd:644 |  [em laço] |
+| PCA-436 | outdoor table chair set 01 | `_kiosk_table` | `B.model` | — | world_village.gd:657 |  |
+| PCA-437 | box | `_kiosk_table` | `B.box` | — | world_village.gd:662 | cardapinho em pé na mesa |
+| PCA-438 | box | `_kiosk_neon` | `B.box` | — | world_village.gd:692 |  |
+| PCA-439 | label | `_kiosk_neon` | `B.label` | — | world_village.gd:694 |  |
+| PCA-440 | box | `_kiosk_neon` | `B.box` | — | world_village.gd:699 |  [em laço] |
+| PCA-441 | box | `_kiosk_neon` | `B.box` | — | world_village.gd:700 |  |
+| PCA-442 | box | `_kiosk_neon` | `B.box` | — | world_village.gd:701 |  |
+| PCA-443 | electric stove | `_kiosk_grill` | `B.model` | — | world_village.gd:712 |  |
+| PCA-444 | cyl | `_kiosk_grill` | `B.cyl` | — | world_village.gd:713 |  |
+| PCA-445 | sphere | `_kiosk_grill` | `B.sphere` | — | world_village.gd:716 |  [em laço] |
+| PCA-446 | cyl oak | `_barraca` | `B.cyl` | oak | world_village.gd:757 |  [em laço] |
+| PCA-447 | box | `_barraca` | `B.box` | — | world_village.gd:758 |  |
+| PCA-448 | box bamboo | `_barraca` | `B.box` | bamboo | world_village.gd:760 |  |
+| PCA-449 | label | `_barraca` | `B.label` | — | world_village.gd:761 |  |
+| PCA-450 | outdoor table chair set 01 | `_barraca` | `B.model` | — | world_village.gd:764 |  [em laço] |
+| PCA-451 | plastic crate 01 | `_barraca` | `B.model` | — | world_village.gd:767 |  |
+| PCA-452 | plastic monobloc chair 01 | `_barraca` | `B.model` | — | world_village.gd:768 |  |
+| PCA-453 | coconut pile | `_coco_piles` | `D.coconut_pile` | — | world_village.gd:809 |  [em laço] |
+| PCA-454 | new | `_bike` | `MeshInstance3D.new` | — | world_village.gd:851 |  [em laço] |
+| PCA-455 |  beam | `_bike` | `B._beam` | — | world_village.gd:867 |  [em laço] |
+| PCA-456 | cyl | `_bike` | `B.cyl` | — | world_village.gd:870 |  [em laço] |
+| PCA-457 |  beam | `_bike` | `B._beam` | — | world_village.gd:874 |  [em laço] |
+| PCA-458 |  beam | `_bike` | `B._beam` | — | world_village.gd:876 | guidão, selim, pedivela e pedais, descanso |
+| PCA-459 |  beam | `_bike` | `B._beam` | — | world_village.gd:878 |  [em laço] |
+| PCA-460 | sphere | `_bike` | `B.sphere` | — | world_village.gd:879 |  |
+| PCA-461 | cyl | `_bike` | `B.cyl` | — | world_village.gd:880 |  |
+| PCA-462 |  beam | `_bike` | `B._beam` | — | world_village.gd:882 |  |
+| PCA-463 |  beam | `_bike` | `B._beam` | — | world_village.gd:883 |  |
+| PCA-464 | box | `_bike` | `B.box` | — | world_village.gd:884 |  |
+| PCA-465 | box | `_bike` | `B.box` | — | world_village.gd:885 |  |
+| PCA-466 |  beam | `_bike` | `B._beam` | — | world_village.gd:886 |  |
+| PCA-467 |  beam | `_bike` | `B._beam` | — | world_village.gd:887 |  |
+| PCA-468 | cyl | `_bike` | `B.cyl` | — | world_village.gd:889 | cestinha na frente |
+| PCA-469 | cyl post | `_jangada2` | `B.cyl` | post | world_village.gd:897 |  [em laço] |
+| PCA-470 | cyl oak | `_jangada2` | `B.cyl` | oak | world_village.gd:899 |  |
+| PCA-471 | new | `_jangada2` | `MeshInstance3D.new` | — | world_village.gd:900 |  |
+| PCA-472 | wall | `_jangada2` | `B.wall` | — | world_village.gd:912 |  |
+| PCA-473 | k:boat-row-large | `_fishing_boat` | `Real.place` | — | world_village.gd:920 | casco real (Kenney Pirate Kit, CC0, suavizado no Blender); pintado com a cor do barco |
+| PCA-474 | wooden crate 01 | `_fishing_boat` | `B.model` | — | world_village.gd:923 |  |
+| PCA-475 | wooden bucket 01 | `_fishing_boat` | `B.model` | — | world_village.gd:924 |  |
+| PCA-476 | cyl oak | `_fishing_boat` | `B.cyl` | oak | world_village.gd:925 |  |
+| PCA-477 | new | `_fishing_boat` | `MeshInstance3D.new` | — | world_village.gd:926 |  |
+| PCA-478 | wall | `_fishing_boat` | `B.wall` | — | world_village.gd:938 |  |
+| PCA-479 | cyl | `_net` | `B.cyl` | — | world_village.gd:989 |  |
+| PCA-480 | cyl | `_net` | `B.cyl` | — | world_village.gd:990 |  |
+| PCA-481 | new | `_net` | `MeshInstance3D.new` | — | world_village.gd:1010 |  |
+| PCA-482 | wooden crate 01 | `_village_props` | `B.model` | — | world_village.gd:1049 |  [em laço] |
+| PCA-483 | wicker basket 02 | `_village_props` | `B.model` | — | world_village.gd:1050 |  [em laço] |
+| PCA-484 | potted plant 01 | `_village_props` | `B.model` | — | world_village.gd:1053 |  [em laço] |
+| PCA-485 | q:Bush Common | `_village_props` | `Real.place` | — | world_village.gd:1063 |  [em laço] |
+| PCA-486 | street lamp 01 | `_street_lamps` | `B.model` | — | world_village.gd:1109 |  [em laço] |
+| PCA-487 | cyl | `_street_lamps` | `B.cyl` | — | world_village.gd:1114 |  |
+| PCA-488 | new | `_street_lamps` | `MeshInstance3D.new` | — | world_village.gd:1115 |  |
+| PCA-489 | thatch fringe | `_kiosk_details` | `D.thatch_fringe` | — | world_village.gd:1172 |  |
+| PCA-490 | bunting | `_kiosk_details` | `D.bunting` | — | world_village.gd:1174 |  [em laço] |
+| PCA-491 | bananas | `_kiosk_details` | `D.bananas` | — | world_village.gd:1176 | frutas penduradas nas vigas |
+| PCA-492 | bananas | `_kiosk_details` | `D.bananas` | — | world_village.gd:1177 |  |
+| PCA-493 | cyl | `_kiosk_details` | `B.cyl` | — | world_village.gd:1180 |  [em laço] |
+| PCA-494 | m | `_kiosk_details` | `D.m` | — | world_village.gd:1180 |  [em laço] |
+| PCA-495 | k:coconut | `_kiosk_details` | `Real.place` | — | world_village.gd:1181 |  [em laço] |
+| PCA-496 | tip jar | `_kiosk_details` | `D.tip_jar` | — | world_village.gd:1184 |  |
+| PCA-497 | straw cup | `_kiosk_details` | `D.straw_cup` | — | world_village.gd:1185 |  |
+| PCA-498 | cup stack | `_kiosk_details` | `D.cup_stack` | — | world_village.gd:1186 |  |
+| PCA-499 | cup stack | `_kiosk_details` | `D.cup_stack` | — | world_village.gd:1187 |  |
+| PCA-500 | blender | `_kiosk_details` | `D.blender` | — | world_village.gd:1188 |  |
+| PCA-501 | pineapple | `_kiosk_details` | `D.pineapple` | — | world_village.gd:1189 |  |
+| PCA-502 | box | `_kiosk_details` | `B.box` | — | world_village.gd:1190 |  |
+| PCA-503 | m | `_kiosk_details` | `D.m` | — | world_village.gd:1190 |  |
+| PCA-504 | radio | `_kiosk_details` | `D.radio` | — | world_village.gd:1191 |  |
+| PCA-505 | cyl | `_kiosk_details` | `B.cyl` | — | world_village.gd:1194 |  [em laço] |
+| PCA-506 | m | `_kiosk_details` | `D.m` | — | world_village.gd:1194 |  [em laço] |
+| PCA-507 | k:coconut-half | `_kiosk_details` | `Real.place` | — | world_village.gd:1196 |  [em laço] |
+| PCA-508 | open sign | `_kiosk_details` | `D.open_sign` | — | world_village.gd:1199 |  |
+| PCA-509 | coconut pile | `_kiosk_details` | `D.coconut_pile` | — | world_village.gd:1201 | em volta |
+| PCA-510 | coconut pile | `_kiosk_details` | `D.coconut_pile` | — | world_village.gd:1202 |  |
+| PCA-511 | box | `_kiosk_details` | `B.box` | — | world_village.gd:1207 |  |
+| PCA-512 | m | `_kiosk_details` | `D.m` | — | world_village.gd:1207 |  |
+| PCA-513 | cyl | `_kiosk_details` | `B.cyl` | — | world_village.gd:1208 |  |
+| PCA-514 | m | `_kiosk_details` | `D.m` | — | world_village.gd:1208 |  |
+| PCA-515 | box | `_kiosk_details` | `B.box` | — | world_village.gd:1211 |  [em laço] |
+| PCA-516 | m | `_kiosk_details` | `D.m` | — | world_village.gd:1211 |  [em laço] |
+| PCA-517 | coconut pile | `_kiosk_details` | `D.coconut_pile` | — | world_village.gd:1212 |  |
+| PCA-518 | trash bin | `_kiosk_details` | `D.trash_bin` | — | world_village.gd:1214 |  |
+| PCA-519 | trash bin | `_kiosk_details` | `D.trash_bin` | — | world_village.gd:1215 |  |
+| PCA-520 | lifebuoy | `_kiosk_details` | `B.model` | — | world_village.gd:1216 |  |
+| PCA-521 | signpost | `_kiosk_details` | `D.signpost` | — | world_village.gd:1217 |  |
+| PCA-522 | tiki torch | `_kiosk_details` | `D.tiki_torch` | — | world_village.gd:1219 |  [em laço] |
+| PCA-523 | box deckwood | `_kiosk_details` | `B.box` | deckwood | world_village.gd:1223 |  [em laço] |
+| PCA-524 | box | `_back_bar` | `B.box` | — | world_village.gd:1232 |  [em laço] |
+| PCA-525 | box oak | `_back_bar` | `B.box` | oak | world_village.gd:1234 |  [em laço] |
+| PCA-526 | box | `_back_bar` | `B.box` | — | world_village.gd:1235 |  [em laço] |
+| PCA-527 | box planks | `_back_bar` | `B.box` | planks | world_village.gd:1236 |  |
+| PCA-528 | place | `_back_bar` | `Real.place` | — | world_village.gd:1243 |  [em laço] |
+| PCA-529 | k:bottle | `_back_bar` | `Real.place` | — | world_village.gd:1246 |  [em laço] |
+| PCA-530 | k:bottle | `_back_bar` | `Real.place` | — | world_village.gd:1248 |  [em laço] |
+| PCA-531 | box | `_surf_rack` | `B.box` | — | world_village.gd:1253 |  |
+| PCA-532 | box | `_surf_rack` | `B.box` | — | world_village.gd:1255 |  [em laço] |
+| PCA-533 | box | `_surf_rack` | `B.box` | — | world_village.gd:1256 |  [em laço] |
+| PCA-534 | box | `_surf_rack` | `B.box` | — | world_village.gd:1257 |  |
+| PCA-535 | surfboard | `_surf_rack` | `D.surfboard` | — | world_village.gd:1261 | base na frente, topo apoiado na trave (inclinação para trás = -X) [em laço] |
+| PCA-536 | k:cocktail | `_kiosk_drinks` | `Real.place` | — | world_village.gd:1270 |  [em laço] |
+| PCA-537 | wooden crate 02 | `_kiosk_drinks` | `Real.place` | — | world_village.gd:1272 |  |
+| PCA-538 | food lime 01 | `_kiosk_drinks` | `Real.place` | — | world_village.gd:1274 |  [em laço] |
+| PCA-539 | k:bottle-large | `_kiosk_drinks` | `Real.place` | — | world_village.gd:1276 |  [em laço] |
+| PCA-540 | box | `_kiosk_drinks` | `B.box` | — | world_village.gd:1278 |  |
+| PCA-541 | m | `_kiosk_drinks` | `D.m` | — | world_village.gd:1278 |  |
+| PCA-542 | label | `_kiosk_drinks` | `B.label` | — | world_village.gd:1279 |  |
+| PCA-543 | label | `_kiosk_drinks` | `B.label` | — | world_village.gd:1281 |  |
+| PCA-544 | box | `_road` | `B.box` | — | world_village.gd:1309 |  |
+| PCA-545 | platform | `_road` | `B.platform` | — | world_village.gd:1311 |  [em laço] |
+| PCA-546 | box | `_road` | `B.box` | — | world_village.gd:1312 |  [em laço] |
+| PCA-547 | box | `_road` | `B.box` | — | world_village.gd:1314 |  |
+| PCA-548 | platform | `_road` | `B.platform` | — | world_village.gd:1316 |  [em laço] |
+| PCA-549 | box | `_road` | `B.box` | — | world_village.gd:1317 |  [em laço] |
+| PCA-550 | street lamp 01 | `_add_lamp` | `B.model` | — | world_village.gd:1320 |  |
+| PCA-551 | new | `_add_lamp` | `MeshInstance3D.new` | — | world_village.gd:1321 |  |
+| PCA-552 | box | `_village_expansion` | `B.box` | — | world_village.gd:1351 |  |
+| PCA-553 | platform | `_village_expansion` | `B.platform` | — | world_village.gd:1385 |  |
+| PCA-554 | stall | `_village_expansion` | `D.stall` | — | world_village.gd:1390 |  [em laço] |
+| PCA-555 | label | `_village_expansion` | `B.label` | — | world_village.gd:1392 |  |
+| PCA-556 | cyl | `_village_expansion` | `B.cyl` | — | world_village.gd:1394 |  [em laço] |
+| PCA-557 | m | `_village_expansion` | `D.m` | — | world_village.gd:1394 |  [em laço] |
+| PCA-558 | bunting | `_village_expansion` | `D.bunting` | — | world_village.gd:1395 |  |
+| PCA-559 | bunting | `_village_expansion` | `D.bunting` | — | world_village.gd:1399 |  [em laço] |
+| PCA-560 | bunting | `_village_expansion` | `D.bunting` | — | world_village.gd:1403 |  [em laço] |
+| PCA-561 | power pole | `_village_expansion` | `D.power_pole` | — | world_village.gd:1409 |  [em laço] |
+| PCA-562 | wire | `_village_expansion` | `D.wire` | — | world_village.gd:1412 |  [em laço] |
+| PCA-563 | mailbox | `_village_expansion` | `D.mailbox` | — | world_village.gd:1425 |  [em laço] |
+| PCA-564 | cat | `_village_expansion` | `D.cat` | — | world_village.gd:1426 |  |
+| PCA-565 | cat | `_village_expansion` | `D.cat` | — | world_village.gd:1427 |  |
+| PCA-566 | cat | `_village_expansion` | `D.cat` | — | world_village.gd:1428 |  |
+| PCA-567 | dog | `_village_expansion` | `D.dog` | — | world_village.gd:1429 |  |
+| PCA-568 | dog | `_village_expansion` | `D.dog` | — | world_village.gd:1430 |  |
+| PCA-569 | painted wooden bench | `_village_expansion` | `B.model` | — | world_village.gd:1433 |  [em laço] |
+| PCA-570 | pier | `_village_expansion` | `D.pier` | — | world_village.gd:1438 | píer e farol |
+| PCA-571 | wall | `_village_expansion` | `B.wall` | — | world_village.gd:1439 |  |
+| PCA-572 | wall | `_village_expansion` | `B.wall` | — | world_village.gd:1442 |  [em laço] |
+| PCA-573 | wall | `_village_expansion` | `B.wall` | — | world_village.gd:1443 |  |
+| PCA-574 | wall | `_village_expansion` | `B.wall` | — | world_village.gd:1457 |  [em laço] |
+| PCA-575 | lighthouse | `_village_expansion` | `D.lighthouse` | — | world_village.gd:1458 |  |
+| PCA-576 | beach spot | `_beach_life` | `D.beach_spot` | — | world_village.gd:1475 |  [em laço] |
+| PCA-577 | sand castle | `_beach_life` | `D.sand_castle` | — | world_village.gd:1476 |  |
+| PCA-578 | volley net | `_beach_life` | `D.volley_net` | — | world_village.gd:1477 |  |
+| PCA-579 | starfish | `_beach_life` | `D.starfish` | — | world_village.gd:1483 |  [em laço] |
+| PCA-580 | crab | `_beach_life` | `D.crab` | — | world_village.gd:1487 |  [em laço] |
+| PCA-581 | box | `_landmark_details` | `B.box` | — | world_village.gd:1508 |  [em laço] |
+| PCA-582 | box | `_landmark_details` | `B.box` | — | world_village.gd:1515 |  |
+| PCA-583 | arch | `_landmark_details` | `B.arch` | — | world_village.gd:1516 |  |
+| PCA-584 | arch | `_landmark_details` | `B.arch` | — | world_village.gd:1517 |  |
+| PCA-585 | box | `_landmark_details` | `B.box` | — | world_village.gd:1519 |  |
+| PCA-586 | box | `_landmark_details` | `B.box` | — | world_village.gd:1520 |  |
+| PCA-587 | box | `_landmark_details` | `B.box` | — | world_village.gd:1521 |  |
+| PCA-588 | box | `_landmark_details` | `B.box` | — | world_village.gd:1523 |  [em laço] |
+| PCA-589 | box | `_landmark_details` | `B.box` | — | world_village.gd:1524 |  |
+| PCA-590 | box | `_landmark_details` | `B.box` | — | world_village.gd:1525 |  |
+| PCA-591 | arch | `_landmark_details` | `B.arch` | — | world_village.gd:1527 | arco da porta, sino visível na torre e lanternas |
+| PCA-592 | arch | `_landmark_details` | `B.arch` | — | world_village.gd:1528 |  |
+| PCA-593 | cyl | `_landmark_details` | `B.cyl` | — | world_village.gd:1531 |  |
+| PCA-594 | sphere | `_landmark_details` | `B.sphere` | — | world_village.gd:1532 |  |
+| PCA-595 | sphere | `_landmark_details` | `B.sphere` | — | world_village.gd:1533 |  |
+| PCA-596 |  beam | `_landmark_details` | `B._beam` | — | world_village.gd:1534 |  |
+| PCA-597 | box | `_landmark_details` | `B.box` | — | world_village.gd:1537 |  [em laço] |
+| PCA-598 | cyl | `_landmark_details` | `B.cyl` | — | world_village.gd:1538 |  [em laço] |
+| PCA-599 | box | `_landmark_details` | `B.box` | — | world_village.gd:1542 |  [em laço] |
+| PCA-600 | sphere | `_landmark_details` | `B.sphere` | — | world_village.gd:1544 |  [em laço] |
+| PCA-601 | cyl | `_landmark_details` | `B.cyl` | — | world_village.gd:1549 |  [em laço] |
+| PCA-602 | cyl | `_landmark_details` | `B.cyl` | — | world_village.gd:1550 |  [em laço] |
+| PCA-603 |  beam | `_landmark_details` | `B._beam` | — | world_village.gd:1552 |  [em laço] |
+| PCA-604 |  beam | `_landmark_details` | `B._beam` | — | world_village.gd:1553 |  |
+| PCA-605 | box | `_landmark_details` | `B.box` | — | world_village.gd:1557 |  |
+| PCA-606 | box | `_landmark_details` | `B.box` | — | world_village.gd:1558 |  |
+| PCA-607 | box | `_landmark_details` | `B.box` | — | world_village.gd:1561 |  [em laço] |
+| PCA-608 | label | `_landmark_details` | `B.label` | — | world_village.gd:1562 |  |
+| PCA-609 | box | `_landmark_details` | `B.box` | — | world_village.gd:1564 |  |
+| PCA-610 | box | `_landmark_details` | `B.box` | — | world_village.gd:1565 |  |
+| PCA-611 | sphere | `_landmark_details` | `B.sphere` | — | world_village.gd:1567 |  [em laço] |
+| PCA-612 | cyl | `_landmark_details` | `B.cyl` | — | world_village.gd:1569 |  [em laço] |
+| PCA-613 | cyl | `_landmark_details` | `B.cyl` | — | world_village.gd:1571 |  |
+| PCA-614 | cyl | `_landmark_details` | `B.cyl` | — | world_village.gd:1572 |  |
+| PCA-615 | label | `_landmark_details` | `B.label` | — | world_village.gd:1573 |  |
+| PCA-616 | sphere | `_landmark_details` | `B.sphere` | — | world_village.gd:1584 |  |
+| PCA-617 | sphere | `_landmark_details` | `B.sphere` | — | world_village.gd:1585 |  |
+| PCA-618 | cyl | `_landmark_details` | `B.cyl` | — | world_village.gd:1586 |  |
+| PCA-619 | cyl | `_landmark_details` | `B.cyl` | — | world_village.gd:1593 |  [em laço] |
+| PCA-620 | sphere | `_landmark_details` | `B.sphere` | — | world_village.gd:1594 |  [em laço] |
+| PCA-621 | wooden crate 01 | `_landmark_details` | `B.model` | — | world_village.gd:1597 |  [em laço] |
+| PCA-622 | new | `_landmark_details` | `MeshInstance3D.new` | — | world_village.gd:1603 |  [em laço] |
+| PCA-623 | box | `_landmark_details` | `B.box` | — | world_village.gd:1611 |  |
+| PCA-624 | box | `_landmark_details` | `B.box` | — | world_village.gd:1615 |  [em laço] |
+| PCA-625 | cyl | `_landmark_details` | `B.cyl` | — | world_village.gd:1619 |  [em laço] |
+| PCA-626 | new | `_landmark_details` | `MeshInstance3D.new` | — | world_village.gd:1624 |  |
+| PCA-627 | box | `_landmark_details` | `B.box` | — | world_village.gd:1631 |  |
+| PCA-628 | hip roof | `_landmark_details` | `B.hip_roof` | — | world_village.gd:1632 |  |
+| PCA-629 | box | `_landmark_details` | `B.box` | — | world_village.gd:1633 |  |
+| PCA-630 | multimesh | `_map_details` | `D.multimesh` | — | world_village.gd:1658 |  |
+| PCA-631 | multimesh | `_map_details` | `D.multimesh` | — | world_village.gd:1661 |  |
+| PCA-632 | multimesh | `_map_details` | `D.multimesh` | — | world_village.gd:1672 |  |
+| PCA-633 |  beam | `_map_details` | `B._beam` | — | world_village.gd:1682 |  |
+| PCA-634 | multimesh | `_map_details` | `D.multimesh` | — | world_village.gd:1697 |  |
+| PCA-635 | potted plant 01 | `_map_details` | `B.model` | — | world_village.gd:1704 |  [em laço] |
+| PCA-636 | cyl | `_map_details` | `B.cyl` | — | world_village.gd:1708 |  [em laço] |
+| PCA-637 | cyl | `_map_details` | `B.cyl` | — | world_village.gd:1717 |  [em laço] |
+| PCA-638 | wire | `_map_details` | `D.wire` | — | world_village.gd:1718 |  |
+| PCA-639 | box | `_map_details` | `B.box` | — | world_village.gd:1721 |  [em laço] |
+| PCA-640 | island tree 01 | `_map_details` | `B.model` | — | world_village.gd:1724 |  [em laço] |
+| PCA-641 | cyl | `tiki_torch` | `B.cyl` | — | details.gd:114 |  |
+| PCA-642 | cyl | `tiki_torch` | `B.cyl` | — | details.gd:116 |  [em laço] |
+| PCA-643 | cyl | `tiki_torch` | `B.cyl` | — | details.gd:117 |  |
+| PCA-644 | sphere | `tiki_torch` | `B.sphere` | — | details.gd:118 |  |
+| PCA-645 | cyl | `signpost` | `B.cyl` | — | details.gd:130 |  |
+| PCA-646 | box | `signpost` | `B.box` | — | details.gd:138 |  [em laço] |
+| PCA-647 | cyl | `signpost` | `B.cyl` | — | details.gd:139 |  |
+| PCA-648 | label | `signpost` | `B.label` | — | details.gd:142 |  [em laço] |
+| PCA-649 | g:surfboard | `surfboard` | `Real.place` | — | details.gd:152 |  |
+| PCA-650 | g:towel | `towel` | `Real.place` | — | details.gd:158 | toalha de pano ondulado com listras (modelo gerado no Blender: tools/gen_beach_props.py),  |
+| PCA-651 | box | `towel` | `B.box` | — | details.gd:160 |  |
+| PCA-652 | k:coconut | `coconut_pile` | `Real.place` | — | details.gd:176 |  [em laço] |
+| PCA-653 | cyl | `bananas` | `B.cyl` | — | details.gd:182 | cesto de vime pendurado na viga por uma corda grossa, com bananas reais dentro |
+| PCA-654 | wicker basket 01 | `bananas` | `Real.place` | — | details.gd:183 |  |
+| PCA-655 | bananas | `bananas` | `Real.place` | — | details.gd:184 |  |
+| PCA-656 | k:pineapple | `pineapple` | `Real.place` | — | details.gd:187 |  |
+| PCA-657 | k:cup | `cup_stack` | `Real.place` | — | details.gd:191 |  [em laço] |
+| PCA-658 | k:frappe | `blender` | `Real.place` | — | details.gd:194 |  |
+| PCA-659 | k:frappe | `blender` | `Real.place` | — | details.gd:195 |  |
+| PCA-660 | k:glass | `tip_jar` | `Real.place` | — | details.gd:198 |  |
+| PCA-661 | label | `tip_jar` | `B.label` | — | details.gd:199 |  |
+| PCA-662 | k:cocktail | `straw_cup` | `Real.place` | — | details.gd:203 |  |
+| PCA-663 | boombox | `radio` | `Real.place` | — | details.gd:206 |  |
+| PCA-664 | wicker basket 02 | `trash_bin` | `Real.place` | — | details.gd:209 |  |
+| PCA-665 | box | `open_sign` | `B.box` | — | details.gd:217 |  [em laço] |
+| PCA-666 | box | `open_sign` | `B.box` | — | details.gd:218 |  |
+| PCA-667 | label | `open_sign` | `B.label` | — | details.gd:219 |  |
+| PCA-668 | g:sandcastle | `sand_castle` | `Real.place` | — | details.gd:226 | castelo de areia modelado no Blender (tools/gen_beach_props.py) + balde e pá reais |
+| PCA-669 | k:flag-pennant | `sand_castle` | `Real.place` | — | details.gd:229 |  |
+| PCA-670 | wooden bucket 02 | `sand_castle` | `Real.place` | — | details.gd:230 |  |
+| PCA-671 | k:tool-paddle | `sand_castle` | `Real.place` | — | details.gd:231 |  |
+| PCA-672 | lambis shell | `starfish` | `Real.place` | — | details.gd:236 |  |
+| PCA-673 | g:crab | `crab` | `Real.place` | — | details.gd:244 | caranguejo real (OpenGameArt, CC0), de lado como os caranguejos andam |
+| PCA-674 | cyl | `volley_net` | `B.cyl` | — | details.gd:268 |  [em laço] |
+| PCA-675 | box | `volley_net` | `B.box` | — | details.gd:269 |  |
+| PCA-676 | box | `volley_net` | `B.box` | — | details.gd:270 |  |
+| PCA-677 | sphere | `volley_net` | `B.sphere` | — | details.gd:272 |  |
+| PCA-678 | box | `volley_net` | `B.box` | — | details.gd:275 |  [em laço] |
+| PCA-679 | box | `volley_net` | `B.box` | — | details.gd:277 |  [em laço] |
+| PCA-680 | cyl | `beach_spot` | `B.cyl` | — | details.gd:285 |  |
+| PCA-681 | cyl | `beach_spot` | `B.cyl` | — | details.gd:286 |  |
+| PCA-682 | cyl | `beach_spot` | `B.cyl` | — | details.gd:288 |  |
+| PCA-683 | plastic crate 02 | `beach_spot` | `Real.place` | — | details.gd:293 |  |
+| PCA-684 | cyl | `power_pole` | `B.cyl` | — | details.gd:298 |  |
+| PCA-685 | box | `power_pole` | `B.box` | — | details.gd:299 |  |
+| PCA-686 | cyl | `power_pole` | `B.cyl` | — | details.gd:301 |  [em laço] |
+| PCA-687 | cyl | `stall` | `B.cyl` | — | details.gd:327 |  [em laço] |
+| PCA-688 | box | `stall` | `B.box` | — | details.gd:328 |  |
+| PCA-689 | box | `stall` | `B.box` | — | details.gd:329 |  |
+| PCA-690 | box | `stall` | `B.box` | — | details.gd:331 |  [em laço] |
+| PCA-691 | box | `stall` | `B.box` | — | details.gd:334 |  [em laço] |
+| PCA-692 | wicker basket 02 | `stall` | `Real.place` | — | details.gd:344 |  [em laço] |
+| PCA-693 | place | `stall` | `Real.place` | — | details.gd:348 |  [em laço] |
+| PCA-694 | wooden crate 02 | `stall` | `Real.place` | — | details.gd:349 |  |
+| PCA-695 | cyl | `mailbox` | `B.cyl` | — | details.gd:352 |  |
+| PCA-696 | box | `mailbox` | `B.box` | — | details.gd:353 |  |
+| PCA-697 | g:cat | `cat` | `Real.place` | — | details.gd:361 |  |
+| PCA-698 | sphere | `cat` | `B.sphere` | — | details.gd:363 |  |
+| PCA-699 | g:dog | `dog` | `Real.place` | — | details.gd:371 |  |
+| PCA-700 | sphere | `dog` | `B.sphere` | — | details.gd:373 |  |
+| PCA-701 | box | `pier` | `B.box` | — | details.gd:381 |  |
+| PCA-702 | cyl | `pier` | `B.cyl` | — | details.gd:385 |  [em laço] |
+| PCA-703 | cyl | `pier` | `B.cyl` | — | details.gd:386 |  [em laço] |
+| PCA-704 | box | `pier` | `B.box` | — | details.gd:389 |  [em laço] |
+| PCA-705 | box | `pier` | `B.box` | — | details.gd:391 |  |
+| PCA-706 | lifebuoy | `pier` | `B.model` | — | details.gd:392 |  |
+| PCA-707 | wooden bucket 01 | `pier` | `B.model` | — | details.gd:393 |  |
+| PCA-708 | cyl | `pier` | `B.cyl` | — | details.gd:394 |  |
+| PCA-709 | place | `lighthouse` | `Real.place` | — | details.gd:403 |  [em laço] |
+| PCA-710 | coast rocks 05 | `lighthouse` | `Real.place` | — | details.gd:404 |  |
+| PCA-711 | cyl | `lighthouse` | `B.cyl` | — | details.gd:411 |  [em laço] |
+| PCA-712 | cyl | `lighthouse` | `B.cyl` | — | details.gd:413 |  |
+| PCA-713 | cyl | `lighthouse` | `B.cyl` | — | details.gd:414 |  |
+| PCA-714 | cyl | `lighthouse` | `B.cyl` | — | details.gd:415 |  |
+| PCA-715 | sphere | `lighthouse` | `B.sphere` | — | details.gd:420 |  |
+| PCA-716 | cyl | `lighthouse` | `B.cyl` | — | details.gd:421 |  |
+| PCA-717 | new | `box` | `MeshInstance3D.new` | — | build.gd:165 |  |
+| PCA-718 | new | `cyl` | `MeshInstance3D.new` | — | build.gd:187 |  |
+| PCA-719 | new | `sphere` | `MeshInstance3D.new` | — | build.gd:202 |  |
+| PCA-720 | new | `hip_roof` | `MeshInstance3D.new` | — | build.gd:265 |  |
+| PCA-721 | new | `_beam` | `MeshInstance3D.new` | — | build.gd:298 |  |
+| PCA-722 | new | `arch` | `MeshInstance3D.new` | — | build.gd:340 |  |
+| PCA-723 | new | `_hip_roof_flat` | `MeshInstance3D.new` | — | build.gd:492 |  |
+| PCA-724 | build | `model` | `P.build` | — | build.gd:502 |  |
+| PCA-725 | cyl | `_legs` | `B.cyl` | — | props.gd:78 |  [em laço] |
+| PCA-726 | cyl | `stool` | `B.cyl` | — | props.gd:82 |  |
+| PCA-727 | cyl | `stool` | `B.cyl` | — | props.gd:83 |  |
+| PCA-728 | sphere | `stool` | `B.sphere` | — | props.gd:85 | almofada capitonê com botões |
+| PCA-729 | sphere | `stool` | `B.sphere` | — | props.gd:88 |  [em laço] |
+| PCA-730 | cyl | `stool` | `B.cyl` | — | props.gd:91 |  [em laço] |
+| PCA-731 | new | `stool` | `MeshInstance3D.new` | — | props.gd:96 |  |
+| PCA-732 | box | `chair` | `B.box` | — | props.gd:105 |  [em laço] |
+| PCA-733 | box | `chair` | `B.box` | — | props.gd:106 |  |
+| PCA-734 | box | `chair` | `B.box` | — | props.gd:108 |  [em laço] |
+| PCA-735 | box | `chair` | `B.box` | — | props.gd:110 |  [em laço] |
+| PCA-736 | box | `chair` | `B.box` | — | props.gd:112 |  [em laço] |
+| PCA-737 | box | `chair` | `B.box` | — | props.gd:115 |  [em laço] |
+| PCA-738 | cyl | `round_table` | `B.cyl` | — | props.gd:118 |  |
+| PCA-739 | cyl | `round_table` | `B.cyl` | — | props.gd:120 | toalha xadrez com barrado |
+| PCA-740 | cyl | `round_table` | `B.cyl` | — | props.gd:121 |  |
+| PCA-741 | box | `round_table` | `B.box` | — | props.gd:124 |  [em laço] |
+| PCA-742 | cyl | `round_table` | `B.cyl` | — | props.gd:125 |  |
+| PCA-743 | cyl | `round_table` | `B.cyl` | — | props.gd:126 |  |
+| PCA-744 | cyl | `round_table` | `B.cyl` | — | props.gd:127 |  |
+| PCA-745 | cyl | `round_table` | `B.cyl` | — | props.gd:128 |  |
+| PCA-746 | box | `table_rect` | `B.box` | — | props.gd:141 |  |
+| PCA-747 | box | `table_rect` | `B.box` | — | props.gd:142 |  |
+| PCA-748 | box | `table_rect` | `B.box` | — | props.gd:144 |  [em laço] |
+| PCA-749 | box | `table_rect` | `B.box` | — | props.gd:146 |  [em laço] |
+| PCA-750 | cyl | `table_rect` | `B.cyl` | — | props.gd:150 | toalhinha de renda |
+| PCA-751 | box | `bench` | `B.box` | — | props.gd:153 |  |
+| PCA-752 | box | `bench` | `B.box` | — | props.gd:154 |  |
+| PCA-753 | box | `rocking_chair` | `B.box` | — | props.gd:160 |  [em laço] |
+| PCA-754 | box | `shelf` | `B.box` | — | props.gd:167 |  [em laço] |
+| PCA-755 | box | `shelf` | `B.box` | — | props.gd:169 |  [em laço] |
+| PCA-756 | cyl | `shelf` | `B.cyl` | — | props.gd:174 |  [em laço] |
+| PCA-757 | cyl | `bucket` | `B.cyl` | — | props.gd:177 |  |
+| PCA-758 | cyl | `bucket` | `B.cyl` | — | props.gd:179 |  [em laço] |
+| PCA-759 | cyl | `bucket` | `B.cyl` | — | props.gd:180 |  |
+| PCA-760 | box | `crate` | `B.box` | — | props.gd:183 |  |
+| PCA-761 | box | `crate` | `B.box` | — | props.gd:184 |  |
+| PCA-762 | box | `crate` | `B.box` | — | props.gd:185 |  |
+| PCA-763 | sphere | `crate` | `B.sphere` | — | props.gd:187 |  [em laço] |
+| PCA-764 | box | `lantern` | `B.box` | — | props.gd:190 |  |
+| PCA-765 | box | `lantern` | `B.box` | — | props.gd:191 |  |
+| PCA-766 | box | `lantern` | `B.box` | — | props.gd:192 |  |
+| PCA-767 | cyl | `lantern` | `B.cyl` | — | props.gd:193 |  |
+| PCA-768 | cyl | `basket` | `B.cyl` | — | props.gd:196 |  |
+| PCA-769 | sphere | `basket` | `B.sphere` | — | props.gd:198 |  [em laço] |
+| PCA-770 | box | `stove` | `B.box` | — | props.gd:201 |  |
+| PCA-771 | box | `stove` | `B.box` | — | props.gd:202 |  |
+| PCA-772 | box | `stove` | `B.box` | — | props.gd:203 |  |
+| PCA-773 | cyl | `stove` | `B.cyl` | — | props.gd:207 |  [em laço] |
+| PCA-774 | cyl | `stove` | `B.cyl` | — | props.gd:208 |  [em laço] |
+| PCA-775 | box | `stove` | `B.box` | — | props.gd:210 |  [em laço] |
+| PCA-776 | box | `stove` | `B.box` | — | props.gd:212 | porta do forno com visor e puxador |
+| PCA-777 | box | `stove` | `B.box` | — | props.gd:213 |  |
+| PCA-778 |  beam | `stove` | `B._beam` | — | props.gd:214 |  |
+| PCA-779 |  beam | `stove` | `B._beam` | — | props.gd:216 |  [em laço] |
+| PCA-780 | cyl | `stove` | `B.cyl` | — | props.gd:218 |  [em laço] |
+| PCA-781 | box | `stove` | `B.box` | — | props.gd:220 |  |
+| PCA-782 | cyl | `stove` | `B.cyl` | — | props.gd:222 | panela no fogo |
+| PCA-783 | cyl | `stove` | `B.cyl` | — | props.gd:223 |  |
+| PCA-784 | sphere | `stove` | `B.sphere` | — | props.gd:224 |  |
+| PCA-785 | box | `register` | `B.box` | — | props.gd:227 |  |
+| PCA-786 | box | `register` | `B.box` | — | props.gd:228 |  |
+| PCA-787 | box | `register` | `B.box` | — | props.gd:230 |  |
+| PCA-788 | box | `register` | `B.box` | — | props.gd:232 |  [em laço] |
+| PCA-789 | box | `coffee_cart` | `B.box` | — | props.gd:235 |  |
+| PCA-790 | box | `coffee_cart` | `B.box` | — | props.gd:236 |  |
+| PCA-791 | cyl | `coffee_cart` | `B.cyl` | — | props.gd:238 |  [em laço] |
+| PCA-792 | cyl | `coffee_cart` | `B.cyl` | — | props.gd:240 |  |
+| PCA-793 | cyl | `coffee_cart` | `B.cyl` | — | props.gd:241 |  |
+| PCA-794 | cyl | `plant` | `B.cyl` | — | props.gd:245 |  |
+| PCA-795 | cyl | `plant` | `B.cyl` | — | props.gd:246 |  |
+| PCA-796 | sphere | `plant` | `B.sphere` | — | props.gd:249 |  |
+| PCA-797 | sphere | `plant` | `B.sphere` | — | props.gd:250 |  |
+| PCA-798 | sphere | `plant` | `B.sphere` | — | props.gd:251 |  |
+| PCA-799 | box | `planter_box` | `B.box` | — | props.gd:254 |  |
+| PCA-800 | sphere | `planter_box` | `B.sphere` | — | props.gd:256 |  [em laço] |
+| PCA-801 | sphere | `planter_box` | `B.sphere` | — | props.gd:257 |  [em laço] |
+| PCA-802 | sphere | `shell` | `B.sphere` | — | props.gd:260 |  |
+| PCA-803 | cyl | `shell` | `B.cyl` | — | props.gd:261 |  |
+| PCA-804 | sphere | `vase` | `B.sphere` | — | props.gd:265 |  |
+| PCA-805 | cyl | `vase` | `B.cyl` | — | props.gd:266 |  |
+| PCA-806 | cyl | `vase` | `B.cyl` | — | props.gd:267 |  |
+| PCA-807 | cyl | `vase` | `B.cyl` | — | props.gd:268 |  |
+| PCA-808 | cyl | `vase` | `B.cyl` | — | props.gd:273 |  [em laço] |
+| PCA-809 | sphere | `vase` | `B.sphere` | — | props.gd:278 |  [em laço] |
+| PCA-810 | sphere | `vase` | `B.sphere` | — | props.gd:279 |  |
+| PCA-811 | cyl | `bowl` | `B.cyl` | — | props.gd:282 |  |
+| PCA-812 | sphere | `bowl` | `B.sphere` | — | props.gd:284 |  [em laço] |
+| PCA-813 | box | `mirror` | `B.box` | — | props.gd:287 |  |
+| PCA-814 | box | `mirror` | `B.box` | — | props.gd:288 |  |
+| PCA-815 | box | `picture` | `B.box` | — | props.gd:291 |  |
+| PCA-816 | box | `picture` | `B.box` | — | props.gd:292 |  |
+| PCA-817 | box | `picture` | `B.box` | — | props.gd:293 |  |
+| PCA-818 | sphere | `picture` | `B.sphere` | — | props.gd:294 |  |
+| PCA-819 | new | `lifebuoy` | `MeshInstance3D.new` | — | props.gd:304 |  |
+| PCA-820 | box | `lifebuoy` | `B.box` | — | props.gd:310 |  [em laço] |
+| PCA-821 | cyl | `_turned_leg` | `B.cyl` | — | props.gd:315 | perna torneada: base, anéis e bolacha no pé |
+| PCA-822 | cyl | `_turned_leg` | `B.cyl` | — | props.gd:317 |  [em laço] |
+| PCA-823 | sphere | `_turned_leg` | `B.sphere` | — | props.gd:318 |  |
+| PCA-824 | box | `bed` | `B.box` | — | props.gd:324 | estrado e laterais |
+| PCA-825 | box | `bed` | `B.box` | — | props.gd:326 |  [em laço] |
+| PCA-826 | cyl | `bed` | `B.cyl` | — | props.gd:329 |  [em laço] |
+| PCA-827 | sphere | `bed` | `B.sphere` | — | props.gd:330 |  [em laço] |
+| PCA-828 | cyl | `bed` | `B.cyl` | — | props.gd:331 |  [em laço] |
+| PCA-829 | sphere | `bed` | `B.sphere` | — | props.gd:332 |  [em laço] |
+| PCA-830 | box | `bed` | `B.box` | — | props.gd:333 |  |
+| PCA-831 | box | `bed` | `B.box` | — | props.gd:334 |  |
+| PCA-832 | box | `bed` | `B.box` | — | props.gd:336 |  [em laço] |
+| PCA-833 | sphere | `bed` | `B.sphere` | — | props.gd:337 |  |
+| PCA-834 | box | `bed` | `B.box` | — | props.gd:340 | peseira |
+| PCA-835 | box | `bed` | `B.box` | — | props.gd:341 |  |
+| PCA-836 | box | `bed` | `B.box` | — | props.gd:343 | colchão gordinho, lençol e colcha de patchwork dobrada |
+| PCA-837 | box | `bed` | `B.box` | — | props.gd:344 |  |
+| PCA-838 | box | `bed` | `B.box` | — | props.gd:348 |  [em laço] |
+| PCA-839 | box | `bed` | `B.box` | — | props.gd:349 |  |
+| PCA-840 | box | `bed` | `B.box` | — | props.gd:350 |  |
+| PCA-841 | sphere | `bed` | `B.sphere` | — | props.gd:353 |  [em laço] |
+| PCA-842 | sphere | `bed` | `B.sphere` | — | props.gd:354 |  [em laço] |
+| PCA-843 | box | `nightstand` | `B.box` | — | props.gd:358 |  |
+| PCA-844 | box | `nightstand` | `B.box` | — | props.gd:359 |  |
+| PCA-845 | box | `nightstand` | `B.box` | — | props.gd:360 |  |
+| PCA-846 | box | `nightstand` | `B.box` | — | props.gd:363 |  [em laço] |
+| PCA-847 | box | `nightstand` | `B.box` | — | props.gd:364 |  [em laço] |
+| PCA-848 | sphere | `nightstand` | `B.sphere` | — | props.gd:365 |  [em laço] |
+| PCA-849 | cyl | `oil_lamp` | `B.cyl` | — | props.gd:373 |  |
+| PCA-850 | sphere | `oil_lamp` | `B.sphere` | — | props.gd:374 |  |
+| PCA-851 | cyl | `oil_lamp` | `B.cyl` | — | props.gd:375 |  |
+| PCA-852 | sphere | `oil_lamp` | `B.sphere` | — | props.gd:376 |  |
+| PCA-853 | cyl | `oil_lamp` | `B.cyl` | — | props.gd:377 |  |
+| PCA-854 | box | `oil_lamp` | `B.box` | — | props.gd:380 |  [em laço] |
+| PCA-855 | cyl | `oil_lamp` | `B.cyl` | — | props.gd:382 |  |
+| PCA-856 | box | `cabinet` | `B.box` | — | props.gd:386 |  |
+| PCA-857 | box | `cabinet` | `B.box` | — | props.gd:387 |  |
+| PCA-858 | box | `cabinet` | `B.box` | — | props.gd:388 |  |
+| PCA-859 | box | `cabinet` | `B.box` | — | props.gd:389 |  |
+| PCA-860 | box | `cabinet` | `B.box` | — | props.gd:392 | portas almofadadas [em laço] |
+| PCA-861 | box | `cabinet` | `B.box` | — | props.gd:393 |  [em laço] |
+| PCA-862 | box | `cabinet` | `B.box` | — | props.gd:394 |  [em laço] |
+| PCA-863 | sphere | `cabinet` | `B.sphere` | — | props.gd:395 |  [em laço] |
+| PCA-864 | box | `cabinet` | `B.box` | — | props.gd:397 | gaveta de baixo |
+| PCA-865 | box | `cabinet` | `B.box` | — | props.gd:398 |  |
+| PCA-866 | sphere | `cabinet` | `B.sphere` | — | props.gd:400 |  [em laço] |
+| PCA-867 | cyl | `ceiling_fan` | `B.cyl` | — | props.gd:403 |  |
+| PCA-868 | cyl | `ceiling_fan` | `B.cyl` | — | props.gd:404 |  |
+| PCA-869 | box | `ceiling_fan` | `B.box` | — | props.gd:406 |  [em laço] |
+| PCA-870 | cyl | `street_lamp` | `B.cyl` | — | props.gd:412 |  |
+| PCA-871 | cyl | `street_lamp` | `B.cyl` | — | props.gd:413 |  |
+| PCA-872 | sphere | `street_lamp` | `B.sphere` | — | props.gd:414 |  |
+| PCA-873 | cyl | `island_tree` | `B.cyl` | — | props.gd:418 |  |
+| PCA-874 | sphere | `island_tree` | `B.sphere` | — | props.gd:422 |  [em laço] |
+| PCA-875 | new | `spawn` | `MeshInstance3D.new` | — | palm.gd:187 |  |
+| PCA-876 | new | `_make_cup` | `MeshInstance3D.new` | — | guest.gd:234 |  |
+| PCA-877 | new | `_make_food` | `MeshInstance3D.new` | — | guest.gd:257 |  |
+| PCA-878 | new | `_make_food` | `MeshInstance3D.new` | — | guest.gd:267 |  |
+| PCA-879 | new | `_make_food` | `MeshInstance3D.new` | — | guest.gd:280 |  |
+| PCA-880 | new | `_dress` | `MeshInstance3D.new` | — | guest.gd:798 |  [em laço] |
+| PCA-881 | place | `_caricature` | `Real.place` | — | guest.gd:837 |  |
+| PCA-882 | g:cap | `_caricature` | `Real.place` | — | guest.gd:840 |  |
+| PCA-883 | fishermans hat | `_caricature` | `Real.place` | — | guest.gd:843 |  |
+| PCA-884 | flower gazania | `_caricature` | `Real.place` | — | guest.gd:845 |  |
+| PCA-885 | g:sunglasses | `_caricature` | `Real.place` | — | guest.gd:848 |  |
+| PCA-886 | Camera 01 | `_caricature` | `Real.place` | — | guest.gd:853 |  |
+| PCA-887 | sphere | `_caricature` | `B.sphere` | — | guest.gd:862 |  [em laço] |
+| PCA-888 | box | `show_menu` | `B.box` | — | guest.gd:910 |  |
+| PCA-889 | box | `show_menu` | `B.box` | — | guest.gd:911 |  |
+| PCA-890 | box | `show_menu` | `B.box` | — | guest.gd:913 |  [em laço] |
+| PCA-891 | place | `_run_shot` | `Real.place` | — | main.gd:324 |  [em laço] |
+| PCA-892 | label | `spawn_customer` | `B.label` | — | village_life.gd:265 |  |
+
+## MAT — Materiais nomeados (M.xxx) (24)
+
+| Código | Nome | Chave | Fonte | Usado em |
+|---|---|---|---|---|
+| MAT-001 | Azulejo | `azulejo` | world.gd:85 | world.gd:271, world.gd:339 |
+| MAT-002 | Bamboo | `bamboo` | world.gd:81 | world.gd:2003, world.gd:728, world.gd:737, world_village.gd:760 |
+| MAT-003 | Ceramic | `ceramic` | world.gd:104 | world.gd:840 |
+| MAT-004 | Dark | `dark` | world.gd:92 | — |
+| MAT-005 | Darkwood | `darkwood` | world.gd:94 | world.gd:1012, world.gd:1117, world.gd:2060, world.gd:2065 (+13) |
+| MAT-006 | Deckwood | `deckwood` | world.gd:79 | world.gd:1004, world.gd:1987, world.gd:210, world.gd:211 (+6) |
+| MAT-007 | Duvet | `duvet` | world.gd:99 | — |
+| MAT-008 | Floor in | `floor_in` | world.gd:95 | world.gd:617 |
+| MAT-009 | Linen | `linen` | world.gd:82 | world.gd:396 |
+| MAT-010 | Linen sand | `linen_sand` | world.gd:84 | world.gd:1193, world.gd:642, world.gd:650 |
+| MAT-011 | Linen teal | `linen_teal` | world.gd:83 | world.gd:1137, world.gd:394, world.gd:395, world.gd:834 |
+| MAT-012 | Oak | `oak` | world.gd:80 | world.gd:1016, world.gd:1017, world.gd:1018, world.gd:1020 (+14) |
+| MAT-013 | Planks | `planks` | world.gd:78 | world.gd:1056, world.gd:1059, world.gd:1352, world.gd:2078 (+8) |
+| MAT-014 | Plaster | `plaster` | world.gd:75 | world.gd:237, world.gd:262, world.gd:280, world.gd:726 (+2) |
+| MAT-015 | Post | `post` | world.gd:91 | world.gd:1008, world.gd:1146, world.gd:1350, world.gd:1351 (+6) |
+| MAT-016 | Rattan | `rattan` | world.gd:98 | world.gd:392, world.gd:393 |
+| MAT-017 | Rug | `rug` | world.gd:96 | world.gd:785, world.gd:795 |
+| MAT-018 | Rug teal | `rug_teal` | world.gd:97 | world.gd:789 |
+| MAT-019 | Stone | `stone` | world.gd:86 | world.gd:1173, world.gd:205, world.gd:206, world.gd:207 (+8) |
+| MAT-020 | Teal | `teal` | world.gd:77 | world.gd:235, world.gd:240, world.gd:241, world.gd:242 (+3) |
+| MAT-021 | Terra tiles | `terra_tiles` | world.gd:87 | world.gd:204 |
+| MAT-022 | Terracotta | `terracotta` | world.gd:76 | world.gd:264, world.gd:289, world.gd:727, world.gd:736 (+1) |
+| MAT-023 | Thatch | `thatch` | world.gd:90 | world.gd:1009, world.gd:283, world.gd:557, world.gd:606 (+1) |
+| MAT-024 | Voile | `voile` | world.gd:103 | world.gd:780, world.gd:782, world.gd:843 |
+
+## COR — Cores de paleta dos personagens (28)
+
+| Código | Nome | Chave | Fonte | Usado em |
+|---|---|---|---|---|
+| COR-001 | Pele 1 | `SKINS_0` | guest.gd | — |
+| COR-002 | Pele 2 | `SKINS_1` | guest.gd | — |
+| COR-003 | Pele 3 | `SKINS_2` | guest.gd | — |
+| COR-004 | Pele 4 | `SKINS_3` | guest.gd | — |
+| COR-005 | Camisa 1 | `SHIRTS_0` | guest.gd | — |
+| COR-006 | Camisa 2 | `SHIRTS_1` | guest.gd | — |
+| COR-007 | Camisa 3 | `SHIRTS_2` | guest.gd | — |
+| COR-008 | Camisa 4 | `SHIRTS_3` | guest.gd | — |
+| COR-009 | Camisa 5 | `SHIRTS_4` | guest.gd | — |
+| COR-010 | Camisa 6 | `SHIRTS_5` | guest.gd | — |
+| COR-011 | Camisa 7 | `SHIRTS_6` | guest.gd | — |
+| COR-012 | Bermuda 1 | `SHORTS_0` | guest.gd | — |
+| COR-013 | Bermuda 2 | `SHORTS_1` | guest.gd | — |
+| COR-014 | Bermuda 3 | `SHORTS_2` | guest.gd | — |
+| COR-015 | Bermuda 4 | `SHORTS_3` | guest.gd | — |
+| COR-016 | Bermuda 5 | `SHORTS_4` | guest.gd | — |
+| COR-017 | Cabelo 1 | `HAIRS_0` | guest.gd | — |
+| COR-018 | Cabelo 2 | `HAIRS_1` | guest.gd | — |
+| COR-019 | Cabelo 3 | `HAIRS_2` | guest.gd | — |
+| COR-020 | Cabelo 4 | `HAIRS_3` | guest.gd | — |
+| COR-021 | Cabelo 5 | `HAIRS_4` | guest.gd | — |
+| COR-022 | Cabelo 6 | `HAIRS_5` | guest.gd | — |
+| COR-023 | Cabelo 7 | `HAIRS_6` | guest.gd | — |
+| COR-024 | Estampa 1 | `PRINT_COLS_0` | guest.gd | — |
+| COR-025 | Estampa 2 | `PRINT_COLS_1` | guest.gd | — |
+| COR-026 | Estampa 3 | `PRINT_COLS_2` | guest.gd | — |
+| COR-027 | Estampa 4 | `PRINT_COLS_3` | guest.gd | — |
+| COR-028 | Estampa 5 | `PRINT_COLS_4` | guest.gd | — |
 
 ## SCR — Scripts (módulos do jogo) (28)
 
