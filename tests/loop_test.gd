@@ -188,6 +188,9 @@ func run(m) -> void :
 		main.player.interact()
 	check(Core.kiosk_sales_count == 1 and Core.money > km0, "venda no quiosque: %s" % Core.fmt_money(Core.money - km0, true))
 	check(kc.state == "keat", "cliente atendido fica comendo/bebendo")
+	check(main.village.served_today == 1, "contador de atendimentos do dia: %d" % main.village.served_today)
+	check(main.village.daily_goal() >= 8, "meta diária: %d clientes" % main.village.daily_goal())
+	check(main.village.combo >= 1, "combo após atendimento rápido: x%d" % main.village.combo)
 
 	Core.speed_mult = 1.0
 	Core.minutes = 15.0 * 60.0

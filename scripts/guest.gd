@@ -929,7 +929,7 @@ func show_order(text: String, urgent: = false) -> void :
 		add_child(_bubble)
 	_bubble.text = text
 	_bubble.modulate = Color(0.2, 0.12, 0.08)
-	_bubble.outline_modulate = Color(1.0, 0.55, 0.5) if urgent else Color(1, 1, 1)
+	_bubble.outline_modulate = Color(1.0, 0.55, 0.5) if urgent else (Color(1.0, 0.85, 0.25) if get_meta("vip", false) else Color(1, 1, 1))
 
 
 ## Cliente atendido: senta comendo (prato na mão) ou bebendo (copo/coco), levando à boca. (v0.7.1)

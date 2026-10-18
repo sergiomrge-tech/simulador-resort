@@ -18,6 +18,15 @@ var walkers: Array = []
 var customers: Array = []
 var kiosk_spawn_in: = 10.0
 var kiosk_lost: = 0
+## v0.7.4: ritmo do dia no quiosque — sequência (combo), cliente VIP, ônibus de turistas e meta diária.
+const COMBO_MAX: = 5
+const VIP_CHANCE: = 0.08
+const GOAL_REWARD: = 40
+var combo: = 0
+var served_today: = 0
+var goal_paid: = false
+var rush_done: = false
+var rush_left: = 0
 
 func _ready() -> void :
 	add_to_group("kiosk")
@@ -151,6 +160,8 @@ func spawn_customer() -> Node3D:
 	var menu: Array = Core.kiosk_menu()
 	var dish: String = str(menu[rng.randi() % menu.size()])
 	g.set_meta("dish", dish)
+	if rng.randf() < VIP_CHANCE and Core.stars() >= 3.0:
+		g.set_meta("vip", true)
 	var route: Array = [] if from_beach else world.village_points.kiosk_approach.slice(1)
 	if from_beach:
 		# contorna o quiosque pela lateral em vez de atravessar o balcão
@@ -179,8 +190,18 @@ func _kiosk_tick(dmin: float) -> void :
 		if kiosk_spawn_in <= 0.0:
 			var rngv: Vector2 = Economy.KIOSK_SPAWN_TABLES if Core.has("kiosk_tables") else Economy.KIOSK_SPAWN
 			kiosk_spawn_in = rng.randf_range(rngv.x, rngv.y)
+			if rush_left > 0:
+				rush_left -= 1
+				kiosk_spawn_in = rng.randf_range(2.5, 5.0)
 			if waiting_customers().size() < world.kiosk_spots.size():
 				spawn_customer()
+		# ônibus de turistas: uma vez por dia, entre 11h e 15h, com o quiosque já rodando
+		if not rush_done and Core.in_game and Core.minutes >= 11.0 * 60.0 and Core.minutes <= 15.0 * 60.0 and served_today >= 3:
+			if rng.randf() < dmin * 0.004:
+				rush_done = true
+				rush_left = 4
+				kiosk_spawn_in = 1.5
+				Core.toast.emit(tr("Chegou um ônibus de turistas! Vem gente: sirva rápido para manter o combo."), "good")
 	for g in customers.duplicate():
 		match g.state:
 			"kwalk":
@@ -209,6 +230,7 @@ func _kiosk_tick(dmin: float) -> void :
 					g.play("Sitting_Idle_Loop")
 				if g.timer <= 0.0:
 					kiosk_lost += 1
+					combo = 0
 					Core.add_rating(Economy.KIOSK_RATING_LOST)
 					Core.toast.emit(tr("Um cliente cansou de esperar no quiosque. ★%.1f") % Economy.KIOSK_RATING_LOST, "bad")
 					_leave(g)
@@ -235,7 +257,7 @@ func _order_text(g) -> String:
 	var dish: = str(g.get_meta("dish", ""))
 	if dish == "" or not Economy.DISHES.has(dish):
 		return "?"
-	return tr(str(Economy.dish(dish).name)) + "!"
+	return ("★ " if g.get_meta("vip", false) else "") + tr(str(Economy.dish(dish).name)) + "!"
 
 func _leave(g) -> void :
 	g.play("Sitting_Idle_Loop")
@@ -258,7 +280,21 @@ func kiosk_prompt() -> String:
 	var d: Dictionary = Economy.dish(dish)
 	if not Core.can_make(dish):
 		return tr("Sem %s no estoque") % tr(str(d.name))
-	return tr("Servir %s (%s)") % [tr(str(d.name)), Core.fmt_money(int(d.price))]
+	var extra: = ""
+	if w[0].get_meta("vip", false):
+		extra += "  ★ VIP"
+	if combo >= 2:
+		extra += "  ·  Combo x%d" % combo
+	extra += "  ·  " + tr("Meta %d/%d") % [mini(served_today, daily_goal()), daily_goal()]
+	return tr("Servir %s (%s)") % [tr(str(d.name)), Core.fmt_money(int(d.price))] + extra
+
+## Quantos clientes atender por dia para ganhar a meta: cresce com as expansões compradas.
+func daily_goal() -> int:
+	var n: = 0
+	for id in Economy.EXPANSION_ORDER:
+		if Core.has(id):
+			n += 1
+	return 8 + 2 * n
 
 func kiosk_serve() -> bool:
 	var w: = waiting_customers()
@@ -274,10 +310,28 @@ func kiosk_serve() -> bool:
 	var tip: = 2 if fast else 0
 	if Core.has("kiosk_tables") and fast:
 		tip += 1
-	Core.sell_dish(dish, "kiosk")
+	# sequência: cada atendimento rápido seguido sobe o combo (até x5) e rende gorjeta extra
+	if fast:
+		combo = mini(combo + 1, COMBO_MAX)
+		if combo >= 2:
+			tip += combo - 1
+			Core.toast.emit(tr("Combo x%d! +R$ %d de gorjeta") % [combo, tip], "good")
+	else:
+		combo = maxi(0, combo - 1)
+	var price: = Core.sell_dish(dish, "kiosk")
 	Core.add_rating(Economy.KIOSK_RATING_FAST if fast else Economy.KIOSK_RATING_SLOW)
+	if g.get_meta("vip", false) and price > 0:
+		var vip_tip: = price + 5
+		Core.book(vip_tip, tr("Cliente VIP: gorjeta generosa"), "gorjeta", false)
+		Core.add_rating(5.0)
+		Core.toast.emit(tr("Cliente VIP encantado! +R$ %d de gorjeta") % vip_tip, "good")
 	if tip > 0:
 		Core.book(tip, tr("Gorjeta do quiosque"), "gorjeta", false)
+	served_today += 1
+	if not goal_paid and served_today >= daily_goal():
+		goal_paid = true
+		Core.book(GOAL_REWARD, tr("Meta do dia"), "missao", false)
+		Core.toast.emit(tr("Meta do dia cumprida: %d clientes! +R$ %d") % [daily_goal(), GOAL_REWARD], "good")
 	get_tree().call_group("audio", "sfx", "coin", -8.0)
 	# v0.7.1: o cliente fica sentado consumindo antes de ir embora (o lugar continua ocupado)
 	g.position = g.spot.pos
@@ -300,3 +354,8 @@ func _on_slept(_d: int) -> void :
 		customers.erase(g)
 		g.queue_free()
 	kiosk_spawn_in = 10.0
+	combo = 0
+	served_today = 0
+	goal_paid = false
+	rush_done = false
+	rush_left = 0

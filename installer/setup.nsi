@@ -1,7 +1,7 @@
 Unicode true
 !include "MUI2.nsh"
 !define APP "Maré Alta Resort"
-!define VER "0.7.3"
+!define VER "0.7.4"
 Name "${APP} ${VER}"
 OutFile "Instalar_MareAltaResort_v${VER}.exe"
 RequestExecutionLevel user
