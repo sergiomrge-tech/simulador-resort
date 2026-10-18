@@ -1160,7 +1160,7 @@ func _kiosk_details(c: Vector3, y0: float) -> void :
 
 ## Prateleira de fundo do quiosque (v0.7.3): três tábuas com montantes, onde as garrafas e o rádio apoiam de verdade.
 func _back_bar(c: Vector3, y0: float) -> void :
-	var w: = M.darkwood
+	var w: Material = M.darkwood
 	var z: = c.z - 1.92
 	var yb: = c.y + y0 + 0.028
 	for x in [-1.9, -0.65, 0.65, 1.9]:
@@ -1183,7 +1183,7 @@ func _back_bar(c: Vector3, y0: float) -> void :
 
 ## Suporte de pranchas atrás do quiosque: as pranchas encostam numa trave, nada fica no ar.
 func _surf_rack(p: Vector3) -> void :
-	var w: = M.darkwood
+	var w: Material = M.darkwood
 	B.box(self, Vector3(1.9, 0.12, 0.22), p + Vector3(0, 0.06, 0.05), w)
 	for sx in [-0.95, 0.95]:
 		B.box(self, Vector3(0.09, 1.45, 0.09), p + Vector3(sx, 0.725, -0.32), w)

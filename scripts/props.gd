@@ -192,10 +192,6 @@ static func lantern(r: Node3D) -> void :
 	B.box(r, Vector3(0.14, 0.28, 0.14), Vector3(0, 0.19, 0), glow(Color(1.0, 0.75, 0.35), 2.5))
 	B.cyl(r, 0.01, 0.01, 0.3, Vector3(0, 0.52, 0), m(WOOD_DARK), 4)
 
-static func oil_lamp(r: Node3D) -> void :
-	B.cyl(r, 0.08, 0.1, 0.1, Vector3(0, 0.05, 0), m(Color(0.8, 0.6, 0.2), 0.4), 10)
-	B.sphere(r, 0.07, Vector3(0, 0.19, 0), glow(Color(1.0, 0.8, 0.45), 2.0))
-
 static func basket(r: Node3D) -> void :
 	B.cyl(r, 0.24, 0.18, 0.26, Vector3(0, 0.13, 0), m(Color(0.86, 0.65, 0.38)), 12)
 	for i in 4:
