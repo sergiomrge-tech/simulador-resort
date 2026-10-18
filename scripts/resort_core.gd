@@ -17,11 +17,14 @@ signal staff_changed
 signal day_closed(summary: Dictionary)
 signal weather_changed(kind: String)
 signal expansion_bought(id: String)
+signal market_changed
+signal event_changed
+signal tour_done(id: String, pax: int, revenue: int)
 
 var SAVE_PATH: = "user://save_slot1.json"
 var slot: int = 1
 var proc_props: = false   # --proc: usa os props montados por código (P) em vez dos modelos reais
-const SAVE_VERSION: = 4
+const SAVE_VERSION: = 5
 const WAKE_MIN: = 390.0
 const SLEEP_FROM: = 20.0 * 60.0
 const MAX_REDES: = Economy.HAMMOCK_MAX
@@ -51,7 +54,7 @@ var day_income: int = 0
 var day_expense: int = 0
 var last_summary: Dictionary = {}
 var stockouts: int = 0
-var staff: = {"atendente": false, "camareira": false, "bartender": false}
+var staff: = {"atendente": false, "camareira": false, "bartender": false, "guia": false}
 var unlocked: = {}
 var quests: = {}
 var weather: = "sun"
@@ -60,6 +63,16 @@ var price_tier: = {}
 var freezer: = false
 var day_event: = ""
 var album: Array = []
+## v0.9.0: fornecedores (preço do dia e contratos), previsão de eventos, preparativos e passeios.
+var supply_mult: = {}      # id -> multiplicador do preço de hoje
+var contracts: = {}        # id -> dias restantes do contrato
+var forecast_next: = ""    # evento de amanhã (previsão)
+var forecast_set: = false
+var prep_paid: = false     # preparativos pagos para o próximo evento
+var prep_active: = false   # preparativos valendo no evento de hoje
+var tours_done: = {}       # passeios já realizados hoje
+var tours_total: int = 0
+var tours_revenue: int = 0
 
 var _autosave_t: = 0.0
 var _bar_batch_count: = 0
@@ -90,7 +103,16 @@ func _reset_economy() -> void :
 	day_expense = 0
 	last_summary = {}
 	stockouts = 0
-	staff = {"atendente": false, "camareira": false, "bartender": false}
+	staff = {"atendente": false, "camareira": false, "bartender": false, "guia": false}
+	supply_mult = {}
+	contracts = {}
+	forecast_next = ""
+	forecast_set = false
+	prep_paid = false
+	prep_active = false
+	tours_done = {}
+	tours_total = 0
+	tours_revenue = 0
 	quests = {}
 	price_tier = {}
 	freezer = false
@@ -155,6 +177,7 @@ func _process(delta: float) -> void :
 		if _helper_acc >= Economy.HELPER_MINUTES:
 			_helper_acc = 0.0
 			get_tree().call_group("kiosk", "helper_serve")
+	_check_tours()
 	_autosave_t += delta
 	if _autosave_t > 45.0 and in_game:
 		_autosave_t = 0.0
@@ -295,7 +318,9 @@ func sleep() -> void :
 	day_closed.emit(last_summary)
 	time_changed.emit(day, minutes)
 	toast.emit(tr("Bom dia! Dia %d") % day, "info")
+	roll_supply_prices()
 	roll_day_event()
+	tours_done = {}
 	save_game()
 
 func _pay_wages() -> void :
@@ -530,7 +555,18 @@ func demand_factor() -> float:
 		f /= float(m.size())
 	if day_event == "calor":
 		f *= 1.25
+	elif is_party():
+		f *= Economy.PARTY_DECO_DEMAND if prep_active else Economy.PARTY_DEMAND
+	elif Economy.EVENT_DEMAND.has(day_event):
+		f *= float(Economy.EVENT_DEMAND[day_event])
 	return f
+
+func is_party() -> bool:
+	return day_event != "" and bool(Economy.DAY_EVENTS[day_event].get("party", false))
+
+## Fração dos clientes do quiosque que vêm da praia (a maré alta e a tempestade esvaziam a areia).
+func beach_share() -> float:
+	return float(Economy.BEACH_SHARE.get(day_event, 0.6))
 
 ## Ajuste na nota de quem foi atendido: preço salgado reclama, preço camarada agrada.
 func price_rating_adjust() -> float:
@@ -543,18 +579,164 @@ func price_rating_adjust() -> float:
 		return 0.15
 	return 0.0
 
-## Evento do dia: sorteado ao acordar (nunca no dia 1). Avisa o jogador.
+## Evento de um dia: festa do calendário (a partir do dia 8) ou sorteio (calor, lua, maré alta, tempestade).
+func pick_event(d: int) -> String:
+	if d >= Economy.PARTY_FROM_DAY and Economy.PARTY_CALENDAR.has(d % 7):
+		return str(Economy.PARTY_CALENDAR[d % 7])
+	if d <= 1:
+		return ""
+	var r: = randf()
+	var acc: = 0.0
+	for o in Economy.EVENT_ODDS:
+		acc += float(o[1])
+		if r < acc:
+			return str(o[0])
+	return ""
+
+## Evento do dia: o que foi previsto ontem (ou sorteado), e já prevê o de amanhã.
 func roll_day_event() -> void :
-	day_event = ""
-	if day > 1:
-		var r: = randf()
-		if r < 0.30:
-			day_event = "calor"
-		elif r < 0.45:
-			day_event = "lua"
+	var prev: = day_event
+	day_event = forecast_next if forecast_set else pick_event(day)
+	forecast_next = pick_event(day + 1)
+	forecast_set = true
+	prep_active = prep_paid and day_event != ""
+	prep_paid = false
+	if day_event == "tempestade":
+		set_weather("rain")
+		if prep_active:
+			toast.emit(tr("Preparativos prontos: o estoque está protegido da tempestade."), "good")
+		else:
+			_storm_damage()
+	elif prev == "tempestade":
+		set_weather("sun")
 	if day_event != "":
 		var e: Dictionary = Economy.DAY_EVENTS[day_event]
 		toast.emit("%s: %s" % [tr(str(e.name)), tr(str(e.blurb))], "info")
+	if forecast_next != "":
+		toast.emit(tr("Previsão para amanhã: %s.") % tr(str(Economy.DAY_EVENTS[forecast_next].name)), "info")
+	event_changed.emit()
+
+func _storm_damage() -> void :
+	var lost: = 0
+	for id in stock.keys():
+		var n: = int(round(float(int(stock[id])) * Economy.STORM_LOSS))
+		if n > 0:
+			stock[id] = int(stock[id]) - n
+			lost += n
+	if lost > 0:
+		stock_changed.emit()
+		toast.emit(tr("A tempestade molhou o estoque: %d itens perdidos.") % lost, "bad")
+
+## Quanto custam os preparativos para o evento citado ("" = não precisa de preparativos).
+func prep_cost(ev: String) -> int:
+	if ev == "tempestade" or ev == "mare":
+		return Economy.STORM_PREP_COST
+	if ev != "" and bool(Economy.DAY_EVENTS[ev].get("party", false)):
+		return Economy.PARTY_DECO_COST
+	return 0
+
+## Paga os preparativos: do evento de amanhã (tempestade, maré, festa) ou decoração da festa de hoje.
+func buy_prep() -> bool:
+	if prep_paid or prep_active:
+		toast.emit(tr("Os preparativos já estão pagos."), "info")
+		return false
+	var target: = forecast_next
+	var today: = false
+	if is_party() and not prep_active:
+		target = day_event
+		today = true
+	var cost: = prep_cost(target)
+	if cost <= 0:
+		toast.emit(tr("Não há nada para preparar."), "info")
+		return false
+	if money < cost:
+		toast.emit(tr("Dinheiro insuficiente (%s).") % fmt_money(cost), "bad")
+		return false
+	book( - cost, tr("Preparativos: %s") % tr(str(Economy.DAY_EVENTS[target].name)), "outro", true)
+	if today:
+		prep_active = true
+	else:
+		prep_paid = true
+	event_changed.emit()
+	return true
+
+## Fornecedores: sorteia o preço de hoje de cada insumo e desconta os dias dos contratos.
+func roll_supply_prices() -> void :
+	for id in Economy.SUPPLIES:
+		var m: float = float(Economy.PRICE_SWING[randi() % Economy.PRICE_SWING.size()])
+		supply_mult[id] = m
+		if contracts.has(id):
+			contracts[id] = int(contracts[id]) - 1
+			if int(contracts[id]) <= 0:
+				contracts.erase(id)
+				toast.emit(tr("Contrato de %s terminou.") % tr(str(Economy.SUPPLIES[id].name)).to_lower(), "info")
+	market_changed.emit()
+
+## Multiplicador do preço de hoje. Contrato = desconto fixo e nunca paga mais que o preço normal.
+func supply_factor(id: String) -> float:
+	var m: float = float(supply_mult.get(id, 1.0))
+	if contracts.has(id):
+		return minf(m, 1.0) * (1.0 - Economy.CONTRACT_DISCOUNT)
+	return m
+
+## Preço total de comprar qty unidades hoje (arredonda para cima).
+func supply_total(id: String, qty: int) -> int:
+	return maxi(1, int(ceil(float(Economy.supply_cost(id)) * supply_factor(id) * float(qty) - 0.001)))
+
+func buy_contract(id: String) -> bool:
+	if not Economy.SUPPLIES.has(id) or contracts.has(id):
+		return false
+	if money < Economy.CONTRACT_FEE:
+		toast.emit(tr("Dinheiro insuficiente para o contrato (%s).") % fmt_money(Economy.CONTRACT_FEE), "bad")
+		return false
+	contracts[id] = Economy.CONTRACT_DAYS
+	book( - Economy.CONTRACT_FEE, tr("Contrato: %s (%d dias)") % [tr(str(Economy.SUPPLIES[id].name)), Economy.CONTRACT_DAYS], "insumo", true)
+	market_changed.emit()
+	return true
+
+## Passeios turísticos: com o guia contratado, cada saída rende no horário marcado.
+func _check_tours() -> void :
+	if not has("passeios") or not bool(staff.get("guia", false)):
+		return
+	for id in Economy.TOURS:
+		var t: Dictionary = Economy.TOURS[id]
+		if tours_done.has(id) or minutes < float(t.at) or minutes > float(t.at) + 90.0:
+			continue
+		run_tour(id)
+
+func run_tour(id: String) -> int:
+	if not Economy.TOURS.has(id) or tours_done.has(id):
+		return 0
+	tours_done[id] = true
+	var t: Dictionary = Economy.TOURS[id]
+	if bool(t.sea) and (day_event == "mare" or day_event == "tempestade"):
+		toast.emit(tr("%s cancelado pelo mar.") % tr(str(t.name)), "bad")
+		return 0
+	if not bool(t.sea) and day_event == "tempestade":
+		toast.emit(tr("%s cancelada pela tempestade.") % tr(str(t.name)), "bad")
+		return 0
+	var occupied: = 0
+	for r in rooms:
+		if r.state == "occupied":
+			occupied += 1
+	var pax: = clampi(int(round(1.0 + stars() * 1.2 + float(occupied) * 1.5)), 1, int(t.seats))
+	if is_party():
+		pax = mini(int(t.seats), pax + 2)
+	var rev: int = pax * int(t.price) - int(t.cost)
+	tours_total += 1
+	tours_revenue += rev
+	book(rev, tr("%s · %d pessoas") % [tr(str(t.name)), pax], "passeio", true)
+	add_rating(0.05)
+	tour_done.emit(id, pax, rev)
+	return rev
+
+func tour_status(id: String) -> String:
+	var t: Dictionary = Economy.TOURS[id]
+	if tours_done.has(id):
+		return "done"
+	if minutes > float(t.at):
+		return "missed"
+	return "wait"
 
 ## Estoque que sobra estraga durante a noite (gelo derrete, peixe e pão passam do ponto).
 func spoil_stock() -> void :
@@ -633,7 +815,7 @@ func serve_bar() -> int:
 func buy_supply(id: String, qty: int) -> bool:
 	if not Economy.SUPPLIES.has(id) or qty <= 0:
 		return false
-	var cost: = Economy.supply_cost(id) * qty
+	var cost: = supply_total(id, qty)
 	if money < cost:
 		toast.emit(tr("Dinheiro insuficiente no mercadinho (%s).") % fmt_money(cost), "bad")
 		return false
@@ -738,6 +920,8 @@ func save_game() -> void :
 		"staff": staff.duplicate(), "quests": quests.duplicate(), 
 		"weather": weather, "ledger": ledger_today.duplicate(true), 
 		"ptier": price_tier.duplicate(), "freezer": freezer, "event": day_event, "album": album.duplicate(), 
+		"smult": supply_mult.duplicate(), "contracts": contracts.duplicate(), "forecast": forecast_next, "forecast_set": forecast_set, 
+		"prep_paid": prep_paid, "prep_active": prep_active, "tours_done": tours_done.duplicate(), "tours_n": tours_total, "tours_rev": tours_revenue, 
 		"day_in": day_income, "day_out": day_expense, 
 		"summary": last_summary.duplicate(true), "unlocked": unlocked.duplicate(), 
 		"saved_at": Time.get_datetime_string_from_system(false, true), 
@@ -797,6 +981,18 @@ func load_game() -> bool:
 	price_tier = pt.duplicate() if typeof(pt) == TYPE_DICTIONARY else {}
 	freezer = bool(data.get("freezer", false))
 	day_event = str(data.get("event", ""))
+	var sm = data.get("smult", {})
+	supply_mult = sm.duplicate() if typeof(sm) == TYPE_DICTIONARY else {}
+	var ct = data.get("contracts", {})
+	contracts = ct.duplicate() if typeof(ct) == TYPE_DICTIONARY else {}
+	forecast_next = str(data.get("forecast", ""))
+	forecast_set = bool(data.get("forecast_set", false))
+	prep_paid = bool(data.get("prep_paid", false))
+	prep_active = bool(data.get("prep_active", false))
+	var td = data.get("tours_done", {})
+	tours_done = td.duplicate() if typeof(td) == TYPE_DICTIONARY else {}
+	tours_total = int(data.get("tours_n", 0))
+	tours_revenue = int(data.get("tours_rev", 0))
 	var alb = data.get("album", [])
 	album = alb.duplicate() if typeof(alb) == TYPE_ARRAY else []
 	var qs = data.get("quests", {})
@@ -829,6 +1025,8 @@ func load_game() -> bool:
 	_emit_all()
 	stock_changed.emit()
 	staff_changed.emit()
+	market_changed.emit()
+	event_changed.emit()
 	weather_changed.emit(weather)
 	expansion_bought.emit("")
 	if is_inside_tree():

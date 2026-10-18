@@ -2,7 +2,7 @@
 
 Gerado por `python3 tools/gen_item_catalog.py` — **não edite à mão**. Os códigos ficam em `docs/itens_registro.json` e nunca mudam. Para pedir uma alteração, cite o código (ex.: "troque o modelo de MOD-017").
 
-Total: 1799 itens. MOD 105 · NAT 68 · PRC 31 · CEN 262 · PRT 9 · DSH 4 · SUP 6 · EXP 7 · STF 3 · UPG 15 · QST 4 · VIP 12 · EVT 2 · NOU 146 · TEX 28 · AUD 20 · ICO 31 · FNT 1 · SHD 12 · ANI 43 · PCA 894 · MAT 24 · COR 28 · SCR 28 · PES 16
+Total: 1806 itens. MOD 105 · NAT 68 · PRC 31 · CEN 262 · PRT 9 · DSH 4 · SUP 6 · EXP 8 · STF 4 · UPG 15 · QST 4 · VIP 12 · EVT 7 · NOU 146 · TEX 28 · AUD 20 · ICO 31 · FNT 1 · SHD 12 · ANI 43 · PCA 894 · MAT 24 · COR 28 · SCR 28 · PES 16
 
 ## MOD — Modelos 3D em uso (reais, baixados da web) (105)
 
@@ -433,40 +433,40 @@ Total: 1799 itens. MOD 105 · NAT 68 · PRC 31 · CEN 262 · PRT 9 · DSH 4 · S
 | CEN-204 | Beach life | `world_village._beach_life` | world_village.gd (código) | world_village.gd:1470 |
 | CEN-205 | Landmark details | `world_village._landmark_details` | world_village.gd (código) | world_village.gd:1519 |
 | CEN-206 | Map details | `world_village._map_details` | world_village.gd (código) | world_village.gd:1664 |
-| CEN-207 | Make | `village_life._make` | village_life.gd (código) | village_life.gd:92 |
-| CEN-208 | Fish prompt | `village_life.fish_prompt` | village_life.gd (código) | village_life.gd:132 |
-| CEN-209 | Fish action | `village_life.fish_action` | village_life.gd (código) | village_life.gd:139 |
-| CEN-210 | Fish tick | `village_life._fish_tick` | village_life.gd (código) | village_life.gd:145 |
-| CEN-211 | Fish catch | `village_life.fish_catch` | village_life.gd (código) | village_life.gd:158 |
-| CEN-212 | Prep tick | `village_life._prep_tick` | village_life.gd (código) | village_life.gd:177 |
-| CEN-213 | Outside blocks | `village_life._outside_blocks` | village_life.gd (código) | village_life.gd:195 |
-| CEN-214 | Kiosk open | `village_life.kiosk_open` | village_life.gd (código) | village_life.gd:218 |
-| CEN-215 | Waiting customers | `village_life.waiting_customers` | village_life.gd (código) | village_life.gd:221 |
-| CEN-216 | Free spot | `village_life._free_spot` | village_life.gd (código) | village_life.gd:224 |
-| CEN-217 | Spawn customer | `village_life.spawn_customer` | village_life.gd (código) | village_life.gd:235 |
-| CEN-218 | Kiosk tick | `village_life._kiosk_tick` | village_life.gd (código) | village_life.gd:283 |
-| CEN-219 | Order | `village_life._order` | village_life.gd (código) | village_life.gd:355 |
-| CEN-220 | Pick dish | `village_life._pick_dish` | village_life.gd (código) | village_life.gd:364 |
-| CEN-221 | Pick vip | `village_life._pick_vip` | village_life.gd (código) | village_life.gd:379 |
-| CEN-222 | Vip name | `village_life._vip_name` | village_life.gd (código) | village_life.gd:388 |
-| CEN-223 | Items | `village_life._items` | village_life.gd (código) | village_life.gd:394 |
-| CEN-224 | Patience | `village_life._patience` | village_life.gd (código) | village_life.gd:398 |
-| CEN-225 | Remaining | `village_life._remaining` | village_life.gd (código) | village_life.gd:401 |
-| CEN-226 | Order text | `village_life._order_text` | village_life.gd (código) | village_life.gd:404 |
-| CEN-227 | Leave | `village_life._leave` | village_life.gd (código) | village_life.gd:413 |
-| CEN-228 | Next customer | `village_life._next_customer` | village_life.gd (código) | village_life.gd:422 |
-| CEN-229 | W0 vip | `village_life.w0_vip` | village_life.gd (código) | village_life.gd:430 |
-| CEN-230 | Bar | `village_life._bar` | village_life.gd (código) | village_life.gd:433 |
-| CEN-231 | Kiosk prompt | `village_life.kiosk_prompt` | village_life.gd (código) | village_life.gd:437 |
-| CEN-232 | Daily goal | `village_life.daily_goal` | village_life.gd (código) | village_life.gd:464 |
-| CEN-233 | Kiosk action | `village_life.kiosk_action` | village_life.gd (código) | village_life.gd:472 |
-| CEN-234 | Stage secs | `village_life._stage_secs` | village_life.gd (código) | village_life.gd:490 |
-| CEN-235 | Prep advance | `village_life.prep_advance` | village_life.gd (código) | village_life.gd:496 |
-| CEN-236 | Deliver item | `village_life._deliver_item` | village_life.gd (código) | village_life.gd:513 |
-| CEN-237 | Complete order | `village_life._complete_order` | village_life.gd (código) | village_life.gd:529 |
-| CEN-238 | Kiosk serve | `village_life.kiosk_serve` | village_life.gd (código) | village_life.gd:570 |
-| CEN-239 | Helper serve | `village_life.helper_serve` | village_life.gd (código) | village_life.gd:581 |
-| CEN-240 | On slept | `village_life._on_slept` | village_life.gd (código) | village_life.gd:586 |
+| CEN-207 | Make | `village_life._make` | village_life.gd (código) | village_life.gd:93 |
+| CEN-208 | Fish prompt | `village_life.fish_prompt` | village_life.gd (código) | village_life.gd:133 |
+| CEN-209 | Fish action | `village_life.fish_action` | village_life.gd (código) | village_life.gd:140 |
+| CEN-210 | Fish tick | `village_life._fish_tick` | village_life.gd (código) | village_life.gd:146 |
+| CEN-211 | Fish catch | `village_life.fish_catch` | village_life.gd (código) | village_life.gd:159 |
+| CEN-212 | Prep tick | `village_life._prep_tick` | village_life.gd (código) | village_life.gd:178 |
+| CEN-213 | Outside blocks | `village_life._outside_blocks` | village_life.gd (código) | village_life.gd:196 |
+| CEN-214 | Kiosk open | `village_life.kiosk_open` | village_life.gd (código) | village_life.gd:219 |
+| CEN-215 | Waiting customers | `village_life.waiting_customers` | village_life.gd (código) | village_life.gd:222 |
+| CEN-216 | Free spot | `village_life._free_spot` | village_life.gd (código) | village_life.gd:225 |
+| CEN-217 | Spawn customer | `village_life.spawn_customer` | village_life.gd (código) | village_life.gd:236 |
+| CEN-218 | Kiosk tick | `village_life._kiosk_tick` | village_life.gd (código) | village_life.gd:289 |
+| CEN-219 | Order | `village_life._order` | village_life.gd (código) | village_life.gd:361 |
+| CEN-220 | Pick dish | `village_life._pick_dish` | village_life.gd (código) | village_life.gd:370 |
+| CEN-221 | Pick vip | `village_life._pick_vip` | village_life.gd (código) | village_life.gd:387 |
+| CEN-222 | Vip name | `village_life._vip_name` | village_life.gd (código) | village_life.gd:396 |
+| CEN-223 | Items | `village_life._items` | village_life.gd (código) | village_life.gd:402 |
+| CEN-224 | Patience | `village_life._patience` | village_life.gd (código) | village_life.gd:406 |
+| CEN-225 | Remaining | `village_life._remaining` | village_life.gd (código) | village_life.gd:409 |
+| CEN-226 | Order text | `village_life._order_text` | village_life.gd (código) | village_life.gd:412 |
+| CEN-227 | Leave | `village_life._leave` | village_life.gd (código) | village_life.gd:421 |
+| CEN-228 | Next customer | `village_life._next_customer` | village_life.gd (código) | village_life.gd:430 |
+| CEN-229 | W0 vip | `village_life.w0_vip` | village_life.gd (código) | village_life.gd:438 |
+| CEN-230 | Bar | `village_life._bar` | village_life.gd (código) | village_life.gd:441 |
+| CEN-231 | Kiosk prompt | `village_life.kiosk_prompt` | village_life.gd (código) | village_life.gd:445 |
+| CEN-232 | Daily goal | `village_life.daily_goal` | village_life.gd (código) | village_life.gd:472 |
+| CEN-233 | Kiosk action | `village_life.kiosk_action` | village_life.gd (código) | village_life.gd:480 |
+| CEN-234 | Stage secs | `village_life._stage_secs` | village_life.gd (código) | village_life.gd:498 |
+| CEN-235 | Prep advance | `village_life.prep_advance` | village_life.gd (código) | village_life.gd:504 |
+| CEN-236 | Deliver item | `village_life._deliver_item` | village_life.gd (código) | village_life.gd:521 |
+| CEN-237 | Complete order | `village_life._complete_order` | village_life.gd (código) | village_life.gd:537 |
+| CEN-238 | Kiosk serve | `village_life.kiosk_serve` | village_life.gd (código) | village_life.gd:578 |
+| CEN-239 | Helper serve | `village_life.helper_serve` | village_life.gd (código) | village_life.gd:589 |
+| CEN-240 | On slept | `village_life._on_slept` | village_life.gd (código) | village_life.gd:594 |
 | CEN-241 | Make guest | `guests._make_guest` | guests.gd (código) | guests.gd:34 |
 | CEN-242 | Spawn guest | `guests.spawn_guest` | guests.gd (código) | guests.gd:64 |
 | CEN-243 | On areas changed | `guests.on_areas_changed` | guests.gd (código) | guests.gd:77 |
@@ -524,7 +524,7 @@ Total: 1799 itens. MOD 105 · NAT 68 · PRC 31 · CEN 262 · PRT 9 · DSH 4 · S
 | SUP-005 | Peixe | `peixe` | custo=7 |
 | SUP-006 | Pão | `pao` | custo=2 |
 
-## EXP — Expansões (7)
+## EXP — Expansões (8)
 
 | Código | Nome | Chave | Dados |
 |---|---|---|---|
@@ -535,14 +535,16 @@ Total: 1799 itens. MOD 105 · NAT 68 · PRC 31 · CEN 262 · PRT 9 · DSH 4 · S
 | EXP-005 | Bar do Coqueiro | `bar` | custo=1200; estrelas=3.6 — Um bar de praia com barman. Banhistas sentam e pedem drinks sozinhos. |
 | EXP-006 | Pousada: recepção + bangalô | `pousada` | custo=2400; estrelas=3.8 — Recepção e o primeiro bangalô. Hóspedes pagam diária e dão gorjeta. |
 | EXP-007 | Piscina | `pool` | custo=2000; estrelas=4.0 — Piscina com espreguiçadeiras. Hóspedes ficam mais felizes (+★). |
+| EXP-008 | Passeios turísticos | `passeios` | custo=1800; estrelas=3.5 — Mergulho, barco e trilha ao farol. Com um guia contratado, os passeios rendem sozinhos. |
 
-## STF — Funcionários (3)
+## STF — Funcionários (4)
 
 | Código | Nome | Chave | Dados |
 |---|---|---|---|
 | STF-001 | Atendente do quiosque | `atendente` | contratacao=240; salario=30 — Serve um cliente do quiosque a cada 14 min, mesmo sem você. Salário no fim do dia. |
 | STF-002 | Camareira | `camareira` | contratacao=220; salario=36 — Limpa um item de bangalô a cada 20 min. Salário no fim do dia. |
 | STF-003 | Bartender | `bartender` | contratacao=260; salario=42 — Os preços do bar sobem 15%. Salário no fim do dia. |
+| STF-004 | Guia de passeios | `guia` | contratacao=280; salario=45 — Conduz os passeios turísticos nos horários marcados. Salário no fim do dia. |
 
 ## UPG — Melhorias de bangalô (15)
 
@@ -590,12 +592,17 @@ Total: 1799 itens. MOD 105 · NAT 68 · PRC 31 · CEN 262 · PRT 9 · DSH 4 · S
 | VIP-011 | Mike, o turista | `mike` | Americano apaixonado por coco |
 | VIP-012 | Sr. Prefeito | `prefeito` | Veio inspecionar o quiosque |
 
-## EVT — Eventos do dia (2)
+## EVT — Eventos do dia (7)
 
 | Código | Nome | Chave | Dados |
 |---|---|---|---|
 | EVT-001 | Dia de calor | `calor` | Todo mundo quer coco e suco gelado: mais clientes e pedidos de bebidas frescas. |
 | EVT-002 | Noite de lua cheia | `lua` | À noite o bar e o quiosque lotam. Deixe estoque para o fim da tarde. |
+| EVT-003 | Maré alta | `mare` | O mar sobe e a praia some: vêm bem menos clientes da areia e os passeios de barco e mergulho são cancelados. |
+| EVT-004 | Tempestade | `tempestade` | Chuva forte e vento. Poucos clientes, passeios cancelados e estoque exposto. Faça os preparativos antes. |
+| EVT-005 | Quermesse da praia | `quermesse` | Barraquinhas e música: mais clientes e pedidos maiores. Decoração dá ainda mais movimento. |
+| EVT-006 | Festa junina | `junina` | Fogueira, quadrilha e petiscos. A galera pede mais comida. Decoração atrai ainda mais gente. |
+| EVT-007 | Show do DJ Maré | `show_dj` | O DJ Maré toca na praia e passa no quiosque. Clientes de sobra e caipirinha em alta. |
 
 ## NOU — Modelos baixados ainda sem uso (disponíveis) (146)
 
@@ -785,16 +792,16 @@ Total: 1799 itens. MOD 105 · NAT 68 · PRC 31 · CEN 262 · PRT 9 · DSH 4 · S
 
 | Código | Nome | Chave | Fonte | Usado em |
 |---|---|---|---|---|
-| AUD-001 | Bell | `bell` | assets/audio | audio.gd:91, guests.gd:74, resort_core.gd:475 |
+| AUD-001 | Bell | `bell` | assets/audio | audio.gd:91, guests.gd:74, resort_core.gd:500 |
 | AUD-002 | Bird1 | `bird1` | assets/audio | audio.gd:70 |
 | AUD-003 | Bird2 | `bird2` | assets/audio | audio.gd:70 |
 | AUD-004 | Clean | `clean` | assets/audio | world.gd:613, world.gd:703 |
-| AUD-005 | Click | `click` | assets/audio | hud.gd:255, menus.gd:123, menus.gd:348, phone_ui.gd:241 (+3) |
+| AUD-005 | Click | `click` | assets/audio | hud.gd:255, menus.gd:123, menus.gd:348, phone_ui.gd:244 (+3) |
 | AUD-006 | Coin | `coin` | assets/audio | guests.gd:189, guests.gd:288, office_ui.gd:433, office_ui.gd:445 (+4) |
 | AUD-007 | Crickets loop | `crickets_loop` | assets/audio | audio.gd:33 |
 | AUD-008 | Dog | `dog` | assets/audio | audio.gd:80 |
 | AUD-009 | Door | `door` | assets/audio | world_village.gd:223, world_village.gd:343, world_village.gd:454, world_village.gd:538 |
-| AUD-010 | Glass | `glass` | assets/audio | guests.gd:157, village_life.gd:143, village_life.gd:522, world_village.gd:1163 |
+| AUD-010 | Glass | `glass` | assets/audio | guests.gd:157, village_life.gd:144, village_life.gd:530, world_village.gd:1163 |
 | AUD-011 | Music bossa | `music_bossa` | assets/audio | audio.gd:31 |
 | AUD-012 | Ocean loop | `ocean_loop` | assets/audio | audio.gd:32 |
 | AUD-013 | Seagull1 | `seagull1` | assets/audio | audio.gd:75 |
@@ -811,36 +818,36 @@ Total: 1799 itens. MOD 105 · NAT 68 · PRC 31 · CEN 262 · PRT 9 · DSH 4 · S
 | Código | Nome | Chave | Fonte | Usado em |
 |---|---|---|---|---|
 | ICO-001 | Bangalo | `bangalo` | assets/ui/icons | economy.gd:53, main.gd:29, main.gd:350, main.gd:424 (+8) |
-| ICO-002 | Banho | `banho` | assets/ui/icons | economy.gd:251, economy.gd:57, world.gd:838, world.gd:847 |
-| ICO-003 | Bar | `bar` | assets/ui/icons | economy.gd:100, economy.gd:264, economy.gd:48, economy.gd:49 (+22) |
-| ICO-004 | Bartender | `bartender` | assets/ui/icons | economy.gd:96, resort_core.gd:54, resort_core.gd:614, resort_core.gd:93 (+1) |
-| ICO-005 | Cachaca | `cachaca` | assets/ui/icons | economy.gd:159, economy.gd:169, economy.gd:179, economy.gd:37 |
+| ICO-002 | Banho | `banho` | assets/ui/icons | economy.gd:294, economy.gd:57, economy.gd:61, world.gd:838 (+1) |
+| ICO-003 | Bar | `bar` | assets/ui/icons | economy.gd:104, economy.gd:307, economy.gd:48, economy.gd:49 (+22) |
+| ICO-004 | Bartender | `bartender` | assets/ui/icons | economy.gd:100, resort_core.gd:106, resort_core.gd:57, resort_core.gd:796 (+1) |
+| ICO-005 | Cachaca | `cachaca` | assets/ui/icons | economy.gd:170, economy.gd:180, economy.gd:190, economy.gd:37 |
 | ICO-006 | Caixa | `caixa` | assets/ui/icons | hud.gd:236, hud.gd:59, office_ui.gd:10, office_ui.gd:256 (+9) |
-| ICO-007 | Cama | `cama` | assets/ui/icons | economy.gd:235, phone_ui.gd:21, resort_core.gd:167, resort_core.gd:368 (+7) |
-| ICO-008 | Camareira | `camareira` | assets/ui/icons | economy.gd:89, resort_core.gd:148, resort_core.gd:54, resort_core.gd:93 |
-| ICO-009 | Clima | `clima` | assets/ui/icons | economy.gd:219, hud.gd:531, world.gd:824, world.gd:831 |
-| ICO-010 | Coco | `coco` | assets/ui/icons | economy.gd:110, economy.gd:157, economy.gd:169, economy.gd:178 (+1) |
-| ICO-011 | Compra | `compra` | assets/ui/icons | economy.gd:268, office_ui.gd:287, office_ui.gd:548, office_ui.gd:554 (+3) |
-| ICO-012 | Decor | `decor` | assets/ui/icons | economy.gd:243, world.gd:802, world.gd:816 |
-| ICO-013 | Diaria | `diaria` | assets/ui/icons | economy.gd:262, guests.gd:188, main.gd:661, main.gd:663 (+2) |
-| ICO-014 | Equipe | `equipe` | assets/ui/icons | office_ui.gd:270, office_ui.gd:450, office_ui.gd:67, phone_ui.gd:152 (+3) |
-| ICO-015 | Folha | `folha` | assets/ui/icons | economy.gd:269, office_ui.gd:554, resort_core.gd:308, resort_core.gd:697 |
-| ICO-016 | Frutas | `frutas` | assets/ui/icons | economy.gd:128, economy.gd:158, economy.gd:169, economy.gd:179 (+3) |
-| ICO-017 | Gelo | `gelo` | assets/ui/icons | economy.gd:160, economy.gd:169, economy.gd:178, economy.gd:179 (+3) |
-| ICO-018 | Gorjeta | `gorjeta` | assets/ui/icons | economy.gd:263, guests.gd:287, guests.gd:320, main.gd:661 (+5) |
-| ICO-019 | Insumo | `insumo` | assets/ui/icons | economy.gd:266, main.gd:661, main.gd:667, office_ui.gd:554 (+1) |
+| ICO-007 | Cama | `cama` | assets/ui/icons | economy.gd:278, phone_ui.gd:21, resort_core.gd:190, resort_core.gd:393 (+7) |
+| ICO-008 | Camareira | `camareira` | assets/ui/icons | economy.gd:93, resort_core.gd:106, resort_core.gd:170, resort_core.gd:57 |
+| ICO-009 | Clima | `clima` | assets/ui/icons | economy.gd:262, hud.gd:531, phone_ui.gd:26, world.gd:824 (+1) |
+| ICO-010 | Coco | `coco` | assets/ui/icons | economy.gd:121, economy.gd:168, economy.gd:180, economy.gd:189 (+1) |
+| ICO-011 | Compra | `compra` | assets/ui/icons | economy.gd:311, office_ui.gd:287, office_ui.gd:548, office_ui.gd:554 (+3) |
+| ICO-012 | Decor | `decor` | assets/ui/icons | economy.gd:286, world.gd:802, world.gd:816 |
+| ICO-013 | Diaria | `diaria` | assets/ui/icons | economy.gd:305, guests.gd:188, main.gd:661, main.gd:663 (+2) |
+| ICO-014 | Equipe | `equipe` | assets/ui/icons | office_ui.gd:270, office_ui.gd:450, office_ui.gd:67, phone_ui.gd:155 (+4) |
+| ICO-015 | Folha | `folha` | assets/ui/icons | economy.gd:312, office_ui.gd:554, resort_core.gd:333, resort_core.gd:879 |
+| ICO-016 | Frutas | `frutas` | assets/ui/icons | economy.gd:139, economy.gd:169, economy.gd:180, economy.gd:190 (+3) |
+| ICO-017 | Gelo | `gelo` | assets/ui/icons | economy.gd:171, economy.gd:180, economy.gd:189, economy.gd:190 (+3) |
+| ICO-018 | Gorjeta | `gorjeta` | assets/ui/icons | economy.gd:306, guests.gd:287, guests.gd:320, main.gd:661 (+5) |
+| ICO-019 | Insumo | `insumo` | assets/ui/icons | economy.gd:309, main.gd:661, main.gd:667, office_ui.gd:554 (+2) |
 | ICO-020 | Insumos | `insumos` | assets/ui/icons | main.gd:421, office_ui.gd:266, office_ui.gd:326, office_ui.gd:67 (+2) |
-| ICO-021 | Missao | `missao` | assets/ui/icons | economy.gd:270, office_ui.gd:478, office_ui.gd:491, phone_ui.gd:24 (+3) |
-| ICO-022 | Multa | `multa` | assets/ui/icons | economy.gd:271, main.gd:260, office_ui.gd:554 |
+| ICO-021 | Missao | `missao` | assets/ui/icons | economy.gd:313, office_ui.gd:478, office_ui.gd:491, phone_ui.gd:24 (+3) |
+| ICO-022 | Multa | `multa` | assets/ui/icons | economy.gd:314, main.gd:260, office_ui.gd:554 |
 | ICO-023 | Novo | `novo` | assets/ui/icons | economy.gd:41, office_ui.gd:440 |
-| ICO-024 | Outro | `outro` | assets/ui/icons | economy.gd:272, office_ui.gd:291, office_ui.gd:319, office_ui.gd:574 (+2) |
-| ICO-025 | Pao | `pao` | assets/ui/icons | economy.gd:122, economy.gd:162, economy.gd:169, economy.gd:180 (+1) |
-| ICO-026 | Peixe | `peixe` | assets/ui/icons | economy.gd:116, economy.gd:161, economy.gd:169, economy.gd:180 (+3) |
+| ICO-024 | Outro | `outro` | assets/ui/icons | economy.gd:316, office_ui.gd:291, office_ui.gd:319, office_ui.gd:574 (+3) |
+| ICO-025 | Pao | `pao` | assets/ui/icons | economy.gd:133, economy.gd:173, economy.gd:180, economy.gd:191 (+1) |
+| ICO-026 | Peixe | `peixe` | assets/ui/icons | economy.gd:127, economy.gd:172, economy.gd:180, economy.gd:191 (+3) |
 | ICO-027 | Prato | `prato` | assets/ui/icons | office_ui.gd:354, office_ui.gd:360, phone_ui.gd:20 |
-| ICO-028 | Quiosque | `quiosque` | assets/ui/icons | economy.gd:265, economy.gd:33, main.gd:364, main.gd:410 (+8) |
-| ICO-029 | Redes | `redes` | assets/ui/icons | office_ui.gd:428, office_ui.gd:581, resort_core.gd:734 |
-| ICO-030 | Roupa | `roupa` | assets/ui/icons | economy.gd:227, world.gd:789, world.gd:794 |
-| ICO-031 | Upgrade | `upgrade` | assets/ui/icons | economy.gd:267, main.gd:350, main.gd:422, main.gd:429 (+8) |
+| ICO-028 | Quiosque | `quiosque` | assets/ui/icons | economy.gd:308, economy.gd:33, main.gd:364, main.gd:410 (+8) |
+| ICO-029 | Redes | `redes` | assets/ui/icons | office_ui.gd:428, office_ui.gd:581, resort_core.gd:916 |
+| ICO-030 | Roupa | `roupa` | assets/ui/icons | economy.gd:270, world.gd:789, world.gd:794 |
+| ICO-031 | Upgrade | `upgrade` | assets/ui/icons | economy.gd:310, main.gd:350, main.gd:422, main.gd:429 (+8) |
 
 ## FNT — Fontes (1)
 
@@ -900,7 +907,7 @@ Total: 1799 itens. MOD 105 · NAT 68 · PRC 31 · CEN 262 · PRT 9 · DSH 4 · S
 | ANI-029 | Sitting enter | `Sitting_Enter` | UAL (Quaternius CC0) | — |
 | ANI-030 | Sitting exit | `Sitting_Exit` | UAL (Quaternius CC0) | — |
 | ANI-031 | Sitting idle loop | `Sitting_Idle_Loop` | UAL (Quaternius CC0) | guest.gd:128, guest.gd:175, main.gd:279, main.gd:382 (+11) |
-| ANI-032 | Sitting talking loop | `Sitting_Talking_Loop` | UAL (Quaternius CC0) | guest.gd:130, guest.gd:175, village_life.gd:335, village_life.gd:361 |
+| ANI-032 | Sitting talking loop | `Sitting_Talking_Loop` | UAL (Quaternius CC0) | guest.gd:130, guest.gd:175, village_life.gd:341, village_life.gd:367 |
 | ANI-033 | Spell simple enter | `Spell_Simple_Enter` | UAL (Quaternius CC0) | — |
 | ANI-034 | Spell simple exit | `Spell_Simple_Exit` | UAL (Quaternius CC0) | — |
 | ANI-035 | Spell simple idle loop | `Spell_Simple_Idle_Loop` | UAL (Quaternius CC0) | — |
@@ -1803,7 +1810,7 @@ Total: 1799 itens. MOD 105 · NAT 68 · PRC 31 · CEN 262 · PRT 9 · DSH 4 · S
 | PCA-889 | box | `show_menu` | `B.box` | — | guest.gd:911 |  |
 | PCA-890 | box | `show_menu` | `B.box` | — | guest.gd:913 |  [em laço] |
 | PCA-891 | place | `_run_shot` | `Real.place` | — | main.gd:338 |  [em laço] |
-| PCA-892 | label | `spawn_customer` | `B.label` | — | village_life.gd:265 |  |
+| PCA-892 | label | `spawn_customer` | `B.label` | — | village_life.gd:271 |  |
 | PCA-893 | build | `_bungalow` | `P.build` | — | world.gd:625 | o modelo real do ventilador tem pás pretas (ficava um X preto no teto): usa o construtor c |
 | PCA-894 | place | `_sand_clutter` | `Real.place` | — | world_village.gd:1514 |  |
 | PCA-895 | new | `_run_shot` | `MeshInstance3D.new` | — | main.gd:323 |  |

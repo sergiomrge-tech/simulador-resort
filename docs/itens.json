@@ -120,17 +120,17 @@
    },
    {
     "arquivo": "village_life.gd",
-    "linha": 69,
+    "linha": 70,
     "funcao": "_ready"
    },
    {
     "arquivo": "village_life.gd",
-    "linha": 80,
+    "linha": 81,
     "funcao": "_ready"
    },
    {
     "arquivo": "village_life.gd",
-    "linha": 114,
+    "linha": 115,
     "funcao": "_process"
    }
   ]
@@ -179,17 +179,17 @@
    },
    {
     "arquivo": "village_life.gd",
-    "linha": 64,
+    "linha": 65,
     "funcao": "_ready"
    },
    {
     "arquivo": "village_life.gd",
-    "linha": 75,
+    "linha": 76,
     "funcao": "_ready"
    },
    {
     "arquivo": "village_life.gd",
-    "linha": 85,
+    "linha": 86,
     "funcao": "_ready"
    }
   ]
@@ -407,22 +407,22 @@
    },
    {
     "arquivo": "village_life.gd",
-    "linha": 57,
+    "linha": 58,
     "funcao": "_ready"
    },
    {
     "arquivo": "village_life.gd",
-    "linha": 320,
+    "linha": 326,
     "funcao": "_kiosk_tick"
    },
    {
     "arquivo": "village_life.gd",
-    "linha": 337,
+    "linha": 343,
     "funcao": "_kiosk_tick"
    },
    {
     "arquivo": "village_life.gd",
-    "linha": 414,
+    "linha": 422,
     "funcao": "_leave"
    },
    {
@@ -476,12 +476,12 @@
    },
    {
     "arquivo": "village_life.gd",
-    "linha": 335,
+    "linha": 341,
     "funcao": "_kiosk_tick"
    },
    {
     "arquivo": "village_life.gd",
-    "linha": 361,
+    "linha": 367,
     "funcao": "_order"
    }
   ]
@@ -642,7 +642,7 @@
    },
    {
     "arquivo": "resort_core.gd",
-    "linha": 475,
+    "linha": 500,
     "funcao": "buy_expansion"
    }
   ],
@@ -722,17 +722,17 @@
    },
    {
     "arquivo": "phone_ui.gd",
-    "linha": 241,
+    "linha": 244,
     "funcao": "_btn"
    },
    {
     "arquivo": "phone_ui.gd",
-    "linha": 388,
+    "linha": 393,
     "funcao": "_home"
    },
    {
     "arquivo": "village_life.gd",
-    "linha": 504,
+    "linha": 512,
     "funcao": "prep_advance"
    },
    {
@@ -782,12 +782,12 @@
    },
    {
     "arquivo": "village_life.gd",
-    "linha": 173,
+    "linha": 174,
     "funcao": "fish_catch"
    },
    {
     "arquivo": "village_life.gd",
-    "linha": 560,
+    "linha": 568,
     "funcao": "_complete_order"
    }
   ],
@@ -867,12 +867,12 @@
    },
    {
     "arquivo": "village_life.gd",
-    "linha": 143,
+    "linha": 144,
     "funcao": "fish_action"
    },
    {
     "arquivo": "village_life.gd",
-    "linha": 522,
+    "linha": 530,
     "funcao": "_deliver_item"
    },
    {
@@ -3896,7 +3896,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 92,
+    "linha": 93,
     "funcao": "_make"
    }
   ]
@@ -3910,7 +3910,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 132,
+    "linha": 133,
     "funcao": "fish_prompt"
    }
   ]
@@ -3924,7 +3924,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 139,
+    "linha": 140,
     "funcao": "fish_action"
    }
   ]
@@ -3938,7 +3938,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 145,
+    "linha": 146,
     "funcao": "_fish_tick"
    }
   ]
@@ -3952,7 +3952,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 158,
+    "linha": 159,
     "funcao": "fish_catch"
    }
   ]
@@ -3966,7 +3966,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 177,
+    "linha": 178,
     "funcao": "_prep_tick"
    }
   ]
@@ -3980,7 +3980,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 195,
+    "linha": 196,
     "funcao": "_outside_blocks"
    }
   ]
@@ -3994,7 +3994,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 218,
+    "linha": 219,
     "funcao": "kiosk_open"
    }
   ]
@@ -4008,7 +4008,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 221,
+    "linha": 222,
     "funcao": "waiting_customers"
    }
   ]
@@ -4022,7 +4022,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 224,
+    "linha": 225,
     "funcao": "_free_spot"
    }
   ]
@@ -4036,7 +4036,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 235,
+    "linha": 236,
     "funcao": "spawn_customer"
    }
   ]
@@ -4050,7 +4050,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 283,
+    "linha": 289,
     "funcao": "_kiosk_tick"
    }
   ]
@@ -4064,7 +4064,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 355,
+    "linha": 361,
     "funcao": "_order"
    }
   ]
@@ -4078,7 +4078,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 364,
+    "linha": 370,
     "funcao": "_pick_dish"
    }
   ]
@@ -4092,7 +4092,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 379,
+    "linha": 387,
     "funcao": "_pick_vip"
    }
   ]
@@ -4106,7 +4106,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 388,
+    "linha": 396,
     "funcao": "_vip_name"
    }
   ]
@@ -4120,7 +4120,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 394,
+    "linha": 402,
     "funcao": "_items"
    }
   ]
@@ -4134,7 +4134,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 398,
+    "linha": 406,
     "funcao": "_patience"
    }
   ]
@@ -4148,7 +4148,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 401,
+    "linha": 409,
     "funcao": "_remaining"
    }
   ]
@@ -4162,7 +4162,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 404,
+    "linha": 412,
     "funcao": "_order_text"
    }
   ]
@@ -4176,7 +4176,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 413,
+    "linha": 421,
     "funcao": "_leave"
    }
   ]
@@ -4190,7 +4190,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 422,
+    "linha": 430,
     "funcao": "_next_customer"
    }
   ]
@@ -4204,7 +4204,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 430,
+    "linha": 438,
     "funcao": "w0_vip"
    }
   ]
@@ -4218,7 +4218,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 433,
+    "linha": 441,
     "funcao": "_bar"
    }
   ]
@@ -4232,7 +4232,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 437,
+    "linha": 445,
     "funcao": "kiosk_prompt"
    }
   ]
@@ -4246,7 +4246,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 464,
+    "linha": 472,
     "funcao": "daily_goal"
    }
   ]
@@ -4260,7 +4260,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 472,
+    "linha": 480,
     "funcao": "kiosk_action"
    }
   ]
@@ -4274,7 +4274,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 490,
+    "linha": 498,
     "funcao": "_stage_secs"
    }
   ]
@@ -4288,7 +4288,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 496,
+    "linha": 504,
     "funcao": "prep_advance"
    }
   ]
@@ -4302,7 +4302,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 513,
+    "linha": 521,
     "funcao": "_deliver_item"
    }
   ]
@@ -4316,7 +4316,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 529,
+    "linha": 537,
     "funcao": "_complete_order"
    }
   ]
@@ -4330,7 +4330,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 570,
+    "linha": 578,
     "funcao": "kiosk_serve"
    }
   ]
@@ -4344,7 +4344,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 581,
+    "linha": 589,
     "funcao": "helper_serve"
    }
   ]
@@ -4358,7 +4358,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 586,
+    "linha": 594,
     "funcao": "_on_slept"
    }
   ]
@@ -4932,7 +4932,7 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 178,
+    "linha": 189,
     "funcao": ""
    }
   ],
@@ -4953,7 +4953,7 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 63,
+    "linha": 67,
     "funcao": ""
    }
   ],
@@ -4982,7 +4982,7 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 63,
+    "linha": 67,
     "funcao": ""
    }
   ],
@@ -5007,7 +5007,7 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 181,
+    "linha": 192,
     "funcao": ""
    }
   ],
@@ -5032,7 +5032,7 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 200,
+    "linha": 211,
     "funcao": ""
    }
   ],
@@ -5047,11 +5047,86 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 201,
+    "linha": 212,
     "funcao": ""
    }
   ],
   "descricao": "À noite o bar e o quiosque lotam. Deixe estoque para o fim da tarde."
+ },
+ {
+  "codigo": "EVT-003",
+  "categoria": "EVT",
+  "chave": "mare",
+  "nome": "Maré alta",
+  "fonte": "economy.gd",
+  "usos": [
+   {
+    "arquivo": "economy.gd",
+    "linha": 213,
+    "funcao": ""
+   }
+  ],
+  "descricao": "O mar sobe e a praia some: vêm bem menos clientes da areia e os passeios de barco e mergulho são cancelados."
+ },
+ {
+  "codigo": "EVT-004",
+  "categoria": "EVT",
+  "chave": "tempestade",
+  "nome": "Tempestade",
+  "fonte": "economy.gd",
+  "usos": [
+   {
+    "arquivo": "economy.gd",
+    "linha": 214,
+    "funcao": ""
+   }
+  ],
+  "descricao": "Chuva forte e vento. Poucos clientes, passeios cancelados e estoque exposto. Faça os preparativos antes."
+ },
+ {
+  "codigo": "EVT-005",
+  "categoria": "EVT",
+  "chave": "quermesse",
+  "nome": "Quermesse da praia",
+  "fonte": "economy.gd",
+  "usos": [
+   {
+    "arquivo": "economy.gd",
+    "linha": 215,
+    "funcao": ""
+   }
+  ],
+  "descricao": "Barraquinhas e música: mais clientes e pedidos maiores. Decoração dá ainda mais movimento."
+ },
+ {
+  "codigo": "EVT-006",
+  "categoria": "EVT",
+  "chave": "junina",
+  "nome": "Festa junina",
+  "fonte": "economy.gd",
+  "usos": [
+   {
+    "arquivo": "economy.gd",
+    "linha": 216,
+    "funcao": ""
+   }
+  ],
+  "descricao": "Fogueira, quadrilha e petiscos. A galera pede mais comida. Decoração atrai ainda mais gente."
+ },
+ {
+  "codigo": "EVT-007",
+  "categoria": "EVT",
+  "chave": "show_dj",
+  "nome": "Show do DJ Maré",
+  "fonte": "economy.gd",
+  "usos": [
+   {
+    "arquivo": "economy.gd",
+    "linha": 217,
+    "funcao": ""
+   }
+  ],
+  "descricao": "O DJ Maré toca na praia e passa no quiosque. Clientes de sobra e caipirinha em alta."
  },
  {
   "codigo": "EXP-001",
@@ -5173,6 +5248,23 @@
   "descricao": "Piscina com espreguiçadeiras. Hóspedes ficam mais felizes (+★)."
  },
  {
+  "codigo": "EXP-008",
+  "categoria": "EXP",
+  "chave": "passeios",
+  "nome": "Passeios turísticos",
+  "fonte": "economy.gd",
+  "usos": [
+   {
+    "arquivo": "economy.gd",
+    "linha": 60,
+    "funcao": ""
+   }
+  ],
+  "custo": "1800",
+  "estrelas": "3.5",
+  "descricao": "Mergulho, barco e trilha ao farol. Com um guia contratado, os passeios rendem sozinhos."
+ },
+ {
   "codigo": "FNT-001",
   "categoria": "FNT",
   "chave": "Nunito.ttf",
@@ -5230,17 +5322,17 @@
    },
    {
     "arquivo": "phone_ui.gd",
-    "linha": 150,
+    "linha": 153,
     "funcao": "app_for_tab"
    },
    {
     "arquivo": "phone_ui.gd",
-    "linha": 342,
+    "linha": 347,
     "funcao": "_home"
    },
    {
     "arquivo": "phone_ui.gd",
-    "linha": 412,
+    "linha": 417,
     "funcao": "_app_expansions"
    },
    {
@@ -5265,7 +5357,12 @@
    },
    {
     "arquivo": "economy.gd",
-    "linha": 251,
+    "linha": 61,
+    "funcao": ""
+   },
+   {
+    "arquivo": "economy.gd",
+    "linha": 294,
     "funcao": ""
    },
    {
@@ -5305,17 +5402,17 @@
    },
    {
     "arquivo": "economy.gd",
-    "linha": 61,
+    "linha": 65,
     "funcao": ""
    },
    {
     "arquivo": "economy.gd",
-    "linha": 100,
+    "linha": 104,
     "funcao": ""
    },
    {
     "arquivo": "economy.gd",
-    "linha": 264,
+    "linha": 307,
     "funcao": ""
    },
    {
@@ -5370,42 +5467,42 @@
    },
    {
     "arquivo": "phone_ui.gd",
-    "linha": 479,
+    "linha": 496,
     "funcao": "_app_menu"
    },
    {
     "arquivo": "phone_ui.gd",
-    "linha": 480,
+    "linha": 497,
     "funcao": "_app_menu"
    },
    {
     "arquivo": "resort_core.gd",
-    "linha": 231,
+    "linha": 254,
     "funcao": "bar_sale"
    },
    {
     "arquivo": "resort_core.gd",
-    "linha": 614,
+    "linha": 796,
     "funcao": "sell_dish"
    },
    {
     "arquivo": "resort_core.gd",
-    "linha": 617,
+    "linha": 799,
     "funcao": "sell_dish"
    },
    {
     "arquivo": "resort_core.gd",
-    "linha": 631,
+    "linha": 813,
     "funcao": "serve_bar"
    },
    {
     "arquivo": "resort_core.gd",
-    "linha": 735,
+    "linha": 917,
     "funcao": "save_game"
    },
    {
     "arquivo": "resort_core.gd",
-    "linha": 779,
+    "linha": 963,
     "funcao": "load_game"
    },
    {
@@ -5430,22 +5527,22 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 96,
+    "linha": 100,
     "funcao": ""
    },
    {
     "arquivo": "resort_core.gd",
-    "linha": 54,
+    "linha": 57,
     "funcao": ""
    },
    {
     "arquivo": "resort_core.gd",
-    "linha": 93,
+    "linha": 106,
     "funcao": "_reset_economy"
    },
    {
     "arquivo": "resort_core.gd",
-    "linha": 614,
+    "linha": 796,
     "funcao": "sell_dish"
    },
    {
@@ -5470,17 +5567,17 @@
    },
    {
     "arquivo": "economy.gd",
-    "linha": 159,
+    "linha": 170,
     "funcao": ""
    },
    {
     "arquivo": "economy.gd",
-    "linha": 169,
+    "linha": 180,
     "funcao": ""
    },
    {
     "arquivo": "economy.gd",
-    "linha": 179,
+    "linha": 190,
     "funcao": ""
    }
   ],
@@ -5545,17 +5642,17 @@
    },
    {
     "arquivo": "phone_ui.gd",
-    "linha": 154,
+    "linha": 157,
     "funcao": "app_for_tab"
    },
    {
     "arquivo": "phone_ui.gd",
-    "linha": 155,
+    "linha": 158,
     "funcao": "app_for_tab"
    },
    {
     "arquivo": "phone_ui.gd",
-    "linha": 318,
+    "linha": 321,
     "funcao": "refresh"
    }
   ],
@@ -5570,7 +5667,7 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 235,
+    "linha": 278,
     "funcao": ""
    },
    {
@@ -5580,22 +5677,22 @@
    },
    {
     "arquivo": "resort_core.gd",
-    "linha": 78,
+    "linha": 91,
     "funcao": "_blank_room"
    },
    {
     "arquivo": "resort_core.gd",
-    "linha": 167,
+    "linha": 190,
     "funcao": "_maid_sweep"
    },
    {
     "arquivo": "resort_core.gd",
-    "linha": 368,
+    "linha": 393,
     "funcao": "vacate_room"
    },
    {
     "arquivo": "resort_core.gd",
-    "linha": 753,
+    "linha": 937,
     "funcao": "save_game"
    },
    {
@@ -5635,22 +5732,22 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 89,
-    "funcao": ""
-   },
-   {
-    "arquivo": "resort_core.gd",
-    "linha": 54,
-    "funcao": ""
-   },
-   {
-    "arquivo": "resort_core.gd",
     "linha": 93,
+    "funcao": ""
+   },
+   {
+    "arquivo": "resort_core.gd",
+    "linha": 57,
+    "funcao": ""
+   },
+   {
+    "arquivo": "resort_core.gd",
+    "linha": 106,
     "funcao": "_reset_economy"
    },
    {
     "arquivo": "resort_core.gd",
-    "linha": 148,
+    "linha": 170,
     "funcao": "_process"
    }
   ],
@@ -5665,13 +5762,18 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 219,
+    "linha": 262,
     "funcao": ""
    },
    {
     "arquivo": "hud.gd",
     "linha": 531,
     "funcao": "objective"
+   },
+   {
+    "arquivo": "phone_ui.gd",
+    "linha": 26,
+    "funcao": ""
    },
    {
     "arquivo": "world.gd",
@@ -5695,22 +5797,22 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 110,
+    "linha": 121,
     "funcao": ""
    },
    {
     "arquivo": "economy.gd",
-    "linha": 157,
+    "linha": 168,
     "funcao": ""
    },
    {
     "arquivo": "economy.gd",
-    "linha": 169,
+    "linha": 180,
     "funcao": ""
    },
    {
     "arquivo": "economy.gd",
-    "linha": 178,
+    "linha": 189,
     "funcao": ""
    },
    {
@@ -5730,7 +5832,7 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 268,
+    "linha": 311,
     "funcao": ""
    },
    {
@@ -5755,12 +5857,12 @@
    },
    {
     "arquivo": "resort_core.gd",
-    "linha": 401,
+    "linha": 426,
     "funcao": "buy_rede"
    },
    {
     "arquivo": "resort_core.gd",
-    "linha": 579,
+    "linha": 761,
     "funcao": "buy_freezer"
    }
   ],
@@ -5775,7 +5877,7 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 243,
+    "linha": 286,
     "funcao": ""
    },
    {
@@ -5800,7 +5902,7 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 262,
+    "linha": 305,
     "funcao": ""
    },
    {
@@ -5860,18 +5962,23 @@
    },
    {
     "arquivo": "phone_ui.gd",
-    "linha": 152,
+    "linha": 155,
     "funcao": "app_for_tab"
    },
    {
     "arquivo": "phone_ui.gd",
-    "linha": 153,
+    "linha": 156,
     "funcao": "app_for_tab"
    },
    {
     "arquivo": "phone_ui.gd",
-    "linha": 316,
+    "linha": 319,
     "funcao": "refresh"
+   },
+   {
+    "arquivo": "phone_ui.gd",
+    "linha": 673,
+    "funcao": "_app_staff"
    }
   ],
   "arquivo_modelo": "assets/ui/icons/equipe.svg"
@@ -5885,7 +5992,7 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 269,
+    "linha": 312,
     "funcao": ""
    },
    {
@@ -5895,12 +6002,12 @@
    },
    {
     "arquivo": "resort_core.gd",
-    "linha": 308,
+    "linha": 333,
     "funcao": "_pay_wages"
    },
    {
     "arquivo": "resort_core.gd",
-    "linha": 697,
+    "linha": 879,
     "funcao": "hire"
    }
   ],
@@ -5915,12 +6022,7 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 128,
-    "funcao": ""
-   },
-   {
-    "arquivo": "economy.gd",
-    "linha": 158,
+    "linha": 139,
     "funcao": ""
    },
    {
@@ -5930,22 +6032,27 @@
    },
    {
     "arquivo": "economy.gd",
-    "linha": 179,
-    "funcao": ""
-   },
-   {
-    "arquivo": "economy.gd",
     "linha": 180,
     "funcao": ""
    },
    {
     "arquivo": "economy.gd",
-    "linha": 181,
+    "linha": 190,
     "funcao": ""
    },
    {
     "arquivo": "economy.gd",
-    "linha": 196,
+    "linha": 191,
+    "funcao": ""
+   },
+   {
+    "arquivo": "economy.gd",
+    "linha": 192,
+    "funcao": ""
+   },
+   {
+    "arquivo": "economy.gd",
+    "linha": 207,
     "funcao": ""
    }
   ],
@@ -5960,37 +6067,37 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 160,
+    "linha": 171,
     "funcao": ""
    },
    {
     "arquivo": "economy.gd",
-    "linha": 169,
+    "linha": 180,
     "funcao": ""
    },
    {
     "arquivo": "economy.gd",
-    "linha": 178,
+    "linha": 189,
     "funcao": ""
    },
    {
     "arquivo": "economy.gd",
-    "linha": 179,
+    "linha": 190,
     "funcao": ""
    },
    {
     "arquivo": "economy.gd",
-    "linha": 181,
+    "linha": 192,
     "funcao": ""
    },
    {
     "arquivo": "economy.gd",
-    "linha": 196,
+    "linha": 207,
     "funcao": ""
    },
    {
     "arquivo": "phone_ui.gd",
-    "linha": 450,
+    "linha": 467,
     "funcao": "_app_market"
    }
   ],
@@ -6005,7 +6112,7 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 263,
+    "linha": 306,
     "funcao": ""
    },
    {
@@ -6035,17 +6142,17 @@
    },
    {
     "arquivo": "phone_ui.gd",
-    "linha": 543,
+    "linha": 560,
     "funcao": "_app_album"
    },
    {
     "arquivo": "village_life.gd",
-    "linha": 549,
+    "linha": 557,
     "funcao": "_complete_order"
    },
    {
     "arquivo": "village_life.gd",
-    "linha": 554,
+    "linha": 562,
     "funcao": "_complete_order"
    }
   ],
@@ -6060,7 +6167,7 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 266,
+    "linha": 309,
     "funcao": ""
    },
    {
@@ -6080,7 +6187,12 @@
    },
    {
     "arquivo": "resort_core.gd",
-    "linha": 641,
+    "linha": 693,
+    "funcao": "buy_contract"
+   },
+   {
+    "arquivo": "resort_core.gd",
+    "linha": 823,
     "funcao": "buy_supply"
    }
   ],
@@ -6115,7 +6227,7 @@
    },
    {
     "arquivo": "phone_ui.gd",
-    "linha": 148,
+    "linha": 151,
     "funcao": "app_for_tab"
    },
    {
@@ -6135,7 +6247,7 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 270,
+    "linha": 313,
     "funcao": ""
    },
    {
@@ -6155,17 +6267,17 @@
    },
    {
     "arquivo": "resort_core.gd",
-    "linha": 595,
+    "linha": 777,
     "funcao": "vip_served"
    },
    {
     "arquivo": "resort_core.gd",
-    "linha": 717,
+    "linha": 899,
     "funcao": "complete_quest"
    },
    {
     "arquivo": "village_life.gd",
-    "linha": 558,
+    "linha": 566,
     "funcao": "_complete_order"
    }
   ],
@@ -6180,7 +6292,7 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 271,
+    "linha": 314,
     "funcao": ""
    },
    {
@@ -6225,7 +6337,7 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 272,
+    "linha": 316,
     "funcao": ""
    },
    {
@@ -6245,13 +6357,18 @@
    },
    {
     "arquivo": "resort_core.gd",
-    "linha": 187,
+    "linha": 210,
     "funcao": "add_money"
    },
    {
     "arquivo": "resort_core.gd",
-    "linha": 315,
+    "linha": 340,
     "funcao": "_snapshot_ledger"
+   },
+   {
+    "arquivo": "resort_core.gd",
+    "linha": 655,
+    "funcao": "buy_prep"
    }
   ],
   "arquivo_modelo": "assets/ui/icons/outro.svg"
@@ -6265,17 +6382,12 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 122,
+    "linha": 133,
     "funcao": ""
    },
    {
     "arquivo": "economy.gd",
-    "linha": 162,
-    "funcao": ""
-   },
-   {
-    "arquivo": "economy.gd",
-    "linha": 169,
+    "linha": 173,
     "funcao": ""
    },
    {
@@ -6285,7 +6397,12 @@
    },
    {
     "arquivo": "economy.gd",
-    "linha": 196,
+    "linha": 191,
+    "funcao": ""
+   },
+   {
+    "arquivo": "economy.gd",
+    "linha": 207,
     "funcao": ""
    }
   ],
@@ -6305,17 +6422,12 @@
    },
    {
     "arquivo": "economy.gd",
-    "linha": 116,
+    "linha": 127,
     "funcao": ""
    },
    {
     "arquivo": "economy.gd",
-    "linha": 161,
-    "funcao": ""
-   },
-   {
-    "arquivo": "economy.gd",
-    "linha": 169,
+    "linha": 172,
     "funcao": ""
    },
    {
@@ -6325,12 +6437,17 @@
    },
    {
     "arquivo": "economy.gd",
-    "linha": 196,
+    "linha": 191,
+    "funcao": ""
+   },
+   {
+    "arquivo": "economy.gd",
+    "linha": 207,
     "funcao": ""
    },
    {
     "arquivo": "village_life.gd",
-    "linha": 170,
+    "linha": 171,
     "funcao": "fish_catch"
    }
   ],
@@ -6375,7 +6492,7 @@
    },
    {
     "arquivo": "economy.gd",
-    "linha": 265,
+    "linha": 308,
     "funcao": ""
    },
    {
@@ -6415,17 +6532,17 @@
    },
    {
     "arquivo": "phone_ui.gd",
-    "linha": 478,
+    "linha": 495,
     "funcao": "_app_menu"
    },
    {
     "arquivo": "phone_ui.gd",
-    "linha": 595,
+    "linha": 673,
     "funcao": "_app_staff"
    },
    {
     "arquivo": "resort_core.gd",
-    "linha": 276,
+    "linha": 299,
     "funcao": "kiosk_sale"
    }
   ],
@@ -6450,7 +6567,7 @@
    },
    {
     "arquivo": "resort_core.gd",
-    "linha": 734,
+    "linha": 916,
     "funcao": "save_game"
    }
   ],
@@ -6465,7 +6582,7 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 227,
+    "linha": 270,
     "funcao": ""
    },
    {
@@ -6490,7 +6607,7 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 267,
+    "linha": 310,
     "funcao": ""
    },
    {
@@ -6535,17 +6652,17 @@
    },
    {
     "arquivo": "resort_core.gd",
-    "linha": 468,
+    "linha": 493,
     "funcao": "buy_expansion"
    },
    {
     "arquivo": "resort_core.gd",
-    "linha": 660,
+    "linha": 842,
     "funcao": "upgrade_room"
    },
    {
     "arquivo": "resort_core.gd",
-    "linha": 677,
+    "linha": 859,
     "funcao": "build_bungalow"
    }
   ],
@@ -28662,7 +28779,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 265,
+    "linha": 271,
     "funcao": "spawn_customer"
    }
   ],
@@ -29457,7 +29574,7 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 107,
+    "linha": 118,
     "funcao": ""
    }
   ],
@@ -29475,7 +29592,7 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 113,
+    "linha": 124,
     "funcao": ""
    }
   ],
@@ -29493,7 +29610,7 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 119,
+    "linha": 130,
     "funcao": ""
    }
   ],
@@ -29511,7 +29628,7 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 125,
+    "linha": 136,
     "funcao": ""
    }
   ],
@@ -29613,7 +29730,7 @@
     "funcao": ""
    }
   ],
-  "linhas": 312,
+  "linhas": 356,
   "descricao": "Todos os números da progressão do Maré Alta. Não espalhar preço, diária ou salário pelo código."
  },
  {
@@ -29805,7 +29922,7 @@
     "funcao": ""
    }
   ],
-  "linhas": 630,
+  "linhas": 708,
   "descricao": "Celular do herói (v0.7): toda a gestão do negócio por apps — Expansões, Mercado, Cardápio,"
  },
  {
@@ -29885,7 +30002,7 @@
     "funcao": ""
    }
   ],
-  "linhas": 846,
+  "linhas": 1044,
   "descricao": ""
  },
  {
@@ -29933,7 +30050,7 @@
     "funcao": ""
    }
   ],
-  "linhas": 601,
+  "linhas": 610,
   "descricao": ""
  },
  {
@@ -30162,7 +30279,7 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 82,
+    "linha": 86,
     "funcao": ""
    }
   ],
@@ -30179,7 +30296,7 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 89,
+    "linha": 93,
     "funcao": ""
    }
   ],
@@ -30196,13 +30313,30 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 96,
+    "linha": 100,
     "funcao": ""
    }
   ],
   "contratacao": "260",
   "salario": "42",
   "descricao": "Os preços do bar sobem 15%. Salário no fim do dia."
+ },
+ {
+  "codigo": "STF-004",
+  "categoria": "STF",
+  "chave": "guia",
+  "nome": "Guia de passeios",
+  "fonte": "economy.gd",
+  "usos": [
+   {
+    "arquivo": "economy.gd",
+    "linha": 107,
+    "funcao": ""
+   }
+  ],
+  "contratacao": "280",
+  "salario": "45",
+  "descricao": "Conduz os passeios turísticos nos horários marcados. Salário no fim do dia."
  },
  {
   "codigo": "SUP-001",
@@ -30213,7 +30347,7 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 110,
+    "linha": 121,
     "funcao": ""
    }
   ],
@@ -30228,7 +30362,7 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 128,
+    "linha": 139,
     "funcao": ""
    }
   ],
@@ -30259,7 +30393,7 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 160,
+    "linha": 171,
     "funcao": ""
    }
   ],
@@ -30291,7 +30425,7 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 122,
+    "linha": 133,
     "funcao": ""
    }
   ],
@@ -31134,7 +31268,7 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 219,
+    "linha": 262,
     "funcao": ""
    }
   ],
@@ -31150,7 +31284,7 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 219,
+    "linha": 262,
     "funcao": ""
    }
   ],
@@ -31166,7 +31300,7 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 219,
+    "linha": 262,
     "funcao": ""
    }
   ],
@@ -31182,7 +31316,7 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 227,
+    "linha": 270,
     "funcao": ""
    }
   ],
@@ -31198,7 +31332,7 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 227,
+    "linha": 270,
     "funcao": ""
    }
   ],
@@ -31214,7 +31348,7 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 227,
+    "linha": 270,
     "funcao": ""
    }
   ],
@@ -31230,7 +31364,7 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 235,
+    "linha": 278,
     "funcao": ""
    }
   ],
@@ -31246,7 +31380,7 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 235,
+    "linha": 278,
     "funcao": ""
    }
   ],
@@ -31262,7 +31396,7 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 235,
+    "linha": 278,
     "funcao": ""
    }
   ],
@@ -31278,7 +31412,7 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 243,
+    "linha": 286,
     "funcao": ""
    }
   ],
@@ -31294,7 +31428,7 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 243,
+    "linha": 286,
     "funcao": ""
    }
   ],
@@ -31310,7 +31444,7 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 243,
+    "linha": 286,
     "funcao": ""
    }
   ],
@@ -31374,7 +31508,7 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 135,
+    "linha": 146,
     "funcao": ""
    }
   ],
@@ -31389,7 +31523,7 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 136,
+    "linha": 147,
     "funcao": ""
    }
   ],
@@ -31404,7 +31538,7 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 137,
+    "linha": 148,
     "funcao": ""
    }
   ],
@@ -31419,7 +31553,7 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 138,
+    "linha": 149,
     "funcao": ""
    }
   ],
@@ -31434,7 +31568,7 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 139,
+    "linha": 150,
     "funcao": ""
    }
   ],
@@ -31449,7 +31583,7 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 140,
+    "linha": 151,
     "funcao": ""
    }
   ],
@@ -31464,7 +31598,7 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 141,
+    "linha": 152,
     "funcao": ""
    }
   ],
@@ -31479,7 +31613,7 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 142,
+    "linha": 153,
     "funcao": ""
    }
   ],
@@ -31494,7 +31628,7 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 143,
+    "linha": 154,
     "funcao": ""
    }
   ],
@@ -31509,7 +31643,7 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 144,
+    "linha": 155,
     "funcao": ""
    }
   ],
@@ -31524,7 +31658,7 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 145,
+    "linha": 156,
     "funcao": ""
    }
   ],
@@ -31539,7 +31673,7 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 146,
+    "linha": 157,
     "funcao": ""
    }
   ],

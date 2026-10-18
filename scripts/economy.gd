@@ -57,8 +57,12 @@ const EXPANSIONS: = {
 		"name": "Piscina", "cost": 2000, "req": ["pousada"], "stars": 4.0, "rooms": 2, "icon": "banho", "area": "pool",
 		"blurb": "Piscina com espreguiçadeiras. Hóspedes ficam mais felizes (+★).",
 	},
+	"passeios": {
+		"name": "Passeios turísticos", "cost": 1800, "req": ["pousada"], "stars": 3.5, "icon": "banho", "area": "",
+		"blurb": "Mergulho, barco e trilha ao farol. Com um guia contratado, os passeios rendem sozinhos.",
+	},
 }
-const EXPANSION_ORDER: = ["kiosk_tables", "drinks", "neon", "grill", "bar", "pousada", "pool"]
+const EXPANSION_ORDER: = ["kiosk_tables", "drinks", "neon", "grill", "bar", "pousada", "pool", "passeios"]
 ## Pratos liberados por expansão (o resto já vem no quiosque inicial).
 const DISH_UNLOCK: = {"caipirinha": "drinks", "petiscos": "grill"}
 ## Bônus de nota da estadia quando a piscina existe.
@@ -99,6 +103,13 @@ const STAFF: = {
 		"wage": 42,
 		"req": "bar",
 		"blurb": "Os preços do bar sobem 15%. Salário no fim do dia.",
+	},
+	"guia": {
+		"name": "Guia de passeios",
+		"hire": 280,
+		"wage": 45,
+		"req": "passeios",
+		"blurb": "Conduz os passeios turísticos nos horários marcados. Salário no fim do dia.",
 	},
 }
 
@@ -199,6 +210,38 @@ const FREEZER_COST: = 300
 const DAY_EVENTS: = {
 	"calor": {"name": "Dia de calor", "blurb": "Todo mundo quer coco e suco gelado: mais clientes e pedidos de bebidas frescas."},
 	"lua": {"name": "Noite de lua cheia", "blurb": "À noite o bar e o quiosque lotam. Deixe estoque para o fim da tarde."},
+	"mare": {"name": "Maré alta", "blurb": "O mar sobe e a praia some: vêm bem menos clientes da areia e os passeios de barco e mergulho são cancelados."},
+	"tempestade": {"name": "Tempestade", "blurb": "Chuva forte e vento. Poucos clientes, passeios cancelados e estoque exposto. Faça os preparativos antes."},
+	"quermesse": {"name": "Quermesse da praia", "blurb": "Barraquinhas e música: mais clientes e pedidos maiores. Decoração dá ainda mais movimento.", "party": true},
+	"junina": {"name": "Festa junina", "blurb": "Fogueira, quadrilha e petiscos. A galera pede mais comida. Decoração atrai ainda mais gente.", "party": true},
+	"show_dj": {"name": "Show do DJ Maré", "blurb": "O DJ Maré toca na praia e passa no quiosque. Clientes de sobra e caipirinha em alta.", "party": true},
+}
+## Probabilidade de cada evento aleatório (o restante do dia fica sem evento).
+const EVENT_ODDS: = [["calor", 0.22], ["lua", 0.12], ["mare", 0.10], ["tempestade", 0.08]]
+## Festas do calendário (dia % 7), só a partir do dia 8.
+const PARTY_CALENDAR: = {2: "quermesse", 4: "junina", 6: "show_dj"}
+const PARTY_FROM_DAY: = 8
+const PARTY_DECO_COST: = 120
+const PARTY_DEMAND: = 1.4
+const PARTY_DECO_DEMAND: = 1.7
+const STORM_PREP_COST: = 80
+## Fração do estoque perdida numa tempestade sem preparativos.
+const STORM_LOSS: = 0.35
+const EVENT_DEMAND: = {"mare": 0.8, "tempestade": 0.35}
+## Fração dos clientes que chegam da praia (normal 0.6).
+const BEACH_SHARE: = {"mare": 0.15, "tempestade": 0.3}
+
+## Fornecedores: o preço do mercadinho oscila a cada dia; contrato fixa desconto por alguns dias.
+const PRICE_SWING: = [0.8, 0.9, 1.0, 1.0, 1.0, 1.1, 1.25, 1.4]
+const CONTRACT_DISCOUNT: = 0.15
+const CONTRACT_DAYS: = 5
+const CONTRACT_FEE: = 60
+
+## Passeios turísticos: horário (min), preço por pessoa, custo por saída, vagas.
+const TOURS: = {
+	"snorkel": {"name": "Mergulho com snorkel", "at": 9.5 * 60.0, "price": 45, "cost": 25, "seats": 6, "sea": true},
+	"barco": {"name": "Passeio de barco", "at": 13.5 * 60.0, "price": 70, "cost": 45, "seats": 8, "sea": true},
+	"farol": {"name": "Trilha ao farol", "at": 16.0 * 60.0, "price": 35, "cost": 10, "seats": 5, "sea": false},
 }
 const KIOSK_MENU: = ["coco_gelado", "suco", "caipirinha", "petiscos"]
 const BAR_MENU: = ["coco_gelado", "caipirinha", "petiscos", "suco"]
@@ -269,6 +312,7 @@ const CAT_NAME: = {
 	"folha": "Equipe", 
 	"missao": "Missões", 
 	"multa": "Multas", 
+	"passeio": "Passeios", 
 	"outro": "Outros", 
 }
 

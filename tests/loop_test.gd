@@ -161,6 +161,90 @@ func vip_rush_test() -> void :
 	Core.speed_mult = 30.0
 	Core.minutes = 8.5 * 60.0
 
+func mechanics_test() -> void :
+	var d0: = Core.day
+	var money0: = Core.money
+	var stock0: = Core.stock.duplicate()
+	# fornecedores: preço oscila e contrato dá desconto
+	Core.supply_mult["coco"] = 1.4
+	var hi: = Core.supply_total("coco", Economy.PACK)
+	Core.supply_mult["coco"] = 0.8
+	var lo: = Core.supply_total("coco", Economy.PACK)
+	check(hi > lo and lo >= 1, "preço do fornecedor oscila: %d > %d" % [hi, lo])
+	Core.supply_mult["coco"] = 1.4
+	var m_c: = Core.money
+	check(Core.buy_contract("coco"), "assinou contrato de coco")
+	check(Core.money == m_c - Economy.CONTRACT_FEE, "taxa do contrato cobrada")
+	check(Core.supply_total("coco", Economy.PACK) < Economy.supply_cost("coco") * Economy.PACK, "contrato nunca paga mais que o normal")
+	for i in Economy.CONTRACT_DAYS:
+		Core.roll_supply_prices()
+	check(not Core.contracts.has("coco"), "contrato expira depois de %d dias" % Economy.CONTRACT_DAYS)
+	Core.supply_mult = {}
+	# festas do calendário
+	check(Core.pick_event(5) not in ["quermesse", "junina", "show_dj"], "antes do dia 8 não tem festa")
+	check(Core.pick_event(9) == "quermesse" and Core.pick_event(11) == "junina" and Core.pick_event(13) == "show_dj", "calendário de festas")
+	Core.day_event = ""
+	Core.prep_active = false
+	var f_base: = Core.demand_factor()
+	Core.day_event = "quermesse"
+	var f_party: = Core.demand_factor()
+	Core.money = 1000
+	check(Core.buy_prep(), "decorou a festa do dia")
+	var f_deco: = Core.demand_factor()
+	check(f_party > f_base * 1.2 and f_deco > f_party, "festa atrai clientes (%.2f < %.2f < %.2f)" % [f_base, f_party, f_deco])
+	Core.day_event = "tempestade"
+	Core.prep_active = false
+	check(Core.demand_factor() < f_base * 0.5, "tempestade espanta clientes")
+	check(Core.beach_share() < 0.4, "tempestade esvazia a praia")
+	# tempestade: sem preparativos o estoque se perde; com preparativos, não
+	for k in Core.stock.keys():
+		Core.stock[k] = 20
+	Core.forecast_next = "tempestade"
+	Core.forecast_set = true
+	Core.prep_paid = false
+	Core.roll_day_event()
+	check(int(Core.stock["coco"]) < 20 and Core.day_event == "tempestade", "tempestade sem preparativos estraga estoque (%d)" % int(Core.stock["coco"]))
+	check(Core.weather == "rain", "tempestade traz chuva")
+	for k in Core.stock.keys():
+		Core.stock[k] = 20
+	Core.forecast_next = "tempestade"
+	Core.forecast_set = true
+	Core.prep_active = false
+	var m_p: = Core.money
+	check(Core.buy_prep(), "pagou os preparativos da tempestade")
+	check(Core.money == m_p - Economy.STORM_PREP_COST, "custo dos preparativos")
+	Core.roll_day_event()
+	check(int(Core.stock["coco"]) == 20 and Core.prep_active, "preparativos protegem o estoque")
+	Core.set_weather("sun")
+	# passeios: guia + horário certo = renda; mar bravo cancela
+	var had: = Core.has("passeios")
+	Core.unlocked["passeios"] = true
+	Core.staff["guia"] = true
+	Core.day_event = ""
+	Core.tours_done = {}
+	Core.minutes = float(Economy.TOURS.snorkel.at) + 5.0
+	var m_t: = Core.money
+	Core._check_tours()
+	check(Core.tours_done.has("snorkel") and Core.money > m_t, "passeio de snorkel rendeu %d" % (Core.money - m_t))
+	var m_t2: = Core.money
+	Core._check_tours()
+	check(Core.money == m_t2, "o mesmo passeio não roda duas vezes")
+	Core.day_event = "mare"
+	check(Core.run_tour("barco") == 0 and Core.tours_done.has("barco"), "maré alta cancela o passeio de barco")
+	check(Core.run_tour("farol") > 0, "trilha ao farol acontece na maré alta")
+	Core.staff["guia"] = false
+	if not had:
+		Core.unlocked.erase("passeios")
+	Core.tours_done = {}
+	Core.day_event = ""
+	Core.prep_active = false
+	Core.prep_paid = false
+	Core.forecast_next = ""
+	Core.forecast_set = false
+	Core.day = d0
+	Core.money = money0
+	Core.stock = stock0
+
 func run(m) -> void :
 	main = m
 	var watchdog: = get_tree().create_timer(230.0)
@@ -296,6 +380,15 @@ func run(m) -> void :
 	Core.day = d0
 	Core.day_event = ""
 	check(ev_seen.has("calor") and ev_seen.has("lua") and ev_seen.has(""), "eventos do dia sorteados: %s" % str(ev_seen.keys()))
+	check(ev_seen.has("mare") and ev_seen.has("tempestade"), "maré alta e tempestade sorteadas: %s" % str(ev_seen.keys()))
+	Core.set_weather("sun")
+	Core.forecast_set = false
+	Core.prep_paid = false
+	Core.prep_active = false
+	Core.supply_mult = {}
+	mechanics_test()
+	Core.set_weather("sun")
+	Core.stock = Economy.START_STOCK.duplicate()
 	Core.stock["gelo"] = 18
 	Core.stock["peixe"] = 10
 
@@ -343,7 +436,7 @@ func run(m) -> void :
 	var m_buy: = Core.money
 	check(Core.buy_supply("coco", Economy.PACK), "comprou fardo de coco")
 	check(int(Core.stock["coco"]) == Economy.PACK, "estoque de coco = %d" % int(Core.stock["coco"]))
-	check(Core.money == m_buy - Economy.supply_cost("coco") * Economy.PACK, "custo do fardo descontado")
+	check(Core.money == m_buy - Core.supply_total("coco", Economy.PACK), "custo do fardo descontado")
 	var m_q: = Core.money
 	check(Core.complete_quest("cocos_rita"), "entregou a encomenda da Dona Rita")
 	check(Core.money == m_q + int(Economy.QUESTS.cocos_rita.reward), "recompensa da missão")

@@ -23,6 +23,7 @@ const APPS: = [
 	["caixa", "Caixa", Color(0.1, 0.65, 0.68), "caixa"],
 	["missoes", "Missões", Color(0.95, 0.55, 0.2), "missao"],
 	["album", "Álbum", Color(0.85, 0.35, 0.6), "gorjeta"],
+	["agenda", "Agenda", Color(0.95, 0.35, 0.5), "clima"],
 ]
 
 var app: = ""
@@ -105,6 +106,8 @@ func _ready() -> void :
 	Core.stock_changed.connect(_refresh_if_open)
 	Core.expansion_bought.connect(func(_id): _refresh_if_open())
 	Core.staff_changed.connect(_refresh_if_open)
+	Core.market_changed.connect(_refresh_if_open)
+	Core.event_changed.connect(_refresh_if_open)
 	Core.upgrades_changed.connect(func(_r): _refresh_if_open())
 
 func _place() -> void :
@@ -155,7 +158,7 @@ static func app_for_tab(tab: String) -> String:
 			return "caixa"
 		"expansoes":
 			return "expansoes"
-		"cardapio", "mercado", "album", "missoes":
+		"cardapio", "mercado", "album", "missoes", "agenda":
 			return tab
 	return ""
 
@@ -321,6 +324,8 @@ func refresh() -> void :
 			_app_quests(list)
 		"album":
 			_app_album(list)
+		"agenda":
+			_app_agenda(list)
 
 func _home() -> void :
 	var m: = MarginContainer.new()
@@ -426,7 +431,7 @@ func _app_expansions(list: VBoxContainer) -> void :
 				_lbl(c, str(st[1]), 14, BAD if st[0] == "money" else INK_SOFT, true, true)
 
 func _app_market(list: VBoxContainer) -> void :
-	_lbl(list, tr("Entrega na hora no quiosque. Fardos de %d.") % Economy.PACK, 15, INK_SOFT, false, true)
+	_lbl(list, tr("Entrega na hora no quiosque. Fardos de %d. O preço do mercadinho muda todo dia (▲ caro, ▼ barato).") % Economy.PACK, 15, INK_SOFT, false, true)
 	for id in Economy.SUPPLIES:
 		var sup: Dictionary = Economy.SUPPLIES[id]
 		var used: = false
@@ -440,9 +445,21 @@ func _app_market(list: VBoxContainer) -> void :
 		v.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		r.add_child(v)
 		_lbl(v, tr(str(sup.name)), 18, INK, true)
-		_lbl(v, tr("Estoque: %d  ·  %s cada") % [int(Core.stock.get(id, 0)), Core.fmt_money(int(sup.cost))] + ("" if used else "  ·  " + tr("ainda não usa")), 14, INK_SOFT, false, true)
-		var cost: = int(sup.cost) * Economy.PACK
+		var f: = Core.supply_factor(id)
+		var trend: = ""
+		if f > 1.05:
+			trend = "  ▲"
+		elif f < 0.95:
+			trend = "  ▼"
+		_lbl(v, tr("Estoque: %d  ·  %s cada") % [int(Core.stock.get(id, 0)), Core.fmt_money(Core.supply_total(id, 10)) + "/10"] + trend + ("" if used else "  ·  " + tr("ainda não usa")), 14, BAD if f > 1.05 else (GOOD if f < 0.95 else INK_SOFT), false, true)
+		var cost: = Core.supply_total(id, Economy.PACK)
 		_btn(r, "+%d\n%s" % [Economy.PACK, Core.fmt_money(cost)], func(): Core.buy_supply(id, Economy.PACK), Color(0.15, 0.72, 0.45), Core.money >= cost)
+		var cr: = _row(c, 8)
+		if Core.contracts.has(id):
+			_expand(_lbl(cr, tr("Contrato: -%d%% por mais %d dia(s)") % [int(Economy.CONTRACT_DISCOUNT * 100.0), int(Core.contracts[id])], 13, GOOD, true, true))
+		else:
+			_expand(_lbl(cr, tr("Contrato de %d dias: -%d%% e nunca paga mais que o normal") % [Economy.CONTRACT_DAYS, int(Economy.CONTRACT_DISCOUNT * 100.0)], 13, INK_SOFT, false, true))
+			_btn(cr, tr("Assinar %s") % Core.fmt_money(Economy.CONTRACT_FEE), func(): Core.buy_contract(id), Color(0.2, 0.6, 0.95), Core.money >= Economy.CONTRACT_FEE)
 		if Economy.SPOIL.has(id):
 			_lbl(c, tr("Estraga %d%% do que sobrar por noite%s") % [int(round(float(Economy.SPOIL[id]) * (0.5 if Core.freezer else 1.0) * 100.0)), tr(" (freezer ligado)") if Core.freezer else ""], 13, BAD if not Core.freezer else INK_SOFT, false, true)
 	var fc: = _card(list, Color(0.9, 1.0, 0.92, 0.95) if Core.freezer else Color(1, 1, 1, 0.94))
@@ -585,6 +602,67 @@ func _app_rooms(list: VBoxContainer) -> void :
 			var catc: String = cat
 			_btn(r, "%s\n%s" % [tr(Economy.tier_name(cat, tier + 1)), Core.fmt_money(nc)], func(): Core.upgrade_room(rid, catc), Color(0.2, 0.6, 0.95), Core.money >= nc)
 
+func _app_agenda(list: VBoxContainer) -> void :
+	var ev: = str(Core.day_event)
+	var c: = _card(list, Color(1.0, 0.96, 0.78, 0.97))
+	_lbl(c, tr("Hoje (dia %d)") % Core.day, 15, INK_SOFT, true)
+	if ev == "":
+		_lbl(c, tr("Dia normal, sem eventos."), 17, INK, true)
+	else:
+		_lbl(c, tr(str(Economy.DAY_EVENTS[ev].name)), 18, INK, true)
+		_lbl(c, tr(str(Economy.DAY_EVENTS[ev].blurb)), 14, INK_SOFT, false, true)
+		if Core.prep_active:
+			_lbl(c, tr("✓ Preparativos feitos"), 15, GOOD, true)
+	var fc: = _card(list)
+	_lbl(fc, tr("Previsão para amanhã"), 15, INK_SOFT, true)
+	var fn: = str(Core.forecast_next)
+	if fn == "":
+		_lbl(fc, tr("Tempo firme, sem eventos."), 17, INK, true)
+	else:
+		_lbl(fc, tr(str(Economy.DAY_EVENTS[fn].name)), 18, INK, true)
+		_lbl(fc, tr(str(Economy.DAY_EVENTS[fn].blurb)), 14, INK_SOFT, false, true)
+	# preparativos: evento de amanhã, ou decoração da festa de hoje
+	var target: = fn
+	if Core.is_party() and not Core.prep_active:
+		target = ev
+	var pc: = Core.prep_cost(target)
+	if pc > 0 and not Core.prep_paid and not Core.prep_active:
+		var storm: = target == "tempestade" or target == "mare"
+		var r: = _row(fc, 8)
+		_expand(_lbl(r, tr("Proteger o estoque e amarrar tudo") if storm else tr("Decoração da festa: mais movimento"), 14, INK, false, true))
+		_btn(r, tr("Preparar\n%s") % Core.fmt_money(pc), func(): Core.buy_prep(), Color(0.95, 0.35, 0.5), Core.money >= pc)
+	elif Core.prep_paid:
+		_lbl(fc, tr("✓ Preparativos pagos para amanhã"), 15, GOOD, true)
+	var cal: = _card(list)
+	_lbl(cal, tr("Festas do calendário"), 15, INK_SOFT, true)
+	if Core.day < Economy.PARTY_FROM_DAY:
+		_lbl(cal, tr("A primeira festa da praia acontece no dia %d.") % Economy.PARTY_FROM_DAY, 14, INK_SOFT, false, true)
+	else:
+		for k in [2, 4, 6]:
+			var pid: String = str(Economy.PARTY_CALENDAR[k])
+			var d: = Core.day
+			while d % 7 != k or d < Core.day:
+				d += 1
+			_lbl(cal, "%s · dia %d" % [tr(str(Economy.DAY_EVENTS[pid].name)), d], 14, INK, false, true)
+	var tc: = _card(list)
+	_lbl(tc, tr("Passeios turísticos"), 15, INK_SOFT, true)
+	if not Core.has("passeios"):
+		_lbl(tc, tr("Compre a expansão Passeios turísticos e contrate um guia."), 14, INK_SOFT, false, true)
+	else:
+		if not bool(Core.staff.get("guia", false)):
+			_lbl(tc, tr("Contrate um guia na aba Equipe para os passeios rodarem."), 14, BAD, false, true)
+		for id in Economy.TOURS:
+			var t: Dictionary = Economy.TOURS[id]
+			var hh: = int(float(t.at) / 60.0)
+			var mm: = int(float(t.at)) % 60
+			var stt: = Core.tour_status(id)
+			var mark: = "✓" if stt == "done" else ("–" if stt == "missed" else "•")
+			var sea: = ""
+			if bool(t.sea) and (ev == "mare" or ev == "tempestade"):
+				sea = "  " + tr("(cancelado pelo mar)")
+			_lbl(tc, "%s %02d:%02d  %s · %s/pessoa%s" % [mark, hh, mm, tr(str(t.name)), Core.fmt_money(int(t.price)), sea], 14, INK, false, true)
+		_lbl(tc, tr("Total: %d passeios, %s") % [Core.tours_total, Core.fmt_money(Core.tours_revenue)], 14, GOOD, true, true)
+
 func _app_staff(list: VBoxContainer) -> void :
 	for role in Economy.STAFF:
 		var s: Dictionary = Economy.STAFF[role]
@@ -592,7 +670,7 @@ func _app_staff(list: VBoxContainer) -> void :
 		var need: = str(s.get("req", ""))
 		var c: = _card(list, Color(0.9, 1.0, 0.92, 0.95) if hired else Color(1, 1, 1, 0.94))
 		var r: = _row(c, 10)
-		_badge(r, "quiosque" if role == "atendente" else role, Color(0.6, 0.4, 0.9))
+		_badge(r, "quiosque" if role == "atendente" else ("equipe" if role == "guia" else role), Color(0.6, 0.4, 0.9))
 		var v: = VBoxContainer.new()
 		v.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		r.add_child(v)

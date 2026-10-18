@@ -21,6 +21,7 @@ var kiosk_lost: = 0
 ## v0.7.4: ritmo do dia no quiosque — sequência (combo), cliente VIP, ônibus de turistas e meta diária.
 const COMBO_MAX: = 5
 const VIP_CHANCE: = 0.08
+var _dj_came: = false
 const GOAL_REWARD: = 40
 var combo: = 0
 var served_today: = 0
@@ -237,7 +238,7 @@ func spawn_customer() -> Node3D:
 	if si < 0:
 		return null
 	var g: = _make()
-	var from_beach: = rng.randf() < 0.6
+	var from_beach: = rng.randf() < Core.beach_share()
 	var start: Vector3 = Vector3(rng.randf_range(46, 80), 0, rng.randf_range(-24, -21)) if from_beach else world.village_points.kiosk_approach[0]
 	g.position = start
 	var spot: Dictionary = world.kiosk_spots[si]
@@ -251,6 +252,8 @@ func spawn_customer() -> Node3D:
 	# quiosque cheio (ou mesas compradas) = pedidos maiores
 	var items: Array = [dish]
 	var extra_p: = (0.12 if Core.has("kiosk_tables") else 0.0) + 0.1 * float(customers.size())
+	if Core.is_party():
+		extra_p += 0.25 if Core.day_event == "junina" else 0.12
 	if rng.randf() < minf(extra_p, 0.4):
 		items.append(str(menu[rng.randi() % menu.size()]))
 		if Core.stars() >= 4.0 and rng.randf() < 0.25:
@@ -258,9 +261,12 @@ func spawn_customer() -> Node3D:
 	g.set_meta("items", items)
 	g.set_meta("delivered", 0)
 	g.set_meta("revenue", 0)
-	if rng.randf() < VIP_CHANCE and Core.stars() >= 3.0:
+	var dj_now: = Core.day_event == "show_dj" and not _dj_came
+	if dj_now or (rng.randf() < VIP_CHANCE and Core.stars() >= 3.0):
 		g.set_meta("vip", true)
-		var vid: = _pick_vip()
+		var vid: = "djmare" if dj_now else _pick_vip()
+		if dj_now:
+			_dj_came = true
 		g.set_meta("vip_id", vid)
 		var vl: = B.label(g, _vip_name(vid), Vector3(0, 2.55, 0), 44, Color(1.0, 0.88, 0.3), Color(0.25, 0.15, 0.02, 1))
 		vl.billboard = BaseMaterial3D.BILLBOARD_ENABLED
@@ -366,6 +372,8 @@ func _pick_dish(menu: Array) -> String:
 	var ws: Array = []
 	for d in menu:
 		var w: = 2.5 if (Core.day_event == "calor" and (d == "coco_gelado" or d == "suco")) else 1.0
+		if (Core.day_event == "junina" and d == "petiscos") or (Core.day_event == "show_dj" and d == "caipirinha") or (Core.day_event == "quermesse" and d == "suco"):
+			w = 2.0
 		ws.append(w)
 		total += w
 	var r: = rng.randf() * total
@@ -589,6 +597,7 @@ func _on_slept(_d: int) -> void :
 		customers.erase(g)
 		g.queue_free()
 	kiosk_spawn_in = 10.0
+	_dj_came = false
 	combo = 0
 	served_today = 0
 	goal_paid = false

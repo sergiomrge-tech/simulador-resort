@@ -66,6 +66,12 @@ Base de trabalho: v0.6.5 recuperada; versões atuais em `project.godot` / `expor
 - Todo item do jogo tem um código estável (MOD-017, DSH-002, EXP-005…) em `docs/ITENS.md` / `docs/itens.json`. O usuário pode pedir mudanças citando o código.
 - O registro `docs/itens_registro.json` garante que o código nunca muda. **Depois de adicionar modelo, prato, expansão etc., rode `python3 tools/gen_item_catalog.py`** e comite os três arquivos.
 
+## 📅 Sala da Agenda — eventos, preços e passeios (v0.9.0)
+- Eventos do dia (`Economy.DAY_EVENTS`): calor, lua, maré alta, tempestade e 3 festas (calendário `PARTY_CALENDAR`, só a partir do dia 8). O de amanhã é previsto (`Core.forecast_next`) e aparece no app Agenda; `Core.buy_prep()` paga preparativos (tempestade: estoque não se perde; festa: mais clientes).
+- Preço do mercadinho muda por dia (`supply_mult`); **sempre use `Core.supply_total(id, qty)`**, nunca `Economy.supply_cost` para cobrar. Contratos dão -15% por 5 dias.
+- Passeios: expansão `passeios` + equipe `guia`; `Core._check_tours()` roda no horário de `Economy.TOURS`; mar bravo cancela os passeios de mar.
+- Save agora é versão 5; campos novos têm padrão ao carregar saves antigos. `tests/loop_test.gd` tem `mechanics_test()`.
+
 ## 🧪 Sala da Conferência — antes de entregar
 1. `godot --headless --check-only -s scripts/X.gd` em todo script editado. Erros "Identifier not found: Core/Quality/Economy" são normais (autoloads). Qualquer outro erro bloqueia.
 2. Erros já cometidos: função duplicada no mesmo arquivo (`oil_lamp`); `var w: = M.algo` sem tipo (use `var w: Material = ...`).

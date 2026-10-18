@@ -341,7 +341,7 @@ func _fill_supplies() -> void :
 		nv.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		top.add_child(nv)
 		_lbl(nv, tr(str(s.name)), T.FS_H2, T.TEXT, true)
-		_lbl(nv, tr("%s cada · fardo %s") % [Core.fmt_money(int(s.cost)), Core.fmt_money(int(s.cost) * Economy.PACK)], T.FS_SMALL, T.TEXT_SOFT)
+		_lbl(nv, tr("%s cada · fardo %s") % [Core.fmt_money(Core.supply_total(id, 1)), Core.fmt_money(Core.supply_total(id, Economy.PACK))], T.FS_SMALL, T.TEXT_SOFT)
 		var low: = stock <= 2
 		_chip(top, tr("estoque %d") % stock, Color.WHITE, T.BAD if low else T.GOOD)
 		var br: = _hrow(v, 8)
