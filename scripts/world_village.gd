@@ -44,6 +44,8 @@ func _ready() -> void :
 	_village_routes()
 	_village_expansion()
 	_beach_life()
+	_landmark_details()
+	_map_details()
 	_finish_blooms()
 	Core.time_changed.connect(_on_time)
 
@@ -1340,3 +1342,240 @@ func _beach_life() -> void :
 		var cp: = Vector3(rng.randf_range(-35, 100), 0, rng.randf_range(-29.0, -26.0))
 		cp.y = _height(cp.x, cp.z) + 0.01
 		D.crab(self, cp, rng.randf_range(1.0, 2.2))
+
+
+# ------------------------------------------------------------------ v0.7.2: igreja, praça, píer e farol detalhados
+func _landmark_details() -> void :
+	var c: = CHURCH_C
+	var w: = 10.0
+	var d: = 12.0
+	var white: = stucco(Color(0.98, 0.97, 0.94))
+	var yellow: = stucco(Color(0.98, 0.8, 0.3))
+	var blue: = stucco(Color(0.2, 0.42, 0.72))
+	var stained: = [Color(0.95, 0.3, 0.35), Color(0.3, 0.55, 0.95), Color(1.0, 0.8, 0.25), Color(0.35, 0.8, 0.45)]
+	# janelas em arco com vitral nas laterais, pilastras e cornija
+	for sx in [-1.0, 1.0]:
+		var x: float = c.x + sx * (w * 0.5 + 0.04)
+		for k in 3:
+			var z: = c.z - 3.6 + k * 3.6
+			var piv: = Node3D.new()
+			piv.position = Vector3(x, 0, z)
+			piv.rotation.y = sx * PI * 0.5
+			add_child(piv)
+			B.box(piv, Vector3(1.3, 2.6, 0.12), Vector3(0, 3.0, 0), yellow)
+			var g: = StandardMaterial3D.new()
+			g.albedo_color = stained[(k + int(sx + 1.0)) % stained.size()]
+			g.emission_enabled = true
+			g.emission = g.albedo_color
+			g.emission_energy_multiplier = 0.35
+			g.diffuse_mode = BaseMaterial3D.DIFFUSE_TOON
+			B.box(piv, Vector3(0.9, 2.1, 0.14), Vector3(0, 2.95, 0.02), g)
+			B.arch(piv, Vector3(0, 4.0, 0.02), 0.45, 0.65, 0.16, yellow)
+			var semi: = B.arch(piv, Vector3(0, 4.0, 0.0), 0.0, 0.45, 0.12, g)
+			semi.name = "Vitral" 
+			B.box(piv, Vector3(0.05, 2.1, 0.16), Vector3(0, 2.95, 0.03), yellow)
+			B.box(piv, Vector3(0.9, 0.05, 0.16), Vector3(0, 3.3, 0.03), yellow)
+			B.box(piv, Vector3(1.5, 0.12, 0.3), Vector3(0, 1.6, 0.1), white)
+		for k in 5:
+			B.box(self, Vector3(0.3, 7.0, 0.5), Vector3(x + sx * 0.08, 3.5, c.z - d * 0.5 + 0.4 + k * 2.8), yellow)
+	B.box(self, Vector3(w + 0.5, 0.3, d + 0.5), c + Vector3(0, 6.85, 0), white)
+	B.box(self, Vector3(w + 0.7, 0.14, d + 0.7), c + Vector3(0, 7.05, 0), yellow)
+	# arco da porta, sino visível na torre e lanternas
+	B.arch(self, c + Vector3(0, 3.6, - d * 0.5 - 0.1), 1.0, 1.25, 0.2, yellow, PI)
+	B.arch(self, c + Vector3(0, 3.6, - d * 0.5 - 0.06), 0.0, 1.0, 0.1, wood_tint(Color(0.45, 0.25, 0.12)), PI)
+	var tc: = c + Vector3(w * 0.5 + 1.6, 0, - d * 0.5 + 1.6)
+	var gold: = B.flat(Color(0.95, 0.75, 0.25), 0.3, 0.8)
+	B.cyl(self, 0.2, 0.55, 0.9, tc + Vector3(0, 10.6, 0), gold, 24)
+	B.sphere(self, 0.22, tc + Vector3(0, 11.1, 0), gold)
+	B.sphere(self, 0.08, tc + Vector3(0, 10.1, 0), B.flat(Color(0.3, 0.25, 0.2), 0.5))
+	B._beam(self, tc + Vector3(-1.4, 11.3, 0), tc + Vector3(1.4, 11.3, 0), 0.07, wood_tint(Color(0.4, 0.25, 0.14)))
+	for sx in [-1.0, 1.0]:
+		var lp: = c + Vector3(sx * 2.2, 0, - d * 0.5 - 0.15)
+		B.box(self, Vector3(0.12, 0.12, 0.3), lp + Vector3(0, 2.9, 0), B.flat(Color(0.15, 0.15, 0.17), 0.5, 0.4))
+		B.cyl(self, 0.12, 0.09, 0.32, lp + Vector3(0, 2.75, -0.18), VM.glass, 12)
+	# canteiros e gradil do adro
+	for sx in [-1.0, 1.0]:
+		var bed: = c + Vector3(sx * 3.4, 0, - d * 0.5 - 0.8)
+		B.box(self, Vector3(2.2, 0.35, 0.9), bed + Vector3(0, 0.17, 0), blue)
+		for k in 7:
+			B.sphere(self, 0.13, bed + Vector3(-0.9 + k * 0.3, 0.42, (k % 2) * 0.2 - 0.1), B.flat(D.FLAG_COLS[(k + 2) % D.FLAG_COLS.size()], 0.7))
+	var iron: = B.flat(Color(0.12, 0.12, 0.14), 0.5, 0.4)
+	for seg in [[c.x - 6.0, c.x - 1.6], [c.x + 1.6, c.x + 6.0]]:
+		var x0: float = seg[0]
+		while x0 <= seg[1]:
+			B.cyl(self, 0.02, 0.02, 1.1, Vector3(x0, 0.65, c.z - d * 0.5 - 1.5), iron, 6)
+			B.cyl(self, 0.0, 0.04, 0.1, Vector3(x0, 1.25, c.z - d * 0.5 - 1.5), iron, 6)
+			x0 += 0.22
+		B._beam(self, Vector3(seg[0], 1.0, c.z - d * 0.5 - 1.5), Vector3(seg[1], 1.0, c.z - d * 0.5 - 1.5), 0.02, iron)
+		B._beam(self, Vector3(seg[0], 0.3, c.z - d * 0.5 - 1.5), Vector3(seg[1], 0.3, c.z - d * 0.5 - 1.5), 0.02, iron)
+	# praça: banca de jornal, carrinho de pipoca e pombinhos
+	var pc: = Vector3(PRACA.get_center().x, 0.1, PRACA.get_center().y)
+	var banca: = pc + Vector3(7.4, 0, -3.2)
+	B.box(self, Vector3(2.2, 2.2, 1.6), banca + Vector3(0, 1.1, 0), B.flat(Color(0.2, 0.55, 0.35), 0.6))
+	var awn: = B.box(self, Vector3(2.6, 0.06, 0.9), banca + Vector3(0, 2.3, -1.1), B.flat(Color(1.0, 0.85, 0.2), 0.7))
+	awn.rotation.x = 0.3
+	for k in 12:
+		B.box(self, Vector3(0.28, 0.36, 0.02), banca + Vector3(-0.85 + (k % 6) * 0.34, 0.9 + (k / 6) * 0.45, -0.81), B.flat(D.FLAG_COLS[k % D.FLAG_COLS.size()], 0.8))
+	B.label(self, "BANCA", banca + Vector3(0, 2.0, -0.82), 48, Color(1, 1, 1), Color(0.1, 0.3, 0.15, 1), PI).pixel_size = 0.005
+	var pip: = pc + Vector3(-6.0, 0, 2.9)
+	B.box(self, Vector3(1.0, 0.9, 0.7), pip + Vector3(0, 0.75, 0), B.flat(Color(0.95, 0.25, 0.25), 0.5))
+	B.box(self, Vector3(0.8, 0.6, 0.6), pip + Vector3(0, 1.5, 0), B.flat(Color(0.85, 0.95, 1.0, 0.6), 0.1))
+	for k in 14:
+		B.sphere(self, 0.06, pip + Vector3(-0.3 + (k % 5) * 0.15, 1.28 + (k / 5) * 0.08, -0.15 + (k % 3) * 0.12), B.flat(Color(1.0, 0.97, 0.85), 0.9))
+	for sx in [-0.4, 0.4]:
+		var wh: = B.cyl(self, 0.22, 0.22, 0.05, pip + Vector3(sx, 0.22, 0.38), B.flat(Color(0.2, 0.2, 0.22), 0.6), 16)
+		wh.rotation.x = PI * 0.5
+	B.cyl(self, 0.02, 0.02, 1.2, pip + Vector3(0, 2.4, 0), wood_tint(Color(0.5, 0.3, 0.2)), 6)
+	B.cyl(self, 0.03, 0.75, 0.25, pip + Vector3(0, 3.0, 0), B.flat(Color(1.0, 0.95, 0.9), 0.7), 16)
+	B.label(self, "PIPOCA", pip + Vector3(0, 0.75, -0.36), 40, Color.WHITE, Color(0.6, 0.1, 0.1, 1), PI).pixel_size = 0.005
+	var rng: = RandomNumberGenerator.new()
+	rng.seed = 3131
+	for k in 10:
+		var bp: = pc + Vector3(rng.randf_range(-5, 5), 0.0, rng.randf_range(-3, 3.5))
+		if bp.distance_to(pc) < 2.6:
+			continue
+		var bird: = Node3D.new()
+		bird.position = bp
+		bird.rotation.y = rng.randf() * TAU
+		add_child(bird)
+		B.sphere(bird, 0.09, Vector3(0, 0.09, 0), B.flat(Color(0.6, 0.62, 0.7), 0.7), Vector3(0.8, 0.8, 1.3))
+		B.sphere(bird, 0.05, Vector3(0, 0.18, 0.09), B.flat(Color(0.45, 0.5, 0.6), 0.7))
+		B.cyl(bird, 0.0, 0.015, 0.04, Vector3(0, 0.18, 0.15), B.flat(Color(1.0, 0.65, 0.2), 0.5), 6).rotation.x = PI * 0.5
+	# píer: postes com lanternas, caixotes e rolos de corda, barquinho amarrado
+	var wood: = wood_tint(Color(0.45, 0.3, 0.2))
+	for k in 4:
+		var lz: = -24.0 - k * 7.5
+		for sx in [-1.0, 1.0]:
+			var lp2: = Vector3(PIER_X + sx * 1.25, 0.3, lz)
+			B.cyl(self, 0.05, 0.06, 1.6, lp2 + Vector3(0, 0.8, 0), wood, 8)
+			B.sphere(self, 0.12, lp2 + Vector3(0, 1.7, 0), P.glow(Color(1.0, 0.8, 0.45), 1.6))
+	var end: = Vector3(PIER_X, 0.37, -47.0)
+	for k in 3:
+		B.model(self, "wooden_crate_01", end + Vector3(-1.9 + (k % 2) * 0.1, k * 0.0, 0.6 - k * 0.7), k * 0.4, 0.8)
+	var coil: = TorusMesh.new()
+	coil.inner_radius = 0.12
+	coil.outer_radius = 0.3
+	coil.rings = 24
+	for k in 3:
+		var mi: = MeshInstance3D.new()
+		mi.mesh = coil
+		mi.material_override = B.flat(Color(0.86, 0.74, 0.5), 0.95)
+		mi.position = end + Vector3(1.8, 0.05 + k * 0.06, 0.9)
+		add_child(mi)
+	_fishing_boat(Vector3(PIER_X + 3.2, -0.25, -44.0), 0.1, Color(0.2, 0.6, 0.55))
+	# farol: porta, janelinhas, balcão com gradil e casinha do faroleiro
+	var fp: = Vector3(108.0, 0.0, -40.0)
+	B.box(self, Vector3(0.9, 1.7, 0.2), fp + Vector3(0, 1.85, -1.55), B.flat(Color(0.25, 0.45, 0.8), 0.6))
+	for k in 4:
+		var a: = k * 1.7
+		var r: = lerpf(1.6, 1.05, (3.0 + k * 2.6) / 14.0) + 0.02
+		var win: = B.box(self, Vector3(0.35, 0.55, 0.12), fp + Vector3(sin(a) * r, 4.0 + k * 2.6, - cos(a) * r), VM.glass)
+		win.rotation.y = - a
+	for k in 20:
+		var a2: = TAU * k / 20.0
+		B.cyl(self, 0.02, 0.02, 0.6, fp + Vector3(cos(a2) * 1.42, 15.5, sin(a2) * 1.42), iron, 6)
+	var ring: = TorusMesh.new()
+	ring.inner_radius = 1.38
+	ring.outer_radius = 1.46
+	ring.rings = 40
+	var rmi: = MeshInstance3D.new()
+	rmi.mesh = ring
+	rmi.material_override = iron
+	rmi.position = fp + Vector3(0, 15.8, 0)
+	add_child(rmi)
+	var hut: = Vector3(99.0, 0.0, -27.5)
+	hut.y = _height(hut.x, hut.z)
+	B.box(self, Vector3(3.0, 2.4, 2.6), hut + Vector3(0, 1.2, 0), stucco(Color(0.98, 0.97, 0.94)), true)
+	B.hip_roof(self, hut + Vector3(0, 2.45, 0), 3.8, 3.4, 1.4, VM.clay, 0.12)
+	B.box(self, Vector3(0.8, 1.7, 0.1), hut + Vector3(0, 0.85, 1.32), B.flat(Color(0.95, 0.3, 0.25), 0.6))
+
+# ------------------------------------------------------------------ v0.7.2: mapa cheio de detalhes miúdos
+func _map_details() -> void :
+	var rng: = RandomNumberGenerator.new()
+	rng.seed = 2468
+	# conchas e pedrinhas na areia (MultiMesh: milhares sem pesar)
+	var shell_x: = []
+	var shell_c: = []
+	var pebble_x: = []
+	var pebble_c: = []
+	for k in 900:
+		var p: = Vector3(rng.randf_range(-45, 104), 0, rng.randf_range(-30.0, -17.0))
+		p.y = _height(p.x, p.z) + 0.01
+		if rng.randf() < 0.5:
+			shell_x.append(Transform3D(Basis(Vector3.UP, rng.randf() * TAU).scaled(Vector3(1.0, 0.45, 1.3) * rng.randf_range(0.6, 1.3)), p))
+			shell_c.append([Color(1.0, 0.85, 0.8), Color(1.0, 0.95, 0.85), Color(1.0, 0.75, 0.6), Color(0.95, 0.9, 1.0)][k % 4])
+		else:
+			pebble_x.append(Transform3D(Basis(Vector3.UP, rng.randf() * TAU).scaled(Vector3(1.2, 0.6, 1.0) * rng.randf_range(0.5, 1.6)), p))
+			pebble_c.append(Color(0.75, 0.72, 0.7).darkened(rng.randf() * 0.25))
+	var sm: = SphereMesh.new()
+	sm.radius = 0.035
+	sm.height = 0.07
+	sm.radial_segments = 10
+	sm.rings = 5
+	var mi1: = D.multimesh(self, sm, shell_x, shell_c)
+	mi1.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	mi1.visibility_range_end = 45.0
+	var mi2: = D.multimesh(self, sm, pebble_x, pebble_c)
+	mi2.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	mi2.visibility_range_end = 45.0
+	# algas na linha da maré
+	var weed_x: = []
+	for k in 160:
+		var p: = Vector3(rng.randf_range(-45, 104), 0, rng.randf_range(-30.5, -28.5))
+		p.y = _height(p.x, p.z) + 0.01
+		weed_x.append(Transform3D(Basis(Vector3.UP, rng.randf() * TAU), p))
+	var wm: = BoxMesh.new()
+	wm.size = Vector3(0.5, 0.015, 0.06)
+	var mi3: = D.multimesh(self, wm, weed_x, [], B.flat(Color(0.2, 0.42, 0.25), 0.8))
+	mi3.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	# troncos trazidos pelo mar
+	for k in 10:
+		var p: = Vector3(rng.randf_range(-40, 100), 0, rng.randf_range(-27.0, -19.0))
+		if absf(p.x - KIOSK_C.x) < 7.0 or absf(p.x - PIER_X) < 4.0:
+			continue
+		p.y = _height(p.x, p.z) + 0.08
+		var a: = rng.randf() * TAU
+		var L: = rng.randf_range(1.2, 2.6)
+		B._beam(self, p - Vector3(cos(a), 0, sin(a)) * L * 0.5, p + Vector3(cos(a), 0, sin(a)) * L * 0.5, rng.randf_range(0.08, 0.14), B.flat(Color(0.72, 0.62, 0.5), 0.95))
+	# pegadas na areia molhada
+	var fx: = []
+	var px: = -10.0
+	var pz: = -26.5
+	for k in 60:
+		px += 0.42
+		pz += sin(k * 0.3) * 0.08
+		var side: = 0.12 if k % 2 == 0 else -0.12
+		fx.append(Transform3D(Basis(Vector3.UP, 0.0).scaled(Vector3(0.6, 1.0, 1.0)), Vector3(px, _height(px, pz + side) + 0.012, pz + side)))
+	var fm: = CylinderMesh.new()
+	fm.top_radius = 0.09
+	fm.bottom_radius = 0.09
+	fm.height = 0.01
+	fm.radial_segments = 12
+	var mi4: = D.multimesh(self, fm, fx, [], B.flat(Color(0.85, 0.68, 0.45), 0.9))
+	mi4.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	# vila: vasos nas calçadas, tampas de bueiro, varais de roupa e árvores nos quintais
+	for k in 26:
+		var on_back: = k % 2 == 0
+		var vx: = rng.randf_range(4, 104)
+		var vz: = (BACK_Z + 2.4 * (1.0 if rng.randf() < 0.5 else -1.0)) if on_back else (STREET_Z + 2.4 * (1.0 if rng.randf() < 0.5 else -1.0))
+		B.model(self, ["potted_plant_01", "potted_plant_02", "planter_pot_clay", "potted_plant_04"][k % 4], Vector3(vx, 0.16, vz), rng.randf() * TAU, rng.randf_range(0.8, 1.1))
+	for k in 12:
+		var mx: = 6.0 + k * 9.0
+		for zz in [STREET_Z, BACK_Z]:
+			var cap: = B.cyl(self, 0.32, 0.32, 0.02, Vector3(mx, 0.065 + (0.012 if zz == BACK_Z else 0.0), zz + 0.8), B.flat(Color(0.35, 0.35, 0.38), 0.5, 0.5), 20)
+			cap.name = "Bueiro"
+	for k in 8:
+		var lx: = 10.0 + k * 12.0
+		var lz: = BACK_Z + 11.5
+		var pole_m: = wood_tint(Color(0.5, 0.35, 0.22))
+		var a2: = Vector3(lx - 2.5, 0, lz)
+		var b2: = Vector3(lx + 2.5, 0, lz)
+		for pp in [a2, b2]:
+			B.cyl(self, 0.04, 0.05, 2.0, pp + Vector3(0, 1.0, 0), pole_m, 8)
+		D.wire(self, a2 + Vector3(0, 1.9, 0), b2 + Vector3(0, 1.9, 0), 0.25)
+		for j in 6:
+			var cp: = a2.lerp(b2, (j + 0.5) / 6.0) + Vector3(0, 1.62 - 0.25 * 4.0 * ((j + 0.5) / 6.0) * (1.0 - (j + 0.5) / 6.0), 0)
+			var piece: = B.box(self, Vector3(0.45, 0.5 if j % 2 == 0 else 0.35, 0.02), cp, B.flat(D.FLAG_COLS[(j + k) % D.FLAG_COLS.size()], 0.95))
+			piece.rotation.z = rng.randf_range(-0.08, 0.08)
+	for k in 12:
+		B.model(self, "island_tree_01", Vector3(4.0 + k * 9.0 + rng.randf_range(-2, 2), 0, BACK_Z + 14.5 + rng.randf_range(-1, 2)), rng.randf() * TAU, rng.randf_range(0.8, 1.2))

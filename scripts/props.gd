@@ -81,6 +81,11 @@ static func _legs(r: Node3D, hx: float, hz: float, h: float, rad: float, c: Colo
 static func stool(r: Node3D) -> void :
 	B.cyl(r, 0.24, 0.22, 0.1, Vector3(0, 0.74, 0), m(CORAL), 14)
 	B.cyl(r, 0.2, 0.2, 0.03, Vector3(0, 0.8, 0), m(Color(1.0, 0.62, 0.5)), 14)
+	# almofada capitonê com botões
+	B.sphere(r, 0.19, Vector3(0, 0.81, 0), m(Color(1.0, 0.55, 0.45), 0.9), Vector3(1.0, 0.22, 1.0))
+	for k in 5:
+		var a: = TAU * k / 5.0
+		B.sphere(r, 0.015, Vector3(cos(a) * 0.1, 0.85, sin(a) * 0.1), m(Color(0.8, 0.3, 0.25)))
 	for i in 3:
 		var a: = TAU * i / 3.0
 		var leg: = B.cyl(r, 0.025, 0.03, 0.74, Vector3(cos(a) * 0.14, 0.37, sin(a) * 0.14), m(WOOD_DARK), 6)
@@ -95,13 +100,30 @@ static func stool(r: Node3D) -> void :
 	r.add_child(mi)
 
 static func chair(r: Node3D, c: Color) -> void :
-	B.box(r, Vector3(0.46, 0.07, 0.44), Vector3(0, 0.45, 0), m(c))
-	B.box(r, Vector3(0.46, 0.5, 0.07), Vector3(0, 0.72, -0.2), m(c))
+	# v0.7.2: assento de ripas, encosto com travessas e ripas verticais, almofada, pés com travessa
+	for k in 4:
+		B.box(r, Vector3(0.46, 0.05, 0.1), Vector3(0, 0.45, -0.165 + k * 0.11), m(c))
+	B.box(r, Vector3(0.38, 0.05, 0.36), Vector3(0, 0.49, 0.01), m(c.lightened(0.45), 0.95))
+	for sx in [-0.2, 0.2]:
+		B.box(r, Vector3(0.05, 0.55, 0.05), Vector3(sx, 0.74, -0.2), m(c.darkened(0.15)))
+	for yy in [0.62, 0.96]:
+		B.box(r, Vector3(0.44, 0.07, 0.04), Vector3(0, yy, -0.2), m(c))
+	for k in 3:
+		B.box(r, Vector3(0.05, 0.3, 0.03), Vector3(-0.1 + k * 0.1, 0.79, -0.2), m(c))
 	_legs(r, 0.19, 0.18, 0.43, 0.025, c.darkened(0.25))
+	for sx in [-0.19, 0.19]:
+		B.box(r, Vector3(0.025, 0.025, 0.36), Vector3(sx, 0.14, 0), m(c.darkened(0.25)))
 
 static func round_table(r: Node3D, pos: Vector3, rad: float, top: Color) -> void :
 	B.cyl(r, rad, rad, 0.06, pos + Vector3(0, 0.74, 0), m(top), 18)
-	B.cyl(r, rad * 0.95, rad * 0.95, 0.02, pos + Vector3(0, 0.78, 0), m(top.lightened(0.15)), 18)
+	# toalha xadrez com barrado
+	B.cyl(r, rad * 1.04, rad * 1.04, 0.012, pos + Vector3(0, 0.776, 0), m(Color(1.0, 0.97, 0.92), 0.95), 24)
+	B.cyl(r, rad * 1.06, rad * 1.02, 0.12, pos + Vector3(0, 0.72, 0), m(Color(0.95, 0.3, 0.3), 0.95), 24)
+	for k in 6:
+		var a: = TAU * k / 6.0
+		B.box(r, Vector3(rad * 0.9, 0.004, 0.06), pos + Vector3(0, 0.783, 0), m(Color(0.95, 0.3, 0.3), 0.95)).rotation.y = a
+	B.cyl(r, 0.035, 0.035, 0.09, pos + Vector3(rad * 0.4, 0.83, 0), m(Color(0.95, 0.95, 0.95), 0.4), 10)
+	B.cyl(r, 0.03, 0.03, 0.07, pos + Vector3(rad * 0.4 + 0.08, 0.82, 0.02), m(Color(0.85, 0.2, 0.15), 0.4), 10)
 	B.cyl(r, 0.04, 0.04, 0.72, pos + Vector3(0, 0.37, 0), m(WOOD_DARK), 8)
 	B.cyl(r, 0.24, 0.28, 0.04, pos + Vector3(0, 0.02, 0), m(WOOD_DARK), 12)
 

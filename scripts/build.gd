@@ -261,6 +261,41 @@ static func _beam(parent: Node, a: Vector3, b: Vector3, r: float, m: Material) -
 	mi.transform = Transform3D(bas * Basis(Vector3.RIGHT, PI * 0.5), (a + b) * 0.5)
 	return mi
 
+## Arco (meia-coroa) de moldura sobre portas e janelas, de frente para +Z local.
+static func arch(parent: Node, center: Vector3, r_in: float, r_out: float, depth: float, m: Material, rot_y: = 0.0) -> MeshInstance3D:
+	var st: = SurfaceTool.new()
+	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var segs: = 24
+	var hz: = depth * 0.5
+	for i in segs:
+		var a0: = PI * float(i) / segs
+		var a1: = PI * float(i + 1) / segs
+		var i0: = Vector3(cos(a0) * r_in, sin(a0) * r_in, 0)
+		var i1: = Vector3(cos(a1) * r_in, sin(a1) * r_in, 0)
+		var o0: = Vector3(cos(a0) * r_out, sin(a0) * r_out, 0)
+		var o1: = Vector3(cos(a1) * r_out, sin(a1) * r_out, 0)
+		for face in [[hz, Vector3(0, 0, 1)], [- hz, Vector3(0, 0, -1)]]:
+			var z: float = face[0]
+			var n: Vector3 = face[1]
+			var tri: = [i0, o0, o1, i0, o1, i1] if z > 0 else [i0, o1, o0, i0, i1, o1]
+			for v in tri:
+				st.set_normal(n)
+				st.add_vertex(v + Vector3(0, 0, z))
+		var no: = Vector3(cos((a0 + a1) * 0.5), sin((a0 + a1) * 0.5), 0)
+		for v in [o0 + Vector3(0, 0, hz), o0 - Vector3(0, 0, hz), o1 + Vector3(0, 0, hz), o1 + Vector3(0, 0, hz), o0 - Vector3(0, 0, hz), o1 - Vector3(0, 0, hz)]:
+			st.set_normal(no)
+			st.add_vertex(v)
+		for v in [i0 + Vector3(0, 0, hz), i1 + Vector3(0, 0, hz), i0 - Vector3(0, 0, hz), i1 + Vector3(0, 0, hz), i1 - Vector3(0, 0, hz), i0 - Vector3(0, 0, hz)]:
+			st.set_normal(- no)
+			st.add_vertex(v)
+	var mi: = MeshInstance3D.new()
+	mi.mesh = st.commit()
+	mi.material_override = m
+	mi.position = center
+	mi.rotation.y = rot_y
+	parent.add_child(mi)
+	return mi
+
 static func _detailed_roof_mesh(w: float, d: float, peak: float, thickness: float, style: String) -> Mesh:
 	var hx: = w * 0.5
 	var hz: = d * 0.5
