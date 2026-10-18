@@ -1,0 +1,42 @@
+# Godot 4
+.godot/
+*.import.tmp
+export_credentials.cfg
+*.translation
+mono_crash.*.json
+
+# builds e saídas
+build/
+dist/
+out/
+*.exe
+*.pck
+*.apk
+*.aab
+*.zip
+shots/
+
+# segredos — nunca versionar
+*.keystore
+*.jks
+signing/
+
+# assets baixados por tools/fetch_assets.* (CC0, ver CREDITS.md)
+# (os arquivos .import ficam versionados: guardam as configurações de importação — mipmaps, VRAM, normal maps)
+assets/tex/*.jpg
+assets/tex/*.png
+assets/tex_hd/*.jpg
+assets/tex_hd/*.png
+assets/models/**/*.gltf
+assets/models/**/*.bin
+assets/models/**/*.jpg
+assets/models_hd/**/*.gltf
+assets/models_hd/**/*.bin
+assets/models_hd/**/*.jpg
+
+# sistema
+.DS_Store
+Thumbs.db
+__pycache__/
+.autoconverted/
+assets/models/**/textures/
