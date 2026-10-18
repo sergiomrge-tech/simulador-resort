@@ -589,6 +589,7 @@ func _quiosque() -> void :
 		_kiosk_table(c + Vector3(4.4, 0, 4.6), "kiosk_tables", Color(0.12, 0.55, 0.58), true)
 		_kiosk_table(c + Vector3(-4.6, 0, 8.6), "kiosk_tables", Color(1.0, 0.45, 0.35), true))
 	_kiosk_details(c, y0)
+	hut_details(c, 2.4, y0, 2.8, 2.8, 3.3)
 	_area("drinks", func(): _kiosk_drinks(c, y0))
 	_area("neon", func(): _kiosk_neon(c, y0))
 	_area("grill", func(): _kiosk_grill(c, y0))
@@ -1165,20 +1166,22 @@ const BACK_Z: = 64.0
 const CROSS_X: = 1.5
 const SHOP_SIGNS: = ["Farmácia", "Peixaria do Tonho", "Sorveteria Gelato", "Posto de Saúde", "Escola Municipal", "Correios", "Bar do Zé", "Barbearia", "Lojinha de Artesanato", "Açaí da Praia"]
 
+var _road_n: = 0
 func _road(a: Vector3, b: Vector3) -> void :
 	var horizontal: = absf(b.x - a.x) > absf(b.z - a.z)
 	var L: = a.distance_to(b)
-	var c: = (a + b) * 0.5
+	_road_n += 1
+	var c: = (a + b) * 0.5 + Vector3(0, 0.006 * _road_n, 0)
 	if horizontal:
-		B.box(self, Vector3(L, 0.05, 4.0), Vector3(c.x, 0.02, c.z), VM.road)
+		B.box(self, Vector3(L, 0.05, 4.0), Vector3(c.x, 0.02 + c.y, c.z), VM.road)
 		for side in [-1.0, 1.0]:
-			B.platform(self, Vector3(L, 0.3, 1.8), Vector3(c.x, 0.0, c.z + side * 2.9), VM.calcada, 0.35)
-			B.box(self, Vector3(L, 0.32, 0.22), Vector3(c.x, 0.0, c.z + side * 2.05), VM.curb)
+			B.platform(self, Vector3(L, 0.3, 1.8), Vector3(c.x, c.y, c.z + side * 2.9), VM.calcada, 0.35)
+			B.box(self, Vector3(L, 0.32, 0.22), Vector3(c.x, c.y, c.z + side * 2.05), VM.curb)
 	else:
-		B.box(self, Vector3(4.0, 0.05, L), Vector3(c.x, 0.02, c.z), VM.road)
+		B.box(self, Vector3(4.0, 0.05, L), Vector3(c.x, 0.02 + c.y, c.z), VM.road)
 		for side in [-1.0, 1.0]:
-			B.platform(self, Vector3(1.8, 0.3, L), Vector3(c.x + side * 2.9, 0.0, c.z), VM.calcada, 0.35)
-			B.box(self, Vector3(0.22, 0.32, L), Vector3(c.x + side * 2.05, 0.0, c.z), VM.curb)
+			B.platform(self, Vector3(1.8, 0.3, L), Vector3(c.x + side * 2.9, c.y, c.z), VM.calcada, 0.35)
+			B.box(self, Vector3(0.22, 0.32, L), Vector3(c.x + side * 2.05, c.y, c.z), VM.curb)
 
 func _add_lamp(p: Vector3) -> void :
 	B.model(self, "street_lamp_01", p, 0.0, 1.0)

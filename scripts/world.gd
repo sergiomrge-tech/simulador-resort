@@ -38,12 +38,18 @@ func _ready() -> void :
 	_ocean()
 	_bounds()
 	_paths()
-	_area("pousada", _reception)
-	_area("pool", _pool)
+	_area("pousada", func():
+		_reception()
+		_reception_details())
+	_area("pool", func():
+		_pool()
+		_pool_details())
 	_ensure_bung_x(Core.rooms.size())
 	for i in Core.rooms.size():
 		_bungalow(i, Vector3(BUNG_X[i], 0, BUNG_Z))
-	_area("bar", _bar)
+	_area("bar", func():
+		_bar()
+		hut_details(BAR_C, 2.8, 0.1, 2.9, 3.0, 3.7))
 	_beach_props()
 	_palms()
 	_vegetation()
@@ -184,14 +190,18 @@ func _bounds() -> void :
 	B.wall(self, Vector3(1, 4, 112), Vector3(-48, 1.5, 23))
 	B.wall(self, Vector3(1, 4, 112), Vector3(112, 1.5, 23))
 
+var _strip_n: = 0
+## Caminho sobre a areia. Cada faixa fica uns milímetros acima da anterior para não "piscar" (z-fighting)
+## onde duas se cruzam.
 func _strip(a: Vector2, b_: Vector2, w: float, m: Material, y: = 0.025) -> void :
 	var d: = b_ - a
 	var mid: = (a + b_) * 0.5
-	var mi: = B.box(self, Vector3(w, 0.05, d.length()), Vector3(mid.x, y, mid.y), m)
+	_strip_n += 1
+	var mi: = B.box(self, Vector3(w, 0.06, d.length()), Vector3(mid.x, y + 0.008 * _strip_n, mid.y), m)
 	mi.rotation.y = atan2(d.x, d.y)
 
 func _paths() -> void :
-	_strip(Vector2(0, 19.5), Vector2(0, 46), 2.6, M.terra_tiles)
+	_strip(Vector2(0, 19.5), Vector2(0, 27.0), 2.6, M.terra_tiles)
 	_strip(Vector2(-10.5, 11.5), Vector2(-10.5, 26), 2.0, M.stone)
 	_strip(Vector2(-11.5, 26), Vector2(0, 26), 2.0, M.stone)
 	_strip(Vector2(-10.5, 11.5), Vector2(-10.5, -4.5), 2.0, M.stone)
@@ -315,9 +325,9 @@ func _pool() -> void :
 
 	var deck_y: = 0.06
 	B.box(self, Vector3(18, 0.12, 3), Vector3(0, deck_y, -1.5), M.stone)
-	B.box(self, Vector3(18, 0.12, 3), Vector3(0, deck_y, 9.5), M.stone)
-	B.box(self, Vector3(3, 0.12, 8), Vector3(-7.5, deck_y, 4), M.stone)
-	B.box(self, Vector3(3, 0.12, 8), Vector3(7.5, deck_y, 4), M.stone)
+	B.box(self, Vector3(18, 0.12, 3), Vector3(0, deck_y + 0.004, 9.5), M.stone)
+	B.box(self, Vector3(3, 0.12, 7.9), Vector3(-7.5, deck_y + 0.008, 4), M.stone)
+	B.box(self, Vector3(3, 0.12, 7.9), Vector3(7.5, deck_y + 0.012, 4), M.stone)
 
 	var coping: = B.flat(Color(0.93, 0.9, 0.84), 0.6)
 	B.box(self, Vector3(wx + 0.6, 0.16, 0.3), Vector3(c.x, 0.1, POOL_MIN.y - 0.15), coping)
@@ -386,6 +396,14 @@ func _lounger(p: Vector3, rot: float) -> void :
 	for sx in [-0.31, 0.31]:
 		for sz in [-0.82, 0.82]:
 			B.cyl(n, 0.03, 0.035, 0.3, Vector3(sx, 0.15, sz), M.darkwood, 8)
+	# v0.7.2: toalha listrada dobrada, rodinhas e chinelos
+	for k in 4:
+		B.box(n, Vector3(0.5, 0.025, 0.11), Vector3(0, 0.45, 0.62 + k * 0.11), B.flat(D.FLAG_COLS[(k + int(p.x)) % D.FLAG_COLS.size()] if k % 2 == 0 else Color.WHITE, 0.9))
+	for sx in [-0.36, 0.36]:
+		var wh: = B.cyl(n, 0.07, 0.07, 0.04, Vector3(sx, 0.07, -0.85), M.darkwood, 14)
+		wh.rotation.z = PI * 0.5
+	for sx in [-0.1, 0.1]:
+		B.box(n, Vector3(0.09, 0.02, 0.24), Vector3(sx + 0.45, 0.01, 1.05), B.flat(Color(1.0, 0.85, 0.2), 0.6))
 
 var _parasol_mats: = {}
 var _thatch_parasol: Material
@@ -588,6 +606,7 @@ func _bungalow(i: int, c: Vector3) -> void :
 			B.cyl(self, 0.12, 0.14, h, Vector3(sx, y0 + h * 0.5, sz), M.post, 8)
 	B.box(self, Vector3(w, 0.06, d), Vector3(c.x, y0 + h, c.z), M.planks)
 	B.hip_roof(self, Vector3(c.x, y0 + h + 0.03, c.z - 0.7), w + 2.4, d + 3.8, 3.8, M.thatch, 0.22)
+	_bungalow_details(i, c, y0, w, d, zf, zb, x0, x1, h)
 
 	B.model(self, "wooden_stool_01", Vector3(c.x - 1.5, y0, zf - 1.3), 0.3, 1.0)
 	B.model(self, "side_table_01", Vector3(c.x + 1.6, y0, zf - 1.2), 0.0, 1.0)
@@ -1887,3 +1906,186 @@ func refresh_areas() -> void :
 		_set_live(areas[id], owned)
 		_set_live(lots.get(id), not owned)
 	get_tree().call_group("world_dyn", "on_areas_changed")
+
+
+# ------------------------------------------------------------------ v0.7.2: estruturas 10x mais detalhadas
+## Estrutura de madeira de quiosque/bar: vigas de amarração, mãos-francesas, caibros sob o sapê,
+## amarras de corda e assoalho de tábuas com frestas.
+func hut_details(c: Vector3, half: float, y0: float, post_h: float, peak: float, roof_half: float) -> void :
+	var wood: = B.flat(Color(0.62, 0.42, 0.25), 0.85)
+	var rope: = B.flat(Color(0.86, 0.74, 0.5), 0.95)
+	var top: = y0 + post_h
+	var corners: = [Vector3(- half, 0, - half), Vector3(half, 0, - half), Vector3(half, 0, half), Vector3(- half, 0, half)]
+	for i in 4:
+		var a: Vector3 = c + corners[i] + Vector3(0, top - 0.12, 0)
+		var b_: Vector3 = c + corners[(i + 1) % 4] + Vector3(0, top - 0.12, 0)
+		B._beam(self, a, b_, 0.08, wood)
+		# mãos-francesas
+		for o in [corners[(i + 1) % 4], corners[(i + 3) % 4]]:
+			var dir: Vector3 = (o - corners[i]).normalized()
+			B._beam(self, c + corners[i] + Vector3(0, top - 0.75, 0), c + corners[i] + dir * 0.6 + Vector3(0, top - 0.14, 0), 0.04, wood)
+		# amarras de corda no topo do poste
+		for ry in [top - 0.2, top - 0.32]:
+			var t: = TorusMesh.new()
+			t.inner_radius = 0.13
+			t.outer_radius = 0.17
+			t.rings = 20
+			t.ring_segments = 8
+			var mi: = MeshInstance3D.new()
+			mi.mesh = t
+			mi.material_override = rope
+			mi.position = c + corners[i] + Vector3(0, ry, 0)
+			add_child(mi)
+	# caibros do telhado, do beiral até o pico
+	var apex: = c + Vector3(0, top + peak - 0.1, 0)
+	for k in 16:
+		var ang: = TAU * k / 16.0
+		var edge: = Vector3(cos(ang), 0, sin(ang))
+		var m_: = maxf(absf(edge.x), absf(edge.z))
+		edge = edge / m_ * (roof_half - 0.15)
+		B._beam(self, c + edge + Vector3(0, top - 0.05, 0), apex, 0.035, wood)
+	# assoalho de tábuas
+	var xfs: = []
+	var cols: = []
+	var z: = - half - 0.25
+	while z <= half + 0.25:
+		xfs.append(Transform3D(Basis(), c + Vector3(0, y0 + 0.012, z)))
+		cols.append(Color(0.82, 0.62, 0.42).darkened(fposmod(z * 3.7, 0.12)))
+		z += 0.2
+	var pm: = BoxMesh.new()
+	pm.size = Vector3(half * 2.0 + 0.6, 0.03, 0.17)
+	D.multimesh(self, pm, xfs, cols)
+
+func _bungalow_details(i: int, c: Vector3, y0: float, w: float, d: float, zf: float, zb: float, x0: float, x1: float, h: float) -> void :
+	var wood: = B.flat(Color(0.58, 0.4, 0.24), 0.85)
+	var deck_z: = c.z - 1.1 - (d + 2.8) * 0.5
+	var rail_y: = y0 + 0.9
+	# guarda-corpo da varanda, com abertura para a escada
+	for side in [-1.0, 1.0]:
+		var xa: float = c.x + side * 0.9
+		var xb: float = c.x + side * (w * 0.5 + 0.25)
+		var k: = 0.0
+		while k <= 1.001:
+			B.cyl(self, 0.04, 0.045, 0.9, Vector3(lerpf(xa, xb, k), y0 + 0.45, deck_z + 0.18), wood, 10)
+			k += 0.2
+		for yy in [rail_y, y0 + 0.5]:
+			B._beam(self, Vector3(xa, yy, deck_z + 0.18), Vector3(xb, yy, deck_z + 0.18), 0.035, wood)
+		B._beam(self, Vector3(xb, rail_y, deck_z + 0.18), Vector3(xb, rail_y, zf), 0.035, wood)
+	# escada de 2 degraus
+	for k in 2:
+		B.box(self, Vector3(1.7, 0.12, 0.4), Vector3(c.x, y0 - 0.14 - k * 0.12, deck_z - 0.2 - k * 0.38), M.deckwood)
+	# toalha no guarda-corpo, chinelos, capacho, lanterna pendurada, placa com o número
+	for k in 5:
+		B.box(self, Vector3(0.14, 0.6, 0.03), Vector3(c.x + 1.6 + k * 0.14, rail_y - 0.28, deck_z + 0.18), B.flat(D.FLAG_COLS[(i * 2 + 3) % D.FLAG_COLS.size()] if k % 2 == 0 else Color.WHITE, 0.9))
+	for sx in [-0.09, 0.09]:
+		B.box(self, Vector3(0.1, 0.025, 0.26), Vector3(c.x - 0.6 + sx, y0 + 0.012, zf - 0.6), B.flat(Color(0.2, 0.6, 0.95), 0.6))
+	B.box(self, Vector3(1.2, 0.02, 0.6), Vector3(c.x, y0 + 0.012, zf - 0.45), B.flat(Color(0.75, 0.55, 0.32), 0.95))
+	var lp: = Vector3(c.x + 1.9, y0 + h - 0.1, zf - 1.3)
+	B.cyl(self, 0.005, 0.005, 0.4, lp + Vector3(0, 0.2, 0), wood, 4)
+	B.model(self, "wooden_lantern_01", lp - Vector3(0, 0.35, 0), 0.0, 0.8)
+	B.box(self, Vector3(0.6, 0.3, 0.04), Vector3(c.x - 1.9, y0 + 1.9, zf - 0.05), B.flat(Color(0.95, 0.9, 0.78), 0.9))
+	var nl: = B.label(self, "Bangalô %d" % (i + 1), Vector3(c.x - 1.9, y0 + 1.9, zf - 0.08), 28, Color(0.35, 0.22, 0.1), Color(1, 1, 1, 0.8), PI)
+	nl.pixel_size = 0.0045
+	# faixas de bambu nas paredes e chuveirinho externo
+	for yy in [y0 + 0.35, y0 + h - 0.25]:
+		for zz in [zf - 0.03, zb + 0.03]:
+			var band: = B.cyl(self, 0.045, 0.045, w, Vector3(c.x, yy, zz), M.bamboo, 12)
+			band.rotation.z = PI * 0.5
+	var sp: = Vector3(x1 + 0.45, y0, c.z + 1.2)
+	var pipe: = B.flat(Color(0.75, 0.78, 0.8), 0.3, 0.6)
+	B.cyl(self, 0.03, 0.03, 2.2, sp + Vector3(0, 1.1, 0), pipe, 10)
+	B._beam(self, sp + Vector3(0, 2.2, 0), sp + Vector3(0.0, 2.2, 0.35), 0.03, pipe)
+	B.cyl(self, 0.12, 0.04, 0.06, sp + Vector3(0, 2.15, 0.38), pipe, 14)
+	B.box(self, Vector3(0.9, 0.06, 0.9), sp + Vector3(0, 0.03, 0.2), B.flat(Color(0.85, 0.85, 0.82), 0.6))
+	# mensageiro dos ventos de conchas
+	var wc: = Vector3(c.x - 1.2, y0 + h - 0.15, zf - 1.5)
+	for k in 5:
+		B.cyl(self, 0.003, 0.003, 0.35 + k * 0.05, wc + Vector3(-0.1 + k * 0.05, -0.2 - k * 0.025, 0), wood, 4)
+		B.sphere(self, 0.03, wc + Vector3(-0.1 + k * 0.05, -0.4 - k * 0.05, 0), B.flat(Color(1.0, 0.85, 0.8), 0.5), Vector3(1, 1.3, 0.5))
+
+func _pool_details() -> void :
+	var chrome: = B.flat(Color(0.85, 0.88, 0.9), 0.15, 0.9)
+	# escadinhas de inox
+	for lp in [Vector3(POOL_MAX.x - 0.6, 0, POOL_MIN.y + 0.15), Vector3(POOL_MIN.x + 0.6, 0, POOL_MAX.y - 0.15)]:
+		var inward: = 1.0 if lp.z < 4.0 else -1.0
+		for sx in [-0.25, 0.25]:
+			B._beam(self, lp + Vector3(sx, -0.9, inward * 0.15), lp + Vector3(sx, 0.55, inward * 0.15), 0.025, chrome)
+			B._beam(self, lp + Vector3(sx, 0.55, inward * 0.15), lp + Vector3(sx, 0.55, - inward * 0.25), 0.025, chrome)
+			B._beam(self, lp + Vector3(sx, 0.55, - inward * 0.25), lp + Vector3(sx, 0.1, - inward * 0.25), 0.025, chrome)
+		for k in 3:
+			B.box(self, Vector3(0.5, 0.03, 0.12), lp + Vector3(0, -0.25 - k * 0.3, inward * 0.18), chrome)
+	# boias e bola flutuando
+	var donut: = TorusMesh.new()
+	donut.inner_radius = 0.22
+	donut.outer_radius = 0.5
+	donut.rings = 28
+	donut.ring_segments = 14
+	for fp in [[Vector3(-2.5, -0.1, 2.6), Color(1.0, 0.45, 0.65)], [Vector3(2.8, -0.1, 5.4), Color(1.0, 0.82, 0.25)]]:
+		var mi: = MeshInstance3D.new()
+		mi.mesh = donut
+		mi.material_override = B.flat(fp[1], 0.4)
+		mi.position = fp[0]
+		add_child(mi)
+		var bob: = mi.create_tween().set_loops() if mi.is_inside_tree() else null
+		if bob == null:
+			mi.ready.connect(func():
+				var tw: = mi.create_tween().set_loops()
+				tw.tween_property(mi, "position:y", -0.04, 1.6).set_trans(Tween.TRANS_SINE)
+				tw.tween_property(mi, "position:y", -0.12, 1.6).set_trans(Tween.TRANS_SINE), CONNECT_ONE_SHOT)
+	var ball: = B.sphere(self, 0.22, Vector3(0.8, -0.08, 6.6), B.flat(Color(1, 1, 1), 0.4))
+	for k in 3:
+		var stripe: = B.sphere(ball, 0.222, Vector3.ZERO, B.flat([Color(1.0, 0.3, 0.3), Color(0.2, 0.6, 1.0), Color(1.0, 0.85, 0.2)][k], 0.4), Vector3(0.35, 1.0, 1.0))
+		stripe.rotation.y = k * PI / 3.0
+	# luzes da piscina nas paredes
+	for k in 4:
+		var lx: = lerpf(POOL_MIN.x + 1.5, POOL_MAX.x - 1.5, k / 3.0)
+		for lz in [POOL_MIN.y + 0.12, POOL_MAX.y - 0.12]:
+			B.sphere(self, 0.08, Vector3(lx, -0.7, lz), P.glow(Color(0.6, 0.95, 1.0), 2.0), Vector3(1, 1, 0.4))
+	# drinks nas mesinhas entre as espreguiçadeiras
+	for side in [-1.0, 1.0]:
+		for k in 2:
+			var tp: = Vector3(side * 7.6, 0.12, 2.5 + k * 2.6)
+			B.cyl(self, 0.22, 0.22, 0.04, tp + Vector3(0, 0.5, 0), B.flat(Color(0.95, 0.92, 0.85), 0.6), 18)
+			B.cyl(self, 0.03, 0.03, 0.5, tp + Vector3(0, 0.25, 0), M.darkwood, 8)
+			B.cyl(self, 0.04, 0.03, 0.12, tp + Vector3(0.05, 0.58, 0), B.flat(Color(1.0, 0.6, 0.3, 0.85), 0.1), 12)
+			B.cyl(self, 0.0, 0.05, 0.03, tp + Vector3(0.07, 0.68, 0), B.flat(D.FLAG_COLS[k * 3 % D.FLAG_COLS.size()]), 8)
+	# placa de regras e chuveiro da piscina
+	var pole: = Vector3(-8.6, 0.12, 8.8)
+	B.cyl(self, 0.04, 0.04, 1.8, pole + Vector3(0, 0.9, 0), M.darkwood, 8)
+	B.box(self, Vector3(0.9, 0.6, 0.05), pole + Vector3(0, 1.7, 0), B.flat(Color(0.2, 0.6, 0.9), 0.6))
+	var rl: = B.label(self, "PISCINA\nduche antes de entrar", pole + Vector3(0, 1.7, 0.03), 26, Color.WHITE, Color(0.05, 0.25, 0.45, 1))
+	rl.pixel_size = 0.004
+
+func _reception_details() -> void :
+	var y0: = 0.12
+	# degraus de entrada e capacho
+	for k in 2:
+		B.box(self, Vector3(3.4, 0.12, 0.45), Vector3(0, y0 - 0.06 - k * 0.1, 20.0 + k * 0.4), M.stone)
+	B.box(self, Vector3(1.6, 0.02, 0.8), Vector3(0, y0 + 0.012, 19.0), B.flat(Color(0.85, 0.35, 0.3), 0.95))
+	# floreiras sob as janelas da frente
+	for sx in [-3.2, 3.2]:
+		B.box(self, Vector3(1.7, 0.25, 0.32), Vector3(sx, y0 + 0.95, 19.78), M.planks)
+		for k in 6:
+			B.sphere(self, 0.1, Vector3(sx - 0.65 + k * 0.26, y0 + 1.15, 19.78), B.flat(D.FLAG_COLS[k % D.FLAG_COLS.size()], 0.7))
+	# placa pendurada da pousada
+	var sp: = Vector3(3.6, 0, 21.4)
+	B.cyl(self, 0.07, 0.08, 3.2, sp + Vector3(0, 1.6, 0), M.post, 10)
+	B._beam(self, sp + Vector3(0, 3.0, 0), sp + Vector3(-1.4, 3.0, 0), 0.05, M.post)
+	B.box(self, Vector3(1.3, 0.7, 0.06), sp + Vector3(-0.75, 2.45, 0), B.flat(Color(0.98, 0.93, 0.8), 0.8))
+	B.label(self, "Pousada\nMaré Alta", sp + Vector3(-0.75, 2.45, 0.04), 40, Color(0.1, 0.45, 0.5), Color(1, 1, 1, 0.9)).pixel_size = 0.005
+	# carrinho de malas, quadro de avisos, banco, sininho no balcão
+	var cart: = Vector3(-3.9, y0, 17.8)
+	var brass: = B.flat(Color(0.95, 0.78, 0.3), 0.25, 0.7)
+	B.box(self, Vector3(0.9, 0.06, 0.6), cart + Vector3(0, 0.15, 0), B.flat(Color(0.7, 0.15, 0.2), 0.8))
+	for sx in [-0.4, 0.4]:
+		B.cyl(self, 0.02, 0.02, 1.4, cart + Vector3(sx, 0.85, 0), brass, 8)
+	B._beam(self, cart + Vector3(-0.4, 1.55, 0), cart + Vector3(0.4, 1.55, 0), 0.02, brass)
+	B.box(self, Vector3(0.6, 0.4, 0.25), cart + Vector3(0, 0.38, 0), B.flat(Color(0.25, 0.5, 0.85), 0.6))
+	B.box(self, Vector3(0.45, 0.3, 0.2), cart + Vector3(0.05, 0.73, 0), B.flat(Color(0.95, 0.6, 0.2), 0.6))
+	B.box(self, Vector3(1.2, 0.8, 0.05), Vector3(2.8, y0 + 1.6, 12.82), B.flat(Color(0.75, 0.55, 0.35), 0.9))
+	for k in 5:
+		B.box(self, Vector3(0.22, 0.28, 0.01), Vector3(2.4 + (k % 3) * 0.35, y0 + 1.75 - (k / 3) * 0.35, 12.85), B.flat([Color(1, 1, 0.7), Color(0.8, 0.95, 1), Color(1, 0.85, 0.85)][k % 3], 0.9))
+	B.model(self, "painted_wooden_bench", Vector3(-3.0, y0, 20.9), PI, 1.0)
+	B.sphere(self, 0.06, Vector3(-0.6, y0 + 1.14, 15.5), brass, Vector3(1, 0.7, 1))
+	B.model(self, "potted_plant_01", Vector3(-1.9, y0, 20.3), 0.0, 1.1)
+	B.model(self, "potted_plant_01", Vector3(1.9, y0, 20.3), 0.0, 1.1)
