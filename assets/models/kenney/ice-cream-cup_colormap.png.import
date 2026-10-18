@@ -3,9 +3,10 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://dhqoabiqy314e"
-path="res://.godot/imported/ice-cream-cup_colormap.png-110aacfe0f958d9778fa171ebd028a6e.ctex"
+path.s3tc="res://.godot/imported/ice-cream-cup_colormap.png-110aacfe0f958d9778fa171ebd028a6e.s3tc.ctex"
 metadata={
-"vram_texture": false
+"imported_formats": ["s3tc_bptc"],
+"vram_texture": true
 }
 generator_parameters={
 "md5": "4296df7c74d385beaabf51e4d39e95b2"
@@ -14,11 +15,11 @@ generator_parameters={
 [deps]
 
 source_file="res://assets/models/kenney/ice-cream-cup_colormap.png"
-dest_files=["res://.godot/imported/ice-cream-cup_colormap.png-110aacfe0f958d9778fa171ebd028a6e.ctex"]
+dest_files=["res://.godot/imported/ice-cream-cup_colormap.png-110aacfe0f958d9778fa171ebd028a6e.s3tc.ctex"]
 
 [params]
 
-compress/mode=0
+compress/mode=2
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0

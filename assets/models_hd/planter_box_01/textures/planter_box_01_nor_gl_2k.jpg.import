@@ -3,27 +3,28 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://kj4yy6w2npmx"
-path="res://.godot/imported/planter_box_01_nor_gl_2k.jpg-90b1efc5f0b6e894fdccd8492a860f5f.ctex"
+path.s3tc="res://.godot/imported/planter_box_01_nor_gl_2k.jpg-90b1efc5f0b6e894fdccd8492a860f5f.s3tc.ctex"
 metadata={
-"vram_texture": false
+"imported_formats": ["s3tc_bptc"],
+"vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/models_hd/planter_box_01/textures/planter_box_01_nor_gl_2k.jpg"
-dest_files=["res://.godot/imported/planter_box_01_nor_gl_2k.jpg-90b1efc5f0b6e894fdccd8492a860f5f.ctex"]
+dest_files=["res://.godot/imported/planter_box_01_nor_gl_2k.jpg-90b1efc5f0b6e894fdccd8492a860f5f.s3tc.ctex"]
 
 [params]
 
-compress/mode=0
+compress/mode=2
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0
 compress/rdo_quality_loss=0.0
 compress/hdr_compression=1
-compress/normal_map=0
+compress/normal_map=1
 compress/channel_pack=0
-mipmaps/generate=false
+mipmaps/generate=true
 mipmaps/limit=-1
 roughness/mode=0
 roughness/src_normal=""

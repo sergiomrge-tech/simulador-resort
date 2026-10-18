@@ -3,19 +3,20 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://cqw68rv3honux"
-path="res://.godot/imported/metal_stool_01_diff_2k.jpg-496066c0a4861f9913ad0c4fa3d86f88.ctex"
+path.s3tc="res://.godot/imported/metal_stool_01_diff_2k.jpg-496066c0a4861f9913ad0c4fa3d86f88.s3tc.ctex"
 metadata={
-"vram_texture": false
+"imported_formats": ["s3tc_bptc"],
+"vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/models_hd/metal_stool_01/textures/metal_stool_01_diff_2k.jpg"
-dest_files=["res://.godot/imported/metal_stool_01_diff_2k.jpg-496066c0a4861f9913ad0c4fa3d86f88.ctex"]
+dest_files=["res://.godot/imported/metal_stool_01_diff_2k.jpg-496066c0a4861f9913ad0c4fa3d86f88.s3tc.ctex"]
 
 [params]
 
-compress/mode=0
+compress/mode=2
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0
@@ -23,7 +24,7 @@ compress/rdo_quality_loss=0.0
 compress/hdr_compression=1
 compress/normal_map=0
 compress/channel_pack=0
-mipmaps/generate=false
+mipmaps/generate=true
 mipmaps/limit=-1
 roughness/mode=0
 roughness/src_normal=""

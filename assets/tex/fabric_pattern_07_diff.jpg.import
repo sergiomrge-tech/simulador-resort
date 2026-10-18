@@ -3,19 +3,20 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://b1aj5soc4evv"
-path="res://.godot/imported/fabric_pattern_07_diff.jpg-f25d8f7191b3ba26890174fb4e8b5d87.ctex"
+path.s3tc="res://.godot/imported/fabric_pattern_07_diff.jpg-f25d8f7191b3ba26890174fb4e8b5d87.s3tc.ctex"
 metadata={
-"vram_texture": false
+"imported_formats": ["s3tc_bptc"],
+"vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/tex/fabric_pattern_07_diff.jpg"
-dest_files=["res://.godot/imported/fabric_pattern_07_diff.jpg-f25d8f7191b3ba26890174fb4e8b5d87.ctex"]
+dest_files=["res://.godot/imported/fabric_pattern_07_diff.jpg-f25d8f7191b3ba26890174fb4e8b5d87.s3tc.ctex"]
 
 [params]
 
-compress/mode=0
+compress/mode=2
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0
@@ -23,7 +24,7 @@ compress/rdo_quality_loss=0.0
 compress/hdr_compression=1
 compress/normal_map=0
 compress/channel_pack=0
-mipmaps/generate=false
+mipmaps/generate=true
 mipmaps/limit=-1
 roughness/mode=0
 roughness/src_normal=""

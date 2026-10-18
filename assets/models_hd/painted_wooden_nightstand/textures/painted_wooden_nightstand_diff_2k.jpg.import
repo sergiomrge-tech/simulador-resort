@@ -3,19 +3,20 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://dqf3oxpndkuud"
-path="res://.godot/imported/painted_wooden_nightstand_diff_2k.jpg-fc37fc86868518650695ead546b93830.ctex"
+path.s3tc="res://.godot/imported/painted_wooden_nightstand_diff_2k.jpg-fc37fc86868518650695ead546b93830.s3tc.ctex"
 metadata={
-"vram_texture": false
+"imported_formats": ["s3tc_bptc"],
+"vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/models_hd/painted_wooden_nightstand/textures/painted_wooden_nightstand_diff_2k.jpg"
-dest_files=["res://.godot/imported/painted_wooden_nightstand_diff_2k.jpg-fc37fc86868518650695ead546b93830.ctex"]
+dest_files=["res://.godot/imported/painted_wooden_nightstand_diff_2k.jpg-fc37fc86868518650695ead546b93830.s3tc.ctex"]
 
 [params]
 
-compress/mode=0
+compress/mode=2
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0
@@ -23,7 +24,7 @@ compress/rdo_quality_loss=0.0
 compress/hdr_compression=1
 compress/normal_map=0
 compress/channel_pack=0
-mipmaps/generate=false
+mipmaps/generate=true
 mipmaps/limit=-1
 roughness/mode=0
 roughness/src_normal=""

@@ -7,6 +7,8 @@ class_name Real
 static var _cache: = {}
 
 static func path_of(key: String) -> String:
+	if key.begins_with("g:"):
+		return "res://assets/models/gen/%s.glb" % key.substr(2)
 	if key.begins_with("k:"):
 		return "res://assets/models/kenney/%s.glb" % key.substr(2)
 	var hd: = "res://assets/models_hd/%s/%s.gltf" % [key, key]

@@ -806,11 +806,7 @@ func _coco_piles(spots: Array) -> void :
 		var pile: = Node3D.new()
 		pile.position = base
 		add_child(pile)
-		var shell: = B.flat(Color(0.42, 0.26, 0.12), 0.7)
-		for k in 4:
-			var a: = TAU * float(k) / 4.0 + float(i)
-			var cs: = B.sphere(pile, 0.17, Vector3(cos(a) * 0.2, 0.15, sin(a) * 0.2), shell, Vector3(1.0, 0.9, 1.0))
-		B.sphere(pile, 0.17, Vector3(0.0, 0.38, 0.0), shell)
+		D.coconut_pile(pile, Vector3.ZERO, 5)
 		var ia: = Interactable.new()
 		ia.name = "CocoPile%d" % i
 		var cc: = CollisionShape3D.new()
@@ -1182,7 +1178,7 @@ func _kiosk_details(c: Vector3, y0: float) -> void :
 	for k in 3:
 		var cc: = c + Vector3(-0.6 + k * 0.6, y0 + 2.45, -2.25)
 		B.cyl(self, 0.014, 0.014, 0.62, cc + Vector3(0, 0.05, 0), D.m(Color(0.45, 0.3, 0.16)), 8)
-		B.sphere(self, 0.13, cc + Vector3(0, -0.4, 0), D.m(Color(0.45, 0.68, 0.22), 0.6), Vector3(1, 1.1, 1))
+		Real.place(self, "k:coconut", cc + Vector3(0, -0.55, 0), 0.26, k * 1.3)
 	# balcão
 	var top: = c + Vector3(0, y0 + 1.18, 2.0)
 	D.tip_jar(self, top + Vector3(1.6, 0, 0.15))
@@ -1197,8 +1193,9 @@ func _kiosk_details(c: Vector3, y0: float) -> void :
 	for k in 15:
 		B.cyl(self, 0.05, 0.05, 1.0, c + Vector3(-2.2 + k * 0.315, y0 + 0.52, 2.33), D.m(Color(0.9, 0.76, 0.42)), 6)
 	for k in 3:
-		var half: = B.sphere(self, 0.12, c + Vector3(-1.3 + k * 1.3, y0 + 0.75, 2.4), D.m(Color(0.55, 0.36, 0.2)), Vector3(1, 1, 0.45))
-		B.sphere(half, 0.1, Vector3(0, 0, 0.05), D.m(Color(0.98, 0.96, 0.9)), Vector3(1, 1, 0.4))
+		var half: = Real.place(self, "k:coconut-half", c + Vector3(-1.3 + k * 1.3, y0 + 0.66, 2.42), 0.2, 0.0)
+		if half:
+			half.rotation.x = -PI * 0.5
 	_open_sign = D.open_sign(self, c + Vector3(1.65, y0 + 2.3, 2.5), 0.0)
 	# em volta
 	D.coconut_pile(self, c + Vector3(3.7, 0.05, 0.8), 10)

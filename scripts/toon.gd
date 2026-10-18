@@ -307,6 +307,11 @@ static func toonify(mt: Material) -> Material:
 		s.roughness_texture = null
 		s.metallic_texture = null
 		s.ao_enabled = false
+		# modelos reais vêm escuros/realistas: clareia e esquenta para casar com a paleta cartoon do jogo
+		s.albedo_color = s.albedo_color * Color(1.55, 1.45, 1.35)
+		s.rim_enabled = true
+		s.rim = 0.25
+		s.rim_tint = 0.5
 		return s
 	return mt
 

@@ -68,6 +68,10 @@ Base de trabalho: v0.6.5 recuperada; versões atuais em `project.godot` / `expor
 3. Prints: `./shot.sh nome` ou câmera livre com `--cam=x,y,z,yaw,pitch[,hora]` (ver `main.gd`). Olhe de perto paredes, móveis, pessoas e chão.
 4. `tests/loop_test.gd` precisa dar LOOP_TEST PASS.
 5. **Assets baixados não vão no git** (`assets/tex*`, `assets/models/**/*.gltf` ficam no `.gitignore`). Antes de exportar, rode `python3 tools/fetch_assets.py` e `godot --headless --import`; sem isso o instalador sai sem texturas ("Resource file not found: res://assets/tex/...") e o log do `shot` mostra o erro. Confira com `grep -c "not found" shots/X.log` = 0.
-6. Móveis do Poly Haven (cama gótica preta etc.) testados no lugar dos construídos por código: destoam da paleta colorida. Em modo toon os de `props.gd` têm prioridade; não troque sem comparar render lado a lado.
+6. **Modelos reais têm prioridade** (regra 18/10/2026): `B.model` usa o glTF baixado quando existe; `props.gd` (P) só vale quando não há asset ou com `--proc`. Para itens soltos use `Real.place(parent, chave, pos, altura, rot, tint, largura)` (`scripts/real.gd`): chave `nome` = Poly Haven, `k:nome` = Kenney, `g:nome` = gerado no Blender (`tools/gen_*.py`).
+6b. **Texturas lossless estouram a memória.** Os `.import` de jpg/png nascem com `compress/mode=0` (sem compressão; o `shot` foi morto por OOM com shmem de 3,9 GB). Depois de `godot --import`, rode `python3 tools/vram_textures.py` e importe de novo (o `build_release.sh` já faz).
+6c. **Kenney:** o GLB original aponta para `Textures/colormap.png` externo (sem ele tudo fica branco/azulado) e é facetado. `tools/fetch_assets.py` passa por `tools/smooth_kenney.py` (Blender/bpy: subdivisão + sombreamento suave + textura embutida). Pack novo → acrescente em `KENNEY` no fetch.
+6d. Para ver o balcão do quiosque por cima use `--noroof` (esconde telhado e bandeirinhas). Câmeras antigas de `SHOTS` ficaram desatualizadas (vila foi movida): quiosque fica em x=38, z=-13. Shots pesados: `Q=1` em `/tmp/claude-0/sub/dbg.sh`.
+6e. Nunca use `pkill -f` com texto que aparece no próprio comando (mata o shell).
 7. Versão em `project.godot`, `export_presets.cfg` e `installer/setup.nsi`; depois exporte, rode o `makensis`, entregue no PC e faça o push.
 8. Arquivos acima de 30 MB para o PC: primeiro `SendUserFile`, depois commit com o `fileUuid`.

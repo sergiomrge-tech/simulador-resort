@@ -139,12 +139,14 @@ static func signpost(parent: Node, p: Vector3, arrows: Array) -> void :
 		y -= 0.42
 
 static func surfboard(parent: Node, p: Vector3, rot: float, col: Color, lean: = 0.25) -> void :
+	# prancha modelada no Blender (tools/gen_surfboard.py): perfil real, rocker e três quilhas
 	var piv: = Node3D.new()
 	piv.position = p
 	piv.rotation = Vector3(lean, rot, 0)
 	parent.add_child(piv)
-	B.sphere(piv, 0.3, Vector3(0, 1.0, 0), m(col, 0.4), Vector3(0.95, 3.4, 0.14))
-	B.sphere(piv, 0.3, Vector3(0, 1.0, 0.012), m(Color.WHITE, 0.4), Vector3(0.2, 3.3, 0.14))
+	var h: = Real.place(piv, "g:surfboard", Vector3(0, 1.0, 0), 0.0, 0.0, col.lerp(Color.WHITE, 0.2), 2.0)
+	if h:
+		h.rotation.x = -PI * 0.5
 
 static func towel(parent: Node, p: Vector3, rot: float, a: Color, b: Color) -> void :
 	for i in 5:

@@ -20,6 +20,7 @@ signal expansion_bought(id: String)
 
 var SAVE_PATH: = "user://save_slot1.json"
 var slot: int = 1
+var proc_props: = false   # --proc: usa os props montados por código (P) em vez dos modelos reais
 const SAVE_VERSION: = 4
 const WAKE_MIN: = 390.0
 const SLEEP_FROM: = 20.0 * 60.0

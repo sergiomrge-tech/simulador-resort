@@ -3,19 +3,20 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://dosm281mjiux7"
-path="res://.godot/imported/CoffeeCart_01_cart_diff_2k.jpg-32f299893b5554a2cb9ab475bb0b2235.ctex"
+path.s3tc="res://.godot/imported/CoffeeCart_01_cart_diff_2k.jpg-32f299893b5554a2cb9ab475bb0b2235.s3tc.ctex"
 metadata={
-"vram_texture": false
+"imported_formats": ["s3tc_bptc"],
+"vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/models_hd/CoffeeCart_01/textures/CoffeeCart_01_cart_diff_2k.jpg"
-dest_files=["res://.godot/imported/CoffeeCart_01_cart_diff_2k.jpg-32f299893b5554a2cb9ab475bb0b2235.ctex"]
+dest_files=["res://.godot/imported/CoffeeCart_01_cart_diff_2k.jpg-32f299893b5554a2cb9ab475bb0b2235.s3tc.ctex"]
 
 [params]
 
-compress/mode=0
+compress/mode=2
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0
@@ -23,7 +24,7 @@ compress/rdo_quality_loss=0.0
 compress/hdr_compression=1
 compress/normal_map=0
 compress/channel_pack=0
-mipmaps/generate=false
+mipmaps/generate=true
 mipmaps/limit=-1
 roughness/mode=0
 roughness/src_normal=""

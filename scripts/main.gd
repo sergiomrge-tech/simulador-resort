@@ -93,6 +93,7 @@ func _ready() -> void :
 		var kv: PackedStringArray = a.trim_prefix("--").split("=", true, 1)
 		args[kv[0]] = kv[1] if kv.size() > 1 else "1"
 	Core.in_game = false
+	Core.proc_props = args.has("proc")
 	var testing: = args.has("shot") or args.has("loop-test") or args.has("tour")
 	if testing:
 		Core.SAVE_PATH = "user://test_save.json"

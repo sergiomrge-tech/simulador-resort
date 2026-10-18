@@ -3,19 +3,20 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://bsvmrubii2xeb"
-path="res://.godot/imported/book_encyclopedia_set_01_paper_diff_2k.jpg-bb722db0560e94a99f23a7d01ba3bb2a.ctex"
+path.s3tc="res://.godot/imported/book_encyclopedia_set_01_paper_diff_2k.jpg-bb722db0560e94a99f23a7d01ba3bb2a.s3tc.ctex"
 metadata={
-"vram_texture": false
+"imported_formats": ["s3tc_bptc"],
+"vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/models_hd/book_encyclopedia_set_01/textures/book_encyclopedia_set_01_paper_diff_2k.jpg"
-dest_files=["res://.godot/imported/book_encyclopedia_set_01_paper_diff_2k.jpg-bb722db0560e94a99f23a7d01ba3bb2a.ctex"]
+dest_files=["res://.godot/imported/book_encyclopedia_set_01_paper_diff_2k.jpg-bb722db0560e94a99f23a7d01ba3bb2a.s3tc.ctex"]
 
 [params]
 
-compress/mode=0
+compress/mode=2
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0
@@ -23,7 +24,7 @@ compress/rdo_quality_loss=0.0
 compress/hdr_compression=1
 compress/normal_map=0
 compress/channel_pack=0
-mipmaps/generate=false
+mipmaps/generate=true
 mipmaps/limit=-1
 roughness/mode=0
 roughness/src_normal=""

@@ -41,6 +41,7 @@ AMBIENTCG = {"Wicker002": "rattan"}
 
 # v0.8 (regra "nada de bolas e quadrados"): modelos reais do Poly Haven (CC0) para todos os objetos do jogo, só 1k para não pesar.
 MODELS_EXTRA = [
+    "painted_wooden_chair_01", "wooden_bowl_01",
     "boombox", "lambis_shell", "lifebuoy", "ocean_buoy", "wicker_basket_01", "wicker_basket_02", "trashbag", "planter_pot_clay",
     "potted_plant_01", "potted_plant_02", "potted_plant_04", "vintage_oil_lamp", "vintage_radio_transceiver", "sweet_potato",
     # frutas, pães e cozinha
@@ -77,6 +78,10 @@ MODELS_EXTRA = [
 ]
 # Kenney (CC0): só o que o Poly Haven não tem (coco, drinques, peixe, barcos, palmeiras, bandeiras). {zip: [arquivos .glb]}
 KENNEY = {
+    "https://kenney.nl/media/pages/assets/nature-kit/37ac38a37b-1677698939/kenney_nature-kit.zip": [
+        "canoe", "canoe_paddle", "rock_largeB", "rock_largeC", "rock_smallA", "rock_smallB", "rock_smallC", "rock_smallF",
+        "stone_largeB", "stone_largeC", "plant_bush", "plant_bushLarge", "plant_bushDetailed", "flower_redA", "flower_yellowB",
+        "flower_purpleB", "log_large", "stump_round", "campfire_logs", "campfire_stones", "tent_smallOpen", "lily_large", "mushroom_red"],
     "https://kenney.nl/media/pages/assets/food-kit/83086fa91c-1719418518/kenney_food-kit.zip": [
         "coconut", "coconut-half", "cocktail", "frappe", "glass", "fish", "fish-bones", "loaf", "loaf-round", "bread",
         "pineapple", "watermelon", "orange", "bottle-oil", "ice-cream-cup", "cup", "cup-tea", "bowl"],
@@ -178,7 +183,7 @@ def kenney(url, names):
     z.extractall(tmp)
     src = None
     for dp, dn, fn in os.walk(tmp):
-        if os.path.basename(dp) == "GLB format":
+        if os.path.basename(dp) in ("GLB format", "GLTF format"):
             src = dp
     os.makedirs(out, exist_ok=True)
     have = [n for n in todo if os.path.exists(f"{src}/{n}.glb")]

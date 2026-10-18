@@ -498,7 +498,7 @@ static func _hip_roof_flat(parent: Node, center: Vector3, w: float, d: float, pe
 
 
 static func model(parent: Node, n: String, pos: Vector3, rot_y: = 0.0, s: = 1.0) -> Node3D:
-	if Toon.enabled() and P.has(n):
+	if Toon.enabled() and P.has(n) and not _real_exists(n):
 		var pr: = P.build(n)
 		pr.position = pos
 		pr.rotation.y = rot_y
@@ -545,6 +545,12 @@ static func label(parent: Node, text: String, pos: Vector3, size: = 64, col: = C
 	l.double_sided = false
 	parent.add_child(l)
 	return l
+
+## Regra "nada de bolas e quadrados": se o modelo real baixado existe, ele vale mais que o construído por código (P). `--proc` força P.
+static func _real_exists(n: String) -> bool:
+	if Core.proc_props:
+		return false
+	return ResourceLoader.exists("res://assets/models/%s/%s.gltf" % [n, n])
 
 static func has_model(n: String) -> bool:
 	if Toon.enabled() and P.has(n):

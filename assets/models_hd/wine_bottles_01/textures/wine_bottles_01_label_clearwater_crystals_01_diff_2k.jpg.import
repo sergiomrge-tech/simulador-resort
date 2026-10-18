@@ -3,19 +3,20 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://b01573txmupyk"
-path="res://.godot/imported/wine_bottles_01_label_clearwater_crystals_01_diff_2k.jpg-4fe3bb7169243af3de4d4f15413d7147.ctex"
+path.s3tc="res://.godot/imported/wine_bottles_01_label_clearwater_crystals_01_diff_2k.jpg-4fe3bb7169243af3de4d4f15413d7147.s3tc.ctex"
 metadata={
-"vram_texture": false
+"imported_formats": ["s3tc_bptc"],
+"vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/models_hd/wine_bottles_01/textures/wine_bottles_01_label_clearwater_crystals_01_diff_2k.jpg"
-dest_files=["res://.godot/imported/wine_bottles_01_label_clearwater_crystals_01_diff_2k.jpg-4fe3bb7169243af3de4d4f15413d7147.ctex"]
+dest_files=["res://.godot/imported/wine_bottles_01_label_clearwater_crystals_01_diff_2k.jpg-4fe3bb7169243af3de4d4f15413d7147.s3tc.ctex"]
 
 [params]
 
-compress/mode=0
+compress/mode=2
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0
@@ -23,7 +24,7 @@ compress/rdo_quality_loss=0.0
 compress/hdr_compression=1
 compress/normal_map=0
 compress/channel_pack=0
-mipmaps/generate=false
+mipmaps/generate=true
 mipmaps/limit=-1
 roughness/mode=0
 roughness/src_normal=""

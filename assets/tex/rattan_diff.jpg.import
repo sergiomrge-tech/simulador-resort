@@ -3,19 +3,20 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://c836kc418wq84"
-path="res://.godot/imported/rattan_diff.jpg-99c50c37c54b52bd4e1f93ca5b8d185c.ctex"
+path.s3tc="res://.godot/imported/rattan_diff.jpg-99c50c37c54b52bd4e1f93ca5b8d185c.s3tc.ctex"
 metadata={
-"vram_texture": false
+"imported_formats": ["s3tc_bptc"],
+"vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/tex/rattan_diff.jpg"
-dest_files=["res://.godot/imported/rattan_diff.jpg-99c50c37c54b52bd4e1f93ca5b8d185c.ctex"]
+dest_files=["res://.godot/imported/rattan_diff.jpg-99c50c37c54b52bd4e1f93ca5b8d185c.s3tc.ctex"]
 
 [params]
 
-compress/mode=0
+compress/mode=2
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0
@@ -23,7 +24,7 @@ compress/rdo_quality_loss=0.0
 compress/hdr_compression=1
 compress/normal_map=0
 compress/channel_pack=0
-mipmaps/generate=false
+mipmaps/generate=true
 mipmaps/limit=-1
 roughness/mode=0
 roughness/src_normal=""

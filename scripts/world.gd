@@ -1007,9 +1007,8 @@ func _bar() -> void :
 	B.model(self, "lambis_shell", c + Vector3(-2.0, y0 + ch + 0.07, 1.2), 0.3, 1.0)
 	B.model(self, "wooden_bucket_01", c + Vector3(-2.0, y0 + ch + 0.07, -1.0), 0.0, 0.6)
 
-	var coco: = B.flat(Color(0.4, 0.5, 0.15), 0.6)
 	for k in 3:
-		B.sphere(self, 0.12, c + Vector3(-0.6 + k * 0.3, y0 + ch + 0.17, -2.0), coco)
+		Real.place(self, "k:coconut", c + Vector3(-0.6 + k * 0.3, y0 + ch + 0.08, -2.0), 0.24, k * 2.1)
 
 	var stools: = [Vector3(-3.0, 0, -0.9), Vector3(-3.0, 0, 0.9), Vector3(-0.9, 0, -3.0), Vector3(0.9, 0, -3.0), Vector3(-0.9, 0, 3.0), Vector3(0.9, 0, 3.0)]
 	for s in stools:
@@ -1158,12 +1157,11 @@ func _shore_details() -> void :
 		var x: = rng.randf_range(-38.0, 40.0)
 		var z: = rng.randf_range(-31.2, -27.2)
 		var s: = rng.randf_range(0.12, 0.28)
-		B.sphere(self, s, Vector3(x, _height(x, z) + s * 0.35, z), rock, Vector3(1.3, 0.7, 1.1))
+		var rk: String = ["rock_07", "rock_09", "k:rock_smallA", "k:rock_smallB"][i % 4]
+		Real.place(self, rk, Vector3(x, _height(x, z) - 0.03, z), 0.0, rng.randf() * TAU, Color.WHITE, s * 3.4)
 	for i in 4:
 		var x2: = -32.0 + float(i) * 16.0
-		var log: = B.cyl(self, 0.08, 0.11, rng.randf_range(1.6, 2.6), Vector3(x2, _height(x2, -28.5) + 0.08, -28.5 + float(i) * 0.4), M.post, 8)
-		log.rotation.z = PI * 0.5
-		log.rotation.y = rng.randf_range(-0.4, 0.4)
+		Real.place(self, "k:log_large", Vector3(x2, _height(x2, -28.5) - 0.02, -28.5 + float(i) * 0.4), 0.0, rng.randf_range(-0.4, 0.4), Color(0.85, 0.75, 0.65), rng.randf_range(1.6, 2.6))
 	var shrubs: = ["shrub_01", "shrub_02", "shrub_03"]
 	for i in 7:
 		var x3: = rng.randf_range(-40.0, 40.0)

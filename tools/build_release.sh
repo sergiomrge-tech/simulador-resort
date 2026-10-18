@@ -13,7 +13,9 @@ echo "-- 1/6 assets"
 python3 tools/fetch_assets.py
 
 echo "-- 2/6 importar"
-timeout 900 "$GODOT" --headless --path . --import >/dev/null 2>&1 || true
+timeout 1800 "$GODOT" --headless --path . --import >/dev/null 2>&1 || true
+python3 tools/vram_textures.py
+timeout 3600 "$GODOT" --headless --path . --import >/dev/null 2>&1 || true
 
 echo "-- 3/6 conferir arquivos que o jogo precisa"
 faltando=0

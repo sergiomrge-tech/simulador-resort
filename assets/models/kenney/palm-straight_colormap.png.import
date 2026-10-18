@@ -3,9 +3,10 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://b027ukv2ikrq1"
-path="res://.godot/imported/palm-straight_colormap.png-b05ae4579f11f95275e8a4979dc8f4e6.ctex"
+path.s3tc="res://.godot/imported/palm-straight_colormap.png-b05ae4579f11f95275e8a4979dc8f4e6.s3tc.ctex"
 metadata={
-"vram_texture": false
+"imported_formats": ["s3tc_bptc"],
+"vram_texture": true
 }
 generator_parameters={
 "md5": "510d4719db6ba3084b8f399a5506ecc3"
@@ -14,11 +15,11 @@ generator_parameters={
 [deps]
 
 source_file="res://assets/models/kenney/palm-straight_colormap.png"
-dest_files=["res://.godot/imported/palm-straight_colormap.png-b05ae4579f11f95275e8a4979dc8f4e6.ctex"]
+dest_files=["res://.godot/imported/palm-straight_colormap.png-b05ae4579f11f95275e8a4979dc8f4e6.s3tc.ctex"]
 
 [params]
 
-compress/mode=0
+compress/mode=2
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0
