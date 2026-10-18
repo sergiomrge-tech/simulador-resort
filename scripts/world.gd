@@ -946,12 +946,16 @@ func _drop_bungalow(i: int) -> void :
 func _birds_spawn() -> void :
 	var mat: = B.flat(Color(0.12, 0.12, 0.14))
 	for i in 5:
-		var mi: = MeshInstance3D.new()
-		var qm: = QuadMesh.new()
-		qm.size = Vector2(0.62, 0.14)
-		mi.mesh = qm
-		mi.material_override = mat
+		var mi: = Node3D.new()
 		add_child(mi)
+		# gaivota modelada no Blender (asas em arco, bico, cauda); sem o modelo, cai no traço preto antigo
+		if Real.place(mi, "g:seagull_fly", Vector3.ZERO, -1.8, 0.0, Color.WHITE, 0.0, true) == null:
+			var qmi: = MeshInstance3D.new()
+			var qm: = QuadMesh.new()
+			qm.size = Vector2(0.62, 0.14)
+			qmi.mesh = qm
+			qmi.material_override = mat
+			mi.add_child(qmi)
 		_birds.append({"n": mi, "a": float(i) * 1.2, "r": 7.0 + float(i) * 1.6, "y": 8.5 + float(i) * 0.35, "cx": -4.0 + float(i) * 3.0, "cz": -8.0})
 
 func _weather_fx() -> void :
@@ -992,12 +996,13 @@ func _on_weather(kind: String) -> void :
 func _process(delta: float) -> void :
 	var t: = Time.get_ticks_msec() * 0.001
 	for b in _birds:
-		var n: MeshInstance3D = b.n
+		var n: Node3D = b.n
 		if not is_instance_valid(n):
 			continue
 		var a: float = t * 0.32 + float(b.a)
 		n.position = Vector3(float(b.cx) + cos(a) * float(b.r), float(b.y) + sin(a * 2.0) * 0.35, float(b.cz) + sin(a) * float(b.r) * 0.55)
 		n.rotation.y = - a
+		n.rotation.z = sin(t * 2.4 + float(b.a)) * 0.14   # inclina as asas ao planar
 	for rn in room_nodes:
 		var fan: Node3D = rn.get("fan")
 		if fan and is_instance_valid(fan) and fan.visible:
@@ -1193,8 +1198,7 @@ func _shore_details() -> void :
 	for spot in [Vector3(-42, 0, -16), Vector3(44, 0, -15), Vector3(-38, 0, 6)]:
 		B.model(self, "island_tree_01", Vector3(spot.x, _height(spot.x, spot.z), spot.z), spot.x * 0.1, 0.9)
 
-	var ball: = B.sphere(self, 0.16, Vector3(8.5, 0.16, -20.5), B.flat(Color(0.95, 0.35, 0.25), 0.4))
-	ball.scale = Vector3(1.0, 1.0, 1.0)
+	Real.place(self, "g:beach_ball", Vector3(8.5, 0.0, -20.5), 0.32, 0.5)
 	B.box(self, Vector3(0.7, 0.025, 1.3), Vector3(18.0, 0.02, -23.5), M.linen_sand)
 
 func _palms() -> void :
@@ -2075,10 +2079,7 @@ func _pool_details() -> void :
 				var tw: = mi.create_tween().set_loops()
 				tw.tween_property(mi, "position:y", -0.04, 1.6).set_trans(Tween.TRANS_SINE)
 				tw.tween_property(mi, "position:y", -0.12, 1.6).set_trans(Tween.TRANS_SINE), CONNECT_ONE_SHOT)
-	var ball: = B.sphere(self, 0.22, Vector3(0.8, -0.08, 6.6), B.flat(Color(1, 1, 1), 0.4))
-	for k in 3:
-		var stripe: = B.sphere(ball, 0.222, Vector3.ZERO, B.flat([Color(1.0, 0.3, 0.3), Color(0.2, 0.6, 1.0), Color(1.0, 0.85, 0.2)][k], 0.4), Vector3(0.35, 1.0, 1.0))
-		stripe.rotation.y = k * PI / 3.0
+	Real.place(self, "g:beach_ball", Vector3(0.8, -0.3, 6.6), 0.44, 0.9)   # bola de praia boiando na piscina
 	# luzes da piscina nas paredes
 	for k in 4:
 		var lx: = lerpf(POOL_MIN.x + 1.5, POOL_MAX.x - 1.5, k / 3.0)
@@ -2108,8 +2109,7 @@ func _reception_details() -> void :
 	# floreiras sob as janelas da frente
 	for sx in [-3.2, 3.2]:
 		B.box(self, Vector3(1.7, 0.25, 0.32), Vector3(sx, y0 + 0.95, 19.78), M.planks)
-		for k in 6:
-			B.sphere(self, 0.1, Vector3(sx - 0.65 + k * 0.26, y0 + 1.15, 19.78), B.flat(D.FLAG_COLS[k % D.FLAG_COLS.size()], 0.7))
+		Real.place(self, "g:flowerbed", Vector3(sx, y0 + 1.075, 19.78), -0.8, 0.0, Color.WHITE, 0.0, false)
 	# placa pendurada da pousada
 	var sp: = Vector3(3.6, 0, 21.4)
 	B.cyl(self, 0.07, 0.08, 3.2, sp + Vector3(0, 1.6, 0), M.post, 10)

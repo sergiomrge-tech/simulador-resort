@@ -274,7 +274,8 @@ static func volley_net(parent: Node, c: Vector3, rot: float) -> void :
 		B.box(piv, Vector3(8.0, 0.08, 0.02), Vector3(0, 2.4, 0), m(Color(0.95, 0.95, 0.95)))
 		var net: = B.box(piv, Vector3(8.0, 0.8, 0.01), Vector3(0, 1.98, 0), m(Color(0.15, 0.15, 0.18, 0.55)))
 		net.name = "Net"
-	B.sphere(piv, 0.11, Vector3(1.2, 0.11, 2.0), m(Color(1.0, 0.9, 0.3), 0.5))
+	if Real.place(piv, "g:volleyball", Vector3(1.2, 0.0, 2.0), 0.22, 0.0) == null:
+		B.sphere(piv, 0.11, Vector3(1.2, 0.11, 2.0), m(Color(1.0, 0.9, 0.3), 0.5))
 	# linhas da quadra na areia
 	for sz in [-4.0, 4.0]:
 		B.box(piv, Vector3(8.0, 0.01, 0.06), Vector3(0, 0.012, sz), m(Color(0.25, 0.55, 0.95)))

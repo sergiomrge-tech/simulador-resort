@@ -552,7 +552,8 @@ func _church_and_praca() -> void :
 	B.box(self, Vector3(2.0, 3.6, 0.1), c + Vector3(0, 1.8, - d * 0.5 - 0.06), wood_tint(Color(0.45, 0.25, 0.12)))
 	for sx in [-1.0, 1.0]:
 		_facade(c + Vector3(0, 2.0, 0), Vector3(0, 0, -1), d * 0.5, sx * 2.8, "window", Color(0.2, 0.42, 0.72))
-	B.sphere(self, 0.6, c + Vector3(0, h + 1.6, - d * 0.5 - 0.05), B.flat(Color(0.25, 0.45, 0.75), 0.3), Vector3(1, 1, 0.15))
+	if Real.place(self, "g:rose_window", c + Vector3(0, h + 1.6 - 0.64, - d * 0.5 - 0.05), -1.0, 0.0, Color.WHITE, 0.0, false) == null:
+		B.sphere(self, 0.6, c + Vector3(0, h + 1.6, - d * 0.5 - 0.05), B.flat(Color(0.25, 0.45, 0.75), 0.3), Vector3(1, 1, 0.15))
 
 	var tc: = c + Vector3(w * 0.5 + 1.6, 0, - d * 0.5 + 1.6)
 	B.box(self, Vector3(3.2, 13.0, 3.2), tc + Vector3(0, 6.5, 0), white, true)
@@ -726,7 +727,9 @@ func _kiosk_grill(c: Vector3, y0: float) -> void :
 	var pan: = B.cyl(self, 0.18, 0.15, 0.06, c + Vector3(1.1, y0 + 0.86, -1.2), B.flat(Color(0.15, 0.15, 0.17), 0.4), 14)
 	pan.name = "Pan"
 	for k in 3:
-		B.sphere(self, 0.06, c + Vector3(1.04 + k * 0.06, y0 + 0.9, -1.2), B.flat(Color(0.95, 0.65, 0.25)), Vector3(1.6, 0.6, 1.0))
+		# coxinhas douradas na chapa (modelo do Blender)
+		if Real.place(self, "g:coxinha", Vector3(1.0 + k * 0.075, 0.0, -1.2) + c + Vector3(0, y0 + 0.89, 0), -1.0, 0.5 + k, Color.WHITE, 0.0, true) == null:
+			B.sphere(self, 0.06, c + Vector3(1.04 + k * 0.06, y0 + 0.9, -1.2), B.flat(Color(0.95, 0.65, 0.25)), Vector3(1.6, 0.6, 1.0))
 	_petisco_plate(self, c + Vector3(-1.2, y0 + 1.2, 2.22))
 	var smoke: = GPUParticles3D.new()
 	var pm: = ParticleProcessMaterial.new()
@@ -1622,8 +1625,7 @@ func _landmark_details() -> void :
 	var pip: = pc + Vector3(-6.0, 0, 2.9)
 	B.box(self, Vector3(1.0, 0.9, 0.7), pip + Vector3(0, 0.75, 0), B.flat(Color(0.95, 0.25, 0.25), 0.5))
 	B.box(self, Vector3(0.8, 0.6, 0.6), pip + Vector3(0, 1.5, 0), B.flat(Color(0.85, 0.95, 1.0, 0.6), 0.1))
-	for k in 14:
-		B.sphere(self, 0.06, pip + Vector3(-0.3 + (k % 5) * 0.15, 1.28 + (k / 5) * 0.08, -0.15 + (k % 3) * 0.12), B.flat(Color(1.0, 0.97, 0.85), 0.9))
+	Real.place(self, "g:popcorn", pip + Vector3(0, 1.26, 0), -1.0, 0.0, Color.WHITE, 0.0, true)
 	for sx in [-0.4, 0.4]:
 		var wh: = B.cyl(self, 0.22, 0.22, 0.05, pip + Vector3(sx, 0.22, 0.38), B.flat(Color(0.2, 0.2, 0.22), 0.6), 16)
 		wh.rotation.x = PI * 0.5
@@ -1640,9 +1642,9 @@ func _landmark_details() -> void :
 		bird.position = bp
 		bird.rotation.y = rng.randf() * TAU
 		add_child(bird)
-		B.sphere(bird, 0.09, Vector3(0, 0.09, 0), B.flat(Color(0.6, 0.62, 0.7), 0.7), Vector3(0.8, 0.8, 1.3))
-		B.sphere(bird, 0.05, Vector3(0, 0.18, 0.09), B.flat(Color(0.45, 0.5, 0.6), 0.7))
-		B.cyl(bird, 0.0, 0.015, 0.04, Vector3(0, 0.18, 0.15), B.flat(Color(1.0, 0.65, 0.2), 0.5), 6).rotation.x = PI * 0.5
+		if Real.place(bird, "g:seagull_perch", Vector3.ZERO, -0.9, 0.0, Color.WHITE, 0.0, true) == null:
+			B.sphere(bird, 0.09, Vector3(0, 0.09, 0), B.flat(Color(0.6, 0.62, 0.7), 0.7), Vector3(0.8, 0.8, 1.3))
+			B.sphere(bird, 0.05, Vector3(0, 0.18, 0.09), B.flat(Color(0.45, 0.5, 0.6), 0.7))
 	# píer: postes com lanternas, caixotes e rolos de corda, barquinho amarrado
 	var wood: = wood_tint(Color(0.45, 0.3, 0.2))
 	for k in 4:

@@ -993,9 +993,236 @@ def flowerbed():
     join(objs, "canteiro")
     export("flowerbed")
 
+# ---------------------------------------------------------------- bolas de verdade (praia, vôlei), gaivota, salgado, pipoca, rosácea
+def _ball(name, colors, seams, radius=0.5, volley=False):
+    """Bola gomada: esfera de 64x32 com painéis coloridos por material (gomos de praia ou faixas de vôlei) e costuras fundas. Raio 0,5 (ajuste a escala na engine)."""
+    import mathutils
+    fresh()
+    mats = [mat("p%d" % i, c, 0.45) for i, c in enumerate(colors)]
+    bpy.ops.mesh.primitive_uv_sphere_add(radius=radius, segments=72, ring_count=36, location=(0, 0, radius))
+    ob = bpy.context.active_object
+    me = ob.data
+    for m in mats:
+        me.materials.append(m)
+    n = len(colors)
+    for poly in me.polygons:
+        c = sum((me.vertices[i].co for i in poly.vertices), mathutils.Vector()) / len(poly.vertices)
+        lon = math.atan2(c.y, c.x) % (2 * math.pi)
+        lat = math.asin(max(-1, min(1, c.z / max(c.length, 1e-6))))
+        if volley:
+            idx = int(math.floor(lon * 6 / (2 * math.pi) * 3 + lat * 1.2)) % 3
+            poly.material_index = idx % n
+        else:
+            if abs(lat) > math.radians(72):
+                poly.material_index = 1 % n
+            else:
+                poly.material_index = int(lon / (2 * math.pi) * seams) % n
+    # costuras: afunda os vértices perto das fronteiras dos gomos
+    for v in me.vertices:
+        lon = math.atan2(v.co.y, v.co.x) % (2 * math.pi)
+        f = (lon / (2 * math.pi) * (seams if not volley else 18)) % 1.0
+        d = min(f, 1 - f)
+        if d < 0.04 and abs(v.co.z - radius) < radius * 0.96:
+            v.co = v.co * 0.992
+    bpy.ops.object.shade_smooth()
+    parts = [ob]
+    metal = mat("valvula", (0.9, 0.9, 0.92), 0.4)
+    parts.append(lathe([(0.0, 0.0), (0.03, 0.0), (0.03, 0.012), (0.0, 0.012)], metal, loc=(0, 0, 2 * radius - 0.006), verts=16))
+    join(parts, name)
+    export(name)
+
+def beach_ball():
+    _ball("beach_ball", [(0.95, 0.25, 0.2), (0.98, 0.98, 0.96), (0.15, 0.5, 0.95), (0.98, 0.98, 0.96), (1.0, 0.82, 0.15), (0.98, 0.98, 0.96)], 6)
+
+def volleyball():
+    _ball("volleyball", [(1.0, 0.88, 0.2), (0.98, 0.98, 0.95), (0.15, 0.4, 0.85)], 18, volley=True)
+
+def seagull(name, flying):
+    """Gaivota: corpo torneado (peito cheio, cauda afilada), cabeça com bico amarelo e pinta vermelha, olhos, asas de 0,9 m em arco (ponta preta)
+    ou dobradas no corpo (pousada, com pernas laranja). Cabeça para +Z do glTF (-Y do Blender)."""
+    import mathutils
+    V = mathutils.Vector
+    fresh()
+    white = mat("branco", (0.97, 0.97, 0.96), 0.8)
+    gray = mat("cinza", (0.62, 0.66, 0.72), 0.8)
+    black = mat("preto", (0.08, 0.08, 0.1), 0.7)
+    yellow = mat("bico", (1.0, 0.75, 0.1), 0.5)
+    red = mat("pinta", (0.9, 0.15, 0.1), 0.5)
+    orange = mat("pernas", (1.0, 0.55, 0.15), 0.6)
+    parts = []
+    # corpo (eixo Z do lathe -> -Y do Blender depois de girar)
+    body = lathe([(0.0, -0.33), (0.012, -0.3), (0.04, -0.2), (0.075, -0.08), (0.095, 0.03), (0.088, 0.12), (0.06, 0.19), (0.0, 0.215)], white, verts=28)
+    head = lathe([(0.0, 0.14), (0.04, 0.16), (0.05, 0.2), (0.046, 0.25), (0.03, 0.285), (0.0, 0.295)], white, verts=24)
+    beak = lathe([(0.0, 0.27), (0.022, 0.27), (0.016, 0.31), (0.0, 0.345)], yellow, verts=14)
+    dot = lathe([(0.0, 0.318), (0.011, 0.318), (0.0, 0.33)], red, verts=10)
+    dot.location.x = 0.0
+    for o in (body, head, beak, dot):
+        o.rotation_euler = (math.radians(90), 0, 0)
+        o.rotation_euler = (math.radians(-90), 0, 0)
+    objs = [body, head, beak, dot]
+    # após girar -90 em X: +Z do lathe vira +Y; queremos a frente em -Y -> gira 180 em Z
+    for sx in (-1, 1):
+        bpy.ops.mesh.primitive_uv_sphere_add(radius=0.009, segments=10, ring_count=6, location=(sx * 0.038, 0.225, 0.03))
+        e = bpy.context.active_object
+        e.data.materials.append(black)
+        objs.append(e)
+    # cauda: leque de penas
+    bm = bmesh.new()
+    uvl = bm.loops.layers.uv.new("UVMap")
+    for k in range(5):
+        a = (k - 2) * math.radians(9)
+        M = mathutils.Matrix.Translation(V((0, 0.2, 0.01))) @ mathutils.Matrix.Rotation(a, 4, "Z") @ mathutils.Matrix.Rotation(math.radians(-90), 4, "Z")
+        # pena: patch ao longo de +Y local; gira para apontar para +Y do corpo (cauda)
+        M = mathutils.Matrix.Translation(V((0, 0.2, 0.0))) @ mathutils.Matrix.Rotation(-a, 4, "Z")
+        _patch(bm, M, 0.16, 0.05, 0.1, 0.0, 0.0, 4, 2, 0, uvl)
+    # asas
+    def wing(sx):
+        rows = []
+        nu, nv = 10, 4
+        span = 0.46 if flying else 0.2
+        for i in range(nu + 1):
+            u = i / nu
+            chord = 0.17 * (1 - 0.45 * u) if flying else 0.22 * (1 - 0.5 * u)
+            for_row = []
+            for j in range(nv + 1):
+                v = j / nv
+                if flying:
+                    x = sx * (0.07 + u * span)
+                    zc = 0.05 + 0.1 * math.sin(u * math.pi * 0.9) - 0.06 * u * u    # arco em M
+                    y = -0.02 + (0.5 - v) * chord + 0.2 * u * u * 0.5 + 0.07 * u
+                    z = zc - 0.01 * v
+                else:
+                    x = sx * (0.085 + 0.012 * math.sin(u * 3))
+                    z = 0.0 - 0.03 * u + 0.05 * (1 - v) * 0.2 + 0.05
+                    y = 0.02 + u * 0.3 - v * 0.0
+                    y = -0.05 + u * 0.33
+                    x = sx * (0.09 + 0.02 * (v - 0.5) * 2 * 0.5)
+                    z = 0.03 + (0.5 - v) * 0.1 - 0.015 * u
+                for_row.append(bm.verts.new((x, y, z)))
+            rows.append(for_row)
+        for i in range(nu):
+            for j in range(nv):
+                f = bm.faces.new((rows[i][j], rows[i][j + 1], rows[i + 1][j + 1], rows[i + 1][j]))
+                f.material_index = 2 if (i >= nu - 2) else 1
+                for lp in f.loops:
+                    lp[uvl].uv = (0, 0)
+    wing(-1)
+    wing(1)
+    me = bpy.data.meshes.new("asas")
+    bm.to_mesh(me)
+    bm.free()
+    wo = bpy.data.objects.new("asas", me)
+    bpy.context.scene.collection.objects.link(wo)
+    for m in (white, gray, black):
+        me.materials.append(m)
+    bpy.context.view_layer.objects.active = wo
+    so = wo.modifiers.new("sol", "SOLIDIFY")
+    so.thickness = 0.008
+    bpy.ops.object.modifier_apply(modifier=so.name)
+    bpy.ops.object.shade_smooth()
+    objs.append(wo)
+    if not flying:
+        for sx in (-1, 1):
+            objs.append(tube((sx * 0.03, 0.0, -0.01), (sx * 0.03, 0.01, -0.12), 0.006, orange, verts=8))
+            objs.append(tube((sx * 0.03, 0.01, -0.12), (sx * 0.03, -0.04, -0.125), 0.005, orange, verts=8))
+    o = join(objs, name)
+    # a frente (bico) está em +Y: gira 180 em Z para ficar em -Y (glTF +Z)
+    o.rotation_euler = (0, 0, math.pi)
+    bpy.context.view_layer.objects.active = o
+    o.select_set(True)
+    bpy.ops.object.transform_apply(rotation=True)
+    o.select_set(False)
+    if not flying:
+        _drop_to_zero(o)
+    export(name)
+
+def coxinha():
+    """Coxinha de frango: gota dourada (corpo largo e ponta torcida), com crosta irregular. Deitada, 9 cm."""
+    fresh()
+    gold = mat("crosta", (0.88, 0.58, 0.18), 0.55)
+    prof = [(0.0, 0.0), (0.018, 0.002), (0.034, 0.012), (0.044, 0.03), (0.046, 0.05), (0.04, 0.07), (0.03, 0.088), (0.02, 0.102), (0.012, 0.114), (0.006, 0.122), (0.0, 0.126)]
+    ob = lathe(prof, gold, verts=36)
+    bpy.context.view_layer.objects.active = ob
+    ob.select_set(True)
+    sm = ob.modifiers.new("sub", "SUBSURF")
+    sm.levels = 2
+    bpy.ops.object.modifier_apply(modifier=sm.name)
+    tex_ = bpy.data.textures.new("crosta", "CLOUDS")
+    tex_.noise_scale = 0.03
+    d = ob.modifiers.new("dis", "DISPLACE")
+    d.texture = tex_
+    d.strength = 0.006
+    bpy.ops.object.modifier_apply(modifier=d.name)
+    bpy.ops.object.shade_smooth()
+    ob.rotation_euler = (math.radians(90), 0, 0)
+    bpy.ops.object.transform_apply(rotation=True)
+    _drop_to_zero(ob)
+    export("coxinha")
+
+def popcorn():
+    """Monte de pipoca (38 grãos irregulares) de 0,5 m para a carrocinha. Base em z=0."""
+    fresh()
+    rnd = random.Random(8)
+    cream = mat("pipoca", (1.0, 0.96, 0.8), 0.8)
+    gold = mat("casca", (0.95, 0.75, 0.25), 0.7)
+    tex_ = bpy.data.textures.new("lumps", "CLOUDS")
+    tex_.noise_scale = 0.35
+    objs = []
+    for k in range(38):
+        r = 0.2 * math.sqrt(rnd.random())
+        a = rnd.random() * 2 * math.pi
+        x, y = math.cos(a) * r, math.sin(a) * r * 0.6
+        z = 0.03 + 0.07 * (1 - r / 0.2) + rnd.random() * 0.02
+        bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=3, radius=0.028 * rnd.uniform(0.85, 1.25), location=(x, y, z), rotation=(rnd.random() * 3, rnd.random() * 3, rnd.random() * 3))
+        o = bpy.context.active_object
+        o.scale = (1, rnd.uniform(0.8, 1.1), rnd.uniform(0.75, 1.0))
+        dd = o.modifiers.new("d", "DISPLACE")
+        dd.texture = tex_
+        dd.strength = 0.03
+        bpy.ops.object.modifier_apply(modifier=dd.name)
+        bpy.ops.object.shade_smooth()
+        o.data.materials.append(cream if k % 5 else gold)
+        objs.append(o)
+    join(objs, "pipoca")
+    export("popcorn")
+
+def rose_window():
+    """Rosácea de igreja de 1,2 m: aro de pedra, 8 raios, vitral azul com pétalas coloridas e miolo. Simétrica nos dois lados; eixo = Y do Blender (Z do glTF). Centro em z = 0,64."""
+    fresh()
+    stone = mat("pedra", (0.85, 0.83, 0.78), 0.85, tex("light_stone_diff.jpg"))
+    glass = mat("vitral", (0.2, 0.42, 0.8), 0.25)
+    cols = [mat("v%d" % i, c, 0.25) for i, c in enumerate([(0.9, 0.2, 0.2), (0.98, 0.8, 0.15), (0.2, 0.7, 0.4), (0.7, 0.3, 0.8)])]
+    parts = []
+    Zc = 0.64
+    bpy.ops.mesh.primitive_torus_add(major_radius=0.58, minor_radius=0.045, major_segments=64, minor_segments=14, location=(0, 0, Zc), rotation=(math.radians(90), 0, 0))
+    t = bpy.context.active_object
+    bpy.ops.object.shade_smooth()
+    t.data.materials.append(stone)
+    parts.append(t)
+    parts.append(lathe([(0.0, -0.012), (0.55, -0.012), (0.55, 0.012), (0.0, 0.012)], glass, loc=(0, 0, Zc), verts=64))
+    parts[-1].rotation_euler = (math.radians(90), 0, 0)
+    for k in range(8):
+        a = k * math.pi / 4
+        parts.append(tube((0, 0, Zc), (math.cos(a) * 0.56, 0, Zc + math.sin(a) * 0.56), 0.016, stone, verts=10))
+        b = a + math.pi / 8
+        bpy.ops.mesh.primitive_uv_sphere_add(radius=0.1, segments=20, ring_count=10, location=(math.cos(b) * 0.33, 0, Zc + math.sin(b) * 0.33))
+        pe = bpy.context.active_object
+        pe.scale = (1.0, 0.12, 1.5)
+        pe.rotation_euler = (0, -b + math.pi / 2, 0)
+        bpy.ops.object.shade_smooth()
+        pe.data.materials.append(cols[k % 4])
+        parts.append(pe)
+    bpy.ops.mesh.primitive_torus_add(major_radius=0.15, minor_radius=0.025, major_segments=36, minor_segments=10, location=(0, 0, Zc), rotation=(math.radians(90), 0, 0))
+    t2 = bpy.context.active_object
+    bpy.ops.object.shade_smooth()
+    t2.data.materials.append(stone)
+    parts.append(t2)
+    join(parts, "rosacea")
+    export("rose_window")
+
 ALL = {"tiki_torch": tiki_torch, "signpost_post": signpost_post, "sign_arrow": sign_arrow, "open_sign": open_sign,
        "volley_net": volley_net, "power_pole": power_pole, "mailbox": mailbox, "starfish": starfish, "ceiling_fan": ceiling_fan,
-       "lighthouse": lighthouse, "pier_segment": pier_segment, "pier_end": pier_end, "boat_mast": boat_mast, "jangada": jangada, "hanging_planter": hanging_planter, "flowerbed": flowerbed,
+       "lighthouse": lighthouse, "pier_segment": pier_segment, "pier_end": pier_end, "boat_mast": boat_mast, "jangada": jangada, "beach_ball": beach_ball, "volleyball": volleyball, "seagull_fly": lambda: seagull("seagull_fly", True), "seagull_perch": lambda: seagull("seagull_perch", False), "coxinha": coxinha, "popcorn": popcorn, "rose_window": rose_window, "hanging_planter": hanging_planter, "flowerbed": flowerbed,
        **{"bloom_" + k: (lambda k=k, v=v: bloom_clump(k, v)) for k, v in BLOOM_COLORS.items()},
        **{"bike_" + k: (lambda k=k, v=v: bike(k, v)) for k, v in BIKE_COLORS.items()}}
 if __name__ == "__main__":

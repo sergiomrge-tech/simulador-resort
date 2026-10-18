@@ -77,6 +77,7 @@ Base de trabalho: v0.6.5 recuperada; versões atuais em `project.godot` / `expor
 - `tools/gen_code_props.py` (bpy) gera tocha, poste/seta de direção, placa ABERTO, rede de vôlei, poste de luz, caixa de correio, estrela-do-mar, ventilador, farol, píer (`pier_segment` 3 m + `pier_end`), bicicletas por cor, jangada e mastro/vela. Rode `python3 tools/gen_code_props.py [nome]`, depois `godot --import` + `vram_textures.py`.
 - **Eixos:** Blender +Y vira Godot -Z; frente do modelo = -Y do Blender. Use `Real.place(parent, "g:nome", pos, -1.0, rot, tint, 0.0, false)` (escala 1, origem mantida em XZ, base do modelo em y=0).
 - Redes/telas finas: barras reais, não modificador Wireframe (some no render). `godot` fica em `/home/claude/godot/godot` (não está no PATH).
+- Também em Blender: buganvília (`bloom_<cor>`), hera pendurada, canteiro florido, bolas de praia/vôlei, gaivotas (`seagull_fly`/`seagull_perch`), coxinha, pipoca e rosácea. A "árvore de bolas" (`island_tree_01`) agora usa `q:CommonTree_N` (Quaternius) em `B.model`.
 - O código antigo continua como fallback quando o .glb não existe.
 
 ## 🧪 Sala da Conferência — antes de entregar
