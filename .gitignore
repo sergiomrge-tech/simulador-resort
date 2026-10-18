@@ -40,3 +40,4 @@ Thumbs.db
 __pycache__/
 .autoconverted/
 assets/models/**/textures/
+export_presets.cfg.bak
