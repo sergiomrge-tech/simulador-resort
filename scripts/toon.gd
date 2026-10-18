@@ -62,6 +62,9 @@ static func pattern(kind: String) -> Texture2D:
 		return null
 	if _patterns.has(kind):
 		return _patterns[kind]
+	if RICH.has(kind):
+		_make_rich(kind)
+		return _patterns[kind]
 	var s: = 128
 	var img: = Image.create(s, s, true, Image.FORMAT_L8)
 	var rng: = RandomNumberGenerator.new()
@@ -113,6 +116,138 @@ static func pattern(kind: String) -> Texture2D:
 	_patterns[kind] = tex
 	return tex
 
+
+## Tipos desenhados em 256 px com ruído, relevo e variação por peça (reboco pintado, telha, tábua, piso, pedra).
+const RICH: = ["plaster", "rooftiles", "planks", "tiles", "cobble"]
+const RS: = 256
+
+static func normal_pattern(kind: String) -> Texture2D:
+	if not RICH.has(kind) or kind == "rooftiles":
+		return null
+	pattern(kind)
+	return _patterns.get(kind + "_n")
+
+static func _noise_img(seed_: int, freq: float, octaves: int = 3) -> Image:
+	var n: = FastNoiseLite.new()
+	n.seed = seed_
+	n.noise_type = FastNoiseLite.TYPE_SIMPLEX_SMOOTH
+	n.frequency = freq
+	n.fractal_octaves = octaves
+	return n.get_seamless_image(RS, RS, false, false, 0.15, true)
+
+static func _h2(a: int, b: int) -> float:
+	return float(hash(Vector2i(a, b)) & 0xFFFF) / 65535.0
+
+static func _make_rich(kind: String) -> void :
+	var big: = _noise_img(11 + hash(kind) % 50, 0.012, 3)
+	var mid: = _noise_img(23 + hash(kind) % 50, 0.045, 3)
+	var fine: = _noise_img(37 + hash(kind) % 50, 0.30, 2)
+	var alb: = Image.create(RS, RS, false, Image.FORMAT_L8)
+	var hgt: = Image.create(RS, RS, false, Image.FORMAT_L8)
+	var rng: = RandomNumberGenerator.new()
+	rng.seed = hash(kind)
+	var seeds: = PackedVector2Array()
+	if kind == "cobble":
+		for i in 28:
+			seeds.append(Vector2(rng.randf() * RS, rng.randf() * RS))
+	var knots: = []
+	if kind == "planks":
+		for i in 5:
+			knots.append(Vector3(rng.randf() * RS, rng.randf() * RS, rng.randf_range(5.0, 9.0)))
+	for y in RS:
+		for x in RS:
+			var b: = big.get_pixel(x, y).r
+			var m: = mid.get_pixel(x, y).r
+			var f: = fine.get_pixel(x, y).r
+			var v: = 1.0
+			var h: = 0.5
+			match kind:
+				"plaster":
+					# reboco pintado à mão: manchas largas, pinceladas e grão fino
+					var brush: = sin((float(x) * 0.7 + float(y) * 0.35 + m * 9.0) * 0.5) * 0.5 + 0.5
+					v = 0.90 + b * 0.07 + m * 0.035 + brush * 0.02 + (f - 0.5) * 0.03
+					if b < 0.28:
+						v -= (0.28 - b) * 0.35   # manchas de umidade
+					h = 0.5 + (m - 0.5) * 0.7 + (f - 0.5) * 0.5
+				"rooftiles":
+					# UV do telhado = (largura da telha, fileira): 8 telhas por 8 fileiras em cada textura.
+					# A malha já tem as ondas; aqui entram a cor de cada telha, a sombra sob a fileira de cima e o desgaste.
+					var cw: = 32
+					var row: = y / cw
+					var cx: = float(x % cw) / float(cw)
+					var ty: = float(y % cw) / float(cw)
+					var cell: = _h2(x / cw, row)
+					v = 0.90 + (cell - 0.5) * 0.16 + (m - 0.5) * 0.10 + (b - 0.5) * 0.06
+					v *= 0.80 + 0.20 * smoothstep(0.0, 0.32, ty)
+					if cx < 0.07 or cx > 0.93:
+						v *= 0.84
+					if b < 0.25:
+						v -= 0.06
+					h = 0.5
+				"planks":
+					var ph: = 32
+					var prow: = y / ph
+					var off: = int(_h2(prow, 7) * RS)
+					var py: = float(y % ph)
+					var grain: = (big.get_pixel((x / 5) % RS, (y * 2) % RS).r - 0.5) * 0.10 + sin((float(y) + m * 18.0) * 0.9) * 0.025
+					v = 0.90 + (_h2(prow, 3) - 0.5) * 0.12 + grain + (f - 0.5) * 0.02
+					h = 0.55 + grain
+					if py < 1.6:
+						v = 0.62
+						h = 0.1
+					elif (x + off) % 128 < 2:
+						v = 0.68
+						h = 0.15
+					for k in knots:
+						var kd: = Vector2((float(x) - k.x) * 0.55, float(y) - k.y).length()
+						if kd < k.z:
+							v *= 0.80 + 0.2 * absf(sin(kd * 1.1))
+					if ((x + off) % 128 == 6 or (x + off) % 128 == 122) and (py == 8.0 or py == 24.0):
+						v = 0.45   # prego
+				"tiles":
+					var tw: = 32
+					var tx: = x % tw
+					var ty2: = y % tw
+					var tc: = _h2(x / tw, y / tw)
+					v = 0.95 + (tc - 0.5) * 0.10 + (m - 0.5) * 0.06
+					h = 0.8
+					if tx < 2 or ty2 < 2:
+						v = 0.62
+						h = 0.1
+					elif tx < 4 or ty2 < 4:
+						v *= 0.93
+				"cobble":
+					var d1: = 1e9
+					var d2: = 1e9
+					var id: = 0
+					for i in seeds.size():
+						var sp: = seeds[i]
+						var dx: = absf(float(x) - sp.x)
+						var dy: = absf(float(y) - sp.y)
+						dx = minf(dx, RS - dx)
+						dy = minf(dy, RS - dy)
+						var d: = sqrt(dx * dx + dy * dy)
+						if d < d1:
+							d2 = d1
+							d1 = d
+							id = i
+						elif d < d2:
+							d2 = d
+					var edge: = d2 - d1
+					v = 0.90 + (_h2(id, 5) - 0.5) * 0.16 + (m - 0.5) * 0.06
+					h = clampf(edge / 8.0, 0.0, 1.0)
+					if edge < 2.6:
+						v = 0.58
+			alb.set_pixel(x, y, Color(v, v, v))
+			hgt.set_pixel(x, y, Color(h, h, h))
+	alb.generate_mipmaps()
+	_patterns[kind] = ImageTexture.create_from_image(alb)
+	var nrm: = Image.create_from_data(RS, RS, false, Image.FORMAT_L8, hgt.get_data())
+	nrm.convert(Image.FORMAT_RGBA8)
+	nrm.bump_map_to_normal_map(3.0 if kind != "plaster" else 1.6)
+	nrm.generate_mipmaps()
+	_patterns[kind + "_n"] = ImageTexture.create_from_image(nrm)
+
 static func _base(c: Color, rough: float) -> StandardMaterial3D:
 	var m: = StandardMaterial3D.new()
 	m.albedo_color = c
@@ -141,6 +276,11 @@ static func material(n: String, scale: float, tint: Color, rough: float) -> Stan
 		m.uv1_scale = Vector3.ONE * scale * 0.5
 		m.uv1_triplanar_sharpness = 6.0
 		m.texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS_ANISOTROPIC
+		var ntex: = normal_pattern(pattern_kind(n))
+		if ntex:
+			m.normal_enabled = true
+			m.normal_texture = ntex
+			m.normal_scale = 0.8
 	_mats[key] = m
 	return m
 

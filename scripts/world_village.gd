@@ -56,6 +56,7 @@ func _village_materials() -> void :
 	var clay: = B.mat("clay_roof_tiles_02", 0.55, Color(1, 1, 1), 0.8).duplicate()
 	clay.cull_mode = BaseMaterial3D.CULL_DISABLED
 	VM.clay = clay
+	VM.stone = B.mat("cobblestone_floor_04", 0.8, Color(0.97, 0.92, 0.86), 0.9)
 	VM.trim = B.mat("white_stucco", 0.5, Color(0.97, 0.96, 0.93), 0.85)
 	VM.floor = B.mat("terracotta_floor_tiles", 0.7, Color(1, 1, 1), 0.6)
 	VM.door = B.mat("weathered_planks", 0.9, Color(0.45, 0.28, 0.16), 0.7)
@@ -227,6 +228,13 @@ func _facade(c: Vector3, n: Vector3, half: float, offset: float, kind: String, c
 		for k in 3:
 			B.box(piv, Vector3(0.03, 0.42, 0.05), Vector3(-0.26 + k * 0.26, 2.48, 0.06), VM.trim)
 		B.box(piv, Vector3(1.6, 0.14, 0.5), Vector3(0, 0.07, 0.26), VM.curb)
+		# marquise de telha sobre a porta, com duas mãos-francesas
+		var hood: = B.box(piv, Vector3(1.9, 0.07, 0.78), Vector3(0, 3.12, 0.38), VM.clay)
+		hood.rotation.x = 0.2
+		B.box(piv, Vector3(1.92, 0.05, 0.06), Vector3(0, 3.0, 0.74), VM.trim)
+		for sx in [-1.0, 1.0]:
+			var br: = B.box(piv, Vector3(0.07, 0.07, 0.62), Vector3(sx * 0.78, 2.98, 0.34), dark)
+			br.rotation.x = 0.3
 		# numero da casa e luminária de parede
 		var num: = absi(int(c.x * 3.0 + c.z)) % 300 + 1
 		B.box(piv, Vector3(0.24, 0.18, 0.03), Vector3(-0.9, 1.9, 0.04), B.flat(Color(0.15, 0.4, 0.75), 0.4))
@@ -243,6 +251,12 @@ func _facade(c: Vector3, n: Vector3, half: float, offset: float, kind: String, c
 		B.box(piv, Vector3(1.1, 0.05, 0.06), Vector3(0, 1.9, 0.04), VM.trim)
 		B.box(piv, Vector3(1.62, 0.09, 0.24), Vector3(0, 0.95, 0.08), VM.trim)
 		B.box(piv, Vector3(1.55, 0.12, 0.14), Vector3(0, 2.62, 0.04), VM.trim)
+		# verga com pedra-chave, cimalha e mísulas sob o peitoril
+		B.box(piv, Vector3(1.78, 0.09, 0.2), Vector3(0, 2.74, 0.06), VM.trim)
+		B.box(piv, Vector3(0.26, 0.24, 0.22), Vector3(0, 2.66, 0.07), VM.trim)
+		for sx in [-1.0, 1.0]:
+			B.box(piv, Vector3(0.1, 0.2, 0.16), Vector3(sx * 0.6, 0.82, 0.07), VM.trim)
+			B.box(piv, Vector3(0.08, 0.08, 0.1), Vector3(sx * 0.6, 0.7, 0.06), VM.trim)
 		# venezianas abertas com ripas
 		for sd in [-1.0, 1.0]:
 			var hinge: = Node3D.new()
@@ -315,7 +329,8 @@ func _house(c: Vector3, w: float, d: float, front: float, col: Color, shutter: C
 	var h: = 3.5
 	var body: = B.box(self, Vector3(w, h, d), c + Vector3(0, h * 0.5, 0), stucco(col), true)
 	body.name = "house"
-	B.box(self, Vector3(w + 0.04, 0.7, d + 0.04), c + Vector3(0, 0.35, 0), stucco(col.darkened(0.35)))
+	B.box(self, Vector3(w + 0.06, 0.7, d + 0.06), c + Vector3(0, 0.35, 0), VM.stone)
+	B.box(self, Vector3(w + 0.14, 0.07, d + 0.14), c + Vector3(0, 0.72, 0), VM.trim)
 	B.box(self, Vector3(w + 0.16, 0.28, d + 0.16), c + Vector3(0, h - 0.1, 0), VM.trim)
 	for sx in [-1.0, 1.0]:
 		for sz in [-1.0, 1.0]:

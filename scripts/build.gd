@@ -264,7 +264,7 @@ static func hip_roof(parent: Node, center: Vector3, w: float, d: float, peak: fl
 		_roofs[key] = _detailed_roof_mesh(w, d, peak, thickness, style)
 	var mi: = MeshInstance3D.new()
 	mi.mesh = _roofs[key]
-	mi.material_override = m
+	mi.material_override = _roof_uv_mat(m) if style == "clay" else m
 	mi.position = center
 	parent.add_child(mi)
 	var hx: = w * 0.5
@@ -279,6 +279,19 @@ static func hip_roof(parent: Node, center: Vector3, w: float, d: float, peak: fl
 	for pair in [[Vector3(- hx, 0, - hz), r1], [Vector3(- hx, 0, hz), r1], [Vector3(hx, 0, - hz), r2], [Vector3(hx, 0, hz), r2]]:
 		_beam(mi, pair[0], pair[1] + Vector3(0, 0.02, 0), cap_r * 0.8, cap_m)
 	return mi
+
+## Telhado de telha: a malha traz UV por telha/fileira, então a textura não pode ser triplanar.
+static func _roof_uv_mat(m: Material) -> Material:
+	var key: = "roofuv|%d" % m.get_instance_id()
+	if _mats.has(key):
+		return _mats[key]
+	var r: = m.duplicate() as StandardMaterial3D
+	r.uv1_triplanar = false
+	r.uv1_world_triplanar = false
+	r.uv1_scale = Vector3.ONE
+	r.cull_mode = BaseMaterial3D.CULL_DISABLED
+	_mats[key] = r
+	return r
 
 ## Peça cilíndrica arredondada entre dois pontos (cumeeira, espigão, viga).
 static func _beam(parent: Node, a: Vector3, b: Vector3, r: float, m: Material) -> MeshInstance3D:
@@ -361,9 +374,11 @@ static func _detailed_roof_mesh(w: float, d: float, peak: float, thickness: floa
 		var nu: = clampi(int(L / tile_w * (4.0 if style == "clay" else 1.5)), 6, 220)
 		var nv: = clampi(int(S / course * 3.0), 4, 80)
 		var grid: = []
+		var ugrid: = []
 		for j in nv + 1:
 			var v: = float(j) / nv
 			var row: = []
+			var urow: = []
 			for i in nu + 1:
 				var u: = float(i) / nu
 				var base: = p0.lerp(p1, u).lerp(q0.lerp(q1, u), v)
@@ -379,10 +394,13 @@ static func _detailed_roof_mesh(w: float, d: float, peak: float, thickness: floa
 				# perto da borda e do topo a ondulação some (para fechar com a cumeeira e o beiral)
 				disp *= clampf(v * 12.0, 0.25, 1.0) * clampf((1.0 - v) * 10.0, 0.0, 1.0)
 				row.append(base + n * disp)
+				urow.append(Vector2(along, up_s))
 			grid.append(row)
+			ugrid.append(urow)
 		for j in nv:
 			for i in nu:
 				var q: = [grid[j][i], grid[j][i + 1], grid[j + 1][i + 1], grid[j + 1][i]]
+				var qu: = [ugrid[j][i], ugrid[j][i + 1], ugrid[j + 1][i + 1], ugrid[j + 1][i]]
 				var fn: Vector3 = (q[1] - q[0]).cross(q[3] - q[0])
 				var flip: = fn.dot(n) < 0.0
 				var tris: = [[0, 1, 2], [0, 2, 3]] if not flip else [[0, 2, 1], [0, 3, 2]]
@@ -393,7 +411,7 @@ static func _detailed_roof_mesh(w: float, d: float, peak: float, thickness: floa
 					tn = tn.lerp(n, 0.35).normalized()
 					for k in t:
 						st.set_normal(tn)
-						st.set_uv(Vector2(q[k].x + q[k].z, q[k].y) * 0.55)
+						st.set_uv(Vector2(qu[k].x / (tile_w * 8.0), qu[k].y / (course * 8.0)))
 						st.add_vertex(q[k])
 		# lado de baixo (forro) e a espessura do beiral
 		var u0: = p0 - Vector3(0, thickness, 0)
