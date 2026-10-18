@@ -2748,7 +2748,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1455,
+    "linha": 1457,
     "funcao": "_vegetation"
    }
   ]
@@ -2762,7 +2762,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1548,
+    "linha": 1567,
     "funcao": "_hermite"
    }
   ]
@@ -2776,7 +2776,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1552,
+    "linha": 1571,
     "funcao": "_ridge"
    }
   ]
@@ -2790,7 +2790,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1561,
+    "linha": 1580,
     "funcao": "_mtn_mask"
    }
   ]
@@ -2804,7 +2804,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1569,
+    "linha": 1588,
     "funcao": "_mtn"
    }
   ]
@@ -2818,7 +2818,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1581,
+    "linha": 1600,
     "funcao": "_mtn_material"
    }
   ]
@@ -2832,7 +2832,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1593,
+    "linha": 1612,
     "funcao": "_mtn_build_rect"
    }
   ]
@@ -2846,7 +2846,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1632,
+    "linha": 1651,
     "funcao": "_mtn_up"
    }
   ]
@@ -2860,7 +2860,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1638,
+    "linha": 1657,
     "funcao": "_mtn_corner"
    }
   ]
@@ -2874,7 +2874,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1647,
+    "linha": 1666,
     "funcao": "_mtn_show"
    }
   ]
@@ -2888,7 +2888,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1659,
+    "linha": 1678,
     "funcao": "_sphere_mid"
    }
   ]
@@ -2902,7 +2902,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1670,
+    "linha": 1689,
     "funcao": "_crown_mesh"
    }
   ]
@@ -2916,7 +2916,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1720,
+    "linha": 1739,
     "funcao": "_mtn_slope_y"
    }
   ]
@@ -2930,7 +2930,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1726,
+    "linha": 1745,
     "funcao": "_mtn_push_tree"
    }
   ]
@@ -2944,7 +2944,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1742,
+    "linha": 1761,
     "funcao": "_mtn_trees"
    }
   ]
@@ -2958,7 +2958,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1781,
+    "linha": 1800,
     "funcao": "_mtn_cards"
    }
   ]
@@ -2972,7 +2972,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1804,
+    "linha": 1823,
     "funcao": "_mountains"
    }
   ]
@@ -2986,7 +2986,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1843,
+    "linha": 1862,
     "funcao": "_area"
    }
   ]
@@ -3000,7 +3000,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1858,
+    "linha": 1877,
     "funcao": "_lot_post"
    }
   ]
@@ -3014,7 +3014,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1862,
+    "linha": 1881,
     "funcao": "_lot"
    }
   ]
@@ -3028,7 +3028,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1897,
+    "linha": 1916,
     "funcao": "_build_lots"
    }
   ]
@@ -3042,7 +3042,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1906,
+    "linha": 1925,
     "funcao": "sand_patch_mat"
    }
   ]
@@ -3056,7 +3056,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1909,
+    "linha": 1928,
     "funcao": "_set_live"
    }
   ]
@@ -3070,7 +3070,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1915,
+    "linha": 1934,
     "funcao": "_on_expansion"
    }
   ]
@@ -3084,7 +3084,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1918,
+    "linha": 1937,
     "funcao": "refresh_areas"
    }
   ]
@@ -3098,7 +3098,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1929,
+    "linha": 1948,
     "funcao": "hut_details"
    }
   ]
@@ -3112,7 +3112,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1974,
+    "linha": 1993,
     "funcao": "_bungalow_details"
    }
   ]
@@ -3126,7 +3126,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2021,
+    "linha": 2040,
     "funcao": "_pool_details"
    }
   ]
@@ -3140,7 +3140,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2074,
+    "linha": 2093,
     "funcao": "_reception_details"
    }
   ]
@@ -5415,7 +5415,7 @@
    },
    {
     "arquivo": "world.gd",
-    "linha": 1898,
+    "linha": 1917,
     "funcao": "_build_lots"
    }
   ],
@@ -6590,7 +6590,7 @@
    },
    {
     "arquivo": "world.gd",
-    "linha": 2007,
+    "linha": 2026,
     "funcao": "_bungalow_details"
    },
    {
@@ -6694,12 +6694,12 @@
    },
    {
     "arquivo": "world.gd",
-    "linha": 2064,
+    "linha": 2083,
     "funcao": "_pool_details"
    },
    {
     "arquivo": "world.gd",
-    "linha": 2069,
+    "linha": 2088,
     "funcao": "_pool_details"
    },
    {
@@ -6759,7 +6759,7 @@
    },
    {
     "arquivo": "world.gd",
-    "linha": 1991,
+    "linha": 2010,
     "funcao": "_bungalow_details"
    },
    {
@@ -7023,7 +7023,7 @@
    },
    {
     "arquivo": "world.gd",
-    "linha": 2082,
+    "linha": 2101,
     "funcao": "_reception_details"
    },
    {
@@ -7123,12 +7123,12 @@
    },
    {
     "arquivo": "world.gd",
-    "linha": 2087,
+    "linha": 2106,
     "funcao": "_reception_details"
    },
    {
     "arquivo": "world.gd",
-    "linha": 2088,
+    "linha": 2107,
     "funcao": "_reception_details"
    },
    {
@@ -7263,7 +7263,7 @@
    },
    {
     "arquivo": "world.gd",
-    "linha": 2078,
+    "linha": 2097,
     "funcao": "_reception_details"
    }
   ],
@@ -8365,7 +8365,7 @@
    },
    {
     "arquivo": "world.gd",
-    "linha": 2103,
+    "linha": 2122,
     "funcao": "_reception_details"
    },
    {
@@ -8613,12 +8613,12 @@
    },
    {
     "arquivo": "world.gd",
-    "linha": 2105,
+    "linha": 2124,
     "funcao": "_reception_details"
    },
    {
     "arquivo": "world.gd",
-    "linha": 2106,
+    "linha": 2125,
     "funcao": "_reception_details"
    },
    {
@@ -9160,7 +9160,7 @@
    },
    {
     "arquivo": "world.gd",
-    "linha": 2000,
+    "linha": 2019,
     "funcao": "_bungalow_details"
    },
    {
@@ -9811,6 +9811,11 @@
     "funcao": "_shore_details"
    },
    {
+    "arquivo": "world.gd",
+    "linha": 1519,
+    "funcao": "_vegetation"
+   },
+   {
     "arquivo": "world_village.gd",
     "linha": 1063,
     "funcao": "_village_props"
@@ -9829,6 +9834,11 @@
     "arquivo": "world.gd",
     "linha": 1187,
     "funcao": "_shore_details"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 1520,
+    "funcao": "_vegetation"
    },
    {
     "arquivo": "world_village.gd",
@@ -15777,7 +15787,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1650,
+    "linha": 1669,
     "funcao": "_mtn_show"
    }
   ],
@@ -15796,7 +15806,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1835,
+    "linha": 1854,
     "funcao": "_mountains"
    }
   ],
@@ -15815,7 +15825,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1836,
+    "linha": 1855,
     "funcao": "_mountains"
    }
   ],
@@ -15834,7 +15844,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1837,
+    "linha": 1856,
     "funcao": "_mountains"
    }
   ],
@@ -15853,7 +15863,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1859,
+    "linha": 1878,
     "funcao": "_lot_post"
    }
   ],
@@ -15872,7 +15882,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1877,
+    "linha": 1896,
     "funcao": "_lot"
    }
   ],
@@ -15891,7 +15901,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1885,
+    "linha": 1904,
     "funcao": "_lot"
    }
   ],
@@ -15910,7 +15920,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1886,
+    "linha": 1905,
     "funcao": "_lot"
    }
   ],
@@ -15929,7 +15939,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1887,
+    "linha": 1906,
     "funcao": "_lot"
    }
   ],
@@ -15948,7 +15958,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1889,
+    "linha": 1908,
     "funcao": "_lot"
    }
   ],
@@ -15967,7 +15977,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1891,
+    "linha": 1910,
     "funcao": "_lot"
    }
   ],
@@ -15986,7 +15996,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1892,
+    "linha": 1911,
     "funcao": "_lot"
    }
   ],
@@ -16005,7 +16015,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1893,
+    "linha": 1912,
     "funcao": "_lot"
    }
   ],
@@ -16024,7 +16034,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1902,
+    "linha": 1921,
     "funcao": "_build_lots"
    }
   ],
@@ -16043,7 +16053,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1937,
+    "linha": 1956,
     "funcao": "hut_details"
    }
   ],
@@ -16062,7 +16072,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1941,
+    "linha": 1960,
     "funcao": "hut_details"
    }
   ],
@@ -16081,7 +16091,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1949,
+    "linha": 1968,
     "funcao": "hut_details"
    }
   ],
@@ -16100,7 +16110,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1961,
+    "linha": 1980,
     "funcao": "hut_details"
    }
   ],
@@ -16119,7 +16129,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1972,
+    "linha": 1991,
     "funcao": "hut_details"
    }
   ],
@@ -16138,7 +16148,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1984,
+    "linha": 2003,
     "funcao": "_bungalow_details"
    }
   ],
@@ -16157,7 +16167,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1987,
+    "linha": 2006,
     "funcao": "_bungalow_details"
    }
   ],
@@ -16176,7 +16186,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1988,
+    "linha": 2007,
     "funcao": "_bungalow_details"
    }
   ],
@@ -16195,7 +16205,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1991,
+    "linha": 2010,
     "funcao": "_bungalow_details"
    }
   ],
@@ -16214,7 +16224,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1994,
+    "linha": 2013,
     "funcao": "_bungalow_details"
    }
   ],
@@ -16233,7 +16243,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1996,
+    "linha": 2015,
     "funcao": "_bungalow_details"
    }
   ],
@@ -16252,7 +16262,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1997,
+    "linha": 2016,
     "funcao": "_bungalow_details"
    }
   ],
@@ -16271,7 +16281,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1999,
+    "linha": 2018,
     "funcao": "_bungalow_details"
    }
   ],
@@ -16290,7 +16300,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2000,
+    "linha": 2019,
     "funcao": "_bungalow_details"
    }
   ],
@@ -16309,7 +16319,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2001,
+    "linha": 2020,
     "funcao": "_bungalow_details"
    }
   ],
@@ -16328,7 +16338,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2002,
+    "linha": 2021,
     "funcao": "_bungalow_details"
    }
   ],
@@ -16347,7 +16357,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2007,
+    "linha": 2026,
     "funcao": "_bungalow_details"
    }
   ],
@@ -16366,7 +16376,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2011,
+    "linha": 2030,
     "funcao": "_bungalow_details"
    }
   ],
@@ -16385,7 +16395,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2012,
+    "linha": 2031,
     "funcao": "_bungalow_details"
    }
   ],
@@ -16404,7 +16414,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2013,
+    "linha": 2032,
     "funcao": "_bungalow_details"
    }
   ],
@@ -16423,7 +16433,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2014,
+    "linha": 2033,
     "funcao": "_bungalow_details"
    }
   ],
@@ -16442,7 +16452,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2018,
+    "linha": 2037,
     "funcao": "_bungalow_details"
    }
   ],
@@ -16461,7 +16471,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2019,
+    "linha": 2038,
     "funcao": "_bungalow_details"
    }
   ],
@@ -16480,7 +16490,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2027,
+    "linha": 2046,
     "funcao": "_pool_details"
    }
   ],
@@ -16499,7 +16509,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2028,
+    "linha": 2047,
     "funcao": "_pool_details"
    }
   ],
@@ -16518,7 +16528,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2029,
+    "linha": 2048,
     "funcao": "_pool_details"
    }
   ],
@@ -16537,7 +16547,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2031,
+    "linha": 2050,
     "funcao": "_pool_details"
    }
   ],
@@ -16556,7 +16566,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2039,
+    "linha": 2058,
     "funcao": "_pool_details"
    }
   ],
@@ -16575,7 +16585,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2050,
+    "linha": 2069,
     "funcao": "_pool_details"
    }
   ],
@@ -16594,7 +16604,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2052,
+    "linha": 2071,
     "funcao": "_pool_details"
    }
   ],
@@ -16613,7 +16623,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2058,
+    "linha": 2077,
     "funcao": "_pool_details"
    }
   ],
@@ -16632,7 +16642,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2063,
+    "linha": 2082,
     "funcao": "_pool_details"
    }
   ],
@@ -16651,7 +16661,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2064,
+    "linha": 2083,
     "funcao": "_pool_details"
    }
   ],
@@ -16670,7 +16680,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2065,
+    "linha": 2084,
     "funcao": "_pool_details"
    }
   ],
@@ -16689,7 +16699,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2066,
+    "linha": 2085,
     "funcao": "_pool_details"
    }
   ],
@@ -16708,7 +16718,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2069,
+    "linha": 2088,
     "funcao": "_pool_details"
    }
   ],
@@ -16727,7 +16737,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2070,
+    "linha": 2089,
     "funcao": "_pool_details"
    }
   ],
@@ -16746,7 +16756,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2071,
+    "linha": 2090,
     "funcao": "_pool_details"
    }
   ],
@@ -16765,7 +16775,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2078,
+    "linha": 2097,
     "funcao": "_reception_details"
    }
   ],
@@ -16784,7 +16794,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2079,
+    "linha": 2098,
     "funcao": "_reception_details"
    }
   ],
@@ -16803,7 +16813,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2082,
+    "linha": 2101,
     "funcao": "_reception_details"
    }
   ],
@@ -16822,7 +16832,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2084,
+    "linha": 2103,
     "funcao": "_reception_details"
    }
   ],
@@ -16841,7 +16851,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2087,
+    "linha": 2106,
     "funcao": "_reception_details"
    }
   ],
@@ -16860,7 +16870,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2088,
+    "linha": 2107,
     "funcao": "_reception_details"
    }
   ],
@@ -16879,7 +16889,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2089,
+    "linha": 2108,
     "funcao": "_reception_details"
    }
   ],
@@ -16898,7 +16908,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2090,
+    "linha": 2109,
     "funcao": "_reception_details"
    }
   ],
@@ -16917,7 +16927,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2094,
+    "linha": 2113,
     "funcao": "_reception_details"
    }
   ],
@@ -16936,7 +16946,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2096,
+    "linha": 2115,
     "funcao": "_reception_details"
    }
   ],
@@ -16955,7 +16965,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2097,
+    "linha": 2116,
     "funcao": "_reception_details"
    }
   ],
@@ -16974,7 +16984,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2098,
+    "linha": 2117,
     "funcao": "_reception_details"
    }
   ],
@@ -16993,7 +17003,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2099,
+    "linha": 2118,
     "funcao": "_reception_details"
    }
   ],
@@ -17012,7 +17022,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2100,
+    "linha": 2119,
     "funcao": "_reception_details"
    }
   ],
@@ -17031,7 +17041,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2102,
+    "linha": 2121,
     "funcao": "_reception_details"
    }
   ],
@@ -17050,7 +17060,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2103,
+    "linha": 2122,
     "funcao": "_reception_details"
    }
   ],
@@ -17069,7 +17079,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2104,
+    "linha": 2123,
     "funcao": "_reception_details"
    }
   ],
@@ -17088,7 +17098,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2105,
+    "linha": 2124,
     "funcao": "_reception_details"
    }
   ],
@@ -17107,7 +17117,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2106,
+    "linha": 2125,
     "funcao": "_reception_details"
    }
   ],
@@ -29866,7 +29876,7 @@
     "funcao": ""
    }
   ],
-  "linhas": 94,
+  "linhas": 107,
   "descricao": "Carrega modelos REAIS baixados da web (Poly Haven e Kenney, CC0) e posiciona com tamanho certo."
  },
  {
@@ -29946,7 +29956,7 @@
     "funcao": ""
    }
   ],
-  "linhas": 2107,
+  "linhas": 2126,
   "descricao": ""
  },
  {
@@ -29974,12 +29984,12 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1481,
+    "linha": 1483,
     "funcao": "_vegetation"
    },
    {
     "arquivo": "world.gd",
-    "linha": 1497,
+    "linha": 1499,
     "funcao": "_vegetation"
    }
   ],
@@ -30024,7 +30034,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1583,
+    "linha": 1602,
     "funcao": "_mtn_material"
    }
   ],
@@ -30144,7 +30154,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1744,
+    "linha": 1763,
     "funcao": "_mtn_trees"
    }
   ],
@@ -30434,12 +30444,12 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1584,
+    "linha": 1603,
     "funcao": "_mtn_material"
    },
    {
     "arquivo": "world.gd",
-    "linha": 1585,
+    "linha": 1604,
     "funcao": "_mtn_material"
    }
   ],
@@ -30881,12 +30891,12 @@
    },
    {
     "arquivo": "world.gd",
-    "linha": 1586,
+    "linha": 1605,
     "funcao": "_mtn_material"
    },
    {
     "arquivo": "world.gd",
-    "linha": 1587,
+    "linha": 1606,
     "funcao": "_mtn_material"
    }
   ],

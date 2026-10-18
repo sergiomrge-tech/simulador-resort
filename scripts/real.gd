@@ -74,6 +74,19 @@ static func place(parent: Node, key: String, pos: Vector3, height: float, rot_y:
 	inst.position = Vector3(-c.x * s if center_xz else 0.0, -bb.position.y * s, -c.z * s if center_xz else 0.0)
 	return holder
 
+## Primeira malha do modelo (para MultiMesh). A malha já leva o material do glTF (estilizado, sem o clareamento do toon).
+static func mesh_of(key: String) -> Mesh:
+	var ps: = _scene(key)
+	if ps == null:
+		return null
+	var inst: Node = ps.instantiate()
+	var mis: = inst.find_children("*", "MeshInstance3D", true, false)
+	var out: Mesh = null
+	if not mis.is_empty():
+		out = (mis[0] as MeshInstance3D).mesh
+	inst.free()
+	return out
+
 static func _aabb(n: Node3D) -> AABB:
 	var out: = AABB()
 	var first: = true

@@ -1428,6 +1428,7 @@ func _cross_mesh(w: float, h: float, planes: int) -> ArrayMesh:
 	return st.commit()
 
 func _scatter(mesh: Mesh, mat: Material, xforms: Array, vis_end: float, shadows: bool) -> void :
+	# mat == null: usa o material do próprio modelo (arbustos reais)
 	var chunks: = {}
 	for t in xforms:
 		var key: = Vector2i(int(floor(t.origin.x / 24.0)), int(floor(t.origin.z / 24.0)))
@@ -1444,7 +1445,8 @@ func _scatter(mesh: Mesh, mat: Material, xforms: Array, vis_end: float, shadows:
 			mm.set_instance_transform(i, list[i])
 		var mmi: = MultiMeshInstance3D.new()
 		mmi.multimesh = mm
-		mmi.material_override = mat
+		if mat != null:
+			mmi.material_override = mat
 		mmi.visibility_range_end = vis_end
 		mmi.visibility_range_end_margin = 8.0
 		mmi.visibility_range_fade_mode = GeometryInstance3D.VISIBILITY_RANGE_FADE_SELF
@@ -1513,7 +1515,24 @@ func _vegetation() -> void :
 				continue
 			var s: = rng.randf_range(0.8, 1.4)
 			bushes.append(Transform3D(Basis(Vector3.UP, rng.randf() * TAU).scaled(Vector3(s, s, s)), Vector3(p.x, _height(p.x, p.y) - 0.05, p.y)))
-	_scatter(_cross_mesh(1.7, 1.4, 4), bm, bushes, 110.0, true)
+	# revisão visual 18/10/2026: arbustos reais (Quaternius, CC0) no lugar dos cartões cruzados ("blobs" verdes)
+	var bm_a: Mesh = Real.mesh_of("q:Bush_Common")
+	var bm_b: Mesh = Real.mesh_of("q:Bush_Common_Flowers")
+	if bm_a != null and bm_b != null:
+		var fa: float = 1.25 / maxf(bm_a.get_aabb().size.y, 0.01)
+		var fb: float = 1.25 / maxf(bm_b.get_aabb().size.y, 0.01)
+		var la: = []
+		var lb: = []
+		for i in bushes.size():
+			var t: Transform3D = bushes[i]
+			if i % 6 != 0:
+				lb.append(Transform3D(t.basis.scaled(Vector3.ONE * fb), t.origin))
+			else:
+				la.append(Transform3D(t.basis.scaled(Vector3.ONE * fa), t.origin))
+		_scatter(bm_a, null, la, 110.0, true)
+		_scatter(bm_b, null, lb, 110.0, true)
+	else:
+		_scatter(_cross_mesh(1.7, 1.4, 4), bm, bushes, 110.0, true)
 	print("vegetacao: capim=%d arbustos=%d coqueiros+=%d" % [grass.size(), bushes.size(), placed.size()])
 
 
