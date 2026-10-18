@@ -72,6 +72,12 @@ Base de trabalho: v0.6.5 recuperada; versões atuais em `project.godot` / `expor
 - Passeios: expansão `passeios` + equipe `guia`; `Core._check_tours()` roda no horário de `Economy.TOURS`; mar bravo cancela os passeios de mar.
 - Save agora é versão 5; campos novos têm padrão ao carregar saves antigos. `tests/loop_test.gd` tem `mechanics_test()`.
 
+## 🔨 Sala do Blender — o que era código virou modelo (v0.9.1)
+- `tools/gen_code_props.py` (bpy) gera tocha, poste/seta de direção, placa ABERTO, rede de vôlei, poste de luz, caixa de correio, estrela-do-mar, ventilador, farol, píer (`pier_segment` 3 m + `pier_end`), bicicletas por cor, jangada e mastro/vela. Rode `python3 tools/gen_code_props.py [nome]`, depois `godot --import` + `vram_textures.py`.
+- **Eixos:** Blender +Y vira Godot -Z; frente do modelo = -Y do Blender. Use `Real.place(parent, "g:nome", pos, -1.0, rot, tint, 0.0, false)` (escala 1, origem mantida em XZ, base do modelo em y=0).
+- Redes/telas finas: barras reais, não modificador Wireframe (some no render). `godot` fica em `/home/claude/godot/godot` (não está no PATH).
+- O código antigo continua como fallback quando o .glb não existe.
+
 ## 🧪 Sala da Conferência — antes de entregar
 1. `godot --headless --check-only -s scripts/X.gd` em todo script editado. Erros "Identifier not found: Core/Quality/Economy" são normais (autoloads). Qualquer outro erro bloqueia.
 2. Erros já cometidos: função duplicada no mesmo arquivo (`oil_lamp`); `var w: = M.algo` sem tipo (use `var w: Material = ...`).

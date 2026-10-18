@@ -9,7 +9,8 @@ TEX = os.path.join(ROOT, "assets", "tex")
 os.makedirs(OUT, exist_ok=True)
 
 def tex(n):
-    return os.path.join(TEX, n)
+    p = os.path.join(TEX, n)
+    return p if os.path.exists(p) else os.path.join(ROOT, "assets", "tex_hd", n)
 
 def mat(name, rgb, rough=0.8, img=None, metal=0.0):
     m = bpy.data.materials.new(name)
@@ -588,9 +589,187 @@ def pier_end():
     join(parts, "pier_end")
     export("pier_end")
 
+# ---------------------------------------------------------------- bicicleta
+BIKE_COLORS = {"red": (0.8, 0.15, 0.15), "blue": (0.1, 0.4, 0.75), "yellow": (0.95, 0.75, 0.1), "green": (0.15, 0.55, 0.3), "white": (0.9, 0.9, 0.9)}
+
+def _torus(major, minor, loc, axis_x=True, m=None, seg=48, rseg=12):
+    bpy.ops.mesh.primitive_torus_add(major_radius=major, minor_radius=minor, major_segments=seg, minor_segments=rseg, location=loc,
+                                     rotation=(0, math.radians(90), 0) if axis_x else (0, 0, 0))
+    o = bpy.context.active_object
+    bpy.ops.object.shade_smooth()
+    o.data.materials.append(m)
+    return o
+
+def bike(name, rgb):
+    """Bicicleta de praia: quadro diamante tubular, rodas com aro, 16 raios, pneu, pedivela com coroa, corrente, selim de couro, guidão com
+    manoplas, paralamas e cestinha de vime. Frente = -Y do Blender (vira +Z no glTF), 1,7 m de comprimento, 1,05 m de altura."""
+    fresh()
+    fr = mat("quadro", rgb, 0.35, metal=0.5)
+    rub = mat("borracha", (0.07, 0.07, 0.08), 0.8)
+    chrome = mat("cromado", (0.8, 0.82, 0.85), 0.25, metal=0.95)
+    leather = mat("couro", (0.35, 0.2, 0.1), 0.6)
+    grip = mat("manopla", (0.9, 0.3, 0.25), 0.8)
+    rattan = mat("vime", (0.85, 0.65, 0.4), 0.9, os.path.join(ROOT, "assets", "tex_hd", "rattan_diff.jpg"))
+    R, F, BB, S, H1, H2 = (0.52, 0.34), (-0.52, 0.34), (0.0, 0.36), (0.22, 0.82), (-0.38, 0.88), (-0.42, 0.74)
+    parts = []
+    def t(a, b, r, m=fr, x=0.0):
+        parts.append(tube((x, a[0], a[1]), (x, b[0], b[1]), r, m, verts=14))
+    for pt in (R, F):
+        parts.append(_torus(0.315, 0.036, (0, pt[0], pt[1]), True, rub, 56, 14))
+        parts.append(_torus(0.275, 0.008, (0, pt[0], pt[1]), True, chrome, 56, 8))
+        parts.append(lathe([(0.0, -0.05), (0.03, -0.05), (0.03, 0.05), (0.0, 0.05)], chrome, loc=(0, pt[0], pt[1]), verts=16))
+        parts[-1].rotation_euler = (0, math.radians(90), 0)
+        for k in range(16):
+            a = k * math.pi / 8
+            parts.append(tube((0.0, pt[0], pt[1]), (0.0, pt[0] + math.cos(a) * 0.275, pt[1] + math.sin(a) * 0.275), 0.0035, chrome, verts=6))
+    # quadro
+    for a, b in ((S, H1), (BB, H2), (BB, S), (H2, H1)):
+        t(a, b, 0.0185)
+    for sx in (-0.045, 0.045):
+        t(S, R, 0.0115, x=sx)
+        t(BB, R, 0.0115, x=sx)
+        t(H2, F, 0.0125, chrome, x=sx)
+    parts.append(tube((0, H2[0], H2[1]), (0, -0.40, 1.02), 0.014, chrome, verts=12))
+    parts.append(tube((-0.28, -0.40, 1.02), (0.28, -0.40, 1.02), 0.012, chrome, verts=10))
+    for sx in (-1, 1):
+        parts.append(tube((sx * 0.28, -0.40, 1.02), (sx * 0.31, -0.37, 1.0), 0.024, grip, verts=12))
+    # canote e selim
+    parts.append(tube((0, S[0], S[1]), (0, S[0] + 0.02, S[1] + 0.12), 0.013, chrome, verts=10))
+    bpy.ops.mesh.primitive_uv_sphere_add(radius=0.1, location=(0, S[0] + 0.03, S[1] + 0.14), segments=24, ring_count=12)
+    sd = bpy.context.active_object
+    sd.scale = (0.75, 1.5, 0.38)
+    bpy.ops.object.shade_smooth()
+    sd.data.materials.append(leather)
+    parts.append(sd)
+    # pedivela, coroa, pedais e corrente
+    parts.append(lathe([(0.0, -0.01), (0.095, -0.01), (0.1, 0.0), (0.095, 0.01), (0.0, 0.01)], chrome, loc=(0.05, BB[0], BB[1]), verts=36))
+    parts[-1].rotation_euler = (0, math.radians(90), 0)
+    parts.append(tube((0.08, BB[0], BB[1]), (0.1, BB[0] + 0.07, BB[1] - 0.16), 0.011, chrome, verts=8))
+    parts.append(tube((-0.08, BB[0], BB[1]), (-0.1, BB[0] - 0.07, BB[1] + 0.16), 0.011, chrome, verts=8))
+    parts.append(box((0.1, 0.06, 0.02), (0.15, BB[0] + 0.07, BB[1] - 0.16), rub, 0.006))
+    parts.append(box((0.1, 0.06, 0.02), (-0.15, BB[0] - 0.07, BB[1] + 0.16), rub, 0.006))
+    parts.append(tube((0.05, BB[0], BB[1] + 0.09), (0.05, R[0], R[1] + 0.05), 0.005, rub, verts=6))
+    parts.append(tube((0.05, BB[0], BB[1] - 0.09), (0.05, R[0], R[1] - 0.05), 0.005, rub, verts=6))
+    # paralamas: arco de tubos sobre a metade de cima de cada roda
+    for pt in (R, F):
+        prev = None
+        for k in range(0, 15):
+            a = math.radians(25 + k * 10)
+            q = (0.0, pt[0] + math.cos(a) * 0.37, pt[1] + math.sin(a) * 0.37)
+            if prev:
+                parts.append(tube(prev, q, 0.02, fr, verts=10))
+            prev = q
+    # cestinha de vime na frente
+    parts.append(lathe([(0.0, 0.0), (0.12, 0.0), (0.15, 0.04), (0.17, 0.2), (0.165, 0.21), (0.0, 0.21)], rattan, loc=(0, -0.62, 0.95), verts=28, uvscale=1.2))
+    parts.append(lathe([(0.17, 0.2), (0.175, 0.2), (0.175, 0.22), (0.17, 0.22)], rattan, loc=(0, -0.62, 0.95), verts=28))
+    join(parts, "bike_" + name)
+    export("bike_" + name)
+
+# ---------------------------------------------------------------- vela do barco de pesca
+def boat_mast():
+    """Mastro de madeira (2,4 m) com vela latina triangular enfunada, retranca, costuras e cabos. Pé do mastro em z=0. Vela para -Y (popa) do Blender,
+    como no código antigo (vela para +Z do glTF = frente)."""
+    fresh()
+    wood = mat("mastro", (0.5, 0.35, 0.22), 0.8, tex("oak_wood_planks_diff.jpg"))
+    linen = mat("vela", (0.97, 0.95, 0.9), 0.95, tex("rough_linen_diff.jpg"))
+    rope = mat("corda", (0.65, 0.5, 0.3), 0.95)
+    parts = []
+    parts.append(lathe([(0.0, 0.0), (0.04, 0.0), (0.035, 1.2), (0.026, 2.4), (0.0, 2.44)], wood, verts=16, uvscale=0.8))
+    parts.append(tube((0.0, -0.02, 0.44), (0.0, -1.5, 0.58), 0.02, wood, verts=10))   # retranca
+    parts.append(_sail((0, 0, 0.45), (0, 0, 2.3), (0, -1.5, 0.55), 0.22, linen))
+    for k in (0.3, 0.6):
+        parts.append(tube((0.0, 0.0, 2.3), (0.0, -1.5 * k, 0.55 + 0.2 * k * 0.0), 0.004, rope, verts=6)) if False else None
+    parts.append(tube((0.0, 0.0, 2.35), (0.0, 1.1, 0.35), 0.008, rope, verts=8))     # estai para a proa
+    parts.append(tube((0.0, 0.0, 2.35), (0.0, -1.7, 0.45), 0.008, rope, verts=8))    # cabo para a popa
+    parts = [p for p in parts if p]
+    join(parts, "mastro")
+    export("boat_mast")
+
+def _sail(a, b, c, billow, m, n=14):
+    """Vela triangular enfunada (grade barícêntrica), dupla face, com costuras horizontais em relevo suave."""
+    import mathutils
+    A, B_, C = mathutils.Vector(a), mathutils.Vector(b), mathutils.Vector(c)
+    bm = bmesh.new()
+    uvl = bm.loops.layers.uv.new("UVMap")
+    grid = {}
+    for i in range(n + 1):
+        for j in range(n + 1 - i):
+            u, v = i / n, j / n
+            p = A + (B_ - A) * u + (C - A) * v
+            # enfunada: bojo perpendicular ao plano (eixo X)
+            p.x += billow * math.sin(math.pi * min(1.0, u + v)) * 4 * u * v * 2.2 + billow * 0.5 * math.sin(math.pi * (u + v)) * (1 - u - v) * 0.0
+            p.x += 0.012 * math.sin(u * 60.0)
+            grid[(i, j)] = bm.verts.new(p)
+    for i in range(n):
+        for j in range(n - i):
+            f = bm.faces.new((grid[(i, j)], grid[(i + 1, j)], grid[(i, j + 1)]))
+            if i + j + 1 < n:
+                bm.faces.new((grid[(i + 1, j)], grid[(i + 1, j + 1)], grid[(i, j + 1)]))
+    for f in bm.faces:
+        for lp in f.loops:
+            lp[uvl].uv = (lp.vert.co.y * 0.5, lp.vert.co.z * 0.5)
+    me = bpy.data.meshes.new("vela")
+    bm.to_mesh(me)
+    bm.free()
+    ob = bpy.data.objects.new("vela", me)
+    bpy.context.scene.collection.objects.link(ob)
+    bpy.context.view_layer.objects.active = ob
+    so = ob.modifiers.new("sol", "SOLIDIFY")
+    so.thickness = 0.012
+    bpy.ops.object.modifier_apply(modifier=so.name)
+    bpy.ops.object.shade_smooth()
+    me.materials.append(m)
+    return ob
+
+# ---------------------------------------------------------------- jangada
+def jangada():
+    """Jangada de pesca: 6 troncos roliços com proa levantada, 3 travessas amarradas com cordas, mastro de 5,5 m, vela grande enfunada, retranca e cabos.
+    Proa em -Y do Blender (vira +Z no glTF), comprimento 6 m, largura ~1,7 m. Base (fundo dos troncos) em z=0."""
+    fresh()
+    log = mat("tronco", (0.62, 0.44, 0.28), 0.9, tex("palm_tree_bark_diff.jpg") if os.path.exists(tex("palm_tree_bark_diff.jpg")) else tex("oak_wood_planks_diff.jpg"))
+    wood = mat("madeira", (0.55, 0.38, 0.24), 0.8, tex("oak_wood_planks_diff.jpg"))
+    rope = mat("corda", (0.66, 0.5, 0.3), 0.95)
+    linen = mat("vela", (1.0, 0.98, 0.94), 0.95, tex("rough_linen_diff.jpg"))
+    parts = []
+    def zline(y):   # elevação da proa: sobe suave nos últimos 1,2 m
+        d = max(0.0, -y - 1.6)
+        return 0.12 + 0.55 * (d / 1.4) ** 2 if d > 0 else 0.12
+    for k in range(6):
+        x = -0.6 + k * 0.24
+        prev = None
+        for i in range(0, 25):
+            y = -3.0 + i * 0.25
+            pt = (x, y, zline(y))
+            if prev:
+                parts.append(tube(prev, pt, 0.12 + (0.01 if k % 2 else 0.0), log, verts=14))
+            prev = pt
+        # topo do tronco
+        bpy.ops.mesh.primitive_uv_sphere_add(radius=0.12, location=(x, 3.0, 0.12), segments=14, ring_count=8)
+        e = bpy.context.active_object
+        bpy.ops.object.shade_smooth()
+        e.data.materials.append(log)
+        parts.append(e)
+    for y in (-1.2, 0.4, 2.0):
+        parts.append(tube((-0.85, y, 0.3), (0.85, y, 0.3), 0.045, wood, verts=12))
+        for x in (-0.6 + k * 0.24 for k in range(6)):
+            parts.append(lathe([(0.0, -0.035), (0.135, -0.035), (0.145, -0.01), (0.145, 0.01), (0.135, 0.035), (0.0, 0.035)], rope, loc=(x, y, 0.12), verts=16, uvscale=0.4))
+            parts[-1].rotation_euler = (math.radians(90), 0, 0)
+            parts[-1].location = (x, y, 0.16)
+    # mastro, retranca, vela e cabos
+    parts.append(lathe([(0.0, 0.2), (0.075, 0.2), (0.065, 2.5), (0.05, 5.5), (0.0, 5.58)], wood, loc=(0, -1.0, 0.0), verts=18, uvscale=0.8))
+    parts.append(tube((0, -1.0, 0.7), (0, 2.5, 0.78), 0.035, wood, verts=12))
+    parts.append(_sail((0, -1.0, 0.6), (0, -1.0, 5.4), (0, 2.4, 0.7), 0.35, linen, n=18))
+    parts.append(tube((0, -1.0, 5.45), (0, -2.9, 0.75), 0.012, rope, verts=8))
+    parts.append(tube((0, -1.0, 5.45), (0, 2.8, 0.7), 0.012, rope, verts=8))
+    parts.append(tube((0, -1.0, 2.8), (0.8, -0.6, 0.3), 0.01, rope, verts=8))
+    parts.append(tube((0, -1.0, 2.8), (-0.8, -0.6, 0.3), 0.01, rope, verts=8))
+    join(parts, "jangada")
+    export("jangada")
+
 ALL = {"tiki_torch": tiki_torch, "signpost_post": signpost_post, "sign_arrow": sign_arrow, "open_sign": open_sign,
        "volley_net": volley_net, "power_pole": power_pole, "mailbox": mailbox, "starfish": starfish, "ceiling_fan": ceiling_fan,
-       "lighthouse": lighthouse, "pier_segment": pier_segment, "pier_end": pier_end}
+       "lighthouse": lighthouse, "pier_segment": pier_segment, "pier_end": pier_end, "boat_mast": boat_mast, "jangada": jangada,
+       **{"bike_" + k: (lambda k=k, v=v: bike(k, v)) for k, v in BIKE_COLORS.items()}}
 if __name__ == "__main__":
     names = sys.argv[1:] or list(ALL)
     for n in names:

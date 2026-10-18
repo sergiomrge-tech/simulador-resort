@@ -840,11 +840,23 @@ func _umbrella_hd(p: Vector3, r: float) -> void :
 	_umbrella(p, r)
 
 
+const BIKE_COLS: = {"red": Color(0.8, 0.15, 0.15), "blue": Color(0.1, 0.4, 0.75), "yellow": Color(0.95, 0.75, 0.1), "green": Color(0.15, 0.55, 0.3), "white": Color(0.9, 0.9, 0.9)}
+
 func _bike(p: Vector3, rot: float, col: Color) -> void :
 	var n: = Node3D.new()
 	n.position = p
 	n.rotation = Vector3(0, rot, 0.18)
 	add_child(n)
+	# bicicleta modelada no Blender (quadro tubular, raios, cestinha de vime), na cor mais próxima
+	var bk: = "white"
+	var best: = 99.0
+	for kk in BIKE_COLS:
+		var dd: = Vector3(col.r - BIKE_COLS[kk].r, col.g - BIKE_COLS[kk].g, col.b - BIKE_COLS[kk].b).length()
+		if dd < best:
+			best = dd
+			bk = kk
+	if Real.place(n, "g:bike_" + bk, Vector3.ZERO, -1.0, 0.0, Color.WHITE, 0.0, false) != null:
+		return
 	var tire: = B.flat(Color(0.08, 0.08, 0.08), 0.7)
 	var frame: = B.flat(col, 0.35, 0.6)
 	for zz in [-0.52, 0.52]:
@@ -893,6 +905,10 @@ func _jangada2(p: Vector3, rot: float) -> void :
 	j.position = p
 	j.rotation.y = rot
 	add_child(j)
+	# jangada de troncos com vela enfunada: modelo do Blender (tools/gen_code_props.py)
+	if Real.place(j, "g:jangada", Vector3.ZERO, -1.0, 0.0, Color.WHITE, 0.0, false) != null:
+		B.wall(self, Vector3(2.0, 2.0, 6.5), p + Vector3(0, 1.4, 0), rot)
+		return
 	for k in 6:
 		var log_: = B.cyl(j, 0.12, 0.12, 6.0, Vector3(-0.6 + k * 0.24, 0.12, 0), M.post, 8)
 		log_.rotation.x = PI * 0.5
@@ -922,6 +938,9 @@ func _fishing_boat(p: Vector3, rot: float, paint: Color) -> void :
 		hull.rotation.y = 0.0
 	B.model(j, "wooden_crate_01", Vector3(-0.15, 0.48, 1.15), 0.2, 0.55)
 	B.model(j, "wooden_bucket_01", Vector3(0.28, 0.42, 0.55), 0.5, 0.45)
+	if Real.place(j, "g:boat_mast", Vector3(0.05, 0.25, -0.15), -1.0, 0.0, Color.WHITE, 0.0, false) != null:
+		B.wall(self, Vector3(1.7, 0.7, 4.6), p + Vector3(0, 0.35, 0.1), rot)
+		return
 	B.cyl(j, 0.035, 0.04, 2.4, Vector3(0.05, 1.45, -0.15), M.oak, 6)
 	var sail: = MeshInstance3D.new()
 	var sst: = SurfaceTool.new()
