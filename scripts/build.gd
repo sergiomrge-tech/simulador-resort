@@ -524,7 +524,10 @@ static func model(parent: Node, n: String, pos: Vector3, rot_y: = 0.0, s: = 1.0)
 			for si in mi.mesh.get_surface_count():
 				var sm: Material = mi.mesh.surface_get_material(si)
 				if sm:
-					mi.set_surface_override_material(si, Toon.toonify(sm))
+					var tmat: Material = Toon.toonify(sm)
+					if tmat is BaseMaterial3D and Real.LIFT.has(n):
+						(tmat as BaseMaterial3D).albedo_color = (tmat as BaseMaterial3D).albedo_color * Real.LIFT[n]
+					mi.set_surface_override_material(si, tmat)
 	inst.position = pos
 	inst.rotation.y = rot_y
 	inst.scale = Vector3.ONE * s

@@ -6,6 +6,16 @@ class_name Real
 
 static var _cache: = {}
 
+## Modelos Poly Haven muito escuros (viravam quase pretos sob o toon): clareados por chave. Revisão visual 18/10/2026.
+const LIFT: = {
+	"bar_chair_round_01": Color(2.1, 1.85, 1.6), "wooden_stool_01": Color(1.6, 1.5, 1.4),
+	"GothicBed_01": Color(1.25, 1.2, 1.15), "ceiling_fan": Color(5.0, 4.2, 3.4),
+	"Rockingchair_01": Color(1.9, 1.7, 1.5), "WoodenChair_01": Color(1.6, 1.5, 1.4),
+}
+
+static func lift(key: String) -> Color:
+	return LIFT.get(key, Color.WHITE)
+
 static func path_of(key: String) -> String:
 	if key.begins_with("q:"):
 		return "res://assets/models/qnat/%s.gltf" % key.substr(2)
