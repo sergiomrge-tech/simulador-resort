@@ -119,6 +119,148 @@ def sandcastle():
     ob.location.z = 0.0
     export("sandcastle")
 
+def _fresh():
+    bpy.ops.wm.read_factory_settings(use_empty=True)
+
+def _smooth(ob, levels=1):
+    bpy.context.view_layer.objects.active = ob
+    ob.select_set(True)
+    if levels:
+        m = ob.modifiers.new("sub", "SUBSURF")
+        m.levels = levels
+        bpy.ops.object.modifier_apply(modifier=m.name)
+    bpy.ops.object.shade_smooth()
+    ob.select_set(False)
+
+def strawhat(name, ribbon_rgb):
+    """Chapéu de palha: copa abaulada + aba larga ondulada + fita colorida. Frente = -Y no Blender (+Z no glTF)."""
+    _fresh()
+    RAT = os.path.join(ROOT, "assets", "tex", "rattan_diff.jpg")
+    # copa: esfera UV cortada embaixo, achatada
+    bpy.ops.mesh.primitive_uv_sphere_add(segments=48, ring_count=24, radius=0.15, location=(0, 0, 0.0))
+    crown = bpy.context.active_object
+    crown.scale = (1.0, 1.1, 0.8)
+    bpy.ops.object.transform_apply(scale=True)
+    bm = bmesh.new()
+    bm.from_mesh(crown.data)
+    bmesh.ops.delete(bm, geom=[v for v in bm.verts if v.co.z < 0.0], context="VERTS")
+    bm.to_mesh(crown.data)
+    bm.free()
+    crown.location.z = 0.0
+    # aba: disco com anel, ondulação suave e espessura
+    bpy.ops.mesh.primitive_circle_add(vertices=64, radius=0.27, fill_type="NGON", location=(0, 0, 0))
+    brim = bpy.context.active_object
+    bpy.context.view_layer.objects.active = brim
+    bpy.ops.object.mode_set(mode="EDIT")
+    bpy.ops.mesh.select_all(action="SELECT")
+    bpy.ops.mesh.subdivide(number_cuts=6)
+    bpy.ops.object.mode_set(mode="OBJECT")
+    for v in brim.data.vertices:
+        r = math.hypot(v.co.x, v.co.y)
+        a = math.atan2(v.co.y, v.co.x)
+        v.co.z = 0.0 + 0.045 * max(0.0, (r - 0.15) / 0.12) ** 1.6 * (1.0 + 0.35 * math.sin(a * 5.0))
+        if r < 0.15:
+            v.co.z = 0.0
+    sol = brim.modifiers.new("sol", "SOLIDIFY")
+    sol.thickness = 0.012
+    bpy.ops.object.modifier_apply(modifier=sol.name)
+    # fita: anel baixo em volta da copa
+    bpy.ops.mesh.primitive_cylinder_add(vertices=48, radius=0.1535, depth=0.032, location=(0, 0, 0.028))
+    rib = bpy.context.active_object
+    rib.scale = (1.0, 1.1, 1.0)
+    bpy.ops.object.transform_apply(scale=True)
+    for o in (crown, brim, rib):
+        _smooth(o, 0)
+    crown.data.materials.append(mat("palha", (0.98, 0.84, 0.5), 0.9, RAT))
+    brim.data.materials.append(mat("palha_aba", (0.98, 0.84, 0.5), 0.9, RAT))
+    rib.data.materials.append(mat("fita", ribbon_rgb, 0.6))
+    for o in (crown, brim, rib):
+        o.select_set(True)
+    bpy.context.view_layer.objects.active = crown
+    bpy.ops.object.join()
+    export(name)
+
+def cap():
+    """Boné: copa em gomos + aba curva na frente (-Y). Cor = branco (o jogo tinge)."""
+    _fresh()
+    bpy.ops.mesh.primitive_uv_sphere_add(segments=32, ring_count=16, radius=0.14, location=(0, 0, 0))
+    dome = bpy.context.active_object
+    dome.scale = (1.0, 1.08, 0.75)
+    bpy.ops.object.transform_apply(scale=True)
+    bm = bmesh.new()
+    bm.from_mesh(dome.data)
+    bmesh.ops.delete(bm, geom=[v for v in bm.verts if v.co.z < -0.005], context="VERTS")
+    bm.to_mesh(dome.data)
+    bm.free()
+    # aba: setor de disco, curvada para baixo
+    bpy.ops.mesh.primitive_circle_add(vertices=40, radius=0.17, fill_type="NGON", location=(0, -0.07, -0.005))
+    vis = bpy.context.active_object
+    bpy.context.view_layer.objects.active = vis
+    bpy.ops.object.mode_set(mode="EDIT")
+    bpy.ops.mesh.select_all(action="SELECT")
+    bpy.ops.mesh.subdivide(number_cuts=5)
+    bpy.ops.object.mode_set(mode="OBJECT")
+    bm = bmesh.new()
+    bm.from_mesh(vis.data)
+    bmesh.ops.delete(bm, geom=[v for v in bm.verts if v.co.y > -0.07 + 0.0], context="VERTS")
+    bm.to_mesh(vis.data)
+    bm.free()
+    for v in vis.data.vertices:
+        v.co.z = -0.005 - 0.35 * (v.co.x ** 2) - 0.12 * max(0.0, -v.co.y - 0.07)
+    sol = vis.modifiers.new("sol", "SOLIDIFY")
+    sol.thickness = 0.01
+    bpy.ops.object.modifier_apply(modifier=sol.name)
+    for o in (dome, vis):
+        _smooth(o, 0)
+        o.data.materials.append(mat("pano_bone", (0.97, 0.97, 0.97), 0.85))
+        o.select_set(True)
+    bpy.context.view_layer.objects.active = dome
+    bpy.ops.object.join()
+    export("cap")
+
+def sunglasses():
+    """Óculos de sol: duas lentes escuras com aro e ponte. Frente = -Y."""
+    _fresh()
+    parts = []
+    for sx in (-0.045, 0.045):
+        bpy.ops.mesh.primitive_cylinder_add(vertices=32, radius=0.036, depth=0.008, location=(sx, 0, 0))
+        o = bpy.context.active_object
+        o.rotation_euler.x = math.pi * 0.5
+        o.scale = (1.15, 1.0, 1.0)
+        bpy.ops.object.transform_apply(rotation=True, scale=True)
+        o.data.materials.append(mat("lente", (0.05, 0.05, 0.08), 0.15))
+        parts.append(o)
+        bpy.ops.mesh.primitive_torus_add(major_radius=0.038, minor_radius=0.004, major_segments=32, minor_segments=8, location=(sx, 0, 0))
+        t = bpy.context.active_object
+        t.rotation_euler.x = math.pi * 0.5
+        t.scale = (1.15, 1.0, 1.0)
+        bpy.ops.object.transform_apply(rotation=True, scale=True)
+        t.data.materials.append(mat("aro", (0.95, 0.95, 0.95), 0.4))
+        parts.append(t)
+    bpy.ops.mesh.primitive_cylinder_add(vertices=8, radius=0.004, depth=0.03, location=(0, 0, 0.012))
+    br = bpy.context.active_object
+    br.rotation_euler.y = math.pi * 0.5
+    bpy.ops.object.transform_apply(rotation=True)
+    br.data.materials.append(mat("aro2", (0.95, 0.95, 0.95), 0.4))
+    parts.append(br)
+    for sx in (-0.085, 0.085):
+        bpy.ops.mesh.primitive_cylinder_add(vertices=8, radius=0.0035, depth=0.11, location=(sx, 0.055, 0))
+        a = bpy.context.active_object
+        a.rotation_euler.x = math.pi * 0.5
+        bpy.ops.object.transform_apply(rotation=True)
+        a.data.materials.append(mat("aro3", (0.95, 0.95, 0.95), 0.4))
+        parts.append(a)
+    for o in parts:
+        o.select_set(True)
+    bpy.context.view_layer.objects.active = parts[0]
+    bpy.ops.object.join()
+    export("sunglasses")
+
 towel()
 sandcastle()
+strawhat("strawhat_red", (0.9, 0.2, 0.2))
+strawhat("strawhat_blue", (0.12, 0.5, 0.75))
+strawhat("strawhat_dark", (0.18, 0.18, 0.22))
+cap()
+sunglasses()
 print("gen_beach_props ok")

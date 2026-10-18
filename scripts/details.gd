@@ -84,19 +84,21 @@ static func bunting(parent: Node, a: Vector3, b: Vector3, sag: = 0.5, spacing: =
 	multimesh(parent, _bmesh(Vector3(0.015, 0.015, 1.0)), xs, [], m(Color(0.95, 0.95, 0.9)))
 
 ## Franja de palha pendurada na borda de um telhado quadrado (half = meia largura do beiral).
-static func thatch_fringe(parent: Node, c: Vector3, half: float, y: float, col: Color, length: = 0.55) -> void :
+static func thatch_fringe(parent: Node, c: Vector3, half: float, y: float, col: Color, length: = 0.55, half_z: = -1.0) -> void :
 	var xfs: = []
 	var cols: = []
 	var rng: = RandomNumberGenerator.new()
 	rng.seed = int(c.x * 13.0 + c.z * 7.0)
-	var step: = 0.12
+	var step: = 0.09
+	var hz: = half if half_z < 0.0 else half_z
 	for side in 4:
-		var k: = -half
-		while k < half:
+		var lim: = half if side < 2 else hz
+		var k: = -lim
+		while k < lim:
 			var p: Vector3
 			match side:
-				0: p = Vector3(k, 0, half)
-				1: p = Vector3(k, 0, -half)
+				0: p = Vector3(k, 0, hz)
+				1: p = Vector3(k, 0, -hz)
 				2: p = Vector3(half, 0, k)
 				_: p = Vector3(-half, 0, k)
 			var l: = length * rng.randf_range(0.45, 1.3)

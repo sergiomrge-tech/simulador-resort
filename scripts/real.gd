@@ -29,7 +29,8 @@ static func _scene(key: String) -> PackedScene:
 
 ## Instancia o modelo, ajusta para `height` (m) de altura (ou `width` se height <= 0), centra em XZ e apoia a base em y = 0.
 ## `tint` multiplica a cor (deixa mais vivo/cartoon). Retorna null se o arquivo não existe.
-static func place(parent: Node, key: String, pos: Vector3, height: float, rot_y: = 0.0, tint: = Color.WHITE, width: = 0.0) -> Node3D:
+## height < 0: escala uniforme direta (-height); center_xz = false mantém a origem do modelo em XZ (chapéus, óculos).
+static func place(parent: Node, key: String, pos: Vector3, height: float, rot_y: = 0.0, tint: = Color.WHITE, width: = 0.0, center_xz: = true) -> Node3D:
 	var ps: = _scene(key)
 	if ps == null:
 		return null
@@ -42,7 +43,7 @@ static func place(parent: Node, key: String, pos: Vector3, height: float, rot_y:
 			var sm: Material = mesh.surface_get_material(si)
 			if sm:
 				var tm: Material = Toon.toonify(sm)
-				if key.begins_with("q:") and tm is BaseMaterial3D and sm is BaseMaterial3D:
+				if (key.begins_with("q:") or key.begins_with("k:coconut")) and tm is BaseMaterial3D and sm is BaseMaterial3D:
 					(tm as BaseMaterial3D).albedo_color = (sm as BaseMaterial3D).albedo_color   # já são estilizados: sem o clareamento do toonify
 				if tm is BaseMaterial3D and tint != Color.WHITE:
 					(tm as BaseMaterial3D).albedo_color = (tm as BaseMaterial3D).albedo_color * tint
@@ -56,9 +57,11 @@ static func place(parent: Node, key: String, pos: Vector3, height: float, rot_y:
 	var ref: float = bb.size.y if height > 0.0 else maxf(bb.size.x, bb.size.z)
 	var want: float = height if height > 0.0 else width
 	var s: float = want / maxf(ref, 0.0001)
+	if height < 0.0:
+		s = -height
 	inst.scale = Vector3.ONE * s
 	var c: = bb.get_center()
-	inst.position = Vector3(-c.x * s, -bb.position.y * s, -c.z * s)
+	inst.position = Vector3(-c.x * s if center_xz else 0.0, -bb.position.y * s, -c.z * s if center_xz else 0.0)
 	return holder
 
 static func _aabb(n: Node3D) -> AABB:

@@ -93,6 +93,74 @@ func career_test() -> void :
 	Core.day_income = 0
 	Core.day_expense = 0
 
+## v0.8: cliente VIP de ponta a ponta, ônibus de turistas (rush), fechamento do quiosque e evento "calor".
+func vip_rush_test() -> void :
+	var v = main.village
+	v.enabled = false
+	Core.speed_mult = 8.0
+	Core.minutes = 12.0 * 60.0
+	Core.day_event = ""
+	v._on_slept(0)
+	# --- VIP: o famoso entra no álbum e paga gorjeta generosa
+	Core.album = []
+	var vc = v.spawn_customer()
+	if not check(vc != null, "VIP: cliente criado"):
+		return
+	vc.set_meta("vip", true)
+	vc.set_meta("vip_id", "kai")
+	var m0: = Core.money
+	check( await wait_until( func(): return vc.state == "kwait", 40.0), "VIP: esperando no balcão")
+	check(v.kiosk_serve(), "VIP: pedido servido")
+	check(Core.album.has("kai"), "VIP: Kai Onda entrou no álbum")
+	check(Core.money - m0 > 10, "VIP: pagou o pedido e a gorjeta (%d)" % (Core.money - m0))
+	# --- rush: o ônibus manda 4 clientes seguidos, sem estourar as vagas do quiosque
+	v._on_slept(0)
+	for k in Core.stock.keys():
+		Core.stock[k] = 30   # o rush precisa de estoque para todos os pratos
+	Core.stock_changed.emit()
+	v.enabled = true
+	v.rush_left = 4
+	v.rush_done = true
+	v.kiosk_spawn_in = 0.5
+	Core.minutes = 12.0 * 60.0
+	var peak: = 0
+	var t: = 0.0
+	while t < 40.0 and v.customers.size() < 4:
+		await get_tree().process_frame
+		t += get_process_delta_time()
+		peak = maxi(peak, v.customers.size())
+	check(v.customers.size() >= 3, "rush: %d clientes chegaram em %.0fs" % [v.customers.size(), t])
+	check(v.customers.size() <= main.world.kiosk_spots.size(), "rush respeita as vagas do quiosque (%d de %d)" % [v.customers.size(), main.world.kiosk_spots.size()])
+	var served0: int = v.served_today
+	v.enabled = false
+	for k in 12:
+		var up = await wait_until( func(): return not v.waiting_customers().is_empty(), 25.0)
+		if not up:
+			var st: = []
+			for c in v.customers:
+				st.append("%s/%.1f/%s" % [c.state, float(c.timer), str(c.is_moving())])
+			_p("rush: sem cliente esperando (k=%d) estados=%s min=%.0f open=%s" % [k, st, Core.minutes, str(v.kiosk_open())])
+			break
+		v.kiosk_serve()
+	check(v.served_today - served0 >= 3, "rush: atendeu %d clientes seguidos (combo x%d)" % [v.served_today - served0, v.combo])
+	# --- fechamento: depois da hora quem está no quiosque vai embora
+	Core.minutes = Core.kiosk_close_min() + 5.0
+	await frames(6)
+	var stuck: = 0
+	for c in v.customers:
+		if not (c.state in ["kleave"]):
+			stuck += 1
+	check(stuck == 0, "quiosque fechado: ninguém fica parado (%d presos)" % stuck)
+	# --- calor: mais demanda; lua: mais movimento à noite
+	Core.day_event = "calor"
+	var d_calor: float = Core.demand_factor()
+	Core.day_event = ""
+	var d_base: float = Core.demand_factor()
+	check(d_calor > d_base * 1.2, "evento calor aumenta a demanda: %.2f -> %.2f" % [d_base, d_calor])
+	v._on_slept(0)
+	Core.speed_mult = 30.0
+	Core.minutes = 8.5 * 60.0
+
 func run(m) -> void :
 	main = m
 	var watchdog: = get_tree().create_timer(230.0)
@@ -302,6 +370,7 @@ func run(m) -> void :
 	check(Core.album.size() == 2, "álbum sem repetidos: %d" % Core.album.size())
 	Core.vip_served("brasa")
 	check(Core.album.size() == 3 and Core.money == ma + int(Economy.ALBUM_REWARDS[3]), "prêmio do álbum com 3 famosos")
+	await vip_rush_test()
 	if Core.money < int(Economy.STAFF.camareira.hire):
 		Core.book(int(Economy.STAFF.camareira.hire), "Aporte", "outro", false)
 	check(Core.hire("camareira"), "contratou camareira")

@@ -81,16 +81,16 @@ static func _build(seed_: int) -> ArrayMesh:
 		var droop: = rng.randf_range(1.7, 2.7)
 		var dirh: = Vector3(cos(yaw), 0, sin(yaw))
 		var side: = Vector3( - sin(yaw), 0, cos(yaw))
-		var nseg: = 8
+		var nseg: = 20
 		for j in nseg:
 			var s0: = float(j) / float(nseg)
 			var s1: = float(j + 1) / float(nseg)
 			var c0: = _frond_center(crown, dirh, s0, L, up0, droop)
 			var c1: = _frond_center(crown, dirh, s1, L, up0, droop)
-			var rib: = 0.028 + 0.02 * (1.0 - s0)
+			var rib: = 0.022 + 0.018 * (1.0 - s0)
 			_frond_quad(sf, c0 - side * rib, c0 + side * rib, c1 + side * rib, c1 - side * rib, 0.42, 0.58, s0, s1)
-			var reach: = lerpf(0.72, 0.16, s0) * rng.randf_range(0.88, 1.08)
-			var hang: = lerpf(0.02, 0.42, s0)
+			var reach: = lerpf(1.05, 0.22, pow(s0, 0.8)) * rng.randf_range(0.9, 1.1)
+			var hang: = lerpf(0.05, 0.62, s0)
 			for sgn_i in 2:
 				var sgn: = -1.0 if sgn_i == 0 else 1.0
 				var spread: float = sgn * rng.randf_range(0.85, 1.15)
@@ -186,7 +186,7 @@ static func spawn(parent: Node, pos: Vector3, seed_: int, collide: = true) -> No
 	root.scale = Vector3(s, s, s)
 	var mi: = MeshInstance3D.new()
 	mi.mesh = variant(seed_)
-	var tones: = [Color(0.82, 1.0, 0.7), Color(1.0, 0.96, 0.78), Color(0.7, 0.92, 0.58), Color(0.95, 1.0, 0.62)]
+	var tones: = [Color(0.72, 0.92, 0.6), Color(0.88, 0.86, 0.66), Color(0.62, 0.84, 0.5), Color(0.82, 0.9, 0.52)]
 	mi.set_instance_shader_parameter("tint", tones[absi(seed_) % tones.size()])
 	mi.visibility_range_end = 120.0 if collide else 78.0
 	mi.visibility_range_end_margin = 14.0

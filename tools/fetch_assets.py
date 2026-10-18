@@ -68,7 +68,7 @@ MODELS_EXTRA = [
     "book_encyclopedia_set_01", "mantel_clock_01", "carved_wooden_elephant",
     # plantas e pedras
     "shrub_04", "grass_medium_01", "grass_medium_02", "grass_bermuda_01", "fern_02", "calathea_orbifolia_01",
-    "anthurium_botany_01", "flower_gazania", "flower_ursinia", "periwinkle_plant", "island_tree_02", 
+    "Camera_01", "anthurium_botany_01", "flower_gazania", "flower_ursinia", "periwinkle_plant", "island_tree_02", 
     "tree_stump_01", "dry_branches_medium_01", "bark_debris_01",
     "coast_rocks_02", "coast_rocks_03", "coast_rocks_05", "boulder_01", "rock_07", "rock_09", "stone_01", "sand_rocks_small_01",
     "coast_land_rocks_02", "coast_land_rocks_03",

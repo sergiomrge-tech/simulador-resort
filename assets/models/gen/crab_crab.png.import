@@ -3,9 +3,10 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://beur1t4ngdrfo"
-path="res://.godot/imported/crab_crab.png-6fed2cd55e7ff167b22bf189204e00e2.ctex"
+path.s3tc="res://.godot/imported/crab_crab.png-6fed2cd55e7ff167b22bf189204e00e2.s3tc.ctex"
 metadata={
-"vram_texture": false
+"imported_formats": ["s3tc_bptc"],
+"vram_texture": true
 }
 generator_parameters={
 "md5": "6f59033cdb9396795939bfa0ba276021"
@@ -14,11 +15,11 @@ generator_parameters={
 [deps]
 
 source_file="res://assets/models/gen/crab_crab.png"
-dest_files=["res://.godot/imported/crab_crab.png-6fed2cd55e7ff167b22bf189204e00e2.ctex"]
+dest_files=["res://.godot/imported/crab_crab.png-6fed2cd55e7ff167b22bf189204e00e2.s3tc.ctex"]
 
 [params]
 
-compress/mode=0
+compress/mode=2
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0

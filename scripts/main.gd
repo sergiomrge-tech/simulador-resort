@@ -339,6 +339,10 @@ func _run_shot(n: String) -> void :
 			Core.reset_rooms(2)
 			world.sync_bungalows()
 		world.refresh_areas()
+		if args.has("dirty"):
+			# depuração: --dirty deixa os quartos sujos (cama bagunçada, toalhas e lixo)
+			for rr in Core.rooms:
+				Core.vacate_room(rr.id)
 	if not args.has("empty"):
 		_stage_guests()
 		if n in ["vila", "noite_vila", "vila_anda", "praca", "casa", "casa_ext", "barcos", "palmeira", "serra_dia", "serra_praia", "serra_ouro", "serra_alvorada"]:

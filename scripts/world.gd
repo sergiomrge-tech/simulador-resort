@@ -281,6 +281,7 @@ func _reception() -> void :
 
 	B.box(self, Vector3(10.2, 0.08, 7.2), Vector3(cx, y0 + h + 0.04, cz), M.planks)
 	B.hip_roof(self, Vector3(cx, y0 + h + 0.08, cz), 13.0, 10.0, 4.2, M.thatch, 0.25)
+	D.thatch_fringe(self, Vector3(cx, 0, cz), 6.45, y0 + h + 0.14, Color(0.96, 0.75, 0.38), 0.24, 4.95)
 
 	var desk_z: = 15.5
 	B.box(self, Vector3(5.2, 1.05, 0.7), Vector3(0, y0 + 0.525, desk_z), M.planks, true)
@@ -603,6 +604,7 @@ func _bungalow(i: int, c: Vector3) -> void :
 			B.cyl(self, 0.12, 0.14, h, Vector3(sx, y0 + h * 0.5, sz), M.post, 8)
 	B.box(self, Vector3(w, 0.06, d), Vector3(c.x, y0 + h, c.z), M.planks)
 	B.hip_roof(self, Vector3(c.x, y0 + h + 0.03, c.z - 0.7), w + 2.4, d + 3.8, 3.8, M.thatch, 0.22)
+	D.thatch_fringe(self, Vector3(c.x, 0, c.z - 0.7), (w + 2.4) * 0.5 - 0.05, y0 + h + 0.1, Color(0.96, 0.75, 0.38), 0.22, (d + 3.8) * 0.5 - 0.05)
 	_bungalow_details(i, c, y0, w, d, zf, zb, x0, x1, h)
 
 	B.model(self, "wooden_stool_01", Vector3(c.x - 1.5, y0, zf - 1.3), 0.3, 1.0)
@@ -618,6 +620,14 @@ func _bungalow(i: int, c: Vector3) -> void :
 	B.model(self, "wooden_lantern_01", Vector3(c.x - 2.42, y0 + 0.62, c.z + 1.6), 0.4, 0.75)
 	B.model(self, "potted_plant_02", Vector3(c.x + 2.2, y0, c.z - 2.0), 0.0, 0.9)
 	B.model(self, "wicker_basket_02", Vector3(c.x + 2.3, y0, c.z + 0.2), 0.6, 1.0)
+	# decoração real (Poly Haven, CC0): armário, ventilador de teto, quadros, espelho, mala e despertador
+	Real.place(self, "painted_wooden_cabinet", Vector3(c.x + 2.45, y0, c.z - 1.0), 1.6, -PI * 0.5, Color.WHITE, 0.0)
+	Real.place(self, "ceiling_fan", Vector3(c.x + 0.2, y0 + h - 0.42, c.z), 0.42, 0.0, Color(1.6, 1.6, 1.6), 1.1)
+	Real.place(self, "fancy_picture_frame_01", Vector3(c.x + 2.58, y0 + 1.5, c.z + 0.8), 0.0, -PI * 0.5, Color.WHITE, 0.75)
+	Real.place(self, "wall_clock", Vector3(c.x + 2.58, y0 + 1.75, c.z - 0.5), 0.0, -PI * 0.5, Color.WHITE, 0.32)
+	Real.place(self, "ornate_mirror_01", Vector3(c.x - 0.3, y0 + 1.0, zb - 0.2), 0.9, PI, Color.WHITE, 0.0)
+	Real.place(self, "vintage_suitcase", Vector3(c.x + 2.3, y0, c.z + 2.0), 0.4, -PI * 0.5 + 0.3, Color.WHITE, 0.0)
+	Real.place(self, "alarm_clock_01", Vector3(c.x - 2.45, y0 + 0.6, c.z + 1.25), 0.1, PI * 0.5)
 	var lamp: = OmniLight3D.new()
 	lamp.position = Vector3(c.x - 2.42, y0 + 0.9, c.z + 1.55)
 	lamp.omni_range = 2.6
@@ -631,30 +641,38 @@ func _bungalow(i: int, c: Vector3) -> void :
 
 	B.box(cl, Vector3(1.3, 0.025, 0.42), bed_c + Vector3(0, 0.475, -0.62), M.linen_sand)
 	for sx in [-0.22, 0.22]:
-		var towel: = B.cyl(cl, 0.075, 0.075, 0.42, bed_c + Vector3(sx, 0.56, -0.62), M.linen_teal, 16)
-		towel.rotation.x = PI * 0.5
+		# toalhas dobradas (modelo gerado), empilhadas
+		for k in 3:
+			Real.place(cl, "g:towel", bed_c + Vector3(sx, 0.5 + k * 0.03, -0.62), 0.0, 0.1 * k, Color(0.55, 0.9, 0.95), 0.4)
 
 	var dc: = Node3D.new()
 	add_child(dc)
 	B.box(dc, Vector3(1.3, 0.04, 1.1), bed_c + Vector3(0.1, 0.49, -0.1), M.linen_sand).rotation = Vector3(0.05, 0.4, 0.06)
-	B.box(dc, Vector3(0.8, 0.1, 0.6), bed_c + Vector3(-0.3, 0.53, -0.45), M.linen_sand).rotation = Vector3(0.25, -0.5, 0.15)
-	B.box(dc, Vector3(0.55, 0.13, 0.36), bed_c + Vector3(0.4, 0.54, 0.2), M.linen).rotation = Vector3(0.1, 0.9, 0.3)
-	B.box(dc, Vector3(0.62, 0.14, 0.4), bed_c + Vector3(-1.05, 0.08, 0.6), M.linen).rotation = Vector3(0.0, 0.3, 0.1)
+	var pil0: = Real.place(dc, "g:towel", bed_c + Vector3(-0.3, 0.52, -0.45), 0.0, -0.5, Color(1.0, 0.95, 0.85), 0.7)
+	if pil0:
+		pil0.rotation.x = 0.25
+	var pil1: = Real.place(dc, "g:towel", bed_c + Vector3(0.4, 0.52, 0.2), 0.0, 0.9, Color(0.85, 0.95, 1.0), 0.6)
+	if pil1:
+		pil1.rotation.z = 0.3
+	Real.place(dc, "g:towel", bed_c + Vector3(-1.05, 0.02, 0.6), 0.0, 0.3, Color(0.9, 0.9, 0.9), 0.7)
 	var dt: = Node3D.new()
 	add_child(dt)
-	B.box(dt, Vector3(0.8, 0.03, 0.5), Vector3(c.x + 0.4, y0 + 0.02, c.z - 1.6), M.linen_teal).rotation.y = 0.7
-	B.box(dt, Vector3(0.6, 0.06, 0.45), Vector3(c.x + 0.7, y0 + 0.04, c.z - 1.3), M.linen_teal).rotation = Vector3(0.1, -0.3, 0.05)
-	B.box(dt, Vector3(0.7, 0.03, 0.5), Vector3(c.x - 0.1, y0 + 0.02, zf - 1.0), M.linen_teal).rotation.y = 1.9
+	Real.place(dt, "g:towel", Vector3(c.x + 0.4, y0, c.z - 1.6), 0.0, 0.7, Color(0.45, 0.9, 0.95), 0.9)
+	Real.place(dt, "g:towel", Vector3(c.x + 0.7, y0 + 0.03, c.z - 1.3), 0.0, -0.3, Color(1.0, 0.7, 0.75), 0.8)
+	Real.place(dt, "g:towel", Vector3(c.x - 0.1, y0, zf - 1.0), 0.0, 1.9, Color(0.45, 0.9, 0.95), 0.9)
 	var dl: = Node3D.new()
 	add_child(dl)
-	var red: = B.flat(Color(0.75, 0.1, 0.08), 0.35, 0.6)
-	var paper: = B.flat(Color(0.95, 0.95, 0.9), 0.9)
-	B.cyl(dl, 0.033, 0.033, 0.12, Vector3(c.x + 1.2, y0 + 0.06, c.z + 1.6), red, 10)
-	B.cyl(dl, 0.033, 0.033, 0.12, Vector3(c.x + 1.5, y0 + 0.033, c.z + 1.2), red, 10).rotation.z = PI * 0.5
-	B.sphere(dl, 0.07, Vector3(c.x + 0.9, y0 + 0.06, c.z + 1.3), paper)
-	B.sphere(dl, 0.06, Vector3(c.x + 1.7, y0 + 0.05, c.z + 1.8), paper)
-	B.sphere(dl, 0.12, Vector3(c.x + 0.6, y0 + 0.1, c.z + 1.8), B.flat(Color(0.35, 0.23, 0.12), 0.9), Vector3(1, 0.8, 1))
-	B.sphere(dl, 0.18, Vector3(c.x + 1.9, y0 + 0.16, c.z + 0.6), B.flat(Color(0.1, 0.1, 0.1), 0.3), Vector3(1, 1.3, 1))
+	# lixo real (Poly Haven / Kenney, CC0): saco, copos, garrafa, resto de fruta, pão
+	Real.place(dl, "trashbag", Vector3(c.x + 1.9, y0, c.z + 0.6), 0.45, 0.4)
+	var cup0: = Real.place(dl, "k:cup", Vector3(c.x + 1.2, y0 + 0.03, c.z + 1.6), 0.12, 0.0, Color(1.0, 0.35, 0.3))
+	if cup0:
+		cup0.rotation.x = PI * 0.5
+	Real.place(dl, "k:cup", Vector3(c.x + 1.5, y0, c.z + 1.2), 0.12, 0.8, Color(1.0, 0.35, 0.3))
+	var bot0: = Real.place(dl, "k:bottle", Vector3(c.x + 0.9, y0 + 0.04, c.z + 1.3), 0.22, 0.6)
+	if bot0:
+		bot0.rotation.z = PI * 0.5
+	Real.place(dl, "food_apple_01", Vector3(c.x + 1.7, y0, c.z + 1.8), 0.08, 0.0, Color(0.7, 0.6, 0.5))
+	Real.place(dl, "k:bread", Vector3(c.x + 0.6, y0, c.z + 1.8), 0.12, 1.2, Color(0.8, 0.7, 0.6))
 	room.dirty = {"cama": dc, "toalhas": dt, "lixo": dl}
 
 	var items: = {"cama": [bed_c + Vector3(0, 0.6, 0), Vector3(1.9, 0.9, 2.2), "Arrumar a cama"], 

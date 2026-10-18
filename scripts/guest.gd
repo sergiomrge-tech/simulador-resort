@@ -6,7 +6,7 @@ signal arrived
 const SKINS: = [Color(0.95, 0.78, 0.62), Color(0.8, 0.58, 0.42), Color(0.62, 0.42, 0.28), Color(0.42, 0.28, 0.18)]
 const SHIRTS: = [Color(0.95, 0.45, 0.2), Color(0.15, 0.55, 0.75), Color(0.95, 0.85, 0.3), Color(0.9, 0.9, 0.88), Color(0.85, 0.25, 0.35), Color(0.3, 0.7, 0.45), Color(0.55, 0.35, 0.7)]
 const SHORTS: = [Color(0.15, 0.25, 0.5), Color(0.85, 0.8, 0.65), Color(0.2, 0.2, 0.22), Color(0.3, 0.55, 0.65), Color(0.75, 0.3, 0.2)]
-const HAIRS: = [Color(0.08, 0.06, 0.05), Color(0.3, 0.18, 0.08), Color(0.75, 0.6, 0.35), Color(0.55, 0.55, 0.55)]
+const HAIRS: = [Color(0.08, 0.06, 0.05), Color(0.3, 0.18, 0.08), Color(0.75, 0.6, 0.35), Color(0.6, 0.57, 0.54), Color(0.5, 0.2, 0.1), Color(0.9, 0.78, 0.5), Color(0.18, 0.12, 0.08)]
 const NAMES: = ["Ana", "João", "Maria", "Pedro", "Luiza", "Rafael", "Camila", "Bruno", "Juliana", "Thiago", "Beatriz", "Lucas", "Fernanda", "Gabriel", "Larissa", "Diego"]
 
 static var _mat: ShaderMaterial
@@ -93,10 +93,10 @@ func set_colors(skin: Color, shirt: Color, shorts: Color, hair: Color) -> void :
 	_hair_col = hair
 	if _body_mi and is_instance_valid(_body_mi):
 		_body_mi.material_override = Ppl.skin_material(_female, skin)
-	var htint: = Color(clampf(hair.r * 1.9 + 0.04, 0.0, 1.0), clampf(hair.g * 1.9 + 0.03, 0.0, 1.0), clampf(hair.b * 1.9 + 0.03, 0.0, 1.0))
+	var htint: = Color(clampf(hair.r * 1.9 + 0.04, 0.0, 0.9), clampf(hair.g * 1.9 + 0.03, 0.0, 0.88), clampf(hair.b * 1.9 + 0.03, 0.0, 0.84))   # teto < 1: branco puro vira azul na sombra do chapéu
 	for n in _hair_parts:
 		if is_instance_valid(n):
-			n.material_override = Ppl.toon_copy(n.get_meta("src"), htint)
+			n.material_override = Ppl.hair_copy(n.get_meta("src"), htint)
 	for mi in _mesh_insts:
 		mi.set_instance_shader_parameter("skin", skin)
 		mi.set_instance_shader_parameter("shirt", shirt)
@@ -831,22 +831,26 @@ func _caricature(rng: RandomNumberGenerator) -> void :
 	_face = Node3D.new()
 	att.add_child(_face)
 	var roll: = rng.randf()
-	if roll < 0.3:
-		var straw: = B.flat(Color(0.98, 0.84, 0.45), 0.9)
-		B.cyl(_face, 0.26, 0.26, 0.018, Vector3(0, HAT_Y, -0.02), straw, 32)
-		B.cyl(_face, 0.125, 0.14, 0.12, Vector3(0, HAT_Y + 0.055, -0.02), straw, 24)
-		B.cyl(_face, 0.143, 0.143, 0.03, Vector3(0, HAT_Y + 0.02, -0.02), B.flat([Color(0.9, 0.25, 0.25), Color(0.15, 0.55, 0.75), Color(0.2, 0.2, 0.25)][rng.randi() % 3], 0.6), 24)
-	elif roll < 0.52:
+	# acessórios reais: chapéu de palha / boné / chapéu de pescador (Poly Haven) / flor (Poly Haven) — modelos em assets/models/gen e Poly Haven
+	if roll < 0.28:
+		var hat: String = ["g:strawhat_red", "g:strawhat_blue", "g:strawhat_dark"][rng.randi() % 3]
+		Real.place(_face, hat, Vector3(0, HAT_Y - 0.01, -0.02), -1.0, 0.0, Color.WHITE, 0.0, false)
+	elif roll < 0.5:
 		var cap_c: Color = [Color(1.0, 0.4, 0.3), Color(0.2, 0.6, 1.0), Color(1.0, 0.85, 0.2), Color(0.3, 0.8, 0.45)][rng.randi() % 4]
-		B.sphere(_face, 0.135, Vector3(0, HAT_Y - 0.03, -0.02), B.flat(cap_c, 0.7), Vector3(1.0, 0.7, 1.08))
-		var visor: = B.box(_face, Vector3(0.19, 0.015, 0.13), Vector3(0, HAT_Y - 0.05, 0.14), B.flat(cap_c.darkened(0.15), 0.7))
-		visor.rotation.x = 0.12
+		Real.place(_face, "g:cap", Vector3(0, HAT_Y - 0.05, -0.02), -1.0, 0.0, cap_c.lerp(Color.WHITE, 0.15), 0.0, false)
 	elif roll < 0.62:
-		var bucket: Color = [Color(0.95, 0.95, 0.9), Color(0.55, 0.8, 0.95)][rng.randi() % 2]
-		B.cyl(_face, 0.125, 0.18, 0.11, Vector3(0, HAT_Y + 0.02, -0.02), B.flat(bucket, 0.8), 24)
+		var bucket: Color = [Color(1.0, 1.0, 0.96), Color(0.7, 0.9, 1.1)][rng.randi() % 2]
+		Real.place(_face, "fishermans_hat", Vector3(0, HAT_Y - 0.05, -0.02), 0.0, rng.randf() * TAU, bucket, 0.34)
 	elif roll < 0.7:
-		var flower: = B.sphere(_face, 0.04, Vector3(0.11, HAT_Y - 0.06, 0.02), B.flat(Color(1.0, 0.4, 0.65), 0.6))
-		B.sphere(_face, 0.016, flower.position + Vector3(0.012, 0.0, 0.025), B.flat(Color(1.0, 0.9, 0.3), 0.6))
+		Real.place(_face, "flower_gazania", Vector3(0.12, HAT_Y - 0.07, 0.03), 0.0, 0.0, Color.WHITE, 0.1)
+	# óculos de sol e câmera no pescoço
+	if rng.randf() < 0.3:
+		Real.place(_face, "g:sunglasses", Vector3(0, 0.075, 0.115), -1.0, 0.0, Color.WHITE, 0.0, false)
+	if rng.randf() < 0.14:
+		var att3: = BoneAttachment3D.new()
+		att3.bone_name = "neck_01"
+		_skel.add_child(att3)
+		Real.place(att3, "Camera_01", Vector3(0, -0.2, 0.1), 0.0, PI, Color.WHITE, 0.14)
 	# colar de contas
 	if rng.randf() < 0.25:
 		var att2: = BoneAttachment3D.new()
@@ -875,8 +879,8 @@ func _finish_look(rng: RandomNumberGenerator) -> void :
 		mi.set_instance_shader_parameter("shirt2", p2)
 		mi.set_instance_shader_parameter("shorts_pattern", 1.0 if rng.randf() < 0.3 else 0.0)
 	if _model:
-		var h: = rng.randf_range(0.93, 1.06)
-		var w: = rng.randf_range(0.86, 1.0)
+		var h: = rng.randf_range(0.9, 1.08)
+		var w: = rng.randf_range(0.82, 1.06)
 		_model.scale = Vector3(w * lerpf(1.0, h, 0.5), h, w * lerpf(1.0, h, 0.5))
 
 const HAT_Y: = 0.14

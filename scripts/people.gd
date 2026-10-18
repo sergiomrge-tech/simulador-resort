@@ -198,6 +198,43 @@ static func toon_copy(src: Material, tint: Color) -> Material:
 		return m
 	return src
 
+static var _gray_hair: = {}
+
+## Cabelo: a textura original é azulada; usa uma versão em tons de cinza (média 0,5) para a cor do cabelo sair exata.
+static func hair_copy(src: Material, tint: Color) -> Material:
+	var m: Material = toon_copy(src, tint)
+	if m is BaseMaterial3D and (m as BaseMaterial3D).albedo_texture != null:
+		var bm: BaseMaterial3D = m as BaseMaterial3D
+		var tex: Texture2D = bm.albedo_texture
+		var key: = tex.get_instance_id()
+		if not _gray_hair.has(key):
+			var img: Image = tex.get_image()
+			if img != null:
+				if img.is_compressed():
+					img.decompress()
+				img.resize(256, 256)
+				var sum: = 0.0
+				var cnt: = 0
+				for y in 256:
+					for x in 256:
+						var c: = img.get_pixel(x, y)
+						var l: = c.get_luminance()
+						img.set_pixel(x, y, Color(l, l, l, c.a))
+						if c.a > 0.5:
+							sum += l
+							cnt += 1
+				var k: = 0.5 / maxf(sum / maxf(cnt, 1), 0.02)
+				for y in 256:
+					for x in 256:
+						var c: = img.get_pixel(x, y)
+						var l: = clampf(c.r * k, 0.0, 1.0)
+						img.set_pixel(x, y, Color(l, l, l, c.a))
+				_gray_hair[key] = ImageTexture.create_from_image(img)
+			else:
+				_gray_hair[key] = tex
+		bm.albedo_texture = _gray_hair[key]
+	return m
+
 ## Cor final do corpo: textura clara ou escura (já com a roupa de baixo desenhada) tingida para o tom de pele.
 static func skin_material(female: bool, skin: Color) -> StandardMaterial3D:
 	var lum: = skin.get_luminance()
