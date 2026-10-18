@@ -766,9 +766,237 @@ def jangada():
     join(parts, "jangada")
     export("jangada")
 
+# ---------------------------------------------------------------- buganvília (substitui as "bolas coloridas")
+BLOOM_COLORS = {"magenta": (0.86, 0.12, 0.42), "laranja": (0.95, 0.42, 0.12), "roxa": (0.62, 0.18, 0.72), "rosa": (0.96, 0.62, 0.78), "folhas": None}
+
+def _patch(bm, M, L, W, cup, curl, fold, nu, nv, mi, uvl):
+    """Folha/pétala: grade nu x nv com contorno ovalado e ponta (sin), cupulada (cup), curvada (curl) e dobrada na nervura (fold). M = matriz de posição."""
+    rows = []
+    for i in range(nu + 1):
+        u = i / nu
+        w = W * 0.5 * (math.sin(math.pi * u ** 0.8)) ** 0.85
+        row = []
+        for j in range(nv + 1):
+            v = -1.0 + 2.0 * j / nv
+            x = v * w
+            y = u * L
+            z = cup * (x * x) / (W * 0.5) + curl * u * u * L - fold * abs(x)
+            row.append(bm.verts.new(M @ __import__("mathutils").Vector((x, y, z))))
+        rows.append(row)
+    for i in range(nu):
+        for j in range(nv):
+            f = bm.faces.new((rows[i][j], rows[i][j + 1], rows[i + 1][j + 1], rows[i + 1][j]))
+            f.material_index = mi
+            for lp in f.loops:
+                lp[uvl].uv = ((i + (lp.vert is rows[i + 1][j + 1].__class__ and 0)) / nu, j / nv)
+
+def bloom_clump(name, rgb):
+    """Ramo de buganvília: 3 galhinhos com espinhos, folhas ovais com nervura e, nas pontas, trios de brácteas de papel (cupuladas, onduladas)
+    em volta de florzinhas brancas tubulares. rgb=None -> só folhas. Diâmetro ~0,32 m, centrado na origem. Substitui as bolinhas coloridas."""
+    import mathutils
+    V, Mx = mathutils.Vector, mathutils.Matrix
+    fresh()
+    rnd = random.Random(5)
+    leaf = mat("folha", (0.2, 0.46, 0.16), 0.7)
+    bract = mat("braktea", rgb or (0.8, 0.2, 0.4), 0.55)
+    stem = mat("galho", (0.36, 0.24, 0.14), 0.9)
+    white = mat("flor", (0.98, 0.97, 0.9), 0.5)
+    bm = bmesh.new()
+    uvl = bm.loops.layers.uv.new("UVMap")
+    tubes = []
+    for b in range(3):
+        a = b * 2 * math.pi / 3 + rnd.uniform(-0.3, 0.3)
+        d = V((math.cos(a) * 0.85, math.sin(a) * 0.85, 0.45 + rnd.uniform(-0.15, 0.15))).normalized()
+        base = V((0, 0, -0.04))
+        tip = base + d * 0.15
+        tubes.append((base, tip))
+        q = d.to_track_quat("Y", "Z")
+        # folhas alternadas ao longo do galho
+        for k, t in enumerate((0.3, 0.55, 0.8)):
+            for side in (-1, 1):
+                if (k + b + (side > 0)) % 3 == 0 and rgb is not None:
+                    continue
+                pos = base + d * (0.15 * t)
+                roll = Mx.Rotation(side * math.radians(70 + rnd.uniform(-12, 12)), 4, "Y")
+                tilt = Mx.Rotation(math.radians(-25 + rnd.uniform(-8, 8)), 4, "X")
+                M = Mx.Translation(pos) @ q.to_matrix().to_4x4() @ roll @ tilt
+                sz = rnd.uniform(0.85, 1.15)
+                _patch(bm, M, 0.075 * sz, 0.048 * sz, 0.12, -0.25, 0.35, 7, 4, 0, uvl)
+        if rgb is None:
+            # clump só de folhas: mais algumas folhas na ponta
+            for r in range(3):
+                M = Mx.Translation(tip) @ q.to_matrix().to_4x4() @ Mx.Rotation(r * 2.1, 4, "Y") @ Mx.Rotation(math.radians(-35), 4, "X")
+                _patch(bm, M, 0.085, 0.055, 0.12, -0.2, 0.35, 7, 4, 0, uvl)
+            continue
+        # trio de brácteas no ápice
+        for r in range(3):
+            M = Mx.Translation(tip) @ q.to_matrix().to_4x4() @ Mx.Rotation(r * 2 * math.pi / 3 + rnd.uniform(-0.2, 0.2), 4, "Y") @ Mx.Rotation(math.radians(-48), 4, "X")
+            sz = rnd.uniform(0.9, 1.15)
+            _patch(bm, M, 0.095 * sz, 0.075 * sz, 0.55, 0.5, 0.0, 8, 6, 1, uvl)
+        for r in range(3):
+            tubes.append((tip, tip + d * 0.032 + V((math.cos(r * 2.1) * 0.012, math.sin(r * 2.1) * 0.012, 0))))
+    me = bpy.data.meshes.new("clump")
+    bm.to_mesh(me)
+    bm.free()
+    ob = bpy.data.objects.new("clump", me)
+    bpy.context.scene.collection.objects.link(ob)
+    me.materials.append(leaf)
+    me.materials.append(bract)
+    bpy.context.view_layer.objects.active = ob
+    so = ob.modifiers.new("sol", "SOLIDIFY")
+    so.thickness = 0.0025
+    bpy.ops.object.modifier_apply(modifier=so.name)
+    bpy.ops.object.shade_smooth()
+    parts = [ob]
+    for i, (a_, b_) in enumerate(tubes):
+        is_flower = i >= 3 and (i - 3) % 4 != 0 and rgb is not None
+        parts.append(tube(tuple(a_), tuple(b_), 0.0045 if is_flower else 0.0065, white if is_flower else stem, verts=8))
+    join(parts, "buganvilia")
+    export("bloom_" + name)
+
+# ---------------------------------------------------------------- vaso pendurado e canteiro de flores
+def _finish_patches(bm, mats, name):
+    me = bpy.data.meshes.new(name)
+    bm.to_mesh(me)
+    bm.free()
+    ob = bpy.data.objects.new(name, me)
+    bpy.context.scene.collection.objects.link(ob)
+    for m in mats:
+        me.materials.append(m)
+    bpy.context.view_layer.objects.active = ob
+    so = ob.modifiers.new("sol", "SOLIDIFY")
+    so.thickness = 0.0025
+    bpy.ops.object.modifier_apply(modifier=so.name)
+    bpy.ops.object.shade_smooth()
+    return ob
+
+def _drop_to_zero(ob):
+    """Move o objeto para que o ponto mais baixo fique em z=0 (e devolve o deslocamento)."""
+    zmin = min((ob.matrix_world @ v.co).z for v in ob.data.vertices)
+    ob.location.z -= zmin
+    bpy.context.view_layer.objects.active = ob
+    ob.select_set(True)
+    bpy.ops.object.transform_apply(location=True)
+    ob.select_set(False)
+    return -zmin
+
+def hanging_planter():
+    """Vaso de barro pendurado por 3 correntes, com folhagem em cascata (hera): 7 ramos caindo com folhas ovais alternadas e um tufo de folhas na boca.
+    Pé (ponta do ramo mais longo) em z=0; centro do vaso em z = POT_Z (impresso na geração). Topo das correntes ~0,55 m acima do vaso."""
+    import mathutils
+    V, Mx = mathutils.Vector, mathutils.Matrix
+    fresh()
+    rnd = random.Random(21)
+    clay = mat("barro", (0.82, 0.42, 0.28), 0.8, tex("terracotta_floor_tiles_diff.jpg") if os.path.exists(tex("terracotta_floor_tiles_diff.jpg")) else None)
+    soil = mat("terra", (0.2, 0.13, 0.08), 0.95)
+    leaf = mat("folha", (0.24, 0.55, 0.2), 0.7)
+    leaf2 = mat("folha2", (0.34, 0.66, 0.26), 0.7)
+    stem = mat("ramo", (0.3, 0.38, 0.16), 0.9)
+    chain = mat("corrente", (0.3, 0.25, 0.2), 0.9)
+    bm = bmesh.new()
+    uvl = bm.loops.layers.uv.new("UVMap")
+    PZ = 1.0
+    parts = []
+    # tufo na boca do vaso
+    for k in range(14):
+        a = k * 2 * math.pi / 14 + rnd.uniform(-0.2, 0.2)
+        M = Mx.Translation(V((math.cos(a) * 0.06, math.sin(a) * 0.06, PZ + 0.08))) @ Mx.Rotation(a - math.pi / 2, 4, "Z") @ Mx.Rotation(math.radians(-55 + rnd.uniform(-15, 15)), 4, "X")
+        _patch(bm, M, 0.14, 0.075, 0.15, 0.25, 0.3, 7, 4, k % 2, uvl)
+    # ramos caindo
+    for b in range(7):
+        a = b * 2 * math.pi / 7 + rnd.uniform(-0.2, 0.2)
+        r0 = 0.13
+        p0 = V((math.cos(a) * r0, math.sin(a) * r0, PZ + 0.03))
+        L = rnd.uniform(0.35, 0.62) if b else 0.9
+        prev = p0
+        n = 14
+        for i in range(1, n + 1):
+            t = i / n
+            out = r0 + 0.05 * math.sin(t * math.pi)
+            q = V((math.cos(a) * out + 0.01 * math.sin(i * 1.7), math.sin(a) * out + 0.01 * math.cos(i * 1.3), PZ + 0.03 - t * (L + 0.1)))
+            parts.append((prev, q))
+            if i % 2 == 0 and i < n:
+                for side in (-1, 1):
+                    d = (q - prev).normalized()
+                    M = Mx.Translation(q) @ Mx.Rotation(a + side * math.radians(80), 4, "Z") @ Mx.Rotation(math.radians(115 + rnd.uniform(-15, 15)), 4, "X")
+                    sz = rnd.uniform(0.85, 1.15) * (1.0 - 0.3 * t)
+                    _patch(bm, M, 0.065 * sz, 0.042 * sz, 0.15, 0.3, 0.3, 5, 3, (i + b + side) % 2, uvl)
+            prev = q
+        # folha-ponta
+        M = Mx.Translation(prev) @ Mx.Rotation(a, 4, "Z") @ Mx.Rotation(math.radians(160), 4, "X")
+        _patch(bm, M, 0.07, 0.045, 0.15, 0.2, 0.3, 5, 3, 0, uvl)
+    ob = _finish_patches(bm, [leaf, leaf2], "folhagem")
+    objs = [ob]
+    for a_, b_ in parts:
+        objs.append(tube(tuple(a_), tuple(b_), 0.0042, stem, verts=6))
+    # vaso torneado + terra + correntes
+    objs.append(lathe([(0.0, PZ - 0.1), (0.075, PZ - 0.1), (0.1, PZ - 0.07), (0.135, PZ + 0.02), (0.15, PZ + 0.09), (0.155, PZ + 0.1), (0.145, PZ + 0.1), (0.13, PZ + 0.09), (0.0, PZ + 0.07)], clay, verts=40, uvscale=0.9))
+    objs.append(lathe([(0.0, PZ + 0.06), (0.13, PZ + 0.07), (0.0, PZ + 0.08)], soil, verts=32))
+    for k in range(3):
+        a = k * 2 * math.pi / 3 + 0.4
+        top = (0, 0, PZ + 0.62)
+        objs.append(tube((math.cos(a) * 0.14, math.sin(a) * 0.14, PZ + 0.09), top, 0.006, chain, verts=8))
+    objs.append(tube((0, 0, PZ + 0.62), (0, 0, PZ + 0.7), 0.01, chain, verts=8))
+    o = join(objs, "vaso_pendurado")
+    sh = _drop_to_zero(o)
+    print("POT_Z", PZ + sh, "TOP", PZ + 0.7 + sh)
+    export("hanging_planter")
+
+def flowerbed():
+    """Canteiro florido de 2,0 x 0,6 m: ~16 plantas de margarida/zínia (miolo torneado + 9-10 pétalas cupuladas em 6 cores) com talo curvo e roseta de folhas.
+    Base em z=0 (sobre a terra do canteiro); origem no centro."""
+    import mathutils
+    V, Mx = mathutils.Vector, mathutils.Matrix
+    fresh()
+    rnd = random.Random(33)
+    leaf = mat("folha", (0.2, 0.5, 0.18), 0.7)
+    cols = [(0.9, 0.15, 0.2), (1.0, 0.82, 0.12), (0.95, 0.4, 0.62), (0.98, 0.97, 0.94), (1.0, 0.5, 0.1), (0.6, 0.25, 0.8)]
+    pet = [mat("petala%d" % i, c, 0.55) for i, c in enumerate(cols)]
+    stem = mat("talo", (0.25, 0.42, 0.15), 0.9)
+    eye = mat("miolo", (0.45, 0.28, 0.08), 0.8)
+    bm = bmesh.new()
+    uvl = bm.loops.layers.uv.new("UVMap")
+    objs_t = []
+    centers = []
+    n = 0
+    for gx in range(8):
+        for gy in range(3):
+            if (gx + gy) % 2:
+                continue
+            x = -0.88 + gx * 0.25 + rnd.uniform(-0.05, 0.05)
+            y = -0.2 + gy * 0.2 + rnd.uniform(-0.05, 0.05)
+            h = rnd.uniform(0.2, 0.36)
+            lean = V((rnd.uniform(-0.05, 0.05), rnd.uniform(-0.05, 0.05), 0))
+            base = V((x, y, 0.0))
+            top = base + V((0, 0, h)) + lean
+            objs_t.append((base, top))
+            c = n % len(pet)
+            n += 1
+            centers.append(top)
+            # roseta de folhas
+            for k in range(6):
+                a = k * math.pi / 3 + rnd.uniform(-0.3, 0.3)
+                M = Mx.Translation(base + V((0, 0, 0.01))) @ Mx.Rotation(a - math.pi / 2, 4, "Z") @ Mx.Rotation(math.radians(-62 + rnd.uniform(-12, 12)), 4, "X")
+                _patch(bm, M, 0.13, 0.05, 0.15, -0.2, 0.3, 5, 3, 0, uvl)
+            # pétalas
+            npet = 10
+            for k in range(npet):
+                a = k * 2 * math.pi / npet
+                M = Mx.Translation(top + V((0, 0, 0.004))) @ Mx.Rotation(a - math.pi / 2, 4, "Z") @ Mx.Rotation(math.radians(-80 + rnd.uniform(-8, 8)), 4, "X")
+                _patch(bm, M, 0.062, 0.03, 0.5, 0.25, 0.0, 5, 3, 1 + c, uvl)
+    ob = _finish_patches(bm, [leaf] + pet, "flores")
+    objs = [ob]
+    for a_, b_ in objs_t:
+        objs.append(tube(tuple(a_), tuple(b_), 0.0055, stem, verts=7))
+    for c in centers:
+        objs.append(lathe([(0.0, 0.0), (0.026, 0.0), (0.03, 0.008), (0.02, 0.022), (0.0, 0.026)], eye, loc=tuple(c + V((0, 0, 0.0))), verts=16))
+    join(objs, "canteiro")
+    export("flowerbed")
+
 ALL = {"tiki_torch": tiki_torch, "signpost_post": signpost_post, "sign_arrow": sign_arrow, "open_sign": open_sign,
        "volley_net": volley_net, "power_pole": power_pole, "mailbox": mailbox, "starfish": starfish, "ceiling_fan": ceiling_fan,
-       "lighthouse": lighthouse, "pier_segment": pier_segment, "pier_end": pier_end, "boat_mast": boat_mast, "jangada": jangada,
+       "lighthouse": lighthouse, "pier_segment": pier_segment, "pier_end": pier_end, "boat_mast": boat_mast, "jangada": jangada, "hanging_planter": hanging_planter, "flowerbed": flowerbed,
+       **{"bloom_" + k: (lambda k=k, v=v: bloom_clump(k, v)) for k, v in BLOOM_COLORS.items()},
        **{"bike_" + k: (lambda k=k, v=v: bike(k, v)) for k, v in BIKE_COLORS.items()}}
 if __name__ == "__main__":
     names = sys.argv[1:] or list(ALL)

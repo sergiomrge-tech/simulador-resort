@@ -498,6 +498,12 @@ static func _hip_roof_flat(parent: Node, center: Vector3, w: float, d: float, pe
 
 
 static func model(parent: Node, n: String, pos: Vector3, rot_y: = 0.0, s: = 1.0) -> Node3D:
+	# a "árvore de bolas" (island_tree_01, esferas verdes) foi trocada por árvores reais da Quaternius (CC0)
+	if n == "island_tree_01":
+		var tk: = 1 + int(absf(pos.x * 3.0 + pos.z * 7.0)) % 5
+		var tr_: = Real.place(parent, "q:CommonTree_%d" % tk, pos, 5.2 * s, rot_y)
+		if tr_ != null:
+			return tr_
 	if Toon.enabled() and P.has(n) and not _real_exists(n):
 		var pr: = P.build(n)
 		pr.position = pos

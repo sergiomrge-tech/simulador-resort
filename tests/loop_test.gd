@@ -103,6 +103,9 @@ func vip_rush_test() -> void :
 	v._on_slept(0)
 	# --- VIP: o famoso entra no álbum e paga gorjeta generosa
 	Core.album = []
+	for k in Core.stock.keys():
+		Core.stock[k] = 30   # o prato é sorteado: precisa de estoque de tudo
+	Core.stock_changed.emit()
 	var vc = v.spawn_customer()
 	if not check(vc != null, "VIP: cliente criado"):
 		return

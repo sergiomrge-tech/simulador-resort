@@ -142,34 +142,51 @@ func _bougainvillea(p: Vector3, front: float) -> void :
 		else:
 			_bloom(q, 0.0, cols[i % cols.size()], rng.randf_range(0.5, 0.75))
 
+const BLOOM_KEYS: = {"magenta": Color(0.86, 0.12, 0.42), "laranja": Color(0.95, 0.42, 0.12), "roxa": Color(0.62, 0.18, 0.72), "rosa": Color(0.96, 0.62, 0.78)}
+
+func _bloom_key(c: Color) -> String:
+	if c.g > c.r and c.g > c.b:
+		return "folhas"
+	var best: = "magenta"
+	var bd: = 99.0
+	for k in BLOOM_KEYS:
+		var o: Color = BLOOM_KEYS[k]
+		var d: = Vector3(c.r - o.r, c.g - o.g, c.b - o.b).length()
+		if d < bd:
+			bd = d
+			best = k
+	return best
+
+## Folhagem e flores: ramos de buganvília modelados no Blender (folhas ovais, brácteas de papel e florzinhas), em MultiMesh por cor.
+## Nada de bolinhas coloridas (regra do Sergio). Sem o modelo, usa a bolinha antiga como último recurso.
 func _finish_blooms() -> void :
 	if _bloom_xf.is_empty():
 		return
-	# v0.7.3: flores em bolinhas 3D (antes eram cartões chapados que pareciam manchas flutuando)
-	var ball: = SphereMesh.new()
-	ball.radius = 0.2
-	ball.height = 0.34
-	ball.radial_segments = 16
-	ball.rings = 8
-	var mm: = MultiMesh.new()
-	mm.transform_format = MultiMesh.TRANSFORM_3D
-	mm.use_colors = true
-	mm.mesh = ball
-	mm.instance_count = _bloom_xf.size()
+	var groups: = {}
 	for i in _bloom_xf.size():
-		mm.set_instance_transform(i, _bloom_xf[i])
-		mm.set_instance_color(i, _bloom_col[i])
-	var mi: = MultiMeshInstance3D.new()
-	mi.multimesh = mm
-	var mat: = StandardMaterial3D.new()
-	mat.vertex_color_use_as_albedo = true
-	mat.vertex_color_is_srgb = true
-	mat.diffuse_mode = BaseMaterial3D.DIFFUSE_TOON
-	mat.specular_mode = BaseMaterial3D.SPECULAR_TOON
-	mat.roughness = 0.8
-	mi.material_override = mat
-	mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-	add_child(mi)
+		var k: = _bloom_key(_bloom_col[i])
+		if not groups.has(k):
+			groups[k] = []
+		groups[k].append(i)
+	for k in groups:
+		var mesh: Mesh = Real.mesh_of("g:bloom_" + k)
+		var idx: Array = groups[k]
+		if mesh == null:
+			continue
+		var mm: = MultiMesh.new()
+		mm.transform_format = MultiMesh.TRANSFORM_3D
+		mm.mesh = mesh
+		mm.instance_count = idx.size()
+		for n in idx.size():
+			var xf: Transform3D = _bloom_xf[idx[n]]
+			var rng_yaw: = float((idx[n] * 7919) % 628) / 100.0
+			xf.basis = xf.basis * Basis(Vector3.UP, rng_yaw).scaled(Vector3.ONE * 1.7)
+			mm.set_instance_transform(n, xf)
+		var mi: = MultiMeshInstance3D.new()
+		mi.multimesh = mm
+		mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		mi.visibility_range_end = 70.0
+		add_child(mi)
 
 func _fence(a: Vector3, b: Vector3) -> void :
 	var wood: = wood_tint(Color(0.42, 0.26, 0.14))
@@ -321,13 +338,9 @@ func _house_extras(c: Vector3, w: float, d: float, h: float, front: float, col: 
 	if rng.randf() < 0.5:
 		var vp: = c + Vector3(w * 0.1 * front, 2.6, front * (d * 0.5 + 0.35))
 		B.cyl(self, 0.012, 0.012, h - 2.6, vp + Vector3(0, (h - 2.6) * 0.5, 0), B.flat(Color(0.3, 0.25, 0.2)), 8)
-		for sx in [-1.0, 1.0]:
-			var cord: = B.cyl(self, 0.008, 0.008, 0.26, vp + Vector3(sx * 0.07, 0.12, 0), B.flat(Color(0.3, 0.25, 0.2)), 6)
-			cord.rotation.z = sx * 0.5
-		B.cyl(self, 0.14, 0.1, 0.18, vp, B.flat(Color(0.85, 0.45, 0.3), 0.8), 14)
-		for j in 5:
-			var lf: = B.sphere(self, 0.07, vp + Vector3(cos(j) * 0.12, -0.05 - (j % 2) * 0.12, sin(j) * 0.12), B.flat(Color(0.3, 0.72, 0.3)))
-			lf.scale = Vector3(1, 1.5, 1)
+		# vaso de barro com hera em cascata: modelo do Blender (centro do vaso a 0,97 m do ponto mais baixo)
+		if Real.place(self, "g:hanging_planter", vp - Vector3(0, 0.97, 0), -1.0, 0.0, Color.WHITE, 0.0, false) == null:
+			B.cyl(self, 0.14, 0.1, 0.18, vp, B.flat(Color(0.85, 0.45, 0.3), 0.8), 14)
 
 func _house(c: Vector3, w: float, d: float, front: float, col: Color, shutter: Color, porch: bool, sign_text: = "") -> void :
 	var h: = 3.5
@@ -1587,8 +1600,7 @@ func _landmark_details() -> void :
 	for sx in [-1.0, 1.0]:
 		var bed: = c + Vector3(sx * 3.4, 0, - d * 0.5 - 0.8)
 		B.box(self, Vector3(2.2, 0.35, 0.9), bed + Vector3(0, 0.17, 0), blue)
-		for k in 7:
-			B.sphere(self, 0.13, bed + Vector3(-0.9 + k * 0.3, 0.42, (k % 2) * 0.2 - 0.1), B.flat(D.FLAG_COLS[(k + 2) % D.FLAG_COLS.size()], 0.7))
+		Real.place(self, "g:flowerbed", bed + Vector3(0, 0.34, 0), -1.0, 0.0, Color.WHITE, 0.0, false)
 	var iron: = B.flat(Color(0.12, 0.12, 0.14), 0.5, 0.4)
 	for seg in [[c.x - 6.0, c.x - 1.6], [c.x + 1.6, c.x + 6.0]]:
 		var x0: float = seg[0]
