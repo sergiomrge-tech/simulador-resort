@@ -320,8 +320,22 @@ func _run_shot(n: String) -> void :
 		var fwd: = Vector3(-sin(yaw_r), 0, -cos(yaw_r))
 		var right: = Vector3(cos(yaw_r), 0, -sin(yaw_r))
 		var base_p: Vector3 = s[0] + fwd * 3.2 - Vector3(0, 1.6, 0)
+		var gfloor: = MeshInstance3D.new()
+		var gbox: = BoxMesh.new()
+		gbox.size = Vector3(40, 0.1, 40)
+		gfloor.mesh = gbox
+		var gmat: = StandardMaterial3D.new()
+		gmat.albedo_color = Color(0.82, 0.84, 0.88)
+		gfloor.material_override = gmat
+		gfloor.position = base_p + fwd * 6.0 + Vector3(0, -0.06, 0)
+		world.add_child(gfloor)
+		var gcols: int = int(str(args.get("gcols", "0")))
+		if gcols <= 0:
+			gcols = keys.size()
 		for gi in keys.size():
-			Real.place(world, keys[gi], base_p + right * (float(gi) - keys.size() * 0.5 + 0.5) * 1.6, 1.2, 0.0)
+			var gcol: int = gi % gcols
+			var grow: int = gi / gcols
+			Real.place(world, keys[gi], base_p + right * (float(gcol) - gcols * 0.5 + 0.5) * 1.6 + fwd * float(grow) * 1.8, 1.2, 0.0)
 	if args.has("noroof"):
 		# depuração: esconde telhado e bandeirinhas do quiosque para ver o balcão de cima
 		await get_tree().process_frame
