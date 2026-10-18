@@ -1,5 +1,1009 @@
 [
  {
+  "codigo": "ANI-001",
+  "categoria": "ANI",
+  "chave": "A_TPose",
+  "nome": "A tpose",
+  "fonte": "UAL (Quaternius CC0)",
+  "usos": []
+ },
+ {
+  "codigo": "ANI-002",
+  "categoria": "ANI",
+  "chave": "Crouch_Fwd_Loop",
+  "nome": "Crouch fwd loop",
+  "fonte": "UAL (Quaternius CC0)",
+  "usos": []
+ },
+ {
+  "codigo": "ANI-003",
+  "categoria": "ANI",
+  "chave": "Crouch_Idle_Loop",
+  "nome": "Crouch idle loop",
+  "fonte": "UAL (Quaternius CC0)",
+  "usos": []
+ },
+ {
+  "codigo": "ANI-004",
+  "categoria": "ANI",
+  "chave": "Dance_Loop",
+  "nome": "Dance loop",
+  "fonte": "UAL (Quaternius CC0)",
+  "usos": []
+ },
+ {
+  "codigo": "ANI-005",
+  "categoria": "ANI",
+  "chave": "Death01",
+  "nome": "Death01",
+  "fonte": "UAL (Quaternius CC0)",
+  "usos": []
+ },
+ {
+  "codigo": "ANI-006",
+  "categoria": "ANI",
+  "chave": "Driving_Loop",
+  "nome": "Driving loop",
+  "fonte": "UAL (Quaternius CC0)",
+  "usos": []
+ },
+ {
+  "codigo": "ANI-007",
+  "categoria": "ANI",
+  "chave": "Fixing_Kneeling",
+  "nome": "Fixing kneeling",
+  "fonte": "UAL (Quaternius CC0)",
+  "usos": []
+ },
+ {
+  "codigo": "ANI-008",
+  "categoria": "ANI",
+  "chave": "Hit_Chest",
+  "nome": "Hit chest",
+  "fonte": "UAL (Quaternius CC0)",
+  "usos": []
+ },
+ {
+  "codigo": "ANI-009",
+  "categoria": "ANI",
+  "chave": "Hit_Head",
+  "nome": "Hit head",
+  "fonte": "UAL (Quaternius CC0)",
+  "usos": []
+ },
+ {
+  "codigo": "ANI-010",
+  "categoria": "ANI",
+  "chave": "Idle_Loop",
+  "nome": "Idle loop",
+  "fonte": "UAL (Quaternius CC0)",
+  "usos": [
+   {
+    "arquivo": "guest.gd",
+    "linha": 89,
+    "funcao": "setup"
+   },
+   {
+    "arquivo": "guest.gd",
+    "linha": 120,
+    "funcao": "_state_for"
+   },
+   {
+    "arquivo": "guest.gd",
+    "linha": 174,
+    "funcao": "_build_anim"
+   },
+   {
+    "arquivo": "guests.gd",
+    "linha": 129,
+    "funcao": "_tick"
+   },
+   {
+    "arquivo": "main.gd",
+    "linha": 374,
+    "funcao": "_run_shot"
+   },
+   {
+    "arquivo": "main.gd",
+    "linha": 558,
+    "funcao": "_stage_village"
+   },
+   {
+    "arquivo": "main.gd",
+    "linha": 573,
+    "funcao": "_stage_village"
+   },
+   {
+    "arquivo": "main.gd",
+    "linha": 625,
+    "funcao": "_stage_guests"
+   },
+   {
+    "arquivo": "village_life.gd",
+    "linha": 69,
+    "funcao": "_ready"
+   },
+   {
+    "arquivo": "village_life.gd",
+    "linha": 80,
+    "funcao": "_ready"
+   },
+   {
+    "arquivo": "village_life.gd",
+    "linha": 114,
+    "funcao": "_process"
+   }
+  ]
+ },
+ {
+  "codigo": "ANI-011",
+  "categoria": "ANI",
+  "chave": "Idle_Talking_Loop",
+  "nome": "Idle talking loop",
+  "fonte": "UAL (Quaternius CC0)",
+  "usos": [
+   {
+    "arquivo": "guest.gd",
+    "linha": 122,
+    "funcao": "_state_for"
+   },
+   {
+    "arquivo": "guest.gd",
+    "linha": 174,
+    "funcao": "_build_anim"
+   },
+   {
+    "arquivo": "guests.gd",
+    "linha": 28,
+    "funcao": "_ready"
+   },
+   {
+    "arquivo": "guests.gd",
+    "linha": 129,
+    "funcao": "_tick"
+   },
+   {
+    "arquivo": "main.gd",
+    "linha": 374,
+    "funcao": "_run_shot"
+   },
+   {
+    "arquivo": "main.gd",
+    "linha": 600,
+    "funcao": "_stage_village"
+   },
+   {
+    "arquivo": "main.gd",
+    "linha": 625,
+    "funcao": "_stage_guests"
+   },
+   {
+    "arquivo": "village_life.gd",
+    "linha": 64,
+    "funcao": "_ready"
+   },
+   {
+    "arquivo": "village_life.gd",
+    "linha": 75,
+    "funcao": "_ready"
+   },
+   {
+    "arquivo": "village_life.gd",
+    "linha": 85,
+    "funcao": "_ready"
+   }
+  ]
+ },
+ {
+  "codigo": "ANI-012",
+  "categoria": "ANI",
+  "chave": "Idle_Torch_Loop",
+  "nome": "Idle torch loop",
+  "fonte": "UAL (Quaternius CC0)",
+  "usos": []
+ },
+ {
+  "codigo": "ANI-013",
+  "categoria": "ANI",
+  "chave": "Interact",
+  "nome": "Interact",
+  "fonte": "UAL (Quaternius CC0)",
+  "usos": [
+   {
+    "arquivo": "guest.gd",
+    "linha": 136,
+    "funcao": "_state_for"
+   },
+   {
+    "arquivo": "guest.gd",
+    "linha": 176,
+    "funcao": "_build_anim"
+   },
+   {
+    "arquivo": "i18n.gd",
+    "linha": 49,
+    "funcao": ""
+   }
+  ]
+ },
+ {
+  "codigo": "ANI-014",
+  "categoria": "ANI",
+  "chave": "Jog_Fwd_Loop",
+  "nome": "Jog fwd loop",
+  "fonte": "UAL (Quaternius CC0)",
+  "usos": [
+   {
+    "arquivo": "guest.gd",
+    "linha": 126,
+    "funcao": "_state_for"
+   },
+   {
+    "arquivo": "guest.gd",
+    "linha": 174,
+    "funcao": "_build_anim"
+   }
+  ]
+ },
+ {
+  "codigo": "ANI-015",
+  "categoria": "ANI",
+  "chave": "Jump_Land",
+  "nome": "Jump land",
+  "fonte": "UAL (Quaternius CC0)",
+  "usos": []
+ },
+ {
+  "codigo": "ANI-016",
+  "categoria": "ANI",
+  "chave": "Jump_Loop",
+  "nome": "Jump loop",
+  "fonte": "UAL (Quaternius CC0)",
+  "usos": []
+ },
+ {
+  "codigo": "ANI-017",
+  "categoria": "ANI",
+  "chave": "Jump_Start",
+  "nome": "Jump start",
+  "fonte": "UAL (Quaternius CC0)",
+  "usos": []
+ },
+ {
+  "codigo": "ANI-018",
+  "categoria": "ANI",
+  "chave": "PickUp_Table",
+  "nome": "Pick up table",
+  "fonte": "UAL (Quaternius CC0)",
+  "usos": []
+ },
+ {
+  "codigo": "ANI-019",
+  "categoria": "ANI",
+  "chave": "Pistol_Aim_Down",
+  "nome": "Pistol aim down",
+  "fonte": "UAL (Quaternius CC0)",
+  "usos": []
+ },
+ {
+  "codigo": "ANI-020",
+  "categoria": "ANI",
+  "chave": "Pistol_Aim_Neutral",
+  "nome": "Pistol aim neutral",
+  "fonte": "UAL (Quaternius CC0)",
+  "usos": []
+ },
+ {
+  "codigo": "ANI-021",
+  "categoria": "ANI",
+  "chave": "Pistol_Aim_Up",
+  "nome": "Pistol aim up",
+  "fonte": "UAL (Quaternius CC0)",
+  "usos": []
+ },
+ {
+  "codigo": "ANI-022",
+  "categoria": "ANI",
+  "chave": "Pistol_Idle_Loop",
+  "nome": "Pistol idle loop",
+  "fonte": "UAL (Quaternius CC0)",
+  "usos": []
+ },
+ {
+  "codigo": "ANI-023",
+  "categoria": "ANI",
+  "chave": "Pistol_Reload",
+  "nome": "Pistol reload",
+  "fonte": "UAL (Quaternius CC0)",
+  "usos": []
+ },
+ {
+  "codigo": "ANI-024",
+  "categoria": "ANI",
+  "chave": "Pistol_Shoot",
+  "nome": "Pistol shoot",
+  "fonte": "UAL (Quaternius CC0)",
+  "usos": []
+ },
+ {
+  "codigo": "ANI-025",
+  "categoria": "ANI",
+  "chave": "Punch_Cross",
+  "nome": "Punch cross",
+  "fonte": "UAL (Quaternius CC0)",
+  "usos": []
+ },
+ {
+  "codigo": "ANI-026",
+  "categoria": "ANI",
+  "chave": "Punch_Jab",
+  "nome": "Punch jab",
+  "fonte": "UAL (Quaternius CC0)",
+  "usos": []
+ },
+ {
+  "codigo": "ANI-027",
+  "categoria": "ANI",
+  "chave": "Push_Loop",
+  "nome": "Push loop",
+  "fonte": "UAL (Quaternius CC0)",
+  "usos": []
+ },
+ {
+  "codigo": "ANI-028",
+  "categoria": "ANI",
+  "chave": "Roll",
+  "nome": "Roll",
+  "fonte": "UAL (Quaternius CC0)",
+  "usos": []
+ },
+ {
+  "codigo": "ANI-029",
+  "categoria": "ANI",
+  "chave": "Sitting_Enter",
+  "nome": "Sitting enter",
+  "fonte": "UAL (Quaternius CC0)",
+  "usos": []
+ },
+ {
+  "codigo": "ANI-030",
+  "categoria": "ANI",
+  "chave": "Sitting_Exit",
+  "nome": "Sitting exit",
+  "fonte": "UAL (Quaternius CC0)",
+  "usos": []
+ },
+ {
+  "codigo": "ANI-031",
+  "categoria": "ANI",
+  "chave": "Sitting_Idle_Loop",
+  "nome": "Sitting idle loop",
+  "fonte": "UAL (Quaternius CC0)",
+  "usos": [
+   {
+    "arquivo": "guest.gd",
+    "linha": 128,
+    "funcao": "_state_for"
+   },
+   {
+    "arquivo": "guest.gd",
+    "linha": 175,
+    "funcao": "_build_anim"
+   },
+   {
+    "arquivo": "main.gd",
+    "linha": 279,
+    "funcao": "_process"
+   },
+   {
+    "arquivo": "main.gd",
+    "linha": 368,
+    "funcao": "_run_shot"
+   },
+   {
+    "arquivo": "main.gd",
+    "linha": 470,
+    "funcao": "_run_tour"
+   },
+   {
+    "arquivo": "village_life.gd",
+    "linha": 57,
+    "funcao": "_ready"
+   },
+   {
+    "arquivo": "village_life.gd",
+    "linha": 320,
+    "funcao": "_kiosk_tick"
+   },
+   {
+    "arquivo": "village_life.gd",
+    "linha": 337,
+    "funcao": "_kiosk_tick"
+   },
+   {
+    "arquivo": "village_life.gd",
+    "linha": 414,
+    "funcao": "_leave"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 375,
+    "funcao": "_pool"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 1035,
+    "funcao": "_bar"
+   },
+   {
+    "arquivo": "world_village.gd",
+    "linha": 210,
+    "funcao": "_street"
+   },
+   {
+    "arquivo": "world_village.gd",
+    "linha": 579,
+    "funcao": "_church_and_praca"
+   },
+   {
+    "arquivo": "world_village.gd",
+    "linha": 666,
+    "funcao": "_kiosk_table"
+   },
+   {
+    "arquivo": "world_village.gd",
+    "linha": 1434,
+    "funcao": "_village_expansion"
+   }
+  ]
+ },
+ {
+  "codigo": "ANI-032",
+  "categoria": "ANI",
+  "chave": "Sitting_Talking_Loop",
+  "nome": "Sitting talking loop",
+  "fonte": "UAL (Quaternius CC0)",
+  "usos": [
+   {
+    "arquivo": "guest.gd",
+    "linha": 130,
+    "funcao": "_state_for"
+   },
+   {
+    "arquivo": "guest.gd",
+    "linha": 175,
+    "funcao": "_build_anim"
+   },
+   {
+    "arquivo": "village_life.gd",
+    "linha": 335,
+    "funcao": "_kiosk_tick"
+   },
+   {
+    "arquivo": "village_life.gd",
+    "linha": 361,
+    "funcao": "_order"
+   }
+  ]
+ },
+ {
+  "codigo": "ANI-033",
+  "categoria": "ANI",
+  "chave": "Spell_Simple_Enter",
+  "nome": "Spell simple enter",
+  "fonte": "UAL (Quaternius CC0)",
+  "usos": []
+ },
+ {
+  "codigo": "ANI-034",
+  "categoria": "ANI",
+  "chave": "Spell_Simple_Exit",
+  "nome": "Spell simple exit",
+  "fonte": "UAL (Quaternius CC0)",
+  "usos": []
+ },
+ {
+  "codigo": "ANI-035",
+  "categoria": "ANI",
+  "chave": "Spell_Simple_Idle_Loop",
+  "nome": "Spell simple idle loop",
+  "fonte": "UAL (Quaternius CC0)",
+  "usos": []
+ },
+ {
+  "codigo": "ANI-036",
+  "categoria": "ANI",
+  "chave": "Spell_Simple_Shoot",
+  "nome": "Spell simple shoot",
+  "fonte": "UAL (Quaternius CC0)",
+  "usos": []
+ },
+ {
+  "codigo": "ANI-037",
+  "categoria": "ANI",
+  "chave": "Sprint_Loop",
+  "nome": "Sprint loop",
+  "fonte": "UAL (Quaternius CC0)",
+  "usos": []
+ },
+ {
+  "codigo": "ANI-038",
+  "categoria": "ANI",
+  "chave": "Swim_Fwd_Loop",
+  "nome": "Swim fwd loop",
+  "fonte": "UAL (Quaternius CC0)",
+  "usos": [
+   {
+    "arquivo": "guest.gd",
+    "linha": 132,
+    "funcao": "_state_for"
+   },
+   {
+    "arquivo": "guest.gd",
+    "linha": 176,
+    "funcao": "_build_anim"
+   }
+  ]
+ },
+ {
+  "codigo": "ANI-039",
+  "categoria": "ANI",
+  "chave": "Swim_Idle_Loop",
+  "nome": "Swim idle loop",
+  "fonte": "UAL (Quaternius CC0)",
+  "usos": [
+   {
+    "arquivo": "guest.gd",
+    "linha": 134,
+    "funcao": "_state_for"
+   },
+   {
+    "arquivo": "guest.gd",
+    "linha": 176,
+    "funcao": "_build_anim"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 377,
+    "funcao": "_pool"
+   }
+  ]
+ },
+ {
+  "codigo": "ANI-040",
+  "categoria": "ANI",
+  "chave": "Sword_Attack",
+  "nome": "Sword attack",
+  "fonte": "UAL (Quaternius CC0)",
+  "usos": []
+ },
+ {
+  "codigo": "ANI-041",
+  "categoria": "ANI",
+  "chave": "Sword_Idle",
+  "nome": "Sword idle",
+  "fonte": "UAL (Quaternius CC0)",
+  "usos": []
+ },
+ {
+  "codigo": "ANI-042",
+  "categoria": "ANI",
+  "chave": "Walk_Formal_Loop",
+  "nome": "Walk formal loop",
+  "fonte": "UAL (Quaternius CC0)",
+  "usos": [
+   {
+    "arquivo": "guest.gd",
+    "linha": 124,
+    "funcao": "_state_for"
+   }
+  ]
+ },
+ {
+  "codigo": "ANI-043",
+  "categoria": "ANI",
+  "chave": "Walk_Loop",
+  "nome": "Walk loop",
+  "fonte": "UAL (Quaternius CC0)",
+  "usos": [
+   {
+    "arquivo": "guest.gd",
+    "linha": 124,
+    "funcao": "_state_for"
+   },
+   {
+    "arquivo": "guest.gd",
+    "linha": 174,
+    "funcao": "_build_anim"
+   },
+   {
+    "arquivo": "main.gd",
+    "linha": 635,
+    "funcao": "_stage_guests"
+   }
+  ]
+ },
+ {
+  "codigo": "AUD-001",
+  "categoria": "AUD",
+  "chave": "bell",
+  "nome": "Bell",
+  "fonte": "assets/audio",
+  "usos": [
+   {
+    "arquivo": "audio.gd",
+    "linha": 91,
+    "funcao": "_church_bell"
+   },
+   {
+    "arquivo": "guests.gd",
+    "linha": 74,
+    "funcao": "spawn_guest"
+   },
+   {
+    "arquivo": "resort_core.gd",
+    "linha": 475,
+    "funcao": "buy_expansion"
+   }
+  ],
+  "arquivo_modelo": "assets/audio/bell.ogg"
+ },
+ {
+  "codigo": "AUD-002",
+  "categoria": "AUD",
+  "chave": "bird1",
+  "nome": "Bird1",
+  "fonte": "assets/audio",
+  "usos": [
+   {
+    "arquivo": "audio.gd",
+    "linha": 70,
+    "funcao": "_process"
+   }
+  ],
+  "arquivo_modelo": "assets/audio/bird1.ogg"
+ },
+ {
+  "codigo": "AUD-003",
+  "categoria": "AUD",
+  "chave": "bird2",
+  "nome": "Bird2",
+  "fonte": "assets/audio",
+  "usos": [
+   {
+    "arquivo": "audio.gd",
+    "linha": 70,
+    "funcao": "_process"
+   }
+  ],
+  "arquivo_modelo": "assets/audio/bird2.ogg"
+ },
+ {
+  "codigo": "AUD-004",
+  "categoria": "AUD",
+  "chave": "clean",
+  "nome": "Clean",
+  "fonte": "assets/audio",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 614,
+    "funcao": "_bungalow"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 700,
+    "funcao": "_bungalow"
+   }
+  ],
+  "arquivo_modelo": "assets/audio/clean.ogg"
+ },
+ {
+  "codigo": "AUD-005",
+  "categoria": "AUD",
+  "chave": "click",
+  "nome": "Click",
+  "fonte": "assets/audio",
+  "usos": [
+   {
+    "arquivo": "hud.gd",
+    "linha": 255,
+    "funcao": "toggle_shop"
+   },
+   {
+    "arquivo": "menus.gd",
+    "linha": 123,
+    "funcao": "_btn"
+   },
+   {
+    "arquivo": "menus.gd",
+    "linha": 348,
+    "funcao": "toggle_pause"
+   },
+   {
+    "arquivo": "phone_ui.gd",
+    "linha": 241,
+    "funcao": "_btn"
+   },
+   {
+    "arquivo": "phone_ui.gd",
+    "linha": 388,
+    "funcao": "_home"
+   },
+   {
+    "arquivo": "village_life.gd",
+    "linha": 504,
+    "funcao": "prep_advance"
+   },
+   {
+    "arquivo": "world_village.gd",
+    "linha": 825,
+    "funcao": "_coco_piles"
+   }
+  ],
+  "arquivo_modelo": "assets/audio/click.ogg"
+ },
+ {
+  "codigo": "AUD-006",
+  "categoria": "AUD",
+  "chave": "coin",
+  "nome": "Coin",
+  "fonte": "assets/audio",
+  "usos": [
+   {
+    "arquivo": "guests.gd",
+    "linha": 189,
+    "funcao": "checkin_front"
+   },
+   {
+    "arquivo": "guests.gd",
+    "linha": 288,
+    "funcao": "_checkout"
+   },
+   {
+    "arquivo": "office_ui.gd",
+    "linha": 433,
+    "funcao": "_fill_rooms"
+   },
+   {
+    "arquivo": "office_ui.gd",
+    "linha": 445,
+    "funcao": "_fill_rooms"
+   },
+   {
+    "arquivo": "office_ui.gd",
+    "linha": 620,
+    "funcao": "_upgrade"
+   },
+   {
+    "arquivo": "office_ui.gd",
+    "linha": 625,
+    "funcao": "_hire_role"
+   },
+   {
+    "arquivo": "village_life.gd",
+    "linha": 173,
+    "funcao": "fish_catch"
+   },
+   {
+    "arquivo": "village_life.gd",
+    "linha": 560,
+    "funcao": "_complete_order"
+   }
+  ],
+  "arquivo_modelo": "assets/audio/coin.ogg"
+ },
+ {
+  "codigo": "AUD-007",
+  "categoria": "AUD",
+  "chave": "crickets_loop",
+  "nome": "Crickets loop",
+  "fonte": "assets/audio",
+  "usos": [
+   {
+    "arquivo": "audio.gd",
+    "linha": 33,
+    "funcao": "_ready"
+   }
+  ],
+  "arquivo_modelo": "assets/audio/crickets_loop.ogg"
+ },
+ {
+  "codigo": "AUD-008",
+  "categoria": "AUD",
+  "chave": "dog",
+  "nome": "Dog",
+  "fonte": "assets/audio",
+  "usos": [
+   {
+    "arquivo": "audio.gd",
+    "linha": 80,
+    "funcao": "_process"
+   }
+  ],
+  "arquivo_modelo": "assets/audio/dog.ogg"
+ },
+ {
+  "codigo": "AUD-009",
+  "categoria": "AUD",
+  "chave": "door",
+  "nome": "Door",
+  "fonte": "assets/audio",
+  "usos": [
+   {
+    "arquivo": "world_village.gd",
+    "linha": 223,
+    "funcao": "_facade"
+   },
+   {
+    "arquivo": "world_village.gd",
+    "linha": 343,
+    "funcao": "_house"
+   },
+   {
+    "arquivo": "world_village.gd",
+    "linha": 454,
+    "funcao": "_hero_house"
+   },
+   {
+    "arquivo": "world_village.gd",
+    "linha": 538,
+    "funcao": "_church_and_praca"
+   }
+  ],
+  "arquivo_modelo": "assets/audio/door.ogg"
+ },
+ {
+  "codigo": "AUD-010",
+  "categoria": "AUD",
+  "chave": "glass",
+  "nome": "Glass",
+  "fonte": "assets/audio",
+  "usos": [
+   {
+    "arquivo": "guests.gd",
+    "linha": 157,
+    "funcao": "_arrive_state"
+   },
+   {
+    "arquivo": "village_life.gd",
+    "linha": 143,
+    "funcao": "fish_action"
+   },
+   {
+    "arquivo": "village_life.gd",
+    "linha": 522,
+    "funcao": "_deliver_item"
+   },
+   {
+    "arquivo": "world_village.gd",
+    "linha": 1163,
+    "funcao": "set_night"
+   }
+  ],
+  "arquivo_modelo": "assets/audio/glass.ogg"
+ },
+ {
+  "codigo": "AUD-011",
+  "categoria": "AUD",
+  "chave": "music_bossa",
+  "nome": "Music bossa",
+  "fonte": "assets/audio",
+  "usos": [
+   {
+    "arquivo": "audio.gd",
+    "linha": 31,
+    "funcao": "_ready"
+   }
+  ],
+  "arquivo_modelo": "assets/audio/music_bossa.ogg"
+ },
+ {
+  "codigo": "AUD-012",
+  "categoria": "AUD",
+  "chave": "ocean_loop",
+  "nome": "Ocean loop",
+  "fonte": "assets/audio",
+  "usos": [
+   {
+    "arquivo": "audio.gd",
+    "linha": 32,
+    "funcao": "_ready"
+   }
+  ],
+  "arquivo_modelo": "assets/audio/ocean_loop.ogg"
+ },
+ {
+  "codigo": "AUD-013",
+  "categoria": "AUD",
+  "chave": "seagull1",
+  "nome": "Seagull1",
+  "fonte": "assets/audio",
+  "usos": [
+   {
+    "arquivo": "audio.gd",
+    "linha": 75,
+    "funcao": "_process"
+   }
+  ],
+  "arquivo_modelo": "assets/audio/seagull1.ogg"
+ },
+ {
+  "codigo": "AUD-014",
+  "categoria": "AUD",
+  "chave": "seagull2",
+  "nome": "Seagull2",
+  "fonte": "assets/audio",
+  "usos": [
+   {
+    "arquivo": "audio.gd",
+    "linha": 75,
+    "funcao": "_process"
+   }
+  ],
+  "arquivo_modelo": "assets/audio/seagull2.ogg"
+ },
+ {
+  "codigo": "AUD-015",
+  "categoria": "AUD",
+  "chave": "step1",
+  "nome": "Step1",
+  "fonte": "assets/audio",
+  "usos": [],
+  "arquivo_modelo": "assets/audio/step1.ogg"
+ },
+ {
+  "codigo": "AUD-016",
+  "categoria": "AUD",
+  "chave": "step2",
+  "nome": "Step2",
+  "fonte": "assets/audio",
+  "usos": [],
+  "arquivo_modelo": "assets/audio/step2.ogg"
+ },
+ {
+  "codigo": "AUD-017",
+  "categoria": "AUD",
+  "chave": "step_wood1",
+  "nome": "Step wood1",
+  "fonte": "assets/audio",
+  "usos": [],
+  "arquivo_modelo": "assets/audio/step_wood1.ogg"
+ },
+ {
+  "codigo": "AUD-018",
+  "categoria": "AUD",
+  "chave": "step_wood2",
+  "nome": "Step wood2",
+  "fonte": "assets/audio",
+  "usos": [],
+  "arquivo_modelo": "assets/audio/step_wood2.ogg"
+ },
+ {
+  "codigo": "AUD-019",
+  "categoria": "AUD",
+  "chave": "swoosh",
+  "nome": "Swoosh",
+  "fonte": "assets/audio",
+  "usos": [],
+  "arquivo_modelo": "assets/audio/swoosh.ogg"
+ },
+ {
+  "codigo": "AUD-020",
+  "categoria": "AUD",
+  "chave": "village_murmur",
+  "nome": "Village murmur",
+  "fonte": "assets/audio",
+  "usos": [
+   {
+    "arquivo": "audio.gd",
+    "linha": 34,
+    "funcao": "_ready"
+   }
+  ],
+  "arquivo_modelo": "assets/audio/village_murmur.ogg"
+ },
+ {
   "codigo": "CEN-001",
   "categoria": "CEN",
   "chave": "details.m",
@@ -700,6 +1704,2960 @@
   ]
  },
  {
+  "codigo": "CEN-051",
+  "categoria": "CEN",
+  "chave": "details._vcol_mat",
+  "nome": "Vcol mat",
+  "fonte": "details.gd (código)",
+  "usos": [
+   {
+    "arquivo": "details.gd",
+    "linha": 14,
+    "funcao": "_vcol_mat"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-052",
+  "categoria": "CEN",
+  "chave": "details._bmesh",
+  "nome": "Bmesh",
+  "fonte": "details.gd (código)",
+  "usos": [
+   {
+    "arquivo": "details.gd",
+    "linha": 48,
+    "funcao": "_bmesh"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-053",
+  "categoria": "CEN",
+  "chave": "details._crab_walk",
+  "nome": "Crab walk",
+  "fonte": "details.gd (código)",
+  "usos": [
+   {
+    "arquivo": "details.gd",
+    "linha": 253,
+    "funcao": "_crab_walk"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-054",
+  "categoria": "CEN",
+  "chave": "build._hd_path",
+  "nome": "Hd path",
+  "fonte": "build.gd (código)",
+  "usos": [
+   {
+    "arquivo": "build.gd",
+    "linha": 9,
+    "funcao": "_hd_path"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-055",
+  "categoria": "CEN",
+  "chave": "build._roof_uv_mat",
+  "nome": "Roof uv mat",
+  "fonte": "build.gd (código)",
+  "usos": [
+   {
+    "arquivo": "build.gd",
+    "linha": 284,
+    "funcao": "_roof_uv_mat"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-056",
+  "categoria": "CEN",
+  "chave": "build._beam",
+  "nome": "Beam",
+  "fonte": "build.gd (código)",
+  "usos": [
+   {
+    "arquivo": "build.gd",
+    "linha": 297,
+    "funcao": "_beam"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-057",
+  "categoria": "CEN",
+  "chave": "build._detailed_roof_mesh",
+  "nome": "Detailed roof mesh",
+  "fonte": "build.gd (código)",
+  "usos": [
+   {
+    "arquivo": "build.gd",
+    "linha": 348,
+    "funcao": "_detailed_roof_mesh"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-058",
+  "categoria": "CEN",
+  "chave": "build._hip_roof_flat",
+  "nome": "Hip roof flat",
+  "fonte": "build.gd (código)",
+  "usos": [
+   {
+    "arquivo": "build.gd",
+    "linha": 437,
+    "funcao": "_hip_roof_flat"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-059",
+  "categoria": "CEN",
+  "chave": "build._real_exists",
+  "nome": "Real exists",
+  "fonte": "build.gd (código)",
+  "usos": [
+   {
+    "arquivo": "build.gd",
+    "linha": 550,
+    "funcao": "_real_exists"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-060",
+  "categoria": "CEN",
+  "chave": "world._materials",
+  "nome": "Materials",
+  "fonte": "world.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 74,
+    "funcao": "_materials"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-061",
+  "categoria": "CEN",
+  "chave": "world._height",
+  "nome": "Height",
+  "fonte": "world.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 107,
+    "funcao": "_height"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-062",
+  "categoria": "CEN",
+  "chave": "world._ground",
+  "nome": "Ground",
+  "fonte": "world.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 118,
+    "funcao": "_ground"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-063",
+  "categoria": "CEN",
+  "chave": "world._ocean",
+  "nome": "Ocean",
+  "fonte": "world.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 169,
+    "funcao": "_ocean"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-064",
+  "categoria": "CEN",
+  "chave": "world._bounds",
+  "nome": "Bounds",
+  "fonte": "world.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 186,
+    "funcao": "_bounds"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-065",
+  "categoria": "CEN",
+  "chave": "world._strip",
+  "nome": "Strip",
+  "fonte": "world.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 196,
+    "funcao": "_strip"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-066",
+  "categoria": "CEN",
+  "chave": "world._paths",
+  "nome": "Paths",
+  "fonte": "world.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 203,
+    "funcao": "_paths"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-067",
+  "categoria": "CEN",
+  "chave": "world._wall_x",
+  "nome": "Wall x",
+  "fonte": "world.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 214,
+    "funcao": "_wall_x"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-068",
+  "categoria": "CEN",
+  "chave": "world._wall_z",
+  "nome": "Wall z",
+  "fonte": "world.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 244,
+    "funcao": "_wall_z"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-069",
+  "categoria": "CEN",
+  "chave": "world._wall_piece",
+  "nome": "Wall piece",
+  "fonte": "world.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 261,
+    "funcao": "_wall_piece"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-070",
+  "categoria": "CEN",
+  "chave": "world._reception",
+  "nome": "Reception",
+  "fonte": "world.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 266,
+    "funcao": "_reception"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-071",
+  "categoria": "CEN",
+  "chave": "world._pool",
+  "nome": "Pool",
+  "fonte": "world.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 321,
+    "funcao": "_pool"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-072",
+  "categoria": "CEN",
+  "chave": "world._lounger",
+  "nome": "Lounger",
+  "fonte": "world.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 386,
+    "funcao": "_lounger"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-073",
+  "categoria": "CEN",
+  "chave": "world._umbrella",
+  "nome": "Umbrella",
+  "fonte": "world.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 413,
+    "funcao": "_umbrella"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-074",
+  "categoria": "CEN",
+  "chave": "world._parasol_point",
+  "nome": "Parasol point",
+  "fonte": "world.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 435,
+    "funcao": "_parasol_point"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-075",
+  "categoria": "CEN",
+  "chave": "world._parasol_canopy",
+  "nome": "Parasol canopy",
+  "fonte": "world.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 442,
+    "funcao": "_parasol_canopy"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-076",
+  "categoria": "CEN",
+  "chave": "world._parasol_ribs",
+  "nome": "Parasol ribs",
+  "fonte": "world.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 509,
+    "funcao": "_parasol_ribs"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-077",
+  "categoria": "CEN",
+  "chave": "world._stripe_mat",
+  "nome": "Stripe mat",
+  "fonte": "world.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 528,
+    "funcao": "_stripe_mat"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-078",
+  "categoria": "CEN",
+  "chave": "world._thatch_parasol_mat",
+  "nome": "Thatch parasol mat",
+  "fonte": "world.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 555,
+    "funcao": "_thatch_parasol_mat"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-079",
+  "categoria": "CEN",
+  "chave": "world._coconut_cup",
+  "nome": "Coconut cup",
+  "fonte": "world.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 563,
+    "funcao": "_coconut_cup"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-080",
+  "categoria": "CEN",
+  "chave": "world._petisco_plate",
+  "nome": "Petisco plate",
+  "fonte": "world.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 572,
+    "funcao": "_petisco_plate"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-081",
+  "categoria": "CEN",
+  "chave": "world._bungalow",
+  "nome": "Bungalow",
+  "fonte": "world.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 583,
+    "funcao": "_bungalow"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-082",
+  "categoria": "CEN",
+  "chave": "world._bwall_x",
+  "nome": "Bwall x",
+  "fonte": "world.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 725,
+    "funcao": "_bwall_x"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-083",
+  "categoria": "CEN",
+  "chave": "world._bwall_z",
+  "nome": "Bwall z",
+  "fonte": "world.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 734,
+    "funcao": "_bwall_z"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-084",
+  "categoria": "CEN",
+  "chave": "world._on_room_changed",
+  "nome": "On room changed",
+  "fonte": "world.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 743,
+    "funcao": "_on_room_changed"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-085",
+  "categoria": "CEN",
+  "chave": "world._look",
+  "nome": "Look",
+  "fonte": "world.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 754,
+    "funcao": "_look"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-086",
+  "categoria": "CEN",
+  "chave": "world._upgrade_meshes",
+  "nome": "Upgrade meshes",
+  "fonte": "world.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 760,
+    "funcao": "_upgrade_meshes"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-087",
+  "categoria": "CEN",
+  "chave": "world._keep_parts",
+  "nome": "Keep parts",
+  "fonte": "world.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 848,
+    "funcao": "_keep_parts"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-088",
+  "categoria": "CEN",
+  "chave": "world._upgrade_sign",
+  "nome": "Upgrade sign",
+  "fonte": "world.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 868,
+    "funcao": "_upgrade_sign"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-089",
+  "categoria": "CEN",
+  "chave": "world.apply_room_look",
+  "nome": "Apply room look",
+  "fonte": "world.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 886,
+    "funcao": "apply_room_look"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-090",
+  "categoria": "CEN",
+  "chave": "world.upgrade_visible",
+  "nome": "Upgrade visible",
+  "fonte": "world.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 898,
+    "funcao": "upgrade_visible"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-091",
+  "categoria": "CEN",
+  "chave": "world._ensure_bung_x",
+  "nome": "Ensure bung x",
+  "fonte": "world.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 906,
+    "funcao": "_ensure_bung_x"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-092",
+  "categoria": "CEN",
+  "chave": "world._on_bungalow_built",
+  "nome": "On bungalow built",
+  "fonte": "world.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 910,
+    "funcao": "_on_bungalow_built"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-093",
+  "categoria": "CEN",
+  "chave": "world.sync_bungalows",
+  "nome": "Sync bungalows",
+  "fonte": "world.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 916,
+    "funcao": "sync_bungalows"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-094",
+  "categoria": "CEN",
+  "chave": "world._drop_bungalow",
+  "nome": "Drop bungalow",
+  "fonte": "world.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 926,
+    "funcao": "_drop_bungalow"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-095",
+  "categoria": "CEN",
+  "chave": "world._birds_spawn",
+  "nome": "Birds spawn",
+  "fonte": "world.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 941,
+    "funcao": "_birds_spawn"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-096",
+  "categoria": "CEN",
+  "chave": "world._weather_fx",
+  "nome": "Weather fx",
+  "fonte": "world.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 952,
+    "funcao": "_weather_fx"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-097",
+  "categoria": "CEN",
+  "chave": "world._on_weather",
+  "nome": "On weather",
+  "fonte": "world.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 979,
+    "funcao": "_on_weather"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-098",
+  "categoria": "CEN",
+  "chave": "world._bar",
+  "nome": "Bar",
+  "fonte": "world.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 1002,
+    "funcao": "_bar"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-099",
+  "categoria": "CEN",
+  "chave": "world._bulb_mat",
+  "nome": "Bulb mat",
+  "fonte": "world.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 1068,
+    "funcao": "_bulb_mat"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-100",
+  "categoria": "CEN",
+  "chave": "world._string_lights",
+  "nome": "String lights",
+  "fonte": "world.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 1075,
+    "funcao": "_string_lights"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-101",
+  "categoria": "CEN",
+  "chave": "world._cooler",
+  "nome": "Cooler",
+  "fonte": "world.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 1083,
+    "funcao": "_cooler"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-102",
+  "categoria": "CEN",
+  "chave": "world._table_bites",
+  "nome": "Table bites",
+  "fonte": "world.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 1095,
+    "funcao": "_table_bites"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-103",
+  "categoria": "CEN",
+  "chave": "world._fruit_row",
+  "nome": "Fruit row",
+  "fonte": "world.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 1099,
+    "funcao": "_fruit_row"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-104",
+  "categoria": "CEN",
+  "chave": "world._menu_lines",
+  "nome": "Menu lines",
+  "fonte": "world.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 1105,
+    "funcao": "_menu_lines"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-105",
+  "categoria": "CEN",
+  "chave": "world._chalkboard",
+  "nome": "Chalkboard",
+  "fonte": "world.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 1112,
+    "funcao": "_chalkboard"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-106",
+  "categoria": "CEN",
+  "chave": "world._beach_props",
+  "nome": "Beach props",
+  "fonte": "world.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 1128,
+    "funcao": "_beach_props"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-107",
+  "categoria": "CEN",
+  "chave": "world._shore_details",
+  "nome": "Shore details",
+  "fonte": "world.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 1166,
+    "funcao": "_shore_details"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-108",
+  "categoria": "CEN",
+  "chave": "world._palms",
+  "nome": "Palms",
+  "fonte": "world.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 1195,
+    "funcao": "_palms"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-109",
+  "categoria": "CEN",
+  "chave": "world._redes",
+  "nome": "Redes",
+  "fonte": "world.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 1235,
+    "funcao": "_redes"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-110",
+  "categoria": "CEN",
+  "chave": "world._on_redes_changed",
+  "nome": "On redes changed",
+  "fonte": "world.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 1290,
+    "funcao": "_on_redes_changed"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-111",
+  "categoria": "CEN",
+  "chave": "world._lantern_posts",
+  "nome": "Lantern posts",
+  "fonte": "world.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 1294,
+    "funcao": "_lantern_posts"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-112",
+  "categoria": "CEN",
+  "chave": "world.set_atmosphere",
+  "nome": "Set atmosphere",
+  "fonte": "world.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 1323,
+    "funcao": "set_atmosphere"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-113",
+  "categoria": "CEN",
+  "chave": "world.set_night",
+  "nome": "Set night",
+  "fonte": "world.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 1335,
+    "funcao": "set_night"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-114",
+  "categoria": "CEN",
+  "chave": "world._signs",
+  "nome": "Signs",
+  "fonte": "world.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 1348,
+    "funcao": "_signs"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-115",
+  "categoria": "CEN",
+  "chave": "world._route_points",
+  "nome": "Route points",
+  "fonte": "world.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 1357,
+    "funcao": "_route_points"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-116",
+  "categoria": "CEN",
+  "chave": "world.route_to_room",
+  "nome": "Route to room",
+  "fonte": "world.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 1373,
+    "funcao": "route_to_room"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-117",
+  "categoria": "CEN",
+  "chave": "world.route_room_to_hub",
+  "nome": "Route room to hub",
+  "fonte": "world.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 1377,
+    "funcao": "route_room_to_hub"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-118",
+  "categoria": "CEN",
+  "chave": "world.route_hub_to_room",
+  "nome": "Route hub to room",
+  "fonte": "world.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 1380,
+    "funcao": "route_hub_to_room"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-119",
+  "categoria": "CEN",
+  "chave": "world.route_hub_to_pool",
+  "nome": "Route hub to pool",
+  "fonte": "world.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 1383,
+    "funcao": "route_hub_to_pool"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-120",
+  "categoria": "CEN",
+  "chave": "world.route_hub_to_bar",
+  "nome": "Route hub to bar",
+  "fonte": "world.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 1391,
+    "funcao": "route_hub_to_bar"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-121",
+  "categoria": "CEN",
+  "chave": "world.route_exit",
+  "nome": "Route exit",
+  "fonte": "world.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 1397,
+    "funcao": "route_exit"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-122",
+  "categoria": "CEN",
+  "chave": "world._veg_free",
+  "nome": "Veg free",
+  "fonte": "world.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 1407,
+    "funcao": "_veg_free"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-123",
+  "categoria": "CEN",
+  "chave": "world._cross_mesh",
+  "nome": "Cross mesh",
+  "fonte": "world.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 1413,
+    "funcao": "_cross_mesh"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-124",
+  "categoria": "CEN",
+  "chave": "world._scatter",
+  "nome": "Scatter",
+  "fonte": "world.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 1426,
+    "funcao": "_scatter"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-125",
+  "categoria": "CEN",
+  "chave": "world._vegetation",
+  "nome": "Vegetation",
+  "fonte": "world.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 1451,
+    "funcao": "_vegetation"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-126",
+  "categoria": "CEN",
+  "chave": "world._hermite",
+  "nome": "Hermite",
+  "fonte": "world.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 1544,
+    "funcao": "_hermite"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-127",
+  "categoria": "CEN",
+  "chave": "world._ridge",
+  "nome": "Ridge",
+  "fonte": "world.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 1548,
+    "funcao": "_ridge"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-128",
+  "categoria": "CEN",
+  "chave": "world._mtn_mask",
+  "nome": "Mtn mask",
+  "fonte": "world.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 1557,
+    "funcao": "_mtn_mask"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-129",
+  "categoria": "CEN",
+  "chave": "world._mtn",
+  "nome": "Mtn",
+  "fonte": "world.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 1565,
+    "funcao": "_mtn"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-130",
+  "categoria": "CEN",
+  "chave": "world._mtn_material",
+  "nome": "Mtn material",
+  "fonte": "world.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 1577,
+    "funcao": "_mtn_material"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-131",
+  "categoria": "CEN",
+  "chave": "world._mtn_build_rect",
+  "nome": "Mtn build rect",
+  "fonte": "world.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 1589,
+    "funcao": "_mtn_build_rect"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-132",
+  "categoria": "CEN",
+  "chave": "world._mtn_up",
+  "nome": "Mtn up",
+  "fonte": "world.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 1628,
+    "funcao": "_mtn_up"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-133",
+  "categoria": "CEN",
+  "chave": "world._mtn_corner",
+  "nome": "Mtn corner",
+  "fonte": "world.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 1634,
+    "funcao": "_mtn_corner"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-134",
+  "categoria": "CEN",
+  "chave": "world._mtn_show",
+  "nome": "Mtn show",
+  "fonte": "world.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 1643,
+    "funcao": "_mtn_show"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-135",
+  "categoria": "CEN",
+  "chave": "world._sphere_mid",
+  "nome": "Sphere mid",
+  "fonte": "world.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 1655,
+    "funcao": "_sphere_mid"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-136",
+  "categoria": "CEN",
+  "chave": "world._crown_mesh",
+  "nome": "Crown mesh",
+  "fonte": "world.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 1666,
+    "funcao": "_crown_mesh"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-137",
+  "categoria": "CEN",
+  "chave": "world._mtn_slope_y",
+  "nome": "Mtn slope y",
+  "fonte": "world.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 1716,
+    "funcao": "_mtn_slope_y"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-138",
+  "categoria": "CEN",
+  "chave": "world._mtn_push_tree",
+  "nome": "Mtn push tree",
+  "fonte": "world.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 1722,
+    "funcao": "_mtn_push_tree"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-139",
+  "categoria": "CEN",
+  "chave": "world._mtn_trees",
+  "nome": "Mtn trees",
+  "fonte": "world.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 1738,
+    "funcao": "_mtn_trees"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-140",
+  "categoria": "CEN",
+  "chave": "world._mtn_cards",
+  "nome": "Mtn cards",
+  "fonte": "world.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 1777,
+    "funcao": "_mtn_cards"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-141",
+  "categoria": "CEN",
+  "chave": "world._mountains",
+  "nome": "Mountains",
+  "fonte": "world.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 1800,
+    "funcao": "_mountains"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-142",
+  "categoria": "CEN",
+  "chave": "world._area",
+  "nome": "Area",
+  "fonte": "world.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 1839,
+    "funcao": "_area"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-143",
+  "categoria": "CEN",
+  "chave": "world._lot_post",
+  "nome": "Lot post",
+  "fonte": "world.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 1854,
+    "funcao": "_lot_post"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-144",
+  "categoria": "CEN",
+  "chave": "world._lot",
+  "nome": "Lot",
+  "fonte": "world.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 1858,
+    "funcao": "_lot"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-145",
+  "categoria": "CEN",
+  "chave": "world._build_lots",
+  "nome": "Build lots",
+  "fonte": "world.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 1893,
+    "funcao": "_build_lots"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-146",
+  "categoria": "CEN",
+  "chave": "world.sand_patch_mat",
+  "nome": "Sand patch mat",
+  "fonte": "world.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 1902,
+    "funcao": "sand_patch_mat"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-147",
+  "categoria": "CEN",
+  "chave": "world._set_live",
+  "nome": "Set live",
+  "fonte": "world.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 1905,
+    "funcao": "_set_live"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-148",
+  "categoria": "CEN",
+  "chave": "world._on_expansion",
+  "nome": "On expansion",
+  "fonte": "world.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 1911,
+    "funcao": "_on_expansion"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-149",
+  "categoria": "CEN",
+  "chave": "world.refresh_areas",
+  "nome": "Refresh areas",
+  "fonte": "world.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 1914,
+    "funcao": "refresh_areas"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-150",
+  "categoria": "CEN",
+  "chave": "world.hut_details",
+  "nome": "Hut details",
+  "fonte": "world.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 1925,
+    "funcao": "hut_details"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-151",
+  "categoria": "CEN",
+  "chave": "world._bungalow_details",
+  "nome": "Bungalow details",
+  "fonte": "world.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 1970,
+    "funcao": "_bungalow_details"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-152",
+  "categoria": "CEN",
+  "chave": "world._pool_details",
+  "nome": "Pool details",
+  "fonte": "world.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 2017,
+    "funcao": "_pool_details"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-153",
+  "categoria": "CEN",
+  "chave": "world._reception_details",
+  "nome": "Reception details",
+  "fonte": "world.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 2070,
+    "funcao": "_reception_details"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-154",
+  "categoria": "CEN",
+  "chave": "world_village._village_materials",
+  "nome": "Village materials",
+  "fonte": "world_village.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world_village.gd",
+    "linha": 56,
+    "funcao": "_village_materials"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-155",
+  "categoria": "CEN",
+  "chave": "world_village.stucco",
+  "nome": "Stucco",
+  "fonte": "world_village.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world_village.gd",
+    "linha": 78,
+    "funcao": "stucco"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-156",
+  "categoria": "CEN",
+  "chave": "world_village.wood_tint",
+  "nome": "Wood tint",
+  "fonte": "world_village.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world_village.gd",
+    "linha": 81,
+    "funcao": "wood_tint"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-157",
+  "categoria": "CEN",
+  "chave": "world_village._block",
+  "nome": "Block",
+  "fonte": "world_village.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world_village.gd",
+    "linha": 84,
+    "funcao": "_block"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-158",
+  "categoria": "CEN",
+  "chave": "world_village._occlude",
+  "nome": "Occlude",
+  "fonte": "world_village.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world_village.gd",
+    "linha": 87,
+    "funcao": "_occlude"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-159",
+  "categoria": "CEN",
+  "chave": "world_village._bloom",
+  "nome": "Bloom",
+  "fonte": "world_village.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world_village.gd",
+    "linha": 95,
+    "funcao": "_bloom"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-160",
+  "categoria": "CEN",
+  "chave": "world_village._flower_box",
+  "nome": "Flower box",
+  "fonte": "world_village.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world_village.gd",
+    "linha": 100,
+    "funcao": "_flower_box"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-161",
+  "categoria": "CEN",
+  "chave": "world_village._juliet",
+  "nome": "Juliet",
+  "fonte": "world_village.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world_village.gd",
+    "linha": 107,
+    "funcao": "_juliet"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-162",
+  "categoria": "CEN",
+  "chave": "world_village._bougainvillea",
+  "nome": "Bougainvillea",
+  "fonte": "world_village.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world_village.gd",
+    "linha": 118,
+    "funcao": "_bougainvillea"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-163",
+  "categoria": "CEN",
+  "chave": "world_village._finish_blooms",
+  "nome": "Finish blooms",
+  "fonte": "world_village.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world_village.gd",
+    "linha": 145,
+    "funcao": "_finish_blooms"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-164",
+  "categoria": "CEN",
+  "chave": "world_village._fence",
+  "nome": "Fence",
+  "fonte": "world_village.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world_village.gd",
+    "linha": 174,
+    "funcao": "_fence"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-165",
+  "categoria": "CEN",
+  "chave": "world_village._street",
+  "nome": "Street",
+  "fonte": "world_village.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world_village.gd",
+    "linha": 193,
+    "funcao": "_street"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-166",
+  "categoria": "CEN",
+  "chave": "world_village._facade",
+  "nome": "Facade",
+  "fonte": "world_village.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world_village.gd",
+    "linha": 212,
+    "funcao": "_facade"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-167",
+  "categoria": "CEN",
+  "chave": "world_village._house_extras",
+  "nome": "House extras",
+  "fonte": "world_village.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world_village.gd",
+    "linha": 281,
+    "funcao": "_house_extras"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-168",
+  "categoria": "CEN",
+  "chave": "world_village._house",
+  "nome": "House",
+  "fonte": "world_village.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world_village.gd",
+    "linha": 332,
+    "funcao": "_house"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-169",
+  "categoria": "CEN",
+  "chave": "world_village._houses",
+  "nome": "Houses",
+  "fonte": "world_village.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world_village.gd",
+    "linha": 379,
+    "funcao": "_houses"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-170",
+  "categoria": "CEN",
+  "chave": "world_village._hero_house",
+  "nome": "Hero house",
+  "fonte": "world_village.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world_village.gd",
+    "linha": 415,
+    "funcao": "_hero_house"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-171",
+  "categoria": "CEN",
+  "chave": "world_village._church_and_praca",
+  "nome": "Church and praca",
+  "fonte": "world_village.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world_village.gd",
+    "linha": 504,
+    "funcao": "_church_and_praca"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-172",
+  "categoria": "CEN",
+  "chave": "world_village._quiosque",
+  "nome": "Quiosque",
+  "fonte": "world_village.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world_village.gd",
+    "linha": 587,
+    "funcao": "_quiosque"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-173",
+  "categoria": "CEN",
+  "chave": "world_village._kiosk_table",
+  "nome": "Kiosk table",
+  "fonte": "world_village.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world_village.gd",
+    "linha": 656,
+    "funcao": "_kiosk_table"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-174",
+  "categoria": "CEN",
+  "chave": "world_village._refresh_kiosk_board",
+  "nome": "Refresh kiosk board",
+  "fonte": "world_village.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world_village.gd",
+    "linha": 671,
+    "funcao": "_refresh_kiosk_board"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-175",
+  "categoria": "CEN",
+  "chave": "world_village.on_areas_changed",
+  "nome": "On areas changed",
+  "fonte": "world_village.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world_village.gd",
+    "linha": 682,
+    "funcao": "on_areas_changed"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-176",
+  "categoria": "CEN",
+  "chave": "world_village._kiosk_neon",
+  "nome": "Kiosk neon",
+  "fonte": "world_village.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world_village.gd",
+    "linha": 686,
+    "funcao": "_kiosk_neon"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-177",
+  "categoria": "CEN",
+  "chave": "world_village._kiosk_grill",
+  "nome": "Kiosk grill",
+  "fonte": "world_village.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world_village.gd",
+    "linha": 711,
+    "funcao": "_kiosk_grill"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-178",
+  "categoria": "CEN",
+  "chave": "world_village._barraca",
+  "nome": "Barraca",
+  "fonte": "world_village.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world_village.gd",
+    "linha": 745,
+    "funcao": "_barraca"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-179",
+  "categoria": "CEN",
+  "chave": "world_village._quest_giver",
+  "nome": "Quest giver",
+  "fonte": "world_village.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world_village.gd",
+    "linha": 774,
+    "funcao": "_quest_giver"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-180",
+  "categoria": "CEN",
+  "chave": "world_village._coco_piles",
+  "nome": "Coco piles",
+  "fonte": "world_village.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world_village.gd",
+    "linha": 803,
+    "funcao": "_coco_piles"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-181",
+  "categoria": "CEN",
+  "chave": "world_village.reset_coco_piles",
+  "nome": "Reset coco piles",
+  "fonte": "world_village.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world_village.gd",
+    "linha": 831,
+    "funcao": "reset_coco_piles"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-182",
+  "categoria": "CEN",
+  "chave": "world_village._umbrella_hd",
+  "nome": "Umbrella hd",
+  "fonte": "world_village.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world_village.gd",
+    "linha": 839,
+    "funcao": "_umbrella_hd"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-183",
+  "categoria": "CEN",
+  "chave": "world_village._bike",
+  "nome": "Bike",
+  "fonte": "world_village.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world_village.gd",
+    "linha": 843,
+    "funcao": "_bike"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-184",
+  "categoria": "CEN",
+  "chave": "world_village._jangada2",
+  "nome": "Jangada2",
+  "fonte": "world_village.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world_village.gd",
+    "linha": 891,
+    "funcao": "_jangada2"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-185",
+  "categoria": "CEN",
+  "chave": "world_village._fishing_boat",
+  "nome": "Fishing boat",
+  "fonte": "world_village.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world_village.gd",
+    "linha": 914,
+    "funcao": "_fishing_boat"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-186",
+  "categoria": "CEN",
+  "chave": "world_village._boat_mesh",
+  "nome": "Boat mesh",
+  "fonte": "world_village.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world_village.gd",
+    "linha": 940,
+    "funcao": "_boat_mesh"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-187",
+  "categoria": "CEN",
+  "chave": "world_village._boat_quad",
+  "nome": "Boat quad",
+  "fonte": "world_village.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world_village.gd",
+    "linha": 974,
+    "funcao": "_boat_quad"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-188",
+  "categoria": "CEN",
+  "chave": "world_village._net",
+  "nome": "Net",
+  "fonte": "world_village.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world_village.gd",
+    "linha": 985,
+    "funcao": "_net"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-189",
+  "categoria": "CEN",
+  "chave": "world_village._net_mat",
+  "nome": "Net mat",
+  "fonte": "world_village.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world_village.gd",
+    "linha": 1016,
+    "funcao": "_net_mat"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-190",
+  "categoria": "CEN",
+  "chave": "world_village._village_props",
+  "nome": "Village props",
+  "fonte": "world_village.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world_village.gd",
+    "linha": 1033,
+    "funcao": "_village_props"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-191",
+  "categoria": "CEN",
+  "chave": "world_village._village_palms",
+  "nome": "Village palms",
+  "fonte": "world_village.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world_village.gd",
+    "linha": 1065,
+    "funcao": "_village_palms"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-192",
+  "categoria": "CEN",
+  "chave": "world_village._street_lamps",
+  "nome": "Street lamps",
+  "fonte": "world_village.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world_village.gd",
+    "linha": 1093,
+    "funcao": "_street_lamps"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-193",
+  "categoria": "CEN",
+  "chave": "world_village._village_routes",
+  "nome": "Village routes",
+  "fonte": "world_village.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world_village.gd",
+    "linha": 1140,
+    "funcao": "_village_routes"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-194",
+  "categoria": "CEN",
+  "chave": "world_village.set_night",
+  "nome": "Set night",
+  "fonte": "world_village.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world_village.gd",
+    "linha": 1153,
+    "funcao": "set_night"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-195",
+  "categoria": "CEN",
+  "chave": "world_village._kiosk_details",
+  "nome": "Kiosk details",
+  "fonte": "world_village.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world_village.gd",
+    "linha": 1170,
+    "funcao": "_kiosk_details"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-196",
+  "categoria": "CEN",
+  "chave": "world_village._back_bar",
+  "nome": "Back bar",
+  "fonte": "world_village.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world_village.gd",
+    "linha": 1227,
+    "funcao": "_back_bar"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-197",
+  "categoria": "CEN",
+  "chave": "world_village._surf_rack",
+  "nome": "Surf rack",
+  "fonte": "world_village.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world_village.gd",
+    "linha": 1251,
+    "funcao": "_surf_rack"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-198",
+  "categoria": "CEN",
+  "chave": "world_village.rng_off",
+  "nome": "Rng off",
+  "fonte": "world_village.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world_village.gd",
+    "linha": 1263,
+    "funcao": "rng_off"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-199",
+  "categoria": "CEN",
+  "chave": "world_village._kiosk_drinks",
+  "nome": "Kiosk drinks",
+  "fonte": "world_village.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world_village.gd",
+    "linha": 1267,
+    "funcao": "_kiosk_drinks"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-200",
+  "categoria": "CEN",
+  "chave": "world_village._on_time",
+  "nome": "On time",
+  "fonte": "world_village.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world_village.gd",
+    "linha": 1284,
+    "funcao": "_on_time"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-201",
+  "categoria": "CEN",
+  "chave": "world_village._road",
+  "nome": "Road",
+  "fonte": "world_village.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world_village.gd",
+    "linha": 1303,
+    "funcao": "_road"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-202",
+  "categoria": "CEN",
+  "chave": "world_village._add_lamp",
+  "nome": "Add lamp",
+  "fonte": "world_village.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world_village.gd",
+    "linha": 1319,
+    "funcao": "_add_lamp"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-203",
+  "categoria": "CEN",
+  "chave": "world_village._village_expansion",
+  "nome": "Village expansion",
+  "fonte": "world_village.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world_village.gd",
+    "linha": 1343,
+    "funcao": "_village_expansion"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-204",
+  "categoria": "CEN",
+  "chave": "world_village._beach_life",
+  "nome": "Beach life",
+  "fonte": "world_village.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world_village.gd",
+    "linha": 1470,
+    "funcao": "_beach_life"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-205",
+  "categoria": "CEN",
+  "chave": "world_village._landmark_details",
+  "nome": "Landmark details",
+  "fonte": "world_village.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world_village.gd",
+    "linha": 1491,
+    "funcao": "_landmark_details"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-206",
+  "categoria": "CEN",
+  "chave": "world_village._map_details",
+  "nome": "Map details",
+  "fonte": "world_village.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world_village.gd",
+    "linha": 1636,
+    "funcao": "_map_details"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-207",
+  "categoria": "CEN",
+  "chave": "village_life._make",
+  "nome": "Make",
+  "fonte": "village_life.gd (código)",
+  "usos": [
+   {
+    "arquivo": "village_life.gd",
+    "linha": 92,
+    "funcao": "_make"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-208",
+  "categoria": "CEN",
+  "chave": "village_life.fish_prompt",
+  "nome": "Fish prompt",
+  "fonte": "village_life.gd (código)",
+  "usos": [
+   {
+    "arquivo": "village_life.gd",
+    "linha": 132,
+    "funcao": "fish_prompt"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-209",
+  "categoria": "CEN",
+  "chave": "village_life.fish_action",
+  "nome": "Fish action",
+  "fonte": "village_life.gd (código)",
+  "usos": [
+   {
+    "arquivo": "village_life.gd",
+    "linha": 139,
+    "funcao": "fish_action"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-210",
+  "categoria": "CEN",
+  "chave": "village_life._fish_tick",
+  "nome": "Fish tick",
+  "fonte": "village_life.gd (código)",
+  "usos": [
+   {
+    "arquivo": "village_life.gd",
+    "linha": 145,
+    "funcao": "_fish_tick"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-211",
+  "categoria": "CEN",
+  "chave": "village_life.fish_catch",
+  "nome": "Fish catch",
+  "fonte": "village_life.gd (código)",
+  "usos": [
+   {
+    "arquivo": "village_life.gd",
+    "linha": 158,
+    "funcao": "fish_catch"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-212",
+  "categoria": "CEN",
+  "chave": "village_life._prep_tick",
+  "nome": "Prep tick",
+  "fonte": "village_life.gd (código)",
+  "usos": [
+   {
+    "arquivo": "village_life.gd",
+    "linha": 177,
+    "funcao": "_prep_tick"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-213",
+  "categoria": "CEN",
+  "chave": "village_life._outside_blocks",
+  "nome": "Outside blocks",
+  "fonte": "village_life.gd (código)",
+  "usos": [
+   {
+    "arquivo": "village_life.gd",
+    "linha": 195,
+    "funcao": "_outside_blocks"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-214",
+  "categoria": "CEN",
+  "chave": "village_life.kiosk_open",
+  "nome": "Kiosk open",
+  "fonte": "village_life.gd (código)",
+  "usos": [
+   {
+    "arquivo": "village_life.gd",
+    "linha": 218,
+    "funcao": "kiosk_open"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-215",
+  "categoria": "CEN",
+  "chave": "village_life.waiting_customers",
+  "nome": "Waiting customers",
+  "fonte": "village_life.gd (código)",
+  "usos": [
+   {
+    "arquivo": "village_life.gd",
+    "linha": 221,
+    "funcao": "waiting_customers"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-216",
+  "categoria": "CEN",
+  "chave": "village_life._free_spot",
+  "nome": "Free spot",
+  "fonte": "village_life.gd (código)",
+  "usos": [
+   {
+    "arquivo": "village_life.gd",
+    "linha": 224,
+    "funcao": "_free_spot"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-217",
+  "categoria": "CEN",
+  "chave": "village_life.spawn_customer",
+  "nome": "Spawn customer",
+  "fonte": "village_life.gd (código)",
+  "usos": [
+   {
+    "arquivo": "village_life.gd",
+    "linha": 235,
+    "funcao": "spawn_customer"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-218",
+  "categoria": "CEN",
+  "chave": "village_life._kiosk_tick",
+  "nome": "Kiosk tick",
+  "fonte": "village_life.gd (código)",
+  "usos": [
+   {
+    "arquivo": "village_life.gd",
+    "linha": 283,
+    "funcao": "_kiosk_tick"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-219",
+  "categoria": "CEN",
+  "chave": "village_life._order",
+  "nome": "Order",
+  "fonte": "village_life.gd (código)",
+  "usos": [
+   {
+    "arquivo": "village_life.gd",
+    "linha": 355,
+    "funcao": "_order"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-220",
+  "categoria": "CEN",
+  "chave": "village_life._pick_dish",
+  "nome": "Pick dish",
+  "fonte": "village_life.gd (código)",
+  "usos": [
+   {
+    "arquivo": "village_life.gd",
+    "linha": 364,
+    "funcao": "_pick_dish"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-221",
+  "categoria": "CEN",
+  "chave": "village_life._pick_vip",
+  "nome": "Pick vip",
+  "fonte": "village_life.gd (código)",
+  "usos": [
+   {
+    "arquivo": "village_life.gd",
+    "linha": 379,
+    "funcao": "_pick_vip"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-222",
+  "categoria": "CEN",
+  "chave": "village_life._vip_name",
+  "nome": "Vip name",
+  "fonte": "village_life.gd (código)",
+  "usos": [
+   {
+    "arquivo": "village_life.gd",
+    "linha": 388,
+    "funcao": "_vip_name"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-223",
+  "categoria": "CEN",
+  "chave": "village_life._items",
+  "nome": "Items",
+  "fonte": "village_life.gd (código)",
+  "usos": [
+   {
+    "arquivo": "village_life.gd",
+    "linha": 394,
+    "funcao": "_items"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-224",
+  "categoria": "CEN",
+  "chave": "village_life._patience",
+  "nome": "Patience",
+  "fonte": "village_life.gd (código)",
+  "usos": [
+   {
+    "arquivo": "village_life.gd",
+    "linha": 398,
+    "funcao": "_patience"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-225",
+  "categoria": "CEN",
+  "chave": "village_life._remaining",
+  "nome": "Remaining",
+  "fonte": "village_life.gd (código)",
+  "usos": [
+   {
+    "arquivo": "village_life.gd",
+    "linha": 401,
+    "funcao": "_remaining"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-226",
+  "categoria": "CEN",
+  "chave": "village_life._order_text",
+  "nome": "Order text",
+  "fonte": "village_life.gd (código)",
+  "usos": [
+   {
+    "arquivo": "village_life.gd",
+    "linha": 404,
+    "funcao": "_order_text"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-227",
+  "categoria": "CEN",
+  "chave": "village_life._leave",
+  "nome": "Leave",
+  "fonte": "village_life.gd (código)",
+  "usos": [
+   {
+    "arquivo": "village_life.gd",
+    "linha": 413,
+    "funcao": "_leave"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-228",
+  "categoria": "CEN",
+  "chave": "village_life._next_customer",
+  "nome": "Next customer",
+  "fonte": "village_life.gd (código)",
+  "usos": [
+   {
+    "arquivo": "village_life.gd",
+    "linha": 422,
+    "funcao": "_next_customer"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-229",
+  "categoria": "CEN",
+  "chave": "village_life.w0_vip",
+  "nome": "W0 vip",
+  "fonte": "village_life.gd (código)",
+  "usos": [
+   {
+    "arquivo": "village_life.gd",
+    "linha": 430,
+    "funcao": "w0_vip"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-230",
+  "categoria": "CEN",
+  "chave": "village_life._bar",
+  "nome": "Bar",
+  "fonte": "village_life.gd (código)",
+  "usos": [
+   {
+    "arquivo": "village_life.gd",
+    "linha": 433,
+    "funcao": "_bar"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-231",
+  "categoria": "CEN",
+  "chave": "village_life.kiosk_prompt",
+  "nome": "Kiosk prompt",
+  "fonte": "village_life.gd (código)",
+  "usos": [
+   {
+    "arquivo": "village_life.gd",
+    "linha": 437,
+    "funcao": "kiosk_prompt"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-232",
+  "categoria": "CEN",
+  "chave": "village_life.daily_goal",
+  "nome": "Daily goal",
+  "fonte": "village_life.gd (código)",
+  "usos": [
+   {
+    "arquivo": "village_life.gd",
+    "linha": 464,
+    "funcao": "daily_goal"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-233",
+  "categoria": "CEN",
+  "chave": "village_life.kiosk_action",
+  "nome": "Kiosk action",
+  "fonte": "village_life.gd (código)",
+  "usos": [
+   {
+    "arquivo": "village_life.gd",
+    "linha": 472,
+    "funcao": "kiosk_action"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-234",
+  "categoria": "CEN",
+  "chave": "village_life._stage_secs",
+  "nome": "Stage secs",
+  "fonte": "village_life.gd (código)",
+  "usos": [
+   {
+    "arquivo": "village_life.gd",
+    "linha": 490,
+    "funcao": "_stage_secs"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-235",
+  "categoria": "CEN",
+  "chave": "village_life.prep_advance",
+  "nome": "Prep advance",
+  "fonte": "village_life.gd (código)",
+  "usos": [
+   {
+    "arquivo": "village_life.gd",
+    "linha": 496,
+    "funcao": "prep_advance"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-236",
+  "categoria": "CEN",
+  "chave": "village_life._deliver_item",
+  "nome": "Deliver item",
+  "fonte": "village_life.gd (código)",
+  "usos": [
+   {
+    "arquivo": "village_life.gd",
+    "linha": 513,
+    "funcao": "_deliver_item"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-237",
+  "categoria": "CEN",
+  "chave": "village_life._complete_order",
+  "nome": "Complete order",
+  "fonte": "village_life.gd (código)",
+  "usos": [
+   {
+    "arquivo": "village_life.gd",
+    "linha": 529,
+    "funcao": "_complete_order"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-238",
+  "categoria": "CEN",
+  "chave": "village_life.kiosk_serve",
+  "nome": "Kiosk serve",
+  "fonte": "village_life.gd (código)",
+  "usos": [
+   {
+    "arquivo": "village_life.gd",
+    "linha": 570,
+    "funcao": "kiosk_serve"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-239",
+  "categoria": "CEN",
+  "chave": "village_life.helper_serve",
+  "nome": "Helper serve",
+  "fonte": "village_life.gd (código)",
+  "usos": [
+   {
+    "arquivo": "village_life.gd",
+    "linha": 581,
+    "funcao": "helper_serve"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-240",
+  "categoria": "CEN",
+  "chave": "village_life._on_slept",
+  "nome": "On slept",
+  "fonte": "village_life.gd (código)",
+  "usos": [
+   {
+    "arquivo": "village_life.gd",
+    "linha": 586,
+    "funcao": "_on_slept"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-241",
+  "categoria": "CEN",
+  "chave": "guests._make_guest",
+  "nome": "Make guest",
+  "fonte": "guests.gd (código)",
+  "usos": [
+   {
+    "arquivo": "guests.gd",
+    "linha": 34,
+    "funcao": "_make_guest"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-242",
+  "categoria": "CEN",
+  "chave": "guests.spawn_guest",
+  "nome": "Spawn guest",
+  "fonte": "guests.gd (código)",
+  "usos": [
+   {
+    "arquivo": "guests.gd",
+    "linha": 64,
+    "funcao": "spawn_guest"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-243",
+  "categoria": "CEN",
+  "chave": "guests.on_areas_changed",
+  "nome": "On areas changed",
+  "fonte": "guests.gd (código)",
+  "usos": [
+   {
+    "arquivo": "guests.gd",
+    "linha": 77,
+    "funcao": "on_areas_changed"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-244",
+  "categoria": "CEN",
+  "chave": "guests._visitor_count",
+  "nome": "Visitor count",
+  "fonte": "guests.gd (código)",
+  "usos": [
+   {
+    "arquivo": "guests.gd",
+    "linha": 81,
+    "funcao": "_visitor_count"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-245",
+  "categoria": "CEN",
+  "chave": "guests.spawn_bar_visitor",
+  "nome": "Spawn bar visitor",
+  "fonte": "guests.gd (código)",
+  "usos": [
+   {
+    "arquivo": "guests.gd",
+    "linha": 89,
+    "funcao": "spawn_bar_visitor"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-246",
+  "categoria": "CEN",
+  "chave": "guests._visitor_leave",
+  "nome": "Visitor leave",
+  "fonte": "guests.gd (código)",
+  "usos": [
+   {
+    "arquivo": "guests.gd",
+    "linha": 107,
+    "funcao": "_visitor_leave"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-247",
+  "categoria": "CEN",
+  "chave": "guests._refresh_queue",
+  "nome": "Refresh queue",
+  "fonte": "guests.gd (código)",
+  "usos": [
+   {
+    "arquivo": "guests.gd",
+    "linha": 116,
+    "funcao": "_refresh_queue"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-248",
+  "categoria": "CEN",
+  "chave": "guests._tick",
+  "nome": "Tick",
+  "fonte": "guests.gd (código)",
+  "usos": [
+   {
+    "arquivo": "guests.gd",
+    "linha": 123,
+    "funcao": "_tick"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-249",
+  "categoria": "CEN",
+  "chave": "guests._arrive_state",
+  "nome": "Arrive state",
+  "fonte": "guests.gd (código)",
+  "usos": [
+   {
+    "arquivo": "guests.gd",
+    "linha": 141,
+    "funcao": "_arrive_state"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-250",
+  "categoria": "CEN",
+  "chave": "guests.desk_prompt",
+  "nome": "Desk prompt",
+  "fonte": "guests.gd (código)",
+  "usos": [
+   {
+    "arquivo": "guests.gd",
+    "linha": 164,
+    "funcao": "desk_prompt"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-251",
+  "categoria": "CEN",
+  "chave": "guests.checkin_front",
+  "nome": "Checkin front",
+  "fonte": "guests.gd (código)",
+  "usos": [
+   {
+    "arquivo": "guests.gd",
+    "linha": 174,
+    "funcao": "checkin_front"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-252",
+  "categoria": "CEN",
+  "chave": "guests._free_spot",
+  "nome": "Free spot",
+  "fonte": "guests.gd (código)",
+  "usos": [
+   {
+    "arquivo": "guests.gd",
+    "linha": 201,
+    "funcao": "_free_spot"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-253",
+  "categoria": "CEN",
+  "chave": "guests._release_spot",
+  "nome": "Release spot",
+  "fonte": "guests.gd (código)",
+  "usos": [
+   {
+    "arquivo": "guests.gd",
+    "linha": 210,
+    "funcao": "_release_spot"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-254",
+  "categoria": "CEN",
+  "chave": "guests._next_activity",
+  "nome": "Next activity",
+  "fonte": "guests.gd (código)",
+  "usos": [
+   {
+    "arquivo": "guests.gd",
+    "linha": 215,
+    "funcao": "_next_activity"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-255",
+  "categoria": "CEN",
+  "chave": "guests._next_activity_fallback",
+  "nome": "Next activity fallback",
+  "fonte": "guests.gd (código)",
+  "usos": [
+   {
+    "arquivo": "guests.gd",
+    "linha": 248,
+    "funcao": "_next_activity_fallback"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-256",
+  "categoria": "CEN",
+  "chave": "guests._back_to_hub",
+  "nome": "Back to hub",
+  "fonte": "guests.gd (código)",
+  "usos": [
+   {
+    "arquivo": "guests.gd",
+    "linha": 257,
+    "funcao": "_back_to_hub"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-257",
+  "categoria": "CEN",
+  "chave": "guests._stay_rating",
+  "nome": "Stay rating",
+  "fonte": "guests.gd (código)",
+  "usos": [
+   {
+    "arquivo": "guests.gd",
+    "linha": 269,
+    "funcao": "_stay_rating"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-258",
+  "categoria": "CEN",
+  "chave": "guests._checkout",
+  "nome": "Checkout",
+  "fonte": "guests.gd (código)",
+  "usos": [
+   {
+    "arquivo": "guests.gd",
+    "linha": 281,
+    "funcao": "_checkout"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-259",
+  "categoria": "CEN",
+  "chave": "guests._give_up",
+  "nome": "Give up",
+  "fonte": "guests.gd (código)",
+  "usos": [
+   {
+    "arquivo": "guests.gd",
+    "linha": 295,
+    "funcao": "_give_up"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-260",
+  "categoria": "CEN",
+  "chave": "guests.queue_size",
+  "nome": "Queue size",
+  "fonte": "guests.gd (código)",
+  "usos": [
+   {
+    "arquivo": "guests.gd",
+    "linha": 303,
+    "funcao": "queue_size"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-261",
+  "categoria": "CEN",
+  "chave": "guests.on_sleep",
+  "nome": "On sleep",
+  "fonte": "guests.gd (código)",
+  "usos": [
+   {
+    "arquivo": "guests.gd",
+    "linha": 308,
+    "funcao": "on_sleep"
+   }
+  ]
+ },
+ {
   "codigo": "DSH-001",
   "categoria": "DSH",
   "chave": "coco_gelado",
@@ -712,7 +4670,13 @@
     "funcao": ""
    }
   ],
-  "preco": "12"
+  "preco": "12",
+  "etapas": [
+   [
+    "Cortar o coco",
+    "1.0"
+   ]
+  ]
  },
  {
   "codigo": "DSH-002",
@@ -727,7 +4691,21 @@
     "funcao": ""
    }
   ],
-  "preco": "22"
+  "preco": "22",
+  "etapas": [
+   [
+    "Amassar o limão",
+    "0.8"
+   ],
+   [
+    "Pôr cachaça e gelo",
+    "0.8"
+   ],
+   [
+    "Agitar a coqueteleira",
+    "1.0"
+   ]
+  ]
  },
  {
   "codigo": "DSH-003",
@@ -742,7 +4720,17 @@
     "funcao": ""
    }
   ],
-  "preco": "26"
+  "preco": "26",
+  "etapas": [
+   [
+    "Fritar o peixe",
+    "1.4"
+   ],
+   [
+    "Montar o prato",
+    "0.9"
+   ]
+  ]
  },
  {
   "codigo": "DSH-004",
@@ -757,7 +4745,17 @@
     "funcao": ""
    }
   ],
-  "preco": "14"
+  "preco": "14",
+  "etapas": [
+   [
+    "Espremer as frutas",
+    "1.0"
+   ],
+   [
+    "Misturar com gelo",
+    "0.8"
+   ]
+  ]
  },
  {
   "codigo": "EVT-001",
@@ -907,6 +4905,1385 @@
   "custo": "2000",
   "estrelas": "4.0",
   "descricao": "Piscina com espreguiçadeiras. Hóspedes ficam mais felizes (+★)."
+ },
+ {
+  "codigo": "FNT-001",
+  "categoria": "FNT",
+  "chave": "Nunito.ttf",
+  "nome": "Nunito",
+  "fonte": "assets/fonts",
+  "usos": [],
+  "arquivo_modelo": "assets/fonts/Nunito.ttf"
+ },
+ {
+  "codigo": "ICO-001",
+  "categoria": "ICO",
+  "chave": "bangalo",
+  "nome": "Bangalo",
+  "fonte": "assets/ui/icons",
+  "usos": [
+   {
+    "arquivo": "economy.gd",
+    "linha": 53,
+    "funcao": ""
+   },
+   {
+    "arquivo": "main.gd",
+    "linha": 29,
+    "funcao": ""
+   },
+   {
+    "arquivo": "main.gd",
+    "linha": 336,
+    "funcao": "_run_shot"
+   },
+   {
+    "arquivo": "main.gd",
+    "linha": 410,
+    "funcao": "_run_shot"
+   },
+   {
+    "arquivo": "office_ui.gd",
+    "linha": 53,
+    "funcao": "_ready"
+   },
+   {
+    "arquivo": "office_ui.gd",
+    "linha": 67,
+    "funcao": "_ready"
+   },
+   {
+    "arquivo": "office_ui.gd",
+    "linha": 268,
+    "funcao": "refresh"
+   },
+   {
+    "arquivo": "office_ui.gd",
+    "linha": 380,
+    "funcao": "_fill_rooms"
+   },
+   {
+    "arquivo": "phone_ui.gd",
+    "linha": 150,
+    "funcao": "app_for_tab"
+   },
+   {
+    "arquivo": "phone_ui.gd",
+    "linha": 342,
+    "funcao": "_home"
+   },
+   {
+    "arquivo": "phone_ui.gd",
+    "linha": 412,
+    "funcao": "_app_expansions"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 883,
+    "funcao": "_upgrade_sign"
+   }
+  ],
+  "arquivo_modelo": "assets/ui/icons/bangalo.svg"
+ },
+ {
+  "codigo": "ICO-002",
+  "categoria": "ICO",
+  "chave": "banho",
+  "nome": "Banho",
+  "fonte": "assets/ui/icons",
+  "usos": [
+   {
+    "arquivo": "economy.gd",
+    "linha": 57,
+    "funcao": ""
+   },
+   {
+    "arquivo": "economy.gd",
+    "linha": 251,
+    "funcao": ""
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 835,
+    "funcao": "_upgrade_meshes"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 844,
+    "funcao": "_upgrade_meshes"
+   }
+  ],
+  "arquivo_modelo": "assets/ui/icons/banho.svg"
+ },
+ {
+  "codigo": "ICO-003",
+  "categoria": "ICO",
+  "chave": "bar",
+  "nome": "Bar",
+  "fonte": "assets/ui/icons",
+  "usos": [
+   {
+    "arquivo": "economy.gd",
+    "linha": 48,
+    "funcao": ""
+   },
+   {
+    "arquivo": "economy.gd",
+    "linha": 49,
+    "funcao": ""
+   },
+   {
+    "arquivo": "economy.gd",
+    "linha": 53,
+    "funcao": ""
+   },
+   {
+    "arquivo": "economy.gd",
+    "linha": 61,
+    "funcao": ""
+   },
+   {
+    "arquivo": "economy.gd",
+    "linha": 100,
+    "funcao": ""
+   },
+   {
+    "arquivo": "economy.gd",
+    "linha": 264,
+    "funcao": ""
+   },
+   {
+    "arquivo": "guests.gd",
+    "linha": 46,
+    "funcao": "_process"
+   },
+   {
+    "arquivo": "guests.gd",
+    "linha": 79,
+    "funcao": "on_areas_changed"
+   },
+   {
+    "arquivo": "guests.gd",
+    "linha": 191,
+    "funcao": "checkin_front"
+   },
+   {
+    "arquivo": "guests.gd",
+    "linha": 193,
+    "funcao": "checkin_front"
+   },
+   {
+    "arquivo": "guests.gd",
+    "linha": 221,
+    "funcao": "_next_activity"
+   },
+   {
+    "arquivo": "guests.gd",
+    "linha": 228,
+    "funcao": "_next_activity"
+   },
+   {
+    "arquivo": "main.gd",
+    "linha": 31,
+    "funcao": ""
+   },
+   {
+    "arquivo": "main.gd",
+    "linha": 336,
+    "funcao": "_run_shot"
+   },
+   {
+    "arquivo": "main.gd",
+    "linha": 647,
+    "funcao": "_demo_summary"
+   },
+   {
+    "arquivo": "main.gd",
+    "linha": 650,
+    "funcao": "_demo_summary"
+   },
+   {
+    "arquivo": "phone_ui.gd",
+    "linha": 479,
+    "funcao": "_app_menu"
+   },
+   {
+    "arquivo": "phone_ui.gd",
+    "linha": 480,
+    "funcao": "_app_menu"
+   },
+   {
+    "arquivo": "resort_core.gd",
+    "linha": 231,
+    "funcao": "bar_sale"
+   },
+   {
+    "arquivo": "resort_core.gd",
+    "linha": 614,
+    "funcao": "sell_dish"
+   },
+   {
+    "arquivo": "resort_core.gd",
+    "linha": 617,
+    "funcao": "sell_dish"
+   },
+   {
+    "arquivo": "resort_core.gd",
+    "linha": 631,
+    "funcao": "serve_bar"
+   },
+   {
+    "arquivo": "resort_core.gd",
+    "linha": 735,
+    "funcao": "save_game"
+   },
+   {
+    "arquivo": "resort_core.gd",
+    "linha": 779,
+    "funcao": "load_game"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 50,
+    "funcao": "_ready"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 1894,
+    "funcao": "_build_lots"
+   }
+  ],
+  "arquivo_modelo": "assets/ui/icons/bar.svg"
+ },
+ {
+  "codigo": "ICO-004",
+  "categoria": "ICO",
+  "chave": "bartender",
+  "nome": "Bartender",
+  "fonte": "assets/ui/icons",
+  "usos": [
+   {
+    "arquivo": "economy.gd",
+    "linha": 96,
+    "funcao": ""
+   },
+   {
+    "arquivo": "resort_core.gd",
+    "linha": 54,
+    "funcao": ""
+   },
+   {
+    "arquivo": "resort_core.gd",
+    "linha": 93,
+    "funcao": "_reset_economy"
+   },
+   {
+    "arquivo": "resort_core.gd",
+    "linha": 614,
+    "funcao": "sell_dish"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 1060,
+    "funcao": "_bar"
+   }
+  ],
+  "arquivo_modelo": "assets/ui/icons/bartender.svg"
+ },
+ {
+  "codigo": "ICO-005",
+  "categoria": "ICO",
+  "chave": "cachaca",
+  "nome": "Cachaca",
+  "fonte": "assets/ui/icons",
+  "usos": [
+   {
+    "arquivo": "economy.gd",
+    "linha": 37,
+    "funcao": ""
+   },
+   {
+    "arquivo": "economy.gd",
+    "linha": 159,
+    "funcao": ""
+   },
+   {
+    "arquivo": "economy.gd",
+    "linha": 169,
+    "funcao": ""
+   },
+   {
+    "arquivo": "economy.gd",
+    "linha": 179,
+    "funcao": ""
+   }
+  ],
+  "arquivo_modelo": "assets/ui/icons/cachaca.svg"
+ },
+ {
+  "codigo": "ICO-006",
+  "categoria": "ICO",
+  "chave": "caixa",
+  "nome": "Caixa",
+  "fonte": "assets/ui/icons",
+  "usos": [
+   {
+    "arquivo": "hud.gd",
+    "linha": 59,
+    "funcao": "_ready"
+   },
+   {
+    "arquivo": "hud.gd",
+    "linha": 236,
+    "funcao": "open_office"
+   },
+   {
+    "arquivo": "office_ui.gd",
+    "linha": 10,
+    "funcao": ""
+   },
+   {
+    "arquivo": "office_ui.gd",
+    "linha": 67,
+    "funcao": "_ready"
+   },
+   {
+    "arquivo": "office_ui.gd",
+    "linha": 256,
+    "funcao": "refresh"
+   },
+   {
+    "arquivo": "office_ui.gd",
+    "linha": 262,
+    "funcao": "refresh"
+   },
+   {
+    "arquivo": "office_ui.gd",
+    "linha": 288,
+    "funcao": "_fill_ledger"
+   },
+   {
+    "arquivo": "office_ui.gd",
+    "linha": 541,
+    "funcao": "show_day_summary"
+   },
+   {
+    "arquivo": "office_ui.gd",
+    "linha": 549,
+    "funcao": "show_day_summary"
+   },
+   {
+    "arquivo": "phone_ui.gd",
+    "linha": 23,
+    "funcao": ""
+   },
+   {
+    "arquivo": "phone_ui.gd",
+    "linha": 154,
+    "funcao": "app_for_tab"
+   },
+   {
+    "arquivo": "phone_ui.gd",
+    "linha": 155,
+    "funcao": "app_for_tab"
+   },
+   {
+    "arquivo": "phone_ui.gd",
+    "linha": 318,
+    "funcao": "refresh"
+   }
+  ],
+  "arquivo_modelo": "assets/ui/icons/caixa.svg"
+ },
+ {
+  "codigo": "ICO-007",
+  "categoria": "ICO",
+  "chave": "cama",
+  "nome": "Cama",
+  "fonte": "assets/ui/icons",
+  "usos": [
+   {
+    "arquivo": "economy.gd",
+    "linha": 235,
+    "funcao": ""
+   },
+   {
+    "arquivo": "phone_ui.gd",
+    "linha": 21,
+    "funcao": ""
+   },
+   {
+    "arquivo": "resort_core.gd",
+    "linha": 78,
+    "funcao": "_blank_room"
+   },
+   {
+    "arquivo": "resort_core.gd",
+    "linha": 167,
+    "funcao": "_maid_sweep"
+   },
+   {
+    "arquivo": "resort_core.gd",
+    "linha": 368,
+    "funcao": "vacate_room"
+   },
+   {
+    "arquivo": "resort_core.gd",
+    "linha": 753,
+    "funcao": "save_game"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 676,
+    "funcao": "_bungalow"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 678,
+    "funcao": "_bungalow"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 764,
+    "funcao": "_upgrade_meshes"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 767,
+    "funcao": "_upgrade_meshes"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 783,
+    "funcao": "_upgrade_meshes"
+   }
+  ],
+  "arquivo_modelo": "assets/ui/icons/cama.svg"
+ },
+ {
+  "codigo": "ICO-008",
+  "categoria": "ICO",
+  "chave": "camareira",
+  "nome": "Camareira",
+  "fonte": "assets/ui/icons",
+  "usos": [
+   {
+    "arquivo": "economy.gd",
+    "linha": 89,
+    "funcao": ""
+   },
+   {
+    "arquivo": "resort_core.gd",
+    "linha": 54,
+    "funcao": ""
+   },
+   {
+    "arquivo": "resort_core.gd",
+    "linha": 93,
+    "funcao": "_reset_economy"
+   },
+   {
+    "arquivo": "resort_core.gd",
+    "linha": 148,
+    "funcao": "_process"
+   }
+  ],
+  "arquivo_modelo": "assets/ui/icons/camareira.svg"
+ },
+ {
+  "codigo": "ICO-009",
+  "categoria": "ICO",
+  "chave": "clima",
+  "nome": "Clima",
+  "fonte": "assets/ui/icons",
+  "usos": [
+   {
+    "arquivo": "economy.gd",
+    "linha": 219,
+    "funcao": ""
+   },
+   {
+    "arquivo": "hud.gd",
+    "linha": 531,
+    "funcao": "objective"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 821,
+    "funcao": "_upgrade_meshes"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 828,
+    "funcao": "_upgrade_meshes"
+   }
+  ],
+  "arquivo_modelo": "assets/ui/icons/clima.svg"
+ },
+ {
+  "codigo": "ICO-010",
+  "categoria": "ICO",
+  "chave": "coco",
+  "nome": "Coco",
+  "fonte": "assets/ui/icons",
+  "usos": [
+   {
+    "arquivo": "economy.gd",
+    "linha": 110,
+    "funcao": ""
+   },
+   {
+    "arquivo": "economy.gd",
+    "linha": 157,
+    "funcao": ""
+   },
+   {
+    "arquivo": "economy.gd",
+    "linha": 169,
+    "funcao": ""
+   },
+   {
+    "arquivo": "economy.gd",
+    "linha": 178,
+    "funcao": ""
+   },
+   {
+    "arquivo": "world_village.gd",
+    "linha": 822,
+    "funcao": "_coco_piles"
+   }
+  ],
+  "arquivo_modelo": "assets/ui/icons/coco.svg"
+ },
+ {
+  "codigo": "ICO-011",
+  "categoria": "ICO",
+  "chave": "compra",
+  "nome": "Compra",
+  "fonte": "assets/ui/icons",
+  "usos": [
+   {
+    "arquivo": "economy.gd",
+    "linha": 268,
+    "funcao": ""
+   },
+   {
+    "arquivo": "office_ui.gd",
+    "linha": 287,
+    "funcao": "_fill_ledger"
+   },
+   {
+    "arquivo": "office_ui.gd",
+    "linha": 548,
+    "funcao": "show_day_summary"
+   },
+   {
+    "arquivo": "office_ui.gd",
+    "linha": 554,
+    "funcao": "show_day_summary"
+   },
+   {
+    "arquivo": "phone_ui.gd",
+    "linha": 19,
+    "funcao": ""
+   },
+   {
+    "arquivo": "resort_core.gd",
+    "linha": 401,
+    "funcao": "buy_rede"
+   },
+   {
+    "arquivo": "resort_core.gd",
+    "linha": 579,
+    "funcao": "buy_freezer"
+   }
+  ],
+  "arquivo_modelo": "assets/ui/icons/compra.svg"
+ },
+ {
+  "codigo": "ICO-012",
+  "categoria": "ICO",
+  "chave": "decor",
+  "nome": "Decor",
+  "fonte": "assets/ui/icons",
+  "usos": [
+   {
+    "arquivo": "economy.gd",
+    "linha": 243,
+    "funcao": ""
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 799,
+    "funcao": "_upgrade_meshes"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 813,
+    "funcao": "_upgrade_meshes"
+   }
+  ],
+  "arquivo_modelo": "assets/ui/icons/decor.svg"
+ },
+ {
+  "codigo": "ICO-013",
+  "categoria": "ICO",
+  "chave": "diaria",
+  "nome": "Diaria",
+  "fonte": "assets/ui/icons",
+  "usos": [
+   {
+    "arquivo": "economy.gd",
+    "linha": 262,
+    "funcao": ""
+   },
+   {
+    "arquivo": "guests.gd",
+    "linha": 188,
+    "funcao": "checkin_front"
+   },
+   {
+    "arquivo": "main.gd",
+    "linha": 647,
+    "funcao": "_demo_summary"
+   },
+   {
+    "arquivo": "main.gd",
+    "linha": 649,
+    "funcao": "_demo_summary"
+   },
+   {
+    "arquivo": "office_ui.gd",
+    "linha": 286,
+    "funcao": "_fill_ledger"
+   },
+   {
+    "arquivo": "office_ui.gd",
+    "linha": 547,
+    "funcao": "show_day_summary"
+   }
+  ],
+  "arquivo_modelo": "assets/ui/icons/diaria.svg"
+ },
+ {
+  "codigo": "ICO-014",
+  "categoria": "ICO",
+  "chave": "equipe",
+  "nome": "Equipe",
+  "fonte": "assets/ui/icons",
+  "usos": [
+   {
+    "arquivo": "office_ui.gd",
+    "linha": 67,
+    "funcao": "_ready"
+   },
+   {
+    "arquivo": "office_ui.gd",
+    "linha": 270,
+    "funcao": "refresh"
+   },
+   {
+    "arquivo": "office_ui.gd",
+    "linha": 450,
+    "funcao": "_fill_staff"
+   },
+   {
+    "arquivo": "phone_ui.gd",
+    "linha": 22,
+    "funcao": ""
+   },
+   {
+    "arquivo": "phone_ui.gd",
+    "linha": 152,
+    "funcao": "app_for_tab"
+   },
+   {
+    "arquivo": "phone_ui.gd",
+    "linha": 153,
+    "funcao": "app_for_tab"
+   },
+   {
+    "arquivo": "phone_ui.gd",
+    "linha": 316,
+    "funcao": "refresh"
+   }
+  ],
+  "arquivo_modelo": "assets/ui/icons/equipe.svg"
+ },
+ {
+  "codigo": "ICO-015",
+  "categoria": "ICO",
+  "chave": "folha",
+  "nome": "Folha",
+  "fonte": "assets/ui/icons",
+  "usos": [
+   {
+    "arquivo": "economy.gd",
+    "linha": 269,
+    "funcao": ""
+   },
+   {
+    "arquivo": "office_ui.gd",
+    "linha": 554,
+    "funcao": "show_day_summary"
+   },
+   {
+    "arquivo": "resort_core.gd",
+    "linha": 308,
+    "funcao": "_pay_wages"
+   },
+   {
+    "arquivo": "resort_core.gd",
+    "linha": 697,
+    "funcao": "hire"
+   }
+  ],
+  "arquivo_modelo": "assets/ui/icons/folha.svg"
+ },
+ {
+  "codigo": "ICO-016",
+  "categoria": "ICO",
+  "chave": "frutas",
+  "nome": "Frutas",
+  "fonte": "assets/ui/icons",
+  "usos": [
+   {
+    "arquivo": "economy.gd",
+    "linha": 128,
+    "funcao": ""
+   },
+   {
+    "arquivo": "economy.gd",
+    "linha": 158,
+    "funcao": ""
+   },
+   {
+    "arquivo": "economy.gd",
+    "linha": 169,
+    "funcao": ""
+   },
+   {
+    "arquivo": "economy.gd",
+    "linha": 179,
+    "funcao": ""
+   },
+   {
+    "arquivo": "economy.gd",
+    "linha": 180,
+    "funcao": ""
+   },
+   {
+    "arquivo": "economy.gd",
+    "linha": 181,
+    "funcao": ""
+   },
+   {
+    "arquivo": "economy.gd",
+    "linha": 196,
+    "funcao": ""
+   }
+  ],
+  "arquivo_modelo": "assets/ui/icons/frutas.svg"
+ },
+ {
+  "codigo": "ICO-017",
+  "categoria": "ICO",
+  "chave": "gelo",
+  "nome": "Gelo",
+  "fonte": "assets/ui/icons",
+  "usos": [
+   {
+    "arquivo": "economy.gd",
+    "linha": 160,
+    "funcao": ""
+   },
+   {
+    "arquivo": "economy.gd",
+    "linha": 169,
+    "funcao": ""
+   },
+   {
+    "arquivo": "economy.gd",
+    "linha": 178,
+    "funcao": ""
+   },
+   {
+    "arquivo": "economy.gd",
+    "linha": 179,
+    "funcao": ""
+   },
+   {
+    "arquivo": "economy.gd",
+    "linha": 181,
+    "funcao": ""
+   },
+   {
+    "arquivo": "economy.gd",
+    "linha": 196,
+    "funcao": ""
+   },
+   {
+    "arquivo": "phone_ui.gd",
+    "linha": 450,
+    "funcao": "_app_market"
+   }
+  ],
+  "arquivo_modelo": "assets/ui/icons/gelo.svg"
+ },
+ {
+  "codigo": "ICO-018",
+  "categoria": "ICO",
+  "chave": "gorjeta",
+  "nome": "Gorjeta",
+  "fonte": "assets/ui/icons",
+  "usos": [
+   {
+    "arquivo": "economy.gd",
+    "linha": 263,
+    "funcao": ""
+   },
+   {
+    "arquivo": "guests.gd",
+    "linha": 287,
+    "funcao": "_checkout"
+   },
+   {
+    "arquivo": "guests.gd",
+    "linha": 320,
+    "funcao": "on_sleep"
+   },
+   {
+    "arquivo": "main.gd",
+    "linha": 647,
+    "funcao": "_demo_summary"
+   },
+   {
+    "arquivo": "main.gd",
+    "linha": 652,
+    "funcao": "_demo_summary"
+   },
+   {
+    "arquivo": "phone_ui.gd",
+    "linha": 25,
+    "funcao": ""
+   },
+   {
+    "arquivo": "phone_ui.gd",
+    "linha": 543,
+    "funcao": "_app_album"
+   },
+   {
+    "arquivo": "village_life.gd",
+    "linha": 549,
+    "funcao": "_complete_order"
+   },
+   {
+    "arquivo": "village_life.gd",
+    "linha": 554,
+    "funcao": "_complete_order"
+   }
+  ],
+  "arquivo_modelo": "assets/ui/icons/gorjeta.svg"
+ },
+ {
+  "codigo": "ICO-019",
+  "categoria": "ICO",
+  "chave": "insumo",
+  "nome": "Insumo",
+  "fonte": "assets/ui/icons",
+  "usos": [
+   {
+    "arquivo": "economy.gd",
+    "linha": 266,
+    "funcao": ""
+   },
+   {
+    "arquivo": "main.gd",
+    "linha": 647,
+    "funcao": "_demo_summary"
+   },
+   {
+    "arquivo": "main.gd",
+    "linha": 653,
+    "funcao": "_demo_summary"
+   },
+   {
+    "arquivo": "office_ui.gd",
+    "linha": 554,
+    "funcao": "show_day_summary"
+   },
+   {
+    "arquivo": "resort_core.gd",
+    "linha": 641,
+    "funcao": "buy_supply"
+   }
+  ],
+  "arquivo_modelo": "assets/ui/icons/insumo.svg"
+ },
+ {
+  "codigo": "ICO-020",
+  "categoria": "ICO",
+  "chave": "insumos",
+  "nome": "Insumos",
+  "fonte": "assets/ui/icons",
+  "usos": [
+   {
+    "arquivo": "main.gd",
+    "linha": 407,
+    "funcao": "_run_shot"
+   },
+   {
+    "arquivo": "office_ui.gd",
+    "linha": 67,
+    "funcao": "_ready"
+   },
+   {
+    "arquivo": "office_ui.gd",
+    "linha": 266,
+    "funcao": "refresh"
+   },
+   {
+    "arquivo": "office_ui.gd",
+    "linha": 326,
+    "funcao": "_fill_supplies"
+   },
+   {
+    "arquivo": "phone_ui.gd",
+    "linha": 148,
+    "funcao": "app_for_tab"
+   },
+   {
+    "arquivo": "world_village.gd",
+    "linha": 406,
+    "funcao": "_houses"
+   }
+  ],
+  "arquivo_modelo": "assets/ui/icons/insumos.svg"
+ },
+ {
+  "codigo": "ICO-021",
+  "categoria": "ICO",
+  "chave": "missao",
+  "nome": "Missao",
+  "fonte": "assets/ui/icons",
+  "usos": [
+   {
+    "arquivo": "economy.gd",
+    "linha": 270,
+    "funcao": ""
+   },
+   {
+    "arquivo": "office_ui.gd",
+    "linha": 478,
+    "funcao": "_fill_staff"
+   },
+   {
+    "arquivo": "office_ui.gd",
+    "linha": 491,
+    "funcao": "_fill_staff"
+   },
+   {
+    "arquivo": "phone_ui.gd",
+    "linha": 24,
+    "funcao": ""
+   },
+   {
+    "arquivo": "resort_core.gd",
+    "linha": 595,
+    "funcao": "vip_served"
+   },
+   {
+    "arquivo": "resort_core.gd",
+    "linha": 717,
+    "funcao": "complete_quest"
+   },
+   {
+    "arquivo": "village_life.gd",
+    "linha": 558,
+    "funcao": "_complete_order"
+   }
+  ],
+  "arquivo_modelo": "assets/ui/icons/missao.svg"
+ },
+ {
+  "codigo": "ICO-022",
+  "categoria": "ICO",
+  "chave": "multa",
+  "nome": "Multa",
+  "fonte": "assets/ui/icons",
+  "usos": [
+   {
+    "arquivo": "economy.gd",
+    "linha": 271,
+    "funcao": ""
+   },
+   {
+    "arquivo": "main.gd",
+    "linha": 260,
+    "funcao": "go_to_sleep"
+   },
+   {
+    "arquivo": "office_ui.gd",
+    "linha": 554,
+    "funcao": "show_day_summary"
+   }
+  ],
+  "arquivo_modelo": "assets/ui/icons/multa.svg"
+ },
+ {
+  "codigo": "ICO-023",
+  "categoria": "ICO",
+  "chave": "novo",
+  "nome": "Novo",
+  "fonte": "assets/ui/icons",
+  "usos": [
+   {
+    "arquivo": "economy.gd",
+    "linha": 41,
+    "funcao": ""
+   },
+   {
+    "arquivo": "office_ui.gd",
+    "linha": 440,
+    "funcao": "_fill_rooms"
+   }
+  ],
+  "arquivo_modelo": "assets/ui/icons/novo.svg"
+ },
+ {
+  "codigo": "ICO-024",
+  "categoria": "ICO",
+  "chave": "outro",
+  "nome": "Outro",
+  "fonte": "assets/ui/icons",
+  "usos": [
+   {
+    "arquivo": "economy.gd",
+    "linha": 272,
+    "funcao": ""
+   },
+   {
+    "arquivo": "office_ui.gd",
+    "linha": 291,
+    "funcao": "_fill_ledger"
+   },
+   {
+    "arquivo": "office_ui.gd",
+    "linha": 319,
+    "funcao": "_fill_ledger"
+   },
+   {
+    "arquivo": "office_ui.gd",
+    "linha": 574,
+    "funcao": "show_day_summary"
+   },
+   {
+    "arquivo": "resort_core.gd",
+    "linha": 187,
+    "funcao": "add_money"
+   },
+   {
+    "arquivo": "resort_core.gd",
+    "linha": 315,
+    "funcao": "_snapshot_ledger"
+   }
+  ],
+  "arquivo_modelo": "assets/ui/icons/outro.svg"
+ },
+ {
+  "codigo": "ICO-025",
+  "categoria": "ICO",
+  "chave": "pao",
+  "nome": "Pao",
+  "fonte": "assets/ui/icons",
+  "usos": [
+   {
+    "arquivo": "economy.gd",
+    "linha": 122,
+    "funcao": ""
+   },
+   {
+    "arquivo": "economy.gd",
+    "linha": 162,
+    "funcao": ""
+   },
+   {
+    "arquivo": "economy.gd",
+    "linha": 169,
+    "funcao": ""
+   },
+   {
+    "arquivo": "economy.gd",
+    "linha": 180,
+    "funcao": ""
+   },
+   {
+    "arquivo": "economy.gd",
+    "linha": 196,
+    "funcao": ""
+   }
+  ],
+  "arquivo_modelo": "assets/ui/icons/pao.svg"
+ },
+ {
+  "codigo": "ICO-026",
+  "categoria": "ICO",
+  "chave": "peixe",
+  "nome": "Peixe",
+  "fonte": "assets/ui/icons",
+  "usos": [
+   {
+    "arquivo": "economy.gd",
+    "linha": 45,
+    "funcao": ""
+   },
+   {
+    "arquivo": "economy.gd",
+    "linha": 116,
+    "funcao": ""
+   },
+   {
+    "arquivo": "economy.gd",
+    "linha": 161,
+    "funcao": ""
+   },
+   {
+    "arquivo": "economy.gd",
+    "linha": 169,
+    "funcao": ""
+   },
+   {
+    "arquivo": "economy.gd",
+    "linha": 180,
+    "funcao": ""
+   },
+   {
+    "arquivo": "economy.gd",
+    "linha": 196,
+    "funcao": ""
+   },
+   {
+    "arquivo": "village_life.gd",
+    "linha": 170,
+    "funcao": "fish_catch"
+   }
+  ],
+  "arquivo_modelo": "assets/ui/icons/peixe.svg"
+ },
+ {
+  "codigo": "ICO-027",
+  "categoria": "ICO",
+  "chave": "prato",
+  "nome": "Prato",
+  "fonte": "assets/ui/icons",
+  "usos": [
+   {
+    "arquivo": "office_ui.gd",
+    "linha": 354,
+    "funcao": "_fill_supplies"
+   },
+   {
+    "arquivo": "office_ui.gd",
+    "linha": 360,
+    "funcao": "_fill_supplies"
+   },
+   {
+    "arquivo": "phone_ui.gd",
+    "linha": 20,
+    "funcao": ""
+   }
+  ],
+  "arquivo_modelo": "assets/ui/icons/prato.svg"
+ },
+ {
+  "codigo": "ICO-028",
+  "categoria": "ICO",
+  "chave": "quiosque",
+  "nome": "Quiosque",
+  "fonte": "assets/ui/icons",
+  "usos": [
+   {
+    "arquivo": "economy.gd",
+    "linha": 33,
+    "funcao": ""
+   },
+   {
+    "arquivo": "economy.gd",
+    "linha": 265,
+    "funcao": ""
+   },
+   {
+    "arquivo": "main.gd",
+    "linha": 50,
+    "funcao": ""
+   },
+   {
+    "arquivo": "main.gd",
+    "linha": 350,
+    "funcao": "_run_shot"
+   },
+   {
+    "arquivo": "main.gd",
+    "linha": 396,
+    "funcao": "_run_shot"
+   },
+   {
+    "arquivo": "main.gd",
+    "linha": 415,
+    "funcao": "_run_shot"
+   },
+   {
+    "arquivo": "main.gd",
+    "linha": 416,
+    "funcao": "_run_shot"
+   },
+   {
+    "arquivo": "main.gd",
+    "linha": 647,
+    "funcao": "_demo_summary"
+   },
+   {
+    "arquivo": "main.gd",
+    "linha": 651,
+    "funcao": "_demo_summary"
+   },
+   {
+    "arquivo": "phone_ui.gd",
+    "linha": 478,
+    "funcao": "_app_menu"
+   },
+   {
+    "arquivo": "phone_ui.gd",
+    "linha": 595,
+    "funcao": "_app_staff"
+   },
+   {
+    "arquivo": "resort_core.gd",
+    "linha": 276,
+    "funcao": "kiosk_sale"
+   }
+  ],
+  "arquivo_modelo": "assets/ui/icons/quiosque.svg"
+ },
+ {
+  "codigo": "ICO-029",
+  "categoria": "ICO",
+  "chave": "redes",
+  "nome": "Redes",
+  "fonte": "assets/ui/icons",
+  "usos": [
+   {
+    "arquivo": "office_ui.gd",
+    "linha": 428,
+    "funcao": "_fill_rooms"
+   },
+   {
+    "arquivo": "office_ui.gd",
+    "linha": 581,
+    "funcao": "show_day_summary"
+   },
+   {
+    "arquivo": "resort_core.gd",
+    "linha": 734,
+    "funcao": "save_game"
+   }
+  ],
+  "arquivo_modelo": "assets/ui/icons/redes.svg"
+ },
+ {
+  "codigo": "ICO-030",
+  "categoria": "ICO",
+  "chave": "roupa",
+  "nome": "Roupa",
+  "fonte": "assets/ui/icons",
+  "usos": [
+   {
+    "arquivo": "economy.gd",
+    "linha": 227,
+    "funcao": ""
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 786,
+    "funcao": "_upgrade_meshes"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 791,
+    "funcao": "_upgrade_meshes"
+   }
+  ],
+  "arquivo_modelo": "assets/ui/icons/roupa.svg"
+ },
+ {
+  "codigo": "ICO-031",
+  "categoria": "ICO",
+  "chave": "upgrade",
+  "nome": "Upgrade",
+  "fonte": "assets/ui/icons",
+  "usos": [
+   {
+    "arquivo": "economy.gd",
+    "linha": 267,
+    "funcao": ""
+   },
+   {
+    "arquivo": "main.gd",
+    "linha": 86,
+    "funcao": ""
+   },
+   {
+    "arquivo": "main.gd",
+    "linha": 336,
+    "funcao": "_run_shot"
+   },
+   {
+    "arquivo": "main.gd",
+    "linha": 408,
+    "funcao": "_run_shot"
+   },
+   {
+    "arquivo": "main.gd",
+    "linha": 415,
+    "funcao": "_run_shot"
+   },
+   {
+    "arquivo": "main.gd",
+    "linha": 647,
+    "funcao": "_demo_summary"
+   },
+   {
+    "arquivo": "main.gd",
+    "linha": 654,
+    "funcao": "_demo_summary"
+   },
+   {
+    "arquivo": "office_ui.gd",
+    "linha": 554,
+    "funcao": "show_day_summary"
+   },
+   {
+    "arquivo": "phone_ui.gd",
+    "linha": 18,
+    "funcao": ""
+   },
+   {
+    "arquivo": "resort_core.gd",
+    "linha": 468,
+    "funcao": "buy_expansion"
+   },
+   {
+    "arquivo": "resort_core.gd",
+    "linha": 660,
+    "funcao": "upgrade_room"
+   },
+   {
+    "arquivo": "resort_core.gd",
+    "linha": 677,
+    "funcao": "build_bungalow"
+   }
+  ],
+  "arquivo_modelo": "assets/ui/icons/upgrade.svg"
  },
  {
   "codigo": "MOD-001",
@@ -5206,6 +10583,134 @@
   "arquivo_modelo": "assets/models/kenney/watermelon.glb"
  },
  {
+  "codigo": "PES-001",
+  "categoria": "PES",
+  "chave": "Ana",
+  "nome": "Ana",
+  "fonte": "guest.gd",
+  "usos": []
+ },
+ {
+  "codigo": "PES-002",
+  "categoria": "PES",
+  "chave": "João",
+  "nome": "João",
+  "fonte": "guest.gd",
+  "usos": []
+ },
+ {
+  "codigo": "PES-003",
+  "categoria": "PES",
+  "chave": "Maria",
+  "nome": "Maria",
+  "fonte": "guest.gd",
+  "usos": []
+ },
+ {
+  "codigo": "PES-004",
+  "categoria": "PES",
+  "chave": "Pedro",
+  "nome": "Pedro",
+  "fonte": "guest.gd",
+  "usos": []
+ },
+ {
+  "codigo": "PES-005",
+  "categoria": "PES",
+  "chave": "Luiza",
+  "nome": "Luiza",
+  "fonte": "guest.gd",
+  "usos": []
+ },
+ {
+  "codigo": "PES-006",
+  "categoria": "PES",
+  "chave": "Rafael",
+  "nome": "Rafael",
+  "fonte": "guest.gd",
+  "usos": []
+ },
+ {
+  "codigo": "PES-007",
+  "categoria": "PES",
+  "chave": "Camila",
+  "nome": "Camila",
+  "fonte": "guest.gd",
+  "usos": []
+ },
+ {
+  "codigo": "PES-008",
+  "categoria": "PES",
+  "chave": "Bruno",
+  "nome": "Bruno",
+  "fonte": "guest.gd",
+  "usos": []
+ },
+ {
+  "codigo": "PES-009",
+  "categoria": "PES",
+  "chave": "Juliana",
+  "nome": "Juliana",
+  "fonte": "guest.gd",
+  "usos": []
+ },
+ {
+  "codigo": "PES-010",
+  "categoria": "PES",
+  "chave": "Thiago",
+  "nome": "Thiago",
+  "fonte": "guest.gd",
+  "usos": []
+ },
+ {
+  "codigo": "PES-011",
+  "categoria": "PES",
+  "chave": "Beatriz",
+  "nome": "Beatriz",
+  "fonte": "guest.gd",
+  "usos": []
+ },
+ {
+  "codigo": "PES-012",
+  "categoria": "PES",
+  "chave": "Lucas",
+  "nome": "Lucas",
+  "fonte": "guest.gd",
+  "usos": []
+ },
+ {
+  "codigo": "PES-013",
+  "categoria": "PES",
+  "chave": "Fernanda",
+  "nome": "Fernanda",
+  "fonte": "guest.gd",
+  "usos": []
+ },
+ {
+  "codigo": "PES-014",
+  "categoria": "PES",
+  "chave": "Gabriel",
+  "nome": "Gabriel",
+  "fonte": "guest.gd",
+  "usos": []
+ },
+ {
+  "codigo": "PES-015",
+  "categoria": "PES",
+  "chave": "Larissa",
+  "nome": "Larissa",
+  "fonte": "guest.gd",
+  "usos": []
+ },
+ {
+  "codigo": "PES-016",
+  "categoria": "PES",
+  "chave": "Diego",
+  "nome": "Diego",
+  "fonte": "guest.gd",
+  "usos": []
+ },
+ {
   "codigo": "PRC-001",
   "categoria": "PRC",
   "chave": "stool",
@@ -5793,6 +11298,639 @@
   "descricao": "A padaria quer 8 frutas para a geleia da casa."
  },
  {
+  "codigo": "SCR-001",
+  "categoria": "SCR",
+  "chave": "audio.gd",
+  "nome": "audio.gd",
+  "fonte": "scripts/",
+  "usos": [
+   {
+    "arquivo": "audio.gd",
+    "linha": 1,
+    "funcao": ""
+   }
+  ],
+  "linhas": 106,
+  "descricao": ""
+ },
+ {
+  "codigo": "SCR-002",
+  "categoria": "SCR",
+  "chave": "build.gd",
+  "nome": "build.gd",
+  "fonte": "scripts/",
+  "usos": [
+   {
+    "arquivo": "build.gd",
+    "linha": 1,
+    "funcao": ""
+   }
+  ],
+  "linhas": 570,
+  "descricao": ""
+ },
+ {
+  "codigo": "SCR-003",
+  "categoria": "SCR",
+  "chave": "daycycle.gd",
+  "nome": "daycycle.gd",
+  "fonte": "scripts/",
+  "usos": [
+   {
+    "arquivo": "daycycle.gd",
+    "linha": 1,
+    "funcao": ""
+   }
+  ],
+  "linhas": 159,
+  "descricao": ""
+ },
+ {
+  "codigo": "SCR-004",
+  "categoria": "SCR",
+  "chave": "details.gd",
+  "nome": "details.gd",
+  "fonte": "scripts/",
+  "usos": [
+   {
+    "arquivo": "details.gd",
+    "linha": 1,
+    "funcao": ""
+   }
+  ],
+  "linhas": 434,
+  "descricao": "Detalhes cartoon (v0.7.1): bandeirinhas, franja de palha, tochas, placas, frutas, pranchas, barracas de"
+ },
+ {
+  "codigo": "SCR-005",
+  "categoria": "SCR",
+  "chave": "eat_arm.gd",
+  "nome": "eat_arm.gd",
+  "fonte": "scripts/",
+  "usos": [
+   {
+    "arquivo": "eat_arm.gd",
+    "linha": 1,
+    "funcao": ""
+   }
+  ],
+  "linhas": 71,
+  "descricao": ""
+ },
+ {
+  "codigo": "SCR-006",
+  "categoria": "SCR",
+  "chave": "economy.gd",
+  "nome": "economy.gd",
+  "fonte": "scripts/",
+  "usos": [
+   {
+    "arquivo": "economy.gd",
+    "linha": 1,
+    "funcao": ""
+   }
+  ],
+  "linhas": 312,
+  "descricao": "Todos os números da progressão do Maré Alta. Não espalhar preço, diária ou salário pelo código."
+ },
+ {
+  "codigo": "SCR-007",
+  "categoria": "SCR",
+  "chave": "guest.gd",
+  "nome": "guest.gd",
+  "fonte": "scripts/",
+  "usos": [
+   {
+    "arquivo": "guest.gd",
+    "linha": 1,
+    "funcao": ""
+   }
+  ],
+  "linhas": 944,
+  "descricao": ""
+ },
+ {
+  "codigo": "SCR-008",
+  "categoria": "SCR",
+  "chave": "guests.gd",
+  "nome": "guests.gd",
+  "fonte": "scripts/",
+  "usos": [
+   {
+    "arquivo": "guests.gd",
+    "linha": 1,
+    "funcao": ""
+   }
+  ],
+  "linhas": 329,
+  "descricao": ""
+ },
+ {
+  "codigo": "SCR-009",
+  "categoria": "SCR",
+  "chave": "head_scaler.gd",
+  "nome": "head_scaler.gd",
+  "fonte": "scripts/",
+  "usos": [
+   {
+    "arquivo": "head_scaler.gd",
+    "linha": 1,
+    "funcao": ""
+   }
+  ],
+  "linhas": 23,
+  "descricao": "Deixa os personagens caricatos (v0.7): aumenta a cabeça e engorda um pouco o tronco depois da animação."
+ },
+ {
+  "codigo": "SCR-010",
+  "categoria": "SCR",
+  "chave": "hud.gd",
+  "nome": "hud.gd",
+  "fonte": "scripts/",
+  "usos": [
+   {
+    "arquivo": "hud.gd",
+    "linha": 1,
+    "funcao": ""
+   }
+  ],
+  "linhas": 623,
+  "descricao": ""
+ },
+ {
+  "codigo": "SCR-011",
+  "categoria": "SCR",
+  "chave": "i18n.gd",
+  "nome": "i18n.gd",
+  "fonte": "scripts/",
+  "usos": [
+   {
+    "arquivo": "i18n.gd",
+    "linha": 1,
+    "funcao": ""
+   }
+  ],
+  "linhas": 254,
+  "descricao": ""
+ },
+ {
+  "codigo": "SCR-012",
+  "categoria": "SCR",
+  "chave": "interactable.gd",
+  "nome": "interactable.gd",
+  "fonte": "scripts/",
+  "usos": [
+   {
+    "arquivo": "interactable.gd",
+    "linha": 1,
+    "funcao": ""
+   }
+  ],
+  "linhas": 21,
+  "descricao": ""
+ },
+ {
+  "codigo": "SCR-013",
+  "categoria": "SCR",
+  "chave": "main.gd",
+  "nome": "main.gd",
+  "fonte": "scripts/",
+  "usos": [
+   {
+    "arquivo": "main.gd",
+    "linha": 1,
+    "funcao": ""
+   }
+  ],
+  "linhas": 657,
+  "descricao": ""
+ },
+ {
+  "codigo": "SCR-014",
+  "categoria": "SCR",
+  "chave": "menus.gd",
+  "nome": "menus.gd",
+  "fonte": "scripts/",
+  "usos": [
+   {
+    "arquivo": "menus.gd",
+    "linha": 1,
+    "funcao": ""
+   }
+  ],
+  "linhas": 547,
+  "descricao": ""
+ },
+ {
+  "codigo": "SCR-015",
+  "categoria": "SCR",
+  "chave": "office_ui.gd",
+  "nome": "office_ui.gd",
+  "fonte": "scripts/",
+  "usos": [
+   {
+    "arquivo": "office_ui.gd",
+    "linha": 1,
+    "funcao": ""
+   }
+  ],
+  "linhas": 627,
+  "descricao": ""
+ },
+ {
+  "codigo": "SCR-016",
+  "categoria": "SCR",
+  "chave": "palm.gd",
+  "nome": "palm.gd",
+  "fonte": "scripts/",
+  "usos": [
+   {
+    "arquivo": "palm.gd",
+    "linha": 1,
+    "funcao": ""
+   }
+  ],
+  "linhas": 208,
+  "descricao": ""
+ },
+ {
+  "codigo": "SCR-017",
+  "categoria": "SCR",
+  "chave": "people.gd",
+  "nome": "people.gd",
+  "fonte": "scripts/",
+  "usos": [
+   {
+    "arquivo": "people.gd",
+    "linha": 1,
+    "funcao": ""
+   }
+  ],
+  "linhas": 259,
+  "descricao": "Pessoas (v0.7.3): corpo, rosto e cabelo vêm do pacote CC0 \"Universal Base Characters\" (Quaternius)."
+ },
+ {
+  "codigo": "SCR-018",
+  "categoria": "SCR",
+  "chave": "phone_ui.gd",
+  "nome": "phone_ui.gd",
+  "fonte": "scripts/",
+  "usos": [
+   {
+    "arquivo": "phone_ui.gd",
+    "linha": 1,
+    "funcao": ""
+   }
+  ],
+  "linhas": 630,
+  "descricao": "Celular do herói (v0.7): toda a gestão do negócio por apps — Expansões, Mercado, Cardápio,"
+ },
+ {
+  "codigo": "SCR-019",
+  "categoria": "SCR",
+  "chave": "player.gd",
+  "nome": "player.gd",
+  "fonte": "scripts/",
+  "usos": [
+   {
+    "arquivo": "player.gd",
+    "linha": 1,
+    "funcao": ""
+   }
+  ],
+  "linhas": 110,
+  "descricao": ""
+ },
+ {
+  "codigo": "SCR-020",
+  "categoria": "SCR",
+  "chave": "props.gd",
+  "nome": "props.gd",
+  "fonte": "scripts/",
+  "usos": [
+   {
+    "arquivo": "props.gd",
+    "linha": 1,
+    "funcao": ""
+   }
+  ],
+  "linhas": 423,
+  "descricao": "Biblioteca de props cartoon (v0.7). Cada nome de modelo antigo (Poly Haven) tem aqui uma versão"
+ },
+ {
+  "codigo": "SCR-021",
+  "categoria": "SCR",
+  "chave": "quality.gd",
+  "nome": "quality.gd",
+  "fonte": "scripts/",
+  "usos": [
+   {
+    "arquivo": "quality.gd",
+    "linha": 1,
+    "funcao": ""
+   }
+  ],
+  "linhas": 381,
+  "descricao": ""
+ },
+ {
+  "codigo": "SCR-022",
+  "categoria": "SCR",
+  "chave": "real.gd",
+  "nome": "real.gd",
+  "fonte": "scripts/",
+  "usos": [
+   {
+    "arquivo": "real.gd",
+    "linha": 1,
+    "funcao": ""
+   }
+  ],
+  "linhas": 84,
+  "descricao": "Carrega modelos REAIS baixados da web (Poly Haven e Kenney, CC0) e posiciona com tamanho certo."
+ },
+ {
+  "codigo": "SCR-023",
+  "categoria": "SCR",
+  "chave": "resort_core.gd",
+  "nome": "resort_core.gd",
+  "fonte": "scripts/",
+  "usos": [
+   {
+    "arquivo": "resort_core.gd",
+    "linha": 1,
+    "funcao": ""
+   }
+  ],
+  "linhas": 846,
+  "descricao": ""
+ },
+ {
+  "codigo": "SCR-024",
+  "categoria": "SCR",
+  "chave": "toon.gd",
+  "nome": "toon.gd",
+  "fonte": "scripts/",
+  "usos": [
+   {
+    "arquivo": "toon.gd",
+    "linha": 1,
+    "funcao": ""
+   }
+  ],
+  "linhas": 405,
+  "descricao": "Visual cartoon do Maré Alta (v0.7): paleta saturada, sombreamento em faixas (toon), texturas"
+ },
+ {
+  "codigo": "SCR-025",
+  "categoria": "SCR",
+  "chave": "ui_theme.gd",
+  "nome": "ui_theme.gd",
+  "fonte": "scripts/",
+  "usos": [
+   {
+    "arquivo": "ui_theme.gd",
+    "linha": 1,
+    "funcao": ""
+   }
+  ],
+  "linhas": 181,
+  "descricao": ""
+ },
+ {
+  "codigo": "SCR-026",
+  "categoria": "SCR",
+  "chave": "village_life.gd",
+  "nome": "village_life.gd",
+  "fonte": "scripts/",
+  "usos": [
+   {
+    "arquivo": "village_life.gd",
+    "linha": 1,
+    "funcao": ""
+   }
+  ],
+  "linhas": 601,
+  "descricao": ""
+ },
+ {
+  "codigo": "SCR-027",
+  "categoria": "SCR",
+  "chave": "world.gd",
+  "nome": "world.gd",
+  "fonte": "scripts/",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 1,
+    "funcao": ""
+   }
+  ],
+  "linhas": 2103,
+  "descricao": ""
+ },
+ {
+  "codigo": "SCR-028",
+  "categoria": "SCR",
+  "chave": "world_village.gd",
+  "nome": "world_village.gd",
+  "fonte": "scripts/",
+  "usos": [
+   {
+    "arquivo": "world_village.gd",
+    "linha": 1,
+    "funcao": ""
+   }
+  ],
+  "linhas": 1725,
+  "descricao": ""
+ },
+ {
+  "codigo": "SHD-001",
+  "categoria": "SHD",
+  "chave": "foliage",
+  "nome": "Foliage",
+  "fonte": "shaders",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 1477,
+    "funcao": "_vegetation"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 1493,
+    "funcao": "_vegetation"
+   }
+  ],
+  "arquivo_modelo": "shaders/foliage.gdshader"
+ },
+ {
+  "codigo": "SHD-002",
+  "categoria": "SHD",
+  "chave": "ground",
+  "nome": "Ground",
+  "fonte": "shaders",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 149,
+    "funcao": "_ground"
+   }
+  ],
+  "arquivo_modelo": "shaders/ground.gdshader"
+ },
+ {
+  "codigo": "SHD-003",
+  "categoria": "SHD",
+  "chave": "guest",
+  "nome": "Guest",
+  "fonte": "shaders",
+  "usos": [
+   {
+    "arquivo": "guest.gd",
+    "linha": 70,
+    "funcao": "setup"
+   }
+  ],
+  "arquivo_modelo": "shaders/guest.gdshader"
+ },
+ {
+  "codigo": "SHD-004",
+  "categoria": "SHD",
+  "chave": "mountain",
+  "nome": "Mountain",
+  "fonte": "shaders",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 1579,
+    "funcao": "_mtn_material"
+   }
+  ],
+  "arquivo_modelo": "shaders/mountain.gdshader"
+ },
+ {
+  "codigo": "SHD-005",
+  "categoria": "SHD",
+  "chave": "ocean",
+  "nome": "Ocean",
+  "fonte": "shaders",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 178,
+    "funcao": "_ocean"
+   }
+  ],
+  "arquivo_modelo": "shaders/ocean.gdshader"
+ },
+ {
+  "codigo": "SHD-006",
+  "categoria": "SHD",
+  "chave": "ocean_hd",
+  "nome": "Ocean hd",
+  "fonte": "shaders",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 178,
+    "funcao": "_ocean"
+   }
+  ],
+  "arquivo_modelo": "shaders/ocean_hd.gdshader"
+ },
+ {
+  "codigo": "SHD-007",
+  "categoria": "SHD",
+  "chave": "outline",
+  "nome": "Outline",
+  "fonte": "shaders",
+  "usos": [
+   {
+    "arquivo": "toon.gd",
+    "linha": 400,
+    "funcao": "attach_outline"
+   }
+  ],
+  "arquivo_modelo": "shaders/outline.gdshader"
+ },
+ {
+  "codigo": "SHD-008",
+  "categoria": "SHD",
+  "chave": "palm_wind",
+  "nome": "Palm wind",
+  "fonte": "shaders",
+  "usos": [
+   {
+    "arquivo": "palm.gd",
+    "linha": 33,
+    "funcao": "_mats"
+   }
+  ],
+  "arquivo_modelo": "shaders/palm_wind.gdshader"
+ },
+ {
+  "codigo": "SHD-009",
+  "categoria": "SHD",
+  "chave": "pool",
+  "nome": "Pool",
+  "fonte": "shaders",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 360,
+    "funcao": "_pool"
+   }
+  ],
+  "arquivo_modelo": "shaders/pool.gdshader"
+ },
+ {
+  "codigo": "SHD-010",
+  "categoria": "SHD",
+  "chave": "pool_floor",
+  "nome": "Pool floor",
+  "fonte": "shaders",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 342,
+    "funcao": "_pool"
+   }
+  ],
+  "arquivo_modelo": "shaders/pool_floor.gdshader"
+ },
+ {
+  "codigo": "SHD-011",
+  "categoria": "SHD",
+  "chave": "pool_hd",
+  "nome": "Pool hd",
+  "fonte": "shaders",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 360,
+    "funcao": "_pool"
+   }
+  ],
+  "arquivo_modelo": "shaders/pool_hd.gdshader"
+ },
+ {
+  "codigo": "SHD-012",
+  "categoria": "SHD",
+  "chave": "tree_card",
+  "nome": "Tree card",
+  "fonte": "shaders",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 1740,
+    "funcao": "_mtn_trees"
+   }
+  ],
+  "arquivo_modelo": "shaders/tree_card.gdshader"
+ },
+ {
   "codigo": "STF-001",
   "categoria": "STF",
   "chave": "atendente",
@@ -5871,7 +12009,8 @@
     "funcao": ""
    }
   ],
-  "custo": "2"
+  "custo": "2",
+  "estraga_por_dia": "0.2"
  },
  {
   "codigo": "SUP-003",
@@ -5901,7 +12040,8 @@
     "funcao": ""
    }
   ],
-  "custo": "1"
+  "custo": "1",
+  "estraga_por_dia": "0.25"
  },
  {
   "codigo": "SUP-005",
@@ -5916,7 +12056,8 @@
     "funcao": ""
    }
   ],
-  "custo": "7"
+  "custo": "7",
+  "estraga_por_dia": "0.4"
  },
  {
   "codigo": "SUP-006",
@@ -5931,7 +12072,835 @@
     "funcao": ""
    }
   ],
-  "custo": "2"
+  "custo": "2",
+  "estraga_por_dia": "0.3"
+ },
+ {
+  "codigo": "TEX-001",
+  "categoria": "TEX",
+  "chave": "bamboo_wall",
+  "nome": "Bamboo wall",
+  "fonte": "Poly Haven/ambientCG (CC0) ou gerado",
+  "usos": [
+   {
+    "arquivo": "toon.gd",
+    "linha": 15,
+    "funcao": ""
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 81,
+    "funcao": "_materials"
+   }
+  ],
+  "arquivos": [
+   "assets/tex/bamboo_wall_diff.jpg",
+   "assets/tex/bamboo_wall_nor.jpg",
+   "assets/tex_hd/bamboo_wall_diff.jpg",
+   "assets/tex_hd/bamboo_wall_nor.jpg",
+   "assets/tex_hd/bamboo_wall_rough.jpg"
+  ]
+ },
+ {
+  "codigo": "TEX-002",
+  "categoria": "TEX",
+  "chave": "blue_floor_tiles_01",
+  "nome": "Blue floor tiles 01",
+  "fonte": "Poly Haven/ambientCG (CC0) ou gerado",
+  "usos": [
+   {
+    "arquivo": "toon.gd",
+    "linha": 19,
+    "funcao": ""
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 85,
+    "funcao": "_materials"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 343,
+    "funcao": "_pool"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 344,
+    "funcao": "_pool"
+   }
+  ],
+  "arquivos": [
+   "assets/tex/blue_floor_tiles_01_diff.jpg",
+   "assets/tex/blue_floor_tiles_01_nor.jpg",
+   "assets/tex_hd/blue_floor_tiles_01_diff.jpg",
+   "assets/tex_hd/blue_floor_tiles_01_nor.jpg",
+   "assets/tex_hd/blue_floor_tiles_01_rough.jpg"
+  ]
+ },
+ {
+  "codigo": "TEX-003",
+  "categoria": "TEX",
+  "chave": "brown_planks_05",
+  "nome": "Brown planks 05",
+  "fonte": "Poly Haven/ambientCG (CC0) ou gerado",
+  "usos": [
+   {
+    "arquivo": "toon.gd",
+    "linha": 13,
+    "funcao": ""
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 95,
+    "funcao": "_materials"
+   }
+  ],
+  "arquivos": [
+   "assets/tex/brown_planks_05_diff.jpg",
+   "assets/tex/brown_planks_05_nor.jpg",
+   "assets/tex_hd/brown_planks_05_diff.jpg",
+   "assets/tex_hd/brown_planks_05_nor.jpg",
+   "assets/tex_hd/brown_planks_05_rough.jpg"
+  ]
+ },
+ {
+  "codigo": "TEX-004",
+  "categoria": "TEX",
+  "chave": "bush",
+  "nome": "Bush",
+  "fonte": "Poly Haven/ambientCG (CC0) ou gerado",
+  "usos": [],
+  "arquivos": [
+   "assets/tex_hd/bush.png"
+  ]
+ },
+ {
+  "codigo": "TEX-005",
+  "categoria": "TEX",
+  "chave": "calcada",
+  "nome": "Calcada",
+  "fonte": "Poly Haven/ambientCG (CC0) ou gerado",
+  "usos": [
+   {
+    "arquivo": "toon.gd",
+    "linha": 26,
+    "funcao": ""
+   },
+   {
+    "arquivo": "toon.gd",
+    "linha": 104,
+    "funcao": "pattern"
+   },
+   {
+    "arquivo": "world_village.gd",
+    "linha": 58,
+    "funcao": "_village_materials"
+   }
+  ],
+  "arquivos": [
+   "assets/tex/calcada_diff.jpg",
+   "assets/tex/calcada_nor.jpg",
+   "assets/tex_hd/calcada_diff.jpg",
+   "assets/tex_hd/calcada_nor.jpg",
+   "assets/tex_hd/calcada_rough.jpg"
+  ]
+ },
+ {
+  "codigo": "TEX-006",
+  "categoria": "TEX",
+  "chave": "canopy",
+  "nome": "Canopy",
+  "fonte": "Poly Haven/ambientCG (CC0) ou gerado",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 1580,
+    "funcao": "_mtn_material"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 1581,
+    "funcao": "_mtn_material"
+   }
+  ],
+  "arquivos": [
+   "assets/tex/canopy_diff.jpg",
+   "assets/tex/canopy_nor.jpg",
+   "assets/tex_hd/canopy_diff.jpg",
+   "assets/tex_hd/canopy_nor.jpg",
+   "assets/tex_hd/canopy_rough.jpg"
+  ]
+ },
+ {
+  "codigo": "TEX-007",
+  "categoria": "TEX",
+  "chave": "clay_roof_tiles_02",
+  "nome": "Clay roof tiles 02",
+  "fonte": "Poly Haven/ambientCG (CC0) ou gerado",
+  "usos": [
+   {
+    "arquivo": "build.gd",
+    "linha": 256,
+    "funcao": "hip_roof"
+   },
+   {
+    "arquivo": "toon.gd",
+    "linha": 27,
+    "funcao": ""
+   },
+   {
+    "arquivo": "world_village.gd",
+    "linha": 60,
+    "funcao": "_village_materials"
+   }
+  ],
+  "arquivos": [
+   "assets/tex/clay_roof_tiles_02_diff.jpg",
+   "assets/tex/clay_roof_tiles_02_nor.jpg",
+   "assets/tex_hd/clay_roof_tiles_02_diff.jpg",
+   "assets/tex_hd/clay_roof_tiles_02_nor.jpg",
+   "assets/tex_hd/clay_roof_tiles_02_rough.jpg"
+  ]
+ },
+ {
+  "codigo": "TEX-008",
+  "categoria": "TEX",
+  "chave": "coast_sand_01",
+  "nome": "Coast sand 01",
+  "fonte": "Poly Haven/ambientCG (CC0) ou gerado",
+  "usos": [
+   {
+    "arquivo": "toon.gd",
+    "linha": 28,
+    "funcao": ""
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 150,
+    "funcao": "_ground"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 151,
+    "funcao": "_ground"
+   }
+  ],
+  "arquivos": [
+   "assets/tex/coast_sand_01_diff.jpg",
+   "assets/tex/coast_sand_01_nor.jpg",
+   "assets/tex_hd/coast_sand_01_diff.jpg",
+   "assets/tex_hd/coast_sand_01_nor.jpg",
+   "assets/tex_hd/coast_sand_01_rough.jpg"
+  ]
+ },
+ {
+  "codigo": "TEX-009",
+  "categoria": "TEX",
+  "chave": "cobblestone_floor_04",
+  "nome": "Cobblestone floor 04",
+  "fonte": "Poly Haven/ambientCG (CC0) ou gerado",
+  "usos": [
+   {
+    "arquivo": "toon.gd",
+    "linha": 25,
+    "funcao": ""
+   },
+   {
+    "arquivo": "world_village.gd",
+    "linha": 57,
+    "funcao": "_village_materials"
+   },
+   {
+    "arquivo": "world_village.gd",
+    "linha": 63,
+    "funcao": "_village_materials"
+   }
+  ],
+  "arquivos": [
+   "assets/tex/cobblestone_floor_04_diff.jpg",
+   "assets/tex/cobblestone_floor_04_nor.jpg",
+   "assets/tex_hd/cobblestone_floor_04_diff.jpg",
+   "assets/tex_hd/cobblestone_floor_04_nor.jpg",
+   "assets/tex_hd/cobblestone_floor_04_rough.jpg"
+  ]
+ },
+ {
+  "codigo": "TEX-010",
+  "categoria": "TEX",
+  "chave": "damp_beach_sand",
+  "nome": "Damp beach sand",
+  "fonte": "Poly Haven/ambientCG (CC0) ou gerado",
+  "usos": [
+   {
+    "arquivo": "toon.gd",
+    "linha": 29,
+    "funcao": ""
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 152,
+    "funcao": "_ground"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 153,
+    "funcao": "_ground"
+   }
+  ],
+  "arquivos": [
+   "assets/tex/damp_beach_sand_diff.jpg",
+   "assets/tex/damp_beach_sand_nor.jpg",
+   "assets/tex_hd/damp_beach_sand_diff.jpg",
+   "assets/tex_hd/damp_beach_sand_nor.jpg",
+   "assets/tex_hd/damp_beach_sand_rough.jpg"
+  ]
+ },
+ {
+  "codigo": "TEX-011",
+  "categoria": "TEX",
+  "chave": "dark_wooden_planks",
+  "nome": "Dark wooden planks",
+  "fonte": "Poly Haven/ambientCG (CC0) ou gerado",
+  "usos": [
+   {
+    "arquivo": "toon.gd",
+    "linha": 14,
+    "funcao": ""
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 94,
+    "funcao": "_materials"
+   }
+  ],
+  "arquivos": [
+   "assets/tex/dark_wooden_planks_diff.jpg",
+   "assets/tex/dark_wooden_planks_nor.jpg",
+   "assets/tex_hd/dark_wooden_planks_diff.jpg",
+   "assets/tex_hd/dark_wooden_planks_nor.jpg",
+   "assets/tex_hd/dark_wooden_planks_rough.jpg"
+  ]
+ },
+ {
+  "codigo": "TEX-012",
+  "categoria": "TEX",
+  "chave": "fabric_pattern_07",
+  "nome": "Fabric pattern 07",
+  "fonte": "Poly Haven/ambientCG (CC0) ou gerado",
+  "usos": [
+   {
+    "arquivo": "toon.gd",
+    "linha": 17,
+    "funcao": ""
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 96,
+    "funcao": "_materials"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 97,
+    "funcao": "_materials"
+   }
+  ],
+  "arquivos": [
+   "assets/tex/fabric_pattern_07_diff.jpg",
+   "assets/tex/fabric_pattern_07_nor.jpg",
+   "assets/tex_hd/fabric_pattern_07_diff.jpg",
+   "assets/tex_hd/fabric_pattern_07_nor.jpg",
+   "assets/tex_hd/fabric_pattern_07_rough.jpg"
+  ]
+ },
+ {
+  "codigo": "TEX-013",
+  "categoria": "TEX",
+  "chave": "forest_floor",
+  "nome": "Forest floor",
+  "fonte": "Poly Haven/ambientCG (CC0) ou gerado",
+  "usos": [
+   {
+    "arquivo": "toon.gd",
+    "linha": 30,
+    "funcao": ""
+   }
+  ],
+  "arquivos": [
+   "assets/tex/forest_floor_diff.jpg",
+   "assets/tex/forest_floor_nor.jpg",
+   "assets/tex_hd/forest_floor_diff.jpg",
+   "assets/tex_hd/forest_floor_nor.jpg",
+   "assets/tex_hd/forest_floor_rough.jpg"
+  ]
+ },
+ {
+  "codigo": "TEX-014",
+  "categoria": "TEX",
+  "chave": "grass_tuft",
+  "nome": "Grass tuft",
+  "fonte": "Poly Haven/ambientCG (CC0) ou gerado",
+  "usos": [],
+  "arquivos": [
+   "assets/tex_hd/grass_tuft.png"
+  ]
+ },
+ {
+  "codigo": "TEX-015",
+  "categoria": "TEX",
+  "chave": "leafy_grass",
+  "nome": "Leafy grass",
+  "fonte": "Poly Haven/ambientCG (CC0) ou gerado",
+  "usos": [
+   {
+    "arquivo": "toon.gd",
+    "linha": 31,
+    "funcao": ""
+   }
+  ],
+  "arquivos": [
+   "assets/tex/leafy_grass_diff.jpg",
+   "assets/tex/leafy_grass_nor.jpg",
+   "assets/tex_hd/leafy_grass_diff.jpg",
+   "assets/tex_hd/leafy_grass_nor.jpg",
+   "assets/tex_hd/leafy_grass_rough.jpg"
+  ]
+ },
+ {
+  "codigo": "TEX-016",
+  "categoria": "TEX",
+  "chave": "light_stone",
+  "nome": "Light stone",
+  "fonte": "Poly Haven/ambientCG (CC0) ou gerado",
+  "usos": [
+   {
+    "arquivo": "toon.gd",
+    "linha": 20,
+    "funcao": ""
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 86,
+    "funcao": "_materials"
+   },
+   {
+    "arquivo": "world_village.gd",
+    "linha": 59,
+    "funcao": "_village_materials"
+   }
+  ],
+  "arquivos": [
+   "assets/tex/light_stone_diff.jpg",
+   "assets/tex/light_stone_nor.jpg",
+   "assets/tex_hd/light_stone_diff.jpg",
+   "assets/tex_hd/light_stone_nor.jpg",
+   "assets/tex_hd/light_stone_rough.jpg"
+  ]
+ },
+ {
+  "codigo": "TEX-017",
+  "categoria": "TEX",
+  "chave": "oak_wood_planks",
+  "nome": "Oak wood planks",
+  "fonte": "Poly Haven/ambientCG (CC0) ou gerado",
+  "usos": [
+   {
+    "arquivo": "toon.gd",
+    "linha": 12,
+    "funcao": ""
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 80,
+    "funcao": "_materials"
+   }
+  ],
+  "arquivos": [
+   "assets/tex/oak_wood_planks_diff.jpg",
+   "assets/tex/oak_wood_planks_nor.jpg",
+   "assets/tex_hd/oak_wood_planks_diff.jpg",
+   "assets/tex_hd/oak_wood_planks_nor.jpg",
+   "assets/tex_hd/oak_wood_planks_rough.jpg"
+  ]
+ },
+ {
+  "codigo": "TEX-018",
+  "categoria": "TEX",
+  "chave": "palm_frond",
+  "nome": "Palm frond",
+  "fonte": "Poly Haven/ambientCG (CC0) ou gerado",
+  "usos": [],
+  "arquivos": [
+   "assets/tex/palm_frond.png"
+  ]
+ },
+ {
+  "codigo": "TEX-019",
+  "categoria": "TEX",
+  "chave": "palm_tree_bark",
+  "nome": "Palm tree bark",
+  "fonte": "Poly Haven/ambientCG (CC0) ou gerado",
+  "usos": [
+   {
+    "arquivo": "palm.gd",
+    "linha": 35,
+    "funcao": "_mats"
+   },
+   {
+    "arquivo": "toon.gd",
+    "linha": 24,
+    "funcao": ""
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 91,
+    "funcao": "_materials"
+   }
+  ],
+  "arquivos": [
+   "assets/tex/palm_tree_bark_diff.jpg",
+   "assets/tex/palm_tree_bark_nor.jpg",
+   "assets/tex_hd/palm_tree_bark_diff.jpg",
+   "assets/tex_hd/palm_tree_bark_nor.jpg",
+   "assets/tex_hd/palm_tree_bark_rough.jpg"
+  ]
+ },
+ {
+  "codigo": "TEX-020",
+  "categoria": "TEX",
+  "chave": "patio_tiles",
+  "nome": "Patio tiles",
+  "fonte": "Poly Haven/ambientCG (CC0) ou gerado",
+  "usos": [
+   {
+    "arquivo": "toon.gd",
+    "linha": 21,
+    "funcao": ""
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 87,
+    "funcao": "_materials"
+   }
+  ],
+  "arquivos": [
+   "assets/tex/patio_tiles_diff.jpg",
+   "assets/tex/patio_tiles_nor.jpg",
+   "assets/tex_hd/patio_tiles_diff.jpg",
+   "assets/tex_hd/patio_tiles_nor.jpg",
+   "assets/tex_hd/patio_tiles_rough.jpg"
+  ]
+ },
+ {
+  "codigo": "TEX-021",
+  "categoria": "TEX",
+  "chave": "rattan",
+  "nome": "Rattan",
+  "fonte": "Poly Haven/ambientCG (CC0) ou gerado",
+  "usos": [
+   {
+    "arquivo": "toon.gd",
+    "linha": 18,
+    "funcao": ""
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 98,
+    "funcao": "_materials"
+   }
+  ],
+  "arquivos": [
+   "assets/tex/rattan_diff.jpg",
+   "assets/tex/rattan_nor.jpg",
+   "assets/tex_hd/rattan_diff.jpg",
+   "assets/tex_hd/rattan_nor.jpg",
+   "assets/tex_hd/rattan_rough.jpg"
+  ]
+ },
+ {
+  "codigo": "TEX-022",
+  "categoria": "TEX",
+  "chave": "reed_roof_04",
+  "nome": "Reed roof 04",
+  "fonte": "Poly Haven/ambientCG (CC0) ou gerado",
+  "usos": [
+   {
+    "arquivo": "build.gd",
+    "linha": 258,
+    "funcao": "hip_roof"
+   },
+   {
+    "arquivo": "toon.gd",
+    "linha": 23,
+    "funcao": ""
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 88,
+    "funcao": "_materials"
+   }
+  ],
+  "arquivos": [
+   "assets/tex/reed_roof_04_diff.jpg",
+   "assets/tex/reed_roof_04_nor.jpg",
+   "assets/tex_hd/reed_roof_04_diff.jpg",
+   "assets/tex_hd/reed_roof_04_nor.jpg",
+   "assets/tex_hd/reed_roof_04_rough.jpg"
+  ]
+ },
+ {
+  "codigo": "TEX-023",
+  "categoria": "TEX",
+  "chave": "rock_face",
+  "nome": "Rock face",
+  "fonte": "Poly Haven/ambientCG (CC0) ou gerado",
+  "usos": [
+   {
+    "arquivo": "toon.gd",
+    "linha": 32,
+    "funcao": ""
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 1582,
+    "funcao": "_mtn_material"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 1583,
+    "funcao": "_mtn_material"
+   }
+  ],
+  "arquivos": [
+   "assets/tex/rock_face_diff.jpg",
+   "assets/tex/rock_face_nor.jpg",
+   "assets/tex_hd/rock_face_diff.jpg",
+   "assets/tex_hd/rock_face_nor.jpg",
+   "assets/tex_hd/rock_face_rough.jpg"
+  ]
+ },
+ {
+  "codigo": "TEX-024",
+  "categoria": "TEX",
+  "chave": "rough_linen",
+  "nome": "Rough linen",
+  "fonte": "Poly Haven/ambientCG (CC0) ou gerado",
+  "usos": [
+   {
+    "arquivo": "toon.gd",
+    "linha": 16,
+    "funcao": ""
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 82,
+    "funcao": "_materials"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 83,
+    "funcao": "_materials"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 84,
+    "funcao": "_materials"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 99,
+    "funcao": "_materials"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 100,
+    "funcao": "_materials"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 1156,
+    "funcao": "_beach_props"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 1245,
+    "funcao": "_redes"
+   },
+   {
+    "arquivo": "world_village.gd",
+    "linha": 389,
+    "funcao": "_houses"
+   },
+   {
+    "arquivo": "world_village.gd",
+    "linha": 490,
+    "funcao": "_hero_house"
+   },
+   {
+    "arquivo": "world_village.gd",
+    "linha": 908,
+    "funcao": "_jangada2"
+   },
+   {
+    "arquivo": "world_village.gd",
+    "linha": 934,
+    "funcao": "_fishing_boat"
+   }
+  ],
+  "arquivos": [
+   "assets/tex/rough_linen_diff.jpg",
+   "assets/tex/rough_linen_nor.jpg",
+   "assets/tex_hd/rough_linen_diff.jpg",
+   "assets/tex_hd/rough_linen_nor.jpg",
+   "assets/tex_hd/rough_linen_rough.jpg"
+  ]
+ },
+ {
+  "codigo": "TEX-025",
+  "categoria": "TEX",
+  "chave": "terracotta_floor_tiles",
+  "nome": "Terracotta floor tiles",
+  "fonte": "Poly Haven/ambientCG (CC0) ou gerado",
+  "usos": [
+   {
+    "arquivo": "toon.gd",
+    "linha": 22,
+    "funcao": ""
+   },
+   {
+    "arquivo": "world_village.gd",
+    "linha": 65,
+    "funcao": "_village_materials"
+   }
+  ],
+  "arquivos": [
+   "assets/tex/terracotta_floor_tiles_diff.jpg",
+   "assets/tex/terracotta_floor_tiles_nor.jpg",
+   "assets/tex_hd/terracotta_floor_tiles_diff.jpg",
+   "assets/tex_hd/terracotta_floor_tiles_nor.jpg",
+   "assets/tex_hd/terracotta_floor_tiles_rough.jpg"
+  ]
+ },
+ {
+  "codigo": "TEX-026",
+  "categoria": "TEX",
+  "chave": "weathered_planks",
+  "nome": "Weathered planks",
+  "fonte": "Poly Haven/ambientCG (CC0) ou gerado",
+  "usos": [
+   {
+    "arquivo": "details.gd",
+    "linha": 324,
+    "funcao": "stall"
+   },
+   {
+    "arquivo": "details.gd",
+    "linha": 378,
+    "funcao": "pier"
+   },
+   {
+    "arquivo": "toon.gd",
+    "linha": 11,
+    "funcao": ""
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 77,
+    "funcao": "_materials"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 78,
+    "funcao": "_materials"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 79,
+    "funcao": "_materials"
+   },
+   {
+    "arquivo": "world_village.gd",
+    "linha": 66,
+    "funcao": "_village_materials"
+   },
+   {
+    "arquivo": "world_village.gd",
+    "linha": 82,
+    "funcao": "wood_tint"
+   }
+  ],
+  "arquivos": [
+   "assets/tex/weathered_planks_diff.jpg",
+   "assets/tex/weathered_planks_nor.jpg",
+   "assets/tex_hd/weathered_planks_diff.jpg",
+   "assets/tex_hd/weathered_planks_nor.jpg",
+   "assets/tex_hd/weathered_planks_rough.jpg"
+  ]
+ },
+ {
+  "codigo": "TEX-027",
+  "categoria": "TEX",
+  "chave": "white_plaster",
+  "nome": "White plaster",
+  "fonte": "Poly Haven/ambientCG (CC0) ou gerado",
+  "usos": [
+   {
+    "arquivo": "details.gd",
+    "linha": 411,
+    "funcao": "lighthouse"
+   },
+   {
+    "arquivo": "toon.gd",
+    "linha": 9,
+    "funcao": ""
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 75,
+    "funcao": "_materials"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 76,
+    "funcao": "_materials"
+   }
+  ],
+  "arquivos": [
+   "assets/tex/white_plaster_diff.jpg",
+   "assets/tex_hd/white_plaster_diff.jpg",
+   "assets/tex_hd/white_plaster_nor.jpg",
+   "assets/tex_hd/white_plaster_rough.jpg"
+  ]
+ },
+ {
+  "codigo": "TEX-028",
+  "categoria": "TEX",
+  "chave": "white_stucco",
+  "nome": "White stucco",
+  "fonte": "Poly Haven/ambientCG (CC0) ou gerado",
+  "usos": [
+   {
+    "arquivo": "toon.gd",
+    "linha": 10,
+    "funcao": ""
+   },
+   {
+    "arquivo": "world_village.gd",
+    "linha": 64,
+    "funcao": "_village_materials"
+   },
+   {
+    "arquivo": "world_village.gd",
+    "linha": 79,
+    "funcao": "stucco"
+   }
+  ],
+  "arquivos": [
+   "assets/tex/white_stucco_diff.jpg",
+   "assets/tex/white_stucco_nor.jpg",
+   "assets/tex_hd/white_stucco_diff.jpg",
+   "assets/tex_hd/white_stucco_nor.jpg",
+   "assets/tex_hd/white_stucco_rough.jpg"
+  ]
  },
  {
   "codigo": "UPG-001",

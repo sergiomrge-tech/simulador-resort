@@ -2,7 +2,7 @@
 
 Gerado por `python3 tools/gen_item_catalog.py` — **não edite à mão**. Os códigos ficam em `docs/itens_registro.json` e nunca mudam. Para pedir uma alteração, cite o código (ex.: "troque o modelo de MOD-017").
 
-Total: 461 itens. MOD 102 · NAT 68 · PRC 31 · CEN 50 · PRT 9 · DSH 4 · SUP 6 · EXP 7 · STF 3 · UPG 15 · QST 4 · VIP 12 · EVT 2 · NOU 148
+Total: 851 itens. MOD 102 · NAT 68 · PRC 31 · CEN 261 · PRT 9 · DSH 4 · SUP 6 · EXP 7 · STF 3 · UPG 15 · QST 4 · VIP 12 · EVT 2 · NOU 148 · TEX 28 · AUD 20 · ICO 31 · FNT 1 · SHD 12 · ANI 43 · SCR 28 · PES 16
 
 ## MOD — Modelos 3D em uso (reais, baixados da web) (102)
 
@@ -220,7 +220,7 @@ Total: 461 itens. MOD 102 · NAT 68 · PRC 31 · CEN 50 · PRT 9 · DSH 4 · SUP
 | PRC-030 | Street lamp | `street_lamp` | props.gd (código) | props.gd:411 |
 | PRC-031 | Island tree | `island_tree` | props.gd (código) | props.gd:416 |
 
-## CEN — Construtores de cenário (details.gd / build.gd) (50)
+## CEN — Construtores de cenário e lógica (funções de world, details, build, vila, hóspedes) (261)
 
 | Código | Nome | Chave | Fonte | Usado em |
 |---|---|---|---|---|
@@ -274,6 +274,217 @@ Total: 461 itens. MOD 102 · NAT 68 · PRC 31 · CEN 50 · PRT 9 · DSH 4 · SUP
 | CEN-048 | Label | `build.label` | build.gd (código) | build.gd:534 |
 | CEN-049 | Has model | `build.has_model` | build.gd (código) | build.gd:555 |
 | CEN-050 | Aabb of | `build.aabb_of` | build.gd (código) | build.gd:561 |
+| CEN-051 | Vcol mat | `details._vcol_mat` | details.gd (código) | details.gd:14 |
+| CEN-052 | Bmesh | `details._bmesh` | details.gd (código) | details.gd:48 |
+| CEN-053 | Crab walk | `details._crab_walk` | details.gd (código) | details.gd:253 |
+| CEN-054 | Hd path | `build._hd_path` | build.gd (código) | build.gd:9 |
+| CEN-055 | Roof uv mat | `build._roof_uv_mat` | build.gd (código) | build.gd:284 |
+| CEN-056 | Beam | `build._beam` | build.gd (código) | build.gd:297 |
+| CEN-057 | Detailed roof mesh | `build._detailed_roof_mesh` | build.gd (código) | build.gd:348 |
+| CEN-058 | Hip roof flat | `build._hip_roof_flat` | build.gd (código) | build.gd:437 |
+| CEN-059 | Real exists | `build._real_exists` | build.gd (código) | build.gd:550 |
+| CEN-060 | Materials | `world._materials` | world.gd (código) | world.gd:74 |
+| CEN-061 | Height | `world._height` | world.gd (código) | world.gd:107 |
+| CEN-062 | Ground | `world._ground` | world.gd (código) | world.gd:118 |
+| CEN-063 | Ocean | `world._ocean` | world.gd (código) | world.gd:169 |
+| CEN-064 | Bounds | `world._bounds` | world.gd (código) | world.gd:186 |
+| CEN-065 | Strip | `world._strip` | world.gd (código) | world.gd:196 |
+| CEN-066 | Paths | `world._paths` | world.gd (código) | world.gd:203 |
+| CEN-067 | Wall x | `world._wall_x` | world.gd (código) | world.gd:214 |
+| CEN-068 | Wall z | `world._wall_z` | world.gd (código) | world.gd:244 |
+| CEN-069 | Wall piece | `world._wall_piece` | world.gd (código) | world.gd:261 |
+| CEN-070 | Reception | `world._reception` | world.gd (código) | world.gd:266 |
+| CEN-071 | Pool | `world._pool` | world.gd (código) | world.gd:321 |
+| CEN-072 | Lounger | `world._lounger` | world.gd (código) | world.gd:386 |
+| CEN-073 | Umbrella | `world._umbrella` | world.gd (código) | world.gd:413 |
+| CEN-074 | Parasol point | `world._parasol_point` | world.gd (código) | world.gd:435 |
+| CEN-075 | Parasol canopy | `world._parasol_canopy` | world.gd (código) | world.gd:442 |
+| CEN-076 | Parasol ribs | `world._parasol_ribs` | world.gd (código) | world.gd:509 |
+| CEN-077 | Stripe mat | `world._stripe_mat` | world.gd (código) | world.gd:528 |
+| CEN-078 | Thatch parasol mat | `world._thatch_parasol_mat` | world.gd (código) | world.gd:555 |
+| CEN-079 | Coconut cup | `world._coconut_cup` | world.gd (código) | world.gd:563 |
+| CEN-080 | Petisco plate | `world._petisco_plate` | world.gd (código) | world.gd:572 |
+| CEN-081 | Bungalow | `world._bungalow` | world.gd (código) | world.gd:583 |
+| CEN-082 | Bwall x | `world._bwall_x` | world.gd (código) | world.gd:725 |
+| CEN-083 | Bwall z | `world._bwall_z` | world.gd (código) | world.gd:734 |
+| CEN-084 | On room changed | `world._on_room_changed` | world.gd (código) | world.gd:743 |
+| CEN-085 | Look | `world._look` | world.gd (código) | world.gd:754 |
+| CEN-086 | Upgrade meshes | `world._upgrade_meshes` | world.gd (código) | world.gd:760 |
+| CEN-087 | Keep parts | `world._keep_parts` | world.gd (código) | world.gd:848 |
+| CEN-088 | Upgrade sign | `world._upgrade_sign` | world.gd (código) | world.gd:868 |
+| CEN-089 | Apply room look | `world.apply_room_look` | world.gd (código) | world.gd:886 |
+| CEN-090 | Upgrade visible | `world.upgrade_visible` | world.gd (código) | world.gd:898 |
+| CEN-091 | Ensure bung x | `world._ensure_bung_x` | world.gd (código) | world.gd:906 |
+| CEN-092 | On bungalow built | `world._on_bungalow_built` | world.gd (código) | world.gd:910 |
+| CEN-093 | Sync bungalows | `world.sync_bungalows` | world.gd (código) | world.gd:916 |
+| CEN-094 | Drop bungalow | `world._drop_bungalow` | world.gd (código) | world.gd:926 |
+| CEN-095 | Birds spawn | `world._birds_spawn` | world.gd (código) | world.gd:941 |
+| CEN-096 | Weather fx | `world._weather_fx` | world.gd (código) | world.gd:952 |
+| CEN-097 | On weather | `world._on_weather` | world.gd (código) | world.gd:979 |
+| CEN-098 | Bar | `world._bar` | world.gd (código) | world.gd:1002 |
+| CEN-099 | Bulb mat | `world._bulb_mat` | world.gd (código) | world.gd:1068 |
+| CEN-100 | String lights | `world._string_lights` | world.gd (código) | world.gd:1075 |
+| CEN-101 | Cooler | `world._cooler` | world.gd (código) | world.gd:1083 |
+| CEN-102 | Table bites | `world._table_bites` | world.gd (código) | world.gd:1095 |
+| CEN-103 | Fruit row | `world._fruit_row` | world.gd (código) | world.gd:1099 |
+| CEN-104 | Menu lines | `world._menu_lines` | world.gd (código) | world.gd:1105 |
+| CEN-105 | Chalkboard | `world._chalkboard` | world.gd (código) | world.gd:1112 |
+| CEN-106 | Beach props | `world._beach_props` | world.gd (código) | world.gd:1128 |
+| CEN-107 | Shore details | `world._shore_details` | world.gd (código) | world.gd:1166 |
+| CEN-108 | Palms | `world._palms` | world.gd (código) | world.gd:1195 |
+| CEN-109 | Redes | `world._redes` | world.gd (código) | world.gd:1235 |
+| CEN-110 | On redes changed | `world._on_redes_changed` | world.gd (código) | world.gd:1290 |
+| CEN-111 | Lantern posts | `world._lantern_posts` | world.gd (código) | world.gd:1294 |
+| CEN-112 | Set atmosphere | `world.set_atmosphere` | world.gd (código) | world.gd:1323 |
+| CEN-113 | Set night | `world.set_night` | world.gd (código) | world.gd:1335 |
+| CEN-114 | Signs | `world._signs` | world.gd (código) | world.gd:1348 |
+| CEN-115 | Route points | `world._route_points` | world.gd (código) | world.gd:1357 |
+| CEN-116 | Route to room | `world.route_to_room` | world.gd (código) | world.gd:1373 |
+| CEN-117 | Route room to hub | `world.route_room_to_hub` | world.gd (código) | world.gd:1377 |
+| CEN-118 | Route hub to room | `world.route_hub_to_room` | world.gd (código) | world.gd:1380 |
+| CEN-119 | Route hub to pool | `world.route_hub_to_pool` | world.gd (código) | world.gd:1383 |
+| CEN-120 | Route hub to bar | `world.route_hub_to_bar` | world.gd (código) | world.gd:1391 |
+| CEN-121 | Route exit | `world.route_exit` | world.gd (código) | world.gd:1397 |
+| CEN-122 | Veg free | `world._veg_free` | world.gd (código) | world.gd:1407 |
+| CEN-123 | Cross mesh | `world._cross_mesh` | world.gd (código) | world.gd:1413 |
+| CEN-124 | Scatter | `world._scatter` | world.gd (código) | world.gd:1426 |
+| CEN-125 | Vegetation | `world._vegetation` | world.gd (código) | world.gd:1451 |
+| CEN-126 | Hermite | `world._hermite` | world.gd (código) | world.gd:1544 |
+| CEN-127 | Ridge | `world._ridge` | world.gd (código) | world.gd:1548 |
+| CEN-128 | Mtn mask | `world._mtn_mask` | world.gd (código) | world.gd:1557 |
+| CEN-129 | Mtn | `world._mtn` | world.gd (código) | world.gd:1565 |
+| CEN-130 | Mtn material | `world._mtn_material` | world.gd (código) | world.gd:1577 |
+| CEN-131 | Mtn build rect | `world._mtn_build_rect` | world.gd (código) | world.gd:1589 |
+| CEN-132 | Mtn up | `world._mtn_up` | world.gd (código) | world.gd:1628 |
+| CEN-133 | Mtn corner | `world._mtn_corner` | world.gd (código) | world.gd:1634 |
+| CEN-134 | Mtn show | `world._mtn_show` | world.gd (código) | world.gd:1643 |
+| CEN-135 | Sphere mid | `world._sphere_mid` | world.gd (código) | world.gd:1655 |
+| CEN-136 | Crown mesh | `world._crown_mesh` | world.gd (código) | world.gd:1666 |
+| CEN-137 | Mtn slope y | `world._mtn_slope_y` | world.gd (código) | world.gd:1716 |
+| CEN-138 | Mtn push tree | `world._mtn_push_tree` | world.gd (código) | world.gd:1722 |
+| CEN-139 | Mtn trees | `world._mtn_trees` | world.gd (código) | world.gd:1738 |
+| CEN-140 | Mtn cards | `world._mtn_cards` | world.gd (código) | world.gd:1777 |
+| CEN-141 | Mountains | `world._mountains` | world.gd (código) | world.gd:1800 |
+| CEN-142 | Area | `world._area` | world.gd (código) | world.gd:1839 |
+| CEN-143 | Lot post | `world._lot_post` | world.gd (código) | world.gd:1854 |
+| CEN-144 | Lot | `world._lot` | world.gd (código) | world.gd:1858 |
+| CEN-145 | Build lots | `world._build_lots` | world.gd (código) | world.gd:1893 |
+| CEN-146 | Sand patch mat | `world.sand_patch_mat` | world.gd (código) | world.gd:1902 |
+| CEN-147 | Set live | `world._set_live` | world.gd (código) | world.gd:1905 |
+| CEN-148 | On expansion | `world._on_expansion` | world.gd (código) | world.gd:1911 |
+| CEN-149 | Refresh areas | `world.refresh_areas` | world.gd (código) | world.gd:1914 |
+| CEN-150 | Hut details | `world.hut_details` | world.gd (código) | world.gd:1925 |
+| CEN-151 | Bungalow details | `world._bungalow_details` | world.gd (código) | world.gd:1970 |
+| CEN-152 | Pool details | `world._pool_details` | world.gd (código) | world.gd:2017 |
+| CEN-153 | Reception details | `world._reception_details` | world.gd (código) | world.gd:2070 |
+| CEN-154 | Village materials | `world_village._village_materials` | world_village.gd (código) | world_village.gd:56 |
+| CEN-155 | Stucco | `world_village.stucco` | world_village.gd (código) | world_village.gd:78 |
+| CEN-156 | Wood tint | `world_village.wood_tint` | world_village.gd (código) | world_village.gd:81 |
+| CEN-157 | Block | `world_village._block` | world_village.gd (código) | world_village.gd:84 |
+| CEN-158 | Occlude | `world_village._occlude` | world_village.gd (código) | world_village.gd:87 |
+| CEN-159 | Bloom | `world_village._bloom` | world_village.gd (código) | world_village.gd:95 |
+| CEN-160 | Flower box | `world_village._flower_box` | world_village.gd (código) | world_village.gd:100 |
+| CEN-161 | Juliet | `world_village._juliet` | world_village.gd (código) | world_village.gd:107 |
+| CEN-162 | Bougainvillea | `world_village._bougainvillea` | world_village.gd (código) | world_village.gd:118 |
+| CEN-163 | Finish blooms | `world_village._finish_blooms` | world_village.gd (código) | world_village.gd:145 |
+| CEN-164 | Fence | `world_village._fence` | world_village.gd (código) | world_village.gd:174 |
+| CEN-165 | Street | `world_village._street` | world_village.gd (código) | world_village.gd:193 |
+| CEN-166 | Facade | `world_village._facade` | world_village.gd (código) | world_village.gd:212 |
+| CEN-167 | House extras | `world_village._house_extras` | world_village.gd (código) | world_village.gd:281 |
+| CEN-168 | House | `world_village._house` | world_village.gd (código) | world_village.gd:332 |
+| CEN-169 | Houses | `world_village._houses` | world_village.gd (código) | world_village.gd:379 |
+| CEN-170 | Hero house | `world_village._hero_house` | world_village.gd (código) | world_village.gd:415 |
+| CEN-171 | Church and praca | `world_village._church_and_praca` | world_village.gd (código) | world_village.gd:504 |
+| CEN-172 | Quiosque | `world_village._quiosque` | world_village.gd (código) | world_village.gd:587 |
+| CEN-173 | Kiosk table | `world_village._kiosk_table` | world_village.gd (código) | world_village.gd:656 |
+| CEN-174 | Refresh kiosk board | `world_village._refresh_kiosk_board` | world_village.gd (código) | world_village.gd:671 |
+| CEN-175 | On areas changed | `world_village.on_areas_changed` | world_village.gd (código) | world_village.gd:682 |
+| CEN-176 | Kiosk neon | `world_village._kiosk_neon` | world_village.gd (código) | world_village.gd:686 |
+| CEN-177 | Kiosk grill | `world_village._kiosk_grill` | world_village.gd (código) | world_village.gd:711 |
+| CEN-178 | Barraca | `world_village._barraca` | world_village.gd (código) | world_village.gd:745 |
+| CEN-179 | Quest giver | `world_village._quest_giver` | world_village.gd (código) | world_village.gd:774 |
+| CEN-180 | Coco piles | `world_village._coco_piles` | world_village.gd (código) | world_village.gd:803 |
+| CEN-181 | Reset coco piles | `world_village.reset_coco_piles` | world_village.gd (código) | world_village.gd:831 |
+| CEN-182 | Umbrella hd | `world_village._umbrella_hd` | world_village.gd (código) | world_village.gd:839 |
+| CEN-183 | Bike | `world_village._bike` | world_village.gd (código) | world_village.gd:843 |
+| CEN-184 | Jangada2 | `world_village._jangada2` | world_village.gd (código) | world_village.gd:891 |
+| CEN-185 | Fishing boat | `world_village._fishing_boat` | world_village.gd (código) | world_village.gd:914 |
+| CEN-186 | Boat mesh | `world_village._boat_mesh` | world_village.gd (código) | world_village.gd:940 |
+| CEN-187 | Boat quad | `world_village._boat_quad` | world_village.gd (código) | world_village.gd:974 |
+| CEN-188 | Net | `world_village._net` | world_village.gd (código) | world_village.gd:985 |
+| CEN-189 | Net mat | `world_village._net_mat` | world_village.gd (código) | world_village.gd:1016 |
+| CEN-190 | Village props | `world_village._village_props` | world_village.gd (código) | world_village.gd:1033 |
+| CEN-191 | Village palms | `world_village._village_palms` | world_village.gd (código) | world_village.gd:1065 |
+| CEN-192 | Street lamps | `world_village._street_lamps` | world_village.gd (código) | world_village.gd:1093 |
+| CEN-193 | Village routes | `world_village._village_routes` | world_village.gd (código) | world_village.gd:1140 |
+| CEN-194 | Set night | `world_village.set_night` | world_village.gd (código) | world_village.gd:1153 |
+| CEN-195 | Kiosk details | `world_village._kiosk_details` | world_village.gd (código) | world_village.gd:1170 |
+| CEN-196 | Back bar | `world_village._back_bar` | world_village.gd (código) | world_village.gd:1227 |
+| CEN-197 | Surf rack | `world_village._surf_rack` | world_village.gd (código) | world_village.gd:1251 |
+| CEN-198 | Rng off | `world_village.rng_off` | world_village.gd (código) | world_village.gd:1263 |
+| CEN-199 | Kiosk drinks | `world_village._kiosk_drinks` | world_village.gd (código) | world_village.gd:1267 |
+| CEN-200 | On time | `world_village._on_time` | world_village.gd (código) | world_village.gd:1284 |
+| CEN-201 | Road | `world_village._road` | world_village.gd (código) | world_village.gd:1303 |
+| CEN-202 | Add lamp | `world_village._add_lamp` | world_village.gd (código) | world_village.gd:1319 |
+| CEN-203 | Village expansion | `world_village._village_expansion` | world_village.gd (código) | world_village.gd:1343 |
+| CEN-204 | Beach life | `world_village._beach_life` | world_village.gd (código) | world_village.gd:1470 |
+| CEN-205 | Landmark details | `world_village._landmark_details` | world_village.gd (código) | world_village.gd:1491 |
+| CEN-206 | Map details | `world_village._map_details` | world_village.gd (código) | world_village.gd:1636 |
+| CEN-207 | Make | `village_life._make` | village_life.gd (código) | village_life.gd:92 |
+| CEN-208 | Fish prompt | `village_life.fish_prompt` | village_life.gd (código) | village_life.gd:132 |
+| CEN-209 | Fish action | `village_life.fish_action` | village_life.gd (código) | village_life.gd:139 |
+| CEN-210 | Fish tick | `village_life._fish_tick` | village_life.gd (código) | village_life.gd:145 |
+| CEN-211 | Fish catch | `village_life.fish_catch` | village_life.gd (código) | village_life.gd:158 |
+| CEN-212 | Prep tick | `village_life._prep_tick` | village_life.gd (código) | village_life.gd:177 |
+| CEN-213 | Outside blocks | `village_life._outside_blocks` | village_life.gd (código) | village_life.gd:195 |
+| CEN-214 | Kiosk open | `village_life.kiosk_open` | village_life.gd (código) | village_life.gd:218 |
+| CEN-215 | Waiting customers | `village_life.waiting_customers` | village_life.gd (código) | village_life.gd:221 |
+| CEN-216 | Free spot | `village_life._free_spot` | village_life.gd (código) | village_life.gd:224 |
+| CEN-217 | Spawn customer | `village_life.spawn_customer` | village_life.gd (código) | village_life.gd:235 |
+| CEN-218 | Kiosk tick | `village_life._kiosk_tick` | village_life.gd (código) | village_life.gd:283 |
+| CEN-219 | Order | `village_life._order` | village_life.gd (código) | village_life.gd:355 |
+| CEN-220 | Pick dish | `village_life._pick_dish` | village_life.gd (código) | village_life.gd:364 |
+| CEN-221 | Pick vip | `village_life._pick_vip` | village_life.gd (código) | village_life.gd:379 |
+| CEN-222 | Vip name | `village_life._vip_name` | village_life.gd (código) | village_life.gd:388 |
+| CEN-223 | Items | `village_life._items` | village_life.gd (código) | village_life.gd:394 |
+| CEN-224 | Patience | `village_life._patience` | village_life.gd (código) | village_life.gd:398 |
+| CEN-225 | Remaining | `village_life._remaining` | village_life.gd (código) | village_life.gd:401 |
+| CEN-226 | Order text | `village_life._order_text` | village_life.gd (código) | village_life.gd:404 |
+| CEN-227 | Leave | `village_life._leave` | village_life.gd (código) | village_life.gd:413 |
+| CEN-228 | Next customer | `village_life._next_customer` | village_life.gd (código) | village_life.gd:422 |
+| CEN-229 | W0 vip | `village_life.w0_vip` | village_life.gd (código) | village_life.gd:430 |
+| CEN-230 | Bar | `village_life._bar` | village_life.gd (código) | village_life.gd:433 |
+| CEN-231 | Kiosk prompt | `village_life.kiosk_prompt` | village_life.gd (código) | village_life.gd:437 |
+| CEN-232 | Daily goal | `village_life.daily_goal` | village_life.gd (código) | village_life.gd:464 |
+| CEN-233 | Kiosk action | `village_life.kiosk_action` | village_life.gd (código) | village_life.gd:472 |
+| CEN-234 | Stage secs | `village_life._stage_secs` | village_life.gd (código) | village_life.gd:490 |
+| CEN-235 | Prep advance | `village_life.prep_advance` | village_life.gd (código) | village_life.gd:496 |
+| CEN-236 | Deliver item | `village_life._deliver_item` | village_life.gd (código) | village_life.gd:513 |
+| CEN-237 | Complete order | `village_life._complete_order` | village_life.gd (código) | village_life.gd:529 |
+| CEN-238 | Kiosk serve | `village_life.kiosk_serve` | village_life.gd (código) | village_life.gd:570 |
+| CEN-239 | Helper serve | `village_life.helper_serve` | village_life.gd (código) | village_life.gd:581 |
+| CEN-240 | On slept | `village_life._on_slept` | village_life.gd (código) | village_life.gd:586 |
+| CEN-241 | Make guest | `guests._make_guest` | guests.gd (código) | guests.gd:34 |
+| CEN-242 | Spawn guest | `guests.spawn_guest` | guests.gd (código) | guests.gd:64 |
+| CEN-243 | On areas changed | `guests.on_areas_changed` | guests.gd (código) | guests.gd:77 |
+| CEN-244 | Visitor count | `guests._visitor_count` | guests.gd (código) | guests.gd:81 |
+| CEN-245 | Spawn bar visitor | `guests.spawn_bar_visitor` | guests.gd (código) | guests.gd:89 |
+| CEN-246 | Visitor leave | `guests._visitor_leave` | guests.gd (código) | guests.gd:107 |
+| CEN-247 | Refresh queue | `guests._refresh_queue` | guests.gd (código) | guests.gd:116 |
+| CEN-248 | Tick | `guests._tick` | guests.gd (código) | guests.gd:123 |
+| CEN-249 | Arrive state | `guests._arrive_state` | guests.gd (código) | guests.gd:141 |
+| CEN-250 | Desk prompt | `guests.desk_prompt` | guests.gd (código) | guests.gd:164 |
+| CEN-251 | Checkin front | `guests.checkin_front` | guests.gd (código) | guests.gd:174 |
+| CEN-252 | Free spot | `guests._free_spot` | guests.gd (código) | guests.gd:201 |
+| CEN-253 | Release spot | `guests._release_spot` | guests.gd (código) | guests.gd:210 |
+| CEN-254 | Next activity | `guests._next_activity` | guests.gd (código) | guests.gd:215 |
+| CEN-255 | Next activity fallback | `guests._next_activity_fallback` | guests.gd (código) | guests.gd:248 |
+| CEN-256 | Back to hub | `guests._back_to_hub` | guests.gd (código) | guests.gd:257 |
+| CEN-257 | Stay rating | `guests._stay_rating` | guests.gd (código) | guests.gd:269 |
+| CEN-258 | Checkout | `guests._checkout` | guests.gd (código) | guests.gd:281 |
+| CEN-259 | Give up | `guests._give_up` | guests.gd (código) | guests.gd:295 |
+| CEN-260 | Queue size | `guests.queue_size` | guests.gd (código) | guests.gd:303 |
+| CEN-261 | On sleep | `guests.on_sleep` | guests.gd (código) | guests.gd:308 |
 
 ## PRT — Partes dos personagens (9)
 
@@ -534,3 +745,222 @@ Total: 461 itens. MOD 102 · NAT 68 · PRC 31 · CEN 50 · PRT 9 · DSH 4 · SUP
 | NOU-146 | Stump round | `k:stump_round` | Kenney (CC0) | — |
 | NOU-147 | Tent small open | `k:tent_smallOpen` | Kenney (CC0) | — |
 | NOU-148 | Watermelon | `k:watermelon` | Kenney (CC0) | — |
+
+## TEX — Texturas e materiais (28)
+
+| Código | Nome | Chave | Fonte | Usado em |
+|---|---|---|---|---|
+| TEX-001 | Bamboo wall | `bamboo_wall` | Poly Haven/ambientCG (CC0) ou gerado | toon.gd:15, world.gd:81 |
+| TEX-002 | Blue floor tiles 01 | `blue_floor_tiles_01` | Poly Haven/ambientCG (CC0) ou gerado | toon.gd:19, world.gd:343, world.gd:344, world.gd:85 |
+| TEX-003 | Brown planks 05 | `brown_planks_05` | Poly Haven/ambientCG (CC0) ou gerado | toon.gd:13, world.gd:95 |
+| TEX-004 | Bush | `bush` | Poly Haven/ambientCG (CC0) ou gerado | — |
+| TEX-005 | Calcada | `calcada` | Poly Haven/ambientCG (CC0) ou gerado | toon.gd:104, toon.gd:26, world_village.gd:58 |
+| TEX-006 | Canopy | `canopy` | Poly Haven/ambientCG (CC0) ou gerado | world.gd:1580, world.gd:1581 |
+| TEX-007 | Clay roof tiles 02 | `clay_roof_tiles_02` | Poly Haven/ambientCG (CC0) ou gerado | build.gd:256, toon.gd:27, world_village.gd:60 |
+| TEX-008 | Coast sand 01 | `coast_sand_01` | Poly Haven/ambientCG (CC0) ou gerado | toon.gd:28, world.gd:150, world.gd:151 |
+| TEX-009 | Cobblestone floor 04 | `cobblestone_floor_04` | Poly Haven/ambientCG (CC0) ou gerado | toon.gd:25, world_village.gd:57, world_village.gd:63 |
+| TEX-010 | Damp beach sand | `damp_beach_sand` | Poly Haven/ambientCG (CC0) ou gerado | toon.gd:29, world.gd:152, world.gd:153 |
+| TEX-011 | Dark wooden planks | `dark_wooden_planks` | Poly Haven/ambientCG (CC0) ou gerado | toon.gd:14, world.gd:94 |
+| TEX-012 | Fabric pattern 07 | `fabric_pattern_07` | Poly Haven/ambientCG (CC0) ou gerado | toon.gd:17, world.gd:96, world.gd:97 |
+| TEX-013 | Forest floor | `forest_floor` | Poly Haven/ambientCG (CC0) ou gerado | toon.gd:30 |
+| TEX-014 | Grass tuft | `grass_tuft` | Poly Haven/ambientCG (CC0) ou gerado | — |
+| TEX-015 | Leafy grass | `leafy_grass` | Poly Haven/ambientCG (CC0) ou gerado | toon.gd:31 |
+| TEX-016 | Light stone | `light_stone` | Poly Haven/ambientCG (CC0) ou gerado | toon.gd:20, world.gd:86, world_village.gd:59 |
+| TEX-017 | Oak wood planks | `oak_wood_planks` | Poly Haven/ambientCG (CC0) ou gerado | toon.gd:12, world.gd:80 |
+| TEX-018 | Palm frond | `palm_frond` | Poly Haven/ambientCG (CC0) ou gerado | — |
+| TEX-019 | Palm tree bark | `palm_tree_bark` | Poly Haven/ambientCG (CC0) ou gerado | palm.gd:35, toon.gd:24, world.gd:91 |
+| TEX-020 | Patio tiles | `patio_tiles` | Poly Haven/ambientCG (CC0) ou gerado | toon.gd:21, world.gd:87 |
+| TEX-021 | Rattan | `rattan` | Poly Haven/ambientCG (CC0) ou gerado | toon.gd:18, world.gd:98 |
+| TEX-022 | Reed roof 04 | `reed_roof_04` | Poly Haven/ambientCG (CC0) ou gerado | build.gd:258, toon.gd:23, world.gd:88 |
+| TEX-023 | Rock face | `rock_face` | Poly Haven/ambientCG (CC0) ou gerado | toon.gd:32, world.gd:1582, world.gd:1583 |
+| TEX-024 | Rough linen | `rough_linen` | Poly Haven/ambientCG (CC0) ou gerado | toon.gd:16, world.gd:100, world.gd:1156, world.gd:1245 (+8) |
+| TEX-025 | Terracotta floor tiles | `terracotta_floor_tiles` | Poly Haven/ambientCG (CC0) ou gerado | toon.gd:22, world_village.gd:65 |
+| TEX-026 | Weathered planks | `weathered_planks` | Poly Haven/ambientCG (CC0) ou gerado | details.gd:324, details.gd:378, toon.gd:11, world.gd:77 (+4) |
+| TEX-027 | White plaster | `white_plaster` | Poly Haven/ambientCG (CC0) ou gerado | details.gd:411, toon.gd:9, world.gd:75, world.gd:76 |
+| TEX-028 | White stucco | `white_stucco` | Poly Haven/ambientCG (CC0) ou gerado | toon.gd:10, world_village.gd:64, world_village.gd:79 |
+
+## AUD — Sons e músicas (20)
+
+| Código | Nome | Chave | Fonte | Usado em |
+|---|---|---|---|---|
+| AUD-001 | Bell | `bell` | assets/audio | audio.gd:91, guests.gd:74, resort_core.gd:475 |
+| AUD-002 | Bird1 | `bird1` | assets/audio | audio.gd:70 |
+| AUD-003 | Bird2 | `bird2` | assets/audio | audio.gd:70 |
+| AUD-004 | Clean | `clean` | assets/audio | world.gd:614, world.gd:700 |
+| AUD-005 | Click | `click` | assets/audio | hud.gd:255, menus.gd:123, menus.gd:348, phone_ui.gd:241 (+3) |
+| AUD-006 | Coin | `coin` | assets/audio | guests.gd:189, guests.gd:288, office_ui.gd:433, office_ui.gd:445 (+4) |
+| AUD-007 | Crickets loop | `crickets_loop` | assets/audio | audio.gd:33 |
+| AUD-008 | Dog | `dog` | assets/audio | audio.gd:80 |
+| AUD-009 | Door | `door` | assets/audio | world_village.gd:223, world_village.gd:343, world_village.gd:454, world_village.gd:538 |
+| AUD-010 | Glass | `glass` | assets/audio | guests.gd:157, village_life.gd:143, village_life.gd:522, world_village.gd:1163 |
+| AUD-011 | Music bossa | `music_bossa` | assets/audio | audio.gd:31 |
+| AUD-012 | Ocean loop | `ocean_loop` | assets/audio | audio.gd:32 |
+| AUD-013 | Seagull1 | `seagull1` | assets/audio | audio.gd:75 |
+| AUD-014 | Seagull2 | `seagull2` | assets/audio | audio.gd:75 |
+| AUD-015 | Step1 | `step1` | assets/audio | — |
+| AUD-016 | Step2 | `step2` | assets/audio | — |
+| AUD-017 | Step wood1 | `step_wood1` | assets/audio | — |
+| AUD-018 | Step wood2 | `step_wood2` | assets/audio | — |
+| AUD-019 | Swoosh | `swoosh` | assets/audio | — |
+| AUD-020 | Village murmur | `village_murmur` | assets/audio | audio.gd:34 |
+
+## ICO — Ícones de interface (31)
+
+| Código | Nome | Chave | Fonte | Usado em |
+|---|---|---|---|---|
+| ICO-001 | Bangalo | `bangalo` | assets/ui/icons | economy.gd:53, main.gd:29, main.gd:336, main.gd:410 (+8) |
+| ICO-002 | Banho | `banho` | assets/ui/icons | economy.gd:251, economy.gd:57, world.gd:835, world.gd:844 |
+| ICO-003 | Bar | `bar` | assets/ui/icons | economy.gd:100, economy.gd:264, economy.gd:48, economy.gd:49 (+22) |
+| ICO-004 | Bartender | `bartender` | assets/ui/icons | economy.gd:96, resort_core.gd:54, resort_core.gd:614, resort_core.gd:93 (+1) |
+| ICO-005 | Cachaca | `cachaca` | assets/ui/icons | economy.gd:159, economy.gd:169, economy.gd:179, economy.gd:37 |
+| ICO-006 | Caixa | `caixa` | assets/ui/icons | hud.gd:236, hud.gd:59, office_ui.gd:10, office_ui.gd:256 (+9) |
+| ICO-007 | Cama | `cama` | assets/ui/icons | economy.gd:235, phone_ui.gd:21, resort_core.gd:167, resort_core.gd:368 (+7) |
+| ICO-008 | Camareira | `camareira` | assets/ui/icons | economy.gd:89, resort_core.gd:148, resort_core.gd:54, resort_core.gd:93 |
+| ICO-009 | Clima | `clima` | assets/ui/icons | economy.gd:219, hud.gd:531, world.gd:821, world.gd:828 |
+| ICO-010 | Coco | `coco` | assets/ui/icons | economy.gd:110, economy.gd:157, economy.gd:169, economy.gd:178 (+1) |
+| ICO-011 | Compra | `compra` | assets/ui/icons | economy.gd:268, office_ui.gd:287, office_ui.gd:548, office_ui.gd:554 (+3) |
+| ICO-012 | Decor | `decor` | assets/ui/icons | economy.gd:243, world.gd:799, world.gd:813 |
+| ICO-013 | Diaria | `diaria` | assets/ui/icons | economy.gd:262, guests.gd:188, main.gd:647, main.gd:649 (+2) |
+| ICO-014 | Equipe | `equipe` | assets/ui/icons | office_ui.gd:270, office_ui.gd:450, office_ui.gd:67, phone_ui.gd:152 (+3) |
+| ICO-015 | Folha | `folha` | assets/ui/icons | economy.gd:269, office_ui.gd:554, resort_core.gd:308, resort_core.gd:697 |
+| ICO-016 | Frutas | `frutas` | assets/ui/icons | economy.gd:128, economy.gd:158, economy.gd:169, economy.gd:179 (+3) |
+| ICO-017 | Gelo | `gelo` | assets/ui/icons | economy.gd:160, economy.gd:169, economy.gd:178, economy.gd:179 (+3) |
+| ICO-018 | Gorjeta | `gorjeta` | assets/ui/icons | economy.gd:263, guests.gd:287, guests.gd:320, main.gd:647 (+5) |
+| ICO-019 | Insumo | `insumo` | assets/ui/icons | economy.gd:266, main.gd:647, main.gd:653, office_ui.gd:554 (+1) |
+| ICO-020 | Insumos | `insumos` | assets/ui/icons | main.gd:407, office_ui.gd:266, office_ui.gd:326, office_ui.gd:67 (+2) |
+| ICO-021 | Missao | `missao` | assets/ui/icons | economy.gd:270, office_ui.gd:478, office_ui.gd:491, phone_ui.gd:24 (+3) |
+| ICO-022 | Multa | `multa` | assets/ui/icons | economy.gd:271, main.gd:260, office_ui.gd:554 |
+| ICO-023 | Novo | `novo` | assets/ui/icons | economy.gd:41, office_ui.gd:440 |
+| ICO-024 | Outro | `outro` | assets/ui/icons | economy.gd:272, office_ui.gd:291, office_ui.gd:319, office_ui.gd:574 (+2) |
+| ICO-025 | Pao | `pao` | assets/ui/icons | economy.gd:122, economy.gd:162, economy.gd:169, economy.gd:180 (+1) |
+| ICO-026 | Peixe | `peixe` | assets/ui/icons | economy.gd:116, economy.gd:161, economy.gd:169, economy.gd:180 (+3) |
+| ICO-027 | Prato | `prato` | assets/ui/icons | office_ui.gd:354, office_ui.gd:360, phone_ui.gd:20 |
+| ICO-028 | Quiosque | `quiosque` | assets/ui/icons | economy.gd:265, economy.gd:33, main.gd:350, main.gd:396 (+8) |
+| ICO-029 | Redes | `redes` | assets/ui/icons | office_ui.gd:428, office_ui.gd:581, resort_core.gd:734 |
+| ICO-030 | Roupa | `roupa` | assets/ui/icons | economy.gd:227, world.gd:786, world.gd:791 |
+| ICO-031 | Upgrade | `upgrade` | assets/ui/icons | economy.gd:267, main.gd:336, main.gd:408, main.gd:415 (+8) |
+
+## FNT — Fontes (1)
+
+| Código | Nome | Chave | Fonte | Usado em |
+|---|---|---|---|---|
+| FNT-001 | Nunito | `Nunito.ttf` | assets/fonts | — |
+
+## SHD — Shaders (12)
+
+| Código | Nome | Chave | Fonte | Usado em |
+|---|---|---|---|---|
+| SHD-001 | Foliage | `foliage` | shaders | world.gd:1477, world.gd:1493 |
+| SHD-002 | Ground | `ground` | shaders | world.gd:149 |
+| SHD-003 | Guest | `guest` | shaders | guest.gd:70 |
+| SHD-004 | Mountain | `mountain` | shaders | world.gd:1579 |
+| SHD-005 | Ocean | `ocean` | shaders | world.gd:178 |
+| SHD-006 | Ocean hd | `ocean_hd` | shaders | world.gd:178 |
+| SHD-007 | Outline | `outline` | shaders | toon.gd:400 |
+| SHD-008 | Palm wind | `palm_wind` | shaders | palm.gd:33 |
+| SHD-009 | Pool | `pool` | shaders | world.gd:360 |
+| SHD-010 | Pool floor | `pool_floor` | shaders | world.gd:342 |
+| SHD-011 | Pool hd | `pool_hd` | shaders | world.gd:360 |
+| SHD-012 | Tree card | `tree_card` | shaders | world.gd:1740 |
+
+## ANI — Animações dos personagens (43)
+
+| Código | Nome | Chave | Fonte | Usado em |
+|---|---|---|---|---|
+| ANI-001 | A tpose | `A_TPose` | UAL (Quaternius CC0) | — |
+| ANI-002 | Crouch fwd loop | `Crouch_Fwd_Loop` | UAL (Quaternius CC0) | — |
+| ANI-003 | Crouch idle loop | `Crouch_Idle_Loop` | UAL (Quaternius CC0) | — |
+| ANI-004 | Dance loop | `Dance_Loop` | UAL (Quaternius CC0) | — |
+| ANI-005 | Death01 | `Death01` | UAL (Quaternius CC0) | — |
+| ANI-006 | Driving loop | `Driving_Loop` | UAL (Quaternius CC0) | — |
+| ANI-007 | Fixing kneeling | `Fixing_Kneeling` | UAL (Quaternius CC0) | — |
+| ANI-008 | Hit chest | `Hit_Chest` | UAL (Quaternius CC0) | — |
+| ANI-009 | Hit head | `Hit_Head` | UAL (Quaternius CC0) | — |
+| ANI-010 | Idle loop | `Idle_Loop` | UAL (Quaternius CC0) | guest.gd:120, guest.gd:174, guest.gd:89, guests.gd:129 (+7) |
+| ANI-011 | Idle talking loop | `Idle_Talking_Loop` | UAL (Quaternius CC0) | guest.gd:122, guest.gd:174, guests.gd:129, guests.gd:28 (+6) |
+| ANI-012 | Idle torch loop | `Idle_Torch_Loop` | UAL (Quaternius CC0) | — |
+| ANI-013 | Interact | `Interact` | UAL (Quaternius CC0) | guest.gd:136, guest.gd:176, i18n.gd:49 |
+| ANI-014 | Jog fwd loop | `Jog_Fwd_Loop` | UAL (Quaternius CC0) | guest.gd:126, guest.gd:174 |
+| ANI-015 | Jump land | `Jump_Land` | UAL (Quaternius CC0) | — |
+| ANI-016 | Jump loop | `Jump_Loop` | UAL (Quaternius CC0) | — |
+| ANI-017 | Jump start | `Jump_Start` | UAL (Quaternius CC0) | — |
+| ANI-018 | Pick up table | `PickUp_Table` | UAL (Quaternius CC0) | — |
+| ANI-019 | Pistol aim down | `Pistol_Aim_Down` | UAL (Quaternius CC0) | — |
+| ANI-020 | Pistol aim neutral | `Pistol_Aim_Neutral` | UAL (Quaternius CC0) | — |
+| ANI-021 | Pistol aim up | `Pistol_Aim_Up` | UAL (Quaternius CC0) | — |
+| ANI-022 | Pistol idle loop | `Pistol_Idle_Loop` | UAL (Quaternius CC0) | — |
+| ANI-023 | Pistol reload | `Pistol_Reload` | UAL (Quaternius CC0) | — |
+| ANI-024 | Pistol shoot | `Pistol_Shoot` | UAL (Quaternius CC0) | — |
+| ANI-025 | Punch cross | `Punch_Cross` | UAL (Quaternius CC0) | — |
+| ANI-026 | Punch jab | `Punch_Jab` | UAL (Quaternius CC0) | — |
+| ANI-027 | Push loop | `Push_Loop` | UAL (Quaternius CC0) | — |
+| ANI-028 | Roll | `Roll` | UAL (Quaternius CC0) | — |
+| ANI-029 | Sitting enter | `Sitting_Enter` | UAL (Quaternius CC0) | — |
+| ANI-030 | Sitting exit | `Sitting_Exit` | UAL (Quaternius CC0) | — |
+| ANI-031 | Sitting idle loop | `Sitting_Idle_Loop` | UAL (Quaternius CC0) | guest.gd:128, guest.gd:175, main.gd:279, main.gd:368 (+11) |
+| ANI-032 | Sitting talking loop | `Sitting_Talking_Loop` | UAL (Quaternius CC0) | guest.gd:130, guest.gd:175, village_life.gd:335, village_life.gd:361 |
+| ANI-033 | Spell simple enter | `Spell_Simple_Enter` | UAL (Quaternius CC0) | — |
+| ANI-034 | Spell simple exit | `Spell_Simple_Exit` | UAL (Quaternius CC0) | — |
+| ANI-035 | Spell simple idle loop | `Spell_Simple_Idle_Loop` | UAL (Quaternius CC0) | — |
+| ANI-036 | Spell simple shoot | `Spell_Simple_Shoot` | UAL (Quaternius CC0) | — |
+| ANI-037 | Sprint loop | `Sprint_Loop` | UAL (Quaternius CC0) | — |
+| ANI-038 | Swim fwd loop | `Swim_Fwd_Loop` | UAL (Quaternius CC0) | guest.gd:132, guest.gd:176 |
+| ANI-039 | Swim idle loop | `Swim_Idle_Loop` | UAL (Quaternius CC0) | guest.gd:134, guest.gd:176, world.gd:377 |
+| ANI-040 | Sword attack | `Sword_Attack` | UAL (Quaternius CC0) | — |
+| ANI-041 | Sword idle | `Sword_Idle` | UAL (Quaternius CC0) | — |
+| ANI-042 | Walk formal loop | `Walk_Formal_Loop` | UAL (Quaternius CC0) | guest.gd:124 |
+| ANI-043 | Walk loop | `Walk_Loop` | UAL (Quaternius CC0) | guest.gd:124, guest.gd:174, main.gd:635 |
+
+## SCR — Scripts (módulos do jogo) (28)
+
+| Código | Nome | Chave | Fonte | Usado em |
+|---|---|---|---|---|
+| SCR-001 | audio.gd | `audio.gd` | scripts/ | audio.gd:1 |
+| SCR-002 | build.gd | `build.gd` | scripts/ | build.gd:1 |
+| SCR-003 | daycycle.gd | `daycycle.gd` | scripts/ | daycycle.gd:1 |
+| SCR-004 | details.gd | `details.gd` | scripts/ | details.gd:1 |
+| SCR-005 | eat_arm.gd | `eat_arm.gd` | scripts/ | eat_arm.gd:1 |
+| SCR-006 | economy.gd | `economy.gd` | scripts/ | economy.gd:1 |
+| SCR-007 | guest.gd | `guest.gd` | scripts/ | guest.gd:1 |
+| SCR-008 | guests.gd | `guests.gd` | scripts/ | guests.gd:1 |
+| SCR-009 | head_scaler.gd | `head_scaler.gd` | scripts/ | head_scaler.gd:1 |
+| SCR-010 | hud.gd | `hud.gd` | scripts/ | hud.gd:1 |
+| SCR-011 | i18n.gd | `i18n.gd` | scripts/ | i18n.gd:1 |
+| SCR-012 | interactable.gd | `interactable.gd` | scripts/ | interactable.gd:1 |
+| SCR-013 | main.gd | `main.gd` | scripts/ | main.gd:1 |
+| SCR-014 | menus.gd | `menus.gd` | scripts/ | menus.gd:1 |
+| SCR-015 | office_ui.gd | `office_ui.gd` | scripts/ | office_ui.gd:1 |
+| SCR-016 | palm.gd | `palm.gd` | scripts/ | palm.gd:1 |
+| SCR-017 | people.gd | `people.gd` | scripts/ | people.gd:1 |
+| SCR-018 | phone_ui.gd | `phone_ui.gd` | scripts/ | phone_ui.gd:1 |
+| SCR-019 | player.gd | `player.gd` | scripts/ | player.gd:1 |
+| SCR-020 | props.gd | `props.gd` | scripts/ | props.gd:1 |
+| SCR-021 | quality.gd | `quality.gd` | scripts/ | quality.gd:1 |
+| SCR-022 | real.gd | `real.gd` | scripts/ | real.gd:1 |
+| SCR-023 | resort_core.gd | `resort_core.gd` | scripts/ | resort_core.gd:1 |
+| SCR-024 | toon.gd | `toon.gd` | scripts/ | toon.gd:1 |
+| SCR-025 | ui_theme.gd | `ui_theme.gd` | scripts/ | ui_theme.gd:1 |
+| SCR-026 | village_life.gd | `village_life.gd` | scripts/ | village_life.gd:1 |
+| SCR-027 | world.gd | `world.gd` | scripts/ | world.gd:1 |
+| SCR-028 | world_village.gd | `world_village.gd` | scripts/ | world_village.gd:1 |
+
+## PES — Nomes de personagens (16)
+
+| Código | Nome | Chave | Fonte | Usado em |
+|---|---|---|---|---|
+| PES-001 | Ana | `Ana` | guest.gd | — |
+| PES-002 | João | `João` | guest.gd | — |
+| PES-003 | Maria | `Maria` | guest.gd | — |
+| PES-004 | Pedro | `Pedro` | guest.gd | — |
+| PES-005 | Luiza | `Luiza` | guest.gd | — |
+| PES-006 | Rafael | `Rafael` | guest.gd | — |
+| PES-007 | Camila | `Camila` | guest.gd | — |
+| PES-008 | Bruno | `Bruno` | guest.gd | — |
+| PES-009 | Juliana | `Juliana` | guest.gd | — |
+| PES-010 | Thiago | `Thiago` | guest.gd | — |
+| PES-011 | Beatriz | `Beatriz` | guest.gd | — |
+| PES-012 | Lucas | `Lucas` | guest.gd | — |
+| PES-013 | Fernanda | `Fernanda` | guest.gd | — |
+| PES-014 | Gabriel | `Gabriel` | guest.gd | — |
+| PES-015 | Larissa | `Larissa` | guest.gd | — |
+| PES-016 | Diego | `Diego` | guest.gd | — |

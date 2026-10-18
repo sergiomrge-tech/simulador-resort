@@ -22,6 +22,9 @@ Categorias (prefixo):
   UPG  melhoria de bangalô (nível)    QST missão da vila
   VIP  cliente famoso                 EVT evento do dia
   NOU  modelo baixado mas ainda sem uso no código (disponível)
+  TEX  textura/material (assets/tex, tex_hd)   AUD  som/música   ICO  ícone de interface
+  FNT  fonte                                   SHD  shader        ANI  animação de personagem
+  SCR  script (módulo do jogo)                 PES  nome de personagem (moradores/hóspedes)
 """
 import json, os, re, sys
 
@@ -133,10 +136,10 @@ for i, ln in enumerate(SRC.get("props.gd", [])):
         add("PRC", fn, humanize(fn), "props.gd (código)", usos[-1:])
 
 # construtores de cenário (details.gd): cada função estática é um conjunto montado por código
-for fname in ("details.gd", "build.gd"):
+for fname in ("details.gd", "build.gd", "world.gd", "world_village.gd", "village_life.gd", "guests.gd"):
     for i, ln in enumerate(SRC.get(fname, [])):
-        m = re.match(r"static func ([a-z]\w*)\(", ln)
-        if m:
+        m = re.match(r"(?:static )?func (\w+)\(", ln)
+        if m and m.group(1) not in ("_ready", "_process", "_physics_process", "_init"):
             fn = m.group(1)
             add("CEN", fname[:-3] + "." + fn, humanize(fn), fname + " (código)",
                 [{"arquivo": fname, "linha": i + 1, "funcao": fn}])
@@ -212,6 +215,81 @@ eb = block("DAY_EVENTS")
 for m in re.finditer(r'"(\w+)":\s*\{"name":\s*"([^"]*)",\s*"blurb":\s*"([^"]*)"', eb):
     add("EVT", m.group(1), m.group(2), "economy.gd", eco(m.group(1)), {"descricao": m.group(3)})
 
+
+# ---------------------------------------------------------------- texturas, sons, ícones, fontes, shaders, animações, scripts, nomes
+def files_in(base, exts):
+    out = []
+    for dp, dn, fn in os.walk(base):
+        for f in sorted(fn):
+            if f.endswith(exts):
+                out.append(os.path.join(dp, f).replace("\\", "/"))
+    return sorted(out)
+
+
+tex = {}
+for base in ("assets/tex", "assets/tex_hd"):
+    for f in files_in(base, (".jpg", ".png")):
+        stem = os.path.splitext(os.path.basename(f))[0]
+        stem = re.sub(r"_(diff|nor|rough|arm|disp|ao)$", "", stem)
+        tex.setdefault(stem, []).append(f)
+for stem, fl in sorted(tex.items()):
+    add("TEX", stem, humanize(stem), "Poly Haven/ambientCG (CC0) ou gerado", uses_of(stem), {"arquivos": fl})
+
+for f in files_in("assets/audio", (".ogg", ".wav", ".mp3")):
+    stem = os.path.splitext(os.path.basename(f))[0]
+    add("AUD", stem, humanize(stem), "assets/audio", uses_of(stem), {"arquivo_modelo": f})
+for f in files_in("assets/ui/icons", (".svg", ".png")):
+    stem = os.path.splitext(os.path.basename(f))[0]
+    add("ICO", stem, humanize(stem), "assets/ui/icons", uses_of(stem), {"arquivo_modelo": f})
+for f in files_in("assets/fonts", (".ttf", ".otf")):
+    add("FNT", os.path.basename(f), humanize(os.path.splitext(os.path.basename(f))[0]), "assets/fonts",
+        uses_of(f), {"arquivo_modelo": f})
+for f in files_in("shaders", (".gdshader",)):
+    stem = os.path.splitext(os.path.basename(f))[0]
+    add("SHD", stem, humanize(stem), "shaders", uses_of("res://shaders/" + os.path.basename(f)), {"arquivo_modelo": f})
+
+# animações do esqueleto dos personagens (JSON dentro do .glb)
+import struct
+try:
+    raw = open("assets/models/ual/guest.glb", "rb").read()
+    jl = struct.unpack("<I", raw[12:16])[0]
+    gj = json.loads(raw[20:20 + jl])
+    for a in gj.get("animations", []):
+        nm = a.get("name", "")
+        add("ANI", nm, humanize(nm), "UAL (Quaternius CC0)", uses_of(nm))
+except Exception as e:
+    print("sem animações:", e)
+
+# scripts
+for f in SCRIPTS:
+    desc = ""
+    for ln in SRC[f][:8]:
+        if ln.startswith("##"):
+            desc = ln.lstrip("# ").strip()
+            break
+    add("SCR", f, f, "scripts/", [{"arquivo": f, "linha": 1, "funcao": ""}],
+        {"linhas": len(SRC[f]), "descricao": desc})
+
+# nomes de pessoas
+gm = re.search(r"const NAMES: = \[(.*?)\]", "\n".join(SRC["guest.gd"]), re.S)
+if gm:
+    for nm in re.findall(r'"([^"]+)"', gm.group(1)):
+        add("PES", nm, nm, "guest.gd", [])
+
+# detalhes extras de pratos / insumos
+dish_stage = {}
+for k, t in top_entries("DISH_STAGES") if False else []:
+    pass
+sb = block("DISH_STAGES")
+for m in re.finditer(r'"(\w+)":\s*\[(.*?)\],?\n', sb):
+    for it in items:
+        if it["categoria"] == "DSH" and it["chave"] == m.group(1):
+            it["etapas"] = re.findall(r'\["([^"]+)",\s*([\d.]+)\]', m.group(2))
+spoil = dict(re.findall(r'"(\w+)":\s*([\d.]+)', block("SPOIL")))
+for it in items:
+    if it["categoria"] == "SUP" and it["chave"] in spoil:
+        it["estraga_por_dia"] = spoil[it["chave"]]
+
 # ---------------------------------------------------------------- saída
 items.sort(key=lambda d: (d["categoria"], d["codigo"]))
 os.makedirs("docs", exist_ok=True)
@@ -222,11 +300,14 @@ TITULOS = [
     ("MOD", "Modelos 3D em uso (reais, baixados da web)"),
     ("NAT", "Natureza (Quaternius)"),
     ("PRC", "Peças procedurais de props.gd (montadas por código — candidatas a virar modelo real)"),
-    ("CEN", "Construtores de cenário (details.gd / build.gd)"),
+    ("CEN", "Construtores de cenário e lógica (funções de world, details, build, vila, hóspedes)"),
     ("PRT", "Partes dos personagens"),
     ("DSH", "Pratos e bebidas"), ("SUP", "Insumos"), ("EXP", "Expansões"), ("STF", "Funcionários"),
     ("UPG", "Melhorias de bangalô"), ("QST", "Missões"), ("VIP", "Clientes famosos"), ("EVT", "Eventos do dia"),
     ("NOU", "Modelos baixados ainda sem uso (disponíveis)"),
+    ("TEX", "Texturas e materiais"), ("AUD", "Sons e músicas"), ("ICO", "Ícones de interface"),
+    ("FNT", "Fontes"), ("SHD", "Shaders"), ("ANI", "Animações dos personagens"),
+    ("SCR", "Scripts (módulos do jogo)"), ("PES", "Nomes de personagens"),
 ]
 by = {}
 for d in items:
@@ -242,7 +323,7 @@ for cat, titulo in TITULOS:
     if not lst:
         continue
     out += ["## %s — %s (%d)" % (cat, titulo, len(lst)), ""]
-    if cat in ("MOD", "NAT", "NOU", "PRC", "CEN", "PRT"):
+    if cat in ("MOD", "NAT", "NOU", "PRC", "CEN", "PRT", "TEX", "AUD", "ICO", "FNT", "SHD", "ANI", "SCR", "PES"):
         out += ["| Código | Nome | Chave | Fonte | Usado em |", "|---|---|---|---|---|"]
         for d in lst:
             u = d["usos"]
