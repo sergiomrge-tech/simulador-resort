@@ -1485,6 +1485,34 @@ func _beach_life() -> void :
 		var cp: = Vector3(rng.randf_range(-35, 100), 0, rng.randf_range(-29.0, -26.0))
 		cp.y = _height(cp.x, cp.z) + 0.01
 		D.crab(self, cp, rng.randf_range(1.0, 2.2))
+	_sand_clutter(rng)
+
+
+## Revisão visual 18/10/2026: a areia entre o mato e a praia era lisa demais. Espalha seixos, conchas, touceiras e flores (CC0).
+func _sand_clutter(rng: RandomNumberGenerator) -> void :
+	var kinds: = [
+		["q:Pebble_Round_1", 0.12, 0.26], ["q:Pebble_Round_3", 0.1, 0.22], ["q:Pebble_Square_2", 0.12, 0.24],
+		["lambis_shell", 0.1, 0.2], ["q:Grass_Wispy_Short", 0.3, 0.5], ["q:Grass_Common_Short", 0.25, 0.4],
+		["q:Clover_1", 0.12, 0.2], ["q:Flower_3_Group", 0.25, 0.4], ["q:Flower_4_Group", 0.25, 0.4],
+		["periwinkle_plant", 0.25, 0.4], ["fern_02", 0.3, 0.5],
+	]
+	var placed: = 0
+	var tries: = 0
+	while placed < 150 and tries < 900:
+		tries += 1
+		var x: = rng.randf_range(-40.0, 98.0)
+		var z: = rng.randf_range(-25.0, -5.0)
+		var q: = Vector2(x, z)
+		var bad: = false
+		for r in block_rects:
+			if (r as Rect2).grow(1.2).has_point(q):
+				bad = true
+				break
+		if bad or (absf(x - 38.0) < 8.0 and z > -20.0) or (x > 55.0 and x < 97.0 and z < -22.0):
+			continue
+		var k: Array = kinds[rng.randi() % kinds.size()]
+		Real.place(self, str(k[0]), Vector3(x, _height(x, z) - 0.01, z), rng.randf_range(float(k[1]), float(k[2])), rng.randf() * TAU)
+		placed += 1
 
 
 # ------------------------------------------------------------------ v0.7.2: igreja, praça, píer e farol detalhados

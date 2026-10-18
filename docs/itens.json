@@ -100,22 +100,22 @@
    },
    {
     "arquivo": "main.gd",
-    "linha": 374,
+    "linha": 388,
     "funcao": "_run_shot"
    },
    {
     "arquivo": "main.gd",
-    "linha": 558,
+    "linha": 572,
     "funcao": "_stage_village"
    },
    {
     "arquivo": "main.gd",
-    "linha": 573,
+    "linha": 587,
     "funcao": "_stage_village"
    },
    {
     "arquivo": "main.gd",
-    "linha": 625,
+    "linha": 639,
     "funcao": "_stage_guests"
    },
    {
@@ -164,17 +164,17 @@
    },
    {
     "arquivo": "main.gd",
-    "linha": 374,
+    "linha": 388,
     "funcao": "_run_shot"
    },
    {
     "arquivo": "main.gd",
-    "linha": 600,
+    "linha": 614,
     "funcao": "_stage_village"
    },
    {
     "arquivo": "main.gd",
-    "linha": 625,
+    "linha": 639,
     "funcao": "_stage_guests"
    },
    {
@@ -397,12 +397,12 @@
    },
    {
     "arquivo": "main.gd",
-    "linha": 368,
+    "linha": 382,
     "funcao": "_run_shot"
    },
    {
     "arquivo": "main.gd",
-    "linha": 470,
+    "linha": 484,
     "funcao": "_run_tour"
    },
    {
@@ -432,7 +432,7 @@
    },
    {
     "arquivo": "world.gd",
-    "linha": 1035,
+    "linha": 1039,
     "funcao": "_bar"
    },
    {
@@ -618,7 +618,7 @@
    },
    {
     "arquivo": "main.gd",
-    "linha": 635,
+    "linha": 649,
     "funcao": "_stage_guests"
    }
   ]
@@ -692,7 +692,7 @@
    },
    {
     "arquivo": "world.gd",
-    "linha": 700,
+    "linha": 704,
     "funcao": "_bungalow"
    }
   ],
@@ -1670,7 +1670,7 @@
   "usos": [
    {
     "arquivo": "build.gd",
-    "linha": 534,
+    "linha": 537,
     "funcao": "label"
    }
   ]
@@ -1684,7 +1684,7 @@
   "usos": [
    {
     "arquivo": "build.gd",
-    "linha": 555,
+    "linha": 558,
     "funcao": "has_model"
    }
   ]
@@ -1698,7 +1698,7 @@
   "usos": [
    {
     "arquivo": "build.gd",
-    "linha": 561,
+    "linha": 564,
     "funcao": "aabb_of"
    }
   ]
@@ -1824,7 +1824,7 @@
   "usos": [
    {
     "arquivo": "build.gd",
-    "linha": 550,
+    "linha": 553,
     "funcao": "_real_exists"
    }
   ]
@@ -2146,7 +2146,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 725,
+    "linha": 729,
     "funcao": "_bwall_x"
    }
   ]
@@ -2160,7 +2160,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 734,
+    "linha": 738,
     "funcao": "_bwall_z"
    }
   ]
@@ -2174,7 +2174,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 743,
+    "linha": 747,
     "funcao": "_on_room_changed"
    }
   ]
@@ -2188,7 +2188,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 754,
+    "linha": 758,
     "funcao": "_look"
    }
   ]
@@ -2202,7 +2202,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 760,
+    "linha": 764,
     "funcao": "_upgrade_meshes"
    }
   ]
@@ -2216,7 +2216,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 848,
+    "linha": 852,
     "funcao": "_keep_parts"
    }
   ]
@@ -2230,7 +2230,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 868,
+    "linha": 872,
     "funcao": "_upgrade_sign"
    }
   ]
@@ -2244,7 +2244,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 886,
+    "linha": 890,
     "funcao": "apply_room_look"
    }
   ]
@@ -2258,7 +2258,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 898,
+    "linha": 902,
     "funcao": "upgrade_visible"
    }
   ]
@@ -2272,7 +2272,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 906,
+    "linha": 910,
     "funcao": "_ensure_bung_x"
    }
   ]
@@ -2286,7 +2286,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 910,
+    "linha": 914,
     "funcao": "_on_bungalow_built"
    }
   ]
@@ -2300,7 +2300,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 916,
+    "linha": 920,
     "funcao": "sync_bungalows"
    }
   ]
@@ -2314,7 +2314,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 926,
+    "linha": 930,
     "funcao": "_drop_bungalow"
    }
   ]
@@ -2328,7 +2328,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 941,
+    "linha": 945,
     "funcao": "_birds_spawn"
    }
   ]
@@ -2342,7 +2342,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 952,
+    "linha": 956,
     "funcao": "_weather_fx"
    }
   ]
@@ -2356,7 +2356,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 979,
+    "linha": 983,
     "funcao": "_on_weather"
    }
   ]
@@ -2370,7 +2370,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1002,
+    "linha": 1006,
     "funcao": "_bar"
    }
   ]
@@ -2384,7 +2384,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1068,
+    "linha": 1072,
     "funcao": "_bulb_mat"
    }
   ]
@@ -2398,7 +2398,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1075,
+    "linha": 1079,
     "funcao": "_string_lights"
    }
   ]
@@ -2412,7 +2412,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1083,
+    "linha": 1087,
     "funcao": "_cooler"
    }
   ]
@@ -2426,7 +2426,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1095,
+    "linha": 1099,
     "funcao": "_table_bites"
    }
   ]
@@ -2440,7 +2440,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1099,
+    "linha": 1103,
     "funcao": "_fruit_row"
    }
   ]
@@ -2454,7 +2454,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1105,
+    "linha": 1109,
     "funcao": "_menu_lines"
    }
   ]
@@ -2468,7 +2468,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1112,
+    "linha": 1116,
     "funcao": "_chalkboard"
    }
   ]
@@ -2482,7 +2482,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1128,
+    "linha": 1132,
     "funcao": "_beach_props"
    }
   ]
@@ -2496,7 +2496,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1166,
+    "linha": 1170,
     "funcao": "_shore_details"
    }
   ]
@@ -2510,7 +2510,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1195,
+    "linha": 1199,
     "funcao": "_palms"
    }
   ]
@@ -2524,7 +2524,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1235,
+    "linha": 1239,
     "funcao": "_redes"
    }
   ]
@@ -2538,7 +2538,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1290,
+    "linha": 1294,
     "funcao": "_on_redes_changed"
    }
   ]
@@ -2552,7 +2552,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1294,
+    "linha": 1298,
     "funcao": "_lantern_posts"
    }
   ]
@@ -2566,7 +2566,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1323,
+    "linha": 1327,
     "funcao": "set_atmosphere"
    }
   ]
@@ -2580,7 +2580,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1335,
+    "linha": 1339,
     "funcao": "set_night"
    }
   ]
@@ -2594,7 +2594,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1348,
+    "linha": 1352,
     "funcao": "_signs"
    }
   ]
@@ -2608,7 +2608,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1357,
+    "linha": 1361,
     "funcao": "_route_points"
    }
   ]
@@ -2622,7 +2622,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1373,
+    "linha": 1377,
     "funcao": "route_to_room"
    }
   ]
@@ -2636,7 +2636,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1377,
+    "linha": 1381,
     "funcao": "route_room_to_hub"
    }
   ]
@@ -2650,7 +2650,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1380,
+    "linha": 1384,
     "funcao": "route_hub_to_room"
    }
   ]
@@ -2664,7 +2664,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1383,
+    "linha": 1387,
     "funcao": "route_hub_to_pool"
    }
   ]
@@ -2678,7 +2678,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1391,
+    "linha": 1395,
     "funcao": "route_hub_to_bar"
    }
   ]
@@ -2692,7 +2692,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1397,
+    "linha": 1401,
     "funcao": "route_exit"
    }
   ]
@@ -2706,7 +2706,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1407,
+    "linha": 1411,
     "funcao": "_veg_free"
    }
   ]
@@ -2720,7 +2720,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1413,
+    "linha": 1417,
     "funcao": "_cross_mesh"
    }
   ]
@@ -2734,7 +2734,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1426,
+    "linha": 1430,
     "funcao": "_scatter"
    }
   ]
@@ -2748,7 +2748,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1451,
+    "linha": 1455,
     "funcao": "_vegetation"
    }
   ]
@@ -2762,7 +2762,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1544,
+    "linha": 1548,
     "funcao": "_hermite"
    }
   ]
@@ -2776,7 +2776,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1548,
+    "linha": 1552,
     "funcao": "_ridge"
    }
   ]
@@ -2790,7 +2790,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1557,
+    "linha": 1561,
     "funcao": "_mtn_mask"
    }
   ]
@@ -2804,7 +2804,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1565,
+    "linha": 1569,
     "funcao": "_mtn"
    }
   ]
@@ -2818,7 +2818,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1577,
+    "linha": 1581,
     "funcao": "_mtn_material"
    }
   ]
@@ -2832,7 +2832,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1589,
+    "linha": 1593,
     "funcao": "_mtn_build_rect"
    }
   ]
@@ -2846,7 +2846,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1628,
+    "linha": 1632,
     "funcao": "_mtn_up"
    }
   ]
@@ -2860,7 +2860,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1634,
+    "linha": 1638,
     "funcao": "_mtn_corner"
    }
   ]
@@ -2874,7 +2874,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1643,
+    "linha": 1647,
     "funcao": "_mtn_show"
    }
   ]
@@ -2888,7 +2888,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1655,
+    "linha": 1659,
     "funcao": "_sphere_mid"
    }
   ]
@@ -2902,7 +2902,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1666,
+    "linha": 1670,
     "funcao": "_crown_mesh"
    }
   ]
@@ -2916,7 +2916,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1716,
+    "linha": 1720,
     "funcao": "_mtn_slope_y"
    }
   ]
@@ -2930,7 +2930,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1722,
+    "linha": 1726,
     "funcao": "_mtn_push_tree"
    }
   ]
@@ -2944,7 +2944,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1738,
+    "linha": 1742,
     "funcao": "_mtn_trees"
    }
   ]
@@ -2958,7 +2958,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1777,
+    "linha": 1781,
     "funcao": "_mtn_cards"
    }
   ]
@@ -2972,7 +2972,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1800,
+    "linha": 1804,
     "funcao": "_mountains"
    }
   ]
@@ -2986,7 +2986,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1839,
+    "linha": 1843,
     "funcao": "_area"
    }
   ]
@@ -3000,7 +3000,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1854,
+    "linha": 1858,
     "funcao": "_lot_post"
    }
   ]
@@ -3014,7 +3014,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1858,
+    "linha": 1862,
     "funcao": "_lot"
    }
   ]
@@ -3028,7 +3028,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1893,
+    "linha": 1897,
     "funcao": "_build_lots"
    }
   ]
@@ -3042,7 +3042,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1902,
+    "linha": 1906,
     "funcao": "sand_patch_mat"
    }
   ]
@@ -3056,7 +3056,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1905,
+    "linha": 1909,
     "funcao": "_set_live"
    }
   ]
@@ -3070,7 +3070,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1911,
+    "linha": 1915,
     "funcao": "_on_expansion"
    }
   ]
@@ -3084,7 +3084,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1914,
+    "linha": 1918,
     "funcao": "refresh_areas"
    }
   ]
@@ -3098,7 +3098,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1925,
+    "linha": 1929,
     "funcao": "hut_details"
    }
   ]
@@ -3112,7 +3112,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1970,
+    "linha": 1974,
     "funcao": "_bungalow_details"
    }
   ]
@@ -3126,7 +3126,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2017,
+    "linha": 2021,
     "funcao": "_pool_details"
    }
   ]
@@ -3140,7 +3140,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2070,
+    "linha": 2074,
     "funcao": "_reception_details"
    }
   ]
@@ -3868,7 +3868,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1491,
+    "linha": 1519,
     "funcao": "_landmark_details"
    }
   ]
@@ -3882,7 +3882,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1636,
+    "linha": 1664,
     "funcao": "_map_details"
    }
   ]
@@ -4658,6 +4658,20 @@
   ]
  },
  {
+  "codigo": "CEN-262",
+  "categoria": "CEN",
+  "chave": "world_village._sand_clutter",
+  "nome": "Sand clutter",
+  "fonte": "world_village.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world_village.gd",
+    "linha": 1492,
+    "funcao": "_sand_clutter"
+   }
+  ]
+ },
+ {
   "codigo": "COR-001",
   "categoria": "COR",
   "chave": "SKINS_0",
@@ -5186,12 +5200,12 @@
    },
    {
     "arquivo": "main.gd",
-    "linha": 336,
+    "linha": 350,
     "funcao": "_run_shot"
    },
    {
     "arquivo": "main.gd",
-    "linha": 410,
+    "linha": 424,
     "funcao": "_run_shot"
    },
    {
@@ -5231,7 +5245,7 @@
    },
    {
     "arquivo": "world.gd",
-    "linha": 883,
+    "linha": 887,
     "funcao": "_upgrade_sign"
    }
   ],
@@ -5256,12 +5270,12 @@
    },
    {
     "arquivo": "world.gd",
-    "linha": 835,
+    "linha": 839,
     "funcao": "_upgrade_meshes"
    },
    {
     "arquivo": "world.gd",
-    "linha": 844,
+    "linha": 848,
     "funcao": "_upgrade_meshes"
    }
   ],
@@ -5341,17 +5355,17 @@
    },
    {
     "arquivo": "main.gd",
-    "linha": 336,
+    "linha": 350,
     "funcao": "_run_shot"
    },
    {
     "arquivo": "main.gd",
-    "linha": 647,
+    "linha": 661,
     "funcao": "_demo_summary"
    },
    {
     "arquivo": "main.gd",
-    "linha": 650,
+    "linha": 664,
     "funcao": "_demo_summary"
    },
    {
@@ -5401,7 +5415,7 @@
    },
    {
     "arquivo": "world.gd",
-    "linha": 1894,
+    "linha": 1898,
     "funcao": "_build_lots"
    }
   ],
@@ -5436,7 +5450,7 @@
    },
    {
     "arquivo": "world.gd",
-    "linha": 1060,
+    "linha": 1064,
     "funcao": "_bar"
    }
   ],
@@ -5586,27 +5600,27 @@
    },
    {
     "arquivo": "world.gd",
-    "linha": 676,
+    "linha": 680,
     "funcao": "_bungalow"
    },
    {
     "arquivo": "world.gd",
-    "linha": 678,
+    "linha": 682,
     "funcao": "_bungalow"
    },
    {
     "arquivo": "world.gd",
-    "linha": 764,
+    "linha": 768,
     "funcao": "_upgrade_meshes"
    },
    {
     "arquivo": "world.gd",
-    "linha": 767,
+    "linha": 771,
     "funcao": "_upgrade_meshes"
    },
    {
     "arquivo": "world.gd",
-    "linha": 783,
+    "linha": 787,
     "funcao": "_upgrade_meshes"
    }
   ],
@@ -5661,12 +5675,12 @@
    },
    {
     "arquivo": "world.gd",
-    "linha": 821,
+    "linha": 825,
     "funcao": "_upgrade_meshes"
    },
    {
     "arquivo": "world.gd",
-    "linha": 828,
+    "linha": 832,
     "funcao": "_upgrade_meshes"
    }
   ],
@@ -5766,12 +5780,12 @@
    },
    {
     "arquivo": "world.gd",
-    "linha": 799,
+    "linha": 803,
     "funcao": "_upgrade_meshes"
    },
    {
     "arquivo": "world.gd",
-    "linha": 813,
+    "linha": 817,
     "funcao": "_upgrade_meshes"
    }
   ],
@@ -5796,12 +5810,12 @@
    },
    {
     "arquivo": "main.gd",
-    "linha": 647,
+    "linha": 661,
     "funcao": "_demo_summary"
    },
    {
     "arquivo": "main.gd",
-    "linha": 649,
+    "linha": 663,
     "funcao": "_demo_summary"
    },
    {
@@ -6006,12 +6020,12 @@
    },
    {
     "arquivo": "main.gd",
-    "linha": 647,
+    "linha": 661,
     "funcao": "_demo_summary"
    },
    {
     "arquivo": "main.gd",
-    "linha": 652,
+    "linha": 666,
     "funcao": "_demo_summary"
    },
    {
@@ -6051,12 +6065,12 @@
    },
    {
     "arquivo": "main.gd",
-    "linha": 647,
+    "linha": 661,
     "funcao": "_demo_summary"
    },
    {
     "arquivo": "main.gd",
-    "linha": 653,
+    "linha": 667,
     "funcao": "_demo_summary"
    },
    {
@@ -6081,7 +6095,7 @@
   "usos": [
    {
     "arquivo": "main.gd",
-    "linha": 407,
+    "linha": 421,
     "funcao": "_run_shot"
    },
    {
@@ -6371,32 +6385,32 @@
    },
    {
     "arquivo": "main.gd",
-    "linha": 350,
+    "linha": 364,
     "funcao": "_run_shot"
    },
    {
     "arquivo": "main.gd",
-    "linha": 396,
+    "linha": 410,
     "funcao": "_run_shot"
    },
    {
     "arquivo": "main.gd",
-    "linha": 415,
+    "linha": 429,
     "funcao": "_run_shot"
    },
    {
     "arquivo": "main.gd",
-    "linha": 416,
+    "linha": 430,
     "funcao": "_run_shot"
    },
    {
     "arquivo": "main.gd",
-    "linha": 647,
+    "linha": 661,
     "funcao": "_demo_summary"
    },
    {
     "arquivo": "main.gd",
-    "linha": 651,
+    "linha": 665,
     "funcao": "_demo_summary"
    },
    {
@@ -6456,12 +6470,12 @@
    },
    {
     "arquivo": "world.gd",
-    "linha": 786,
+    "linha": 790,
     "funcao": "_upgrade_meshes"
    },
    {
     "arquivo": "world.gd",
-    "linha": 791,
+    "linha": 795,
     "funcao": "_upgrade_meshes"
    }
   ],
@@ -6486,27 +6500,27 @@
    },
    {
     "arquivo": "main.gd",
-    "linha": 336,
+    "linha": 350,
     "funcao": "_run_shot"
    },
    {
     "arquivo": "main.gd",
-    "linha": 408,
+    "linha": 422,
     "funcao": "_run_shot"
    },
    {
     "arquivo": "main.gd",
-    "linha": 415,
+    "linha": 429,
     "funcao": "_run_shot"
    },
    {
     "arquivo": "main.gd",
-    "linha": 647,
+    "linha": 661,
     "funcao": "_demo_summary"
    },
    {
     "arquivo": "main.gd",
-    "linha": 654,
+    "linha": 668,
     "funcao": "_demo_summary"
    },
    {
@@ -6566,17 +6580,17 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 728,
+    "linha": 732,
     "funcao": "_bwall_x"
    },
    {
     "arquivo": "world.gd",
-    "linha": 737,
+    "linha": 741,
     "funcao": "_bwall_z"
    },
    {
     "arquivo": "world.gd",
-    "linha": 2003,
+    "linha": 2007,
     "funcao": "_bungalow_details"
    },
    {
@@ -6596,7 +6610,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 840,
+    "linha": 844,
     "funcao": "_upgrade_meshes"
    }
   ],
@@ -6640,52 +6654,52 @@
    },
    {
     "arquivo": "world.gd",
-    "linha": 772,
-    "funcao": "_upgrade_meshes"
-   },
-   {
-    "arquivo": "world.gd",
-    "linha": 774,
-    "funcao": "_upgrade_meshes"
-   },
-   {
-    "arquivo": "world.gd",
     "linha": 776,
     "funcao": "_upgrade_meshes"
    },
    {
     "arquivo": "world.gd",
-    "linha": 796,
+    "linha": 778,
     "funcao": "_upgrade_meshes"
    },
    {
     "arquivo": "world.gd",
-    "linha": 833,
+    "linha": 780,
     "funcao": "_upgrade_meshes"
    },
    {
     "arquivo": "world.gd",
-    "linha": 839,
+    "linha": 800,
     "funcao": "_upgrade_meshes"
    },
    {
     "arquivo": "world.gd",
-    "linha": 1012,
+    "linha": 837,
+    "funcao": "_upgrade_meshes"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 843,
+    "funcao": "_upgrade_meshes"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 1016,
     "funcao": "_bar"
    },
    {
     "arquivo": "world.gd",
-    "linha": 1117,
+    "linha": 1121,
     "funcao": "_chalkboard"
    },
    {
     "arquivo": "world.gd",
-    "linha": 2060,
+    "linha": 2064,
     "funcao": "_pool_details"
    },
    {
     "arquivo": "world.gd",
-    "linha": 2065,
+    "linha": 2069,
     "funcao": "_pool_details"
    },
    {
@@ -6730,22 +6744,22 @@
    },
    {
     "arquivo": "world.gd",
-    "linha": 729,
+    "linha": 733,
     "funcao": "_bwall_x"
    },
    {
     "arquivo": "world.gd",
-    "linha": 738,
+    "linha": 742,
     "funcao": "_bwall_z"
    },
    {
     "arquivo": "world.gd",
-    "linha": 1004,
+    "linha": 1008,
     "funcao": "_bar"
    },
    {
     "arquivo": "world.gd",
-    "linha": 1987,
+    "linha": 1991,
     "funcao": "_bungalow_details"
    },
    {
@@ -6814,17 +6828,17 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 642,
+    "linha": 646,
     "funcao": "_bungalow"
    },
    {
     "arquivo": "world.gd",
-    "linha": 650,
+    "linha": 654,
     "funcao": "_bungalow"
    },
    {
     "arquivo": "world.gd",
-    "linha": 1193,
+    "linha": 1197,
     "funcao": "_shore_details"
    }
   ],
@@ -6849,12 +6863,12 @@
    },
    {
     "arquivo": "world.gd",
-    "linha": 834,
+    "linha": 838,
     "funcao": "_upgrade_meshes"
    },
    {
     "arquivo": "world.gd",
-    "linha": 1137,
+    "linha": 1141,
     "funcao": "_beach_props"
    }
   ],
@@ -6889,37 +6903,37 @@
    },
    {
     "arquivo": "world.gd",
-    "linha": 1016,
-    "funcao": "_bar"
-   },
-   {
-    "arquivo": "world.gd",
-    "linha": 1017,
-    "funcao": "_bar"
-   },
-   {
-    "arquivo": "world.gd",
-    "linha": 1018,
-    "funcao": "_bar"
-   },
-   {
-    "arquivo": "world.gd",
     "linha": 1020,
     "funcao": "_bar"
    },
    {
     "arquivo": "world.gd",
-    "linha": 1147,
+    "linha": 1021,
+    "funcao": "_bar"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 1022,
+    "funcao": "_bar"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 1024,
+    "funcao": "_bar"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 1151,
     "funcao": "_beach_props"
    },
    {
     "arquivo": "world.gd",
-    "linha": 1299,
+    "linha": 1303,
     "funcao": "_lantern_posts"
    },
    {
     "arquivo": "world.gd",
-    "linha": 1300,
+    "linha": 1304,
     "funcao": "_lantern_posts"
    },
    {
@@ -6989,27 +7003,27 @@
    },
    {
     "arquivo": "world.gd",
-    "linha": 870,
+    "linha": 874,
     "funcao": "_upgrade_sign"
    },
    {
     "arquivo": "world.gd",
-    "linha": 1056,
+    "linha": 1060,
     "funcao": "_bar"
    },
    {
     "arquivo": "world.gd",
-    "linha": 1059,
+    "linha": 1063,
     "funcao": "_bar"
    },
    {
     "arquivo": "world.gd",
-    "linha": 1352,
+    "linha": 1356,
     "funcao": "_signs"
    },
    {
     "arquivo": "world.gd",
-    "linha": 2078,
+    "linha": 2082,
     "funcao": "_reception_details"
    },
    {
@@ -7054,12 +7068,12 @@
    },
    {
     "arquivo": "world.gd",
-    "linha": 726,
+    "linha": 730,
     "funcao": "_bwall_x"
    },
    {
     "arquivo": "world.gd",
-    "linha": 735,
+    "linha": 739,
     "funcao": "_bwall_z"
    },
    {
@@ -7089,32 +7103,32 @@
    },
    {
     "arquivo": "world.gd",
-    "linha": 1008,
+    "linha": 1012,
     "funcao": "_bar"
    },
    {
     "arquivo": "world.gd",
-    "linha": 1146,
+    "linha": 1150,
     "funcao": "_beach_props"
    },
    {
     "arquivo": "world.gd",
-    "linha": 1350,
+    "linha": 1354,
     "funcao": "_signs"
    },
    {
     "arquivo": "world.gd",
-    "linha": 1351,
+    "linha": 1355,
     "funcao": "_signs"
    },
    {
     "arquivo": "world.gd",
-    "linha": 2083,
+    "linha": 2087,
     "funcao": "_reception_details"
    },
    {
     "arquivo": "world.gd",
-    "linha": 2084,
+    "linha": 2088,
     "funcao": "_reception_details"
    },
    {
@@ -7159,12 +7173,12 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 785,
+    "linha": 789,
     "funcao": "_upgrade_meshes"
    },
    {
     "arquivo": "world.gd",
-    "linha": 795,
+    "linha": 799,
     "funcao": "_upgrade_meshes"
    }
   ],
@@ -7179,7 +7193,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 789,
+    "linha": 793,
     "funcao": "_upgrade_meshes"
    }
   ],
@@ -7239,17 +7253,17 @@
    },
    {
     "arquivo": "world.gd",
-    "linha": 838,
+    "linha": 842,
     "funcao": "_upgrade_meshes"
    },
    {
     "arquivo": "world.gd",
-    "linha": 1173,
+    "linha": 1177,
     "funcao": "_shore_details"
    },
    {
     "arquivo": "world.gd",
-    "linha": 2074,
+    "linha": 2078,
     "funcao": "_reception_details"
    }
   ],
@@ -7334,12 +7348,12 @@
    },
    {
     "arquivo": "world.gd",
-    "linha": 727,
+    "linha": 731,
     "funcao": "_bwall_x"
    },
    {
     "arquivo": "world.gd",
-    "linha": 736,
+    "linha": 740,
     "funcao": "_bwall_z"
    },
    {
@@ -7374,7 +7388,7 @@
    },
    {
     "arquivo": "world.gd",
-    "linha": 1009,
+    "linha": 1013,
     "funcao": "_bar"
    },
    {
@@ -7394,17 +7408,17 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 780,
+    "linha": 784,
     "funcao": "_upgrade_meshes"
    },
    {
     "arquivo": "world.gd",
-    "linha": 782,
+    "linha": 786,
     "funcao": "_upgrade_meshes"
    },
    {
     "arquivo": "world.gd",
-    "linha": 843,
+    "linha": 847,
     "funcao": "_upgrade_meshes"
    }
   ],
@@ -7480,13 +7494,18 @@
     "funcao": "_init_builders"
    },
    {
+    "arquivo": "real.gd",
+    "linha": 12,
+    "funcao": ""
+   },
+   {
     "arquivo": "world.gd",
-    "linha": 762,
+    "linha": 766,
     "funcao": "_upgrade_meshes"
    },
    {
     "arquivo": "world.gd",
-    "linha": 765,
+    "linha": 769,
     "funcao": "_upgrade_meshes"
    },
    {
@@ -7511,8 +7530,13 @@
     "funcao": "_init_builders"
    },
    {
+    "arquivo": "real.gd",
+    "linha": 13,
+    "funcao": ""
+   },
+   {
     "arquivo": "world.gd",
-    "linha": 802,
+    "linha": 806,
     "funcao": "_upgrade_meshes"
    },
    {
@@ -7561,6 +7585,11 @@
     "arquivo": "props.gd",
     "linha": 30,
     "funcao": "_init_builders"
+   },
+   {
+    "arquivo": "real.gd",
+    "linha": 13,
+    "funcao": ""
    }
   ],
   "arquivo_modelo": "assets/models/WoodenChair_01/WoodenChair_01.gltf",
@@ -7596,7 +7625,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 630,
+    "linha": 634,
     "funcao": "_bungalow"
    }
   ],
@@ -7630,8 +7659,13 @@
     "funcao": "_init_builders"
    },
    {
+    "arquivo": "real.gd",
+    "linha": 11,
+    "funcao": ""
+   },
+   {
     "arquivo": "world.gd",
-    "linha": 1034,
+    "linha": 1038,
     "funcao": "_bar"
    },
    {
@@ -7686,13 +7720,18 @@
     "funcao": "_init_builders"
    },
    {
+    "arquivo": "real.gd",
+    "linha": 12,
+    "funcao": ""
+   },
+   {
     "arquivo": "world.gd",
-    "linha": 625,
+    "linha": 626,
     "funcao": "_bungalow"
    },
    {
     "arquivo": "world.gd",
-    "linha": 818,
+    "linha": 822,
     "funcao": "_upgrade_meshes"
    },
    {
@@ -7733,12 +7772,12 @@
    },
    {
     "arquivo": "world.gd",
-    "linha": 798,
+    "linha": 802,
     "funcao": "_upgrade_meshes"
    },
    {
     "arquivo": "world.gd",
-    "linha": 841,
+    "linha": 845,
     "funcao": "_upgrade_meshes"
    },
    {
@@ -7880,7 +7919,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 626,
+    "linha": 630,
     "funcao": "_bungalow"
    }
   ],
@@ -7935,12 +7974,12 @@
    },
    {
     "arquivo": "world.gd",
-    "linha": 674,
+    "linha": 678,
     "funcao": "_bungalow"
    },
    {
     "arquivo": "world.gd",
-    "linha": 1101,
+    "linha": 1105,
     "funcao": "_fruit_row"
    }
   ],
@@ -8005,7 +8044,7 @@
    },
    {
     "arquivo": "world.gd",
-    "linha": 1101,
+    "linha": 1105,
     "funcao": "_fruit_row"
    },
    {
@@ -8095,7 +8134,7 @@
    },
    {
     "arquivo": "world.gd",
-    "linha": 797,
+    "linha": 801,
     "funcao": "_upgrade_meshes"
    },
    {
@@ -8146,18 +8185,23 @@
    },
    {
     "arquivo": "world.gd",
-    "linha": 1025,
+    "linha": 1029,
     "funcao": "_bar"
    },
    {
     "arquivo": "world.gd",
-    "linha": 1162,
+    "linha": 1166,
     "funcao": "_beach_props"
    },
    {
     "arquivo": "world.gd",
-    "linha": 1172,
+    "linha": 1176,
     "funcao": "_shore_details"
+   },
+   {
+    "arquivo": "world_village.gd",
+    "linha": 1495,
+    "funcao": "_sand_clutter"
    }
   ],
   "arquivo_modelo": "assets/models/lambis_shell/lambis_shell.gltf",
@@ -8182,7 +8226,7 @@
    },
    {
     "arquivo": "world.gd",
-    "linha": 1101,
+    "linha": 1105,
     "funcao": "_fruit_row"
    }
   ],
@@ -8233,12 +8277,12 @@
    },
    {
     "arquivo": "world.gd",
-    "linha": 628,
+    "linha": 632,
     "funcao": "_bungalow"
    },
    {
     "arquivo": "world.gd",
-    "linha": 832,
+    "linha": 836,
     "funcao": "_upgrade_meshes"
    }
   ],
@@ -8259,12 +8303,12 @@
    },
    {
     "arquivo": "world.gd",
-    "linha": 1042,
+    "linha": 1046,
     "funcao": "_bar"
    },
    {
     "arquivo": "world.gd",
-    "linha": 1045,
+    "linha": 1049,
     "funcao": "_bar"
    },
    {
@@ -8295,7 +8339,7 @@
    },
    {
     "arquivo": "world.gd",
-    "linha": 805,
+    "linha": 809,
     "funcao": "_upgrade_meshes"
    },
    {
@@ -8321,7 +8365,7 @@
    },
    {
     "arquivo": "world.gd",
-    "linha": 2099,
+    "linha": 2103,
     "funcao": "_reception_details"
    },
    {
@@ -8466,7 +8510,7 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1704,
+    "linha": 1732,
     "funcao": "_map_details"
    }
   ],
@@ -8569,12 +8613,12 @@
    },
    {
     "arquivo": "world.gd",
-    "linha": 2101,
+    "linha": 2105,
     "funcao": "_reception_details"
    },
    {
     "arquivo": "world.gd",
-    "linha": 2102,
+    "linha": 2106,
     "funcao": "_reception_details"
    },
    {
@@ -8589,7 +8633,7 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1704,
+    "linha": 1732,
     "funcao": "_map_details"
    }
   ],
@@ -8625,7 +8669,7 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1704,
+    "linha": 1732,
     "funcao": "_map_details"
    }
   ],
@@ -8661,7 +8705,7 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1704,
+    "linha": 1732,
     "funcao": "_map_details"
    }
   ],
@@ -8677,7 +8721,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1178,
+    "linha": 1182,
     "funcao": "_shore_details"
    }
   ],
@@ -8692,7 +8736,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1178,
+    "linha": 1182,
     "funcao": "_shore_details"
    }
   ],
@@ -8717,7 +8761,7 @@
    },
    {
     "arquivo": "world.gd",
-    "linha": 803,
+    "linha": 807,
     "funcao": "_upgrade_meshes"
    }
   ],
@@ -8769,7 +8813,7 @@
    },
    {
     "arquivo": "world.gd",
-    "linha": 790,
+    "linha": 794,
     "funcao": "_upgrade_meshes"
    },
    {
@@ -8790,7 +8834,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 666,
+    "linha": 670,
     "funcao": "_bungalow"
    }
   ],
@@ -8810,7 +8854,7 @@
    },
    {
     "arquivo": "world.gd",
-    "linha": 804,
+    "linha": 808,
     "funcao": "_upgrade_meshes"
    },
    {
@@ -8831,7 +8875,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 629,
+    "linha": 633,
     "funcao": "_bungalow"
    }
   ],
@@ -8846,7 +8890,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 627,
+    "linha": 631,
     "funcao": "_bungalow"
    }
   ],
@@ -8876,7 +8920,7 @@
    },
    {
     "arquivo": "world.gd",
-    "linha": 842,
+    "linha": 846,
     "funcao": "_upgrade_meshes"
    },
    {
@@ -8917,7 +8961,7 @@
    },
    {
     "arquivo": "world.gd",
-    "linha": 1139,
+    "linha": 1143,
     "funcao": "_beach_props"
    },
    {
@@ -8994,12 +9038,12 @@
    },
    {
     "arquivo": "world.gd",
-    "linha": 1026,
+    "linha": 1030,
     "funcao": "_bar"
    },
    {
     "arquivo": "world.gd",
-    "linha": 1163,
+    "linha": 1167,
     "funcao": "_beach_props"
    },
    {
@@ -9060,7 +9104,7 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1597,
+    "linha": 1625,
     "funcao": "_landmark_details"
    }
   ],
@@ -9106,17 +9150,17 @@
    },
    {
     "arquivo": "world.gd",
-    "linha": 1051,
+    "linha": 1055,
     "funcao": "_bar"
    },
    {
     "arquivo": "world.gd",
-    "linha": 1301,
+    "linha": 1305,
     "funcao": "_lantern_posts"
    },
    {
     "arquivo": "world.gd",
-    "linha": 1996,
+    "linha": 2000,
     "funcao": "_bungalow_details"
    },
    {
@@ -9139,6 +9183,11 @@
     "arquivo": "props.gd",
     "linha": 26,
     "funcao": "_init_builders"
+   },
+   {
+    "arquivo": "real.gd",
+    "linha": 11,
+    "funcao": ""
    },
    {
     "arquivo": "world.gd",
@@ -9228,7 +9277,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 671,
+    "linha": 675,
     "funcao": "_bungalow"
    },
    {
@@ -9263,7 +9312,7 @@
    },
    {
     "arquivo": "world.gd",
-    "linha": 675,
+    "linha": 679,
     "funcao": "_bungalow"
    }
   ],
@@ -9323,12 +9372,12 @@
    },
    {
     "arquivo": "real.gd",
-    "linha": 46,
+    "linha": 56,
     "funcao": "place"
    },
    {
     "arquivo": "world.gd",
-    "linha": 1029,
+    "linha": 1033,
     "funcao": "_bar"
    },
    {
@@ -9358,12 +9407,12 @@
    },
    {
     "arquivo": "world.gd",
-    "linha": 667,
+    "linha": 671,
     "funcao": "_bungalow"
    },
    {
     "arquivo": "world.gd",
-    "linha": 670,
+    "linha": 674,
     "funcao": "_bungalow"
    }
   ],
@@ -9428,7 +9477,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1182,
+    "linha": 1186,
     "funcao": "_shore_details"
    }
   ],
@@ -9453,7 +9502,7 @@
    },
    {
     "arquivo": "world.gd",
-    "linha": 1101,
+    "linha": 1105,
     "funcao": "_fruit_row"
    }
   ],
@@ -9483,7 +9532,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1178,
+    "linha": 1182,
     "funcao": "_shore_details"
    }
   ],
@@ -9498,7 +9547,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1178,
+    "linha": 1182,
     "funcao": "_shore_details"
    }
   ],
@@ -9683,27 +9732,17 @@
    },
    {
     "arquivo": "world.gd",
-    "linha": 646,
+    "linha": 650,
     "funcao": "_bungalow"
    },
    {
     "arquivo": "world.gd",
-    "linha": 651,
+    "linha": 655,
     "funcao": "_bungalow"
    },
    {
     "arquivo": "world.gd",
-    "linha": 654,
-    "funcao": "_bungalow"
-   },
-   {
-    "arquivo": "world.gd",
-    "linha": 657,
-    "funcao": "_bungalow"
-   },
-   {
-    "arquivo": "world.gd",
-    "linha": 660,
+    "linha": 658,
     "funcao": "_bungalow"
    },
    {
@@ -9713,11 +9752,51 @@
    },
    {
     "arquivo": "world.gd",
-    "linha": 662,
+    "linha": 664,
+    "funcao": "_bungalow"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 665,
+    "funcao": "_bungalow"
+   },
+   {
+    "arquivo": "world.gd",
+    "linha": 666,
     "funcao": "_bungalow"
    }
   ],
   "arquivo_modelo": "assets/models/gen/towel.glb"
+ },
+ {
+  "codigo": "MOD-103",
+  "categoria": "MOD",
+  "chave": "fern_02",
+  "nome": "Fern 02",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [
+   {
+    "arquivo": "world_village.gd",
+    "linha": 1497,
+    "funcao": "_sand_clutter"
+   }
+  ],
+  "arquivo_modelo": "assets/models/fern_02/fern_02.gltf"
+ },
+ {
+  "codigo": "MOD-104",
+  "categoria": "MOD",
+  "chave": "periwinkle_plant",
+  "nome": "Periwinkle plant",
+  "fonte": "Poly Haven (CC0)",
+  "usos": [
+   {
+    "arquivo": "world_village.gd",
+    "linha": 1497,
+    "funcao": "_sand_clutter"
+   }
+  ],
+  "arquivo_modelo": "assets/models/periwinkle_plant/periwinkle_plant.gltf"
  },
  {
   "codigo": "NAT-001",
@@ -9728,7 +9807,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1183,
+    "linha": 1187,
     "funcao": "_shore_details"
    },
    {
@@ -9748,7 +9827,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1183,
+    "linha": 1187,
     "funcao": "_shore_details"
    },
    {
@@ -9765,7 +9844,13 @@
   "chave": "q:Clover_1",
   "nome": "Clover 1",
   "fonte": "Quaternius (CC0)",
-  "usos": [],
+  "usos": [
+   {
+    "arquivo": "world_village.gd",
+    "linha": 1496,
+    "funcao": "_sand_clutter"
+   }
+  ],
   "arquivo_modelo": "assets/models/qnat/Clover_1.gltf"
  },
  {
@@ -9876,7 +9961,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1183,
+    "linha": 1187,
     "funcao": "_shore_details"
    },
    {
@@ -9893,7 +9978,13 @@
   "chave": "q:Flower_3_Group",
   "nome": "Flower 3 group",
   "fonte": "Quaternius (CC0)",
-  "usos": [],
+  "usos": [
+   {
+    "arquivo": "world_village.gd",
+    "linha": 1496,
+    "funcao": "_sand_clutter"
+   }
+  ],
   "arquivo_modelo": "assets/models/qnat/Flower_3_Group.gltf"
  },
  {
@@ -9911,7 +10002,13 @@
   "chave": "q:Flower_4_Group",
   "nome": "Flower 4 group",
   "fonte": "Quaternius (CC0)",
-  "usos": [],
+  "usos": [
+   {
+    "arquivo": "world_village.gd",
+    "linha": 1496,
+    "funcao": "_sand_clutter"
+   }
+  ],
   "arquivo_modelo": "assets/models/qnat/Flower_4_Group.gltf"
  },
  {
@@ -9929,7 +10026,13 @@
   "chave": "q:Grass_Common_Short",
   "nome": "Grass common short",
   "fonte": "Quaternius (CC0)",
-  "usos": [],
+  "usos": [
+   {
+    "arquivo": "world_village.gd",
+    "linha": 1495,
+    "funcao": "_sand_clutter"
+   }
+  ],
   "arquivo_modelo": "assets/models/qnat/Grass_Common_Short.gltf"
  },
  {
@@ -9947,7 +10050,13 @@
   "chave": "q:Grass_Wispy_Short",
   "nome": "Grass wispy short",
   "fonte": "Quaternius (CC0)",
-  "usos": [],
+  "usos": [
+   {
+    "arquivo": "world_village.gd",
+    "linha": 1495,
+    "funcao": "_sand_clutter"
+   }
+  ],
   "arquivo_modelo": "assets/models/qnat/Grass_Wispy_Short.gltf"
  },
  {
@@ -9983,7 +10092,13 @@
   "chave": "q:Pebble_Round_1",
   "nome": "Pebble round 1",
   "fonte": "Quaternius (CC0)",
-  "usos": [],
+  "usos": [
+   {
+    "arquivo": "world_village.gd",
+    "linha": 1494,
+    "funcao": "_sand_clutter"
+   }
+  ],
   "arquivo_modelo": "assets/models/qnat/Pebble_Round_1.gltf"
  },
  {
@@ -10001,7 +10116,13 @@
   "chave": "q:Pebble_Round_3",
   "nome": "Pebble round 3",
   "fonte": "Quaternius (CC0)",
-  "usos": [],
+  "usos": [
+   {
+    "arquivo": "world_village.gd",
+    "linha": 1494,
+    "funcao": "_sand_clutter"
+   }
+  ],
   "arquivo_modelo": "assets/models/qnat/Pebble_Round_3.gltf"
  },
  {
@@ -10037,7 +10158,13 @@
   "chave": "q:Pebble_Square_2",
   "nome": "Pebble square 2",
   "fonte": "Quaternius (CC0)",
-  "usos": [],
+  "usos": [
+   {
+    "arquivo": "world_village.gd",
+    "linha": 1494,
+    "funcao": "_sand_clutter"
+   }
+  ],
   "arquivo_modelo": "assets/models/qnat/Pebble_Square_2.gltf"
  },
  {
@@ -10184,7 +10311,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1183,
+    "linha": 1187,
     "funcao": "_shore_details"
    },
    {
@@ -10691,15 +10818,6 @@
   "arquivo_modelo": "assets/models/dry_branches_medium_01/dry_branches_medium_01.gltf"
  },
  {
-  "codigo": "NOU-036",
-  "categoria": "NOU",
-  "chave": "fern_02",
-  "nome": "Fern 02",
-  "fonte": "Poly Haven (CC0)",
-  "usos": [],
-  "arquivo_modelo": "assets/models/fern_02/fern_02.gltf"
- },
- {
   "codigo": "NOU-037",
   "categoria": "NOU",
   "chave": "fire_hydrant",
@@ -10977,15 +11095,6 @@
   "fonte": "Poly Haven (CC0)",
   "usos": [],
   "arquivo_modelo": "assets/models/painted_wooden_table/painted_wooden_table.gltf"
- },
- {
-  "codigo": "NOU-068",
-  "categoria": "NOU",
-  "chave": "periwinkle_plant",
-  "nome": "Periwinkle plant",
-  "fonte": "Poly Haven (CC0)",
-  "usos": [],
-  "arquivo_modelo": "assets/models/periwinkle_plant/periwinkle_plant.gltf"
  },
  {
   "codigo": "NOU-069",
@@ -13535,31 +13644,12 @@
   "codigo": "PCA-097",
   "categoria": "PCA",
   "chave": "world.gd|_bungalow|Real.place|2",
-  "nome": "ceiling fan",
-  "fonte": "world.gd (código)",
-  "usos": [
-   {
-    "arquivo": "world.gd",
-    "linha": 625,
-    "funcao": "_bungalow"
-   }
-  ],
-  "chamada": "Real.place",
-  "args": "self, \"ceiling_fan\", Vector3(c.x + 0.2, y0 + h - 0.42, c.z), 0.42, 0.0, Color(1.6, 1.6, 1.6), 1.1",
-  "material": "",
-  "em_laco": false,
-  "comentario": ""
- },
- {
-  "codigo": "PCA-098",
-  "categoria": "PCA",
-  "chave": "world.gd|_bungalow|Real.place|3",
   "nome": "fancy picture frame 01",
   "fonte": "world.gd (código)",
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 626,
+    "linha": 630,
     "funcao": "_bungalow"
    }
   ],
@@ -13570,15 +13660,15 @@
   "comentario": ""
  },
  {
-  "codigo": "PCA-099",
+  "codigo": "PCA-098",
   "categoria": "PCA",
-  "chave": "world.gd|_bungalow|Real.place|4",
+  "chave": "world.gd|_bungalow|Real.place|3",
   "nome": "wall clock",
   "fonte": "world.gd (código)",
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 627,
+    "linha": 631,
     "funcao": "_bungalow"
    }
   ],
@@ -13589,15 +13679,15 @@
   "comentario": ""
  },
  {
-  "codigo": "PCA-100",
+  "codigo": "PCA-099",
   "categoria": "PCA",
-  "chave": "world.gd|_bungalow|Real.place|5",
+  "chave": "world.gd|_bungalow|Real.place|4",
   "nome": "ornate mirror 01",
   "fonte": "world.gd (código)",
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 628,
+    "linha": 632,
     "funcao": "_bungalow"
    }
   ],
@@ -13608,15 +13698,15 @@
   "comentario": ""
  },
  {
-  "codigo": "PCA-101",
+  "codigo": "PCA-100",
   "categoria": "PCA",
-  "chave": "world.gd|_bungalow|Real.place|6",
+  "chave": "world.gd|_bungalow|Real.place|5",
   "nome": "vintage suitcase",
   "fonte": "world.gd (código)",
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 629,
+    "linha": 633,
     "funcao": "_bungalow"
    }
   ],
@@ -13627,15 +13717,15 @@
   "comentario": ""
  },
  {
-  "codigo": "PCA-102",
+  "codigo": "PCA-101",
   "categoria": "PCA",
-  "chave": "world.gd|_bungalow|Real.place|7",
+  "chave": "world.gd|_bungalow|Real.place|6",
   "nome": "alarm clock 01",
   "fonte": "world.gd (código)",
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 630,
+    "linha": 634,
     "funcao": "_bungalow"
    }
   ],
@@ -13643,6 +13733,25 @@
   "args": "self, \"alarm_clock_01\", Vector3(c.x - 2.45, y0 + 0.6, c.z + 1.25), 0.1, PI * 0.5",
   "material": "",
   "em_laco": false,
+  "comentario": ""
+ },
+ {
+  "codigo": "PCA-102",
+  "categoria": "PCA",
+  "chave": "world.gd|_bungalow|Real.place|7",
+  "nome": "g:towel",
+  "fonte": "world.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 650,
+    "funcao": "_bungalow"
+   }
+  ],
+  "chamada": "Real.place",
+  "args": "cl, \"g:towel\", bed_c + Vector3(sx, 0.5 + k * 0.03, -0.62), 0.0, 0.1 * k, Color(0.55, 0.9, 0.95), 0.4",
+  "material": "",
+  "em_laco": true,
   "comentario": ""
  },
  {
@@ -13654,7 +13763,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 642,
+    "linha": 646,
     "funcao": "_bungalow"
    }
   ],
@@ -13673,14 +13782,14 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 646,
+    "linha": 655,
     "funcao": "_bungalow"
    }
   ],
   "chamada": "Real.place",
-  "args": "cl, \"g:towel\", bed_c + Vector3(sx, 0.5 + k * 0.03, -0.62), 0.0, 0.1 * k, Color(0.55, 0.9, 0.95), 0.4",
+  "args": "dc, \"g:towel\", bed_c + Vector3(-0.3, 0.52, -0.45), 0.0, -0.5, Color(1.0, 0.95, 0.85), 0.7",
   "material": "",
-  "em_laco": true,
+  "em_laco": false,
   "comentario": ""
  },
  {
@@ -13692,7 +13801,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 650,
+    "linha": 654,
     "funcao": "_bungalow"
    }
   ],
@@ -13711,12 +13820,12 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 651,
+    "linha": 658,
     "funcao": "_bungalow"
    }
   ],
   "chamada": "Real.place",
-  "args": "dc, \"g:towel\", bed_c + Vector3(-0.3, 0.52, -0.45), 0.0, -0.5, Color(1.0, 0.95, 0.85), 0.7",
+  "args": "dc, \"g:towel\", bed_c + Vector3(0.4, 0.52, 0.2), 0.0, 0.9, Color(0.85, 0.95, 1.0), 0.6",
   "material": "",
   "em_laco": false,
   "comentario": ""
@@ -13730,12 +13839,12 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 654,
+    "linha": 661,
     "funcao": "_bungalow"
    }
   ],
   "chamada": "Real.place",
-  "args": "dc, \"g:towel\", bed_c + Vector3(0.4, 0.52, 0.2), 0.0, 0.9, Color(0.85, 0.95, 1.0), 0.6",
+  "args": "dc, \"g:towel\", bed_c + Vector3(-1.05, 0.02, 0.6), 0.0, 0.3, Color(0.9, 0.9, 0.9), 0.7",
   "material": "",
   "em_laco": false,
   "comentario": ""
@@ -13749,12 +13858,12 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 657,
+    "linha": 664,
     "funcao": "_bungalow"
    }
   ],
   "chamada": "Real.place",
-  "args": "dc, \"g:towel\", bed_c + Vector3(-1.05, 0.02, 0.6), 0.0, 0.3, Color(0.9, 0.9, 0.9), 0.7",
+  "args": "dt, \"g:towel\", Vector3(c.x + 0.4, y0, c.z - 1.6), 0.0, 0.7, Color(0.45, 0.9, 0.95), 0.9",
   "material": "",
   "em_laco": false,
   "comentario": ""
@@ -13768,12 +13877,12 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 660,
+    "linha": 665,
     "funcao": "_bungalow"
    }
   ],
   "chamada": "Real.place",
-  "args": "dt, \"g:towel\", Vector3(c.x + 0.4, y0, c.z - 1.6), 0.0, 0.7, Color(0.45, 0.9, 0.95), 0.9",
+  "args": "dt, \"g:towel\", Vector3(c.x + 0.7, y0 + 0.03, c.z - 1.3), 0.0, -0.3, Color(1.0, 0.7, 0.75), 0.8",
   "material": "",
   "em_laco": false,
   "comentario": ""
@@ -13787,26 +13896,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 661,
-    "funcao": "_bungalow"
-   }
-  ],
-  "chamada": "Real.place",
-  "args": "dt, \"g:towel\", Vector3(c.x + 0.7, y0 + 0.03, c.z - 1.3), 0.0, -0.3, Color(1.0, 0.7, 0.75), 0.8",
-  "material": "",
-  "em_laco": false,
-  "comentario": ""
- },
- {
-  "codigo": "PCA-111",
-  "categoria": "PCA",
-  "chave": "world.gd|_bungalow|Real.place|14",
-  "nome": "g:towel",
-  "fonte": "world.gd (código)",
-  "usos": [
-   {
-    "arquivo": "world.gd",
-    "linha": 662,
+    "linha": 666,
     "funcao": "_bungalow"
    }
   ],
@@ -13817,15 +13907,15 @@
   "comentario": ""
  },
  {
-  "codigo": "PCA-112",
+  "codigo": "PCA-111",
   "categoria": "PCA",
-  "chave": "world.gd|_bungalow|Real.place|15",
+  "chave": "world.gd|_bungalow|Real.place|14",
   "nome": "trashbag",
   "fonte": "world.gd (código)",
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 666,
+    "linha": 670,
     "funcao": "_bungalow"
    }
   ],
@@ -13836,15 +13926,15 @@
   "comentario": "lixo real (Poly Haven / Kenney, CC0): saco, copos, garrafa, resto de fruta, pão"
  },
  {
-  "codigo": "PCA-113",
+  "codigo": "PCA-112",
   "categoria": "PCA",
-  "chave": "world.gd|_bungalow|Real.place|16",
+  "chave": "world.gd|_bungalow|Real.place|15",
   "nome": "k:cup",
   "fonte": "world.gd (código)",
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 667,
+    "linha": 671,
     "funcao": "_bungalow"
    }
   ],
@@ -13855,15 +13945,15 @@
   "comentario": ""
  },
  {
-  "codigo": "PCA-114",
+  "codigo": "PCA-113",
   "categoria": "PCA",
-  "chave": "world.gd|_bungalow|Real.place|17",
+  "chave": "world.gd|_bungalow|Real.place|16",
   "nome": "k:cup",
   "fonte": "world.gd (código)",
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 670,
+    "linha": 674,
     "funcao": "_bungalow"
    }
   ],
@@ -13874,15 +13964,15 @@
   "comentario": ""
  },
  {
-  "codigo": "PCA-115",
+  "codigo": "PCA-114",
   "categoria": "PCA",
-  "chave": "world.gd|_bungalow|Real.place|18",
+  "chave": "world.gd|_bungalow|Real.place|17",
   "nome": "k:bottle",
   "fonte": "world.gd (código)",
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 671,
+    "linha": 675,
     "funcao": "_bungalow"
    }
   ],
@@ -13893,15 +13983,15 @@
   "comentario": ""
  },
  {
-  "codigo": "PCA-116",
+  "codigo": "PCA-115",
   "categoria": "PCA",
-  "chave": "world.gd|_bungalow|Real.place|19",
+  "chave": "world.gd|_bungalow|Real.place|18",
   "nome": "food apple 01",
   "fonte": "world.gd (código)",
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 674,
+    "linha": 678,
     "funcao": "_bungalow"
    }
   ],
@@ -13912,15 +14002,15 @@
   "comentario": ""
  },
  {
-  "codigo": "PCA-117",
+  "codigo": "PCA-116",
   "categoria": "PCA",
-  "chave": "world.gd|_bungalow|Real.place|20",
+  "chave": "world.gd|_bungalow|Real.place|19",
   "nome": "k:bread",
   "fonte": "world.gd (código)",
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 675,
+    "linha": 679,
     "funcao": "_bungalow"
    }
   ],
@@ -13939,7 +14029,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 712,
+    "linha": 716,
     "funcao": "_bungalow"
    }
   ],
@@ -13958,7 +14048,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 762,
+    "linha": 766,
     "funcao": "_upgrade_meshes"
    }
   ],
@@ -13977,7 +14067,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 765,
+    "linha": 769,
     "funcao": "_upgrade_meshes"
    }
   ],
@@ -13996,7 +14086,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 772,
+    "linha": 776,
     "funcao": "_upgrade_meshes"
    }
   ],
@@ -14015,7 +14105,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 774,
+    "linha": 778,
     "funcao": "_upgrade_meshes"
    }
   ],
@@ -14034,7 +14124,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 776,
+    "linha": 780,
     "funcao": "_upgrade_meshes"
    }
   ],
@@ -14053,7 +14143,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 780,
+    "linha": 784,
     "funcao": "_upgrade_meshes"
    }
   ],
@@ -14072,7 +14162,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 782,
+    "linha": 786,
     "funcao": "_upgrade_meshes"
    }
   ],
@@ -14091,7 +14181,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 785,
+    "linha": 789,
     "funcao": "_upgrade_meshes"
    }
   ],
@@ -14110,7 +14200,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 789,
+    "linha": 793,
     "funcao": "_upgrade_meshes"
    }
   ],
@@ -14129,7 +14219,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 790,
+    "linha": 794,
     "funcao": "_upgrade_meshes"
    }
   ],
@@ -14148,7 +14238,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 795,
+    "linha": 799,
     "funcao": "_upgrade_meshes"
    }
   ],
@@ -14167,7 +14257,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 796,
+    "linha": 800,
     "funcao": "_upgrade_meshes"
    }
   ],
@@ -14186,7 +14276,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 797,
+    "linha": 801,
     "funcao": "_upgrade_meshes"
    }
   ],
@@ -14205,7 +14295,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 798,
+    "linha": 802,
     "funcao": "_upgrade_meshes"
    }
   ],
@@ -14224,7 +14314,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 802,
+    "linha": 806,
     "funcao": "_upgrade_meshes"
    }
   ],
@@ -14243,7 +14333,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 803,
+    "linha": 807,
     "funcao": "_upgrade_meshes"
    }
   ],
@@ -14262,7 +14352,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 804,
+    "linha": 808,
     "funcao": "_upgrade_meshes"
    }
   ],
@@ -14281,7 +14371,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 805,
+    "linha": 809,
     "funcao": "_upgrade_meshes"
    }
   ],
@@ -14300,7 +14390,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 818,
+    "linha": 822,
     "funcao": "_upgrade_meshes"
    }
   ],
@@ -14319,7 +14409,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 825,
+    "linha": 829,
     "funcao": "_upgrade_meshes"
    }
   ],
@@ -14338,7 +14428,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 826,
+    "linha": 830,
     "funcao": "_upgrade_meshes"
    }
   ],
@@ -14357,7 +14447,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 827,
+    "linha": 831,
     "funcao": "_upgrade_meshes"
    }
   ],
@@ -14376,7 +14466,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 832,
+    "linha": 836,
     "funcao": "_upgrade_meshes"
    }
   ],
@@ -14395,7 +14485,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 833,
+    "linha": 837,
     "funcao": "_upgrade_meshes"
    }
   ],
@@ -14414,7 +14504,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 834,
+    "linha": 838,
     "funcao": "_upgrade_meshes"
    }
   ],
@@ -14433,7 +14523,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 838,
+    "linha": 842,
     "funcao": "_upgrade_meshes"
    }
   ],
@@ -14452,7 +14542,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 839,
+    "linha": 843,
     "funcao": "_upgrade_meshes"
    }
   ],
@@ -14471,7 +14561,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 840,
+    "linha": 844,
     "funcao": "_upgrade_meshes"
    }
   ],
@@ -14490,7 +14580,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 841,
+    "linha": 845,
     "funcao": "_upgrade_meshes"
    }
   ],
@@ -14509,7 +14599,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 842,
+    "linha": 846,
     "funcao": "_upgrade_meshes"
    }
   ],
@@ -14528,7 +14618,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 843,
+    "linha": 847,
     "funcao": "_upgrade_meshes"
    }
   ],
@@ -14547,7 +14637,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 870,
+    "linha": 874,
     "funcao": "_upgrade_sign"
    }
   ],
@@ -14566,7 +14656,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 871,
+    "linha": 875,
     "funcao": "_upgrade_sign"
    }
   ],
@@ -14585,7 +14675,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 944,
+    "linha": 948,
     "funcao": "_birds_spawn"
    }
   ],
@@ -14604,7 +14694,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1004,
+    "linha": 1008,
     "funcao": "_bar"
    }
   ],
@@ -14623,7 +14713,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1008,
+    "linha": 1012,
     "funcao": "_bar"
    }
   ],
@@ -14642,7 +14732,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1009,
+    "linha": 1013,
     "funcao": "_bar"
    }
   ],
@@ -14661,7 +14751,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1013,
+    "linha": 1017,
     "funcao": "_bar"
    }
   ],
@@ -14680,7 +14770,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1014,
+    "linha": 1018,
     "funcao": "_bar"
    }
   ],
@@ -14699,7 +14789,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1015,
+    "linha": 1019,
     "funcao": "_bar"
    }
   ],
@@ -14718,7 +14808,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1016,
+    "linha": 1020,
     "funcao": "_bar"
    }
   ],
@@ -14737,7 +14827,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1017,
+    "linha": 1021,
     "funcao": "_bar"
    }
   ],
@@ -14756,7 +14846,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1018,
+    "linha": 1022,
     "funcao": "_bar"
    }
   ],
@@ -14775,7 +14865,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1020,
+    "linha": 1024,
     "funcao": "_bar"
    }
   ],
@@ -14794,7 +14884,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1024,
+    "linha": 1028,
     "funcao": "_bar"
    }
   ],
@@ -14813,7 +14903,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1025,
+    "linha": 1029,
     "funcao": "_bar"
    }
   ],
@@ -14832,7 +14922,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1026,
+    "linha": 1030,
     "funcao": "_bar"
    }
   ],
@@ -14851,7 +14941,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1029,
+    "linha": 1033,
     "funcao": "_bar"
    }
   ],
@@ -14870,7 +14960,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1034,
+    "linha": 1038,
     "funcao": "_bar"
    }
   ],
@@ -14889,7 +14979,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1042,
+    "linha": 1046,
     "funcao": "_bar"
    }
   ],
@@ -14908,7 +14998,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1045,
+    "linha": 1049,
     "funcao": "_bar"
    }
   ],
@@ -14927,7 +15017,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1051,
+    "linha": 1055,
     "funcao": "_bar"
    }
   ],
@@ -14946,7 +15036,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1056,
+    "linha": 1060,
     "funcao": "_bar"
    }
   ],
@@ -14965,7 +15055,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1057,
+    "linha": 1061,
     "funcao": "_bar"
    }
   ],
@@ -14984,7 +15074,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1058,
+    "linha": 1062,
     "funcao": "_bar"
    }
   ],
@@ -15003,7 +15093,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1059,
+    "linha": 1063,
     "funcao": "_bar"
    }
   ],
@@ -15022,7 +15112,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1081,
+    "linha": 1085,
     "funcao": "_string_lights"
    }
   ],
@@ -15041,7 +15131,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1090,
+    "linha": 1094,
     "funcao": "_cooler"
    }
   ],
@@ -15060,7 +15150,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1091,
+    "linha": 1095,
     "funcao": "_cooler"
    }
   ],
@@ -15079,7 +15169,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1093,
+    "linha": 1097,
     "funcao": "_cooler"
    }
   ],
@@ -15098,7 +15188,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1103,
+    "linha": 1107,
     "funcao": "_fruit_row"
    }
   ],
@@ -15117,7 +15207,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1117,
+    "linha": 1121,
     "funcao": "_chalkboard"
    }
   ],
@@ -15136,7 +15226,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1118,
+    "linha": 1122,
     "funcao": "_chalkboard"
    }
   ],
@@ -15155,7 +15245,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1119,
+    "linha": 1123,
     "funcao": "_chalkboard"
    }
   ],
@@ -15174,7 +15264,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1125,
+    "linha": 1129,
     "funcao": "_chalkboard"
    }
   ],
@@ -15193,7 +15283,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1137,
+    "linha": 1141,
     "funcao": "_beach_props"
    }
   ],
@@ -15212,7 +15302,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1139,
+    "linha": 1143,
     "funcao": "_beach_props"
    }
   ],
@@ -15231,7 +15321,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1146,
+    "linha": 1150,
     "funcao": "_beach_props"
    }
   ],
@@ -15250,7 +15340,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1147,
+    "linha": 1151,
     "funcao": "_beach_props"
    }
   ],
@@ -15269,7 +15359,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1148,
+    "linha": 1152,
     "funcao": "_beach_props"
    }
   ],
@@ -15288,7 +15378,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1160,
+    "linha": 1164,
     "funcao": "_beach_props"
    }
   ],
@@ -15307,7 +15397,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1162,
+    "linha": 1166,
     "funcao": "_beach_props"
    }
   ],
@@ -15326,7 +15416,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1163,
+    "linha": 1167,
     "funcao": "_beach_props"
    }
   ],
@@ -15345,7 +15435,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1172,
+    "linha": 1176,
     "funcao": "_shore_details"
    }
   ],
@@ -15364,7 +15454,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1179,
+    "linha": 1183,
     "funcao": "_shore_details"
    }
   ],
@@ -15383,7 +15473,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1182,
+    "linha": 1186,
     "funcao": "_shore_details"
    }
   ],
@@ -15402,7 +15492,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1187,
+    "linha": 1191,
     "funcao": "_shore_details"
    }
   ],
@@ -15421,7 +15511,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1189,
+    "linha": 1193,
     "funcao": "_shore_details"
    }
   ],
@@ -15440,7 +15530,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1191,
+    "linha": 1195,
     "funcao": "_shore_details"
    }
   ],
@@ -15459,7 +15549,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1193,
+    "linha": 1197,
     "funcao": "_shore_details"
    }
   ],
@@ -15478,7 +15568,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1278,
+    "linha": 1282,
     "funcao": "_redes"
    }
   ],
@@ -15497,7 +15587,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1286,
+    "linha": 1290,
     "funcao": "_redes"
    }
   ],
@@ -15516,7 +15606,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1299,
+    "linha": 1303,
     "funcao": "_lantern_posts"
    }
   ],
@@ -15535,7 +15625,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1300,
+    "linha": 1304,
     "funcao": "_lantern_posts"
    }
   ],
@@ -15554,7 +15644,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1301,
+    "linha": 1305,
     "funcao": "_lantern_posts"
    }
   ],
@@ -15573,7 +15663,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1302,
+    "linha": 1306,
     "funcao": "_lantern_posts"
    }
   ],
@@ -15592,7 +15682,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1350,
+    "linha": 1354,
     "funcao": "_signs"
    }
   ],
@@ -15611,7 +15701,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1351,
+    "linha": 1355,
     "funcao": "_signs"
    }
   ],
@@ -15630,7 +15720,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1352,
+    "linha": 1356,
     "funcao": "_signs"
    }
   ],
@@ -15649,7 +15739,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1353,
+    "linha": 1357,
     "funcao": "_signs"
    }
   ],
@@ -15668,7 +15758,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1354,
+    "linha": 1358,
     "funcao": "_signs"
    }
   ],
@@ -15687,7 +15777,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1646,
+    "linha": 1650,
     "funcao": "_mtn_show"
    }
   ],
@@ -15706,7 +15796,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1831,
+    "linha": 1835,
     "funcao": "_mountains"
    }
   ],
@@ -15725,7 +15815,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1832,
+    "linha": 1836,
     "funcao": "_mountains"
    }
   ],
@@ -15744,7 +15834,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1833,
+    "linha": 1837,
     "funcao": "_mountains"
    }
   ],
@@ -15763,7 +15853,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1855,
+    "linha": 1859,
     "funcao": "_lot_post"
    }
   ],
@@ -15782,7 +15872,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1873,
+    "linha": 1877,
     "funcao": "_lot"
    }
   ],
@@ -15801,7 +15891,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1881,
+    "linha": 1885,
     "funcao": "_lot"
    }
   ],
@@ -15820,7 +15910,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1882,
+    "linha": 1886,
     "funcao": "_lot"
    }
   ],
@@ -15839,7 +15929,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1883,
+    "linha": 1887,
     "funcao": "_lot"
    }
   ],
@@ -15858,7 +15948,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1885,
+    "linha": 1889,
     "funcao": "_lot"
    }
   ],
@@ -15877,7 +15967,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1887,
+    "linha": 1891,
     "funcao": "_lot"
    }
   ],
@@ -15896,7 +15986,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1888,
+    "linha": 1892,
     "funcao": "_lot"
    }
   ],
@@ -15915,7 +16005,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1889,
+    "linha": 1893,
     "funcao": "_lot"
    }
   ],
@@ -15934,7 +16024,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1898,
+    "linha": 1902,
     "funcao": "_build_lots"
    }
   ],
@@ -15953,7 +16043,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1933,
+    "linha": 1937,
     "funcao": "hut_details"
    }
   ],
@@ -15972,7 +16062,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1937,
+    "linha": 1941,
     "funcao": "hut_details"
    }
   ],
@@ -15991,7 +16081,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1945,
+    "linha": 1949,
     "funcao": "hut_details"
    }
   ],
@@ -16010,7 +16100,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1957,
+    "linha": 1961,
     "funcao": "hut_details"
    }
   ],
@@ -16029,7 +16119,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1968,
+    "linha": 1972,
     "funcao": "hut_details"
    }
   ],
@@ -16048,7 +16138,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1980,
+    "linha": 1984,
     "funcao": "_bungalow_details"
    }
   ],
@@ -16067,7 +16157,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1983,
+    "linha": 1987,
     "funcao": "_bungalow_details"
    }
   ],
@@ -16086,7 +16176,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1984,
+    "linha": 1988,
     "funcao": "_bungalow_details"
    }
   ],
@@ -16105,7 +16195,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1987,
+    "linha": 1991,
     "funcao": "_bungalow_details"
    }
   ],
@@ -16124,7 +16214,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1990,
+    "linha": 1994,
     "funcao": "_bungalow_details"
    }
   ],
@@ -16143,7 +16233,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1992,
+    "linha": 1996,
     "funcao": "_bungalow_details"
    }
   ],
@@ -16162,7 +16252,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1993,
+    "linha": 1997,
     "funcao": "_bungalow_details"
    }
   ],
@@ -16181,7 +16271,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1995,
+    "linha": 1999,
     "funcao": "_bungalow_details"
    }
   ],
@@ -16200,7 +16290,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1996,
+    "linha": 2000,
     "funcao": "_bungalow_details"
    }
   ],
@@ -16219,7 +16309,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1997,
+    "linha": 2001,
     "funcao": "_bungalow_details"
    }
   ],
@@ -16238,7 +16328,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1998,
+    "linha": 2002,
     "funcao": "_bungalow_details"
    }
   ],
@@ -16257,7 +16347,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2003,
+    "linha": 2007,
     "funcao": "_bungalow_details"
    }
   ],
@@ -16276,7 +16366,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2007,
+    "linha": 2011,
     "funcao": "_bungalow_details"
    }
   ],
@@ -16295,7 +16385,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2008,
+    "linha": 2012,
     "funcao": "_bungalow_details"
    }
   ],
@@ -16314,7 +16404,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2009,
+    "linha": 2013,
     "funcao": "_bungalow_details"
    }
   ],
@@ -16333,7 +16423,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2010,
+    "linha": 2014,
     "funcao": "_bungalow_details"
    }
   ],
@@ -16352,7 +16442,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2014,
+    "linha": 2018,
     "funcao": "_bungalow_details"
    }
   ],
@@ -16371,7 +16461,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2015,
+    "linha": 2019,
     "funcao": "_bungalow_details"
    }
   ],
@@ -16390,7 +16480,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2023,
+    "linha": 2027,
     "funcao": "_pool_details"
    }
   ],
@@ -16409,7 +16499,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2024,
+    "linha": 2028,
     "funcao": "_pool_details"
    }
   ],
@@ -16428,7 +16518,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2025,
+    "linha": 2029,
     "funcao": "_pool_details"
    }
   ],
@@ -16447,7 +16537,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2027,
+    "linha": 2031,
     "funcao": "_pool_details"
    }
   ],
@@ -16466,7 +16556,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2035,
+    "linha": 2039,
     "funcao": "_pool_details"
    }
   ],
@@ -16485,7 +16575,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2046,
+    "linha": 2050,
     "funcao": "_pool_details"
    }
   ],
@@ -16504,7 +16594,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2048,
+    "linha": 2052,
     "funcao": "_pool_details"
    }
   ],
@@ -16523,7 +16613,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2054,
+    "linha": 2058,
     "funcao": "_pool_details"
    }
   ],
@@ -16542,7 +16632,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2059,
+    "linha": 2063,
     "funcao": "_pool_details"
    }
   ],
@@ -16561,7 +16651,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2060,
+    "linha": 2064,
     "funcao": "_pool_details"
    }
   ],
@@ -16580,7 +16670,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2061,
+    "linha": 2065,
     "funcao": "_pool_details"
    }
   ],
@@ -16599,7 +16689,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2062,
+    "linha": 2066,
     "funcao": "_pool_details"
    }
   ],
@@ -16618,7 +16708,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2065,
+    "linha": 2069,
     "funcao": "_pool_details"
    }
   ],
@@ -16637,7 +16727,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2066,
+    "linha": 2070,
     "funcao": "_pool_details"
    }
   ],
@@ -16656,7 +16746,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2067,
+    "linha": 2071,
     "funcao": "_pool_details"
    }
   ],
@@ -16675,7 +16765,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2074,
+    "linha": 2078,
     "funcao": "_reception_details"
    }
   ],
@@ -16694,7 +16784,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2075,
+    "linha": 2079,
     "funcao": "_reception_details"
    }
   ],
@@ -16713,7 +16803,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2078,
+    "linha": 2082,
     "funcao": "_reception_details"
    }
   ],
@@ -16732,7 +16822,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2080,
+    "linha": 2084,
     "funcao": "_reception_details"
    }
   ],
@@ -16751,7 +16841,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2083,
+    "linha": 2087,
     "funcao": "_reception_details"
    }
   ],
@@ -16770,7 +16860,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2084,
+    "linha": 2088,
     "funcao": "_reception_details"
    }
   ],
@@ -16789,7 +16879,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2085,
+    "linha": 2089,
     "funcao": "_reception_details"
    }
   ],
@@ -16808,7 +16898,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2086,
+    "linha": 2090,
     "funcao": "_reception_details"
    }
   ],
@@ -16827,7 +16917,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2090,
+    "linha": 2094,
     "funcao": "_reception_details"
    }
   ],
@@ -16846,7 +16936,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2092,
+    "linha": 2096,
     "funcao": "_reception_details"
    }
   ],
@@ -16865,7 +16955,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2093,
+    "linha": 2097,
     "funcao": "_reception_details"
    }
   ],
@@ -16884,7 +16974,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2094,
+    "linha": 2098,
     "funcao": "_reception_details"
    }
   ],
@@ -16903,7 +16993,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2095,
+    "linha": 2099,
     "funcao": "_reception_details"
    }
   ],
@@ -16922,7 +17012,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2096,
+    "linha": 2100,
     "funcao": "_reception_details"
    }
   ],
@@ -16941,7 +17031,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2098,
+    "linha": 2102,
     "funcao": "_reception_details"
    }
   ],
@@ -16960,7 +17050,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2099,
+    "linha": 2103,
     "funcao": "_reception_details"
    }
   ],
@@ -16979,7 +17069,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2100,
+    "linha": 2104,
     "funcao": "_reception_details"
    }
   ],
@@ -16998,7 +17088,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2101,
+    "linha": 2105,
     "funcao": "_reception_details"
    }
   ],
@@ -17017,7 +17107,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2102,
+    "linha": 2106,
     "funcao": "_reception_details"
    }
   ],
@@ -22736,7 +22826,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1508,
+    "linha": 1536,
     "funcao": "_landmark_details"
    }
   ],
@@ -22755,7 +22845,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1515,
+    "linha": 1543,
     "funcao": "_landmark_details"
    }
   ],
@@ -22774,7 +22864,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1516,
+    "linha": 1544,
     "funcao": "_landmark_details"
    }
   ],
@@ -22793,7 +22883,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1517,
+    "linha": 1545,
     "funcao": "_landmark_details"
    }
   ],
@@ -22812,7 +22902,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1519,
+    "linha": 1547,
     "funcao": "_landmark_details"
    }
   ],
@@ -22831,7 +22921,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1520,
+    "linha": 1548,
     "funcao": "_landmark_details"
    }
   ],
@@ -22850,7 +22940,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1521,
+    "linha": 1549,
     "funcao": "_landmark_details"
    }
   ],
@@ -22869,7 +22959,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1523,
+    "linha": 1551,
     "funcao": "_landmark_details"
    }
   ],
@@ -22888,7 +22978,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1524,
+    "linha": 1552,
     "funcao": "_landmark_details"
    }
   ],
@@ -22907,7 +22997,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1525,
+    "linha": 1553,
     "funcao": "_landmark_details"
    }
   ],
@@ -22926,7 +23016,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1527,
+    "linha": 1555,
     "funcao": "_landmark_details"
    }
   ],
@@ -22945,7 +23035,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1528,
+    "linha": 1556,
     "funcao": "_landmark_details"
    }
   ],
@@ -22964,7 +23054,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1531,
+    "linha": 1559,
     "funcao": "_landmark_details"
    }
   ],
@@ -22983,7 +23073,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1532,
+    "linha": 1560,
     "funcao": "_landmark_details"
    }
   ],
@@ -23002,7 +23092,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1533,
+    "linha": 1561,
     "funcao": "_landmark_details"
    }
   ],
@@ -23021,7 +23111,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1534,
+    "linha": 1562,
     "funcao": "_landmark_details"
    }
   ],
@@ -23040,7 +23130,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1537,
+    "linha": 1565,
     "funcao": "_landmark_details"
    }
   ],
@@ -23059,7 +23149,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1538,
+    "linha": 1566,
     "funcao": "_landmark_details"
    }
   ],
@@ -23078,7 +23168,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1542,
+    "linha": 1570,
     "funcao": "_landmark_details"
    }
   ],
@@ -23097,7 +23187,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1544,
+    "linha": 1572,
     "funcao": "_landmark_details"
    }
   ],
@@ -23116,7 +23206,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1549,
+    "linha": 1577,
     "funcao": "_landmark_details"
    }
   ],
@@ -23135,7 +23225,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1550,
+    "linha": 1578,
     "funcao": "_landmark_details"
    }
   ],
@@ -23154,7 +23244,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1552,
+    "linha": 1580,
     "funcao": "_landmark_details"
    }
   ],
@@ -23173,7 +23263,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1553,
+    "linha": 1581,
     "funcao": "_landmark_details"
    }
   ],
@@ -23192,7 +23282,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1557,
+    "linha": 1585,
     "funcao": "_landmark_details"
    }
   ],
@@ -23211,7 +23301,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1558,
+    "linha": 1586,
     "funcao": "_landmark_details"
    }
   ],
@@ -23230,7 +23320,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1561,
+    "linha": 1589,
     "funcao": "_landmark_details"
    }
   ],
@@ -23249,7 +23339,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1562,
+    "linha": 1590,
     "funcao": "_landmark_details"
    }
   ],
@@ -23268,7 +23358,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1564,
+    "linha": 1592,
     "funcao": "_landmark_details"
    }
   ],
@@ -23287,7 +23377,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1565,
+    "linha": 1593,
     "funcao": "_landmark_details"
    }
   ],
@@ -23306,7 +23396,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1567,
+    "linha": 1595,
     "funcao": "_landmark_details"
    }
   ],
@@ -23325,7 +23415,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1569,
+    "linha": 1597,
     "funcao": "_landmark_details"
    }
   ],
@@ -23344,7 +23434,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1571,
+    "linha": 1599,
     "funcao": "_landmark_details"
    }
   ],
@@ -23363,7 +23453,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1572,
+    "linha": 1600,
     "funcao": "_landmark_details"
    }
   ],
@@ -23382,7 +23472,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1573,
+    "linha": 1601,
     "funcao": "_landmark_details"
    }
   ],
@@ -23401,7 +23491,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1584,
+    "linha": 1612,
     "funcao": "_landmark_details"
    }
   ],
@@ -23420,7 +23510,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1585,
+    "linha": 1613,
     "funcao": "_landmark_details"
    }
   ],
@@ -23439,7 +23529,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1586,
+    "linha": 1614,
     "funcao": "_landmark_details"
    }
   ],
@@ -23458,7 +23548,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1593,
+    "linha": 1621,
     "funcao": "_landmark_details"
    }
   ],
@@ -23477,7 +23567,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1594,
+    "linha": 1622,
     "funcao": "_landmark_details"
    }
   ],
@@ -23496,7 +23586,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1597,
+    "linha": 1625,
     "funcao": "_landmark_details"
    }
   ],
@@ -23515,7 +23605,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1603,
+    "linha": 1631,
     "funcao": "_landmark_details"
    }
   ],
@@ -23534,7 +23624,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1611,
+    "linha": 1639,
     "funcao": "_landmark_details"
    }
   ],
@@ -23553,7 +23643,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1615,
+    "linha": 1643,
     "funcao": "_landmark_details"
    }
   ],
@@ -23572,7 +23662,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1619,
+    "linha": 1647,
     "funcao": "_landmark_details"
    }
   ],
@@ -23591,7 +23681,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1624,
+    "linha": 1652,
     "funcao": "_landmark_details"
    }
   ],
@@ -23610,7 +23700,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1631,
+    "linha": 1659,
     "funcao": "_landmark_details"
    }
   ],
@@ -23629,7 +23719,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1632,
+    "linha": 1660,
     "funcao": "_landmark_details"
    }
   ],
@@ -23648,7 +23738,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1633,
+    "linha": 1661,
     "funcao": "_landmark_details"
    }
   ],
@@ -23667,7 +23757,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1658,
+    "linha": 1686,
     "funcao": "_map_details"
    }
   ],
@@ -23686,7 +23776,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1661,
+    "linha": 1689,
     "funcao": "_map_details"
    }
   ],
@@ -23705,7 +23795,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1672,
+    "linha": 1700,
     "funcao": "_map_details"
    }
   ],
@@ -23724,7 +23814,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1682,
+    "linha": 1710,
     "funcao": "_map_details"
    }
   ],
@@ -23743,7 +23833,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1697,
+    "linha": 1725,
     "funcao": "_map_details"
    }
   ],
@@ -23762,7 +23852,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1704,
+    "linha": 1732,
     "funcao": "_map_details"
    }
   ],
@@ -23781,7 +23871,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1708,
+    "linha": 1736,
     "funcao": "_map_details"
    }
   ],
@@ -23800,7 +23890,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1717,
+    "linha": 1745,
     "funcao": "_map_details"
    }
   ],
@@ -23819,7 +23909,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1718,
+    "linha": 1746,
     "funcao": "_map_details"
    }
   ],
@@ -23838,7 +23928,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1721,
+    "linha": 1749,
     "funcao": "_map_details"
    }
   ],
@@ -23857,7 +23947,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1724,
+    "linha": 1752,
     "funcao": "_map_details"
    }
   ],
@@ -28626,12 +28716,12 @@
   "usos": [
    {
     "arquivo": "main.gd",
-    "linha": 324,
+    "linha": 338,
     "funcao": "_run_shot"
    }
   ],
   "chamada": "Real.place",
-  "args": "world, keys[gi], base_p + right * (float(gi) - keys.size() * 0.5 + 0.5) * 1.6, 1.2, 0.0",
+  "args": "world, keys[gi], base_p + right * (float(gcol) - gcols * 0.5 + 0.5) * 1.6 + fwd * float(grow) * 1.8, 1.2, 0.0",
   "material": "",
   "em_laco": true,
   "comentario": ""
@@ -28651,6 +28741,63 @@
   ],
   "chamada": "B.label",
   "args": "g, _vip_name(vid), Vector3(0, 2.55, 0), 44, Color(1.0, 0.88, 0.3), Color(0.25, 0.15, 0.02, 1",
+  "material": "",
+  "em_laco": false,
+  "comentario": ""
+ },
+ {
+  "codigo": "PCA-893",
+  "categoria": "PCA",
+  "chave": "world.gd|_bungalow|P.build|1",
+  "nome": "build",
+  "fonte": "world.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 626,
+    "funcao": "_bungalow"
+   }
+  ],
+  "chamada": "P.build",
+  "args": "\"ceiling_fan\"",
+  "material": "",
+  "em_laco": false,
+  "comentario": "o modelo real do ventilador tem pás pretas (ficava um X preto no teto): usa o construtor c"
+ },
+ {
+  "codigo": "PCA-894",
+  "categoria": "PCA",
+  "chave": "world_village.gd|_sand_clutter|Real.place|1",
+  "nome": "place",
+  "fonte": "world_village.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world_village.gd",
+    "linha": 1514,
+    "funcao": "_sand_clutter"
+   }
+  ],
+  "chamada": "Real.place",
+  "args": "self, str(k[0]), Vector3(x, _height(x, z) - 0.01, z), rng.randf_range(float(k[1]), float(k[2])), rng.randf() *",
+  "material": "",
+  "em_laco": false,
+  "comentario": ""
+ },
+ {
+  "codigo": "PCA-895",
+  "categoria": "PCA",
+  "chave": "main.gd|_run_shot|MeshInstance3D.new|1",
+  "nome": "new",
+  "fonte": "main.gd (código)",
+  "usos": [
+   {
+    "arquivo": "main.gd",
+    "linha": 323,
+    "funcao": "_run_shot"
+   }
+  ],
+  "chamada": "MeshInstance3D.new",
+  "args": "",
   "material": "",
   "em_laco": false,
   "comentario": ""
@@ -29399,7 +29546,7 @@
     "funcao": ""
    }
   ],
-  "linhas": 570,
+  "linhas": 573,
   "descricao": ""
  },
  {
@@ -29575,7 +29722,7 @@
     "funcao": ""
    }
   ],
-  "linhas": 657,
+  "linhas": 671,
   "descricao": ""
  },
  {
@@ -29719,7 +29866,7 @@
     "funcao": ""
    }
   ],
-  "linhas": 84,
+  "linhas": 94,
   "descricao": "Carrega modelos REAIS baixados da web (Poly Haven e Kenney, CC0) e posiciona com tamanho certo."
  },
  {
@@ -29799,7 +29946,7 @@
     "funcao": ""
    }
   ],
-  "linhas": 2103,
+  "linhas": 2107,
   "descricao": ""
  },
  {
@@ -29815,7 +29962,7 @@
     "funcao": ""
    }
   ],
-  "linhas": 1725,
+  "linhas": 1753,
   "descricao": ""
  },
  {
@@ -29827,12 +29974,12 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1477,
+    "linha": 1481,
     "funcao": "_vegetation"
    },
    {
     "arquivo": "world.gd",
-    "linha": 1493,
+    "linha": 1497,
     "funcao": "_vegetation"
    }
   ],
@@ -29877,7 +30024,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1579,
+    "linha": 1583,
     "funcao": "_mtn_material"
    }
   ],
@@ -29997,7 +30144,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1740,
+    "linha": 1744,
     "funcao": "_mtn_trees"
    }
   ],
@@ -30287,12 +30434,12 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1580,
+    "linha": 1584,
     "funcao": "_mtn_material"
    },
    {
     "arquivo": "world.gd",
-    "linha": 1581,
+    "linha": 1585,
     "funcao": "_mtn_material"
    }
   ],
@@ -30734,12 +30881,12 @@
    },
    {
     "arquivo": "world.gd",
-    "linha": 1582,
+    "linha": 1586,
     "funcao": "_mtn_material"
    },
    {
     "arquivo": "world.gd",
-    "linha": 1583,
+    "linha": 1587,
     "funcao": "_mtn_material"
    }
   ],
@@ -30790,12 +30937,12 @@
    },
    {
     "arquivo": "world.gd",
-    "linha": 1156,
+    "linha": 1160,
     "funcao": "_beach_props"
    },
    {
     "arquivo": "world.gd",
-    "linha": 1245,
+    "linha": 1249,
     "funcao": "_redes"
    },
    {
