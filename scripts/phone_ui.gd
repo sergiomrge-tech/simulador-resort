@@ -21,6 +21,8 @@ const APPS: = [
 	["bangalos", "Bangalôs", Color(0.2, 0.6, 0.95), "cama"],
 	["equipe", "Equipe", Color(0.6, 0.4, 0.9), "equipe"],
 	["caixa", "Caixa", Color(0.1, 0.65, 0.68), "caixa"],
+	["missoes", "Missões", Color(0.95, 0.55, 0.2), "missao"],
+	["album", "Álbum", Color(0.85, 0.35, 0.6), "gorjeta"],
 ]
 
 var app: = ""
@@ -315,6 +317,10 @@ func refresh() -> void :
 			_app_staff(list)
 		"caixa":
 			_app_ledger(list)
+		"missoes":
+			_app_quests(list)
+		"album":
+			_app_album(list)
 
 func _home() -> void :
 	var m: = MarginContainer.new()
@@ -491,6 +497,55 @@ func _app_menu(list: VBoxContainer) -> void :
 			_btn(pr, "+", func(): Core.set_price_tier(id, t + 1), Color(1.0, 0.55, 0.2), t < Economy.PRICE_TIERS.size() - 1)
 		if ok and not Core.can_make(id):
 			_lbl(c, tr("Sem insumos! Compre no Mercado."), 14, BAD, true)
+
+func _app_quests(list: VBoxContainer) -> void :
+	_lbl(list, tr("Encomendas dos moradores. Aceite com o morador, junte os itens e entregue a ele."), 14, INK_SOFT, false, true)
+	var tips: = _card(list, Color(0.9, 0.97, 1.0, 0.95))
+	_lbl(tips, tr("Dica: pesque no fim do píer e junte cocos caídos sob as palmeiras. Os dois dão insumos de graça."), 14, INK, false, true)
+	for id in Economy.QUESTS:
+		var q: Dictionary = Economy.QUESTS[id]
+		var st: = str(Core.quests.get(id, ""))
+		var avail: = Core.quest_available(id)
+		var c: = _card(list, Color(0.9, 1.0, 0.92, 0.95) if st == "done" else Color(1, 1, 1, 0.94))
+		var r: = _row(c, 10)
+		_badge(r, str(q.need), GOOD if st == "done" else (Color(0.95, 0.55, 0.2) if avail else Color(0.6, 0.6, 0.66)), 40)
+		var v: = VBoxContainer.new()
+		v.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		r.add_child(v)
+		_lbl(v, tr(str(q.title)), 18, INK, true, true)
+		_lbl(v, tr(str(q.desc)), 14, INK_SOFT, false, true)
+		_lbl(c, "%s · %s" % [tr(str(q.giver)), tr(str(q.where))], 13, INK_SOFT, false, true)
+		var r2: = _row(c, 8)
+		_expand(_lbl(r2, tr("Paga %s") % Core.fmt_money(int(q.reward)) + (" + ★" if q.has("rating") else ""), 16, INK, true))
+		if st == "done":
+			_lbl(r2, tr("✓ Entregue"), 16, GOOD, true)
+		elif not avail:
+			_lbl(r2, tr("Compre: %s") % tr(str(Economy.EXPANSIONS[q.req].name)), 13, BAD, true, true)
+		elif st == "":
+			_lbl(r2, tr("Fale com o morador"), 14, INK_SOFT, true)
+		else:
+			var have: = int(Core.stock.get(q.need, 0))
+			_lbl(r2, "%d/%d %s" % [mini(have, int(q.qty)), int(q.qty), tr(str(Economy.SUPPLIES[q.need].name))], 15, GOOD if have >= int(q.qty) else BAD, true)
+
+func _app_album(list: VBoxContainer) -> void :
+	var n: = Core.album.size()
+	var head: = _card(list, Color(1.0, 0.96, 0.8, 0.97))
+	_lbl(head, tr("Clientes famosos: %d/%d") % [n, Economy.VIPS.size()], 20, INK, true)
+	_lbl(head, tr("Sirva um cliente VIP (balão dourado) para colocá-lo no álbum. Cada marco paga um prêmio."), 14, INK_SOFT, false, true)
+	var ms: = _row(head, 8)
+	for k in Economy.ALBUM_REWARDS:
+		var done: = n >= int(k)
+		_chip(ms, "%d: %s" % [int(k), Core.fmt_money(int(Economy.ALBUM_REWARDS[k]))], Color.WHITE if done else INK, GOOD if done else Color(0.9, 0.9, 0.94))
+	for v in Economy.VIPS:
+		var got: bool = Core.album.has(v.id)
+		var c: = _card(list, Color(1, 1, 1, 0.95) if got else Color(0.92, 0.92, 0.95, 0.9))
+		var r: = _row(c, 10)
+		_badge(r, "gorjeta", Color(0.95, 0.7, 0.15) if got else Color(0.65, 0.65, 0.7), 40)
+		var col: = VBoxContainer.new()
+		col.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		r.add_child(col)
+		_lbl(col, str(v.name) if got else "???", 18, INK if got else INK_SOFT, true)
+		_lbl(col, tr(str(v.title)) if got else tr("Ainda não visitou o quiosque"), 14, INK_SOFT, false, true)
 
 func _app_rooms(list: VBoxContainer) -> void :
 	if not Core.has("pousada"):

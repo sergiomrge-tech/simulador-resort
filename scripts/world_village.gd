@@ -18,6 +18,10 @@ var home_wake: = Vector3(HOME_C.x - 0.8, 0.2, HOME_C.z - 0.6)
 var bench_spots: Array = []
 var market: Interactable
 var quest_board: Interactable
+var coco_piles: Array = []
+var coco_spots: Array = []
+var coco_piles_taken: Array = []
+var fish_spot: Interactable
 var VM: = {}
 var _kiosk_board: Node3D
 var _open_sign: Label3D
@@ -396,6 +400,8 @@ func _houses() -> void :
 	mcs.shape = msh
 	market.add_child(mcs)
 	market.position = pc + Vector3(0, 1.1, 4.7)
+	village_points.lourdes = pc + Vector3(1.1, 0.1, 3.7)
+	_quest_giver("frutas_lourdes", "Dona Lourdes", pc + Vector3(1.1, 1.0, 4.1), Vector3(1.0, 1.8, 0.8))
 	market.prompt_fn = func() -> String: return tr("Comprar insumos no mercadinho")
 	market.action_fn = func() -> void : get_tree().call_group("hud", "open_office", "insumos", -1)
 	add_child(market)
@@ -551,6 +557,8 @@ func _church_and_praca() -> void :
 	B.box(self, Vector3(0.8, 0.14, 0.14), tc + Vector3(0, 17.1, 0), B.flat(Color(0.9, 0.85, 0.6), 0.3, 0.7))
 	B.label(self, "Igreja de São Pedro", c + Vector3(0, h - 0.6, - d * 0.5 - 0.1), 60, Color(0.15, 0.3, 0.55), Color(1, 1, 1, 0.9), PI)
 	village_points.church_bell = tc + Vector3(0, 11, 0)
+	village_points.padre = c + Vector3(2.6, 0.1, - d * 0.5 - 2.6)
+	_quest_giver("paes_padre", "Padre Tomé", c + Vector3(2.6, 1.0, - d * 0.5 - 2.3), Vector3(1.0, 1.8, 1.0))
 
 	B.cyl(self, 2.2, 2.3, 0.45, pc + Vector3(0, 0.3, 0), VM.curb, 24)
 	if Quality.hd and B.has_model("island_tree_01"):
@@ -763,27 +771,78 @@ func _barraca() -> void :
 	B.model(self, "plastic_crate_01", c + Vector3(1.8, 0, -1.4), 0.3, 1.0)
 	B.model(self, "plastic_monobloc_chair_01", c + Vector3(2.4, 0, -0.4), 2.5, 1.0)
 	village_points.barraca = c + Vector3(-1.6, 0, -0.6)
-	quest_board = Interactable.new()
-	quest_board.name = "DonaRita"
-	var qcs: = CollisionShape3D.new()
-	var qsh: = BoxShape3D.new()
-	qsh.size = Vector3(1.4, 1.8, 1.2)
-	qcs.shape = qsh
-	quest_board.add_child(qcs)
-	quest_board.position = c + Vector3(-1.6, 1.0, 0.4)
-	quest_board.prompt_fn = func() -> String:
-		var st: = str(Core.quests.get("cocos_rita", ""))
+	quest_board = _quest_giver("cocos_rita", "Dona Rita", c + Vector3(-1.6, 1.0, 0.4), Vector3(1.4, 1.8, 1.2))
+
+
+## Doador de missão da vila: caixa de interação perto do morador. Aceita a encomenda e depois entrega do estoque.
+func _quest_giver(qid: String, who: String, pos: Vector3, size: Vector3) -> Interactable:
+	var qb: = Interactable.new()
+	qb.name = "Quest_" + qid
+	var cs: = CollisionShape3D.new()
+	var sh: = BoxShape3D.new()
+	sh.size = size
+	cs.shape = sh
+	qb.add_child(cs)
+	qb.position = pos
+	qb.prompt_fn = func() -> String:
+		var q: Dictionary = Economy.QUESTS[qid]
+		var st: = str(Core.quests.get(qid, ""))
 		if st == "done":
 			return ""
+		if not Core.quest_available(qid):
+			return tr("%s: sem encomendas ainda (compre %s)") % [tr(who), tr(str(Economy.EXPANSIONS[q.req].name))]
+		var item: = tr(str(Economy.SUPPLIES[q.need].name))
 		if st == "":
-			return tr("Dona Rita: aceitar encomenda de cocos")
-		return tr("Dona Rita: entregar cocos")
-	quest_board.action_fn = func() -> void :
-		if str(Core.quests.get("cocos_rita", "")) == "":
-			Core.accept_quest("cocos_rita")
+			return tr("%s: aceitar \"%s\" (%d × %s)") % [tr(who), tr(str(q.title)), int(q.qty), item]
+		return tr("%s: entregar %d × %s (você tem %d)") % [tr(who), int(q.qty), item, int(Core.stock.get(q.need, 0))]
+	qb.action_fn = func() -> void :
+		if str(Core.quests.get(qid, "")) == "":
+			Core.accept_quest(qid)
 		else:
-			Core.complete_quest("cocos_rita")
-	add_child(quest_board)
+			Core.complete_quest(qid)
+	add_child(qb)
+	return qb
+
+## Cocos caídos junto às palmeiras da praia: rendem cocos grátis uma vez por dia.
+func _coco_piles(spots: Array) -> void :
+	for i in spots.size():
+		var base: Vector3 = spots[i]
+		var pile: = Node3D.new()
+		pile.position = base
+		add_child(pile)
+		var shell: = B.flat(Color(0.42, 0.26, 0.12), 0.7)
+		for k in 4:
+			var a: = TAU * float(k) / 4.0 + float(i)
+			var cs: = B.sphere(pile, 0.17, Vector3(cos(a) * 0.2, 0.15, sin(a) * 0.2), shell, Vector3(1.0, 0.9, 1.0))
+		B.sphere(pile, 0.17, Vector3(0.0, 0.38, 0.0), shell)
+		var ia: = Interactable.new()
+		ia.name = "CocoPile%d" % i
+		var cc: = CollisionShape3D.new()
+		var bs: = BoxShape3D.new()
+		bs.size = Vector3(1.1, 0.9, 1.1)
+		cc.shape = bs
+		ia.add_child(cc)
+		ia.position = Vector3(0, 0.45, 0)
+		pile.add_child(ia)
+		ia.prompt_fn = func() -> String:
+			return tr("Juntar cocos caídos (+%d cocos)") % Economy.COCO_PILE_YIELD
+		ia.action_fn = func() -> void :
+			Core.stock["coco"] = int(Core.stock.get("coco", 0)) + Economy.COCO_PILE_YIELD
+			Core.stock_changed.emit()
+			Core.toast.emit(tr("Você juntou %d cocos caídos.") % Economy.COCO_PILE_YIELD, "good")
+			get_tree().call_group("audio", "sfx", "click", -6.0)
+			pile.visible = false
+			ia.collision_layer = 0
+			coco_piles_taken.append(pile)
+		coco_piles.append(pile)
+
+func reset_coco_piles() -> void :
+	for pile in coco_piles:
+		pile.visible = true
+		for ch in pile.get_children():
+			if ch is Interactable:
+				ch.collision_layer = 2
+	coco_piles_taken.clear()
 
 func _umbrella_hd(p: Vector3, r: float) -> void :
 	_umbrella(p, r)
@@ -1037,9 +1096,12 @@ func _village_palms() -> void :
 		if bad:
 			continue
 		Palm.spawn(self, Vector3(p.x, _height(p.x, p.y) - 0.05, p.y), 3000 + placed)
+		if p.y < 12.0 and p.x < 90.0 and coco_spots.size() < 4:
+			coco_spots.append(Vector3(p.x + 1.15, _height(p.x + 1.15, p.y + 0.6), p.y + 0.6))
 		placed += 1
 
 	Palm.spawn(self, Vector3(33.2, _height(33.2, -9.5) - 0.05, -9.5), 4242)
+	_coco_piles(coco_spots)
 
 func _street_lamps() -> void :
 	var spots: = []
@@ -1393,6 +1455,18 @@ func _village_expansion() -> void :
 	for sx in [-1.0, 1.0]:
 		B.wall(self, Vector3(0.2, 3.0, 28.0), Vector3(PIER_X + sx * 1.35, 1.6, -36.0))
 	B.wall(self, Vector3(5.0, 3.0, 0.2), Vector3(PIER_X, 1.6, -50.7))
+	# pesca no fim do píer (a lógica fica em village_life) e o Seu Zé na cabeceira
+	fish_spot = Interactable.new()
+	fish_spot.name = "Pesca"
+	var fcs: = CollisionShape3D.new()
+	var fsh: = BoxShape3D.new()
+	fsh.size = Vector3(4.0, 1.8, 0.9)
+	fcs.shape = fsh
+	fish_spot.add_child(fcs)
+	fish_spot.position = Vector3(PIER_X, 1.4, -49.3)
+	add_child(fish_spot)
+	village_points.ze = Vector3(PIER_X + 3.0, 0.1, -23.7)
+	_quest_giver("peixe_ze", "Seu Zé", Vector3(PIER_X + 3.0, 1.0, -23.3), Vector3(1.0, 1.8, 1.0))
 	for sx in [-1.0, 1.0]:
 		B.wall(self, Vector3(0.2, 3.0, 3.2), Vector3(PIER_X + sx * 2.5, 1.6, -48.6))
 	_lighthouse = D.lighthouse(self, Vector3(108.0, 0.0, -40.0))

@@ -58,6 +58,7 @@ var weather: = "sun"
 var price_tier: = {}
 var freezer: = false
 var day_event: = ""
+var album: Array = []
 
 var _autosave_t: = 0.0
 var _bar_batch_count: = 0
@@ -93,6 +94,7 @@ func _reset_economy() -> void :
 	price_tier = {}
 	freezer = false
 	day_event = ""
+	album = []
 	_maid_acc = 0.0
 	_helper_acc = 0.0
 	if weather != "sun":
@@ -577,9 +579,25 @@ func buy_freezer() -> bool:
 	stock_changed.emit()
 	return true
 
-## Chamado quando um cliente VIP é atendido (álbum de clientes famosos).
-func vip_served(_id: String) -> void :
-	pass
+## Chamado quando um cliente VIP é atendido: o famoso entra no álbum e os marcos pagam prêmio.
+func vip_served(id: String) -> void :
+	if id == "" or album.has(id):
+		return
+	album.append(id)
+	var nm: = id
+	for v in Economy.VIPS:
+		if v.id == id:
+			nm = str(v.name)
+	toast.emit(tr("Novo no álbum: %s! (%d/%d)") % [nm, album.size(), Economy.VIPS.size()], "good")
+	if Economy.ALBUM_REWARDS.has(album.size()):
+		var r: = int(Economy.ALBUM_REWARDS[album.size()])
+		book(r, tr("Prêmio do álbum: %d famosos") % album.size(), "missao", true)
+
+func quest_available(id: String) -> bool:
+	if not Economy.QUESTS.has(id):
+		return false
+	var req: = str(Economy.QUESTS[id].get("req", ""))
+	return req == "" or has(req)
 
 func sell_dish(id: String, channel: String) -> int:
 	if not Economy.DISHES.has(id):
@@ -680,7 +698,7 @@ func hire(role: String) -> bool:
 	return true
 
 func accept_quest(id: String) -> void :
-	if not Economy.QUESTS.has(id) or str(quests.get(id, "")) != "":
+	if not Economy.QUESTS.has(id) or str(quests.get(id, "")) != "" or not quest_available(id):
 		return
 	quests[id] = "active"
 	toast.emit(tr(str(Economy.QUESTS[id].title)), "info")
@@ -696,6 +714,8 @@ func complete_quest(id: String) -> bool:
 	quests[id] = "done"
 	stock_changed.emit()
 	book(int(q.reward), tr(str(q.title)), "missao", true)
+	if q.has("rating"):
+		add_rating(float(q.rating))
 	return true
 
 func set_weather(kind: String) -> void :
@@ -716,7 +736,7 @@ func save_game() -> void :
 		"stock": stock.duplicate(), "stockouts": stockouts, 
 		"staff": staff.duplicate(), "quests": quests.duplicate(), 
 		"weather": weather, "ledger": ledger_today.duplicate(true), 
-		"ptier": price_tier.duplicate(), "freezer": freezer, "event": day_event, 
+		"ptier": price_tier.duplicate(), "freezer": freezer, "event": day_event, "album": album.duplicate(), 
 		"day_in": day_income, "day_out": day_expense, 
 		"summary": last_summary.duplicate(true), "unlocked": unlocked.duplicate(), 
 		"saved_at": Time.get_datetime_string_from_system(false, true), 
@@ -776,6 +796,8 @@ func load_game() -> bool:
 	price_tier = pt.duplicate() if typeof(pt) == TYPE_DICTIONARY else {}
 	freezer = bool(data.get("freezer", false))
 	day_event = str(data.get("event", ""))
+	var alb = data.get("album", [])
+	album = alb.duplicate() if typeof(alb) == TYPE_ARRAY else []
 	var qs = data.get("quests", {})
 	quests = qs if typeof(qs) == TYPE_DICTIONARY else {}
 	day_income = int(data.get("day_in", 0))

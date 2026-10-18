@@ -102,16 +102,56 @@ const STAFF: = {
 	},
 }
 
+## Missões da vila. "giver"/"where" dizem quem e onde; "req" = expansão necessária; "rating" = voto de nota extra ao concluir.
 const QUESTS: = {
 	"cocos_rita": {
 		"title": "Cocos da Dona Rita", 
 		"desc": "A barraca compra 4 cocos do seu estoque.", 
-		"need": "coco", 
-		"qty": 4, 
-		"reward": 50, 
+		"need": "coco", "qty": 4, "reward": 50, 
+		"giver": "Dona Rita", "where": "Barraca, no fim da praia", "req": "", 
+	}, 
+	"peixe_ze": {
+		"title": "Peixe fresco do Seu Zé", 
+		"desc": "Seu Zé quer 3 peixes para o almoço. Pesque no fim do píer e entregue.", 
+		"need": "peixe", "qty": 3, "reward": 75, 
+		"giver": "Seu Zé", "where": "Início do píer", "req": "", 
+	}, 
+	"paes_padre": {
+		"title": "Quermesse da igreja", 
+		"desc": "Padre Tomé precisa de 6 pães para a festa de São Pedro.", 
+		"need": "pao", "qty": 6, "reward": 90, "rating": 5.0, 
+		"giver": "Padre Tomé", "where": "Em frente à igreja", "req": "kiosk_tables", 
+	}, 
+	"frutas_lourdes": {
+		"title": "Geleia da Dona Lourdes", 
+		"desc": "A padaria quer 8 frutas para a geleia da casa.", 
+		"need": "frutas", "qty": 8, "reward": 85, 
+		"giver": "Dona Lourdes", "where": "Padaria e Mercadinho", "req": "drinks", 
 	}, 
 }
 
+## Clientes famosos do álbum: aparecem como VIP no quiosque. Cada um novo conta para os prêmios do álbum.
+const VIPS: = [
+	{"id": "marcel", "name": "Chef Marcel", "title": "Chef francês em férias"}, 
+	{"id": "luna", "name": "Luna Influencer", "title": "Faz stories de tudo"}, 
+	{"id": "brasa", "name": "Capitão Brasa", "title": "Pirata aposentado"}, 
+	{"id": "cora", "name": "Dra. Cora", "title": "Bióloga marinha"}, 
+	{"id": "djmare", "name": "DJ Maré", "title": "Toca nas festas da praia"}, 
+	{"id": "kai", "name": "Kai Onda", "title": "Campeão de surfe"}, 
+	{"id": "zefa", "name": "Dona Zefa", "title": "Cem anos, ainda dança forró"}, 
+	{"id": "bento", "name": "Mestre Bento", "title": "Capoeirista lendário"}, 
+	{"id": "tiao", "name": "Poeta Tião", "title": "Rima com tudo"}, 
+	{"id": "valentina", "name": "Valentina Cruz", "title": "Atriz de novela"}, 
+	{"id": "mike", "name": "Mike, o turista", "title": "Americano apaixonado por coco"}, 
+	{"id": "prefeito", "name": "Sr. Prefeito", "title": "Veio inspecionar o quiosque"}, 
+]
+## Prêmio (R$) ao chegar a N famosos no álbum.
+const ALBUM_REWARDS: = {3: 100, 6: 250, 9: 500, 12: 1000}
+
+## Pesca no fim do píer e cocos caídos na praia (ingredientes grátis, limitados por dia).
+const FISH_CASTS_PER_DAY: = 6
+const FISH_SECONDS: = 3.2
+const COCO_PILE_YIELD: = 2
 
 const SUPPLIES: = {
 	"coco": {"name": "Coco", "cost": 3}, 

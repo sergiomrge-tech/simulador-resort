@@ -29,6 +29,9 @@ var rush_done: = false
 var rush_left: = 0
 ## Preparo em andamento no balcão: {g, dish, stage, p, away}. Vazio = nada sendo preparado.
 var prep: = {}
+## Pesca no píer: {t} enquanto a linha está na água.
+var fish: = {}
+var fish_casts: = 0
 
 func _ready() -> void :
 	add_to_group("kiosk")
@@ -64,6 +67,24 @@ func _ready() -> void :
 	cart.rotation.y = - PI * 0.5
 	cart.set_colors(Color(0.8, 0.58, 0.42), Color(0.9, 0.9, 0.88), Color(0.15, 0.25, 0.5), Color(0.3, 0.18, 0.08))
 	cart.play("Idle_Loop")
+	# moradores com missão: Seu Zé (píer), Padre Tomé (igreja) e Dona Lourdes (padaria)
+	var ze: = _make()
+	ze.position = world.village_points.ze
+	ze.rotation.y = 0.0
+	ze.set_colors(Color(0.7, 0.5, 0.36), Color(0.95, 0.8, 0.2), Color(0.12, 0.2, 0.42), Color(0.9, 0.9, 0.88))
+	ze.play("Idle_Talking_Loop")
+	var padre: = _make()
+	padre.position = world.village_points.padre
+	padre.rotation.y = PI
+	padre.set_colors(Color(0.78, 0.58, 0.44), Color(0.1, 0.1, 0.12), Color(0.1, 0.1, 0.12), Color(0.75, 0.75, 0.78))
+	padre.play("Idle_Loop")
+	var lourdes: = _make()
+	lourdes.position = world.village_points.lourdes
+	lourdes.rotation.y = 0.0
+	lourdes.set_colors(Color(0.62, 0.42, 0.3), Color(0.95, 0.5, 0.65), Color(0.95, 0.95, 0.92), Color(0.25, 0.15, 0.1))
+	lourdes.play("Idle_Talking_Loop")
+	world.fish_spot.prompt_fn = fish_prompt
+	world.fish_spot.action_fn = fish_action
 	world.kiosk_counter.prompt_fn = kiosk_prompt
 	world.kiosk_counter.action_fn = kiosk_action
 	Core.slept.connect(_on_slept)
@@ -106,6 +127,51 @@ func _process(delta: float) -> void :
 		g.go([_outside_blocks(path[nxt] + jitter)])
 	_kiosk_tick(dmin)
 	_prep_tick(delta)
+	_fish_tick(delta)
+
+func fish_prompt() -> String:
+	if not fish.is_empty():
+		return tr("Pescando...  %s") % _bar(float(fish.t) / Economy.FISH_SECONDS)
+	if fish_casts >= Economy.FISH_CASTS_PER_DAY:
+		return tr("Os peixes cansaram de você por hoje. Volte amanhã.")
+	return tr("Pescar (%d/%d lançamentos hoje)") % [fish_casts, Economy.FISH_CASTS_PER_DAY]
+
+func fish_action() -> void :
+	if not fish.is_empty() or fish_casts >= Economy.FISH_CASTS_PER_DAY:
+		return
+	fish = {"t": 0.0}
+	get_tree().call_group("audio", "sfx", "glass", -10.0, 0.7)
+
+func _fish_tick(delta: float) -> void :
+	if fish.is_empty():
+		return
+	var pl = get_parent().get("player")
+	if pl == null or pl.focus != world.fish_spot:
+		fish = {}
+		return
+	fish.t = float(fish.t) + delta
+	if float(fish.t) >= Economy.FISH_SECONDS:
+		fish = {}
+		fish_catch(randf())
+
+## r < 0,12 bota velha; até 0,65 um peixe; até 0,9 dois; o resto, peixe grande (3).
+func fish_catch(r: float) -> int:
+	fish_casts += 1
+	var n: = 0
+	if r >= 0.9:
+		n = 3
+	elif r >= 0.65:
+		n = 2
+	elif r >= 0.12:
+		n = 1
+	if n == 0:
+		Core.toast.emit(tr("Você pescou uma bota velha. Tente de novo!"), "info")
+		return 0
+	Core.stock["peixe"] = int(Core.stock.get("peixe", 0)) + n
+	Core.stock_changed.emit()
+	Core.toast.emit((tr("Peixe grande! +%d peixes") % n) if n == 3 else (tr("Você pescou +%d peixe") % n if n == 1 else tr("Você pescou +%d peixes") % n), "good")
+	get_tree().call_group("audio", "sfx", "coin", -8.0, 1.2)
+	return n
 
 ## Segurar E no balcão adianta o preparo; se o jogador sai de perto por 2 s, o preparo é perdido.
 func _prep_tick(delta: float) -> void :
@@ -194,6 +260,13 @@ func spawn_customer() -> Node3D:
 	g.set_meta("revenue", 0)
 	if rng.randf() < VIP_CHANCE and Core.stars() >= 3.0:
 		g.set_meta("vip", true)
+		var vid: = _pick_vip()
+		g.set_meta("vip_id", vid)
+		var vl: = B.label(g, _vip_name(vid), Vector3(0, 2.55, 0), 44, Color(1.0, 0.88, 0.3), Color(0.25, 0.15, 0.02, 1))
+		vl.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+		vl.double_sided = true
+		vl.pixel_size = 0.0045
+		vl.no_depth_test = true
 	var route: Array = [] if from_beach else world.village_points.kiosk_approach.slice(1)
 	if from_beach:
 		# contorna o quiosque pela lateral em vez de atravessar o balcão
@@ -302,6 +375,22 @@ func _pick_dish(menu: Array) -> String:
 			return str(menu[i])
 	return str(menu[menu.size() - 1])
 
+## Famoso do dia: 85% de chance de ser alguém que ainda não está no álbum.
+func _pick_vip() -> String:
+	var fresh: Array = []
+	for v in Economy.VIPS:
+		if not Core.album.has(v.id):
+			fresh.append(str(v.id))
+	if not fresh.is_empty() and randf() < 0.85:
+		return fresh[randi() % fresh.size()]
+	return str(Economy.VIPS[randi() % Economy.VIPS.size()].id)
+
+func _vip_name(id: String) -> String:
+	for v in Economy.VIPS:
+		if v.id == id:
+			return str(v.name)
+	return tr("Cliente VIP")
+
 func _items(g) -> Array:
 	return g.get_meta("items", [str(g.get_meta("dish", ""))])
 
@@ -338,6 +427,9 @@ func _next_customer():
 	w.sort_custom( func(a, b): return a.timer < b.timer)
 	return w[0]
 
+func w0_vip(g) -> String:
+	return str(g.get_meta("vip_id", ""))
+
 func _bar(p: float) -> String:
 	var n: = clampi(int(round(p * 8.0)), 0, 8)
 	return "▰".repeat(n) + "▱".repeat(8 - n)
@@ -362,7 +454,7 @@ func kiosk_prompt() -> String:
 	if rem.size() > 1:
 		extra += "  +%d" % (rem.size() - 1)
 	if g.get_meta("vip", false):
-		extra += "  ★ VIP"
+		extra += "  ★ " + _vip_name(str(w0_vip(g)))
 	if combo >= 2:
 		extra += "  ·  Combo x%d" % combo
 	extra += "  ·  " + tr("Meta %d/%d") % [mini(served_today, daily_goal()), daily_goal()]
@@ -503,3 +595,6 @@ func _on_slept(_d: int) -> void :
 	rush_done = false
 	rush_left = 0
 	prep = {}
+	fish = {}
+	fish_casts = 0
+	world.reset_coco_piles()

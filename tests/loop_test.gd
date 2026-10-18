@@ -279,6 +279,29 @@ func run(m) -> void :
 	var m_q: = Core.money
 	check(Core.complete_quest("cocos_rita"), "entregou a encomenda da Dona Rita")
 	check(Core.money == m_q + int(Economy.QUESTS.cocos_rita.reward), "recompensa da missão")
+	# v0.7.5: missões novas, pesca, cocos caídos e álbum
+	var peixe0: int = int(Core.stock.get("peixe", 0))
+	check(main.village.fish_catch(0.95) == 3 and int(Core.stock["peixe"]) == peixe0 + 3, "pesca: peixe grande rende 3")
+	check(main.village.fish_catch(0.05) == 0, "pesca: bota velha não rende nada")
+	Core.accept_quest("peixe_ze")
+	var mz: = Core.money
+	check(Core.complete_quest("peixe_ze") and Core.money == mz + int(Economy.QUESTS.peixe_ze.reward), "entregou o peixe ao Seu Zé")
+	check(main.world.coco_piles.size() >= 1, "cocos caídos na praia: %d montes" % main.world.coco_piles.size())
+	var coco0: int = int(Core.stock.get("coco", 0))
+	for ch in main.world.coco_piles[0].get_children():
+		if ch is Interactable:
+			ch.use()
+	check(int(Core.stock["coco"]) == coco0 + Economy.COCO_PILE_YIELD and not main.world.coco_piles[0].visible, "juntou cocos caídos")
+	main.world.reset_coco_piles()
+	check(main.world.coco_piles[0].visible, "cocos caídos voltam no dia seguinte")
+	Core.album = []
+	var ma: = Core.money
+	Core.vip_served("marcel")
+	Core.vip_served("marcel")
+	Core.vip_served("luna")
+	check(Core.album.size() == 2, "álbum sem repetidos: %d" % Core.album.size())
+	Core.vip_served("brasa")
+	check(Core.album.size() == 3 and Core.money == ma + int(Economy.ALBUM_REWARDS[3]), "prêmio do álbum com 3 famosos")
 	if Core.money < int(Economy.STAFF.camareira.hire):
 		Core.book(int(Economy.STAFF.camareira.hire), "Aporte", "outro", false)
 	check(Core.hire("camareira"), "contratou camareira")
