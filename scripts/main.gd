@@ -284,6 +284,10 @@ func _process(delta: float) -> void :
 
 func _run_shot(n: String) -> void :
 	var s: Array = SHOTS.get(n, SHOTS.entrada)
+	# câmera livre para depuração: --cam=x,y,z,yaw,pitch[,hora]
+	if args.has("cam"):
+		var cv: = str(args.cam).split(",")
+		s = [Vector3(float(cv[0]), float(cv[1]), float(cv[2])), float(cv[3]), float(cv[4]), float(cv[5]) if cv.size() > 5 else 11.0]
 	Core.paused = true
 	Core.minutes = s[3] * 60.0
 	guests.enabled = false

@@ -108,47 +108,60 @@ func _juliet(c: Vector3, front: float, w: float, d: float) -> void :
 		B.box(self, Vector3(0.045, 0.42, 0.045), Vector3(x + sx, 1.34, z), wood)
 	_flower_box(Vector3(x, 1.08, z + front * 0.12), 0.0 if front > 0.0 else PI, Color(0.9, 0.25, 0.45))
 
-func _bougainvillea(p: Vector3, yaw: float) -> void :
+## Primavera (buganvília) plantada num vaso, subindo por uma treliça encostada na parede (v0.7.3).
+## p = chão logo à frente da parede; front = +1/-1 para que lado a parede fica (atrás do vaso).
+func _bougainvillea(p: Vector3, front: float) -> void :
 	var cols: = [Color(0.86, 0.12, 0.42), Color(0.95, 0.42, 0.12), Color(0.62, 0.18, 0.72), Color(0.96, 0.82, 0.88)]
-	for i in 8:
-		var ang: = yaw + float(i) * 0.55
-		var h: = 0.35 + float(i % 4) * 0.28
-		_bloom(p + Vector3(cos(ang) * 0.28, h, sin(ang) * 0.22), ang, cols[i % cols.size()], 1.15 + float(i % 3) * 0.15)
-	for i in 5:
-		var ang2: = yaw + float(i) * 0.9
-		_bloom(p + Vector3(cos(ang2) * 0.18, 0.25 + float(i) * 0.22, sin(ang2) * 0.16), ang2 + 0.4, Color(0.16, 0.42, 0.16), 1.35)
+	var wood: = wood_tint(Color(0.45, 0.28, 0.14))
+	var clay_m: = B.flat(Color(0.82, 0.42, 0.26), 0.8)
+	B.cyl(self, 0.24, 0.18, 0.38, p + Vector3(0, 0.19, 0), clay_m, 24)
+	B.cyl(self, 0.26, 0.26, 0.06, p + Vector3(0, 0.38, 0), B.flat(Color(0.7, 0.34, 0.2), 0.8), 24)
+	B.cyl(self, 0.22, 0.22, 0.02, p + Vector3(0, 0.4, 0), B.flat(Color(0.32, 0.2, 0.12), 0.9), 24)
+	var back: = - front * 0.18
+	for sx in [-0.42, 0.42]:
+		B.box(self, Vector3(0.04, 2.5, 0.04), p + Vector3(sx, 1.25, back), wood)
+	for k in 5:
+		B.box(self, Vector3(0.9, 0.03, 0.03), p + Vector3(0, 0.7 + k * 0.42, back), wood)
+	# galhos subindo do vaso
+	var stem: = B.flat(Color(0.35, 0.22, 0.12), 0.9)
+	for sx in [-0.25, 0.05, 0.3]:
+		var st: = B.cyl(self, 0.022, 0.03, 1.9, p + Vector3(sx * 0.6, 1.3, back * 0.6), stem, 8)
+		st.rotation.z = sx * 0.35
+	var rng: = RandomNumberGenerator.new()
+	rng.seed = int(p.x * 13.0 + p.z * 7.0)
+	for i in 26:
+		var h: = rng.randf_range(0.6, 2.55)
+		var q: = p + Vector3(rng.randf_range(-0.5, 0.5), h, back + rng.randf_range(-0.08, 0.14) * front)
+		if i % 3 == 0:
+			_bloom(q, 0.0, Color(0.2, 0.5, 0.2).lerp(Color(0.32, 0.62, 0.25), rng.randf()), rng.randf_range(0.75, 1.0))
+		else:
+			_bloom(q, 0.0, cols[i % cols.size()], rng.randf_range(0.5, 0.75))
 
 func _finish_blooms() -> void :
 	if _bloom_xf.is_empty():
 		return
-	var quad: = QuadMesh.new()
-	quad.size = Vector2(0.7, 0.85)
-	quad.orientation = PlaneMesh.FACE_Z
+	# v0.7.3: flores em bolinhas 3D (antes eram cartões chapados que pareciam manchas flutuando)
+	var ball: = SphereMesh.new()
+	ball.radius = 0.2
+	ball.height = 0.34
+	ball.radial_segments = 16
+	ball.rings = 8
 	var mm: = MultiMesh.new()
 	mm.transform_format = MultiMesh.TRANSFORM_3D
 	mm.use_colors = true
-	mm.mesh = quad
+	mm.mesh = ball
 	mm.instance_count = _bloom_xf.size()
 	for i in _bloom_xf.size():
 		mm.set_instance_transform(i, _bloom_xf[i])
 		mm.set_instance_color(i, _bloom_col[i])
 	var mi: = MultiMeshInstance3D.new()
 	mi.multimesh = mm
-	var blob: = Image.create(64, 64, false, Image.FORMAT_RGBA8)
-	for y in 64:
-		for x in 64:
-			var dx: = (float(x) - 31.5) / 28.0
-			var dy: = (float(y) - 31.5) / 28.0
-			var r: = sqrt(dx * dx + dy * dy)
-			var a: = clampf(1.0 - smoothstep(0.55, 1.0, r), 0.0, 1.0)
-			blob.set_pixel(x, y, Color(1, 1, 1, a))
 	var mat: = StandardMaterial3D.new()
-	mat.albedo_texture = ImageTexture.create_from_image(blob)
 	mat.vertex_color_use_as_albedo = true
-	mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA_SCISSOR
-	mat.alpha_scissor_threshold = 0.35
-	mat.cull_mode = BaseMaterial3D.CULL_DISABLED
-	mat.roughness = 0.72
+	mat.vertex_color_is_srgb = true
+	mat.diffuse_mode = BaseMaterial3D.DIFFUSE_TOON
+	mat.specular_mode = BaseMaterial3D.SPECULAR_TOON
+	mat.roughness = 0.8
 	mi.material_override = mat
 	mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	add_child(mi)
@@ -289,7 +302,10 @@ func _house_extras(c: Vector3, w: float, d: float, h: float, front: float, col: 
 	# vaso pendurado
 	if rng.randf() < 0.5:
 		var vp: = c + Vector3(w * 0.1 * front, 2.6, front * (d * 0.5 + 0.35))
-		B.cyl(self, 0.005, 0.005, 0.5, vp + Vector3(0, 0.25, 0), B.flat(Color(0.3, 0.25, 0.2)), 4)
+		B.cyl(self, 0.012, 0.012, h - 2.6, vp + Vector3(0, (h - 2.6) * 0.5, 0), B.flat(Color(0.3, 0.25, 0.2)), 8)
+		for sx in [-1.0, 1.0]:
+			var cord: = B.cyl(self, 0.008, 0.008, 0.26, vp + Vector3(sx * 0.07, 0.12, 0), B.flat(Color(0.3, 0.25, 0.2)), 6)
+			cord.rotation.z = sx * 0.5
 		B.cyl(self, 0.14, 0.1, 0.18, vp, B.flat(Color(0.85, 0.45, 0.3), 0.8), 14)
 		for j in 5:
 			var lf: = B.sphere(self, 0.07, vp + Vector3(cos(j) * 0.12, -0.05 - (j % 2) * 0.12, sin(j) * 0.12), B.flat(Color(0.3, 0.72, 0.3)))
@@ -321,7 +337,7 @@ func _house(c: Vector3, w: float, d: float, front: float, col: Color, shutter: C
 		_flower_box(Vector3(win_x, 1.02, c.z + front * (d * 0.5 + 0.2)), 0.0 if front > 0.0 else PI, Color(0.92, 0.28, 0.48).lerp(shutter, 0.35))
 	else:
 		_juliet(c, front, w, d)
-	_bougainvillea(c + Vector3(w * 0.46, 0.15, front * d * 0.28), front * 0.6)
+	_bougainvillea(c + Vector3(w * 0.38 * front, 0.0, front * (d * 0.5 + 0.32)), front)
 	if porch:
 		var pz: = c.z + front * (d * 0.5 + 0.75)
 		B.platform(self, Vector3(w - 0.6, 0.18, 1.5), Vector3(c.x, 0.0, pz), stucco(Color(0.75, 0.42, 0.3)), 0.3)
@@ -406,7 +422,7 @@ func _hero_house() -> void :
 	B.hip_roof(self, Vector3(c.x, y0 + h + 0.05, c.z), w + 1.8, d + 1.8, 2.15, VM.clay, 0.14)
 	_block(c, w, d, 0.38)
 	_occlude(c, w * 0.85, d * 0.85, h * 0.85)
-	_bougainvillea(Vector3(x0 + 0.2, 0.2, zf - 0.4), 0.8)
+	_bougainvillea(Vector3(x0 + 0.75, 0.0, zf + 0.62), 1.0)
 
 	B.box(self, Vector3(1.35, 1.22, 0.04), Vector3(c.x - 1.7, y0 + 1.65, zf), VM.glass)
 	B.box(self, Vector3(2.15, 1.4, 0.04), Vector3(c.x - 1.4, y0 + 1.6, zb), VM.glass)
@@ -421,10 +437,10 @@ func _hero_house() -> void :
 	gothic.scale = Vector3(0.95, 1.0, 0.92)
 	B.model(self, "throw_pillows_01", bc + Vector3(0.05, 0.5, -0.15), 0.0, 0.7)
 	B.model(self, "painted_wooden_nightstand", bc + Vector3(1.15, 0, -0.15), PI * 0.5, 0.95)
-	B.model(self, "vintage_oil_lamp", bc + Vector3(1.15, 0.62, -0.1), 0.4, 0.5)
+	B.model(self, "vintage_oil_lamp", bc + Vector3(1.15, 0.65, -0.27), 0.4, 0.9)
 	B.model(self, "Shelf_01", Vector3(x0 + 0.85, y0, c.z + 0.2), PI * 0.5, 0.9)
 	B.model(self, "hanging_picture_frame_02", Vector3(bc.x, y0 + 1.7, zb + 0.12), 0.0, 0.85)
-	B.model(self, "ceramic_vase_02", bc + Vector3(1.15, 0.62, 0.35), 0.2, 0.65)
+	B.model(self, "ceramic_vase_02", bc + Vector3(1.15, 0.65, 0.02), 0.2, 0.5)
 	bed = Interactable.new()
 	var cs: = CollisionShape3D.new()
 	var sh: = BoxShape3D.new()
@@ -563,10 +579,10 @@ func _quiosque() -> void :
 	B.box(self, Vector3(0.6, ch, 3.4), c + Vector3(-2.0, y0 + ch * 0.5, 0.5), wood, true)
 	B.box(self, Vector3(0.6, ch, 3.4), c + Vector3(2.0, y0 + ch * 0.5, 0.5), wood, true)
 	B.box(self, Vector3(4.9, 0.08, 0.9), c + Vector3(0, y0 + ch + 0.04, 2.0), M.oak)
-	B.model(self, "Shelf_01", c + Vector3(0, y0, -1.85), 0.0, 1.0)
+	_back_bar(c, y0)
 	var cols: = [Color(0.15, 0.45, 0.22), Color(0.85, 0.88, 0.9), Color(0.55, 0.28, 0.1), Color(0.7, 0.1, 0.16)]
 	for i in 8:
-		B.cyl(self, 0.04, 0.045, 0.28, c + Vector3(-1.4 + i * 0.38, y0 + 1.35, -1.9), B.flat(cols[i % 4], 0.15, 0.05), 8)
+		B.cyl(self, 0.04, 0.045, 0.28, c + Vector3(-1.4 + i * 0.38, y0 + 1.35, -1.9), B.flat(cols[i % 4], 0.15, 0.05), 16)
 	_fruit_row(c + Vector3(-1.5, y0 + ch + 0.14, 1.85))
 	var snack_y: = y0 + ch + 0.1
 	_coconut_cup(self, c + Vector3(-0.55, snack_y, 2.22))
@@ -574,9 +590,9 @@ func _quiosque() -> void :
 	var coco: = B.flat(Color(0.42, 0.52, 0.16), 0.6)
 	for k in 5:
 		B.sphere(self, 0.11, c + Vector3(0.35 + (k % 3) * 0.24, y0 + ch + 0.14, 2.05), coco)
-	B.model(self, "wooden_bucket_01", c + Vector3(1.55, y0 + ch + 0.02, 1.9), 0.4, 0.65)
-	_cooler(c + Vector3(2.15, y0, 0.2), 1.2)
-	B.model(self, "plastic_crate_01", c + Vector3(-1.5, y0, -0.4), 0.2, 1.0)
+	B.model(self, "wooden_bucket_01", c + Vector3(1.55, y0 + ch + 0.08, 1.9), 0.4, 0.65)
+	_cooler(c + Vector3(1.3, y0 + 0.028, 0.3), 1.2)
+	B.model(self, "plastic_crate_01", c + Vector3(-1.3, y0 + 0.028, -0.35), 0.2, 1.0)
 	B.box(self, Vector3(3.6, 0.6, 0.08), c + Vector3(0, y0 + 2.5, 2.42), M.planks)
 	B.label(self, "Quiosque Maré Alta", c + Vector3(0, y0 + 2.5, 2.48), 64, Color(1.0, 0.95, 0.8), Color(0.25, 0.12, 0.02, 1.0))
 	_kiosk_board = Node3D.new()
@@ -629,7 +645,8 @@ func _kiosk_table(tp: Vector3, need: String, umb: Color, umbrella: bool) -> void
 	for sx in [-1.0, 1.0]:
 		var seat: = tp + Vector3(sx * 0.85, 0, 0)
 		kiosk_spots.append({"pos": seat + Vector3(0, 0.02, 0), "rot": - sx * PI * 0.5, "busy": false, "need": need, "anim": "Sitting_Idle_Loop", "table": true})
-	_block(tp, 1.2, 0.9, 0.15)
+	# mesa + cadeiras bloqueadas: pedestres contornam o conjunto todo (quem vai sentar entra)
+	_block(tp, 2.5, 1.0, 0.12)
 
 ## Quadro-negro do quiosque: mostra só os pratos liberados.
 func _refresh_kiosk_board() -> void :
@@ -779,14 +796,31 @@ func _bike(p: Vector3, rot: float, col: Color) -> void :
 	var bars: = [[Vector3(0, 0.34, -0.52), Vector3(0, 0.75, 0.3)], [Vector3(0, 0.34, 0.52), Vector3(0, 0.75, 0.3)], 
 		[Vector3(0, 0.34, -0.52), Vector3(0, 0.8, -0.2)], [Vector3(0, 0.8, -0.2), Vector3(0, 0.75, 0.3)], 
 		[Vector3(0, 0.75, 0.3), Vector3(0, 1.0, 0.42)], [Vector3(0, 0.8, -0.2), Vector3(0, 0.92, -0.28)]]
+	# v0.7.3: quadro montado em coordenadas locais (antes as barras iam parar longe e só sobravam as rodas)
 	for b in bars:
-		var a: Vector3 = b[0]
-		var e: Vector3 = b[1]
-		var cyl: = B.cyl(n, 0.022, 0.022, a.distance_to(e), (a + e) * 0.5, frame, 6)
-		cyl.look_at_from_position(cyl.position, e, Vector3.UP if absf((e - a).normalized().dot(Vector3.UP)) < 0.99 else Vector3.RIGHT)
-		cyl.rotate_object_local(Vector3.RIGHT, PI * 0.5)
-	B.box(n, Vector3(0.5, 0.03, 0.03), Vector3(0, 1.0, 0.42), tire)
-	B.box(n, Vector3(0.14, 0.05, 0.24), Vector3(0, 0.95, -0.28), tire)
+		B._beam(n, b[0], b[1], 0.022, frame)
+	var metal: = B.flat(Color(0.75, 0.76, 0.78), 0.3, 0.6)
+	for zz in [-0.52, 0.52]:
+		var hub: = B.cyl(n, 0.035, 0.035, 0.1, Vector3(0, 0.34, zz), metal, 16)
+		hub.rotation.z = PI * 0.5
+		for k in 8:
+			var a: = TAU * k / 8.0
+			B._beam(n, Vector3(0, 0.34, zz), Vector3(0, 0.34 + sin(a) * 0.29, zz + cos(a) * 0.29), 0.004, metal)
+	# guidão, selim, pedivela e pedais, descanso
+	B._beam(n, Vector3(-0.26, 1.0, 0.42), Vector3(0.26, 1.0, 0.42), 0.016, tire)
+	for sx in [-0.27, 0.27]:
+		B._beam(n, Vector3(sx, 1.0, 0.42), Vector3(sx * 1.15, 1.0, 0.36), 0.024, B.flat(Color(0.9, 0.3, 0.25), 0.8))
+	B.sphere(n, 0.1, Vector3(0, 0.96, -0.28), tire, Vector3(0.8, 0.35, 1.4))
+	var crank: = B.cyl(n, 0.09, 0.09, 0.02, Vector3(0.04, 0.36, 0.0), metal, 24)
+	crank.rotation.z = PI * 0.5
+	B._beam(n, Vector3(0.06, 0.36, 0.0), Vector3(0.1, 0.22, 0.08), 0.012, metal)
+	B._beam(n, Vector3(-0.06, 0.36, 0.0), Vector3(-0.1, 0.5, -0.08), 0.012, metal)
+	B.box(n, Vector3(0.1, 0.02, 0.05), Vector3(0.14, 0.22, 0.08), tire)
+	B.box(n, Vector3(0.1, 0.02, 0.05), Vector3(-0.14, 0.5, -0.08), tire)
+	B._beam(n, Vector3(0, 0.34, -0.1), Vector3(0, 0.36, 0.0), 0.012, metal)
+	B._beam(n, Vector3(-0.02, 0.33, -0.15), Vector3(-0.2, 0.0, -0.2), 0.012, metal)
+	# cestinha na frente
+	B.cyl(n, 0.16, 0.13, 0.18, Vector3(0, 0.95, 0.62), B.flat(Color(0.82, 0.62, 0.36), 0.9), 20)
 
 func _jangada2(p: Vector3, rot: float) -> void :
 	var j: = Node3D.new()
@@ -1079,7 +1113,7 @@ func _kiosk_details(c: Vector3, y0: float) -> void :
 	D.bananas(self, c + Vector3(1.75, y0 + 2.35, -1.6))
 	for k in 3:
 		var cc: = c + Vector3(-0.6 + k * 0.6, y0 + 2.45, -2.25)
-		B.cyl(self, 0.008, 0.008, 0.35, cc + Vector3(0, -0.15, 0), D.m(Color(0.5, 0.35, 0.2)), 4)
+		B.cyl(self, 0.014, 0.014, 0.62, cc + Vector3(0, 0.05, 0), D.m(Color(0.45, 0.3, 0.16)), 8)
 		B.sphere(self, 0.13, cc + Vector3(0, -0.4, 0), D.m(Color(0.45, 0.68, 0.22), 0.6), Vector3(1, 1.1, 1))
 	# balcão
 	var top: = c + Vector3(0, y0 + 1.18, 2.0)
@@ -1090,7 +1124,7 @@ func _kiosk_details(c: Vector3, y0: float) -> void :
 	D.blender(self, top + Vector3(-1.2, 0, -0.15))
 	D.pineapple(self, top + Vector3(1.95, 0, -0.1))
 	B.box(self, Vector3(0.14, 0.12, 0.08), top + Vector3(-0.15, 0.06, 0.2), D.m(Color(0.95, 0.95, 0.98)))
-	D.radio(self, c + Vector3(-1.1, y0 + 1.82, -1.9), 0.0)
+	D.radio(self, c + Vector3(-1.1, y0 + 1.79, -1.9), 0.0)
 	# frente do balcão: bambu e cocos cortados
 	for k in 15:
 		B.cyl(self, 0.05, 0.05, 1.0, c + Vector3(-2.2 + k * 0.315, y0 + 0.52, 2.33), D.m(Color(0.9, 0.76, 0.42)), 6)
@@ -1111,9 +1145,7 @@ func _kiosk_details(c: Vector3, y0: float) -> void :
 	for sx in [-1.0, 1.0]:
 		B.box(cart, Vector3(0.05, 0.05, 0.9), Vector3(sx * 0.25, 0.55, -0.75), D.m(Color(0.6, 0.45, 0.3)))
 	D.coconut_pile(cart, Vector3(0, 0.55, 0), 5)
-	D.surfboard(self, c + Vector3(-2.75, 0.05, -2.75), 0.6, Color(1.0, 0.45, 0.35))
-	D.surfboard(self, c + Vector3(-2.35, 0.05, -2.95), 0.9, Color(0.2, 0.75, 0.95), 0.32)
-	D.surfboard(self, c + Vector3(-1.95, 0.05, -3.05), 1.2, Color(1.0, 0.85, 0.25), 0.38)
+	_surf_rack(c + Vector3(-1.2, 0.0, -3.35))
 	D.trash_bin(self, c + Vector3(3.1, 0.05, 2.8))
 	D.trash_bin(self, c + Vector3(3.6, 0.05, 2.8), Color(0.2, 0.55, 0.9))
 	B.model(self, "lifebuoy", c + Vector3(2.48, y0 + 1.8, 2.48), PI * 0.25, 0.8).rotation.x = PI * 0.5
@@ -1126,6 +1158,42 @@ func _kiosk_details(c: Vector3, y0: float) -> void :
 		var plank: = B.box(self, Vector3(1.6, 0.06, 0.4), c + Vector3(rng_off(k) * 0.15, 0.04, 3.6 + k * 0.75), M.deckwood)
 		plank.rotation.y = rng_off(k + 3) * 0.08
 
+## Prateleira de fundo do quiosque (v0.7.3): três tábuas com montantes, onde as garrafas e o rádio apoiam de verdade.
+func _back_bar(c: Vector3, y0: float) -> void :
+	var w: = M.darkwood
+	var z: = c.z - 1.92
+	var yb: = c.y + y0 + 0.028
+	for x in [-1.9, -0.65, 0.65, 1.9]:
+		B.box(self, Vector3(0.07, 1.85, 0.36), Vector3(c.x + x, yb + 0.925, z), w)
+	for top in [0.62, 1.21, 1.79]:
+		B.box(self, Vector3(3.95, 0.05, 0.38), Vector3(c.x, c.y + y0 + top - 0.025, z), M.oak)
+		B.box(self, Vector3(3.95, 0.07, 0.03), Vector3(c.x, c.y + y0 + top - 0.06, z + 0.19), w)
+	B.box(self, Vector3(3.95, 1.85, 0.03), Vector3(c.x, yb + 0.925, z - 0.18), M.planks)
+	# prateleira de baixo: potes, caixas e garrafas grandes
+	var cols: = [Color(1.0, 0.45, 0.35), Color(1.0, 0.82, 0.25), Color(0.1, 0.72, 0.72), Color(0.3, 0.75, 0.3), Color(0.99, 0.94, 0.82)]
+	for i in 9:
+		var px: = -1.7 + i * 0.42
+		if i % 3 == 0:
+			B.box(self, Vector3(0.3, 0.22, 0.24), Vector3(c.x + px, c.y + y0 + 0.73, z), D.m(cols[i % 5]))
+		else:
+			B.cyl(self, 0.08, 0.09, 0.26, Vector3(c.x + px, c.y + y0 + 0.75, z), D.m(cols[i % 5], 0.4), 16)
+			B.cyl(self, 0.085, 0.085, 0.04, Vector3(c.x + px, c.y + y0 + 0.9, z), D.m(cols[(i + 2) % 5].darkened(0.2), 0.4), 16)
+	for i in 6:
+		B.cyl(self, 0.035, 0.04, 0.2, Vector3(c.x - 0.3 + i * 0.13, c.y + y0 + 0.07, z + 0.05), D.m(cols[i % 5], 0.3), 12)
+
+## Suporte de pranchas atrás do quiosque: as pranchas encostam numa trave, nada fica no ar.
+func _surf_rack(p: Vector3) -> void :
+	var w: = M.darkwood
+	B.box(self, Vector3(1.9, 0.12, 0.22), p + Vector3(0, 0.06, 0.05), w)
+	for sx in [-0.95, 0.95]:
+		B.box(self, Vector3(0.09, 1.45, 0.09), p + Vector3(sx, 0.725, -0.32), w)
+		B.box(self, Vector3(0.08, 0.08, 0.5), p + Vector3(sx, 0.08, -0.15), w)
+	B.box(self, Vector3(2.0, 0.09, 0.09), p + Vector3(0, 1.36, -0.32), w)
+	var cols: = [Color(1.0, 0.45, 0.35), Color(0.2, 0.75, 0.95), Color(1.0, 0.85, 0.25)]
+	for k in 3:
+		# base na frente, topo apoiado na trave (inclinação para trás = -X)
+		D.surfboard(self, p + Vector3(-0.6 + k * 0.6, 0.1, 0.1), PI, cols[k], 0.33)
+
 func rng_off(k: int) -> float:
 	return sin(float(k) * 12.9898) * 2.0 - 1.0 if k % 2 == 0 else cos(float(k) * 7.31)
 
@@ -1137,12 +1205,12 @@ func _kiosk_drinks(c: Vector3, y0: float) -> void :
 		B.cyl(self, 0.04, 0.025, 0.1, g + Vector3(0, 0.05, 0), D.m(Color(0.9, 1.0, 0.75, 0.75), 0.1), 10)
 		B.cyl(self, 0.002, 0.002, 0.12, g + Vector3(0.02, 0.14, 0), D.m(Color(0.4, 0.3, 0.2)), 4)
 		B.cyl(self, 0.0, 0.05, 0.03, g + Vector3(0.02, 0.2, 0), D.m(D.FLAG_COLS[k * 2 % D.FLAG_COLS.size()]), 8)
-	var crate_p: = c + Vector3(-1.9, y0, -0.9)
+	var crate_p: = c + Vector3(-1.4, y0 + 0.028, -0.9)
 	B.box(self, Vector3(0.5, 0.25, 0.35), crate_p + Vector3(0, 0.125, 0), D.m(Color(0.85, 0.65, 0.4)))
 	for k in 8:
 		B.sphere(self, 0.04, crate_p + Vector3(-0.18 + (k % 4) * 0.12, 0.27, -0.08 + (k / 4) * 0.14), D.m(Color(0.45, 0.85, 0.25), 0.5))
 	for k in 4:
-		B.cyl(self, 0.045, 0.05, 0.32, c + Vector3(-1.4 + k * 0.2, y0 + 1.3, -1.95), D.m(Color(0.95, 0.95, 0.9, 0.8), 0.15), 8)
+		B.cyl(self, 0.045, 0.05, 0.32, c + Vector3(0.3 + k * 0.2, y0 + 1.95, -1.9), D.m(Color(0.95, 0.95, 0.9, 0.8), 0.15), 16)
 	var sign_p: = c + Vector3(-2.38, y0 + 1.75, 0.9)
 	B.box(self, Vector3(0.06, 0.5, 1.1), sign_p, D.m(Color(0.25, 0.65, 0.35)))
 	var l: = B.label(self, "CAIPIRINHA", sign_p + Vector3(-0.04, 0.08, 0), 40, Color.WHITE, Color(0.1, 0.3, 0.15), - PI * 0.5)
@@ -1173,7 +1241,7 @@ func _road(a: Vector3, b: Vector3) -> void :
 	var horizontal: = absf(b.x - a.x) > absf(b.z - a.z)
 	var L: = a.distance_to(b)
 	_road_n += 1
-	var c: = (a + b) * 0.5 + Vector3(0, 0.006 * _road_n, 0)
+	var c: = (a + b) * 0.5 + Vector3(0, 0.005 * (_road_n % 4), 0)
 	if horizontal:
 		B.box(self, Vector3(L, 0.05, 4.0), Vector3(c.x, 0.02 + c.y, c.z), VM.road)
 		for side in [-1.0, 1.0]:

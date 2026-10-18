@@ -28,6 +28,11 @@ var invert_y: = false
 var language: = "pt"
 var ui_scale: = 1.0
 var keybinds: = {}
+# v0.7.3: upscaler (0 = desligado, 1 = FSR 1, 2 = FSR 2.2) e API gráfica no Windows
+const UPSCALERS: = ["Desligado (nativo)", "AMD FSR 1.0", "AMD FSR 2.2 (tipo DLSS)"]
+const APIS: = ["Vulkan", "DirectX 12"]
+var upscaler: = 2
+var api: = 0
 
 var env: Environment
 var sun: DirectionalLight3D
@@ -72,6 +77,8 @@ func _load() -> void :
 	invert_y = bool(c.get_value("controls", "invert_y", invert_y))
 	language = str(c.get_value("general", "language", language))
 	ui_scale = clampf(float(c.get_value("general", "ui_scale", ui_scale)), 0.75, 1.5)
+	upscaler = clampi(int(c.get_value("video", "upscaler", upscaler)), 0, 2)
+	api = 1 if current_api() == "d3d12" else 0
 	var kb = c.get_value("controls", "keys", {})
 	if typeof(kb) == TYPE_DICTIONARY:
 		keybinds = kb
@@ -84,6 +91,7 @@ func save() -> void :
 	c.set_value("video", "window_mode", window_mode)
 	c.set_value("video", "resolution", resolution)
 	c.set_value("video", "fov", fov)
+	c.set_value("video", "upscaler", upscaler)
 	c.set_value("audio", "master", vol_master)
 	c.set_value("audio", "music", vol_music)
 	c.set_value("audio", "sfx", vol_sfx)
@@ -265,6 +273,27 @@ func set_scale(s: float) -> void :
 	apply()
 	save()
 
+func set_upscaler(u: int) -> void :
+	upscaler = clampi(u, 0, 2)
+	apply()
+	save()
+
+func current_api() -> String:
+	return RenderingServer.get_current_rendering_driver_name()
+
+# A API gráfica só muda ao reiniciar: grava um override.cfg ao lado do .exe
+# (o Godot lê esse arquivo na inicialização; se o DirectX 12 falhar, ele volta ao Vulkan sozinho).
+func set_api(a: int) -> void :
+	api = clampi(a, 0, 1)
+	if OS.has_feature("editor") or OS.get_name() != "Windows":
+		return
+	var path: = OS.get_executable_path().get_base_dir().path_join("override.cfg")
+	var f: = FileAccess.open(path, FileAccess.WRITE)
+	if f == null:
+		return
+	f.store_string("[rendering]\n\nrendering_device/driver.windows=\"%s\"\nrendering_device/fallback_to_vulkan=true\nrendering_device/fallback_to_d3d12=true\n" % ("d3d12" if api == 1 else "vulkan"))
+	f.close()
+
 func set_ui_scale(s: float) -> void :
 	ui_scale = clampf(s, 0.75, 1.5)
 	UiTheme.apply_scale(get_tree(), ui_scale)
@@ -308,8 +337,15 @@ func apply() -> void :
 	vp.msaa_3d = Viewport.MSAA_DISABLED
 	vp.screen_space_aa = Viewport.SCREEN_SPACE_AA_FXAA
 	vp.use_taa = false
-	vp.scaling_3d_mode = Viewport.SCALING_3D_MODE_FSR2 if scale < 0.99 else Viewport.SCALING_3D_MODE_BILINEAR
-	vp.scaling_3d_scale = scale
+	var sc: = scale if upscaler > 0 else 1.0
+	if upscaler == 2 and sc < 0.99:
+		vp.scaling_3d_mode = Viewport.SCALING_3D_MODE_FSR2
+	elif upscaler == 1 and sc < 0.99:
+		vp.scaling_3d_mode = Viewport.SCALING_3D_MODE_FSR
+		vp.fsr_sharpness = 0.3
+	else:
+		vp.scaling_3d_mode = Viewport.SCALING_3D_MODE_BILINEAR
+	vp.scaling_3d_scale = sc
 	vp.mesh_lod_threshold = [2.0, 1.0, 1.0, 0.5][p]
 	vp.positional_shadow_atlas_size = [2048, 2048, 4096, 4096][p]
 

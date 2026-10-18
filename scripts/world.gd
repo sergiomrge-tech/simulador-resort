@@ -197,7 +197,7 @@ func _strip(a: Vector2, b_: Vector2, w: float, m: Material, y: = 0.025) -> void 
 	var d: = b_ - a
 	var mid: = (a + b_) * 0.5
 	_strip_n += 1
-	var mi: = B.box(self, Vector3(w, 0.06, d.length()), Vector3(mid.x, y + 0.008 * _strip_n, mid.y), m)
+	var mi: = B.box(self, Vector3(w, 0.06, d.length()), Vector3(mid.x, y + 0.006 * (_strip_n % 4), mid.y), m)
 	mi.rotation.y = atan2(d.x, d.y)
 
 func _paths() -> void :
@@ -1269,10 +1269,7 @@ func _redes() -> void :
 		var rope: = B.flat(Color(0.75, 0.65, 0.45), 0.9)
 		for e in [[a, fwd], [b_, - fwd]]:
 			var ep: Vector3 = e[0] + Vector3(0, attach_h + 0.15, 0) + e[1] * 0.25
-			var rp: = B.cyl(node, 0.015, 0.015, 0.6, ep + e[1] * 0.25 - Vector3(0, 0.08, 0), rope, 5)
-			rp.rotation = Vector3(0, 0, 0)
-			rp.look_at_from_position(rp.position, ep + e[1] * 0.6 - Vector3(0, 0.2, 0), Vector3.UP)
-			rp.rotate_object_local(Vector3.RIGHT, PI * 0.5)
+			B._beam(node, ep - Vector3(0, 0.02, 0), ep + e[1] * 0.6 - Vector3(0, 0.2, 0), 0.015, rope)
 		node.visible = false
 		rede_nodes.append(node)
 

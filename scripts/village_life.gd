@@ -22,7 +22,7 @@ var kiosk_lost: = 0
 func _ready() -> void :
 	add_to_group("kiosk")
 	rng.seed = 7171
-	var n_walk: = 24 if Quality.hd else 10
+	var n_walk: = 12 if Quality.hd else 5
 	for i in n_walk:
 		var g: = _make()
 		var path: Array = world.village_paths[i % world.village_paths.size()]

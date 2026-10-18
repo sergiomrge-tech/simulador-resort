@@ -389,7 +389,15 @@ func _build_settings() -> Control:
 		_option(r, res, Quality.resolution, func(i): Quality.set_resolution(i))
 		r = _row(vid, "V-Sync")
 		_check(r, Quality.vsync, func(on): Quality.set_vsync(on))
-	r = _row(vid, "Escala 3D (FSR 2)")
+	if not touch:
+		r = _row(vid, "API gráfica (reinicia o jogo)")
+		_option(r, Quality.APIS, Quality.api, func(i): Quality.set_api(i))
+	r = _row(vid, "Upscaling")
+	var ups: = []
+	for n in Quality.UPSCALERS:
+		ups.append(tr(n))
+	_option(r, ups, Quality.upscaler, func(i): Quality.set_upscaler(i))
+	r = _row(vid, "Escala 3D (resolução interna)")
 	_slider(r, 50, 100, 5, Quality.scale * 100.0, func(v): Quality.set_scale(v / 100.0), func(v): return "%d%%" % int(v))
 	r = _row(vid, "Escala da interface")
 	_slider(r, 75, 150, 5, Quality.ui_scale * 100.0, func(v): Quality.set_ui_scale(v / 100.0), func(v): return "%d%%" % int(v))

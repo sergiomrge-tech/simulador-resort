@@ -35,9 +35,12 @@ void fragment() {
 	float u = lin_depth(uv - vec2(0.0, px.y), INV_PROJECTION_MATRIX);
 	float d = lin_depth(uv + vec2(0.0, px.y), INV_PROJECTION_MATRIX);
 	float near_d = min(c, min(min(l, r), min(u, d)));
-	// diferença relativa: igual perto e longe; segunda derivada ignora pisos inclinados
-	float dd = abs(l + r - 2.0 * c) + abs(u + d - 2.0 * c);
-	float e_depth = smoothstep(depth_sensitivity, depth_sensitivity * 2.0, dd / max(near_d, 0.1));
+	// v0.7.3: segunda derivada do INVERSO da profundidade. Em perspectiva, 1/z varia de forma linear
+	// na tela sobre qualquer plano, então pisos e paredes vistos de lado não geram mais linhas tracejadas
+	// (antes o chão "tremia" ao andar); só quinas e silhuetas de verdade passam.
+	float ic = 1.0 / max(c, 0.05);
+	float dd = abs(1.0 / max(l, 0.05) + 1.0 / max(r, 0.05) - 2.0 * ic) + abs(1.0 / max(u, 0.05) + 1.0 / max(d, 0.05) - 2.0 * ic);
+	float e_depth = smoothstep(depth_sensitivity, depth_sensitivity * 2.0, dd / ic);
 
 	vec3 n = view_normal(uv);
 	float nd = 0.0;

@@ -690,10 +690,15 @@ func _slide_out_of_blocks(from: Vector3, to: Vector3) -> Vector3:
 	if block_rects.is_empty():
 		return to
 	var p: = to
+	# o bloco que contém o destino final (ex.: a mesa onde o cliente vai sentar) não barra a chegada
+	var dest: Vector2 = Vector2(INF, INF)
+	if not _route.is_empty():
+		var last: Vector3 = _route[_route.size() - 1]
+		dest = Vector2(last.x, last.z)
 	for _pass in 2:
 		for r in block_rects:
 			var rect: Rect2 = r
-			if not rect.has_point(Vector2(p.x, p.z)):
+			if not rect.has_point(Vector2(p.x, p.z)) or rect.has_point(dest):
 				continue
 			var dl: = p.x - rect.position.x
 			var dr: = rect.end.x - p.x
@@ -810,9 +815,9 @@ func _caricature(rng: RandomNumberGenerator) -> void :
 	_people_details(rng, roll < 0.62)
 	if roll < 0.3:
 		var straw: = B.flat(Color(0.98, 0.84, 0.45), 0.9)
-		B.cyl(_face, 0.24, 0.24, 0.018, Vector3(0, 0.215, 0.0), straw, 18)
-		B.cyl(_face, 0.11, 0.125, 0.11, Vector3(0, 0.27, -0.005), straw, 14)
-		B.cyl(_face, 0.127, 0.127, 0.028, Vector3(0, 0.235, -0.005), B.flat([Color(0.9, 0.25, 0.25), Color(0.15, 0.55, 0.75), Color(0.2, 0.2, 0.25)][rng.randi() % 3], 0.6), 14)
+		B.cyl(_face, 0.24, 0.24, 0.018, Vector3(0, 0.245, -0.01), straw, 32)
+		B.cyl(_face, 0.11, 0.125, 0.11, Vector3(0, 0.3, -0.015), straw, 24)
+		B.cyl(_face, 0.127, 0.127, 0.028, Vector3(0, 0.265, -0.015), B.flat([Color(0.9, 0.25, 0.25), Color(0.15, 0.55, 0.75), Color(0.2, 0.2, 0.25)][rng.randi() % 3], 0.6), 24)
 	elif roll < 0.52:
 		var cap_c: Color = [Color(1.0, 0.4, 0.3), Color(0.2, 0.6, 1.0), Color(1.0, 0.85, 0.2), Color(0.3, 0.8, 0.45)][rng.randi() % 4]
 		B.sphere(_face, 0.125, Vector3(0, 0.2, -0.005), B.flat(cap_c, 0.7), Vector3(1.0, 0.62, 1.05))
@@ -820,7 +825,7 @@ func _caricature(rng: RandomNumberGenerator) -> void :
 		visor.rotation.x = 0.12
 	elif roll < 0.62:
 		var bucket: Color = [Color(0.95, 0.95, 0.9), Color(0.55, 0.8, 0.95)][rng.randi() % 2]
-		B.cyl(_face, 0.115, 0.17, 0.1, Vector3(0, 0.235, -0.005), B.flat(bucket, 0.8), 14)
+		B.cyl(_face, 0.115, 0.17, 0.1, Vector3(0, 0.235, -0.005), B.flat(bucket, 0.8), 24)
 	elif roll < 0.7:
 		var flower: = B.sphere(_face, 0.035, Vector3(0.1, 0.19, 0.03), B.flat(Color(1.0, 0.4, 0.65), 0.6))
 		B.sphere(_face, 0.014, flower.position + Vector3(0.012, 0.0, 0.022), B.flat(Color(1.0, 0.9, 0.3), 0.6))
