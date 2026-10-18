@@ -1493,7 +1493,7 @@ func _sand_clutter(rng: RandomNumberGenerator) -> void :
 	var kinds: = [
 		["q:Pebble_Round_1", 0.12, 0.26], ["q:Pebble_Round_3", 0.1, 0.22], ["q:Pebble_Square_2", 0.12, 0.24],
 		["lambis_shell", 0.1, 0.2], ["q:Grass_Wispy_Short", 0.3, 0.5], ["q:Grass_Common_Short", 0.25, 0.4],
-		["q:Clover_1", 0.12, 0.2], ["q:Flower_3_Group", 0.25, 0.4], ["q:Flower_4_Group", 0.25, 0.4],
+		["q:Flower_3_Group", 0.25, 0.4], ["q:Flower_4_Group", 0.25, 0.4],
 		["periwinkle_plant", 0.25, 0.4], ["fern_02", 0.3, 0.5],
 	]
 	var placed: = 0
