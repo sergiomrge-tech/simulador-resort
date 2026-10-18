@@ -71,6 +71,11 @@ static func clothes(female: bool, mi: MeshInstance3D, skel: Skeleton3D) -> Dicti
 	var bones: PackedInt32Array = arrays[Mesh.ARRAY_BONES] if arrays[Mesh.ARRAY_BONES] != null else PackedInt32Array()
 	var weights: PackedFloat32Array = arrays[Mesh.ARRAY_WEIGHTS] if arrays[Mesh.ARRAY_WEIGHTS] != null else PackedFloat32Array()
 	var out: = {}
+	var hem_shirt: = 0.96 if female else 0.98
+	var neck_y: = 1.45 if female else 1.48
+	var sleeve_x: = 0.34 if female else 0.4
+	var hem_shorts: = 0.64 if female else 0.66
+	var waist_y: = 1.02 if female else 1.04
 	if verts.is_empty() or bones.is_empty() or idx.is_empty():
 		_clothes[key] = out
 		return out
@@ -116,7 +121,16 @@ static func clothes(female: bool, mi: MeshInstance3D, skel: Skeleton3D) -> Dicti
 			var b: = idx[t + 1]
 			var c: = idx[t + 2]
 			t += 3
-			if sel[a] < 0.3 or sel[b] < 0.3 or sel[c] < 0.3:
+			# bainha reta: corta por altura (e pelo comprimento da manga) em vez de seguir os pesos dos ossos
+			var cut_ok: = true
+			for vi in [a, b, c]:
+				var pv: Vector3 = verts[vi]
+				if zone < 1.5:
+					if pv.y < hem_shirt or pv.y > neck_y + minf(0.12, maxf(0.0, (absf(pv.x) - 0.1) * 1.1)) or absf(pv.x) > sleeve_x:
+						cut_ok = false
+				elif pv.y < hem_shorts or pv.y > waist_y:
+					cut_ok = false
+			if not cut_ok:
 				continue
 			for vi in [a, b, c]:
 				if not remap.has(vi):

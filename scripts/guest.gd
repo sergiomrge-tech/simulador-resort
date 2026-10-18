@@ -879,7 +879,7 @@ func _finish_look(rng: RandomNumberGenerator) -> void :
 		var w: = rng.randf_range(0.86, 1.0)
 		_model.scale = Vector3(w * lerpf(1.0, h, 0.5), h, w * lerpf(1.0, h, 0.5))
 
-const HAT_Y: = 0.165
+const HAT_Y: = 0.14
 
 
 # ------------------------------------------------------------------ v0.7.1: cardápio e balão de pedido

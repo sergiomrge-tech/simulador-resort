@@ -49,6 +49,14 @@ Base de trabalho: v0.6.5 recuperada; versões atuais em `project.godot` / `expor
 - Bloqueios (`block_rects`) cobrem mesa **e** cadeiras. O bloco que contém o destino final do NPC não barra a chegada dele (`_slide_out_of_blocks`).
 - **Blender (bpy 5.x):** não use `bpy.ops.object.modifier_move_up` em script (laço infinito). Use `obj.modifiers.move(i, 0)`. Nunca chame um script de `inspect.py` (conflita com o módulo padrão do Python).
 
+### Pessoas v0.7.3 (corpo real, CC0)
+- Corpo, rosto e cabelo: `assets/models/ubc/` (Quaternius Universal Base Characters, gratuito, CC0). Código em `scripts/people.gd` (classe `Ppl`).
+- O esqueleto é o mesmo UAL de 65 ossos do `guest.glb`; as animações vêm de lá (o AnimationPlayer é enxertado no corpo novo).
+- Camisa e bermuda são **geradas** a partir da malha do corpo, empurradas para fora, cortadas por altura (bainha reta) e posição (manga). Cortar por peso de osso deixa a bainha serrilhada.
+- O osso `Head` fica em y ≈ 1,60 (homem) e 1,55 (mulher); olhos 0,09 acima. Chapéu: `HAT_Y` = 0,14 em `guest.gd`.
+- O pacote gratuito só tem corpos "Superhero" (musculosos): use escala X/Z de 0,86–1,0 para variar o porte.
+- Download do itch.io pelo shell: GET na página, POST `/download_url` com `csrf_token`, abrir a URL devolvida, depois POST `/file/<id>?source=view_game&as_props=1&after_download_lightbox=true` (a URL assinada dura 60 s). Kenney, ambientCG e Poly Haven respondem direto do shell.
+
 ## 🖥️ Sala do Vídeo
 - DirectX 12: opção "API gráfica" grava um `override.cfg` ao lado do .exe (com volta automática para o Vulkan).
 - DLSS **não existe na Godot**. O upscaler é o FSR 2.2 / FSR 1, na opção "Upscaling" + "Escala 3D".
