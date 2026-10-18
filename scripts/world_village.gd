@@ -917,7 +917,7 @@ func _fishing_boat(p: Vector3, rot: float, paint: Color) -> void :
 	j.rotation.y = rot
 	add_child(j)
 	# casco real (Kenney Pirate Kit, CC0, suavizado no Blender); pintado com a cor do barco
-	var hull: = Real.place(j, "k:boat-row-large", Vector3(0, 0.0, 0), 0.0, 0.0, paint.lerp(Color.WHITE, 0.45), 4.6)
+	var hull: = Real.place(j, "k:boat-row-large", Vector3(0, 0.0, 0), 0.0, 0.0, paint.lerp(Color.WHITE, 0.12), 4.6)
 	if hull != null:
 		hull.rotation.y = 0.0
 	B.model(j, "wooden_crate_01", Vector3(-0.15, 0.48, 1.15), 0.2, 0.55)
