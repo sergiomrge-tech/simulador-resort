@@ -114,3 +114,10 @@ Base de trabalho: v0.6.5 recuperada; versões atuais em `project.godot` / `expor
 - `--lineup=x,z` (depuração) põe 8 pessoas em fila e uma sentada num banco, para olhar calçados e roupas de perto. Na câmera `--cam`, pitch **negativo olha para baixo**.
 - Pessoas usam calçados gerados do pé da malha (`Ppl.clothes`: "shoes" = tênis, "sandals" = sandália com tira; zonas 4/5 no `guest.gdshader`). Nada de NPC descalço.
 - Gaivota: o `join` herdava a rotação do corpo e ela ficava em pé ("garrafa"); aplique a rotação (`transform_apply`) antes do `join`.
+
+## 🩹 Sala do Patch — atualizar sem reinstalar (v0.9.3)
+- O Sergio já tem o jogo instalado: entregue **patch**, não o instalador de 1,3 GB. `bash tools/build_patch.sh <commit da versão instalada>` (0.9.2 = `477454d`) gera `build/patch/patch_<VER>.pck` só com os arquivos mudados e `/home/claude/inst/patch/Atualizar_MareAltaResort_v<VER>.exe` (~25 MB).
+- Como funciona: o instalador do patch copia `patch_<VER>.pck` + `installer/patch_loader.gd` e grava no `override.cfg` `[autoload] Patch="*D:/.../patch_loader.gd"`; o carregador monta todos os `patch_*.pck` (em ordem) por cima do pacote principal. Patches seguintes só acrescentam outro `patch_*.pck`.
+- **Regra:** script novo **não** pode usar `class_name` novo (o cache de classes vem do pacote base): carregue por caminho (`load("res://scripts/x.gd").new()`). Autoloads (Core, Quality) não são atualizados pelo patch na sessão (já instanciados antes do carregador).
+- Teste do patch no Linux: copiar o binário da Godot como `MareAltaResort` ao lado de um `.pck` base + patch + `override.cfg`, rodar um `--shot` e procurar `[patch] ... ok` no log.
+- `pkill -f`/`pgrep -f` com texto que aparece no próprio comando mata o shell (aconteceu de novo com "build_release" e "dbg.sh"): use `ps aux | grep "[g]odot/godot" | awk '{print $2}' | xargs kill`.

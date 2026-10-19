@@ -288,11 +288,13 @@ func set_api(a: int) -> void :
 	if OS.has_feature("editor") or OS.get_name() != "Windows":
 		return
 	var path: = OS.get_executable_path().get_base_dir().path_join("override.cfg")
-	var f: = FileAccess.open(path, FileAccess.WRITE)
-	if f == null:
-		return
-	f.store_string("[rendering]\n\nrendering_device/driver.windows=\"%s\"\nrendering_device/fallback_to_vulkan=true\nrendering_device/fallback_to_d3d12=true\n" % ("d3d12" if api == 1 else "vulkan"))
-	f.close()
+	# v0.9.3: mescla em vez de sobrescrever (o override.cfg também guarda o carregador de patches)
+	var cf: = ConfigFile.new()
+	cf.load(path)
+	cf.set_value("rendering", "rendering_device/driver.windows", "d3d12" if api == 1 else "vulkan")
+	cf.set_value("rendering", "rendering_device/fallback_to_vulkan", true)
+	cf.set_value("rendering", "rendering_device/fallback_to_d3d12", true)
+	cf.save(path)
 
 func set_ui_scale(s: float) -> void :
 	ui_scale = clampf(s, 0.75, 1.5)
