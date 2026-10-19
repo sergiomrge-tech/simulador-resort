@@ -250,7 +250,7 @@ def animals_gen():
         z = zipfile.ZipFile(io.BytesIO(get("https://opengameart.org/sites/default/files/crab_0.zip")))
         z.extractall(tmp)
         subprocess.check_call([sys.executable, os.path.join(ROOT, "tools", "convert_crab.py"), os.path.join(tmp, "crab", "crab.blend"), f"{gen}/crab.glb"])
- 
+
 def generated_props():
     """Reconstrói todos os grupos Blender/bpy necessários após clone limpo.
 
@@ -274,6 +274,9 @@ def generated_props():
         if FORCE or missing:
             print("gerando modelos Blender:", script, "(faltando:", ", ".join(missing) or "force", ")")
             subprocess.check_call([sys.executable, os.path.join(ROOT, "tools", script)], cwd=ROOT)
+        still_missing = [name for name in expected if not os.path.isfile(os.path.join(gen, name + ".glb"))]
+        if still_missing:
+            raise RuntimeError("%s não gerou: %s" % (script, ", ".join(still_missing)))
 
 
 def ambientcg(asset, name):
