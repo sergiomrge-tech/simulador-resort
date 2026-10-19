@@ -133,3 +133,4 @@ Base de trabalho: v0.6.5 recuperada; versões atuais em `project.godot` / `expor
 - Janelas acendem em 3 horários (`VM.glass`, `glass_b`, `glass_c`); moradores vão até a porta (`house_doors`) às 21h30; facho do farol com `shaders/light_beam.gdshader`.
 - O carregador do patch grava `diagnostico.txt` (placa, API, renderizador, FPS) na pasta do jogo.
 - Política de instalador: patches pequenos para quem já tem o jogo; instalador completo consolidado a cada ~5 versões (próximo na 0.9.7 ou quando pedirem).
+- Pacote cumulativo: `bash tools/build_patch.sh 477454d` (base 0.9.2) gera um patch único com tudo; renomeie para `Atualizar_MareAltaResort_0.9.2_para_X_completo.exe` e deixe só ele em `patches/`.
