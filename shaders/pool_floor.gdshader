@@ -25,7 +25,8 @@ void fragment(){
 	NORMAL_MAP = texture(normal_tex, uv * tile).rgb;
 	ROUGHNESS = 0.25;
 	vec2 cuv = wpos.xz * 1.6 + vec2(wpos.y * 0.3);
-	float c = pow(1.0 - voronoi(cuv, TIME * 1.1), 6.0) + pow(1.0 - voronoi(cuv * 1.3 + 3.1, TIME * 0.8), 6.0) * 0.7;
+	// max(...,0): pow() de base negativa é indefinido (NaN) e aparecia como manchas pretas no fundo
+	float c = pow(max(1.0 - voronoi(cuv, TIME * 1.1), 0.0), 6.0) + pow(max(1.0 - voronoi(cuv * 1.3 + 3.1, TIME * 0.8), 0.0), 6.0) * 0.7;
 	float depth_fade = clamp(-wpos.y / 1.4, 0.2, 1.0);
 	EMISSION = vec3(0.85, 1.0, 1.0) * c * caustic_strength * day * depth_fade * 0.35;
 }

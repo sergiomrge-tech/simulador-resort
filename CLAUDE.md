@@ -102,4 +102,5 @@ Base de trabalho: v0.6.5 recuperada; versões atuais em `project.godot` / `expor
 - Luzes: superfícies de modelo com material chamado `glow*` recebem o material ligado/desligado à noite via `Real.place_glow(...)` (lâmpadas `g:lamp_globe`/`g:lamp_bulb`, `g:flame`, `g:fresnel_lens`, `g:pool_light`, janelas/portas `g:win_frame`/`g:door_frame` com `VM.glass`).
 - Janelas e portas da vila: `g:win_frame` + `g:win_shutters` (tingidas), `g:door_frame` + `g:door_leaf`; sino da igreja `g:bell`; maçanetas `g:brass_knob`; algas `g:alga`; fumaça = sprite Kenney (`tools/fetch_assets.py` -> `assets/tex/smoke_puff.png`).
 - Metal no glTF vira preto no toon: use `metallic` 0 em material novo que precisa aparecer claro (aço da luz da piscina).
+- **Erro (v0.9.2):** manchas pretas no fundo da piscina = `pow()` de base negativa (`1.0 - voronoi(...)`) no `pool_floor.gdshader` gerava NaN. **Regra:** em shader, `pow(max(x, 0.0), n)` sempre. Ao ver um defeito visual, ache a causa e corrija na hora, sem só avisar (pedido do Sergio, 18/10/2026).
 
