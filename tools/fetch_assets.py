@@ -332,12 +332,18 @@ def universal_base_characters():
                 dest = os.path.normpath(os.path.join(out, *normalized.split("/")))
                 if not dest.startswith(os.path.abspath(out) + os.sep):
                     raise RuntimeError("UBC: destino inseguro: " + rel)
+                # Texturas PNG da UBC estão preservadas no repositório.
+                # A versão atual do ZIP usa nomes ligeiramente diferentes,
+                # então a dependência já existente não precisa ser baixada.
+                if os.path.isfile(dest) and not FORCE:
+                    continue
                 if source not in names:
+                    if os.path.isfile(dest):
+                        continue
                     raise RuntimeError("UBC: dependencia ausente: " + source)
                 os.makedirs(os.path.dirname(dest), exist_ok=True)
-                if FORCE or not os.path.isfile(dest):
-                    with open(dest, "wb") as f:
-                        f.write(z.read(source))
+                with open(dest, "wb") as f:
+                    f.write(z.read(source))
     print("ubc ok", len(wanted))
 
 
