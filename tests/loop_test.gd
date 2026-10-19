@@ -289,6 +289,7 @@ func v1_test() -> void :
 	P.toggle_off("atendente")
 	check(P.staff_eff("atendente") == 0.0, "atendente de folga não trabalha")
 	P.toggle_off("atendente")
+	P.roll_week()
 	check(P.week_goals.size() == 3, "3 metas da semana")
 	for c in PD.CHAPTERS:
 		P.chapters[str(c.id)] = 3
@@ -312,6 +313,7 @@ func v1_test() -> void :
 	# volta ao estado anterior para o resto do teste (sem receita secreta nem melhorias que mudam os tempos)
 	P.discovered.clear()
 	P.tree.clear()
+	P.week_goals.clear()
 	Core.staff["atendente"] = att0
 	Core.money = money0
 
@@ -330,6 +332,7 @@ func run(m) -> void :
 	check(Core.minutes == Core.WAKE_MIN, "novo jogo começa às 06:30")
 	check(main.player.global_position.distance_to(main.world.home_wake) < 1.5, "herói acorda em casa")
 	await career_test()
+	Core.prog.week_goals.clear()   # v1.0: metas da semana pagariam no meio das contas exatas do teste (o v1_test sorteia de novo)
 	var g = main.guests
 	g.enabled = false
 	main.village.enabled = false
@@ -424,9 +427,10 @@ func run(m) -> void :
 	# v0.7.5: preço ajustável, estoque que estraga, freezer e eventos do dia
 	var base_p: = int(Economy.dish("coco_gelado").price)
 	check(Core.price_of("coco_gelado") == base_p, "preço padrão do coco: %d" % base_p)
+	var dem0: = Core.demand_factor()   # v1.0: temporada e fama também multiplicam; compara com o preço padrão
 	Core.set_price_tier("coco_gelado", 4)
 	check(Core.price_of("coco_gelado") == int(round(base_p * 1.5)), "preço ×1,5 do coco: %d" % Core.price_of("coco_gelado"))
-	check(Core.demand_factor() < 1.0, "preço alto reduz a demanda: %.2f" % Core.demand_factor())
+	check(Core.demand_factor() < dem0, "preço alto reduz a demanda: %.2f < %.2f" % [Core.demand_factor(), dem0])
 	Core.set_price_tier("coco_gelado", 0)
 	check(Core.demand_factor() > 1.0 and Core.price_rating_adjust() >= 0.0, "preço baixo atrai mais clientes: %.2f" % Core.demand_factor())
 	Core.set_price_tier("coco_gelado", 2)
@@ -444,7 +448,7 @@ func run(m) -> void :
 	var ev_seen: = {}
 	var d0: = Core.day
 	Core.day = 5
-	for i in 60:
+	for i in 300:   # v1.0: no verão a tempestade é mais rara (temporadas), então sorteia mais vezes
 		Core.roll_day_event()
 		ev_seen[Core.day_event] = true
 	Core.day = d0
@@ -527,6 +531,7 @@ func run(m) -> void :
 	main.world.reset_coco_piles()
 	check(main.world.coco_piles[0].visible, "cocos caídos voltam no dia seguinte")
 	Core.album = []
+	Core.prog.week_goals.clear()   # v1.0: a meta "receber VIP" também pagaria e mudaria a conta
 	var ma: = Core.money
 	Core.vip_served("marcel")
 	Core.vip_served("marcel")

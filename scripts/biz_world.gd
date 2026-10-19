@@ -51,9 +51,9 @@ func _build(id: String) -> Node3D:
 		"aluguel":
 			Real.place(root, "g:biz_booth", Vector3.ZERO, -1.0, 0.0, Color.WHITE, 0.0, false)
 			Real.tint_named(root, tint)
-			Real.place(root, "g:biz_kayak_rack", Vector3(3.4, 0, 0.3), -1.0, PI * 0.5)
-			Real.place(root, "g:biz_board_rack", Vector3(-3.1, 0, 0.4), -1.0, PI * 0.5)
-			_boards(root, Vector3(-3.1, 0, 0.4), PI * 0.5)
+			Real.place(root, "g:biz_kayak_rack", Vector3(0.0, 0, -2.5), -1.0, 0.0)
+			Real.place(root, "g:biz_board_rack", Vector3(2.9, 0, 0.3), -1.0, PI * 0.5)
+			_boards(root, Vector3(2.9, 0, 0.3), PI * 0.5)
 			Real.place(root, "g:cooler_box", Vector3(1.0, 1.07, 0.55), -1.0, 0.2)
 		"surfe":
 			Real.place(root, "g:biz_canopy", Vector3.ZERO, -1.0, 0.0, Color.WHITE, 0.0, false)
@@ -63,18 +63,15 @@ func _build(id: String) -> Node3D:
 			# pranchas deitadas na areia para a aula
 			for k in 4:
 				var piv: = Node3D.new()
-				piv.position = Vector3(-3.5 + k * 2.3, 0.04, 4.0)
+				piv.position = Vector3(-4.8 + k * 2.0, 0.04, 4.0)
 				root.add_child(piv)
-				var h: = Real.place(piv, "g:surfboard", Vector3.ZERO, 0.0, 0.0, [Color(1, 0.5, 0.3), Color(0.3, 0.7, 1), Color(1, 0.85, 0.3), Color(0.5, 0.9, 0.5)][k], 2.0)
-				if h:
-					h.rotation = Vector3(0, 0, PI * 0.5)
+				Real.place(piv, "g:surfboard", Vector3.ZERO, 0.0, 0.0, [Color(1, 0.5, 0.3), Color(0.3, 0.7, 1), Color(1, 0.85, 0.3), Color(0.5, 0.9, 0.5)][k], 2.0)
 			counter = Vector3(0, 0, 1.4)
 			sign_pos = Vector3(0, 2.75, 1.55)
 		"food_truck":
 			Real.place(root, "g:biz_food_truck", Vector3.ZERO, -1.0, 0.0, Color.WHITE, 0.0, false)
 			Real.tint_named(root, tint)
-			B_.model(root, "outdoor_table_chair_set_01", Vector3(-2.6, 0, 3.6), 0.3, 1.0)
-			B_.model(root, "outdoor_table_chair_set_01", Vector3(1.6, 0, 3.9), -0.2, 1.0)
+			# estacionado na rua principal, janela virada para a calçada (+Z)
 			counter = Vector3(-0.8, 0, 1.9)
 			sign_pos = Vector3(-0.3, 3.15, 0.0)
 		"souvenir":

@@ -112,6 +112,7 @@ func _ready() -> void :
 		for id in PD.BUSINESSES:
 			Core.prog.biz[id] = {"lvl": 1, "games_hour": -1, "today": 0}
 		Core.prog.add_fame(3300)
+		Core.reset_rooms(2)
 	audio = Node.new()
 	audio.set_script(load("res://scripts/audio.gd"))
 	audio.process_mode = Node.PROCESS_MODE_ALWAYS
@@ -319,6 +320,11 @@ func _run_shot(n: String) -> void :
 			Core.set_weather("rain")
 		Core.prep_active = args.has("deco")
 		Core.event_changed.emit()
+	if args.has("minigame"):   # depuração v1.0: --minigame=sorveteria abre o minijogo do balcão
+		var mg: CanvasLayer = load("res://scripts/minigame.gd").new()
+		mg.no_pause = true
+		get_tree().root.add_child.call_deferred(mg)
+		mg.start.call_deferred(str(args.minigame))
 	if args.has("tourboat"):
 		Core.tour_done.emit("barco", 4, 100)
 	if args.has("farol"):
@@ -473,7 +479,7 @@ func _run_shot(n: String) -> void :
 		_dress_room(0)
 	elif n == "resumo":
 		hud.show_summary(_demo_summary())
-	if n in ["estoque", "upgrade", "bangalo_up", "resumo", "pausa", "recepcao", "npc_bar", "npc_anda", "npc_senta", "quiosque", "balcao", "rosto", "celular", "celular_home", "mesas", "cel_cardapio", "cel_mercado", "cel_album", "cel_missoes"]:
+	if n in ["estoque", "upgrade", "bangalo_up", "resumo", "pausa", "recepcao", "npc_bar", "npc_anda", "npc_senta", "quiosque", "balcao", "rosto", "celular", "celular_home", "mesas", "cel_cardapio", "cel_mercado", "cel_album", "cel_missoes"] or n.begins_with("cel_"):
 		var extra: = 36 if n in ["npc_bar", "quiosque", "balcao", "celular", "celular_home"] else 12
 		for i in extra:
 			await get_tree().process_frame

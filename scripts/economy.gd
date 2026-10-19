@@ -65,7 +65,7 @@ const EXPANSIONS: = {
 	"grand_hotel": {
 		"name": "Grand Hotel Maré Alta 5★", "cost": 30000, "req": ["pool", "passeios"], "stars": 4.3, "fame": 8, "chapter": "carnaval",
 		"icon": "bangalo", "area": "",
-		"blurb": "A fase final: hotel de 5 andares com 32 suítes, restaurante, academia, spa, piscina com tobogã, bar molhado e kids club.",
+		"blurb": "A fase final: hotel de 5 andares com 32 suítes, restaurante com buffet, academia, spa, piscina com tobogã e bar da piscina.",
 	},
 }
 const EXPANSION_ORDER: = ["kiosk_tables", "drinks", "neon", "grill", "bar", "pousada", "pool", "passeios", "grand_hotel"]

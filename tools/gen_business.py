@@ -388,7 +388,7 @@ def biz_canopy():
         for sy in (-1, 1):
             parts.append(tube((sx * S, sy * S, 0.0), (sx * S, sy * S, 2.3), 0.025, alu, verts=12))
             parts.append(box((0.2, 0.2, 0.03), (sx * S, sy * S, 0.015), alu, bevel=0.01))
-            parts.append(sweep([(sx * S, sy * S, 2.2), (sx * (S + 0.45), sy * (S + 0.45), 1.1), (sx * (S + 0.9), sy * (S + 0.9), 0.0)], 0.006, rope, 6, "estai"))
+            parts.append(sweep([(sx * S, sy * S, 2.2), (sx * (S + 0.45), sy * (S + 0.45), 1.1), (sx * (S + 0.9), sy * (S + 0.9), 0.0)], 0.012, rope, 8, "estai"))
     for (a, b) in (((-S, -S), (S, -S)), ((S, -S), (S, S)), ((S, S), (-S, S)), ((-S, S), (-S, -S))):
         parts.append(tube((a[0], a[1], 2.3), (b[0], b[1], 2.3), 0.02, alu, verts=10))
     # teto: pirâmide com leve barriga entre as costuras

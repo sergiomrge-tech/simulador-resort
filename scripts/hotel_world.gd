@@ -79,7 +79,6 @@ func _build() -> Node3D:
 	# academia (frente para o mar, -Z) e aparelhos
 	var gp: = Vector3(-11.0, TER_Y, 30.0)
 	Real.place(root, "g:hotel_gym", gp, -1.0, PI, Color.WHITE, 0.0, false)
-	var floor_y: = TER_Y + 0.28
 	Real.place(root, "g:gym_treadmill", gp + Vector3(-3.0, 0.28, -1.0), -1.0, PI)
 	Real.place(root, "g:gym_treadmill", gp + Vector3(-1.5, 0.28, -1.0), -1.0, PI)
 	Real.place(root, "g:gym_bike", gp + Vector3(0.3, 0.28, -1.2), -1.0, PI)
@@ -105,6 +104,27 @@ func _build() -> Node3D:
 	for p in [Vector2(-43, 27), Vector2(-43, 49), Vector2(-5, 27), Vector2(-16, 49), Vector2(-36, 49), Vector2(-30, 53), Vector2(-12, 53), Vector2(-2, 56), Vector2(-40, 56)]:
 		var y: = TER_Y if (p.x >= TER_MIN.x and p.x <= TER_MAX.x and p.y >= TER_MIN.y and p.y <= TER_MAX.y) else 0.0
 		Palm.spawn(root, Vector3(p.x, y, p.y), int(absf(p.x * 13.0 + p.y)))
+	# noite: tochas tiki em volta da piscina, luzes subaquáticas e luz quente no bar e no restaurante
+	var D_: = preload("res://scripts/details.gd")
+	for tp in [Vector3(-36.2, TER_Y, 30.2), Vector3(-36.2, TER_Y, 41.8), Vector3(-17.4, TER_Y, 30.3), Vector3(-15.8, TER_Y, 41.8), Vector3(-26.0, TER_Y, 30.0), Vector3(-30.5, TER_Y, 45.5), Vector3(-21.5, TER_Y, 45.5)]:
+		var tl: OmniLight3D = D_.tiki_torch(root, tp)
+		if world.get("lanterns") != null:
+			world.lanterns.append([tl, null, 1.6, false])
+	for k in 4:
+		var lx: = lerpf(POOL_MIN.x + 2.0, POOL_MAX.x - 2.0, k / 3.0)
+		for lz in [POOL_MIN.y + 0.12, POOL_MAX.y - 0.12]:
+			var pl: = Real.place_glow(root, "g:pool_light", Vector3(lx, WATER_Y - 0.55, lz), -1.0, 0.0, P.glow(Color(0.6, 0.95, 1.0), 2.0))
+			if pl != null:
+				pl.rotation.x = PI * 0.5 if lz < (POOL_MIN.y + POOL_MAX.y) * 0.5 else -PI * 0.5
+	for lp in [Vector3(-26.0, TER_Y + 2.3, 46.4), Vector3(-9.0, TER_Y + 3.0, 43.0), Vector3(-9.0, TER_Y + 3.0, 39.0), Vector3(-9.0, TER_Y + 3.0, 47.0)]:
+		var ol: = OmniLight3D.new()
+		ol.position = lp
+		ol.omni_range = 7.0
+		ol.light_color = Color(1.0, 0.75, 0.45)
+		ol.light_energy = 0.0
+		root.add_child(ol)
+		if world.get("lanterns") != null:
+			world.lanterns.append([ol, null, 1.4, false])
 	_people(root)
 	if world.get("block_rects") != null:
 		world.block_rects.append(Rect2(TER_MIN.x - 0.5, TER_MIN.y - 0.5, TER_MAX.x - TER_MIN.x + 1.0, TER_MAX.y - TER_MIN.y + 1.0))
@@ -146,11 +166,29 @@ func _terrace(root: Node3D) -> void:
 	# escadarias: norte (centro) e leste (vindo do caminho do resort) e sul (para o hotel)
 	for k in 8:
 		var y: = (k + 1) * h / 8.0
-		B_.box(root, Vector3(5.0, y, 0.34), Vector3(-26.0, y * 0.5, TER_MIN.y - 0.17 - (7 - k) * 0.34), stone, true)
-		B_.box(root, Vector3(0.34, y, 3.0), Vector3(TER_MAX.x + 0.17 + (7 - k) * 0.34, y * 0.5, 34.0), stone, true)
-		B_.box(root, Vector3(4.0, y, 0.34), Vector3(-21.0, y * 0.5, TER_MAX.y + 0.17 + (7 - k) * 0.34), stone, true)
+		B_.box(root, Vector3(5.0, y, 0.34), Vector3(-26.0, y * 0.5, TER_MIN.y - 0.17 - (7 - k) * 0.34), stone)
+		B_.box(root, Vector3(0.34, y, 3.0), Vector3(TER_MAX.x + 0.17 + (7 - k) * 0.34, y * 0.5, 34.0), stone)
+		B_.box(root, Vector3(4.0, y, 0.34), Vector3(-21.0, y * 0.5, TER_MAX.y + 0.17 + (7 - k) * 0.34), stone)
+	# colisão das escadas = rampa invisível (o jogador não sobe degrau de 15 cm sozinho)
+	_ramp(root, Vector3(-26.0, 0.0, TER_MIN.y - 2.72), Vector3(-26.0, h, TER_MIN.y), 5.0)
+	_ramp(root, Vector3(TER_MAX.x + 2.72, 0.0, 34.0), Vector3(TER_MAX.x, h, 34.0), 3.0)
+	_ramp(root, Vector3(-21.0, 0.0, TER_MAX.y + 2.72), Vector3(-21.0, h, TER_MAX.y), 4.0)
 	# caminho de pedra do resort até a escada leste
 	world._strip(Vector2(0.0, 27.0), Vector2(-1.0, 34.0), 2.4, stone, 0.03)
+
+func _ramp(root: Node3D, bottom: Vector3, top: Vector3, width: float) -> void:
+	var dir: = top - bottom
+	var zx: = dir.normalized()
+	var xx: = Vector3.UP.cross(zx).normalized()
+	var yy: = zx.cross(xx).normalized()
+	var sb: = StaticBody3D.new()
+	var cs: = CollisionShape3D.new()
+	var sh: = BoxShape3D.new()
+	sh.size = Vector3(width, 0.2, dir.length() + 0.3)
+	cs.shape = sh
+	sb.add_child(cs)
+	sb.transform = Transform3D(Basis(xx, yy, zx), (top + bottom) * 0.5 - yy * 0.1)
+	root.add_child(sb)
 
 func _pool(root: Node3D) -> void:
 	var wx: = POOL_MAX.x - POOL_MIN.x
@@ -185,9 +223,7 @@ func _pool(root: Node3D) -> void:
 	B_.wall(root, Vector3(wx, 2, 0.2), Vector3(c.x, TER_Y + 1, POOL_MAX.y))
 	B_.wall(root, Vector3(0.2, 2, wz), Vector3(POOL_MIN.x, TER_Y + 1, c.z))
 	B_.wall(root, Vector3(0.2, 2, wz), Vector3(POOL_MAX.x, TER_Y + 1, c.z))
-	var lb: = B_.model(root, "lifebuoy", Vector3(POOL_MAX.x + 0.6, TER_Y + 0.85, POOL_MAX.y + 0.4), 0.0, 1.0)
-	if lb:
-		lb.rotation.x = - PI * 0.5
+	B_.model(root, "lifebuoy", Vector3(POOL_MAX.x + 0.6, TER_Y + 0.75, POOL_MAX.y + 0.42), 0.0, 1.0)   # boia pendurada em pé no mastro
 	Real.place(root, "g:bamboo_pole", Vector3(POOL_MAX.x + 0.6, TER_Y, POOL_MAX.y + 0.55), 1.4, 0.0)
 
 # ------------------------------------------------------------------ hóspedes
@@ -211,19 +247,19 @@ func _people(root: Node3D) -> void:
 		_npc(root, p, (PI if north else 0.0) + PI, "Sitting_Idle_Loop")
 	var n_swim: = 5 if Quality.hd else 2
 	for k in n_swim:
-		var p2: = Vector3(_rng.randf_range(POOL_MIN.x + 1.5, POOL_MAX.x - 1.5), WATER_Y - 1.45, _rng.randf_range(POOL_MIN.y + 1.2, POOL_MAX.y - 1.2))
+		var p2: = Vector3(_rng.randf_range(POOL_MIN.x + 1.5, POOL_MAX.x - 1.5), WATER_Y - 0.28, _rng.randf_range(POOL_MIN.y + 1.2, POOL_MAX.y - 1.2))
 		_npc(root, p2, _rng.randf() * TAU, "Swim_Idle_Loop")
 	# academia: dois correndo na esteira, um na bike (em pé, animação de corrida)
 	var gp: = Vector3(-11.0, TER_Y + 0.28 + 0.25, 30.0)
-	_npc(root, gp + Vector3(-3.0, 0, -0.9), PI, "Jog_Fwd_Loop")
+	_npc(root, gp + Vector3(-3.0, 0, -0.9), 0.0, "Jog_Fwd_Loop")   # de frente para o painel da esteira (-Z)
 	if Quality.hd:
-		_npc(root, gp + Vector3(-1.5, 0, -0.9), PI, "Jog_Fwd_Loop")
+		_npc(root, gp + Vector3(-1.5, 0, -0.9), 0.0, "Jog_Fwd_Loop")
 	# restaurante: casais conversando nas mesas
 	for i in (3 if Quality.hd else 1):
 		_npc(root, Vector3(-11.4, TER_Y + 0.35 + 0.1, 38.6 + i * 3.4), PI * 0.5, "Sitting_Talking_Loop").set_meta("anim_kind", "keep")
 	# bar da piscina: dois em pé no balcão
-	_npc(root, Vector3(-26.6, TER_Y, 45.2), 0.0, "Idle_Talking_Loop").set_meta("anim_kind", "keep")
-	_npc(root, Vector3(-25.2, TER_Y, 45.1), 0.2, "Idle_Talking_Loop").set_meta("anim_kind", "keep")
+	_npc(root, Vector3(-26.6, TER_Y, 45.2), PI, "Idle_Talking_Loop").set_meta("anim_kind", "keep")   # de frente para o balcão (+Z)
+	_npc(root, Vector3(-25.2, TER_Y, 45.1), PI - 0.2, "Idle_Talking_Loop").set_meta("anim_kind", "keep")
 
 func _process(_d: float) -> void:
 	if built == null:

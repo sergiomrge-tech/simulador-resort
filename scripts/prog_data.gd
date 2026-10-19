@@ -58,7 +58,7 @@ const HOTEL_ROOMS: = 32
 const HOTEL_RATE: = 220
 const HOTEL_DINING: = 35
 const HOTEL_STAFF: = 900
-const HOTEL_AMENITIES: = ["Lobby e recepção 24h", "32 suítes com varanda", "Restaurante com buffet", "Academia", "Spa", "Piscina com tobogã", "Bar molhado", "Kids club"]
+const HOTEL_AMENITIES: = ["Lobby e recepção 24h", "32 suítes com varanda", "Restaurante com buffet", "Academia", "Spa", "Piscina com tobogã", "Bar da piscina"]
 const TREE_FAME: = [1, 4, 6]
 
 # ------------------------------------------------------------------ negócios
@@ -68,16 +68,16 @@ const BUSINESSES: = {
 		"open": [9.0, 19.0], "pos": Vector3(47.5, 0.0, -18.5), "rot": 0.4, "tint": Color(1.0, 0.55, 0.7),
 		"game": "Montar a casquinha", "blurb": "Vende muito no calor; quase nada na chuva e no inverno."},
 	"aluguel": {"name": "Aluguel de pranchas e caiaques", "cost": 1400, "fame": 3, "chapter": "pier", "hour": 22, "wage": 45,
-		"open": [8.0, 17.0], "pos": Vector3(66.5, 0.0, -20.0), "rot": 0.0, "tint": Color(0.3, 0.7, 0.95),
+		"open": [8.0, 17.0], "pos": Vector3(67.3, 0.0, -20.0), "rot": 0.0, "tint": Color(0.3, 0.7, 0.95),
 		"game": "Encerar a prancha", "blurb": "Fecha com mar bravo. Rende mais com ondas boas (maré alta)."},
 	"surfe": {"name": "Escolinha de surfe", "cost": 2200, "fame": 4, "chapter": "prainha", "hour": 32, "wage": 55,
 		"open": [7.0, 16.0], "pos": Vector3(-46.0, 0.0, -21.0), "rot": 0.2, "tint": Color(1.0, 0.75, 0.25),
 		"game": "Aula na areia", "blurb": "Fica na Prainha do Oeste. Turistas e famílias adoram."},
 	"food_truck": {"name": "Food truck do Pastel", "cost": 1800, "fame": 4, "chapter": "sabores", "hour": 26, "wage": 50,
-		"open": [11.0, 23.0], "pos": Vector3(27.0, 0.15, 33.4), "rot": PI, "tint": Color(0.95, 0.35, 0.25),
+		"open": [11.0, 23.0], "pos": Vector3(27.0, 0.045, 30.85), "rot": 0.0, "tint": Color(0.95, 0.35, 0.25),
 		"game": "Fritar o pastel", "blurb": "Na rua principal. Funciona até tarde e bomba nas festas."},
 	"souvenir": {"name": "Lojinha de souvenires", "cost": 1600, "fame": 5, "chapter": "carnaval", "hour": 20, "wage": 40,
-		"open": [9.0, 20.0], "pos": Vector3(63.5, 0.1, 37.0), "rot": PI * 0.5, "tint": Color(0.55, 0.85, 0.45),
+		"open": [9.0, 20.0], "pos": Vector3(82.8, 0.1, 40.5), "rot": -PI * 0.5, "tint": Color(0.55, 0.85, 0.45),
 		"game": "Embrulhar o presente", "blurb": "Na praça. Quanto mais fama, mais turista compra lembrancinha."},
 }
 const BIZ_LEVEL_MULT: = [1.0, 1.5, 2.1]
@@ -110,7 +110,7 @@ const GOAL_POOL: = [
 	{"kind": "serve", "text": "Atender %d clientes no quiosque", "base": 25, "per_fame": 6, "reward": 120},
 	{"kind": "earn", "text": "Faturar %s na semana", "base": 900, "per_fame": 250, "reward": 150, "money": true},
 	{"kind": "dish", "text": "Vender %d petiscos ou pratos da cozinha", "base": 8, "per_fame": 2, "reward": 110},
-	{"kind": "vip", "text": "Receber %d clientes VIP", "base": 1, "per_fame": 0, "reward": 130},
+	{"kind": "vip", "text": "Receber %d cliente(s) VIP", "base": 1, "per_fame": 0, "reward": 130},
 	{"kind": "tour", "text": "Fazer %d passeios turísticos", "base": 3, "per_fame": 1, "reward": 140, "need": "passeios"},
 	{"kind": "biz", "text": "Jogar %d vezes nos balcões dos negócios", "base": 3, "per_fame": 1, "reward": 120, "need_biz": true},
 	{"kind": "photo", "text": "Tirar %d fotos (tecla P)", "base": 3, "per_fame": 0, "reward": 80},

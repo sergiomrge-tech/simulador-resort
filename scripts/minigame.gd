@@ -22,6 +22,7 @@ var zone_c: = 0.5
 var zone_w: = 0.22
 var waiting: = false
 var _age: = 0.0
+var no_pause: = false     # depuração (--minigame): não pausa, para o print sair
 var _was_paused: = false
 var _mouse_before: int = Input.MOUSE_MODE_VISIBLE
 
@@ -39,7 +40,8 @@ func _ready() -> void:
 func start(id: String) -> void:
 	biz_id = id
 	_was_paused = get_tree().paused
-	get_tree().paused = true
+	if not no_pause:
+		get_tree().paused = true
 	_mouse_before = Input.mouse_mode
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	var root: = Control.new()

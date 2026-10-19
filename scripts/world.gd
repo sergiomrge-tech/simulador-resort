@@ -2137,12 +2137,15 @@ func _pool_details() -> void :
 		else:
 			mi.mesh = donut
 			mi.material_override = B.flat(fp[1], 0.4)
-		var bob: = mi.create_tween().set_loops() if mi.is_inside_tree() else null
-		if bob == null:
-			mi.ready.connect(func():
-				var tw: = mi.create_tween().set_loops()
-				tw.tween_property(mi, "position:y", -0.04, 1.6).set_trans(Tween.TRANS_SINE)
-				tw.tween_property(mi, "position:y", -0.12, 1.6).set_trans(Tween.TRANS_SINE), CONNECT_ONE_SHOT)
+		# boia balançando (antes o tween era criado sem etapas quando o nó já estava na árvore: erro "started with no Tweeners")
+		var start_bob: = func():
+			var tw: = mi.create_tween().set_loops()
+			tw.tween_property(mi, "position:y", -0.04, 1.6).set_trans(Tween.TRANS_SINE)
+			tw.tween_property(mi, "position:y", -0.12, 1.6).set_trans(Tween.TRANS_SINE)
+		if mi.is_inside_tree():
+			start_bob.call()
+		else:
+			mi.ready.connect(start_bob, CONNECT_ONE_SHOT)
 	Real.place(self, "g:beach_ball", Vector3(0.8, -0.3, 6.6), 0.44, 0.9)   # bola de praia boiando na piscina
 	# luzes da piscina nas paredes
 	for k in 4:
