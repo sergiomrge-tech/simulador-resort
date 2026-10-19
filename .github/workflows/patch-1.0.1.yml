@@ -1,0 +1,156 @@
+name: Compilar patch Maré Alta Resort 1.0.1
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/patch-1.0.1.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: mare-alta-patch-101
+  cancel-in-progress: false
+
+jobs:
+  patch-windows:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 300
+    steps:
+      - name: Obter repositório (incluindo versão 1.0.0)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configurar Python com bpy (Blender)
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Instalar dependências de renderização e instalador NSIS
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends xvfb xauth nsis unzip zip libgl1-mesa-dri libglu1-mesa0 libxi6 libxrandr2 libxcursor1 libxinerama1 libasound2t64 libpulse0
+          python -m pip install --upgrade pip
+          python -m pip install 'bpy==4.5.14' pillow numpy
+
+      - name: Instalar Godot 4.5.1 e templates oficiais
+        env:
+          GODOT_VERSION: 4.5.1
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/godot" "$HOME/.local/share/godot/export_templates/4.5.1.stable"
+          curl -fL --retry 5 --retry-all-errors -o "$RUNNER_TEMP/godot/engine.zip" "https://github.com/godotengine/godot/releases/download/4.5.1-stable/Godot_v4.5.1-stable_linux.x86_64.zip"
+          unzip -q "$RUNNER_TEMP/godot/engine.zip" -d "$RUNNER_TEMP/godot/"
+          mv "$RUNNER_TEMP/godot/Godot_v4.5.1-stable_linux.x86_64" "$RUNNER_TEMP/godot/godot"
+          chmod +x "$RUNNER_TEMP/godot/godot"
+          curl -fL --retry 5 --retry-all-errors -o "$RUNNER_TEMP/godot/templates.tpz" "https://github.com/godotengine/godot/releases/download/4.5.1-stable/Godot_v4.5.1-stable_export_templates.tpz"
+          unzip -q "$RUNNER_TEMP/godot/templates.tpz" -d "$RUNNER_TEMP/godot/unpacked"
+          cp -a "$RUNNER_TEMP/godot/unpacked/templates/." "$HOME/.local/share/godot/export_templates/4.5.1.stable/"
+          "$RUNNER_TEMP/godot/godot" --version
+          echo "GODOT=$RUNNER_TEMP/godot/godot" >> "$GITHUB_ENV"
+
+      - name: Baixar CC0 e modelar todos os assets com Blender
+        run: |
+          set -euo pipefail
+          python tools/fetch_assets.py 2>&1 | tee fetch-assets.log
+          test -s assets/models/qnat/Bush_Common.gltf
+          for model in coconut_green coconut_open pineapple orange frappe cup_plastic glass_juice cocktail campfire_logs beach_flag beach_spade boat_hull; do
+            test -s "assets/models/gen/${model}.glb"
+          done
+
+      - name: Importar assets, comprimir texturas e importar de novo
+        run: |
+          set -euo pipefail
+          timeout 2400 "$GODOT" --headless --path . --import 2>&1 | tee import-1.log
+          python tools/vram_textures.py 2>&1 | tee vram.log
+          timeout 2400 "$GODOT" --headless --path . --import 2>&1 | tee import-2.log
+
+      - name: Testar assentos do quiosque e ciclo completo do jogo
+        run: |
+          set -euo pipefail
+          mkdir -p shots
+          timeout 240 xvfb-run -a -s '-screen 0 1280x720x24' "$GODOT" --path . --rendering-driver opengl3 --rendering-method gl_compatibility -- --loop-test --kiosk-test --quality=0 2>&1 | tee shots/kiosk-ci.log
+          grep -q 'KIOSK_TEST PASS' shots/kiosk-ci.log
+          timeout 380 xvfb-run -a -s '-screen 0 1280x720x24' "$GODOT" --path . --rendering-driver opengl3 --rendering-method gl_compatibility -- --loop-test --quality=0 2>&1 | tee shots/loop-ci.log
+          grep -q 'LOOP_TEST PASS' shots/loop-ci.log
+
+      - name: Tirar screenshots e procurar erros de recursos
+        run: |
+          set -euo pipefail
+          timeout 600 xvfb-run -a -s '-screen 0 1280x720x24' "$GODOT" --path . --rendering-driver opengl3 --rendering-method gl_compatibility -- --shot=ci-quiosque --cam=38,3,-2,0,-28,12 --v1 --noroof --quality=1 --primcheck --floatcheck --out="$PWD/shots/ci-quiosque.png" > shots/visual-ci.log 2>&1
+          test -s shots/ci-quiosque.png
+          if grep -Ei 'SCRIPT ERROR|REAL_MISSING|resource file not found' shots/visual-ci.log; then
+            echo "Falha: recursos ou scripts ausentes"; exit 1
+          fi
+
+      - name: Construir PCK original da v1.0.0 para testar a atualização
+        run: |
+          set -euo pipefail
+          CURRENT_SHA="$GITHUB_SHA"
+          mkdir -p "$RUNNER_TEMP/base"
+          git reset --hard HEAD
+          git checkout --detach 51921df
+          rm -rf .godot
+          timeout 2400 "$GODOT" --headless --path . --import > "$RUNNER_TEMP/base/base-import.log" 2>&1
+          python tools/vram_textures.py > "$RUNNER_TEMP/base/base-vram.log" 2>&1
+          timeout 2400 "$GODOT" --headless --path . --import >> "$RUNNER_TEMP/base/base-import.log" 2>&1
+          python tools/prune_export.py apply
+          timeout 2400 "$GODOT" --headless --path . --export-pack "Windows Desktop" "$RUNNER_TEMP/base/MareAltaResort.pck" > "$RUNNER_TEMP/base/base-export.log" 2>&1
+          python tools/prune_export.py restore
+          test -s "$RUNNER_TEMP/base/MareAltaResort.pck"
+          git reset --hard "$CURRENT_SHA"
+          rm -rf .godot
+          timeout 2400 "$GODOT" --headless --path . --import > shots/import-final.log 2>&1
+          python tools/vram_textures.py >> shots/import-final.log 2>&1
+          timeout 2400 "$GODOT" --headless --path . --import >> shots/import-final.log 2>&1
+
+      - name: Montar instalador de patch a partir do commit 51921df
+        env:
+          STAGE: ${{ runner.temp }}/stage
+        run: |
+          set -euo pipefail
+          bash tools/build_patch.sh 51921df 2>&1 | tee shots/build-patch.log
+          test -s "$STAGE/Atualizar_MareAltaResort_v1.0.1.exe"
+          test -s build/patch/patch_1.0.1.pck
+
+      - name: Testar o patch por cima do PCK 1.0.0
+        run: |
+          set -euo pipefail
+          ROOT="$PWD/build/patch-smoke"
+          mkdir -p "$ROOT"
+          cp "$GODOT" "$ROOT/MareAltaResort"
+          cp "$RUNNER_TEMP/base/MareAltaResort.pck" "$ROOT/MareAltaResort.pck"
+          cp build/patch/patch_1.0.1.pck installer/patch_loader.gd "$ROOT/"
+          printf '[autoload]\nPatch="*%s/patch_loader.gd"\n' "$ROOT" > "$ROOT/override.cfg"
+          timeout 600 xvfb-run -a -s '-screen 0 1280x720x24' "$ROOT/MareAltaResort" --main-pack "$ROOT/MareAltaResort.pck" --rendering-driver opengl3 --rendering-method gl_compatibility -- --shot=patch-ci --cam=38,3,-2,0,-28,12 --v1 --quality=1 --out="$PWD/shots/patch-ci.png" > shots/patch-ci.log 2>&1
+          grep -Fq '[patch] patch_1.0.1.pck ok' shots/patch-ci.log
+          test -s shots/patch-ci.png
+          if grep -Ei 'SCRIPT ERROR|REAL_MISSING|resource file not found' shots/patch-ci.log; then
+            echo "Falha: erro na atualização 1.0.0 -> 1.0.1"; exit 1
+          fi
+
+      - name: Guardar logs e prints para auditoria
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: logs-e-prints-mare-alta-101
+          path: |
+            shots/
+            fetch-assets.log
+            import-1.log
+            import-2.log
+            vram.log
+          retention-days: 7
+          if-no-files-found: ignore
+
+      - name: Publicar link direto do instalador de testes
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          STAGE: ${{ runner.temp }}/stage
+        run: |
+          set -euo pipefail
+          gh release create v1.0.1-rc1 "$STAGE/Atualizar_MareAltaResort_v1.0.1.exe" --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --title 'Maré Alta Resort 1.0.1 (prévia de atualização)' --prerelease --notes 'Patch cumulativo sobre a v1.0.0 (51921df). Gerado com Godot 4.5.1, assets CC0/Blender, testes KIOSK_TEST, LOOP_TEST, smoke do PCK base mais patch e verificação de erros em logs. Prévia para inspeção visual no Windows.'
