@@ -968,7 +968,7 @@ func _jangada2(p: Vector3, rot: float) -> void :
 	j.add_child(sail)
 	B.wall(self, Vector3(2.0, 2.0, 6.5), p + Vector3(0, 1.4, 0), rot)
 
-func _fishing_boat(p: Vector3, rot: float, paint: Color) -> void :
+func _fishing_boat(p: Vector3, rot: float, paint: Color, solid: = true) -> Node3D:
 	var j: = Node3D.new()
 	j.position = p
 	j.rotation.y = rot
@@ -980,8 +980,9 @@ func _fishing_boat(p: Vector3, rot: float, paint: Color) -> void :
 	B.model(j, "wooden_crate_01", Vector3(-0.15, 0.48, 1.15), 0.2, 0.55)
 	B.model(j, "wooden_bucket_01", Vector3(0.28, 0.42, 0.55), 0.5, 0.45)
 	if Real.place(j, "g:boat_mast", Vector3(0.05, 0.25, -0.15), -1.0, 0.0, Color.WHITE, 0.0, false) != null:
-		B.wall(self, Vector3(1.7, 0.7, 4.6), p + Vector3(0, 0.35, 0.1), rot)
-		return
+		if solid:
+			B.wall(self, Vector3(1.7, 0.7, 4.6), p + Vector3(0, 0.35, 0.1), rot)
+		return j
 	B.cyl(j, 0.035, 0.04, 2.4, Vector3(0.05, 1.45, -0.15), M.oak, 6)
 	var sail: = MeshInstance3D.new()
 	var sst: = SurfaceTool.new()
@@ -995,7 +996,9 @@ func _fishing_boat(p: Vector3, rot: float, paint: Color) -> void :
 	smat.cull_mode = BaseMaterial3D.CULL_DISABLED
 	sail.material_override = smat
 	j.add_child(sail)
-	B.wall(self, Vector3(1.7, 0.7, 4.6), p + Vector3(0, 0.35, 0.1), rot)
+	if solid:
+		B.wall(self, Vector3(1.7, 0.7, 4.6), p + Vector3(0, 0.35, 0.1), rot)
+	return j
 
 func _boat_mesh() -> ArrayMesh:
 	if VM.has("boat"):

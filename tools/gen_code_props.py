@@ -1438,7 +1438,7 @@ def fresnel_lens():
 def pool_light():
     """Refletor de piscina embutido: aro de aço, vidro (glow) e parafusos. Eixo +Y no Godot; diâmetro 0,2."""
     fresh()
-    steel = mat("aco", (0.75, 0.78, 0.8), 0.3, None, 0.9)
+    steel = mat("aco", (0.85, 0.87, 0.9), 0.5, None, 0.0)
     glow = glow_mat("glow", (0.6, 0.95, 1.0), 3.0)
     parts = [lathe([(0.0, 0), (0.1, 0), (0.1, 0.018), (0.088, 0.026), (0.0, 0.026)], steel, verts=32),
              lathe([(0.0, 0.02), (0.078, 0.02), (0.075, 0.034), (0.0, 0.042)], glow, verts=32)]
@@ -1670,10 +1670,125 @@ def door_frame():
     join(parts, "batente")
     export("door_frame")
 
+# ---------------------------------------------------------------- festas (v0.9.2)
+def dj_booth():
+    """Palco do DJ: bancada com toca-discos e mixer, duas caixas com alto-falantes de cone, treliça com refletores. Largura 5 m, frente +Z (Godot)."""
+    fresh()
+    body = mat("bancada", (0.12, 0.12, 0.16), 0.5, tex("dark_wooden_planks_diff.jpg"))
+    steel = mat("aco", (0.7, 0.72, 0.76), 0.3, None, 0.9)
+    black = mat("preto", (0.05, 0.05, 0.06), 0.5, None, 0.2)
+    neon = glow_mat("glow_neon", (0.2, 0.9, 1.0), 4.0)
+    pink = glow_mat("glow_rosa", (1.0, 0.25, 0.7), 4.0)
+    parts = [anchor(body)]
+    # palco
+    parts.append(gbox((5.0, 0.2, 2.6), (0, 0.1, 0), body, 0.02))
+    # bancada
+    parts.append(gbox((2.2, 0.9, 0.9), (0, 0.65, -0.2), body, 0.03))
+    parts.append(gbox((2.0, 0.05, 0.05), (0, 0.38, 0.27), neon, 0.0))
+    # toca-discos
+    for sx in (-0.7, 0.7):
+        parts.append(gbox((0.62, 0.05, 0.55), (sx, 1.12, -0.2), black, 0.01))
+        parts.append(lathe([(0, 0), (0.22, 0), (0.22, 0.03), (0.0, 0.03)], steel, loc=(sx, 0.2, 1.145), verts=40))
+        parts.append(lathe([(0, 0.03), (0.2, 0.03), (0.2, 0.034), (0.0, 0.034)], black, loc=(sx, 0.2, 1.145), verts=40))
+        parts.append(lathe([(0, 0.034), (0.05, 0.034), (0.05, 0.038), (0.0, 0.038)], pink, loc=(sx, 0.2, 1.145), verts=20))
+    parts.append(gbox((0.5, 0.06, 0.5), (0, 1.13, -0.2), black, 0.01))
+    for k in range(4):
+        parts.append(gbox((0.04, 0.012, 0.18), (-0.17 + k * 0.11, 1.17, -0.2), neon, 0.0))
+    # caixas de som com cone
+    for sx in (-1.95, 1.95):
+        parts.append(gbox((0.75, 1.6, 0.65), (sx, 1.0, -0.4), black, 0.03))
+        for (zy, rad) in ((0.62, 0.26), (1.22, 0.14)):
+            cx, cy, cz = sx, zy + 0.35 + (0.0 if rad > 0.2 else 0.0), -0.4 + 0.325
+            cone = lathe([(0, -0.07), (rad * 0.35, -0.07), (rad * 0.85, -0.015), (rad, 0), (rad * 1.12, 0.01), (rad * 1.2, 0.0), (rad * 1.2, -0.02), (0, -0.02)], steel, loc=(0, 0, 0), verts=36)
+            cone.rotation_euler = (math.radians(90), 0, 0)
+            cone.location = (cx, -cz - 0.0, cy)
+            bpy.context.view_layer.objects.active = cone
+            parts.append(cone)
+        parts.append(gtube((sx, 0.2, -0.4), (sx, 0.5, -0.4), 0.0, steel) if False else gbox((0.78, 0.04, 0.68), (sx, 0.22, -0.4), steel, 0.01))
+    # treliça: dois montantes + travessa, cada um com 4 cordas e zigue-zague
+    H, Wt = 3.3, 4.6
+    def truss(a, b, side):
+        for (ox, oz) in ((-0.1, -0.1), (0.1, -0.1), (-0.1, 0.1), (0.1, 0.1)):
+            parts.append(gtube((a[0] + ox, a[1], a[2] + oz), (b[0] + ox, b[1], b[2] + oz), 0.018, steel, verts=8))
+        n = max(2, int(math.dist(a, b) / 0.3))
+        for i in range(n):
+            t0, t1 = i / n, (i + 1) / n
+            p0 = tuple(a[k] + (b[k] - a[k]) * t0 for k in range(3))
+            p1 = tuple(a[k] + (b[k] - a[k]) * t1 for k in range(3))
+            sgn = 1 if i % 2 == 0 else -1
+            parts.append(gtube((p0[0] + 0.1 * sgn, p0[1], p0[2] + 0.1 * sgn), (p1[0] - 0.1 * sgn, p1[1], p1[2] - 0.1 * sgn), 0.009, steel, verts=6))
+    for sx in (-Wt / 2, Wt / 2):
+        truss((sx, 0.2, -1.0), (sx, H, -1.0), 0)
+    truss((-Wt / 2, H, -1.0), (Wt / 2, H, -1.0), 1)
+    # refletores
+    cols = [(1.0, 0.2, 0.3), (0.2, 0.7, 1.0), (1.0, 0.85, 0.2), (0.6, 0.3, 1.0), (0.2, 1.0, 0.5)]
+    for i, sx in enumerate([-1.8, -0.9, 0.0, 0.9, 1.8]):
+        lens = glow_mat("glow_%d" % i, cols[i], 5.0)
+        hd = gtube((sx, H - 0.1, -0.9), (sx, H - 0.5, -0.65), 0.1, black, verts=14)
+        parts.append(hd)
+        parts.append(gtube((sx, H - 0.5, -0.65), (sx, H - 0.53, -0.62), 0.085, lens, verts=14))
+        parts.append(gtube((sx, H - 0.05, -1.0), (sx, H - 0.1, -0.92), 0.03, steel, verts=8))
+    join(parts, "dj")
+    export("dj_booth")
+
+def party_banner():
+    """Faixa de festa: dois mastros de bambu com corda e pano ondulado (bordas e franjas). Largura 4,4 m, altura 3,3 m. Texto vai no Godot (Label3D)."""
+    fresh()
+    bamboo = mat("bambu", (0.9, 0.75, 0.42), 0.6, tex("bamboo_wall_diff.jpg"))
+    cloth = mat("pano", (0.98, 0.9, 0.78), 0.8, tex("rough_linen_diff.jpg"))
+    edge = mat("borda", (0.9, 0.18, 0.3), 0.8)
+    parts = [anchor(bamboo)]
+    for sx in (-2.1, 2.1):
+        parts.append(gtube((sx, 0.0, 0.0), (sx, 3.3, 0.0), 0.05, bamboo, verts=12))
+        parts.append(lathe(_sphere_profile(0, 0.07, -80, 80, 8), edge, loc=(sx, 0, 3.34), verts=12))
+        for kk in range(1, 4):
+            parts.append(lathe([(0.052, -0.012), (0.062, 0), (0.052, 0.012)], bamboo, loc=(sx, 0, kk * 0.8), verts=12))
+    bm = bmesh.new()
+    uvl = bm.loops.layers.uv.new("UVMap")
+    nx, ny = 40, 10
+    W, Hc = 4.0, 0.95
+    grid = []
+    for j in range(ny + 1):
+        row = []
+        for i in range(nx + 1):
+            u = i / nx
+            x = -W / 2 + W * u
+            y = 2.85 - Hc * j / ny - 0.18 * math.sin(math.pi * u) ** 2 * (1 - j / ny) * 0
+            z = 0.06 * math.sin(u * 7.0 + j * 0.25) * (0.4 + 0.6 * j / ny)
+            sag = -0.22 * math.sin(math.pi * u)
+            row.append(bm.verts.new((x, -z, y + sag)))
+        grid.append(row)
+    for j in range(ny):
+        for i in range(nx):
+            f = bm.faces.new((grid[j][i], grid[j][i + 1], grid[j + 1][i + 1], grid[j + 1][i]))
+            for lp in f.loops:
+                lp[uvl].uv = (lp.vert.co.x * 0.5, lp.vert.co.z * 0.5)
+    for f in bm.faces:
+        if f.normal.y > 0:
+            f.normal_flip()
+    me = bpy.data.meshes.new("pano")
+    bm.to_mesh(me)
+    bm.free()
+    ob = bpy.data.objects.new("pano", me)
+    bpy.context.scene.collection.objects.link(ob)
+    me.materials.append(cloth)
+    bpy.context.view_layer.objects.active = ob
+    so = ob.modifiers.new("sol", "SOLIDIFY")
+    so.thickness = 0.012
+    bpy.ops.object.modifier_apply(modifier=so.name)
+    bpy.ops.object.shade_smooth()
+    parts.append(ob)
+    # cordas do pano até os mastros e barras de borda
+    for sx in (-2.1, 2.1):
+        parts.append(gtube((sx, 2.95, 0.0), (sx * 0.95, 2.88, 0.0), 0.012, edge, verts=6))
+        parts.append(gtube((sx, 2.0, 0.0), (sx * 0.95, 1.98, 0.0), 0.012, edge, verts=6))
+    join(parts, "faixa")
+    export("party_banner")
+
 ALL = {"tiki_torch": tiki_torch, "signpost_post": signpost_post, "sign_arrow": sign_arrow, "open_sign": open_sign,
        "volley_net": volley_net, "power_pole": power_pole, "mailbox": mailbox, "starfish": starfish, "ceiling_fan": ceiling_fan,
        "lighthouse": lighthouse, "pier_segment": pier_segment, "pier_end": pier_end, "boat_mast": boat_mast, "jangada": jangada, "beach_ball": beach_ball, "volleyball": volleyball, "seagull_fly": lambda: seagull("seagull_fly", True), "seagull_perch": lambda: seagull("seagull_perch", False), "coxinha": coxinha, "popcorn": popcorn, "rose_window": rose_window, "hanging_planter": hanging_planter, "flowerbed": flowerbed,
-       "win_frame": win_frame, "win_shutters": win_shutters, "door_leaf": door_leaf, "door_frame": door_frame, "lamp_globe": lamp_globe, "lamp_bulb": lamp_bulb, "string_bulb": string_bulb, "flame": flame, "fresnel_lens": fresnel_lens, "pool_light": pool_light, "brass_knob": brass_knob, "bell": bell, "alga": alga,
+       "dj_booth": dj_booth, "party_banner": party_banner, "win_frame": win_frame, "win_shutters": win_shutters, "door_leaf": door_leaf, "door_frame": door_frame, "lamp_globe": lamp_globe, "lamp_bulb": lamp_bulb, "string_bulb": string_bulb, "flame": flame, "fresnel_lens": fresnel_lens, "pool_light": pool_light, "brass_knob": brass_knob, "bell": bell, "alga": alga,
        "pebble_a": lambda: pebble("pebble_a", (0.78, 0.75, 0.72), 1), "pebble_b": lambda: pebble("pebble_b", (0.55, 0.52, 0.5), 2), "pebble_c": lambda: pebble("pebble_c", (0.9, 0.86, 0.8), 3),
        "shell_a": lambda: scallop("shell_a", (1.0, 0.86, 0.8), None), "shell_b": lambda: scallop("shell_b", (1.0, 0.72, 0.58), None), "shell_c": lambda: seashell_spiral("shell_c", (1.0, 0.93, 0.84)),
        **{"bloom_" + k: (lambda k=k, v=v: bloom_clump(k, v)) for k, v in BLOOM_COLORS.items()},

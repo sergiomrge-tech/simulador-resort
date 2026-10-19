@@ -125,6 +125,10 @@ func apply() -> void :
 	var rain: = Core.weather == "rain"
 	var fog_c: Color = k[1].lerp(Color(0.72, 0.82, 0.9), 0.35)
 	if rain:
+		var gk: = clampf(1.0 - night * 0.6, 0.0, 1.0)
+		sky_mat.sky_top_color = sky_mat.sky_top_color.lerp(Color(0.34, 0.38, 0.46) * gk, 0.72)
+		sky_mat.sky_horizon_color = sky_mat.sky_horizon_color.lerp(Color(0.5, 0.55, 0.62) * gk, 0.7)
+		sky_mat.ground_horizon_color = sky_mat.sky_horizon_color.darkened(0.1)
 		fog_c = Color(0.55, 0.6, 0.66)
 		sun.light_energy *= 0.42
 		sun.light_color = sun.light_color.lerp(Color(0.75, 0.78, 0.82), 0.65)

@@ -7,7 +7,9 @@ uniform vec3 foam_col : source_color = vec3(0.96, 0.98, 1.0);
 uniform float shore_z = -36.0;      // linha da água (z do mundo)
 uniform float deep_dist = 70.0;
 uniform float time_scale = 1.0;
-uniform float night = 0.0;          // 0 dia, 1 noite
+uniform float night = 0.0;
+uniform float swell = 1.0;
+uniform float tide = 0.0;          // 0 dia, 1 noite
 varying vec3 wpos;
 varying float crest;
 
@@ -30,8 +32,8 @@ void vertex(){
 	d += wave(w.xz, normalize(vec2(0.15, 1.0)), 0.16, 9.0, 1.6, t);
 	d += wave(w.xz, normalize(vec2(-0.4, 1.0)), 0.08, 4.3, 1.2, t);
 	d += wave(w.xz, normalize(vec2(0.7, 0.8)), 0.04, 2.1, 0.9, t);
-	d *= dist;
-	VERTEX.y += d.y;
+	d *= dist * swell;
+	VERTEX.y += d.y + tide;
 	VERTEX.x += d.x;
 	VERTEX.z += d.z;
 	crest = d.y;

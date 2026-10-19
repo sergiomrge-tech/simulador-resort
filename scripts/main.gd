@@ -293,6 +293,15 @@ func _run_shot(n: String) -> void :
 	if args.has("cam"):
 		var cv: = str(args.cam).split(",")
 		s = [Vector3(float(cv[0]), float(cv[1]), float(cv[2])), float(cv[3]), float(cv[4]), float(cv[5]) if cv.size() > 5 else 11.0]
+	if args.has("event"):   # depuração: --event=show_dj[ --deco] / mare / tempestade
+		Core.paused = true
+		Core.day_event = str(args.event)
+		if Core.day_event == "tempestade":
+			Core.set_weather("rain")
+		Core.prep_active = args.has("deco")
+		Core.event_changed.emit()
+	if args.has("tourboat"):
+		Core.tour_done.emit("barco", 4, 100)
 	Core.paused = true
 	Core.minutes = s[3] * 60.0
 	guests.enabled = false

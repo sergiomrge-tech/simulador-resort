@@ -9,6 +9,8 @@ uniform vec3 deep : source_color = vec3(0.04, 0.4, 0.78);
 uniform vec3 foam_col : source_color = vec3(1.0, 1.0, 1.0);
 uniform float shore_z = -32.5;
 uniform float night = 0.0;
+uniform float swell = 1.0;   // ressaca (tempestade/maré alta)
+uniform float tide = 0.0;    // elevação do nível do mar (maré alta)
 varying vec3 wpos;
 varying float crest;
 
@@ -31,12 +33,13 @@ vec3 waves(vec2 p, float t){
 void vertex(){
 	vec3 w = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
 	float dist = clamp((shore_z - w.z) / 12.0, 0.15, 1.0);
-	vec3 d = waves(w.xz, TIME) * dist;
+	vec3 d = waves(w.xz, TIME) * dist * swell;
 	VERTEX += d;
+	VERTEX.y += tide;
 	crest = d.y;
 	float e = 0.25;
-	vec3 dx = waves(w.xz + vec2(e, 0), TIME) * dist;
-	vec3 dz = waves(w.xz + vec2(0, e), TIME) * dist;
+	vec3 dx = waves(w.xz + vec2(e, 0), TIME) * dist * swell;
+	vec3 dz = waves(w.xz + vec2(0, e), TIME) * dist * swell;
 	NORMAL = normalize(cross(vec3(0, dz.y - d.y, e), vec3(e, dx.y - d.y, 0)));
 	wpos = w;
 }

@@ -95,3 +95,11 @@ Base de trabalho: v0.6.5 recuperada; versões atuais em `project.godot` / `expor
 7. Versão em `project.godot`, `export_presets.cfg` e `installer/setup.nsi`; depois exporte, rode o `makensis`, entregue no PC e faça o push.
 8. Arquivos acima de 30 MB para o PC: primeiro `SendUserFile`, depois commit com o `fileUuid`.
 - Pedrinhas e conchas da areia (v0.9.1): `g:pebble_a/b/c`, `g:shell_a/b/c` (Blender, `gen_code_props.py`) em MultiMesh por tipo no `world_village.gd`; nada de SphereMesh nelas.
+
+## 🎉 Sala dos Eventos — efeitos visíveis (v0.9.2)
+- `scripts/event_fx.gd` (classe `EventFX`, criada em `world.gd`): festas (quermesse = tendas Kenney; junina = fogueira com chama do Blender e luz tremulando; DJ = `g:dj_booth` com refletores coloridos), faixa `g:party_banner` + bandeirinhas + varal de luzes só quando os preparativos foram pagos (`Core.prep_active`); maré alta/tempestade mexem nos uniforms `swell`/`tide` do shader do mar; passeio de barco/mergulho solta um barco do píer (`Core.tour_done`).
+- Testar: `XTRA="--event=show_dj --deco" Q=1 bash /tmp/claude-0/sub/dbg.sh nome "52,1.6,-17.5,0,2,21"`; também `--event=junina|quermesse|mare|tempestade` e `--tourboat`. Os nomes de shot "piscina", "quiosque" etc. liberam expansões; nome livre não tem piscina.
+- Luzes: superfícies de modelo com material chamado `glow*` recebem o material ligado/desligado à noite via `Real.place_glow(...)` (lâmpadas `g:lamp_globe`/`g:lamp_bulb`, `g:flame`, `g:fresnel_lens`, `g:pool_light`, janelas/portas `g:win_frame`/`g:door_frame` com `VM.glass`).
+- Janelas e portas da vila: `g:win_frame` + `g:win_shutters` (tingidas), `g:door_frame` + `g:door_leaf`; sino da igreja `g:bell`; maçanetas `g:brass_knob`; algas `g:alga`; fumaça = sprite Kenney (`tools/fetch_assets.py` -> `assets/tex/smoke_puff.png`).
+- Metal no glTF vira preto no toon: use `metallic` 0 em material novo que precisa aparecer claro (aço da luz da piscina).
+
