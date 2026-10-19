@@ -2,7 +2,7 @@
 
 Gerado por `python3 tools/gen_item_catalog.py` — **não edite à mão**. Os códigos ficam em `docs/itens_registro.json` e nunca mudam. Para pedir uma alteração, cite o código (ex.: "troque o modelo de MOD-017").
 
-Total: 1929 itens. MOD 165 · NAT 68 · PRC 31 · CEN 269 · PRT 9 · DSH 4 · SUP 6 · EXP 8 · STF 4 · UPG 15 · QST 4 · VIP 12 · EVT 7 · NOU 154 · TEX 29 · AUD 25 · ICO 31 · FNT 1 · SHD 12 · ANI 43 · PCA 934 · MAT 24 · COR 28 · SCR 30 · PES 16
+Total: 1933 itens. MOD 165 · NAT 68 · PRC 31 · CEN 269 · PRT 9 · DSH 4 · SUP 6 · EXP 8 · STF 4 · UPG 15 · QST 4 · VIP 12 · EVT 7 · NOU 157 · TEX 29 · AUD 25 · ICO 31 · FNT 1 · SHD 12 · ANI 43 · PCA 935 · MAT 24 · COR 28 · SCR 30 · PES 16
 
 ## MOD — Modelos 3D em uso (reais, baixados da web) (165)
 
@@ -334,9 +334,9 @@ Total: 1929 itens. MOD 165 · NAT 68 · PRC 31 · CEN 269 · PRT 9 · DSH 4 · S
 | CEN-045 | Hip roof | `build.hip_roof` | build.gd (código) | build.gd:253 |
 | CEN-046 | Arch | `build.arch` | build.gd (código) | build.gd:314 |
 | CEN-047 | Model | `build.model` | build.gd (código) | build.gd:500 |
-| CEN-048 | Label | `build.label` | build.gd (código) | build.gd:543 |
-| CEN-049 | Has model | `build.has_model` | build.gd (código) | build.gd:564 |
-| CEN-050 | Aabb of | `build.aabb_of` | build.gd (código) | build.gd:570 |
+| CEN-048 | Label | `build.label` | build.gd (código) | build.gd:547 |
+| CEN-049 | Has model | `build.has_model` | build.gd (código) | build.gd:568 |
+| CEN-050 | Aabb of | `build.aabb_of` | build.gd (código) | build.gd:574 |
 | CEN-051 | Vcol mat | `details._vcol_mat` | details.gd (código) | details.gd:14 |
 | CEN-052 | Bmesh | `details._bmesh` | details.gd (código) | details.gd:48 |
 | CEN-053 | Crab walk | `details._crab_walk` | details.gd (código) | details.gd:259 |
@@ -345,7 +345,7 @@ Total: 1929 itens. MOD 165 · NAT 68 · PRC 31 · CEN 269 · PRT 9 · DSH 4 · S
 | CEN-056 | Beam | `build._beam` | build.gd (código) | build.gd:297 |
 | CEN-057 | Detailed roof mesh | `build._detailed_roof_mesh` | build.gd (código) | build.gd:348 |
 | CEN-058 | Hip roof flat | `build._hip_roof_flat` | build.gd (código) | build.gd:437 |
-| CEN-059 | Real exists | `build._real_exists` | build.gd (código) | build.gd:559 |
+| CEN-059 | Real exists | `build._real_exists` | build.gd (código) | build.gd:563 |
 | CEN-060 | Materials | `world._materials` | world.gd (código) | world.gd:80 |
 | CEN-061 | Height | `world._height` | world.gd (código) | world.gd:113 |
 | CEN-062 | Ground | `world._ground` | world.gd (código) | world.gd:124 |
@@ -671,7 +671,7 @@ Total: 1929 itens. MOD 165 · NAT 68 · PRC 31 · CEN 269 · PRT 9 · DSH 4 · S
 | EVT-006 | Festa junina | `junina` | Fogueira, quadrilha e petiscos. A galera pede mais comida. Decoração atrai ainda mais gente. |
 | EVT-007 | Show do DJ Maré | `show_dj` | O DJ Maré toca na praia e passa no quiosque. Clientes de sobra e caipirinha em alta. |
 
-## NOU — Modelos baixados ainda sem uso (disponíveis) (154)
+## NOU — Modelos baixados ainda sem uso (disponíveis) (157)
 
 | Código | Nome | Chave | Fonte | Usado em |
 |---|---|---|---|---|
@@ -829,6 +829,9 @@ Total: 1929 itens. MOD 165 · NAT 68 · PRC 31 · CEN 269 · PRT 9 · DSH 4 · S
 | NOU-160 | Pebble b | `g:pebble_b` | Gerado no Blender (tools/gen_*.py) | — |
 | NOU-161 | Pebble c | `g:pebble_c` | Gerado no Blender (tools/gen_*.py) | — |
 | NOU-164 | Shell c | `g:shell_c` | Gerado no Blender (tools/gen_*.py) | — |
+| NOU-166 | Tree amendoeira 1 | `g:tree_amendoeira_1` | Gerado no Blender (tools/gen_*.py) | — |
+| NOU-167 | Tree amendoeira 2 | `g:tree_amendoeira_2` | Gerado no Blender (tools/gen_*.py) | — |
+| NOU-168 | Tree amendoeira 3 | `g:tree_amendoeira_3` | Gerado no Blender (tools/gen_*.py) | — |
 
 ## TEX — Texturas e materiais (29)
 
@@ -1001,7 +1004,7 @@ Total: 1929 itens. MOD 165 · NAT 68 · PRC 31 · CEN 269 · PRT 9 · DSH 4 · S
 | ANI-042 | Walk formal loop | `Walk_Formal_Loop` | UAL (Quaternius CC0) | guest.gd:124 |
 | ANI-043 | Walk loop | `Walk_Loop` | UAL (Quaternius CC0) | event_fx.gd:251, guest.gd:124, guest.gd:180, main.gd:316 (+1) |
 
-## PCA — Peças construídas por código (uma linha = uma peça; ver coluna Função) (934)
+## PCA — Peças construídas por código (uma linha = uma peça; ver coluna Função) (935)
 
 | Código | Peça | Função | Chamada | Material | Linha | Obs |
 |---|---|---|---|---|---|---|
@@ -1706,7 +1709,7 @@ Total: 1929 itens. MOD 165 · NAT 68 · PRC 31 · CEN 269 · PRT 9 · DSH 4 · S
 | PCA-721 | new | `_beam` | `MeshInstance3D.new` | — | build.gd:298 |  |
 | PCA-722 | new | `arch` | `MeshInstance3D.new` | — | build.gd:340 |  |
 | PCA-723 | new | `_hip_roof_flat` | `MeshInstance3D.new` | — | build.gd:492 |  |
-| PCA-724 | build | `model` | `P.build` | — | build.gd:508 |  |
+| PCA-724 | build | `model` | `P.build` | — | build.gd:512 |  |
 | PCA-725 | cyl | `_legs` | `B.cyl` | — | props.gd:78 |  [em laço] |
 | PCA-726 | cyl | `stool` | `B.cyl` | — | props.gd:82 |  |
 | PCA-727 | cyl | `stool` | `B.cyl` | — | props.gd:83 |  |
@@ -1909,7 +1912,7 @@ Total: 1929 itens. MOD 165 · NAT 68 · PRC 31 · CEN 269 · PRT 9 · DSH 4 · S
 | PCA-924 | g:flowerbed | `_landmark_details` | `Real.place` | — | world_village.gd:1739 |  [em laço] |
 | PCA-925 | g:popcorn | `_landmark_details` | `Real.place` | — | world_village.gd:1761 |  |
 | PCA-926 | g:volleyball | `volley_net` | `Real.place` | — | details.gd:279 |  |
-| PCA-927 | q:CommonTree %d | `model` | `Real.place` | — | build.gd:504 |  |
+| PCA-927 | g:tree amendoeira %d | `model` | `Real.place` | — | build.gd:505 | v0.9.4: amendoeira-da-praia do Blender (folhas de verdade); a CommonTree da Quaternius tin |
 | PCA-928 | multimesh | `_string_lights` | `D.multimesh` | — | world.gd:1120 |  |
 | PCA-929 | g:shell a | `_bungalow_details` | `Real.place` | — | world.gd:2083 |  [em laço] |
 | PCA-930 | g:brass knob | `_reception_details` | `Real.place` | — | world.gd:2172 |  |
@@ -1939,6 +1942,7 @@ Total: 1929 itens. MOD 165 · NAT 68 · PRC 31 · CEN 269 · PRT 9 · DSH 4 · S
 | PCA-954 | box | `_house` | `B.box` | — | world_village.gd:487 |  |
 | PCA-955 | box | `_house` | `B.box` | — | world_village.gd:494 |  |
 | PCA-956 | label | `_house` | `B.label` | — | world_village.gd:495 |  |
+| PCA-957 | q:CommonTree %d | `model` | `Real.place` | — | build.gd:508 |  |
 
 ## MAT — Materiais nomeados (M.xxx) (24)
 

@@ -126,3 +126,4 @@ glTF 1k em `assets/models/` (normal/ARM reduzidos para 512) e glTF 2k em `assets
 porch_column, bamboo_pole, seagull_perch/seagull_fly (refeitas), coxinha (refeita), jangada (troncos contínuos), bicicletas (bagageiro e descanso), lamp_globe (ferro), signpost_post (pedras lascadas), fish_clown/blue/angel/silver, coral_branch_a/b/c, coral_table, coral_brain, sea_fan, life_vest.
 ### Áudio sintetizado (numpy, `tools/gen_audio.py`, sem samples de terceiros)
 thunder, rain_loop, wind_loop, forro_loop, dj_loop.
+- v0.9.4 (Blender, próprios): balcony_rail, tree_amendoeira_1/2/3.

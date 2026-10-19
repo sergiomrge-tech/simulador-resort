@@ -501,6 +501,10 @@ static func model(parent: Node, n: String, pos: Vector3, rot_y: = 0.0, s: = 1.0)
 	# a "árvore de bolas" (island_tree_01, esferas verdes) foi trocada por árvores reais da Quaternius (CC0)
 	if n == "island_tree_01":
 		var tk: = 1 + int(absf(pos.x * 3.0 + pos.z * 7.0)) % 5
+		# v0.9.4: amendoeira-da-praia do Blender (folhas de verdade); a CommonTree da Quaternius tinha copa de bolas
+		var am: = Real.place(parent, "g:tree_amendoeira_%d" % (1 + tk % 3), pos, 6.0 * s, rot_y)
+		if am != null:
+			return am
 		var tr_: = Real.place(parent, "q:CommonTree_%d" % tk, pos, 5.2 * s, rot_y)
 		if tr_ != null:
 			return tr_

@@ -2203,7 +2203,98 @@ def balcony_rail():
     join(parts, "balcony_rail")
     export("balcony_rail")
 
-ALL = {"balcony_rail": balcony_rail, "porch_column": porch_column, "bamboo_pole": bamboo_pole, "fish_clown": lambda: fish("fish_clown", 0.16, 0.1, 0.07, (1.0, 0.45, 0.05), (1.0, 0.5, 0.1), (0.97, 0.97, 0.95), 3, (1.0, 0.4, 0.05), "round", 0.16),
+def tree_amendoeira(name, seed, H=6.0):
+    """Amendoeira-da-praia (Terminalia catappa), a árvore típica da orla brasileira: tronco torto com casca, galhos em andares quase horizontais
+    (forma de pagode) e folhas grandes obovadas em rosetas nas pontas, algumas avermelhadas. Substitui a copa de "bolas" (Quaternius CommonTree).
+    Altura H (m), base em z=0. Folhas são lâminas de verdade (grade com nervura e curvatura), não esferas."""
+    import mathutils
+    V, Mx = mathutils.Vector, mathutils.Matrix
+    fresh()
+    rnd = random.Random(seed)
+    bark = mat("casca", (0.42, 0.32, 0.24), 0.9, tex("palm_tree_bark_diff.jpg"))
+    greens = [mat("folha1", (0.16, 0.42, 0.12), 0.65), mat("folha2", (0.24, 0.52, 0.16), 0.65), mat("folha3", (0.12, 0.34, 0.1), 0.7),
+              mat("folha_ruiva", (0.78, 0.3, 0.1), 0.65)]
+    for m in greens:
+        m.use_backface_culling = False
+    parts = []
+    # tronco em loft com leve curva
+    bmT = bmesh.new()
+    uvl = bmT.loops.layers.uv.new("UVMap")
+    th = H * 0.46
+    lean = V((rnd.uniform(-0.3, 0.3), rnd.uniform(-0.3, 0.3), 0))
+    secs = []
+    rings = []
+    n = 14
+    for i in range(n + 1):
+        t = i / n
+        c = lean * (t * t) + V((0, 0, th * t))
+        r = (0.24 - 0.11 * t) * (1.25 if t < 0.06 else 1.0) * (1 + 0.04 * math.sin(t * 17 + seed))
+        ring = []
+        for k in range(16):
+            a = 2 * math.pi * k / 16
+            rr = r * (1 + 0.06 * math.sin(a * 3 + t * 9))
+            ring.append(bmT.verts.new((c.x + rr * math.cos(a), c.y + rr * math.sin(a), c.z)))
+        rings.append(ring)
+    for i in range(n):
+        for k in range(16):
+            k2 = (k + 1) % 16
+            f = bmT.faces.new((rings[i][k], rings[i][k2], rings[i + 1][k2], rings[i + 1][k]))
+            for lp in f.loops:
+                lp[uvl].uv = (k / 16 * 2, lp.vert.co.z * 0.8)
+    parts.append(_mesh_obj(bmT, "tronco", [bark], 0.0, 1))
+    top = lean + V((0, 0, th))
+    bmL = bmesh.new()
+    uvL = bmL.loops.layers.uv.new("UVMap")
+    def rosette(p, d, sz):
+        q = d.to_track_quat("Y", "Z").to_matrix().to_4x4()
+        cnt = rnd.randint(10, 13)
+        for j in range(cnt):
+            a = j * 2 * math.pi / cnt + rnd.uniform(-0.2, 0.2)
+            up = math.radians(rnd.uniform(15, 40))
+            M = Mx.Translation(p) @ Mx.Rotation(a, 4, "Z") @ Mx.Rotation(-math.pi / 2 + up, 4, "X")
+            L = 0.46 * sz * rnd.uniform(0.8, 1.2)
+            mi = 3 if rnd.random() < 0.04 else rnd.randint(0, 2)
+            _patch(bmL, M, L, L * 0.55, 0.08, -0.15, 0.06, 4, 2, mi, uvL)
+    def branch(p0, d, length, r0, depth):
+        steps = 4
+        prev = p0
+        dd = d.copy()
+        for sidx in range(steps):
+            t1 = (sidx + 1) / steps
+            dd = (dd + V((rnd.uniform(-0.12, 0.12), rnd.uniform(-0.12, 0.12), 0.04))).normalized()
+            q = prev + dd * (length / steps)
+            parts.append(tube(tuple(prev), tuple(q), max(0.012, r0 * (1 - 0.6 * t1)), bark, verts=10))
+            if sidx >= 1:
+                rosette(q, dd, 0.9 if depth == 0 else 0.8)
+                # rosetas extras em volta (copa em "pratos" horizontais, cheia)
+                for e in range(2 if sidx >= 2 else 1):
+                    off = V((rnd.uniform(-0.35, 0.35), rnd.uniform(-0.35, 0.35), rnd.uniform(-0.05, 0.12)))
+                    rosette(q + off, dd, 0.8)
+            prev = q
+        if depth == 0:
+            for side in (-1, 1):
+                sd = (d + V((-d.y * side * 0.9, d.x * side * 0.9, 0.15))).normalized()
+                branch(p0 + d * length * 0.55, sd, length * 0.45, r0 * 0.5, 1)
+        rosette(prev, dd, 1.0)
+    tiers = [(0.42, 2.9, 6), (0.56, 2.6, 6), (0.7, 2.1, 5), (0.84, 1.5, 5), (0.95, 0.8, 3)]
+    for ti, (hf, ln, nb) in enumerate(tiers):
+        z = H * hf
+        rot0 = rnd.uniform(0, math.pi)
+        for b in range(nb):
+            a = rot0 + b * 2 * math.pi / nb + rnd.uniform(-0.25, 0.25)
+            d = V((math.cos(a), math.sin(a), 0.12 + 0.06 * ti)).normalized()
+            base = V((lean.x * (z / th) ** 2 if z < th else lean.x, lean.y * (z / th) ** 2 if z < th else lean.y, z))
+            if z > th:
+                # acima do tronco: continua por um líder central
+                parts.append(tube(tuple(top), tuple(base), 0.1 * (1.2 - hf), bark, verts=10))
+            branch(base, d, ln * H / 6.0 * rnd.uniform(0.85, 1.1), 0.09 * (1.15 - hf), 0)
+    rosette(V((lean.x, lean.y, H * 0.97)), V((0, 0.0, 1)), 1.0)
+    leaves = _mesh_obj(bmL, "folhas", greens)
+    parts.append(leaves)
+    join(parts, name)
+    export(name)
+
+ALL = {"tree_amendoeira_1": lambda: tree_amendoeira("tree_amendoeira_1", 11), "tree_amendoeira_2": lambda: tree_amendoeira("tree_amendoeira_2", 27), "tree_amendoeira_3": lambda: tree_amendoeira("tree_amendoeira_3", 53), "balcony_rail": balcony_rail, "porch_column": porch_column, "bamboo_pole": bamboo_pole, "fish_clown": lambda: fish("fish_clown", 0.16, 0.1, 0.07, (1.0, 0.45, 0.05), (1.0, 0.5, 0.1), (0.97, 0.97, 0.95), 3, (1.0, 0.4, 0.05), "round", 0.16),
        "fish_blue": lambda: fish("fish_blue", 0.22, 0.14, 0.05, (0.1, 0.35, 0.9), (0.95, 0.8, 0.2), (0.05, 0.1, 0.4), 0, (0.95, 0.85, 0.2), "fork", 0.12),
        "fish_angel": lambda: fish("fish_angel", 0.24, 0.26, 0.05, (0.95, 0.85, 0.25), (0.95, 0.9, 0.5), (0.15, 0.15, 0.2), 4, (0.2, 0.3, 0.8), "round", 0.1),
        "fish_silver": lambda: fish("fish_silver", 0.3, 0.1, 0.06, (0.55, 0.62, 0.72), (0.93, 0.95, 0.97), (0.4, 0.45, 0.55), 0, (0.7, 0.75, 0.85), "fork", 0.1),

@@ -1838,7 +1838,7 @@
   "usos": [
    {
     "arquivo": "build.gd",
-    "linha": 543,
+    "linha": 547,
     "funcao": "label"
    }
   ]
@@ -1852,7 +1852,7 @@
   "usos": [
    {
     "arquivo": "build.gd",
-    "linha": 564,
+    "linha": 568,
     "funcao": "has_model"
    }
   ]
@@ -1866,7 +1866,7 @@
   "usos": [
    {
     "arquivo": "build.gd",
-    "linha": 570,
+    "linha": 574,
     "funcao": "aabb_of"
    }
   ]
@@ -1992,7 +1992,7 @@
   "usos": [
    {
     "arquivo": "build.gd",
-    "linha": 559,
+    "linha": 563,
     "funcao": "_real_exists"
    }
   ]
@@ -13213,6 +13213,33 @@
   "fonte": "Gerado no Blender (tools/gen_*.py)",
   "usos": [],
   "arquivo_modelo": "assets/models/gen/shell_c.glb"
+ },
+ {
+  "codigo": "NOU-166",
+  "categoria": "NOU",
+  "chave": "g:tree_amendoeira_1",
+  "nome": "Tree amendoeira 1",
+  "fonte": "Gerado no Blender (tools/gen_*.py)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/gen/tree_amendoeira_1.glb"
+ },
+ {
+  "codigo": "NOU-167",
+  "categoria": "NOU",
+  "chave": "g:tree_amendoeira_2",
+  "nome": "Tree amendoeira 2",
+  "fonte": "Gerado no Blender (tools/gen_*.py)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/gen/tree_amendoeira_2.glb"
+ },
+ {
+  "codigo": "NOU-168",
+  "categoria": "NOU",
+  "chave": "g:tree_amendoeira_3",
+  "nome": "Tree amendoeira 3",
+  "fonte": "Gerado no Blender (tools/gen_*.py)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/gen/tree_amendoeira_3.glb"
  },
  {
   "codigo": "PCA-001",
@@ -26542,7 +26569,7 @@
   "usos": [
    {
     "arquivo": "build.gd",
-    "linha": 508,
+    "linha": 512,
     "funcao": "model"
    }
   ],
@@ -30394,20 +30421,20 @@
   "codigo": "PCA-927",
   "categoria": "PCA",
   "chave": "build.gd|model|Real.place|1",
-  "nome": "q:CommonTree %d",
+  "nome": "g:tree amendoeira %d",
   "fonte": "build.gd (código)",
   "usos": [
    {
     "arquivo": "build.gd",
-    "linha": 504,
+    "linha": 505,
     "funcao": "model"
    }
   ],
   "chamada": "Real.place",
-  "args": "parent, \"q:CommonTree_%d\" % tk, pos, 5.2 * s, rot_y",
+  "args": "parent, \"g:tree_amendoeira_%d\" % (1 + tk % 3), pos, 6.0 * s, rot_y",
   "material": "",
   "em_laco": false,
-  "comentario": ""
+  "comentario": "v0.9.4: amendoeira-da-praia do Blender (folhas de verdade); a CommonTree da Quaternius tin"
  },
  {
   "codigo": "PCA-928",
@@ -30956,6 +30983,25 @@
   ],
   "chamada": "B.label",
   "args": "self, sign_text, c + Vector3(0, 2.95, front * (d * 0.5 + 0.15)), 70, Color(1.0, 0.93, 0.75), Color(0.25, 0.12,",
+  "material": "",
+  "em_laco": false,
+  "comentario": ""
+ },
+ {
+  "codigo": "PCA-957",
+  "categoria": "PCA",
+  "chave": "build.gd|model|Real.place|2",
+  "nome": "q:CommonTree %d",
+  "fonte": "build.gd (código)",
+  "usos": [
+   {
+    "arquivo": "build.gd",
+    "linha": 508,
+    "funcao": "model"
+   }
+  ],
+  "chamada": "Real.place",
+  "args": "parent, \"q:CommonTree_%d\" % tk, pos, 5.2 * s, rot_y",
   "material": "",
   "em_laco": false,
   "comentario": ""
@@ -31704,7 +31750,7 @@
     "funcao": ""
    }
   ],
-  "linhas": 579,
+  "linhas": 583,
   "descricao": ""
  },
  {
