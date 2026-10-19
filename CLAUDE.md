@@ -1,5 +1,7 @@
 # Maré Alta Resort — Palácio de Memória
 
+> **Para continuar o trabalho (outra IA ou pessoa): leia primeiro [`docs/CONTINUAR.md`](docs/CONTINUAR.md).**
+
 Regras aprendidas com erros reais deste projeto. Leia antes de mexer em qualquer coisa.
 Cada "cômodo" guarda um tipo de erro: o que aconteceu, a regra e como conferir.
 Ao corrigir um erro novo, acrescente uma linha no cômodo certo (ou crie um cômodo).
