@@ -283,7 +283,7 @@ def universal_base_characters():
     page = call(base)
     dl = json.loads(call(base + "/download_url", {"csrf_token": csrf(page)}))["url"]
     dlpage = call(dl)
-    m = re.search(r'data-upload_id="(\\d+)"', dlpage.decode("utf-8", "ignore"))
+    m = re.search(r'data-upload_id="(\d+)"', dlpage.decode("utf-8", "ignore"))
     if not m:
         raise RuntimeError("UBC: itch.io nao forneceu upload_id")
     upload = m.group(1)
@@ -310,7 +310,7 @@ def universal_base_characters():
             for rel in refs:
                 if not rel or rel.startswith("data:"):
                     continue
-                rel = urllib.parse.unquote(rel).replace("\\\\", "/")
+                rel = urllib.parse.unquote(rel).replace("\\", "/")
                 normalized = posixpath.normpath(rel)
                 if normalized.startswith("../") or normalized.startswith("/"):
                     raise RuntimeError("UBC: caminho fora do pacote: " + rel)
