@@ -138,6 +138,8 @@ Base de trabalho: v0.6.5 recuperada; versões atuais em `project.godot` / `expor
 - Política de instalador: patches pequenos para quem já tem o jogo; instalador completo consolidado a cada ~5 versões (próximo na 0.9.7 ou quando pedirem).
 - Pacote cumulativo: `bash tools/build_patch.sh 477454d` (base 0.9.2) gera um patch único com tudo; renomeie para `Atualizar_MareAltaResort_0.9.2_para_X_completo.exe` e deixe só ele em `patches/`.
 
+- **Erro prevenido (v1.0.1):** `git diff` não inclui `assets/models/qnat` ignorados nem garante novos `assets/models/gen/*.glb`; o patch precisa acrescentar qnat e os GLBs atualizados explicitamente (`tools/build_patch.sh`). `fetch_assets.py` deve gerar também `gen_food`, `gen_business` e `gen_hotel` após as texturas, e falhar se um GLB não sair. O código foi corrigido via GitHub MCP, mas **testes reais no Godot ainda estão pendentes**.
+
 ## 🏆 Sala da Evolução — v1.0 (fama, negócios, temporadas, receitas, capítulos, Hotel 5★)
 - Lógica em `scripts/progression.gd` (nó `Core.prog`, salvo em `"prog"` no save v6); dados em `scripts/prog_data.gd` (classe `PD`). Ganchos no Core: `on_sale`, `on_income` (via `book`), `on_vip`, `on_tour`, `on_new_day`, `tick`.
 - Efeitos da árvore: `Core.prog.eff("ramo")`; equipe: `staff_eff(cargo)` (0 = folga) e `staff_wage(cargo)`. Nunca leia `Economy.STAFF[x].wage` direto para pagar.
