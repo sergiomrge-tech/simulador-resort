@@ -16,6 +16,17 @@ echo "== patch $BASEVER -> $VER =="
   echo "ERRO: assets/models/qnat ausente. Rode python3 tools/fetch_assets.py."
   exit 1
 }
+# Os aliases Kenney -> Poly Haven desta versão não aparecem no git diff,
+# porque as texturas/GLTF baixadas estão no .gitignore. Sem eles, o jogo
+# instalado perde árvores, rochas, fogueira, caixotes e pão.
+PATCH_PH=(croissant Barrel_01 wooden_crate_02 stone_fire_pit sand_rocks_small_01
+          boulder_01 dead_tree_trunk)
+for slug in "${PATCH_PH[@]}"; do
+  [ -s "assets/models/${slug}/${slug}.gltf" ] || {
+    echo "ERRO: falta Poly Haven 1k: ${slug}; rode tools/fetch_assets.py."
+    exit 1
+  }
+done
 # Novos modelos v1.0.1 + os props refeitos após corrigir o Blender.
 PATCH_GEN=(coconut_green coconut_open pineapple orange frappe cup_plastic glass_juice cocktail
            campfire_logs beach_flag beach_spade boat_hull
@@ -31,6 +42,10 @@ FILES=$(
     git diff --name-only "$BASE" -- scripts shaders scenes assets '*.tscn'
     git ls-files --others --exclude-standard -- scripts shaders scenes assets
     find assets/models/qnat -maxdepth 1 -type f
+    # glTF Poly Haven de 1k e todas as dependências (.bin, JPG, PNG)
+    for slug in "${PATCH_PH[@]}"; do
+      find "assets/models/${slug}" -type f
+    done
     for name in "${PATCH_GEN[@]}"; do echo "assets/models/gen/${name}.glb"; done
   } | grep -E '\.(gd|gdshader|glb|gltf|bin|ogg|tscn|tres|png|jpg|jpeg|webp)$' |
     grep -v '^tests/' | sort -u | while IFS= read -r f; do [ -f "$f" ] && echo "$f"; done
