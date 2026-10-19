@@ -55,7 +55,21 @@ jobs:
       - name: Baixar CC0 e modelar todos os assets com Blender
         run: |
           set -euo pipefail
-          python tools/fetch_assets.py 2>&1 | tee fetch-assets.log
+          # CDN Poly Haven pode responder 502/520 mesmo após 4 tentativas
+          # internas. Reexecutar aproveita downloads completos e recupera
+          # glTF cujas texturas/binários ficaram incompletos.
+          succeeded=0
+          for attempt in 1 2 3 4; do
+            echo "=== Tentativa de assets $attempt/4 ===" | tee -a fetch-assets.log
+            if python -u tools/fetch_assets.py 2>&1 | tee -a fetch-assets.log; then
+              succeeded=1
+              break
+            fi
+            sleep 15
+          done
+          if [ "$succeeded" != "1" ]; then
+            echo "Assets CC0 incompletos após quatro tentativas"; exit 1
+          fi
           test -s assets/models/qnat/Bush_Common.gltf
           for model in coconut_green coconut_open pineapple orange frappe cup_plastic glass_juice cocktail campfire_logs beach_flag beach_spade boat_hull; do
             test -s "assets/models/gen/${model}.glb"
