@@ -339,6 +339,11 @@ func _home() -> void :
 	m.add_child(v)
 	var hello: = _lbl(v, tr("Quiosque Maré Alta"), 28, INK, true)
 	hello.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	if Engine.has_meta("update_ver"):
+		var up: = _card(v, Color(0.85, 1.0, 0.9, 0.95))
+		_lbl(up, tr("ATUALIZAÇÃO DISPONÍVEL"), 14, INK_SOFT, true)
+		_lbl(up, tr("Versão %s do jogo já saiu. Baixe o patch (Atualizar_MareAltaResort) e rode com o jogo fechado.") % str(Engine.get_meta("update_ver")), 15, INK, false, true)
+		_btn(up, tr("Abrir página dos patches"), func(): OS.shell_open(str(Engine.get_meta("update_page"))))
 	var nx: = Core.next_expansion()
 	if nx != "":
 		var goal: = _card(v, Color(1, 1, 1, 0.85))
@@ -545,6 +550,7 @@ func _app_quests(list: VBoxContainer) -> void :
 			_lbl(r2, "%d/%d %s" % [mini(have, int(q.qty)), int(q.qty), tr(str(Economy.SUPPLIES[q.need].name))], 15, GOOD if have >= int(q.qty) else BAD, true)
 
 func _app_album(list: VBoxContainer) -> void :
+	_album_photos(list)
 	var n: = Core.album.size()
 	var head: = _card(list, Color(1.0, 0.96, 0.8, 0.97))
 	_lbl(head, tr("Clientes famosos: %d/%d") % [n, Economy.VIPS.size()], 20, INK, true)
@@ -563,6 +569,42 @@ func _app_album(list: VBoxContainer) -> void :
 		r.add_child(col)
 		_lbl(col, str(v.name) if got else "???", 18, INK if got else INK_SOFT, true)
 		_lbl(col, tr(str(v.title)) if got else tr("Ainda não visitou o quiosque"), 14, INK_SOFT, false, true)
+
+## v0.9.5: fotos tiradas com a tecla P (user://album) e temas que pagam prêmio.
+func _album_photos(list: VBoxContainer) -> void :
+	var data: = {"fotos": [], "temas": {}}
+	var f: = FileAccess.open("user://album/album.json", FileAccess.READ)
+	if f:
+		var d = JSON.parse_string(f.get_as_text())
+		if d is Dictionary:
+			data = d
+	var head: = _card(list, Color(0.85, 0.95, 1.0, 0.97))
+	var themes: Dictionary = load("res://scripts/photo_mode.gd").THEMES
+	_lbl(head, tr("Fotos: %d   ·   Temas: %d/%d") % [data.fotos.size(), data.temas.size(), themes.size()], 20, INK, true)
+	_lbl(head, tr("Aperte P para fotografar. Cada tema novo rende um prêmio."), 14, INK_SOFT, false, true)
+	var ch: = HFlowContainer.new()
+	ch.add_theme_constant_override("h_separation", 6)
+	ch.add_theme_constant_override("v_separation", 6)
+	head.add_child(ch)
+	for t in themes:
+		var got: bool = data.temas.has(t)
+		_chip(ch, tr(str(themes[t][0])), Color.WHITE if got else INK, GOOD if got else Color(0.9, 0.9, 0.94))
+	var grid: = GridContainer.new()
+	grid.columns = 2
+	grid.add_theme_constant_override("h_separation", 8)
+	grid.add_theme_constant_override("v_separation", 8)
+	list.add_child(grid)
+	var fotos: Array = data.fotos
+	for i in range(fotos.size() - 1, maxi(-1, fotos.size() - 13), -1):
+		var img: = Image.load_from_file("user://album/" + str(fotos[i].arq))
+		if img == null or img.is_empty():
+			continue
+		var tr_: = TextureRect.new()
+		tr_.texture = ImageTexture.create_from_image(img)
+		tr_.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		tr_.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+		tr_.custom_minimum_size = Vector2(150, 84)
+		grid.add_child(tr_)
 
 func _app_rooms(list: VBoxContainer) -> void :
 	if not Core.has("pousada"):

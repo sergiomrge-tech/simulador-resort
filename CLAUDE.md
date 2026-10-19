@@ -123,3 +123,13 @@ Base de trabalho: v0.6.5 recuperada; versões atuais em `project.godot` / `expor
 - `pkill -f`/`pgrep -f` com texto que aparece no próprio comando mata o shell (aconteceu de novo com "build_release" e "dbg.sh"): use `ps aux | grep "[g]odot/godot" | awk '{print $2}' | xargs kill`.
 - v0.9.4: casas variadas em `_house` (estilo pela posição: térrea, sobrado com sacada `g:balcony_rail`, platibanda com frontão e ano, madeira) e telhado em 4 tons (`ROOF_TINTS`). Patch: `bash tools/build_patch.sh c8d566e` (base 0.9.3); os patches se somam (`patch_0.9.3.pck` + `patch_0.9.4.pck`).
 - v0.9.4: a "árvore de bolas" voltou a aparecer no modo leve: a `q:CommonTree` da Quaternius também tem copa de esferas. Trocada por `g:tree_amendoeira_1..3` (Blender, galhos em andares e rosetas de folhas de verdade) em `B.model("island_tree_01")`.
+
+## 🧹 Sala da Faxina — v0.9.5
+- `--primcheck` (`tests/prim_check.gd`) lista no log `PRIM n=...` toda BoxMesh/CylinderMesh/SphereMesh/... que não é parede, piso ou telhado. Rode junto com `--floatcheck` antes de cada patch: `XTRA="--full --primcheck --floatcheck" Q=1 bash /tmp/claude-0/sub/dbg.sh pc "40,40,0,0,-60,12"`. Aceitos: neon, grades, placas de número, bueiros, corrimãos, amarras.
+- Novos modelos do Blender: trellis_planter, towel_folded, flipflops, pool_float, rope_coil, cloth_shirt/towel, ac_unit, tv_antenna, straw, popcorn_cart, newsstand, cooler_box, coconut_cart, bottle_*. Materiais chamados `tint*` são coloridos no jogo com `Real.tint_named(nó, cor)`.
+- Snorkel: `player.gd` nada quando o fundo está abaixo de -1,1 m (máscara em y -0,48, Shift mergulha); `scripts/underwater.gd` + `shaders/underwater.gdshader` ligam a visão subaquática quando a câmera fica abaixo de WATER_Y (-0,3). No `--cam` o y é do corpo: câmera = y + 1,65.
+- Fotos: tecla P (`scripts/photo_mode.gd`, registrada em tempo de execução porque o patch não muda o InputMap do project.godot), álbum em `user://album`. Fregueses fiéis em `user://fregueses.json` (`village_life.gd`, não no Core, que é autoload e não muda com patch).
+- Aviso de atualização: `scripts/update_check.gd` lê `docs/latest_version.txt` no GitHub; os patches ficam em `patches/` no repositório. **A cada patch novo: atualize `docs/latest_version.txt` e copie o .exe para `patches/`.**
+- Janelas acendem em 3 horários (`VM.glass`, `glass_b`, `glass_c`); moradores vão até a porta (`house_doors`) às 21h30; facho do farol com `shaders/light_beam.gdshader`.
+- O carregador do patch grava `diagnostico.txt` (placa, API, renderizador, FPS) na pasta do jogo.
+- Política de instalador: patches pequenos para quem já tem o jogo; instalador completo consolidado a cada ~5 versões (próximo na 0.9.7 ou quando pedirem).

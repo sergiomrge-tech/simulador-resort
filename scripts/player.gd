@@ -15,6 +15,8 @@ var ray: RayCast3D
 var focus: Interactable = null
 var _step_acc: = 0.0
 var _step_flip: = false
+var world: Node3D
+var swimming: = false
 
 func _ready() -> void :
 	var cs: = CollisionShape3D.new()
@@ -74,6 +76,11 @@ func _physics_process(delta: float) -> void :
 	var dir: = (right * inp.x + fwd * inp.y)
 	dir.y = 0
 	var sp: = SPEED * (SPRINT if Input.is_action_pressed("sprint") else 1.0)
+	# v0.9.5: nado/snorkel no mar fundo (mais de 1 m de água): boia com a máscara logo abaixo da superfície; Shift mergulha até o fundo
+	var ground: = float(world.call("_height", global_position.x, global_position.z)) if world and world.has_method("_height") else 0.0
+	swimming = global_position.z < -24.0 and ground < -1.1
+	if swimming:
+		sp = 2.1
 	velocity.x = dir.x * sp
 	velocity.z = dir.z * sp
 
@@ -83,13 +90,17 @@ func _physics_process(delta: float) -> void :
 		yaw -= lk.x * kk
 		pitch = clampf(pitch - ( - lk.y if Quality.invert_y else lk.y) * kk * 0.75, deg_to_rad(-80), deg_to_rad(75))
 		_apply_look()
-	if not is_on_floor():
+	if swimming:
+		var dive: = Input.is_action_pressed("sprint")
+		var cam_y: = maxf((ground + 0.6) if dive else -0.48, ground + 0.45)   # superfície do mar em y = -0,3
+		velocity.y = clampf((cam_y - EYE - global_position.y) * 3.0, -1.6, 1.6)
+	elif not is_on_floor():
 		velocity.y -= 18.0 * delta
 	else:
 		velocity.y = -0.5
 	move_and_slide()
 	var hv: = Vector2(velocity.x, velocity.z).length()
-	if hv > 0.5 and is_on_floor():
+	if hv > 0.5 and is_on_floor() and not swimming:
 		_step_acc += hv * delta
 		if _step_acc > (0.95 if sp > SPEED else 0.75):
 			_step_acc = 0.0

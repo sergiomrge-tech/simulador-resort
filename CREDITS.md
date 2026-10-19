@@ -127,3 +127,4 @@ porch_column, bamboo_pole, seagull_perch/seagull_fly (refeitas), coxinha (refeit
 ### Áudio sintetizado (numpy, `tools/gen_audio.py`, sem samples de terceiros)
 thunder, rain_loop, wind_loop, forro_loop, dj_loop.
 - v0.9.4 (Blender, próprios): balcony_rail, tree_amendoeira_1/2/3.
+- v0.9.5 (Blender, próprios): trellis_planter, towel_folded, flipflops, pool_float, rope_coil, cloth_shirt, cloth_towel, ac_unit, tv_antenna, straw, popcorn_cart, newsstand, cooler_box, coconut_cart, bottle_cachaca/rum/green/wine.

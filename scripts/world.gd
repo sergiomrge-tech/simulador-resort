@@ -403,13 +403,15 @@ func _lounger(p: Vector3, rot: float) -> void :
 		B.box(n, Vector3(0.68, 0.1, 0.72), Vector3(0, 0.56, -0.86), M.rattan).rotation.x = -0.7
 		B.box(n, Vector3(0.64, 0.09, 1.25), Vector3(0, 0.39, 0.28), M.linen_teal)
 	# v0.7.2: toalha listrada dobrada, rodinhas e chinelos
-	for k in 4:
-		B.box(n, Vector3(0.5, 0.025, 0.11), Vector3(0, 0.45, 0.62 + k * 0.11), B.flat(D.FLAG_COLS[(k + int(p.x)) % D.FLAG_COLS.size()] if k % 2 == 0 else Color.WHITE, 0.9))
-	for sx in [-0.36, 0.36]:
-		var wh: = B.cyl(n, 0.07, 0.07, 0.04, Vector3(sx, 0.07, -0.85), M.darkwood, 14)
-		wh.rotation.z = PI * 0.5
-	for sx in [-0.1, 0.1]:
-		B.box(n, Vector3(0.09, 0.02, 0.24), Vector3(sx + 0.45, 0.01, 1.05), B.flat(Color(1.0, 0.85, 0.2), 0.6))
+	# v0.9.5: toalha dobrada e chinelos modelados no Blender (antes: tiras de caixa e chinelos-caixa)
+	var tw: = Real.place(n, "g:towel_folded", Vector3(0, 0.44, 0.75), -1.0, 0.0, Color.WHITE, 0.0, false)
+	if tw:
+		Real.tint_named(tw, D.FLAG_COLS[int(absf(p.x * 3.0 + p.z)) % D.FLAG_COLS.size()])
+	if lg == null:
+		for sx in [-0.36, 0.36]:
+			var wh: = B.cyl(n, 0.07, 0.07, 0.04, Vector3(sx, 0.07, -0.85), M.darkwood, 14)
+			wh.rotation.z = PI * 0.5
+	Real.place(n, "g:flipflops", Vector3(0.48, 0.0, 1.05), -1.0, 0.2, Color.WHITE, 0.0, false)
 
 var _parasol_mats: = {}
 var _thatch_parasol: Material
@@ -574,8 +576,9 @@ func _coconut_cup(parent: Node, pos: Vector3) -> Node3D:
 	n.position = pos
 	parent.add_child(n)
 	Real.place(n, "k:coconut-half", Vector3.ZERO, 0.15)
-	var straw: = B.cyl(n, 0.012, 0.012, 0.22, Vector3(0.03, 0.2, 0), B.flat(Color(0.85, 0.2, 0.16), 0.4), 8)
-	straw.rotation.z = -0.55
+	if Real.place(n, "g:straw", Vector3(0.0, 0.05, 0.0), -1.0, 0.6, Color.WHITE, 0.0, false) == null:
+		var straw: = B.cyl(n, 0.012, 0.012, 0.22, Vector3(0.03, 0.2, 0), B.flat(Color(0.85, 0.2, 0.16), 0.4), 8)
+		straw.rotation.z = -0.55
 	return n
 
 func _petisco_plate(parent: Node, pos: Vector3) -> Node3D:
@@ -1039,9 +1042,11 @@ func _bar() -> void :
 
 	B.box(self, Vector3(0.4, 1.6, 3.0), c + Vector3(2.3, y0 + 0.8, 0), M.oak)
 	var cols: = [Color(0.2, 0.5, 0.2), Color(0.6, 0.35, 0.1), Color(0.85, 0.85, 0.9), Color(0.5, 0.1, 0.15)]
+	# v0.9.5: garrafas torneadas do Blender (cachaça, rum, long neck, vinho) no lugar dos cilindros
+	var bkeys: = ["g:bottle_cachaca", "g:bottle_rum", "g:bottle_green", "g:bottle_wine"]
 	for i in 10:
-		var gm: = B.flat(cols[i % cols.size()], 0.15, 0.1)
-		B.cyl(self, 0.045, 0.05, 0.3, c + Vector3(2.25, y0 + 1.75, -1.3 + i * 0.28), gm, 8)
+		if Real.place(self, bkeys[i % bkeys.size()], c + Vector3(2.25, y0 + 1.6, -1.3 + i * 0.28), -1.0, i * 0.7, Color.WHITE, 0.0, true) == null:
+			B.cyl(self, 0.045, 0.05, 0.3, c + Vector3(2.25, y0 + 1.75, -1.3 + i * 0.28), B.flat(cols[i % cols.size()], 0.15, 0.1), 8)
 	B.model(self, "lambis_shell", c + Vector3(-2.0, y0 + ch + 0.07, 1.2), 0.3, 1.0)
 	B.model(self, "wooden_bucket_01", c + Vector3(-2.0, y0 + ch + 0.07, -1.0), 0.0, 0.6)
 
@@ -1125,6 +1130,8 @@ func _cooler(p: Vector3, rot: float) -> void :
 	n.position = p
 	n.rotation.y = rot
 	add_child(n)
+	if Real.place(n, "g:cooler_box", Vector3.ZERO, -1.0, 0.0, Color.WHITE, 0.0, false) != null:
+		return
 	var body: = B.flat(Color(0.85, 0.9, 0.92), 0.35)
 	var lid: = B.flat(Color(0.15, 0.45, 0.55), 0.4)
 	B.box(n, Vector3(0.7, 0.42, 0.42), Vector3(0, 0.21, 0), body)
@@ -1166,6 +1173,20 @@ func _chalkboard(pos: Vector3, rot: float, title: String, lines: PackedStringArr
 
 
 func _beach_props() -> void :
+	var mark: = get_child_count()
+	_beach_props_build()
+	# v0.9.5: tudo o que foi criado aqui vai para um nó só, que a maré alta empurra areia acima (EventFX)
+	var root: = Node3D.new()
+	root.name = "BeachSet"
+	root.add_to_group("beach_set")
+	var made: Array = []
+	for i in range(mark, get_child_count()):
+		made.append(get_child(i))
+	add_child(root)
+	for ch in made:
+		ch.reparent(root)
+
+func _beach_props_build() -> void :
 	var spots: = [Vector3(-28, 0, -21), Vector3(-17, 0, -22), Vector3(-6, 0, -23), Vector3(4, 0, -22), Vector3(24, 0, -21), Vector3(33, 0, -22)]
 	var tints: = [Color(0.86, 0.22, 0.18), Color(0.95, 0.78, 0.35), Color(0.95, 0.95, 0.9), Color(0.12, 0.55, 0.58), Color(0.2, 0.38, 0.72), Color(0.9, 0.45, 0.25)]
 	for i in spots.size():
@@ -2053,13 +2074,14 @@ func _bungalow_details(i: int, c: Vector3, y0: float, w: float, d: float, zf: fl
 	for k in 2:
 		B.box(self, Vector3(1.7, 0.12, 0.4), Vector3(c.x, y0 - 0.14 - k * 0.12, deck_z - 0.2 - k * 0.38), M.deckwood)
 	# toalha no guarda-corpo, chinelos, capacho, lanterna pendurada, placa com o número
-	for k in 5:
-		B.box(self, Vector3(0.14, 0.6, 0.03), Vector3(c.x + 1.6 + k * 0.14, rail_y - 0.28, deck_z + 0.18), B.flat(D.FLAG_COLS[(i * 2 + 3) % D.FLAG_COLS.size()] if k % 2 == 0 else Color.WHITE, 0.9))
-	for sx in [-0.09, 0.09]:
-		B.box(self, Vector3(0.1, 0.025, 0.26), Vector3(c.x - 0.6 + sx, y0 + 0.012, zf - 0.6), B.flat(Color(0.2, 0.6, 0.95), 0.6))
+	# toalha de pano presa no guarda-corpo e chinelos (Blender)
+	var tw: = Real.place(self, "g:cloth_towel", Vector3(c.x + 1.9, rail_y - 0.7, deck_z + 0.21), -1.0, 0.0, Color.WHITE, 0.0, false)
+	if tw:
+		Real.tint_named(tw, D.FLAG_COLS[(i * 2 + 3) % D.FLAG_COLS.size()])
+	Real.place(self, "g:flipflops", Vector3(c.x - 0.6, y0, zf - 0.6), -1.0, 0.3, Color.WHITE, 0.0, false)
 	B.box(self, Vector3(1.2, 0.02, 0.6), Vector3(c.x, y0 + 0.012, zf - 0.45), B.flat(Color(0.75, 0.55, 0.32), 0.95))
 	var lp: = Vector3(c.x + 1.9, y0 + h - 0.1, zf - 1.3)
-	B.cyl(self, 0.005, 0.005, 0.4, lp + Vector3(0, 0.2, 0), wood, 4)
+	B._beam(self, lp, lp + Vector3(0, 0.4, 0), 0.012, wood)   # corda visível (mín. 12 mm)
 	B.model(self, "wooden_lantern_01", lp - Vector3(0, 0.35, 0), 0.0, 0.8)
 	B.box(self, Vector3(0.6, 0.3, 0.04), Vector3(c.x - 1.9, y0 + 1.9, zf - 0.05), B.flat(Color(0.95, 0.9, 0.78), 0.9))
 	var nl: = B.label(self, "Bangalô %d" % (i + 1), Vector3(c.x - 1.9, y0 + 1.9, zf - 0.08), 28, Color(0.35, 0.22, 0.1), Color(1, 1, 1, 0.8), PI)
@@ -2105,10 +2127,15 @@ func _pool_details() -> void :
 	donut.ring_segments = 14
 	for fp in [[Vector3(-2.5, -0.1, 2.6), Color(1.0, 0.45, 0.65)], [Vector3(2.8, -0.1, 5.4), Color(1.0, 0.82, 0.25)]]:
 		var mi: = MeshInstance3D.new()
-		mi.mesh = donut
-		mi.material_override = B.flat(fp[1], 0.4)
 		mi.position = fp[0]
 		add_child(mi)
+		# boia de gomos do Blender, colorida nos gomos "tint" (antes um TorusMesh liso)
+		var pf: = Real.place(mi, "g:pool_float", Vector3.ZERO, -1.0, 0.0, Color.WHITE, 0.0, true)
+		if pf:
+			Real.tint_named(pf, fp[1])
+		else:
+			mi.mesh = donut
+			mi.material_override = B.flat(fp[1], 0.4)
 		var bob: = mi.create_tween().set_loops() if mi.is_inside_tree() else null
 		if bob == null:
 			mi.ready.connect(func():
@@ -2129,10 +2156,10 @@ func _pool_details() -> void :
 	for side in [-1.0, 1.0]:
 		for k in 2:
 			var tp: = Vector3(side * 7.6, 0.12, 2.5 + k * 2.6)
-			B.cyl(self, 0.22, 0.22, 0.04, tp + Vector3(0, 0.5, 0), B.flat(Color(0.95, 0.92, 0.85), 0.6), 18)
-			B.cyl(self, 0.03, 0.03, 0.5, tp + Vector3(0, 0.25, 0), M.darkwood, 8)
-			B.cyl(self, 0.04, 0.03, 0.12, tp + Vector3(0.05, 0.58, 0), B.flat(Color(1.0, 0.6, 0.3, 0.85), 0.1), 12)
-			B.cyl(self, 0.0, 0.05, 0.03, tp + Vector3(0.07, 0.68, 0), B.flat(D.FLAG_COLS[k * 3 % D.FLAG_COLS.size()]), 8)
+			# v0.9.5: mesinha de verdade (Poly Haven, tampo a 0,52 m) com drink de guarda-chuvinha (Kenney) em cima
+			B.model(self, "side_table_01", tp, side * 0.4, 0.95)
+			if Real.place(self, "k:cocktail", tp + Vector3(0.05, 0.522, 0.02), 0.2, k * 1.3) == null:
+				B.cyl(self, 0.04, 0.03, 0.12, tp + Vector3(0.05, 0.58, 0), B.flat(Color(1.0, 0.6, 0.3, 0.85), 0.1), 12)
 	# placa de regras e chuveiro da piscina
 	var pole: = Vector3(-8.6, 0.12, 8.8)
 	B.cyl(self, 0.04, 0.04, 1.8, pole + Vector3(0, 0.9, 0), M.darkwood, 8)
@@ -2168,11 +2195,11 @@ func _reception_details() -> void :
 	B.box(self, Vector3(1.2, 0.8, 0.05), Vector3(2.8, y0 + 1.6, 12.82), B.flat(Color(0.75, 0.55, 0.35), 0.9))
 	for k in 5:
 		B.box(self, Vector3(0.22, 0.28, 0.01), Vector3(2.4 + (k % 3) * 0.35, y0 + 1.75 - (k / 3) * 0.35, 12.85), B.flat([Color(1, 1, 0.7), Color(0.8, 0.95, 1), Color(1, 0.85, 0.85)][k % 3], 0.9))
-	B.model(self, "painted_wooden_bench", Vector3(-3.0, y0, 20.9), PI, 1.0).scale = Vector3(1.0, 0.7, 1.0)
+	B.model(self, "painted_wooden_bench", Vector3(-3.0, 0.02, 20.9), PI, 1.0).scale = Vector3(1.0, 0.7, 1.0)
 	var kn2: = Real.place(self, "g:brass_knob", Vector3(-0.6, y0 + 1.14, 15.5), -1.4, 0.0, Color.WHITE, 0.0, false)
 	if kn2 != null:
 		kn2.rotation.x = PI * 0.5
 	else:
 		B.sphere(self, 0.06, Vector3(-0.6, y0 + 1.14, 15.5), brass, Vector3(1, 0.7, 1))
-	B.model(self, "potted_plant_01", Vector3(-1.9, y0, 20.3), 0.0, 1.1)
-	B.model(self, "potted_plant_01", Vector3(1.9, y0, 20.3), 0.0, 1.1)
+	B.model(self, "potted_plant_01", Vector3(-1.9, 0.02, 20.3), 0.0, 1.1)
+	B.model(self, "potted_plant_01", Vector3(1.9, 0.02, 20.3), 0.0, 1.1)

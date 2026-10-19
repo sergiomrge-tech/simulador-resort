@@ -134,6 +134,7 @@ func _ready() -> void :
 	add_child(player)
 	Toon.attach_outline(player.cam)
 	Core.player_ref = player
+	player.set("world", world)
 	_place_at_home()
 	audio.player = player
 	hud = CanvasLayer.new()
@@ -159,6 +160,16 @@ func _ready() -> void :
 	add_child(menu_cam)
 	Toon.attach_outline(menu_cam)
 	day.force_update()
+	var ph: Node = load("res://scripts/photo_mode.gd").new()
+	ph.set("world", world)
+	ph.name = "PhotoMode"
+	add_child(ph)
+	var uw: Node = load("res://scripts/underwater.gd").new()
+	uw.set("world", world)
+	add_child(uw)
+	if not testing:
+		var upd: Node = load("res://scripts/update_check.gd").new()
+		add_child(upd)
 	if args.has("shot"):
 		_run_shot(args.shot)
 	elif args.has("loop-test"):
@@ -304,6 +315,8 @@ func _run_shot(n: String) -> void :
 		Core.tour_done.emit("barco", 4, 100)
 	if args.has("farol"):
 		Core.tour_done.emit("farol", 4, 100)
+	if args.has("primcheck"):
+		get_tree().create_timer(1.5).timeout.connect(func(): load("res://tests/prim_check.gd").run(world))
 	if args.has("floatcheck"):
 		get_tree().create_timer(1.5).timeout.connect(func(): load("res://tests/float_check.gd").run(world))
 	if args.has("lineup"):   # depuração: --lineup=x,z -> fila de 8 pessoas para conferir calçados/roupas, e duas sentadas num banco

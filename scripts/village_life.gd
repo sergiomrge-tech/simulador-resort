@@ -34,8 +34,40 @@ var prep: = {}
 var fish: = {}
 var fish_casts: = 0
 
+## v0.9.5: fregueses fiéis — voltam dia após dia, sempre pedem o prato favorito e deixam gorjeta maior a cada visita.
+const REGULARS: = [
+	{"id": "cida", "name": "Dona Cida", "fav": "suco", "f": true, "skin": Color(0.62, 0.42, 0.28), "shirt": Color(0.95, 0.5, 0.65), "hair": Color(0.75, 0.75, 0.78)},
+	{"id": "nino", "name": "Seu Nino", "fav": "coco_gelado", "f": false, "skin": Color(0.8, 0.58, 0.42), "shirt": Color(0.95, 0.85, 0.3), "hair": Color(0.9, 0.9, 0.88)},
+	{"id": "bia", "name": "Bia Surfista", "fav": "coco_gelado", "f": true, "skin": Color(0.95, 0.78, 0.62), "shirt": Color(0.15, 0.55, 0.75), "hair": Color(0.9, 0.78, 0.5)},
+	{"id": "toninho", "name": "Toninho Pescador", "fav": "petiscos", "f": false, "skin": Color(0.42, 0.28, 0.18), "shirt": Color(0.9, 0.9, 0.88), "hair": Color(0.08, 0.06, 0.05)},
+	{"id": "lia", "name": "Lia da Padaria", "fav": "caipirinha", "f": true, "skin": Color(0.8, 0.58, 0.42), "shirt": Color(0.3, 0.7, 0.45), "hair": Color(0.3, 0.18, 0.08)},
+	{"id": "joca", "name": "Joca Músico", "fav": "suco", "f": false, "skin": Color(0.62, 0.42, 0.28), "shirt": Color(0.55, 0.35, 0.7), "hair": Color(0.18, 0.12, 0.08)},
+]
+var regulars: = {}
+
+func _load_regulars() -> void :
+	var f: = FileAccess.open("user://fregueses.json", FileAccess.READ)
+	if f:
+		var d = JSON.parse_string(f.get_as_text())
+		if d is Dictionary:
+			regulars = d
+
+func _save_regulars() -> void :
+	var f: = FileAccess.open("user://fregueses.json", FileAccess.WRITE)
+	if f:
+		f.store_string(JSON.stringify(regulars))
+
+func _pick_regular(menu: Array, female: bool) -> Dictionary:
+	var present: = {}
+	for g in customers:
+		if is_instance_valid(g) and g.has_meta("regular"):
+			present[g.get_meta("regular")] = true
+	var opts: Array = REGULARS.filter(func(r): return not present.has(r.id) and menu.has(r.fav) and bool(r.f) == female)
+	return {} if opts.is_empty() else opts[rng.randi() % opts.size()]
+
 func _ready() -> void :
 	add_to_group("kiosk")
+	_load_regulars()
 	rng.seed = 7171
 	var n_walk: = 12 if Quality.hd else 5
 	for i in n_walk:
@@ -103,9 +135,28 @@ func _process(delta: float) -> void :
 	var night: = Core.minutes > 22.0 * 60.0 or Core.minutes < 5.5 * 60.0
 	for i in walkers.size():
 		var g: Node3D = walkers[i]
-		var hide: bool = (night and i >= 3) or bool(g.get_meta("on_tour", false))
+		# v0.9.5: às 21h30 quem mora na vila caminha até a porta de uma casa e entra (some lá dentro); de manhã sai de novo
+		var home_time: = Core.minutes > 21.5 * 60.0 or Core.minutes < 5.5 * 60.0
+		if i >= 3 and home_time:
+			if not g.has_meta("home_target"):
+				var doors: Array = world.get("house_doors") if world.get("house_doors") != null else []
+				var best: = Vector3.INF
+				for dp in doors:
+					if (dp as Vector3).distance_to(g.position) < best.distance_to(g.position):
+						best = dp
+				if best != Vector3.INF and best.distance_to(g.position) < 40.0:
+					g.set_meta("home_target", best)
+					g.go([best])
+				else:
+					g.set_meta("home_target", g.position)
+			elif not g.is_moving():
+				g.set_meta("home_done", true)
+		elif g.has_meta("home_target"):
+			g.remove_meta("home_target")
+			g.remove_meta("home_done")
+		var hide: bool = bool(g.get_meta("home_done", false)) or bool(g.get_meta("on_tour", false))
 		g.visible = not hide
-		if hide:
+		if hide or g.has_meta("home_target"):
 			continue
 		if g.is_moving():
 			continue
@@ -235,6 +286,11 @@ func _free_spot() -> int:
 			free.append(i)
 	if free.is_empty():
 		return -1
+	# tempestade: primeiro as banquetas do balcão, que ficam debaixo do telhado de palha
+	if Core.weather == "rain":
+		var dry: Array = free.filter(func(i): return not world.kiosk_spots[i].get("table", false))
+		if not dry.is_empty():
+			free = dry
 	return free[rng.randi() % free.size()]
 
 func spawn_customer() -> Node3D:
@@ -252,6 +308,16 @@ func spawn_customer() -> Node3D:
 	g.timer = KIOSK_PATIENCE
 	var menu: Array = Core.kiosk_menu()
 	var dish: String = _pick_dish(menu)
+	var reg: Dictionary = _pick_regular(menu, bool(g.get("_female"))) if rng.randf() < 0.25 and not Core.day_event == "show_dj" else {}
+	if not reg.is_empty():
+		dish = str(reg.fav)
+		g.set_meta("regular", reg.id)
+		g.set_colors(reg.skin, reg.shirt, Color(0.2, 0.25, 0.4), reg.hair)
+		var visits: = int(regulars.get(reg.id, 0))
+		var rl: = B.label(g, "%s ♥%d" % [reg.name, visits] if visits > 0 else str(reg.name), Vector3(0, 2.5, 0), 40, Color(0.75, 1.0, 0.75), Color(0.05, 0.25, 0.08, 1))
+		rl.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+		rl.pixel_size = 0.004
+		rl.no_depth_test = true
 	g.set_meta("dish", dish)
 	# quiosque cheio (ou mesas compradas) = pedidos maiores
 	var items: Array = [dish]
@@ -378,6 +444,9 @@ func _pick_dish(menu: Array) -> String:
 		var w: = 2.5 if (Core.day_event == "calor" and (d == "coco_gelado" or d == "suco")) else 1.0
 		if (Core.day_event == "junina" and d == "petiscos") or (Core.day_event == "show_dj" and d == "caipirinha") or (Core.day_event == "quermesse" and d == "suco"):
 			w = 2.0
+		# v0.9.5: na tempestade o povo quer comida quente e foge do coco gelado
+		if Core.day_event == "tempestade":
+			w = {"petiscos": 2.6, "coco_gelado": 0.35, "suco": 0.7}.get(d, 1.0)
 		ws.append(w)
 		total += w
 	var r: = rng.randf() * total
@@ -562,6 +631,16 @@ func _complete_order(g, last_dish: String) -> void :
 		Core.add_rating(5.0)
 		Core.toast.emit(tr("Cliente VIP encantado! +R$ %d de gorjeta") % vip_tip, "good")
 		Core.vip_served(g.get_meta("vip_id", ""))
+	if g.has_meta("regular"):
+		var rid: String = g.get_meta("regular")
+		var v: = int(regulars.get(rid, 0)) + 1
+		regulars[rid] = v
+		_save_regulars()
+		tip += mini(v, 6)
+		var rn: = str(REGULARS.filter(func(r): return r.id == rid)[0].name)
+		if v in [3, 7, 15, 30]:
+			Core.toast.emit(tr("%s já veio %d vezes: virou freguês fiel! Gorjeta maior a cada visita.") % [rn, v], "good")
+			Core.add_rating(5.0)
 	if tip > 0:
 		Core.book(tip, tr("Gorjeta do quiosque"), "gorjeta", false)
 	served_today += 1

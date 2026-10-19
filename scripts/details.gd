@@ -449,9 +449,12 @@ static func lighthouse(parent: Node, p: Vector3) -> Node3D:
 	parent.add_child(lamp)
 	if Real.place_glow(lamp, "g:fresnel_lens", Vector3(0, -0.4, 0), -1.0, 0.0, P.glow(Color(1.0, 0.95, 0.7), 3.0), true) == null:
 		B.sphere(lamp, 0.4, Vector3.ZERO, P.glow(Color(1.0, 0.95, 0.7), 3.0))
-	var beam: = B.cyl(lamp, 0.25, 2.2, 18.0, Vector3(0, 0, 9.0), P.glow(Color(1.0, 0.95, 0.7, 0.18), 1.5), 12)
+	# v0.9.5: facho longo (42 m) com shader aditivo que esmaece nas bordas e na ponta (antes: cone liso de 18 m)
+	var beam: = B.cyl(lamp, 4.2, 0.3, 42.0, Vector3(0, 0, 21.0), null, 32)   # boca larga longe da lente
+	var bm: = ShaderMaterial.new()
+	bm.shader = load("res://shaders/light_beam.gdshader")
+	beam.material_override = bm
 	beam.rotation.x = PI * 0.5
-	(beam.material_override as StandardMaterial3D).transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
 	beam.name = "Beam"
 	beam.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	var l: = SpotLight3D.new()

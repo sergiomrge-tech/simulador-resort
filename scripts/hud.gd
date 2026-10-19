@@ -475,6 +475,7 @@ func _update_keys_hint() -> void :
 	keys_l.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
 	var mv: = "%s%s%s%s" % [Quality.key_name("move_forward"), Quality.key_name("move_left"), Quality.key_name("move_back"), Quality.key_name("move_right")]
 	keys_l.text = tr("%s andar  ·  Mouse olhar  ·  %s interagir  ·  %s celular  ·  %s correr  ·  Esc menu  ·  F11 tela cheia") % [mv, Quality.key_name("interact"), Quality.key_name("shop"), Quality.key_name("sprint")]
+	keys_l.text += tr("  ·  P foto")
 	if keys_l.is_inside_tree():
 		_hug(keys_l, 21, -58.0, 44.0)
 

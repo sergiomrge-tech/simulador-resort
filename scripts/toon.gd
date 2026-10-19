@@ -308,7 +308,9 @@ static func toonify(mt: Material) -> Material:
 		s.metallic_texture = null
 		s.ao_enabled = false
 		# modelos reais vêm escuros/realistas: clareia e esquenta para casar com a paleta cartoon do jogo
-		s.albedo_color = s.albedo_color * Color(1.55, 1.45, 1.35)
+		# no modo de compatibilidade (OpenGL, PCs antigos) a imagem já sai mais clara: clareia menos para não desbotar
+		var lift: = Color(1.55, 1.45, 1.35) if RenderingServer.get_current_rendering_method() != "gl_compatibility" else Color(1.15, 1.1, 1.06)
+		s.albedo_color = s.albedo_color * lift
 		s.rim_enabled = true
 		s.rim = 0.25
 		s.rim_tint = 0.5

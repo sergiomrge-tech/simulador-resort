@@ -144,6 +144,10 @@ func apply() -> void :
 	env.tonemap_exposure = (1.05 if not rain else 0.88) * lerpf(1.0, 1.05, golden)
 	env.adjustment_enabled = true
 	env.adjustment_saturation = (0.95 if rain else lerpf(1.32, 1.4, golden))
+	if RenderingServer.get_current_rendering_method() == "gl_compatibility":
+		# v0.9.5: OpenGL sai desbotado (sem o mesmo tonemap): mais saturação e contraste
+		env.adjustment_saturation *= 1.25
+		env.adjustment_contrast = 1.12
 	env.adjustment_contrast = lerpf(1.06, 1.1, golden)
 	env.adjustment_brightness = 0.94 if rain else 1.0
 	env.volumetric_fog_albedo = fog_c

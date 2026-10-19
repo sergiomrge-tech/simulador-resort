@@ -3,9 +3,10 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://cr5m48y7mnqdh"
-path="res://.godot/imported/tree_amendoeira_3_palm_tree_bark_diff.jpg-fa643a08a23b14c920ba94a60655820c.ctex"
+path.s3tc="res://.godot/imported/tree_amendoeira_3_palm_tree_bark_diff.jpg-fa643a08a23b14c920ba94a60655820c.s3tc.ctex"
 metadata={
-"vram_texture": false
+"imported_formats": ["s3tc_bptc"],
+"vram_texture": true
 }
 generator_parameters={
 "md5": "2232580d5044a4e0cac2483e0867090a"
@@ -14,11 +15,11 @@ generator_parameters={
 [deps]
 
 source_file="res://assets/models/gen/tree_amendoeira_3_palm_tree_bark_diff.jpg"
-dest_files=["res://.godot/imported/tree_amendoeira_3_palm_tree_bark_diff.jpg-fa643a08a23b14c920ba94a60655820c.ctex"]
+dest_files=["res://.godot/imported/tree_amendoeira_3_palm_tree_bark_diff.jpg-fa643a08a23b14c920ba94a60655820c.s3tc.ctex"]
 
 [params]
 
-compress/mode=0
+compress/mode=2
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0

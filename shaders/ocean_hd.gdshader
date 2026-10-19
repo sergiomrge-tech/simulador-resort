@@ -3,6 +3,7 @@ render_mode blend_mix, cull_back, depth_draw_always, diffuse_toon, specular_toon
 // Mar cartoon (v0.7): faixas de cor por profundidade (turquesa → azul → azul-marinho), espuma branca
 // recortada na arrebentação, linhas de onda subindo a praia e brilhos que piscam ao sol.
 uniform sampler2D depth_tex : hint_depth_texture, filter_linear_mipmap;
+uniform sampler2D screen_tex : hint_screen_texture, filter_linear_mipmap;   // v0.9.5: o que está embaixo d'água, absorvido pela profundidade
 uniform vec3 shallow : source_color = vec3(0.3, 0.95, 0.88);
 uniform vec3 mid : source_color = vec3(0.08, 0.72, 0.9);
 uniform vec3 deep : source_color = vec3(0.04, 0.4, 0.78);
@@ -56,6 +57,11 @@ void fragment(){
 	vec3 col = shallow;
 	col = mix(col, mid, smoothstep(0.22, 0.26, depth_t));
 	col = mix(col, deep, smoothstep(0.6, 0.64, depth_t));
+	// v0.9.5: água transparente de verdade: o fundo, os corais e os peixes aparecem e vão sumindo no azul com a profundidade
+	vec2 ruv = SCREEN_UV + NORMAL.xz * 0.012 * clamp(thick, 0.0, 1.0);
+	vec3 below = texture(screen_tex, ruv).rgb * exp(-thick * vec3(0.55, 0.16, 0.1));
+	float vis = exp(-thick * 0.75) * (1.0 - smoothstep(30.0, 60.0, shore_d));
+	col = mix(col, below * 0.85 + col * 0.25, clamp(vis, 0.0, 0.85));
 	// manchas claras ondulando (reflexo do céu estilizado)
 	float ripple = noise(wpos.xz * vec2(0.35, 0.9) + vec2(t * 0.3, t * 0.5));
 	col = mix(col, col * 1.18 + vec3(0.04), smoothstep(0.62, 0.66, ripple) * 0.6);
@@ -80,5 +86,5 @@ void fragment(){
 	ROUGHNESS = mix(0.25, 0.9, foam);
 	SPECULAR = 0.5;
 	METALLIC = 0.0;
-	ALPHA = mix(0.82, 1.0, smoothstep(0.0, 0.6, thick) * (1.0 - foam) + foam);
+	ALPHA = 1.0;
 }

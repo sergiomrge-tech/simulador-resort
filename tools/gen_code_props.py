@@ -2294,7 +2294,479 @@ def tree_amendoeira(name, seed, H=6.0):
     join(parts, name)
     export(name)
 
-ALL = {"tree_amendoeira_1": lambda: tree_amendoeira("tree_amendoeira_1", 11), "tree_amendoeira_2": lambda: tree_amendoeira("tree_amendoeira_2", 27), "tree_amendoeira_3": lambda: tree_amendoeira("tree_amendoeira_3", 53), "balcony_rail": balcony_rail, "porch_column": porch_column, "bamboo_pole": bamboo_pole, "fish_clown": lambda: fish("fish_clown", 0.16, 0.1, 0.07, (1.0, 0.45, 0.05), (1.0, 0.5, 0.1), (0.97, 0.97, 0.95), 3, (1.0, 0.4, 0.05), "round", 0.16),
+# ---------------------------------------------------------------- v0.9.5: troca das últimas primitivas
+def sweep(points, r, m, n=10, name="sweep", taper=None, sub=0, mats=None, mi_fn=None):
+    """Tubo contínuo ao longo de uma polilinha (quadros de Frenet suavizados): cordas, canudos, galhos, antenas. r pode variar com taper(t)."""
+    import mathutils
+    V = mathutils.Vector
+    pts = [V(p) for p in points]
+    bm = bmesh.new()
+    uvl = bm.loops.layers.uv.new("UVMap")
+    rings = []
+    prev_n = None
+    L = len(pts)
+    for i, p in enumerate(pts):
+        t = (pts[min(i + 1, L - 1)] - pts[max(i - 1, 0)]).normalized()
+        if prev_n is None:
+            up = V((0, 0, 1)) if abs(t.z) < 0.9 else V((1, 0, 0))
+            nn = t.cross(up).normalized()
+        else:
+            nn = (prev_n - t * prev_n.dot(t)).normalized()
+        prev_n = nn
+        bb = t.cross(nn).normalized()
+        rr = r * (taper(i / max(1, L - 1)) if taper else 1.0)
+        ring = []
+        for k in range(n):
+            a = 2 * math.pi * k / n
+            ring.append(bm.verts.new(p + (nn * math.cos(a) + bb * math.sin(a)) * rr))
+        rings.append(ring)
+    for i in range(L - 1):
+        for k in range(n):
+            k2 = (k + 1) % n
+            f = bm.faces.new((rings[i][k], rings[i][k2], rings[i + 1][k2], rings[i + 1][k]))
+            if mi_fn:
+                f.material_index = mi_fn(i, k)
+            for lp in f.loops:
+                lp[uvl].uv = (k / n, i / max(1, L - 1))
+    bm.faces.new(rings[0][::-1])
+    bm.faces.new(rings[-1])
+    bmesh.ops.recalc_face_normals(bm, faces=bm.faces[:])
+    return _mesh_obj(bm, name, mats or [m], 0.0, sub)
+
+def trellis_planter():
+    """Vaso de barro torneado (borda dobrada, pé, terra com torrões) e treliça de ripas (2 montantes, travessas e ripas em X) atrás,
+    com 3 galhos torcidos subindo. Origem na base do vaso; treliça a 0,18 m para -Z do jogo (encostada na parede). 0,9 x 2,5 m."""
+    fresh()
+    rnd = random.Random(4)
+    clay = mat("barro", (0.72, 0.36, 0.22), 0.8)
+    soil = mat("terra", (0.28, 0.18, 0.1), 0.95)
+    wood = mat("ripa", (0.45, 0.29, 0.16), 0.8, tex("oak_wood_planks_diff.jpg"))
+    stem = mat("galho", (0.34, 0.22, 0.12), 0.9)
+    parts = [anchor(clay)]
+    parts.append(lathe([(0.0, 0.0), (0.16, 0.0), (0.17, 0.02), (0.165, 0.035), (0.2, 0.2), (0.235, 0.34), (0.26, 0.345), (0.268, 0.37), (0.262, 0.4),
+                        (0.235, 0.405), (0.225, 0.38), (0.0, 0.38)], clay, verts=36))
+    bm = bmesh.new()
+    uvl = bm.loops.layers.uv.new("UVMap")
+    nr, na = 5, 28
+    rows = []
+    for i in range(nr + 1):
+        rr = 0.222 * i / nr
+        ring = []
+        for k in range(na):
+            a = 2 * math.pi * k / na
+            ring.append(bm.verts.new((rr * math.cos(a), rr * math.sin(a), 0.375 + 0.012 * rnd.random() + 0.015 * (1 - i / nr))))
+        rows.append(ring)
+    for i in range(nr):
+        for k in range(na):
+            k2 = (k + 1) % na
+            bm.faces.new((rows[i][k], rows[i][k2], rows[i + 1][k2], rows[i + 1][k]))
+    parts.append(_mesh_obj(bm, "terra", [soil], 0.0, 1))
+    by = 0.18   # +Y do Blender = -Z do jogo (parede)
+    for sx in (-0.42, 0.42):
+        parts.append(box((0.045, 0.045, 2.5), (sx, by, 1.25), wood, bevel=0.008))
+    for k in range(5):
+        parts.append(box((0.9, 0.03, 0.035), (0, by - 0.03, 0.7 + k * 0.42), wood, bevel=0.006))
+    for k in range(4):
+        z0 = 0.7 + k * 0.42
+        for sgn in (-1, 1):
+            parts.append(box((0.9, 0.02, 0.028), (0, by + 0.01, z0 + 0.21), wood, bevel=0.004, rot=(0, sgn * math.atan2(0.42, 0.84), 0)))
+    for j, sx in enumerate((-0.15, 0.03, 0.18)):
+        pts = []
+        for i in range(14):
+            t = i / 13
+            pts.append((sx * (1 + 0.8 * t) + 0.04 * math.sin(t * 7 + j), 0.02 + by * 0.6 * t + 0.02 * math.sin(t * 5 + j), 0.36 + 1.9 * t))
+        parts.append(sweep(pts, 0.026, stem, 8, "galho", taper=lambda t: 1.0 - 0.6 * t))
+    join(parts, "trellis_planter")
+    export("trellis_planter")
+
+def towel_folded():
+    """Toalha de praia dobrada em quatro, com listras e bordas arredondadas (dobras de pano). 0,5 x 0,44 m, base em z=0. Material branco p/ tingir."""
+    fresh()
+    a = mat("listra_a", (0.95, 0.95, 0.93), 0.95, tex("rough_linen_diff.jpg"))
+    b = mat("listra_b", (0.95, 0.95, 0.93), 0.95, tex("rough_linen_diff.jpg"))
+    b.name = "tint_listra"
+    parts = []
+    for k in range(4):
+        o = box((0.5, 0.11, 0.024), (0, -0.165 + k * 0.11, 0.012), a if k % 2 == 0 else b, bevel=0.01, sub=2)
+        parts.append(o)
+    top = box((0.5, 0.44, 0.022), (0, 0, 0.034), a, bevel=0.01, sub=2)
+    parts.append(top)
+    join(parts, "towel_folded")
+    export("towel_folded")
+
+def flipflops():
+    """Par de chinelos: sola com contorno de pé (calcanhar estreito, dedos largos), 2 camadas e tiras em V até o dedão. 0,26 m."""
+    fresh()
+    sole = mat("sola", (1.0, 0.82, 0.2), 0.6)
+    top = mat("palmilha", (0.95, 0.95, 0.9), 0.6)
+    strap = mat("tira", (0.15, 0.45, 0.85), 0.5)
+    parts = []
+    for side in (-1, 1):
+        cx = side * 0.065
+        outline = []
+        for k in range(32):
+            a = 2 * math.pi * k / 32
+            y = 0.13 * math.sin(a)
+            w = 0.036 + 0.014 * (math.sin(a) + 1) * 0.5 + 0.004 * math.cos(3 * a)
+            outline.append((cx + w * math.cos(a) * side + side * 0.006 * math.sin(a), y))
+        for z0, h, m_ in ((0.0, 0.012, sole), (0.012, 0.004, top)):
+            bm = bmesh.new()
+            vb = [bm.verts.new((x, y, z0)) for x, y in outline]
+            vt = [bm.verts.new((x, y, z0 + h)) for x, y in outline]
+            bm.faces.new(vb[::-1]); bm.faces.new(vt)
+            for k in range(32):
+                k2 = (k + 1) % 32
+                bm.faces.new((vb[k], vb[k2], vt[k2], vt[k]))
+            uvl = bm.loops.layers.uv.new("UVMap")
+            parts.append(_mesh_obj(bm, "sola", [m_]))
+        toe = (cx - side * 0.012, 0.085, 0.017)
+        for sx in (-1, 1):
+            parts.append(sweep([toe, (cx + sx * 0.022, 0.03, 0.045), (cx + sx * 0.04, -0.01, 0.017)], 0.006, strap, 8, "tira"))
+    join(parts, "flipflops")
+    export("flipflops")
+
+def pool_float():
+    """Boia de piscina (rosquinha) com 8 gomos alternados, costura e válvula. Diâmetro 1,0 m. Gomos 'tint' recebem a cor no jogo."""
+    fresh()
+    w = mat("branco", (0.97, 0.97, 0.95), 0.35)
+    c = mat("tint_cor", (0.97, 0.97, 0.95), 0.35)
+    bm = bmesh.new()
+    uvl = bm.loops.layers.uv.new("UVMap")
+    R, r, nu, nv = 0.36, 0.14, 64, 20
+    grid = []
+    for i in range(nu):
+        a = 2 * math.pi * i / nu
+        row = []
+        for j in range(nv):
+            b = 2 * math.pi * j / nv
+            rr = r * (1 - 0.04 * (1 if i % 8 == 0 else 0))
+            row.append(bm.verts.new(((R + rr * math.cos(b)) * math.cos(a), (R + rr * math.cos(b)) * math.sin(a), rr * math.sin(b) * 0.85)))
+        grid.append(row)
+    for i in range(nu):
+        for j in range(nv):
+            f = bm.faces.new((grid[i][j], grid[(i + 1) % nu][j], grid[(i + 1) % nu][(j + 1) % nv], grid[i][(j + 1) % nv]))
+            f.material_index = (i // 8) % 2
+    bmesh.ops.recalc_face_normals(bm, faces=bm.faces[:])
+    parts = [_mesh_obj(bm, "boia", [w, c], 0.0, 1)]
+    parts.append(lathe([(0.0, 0.0), (0.018, 0.0), (0.018, 0.02), (0.01, 0.03), (0.0, 0.03)], w, loc=(R, 0, r * 0.85 - 0.004), verts=12))
+    join(parts, "pool_float")
+    export("pool_float")
+
+def rope_coil():
+    """Rolo de corda de navio: 3 voltas em espiral achatada + ponta solta, corda com torção (fios em hélice). Diâmetro ~0,6 m, base em z=0."""
+    fresh()
+    rope = mat("corda", (0.78, 0.66, 0.42), 0.95)
+    rope2 = mat("corda_esc", (0.6, 0.48, 0.28), 0.95)
+    pts = []
+    turns = 3.2
+    N = 220
+    for i in range(N):
+        t = i / (N - 1)
+        a = t * turns * 2 * math.pi
+        rr = 0.27 - 0.07 * t
+        z = 0.025 + 0.045 * (t * turns // 1) * 0.6 + 0.012 * math.sin(a * 0.5)
+        pts.append((rr * math.cos(a), rr * math.sin(a), z))
+    end = pts[-1]
+    for i in range(1, 12):
+        pts.append((end[0] + 0.03 * i, end[1] - 0.025 * i, max(0.025, end[2] - 0.006 * i)))
+    o = sweep(pts, 0.024, rope, 12, "corda", mats=[rope, rope2], mi_fn=lambda i, k: ((k + i // 3) // 3) % 2, sub=0)
+    join([o, anchor(rope)], "rope_coil")
+    export("rope_coil")
+
+def _cloth(name, outline_fn, nx, ny, W, H):
+    """Peça de roupa pendurada: grade com caimento (ondas de prega mais fortes embaixo), 2 prendedores de madeira no topo. Material 'tint'."""
+    rnd = random.Random(len(name))
+    cl = mat("tint_pano", (0.96, 0.96, 0.94), 0.95, tex("rough_linen_diff.jpg"))
+    pin = mat("prendedor", (0.82, 0.66, 0.42), 0.7)
+    bm = bmesh.new()
+    uvl = bm.loops.layers.uv.new("UVMap")
+    g = {}
+    for j in range(ny + 1):
+        for i in range(nx + 1):
+            u, v = i / nx, j / ny
+            if not outline_fn(u, v):
+                continue
+            x = (u - 0.5) * W
+            z = -v * H
+            y = 0.02 * math.sin(u * 9 + v * 2) * v + 0.035 * math.sin(u * 5.0) * v * v
+            g[(i, j)] = bm.verts.new((x, y, z))
+    for j in range(ny):
+        for i in range(nx):
+            q = [(i, j), (i + 1, j), (i + 1, j + 1), (i, j + 1)]
+            if all(k in g for k in q):
+                f = bm.faces.new([g[k] for k in q])
+                for lp in f.loops:
+                    lp[uvl].uv = (lp.vert.co.x * 2, lp.vert.co.z * 2)
+    o = _mesh_obj(bm, name, [cl], 0.004, 1)
+    parts = [o]
+    for sx in (-0.35, 0.35):
+        parts.append(box((0.018, 0.012, 0.075), (sx * W, 0.0, 0.005), pin, bevel=0.004))
+    join(parts, name)
+    export(name)
+
+def cloth_shirt():
+    fresh()
+    def shape(u, v):
+        # camiseta: mangas no alto (v < 0,3) abrindo para os lados, corpo no meio
+        if v < 0.32:
+            return True if v > 0.0 or abs(u - 0.5) > 0.12 else abs(u - 0.5) > 0.12 or v > 0.04
+        return 0.2 <= u <= 0.8
+    _cloth("cloth_shirt", shape, 20, 16, 0.62, 0.62)
+
+def cloth_towel():
+    fresh()
+    _cloth("cloth_towel", lambda u, v: True, 14, 18, 0.5, 0.7)
+
+def ac_unit():
+    """Ar-condicionado split (condensadora) de parede: gabinete arredondado, grade frontal com ventilador (aro, raios, cubo), aletas laterais,
+    suportes em L presos na parede e cano de cobre. Frente = -Y do Blender. 0,8 x 0,55 x 0,3 m. Origem atrás (encosta na parede)."""
+    fresh()
+    body = mat("chapa", (0.92, 0.92, 0.9), 0.4)
+    dark = mat("grade", (0.18, 0.18, 0.2), 0.5)
+    cop = mat("cobre", (0.75, 0.45, 0.28), 0.4)
+    parts = [anchor(body)]
+    parts.append(box((0.8, 0.28, 0.55), (0, -0.16, 0.275), body, bevel=0.02, sub=0))
+    cx, cz = -0.12, 0.275
+    parts.append(_torus(0.2, 0.012, (cx, -0.305, cz), False, dark, 40, 8))
+    parts[-1].rotation_euler = (math.radians(90), 0, 0)
+    for k in range(5):
+        parts.append(_torus(0.04 * (k + 1), 0.004, (cx, -0.305, cz), False, dark, 32, 6))
+        parts[-1].rotation_euler = (math.radians(90), 0, 0)
+    for k in range(8):
+        a = k * math.pi / 4
+        parts.append(tube((cx, -0.305, cz), (cx + 0.2 * math.cos(a), -0.305, cz + 0.2 * math.sin(a)), 0.004, dark, verts=6))
+    parts.append(lathe(_sphere_profile(0, 0.035, -80, 80, 6, 0.5), dark, loc=(cx, -0.3, cz), verts=16))
+    parts[-1].rotation_euler = (math.radians(90), 0, 0)
+    for k in range(10):
+        parts.append(box((0.012, 0.01, 0.42), (0.18 + k * 0.02, -0.302, 0.275), dark, bevel=0.003))
+    for sx in (-0.3, 0.3):
+        parts.append(box((0.04, 0.32, 0.03), (sx, -0.16, -0.015), dark, bevel=0.005))
+        parts.append(box((0.04, 0.03, 0.2), (sx, -0.005, 0.07), dark, bevel=0.005))
+    parts.append(sweep([(0.38, -0.08, 0.1), (0.46, -0.08, 0.1), (0.5, -0.03, 0.2), (0.5, -0.02, 0.9)], 0.012, cop, 8, "cano"))
+    join(parts, "ac_unit")
+    export("ac_unit")
+
+def tv_antenna():
+    """Antena de TV (yagi) de telhado: mastro com suporte, gancheira, boom com 8 elementos de tamanhos decrescentes e dipolo. 1,8 m."""
+    fresh()
+    al = mat("aluminio", (0.82, 0.83, 0.85), 0.35)
+    blk = mat("isolador", (0.12, 0.12, 0.13), 0.5)
+    parts = [anchor(al)]
+    parts.append(sweep([(0, 0, 0), (0, 0, 1.7)], 0.02, al, 12, "mastro"))
+    parts.append(box((0.12, 0.12, 0.04), (0, 0, 0.02), blk, bevel=0.01))
+    parts.append(sweep([(0, -0.55, 1.6), (0, 0.55, 1.6)], 0.012, al, 10, "boom"))
+    for k in range(8):
+        y = -0.5 + k * 0.14
+        hw = 0.45 - k * 0.035
+        parts.append(sweep([(-hw, y, 1.6), (hw, y, 1.6)], 0.006, al, 8, "elem"))
+    parts.append(box((0.06, 0.05, 0.04), (0, -0.36, 1.6), blk, bevel=0.008))
+    join(parts, "tv_antenna")
+    export("tv_antenna")
+
+def straw():
+    """Canudo dobrável listrado (vermelho e branco) com a sanfona na dobra. 0,24 m. Base em z=0."""
+    fresh()
+    red = mat("vermelho", (0.88, 0.14, 0.1), 0.4)
+    wh = mat("branco", (0.97, 0.97, 0.95), 0.4)
+    pts = [(0, 0, 0.0)]
+    for i in range(1, 30):
+        t = i / 29
+        if t < 0.7:
+            pts.append((0, 0, 0.17 * t / 0.7))
+        else:
+            a = (t - 0.7) / 0.3 * math.radians(55)
+            pts.append((0.05 * (1 - math.cos(a)) / (1 - math.cos(math.radians(55))) * 0.4 + 0.06 * (t - 0.7) / 0.3 * math.sin(a), 0, 0.17 + 0.06 * math.sin(a)))
+    o = sweep(pts, 0.0035, red, 10, "canudo", mats=[red, wh], mi_fn=lambda i, k: ((k // 2) % 2), taper=lambda t: 1.0 + (0.25 * math.sin(t * 120) if 0.68 < t < 0.8 else 0.0))
+    export("straw")
+
+def _wheel(parts, loc, R, tire_m, rim_m, spokes=12, axis_x=True, width=0.05):
+    parts.append(_torus(R - 0.025, 0.028, loc, axis_x, tire_m, 48, 12))
+    parts.append(_torus(R - 0.055, 0.008, loc, axis_x, rim_m, 48, 6))
+    for k in range(spokes):
+        a = 2 * math.pi * k / spokes
+        if axis_x:
+            q = (loc[0], loc[1] + (R - 0.06) * math.cos(a), loc[2] + (R - 0.06) * math.sin(a))
+        else:
+            q = (loc[0] + (R - 0.06) * math.cos(a), loc[1], loc[2] + (R - 0.06) * math.sin(a))
+        parts.append(tube(loc, q, 0.006, rim_m, verts=6))
+    hub = lathe([(0.0, -width / 2), (0.03, -width / 2), (0.035, 0), (0.03, width / 2), (0.0, width / 2)], rim_m, loc=loc, verts=16)
+    hub.rotation_euler = (0, math.radians(90), 0) if axis_x else (math.radians(90), 0, 0)
+    parts.append(hub)
+
+def popcorn_cart():
+    """Carrinho de pipoca: base vermelha com painéis frisados e frisos dourados, vitrine de vidro com montantes, panela de cobre, 2 rodas raiadas,
+    pé de apoio, puxador, mastro e guarda-sol listrado (gomos alternados com borda recortada). Frente (balcão) = -Y. 1,1 x 0,75 m, 3,1 m."""
+    fresh()
+    red = mat("vermelho", (0.85, 0.14, 0.12), 0.45)
+    gold = mat("dourado", (0.95, 0.75, 0.3), 0.35)
+    glass = mat("vidro", (0.85, 0.95, 1.0), 0.05)
+    glass.node_tree.nodes["Principled BSDF"].inputs["Alpha"].default_value = 0.28
+    try:
+        glass.surface_render_method = "BLENDED"
+    except Exception:
+        glass.blend_method = "BLEND"
+    tire = mat("pneu", (0.08, 0.08, 0.09), 0.8)
+    wood = mat("madeira", (0.45, 0.28, 0.16), 0.8, tex("oak_wood_planks_diff.jpg"))
+    white = mat("branco", (0.97, 0.96, 0.92), 0.7)
+    parts = [anchor(red)]
+    parts.append(box((1.0, 0.7, 0.75), (0, 0, 0.75), red, bevel=0.03))
+    for sx in (-0.25, 0.25):
+        parts.append(box((0.38, 0.02, 0.5), (sx, -0.355, 0.75), red, bevel=0.02))
+        parts.append(box((0.4, 0.015, 0.52), (sx, -0.352, 0.75), gold, bevel=0.005))
+    for z in (0.38, 1.12):
+        parts.append(box((1.04, 0.74, 0.03), (0, 0, z), gold, bevel=0.01))
+    parts.append(box((0.84, 0.6, 0.02), (0, 0, 1.15), wood, bevel=0.005))
+    for sx in (-0.42, 0.42):
+        for sy in (-0.3, 0.3):
+            parts.append(tube((sx, sy, 1.13), (sx, sy, 1.75), 0.012, gold, verts=10))
+    parts.append(box((0.88, 0.64, 0.03), (0, 0, 1.77), red, bevel=0.01))
+    for (sz, loc) in (((0.84, 0.004, 0.6), (0, -0.3, 1.45)), ((0.84, 0.004, 0.6), (0, 0.3, 1.45)), ((0.004, 0.6, 0.6), (-0.42, 0, 1.45)), ((0.004, 0.6, 0.6), (0.42, 0, 1.45))):
+        parts.append(box(sz, loc, glass, bevel=0.0))
+    parts.append(lathe([(0.0, 0.0), (0.16, 0.0), (0.17, 0.02), (0.17, 0.12), (0.18, 0.13), (0.0, 0.13)], gold, loc=(0.1, 0.05, 1.5), verts=28))
+    for sx in (-0.52, 0.52):
+        _wheel(parts, (sx, 0.12, 0.3), 0.3, tire, gold, 12, True)
+    parts.append(tube((-0.12, 0.33, 0.38), (-0.12, 0.33, 0.0), 0.02, gold, verts=10))
+    parts.append(tube((0.12, 0.33, 0.38), (0.12, 0.33, 0.0), 0.02, gold, verts=10))
+    parts.append(sweep([(-0.3, 0.35, 0.95), (-0.3, 0.6, 0.98), (0.3, 0.6, 0.98), (0.3, 0.35, 0.95)], 0.016, wood, 10, "puxador"))
+    parts.append(tube((0, 0, 1.78), (0, 0, 2.95), 0.02, gold, verts=12))
+    bm = bmesh.new()
+    uvl = bm.loops.layers.uv.new("UVMap")
+    nseg, nr = 16, 6
+    rows = [[bm.verts.new((0, 0, 3.05))]]
+    for i in range(1, nr + 1):
+        rr = 0.85 * i / nr
+        ring = []
+        for k in range(nseg * 3):
+            a = 2 * math.pi * k / (nseg * 3)
+            scal = 1.0 - (0.06 * abs(math.sin(a * nseg / 2)) if i == nr else 0)
+            ring.append(bm.verts.new((rr * scal * math.cos(a), rr * scal * math.sin(a), 3.05 - 0.3 * (i / nr) ** 1.4)))
+        rows.append(ring)
+    nk = nseg * 3
+    for k in range(nk):
+        f = bm.faces.new((rows[0][0], rows[1][k], rows[1][(k + 1) % nk]))
+        f.material_index = (k // 3) % 2
+    for i in range(1, nr):
+        for k in range(nk):
+            f = bm.faces.new((rows[i][k], rows[i + 1][k], rows[i + 1][(k + 1) % nk], rows[i][(k + 1) % nk]))
+            f.material_index = (k // 3) % 2
+    bmesh.ops.recalc_face_normals(bm, faces=bm.faces[:])
+    for f in bm.faces:
+        if f.normal.z < 0:
+            f.normal_flip()
+    parts.append(_mesh_obj(bm, "guarda_sol", [white, red], 0.012, 1))
+    join(parts, "popcorn_cart")
+    export("popcorn_cart")
+
+def newsstand():
+    """Banca de jornal: corpo de chapa verde com frisos verticais, balcão de madeira, telhadinho com beiral e toldo amarelo recortado,
+    expositores inclinados com revistas (capas coloridas), porta lateral e luminária. Frente = -Y. 2,2 x 1,6 x 2,5 m."""
+    fresh()
+    rnd = random.Random(8)
+    green = mat("verde", (0.12, 0.45, 0.28), 0.5)
+    trim = mat("friso", (0.08, 0.32, 0.2), 0.5)
+    yel = mat("toldo", (1.0, 0.82, 0.18), 0.7, tex("rough_linen_diff.jpg"))
+    wood = mat("balcao", (0.5, 0.32, 0.18), 0.7, tex("oak_wood_planks_diff.jpg"))
+    covers = [mat("capa%d" % i, c, 0.5) for i, c in enumerate([(0.9, 0.2, 0.2), (0.2, 0.5, 0.9), (0.95, 0.8, 0.2), (0.2, 0.7, 0.35), (0.85, 0.3, 0.7), (0.97, 0.97, 0.95)])]
+    parts = [anchor(green)]
+    parts.append(box((2.2, 1.6, 2.1), (0, 0.0, 1.05), green, bevel=0.03))
+    for k in range(12):
+        x = -1.0 + k * 0.18
+        parts.append(box((0.025, 0.02, 1.9), (x, 0.81, 1.05), trim, bevel=0.006))
+    parts.append(box((2.5, 1.9, 0.08), (0, 0.0, 2.15), trim, bevel=0.02))
+    parts.append(box((2.3, 1.7, 0.18), (0, 0.0, 2.27), green, bevel=0.03))
+    bm = bmesh.new()
+    uvl = bm.loops.layers.uv.new("UVMap")
+    nx = 24
+    top = [bm.verts.new((-1.3 + 2.6 * i / nx, -0.8, 2.12)) for i in range(nx + 1)]
+    bot = [bm.verts.new((-1.3 + 2.6 * i / nx, -1.6, 1.8 - (0.08 if i % 2 else 0.0))) for i in range(nx + 1)]
+    for i in range(nx):
+        f = bm.faces.new((top[i], top[i + 1], bot[i + 1], bot[i]))
+        for lp in f.loops:
+            lp[uvl].uv = (lp.vert.co.x, lp.vert.co.y)
+    parts.append(_mesh_obj(bm, "toldo", [yel], 0.01, 0))
+    parts.append(box((2.0, 0.35, 0.06), (0, -0.95, 0.95), wood, bevel=0.01))
+    for row in range(2):
+        for k in range(6):
+            mz = 1.25 + row * 0.42
+            o = box((0.26, 0.012, 0.34), (-0.85 + k * 0.34, -0.81 - 0.05, mz), covers[(k + row * 2) % len(covers)], bevel=0.003)
+            o.rotation_euler = (math.radians(-12), 0, 0)
+            parts.append(o)
+            parts.append(box((0.24, 0.012, 0.03), (-0.85 + k * 0.34, -0.83, mz + 0.17), covers[5], bevel=0.002))
+        parts.append(tube((-1.05, -0.86, 1.08 + row * 0.42), (1.05, -0.86, 1.08 + row * 0.42), 0.012, trim, verts=8))
+    for k in range(5):
+        o = box((0.32, 0.22, 0.012), (-0.7 + k * 0.35, -0.95, 0.985 + 0.006 * k), covers[k % len(covers)], bevel=0.002)
+        parts.append(o)
+    parts.append(box((0.02, 0.8, 1.9), (1.11, 0.1, 1.0), trim, bevel=0.005))
+    join(parts, "newsstand")
+    export("newsstand")
+
+def cooler_box():
+    """Caixa térmica: corpo arredondado branco, tampa azul com relevo e dobradiça, alças laterais articuladas e tampão de dreno. 0,7 x 0,42 x 0,5 m."""
+    fresh()
+    body = mat("corpo", (0.92, 0.94, 0.95), 0.35)
+    lid = mat("tampa", (0.15, 0.45, 0.6), 0.4)
+    dark = mat("alca", (0.2, 0.22, 0.24), 0.5)
+    parts = [anchor(body)]
+    parts.append(box((0.7, 0.42, 0.4), (0, 0, 0.2), body, bevel=0.035, sub=0))
+    parts.append(box((0.72, 0.44, 0.08), (0, 0, 0.44), lid, bevel=0.03))
+    parts.append(box((0.5, 0.26, 0.02), (0, 0, 0.49), lid, bevel=0.01))
+    for sx in (-1, 1):
+        parts.append(sweep([(sx * 0.36, -0.1, 0.3), (sx * 0.39, -0.08, 0.36), (sx * 0.39, 0.08, 0.36), (sx * 0.36, 0.1, 0.3)], 0.012, dark, 8, "alca"))
+    parts.append(lathe([(0.0, 0.0), (0.02, 0.0), (0.022, 0.015), (0.0, 0.02)], dark, loc=(0.25, -0.215, 0.06), verts=12))
+    parts[-1].rotation_euler = (math.radians(90), 0, 0)
+    join(parts, "cooler_box")
+    export("cooler_box")
+
+def coconut_cart():
+    """Carrinho de cocos de madeira: caçamba de tábuas com laterais, roda raiada na frente, 2 varais/puxadores e pés de apoio. 0,7 x 1,9 m."""
+    fresh()
+    wood = mat("tabua", (0.55, 0.36, 0.2), 0.8, tex("weathered_planks_diff.jpg") if os.path.exists(tex("weathered_planks_diff.jpg")) else tex("oak_wood_planks_diff.jpg"))
+    blue = mat("pintura", (0.2, 0.5, 0.8), 0.6)
+    tire = mat("pneu", (0.08, 0.08, 0.09), 0.8)
+    iron = mat("ferro", (0.25, 0.25, 0.27), 0.5)
+    parts = [anchor(wood)]
+    for k in range(5):
+        parts.append(box((0.7, 0.19, 0.03), (0, -0.4 + k * 0.2, 0.3), wood, bevel=0.006))
+    for sx in (-1, 1):
+        for k in range(2):
+            parts.append(box((0.03, 1.0, 0.11), (sx * 0.35, 0, 0.38 + k * 0.12), blue, bevel=0.006))
+    for sy in (-1, 1):
+        parts.append(box((0.7, 0.03, 0.22), (0, sy * 0.5, 0.42), blue, bevel=0.006))
+    _wheel(parts, (0, -0.62, 0.18), 0.18, tire, iron, 10, True, 0.06)
+    parts.append(tube((-0.06, -0.62, 0.18), (-0.06, -0.45, 0.3), 0.012, iron, verts=8))
+    parts.append(tube((0.06, -0.62, 0.18), (0.06, -0.45, 0.3), 0.012, iron, verts=8))
+    for sx in (-0.25, 0.25):
+        parts.append(sweep([(sx, -0.45, 0.3), (sx, 0.5, 0.33), (sx, 1.2, 0.55)], 0.022, wood, 10, "varal"))
+        parts.append(tube((sx, 0.45, 0.3), (sx, 0.5, 0.0), 0.018, wood, verts=8))
+    join(parts, "coconut_cart")
+    export("coconut_cart")
+
+def bottle(name, glass_rgb, label_rgb, kind):
+    """Garrafa torneada de vidro: corpo, ombro, gargalo com anel e tampa/rolha, rótulo em faixa e contra-rótulo no gargalo.
+    kind: 'cachaca' (alta, ombro suave), 'rum' (atarracada), 'cerveja' (long neck). Base em z=0."""
+    fresh()
+    gl = mat("vidro", glass_rgb, 0.08)
+    lb = mat("rotulo", label_rgb, 0.7)
+    cap = mat("tampa", (0.85, 0.7, 0.3) if kind != "cerveja" else (0.8, 0.8, 0.82), 0.4)
+    if kind == "cachaca":
+        prof = [(0.0, 0.0), (0.035, 0.0), (0.038, 0.006), (0.038, 0.18), (0.034, 0.21), (0.02, 0.245), (0.014, 0.26), (0.014, 0.3), (0.017, 0.305), (0.0, 0.305)]
+        lz, lh, r = 0.06, 0.09, 0.0385
+    elif kind == "rum":
+        prof = [(0.0, 0.0), (0.045, 0.0), (0.048, 0.008), (0.048, 0.15), (0.04, 0.18), (0.018, 0.205), (0.015, 0.24), (0.018, 0.245), (0.0, 0.245)]
+        lz, lh, r = 0.045, 0.085, 0.0485
+    else:
+        prof = [(0.0, 0.0), (0.03, 0.0), (0.032, 0.006), (0.032, 0.13), (0.026, 0.17), (0.013, 0.205), (0.012, 0.24), (0.014, 0.245), (0.0, 0.245)]
+        lz, lh, r = 0.04, 0.07, 0.0325
+    parts = [lathe(prof, gl, verts=32)]
+    parts.append(lathe([(r, lz), (r + 0.001, lz), (r + 0.001, lz + lh), (r, lz + lh)], lb, verts=32))
+    top = prof[-2][1]
+    parts.append(lathe([(0.0, top - 0.015), (prof[-3][0] + 0.002, top - 0.015), (prof[-3][0] + 0.002, top + 0.006), (0.0, top + 0.008)], cap, verts=20))
+    join(parts, name)
+    export(name)
+
+ALL = {"bottle_cachaca": lambda: bottle("bottle_cachaca", (0.85, 0.92, 0.88), (0.95, 0.85, 0.3), "cachaca"), "bottle_rum": lambda: bottle("bottle_rum", (0.45, 0.25, 0.08), (0.9, 0.9, 0.85), "rum"), "bottle_green": lambda: bottle("bottle_green", (0.15, 0.45, 0.2), (0.85, 0.25, 0.2), "cerveja"), "bottle_wine": lambda: bottle("bottle_wine", (0.35, 0.05, 0.1), (0.95, 0.92, 0.8), "cachaca"),
+       "trellis_planter": trellis_planter, "towel_folded": towel_folded, "flipflops": flipflops, "pool_float": pool_float, "rope_coil": rope_coil, "cloth_shirt": cloth_shirt, "cloth_towel": cloth_towel, "ac_unit": ac_unit, "tv_antenna": tv_antenna, "straw": straw, "popcorn_cart": popcorn_cart, "newsstand": newsstand, "cooler_box": cooler_box, "coconut_cart": coconut_cart,
+       "tree_amendoeira_1": lambda: tree_amendoeira("tree_amendoeira_1", 11), "tree_amendoeira_2": lambda: tree_amendoeira("tree_amendoeira_2", 27), "tree_amendoeira_3": lambda: tree_amendoeira("tree_amendoeira_3", 53), "balcony_rail": balcony_rail, "porch_column": porch_column, "bamboo_pole": bamboo_pole, "fish_clown": lambda: fish("fish_clown", 0.16, 0.1, 0.07, (1.0, 0.45, 0.05), (1.0, 0.5, 0.1), (0.97, 0.97, 0.95), 3, (1.0, 0.4, 0.05), "round", 0.16),
        "fish_blue": lambda: fish("fish_blue", 0.22, 0.14, 0.05, (0.1, 0.35, 0.9), (0.95, 0.8, 0.2), (0.05, 0.1, 0.4), 0, (0.95, 0.85, 0.2), "fork", 0.12),
        "fish_angel": lambda: fish("fish_angel", 0.24, 0.26, 0.05, (0.95, 0.85, 0.25), (0.95, 0.9, 0.5), (0.15, 0.15, 0.2), 4, (0.2, 0.3, 0.8), "round", 0.1),
        "fish_silver": lambda: fish("fish_silver", 0.3, 0.1, 0.06, (0.55, 0.62, 0.72), (0.93, 0.95, 0.97), (0.4, 0.45, 0.55), 0, (0.7, 0.75, 0.85), "fork", 0.1),

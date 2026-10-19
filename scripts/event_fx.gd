@@ -54,6 +54,14 @@ func _refresh() -> void :
 
 # ------------------------------------------------------------------ mar
 func _sea() -> void :
+	# maré alta / tempestade: guarda-sóis, espreguiçadeiras e toalhas sobem a areia (3,5 m para longe do mar)
+	var shift: = 3.5 if Core.day_event == "mare" or Core.day_event == "tempestade" else 0.0
+	for bs in get_tree().get_nodes_in_group("beach_set"):
+		var n3: Node3D = bs
+		if Core.paused:
+			n3.position.z = shift
+		else:
+			create_tween().tween_property(n3, "position:z", shift, 4.0).set_trans(Tween.TRANS_SINE)
 	var om: ShaderMaterial = world.get("ocean_mat")
 	if om == null:
 		return

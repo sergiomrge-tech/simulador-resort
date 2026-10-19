@@ -74,6 +74,9 @@ func _village_materials() -> void :
 	glass.emission_energy_multiplier = 0.0
 	glass.cull_mode = BaseMaterial3D.CULL_DISABLED
 	VM.glass = glass
+	# v0.9.5: cada casa acende e apaga a luz numa hora diferente (3 grupos de janelas)
+	VM.glass_b = glass.duplicate()
+	VM.glass_c = glass.duplicate()
 
 func stucco(c: Color) -> Material:
 	return B.mat("white_stucco", 0.5, c, 0.88)
@@ -155,20 +158,15 @@ func _juliet(c: Vector3, front: float, w: float, d: float) -> void :
 func _bougainvillea(p: Vector3, front: float) -> void :
 	var cols: = [Color(0.86, 0.12, 0.42), Color(0.95, 0.42, 0.12), Color(0.62, 0.18, 0.72), Color(0.96, 0.82, 0.88)]
 	var wood: = wood_tint(Color(0.45, 0.28, 0.14))
-	var clay_m: = B.flat(Color(0.82, 0.42, 0.26), 0.8)
-	B.cyl(self, 0.24, 0.18, 0.38, p + Vector3(0, 0.19, 0), clay_m, 24)
-	B.cyl(self, 0.26, 0.26, 0.06, p + Vector3(0, 0.38, 0), B.flat(Color(0.7, 0.34, 0.2), 0.8), 24)
-	B.cyl(self, 0.22, 0.22, 0.02, p + Vector3(0, 0.4, 0), B.flat(Color(0.32, 0.2, 0.12), 0.9), 24)
 	var back: = - front * 0.18
-	for sx in [-0.42, 0.42]:
-		B.box(self, Vector3(0.04, 2.5, 0.04), p + Vector3(sx, 1.25, back), wood)
-	for k in 5:
-		B.box(self, Vector3(0.9, 0.03, 0.03), p + Vector3(0, 0.7 + k * 0.42, back), wood)
-	# galhos subindo do vaso
-	var stem: = B.flat(Color(0.35, 0.22, 0.12), 0.9)
-	for sx in [-0.25, 0.05, 0.3]:
-		var st: = B.cyl(self, 0.022, 0.03, 1.9, p + Vector3(sx * 0.6, 1.3, back * 0.6), stem, 8)
-		st.rotation.z = sx * 0.35
+	# v0.9.5: vaso torneado, treliça de ripas e galhos num modelo só (Blender); antes eram cilindros e caixas
+	if Real.place(self, "g:trellis_planter", p, -1.0, 0.0 if front > 0.0 else PI, Color.WHITE, 0.0, false) == null:
+		var clay_m: = B.flat(Color(0.82, 0.42, 0.26), 0.8)
+		B.cyl(self, 0.24, 0.18, 0.38, p + Vector3(0, 0.19, 0), clay_m, 24)
+		for sx in [-0.42, 0.42]:
+			B.box(self, Vector3(0.04, 2.5, 0.04), p + Vector3(sx, 1.25, back), wood)
+		for k in 5:
+			B.box(self, Vector3(0.9, 0.03, 0.03), p + Vector3(0, 0.7 + k * 0.42, back), wood)
 	var rng: = RandomNumberGenerator.new()
 	rng.seed = int(p.x * 13.0 + p.z * 7.0)
 	for i in 26:
@@ -370,17 +368,13 @@ func _house_extras(c: Vector3, w: float, d: float, h: float, front: float, col: 
 		B.box(self, Vector3(0.6, 1.4, 0.6), Vector3(chx, h + 1.6, c.z - front * d * 0.18), stucco(col.darkened(0.15)))
 		B.box(self, Vector3(0.75, 0.12, 0.75), Vector3(chx, h + 2.35, c.z - front * d * 0.18), VM.trim)
 	if rng.randf() < 0.3:
+		# antena yagi do Blender no telhado (antes: varetas de caixa)
 		var ax: = c.x - w * 0.3
-		var az: = c.z
-		B.cyl(self, 0.02, 0.02, 1.6, Vector3(ax, h + 2.4, az), gm, 6)
-		for j in 4:
-			var bar: = B.box(self, Vector3(0.9 - j * 0.15, 0.02, 0.02), Vector3(ax, h + 2.8 + j * 0.15, az), gm)
-			bar.rotation.y = 0.3
+		Real.place(self, "g:tv_antenna", Vector3(ax, h + (0.55 if eaves else 0.1), c.z), -1.0, 0.3, Color.WHITE, 0.0, false)
 	if rng.randf() < 0.35:
+		# ar-condicionado split na parede lateral (Blender: grade, ventilador, suportes e cano)
 		var side: = 1.0 if rng.randf() < 0.5 else -1.0
-		B.box(self, Vector3(0.28, 0.5, 0.75), Vector3(c.x + side * (w * 0.5 + 0.16), 2.4, c.z), B.flat(Color(0.95, 0.95, 0.95), 0.5))
-		var grille: = B.cyl(self, 0.2, 0.2, 0.03, Vector3(c.x + side * (w * 0.5 + 0.31), 2.4, c.z), B.flat(Color(0.3, 0.3, 0.32), 0.5), 16)
-		grille.rotation.z = PI * 0.5
+		Real.place(self, "g:ac_unit", Vector3(c.x + side * (w * 0.5 + 0.02), 2.1, c.z), -1.0, side * PI * 0.5, Color.WHITE, 0.0, false)
 	# relógio de luz ao lado da porta
 	B.box(self, Vector3(0.35, 0.45, 0.14), c + Vector3(- w * 0.42 * front, 1.5, front * (d * 0.5 + 0.08)), B.flat(Color(0.75, 0.78, 0.8), 0.5))
 	# vaso pendurado
@@ -393,6 +387,7 @@ func _house_extras(c: Vector3, w: float, d: float, h: float, front: float, col: 
 			B.cyl(self, 0.14, 0.1, 0.18, vp, B.flat(Color(0.85, 0.45, 0.3), 0.8), 14)
 
 var _house_fronts: Array = []
+var house_doors: Array = []   # v0.9.5: os moradores entram em casa à noite
 ## v0.9.3: variedade de casas. Estilo sorteado pela posição (estável): 0 térrea de telhado, 1 sobrado com sacada de ferro,
 ## 2 platibanda (fachada reta escondendo o telhado, com frontão e ano), 3 casa de madeira (tábuas pintadas). Telhado em 4 tons.
 const ROOF_TINTS: = [Color(1, 1, 1), Color(0.55, 0.36, 0.3), Color(1.15, 0.92, 0.78), Color(0.5, 0.56, 0.64)]
@@ -412,6 +407,9 @@ func _house(c: Vector3, w: float, d: float, front: float, col: Color, shutter: C
 		style = 0
 	var h: = 6.3 if style == 1 else 3.5
 	_house_fronts.append([c.x - w * 0.5 + 0.4, c.x + w * 0.5 - 0.4, c.z + d * 0.5 * front, front, h])
+	house_doors.append(Vector3(c.x - w * 0.18 * front, 0.12, c.z + front * (d * 0.5 + (1.6 if porch else 0.55))))
+	var glass_keep: Material = VM.glass
+	VM.glass = [VM.glass, VM.get("glass_b", VM.glass), VM.get("glass_c", VM.glass)][hr.randi() % 3]
 	var wall_m: Material = stucco(col)
 	if style == 3:
 		wall_m = B.mat("weathered_planks", 0.45, col.lightened(0.15), 0.85)
@@ -467,6 +465,7 @@ func _house(c: Vector3, w: float, d: float, front: float, col: Color, shutter: C
 		yr.pixel_size = 0.006
 	else:
 		B.hip_roof(self, c + Vector3(0, h + 0.05, 0), w + 1.75, d + 1.75, 2.05, roof_m, 0.14)
+	VM.glass = glass_keep
 	_house_extras(c, w, d, h, front, col, shutter, style != 2)
 	_block(c, w, d, 0.4)
 	_occlude(c, w * 0.9, d * 0.9, h * 0.9)
@@ -1312,13 +1311,23 @@ func set_night(t: float) -> void :
 		var beam: = _lighthouse.get_node_or_null("Beam")
 		if beam:
 			beam.visible = t > 0.3
+			if beam is GeometryInstance3D and (beam as GeometryInstance3D).material_override is ShaderMaterial:
+				((beam as GeometryInstance3D).material_override as ShaderMaterial).set_shader_parameter("night", clampf((t - 0.3) / 0.5, 0.0, 1.0))
 		for ch in _lighthouse.get_children():
 			if ch is SpotLight3D:
 				ch.light_energy = 6.0 * t
 	if VM.has("glass"):
-		var glass: StandardMaterial3D = VM.glass
-		glass.emission_energy_multiplier = 7.0 * t
-		glass.albedo_color = Color(0.62, 0.78, 0.88, 0.7).lerp(Color(1.0, 0.7, 0.35, 0.95), t)
+		# janelas: grupo A (também igreja, quiosque, lojas) aceso a noite toda; B das 18h30 às 21h30 (dorme cedo);
+		# C das 19h30 à 0h30 e de novo das 5h às 6h30 (acorda cedo). Apagada = reflexo fraco.
+		var h: = Core.minutes / 60.0
+		var on: = {"glass": true, "glass_b": h >= 18.5 and h < 21.5, "glass_c": (h >= 19.5 or h < 0.5) or (h >= 5.0 and h < 6.5)}
+		for key in on:
+			if not VM.has(key):
+				continue
+			var glass: StandardMaterial3D = VM[key]
+			var k: = t if on[key] else t * 0.06
+			glass.emission_energy_multiplier = 7.0 * k
+			glass.albedo_color = Color(0.62, 0.78, 0.88, 0.7).lerp(Color(1.0, 0.7, 0.35, 0.95), k)
 
 
 # ------------------------------------------------------------------ v0.7.1: quiosque cheio de detalhes
@@ -1359,12 +1368,12 @@ func _kiosk_details(c: Vector3, y0: float) -> void :
 	cart.position = c + Vector3(-3.9, 0.05, -0.4)
 	cart.rotation.y = 0.5
 	add_child(cart)
-	B.box(cart, Vector3(0.7, 0.35, 1.0), Vector3(0, 0.45, 0), D.m(Color(0.25, 0.55, 0.85)))
-	var wheel: = B.cyl(cart, 0.18, 0.18, 0.08, Vector3(0, 0.18, 0.62), D.m(Color(0.2, 0.2, 0.22)), 12)
-	wheel.rotation.z = PI * 0.5
-	for sx in [-1.0, 1.0]:
-		B.box(cart, Vector3(0.05, 0.05, 0.9), Vector3(sx * 0.25, 0.55, -0.75), D.m(Color(0.6, 0.45, 0.3)))
-	D.coconut_pile(cart, Vector3(0, 0.55, 0), 5)
+	# carrinho de cocos de madeira do Blender (roda raiada, varais); cocos sobre as tábuas (topo a 0,315 m)
+	if Real.place(cart, "g:coconut_cart", Vector3.ZERO, -1.0, PI, Color.WHITE, 0.0, false) != null:
+		D.coconut_pile(cart, Vector3(0, 0.32, 0), 5)
+	else:
+		B.box(cart, Vector3(0.7, 0.35, 1.0), Vector3(0, 0.45, 0), D.m(Color(0.25, 0.55, 0.85)))
+		D.coconut_pile(cart, Vector3(0, 0.55, 0), 5)
 	_surf_rack(c + Vector3(-1.2, 0.0, -3.35))
 	D.trash_bin(self, c + Vector3(3.1, 0.05, 2.8))
 	D.trash_bin(self, c + Vector3(3.6, 0.05, 2.8), Color(0.2, 0.55, 0.9))
@@ -1749,22 +1758,18 @@ func _landmark_details() -> void :
 	# praça: banca de jornal, carrinho de pipoca e pombinhos
 	var pc: = Vector3(PRACA.get_center().x, 0.1, PRACA.get_center().y)
 	var banca: = pc + Vector3(7.4, 0, -3.2)
-	B.box(self, Vector3(2.2, 2.2, 1.6), banca + Vector3(0, 1.1, 0), B.flat(Color(0.2, 0.55, 0.35), 0.6))
-	var awn: = B.box(self, Vector3(2.6, 0.06, 0.9), banca + Vector3(0, 2.3, -1.1), B.flat(Color(1.0, 0.85, 0.2), 0.7))
-	awn.rotation.x = 0.3
-	for k in 12:
-		B.box(self, Vector3(0.28, 0.36, 0.02), banca + Vector3(-0.85 + (k % 6) * 0.34, 0.9 + (k / 6) * 0.45, -0.81), B.flat(D.FLAG_COLS[k % D.FLAG_COLS.size()], 0.8))
-	B.label(self, "BANCA", banca + Vector3(0, 2.0, -0.82), 48, Color(1, 1, 1), Color(0.1, 0.3, 0.15, 1), PI).pixel_size = 0.005
+	# v0.9.5: banca de jornal do Blender (frisos, toldo recortado, revistas nos expositores); frente para -Z como antes
+	if Real.place(self, "g:newsstand", banca, -1.0, PI, Color.WHITE, 0.0, false) != null:
+		B.label(self, "BANCA", banca + Vector3(0, 2.27, -0.86), 48, Color(1, 1, 1), Color(0.1, 0.3, 0.15, 1), PI).pixel_size = 0.005
+	else:
+		B.box(self, Vector3(2.2, 2.2, 1.6), banca + Vector3(0, 1.1, 0), B.flat(Color(0.2, 0.55, 0.35), 0.6))
 	var pip: = pc + Vector3(-6.0, 0, 2.9)
-	B.box(self, Vector3(1.0, 0.9, 0.7), pip + Vector3(0, 0.75, 0), B.flat(Color(0.95, 0.25, 0.25), 0.5))
-	B.box(self, Vector3(0.8, 0.6, 0.6), pip + Vector3(0, 1.5, 0), B.flat(Color(0.85, 0.95, 1.0, 0.6), 0.1))
-	Real.place(self, "g:popcorn", pip + Vector3(0, 1.26, 0), -1.0, 0.0, Color.WHITE, 0.0, true)
-	for sx in [-0.4, 0.4]:
-		var wh: = B.cyl(self, 0.22, 0.22, 0.05, pip + Vector3(sx, 0.22, 0.38), B.flat(Color(0.2, 0.2, 0.22), 0.6), 16)
-		wh.rotation.x = PI * 0.5
-	B.cyl(self, 0.02, 0.02, 1.2, pip + Vector3(0, 2.4, 0), wood_tint(Color(0.5, 0.3, 0.2)), 6)
-	B.cyl(self, 0.03, 0.75, 0.25, pip + Vector3(0, 3.0, 0), B.flat(Color(1.0, 0.95, 0.9), 0.7), 16)
-	B.label(self, "PIPOCA", pip + Vector3(0, 0.75, -0.36), 40, Color.WHITE, Color(0.6, 0.1, 0.1, 1), PI).pixel_size = 0.005
+	# v0.9.5: carrinho de pipoca do Blender (vitrine, rodas raiadas, guarda-sol listrado); pipoca dentro da vitrine
+	if Real.place(self, "g:popcorn_cart", pip, -1.0, PI, Color.WHITE, 0.0, false) != null:
+		Real.place(self, "g:popcorn", pip + Vector3(0, 1.17, 0), -0.75, 0.0, Color.WHITE, 0.0, true)
+		B.label(self, "PIPOCA", pip + Vector3(-0.25, 0.75, -0.38), 40, Color.WHITE, Color(0.6, 0.1, 0.1, 1), PI).pixel_size = 0.004
+	else:
+		B.box(self, Vector3(1.0, 0.9, 0.7), pip + Vector3(0, 0.75, 0), B.flat(Color(0.95, 0.25, 0.25), 0.5))
 	var rng: = RandomNumberGenerator.new()
 	rng.seed = 3131
 	for k in 10:
@@ -1775,6 +1780,7 @@ func _landmark_details() -> void :
 		bird.position = bp
 		bird.rotation.y = rng.randf() * TAU
 		add_child(bird)
+		bird.add_to_group("gull")
 		if Real.place(bird, "g:seagull_perch", Vector3.ZERO, -1.25, 0.0, Color.WHITE, 0.0, true) == null:
 			B.sphere(bird, 0.09, Vector3(0, 0.09, 0), B.flat(Color(0.6, 0.62, 0.7), 0.7), Vector3(0.8, 0.8, 1.3))
 			B.sphere(bird, 0.05, Vector3(0, 0.18, 0.09), B.flat(Color(0.45, 0.5, 0.6), 0.7))
@@ -1790,16 +1796,8 @@ func _landmark_details() -> void :
 	var end: = Vector3(PIER_X, 0.37, -47.0)
 	for k in 3:
 		B.model(self, "wooden_crate_01", end + Vector3(-1.9 + (k % 2) * 0.1, k * 0.0, 0.6 - k * 0.7), k * 0.4, 0.8)
-	var coil: = TorusMesh.new()
-	coil.inner_radius = 0.12
-	coil.outer_radius = 0.3
-	coil.rings = 24
-	for k in 3:
-		var mi: = MeshInstance3D.new()
-		mi.mesh = coil
-		mi.material_override = B.flat(Color(0.86, 0.74, 0.5), 0.95)
-		mi.position = end + Vector3(1.8, 0.05 + k * 0.06, 0.9)
-		add_child(mi)
+	# rolo de corda de verdade (Blender), não argolas empilhadas
+	Real.place(self, "g:rope_coil", end + Vector3(1.75, 0.0, 0.2), -1.0, 0.7, Color.WHITE, 0.0, false)
 	_fishing_boat(Vector3(PIER_X + 3.2, -0.25, -44.0), 0.1, Color(0.2, 0.6, 0.55))
 	# farol: porta, janelinhas, balcão com gradil e casinha do faroleiro
 	var fp: = Vector3(108.0, 0.0, -40.0)
@@ -1910,12 +1908,20 @@ func _map_details() -> void :
 		var pole_m: = wood_tint(Color(0.5, 0.35, 0.22))
 		var a2: = Vector3(lx - 2.5, 0, lz)
 		var b2: = Vector3(lx + 2.5, 0, lz)
+		# varal: mastros de bambu, fio e roupas de pano do Blender (camisetas e toalhas com prendedores), tingidas
+		var top_y: = 1.95
 		for pp in [a2, b2]:
-			B.cyl(self, 0.04, 0.05, 2.0, pp + Vector3(0, 1.0, 0), pole_m, 8)
-		D.wire(self, a2 + Vector3(0, 1.9, 0), b2 + Vector3(0, 1.9, 0), 0.25)
+			if Real.place(self, "g:bamboo_pole", pp, 2.0, 0.0) == null:
+				B.cyl(self, 0.04, 0.05, 2.0, pp + Vector3(0, 1.0, 0), pole_m, 8)
+		D.wire(self, a2 + Vector3(0, top_y, 0), b2 + Vector3(0, top_y, 0), 0.25)
 		for j in 6:
-			var cp: = a2.lerp(b2, (j + 0.5) / 6.0) + Vector3(0, 1.62 - 0.25 * 4.0 * ((j + 0.5) / 6.0) * (1.0 - (j + 0.5) / 6.0), 0)
-			var piece: = B.box(self, Vector3(0.45, 0.5 if j % 2 == 0 else 0.35, 0.02), cp, B.flat(D.FLAG_COLS[(j + k) % D.FLAG_COLS.size()], 0.95))
-			piece.rotation.z = rng.randf_range(-0.08, 0.08)
+			var t6: = (j + 0.5) / 6.0
+			var cp: = a2.lerp(b2, t6) + Vector3(0, top_y - 0.25 * 4.0 * t6 * (1.0 - t6), 0)
+			var piece: = Real.place(self, "g:cloth_shirt" if j % 2 == 0 else "g:cloth_towel", cp, -1.0, rng.randf_range(-0.06, 0.06), Color.WHITE, 0.0, false)
+			if piece:
+				piece.position.y = cp.y - B.aabb_of(piece).size.y + 0.04   # prendedores no fio, pano pendurado embaixo
+				Real.tint_named(piece, D.FLAG_COLS[(j + k) % D.FLAG_COLS.size()])
+			else:
+				B.box(self, Vector3(0.45, 0.5, 0.02), cp, B.flat(D.FLAG_COLS[(j + k) % D.FLAG_COLS.size()], 0.95))
 	for k in 12:
 		B.model(self, "island_tree_01", Vector3(4.0 + k * 9.0 + rng.randf_range(-2, 2), 0, BACK_Z + 14.5 + rng.randf_range(-1, 2)), rng.randf() * TAU, rng.randf_range(1.6, 2.2))

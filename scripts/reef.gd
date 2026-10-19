@@ -62,8 +62,18 @@ func _process(delta: float) -> void :
 		var a: float = d.ph + _t * d.w
 		var pos: Vector3 = d.c + Vector3(cos(a) * d.r, d.yb + sin(a * 1.7 + d.ph) * 0.12, sin(a) * d.r * 0.7)
 		var vel: = Vector3(-sin(a) * d.w * d.r, 0, cos(a) * d.w * d.r * 0.7)
-		f.position = pos
-		f.rotation.y = atan2(vel.x, vel.z)
+		# o cardume foge de quem mergulha perto (2,5 m) e volta devagar depois
+		var pl: Node3D = Core.player_ref
+		var flee: Vector3 = d.get("flee", Vector3.ZERO)
+		if is_instance_valid(pl):
+			var away: Vector3 = (pos + flee) - pl.global_position - Vector3(0, 1.4, 0)
+			if away.length() < 2.5:
+				flee += away.normalized() * delta * 3.0
+		flee = flee.lerp(Vector3.ZERO, delta * 0.4)
+		d["flee"] = flee
+		f.position = pos + flee
+		var mv: Vector3 = vel + flee * 4.0
+		f.rotation.y = atan2(mv.x, mv.z)
 		var tl: Node3D = d.tail
 		if tl:
 			tl.rotation.y = sin(_t * 9.0 + d.ph) * 0.45

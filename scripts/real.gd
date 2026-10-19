@@ -119,3 +119,20 @@ static func _aabb(n: Node3D) -> AABB:
 		out = bb if first else out.merge(bb)
 		first = false
 	return out
+
+
+## Pinta só as superfícies cujo material se chama "tint*" (toalha, boia, roupa no varal) com a cor dada.
+static func tint_named(root: Node, col: Color) -> void:
+	if root == null:
+		return
+	for mi in root.find_children("*", "MeshInstance3D", true, false):
+		var m: MeshInstance3D = mi
+		if m.mesh == null:
+			continue
+		for si in m.mesh.get_surface_count():
+			var src: Material = m.mesh.surface_get_material(si)
+			if src and String(src.resource_name).begins_with("tint"):
+				var cur: Material = m.get_surface_override_material(si)
+				var base: BaseMaterial3D = (cur if cur is BaseMaterial3D else src).duplicate()
+				base.albedo_color = col
+				m.set_surface_override_material(si, base)
