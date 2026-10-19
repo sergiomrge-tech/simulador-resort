@@ -1084,11 +1084,19 @@ func _bulb_mat() -> StandardMaterial3D:
 
 func _string_lights(a: Vector3, b: Vector3, count: int) -> void :
 	var mat: = _bulb_mat()
+	var bulb: Mesh = Real.mesh_of("g:string_bulb")
+	var bx: = []
 	for i in count:
 		var t: = float(i + 1) / float(count + 1)
 		var p: = a.lerp(b, t)
 		p.y -= sin(t * PI) * 0.16
-		B.sphere(self, 0.04, p, mat)
+		if bulb == null:
+			B.sphere(self, 0.04, p, mat)
+		else:
+			bx.append(Transform3D(Basis(Vector3.UP, float(i) * 1.7), p))
+	if bulb != null and not bx.is_empty():
+		var bmi: = D.multimesh(self, bulb, bx, [], mat)
+		bmi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 
 func _cooler(p: Vector3, rot: float) -> void :
 	var n: = Node3D.new()
@@ -1308,19 +1316,20 @@ func _lantern_posts() -> void :
 		B.box(self, Vector3(0.14, 1.9, 0.14), p + Vector3(0, 0.95, 0), M.oak)
 		B.box(self, Vector3(0.5, 0.06, 0.14), p + Vector3(0.18, 1.88, 0), M.oak)
 		B.model(self, "wooden_lantern_01", p + Vector3(0.36, 1.45, 0), 0.0, 0.9)
-		var glow: = MeshInstance3D.new()
-		var sm: = SphereMesh.new()
-		sm.radius = 0.07
-		sm.height = 0.14
-		glow.mesh = sm
 		var gm: = StandardMaterial3D.new()
 		gm.albedo_color = Color(1, 0.8, 0.5)
 		gm.emission_enabled = true
 		gm.emission = Color(1.0, 0.7, 0.35)
 		gm.emission_energy_multiplier = 0.0
-		glow.material_override = gm
-		glow.position = p + Vector3(0.36, 1.62, 0)
-		add_child(glow)
+		if Real.place_glow(self, "g:lamp_bulb", p + Vector3(0.36, 1.52, 0), -1.0, 0.0, gm) == null:
+			var glow: = MeshInstance3D.new()
+			var sm: = SphereMesh.new()
+			sm.radius = 0.07
+			sm.height = 0.14
+			glow.mesh = sm
+			glow.material_override = gm
+			glow.position = p + Vector3(0.36, 1.62, 0)
+			add_child(glow)
 		var l: = OmniLight3D.new()
 		l.position = p + Vector3(0.36, 1.6, 0)
 		l.omni_range = 6.0
@@ -2048,7 +2057,12 @@ func _bungalow_details(i: int, c: Vector3, y0: float, w: float, d: float, zf: fl
 	var wc: = Vector3(c.x - 1.2, y0 + h - 0.15, zf - 1.5)
 	for k in 5:
 		B.cyl(self, 0.003, 0.003, 0.35 + k * 0.05, wc + Vector3(-0.1 + k * 0.05, -0.2 - k * 0.025, 0), wood, 4)
-		B.sphere(self, 0.03, wc + Vector3(-0.1 + k * 0.05, -0.4 - k * 0.05, 0), B.flat(Color(1.0, 0.85, 0.8), 0.5), Vector3(1, 1.3, 0.5))
+		var chp: = wc + Vector3(-0.1 + k * 0.05, -0.4 - k * 0.05, 0)
+		var shl: = Real.place(self, "g:shell_a" if k % 2 == 0 else "g:shell_b", chp, -1.6, 0.4 * k, Color.WHITE, 0.0, true)
+		if shl != null:
+			shl.rotation.x = PI * 0.5
+		else:
+			B.sphere(self, 0.03, chp, B.flat(Color(1.0, 0.85, 0.8), 0.5), Vector3(1, 1.3, 0.5))
 
 func _pool_details() -> void :
 	var chrome: = B.flat(Color(0.85, 0.88, 0.9), 0.15, 0.9)
@@ -2084,7 +2098,11 @@ func _pool_details() -> void :
 	for k in 4:
 		var lx: = lerpf(POOL_MIN.x + 1.5, POOL_MAX.x - 1.5, k / 3.0)
 		for lz in [POOL_MIN.y + 0.12, POOL_MAX.y - 0.12]:
-			B.sphere(self, 0.08, Vector3(lx, -0.7, lz), P.glow(Color(0.6, 0.95, 1.0), 2.0), Vector3(1, 1, 0.4))
+			var pl: = Real.place_glow(self, "g:pool_light", Vector3(lx, -0.7, lz), -1.0, 0.0, P.glow(Color(0.6, 0.95, 1.0), 2.0))
+			if pl != null:
+				pl.rotation.x = PI * 0.5 if lz < (POOL_MIN.y + POOL_MAX.y) * 0.5 else -PI * 0.5
+			else:
+				B.sphere(self, 0.08, Vector3(lx, -0.7, lz), P.glow(Color(0.6, 0.95, 1.0), 2.0), Vector3(1, 1, 0.4))
 	# drinks nas mesinhas entre as espreguiçadeiras
 	for side in [-1.0, 1.0]:
 		for k in 2:
@@ -2129,6 +2147,10 @@ func _reception_details() -> void :
 	for k in 5:
 		B.box(self, Vector3(0.22, 0.28, 0.01), Vector3(2.4 + (k % 3) * 0.35, y0 + 1.75 - (k / 3) * 0.35, 12.85), B.flat([Color(1, 1, 0.7), Color(0.8, 0.95, 1), Color(1, 0.85, 0.85)][k % 3], 0.9))
 	B.model(self, "painted_wooden_bench", Vector3(-3.0, y0, 20.9), PI, 1.0)
-	B.sphere(self, 0.06, Vector3(-0.6, y0 + 1.14, 15.5), brass, Vector3(1, 0.7, 1))
+	var kn2: = Real.place(self, "g:brass_knob", Vector3(-0.6, y0 + 1.14, 15.5), -1.4, 0.0, Color.WHITE, 0.0, false)
+	if kn2 != null:
+		kn2.rotation.x = PI * 0.5
+	else:
+		B.sphere(self, 0.06, Vector3(-0.6, y0 + 1.14, 15.5), brass, Vector3(1, 0.7, 1))
 	B.model(self, "potted_plant_01", Vector3(-1.9, y0, 20.3), 0.0, 1.1)
 	B.model(self, "potted_plant_01", Vector3(1.9, y0, 20.3), 0.0, 1.1)

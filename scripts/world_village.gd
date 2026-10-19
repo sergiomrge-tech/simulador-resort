@@ -238,61 +238,72 @@ func _facade(c: Vector3, n: Vector3, half: float, offset: float, kind: String, c
 	piv.rotation.y = rot
 	add_child(piv)
 	if kind == "door":
-		B.box(piv, Vector3(1.36, 2.95, 0.1), Vector3(0, 1.47, 0), VM.trim)
-		B.box(piv, Vector3(1.05, 2.2, 0.1), Vector3(0, 1.1, 0.03), leaf_m)
-		for py in [0.55, 1.15, 1.75]:
-			for px in [-0.24, 0.24]:
-				B.box(piv, Vector3(0.36, 0.42, 0.04), Vector3(px, py, 0.09), dark)
-				B.box(piv, Vector3(0.28, 0.34, 0.04), Vector3(px, py, 0.11), leaf_m)
-		B.sphere(piv, 0.04, Vector3(0.38, 1.05, 0.14), B.flat(Color(0.95, 0.78, 0.3), 0.25, 0.6))
-		B.box(piv, Vector3(1.05, 0.45, 0.06), Vector3(0, 2.48, 0.02), VM.glass)
-		for k in 3:
-			B.box(piv, Vector3(0.03, 0.42, 0.05), Vector3(-0.26 + k * 0.26, 2.48, 0.06), VM.trim)
-		B.box(piv, Vector3(1.6, 0.14, 0.5), Vector3(0, 0.07, 0.26), VM.curb)
-		# marquise de telha sobre a porta, com duas mãos-francesas
-		var hood: = B.box(piv, Vector3(1.9, 0.07, 0.78), Vector3(0, 3.12, 0.38), VM.clay)
-		hood.rotation.x = 0.2
-		B.box(piv, Vector3(1.92, 0.05, 0.06), Vector3(0, 3.0, 0.74), VM.trim)
-		for sx in [-1.0, 1.0]:
-			var br: = B.box(piv, Vector3(0.07, 0.07, 0.62), Vector3(sx * 0.78, 2.98, 0.34), dark)
-			br.rotation.x = 0.3
+		var dframe: Node3D = Real.place_glow(piv, "g:door_frame", Vector3.ZERO, -1.0, 0.0, VM.glass)
+		var dleaf: Node3D = Real.place(piv, "g:door_leaf", Vector3.ZERO, -1.0, 0.0, col.lightened(0.3), 0.0, false)
+		if dframe == null or dleaf == null:
+			B.box(piv, Vector3(1.36, 2.95, 0.1), Vector3(0, 1.47, 0), VM.trim)
+			B.box(piv, Vector3(1.05, 2.2, 0.1), Vector3(0, 1.1, 0.03), leaf_m)
+			for py in [0.55, 1.15, 1.75]:
+				for px in [-0.24, 0.24]:
+					B.box(piv, Vector3(0.36, 0.42, 0.04), Vector3(px, py, 0.09), dark)
+					B.box(piv, Vector3(0.28, 0.34, 0.04), Vector3(px, py, 0.11), leaf_m)
+			B.box(piv, Vector3(1.05, 0.45, 0.06), Vector3(0, 2.48, 0.02), VM.glass)
+			for k in 3:
+				B.box(piv, Vector3(0.03, 0.42, 0.05), Vector3(-0.26 + k * 0.26, 2.48, 0.06), VM.trim)
+			B.box(piv, Vector3(1.6, 0.14, 0.5), Vector3(0, 0.07, 0.26), VM.curb)
+			# marquise de telha sobre a porta, com duas mãos-francesas
+			var hood: = B.box(piv, Vector3(1.9, 0.07, 0.78), Vector3(0, 3.12, 0.38), VM.clay)
+			hood.rotation.x = 0.2
+			B.box(piv, Vector3(1.92, 0.05, 0.06), Vector3(0, 3.0, 0.74), VM.trim)
+			for sx in [-1.0, 1.0]:
+				var br: = B.box(piv, Vector3(0.07, 0.07, 0.62), Vector3(sx * 0.78, 2.98, 0.34), dark)
+				br.rotation.x = 0.3
+		var knob: = Real.place(piv, "g:brass_knob", Vector3(0.38, 1.05, 0.075), -1.0, 0.0, Color.WHITE, 0.0, false)
+		if knob != null:
+			knob.rotation.x = PI * 0.5
+		else:
+			B.sphere(piv, 0.04, Vector3(0.38, 1.05, 0.14), B.flat(Color(0.95, 0.78, 0.3), 0.25, 0.6))
 		# numero da casa e luminária de parede
 		var num: = absi(int(c.x * 3.0 + c.z)) % 300 + 1
 		B.box(piv, Vector3(0.24, 0.18, 0.03), Vector3(-0.9, 1.9, 0.04), B.flat(Color(0.15, 0.4, 0.75), 0.4))
 		var nl: = B.label(piv, str(num), Vector3(-0.9, 1.9, 0.062), 32, Color.WHITE, Color(0.1, 0.25, 0.5, 1))
 		nl.pixel_size = 0.004
 		B.box(piv, Vector3(0.08, 0.08, 0.2), Vector3(0.9, 2.55, 0.1), dark)
-		B.cyl(piv, 0.09, 0.07, 0.22, Vector3(0.9, 2.45, 0.22), VM.glass, 10)
-		B.cyl(piv, 0.11, 0.02, 0.08, Vector3(0.9, 2.6, 0.22), dark, 10)
+		if Real.place_glow(piv, "g:lamp_bulb", Vector3(0.9, 2.28, 0.22), -1.5, 0.0, VM.glass) == null:
+			B.cyl(piv, 0.09, 0.07, 0.22, Vector3(0.9, 2.45, 0.22), VM.glass, 10)
+			B.cyl(piv, 0.11, 0.02, 0.08, Vector3(0.9, 2.6, 0.22), dark, 10)
 	else:
-		B.box(piv, Vector3(1.4, 1.65, 0.1), Vector3(0, 1.75, 0), VM.trim)
-		B.box(piv, Vector3(1.1, 1.35, 0.06), Vector3(0, 1.75, 0.01), VM.glass)
-		# caixilho em cruz
-		B.box(piv, Vector3(0.05, 1.35, 0.06), Vector3(0, 1.75, 0.04), VM.trim)
-		B.box(piv, Vector3(1.1, 0.05, 0.06), Vector3(0, 1.9, 0.04), VM.trim)
-		B.box(piv, Vector3(1.62, 0.09, 0.24), Vector3(0, 0.95, 0.08), VM.trim)
-		B.box(piv, Vector3(1.55, 0.12, 0.14), Vector3(0, 2.62, 0.04), VM.trim)
-		# verga com pedra-chave, cimalha e mísulas sob o peitoril
-		B.box(piv, Vector3(1.78, 0.09, 0.2), Vector3(0, 2.74, 0.06), VM.trim)
-		B.box(piv, Vector3(0.26, 0.24, 0.22), Vector3(0, 2.66, 0.07), VM.trim)
-		for sx in [-1.0, 1.0]:
-			B.box(piv, Vector3(0.1, 0.2, 0.16), Vector3(sx * 0.6, 0.82, 0.07), VM.trim)
-			B.box(piv, Vector3(0.08, 0.08, 0.1), Vector3(sx * 0.6, 0.7, 0.06), VM.trim)
-		# venezianas abertas com ripas
-		for sd in [-1.0, 1.0]:
-			var hinge: = Node3D.new()
-			hinge.position = Vector3(sd * 0.64, 1.75, 0.04)
-			hinge.rotation.y = sd * 1.05
-			piv.add_child(hinge)
-			B.box(hinge, Vector3(0.52, 1.32, 0.035), Vector3(sd * 0.26, 0, 0.02), leaf_m)
-			for k in 9:
-				var slat: = B.box(hinge, Vector3(0.42, 0.06, 0.03), Vector3(sd * 0.26, -0.52 + k * 0.13, 0.045), dark)
-				slat.rotation.x = 0.5
-		# grade de ferro baixinha
-		var iron: = B.flat(Color(0.12, 0.12, 0.14), 0.5, 0.4)
-		B.box(piv, Vector3(1.2, 0.03, 0.03), Vector3(0, 1.32, 0.14), iron)
-		for k in 7:
-			B.box(piv, Vector3(0.025, 0.32, 0.025), Vector3(-0.54 + k * 0.18, 1.16, 0.14), iron)
+		var wframe: Node3D = Real.place_glow(piv, "g:win_frame", Vector3.ZERO, -1.0, 0.0, VM.glass)
+		var wshut: Node3D = Real.place(piv, "g:win_shutters", Vector3.ZERO, -1.0, 0.0, col, 0.0, false)
+		if wframe == null or wshut == null:
+			B.box(piv, Vector3(1.4, 1.65, 0.1), Vector3(0, 1.75, 0), VM.trim)
+			B.box(piv, Vector3(1.1, 1.35, 0.06), Vector3(0, 1.75, 0.01), VM.glass)
+			# caixilho em cruz
+			B.box(piv, Vector3(0.05, 1.35, 0.06), Vector3(0, 1.75, 0.04), VM.trim)
+			B.box(piv, Vector3(1.1, 0.05, 0.06), Vector3(0, 1.9, 0.04), VM.trim)
+			B.box(piv, Vector3(1.62, 0.09, 0.24), Vector3(0, 0.95, 0.08), VM.trim)
+			B.box(piv, Vector3(1.55, 0.12, 0.14), Vector3(0, 2.62, 0.04), VM.trim)
+			# verga com pedra-chave, cimalha e mísulas sob o peitoril
+			B.box(piv, Vector3(1.78, 0.09, 0.2), Vector3(0, 2.74, 0.06), VM.trim)
+			B.box(piv, Vector3(0.26, 0.24, 0.22), Vector3(0, 2.66, 0.07), VM.trim)
+			for sx in [-1.0, 1.0]:
+				B.box(piv, Vector3(0.1, 0.2, 0.16), Vector3(sx * 0.6, 0.82, 0.07), VM.trim)
+				B.box(piv, Vector3(0.08, 0.08, 0.1), Vector3(sx * 0.6, 0.7, 0.06), VM.trim)
+			# venezianas abertas com ripas
+			for sd in [-1.0, 1.0]:
+				var hinge: = Node3D.new()
+				hinge.position = Vector3(sd * 0.64, 1.75, 0.04)
+				hinge.rotation.y = sd * 1.05
+				piv.add_child(hinge)
+				B.box(hinge, Vector3(0.52, 1.32, 0.035), Vector3(sd * 0.26, 0, 0.02), leaf_m)
+				for k in 9:
+					var slat: = B.box(hinge, Vector3(0.42, 0.06, 0.03), Vector3(sd * 0.26, -0.52 + k * 0.13, 0.045), dark)
+					slat.rotation.x = 0.5
+			# grade de ferro baixinha
+			var iron: = B.flat(Color(0.12, 0.12, 0.14), 0.5, 0.4)
+			B.box(piv, Vector3(1.2, 0.03, 0.03), Vector3(0, 1.32, 0.14), iron)
+			for k in 7:
+				B.box(piv, Vector3(0.025, 0.32, 0.025), Vector3(-0.54 + k * 0.18, 1.16, 0.14), iron)
 
 ## Detalhes extras de uma casa: cornija dupla, faixa colorida, caibros, calha, chaminé, antena, ar-condicionado.
 func _house_extras(c: Vector3, w: float, d: float, h: float, front: float, col: Color, shutter: Color) -> void :
@@ -742,16 +753,30 @@ func _kiosk_grill(c: Vector3, y0: float) -> void :
 	pm.scale_max = 1.0
 	pm.color = Color(1, 1, 1, 0.35)
 	smoke.process_material = pm
-	var qm: = SphereMesh.new()
-	qm.radius = 0.08
-	qm.height = 0.16
-	qm.radial_segments = 6
-	qm.rings = 3
+	var qm: = QuadMesh.new()
+	qm.size = Vector2(0.55, 0.55)
 	var sm: = StandardMaterial3D.new()
-	sm.albedo_color = Color(1, 1, 1, 0.35)
 	sm.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
 	sm.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	sm.billboard_mode = BaseMaterial3D.BILLBOARD_PARTICLES
+	sm.vertex_color_use_as_albedo = true
+	sm.particles_anim_h_frames = 1
+	var puff: Texture2D = load("res://assets/tex/smoke_puff.png") if ResourceLoader.exists("res://assets/tex/smoke_puff.png") else null
+	if puff:
+		sm.albedo_texture = puff
+	sm.albedo_color = Color(1, 1, 1, 0.55)
 	qm.material = sm
+	var fade: = Gradient.new()
+	fade.set_color(0, Color(1, 1, 1, 0.0))
+	fade.set_color(1, Color(1, 1, 1, 0.0))
+	fade.add_point(0.2, Color(1, 1, 1, 0.6))
+	var ft: = GradientTexture1D.new()
+	ft.gradient = fade
+	pm.color_ramp = ft
+	pm.scale_min = 0.5
+	pm.scale_max = 1.3
+	pm.angle_min = -180.0
+	pm.angle_max = 180.0
 	smoke.draw_pass_1 = qm
 	smoke.amount = 10
 	smoke.lifetime = 2.0
@@ -1147,21 +1172,8 @@ func _street_lamps() -> void :
 				top = bb.end.y - 0.35
 		else:
 			B.cyl(self, 0.06, 0.09, 4.2, p + Vector3(0, 2.1, 0), B.flat(Color(0.12, 0.14, 0.13), 0.5, 0.6), 10)
-		var glow: = MeshInstance3D.new()
-		var sm: = SphereMesh.new()
-		sm.radius = 0.22
-		sm.height = 0.44
-		glow.mesh = sm
-		var gm: = StandardMaterial3D.new()
-		gm.albedo_color = Color(1, 0.86, 0.55)
-		gm.emission_enabled = true
-		gm.emission = Color(1.0, 0.72, 0.32)
-		gm.emission_energy_multiplier = 0.0
-		gm.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-		glow.material_override = gm
-		glow.position = p + Vector3(0, top, 0)
-		glow.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-		add_child(glow)
+		var gm: = _lamp_glow_mat()
+		_lamp_head(p + Vector3(0, top, 0), gm)
 		var l: = OmniLight3D.new()
 		l.position = p + Vector3(0, top - 0.15, 0)
 		l.omni_range = 11.0
@@ -1351,22 +1363,33 @@ func _road(a: Vector3, b: Vector3) -> void :
 			B.platform(self, Vector3(1.8, 0.3, L), Vector3(c.x + side * 2.9, c.y, c.z), VM.calcada, 0.35)
 			B.box(self, Vector3(0.22, 0.32, L), Vector3(c.x + side * 2.05, c.y, c.z), VM.curb)
 
-func _add_lamp(p: Vector3) -> void :
-	B.model(self, "street_lamp_01", p, 0.0, 1.0)
-	var glow: = MeshInstance3D.new()
-	var sm: = SphereMesh.new()
-	sm.radius = 0.22
-	sm.height = 0.44
-	glow.mesh = sm
+func _lamp_glow_mat() -> StandardMaterial3D:
 	var gm: = StandardMaterial3D.new()
 	gm.albedo_color = Color(1, 0.86, 0.55)
 	gm.emission_enabled = true
 	gm.emission = Color(1.0, 0.72, 0.32)
 	gm.emission_energy_multiplier = 0.0
 	gm.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	return gm
+
+## Cabeça de poste do Blender (g:lamp_globe): o centro do globo (0,31 m no modelo) fica em `c`.
+func _lamp_head(c: Vector3, gm: StandardMaterial3D, sc: float = 1.1) -> void :
+	if Real.place_glow(self, "g:lamp_globe", c - Vector3(0, 0.31 * sc, 0), -sc, 0.0, gm) != null:
+		return
+	var glow: = MeshInstance3D.new()
+	var sm: = SphereMesh.new()
+	sm.radius = 0.22
+	sm.height = 0.44
+	glow.mesh = sm
 	glow.material_override = gm
-	glow.position = p + Vector3(0, 3.5, 0)
+	glow.position = c
+	glow.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	add_child(glow)
+
+func _add_lamp(p: Vector3) -> void :
+	B.model(self, "street_lamp_01", p, 0.0, 1.0)
+	var gm: = _lamp_glow_mat()
+	_lamp_head(p + Vector3(0, 3.5, 0), gm)
 	var l: = OmniLight3D.new()
 	l.position = p + Vector3(0, 3.35, 0)
 	l.omni_range = 11.0
@@ -1591,9 +1614,10 @@ func _landmark_details() -> void :
 	B.arch(self, c + Vector3(0, 3.6, - d * 0.5 - 0.06), 0.0, 1.0, 0.1, wood_tint(Color(0.45, 0.25, 0.12)), PI)
 	var tc: = c + Vector3(w * 0.5 + 1.6, 0, - d * 0.5 + 1.6)
 	var gold: = B.flat(Color(0.95, 0.75, 0.25), 0.3, 0.8)
-	B.cyl(self, 0.2, 0.55, 0.9, tc + Vector3(0, 10.6, 0), gold, 24)
-	B.sphere(self, 0.22, tc + Vector3(0, 11.1, 0), gold)
-	B.sphere(self, 0.08, tc + Vector3(0, 10.1, 0), B.flat(Color(0.3, 0.25, 0.2), 0.5))
+	if Real.place(self, "g:bell", tc + Vector3(0, 10.05, 0), -1.0, 0.0, Color.WHITE, 0.0, false) == null:
+		B.cyl(self, 0.2, 0.55, 0.9, tc + Vector3(0, 10.6, 0), gold, 24)
+		B.sphere(self, 0.22, tc + Vector3(0, 11.1, 0), gold)
+		B.sphere(self, 0.08, tc + Vector3(0, 10.1, 0), B.flat(Color(0.3, 0.25, 0.2), 0.5))
 	B._beam(self, tc + Vector3(-1.4, 11.3, 0), tc + Vector3(1.4, 11.3, 0), 0.07, wood_tint(Color(0.4, 0.25, 0.14)))
 	for sx in [-1.0, 1.0]:
 		var lp: = c + Vector3(sx * 2.2, 0, - d * 0.5 - 0.15)
@@ -1652,7 +1676,8 @@ func _landmark_details() -> void :
 		for sx in [-1.0, 1.0]:
 			var lp2: = Vector3(PIER_X + sx * 1.25, 0.3, lz)
 			B.cyl(self, 0.05, 0.06, 1.6, lp2 + Vector3(0, 0.8, 0), wood, 8)
-			B.sphere(self, 0.12, lp2 + Vector3(0, 1.7, 0), P.glow(Color(1.0, 0.8, 0.45), 1.6))
+			if Real.place_glow(self, "g:lamp_globe", lp2 + Vector3(0, 1.6, 0), -0.6, 0.0, P.glow(Color(1.0, 0.8, 0.45), 1.6)) == null:
+				B.sphere(self, 0.12, lp2 + Vector3(0, 1.7, 0), P.glow(Color(1.0, 0.8, 0.45), 1.6))
 	var end: = Vector3(PIER_X, 0.37, -47.0)
 	for k in 3:
 		B.model(self, "wooden_crate_01", end + Vector3(-1.9 + (k % 2) * 0.1, k * 0.0, 0.6 - k * 0.7), k * 0.4, 0.8)
@@ -1723,10 +1748,17 @@ func _map_details() -> void :
 		var p: = Vector3(rng.randf_range(-45, 104), 0, rng.randf_range(-30.5, -28.5))
 		p.y = _height(p.x, p.z) + 0.01
 		weed_x.append(Transform3D(Basis(Vector3.UP, rng.randf() * TAU), p))
-	var wm: = BoxMesh.new()
-	wm.size = Vector3(0.5, 0.015, 0.06)
-	var mi3: = D.multimesh(self, wm, weed_x, [], B.flat(Color(0.2, 0.42, 0.25), 0.8))
+	var wm: Mesh = Real.mesh_of("g:alga")
+	var mi3: MultiMeshInstance3D
+	if wm != null:
+		mi3 = D.multimesh(self, wm, weed_x)
+		mi3.material_override = null
+	else:
+		var bm: = BoxMesh.new()
+		bm.size = Vector3(0.5, 0.015, 0.06)
+		mi3 = D.multimesh(self, bm, weed_x, [], B.flat(Color(0.2, 0.42, 0.25), 0.8))
 	mi3.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	mi3.visibility_range_end = 60.0
 	# troncos trazidos pelo mar
 	for k in 10:
 		var p: = Vector3(rng.randf_range(-40, 100), 0, rng.randf_range(-27.0, -19.0))

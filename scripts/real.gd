@@ -74,6 +74,21 @@ static func place(parent: Node, key: String, pos: Vector3, height: float, rot_y:
 	inst.position = Vector3(-c.x * s if center_xz else 0.0, -bb.position.y * s, -c.z * s if center_xz else 0.0)
 	return holder
 
+## Como place(), mas as superfícies cujo material se chama "glow*" usam `glow_mat` (o material que o mundo liga e desliga à noite).
+static func place_glow(parent: Node, key: String, pos: Vector3, height: float, rot_y: float, glow_mat: Material, center_xz: = false) -> Node3D:
+	var h: = place(parent, key, pos, height, rot_y, Color.WHITE, 0.0, center_xz)
+	if h == null:
+		return null
+	for mi in h.find_children("*", "MeshInstance3D", true, false):
+		var mesh: Mesh = (mi as MeshInstance3D).mesh
+		if mesh == null:
+			continue
+		for si in mesh.get_surface_count():
+			var sm: Material = mesh.surface_get_material(si)
+			if sm and sm.resource_name.begins_with("glow"):
+				(mi as MeshInstance3D).set_surface_override_material(si, glow_mat)
+	return h
+
 ## Primeira malha do modelo (para MultiMesh). A malha já leva o material do glTF (estilizado, sem o clareamento do toon).
 static func mesh_of(key: String) -> Mesh:
 	var ps: = _scene(key)

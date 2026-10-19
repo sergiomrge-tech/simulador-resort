@@ -58,10 +58,11 @@ def box(size, loc, m, bevel=0.01, rot=(0, 0, 0), sub=0, uv=0.5):
     bpy.ops.mesh.select_all(action="SELECT")
     bpy.ops.uv.cube_project(cube_size=uv)
     bpy.ops.object.mode_set(mode="OBJECT")
-    bv = ob.modifiers.new("bv", "BEVEL")
-    bv.width = bevel
-    bv.segments = 3
-    bpy.ops.object.modifier_apply(modifier=bv.name)
+    if bevel > 0:
+        bv = ob.modifiers.new("bv", "BEVEL")
+        bv.width = min(bevel, 0.45 * min(size))
+        bv.segments = 3
+        bpy.ops.object.modifier_apply(modifier=bv.name)
     smooth(ob, sub)
     ob.data.materials.append(m)
     return ob
@@ -1351,9 +1352,328 @@ def seashell_spiral(name, rgb):
     _drop_to_zero(ob)
     export(name)
 
+# ---------------------------------------------------------------- luzes e metais (v0.9.2)
+def glow_mat(name, rgb, strength=3.0):
+    """Material emissivo. No Godot a superfície chamada 'glow' recebe o material que liga/desliga à noite."""
+    m = bpy.data.materials.new(name)
+    m.use_nodes = True
+    b = m.node_tree.nodes["Principled BSDF"]
+    b.inputs["Base Color"].default_value = (*rgb, 1)
+    b.inputs["Roughness"].default_value = 0.3
+    b.inputs["Emission Color"].default_value = (*rgb, 1)
+    b.inputs["Emission Strength"].default_value = strength
+    return m
+
+def _sphere_profile(cz, r, a0=-80, a1=80, n=14, squash=1.0):
+    pts = [(0.0, cz + r * math.sin(math.radians(a0)) * squash)]
+    for i in range(n + 1):
+        a = math.radians(a0 + (a1 - a0) * i / n)
+        pts.append((max(r * math.cos(a), 1e-4), cz + r * math.sin(a) * squash))
+    pts.append((0.0, cz + r * math.sin(math.radians(a1)) * squash))
+    return pts
+
+def lamp_globe():
+    """Cabeça de poste vitoriana: base de latão, globo de vidro (superfície 'glow'), nervuras e chapéu com pináculo. Origem na base; globo r=0,2 centrado em z=0,30."""
+    fresh()
+    brass = mat("latao", (0.78, 0.58, 0.22), 0.35, None, 0.85)
+    glow = glow_mat("glow", (1.0, 0.82, 0.5), 3.0)
+    parts = [lathe([(0, 0), (0.07, 0), (0.085, 0.025), (0.075, 0.05), (0.12, 0.085), (0.15, 0.105), (0.13, 0.115), (0, 0.115)], brass, verts=32),
+             lathe(_sphere_profile(0.31, 0.2, -78, 80, 16), glow, verts=36),
+             lathe([(0, 0.485), (0.17, 0.495), (0.19, 0.515), (0.12, 0.56), (0.07, 0.62), (0.045, 0.68), (0.06, 0.70), (0.03, 0.74), (0.0, 0.80)], brass, verts=32)]
+    for k in range(6):
+        a = k * math.pi / 3
+        c, sn = math.cos(a), math.sin(a)
+        parts.append(tube((0.12 * c, 0.12 * sn, 0.115), (0.205 * c, 0.205 * sn, 0.31), 0.011, brass, verts=8))
+        parts.append(tube((0.205 * c, 0.205 * sn, 0.31), (0.16 * c, 0.16 * sn, 0.49), 0.011, brass, verts=8))
+    join(parts, "lamp_globe")
+    export("lamp_globe")
+
+def lamp_bulb():
+    """Lâmpada/lanterninha pequena: soquete de latão e bulbo de vidro (glow) r=0,07 centrado em z=0,10."""
+    fresh()
+    brass = mat("latao", (0.78, 0.58, 0.22), 0.35, None, 0.85)
+    glow = glow_mat("glow", (1.0, 0.8, 0.5), 3.0)
+    parts = [lathe([(0, 0), (0.022, 0), (0.026, 0.02), (0.03, 0.045), (0.0, 0.05)], brass, verts=20),
+             lathe(_sphere_profile(0.115, 0.07, -62, 90, 14), glow, verts=24)]
+    join(parts, "lamp_bulb")
+    export("lamp_bulb")
+
+def string_bulb():
+    """Lâmpada de varal de luzes: bulbo + soquete. Origem no centro do bulbo, soquete para +Z (cima)."""
+    fresh()
+    brass = mat("latao", (0.35, 0.33, 0.3), 0.5, None, 0.7)
+    glow = glow_mat("glow", (1.0, 0.85, 0.55), 3.0)
+    parts = [lathe(_sphere_profile(0.0, 0.04, -88, 60, 14), glow, verts=20),
+             lathe([(0, 0.032), (0.016, 0.03), (0.018, 0.05), (0.014, 0.058), (0.0, 0.058)], brass, verts=14)]
+    join(parts, "string_bulb")
+    export("string_bulb")
+
+def flame():
+    """Chama de tocha: gota ondulada com língua central (emissiva). Origem na base, 0,5 m."""
+    fresh()
+    glow = glow_mat("glow", (1.0, 0.55, 0.15), 5.0)
+    core = glow_mat("glow_core", (1.0, 0.85, 0.35), 6.0)
+    outer = lathe([(0, 0), (0.05, 0.02), (0.09, 0.09), (0.095, 0.17), (0.07, 0.27), (0.04, 0.37), (0.02, 0.45), (0.0, 0.52)], glow, verts=24)
+    inner = lathe([(0, 0.01), (0.03, 0.03), (0.05, 0.09), (0.04, 0.17), (0.02, 0.26), (0.0, 0.31)], core, verts=16)
+    join([outer, inner], "chama")
+    export("flame")
+
+def fresnel_lens():
+    """Lente de Fresnel do farol: núcleo emissivo, 5 anéis prismáticos e armação de latão. Altura 0,8, centro em z=0,40, r=0,38."""
+    fresh()
+    brass = mat("latao", (0.78, 0.58, 0.22), 0.35, None, 0.85)
+    glow = glow_mat("glow", (1.0, 0.95, 0.7), 3.0)
+    parts = [lathe([(0, 0.12), (0.22, 0.12), (0.22, 0.68), (0, 0.68)], glow, verts=36)]
+    for k in range(5):
+        z = 0.14 + k * 0.13
+        parts.append(lathe([(0.2, z), (0.36, z + 0.015), (0.38, z + 0.05), (0.36, z + 0.095), (0.2, z + 0.11)], glow, verts=40))
+    parts.append(lathe([(0, 0), (0.3, 0), (0.4, 0.04), (0.4, 0.1), (0.24, 0.12), (0, 0.12)], brass, verts=40))
+    parts.append(lathe([(0, 0.68), (0.24, 0.68), (0.4, 0.70), (0.4, 0.76), (0.3, 0.8), (0, 0.8)], brass, verts=40))
+    for k in range(6):
+        a = k * math.pi / 3
+        parts.append(tube((0.37 * math.cos(a), 0.37 * math.sin(a), 0.1), (0.37 * math.cos(a), 0.37 * math.sin(a), 0.7), 0.014, brass, verts=8))
+    join(parts, "fresnel")
+    export("fresnel_lens")
+
+def pool_light():
+    """Refletor de piscina embutido: aro de aço, vidro (glow) e parafusos. Eixo +Y no Godot; diâmetro 0,2."""
+    fresh()
+    steel = mat("aco", (0.75, 0.78, 0.8), 0.3, None, 0.9)
+    glow = glow_mat("glow", (0.6, 0.95, 1.0), 3.0)
+    parts = [lathe([(0.0, 0), (0.1, 0), (0.1, 0.018), (0.088, 0.026), (0.0, 0.026)], steel, verts=32),
+             lathe([(0.0, 0.02), (0.078, 0.02), (0.075, 0.034), (0.0, 0.042)], glow, verts=32)]
+    for k in range(4):
+        a = k * math.pi / 2 + math.pi / 4
+        parts.append(lathe([(0, 0.016), (0.008, 0.016), (0.008, 0.026), (0, 0.026)], steel, loc=(0.092 * math.cos(a), 0.092 * math.sin(a), 0), verts=10))
+    join(parts, "pool_light")
+    export("pool_light")
+
+def brass_knob():
+    """Maçaneta redonda de latão com roseta e pescoço. Eixo +Y no Godot, origem na roseta."""
+    fresh()
+    brass = mat("latao", (0.85, 0.65, 0.25), 0.22, None, 0.9)
+    prof = [(0, 0), (0.04, 0), (0.042, 0.008), (0.03, 0.014), (0.014, 0.016), (0.012, 0.04)]
+    prof += [(r, 0.065 + 0.03 * math.sin(math.radians(a))) if False else (0.034 * math.cos(math.radians(a)) + 0.0, 0.07 + 0.034 * math.sin(math.radians(a))) for a in range(-40, 91, 15)]
+    prof = [(max(r, 1e-4), z) for r, z in prof]
+    prof.append((0, 0.104))
+    join([lathe(prof, brass, verts=24)], "macaneta")
+    export("brass_knob")
+
+def bell():
+    """Sino da torre: coroa com argola, corpo com lábio aberto, aro e badalo. Altura ~1,25; badalo em z=0."""
+    fresh()
+    gold = mat("ouro", (0.95, 0.75, 0.25), 0.3, None, 0.9)
+    dark = mat("ferro", (0.25, 0.2, 0.17), 0.6, None, 0.3)
+    body = lathe([(0, 0.93), (0.07, 0.93), (0.1, 0.9), (0.16, 0.82), (0.2, 0.7), (0.26, 0.5), (0.34, 0.3), (0.5, 0.12), (0.55, 0.06), (0.53, 0.02), (0.45, 0.04),
+                  (0.3, 0.1), (0.2, 0.2), (0.0, 0.2)], gold, verts=40)
+    parts = [body,
+             lathe([(0, 0.93), (0.05, 0.93), (0.05, 1.08), (0.0, 1.08)], gold, verts=14),
+             lathe(_sphere_profile(0.0, 0.07, -88, 88, 10), dark, loc=(0, 0, 0.08), verts=16),
+             tube((0, 0, 0.1), (0, 0, 0.35), 0.015, dark, verts=8)]
+    bpy.ops.mesh.primitive_torus_add(major_radius=0.09, minor_radius=0.022, major_segments=24, minor_segments=10, location=(0, 0, 1.15), rotation=(math.radians(90), 0, 0))
+    t = bpy.context.active_object
+    bpy.ops.object.shade_smooth()
+    t.data.materials.append(gold)
+    parts.append(t)
+    join(parts, "sino")
+    export("bell")
+
+def alga():
+    """Alga marinha jogada na areia: 3 fitas onduladas com nervura central e pontas finas. Deitada ao longo de +X, ~0,5 m."""
+    fresh()
+    rnd = random.Random(7)
+    m = mat("alga", (0.26, 0.45, 0.2), 0.75, tex("coast_sand_01_diff.jpg"))
+    bm = bmesh.new()
+    uvl = bm.loops.layers.uv.new("UVMap")
+    nu = 28
+    for (L, w, yoff, ph) in [(0.5, 0.05, 0.0, 0.0), (0.38, 0.04, 0.045, 1.7), (0.3, 0.035, -0.04, 3.1)]:
+        rows = []
+        for i in range(nu + 1):
+            t = i / nu
+            x = (t - 0.5) * L
+            taper = math.sin(math.pi * min(t * 1.05, 1.0)) ** 0.5 * (1 - 0.6 * t) + 0.12
+            y = yoff + 0.03 * math.sin(t * 9 + ph) + 0.015 * math.sin(t * 21 + ph)
+            wd = w * taper * (1 + 0.15 * math.sin(t * 30))
+            z = 0.004 + 0.006 * math.sin(t * 14 + ph)
+            rows.append((bm.verts.new((x, y - wd, z - 0.002 * 1)), bm.verts.new((x, y, z + 0.007)), bm.verts.new((x, y + wd, z - 0.002))))
+        for i in range(nu):
+            a, b = rows[i], rows[i + 1]
+            for j in range(2):
+                f = bm.faces.new((a[j], b[j], b[j + 1], a[j + 1]))
+                for lp in f.loops:
+                    lp[uvl].uv = (lp.vert.co.x * 3, lp.vert.co.y * 3)
+    for f in bm.faces:
+        if f.normal.z < 0:
+            f.normal_flip()
+    me = bpy.data.meshes.new("alga")
+    bm.to_mesh(me)
+    bm.free()
+    ob = bpy.data.objects.new("alga", me)
+    bpy.context.scene.collection.objects.link(ob)
+    me.materials.append(m)
+    bpy.context.view_layer.objects.active = ob
+    so = ob.modifiers.new("sol", "SOLIDIFY")
+    so.thickness = 0.002
+    bpy.ops.object.modifier_apply(modifier=so.name)
+    bpy.ops.object.shade_smooth()
+    export("alga")
+
+# ---------------------------------------------------------------- janelas e portas da vila (v0.9.2)
+# Coordenadas "estilo Godot" (x, y para cima, z para a frente) convertidas para o Blender (x, -z, y).
+def gbox(size, loc, m, bevel=0.006, rx=0.0, ry=0.0, uv=0.5):
+    sx, sy, sz = size
+    x, y, z = loc
+    ob = box((sx, sz, sy), (x, -z, y), m, bevel=bevel, rot=(rx, 0, ry), uv=uv)
+    return ob
+
+def gtube(a, b, r, m, verts=10):
+    return tube((a[0], -a[2], a[1]), (b[0], -b[2], b[1]), r, m, verts=verts)
+
+def anchor(m):
+    """Triângulo degenerado na origem: o bbox passa a incluir y=0, e Real.place mantém a origem do modelo."""
+    me = bpy.data.meshes.new("anchor")
+    me.from_pydata([(0, 0, 0), (1e-5, 0, 0), (0, 1e-5, 0)], [], [(0, 1, 2)])
+    ob = bpy.data.objects.new("anchor", me)
+    bpy.context.scene.collection.objects.link(ob)
+    me.materials.append(m)
+    return ob
+
+def _trim_mat():
+    return mat("trim", (0.97, 0.96, 0.93), 0.7, tex("light_stone_diff.jpg"))
+
+def win_frame():
+    """Janela colonial: caixilho com 6 vidros, peitoril com mísulas, verga com pedra-chave e grade de ferro. Origem na base do vão (y=0 = base da janela)."""
+    fresh()
+    trim = _trim_mat()
+    glass = glow_mat("glow_glass", (0.62, 0.78, 0.88), 0.0)
+    iron = mat("ferro", (0.12, 0.12, 0.14), 0.5, None, 0.5)
+    cy = 1.75
+    parts = [anchor(trim)]
+    # aduela (4 peças) e vidro
+    for (sz, loc) in [((1.4, 0.14, 0.1), (0, cy + 0.755, 0)), ((1.4, 0.14, 0.1), (0, cy - 0.755, 0)), ((0.14, 1.65, 0.1), (-0.63, cy, 0)), ((0.14, 1.65, 0.1), (0.63, cy, 0))]:
+        parts.append(gbox(sz, loc, trim, 0.012))
+    parts.append(gbox((1.12, 1.37, 0.02), (0, cy, 0.0), glass, 0.0))
+    # caixilhos: cruz + travessa extra
+    parts.append(gbox((0.05, 1.37, 0.05), (0, cy, 0.03), trim, 0.008))
+    for dy in (0.15, -0.38):
+        parts.append(gbox((1.12, 0.05, 0.05), (0, cy + dy, 0.03), trim, 0.008))
+    # peitoril + mísulas
+    parts.append(gbox((1.62, 0.09, 0.24), (0, 0.95, 0.08), trim, 0.015))
+    for sx in (-1, 1):
+        parts.append(gbox((0.1, 0.2, 0.16), (sx * 0.6, 0.82, 0.07), trim, 0.012))
+        parts.append(gbox((0.08, 0.1, 0.1), (sx * 0.6, 0.68, 0.06), trim, 0.012, rx=0.0))
+    # verga, cimalha e pedra-chave
+    parts.append(gbox((1.55, 0.12, 0.14), (0, 2.62, 0.04), trim, 0.012))
+    parts.append(gbox((1.78, 0.09, 0.2), (0, 2.74, 0.06), trim, 0.015))
+    parts.append(gbox((0.26, 0.26, 0.22), (0, 2.65, 0.07), trim, 0.02))
+    # grade de ferro: barras redondas com bolinhas-pináculo
+    parts.append(gtube((-0.6, 1.32, 0.14), (0.6, 1.32, 0.14), 0.014, iron))
+    parts.append(gtube((-0.6, 1.02, 0.14), (0.6, 1.02, 0.14), 0.012, iron))
+    for k in range(7):
+        x = -0.54 + k * 0.18
+        parts.append(gtube((x, 1.02, 0.14), (x, 1.31, 0.14), 0.0095, iron, verts=8))
+        parts.append(lathe([(1e-4, 0), (0.014, 0.004), (0.01, 0.025), (0, 0.04)], iron, loc=(x, -0.14, 1.32), verts=10))
+    join(parts, "janela")
+    export("win_frame")
+
+def win_shutters():
+    """Par de venezianas abertas a 60°, com 9 ripas inclinadas e batentes. Material neutro de madeira (tinge-se no Godot)."""
+    fresh()
+    wood = mat("veneziana", (1.0, 1.0, 1.0), 0.7, tex("oak_wood_planks_diff.jpg"))
+    parts = [anchor(wood)]
+    cy = 1.75
+    for sd in (-1, 1):
+        phi = sd * 1.05
+        hx, hz = sd * 0.64, 0.04
+
+        def put(size, u, y, zl, rx=0.0):
+            x = hx + u * math.cos(phi) + zl * math.sin(phi)
+            z = hz - u * math.sin(phi) + zl * math.cos(phi)
+            ob = gbox(size, (x, y, z), wood, 0.004, rx=rx, ry=phi)
+            parts.append(ob)
+        # montantes, travessas e ripas (u = distância da dobradiça)
+        put((0.05, 1.32, 0.04), sd * 0.025, cy, 0.02)
+        put((0.05, 1.32, 0.04), sd * 0.495, cy, 0.02)
+        put((0.52, 0.06, 0.04), sd * 0.26, cy + 0.63, 0.02)
+        put((0.52, 0.06, 0.04), sd * 0.26, cy - 0.63, 0.02)
+        for k in range(9):
+            put((0.42, 0.06, 0.02), sd * 0.26, cy - 0.52 + k * 0.13, 0.045, rx=0.5)
+    join(parts, "venezianas")
+    export("win_shutters")
+
+def door_leaf():
+    """Folha de porta almofadada: 6 almofadas com moldura em relevo e friso. Origem na soleira (y=0), centrada em x. Material neutro (tinge-se no Godot)."""
+    fresh()
+    wood = mat("porta", (1.0, 1.0, 1.0), 0.6, tex("oak_wood_planks_diff.jpg"))
+    parts = [anchor(wood), gbox((1.05, 2.2, 0.06), (0, 1.1, 0.03), wood, 0.01)]
+    for py in (0.55, 1.15, 1.75):
+        for px in (-0.24, 0.24):
+            parts.append(gbox((0.36, 0.42, 0.04), (px, py, 0.075), wood, 0.012))
+            parts.append(gbox((0.26, 0.32, 0.03), (px, py, 0.095), wood, 0.012))
+    join(parts, "porta")
+    export("door_leaf")
+
+def door_frame():
+    """Batente, bandeira com vidro e travessas, soleira e marquise de telhas com mãos-francesas. Origem na soleira, +Z para a rua."""
+    fresh()
+    trim = _trim_mat()
+    glass = glow_mat("glow_glass", (0.62, 0.78, 0.88), 0.0)
+    clay = mat("telha", (1.0, 0.85, 0.75), 0.6, tex("clay_roof_tiles_02_diff.jpg"))
+    dark = mat("madeira", (0.35, 0.2, 0.1), 0.7, tex("dark_wooden_planks_diff.jpg"))
+    parts = [anchor(trim)]
+    parts.append(gbox((0.16, 2.95, 0.1), (-0.6, 1.475, 0), trim, 0.012))
+    parts.append(gbox((0.16, 2.95, 0.1), (0.6, 1.475, 0), trim, 0.012))
+    parts.append(gbox((1.36, 0.14, 0.1), (0, 2.88, 0), trim, 0.012))
+    parts.append(gbox((1.36, 0.1, 0.1), (0, 2.25, 0), trim, 0.012))
+    parts.append(gbox((1.05, 0.45, 0.02), (0, 2.5, 0.0), glass, 0.0))
+    for k in range(3):
+        parts.append(gbox((0.03, 0.42, 0.04), (-0.26 + k * 0.26, 2.5, 0.03), trim, 0.006))
+    parts.append(gbox((1.6, 0.14, 0.5), (0, 0.07, 0.26), trim, 0.02))
+    # marquise: telhas em canal (sinusoide) sobre estrutura inclinada
+    bm = bmesh.new()
+    uvl = bm.loops.layers.uv.new("UVMap")
+    nx, nz = 80, 10
+    W, D = 1.9, 0.78
+    grid = []
+    for j in range(nz + 1):
+        row = []
+        for i in range(nx + 1):
+            x = -W / 2 + W * i / nx
+            zz = D * j / nz
+            wave = 0.028 * math.cos(x / 0.19 * 2 * math.pi)
+            # inclinação 0,2 rad: z para a frente desce
+            y = 3.2 - zz * 0.2 + wave
+            row.append(bm.verts.new((x, -(zz - 0.0 + 0.0), y + 0.0)))
+        grid.append(row)
+    for j in range(nz):
+        for i in range(nx):
+            f = bm.faces.new((grid[j][i], grid[j][i + 1], grid[j + 1][i + 1], grid[j + 1][i]))
+            for lp in f.loops:
+                lp[uvl].uv = (lp.vert.co.x * 1.3, -lp.vert.co.y * 1.3)
+    bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+    me = bpy.data.meshes.new("marquise")
+    bm.to_mesh(me)
+    bm.free()
+    ob = bpy.data.objects.new("marquise", me)
+    bpy.context.scene.collection.objects.link(ob)
+    me.materials.append(clay)
+    bpy.context.view_layer.objects.active = ob
+    so = ob.modifiers.new("sol", "SOLIDIFY")
+    so.thickness = 0.03
+    bpy.ops.object.modifier_apply(modifier=so.name)
+    bpy.ops.object.shade_smooth()
+    parts.append(ob)
+    parts.append(gbox((1.94, 0.06, 0.05), (0, 3.01, 0.78), trim, 0.008))
+    for sx in (-1, 1):
+        parts.append(gtube((sx * 0.78, 2.72, 0.05), (sx * 0.78, 3.02, 0.68), 0.03, dark, verts=8))
+        parts.append(gtube((sx * 0.78, 3.0, 0.05), (sx * 0.78, 3.0, 0.7), 0.026, dark, verts=8))
+    join(parts, "batente")
+    export("door_frame")
+
 ALL = {"tiki_torch": tiki_torch, "signpost_post": signpost_post, "sign_arrow": sign_arrow, "open_sign": open_sign,
        "volley_net": volley_net, "power_pole": power_pole, "mailbox": mailbox, "starfish": starfish, "ceiling_fan": ceiling_fan,
        "lighthouse": lighthouse, "pier_segment": pier_segment, "pier_end": pier_end, "boat_mast": boat_mast, "jangada": jangada, "beach_ball": beach_ball, "volleyball": volleyball, "seagull_fly": lambda: seagull("seagull_fly", True), "seagull_perch": lambda: seagull("seagull_perch", False), "coxinha": coxinha, "popcorn": popcorn, "rose_window": rose_window, "hanging_planter": hanging_planter, "flowerbed": flowerbed,
+       "win_frame": win_frame, "win_shutters": win_shutters, "door_leaf": door_leaf, "door_frame": door_frame, "lamp_globe": lamp_globe, "lamp_bulb": lamp_bulb, "string_bulb": string_bulb, "flame": flame, "fresnel_lens": fresnel_lens, "pool_light": pool_light, "brass_knob": brass_knob, "bell": bell, "alga": alga,
        "pebble_a": lambda: pebble("pebble_a", (0.78, 0.75, 0.72), 1), "pebble_b": lambda: pebble("pebble_b", (0.55, 0.52, 0.5), 2), "pebble_c": lambda: pebble("pebble_c", (0.9, 0.86, 0.8), 3),
        "shell_a": lambda: scallop("shell_a", (1.0, 0.86, 0.8), None), "shell_b": lambda: scallop("shell_b", (1.0, 0.72, 0.58), None), "shell_c": lambda: seashell_spiral("shell_c", (1.0, 0.93, 0.84)),
        **{"bloom_" + k: (lambda k=k, v=v: bloom_clump(k, v)) for k, v in BLOOM_COLORS.items()},

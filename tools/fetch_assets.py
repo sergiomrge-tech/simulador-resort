@@ -275,6 +275,19 @@ def ambientcg(asset, name):
                     im.resize((1024, 1024) if k == "diff" else (512, 512), Image.LANCZOS).save(small, quality=90)
     print("tex  ok (ambientCG)", asset, "->", name)
 
+def kenney_smoke():
+    """Sprite de fumaça (Kenney Smoke Particles, CC0) -> assets/tex/smoke_puff.png (RGBA 256 px)."""
+    dst = f"{A}/tex/smoke_puff.png"
+    if os.path.exists(dst) and not FORCE:
+        return
+    import zipfile, io
+    from PIL import Image
+    z = zipfile.ZipFile(io.BytesIO(get("https://kenney.nl/media/pages/assets/smoke-particles/23249a0d35-1677695171/kenney_smoke-particles.zip")))
+    im = Image.open(io.BytesIO(z.read("PNG/White puff/whitePuff12.png"))).convert("RGBA")
+    im.thumbnail((256, 256))
+    im.save(dst)
+    print("kenney smoke ok")
+
 def main():
     only = sys.argv[sys.argv.index("--only") + 1] if "--only" in sys.argv else ""
     with ThreadPoolExecutor(6) as ex:
@@ -286,6 +299,7 @@ def main():
             futs += [ex.submit(model, s, "1k", "models", True) for s in MODELS + MODELS_EXTRA]
             futs += [ex.submit(model, s, "2k", "models_hd") for s in MODELS + MODELS_EXTRA + MODELS_HD_ONLY]
             futs += [ex.submit(kenney, u, n) for u, n in KENNEY.items()]
+            futs.append(ex.submit(kenney_smoke))
             futs.append(ex.submit(quaternius_nature))
             futs.append(ex.submit(animals_gen))
         errs = 0

@@ -115,7 +115,9 @@ static func tiki_torch(parent: Node, p: Vector3) -> OmniLight3D:
 	if Real.place(parent, "g:tiki_torch", p, -1.0, 0.0, Color.WHITE, 0.0, false) == null:
 		B.cyl(parent, 0.045, 0.06, 1.7, p + Vector3(0, 0.85, 0), m(Color(0.86, 0.7, 0.4)), 8)
 		B.cyl(parent, 0.11, 0.07, 0.22, p + Vector3(0, 1.78, 0), m(Color(0.5, 0.35, 0.2)), 10)
-	var flame: = B.sphere(parent, 0.11, p + Vector3(0, 1.98, 0), P.glow(Color(1.0, 0.55, 0.15), 4.0), Vector3(0.8, 1.6, 0.8))
+	var flame: Node3D = Real.place_glow(parent, "g:flame", p + Vector3(0, 1.84, 0), -0.8, 0.0, P.glow(Color(1.0, 0.55, 0.15), 4.0))
+	if flame == null:
+		flame = B.sphere(parent, 0.11, p + Vector3(0, 1.98, 0), P.glow(Color(1.0, 0.55, 0.15), 4.0), Vector3(0.8, 1.6, 0.8))
 	flame.name = "TikiFlame"
 	var l: = OmniLight3D.new()
 	l.position = p + Vector3(0, 2.0, 0)
@@ -445,7 +447,8 @@ static func lighthouse(parent: Node, p: Vector3) -> Node3D:
 	lamp.name = "LighthouseLamp"
 	lamp.position = top + Vector3(0, 0.85, 0)
 	parent.add_child(lamp)
-	B.sphere(lamp, 0.4, Vector3.ZERO, P.glow(Color(1.0, 0.95, 0.7), 3.0))
+	if Real.place_glow(lamp, "g:fresnel_lens", Vector3(0, -0.4, 0), -1.0, 0.0, P.glow(Color(1.0, 0.95, 0.7), 3.0), true) == null:
+		B.sphere(lamp, 0.4, Vector3.ZERO, P.glow(Color(1.0, 0.95, 0.7), 3.0))
 	var beam: = B.cyl(lamp, 0.25, 2.2, 18.0, Vector3(0, 0, 9.0), P.glow(Color(1.0, 0.95, 0.7, 0.18), 1.5), 12)
 	beam.rotation.x = PI * 0.5
 	(beam.material_override as StandardMaterial3D).transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
