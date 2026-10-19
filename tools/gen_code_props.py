@@ -2212,7 +2212,7 @@ def tree_amendoeira(name, seed, H=6.0):
     fresh()
     rnd = random.Random(seed)
     bark = mat("casca", (0.42, 0.32, 0.24), 0.9, tex("palm_tree_bark_diff.jpg"))
-    greens = [mat("folha1", (0.16, 0.42, 0.12), 0.65), mat("folha2", (0.24, 0.52, 0.16), 0.65), mat("folha3", (0.12, 0.34, 0.1), 0.7),
+    greens = [mat("folha1", (0.09, 0.27, 0.07), 0.65), mat("folha2", (0.14, 0.34, 0.09), 0.65), mat("folha3", (0.07, 0.21, 0.06), 0.7),
               mat("folha_ruiva", (0.78, 0.3, 0.1), 0.65)]
     for m in greens:
         m.use_backface_culling = False
