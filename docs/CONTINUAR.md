@@ -72,3 +72,12 @@ na raiz: ele é o "palácio de memória" com TODAS as regras e erros já cometid
 - `scripts/phone_ui.gd`: celular (todos os apps). `scripts/minigame.gd`: minijogo dos negócios.
 - `scripts/real.gd`: carrega modelos reais (`g:` Blender, `k:` Kenney, `q:` Quaternius, nome = Poly Haven).
 - `tools/gen_*.py`: modelos feitos no Blender. `tools/fetch_assets.py`: baixa os assets CC0.
+
+## 7. Atualização via GitHub MCP (19/10/2026 — validação Godot pendente)
+- O `main` avançou após o checkpoint `25e4554`. O commit `886c2de` contém reserva de assentos por `owner`, fila de espera e `tests/kiosk_regression.gd` (necessário executar no Godot).
+- `tools/build_release.sh` já possui smoke de pacote exportado via `--main-pack`, `--v1`, verificação de screenshot, `not found`, `SCRIPT ERROR` e `REAL_MISSING`.
+- `CREDITS.md` atualizado com os 12 modelos novos de `gen_food.py` e 7 fontes Poly Haven CC0 (commit `0bd920f`).
+- `tools/fetch_assets.py` agora gera, depois das texturas, os modelos de `gen_beach_props`, `gen_code_props`, `gen_business`, `gen_hotel` e `gen_food` ausentes, e confere as saídas (commits `4116230` e `4e85874`).
+- `tools/build_patch.sh` agora inclui a pasta `assets/models/qnat` e os GLBs novos/corrigidos da v1.0.1 mesmo quando ignorados pelo Git; aborta se faltarem (commit `cb7ff42`).
+- **Não foi executado Godot neste ambiente:** o computador Desktop Commander estava offline, sem clone local executável da pasta `resort 2`; nenhuma captura, import, `--primcheck`, `--floatcheck`, `LOOP_TEST PASS`, teste do PCK ou do patch sobre a v1.0 foi confirmado. **Não anunciar patch pronto.**
+- **Falta:** clonar localmente, baixar/regenerar assets, importar duas vezes com `vram_textures.py`, conferir prints do quiosque e todos os modelos novos, corrigir qualquer defeito, rodar testes e smoke reais, gerar catálogo com `tools/gen_item_catalog.py`, exportar patch com base `51921df`, testar contra PCK da v1.0 instalada, só então atualizar `docs/latest_version.txt` e publicar `patches/`.
