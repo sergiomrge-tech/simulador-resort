@@ -2662,9 +2662,9 @@ def newsstand():
     expositores inclinados com revistas (capas coloridas), porta lateral e luminária. Frente = -Y. 2,2 x 1,6 x 2,5 m."""
     fresh()
     rnd = random.Random(8)
-    green = mat("verde", (0.12, 0.45, 0.28), 0.5)
-    trim = mat("friso", (0.08, 0.32, 0.2), 0.5)
-    yel = mat("toldo", (1.0, 0.82, 0.18), 0.7, tex("rough_linen_diff.jpg"))
+    green = mat("verde", (0.05, 0.25, 0.13), 0.5)   # escuro: o toon clareia 1,5x
+    trim = mat("friso", (0.03, 0.16, 0.09), 0.5)
+    yel = mat("toldo", (0.75, 0.52, 0.06), 0.7, tex("rough_linen_diff.jpg"))
     wood = mat("balcao", (0.5, 0.32, 0.18), 0.7, tex("oak_wood_planks_diff.jpg"))
     covers = [mat("capa%d" % i, c, 0.5) for i, c in enumerate([(0.9, 0.2, 0.2), (0.2, 0.5, 0.9), (0.95, 0.8, 0.2), (0.2, 0.7, 0.35), (0.85, 0.3, 0.7), (0.97, 0.97, 0.95)])]
     parts = [anchor(green)]

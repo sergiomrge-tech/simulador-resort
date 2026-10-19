@@ -1763,10 +1763,10 @@ func _landmark_details() -> void :
 		B.label(self, "BANCA", banca + Vector3(0, 2.27, -0.86), 48, Color(1, 1, 1), Color(0.1, 0.3, 0.15, 1), PI).pixel_size = 0.005
 	else:
 		B.box(self, Vector3(2.2, 2.2, 1.6), banca + Vector3(0, 1.1, 0), B.flat(Color(0.2, 0.55, 0.35), 0.6))
-	var pip: = pc + Vector3(-6.0, 0, 2.9)
+	var pip: = pc + Vector3(-4.6, 0, 2.9)   # v0.9.5: afastado do carrinho de café (encostavam)
 	# v0.9.5: carrinho de pipoca do Blender (vitrine, rodas raiadas, guarda-sol listrado); pipoca dentro da vitrine
 	if Real.place(self, "g:popcorn_cart", pip, -1.0, PI, Color.WHITE, 0.0, false) != null:
-		Real.place(self, "g:popcorn", pip + Vector3(0, 1.17, 0), -0.75, 0.0, Color.WHITE, 0.0, true)
+		Real.place(self, "g:popcorn", pip + Vector3(0.05, 1.16, -0.02), -1.35, 0.0, Color(1.0, 0.93, 0.7), 0.0, true)   # vitrine cheia, pipoca amanteigada
 		B.label(self, "PIPOCA", pip + Vector3(-0.25, 0.75, -0.38), 40, Color.WHITE, Color(0.6, 0.1, 0.1, 1), PI).pixel_size = 0.004
 	else:
 		B.box(self, Vector3(1.0, 0.9, 0.7), pip + Vector3(0, 0.75, 0), B.flat(Color(0.95, 0.25, 0.25), 0.5))
