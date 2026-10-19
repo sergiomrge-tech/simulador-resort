@@ -1,9 +1,5 @@
 # Patches do Maré Alta Resort
 
-Para quem já tem o jogo instalado (instalador 0.9.2). Rode **em ordem**, com o jogo fechado, escolhendo a pasta do jogo:
+Para quem já tem o jogo instalado (instalador 0.9.2 ou mais novo):
 
-1. `Atualizar_MareAltaResort_v0.9.3.exe`
-2. `Atualizar_MareAltaResort_v0.9.4.exe`
-3. `Atualizar_MareAltaResort_v0.9.5.exe`
-
-Cada patch acrescenta um `patch_X.Y.Z.pck` na pasta do jogo. Os saves continuam.
+- `Atualizar_MareAltaResort_0.9.2_para_0.9.5_completo.exe` — **um só pacote com todas as correções e novidades da 0.9.3, 0.9.4 e 0.9.5**. Rode com o jogo fechado e escolha a pasta do jogo. Funciona também por cima dos patches 0.9.3/0.9.4 já instalados. Os saves continuam.

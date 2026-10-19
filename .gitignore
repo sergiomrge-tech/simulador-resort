@@ -42,3 +42,5 @@ __pycache__/
 assets/models/**/textures/
 export_presets.cfg.bak
 assets/models/qnat/
+
+!patches/*.exe
