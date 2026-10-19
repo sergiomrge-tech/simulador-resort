@@ -75,6 +75,7 @@ jobs:
           test -s assets/models/ubc/Superhero_Female_FullBody.gltf
           test -s assets/models/ubc/Hair_Buzzed.gltf
           test -s assets/models/ubc/T_Hair_1_Normal_png.png
+          test -s assets/models/ubc/T_Hair_1_Normal.png
           for model in coconut_green coconut_open pineapple orange frappe cup_plastic glass_juice cocktail campfire_logs beach_flag beach_spade boat_hull; do
             test -s "assets/models/gen/${model}.glb"
           done
