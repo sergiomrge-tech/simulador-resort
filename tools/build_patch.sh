@@ -10,8 +10,31 @@ STAGE=${STAGE:-/home/claude/inst/patch}
 VER=$(grep -m1 '^config/version=' project.godot | sed 's/.*"\(.*\)".*/\1/')
 BASEVER=$(git show "$BASE:project.godot" | grep -m1 '^config/version=' | sed 's/.*"\(.*\)".*/\1/')
 echo "== patch $BASEVER -> $VER =="
-FILES=$( (git diff --name-only "$BASE" -- scripts shaders scenes assets *.tscn; git ls-files --others --exclude-standard -- scripts shaders scenes assets) \
-  | grep -E '\.(gd|gdshader|glb|gltf|ogg|tscn|tres|png|jpg)$' | grep -v '^tests/' | sort -u | while read f; do [ -f "$f" ] && echo "$f"; done)
+# Assets CC0 e GLBs Blender ficam no .gitignore: git diff não os detecta.
+# A v1.0.0 instalada não tem os arbustos qnat, portanto a pasta inteira entra.
+[ -f assets/models/qnat/Bush_Common.gltf ] || {
+  echo "ERRO: assets/models/qnat ausente. Rode python3 tools/fetch_assets.py."
+  exit 1
+}
+# Novos modelos v1.0.1 + os props refeitos após corrigir o Blender.
+PATCH_GEN=(coconut_green coconut_open pineapple orange frappe cup_plastic glass_juice cocktail
+           campfire_logs beach_flag beach_spade boat_hull
+           lounger win_shutters trellis_planter newsstand)
+for name in "${PATCH_GEN[@]}"; do
+  [ -s "assets/models/gen/${name}.glb" ] || {
+    echo "ERRO: falta assets/models/gen/${name}.glb; rode python3 tools/fetch_assets.py."
+    exit 1
+  }
+done
+FILES=$(
+  {
+    git diff --name-only "$BASE" -- scripts shaders scenes assets '*.tscn'
+    git ls-files --others --exclude-standard -- scripts shaders scenes assets
+    find assets/models/qnat -maxdepth 1 -type f
+    for name in "${PATCH_GEN[@]}"; do echo "assets/models/gen/${name}.glb"; done
+  } | grep -E '\.(gd|gdshader|glb|gltf|bin|ogg|tscn|tres|png|jpg|jpeg|webp)$' |
+    grep -v '^tests/' | sort -u | while IFS= read -r f; do [ -f "$f" ] && echo "$f"; done
+)
 N=$(echo "$FILES" | grep -c . || true)
 echo "arquivos alterados: $N"
 LIST=$(echo "$FILES" | sed 's/^/"res:\/\//; s/$/"/' | paste -sd, -)
@@ -30,7 +53,7 @@ dedicated_server=false
 custom_features=""
 export_filter="resources"
 export_files=PackedStringArray($LIST)
-include_filter=""
+include_filter="assets/models/qnat/*.bin,assets/models/qnat/*.png,assets/models/qnat/*.jpg,assets/models/qnat/*.jpeg,assets/models/qnat/*.webp"
 exclude_filter=""
 export_path="build/patch/patch.pck"
 patches=PackedStringArray()
