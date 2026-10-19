@@ -69,7 +69,7 @@ func _ready() -> void :
 	var efx: = EventFX.new()
 	add_child(efx)
 	efx.setup(self)
-	var reef: = Reef.new()
+	var reef: Node3D = load("res://scripts/reef.gd").new()   # sem class_name global: o patch não atualiza o cache de classes
 	add_child(reef)
 	reef.setup(self)
 	_weather_fx()
@@ -431,11 +431,15 @@ func _umbrella(p: Vector3, r: float, tint: = Color(0.86, 0.22, 0.18), thatch: = 
 	canopy.position = Vector3(0, hub_y, 0)
 	canopy.material_override = _thatch_parasol_mat() if thatch else _stripe_mat(tint)
 	n.add_child(canopy)
+	if not thatch:
+		canopy.add_to_group("parasol")   # a tempestade fecha os guarda-sóis (EventFX)
 	var ribs: = MeshInstance3D.new()
 	ribs.mesh = _parasol_ribs(r, panels, drop)
 	ribs.position = Vector3(0, hub_y, 0)
 	ribs.material_override = M.darkwood
 	n.add_child(ribs)
+	if not thatch:
+		ribs.add_to_group("parasol")
 
 func _parasol_point(a0: float, a1: float, across: float, radial: float, radius: float, drop: float, sag: float) -> Vector3:
 	var ang: = lerpf(a0, a1, across)
@@ -1089,20 +1093,31 @@ func _bulb_mat() -> StandardMaterial3D:
 	m.emission_energy_multiplier = 1.6
 	return m
 
-func _string_lights(a: Vector3, b: Vector3, count: int) -> void :
+func _string_lights(a: Vector3, b: Vector3, count: int, parent: Node = null) -> void :
+	var par: Node = parent if parent else self
 	var mat: = _bulb_mat()
 	var bulb: Mesh = Real.mesh_of("g:string_bulb")
 	var bx: = []
+	# v0.9.3: fio de verdade entre as pontas (antes as lâmpadas ficavam soltas no ar)
+	var wire: = B.flat(Color(0.08, 0.08, 0.09), 0.6)
+	var prev: = a
+	var segs: = 16
+	for k in range(1, segs + 1):
+		var tt: = float(k) / float(segs)
+		var q: = a.lerp(b, tt)
+		q.y -= sin(tt * PI) * 0.16
+		B._beam(par, prev, q, 0.006, wire)
+		prev = q
 	for i in count:
 		var t: = float(i + 1) / float(count + 1)
 		var p: = a.lerp(b, t)
 		p.y -= sin(t * PI) * 0.16
 		if bulb == null:
-			B.sphere(self, 0.04, p, mat)
+			B.sphere(par, 0.04, p + Vector3(0, -0.04, 0), mat)
 		else:
-			bx.append(Transform3D(Basis(Vector3.UP, float(i) * 1.7), p))
+			bx.append(Transform3D(Basis(Vector3.UP, float(i) * 1.7), p + Vector3(0, -0.058, 0)))
 	if bulb != null and not bx.is_empty():
-		var bmi: = D.multimesh(self, bulb, bx, [], mat)
+		var bmi: = D.multimesh(par, bulb, bx, [], mat)
 		bmi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 
 func _cooler(p: Vector3, rot: float) -> void :

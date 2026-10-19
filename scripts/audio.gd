@@ -14,6 +14,12 @@ var _dog_t: = 20.0
 var _night: = 0.0
 var _last_bell_hour: = -1
 var muted: = false
+# v0.9.3: sons de evento (sintetizados em tools/gen_audio.py)
+var rain_snd: AudioStreamPlayer
+var wind_snd: AudioStreamPlayer
+var party_snd: AudioStreamPlayer3D
+var _party_kind: = ""
+const PARTY_C: = Vector3(52.0, 1.5, -23.0)
 
 const VILLAGE: = Vector3(70, 0, 30)
 
@@ -32,6 +38,15 @@ func _ready() -> void :
 	ocean = _loop("ocean_loop", -8.0)
 	crickets = _loop("crickets_loop", -60.0)
 	murmur = _loop("village_murmur", -60.0)
+	rain_snd = _loop("rain_loop", -80.0)
+	wind_snd = _loop("wind_loop", -80.0)
+	party_snd = AudioStreamPlayer3D.new()
+	party_snd.position = PARTY_C
+	party_snd.unit_size = 9.0
+	party_snd.max_distance = 70.0
+	party_snd.bus = "Music"
+	party_snd.volume_db = -4.0
+	add_child(party_snd)
 
 func _loop(n: String, db: float, bus: = "SFX") -> AudioStreamPlayer:
 	var p: = AudioStreamPlayer.new()
@@ -79,16 +94,39 @@ func _process(delta: float) -> void :
 		if village_k > 0.15:
 			sfx("dog", lerpf(-26.0, -14.0, village_k))
 
+	# sino da igreja de hora em hora (7h às 21h), uma badalada por hora do relógio
 	var h: = int(Core.minutes / 60.0)
-	if (h == 12 or h == 18) and h != _last_bell_hour and int(Core.minutes) % 60 < 5:
+	if h >= 7 and h <= 21 and h != _last_bell_hour and int(Core.minutes) % 60 < 5:
 		_last_bell_hour = h
-		_church_bell(village_k)
-	elif h != 12 and h != 18:
-		_last_bell_hour = -1
+		_church_bell(village_k, ((h - 1) % 12) + 1)
+	_event_sounds()
 
-func _church_bell(k: float) -> void :
-	for i in 3:
-		get_tree().create_timer(i * 1.4).timeout.connect( func(): sfx("bell", lerpf(-26.0, -10.0, k), 0.55))
+func _event_sounds() -> void :
+	var storm: = Core.weather == "rain"
+	var hard: = Core.day_event == "tempestade"
+	var tgt_rain: = (-6.0 if hard else -12.0) if storm else -80.0
+	var tgt_wind: = -8.0 if hard else (-20.0 if Core.day_event == "mare" else -80.0)
+	rain_snd.volume_db = lerpf(rain_snd.volume_db, tgt_rain, 0.02)
+	wind_snd.volume_db = lerpf(wind_snd.volume_db, tgt_wind, 0.02)
+	# música da festa: forró na junina, batida eletrônica no show do DJ, forró mais baixo na quermesse; só das 16h às 23h
+	var kind: = ""
+	if Core.is_party() and Core.minutes >= 16.0 * 60.0 and Core.minutes < 23.0 * 60.0:
+		kind = "dj_loop" if Core.day_event == "show_dj" else "forro_loop"
+	if kind != _party_kind:
+		_party_kind = kind
+		if kind == "":
+			party_snd.stop()
+		else:
+			var st: AudioStreamOggVorbis = load("res://assets/audio/%s.ogg" % kind)
+			st.loop = true
+			party_snd.stream = st
+			party_snd.volume_db = -8.0 if Core.day_event == "quermesse" else -3.0
+			if not muted:
+				party_snd.play()
+
+func _church_bell(k: float, strikes: = 3) -> void :
+	for i in strikes:
+		get_tree().create_timer(i * 1.6).timeout.connect( func(): sfx("bell", lerpf(-26.0, -10.0, k), 0.55))
 
 func sfx(n: String, db: = -6.0, pitch: = 1.0) -> void :
 	if muted:

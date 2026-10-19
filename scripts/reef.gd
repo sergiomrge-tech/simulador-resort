@@ -1,7 +1,7 @@
 extends Node3D
 ## Recife de coral e peixes na água rasa (para o mergulho de snorkel). Corais e peixes vêm do Blender (g:coral_*, g:fish_*).
 ## Os cardumes nadam em círculos lentos em volta de cada canteiro; a cauda ("Tail") balança.
-class_name Reef
+## (sem class_name: carregado por caminho em world.gd)
 
 var world: Node3D
 var rng := RandomNumberGenerator.new()

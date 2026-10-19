@@ -103,11 +103,15 @@ func _process(delta: float) -> void :
 	var night: = Core.minutes > 22.0 * 60.0 or Core.minutes < 5.5 * 60.0
 	for i in walkers.size():
 		var g: Node3D = walkers[i]
-		var hide: = night and i >= 3
+		var hide: bool = (night and i >= 3) or bool(g.get_meta("on_tour", false))
 		g.visible = not hide
 		if hide:
 			continue
 		if g.is_moving():
+			continue
+		if g.get_meta("shelter", false):
+			# tempestade: fica abrigado sob o beiral até a chuva passar (EventFX)
+			g.play("Idle_Talking_Loop" if i % 2 else "Idle_Loop")
 			continue
 		var w: float = g.get_meta("wait") - delta * Core.speed_mult
 		if w > 0.0:

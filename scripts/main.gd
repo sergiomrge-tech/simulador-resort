@@ -302,6 +302,8 @@ func _run_shot(n: String) -> void :
 		Core.event_changed.emit()
 	if args.has("tourboat"):
 		Core.tour_done.emit("barco", 4, 100)
+	if args.has("farol"):
+		Core.tour_done.emit("farol", 4, 100)
 	if args.has("floatcheck"):
 		get_tree().create_timer(1.5).timeout.connect(func(): load("res://tests/float_check.gd").run(world))
 	if args.has("lineup"):   # depuração: --lineup=x,z -> fila de 8 pessoas para conferir calçados/roupas, e duas sentadas num banco
