@@ -260,7 +260,7 @@ def universal_base_characters():
     todos os clientes e moradores, apesar de já possuir as texturas .png.
     Fonte: https://quaternius.itch.io/universal-base-characters
     """
-    import zipfile, io, http.cookiejar, urllib.parse, re, posixpath
+    import zipfile, io, http.cookiejar, urllib.parse, re, posixpath, shutil
     out = os.path.join(A, "models", "ubc")
     wanted = ["Superhero_Male_FullBody", "Superhero_Female_FullBody",
               "Hair_Beard", "Hair_Buns", "Hair_Buzzed",
@@ -340,6 +340,21 @@ def universal_base_characters():
                 if source not in names:
                     if os.path.isfile(dest):
                         continue
+                    # Em algumas versões do pack, o glTF referencia
+                    # T_Hair_1_Normal_png.png, mas a textura existente
+                    # chama-se T_Hair_1_Normal.png.
+                    if normalized.endswith("_png.png"):
+                        alt = normalized[:-8] + ".png"
+                        alt_dst = os.path.normpath(os.path.join(out, *alt.split("/")))
+                        alt_source = posixpath.normpath(parent + "/" + alt)
+                        os.makedirs(os.path.dirname(dest), exist_ok=True)
+                        if os.path.isfile(alt_dst):
+                            shutil.copyfile(alt_dst, dest)
+                            continue
+                        if alt_source in names:
+                            with open(dest, "wb") as f:
+                                f.write(z.read(alt_source))
+                            continue
                     raise RuntimeError("UBC: dependencia ausente: " + source)
                 os.makedirs(os.path.dirname(dest), exist_ok=True)
                 with open(dest, "wb") as f:
