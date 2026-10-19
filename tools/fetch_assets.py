@@ -252,6 +252,81 @@ def quaternius_nature():
                 f.write(z.read(n))
     print("qnat ok", len(os.listdir(out)))
 
+def universal_base_characters():
+    """Baixa personagens e cabelos CC0 da Quaternius usados em people.gd.
+
+    Os glTF/.bin não estão versionados no Git (gitignore). Sem esta etapa, uma
+    instalação nova do GitHub Actions tenta instanciar PackedScene nula para
+    todos os clientes e moradores, apesar de já possuir as texturas .png.
+    Fonte: https://quaternius.itch.io/universal-base-characters
+    """
+    import zipfile, io, http.cookiejar, urllib.parse, re, posixpath
+    out = os.path.join(A, "models", "ubc")
+    wanted = ["Superhero_Male_FullBody", "Superhero_Female_FullBody",
+              "Hair_Beard", "Hair_Buns", "Hair_Buzzed",
+              "Hair_BuzzedFemale", "Hair_Long", "Hair_SimpleParted"]
+    if not FORCE and all(os.path.isfile(os.path.join(out, n + ".gltf")) for n in wanted):
+        print("ubc skip", len(wanted))
+        return
+    base = "https://quaternius.itch.io/universal-base-characters"
+    jar = http.cookiejar.CookieJar()
+    op = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(jar))
+    def call(url, data=None):
+        req = urllib.request.Request(
+            url, data=urllib.parse.urlencode(data).encode() if data is not None else None, headers=UA)
+        return op.open(req, timeout=120).read()
+    def csrf(html):
+        m = re.search(r'csrf_token" value="([^"]+)', html.decode("utf-8", "ignore"))
+        if not m:
+            raise RuntimeError("UBC: itch.io nao forneceu csrf_token")
+        return m.group(1)
+    page = call(base)
+    dl = json.loads(call(base + "/download_url", {"csrf_token": csrf(page)}))["url"]
+    dlpage = call(dl)
+    m = re.search(r'data-upload_id="(\\d+)"', dlpage.decode("utf-8", "ignore"))
+    if not m:
+        raise RuntimeError("UBC: itch.io nao forneceu upload_id")
+    upload = m.group(1)
+    fj = json.loads(call(
+        base + "/file/" + upload + "?source=view_game&as_props=1&after_download_lightbox=true",
+        {"csrf_token": csrf(dlpage)}))
+    with zipfile.ZipFile(io.BytesIO(get(fj["url"]))) as z:
+        names = z.namelist()
+        os.makedirs(out, exist_ok=True)
+        for stem in wanted:
+            candidates = [n for n in names
+                          if n.lower().endswith("/" + stem.lower() + ".gltf")]
+            candidates.sort(key=lambda n: (0 if "godot - ue" in n.lower() else 1, len(n)))
+            if not candidates:
+                raise RuntimeError("UBC: modelo ausente do ZIP: " + stem)
+            entry = candidates[0]
+            doc = json.loads(z.read(entry).decode("utf-8"))
+            dst = os.path.join(out, stem + ".gltf")
+            with open(dst, "wb") as f:
+                f.write(z.read(entry))
+            parent = posixpath.dirname(entry)
+            refs = [x.get("uri", "") for x in doc.get("buffers", [])]
+            refs += [x.get("uri", "") for x in doc.get("images", [])]
+            for rel in refs:
+                if not rel or rel.startswith("data:"):
+                    continue
+                rel = urllib.parse.unquote(rel).replace("\\\\", "/")
+                normalized = posixpath.normpath(rel)
+                if normalized.startswith("../") or normalized.startswith("/"):
+                    raise RuntimeError("UBC: caminho fora do pacote: " + rel)
+                source = posixpath.normpath(parent + "/" + normalized)
+                dest = os.path.normpath(os.path.join(out, *normalized.split("/")))
+                if not dest.startswith(os.path.abspath(out) + os.sep):
+                    raise RuntimeError("UBC: destino inseguro: " + rel)
+                if source not in names:
+                    raise RuntimeError("UBC: dependencia ausente: " + source)
+                os.makedirs(os.path.dirname(dest), exist_ok=True)
+                if FORCE or not os.path.isfile(dest):
+                    with open(dest, "wb") as f:
+                        f.write(z.read(source))
+    print("ubc ok", len(wanted))
+
+
 def animals_gen():
     """Gato/cachorro (Quaternius Animal Pack Vol.2, CC0) e caranguejo ("methodical pixel", CC0) pelo OpenGameArt -> assets/models/gen/*.glb
     (suavizados no Blender por tools/smooth_animals.py / convert_crab.py); toalha e castelo de areia saem de tools/gen_beach_props.py."""
@@ -345,6 +420,7 @@ def main():
             futs += [ex.submit(kenney, u, n) for u, n in KENNEY.items()]
             futs.append(ex.submit(kenney_smoke))
             futs.append(ex.submit(quaternius_nature))
+            futs.append(ex.submit(universal_base_characters))
             futs.append(ex.submit(animals_gen))
         errs = 0
         for f in futs:
