@@ -2,7 +2,7 @@
 
 Gerado por `python3 tools/gen_item_catalog.py` — **não edite à mão**. Os códigos ficam em `docs/itens_registro.json` e nunca mudam. Para pedir uma alteração, cite o código (ex.: "troque o modelo de MOD-017").
 
-Total: 1859 itens. MOD 128 · NAT 68 · PRC 31 · CEN 263 · PRT 9 · DSH 4 · SUP 6 · EXP 8 · STF 4 · UPG 15 · QST 4 · VIP 12 · EVT 7 · NOU 156 · TEX 28 · AUD 20 · ICO 31 · FNT 1 · SHD 12 · ANI 43 · PCA 913 · MAT 24 · COR 28 · SCR 28 · PES 16
+Total: 1864 itens. MOD 128 · NAT 68 · PRC 31 · CEN 263 · PRT 9 · DSH 4 · SUP 6 · EXP 8 · STF 4 · UPG 15 · QST 4 · VIP 12 · EVT 7 · NOU 162 · TEX 28 · AUD 20 · ICO 31 · FNT 1 · SHD 12 · ANI 43 · PCA 912 · MAT 24 · COR 28 · SCR 28 · PES 16
 
 ## MOD — Modelos 3D em uso (reais, baixados da web) (128)
 
@@ -54,14 +54,14 @@ Total: 1859 itens. MOD 128 · NAT 68 · PRC 31 · CEN 263 · PRT 9 · DSH 4 · S
 | MOD-044 | Painted wooden chair 01 | `painted_wooden_chair_01` | Poly Haven (CC0) | props.gd:29, world_village.gd:380 |
 | MOD-045 | Painted wooden nightstand | `painted_wooden_nightstand` | Poly Haven (CC0) | props.gd:40, world.gd:618, world_village.gd:473 |
 | MOD-046 | Planter box 01 | `planter_box_01` | Poly Haven (CC0) | props.gd:38, world_village.gd:505, world_village.gd:595 |
-| MOD-047 | Planter pot clay | `planter_pot_clay` | Poly Haven (CC0) | props.gd:37, world.gd:295, world_village.gd:1088, world_village.gd:1765 |
+| MOD-047 | Planter pot clay | `planter_pot_clay` | Poly Haven (CC0) | props.gd:37, world.gd:295, world_village.gd:1088, world_village.gd:1760 |
 | MOD-048 | Plastic crate 01 | `plastic_crate_01` | Poly Haven (CC0) | props.gd:33, world_village.gd:406, world_village.gd:628, world_village.gd:783 |
 | MOD-049 | Plastic crate 02 | `plastic_crate_02` | Poly Haven (CC0) | details.gd:299 |
 | MOD-050 | Plastic monobloc chair 01 | `plastic_monobloc_chair_01` | Poly Haven (CC0) | props.gd:28, world_village.gd:784 |
 | MOD-051 | Pot enamel 01 | `pot_enamel_01` | Poly Haven (CC0) | world_village.gd:1274 |
 | MOD-052 | Potted plant 01 | `potted_plant_01` | Poly Haven (CC0) | props.gd:36, world.gd:2133, world.gd:2134, world_village.gd:1088 (+2) |
 | MOD-053 | Potted plant 02 | `potted_plant_02` | Poly Haven (CC0) | props.gd:36, world.gd:293, world.gd:294, world.gd:620 (+1) |
-| MOD-054 | Potted plant 04 | `potted_plant_04` | Poly Haven (CC0) | props.gd:37, world_village.gd:1088, world_village.gd:1765, world_village.gd:381 (+1) |
+| MOD-054 | Potted plant 04 | `potted_plant_04` | Poly Haven (CC0) | props.gd:37, world_village.gd:1088, world_village.gd:1760, world_village.gd:381 (+1) |
 | MOD-055 | Rock 07 | `rock_07` | Poly Haven (CC0) | world.gd:1188 |
 | MOD-056 | Rock 09 | `rock_09` | Poly Haven (CC0) | world.gd:1188 |
 | MOD-057 | Side table 01 | `side_table_01` | Poly Haven (CC0) | props.gd:40, world.gd:610, world.gd:808 |
@@ -628,7 +628,7 @@ Total: 1859 itens. MOD 128 · NAT 68 · PRC 31 · CEN 263 · PRT 9 · DSH 4 · S
 | EVT-006 | Festa junina | `junina` | Fogueira, quadrilha e petiscos. A galera pede mais comida. Decoração atrai ainda mais gente. |
 | EVT-007 | Show do DJ Maré | `show_dj` | O DJ Maré toca na praia e passa no quiosque. Clientes de sobra e caipirinha em alta. |
 
-## NOU — Modelos baixados ainda sem uso (disponíveis) (156)
+## NOU — Modelos baixados ainda sem uso (disponíveis) (162)
 
 | Código | Nome | Chave | Fonte | Usado em |
 |---|---|---|---|---|
@@ -788,6 +788,12 @@ Total: 1859 itens. MOD 128 · NAT 68 · PRC 31 · CEN 263 · PRT 9 · DSH 4 · S
 | NOU-156 | Bloom magenta | `g:bloom_magenta` | Gerado no Blender (tools/gen_*.py) | — |
 | NOU-157 | Bloom rosa | `g:bloom_rosa` | Gerado no Blender (tools/gen_*.py) | — |
 | NOU-158 | Bloom roxa | `g:bloom_roxa` | Gerado no Blender (tools/gen_*.py) | — |
+| NOU-159 | Pebble a | `g:pebble_a` | Gerado no Blender (tools/gen_*.py) | — |
+| NOU-160 | Pebble b | `g:pebble_b` | Gerado no Blender (tools/gen_*.py) | — |
+| NOU-161 | Pebble c | `g:pebble_c` | Gerado no Blender (tools/gen_*.py) | — |
+| NOU-162 | Shell a | `g:shell_a` | Gerado no Blender (tools/gen_*.py) | — |
+| NOU-163 | Shell b | `g:shell_b` | Gerado no Blender (tools/gen_*.py) | — |
+| NOU-164 | Shell c | `g:shell_c` | Gerado no Blender (tools/gen_*.py) | — |
 
 ## TEX — Texturas e materiais (28)
 
@@ -954,7 +960,7 @@ Total: 1859 itens. MOD 128 · NAT 68 · PRC 31 · CEN 263 · PRT 9 · DSH 4 · S
 | ANI-042 | Walk formal loop | `Walk_Formal_Loop` | UAL (Quaternius CC0) | guest.gd:124 |
 | ANI-043 | Walk loop | `Walk_Loop` | UAL (Quaternius CC0) | guest.gd:124, guest.gd:174, main.gd:649 |
 
-## PCA — Peças construídas por código (uma linha = uma peça; ver coluna Função) (913)
+## PCA — Peças construídas por código (uma linha = uma peça; ver coluna Função) (912)
 
 | Código | Peça | Função | Chamada | Material | Linha | Obs |
 |---|---|---|---|---|---|---|
@@ -1574,17 +1580,16 @@ Total: 1859 itens. MOD 128 · NAT 68 · PRC 31 · CEN 263 · PRT 9 · DSH 4 · S
 | PCA-627 | box | `_landmark_details` | `B.box` | — | world_village.gd:1692 |  |
 | PCA-628 | hip roof | `_landmark_details` | `B.hip_roof` | — | world_village.gd:1693 |  |
 | PCA-629 | box | `_landmark_details` | `B.box` | — | world_village.gd:1694 |  |
-| PCA-630 | multimesh | `_map_details` | `D.multimesh` | — | world_village.gd:1719 |  |
-| PCA-631 | multimesh | `_map_details` | `D.multimesh` | — | world_village.gd:1722 |  |
-| PCA-632 | multimesh | `_map_details` | `D.multimesh` | — | world_village.gd:1733 |  |
-| PCA-633 |  beam | `_map_details` | `B._beam` | — | world_village.gd:1743 |  |
-| PCA-634 | multimesh | `_map_details` | `D.multimesh` | — | world_village.gd:1758 |  |
-| PCA-635 | potted plant 01 | `_map_details` | `B.model` | — | world_village.gd:1765 |  [em laço] |
-| PCA-636 | cyl | `_map_details` | `B.cyl` | — | world_village.gd:1769 |  [em laço] |
-| PCA-637 | cyl | `_map_details` | `B.cyl` | — | world_village.gd:1778 |  [em laço] |
-| PCA-638 | wire | `_map_details` | `D.wire` | — | world_village.gd:1779 |  |
-| PCA-639 | box | `_map_details` | `B.box` | — | world_village.gd:1782 |  [em laço] |
-| PCA-640 | island tree 01 | `_map_details` | `B.model` | — | world_village.gd:1785 |  [em laço] |
+| PCA-630 | multimesh | `_map_details` | `D.multimesh` | — | world_village.gd:1716 |  [em laço] |
+| PCA-631 | multimesh | `_map_details` | `D.multimesh` | — | world_village.gd:1728 |  |
+| PCA-632 | multimesh | `_map_details` | `D.multimesh` | — | world_village.gd:1753 |  |
+| PCA-633 |  beam | `_map_details` | `B._beam` | — | world_village.gd:1738 |  |
+| PCA-635 | potted plant 01 | `_map_details` | `B.model` | — | world_village.gd:1760 |  [em laço] |
+| PCA-636 | cyl | `_map_details` | `B.cyl` | — | world_village.gd:1764 |  [em laço] |
+| PCA-637 | cyl | `_map_details` | `B.cyl` | — | world_village.gd:1773 |  [em laço] |
+| PCA-638 | wire | `_map_details` | `D.wire` | — | world_village.gd:1774 |  |
+| PCA-639 | box | `_map_details` | `B.box` | — | world_village.gd:1777 |  [em laço] |
+| PCA-640 | island tree 01 | `_map_details` | `B.model` | — | world_village.gd:1780 |  [em laço] |
 | PCA-641 | cyl | `tiki_torch` | `B.cyl` | — | details.gd:116 |  |
 | PCA-642 | cyl | `tiki_torch` | `B.cyl` | — | details.gd:117 |  |
 | PCA-644 | sphere | `tiki_torch` | `B.sphere` | — | details.gd:118 |  |

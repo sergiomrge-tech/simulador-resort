@@ -94,3 +94,4 @@ Base de trabalho: v0.6.5 recuperada; versões atuais em `project.godot` / `expor
 6e. Nunca use `pkill -f` com texto que aparece no próprio comando (mata o shell).
 7. Versão em `project.godot`, `export_presets.cfg` e `installer/setup.nsi`; depois exporte, rode o `makensis`, entregue no PC e faça o push.
 8. Arquivos acima de 30 MB para o PC: primeiro `SendUserFile`, depois commit com o `fileUuid`.
+- Pedrinhas e conchas da areia (v0.9.1): `g:pebble_a/b/c`, `g:shell_a/b/c` (Blender, `gen_code_props.py`) em MultiMesh por tipo no `world_village.gd`; nada de SphereMesh nelas.

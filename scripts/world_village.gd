@@ -1697,31 +1697,26 @@ func _landmark_details() -> void :
 func _map_details() -> void :
 	var rng: = RandomNumberGenerator.new()
 	rng.seed = 2468
-	# conchas e pedrinhas na areia (MultiMesh: milhares sem pesar)
-	var shell_x: = []
-	var shell_c: = []
-	var pebble_x: = []
-	var pebble_c: = []
+	# conchas e pedrinhas na areia: modelos do Blender (g:pebble_*, g:shell_*), um MultiMesh por tipo
+	var kinds: = ["pebble_a", "pebble_b", "pebble_c", "shell_a", "shell_b", "shell_c"]
+	var kx: = {}
+	for kn in kinds:
+		kx[kn] = []
 	for k in 900:
 		var p: = Vector3(rng.randf_range(-45, 104), 0, rng.randf_range(-30.0, -17.0))
-		p.y = _height(p.x, p.z) + 0.01
-		if rng.randf() < 0.5:
-			shell_x.append(Transform3D(Basis(Vector3.UP, rng.randf() * TAU).scaled(Vector3(1.0, 0.45, 1.3) * rng.randf_range(0.6, 1.3)), p))
-			shell_c.append([Color(1.0, 0.85, 0.8), Color(1.0, 0.95, 0.85), Color(1.0, 0.75, 0.6), Color(0.95, 0.9, 1.0)][k % 4])
-		else:
-			pebble_x.append(Transform3D(Basis(Vector3.UP, rng.randf() * TAU).scaled(Vector3(1.2, 0.6, 1.0) * rng.randf_range(0.5, 1.6)), p))
-			pebble_c.append(Color(0.75, 0.72, 0.7).darkened(rng.randf() * 0.25))
-	var sm: = SphereMesh.new()
-	sm.radius = 0.035
-	sm.height = 0.07
-	sm.radial_segments = 10
-	sm.rings = 5
-	var mi1: = D.multimesh(self, sm, shell_x, shell_c)
-	mi1.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-	mi1.visibility_range_end = 45.0
-	var mi2: = D.multimesh(self, sm, pebble_x, pebble_c)
-	mi2.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-	mi2.visibility_range_end = 45.0
+		p.y = _height(p.x, p.z) - 0.004
+		var kn: String = kinds[rng.randi() % kinds.size()]
+		var sc: = rng.randf_range(0.6, 1.5) * (1.0 if kn.begins_with("shell") else 1.3)
+		var tilt: = Basis(Vector3.RIGHT, rng.randf_range(-0.08, 0.08)) if kn.begins_with("shell") else Basis(Vector3.RIGHT, rng.randf() * TAU)
+		kx[kn].append(Transform3D(Basis(Vector3.UP, rng.randf() * TAU) * tilt * Basis.from_scale(Vector3.ONE * sc), p))
+	for kn in kinds:
+		var pm: Mesh = Real.mesh_of("g:" + kn)
+		if pm == null:
+			continue
+		var mi1: = D.multimesh(self, pm, kx[kn])
+		mi1.material_override = null
+		mi1.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		mi1.visibility_range_end = 45.0
 	# algas na linha da maré
 	var weed_x: = []
 	for k in 160:

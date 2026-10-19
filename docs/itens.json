@@ -8625,7 +8625,7 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1765,
+    "linha": 1760,
     "funcao": "_map_details"
    }
   ],
@@ -8748,7 +8748,7 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1765,
+    "linha": 1760,
     "funcao": "_map_details"
    }
   ],
@@ -8784,7 +8784,7 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1765,
+    "linha": 1760,
     "funcao": "_map_details"
    }
   ],
@@ -8820,7 +8820,7 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1765,
+    "linha": 1760,
     "funcao": "_map_details"
    }
   ],
@@ -12394,6 +12394,60 @@
   "fonte": "Gerado no Blender (tools/gen_*.py)",
   "usos": [],
   "arquivo_modelo": "assets/models/gen/bloom_roxa.glb"
+ },
+ {
+  "codigo": "NOU-159",
+  "categoria": "NOU",
+  "chave": "g:pebble_a",
+  "nome": "Pebble a",
+  "fonte": "Gerado no Blender (tools/gen_*.py)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/gen/pebble_a.glb"
+ },
+ {
+  "codigo": "NOU-160",
+  "categoria": "NOU",
+  "chave": "g:pebble_b",
+  "nome": "Pebble b",
+  "fonte": "Gerado no Blender (tools/gen_*.py)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/gen/pebble_b.glb"
+ },
+ {
+  "codigo": "NOU-161",
+  "categoria": "NOU",
+  "chave": "g:pebble_c",
+  "nome": "Pebble c",
+  "fonte": "Gerado no Blender (tools/gen_*.py)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/gen/pebble_c.glb"
+ },
+ {
+  "codigo": "NOU-162",
+  "categoria": "NOU",
+  "chave": "g:shell_a",
+  "nome": "Shell a",
+  "fonte": "Gerado no Blender (tools/gen_*.py)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/gen/shell_a.glb"
+ },
+ {
+  "codigo": "NOU-163",
+  "categoria": "NOU",
+  "chave": "g:shell_b",
+  "nome": "Shell b",
+  "fonte": "Gerado no Blender (tools/gen_*.py)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/gen/shell_b.glb"
+ },
+ {
+  "codigo": "NOU-164",
+  "categoria": "NOU",
+  "chave": "g:shell_c",
+  "nome": "Shell c",
+  "fonte": "Gerado no Blender (tools/gen_*.py)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/gen/shell_c.glb"
  },
  {
   "codigo": "PCA-001",
@@ -24108,14 +24162,14 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1719,
+    "linha": 1716,
     "funcao": "_map_details"
    }
   ],
   "chamada": "D.multimesh",
-  "args": "self, sm, shell_x, shell_c",
+  "args": "self, pm, kx[kn]",
   "material": "",
-  "em_laco": false,
+  "em_laco": true,
   "comentario": ""
  },
  {
@@ -24127,12 +24181,12 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1722,
+    "linha": 1728,
     "funcao": "_map_details"
    }
   ],
   "chamada": "D.multimesh",
-  "args": "self, sm, pebble_x, pebble_c",
+  "args": "self, wm, weed_x, [], B.flat(Color(0.2, 0.42, 0.25), 0.8",
   "material": "",
   "em_laco": false,
   "comentario": ""
@@ -24146,12 +24200,12 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1733,
+    "linha": 1753,
     "funcao": "_map_details"
    }
   ],
   "chamada": "D.multimesh",
-  "args": "self, wm, weed_x, [], B.flat(Color(0.2, 0.42, 0.25), 0.8",
+  "args": "self, fm, fx, [], B.flat(Color(0.85, 0.68, 0.45), 0.9",
   "material": "",
   "em_laco": false,
   "comentario": ""
@@ -24165,31 +24219,12 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1743,
+    "linha": 1738,
     "funcao": "_map_details"
    }
   ],
   "chamada": "B._beam",
   "args": "self, p - Vector3(cos(a), 0, sin(a)) * L * 0.5, p + Vector3(cos(a), 0, sin(a)) * L * 0.5, rng.randf_range(0.08",
-  "material": "",
-  "em_laco": false,
-  "comentario": ""
- },
- {
-  "codigo": "PCA-634",
-  "categoria": "PCA",
-  "chave": "world_village.gd|_map_details|D.multimesh|4",
-  "nome": "multimesh",
-  "fonte": "world_village.gd (código)",
-  "usos": [
-   {
-    "arquivo": "world_village.gd",
-    "linha": 1758,
-    "funcao": "_map_details"
-   }
-  ],
-  "chamada": "D.multimesh",
-  "args": "self, fm, fx, [], B.flat(Color(0.85, 0.68, 0.45), 0.9",
   "material": "",
   "em_laco": false,
   "comentario": ""
@@ -24203,7 +24238,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1765,
+    "linha": 1760,
     "funcao": "_map_details"
    }
   ],
@@ -24222,7 +24257,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1769,
+    "linha": 1764,
     "funcao": "_map_details"
    }
   ],
@@ -24241,7 +24276,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1778,
+    "linha": 1773,
     "funcao": "_map_details"
    }
   ],
@@ -24260,7 +24295,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1779,
+    "linha": 1774,
     "funcao": "_map_details"
    }
   ],
@@ -24279,7 +24314,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1782,
+    "linha": 1777,
     "funcao": "_map_details"
    }
   ],
@@ -24298,7 +24333,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1785,
+    "linha": 1780,
     "funcao": "_map_details"
    }
   ],
@@ -30902,7 +30937,7 @@
     "funcao": ""
    }
   ],
-  "linhas": 1786,
+  "linhas": 1781,
   "descricao": ""
  },
  {

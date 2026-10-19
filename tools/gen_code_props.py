@@ -1220,9 +1220,142 @@ def rose_window():
     join(parts, "rosacea")
     export("rose_window")
 
+# ---------------------------------------------------------------- pedrinhas e conchas
+def pebble(name, rgb, seed):
+    """Seixo irregular: icosfera subdividida deformada por ruído, achatada, com textura de rocha. ~7 cm."""
+    fresh()
+    rnd = random.Random(seed)
+    m = mat(name, rgb, 0.85, tex("rock_face_diff.jpg"))
+    bm = bmesh.new()
+    bmesh.ops.create_icosphere(bm, subdivisions=3, radius=0.5)
+    ax = (rnd.uniform(0.9, 1.15), rnd.uniform(0.7, 0.95), rnd.uniform(0.4, 0.6))
+    ph = [rnd.uniform(0, 6.28) for _ in range(6)]
+    for v in bm.verts:
+        x, y, z = v.co
+        n = (0.10 * math.sin(x * 9 + ph[0]) * math.cos(y * 8 + ph[1]) + 0.06 * math.sin(z * 13 + ph[2] + x * 5)
+             + 0.03 * math.sin((x + y) * 22 + ph[3]))
+        k = 1.0 + n
+        v.co = (x * k * ax[0], y * k * ax[1], z * k * ax[2])
+    uvl = bm.loops.layers.uv.new("UVMap")
+    for f in bm.faces:
+        for lp in f.loops:
+            c = lp.vert.co
+            lp[uvl].uv = (math.atan2(c.y, c.x) / 6.283 + 0.5, c.z * 2 + 0.5)
+    me = bpy.data.meshes.new(name)
+    bm.to_mesh(me)
+    bm.free()
+    ob = bpy.data.objects.new(name, me)
+    bpy.context.scene.collection.objects.link(ob)
+    me.materials.append(m)
+    bpy.context.view_layer.objects.active = ob
+    ob.scale = (0.14, 0.14, 0.14)
+    bpy.ops.object.transform_apply(scale=True)
+    bpy.ops.object.shade_smooth()
+    _drop_to_zero(ob)
+    export(name)
+
+def scallop(name, rgb, rgb2):
+    """Concha de vieira: leque de 14 nervuras, borda ondulada, orelhas na charneira e espessura. ~6 cm."""
+    fresh()
+    m = mat(name, rgb, 0.45, tex("coast_sand_01_diff.jpg"))
+    bm = bmesh.new()
+    uvl = bm.loops.layers.uv.new("UVMap")
+    nu, nv, ribs = 56, 14, 14
+    spread = math.radians(62)
+    grid = []
+    for j in range(nv + 1):
+        r = 0.035 * j / nv
+        row = []
+        for i in range(nu + 1):
+            a = -spread + 2 * spread * i / nu
+            rib = 0.0016 * math.cos(a / spread * ribs * math.pi) * (j / nv)
+            edge = 0.0012 * math.sin(a * 40) * (j / nv) ** 3
+            z = 0.012 * (r / 0.035) ** 1.6 * (1 - 0.5 * (a / spread) ** 2) + rib * 1.0 + 0.0008
+            rr = r + edge
+            row.append(bm.verts.new((rr * math.sin(a), rr * math.cos(a) - 0.0, z)))
+        grid.append(row)
+    for j in range(nv):
+        for i in range(nu):
+            f = bm.faces.new((grid[j][i], grid[j][i + 1], grid[j + 1][i + 1], grid[j + 1][i]))
+            for lp in f.loops:
+                lp[uvl].uv = (lp.vert.co.x * 14 + 0.5, lp.vert.co.y * 14)
+    bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+    me = bpy.data.meshes.new(name)
+    bm.to_mesh(me)
+    bm.free()
+    ob = bpy.data.objects.new(name, me)
+    bpy.context.scene.collection.objects.link(ob)
+    me.materials.append(m)
+    bpy.context.view_layer.objects.active = ob
+    so = ob.modifiers.new("sol", "SOLIDIFY")
+    so.thickness = 0.0016
+    so.offset = -1
+    bpy.ops.object.modifier_apply(modifier=so.name)
+    # orelhas da charneira
+    parts = [ob]
+    for sx in (-1, 1):
+        bpy.ops.mesh.primitive_uv_sphere_add(radius=0.006, segments=14, ring_count=8, location=(sx * 0.0075, 0.0015, 0.002))
+        e = bpy.context.active_object
+        e.scale = (1.6, 0.55, 0.45)
+        bpy.ops.object.shade_smooth()
+        e.data.materials.append(m)
+        parts.append(e)
+    ob = join(parts, name)
+    bpy.context.view_layer.objects.active = ob
+    ob.select_set(True)
+    sm = ob.modifiers.new("sub", "SUBSURF")
+    sm.levels = 1
+    bpy.ops.object.modifier_apply(modifier=sm.name)
+    bpy.ops.object.shade_smooth()
+    ob.select_set(False)
+    _drop_to_zero(ob)
+    export(name)
+
+def seashell_spiral(name, rgb):
+    """Caramujo em espiral (turritela): cone enrolado com costelas. ~5 cm."""
+    fresh()
+    m = mat(name, rgb, 0.5, tex("coast_sand_01_diff.jpg"))
+    bm = bmesh.new()
+    uvl = bm.loops.layers.uv.new("UVMap")
+    turns, per, seg = 5.5, 36, 14
+    rows = []
+    for k in range(int(turns * per) + 1):
+        t = k / (turns * per)
+        a = t * turns * 2 * math.pi
+        R = 0.016 * (1 - 0.85 * t) + 0.002
+        rad = 0.0075 * (1 - 0.9 * t) + 0.0015
+        h = t * 0.05
+        ring = []
+        for s in range(seg):
+            b = s / seg * 2 * math.pi
+            rib = 1 + 0.12 * math.sin(a * 2)
+            ring.append(bm.verts.new(((R + rad * rib * math.cos(b)) * math.cos(a), (R + rad * rib * math.cos(b)) * math.sin(a), h + rad * rib * math.sin(b))))
+        rows.append(ring)
+    for k in range(len(rows) - 1):
+        for s in range(seg):
+            t2 = (s + 1) % seg
+            f = bm.faces.new((rows[k][s], rows[k][t2], rows[k + 1][t2], rows[k + 1][s]))
+            for lp in f.loops:
+                lp[uvl].uv = (lp.vert.co.x * 18, lp.vert.co.z * 18)
+    bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+    me = bpy.data.meshes.new(name)
+    bm.to_mesh(me)
+    bm.free()
+    ob = bpy.data.objects.new(name, me)
+    bpy.context.scene.collection.objects.link(ob)
+    me.materials.append(m)
+    bpy.context.view_layer.objects.active = ob
+    bpy.ops.object.shade_smooth()
+    ob.rotation_euler = (math.radians(90), 0, 0)
+    bpy.ops.object.transform_apply(rotation=True)
+    _drop_to_zero(ob)
+    export(name)
+
 ALL = {"tiki_torch": tiki_torch, "signpost_post": signpost_post, "sign_arrow": sign_arrow, "open_sign": open_sign,
        "volley_net": volley_net, "power_pole": power_pole, "mailbox": mailbox, "starfish": starfish, "ceiling_fan": ceiling_fan,
        "lighthouse": lighthouse, "pier_segment": pier_segment, "pier_end": pier_end, "boat_mast": boat_mast, "jangada": jangada, "beach_ball": beach_ball, "volleyball": volleyball, "seagull_fly": lambda: seagull("seagull_fly", True), "seagull_perch": lambda: seagull("seagull_perch", False), "coxinha": coxinha, "popcorn": popcorn, "rose_window": rose_window, "hanging_planter": hanging_planter, "flowerbed": flowerbed,
+       "pebble_a": lambda: pebble("pebble_a", (0.78, 0.75, 0.72), 1), "pebble_b": lambda: pebble("pebble_b", (0.55, 0.52, 0.5), 2), "pebble_c": lambda: pebble("pebble_c", (0.9, 0.86, 0.8), 3),
+       "shell_a": lambda: scallop("shell_a", (1.0, 0.86, 0.8), None), "shell_b": lambda: scallop("shell_b", (1.0, 0.72, 0.58), None), "shell_c": lambda: seashell_spiral("shell_c", (1.0, 0.93, 0.84)),
        **{"bloom_" + k: (lambda k=k, v=v: bloom_clump(k, v)) for k, v in BLOOM_COLORS.items()},
        **{"bike_" + k: (lambda k=k, v=v: bike(k, v)) for k, v in BIKE_COLORS.items()}}
 if __name__ == "__main__":
