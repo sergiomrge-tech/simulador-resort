@@ -155,14 +155,32 @@ def texture(slug):
 def model(slug, res, base, small_maps=False):
     out = f"{A}/{base}/{slug}"
     gl = f"{out}/{slug}.gltf"
-    if os.path.exists(gl) and not FORCE:
-        print("model skip", base, slug)
-        return
+    # Um .gltf pode existir mesmo se um download de .bin/.jpg falhou.
+    # Nesse caso nunca considerar o modelo pronto: buscar só dependências faltantes.
+    if os.path.isfile(gl) and not FORCE:
+        try:
+            from urllib.parse import unquote
+            with open(gl, encoding="utf-8") as f:
+                doc = json.load(f)
+            links = [x.get("uri", "") for x in doc.get("buffers", [])]
+            links += [x.get("uri", "") for x in doc.get("images", [])]
+            missing = [u for u in links if u and not u.startswith("data:")
+                       and not os.path.isfile(os.path.join(out, unquote(u)))]
+            if not missing:
+                print("model skip", base, slug)
+                return
+            print("model incompleto, recuperando", base, slug, missing)
+        except (OSError, ValueError) as e:
+            print("model danificado, baixando novamente", base, slug, e)
     files = json.loads(get(API + slug))
     g = files["gltf"][res]["gltf"]
-    get(g["url"], gl)
+    if FORCE or not os.path.isfile(gl):
+        get(g["url"], gl)
+    # Conferir binários e mapas mesmo no retry após um erro de download.
     for rel, inc in g.get("include", {}).items():
         dst = os.path.join(out, rel)
+        if os.path.isfile(dst) and not FORCE:
+            continue
         get(inc["url"], dst)
         if rel.endswith(".jpg") or rel.endswith(".png"):
             if small_maps and ("_nor_" in rel or "_arm_" in rel):
