@@ -250,10 +250,31 @@ def animals_gen():
         z = zipfile.ZipFile(io.BytesIO(get("https://opengameart.org/sites/default/files/crab_0.zip")))
         z.extractall(tmp)
         subprocess.check_call([sys.executable, os.path.join(ROOT, "tools", "convert_crab.py"), os.path.join(tmp, "crab", "crab.blend"), f"{gen}/crab.glb"])
-    if FORCE or not os.path.exists(f"{gen}/towel.glb"):
-        subprocess.check_call([sys.executable, os.path.join(ROOT, "tools", "gen_beach_props.py")])
-    if FORCE or not os.path.exists(f"{gen}/tiki_torch.glb"):
-        subprocess.check_call([sys.executable, os.path.join(ROOT, "tools", "gen_code_props.py")])
+ 
+def generated_props():
+    """Reconstrói todos os grupos Blender/bpy necessários após clone limpo.
+
+    Os arquivos de assets/models/gen/ são ignorados pelo Git. Gerar só o
+    primeiro grupo antigo deixava de fora frutas, negócios e Grand Hotel.
+    Rodar após baixar texturas evita exportar GLBs sem materiais/texturas.
+    """
+    groups = [
+        ("gen_beach_props.py", ("towel", "sandcastle", "lounger")),
+        ("gen_code_props.py", ("tiki_torch", "win_shutters", "trellis_planter", "newsstand", "boat_mast")),
+        ("gen_business.py", ("biz_gelato", "biz_canopy", "biz_food_truck", "biz_barrier")),
+        ("gen_hotel.py", ("hotel_tower", "hotel_restaurant", "water_slide")),
+        ("gen_food.py", ("coconut_green", "coconut_open", "pineapple", "orange",
+                         "frappe", "cup_plastic", "glass_juice", "cocktail", "campfire_logs",
+                         "beach_flag", "beach_spade", "boat_hull")),
+    ]
+    gen = os.path.join(A, "models", "gen")
+    os.makedirs(gen, exist_ok=True)
+    for script, expected in groups:
+        missing = [name for name in expected if not os.path.isfile(os.path.join(gen, name + ".glb"))]
+        if FORCE or missing:
+            print("gerando modelos Blender:", script, "(faltando:", ", ".join(missing) or "force", ")")
+            subprocess.check_call([sys.executable, os.path.join(ROOT, "tools", script)], cwd=ROOT)
+
 
 def ambientcg(asset, name):
     import zipfile, io
@@ -320,6 +341,8 @@ def main():
             p = f"{A}/tex/grey_plaster_02_{s}.jpg"
             if os.path.exists(p):
                 os.remove(p)
+    if only in ("", "models"):
+        generated_props()
     for need in ("assets/models/ual/guest.glb", "assets/audio/music_bossa.ogg"):
         if not os.path.exists(os.path.join(ROOT, need)):
             print("AVISO: faltando", need, "(vem no repositório; veja CREDITS.md)")
