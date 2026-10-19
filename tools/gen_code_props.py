@@ -2167,7 +2167,43 @@ def porch_column():
     join(parts, "porch_column")
     export("porch_column")
 
-ALL = {"porch_column": porch_column, "bamboo_pole": bamboo_pole, "fish_clown": lambda: fish("fish_clown", 0.16, 0.1, 0.07, (1.0, 0.45, 0.05), (1.0, 0.5, 0.1), (0.97, 0.97, 0.95), 3, (1.0, 0.4, 0.05), "round", 0.16),
+def balcony_rail():
+    """Gradil de ferro de sacada (2,0 m x 0,95 m): corrimão torneado, travessa inferior, balaústres com bolotas e arabescos em "S" entre eles.
+    Ferro escuro (metal 0 para não escurecer no toon). Origem no meio da base, frente = -Y do Blender."""
+    fresh()
+    iron = mat("ferro", (0.09, 0.1, 0.11), 0.45)
+    parts = [anchor(iron)]
+    W, H = 2.0, 0.95
+    parts.append(tube((-W / 2, 0, H), (W / 2, 0, H), 0.022, iron, verts=12))
+    parts.append(tube((-W / 2, 0, 0.06), (W / 2, 0, 0.06), 0.015, iron, verts=10))
+    parts.append(tube((-W / 2, 0, H - 0.12), (W / 2, 0, H - 0.12), 0.01, iron, verts=8))
+    n = 13
+    for i in range(n):
+        x = -W / 2 + W * i / (n - 1)
+        r = 0.012 if 0 < i < n - 1 else 0.02
+        parts.append(tube((x, 0, 0.0), (x, 0, H), r, iron, verts=10))
+        parts.append(lathe(_sphere_profile(0, r * 2.2, -80, 80, 6), iron, loc=(x, 0, 0.45), verts=12))
+        if i < n - 1:
+            # arabesco em S entre os balaústres
+            x2 = -W / 2 + W * (i + 1) / (n - 1)
+            cx = (x + x2) / 2
+            rr = (x2 - x) * 0.22
+            prev = None
+            for k in range(25):
+                t = k / 24
+                a = t * math.pi * 2
+                sgn = 1 if t < 0.5 else -1
+                zc = 0.62 + (0.12 if t < 0.5 else -0.12) * 0 + (rr * 1.6 if t < 0.5 else -rr * 1.6)
+                px = cx + rr * math.cos(a * 1.0) * sgn
+                pz = 0.62 + rr * 1.6 * (1 if t < 0.5 else -1) + rr * math.sin(a)
+                q = (px, 0, pz)
+                if prev:
+                    parts.append(tube(prev, q, 0.006, iron, verts=6))
+                prev = q
+    join(parts, "balcony_rail")
+    export("balcony_rail")
+
+ALL = {"balcony_rail": balcony_rail, "porch_column": porch_column, "bamboo_pole": bamboo_pole, "fish_clown": lambda: fish("fish_clown", 0.16, 0.1, 0.07, (1.0, 0.45, 0.05), (1.0, 0.5, 0.1), (0.97, 0.97, 0.95), 3, (1.0, 0.4, 0.05), "round", 0.16),
        "fish_blue": lambda: fish("fish_blue", 0.22, 0.14, 0.05, (0.1, 0.35, 0.9), (0.95, 0.8, 0.2), (0.05, 0.1, 0.4), 0, (0.95, 0.85, 0.2), "fork", 0.12),
        "fish_angel": lambda: fish("fish_angel", 0.24, 0.26, 0.05, (0.95, 0.85, 0.25), (0.95, 0.9, 0.5), (0.15, 0.15, 0.2), 4, (0.2, 0.3, 0.8), "round", 0.1),
        "fish_silver": lambda: fish("fish_silver", 0.3, 0.1, 0.06, (0.55, 0.62, 0.72), (0.93, 0.95, 0.97), (0.4, 0.45, 0.55), 0, (0.7, 0.75, 0.85), "fork", 0.1),

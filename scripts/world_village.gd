@@ -94,20 +94,21 @@ func _bench(p: Vector3, rot: float, parent: Node = null) -> Dictionary:
 	var local: = Vector3(0.06, 0.0, -0.062 + 0.3).rotated(Vector3.UP, rot)
 	return {"pos": p + local + Vector3(0, 0.457 - SEAT_DROP, 0), "rot": rot, "anim": "Sitting_Idle_Loop", "busy": false}
 
-func _front_at(x: float, street_z: float, side: float) -> float:
+func _front_at(x: float, street_z: float, side: float) -> Array:
 	for hf in _house_fronts:
 		if x >= hf[0] and x <= hf[1] and signf(street_z - hf[2]) == side and absf(street_z - hf[2]) < 8.0:
-			return hf[2]
-	return INF
+			return hf
+	return []
 
 func _street_bunting(street_z: float, spacing: float) -> void :
 	var x: = 0.0
 	while x < 110.0:
-		var zn: = _front_at(x, street_z, 1.0)
-		var zs: = _front_at(x + 3.0, street_z, -1.0)
-		if zn != INF and zs != INF:
-			var a: = Vector3(x, 3.38, zn + 0.1)
-			var b: = Vector3(x + 3.0, 3.38, zs - 0.1)
+		var fn: = _front_at(x, street_z, 1.0)
+		var fs: = _front_at(x + 3.0, street_z, -1.0)
+		if not fn.is_empty() and not fs.is_empty():
+			# sobrado: prende sob a cornija de cima (6,1 m), longe da sacada
+			var a: = Vector3(x, 6.15 if fn[4] > 5.0 else 3.38, fn[2] + 0.1)
+			var b: = Vector3(x + 3.0, 6.15 if fs[4] > 5.0 else 3.38, fs[2] - 0.1)
 			D.bunting(self, a, b, 0.45)
 			for e in [[a, 0.0], [b, PI]]:
 				var hk: = Real.place(self, "g:brass_knob", e[0], -1.6, 0.0, Color(0.55, 0.55, 0.58), 0.0, false)
@@ -342,27 +343,28 @@ func _facade(c: Vector3, n: Vector3, half: float, offset: float, kind: String, c
 				B.box(piv, Vector3(0.025, 0.32, 0.025), Vector3(-0.54 + k * 0.18, 1.16, 0.14), iron)
 
 ## Detalhes extras de uma casa: cornija dupla, faixa colorida, caibros, calha, chaminé, antena, ar-condicionado.
-func _house_extras(c: Vector3, w: float, d: float, h: float, front: float, col: Color, shutter: Color) -> void :
+func _house_extras(c: Vector3, w: float, d: float, h: float, front: float, col: Color, shutter: Color, eaves: = true) -> void :
 	var rng: = RandomNumberGenerator.new()
 	rng.seed = int(c.x * 17.0 + c.z * 5.0)
 	B.box(self, Vector3(w + 0.06, 0.26, d + 0.06), c + Vector3(0, h - 0.45, 0), stucco(shutter.lightened(0.45)))
-	B.box(self, Vector3(w + 0.32, 0.1, d + 0.32), c + Vector3(0, h + 0.06, 0), VM.trim)
-	# caibros aparentes sob o beiral (frente e fundos)
-	var xfs: = []
-	var k: = - w * 0.5 - 0.6
-	while k <= w * 0.5 + 0.6:
-		for sz in [-1.0, 1.0]:
-			xfs.append(Transform3D(Basis(), c + Vector3(k, h + 0.0, sz * (d * 0.5 + 0.45))))
-		k += 0.55
-	var rm: = BoxMesh.new()
-	rm.size = Vector3(0.09, 0.12, 0.9)
-	D.multimesh(self, rm, xfs, [], wood_tint(Color(0.5, 0.3, 0.16)))
-	# calha e cano na frente
-	var gz: = c.z + front * (d * 0.5 + 0.86)
 	var gm: = B.flat(Color(0.88, 0.88, 0.85), 0.5, 0.3)
-	var gut: = B.cyl(self, 0.06, 0.06, w + 1.7, Vector3(c.x, h + 0.02, gz), gm, 12)
-	gut.rotation.z = PI * 0.5
-	B.cyl(self, 0.045, 0.045, h, Vector3(c.x + w * 0.5 + 0.8, h * 0.5, gz), gm, 10)
+	if eaves:
+		B.box(self, Vector3(w + 0.32, 0.1, d + 0.32), c + Vector3(0, h + 0.06, 0), VM.trim)
+		# caibros aparentes sob o beiral (frente e fundos)
+		var xfs: = []
+		var k: = - w * 0.5 - 0.6
+		while k <= w * 0.5 + 0.6:
+			for sz in [-1.0, 1.0]:
+				xfs.append(Transform3D(Basis(), c + Vector3(k, h + 0.0, sz * (d * 0.5 + 0.45))))
+			k += 0.55
+		var rm: = BoxMesh.new()
+		rm.size = Vector3(0.09, 0.12, 0.9)
+		D.multimesh(self, rm, xfs, [], wood_tint(Color(0.5, 0.3, 0.16)))
+		# calha e cano na frente
+		var gz: = c.z + front * (d * 0.5 + 0.86)
+		var gut: = B.cyl(self, 0.06, 0.06, w + 1.7, Vector3(c.x, h + 0.02, gz), gm, 12)
+		gut.rotation.z = PI * 0.5
+		B.cyl(self, 0.045, 0.045, h, Vector3(c.x + w * 0.5 + 0.8, h * 0.5, gz), gm, 10)
 	if rng.randf() < 0.45:
 		var chx: = c.x + rng.randf_range(- w * 0.25, w * 0.25)
 		B.box(self, Vector3(0.6, 1.4, 0.6), Vector3(chx, h + 1.6, c.z - front * d * 0.18), stucco(col.darkened(0.15)))
@@ -391,10 +393,29 @@ func _house_extras(c: Vector3, w: float, d: float, h: float, front: float, col: 
 			B.cyl(self, 0.14, 0.1, 0.18, vp, B.flat(Color(0.85, 0.45, 0.3), 0.8), 14)
 
 var _house_fronts: Array = []
+## v0.9.3: variedade de casas. Estilo sorteado pela posição (estável): 0 térrea de telhado, 1 sobrado com sacada de ferro,
+## 2 platibanda (fachada reta escondendo o telhado, com frontão e ano), 3 casa de madeira (tábuas pintadas). Telhado em 4 tons.
+const ROOF_TINTS: = [Color(1, 1, 1), Color(0.55, 0.36, 0.3), Color(1.15, 0.92, 0.78), Color(0.5, 0.56, 0.64)]
+var _roof_mats: = {}
+func _roof_mat(i: int) -> Material:
+	if not _roof_mats.has(i):
+		var m: StandardMaterial3D = VM.clay.duplicate()
+		m.albedo_color = m.albedo_color * ROOF_TINTS[i]
+		_roof_mats[i] = m
+	return _roof_mats[i]
+
 func _house(c: Vector3, w: float, d: float, front: float, col: Color, shutter: Color, porch: bool, sign_text: = "") -> void :
-	var h: = 3.5
-	_house_fronts.append([c.x - w * 0.5 + 0.4, c.x + w * 0.5 - 0.4, c.z + d * 0.5 * front, front])
-	var body: = B.box(self, Vector3(w, h, d), c + Vector3(0, h * 0.5, 0), stucco(col), true)
+	var hr: = RandomNumberGenerator.new()
+	hr.seed = int(c.x * 131.0 + c.z * 17.0) + 5
+	var style: = hr.randi() % 4
+	if sign_text != "" and style == 3:
+		style = 0
+	var h: = 6.3 if style == 1 else 3.5
+	_house_fronts.append([c.x - w * 0.5 + 0.4, c.x + w * 0.5 - 0.4, c.z + d * 0.5 * front, front, h])
+	var wall_m: Material = stucco(col)
+	if style == 3:
+		wall_m = B.mat("weathered_planks", 0.45, col.lightened(0.15), 0.85)
+	var body: = B.box(self, Vector3(w, h, d), c + Vector3(0, h * 0.5, 0), wall_m, true)
 	body.name = "house"
 	B.box(self, Vector3(w + 0.06, 0.7, d + 0.06), c + Vector3(0, 0.35, 0), VM.stone)
 	B.box(self, Vector3(w + 0.14, 0.07, d + 0.14), c + Vector3(0, 0.72, 0), VM.trim)
@@ -410,8 +431,43 @@ func _house(c: Vector3, w: float, d: float, front: float, col: Color, shutter: C
 	_facade(c, - n, d * 0.5, 0.0, "window", shutter)
 	_facade(c, Vector3(1, 0, 0), w * 0.5, 0.0, "window", shutter)
 	_facade(c, Vector3(-1, 0, 0), w * 0.5, 0.0, "window", shutter)
-	B.hip_roof(self, c + Vector3(0, h + 0.05, 0), w + 1.75, d + 1.75, 2.05, VM.clay, 0.14)
-	_house_extras(c, w, d, h, front, col, shutter)
+	var roof_m: = _roof_mat(hr.randi() % ROOF_TINTS.size())
+	if style == 1:
+		# sobrado: faixa entre andares, janelas de cima e sacada com gradil de ferro (sem sacada se tiver varanda embaixo)
+		B.box(self, Vector3(w + 0.14, 0.12, d + 0.14), c + Vector3(0, 3.0, 0), VM.trim)
+		_facade(c, n, d * 0.5, - w * 0.18 * front, "window", shutter, 2.95)
+		_facade(c, n, d * 0.5, w * 0.22 * front, "window", shutter, 2.95)
+		_facade(c, - n, d * 0.5, 0.0, "window", shutter, 2.95)
+		if not porch:
+			var bz: = c.z + front * (d * 0.5 + 0.42)
+			var bx: = c.x - w * 0.18 * front
+			B.box(self, Vector3(2.3, 0.14, 0.9), Vector3(bx, 2.98, bz), VM.trim)
+			if Real.place(self, "g:balcony_rail", Vector3(bx, 3.05, bz + front * 0.42), -1.0, 0.0 if front > 0 else PI, Color.WHITE, 0.0, false) != null:
+				for sx in [-1.0, 1.0]:
+					var side: = Real.place(self, "g:balcony_rail", Vector3(bx + sx * 1.13, 3.05, bz), -1.0, PI * 0.5, Color.WHITE, 0.0, false)
+					if side:
+						side.scale = Vector3(1.0, 1.0, 1.0)
+						side.get_child(0).scale = Vector3(0.42, 1.0, 1.0)
+		B.hip_roof(self, c + Vector3(0, h + 0.05, 0), w + 1.75, d + 1.75, 2.05, roof_m, 0.14)
+	elif style == 2:
+		# platibanda: telhado baixo escondido atrás de mureta reta com cornija, frontão no meio e o ano da casa
+		var ph: = 1.0
+		B.hip_roof(self, c + Vector3(0, h + 0.05, 0), w - 0.3, d - 0.3, 0.8, roof_m, 0.12)
+		for sz in [-1.0, 1.0]:
+			B.box(self, Vector3(w + 0.1, ph, 0.2), c + Vector3(0, h + ph * 0.5, sz * (d * 0.5 - 0.05)), stucco(col))
+			B.box(self, Vector3(w + 0.3, 0.12, 0.34), c + Vector3(0, h + ph + 0.06, sz * (d * 0.5 - 0.05)), VM.trim)
+		for sx in [-1.0, 1.0]:
+			B.box(self, Vector3(0.2, ph, d + 0.1), c + Vector3(sx * (w * 0.5 - 0.05), h + ph * 0.5, 0), stucco(col))
+			B.box(self, Vector3(0.34, 0.12, d + 0.3), c + Vector3(sx * (w * 0.5 - 0.05), h + ph + 0.06, 0), VM.trim)
+		var fz: = c.z + front * (d * 0.5 - 0.05)
+		B.box(self, Vector3(2.2, 0.55, 0.22), Vector3(c.x, h + ph + 0.33, fz), stucco(col))
+		B.box(self, Vector3(2.4, 0.1, 0.34), Vector3(c.x, h + ph + 0.65, fz), VM.trim)
+		B.box(self, Vector3(w + 0.2, 0.18, 0.26), Vector3(c.x, h + 0.25, fz), stucco(shutter.lightened(0.4)))
+		var yr: = B.label(self, str(1928 + hr.randi() % 40), Vector3(c.x, h + ph + 0.3, fz + front * 0.12), 48, Color(0.97, 0.96, 0.93), Color(0.3, 0.25, 0.2, 0.6), 0.0 if front > 0 else PI)
+		yr.pixel_size = 0.006
+	else:
+		B.hip_roof(self, c + Vector3(0, h + 0.05, 0), w + 1.75, d + 1.75, 2.05, roof_m, 0.14)
+	_house_extras(c, w, d, h, front, col, shutter, style != 2)
 	_block(c, w, d, 0.4)
 	_occlude(c, w * 0.9, d * 0.9, h * 0.9)
 	var win_x: = c.x - w * 0.22
