@@ -113,6 +113,20 @@ func _ready() -> void :
 			Core.prog.biz[id] = {"lvl": 1, "games_hour": -1, "today": 0}
 		Core.prog.add_fame(3300)
 		Core.reset_rooms(2)
+		if args.has("savequit"):   # gera um save "tudo liberado" no slot N e sai (para o Sergio ver a v1.0 inteira)
+			Core.money = 60000
+			Core.day = 8
+			Core.ratings = [4.8, 4.9, 5.0, 4.7, 4.9, 5.0]
+			for r in Core.staff:
+				Core.staff[r] = true
+			for k in Economy.SUPPLIES:
+				Core.stock[k] = 30
+			Core.redes = 2
+			Core.set_slot(int(args.savequit))
+			Core.save_game()
+			print("SAVEQUIT ", Core.SAVE_PATH)
+			get_tree().quit()
+			return
 	audio = Node.new()
 	audio.set_script(load("res://scripts/audio.gd"))
 	audio.process_mode = Node.PROCESS_MODE_ALWAYS
