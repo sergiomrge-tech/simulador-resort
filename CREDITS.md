@@ -130,3 +130,21 @@ thunder, rain_loop, wind_loop, forro_loop, dj_loop.
 - v0.9.5 (Blender, próprios): trellis_planter, towel_folded, flipflops, pool_float, rope_coil, cloth_shirt, cloth_towel, ac_unit, tv_antenna, straw, popcorn_cart, newsstand, cooler_box, coconut_cart, bottle_cachaca/rum/green/wine.
 - v1.0 (Blender, próprios): negócios — biz_gelato, biz_booth, biz_kayak_rack, biz_board_rack, biz_canopy, biz_food_truck, biz_souvenir, biz_barrier (`tools/gen_business.py`); Grand Hotel 5★ — hotel_tower, hotel_restaurant, hotel_gym, gym_treadmill, gym_bike, gym_bench, gym_dumbbells, water_slide (`tools/gen_hotel.py`).
 - v1.0 ícones novos do game-icons.net (CC BY 3.0): shop, cooking-pot, village (Delapouite), trophy, laurel-crown (Lorc).
+
+## v1.0.1 — substituição dos objetos low-poly
+
+Modelos **próprios**, modelados em Blender/bpy por `tools/gen_food.py` (não dependem de assets externos): `coconut_green`, `coconut_open`, `pineapple`, `orange`, `frappe`, `cup_plastic`, `glass_juice`, `cocktail`, `campfire_logs`, `beach_flag`, `beach_spade` e `boat_hull`. Os arquivos gerados são `assets/models/gen/<nome>.glb`, reconstruídos por `tools/fetch_assets.py`. A origem Blender é z=0 (chão no Godot). Os modelos substituem chamadas antigas da Kenney por aliases em `scripts/real.gd`.
+
+Modelos **Poly Haven CC0**, obtidos por `MODELS_EXTRA` em `tools/fetch_assets.py`, usados em substituições da v1.0.1:
+
+| Modelo | Fonte | Licença |
+|---|---|---|
+| `dead_tree_trunk` (tronco de deriva) | https://polyhaven.com/a/dead_tree_trunk | CC0 |
+| `stone_fire_pit` (pedras da fogueira) | https://polyhaven.com/a/stone_fire_pit | CC0 |
+| `boulder_01` (rocha) | https://polyhaven.com/a/boulder_01 | CC0 |
+| `sand_rocks_small_01` (pedras da praia) | https://polyhaven.com/a/sand_rocks_small_01 | CC0 |
+| `wooden_crate_02` (caixote) | https://polyhaven.com/a/wooden_crate_02 | CC0 |
+| `Barrel_01` (barril) | https://polyhaven.com/a/Barrel_01 | CC0 |
+| `croissant` (pão) | https://polyhaven.com/a/croissant | CC0 |
+
+**Observação:** modelos baixados e GLBs gerados são ignorados pelo Git; o script de preparação precisa reconstruí-los e o patch precisa incluí-los explicitamente.
