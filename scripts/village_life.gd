@@ -324,6 +324,8 @@ func spawn_customer() -> Node3D:
 	var extra_p: = (0.12 if Core.has("kiosk_tables") else 0.0) + 0.1 * float(customers.size())
 	if Core.is_party():
 		extra_p += 0.25 if Core.day_event == "junina" else 0.12
+	if Core.prog.fame_level >= 5:   # fama 5: famílias pedem mais
+		extra_p += 0.15
 	if rng.randf() < minf(extra_p, 0.4):
 		items.append(str(menu[rng.randi() % menu.size()]))
 		if Core.stars() >= 4.0 and rng.randf() < 0.25:
@@ -332,7 +334,7 @@ func spawn_customer() -> Node3D:
 	g.set_meta("delivered", 0)
 	g.set_meta("revenue", 0)
 	var dj_now: = Core.day_event == "show_dj" and not _dj_came
-	if dj_now or (rng.randf() < VIP_CHANCE and Core.stars() >= 3.0):
+	if dj_now or (rng.randf() < VIP_CHANCE * (2.0 if Core.prog.fame_level >= 7 else 1.0) and Core.stars() >= 3.0):
 		g.set_meta("vip", true)
 		var vid: = "djmare" if dj_now else _pick_vip()
 		if dj_now:
@@ -477,7 +479,7 @@ func _items(g) -> Array:
 
 ## Pedidos maiores dão mais tempo para o cliente esperar.
 func _patience(g) -> float:
-	return KIOSK_PATIENCE * (1.0 + 0.45 * float(_items(g).size() - 1))
+	return KIOSK_PATIENCE * (1.0 + 0.45 * float(_items(g).size() - 1)) * (1.0 + Core.prog.eff("kiosk_patience"))
 
 func _remaining(g) -> Array:
 	return _items(g).slice(int(g.get_meta("delivered", 0)))
@@ -578,7 +580,8 @@ func prep_advance(sec: float) -> void :
 	if prep.is_empty():
 		return
 	var stages: Array = Economy.DISH_STAGES[prep.dish]
-	prep.p = float(prep.p) + sec / float(stages[prep.stage][1])
+	# v1.0: melhoria "Mãos rápidas" encurta cada etapa
+	prep.p = float(prep.p) + sec / (float(stages[prep.stage][1]) * maxf(0.4, 1.0 - Core.prog.eff("kiosk_speed")))
 	while float(prep.p) >= 1.0 and not prep.is_empty():
 		prep.p = float(prep.p) - 1.0
 		prep.stage = int(prep.stage) + 1
@@ -612,6 +615,8 @@ func _complete_order(g, last_dish: String) -> void :
 	var tip: = (2 if fast else 0) * _items(g).size()
 	if Core.has("kiosk_tables") and fast:
 		tip += 1
+	if fast:   # v1.0: melhoria "Sorriso no balcão" e fama 3 (turistas dão gorjeta)
+		tip += int(Core.prog.eff("tips")) + (1 if Core.prog.fame_level >= 3 else 0)
 	# sequência: cada atendimento rápido seguido sobe o combo (até x5) e rende gorjeta extra
 	if fast:
 		combo = mini(combo + 1, COMBO_MAX)

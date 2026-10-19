@@ -1,5 +1,5 @@
 Ícones de https://game-icons.net (CC BY 3.0), via github.com/game-icons/icons.
 Autores: Delapouite (coins, wooden-crate, hut, three-friends, money-stack, wallet, shop, shopping-cart,
 star-formation, sell-card, person, notebook, coconuts, orange-slice, beer-bottle, shrimp, bread, pillow, bed,
-bathtub, broom, cook, palm-tree, house) e Lorc (beer-stein, snowflake-1, flower-pot, wine-glass).
+bathtub, broom, cook, palm-tree, house, cooking-pot, village) e Lorc (beer-stein, snowflake-1, flower-pot, wine-glass, trophy, laurel-crown).
 O quadrado de fundo preto foi removido; a cor é aplicada no jogo.

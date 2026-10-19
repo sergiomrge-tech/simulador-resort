@@ -24,7 +24,7 @@ signal tour_done(id: String, pax: int, revenue: int)
 var SAVE_PATH: = "user://save_slot1.json"
 var slot: int = 1
 var proc_props: = false   # --proc: usa os props montados por código (P) em vez dos modelos reais
-const SAVE_VERSION: = 5
+const SAVE_VERSION: = 6
 const WAKE_MIN: = 390.0
 const SLEEP_FROM: = 20.0 * 60.0
 const MAX_REDES: = Economy.HAMMOCK_MAX
@@ -74,6 +74,7 @@ var tours_done: = {}       # passeios já realizados hoje
 var tours_total: int = 0
 var tours_revenue: int = 0
 
+var prog: Prog   # v1.0: fama, árvore de melhorias, negócios, equipe, temporadas, receitas e capítulos
 var _autosave_t: = 0.0
 var _bar_batch_count: = 0
 var _bar_batch_value: = 0
@@ -83,6 +84,10 @@ var _helper_acc: = 0.0
 
 func _ready() -> void :
 	process_mode = Node.PROCESS_MODE_ALWAYS
+	prog = Prog.new()
+	prog.name = "Prog"
+	add_child(prog)
+	prog.reset()
 	_reset_economy()
 	reset_rooms(0)
 
@@ -140,6 +145,7 @@ func new_game() -> void :
 	_reset_economy()
 	unlocked = {}
 	reset_rooms(0)
+	prog.reset()
 	_emit_all()
 	expansion_bought.emit("")
 	if is_inside_tree():
@@ -167,13 +173,14 @@ func _process(delta: float) -> void :
 		_bar_batch_t -= delta * speed_mult
 		if _bar_batch_t < 0.0:
 			_flush_bar()
-	if bool(staff.get("camareira", false)):
-		_maid_acc += delta * minutes_per_sec * speed_mult
+	prog.tick(delta * minutes_per_sec * speed_mult)
+	if prog.staff_eff("camareira") > 0.0:
+		_maid_acc += delta * minutes_per_sec * speed_mult * prog.staff_eff("camareira") * (1.0 + prog.eff("maid_speed"))
 		if _maid_acc >= Economy.MAID_MINUTES:
 			_maid_acc = 0.0
 			_maid_sweep()
-	if bool(staff.get("atendente", false)):
-		_helper_acc += delta * minutes_per_sec * speed_mult
+	if prog.staff_eff("atendente") > 0.0:
+		_helper_acc += delta * minutes_per_sec * speed_mult * prog.staff_eff("atendente")
 		if _helper_acc >= Economy.HELPER_MINUTES:
 			_helper_acc = 0.0
 			get_tree().call_group("kiosk", "helper_serve")
@@ -202,10 +209,19 @@ func stars() -> float:
 	return clampf(s / ratings.size(), 1.0, 5.0)
 
 func add_rating(r: float) -> void :
-	ratings.append(clampf(r, 1.0, 5.0))
+	ratings.append(clampf(r + rating_bonus(), 1.0, 5.0))
 	while ratings.size() > 12:
 		ratings.pop_front()
 	stars_changed.emit(stars())
+
+## v1.0: capricho do quiosque, café da manhã, fornecedores premium e atendente simpático melhoram todas as notas.
+func rating_bonus() -> float:
+	if prog == null:
+		return 0.0
+	var b: = prog.eff("kiosk_quality") + prog.eff("breakfast") + prog.premium_share() * PD.PREMIUM_RATING
+	if prog.staff_eff("atendente") > 0.0 and str(prog.staff_rec("atendente").trait) == "simpatico":
+		b += 0.15
+	return b
 
 func add_money(v: int, reason: String = "", cat: String = "outro") -> void :
 	book(v, reason, cat, reason != "")
@@ -223,11 +239,13 @@ func book(v: int, reason: String, cat: String, do_toast: = true) -> void :
 			ledger_today.pop_front()
 	money_changed.emit(money)
 	ledger_changed.emit()
+	if prog:
+		prog.on_income(v, cat)
 	if do_toast and reason != "":
 		toast.emit("%s  %s" % [reason, fmt_money(v, true)], "money" if v >= 0 else "bad")
 
 func nightly_rate(room_id: int = -1) -> int:
-	var v: = Economy.BASE_NIGHTLY + int(round(stars() * Economy.STAR_BONUS)) + redes * Economy.HAMMOCK_BONUS
+	var v: = Economy.BASE_NIGHTLY + int(round(stars() * Economy.STAR_BONUS)) + redes * Economy.HAMMOCK_BONUS + int(prog.eff("room_rate"))
 	if room_id >= 0:
 		v += room_rate_bonus(room_id)
 	return v
@@ -310,6 +328,7 @@ func sleep() -> void :
 		day += 1
 	minutes = WAKE_MIN
 	_pay_wages()
+	prog.on_new_day()
 	force_flush_bar()
 	spoil_stock()
 	slept.emit(day)
@@ -328,7 +347,7 @@ func _pay_wages() -> void :
 	for role in staff:
 		if not bool(staff[role]) or not Economy.STAFF.has(role):
 			continue
-		var w: = int(Economy.STAFF[role].wage)
+		var w: = prog.staff_wage(role)
 		total += w
 		book( - w, tr("Salário: %s") % tr(str(Economy.STAFF[role].name)), "folha", false)
 	if total > 0:
@@ -445,10 +464,13 @@ func has(id: String) -> bool:
 	return bool(unlocked.get(id, false))
 
 func dish_unlocked(id: String) -> bool:
+	if bool(Economy.DISHES.get(id, {}).get("secret", false)) and not prog.is_discovered(id):
+		return false
 	return not Economy.DISH_UNLOCK.has(id) or has(str(Economy.DISH_UNLOCK[id]))
 
+## Pratos que os clientes podem pedir: liberados e não desligados no Cardápio.
 func kiosk_menu() -> Array:
-	return Economy.KIOSK_MENU.filter(func(d): return dish_unlocked(d))
+	return Economy.KIOSK_MENU.filter(func(d): return dish_unlocked(d) and not bool(prog.menu_off.get(d, false)))
 
 func bar_menu() -> Array:
 	return Economy.BAR_MENU.filter(func(d): return dish_unlocked(d))
@@ -468,6 +490,10 @@ func expansion_state(id: String) -> Array:
 		return ["locked", tr("Precisa de ★ %.1f (agora ★ %.1f)") % [float(e.stars), stars()]]
 	if rooms.size() < int(e.get("rooms", 0)):
 		return ["locked", tr("Precisa de %d bangalôs") % int(e.rooms)]
+	if prog.fame_level < int(e.get("fame", 0)):
+		return ["locked", tr("Precisa de fama \"%s\"") % tr(prog.fame_name(int(e.fame)))]
+	if str(e.get("chapter", "")) != "" and not prog.chapter_done(str(e.chapter)):
+		return ["locked", tr("Conclua o capítulo \"%s\" (app Vila)") % tr(prog.chapter_title(str(e.chapter)))]
 	if money < int(e.cost):
 		return ["money", tr("Faltam %s") % fmt_money(int(e.cost) - money)]
 	return ["ready", ""]
@@ -554,11 +580,15 @@ func demand_factor() -> float:
 			f += float(Economy.DEMAND_BY_TIER[price_tier_of(d)])
 		f /= float(m.size())
 	if day_event == "calor":
-		f *= 1.25
+		f *= 1.25 * (1.0 + prog.eff("event_bonus"))
+	elif day_event == "carnaval":
+		f *= Economy.CARNAVAL_DEMAND * (1.0 + prog.eff("event_bonus"))
 	elif is_party():
-		f *= Economy.PARTY_DECO_DEMAND if prep_active else Economy.PARTY_DEMAND
+		f *= (Economy.PARTY_DECO_DEMAND if prep_active else Economy.PARTY_DEMAND) * (1.0 + prog.eff("event_bonus"))
 	elif Economy.EVENT_DEMAND.has(day_event):
 		f *= float(Economy.EVENT_DEMAND[day_event])
+	# v1.0: fama, temporada e melhorias da praia/bar
+	f *= (1.0 + PD.FAME_DEMAND * float(prog.fame_level - 1)) * prog.season_demand() * (1.0 + prog.eff("beach_demand") + prog.eff("happy_hour"))
 	return f
 
 func is_party() -> bool:
@@ -571,6 +601,8 @@ func beach_share() -> float:
 ## Ajuste na nota de quem foi atendido: preço salgado reclama, preço camarada agrada.
 func price_rating_adjust() -> float:
 	var a: = avg_price_mult()
+	if prog.fame_level >= 9 and a < 1.35:
+		return 0.0
 	if a >= 1.35:
 		return -0.9
 	if a >= 1.1:
@@ -581,14 +613,18 @@ func price_rating_adjust() -> float:
 
 ## Evento de um dia: festa do calendário (a partir do dia 8) ou sorteio (calor, lua, maré alta, tempestade).
 func pick_event(d: int) -> String:
+	if prog.is_carnaval_day(d):
+		return "carnaval"
 	if d >= Economy.PARTY_FROM_DAY and Economy.PARTY_CALENDAR.has(d % 7):
 		return str(Economy.PARTY_CALENDAR[d % 7])
 	if d <= 1:
 		return ""
+	# v1.0: a temporada pesa as chances (verão: calor; inverno: tempestade e maré)
+	var odds: Dictionary = PD.SEASONS[prog.season_index(d)].odds
 	var r: = randf()
 	var acc: = 0.0
 	for o in Economy.EVENT_ODDS:
-		acc += float(o[1])
+		acc += float(o[1]) * float(odds.get(o[0], 1.0))
 		if r < acc:
 			return str(o[0])
 	return ""
@@ -619,7 +655,7 @@ func roll_day_event() -> void :
 func _storm_damage() -> void :
 	var lost: = 0
 	for id in stock.keys():
-		var n: = int(round(float(int(stock[id])) * Economy.STORM_LOSS))
+		var n: = int(round(float(int(stock[id])) * Economy.STORM_LOSS * maxf(0.0, 1.0 - prog.eff("storm_guard"))))
 		if n > 0:
 			stock[id] = int(stock[id]) - n
 			lost += n
@@ -681,7 +717,8 @@ func supply_factor(id: String) -> float:
 
 ## Preço total de comprar qty unidades hoje (arredonda para cima).
 func supply_total(id: String, qty: int) -> int:
-	return maxi(1, int(ceil(float(Economy.supply_cost(id)) * supply_factor(id) * float(qty) - 0.001)))
+	var prem: = PD.PREMIUM_MULT if bool(prog.premium.get(id, false)) else 1.0
+	return maxi(1, int(ceil(float(Economy.supply_cost(id)) * supply_factor(id) * prem * float(qty) - 0.001)))
 
 func buy_contract(id: String) -> bool:
 	if not Economy.SUPPLIES.has(id) or contracts.has(id):
@@ -719,15 +756,19 @@ func run_tour(id: String) -> int:
 	for r in rooms:
 		if r.state == "occupied":
 			occupied += 1
-	var pax: = clampi(int(round(1.0 + stars() * 1.2 + float(occupied) * 1.5)), 1, int(t.seats))
+	var seats: = int(t.seats) + (2 if prog.fame_level >= 8 else 0)
+	var pax: = clampi(int(round(1.0 + stars() * 1.2 + float(occupied) * 1.5 + 0.3 * float(prog.fame_level - 1))), 1, seats)
 	if is_party():
 		pax = mini(int(t.seats), pax + 2)
-	var rev: int = pax * int(t.price) - int(t.cost)
+	# guia com nível cobra um pouco mais (experiência)
+	var gl: = int(prog.staff_rec("guia").lvl) if bool(staff.get("guia", false)) else 1
+	var rev: int = int(round(float(pax * int(t.price)) * (1.0 + 0.05 * float(gl - 1)))) - int(t.cost)
 	tours_total += 1
 	tours_revenue += rev
 	book(rev, tr("%s · %d pessoas") % [tr(str(t.name)), pax], "passeio", true)
 	add_rating(0.05)
 	tour_done.emit(id, pax, rev)
+	prog.on_tour(pax)
 	return rev
 
 func tour_status(id: String) -> String:
@@ -764,6 +805,8 @@ func buy_freezer() -> bool:
 
 ## Chamado quando um cliente VIP é atendido: o famoso entra no álbum e os marcos pagam prêmio.
 func vip_served(id: String) -> void :
+	if id != "":
+		prog.on_vip()
 	if id == "" or album.has(id):
 		return
 	album.append(id)
@@ -793,13 +836,14 @@ func sell_dish(id: String, channel: String) -> int:
 		stock[ing] = int(stock[ing]) - int(uses[ing])
 	stock_changed.emit()
 	var price: = price_of(id)
-	if channel == "bar" and bool(staff.get("bartender", false)):
-		price = int(round(float(price) * (1.0 + Economy.BARTENDER_MARKUP)))
+	if channel == "bar":
+		price = int(round(float(price) * (1.0 + Economy.BARTENDER_MARKUP * prog.staff_eff("bartender") + prog.eff("bar_markup"))))
 	var nm: = str(Economy.dish(id).name)
 	if channel == "bar":
 		bar_sale(price, tr("Bar: %s") % tr(nm))
 	else:
 		kiosk_sale(nm, price)
+	prog.on_sale(id, channel)
 	return price
 
 func serve_bar() -> int:
@@ -923,7 +967,7 @@ func save_game() -> void :
 		"smult": supply_mult.duplicate(), "contracts": contracts.duplicate(), "forecast": forecast_next, "forecast_set": forecast_set, 
 		"prep_paid": prep_paid, "prep_active": prep_active, "tours_done": tours_done.duplicate(), "tours_n": tours_total, "tours_rev": tours_revenue, 
 		"day_in": day_income, "day_out": day_expense, 
-		"summary": last_summary.duplicate(true), "unlocked": unlocked.duplicate(), 
+		"summary": last_summary.duplicate(true), "unlocked": unlocked.duplicate(), "prog": prog.to_dict(), 
 		"saved_at": Time.get_datetime_string_from_system(false, true), 
 	}
 	if is_instance_valid(player_ref) and player_ref.is_inside_tree():
@@ -1013,6 +1057,8 @@ func load_game() -> bool:
 			for k in ul:
 				if Economy.EXPANSIONS.has(k):
 					unlocked[k] = bool(ul[k])
+	var pd = data.get("prog", {})
+	prog.from_dict(pd if typeof(pd) == TYPE_DICTIONARY else {})
 	reset_rooms(data.rooms.size())
 	for i in data.rooms.size():
 		rooms[i].state = data.rooms[i].state

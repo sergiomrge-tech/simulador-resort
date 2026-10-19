@@ -24,6 +24,12 @@ const APPS: = [
 	["missoes", "Missões", Color(0.95, 0.55, 0.2), "missao"],
 	["album", "Álbum", Color(0.85, 0.35, 0.6), "gorjeta"],
 	["agenda", "Agenda", Color(0.95, 0.35, 0.5), "clima"],
+	["evolucao", "Evolução", Color(0.95, 0.65, 0.1), "laurel-crown"],
+	["negocios", "Negócios", Color(0.25, 0.55, 0.85), "shop"],
+	["temporada", "Temporada", Color(0.85, 0.5, 0.15), "trophy"],
+	["cozinha", "Cozinha", Color(0.8, 0.3, 0.3), "cooking-pot"],
+	["vila", "Vila", Color(0.35, 0.6, 0.35), "village"],
+	["hotel", "Hotel 5★", Color(0.75, 0.6, 0.2), "bangalo"],
 ]
 
 var app: = ""
@@ -109,6 +115,12 @@ func _ready() -> void :
 	Core.market_changed.connect(_refresh_if_open)
 	Core.event_changed.connect(_refresh_if_open)
 	Core.upgrades_changed.connect(func(_r): _refresh_if_open())
+	Core.prog.fame_changed.connect(func(_l, _x): _refresh_if_open())
+	Core.prog.tree_changed.connect(_refresh_if_open)
+	Core.prog.biz_changed.connect(func(_id): _refresh_if_open())
+	Core.prog.goals_changed.connect(_refresh_if_open)
+	Core.prog.chapters_changed.connect(_refresh_if_open)
+	Core.prog.recipes_changed.connect(_refresh_if_open)
 
 func _place() -> void :
 	var vs: = get_viewport_rect().size if size.x < 10.0 else size
@@ -158,7 +170,7 @@ static func app_for_tab(tab: String) -> String:
 			return "caixa"
 		"expansoes":
 			return "expansoes"
-		"cardapio", "mercado", "album", "missoes", "agenda":
+		"cardapio", "mercado", "album", "missoes", "agenda", "evolucao", "negocios", "temporada", "cozinha", "vila", "hotel":
 			return tab
 	return ""
 
@@ -216,7 +228,7 @@ func _badge(parent: Node, id: String, bg: Color, sz: = 44) -> void :
 	var p: = PanelContainer.new()
 	p.add_theme_stylebox_override("panel", _box(bg, 14, 6))
 	p.custom_minimum_size = Vector2(sz, sz)
-	p.add_child(_icon(id, sz - 14, Color.WHITE))
+	p.add_child(_icon(id if T.icon(id) != null else "insumo", sz - 14, Color.WHITE))
 	parent.add_child(p)
 
 func _btn(parent: Node, text: String, cb: Callable, c: = Color(0.1, 0.65, 0.68), enabled: = true) -> Button:
@@ -326,24 +338,42 @@ func refresh() -> void :
 			_app_album(list)
 		"agenda":
 			_app_agenda(list)
+		"evolucao":
+			_app_evolution(list)
+		"negocios":
+			_app_business(list)
+		"temporada":
+			_app_season(list)
+		"cozinha":
+			_app_kitchen(list)
+		"vila":
+			_app_village(list)
+		"hotel":
+			_app_hotel(list)
 
 func _home() -> void :
 	var m: = MarginContainer.new()
 	for side in ["left", "right"]:
 		m.add_theme_constant_override("margin_" + side, 20)
 	m.add_theme_constant_override("margin_top", 14)
-	m.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	screen.add_child(m)
+	m.add_theme_constant_override("margin_bottom", 10)
+	m.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	var hsc: = ScrollContainer.new()
+	hsc.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	hsc.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	screen.add_child(hsc)
+	hsc.add_child(m)
 	var v: = VBoxContainer.new()
-	v.add_theme_constant_override("separation", 16)
+	v.add_theme_constant_override("separation", 10)
 	m.add_child(v)
-	var hello: = _lbl(v, tr("Quiosque Maré Alta"), 28, INK, true)
+	var hello: = _lbl(v, tr("Quiosque Maré Alta"), 26, INK, true)
 	hello.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	if Engine.has_meta("update_ver"):
 		var up: = _card(v, Color(0.85, 1.0, 0.9, 0.95))
 		_lbl(up, tr("ATUALIZAÇÃO DISPONÍVEL"), 14, INK_SOFT, true)
 		_lbl(up, tr("Versão %s do jogo já saiu. Baixe o patch (Atualizar_MareAltaResort) e rode com o jogo fechado.") % str(Engine.get_meta("update_ver")), 15, INK, false, true)
 		_btn(up, tr("Abrir página dos patches"), func(): OS.shell_open(str(Engine.get_meta("update_page"))))
+	_fame_bar(v)
 	var nx: = Core.next_expansion()
 	if nx != "":
 		var goal: = _card(v, Color(1, 1, 1, 0.85))
@@ -366,9 +396,9 @@ func _home() -> void :
 		gv.add_child(pb)
 		_lbl(gv, tr("Pronto para comprar!") if st[0] == "ready" else str(st[1]), 15, GOOD if st[0] == "ready" else INK_SOFT, false, true)
 	var grid: = GridContainer.new()
-	grid.columns = 3
-	grid.add_theme_constant_override("h_separation", 14)
-	grid.add_theme_constant_override("v_separation", 14)
+	grid.columns = 4
+	grid.add_theme_constant_override("h_separation", 12)
+	grid.add_theme_constant_override("v_separation", 8)
 	grid.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	v.add_child(grid)
 	for a in APPS:
@@ -376,8 +406,8 @@ func _home() -> void :
 		cell.add_theme_constant_override("separation", 4)
 		grid.add_child(cell)
 		var b: = Button.new()
-		b.custom_minimum_size = Vector2(92, 92)
-		var n: = _box(a[2], 26, 10)
+		b.custom_minimum_size = Vector2(72, 72)
+		var n: = _box(a[2], 22, 10)
 		n.shadow_color = Color(0, 0, 0, 0.18)
 		n.shadow_size = 5
 		n.shadow_offset = Vector2(0, 3)
@@ -399,7 +429,7 @@ func _home() -> void :
 			app = id
 			refresh())
 		cell.add_child(b)
-		var l: = _lbl(cell, tr(str(a[1])), 15, INK, true)
+		var l: = _lbl(cell, tr(str(a[1])), 13, INK, true)
 		l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		if a[0] == "expansoes":
 			var ready_n: = 0
@@ -489,6 +519,8 @@ func _app_menu(list: VBoxContainer) -> void :
 	_lbl(list, tr("Ajuste o preço de cada prato: barato atrai mais gente, caro rende mais por cliente mas pode irritar."), 14, INK_SOFT, false, true)
 	for id in Economy.DISHES:
 		var d: Dictionary = Economy.DISHES[id]
+		if bool(d.get("secret", false)) and not Core.prog.is_discovered(id):
+			continue   # prato secreto: só aparece depois de descoberto na Cozinha
 		var ok: = Core.dish_unlocked(id)
 		var c: = _card(list, Color(1, 1, 1, 0.94) if ok else Color(0.92, 0.92, 0.95, 0.9))
 		var r: = _row(c, 10)
@@ -502,7 +534,7 @@ func _app_menu(list: VBoxContainer) -> void :
 			where.append(tr("bar"))
 		var margin: = price - Economy.dish_cost(id)
 		var info: = tr("Custo %s · margem %s") % [Core.fmt_money(Economy.dish_cost(id)), Core.fmt_money(margin)]
-		if not ok:
+		if not ok and Economy.DISH_UNLOCK.has(id):
 			info = tr("Bloqueado: compre %s") % tr(str(Economy.EXPANSIONS[Economy.DISH_UNLOCK[id]].name))
 		elif where.is_empty():
 			info += "  ·  " + tr("ainda não é vendido")
@@ -722,6 +754,7 @@ func _app_staff(list: VBoxContainer) -> void :
 		_expand(_lbl(r2, tr("Contratar %s · salário %s/dia") % [Core.fmt_money(int(s.hire)), Core.fmt_money(int(s.wage))], 14, INK, true, true))
 		if hired:
 			_chip(r2, tr("✓ Na equipe"), Color.WHITE, GOOD)
+			_staff_card(c, role)
 		elif need != "" and not Core.has(need):
 			_lbl(c, tr("Precisa de: %s") % tr(str(Economy.EXPANSIONS[need].name)), 14, INK_SOFT, true, true)
 		else:
@@ -747,3 +780,318 @@ func _app_ledger(list: VBoxContainer) -> void :
 		_expand(_lbl(lr, tr(str(line.get("r", ""))), 14, INK, false, true))
 		var a: = int(line.get("a", 0))
 		_lbl(lr, Core.fmt_money(a, true), 14, GOOD if a >= 0 else BAD, true)
+
+
+# ================================================================== v1.0: evolução
+func _progress(parent: Node, val: float, mx: float, c: Color, h: = 12) -> void:
+	var pb: = ProgressBar.new()
+	pb.max_value = maxf(mx, 0.001)
+	pb.value = clampf(val, 0.0, mx)
+	pb.show_percentage = false
+	pb.custom_minimum_size = Vector2(0, h)
+	pb.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	pb.add_theme_stylebox_override("background", _box(Color(0.85, 0.85, 0.9), 6, 0))
+	pb.add_theme_stylebox_override("fill", _box(c, 6, 0))
+	parent.add_child(pb)
+
+## Barra de fama (tela inicial e app Evolução).
+func _fame_bar(parent: Node) -> void:
+	var P: Prog = Core.prog
+	var c: = _card(parent, Color(1.0, 0.97, 0.85, 0.95))
+	var r: = _row(c, 10)
+	_badge(r, "laurel-crown", Color(0.95, 0.65, 0.1), 40)
+	var v: = VBoxContainer.new()
+	v.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	r.add_child(v)
+	_lbl(v, tr("Fama %d: %s") % [P.fame_level, tr(P.fame_name())], 17, INK, true, true)
+	var fp: Array = P.fame_progress()
+	if int(fp[1]) > 0:
+		_progress(v, float(fp[0]), float(fp[1]), Color(0.95, 0.65, 0.1))
+		var nxt: = str(PD.FAME_PERKS.get(P.fame_level + 1, ""))
+		_lbl(v, tr("Próximo: %s") % tr(nxt) if nxt != "" else "", 13, INK_SOFT, false, true)
+	else:
+		_lbl(v, tr("Fama máxima!"), 13, GOOD, true)
+
+func _app_evolution(list: VBoxContainer) -> void:
+	var P: Prog = Core.prog
+	_fame_bar(list)
+	_lbl(list, tr("Ganhe fama vendendo, recebendo VIPs, fazendo passeios, cumprindo metas e capítulos. Cada nível traz mais clientes e libera melhorias."), 14, INK_SOFT, false, true)
+	for area in PD.TREE:
+		var A: Dictionary = PD.TREE[area]
+		var head: = _card(list, Color(0.95, 0.92, 1.0, 0.95))
+		_lbl(head, tr(str(A.name)).to_upper(), 15, INK_SOFT, true)
+		if str(A.need) != "" and not Core.has(str(A.need)):
+			_lbl(head, tr("Compre \"%s\" em Expansões para liberar.") % tr(str(Economy.EXPANSIONS[A.need].name)), 14, INK_SOFT, false, true)
+			continue
+		for br in A.branches:
+			var B_: Dictionary = A.branches[br]
+			var l: = P.lvl(br)
+			var row: = _row(head, 8)
+			var col: = VBoxContainer.new()
+			col.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+			row.add_child(col)
+			_lbl(col, "%s  %s" % [tr(str(B_.name)), "●".repeat(l) + "○".repeat(3 - l)], 16, INK, true, true)
+			_lbl(col, tr(str(B_.desc)), 13, INK_SOFT, false, true)
+			var st: Array = P.tree_state(br)
+			if st[0] == "max":
+				_chip(row, tr("Máximo"), Color.WHITE, GOOD)
+			elif st[0] == "locked":
+				_lbl(col, str(st[1]), 13, BAD, true, true)
+			else:
+				var brc: String = br
+				_btn(row, Core.fmt_money(int(PD.TREE_COST[l])), func(): P.buy_tree(brc), Color(0.95, 0.65, 0.1), st[0] == "ready")
+
+# ================================================================== v1.0: negócios
+func _app_business(list: VBoxContainer) -> void:
+	var P: Prog = Core.prog
+	_lbl(list, tr("Negócios rendem por hora enquanto abertos. Vá até o balcão e aperte E para atender (minijogo, 1 vez por hora): quanto melhor, maior o prêmio."), 14, INK_SOFT, false, true)
+	for id in PD.BUSINESSES:
+		var b: Dictionary = PD.BUSINESSES[id]
+		var st: Array = P.biz_state(id)
+		var owned: bool = st[0] == "owned"
+		var c: = _card(list, Color(0.9, 1.0, 0.92, 0.95) if owned else Color(1, 1, 1, 0.94))
+		var r: = _row(c, 10)
+		_badge(r, "shop", b.tint if st[0] != "locked" else Color(0.6, 0.6, 0.66))
+		var v: = VBoxContainer.new()
+		v.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		r.add_child(v)
+		_lbl(v, tr(str(b.name)), 18, INK, true, true)
+		_lbl(v, tr(str(b.blurb)), 13, INK_SOFT, false, true)
+		_lbl(c, tr("Abre %02dh–%02dh · operador %s/dia · minijogo: %s") % [int(b.open[0]), int(b.open[1]), Core.fmt_money(int(b.wage)), tr(str(b.game))], 13, INK_SOFT, false, true)
+		var r2: = _row(c, 8)
+		if owned:
+			var lv: = int(P.biz[id].lvl)
+			var rate: = P.biz_rate(id)
+			_expand(_lbl(r2, tr("Nível %d · %s · hoje %s") % [lv, tr("aberto %s/h") % Core.fmt_money(rate) if rate > 0 else tr("fechado agora"), Core.fmt_money(int(P.biz[id].get("today", 0)))], 14, GOOD if rate > 0 else INK_SOFT, true, true))
+			if lv < 3:
+				var cost: = int(PD.BIZ_UPGRADE_COST[lv])
+				var idc: String = id
+				_btn(r2, tr("Nível %d\n%s") % [lv + 1, Core.fmt_money(cost)], func(): P.upgrade_biz(idc), Color(0.25, 0.55, 0.85), Core.money >= cost)
+			else:
+				_chip(r2, tr("Máximo"), Color.WHITE, GOOD)
+		else:
+			_expand(_lbl(r2, Core.fmt_money(int(b.cost)), 18, INK, true))
+			if st[0] == "ready":
+				var idb: String = id
+				_btn(r2, tr("Abrir negócio"), func(): P.buy_biz(idb), Color(0.25, 0.55, 0.85))
+			else:
+				_lbl(c, str(st[1]), 14, BAD if st[0] == "money" else INK_SOFT, true, true)
+
+# ================================================================== v1.0: temporada e metas
+func _app_season(list: VBoxContainer) -> void:
+	var P: Prog = Core.prog
+	var c: = _card(list, Color(1.0, 0.95, 0.82, 0.97))
+	_lbl(c, tr("%s · temporada %d") % [tr(P.season_name()), P.season_number()], 20, INK, true)
+	_lbl(c, tr("Dia %d de %d · movimento ×%.2f") % [P.day_in_season(), PD.SEASON_DAYS, P.season_demand()], 14, INK_SOFT, false, true)
+	if P.chapter_done("carnaval"):
+		_lbl(c, tr("O Carnaval da Maré acontece no último dia de cada verão."), 13, GOOD, false, true)
+	var g: = _card(list)
+	_lbl(g, tr("METAS DA SEMANA"), 14, INK_SOFT, true)
+	for goal in P.week_goals:
+		var done: = bool(goal.done)
+		var rr: = _row(g, 8)
+		_expand(_lbl(rr, ("✓ " if done else "• ") + P.goal_text(goal), 15, GOOD if done else INK, true, true))
+		_lbl(rr, Core.fmt_money(int(goal.reward)), 14, GOOD if done else INK_SOFT, true)
+		if not done:
+			_progress(g, P.goal_progress(goal), float(goal.target), Color(0.85, 0.5, 0.15), 8)
+	var rk: = _card(list)
+	_lbl(rk, tr("RANKING DA COSTA (faturamento na temporada)"), 14, INK_SOFT, true, true)
+	var rank: Array = P.ranking()
+	for i in rank.size():
+		var me: = str(rank[i][0]).ends_with("(você)")
+		var rr: = _row(rk, 8)
+		_expand(_lbl(rr, "%dº  %s" % [i + 1, str(rank[i][0])], 15, Color(0.1, 0.45, 0.8) if me else INK, me, true))
+		_lbl(rr, Core.fmt_money(int(rank[i][1])), 15, INK, me)
+	_lbl(rk, tr("1º lugar: ouro · 2º: prata · 3º: bronze (com prêmio em dinheiro e fama)."), 13, INK_SOFT, false, true)
+	var md: = _card(list)
+	_lbl(md, tr("MEDALHAS: %d") % P.medals.size(), 14, INK_SOFT, true)
+	var fl: = HFlowContainer.new()
+	fl.add_theme_constant_override("h_separation", 6)
+	fl.add_theme_constant_override("v_separation", 6)
+	md.add_child(fl)
+	var cols: = {"ouro": Color(0.95, 0.72, 0.1), "prata": Color(0.62, 0.66, 0.72), "bronze": Color(0.75, 0.45, 0.2)}
+	for m in P.medals:
+		_chip(fl, "%s · T%d" % [tr(str(m.get("name", ""))), int(m.get("season", 0))], Color.WHITE, cols.get(str(m.medal), INK_SOFT))
+	if P.medals.is_empty():
+		_lbl(md, tr("Nenhuma ainda. Fature mais que os rivais até o fim da temporada."), 13, INK_SOFT, false, true)
+
+# ================================================================== v1.0: cozinha experimental
+var _kit_sel: Array = []
+
+func _app_kitchen(list: VBoxContainer) -> void:
+	var P: Prog = Core.prog
+	var ex: = _card(list, Color(1.0, 0.93, 0.9, 0.97))
+	_lbl(ex, tr("COZINHA EXPERIMENTAL"), 14, INK_SOFT, true)
+	_lbl(ex, tr("Escolha 2 ou 3 insumos e teste. Cada teste gasta 1 de cada. Acertou a combinação: prato secreto novo no cardápio!"), 14, INK, false, true)
+	var fl: = HFlowContainer.new()
+	fl.add_theme_constant_override("h_separation", 6)
+	fl.add_theme_constant_override("v_separation", 6)
+	ex.add_child(fl)
+	for id in Economy.SUPPLIES:
+		var on: = _kit_sel.has(id)
+		var idc: String = id
+		var b: = _btn(fl, "%s (%d)" % [tr(str(Economy.SUPPLIES[id].name)), int(Core.stock.get(id, 0))], func():
+			if _kit_sel.has(idc):
+				_kit_sel.erase(idc)
+			elif _kit_sel.size() < 3:
+				_kit_sel.append(idc)
+			refresh(), Color(0.8, 0.3, 0.3) if on else Color(0.6, 0.58, 0.66))
+		b.add_theme_font_size_override("font_size", 14)
+	var tr2: = _row(ex, 8)
+	_expand(_lbl(tr2, tr("Panela: %s") % (", ".join(_kit_sel.map(func(i): return tr(str(Economy.SUPPLIES[i].name)))) if not _kit_sel.is_empty() else "—"), 14, INK, true, true))
+	_btn(tr2, tr("Testar"), func():
+		P.try_recipe(_kit_sel.duplicate())
+		_kit_sel.clear()
+		refresh(), Color(0.8, 0.3, 0.3), _kit_sel.size() >= 2)
+	var rc: = _card(list)
+	_lbl(rc, tr("CADERNO DE RECEITAS"), 14, INK_SOFT, true)
+	for id in PD.RECIPES:
+		var got: = P.is_discovered(id)
+		var hint: = str(PD.RECIPES[id].hint)
+		if id == "moqueca" and not P.chapter_done("sabores") and not got:
+			hint = "Dona Lourdes sabe essa (capítulo \"Sabores da vila\")"
+		_lbl(rc, ("✓ %s" % tr(str(Economy.DISHES[id].name))) if got else ("? " + tr(hint)), 14, GOOD if got else INK, got, true)
+	var mn: = _card(list)
+	_lbl(mn, tr("CARDÁPIO DO QUIOSQUE"), 14, INK_SOFT, true)
+	_lbl(mn, tr("Desligue pratos para focar nos mais lucrativos (pelo menos 1 fica ligado)."), 13, INK_SOFT, false, true)
+	var on_n: = 0
+	for d in Economy.KIOSK_MENU:
+		if Core.dish_unlocked(d) and not bool(P.menu_off.get(d, false)):
+			on_n += 1
+	for d in Economy.KIOSK_MENU:
+		if not Core.dish_unlocked(d):
+			continue
+		var off: = bool(P.menu_off.get(d, false))
+		var rr: = _row(mn, 8)
+		_expand(_lbl(rr, tr(str(Economy.DISHES[d].name)), 15, INK_SOFT if off else INK, true))
+		var dc: String = d
+		_btn(rr, tr("Desligado") if off else tr("Ligado"), func(): P.toggle_menu(dc), Color(0.6, 0.6, 0.66) if off else GOOD, off or on_n > 1)
+	var pr: = _card(list)
+	_lbl(pr, tr("FORNECEDORES PREMIUM"), 14, INK_SOFT, true)
+	_lbl(pr, tr("Insumo premium custa %d%% a mais e os clientes avaliam melhor (até +%.2f ★ com tudo premium).") % [int(round((PD.PREMIUM_MULT - 1.0) * 100.0)), PD.PREMIUM_RATING], 13, INK_SOFT, false, true)
+	for id in Economy.SUPPLIES:
+		var on: = bool(P.premium.get(id, false))
+		var rr: = _row(pr, 8)
+		_expand(_lbl(rr, tr(str(Economy.SUPPLIES[id].name)), 15, INK, true))
+		var ic: String = id
+		_btn(rr, tr("Premium") if on else tr("Comum"), func(): P.toggle_premium(ic), Color(0.95, 0.65, 0.1) if on else Color(0.6, 0.6, 0.66))
+
+# ================================================================== v1.0: capítulos da vila
+func _app_village(list: VBoxContainer) -> void:
+	var P: Prog = Core.prog
+	_lbl(list, tr("Histórias dos moradores. Cada capítulo concluído libera um lugar ou negócio novo."), 14, INK_SOFT, false, true)
+	for c in PD.CHAPTERS:
+		var id: String = c.id
+		var open: = P.chapter_open(id)
+		var done: = P.chapter_done(id)
+		var card: = _card(list, Color(0.9, 1.0, 0.92, 0.95) if done else (Color(1, 1, 1, 0.94) if open else Color(0.92, 0.92, 0.95, 0.9)))
+		var r: = _row(card, 10)
+		_badge(r, "village", GOOD if done else (Color(0.35, 0.6, 0.35) if open else Color(0.6, 0.6, 0.66)), 40)
+		var v: = VBoxContainer.new()
+		v.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		r.add_child(v)
+		_lbl(v, tr(str(c.title)), 18, INK, true, true)
+		_lbl(v, "%s · %s" % [tr(str(c.giver)), tr("concluído") if done else (tr("passo %d de 3") % (P.chapter_step(id) + 1) if open else tr("bloqueado"))], 13, INK_SOFT, false, true)
+		if not open:
+			_lbl(card, tr("Conclua o capítulo anterior."), 13, INK_SOFT, false, true)
+			continue
+		_lbl(card, tr(str(c.story)), 14, INK, false, true)
+		for i in 3:
+			var s: Dictionary = c.steps[i]
+			var k: = P.chapter_step(id)
+			var mark: = "✓" if i < k else ("→" if i == k else "·")
+			var extra: = ""
+			if i == k and not done:
+				match str(s.kind):
+					"serve":
+						extra = "  (%d/%d)" % [int(P.chapters.get(id + "_serve", 0)), int(s.qty)]
+					"sell":
+						extra = "  (%d/%d)" % [int(P.chapters.get(id + "_sell", 0)), int(s.qty)]
+					"deliver":
+						extra = "  (%d/%d)" % [mini(int(Core.stock.get(str(s.item), 0)), int(s.qty)), int(s.qty)]
+					"recipes":
+						extra = "  (%d/%d)" % [P.discovered.size(), int(s.qty)]
+					"biz":
+						extra = "  (%d/%d)" % [P.biz.size(), int(s.qty)]
+			_lbl(card, "%s %s%s" % [mark, tr(str(s.text)), extra], 14, GOOD if i < k else (INK if i == k else INK_SOFT), i == k, true)
+		var r2: = _row(card, 8)
+		_expand(_lbl(r2, tr("Libera: %s · prêmio %s") % [tr(str(c.unlock)), Core.fmt_money(int(c.reward))], 13, GOOD if done else INK_SOFT, true, true))
+		if not done:
+			var kind: = str(c.steps[P.chapter_step(id)].kind)
+			var label: = tr("Entregar") if kind == "deliver" else (tr("Pagar") if kind == "pay" else tr("Concluir passo"))
+			_btn(r2, label, func(): P.advance_chapter(id), Color(0.35, 0.6, 0.35), P.step_met(id))
+
+
+## v1.0: nível, experiência, energia, traço, treino e folga de cada funcionário.
+func _staff_card(c: VBoxContainer, role: String) -> void:
+	var P: Prog = Core.prog
+	var sr: Dictionary = P.staff_rec(role)
+	var tr_: Dictionary = PD.STAFF_TRAITS.get(str(sr.trait), {"name": "", "desc": ""})
+	var lv: = int(sr.lvl)
+	_lbl(c, tr("Nível %d · %s: %s · salário atual %s/dia") % [lv, tr(str(tr_.name)), tr(str(tr_.desc)), Core.fmt_money(P.staff_wage(role))], 13, INK, false, true)
+	var xr: = _row(c, 6)
+	_lbl(xr, tr("XP"), 13, INK_SOFT, true)
+	if lv < PD.STAFF_XP.size():
+		_progress(xr, float(int(sr.xp) - int(PD.STAFF_XP[lv - 1])), float(int(PD.STAFF_XP[lv]) - int(PD.STAFF_XP[lv - 1])), Color(0.6, 0.4, 0.9), 8)
+	else:
+		_lbl(xr, tr("nível máximo"), 13, GOOD, true)
+	var er: = _row(c, 6)
+	_lbl(er, tr("Energia"), 13, INK_SOFT, true)
+	_progress(er, float(sr.energy), 100.0, GOOD if int(sr.energy) >= 30 else BAD, 8)
+	var br: = _row(c, 8)
+	var cost: = PD.STAFF_TRAIN_COST * lv
+	_btn(br, tr("Treinar %s") % Core.fmt_money(cost), func(): P.train(role), Color(0.6, 0.4, 0.9), Core.money >= cost and lv < PD.STAFF_XP.size())
+	_btn(br, tr("Voltar ao trabalho") if bool(sr.off) else tr("Dar folga hoje"), func(): P.toggle_off(role), Color(0.2, 0.6, 0.95))
+	if bool(sr.off):
+		_lbl(c, tr("De folga: não trabalha hoje, recupera energia e recebe meio salário."), 13, INK_SOFT, false, true)
+
+
+# ================================================================== v1.0: Grand Hotel 5★ (fase final)
+func _app_hotel(list: VBoxContainer) -> void:
+	var P: Prog = Core.prog
+	var e: Dictionary = Economy.EXPANSIONS.grand_hotel
+	var head: = _card(list, Color(1.0, 0.95, 0.8, 0.97))
+	_lbl(head, tr(str(e.name)), 20, INK, true, true)
+	_lbl(head, tr(str(e.blurb)), 14, INK_SOFT, false, true)
+	if not Core.has("grand_hotel"):
+		var st: Array = Core.expansion_state("grand_hotel")
+		var req: = _card(list)
+		_lbl(req, tr("PARA CONSTRUIR"), 14, INK_SOFT, true)
+		var checks: = [
+			[tr("Piscina e Passeios turísticos"), Core.has("pool") and Core.has("passeios")],
+			[tr("★ %.1f de avaliação") % float(e.stars), Core.stars() + 0.001 >= float(e.stars)],
+			[tr("Fama \"%s\"") % tr(P.fame_name(int(e.fame))), P.fame_level >= int(e.fame)],
+			[tr("Capítulo \"%s\" concluído") % tr(P.chapter_title(str(e.chapter))), P.chapter_done(str(e.chapter))],
+			[tr("%s em caixa") % Core.fmt_money(int(e.cost)), Core.money >= int(e.cost)],
+		]
+		for c in checks:
+			_lbl(req, ("✓ " if c[1] else "○ ") + str(c[0]), 15, GOOD if c[1] else INK, c[1], true)
+		var r: = _row(req, 8)
+		_expand(_lbl(r, Core.fmt_money(int(e.cost)), 20, INK, true))
+		_btn(r, tr("Construir o hotel"), func(): Core.buy_expansion("grand_hotel"), Color(0.75, 0.6, 0.2), st[0] == "ready")
+		return
+	var occ: = P.hotel_occupancy()
+	var c: = _card(list)
+	_lbl(c, tr("PREVISÃO PARA ESTA NOITE"), 14, INK_SOFT, true)
+	var rr: = _row(c, 8)
+	_lbl(rr, tr("Ocupação"), 15, INK, true)
+	_progress(rr, occ, 1.0, Color(0.75, 0.6, 0.2), 12)
+	_lbl(rr, "%d%%" % int(occ * 100.0), 15, INK, true)
+	_lbl(c, tr("Diária das suítes: %s · %d suítes") % [Core.fmt_money(P.hotel_rate()), PD.HOTEL_ROOMS], 14, INK_SOFT, false, true)
+	if not P.hotel_last.is_empty():
+		var l: = _card(list)
+		_lbl(l, tr("ÚLTIMA NOITE"), 14, INK_SOFT, true)
+		_lbl(l, tr("%d suítes ocupadas · diárias %s") % [int(P.hotel_last.rooms), Core.fmt_money(int(P.hotel_last.rev))], 15, INK, false, true)
+		_lbl(l, tr("Restaurante e bar: %s") % Core.fmt_money(int(P.hotel_last.dining)), 15, INK, false, true)
+		_lbl(l, tr("Equipe do hotel: %s") % Core.fmt_money(- int(P.hotel_last.staff), true), 15, BAD, false, true)
+		var net: = int(P.hotel_last.rev) + int(P.hotel_last.dining) - int(P.hotel_last.staff)
+		_lbl(l, tr("Lucro: %s") % Core.fmt_money(net, true), 17, GOOD if net >= 0 else BAD, true)
+	var am: = _card(list)
+	_lbl(am, tr("ESTRUTURA"), 14, INK_SOFT, true)
+	var fl: = HFlowContainer.new()
+	fl.add_theme_constant_override("h_separation", 6)
+	fl.add_theme_constant_override("v_separation", 6)
+	am.add_child(fl)
+	for a in PD.HOTEL_AMENITIES:
+		_chip(fl, tr(str(a)), Color.WHITE, GOOD)
+	_lbl(list, tr("Dica: melhore o hotel no app Evolução (área Grand Hotel 5★). Ocupação sobe com estrelas, fama, verão e festas."), 13, INK_SOFT, false, true)

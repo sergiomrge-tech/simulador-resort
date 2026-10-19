@@ -132,8 +132,8 @@ func _party() -> void :
 				var lp: = fp + Vector3(cos(a), 0, sin(a)) * 2.6
 				lp.y = _ground(lp.x, lp.z)
 				world.call("_bench", lp, -a + PI * 0.5, party_root)
-		"show_dj":
-			title = "DJ MARÉ"
+		"show_dj", "carnaval":
+			title = "DJ MARÉ" if Core.day_event == "show_dj" else "CARNAVAL DA MARÉ"
 			var dp: = c + Vector3(0, 0, 0)
 			dp.y = _ground(dp.x, dp.z)
 			Real.place(party_root, "g:dj_booth", dp, -1.0, 0.0, Color.WHITE, 0.0, false)
@@ -145,8 +145,8 @@ func _party() -> void :
 				party_root.add_child(l)
 				_dj_lights.append(l)
 	_party_crowd(c)
-	# faixa com o nome da festa (só se os preparativos/decoração foram pagos)
-	if deco:
+	# faixa com o nome da festa (só se os preparativos/decoração foram pagos; o carnaval sempre tem)
+	if deco or Core.day_event == "carnaval":
 		var bp: = c + Vector3(0, 0, -3.4)
 		bp.y = _ground(bp.x, bp.z)
 		if Real.place(party_root, "g:party_banner", bp, -1.0, 0.0, Color.WHITE, 0.0, false):
@@ -199,7 +199,9 @@ func _face(p: Vector3, target: Vector3) -> float:
 func _party_crowd(c: Vector3) -> void :
 	var n: = 10 if Quality.hd else 5
 	match Core.day_event:
-		"show_dj":
+		"show_dj", "carnaval":
+			if Core.day_event == "carnaval":
+				n = n * 2   # bloco de carnaval: o dobro de foliões
 			for k in n:
 				var p: = c + Vector3(_rng.randf_range(-3.6, 3.6), 0, _rng.randf_range(2.6, 6.0))
 				p.y = _ground(p.x, p.z)

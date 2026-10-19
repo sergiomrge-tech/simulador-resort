@@ -111,7 +111,7 @@ func _event_sounds() -> void :
 	# música da festa: forró na junina, batida eletrônica no show do DJ, forró mais baixo na quermesse; só das 16h às 23h
 	var kind: = ""
 	if Core.is_party() and Core.minutes >= 16.0 * 60.0 and Core.minutes < 23.0 * 60.0:
-		kind = "dj_loop" if Core.day_event == "show_dj" else "forro_loop"
+		kind = "dj_loop" if Core.day_event in ["show_dj", "carnaval"] else "forro_loop"
 	if kind != _party_kind:
 		_party_kind = kind
 		if kind == "":

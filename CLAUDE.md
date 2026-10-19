@@ -134,3 +134,12 @@ Base de trabalho: v0.6.5 recuperada; versões atuais em `project.godot` / `expor
 - O carregador do patch grava `diagnostico.txt` (placa, API, renderizador, FPS) na pasta do jogo.
 - Política de instalador: patches pequenos para quem já tem o jogo; instalador completo consolidado a cada ~5 versões (próximo na 0.9.7 ou quando pedirem).
 - Pacote cumulativo: `bash tools/build_patch.sh 477454d` (base 0.9.2) gera um patch único com tudo; renomeie para `Atualizar_MareAltaResort_0.9.2_para_X_completo.exe` e deixe só ele em `patches/`.
+
+## 🏆 Sala da Evolução — v1.0 (fama, negócios, temporadas, receitas, capítulos, Hotel 5★)
+- Lógica em `scripts/progression.gd` (nó `Core.prog`, salvo em `"prog"` no save v6); dados em `scripts/prog_data.gd` (classe `PD`). Ganchos no Core: `on_sale`, `on_income` (via `book`), `on_vip`, `on_tour`, `on_new_day`, `tick`.
+- Efeitos da árvore: `Core.prog.eff("ramo")`; equipe: `staff_eff(cargo)` (0 = folga) e `staff_wage(cargo)`. Nunca leia `Economy.STAFF[x].wage` direto para pagar.
+- Pratos secretos (`"secret": true` em `Economy.DISHES`) só entram no cardápio depois de descobertos (`prog.is_discovered`). Cardápio do quiosque respeita `prog.menu_off`.
+- Negócios no mapa: `scripts/biz_world.gd` (modelos `g:biz_*`), minijogo `scripts/minigame.gd` (pausa a árvore; 3 rodadas). Prainha do Oeste: barreira em x=-37 até o capítulo "prainha".
+- Hotel 5★: expansão `grand_hotel` (fama 8 + capítulo "carnaval"), `scripts/hotel_world.gd`, terraço elevado a 1,2 m (piscina x -35..-17, z 31..41, água 1,05). O terreno x -47..4, z 23..75 é reservado (sem palmeiras/vegetação) em `VEG_EXCL` e `_palms`. Renda à noite: `prog._hotel_night()`.
+- **Erro (gen_*.py):** `box()` do `gen_code_props.py` aplica a localização na malha (origem fica em 0,0,0); `rotation_euler` depois gira em volta da origem do mundo e o objeto "voa" (toldo do food truck no chão, cartões-postais espalhados). **Regra:** para caixa girada use `rbox(size, loc, mat, rot)` (gen_business/gen_hotel). `from gen_code_props import *` não traz nomes com `_` (importe `_mesh_obj`, `_torus`... explicitamente).
+- Depuração: `--v1` libera tudo (expansões, capítulos, negócios, fama máxima). Ex.: `XTRA="--v1" Q=1 bash /tmp/claude-0/sub/dbg.sh h "-14,9,10,200,-12,11"`.

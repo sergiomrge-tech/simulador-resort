@@ -65,6 +65,9 @@ func career_test() -> void :
 	Core.ratings = [5.0, 5.0, 5.0]
 	Core.money = 20000
 	for id in Economy.EXPANSION_ORDER:
+		if id == "grand_hotel":
+			check(Core.expansion_state(id)[0] == "locked", "hotel 5★ exige fama e capítulo")
+			continue
 		if id == "pool":
 			check(Core.expansion_state("pool")[0] == "locked", "piscina exige 2 bangalôs")
 			check(Core.build_bungalow(), "segundo bangalô construído")
@@ -248,6 +251,70 @@ func mechanics_test() -> void :
 	Core.money = money0
 	Core.stock = stock0
 
+## v1.0: fama, árvore, negócios, minijogo, equipe, receitas, metas, capítulos, hotel 5★ e save.
+func v1_test() -> void :
+	var P: Prog = Core.prog
+	var money0: = Core.money
+	var att0: = bool(Core.staff.get("atendente", false))
+	Core.money = 100000
+	var f0: = P.fame_xp
+	P.on_sale("suco", "kiosk")
+	check(P.fame_xp > f0, "venda dá fama")
+	check(P.buy_tree("kiosk_speed") and P.lvl("kiosk_speed") == 1, "comprou melhoria Mãos rápidas")
+	check(P.eff("kiosk_speed") > 0.1, "efeito da melhoria: %.2f" % P.eff("kiosk_speed"))
+	P.add_fame(800)
+	check(P.fame_level >= 5, "fama sobe de nível: %d" % P.fame_level)
+	check(P.biz_state("sorveteria")[0] == "ready", "sorveteria disponível")
+	check(P.buy_biz("sorveteria"), "comprou a sorveteria")
+	await frames(2)
+	var bw: Node = main.world.get_node_or_null("BizWorld")
+	check(bw != null and bw.built.has("sorveteria"), "sorveteria apareceu no mapa")
+	Core.minutes = 12 * 60
+	check(P.can_play("sorveteria"), "minijogo disponível ao meio-dia")
+	var m1: = Core.money
+	P.play_result("sorveteria", 3)
+	check(Core.money > m1 and not P.can_play("sorveteria"), "minijogo pagou e só volta na próxima hora")
+	Core.stock["tapioca"] = 3
+	Core.stock["queijo"] = 3
+	check(P.try_recipe(["queijo", "tapioca"]) == "tapioca" and Core.dish_unlocked("tapioca"), "descobriu a tapioca")
+	check("tapioca" in Core.kiosk_menu(), "tapioca no cardápio")
+	P.toggle_menu("tapioca")
+	check(not ("tapioca" in Core.kiosk_menu()), "prato desligado sai do cardápio")
+	P.toggle_menu("tapioca")
+	Core.staff["atendente"] = true
+	var w0: = P.staff_wage("atendente")
+	P.train("atendente")
+	P.train("atendente")
+	check(int(P.staff_rec("atendente").lvl) >= 2 and P.staff_wage("atendente") >= w0, "atendente treinado subiu de nível")
+	P.toggle_off("atendente")
+	check(P.staff_eff("atendente") == 0.0, "atendente de folga não trabalha")
+	P.toggle_off("atendente")
+	check(P.week_goals.size() == 3, "3 metas da semana")
+	for c in PD.CHAPTERS:
+		P.chapters[str(c.id)] = 3
+	P.chapters_changed.emit()
+	await frames(2)
+	check(bw.prainha == null, "barreira da Prainha do Oeste removida")
+	P.add_fame(4000)
+	Core.ratings = [5.0, 5.0, 5.0, 5.0]
+	check(Core.expansion_state("grand_hotel")[0] == "ready", "hotel 5★ liberado: %s" % str(Core.expansion_state("grand_hotel")))
+	check(Core.buy_expansion("grand_hotel"), "construiu o Grand Hotel 5★")
+	await frames(3)
+	var hw: Node = main.world.get_node_or_null("HotelWorld")
+	check(hw != null and hw.built != null, "hotel apareceu no mapa")
+	var m2: = Core.money
+	P._hotel_night()
+	check(Core.money > m2 and int(P.hotel_last.get("rooms", 0)) > 0, "hotel rendeu à noite: %s" % str(P.hotel_last))
+	Core.save_game()
+	var fx: = P.fame_xp
+	P.reset()
+	check(Core.load_game() and P.fame_xp == fx and P.owns("sorveteria") and P.is_discovered("tapioca"), "save v6 guardou a evolução")
+	# volta ao estado anterior para o resto do teste (sem receita secreta nem melhorias que mudam os tempos)
+	P.discovered.clear()
+	P.tree.clear()
+	Core.staff["atendente"] = att0
+	Core.money = money0
+
 func run(m) -> void :
 	main = m
 	var watchdog: = get_tree().create_timer(230.0)
@@ -390,6 +457,7 @@ func run(m) -> void :
 	Core.prep_active = false
 	Core.supply_mult = {}
 	mechanics_test()
+	await v1_test()
 	Core.set_weather("sun")
 	Core.stock = Economy.START_STOCK.duplicate()
 	Core.stock["gelo"] = 18

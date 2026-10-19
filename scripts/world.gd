@@ -72,6 +72,7 @@ func _ready() -> void :
 	var reef: Node3D = load("res://scripts/reef.gd").new()   # sem class_name global: o patch não atualiza o cache de classes
 	add_child(reef)
 	reef.setup(self)
+	call_deferred("_setup_v1")
 	_weather_fx()
 	_mountains()
 	_build_lots()
@@ -1254,7 +1255,7 @@ func _shore_details() -> void :
 
 func _palms() -> void :
 	var excl: = [Rect2(-6, 12, 12, 8), Rect2(-10, -4, 20, 16), Rect2(-25.5, -12.5, 15, 9), Rect2(8.5, -18, 9, 10), 
-		Rect2(-2, 18, 4, 30), Rect2(-12, -6, 3, 34), Rect2(-31, -26, 70, 7), Rect2(1, 25, 100, 10), Rect2(34, 16, 70, 40), Rect2(35, -16, 8, 42)]
+		Rect2(-2, 18, 4, 30), Rect2(-12, -6, 3, 34), Rect2(-31, -26, 70, 7), Rect2(1, 25, 100, 10), Rect2(34, 16, 70, 40), Rect2(35, -16, 8, 42), Rect2(-47, 23, 51, 52)]
 	var rng: = RandomNumberGenerator.new()
 	rng.seed = 42
 	var placed: = []
@@ -1463,7 +1464,7 @@ const VEG_EXCL: = [Rect2(-2.0, 16.0, 40.0, 30.0), Rect2(-3.0, 33.0, 113.0, 44.0)
 	Rect2(-1.8, 19, 3.6, 28), Rect2(-11.8, -5.8, 2.6, 33), Rect2(-24.8, -5.8, 15.2, 2.6), Rect2(-11.8, 24.6, 12.2, 2.8), 
 	Rect2(8.4, -17.6, 9.2, 9.2), Rect2(8.0, -11.0, 4.2, 9.0), Rect2(-1.2, -17, 2.4, 15), Rect2(1.0, 38.5, 5.5, 3), 
 	Rect2(1.0, 25.8, 98, 8.4), Rect2(41.5, 16.5, 56, 9.2), Rect2(39, 34, 58, 9.5), Rect2(65, 34, 20, 20), Rect2(36.4, -16, 3.2, 43), 
-	Rect2(33, -17.5, 10, 9), Rect2(56, -24, 12, 9)]
+	Rect2(33, -17.5, 10, 9), Rect2(56, -24, 12, 9), Rect2(-47, 23, 51, 52)]   # v1.0: terreno do Grand Hotel
 
 func _veg_free(p: Vector2, margin: = 0.5) -> bool:
 	for r in VEG_EXCL:
@@ -2203,3 +2204,15 @@ func _reception_details() -> void :
 		B.sphere(self, 0.06, Vector3(-0.6, y0 + 1.14, 15.5), brass, Vector3(1, 0.7, 1))
 	B.model(self, "potted_plant_01", Vector3(-1.9, 0.02, 20.3), 0.0, 1.1)
 	B.model(self, "potted_plant_01", Vector3(1.9, 0.02, 20.3), 0.0, 1.1)
+
+
+## v1.0: negócios novos (Core.prog) e o Grand Hotel 5★; criados depois da vila para ter VM e block_rects prontos.
+func _setup_v1() -> void:
+	var bw: Node3D = load("res://scripts/biz_world.gd").new()
+	bw.name = "BizWorld"
+	add_child(bw)
+	bw.setup(self)
+	var hw: Node3D = load("res://scripts/hotel_world.gd").new()
+	hw.name = "HotelWorld"
+	add_child(hw)
+	hw.setup(self)

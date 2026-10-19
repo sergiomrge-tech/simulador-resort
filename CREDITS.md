@@ -128,3 +128,5 @@ porch_column, bamboo_pole, seagull_perch/seagull_fly (refeitas), coxinha (refeit
 thunder, rain_loop, wind_loop, forro_loop, dj_loop.
 - v0.9.4 (Blender, próprios): balcony_rail, tree_amendoeira_1/2/3.
 - v0.9.5 (Blender, próprios): trellis_planter, towel_folded, flipflops, pool_float, rope_coil, cloth_shirt, cloth_towel, ac_unit, tv_antenna, straw, popcorn_cart, newsstand, cooler_box, coconut_cart, bottle_cachaca/rum/green/wine.
+- v1.0 (Blender, próprios): negócios — biz_gelato, biz_booth, biz_kayak_rack, biz_board_rack, biz_canopy, biz_food_truck, biz_souvenir, biz_barrier (`tools/gen_business.py`); Grand Hotel 5★ — hotel_tower, hotel_restaurant, hotel_gym, gym_treadmill, gym_bike, gym_bench, gym_dumbbells, water_slide (`tools/gen_hotel.py`).
+- v1.0 ícones novos do game-icons.net (CC BY 3.0): shop, cooking-pot, village (Delapouite), trophy, laurel-crown (Lorc).

@@ -74,8 +74,11 @@ func snap() -> void:
 		data.fotos.pop_front()
 	get_tree().call_group("audio", "sfx", "click", -4.0, 0.6)
 	var paid: = false
+	Core.prog.on_photo("")
 	for t in themes:
+		Core.prog.chapter_photo[t] = true
 		if not data.temas.has(t):
+			Core.prog.add_fame(PD.XP.photo)
 			data.temas[t] = Core.day
 			Core.book(int(THEMES[t][1]), tr("Foto para o álbum: %s") % tr(str(THEMES[t][0])), "missao", false)
 			Core.toast.emit(tr("Foto nova no álbum: %s! +%s") % [tr(str(THEMES[t][0])), Core.fmt_money(int(THEMES[t][1]))], "good")

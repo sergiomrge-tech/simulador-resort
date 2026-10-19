@@ -104,6 +104,14 @@ func _ready() -> void :
 		Core.new_game()
 	if args.has("quality"):
 		Quality.preset = clampi(int(args.quality), 0, 3)
+	if args.has("v1"):   # depuração v1.0: --v1 libera tudo (expansões, negócios, capítulos, hotel 5★)
+		for id in Economy.EXPANSION_ORDER:
+			Core.unlocked[id] = true
+		for c in PD.CHAPTERS:
+			Core.prog.chapters[str(c.id)] = 3
+		for id in PD.BUSINESSES:
+			Core.prog.biz[id] = {"lvl": 1, "games_hour": -1, "today": 0}
+		Core.prog.add_fame(3300)
 	audio = Node.new()
 	audio.set_script(load("res://scripts/audio.gd"))
 	audio.process_mode = Node.PROCESS_MODE_ALWAYS

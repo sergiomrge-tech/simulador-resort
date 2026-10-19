@@ -61,10 +61,16 @@ const EXPANSIONS: = {
 		"name": "Passeios turísticos", "cost": 1800, "req": ["pousada"], "stars": 3.5, "icon": "banho", "area": "",
 		"blurb": "Mergulho, barco e trilha ao farol. Com um guia contratado, os passeios rendem sozinhos.",
 	},
+	# v1.0: fase final — o resort vira hotel 5 estrelas (scripts/hotel_world.gd)
+	"grand_hotel": {
+		"name": "Grand Hotel Maré Alta 5★", "cost": 30000, "req": ["pool", "passeios"], "stars": 4.3, "fame": 8, "chapter": "carnaval",
+		"icon": "bangalo", "area": "",
+		"blurb": "A fase final: hotel de 5 andares com 32 suítes, restaurante, academia, spa, piscina com tobogã, bar molhado e kids club.",
+	},
 }
-const EXPANSION_ORDER: = ["kiosk_tables", "drinks", "neon", "grill", "bar", "pousada", "pool", "passeios"]
+const EXPANSION_ORDER: = ["kiosk_tables", "drinks", "neon", "grill", "bar", "pousada", "pool", "passeios", "grand_hotel"]
 ## Pratos liberados por expansão (o resto já vem no quiosque inicial).
-const DISH_UNLOCK: = {"caipirinha": "drinks", "petiscos": "grill"}
+const DISH_UNLOCK: = {"caipirinha": "drinks", "petiscos": "grill", "batida": "drinks"}
 ## Bônus de nota da estadia quando a piscina existe.
 const POOL_RATING: = 0.2
 
@@ -171,6 +177,11 @@ const SUPPLIES: = {
 	"gelo": {"name": "Gelo", "cost": 1}, 
 	"peixe": {"name": "Peixe", "cost": 7}, 
 	"pao": {"name": "Pão", "cost": 2}, 
+	# v1.0: insumos das receitas secretas (Cozinha experimental)
+	"tapioca": {"name": "Goma de tapioca", "cost": 4}, 
+	"queijo": {"name": "Queijo coalho", "cost": 5}, 
+	"camarao": {"name": "Camarão", "cost": 9}, 
+	"acai": {"name": "Polpa de açaí", "cost": 6}, 
 }
 
 
@@ -178,6 +189,7 @@ const SUPPLIES: = {
 ## Despensa de abertura do quiosque (presente, não entra no caixa): dá para a manhã do dia 1.
 const START_STOCK: = {
 	"coco": 12, "frutas": 12, "cachaca": 0, "gelo": 18, "peixe": 0, "pao": 0,
+	"tapioca": 0, "queijo": 0, "camarao": 0, "acai": 0,
 }
 
 
@@ -190,6 +202,12 @@ const DISHES: = {
 	"caipirinha": {"name": "Caipirinha", "price": 22, "uses": {"cachaca": 1, "frutas": 1, "gelo": 1}}, 
 	"petiscos": {"name": "Petiscos", "price": 26, "uses": {"peixe": 1, "pao": 1, "frutas": 1}}, 
 	"suco": {"name": "Suco da fruta", "price": 14, "uses": {"frutas": 2, "gelo": 1}}, 
+	# v1.0: pratos secretos (descobertos na Cozinha experimental, PD.RECIPES)
+	"tapioca": {"name": "Tapioca de queijo", "price": 18, "uses": {"tapioca": 1, "queijo": 1}, "secret": true}, 
+	"pastel": {"name": "Pastel de camarão", "price": 24, "uses": {"camarao": 1, "pao": 1}, "secret": true}, 
+	"acai": {"name": "Açaí na tigela", "price": 22, "uses": {"acai": 1, "frutas": 1, "gelo": 1}, "secret": true}, 
+	"batida": {"name": "Batida de coco", "price": 20, "uses": {"coco": 1, "cachaca": 1, "gelo": 1}, "secret": true}, 
+	"moqueca": {"name": "Moqueca da casa", "price": 42, "uses": {"peixe": 1, "camarao": 1, "coco": 1}, "secret": true}, 
 }
 ## Preparo no balcão (v0.7.5): etapas por prato [rótulo, segundos segurando E]. Cada toque em E adianta um pedaço.
 const DISH_STAGES: = {
@@ -197,6 +215,11 @@ const DISH_STAGES: = {
 	"suco": [["Espremer as frutas", 1.0], ["Misturar com gelo", 0.8]],
 	"caipirinha": [["Amassar o limão", 0.8], ["Pôr cachaça e gelo", 0.8], ["Agitar a coqueteleira", 1.0]],
 	"petiscos": [["Fritar o peixe", 1.4], ["Montar o prato", 0.9]],
+	"tapioca": [["Espalhar a goma na chapa", 0.9], ["Derreter o queijo", 0.8]],
+	"pastel": [["Rechear a massa", 0.8], ["Fritar o pastel", 1.2]],
+	"acai": [["Bater o açaí", 1.0], ["Montar a tigela", 0.8]],
+	"batida": [["Bater coco com cachaça", 1.0], ["Servir no gelo", 0.6]],
+	"moqueca": [["Refogar o peixe", 1.2], ["Cozinhar no leite de coco", 1.4], ["Servir na panela de barro", 0.8]],
 }
 const TAP_BURST: = 0.16
 ## Preço ajustável por prato (v0.7.5): multiplicadores, demanda de clientes para cada nível e estoque que estraga.
@@ -215,6 +238,7 @@ const DAY_EVENTS: = {
 	"quermesse": {"name": "Quermesse da praia", "blurb": "Barraquinhas e música: mais clientes e pedidos maiores. Decoração dá ainda mais movimento.", "party": true},
 	"junina": {"name": "Festa junina", "blurb": "Fogueira, quadrilha e petiscos. A galera pede mais comida. Decoração atrai ainda mais gente.", "party": true},
 	"show_dj": {"name": "Show do DJ Maré", "blurb": "O DJ Maré toca na praia e passa no quiosque. Clientes de sobra e caipirinha em alta.", "party": true},
+	"carnaval": {"name": "Carnaval da Maré", "blurb": "Bloco na areia à tarde e à noite! O dobro de clientes, bebidas em alta. Libere no capítulo do prefeito.", "party": true},
 }
 ## Probabilidade de cada evento aleatório (o restante do dia fica sem evento).
 const EVENT_ODDS: = [["calor", 0.22], ["lua", 0.12], ["mare", 0.10], ["tempestade", 0.08]]
@@ -228,6 +252,7 @@ const STORM_PREP_COST: = 80
 ## Fração do estoque perdida numa tempestade sem preparativos.
 const STORM_LOSS: = 0.35
 const EVENT_DEMAND: = {"mare": 0.8, "tempestade": 0.35}
+const CARNAVAL_DEMAND: = 2.0
 ## Fração dos clientes que chegam da praia (normal 0.6).
 const BEACH_SHARE: = {"mare": 0.15, "tempestade": 0.3}
 
@@ -243,7 +268,7 @@ const TOURS: = {
 	"barco": {"name": "Passeio de barco", "at": 13.5 * 60.0, "price": 70, "cost": 45, "seats": 8, "sea": true},
 	"farol": {"name": "Trilha ao farol", "at": 16.0 * 60.0, "price": 35, "cost": 10, "seats": 5, "sea": false},
 }
-const KIOSK_MENU: = ["coco_gelado", "suco", "caipirinha", "petiscos"]
+const KIOSK_MENU: = ["coco_gelado", "suco", "caipirinha", "petiscos", "tapioca", "pastel", "acai", "batida", "moqueca"]
 const BAR_MENU: = ["coco_gelado", "caipirinha", "petiscos", "suco"]
 const PACK: = 6
 
@@ -313,6 +338,7 @@ const CAT_NAME: = {
 	"missao": "Missões", 
 	"multa": "Multas", 
 	"passeio": "Passeios", 
+	"negocio": "Negócios", 
 	"outro": "Outros", 
 }
 
