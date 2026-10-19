@@ -32,7 +32,7 @@ jobs:
       - name: Instalar dependências de renderização e instalador NSIS
         run: |
           sudo apt-get update
-          sudo apt-get install -y --no-install-recommends xvfb xauth nsis unzip zip libgl1-mesa-dri libglu1-mesa0 libxi6 libxrandr2 libxcursor1 libxinerama1 libasound2t64 libpulse0
+          sudo apt-get install -y --no-install-recommends xvfb xauth nsis unzip zip libgl1-mesa-dri libglu1-mesa libxi6 libxrandr2 libxcursor1 libxinerama1 libasound2t64 libpulse0
           python -m pip install --upgrade pip
           python -m pip install 'bpy==4.5.14' pillow numpy
 
