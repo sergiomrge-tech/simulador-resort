@@ -71,6 +71,9 @@ jobs:
             echo "Assets CC0 incompletos após quatro tentativas"; exit 1
           fi
           test -s assets/models/qnat/Bush_Common.gltf
+          test -s assets/models/ubc/Superhero_Male_FullBody.gltf
+          test -s assets/models/ubc/Superhero_Female_FullBody.gltf
+          test -s assets/models/ubc/Hair_Buzzed.gltf
           for model in coconut_green coconut_open pineapple orange frappe cup_plastic glass_juice cocktail campfire_logs beach_flag beach_spade boat_hull; do
             test -s "assets/models/gen/${model}.glb"
           done
@@ -81,20 +84,29 @@ jobs:
           timeout 2400 "$GODOT" --headless --path . --import 2>&1 | tee import-1.log
           python tools/vram_textures.py 2>&1 | tee vram.log
           timeout 2400 "$GODOT" --headless --path . --import 2>&1 | tee import-2.log
+          python - <<'PY'
+          import pathlib, re
+          for stem in ('Superhero_Male_FullBody','Superhero_Female_FullBody','Hair_Buzzed'):
+              cfg = pathlib.Path('assets/models/ubc') / (stem + '.gltf.import')
+              txt = cfg.read_text(encoding='utf-8')
+              match = re.search(r'^path="res://([^"]+)"', txt, re.M)
+              assert match and pathlib.Path(match.group(1)).is_file(), f'Falha ao importar UBC: {stem}'
+          print('UBC_IMPORTED PASS')
+          PY
 
       - name: Testar assentos do quiosque e ciclo completo do jogo
         run: |
           set -euo pipefail
           mkdir -p shots
-          timeout 240 xvfb-run -a -s '-screen 0 1280x720x24' "$GODOT" --path . --rendering-driver opengl3 --rendering-method gl_compatibility -- --loop-test --kiosk-test --quality=0 2>&1 | tee shots/kiosk-ci.log
+          timeout 240 xvfb-run -a -s '-screen 0 1280x720x24' "$GODOT" --audio-driver Dummy --path . --rendering-driver opengl3 --rendering-method gl_compatibility -- --loop-test --kiosk-test --quality=0 2>&1 | tee shots/kiosk-ci.log
           grep -q 'KIOSK_TEST PASS' shots/kiosk-ci.log
-          timeout 380 xvfb-run -a -s '-screen 0 1280x720x24' "$GODOT" --path . --rendering-driver opengl3 --rendering-method gl_compatibility -- --loop-test --quality=0 2>&1 | tee shots/loop-ci.log
+          timeout 380 xvfb-run -a -s '-screen 0 1280x720x24' "$GODOT" --audio-driver Dummy --path . --rendering-driver opengl3 --rendering-method gl_compatibility -- --loop-test --quality=0 2>&1 | tee shots/loop-ci.log
           grep -q 'LOOP_TEST PASS' shots/loop-ci.log
 
       - name: Tirar screenshots e procurar erros de recursos
         run: |
           set -euo pipefail
-          timeout 600 xvfb-run -a -s '-screen 0 1280x720x24' "$GODOT" --path . --rendering-driver opengl3 --rendering-method gl_compatibility -- --shot=ci-quiosque --cam=38,3,-2,0,-28,12 --v1 --noroof --quality=1 --primcheck --floatcheck --out="$PWD/shots/ci-quiosque.png" > shots/visual-ci.log 2>&1
+          timeout 600 xvfb-run -a -s '-screen 0 1280x720x24' "$GODOT" --audio-driver Dummy --path . --rendering-driver opengl3 --rendering-method gl_compatibility -- --shot=ci-quiosque --cam=38,3,-2,0,-28,12 --v1 --noroof --quality=1 --primcheck --floatcheck --out="$PWD/shots/ci-quiosque.png" > shots/visual-ci.log 2>&1
           test -s shots/ci-quiosque.png
           if grep -Ei 'SCRIPT ERROR|REAL_MISSING|resource file not found' shots/visual-ci.log; then
             echo "Falha: recursos ou scripts ausentes"; exit 1
