@@ -576,10 +576,7 @@ func _coconut_cup(parent: Node, pos: Vector3) -> Node3D:
 	var n: = Node3D.new()
 	n.position = pos
 	parent.add_child(n)
-	Real.place(n, "k:coconut-half", Vector3.ZERO, 0.15)
-	if Real.place(n, "g:straw", Vector3(0.0, 0.05, 0.0), -1.0, 0.6, Color.WHITE, 0.0, false) == null:
-		var straw: = B.cyl(n, 0.012, 0.012, 0.22, Vector3(0.03, 0.2, 0), B.flat(Color(0.85, 0.2, 0.16), 0.4), 8)
-		straw.rotation.z = -0.55
+	Real.place(n, "g:coconut_open", Vector3.ZERO, 0.29)   # coco verde aberto, já com o canudo (tools/gen_food.py)
 	return n
 
 func _petisco_plate(parent: Node, pos: Vector3) -> Node3D:

@@ -231,11 +231,15 @@ static func sand_castle(parent: Node, p: Vector3) -> void :
 	var h: = Real.place(parent, "g:sandcastle", p, 1.1, 0.4)
 	if h == null:
 		return
-	var fl: = Real.place(parent, "k:flag-pennant", p + Vector3(0.0, 1.05, 0.0), 0.35, 0.0, Color(1.0, 0.4, 0.35))
+	var fl: = Real.place(parent, "g:beach_flag", p + Vector3(0.0, 1.0, 0.0), 0.35, 0.0)
+	if fl:
+		Real.tint_named(fl, Color(1.0, 0.35, 0.3))
 	Real.place(parent, "wooden_bucket_02", p + Vector3(0.85, 0.0, 0.25), 0.2, 0.5, Color(1.0, 0.85, 0.25))
-	var sh: = Real.place(parent, "k:tool-paddle", p + Vector3(0.7, 0.03, -0.45), 0.0, 0.6, Color(0.5, 0.8, 1.0), 0.4)
+	# pazinha de plástico fincada na areia, inclinada (tools/gen_food.py)
+	var sh: = Real.place(parent, "g:beach_spade", p + Vector3(0.7, -0.06, -0.45), 0.38, 0.6)
 	if sh:
-		sh.rotation.x = PI * 0.5 - 0.05
+		Real.tint_named(sh, Color(0.3, 0.7, 1.0))
+		sh.rotation.z = 0.35
 
 static func starfish(parent: Node, p: Vector3, col: = Color(1.0, 0.5, 0.35)) -> void :
 	if Real.place(parent, "g:starfish", p, -1.0, p.x * 3.0, col, 0.0, true) == null:

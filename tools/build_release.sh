@@ -40,10 +40,14 @@ SZ=$(( $(stat -c %s build/win/MareAltaResort.pck) + $(stat -c %s build/win/MareA
 if [ "${1:-}" != "--sem-smoke" ]; then
   echo "-- 5/6 smoke test (vila): nenhum 'not found' no log"
   rm -f shots/smoke.png
-  timeout -k 5 400 xvfb-run -a -s "-screen 0 1280x720x24" "$GODOT" --path . --rendering-driver vulkan --rendering-method mobile \
-    --resolution 1280x720 -- --shot=vila > shots/smoke.log 2>&1 || true
-  n=$(grep -c "not found\|SCRIPT ERROR" shots/smoke.log || true)
-  [ "$n" = 0 ] || { echo "Abortado: $n erros no log (shots/smoke.log)"; grep "not found\|SCRIPT ERROR" shots/smoke.log | sort -u | head; exit 1; }
+  # v1.0.1: testa o PACOTE EXPORTADO (--main-pack), não o projeto: foi assim que a pasta qnat sumiu do instalador sem ninguém ver.
+  # --v1 constrói tudo (negócios, hotel), então qualquer modelo faltando aparece como REAL_MISSING.
+  timeout -k 5 600 xvfb-run -a -s "-screen 0 1280x720x24" "$GODOT" --main-pack build/win/MareAltaResort.pck --rendering-driver opengl3 \
+    --rendering-method gl_compatibility --resolution 1280x720 -- --shot=smoke --cam=60,4,20,180,-10,12 --quality=1 --v1 \
+    --out="$PWD/shots/smoke.png" > shots/smoke.log 2>&1 || true
+  [ -f shots/smoke.png ] || { echo "Abortado: o pacote exportado não chegou a tirar o print (shots/smoke.log)"; exit 1; }
+  n=$(grep -c "not found\|SCRIPT ERROR\|REAL_MISSING" shots/smoke.log || true)
+  [ "$n" = 0 ] || { echo "Abortado: $n erros no log (shots/smoke.log)"; grep "not found\|SCRIPT ERROR\|REAL_MISSING" shots/smoke.log | sort -u | head; exit 1; }
 fi
 
 echo "-- 6/6 instalador"

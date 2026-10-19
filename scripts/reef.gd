@@ -25,7 +25,11 @@ func setup(w: Node3D) -> void :
 			p.y = float(world.call("_height", p.x, p.z)) - 0.02
 			var key: String = CORALS[rng.randi() % CORALS.size()]
 			var tint: = Color.from_hsv(rng.randf(), rng.randf_range(0.0, 0.15), rng.randf_range(0.9, 1.0))
-			Real.place(self, key, p, -rng.randf_range(0.9, 1.7), rng.randf() * TAU, tint, 0.0, false)
+			# v1.0.1: altura limitada pela profundidade (antes corais em escala fixa furavam a superfície e viravam "pontas" no mar)
+			var depth: = -0.3 - p.y
+			if depth < 0.55:
+				continue
+			Real.place(self, key, p, minf(rng.randf_range(0.45, 0.95), depth * 0.6), rng.randf() * TAU, tint, 0.0, false)
 		for s in schools:
 			var sp: Array = SPECIES[(pi + s) % SPECIES.size()]
 			var n: = rng.randi_range(4, 7) if Quality.hd else rng.randi_range(2, 4)

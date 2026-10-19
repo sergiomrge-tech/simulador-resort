@@ -58,6 +58,8 @@ MODELS_EXTRA = [
     "painted_wooden_table", "dining_table", "folding_wooden_stool", "wooden_stool_02", "painted_wooden_chair_02",
     "dining_chair_02", "vintage_day_bed", "old_bed_frame", "painted_wooden_cabinet_02", "painted_wooden_shelves",
     "wooden_display_shelves_01", "vintage_cabinet_01", "wooden_bookshelf_worn", "ClassicNightstand_01",
+    # v1.0.1: tronco de deriva na praia (no lugar do log_large da Kenney)
+    "dead_tree_trunk",
     "small_wooden_table_01", "coffee_table_round_01", "side_table_tall_01", "painted_wooden_sofa", "sofa_02", "ArmChair_01",
     "Ottoman_01", "GreenChair_01", "metal_stool_01", "chinese_stool", "modular_street_seating", "painted_wooden_stool",
     # luz e decoração

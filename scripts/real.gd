@@ -13,10 +13,27 @@ const LIFT: = {
 	"Rockingchair_01": Color(1.9, 1.7, 1.5), "WoodenChair_01": Color(1.6, 1.5, 1.4),
 }
 
+## v1.0.1: os modelos Kenney eram low-poly e, suavizados, viravam "bolas de círculos" (coco, abacaxi, garrafas...).
+## Todas as chamadas antigas "k:..." agora caem em modelos detalhados: Blender (g:, tools/gen_food.py) ou Poly Haven (CC0).
+const ALIAS: = {
+	"k:coconut": "g:coconut_green", "k:coconut-half": "g:coconut_open", "k:pineapple": "g:pineapple", "k:orange": "g:orange",
+	"k:frappe": "g:frappe", "k:cup": "g:cup_plastic", "k:glass": "g:glass_juice", "k:cocktail": "g:cocktail",
+	"k:bottle": "g:bottle_green", "k:bottle-large": "g:bottle_rum", "k:bottle-oil": "g:bottle_cachaca", "k:bread": "croissant",
+	"k:barrel": "Barrel_01", "k:crate-bottles": "wooden_crate_02", "k:campfire_stones": "stone_fire_pit", "k:campfire_logs": "g:campfire_logs",
+	"k:rock_smallA": "sand_rocks_small_01", "k:rock_smallB": "boulder_01", "k:log_large": "dead_tree_trunk",
+	"k:tent_smallOpen": "g:biz_canopy", "k:boat-row-large": "g:boat_hull", "k:flag-pennant": "g:beach_flag", "k:tool-paddle": "g:beach_spade",
+}
+## Altura pedida × fator quando o modelo novo tem partes a mais na caixa (canudo do coco aberto, canudo do copo de suco).
+const ALIAS_H: = {"k:coconut-half": 1.9, "k:glass": 1.35}
+
+static func resolve(key: String) -> String:
+	return str(ALIAS.get(key, key))
+
 static func lift(key: String) -> Color:
 	return LIFT.get(key, Color.WHITE)
 
 static func path_of(key: String) -> String:
+	key = resolve(key)
 	if key.begins_with("q:"):
 		return "res://assets/models/qnat/%s.gltf" % key.substr(2)
 	if key.begins_with("g:"):
@@ -35,12 +52,19 @@ static func _scene(key: String) -> PackedScene:
 	var p: = path_of(key)
 	if not _cache.has(p):
 		_cache[p] = load(p) if ResourceLoader.exists(p) else null
+		if _cache[p] == null:
+			# v1.0.1: avisa no log (o build_release.sh barra o instalador se aparecer); antes o fallback era silencioso
+			print("REAL_MISSING ", key, " ", p)
 	return _cache[p]
 
 ## Instancia o modelo, ajusta para `height` (m) de altura (ou `width` se height <= 0), centra em XZ e apoia a base em y = 0.
 ## `tint` multiplica a cor (deixa mais vivo/cartoon). Retorna null se o arquivo não existe.
 ## height < 0: escala uniforme direta (-height); center_xz = false mantém a origem do modelo em XZ (chapéus, óculos).
 static func place(parent: Node, key: String, pos: Vector3, height: float, rot_y: = 0.0, tint: = Color.WHITE, width: = 0.0, center_xz: = true) -> Node3D:
+	if ALIAS.has(key):
+		if height > 0.0:
+			height *= float(ALIAS_H.get(key, 1.0))
+		key = resolve(key)
 	var ps: = _scene(key)
 	if ps == null:
 		return null
@@ -53,7 +77,7 @@ static func place(parent: Node, key: String, pos: Vector3, height: float, rot_y:
 			var sm: Material = mesh.surface_get_material(si)
 			if sm:
 				var tm: Material = Toon.toonify(sm)
-				if (key.begins_with("q:") or key.begins_with("k:coconut")) and tm is BaseMaterial3D and sm is BaseMaterial3D:
+				if key.begins_with("q:") and tm is BaseMaterial3D and sm is BaseMaterial3D:
 					(tm as BaseMaterial3D).albedo_color = (sm as BaseMaterial3D).albedo_color   # já são estilizados: sem o clareamento do toonify
 				if tm is BaseMaterial3D and tint != Color.WHITE:
 					(tm as BaseMaterial3D).albedo_color = (tm as BaseMaterial3D).albedo_color * tint

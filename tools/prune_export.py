@@ -8,13 +8,16 @@ if sys.argv[1:] == ["restore"]:
     if os.path.exists(BAK):
         shutil.move(BAK, CFG)
     sys.exit(0)
-src = "".join(open(f, encoding="utf-8").read() for f in glob.glob(ROOT + "/scripts/*.gd"))
-skip = {"kenney", "gen", "ual", "ubc"}
+src = "".join(open(f, encoding="utf-8").read() for f in glob.glob(ROOT + "/scripts/*.gd") + glob.glob(ROOT + "/scenes/*.tscn") + glob.glob(ROOT + "/tests/*.gd"))
+# v1.0.1: "qnat" (Quaternius: arbustos, samambaias, capim) é citado como caminho ("res://assets/models/qnat/%s.gltf"),
+# não como "qnat" entre aspas, e foi excluído do instalador: o jogo instalado mostrava placas redondas no lugar dos arbustos.
+skip = {"kenney", "gen", "ual", "ubc", "qnat", "beach"}
 ex = []
 for base in ("models", "models_hd"):
     b = os.path.join(ROOT, "assets", base)
     for d in sorted(os.listdir(b)):
-        if os.path.isdir(os.path.join(b, d)) and d not in skip and f'"{d}"' not in src and f"'{d}'" not in src:
+        used = f'"{d}"' in src or f"'{d}'" in src or f"/{base}/{d}/" in src or f"{base}/{d}" in src
+        if os.path.isdir(os.path.join(b, d)) and d not in skip and not used:
             ex.append(f"assets/{base}/{d}/*")
 if os.environ.get("LITE") == "1":
     ex += ["assets/models_hd/*", "assets/tex_hd/*"]  # versão leve: sem modelos/texturas HD
