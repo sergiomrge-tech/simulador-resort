@@ -790,7 +790,8 @@ func _kiosk_table(tp: Vector3, need: String, umb: Color, umbrella: bool) -> void
 		var seat_c: Vector3 = sd[0]
 		var fwd: Vector3 = sd[1]
 		var root: = tp + Vector3(seat_c.x, seat_c.y - SEAT_DROP, seat_c.z) + fwd * 0.27
-		kiosk_spots.append({"pos": root, "rot": atan2(fwd.x, fwd.z), "busy": false, "need": need, "anim": "Sitting_Idle_Loop", "table": true})
+		var approach: = tp + Vector3(seat_c.x, 0.1, seat_c.z) - fwd * 0.85
+		kiosk_spots.append({"pos": root, "approach": approach, "rot": atan2(fwd.x, fwd.z), "busy": false, "need": need, "anim": "Sitting_Idle_Loop", "table": true})
 	# mesa + cadeiras bloqueadas: pedestres contornam o conjunto todo (quem vai sentar entra)
 	_block(tp, 1.0, 1.9, 0.12)
 

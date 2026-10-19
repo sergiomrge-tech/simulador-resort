@@ -10,6 +10,7 @@ const KIOSK_PATIENCE: = 90.0
 const CHOOSE_MIN: = Vector2(4.0, 9.0)
 ## Minutos de jogo comendo/bebendo depois de servido.
 const EAT_MIN: = Vector2(14.0, 26.0)
+const MAX_QUEUE: = 3
 
 var world: Node3D
 var enabled: = true
@@ -295,16 +296,19 @@ func _free_spot() -> int:
 
 func spawn_customer() -> Node3D:
 	var si: = _free_spot()
-	if si < 0:
+	var queued: Array = customers.filter(func(c): return c.state == "kqueue")
+	if si < 0 and queued.size() >= MAX_QUEUE:
 		return null
 	var g: = _make()
 	var from_beach: = rng.randf() < Core.beach_share()
 	var start: Vector3 = Vector3(rng.randf_range(46, 80), 0, rng.randf_range(-24, -21)) if from_beach else world.village_points.kiosk_approach[0]
 	g.position = start
-	var spot: Dictionary = world.kiosk_spots[si]
-	spot.busy = true
+	var spot: Dictionary = world.kiosk_spots[si] if si >= 0 else {}
+	if si >= 0:
+		spot.busy = true
+		spot["owner"] = g.get_instance_id()
 	g.spot = spot
-	g.state = "kwalk"
+	g.state = "kwalk" if si >= 0 else "kqueue"
 	g.timer = KIOSK_PATIENCE
 	var menu: Array = Core.kiosk_menu()
 	var dish: String = _pick_dish(menu)
@@ -346,13 +350,24 @@ func spawn_customer() -> Node3D:
 		vl.pixel_size = 0.0045
 		vl.no_depth_test = true
 	var route: Array = [] if from_beach else world.village_points.kiosk_approach.slice(1)
+	if si < 0:
+		var used: Array = queued.map(func(c): return int(c.get_meta("queue_slot")))
+		var slot: = 0
+		while slot in used:
+			slot += 1
+		g.set_meta("queue_slot", slot)
+		# Fila a leste das mesas, fora das cadeiras e do corredor de acesso ao balcão.
+		g.go([world.KIOSK_C + Vector3(7.5, 0.1, 5.0 + slot * 1.1)])
+		customers.append(g)
+		return g
 	if from_beach:
 		# contorna o quiosque pela lateral em vez de atravessar o balcão
 		var kc: Vector3 = world.KIOSK_C
 		var sx: = 1.0 if start.x >= kc.x else -1.0
 		route.append(Vector3(kc.x + sx * 5.2, 0.05, kc.z - 3.8))
 		route.append(Vector3(kc.x + sx * 5.2, 0.05, kc.z + 3.6))
-	var front: Vector3 = Vector3(spot.pos.x, 0.1, spot.pos.z) if spot.get("table", false) else Vector3(spot.pos.x, 0.1, spot.pos.z + 0.85)
+	# Chega por trás da cadeira, sem cruzar o tampo para alcançar a raiz da animação.
+	var front: Vector3 = spot.get("approach", Vector3(spot.pos.x, 0.1, spot.pos.z + 0.85))
 	route.append(front)
 	g.go(route)
 	customers.append(g)
@@ -363,7 +378,7 @@ func _kiosk_tick(dmin: float) -> void :
 	if not kiosk_open():
 		var sent: = 0
 		for g in customers:
-			if g.state in ["kwalk", "kchoose", "kwait", "keat"]:
+			if g.state in ["kqueue", "kwalk", "kchoose", "kwait", "keat"]:
 				_leave(g)
 				sent += 1
 		if sent > 0 and Core.in_game:
@@ -378,8 +393,7 @@ func _kiosk_tick(dmin: float) -> void :
 			if rush_left > 0:
 				rush_left -= 1
 				kiosk_spawn_in = rng.randf_range(2.5, 5.0)
-			if waiting_customers().size() < world.kiosk_spots.size():
-				spawn_customer()
+			spawn_customer()
 		# ônibus de turistas: uma vez por dia, entre 11h e 15h, com o quiosque já rodando
 		if not rush_done and Core.in_game and Core.minutes >= 11.0 * 60.0 and Core.minutes <= 15.0 * 60.0 and served_today >= 3:
 			if rng.randf() < dmin * 0.004:
@@ -389,6 +403,21 @@ func _kiosk_tick(dmin: float) -> void :
 				Core.toast.emit(tr("Chegou um ônibus de turistas! Vem gente: sirva rápido para manter o combo."), "good")
 	for g in customers.duplicate():
 		match g.state:
+			"kqueue":
+				g.timer -= dmin
+				if not g.is_moving():
+					var si: = _free_spot()
+					if si >= 0:
+						g.spot = world.kiosk_spots[si]
+						g.spot.busy = true
+						g.spot["owner"] = g.get_instance_id()
+						g.state = "kwalk"
+						var front: Vector3 = g.spot.get("approach", Vector3(g.spot.pos.x, 0.1, g.spot.pos.z + 0.85))
+						g.go([front])
+					else:
+						g.play("Idle_Loop")
+				if g.state == "kqueue" and g.timer <= 0.0:
+					_leave(g)
 			"kwalk":
 				if not g.is_moving():
 					# senta e olha o cardápio antes de pedir
@@ -425,7 +454,11 @@ func _kiosk_tick(dmin: float) -> void :
 				if left <= 0.0:
 					_leave(g)
 			"kleave":
+				# O lugar continua reservado enquanto o cliente ainda está junto da cadeira.
+				if not g.spot.is_empty() and g.position.distance_to(g.spot.pos) > 1.2:
+					_release_spot(g)
 				if not g.is_moving():
+					_release_spot(g)
 					customers.erase(g)
 					g.queue_free()
 
@@ -493,14 +526,23 @@ func _order_text(g) -> String:
 		return "?"
 	return ("★ " if g.get_meta("vip", false) else "") + " + ".join(names) + "!"
 
+func _release_spot(g) -> void:
+	if g.spot.is_empty():
+		return
+	# Uma saída atrasada nunca libera o assento que já pertence a outro cliente.
+	if int(g.spot.get("owner", g.get_instance_id())) == g.get_instance_id():
+		g.spot.busy = false
+		g.spot.erase("owner")
+	g.spot = {}
+
 func _leave(g) -> void :
 	g.play("Sitting_Idle_Loop")
 	g.show_menu(false)
 	g.show_order("")
-	g.spot.busy = false
 	g.state = "kleave"
 	g.position.y = 0.1
-	g.go([g.position + Vector3(0, 0, 2.5), Vector3(rng.randf_range(44, 90), 0, rng.randf_range(-25, -21))])
+	var exit: Vector3 = g.spot.get("approach", g.position + Vector3(0, 0, 1.8))
+	g.go([exit, Vector3(world.KIOSK_C.x + 6.0, 0.1, world.KIOSK_C.z + 5.0), Vector3(rng.randf_range(44, 90), 0, rng.randf_range(-25, -21))])
 
 func _next_customer():
 	var w: = waiting_customers()
@@ -681,7 +723,7 @@ func helper_serve() -> void :
 
 func _on_slept(_d: int) -> void :
 	for g in customers.duplicate():
-		g.spot.busy = false
+		_release_spot(g)
 		customers.erase(g)
 		g.queue_free()
 	kiosk_spawn_in = 10.0

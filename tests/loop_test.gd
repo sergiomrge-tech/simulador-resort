@@ -136,7 +136,8 @@ func vip_rush_test() -> void :
 		t += get_process_delta_time()
 		peak = maxi(peak, v.customers.size())
 	check(v.customers.size() >= 3, "rush: %d clientes chegaram em %.0fs" % [v.customers.size(), t])
-	check(v.customers.size() <= main.world.kiosk_spots.size(), "rush respeita as vagas do quiosque (%d de %d)" % [v.customers.size(), main.world.kiosk_spots.size()])
+	var reserved: Array = v.customers.filter(func(c): return not c.spot.is_empty())
+	check(reserved.size() <= main.world.kiosk_spots.size(), "rush respeita as vagas do quiosque (%d de %d)" % [reserved.size(), main.world.kiosk_spots.size()])
 	var served0: int = v.served_today
 	v.enabled = false
 	for k in 12:
@@ -319,6 +320,11 @@ func v1_test() -> void :
 
 func run(m) -> void :
 	main = m
+	if main.args.has("kiosk-test"):
+		var regression = load("res://tests/kiosk_regression.gd").new()
+		add_child(regression)
+		regression.run(main)
+		return
 	var watchdog: = get_tree().create_timer(230.0)
 	watchdog.timeout.connect( func():
 		print("LOOP_TEST FAIL: watchdog timeout")

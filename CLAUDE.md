@@ -108,6 +108,7 @@ Base de trabalho: v0.6.5 recuperada; versões atuais em `project.godot` / `expor
 
 
 ## 🪑 Sala dos Assentos e Apoios — pente fino (v0.9.3)
+- **Correção (v1.0.1):** cada lugar do quiosque tem proprietário (`owner`); só é liberado quando quem sai se afasta 1,2 m. Quem encontra lotação espera na fila lateral (`kqueue`, no máximo 3), sem ocupar cadeira nem exibir pedido. Mesas têm `approach` atrás de cada cadeira. Teste real: `--loop-test --kiosk-test --quality=0` verifica chegada, postura, consumo, saída e transferência da reserva.
 - **Erro:** pessoas sentadas dentro do banco (assento do `painted_wooden_bench` fica a 0,65 m), no ar ao lado da mesa (as cadeiras do `outdoor_table_chair_set_01` ficam na frente/atrás, eixo z, não nos lados) e atrás da banqueta.
 - **Regra:** na animação `Sitting_Idle` o bumbum fica 0,46 m acima da raiz e 0,33 m **atrás** dela. Lugar de sentar = centro do assento + frente × 0,27–0,3, com y = topo do assento − `SEAT_DROP` (0,455). Meça o assento com Blender (faces horizontais) antes de criar um lugar. O banco é achatado (`_bench()`, escala y 0,7 → assento a 0,46 m).
 - **Erro:** objetos no ar: tigela 23 cm acima da `WoodenTable_01` (tampo a 0,55 m), petiscos 5 cm acima da mesa dobrável (0,73 m), gatos a 0,3 m (varanda tem topo 0,09 m e calçada 0,15 m; `B.platform` é centrada no y dado), balde fora do deck do bangalô, boia em pé solta no píer, varais de bandeirinha terminando no vazio.
