@@ -265,7 +265,21 @@ def universal_base_characters():
     wanted = ["Superhero_Male_FullBody", "Superhero_Female_FullBody",
               "Hair_Beard", "Hair_Buns", "Hair_Buzzed",
               "Hair_BuzzedFemale", "Hair_Long", "Hair_SimpleParted"]
-    if not FORCE and all(os.path.isfile(os.path.join(out, n + ".gltf")) for n in wanted):
+    def complete(stem):
+        p = os.path.join(out, stem + ".gltf")
+        if not os.path.isfile(p):
+            return False
+        try:
+            with open(p, encoding="utf-8") as f:
+                doc = json.load(f)
+            refs = [x.get("uri", "") for x in doc.get("buffers", [])]
+            refs += [x.get("uri", "") for x in doc.get("images", [])]
+            return all(not ref or ref.startswith("data:") or os.path.isfile(
+                os.path.normpath(os.path.join(out, urllib.parse.unquote(ref))))
+                for ref in refs)
+        except (OSError, ValueError):
+            return False
+    if not FORCE and all(complete(stem) for stem in wanted):
         print("ubc skip", len(wanted))
         return
     base = "https://quaternius.itch.io/universal-base-characters"
