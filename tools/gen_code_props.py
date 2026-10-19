@@ -172,7 +172,7 @@ def signpost_post():
     """Poste grosso de madeira com topo chanfrado, base em pedras e braçadeira de ferro. Altura 2,6 m."""
     fresh()
     wood = mat("madeira", (0.78, 0.55, 0.34), 0.8, tex("oak_wood_planks_diff.jpg"))
-    stone = mat("pedra", (0.75, 0.73, 0.68), 0.9, tex("light_stone_diff.jpg"))
+    stone = mat("pedra", (0.5, 0.48, 0.45), 0.9, tex("light_stone_diff.jpg"))
     iron = mat("ferro", (0.16, 0.16, 0.18), 0.55, metal=0.6)
     parts = []
     parts.append(lathe([(0.0, 0.0), (0.075, 0.0), (0.07, 1.2), (0.062, 2.5), (0.05, 2.6), (0.0, 2.64)], wood, verts=24, uvscale=0.8))
@@ -180,9 +180,17 @@ def signpost_post():
     for k in range(7):
         a = k * 2 * math.pi / 7
         s = 0.1 + rnd.random() * 0.05
-        bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=3, radius=s, location=(math.cos(a) * 0.17, math.sin(a) * 0.17, 0.05 + rnd.random() * 0.03))
+        bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=4, radius=s, location=(math.cos(a) * 0.17, math.sin(a) * 0.17, 0.04 + rnd.random() * 0.02))
         o = bpy.context.active_object
-        o.scale = (1.0, 1.0, 0.7)
+        o.scale = (1.0 + rnd.random() * 0.4, 0.8 + rnd.random() * 0.3, 0.55)
+        o.rotation_euler = (rnd.random() * 0.4, rnd.random() * 0.4, rnd.random() * 6.3)
+        # pedra irregular (lascada), não bolinha lisa: deslocamento com ruído
+        tx = bpy.data.textures.new("pedra%d" % k, "VORONOI")
+        tx.noise_scale = 0.06
+        dm = o.modifiers.new("dis", "DISPLACE")
+        dm.texture = tx
+        dm.strength = 0.035
+        bpy.ops.object.modifier_apply(modifier=dm.name)
         bpy.ops.object.shade_smooth()
         o.data.materials.append(stone)
         parts.append(o)
@@ -661,8 +669,19 @@ def bike(name, rgb):
                 parts.append(tube(prev, q, 0.02, fr, verts=10))
             prev = q
     # cestinha de vime na frente
-    parts.append(lathe([(0.0, 0.0), (0.12, 0.0), (0.15, 0.04), (0.17, 0.2), (0.165, 0.21), (0.0, 0.21)], rattan, loc=(0, -0.62, 0.95), verts=28, uvscale=1.2))
-    parts.append(lathe([(0.17, 0.2), (0.175, 0.2), (0.175, 0.22), (0.17, 0.22)], rattan, loc=(0, -0.62, 0.95), verts=28))
+    # descanso lateral: a bicicleta fica inclinada 0,18 rad para -X no jogo; o pé do descanso toca o chão nessa inclinação
+    parts.append(tube((-0.03, BB[0] + 0.1, BB[1] - 0.02), (-0.22, BB[0] + 0.16, 0.045), 0.009, chrome, verts=8))
+    parts.append(box((0.05, 0.03, 0.012), (-0.225, BB[0] + 0.16, 0.04), rub, 0.004))
+    # v0.9.3: cesta apoiada num bagageiro dianteiro (hastes até o eixo da roda) e presa ao guidão por duas alças, nada solto no ar
+    bc = (0, -0.58, 0.86)
+    parts.append(lathe([(0.0, 0.0), (0.12, 0.0), (0.15, 0.04), (0.17, 0.2), (0.165, 0.21), (0.0, 0.21)], rattan, loc=bc, verts=28, uvscale=1.2))
+    parts.append(lathe([(0.17, 0.2), (0.175, 0.2), (0.175, 0.22), (0.17, 0.22)], rattan, loc=bc, verts=28))
+    parts.append(_torus(0.125, 0.007, (0, bc[1], bc[2] - 0.006), False, chrome, 32, 8))
+    for sx in (-0.05, 0.05):
+        parts.append(tube((sx, F[0], F[1]), (sx * 2.2, bc[1] - 0.04, bc[2] - 0.006), 0.007, chrome, verts=8))
+        parts.append(tube((sx * 2.2, bc[1] - 0.04, bc[2] - 0.006), (sx * 2.2, bc[1] + 0.1, bc[2] - 0.006), 0.007, chrome, verts=8))
+    for sx in (-0.09, 0.09):
+        parts.append(tube((sx, bc[1] + 0.15, bc[2] + 0.19), (sx * 0.8, -0.40, 1.01), 0.01, leather, verts=8))
     join(parts, "bike_" + name)
     export("bike_" + name)
 
@@ -735,21 +754,36 @@ def jangada():
     def zline(y):   # elevação da proa: sobe suave nos últimos 1,2 m
         d = max(0.0, -y - 1.6)
         return 0.12 + 0.55 * (d / 1.4) ** 2 if d > 0 else 0.12
+    rnd = random.Random(12)
     for k in range(6):
+        # v0.9.3: cada tronco é uma malha contínua (loft com nós e casca irregular), não mais uma fila de tubos que parecia "rolos"
         x = -0.6 + k * 0.24
-        prev = None
-        for i in range(0, 25):
-            y = -3.0 + i * 0.25
-            pt = (x, y, zline(y))
-            if prev:
-                parts.append(tube(prev, pt, 0.12 + (0.01 if k % 2 else 0.0), log, verts=14))
-            prev = pt
-        # topo do tronco
-        bpy.ops.mesh.primitive_uv_sphere_add(radius=0.12, location=(x, 3.0, 0.12), segments=14, ring_count=8)
-        e = bpy.context.active_object
-        bpy.ops.object.shade_smooth()
-        e.data.materials.append(log)
-        parts.append(e)
+        R = 0.12 + (0.01 if k % 2 else 0.0)
+        bm = bmesh.new()
+        uvl = bm.loops.layers.uv.new("UVMap")
+        rn = 16
+        rings = []
+        ys = [-3.0 + i * 0.15 for i in range(41)]
+        for i, y in enumerate(ys):
+            end = min(y + 3.0, 3.0 - y)
+            rr = R * (0.55 + 0.45 * math.sqrt(min(1.0, end / 0.12))) * (1 + 0.04 * math.sin(y * 3.1 + k) + 0.02 * math.sin(y * 11 + k * 2))
+            zc = zline(y)
+            dz = (zline(y + 0.05) - zline(y - 0.05)) / 0.1
+            ring = []
+            for j in range(rn):
+                a = 2 * math.pi * j / rn
+                bump = 1 + 0.03 * rnd.random()
+                ring.append(bm.verts.new((x + rr * bump * math.cos(a), y - rr * math.sin(a) * dz * 0.5 * 0, zc + rr * bump * math.sin(a))))
+            rings.append(ring)
+        for i in range(len(rings) - 1):
+            for j in range(rn):
+                j2 = (j + 1) % rn
+                f = bm.faces.new((rings[i][j], rings[i][j2], rings[i + 1][j2], rings[i + 1][j]))
+                for lp in f.loops:
+                    lp[uvl].uv = (j / rn, lp.vert.co.y * 0.6)
+        for ring in (rings[0], rings[-1]):
+            bm.faces.new(ring if ring is rings[-1] else ring[::-1])
+        parts.append(_mesh_obj(bm, "tronco", [log], 0.0, 1))
     for y in (-1.2, 0.4, 2.0):
         parts.append(tube((-0.85, y, 0.3), (0.85, y, 0.3), 0.045, wood, verts=12))
         for x in (-0.6 + k * 0.24 for k in range(6)):
@@ -1039,96 +1073,94 @@ def volleyball():
     _ball("volleyball", [(1.0, 0.88, 0.2), (0.98, 0.98, 0.95), (0.15, 0.4, 0.85)], 18, volley=True)
 
 def seagull(name, flying):
-    """Gaivota: corpo torneado (peito cheio, cauda afilada), cabeça com bico amarelo e pinta vermelha, olhos, asas de 0,9 m em arco (ponta preta)
-    ou dobradas no corpo (pousada, com pernas laranja). Cabeça para +Z do glTF (-Y do Blender)."""
-    import mathutils
-    V = mathutils.Vector
+    """Gaivota (v0.9.3, refeita): corpo em loft com peito cheio e cauda afilada, pescoço e cabeça redonda, bico amarelo com gancho e pinta vermelha,
+    olho claro com pupila, asas cinza com pontas pretas e pintas brancas (dobradas sobre o dorso, passando da cauda, ou abertas em "M"),
+    leque de cauda branco e pernas rosadas com pés de membrana. Frente = -Y do Blender (glTF +Z). Pousada: ~0,52 m de comprimento x 0,33 m de altura."""
     fresh()
-    white = mat("branco", (0.97, 0.97, 0.96), 0.8)
-    gray = mat("cinza", (0.62, 0.66, 0.72), 0.8)
-    black = mat("preto", (0.08, 0.08, 0.1), 0.7)
-    yellow = mat("bico", (1.0, 0.75, 0.1), 0.5)
-    red = mat("pinta", (0.9, 0.15, 0.1), 0.5)
-    orange = mat("pernas", (1.0, 0.55, 0.15), 0.6)
+    white = mat("branco", (0.95, 0.95, 0.94), 0.75)
+    gray = mat("cinza", (0.55, 0.6, 0.66), 0.75)
+    black = mat("preto", (0.07, 0.07, 0.09), 0.6)
+    yellow = mat("bico", (1.0, 0.78, 0.12), 0.45)
+    red = mat("pinta", (0.88, 0.12, 0.08), 0.5)
+    leg = mat("pernas", (0.95, 0.62, 0.55), 0.6)
+    eye_m = mat("iris", (0.95, 0.88, 0.45), 0.3)
     parts = []
-    # corpo (eixo Z do lathe -> -Y do Blender depois de girar)
-    body = lathe([(0.0, -0.33), (0.012, -0.3), (0.04, -0.2), (0.075, -0.08), (0.095, 0.03), (0.088, 0.12), (0.06, 0.19), (0.0, 0.215)], white, verts=28)
-    head = lathe([(0.0, 0.14), (0.04, 0.16), (0.05, 0.2), (0.046, 0.25), (0.03, 0.285), (0.0, 0.295)], white, verts=24)
-    beak = lathe([(0.0, 0.27), (0.022, 0.27), (0.016, 0.31), (0.0, 0.345)], yellow, verts=14)
-    dot = lathe([(0.0, 0.318), (0.011, 0.318), (0.0, 0.33)], red, verts=10)
-    dot.location.x = 0.0
-    for o in (body, head, beak, dot):
-        o.rotation_euler = (math.radians(90), 0, 0)
-        o.rotation_euler = (math.radians(-90), 0, 0)
-    objs = [body, head, beak, dot]
-    # após girar -90 em X: +Z do lathe vira +Y; queremos a frente em -Y -> gira 180 em Z
-    for sx in (-1, 1):
-        bpy.ops.mesh.primitive_uv_sphere_add(radius=0.009, segments=10, ring_count=6, location=(sx * 0.038, 0.225, 0.03))
-        e = bpy.context.active_object
-        e.data.materials.append(black)
-        objs.append(e)
-    # cauda: leque de penas
-    bm = bmesh.new()
-    uvl = bm.loops.layers.uv.new("UVMap")
-    for k in range(5):
-        a = (k - 2) * math.radians(9)
-        M = mathutils.Matrix.Translation(V((0, 0.2, 0.01))) @ mathutils.Matrix.Rotation(a, 4, "Z") @ mathutils.Matrix.Rotation(math.radians(-90), 4, "Z")
-        # pena: patch ao longo de +Y local; gira para apontar para +Y do corpo (cauda)
-        M = mathutils.Matrix.Translation(V((0, 0.2, 0.0))) @ mathutils.Matrix.Rotation(-a, 4, "Z")
-        _patch(bm, M, 0.16, 0.05, 0.1, 0.0, 0.0, 4, 2, 0, uvl)
+    lift = 0.0 if not flying else 0.0
+    # corpo (+X = frente)
+    secs = [(-0.215, 0.010, 0.008, 0.17), (-0.17, 0.03, 0.022, 0.168), (-0.11, 0.055, 0.048, 0.163), (-0.04, 0.074, 0.068, 0.158),
+            (0.02, 0.08, 0.077, 0.157), (0.075, 0.076, 0.078, 0.162), (0.115, 0.06, 0.066, 0.176), (0.145, 0.04, 0.046, 0.195), (0.16, 0.026, 0.03, 0.21)]
+    bm = bmesh.new(); uvl = bm.loops.layers.uv.new("UVMap")
+    _loft(bm, uvl, secs, 24, True)
+    parts.append(_mesh_obj(bm, "corpo", [white], 0.0, 2))
+    # pescoço + cabeça
+    secs = [(0.10, 0.045, 0.05, 0.19), (0.135, 0.042, 0.046, 0.225), (0.16, 0.044, 0.046, 0.258), (0.185, 0.047, 0.048, 0.282),
+            (0.21, 0.045, 0.046, 0.292), (0.232, 0.036, 0.038, 0.294), (0.248, 0.022, 0.026, 0.292), (0.256, 0.008, 0.01, 0.29)]
+    bm = bmesh.new(); uvl = bm.loops.layers.uv.new("UVMap")
+    _loft(bm, uvl, secs, 24, True)
+    parts.append(_mesh_obj(bm, "cabeca", [white], 0.0, 2))
+    # bico (com gancho na ponta)
+    secs = [(0.238, 0.014, 0.014, 0.286), (0.26, 0.011, 0.012, 0.284), (0.285, 0.008, 0.01, 0.281), (0.305, 0.006, 0.009, 0.279), (0.318, 0.004, 0.007, 0.274), (0.324, 0.002, 0.003, 0.268)]
+    bm = bmesh.new(); uvl = bm.loops.layers.uv.new("UVMap")
+    _loft(bm, uvl, secs, 12, True)
+    parts.append(_mesh_obj(bm, "bico", [yellow], 0.0, 1))
+    parts.append(lathe(_sphere_profile(0, 0.0045, -85, 85, 6), red, loc=(0.305, 0.0, 0.272), verts=10))
+    for sy in (-1, 1):
+        parts.append(lathe(_sphere_profile(0, 0.0075, -85, 85, 6), eye_m, loc=(0.222, sy * 0.034, 0.302), verts=12))
+        parts.append(lathe(_sphere_profile(0, 0.004, -85, 85, 6), black, loc=(0.226, sy * 0.0395, 0.303), verts=10))
+    # cauda branca em leque (abaixo das pontas das asas)
+    bm = bmesh.new(); uvl = bm.loops.layers.uv.new("UVMap")
+    fan = 0.06 if not flying else 0.09
+    vs = [bm.verts.new(p) for p in [(-0.17, -0.02, 0.172), (-0.25, -fan, 0.176), (-0.262, 0.0, 0.178), (-0.25, fan, 0.176), (-0.17, 0.02, 0.172)]]
+    f = bm.faces.new(vs)
+    parts.append(_mesh_obj(bm, "cauda", [white], 0.006, 1))
     # asas
-    def wing(sx):
-        rows = []
-        nu, nv = 10, 4
-        span = 0.46 if flying else 0.2
+    def wing(sy):
+        bm = bmesh.new(); uvl = bm.loops.layers.uv.new("UVMap")
+        nu, nv = 18, 6
+        g = []
         for i in range(nu + 1):
             u = i / nu
-            chord = 0.17 * (1 - 0.45 * u) if flying else 0.22 * (1 - 0.5 * u)
-            for_row = []
+            row = []
             for j in range(nv + 1):
                 v = j / nv
                 if flying:
-                    x = sx * (0.07 + u * span)
-                    zc = 0.05 + 0.1 * math.sin(u * math.pi * 0.9) - 0.06 * u * u    # arco em M
-                    y = -0.02 + (0.5 - v) * chord + 0.2 * u * u * 0.5 + 0.07 * u
-                    z = zc - 0.01 * v
+                    span = 0.5
+                    yy = sy * (0.05 + span * u)
+                    le = 0.07 - 0.04 * u - 0.1 * u * u           # bordo de ataque, enflechado para trás
+                    chord = 0.17 * (1 - 0.55 * u)
+                    x = le - v * chord
+                    z = 0.2 + 0.09 * math.sin(u * math.pi * 0.85) - 0.12 * u * u + 0.012 * math.sin(v * math.pi)
                 else:
-                    x = sx * (0.085 + 0.012 * math.sin(u * 3))
-                    z = 0.0 - 0.03 * u + 0.05 * (1 - v) * 0.2 + 0.05
-                    y = 0.02 + u * 0.3 - v * 0.0
-                    y = -0.05 + u * 0.33
-                    x = sx * (0.09 + 0.02 * (v - 0.5) * 2 * 0.5)
-                    z = 0.03 + (0.5 - v) * 0.1 - 0.015 * u
-                for_row.append(bm.verts.new((x, y, z)))
-            rows.append(for_row)
+                    x = 0.085 - u * 0.37
+                    w = (0.083 - 0.06 * u ** 1.6)
+                    yy = sy * w * (1 - 0.42 * v * v)
+                    z = 0.135 + 0.045 * u + v * (0.085 - 0.045 * u)
+                row.append(bm.verts.new((x, yy, z)))
+            g.append(row)
         for i in range(nu):
             for j in range(nv):
-                f = bm.faces.new((rows[i][j], rows[i][j + 1], rows[i + 1][j + 1], rows[i + 1][j]))
-                f.material_index = 2 if (i >= nu - 2) else 1
+                f = bm.faces.new((g[i][j], g[i + 1][j], g[i + 1][j + 1], g[i][j + 1]) if sy > 0 else (g[i][j], g[i][j + 1], g[i + 1][j + 1], g[i + 1][j]))
+                u = (i + 0.5) / nu
+                tip = u > (0.72 if flying else 0.66)
+                spot = tip and i == nu - 2 and j in (2, 3)
+                f.material_index = 2 if spot else (1 if tip else 0)
                 for lp in f.loops:
-                    lp[uvl].uv = (0, 0)
-    wing(-1)
-    wing(1)
-    me = bpy.data.meshes.new("asas")
-    bm.to_mesh(me)
-    bm.free()
-    wo = bpy.data.objects.new("asas", me)
-    bpy.context.scene.collection.objects.link(wo)
-    for m in (white, gray, black):
-        me.materials.append(m)
-    bpy.context.view_layer.objects.active = wo
-    so = wo.modifiers.new("sol", "SOLIDIFY")
-    so.thickness = 0.008
-    bpy.ops.object.modifier_apply(modifier=so.name)
-    bpy.ops.object.shade_smooth()
-    objs.append(wo)
+                    lp[uvl].uv = (i / nu, j / nv)
+        return _mesh_obj(bm, "asa", [gray, black, white], 0.008, 1)
+    parts.append(wing(-1)); parts.append(wing(1))
     if not flying:
-        for sx in (-1, 1):
-            objs.append(tube((sx * 0.03, 0.0, -0.01), (sx * 0.03, 0.01, -0.12), 0.006, orange, verts=8))
-            objs.append(tube((sx * 0.03, 0.01, -0.12), (sx * 0.03, -0.04, -0.125), 0.005, orange, verts=8))
-    o = join(objs, name)
-    # a frente (bico) está em +Y: gira 180 em Z para ficar em -Y (glTF +Z)
-    o.rotation_euler = (0, 0, math.pi)
+        for sy in (-1, 1):
+            y = sy * 0.032
+            parts.append(tube((0.03, y, 0.115), (0.035, y, 0.012), 0.0065, leg, verts=10))
+            for a in (-0.45, 0.0, 0.45):
+                parts.append(tube((0.035, y, 0.012), (0.035 + 0.045 * math.cos(a), y + 0.045 * math.sin(a), 0.006), 0.0035, leg, verts=6))
+            bm = bmesh.new(); uvl = bm.loops.layers.uv.new("UVMap")
+            vs = [bm.verts.new(p) for p in [(0.035, y, 0.009), (0.035 + 0.045 * math.cos(-0.45), y + 0.045 * math.sin(-0.45), 0.006), (0.08, y, 0.006), (0.035 + 0.045 * math.cos(0.45), y + 0.045 * math.sin(0.45), 0.006)]]
+            bm.faces.new(vs)
+            parts.append(_mesh_obj(bm, "pe", [leg], 0.003))
+    o = join(parts, name)
+    o.rotation_euler = (0, 0, math.radians(-90))
+    bpy.ops.object.select_all(action="DESELECT")
     bpy.context.view_layer.objects.active = o
     o.select_set(True)
     bpy.ops.object.transform_apply(rotation=True)
@@ -1138,25 +1170,44 @@ def seagull(name, flying):
     export(name)
 
 def coxinha():
-    """Coxinha de frango: gota dourada (corpo largo e ponta torcida), com crosta irregular. Deitada, 9 cm."""
+    """Coxinha de frango em pé (v0.9.3): base arredondada e larga, corpo em gota afinando até a ponta torcida, crosta de farinha de rosca
+    (relevo fino + migalhas soltas mais escuras). 9 cm de altura, base em z=0."""
     fresh()
-    gold = mat("crosta", (0.88, 0.58, 0.18), 0.55)
-    prof = [(0.0, 0.0), (0.018, 0.002), (0.034, 0.012), (0.044, 0.03), (0.046, 0.05), (0.04, 0.07), (0.03, 0.088), (0.02, 0.102), (0.012, 0.114), (0.006, 0.122), (0.0, 0.126)]
-    ob = lathe(prof, gold, verts=36)
+    gold = mat("crosta", (0.74, 0.4, 0.1), 0.7)
+    crumb = mat("migalha", (0.5, 0.25, 0.07), 0.8)
+    prof = [(0.0, 0.0), (0.022, 0.0), (0.034, 0.004), (0.041, 0.012), (0.044, 0.024), (0.043, 0.036), (0.038, 0.048), (0.03, 0.06),
+            (0.021, 0.07), (0.013, 0.078), (0.008, 0.084), (0.005, 0.089), (0.0, 0.094)]
+    ob = lathe(prof, gold, verts=40)
+    me = ob.data
+    me.materials.append(crumb)
     bpy.context.view_layer.objects.active = ob
     ob.select_set(True)
     sm = ob.modifiers.new("sub", "SUBSURF")
     sm.levels = 2
     bpy.ops.object.modifier_apply(modifier=sm.name)
-    tex_ = bpy.data.textures.new("crosta", "CLOUDS")
-    tex_.noise_scale = 0.03
-    d = ob.modifiers.new("dis", "DISPLACE")
-    d.texture = tex_
-    d.strength = 0.006
-    bpy.ops.object.modifier_apply(modifier=d.name)
+    # torce a ponta (biquinho) e dá a assimetria de coxinha feita à mão
+    for v in ob.data.vertices:
+        z = v.co.z
+        if z > 0.06:
+            t = (z - 0.06) / 0.034
+            a = t * 1.2
+            x, y = v.co.x, v.co.y
+            v.co.x = x * math.cos(a) - y * math.sin(a) + 0.004 * t
+            v.co.y = x * math.sin(a) + y * math.cos(a)
+        v.co.x += 0.002 * math.sin(z * 90)
+    for nm, sc, st in (("grao", 0.0035, 0.0016), ("ondas", 0.02, 0.0022)):
+        tx = bpy.data.textures.new(nm, "VORONOI" if nm == "grao" else "CLOUDS")
+        tx.noise_scale = sc
+        d = ob.modifiers.new(nm, "DISPLACE")
+        d.texture = tx
+        d.strength = st
+        d.mid_level = 0.5
+        bpy.ops.object.modifier_apply(modifier=d.name)
+    rnd = random.Random(9)
+    for f in ob.data.polygons:
+        if rnd.random() < 0.1 and f.center.z > 0.004:
+            f.material_index = 1
     bpy.ops.object.shade_smooth()
-    ob.rotation_euler = (math.radians(90), 0, 0)
-    bpy.ops.object.transform_apply(rotation=True)
     _drop_to_zero(ob)
     export("coxinha")
 
@@ -1375,7 +1426,7 @@ def _sphere_profile(cz, r, a0=-80, a1=80, n=14, squash=1.0):
 def lamp_globe():
     """Cabeça de poste vitoriana: base de latão, globo de vidro (superfície 'glow'), nervuras e chapéu com pináculo. Origem na base; globo r=0,2 centrado em z=0,30."""
     fresh()
-    brass = mat("latao", (0.78, 0.58, 0.22), 0.35, None, 0.85)
+    brass = mat("ferro", (0.06, 0.07, 0.07), 0.45)   # ferro preto como o poste (metal no glTF fica esverdeado/preto no toon)
     glow = glow_mat("glow", (1.0, 0.82, 0.5), 3.0)
     parts = [lathe([(0, 0), (0.07, 0), (0.085, 0.025), (0.075, 0.05), (0.12, 0.085), (0.15, 0.105), (0.13, 0.115), (0, 0.115)], brass, verts=32),
              lathe(_sphere_profile(0.31, 0.2, -78, 80, 16), glow, verts=36),
@@ -1785,7 +1836,348 @@ def party_banner():
     join(parts, "faixa")
     export("party_banner")
 
-ALL = {"tiki_torch": tiki_torch, "signpost_post": signpost_post, "sign_arrow": sign_arrow, "open_sign": open_sign,
+# ---------------------------------------------------------------- vida marinha e colete (v0.9.3)
+def _loft(bm, uvl, sections, ring_n=20, closed_ends=True, mi_fn=None):
+    """sections: lista de (x, ry, rz, cy) -> anéis elípticos ao longo de +X. Retorna lista de anéis de vértices."""
+    rings = []
+    for (x, ry, rz, cy) in sections:
+        ring = []
+        for k in range(ring_n):
+            a = 2 * math.pi * k / ring_n
+            ring.append(bm.verts.new((x, ry * math.cos(a), cy + rz * math.sin(a))))
+        rings.append(ring)
+    for i in range(len(rings) - 1):
+        for k in range(ring_n):
+            k2 = (k + 1) % ring_n
+            f = bm.faces.new((rings[i][k], rings[i + 1][k], rings[i + 1][k2], rings[i][k2]))
+            if mi_fn:
+                f.material_index = mi_fn(i, k, ring_n, len(rings) - 1)
+            for lp in f.loops:
+                lp[uvl].uv = (lp.vert.co.x * 2, lp.vert.co.y * 2)
+    if closed_ends:
+        for ring in (rings[0], rings[-1]):
+            f = bm.faces.new(ring)
+            f.material_index = 0
+    return rings
+
+def _fin(bm, uvl, pts, thick, mi, double=True):
+    """Barbatana: polígono plano (pontos no plano XZ do Blender) com leve curvatura em Y."""
+    vs = [bm.verts.new((x, 0.0, z)) for (x, z) in pts]
+    f = bm.faces.new(vs)
+    f.material_index = mi
+    for lp in f.loops:
+        lp[uvl].uv = (lp.vert.co.x, lp.vert.co.z)
+    return f
+
+def _mesh_obj(bm, name, mats, solidify=0.0, sub=0):
+    me = bpy.data.meshes.new(name)
+    bm.to_mesh(me)
+    bm.free()
+    ob = bpy.data.objects.new(name, me)
+    bpy.context.scene.collection.objects.link(ob)
+    for m in mats:
+        me.materials.append(m)
+    bpy.context.view_layer.objects.active = ob
+    if solidify:
+        so = ob.modifiers.new("sol", "SOLIDIFY")
+        so.thickness = solidify
+        bpy.ops.object.modifier_apply(modifier=so.name)
+    if sub:
+        sm = ob.modifiers.new('sub', 'SUBSURF')
+        sm.levels = sub
+        bpy.ops.object.modifier_apply(modifier=sm.name)
+    bpy.ops.object.shade_smooth()
+    return ob
+
+def fish(name, L, H, W, back, belly, stripe, n_stripes, fin_col, tail_style="fork", eye_r=0.14, lumpy=0.0):
+    """Peixe com corpo em loft (24 seções, perfil de cabeça arredondada), olho com pupila, nadadeiras dorsal/peitoral/anal e cauda como objeto separado 'Tail'
+    (o Godot balança a cauda). Comprimento L (m) ao longo de +X do Blender; focinho em -Y do glTF depois de girar. Origem no centro do corpo."""
+    fresh()
+    mb = mat("dorso", back, 0.45)
+    mv = mat("ventre", belly, 0.45)
+    ms = mat("listra", stripe, 0.45)
+    mf = mat("nadadeira", fin_col, 0.5)
+    black = mat("pupila", (0.02, 0.02, 0.03), 0.3)
+    white = mat("olho", (0.97, 0.97, 0.95), 0.2)
+    secs = []
+    n = 26
+    for i in range(n + 1):
+        t = i / n
+        x = (t - 0.5) * L
+        prof = math.sin(math.pi * (t ** 0.8)) ** 0.62 if t < 0.97 else 0.0
+        taper = 1.0 if t < 0.55 else (1 - ((t - 0.55) / 0.45) ** 1.6 * 0.82)
+        r = max(prof * taper, 0.09)
+        secs.append((x, W * 0.5 * r, H * 0.5 * r * (1 + 0.1 * math.sin(t * 7) * lumpy), 0.0))
+    # ordem: focinho em +X do Blender
+    secs = [(L / 2 - (x + L / 2) if False else x, a, b, c) for (x, a, b, c) in secs]
+    bm = bmesh.new()
+    uvl = bm.loops.layers.uv.new("UVMap")
+    def mi(i, k, rn, last):
+        ang = 2 * math.pi * k / rn
+        up = math.sin(ang)
+        if n_stripes > 0:
+            band = int((i / last) * n_stripes * 2)
+            if band % 2 == 1 and 0.12 < i / last < 0.8:
+                return 2
+        return 0 if up > -0.2 else 1
+    _loft(bm, uvl, secs, 20, True, mi)
+    body = _mesh_obj(bm, "Body", [mb, mv, ms], 0.0, 2)
+    parts = [body]
+    # barbatana dorsal (ondulada em arco) e anal
+    bm = bmesh.new()
+    uvl = bm.loops.layers.uv.new("UVMap")
+    pts = []
+    for k in range(9):
+        t = 0.22 + 0.5 * k / 8
+        pts.append((t * L - L / 2, H * 0.5 * (1 + 0.55 * math.sin(math.pi * k / 8) ** 0.8)))
+    pts = [(x, z) for (x, z) in pts] + [(0.72 * L - L / 2, H * 0.46), (0.22 * L - L / 2, H * 0.46)][::1]
+    pts = sorted(pts[:9], key=lambda p: p[0])
+    poly = [(pts[0][0], H * 0.42)] + pts + [(pts[-1][0], H * 0.36)]
+    _fin(bm, uvl, poly[::-1], 0.004, 0)
+    dors = _mesh_obj(bm, "Dorsal", [mf], 0.006)
+    parts.append(dors)
+    bm = bmesh.new()
+    uvl = bm.loops.layers.uv.new("UVMap")
+    _fin(bm, uvl, [(-0.05 * L - 0.0, -H * 0.38), (0.15 * L, -H * 0.38), (0.05 * L, -H * 0.72), (-0.12 * L, -H * 0.62)], 0.004, 0)
+    anal = _mesh_obj(bm, "Anal", [mf], 0.006)
+    parts.append(anal)
+    # peitorais
+    for sy in (-1, 1):
+        bm = bmesh.new()
+        uvl = bm.loops.layers.uv.new("UVMap")
+        _fin(bm, uvl, [(0.14 * L, -0.05 * H), (0.26 * L, -0.05 * H), (0.2 * L, -0.28 * H), (0.1 * L, -0.2 * H)], 0.004, 0)
+        pf = _mesh_obj(bm, "Pect", [mf], 0.005)
+        pf.rotation_euler = (0, 0, sy * math.radians(35))
+        pf.location = (0, sy * W * 0.38, 0)
+        parts.append(pf)
+    # olhos
+    for sy in (-1, 1):
+        e = lathe(_sphere_profile(0, eye_r * H * 0.55, -85, 85, 8), white, loc=(0, 0, 0), verts=14)
+        pu = lathe(_sphere_profile(0, eye_r * H * 0.3, -85, 85, 6), black, loc=(0, 0, 0), verts=12)
+        e.location = (L * 0.3, sy * W * 0.3, H * 0.12)
+        pu.location = (L * 0.3 + eye_r * H * 0.28, sy * W * 0.3 + sy * 0.0, H * 0.12)
+        parts += [e, pu]
+    # cauda (objeto separado, origem na junção)
+    bm = bmesh.new()
+    uvl = bm.loops.layers.uv.new("UVMap")
+    tl = L * 0.38
+    if tail_style == "fork":
+        poly = [(0, H * 0.06), (tl * 0.7, H * 0.55), (tl, H * 0.62), (tl * 0.72, 0.0), (tl, -H * 0.62), (tl * 0.7, -H * 0.55), (0, -H * 0.06)]
+    else:
+        poly = [(0, H * 0.08), (tl * 0.6, H * 0.5), (tl, H * 0.38), (tl * 1.05, 0.0), (tl, -H * 0.38), (tl * 0.6, -H * 0.5), (0, -H * 0.08)]
+    _fin(bm, uvl, poly, 0.004, 0)
+    tail = _mesh_obj(bm, "Tail", [mf], 0.006)
+    tail.location = (-L / 2 + L * 0.02, 0, 0)
+    tail.rotation_euler = (0, 0, math.radians(180))
+    body_j = join(parts, "Body")
+    body_j.rotation_euler = (0, 0, math.radians(-90))
+    tail.location = (0, L * 0.49, 0)
+    tail.rotation_euler = (0, 0, math.radians(90))
+    export(name)
+
+def coral_branch(name, rgb, rgb2, seed):
+    """Coral ramificado (tipo veado): troncos que se bifurcam, tubos cônicos com pontas arredondadas e pólipos."""
+    fresh()
+    rnd = random.Random(seed)
+    m = mat("coral", rgb, 0.55)
+    tip = mat("ponta", rgb2, 0.5)
+    parts = []
+    base = lathe([(0.0, 0.0), (0.16, 0.0), (0.14, 0.03), (0.09, 0.07), (0.05, 0.1), (0.0, 0.12)], mat("base", (0.78, 0.74, 0.68), 0.9), verts=18)
+    parts.append(base)
+    def grow(p, d, r, ln, depth):
+        import mathutils
+        V = mathutils.Vector
+        q = p + d * ln
+        parts.append(tube(tuple(p), tuple(q), r, m, verts=10))
+        parts.append(lathe(_sphere_profile(0, r * 0.95, -80, 80, 6), tip if depth <= 1 else m, loc=tuple(q), verts=10))
+        if depth <= 0:
+            return
+        for k in range(rnd.choice((2, 2, 3))):
+            nd = (d + V((rnd.uniform(-0.8, 0.8), rnd.uniform(-0.8, 0.8), rnd.uniform(0.0, 0.5)))).normalized()
+            nd.z = max(nd.z, 0.35)
+            grow(q, nd.normalized(), r * 0.72, ln * 0.78, depth - 1)
+    import mathutils
+    V = mathutils.Vector
+    for k in range(4):
+        a = k * 1.6 + rnd.uniform(-0.3, 0.3)
+        d = V((math.cos(a) * 0.35, math.sin(a) * 0.35, 1.0)).normalized()
+        grow(V((math.cos(a) * 0.05, math.sin(a) * 0.05, 0.08)), d, 0.026, 0.14, 3)
+    parts.append(anchor(m))
+    join(parts, name)
+    export(name)
+
+def coral_table(name, rgb, rgb2):
+    """Coral-mesa/cérebro: prato ondulado com borda fina sobre haste e crista de sulcos (sulcos feitos com malha, não textura)."""
+    fresh()
+    m = mat("coral", rgb, 0.5)
+    m2 = mat("sulco", rgb2, 0.5)
+    bm = bmesh.new()
+    uvl = bm.loops.layers.uv.new("UVMap")
+    nr, na = 16, 64
+    rows = []
+    for i in range(nr + 1):
+        r = 0.34 * i / nr
+        ring = []
+        for k in range(na):
+            a = 2 * math.pi * k / na
+            wob = 1 + 0.12 * math.sin(a * 5) * (i / nr)
+            z = 0.2 + 0.05 * (i / nr) ** 2 + 0.012 * math.sin(a * 9 + r * 30) * (i / nr) - 0.04 * (1 - i / nr) ** 2 * 0
+            ring.append(bm.verts.new((r * wob * math.cos(a), r * wob * math.sin(a), z)))
+        rows.append(ring)
+    for i in range(nr):
+        for k in range(na):
+            k2 = (k + 1) % na
+            f = bm.faces.new((rows[i][k], rows[i + 1][k], rows[i + 1][k2], rows[i][k2]))
+            f.material_index = i % 2
+            for lp in f.loops:
+                lp[uvl].uv = (lp.vert.co.x * 2, lp.vert.co.y * 2)
+    ob = _mesh_obj(bm, "plate", [m, m2], 0.02, 1)
+    stem = lathe([(0.0, 0.0), (0.15, 0.0), (0.09, 0.08), (0.06, 0.2), (0.0, 0.2)], m, verts=20)
+    join([ob, stem, anchor(m)], name)
+    export(name)
+
+def sea_fan(name, rgb):
+    """Leque-do-mar (gorgônia): rede plana de galhos finos com malha de ligação, em arco."""
+    fresh()
+    m = mat("leque", rgb, 0.6)
+    parts = [anchor(m), lathe([(0.0, 0.0), (0.07, 0.0), (0.04, 0.04), (0.0, 0.05)], mat("base", (0.6, 0.55, 0.5), 0.9), verts=14)]
+    import mathutils
+    V = mathutils.Vector
+    rnd = random.Random(5)
+    def pt(u, v):
+        return V((0.26 * u, 0.02 * math.sin(v * 3) + 0.03 * u * u, 0.05 + 0.5 * v * (1 - 0.15 * u * u)))
+    for i in range(-5, 6):
+        u = i / 5
+        a, b = pt(u * 0.15, 0.0), pt(u, 1.0)
+        for s in range(5):
+            t0, t1 = s / 5, (s + 1) / 5
+            parts.append(tube(tuple(a.lerp(b, t0) + V((0, 0, 0))), tuple(a.lerp(b, t1)), 0.006 * (1 - t0 * 0.5), m, verts=6))
+    for j in range(1, 9):
+        v = j / 9
+        for i in range(-5, 5):
+            if rnd.random() < 0.85:
+                a = pt(i / 5 * v, v)
+                b = pt((i + 1) / 5 * v, v)
+                parts.append(tube(tuple(a), tuple(b), 0.0035, m, verts=5))
+    join(parts, name)
+    export(name)
+
+def life_vest():
+    """Colete salva-vidas: casca acolchoada elíptica com gomos horizontais, abertura de pescoço, alças de ombro, faixas refletivas em anel e fivela.
+    Origem no centro do tronco (y=0 no meio), frente = -Y do Blender. ~0,44 m de largura x 0,40 m de altura."""
+    fresh()
+    org = mat("laranja", (1.0, 0.36, 0.05), 0.7)
+    refl = mat("refletiva", (0.9, 0.92, 0.8), 0.25)
+    dark = mat("fivela", (0.1, 0.1, 0.12), 0.5)
+    parts = [anchor(org)]
+    def shell(z0, z1, rx, ry, mat_, ridges=0, grow=0.0, n_ring=48, n_z=24, thick=0.025):
+        bm = bmesh.new()
+        uvl = bm.loops.layers.uv.new("UVMap")
+        rows = []
+        for j in range(n_z + 1):
+            v = j / n_z
+            z = z0 + (z1 - z0) * v
+            rr = 1.0 + 0.06 * math.sin(v * math.pi) + (0.04 * math.sin(v * math.pi * ridges * 2) ** 2 if ridges else 0)
+            # ombros descem em direção ao pescoço (topo estreita)
+            top = 1.0 - 0.0 * v
+            ring = []
+            for k in range(n_ring):
+                a = 2 * math.pi * k / n_ring
+                neck = 1.0
+                zz = z
+                if v > 0.8:
+                    neck = 1.0 - (v - 0.8) * 1.6 * (0.5 + 0.5 * math.cos(a))  # só a frente fecha
+                x = (rx + grow) * rr * math.cos(a) * neck
+                y = (ry + grow) * rr * math.sin(a) * (neck if math.sin(a) < 0 else 1.0)
+                ring.append(bm.verts.new((x, y, zz)))
+            rows.append(ring)
+        for j in range(n_z):
+            for k in range(n_ring):
+                k2 = (k + 1) % n_ring
+                f = bm.faces.new((rows[j][k], rows[j][k2], rows[j + 1][k2], rows[j + 1][k]))
+                for lp in f.loops:
+                    lp[uvl].uv = (k / n_ring, j / n_z)
+        return _mesh_obj(bm, "shell", [mat_], thick, 1)
+    parts.append(shell(-0.20, 0.20, 0.215, 0.135, org, ridges=4))
+    for zc in (-0.07, 0.07):
+        parts.append(shell(zc - 0.018, zc + 0.018, 0.215, 0.135, refl, grow=0.012, n_z=3, thick=0.004))
+    # alças de ombro sobre o topo
+    for sx in (-0.11, 0.11):
+        parts.append(tube((sx, -0.09, 0.17), (sx, 0.0, 0.215), 0.016, org, verts=8))
+        parts.append(tube((sx, 0.0, 0.215), (sx, 0.09, 0.17), 0.016, org, verts=8))
+    # fivela e cinta frontal
+    parts.append(box((0.045, 0.02, 0.035), (0.0, -0.152, -0.02), dark, bevel=0.004))
+    parts.append(box((0.30, 0.012, 0.03), (0.0, -0.141, -0.02), dark, bevel=0.004))
+    join(parts, "life_vest")
+    export("life_vest")
+
+def bamboo_pole():
+    """Mastro de bambu de 4,6 m para varais de bandeirinhas: gomos com bojo e nós, amarrações de corda, argola no topo e base enterrada
+    num monte de pedras com estaca. Origem na base."""
+    fresh()
+    bamboo = mat("bambu", (0.9, 0.75, 0.42), 0.55, tex("bamboo_wall_diff.jpg"))
+    rope = mat("corda", (0.62, 0.48, 0.3), 0.95)
+    stone = mat("pedra", (0.62, 0.6, 0.56), 0.9, tex("rock_face_diff.jpg"))
+    metal = mat("argola", (0.35, 0.35, 0.38), 0.4)
+    parts = []
+    z = 0.0
+    prof = []
+    H = 4.6
+    while z < H - 0.01:
+        h = min(0.46, H - z)
+        for k in range(7):
+            t = k / 6
+            r = 0.05 - 0.012 * (z / H) + 0.003 * math.sin(math.pi * t)
+            prof.append((r, z + t * h))
+        prof.append((0.056 - 0.012 * (z / H), z + h + 0.008))
+        z += h
+    prof = [(0.0, 0.0)] + prof + [(0.0, z + 0.01)]
+    parts.append(lathe(prof, bamboo, verts=24, uvscale=1.0))
+    for zz in (0.9, 2.3, H - 0.25):
+        parts.append(lathe([(0.0, zz - 0.035), (0.058, zz - 0.035), (0.063, zz - 0.015), (0.063, zz + 0.015), (0.058, zz + 0.035), (0.0, zz + 0.035)], rope, verts=20, uvscale=0.5))
+    parts.append(_torus(0.04, 0.008, (0.0, 0.0, H - 0.12), True, metal, seg=24, rseg=8))
+    rnd = random.Random(3)
+    for k in range(9):
+        a = k / 9 * math.tau + rnd.uniform(-0.2, 0.2)
+        r = rnd.uniform(0.09, 0.17)
+        st = lathe(_sphere_profile(0, rnd.uniform(0.05, 0.08), -80, 80, 6, squash=0.6), stone, loc=(math.cos(a) * r, math.sin(a) * r, 0.02), verts=10)
+        st.scale = (1.0, rnd.uniform(0.7, 1.2), 1.0)
+        parts.append(st)
+    join(parts, "bamboo_pole")
+    export("bamboo_pole")
+
+def porch_column():
+    """Coluna de varanda colonial (2,62 m): plinto quadrado chanfrado, base com toro e escócia, fuste torneado com êntase e anel, capitel toscano
+    com equino e ábaco quadrado. Reboco branco. Origem na base."""
+    fresh()
+    st = mat("reboco", (0.97, 0.95, 0.92), 0.85, tex("white_plaster_diff.jpg") if os.path.exists(tex("white_plaster_diff.jpg")) else None)
+    parts = [box((0.26, 0.26, 0.08), (0, 0, 0.04), st, bevel=0.01)]
+    prof = [(0.0, 0.08), (0.115, 0.08), (0.12, 0.095), (0.115, 0.11), (0.1, 0.12), (0.095, 0.135), (0.105, 0.15), (0.1, 0.16), (0.09, 0.17)]
+    H = 2.62
+    n = 24
+    for i in range(n + 1):
+        t = i / n
+        z = 0.17 + t * (H - 0.17 - 0.24)
+        r = 0.09 - 0.018 * t + 0.006 * math.sin(math.pi * t * 0.9)
+        prof.append((r, z))
+    zt = H - 0.24
+    prof += [(0.08, zt + 0.01), (0.088, zt + 0.02), (0.088, zt + 0.04), (0.078, zt + 0.05), (0.085, zt + 0.07), (0.11, zt + 0.12), (0.125, zt + 0.15), (0.0, zt + 0.15)]
+    parts.append(lathe(prof, st, verts=32, uvscale=1.0))
+    parts.append(box((0.28, 0.28, 0.09), (0, 0, H - 0.045), st, bevel=0.012))
+    join(parts, "porch_column")
+    export("porch_column")
+
+ALL = {"porch_column": porch_column, "bamboo_pole": bamboo_pole, "fish_clown": lambda: fish("fish_clown", 0.16, 0.1, 0.07, (1.0, 0.45, 0.05), (1.0, 0.5, 0.1), (0.97, 0.97, 0.95), 3, (1.0, 0.4, 0.05), "round", 0.16),
+       "fish_blue": lambda: fish("fish_blue", 0.22, 0.14, 0.05, (0.1, 0.35, 0.9), (0.95, 0.8, 0.2), (0.05, 0.1, 0.4), 0, (0.95, 0.85, 0.2), "fork", 0.12),
+       "fish_angel": lambda: fish("fish_angel", 0.24, 0.26, 0.05, (0.95, 0.85, 0.25), (0.95, 0.9, 0.5), (0.15, 0.15, 0.2), 4, (0.2, 0.3, 0.8), "round", 0.1),
+       "fish_silver": lambda: fish("fish_silver", 0.3, 0.1, 0.06, (0.55, 0.62, 0.72), (0.93, 0.95, 0.97), (0.4, 0.45, 0.55), 0, (0.7, 0.75, 0.85), "fork", 0.1),
+       "coral_branch_a": lambda: coral_branch("coral_branch_a", (0.95, 0.4, 0.45), (1.0, 0.75, 0.7), 11),
+       "coral_branch_b": lambda: coral_branch("coral_branch_b", (0.85, 0.55, 0.95), (0.95, 0.85, 1.0), 23),
+       "coral_branch_c": lambda: coral_branch("coral_branch_c", (0.95, 0.7, 0.2), (1.0, 0.92, 0.6), 41),
+       "coral_table": lambda: coral_table("coral_table", (0.85, 0.45, 0.35), (0.65, 0.3, 0.25)),
+       "coral_brain": lambda: coral_table("coral_brain", (0.55, 0.75, 0.45), (0.35, 0.55, 0.3)),
+       "sea_fan": lambda: sea_fan("sea_fan", (0.85, 0.2, 0.55)), "life_vest": life_vest,
+       "tiki_torch": tiki_torch, "signpost_post": signpost_post, "sign_arrow": sign_arrow, "open_sign": open_sign,
        "volley_net": volley_net, "power_pole": power_pole, "mailbox": mailbox, "starfish": starfish, "ceiling_fan": ceiling_fan,
        "lighthouse": lighthouse, "pier_segment": pier_segment, "pier_end": pier_end, "boat_mast": boat_mast, "jangada": jangada, "beach_ball": beach_ball, "volleyball": volleyball, "seagull_fly": lambda: seagull("seagull_fly", True), "seagull_perch": lambda: seagull("seagull_perch", False), "coxinha": coxinha, "popcorn": popcorn, "rose_window": rose_window, "hanging_planter": hanging_planter, "flowerbed": flowerbed,
        "dj_booth": dj_booth, "party_banner": party_banner, "win_frame": win_frame, "win_shutters": win_shutters, "door_leaf": door_leaf, "door_frame": door_frame, "lamp_globe": lamp_globe, "lamp_bulb": lamp_bulb, "string_bulb": string_bulb, "flame": flame, "fresnel_lens": fresnel_lens, "pool_light": pool_light, "brass_knob": brass_knob, "bell": bell, "alga": alga,

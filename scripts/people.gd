@@ -76,6 +76,7 @@ static func clothes(female: bool, mi: MeshInstance3D, skel: Skeleton3D) -> Dicti
 	var sleeve_x: = 0.34 if female else 0.4
 	var hem_shorts: = 0.64 if female else 0.66
 	var waist_y: = 1.02 if female else 1.04
+	var ankle_y: = 0.125 if female else 0.13
 	if verts.is_empty() or bones.is_empty() or idx.is_empty():
 		_clothes[key] = out
 		return out
@@ -103,7 +104,8 @@ static func clothes(female: bool, mi: MeshInstance3D, skel: Skeleton3D) -> Dicti
 				hw += w
 		shirt_w[v] = sw
 		shorts_w[v] = hw
-	for spec in [["shirt", shirt_w, 1.0, 0.016], ["shorts", shorts_w, 2.0, 0.014]]:
+	# v0.9.3: calçados gerados da malha do pé (tênis fechado ou sandália com tira), zona 4 = cabedal/tira, 5 = sola
+	for spec in [["shirt", shirt_w, 1.0, 0.016], ["shorts", shorts_w, 2.0, 0.014], ["shoes", shirt_w, 4.0, 0.009], ["sandals", shirt_w, 4.5, 0.008]]:
 		var sel: PackedFloat32Array = spec[1]
 		var remap: = {}
 		var nv: = PackedVector3Array()
@@ -123,7 +125,15 @@ static func clothes(female: bool, mi: MeshInstance3D, skel: Skeleton3D) -> Dicti
 			t += 3
 			# bainha reta: corta por altura (e pelo comprimento da manga) em vez de seguir os pesos dos ossos
 			var cut_ok: = true
-			for vi in [a, b, c]:
+			if zone > 3.5:
+				var cen: Vector3 = (verts[a] + verts[b] + verts[c]) / 3.0
+				if zone < 4.25:
+					cut_ok = cen.y < ankle_y
+				else:
+					cut_ok = cen.y < 0.03 or (cen.y < 0.095 and cen.z > -0.035 and cen.z < 0.04)
+				if not cut_ok:
+					continue
+			for vi in ([] if zone > 3.5 else [a, b, c]):
 				var pv: Vector3 = verts[vi]
 				if zone < 1.5:
 					if pv.y < hem_shirt or pv.y > neck_y + minf(0.12, maxf(0.0, (absf(pv.x) - 0.1) * 1.1)) or absf(pv.x) > sleeve_x:
@@ -135,7 +145,11 @@ static func clothes(female: bool, mi: MeshInstance3D, skel: Skeleton3D) -> Dicti
 			for vi in [a, b, c]:
 				if not remap.has(vi):
 					remap[vi] = nv.size()
-					nv.append(verts[vi] + norms[vi] * off)
+					var vp: Vector3 = verts[vi] + norms[vi] * off
+					if zone > 3.5 and verts[vi].y < 0.03:
+						# sola: mais grossa e saliente
+						vp += Vector3(norms[vi].x, 0.0, norms[vi].z).normalized() * 0.006 + Vector3(0, -0.004 if verts[vi].y < 0.012 else 0.0, 0)
+					nv.append(vp)
 					nn.append(norms[vi])
 					if not uvs.is_empty():
 						nuv.append(uvs[vi])
@@ -149,7 +163,10 @@ static func clothes(female: bool, mi: MeshInstance3D, skel: Skeleton3D) -> Dicti
 						var base: = nw.size() - 4
 						for k in 4:
 							nw[base + k] = nw[base + k] / ws
-					ncol.append(Color(zone * 32.0 / 255.0, 0, 0, 1))
+					var zc: = zone
+					if zone > 3.5:
+						zc = 5.0 if verts[vi].y < 0.026 else 4.0
+					ncol.append(Color(zc * 32.0 / 255.0, 0, 0, 1))
 				nidx.append(remap[vi])
 		if nidx.is_empty():
 			continue

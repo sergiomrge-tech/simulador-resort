@@ -133,6 +133,12 @@ func _state_for(an: String) -> String:
 			return "Swim"
 		"Swim_Idle_Loop", "Swim_Idle":
 			return "SwimIdle"
+		"Dance_Loop", "Dance":
+			return "Dance"
+		"Jump_Loop", "Jump":
+			return "Jump"
+		"Sprint_Loop", "Sprint":
+			return "Sprint"
 		"Interact":
 			return "Drink"
 		"Eat", "Eating":
@@ -174,8 +180,9 @@ func _build_anim(model: Node3D) -> void :
 		"Idle": "Idle_Loop", "Talk": "Idle_Talking_Loop", "Walk": "Walk_Loop", "Jog": "Jog_Fwd_Loop", 
 		"Sit": "Sitting_Idle_Loop", "SitTalk": "Sitting_Talking_Loop", 
 		"Swim": "Swim_Fwd_Loop", "SwimIdle": "Swim_Idle_Loop", "Drink": "Interact", 
+		"Dance": "Dance_Loop", "Jump": "Jump_Loop", "Sprint": "Sprint_Loop", 
 	}
-	var order: = ["Idle", "Talk", "Walk", "Jog", "Sit", "SitTalk", "Swim", "SwimIdle", "Drink"]
+	var order: = ["Idle", "Talk", "Walk", "Jog", "Sit", "SitTalk", "Swim", "SwimIdle", "Drink", "Dance", "Jump", "Sprint"]
 	var added: = {}
 	var i: = 0
 	for st in order:
@@ -792,7 +799,8 @@ func _dress(m: Node3D, rng: RandomNumberGenerator) -> void :
 		elif n.contains("eye") and mi.mesh.surface_get_material(0) is BaseMaterial3D:
 			mi.material_override = Ppl.toon_copy(mi.mesh.surface_get_material(0), Color.WHITE)
 	var cl: = Ppl.clothes(_female, _body_mi, skel)
-	for k in ["shirt", "shorts"]:
+	var foot: = "sandals" if rng.randf() < 0.45 else "shoes"
+	for k in ["shirt", "shorts", foot]:
 		if not cl.has(k):
 			continue
 		var cm: = MeshInstance3D.new()
@@ -802,6 +810,12 @@ func _dress(m: Node3D, rng: RandomNumberGenerator) -> void :
 		cm.material_override = _mat
 		skel.add_child(cm)
 		_mesh_insts.append(cm)
+	var shoe_cols: = [Color(0.95, 0.95, 0.93), Color(0.12, 0.12, 0.14), Color(0.15, 0.35, 0.75), Color(0.85, 0.2, 0.2), Color(0.35, 0.22, 0.12), Color(0.95, 0.75, 0.2), Color(0.2, 0.6, 0.55)]
+	var sc: Color = shoe_cols[rng.randi() % shoe_cols.size()]
+	var so: Color = Color(0.95, 0.93, 0.88) if foot == "shoes" and sc.get_luminance() < 0.7 else Color(0.25, 0.2, 0.18)
+	for mi in _mesh_insts:
+		mi.set_instance_shader_parameter("shoes", sc)
+		mi.set_instance_shader_parameter("sole", so)
 	# cabelo
 	var styles: Array = Ppl.HAIR_FEMALE if _female else Ppl.HAIR_MALE
 	var hm: = Ppl.hair_mesh(styles[rng.randi() % styles.size()])

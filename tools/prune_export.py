@@ -16,6 +16,8 @@ for base in ("models", "models_hd"):
     for d in sorted(os.listdir(b)):
         if os.path.isdir(os.path.join(b, d)) and d not in skip and f'"{d}"' not in src and f"'{d}'" not in src:
             ex.append(f"assets/{base}/{d}/*")
+if os.environ.get("LITE") == "1":
+    ex += ["assets/models_hd/*", "assets/tex_hd/*"]  # versão leve: sem modelos/texturas HD
 shutil.copyfile(CFG, BAK)
 s = open(CFG, encoding="utf-8").read()
 s = re.sub(r'exclude_filter="([^"]*)"', lambda m: 'exclude_filter="%s, %s"' % (m.group(1), ", ".join(ex)), s, count=1)

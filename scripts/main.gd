@@ -302,6 +302,21 @@ func _run_shot(n: String) -> void :
 		Core.event_changed.emit()
 	if args.has("tourboat"):
 		Core.tour_done.emit("barco", 4, 100)
+	if args.has("floatcheck"):
+		get_tree().create_timer(1.5).timeout.connect(func(): load("res://tests/float_check.gd").run(world))
+	if args.has("lineup"):   # depuração: --lineup=x,z -> fila de 8 pessoas para conferir calçados/roupas, e duas sentadas num banco
+		var lv: = str(args.lineup).split(",")
+		var base: = Vector3(float(lv[0]), 0.0, float(lv[1]))
+		for k in 8:
+			var g: Node3D = village.call("_make")
+			g.position = base + Vector3(k * 0.9 - 3.15, 0.0, 0.0)
+			g.rotation.y = 0.0
+			g.play("Walk_Loop" if k % 3 == 1 else "Idle_Loop")
+		var sp: Dictionary = world.call("_bench", base + Vector3(-1.0, 0.0, -2.2), 0.0)
+		var g2: Node3D = village.call("_make")
+		g2.position = sp.pos
+		g2.rotation.y = sp.rot
+		g2.play("Sitting_Idle_Loop")
 	Core.paused = true
 	Core.minutes = s[3] * 60.0
 	guests.enabled = false

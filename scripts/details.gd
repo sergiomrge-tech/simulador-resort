@@ -416,7 +416,7 @@ static func pier(parent: Node, from: Vector3, length: float, width: = 2.4) -> vo
 		for sx in [-1.0, 1.0]:
 			B.box(parent, Vector3(0.06, 0.06, length), c + Vector3(sx * (width * 0.5 - 0.05), 1.5, 0), post)
 		B.box(parent, Vector3(width + 2.0, 0.14, 3.0), end + Vector3(0, -0.07, 0), wood, true)
-	B.model(parent, "lifebuoy", end + Vector3(1.6, 0.9, 0), 0.0, 1.0).rotation.x = PI * 0.5
+	B.model(parent, "lifebuoy", end + Vector3(1.4, 0.0, 0.9), 0.4, 1.0)   # deitada no deck (antes ficava em pé solta no ar)
 	B.model(parent, "wooden_bucket_01", end + Vector3(-1.4, 0.0, 0.6), 0.0, 0.8)
 	var rod: = B.cyl(parent, 0.01, 0.015, 2.2, end + Vector3(-1.2, 0.9, -0.8), m(Color(0.3, 0.2, 0.15)), 4)
 	rod.rotation.x = -0.9

@@ -53,7 +53,7 @@ func _ready() -> void :
 	for i in sit_n:
 		var s: Dictionary = world.bench_spots[i * 2 % world.bench_spots.size()]
 		var g2: = _make()
-		g2.position = s.pos + Vector3(sin(s.rot), 0, cos(s.rot)) * 0.12
+		g2.position = s.pos
 		g2.rotation.y = s.rot
 		g2.play("Sitting_Idle_Loop")
 		g2.set_meta("sitter", true)

@@ -6,6 +6,9 @@ instance uniform vec4 shirt : source_color = vec4(0.9, 0.3, 0.3, 1.0);
 instance uniform vec4 shorts : source_color = vec4(0.2, 0.3, 0.6, 1.0);
 instance uniform vec4 hair : source_color = vec4(0.1, 0.07, 0.05, 1.0);
 uniform vec4 sandals : source_color = vec4(0.25, 0.15, 0.08, 1.0);
+// v0.9.3: calçados (zona 4 = cabedal/tira, zona 5 = sola)
+instance uniform vec4 shoes : source_color = vec4(0.25, 0.15, 0.08, 1.0);
+instance uniform vec4 sole : source_color = vec4(0.95, 0.93, 0.88, 1.0);
 // v0.7.3: estampa da camisa (0 lisa, 1 listras, 2 bolinhas, 3 floral havaiana, 4 xadrez) e cor secundária
 instance uniform float pattern = 0.0;
 instance uniform vec4 shirt2 : source_color = vec4(1.0, 1.0, 1.0, 1.0);
@@ -52,7 +55,8 @@ void fragment(){
 		}
 	}
 	else if (zone > 2.5 && zone < 3.5) { c = hair.rgb; r = 0.5; }
-	else if (zone > 3.5) { c = sandals.rgb; r = 0.7; }
+	else if (zone > 3.5 && zone < 4.5) { c = shoes.rgb; r = 0.7; }
+	else if (zone > 4.5) { c = sole.rgb; r = 0.8; }
 	// v0.7 cartoon: cores um pouco mais saturadas
 	float l = dot(c, vec3(0.3, 0.59, 0.11));
 	ALBEDO = mix(vec3(l), c, 1.2);

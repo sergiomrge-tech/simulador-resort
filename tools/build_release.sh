@@ -47,5 +47,8 @@ echo "-- 6/6 instalador"
 mkdir -p "$STAGE"
 cp build/win/MareAltaResort.exe build/win/MareAltaResort.pck "$STAGE/"
 cp installer/setup.nsi installer/Jogar.vbs installer/icon.ico installer/LEIA-ME.txt "$STAGE/"
-(cd "$STAGE" && makensis -V2 setup.nsi)
-ls -la "$STAGE/Instalar_MareAltaResort_v${VER}.exe"
+if [ "${LITE:-0}" = 1 ]; then
+  (cd "$STAGE" && makensis -V2 -DLITE setup.nsi); ls -la "$STAGE/Instalar_MareAltaResort_v${VER}_Leve.exe"
+else
+  (cd "$STAGE" && makensis -V2 setup.nsi); ls -la "$STAGE/Instalar_MareAltaResort_v${VER}.exe"
+fi

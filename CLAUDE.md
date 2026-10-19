@@ -104,3 +104,13 @@ Base de trabalho: v0.6.5 recuperada; versões atuais em `project.godot` / `expor
 - Metal no glTF vira preto no toon: use `metallic` 0 em material novo que precisa aparecer claro (aço da luz da piscina).
 - **Erro (v0.9.2):** manchas pretas no fundo da piscina = `pow()` de base negativa (`1.0 - voronoi(...)`) no `pool_floor.gdshader` gerava NaN. **Regra:** em shader, `pow(max(x, 0.0), n)` sempre. Ao ver um defeito visual, ache a causa e corrija na hora, sem só avisar (pedido do Sergio, 18/10/2026).
 
+
+## 🪑 Sala dos Assentos e Apoios — pente fino (v0.9.3)
+- **Erro:** pessoas sentadas dentro do banco (assento do `painted_wooden_bench` fica a 0,65 m), no ar ao lado da mesa (as cadeiras do `outdoor_table_chair_set_01` ficam na frente/atrás, eixo z, não nos lados) e atrás da banqueta.
+- **Regra:** na animação `Sitting_Idle` o bumbum fica 0,46 m acima da raiz e 0,33 m **atrás** dela. Lugar de sentar = centro do assento + frente × 0,27–0,3, com y = topo do assento − `SEAT_DROP` (0,455). Meça o assento com Blender (faces horizontais) antes de criar um lugar. O banco é achatado (`_bench()`, escala y 0,7 → assento a 0,46 m).
+- **Erro:** objetos no ar: tigela 23 cm acima da `WoodenTable_01` (tampo a 0,55 m), petiscos 5 cm acima da mesa dobrável (0,73 m), gatos a 0,3 m (varanda tem topo 0,09 m e calçada 0,15 m; `B.platform` é centrada no y dado), balde fora do deck do bangalô, boia em pé solta no píer, varais de bandeirinha terminando no vazio.
+- **Regra:** varal de bandeirinha sempre preso em fachada (`_street_bunting`) ou em mastro `g:bamboo_pole`. Cadeira de balanço Poly Haven tem a origem 10,6 cm abaixo dos balanços.
+- **Ferramenta:** `XTRA="--full --floatcheck" Q=1 bash /tmp/claude-0/sub/dbg.sh fc "40,40,0,0,-60,12"` lista no log `FLOAT gap=...` cada modelo cuja base não encosta em nada (`tests/float_check.gd`). Itens no píer e dentro do barco aparecem como falso positivo; confira com render.
+- `--lineup=x,z` (depuração) põe 8 pessoas em fila e uma sentada num banco, para olhar calçados e roupas de perto. Na câmera `--cam`, pitch **negativo olha para baixo**.
+- Pessoas usam calçados gerados do pé da malha (`Ppl.clothes`: "shoes" = tênis, "sandals" = sandália com tira; zonas 4/5 no `guest.gdshader`). Nada de NPC descalço.
+- Gaivota: o `join` herdava a rotação do corpo e ela ficava em pé ("garrafa"); aplique a rotação (`transform_apply`) antes do `join`.

@@ -49,9 +49,12 @@ func _sea() -> void :
 		om.set_shader_parameter("swell", sw)
 		om.set_shader_parameter("tide", td)
 		return
+	# tween_method: o caminho "shader_parameter/x" não existe enquanto o shader não foi compilado (erro no log)
+	var sw0: = float(om.get_shader_parameter("swell") if om.get_shader_parameter("swell") != null else 1.0)
+	var td0: = float(om.get_shader_parameter("tide") if om.get_shader_parameter("tide") != null else 0.0)
 	_sea_tween = create_tween().set_parallel(true)
-	_sea_tween.tween_property(om, "shader_parameter/swell", sw, 3.0)
-	_sea_tween.tween_property(om, "shader_parameter/tide", td, 3.0)
+	_sea_tween.tween_method(func(v: float): om.set_shader_parameter("swell", v), sw0, sw, 3.0)
+	_sea_tween.tween_method(func(v: float): om.set_shader_parameter("tide", v), td0, td, 3.0)
 
 # ------------------------------------------------------------------ festas
 func _party() -> void :
@@ -96,7 +99,7 @@ func _party() -> void :
 				var a: = TAU * k / 4.0 + 0.4
 				var lp: = fp + Vector3(cos(a), 0, sin(a)) * 2.6
 				lp.y = _ground(lp.x, lp.z)
-				Real.place(party_root, "g:bench" if false else "painted_wooden_bench", lp, 0.0, -a + PI * 0.5, Color.WHITE, 1.4)
+				world.call("_bench", lp, -a + PI * 0.5, party_root)
 		"show_dj":
 			title = "DJ MARÉ"
 			var dp: = c + Vector3(0, 0, 0)
@@ -117,15 +120,22 @@ func _party() -> void :
 			var lb: = B.label(party_root, title, bp + Vector3(0, 2.4, 0.07), 60, Color(0.75, 0.1, 0.2), Color(1, 1, 1, 0.0))
 			lb.pixel_size = 0.0045
 		for k in 3:
-			var a: = c + Vector3(-9.0, 4.2, -2.0 + k * 3.0)
-			var b: = c + Vector3(9.0, 4.2, -2.0 + k * 3.0)
-			D.bunting(party_root, a, b, 0.9)
+			_pole_bunting(c + Vector3(-9.0, 0, -2.0 + k * 3.0), c + Vector3(9.0, 0, -2.0 + k * 3.0), 0.9)
 		var la: = c + Vector3(-8.0, 3.0, 5.5)
 		var lb2: = c + Vector3(8.0, 3.0, 5.5)
 		if world.has_method("_string_lights"):
 			world.call("_string_lights", la, lb2, 24)
 	else:
-		D.bunting(party_root, c + Vector3(-6.0, 4.0, 0.0), c + Vector3(6.0, 4.0, 0.0), 0.7)
+		_pole_bunting(c + Vector3(-6.0, 0, 2.6), c + Vector3(6.0, 0, 2.6), 0.7)
+
+## Varal de bandeirinhas preso no topo de dois mastros de bambu (g:bamboo_pole, argola a 4,48 m).
+func _pole_bunting(a: Vector3, b: Vector3, sag: float) -> void :
+	var top: = 4.45
+	for p in [a, b]:
+		var gp: Vector3 = p
+		gp.y = _ground(gp.x, gp.z)
+		Real.place(party_root, "g:bamboo_pole", gp, -1.0, 0.0, Color.WHITE, 0.0, false)
+	D.bunting(party_root, Vector3(a.x, _ground(a.x, a.z) + top, a.z), Vector3(b.x, _ground(b.x, b.z) + top, b.z), sag)
 
 func _flame_mat() -> Material:
 	return P.glow(Color(1.0, 0.55, 0.15), 4.0)

@@ -1,9 +1,13 @@
 Unicode true
 !include "MUI2.nsh"
 !define APP "Maré Alta Resort"
-!define VER "0.9.2"
+!define VER "0.9.3"
 Name "${APP} ${VER}"
+!ifdef LITE
+OutFile "Instalar_MareAltaResort_v${VER}_Leve.exe"
+!else
 OutFile "Instalar_MareAltaResort_v${VER}.exe"
+!endif
 RequestExecutionLevel user
 SetCompressor /SOLID lzma
 InstallDir "D:\Games\MareAltaResort"

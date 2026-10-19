@@ -69,6 +69,9 @@ func _ready() -> void :
 	var efx: = EventFX.new()
 	add_child(efx)
 	efx.setup(self)
+	var reef: = Reef.new()
+	add_child(reef)
+	reef.setup(self)
 	_weather_fx()
 	_mountains()
 	_build_lots()
@@ -575,7 +578,7 @@ func _petisco_plate(parent: Node, pos: Vector3) -> Node3D:
 	var n: = Node3D.new()
 	n.position = pos
 	parent.add_child(n)
-	Real.place(n, "carved_wooden_plate", Vector3.ZERO, 0.0, 0.0, Color.WHITE, 0.34)
+	Real.place(n, "carved_wooden_plate", Vector3.ZERO, 0.0, 0.0, Color(0.72, 0.55, 0.4), 0.26)   # 34 cm e clareado pelo toon parecia uma torrada gigante
 	Real.place(n, "croissant", Vector3(-0.05, 0.02, 0.03), 0.06, 0.4)
 	Real.place(n, "k:bread", Vector3(0.06, 0.02, -0.03), 0.07, 1.4)
 	Real.place(n, "food_lychee_01", Vector3(0.0, 0.02, 0.08), 0.05)
@@ -611,7 +614,7 @@ func _bungalow(i: int, c: Vector3) -> void :
 
 	B.model(self, "wooden_stool_01", Vector3(c.x - 1.5, y0, zf - 1.3), 0.3, 1.0)
 	B.model(self, "side_table_01", Vector3(c.x + 1.6, y0, zf - 1.2), 0.0, 1.0)
-	B.model(self, "wooden_bucket_01", Vector3(c.x + 2.4, y0, zb + 0.6), 0.0, 1.0)
+	B.model(self, "wooden_bucket_01", Vector3(c.x + 2.4, y0, zb - 0.6), 0.0, 1.0)   # dentro do quarto (antes caía fora do deck, no ar)
 
 	var room: = {"clean": Node3D.new(), "dirty": {}, "light": null}
 	var bed_c: = Vector3(c.x - 1.2, y0, c.z - 0.2)
@@ -807,7 +810,7 @@ func _upgrade_meshes(room: Dictionary, c: Vector3, y0: float, bed_c: Vector3, x0
 	_look(room, "decor", 1, decor)
 	var lounge: = Node3D.new()
 	add_child(lounge)
-	B.model(lounge, "Rockingchair_01", Vector3(c.x + 1.75, y0, c.z - 1.55), PI + 0.6, 1.0)
+	B.model(lounge, "Rockingchair_01", Vector3(c.x + 1.75, y0 - 0.106, c.z - 1.55), PI + 0.6, 1.0)   # o modelo tem a origem 10,6 cm abaixo dos balanços
 	B.model(lounge, "side_table_01", Vector3(c.x + 2.3, y0, c.z - 0.75), 0.0, 0.9)
 	B.model(lounge, "vintage_oil_lamp", Vector3(c.x + 2.3, y0 + 0.5, c.z - 0.75), 0.0, 0.6)
 	var plant: = B.model(lounge, "pachira_aquatica_01", Vector3(c.x - 2.0, y0, zb - 0.45), 0.4, 1.0)
@@ -1045,7 +1048,8 @@ func _bar() -> void :
 	for s in stools:
 		var face: = atan2( - s.x, - s.z)
 		B.model(self, "bar_chair_round_01", c + s + Vector3(0, y0, 0), face, 1.0)
-		bar_spots.append({"pos": c + s + Vector3(0, y0 + 0.28, 0), "rot": face, "anim": "Sitting_Idle_Loop", "busy": false})
+		# assento da banqueta a 0,69 m; raiz 0,22 m à frente (para o balcão), ver SEAT_DROP em world_village.gd
+		bar_spots.append({"pos": c + s + Vector3(0, y0 + 0.69 - 0.455, 0) + Vector3(sin(face), 0, cos(face)) * 0.22, "rot": face, "anim": "Sitting_Idle_Loop", "busy": false})
 	var top_y: = y0 + ch + 0.08
 	_coconut_cup(self, c + Vector3(-0.85, top_y, -2.22))
 	_petisco_plate(self, c + Vector3(0.85, top_y, -2.22))
@@ -2149,7 +2153,7 @@ func _reception_details() -> void :
 	B.box(self, Vector3(1.2, 0.8, 0.05), Vector3(2.8, y0 + 1.6, 12.82), B.flat(Color(0.75, 0.55, 0.35), 0.9))
 	for k in 5:
 		B.box(self, Vector3(0.22, 0.28, 0.01), Vector3(2.4 + (k % 3) * 0.35, y0 + 1.75 - (k / 3) * 0.35, 12.85), B.flat([Color(1, 1, 0.7), Color(0.8, 0.95, 1), Color(1, 0.85, 0.85)][k % 3], 0.9))
-	B.model(self, "painted_wooden_bench", Vector3(-3.0, y0, 20.9), PI, 1.0)
+	B.model(self, "painted_wooden_bench", Vector3(-3.0, y0, 20.9), PI, 1.0).scale = Vector3(1.0, 0.7, 1.0)
 	var kn2: = Real.place(self, "g:brass_knob", Vector3(-0.6, y0 + 1.14, 15.5), -1.4, 0.0, Color.WHITE, 0.0, false)
 	if kn2 != null:
 		kn2.rotation.x = PI * 0.5
