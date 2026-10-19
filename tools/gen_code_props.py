@@ -53,7 +53,9 @@ def box(size, loc, m, bevel=0.01, rot=(0, 0, 0), sub=0, uv=0.5):
     bpy.ops.mesh.primitive_cube_add(size=1, location=loc, rotation=rot)
     ob = bpy.context.active_object
     ob.scale = size
-    bpy.ops.object.transform_apply(scale=True, rotation=False)
+    # v1.0: só a escala. Com location=True (padrão do Blender) a origem ia para (0,0,0) e toda peça girada
+    # (rot= ou rotation_euler) girava em volta da origem do mundo: venezianas, treliça e revistas da banca fora do lugar.
+    bpy.ops.object.transform_apply(location=False, scale=True, rotation=False)
     bpy.ops.object.mode_set(mode="EDIT")
     bpy.ops.mesh.select_all(action="SELECT")
     bpy.ops.uv.cube_project(cube_size=uv)
@@ -1638,9 +1640,10 @@ def win_shutters():
         hx, hz = sd * 0.64, 0.04
 
         def put(size, u, y, zl, rx=0.0):
-            x = hx + u * math.cos(phi) + zl * math.sin(phi)
-            z = hz - u * math.sin(phi) + zl * math.cos(phi)
-            ob = gbox(size, (x, y, z), wood, 0.004, rx=rx, ry=phi)
+            # folha aberta para FORA da parede (+z no Godot); no Blender o giro em Z é -phi (y do Blender = -z do Godot)
+            x = hx + u * math.cos(phi) - zl * math.sin(phi)
+            z = hz + u * math.sin(phi) + zl * math.cos(phi)
+            ob = gbox(size, (x, y, z), wood, 0.004, rx=rx, ry=-phi)
             parts.append(ob)
         # montantes, travessas e ripas (u = distância da dobradiça)
         put((0.05, 1.32, 0.04), sd * 0.025, cy, 0.02)

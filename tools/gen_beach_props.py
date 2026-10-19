@@ -261,7 +261,9 @@ def _box(name, size, loc, m, bevel=0.012, rot=(0, 0, 0), sub=0):
     ob = bpy.context.active_object
     ob.name = name
     ob.scale = size
-    bpy.ops.object.transform_apply(scale=True, rotation=False)
+    # só a escala: com location=True (padrão) a origem ia para (0,0,0) e a peça girava em volta do mundo
+    # (encosto da espreguiçadeira solto e virado, v1.0)
+    bpy.ops.object.transform_apply(location=False, scale=True, rotation=False)
     bv = ob.modifiers.new("bv", "BEVEL")
     bv.width = bevel
     bv.segments = 3
@@ -287,7 +289,7 @@ def lounger():
     # longarinas laterais do assento e pernas torneadas
     for sx in (-1, 1):
         parts.append(_box("rail", (0.05, 1.2, 0.07), (sx * (W / 2 - 0.03), -0.28, 0.33), wood))
-        parts.append(_box("rail_enc", (0.05, 0.85, 0.07), (sx * (W / 2 - 0.03), 0.62, 0.52), wood, rot=(math.radians(-38), 0, 0)))
+        parts.append(_box("rail_enc", (0.05, 0.85, 0.07), (sx * (W / 2 - 0.03), 0.66, 0.6), wood, rot=(math.radians(38), 0, 0)))
         for y in (-0.82, 0.12):
             bpy.ops.mesh.primitive_cylinder_add(radius=0.026, depth=0.33, vertices=24, location=(sx * (W / 2 - 0.03), y, 0.165))
             lg = bpy.context.active_object
@@ -301,12 +303,12 @@ def lounger():
     a = math.radians(38)
     for k in range(7):
         t = 0.1 + k * 0.115
-        parts.append(_box("ripa_enc", (W - 0.02, 0.085, 0.02), (0, 0.33 + t * math.cos(a), 0.37 + t * math.sin(a)), wood, 0.006, rot=(math.radians(-38), 0, 0)))
+        parts.append(_box("ripa_enc", (W - 0.02, 0.085, 0.02), (0, 0.33 + t * math.cos(a), 0.37 + t * math.sin(a)), wood, 0.006, rot=(math.radians(38), 0, 0)))
     # colchonete do assento e do encosto (cantos bem arredondados), com faixa branca
     parts.append(_box("col_assento", (W - 0.08, 1.12, 0.07), (0, -0.28, 0.43), pano, 0.03, sub=2))
     parts.append(_box("faixa_assento", (W - 0.07, 0.1, 0.075), (0, -0.28, 0.435), faixa, 0.03, sub=1))
-    parts.append(_box("col_encosto", (W - 0.08, 0.78, 0.07), (0, 0.33 + 0.5 * math.cos(a) * 0.82 + 0.02, 0.43 + 0.5 * math.sin(a) * 0.82 - 0.0), pano, 0.03, rot=(math.radians(-38), 0, 0), sub=2))
-    parts.append(_box("travesseiro", (0.5, 0.26, 0.1), (0, 0.33 + 0.74 * math.cos(a) + 0.05, 0.43 + 0.74 * math.sin(a) + 0.07), faixa, 0.045, rot=(math.radians(-38), 0, 0), sub=2))
+    parts.append(_box("col_encosto", (W - 0.08, 0.78, 0.07), (0, 0.33 + 0.5 * math.cos(a) * 0.82 + 0.02, 0.43 + 0.5 * math.sin(a) * 0.82 - 0.0), pano, 0.03, rot=(math.radians(38), 0, 0), sub=2))
+    parts.append(_box("travesseiro", (0.5, 0.26, 0.1), (0, 0.33 + 0.74 * math.cos(a) + 0.05, 0.43 + 0.74 * math.sin(a) + 0.07), faixa, 0.045, rot=(math.radians(38), 0, 0), sub=2))
     # rodinhas traseiras (lado do encosto fica em +Y; rodas na frente do assento = -Y não, nas pernas de +Y)
     for sx in (-1, 1):
         bpy.ops.mesh.primitive_cylinder_add(radius=0.06, depth=0.035, vertices=24, location=(sx * (W / 2 + 0.005), 0.12, 0.06), rotation=(0, math.radians(90), 0))
@@ -320,12 +322,10 @@ def lounger():
     bpy.ops.object.join()
     export("lounger")
 
-towel()
-sandcastle()
-strawhat("strawhat_red", (0.9, 0.2, 0.2))
-strawhat("strawhat_blue", (0.12, 0.5, 0.75))
-strawhat("strawhat_dark", (0.18, 0.18, 0.22))
-cap()
-sunglasses()
-lounger()
+ALL = {"towel": towel, "sandcastle": sandcastle, "strawhat_red": lambda: strawhat("strawhat_red", (0.9, 0.2, 0.2)),
+       "strawhat_blue": lambda: strawhat("strawhat_blue", (0.12, 0.5, 0.75)), "strawhat_dark": lambda: strawhat("strawhat_dark", (0.18, 0.18, 0.22)),
+       "cap": cap, "sunglasses": sunglasses, "lounger": lounger}
+import sys as _sys
+for _n in (_sys.argv[1:] or list(ALL)):
+    ALL[_n]()
 print("gen_beach_props ok")

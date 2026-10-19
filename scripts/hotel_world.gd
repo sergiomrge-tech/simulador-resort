@@ -95,8 +95,9 @@ func _build() -> Node3D:
 	# espreguiçadeiras com guarda-sol nos dois lados longos
 	for k in 6:
 		var x: = -33.5 + k * 3.0
-		world._lounger(Vector3(x, TER_Y, 28.6), PI)
-		world._lounger(Vector3(x, TER_Y, 43.6), 0.0)
+		# cabeceira (encosto) longe da piscina: quem deita olha para a água
+		world._lounger(Vector3(x, TER_Y, 28.6), 0.0)
+		world._lounger(Vector3(x, TER_Y, 43.6), PI)
 		if k % 2 == 0:
 			world._umbrella(Vector3(x + 1.5, TER_Y, 28.2), 1.35, [Color(0.95, 0.95, 0.9), Color(0.12, 0.55, 0.58)][(k / 2) % 2])
 			world._umbrella(Vector3(x + 1.5, TER_Y, 44.0), 1.35, [Color(0.12, 0.55, 0.58), Color(0.95, 0.95, 0.9)][(k / 2) % 2])
@@ -244,7 +245,7 @@ func _people(root: Node3D) -> void:
 		var x: = -33.5 + (k % 6) * 3.0
 		var north: = k % 2 == 0
 		var p: = Vector3(x, TER_Y + 0.3, 28.6 if north else 43.6)
-		_npc(root, p, (PI if north else 0.0) + PI, "Sitting_Idle_Loop")
+		_npc(root, p, (0.0 if north else PI) + PI, "Sitting_Idle_Loop")
 	var n_swim: = 5 if Quality.hd else 2
 	for k in n_swim:
 		var p2: = Vector3(_rng.randf_range(POOL_MIN.x + 1.5, POOL_MAX.x - 1.5), WATER_Y - 0.28, _rng.randf_range(POOL_MIN.y + 1.2, POOL_MAX.y - 1.2))

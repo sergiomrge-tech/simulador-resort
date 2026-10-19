@@ -14,6 +14,14 @@ for base in ("assets/models", "assets/models_hd", "assets/tex", "assets/tex_hd")
             t = s.replace("compress/mode=0", "compress/mode=2").replace("mipmaps/generate=false", "mipmaps/generate=true")
             if "_nor_" in f or "_nor." in f:
                 t = t.replace("compress/normal_map=0", "compress/normal_map=1")
+            # v1.0: mapas de relevo/rugosidade em 1024 px (no visual cartoon quase não aparecem). Em 2k eles
+            # somavam ~1 GB e o .pck passava de 2 GB, o limite do instalador NSIS ("error mmapping file").
+            if re.search(r"_(nor|rough|arm|ao|disp)(_gl)?[_.]", f):
+                t = t.replace("process/size_limit=0", "process/size_limit=1024")
+            # v1.0: texturas que o Blender embute nos modelos gerados (g:*) são cópias 2k repetidas (madeira, linho...).
+            # Em 1024 px ficam iguais nos props e o .pck volta para baixo de 2 GB (limite do instalador NSIS).
+            if os.sep + os.path.join("models", "gen") + os.sep in p + os.sep or p.replace("\\", "/").find("/models/gen/") >= 0:
+                t = t.replace("process/size_limit=0", "process/size_limit=1024")
             if t != s:
                 open(p, "w", encoding="utf-8").write(t)
                 n += 1

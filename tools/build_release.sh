@@ -33,6 +33,9 @@ mkdir -p build/win
 rm -f build/win/MareAltaResort.exe build/win/MareAltaResort.pck
 "$GODOT" --headless --path . --export-release "Windows Desktop" build/win/MareAltaResort.exe 2>&1 | tail -3
 [ -f build/win/MareAltaResort.pck ] || { echo "Abortado: exportação não gerou o .pck"; exit 1; }
+# NSIS não aceita mais de 2 GB de dados ("Internal compiler error: error mmapping file ... out of range")
+SZ=$(( $(stat -c %s build/win/MareAltaResort.pck) + $(stat -c %s build/win/MareAltaResort.exe) ))
+[ "$SZ" -lt 2100000000 ] || { echo "Abortado: .exe + .pck = $SZ bytes (limite do NSIS ~2 GB). Reduza texturas (tools/vram_textures.py)."; exit 1; }
 
 if [ "${1:-}" != "--sem-smoke" ]; then
   echo "-- 5/6 smoke test (vila): nenhum 'not found' no log"
