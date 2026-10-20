@@ -3,15 +3,17 @@ name: Compilar patch Maré Alta Resort 1.0.1
 on:
   workflow_dispatch:
   push:
-    branches: [main]
+    branches: [main, 'fix/**']
     paths:
       - '.github/workflows/patch-1.0.1.yml'
+      - 'scripts/**'
+      - 'tests/**'
 
 permissions:
   contents: write
 
 concurrency:
-  group: mare-alta-patch-101
+  group: mare-alta-patch-101-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
@@ -51,6 +53,22 @@ jobs:
           cp -a "$RUNNER_TEMP/godot/unpacked/templates/." "$HOME/.local/share/godot/export_templates/4.5.1.stable/"
           "$RUNNER_TEMP/godot/godot" --version
           echo "GODOT=$RUNNER_TEMP/godot/godot" >> "$GITHUB_ENV"
+
+      - name: Testar ciclo de vida e ownership sem assets
+        run: |
+          set -euo pipefail
+          mkdir -p shots
+          TEST_ROOT=$(mktemp -d)
+          mkdir -p "$TEST_ROOT/tests/support" "$TEST_ROOT/scripts"
+          printf 'config_version=5\n' > "$TEST_ROOT/project.godot"
+          cp tests/lifecycle_regression.gd "$TEST_ROOT/tests/"
+          cp tests/support/state_waiter.gd "$TEST_ROOT/tests/support/"
+          cp scripts/people.gd "$TEST_ROOT/scripts/"
+          timeout 30 "$GODOT" --headless --path "$TEST_ROOT" --script res://tests/lifecycle_regression.gd 2>&1 | tee shots/lifecycle-ci.log
+          grep -qx 'LIFECYCLE_TEST PASS' shots/lifecycle-ci.log
+          if grep -Ei 'SCRIPT ERROR|Lambda capture.*freed|inconsistent' shots/lifecycle-ci.log; then
+            exit 1
+          fi
 
       - name: Baixar CC0 e modelar todos os assets com Blender
         run: |
@@ -106,7 +124,11 @@ jobs:
           # Após validação de ocupação/rotas, testar fluxo comercial (VIP/rush)
           # sem a distância inicial aleatória da praia interferir no relógio acelerado.
           timeout 380 "$GODOT" --headless --audio-driver Dummy --path . -- --loop-test --quality=0 2>&1 | tee shots/loop-ci.log
-          grep -q 'LOOP_TEST PASS' shots/loop-ci.log
+          grep -qx 'LOOP_TEST PASS.*' shots/loop-ci.log
+          # Godot pode sair com código 0 mesmo após erro de script.
+          if grep -Ei 'SCRIPT ERROR|Lambda capture.*freed|inconsistent' shots/kiosk-ci.log shots/loop-ci.log; then
+            echo "Falha: erro de script, referência liberada ou ownership inválido"; exit 1
+          fi
 
       - name: Tirar screenshots e procurar erros de recursos
         run: |
@@ -179,7 +201,7 @@ jobs:
           if-no-files-found: ignore
 
       - name: Publicar link direto do instalador de testes
-        if: success()
+        if: success() && github.ref == 'refs/heads/main'
         env:
           GH_TOKEN: ${{ github.token }}
           STAGE: ${{ runner.temp }}/stage
