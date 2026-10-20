@@ -140,6 +140,16 @@ func vip_rush_test() -> void :
 	check(reserved.size() <= main.world.kiosk_spots.size(), "rush respeita as vagas do quiosque (%d de %d)" % [reserved.size(), main.world.kiosk_spots.size()])
 	var served0: int = v.served_today
 	v.enabled = false
+	# O teste de rotas/ocupação é feito no kiosk_regression.gd. No rush,
+	# queremos testar a sequência de atendimentos: aproximar clientes das
+	# cadeiras para não depender do FPS/tempo de travessia da praia no CI.
+	Core.minutes = 12.0 * 60.0
+	Core.speed_mult = 4.0
+	for customer in v.customers:
+		if customer.state == "kwalk" and not customer.spot.is_empty():
+			var approach: Vector3 = customer.spot.get("approach", customer.spot.pos + Vector3(0, 0, 0.85))
+			customer.position = approach + Vector3(0, 0, 0.25)
+			customer.go([approach])
 	for k in 12:
 		var up = await wait_until( func(): return not v.waiting_customers().is_empty(), 25.0)
 		if not up:
