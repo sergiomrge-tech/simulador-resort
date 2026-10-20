@@ -2,6 +2,9 @@ extends Node3D
 
 
 
+const DishPresentation = preload("res://scripts/dish_presentation.gd")
+var prep_visual: Node3D
+
 const GuestScript: = preload("res://scripts/guest.gd")
 const KIOSK_OPEN: = 8.0 * 60.0
 const KIOSK_CLOSE: = 18.0 * 60.0
@@ -182,6 +185,8 @@ func _process(delta: float) -> void :
 		g.set_meta("idx", nxt)
 		var jitter: = Vector3(rng.randf_range(-0.35, 0.35), 0, rng.randf_range(-0.35, 0.35))
 		g.go([_outside_blocks(path[nxt] + jitter)])
+	if prep.is_empty():
+		_clear_prep_visual()
 	_kiosk_tick(dmin)
 	_prep_tick(delta)
 	_fish_tick(delta)
@@ -536,6 +541,10 @@ func _release_spot(g) -> void:
 	g.spot = {}
 
 func _leave(g) -> void :
+	clear_served_visuals(g)
+	if not prep.is_empty() and prep.get("g") == g:
+		prep = {}
+		_clear_prep_visual()
 	g.play("Sitting_Idle_Loop")
 	g.show_menu(false)
 	g.show_order("")
@@ -609,6 +618,7 @@ func kiosk_action() -> bool:
 		_leave(g)
 		return false
 	prep = {"g": g, "dish": dish, "stage": 0, "p": 0.0, "away": 0.0}
+	_show_prep_visual(dish)
 	prep_advance(Economy.TAP_BURST * _stage_secs())
 	return true
 
@@ -632,6 +642,7 @@ func prep_advance(sec: float) -> void :
 			var g = prep.g
 			var dish: String = prep.dish
 			prep = {}
+			_clear_prep_visual()
 			_deliver_item(g, dish)
 			return
 
@@ -643,6 +654,7 @@ func _deliver_item(g, dish: String) -> bool:
 		_leave(g)
 		return false
 	var price: = Core.sell_dish(dish, "kiosk")
+	_show_delivered_visual(g, dish)
 	g.set_meta("revenue", int(g.get_meta("revenue", 0)) + maxi(price, 0))
 	g.set_meta("delivered", int(g.get_meta("delivered", 0)) + 1)
 	get_tree().call_group("audio", "sfx", "glass", -8.0)
@@ -702,7 +714,7 @@ func _complete_order(g, last_dish: String) -> void :
 	g.show_order("")
 	g.state = "keat"
 	g.set_meta("eat", rng.randf_range(EAT_MIN.x, EAT_MIN.y))
-	g.consume(last_dish != "petiscos")
+	g.consume_dish(last_dish)
 
 ## Serve o pedido inteiro de uma vez (atendente contratado e testes).
 func kiosk_serve() -> bool:
@@ -722,7 +734,9 @@ func helper_serve() -> void :
 	kiosk_serve()
 
 func _on_slept(_d: int) -> void :
+	_clear_prep_visual()
 	for g in customers.duplicate():
+		clear_served_visuals(g)
 		_release_spot(g)
 		customers.erase(g)
 		g.queue_free()
@@ -737,3 +751,61 @@ func _on_slept(_d: int) -> void :
 	fish = {}
 	fish_casts = 0
 	world.reset_coco_piles()
+
+## Apresentação vinculada ao proprietário do pedido e à superfície do assento.
+func _prep_position() -> Vector3:
+	return world.KIOSK_C + Vector3(0, 1.28, 1.85)
+
+func _clear_prep_visual() -> void:
+	if is_instance_valid(prep_visual):
+		prep_visual.visible = false
+		prep_visual.queue_free()
+	prep_visual = null
+
+func _show_prep_visual(dish: String) -> void:
+	_clear_prep_visual()
+	prep_visual = DishPresentation.build(world, dish)
+	if prep_visual != null:
+		prep_visual.name = "PreparingDish"
+		prep_visual.global_position = _prep_position()
+		prep_visual.scale = Vector3.ONE * 0.85
+
+func served_dishes(g) -> Array:
+	var result: Array = []
+	var root = g.get_meta("served_visuals", null)
+	if is_instance_valid(root):
+		for child in root.get_children():
+			if child.has_meta("dish_id"):
+				result.append(str(child.get_meta("dish_id")))
+	return result
+
+func clear_served_visuals(g) -> void:
+	var root = g.get_meta("served_visuals", null)
+	if is_instance_valid(root):
+		root.visible = false
+		root.queue_free()
+	if g.has_meta("served_visuals"):
+		g.remove_meta("served_visuals")
+
+func _show_delivered_visual(g, dish: String) -> void:
+	var root = g.get_meta("served_visuals", null)
+	if not is_instance_valid(root):
+		root = Node3D.new()
+		root.name = "ServedOrder_%d" % g.get_instance_id()
+		root.set_meta("customer_id", g.get_instance_id())
+		world.add_child(root)
+		root.global_position = g.spot.get("serve_pos", _prep_position())
+		root.rotation.y = float(g.spot.get("serve_rot", 0.0))
+		g.set_meta("served_visuals", root)
+		# Callable de método: não captura um Node em lambda que possa ser liberado.
+		g.tree_exiting.connect(root.queue_free)
+	var index: int = int(g.get_meta("delivered", 0))
+	var count: int = _items(g).size()
+	var food: Node3D = DishPresentation.build(root, dish)
+	if food == null:
+		return
+	var target := Vector3((index - (count - 1) * 0.5) * 0.225, 0, 0)
+	food.scale = Vector3.ONE * (0.72 if bool(g.spot.get("table", false)) else 0.86)
+	food.position = root.to_local(_prep_position())
+	var tween: Tween = food.create_tween()
+	tween.tween_property(food, "position", target, 0.35).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)

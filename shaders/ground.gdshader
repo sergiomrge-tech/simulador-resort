@@ -11,9 +11,9 @@ uniform float tile = 0.22;
 uniform float wet_start = -27.0;
 uniform float wet_end = -34.0;
 uniform float rain_wet = 0.0;
-uniform vec3 sand_light : source_color = vec3(0.88, 0.78, 0.59);
-uniform vec3 sand_dark : source_color = vec3(0.78, 0.65, 0.46);
-uniform vec3 sand_wet : source_color = vec3(0.68, 0.52, 0.36);
+uniform vec3 sand_light : source_color = vec3(0.62, 0.51, 0.35);
+uniform vec3 sand_dark : source_color = vec3(0.49, 0.38, 0.25);
+uniform vec3 sand_wet : source_color = vec3(0.40, 0.29, 0.18);
 uniform vec3 foam : source_color = vec3(1.0, 1.0, 0.98);
 varying vec3 wpos;
 

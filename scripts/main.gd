@@ -459,7 +459,9 @@ func _run_shot(n: String) -> void :
 			var walker = guests._make_guest()
 			walker.position = Vector3(-6.0, 0.0, 5.0)
 			walker.go([Vector3(80.0, 0.0, 2.0)])
-	await get_tree().create_timer(0.3).timeout
+	if args.has("orders-demo"):
+		_stage_kiosk_orders()
+	await get_tree().create_timer(0.5 if args.has("orders-demo") else 0.3).timeout
 	for i in 25:
 		await get_tree().process_frame
 	day.force_update()
@@ -740,3 +742,32 @@ func _demo_summary() -> Dictionary:
 			{"a": -320, "r": "Ventilador de teto · Bangalô 1", "c": "upgrade"}, 
 		], 
 	}
+
+## Captura de pedidos servidos pelo fluxo real (estoque, preparo/entrega e reserva).
+func _stage_kiosk_orders() -> void:
+	village.enabled = false
+	village._on_slept(0)
+	Core.paused = true
+	Core.staff["atendente"] = false
+	for ingredient in Economy.SUPPLIES:
+		Core.stock[ingredient] = 100
+	for id in Economy.DISHES:
+		Core.prog.discovered[id] = true
+	var orders: Array = [["coco_gelado", "suco", "caipirinha"], ["petiscos", "tapioca", "pastel"], ["acai", "batida", "moqueca"]]
+	for i in orders.size():
+		var customer = village.spawn_customer()
+		if customer == null:
+			continue
+		village._release_spot(customer)
+		customer.spot = world.kiosk_spots[[0, 2, 4][i]]
+		customer.spot.busy = true
+		customer.spot["owner"] = customer.get_instance_id()
+		customer.position = customer.spot.pos
+		customer._route.clear()
+		customer.set_meta("items", orders[i])
+		customer.set_meta("delivered", 0)
+		customer.set_meta("revenue", 0)
+		village._order(customer)
+		customer.timer = 10000.0
+		village.kiosk_serve()
+		customer.set_meta("eat", 10000.0)

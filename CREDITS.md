@@ -149,3 +149,8 @@ Modelos **Poly Haven CC0**, obtidos por `MODELS_EXTRA` em `tools/fetch_assets.py
 | `croissant` (pão) | https://polyhaven.com/a/croissant | CC0 |
 
 **Observação:** modelos baixados e GLBs gerados são ignorados pelo Git; o script de preparação precisa reconstruí-los e o patch precisa incluí-los explicitamente.
+
+### Pedidos servidos — RC3
+- Pratos rasos/fundos e talheres: Kenney **Food Kit**, CC0. Fonte oficial: https://kenney.nl/assets/food-kit ; download reproduzível em `tools/fetch_assets.py`.
+- Recheios de petiscos, tapioca, pastel, açaí, moqueca e batida de coco: modelos originais do projeto, gerados por `tools/gen_dishes.py`, com sementes fixas.
+- Cada apresentação referencia o ID estável do cardápio em `scripts/dish_presentation.gd`; cocos, sucos e caipirinhas preservam os modelos detalhados existentes.

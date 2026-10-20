@@ -28,7 +28,7 @@ for slug in "${PATCH_PH[@]}"; do
   }
 done
 # Novos modelos v1.0.1 + os props refeitos após corrigir o Blender.
-PATCH_GEN=(coconut_green coconut_open pineapple orange frappe cup_plastic glass_juice cocktail
+PATCH_GEN=(dish_petiscos dish_tapioca dish_pastel dish_acai dish_moqueca dish_batida coconut_green coconut_open pineapple orange frappe cup_plastic glass_juice cocktail
            campfire_logs beach_flag beach_spade boat_hull
            lounger win_shutters trellis_planter newsstand)
 for name in "${PATCH_GEN[@]}"; do
@@ -42,6 +42,10 @@ FILES=$(
     git diff --name-only "$BASE" -- scripts shaders scenes assets '*.tscn'
     git ls-files --others --exclude-standard -- scripts shaders scenes assets
     find assets/models/qnat -maxdepth 1 -type f
+    for name in plate-dinner plate-deep utensil-spoon utensil-fork; do
+      test -s "assets/models/kenney/$name.glb"
+      echo "assets/models/kenney/$name.glb"
+    done
     # glTF Poly Haven de 1k e todas as dependências (.bin, JPG, PNG)
     for slug in "${PATCH_PH[@]}"; do
       find "assets/models/${slug}" -type f

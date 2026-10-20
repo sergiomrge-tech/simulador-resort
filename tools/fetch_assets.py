@@ -86,7 +86,8 @@ KENNEY = {
         "flower_purpleB", "log_large", "stump_round", "campfire_logs", "campfire_stones", "tent_smallOpen", "lily_large", "mushroom_red"],
     "https://kenney.nl/media/pages/assets/food-kit/83086fa91c-1719418518/kenney_food-kit.zip": [
         "coconut", "coconut-half", "cocktail", "frappe", "glass", "fish", "fish-bones", "loaf", "loaf-round", "bread",
-        "pineapple", "watermelon", "orange", "bottle-oil", "ice-cream-cup", "cup", "cup-tea", "bowl"],
+        "pineapple", "watermelon", "orange", "bottle-oil", "ice-cream-cup", "cup", "cup-tea", "bowl",
+        "plate-dinner", "plate-deep", "utensil-spoon", "utensil-fork"],
     "https://kenney.nl/media/pages/assets/pirate-kit/e6d4bb1525-1771333093/kenney_pirate-kit.zip": [
         "boat-row-small", "boat-row-large", "palm-detailed-bend", "palm-detailed-straight", "palm-bend", "palm-straight",
         "flag", "flag-pennant", "tool-paddle", "barrel", "crate-bottles", "bottle", "bottle-large", "ship-small", "ship-medium"],
@@ -387,6 +388,7 @@ def generated_props():
     Rodar após baixar texturas evita exportar GLBs sem materiais/texturas.
     """
     groups = [
+        ("gen_dishes.py", ("dish_petiscos", "dish_tapioca", "dish_pastel", "dish_acai", "dish_moqueca", "dish_batida")),
         ("gen_beach_props.py", ("towel", "sandcastle", "lounger")),
         ("gen_code_props.py", ("tiki_torch", "win_shutters", "trellis_planter", "newsstand", "boat_mast")),
         ("gen_business.py", ("biz_gelato", "biz_canopy", "biz_food_truck", "biz_barrier")),

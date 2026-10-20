@@ -92,7 +92,7 @@ func _materials() -> void :
 	M.azulejo = B.mat("blue_floor_tiles_01", 0.5, Color(1, 1, 1), 0.35)
 	M.stone = B.mat("light_stone", 0.55, Color(1, 1, 1), 0.75)
 	M.terra_tiles = B.mat("patio_tiles", 0.55, Color(0.95, 0.9, 0.84), 0.75)
-	var thatch: = B.mat("reed_roof_04", 0.45, Color(1.25, 1.08, 0.8), 0.95).duplicate()
+	var thatch: = B.mat("reed_roof_04", 0.45, Color(0.72, 0.61, 0.43), 0.95).duplicate()
 	thatch.cull_mode = BaseMaterial3D.CULL_DISABLED
 	M.thatch = thatch
 	M.post = B.mat("palm_tree_bark", 0.8, Color(0.8, 0.7, 0.6), 0.9)

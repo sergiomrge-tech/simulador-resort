@@ -728,19 +728,17 @@ func _quiosque() -> void :
 	var snack_y: = y0 + ch + 0.08
 	Real.place(self, "carved_wooden_plate", c + Vector3(-1.45, snack_y, 1.85), 0.0, 0.0, Color(0.82, 0.68, 0.48), 0.8)
 	_fruit_row(c + Vector3(-1.69, snack_y + 0.105, 1.85))
-	_coconut_cup(self, c + Vector3(-0.55, snack_y, 2.22))
-	_petisco_plate(self, c + Vector3(0.5, snack_y, 2.22))
 	for k in 5:
-		Real.place(self, "k:coconut", c + Vector3(0.82 + (k % 3) * 0.28, snack_y, 1.65 + (k / 3) * 0.25), 0.22, k * 1.7)
+		Real.place(self, "k:coconut", c + Vector3(1.9 + (k / 3) * 0.18, y0 + ch, -0.3 + (k % 3) * 0.26), 0.22, k * 1.7)
 	B.model(self, "wooden_bucket_01", c + Vector3(-1.3, y0 + 0.028, 0.8), 0.4, 0.65)
 	_cooler(c + Vector3(1.3, y0 + 0.028, 0.3), 1.2)
 	B.model(self, "plastic_crate_01", c + Vector3(-1.3, y0 + 0.028, -0.35), 0.2, 1.0)
 	# Placa pintada de azul-petróleo, moldura de madeira e tipografia em creme.
-	B.box(self, Vector3(4.0, 0.74, 0.10), c + Vector3(0, y0 + 2.5, 2.42), M.darkwood)
-	B.box(self, Vector3(3.82, 0.58, 0.025), c + Vector3(0, y0 + 2.5, 2.485), wood_tint(Color(0.06, 0.29, 0.31)))
-	var brand: Label3D = B.label(self, "MARÉ ALTA", c + Vector3(0, y0 + 2.58, 2.51), 76, Color(1.0, 0.94, 0.78), Color(0.025, 0.1, 0.11, 0.8))
+	B.box(self, Vector3(4.0, 0.64, 0.10), c + Vector3(0, y0 + 2.45, 3.16), M.darkwood)
+	B.box(self, Vector3(3.82, 0.5, 0.025), c + Vector3(0, y0 + 2.45, 3.225), wood_tint(Color(0.06, 0.29, 0.31)))
+	var brand: Label3D = B.label(self, "MARÉ ALTA", c + Vector3(0, y0 + 2.51, 3.25), 76, Color(1.0, 0.94, 0.78), Color(0.025, 0.1, 0.11, 0.8))
 	brand.outline_size = 4
-	var subtitle: Label3D = B.label(self, "QUIOSQUE • SABORES DA PRAIA", c + Vector3(0, y0 + 2.33, 2.51), 24, Color(0.94, 0.83, 0.6), Color(0, 0, 0, 0))
+	var subtitle: Label3D = B.label(self, "QUIOSQUE • SABORES DA PRAIA", c + Vector3(0, y0 + 2.28, 3.25), 24, Color(0.94, 0.83, 0.6), Color(0, 0, 0, 0))
 	subtitle.shaded = false
 	_kiosk_board = Node3D.new()
 	_kiosk_board.name = "KioskMenuBoard"
@@ -771,14 +769,14 @@ func _quiosque() -> void :
 		var p: = c + Vector3(-0.7 + k * 1.4, y0, 2.72)   # em cima do deck (antes na borda inclinada, 10 cm no ar)
 		B.model(self, "bar_chair_round_01", p, PI, 1.0)
 		# banqueta de bar: assento a 0,69 m; a raiz vai 0,22 m para a frente (para o balcão)
-		kiosk_spots.insert(k, {"pos": p + Vector3(0, 0.69 - SEAT_DROP, -0.22), "rot": PI, "busy": false, "need": ""})
+		kiosk_spots.insert(k, {"pos": p + Vector3(0, 0.69 - SEAT_DROP, -0.22), "rot": PI, "busy": false, "need": "", "serve_pos": c + Vector3(-0.7 + k * 1.4, snack_y, 2.1), "serve_rot": 0.0})
 	village_points.kiosk_work = c + Vector3(0, 0.1, 0.8)
 	var l: = OmniLight3D.new()
 	l.position = c + Vector3(0, 2.5, 0)
 	l.omni_range = 6.5
 	l.light_color = Color(1.0, 0.75, 0.45)
 	add_child(l)
-	lanterns.append([l, null, 1.6, false])
+	lanterns.append([l, null, 0.95, false])
 
 
 ## Mesa com duas cadeiras (dois lugares de cliente) e, opcionalmente, guarda-sol.
@@ -788,7 +786,7 @@ func _kiosk_table(tp: Vector3, need: String, umb: Color, umbrella: bool) -> void
 		_umbrella(tp, 1.45, umb, false)
 	# tampo da mesa dobrável a 0,73 m, centrado em (-0,08; 0,07): petiscos e cardápio apoiados nele (antes flutuavam 5 cm)
 	var top: = tp + Vector3(-0.08, 0.732, 0.07)
-	_table_bites(top)
+	# Pratos e bebidas aparecem só quando o pedido deste lugar é entregue.
 	# cardapinho em pé na mesa
 	var menu: = B.box(self, Vector3(0.16, 0.22, 0.02), top + Vector3(0, 0.105, 0), B.flat(Color(1.0, 0.45, 0.35), 0.8))
 	menu.rotation.x = -0.2
@@ -798,7 +796,7 @@ func _kiosk_table(tp: Vector3, need: String, umb: Color, umbrella: bool) -> void
 		var fwd: Vector3 = sd[1]
 		var root: = tp + Vector3(seat_c.x, seat_c.y - SEAT_DROP, seat_c.z) + fwd * 0.27
 		var approach: = tp + Vector3(seat_c.x, 0.1, seat_c.z) - fwd * 0.85
-		kiosk_spots.append({"pos": root, "approach": approach, "rot": atan2(fwd.x, fwd.z), "busy": false, "need": need, "anim": "Sitting_Idle_Loop", "table": true})
+		kiosk_spots.append({"pos": root, "approach": approach, "rot": atan2(fwd.x, fwd.z), "busy": false, "need": need, "anim": "Sitting_Idle_Loop", "table": true, "serve_pos": top - fwd * 0.17, "serve_rot": atan2(fwd.x, fwd.z)})
 	# mesa + cadeiras bloqueadas: pedestres contornam o conjunto todo (quem vai sentar entra)
 	_block(tp, 1.0, 1.9, 0.12)
 
@@ -1438,8 +1436,6 @@ func rng_off(k: int) -> float:
 ## Expansão "drinks": garrafas, limões e taças com guarda-chuvinha.
 func _kiosk_drinks(c: Vector3, y0: float) -> void :
 	var top: = c + Vector3(0, y0 + 1.18, 2.0)
-	for k in 3:
-		Real.place(self, "k:cocktail", top + Vector3(0.45 + k * 0.22, 0, 0.18), 0.26, k * 0.9, D.FLAG_COLS[k * 2 % D.FLAG_COLS.size()].lerp(Color.WHITE, 0.55))
 	var crate_p: = c + Vector3(-1.4, y0 + 0.028, -0.9)
 	Real.place(self, "wooden_crate_02", crate_p, 0.3, 0.2)
 	for k in 6:

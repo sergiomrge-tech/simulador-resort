@@ -342,6 +342,11 @@ func v1_test() -> void :
 
 func run(m) -> void :
 	main = m
+	if main.args.has("order-visual-test"):
+		var order_test = load("res://tests/order_visuals_regression.gd").new()
+		add_child(order_test)
+		order_test.run(main)
+		return
 	if main.args.has("kiosk-test"):
 		var regression = load("res://tests/kiosk_regression.gd").new()
 		add_child(regression)
