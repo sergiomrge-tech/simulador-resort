@@ -83,6 +83,7 @@ jobs:
       - name: Importar assets, comprimir texturas e importar de novo
         run: |
           set -euo pipefail
+          python tools/clean_orphan_imports.py
           timeout 2400 "$GODOT" --headless --path . --import 2>&1 | tee import-1.log
           python tools/vram_textures.py 2>&1 | tee vram.log
           timeout 2400 "$GODOT" --headless --path . --import 2>&1 | tee import-2.log
@@ -130,6 +131,7 @@ jobs:
           python tools/prune_export.py restore
           test -s "$RUNNER_TEMP/base/MareAltaResort.pck"
           git reset --hard "$CURRENT_SHA"
+          python tools/clean_orphan_imports.py
           rm -rf .godot
           timeout 2400 "$GODOT" --headless --path . --import > shots/import-final.log 2>&1
           python tools/vram_textures.py >> shots/import-final.log 2>&1
