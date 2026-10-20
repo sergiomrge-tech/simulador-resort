@@ -114,8 +114,18 @@ func vip_rush_test() -> void :
 		return
 	vc.set_meta("vip", true)
 	vc.set_meta("vip_id", "kai")
+	# O teste de rotas reais está em kiosk_regression.gd. VIP pode surgir
+	# no extremo da praia (>60 m) e o relógio acelerado fecha o quiosque
+	# antes de chegar. Testar o fluxo comercial sem depender desse sorteio.
+	Core.speed_mult = 4.0
+	if not vc.spot.is_empty():
+		var approach: Vector3 = vc.spot.get("approach", vc.spot.pos + Vector3(0, 0, 0.85))
+		vc.position = approach + Vector3(0, 0, 0.25)
+		vc.go([approach])
 	var m0: = Core.money
-	check( await wait_until( func(): return vc.state == "kwait", 40.0), "VIP: esperando no balcão")
+	var vip_arrived: bool = await wait_until(func(): return is_instance_valid(vc) and vc.state == "kwait", 25.0)
+	if not check(vip_arrived, "VIP: chegou à mesa e fez pedido"):
+		return
 	check(v.kiosk_serve(), "VIP: pedido servido")
 	check(Core.album.has("kai"), "VIP: Kai Onda entrou no álbum")
 	check(Core.money - m0 > 10, "VIP: pagou o pedido e a gorjeta (%d)" % (Core.money - m0))
