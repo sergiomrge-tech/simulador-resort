@@ -100,9 +100,9 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p shots
-          timeout 240 xvfb-run -a -s '-screen 0 1280x720x24' "$GODOT" --audio-driver Dummy --path . --rendering-driver opengl3 --rendering-method gl_compatibility -- --loop-test --kiosk-test --quality=0 2>&1 | tee shots/kiosk-ci.log
+          timeout 240 "$GODOT" --headless --audio-driver Dummy --path . -- --loop-test --kiosk-test --quality=0 2>&1 | tee shots/kiosk-ci.log
           grep -q 'KIOSK_TEST PASS' shots/kiosk-ci.log
-          timeout 380 xvfb-run -a -s '-screen 0 1280x720x24' "$GODOT" --audio-driver Dummy --path . --rendering-driver opengl3 --rendering-method gl_compatibility -- --loop-test --quality=0 2>&1 | tee shots/loop-ci.log
+          timeout 380 "$GODOT" --headless --audio-driver Dummy --path . -- --loop-test --quality=0 2>&1 | tee shots/loop-ci.log
           grep -q 'LOOP_TEST PASS' shots/loop-ci.log
 
       - name: Tirar screenshots e procurar erros de recursos
