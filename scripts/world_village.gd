@@ -724,17 +724,24 @@ func _quiosque() -> void :
 	B.box(self, Vector3(0.6, ch, 3.4), c + Vector3(2.0, y0 + ch * 0.5, 0.5), wood, true)
 	B.box(self, Vector3(4.9, 0.08, 0.9), c + Vector3(0, y0 + ch + 0.04, 2.0), M.oak)
 	_back_bar(c, y0)
-	_fruit_row(c + Vector3(-1.5, y0 + ch + 0.14, 1.85))
-	var snack_y: = y0 + ch + 0.1
+	# Altura real do tampo: base e acabamento; itens apoiados, sem sobreposição.
+	var snack_y: = y0 + ch + 0.08
+	Real.place(self, "carved_wooden_plate", c + Vector3(-1.45, snack_y, 1.85), 0.0, 0.0, Color(0.82, 0.68, 0.48), 0.8)
+	_fruit_row(c + Vector3(-1.69, snack_y + 0.105, 1.85))
 	_coconut_cup(self, c + Vector3(-0.55, snack_y, 2.22))
 	_petisco_plate(self, c + Vector3(0.5, snack_y, 2.22))
 	for k in 5:
-		Real.place(self, "k:coconut", c + Vector3(0.35 + (k % 3) * 0.24, y0 + ch + 0.08, 2.05 + (k / 3) * 0.12), 0.22, k * 1.7)
-	B.model(self, "wooden_bucket_01", c + Vector3(1.55, y0 + ch + 0.08, 1.9), 0.4, 0.65)
+		Real.place(self, "k:coconut", c + Vector3(0.82 + (k % 3) * 0.28, snack_y, 1.65 + (k / 3) * 0.25), 0.22, k * 1.7)
+	B.model(self, "wooden_bucket_01", c + Vector3(-1.3, y0 + 0.028, 0.8), 0.4, 0.65)
 	_cooler(c + Vector3(1.3, y0 + 0.028, 0.3), 1.2)
 	B.model(self, "plastic_crate_01", c + Vector3(-1.3, y0 + 0.028, -0.35), 0.2, 1.0)
-	B.box(self, Vector3(3.6, 0.6, 0.08), c + Vector3(0, y0 + 2.5, 2.42), M.planks)
-	B.label(self, "Quiosque Maré Alta", c + Vector3(0, y0 + 2.5, 2.48), 64, Color(1.0, 0.95, 0.8), Color(0.25, 0.12, 0.02, 1.0))
+	# Placa pintada de azul-petróleo, moldura de madeira e tipografia em creme.
+	B.box(self, Vector3(4.0, 0.74, 0.10), c + Vector3(0, y0 + 2.5, 2.42), M.darkwood)
+	B.box(self, Vector3(3.82, 0.58, 0.025), c + Vector3(0, y0 + 2.5, 2.485), wood_tint(Color(0.06, 0.29, 0.31)))
+	var brand: Label3D = B.label(self, "MARÉ ALTA", c + Vector3(0, y0 + 2.58, 2.51), 76, Color(1.0, 0.94, 0.78), Color(0.025, 0.1, 0.11, 0.8))
+	brand.outline_size = 4
+	var subtitle: Label3D = B.label(self, "QUIOSQUE • SABORES DA PRAIA", c + Vector3(0, y0 + 2.33, 2.51), 24, Color(0.94, 0.83, 0.6), Color(0, 0, 0, 0))
+	subtitle.shaded = false
 	_kiosk_board = Node3D.new()
 	_kiosk_board.name = "KioskMenuBoard"
 	add_child(_kiosk_board)
@@ -1347,16 +1354,16 @@ func _kiosk_details(c: Vector3, y0: float) -> void :
 	# balcão
 	var top: = c + Vector3(0, y0 + 1.18, 2.0)
 	D.tip_jar(self, top + Vector3(1.6, 0, 0.15))
-	D.straw_cup(self, top + Vector3(1.25, 0, 0.1))
+	D.straw_cup(self, c + Vector3(-2.0, y0 + 1.1, 0.95))
 	D.cup_stack(self, top + Vector3(-1.95, 0, 0.0), Color(1.0, 0.9, 0.3))
 	D.cup_stack(self, top + Vector3(-1.75, 0, 0.12), Color(0.3, 0.8, 1.0))
-	D.blender(self, top + Vector3(-1.2, 0, -0.15))
+	D.blender(self, c + Vector3(-2.0, y0 + 1.1, 0.3))
 	D.pineapple(self, top + Vector3(1.95, 0, -0.1))
 	B.box(self, Vector3(0.14, 0.12, 0.08), top + Vector3(-0.15, 0.06, 0.2), D.m(Color(0.95, 0.95, 0.98)))
 	D.radio(self, c + Vector3(-1.1, y0 + 1.79, -1.9), 0.0)
 	# frente do balcão: bambu e cocos cortados
 	for k in 15:
-		B.cyl(self, 0.05, 0.05, 1.0, c + Vector3(-2.2 + k * 0.315, y0 + 0.52, 2.33), D.m(Color(0.9, 0.76, 0.42)), 6)
+		B.cyl(self, 0.05, 0.05, 1.0, c + Vector3(-2.2 + k * 0.315, y0 + 0.52, 2.33), D.m(Color(0.72, 0.57, 0.34)), 6)
 	for k in 3:
 		var half: = Real.place(self, "k:coconut-half", c + Vector3(-1.3 + k * 1.3, y0 + 0.66, 2.42), 0.2, 0.0)
 		if half:

@@ -1,4 +1,4 @@
-name: Compilar patch Maré Alta Resort 1.0.1
+name: Compilar Maré Alta Resort 1.0.1 RC2 — visual e instaladores
 
 on:
   workflow_dispatch:
@@ -139,6 +139,24 @@ jobs:
             echo "Falha: recursos ou scripts ausentes"; exit 1
           fi
 
+      - name: Capturar quiosque refinado de dia e à noite
+        run: |
+          set -euo pipefail
+          for spec in 'frente:38,2.8,-3,0,-8,12' 'balcao:38,2.1,-8,0,-14,12' 'noite:38,2.8,-3,0,-8,20'; do
+            NAME=${spec%%:*}
+            CAMERA=${spec#*:}
+            timeout 600 xvfb-run -a -s '-screen 0 1280x720x24' "$GODOT" --audio-driver Dummy --path . --rendering-driver opengl3 --rendering-method gl_compatibility -- --shot="visual-$NAME" --cam="$CAMERA" --v1 --clean-shot --quality=1 --out="$PWD/shots/visual-$NAME.png" > "shots/visual-$NAME.log" 2>&1
+            test -s "shots/visual-$NAME.png"
+            if grep -Ei 'SCRIPT ERROR|REAL_MISSING|resource file not found|inconsistent' "shots/visual-$NAME.log"; then exit 1; fi
+          done
+
+      - name: Guardar prévia visual antes da montagem
+        uses: actions/upload-artifact@v4
+        with:
+          name: previa-visual-${{ github.sha }}
+          path: shots/
+          retention-days: 7
+
       - name: Construir PCK original da v1.0.0 para testar a atualização
         run: |
           set -euo pipefail
@@ -186,6 +204,40 @@ jobs:
             echo "Falha: erro na atualização 1.0.0 -> 1.0.1"; exit 1
           fi
 
+      - name: Exportar e validar instalador completo Windows
+        env:
+          STAGE: ${{ runner.temp }}/stage
+        run: |
+          set -euo pipefail
+          mkdir -p build/win "$STAGE"
+          python tools/prune_export.py apply
+          trap 'python tools/prune_export.py restore' EXIT
+          timeout 2400 "$GODOT" --headless --path . --export-release "Windows Desktop" "$PWD/build/win/MareAltaResort.exe" > shots/full-export.log 2>&1
+          python tools/prune_export.py restore
+          trap - EXIT
+          test -s build/win/MareAltaResort.exe
+          test -s build/win/MareAltaResort.pck
+          SIZE=$(du -bc build/win/MareAltaResort.exe build/win/MareAltaResort.pck | tail -1 | cut -f1)
+          test "$SIZE" -lt 2100000000
+          timeout 600 xvfb-run -a -s '-screen 0 1280x720x24' "$GODOT" --main-pack "$PWD/build/win/MareAltaResort.pck" --audio-driver Dummy --rendering-driver opengl3 --rendering-method gl_compatibility -- --shot=full-ci --cam=38,2.8,-3,0,-8,12 --v1 --clean-shot --quality=1 --out="$PWD/shots/full-ci.png" > shots/full-ci.log 2>&1
+          test -s shots/full-ci.png
+          if grep -Ei 'SCRIPT ERROR|REAL_MISSING|resource file not found|inconsistent' shots/full-ci.log; then exit 1; fi
+          cp build/win/MareAltaResort.exe build/win/MareAltaResort.pck "$STAGE/"
+          cp installer/setup.nsi installer/Jogar.vbs installer/icon.ico installer/LEIA-ME.txt "$STAGE/"
+          (cd "$STAGE" && makensis -V2 setup.nsi) 2>&1 | tee shots/full-installer.log
+          test -s "$STAGE/Instalar_MareAltaResort_v1.0.1.exe"
+          sha256sum "$STAGE/Instalar_MareAltaResort_v1.0.1.exe" "$STAGE/Atualizar_MareAltaResort_v1.0.1.exe" > "$STAGE/SHA256SUMS.txt"
+
+      - name: Guardar instaladores validados
+        uses: actions/upload-artifact@v4
+        with:
+          name: instaladores-mare-alta-101-rc2
+          path: |
+            ${{ runner.temp }}/stage/Instalar_MareAltaResort_v1.0.1.exe
+            ${{ runner.temp }}/stage/Atualizar_MareAltaResort_v1.0.1.exe
+            ${{ runner.temp }}/stage/SHA256SUMS.txt
+          retention-days: 14
+
       - name: Guardar logs e prints para auditoria
         if: always()
         uses: actions/upload-artifact@v4
@@ -201,10 +253,15 @@ jobs:
           if-no-files-found: ignore
 
       - name: Publicar link direto do instalador de testes
-        if: success() && github.ref == 'refs/heads/main'
+        if: success() && github.ref == 'refs/heads/fix/visual-kiosk-rc2'
         env:
           GH_TOKEN: ${{ github.token }}
           STAGE: ${{ runner.temp }}/stage
         run: |
           set -euo pipefail
-          gh release create v1.0.1-rc1 "$STAGE/Atualizar_MareAltaResort_v1.0.1.exe" --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --title 'Maré Alta Resort 1.0.1 (prévia de atualização)' --prerelease --notes 'Patch cumulativo sobre a v1.0.0 (51921df). Gerado com Godot 4.5.1, assets CC0/Blender, testes KIOSK_TEST, LOOP_TEST, smoke do PCK base mais patch e verificação de erros em logs. Prévia para inspeção visual no Windows.'
+          TAG=v1.0.1-rc2
+          if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" > /dev/null 2>&1; then
+            echo "A prévia $TAG já existe; os instaladores desta execução estão no artefato."
+            exit 0
+          fi
+          gh release create "$TAG" "$STAGE/Instalar_MareAltaResort_v1.0.1.exe" "$STAGE/Atualizar_MareAltaResort_v1.0.1.exe" "$STAGE/SHA256SUMS.txt" --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --title 'Maré Alta Resort 1.0.1 RC2 — refinamento visual' --prerelease --notes 'Instalador completo e patch cumulativo sobre a v1.0.0 (51921df). Iluminação e saturação equilibradas, areia com mais leitura, letreiro do quiosque e organização dos itens refinados. Godot 4.5.1; testes de ciclo de vida, assentos, VIP/rush, ciclo completo e smoke dos pacotes completo e base+patch. Capturas reais nos artefatos do Actions. A instalação e o desempenho no Windows ainda precisam de teste no aparelho.'

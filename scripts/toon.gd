@@ -256,7 +256,7 @@ static func _base(c: Color, rough: float) -> StandardMaterial3D:
 	m.roughness = clampf(rough, 0.35, 1.0)
 	m.metallic_specular = 0.25
 	m.rim_enabled = true
-	m.rim = 0.25
+	m.rim = 0.12
 	m.rim_tint = 0.6
 	if c.a < 0.99:
 		m.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA_DEPTH_PRE_PASS
@@ -309,10 +309,10 @@ static func toonify(mt: Material) -> Material:
 		s.ao_enabled = false
 		# modelos reais vêm escuros/realistas: clareia e esquenta para casar com a paleta cartoon do jogo
 		# no modo de compatibilidade (OpenGL, PCs antigos) a imagem já sai mais clara: clareia menos para não desbotar
-		var lift: = Color(1.55, 1.45, 1.35) if RenderingServer.get_current_rendering_method() != "gl_compatibility" else Color(1.15, 1.1, 1.06)
+		var lift: = Color(1.28, 1.22, 1.16) if RenderingServer.get_current_rendering_method() != "gl_compatibility" else Color(1.04, 1.02, 1.0)
 		s.albedo_color = s.albedo_color * lift
 		s.rim_enabled = true
-		s.rim = 0.25
+		s.rim = 0.1
 		s.rim_tint = 0.5
 		return s
 	return mt

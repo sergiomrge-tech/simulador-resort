@@ -112,13 +112,15 @@ func apply() -> void :
 	var yaw: = 90.0 - 180.0 * t
 	sun.rotation_degrees = Vector3( - maxf(elev, 4.0), yaw, 0)
 	sun.light_color = k[2]
-	sun.light_energy = k[3]
+	# Preserva a leitura dos materiais claros sem apagar a noite.
+	var daylight: float = clampf(k[3] / 0.6, 0.0, 1.0)
+	sun.light_energy = k[3] * lerpf(1.0, 0.68, daylight)
 	sun.visible = k[3] > 0.01
 	sky_mat.sky_top_color = k[0]
 	sky_mat.sky_horizon_color = k[1]
 	sky_mat.ground_horizon_color = k[1].darkened(0.1)
 	sky_mat.sun_angle_max = 20.0
-	env.ambient_light_energy = k[4]
+	env.ambient_light_energy = k[4] * lerpf(1.0, 0.76, daylight)
 	var night: = clampf(1.0 - k[3] / 0.6, 0.0, 1.0)
 	var golden: = _bell(h, 15.8, 18.6)
 	var dawn: = _bell(h, 5.1, 8.0)
@@ -139,16 +141,15 @@ func apply() -> void :
 	env.fog_light_color = fog_c
 	env.fog_density = 0.0048 if rain else lerpf(0.0011, 0.002, golden)
 	env.fog_aerial_perspective = 0.42
-	env.tonemap_mode = Environment.TONE_MAPPER_FILMIC
-	env.tonemap_white = 3.5
-	env.tonemap_exposure = (1.05 if not rain else 0.88) * lerpf(1.0, 1.05, golden)
+	# OpenGL não tem a mesma curva HDR: a correção vem da energia das luzes,
+	# sem a multiplicação de saturação que queimava verdes, areia e madeira.
+	var compatibility: bool = RenderingServer.get_current_rendering_method() == "gl_compatibility"
+	env.tonemap_mode = Environment.TONE_MAPPER_LINEAR if compatibility else Environment.TONE_MAPPER_FILMIC
+	env.tonemap_white = 6.0
+	env.tonemap_exposure = (1.0 if compatibility else 0.98) if not rain else 0.88
 	env.adjustment_enabled = true
-	env.adjustment_saturation = (0.95 if rain else lerpf(1.32, 1.4, golden))
-	if RenderingServer.get_current_rendering_method() == "gl_compatibility":
-		# v0.9.5: OpenGL sai desbotado (sem o mesmo tonemap): mais saturação e contraste
-		env.adjustment_saturation *= 1.25
-		env.adjustment_contrast = 1.12
-	env.adjustment_contrast = lerpf(1.06, 1.1, golden)
+	env.adjustment_saturation = 0.95 if rain else lerpf(1.08, 1.14, golden)
+	env.adjustment_contrast = lerpf(1.02, 1.05, golden)
 	env.adjustment_brightness = 0.94 if rain else 1.0
 	env.volumetric_fog_albedo = fog_c
 	env.volumetric_fog_density = 0.012 if rain else lerpf(0.004, 0.008, maxf(golden, night * 0.7))

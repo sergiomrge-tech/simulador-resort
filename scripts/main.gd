@@ -506,6 +506,11 @@ func _run_shot(n: String) -> void :
 				break
 		for i in 2:
 			await get_tree().process_frame
+	# Capturas de revisão visual sem sobrepor objetivos/HUD ao cenário.
+	if args.has("clean-shot"):
+		hud.visible = false
+		for i in 2:
+			await get_tree().process_frame
 	var img: = get_viewport().get_texture().get_image()
 	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path("res://shots"))
 	var out: String = args.get("out", "res://shots/%s.png" % n)
