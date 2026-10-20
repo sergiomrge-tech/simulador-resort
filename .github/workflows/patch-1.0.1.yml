@@ -103,6 +103,8 @@ jobs:
           mkdir -p shots
           timeout 240 "$GODOT" --headless --audio-driver Dummy --path . -- --loop-test --kiosk-test --quality=0 2>&1 | tee shots/kiosk-ci.log
           grep -q 'KIOSK_TEST PASS' shots/kiosk-ci.log
+          # Após validação de ocupação/rotas, testar fluxo comercial (VIP/rush)
+          # sem a distância inicial aleatória da praia interferir no relógio acelerado.
           timeout 380 "$GODOT" --headless --audio-driver Dummy --path . -- --loop-test --quality=0 2>&1 | tee shots/loop-ci.log
           grep -q 'LOOP_TEST PASS' shots/loop-ci.log
 
