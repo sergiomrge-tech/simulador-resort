@@ -735,6 +735,8 @@ func _quiosque() -> void :
 	B.model(self, "plastic_crate_01", c + Vector3(-1.3, y0 + 0.028, -0.35), 0.2, 1.0)
 	# Placa abaixo da franja e à frente do beiral: texto inteiro visível.
 	# Mantém espaço livre entre o balcão e a borda inferior da moldura.
+	for sx in [-1.0, 1.0]:
+		B.cyl(self, 0.018, 0.018, 0.32, c + Vector3(sx * 1.55, y0 + 2.70, 3.38), M.post, 8)
 	B.box(self, Vector3(4.0, 0.64, 0.10), c + Vector3(0, y0 + 2.25, 3.40), M.darkwood)
 	B.box(self, Vector3(3.82, 0.5, 0.025), c + Vector3(0, y0 + 2.25, 3.465), wood_tint(Color(0.06, 0.29, 0.31)))
 	var brand: Label3D = B.label(self, "MARÉ ALTA", c + Vector3(0, y0 + 2.33, 3.49), 76, Color(1.0, 0.94, 0.78), Color(0.025, 0.1, 0.11, 0.8))
@@ -821,6 +823,9 @@ func _kiosk_neon(c: Vector3, y0: float) -> void :
 	_string_lights(c + Vector3(-2.3, y0 + 2.45, 2.3), c + Vector3(2.3, y0 + 2.45, 2.3), 8)
 	_string_lights(c + Vector3(-2.3, y0 + 2.45, -2.3), c + Vector3(-2.3, y0 + 2.45, 2.3), 6)
 	_string_lights(c + Vector3(2.3, y0 + 2.45, -2.3), c + Vector3(2.3, y0 + 2.45, 2.3), 6)
+	# Suportes prendem o letreiro à borda do telhado.
+	for sx in [-1.0, 1.0]:
+		B.box(self, Vector3(0.065, 0.5, 0.065), c + Vector3(sx * 1.3, y0 + 3.0, 3.26), M.darkwood)
 	var pink: = P.glow(Color(1.0, 0.25, 0.65), 4.0)
 	var cyan: = P.glow(Color(0.2, 0.95, 1.0), 4.0)
 	var back: = B.box(self, Vector3(3.4, 0.9, 0.08), c + Vector3(0, y0 + 3.55, 3.30), B.flat(Color(0.12, 0.1, 0.16), 0.6))
