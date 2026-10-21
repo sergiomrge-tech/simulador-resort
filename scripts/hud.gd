@@ -380,6 +380,9 @@ func _hint() -> String:
 
 
 func _input(e: InputEvent) -> void :
+	# Teclas do nome pertencem ao formulário, inclusive B (atalho do celular).
+	if shop != null and shop.visible and e is InputEventKey and get_viewport().gui_get_focus_owner() is LineEdit and not e.is_action("pause"):
+		return
 	if e is InputEventScreenTouch:
 		if e.pressed:
 			for tb in _touch_buttons:

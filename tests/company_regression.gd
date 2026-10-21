@@ -138,6 +138,13 @@ func _integration(main) -> void:
 	# Edição real do formulário e operações ligadas à cena.
 	main.hud.phone.open("empresa")
 	check(main.hud.phone.company_name.max_length == 24, "formulário limita o nome")
+	main.hud.phone.company_name.grab_focus()
+	var key := InputEventKey.new()
+	key.keycode = KEY_B
+	key.physical_keycode = KEY_B
+	key.pressed = true
+	main.hud._input(key)
+	check(main.hud.phone.visible, "letra B do nome não fecha o celular")
 	main.hud.phone.close()
 	# Cargos trabalham no mundo: cozinheiro prepara, garçom contorna o quiosque.
 	village._on_slept(0)
