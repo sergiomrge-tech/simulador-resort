@@ -288,7 +288,7 @@ func _free_spot() -> int:
 	for i in world.kiosk_spots.size():
 		var sp: Dictionary = world.kiosk_spots[i]
 		var need: = str(sp.get("need", ""))
-		if not sp.busy and (need == "" or Core.has(need)):
+		if not sp.busy and (need == "" or Core.has(need)) and (not Core.company_enabled() or i not in Core.company.dirty_seats):
 			free.append(i)
 	if free.is_empty():
 		return -1
@@ -517,7 +517,7 @@ func _items(g) -> Array:
 
 ## Pedidos maiores dão mais tempo para o cliente esperar.
 func _patience(g) -> float:
-	return KIOSK_PATIENCE * (1.0 + 0.45 * float(_items(g).size() - 1)) * (1.0 + Core.prog.eff("kiosk_patience"))
+	return KIOSK_PATIENCE * (1.8 if Core.company_enabled() else 1.0) * (1.0 + 0.45 * float(_items(g).size() - 1)) * (1.0 + Core.prog.eff("kiosk_patience"))
 
 func _remaining(g) -> Array:
 	return _items(g).slice(int(g.get_meta("delivered", 0)))
@@ -541,6 +541,8 @@ func _release_spot(g) -> void:
 	g.spot = {}
 
 func _leave(g) -> void :
+	if Core.company_enabled() and g.state == "keat":
+		get_parent().operations.mark_dirty(g)
 	clear_served_visuals(g)
 	if not prep.is_empty() and prep.get("g") == g:
 		prep = {}
@@ -569,6 +571,8 @@ func _bar(p: float) -> String:
 	return "▰".repeat(n) + "▱".repeat(8 - n)
 
 func kiosk_prompt() -> String:
+	if Core.company_enabled():
+		return tr("Empresa · retire bebidas na geladeira e pratos na cozinha, atrás do quiosque")
 	if not prep.is_empty():
 		var st: Array = Economy.DISH_STAGES[prep.dish]
 		return "%s  %s  (%d/%d)  ·  %s" % [tr(str(st[prep.stage][0])), _bar(float(prep.p)), int(prep.stage) + 1, st.size(), tr("segure E")]
@@ -604,6 +608,9 @@ func daily_goal() -> int:
 
 ## Aperta E no balcão: começa o preparo do próximo prato; com o preparo andando, cada toque adianta um pedaço.
 func kiosk_action() -> bool:
+	if Core.company_enabled():
+		Core.toast.emit(kiosk_prompt(), "info")
+		return false
 	if not prep.is_empty() and is_instance_valid(prep.g) and prep.g.state == "kwait":
 		prep_advance(Economy.TAP_BURST * _stage_secs())
 		return true
@@ -647,13 +654,26 @@ func prep_advance(sec: float) -> void :
 			return
 
 ## Entrega um prato do pedido; o último fecha o atendimento (nota, gorjeta, combo, meta).
-func _deliver_item(g, dish: String) -> bool:
-	if not Core.can_make(dish):
+func _deliver_item(g, dish: String, prepared: bool = false, by_staff: bool = false) -> bool:
+	if not is_instance_valid(g) or g.is_queued_for_deletion() or g.state != "kwait" or dish not in _remaining(g):
+		return false
+	if Core.company_enabled() != prepared:
+		return false
+	if not prepared and not Core.can_make(dish):
 		Core.note_stockout(dish)
 		combo = 0
 		_leave(g)
 		return false
-	var price: = Core.sell_dish(dish, "kiosk")
+	var price: int = Core.sell_company_dish(dish, by_staff) if prepared else Core.sell_dish(dish, "kiosk")
+	if price < 0:
+		return false
+	var items: Array = _items(g).duplicate()
+	var delivered: int = int(g.get_meta("delivered", 0))
+	var index: int = items.find(dish, delivered)
+	var previous: String = str(items[delivered])
+	items[delivered] = dish
+	items[index] = previous
+	g.set_meta("items", items)
 	_show_delivered_visual(g, dish)
 	g.set_meta("revenue", int(g.get_meta("revenue", 0)) + maxi(price, 0))
 	g.set_meta("delivered", int(g.get_meta("delivered", 0)) + 1)
@@ -718,6 +738,8 @@ func _complete_order(g, last_dish: String) -> void :
 
 ## Serve o pedido inteiro de uma vez (atendente contratado e testes).
 func kiosk_serve() -> bool:
+	if Core.company_enabled():
+		return false
 	var g = _next_customer()
 	if g == null:
 		return false

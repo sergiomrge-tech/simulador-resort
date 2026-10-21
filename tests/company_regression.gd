@@ -1,0 +1,186 @@
+extends Node
+const Rules = preload("res://scripts/company_rules.gd")
+var failed := false
+func check(ok: bool, label: String) -> void:
+	print("[company] ", "ok " if ok else "FAIL ", label)
+	if not ok:
+		failed = true
+
+func run(main = null) -> void:
+	var old_path: String = Core.SAVE_PATH
+	Core.SAVE_PATH = "user://company_regression_tmp.json"
+	Core.in_game = false
+	Core.paused = true
+	Core.new_game()
+	check(not Core.company_enabled(), "novo jogo preserva atendimento original até criar empresa")
+	check(not Core.configure_company("W".repeat(25), "praia"), "limite de 24 caracteres")
+	check(not Core.configure_company("\n", "praia"), "nome vazio recusado")
+	check(not Core.configure_company("Empresa", "invalida"), "fonte fora da lista recusada")
+	check(Core.configure_company("  Quiosque São João  ", "elegante", "dourado"), "criação com acentos e normalização")
+	check(Core.company.name == "Quiosque São João" and Core.company_enabled(), "marca e operação ativadas")
+	for font in Rules.FONTS:
+		var sign := Label3D.new()
+		sign.font_size = 120
+		sign.outline_size = 12
+		Rules.fit_sign(sign, "W".repeat(24), font, "creme", 2.95)
+		var width: float = sign.font.get_string_size(sign.text, HORIZONTAL_ALIGNMENT_LEFT, -1, sign.font_size).x + 2 * sign.outline_size
+		check(width * sign.pixel_size <= 2.951, "nome máximo cabe na placa: " + font)
+		sign.free()
+	for key in Core.stock:
+		Core.stock[key] = 100
+	var before: Dictionary = Core.stock.duplicate()
+	check(Core.prepare_company_dish("suco"), "preparo começa")
+	check(not Core.prepare_company_dish("suco"), "produção simultânea recusada")
+	for ing in Economy.dish("suco").uses:
+		check(Core.stock[ing] == before[ing] - Economy.dish("suco").uses[ing], "ingrediente usado uma vez: " + ing)
+	Core.tick_company(10)
+	var after: Dictionary = Core.stock.duplicate()
+	check(Core.company.ready.get("suco", 0) == 1, "preparo abastece geladeira")
+	check(Core.pickup_company_dish("suco"), "retirada de uma bebida")
+	check(not Core.pickup_company_dish("suco"), "não duplica retirada")
+	check(Core.sell_company_dish("coco_gelado") == -1 and Core.company.carry == "suco", "entrega errada preserva item")
+	var cash: int = Core.money
+	var price: int = Core.sell_company_dish("suco")
+	check(price > 0 and Core.company.carry == "", "entrega consome apenas item carregado")
+	check(Core.stock == after and Core.money == cash, "entrega não gasta ingredientes nem antecipa caixa")
+	check(Core.collect_company_payments() == price and Core.money == cash + price, "caixa manual recebe conta")
+	check(Core.collect_company_payments() == 0 and Core.money == cash + price, "conta não pode ser recebida duas vezes")
+	Core.company.ready.suco = 4
+	check(not Core.prepare_company_dish("suco"), "capacidade da prateleira respeitada")
+	check(Core.pickup_company_dish("suco") and Core.prepare_company_dish("suco"), "preparo reserva espaço após retirada")
+	check(not Core.return_company_dish(), "devolução não ocupa espaço reservado pelo preparo")
+	Core.tick_company(10)
+	check(Core.company.ready.suco == 4 and Core.company.carry == "suco", "produto não se perde com prateleira cheia")
+	check(Core.sell_company_dish("suco") > 0, "libera mãos sem perder cobrança")
+	check(Core.reserve_company_staff_dish("suco") and Core.company.staff_carry == "suco", "garçom retira produto real")
+	check(Core.sell_company_dish("suco", true) > 0 and Core.company.staff_carry == "", "garçom entrega sem alterar mãos do jogador")
+	Core.money = 20000
+	check(Core.hire("caixa") and Core.hire("garcom") and Core.hire("limpeza") and Core.hire("cozinheiro"), "contratação dos quatro cargos")
+	cash = Core.money
+	check(Core.pickup_company_dish("suco"), "retirada para caixa contratado")
+	price = Core.sell_company_dish("suco")
+	check(Core.money > cash and Core.company.receivables.is_empty(), "caixa contratado recebe inclusive contas anteriores")
+	Core.company.dirty_seats = [0]
+	check(not Core.set_company_service(false), "não desativa operação com louça pendente")
+	check(Core.clean_company_seat(0) and not Core.clean_company_seat(0), "limpeza idempotente")
+	Core.company.ready.suco = 2
+	Core.company.carry = "suco"
+	Core.company.staff_carry = "coco_gelado"
+	Core.company.production = {"dish": "suco", "left": 1.25}
+	Core.company.receivables = [{"dish": "suco", "value": 7}]
+	Core.company.dirty_seats = [1]
+	var snapshot: Dictionary = Core.company.duplicate(true)
+	Core.save_game()
+	Core.company = Rules.defaults()
+	check(Core.load_game() and Core.company == Rules.sanitize(snapshot), "save v7 mantém marca, preparo, produtos, mãos, contas e louça")
+	var file = FileAccess.open(Core.SAVE_PATH, FileAccess.READ)
+	var legacy: Dictionary = JSON.parse_string(file.get_as_text())
+	file.close()
+	legacy.erase("company")
+	legacy.v = 6
+	file = FileAccess.open(Core.SAVE_PATH, FileAccess.WRITE)
+	file.store_string(JSON.stringify(legacy))
+	file.close()
+	cash = Core.money
+	check(Core.load_game() and not Core.company_enabled() and Core.money == cash, "migração v6 preserva dinheiro e atendimento original")
+	if main != null:
+		_integration(main)
+	Core.delete_save()
+	Core.SAVE_PATH = old_path
+	print("COMPANY_TEST FAIL" if failed else "COMPANY_TEST PASS")
+	get_tree().quit(1 if failed else 0)
+
+func _integration(main) -> void:
+	var village = main.village
+	village.enabled = false
+	village._on_slept(0)
+	Core.configure_company("Quiosque do Sergio", "praia")
+	for role in Core.staff:
+		Core.staff[role] = false
+	Core.minutes = 10 * 60
+	for key in Core.stock:
+		Core.stock[key] = 100
+	Core.company.ready.suco = 2
+	var g = village.spawn_customer()
+	check(g != null, "cliente criado")
+	if g == null:
+		return
+	g.go([])
+	g.position = g.spot.pos
+	g.set_meta("items", ["coco_gelado", "suco"])
+	g.set_meta("delivered", 0)
+	g.set_meta("vip", false)
+	village._order(g)
+	Core.pickup_company_dish("suco")
+	check(main.operations.deliver(weakref(g)), "entrega física permite ordem diferente do pedido")
+	check(village._remaining(g) == ["coco_gelado"], "pedido parcial mantém apenas item pendente")
+	check(not main.operations.deliver(weakref(g)), "não repete item já entregue")
+	Core.company.ready.coco_gelado = 1
+	Core.pickup_company_dish("coco_gelado")
+	check(main.operations.deliver(weakref(g)) and g.state == "keat", "pedido completo mantém consumo, gorjeta e avaliação")
+	var index: int = main.world.kiosk_spots.find(g.spot)
+	village._leave(g)
+	check(index in Core.company.dirty_seats, "saída deixa louça para recolher")
+	village._release_spot(g)
+	for i in main.world.kiosk_spots.size():
+		if i != index:
+			main.world.kiosk_spots[i].busy = true
+	check(village._free_spot() == -1, "lugar sujo não é ocupado por novo cliente")
+	Core.clean_company_seat(index)
+	check(village._free_spot() == index, "limpeza libera assento")
+	for sign in main.world.company_signs:
+		check(sign.label.text == "Quiosque do Sergio", "marca aplicada à placa real")
+	check(main.operations.stations.size() == 3, "geladeira, armário e cozinha presentes")
+	check(not main.operations.can_access("bebidas"), "retirada remota bloqueada")
+	main.player.position = main.operations.stations.bebidas.global_position + Vector3(0, 0, -1.2)
+	check(main.operations.can_access("bebidas"), "retirada disponível ao chegar à geladeira")
+
+	# Edição real do formulário e operações ligadas à cena.
+	main.hud.phone.open("empresa")
+	check(main.hud.phone.company_name.max_length == 24, "formulário limita o nome")
+	main.hud.phone.close()
+	# Cargos trabalham no mundo: cozinheiro prepara, garçom contorna o quiosque.
+	village._on_slept(0)
+	for spot in main.world.kiosk_spots:
+		spot.busy = false
+	Core.company.ready = {}
+	Core.company.carry = ""
+	Core.company.staff_carry = ""
+	Core.company.production = {}
+	Core.company.dirty_seats = []
+	Core.company.receivables = []
+	g = village.spawn_customer()
+	g.go([])
+	g.position = g.spot.pos
+	g.set_meta("items", ["suco"])
+	g.set_meta("delivered", 0)
+	g.set_meta("vip", false)
+	village._order(g)
+	village.set_process(false)
+	Core.staff.cozinheiro = true
+	Core.staff.garcom = true
+	Core.staff.caixa = true
+	Core.staff.limpeza = true
+	Core.speed_mult = 16.0
+	var elapsed := 0.0
+	while g.state == "kwait" and elapsed < 15.0:
+		Core.tick_company(0.05)
+		main.operations._staff_tick()
+		await get_tree().process_frame
+		elapsed += get_process_delta_time()
+	check(g.state == "keat", "cozinheiro e garçom completam preparo, retirada e percurso real")
+	check(Core.company.receivables.is_empty(), "caixa recebe atendimento da equipe")
+	var waiter = main.operations.actors.get("garcom")
+	check(is_instance_valid(waiter) and waiter.position.distance_to(g.spot.approach) < 1.5, "garçom chegou ao cliente antes de entregar")
+	village._leave(g)
+	village._release_spot(g)
+	elapsed = 0.0
+	while not Core.company.dirty_seats.is_empty() and elapsed < 10.0:
+		main.operations._staff_tick()
+		await get_tree().process_frame
+		elapsed += get_process_delta_time()
+	check(Core.company.dirty_seats.is_empty(), "auxiliar caminha e limpa a louça")
+	Core.prog.staff_rec("garcom").off = true
+	main.operations._staff_tick()
+	check(not waiter.visible, "folga suspende garçom")
+	Core.speed_mult = 1.0

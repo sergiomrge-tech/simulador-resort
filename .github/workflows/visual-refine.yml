@@ -78,7 +78,7 @@ jobs:
           if [ "$succeeded" != "1" ]; then
             echo "Assets CC0 incompletos após quatro tentativas"; exit 1
           fi
-          for model in dish_petiscos dish_tapioca dish_pastel dish_acai dish_moqueca dish_batida; do
+          for model in service_fridge service_fridge_door service_food_cabinet service_register dish_petiscos dish_tapioca dish_pastel dish_acai dish_moqueca dish_batida; do
             test -s "assets/models/gen/$model.glb"
           done
           for model in plate-dinner plate-deep utensil-spoon utensil-fork; do
@@ -128,6 +128,13 @@ jobs:
             echo "Falha: erro de script, referência liberada ou ownership inválido"; exit 1
           fi
 
+      - name: Testar criação de empresa e operação física
+        run: |
+          set -euo pipefail
+          timeout 240 "$GODOT" --headless --audio-driver Dummy --path . -- --loop-test --company-test --quality=0 2>&1 | tee shots/company-ci.log
+          grep -qx 'COMPANY_TEST PASS' shots/company-ci.log
+          if grep -Ei 'SCRIPT ERROR|ERROR:.*meta|REAL_MISSING|resource file not found|Lambda capture.*freed|inconsistent' shots/company-ci.log; then exit 1; fi
+
       - name: Tirar screenshots e procurar erros de recursos
         run: |
           set -euo pipefail
@@ -155,6 +162,19 @@ jobs:
             NAME=${spec%%:*}
             CAMERA=${spec#*:}
             timeout 600 xvfb-run -a -s '-screen 0 1280x720x24' "$GODOT" --audio-driver Dummy --path . --rendering-driver opengl3 --rendering-method gl_compatibility -- --shot="$NAME" --cam="$CAMERA" --v1 --orders-demo --clean-shot --quality=1 --out="$PWD/shots/$NAME.png" > "shots/$NAME.log" 2>&1
+            test -s "shots/$NAME.png"
+            if grep -Ei 'SCRIPT ERROR|ERROR:.*meta|REAL_MISSING|resource file not found|inconsistent' "shots/$NAME.log"; then exit 1; fi
+          done
+
+      - name: Capturar empresa e equipamentos no Godot
+        run: |
+          set -euo pipefail
+          for spec in 'empresa-frente:38,2.8,-3,0,-8,12' 'empresa-geladeira:38,0.1,-20.5,180,-8,12' 'cel_empresa:38,0.1,-20.5,180,-8,12'; do
+            NAME=${spec%%:*}
+            CAMERA=${spec#*:}
+            EXTRA=--clean-shot
+            if [ "$NAME" = cel_empresa ]; then EXTRA=; fi
+            timeout 600 xvfb-run -a -s '-screen 0 1280x720x24' "$GODOT" --audio-driver Dummy --path . --rendering-driver opengl3 --rendering-method gl_compatibility -- --shot="$NAME" --cam="$CAMERA" --v1 --company-demo $EXTRA --quality=1 --out="$PWD/shots/$NAME.png" > "shots/$NAME.log" 2>&1
             test -s "shots/$NAME.png"
             if grep -Ei 'SCRIPT ERROR|ERROR:.*meta|REAL_MISSING|resource file not found|inconsistent' "shots/$NAME.log"; then exit 1; fi
           done

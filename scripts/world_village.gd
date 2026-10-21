@@ -9,6 +9,8 @@ const KIOSK_C: = Vector3(38, 0, -13)
 const CHURCH_C: = Vector3(75, 0, 50)
 const PRACA: = Rect2(66, 34.5, 18, 9.3)
 
+var company_signs: Array = []
+
 var village_points: = {}
 var village_paths: Array = []
 var kiosk_counter: Interactable
@@ -51,6 +53,8 @@ func _ready() -> void :
 	_landmark_details()
 	_map_details()
 	_finish_blooms()
+	Core.company_changed.connect(_refresh_company_signs)
+	_refresh_company_signs()
 	Core.time_changed.connect(_on_time)
 
 func _village_materials() -> void :
@@ -741,6 +745,7 @@ func _quiosque() -> void :
 	B.box(self, Vector3(3.82, 0.5, 0.025), c + Vector3(0, y0 + 2.25, 3.465), wood_tint(Color(0.06, 0.29, 0.31)))
 	var brand: Label3D = B.label(self, "MARÉ ALTA", c + Vector3(0, y0 + 2.33, 3.49), 76, Color(1.0, 0.94, 0.78), Color(0.025, 0.1, 0.11, 0.8))
 	brand.outline_size = 4
+	company_signs.append({"label": brand, "width": 3.45})
 	var subtitle: Label3D = B.label(self, "QUIOSQUE • SABORES DA PRAIA", c + Vector3(0, y0 + 2.08, 3.49), 24, Color(0.94, 0.83, 0.6), Color(0, 0, 0, 0))
 	subtitle.shaded = false
 	_kiosk_board = Node3D.new()
@@ -831,6 +836,7 @@ func _kiosk_neon(c: Vector3, y0: float) -> void :
 	var back: = B.box(self, Vector3(3.4, 0.9, 0.08), c + Vector3(0, y0 + 3.55, 3.30), B.flat(Color(0.12, 0.1, 0.16), 0.6))
 	back.rotation.x = -0.12
 	var l: = B.label(self, "MARÉ ALTA", c + Vector3(0, y0 + 3.62, 3.38), 120, Color(1.0, 0.45, 0.8), Color(1.0, 0.2, 0.6, 0.9))
+	company_signs.append({"label": l, "width": 2.95})
 	l.rotation.x = -0.12
 	l.shaded = false
 	l.outline_size = 18
@@ -1933,3 +1939,8 @@ func _map_details() -> void :
 				B.box(self, Vector3(0.45, 0.5, 0.02), cp, B.flat(D.FLAG_COLS[(j + k) % D.FLAG_COLS.size()], 0.95))
 	for k in 12:
 		B.model(self, "island_tree_01", Vector3(4.0 + k * 9.0 + rng.randf_range(-2, 2), 0, BACK_Z + 14.5 + rng.randf_range(-1, 2)), rng.randf() * TAU, rng.randf_range(1.6, 2.2))
+
+func _refresh_company_signs() -> void:
+	var rules = load("res://scripts/company_rules.gd")
+	for sign in company_signs:
+		rules.fit_sign(sign.label, str(Core.company.name) if Core.company.created else "MARÉ ALTA", str(Core.company.font), str(Core.company.color), float(sign.width))

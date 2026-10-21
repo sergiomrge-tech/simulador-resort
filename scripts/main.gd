@@ -4,6 +4,7 @@ extends Node3D
 
 var world: Node3D
 var guests: Node3D
+var operations: Node3D
 var village: Node3D
 var player: CharacterBody3D
 var hud: CanvasLayer
@@ -168,6 +169,10 @@ func _ready() -> void :
 	hud.village = village
 	hud.process_mode = Node.PROCESS_MODE_ALWAYS
 	add_child(hud)
+	operations = Node3D.new()
+	operations.set_script(load("res://scripts/kiosk_operations.gd"))
+	operations.main = self
+	add_child(operations)
 	menus = CanvasLayer.new()
 	menus.set_script(load("res://scripts/menus.gd"))
 	add_child(menus)
@@ -461,6 +466,8 @@ func _run_shot(n: String) -> void :
 			walker.go([Vector3(80.0, 0.0, 2.0)])
 	if args.has("orders-demo"):
 		_stage_kiosk_orders()
+	if args.has("company-demo"):
+		_stage_company_demo()
 	await get_tree().create_timer(0.5 if args.has("orders-demo") else 0.3).timeout
 	for i in 25:
 		await get_tree().process_frame
@@ -771,3 +778,17 @@ func _stage_kiosk_orders() -> void:
 		customer.timer = 10000.0
 		village.kiosk_serve()
 		customer.set_meta("eat", 10000.0)
+
+func _stage_company_demo() -> void:
+	_stage_kiosk_orders()
+	Core.configure_company("Quiosque do Sergio", "praia", "creme")
+	for id in Core.kiosk_menu():
+		if Core.prepare_company_dish(id):
+			Core.tick_company(100.0)
+	for role in ["cozinheiro", "caixa", "garcom", "limpeza"]:
+		Core.staff[role] = true
+	operations._staff_tick()
+	for role in operations.actors:
+		operations.actors[role].go([])
+		operations.actors[role].set_process(false)
+	operations.sync_company()

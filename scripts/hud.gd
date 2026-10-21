@@ -507,6 +507,23 @@ func objective() -> Array:
 	var home: Vector3 = world.bed.global_position if world.get("bed") else Vector3.INF
 	if Core.can_sleep() and home != Vector3.INF:
 		return [tr("Já é tarde: volte para casa e durma"), home, 2.5]
+	if Core.company_enabled() and village:
+		var ops = get_parent().operations
+		var carried: String = str(Core.company.carry)
+		for g in village.waiting_customers():
+			if carried != "" and carried in village._remaining(g):
+				return ["Entregar " + str(Economy.dish(carried).name), g.spot.approach, 2.0]
+		if not village.waiting_customers().is_empty() and carried == "":
+			var next = village._next_customer()
+			var id: String = str(village._remaining(next)[0])
+			var kind: String = "bebidas" if load("res://scripts/dish_presentation.gd").is_drink(id) else ("pratos" if int(Core.company.ready.get(id, 0)) > 0 else "cozinha")
+			return ["Retirar/preparar " + str(Economy.dish(id).name), ops.stations[kind].global_position, 2.5]
+		if not Core.company.receivables.is_empty():
+			return ["Receber contas no caixa", world.KIOSK_C + Vector3(1.3, 1.28, 1.8), 2.5]
+		if not Core.company.dirty_seats.is_empty():
+			var seat: int = int(Core.company.dirty_seats[0])
+			if seat < world.kiosk_spots.size():
+				return ["Recolher louça e limpar", world.kiosk_spots[seat].approach, 2.5]
 	for r in Core.rooms:
 		if r.state == "dirty":
 			var bc: = Vector3(world.BUNG_X[r.id], 0.6, world.BUNG_Z)

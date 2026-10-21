@@ -388,6 +388,7 @@ def generated_props():
     Rodar após baixar texturas evita exportar GLBs sem materiais/texturas.
     """
     groups = [
+        ("gen_kiosk_service.py", ("service_fridge", "service_fridge_door", "service_food_cabinet", "service_register")),
         ("gen_dishes.py", ("dish_petiscos", "dish_tapioca", "dish_pastel", "dish_acai", "dish_moqueca", "dish_batida")),
         ("gen_beach_props.py", ("towel", "sandcastle", "lounger")),
         ("gen_code_props.py", ("tiki_torch", "win_shutters", "trellis_planter", "newsstand", "boat_mast")),

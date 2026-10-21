@@ -28,7 +28,7 @@ for slug in "${PATCH_PH[@]}"; do
   }
 done
 # Novos modelos v1.0.1 + os props refeitos após corrigir o Blender.
-PATCH_GEN=(dish_petiscos dish_tapioca dish_pastel dish_acai dish_moqueca dish_batida coconut_green coconut_open pineapple orange frappe cup_plastic glass_juice cocktail
+PATCH_GEN=(service_fridge service_fridge_door service_food_cabinet service_register dish_petiscos dish_tapioca dish_pastel dish_acai dish_moqueca dish_batida coconut_green coconut_open pineapple orange frappe cup_plastic glass_juice cocktail
            campfire_logs beach_flag beach_spade boat_hull
            lounger win_shutters trellis_planter newsstand)
 for name in "${PATCH_GEN[@]}"; do
