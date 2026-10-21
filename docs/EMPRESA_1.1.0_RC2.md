@@ -1,6 +1,6 @@
 # Empresa e atendimento físico — 1.1.0 RC2
 
-Branch: `refine/company-kiosk`. Código testado: `EM_VALIDACAO_RC2`.
+Branch: `refine/company-kiosk`. Código testado: `d107960625e68b8751631ab43685685f8b8c7bf4`.
 Base: refinamento visual RC5 sobre o RC4. O diagnóstico da falha original de referências liberadas e ownership permanece em [RELATORIO_RC4.md](RELATORIO_RC4.md).
 
 ## Como jogar
@@ -53,7 +53,28 @@ O atendente anterior continua disponível: conserva o serviço anterior no modo 
 
 A RC1 teve uma espera ausente no teste da cena: `run()` não aguardava `_integration()`. Assim, o PASS anterior não comprovava a conclusão das verificações assíncronas de rascunho/equipe. A RC2 aguarda o fluxo inteiro e exige nos logs os marcadores de atendimento pelo cozinheiro/garçom, limpeza, folga e preservação do rascunho. O teste da tecla B também executa com `Core.in_game=true`.
 
-A execução corrigida e a publicação da RC2 estão em andamento. Os links, hash e resultado final serão registrados após essa execução.
+A [execução 39591282021](https://github.com/sergiomrge-tech/simulador-resort/actions/runs/39591282021) terminou com **sucesso**. `LIFECYCLE_TEST`, `KIOSK_TEST`, `ORDER_VISUAL_TEST`, `LOOP_TEST` e `COMPANY_TEST` passaram. O teste da empresa passou na fonte e novamente no PCK exportado.
+
+Os logs reais, além das linhas de comando, confirmam duas ocorrências de cada marcador — uma na fonte e outra no pacote:
+- preservação do rascunho durante vendas/reposição;
+- preparo, retirada, percurso e entrega pelo cozinheiro/garçom;
+- caminhada e limpeza da louça;
+- suspensão do garçom durante a folga.
+
+Também passaram a migração/save v7, o limite/medição do nome e fontes, estoque sem débito duplo, cobrança sem repetição, entrega parcial e fora de ordem, assentos sujos bloqueados até limpar e apoio/colisão do deck. O ciclo completo terminou com dinheiro 5487, estrelas 4,54 e 26 vendas no bar.
+
+Quatro capturas reais do Godot foram geradas e os logs conferidos. A inspeção visual local ficou pendente devido a desconexões do ambiente/visualizador. Permanecem avisos de recursos/RIDs/ObjectDB no encerramento do renderizador dummy e avisos de UID com fallback textual em execuções da fonte; não houve `SCRIPT ERROR` nos registros finais. Esses avisos de encerramento não foram corrigidos nesta versão.
+
+## Instalador e arquivos
+
+- [Instalador completo 1.1.0 RC2](https://github.com/sergiomrge-tech/simulador-resort/releases/download/v1.1.0-rc2/Instalar_MareAltaResort_v1.1.0.exe) — 1119645243 bytes, aproximadamente 1,12 GB.
+- [Release de testes](https://github.com/sergiomrge-tech/simulador-resort/releases/tag/v1.1.0-rc2).
+- SHA-256 do executável informado pelo GitHub: `85595d7d12fcb5185f6c0e7214ce514aa568cb6e2868eaae80887e764d7c7091`.
+- [Capturas](https://github.com/sergiomrge-tech/simulador-resort/actions/runs/39591282021/artifacts/12343430397).
+- [Logs e capturas de auditoria](https://github.com/sergiomrge-tech/simulador-resort/actions/runs/39591282021/artifacts/12342894201).
+- [Instalador e checksum no Actions](https://github.com/sergiomrge-tech/simulador-resort/actions/runs/39591282021/artifacts/12342978743).
+
+O jogo publicado corresponde a `d107960625e68b8751631ab43685685f8b8c7bf4`. O executável foi exportado para Windows e o PCK foi testado pelo Godot Linux. A instalação no Windows permanece pendente de teste manual.
 
 ## Verificação manual no Windows
 
