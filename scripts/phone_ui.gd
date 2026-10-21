@@ -131,7 +131,8 @@ func _place() -> void :
 	_phone.position = Vector2(vs.x - W - 60.0, (vs.y - _phone.size.y) * 0.5)
 
 func _refresh_if_open() -> void :
-	if app == "empresa" and is_instance_valid(company_name) and company_name.has_focus():
+	# O formulário mantém seu rascunho durante vendas e reposições, mesmo ao trocar de fonte.
+	if app == "empresa":
 		return
 	if visible:
 		call_deferred("refresh")

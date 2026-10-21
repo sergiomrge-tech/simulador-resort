@@ -145,6 +145,14 @@ func _integration(main) -> void:
 	key.pressed = true
 	main.hud._input(key)
 	check(main.hud.phone.visible, "letra B do nome não fecha o celular")
+	main.hud.phone.company_name.text = "Marca em edição"
+	main.hud.phone.company_font.select(2)
+	main.hud.phone.company_name.release_focus()
+	Core.stock_changed.emit()
+	Core.money_changed.emit(Core.money)
+	await get_tree().process_frame
+	await get_tree().process_frame
+	check(main.hud.phone.company_name.text == "Marca em edição" and main.hud.phone.company_font.selected == 2, "vendas e reposição não apagam rascunho ao escolher fonte")
 	main.hud.phone.close()
 	# Cargos trabalham no mundo: cozinheiro prepara, garçom contorna o quiosque.
 	village._on_slept(0)

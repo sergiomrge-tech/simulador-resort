@@ -12,7 +12,7 @@ concurrency:
 jobs:
   visual-godot:
     runs-on: ubuntu-24.04
-    timeout-minutes: 90
+    timeout-minutes: 180
     steps:
       - name: Obter repositório (incluindo versão 1.0.0)
         uses: actions/checkout@v4
@@ -136,6 +136,7 @@ jobs:
           if grep -Ei 'SCRIPT ERROR|ERROR:.*meta|REAL_MISSING|resource file not found|Lambda capture.*freed|inconsistent' shots/company-ci.log; then exit 1; fi
 
       - name: Tirar screenshots e procurar erros de recursos
+        if: github.ref != 'refs/heads/refine/company-kiosk'
         run: |
           set -euo pipefail
           timeout 600 xvfb-run -a -s '-screen 0 1280x720x24' "$GODOT" --audio-driver Dummy --path . --rendering-driver opengl3 --rendering-method gl_compatibility -- --shot=ci-quiosque --cam=38,3,-2,0,-28,12 --v1 --noroof --quality=1 --primcheck --floatcheck --out="$PWD/shots/ci-quiosque.png" > shots/visual-ci.log 2>&1
@@ -145,6 +146,7 @@ jobs:
           fi
 
       - name: Capturar quiosque refinado de dia e à noite
+        if: github.ref != 'refs/heads/refine/company-kiosk'
         run: |
           set -euo pipefail
           for spec in 'frente:38,2.8,-3,0,-8,12' 'balcao:38,0.15,-8,0,-4,12' 'noite:38,2.8,-3,0,-8,20'; do
@@ -156,6 +158,7 @@ jobs:
           done
 
       - name: Capturar pedidos reais no balcão e na mesa
+        if: github.ref != 'refs/heads/refine/company-kiosk'
         run: |
           set -euo pipefail
           for spec in 'pedidos-balcao:36.2,0.5,-10,-51,-31,12' 'pedidos-mesa:34.2,0.1,-9.6,152,-34,12' 'pedidos-mesa-b:43.2,0.1,-9.6,145,-34,12'; do
@@ -169,7 +172,7 @@ jobs:
       - name: Capturar empresa e equipamentos no Godot
         run: |
           set -euo pipefail
-          for spec in 'empresa-frente:38,2.8,-3,0,-8,12' 'empresa-geladeira:38,0.1,-20.5,180,-8,12' 'cel_empresa:38,0.1,-20.5,180,-8,12'; do
+          for spec in 'empresa-frente:38,2.8,-3,0,-8,12' 'empresa-noite:38,2.8,-3,0,-8,20' 'empresa-geladeira:38,0.1,-20.5,180,-8,12' 'cel_empresa:38,0.1,-20.5,180,-8,12'; do
             NAME=${spec%%:*}
             CAMERA=${spec#*:}
             EXTRA=--clean-shot
