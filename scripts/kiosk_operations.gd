@@ -10,6 +10,7 @@ var actors: Dictionary = {}
 var dirt: Dictionary = {}
 var waiter_target: WeakRef
 var waiter_phase := ""
+var waiter_role_active := ""
 var cleaner_seat := -1
 var cleaner_time := 0.0
 var pulse := 0.0
@@ -212,10 +213,15 @@ func _actor(role: String, pos: Vector3):
 func _staff_tick() -> void:
 	var c: Vector3 = center()
 	var waiter_role: String = "garcom" if Core.prog.staff_eff("garcom") > 0 else "atendente"
+	if waiter_role != waiter_role_active:
+		waiter_role_active = waiter_role
+		waiter_phase = ""
+		waiter_target = null
+		for old_role in ["garcom", "atendente"]:
+			if actors.has(old_role):
+				_clear_tray(actors[old_role])
 	for role in ["garcom", "atendente", "caixa", "cozinheiro", "limpeza"]:
 		var active: bool = Core.prog.staff_eff(role) > 0 and main.village.kiosk_open()
-		if role in ["garcom", "atendente"]:
-			active = active and role == waiter_role
 		if actors.has(role):
 			actors[role].visible = active
 			actors[role].set_process(active)
@@ -227,10 +233,11 @@ func _staff_tick() -> void:
 		elif role == "limpeza":
 			pos = c + Vector3(-3.6, 0.1, 3.4)
 		var g = _actor(role, pos)
+		g.speed = 2.0 * Core.prog.staff_eff(role)
 		if role == "caixa":
 			if not Core.company.receivables.is_empty():
 				Core.collect_company_payments()
-		elif role == "cozinheiro":
+		elif role == "cozinheiro" or (role == "atendente" and waiter_role == "garcom"):
 			_cook()
 		elif role == "limpeza":
 			_cleaner(g)
@@ -256,7 +263,8 @@ func _waiter(g) -> void:
 		if is_instance_valid(target) and not target.is_queued_for_deletion() and target.state == "kwait" and str(Core.company.staff_carry) in main.village._remaining(target) and g.position.distance_to(target.spot.approach) < 1.0:
 			main.village._deliver_item(target, str(Core.company.staff_carry), true, true)
 		waiter_phase = ""
-		g.consume(false)
+		_clear_tray(g)
+		g.play("Idle_Loop")
 	# Return safely to the shelves before returning or taking an item.
 	var pickup: Vector3 = center() + Vector3(0, 0.1, -5.3)
 	if g.position.distance_to(pickup) > 0.5:
@@ -271,7 +279,12 @@ func _waiter(g) -> void:
 				continue
 			waiter_target = weakref(target)
 			waiter_phase = "deliver"
-			g.consume_dish(id)
+			var tray := Node3D.new()
+			tray.name = "StaffTray"
+			g.add_child(tray)
+			tray.position = Vector3(0, 1.0, 0.32)
+			tray.scale = Vector3.ONE * 0.65
+			Dishes.build(tray, id)
 			g.go([center() + Vector3(3.8, 0.1, -5.3), center() + Vector3(3.8, 0.1, 3.5), target.spot.approach])
 			return
 
@@ -290,3 +303,9 @@ func _cleaner(g) -> void:
 	cleaner_time = 0.0
 	if cleaner_seat < main.world.kiosk_spots.size():
 		g.go([main.world.kiosk_spots[cleaner_seat].approach])
+
+func _clear_tray(g) -> void:
+	var tray = g.get_node_or_null("StaffTray")
+	if tray != null:
+		g.remove_child(tray)
+		tray.queue_free()

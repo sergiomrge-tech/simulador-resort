@@ -572,6 +572,11 @@ func _bar(p: float) -> String:
 
 func kiosk_prompt() -> String:
 	if Core.company_enabled():
+		if not Core.company.receivables.is_empty():
+			return "Caixa · receber %d contas" % Core.company.receivables.size()
+		for index in Core.company.dirty_seats:
+			if index < 2 and not world.kiosk_spots[index].busy:
+				return "Recolher louça do balcão"
 		return tr("Empresa · retire bebidas na geladeira e pratos na cozinha, atrás do quiosque")
 	if not prep.is_empty():
 		var st: Array = Economy.DISH_STAGES[prep.dish]
@@ -609,6 +614,12 @@ func daily_goal() -> int:
 ## Aperta E no balcão: começa o preparo do próximo prato; com o preparo andando, cada toque adianta um pedaço.
 func kiosk_action() -> bool:
 	if Core.company_enabled():
+		if not Core.company.receivables.is_empty():
+			get_parent().operations.collect_payments()
+			return true
+		for index in Core.company.dirty_seats.duplicate():
+			if index < 2 and not world.kiosk_spots[index].busy:
+				return Core.clean_company_seat(index)
 		Core.toast.emit(kiosk_prompt(), "info")
 		return false
 	if not prep.is_empty() and is_instance_valid(prep.g) and prep.g.state == "kwait":
