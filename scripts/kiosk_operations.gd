@@ -30,6 +30,9 @@ func center() -> Vector3:
 func _build() -> void:
 	var c: Vector3 = center()
 	var wood: Material = main.world.M.post
+	# O anexo fica fora do deck original; esta base apoia os equipamentos a 10 cm.
+	var deck: MeshInstance3D = B.platform(self, Vector3(4.4, 0.2, 1.8), c + Vector3(0, 0, -4.35), wood, 0.45)
+	deck.name = "ServiceDeck"
 	# Anexo externo: pode ser alcançado contornando a lateral, sem atravessar o balcão.
 	for x in [-2.1, 2.1]:
 		B.cyl(self, 0.055, 0.055, 2.25, c + Vector3(x, 1.13, -4.5), wood)
@@ -137,7 +140,10 @@ func clean(index: int) -> void:
 func sync_company() -> void:
 	visible = Core.company_enabled()
 	for body in find_children("*", "StaticBody3D", true, false):
-		body.collision_layer = (3 if body in station_bodies else 2) if visible else 0
+		if body is Interactable:
+			body.collision_layer = (3 if body in station_bodies else 2) if visible else 0
+		else:
+			body.collision_layer = 1 if visible else 0
 	hand.visible = visible
 	for role in actors:
 		actors[role].visible = visible and Core.prog.staff_eff(role) > 0

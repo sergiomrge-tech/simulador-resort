@@ -131,6 +131,10 @@ func _integration(main) -> void:
 	for sign in main.world.company_signs:
 		check(sign.label.text == "Quiosque do Sergio", "marca aplicada à placa real")
 	check(main.operations.stations.size() == 3, "geladeira, armário e cozinha presentes")
+	var deck = main.operations.get_node("ServiceDeck")
+	check(absf(deck.position.y + deck.mesh.get_aabb().end.y - main.operations.stations.pratos.position.y) < 0.005, "equipamentos apoiados no deck do anexo")
+	var floors: Array = deck.find_children("*", "StaticBody3D", true, false)
+	check(floors.size() == 1 and floors[0].collision_layer == 1, "deck visível com colisão de piso")
 	check(not main.operations.can_access("bebidas"), "retirada remota bloqueada")
 	main.player.position = main.operations.stations.bebidas.global_position + Vector3(0, 0, -1.2)
 	check(main.operations.can_access("bebidas"), "retirada disponível ao chegar à geladeira")
