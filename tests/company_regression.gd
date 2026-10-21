@@ -84,7 +84,7 @@ func run(main = null) -> void:
 	cash = Core.money
 	check(Core.load_game() and not Core.company_enabled() and Core.money == cash, "migração v6 preserva dinheiro e atendimento original")
 	if main != null:
-		_integration(main)
+		await _integration(main)
 	Core.delete_save()
 	Core.SAVE_PATH = old_path
 	print("COMPANY_TEST FAIL" if failed else "COMPANY_TEST PASS")
@@ -147,7 +147,10 @@ func _integration(main) -> void:
 	key.keycode = KEY_B
 	key.physical_keycode = KEY_B
 	key.pressed = true
+	var in_game_before: bool = Core.in_game
+	Core.in_game = true
 	main.hud._input(key)
+	Core.in_game = in_game_before
 	check(main.hud.phone.visible, "letra B do nome não fecha o celular")
 	main.hud.phone.company_name.text = "Marca em edição"
 	main.hud.phone.company_font.select(2)

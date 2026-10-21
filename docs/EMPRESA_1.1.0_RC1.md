@@ -1,5 +1,7 @@
 # Empresa e atendimento físico — 1.1.0 RC1
 
+> Prévia anterior. A auditoria encontrou uma espera ausente no próprio teste: ele anunciava PASS antes das verificações assíncronas da equipe. A RC2 corrige essa espera e exige marcadores de conclusão do rascunho, atendimento, limpeza e folga, tanto na fonte quanto no pacote exportado. Consulte [EMPRESA_1.1.0_RC2.md](EMPRESA_1.1.0_RC2.md).
+
 Branch: `refine/company-kiosk`. Código testado: `7d4f7cf85bf16290a935a7a6a8d4e6120aafc031`.
 Base: refinamento visual RC5 sobre o RC4. O diagnóstico da falha original de referências liberadas e ownership permanece em [RELATORIO_RC4.md](RELATORIO_RC4.md).
 

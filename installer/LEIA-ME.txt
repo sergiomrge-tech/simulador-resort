@@ -1,9 +1,9 @@
-MARÉ ALTA RESORT — v1.1.0 RC1
+MARÉ ALTA RESORT — v1.1.0 RC2
 =========================
 Abra pelo atalho "Maré Alta Resort" na área de trabalho ou no menu Iniciar.
 Saves, configurações e cache ficam em userdata\ dentro da pasta do jogo.
 
-NOVO NA 1.1.0 RC1
+NOVO NA 1.1.0 RC2
 - No celular (B), abra Minha Empresa para criar a marca. Nome de até 24 caracteres,
   três estilos de fonte e três cores. As letras se ajustam à largura das placas.
 - Ative atendimento com retirada: contorne a lateral do quiosque até o anexo de trás.
