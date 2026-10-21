@@ -16,7 +16,7 @@ permissions:
 
 concurrency:
   group: mare-alta-patch-101-${{ github.ref }}
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   patch-windows:
