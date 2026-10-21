@@ -3,6 +3,7 @@ extends Node3D
 const Dishes = preload("res://scripts/dish_presentation.gd")
 var main
 var stations: Dictionary = {}
+var station_bodies: Array[Interactable] = []
 var products: Node3D
 var door: Node3D
 var hand: Node3D
@@ -75,7 +76,7 @@ func _station(kind: String, title: String, pos: Vector3, size: Vector3) -> void:
 	stations[kind] = node
 	var label := B.label(node, title, Vector3(0, size.y + 0.16, -0.36), 27, Color(1, 0.96, 0.8), Color(0, 0, 0, 0.8), PI)
 	label.pixel_size = 0.003
-	_interaction(node, Vector3(0, size.y * 0.5, 0), size, station_prompt.bind(kind, title), open_station.bind(kind))
+	station_bodies.append(_interaction(node, Vector3(0, size.y * 0.5, 0), size, station_prompt.bind(kind, title), open_station.bind(kind)))
 
 func station_prompt(_kind: String, title: String) -> String:
 	return title if Core.company_enabled() else ""
@@ -135,6 +136,8 @@ func clean(index: int) -> void:
 
 func sync_company() -> void:
 	visible = Core.company_enabled()
+	for body in find_children("*", "StaticBody3D", true, false):
+		body.collision_layer = (3 if body in station_bodies else 2) if visible else 0
 	hand.visible = visible
 	for role in actors:
 		actors[role].visible = visible and Core.prog.staff_eff(role) > 0
@@ -268,7 +271,7 @@ func _waiter(g) -> void:
 	# Return safely to the shelves before returning or taking an item.
 	var pickup: Vector3 = center() + Vector3(0, 0.1, -5.3)
 	if g.position.distance_to(pickup) > 0.5:
-		g.go([center() + Vector3(3.8, 0.1, 3.5), center() + Vector3(3.8, 0.1, -5.3), pickup])
+		g.go([center() + Vector3(5.2, 0.1, 3.5), center() + Vector3(5.2, 0.1, -5.3), pickup])
 		return
 	if Core.company.staff_carry != "":
 		if not Core.return_company_staff_dish():
@@ -285,7 +288,7 @@ func _waiter(g) -> void:
 			tray.position = Vector3(0, 1.0, 0.32)
 			tray.scale = Vector3.ONE * 0.65
 			Dishes.build(tray, id)
-			g.go([center() + Vector3(3.8, 0.1, -5.3), center() + Vector3(3.8, 0.1, 3.5), target.spot.approach])
+			g.go([center() + Vector3(5.2, 0.1, -5.3), center() + Vector3(5.2, 0.1, 3.5), target.spot.approach])
 			return
 
 func _cleaner(g) -> void:

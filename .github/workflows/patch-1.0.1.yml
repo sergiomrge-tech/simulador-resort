@@ -1,11 +1,11 @@
-name: Compilar Maré Alta Resort 1.0.1 RC4 — visual e instaladores
+name: Compilar Maré Alta Resort 1.1.0 RC1 — visual e instaladores
 
 on:
   workflow_dispatch:
   push:
     branches: [main, 'fix/**']
     paths:
-      - '.github/workflows/patch-1.0.1.yml'
+      - '.github/workflows/patch-1.1.0.yml'
       - 'scripts/**'
       - 'tests/**'
       - 'tools/**'
@@ -15,7 +15,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: mare-alta-patch-101-${{ github.ref }}
+  group: mare-alta-patch-110-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -140,6 +140,13 @@ jobs:
             echo "Falha: erro de script, referência liberada ou ownership inválido"; exit 1
           fi
 
+      - name: Testar empresa e atendimento com retirada
+        run: |
+          set -euo pipefail
+          timeout 240 "$GODOT" --headless --audio-driver Dummy --path . -- --loop-test --company-test --quality=0 2>&1 | tee shots/company-ci.log
+          grep -qx 'COMPANY_TEST PASS' shots/company-ci.log
+          if grep -Ei 'SCRIPT ERROR|ERROR:.*meta|REAL_MISSING|resource file not found|Lambda capture.*freed|inconsistent' shots/company-ci.log; then exit 1; fi
+
       - name: Tirar screenshots e procurar erros de recursos
         run: |
           set -euo pipefail
@@ -206,8 +213,8 @@ jobs:
         run: |
           set -euo pipefail
           bash tools/build_patch.sh 51921df 2>&1 | tee shots/build-patch.log
-          test -s "$STAGE/Atualizar_MareAltaResort_v1.0.1.exe"
-          test -s build/patch/patch_1.0.1.pck
+          test -s "$STAGE/Atualizar_MareAltaResort_v1.1.0.exe"
+          test -s build/patch/patch_1.1.0.pck
 
       - name: Testar o patch por cima do PCK 1.0.0
         run: |
@@ -216,13 +223,13 @@ jobs:
           mkdir -p "$ROOT"
           cp "$GODOT" "$ROOT/MareAltaResort"
           cp "$RUNNER_TEMP/base/MareAltaResort.pck" "$ROOT/MareAltaResort.pck"
-          cp build/patch/patch_1.0.1.pck installer/patch_loader.gd "$ROOT/"
+          cp build/patch/patch_1.1.0.pck installer/patch_loader.gd "$ROOT/"
           printf '[autoload]\nPatch="*%s/patch_loader.gd"\n' "$ROOT" > "$ROOT/override.cfg"
           timeout 600 xvfb-run -a -s '-screen 0 1280x720x24' "$ROOT/MareAltaResort" --main-pack "$ROOT/MareAltaResort.pck" --rendering-driver opengl3 --rendering-method gl_compatibility -- --shot=patch-ci --cam=38,3,-2,0,-28,12 --v1 --orders-demo --quality=1 --out="$PWD/shots/patch-ci.png" > shots/patch-ci.log 2>&1
-          grep -Fq '[patch] patch_1.0.1.pck ok' shots/patch-ci.log
+          grep -Fq '[patch] patch_1.1.0.pck ok' shots/patch-ci.log
           test -s shots/patch-ci.png
           if grep -Ei 'SCRIPT ERROR|ERROR:.*meta|REAL_MISSING|resource file not found' shots/patch-ci.log; then
-            echo "Falha: erro na atualização 1.0.0 -> 1.0.1"; exit 1
+            echo "Falha: erro na atualização 1.0.0 -> 1.1.0"; exit 1
           fi
 
       - name: Exportar e validar instalador completo Windows
@@ -246,16 +253,16 @@ jobs:
           cp build/win/MareAltaResort.exe build/win/MareAltaResort.pck "$STAGE/"
           cp installer/setup.nsi installer/Jogar.vbs installer/icon.ico installer/LEIA-ME.txt "$STAGE/"
           (cd "$STAGE" && makensis -V2 setup.nsi) 2>&1 | tee shots/full-installer.log
-          test -s "$STAGE/Instalar_MareAltaResort_v1.0.1.exe"
-          sha256sum "$STAGE/Instalar_MareAltaResort_v1.0.1.exe" "$STAGE/Atualizar_MareAltaResort_v1.0.1.exe" > "$STAGE/SHA256SUMS.txt"
+          test -s "$STAGE/Instalar_MareAltaResort_v1.1.0.exe"
+          sha256sum "$STAGE/Instalar_MareAltaResort_v1.1.0.exe" "$STAGE/Atualizar_MareAltaResort_v1.1.0.exe" > "$STAGE/SHA256SUMS.txt"
 
       - name: Guardar instaladores validados
         uses: actions/upload-artifact@v4
         with:
-          name: instaladores-mare-alta-101-rc4
+          name: instaladores-mare-alta-110-rc1
           path: |
-            ${{ runner.temp }}/stage/Instalar_MareAltaResort_v1.0.1.exe
-            ${{ runner.temp }}/stage/Atualizar_MareAltaResort_v1.0.1.exe
+            ${{ runner.temp }}/stage/Instalar_MareAltaResort_v1.1.0.exe
+            ${{ runner.temp }}/stage/Atualizar_MareAltaResort_v1.1.0.exe
             ${{ runner.temp }}/stage/SHA256SUMS.txt
           retention-days: 14
 
@@ -263,7 +270,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: logs-e-prints-mare-alta-101
+          name: logs-e-prints-mare-alta-110
           path: |
             shots/
             fetch-assets.log
@@ -274,15 +281,15 @@ jobs:
           if-no-files-found: ignore
 
       - name: Publicar link direto do instalador de testes
-        if: success() && github.ref == 'refs/heads/fix/visual-kiosk-orders-rc3'
+        if: success() && github.ref == 'refs/heads/refine/company-kiosk'
         env:
           GH_TOKEN: ${{ github.token }}
           STAGE: ${{ runner.temp }}/stage
         run: |
           set -euo pipefail
-          TAG=v1.0.1-rc4
+          TAG=v1.1.0-rc1
           if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" > /dev/null 2>&1; then
             echo "A prévia $TAG já existe; os instaladores desta execução estão no artefato."
             exit 0
           fi
-          gh release create "$TAG" "$STAGE/Instalar_MareAltaResort_v1.0.1.exe" "$STAGE/Atualizar_MareAltaResort_v1.0.1.exe" "$STAGE/SHA256SUMS.txt" --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --title 'Maré Alta Resort 1.0.1 RC4 — refinamento visual' --prerelease --notes 'Instalador completo e patch cumulativo sobre a v1.0.0 (51921df). Pratos e bebidas aparecem conforme cada item entregue, com louça e talheres CC0, modelos próprios para receitas brasileiras, pedidos múltiplos e limpeza automática. Iluminação, areia, folhagem e placa do quiosque refinadas. Godot 4.5.1; testes de pedidos visuais, ciclo de vida, assentos, VIP/rush, ciclo completo e smoke dos pacotes completo e base+patch. Capturas reais nos artefatos do Actions. A instalação e o desempenho no Windows ainda precisam de teste no aparelho.'
+          gh release create "$TAG" "$STAGE/Instalar_MareAltaResort_v1.1.0.exe" "$STAGE/Atualizar_MareAltaResort_v1.1.0.exe" "$STAGE/SHA256SUMS.txt" --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --title 'Maré Alta Resort 1.1.0 RC1 — sua empresa no quiosque' --prerelease --notes 'Instalador completo e patch cumulativo sobre a v1.0.0 (51921df). Pratos e bebidas aparecem conforme cada item entregue, com louça e talheres CC0, modelos próprios para receitas brasileiras, pedidos múltiplos e limpeza automática. Iluminação, areia, folhagem e placa do quiosque refinadas. Godot 4.5.1; testes de pedidos visuais, ciclo de vida, assentos, VIP/rush, ciclo completo e smoke dos pacotes completo e base+patch. Capturas reais nos artefatos do Actions. A instalação e o desempenho no Windows ainda precisam de teste no aparelho.'
