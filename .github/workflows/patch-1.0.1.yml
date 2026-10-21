@@ -136,7 +136,7 @@ jobs:
           timeout 380 "$GODOT" --headless --audio-driver Dummy --path . -- --loop-test --quality=0 2>&1 | tee shots/loop-ci.log
           grep -qx 'LOOP_TEST PASS.*' shots/loop-ci.log
           # Godot pode sair com código 0 mesmo após erro de script.
-          if grep -Ei 'SCRIPT ERROR|REAL_MISSING|resource file not found|Lambda capture.*freed|inconsistent' shots/kiosk-ci.log shots/loop-ci.log shots/orders-ci.log; then
+          if grep -Ei 'SCRIPT ERROR|ERROR:.*meta|REAL_MISSING|resource file not found|Lambda capture.*freed|inconsistent' shots/kiosk-ci.log shots/loop-ci.log shots/orders-ci.log; then
             echo "Falha: erro de script, referência liberada ou ownership inválido"; exit 1
           fi
 
@@ -145,7 +145,7 @@ jobs:
           set -euo pipefail
           timeout 600 xvfb-run -a -s '-screen 0 1280x720x24' "$GODOT" --audio-driver Dummy --path . --rendering-driver opengl3 --rendering-method gl_compatibility -- --shot=ci-quiosque --cam=38,3,-2,0,-28,12 --v1 --noroof --quality=1 --primcheck --floatcheck --out="$PWD/shots/ci-quiosque.png" > shots/visual-ci.log 2>&1
           test -s shots/ci-quiosque.png
-          if grep -Ei 'SCRIPT ERROR|REAL_MISSING|resource file not found' shots/visual-ci.log; then
+          if grep -Ei 'SCRIPT ERROR|ERROR:.*meta|REAL_MISSING|resource file not found' shots/visual-ci.log; then
             echo "Falha: recursos ou scripts ausentes"; exit 1
           fi
 
@@ -157,7 +157,7 @@ jobs:
             CAMERA=${spec#*:}
             timeout 600 xvfb-run -a -s '-screen 0 1280x720x24' "$GODOT" --audio-driver Dummy --path . --rendering-driver opengl3 --rendering-method gl_compatibility -- --shot="visual-$NAME" --cam="$CAMERA" --v1 --clean-shot --quality=1 --out="$PWD/shots/visual-$NAME.png" > "shots/visual-$NAME.log" 2>&1
             test -s "shots/visual-$NAME.png"
-            if grep -Ei 'SCRIPT ERROR|REAL_MISSING|resource file not found|inconsistent' "shots/visual-$NAME.log"; then exit 1; fi
+            if grep -Ei 'SCRIPT ERROR|ERROR:.*meta|REAL_MISSING|resource file not found|inconsistent' "shots/visual-$NAME.log"; then exit 1; fi
           done
 
       - name: Capturar pedidos reais no balcão e na mesa
@@ -168,7 +168,7 @@ jobs:
             CAMERA=${spec#*:}
             timeout 600 xvfb-run -a -s '-screen 0 1280x720x24' "$GODOT" --audio-driver Dummy --path . --rendering-driver opengl3 --rendering-method gl_compatibility -- --shot="$NAME" --cam="$CAMERA" --v1 --orders-demo --clean-shot --quality=1 --out="$PWD/shots/$NAME.png" > "shots/$NAME.log" 2>&1
             test -s "shots/$NAME.png"
-            if grep -Ei 'SCRIPT ERROR|REAL_MISSING|resource file not found|inconsistent' "shots/$NAME.log"; then exit 1; fi
+            if grep -Ei 'SCRIPT ERROR|ERROR:.*meta|REAL_MISSING|resource file not found|inconsistent' "shots/$NAME.log"; then exit 1; fi
           done
 
       - name: Guardar prévia visual antes da montagem
@@ -221,7 +221,7 @@ jobs:
           timeout 600 xvfb-run -a -s '-screen 0 1280x720x24' "$ROOT/MareAltaResort" --main-pack "$ROOT/MareAltaResort.pck" --rendering-driver opengl3 --rendering-method gl_compatibility -- --shot=patch-ci --cam=38,3,-2,0,-28,12 --v1 --orders-demo --quality=1 --out="$PWD/shots/patch-ci.png" > shots/patch-ci.log 2>&1
           grep -Fq '[patch] patch_1.0.1.pck ok' shots/patch-ci.log
           test -s shots/patch-ci.png
-          if grep -Ei 'SCRIPT ERROR|REAL_MISSING|resource file not found' shots/patch-ci.log; then
+          if grep -Ei 'SCRIPT ERROR|ERROR:.*meta|REAL_MISSING|resource file not found' shots/patch-ci.log; then
             echo "Falha: erro na atualização 1.0.0 -> 1.0.1"; exit 1
           fi
 
@@ -242,7 +242,7 @@ jobs:
           test "$SIZE" -lt 2100000000
           timeout 600 xvfb-run -a -s '-screen 0 1280x720x24' "$GODOT" --main-pack "$PWD/build/win/MareAltaResort.pck" --audio-driver Dummy --rendering-driver opengl3 --rendering-method gl_compatibility -- --shot=full-ci --cam=38,2.8,-3,0,-8,12 --v1 --orders-demo --clean-shot --quality=1 --out="$PWD/shots/full-ci.png" > shots/full-ci.log 2>&1
           test -s shots/full-ci.png
-          if grep -Ei 'SCRIPT ERROR|REAL_MISSING|resource file not found|inconsistent' shots/full-ci.log; then exit 1; fi
+          if grep -Ei 'SCRIPT ERROR|ERROR:.*meta|REAL_MISSING|resource file not found|inconsistent' shots/full-ci.log; then exit 1; fi
           cp build/win/MareAltaResort.exe build/win/MareAltaResort.pck "$STAGE/"
           cp installer/setup.nsi installer/Jogar.vbs installer/icon.ico installer/LEIA-ME.txt "$STAGE/"
           (cd "$STAGE" && makensis -V2 setup.nsi) 2>&1 | tee shots/full-installer.log

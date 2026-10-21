@@ -772,7 +772,7 @@ func _show_prep_visual(dish: String) -> void:
 
 func served_dishes(g) -> Array:
 	var result: Array = []
-	var root = g.get_meta("served_visuals", null)
+	var root = g.get_meta("served_visuals") if g.has_meta("served_visuals") else null
 	if is_instance_valid(root):
 		for child in root.get_children():
 			if child.has_meta("dish_id"):
@@ -780,7 +780,7 @@ func served_dishes(g) -> Array:
 	return result
 
 func clear_served_visuals(g) -> void:
-	var root = g.get_meta("served_visuals", null)
+	var root = g.get_meta("served_visuals") if g.has_meta("served_visuals") else null
 	if is_instance_valid(root):
 		root.visible = false
 		root.queue_free()
@@ -788,7 +788,7 @@ func clear_served_visuals(g) -> void:
 		g.remove_meta("served_visuals")
 
 func _show_delivered_visual(g, dish: String) -> void:
-	var root = g.get_meta("served_visuals", null)
+	var root = g.get_meta("served_visuals") if g.has_meta("served_visuals") else null
 	if not is_instance_valid(root):
 		root = Node3D.new()
 		root.name = "ServedOrder_%d" % g.get_instance_id()
