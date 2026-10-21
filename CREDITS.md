@@ -154,3 +154,8 @@ Modelos **Poly Haven CC0**, obtidos por `MODELS_EXTRA` em `tools/fetch_assets.py
 - Pratos rasos/fundos e talheres: Kenney **Food Kit**, CC0. Fonte oficial: https://kenney.nl/assets/food-kit ; download reproduzível em `tools/fetch_assets.py`.
 - Recheios de petiscos, tapioca, pastel, açaí, moqueca e batida de coco: modelos originais do projeto, gerados por `tools/gen_dishes.py`, com sementes fixas.
 - Cada apresentação referencia o ID estável do cardápio em `scripts/dish_presentation.gd`; cocos, sucos e caipirinhas preservam os modelos detalhados existentes.
+
+## Equipamentos da empresa (1.1.0)
+Geladeira com porta de vidro separada, armário de pratos e terminal de caixa:
+modelos originais do projeto, gerados por `tools/gen_kiosk_service.py` no Blender.
+Nunito permanece sob sua licença incluída em assets/fonts.

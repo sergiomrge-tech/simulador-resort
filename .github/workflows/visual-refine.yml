@@ -3,9 +3,9 @@ on:
   workflow_dispatch:
   push:
     branches: ['refine/**']
-    paths: ['scripts/**', 'shaders/**', 'tests/**', 'tools/**', '.github/workflows/visual-refine.yml']
+    paths: ['scripts/**', 'shaders/**', 'tests/**', 'tools/**', '.github/workflows/visual-refine.yml', 'project.godot', 'export_presets.cfg', 'installer/**']
 permissions:
-  contents: read
+  contents: write
 concurrency:
   group: resort-visual-${{ github.ref }}
   cancel-in-progress: true
@@ -185,6 +185,58 @@ jobs:
           name: refinamento-visual-${{ github.sha }}
           path: shots/
           retention-days: 7
+
+      - name: Exportar e testar instalador atualizado da empresa
+        if: github.ref == 'refs/heads/refine/company-kiosk'
+        env:
+          STAGE: ${{ runner.temp }}/company-stage
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/company-templates" "$HOME/.local/share/godot/export_templates/4.5.1.stable" "$STAGE" build/win
+          curl -fL --retry 5 --retry-all-errors -o "$RUNNER_TEMP/company-templates/templates.tpz" 'https://github.com/godotengine/godot/releases/download/4.5.1-stable/Godot_v4.5.1-stable_export_templates.tpz'
+          unzip -q "$RUNNER_TEMP/company-templates/templates.tpz" 'templates/windows_release_x86_64.exe' -d "$RUNNER_TEMP/company-templates"
+          cp "$RUNNER_TEMP/company-templates/templates/windows_release_x86_64.exe" "$HOME/.local/share/godot/export_templates/4.5.1.stable/"
+          python tools/prune_export.py apply
+          trap 'python tools/prune_export.py restore' EXIT
+          timeout 2400 "$GODOT" --headless --path . --export-release 'Windows Desktop' "$PWD/build/win/MareAltaResort.exe" > shots/company-export.log 2>&1
+          python tools/prune_export.py restore
+          trap - EXIT
+          test -s build/win/MareAltaResort.exe
+          test -s build/win/MareAltaResort.pck
+          timeout 240 "$GODOT" --headless --audio-driver Dummy --main-pack "$PWD/build/win/MareAltaResort.pck" -- --loop-test --company-test --quality=0 2>&1 | tee shots/company-pack-test.log
+          grep -qx 'COMPANY_TEST PASS' shots/company-pack-test.log
+          timeout 600 xvfb-run -a -s '-screen 0 1280x720x24' "$GODOT" --audio-driver Dummy --main-pack "$PWD/build/win/MareAltaResort.pck" --rendering-driver opengl3 --rendering-method gl_compatibility -- --shot=empresa-full --cam=38,0.1,-20.5,180,-8,12 --v1 --company-demo --clean-shot --quality=1 --out="$PWD/shots/empresa-full.png" > shots/company-pack-visual.log 2>&1
+          test -s shots/empresa-full.png
+          if grep -Ei 'SCRIPT ERROR|ERROR:.*meta|REAL_MISSING|resource file not found|Lambda capture.*freed|inconsistent' shots/company-pack-test.log shots/company-pack-visual.log; then exit 1; fi
+          cp build/win/MareAltaResort.exe build/win/MareAltaResort.pck "$STAGE/"
+          cp installer/setup.nsi installer/Jogar.vbs installer/icon.ico installer/LEIA-ME.txt "$STAGE/"
+          (cd "$STAGE" && makensis -V2 setup.nsi) 2>&1 | tee shots/company-installer.log
+          test -s "$STAGE/Instalar_MareAltaResort_v1.1.0.exe"
+          (cd "$STAGE" && sha256sum Instalar_MareAltaResort_v1.1.0.exe > SHA256SUMS.txt)
+
+      - name: Guardar instalador 1.1.0 RC1
+        if: github.ref == 'refs/heads/refine/company-kiosk'
+        uses: actions/upload-artifact@v4
+        with:
+          name: instalador-empresa-110-rc1
+          path: |
+            ${{ runner.temp }}/company-stage/Instalar_MareAltaResort_v1.1.0.exe
+            ${{ runner.temp }}/company-stage/SHA256SUMS.txt
+          retention-days: 14
+
+      - name: Publicar instalador de testes da empresa
+        if: success() && github.ref == 'refs/heads/refine/company-kiosk'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          STAGE: ${{ runner.temp }}/company-stage
+        run: |
+          set -euo pipefail
+          TAG=v1.1.0-rc1
+          if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" > /dev/null 2>&1; then
+            echo "A prévia já existe; instalador desta execução disponível no artefato."
+            exit 0
+          fi
+          gh release create "$TAG" "$STAGE/Instalar_MareAltaResort_v1.1.0.exe" "$STAGE/SHA256SUMS.txt" --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --title 'Maré Alta Resort 1.1.0 RC1 — sua empresa no quiosque' --prerelease --notes 'Crie sua marca com nome, fonte e cor. Geladeira com vidro, cozinha, armário de pratos, retirada e entrega por item, contas a receber, limpeza e quatro cargos com salários. Saves anteriores preservam o modo original até ativar a empresa. Testes nativos Godot e regressões do pacote exportado; capturas reais no Actions. Instalação, controles, transparência e desempenho no Windows ainda exigem verificação no aparelho. Faça backup de userdata antes de voltar para uma versão anterior.'
 
       - name: Guardar logs mesmo se a validação falhar
         if: always()

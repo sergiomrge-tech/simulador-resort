@@ -1,7 +1,25 @@
-MARÉ ALTA RESORT — v0.8.0
+MARÉ ALTA RESORT — v1.1.0 RC1
 =========================
 Abra pelo atalho "Maré Alta Resort" na área de trabalho ou no menu Iniciar.
 Saves, configurações e cache ficam em userdata\ dentro da pasta do jogo.
+
+NOVO NA 1.1.0 RC1
+- No celular (B), abra Minha Empresa para criar a marca. Nome de até 24 caracteres,
+  três estilos de fonte e três cores. As letras se ajustam à largura das placas.
+- Ative atendimento com retirada: contorne a lateral do quiosque até o anexo de trás.
+  Na geladeira, prepare/retire bebidas. Na cozinha, prepare alimentos; retire-os
+  prontos no armário. Use E no cliente para entregar um item que ele pediu.
+- Ingredientes são gastos no preparo. O produto pronto vai para a prateleira
+  (até 4 de cada); carregar ou entregar não gasta ingredientes novamente.
+- Use o terminal no balcão para receber as contas. Após o consumo e a saída,
+  recolha a louça com E para liberar o lugar.
+- Contrate garçom, operador de caixa, cozinheiro e auxiliar de limpeza em Equipe.
+  Há contratação, salários diários, treinamento, energia e folgas.
+- Saves antigos continuam com o atendimento anterior até criar/ativar a empresa.
+  O save novo também guarda marca, produtos, preparo e contas a receber.
+- Prévia de testes: instalação, controles e desempenho no Windows precisam
+  de verificação no computador do jogador. Faça uma cópia de userdata antes de
+  voltar para uma versão anterior (ela não reconhece a empresa do save novo).
 
 NOVO NA 0.8.0
 - MODELOS REAIS (CC0, Poly Haven e Kenney) no lugar de bolas e caixas: frutas, garrafas, jarros, cocos, taças e drinques,
