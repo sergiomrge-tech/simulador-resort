@@ -733,12 +733,13 @@ func _quiosque() -> void :
 	B.model(self, "wooden_bucket_01", c + Vector3(-1.3, y0 + 0.028, 0.8), 0.4, 0.65)
 	_cooler(c + Vector3(1.3, y0 + 0.028, 0.3), 1.2)
 	B.model(self, "plastic_crate_01", c + Vector3(-1.3, y0 + 0.028, -0.35), 0.2, 1.0)
-	# Placa pintada de azul-petróleo, moldura de madeira e tipografia em creme.
-	B.box(self, Vector3(4.0, 0.64, 0.10), c + Vector3(0, y0 + 2.45, 3.16), M.darkwood)
-	B.box(self, Vector3(3.82, 0.5, 0.025), c + Vector3(0, y0 + 2.45, 3.225), wood_tint(Color(0.06, 0.29, 0.31)))
-	var brand: Label3D = B.label(self, "MARÉ ALTA", c + Vector3(0, y0 + 2.51, 3.25), 76, Color(1.0, 0.94, 0.78), Color(0.025, 0.1, 0.11, 0.8))
+	# Placa abaixo da franja e à frente do beiral: texto inteiro visível.
+	# Mantém espaço livre entre o balcão e a borda inferior da moldura.
+	B.box(self, Vector3(4.0, 0.64, 0.10), c + Vector3(0, y0 + 2.25, 3.40), M.darkwood)
+	B.box(self, Vector3(3.82, 0.5, 0.025), c + Vector3(0, y0 + 2.25, 3.465), wood_tint(Color(0.06, 0.29, 0.31)))
+	var brand: Label3D = B.label(self, "MARÉ ALTA", c + Vector3(0, y0 + 2.33, 3.49), 76, Color(1.0, 0.94, 0.78), Color(0.025, 0.1, 0.11, 0.8))
 	brand.outline_size = 4
-	var subtitle: Label3D = B.label(self, "QUIOSQUE • SABORES DA PRAIA", c + Vector3(0, y0 + 2.28, 3.25), 24, Color(0.94, 0.83, 0.6), Color(0, 0, 0, 0))
+	var subtitle: Label3D = B.label(self, "QUIOSQUE • SABORES DA PRAIA", c + Vector3(0, y0 + 2.08, 3.49), 24, Color(0.94, 0.83, 0.6), Color(0, 0, 0, 0))
 	subtitle.shaded = false
 	_kiosk_board = Node3D.new()
 	_kiosk_board.name = "KioskMenuBoard"
@@ -822,23 +823,23 @@ func _kiosk_neon(c: Vector3, y0: float) -> void :
 	_string_lights(c + Vector3(2.3, y0 + 2.45, -2.3), c + Vector3(2.3, y0 + 2.45, 2.3), 6)
 	var pink: = P.glow(Color(1.0, 0.25, 0.65), 4.0)
 	var cyan: = P.glow(Color(0.2, 0.95, 1.0), 4.0)
-	var back: = B.box(self, Vector3(3.4, 0.9, 0.08), c + Vector3(0, y0 + 3.55, 2.5), B.flat(Color(0.12, 0.1, 0.16), 0.6))
+	var back: = B.box(self, Vector3(3.4, 0.9, 0.08), c + Vector3(0, y0 + 3.55, 3.30), B.flat(Color(0.12, 0.1, 0.16), 0.6))
 	back.rotation.x = -0.12
-	var l: = B.label(self, "MARÉ ALTA", c + Vector3(0, y0 + 3.62, 2.58), 120, Color(1.0, 0.45, 0.8), Color(1.0, 0.2, 0.6, 0.9))
+	var l: = B.label(self, "MARÉ ALTA", c + Vector3(0, y0 + 3.62, 3.38), 120, Color(1.0, 0.45, 0.8), Color(1.0, 0.2, 0.6, 0.9))
 	l.rotation.x = -0.12
 	l.shaded = false
 	l.outline_size = 18
 	for sx in [-1.0, 1.0]:
-		B.box(self, Vector3(0.06, 0.7, 0.06), c + Vector3(sx * 1.6, y0 + 3.55, 2.56), cyan)
-	B.box(self, Vector3(3.2, 0.05, 0.05), c + Vector3(0, y0 + 3.15, 2.6), cyan)
-	B.box(self, Vector3(1.6, 0.04, 0.04), c + Vector3(0, y0 + 3.98, 2.5), pink)
+		B.box(self, Vector3(0.06, 0.7, 0.06), c + Vector3(sx * 1.6, y0 + 3.55, 3.306), cyan)
+	B.box(self, Vector3(3.2, 0.05, 0.05), c + Vector3(0, y0 + 3.15, 3.40), cyan)
+	B.box(self, Vector3(1.6, 0.04, 0.04), c + Vector3(0, y0 + 3.98, 3.30), pink)
 	var nl: = OmniLight3D.new()
-	nl.position = c + Vector3(0, y0 + 3.3, 3.2)
+	nl.position = c + Vector3(0, y0 + 3.3, 3.8)
 	nl.light_color = Color(1.0, 0.4, 0.75)
 	nl.omni_range = 7.0
 	nl.light_energy = 0.0
 	add_child(nl)
-	lanterns.append([nl, null, 2.2, false])
+	lanterns.append([nl, null, 1.1, false])
 
 ## Chapa de petiscos (expansão "grill"): fogão e panela; pratos prontos vêm da entrega.
 func _kiosk_grill(c: Vector3, y0: float) -> void :
