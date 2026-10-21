@@ -840,7 +840,7 @@ func _kiosk_neon(c: Vector3, y0: float) -> void :
 	add_child(nl)
 	lanterns.append([nl, null, 2.2, false])
 
-## Chapa de petiscos (expansão "grill"): fogão, panela e pratos de peixe frito.
+## Chapa de petiscos (expansão "grill"): fogão e panela; pratos prontos vêm da entrega.
 func _kiosk_grill(c: Vector3, y0: float) -> void :
 	B.model(self, "electric_stove", c + Vector3(1.3, y0, -1.3), 0.0, 0.9)
 	# frigideira real (Poly Haven) com três coxinhas em pé dentro (modelo do Blender), sem encostar umas nas outras
@@ -851,7 +851,7 @@ func _kiosk_grill(c: Vector3, y0: float) -> void :
 	for k in 3:
 		var a: = TAU * k / 3.0
 		Real.place(self, "g:coxinha", c + Vector3(1.1 + cos(a) * 0.065, y0 + 0.875, -1.2 + sin(a) * 0.065), -1.0, 0.5 + k, Color.WHITE, 0.0, true)
-	_petisco_plate(self, c + Vector3(-1.2, y0 + 1.2, 2.22))
+	# Superfície de entrega livre: nenhum prato pronto permanente.
 	var smoke: = GPUParticles3D.new()
 	var pm: = ParticleProcessMaterial.new()
 	pm.direction = Vector3.UP
@@ -1359,13 +1359,11 @@ func _kiosk_details(c: Vector3, y0: float) -> void :
 	D.pineapple(self, top + Vector3(1.95, 0, -0.1))
 	B.box(self, Vector3(0.14, 0.12, 0.08), top + Vector3(-0.15, 0.06, 0.2), D.m(Color(0.95, 0.95, 0.98)))
 	D.radio(self, c + Vector3(-1.1, y0 + 1.79, -1.9), 0.0)
-	# frente do balcão: bambu e cocos cortados
+	# frente do balcão: bambu e cocos inteiros decorativos (sem bebida pronta)
 	for k in 15:
 		B.cyl(self, 0.05, 0.05, 1.0, c + Vector3(-2.2 + k * 0.315, y0 + 0.52, 2.33), D.m(Color(0.72, 0.57, 0.34)), 6)
 	for k in 3:
-		var half: = Real.place(self, "k:coconut-half", c + Vector3(-1.3 + k * 1.3, y0 + 0.66, 2.42), 0.2, 0.0)
-		if half:
-			half.rotation.x = -PI * 0.5
+		Real.place(self, "k:coconut", c + Vector3(-1.3 + k * 1.3, y0 + 0.66, 2.42), 0.2, k * 0.7)
 	_open_sign = D.open_sign(self, c + Vector3(1.65, y0 + 2.3, 2.5), 0.0)
 	# em volta
 	D.coconut_pile(self, c + Vector3(3.7, 0.05, 0.8), 10)

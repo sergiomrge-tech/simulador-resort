@@ -17,3 +17,5 @@ O ID de Economy.DISHES é a fonte única para preço, preparo e aparência. A ap
 Louça e talheres: Kenney Food Kit (CC0), https://kenney.nl/assets/food-kit . Os novos recheios são originais e reproduzíveis com `tools/gen_dishes.py` (Blender/bpy 4.5.14). Sementes de distribuição fixas; os modelos são gerados como GLB antes da importação Godot. `tools/build_patch.sh` inclui explicitamente esses GLBs e a louça na atualização cumulativa.
 
 Validação funcional: Godot 4.5.1 `--headless --path . -- --loop-test --order-visual-test --quality=0`. As capturas com `--orders-demo` executam o fluxo real de entrega, preservando contagem e consumo de estoque; não são mockups. Os testes existentes de assentos e do ciclo completo continuam obrigatórios. Renderização e instalação no Windows real exigem verificação no dispositivo.
+
+Revisão RC4: removido o prato pronto permanente da expansão grill; decoração frontal usa cocos inteiros, sem bebida com canudo. O smoke do patch também monta pedidos reais com `--orders-demo`.
