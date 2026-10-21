@@ -345,7 +345,7 @@ func run(m) -> void :
 	if main.args.has("company-test"):
 		var company_test = load("res://tests/company_regression.gd").new()
 		add_child(company_test)
-		company_test.run(main)
+		await company_test.run(main)
 		return
 	if main.args.has("order-visual-test"):
 		var order_test = load("res://tests/order_visuals_regression.gd").new()

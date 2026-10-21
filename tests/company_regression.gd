@@ -184,6 +184,8 @@ func _integration(main) -> void:
 	Core.staff.caixa = true
 	Core.staff.limpeza = true
 	Core.speed_mult = 16.0
+	# O teste aciona o mesmo passo de 0,25 s usado pelo processador da operação.
+	main.operations.pulse = 0.25
 	var elapsed := 0.0
 	while g.state == "kwait" and elapsed < 15.0:
 		Core.tick_company(0.05)
