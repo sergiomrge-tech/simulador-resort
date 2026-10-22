@@ -1302,7 +1302,7 @@ func _app_service(list: VBoxContainer) -> void:
 		var total := 0
 		for recipe in Core.kiosk_menu():
 			if load("res://scripts/dish_presentation.gd").is_drink(recipe): total += int(Core.company.ready.get(recipe, 0))
-		if total == 0: _lbl(list, "Sem bebidas prontas. Os cocos e frutas nas prateleiras são ingredientes: escolha Preparar abaixo.", 15, INK_SOFT, false, true)
+		if total == 0: _lbl(list, "Sem bebidas prontas para vender. O expositor mantém os modelos visíveis; escolha Preparar para repor o estoque real.", 15, INK_SOFT, false, true)
 	var menu: Array = Core.kiosk_menu()
 	var requests: Dictionary = {}
 	for guest in get_tree().current_scene.village.waiting_customers():

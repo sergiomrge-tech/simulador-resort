@@ -34,8 +34,9 @@ ATENDER
 4. E no cliente com o número/pedido correspondente para entregar.
 5. Receba as contas no caixa e recolha a louça.
 
-Cocos e frutas na geladeira são ingredientes do seu estoque. Prepare para ter
-bebidas prontas; nenhum produto é adicionado de graça. Em falta, use Compras.
+Geladeira e armário sempre mostram os produtos vendidos, com etiquetas de estoque.
+No zero, o exemplar de exposição fica visível e indica Preparar mais. Prepare para
+repor as unidades vendáveis; o exemplar não é vendido. Sem ingredientes, use Compras.
 Detalhes: QUIOSQUE_PRATICO.md, ROTINAS_DO_QUIOSQUE.md e GESTAO_DO_QUIOSQUE.md.
 
 CONTROLES

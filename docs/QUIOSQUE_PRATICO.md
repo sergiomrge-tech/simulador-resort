@@ -16,9 +16,13 @@ cozinha à direita. Caixa na frente e liquidificador no tampo lateral. Sem anexo
    cliente correto e aperte **E**.
 5. Receba no caixa e recolha a louça quando o cliente sair.
 
-Cocos e frutas na geladeira são **ingredientes do estoque**, e não bebidas prontas.
-O preparo consome ingredientes uma vez e abastece a geladeira. Retirada e entrega
-não gastam ingredientes novamente. Sem estoque, use Compras; não há produtos grátis.
+Geladeira e armário mantêm **expositores com os produtos vendidos**, inclusive quando
+o estoque vendável chega a zero. Cada receita tem uma vaga fixa e uma etiqueta de
+quantidade; no zero, indica preparar mais. Receitas básicas ainda indisponíveis
+ficam identificadas para desbloquear, e receitas secretas aparecem ao descobrir.
+O exemplar de exposição não pode ser retirado nem vendido. O preparo consome
+ingredientes uma vez e abastece o estoque real; retirada e entrega não consomem
+ingredientes novamente. Sem ingredientes, use Compras.
 
 ## Celular
 

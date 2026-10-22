@@ -61,7 +61,10 @@ func run(main) -> void:
 	Core.company.ready = {}
 	Core.company.production = {}
 	main.operations.sync_company()
-	check(main.operations.products.get_child_count() >= 6, "ingredientes reais visíveis mesmo sem produtos preparados")
+	check(main.operations.products.get_child_count() == main.operations.shelf_menu().size(), "todos os produtos do expositor visíveis com estoque zero")
+	check(main.operations.products.has_node("Shelf_coco_gelado") and main.operations.products.has_node("Shelf_petiscos"), "geladeira e armário têm produtos próprios")
+	check(main.operations.products.get_node("Shelf_coco_gelado").get_meta("display_only"), "referência visual não cria estoque vendável")
+	check(not Core.pickup_company_dish("coco_gelado"), "não vende exemplar de referência com estoque zero")
 	var stock_before: int = Core.stock.coco
 	main.operations.open_station("bebidas")
 	check(main.hud.phone.app == "servico", "E na geladeira abre a estação")
@@ -69,9 +72,11 @@ func run(main) -> void:
 	check(Core.stock.coco == stock_before - 1 and not Core.company.production.is_empty(), "preparo consome ingrediente uma vez")
 	Core.tick_company(10)
 	check(int(Core.company.ready.get("coco_gelado", 0)) == 1, "preparo abastece geladeira")
+	check(main.operations.products.get_node("Shelf_coco_gelado").get_meta("stock_count") == 1, "etiqueta acompanha preparo real")
 	main.operations.open_station("bebidas")
 	main.hud.phone._service_action("coco_gelado", "pickup")
 	check(Core.company.carry == "coco_gelado" and int(Core.company.ready.coco_gelado) == 0, "retirada transfere produto para a mão")
+	check(main.operations.products.get_node("Shelf_coco_gelado").get_meta("display_only") and main.operations.products.get_child_count() == main.operations.shelf_menu().size(), "retirar último item mantém os expositores completos")
 	var guest = main.village.spawn_customer()
 	check(guest != null, "cliente para pedido de prova")
 	if guest != null:

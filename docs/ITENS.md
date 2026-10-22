@@ -215,15 +215,15 @@ Total: 2034 itens. MOD 233 · NAT 68 · PRC 31 · CEN 284 · PRT 11 · DSH 9 · 
 | MOD-207 | Boat hull | `g:boat_hull` | Gerado no Blender (tools/gen_*.py) | real.gd:24 |
 | MOD-208 | Campfire logs | `g:campfire_logs` | Gerado no Blender (tools/gen_*.py) | real.gd:22 |
 | MOD-209 | Cocktail | `g:cocktail` | Gerado no Blender (tools/gen_*.py) | dish_presentation.gd:6, real.gd:20 |
-| MOD-210 | Coconut green | `g:coconut_green` | Gerado no Blender (tools/gen_*.py) | kiosk_operations.gd:169, real.gd:19 |
+| MOD-210 | Coconut green | `g:coconut_green` | Gerado no Blender (tools/gen_*.py) | real.gd:19 |
 | MOD-211 | Coconut open | `g:coconut_open` | Gerado no Blender (tools/gen_*.py) | dish_presentation.gd:4, real.gd:19, world.gd:579 |
 | MOD-212 | Cup plastic | `g:cup_plastic` | Gerado no Blender (tools/gen_*.py) | guest.gd:241, real.gd:20 |
 | MOD-213 | Frappe | `g:frappe` | Gerado no Blender (tools/gen_*.py) | real.gd:20 |
 | MOD-214 | Glass juice | `g:glass_juice` | Gerado no Blender (tools/gen_*.py) | dish_presentation.gd:5, real.gd:20 |
-| MOD-215 | Orange | `g:orange` | Gerado no Blender (tools/gen_*.py) | kiosk_operations.gd:171, real.gd:19 |
+| MOD-215 | Orange | `g:orange` | Gerado no Blender (tools/gen_*.py) | real.gd:19 |
 | MOD-216 | Pineapple | `g:pineapple` | Gerado no Blender (tools/gen_*.py) | real.gd:19 |
 | MOD-217 | Plate deep | `k:plate-deep` | Kenney (CC0) | dish_presentation.gd:31 |
-| MOD-218 | Plate dinner | `k:plate-dinner` | Kenney (CC0) | dish_presentation.gd:31, kiosk_operations.gd:190 |
+| MOD-218 | Plate dinner | `k:plate-dinner` | Kenney (CC0) | dish_presentation.gd:31, kiosk_operations.gd:164 |
 | MOD-219 | Utensil fork | `k:utensil-fork` | Kenney (CC0) | dish_presentation.gd:38 |
 | MOD-220 | Utensil spoon | `k:utensil-spoon` | Kenney (CC0) | dish_presentation.gd:38 |
 | MOD-221 | Dish acai | `g:dish_acai` | Gerado no Blender (tools/gen_*.py) | dish_presentation.gd:11 |
@@ -1020,13 +1020,13 @@ Total: 2034 itens. MOD 233 · NAT 68 · PRC 31 · CEN 284 · PRT 11 · DSH 9 · 
 | ICO-007 | Cama | `cama` | assets/ui/icons | economy.gd:307, phone_ui.gd:24, phone_ui.gd:42, resort_core.gd:100 (+8) |
 | ICO-008 | Camareira | `camareira` | assets/ui/icons | economy.gd:103, resort_core.gd:186, resort_core.gd:187, resort_core.gd:61 |
 | ICO-009 | Clima | `clima` | assets/ui/icons | economy.gd:291, hud.gd:574, phone_ui.gd:32, phone_ui.gd:34 (+3) |
-| ICO-010 | Coco | `coco` | assets/ui/icons | economy.gd:131, economy.gd:178, economy.gd:195, economy.gd:205 (+9) |
+| ICO-010 | Coco | `coco` | assets/ui/icons | economy.gd:131, economy.gd:178, economy.gd:195, economy.gd:205 (+7) |
 | ICO-011 | Compra | `compra` | assets/ui/icons | economy.gd:340, office_ui.gd:287, office_ui.gd:548, office_ui.gd:554 (+6) |
 | ICO-012 | Decor | `decor` | assets/ui/icons | economy.gd:315, world.gd:815, world.gd:829 |
 | ICO-013 | Diaria | `diaria` | assets/ui/icons | economy.gd:334, guests.gd:188, main.gd:743, main.gd:745 (+3) |
 | ICO-014 | Equipe | `equipe` | assets/ui/icons | kiosk_management.gd:107, kiosk_management.gd:34, office_ui.gd:270, office_ui.gd:450 (+16) |
 | ICO-015 | Folha | `folha` | assets/ui/icons | economy.gd:341, office_ui.gd:554, progression.gd:275, progression.gd:603 (+4) |
-| ICO-016 | Frutas | `frutas` | assets/ui/icons | economy.gd:149, economy.gd:179, economy.gd:195, economy.gd:206 (+7) |
+| ICO-016 | Frutas | `frutas` | assets/ui/icons | economy.gd:149, economy.gd:179, economy.gd:195, economy.gd:206 (+5) |
 | ICO-017 | Gelo | `gelo` | assets/ui/icons | economy.gd:181, economy.gd:195, economy.gd:205, economy.gd:206 (+7) |
 | ICO-018 | Gorjeta | `gorjeta` | assets/ui/icons | economy.gd:335, guests.gd:287, guests.gd:320, main.gd:743 (+5) |
 | ICO-019 | Insumo | `insumo` | assets/ui/icons | economy.gd:338, kiosk_management.gd:207, main.gd:743, main.gd:749 (+5) |

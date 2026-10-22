@@ -166,3 +166,26 @@ verificados; sem userdata. O pacote ganhou `QUIOSQUE_PRATICO.md` e instruções 
 atendimento novas. `build/rc2-playable/Jogar.vbs` abre a cópia atualizada. Saves do
 jogador e a instalação em D:/Games preservados. Reempacotamento reproduzível:
 `python tools/package_quiosque_portable.py`.
+
+## Expositores sempre preenchidos — 22/10/2026
+
+Pedido seguinte do Sergio: geladeira e armário devem ter os produtos vendidos e
+não ficar vazios. A exposição agora preenche três prateleiras em cada móvel,
+com bebidas e pratos do catálogo correspondente. Receitas básicas bloqueadas são
+identificadas; secretos continuam condicionados à descoberta. Cada receita tem
+etiqueta de estoque real. Ao retirar a última unidade, as referências visuais
+permanecem; a etiqueta indica preparar mais e a retirada continua bloqueada no zero.
+Quantidades, ingredientes, dinheiro, produção e saves não são alterados pelo expositor.
+A cache inclui catálogo/cardápio e acompanha mudanças de receita durante a operação.
+
+Fonte: `shelves-filled.log` PRACTICAL_TEST PASS e conferência visual do interior.
+PCK de entrega: `shelves-pack-practical.log` PRACTICAL_TEST PASS, incluindo estoque
+zero, bloqueio de retirada da referência, preparo, etiqueta atualizada e permanência
+após retirar a última unidade; `shelves-pack-company.log` COMPANY_TEST PASS.
+Sem SCRIPT ERROR/REAL_MISSING; avisos de encerramento já documentados persistem.
+Captura inspecionada: `shots/practical_workroom.png`, agora com prateleiras preenchidas.
+
+PCK: 1.740.073.324 bytes; SHA-256
+`530876383fddb4a97ebefd7894e40d7a9f886213f348b3c2242d34c32eea0319`.
+ZIP atualizado no mesmo caminho de Downloads: 1.836.753.556 bytes, nove arquivos,
+CRCs verificados e sem userdata. Documentação e instruções do expositor atualizadas.

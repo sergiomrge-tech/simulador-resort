@@ -142,33 +142,7 @@ func sync_company() -> void:
 	for role in actors:
 		actors[role].visible = visible and Core.prog.staff_eff(role) > 0
 		actors[role].set_process(actors[role].visible)
-	var key: String = JSON.stringify([Core.company.ready, Core.stock.get("coco", 0), Core.stock.get("frutas", 0)])
-	if key != _display_key:
-		_display_key = key
-		for child in products.get_children():
-			products.remove_child(child)
-			child.queue_free()
-		var drink_slot := 0
-		var food_slot := 0
-		for id in Core.kiosk_menu():
-			for unit in mini(4, int(Core.company.ready.get(id, 0))):
-				var drink: bool = Dishes.is_drink(id)
-				var slot: int = drink_slot if drink else food_slot
-				var anchor: Node3D = stations.bebidas if drink else stations.pratos
-				var root := Node3D.new()
-				products.add_child(root)
-				var columns := 3
-				var row := int(slot / columns)
-				root.position = anchor.position + Vector3(-0.28 + (slot % columns) * 0.28, 0.315 + (row % 3) * 0.48 if drink else 0.045 + (row % 4) * 0.40, 0.10 if slot < 9 else -0.14)
-				root.scale = Vector3.ONE * 0.68
-				Dishes.build(root, id)
-				if drink: drink_slot += 1
-				else: food_slot += 1
-		# Ingredientes disponíveis ficam visíveis; não representam produtos prontos grátis.
-		for unit in mini(3, int(Core.stock.get("coco", 0))):
-			Real.place(products, "g:coconut_green", stations.bebidas.position + Vector3(-0.25 + unit * 0.25, 1.275, -0.12), 0.18)
-		for unit in mini(3, int(Core.stock.get("frutas", 0))):
-			Real.place(products, "g:orange", stations.bebidas.position + Vector3(-0.25 + unit * 0.25, 1.275, 0.11), 0.10)
+	_sync_products()
 	var held: String = str(Core.company.carry)
 	if held != _hand_key:
 		_hand_key = held
@@ -204,6 +178,7 @@ func _process(delta: float) -> void:
 		return
 	pulse = 0.25
 	_staff_tick()
+	_sync_products()
 
 func _actor(role: String, pos: Vector3):
 	if not actors.has(role):
@@ -342,3 +317,65 @@ func order_summary(g) -> String:
 		var preparing: bool = str(Core.company.production.get("dish", "")) == id
 		parts.append("%s · %s" % [Economy.dish(id).name, "pronto" if available else ("preparando" if preparing else "preparar")])
 	return "%s %s\n%s" % [order_number(g), seat_name(g), "\n".join(parts)]
+
+## Uma vaga fixa por receita: o último produto retirado não deixa o expositor vazio.
+## A quantidade vendável continua em company.ready; o exemplar de referência não é estoque.
+func shelf_menu() -> Array:
+	var catalog: Array = []
+	for id in Economy.KIOSK_MENU:
+		if not bool(Economy.dish(id).get("secret", false)) or Core.prog.is_discovered(id):
+			catalog.append(id)
+	return catalog
+
+func _sync_products() -> void:
+	var catalog: Array = shelf_menu()
+	var menu: Array = Core.kiosk_menu()
+	var key := JSON.stringify([Core.company.ready, catalog, menu])
+	if key == _display_key: return
+	_display_key = key
+	for child in products.get_children():
+		products.remove_child(child)
+		child.queue_free()
+	var drink_slot := 0
+	var food_slot := 0
+	var drinks: Array = catalog.filter(func(id): return Dishes.is_drink(id))
+	var food_count := catalog.size() - drinks.size()
+	for id in catalog:
+		var drink: bool = Dishes.is_drink(id)
+		var slot: int = drink_slot if drink else food_slot
+		var anchor: Node3D = stations.bebidas if drink else stations.pratos
+		var columns := 2 if drink else 3
+		var kind_count := maxi(1, drinks.size() if drink else food_count)
+		var capacity := 6 if drink else 9
+		var row := int(slot / columns)
+		var shelf_y: float = [0.315, 0.795, 1.275][mini(row, 2)] if drink else [0.0625, 0.4125, 0.7625][mini(row, 2)]
+		var x := -0.22 + float(slot % columns) * 0.44 if drink else -0.31 + float(slot % columns) * 0.31
+		var count := int(Core.company.ready.get(id, 0))
+		var display := Node3D.new()
+		display.name = "Shelf_" + str(id)
+		display.set_meta("shelf_dish_id", id)
+		display.set_meta("stock_count", count)
+		display.set_meta("display_only", count == 0)
+		products.add_child(display)
+		# Exposição completa nas três prateleiras; a etiqueta informa o estoque vendável.
+		var copies := int(ceil(float(capacity - slot) / float(kind_count)))
+		for unit in maxi(1, copies):
+			var cell := slot + unit * kind_count
+			var item_row := mini(2, int(cell / columns))
+			var item_y: float = [0.315, 0.795, 1.275][item_row] if drink else [0.0625, 0.4125, 0.7625][item_row]
+			var item_x := -0.22 + float(cell % columns) * 0.44 if drink else -0.31 + float(cell % columns) * 0.31
+			var item := Node3D.new()
+			display.add_child(item)
+			item.position = anchor.position + Vector3(item_x, item_y, 0.08)
+			item.scale = Vector3.ONE * 0.95
+			Dishes.build(item, id)
+		var status: String = "%d prontos" % count
+		if count == 0:
+			status = "Preparar mais" if id in menu else ("Fora do cardápio" if Core.dish_unlocked(id) else "Desbloquear receita")
+		var tag := B.label(display, "%s\n%s" % [Economy.dish(id).name, status], anchor.position + Vector3(x, shelf_y + 0.02, 0.335), 18, Color(1, 0.94, 0.72) if count > 0 else Color(1, 0.72, 0.52), Color(0.03, 0.08, 0.09))
+		tag.name = "StockTag"
+		tag.pixel_size = 0.0014
+		tag.outline_size = 3
+		tag.shaded = false
+		if drink: drink_slot += 1
+		else: food_slot += 1

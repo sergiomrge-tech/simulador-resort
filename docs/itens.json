@@ -126,7 +126,7 @@
    },
    {
     "arquivo": "kiosk_operations.gd",
-    "linha": 284,
+    "linha": 259,
     "funcao": "_waiter"
    },
    {
@@ -6542,17 +6542,17 @@
    },
    {
     "arquivo": "kiosk_operations.gd",
-    "linha": 232,
+    "linha": 207,
     "funcao": "_staff_tick"
    },
    {
     "arquivo": "kiosk_operations.gd",
-    "linha": 242,
+    "linha": 217,
     "funcao": "_staff_tick"
    },
    {
     "arquivo": "kiosk_operations.gd",
-    "linha": 252,
+    "linha": 227,
     "funcao": "_staff_tick"
    },
    {
@@ -6834,16 +6834,6 @@
     "arquivo": "economy.gd",
     "linha": 214,
     "funcao": ""
-   },
-   {
-    "arquivo": "kiosk_operations.gd",
-    "linha": 145,
-    "funcao": "sync_company"
-   },
-   {
-    "arquivo": "kiosk_operations.gd",
-    "linha": 168,
-    "funcao": "sync_company"
    },
    {
     "arquivo": "phone_ui.gd",
@@ -7209,16 +7199,6 @@
     "arquivo": "economy.gd",
     "linha": 234,
     "funcao": ""
-   },
-   {
-    "arquivo": "kiosk_operations.gd",
-    "linha": 145,
-    "funcao": "sync_company"
-   },
-   {
-    "arquivo": "kiosk_operations.gd",
-    "linha": 170,
-    "funcao": "sync_company"
    },
    {
     "arquivo": "prog_data.gd",
@@ -13217,11 +13197,6 @@
   "fonte": "Gerado no Blender (tools/gen_*.py)",
   "usos": [
    {
-    "arquivo": "kiosk_operations.gd",
-    "linha": 169,
-    "funcao": "sync_company"
-   },
-   {
     "arquivo": "real.gd",
     "linha": 19,
     "funcao": ""
@@ -13317,11 +13292,6 @@
   "fonte": "Gerado no Blender (tools/gen_*.py)",
   "usos": [
    {
-    "arquivo": "kiosk_operations.gd",
-    "linha": 171,
-    "funcao": "sync_company"
-   },
-   {
     "arquivo": "real.gd",
     "linha": 19,
     "funcao": ""
@@ -13373,7 +13343,7 @@
    },
    {
     "arquivo": "kiosk_operations.gd",
-    "linha": 190,
+    "linha": 164,
     "funcao": "sync_company"
    }
   ],
@@ -34337,7 +34307,7 @@
     "funcao": ""
    }
   ],
-  "linhas": 345,
+  "linhas": 382,
   "descricao": "Operação do quiosque: estoque pronto separado de ingredientes e contas a receber."
  },
  {
