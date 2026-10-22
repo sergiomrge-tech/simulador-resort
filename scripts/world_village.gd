@@ -77,6 +77,13 @@ func _village_materials() -> void :
 	glass.emission = Color(1.0, 0.64, 0.3)
 	glass.emission_energy_multiplier = 0.0
 	glass.cull_mode = BaseMaterial3D.CULL_DISABLED
+	# Vidro das janelas separado das lâmpadas: neutro, sem emissão nem tinta.
+	var window_glass := glass.duplicate() as StandardMaterial3D
+	window_glass.albedo_color = Color(1, 1, 1, 0.16)
+	window_glass.metallic = 0.0
+	window_glass.emission_enabled = false
+	window_glass.resource_name = "clear_window_glass"
+	VM.window_glass = window_glass
 	VM.glass = glass
 	# v0.9.5: cada casa acende e apaga a luz numa hora diferente (3 grupos de janelas)
 	VM.glass_b = glass.duplicate()
@@ -277,7 +284,7 @@ func _facade(c: Vector3, n: Vector3, half: float, offset: float, kind: String, c
 	piv.rotation.y = rot
 	add_child(piv)
 	if kind == "door":
-		var dframe: Node3D = Real.place_glow(piv, "g:door_frame", Vector3.ZERO, -1.0, 0.0, VM.glass)
+		var dframe: Node3D = Real.place_glow(piv, "g:door_frame", Vector3.ZERO, -1.0, 0.0, VM.window_glass)
 		var dleaf: Node3D = Real.place(piv, "g:door_leaf", Vector3.ZERO, -1.0, 0.0, col.lightened(0.3), 0.0, false)
 		if dframe == null or dleaf == null:
 			B.box(piv, Vector3(1.36, 2.95, 0.1), Vector3(0, 1.47, 0), VM.trim)
@@ -286,7 +293,7 @@ func _facade(c: Vector3, n: Vector3, half: float, offset: float, kind: String, c
 				for px in [-0.24, 0.24]:
 					B.box(piv, Vector3(0.36, 0.42, 0.04), Vector3(px, py, 0.09), dark)
 					B.box(piv, Vector3(0.28, 0.34, 0.04), Vector3(px, py, 0.11), leaf_m)
-			B.box(piv, Vector3(1.05, 0.45, 0.06), Vector3(0, 2.48, 0.02), VM.glass)
+			B.box(piv, Vector3(1.05, 0.45, 0.06), Vector3(0, 2.48, 0.02), VM.window_glass)
 			for k in 3:
 				B.box(piv, Vector3(0.03, 0.42, 0.05), Vector3(-0.26 + k * 0.26, 2.48, 0.06), VM.trim)
 			B.box(piv, Vector3(1.6, 0.14, 0.5), Vector3(0, 0.07, 0.26), VM.curb)
@@ -312,11 +319,11 @@ func _facade(c: Vector3, n: Vector3, half: float, offset: float, kind: String, c
 			B.cyl(piv, 0.09, 0.07, 0.22, Vector3(0.9, 2.45, 0.22), VM.glass, 10)
 			B.cyl(piv, 0.11, 0.02, 0.08, Vector3(0.9, 2.6, 0.22), dark, 10)
 	else:
-		var wframe: Node3D = Real.place_glow(piv, "g:win_frame", Vector3.ZERO, -1.0, 0.0, VM.glass)
+		var wframe: Node3D = Real.place_glow(piv, "g:win_frame", Vector3.ZERO, -1.0, 0.0, VM.window_glass)
 		var wshut: Node3D = Real.place(piv, "g:win_shutters", Vector3.ZERO, -1.0, 0.0, col, 0.0, false)
 		if wframe == null or wshut == null:
 			B.box(piv, Vector3(1.4, 1.65, 0.1), Vector3(0, 1.75, 0), VM.trim)
-			B.box(piv, Vector3(1.1, 1.35, 0.06), Vector3(0, 1.75, 0.01), VM.glass)
+			B.box(piv, Vector3(1.1, 1.35, 0.06), Vector3(0, 1.75, 0.01), VM.window_glass)
 			# caixilho em cruz
 			B.box(piv, Vector3(0.05, 1.35, 0.06), Vector3(0, 1.75, 0.04), VM.trim)
 			B.box(piv, Vector3(1.1, 0.05, 0.06), Vector3(0, 1.9, 0.04), VM.trim)
@@ -570,9 +577,9 @@ func _hero_house() -> void :
 	_occlude(c, w * 0.85, d * 0.85, h * 0.85)
 	_bougainvillea(Vector3(x0 + 0.75, 0.0, zf + 0.62), 1.0)
 
-	B.box(self, Vector3(1.35, 1.22, 0.04), Vector3(c.x - 1.7, y0 + 1.65, zf), VM.glass)
-	B.box(self, Vector3(2.15, 1.4, 0.04), Vector3(c.x - 1.4, y0 + 1.6, zb), VM.glass)
-	B.box(self, Vector3(0.04, 1.22, 1.15), Vector3(x0, y0 + 1.65, c.z), VM.glass)
+	B.box(self, Vector3(1.35, 1.22, 0.04), Vector3(c.x - 1.7, y0 + 1.65, zf), VM.window_glass)
+	B.box(self, Vector3(2.15, 1.4, 0.04), Vector3(c.x - 1.4, y0 + 1.6, zb), VM.window_glass)
+	B.box(self, Vector3(0.04, 1.22, 1.15), Vector3(x0, y0 + 1.65, c.z), VM.window_glass)
 	B.label(self, "Casa", Vector3(c.x + 1.7, y0 + 2.75, zf + 0.2), 44, Color(1, 1, 1), Color(0.1, 0.25, 0.35, 0.9))
 
 	var door: = B.box(self, Vector3(0.06, 2.2, 1.15), Vector3(c.x + 2.35, y0 + 1.1, zf - 0.55), wood_tint(Color(0.1, 0.45, 0.55)))
@@ -677,7 +684,7 @@ func _church_and_praca() -> void :
 	for k in [4.5, 9.0, 12.8]:
 		B.box(self, Vector3(3.45, 0.3, 3.45), tc + Vector3(0, k, 0), yellow)
 	for n in [Vector3(0, 0, -1), Vector3(1, 0, 0), Vector3(-1, 0, 0), Vector3(0, 0, 1)]:
-		B.box(self, Vector3(1.1, 1.8, 0.1), tc + n * 1.62 + Vector3(0, 11.0, 0), VM.glass, false, atan2(n.x, n.z))
+		B.box(self, Vector3(1.1, 1.8, 0.1), tc + n * 1.62 + Vector3(0, 11.0, 0), VM.window_glass, false, atan2(n.x, n.z))
 	B.hip_roof(self, tc + Vector3(0, 13.0, 0), 3.8, 3.8, 3.0, VM.clay, 0.12)
 	B.box(self, Vector3(0.14, 1.6, 0.14), tc + Vector3(0, 16.7, 0), B.flat(Color(0.9, 0.85, 0.6), 0.3, 0.7))
 	B.box(self, Vector3(0.8, 0.14, 0.14), tc + Vector3(0, 17.1, 0), B.flat(Color(0.9, 0.85, 0.6), 0.3, 0.7))
@@ -1105,6 +1112,8 @@ func _jangada2(p: Vector3, rot: float) -> void :
 
 func _fishing_boat(p: Vector3, rot: float, paint: Color, solid: = true) -> Node3D:
 	var j: = Node3D.new()
+	j.name = "FishingBoat"
+	j.add_to_group("fishing_boats")
 	j.position = p
 	j.rotation.y = rot
 	add_child(j)
@@ -1236,7 +1245,7 @@ func _village_props() -> void :
 	for k in 3:
 		var x: = 52.0 + k * 13.0
 		_jangada2(Vector3(x, _height(x, -29.5) - 0.12, -29.5), 0.3 - k * 0.25)
-	var boats: = [[Vector3(58.5, 0, -27.2), 0.35, Color(0.2, 0.45, 0.62)], [Vector3(74.0, 0, -26.6), -0.4, Color(0.72, 0.22, 0.16)], [Vector3(88.5, 0, -27.4), 0.15, Color(0.85, 0.72, 0.28)]]
+	var boats: = [[Vector3(58.5, 0, -27.2), 0.35, Color(0.2, 0.45, 0.62)], [Vector3(82.0, 0, -29.5), -0.4, Color(0.72, 0.22, 0.16)], [Vector3(88.5, 0, -27.4), 0.15, Color(0.85, 0.72, 0.28)]]
 	for b in boats:
 		var bp: Vector3 = b[0]
 		bp.y = _height(bp.x, bp.z) - 0.05
@@ -1826,14 +1835,14 @@ func _landmark_details() -> void :
 		B.model(self, "wooden_crate_01", end + Vector3(-1.9 + (k % 2) * 0.1, k * 0.0, 0.6 - k * 0.7), k * 0.4, 0.8)
 	# rolo de corda de verdade (Blender), não argolas empilhadas
 	Real.place(self, "g:rope_coil", end + Vector3(1.75, 0.0, 0.2), -1.0, 0.7, Color.WHITE, 0.0, false)
-	_fishing_boat(Vector3(PIER_X + 3.2, -0.25, -44.0), 0.1, Color(0.2, 0.6, 0.55))
+	_fishing_boat(Vector3(PIER_X + 4.0, -0.25, -44.0), 0.1, Color(0.2, 0.6, 0.55))
 	# farol: porta, janelinhas, balcão com gradil e casinha do faroleiro
 	var fp: = Vector3(108.0, 0.0, -40.0)
 	B.box(self, Vector3(0.9, 1.7, 0.2), fp + Vector3(0, 1.85, -1.55), B.flat(Color(0.25, 0.45, 0.8), 0.6))
 	for k in 4:
 		var a: = k * 1.7
 		var r: = lerpf(1.6, 1.05, (3.0 + k * 2.6) / 14.0) + 0.02
-		var win: = B.box(self, Vector3(0.35, 0.55, 0.12), fp + Vector3(sin(a) * r, 4.0 + k * 2.6, - cos(a) * r), VM.glass)
+		var win: = B.box(self, Vector3(0.35, 0.55, 0.12), fp + Vector3(sin(a) * r, 4.0 + k * 2.6, - cos(a) * r), VM.window_glass)
 		win.rotation.y = - a
 	for k in 20:
 		var a2: = TAU * k / 20.0

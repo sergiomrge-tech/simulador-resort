@@ -73,3 +73,15 @@ Relato do jogador: queda sem fim ao andar no cais. A regressão reproduziu o def
 Pacote corrigido: SHA-256 `46e78d8a6dd8c720f434141569239a1974d47faa9fee8095e4fe89f299c24a6a`. ZIP completo em `C:/Users/sergi/Downloads/MareAltaResort_1.1_CaisCorrigido.zip`, com CRC de todos os arquivos verificado. Os saves reais não foram alterados.
 
 `pier-loop-pack.log`: LOOP_TEST PASS no pacote final (dinheiro=5406, estrelas=4,48, bar=12), sem SCRIPT ERROR ou REAL_MISSING. `pier-visual-pack.log` confirmou SHOT_SAVED da captura Vulkan desse mesmo pacote.
+
+### Vidros, barcos e passos (22/10/2026)
+
+Os vidros de janelas/portas da vila, casa e hotel usam `VM.window_glass`: branco neutro com alfa 0,16, sem metal ou emissão. O material das lâmpadas permanece separado; a rotina noturna não colore os vidros. O barco vermelho passou de (74; -26,6) para (82; -29,5) em XZ. O barco verde perto da plataforma foi afastado de x=75,2 para x=76; os AABBs transformados de casco, mastro e vela ficam fora do piso do cais.
+
+Passos antigos foram substituídos por quinze pisadas curtas Kenney Impact Sounds (CC0), cinco por superfície. Impactos abafados na areia/terra, madeira no cais/decks e concreto nas calçadas, com identificação do material por raycast. Volume -18 dB (antes -14), sem repetir a mesma variante consecutivamente; espaçamento de 1,5 m andando e 1,85 m correndo (antes 0,75/0,95). A reprodução real dos AudioStreamPlayers é exercitada com driver Dummy em saves de teste; a avaliação subjetiva do áudio continua a cargo do jogador.
+
+`glass-boat-steps-final.log`: PIER_TEST PASS na fonte, incluindo cores neutras de dia/noite, barcos sem sobreposição, quinze clipes sem loop, piso e caminhada, classificação de superfícies, 29 pisadas na ida/volta e silêncio parado. Capturas Vulkan inspecionadas: `shots/glass_clear.png` e `shots/boat_clear_pier.png`.
+
+PCK atualizado: SHA-256 `d339aec50cdbcfed030067f562cb85b4c2e8854f7412a88073f5357ea4dee464`. O ZIP `MareAltaResort_1.1_CaisCorrigido.zip` em Downloads foi atualizado com as três correções; CRC de todos os arquivos verificado.
+
+`glass-boat-steps-pack.log`: PIER_TEST PASS no pacote exportado, com as mesmas verificações de vidro, barcos e áudio e 29 pisadas. `glass-boat-loop-pack.log`: LOOP_TEST PASS (dinheiro=5232, estrelas=4,54, bar=12). Sem SCRIPT ERROR ou REAL_MISSING nesses logs; permanecem os avisos conhecidos de recursos no encerramento automático.

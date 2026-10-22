@@ -162,3 +162,6 @@ Nunito permanece sob sua licença incluída em assets/fonts.
 
 ## Trilha ambiente suave (22/10/2026)
 `music_relax.ogg`: composição e síntese originais do projeto, sem samples nem vozes de terceiros. Gerada por `tools/gen_relax_music.py`: 64 BPM, acordes abertos, timbres suaves e loop estéreo de 30 segundos.
+
+## Passos (22/10/2026)
+Kenney, **Impact Sounds 1.0**, CC0: https://kenney.nl/assets/impact-sounds . Quinze arquivos originais `footstep_carpet_000–004.ogg`, `footstep_concrete_000–004.ogg` e `footstep_wood_000–004.ogg`. Os impactos abafados de carpete são usados na areia/terra para evitar o ruído de raspagem anterior. Licença em `assets/audio/KENNEY_IMPACT_LICENSE.txt`; download reproduzível por `python tools/fetch_assets.py --only audio`.

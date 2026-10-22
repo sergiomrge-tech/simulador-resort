@@ -41,6 +41,7 @@ Base de trabalho: v0.6.5 recuperada; versões atuais em `project.godot` / `expor
 - **Regra:** para cilindro ou cápsula entre dois pontos locais, use `B._beam(parent, a, b, raio, mat)`. Nunca use `look_at*` em nó filho com coordenadas locais.
 
 ## 🪜 Sala do Chão — z-fighting e contorno
+- **Correção (22/10/2026):** os barcos da praia devem ficar fora do corredor e da plataforma do cais, considerando o AABB transformado de casco, mastro e vela. Passos usam amostras curtas e o material do piso atingido por raycast; altura do jogador não identifica madeira e cadência de 0,75 m fazia as pisadas soarem como escavação.
 - **Erro (22/10/2026):** os GLBs do cais tinham tábuas visíveis, mas nenhum piso físico; a plataforma final também ficava antes do limite de colisão. Acrescentar colisão contínua aos módulos e à plataforma, alinhar os limites ao piso e testar caminhando da praia ao fim e de volta. A rampa deve encontrar o deck sem degrau. Não ativar nado só pela profundidade do terreno quando o personagem está sobre o cais; recuperar quedas abaixo do mapa para o último piso seguro.
 - **Erro:** o deslocamento em y para evitar z-fighting crescia sem limite (`0.008 * n`), virando degraus no chão.
 - **Regra:** use deslocamento cíclico: `y + passo * (n % 4)`.

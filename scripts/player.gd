@@ -14,7 +14,7 @@ var cam: Camera3D
 var ray: RayCast3D
 var focus: Interactable = null
 var _step_acc: = 0.0
-var _step_flip: = false
+var _step_variant := 0
 var world: Node3D
 var swimming: = false
 var _safe_position := Vector3.ZERO
@@ -115,11 +115,11 @@ func _physics_process(delta: float) -> void :
 	var hv: = Vector2(velocity.x, velocity.z).length()
 	if hv > 0.5 and is_on_floor() and not swimming:
 		_step_acc += hv * delta
-		if _step_acc > (0.95 if sp > SPEED else 0.75):
+		if _step_acc > (1.85 if sp > SPEED else 1.5):
 			_step_acc = 0.0
-			_step_flip = not _step_flip
-			var wood: = global_position.y > 0.08
-			get_tree().call_group("audio", "sfx", ("step_wood" if wood else "step") + ("1" if _step_flip else "2"), -14.0)
+			_step_variant = (_step_variant + randi_range(1, 4)) % 5
+			var surface := _footstep_surface()
+			get_tree().call_group("audio", "sfx", "footstep_%s_%03d" % [surface, _step_variant], -18.0)
 
 	focus = null
 	ray.force_raycast_update()
@@ -131,3 +131,24 @@ func _physics_process(delta: float) -> void :
 func interact() -> void :
 	if focus:
 		focus.use()
+
+# Identifica o piso tocado, em vez de supor madeira pela altura do jogador.
+func _footstep_surface() -> String:
+	var query := PhysicsRayQueryParameters3D.create(global_position + Vector3(0, 0.25, 0), global_position - Vector3(0, 0.65, 0), 1, [get_rid()])
+	var hit := get_world_3d().direct_space_state.intersect_ray(query)
+	if hit.is_empty():
+		return "carpet" # impacto abafado para areia/terra, sem raspagem longa
+	var body: Node = hit.collider
+	if str(body.name).begins_with("Pier"):
+		return "wood"
+	var mesh_node := body.get_parent() as MeshInstance3D
+	if mesh_node:
+		var material := mesh_node.get_active_material(0) as StandardMaterial3D
+		if material:
+			var texture_path := material.albedo_texture.resource_path if material.albedo_texture else ""
+			var key := (material.resource_name + texture_path).to_lower()
+			for wood in ["wood", "plank", "bamboo"]:
+				if wood in key:
+					return "wood"
+			return "concrete"
+	return "carpet"

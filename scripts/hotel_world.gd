@@ -53,9 +53,9 @@ func _build() -> Node3D:
 	var root: = Node3D.new()
 	root.name = "GrandHotel"
 	add_child(root)
-	# vidros dos quartos acendem à noite junto com as janelas da vila (VM.glass_b); sem a vila, luz fixa
+	# Vidros neutros compartilham o material transparente das janelas da vila.
 	var vm = world.get("VM")
-	var glow: Material = vm.get("glass_b") if vm is Dictionary and vm.has("glass_b") else P.glow(Color(1.0, 0.86, 0.6), 1.6)
+	var glow: Material = vm.get("window_glass") if vm is Dictionary and vm.has("window_glass") else StandardMaterial3D.new()
 	Real.place_glow(root, "g:hotel_tower", TOWER, -1.0, PI, glow)
 	B_.wall(root, Vector3(32.4, 20.0, 13.4), TOWER + Vector3(0, 10.0, 0))
 	B_.wall(root, Vector3(10.0, 0.5, 7.0), TOWER + Vector3(0, 4.7, 9.7))

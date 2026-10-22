@@ -445,10 +445,29 @@ def kenney_smoke():
     im.save(dst)
     print("kenney smoke ok")
 
+def footstep_audio():
+    """Kenney Impact Sounds 1.0 (CC0): pisadas curtas, cinco variantes por piso."""
+    names = [f"footstep_{surface}_{i:03d}.ogg"
+             for surface in ("carpet", "concrete", "wood") for i in range(5)]
+    if not FORCE and all(os.path.exists(f"{A}/audio/{n}") for n in names):
+        return
+    import zipfile, io
+    url = "https://kenney.nl/media/pages/assets/impact-sounds/87b4ddecda-1677589768/kenney_impact-sounds.zip"
+    z = zipfile.ZipFile(io.BytesIO(get(url)))
+    os.makedirs(f"{A}/audio", exist_ok=True)
+    for name in names:
+        with open(f"{A}/audio/{name}", "wb") as f:
+            f.write(z.read("Audio/" + name))
+    with open(f"{A}/audio/KENNEY_IMPACT_LICENSE.txt", "wb") as f:
+        f.write(z.read("License.txt"))
+    print("kenney footsteps ok")
+
 def main():
     only = sys.argv[sys.argv.index("--only") + 1] if "--only" in sys.argv else ""
     with ThreadPoolExecutor(6) as ex:
         futs = []
+        if only in ("", "audio"):
+            futs.append(ex.submit(footstep_audio))
         if only in ("", "tex"):
             futs += [ex.submit(texture, s) for s in TEXTURES]
             futs += [ex.submit(ambientcg, k, v) for k, v in AMBIENTCG.items()]
