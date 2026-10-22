@@ -15,6 +15,8 @@ const BAD: = Color(0.85, 0.28, 0.22)
 
 ## id, nome, cor, ícone
 const APPS: = [
+	["empresa", "Minha Empresa", Color(0.15, 0.55, 0.5), "shop"],
+	["servico", "Operação", Color(0.9, 0.55, 0.2), "prato"],
 	["expansoes", "Expansões", Color(1.0, 0.45, 0.35), "upgrade"],
 	["mercado", "Mercado", Color(0.15, 0.72, 0.45), "compra"],
 	["cardapio", "Cardápio", Color(1.0, 0.72, 0.18), "prato"],
@@ -109,6 +111,7 @@ func _ready() -> void :
 	visible = false
 	resized.connect(_place)
 	Core.money_changed.connect(func(_v): _refresh_if_open())
+	Core.company_changed.connect(_company_refresh)
 	Core.stock_changed.connect(_refresh_if_open)
 	Core.expansion_bought.connect(func(_id): _refresh_if_open())
 	Core.staff_changed.connect(_refresh_if_open)
@@ -128,6 +131,9 @@ func _place() -> void :
 	_phone.position = Vector2(vs.x - W - 60.0, (vs.y - _phone.size.y) * 0.5)
 
 func _refresh_if_open() -> void :
+	# O formulário mantém seu rascunho durante vendas e reposições, mesmo ao trocar de fonte.
+	if app == "empresa":
+		return
 	if visible:
 		call_deferred("refresh")
 
@@ -170,7 +176,7 @@ static func app_for_tab(tab: String) -> String:
 			return "caixa"
 		"expansoes":
 			return "expansoes"
-		"cardapio", "mercado", "album", "missoes", "agenda", "evolucao", "negocios", "temporada", "cozinha", "vila", "hotel":
+		"empresa", "servico", "cardapio", "mercado", "album", "missoes", "agenda", "evolucao", "negocios", "temporada", "cozinha", "vila", "hotel":
 			return tab
 	return ""
 
@@ -320,6 +326,10 @@ func refresh() -> void :
 	list.custom_minimum_size.x = W - 28.0 - 24.0 - 10.0
 	m.add_child(list)
 	match app:
+		"empresa":
+			_app_company(list)
+		"servico":
+			_app_service(list)
 		"expansoes":
 			_app_expansions(list)
 		"mercado":
@@ -366,7 +376,7 @@ func _home() -> void :
 	var v: = VBoxContainer.new()
 	v.add_theme_constant_override("separation", 10)
 	m.add_child(v)
-	var hello: = _lbl(v, tr("Quiosque Maré Alta"), 26, INK, true)
+	var hello: = _lbl(v, str(Core.company.name) if Core.company.created else tr("Quiosque Maré Alta"), 26, INK, true)
 	hello.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	if Engine.has_meta("update_ver"):
 		var up: = _card(v, Color(0.85, 1.0, 0.9, 0.95))
@@ -755,6 +765,8 @@ func _app_staff(list: VBoxContainer) -> void :
 		if hired:
 			_chip(r2, tr("✓ Na equipe"), Color.WHITE, GOOD)
 			_staff_card(c, role)
+		elif bool(s.get("company", false)) and not Core.company.created:
+			_lbl(c, "Crie sua empresa no app Minha Empresa.", 14, INK_SOFT, false, true)
 		elif need != "" and not Core.has(need):
 			_lbl(c, tr("Precisa de: %s") % tr(str(Economy.EXPANSIONS[need].name)), 14, INK_SOFT, true, true)
 		else:
@@ -1095,3 +1107,131 @@ func _app_hotel(list: VBoxContainer) -> void:
 	for a in PD.HOTEL_AMENITIES:
 		_chip(fl, tr(str(a)), Color.WHITE, GOOD)
 	_lbl(list, tr("Dica: melhore o hotel no app Evolução (área Grand Hotel 5★). Ocupação sobe com estrelas, fama, verão e festas."), 13, INK_SOFT, false, true)
+
+# ------------------------------------------------------------------ empresa / atendimento físico
+const CompanyRules = preload("res://scripts/company_rules.gd")
+var company_name: LineEdit
+var company_font: OptionButton
+var company_color: OptionButton
+var company_preview: Label
+var company_count: Label
+
+func _company_refresh() -> void:
+	# Não reconstruir o formulário enquanto o jogador digita.
+	if app != "empresa":
+		_refresh_if_open()
+
+func _app_company(list: VBoxContainer) -> void:
+	_lbl(list, "Sua marca na praia", 23, INK, true)
+	_lbl(list, "Escolha um nome de até 24 caracteres. O tamanho das letras se ajusta para caber inteiro na placa.", 15, INK_SOFT, false, true)
+	company_name = LineEdit.new()
+	company_name.max_length = CompanyRules.MAX_NAME
+	company_name.text = str(Core.company.name)
+	company_name.placeholder_text = "Nome da empresa"
+	list.add_child(company_name)
+	company_font = OptionButton.new()
+	for id in CompanyRules.FONTS:
+		company_font.add_item(str(CompanyRules.FONTS[id]))
+	company_font.select(CompanyRules.FONTS.keys().find(Core.company.font))
+	list.add_child(company_font)
+	company_color = OptionButton.new()
+	for id in CompanyRules.COLORS:
+		company_color.add_item(str(id).capitalize())
+	company_color.select(CompanyRules.COLORS.keys().find(Core.company.color))
+	list.add_child(company_color)
+	var board := _card(list, Color(0.06, 0.22, 0.23))
+	company_preview = _lbl(board, "", 28, Color.WHITE, true)
+	company_preview.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	company_preview.clip_text = true
+	company_count = _lbl(list, "", 14, INK_SOFT)
+	company_name.text_changed.connect(_preview_company.unbind(1))
+	company_font.item_selected.connect(_preview_company.unbind(1))
+	company_color.item_selected.connect(_preview_company.unbind(1))
+	_preview_company()
+	_btn(list, "Salvar marca" if Core.company.created else "Criar minha empresa", _save_company)
+	if Core.company.created:
+		var manual := CheckButton.new()
+		manual.text = "Atendimento com retirada e entrega"
+		manual.button_pressed = bool(Core.company.physical)
+		manual.toggled.connect(_set_service)
+		list.add_child(manual)
+	_lbl(list, "Você começa atendendo. Contrate garçom, caixa, cozinheiro e limpeza para dividir o trabalho. Há custo de contratação e salário diário; folgas e energia afetam a equipe.", 15, INK_SOFT, false, true)
+	_btn(list, "Contratar e gerenciar equipe", _company_staff)
+	_lbl(list, "Contorne o quiosque para acessar a geladeira, a cozinha e o armário. Retire um item por vez e aperte E no cliente que o pediu. Receba as contas no terminal do balcão e recolha a louça após a saída.", 15, INK_SOFT, false, true)
+
+func _preview_company() -> void:
+	var font_id: String = str(CompanyRules.FONTS.keys()[company_font.selected])
+	var color_id: String = str(CompanyRules.COLORS.keys()[company_color.selected])
+	var f: Font = CompanyRules.font_for(font_id)
+	company_preview.text = company_name.text
+	company_preview.add_theme_font_override("font", f)
+	company_preview.add_theme_color_override("font_color", CompanyRules.COLORS[color_id])
+	var width: float = f.get_string_size(company_name.text, HORIZONTAL_ALIGNMENT_LEFT, -1, 28).x
+	company_preview.add_theme_font_size_override("font_size", mini(28, maxi(12, int(28 * 300.0 / maxf(width, 1.0)))))
+	company_count.text = "%d/24 caracteres" % company_name.text.length()
+
+func _save_company() -> void:
+	if Core.configure_company(company_name.text, str(CompanyRules.FONTS.keys()[company_font.selected]), str(CompanyRules.COLORS.keys()[company_color.selected])):
+		Core.toast.emit("Sua empresa está pronta!", "good")
+		refresh()
+
+func _set_service(enabled: bool) -> void:
+	Core.set_company_service(enabled)
+	call_deferred("refresh")
+
+func _company_staff() -> void:
+	app = "equipe"
+	refresh()
+
+func _operations():
+	return get_tree().current_scene.operations
+
+func _service_action(id: String, action: String) -> void:
+	var ops = _operations()
+	var kind: String = str(Core.service_station)
+	if not ops.can_access(kind):
+		return
+	var drink: bool = load("res://scripts/dish_presentation.gd").is_drink(id)
+	var ok := false
+	if action == "prepare" and (kind == "cozinha" or (kind == "bebidas" and drink)):
+		ok = Core.prepare_company_dish(id)
+	elif action == "pickup" and ((kind == "bebidas" and drink) or (kind == "pratos" and not drink)):
+		ok = Core.pickup_company_dish(id)
+	elif action == "return" and ((kind == "bebidas" and drink) or (kind == "pratos" and not drink)):
+		ok = Core.return_company_dish()
+	if ok:
+		ops.finish_station()
+	else:
+		Core.toast.emit("Confira os ingredientes, o preparo e o espaço disponível.", "bad")
+
+func _app_service(list: VBoxContainer) -> void:
+	if not Core.company_enabled():
+		_lbl(list, "Crie a empresa e ative o atendimento com retirada no app Minha Empresa.", 17, INK, false, true)
+		return
+	var kind: String = str(Core.service_station)
+	var near: bool = _operations().can_access(kind)
+	_lbl(list, {"bebidas": "Geladeira", "pratos": "Armário de pratos", "cozinha": "Cozinha"}.get(kind, "Operação"), 23, INK, true)
+	_lbl(list, "Máximo de 4 unidades prontas por produto. Ingredientes são usados no preparo; retirar e entregar não gastam ingredientes novamente.", 14, INK_SOFT, false, true)
+	if not near:
+		_lbl(list, "Aproxime-se da estação atrás do quiosque e aperte E para preparar ou retirar.", 16, BAD, false, true)
+	if not Core.company.production.is_empty():
+		_lbl(list, "Preparando %s · %.1f s estimados" % [Economy.dish(Core.company.production.dish).name, float(Core.company.production.left)], 15, INK, true, true)
+	var carried: String = str(Core.company.carry)
+	if carried != "":
+		_lbl(list, "Carregando: " + str(Economy.dish(carried).name), 17, GOOD, true, true)
+		var matches: bool = (kind == "bebidas") == load("res://scripts/dish_presentation.gd").is_drink(carried) and kind != "cozinha"
+		_btn(list, "Devolver à prateleira", _service_action.bind(carried, "return"), GOOD, near and matches)
+	for id in Core.kiosk_menu():
+		var drink: bool = load("res://scripts/dish_presentation.gd").is_drink(id)
+		if kind != "cozinha" and (kind == "bebidas") != drink:
+			continue
+		if kind == "cozinha" and drink:
+			continue
+		var card := _card(list)
+		var count: int = int(Core.company.ready.get(id, 0))
+		_lbl(card, "%s · %d prontas" % [Economy.dish(id).name, count], 17, INK, true, true)
+		if kind == "bebidas" or kind == "cozinha":
+			_btn(card, "Preparar · 3 s" if drink else "Preparar · 6 s", _service_action.bind(id, "prepare"), Color(0.15, 0.55, 0.5), near and Core.company.production.is_empty() and count < 4 and Core.can_make(id))
+		if kind != "cozinha":
+			_btn(card, "Retirar e levar ao cliente", _service_action.bind(id, "pickup"), GOOD, near and count > 0 and carried == "")
+	_lbl(list, "%d contas aguardando recebimento no terminal · %d lugares para limpar" % [Core.company.receivables.size(), Core.company.dirty_seats.size()], 15, INK_SOFT, false, true)

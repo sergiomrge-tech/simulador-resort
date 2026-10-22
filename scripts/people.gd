@@ -30,10 +30,9 @@ static func build_body(female: bool) -> Node3D:
 	var old: Node = _anim_src.instantiate()
 	var ap: = old.find_child("AnimationPlayer", true, false)
 	if ap:
-		ap.owner = null
+		clear_runtime_owner(ap)
 		ap.get_parent().remove_child(ap)
 		root.add_child(ap)
-		ap.owner = null
 	old.queue_free()
 	return root
 
@@ -187,6 +186,13 @@ static func clothes(female: bool, mi: MeshInstance3D, skel: Skeleton3D) -> Dicti
 	_clothes[key] = out
 	return out
 
+## Nós enxertados em outro personagem não pertencem mais à cena importada.
+## Limpar antes de remover/reanexar também cobre eventuais filhos importados.
+static func clear_runtime_owner(node: Node) -> void:
+	node.owner = null
+	for child in node.get_children():
+		clear_runtime_owner(child)
+
 static func hair_mesh(style: String) -> MeshInstance3D:
 	if style == "":
 		return null
@@ -198,7 +204,7 @@ static func hair_mesh(style: String) -> MeshInstance3D:
 		root.queue_free()
 		return null
 	var mi: MeshInstance3D = found[0]
-	mi.owner = null
+	clear_runtime_owner(mi)
 	mi.get_parent().remove_child(mi)
 	root.queue_free()
 	return mi

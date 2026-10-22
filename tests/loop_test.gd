@@ -4,6 +4,8 @@ extends Node
 
 
 
+const StateWaiter = preload("res://tests/support/state_waiter.gd")
+
 var main
 var log_lines: = []
 var failed: = false
@@ -114,8 +116,18 @@ func vip_rush_test() -> void :
 		return
 	vc.set_meta("vip", true)
 	vc.set_meta("vip_id", "kai")
+	# O teste de rotas reais está em kiosk_regression.gd. VIP pode surgir
+	# no extremo da praia (>60 m) e o relógio acelerado fecha o quiosque
+	# antes de chegar. Testar o fluxo comercial sem depender desse sorteio.
+	Core.speed_mult = 4.0
+	if not vc.spot.is_empty():
+		var approach: Vector3 = vc.spot.get("approach", vc.spot.pos + Vector3(0, 0, 0.85))
+		vc.position = approach + Vector3(0, 0, 0.25)
+		vc.go([approach])
 	var m0: = Core.money
-	check( await wait_until( func(): return vc.state == "kwait", 40.0), "VIP: esperando no balcão")
+	var vip_arrived: bool = await StateWaiter.until_state(get_tree(), weakref(vc), "kwait", 25.0)
+	if not check(vip_arrived, "VIP: chegou à mesa e fez pedido"):
+		return
 	check(v.kiosk_serve(), "VIP: pedido servido")
 	check(Core.album.has("kai"), "VIP: Kai Onda entrou no álbum")
 	check(Core.money - m0 > 10, "VIP: pagou o pedido e a gorjeta (%d)" % (Core.money - m0))
@@ -140,6 +152,16 @@ func vip_rush_test() -> void :
 	check(reserved.size() <= main.world.kiosk_spots.size(), "rush respeita as vagas do quiosque (%d de %d)" % [reserved.size(), main.world.kiosk_spots.size()])
 	var served0: int = v.served_today
 	v.enabled = false
+	# O teste de rotas/ocupação é feito no kiosk_regression.gd. No rush,
+	# queremos testar a sequência de atendimentos: aproximar clientes das
+	# cadeiras para não depender do FPS/tempo de travessia da praia no CI.
+	Core.minutes = 12.0 * 60.0
+	Core.speed_mult = 4.0
+	for customer in v.customers:
+		if customer.state == "kwalk" and not customer.spot.is_empty():
+			var approach: Vector3 = customer.spot.get("approach", customer.spot.pos + Vector3(0, 0, 0.85))
+			customer.position = approach + Vector3(0, 0, 0.25)
+			customer.go([approach])
 	for k in 12:
 		var up = await wait_until( func(): return not v.waiting_customers().is_empty(), 25.0)
 		if not up:
@@ -320,6 +342,16 @@ func v1_test() -> void :
 
 func run(m) -> void :
 	main = m
+	if main.args.has("company-test"):
+		var company_test = load("res://tests/company_regression.gd").new()
+		add_child(company_test)
+		await company_test.run(main)
+		return
+	if main.args.has("order-visual-test"):
+		var order_test = load("res://tests/order_visuals_regression.gd").new()
+		add_child(order_test)
+		order_test.run(main)
+		return
 	if main.args.has("kiosk-test"):
 		var regression = load("res://tests/kiosk_regression.gd").new()
 		add_child(regression)
@@ -411,8 +443,16 @@ func run(m) -> void :
 	main.village.enabled = false
 	main.village._on_slept(0)
 	var kc = main.village.spawn_customer()
-	check(kc != null, "cliente do quiosque criado")
-	check(kc != null and await wait_until( func(): return kc.state == "kwait", 30.0), "cliente esperando no balcão")
+	if not check(kc != null, "cliente do quiosque criado"):
+		get_tree().quit(1)
+		return
+	# A chegada pela praia é validada em kiosk_regression.gd.
+	var approach: Vector3 = kc.spot.get("approach", kc.spot.pos + Vector3(0, 0, 0.85))
+	kc.position = approach + Vector3(0, 0, 0.25)
+	kc.go([approach])
+	if not check(await StateWaiter.until_state(get_tree(), weakref(kc), "kwait", 30.0), "cliente esperando no balcão"):
+		get_tree().quit(1)
+		return
 	var km0: = Core.money
 	var kp: String = await aim(main.world.KIOSK_C + Vector3(0, 0.12, 0.4), 180.0, -32.0)
 	if check(kp.begins_with("Preparar"), "prompt do quiosque: '%s'" % kp):

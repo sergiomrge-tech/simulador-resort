@@ -89,6 +89,10 @@ const BARTENDER_MARKUP: = 0.15
 const MAID_MINUTES: = 20.0
 
 const STAFF: = {
+ "garcom": {"name": "Garçom", "hire": 260, "wage": 38, "req": "", "company": true, "blurb": "Retira produtos prontos e caminha até os clientes para entregar os pedidos."},
+ "caixa": {"name": "Operador de caixa", "hire": 220, "wage": 32, "req": "", "company": true, "blurb": "Recebe automaticamente as contas dos pedidos entregues. Sem caixa, receba no terminal."},
+ "limpeza": {"name": "Auxiliar de limpeza", "hire": 180, "wage": 28, "req": "", "company": true, "blurb": "Recolhe a louça suja e libera as mesas do quiosque para novos clientes."},
+ "cozinheiro": {"name": "Cozinheiro", "hire": 300, "wage": 44, "req": "", "company": true, "blurb": "Prepara os itens pedidos, repõe os armários e acelera a produção."},
 	"atendente": {
 		"name": "Atendente do quiosque",
 		"hire": 240,

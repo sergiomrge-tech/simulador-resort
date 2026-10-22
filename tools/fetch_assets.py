@@ -86,7 +86,8 @@ KENNEY = {
         "flower_purpleB", "log_large", "stump_round", "campfire_logs", "campfire_stones", "tent_smallOpen", "lily_large", "mushroom_red"],
     "https://kenney.nl/media/pages/assets/food-kit/83086fa91c-1719418518/kenney_food-kit.zip": [
         "coconut", "coconut-half", "cocktail", "frappe", "glass", "fish", "fish-bones", "loaf", "loaf-round", "bread",
-        "pineapple", "watermelon", "orange", "bottle-oil", "ice-cream-cup", "cup", "cup-tea", "bowl"],
+        "pineapple", "watermelon", "orange", "bottle-oil", "ice-cream-cup", "cup", "cup-tea", "bowl",
+        "plate-dinner", "plate-deep", "utensil-spoon", "utensil-fork"],
     "https://kenney.nl/media/pages/assets/pirate-kit/e6d4bb1525-1771333093/kenney_pirate-kit.zip": [
         "boat-row-small", "boat-row-large", "palm-detailed-bend", "palm-detailed-straight", "palm-bend", "palm-straight",
         "flag", "flag-pennant", "tool-paddle", "barrel", "crate-bottles", "bottle", "bottle-large", "ship-small", "ship-medium"],
@@ -155,14 +156,32 @@ def texture(slug):
 def model(slug, res, base, small_maps=False):
     out = f"{A}/{base}/{slug}"
     gl = f"{out}/{slug}.gltf"
-    if os.path.exists(gl) and not FORCE:
-        print("model skip", base, slug)
-        return
+    # Um .gltf pode existir mesmo se um download de .bin/.jpg falhou.
+    # Nesse caso nunca considerar o modelo pronto: buscar só dependências faltantes.
+    if os.path.isfile(gl) and not FORCE:
+        try:
+            from urllib.parse import unquote
+            with open(gl, encoding="utf-8") as f:
+                doc = json.load(f)
+            links = [x.get("uri", "") for x in doc.get("buffers", [])]
+            links += [x.get("uri", "") for x in doc.get("images", [])]
+            missing = [u for u in links if u and not u.startswith("data:")
+                       and not os.path.isfile(os.path.join(out, unquote(u)))]
+            if not missing:
+                print("model skip", base, slug)
+                return
+            print("model incompleto, recuperando", base, slug, missing)
+        except (OSError, ValueError) as e:
+            print("model danificado, baixando novamente", base, slug, e)
     files = json.loads(get(API + slug))
     g = files["gltf"][res]["gltf"]
-    get(g["url"], gl)
+    if FORCE or not os.path.isfile(gl):
+        get(g["url"], gl)
+    # Conferir binários e mapas mesmo no retry após um erro de download.
     for rel, inc in g.get("include", {}).items():
         dst = os.path.join(out, rel)
+        if os.path.isfile(dst) and not FORCE:
+            continue
         get(inc["url"], dst)
         if rel.endswith(".jpg") or rel.endswith(".png"):
             if small_maps and ("_nor_" in rel or "_arm_" in rel):
@@ -206,22 +225,13 @@ def kenney(url, names):
 
 
 def quaternius_nature():
-    """Stylized Nature MegaKit [Standard] (Quaternius, CC0)."""
-    quaternius_pack("stylized-nature-megakit", "qnat", "Bush_Common.gltf")
-
-
-def quaternius_characters():
-    """Universal Base Characters [Standard], Quaternius CC0: corpos e cabelos usados por Ppl."""
-    quaternius_pack("universal-base-characters", "ubc", "Superhero_Male_FullBody.gltf")
-
-
-def quaternius_pack(slug, folder, sentinel):
+    """Stylized Nature MegaKit [Standard] (Quaternius, CC0) pelo itch.io: pasta glTF -> assets/models/qnat/ (chave "q:Nome")."""
     import zipfile, io, http.cookiejar, urllib.parse, re
-    out = f"{A}/models/{folder}"
-    if os.path.exists(f"{out}/{sentinel}") and not FORCE:
-        print(folder, "skip")
+    out = f"{A}/models/qnat"
+    if os.path.exists(f"{out}/Bush_Common.gltf") and not FORCE:
+        print("qnat skip")
         return
-    base = "https://quaternius.itch.io/" + slug
+    base = "https://quaternius.itch.io/stylized-nature-megakit"
     jar = http.cookiejar.CookieJar()
     op = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(jar))
     def call(url, data=None):
@@ -234,40 +244,124 @@ def quaternius_pack(slug, folder, sentinel):
     dlpage = call(dl)
     upload = re.search(r'data-upload_id="(\d+)"', dlpage.decode("utf-8", "ignore")).group(1)
     fj = json.loads(call(f"{base}/file/{upload}?source=view_game&as_props=1&after_download_lightbox=true", {"csrf_token": csrf(dlpage)}))
-    archive = get(fj["url"])
-    cache = os.path.join(ROOT, "build", "asset-cache", slug + ".zip")
-    os.makedirs(os.path.dirname(cache), exist_ok=True)
-    with open(cache, "wb") as f:
-        f.write(archive)
-    z = zipfile.ZipFile(io.BytesIO(archive))
+    z = zipfile.ZipFile(io.BytesIO(get(fj["url"])))
     os.makedirs(out, exist_ok=True)
     for n in z.namelist():
         parts = n.split("/")
-        selected = ("Godot - UE" in parts or ("Origin at 0" in parts and "glTF (Godot)" in parts)) if folder == "ubc" else "glTF" in parts
-        if selected and not n.endswith("/"):
+        if "glTF" in parts and not n.endswith("/"):
             with open(f"{out}/{parts[-1]}", "wb") as f:
                 f.write(z.read(n))
-    if not os.path.exists(f"{out}/{sentinel}"):
-        raise RuntimeError(f"{folder}: pacote sem {sentinel}; pastas: {z.namelist()[:25]}")
-    # O pacote UBC referencia algumas normais com sufixo _png que não existe no ZIP.
-    if folder == "ubc":
-        for name in os.listdir(out):
-            if not name.endswith(".gltf"):
-                continue
-            path = os.path.join(out, name)
-            with open(path, encoding="utf-8") as f:
+    print("qnat ok", len(os.listdir(out)))
+
+def universal_base_characters():
+    """Baixa personagens e cabelos CC0 da Quaternius usados em people.gd.
+
+    Os glTF/.bin não estão versionados no Git (gitignore). Sem esta etapa, uma
+    instalação nova do GitHub Actions tenta instanciar PackedScene nula para
+    todos os clientes e moradores, apesar de já possuir as texturas .png.
+    Fonte: https://quaternius.itch.io/universal-base-characters
+    """
+    import zipfile, io, http.cookiejar, urllib.parse, re, posixpath, shutil
+    out = os.path.join(A, "models", "ubc")
+    wanted = ["Superhero_Male_FullBody", "Superhero_Female_FullBody",
+              "Hair_Beard", "Hair_Buns", "Hair_Buzzed",
+              "Hair_BuzzedFemale", "Hair_Long", "Hair_SimpleParted"]
+    def complete(stem):
+        p = os.path.join(out, stem + ".gltf")
+        if not os.path.isfile(p):
+            return False
+        try:
+            with open(p, encoding="utf-8") as f:
                 doc = json.load(f)
-            changed = False
-            for image in doc.get("images", []):
-                uri = image.get("uri", "")
-                fixed = uri.replace("_png.", ".")
-                if uri and not os.path.exists(os.path.join(out, uri)) and os.path.exists(os.path.join(out, fixed)):
-                    image["uri"] = fixed
-                    changed = True
-            if changed:
-                with open(path, "w", encoding="utf-8") as f:
-                    json.dump(doc, f)
-    print(folder, "ok", len(os.listdir(out)))
+            refs = [x.get("uri", "") for x in doc.get("buffers", [])]
+            refs += [x.get("uri", "") for x in doc.get("images", [])]
+            return all(not ref or ref.startswith("data:") or os.path.isfile(
+                os.path.normpath(os.path.join(out, urllib.parse.unquote(ref))))
+                for ref in refs)
+        except (OSError, ValueError):
+            return False
+    if not FORCE and all(complete(stem) for stem in wanted):
+        print("ubc skip", len(wanted))
+        return
+    base = "https://quaternius.itch.io/universal-base-characters"
+    jar = http.cookiejar.CookieJar()
+    op = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(jar))
+    def call(url, data=None):
+        req = urllib.request.Request(
+            url, data=urllib.parse.urlencode(data).encode() if data is not None else None, headers=UA)
+        return op.open(req, timeout=120).read()
+    def csrf(html):
+        m = re.search(r'csrf_token" value="([^"]+)', html.decode("utf-8", "ignore"))
+        if not m:
+            raise RuntimeError("UBC: itch.io nao forneceu csrf_token")
+        return m.group(1)
+    page = call(base)
+    dl = json.loads(call(base + "/download_url", {"csrf_token": csrf(page)}))["url"]
+    dlpage = call(dl)
+    m = re.search(r'data-upload_id="(\d+)"', dlpage.decode("utf-8", "ignore"))
+    if not m:
+        raise RuntimeError("UBC: itch.io nao forneceu upload_id")
+    upload = m.group(1)
+    fj = json.loads(call(
+        base + "/file/" + upload + "?source=view_game&as_props=1&after_download_lightbox=true",
+        {"csrf_token": csrf(dlpage)}))
+    with zipfile.ZipFile(io.BytesIO(get(fj["url"]))) as z:
+        names = z.namelist()
+        os.makedirs(out, exist_ok=True)
+        for stem in wanted:
+            candidates = [n for n in names
+                          if n.lower().endswith("/" + stem.lower() + ".gltf")]
+            candidates.sort(key=lambda n: (0 if "godot - ue" in n.lower() else 1, len(n)))
+            if not candidates:
+                raise RuntimeError("UBC: modelo ausente do ZIP: " + stem)
+            entry = candidates[0]
+            doc = json.loads(z.read(entry).decode("utf-8"))
+            dst = os.path.join(out, stem + ".gltf")
+            with open(dst, "wb") as f:
+                f.write(z.read(entry))
+            parent = posixpath.dirname(entry)
+            refs = [x.get("uri", "") for x in doc.get("buffers", [])]
+            refs += [x.get("uri", "") for x in doc.get("images", [])]
+            for rel in refs:
+                if not rel or rel.startswith("data:"):
+                    continue
+                rel = urllib.parse.unquote(rel).replace("\\", "/")
+                normalized = posixpath.normpath(rel)
+                if normalized.startswith("../") or normalized.startswith("/"):
+                    raise RuntimeError("UBC: caminho fora do pacote: " + rel)
+                source = posixpath.normpath(parent + "/" + normalized)
+                dest = os.path.normpath(os.path.join(out, *normalized.split("/")))
+                if not dest.startswith(os.path.abspath(out) + os.sep):
+                    raise RuntimeError("UBC: destino inseguro: " + rel)
+                # Texturas PNG da UBC estão preservadas no repositório.
+                # A versão atual do ZIP usa nomes ligeiramente diferentes,
+                # então a dependência já existente não precisa ser baixada.
+                if os.path.isfile(dest) and not FORCE:
+                    continue
+                if source not in names:
+                    if os.path.isfile(dest):
+                        continue
+                    # Em algumas versões do pack, o glTF referencia
+                    # T_Hair_1_Normal_png.png, mas a textura existente
+                    # chama-se T_Hair_1_Normal.png.
+                    if normalized.endswith("_png.png"):
+                        alt = normalized[:-8] + ".png"
+                        alt_dst = os.path.normpath(os.path.join(out, *alt.split("/")))
+                        alt_source = posixpath.normpath(parent + "/" + alt)
+                        os.makedirs(os.path.dirname(dest), exist_ok=True)
+                        if os.path.isfile(alt_dst):
+                            shutil.copyfile(alt_dst, dest)
+                            continue
+                        if alt_source in names:
+                            with open(dest, "wb") as f:
+                                f.write(z.read(alt_source))
+                            continue
+                    raise RuntimeError("UBC: dependencia ausente: " + source)
+                os.makedirs(os.path.dirname(dest), exist_ok=True)
+                with open(dest, "wb") as f:
+                    f.write(z.read(source))
+    print("ubc ok", len(wanted))
+
 
 def animals_gen():
     """Gato/cachorro (Quaternius Animal Pack Vol.2, CC0) e caranguejo ("methodical pixel", CC0) pelo OpenGameArt -> assets/models/gen/*.glb
@@ -285,10 +379,36 @@ def animals_gen():
         z = zipfile.ZipFile(io.BytesIO(get("https://opengameart.org/sites/default/files/crab_0.zip")))
         z.extractall(tmp)
         subprocess.check_call([sys.executable, os.path.join(ROOT, "tools", "convert_crab.py"), os.path.join(tmp, "crab", "crab.blend"), f"{gen}/crab.glb"])
-    if FORCE or not os.path.exists(f"{gen}/towel.glb"):
-        subprocess.check_call([sys.executable, os.path.join(ROOT, "tools", "gen_beach_props.py")])
-    if FORCE or not os.path.exists(f"{gen}/tiki_torch.glb"):
-        subprocess.check_call([sys.executable, os.path.join(ROOT, "tools", "gen_code_props.py")])
+
+def generated_props():
+    """Reconstrói todos os grupos Blender/bpy necessários após clone limpo.
+
+    Os arquivos de assets/models/gen/ são ignorados pelo Git. Gerar só o
+    primeiro grupo antigo deixava de fora frutas, negócios e Grand Hotel.
+    Rodar após baixar texturas evita exportar GLBs sem materiais/texturas.
+    """
+    groups = [
+        ("gen_kiosk_service.py", ("service_fridge", "service_fridge_door", "service_food_cabinet", "service_register")),
+        ("gen_dishes.py", ("dish_petiscos", "dish_tapioca", "dish_pastel", "dish_acai", "dish_moqueca", "dish_batida")),
+        ("gen_beach_props.py", ("towel", "sandcastle", "lounger")),
+        ("gen_code_props.py", ("tiki_torch", "win_shutters", "trellis_planter", "newsstand", "boat_mast")),
+        ("gen_business.py", ("biz_gelato", "biz_canopy", "biz_food_truck", "biz_barrier")),
+        ("gen_hotel.py", ("hotel_tower", "hotel_restaurant", "water_slide")),
+        ("gen_food.py", ("coconut_green", "coconut_open", "pineapple", "orange",
+                         "frappe", "cup_plastic", "glass_juice", "cocktail", "campfire_logs",
+                         "beach_flag", "beach_spade", "boat_hull")),
+    ]
+    gen = os.path.join(A, "models", "gen")
+    os.makedirs(gen, exist_ok=True)
+    for script, expected in groups:
+        missing = [name for name in expected if not os.path.isfile(os.path.join(gen, name + ".glb"))]
+        if FORCE or missing:
+            print("gerando modelos Blender:", script, "(faltando:", ", ".join(missing) or "force", ")")
+            subprocess.check_call([sys.executable, os.path.join(ROOT, "tools", script)], cwd=ROOT)
+        still_missing = [name for name in expected if not os.path.isfile(os.path.join(gen, name + ".glb"))]
+        if still_missing:
+            raise RuntimeError("%s não gerou: %s" % (script, ", ".join(still_missing)))
+
 
 def ambientcg(asset, name):
     import zipfile, io
@@ -338,7 +458,7 @@ def main():
             futs += [ex.submit(kenney, u, n) for u, n in KENNEY.items()]
             futs.append(ex.submit(kenney_smoke))
             futs.append(ex.submit(quaternius_nature))
-            futs.append(ex.submit(quaternius_characters))
+            futs.append(ex.submit(universal_base_characters))
             futs.append(ex.submit(animals_gen))
         errs = 0
         for f in futs:
@@ -356,6 +476,8 @@ def main():
             p = f"{A}/tex/grey_plaster_02_{s}.jpg"
             if os.path.exists(p):
                 os.remove(p)
+    if only in ("", "models"):
+        generated_props()
     for need in ("assets/models/ual/guest.glb", "assets/audio/music_bossa.ogg"):
         if not os.path.exists(os.path.join(ROOT, need)):
             print("AVISO: faltando", need, "(vem no repositório; veja CREDITS.md)")

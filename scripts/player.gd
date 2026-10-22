@@ -67,9 +67,11 @@ func _unhandled_input(e: InputEvent) -> void :
 		look_delta(e.relative, false)
 
 func _physics_process(delta: float) -> void :
-	var inp: = move_input
+	var phone = get_tree().get_first_node_in_group("phone")
+	var writing: bool = phone != null and phone.visible
+	var inp: = Vector2.ZERO if writing else move_input
 	var k: = Vector2(Input.get_axis("move_left", "move_right"), Input.get_axis("move_back", "move_forward"))
-	if k.length() > 0.1:
+	if k.length() > 0.1 and not writing:
 		inp = k.limit_length(1.0)
 	var fwd: = - global_transform.basis.z
 	var right: = global_transform.basis.x
@@ -85,7 +87,7 @@ func _physics_process(delta: float) -> void :
 	velocity.z = dir.z * sp
 
 	var lk: = Input.get_vector("look_left", "look_right", "look_up", "look_down", 0.15)
-	if lk.length() > 0.0:
+	if lk.length() > 0.0 and not writing:
 		var kk: = PAD_LOOK * Quality.sensitivity * delta
 		yaw -= lk.x * kk
 		pitch = clampf(pitch - ( - lk.y if Quality.invert_y else lk.y) * kk * 0.75, deg_to_rad(-80), deg_to_rad(75))

@@ -81,7 +81,7 @@ glTF 1k em `assets/models/` (normal/ARM reduzidos para 512) e glTF 2k em `assets
 | Asset | Fonte | Licença |
 |---|---|---|
 | Universal Animation Library (manequim + animações), `assets/models/ual/guest.glb` (zonas de cor adicionadas com `tools/color_zones.py`; incluído no repositório) | https://quaternius.com/packs/universalanimationlibrary.html | CC0 |
-| Universal Base Characters [Standard], corpos e cabelos `assets/models/ubc/`, restaurados por `tools/fetch_assets.py` | https://quaternius.com/packs/universalbasecharacters.html | CC0 |
+| Universal Base Characters [Standard] (corpos Superhero masculino/feminino e cabelos), `assets/models/ubc/`, baixado por `tools/fetch_assets.py`; texturas principais incluídas no repositório | https://quaternius.com/packs/universalbasecharacters.html | CC0 |
 
 ## Áudio — OpenGameArt (CC0), incluído em `assets/audio/`
 | Arquivo | Fonte | Licença |
@@ -132,7 +132,30 @@ thunder, rain_loop, wind_loop, forro_loop, dj_loop.
 - v1.0 (Blender, próprios): negócios — biz_gelato, biz_booth, biz_kayak_rack, biz_board_rack, biz_canopy, biz_food_truck, biz_souvenir, biz_barrier (`tools/gen_business.py`); Grand Hotel 5★ — hotel_tower, hotel_restaurant, hotel_gym, gym_treadmill, gym_bike, gym_bench, gym_dumbbells, water_slide (`tools/gen_hotel.py`).
 - v1.0 ícones novos do game-icons.net (CC BY 3.0): shop, cooking-pot, village (Delapouite), trophy, laurel-crown (Lorc).
 
-## v1.0.1 — substituições de frutas, bebidas e objetos de praia
+## v1.0.1 — substituição dos objetos low-poly
 
-- Modelos próprios detalhados no Blender, gerados por `tools/gen_food.py`: `coconut_green`, `coconut_open`, `pineapple`, `orange`, `frappe`, `cup_plastic`, `glass_juice`, `cocktail`, `campfire_logs`, `beach_flag`, `beach_spade` e `boat_hull`.
-- Modelos Poly Haven, CC0, registrados em `tools/fetch_assets.py`: [dead_tree_trunk](https://polyhaven.com/a/dead_tree_trunk), [stone_fire_pit](https://polyhaven.com/a/stone_fire_pit), [boulder_01](https://polyhaven.com/a/boulder_01), [sand_rocks_small_01](https://polyhaven.com/a/sand_rocks_small_01), [wooden_crate_02](https://polyhaven.com/a/wooden_crate_02), [Barrel_01](https://polyhaven.com/a/Barrel_01) e [croissant](https://polyhaven.com/a/croissant).
+Modelos **próprios**, modelados em Blender/bpy por `tools/gen_food.py` (não dependem de assets externos): `coconut_green`, `coconut_open`, `pineapple`, `orange`, `frappe`, `cup_plastic`, `glass_juice`, `cocktail`, `campfire_logs`, `beach_flag`, `beach_spade` e `boat_hull`. Os arquivos gerados são `assets/models/gen/<nome>.glb`, reconstruídos por `tools/fetch_assets.py`. A origem Blender é z=0 (chão no Godot). Os modelos substituem chamadas antigas da Kenney por aliases em `scripts/real.gd`.
+
+Modelos **Poly Haven CC0**, obtidos por `MODELS_EXTRA` em `tools/fetch_assets.py`, usados em substituições da v1.0.1:
+
+| Modelo | Fonte | Licença |
+|---|---|---|
+| `dead_tree_trunk` (tronco de deriva) | https://polyhaven.com/a/dead_tree_trunk | CC0 |
+| `stone_fire_pit` (pedras da fogueira) | https://polyhaven.com/a/stone_fire_pit | CC0 |
+| `boulder_01` (rocha) | https://polyhaven.com/a/boulder_01 | CC0 |
+| `sand_rocks_small_01` (pedras da praia) | https://polyhaven.com/a/sand_rocks_small_01 | CC0 |
+| `wooden_crate_02` (caixote) | https://polyhaven.com/a/wooden_crate_02 | CC0 |
+| `Barrel_01` (barril) | https://polyhaven.com/a/Barrel_01 | CC0 |
+| `croissant` (pão) | https://polyhaven.com/a/croissant | CC0 |
+
+**Observação:** modelos baixados e GLBs gerados são ignorados pelo Git; o script de preparação precisa reconstruí-los e o patch precisa incluí-los explicitamente.
+
+### Pedidos servidos — RC3
+- Pratos rasos/fundos e talheres: Kenney **Food Kit**, CC0. Fonte oficial: https://kenney.nl/assets/food-kit ; download reproduzível em `tools/fetch_assets.py`.
+- Recheios de petiscos, tapioca, pastel, açaí, moqueca e batida de coco: modelos originais do projeto, gerados por `tools/gen_dishes.py`, com sementes fixas.
+- Cada apresentação referencia o ID estável do cardápio em `scripts/dish_presentation.gd`; cocos, sucos e caipirinhas preservam os modelos detalhados existentes.
+
+## Equipamentos da empresa (1.1.0)
+Geladeira com porta de vidro separada, armário de pratos e terminal de caixa:
+modelos originais do projeto, gerados por `tools/gen_kiosk_service.py` no Blender.
+Nunito permanece sob sua licença incluída em assets/fonts.

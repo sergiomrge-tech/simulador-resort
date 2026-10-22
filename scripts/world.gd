@@ -92,7 +92,7 @@ func _materials() -> void :
 	M.azulejo = B.mat("blue_floor_tiles_01", 0.5, Color(1, 1, 1), 0.35)
 	M.stone = B.mat("light_stone", 0.55, Color(1, 1, 1), 0.75)
 	M.terra_tiles = B.mat("patio_tiles", 0.55, Color(0.95, 0.9, 0.84), 0.75)
-	var thatch: = B.mat("reed_roof_04", 0.45, Color(1.25, 1.08, 0.8), 0.95).duplicate()
+	var thatch: = B.mat("reed_roof_04", 0.45, Color(0.72, 0.61, 0.43), 0.95).duplicate()
 	thatch.cull_mode = BaseMaterial3D.CULL_DISABLED
 	M.thatch = thatch
 	M.post = B.mat("palm_tree_bark", 0.8, Color(0.8, 0.7, 0.6), 0.9)
@@ -1461,7 +1461,7 @@ const VEG_EXCL: = [Rect2(-2.0, 16.0, 40.0, 30.0), Rect2(-3.0, 33.0, 113.0, 44.0)
 	Rect2(-1.8, 19, 3.6, 28), Rect2(-11.8, -5.8, 2.6, 33), Rect2(-24.8, -5.8, 15.2, 2.6), Rect2(-11.8, 24.6, 12.2, 2.8), 
 	Rect2(8.4, -17.6, 9.2, 9.2), Rect2(8.0, -11.0, 4.2, 9.0), Rect2(-1.2, -17, 2.4, 15), Rect2(1.0, 38.5, 5.5, 3), 
 	Rect2(1.0, 25.8, 98, 8.4), Rect2(41.5, 16.5, 56, 9.2), Rect2(39, 34, 58, 9.5), Rect2(65, 34, 20, 20), Rect2(36.4, -16, 3.2, 43), 
-	Rect2(33, -17.5, 10, 9), Rect2(56, -24, 12, 9), Rect2(-47, 23, 51, 52)]   # v1.0: terreno do Grand Hotel
+	Rect2(33, -20.0, 10, 11.5), Rect2(56, -24, 12, 9), Rect2(-47, 23, 51, 52)]   # v1.0: terreno do Grand Hotel
 
 func _veg_free(p: Vector2, margin: = 0.5) -> bool:
 	for r in VEG_EXCL:

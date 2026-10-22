@@ -11,9 +11,9 @@ uniform float tile = 0.22;
 uniform float wet_start = -27.0;
 uniform float wet_end = -34.0;
 uniform float rain_wet = 0.0;
-uniform vec3 sand_light : source_color = vec3(1.0, 0.9, 0.64);
-uniform vec3 sand_dark : source_color = vec3(0.98, 0.8, 0.54);
-uniform vec3 sand_wet : source_color = vec3(0.86, 0.66, 0.46);
+uniform vec3 sand_light : source_color = vec3(0.62, 0.51, 0.35);
+uniform vec3 sand_dark : source_color = vec3(0.49, 0.38, 0.25);
+uniform vec3 sand_wet : source_color = vec3(0.40, 0.29, 0.18);
 uniform vec3 foam : source_color = vec3(1.0, 1.0, 0.98);
 varying vec3 wpos;
 
@@ -28,10 +28,10 @@ void vertex(){ wpos = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz; }
 void fragment(){
 	float big = noise(wpos.xz * 0.06) * 0.65 + noise(wpos.xz * 0.21) * 0.35;
 	// duas cores com borda macia: dá o ar de "pintado" sem virar textura realista
-	vec3 dry = mix(sand_light, sand_dark, smoothstep(0.52, 0.58, big));
+	vec3 dry = mix(sand_light, sand_dark, smoothstep(0.38, 0.68, big));
 	// ondinhas de vento desenhadas como traços claros
 	float streak = smoothstep(0.92, 0.97, sin(wpos.x * 1.3 + noise(wpos.xz * 0.4) * 6.0 + wpos.z * 0.4) * 0.5 + 0.5);
-	dry = mix(dry, sand_light * 1.04, streak * 0.35);
+	dry = mix(dry, sand_light * 1.015, streak * 0.18);
 	float shore_n = (noise(wpos.xz * 0.11) - 0.5) * 3.0 + (noise(wpos.xz * 0.33) - 0.5) * 1.2;
 	float w = smoothstep(wet_start, wet_end, wpos.z + shore_n);
 	w = max(w, rain_wet * 0.6);

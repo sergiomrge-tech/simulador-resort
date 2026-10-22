@@ -24,7 +24,11 @@ signal tour_done(id: String, pax: int, revenue: int)
 var SAVE_PATH: = "user://save_slot1.json"
 var slot: int = 1
 var proc_props: = false   # --proc: usa os props montados por código (P) em vez dos modelos reais
-const SAVE_VERSION: = 6
+const SAVE_VERSION: = 7
+const CompanyRules = preload("res://scripts/company_rules.gd")
+signal company_changed
+var company: Dictionary = CompanyRules.defaults()
+var service_station: String = "cozinha"
 const WAKE_MIN: = 390.0
 const SLEEP_FROM: = 20.0 * 60.0
 const MAX_REDES: = Economy.HAMMOCK_MAX
@@ -108,7 +112,10 @@ func _reset_economy() -> void :
 	day_expense = 0
 	last_summary = {}
 	stockouts = 0
-	staff = {"atendente": false, "camareira": false, "bartender": false, "guia": false}
+	staff = {}
+	for role in Economy.STAFF:
+		staff[role] = false
+	company = CompanyRules.defaults()
 	supply_mult = {}
 	contracts = {}
 	forecast_next = ""
@@ -152,6 +159,7 @@ func new_game() -> void :
 		get_tree().call_group("world", "sync_bungalows")
 
 func _emit_all() -> void :
+	company_changed.emit()
 	money_changed.emit(money)
 	stars_changed.emit(stars())
 	time_changed.emit(day, minutes)
@@ -179,11 +187,12 @@ func _process(delta: float) -> void :
 		if _maid_acc >= Economy.MAID_MINUTES:
 			_maid_acc = 0.0
 			_maid_sweep()
-	if prog.staff_eff("atendente") > 0.0:
+	if not company_enabled() and prog.staff_eff("atendente") > 0.0:
 		_helper_acc += delta * minutes_per_sec * speed_mult * prog.staff_eff("atendente")
 		if _helper_acc >= Economy.HELPER_MINUTES:
 			_helper_acc = 0.0
 			get_tree().call_group("kiosk", "helper_serve")
+	tick_company(delta)
 	_check_tours()
 	_autosave_t += delta
 	if _autosave_t > 45.0 and in_game:
@@ -908,6 +917,9 @@ func build_bungalow() -> bool:
 func hire(role: String) -> bool:
 	if not Economy.STAFF.has(role):
 		return false
+	if bool(Economy.STAFF[role].get("company", false)) and not bool(company.created):
+		toast.emit(tr("Crie sua empresa no celular primeiro."), "bad")
+		return false
 	if bool(staff.get(role, false)):
 		toast.emit(tr("Já contratado: %s") % tr(str(Economy.STAFF[role].name)), "info")
 		return false
@@ -922,6 +934,7 @@ func hire(role: String) -> bool:
 	staff[role] = true
 	book( - cost, tr("Contratação: %s") % tr(str(Economy.STAFF[role].name)), "folha", true)
 	staff_changed.emit()
+	company_changed.emit()
 	return true
 
 func accept_quest(id: String) -> void :
@@ -956,7 +969,7 @@ func set_weather(kind: String) -> void :
 
 func save_game() -> void :
 	var data: = {
-		"v": SAVE_VERSION, "money": money, "ratings": ratings, "day": day, 
+		"company": company.duplicate(true), "v": SAVE_VERSION, "money": money, "ratings": ratings, "day": day,
 		"minutes": minutes, "redes": redes, "served": guests_served, 
 		"bar": bar_sales_total, "tut": tutorial_step, "rooms": [], 
 		"kiosk": kiosk_sales_total, "kiosk_n": kiosk_sales_count, 
@@ -1011,6 +1024,7 @@ func load_game() -> bool:
 	stockouts = int(data.get("stockouts", 0))
 	loaded_player = data.get("player", {})
 	_reset_economy()
+	company = CompanyRules.sanitize(data.get("company", {}))
 	weather = str(data.get("weather", "sun"))
 	var sk = data.get("stock", {})
 	if typeof(sk) == TYPE_DICTIONARY:
@@ -1071,6 +1085,7 @@ func load_game() -> bool:
 	_emit_all()
 	stock_changed.emit()
 	staff_changed.emit()
+	company_changed.emit()
 	market_changed.emit()
 	event_changed.emit()
 	weather_changed.emit(weather)
@@ -1087,3 +1102,122 @@ func _notification(what: int) -> void :
 	if what == NOTIFICATION_APPLICATION_PAUSED or what == NOTIFICATION_WM_CLOSE_REQUEST or what == NOTIFICATION_APPLICATION_FOCUS_OUT:
 		if in_game:
 			save_game()
+
+# ================================================================ empresa / operação física
+func company_enabled() -> bool:
+	return bool(company.created) and bool(company.physical)
+
+func configure_company(title: String, font_id: String, color_id: String = "creme") -> bool:
+	title = title.strip_edges()
+	if not CompanyRules.valid_name(title) or not CompanyRules.FONTS.has(font_id) or not CompanyRules.COLORS.has(color_id):
+		toast.emit(tr("Use um nome de 1 a 24 caracteres e uma fonte da lista."), "bad")
+		return false
+	company.created = true
+	company.name = title
+	company.font = font_id
+	company.color = color_id
+	company_changed.emit()
+	save_game()
+	return true
+
+func set_company_service(enabled: bool) -> bool:
+	if not company.created:
+		return false
+	if not enabled and (company.carry != "" or company.staff_carry != "" or not company.production.is_empty() or not company.receivables.is_empty() or not company.dirty_seats.is_empty()):
+		toast.emit(tr("Entregue o item, finalize o preparo, receba as contas e limpe as mesas primeiro."), "bad")
+		return false
+	company.physical = enabled
+	company_changed.emit()
+	save_game()
+	return true
+
+func prepare_company_dish(id: String) -> bool:
+	if not company_enabled() or id not in kiosk_menu() or not company.production.is_empty():
+		return false
+	if int(company.ready.get(id, 0)) >= CompanyRules.MAX_READY or not can_make(id):
+		return false
+	for ing in Economy.dish(id).uses:
+		stock[ing] = int(stock[ing]) - int(Economy.dish(id).uses[ing])
+	company.production = {"dish": id, "left": 3.0 if load("res://scripts/dish_presentation.gd").is_drink(id) else 6.0}
+	stock_changed.emit()
+	company_changed.emit()
+	return true
+
+func tick_company(delta: float) -> void:
+	if not company_enabled() or company.production.is_empty():
+		return
+	company.production.left = float(company.production.left) - maxf(delta, 0.0) * speed_mult * (1.0 + 0.25 * prog.staff_eff("cozinheiro"))
+	if float(company.production.left) <= 0.0:
+		var id: String = str(company.production.dish)
+		company.production = {}
+		company.ready[id] = mini(CompanyRules.MAX_READY, int(company.ready.get(id, 0)) + 1)
+		toast.emit(tr("Pronto para retirar: %s") % tr(str(Economy.dish(id).name)), "good")
+		company_changed.emit()
+
+func pickup_company_dish(id: String) -> bool:
+	if not company_enabled() or company.carry != "" or id not in Economy.KIOSK_MENU or int(company.ready.get(id, 0)) <= 0:
+		return false
+	company.ready[id] = int(company.ready[id]) - 1
+	company.carry = id
+	company_changed.emit()
+	return true
+
+func return_company_dish() -> bool:
+	var id: String = str(company.carry)
+	if id == "" or int(company.ready.get(id, 0)) + (1 if company.production.get("dish", "") == id else 0) >= CompanyRules.MAX_READY:
+		return false
+	company.ready[id] = int(company.ready.get(id, 0)) + 1
+	company.carry = ""
+	company_changed.emit()
+	return true
+
+func sell_company_dish(id: String, by_staff: bool = false) -> int:
+	var source: String = "staff_carry" if by_staff else "carry"
+	if not company_enabled() or company[source] != id or id not in Economy.KIOSK_MENU:
+		return -1
+	if company.receivables.size() >= 256 and prog.staff_eff("caixa") <= 0.0:
+		return -1
+	var price: int = price_of(id)
+	company[source] = ""
+	company.receivables.append({"dish": id, "value": price})
+	company_changed.emit()
+	if prog.staff_eff("caixa") > 0.0:
+		collect_company_payments()
+	return price
+
+func collect_company_payments() -> int:
+	if not company_enabled():
+		return 0
+	var bills: Array = company.receivables.duplicate(true)
+	company.receivables.clear()
+	var total := 0
+	for bill in bills:
+		kiosk_sale(str(Economy.dish(str(bill.dish)).name), int(bill.value))
+		prog.on_sale(str(bill.dish), "kiosk")
+		total += int(bill.value)
+	company_changed.emit()
+	return total
+
+func clean_company_seat(index: int) -> bool:
+	if index not in company.dirty_seats:
+		return false
+	company.dirty_seats.erase(index)
+	company_changed.emit()
+	return true
+
+func reserve_company_staff_dish(id: String) -> bool:
+	if not company_enabled() or company.staff_carry != "" or int(company.ready.get(id, 0)) <= 0:
+		return false
+	company.ready[id] = int(company.ready[id]) - 1
+	company.staff_carry = id
+	company_changed.emit()
+	return true
+
+func return_company_staff_dish() -> bool:
+	var id: String = str(company.staff_carry)
+	if id == "" or int(company.ready.get(id, 0)) + (1 if company.production.get("dish", "") == id else 0) >= CompanyRules.MAX_READY:
+		return false
+	company.ready[id] = int(company.ready.get(id, 0)) + 1
+	company.staff_carry = ""
+	company_changed.emit()
+	return true

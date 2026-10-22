@@ -998,6 +998,21 @@ func show_order(text: String, urgent: = false) -> void :
 
 ## Cliente atendido: senta comendo (prato na mão) ou bebendo (copo/coco), levando à boca. (v0.7.1)
 func consume(drink: bool) -> void :
-	_consume_drink = drink
+	consume_dish("suco" if drink else "petiscos")
+
+func consume_dish(dish: String) -> void:
+	var presentation = load("res://scripts/dish_presentation.gd")
+	_consume_drink = presentation.is_drink(dish)
+	set_meta("consuming_dish", dish)
+	var holder: Node3D = _cup if _consume_drink else _food
+	if holder != null:
+		for child in holder.get_children():
+			if child is Node3D:
+				child.visible = false
+			child.queue_free()
+		var model: Node3D = presentation.build(holder, dish)
+		if model != null:
+			model.scale = Vector3.ONE * (0.42 if _consume_drink else 0.32)
+			model.position = Vector3(0, 0.02, 0.04)
 	play("Eat")
 	_set_eating(true)

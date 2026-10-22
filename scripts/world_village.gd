@@ -9,6 +9,8 @@ const KIOSK_C: = Vector3(38, 0, -13)
 const CHURCH_C: = Vector3(75, 0, 50)
 const PRACA: = Rect2(66, 34.5, 18, 9.3)
 
+var company_signs: Array = []
+
 var village_points: = {}
 var village_paths: Array = []
 var kiosk_counter: Interactable
@@ -51,6 +53,8 @@ func _ready() -> void :
 	_landmark_details()
 	_map_details()
 	_finish_blooms()
+	Core.company_changed.connect(_refresh_company_signs)
+	_refresh_company_signs()
 	Core.time_changed.connect(_on_time)
 
 func _village_materials() -> void :
@@ -724,17 +728,26 @@ func _quiosque() -> void :
 	B.box(self, Vector3(0.6, ch, 3.4), c + Vector3(2.0, y0 + ch * 0.5, 0.5), wood, true)
 	B.box(self, Vector3(4.9, 0.08, 0.9), c + Vector3(0, y0 + ch + 0.04, 2.0), M.oak)
 	_back_bar(c, y0)
-	_fruit_row(c + Vector3(-1.5, y0 + ch + 0.14, 1.85))
-	var snack_y: = y0 + ch + 0.1
-	_coconut_cup(self, c + Vector3(-0.55, snack_y, 2.22))
-	_petisco_plate(self, c + Vector3(0.5, snack_y, 2.22))
+	# Altura real do tampo: base e acabamento; itens apoiados, sem sobreposição.
+	var snack_y: = y0 + ch + 0.08
+	Real.place(self, "carved_wooden_plate", c + Vector3(-1.45, snack_y, 1.85), 0.0, 0.0, Color(0.82, 0.68, 0.48), 0.8)
+	_fruit_row(c + Vector3(-1.69, snack_y + 0.105, 1.85))
 	for k in 5:
-		Real.place(self, "k:coconut", c + Vector3(0.35 + (k % 3) * 0.24, y0 + ch + 0.08, 2.05 + (k / 3) * 0.12), 0.22, k * 1.7)
-	B.model(self, "wooden_bucket_01", c + Vector3(1.55, y0 + ch + 0.08, 1.9), 0.4, 0.65)
+		Real.place(self, "k:coconut", c + Vector3(1.9 + (k / 3) * 0.18, y0 + ch, -0.3 + (k % 3) * 0.26), 0.22, k * 1.7)
+	B.model(self, "wooden_bucket_01", c + Vector3(-1.3, y0 + 0.028, 0.8), 0.4, 0.65)
 	_cooler(c + Vector3(1.3, y0 + 0.028, 0.3), 1.2)
 	B.model(self, "plastic_crate_01", c + Vector3(-1.3, y0 + 0.028, -0.35), 0.2, 1.0)
-	B.box(self, Vector3(3.6, 0.6, 0.08), c + Vector3(0, y0 + 2.5, 2.42), M.planks)
-	B.label(self, "Quiosque Maré Alta", c + Vector3(0, y0 + 2.5, 2.48), 64, Color(1.0, 0.95, 0.8), Color(0.25, 0.12, 0.02, 1.0))
+	# Placa abaixo da franja e à frente do beiral: texto inteiro visível.
+	# Mantém espaço livre entre o balcão e a borda inferior da moldura.
+	for sx in [-1.0, 1.0]:
+		B.cyl(self, 0.018, 0.018, 0.32, c + Vector3(sx * 1.55, y0 + 2.70, 3.38), M.post, 8)
+	B.box(self, Vector3(4.0, 0.64, 0.10), c + Vector3(0, y0 + 2.25, 3.40), M.darkwood)
+	B.box(self, Vector3(3.82, 0.5, 0.025), c + Vector3(0, y0 + 2.25, 3.465), wood_tint(Color(0.06, 0.29, 0.31)))
+	var brand: Label3D = B.label(self, "MARÉ ALTA", c + Vector3(0, y0 + 2.33, 3.49), 76, Color(1.0, 0.94, 0.78), Color(0.025, 0.1, 0.11, 0.8))
+	brand.outline_size = 4
+	company_signs.append({"label": brand, "width": 3.45})
+	var subtitle: Label3D = B.label(self, "QUIOSQUE • SABORES DA PRAIA", c + Vector3(0, y0 + 2.08, 3.49), 24, Color(0.94, 0.83, 0.6), Color(0, 0, 0, 0))
+	subtitle.shaded = false
 	_kiosk_board = Node3D.new()
 	_kiosk_board.name = "KioskMenuBoard"
 	add_child(_kiosk_board)
@@ -764,14 +777,14 @@ func _quiosque() -> void :
 		var p: = c + Vector3(-0.7 + k * 1.4, y0, 2.72)   # em cima do deck (antes na borda inclinada, 10 cm no ar)
 		B.model(self, "bar_chair_round_01", p, PI, 1.0)
 		# banqueta de bar: assento a 0,69 m; a raiz vai 0,22 m para a frente (para o balcão)
-		kiosk_spots.insert(k, {"pos": p + Vector3(0, 0.69 - SEAT_DROP, -0.22), "rot": PI, "busy": false, "need": ""})
+		kiosk_spots.insert(k, {"approach": Vector3(p.x, 0.1, p.z + 0.63), "pos": p + Vector3(0, 0.69 - SEAT_DROP, -0.22), "rot": PI, "busy": false, "need": "", "serve_pos": c + Vector3(-0.7 + k * 1.4, snack_y, 2.1), "serve_rot": 0.0})
 	village_points.kiosk_work = c + Vector3(0, 0.1, 0.8)
 	var l: = OmniLight3D.new()
 	l.position = c + Vector3(0, 2.5, 0)
 	l.omni_range = 6.5
 	l.light_color = Color(1.0, 0.75, 0.45)
 	add_child(l)
-	lanterns.append([l, null, 1.6, false])
+	lanterns.append([l, null, 0.95, false])
 
 
 ## Mesa com duas cadeiras (dois lugares de cliente) e, opcionalmente, guarda-sol.
@@ -781,7 +794,7 @@ func _kiosk_table(tp: Vector3, need: String, umb: Color, umbrella: bool) -> void
 		_umbrella(tp, 1.45, umb, false)
 	# tampo da mesa dobrável a 0,73 m, centrado em (-0,08; 0,07): petiscos e cardápio apoiados nele (antes flutuavam 5 cm)
 	var top: = tp + Vector3(-0.08, 0.732, 0.07)
-	_table_bites(top)
+	# Pratos e bebidas aparecem só quando o pedido deste lugar é entregue.
 	# cardapinho em pé na mesa
 	var menu: = B.box(self, Vector3(0.16, 0.22, 0.02), top + Vector3(0, 0.105, 0), B.flat(Color(1.0, 0.45, 0.35), 0.8))
 	menu.rotation.x = -0.2
@@ -791,7 +804,7 @@ func _kiosk_table(tp: Vector3, need: String, umb: Color, umbrella: bool) -> void
 		var fwd: Vector3 = sd[1]
 		var root: = tp + Vector3(seat_c.x, seat_c.y - SEAT_DROP, seat_c.z) + fwd * 0.27
 		var approach: = tp + Vector3(seat_c.x, 0.1, seat_c.z) - fwd * 0.85
-		kiosk_spots.append({"pos": root, "approach": approach, "rot": atan2(fwd.x, fwd.z), "busy": false, "need": need, "anim": "Sitting_Idle_Loop", "table": true})
+		kiosk_spots.append({"pos": root, "approach": approach, "rot": atan2(fwd.x, fwd.z), "busy": false, "need": need, "anim": "Sitting_Idle_Loop", "table": true, "serve_pos": top - fwd * 0.17, "serve_rot": atan2(fwd.x, fwd.z)})
 	# mesa + cadeiras bloqueadas: pedestres contornam o conjunto todo (quem vai sentar entra)
 	_block(tp, 1.0, 1.9, 0.12)
 
@@ -815,27 +828,31 @@ func _kiosk_neon(c: Vector3, y0: float) -> void :
 	_string_lights(c + Vector3(-2.3, y0 + 2.45, 2.3), c + Vector3(2.3, y0 + 2.45, 2.3), 8)
 	_string_lights(c + Vector3(-2.3, y0 + 2.45, -2.3), c + Vector3(-2.3, y0 + 2.45, 2.3), 6)
 	_string_lights(c + Vector3(2.3, y0 + 2.45, -2.3), c + Vector3(2.3, y0 + 2.45, 2.3), 6)
+	# Suportes prendem o letreiro à borda do telhado.
+	for sx in [-1.0, 1.0]:
+		B.box(self, Vector3(0.065, 0.5, 0.065), c + Vector3(sx * 1.3, y0 + 3.0, 3.26), M.darkwood)
 	var pink: = P.glow(Color(1.0, 0.25, 0.65), 4.0)
 	var cyan: = P.glow(Color(0.2, 0.95, 1.0), 4.0)
-	var back: = B.box(self, Vector3(3.4, 0.9, 0.08), c + Vector3(0, y0 + 3.55, 2.5), B.flat(Color(0.12, 0.1, 0.16), 0.6))
+	var back: = B.box(self, Vector3(3.4, 0.9, 0.08), c + Vector3(0, y0 + 3.55, 3.30), B.flat(Color(0.12, 0.1, 0.16), 0.6))
 	back.rotation.x = -0.12
-	var l: = B.label(self, "MARÉ ALTA", c + Vector3(0, y0 + 3.62, 2.58), 120, Color(1.0, 0.45, 0.8), Color(1.0, 0.2, 0.6, 0.9))
+	var l: = B.label(self, "MARÉ ALTA", c + Vector3(0, y0 + 3.62, 3.38), 120, Color(1.0, 0.45, 0.8), Color(1.0, 0.2, 0.6, 0.9))
+	company_signs.append({"label": l, "width": 2.95})
 	l.rotation.x = -0.12
 	l.shaded = false
 	l.outline_size = 18
 	for sx in [-1.0, 1.0]:
-		B.box(self, Vector3(0.06, 0.7, 0.06), c + Vector3(sx * 1.6, y0 + 3.55, 2.56), cyan)
-	B.box(self, Vector3(3.2, 0.05, 0.05), c + Vector3(0, y0 + 3.15, 2.6), cyan)
-	B.box(self, Vector3(1.6, 0.04, 0.04), c + Vector3(0, y0 + 3.98, 2.5), pink)
+		B.box(self, Vector3(0.06, 0.7, 0.06), c + Vector3(sx * 1.6, y0 + 3.55, 3.306), cyan)
+	B.box(self, Vector3(3.2, 0.05, 0.05), c + Vector3(0, y0 + 3.15, 3.40), cyan)
+	B.box(self, Vector3(1.6, 0.04, 0.04), c + Vector3(0, y0 + 3.98, 3.30), pink)
 	var nl: = OmniLight3D.new()
-	nl.position = c + Vector3(0, y0 + 3.3, 3.2)
+	nl.position = c + Vector3(0, y0 + 3.3, 3.8)
 	nl.light_color = Color(1.0, 0.4, 0.75)
 	nl.omni_range = 7.0
 	nl.light_energy = 0.0
 	add_child(nl)
-	lanterns.append([nl, null, 2.2, false])
+	lanterns.append([nl, null, 1.1, false])
 
-## Chapa de petiscos (expansão "grill"): fogão, panela e pratos de peixe frito.
+## Chapa de petiscos (expansão "grill"): fogão e panela; pratos prontos vêm da entrega.
 func _kiosk_grill(c: Vector3, y0: float) -> void :
 	B.model(self, "electric_stove", c + Vector3(1.3, y0, -1.3), 0.0, 0.9)
 	# frigideira real (Poly Haven) com três coxinhas em pé dentro (modelo do Blender), sem encostar umas nas outras
@@ -846,7 +863,7 @@ func _kiosk_grill(c: Vector3, y0: float) -> void :
 	for k in 3:
 		var a: = TAU * k / 3.0
 		Real.place(self, "g:coxinha", c + Vector3(1.1 + cos(a) * 0.065, y0 + 0.875, -1.2 + sin(a) * 0.065), -1.0, 0.5 + k, Color.WHITE, 0.0, true)
-	_petisco_plate(self, c + Vector3(-1.2, y0 + 1.2, 2.22))
+	# Superfície de entrega livre: nenhum prato pronto permanente.
 	var smoke: = GPUParticles3D.new()
 	var pm: = ParticleProcessMaterial.new()
 	pm.direction = Vector3.UP
@@ -1347,17 +1364,18 @@ func _kiosk_details(c: Vector3, y0: float) -> void :
 	# balcão
 	var top: = c + Vector3(0, y0 + 1.18, 2.0)
 	D.tip_jar(self, top + Vector3(1.6, 0, 0.15))
-	D.straw_cup(self, top + Vector3(1.25, 0, 0.1))
+	D.straw_cup(self, c + Vector3(-2.0, y0 + 1.1, 0.95))
 	D.cup_stack(self, top + Vector3(-1.95, 0, 0.0), Color(1.0, 0.9, 0.3))
 	D.cup_stack(self, top + Vector3(-1.75, 0, 0.12), Color(0.3, 0.8, 1.0))
-	D.blender(self, top + Vector3(-1.2, 0, -0.15))
+	D.blender(self, c + Vector3(-2.0, y0 + 1.1, 0.3))
 	D.pineapple(self, top + Vector3(1.95, 0, -0.1))
-	Real.place(self, "g:towel_folded", top + Vector3(-0.15, 0.0, 0.2), 0.055)
+	B.box(self, Vector3(0.14, 0.12, 0.08), top + Vector3(-0.15, 0.06, 0.2), D.m(Color(0.95, 0.95, 0.98)))
 	D.radio(self, c + Vector3(-1.1, y0 + 1.79, -1.9), 0.0)
-	# Frente revestida de bambu. Cocos abertos ficam apoiados no balcão;
-	# o modelo com canudo não serve de aplique horizontal na fachada.
+	# frente do balcão: bambu e cocos inteiros decorativos (sem bebida pronta)
 	for k in 15:
-		B.cyl(self, 0.05, 0.05, 1.0, c + Vector3(-2.2 + k * 0.315, y0 + 0.52, 2.33), D.m(Color(0.9, 0.76, 0.42)), 6)
+		B.cyl(self, 0.05, 0.05, 1.0, c + Vector3(-2.2 + k * 0.315, y0 + 0.52, 2.33), D.m(Color(0.72, 0.57, 0.34)), 6)
+	for k in 3:
+		Real.place(self, "k:coconut", c + Vector3(-1.3 + k * 1.3, y0 + 0.66, 2.42), 0.2, k * 0.7)
 	_open_sign = D.open_sign(self, c + Vector3(1.65, y0 + 2.3, 2.5), 0.0)
 	# em volta
 	D.coconut_pile(self, c + Vector3(3.7, 0.05, 0.8), 10)
@@ -1428,8 +1446,6 @@ func rng_off(k: int) -> float:
 ## Expansão "drinks": garrafas, limões e taças com guarda-chuvinha.
 func _kiosk_drinks(c: Vector3, y0: float) -> void :
 	var top: = c + Vector3(0, y0 + 1.18, 2.0)
-	for k in 3:
-		Real.place(self, "k:cocktail", top + Vector3(0.45 + k * 0.22, 0, 0.18), 0.26, k * 0.9, D.FLAG_COLS[k * 2 % D.FLAG_COLS.size()].lerp(Color.WHITE, 0.55))
 	var crate_p: = c + Vector3(-1.4, y0 + 0.028, -0.9)
 	Real.place(self, "wooden_crate_02", crate_p, 0.3, 0.2)
 	for k in 6:
@@ -1923,3 +1939,8 @@ func _map_details() -> void :
 				B.box(self, Vector3(0.45, 0.5, 0.02), cp, B.flat(D.FLAG_COLS[(j + k) % D.FLAG_COLS.size()], 0.95))
 	for k in 12:
 		B.model(self, "island_tree_01", Vector3(4.0 + k * 9.0 + rng.randf_range(-2, 2), 0, BACK_Z + 14.5 + rng.randf_range(-1, 2)), rng.randf() * TAU, rng.randf_range(1.6, 2.2))
+
+func _refresh_company_signs() -> void:
+	var rules = load("res://scripts/company_rules.gd")
+	for sign in company_signs:
+		rules.fit_sign(sign.label, str(Core.company.name) if Core.company.created else "MARÉ ALTA", str(Core.company.font), str(Core.company.color), float(sign.width))

@@ -4,6 +4,7 @@ extends Node3D
 
 var world: Node3D
 var guests: Node3D
+var operations: Node3D
 var village: Node3D
 var player: CharacterBody3D
 var hud: CanvasLayer
@@ -168,6 +169,10 @@ func _ready() -> void :
 	hud.village = village
 	hud.process_mode = Node.PROCESS_MODE_ALWAYS
 	add_child(hud)
+	operations = Node3D.new()
+	operations.set_script(load("res://scripts/kiosk_operations.gd"))
+	operations.main = self
+	add_child(operations)
 	menus = CanvasLayer.new()
 	menus.set_script(load("res://scripts/menus.gd"))
 	add_child(menus)
@@ -455,7 +460,11 @@ func _run_shot(n: String) -> void :
 			var walker = guests._make_guest()
 			walker.position = Vector3(-6.0, 0.0, 5.0)
 			walker.go([Vector3(80.0, 0.0, 2.0)])
-	await get_tree().create_timer(0.3).timeout
+	if args.has("orders-demo"):
+		_stage_kiosk_orders()
+	if args.has("company-demo"):
+		_stage_company_demo()
+	await get_tree().create_timer(0.5 if args.has("orders-demo") else 0.3).timeout
 	for i in 25:
 		await get_tree().process_frame
 	day.force_update()
@@ -502,7 +511,12 @@ func _run_shot(n: String) -> void :
 				break
 		for i in 2:
 			await get_tree().process_frame
-	# Auditoria síncrona: deve terminar antes de salvar o print e sair.
+	# Capturas de revisão visual sem sobrepor objetivos/HUD ao cenário.
+	if args.has("clean-shot"):
+		hud.visible = false
+		for i in 2:
+			await get_tree().process_frame
+	# Termina a auditoria antes da captura e do encerramento automático.
 	if args.has("primcheck"):
 		load("res://tests/prim_check.gd").run(world)
 	if args.has("floatcheck"):
@@ -736,3 +750,46 @@ func _demo_summary() -> Dictionary:
 			{"a": -320, "r": "Ventilador de teto · Bangalô 1", "c": "upgrade"}, 
 		], 
 	}
+
+## Captura de pedidos servidos pelo fluxo real (estoque, preparo/entrega e reserva).
+func _stage_kiosk_orders() -> void:
+	village.enabled = false
+	village._on_slept(0)
+	Core.paused = true
+	Core.staff["atendente"] = false
+	for ingredient in Economy.SUPPLIES:
+		Core.stock[ingredient] = 100
+	for id in Economy.DISHES:
+		Core.prog.discovered[id] = true
+	var orders: Array = [["coco_gelado", "suco", "caipirinha"], ["petiscos", "tapioca", "pastel"], ["acai", "batida", "moqueca"]]
+	for i in orders.size():
+		var customer = village.spawn_customer()
+		if customer == null:
+			continue
+		village._release_spot(customer)
+		customer.spot = world.kiosk_spots[[0, 2, 4][i]]
+		customer.spot.busy = true
+		customer.spot["owner"] = customer.get_instance_id()
+		customer.position = customer.spot.pos
+		customer._route.clear()
+		customer.set_meta("items", orders[i])
+		customer.set_meta("delivered", 0)
+		customer.set_meta("revenue", 0)
+		village._order(customer)
+		customer.timer = 10000.0
+		village.kiosk_serve()
+		customer.set_meta("eat", 10000.0)
+
+func _stage_company_demo() -> void:
+	_stage_kiosk_orders()
+	Core.configure_company("Quiosque do Sergio", "praia", "creme")
+	for id in Core.kiosk_menu():
+		if Core.prepare_company_dish(id):
+			Core.tick_company(100.0)
+	for role in ["cozinheiro", "caixa", "garcom", "limpeza"]:
+		Core.staff[role] = true
+	operations._staff_tick()
+	for role in operations.actors:
+		operations.actors[role].go([])
+		operations.actors[role].set_process(false)
+	operations.sync_company()

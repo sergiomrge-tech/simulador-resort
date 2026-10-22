@@ -1,0 +1,295 @@
+name: Compilar Maré Alta Resort 1.1.0 RC1 — visual e instaladores
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, 'fix/**']
+    paths:
+      - '.github/workflows/patch-1.1.0.yml'
+      - 'scripts/**'
+      - 'tests/**'
+      - 'tools/**'
+      - 'shaders/**'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: mare-alta-patch-110-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  patch-windows:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 300
+    steps:
+      - name: Obter repositório (incluindo versão 1.0.0)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configurar Python com bpy (Blender)
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Instalar dependências de renderização e instalador NSIS
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends xvfb xauth nsis unzip zip libgl1-mesa-dri libglu1-mesa libxi6 libxrandr2 libxcursor1 libxinerama1 libasound2t64 libpulse0
+          python -m pip install --upgrade pip
+          python -m pip install 'bpy==4.5.14' pillow numpy
+
+      - name: Instalar Godot 4.5.1 e templates oficiais
+        env:
+          GODOT_VERSION: 4.5.1
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/godot" "$HOME/.local/share/godot/export_templates/4.5.1.stable"
+          curl -fL --retry 5 --retry-all-errors -o "$RUNNER_TEMP/godot/engine.zip" "https://github.com/godotengine/godot/releases/download/4.5.1-stable/Godot_v4.5.1-stable_linux.x86_64.zip"
+          unzip -q "$RUNNER_TEMP/godot/engine.zip" -d "$RUNNER_TEMP/godot/"
+          mv "$RUNNER_TEMP/godot/Godot_v4.5.1-stable_linux.x86_64" "$RUNNER_TEMP/godot/godot"
+          chmod +x "$RUNNER_TEMP/godot/godot"
+          curl -fL --retry 5 --retry-all-errors -o "$RUNNER_TEMP/godot/templates.tpz" "https://github.com/godotengine/godot/releases/download/4.5.1-stable/Godot_v4.5.1-stable_export_templates.tpz"
+          unzip -q "$RUNNER_TEMP/godot/templates.tpz" -d "$RUNNER_TEMP/godot/unpacked"
+          cp -a "$RUNNER_TEMP/godot/unpacked/templates/." "$HOME/.local/share/godot/export_templates/4.5.1.stable/"
+          "$RUNNER_TEMP/godot/godot" --version
+          echo "GODOT=$RUNNER_TEMP/godot/godot" >> "$GITHUB_ENV"
+
+      - name: Testar ciclo de vida e ownership sem assets
+        run: |
+          set -euo pipefail
+          mkdir -p shots
+          TEST_ROOT=$(mktemp -d)
+          mkdir -p "$TEST_ROOT/tests/support" "$TEST_ROOT/scripts"
+          printf 'config_version=5\n' > "$TEST_ROOT/project.godot"
+          cp tests/lifecycle_regression.gd "$TEST_ROOT/tests/"
+          cp tests/support/state_waiter.gd "$TEST_ROOT/tests/support/"
+          cp scripts/people.gd "$TEST_ROOT/scripts/"
+          timeout 30 "$GODOT" --headless --path "$TEST_ROOT" --script res://tests/lifecycle_regression.gd 2>&1 | tee shots/lifecycle-ci.log
+          grep -qx 'LIFECYCLE_TEST PASS' shots/lifecycle-ci.log
+          if grep -Ei 'SCRIPT ERROR|Lambda capture.*freed|inconsistent' shots/lifecycle-ci.log; then
+            exit 1
+          fi
+
+      - name: Baixar CC0 e modelar todos os assets com Blender
+        run: |
+          set -euo pipefail
+          # CDN Poly Haven pode responder 502/520 mesmo após 4 tentativas
+          # internas. Reexecutar aproveita downloads completos e recupera
+          # glTF cujas texturas/binários ficaram incompletos.
+          succeeded=0
+          for attempt in 1 2 3 4; do
+            echo "=== Tentativa de assets $attempt/4 ===" | tee -a fetch-assets.log
+            if python -u tools/fetch_assets.py 2>&1 | tee -a fetch-assets.log; then
+              succeeded=1
+              break
+            fi
+            sleep 15
+          done
+          if [ "$succeeded" != "1" ]; then
+            echo "Assets CC0 incompletos após quatro tentativas"; exit 1
+          fi
+          for model in dish_petiscos dish_tapioca dish_pastel dish_acai dish_moqueca dish_batida; do
+            test -s "assets/models/gen/$model.glb"
+          done
+          for model in plate-dinner plate-deep utensil-spoon utensil-fork; do
+            test -s "assets/models/kenney/$model.glb"
+          done
+          test -s assets/models/qnat/Bush_Common.gltf
+          test -s assets/models/ubc/Superhero_Male_FullBody.gltf
+          test -s assets/models/ubc/Superhero_Female_FullBody.gltf
+          test -s assets/models/ubc/Hair_Buzzed.gltf
+          test -s assets/models/ubc/T_Hair_1_Normal_png.png
+          test -s assets/models/ubc/T_Hair_1_Normal.png
+          for model in coconut_green coconut_open pineapple orange frappe cup_plastic glass_juice cocktail campfire_logs beach_flag beach_spade boat_hull; do
+            test -s "assets/models/gen/${model}.glb"
+          done
+
+      - name: Importar assets, comprimir texturas e importar de novo
+        run: |
+          set -euo pipefail
+          python tools/clean_orphan_imports.py
+          timeout 2400 "$GODOT" --headless --path . --import 2>&1 | tee import-1.log
+          python tools/vram_textures.py 2>&1 | tee vram.log
+          timeout 2400 "$GODOT" --headless --path . --import 2>&1 | tee import-2.log
+          python - <<'PY'
+          import pathlib, re
+          for stem in ('Superhero_Male_FullBody','Superhero_Female_FullBody','Hair_Buzzed'):
+              cfg = pathlib.Path('assets/models/ubc') / (stem + '.gltf.import')
+              txt = cfg.read_text(encoding='utf-8')
+              match = re.search(r'^path="res://([^"]+)"', txt, re.M)
+              assert match and pathlib.Path(match.group(1)).is_file(), f'Falha ao importar UBC: {stem}'
+          print('UBC_IMPORTED PASS')
+          PY
+
+      - name: Testar assentos do quiosque e ciclo completo do jogo
+        run: |
+          set -euo pipefail
+          mkdir -p shots
+          timeout 240 "$GODOT" --headless --audio-driver Dummy --path . -- --loop-test --kiosk-test --quality=0 2>&1 | tee shots/kiosk-ci.log
+          grep -q 'KIOSK_TEST PASS' shots/kiosk-ci.log
+          timeout 180 "$GODOT" --headless --audio-driver Dummy --path . -- --loop-test --order-visual-test --quality=0 2>&1 | tee shots/orders-ci.log
+          grep -qx 'ORDER_VISUAL_TEST PASS' shots/orders-ci.log
+          # Após validação de ocupação/rotas, testar fluxo comercial (VIP/rush)
+          # sem a distância inicial aleatória da praia interferir no relógio acelerado.
+          timeout 380 "$GODOT" --headless --audio-driver Dummy --path . -- --loop-test --quality=0 2>&1 | tee shots/loop-ci.log
+          grep -qx 'LOOP_TEST PASS.*' shots/loop-ci.log
+          # Godot pode sair com código 0 mesmo após erro de script.
+          if grep -Ei 'SCRIPT ERROR|ERROR:.*meta|REAL_MISSING|resource file not found|Lambda capture.*freed|inconsistent' shots/kiosk-ci.log shots/loop-ci.log shots/orders-ci.log; then
+            echo "Falha: erro de script, referência liberada ou ownership inválido"; exit 1
+          fi
+
+      - name: Testar empresa e atendimento com retirada
+        run: |
+          set -euo pipefail
+          timeout 240 "$GODOT" --headless --audio-driver Dummy --path . -- --loop-test --company-test --quality=0 2>&1 | tee shots/company-ci.log
+          grep -qx 'COMPANY_TEST PASS' shots/company-ci.log
+          if grep -Ei 'SCRIPT ERROR|ERROR:.*meta|REAL_MISSING|resource file not found|Lambda capture.*freed|inconsistent' shots/company-ci.log; then exit 1; fi
+
+      - name: Tirar screenshots e procurar erros de recursos
+        run: |
+          set -euo pipefail
+          timeout 600 xvfb-run -a -s '-screen 0 1280x720x24' "$GODOT" --audio-driver Dummy --path . --rendering-driver opengl3 --rendering-method gl_compatibility -- --shot=ci-quiosque --cam=38,3,-2,0,-28,12 --v1 --noroof --quality=1 --primcheck --floatcheck --out="$PWD/shots/ci-quiosque.png" > shots/visual-ci.log 2>&1
+          test -s shots/ci-quiosque.png
+          if grep -Ei 'SCRIPT ERROR|ERROR:.*meta|REAL_MISSING|resource file not found' shots/visual-ci.log; then
+            echo "Falha: recursos ou scripts ausentes"; exit 1
+          fi
+
+      - name: Capturar quiosque refinado de dia e à noite
+        run: |
+          set -euo pipefail
+          for spec in 'frente:38,2.8,-3,0,-8,12' 'balcao:38,2.1,-8,0,-14,12' 'noite:38,2.8,-3,0,-8,20'; do
+            NAME=${spec%%:*}
+            CAMERA=${spec#*:}
+            timeout 600 xvfb-run -a -s '-screen 0 1280x720x24' "$GODOT" --audio-driver Dummy --path . --rendering-driver opengl3 --rendering-method gl_compatibility -- --shot="visual-$NAME" --cam="$CAMERA" --v1 --clean-shot --quality=1 --out="$PWD/shots/visual-$NAME.png" > "shots/visual-$NAME.log" 2>&1
+            test -s "shots/visual-$NAME.png"
+            if grep -Ei 'SCRIPT ERROR|ERROR:.*meta|REAL_MISSING|resource file not found|inconsistent' "shots/visual-$NAME.log"; then exit 1; fi
+          done
+
+      - name: Capturar pedidos reais no balcão e na mesa
+        run: |
+          set -euo pipefail
+          for spec in 'pedidos-balcao:38,1.9,-7,0,-10,12' 'pedidos-mesa:33.4,1.6,-5.7,0,-14,12'; do
+            NAME=${spec%%:*}
+            CAMERA=${spec#*:}
+            timeout 600 xvfb-run -a -s '-screen 0 1280x720x24' "$GODOT" --audio-driver Dummy --path . --rendering-driver opengl3 --rendering-method gl_compatibility -- --shot="$NAME" --cam="$CAMERA" --v1 --orders-demo --clean-shot --quality=1 --out="$PWD/shots/$NAME.png" > "shots/$NAME.log" 2>&1
+            test -s "shots/$NAME.png"
+            if grep -Ei 'SCRIPT ERROR|ERROR:.*meta|REAL_MISSING|resource file not found|inconsistent' "shots/$NAME.log"; then exit 1; fi
+          done
+
+      - name: Guardar prévia visual antes da montagem
+        uses: actions/upload-artifact@v4
+        with:
+          name: previa-visual-${{ github.sha }}
+          path: shots/
+          retention-days: 7
+
+      - name: Construir PCK original da v1.0.0 para testar a atualização
+        run: |
+          set -euo pipefail
+          CURRENT_SHA="$GITHUB_SHA"
+          mkdir -p "$RUNNER_TEMP/base"
+          git reset --hard HEAD
+          git checkout --detach 51921df
+          rm -rf .godot
+          timeout 2400 "$GODOT" --headless --path . --import > "$RUNNER_TEMP/base/base-import.log" 2>&1
+          python tools/vram_textures.py > "$RUNNER_TEMP/base/base-vram.log" 2>&1
+          timeout 2400 "$GODOT" --headless --path . --import >> "$RUNNER_TEMP/base/base-import.log" 2>&1
+          python tools/prune_export.py apply
+          timeout 2400 "$GODOT" --headless --path . --export-pack "Windows Desktop" "$RUNNER_TEMP/base/MareAltaResort.pck" > "$RUNNER_TEMP/base/base-export.log" 2>&1
+          python tools/prune_export.py restore
+          test -s "$RUNNER_TEMP/base/MareAltaResort.pck"
+          git reset --hard "$CURRENT_SHA"
+          python tools/clean_orphan_imports.py
+          rm -rf .godot
+          timeout 2400 "$GODOT" --headless --path . --import > shots/import-final.log 2>&1
+          python tools/vram_textures.py >> shots/import-final.log 2>&1
+          timeout 2400 "$GODOT" --headless --path . --import >> shots/import-final.log 2>&1
+
+      - name: Montar instalador de patch a partir do commit 51921df
+        env:
+          STAGE: ${{ runner.temp }}/stage
+        run: |
+          set -euo pipefail
+          bash tools/build_patch.sh 51921df 2>&1 | tee shots/build-patch.log
+          test -s "$STAGE/Atualizar_MareAltaResort_v1.1.0.exe"
+          test -s build/patch/patch_1.1.0.pck
+
+      - name: Testar o patch por cima do PCK 1.0.0
+        run: |
+          set -euo pipefail
+          ROOT="$PWD/build/patch-smoke"
+          mkdir -p "$ROOT"
+          cp "$GODOT" "$ROOT/MareAltaResort"
+          cp "$RUNNER_TEMP/base/MareAltaResort.pck" "$ROOT/MareAltaResort.pck"
+          cp build/patch/patch_1.1.0.pck installer/patch_loader.gd "$ROOT/"
+          printf '[autoload]\nPatch="*%s/patch_loader.gd"\n' "$ROOT" > "$ROOT/override.cfg"
+          timeout 600 xvfb-run -a -s '-screen 0 1280x720x24' "$ROOT/MareAltaResort" --main-pack "$ROOT/MareAltaResort.pck" --rendering-driver opengl3 --rendering-method gl_compatibility -- --shot=patch-ci --cam=38,3,-2,0,-28,12 --v1 --orders-demo --quality=1 --out="$PWD/shots/patch-ci.png" > shots/patch-ci.log 2>&1
+          grep -Fq '[patch] patch_1.1.0.pck ok' shots/patch-ci.log
+          test -s shots/patch-ci.png
+          if grep -Ei 'SCRIPT ERROR|ERROR:.*meta|REAL_MISSING|resource file not found' shots/patch-ci.log; then
+            echo "Falha: erro na atualização 1.0.0 -> 1.1.0"; exit 1
+          fi
+
+      - name: Exportar e validar instalador completo Windows
+        env:
+          STAGE: ${{ runner.temp }}/stage
+        run: |
+          set -euo pipefail
+          mkdir -p build/win "$STAGE"
+          python tools/prune_export.py apply
+          trap 'python tools/prune_export.py restore' EXIT
+          timeout 2400 "$GODOT" --headless --path . --export-release "Windows Desktop" "$PWD/build/win/MareAltaResort.exe" > shots/full-export.log 2>&1
+          python tools/prune_export.py restore
+          trap - EXIT
+          test -s build/win/MareAltaResort.exe
+          test -s build/win/MareAltaResort.pck
+          SIZE=$(du -bc build/win/MareAltaResort.exe build/win/MareAltaResort.pck | tail -1 | cut -f1)
+          test "$SIZE" -lt 2100000000
+          timeout 600 xvfb-run -a -s '-screen 0 1280x720x24' "$GODOT" --main-pack "$PWD/build/win/MareAltaResort.pck" --audio-driver Dummy --rendering-driver opengl3 --rendering-method gl_compatibility -- --shot=full-ci --cam=38,2.8,-3,0,-8,12 --v1 --orders-demo --clean-shot --quality=1 --out="$PWD/shots/full-ci.png" > shots/full-ci.log 2>&1
+          test -s shots/full-ci.png
+          if grep -Ei 'SCRIPT ERROR|ERROR:.*meta|REAL_MISSING|resource file not found|inconsistent' shots/full-ci.log; then exit 1; fi
+          cp build/win/MareAltaResort.exe build/win/MareAltaResort.pck "$STAGE/"
+          cp installer/setup.nsi installer/Jogar.vbs installer/icon.ico installer/LEIA-ME.txt "$STAGE/"
+          (cd "$STAGE" && makensis -V2 setup.nsi) 2>&1 | tee shots/full-installer.log
+          test -s "$STAGE/Instalar_MareAltaResort_v1.1.0.exe"
+          sha256sum "$STAGE/Instalar_MareAltaResort_v1.1.0.exe" "$STAGE/Atualizar_MareAltaResort_v1.1.0.exe" > "$STAGE/SHA256SUMS.txt"
+
+      - name: Guardar instaladores validados
+        uses: actions/upload-artifact@v4
+        with:
+          name: instaladores-mare-alta-110-rc1
+          path: |
+            ${{ runner.temp }}/stage/Instalar_MareAltaResort_v1.1.0.exe
+            ${{ runner.temp }}/stage/Atualizar_MareAltaResort_v1.1.0.exe
+            ${{ runner.temp }}/stage/SHA256SUMS.txt
+          retention-days: 14
+
+      - name: Guardar logs e prints para auditoria
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: logs-e-prints-mare-alta-110
+          path: |
+            shots/
+            fetch-assets.log
+            import-1.log
+            import-2.log
+            vram.log
+          retention-days: 7
+          if-no-files-found: ignore
+
+      - name: Publicar link direto do instalador de testes
+        if: success() && github.ref == 'refs/heads/refine/company-kiosk'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          STAGE: ${{ runner.temp }}/stage
+        run: |
+          set -euo pipefail
+          TAG=v1.1.0-rc1
+          if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" > /dev/null 2>&1; then
+            echo "A prévia $TAG já existe; os instaladores desta execução estão no artefato."
+            exit 0
+          fi
+          gh release create "$TAG" "$STAGE/Instalar_MareAltaResort_v1.1.0.exe" "$STAGE/Atualizar_MareAltaResort_v1.1.0.exe" "$STAGE/SHA256SUMS.txt" --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --title 'Maré Alta Resort 1.1.0 RC1 — sua empresa no quiosque' --prerelease --notes 'Instalador completo e patch cumulativo sobre a v1.0.0 (51921df). Pratos e bebidas aparecem conforme cada item entregue, com louça e talheres CC0, modelos próprios para receitas brasileiras, pedidos múltiplos e limpeza automática. Iluminação, areia, folhagem e placa do quiosque refinadas. Godot 4.5.1; testes de pedidos visuais, ciclo de vida, assentos, VIP/rush, ciclo completo e smoke dos pacotes completo e base+patch. Capturas reais nos artefatos do Actions. A instalação e o desempenho no Windows ainda precisam de teste no aparelho.'
