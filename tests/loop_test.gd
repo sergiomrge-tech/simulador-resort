@@ -342,6 +342,11 @@ func v1_test() -> void :
 
 func run(m) -> void :
 	main = m
+	if main.args.has("simulation-test"):
+		var simulation = load("res://tests/simulation_regression.gd").new()
+		add_child(simulation)
+		await simulation.run(main)
+		return
 	if main.args.has("company-test"):
 		var company_test = load("res://tests/company_regression.gd").new()
 		add_child(company_test)

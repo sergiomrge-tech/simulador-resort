@@ -18,6 +18,18 @@ func run(main = null) -> void:
 	check(not Core.configure_company("Empresa", "invalida"), "fonte fora da lista recusada")
 	check(Core.configure_company("  Quiosque São João  ", "elegante", "dourado"), "criação com acentos e normalização")
 	check(Core.company.name == "Quiosque São João" and Core.company_enabled(), "marca e operação ativadas")
+	Core.minutes = 10 * 60
+	Core.set_kiosk_open(false)
+	check(not Core.kiosk_accepting_customers(), "fechamento manual bloqueia novas chegadas")
+	Core.set_kiosk_open(true)
+	check(Core.kiosk_accepting_customers(), "abertura manual permite clientes no horário")
+	Core.minutes = 7 * 60
+	check(not Core.kiosk_accepting_customers(), "abertura respeita o início às 08:00")
+	Core.minutes = 22 * 60
+	check(not Core.kiosk_accepting_customers(), "abertura respeita o encerramento do dia")
+	Core.minutes = 10 * 60
+	check(Rules.sanitize({}).kiosk_open, "save antigo mantém abertura automática")
+	check(not Rules.sanitize({"kiosk_open": false}).kiosk_open, "estado fechado preservado na migração")
 	for font in Rules.FONTS:
 		var sign := Label3D.new()
 		sign.font_size = 120
@@ -69,10 +81,12 @@ func run(main = null) -> void:
 	Core.company.production = {"dish": "suco", "left": 1.25}
 	Core.company.receivables = [{"dish": "suco", "value": 7}]
 	Core.company.dirty_seats = [1]
+	Core.set_kiosk_open(false)
 	var snapshot: Dictionary = Core.company.duplicate(true)
 	Core.save_game()
 	Core.company = Rules.defaults()
 	check(Core.load_game() and Core.company == Rules.sanitize(snapshot), "save v7 mantém marca, preparo, produtos, mãos, contas e louça")
+	check(not Core.company.kiosk_open, "save e recarga preservam quiosque fechado")
 	var file = FileAccess.open(Core.SAVE_PATH, FileAccess.READ)
 	var legacy: Dictionary = JSON.parse_string(file.get_as_text())
 	file.close()
@@ -111,6 +125,16 @@ func _integration(main) -> void:
 	g.set_meta("delivered", 0)
 	g.set_meta("vip", false)
 	village._order(g)
+	Core.set_kiosk_open(false)
+	var before_close: int = village.customers.size()
+	village.enabled = true
+	village.kiosk_spawn_in = 0.0
+	village._kiosk_tick(0.01)
+	village.enabled = false
+	check(village.customers.size() == before_close and g.state == "kwait", "fechar impede chegada sem expulsar cliente com pedido")
+	check(main.world._open_sign.text == "FECHADO", "placa de funcionamento muda ao fechar")
+	Core.set_kiosk_open(true)
+	check(main.world._open_sign.text == "ABERTO", "placa de funcionamento muda ao abrir")
 	Core.pickup_company_dish("suco")
 	check(main.operations.deliver(weakref(g)), "entrega física permite ordem diferente do pedido")
 	check(village._remaining(g) == ["coco_gelado"], "pedido parcial mantém apenas item pendente")
@@ -140,8 +164,12 @@ func _integration(main) -> void:
 	check(main.operations.can_access("bebidas"), "retirada disponível ao chegar à geladeira")
 
 	# Edição real do formulário e operações ligadas à cena.
-	main.hud.phone.open("empresa")
+	main.world.get_node("KioskSign").use()
+	check(main.hud.phone.app == "empresa" and main.hud.phone.visible, "interagir com a placa abre a personalização")
 	check(main.hud.phone.company_name.max_length == 24, "formulário limita o nome")
+	await get_tree().process_frame
+	await get_tree().process_frame
+	check(main.hud.phone.company_name.get_global_rect().end.x <= main.hud.phone._phone.get_global_rect().end.x - 14.0, "formulário cabe na largura do celular")
 	main.hud.phone.company_name.grab_focus()
 	var key := InputEventKey.new()
 	key.keycode = KEY_B
@@ -160,6 +188,11 @@ func _integration(main) -> void:
 	await get_tree().process_frame
 	await get_tree().process_frame
 	check(main.hud.phone.company_name.text == "Marca em edição" and main.hud.phone.company_font.selected == 2, "vendas e reposição não apagam rascunho ao escolher fonte")
+	main.hud.phone._toggle_kiosk()
+	check(main.hud.phone.company_open_button.text == "Abrir quiosque" and main.hud.phone.company_name.text == "Marca em edição", "botão fecha sem apagar rascunho da placa")
+	main.hud.phone._toggle_kiosk()
+	main.hud.phone._save_company()
+	check(Core.company.name == "Marca em edição" and main.world.company_signs[0].label.text == "Marca em edição", "salvar o formulário atualiza a placa no mundo")
 	main.hud.phone.close()
 	# Cargos trabalham no mundo: cozinheiro prepara, garçom contorna o quiosque.
 	village._on_slept(0)

@@ -1,5 +1,6 @@
 extends RefCounted
 ## Dados versionados do negócio. Sem class_name para manter patches compatíveis.
+const Simulation = preload("res://scripts/kiosk_simulation.gd")
 const MAX_NAME := 24
 const MAX_READY := 4
 const FONTS := {"praia": "Nunito · Praia", "classica": "Sans · Clássica", "elegante": "Nunito · Itálica"}
@@ -7,7 +8,7 @@ const COLORS := {"creme": Color(1.0, 0.94, 0.78), "branco": Color.WHITE, "dourad
 static var _fonts: Dictionary = {}
 
 static func defaults() -> Dictionary:
-	return {"created": false, "name": "Maré Alta", "font": "praia", "color": "creme", "physical": true,
+	return {"created": false, "name": "Maré Alta", "font": "praia", "color": "creme", "physical": true, "kiosk_open": true, "sim": Simulation.defaults(),
 		"ready": {}, "carry": "", "staff_carry": "", "production": {}, "receivables": [], "dirty_seats": []}
 
 static func valid_name(value: String) -> bool:
@@ -28,6 +29,8 @@ static func sanitize(value: Variant) -> Dictionary:
 	out.font = str(value.get("font", "praia")) if FONTS.has(str(value.get("font", ""))) else "praia"
 	out.color = str(value.get("color", "creme")) if COLORS.has(str(value.get("color", ""))) else "creme"
 	out.physical = bool(value.get("physical", true))
+	out.kiosk_open = bool(value.get("kiosk_open", true))
+	out.sim = Simulation.sanitize(value.get("sim", {}))
 	var ready: Variant = value.get("ready", {})
 	if ready is Dictionary:
 		for id in Economy.KIOSK_MENU:

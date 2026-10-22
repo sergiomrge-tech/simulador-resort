@@ -240,6 +240,8 @@ func staff_eff(role: String) -> float:
 	if not bool(Core.staff.get(role, false)):
 		return 0.0
 	var s: = staff_rec(role)
+	if Core.company.created and role in Core.CompanyRules.Simulation.ROLES and not Core.kiosk_staff_on_shift(role):
+		return 0.0
 	if bool(s.off):
 		return 0.0
 	var e: = 1.0 + 0.12 * float(int(s.lvl) - 1)
@@ -257,6 +259,8 @@ func staff_wage(role: String) -> int:
 		w *= 0.85
 	if bool(s.off):
 		w *= 0.5
+	if Core.company.created and role in Core.CompanyRules.Simulation.ROLES:
+		w *= Core.CompanyRules.Simulation.wage_factor(Core, role)
 	return int(round(w))
 
 func train(role: String) -> bool:
@@ -264,6 +268,8 @@ func train(role: String) -> bool:
 	var cost: = PD.STAFF_TRAIN_COST * int(s.lvl)
 	if Core.money < cost or int(s.lvl) >= PD.STAFF_XP.size():
 		return false
+	if role in Core.CompanyRules.Simulation.ROLES:
+		Core.CompanyRules.Simulation.record(Core, "investment", cost)
 	Core.book(- cost, tr("Treinamento: %s") % tr(str(Economy.STAFF[role].name)), "folha", true)
 	_staff_xp(role, 40)
 	s.energy = maxi(0, int(s.energy) - 10)
@@ -288,19 +294,31 @@ func _staff_xp(role: String, xp: int) -> void:
 		s.lvl = l
 		Core.toast.emit(tr("%s subiu para o nível %d!") % [tr(str(Economy.STAFF[role].name)), l], "good")
 
-func _staff_day() -> void:
+func _staff_day(company_only: bool = false) -> void:
+	var work_day: int = Core.day - 1
 	for role in Core.staff:
+		var company_role: bool = Core.company.created and role in Core.CompanyRules.Simulation.ROLES
+		if company_only and not company_role:
+			continue
+		if company_role and int(Core.company.sim.staff_day) >= work_day:
+			continue
 		if not bool(Core.staff[role]):
 			continue
 		var s: = staff_rec(role)
-		if bool(s.off):
+		var scheduled_off: bool = company_role and posmod(work_day - 1, 7) not in Core.company.sim.days
+		if bool(s.off) or scheduled_off:
 			s.energy = mini(100, int(s.energy) + PD.STAFF_REST)
 			s.off = false
 		else:
-			_staff_xp(role, 20)
-			s.energy = maxi(0, int(s.energy) - (PD.STAFF_FATIGUE / 2 if str(s.trait) == "incansavel" else PD.STAFF_FATIGUE))
+			var factor: float = Core.CompanyRules.Simulation.wage_factor(Core, role) if company_role else 1.0
+			_staff_xp(role, int(round(20 * factor)))
+			var fatigue: float = PD.STAFF_FATIGUE / 2.0 if str(s.trait) == "incansavel" else float(PD.STAFF_FATIGUE)
+			s.energy = maxi(0, int(s.energy) - int(round(fatigue * factor)))
 			if int(s.energy) < 30:
 				Core.toast.emit(tr("%s está exausto(a). Dê uma folga na aba Equipe.") % tr(str(Economy.STAFF[role].name)), "bad")
+
+	if Core.company.created:
+		Core.company.sim.staff_day = maxi(int(Core.company.sim.staff_day), work_day)
 
 # ================================================================== temporadas e metas
 func season_index(d: = -1) -> int:

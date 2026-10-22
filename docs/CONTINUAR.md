@@ -2,6 +2,8 @@
 
 > **Atualização de 22/10/2026:** o Sergio escolheu continuar a **1.1.0 RC2**. A integração local e os testes na fonte e no PCK estão em [VALIDACAO_1.1.0_LOCAL.md](VALIDACAO_1.1.0_LOCAL.md). Branch ativa: `codex/resort-1.1-mcp`. Os checkpoints 1.0.x abaixo são históricos; não gerar uma atualização antiga sobre a linha 1.1.
 
+> **Expansão solicitada no mesmo dia:** horários/dias, placa, estoque e perdas, fornecedores, turnos/contratação e custos/resultado estão descritos em [SIMULACAO_QUIOSQUE.md](SIMULACAO_QUIOSQUE.md). Ler antes de continuar o trabalho de gestão.
+
 Este arquivo é para qualquer assistente/IA (ou pessoa) que vá continuar o projeto. Leia também o `CLAUDE.md`
 na raiz: ele é o "palácio de memória" com TODAS as regras e erros já cometidos. Siga as regras dele.
 

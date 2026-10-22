@@ -174,6 +174,7 @@ func _process(delta: float) -> void :
 	if minutes >= 1440.0:
 		minutes -= 1440.0
 		day += 1
+		_pay_wages(true)
 		toast.emit(tr("Dia %d começou!") % day, "info")
 	time_changed.emit(day, minutes)
 
@@ -192,6 +193,7 @@ func _process(delta: float) -> void :
 		if _helper_acc >= Economy.HELPER_MINUTES:
 			_helper_acc = 0.0
 			get_tree().call_group("kiosk", "helper_serve")
+	CompanyRules.Simulation.tick(self, delta * minutes_per_sec * speed_mult)
 	tick_company(delta)
 	_check_tours()
 	_autosave_t += delta
@@ -246,6 +248,11 @@ func book(v: int, reason: String, cat: String, do_toast: = true) -> void :
 		ledger_today.append({"a": v, "r": reason, "c": cat})
 		if ledger_today.size() > 40:
 			ledger_today.pop_front()
+	if company.created:
+		if cat == "quiosque" and v > 0:
+			CompanyRules.Simulation.record(self, "cash_in", v)
+		elif cat == "insumo" and v < 0:
+			CompanyRules.Simulation.record(self, "supplies", -v)
 	money_changed.emit(money)
 	ledger_changed.emit()
 	if prog:
@@ -337,6 +344,7 @@ func sleep() -> void :
 		day += 1
 	minutes = WAKE_MIN
 	_pay_wages()
+	CompanyRules.Simulation.rollover(self)
 	prog.on_new_day()
 	force_flush_bar()
 	spoil_stock()
@@ -348,17 +356,28 @@ func sleep() -> void :
 	toast.emit(tr("Bom dia! Dia %d") % day, "info")
 	roll_supply_prices()
 	roll_day_event()
+	CompanyRules.Simulation.run_auto_order(self)
 	tours_done = {}
 	save_game()
 
-func _pay_wages() -> void :
+func _pay_wages(company_only: bool = false) -> void :
 	var total: = 0
+	var pay_day: int = day - 1
 	for role in staff:
+		var company_role: bool = company.created and role in CompanyRules.Simulation.ROLES
+		if company_only and not company_role:
+			continue
+		if company_role and int(company.sim.wage_day) >= pay_day:
+			continue
 		if not bool(staff[role]) or not Economy.STAFF.has(role):
 			continue
 		var w: = prog.staff_wage(role)
 		total += w
 		book( - w, tr("Salário: %s") % tr(str(Economy.STAFF[role].name)), "folha", false)
+		if role in CompanyRules.Simulation.ROLES:
+			CompanyRules.Simulation.record(self, "payroll", w)
+	if company.created:
+		company.sim.wage_day = maxi(int(company.sim.wage_day), pay_day)
 	if total > 0:
 		toast.emit("%s  %s" % [tr("Salários do dia"), fmt_money( - total)], "bad")
 
@@ -484,7 +503,12 @@ func kiosk_menu() -> Array:
 func bar_menu() -> Array:
 	return Economy.BAR_MENU.filter(func(d): return dish_unlocked(d))
 
+func kiosk_open_min() -> float:
+	return float(company.sim.start) * 60.0 if bool(company.sim.custom_hours) else 8.0 * 60.0
+
 func kiosk_close_min() -> float:
+	if bool(company.sim.custom_hours):
+		return float(company.sim.end) * 60.0
 	return (Economy.KIOSK_CLOSE_NEON_H if has("neon") else Economy.KIOSK_CLOSE_H) * 60.0
 
 ## "owned" | "ready" (pode comprar agora) | "money" (falta dinheiro) | "locked" (falta requisito). Motivo em [1].
@@ -549,6 +573,7 @@ func menu_blocked() -> bool:
 	return false
 
 func note_stockout(id: String) -> void :
+	CompanyRules.Simulation.record(self, "stockouts", 1)
 	stockouts += 1
 	add_rating(Economy.STOCKOUT_RATING)
 	var name: = id
@@ -932,6 +957,10 @@ func hire(role: String) -> bool:
 		toast.emit(tr("Dinheiro insuficiente para contratar (%s).") % fmt_money(cost), "bad")
 		return false
 	staff[role] = true
+	if role in CompanyRules.Simulation.ROLES and company.created:
+		var begin: int = int(kiosk_open_min() / 60)
+		company.sim.shifts[role] = {"start": begin, "end": mini(23, begin + 8)}
+		CompanyRules.Simulation.record(self, "investment", cost)
 	book( - cost, tr("Contratação: %s") % tr(str(Economy.STAFF[role].name)), "folha", true)
 	staff_changed.emit()
 	company_changed.emit()
@@ -1104,6 +1133,79 @@ func _notification(what: int) -> void :
 			save_game()
 
 # ================================================================ empresa / operação física
+func kiosk_is_within_hours() -> bool:
+	return CompanyRules.Simulation.is_workday(self) and minutes >= kiosk_open_min() and minutes < kiosk_close_min()
+
+func kiosk_accepting_customers() -> bool:
+	return kiosk_is_within_hours() and bool(company.get("kiosk_open", true))
+
+func set_kiosk_open(value: bool) -> void:
+	company.kiosk_open = value
+	company_changed.emit()
+	save_game()
+	if value:
+		toast.emit(tr("Quiosque aberto!") if kiosk_is_within_hours() else tr("Quiosque preparado para abrir no próximo horário programado."), "good")
+	else:
+		toast.emit(tr("Quiosque fechado para novas chegadas. Conclua os pedidos dos clientes que já estão aqui."), "info")
+
+func set_kiosk_schedule(start: int, end: int, days: Array) -> bool:
+	if start < 6 or end > 23 or start >= end or days.is_empty():
+		toast.emit("Escolha abertura entre 06h e 22h, fechamento até 23h e ao menos um dia.", "bad")
+		return false
+	for index in days:
+		if not index is int or index < 0 or index > 6:
+			return false
+	company.sim.start = start
+	company.sim.end = end
+	company.sim.days = days.duplicate()
+	company.sim.custom_hours = true
+	company_changed.emit()
+	save_game()
+	return true
+
+func set_kiosk_shift(role: String, start: int, end: int) -> bool:
+	if role not in CompanyRules.Simulation.ROLES or not bool(staff.get(role, false)) or start < 6 or start >= end or end > 23:
+		toast.emit("Escolha um turno válido, com entrada antes da saída, entre 06h e 23h.", "bad")
+		return false
+	company.sim.shifts[role] = {"start": start, "end": end}
+	staff_changed.emit()
+	save_game()
+	return true
+
+func kiosk_staff_on_shift(role: String) -> bool:
+	return CompanyRules.Simulation.staff_on_shift(self, role)
+
+func dismiss_kiosk_staff(role: String) -> bool:
+	if role not in CompanyRules.Simulation.ROLES or not bool(staff.get(role, false)):
+		return false
+	var fee: int = prog.staff_wage(role) * 3
+	if money < fee:
+		toast.emit("Saldo insuficiente para a rescisão de três diárias.", "bad")
+		return false
+	if role in ["garcom", "atendente"] and company.staff_carry != "" and not return_company_staff_dish():
+		toast.emit("Libere espaço para devolver o produto do funcionário.", "bad")
+		return false
+	staff[role] = false
+	company.sim.shifts.erase(role)
+	CompanyRules.Simulation.record(self, "investment", fee)
+	book(-fee, "Rescisão: " + str(Economy.STAFF[role].name), "folha", true)
+	staff_changed.emit()
+	company_changed.emit()
+	save_game()
+	return true
+
+func set_kiosk_reorder(enabled: bool, target: int) -> void:
+	company.sim.auto_order = enabled
+	company.sim.target = clampi(target, 1, 48)
+	company_changed.emit()
+	save_game()
+
+func restock_kiosk() -> bool:
+	var okay: bool = CompanyRules.Simulation.reorder(self)
+	if okay:
+		save_game()
+	return okay
+
 func company_enabled() -> bool:
 	return bool(company.created) and bool(company.physical)
 
@@ -1112,6 +1214,8 @@ func configure_company(title: String, font_id: String, color_id: String = "creme
 	if not CompanyRules.valid_name(title) or not CompanyRules.FONTS.has(font_id) or not CompanyRules.COLORS.has(color_id):
 		toast.emit(tr("Use um nome de 1 a 24 caracteres e uma fonte da lista."), "bad")
 		return false
+	if int(company.sim.day) == 0:
+		company.sim.day = day
 	company.created = true
 	company.name = title
 	company.font = font_id

@@ -746,6 +746,19 @@ func _quiosque() -> void :
 	var brand: Label3D = B.label(self, "MARÉ ALTA", c + Vector3(0, y0 + 2.33, 3.49), 76, Color(1.0, 0.94, 0.78), Color(0.025, 0.1, 0.11, 0.8))
 	brand.outline_size = 4
 	company_signs.append({"label": brand, "width": 3.45})
+	var sign_action := Interactable.new()
+	sign_action.name = "KioskSign"
+	sign_action.position = c + Vector3(0, y0 + 2.25, 3.49)
+	var sign_shape := CollisionShape3D.new()
+	var sign_box := BoxShape3D.new()
+	sign_box.size = Vector3(4.0, 0.64, 0.18)
+	sign_shape.shape = sign_box
+	sign_action.add_child(sign_shape)
+	sign_action.prompt_fn = func(): return tr("Gerenciar quiosque · nome da placa e abrir/fechar")
+	sign_action.action_fn = func():
+		get_tree().call_group("phone", "open", "empresa")
+		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+	add_child(sign_action)
 	var subtitle: Label3D = B.label(self, "QUIOSQUE • SABORES DA PRAIA", c + Vector3(0, y0 + 2.08, 3.49), 24, Color(0.94, 0.83, 0.6), Color(0, 0, 0, 0))
 	subtitle.shaded = false
 	_kiosk_board = Node3D.new()
@@ -1461,7 +1474,7 @@ func _kiosk_drinks(c: Vector3, y0: float) -> void :
 
 func _on_time(_d: int, _m: float) -> void :
 	if _open_sign:
-		var open: bool = Core.minutes >= 8.0 * 60.0 and Core.minutes < Core.kiosk_close_min()
+		var open: bool = Core.kiosk_accepting_customers()
 		var txt: = "ABERTO" if open else "FECHADO"
 		if _open_sign.text != txt:
 			_open_sign.text = txt
@@ -1941,6 +1954,7 @@ func _map_details() -> void :
 		B.model(self, "island_tree_01", Vector3(4.0 + k * 9.0 + rng.randf_range(-2, 2), 0, BACK_Z + 14.5 + rng.randf_range(-1, 2)), rng.randf() * TAU, rng.randf_range(1.6, 2.2))
 
 func _refresh_company_signs() -> void:
+	_on_time(Core.day, Core.minutes)
 	var rules = load("res://scripts/company_rules.gd")
 	for sign in company_signs:
 		rules.fit_sign(sign.label, str(Core.company.name) if Core.company.created else "MARÉ ALTA", str(Core.company.font), str(Core.company.color), float(sign.width))

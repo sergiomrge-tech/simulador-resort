@@ -278,7 +278,7 @@ func _outside_blocks(p: Vector3) -> Vector3:
 
 
 func kiosk_open() -> bool:
-	return Core.minutes >= KIOSK_OPEN and Core.minutes < Core.kiosk_close_min()
+	return Core.kiosk_is_within_hours()
 
 func waiting_customers() -> Array:
 	return customers.filter( func(c): return c.state == "kwait")
@@ -388,7 +388,7 @@ func _kiosk_tick(dmin: float) -> void :
 				sent += 1
 		if sent > 0 and Core.in_game:
 			Core.toast.emit(tr("Quiosque fechado por hoje. Os últimos clientes foram embora."), "info")
-	if enabled and kiosk_open():
+	if enabled and Core.kiosk_accepting_customers():
 		kiosk_spawn_in -= dmin
 		if kiosk_spawn_in <= 0.0:
 			var rngv: Vector2 = Economy.KIOSK_SPAWN_TABLES if Core.has("kiosk_tables") else Economy.KIOSK_SPAWN
@@ -586,8 +586,8 @@ func kiosk_prompt() -> String:
 		if customers.any(func(c): return c.state == "kchoose"):
 			return tr("Cliente olhando o cardápio...")
 		if not kiosk_open():
-			return tr("Quiosque fechado (abre 08:00–18:00)")
-		return tr("Quiosque: aguardando clientes")
+			return tr("Quiosque fechado · horário %02d:00–%02d:00") % [int(Core.kiosk_open_min() / 60.0), int(Core.kiosk_close_min() / 60.0)]
+		return tr("Quiosque fechado · abra em B → Meu Quiosque") if not Core.kiosk_accepting_customers() else tr("Quiosque: aguardando clientes")
 	var rem: Array = _remaining(g)
 	var dish: String = str(rem[0])
 	var d: Dictionary = Economy.dish(dish)

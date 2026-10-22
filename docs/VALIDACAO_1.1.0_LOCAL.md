@@ -34,6 +34,14 @@ Continuam os avisos conhecidos de UID com fallback textual na fonte e de recurso
 
 ## Cópia jogável
 
+### Controles do quiosque e personalização (22/10/2026)
+
+**Ampliação posterior:** as três frentes de gestão solicitadas foram implementadas em [SIMULACAO_QUIOSQUE.md](SIMULACAO_QUIOSQUE.md). Usar essa documentação para horários configuráveis, custos, reposição, validade e escalas; os horários fixos descritos no checkpoint abaixo são o padrão de migração.
+
+No celular, **B → Meu Quiosque**, ou **E** mirando a placa frontal: abrir/fechar novas chegadas, nome de até 24 caracteres, fonte, cor, prévia e botão **Salvar nome e placa**. O fechamento mantém os clientes existentes; o horário continua 08:00–18:00, ou até 21:00 com neon. A escolha de funcionamento persiste no save, sem alterar a abertura dos saves antigos. A placa ABERTO/FECHADO acompanha o controle imediatamente.
+
+`kiosk-controls-company.log` e `kiosk-controls-pack-company.log` validam fechamento sem expulsão, bloqueio de novas chegadas, horários, migração, save/recarga, interação com a placa, atualização do nome no cenário e preservação do rascunho. `kiosk-controls-loop.log`: LOOP_TEST PASS. A captura `shots/kiosk_controls_ui_final.png` foi inspecionada; o formulário cabe no celular e o texto digitado tem contraste. O checksum corrente da cópia jogável está em `build/rc2-playable/SHA256SUMS.txt`; os hashes abaixo documentam os pacotes anteriores.
+
 `build/rc2-playable/Jogar.vbs` abre `MareAltaResort.exe` e o PCK completo 1.1.0 exportado nesta máquina. O runtime Windows 4.5.1 foi reutilizado da instalação existente. Os saves desta cópia ficam em seu próprio `userdata/`; a instalação `D:/Games/MareAltaResort` não foi alterada.
 
 O primeiro PCK da integração tinha 1.733.165.240 bytes e SHA-256 `d6692c8b74f5e9f190424f916e42dbeebd5b1814dccfcdb2a9c493d9e6e344c1`.
@@ -45,3 +53,11 @@ A cópia completa é necessária para carregar o núcleo e os autoloads 1.1.0 de
 Instalação por NSIS sobre a versão antiga, migração dos saves reais do jogador e um turno operado manualmente não foram executados nesta rodada. Os testes de migração usam saves isolados de teste.
 
 O snapshot dos imports locais anteriores à integração foi preservado no stash `imports locais antes da integracao 1.1`. Não restaurar em massa sobre os imports novos sem comparar o conteúdo.
+
+### Gestão ampliada — validação final (22/10/2026)
+
+O pacote completo atualizado passou em `simulation-final-pack.log` (SIMULATION_TEST PASS) e `simulation-company-final-pack.log` (COMPANY_TEST PASS), sem SCRIPT ERROR ou REAL_MISSING nesses logs. O ciclo completo passou em `simulation-loop-pack.log` (LOOP_TEST PASS). A validação cobre horários e dias, reposição com orçamento, turnos e salários, perdas, custos, save/recarga e preservação dos formulários durante transações. Permanecem os avisos conhecidos de recursos no encerramento automático.
+
+As telas de horários, estoque, equipe e resultado foram capturadas e inspecionadas em `shots/simulation_*.png`. O resultado exibido usa movimento de caixa e compras da despensa compartilhada; a margem por prato é uma estimativa pelo preço atual dos fornecedores.
+
+PCK final: SHA-256 `385a25fac6499ef3c0ce3eea6dc64c04e2b56918ba58b2c8b7c1247ffab6fd63`. A cópia jogável inclui `GESTAO_DO_QUIOSQUE.md`.

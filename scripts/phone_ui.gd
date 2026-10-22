@@ -15,7 +15,11 @@ const BAD: = Color(0.85, 0.28, 0.22)
 
 ## id, nome, cor, ícone
 const APPS: = [
-	["empresa", "Minha Empresa", Color(0.15, 0.55, 0.5), "shop"],
+	["empresa", "Meu Quiosque", Color(0.15, 0.55, 0.5), "shop"],
+	["horarios", "Horários", Color(0.18, 0.5, 0.65), "clima"],
+	["estoque_quiosque", "Estoque e perdas", Color(0.25, 0.65, 0.35), "compra"],
+	["gestao_equipe", "Escala e equipe", Color(0.6, 0.4, 0.8), "equipe"],
+	["resultado", "Resultado", Color(0.1, 0.6, 0.55), "caixa"],
 	["servico", "Operação", Color(0.9, 0.55, 0.2), "prato"],
 	["expansoes", "Expansões", Color(1.0, 0.45, 0.35), "upgrade"],
 	["mercado", "Mercado", Color(0.15, 0.72, 0.45), "compra"],
@@ -112,6 +116,9 @@ func _ready() -> void :
 	resized.connect(_place)
 	Core.money_changed.connect(func(_v): _refresh_if_open())
 	Core.company_changed.connect(_company_refresh)
+	Core.time_changed.connect(func(_d, _m):
+		_refresh_kiosk_controls()
+		_refresh_staff_status())
 	Core.stock_changed.connect(_refresh_if_open)
 	Core.expansion_bought.connect(func(_id): _refresh_if_open())
 	Core.staff_changed.connect(_refresh_if_open)
@@ -132,7 +139,7 @@ func _place() -> void :
 
 func _refresh_if_open() -> void :
 	# O formulário mantém seu rascunho durante vendas e reposições, mesmo ao trocar de fonte.
-	if app == "empresa":
+	if app in ["empresa", "horarios", "estoque_quiosque", "gestao_equipe"]:
 		return
 	if visible:
 		call_deferred("refresh")
@@ -176,7 +183,7 @@ static func app_for_tab(tab: String) -> String:
 			return "caixa"
 		"expansoes":
 			return "expansoes"
-		"empresa", "servico", "cardapio", "mercado", "album", "missoes", "agenda", "evolucao", "negocios", "temporada", "cozinha", "vila", "hotel":
+		"empresa", "horarios", "estoque_quiosque", "gestao_equipe", "resultado", "servico", "cardapio", "mercado", "album", "missoes", "agenda", "evolucao", "negocios", "temporada", "cozinha", "vila", "hotel":
 			return tab
 	return ""
 
@@ -326,6 +333,14 @@ func refresh() -> void :
 	list.custom_minimum_size.x = W - 28.0 - 24.0 - 10.0
 	m.add_child(list)
 	match app:
+		"horarios":
+			_app_kiosk_schedule(list)
+		"estoque_quiosque":
+			_app_kiosk_inventory(list)
+		"gestao_equipe":
+			_app_staff(list)
+		"resultado":
+			_app_kiosk_results(list)
 		"empresa":
 			_app_company(list)
 		"servico":
@@ -542,8 +557,11 @@ func _app_menu(list: VBoxContainer) -> void :
 			where.append(tr("quiosque"))
 		if Core.has("bar") and id in Core.bar_menu():
 			where.append(tr("bar"))
-		var margin: = price - Economy.dish_cost(id)
-		var info: = tr("Custo %s · margem %s") % [Core.fmt_money(Economy.dish_cost(id)), Core.fmt_money(margin)]
+		var ingredient_cost: int = 0
+		for ing in Economy.dish(id).uses:
+			ingredient_cost += Core.supply_total(ing, int(Economy.dish(id).uses[ing]))
+		var margin: = price - ingredient_cost
+		var info: = tr("Custo atual %s · margem bruta %s") % [Core.fmt_money(ingredient_cost), Core.fmt_money(margin)]
 		if not ok and Economy.DISH_UNLOCK.has(id):
 			info = tr("Bloqueado: compre %s") % tr(str(Economy.EXPANSIONS[Economy.DISH_UNLOCK[id]].name))
 		elif where.is_empty():
@@ -748,7 +766,16 @@ func _app_agenda(list: VBoxContainer) -> void :
 		_lbl(tc, tr("Total: %d passeios, %s") % [Core.tours_total, Core.fmt_money(Core.tours_revenue)], 14, GOOD, true, true)
 
 func _app_staff(list: VBoxContainer) -> void :
+	if app == "gestao_equipe":
+		var payroll := 0
+		for job in Core.CompanyRules.Simulation.ROLES:
+			if bool(Core.staff.get(job, false)):
+				payroll += Core.prog.staff_wage(job)
+		_lbl(list, "Folha do quiosque: %s/dia" % Core.fmt_money(payroll), 19, INK, true, true)
+		_lbl(list, "Turnos de até 8h usam a diária proporcional (mínimo meia diária); turnos maiores custam mais. Folga paga meia diária. O salário é devido mesmo sem vendas.", 14, INK_SOFT, false, true)
 	for role in Economy.STAFF:
+		if app == "gestao_equipe" and role not in Core.CompanyRules.Simulation.ROLES:
+			continue
 		var s: Dictionary = Economy.STAFF[role]
 		var hired: = bool(Core.staff.get(role, false))
 		var need: = str(s.get("req", ""))
@@ -766,11 +793,11 @@ func _app_staff(list: VBoxContainer) -> void :
 			_chip(r2, tr("✓ Na equipe"), Color.WHITE, GOOD)
 			_staff_card(c, role)
 		elif bool(s.get("company", false)) and not Core.company.created:
-			_lbl(c, "Crie sua empresa no app Minha Empresa.", 14, INK_SOFT, false, true)
+			_lbl(c, "Crie sua empresa no app Meu Quiosque.", 14, INK_SOFT, false, true)
 		elif need != "" and not Core.has(need):
 			_lbl(c, tr("Precisa de: %s") % tr(str(Economy.EXPANSIONS[need].name)), 14, INK_SOFT, true, true)
 		else:
-			_btn(r2, tr("Contratar"), func(): Core.hire(role), Color(0.6, 0.4, 0.9), Core.money >= int(s.hire))
+			_btn(r2, tr("Contratar"), _hire_staff.bind(role), Color(0.6, 0.4, 0.9), Core.money >= int(s.hire))
 
 func _app_ledger(list: VBoxContainer) -> void :
 	var top: = _card(list)
@@ -1052,8 +1079,20 @@ func _staff_card(c: VBoxContainer, role: String) -> void:
 	_progress(er, float(sr.energy), 100.0, GOOD if int(sr.energy) >= 30 else BAD, 8)
 	var br: = _row(c, 8)
 	var cost: = PD.STAFF_TRAIN_COST * lv
-	_btn(br, tr("Treinar %s") % Core.fmt_money(cost), func(): P.train(role), Color(0.6, 0.4, 0.9), Core.money >= cost and lv < PD.STAFF_XP.size())
-	_btn(br, tr("Voltar ao trabalho") if bool(sr.off) else tr("Dar folga hoje"), func(): P.toggle_off(role), Color(0.2, 0.6, 0.95))
+	_btn(br, tr("Treinar %s") % Core.fmt_money(cost), _train_staff.bind(role), Color(0.6, 0.4, 0.9), Core.money >= cost and lv < PD.STAFF_XP.size())
+	_btn(br, tr("Voltar ao trabalho") if bool(sr.off) else tr("Dar folga hoje"), _rest_staff.bind(role), Color(0.2, 0.6, 0.95))
+	if role in Core.CompanyRules.Simulation.ROLES and Core.company.created:
+		_staff_status_labels[role] = weakref(_lbl(c, "Em serviço" if P.staff_eff(role) > 0.0 else "Fora do turno ou de folga", 14, GOOD if P.staff_eff(role) > 0.0 else INK_SOFT, true, true))
+		if not Core.company.sim.shifts.has(role):
+			_lbl(c, "Sem escala personalizada: segue o quiosque e recebe a diária base. Salvar o turno aplica a proporção de horas.", 13, INK_SOFT, false, true)
+		var shift: Dictionary = Core.company.sim.shifts.get(role, {"start": int(Core.kiosk_open_min() / 60), "end": int(Core.kiosk_close_min() / 60)})
+		var shift_row := _row(c)
+		var start := _hour_picker(shift_row, "Entrada", int(shift.start))
+		var end := _hour_picker(shift_row, "Saída", int(shift.end))
+		_btn(c, "Salvar turno", func():
+			if Core.set_kiosk_shift(role, int(start.value), int(end.value)):
+				refresh())
+		_btn(c, "Dispensar · rescisão %s" % Core.fmt_money(P.staff_wage(role) * 3), _dismiss_staff.bind(role), BAD, Core.money >= P.staff_wage(role) * 3)
 	if bool(sr.off):
 		_lbl(c, tr("De folga: não trabalha hoje, recupera energia e recebe meio salário."), 13, INK_SOFT, false, true)
 
@@ -1115,19 +1154,34 @@ var company_font: OptionButton
 var company_color: OptionButton
 var company_preview: Label
 var company_count: Label
+var company_status: Label
+var company_open_button: Button
 
 func _company_refresh() -> void:
 	# Não reconstruir o formulário enquanto o jogador digita.
-	if app != "empresa":
+	if app == "empresa":
+		_refresh_kiosk_controls()
+	else:
 		_refresh_if_open()
 
 func _app_company(list: VBoxContainer) -> void:
-	_lbl(list, "Sua marca na praia", 23, INK, true)
+	var operation := _card(list)
+	_lbl(operation, "Funcionamento do quiosque", 20, INK, true)
+	company_status = _lbl(operation, "", 16, INK, true, true)
+	_lbl(operation, "Horário: %02d:00–%02d:00. Fechar bloqueia novas chegadas." % [int(Core.kiosk_open_min() / 60.0), int(Core.kiosk_close_min() / 60.0)], 14, INK_SOFT, false, true)
+	company_open_button = _btn(operation, "", _toggle_kiosk)
+	_refresh_kiosk_controls()
+	_btn(operation, "Alterar horários e dias", _open_management.bind("horarios"))
+	_lbl(list, "Personalizar a placa", 23, INK, true)
 	_lbl(list, "Escolha um nome de até 24 caracteres. O tamanho das letras se ajusta para caber inteiro na placa.", 15, INK_SOFT, false, true)
 	company_name = LineEdit.new()
 	company_name.max_length = CompanyRules.MAX_NAME
 	company_name.text = str(Core.company.name)
-	company_name.placeholder_text = "Nome da empresa"
+	company_name.placeholder_text = "Nome na placa do quiosque"
+	company_name.add_theme_color_override("font_color", INK)
+	company_name.add_theme_color_override("font_placeholder_color", INK_SOFT)
+	company_name.add_theme_color_override("caret_color", INK)
+	company_name.add_theme_font_size_override("font_size", 20)
 	list.add_child(company_name)
 	company_font = OptionButton.new()
 	for id in CompanyRules.FONTS:
@@ -1148,16 +1202,32 @@ func _app_company(list: VBoxContainer) -> void:
 	company_font.item_selected.connect(_preview_company.unbind(1))
 	company_color.item_selected.connect(_preview_company.unbind(1))
 	_preview_company()
-	_btn(list, "Salvar marca" if Core.company.created else "Criar minha empresa", _save_company)
+	_btn(list, "Salvar nome e placa", _save_company)
 	if Core.company.created:
 		var manual := CheckButton.new()
 		manual.text = "Atendimento com retirada e entrega"
+		manual.add_theme_font_size_override("font_size", 16)
+		manual.clip_text = true
 		manual.button_pressed = bool(Core.company.physical)
 		manual.toggled.connect(_set_service)
 		list.add_child(manual)
 	_lbl(list, "Você começa atendendo. Contrate garçom, caixa, cozinheiro e limpeza para dividir o trabalho. Há custo de contratação e salário diário; folgas e energia afetam a equipe.", 15, INK_SOFT, false, true)
-	_btn(list, "Contratar e gerenciar equipe", _company_staff)
+	_btn(list, "Escala, contratação e salários", _open_management.bind("gestao_equipe"))
+	_btn(list, "Estoque, desperdício e fornecedores", _open_management.bind("estoque_quiosque"))
+	_btn(list, "Custos, preços e resultado", _open_management.bind("resultado"))
+	_lbl(list, "Empresa ativa: produtos preparados vencem na virada do dia. Dias de operação têm custo de R$ 12 + R$ 2 por hora aberta, além dos salários.", 14, INK_SOFT, false, true)
 	_lbl(list, "Contorne o quiosque para acessar a geladeira, a cozinha e o armário. Retire um item por vez e aperte E no cliente que o pediu. Receba as contas no terminal do balcão e recolha a louça após a saída.", 15, INK_SOFT, false, true)
+
+func _refresh_kiosk_controls() -> void:
+	if app != "empresa" or not is_instance_valid(company_status) or not is_instance_valid(company_open_button):
+		return
+	var requested: bool = bool(Core.company.get("kiosk_open", true))
+	company_status.text = "Aberto · recebendo clientes" if Core.kiosk_accepting_customers() else ("Fora do horário de atendimento" if requested else "Fechado para novas chegadas")
+	company_status.add_theme_color_override("font_color", GOOD if Core.kiosk_accepting_customers() else INK_SOFT)
+	company_open_button.text = "Fechar quiosque" if requested else ("Abrir quiosque" if Core.kiosk_is_within_hours() else "Programar próxima abertura")
+
+func _toggle_kiosk() -> void:
+	Core.set_kiosk_open(not bool(Core.company.get("kiosk_open", true)))
 
 func _preview_company() -> void:
 	var font_id: String = str(CompanyRules.FONTS.keys()[company_font.selected])
@@ -1172,7 +1242,7 @@ func _preview_company() -> void:
 
 func _save_company() -> void:
 	if Core.configure_company(company_name.text, str(CompanyRules.FONTS.keys()[company_font.selected]), str(CompanyRules.COLORS.keys()[company_color.selected])):
-		Core.toast.emit("Sua empresa está pronta!", "good")
+		Core.toast.emit("Nome e placa do quiosque atualizados!", "good")
 		refresh()
 
 func _set_service(enabled: bool) -> void:
@@ -1206,7 +1276,7 @@ func _service_action(id: String, action: String) -> void:
 
 func _app_service(list: VBoxContainer) -> void:
 	if not Core.company_enabled():
-		_lbl(list, "Crie a empresa e ative o atendimento com retirada no app Minha Empresa.", 17, INK, false, true)
+		_lbl(list, "Crie a empresa e ative o atendimento com retirada no app Meu Quiosque.", 17, INK, false, true)
 		return
 	var kind: String = str(Core.service_station)
 	var near: bool = _operations().can_access(kind)
@@ -1235,3 +1305,139 @@ func _app_service(list: VBoxContainer) -> void:
 		if kind != "cozinha":
 			_btn(card, "Retirar e levar ao cliente", _service_action.bind(id, "pickup"), GOOD, near and count > 0 and carried == "")
 	_lbl(list, "%d contas aguardando recebimento no terminal · %d lugares para limpar" % [Core.company.receivables.size(), Core.company.dirty_seats.size()], 15, INK_SOFT, false, true)
+
+# ------------------------------------------------------------------ simulação de gestão
+func _open_management(id: String) -> void:
+	app = id
+	refresh()
+
+func _hour_picker(parent: Node, title: String, initial: int) -> SpinBox:
+	var col := VBoxContainer.new()
+	col.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	parent.add_child(col)
+	_lbl(col, title, 14, INK, true)
+	var spin := SpinBox.new()
+	spin.min_value = 6
+	spin.max_value = 23
+	spin.step = 1
+	spin.value = initial
+	spin.suffix = "h"
+	spin.get_line_edit().add_theme_color_override("font_color", INK)
+	spin.get_line_edit().add_theme_font_size_override("font_size", 18)
+	col.add_child(spin)
+	return spin
+
+func _app_kiosk_schedule(list: VBoxContainer) -> void:
+	_lbl(list, "Sua semana de trabalho", 22, INK, true, true)
+	_lbl(list, "Defina o expediente entre 06h e 23h. Dia 1 é segunda-feira. Para parar novas chegadas antes do fim do expediente e concluir os pedidos, use Fechar quiosque.", 14, INK_SOFT, false, true)
+	var row := _row(list)
+	var start := _hour_picker(row, "Abertura", int(Core.kiosk_open_min() / 60))
+	var end := _hour_picker(row, "Fechamento", int(Core.kiosk_close_min() / 60))
+	var days := HFlowContainer.new()
+	list.add_child(days)
+	var checks: Array = []
+	for i in 7:
+		var button := CheckButton.new()
+		button.text = Core.CompanyRules.Simulation.DAYS[i]
+		button.add_theme_font_size_override("font_size", 15)
+		button.button_pressed = i in Core.company.sim.days
+		days.add_child(button)
+		checks.append(button)
+	_btn(list, "Salvar horários e dias", func():
+		var selected: Array = []
+		for i in 7:
+			if checks[i].button_pressed:
+				selected.append(i)
+		if Core.set_kiosk_schedule(int(start.value), int(end.value), selected):
+			Core.toast.emit("Horários e dias de funcionamento salvos.", "good")
+			refresh())
+	_lbl(list, "Escalas dos funcionários são configuradas separadamente. Nos dias fechados, a equipe do quiosque não inicia o turno.", 14, INK_SOFT, false, true)
+	_btn(list, "Configurar equipe e turnos", _open_management.bind("gestao_equipe"))
+
+func _app_kiosk_inventory(list: VBoxContainer) -> void:
+	_lbl(list, "Estoque e desperdício", 22, INK, true)
+	_lbl(list, "Ingredientes ficam na despensa compartilhada. Produtos preparados na geladeira/armário vencem na virada do dia. Prepare conforme a demanda para evitar perdas.", 14, INK_SOFT, false, true)
+	var cfg: Dictionary = Core.company.sim
+	var auto_order := CheckButton.new()
+	auto_order.text = "Repor ao começar o dia"
+	auto_order.add_theme_font_size_override("font_size", 16)
+	auto_order.button_pressed = bool(cfg.auto_order)
+	list.add_child(auto_order)
+	_lbl(list, "Meta de unidades por ingrediente", 15, INK, true)
+	var target := SpinBox.new()
+	target.min_value = 1
+	target.max_value = 48
+	target.step = 1
+	target.value = int(cfg.target)
+	target.get_line_edit().add_theme_color_override("font_color", INK)
+	list.add_child(target)
+	_btn(list, "Salvar política de reposição", func():
+		Core.set_kiosk_reorder(auto_order.button_pressed, int(target.value))
+		refresh())
+	var quote: int = Core.CompanyRules.Simulation.reorder_quote(Core)
+	_lbl(list, "Reposição até a meta salva: %s" % Core.fmt_money(quote), 17, INK, true, true)
+	_btn(list, "Repor agora", func():
+		Core.restock_kiosk()
+		refresh(), GOOD, Core.money >= quote and quote > 0)
+	for id in Core.CompanyRules.Simulation.ingredients(Core):
+		var c := _card(list)
+		_lbl(c, "%s · %d unidades" % [Economy.SUPPLIES[id].name, int(Core.stock.get(id, 0))], 17, INK, true, true)
+		_lbl(c, "Fornecedor hoje: %s/unidade%s" % [Core.fmt_money(Core.supply_total(id, 1)), " · contrato ativo" if Core.contracts.has(id) else ""], 14, INK_SOFT, false, true)
+	_lbl(list, "A reposição compra apenas ingredientes do cardápio atual, respeita preços/contratos e só ocorre com saldo para o pedido inteiro. Contratos de desconto são negociados no Mercado.", 14, INK_SOFT, false, true)
+	_btn(list, "Atualizar consulta de estoque", refresh)
+	_btn(list, "Mercado e contratos", _open_management.bind("mercado"))
+
+func _app_kiosk_results(list: VBoxContainer) -> void:
+	_lbl(list, "Caixa do quiosque", 22, INK, true)
+	var d: Dictionary = Core.company.sim.today
+	var net: int = int(d.cash_in) - int(d.supplies) - int(d.payroll) - int(d.overhead) - int(d.investment)
+	_lbl(list, "Movimento atual: %s" % Core.fmt_money(net, true), 20, GOOD if net >= 0 else BAD, true, true)
+	_lbl(list, "Recebimentos: %s\nCompras da despensa: %s\nSalários pagos: %s\nContratação/treinamento/rescisão: %s\nTempo aberto: %.1f h" % [Core.fmt_money(int(d.cash_in)), Core.fmt_money(int(d.supplies)), Core.fmt_money(int(d.payroll)), Core.fmt_money(int(d.investment)), float(d.open_minutes) / 60.0], 16, INK, false, true)
+	_lbl(list, "Fechamento: R$ 12 de estrutura + R$ 2/h aberta, cobrados uma vez ao virar o dia. Este é um resultado de caixa: as compras incluem ingredientes compartilhados com o bar; contas ainda não recebidas não entram.", 14, INK_SOFT, false, true)
+	_lbl(list, "Contas pendentes: %d · faltas de estoque: %d" % [Core.company.receivables.size(), int(d.stockouts)], 15, INK, true, true)
+	_btn(list, "Ajustar preços e cardápio", _open_management.bind("cardapio"))
+	for id in Core.kiosk_menu():
+		var cost := 0
+		for ing in Economy.dish(id).uses:
+			cost += Core.supply_total(ing, int(Economy.dish(id).uses[ing]))
+		_lbl(list, "%s · venda %s · margem bruta estimada %s" % [Economy.dish(id).name, Core.fmt_money(Core.price_of(id)), Core.fmt_money(Core.price_of(id) - cost, true)], 14, INK, false, true)
+	_lbl(list, "Últimos fechamentos", 19, INK, true)
+	var history: Array = Core.company.sim.history.duplicate()
+	history.reverse()
+	if history.is_empty():
+		_lbl(list, "O primeiro relatório aparece ao virar o dia.", 14, INK_SOFT)
+	for report in history:
+		var c := _card(list)
+		_lbl(c, "Dia %d · saldo %s" % [int(report.day), Core.fmt_money(int(report.net), true)], 17, GOOD if int(report.net) >= 0 else BAD, true, true)
+		_lbl(c, "Estrutura: %s · desperdício: %d produtos · rupturas: %d" % [Core.fmt_money(int(report.overhead)), int(report.waste), int(report.stockouts)], 14, INK_SOFT, false, true)
+
+var _staff_status_labels: Dictionary = {}
+func _refresh_staff_status() -> void:
+	if app not in ["gestao_equipe", "equipe"]:
+		return
+	for role in _staff_status_labels:
+		var reference: WeakRef = _staff_status_labels[role]
+		var label = reference.get_ref()
+		if is_instance_valid(label):
+			var active: bool = Core.prog.staff_eff(role) > 0
+			label.text = "Em serviço" if active else "Fora do turno ou de folga"
+			label.add_theme_color_override("font_color", GOOD if active else INK_SOFT)
+
+func _hire_staff(role: String) -> void:
+	if Core.hire(role):
+		Core.save_game()
+		refresh()
+
+func _train_staff(role: String) -> void:
+	if Core.prog.train(role):
+		Core.save_game()
+		refresh()
+
+func _rest_staff(role: String) -> void:
+	Core.prog.toggle_off(role)
+	Core.save_game()
+	refresh()
+
+func _dismiss_staff(role: String) -> void:
+	if Core.dismiss_kiosk_staff(role):
+		refresh()

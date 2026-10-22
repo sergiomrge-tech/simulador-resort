@@ -2006,6 +2006,7 @@
  "SCR:i18n.gd": "SCR-011",
  "SCR:interactable.gd": "SCR-012",
  "SCR:kiosk_operations.gd": "SCR-041",
+ "SCR:kiosk_simulation.gd": "SCR-042",
  "SCR:main.gd": "SCR-013",
  "SCR:menus.gd": "SCR-014",
  "SCR:minigame.gd": "SCR-036",
