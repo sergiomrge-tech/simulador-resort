@@ -20,6 +20,9 @@ Para atualizar uma cópia anterior, substitua os arquivos do programa e mantenha
 a pasta userdata/. O ZIP não inclui nem apaga saves.
 
 NOVO NESTA REVISÃO
+- Funcionários do quiosque aparecem assim que contratados, inclusive fora do turno.
+  Trabalham no horário configurado; funcionários de folga não comparecem.
+- Geladeira com 12 bebidas expostas nas três prateleiras e etiquetas de estoque real.
 - Quiosque refeito: geladeira, retirada de pratos, cozinha, caixa e liquidificador
   dentro da construção, com entrada pelas duas laterais. Sem anexo externo.
 - Novo acabamento em madeira, cobertura de palha, luminárias de fibra e placa única.

@@ -43,6 +43,14 @@ func run(main) -> void:
 	Core.unlock_all()
 	for role in Core.staff: Core.staff[role] = false
 	for id in Core.stock: Core.stock[id] = 30
+	Core.minutes = 22 * 60
+	check(Core.hire("cozinheiro"), "contratação fora do horário")
+	check(main.operations.actors.has("cozinheiro") and main.operations.actors.cozinheiro.visible, "contratado aparece imediatamente com jogo pausado e quiosque fechado")
+	check(Core.prog.staff_eff("cozinheiro") == 0, "presença não libera trabalho fora do turno")
+	Core.staff.cozinheiro = false
+	Core.staff_changed.emit()
+	check(not main.operations.actors.cozinheiro.visible, "demissão remove presença")
+	Core.minutes = 11 * 60
 	var c: Vector3 = main.world.KIOSK_C
 	for station in main.operations.stations.values():
 		check(absf(station.position.x - c.x) < 2 and absf(station.position.z - c.z) < 2.5, "estação dentro do quiosque")
@@ -65,6 +73,12 @@ func run(main) -> void:
 	check(main.operations.products.has_node("Shelf_coco_gelado") and main.operations.products.has_node("Shelf_petiscos"), "geladeira e armário têm produtos próprios")
 	check(main.operations.products.get_node("Shelf_coco_gelado").get_meta("display_only"), "referência visual não cria estoque vendável")
 	check(not Core.pickup_company_dish("coco_gelado"), "não vende exemplar de referência com estoque zero")
+	var drink_models := 0
+	for display in main.operations.products.get_children():
+		if main.operations.Dishes.is_drink(str(display.get_meta("shelf_dish_id"))):
+			for child in display.get_children():
+				if child is Node3D and not child is Label3D: drink_models += 1
+	check(drink_models == 12, "doze bebidas visíveis na geladeira")
 	var stock_before: int = Core.stock.coco
 	main.operations.open_station("bebidas")
 	check(main.hud.phone.app == "servico", "E na geladeira abre a estação")
@@ -103,6 +117,7 @@ func run(main) -> void:
 	main.hud.phone.back()
 	check(main.hud.phone.app == "painel", "voltar respeita a categoria")
 	main.hud.phone.close()
+	check(Core.hire("caixa"), "caixa contratado para conferência visual")
 	if DisplayServer.get_name() != "headless":
 		main.operations.open_station("bebidas")
 		await shot(main, "practical_station", c + Vector3(0, .1, .75), 0, -5)
@@ -122,5 +137,12 @@ func run(main) -> void:
 		await shot(main, "practical_workroom", c + Vector3(0, .1, 1.15), 0, -7)
 		main.hud.root.visible = false
 		await shot(main, "practical_facade", c + Vector3(1.5, .35, 7), 15, -3)
+	Core.company.created = false
+	Core.staff.atendente = true
+	Core.staff_changed.emit()
+	check(main.operations.actors.has("atendente") and main.operations.actors.atendente.visible, "atendente aparece no modo anterior à criação da empresa")
+	Core.prog.staff_rec("atendente").off = true
+	Core.staff_changed.emit()
+	check(not main.operations.actors.atendente.visible, "folga oculta atendente")
 	print("PRACTICAL_TEST ", "FAIL" if failed else "PASS")
 	get_tree().quit(1 if failed else 0)

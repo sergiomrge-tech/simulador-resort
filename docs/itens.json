@@ -126,7 +126,12 @@
    },
    {
     "arquivo": "kiosk_operations.gd",
-    "linha": 259,
+    "linha": 211,
+    "funcao": "_sync_staff_presence"
+   },
+   {
+    "arquivo": "kiosk_operations.gd",
+    "linha": 278,
     "funcao": "_waiter"
    },
    {
@@ -6542,17 +6547,27 @@
    },
    {
     "arquivo": "kiosk_operations.gd",
-    "linha": 207,
-    "funcao": "_staff_tick"
+    "linha": 197,
+    "funcao": "_staff_home"
    },
    {
     "arquivo": "kiosk_operations.gd",
-    "linha": 217,
-    "funcao": "_staff_tick"
+    "linha": 201,
+    "funcao": "_sync_staff_presence"
    },
    {
     "arquivo": "kiosk_operations.gd",
     "linha": 227,
+    "funcao": "_staff_tick"
+   },
+   {
+    "arquivo": "kiosk_operations.gd",
+    "linha": 236,
+    "funcao": "_staff_tick"
+   },
+   {
+    "arquivo": "kiosk_operations.gd",
+    "linha": 246,
     "funcao": "_staff_tick"
    },
    {
@@ -13343,7 +13358,7 @@
    },
    {
     "arquivo": "kiosk_operations.gd",
-    "linha": 164,
+    "linha": 163,
     "funcao": "sync_company"
    }
   ],
@@ -13478,7 +13493,7 @@
   "usos": [
    {
     "arquivo": "kiosk_operations.gd",
-    "linha": 37,
+    "linha": 38,
     "funcao": "_build"
    }
   ],
@@ -13493,7 +13508,7 @@
   "usos": [
    {
     "arquivo": "kiosk_operations.gd",
-    "linha": 36,
+    "linha": 37,
     "funcao": "_build"
    }
   ],
@@ -13508,7 +13523,7 @@
   "usos": [
    {
     "arquivo": "kiosk_operations.gd",
-    "linha": 42,
+    "linha": 43,
     "funcao": "_build"
    }
   ],
@@ -13523,7 +13538,7 @@
   "usos": [
    {
     "arquivo": "kiosk_operations.gd",
-    "linha": 48,
+    "linha": 49,
     "funcao": "_build"
    }
   ],
@@ -13583,7 +13598,7 @@
   "usos": [
    {
     "arquivo": "kiosk_operations.gd",
-    "linha": 46,
+    "linha": 47,
     "funcao": "_build"
    }
   ],
@@ -13598,7 +13613,7 @@
   "usos": [
    {
     "arquivo": "kiosk_operations.gd",
-    "linha": 38,
+    "linha": 39,
     "funcao": "_build"
    }
   ],
@@ -34307,7 +34322,7 @@
     "funcao": ""
    }
   ],
-  "linhas": 382,
+  "linhas": 402,
   "descricao": "Operação do quiosque: estoque pronto separado de ingredientes e contas a receber."
  },
  {

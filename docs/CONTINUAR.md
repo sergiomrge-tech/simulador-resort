@@ -1,5 +1,10 @@
 # Como continuar o Maré Alta Resort (passagem de bastão — 19/10/2026)
 
+> **Contratados e geladeira (22/10/2026):** presença dos funcionários do quiosque
+> sincronizada em `staff_changed`, independente da operação/turno. Trabalho continua
+> condicionado a turno e abertura; folga/demissão ocultam. Atendente legado incluído.
+> Geladeira com 12 apresentações em duas fileiras; testar com `--practical-test`.
+
 > **Expositores sempre preenchidos (22/10/2026):** pedido explícito do Sergio: geladeira/armário não podem ficar vazios e devem exibir o que vendem. `KioskOperations._sync_products()` preenche as três prateleiras com apresentações de bebidas/comidas e etiquetas de estoque real. Referências continuam visíveis no zero, mas não são estoque vendável. Básicos bloqueados identificados; secretos só após descoberta. `--practical-test` cobre retirada da última unidade sem esvaziar o expositor e impede vender a referência no zero.
 
 > **Quiosque prático (22/10/2026, revisão mais recente):** ler [QUIOSQUE_PRATICO.md](QUIOSQUE_PRATICO.md). Equipamentos dentro do quiosque, sem anexo; entradas laterais; seis áreas no início do celular; pedidos numerados e HUD menor. Modelos editáveis em `art/blender/`, gerador `tools/gen_kiosk_facade.py`. Validar com `--loop-test --practical-test`, empresa, gestão, celular e ciclo geral. Não repor o anexo nem os 27 atalhos iniciais dos checkpoints anteriores.

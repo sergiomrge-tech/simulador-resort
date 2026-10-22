@@ -223,7 +223,7 @@ Total: 2034 itens. MOD 233 · NAT 68 · PRC 31 · CEN 284 · PRT 11 · DSH 9 · 
 | MOD-215 | Orange | `g:orange` | Gerado no Blender (tools/gen_*.py) | real.gd:19 |
 | MOD-216 | Pineapple | `g:pineapple` | Gerado no Blender (tools/gen_*.py) | real.gd:19 |
 | MOD-217 | Plate deep | `k:plate-deep` | Kenney (CC0) | dish_presentation.gd:31 |
-| MOD-218 | Plate dinner | `k:plate-dinner` | Kenney (CC0) | dish_presentation.gd:31, kiosk_operations.gd:164 |
+| MOD-218 | Plate dinner | `k:plate-dinner` | Kenney (CC0) | dish_presentation.gd:31, kiosk_operations.gd:163 |
 | MOD-219 | Utensil fork | `k:utensil-fork` | Kenney (CC0) | dish_presentation.gd:38 |
 | MOD-220 | Utensil spoon | `k:utensil-spoon` | Kenney (CC0) | dish_presentation.gd:38 |
 | MOD-221 | Dish acai | `g:dish_acai` | Gerado no Blender (tools/gen_*.py) | dish_presentation.gd:11 |
@@ -232,15 +232,15 @@ Total: 2034 itens. MOD 233 · NAT 68 · PRC 31 · CEN 284 · PRT 11 · DSH 9 · 
 | MOD-224 | Dish pastel | `g:dish_pastel` | Gerado no Blender (tools/gen_*.py) | dish_presentation.gd:10 |
 | MOD-225 | Dish petiscos | `g:dish_petiscos` | Gerado no Blender (tools/gen_*.py) | dish_presentation.gd:8 |
 | MOD-226 | Dish tapioca | `g:dish_tapioca` | Gerado no Blender (tools/gen_*.py) | dish_presentation.gd:9 |
-| MOD-227 | Service food cabinet | `g:service_food_cabinet` | Gerado no Blender (tools/gen_*.py) | kiosk_operations.gd:37 |
-| MOD-228 | Service fridge | `g:service_fridge` | Gerado no Blender (tools/gen_*.py) | kiosk_operations.gd:36 |
-| MOD-229 | Service fridge door | `g:service_fridge_door` | Gerado no Blender (tools/gen_*.py) | kiosk_operations.gd:42 |
-| MOD-230 | Service register | `g:service_register` | Gerado no Blender (tools/gen_*.py) | kiosk_operations.gd:48 |
+| MOD-227 | Service food cabinet | `g:service_food_cabinet` | Gerado no Blender (tools/gen_*.py) | kiosk_operations.gd:38 |
+| MOD-228 | Service fridge | `g:service_fridge` | Gerado no Blender (tools/gen_*.py) | kiosk_operations.gd:37 |
+| MOD-229 | Service fridge door | `g:service_fridge_door` | Gerado no Blender (tools/gen_*.py) | kiosk_operations.gd:43 |
+| MOD-230 | Service register | `g:service_register` | Gerado no Blender (tools/gen_*.py) | kiosk_operations.gd:49 |
 | MOD-231 | Kiosk facade | `g:kiosk_facade` | Gerado no Blender (tools/gen_*.py) | world_village.gd:811 |
 | MOD-232 | Kiosk neon trim | `g:kiosk_neon_trim` | Gerado no Blender (tools/gen_*.py) | world_village.gd:896 |
 | MOD-233 | Kiosk roof | `g:kiosk_roof` | Gerado no Blender (tools/gen_*.py) | world_village.gd:732 |
-| MOD-234 | Kiosk blender | `g:kiosk_blender` | Gerado no Blender (tools/gen_*.py) | kiosk_operations.gd:46 |
-| MOD-235 | Kiosk workbench | `g:kiosk_workbench` | Gerado no Blender (tools/gen_*.py) | kiosk_operations.gd:38 |
+| MOD-234 | Kiosk blender | `g:kiosk_blender` | Gerado no Blender (tools/gen_*.py) | kiosk_operations.gd:47 |
+| MOD-235 | Kiosk workbench | `g:kiosk_workbench` | Gerado no Blender (tools/gen_*.py) | kiosk_operations.gd:39 |
 
 ## NAT — Natureza (Quaternius) (68)
 
@@ -1016,7 +1016,7 @@ Total: 2034 itens. MOD 233 · NAT 68 · PRC 31 · CEN 284 · PRT 11 · DSH 9 · 
 | ICO-003 | Bar | `bar` | assets/ui/icons | economy.gd:114, economy.gd:336, economy.gd:48, economy.gd:49 (+25) |
 | ICO-004 | Bartender | `bartender` | assets/ui/icons | economy.gd:110, resort_core.gd:61, resort_core.gd:874, world.gd:1084 |
 | ICO-005 | Cachaca | `cachaca` | assets/ui/icons | economy.gd:180, economy.gd:195, economy.gd:206, economy.gd:213 (+2) |
-| ICO-006 | Caixa | `caixa` | assets/ui/icons | economy.gd:93, hud.gd:243, hud.gd:64, kiosk_management.gd:14 (+23) |
+| ICO-006 | Caixa | `caixa` | assets/ui/icons | economy.gd:93, hud.gd:243, hud.gd:64, kiosk_management.gd:14 (+25) |
 | ICO-007 | Cama | `cama` | assets/ui/icons | economy.gd:307, phone_ui.gd:24, phone_ui.gd:42, resort_core.gd:100 (+8) |
 | ICO-008 | Camareira | `camareira` | assets/ui/icons | economy.gd:103, resort_core.gd:186, resort_core.gd:187, resort_core.gd:61 |
 | ICO-009 | Clima | `clima` | assets/ui/icons | economy.gd:291, hud.gd:574, phone_ui.gd:32, phone_ui.gd:34 (+3) |
@@ -1086,7 +1086,7 @@ Total: 2034 itens. MOD 233 · NAT 68 · PRC 31 · CEN 284 · PRT 11 · DSH 9 · 
 | ANI-007 | Fixing kneeling | `Fixing_Kneeling` | UAL (Quaternius CC0) | — |
 | ANI-008 | Hit chest | `Hit_Chest` | UAL (Quaternius CC0) | — |
 | ANI-009 | Hit head | `Hit_Head` | UAL (Quaternius CC0) | — |
-| ANI-010 | Idle loop | `Idle_Loop` | UAL (Quaternius CC0) | event_fx.gd:301, event_fx.gd:327, guest.gd:120, guest.gd:180 (+13) |
+| ANI-010 | Idle loop | `Idle_Loop` | UAL (Quaternius CC0) | event_fx.gd:301, event_fx.gd:327, guest.gd:120, guest.gd:180 (+14) |
 | ANI-011 | Idle talking loop | `Idle_Talking_Loop` | UAL (Quaternius CC0) | event_fx.gd:275, event_fx.gd:327, event_fx.gd:371, guest.gd:122 (+12) |
 | ANI-012 | Idle torch loop | `Idle_Torch_Loop` | UAL (Quaternius CC0) | — |
 | ANI-013 | Interact | `Interact` | UAL (Quaternius CC0) | event_fx.gd:301, guest.gd:142, guest.gd:182, i18n.gd:49 |

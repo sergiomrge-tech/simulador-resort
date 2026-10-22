@@ -49,6 +49,7 @@ Base de trabalho: v0.6.5 recuperada; versões atuais em `project.godot` / `expor
 - **Regra:** o contorno usa a 2ª derivada de **1/profundidade**, que é linear na tela sobre planos. O contorno só funciona sem MSAA (use FXAA).
 
 ## 👥 Sala das Pessoas
+- **Contratação (22/10/2026):** não criar o personagem somente no tick de trabalho. Sincronizar presença em `staff_changed`, inclusive com celular aberto, fora do turno e no atendente legado sem empresa; turno controla trabalho, folga/demissão controlam ausência. Testar contratação pausada e entrega automática separadamente.
 - O corpo vem de `assets/models/ual/guest.glb` (manequim Quaternius), com zonas de cor gravadas em `COLOR.r` por `tools/color_zones.py`. Se trocar ou suavizar a malha, **rode o color_zones de novo**.
 - Chapéus e cabelos ficam presos ao osso `Head`, e a cabeça é aumentada pelo `head_scaler`. Confira se a aba não corta os olhos (aba de palha em y ≥ 0,245).
 - Pedestres: 12 no modo HD e 5 no leve (o Sergio pediu metade). Não aumente sem pedir.

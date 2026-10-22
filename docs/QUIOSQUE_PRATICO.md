@@ -1,5 +1,11 @@
 # Quiosque reorganizado — 22/10/2026
 
+Contratação cria imediatamente o funcionário no quiosque, inclusive com o celular
+aberto ou fora do horário. Ele trabalha apenas no turno; folga e demissão ocultam
+o personagem. O atendente também aparece antes da criação da empresa.
+A geladeira exibe 12 bebidas em duas fileiras nas três prateleiras. As etiquetas
+continuam mostrando estoque real; a exposição no zero não pode ser vendida.
+
 O quiosque mantém o acabamento novo e concentra o trabalho dentro da construção.
 Entre por uma das laterais: geladeira à esquerda, retirada de pratos ao centro e
 cozinha à direita. Caixa na frente e liquidificador no tampo lateral. Sem anexo externo.

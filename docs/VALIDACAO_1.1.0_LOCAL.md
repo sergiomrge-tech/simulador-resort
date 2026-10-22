@@ -189,3 +189,15 @@ PCK: 1.740.073.324 bytes; SHA-256
 `530876383fddb4a97ebefd7894e40d7a9f886213f348b3c2242d34c32eea0319`.
 ZIP atualizado no mesmo caminho de Downloads: 1.836.753.556 bytes, nove arquivos,
 CRCs verificados e sem userdata. Documentação e instruções do expositor atualizadas.
+# Funcionários presentes e geladeira ampliada — 22/10/2026
+
+- Fonte: `staff-practical.log` PRACTICAL_TEST PASS em Vulkan, com inspeção de
+  `shots/practical_facade.png` (caixa no balcão) e `practical_workroom.png`.
+- `staff-company.log`: COMPANY_TEST PASS, incluindo trabalho automático.
+- PCK: `staff-loop.log` LOOP_TEST PASS, ciclo geral sem erros de script.
+- PCK: `staff-pack.log` PRACTICAL_TEST PASS. Contratação imediata com jogo pausado
+  e loja fechada, limite do turno, demissão, atendente legado, folga, 12 bebidas,
+  preparo, retirada e entrega. Sem SCRIPT ERROR/REAL_MISSING.
+- SHA-256 PCK: `35dce12a574def7353476ccab1de851bcb189ee3c4f848f52a2b2039de1f7fa2`.
+- ZIP de Downloads atualizado e CRC conferido, sem incluir saves. Avisos de
+  material nulo e recursos na saída permanecem no encerramento dos testes.

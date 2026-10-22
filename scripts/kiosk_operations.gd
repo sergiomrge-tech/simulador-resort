@@ -22,6 +22,7 @@ func _ready() -> void:
 	name = "KioskOperations"
 	_build()
 	Core.company_changed.connect(sync_company)
+	Core.staff_changed.connect(sync_company)
 	sync_company()
 
 func center() -> Vector3:
@@ -139,9 +140,7 @@ func sync_company() -> void:
 		else:
 			body.collision_layer = 1 if visible else 0
 	hand.visible = visible
-	for role in actors:
-		actors[role].visible = visible and Core.prog.staff_eff(role) > 0
-		actors[role].set_process(actors[role].visible)
+	_sync_staff_presence()
 	_sync_products()
 	var held: String = str(Core.company.carry)
 	if held != _hand_key:
@@ -194,7 +193,28 @@ func _actor(role: String, pos: Vector3):
 		actors[role] = g
 	return actors[role]
 
+func _staff_home(role: String) -> Vector3:
+	var offsets := {"cozinheiro": Vector3(1.05, 0.1, -0.2), "atendente": Vector3(-0.9, 0.1, 0.55), "garcom": Vector3(0.1, 0.1, 0.7), "caixa": Vector3(1.25, 0.1, 1.15), "limpeza": Vector3(-3.6, 0.1, 3.4)}
+	return center() + offsets[role]
+
+func _sync_staff_presence() -> void:
+	for role in ["garcom", "atendente", "caixa", "cozinheiro", "limpeza"]:
+		var hired: bool = bool(Core.staff.get(role, false))
+		var present: bool = hired and not bool(Core.prog.staff_rec(role).get("off", false))
+		if present:
+			var g = _actor(role, _staff_home(role))
+			g.visible = true
+			var working: bool = Core.company_enabled() and Core.prog.staff_eff(role) > 0 and main.village.kiosk_open()
+			g.set_process(working)
+			if not working:
+				g.go([])
+				g.play("Idle_Loop")
+		elif actors.has(role):
+			actors[role].visible = false
+			actors[role].set_process(false)
+
 func _staff_tick() -> void:
+	_sync_staff_presence()
 	var c: Vector3 = center()
 	var waiter_role: String = "garcom" if Core.prog.staff_eff("garcom") > 0 else "atendente"
 	if waiter_role != waiter_role_active:
@@ -207,7 +227,6 @@ func _staff_tick() -> void:
 	for role in ["garcom", "atendente", "caixa", "cozinheiro", "limpeza"]:
 		var active: bool = Core.prog.staff_eff(role) > 0 and main.village.kiosk_open()
 		if actors.has(role):
-			actors[role].visible = active
 			actors[role].set_process(active)
 		if not active:
 			continue
@@ -346,7 +365,7 @@ func _sync_products() -> void:
 		var anchor: Node3D = stations.bebidas if drink else stations.pratos
 		var columns := 2 if drink else 3
 		var kind_count := maxi(1, drinks.size() if drink else food_count)
-		var capacity := 6 if drink else 9
+		var capacity := 12 if drink else 9
 		var row := int(slot / columns)
 		var shelf_y: float = [0.315, 0.795, 1.275][mini(row, 2)] if drink else [0.0625, 0.4125, 0.7625][mini(row, 2)]
 		var x := -0.22 + float(slot % columns) * 0.44 if drink else -0.31 + float(slot % columns) * 0.31
@@ -361,12 +380,13 @@ func _sync_products() -> void:
 		var copies := int(ceil(float(capacity - slot) / float(kind_count)))
 		for unit in maxi(1, copies):
 			var cell := slot + unit * kind_count
-			var item_row := mini(2, int(cell / columns))
+			var shelf_cell := cell % 6 if drink else cell
+			var item_row := mini(2, int(shelf_cell / columns))
 			var item_y: float = [0.315, 0.795, 1.275][item_row] if drink else [0.0625, 0.4125, 0.7625][item_row]
 			var item_x := -0.22 + float(cell % columns) * 0.44 if drink else -0.31 + float(cell % columns) * 0.31
 			var item := Node3D.new()
 			display.add_child(item)
-			item.position = anchor.position + Vector3(item_x, item_y, 0.08)
+			item.position = anchor.position + Vector3(item_x, item_y, (0.13 if cell < 6 else -0.13) if drink else 0.08)
 			item.scale = Vector3.ONE * 0.95
 			Dishes.build(item, id)
 		var status: String = "%d prontos" % count
