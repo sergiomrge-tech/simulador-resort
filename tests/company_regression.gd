@@ -155,12 +155,12 @@ func _integration(main) -> void:
 	for sign in main.world.company_signs:
 		check(sign.label.text == "Quiosque do Sergio", "marca aplicada à placa real")
 	check(main.operations.stations.size() == 3, "geladeira, armário e cozinha presentes")
-	var deck = main.operations.get_node("ServiceDeck")
-	check(absf(deck.position.y + deck.mesh.get_aabb().end.y - main.operations.stations.pratos.position.y) < 0.005, "equipamentos apoiados no deck do anexo")
+	var deck = main.world.get_node("KioskFloor")
+	check(absf(deck.position.y + deck.mesh.get_aabb().end.y - main.operations.stations.pratos.position.y) < 0.005, "equipamentos apoiados no piso interno do quiosque")
 	var floors: Array = deck.find_children("*", "StaticBody3D", true, false)
 	check(floors.size() == 1 and floors[0].collision_layer == 1, "deck visível com colisão de piso")
 	check(not main.operations.can_access("bebidas"), "retirada remota bloqueada")
-	main.player.position = main.operations.stations.bebidas.global_position + Vector3(0, 0, -1.2)
+	main.player.position = main.operations.stations.bebidas.global_position + Vector3(0, 0, 1.2)
 	check(main.operations.can_access("bebidas"), "retirada disponível ao chegar à geladeira")
 
 	# Edição real do formulário e operações ligadas à cena.
@@ -189,7 +189,7 @@ func _integration(main) -> void:
 	await get_tree().process_frame
 	check(main.hud.phone.company_name.text == "Marca em edição" and main.hud.phone.company_font.selected == 2, "vendas e reposição não apagam rascunho ao escolher fonte")
 	main.hud.phone._toggle_kiosk()
-	check(main.hud.phone.company_open_button.text == "Abrir quiosque" and main.hud.phone.company_name.text == "Marca em edição", "botão fecha sem apagar rascunho da placa")
+	check(not Core.company.kiosk_open and main.hud.phone.company_name.text == "Marca em edição", "botão fecha sem apagar rascunho da placa")
 	main.hud.phone._toggle_kiosk()
 	main.hud.phone._save_company()
 	check(Core.company.name == "Marca em edição" and main.world.company_signs[0].label.text == "Marca em edição", "salvar o formulário atualiza a placa no mundo")

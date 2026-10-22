@@ -2008,12 +2008,12 @@ func refresh_areas() -> void :
 # ------------------------------------------------------------------ v0.7.2: estruturas 10x mais detalhadas
 ## Estrutura de madeira de quiosque/bar: vigas de amarração, mãos-francesas, caibros sob o sapê,
 ## amarras de corda e assoalho de tábuas com frestas.
-func hut_details(c: Vector3, half: float, y0: float, post_h: float, peak: float, roof_half: float) -> void :
+func hut_details(c: Vector3, half: float, y0: float, post_h: float, peak: float, roof_half: float, structure: bool = true) -> void :
 	var wood: = B.flat(Color(0.62, 0.42, 0.25), 0.85)
 	var rope: = B.flat(Color(0.86, 0.74, 0.5), 0.95)
 	var top: = y0 + post_h
 	var corners: = [Vector3(- half, 0, - half), Vector3(half, 0, - half), Vector3(half, 0, half), Vector3(- half, 0, half)]
-	for i in 4:
+	for i in (4 if structure else 0):
 		var a: Vector3 = c + corners[i] + Vector3(0, top - 0.12, 0)
 		var b_: Vector3 = c + corners[(i + 1) % 4] + Vector3(0, top - 0.12, 0)
 		B._beam(self, a, b_, 0.08, wood)

@@ -86,6 +86,7 @@ Base de trabalho: v0.6.5 recuperada; versões atuais em `project.godot` / `expor
 - O código antigo continua como fallback quando o .glb não existe.
 
 ## 🧪 Sala da Conferência — antes de entregar
+- **Quiosque prático (22/10/2026):** ao substituir um prop de expansão, preservar seu marco lógico em `areas` (ex.: `grill`) mesmo com a cozinha agora interna; `career_test` e desbloqueios dependem dele. Validar o corredor com movimento real da cápsula. Na saída do deck, o chão passa de y=0,1 para y=0: a asserção de piso deve considerar o destino. GLB exporta cores lineares e `Toon.toonify` clareia novamente; julgar madeira/palha no jogo e reservar margem na cor original. Não exibir nomes de fregueses atravessando o telhado: no atendimento físico, usar apenas o número curto e a lista de pedidos.
 - **Gestão ampliada (22/10/2026):** normalizar os números de estado/higiene no sanitize evita diferenças de precisão em save/recarga. Personalização move modelo, assento, ponto de entrega e bloqueio juntos; prévia não cobra. Para cores de prévia iguais às do cenário, definir o albedo solicitado no material duplicado (Toon.material satura a cor). Testar encomendas e serviços pendentes após recarga e evitar avisos repetidos em cada tentativa automática de preparo.
 1. `godot --headless --check-only -s scripts/X.gd` em todo script editado. Erros "Identifier not found: Core/Quality/Economy" são normais (autoloads). Qualquer outro erro bloqueia.
 2. Erros já cometidos: função duplicada no mesmo arquivo (`oil_lamp`); `var w: = M.algo` sem tipo (use `var w: Material = ...`).

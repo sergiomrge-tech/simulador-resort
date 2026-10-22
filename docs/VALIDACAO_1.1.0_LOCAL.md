@@ -116,4 +116,53 @@ O teste novo cobre cobrança e entrega única após recarga, quantidade mínima/
 
 Capturas inspecionadas do pacote final: `shots/management_world.png`, `management_recrutamento.png`, `management_fornecedores.png`, `management_equipamentos.png`, `management_movimento.png` e `management_personalizar.png`. Os campos numéricos novos usam texto escuro após revisão de contraste. Não houve SCRIPT ERROR ou REAL_MISSING nos logs finais acima; continuam os avisos conhecidos de recursos no encerramento automático.
 
-PCK final: SHA-256 `5d992cdd678cafc044a2dc4a20cfc608ef2bf766c5aa11790539b8b6a0f56eb5`. ZIP atualizado no mesmo caminho `C:/Users/sergi/Downloads/MareAltaResort_1.1_CaisCorrigido.zip` (1.830.768.380 bytes), com todos os CRCs verificados. Inclui `ROTINAS_DO_QUIOSQUE.md` e a documentação anterior. Os saves reais do jogador e a instalação D:/Games não foram alterados.
+PCK deste checkpoint: SHA-256 `5d992cdd678cafc044a2dc4a20cfc608ef2bf766c5aa11790539b8b6a0f56eb5`. ZIP atualizado naquele momento no mesmo caminho `C:/Users/sergi/Downloads/MareAltaResort_1.1_CaisCorrigido.zip` (1.830.768.380 bytes), com todos os CRCs verificados. Inclui `ROTINAS_DO_QUIOSQUE.md` e a documentação anterior. Os saves reais do jogador e a instalação D:/Games não foram alterados.
+
+## Quiosque prático e fachada — revisão final de 22/10/2026
+
+Pedido posterior do Sergio: menos opções repetidas, todas as estações dentro do
+quiosque, geladeira compreensível, pedidos claros e tela limpa. Implementação em
+[QUIOSQUE_PRATICO.md](QUIOSQUE_PRATICO.md). O anexo foi removido; duas entradas laterais
+e uma linha interna de geladeira/retirada/cozinha preservam o atendimento físico.
+O celular tem seis áreas iniciais. Os caminhos antigos continuam aceitos internamente,
+sem duplicar atalhos na tela inicial. Estações priorizam receitas pedidas e mostram
+disponível/consumo; ingredientes visíveis não criam produtos preparados gratuitos.
+
+Cinco modelos Blender originais: fachada, cobertura em fiadas, moldura de neon,
+cozinha e liquidificador. `.blend` preservados/reabertos em `art/blender/`, com imagem
+de madeira incorporada. `art/.gdignore` impede importar ou exportar fontes artísticas.
+O gerador integra `fetch_assets.py`; catálogo de itens regenerado com códigos estáveis.
+
+Fonte: `practical-workflow2.log` PRACTICAL_TEST PASS, `practical-company2.log`
+COMPANY_TEST PASS, `practical-management.log` MANAGEMENT_TEST PASS,
+`practical-layout1.log` PHONE_LAYOUT_TEST PASS e `practical-loop-final.log`
+LOOP_TEST PASS (dinheiro=5562, estrelas=4,55, bar=14).
+
+Todos os logs abaixo são do PCK de entrega, usando saves/configurações de teste:
+
+| Log | Resultado |
+|---|---|
+| practical-delivery-workflow.log | PRACTICAL_TEST PASS, Vulkan; movimento com colisão pelas entradas, preparo, retirada, entrega e navegação |
+| practical-delivery-layout.log | PHONE_LAYOUT_TEST PASS; 204 verificações nos apps/rotas e início, em três resoluções |
+| practical-delivery-company.log | COMPANY_TEST PASS; marca, atendimento, percurso da equipe, caixa e limpeza |
+| practical-delivery-management.log | MANAGEMENT_TEST PASS; rotina, estoque, salários, entregas, manutenção e personalização |
+| practical-delivery-loop.log | LOOP_TEST PASS; dinheiro=5117, estrelas=4,45, bar=12 |
+
+Sem SCRIPT ERROR ou REAL_MISSING nesses logs. Persistem os avisos conhecidos de
+recursos/materiais no encerramento automático. O teste de caminhada confirmou
+y=0,101 no deck e y=0,001 na areia, sem queda. A primeira asserção tratava a saída
+para a areia como deck; foi corrigida para respeitar os dois pisos. O ciclo geral
+também detectou o marco `areas.grill` ausente após substituir a chapa; o marco foi
+restaurado sem duplicar equipamentos e o ciclo foi repetido com sucesso.
+
+Capturas finais do executável inspecionadas: `shots/practical_workroom.png`,
+`practical_station.png`, `practical_phone.png`, `practical_orders.png` e
+`practical_facade.png`. Conferência noturna adicional em `practical_night.png` na fonte.
+
+PCK final: 1.740.071.356 bytes, SHA-256
+`926204d89476fe0e3dbc9f0874c25a73ce061c15aa1cae55bda216a97d9359d5`.
+ZIP em Downloads no mesmo caminho: 1.836.751.194 bytes, nove arquivos, todos os CRCs
+verificados; sem userdata. O pacote ganhou `QUIOSQUE_PRATICO.md` e instruções de
+atendimento novas. `build/rc2-playable/Jogar.vbs` abre a cópia atualizada. Saves do
+jogador e a instalação em D:/Games preservados. Reempacotamento reproduzível:
+`python tools/package_quiosque_portable.py`.

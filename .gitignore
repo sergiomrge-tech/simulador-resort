@@ -38,6 +38,8 @@ assets/models_hd/**/*.jpg
 .DS_Store
 Thumbs.db
 __pycache__/
+*.blend1
+*.blend2
 .autoconverted/
 assets/models/**/textures/
 export_presets.cfg.bak

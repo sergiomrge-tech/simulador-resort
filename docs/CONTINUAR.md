@@ -1,5 +1,7 @@
 # Como continuar o Maré Alta Resort (passagem de bastão — 19/10/2026)
 
+> **Quiosque prático (22/10/2026, revisão mais recente):** ler [QUIOSQUE_PRATICO.md](QUIOSQUE_PRATICO.md). Equipamentos dentro do quiosque, sem anexo; entradas laterais; seis áreas no início do celular; pedidos numerados e HUD menor. Modelos editáveis em `art/blender/`, gerador `tools/gen_kiosk_facade.py`. Validar com `--loop-test --practical-test`, empresa, gestão, celular e ciclo geral. Não repor o anexo nem os 27 atalhos iniciais dos checkpoints anteriores.
+
 > **Atualização de 22/10/2026:** o Sergio escolheu continuar a **1.1.0 RC2**. A integração local e os testes na fonte e no PCK estão em [VALIDACAO_1.1.0_LOCAL.md](VALIDACAO_1.1.0_LOCAL.md). Branch ativa: `codex/resort-1.1-mcp`. Os checkpoints 1.0.x abaixo são históricos; não gerar uma atualização antiga sobre a linha 1.1.
 
 > **Expansão solicitada no mesmo dia:** horários/dias, placa, estoque e perdas, fornecedores, turnos/contratação e custos/resultado estão descritos em [SIMULACAO_QUIOSQUE.md](SIMULACAO_QUIOSQUE.md). Ler antes de continuar o trabalho de gestão.

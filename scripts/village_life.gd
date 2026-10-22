@@ -323,10 +323,11 @@ func spawn_customer() -> Node3D:
 		g.set_meta("regular", reg.id)
 		g.set_colors(reg.skin, reg.shirt, Color(0.2, 0.25, 0.4), reg.hair)
 		var visits: = int(regulars.get(reg.id, 0))
-		var rl: = B.label(g, "%s ♥%d" % [reg.name, visits] if visits > 0 else str(reg.name), Vector3(0, 2.5, 0), 40, Color(0.75, 1.0, 0.75), Color(0.05, 0.25, 0.08, 1))
+		var rl: = B.label(g, "%s ♥%d" % [reg.name, visits] if visits > 0 else str(reg.name), Vector3(0, 2.1, 0), 20, Color(0.75, 1.0, 0.75), Color(0.05, 0.25, 0.08, 1))
 		rl.billboard = BaseMaterial3D.BILLBOARD_ENABLED
-		rl.pixel_size = 0.004
-		rl.no_depth_test = true
+		rl.pixel_size = 0.0025
+		rl.no_depth_test = false
+		rl.visible = not Core.company_enabled()
 	g.set_meta("dish", dish)
 	# quiosque cheio (ou mesas compradas) = pedidos maiores
 	var items: Array = [dish]
@@ -349,11 +350,12 @@ func spawn_customer() -> Node3D:
 		if dj_now:
 			_dj_came = true
 		g.set_meta("vip_id", vid)
-		var vl: = B.label(g, _vip_name(vid), Vector3(0, 2.55, 0), 44, Color(1.0, 0.88, 0.3), Color(0.25, 0.15, 0.02, 1))
+		var vl: = B.label(g, _vip_name(vid), Vector3(0, 2.15, 0), 22, Color(1.0, 0.88, 0.3), Color(0.25, 0.15, 0.02, 1))
 		vl.billboard = BaseMaterial3D.BILLBOARD_ENABLED
 		vl.double_sided = true
-		vl.pixel_size = 0.0045
-		vl.no_depth_test = true
+		vl.pixel_size = 0.0025
+		vl.no_depth_test = false
+		vl.visible = not Core.company_enabled()
 	var route: Array = [] if from_beach else world.village_points.kiosk_approach.slice(1)
 	if si < 0:
 		var used: Array = queued.map(func(c): return int(c.get_meta("queue_slot")))
@@ -578,7 +580,7 @@ func kiosk_prompt() -> String:
 		for index in Core.company.dirty_seats:
 			if index < 2 and not world.kiosk_spots[index].busy:
 				return "Recolher louça do balcão"
-		return tr("Empresa · retire bebidas na geladeira e pratos na cozinha, atrás do quiosque")
+		return tr("Entre pela lateral · geladeira e cozinha dentro do quiosque")
 	if not prep.is_empty():
 		var st: Array = Economy.DISH_STAGES[prep.dish]
 		return "%s  %s  (%d/%d)  ·  %s" % [tr(str(st[prep.stage][0])), _bar(float(prep.p)), int(prep.stage) + 1, st.size(), tr("segure E")]
@@ -588,7 +590,7 @@ func kiosk_prompt() -> String:
 			return tr("Cliente olhando o cardápio...")
 		if not kiosk_open():
 			return tr("Quiosque fechado · horário %02d:00–%02d:00") % [int(Core.kiosk_open_min() / 60.0), int(Core.kiosk_close_min() / 60.0)]
-		return tr("Quiosque fechado · abra em B → Meu Quiosque") if not Core.kiosk_accepting_customers() else tr("Quiosque: aguardando clientes")
+		return tr("Quiosque fechado · abra em B → Quiosque") if not Core.kiosk_accepting_customers() else tr("Quiosque: aguardando clientes")
 	var rem: Array = _remaining(g)
 	var dish: String = str(rem[0])
 	var d: Dictionary = Economy.dish(dish)

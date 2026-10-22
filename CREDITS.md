@@ -163,5 +163,13 @@ Nunito permanece sob sua licença incluída em assets/fonts.
 ## Trilha ambiente suave (22/10/2026)
 `music_relax.ogg`: composição e síntese originais do projeto, sem samples nem vozes de terceiros. Gerada por `tools/gen_relax_music.py`: 64 BPM, acordes abertos, timbres suaves e loop estéreo de 30 segundos.
 
+### Quiosque prático (22/10/2026)
+
+`kiosk_facade`, `kiosk_roof`, `kiosk_neon_trim`, `kiosk_workbench` e `kiosk_blender`:
+malhas originais do projeto em Blender/bpy, geradas por `tools/gen_kiosk_facade.py`.
+Fontes editáveis em `art/blender/`, reabertas pelo gerador para verificar portabilidade.
+Textura de madeira `oak_wood_planks` da [Poly Haven](https://polyhaven.com/a/oak_wood_planks),
+CC0, incorporada na fonte Blender. Demais malhas e acabamentos são autorais.
+
 ## Passos (22/10/2026)
 Kenney, **Impact Sounds 1.0**, CC0: https://kenney.nl/assets/impact-sounds . Quinze arquivos originais `footstep_carpet_000–004.ogg`, `footstep_concrete_000–004.ogg` e `footstep_wood_000–004.ogg`. Os impactos abafados de carpete são usados na areia/terra para evitar o ruído de raspagem anterior. Licença em `assets/audio/KENNEY_IMPACT_LICENSE.txt`; download reproduzível por `python tools/fetch_assets.py --only audio`.

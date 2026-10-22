@@ -1141,7 +1141,7 @@ func kiosk_accepting_customers() -> bool:
 
 func set_kiosk_open(value: bool) -> void:
 	if value and not CompanyRules.Simulation.Management.opening_ready(self):
-		toast.emit("Conclua o checklist de abertura no app Rotina.", "info")
+		toast.emit("Conclua o checklist de abertura em Quiosque → Horários e rotina.", "info")
 		return
 	company.kiosk_open = value
 	company_changed.emit()

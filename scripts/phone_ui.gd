@@ -15,14 +15,22 @@ const GOOD: = Color(0.12, 0.62, 0.32)
 const BAD: = Color(0.85, 0.28, 0.22)
 
 ## id, nome, cor, ícone
+const HOME_APPS := ["painel", "compras", "equipe", "financas", "resort", "mundo"]
+const PARENTS := {"empresa":"personalizar", "personalizar":"painel", "horarios":"painel", "rotina":"horarios", "movimento":"painel", "equipamentos":"painel", "pedidos":"painel", "cardapio":"painel", "cozinha":"cardapio", "estoque_quiosque":"compras", "mercado":"compras", "fornecedores":"compras", "gestao_equipe":"equipe", "recrutamento":"equipe", "resultado":"financas", "caixa":"financas", "expansoes":"resort", "bangalos":"resort", "hotel":"resort", "evolucao":"resort", "temporada":"resort", "negocios":"resort", "missoes":"mundo", "album":"mundo", "agenda":"mundo", "vila":"mundo"}
 const APPS: = [
+	["painel", "Quiosque", Color(0.15, 0.55, 0.5), "shop"],
+	["compras", "Compras", Color(0.25, 0.65, 0.35), "compra"],
+	["financas", "Finanças", Color(0.1, 0.6, 0.55), "caixa"],
+	["resort", "Resort", Color(0.2, 0.6, 0.95), "cama"],
+	["mundo", "Vila e lazer", Color(0.8, 0.4, 0.4), "village"],
+	["pedidos", "Pedidos", Color(0.9, 0.55, 0.2), "prato"],
 	["rotina", "Rotina do dia", Color(0.15, 0.55, 0.5), "agenda"],
 	["recrutamento", "Candidatos", Color(0.6, 0.4, 0.8), "equipe"],
 	["fornecedores", "Entregas", Color(0.25, 0.65, 0.35), "compra"],
 	["equipamentos", "Equipamentos", Color(0.8, 0.5, 0.2), "cozinha"],
 	["personalizar", "Personalizar", Color(0.8, 0.35, 0.4), "shop"],
 	["movimento", "Movimento", Color(0.18, 0.5, 0.65), "clima"],
-	["empresa", "Meu Quiosque", Color(0.15, 0.55, 0.5), "shop"],
+	["empresa", "Nome e placa", Color(0.15, 0.55, 0.5), "shop"],
 	["horarios", "Horários", Color(0.18, 0.5, 0.65), "clima"],
 	["estoque_quiosque", "Estoque e perdas", Color(0.25, 0.65, 0.35), "compra"],
 	["gestao_equipe", "Escala e equipe", Color(0.6, 0.4, 0.8), "equipe"],
@@ -40,7 +48,7 @@ const APPS: = [
 	["evolucao", "Evolução", Color(0.95, 0.65, 0.1), "laurel-crown"],
 	["negocios", "Negócios", Color(0.25, 0.55, 0.85), "shop"],
 	["temporada", "Temporada", Color(0.85, 0.5, 0.15), "trophy"],
-	["cozinha", "Cozinha", Color(0.8, 0.3, 0.3), "cooking-pot"],
+	["cozinha", "Receitas", Color(0.8, 0.3, 0.3), "cooking-pot"],
 	["vila", "Vila", Color(0.35, 0.6, 0.35), "village"],
 	["hotel", "Hotel 5★", Color(0.75, 0.6, 0.2), "bangalo"],
 ]
@@ -153,7 +161,7 @@ func _place() -> void :
 
 func _refresh_if_open() -> void :
 	# O formulário mantém seu rascunho durante vendas e reposições, mesmo ao trocar de fonte.
-	if app in ["empresa", "horarios", "estoque_quiosque", "gestao_equipe", "personalizar", "fornecedores", "recrutamento", "rotina"]:
+	if app in ["empresa", "horarios", "estoque_quiosque", "compras", "equipe", "gestao_equipe", "personalizar", "fornecedores", "recrutamento", "rotina"]:
 		return
 	if visible:
 		call_deferred("refresh")
@@ -176,12 +184,14 @@ func open(which: String = "", arg: int = -1) -> void :
 
 func close() -> void :
 	visible = false
+	var scene = get_tree().current_scene
+	if scene != null and scene.get("operations") != null and is_instance_valid(scene.operations.door): scene.operations.door.rotation.y = 0
 
 func back() -> void :
 	if app == "":
 		close()
 	else:
-		app = ""
+		app = str(PARENTS.get(app, ""))
 		refresh()
 
 ## Compatibilidade com as abas do antigo escritório.
@@ -350,9 +360,23 @@ func refresh() -> void :
 	m.add_child(list)
 	if app in ["rotina", "recrutamento", "fornecedores", "equipamentos", "personalizar", "movimento"] and not Core.company.created:
 		_lbl(list, "Crie sua empresa para usar esta gestão.", 20, INK, true, true)
-		_btn(list, "Criar em Meu Quiosque", _open_management.bind("empresa"))
+		_btn(list, "Criar meu quiosque", _open_management.bind("empresa"))
 		return
 	match app:
+		"painel":
+			_app_dashboard(list)
+		"compras":
+			_app_suppliers(list)
+			_btn(list, "Estoque e reposição automática", _open_management.bind("estoque_quiosque"))
+		"financas":
+			_app_kiosk_results(list)
+			_btn(list, "Extrato de entradas e saídas", _open_management.bind("caixa"))
+		"resort":
+			_app_hub(list, [["expansoes","Construções e expansões"],["bangalos","Bangalôs"],["hotel","Hotel"],["evolucao","Evolução"],["negocios","Outros negócios"],["temporada","Temporada"]])
+		"mundo":
+			_app_hub(list, [["agenda","Agenda e clima"],["missoes","Missões"],["vila","Moradores"],["album","Fotos e conquistas"]])
+		"pedidos":
+			_app_orders(list)
 		"rotina":
 			_app_routine(list)
 		"recrutamento":
@@ -408,98 +432,53 @@ func refresh() -> void :
 		"hotel":
 			_app_hotel(list)
 
-func _home() -> void :
-	var m: = MarginContainer.new()
-	for side in ["left", "right"]:
-		m.add_theme_constant_override("margin_" + side, 20)
-	m.add_theme_constant_override("margin_top", 14)
-	m.add_theme_constant_override("margin_bottom", 10)
-	m.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	var hsc: = ScrollContainer.new()
-	hsc.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	hsc.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-	screen.add_child(hsc)
-	hsc.add_child(m)
-	var v: = VBoxContainer.new()
-	v.add_theme_constant_override("separation", 10)
-	m.add_child(v)
-	var hello: = _lbl(v, str(Core.company.name) if Core.company.created else tr("Quiosque Maré Alta"), 26, INK, true)
-	hello.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	if Engine.has_meta("update_ver"):
-		var up: = _card(v, Color(0.85, 1.0, 0.9, 0.95))
-		_lbl(up, tr("ATUALIZAÇÃO DISPONÍVEL"), 14, INK_SOFT, true)
-		_lbl(up, tr("Versão %s do jogo já saiu. Baixe o patch (Atualizar_MareAltaResort) e rode com o jogo fechado.") % str(Engine.get_meta("update_ver")), 15, INK, false, true)
-		_btn(up, tr("Abrir página dos patches"), func(): OS.shell_open(str(Engine.get_meta("update_page"))))
-	_fame_bar(v)
-	var nx: = Core.next_expansion()
-	if nx != "":
-		var goal: = _card(v, Color(1, 1, 1, 0.85))
-		_lbl(goal, tr("PRÓXIMA META"), 14, INK_SOFT, true)
-		var gr: = _row(goal, 10)
-		_badge(gr, str(Economy.EXPANSIONS[nx].get("icon", "bangalo")), Color(1.0, 0.45, 0.35), 40)
-		var gv: = VBoxContainer.new()
-		gv.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		gr.add_child(gv)
-		_lbl(gv, tr(str(Economy.EXPANSIONS[nx].name)), 19, INK, true)
-		var st: Array = Core.expansion_state(nx)
-		var cost: = int(Economy.EXPANSIONS[nx].cost)
-		var pb: = ProgressBar.new()
-		pb.max_value = cost
-		pb.value = clampi(Core.money, 0, cost)
-		pb.show_percentage = false
-		pb.custom_minimum_size = Vector2(0, 12)
-		pb.add_theme_stylebox_override("background", _box(Color(0.85, 0.85, 0.9), 6, 0))
-		pb.add_theme_stylebox_override("fill", _box(GOOD if st[0] == "ready" else Color(1.0, 0.6, 0.2), 6, 0))
-		gv.add_child(pb)
-		_lbl(gv, tr("Pronto para comprar!") if st[0] == "ready" else str(st[1]), 15, GOOD if st[0] == "ready" else INK_SOFT, false, true)
-	var grid: = GridContainer.new()
-	grid.columns = 3
+func _home() -> void:
+	var margin := MarginContainer.new()
+	for side in ["left", "right", "top", "bottom"]: margin.add_theme_constant_override("margin_" + side, 18)
+	screen.add_child(margin)
+	var list := VBoxContainer.new()
+	list.add_theme_constant_override("separation", 12)
+	margin.add_child(list)
+	_lbl(list, str(Core.company.name) if Core.company.created else "Maré Alta", 25, INK, true)
+	_lbl(list, "Gestão do seu negócio", 14, INK_SOFT)
+	var grid := GridContainer.new()
+	grid.columns = 2
 	grid.add_theme_constant_override("h_separation", 10)
-	grid.add_theme_constant_override("v_separation", 8)
-	grid.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-	v.add_child(grid)
-	for a in APPS:
-		var cell: = VBoxContainer.new()
-		cell.custom_minimum_size.x = 100
-		cell.add_theme_constant_override("separation", 4)
-		grid.add_child(cell)
-		var b: = Button.new()
-		b.custom_minimum_size = Vector2(64, 64)
-		b.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-		var n: = _box(a[2], 22, 10)
-		n.shadow_color = Color(0, 0, 0, 0.18)
-		n.shadow_size = 5
-		n.shadow_offset = Vector2(0, 3)
-		var hv: = n.duplicate()
-		hv.bg_color = a[2].lightened(0.15)
-		b.add_theme_stylebox_override("normal", n)
-		b.add_theme_stylebox_override("hover", hv)
-		b.add_theme_stylebox_override("pressed", n)
-		b.add_theme_stylebox_override("focus", hv)
-		b.icon = T.icon(a[3])
-		b.expand_icon = true
-		b.add_theme_color_override("icon_normal_color", Color.WHITE)
-		b.add_theme_color_override("icon_hover_color", Color.WHITE)
-		b.add_theme_color_override("icon_pressed_color", Color.WHITE)
-		b.add_theme_color_override("icon_focus_color", Color.WHITE)
-		var id: String = a[0]
-		b.pressed.connect(func():
-			get_tree().call_group("audio", "sfx", "click")
-			app = id
-			refresh())
-		cell.add_child(b)
-		var l: = _lbl(cell, tr(str(a[1])), 13, INK, true)
-		l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		if a[0] == "expansoes":
-			var ready_n: = 0
-			for eid in Economy.EXPANSION_ORDER:
-				if Core.expansion_state(eid)[0] == "ready":
-					ready_n += 1
-			if ready_n > 0:
-				l.text = tr("Expansões") + " (%d)" % ready_n
-				l.add_theme_color_override("font_color", BAD)
-	var tip: = _lbl(v, tr("%s fecha o celular") % Quality.key_name("shop"), 14, INK_SOFT)
-	tip.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	grid.add_theme_constant_override("v_separation", 10)
+	list.add_child(grid)
+	for id in HOME_APPS:
+		var info: Array = APPS.filter(func(entry): return entry[0] == id)[0]
+		var button := _btn(grid, str(info[1]), _open_management.bind(str(id)), info[2])
+		button.custom_minimum_size = Vector2(160, 78)
+		button.icon = T.icon(str(info[3]))
+		button.expand_icon = true
+		button.add_theme_constant_override("icon_max_width", 26)
+	var help := _card(list)
+	_lbl(help, "No quiosque: E nos equipamentos para preparar e retirar; E no cliente para entregar.", 15, INK, false, true)
+	_lbl(list, "%s fecha o celular" % Quality.key_name("shop"), 13, INK_SOFT)
+
+func _app_hub(list: VBoxContainer, links: Array) -> void:
+	for link in links: _btn(list, str(link[1]), _open_management.bind(str(link[0])))
+
+func _app_dashboard(list: VBoxContainer) -> void:
+	if not Core.company.created:
+		_lbl(list, "Dê um nome ao seu quiosque para começar a operar.", 18, INK, true)
+		_btn(list, "Criar meu quiosque", _open_management.bind("empresa"))
+		return
+	var card := _card(list)
+	company_status = _lbl(card, "", 18, INK, true)
+	company_open_button = _btn(card, "", _toggle_kiosk)
+	_refresh_kiosk_controls()
+	_app_hub(list, [["pedidos","Pedidos do momento"],["cardapio","Cardápio e receitas"],["horarios","Horários e rotina"],["equipamentos","Cuidado dos equipamentos"],["personalizar","Aparência e nome"],["movimento","Movimento por horário e clima"]])
+
+func _app_orders(list: VBoxContainer) -> void:
+	var ops = _operations()
+	var waiting: Array = get_tree().current_scene.village.waiting_customers()
+	if waiting.is_empty(): _lbl(list, "Nenhum pedido esperando.", 18, INK_SOFT)
+	for guest in waiting:
+		var card := _card(list)
+		_lbl(card, ops.order_summary(guest), 17, INK, true, true)
+	_lbl(list, "Os números aqui correspondem aos marcadores junto aos clientes.", 14, INK_SOFT, false, true)
 
 func _app_expansions(list: VBoxContainer) -> void :
 	for id in Economy.EXPANSION_ORDER:
@@ -570,6 +549,7 @@ func _app_market(list: VBoxContainer) -> void :
 		_btn(fr, Core.fmt_money(Economy.FREEZER_COST), func(): Core.buy_freezer(), Color(0.2, 0.6, 0.95), Core.money >= Economy.FREEZER_COST)
 
 func _app_menu(list: VBoxContainer) -> void :
+	_btn(list, "Descobrir receitas", _open_management.bind("cozinha"))
 	var ev: = str(Core.day_event)
 	if ev != "":
 		var ec: = _card(list, Color(1.0, 0.96, 0.78, 0.97))
@@ -803,8 +783,7 @@ func _app_agenda(list: VBoxContainer) -> void :
 		_lbl(tc, tr("Total: %d passeios, %s") % [Core.tours_total, Core.fmt_money(Core.tours_revenue)], 14, GOOD, true, true)
 
 func _app_staff(list: VBoxContainer) -> void :
-	_btn(list, "Comparar candidatos", _open_management.bind("recrutamento"))
-	if app == "gestao_equipe":
+	if app in ["gestao_equipe", "equipe"]:
 		var payroll := 0
 		for job in Core.CompanyRules.Simulation.ROLES:
 			if bool(Core.staff.get(job, false)):
@@ -831,9 +810,11 @@ func _app_staff(list: VBoxContainer) -> void :
 			_chip(r2, tr("✓ Na equipe"), Color.WHITE, GOOD)
 			_staff_card(c, role)
 		elif bool(s.get("company", false)) and not Core.company.created:
-			_lbl(c, "Crie sua empresa no app Meu Quiosque.", 14, INK_SOFT, false, true)
+			_lbl(c, "Crie sua empresa em B → Quiosque.", 14, INK_SOFT, false, true)
 		elif need != "" and not Core.has(need):
 			_lbl(c, tr("Precisa de: %s") % tr(str(Economy.EXPANSIONS[need].name)), 14, INK_SOFT, true, true)
+		elif role in Management.ROLES:
+			_btn(r2, "Escolher candidato", _choose_candidate.bind(str(role)))
 		else:
 			_btn(r2, tr("Contratar"), _hire_staff.bind(role), Color(0.6, 0.4, 0.9), Core.money >= int(s.hire))
 
@@ -1197,21 +1178,12 @@ var company_open_button: Button
 
 func _company_refresh() -> void:
 	# Não reconstruir o formulário enquanto o jogador digita.
-	if app == "empresa":
+	if app in ["empresa", "painel"]:
 		_refresh_kiosk_controls()
 	else:
 		_refresh_if_open()
 
 func _app_company(list: VBoxContainer) -> void:
-	_btn(list, "Rotina de abertura e fechamento", _open_management.bind("rotina"))
-	_btn(list, "Cores, placa, uniforme e mesas", _open_management.bind("personalizar"))
-	var operation := _card(list)
-	_lbl(operation, "Funcionamento do quiosque", 20, INK, true)
-	company_status = _lbl(operation, "", 16, INK, true, true)
-	_lbl(operation, "Horário: %02d:00–%02d:00. Fechar bloqueia novas chegadas." % [int(Core.kiosk_open_min() / 60.0), int(Core.kiosk_close_min() / 60.0)], 14, INK_SOFT, false, true)
-	company_open_button = _btn(operation, "", _toggle_kiosk)
-	_refresh_kiosk_controls()
-	_btn(operation, "Alterar horários e dias", _open_management.bind("horarios"))
 	_lbl(list, "Personalizar a placa", 23, INK, true)
 	_lbl(list, "Escolha um nome de até 24 caracteres. O tamanho das letras se ajusta para caber inteiro na placa.", 15, INK_SOFT, false, true)
 	company_name = LineEdit.new()
@@ -1251,19 +1223,13 @@ func _app_company(list: VBoxContainer) -> void:
 		manual.button_pressed = bool(Core.company.physical)
 		manual.toggled.connect(_set_service)
 		list.add_child(manual)
-	_lbl(list, "Você começa atendendo. Contrate garçom, caixa, cozinheiro e limpeza para dividir o trabalho. Há custo de contratação e salário diário; folgas e energia afetam a equipe.", 15, INK_SOFT, false, true)
-	_btn(list, "Escala, contratação e salários", _open_management.bind("gestao_equipe"))
-	_btn(list, "Estoque, desperdício e fornecedores", _open_management.bind("estoque_quiosque"))
-	_btn(list, "Custos, preços e resultado", _open_management.bind("resultado"))
-	_lbl(list, "Empresa ativa: produtos preparados vencem na virada do dia. Dias de operação têm custo de R$ 12 + R$ 2 por hora aberta, além dos salários.", 14, INK_SOFT, false, true)
-	_lbl(list, "Contorne o quiosque para acessar a geladeira, a cozinha e o armário. Retire um item por vez e aperte E no cliente que o pediu. Receba as contas no terminal do balcão e recolha a louça após a saída.", 15, INK_SOFT, false, true)
 
 func _refresh_kiosk_controls() -> void:
-	if app != "empresa" or not is_instance_valid(company_status) or not is_instance_valid(company_open_button):
+	if app not in ["painel", "empresa"] or not is_instance_valid(company_status) or not is_instance_valid(company_open_button):
 		return
 	var requested: bool = bool(Core.company.get("kiosk_open", true))
 	company_status.text = "Aberto · recebendo clientes" if Core.kiosk_accepting_customers() else ("Fora do horário de atendimento" if requested else "Fechado para novas chegadas")
-	if requested and not Management.opening_ready(Core): company_status.text = "Conclua o checklist no app Rotina"
+	if requested and not Management.opening_ready(Core): company_status.text = "Confira a abertura em Horários e rotina"
 	company_status.add_theme_color_override("font_color", GOOD if Core.kiosk_accepting_customers() else INK_SOFT)
 	company_open_button.text = "Fechar quiosque" if requested else ("Abrir quiosque" if Core.kiosk_is_within_hours() else "Programar próxima abertura")
 
@@ -1317,15 +1283,14 @@ func _service_action(id: String, action: String) -> void:
 
 func _app_service(list: VBoxContainer) -> void:
 	if not Core.company_enabled():
-		_lbl(list, "Crie a empresa e ative o atendimento com retirada no app Meu Quiosque.", 17, INK, false, true)
+		_lbl(list, "Crie a empresa e ative o atendimento com retirada em B → Quiosque.", 17, INK, false, true)
 		return
-	_btn(list, "Estado e cuidado dos equipamentos", _open_management.bind("equipamentos"))
 	var kind: String = str(Core.service_station)
 	var near: bool = _operations().can_access(kind)
 	_lbl(list, {"bebidas": "Geladeira", "pratos": "Armário de pratos", "cozinha": "Cozinha"}.get(kind, "Operação"), 23, INK, true)
-	_lbl(list, "Máximo de 4 unidades prontas por produto. Ingredientes são usados no preparo; retirar e entregar não gastam ingredientes novamente.", 14, INK_SOFT, false, true)
+	_lbl(list, "Prepare primeiro; quando ficar pronto, retire um item e leve ao cliente. Até 4 prontos por receita.", 14, INK_SOFT, false, true)
 	if not near:
-		_lbl(list, "Aproxime-se da estação atrás do quiosque e aperte E para preparar ou retirar.", 16, BAD, false, true)
+		_lbl(list, "Entre no quiosque e aproxime-se da estação e aperte E para preparar ou retirar.", 16, BAD, false, true)
 	if not Core.company.production.is_empty():
 		_lbl(list, "Preparando %s · %.1f s estimados" % [Economy.dish(Core.company.production.dish).name, float(Core.company.production.left)], 15, INK, true, true)
 	var carried: String = str(Core.company.carry)
@@ -1333,7 +1298,19 @@ func _app_service(list: VBoxContainer) -> void:
 		_lbl(list, "Carregando: " + str(Economy.dish(carried).name), 17, GOOD, true, true)
 		var matches: bool = (kind == "bebidas") == load("res://scripts/dish_presentation.gd").is_drink(carried) and kind != "cozinha"
 		_btn(list, "Devolver à prateleira", _service_action.bind(carried, "return"), GOOD, near and matches)
-	for id in Core.kiosk_menu():
+	if kind == "bebidas":
+		var total := 0
+		for recipe in Core.kiosk_menu():
+			if load("res://scripts/dish_presentation.gd").is_drink(recipe): total += int(Core.company.ready.get(recipe, 0))
+		if total == 0: _lbl(list, "Sem bebidas prontas. Os cocos e frutas nas prateleiras são ingredientes: escolha Preparar abaixo.", 15, INK_SOFT, false, true)
+	var menu: Array = Core.kiosk_menu()
+	var requests: Dictionary = {}
+	for guest in get_tree().current_scene.village.waiting_customers():
+		for recipe in get_tree().current_scene.village._remaining(guest):
+			if not requests.has(recipe): requests[recipe] = []
+			requests[recipe].append(_operations().order_number(guest))
+	menu.sort_custom(func(a, b): return requests.get(a, []).size() > requests.get(b, []).size())
+	for id in menu:
 		var drink: bool = load("res://scripts/dish_presentation.gd").is_drink(id)
 		if kind != "cozinha" and (kind == "bebidas") != drink:
 			continue
@@ -1341,7 +1318,12 @@ func _app_service(list: VBoxContainer) -> void:
 			continue
 		var card := _card(list)
 		var count: int = int(Core.company.ready.get(id, 0))
-		_lbl(card, "%s · %d prontas" % [Economy.dish(id).name, count], 17, INK, true, true)
+		var required: Array = []
+		for ingredient in Economy.dish(id).uses:
+			required.append("%s: %d disponíveis (usa %d)" % [Economy.SUPPLIES[ingredient].name, int(Core.stock.get(ingredient, 0)), int(Economy.dish(id).uses[ingredient])])
+		_lbl(card, "Ingredientes: " + " · ".join(required), 14, INK_SOFT, false, true)
+		_lbl(card, "%s · %d prontos" % [Economy.dish(id).name, count], 17, INK, true, true)
+		if requests.has(id): _lbl(card, "Para: " + ", ".join(requests[id]), 14, GOOD, true, true)
 		if kind == "bebidas" or kind == "cozinha":
 			_btn(card, "Preparar · 3 s" if drink else "Preparar · 6 s", _service_action.bind(id, "prepare"), Color(0.15, 0.55, 0.5), near and Core.company.production.is_empty() and count < 4 and Core.can_make(id))
 		if kind != "cozinha":
@@ -1370,6 +1352,7 @@ func _hour_picker(parent: Node, title: String, initial: int) -> SpinBox:
 	return spin
 
 func _app_kiosk_schedule(list: VBoxContainer) -> void:
+	_btn(list, "Checklist e fechamento do turno", _open_management.bind("rotina"))
 	_lbl(list, "Sua semana de trabalho", 22, INK, true, true)
 	_lbl(list, "Defina o expediente entre 06h e 23h. Dia 1 é segunda-feira. Para parar novas chegadas antes do fim do expediente e concluir os pedidos, use Fechar quiosque.", 14, INK_SOFT, false, true)
 	var row := _row(list)
@@ -1397,8 +1380,7 @@ func _app_kiosk_schedule(list: VBoxContainer) -> void:
 	_btn(list, "Configurar equipe e turnos", _open_management.bind("gestao_equipe"))
 
 func _app_kiosk_inventory(list: VBoxContainer) -> void:
-	_btn(list, "Encomendar de fornecedores", _open_management.bind("fornecedores"))
-	_lbl(list, "Estoque e desperdício", 22, INK, true)
+	_lbl(list, "Ingredientes e reposição", 22, INK, true)
 	_lbl(list, "Ingredientes ficam na despensa compartilhada. Produtos preparados na geladeira/armário vencem na virada do dia. Prepare conforme a demanda para evitar perdas.", 14, INK_SOFT, false, true)
 	var cfg: Dictionary = Core.company.sim
 	var auto_order := CheckButton.new()
@@ -1427,7 +1409,6 @@ func _app_kiosk_inventory(list: VBoxContainer) -> void:
 		_lbl(c, "%s · %d unidades" % [Economy.SUPPLIES[id].name, int(Core.stock.get(id, 0))], 17, INK, true, true)
 		_lbl(c, "Fornecedor hoje: %s/unidade%s" % [Core.fmt_money(Core.supply_total(id, 1)), " · contrato ativo" if Core.contracts.has(id) else ""], 14, INK_SOFT, false, true)
 	_lbl(list, "A reposição compra apenas ingredientes do cardápio atual, respeita preços/contratos e só ocorre com saldo para o pedido inteiro. Contratos de desconto são negociados no Mercado.", 14, INK_SOFT, false, true)
-	_btn(list, "Atualizar consulta de estoque", refresh)
 	_btn(list, "Mercado e contratos", _open_management.bind("mercado"))
 
 func _app_kiosk_results(list: VBoxContainer) -> void:
@@ -1552,6 +1533,10 @@ func _app_routine(list: VBoxContainer) -> void:
 	_btn(list, "Atualizar checklist e fechamento", refresh)
 	_btn(list, "Ver resultado e custos", _open_management.bind("resultado"))
 
+func _choose_candidate(role: String) -> void:
+	_candidate_role = role
+	_open_management("recrutamento")
+
 func _app_candidates(list: VBoxContainer) -> void:
 	var roles: Array = Management.ROLES
 	var picker := _choice(list, "Cargo", roles.map(func(role): return str(Economy.STAFF[role].name)), roles.find(_candidate_role))
@@ -1563,7 +1548,7 @@ func _app_candidates(list: VBoxContainer) -> void:
 		_lbl(list, person + " · " + Core.fmt_money(Core.prog.staff_wage(_candidate_role)) + "/dia", 20, INK, true, true)
 		if not record.is_empty():
 			_lbl(list, "Satisfação: %d%%. Jornadas acima de 8h reduzem a satisfação e aceleram o cansaço; folgas ajudam a recuperar." % int(record.morale), 14, INK_SOFT, false, true)
-		_btn(list, "Gerenciar turnos, folgas e treinamento", _open_management.bind("gestao_equipe"))
+		_btn(list, "Gerenciar turnos, folgas e treinamento", _open_management.bind("equipe"))
 	_lbl(list, "Compare o custo e o perfil. A diária abaixo é a base de 8h no nível 1; turno, experiência e folga modificam o valor. Uma vaga por cargo.", 14, INK_SOFT, false, true)
 	for kind in 3:
 		var p := Management.candidate(_candidate_role, kind)
@@ -1578,6 +1563,7 @@ func _app_suppliers(list: VBoxContainer) -> void:
 	var suppliers: Array = Management.SUPPLIERS.keys()
 	var ingredient := _choice(list, "Ingrediente", supplies.map(func(id): return str(Economy.SUPPLIES[id].name)), supplies.find(_supplier_ingredient))
 	ingredient.item_selected.connect(func(index): _supplier_ingredient = supplies[index]; refresh())
+	_lbl(list, "Em estoque: %d unidades de %s" % [int(Core.stock.get(_supplier_ingredient, 0)), Economy.SUPPLIES[_supplier_ingredient].name], 16, INK, true, true)
 	var supplier := _choice(list, "Fornecedor", suppliers.map(func(id): return str(Management.SUPPLIERS[id].name)), suppliers.find(_supplier_id))
 	supplier.item_selected.connect(func(index): _supplier_id = suppliers[index]; refresh())
 	_lbl(list, "Quantidade (1–48; atacado a partir de 12)", 14, INK)
@@ -1631,6 +1617,7 @@ func _app_equipment(list: VBoxContainer) -> void:
 	_lbl(list, "Estado baixo deixa o preparo lento; abaixo de 10% para de funcionar. Higiene abaixo de 15% bloqueia preparo. Cada lote suja e desgasta; geladeira também se desgasta durante a operação. Melhorias aumentam velocidade, até +20%.", 14, INK_SOFT, false, true)
 
 func _app_customize(list: VBoxContainer) -> void:
+	_btn(list, "Nome e letras da placa", _open_management.bind("empresa"))
 	var current: Dictionary = Management.state(Core).look
 	var paints: Array = Management.PAINT.keys()
 	var boards: Array = Management.BOARDS.keys()
@@ -1677,7 +1664,7 @@ func _app_customize(list: VBoxContainer) -> void:
 	preview.call()
 	_lbl(list, "O esquema mostra as cores e a disposição; o quiosque usa os modelos detalhados atuais. Mudar as mesas move também os lugares de sentar, os pontos de entrega e o bloqueio de circulação.", 14, INK_SOFT, false, true)
 	_btn(list, "Aplicar personalização · R$ 180", func(): _management_action(Management.apply_look.bind(Core, choice.call())), GOOD, Core.money >= 180)
-	_lbl(list, "Aplique com o quiosque fechado, sem clientes ou louça. Reaplicar a mesma seleção já comprada não cobra novamente. Nome, fonte e cor das letras continuam em Meu Quiosque.", 14, INK_SOFT, false, true)
+	_lbl(list, "Aplique com o quiosque fechado, sem clientes ou louça. Reaplicar a mesma seleção já comprada não cobra novamente. Nome, fonte e cor das letras continuam em Aparência e nome → Nome e letras da placa.", 14, INK_SOFT, false, true)
 
 func _app_demand(list: VBoxContainer) -> void:
 	var factor := Management.arrival_factor(Core)

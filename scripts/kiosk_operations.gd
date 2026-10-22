@@ -29,27 +29,21 @@ func center() -> Vector3:
 
 func _build() -> void:
 	var c: Vector3 = center()
-	var wood: Material = main.world.M.post
-	# O anexo fica fora do deck original; esta base apoia os equipamentos a 10 cm.
-	var deck: MeshInstance3D = B.platform(self, Vector3(4.4, 0.2, 1.8), c + Vector3(0, 0, -4.35), wood, 0.45)
-	deck.name = "ServiceDeck"
-	# Anexo externo: pode ser alcançado contornando a lateral, sem atravessar o balcão.
-	for x in [-2.1, 2.1]:
-		B.cyl(self, 0.055, 0.055, 2.25, c + Vector3(x, 1.13, -4.5), wood)
-	B.box(self, Vector3(4.4, 0.12, 1.8), c + Vector3(0, 2.3, -4.35), main.world.M.thatch)
-	_station("bebidas", "Geladeira · bebidas prontas", c + Vector3(-1.4, 0.1, -4.0), Vector3(1.0, 1.9, 0.65))
-	_station("pratos", "Armário · pratos e porções", c + Vector3(0, 0.1, -4.0), Vector3(1.15, 1.35, 0.65))
-	_station("cozinha", "Cozinha · preparar pedidos", c + Vector3(1.4, 0.1, -4.0), Vector3(1.1, 0.95, 0.65))
-	Real.place(self, "g:service_fridge", stations.bebidas.position, -1.0, PI)
-	Real.place(self, "g:service_food_cabinet", stations.pratos.position, -1.0, PI)
-	B.box(self, Vector3(1.1, 0.1, 0.65), stations.cozinha.position + Vector3(0, 0.9, 0), wood)
-	for dx in [-0.45, 0.45]:
-		B.box(self, Vector3(0.065, 0.9, 0.5), stations.cozinha.position + Vector3(dx, 0.45, 0), wood)
+	# Três estações no mesmo piso do balcão. Entradas laterais de 1,2 m.
+	_station("bebidas", "Geladeira", c + Vector3(-1.2, 0.1, -1.8), Vector3(0.95, 1.85, 0.62))
+	_station("pratos", "Retirada de pratos", c + Vector3(0, 0.1, -1.8), Vector3(1.1, 1.3, 0.62))
+	_station("cozinha", "Cozinha", c + Vector3(1.2, 0.1, -1.8), Vector3(1.1, 0.94, 0.65))
+	Real.place(self, "g:service_fridge", stations.bebidas.position, -1.0)
+	Real.place(self, "g:service_food_cabinet", stations.pratos.position, -1.0)
+	Real.place(self, "g:kiosk_workbench", stations.cozinha.position, -1.0)
 	door = Node3D.new()
 	add_child(door)
-	door.position = stations.bebidas.position + Vector3(0.475, 0, -0.34)
-	door.rotation.y = PI
+	door.position = stations.bebidas.position + Vector3(-0.475, 0, 0.34)
 	Real.place(door, "g:service_fridge_door", Vector3.ZERO, -1.0, 0, Color.WHITE, 0, false)
+	for side in [-1.0, 1.0]:
+		var label := B.label(self, "ENTRADA", c + Vector3(side * 2.42, 1.45, -0.75), 18, Color(1, 0.94, 0.75), Color(0.05, 0.12, 0.12), side * PI * 0.5)
+		label.pixel_size = 0.0018
+	Real.place(self, "g:kiosk_blender", c + Vector3(-2.0, 1.28, 0.25), -1.0)
 	var register_pos: Vector3 = c + Vector3(1.3, 1.28, 1.8)
 	Real.place(self, "g:service_register", register_pos, -1.0)
 	_interaction(self, register_pos + Vector3(0, 0.12, 0), Vector3(0.4, 0.3, 0.4), _register_prompt, collect_payments)
@@ -77,28 +71,28 @@ func _station(kind: String, title: String, pos: Vector3, size: Vector3) -> void:
 	add_child(node)
 	node.position = pos
 	stations[kind] = node
-	var label := B.label(node, title, Vector3(0, size.y + 0.16, -0.36), 27, Color(1, 0.96, 0.8), Color(0, 0, 0, 0.8), PI)
-	label.pixel_size = 0.003
+	var label := B.label(node, title, Vector3(0, size.y + 0.12, 0), 20, Color(1, 0.96, 0.8), Color(0, 0, 0, 0.8), 0)
+	label.pixel_size = 0.0018
 	station_bodies.append(_interaction(node, Vector3(0, size.y * 0.5, 0), size, station_prompt.bind(kind, title), open_station.bind(kind)))
 
 func station_prompt(_kind: String, title: String) -> String:
 	return title if Core.company_enabled() else ""
 
 func can_access(kind: String) -> bool:
-	return Core.company_enabled() and stations.has(kind) and main.player.global_position.distance_to(stations[kind].global_position) < 2.8
+	return Core.company_enabled() and stations.has(kind) and main.player.global_position.distance_to(stations[kind].global_position) < 2.1 and absf(main.player.global_position.x - center().x) < 2.0 and main.player.global_position.z > center().z - 1.5
 
 func open_station(kind: String) -> void:
 	if not can_access(kind):
 		return
 	Core.service_station = kind
 	if kind == "bebidas":
-		door.rotation.y = PI - deg_to_rad(100)
+		door.rotation.y = -deg_to_rad(105)
 	main.hud.phone.open("servico")
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 
 func finish_station() -> void:
 	main.hud.toggle_shop()
-	door.rotation.y = PI
+	door.rotation.y = 0.0
 
 func _register_prompt() -> String:
 	return "Caixa · receber %d contas" % Core.company.receivables.size() if Core.company_enabled() else ""
@@ -114,7 +108,7 @@ func customer_prompt(ref: WeakRef) -> String:
 	var id: String = str(Core.company.carry)
 	if id in main.village._remaining(g):
 		return "Entregar " + tr(str(Economy.dish(id).name))
-	return "Pedido: " + main.village._order_text(g)
+	return order_number(g) + " · " + main.village._order_text(g)
 
 func deliver(ref: WeakRef) -> bool:
 	var g = ref.get_ref()
@@ -148,7 +142,7 @@ func sync_company() -> void:
 	for role in actors:
 		actors[role].visible = visible and Core.prog.staff_eff(role) > 0
 		actors[role].set_process(actors[role].visible)
-	var key: String = JSON.stringify(Core.company.ready)
+	var key: String = JSON.stringify([Core.company.ready, Core.stock.get("coco", 0), Core.stock.get("frutas", 0)])
 	if key != _display_key:
 		_display_key = key
 		for child in products.get_children():
@@ -156,22 +150,25 @@ func sync_company() -> void:
 			child.queue_free()
 		var drink_slot := 0
 		var food_slot := 0
-		for id in Economy.KIOSK_MENU:
-			if int(Core.company.ready.get(id, 0)) <= 0:
-				continue
-			var drink: bool = Dishes.is_drink(id)
-			var slot: int = drink_slot if drink else food_slot
-			var anchor: Node3D = stations.bebidas if drink else stations.pratos
-			var root := Node3D.new()
-			products.add_child(root)
-			root.position = anchor.position + Vector3(-0.22 + (slot % 2) * 0.44, (0.315 if drink else 0.065) + floorf(float(slot) / 2.0) * (0.48 if drink else 0.35), 0)
-			root.rotation.y = PI
-			root.scale = Vector3.ONE * (0.7 if drink else 0.8)
-			Dishes.build(root, id)
-			if drink:
-				drink_slot += 1
-			else:
-				food_slot += 1
+		for id in Core.kiosk_menu():
+			for unit in mini(4, int(Core.company.ready.get(id, 0))):
+				var drink: bool = Dishes.is_drink(id)
+				var slot: int = drink_slot if drink else food_slot
+				var anchor: Node3D = stations.bebidas if drink else stations.pratos
+				var root := Node3D.new()
+				products.add_child(root)
+				var columns := 3
+				var row := int(slot / columns)
+				root.position = anchor.position + Vector3(-0.28 + (slot % columns) * 0.28, 0.315 + (row % 3) * 0.48 if drink else 0.045 + (row % 4) * 0.40, 0.10 if slot < 9 else -0.14)
+				root.scale = Vector3.ONE * 0.68
+				Dishes.build(root, id)
+				if drink: drink_slot += 1
+				else: food_slot += 1
+		# Ingredientes disponíveis ficam visíveis; não representam produtos prontos grátis.
+		for unit in mini(3, int(Core.stock.get("coco", 0))):
+			Real.place(products, "g:coconut_green", stations.bebidas.position + Vector3(-0.25 + unit * 0.25, 1.275, -0.12), 0.18)
+		for unit in mini(3, int(Core.stock.get("frutas", 0))):
+			Real.place(products, "g:orange", stations.bebidas.position + Vector3(-0.25 + unit * 0.25, 1.275, 0.11), 0.10)
 	var held: String = str(Core.company.carry)
 	if held != _hand_key:
 		_hand_key = held
@@ -218,7 +215,7 @@ func _actor(role: String, pos: Vector3):
 		var display_name: String = str(Economy.STAFF[role].name)
 		if Core.company.sim.management.profiles.has(role):
 			display_name = Core.CompanyRules.Simulation.Management.candidate(role, int(Core.company.sim.management.profiles[role].kind)).name
-		B.label(g, display_name, Vector3(0, 2.1, 0), 26, Color(0.9, 1, 1))
+		g.set_meta("staff_name", display_name)
 		actors[role] = g
 	return actors[role]
 
@@ -239,7 +236,9 @@ func _staff_tick() -> void:
 			actors[role].set_process(active)
 		if not active:
 			continue
-		var pos: Vector3 = c + Vector3(1.4, 0.1, -5.3)
+		var pos: Vector3 = c + Vector3(1.05, 0.1, -0.2)
+		if role == "atendente": pos = c + Vector3(-0.9, 0.1, 0.55)
+		elif role == "garcom": pos = c + Vector3(0.1, 0.1, 0.7)
 		if role == "caixa":
 			pos = c + Vector3(1.25, 0.1, 1.15)
 		elif role == "limpeza":
@@ -284,9 +283,9 @@ func _waiter(g) -> void:
 		_clear_tray(g)
 		g.play("Idle_Loop")
 	# Return safely to the shelves before returning or taking an item.
-	var pickup: Vector3 = center() + Vector3(0, 0.1, -5.3)
+	var pickup: Vector3 = center() + Vector3(0, 0.1, -0.65)
 	if g.position.distance_to(pickup) > 0.5:
-		g.go([center() + Vector3(5.2, 0.1, 3.5), center() + Vector3(5.2, 0.1, -5.3), pickup])
+		g.go([center() + Vector3(3.2, 0.1, 3.5), center() + Vector3(3.2, 0.1, -0.85), center() + Vector3(1.1, 0.1, -0.85), pickup])
 		return
 	if Core.company.staff_carry != "":
 		if not Core.return_company_staff_dish():
@@ -303,7 +302,7 @@ func _waiter(g) -> void:
 			tray.position = Vector3(0, 1.0, 0.32)
 			tray.scale = Vector3.ONE * 0.65
 			Dishes.build(tray, id)
-			g.go([center() + Vector3(5.2, 0.1, -5.3), center() + Vector3(5.2, 0.1, 3.5), target.spot.approach])
+			g.go([center() + Vector3(1.1, 0.1, -0.85), center() + Vector3(3.2, 0.1, -0.85), center() + Vector3(3.2, 0.1, 3.5), target.spot.approach])
 			return
 
 func _cleaner(g) -> void:
@@ -327,3 +326,19 @@ func _clear_tray(g) -> void:
 	if tray != null:
 		g.remove_child(tray)
 		tray.queue_free()
+
+func order_number(g) -> String:
+	var index: int = main.world.kiosk_spots.find(g.spot)
+	return "#%02d" % (index + 1)
+
+func seat_name(g) -> String:
+	var index: int = main.world.kiosk_spots.find(g.spot)
+	return "Balcão %d" % (index + 1) if index < 2 else "Mesa %d%s" % [1 + int((index - 2) / 2), "A" if index % 2 == 0 else "B"]
+
+func order_summary(g) -> String:
+	var parts: Array = []
+	for id in main.village._remaining(g):
+		var available: bool = int(Core.company.ready.get(id, 0)) > 0
+		var preparing: bool = str(Core.company.production.get("dish", "")) == id
+		parts.append("%s · %s" % [Economy.dish(id).name, "pronto" if available else ("preparando" if preparing else "preparar")])
+	return "%s %s\n%s" % [order_number(g), seat_name(g), "\n".join(parts)]

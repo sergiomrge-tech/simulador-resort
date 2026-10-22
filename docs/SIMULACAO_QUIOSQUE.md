@@ -1,5 +1,7 @@
 # Gestão do quiosque — expansão local de 22/10/2026
 
+> **Acesso atualizado:** [QUIOSQUE_PRATICO.md](QUIOSQUE_PRATICO.md) substitui a navegação antiga e o anexo externo citados abaixo. São seis áreas iniciais no celular e todas as estações ficam dentro do quiosque. A placa agora é única; a expansão neon acrescenta iluminação à moldura.
+
 > Ampliação posterior no mesmo dia: [ROTINAS_QUIOSQUE.md](ROTINAS_QUIOSQUE.md) documenta os seis novos apps de rotina, candidatos, entregas, equipamentos, personalização e movimento. No pacote, leia ROTINAS_DO_QUIOSQUE.md. As regras abaixo continuam válidas, com a nova exceção de guardar bebidas no freezer por uma única noite. Os seis apps novos aparecem antes dos apps citados nesta seção.
 
 Solicitação do Sergio: implementar as três frentes de simulação (estoque/fornecedores, equipe/turnos e custos/preços/resultado), além de horários e personalização da placa.

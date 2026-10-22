@@ -2,9 +2,9 @@
 
 Gerado por `python3 tools/gen_item_catalog.py` — **não edite à mão**. Os códigos ficam em `docs/itens_registro.json` e nunca mudam. Para pedir uma alteração, cite o código (ex.: "troque o modelo de MOD-017").
 
-Total: 2055 itens. MOD 229 · NAT 68 · PRC 31 · CEN 283 · PRT 11 · DSH 9 · SUP 10 · EXP 9 · STF 4 · UPG 15 · QST 4 · VIP 12 · EVT 8 · NOU 154 · TEX 29 · AUD 41 · ICO 36 · FNT 1 · SHD 14 · ANI 43 · PCA 933 · MAT 24 · COR 28 · SCR 43 · PES 16
+Total: 2034 itens. MOD 233 · NAT 68 · PRC 31 · CEN 284 · PRT 11 · DSH 9 · SUP 10 · EXP 9 · STF 4 · UPG 15 · QST 4 · VIP 12 · EVT 8 · NOU 155 · TEX 29 · AUD 41 · ICO 36 · FNT 1 · SHD 14 · ANI 43 · PCA 906 · MAT 24 · COR 28 · SCR 43 · PES 16
 
-## MOD — Modelos 3D em uso (reais, baixados da web) (229)
+## MOD — Modelos 3D em uso (reais, baixados da web) (233)
 
 | Código | Nome | Chave | Fonte | Usado em |
 |---|---|---|---|---|
@@ -18,11 +18,11 @@ Total: 2055 itens. MOD 229 · NAT 68 · PRC 31 · CEN 283 · PRT 11 · DSH 9 · 
 | MOD-008 | Wooden table 01 | `WoodenTable_01` | Poly Haven (CC0) | props.gd:27, world_village.gd:623 |
 | MOD-009 | Alarm clock 01 | `alarm_clock_01` | Poly Haven (CC0) | world.gd:646 |
 | MOD-010 | Bananas | `bananas` | Poly Haven (CC0) | details.gd:189 |
-| MOD-011 | Bar chair round 01 | `bar_chair_round_01` | Poly Haven (CC0) | props.gd:26, real.gd:11, world.gd:1057, world_village.gd:803 |
+| MOD-011 | Bar chair round 01 | `bar_chair_round_01` | Poly Haven (CC0) | props.gd:26, real.gd:11, world.gd:1057, world_village.gd:796 |
 | MOD-012 | Boombox | `boombox` | Poly Haven (CC0) | details.gd:211 |
-| MOD-013 | Carved wooden plate | `carved_wooden_plate` | Poly Haven (CC0) | world.gd:586, world_village.gd:745 |
+| MOD-013 | Carved wooden plate | `carved_wooden_plate` | Poly Haven (CC0) | world.gd:586, world_village.gd:742 |
 | MOD-014 | Ceiling fan | `ceiling_fan` | Poly Haven (CC0) | props.gd:42, real.gd:12, world.gd:638, world.gd:834 (+1) |
-| MOD-015 | Ceramic pot | `ceramic_pot` | Poly Haven (CC0) | world_village.gd:1457 |
+| MOD-015 | Ceramic pot | `ceramic_pot` | Poly Haven (CC0) | world_village.gd:1452 |
 | MOD-016 | Ceramic vase 02 | `ceramic_vase_02` | Poly Haven (CC0) | props.gd:39, world.gd:814, world.gd:857, world_village.gd:601 |
 | MOD-017 | Coast land rocks 02 | `coast_land_rocks_02` | Poly Haven (CC0) | details.gd:436 |
 | MOD-018 | Coast land rocks 03 | `coast_land_rocks_03` | Poly Haven (CC0) | details.gd:436 |
@@ -30,19 +30,19 @@ Total: 2055 itens. MOD 229 · NAT 68 · PRC 31 · CEN 283 · PRT 11 · DSH 9 · 
 | MOD-020 | Coast rocks 03 | `coast_rocks_03` | Poly Haven (CC0) | details.gd:436 |
 | MOD-021 | Coast rocks 05 | `coast_rocks_05` | Poly Haven (CC0) | details.gd:436, details.gd:440 |
 | MOD-022 | Croissant | `croissant` | Poly Haven (CC0) | real.gd:21, world.gd:587 |
-| MOD-023 | Electric stove | `electric_stove` | Poly Haven (CC0) | props.gd:43, world_village.gd:614, world_village.gd:893 |
+| MOD-023 | Electric stove | `electric_stove` | Poly Haven (CC0) | props.gd:43, world_village.gd:614, world_village.gd:909 |
 | MOD-024 | Fancy picture frame 01 | `fancy_picture_frame_01` | Poly Haven (CC0) | world.gd:642 |
 | MOD-025 | Fishermans hat | `fishermans_hat` | Poly Haven (CC0) | guest.gd:899 |
 | MOD-026 | Flower gazania | `flower_gazania` | Poly Haven (CC0) | guest.gd:901 |
 | MOD-027 | Food apple 01 | `food_apple_01` | Poly Haven (CC0) | details.gd:352, details.gd:354, world.gd:1146, world.gd:690 |
 | MOD-028 | Food avocado 01 | `food_avocado_01` | Poly Haven (CC0) | details.gd:352, details.gd:354 |
 | MOD-029 | Food kiwi 01 | `food_kiwi_01` | Poly Haven (CC0) | details.gd:352, details.gd:354 |
-| MOD-030 | Food lime 01 | `food_lime_01` | Poly Haven (CC0) | details.gd:352, details.gd:354, world.gd:1146, world_village.gd:1490 |
+| MOD-030 | Food lime 01 | `food_lime_01` | Poly Haven (CC0) | details.gd:352, details.gd:354, world.gd:1146, world_village.gd:1483 |
 | MOD-031 | Food lychee 01 | `food_lychee_01` | Poly Haven (CC0) | details.gd:352, details.gd:354, world.gd:589 |
 | MOD-032 | Food pears asian 01 | `food_pears_asian_01` | Poly Haven (CC0) | details.gd:352, details.gd:354 |
 | MOD-033 | Food pomegranate 01 | `food_pomegranate_01` | Poly Haven (CC0) | details.gd:352, details.gd:354 |
 | MOD-034 | Hanging picture frame 02 | `hanging_picture_frame_02` | Poly Haven (CC0) | props.gd:42, world.gd:813, world_village.gd:600 |
-| MOD-035 | Jug 01 | `jug_01` | Poly Haven (CC0) | world_village.gd:1457 |
+| MOD-035 | Jug 01 | `jug_01` | Poly Haven (CC0) | world_village.gd:1452 |
 | MOD-036 | Lambis shell | `lambis_shell` | Poly Haven (CC0) | details.gd:247, props.gd:39, world.gd:1048, world.gd:1221 (+3) |
 | MOD-037 | Lemon | `lemon` | Poly Haven (CC0) | details.gd:352, details.gd:354, world.gd:1146 |
 | MOD-038 | Lifebuoy | `lifebuoy` | Poly Haven (CC0) | details.gd:428, hotel_world.gd:227, props.gd:43, world.gd:385 (+1) |
@@ -54,18 +54,18 @@ Total: 2055 itens. MOD 229 · NAT 68 · PRC 31 · CEN 283 · PRT 11 · DSH 9 · 
 | MOD-044 | Painted wooden chair 01 | `painted_wooden_chair_01` | Poly Haven (CC0) | props.gd:29, world_village.gd:504 |
 | MOD-045 | Painted wooden nightstand | `painted_wooden_nightstand` | Poly Haven (CC0) | props.gd:40, world.gd:629, world_village.gd:597 |
 | MOD-046 | Planter box 01 | `planter_box_01` | Poly Haven (CC0) | props.gd:38, world_village.gd:629, world_village.gd:718 |
-| MOD-047 | Planter pot clay | `planter_pot_clay` | Poly Haven (CC0) | props.gd:37, world.gd:302, world_village.gd:1276, world_village.gd:1952 |
-| MOD-048 | Plastic crate 01 | `plastic_crate_01` | Poly Haven (CC0) | props.gd:33, world_village.gd:530, world_village.gd:751, world_village.gd:966 |
+| MOD-047 | Planter pot clay | `planter_pot_clay` | Poly Haven (CC0) | props.gd:37, world.gd:302, world_village.gd:1292, world_village.gd:1938 |
+| MOD-048 | Plastic crate 01 | `plastic_crate_01` | Poly Haven (CC0) | props.gd:33, world_village.gd:530, world_village.gd:982 |
 | MOD-049 | Plastic crate 02 | `plastic_crate_02` | Poly Haven (CC0) | details.gd:306 |
-| MOD-050 | Plastic monobloc chair 01 | `plastic_monobloc_chair_01` | Poly Haven (CC0) | props.gd:28, world_village.gd:967 |
-| MOD-051 | Pot enamel 01 | `pot_enamel_01` | Poly Haven (CC0) | world_village.gd:1457 |
-| MOD-052 | Potted plant 01 | `potted_plant_01` | Poly Haven (CC0) | props.gd:36, world.gd:2205, world.gd:2206, world_village.gd:1276 (+2) |
+| MOD-050 | Plastic monobloc chair 01 | `plastic_monobloc_chair_01` | Poly Haven (CC0) | props.gd:28, world_village.gd:983 |
+| MOD-051 | Pot enamel 01 | `pot_enamel_01` | Poly Haven (CC0) | world_village.gd:1452 |
+| MOD-052 | Potted plant 01 | `potted_plant_01` | Poly Haven (CC0) | props.gd:36, world.gd:2205, world.gd:2206, world_village.gd:1292 (+2) |
 | MOD-053 | Potted plant 02 | `potted_plant_02` | Poly Haven (CC0) | props.gd:36, world.gd:300, world.gd:301, world.gd:631 (+1) |
-| MOD-054 | Potted plant 04 | `potted_plant_04` | Poly Haven (CC0) | props.gd:37, world_village.gd:1276, world_village.gd:1952, world_village.gd:505 (+1) |
+| MOD-054 | Potted plant 04 | `potted_plant_04` | Poly Haven (CC0) | props.gd:37, world_village.gd:1292, world_village.gd:1938, world_village.gd:505 (+1) |
 | MOD-055 | Rock 07 | `rock_07` | Poly Haven (CC0) | world.gd:1237 |
 | MOD-056 | Rock 09 | `rock_09` | Poly Haven (CC0) | world.gd:1237 |
 | MOD-057 | Side table 01 | `side_table_01` | Poly Haven (CC0) | props.gd:40, world.gd:2161, world.gd:621, world.gd:819 |
-| MOD-058 | Street lamp 01 | `street_lamp_01` | Poly Haven (CC0) | props.gd:44, world_village.gd:1331, world_village.gd:1332, world_village.gd:1559 |
+| MOD-058 | Street lamp 01 | `street_lamp_01` | Poly Haven (CC0) | props.gd:44, world_village.gd:1347, world_village.gd:1348, world_village.gd:1545 |
 | MOD-059 | Throw pillows 01 | `throw_pillows_01` | Poly Haven (CC0) | props.gd:43, world.gd:806, world_village.gd:596 |
 | MOD-060 | Trashbag | `trashbag` | Poly Haven (CC0) | world.gd:682 |
 | MOD-061 | Vintage oil lamp | `vintage_oil_lamp` | Poly Haven (CC0) | props.gd:34, world.gd:820, world_village.gd:598 |
@@ -74,21 +74,21 @@ Total: 2055 itens. MOD 229 · NAT 68 · PRC 31 · CEN 283 · PRT 11 · DSH 9 · 
 | MOD-064 | Wicker basket 01 | `wicker_basket_01` | Poly Haven (CC0) | details.gd:188, props.gd:35, world.gd:303, world.gd:858 (+1) |
 | MOD-065 | Wicker basket 02 | `wicker_basket_02` | Poly Haven (CC0) | details.gd:214, details.gd:358, props.gd:35, world.gd:1198 (+3) |
 | MOD-066 | Wooden bowl 01 | `wooden_bowl_01` | Poly Haven (CC0) | props.gd:39, world_village.gd:626 |
-| MOD-067 | Wooden bowl 02 | `wooden_bowl_02` | Poly Haven (CC0) | world_village.gd:1457 |
-| MOD-068 | Wooden bucket 01 | `wooden_bucket_01` | Poly Haven (CC0) | details.gd:429, props.gd:31, world.gd:1049, world.gd:1222 (+3) |
+| MOD-067 | Wooden bowl 02 | `wooden_bowl_02` | Poly Haven (CC0) | world_village.gd:1452 |
+| MOD-068 | Wooden bucket 01 | `wooden_bucket_01` | Poly Haven (CC0) | details.gd:429, props.gd:31, world.gd:1049, world.gd:1222 (+2) |
 | MOD-069 | Wooden bucket 02 | `wooden_bucket_02` | Poly Haven (CC0) | details.gd:238 |
-| MOD-070 | Wooden crate 01 | `wooden_crate_01` | Poly Haven (CC0) | props.gd:32, world_village.gd:1140, world_village.gd:1272, world_village.gd:1851 (+1) |
-| MOD-071 | Wooden crate 02 | `wooden_crate_02` | Poly Haven (CC0) | details.gd:363, real.gd:22, world_village.gd:1488 |
+| MOD-070 | Wooden crate 01 | `wooden_crate_01` | Poly Haven (CC0) | props.gd:32, world_village.gd:1156, world_village.gd:1288, world_village.gd:1837 (+1) |
+| MOD-071 | Wooden crate 02 | `wooden_crate_02` | Poly Haven (CC0) | details.gd:363, real.gd:22 |
 | MOD-072 | Wooden lantern 01 | `wooden_lantern_01` | Poly Haven (CC0) | props.gd:34, world.gd:1075, world.gd:1359, world.gd:2083 (+2) |
 | MOD-073 | Wooden stool 01 | `wooden_stool_01` | Poly Haven (CC0) | props.gd:26, real.gd:11, world.gd:620, world_village.gd:504 (+2) |
-| MOD-074 | Boat row large | `k:boat-row-large` | Kenney (CC0) | real.gd:24, world_village.gd:1137 |
-| MOD-075 | Bottle large | `k:bottle-large` | Kenney (CC0) | real.gd:21, world_village.gd:1457, world_village.gd:1464, world_village.gd:1492 |
-| MOD-076 | Bottle oil | `k:bottle-oil` | Kenney (CC0) | real.gd:21, world_village.gd:1457 |
-| MOD-077 | Bottle | `k:bottle` | Kenney (CC0) | real.gd:21, world.gd:687, world_village.gd:1457, world_village.gd:1464 (+1) |
+| MOD-074 | Boat row large | `k:boat-row-large` | Kenney (CC0) | real.gd:24, world_village.gd:1153 |
+| MOD-075 | Bottle large | `k:bottle-large` | Kenney (CC0) | real.gd:21, world_village.gd:1452, world_village.gd:1459 |
+| MOD-076 | Bottle oil | `k:bottle-oil` | Kenney (CC0) | real.gd:21, world_village.gd:1452 |
+| MOD-077 | Bottle | `k:bottle` | Kenney (CC0) | real.gd:21, world.gd:687, world_village.gd:1452, world_village.gd:1459 (+1) |
 | MOD-078 | Bread | `k:bread` | Kenney (CC0) | real.gd:21, world.gd:588, world.gd:691 |
 | MOD-079 | Cocktail | `k:cocktail` | Kenney (CC0) | details.gd:208, real.gd:20, world.gd:2162 |
 | MOD-080 | Coconut half | `k:coconut-half` | Kenney (CC0) | real.gd:19, real.gd:27 |
-| MOD-081 | Coconut | `k:coconut` | Kenney (CC0) | details.gd:181, real.gd:19, world.gd:1052, world_village.gd:1401 (+2) |
+| MOD-081 | Coconut | `k:coconut` | Kenney (CC0) | details.gd:181, real.gd:19, world.gd:1052, world_village.gd:1415 |
 | MOD-082 | Cup | `k:cup` | Kenney (CC0) | details.gd:196, real.gd:20, world.gd:683, world.gd:686 |
 | MOD-083 | Flag pennant | `k:flag-pennant` | Kenney (CC0) | real.gd:24 |
 | MOD-084 | Frappe | `k:frappe` | Kenney (CC0) | details.gd:199, details.gd:200, real.gd:20 |
@@ -110,12 +110,12 @@ Total: 2055 itens. MOD 229 · NAT 68 · PRC 31 · CEN 283 · PRT 11 · DSH 9 · 
 | MOD-100 | Sunglasses | `g:sunglasses` | Gerado no Blender (tools/gen_*.py) | guest.gd:904 |
 | MOD-101 | Surfboard | `g:surfboard` | Gerado no Blender (tools/gen_*.py) | biz_world.gd:131, biz_world.gd:68, details.gd:156 |
 | MOD-102 | Towel | `g:towel` | Gerado no Blender (tools/gen_*.py) | details.gd:162, world.gd:662, world.gd:667, world.gd:670 (+4) |
-| MOD-103 | Fern 02 | `fern_02` | Poly Haven (CC0) | world_village.gd:1726 |
-| MOD-104 | Periwinkle plant | `periwinkle_plant` | Poly Haven (CC0) | world_village.gd:1726 |
+| MOD-103 | Fern 02 | `fern_02` | Poly Haven (CC0) | world_village.gd:1712 |
+| MOD-104 | Periwinkle plant | `periwinkle_plant` | Poly Haven (CC0) | world_village.gd:1712 |
 | MOD-105 | Lounger | `g:lounger` | Gerado no Blender (tools/gen_*.py) | world.gd:401 |
-| MOD-106 | Boat mast | `g:boat_mast` | Gerado no Blender (tools/gen_*.py) | world_village.gd:1142 |
+| MOD-106 | Boat mast | `g:boat_mast` | Gerado no Blender (tools/gen_*.py) | world_village.gd:1158 |
 | MOD-107 | Ceiling fan | `g:ceiling_fan` | Gerado no Blender (tools/gen_*.py) | world.gd:636 |
-| MOD-108 | Jangada | `g:jangada` | Gerado no Blender (tools/gen_*.py) | world_village.gd:1108 |
+| MOD-108 | Jangada | `g:jangada` | Gerado no Blender (tools/gen_*.py) | world_village.gd:1124 |
 | MOD-109 | Lighthouse | `g:lighthouse` | Gerado no Blender (tools/gen_*.py) | details.gd:444 |
 | MOD-110 | Mailbox | `g:mailbox` | Gerado no Blender (tools/gen_*.py) | details.gd:366 |
 | MOD-111 | Open sign | `g:open_sign` | Gerado no Blender (tools/gen_*.py) | details.gd:221 |
@@ -128,21 +128,21 @@ Total: 2055 itens. MOD 229 · NAT 68 · PRC 31 · CEN 283 · PRT 11 · DSH 9 · 
 | MOD-118 | Tiki torch | `g:tiki_torch` | Gerado no Blender (tools/gen_*.py) | details.gd:115 |
 | MOD-119 | Volley net | `g:volley_net` | Gerado no Blender (tools/gen_*.py) | details.gd:278 |
 | MOD-120 | Beach ball | `g:beach_ball` | Gerado no Blender (tools/gen_*.py) | world.gd:1250, world.gd:2146 |
-| MOD-121 | Coxinha | `g:coxinha` | Gerado no Blender (tools/gen_*.py) | guest.gd:248, world_village.gd:901 |
-| MOD-122 | Flowerbed | `g:flowerbed` | Gerado no Blender (tools/gen_*.py) | world.gd:2180, world_village.gd:1801 |
-| MOD-123 | Hanging planter | `g:hanging_planter` | Gerado no Blender (tools/gen_*.py) | world_village.gd:402 |
-| MOD-124 | Popcorn | `g:popcorn` | Gerado no Blender (tools/gen_*.py) | world_village.gd:1822 |
+| MOD-121 | Coxinha | `g:coxinha` | Gerado no Blender (tools/gen_*.py) | guest.gd:248, world_village.gd:917 |
+| MOD-122 | Flowerbed | `g:flowerbed` | Gerado no Blender (tools/gen_*.py) | world.gd:2180, world_village.gd:1787 |
+| MOD-123 | Hanging planter | `g:hanging_planter` | Gerado no Blender (tools/gen_*.py) | world_village.gd:402, world_village.gd:839 |
+| MOD-124 | Popcorn | `g:popcorn` | Gerado no Blender (tools/gen_*.py) | world_village.gd:1808 |
 | MOD-125 | Rose window | `g:rose_window` | Gerado no Blender (tools/gen_*.py) | world_village.gd:679 |
 | MOD-126 | Seagull fly | `g:seagull_fly` | Gerado no Blender (tools/gen_*.py) | world.gd:963 |
-| MOD-127 | Seagull perch | `g:seagull_perch` | Gerado no Blender (tools/gen_*.py) | world_village.gd:1837 |
+| MOD-127 | Seagull perch | `g:seagull_perch` | Gerado no Blender (tools/gen_*.py) | world_village.gd:1823 |
 | MOD-128 | Volleyball | `g:volleyball` | Gerado no Blender (tools/gen_*.py) | details.gd:284 |
 | MOD-129 | Barrel | `k:barrel` | Kenney (CC0) | event_fx.gd:116, real.gd:22 |
 | MOD-130 | Campfire logs | `k:campfire_logs` | Kenney (CC0) | event_fx.gd:122, real.gd:22 |
 | MOD-131 | Campfire stones | `k:campfire_stones` | Kenney (CC0) | event_fx.gd:121, real.gd:22 |
 | MOD-132 | Crate bottles | `k:crate-bottles` | Kenney (CC0) | event_fx.gd:115, real.gd:22 |
 | MOD-133 | Tent small open | `k:tent_smallOpen` | Kenney (CC0) | event_fx.gd:113, real.gd:24 |
-| MOD-134 | Alga | `g:alga` | Gerado no Blender (tools/gen_*.py) | world_village.gd:1911 |
-| MOD-135 | Bell | `g:bell` | Gerado no Blender (tools/gen_*.py) | world_village.gd:1788 |
+| MOD-134 | Alga | `g:alga` | Gerado no Blender (tools/gen_*.py) | world_village.gd:1897 |
+| MOD-135 | Bell | `g:bell` | Gerado no Blender (tools/gen_*.py) | world_village.gd:1774 |
 | MOD-136 | Brass knob | `g:brass_knob` | Gerado no Blender (tools/gen_*.py) | world.gd:2200, world_village.gd:133, world_village.gd:312 |
 | MOD-137 | Dj booth | `g:dj_booth` | Gerado no Blender (tools/gen_*.py) | event_fx.gd:139 |
 | MOD-138 | Door frame | `g:door_frame` | Gerado no Blender (tools/gen_*.py) | world_village.gd:292 |
@@ -150,7 +150,7 @@ Total: 2055 itens. MOD 229 · NAT 68 · PRC 31 · CEN 283 · PRT 11 · DSH 9 · 
 | MOD-140 | Flame | `g:flame` | Gerado no Blender (tools/gen_*.py) | details.gd:118, event_fx.gd:123 |
 | MOD-141 | Fresnel lens | `g:fresnel_lens` | Gerado no Blender (tools/gen_*.py) | details.gd:459 |
 | MOD-142 | Lamp bulb | `g:lamp_bulb` | Gerado no Blender (tools/gen_*.py) | world.gd:1365, world_village.gd:323 |
-| MOD-143 | Lamp globe | `g:lamp_globe` | Gerado no Blender (tools/gen_*.py) | world_village.gd:1546, world_village.gd:1847 |
+| MOD-143 | Lamp globe | `g:lamp_globe` | Gerado no Blender (tools/gen_*.py) | world_village.gd:1532, world_village.gd:1833 |
 | MOD-144 | Party banner | `g:party_banner` | Gerado no Blender (tools/gen_*.py) | event_fx.gd:152 |
 | MOD-145 | Pool light | `g:pool_light` | Gerado no Blender (tools/gen_*.py) | hotel_world.gd:117, world.gd:2151 |
 | MOD-146 | Shell a | `g:shell_a` | Gerado no Blender (tools/gen_*.py) | world.gd:2103 |
@@ -158,8 +158,8 @@ Total: 2055 itens. MOD 229 · NAT 68 · PRC 31 · CEN 283 · PRT 11 · DSH 9 · 
 | MOD-148 | String bulb | `g:string_bulb` | Gerado no Blender (tools/gen_*.py) | world.gd:1102 |
 | MOD-149 | Win frame | `g:win_frame` | Gerado no Blender (tools/gen_*.py) | world_village.gd:327 |
 | MOD-150 | Win shutters | `g:win_shutters` | Gerado no Blender (tools/gen_*.py) | world_village.gd:328 |
-| MOD-151 | Brass pan 01 | `brass_pan_01` | Poly Haven (CC0) | world_village.gd:895 |
-| MOD-152 | Bamboo pole | `g:bamboo_pole` | Gerado no Blender (tools/gen_*.py) | event_fx.gd:163, event_fx.gd:177, hotel_world.gd:228, world_village.gd:1624 (+1) |
+| MOD-151 | Brass pan 01 | `brass_pan_01` | Poly Haven (CC0) | world_village.gd:911 |
+| MOD-152 | Bamboo pole | `g:bamboo_pole` | Gerado no Blender (tools/gen_*.py) | event_fx.gd:163, event_fx.gd:177, hotel_world.gd:228, world_village.gd:1610 (+1) |
 | MOD-153 | Coral brain | `g:coral_brain` | Gerado no Blender (tools/gen_*.py) | reef.gd:12 |
 | MOD-154 | Coral branch a | `g:coral_branch_a` | Gerado no Blender (tools/gen_*.py) | reef.gd:12 |
 | MOD-155 | Coral branch b | `g:coral_branch_b` | Gerado no Blender (tools/gen_*.py) | reef.gd:12 |
@@ -174,19 +174,18 @@ Total: 2055 itens. MOD 229 · NAT 68 · PRC 31 · CEN 283 · PRT 11 · DSH 9 · 
 | MOD-164 | Balcony rail | `g:balcony_rail` | Gerado no Blender (tools/gen_*.py) | world_village.gd:459, world_village.gd:461 |
 | MOD-165 | Life vest | `g:life_vest` | Gerado no Blender (tools/gen_*.py) | event_fx.gd:314 |
 | MOD-166 | Ac unit | `g:ac_unit` | Gerado no Blender (tools/gen_*.py) | world_village.gd:393 |
-| MOD-167 | Bottle cachaca | `g:bottle_cachaca` | Gerado no Blender (tools/gen_*.py) | real.gd:21, world.gd:1044 |
+| MOD-167 | Bottle cachaca | `g:bottle_cachaca` | Gerado no Blender (tools/gen_*.py) | real.gd:21, world.gd:1044, world_village.gd:1482 |
 | MOD-168 | Bottle green | `g:bottle_green` | Gerado no Blender (tools/gen_*.py) | real.gd:21, world.gd:1044 |
 | MOD-169 | Bottle rum | `g:bottle_rum` | Gerado no Blender (tools/gen_*.py) | real.gd:21, world.gd:1044 |
 | MOD-170 | Bottle wine | `g:bottle_wine` | Gerado no Blender (tools/gen_*.py) | world.gd:1044 |
-| MOD-171 | Cloth shirt | `g:cloth_shirt` | Gerado no Blender (tools/gen_*.py) | world_village.gd:1973 |
-| MOD-172 | Cloth towel | `g:cloth_towel` | Gerado no Blender (tools/gen_*.py) | world.gd:2076, world_village.gd:1973 |
-| MOD-173 | Coconut cart | `g:coconut_cart` | Gerado no Blender (tools/gen_*.py) | world_village.gd:1426 |
+| MOD-171 | Cloth shirt | `g:cloth_shirt` | Gerado no Blender (tools/gen_*.py) | world_village.gd:1959 |
+| MOD-172 | Cloth towel | `g:cloth_towel` | Gerado no Blender (tools/gen_*.py) | world.gd:2076, world_village.gd:1959 |
 | MOD-174 | Cooler box | `g:cooler_box` | Gerado no Blender (tools/gen_*.py) | biz_world.gd:48, biz_world.gd:57, world.gd:1131 |
 | MOD-175 | Flipflops | `g:flipflops` | Gerado no Blender (tools/gen_*.py) | world.gd:2079, world.gd:415 |
-| MOD-176 | Newsstand | `g:newsstand` | Gerado no Blender (tools/gen_*.py) | world_village.gd:1815 |
+| MOD-176 | Newsstand | `g:newsstand` | Gerado no Blender (tools/gen_*.py) | world_village.gd:1801 |
 | MOD-177 | Pool float | `g:pool_float` | Gerado no Blender (tools/gen_*.py) | world.gd:2131 |
-| MOD-178 | Popcorn cart | `g:popcorn_cart` | Gerado no Blender (tools/gen_*.py) | world_village.gd:1821 |
-| MOD-179 | Rope coil | `g:rope_coil` | Gerado no Blender (tools/gen_*.py) | world_village.gd:1853 |
+| MOD-178 | Popcorn cart | `g:popcorn_cart` | Gerado no Blender (tools/gen_*.py) | world_village.gd:1807 |
+| MOD-179 | Rope coil | `g:rope_coil` | Gerado no Blender (tools/gen_*.py) | world_village.gd:1839 |
 | MOD-181 | Towel folded | `g:towel_folded` | Gerado no Blender (tools/gen_*.py) | world.gd:408 |
 | MOD-182 | Trellis planter | `g:trellis_planter` | Gerado no Blender (tools/gen_*.py) | world_village.gd:179 |
 | MOD-183 | Tv antenna | `g:tv_antenna` | Gerado no Blender (tools/gen_*.py) | world_village.gd:389 |
@@ -216,15 +215,15 @@ Total: 2055 itens. MOD 229 · NAT 68 · PRC 31 · CEN 283 · PRT 11 · DSH 9 · 
 | MOD-207 | Boat hull | `g:boat_hull` | Gerado no Blender (tools/gen_*.py) | real.gd:24 |
 | MOD-208 | Campfire logs | `g:campfire_logs` | Gerado no Blender (tools/gen_*.py) | real.gd:22 |
 | MOD-209 | Cocktail | `g:cocktail` | Gerado no Blender (tools/gen_*.py) | dish_presentation.gd:6, real.gd:20 |
-| MOD-210 | Coconut green | `g:coconut_green` | Gerado no Blender (tools/gen_*.py) | real.gd:19 |
+| MOD-210 | Coconut green | `g:coconut_green` | Gerado no Blender (tools/gen_*.py) | kiosk_operations.gd:169, real.gd:19 |
 | MOD-211 | Coconut open | `g:coconut_open` | Gerado no Blender (tools/gen_*.py) | dish_presentation.gd:4, real.gd:19, world.gd:579 |
 | MOD-212 | Cup plastic | `g:cup_plastic` | Gerado no Blender (tools/gen_*.py) | guest.gd:241, real.gd:20 |
 | MOD-213 | Frappe | `g:frappe` | Gerado no Blender (tools/gen_*.py) | real.gd:20 |
 | MOD-214 | Glass juice | `g:glass_juice` | Gerado no Blender (tools/gen_*.py) | dish_presentation.gd:5, real.gd:20 |
-| MOD-215 | Orange | `g:orange` | Gerado no Blender (tools/gen_*.py) | real.gd:19 |
+| MOD-215 | Orange | `g:orange` | Gerado no Blender (tools/gen_*.py) | kiosk_operations.gd:171, real.gd:19 |
 | MOD-216 | Pineapple | `g:pineapple` | Gerado no Blender (tools/gen_*.py) | real.gd:19 |
 | MOD-217 | Plate deep | `k:plate-deep` | Kenney (CC0) | dish_presentation.gd:31 |
-| MOD-218 | Plate dinner | `k:plate-dinner` | Kenney (CC0) | dish_presentation.gd:31, kiosk_operations.gd:193 |
+| MOD-218 | Plate dinner | `k:plate-dinner` | Kenney (CC0) | dish_presentation.gd:31, kiosk_operations.gd:190 |
 | MOD-219 | Utensil fork | `k:utensil-fork` | Kenney (CC0) | dish_presentation.gd:38 |
 | MOD-220 | Utensil spoon | `k:utensil-spoon` | Kenney (CC0) | dish_presentation.gd:38 |
 | MOD-221 | Dish acai | `g:dish_acai` | Gerado no Blender (tools/gen_*.py) | dish_presentation.gd:11 |
@@ -233,17 +232,22 @@ Total: 2055 itens. MOD 229 · NAT 68 · PRC 31 · CEN 283 · PRT 11 · DSH 9 · 
 | MOD-224 | Dish pastel | `g:dish_pastel` | Gerado no Blender (tools/gen_*.py) | dish_presentation.gd:10 |
 | MOD-225 | Dish petiscos | `g:dish_petiscos` | Gerado no Blender (tools/gen_*.py) | dish_presentation.gd:8 |
 | MOD-226 | Dish tapioca | `g:dish_tapioca` | Gerado no Blender (tools/gen_*.py) | dish_presentation.gd:9 |
-| MOD-227 | Service food cabinet | `g:service_food_cabinet` | Gerado no Blender (tools/gen_*.py) | kiosk_operations.gd:44 |
-| MOD-228 | Service fridge | `g:service_fridge` | Gerado no Blender (tools/gen_*.py) | kiosk_operations.gd:43 |
-| MOD-229 | Service fridge door | `g:service_fridge_door` | Gerado no Blender (tools/gen_*.py) | kiosk_operations.gd:52 |
-| MOD-230 | Service register | `g:service_register` | Gerado no Blender (tools/gen_*.py) | kiosk_operations.gd:54 |
+| MOD-227 | Service food cabinet | `g:service_food_cabinet` | Gerado no Blender (tools/gen_*.py) | kiosk_operations.gd:37 |
+| MOD-228 | Service fridge | `g:service_fridge` | Gerado no Blender (tools/gen_*.py) | kiosk_operations.gd:36 |
+| MOD-229 | Service fridge door | `g:service_fridge_door` | Gerado no Blender (tools/gen_*.py) | kiosk_operations.gd:42 |
+| MOD-230 | Service register | `g:service_register` | Gerado no Blender (tools/gen_*.py) | kiosk_operations.gd:48 |
+| MOD-231 | Kiosk facade | `g:kiosk_facade` | Gerado no Blender (tools/gen_*.py) | world_village.gd:811 |
+| MOD-232 | Kiosk neon trim | `g:kiosk_neon_trim` | Gerado no Blender (tools/gen_*.py) | world_village.gd:896 |
+| MOD-233 | Kiosk roof | `g:kiosk_roof` | Gerado no Blender (tools/gen_*.py) | world_village.gd:732 |
+| MOD-234 | Kiosk blender | `g:kiosk_blender` | Gerado no Blender (tools/gen_*.py) | kiosk_operations.gd:46 |
+| MOD-235 | Kiosk workbench | `g:kiosk_workbench` | Gerado no Blender (tools/gen_*.py) | kiosk_operations.gd:38 |
 
 ## NAT — Natureza (Quaternius) (68)
 
 | Código | Nome | Chave | Fonte | Usado em |
 |---|---|---|---|---|
-| NAT-001 | Bush common | `q:Bush_Common` | Quaternius (CC0) | world.gd:1242, world.gd:1574, world_village.gd:1286 |
-| NAT-002 | Bush common flowers | `q:Bush_Common_Flowers` | Quaternius (CC0) | world.gd:1242, world.gd:1575, world_village.gd:1286 |
+| NAT-001 | Bush common | `q:Bush_Common` | Quaternius (CC0) | world.gd:1242, world.gd:1574, world_village.gd:1302 |
+| NAT-002 | Bush common flowers | `q:Bush_Common_Flowers` | Quaternius (CC0) | world.gd:1242, world.gd:1575, world_village.gd:1302 |
 | NAT-003 | Clover 1 | `q:Clover_1` | Quaternius (CC0) | — |
 | NAT-004 | Clover 2 | `q:Clover_2` | Quaternius (CC0) | — |
 | NAT-005 | Common tree 1 | `q:CommonTree_1` | Quaternius (CC0) | — |
@@ -256,24 +260,24 @@ Total: 2055 itens. MOD 229 · NAT 68 · PRC 31 · CEN 283 · PRT 11 · DSH 9 · 
 | NAT-012 | Dead tree 3 | `q:DeadTree_3` | Quaternius (CC0) | — |
 | NAT-013 | Dead tree 4 | `q:DeadTree_4` | Quaternius (CC0) | — |
 | NAT-014 | Dead tree 5 | `q:DeadTree_5` | Quaternius (CC0) | — |
-| NAT-015 | Fern 1 | `q:Fern_1` | Quaternius (CC0) | world.gd:1242, world_village.gd:1286 |
-| NAT-016 | Flower 3 group | `q:Flower_3_Group` | Quaternius (CC0) | world_village.gd:1725 |
+| NAT-015 | Fern 1 | `q:Fern_1` | Quaternius (CC0) | world.gd:1242, world_village.gd:1302 |
+| NAT-016 | Flower 3 group | `q:Flower_3_Group` | Quaternius (CC0) | world_village.gd:1711 |
 | NAT-017 | Flower 3 single | `q:Flower_3_Single` | Quaternius (CC0) | — |
-| NAT-018 | Flower 4 group | `q:Flower_4_Group` | Quaternius (CC0) | world_village.gd:1725 |
+| NAT-018 | Flower 4 group | `q:Flower_4_Group` | Quaternius (CC0) | world_village.gd:1711 |
 | NAT-019 | Flower 4 single | `q:Flower_4_Single` | Quaternius (CC0) | — |
-| NAT-020 | Grass common short | `q:Grass_Common_Short` | Quaternius (CC0) | world_village.gd:1724 |
+| NAT-020 | Grass common short | `q:Grass_Common_Short` | Quaternius (CC0) | world_village.gd:1710 |
 | NAT-021 | Grass common tall | `q:Grass_Common_Tall` | Quaternius (CC0) | — |
-| NAT-022 | Grass wispy short | `q:Grass_Wispy_Short` | Quaternius (CC0) | world_village.gd:1724 |
+| NAT-022 | Grass wispy short | `q:Grass_Wispy_Short` | Quaternius (CC0) | world_village.gd:1710 |
 | NAT-023 | Grass wispy tall | `q:Grass_Wispy_Tall` | Quaternius (CC0) | — |
 | NAT-024 | Mushroom common | `q:Mushroom_Common` | Quaternius (CC0) | — |
 | NAT-025 | Mushroom laetiporus | `q:Mushroom_Laetiporus` | Quaternius (CC0) | — |
-| NAT-026 | Pebble round 1 | `q:Pebble_Round_1` | Quaternius (CC0) | world_village.gd:1723 |
+| NAT-026 | Pebble round 1 | `q:Pebble_Round_1` | Quaternius (CC0) | world_village.gd:1709 |
 | NAT-027 | Pebble round 2 | `q:Pebble_Round_2` | Quaternius (CC0) | — |
-| NAT-028 | Pebble round 3 | `q:Pebble_Round_3` | Quaternius (CC0) | world_village.gd:1723 |
+| NAT-028 | Pebble round 3 | `q:Pebble_Round_3` | Quaternius (CC0) | world_village.gd:1709 |
 | NAT-029 | Pebble round 4 | `q:Pebble_Round_4` | Quaternius (CC0) | — |
 | NAT-030 | Pebble round 5 | `q:Pebble_Round_5` | Quaternius (CC0) | — |
 | NAT-031 | Pebble square 1 | `q:Pebble_Square_1` | Quaternius (CC0) | — |
-| NAT-032 | Pebble square 2 | `q:Pebble_Square_2` | Quaternius (CC0) | world_village.gd:1723 |
+| NAT-032 | Pebble square 2 | `q:Pebble_Square_2` | Quaternius (CC0) | world_village.gd:1709 |
 | NAT-033 | Pebble square 3 | `q:Pebble_Square_3` | Quaternius (CC0) | — |
 | NAT-034 | Pebble square 4 | `q:Pebble_Square_4` | Quaternius (CC0) | — |
 | NAT-035 | Pebble square 5 | `q:Pebble_Square_5` | Quaternius (CC0) | — |
@@ -289,7 +293,7 @@ Total: 2055 itens. MOD 229 · NAT 68 · PRC 31 · CEN 283 · PRT 11 · DSH 9 · 
 | NAT-045 | Pine 4 | `q:Pine_4` | Quaternius (CC0) | — |
 | NAT-046 | Pine 5 | `q:Pine_5` | Quaternius (CC0) | — |
 | NAT-047 | Plant 1 | `q:Plant_1` | Quaternius (CC0) | — |
-| NAT-048 | Plant 1 big | `q:Plant_1_Big` | Quaternius (CC0) | world.gd:1242, world_village.gd:1286 |
+| NAT-048 | Plant 1 big | `q:Plant_1_Big` | Quaternius (CC0) | world.gd:1242, world_village.gd:1302 |
 | NAT-049 | Plant 7 | `q:Plant_7` | Quaternius (CC0) | — |
 | NAT-050 | Plant 7 big | `q:Plant_7_Big` | Quaternius (CC0) | — |
 | NAT-051 | Rock path round small 1 | `q:RockPath_Round_Small_1` | Quaternius (CC0) | — |
@@ -347,7 +351,7 @@ Total: 2055 itens. MOD 229 · NAT 68 · PRC 31 · CEN 283 · PRT 11 · DSH 9 · 
 | PRC-030 | Street lamp | `street_lamp` | props.gd (código) | props.gd:411 |
 | PRC-031 | Island tree | `island_tree` | props.gd (código) | props.gd:416 |
 
-## CEN — Construtores de cenário e lógica (funções de world, details, build, vila, hóspedes) (283)
+## CEN — Construtores de cenário e lógica (funções de world, details, build, vila, hóspedes) (284)
 
 | Código | Nome | Chave | Fonte | Usado em |
 |---|---|---|---|---|
@@ -523,40 +527,40 @@ Total: 2055 itens. MOD 229 · NAT 68 · PRC 31 · CEN 283 · PRT 11 · DSH 9 · 
 | CEN-170 | Hero house | `world_village._hero_house` | world_village.gd (código) | world_village.gd:552 |
 | CEN-171 | Church and praca | `world_village._church_and_praca` | world_village.gd (código) | world_village.gd:641 |
 | CEN-172 | Quiosque | `world_village._quiosque` | world_village.gd (código) | world_village.gd:724 |
-| CEN-173 | Kiosk table | `world_village._kiosk_table` | world_village.gd (código) | world_village.gd:816 |
-| CEN-174 | Refresh kiosk board | `world_village._refresh_kiosk_board` | world_village.gd (código) | world_village.gd:847 |
-| CEN-175 | On areas changed | `world_village.on_areas_changed` | world_village.gd (código) | world_village.gd:858 |
-| CEN-176 | Kiosk neon | `world_village._kiosk_neon` | world_village.gd (código) | world_village.gd:862 |
-| CEN-177 | Kiosk grill | `world_village._kiosk_grill` | world_village.gd (código) | world_village.gd:892 |
-| CEN-178 | Barraca | `world_village._barraca` | world_village.gd (código) | world_village.gd:944 |
-| CEN-179 | Quest giver | `world_village._quest_giver` | world_village.gd (código) | world_village.gd:973 |
-| CEN-180 | Coco piles | `world_village._coco_piles` | world_village.gd (código) | world_village.gd:1002 |
-| CEN-181 | Reset coco piles | `world_village.reset_coco_piles` | world_village.gd (código) | world_village.gd:1030 |
-| CEN-182 | Umbrella hd | `world_village._umbrella_hd` | world_village.gd (código) | world_village.gd:1038 |
-| CEN-183 | Bike | `world_village._bike` | world_village.gd (código) | world_village.gd:1044 |
-| CEN-184 | Jangada2 | `world_village._jangada2` | world_village.gd (código) | world_village.gd:1102 |
-| CEN-185 | Fishing boat | `world_village._fishing_boat` | world_village.gd (código) | world_village.gd:1129 |
-| CEN-186 | Boat mesh | `world_village._boat_mesh` | world_village.gd (código) | world_village.gd:1163 |
-| CEN-187 | Boat quad | `world_village._boat_quad` | world_village.gd (código) | world_village.gd:1197 |
-| CEN-188 | Net | `world_village._net` | world_village.gd (código) | world_village.gd:1208 |
-| CEN-189 | Net mat | `world_village._net_mat` | world_village.gd (código) | world_village.gd:1239 |
-| CEN-190 | Village props | `world_village._village_props` | world_village.gd (código) | world_village.gd:1256 |
-| CEN-191 | Village palms | `world_village._village_palms` | world_village.gd (código) | world_village.gd:1288 |
-| CEN-192 | Street lamps | `world_village._street_lamps` | world_village.gd (código) | world_village.gd:1316 |
-| CEN-193 | Village routes | `world_village._village_routes` | world_village.gd (código) | world_village.gd:1350 |
-| CEN-194 | Set night | `world_village.set_night` | world_village.gd (código) | world_village.gd:1363 |
-| CEN-195 | Kiosk details | `world_village._kiosk_details` | world_village.gd (código) | world_village.gd:1390 |
-| CEN-196 | Back bar | `world_village._back_bar` | world_village.gd (código) | world_village.gd:1445 |
-| CEN-197 | Surf rack | `world_village._surf_rack` | world_village.gd (código) | world_village.gd:1469 |
-| CEN-198 | Rng off | `world_village.rng_off` | world_village.gd (código) | world_village.gd:1481 |
-| CEN-199 | Kiosk drinks | `world_village._kiosk_drinks` | world_village.gd (código) | world_village.gd:1485 |
-| CEN-200 | On time | `world_village._on_time` | world_village.gd (código) | world_village.gd:1500 |
-| CEN-201 | Road | `world_village._road` | world_village.gd (código) | world_village.gd:1519 |
-| CEN-202 | Add lamp | `world_village._add_lamp` | world_village.gd (código) | world_village.gd:1558 |
-| CEN-203 | Village expansion | `world_village._village_expansion` | world_village.gd (código) | world_village.gd:1570 |
-| CEN-204 | Beach life | `world_village._beach_life` | world_village.gd (código) | world_village.gd:1699 |
-| CEN-205 | Landmark details | `world_village._landmark_details` | world_village.gd (código) | world_village.gd:1748 |
-| CEN-206 | Map details | `world_village._map_details` | world_village.gd (código) | world_village.gd:1882 |
+| CEN-173 | Kiosk table | `world_village._kiosk_table` | world_village.gd (código) | world_village.gd:843 |
+| CEN-174 | Refresh kiosk board | `world_village._refresh_kiosk_board` | world_village.gd (código) | world_village.gd:874 |
+| CEN-175 | On areas changed | `world_village.on_areas_changed` | world_village.gd (código) | world_village.gd:885 |
+| CEN-176 | Kiosk neon | `world_village._kiosk_neon` | world_village.gd (código) | world_village.gd:889 |
+| CEN-177 | Kiosk grill | `world_village._kiosk_grill` | world_village.gd (código) | world_village.gd:908 |
+| CEN-178 | Barraca | `world_village._barraca` | world_village.gd (código) | world_village.gd:960 |
+| CEN-179 | Quest giver | `world_village._quest_giver` | world_village.gd (código) | world_village.gd:989 |
+| CEN-180 | Coco piles | `world_village._coco_piles` | world_village.gd (código) | world_village.gd:1018 |
+| CEN-181 | Reset coco piles | `world_village.reset_coco_piles` | world_village.gd (código) | world_village.gd:1046 |
+| CEN-182 | Umbrella hd | `world_village._umbrella_hd` | world_village.gd (código) | world_village.gd:1054 |
+| CEN-183 | Bike | `world_village._bike` | world_village.gd (código) | world_village.gd:1060 |
+| CEN-184 | Jangada2 | `world_village._jangada2` | world_village.gd (código) | world_village.gd:1118 |
+| CEN-185 | Fishing boat | `world_village._fishing_boat` | world_village.gd (código) | world_village.gd:1145 |
+| CEN-186 | Boat mesh | `world_village._boat_mesh` | world_village.gd (código) | world_village.gd:1179 |
+| CEN-187 | Boat quad | `world_village._boat_quad` | world_village.gd (código) | world_village.gd:1213 |
+| CEN-188 | Net | `world_village._net` | world_village.gd (código) | world_village.gd:1224 |
+| CEN-189 | Net mat | `world_village._net_mat` | world_village.gd (código) | world_village.gd:1255 |
+| CEN-190 | Village props | `world_village._village_props` | world_village.gd (código) | world_village.gd:1272 |
+| CEN-191 | Village palms | `world_village._village_palms` | world_village.gd (código) | world_village.gd:1304 |
+| CEN-192 | Street lamps | `world_village._street_lamps` | world_village.gd (código) | world_village.gd:1332 |
+| CEN-193 | Village routes | `world_village._village_routes` | world_village.gd (código) | world_village.gd:1366 |
+| CEN-194 | Set night | `world_village.set_night` | world_village.gd (código) | world_village.gd:1379 |
+| CEN-195 | Kiosk details | `world_village._kiosk_details` | world_village.gd (código) | world_village.gd:1406 |
+| CEN-196 | Back bar | `world_village._back_bar` | world_village.gd (código) | world_village.gd:1440 |
+| CEN-197 | Surf rack | `world_village._surf_rack` | world_village.gd (código) | world_village.gd:1464 |
+| CEN-198 | Rng off | `world_village.rng_off` | world_village.gd (código) | world_village.gd:1476 |
+| CEN-199 | Kiosk drinks | `world_village._kiosk_drinks` | world_village.gd (código) | world_village.gd:1480 |
+| CEN-200 | On time | `world_village._on_time` | world_village.gd (código) | world_village.gd:1486 |
+| CEN-201 | Road | `world_village._road` | world_village.gd (código) | world_village.gd:1505 |
+| CEN-202 | Add lamp | `world_village._add_lamp` | world_village.gd (código) | world_village.gd:1544 |
+| CEN-203 | Village expansion | `world_village._village_expansion` | world_village.gd (código) | world_village.gd:1556 |
+| CEN-204 | Beach life | `world_village._beach_life` | world_village.gd (código) | world_village.gd:1685 |
+| CEN-205 | Landmark details | `world_village._landmark_details` | world_village.gd (código) | world_village.gd:1734 |
+| CEN-206 | Map details | `world_village._map_details` | world_village.gd (código) | world_village.gd:1868 |
 | CEN-207 | Make | `village_life._make` | village_life.gd (código) | village_life.gd:129 |
 | CEN-208 | Fish prompt | `village_life.fish_prompt` | village_life.gd (código) | village_life.gd:194 |
 | CEN-209 | Fish action | `village_life.fish_action` | village_life.gd (código) | village_life.gd:201 |
@@ -568,29 +572,29 @@ Total: 2055 itens. MOD 229 · NAT 68 · PRC 31 · CEN 283 · PRT 11 · DSH 9 · 
 | CEN-215 | Waiting customers | `village_life.waiting_customers` | village_life.gd (código) | village_life.gd:283 |
 | CEN-216 | Free spot | `village_life._free_spot` | village_life.gd (código) | village_life.gd:286 |
 | CEN-217 | Spawn customer | `village_life.spawn_customer` | village_life.gd (código) | village_life.gd:302 |
-| CEN-218 | Kiosk tick | `village_life._kiosk_tick` | village_life.gd (código) | village_life.gd:381 |
-| CEN-219 | Order | `village_life._order` | village_life.gd (código) | village_life.gd:471 |
-| CEN-220 | Pick dish | `village_life._pick_dish` | village_life.gd (código) | village_life.gd:480 |
-| CEN-221 | Pick vip | `village_life._pick_vip` | village_life.gd (código) | village_life.gd:501 |
-| CEN-222 | Vip name | `village_life._vip_name` | village_life.gd (código) | village_life.gd:510 |
-| CEN-223 | Items | `village_life._items` | village_life.gd (código) | village_life.gd:516 |
-| CEN-224 | Patience | `village_life._patience` | village_life.gd (código) | village_life.gd:520 |
-| CEN-225 | Remaining | `village_life._remaining` | village_life.gd (código) | village_life.gd:523 |
-| CEN-226 | Order text | `village_life._order_text` | village_life.gd (código) | village_life.gd:526 |
-| CEN-227 | Leave | `village_life._leave` | village_life.gd (código) | village_life.gd:544 |
-| CEN-228 | Next customer | `village_life._next_customer` | village_life.gd (código) | village_life.gd:559 |
-| CEN-229 | W0 vip | `village_life.w0_vip` | village_life.gd (código) | village_life.gd:567 |
-| CEN-230 | Bar | `village_life._bar` | village_life.gd (código) | village_life.gd:570 |
-| CEN-231 | Kiosk prompt | `village_life.kiosk_prompt` | village_life.gd (código) | village_life.gd:574 |
-| CEN-232 | Daily goal | `village_life.daily_goal` | village_life.gd (código) | village_life.gd:608 |
-| CEN-233 | Kiosk action | `village_life.kiosk_action` | village_life.gd (código) | village_life.gd:616 |
-| CEN-234 | Stage secs | `village_life._stage_secs` | village_life.gd (código) | village_life.gd:644 |
-| CEN-235 | Prep advance | `village_life.prep_advance` | village_life.gd (código) | village_life.gd:650 |
-| CEN-236 | Deliver item | `village_life._deliver_item` | village_life.gd (código) | village_life.gd:669 |
-| CEN-237 | Complete order | `village_life._complete_order` | village_life.gd (código) | village_life.gd:699 |
-| CEN-238 | Kiosk serve | `village_life.kiosk_serve` | village_life.gd (código) | village_life.gd:755 |
-| CEN-239 | Helper serve | `village_life.helper_serve` | village_life.gd (código) | village_life.gd:768 |
-| CEN-240 | On slept | `village_life._on_slept` | village_life.gd (código) | village_life.gd:773 |
+| CEN-218 | Kiosk tick | `village_life._kiosk_tick` | village_life.gd (código) | village_life.gd:383 |
+| CEN-219 | Order | `village_life._order` | village_life.gd (código) | village_life.gd:473 |
+| CEN-220 | Pick dish | `village_life._pick_dish` | village_life.gd (código) | village_life.gd:482 |
+| CEN-221 | Pick vip | `village_life._pick_vip` | village_life.gd (código) | village_life.gd:503 |
+| CEN-222 | Vip name | `village_life._vip_name` | village_life.gd (código) | village_life.gd:512 |
+| CEN-223 | Items | `village_life._items` | village_life.gd (código) | village_life.gd:518 |
+| CEN-224 | Patience | `village_life._patience` | village_life.gd (código) | village_life.gd:522 |
+| CEN-225 | Remaining | `village_life._remaining` | village_life.gd (código) | village_life.gd:525 |
+| CEN-226 | Order text | `village_life._order_text` | village_life.gd (código) | village_life.gd:528 |
+| CEN-227 | Leave | `village_life._leave` | village_life.gd (código) | village_life.gd:546 |
+| CEN-228 | Next customer | `village_life._next_customer` | village_life.gd (código) | village_life.gd:561 |
+| CEN-229 | W0 vip | `village_life.w0_vip` | village_life.gd (código) | village_life.gd:569 |
+| CEN-230 | Bar | `village_life._bar` | village_life.gd (código) | village_life.gd:572 |
+| CEN-231 | Kiosk prompt | `village_life.kiosk_prompt` | village_life.gd (código) | village_life.gd:576 |
+| CEN-232 | Daily goal | `village_life.daily_goal` | village_life.gd (código) | village_life.gd:610 |
+| CEN-233 | Kiosk action | `village_life.kiosk_action` | village_life.gd (código) | village_life.gd:618 |
+| CEN-234 | Stage secs | `village_life._stage_secs` | village_life.gd (código) | village_life.gd:646 |
+| CEN-235 | Prep advance | `village_life.prep_advance` | village_life.gd (código) | village_life.gd:652 |
+| CEN-236 | Deliver item | `village_life._deliver_item` | village_life.gd (código) | village_life.gd:671 |
+| CEN-237 | Complete order | `village_life._complete_order` | village_life.gd (código) | village_life.gd:701 |
+| CEN-238 | Kiosk serve | `village_life.kiosk_serve` | village_life.gd (código) | village_life.gd:757 |
+| CEN-239 | Helper serve | `village_life.helper_serve` | village_life.gd (código) | village_life.gd:770 |
+| CEN-240 | On slept | `village_life._on_slept` | village_life.gd (código) | village_life.gd:775 |
 | CEN-241 | Make guest | `guests._make_guest` | guests.gd (código) | guests.gd:34 |
 | CEN-242 | Spawn guest | `guests.spawn_guest` | guests.gd (código) | guests.gd:64 |
 | CEN-243 | On areas changed | `guests.on_areas_changed` | guests.gd (código) | guests.gd:77 |
@@ -612,10 +616,10 @@ Total: 2055 itens. MOD 229 · NAT 68 · PRC 31 · CEN 283 · PRT 11 · DSH 9 · 
 | CEN-259 | Give up | `guests._give_up` | guests.gd (código) | guests.gd:295 |
 | CEN-260 | Queue size | `guests.queue_size` | guests.gd (código) | guests.gd:303 |
 | CEN-261 | On sleep | `guests.on_sleep` | guests.gd (código) | guests.gd:308 |
-| CEN-262 | Sand clutter | `world_village._sand_clutter` | world_village.gd (código) | world_village.gd:1721 |
+| CEN-262 | Sand clutter | `world_village._sand_clutter` | world_village.gd (código) | world_village.gd:1707 |
 | CEN-263 | Bloom key | `world_village._bloom_key` | world_village.gd (código) | world_village.gd:198 |
-| CEN-264 | Lamp glow mat | `world_village._lamp_glow_mat` | world_village.gd (código) | world_village.gd:1535 |
-| CEN-265 | Lamp head | `world_village._lamp_head` | world_village.gd (código) | world_village.gd:1545 |
+| CEN-264 | Lamp glow mat | `world_village._lamp_glow_mat` | world_village.gd (código) | world_village.gd:1521 |
+| CEN-265 | Lamp head | `world_village._lamp_head` | world_village.gd (código) | world_village.gd:1531 |
 | CEN-266 | Bench | `world_village._bench` | world_village.gd (código) | world_village.gd:107 |
 | CEN-267 | Front at | `world_village._front_at` | world_village.gd (código) | world_village.gd:116 |
 | CEN-268 | Street bunting | `world_village._street_bunting` | world_village.gd (código) | world_village.gd:122 |
@@ -625,15 +629,16 @@ Total: 2055 itens. MOD 229 · NAT 68 · PRC 31 · CEN 283 · PRT 11 · DSH 9 · 
 | CEN-272 | Save regulars | `village_life._save_regulars` | village_life.gd (código) | village_life.gd:59 |
 | CEN-273 | Pick regular | `village_life._pick_regular` | village_life.gd (código) | village_life.gd:64 |
 | CEN-274 | Setup v1 | `world._setup_v1` | world.gd (código) | world.gd:2210 |
-| CEN-275 | Release spot | `village_life._release_spot` | village_life.gd (código) | village_life.gd:535 |
-| CEN-276 | Refresh company signs | `world_village._refresh_company_signs` | world_village.gd (código) | world_village.gd:1982 |
-| CEN-277 | Prep position | `village_life._prep_position` | village_life.gd (código) | village_life.gd:793 |
-| CEN-278 | Clear prep visual | `village_life._clear_prep_visual` | village_life.gd (código) | village_life.gd:796 |
-| CEN-279 | Show prep visual | `village_life._show_prep_visual` | village_life.gd (código) | village_life.gd:802 |
-| CEN-280 | Served dishes | `village_life.served_dishes` | village_life.gd (código) | village_life.gd:810 |
-| CEN-281 | Clear served visuals | `village_life.clear_served_visuals` | village_life.gd (código) | village_life.gd:819 |
-| CEN-282 | Show delivered visual | `village_life._show_delivered_visual` | village_life.gd (código) | village_life.gd:827 |
-| CEN-283 | Apply kiosk look | `world_village._apply_kiosk_look` | world_village.gd (código) | world_village.gd:1989 |
+| CEN-275 | Release spot | `village_life._release_spot` | village_life.gd (código) | village_life.gd:537 |
+| CEN-276 | Refresh company signs | `world_village._refresh_company_signs` | world_village.gd (código) | world_village.gd:1968 |
+| CEN-277 | Prep position | `village_life._prep_position` | village_life.gd (código) | village_life.gd:795 |
+| CEN-278 | Clear prep visual | `village_life._clear_prep_visual` | village_life.gd (código) | village_life.gd:798 |
+| CEN-279 | Show prep visual | `village_life._show_prep_visual` | village_life.gd (código) | village_life.gd:804 |
+| CEN-280 | Served dishes | `village_life.served_dishes` | village_life.gd (código) | village_life.gd:812 |
+| CEN-281 | Clear served visuals | `village_life.clear_served_visuals` | village_life.gd (código) | village_life.gd:821 |
+| CEN-282 | Show delivered visual | `village_life._show_delivered_visual` | village_life.gd (código) | village_life.gd:829 |
+| CEN-283 | Apply kiosk look | `world_village._apply_kiosk_look` | world_village.gd (código) | world_village.gd:1975 |
+| CEN-284 | Kiosk facade | `world_village._kiosk_facade` | world_village.gd (código) | world_village.gd:810 |
 
 ## PRT — Partes dos personagens (11)
 
@@ -762,7 +767,7 @@ Total: 2055 itens. MOD 229 · NAT 68 · PRC 31 · CEN 283 · PRT 11 · DSH 9 · 
 | EVT-007 | Show do DJ Maré | `show_dj` | O DJ Maré toca na praia e passa no quiosque. Clientes de sobra e caipirinha em alta. |
 | EVT-008 | Carnaval da Maré | `carnaval` | Bloco na areia à tarde e à noite! O dobro de clientes, bebidas em alta. Libere no capítulo do prefeito. |
 
-## NOU — Modelos baixados ainda sem uso (disponíveis) (154)
+## NOU — Modelos baixados ainda sem uso (disponíveis) (155)
 
 | Código | Nome | Chave | Fonte | Usado em |
 |---|---|---|---|---|
@@ -920,6 +925,7 @@ Total: 2055 itens. MOD 229 · NAT 68 · PRC 31 · CEN 283 · PRT 11 · DSH 9 · 
 | NOU-167 | Tree amendoeira 2 | `g:tree_amendoeira_2` | Gerado no Blender (tools/gen_*.py) | — |
 | NOU-168 | Tree amendoeira 3 | `g:tree_amendoeira_3` | Gerado no Blender (tools/gen_*.py) | — |
 | NOU-169 | Straw | `g:straw` | Gerado no Blender (tools/gen_*.py) | — |
+| NOU-170 | Coconut cart | `g:coconut_cart` | Gerado no Blender (tools/gen_*.py) | — |
 
 ## TEX — Texturas e materiais (29)
 
@@ -963,12 +969,12 @@ Total: 2055 itens. MOD 229 · NAT 68 · PRC 31 · CEN 283 · PRT 11 · DSH 9 · 
 | AUD-002 | Bird1 | `bird1` | assets/audio | audio.gd:81 |
 | AUD-003 | Bird2 | `bird2` | assets/audio | audio.gd:81 |
 | AUD-004 | Clean | `clean` | assets/audio | kiosk_management.gd:258, kiosk_management.gd:263, kiosk_management.gd:265, kiosk_management.gd:266 (+7) |
-| AUD-005 | Click | `click` | assets/audio | hud.gd:255, menus.gd:123, menus.gd:348, minigame.gd:161 (+6) |
+| AUD-005 | Click | `click` | assets/audio | hud.gd:262, menus.gd:123, menus.gd:348, minigame.gd:161 (+5) |
 | AUD-006 | Coin | `coin` | assets/audio | guests.gd:189, guests.gd:288, office_ui.gd:433, office_ui.gd:445 (+4) |
 | AUD-007 | Crickets loop | `crickets_loop` | assets/audio | audio.gd:38 |
 | AUD-008 | Dog | `dog` | assets/audio | audio.gd:91 |
 | AUD-009 | Door | `door` | assets/audio | world_village.gd:291, world_village.gd:441, world_village.gd:591, world_village.gd:675 |
-| AUD-010 | Glass | `glass` | assets/audio | guests.gd:157, village_life.gd:205, village_life.gd:692, world_village.gd:1375 (+1) |
+| AUD-010 | Glass | `glass` | assets/audio | guests.gd:157, village_life.gd:205, village_life.gd:694, world_village.gd:1391 (+1) |
 | AUD-011 | Music bossa | `music_bossa` | assets/audio | — |
 | AUD-012 | Ocean loop | `ocean_loop` | assets/audio | audio.gd:37 |
 | AUD-013 | Seagull1 | `seagull1` | assets/audio | audio.gd:86 |
@@ -1005,42 +1011,42 @@ Total: 2055 itens. MOD 229 · NAT 68 · PRC 31 · CEN 283 · PRT 11 · DSH 9 · 
 
 | Código | Nome | Chave | Fonte | Usado em |
 |---|---|---|---|---|
-| ICO-001 | Bangalo | `bangalo` | assets/ui/icons | economy.gd:53, economy.gd:67, main.gd:30, main.gd:418 (+10) |
+| ICO-001 | Bangalo | `bangalo` | assets/ui/icons | economy.gd:53, economy.gd:67, main.gd:30, main.gd:418 (+9) |
 | ICO-002 | Banho | `banho` | assets/ui/icons | economy.gd:323, economy.gd:57, economy.gd:61, world.gd:851 (+1) |
 | ICO-003 | Bar | `bar` | assets/ui/icons | economy.gd:114, economy.gd:336, economy.gd:48, economy.gd:49 (+25) |
 | ICO-004 | Bartender | `bartender` | assets/ui/icons | economy.gd:110, resort_core.gd:61, resort_core.gd:874, world.gd:1084 |
 | ICO-005 | Cachaca | `cachaca` | assets/ui/icons | economy.gd:180, economy.gd:195, economy.gd:206, economy.gd:213 (+2) |
-| ICO-006 | Caixa | `caixa` | assets/ui/icons | economy.gd:93, hud.gd:236, hud.gd:59, kiosk_management.gd:14 (+20) |
-| ICO-007 | Cama | `cama` | assets/ui/icons | economy.gd:307, phone_ui.gd:34, resort_core.gd:100, resort_core.gd:1023 (+7) |
+| ICO-006 | Caixa | `caixa` | assets/ui/icons | economy.gd:93, hud.gd:243, hud.gd:64, kiosk_management.gd:14 (+23) |
+| ICO-007 | Cama | `cama` | assets/ui/icons | economy.gd:307, phone_ui.gd:24, phone_ui.gd:42, resort_core.gd:100 (+8) |
 | ICO-008 | Camareira | `camareira` | assets/ui/icons | economy.gd:103, resort_core.gd:186, resort_core.gd:187, resort_core.gd:61 |
-| ICO-009 | Clima | `clima` | assets/ui/icons | economy.gd:291, hud.gd:552, phone_ui.gd:24, phone_ui.gd:26 (+3) |
-| ICO-010 | Coco | `coco` | assets/ui/icons | economy.gd:131, economy.gd:178, economy.gd:195, economy.gd:205 (+7) |
-| ICO-011 | Compra | `compra` | assets/ui/icons | economy.gd:340, office_ui.gd:287, office_ui.gd:548, office_ui.gd:554 (+5) |
+| ICO-009 | Clima | `clima` | assets/ui/icons | economy.gd:291, hud.gd:574, phone_ui.gd:32, phone_ui.gd:34 (+3) |
+| ICO-010 | Coco | `coco` | assets/ui/icons | economy.gd:131, economy.gd:178, economy.gd:195, economy.gd:205 (+9) |
+| ICO-011 | Compra | `compra` | assets/ui/icons | economy.gd:340, office_ui.gd:287, office_ui.gd:548, office_ui.gd:554 (+6) |
 | ICO-012 | Decor | `decor` | assets/ui/icons | economy.gd:315, world.gd:815, world.gd:829 |
 | ICO-013 | Diaria | `diaria` | assets/ui/icons | economy.gd:334, guests.gd:188, main.gd:743, main.gd:745 (+3) |
-| ICO-014 | Equipe | `equipe` | assets/ui/icons | kiosk_management.gd:107, kiosk_management.gd:34, office_ui.gd:270, office_ui.gd:450 (+11) |
+| ICO-014 | Equipe | `equipe` | assets/ui/icons | kiosk_management.gd:107, kiosk_management.gd:34, office_ui.gd:270, office_ui.gd:450 (+16) |
 | ICO-015 | Folha | `folha` | assets/ui/icons | economy.gd:341, office_ui.gd:554, progression.gd:275, progression.gd:603 (+4) |
-| ICO-016 | Frutas | `frutas` | assets/ui/icons | economy.gd:149, economy.gd:179, economy.gd:195, economy.gd:206 (+5) |
+| ICO-016 | Frutas | `frutas` | assets/ui/icons | economy.gd:149, economy.gd:179, economy.gd:195, economy.gd:206 (+7) |
 | ICO-017 | Gelo | `gelo` | assets/ui/icons | economy.gd:181, economy.gd:195, economy.gd:205, economy.gd:206 (+7) |
 | ICO-018 | Gorjeta | `gorjeta` | assets/ui/icons | economy.gd:335, guests.gd:287, guests.gd:320, main.gd:743 (+5) |
 | ICO-019 | Insumo | `insumo` | assets/ui/icons | economy.gd:338, kiosk_management.gd:207, main.gd:743, main.gd:749 (+5) |
 | ICO-020 | Insumos | `insumos` | assets/ui/icons | main.gd:493, office_ui.gd:266, office_ui.gd:326, office_ui.gd:67 (+2) |
-| ICO-021 | Missao | `missao` | assets/ui/icons | economy.gd:342, office_ui.gd:478, office_ui.gd:491, phone_ui.gd:37 (+10) |
+| ICO-021 | Missao | `missao` | assets/ui/icons | economy.gd:342, office_ui.gd:478, office_ui.gd:491, phone_ui.gd:45 (+10) |
 | ICO-022 | Multa | `multa` | assets/ui/icons | economy.gd:343, main.gd:299, office_ui.gd:554 |
 | ICO-023 | Novo | `novo` | assets/ui/icons | economy.gd:41, office_ui.gd:440 |
 | ICO-024 | Outro | `outro` | assets/ui/icons | economy.gd:346, office_ui.gd:291, office_ui.gd:319, office_ui.gd:574 (+3) |
 | ICO-025 | Pao | `pao` | assets/ui/icons | economy.gd:143, economy.gd:183, economy.gd:195, economy.gd:207 (+3) |
 | ICO-026 | Peixe | `peixe` | assets/ui/icons | economy.gd:137, economy.gd:182, economy.gd:195, economy.gd:207 (+6) |
-| ICO-027 | Prato | `prato` | assets/ui/icons | office_ui.gd:354, office_ui.gd:360, phone_ui.gd:30, phone_ui.gd:33 |
+| ICO-027 | Prato | `prato` | assets/ui/icons | office_ui.gd:354, office_ui.gd:360, phone_ui.gd:26, phone_ui.gd:38 (+1) |
 | ICO-028 | Quiosque | `quiosque` | assets/ui/icons | economy.gd:33, economy.gd:337, main.gd:432, main.gd:482 (+10) |
 | ICO-029 | Redes | `redes` | assets/ui/icons | office_ui.gd:428, office_ui.gd:581, resort_core.gd:1002 |
 | ICO-030 | Roupa | `roupa` | assets/ui/icons | economy.gd:299, world.gd:802, world.gd:807 |
 | ICO-031 | Upgrade | `upgrade` | assets/ui/icons | economy.gd:339, kiosk_management.gd:258, kiosk_management.gd:262, kiosk_management.gd:266 (+16) |
-| ICO-032 | Cooking pot | `cooking-pot` | assets/ui/icons | phone_ui.gd:43 |
-| ICO-033 | Laurel crown | `laurel-crown` | assets/ui/icons | phone_ui.gd:40, phone_ui.gd:879 |
-| ICO-034 | Shop | `shop` | assets/ui/icons | hud.gd:454, hud.gd:480, hud.gd:542, main.gd:274 (+10) |
-| ICO-035 | Trophy | `trophy` | assets/ui/icons | phone_ui.gd:42 |
-| ICO-036 | Village | `village` | assets/ui/icons | phone_ui.gd:1066, phone_ui.gd:44 |
+| ICO-032 | Cooking pot | `cooking-pot` | assets/ui/icons | phone_ui.gd:51 |
+| ICO-033 | Laurel crown | `laurel-crown` | assets/ui/icons | phone_ui.gd:48, phone_ui.gd:860 |
+| ICO-034 | Shop | `shop` | assets/ui/icons | hud.gd:474, hud.gd:499, hud.gd:564, main.gd:274 (+11) |
+| ICO-035 | Trophy | `trophy` | assets/ui/icons | phone_ui.gd:50 |
+| ICO-036 | Village | `village` | assets/ui/icons | phone_ui.gd:1047, phone_ui.gd:25, phone_ui.gd:52 |
 
 ## FNT — Fontes (1)
 
@@ -1102,7 +1108,7 @@ Total: 2055 itens. MOD 229 · NAT 68 · PRC 31 · CEN 283 · PRT 11 · DSH 9 · 
 | ANI-029 | Sitting enter | `Sitting_Enter` | UAL (Quaternius CC0) | — |
 | ANI-030 | Sitting exit | `Sitting_Exit` | UAL (Quaternius CC0) | — |
 | ANI-031 | Sitting idle loop | `Sitting_Idle_Loop` | UAL (Quaternius CC0) | guest.gd:128, guest.gd:181, hotel_world.gd:248, main.gd:318 (+11) |
-| ANI-032 | Sitting talking loop | `Sitting_Talking_Loop` | UAL (Quaternius CC0) | guest.gd:130, guest.gd:181, hotel_world.gd:260, village_life.gd:447 (+1) |
+| ANI-032 | Sitting talking loop | `Sitting_Talking_Loop` | UAL (Quaternius CC0) | guest.gd:130, guest.gd:181, hotel_world.gd:260, village_life.gd:449 (+1) |
 | ANI-033 | Spell simple enter | `Spell_Simple_Enter` | UAL (Quaternius CC0) | — |
 | ANI-034 | Spell simple exit | `Spell_Simple_Exit` | UAL (Quaternius CC0) | — |
 | ANI-035 | Spell simple idle loop | `Spell_Simple_Idle_Loop` | UAL (Quaternius CC0) | — |
@@ -1115,7 +1121,7 @@ Total: 2055 itens. MOD 229 · NAT 68 · PRC 31 · CEN 283 · PRT 11 · DSH 9 · 
 | ANI-042 | Walk formal loop | `Walk_Formal_Loop` | UAL (Quaternius CC0) | guest.gd:124 |
 | ANI-043 | Walk loop | `Walk_Loop` | UAL (Quaternius CC0) | event_fx.gd:261, guest.gd:124, guest.gd:180, main.gd:358 (+1) |
 
-## PCA — Peças construídas por código (uma linha = uma peça; ver coluna Função) (933)
+## PCA — Peças construídas por código (uma linha = uma peça; ver coluna Função) (906)
 
 | Código | Peça | Função | Chamada | Material | Linha | Obs |
 |---|---|---|---|---|---|---|
@@ -1213,6 +1219,7 @@ Total: 2055 itens. MOD 229 · NAT 68 · PRC 31 · CEN 283 · PRT 11 · DSH 9 · 
 | PCA-098 | fancy picture frame 01 | `_bungalow` | `Real.place` | — | world.gd:642 |  |
 | PCA-099 | wall clock | `_bungalow` | `Real.place` | — | world.gd:643 |  |
 | PCA-100 | ornate mirror 01 | `_bungalow` | `Real.place` | — | world.gd:644 |  |
+| PCA-1000 | g:hanging planter | `_kiosk_facade` | `Real.place` | — | world_village.gd:839 |  [em laço] |
 | PCA-101 | vintage suitcase | `_bungalow` | `Real.place` | — | world.gd:645 |  |
 | PCA-102 | alarm clock 01 | `_bungalow` | `Real.place` | — | world.gd:646 |  |
 | PCA-103 | box linen sand | `_bungalow` | `B.box` | linen_sand | world.gd:658 |  |
@@ -1504,203 +1511,179 @@ Total: 2055 itens. MOD 229 · NAT 68 · PRC 31 · CEN 283 · PRT 11 · DSH 9 · 
 | PCA-418 | wall | `_church_and_praca` | `B.wall` | — | world_village.gd:709 |  |
 | PCA-419 | planter box 01 | `_church_and_praca` | `B.model` | — | world_village.gd:718 |  [em laço] |
 | PCA-420 | CoffeeCart 01 | `_church_and_praca` | `B.model` | — | world_village.gd:720 |  |
-| PCA-422 | platform deckwood | `_quiosque` | `B.platform` | deckwood | world_village.gd:730 |  |
-| PCA-423 | cyl post | `_quiosque` | `B.cyl` | post | world_village.gd:734 |  [em laço] |
-| PCA-424 | hip roof thatch | `_quiosque` | `B.hip_roof` | thatch | world_village.gd:735 |  |
-| PCA-425 | box | `_quiosque` | `B.box` | — | world_village.gd:738 |  |
-| PCA-426 | box | `_quiosque` | `B.box` | — | world_village.gd:739 |  |
-| PCA-427 | box | `_quiosque` | `B.box` | — | world_village.gd:740 |  |
-| PCA-428 | box oak | `_quiosque` | `B.box` | oak | world_village.gd:741 |  |
-| PCA-429 | carved wooden plate | `_quiosque` | `Real.place` | — | world_village.gd:745 |  |
-| PCA-430 | wooden bucket 01 | `_quiosque` | `B.model` | — | world_village.gd:749 |  |
-| PCA-431 | plastic crate 01 | `_quiosque` | `B.model` | — | world_village.gd:751 |  |
-| PCA-432 | box darkwood | `_quiosque` | `B.box` | darkwood | world_village.gd:756 |  |
-| PCA-433 | label | `_quiosque` | `B.label` | — | world_village.gd:758 |  |
-| PCA-434 | wooden lantern 01 | `_quiosque` | `B.model` | — | world_village.gd:781 |  |
-| PCA-435 | bar chair round 01 | `_quiosque` | `B.model` | — | world_village.gd:803 |  [em laço] |
-| PCA-436 | outdoor table chair set 01 | `_kiosk_table` | `B.model` | — | world_village.gd:820 |  |
-| PCA-437 | box | `_kiosk_table` | `B.box` | — | world_village.gd:827 | cardapinho em pé na mesa |
-| PCA-438 | box darkwood | `_kiosk_neon` | `B.box` | darkwood | world_village.gd:868 |  [em laço] |
-| PCA-439 | label | `_kiosk_neon` | `B.label` | — | world_village.gd:874 |  |
-| PCA-440 | box | `_kiosk_neon` | `B.box` | — | world_village.gd:871 |  |
-| PCA-441 | box | `_kiosk_neon` | `B.box` | — | world_village.gd:880 |  [em laço] |
-| PCA-442 | box | `_kiosk_neon` | `B.box` | — | world_village.gd:881 |  |
-| PCA-443 | electric stove | `_kiosk_grill` | `B.model` | — | world_village.gd:893 |  |
-| PCA-444 | cyl | `_kiosk_grill` | `B.cyl` | — | world_village.gd:897 |  |
-| PCA-446 | cyl oak | `_barraca` | `B.cyl` | oak | world_village.gd:956 |  [em laço] |
-| PCA-447 | box | `_barraca` | `B.box` | — | world_village.gd:957 |  |
-| PCA-448 | box bamboo | `_barraca` | `B.box` | bamboo | world_village.gd:959 |  |
-| PCA-449 | label | `_barraca` | `B.label` | — | world_village.gd:960 |  |
-| PCA-450 | outdoor table chair set 01 | `_barraca` | `B.model` | — | world_village.gd:963 |  [em laço] |
-| PCA-451 | plastic crate 01 | `_barraca` | `B.model` | — | world_village.gd:966 |  |
-| PCA-452 | plastic monobloc chair 01 | `_barraca` | `B.model` | — | world_village.gd:967 |  |
-| PCA-453 | coconut pile | `_coco_piles` | `D.coconut_pile` | — | world_village.gd:1008 |  [em laço] |
-| PCA-454 | new | `_bike` | `MeshInstance3D.new` | — | world_village.gd:1062 |  [em laço] |
-| PCA-455 |  beam | `_bike` | `B._beam` | — | world_village.gd:1078 |  [em laço] |
-| PCA-456 | cyl | `_bike` | `B.cyl` | — | world_village.gd:1081 |  [em laço] |
-| PCA-457 |  beam | `_bike` | `B._beam` | — | world_village.gd:1085 |  [em laço] |
-| PCA-458 |  beam | `_bike` | `B._beam` | — | world_village.gd:1087 | guidão, selim, pedivela e pedais, descanso |
-| PCA-459 |  beam | `_bike` | `B._beam` | — | world_village.gd:1089 |  [em laço] |
-| PCA-460 | sphere | `_bike` | `B.sphere` | — | world_village.gd:1090 |  |
-| PCA-461 | cyl | `_bike` | `B.cyl` | — | world_village.gd:1091 |  |
-| PCA-462 |  beam | `_bike` | `B._beam` | — | world_village.gd:1093 |  |
-| PCA-463 |  beam | `_bike` | `B._beam` | — | world_village.gd:1094 |  |
-| PCA-464 | box | `_bike` | `B.box` | — | world_village.gd:1095 |  |
-| PCA-465 | box | `_bike` | `B.box` | — | world_village.gd:1096 |  |
-| PCA-466 |  beam | `_bike` | `B._beam` | — | world_village.gd:1097 |  |
-| PCA-467 |  beam | `_bike` | `B._beam` | — | world_village.gd:1098 |  |
-| PCA-468 | cyl | `_bike` | `B.cyl` | — | world_village.gd:1100 | cestinha na frente |
-| PCA-469 | cyl post | `_jangada2` | `B.cyl` | post | world_village.gd:1112 |  [em laço] |
-| PCA-470 | cyl oak | `_jangada2` | `B.cyl` | oak | world_village.gd:1114 |  |
-| PCA-471 | new | `_jangada2` | `MeshInstance3D.new` | — | world_village.gd:1115 |  |
-| PCA-472 | wall | `_jangada2` | `B.wall` | — | world_village.gd:1109 |  |
-| PCA-473 | k:boat-row-large | `_fishing_boat` | `Real.place` | — | world_village.gd:1137 | casco real (Kenney Pirate Kit, CC0, suavizado no Blender); pintado com a cor do barco |
-| PCA-474 | wooden crate 01 | `_fishing_boat` | `B.model` | — | world_village.gd:1140 |  |
-| PCA-475 | wooden bucket 01 | `_fishing_boat` | `B.model` | — | world_village.gd:1141 |  |
-| PCA-476 | cyl oak | `_fishing_boat` | `B.cyl` | oak | world_village.gd:1146 |  |
-| PCA-477 | new | `_fishing_boat` | `MeshInstance3D.new` | — | world_village.gd:1147 |  |
-| PCA-478 | wall | `_fishing_boat` | `B.wall` | — | world_village.gd:1144 |  |
-| PCA-479 | cyl | `_net` | `B.cyl` | — | world_village.gd:1212 |  |
-| PCA-480 | cyl | `_net` | `B.cyl` | — | world_village.gd:1213 |  |
-| PCA-481 | new | `_net` | `MeshInstance3D.new` | — | world_village.gd:1233 |  |
-| PCA-482 | wooden crate 01 | `_village_props` | `B.model` | — | world_village.gd:1272 |  [em laço] |
-| PCA-483 | wicker basket 02 | `_village_props` | `B.model` | — | world_village.gd:1273 |  [em laço] |
-| PCA-484 | potted plant 01 | `_village_props` | `B.model` | — | world_village.gd:1276 |  [em laço] |
-| PCA-485 | q:Bush Common | `_village_props` | `Real.place` | — | world_village.gd:1286 |  [em laço] |
-| PCA-486 | street lamp 01 | `_street_lamps` | `B.model` | — | world_village.gd:1332 |  [em laço] |
-| PCA-487 | cyl | `_street_lamps` | `B.cyl` | — | world_village.gd:1337 |  |
-| PCA-489 | thatch fringe | `_kiosk_details` | `D.thatch_fringe` | — | world_village.gd:1392 |  |
-| PCA-490 | bunting | `_kiosk_details` | `D.bunting` | — | world_village.gd:1394 |  [em laço] |
-| PCA-491 | bananas | `_kiosk_details` | `D.bananas` | — | world_village.gd:1396 | frutas penduradas nas vigas |
-| PCA-492 | bananas | `_kiosk_details` | `D.bananas` | — | world_village.gd:1397 |  |
-| PCA-493 | cyl | `_kiosk_details` | `B.cyl` | — | world_village.gd:1400 |  [em laço] |
-| PCA-494 | m | `_kiosk_details` | `D.m` | — | world_village.gd:1400 |  [em laço] |
-| PCA-495 | k:coconut | `_kiosk_details` | `Real.place` | — | world_village.gd:1401 |  [em laço] |
-| PCA-496 | tip jar | `_kiosk_details` | `D.tip_jar` | — | world_village.gd:1404 |  |
-| PCA-497 | straw cup | `_kiosk_details` | `D.straw_cup` | — | world_village.gd:1405 |  |
-| PCA-498 | cup stack | `_kiosk_details` | `D.cup_stack` | — | world_village.gd:1406 |  |
-| PCA-499 | cup stack | `_kiosk_details` | `D.cup_stack` | — | world_village.gd:1407 |  |
-| PCA-500 | blender | `_kiosk_details` | `D.blender` | — | world_village.gd:1408 |  |
-| PCA-501 | pineapple | `_kiosk_details` | `D.pineapple` | — | world_village.gd:1409 |  |
-| PCA-502 | box | `_kiosk_details` | `B.box` | — | world_village.gd:1410 |  |
-| PCA-503 | m | `_kiosk_details` | `D.m` | — | world_village.gd:1410 |  |
-| PCA-504 | radio | `_kiosk_details` | `D.radio` | — | world_village.gd:1411 |  |
-| PCA-505 | cyl | `_kiosk_details` | `B.cyl` | — | world_village.gd:1414 |  [em laço] |
-| PCA-506 | m | `_kiosk_details` | `D.m` | — | world_village.gd:1414 |  [em laço] |
-| PCA-507 | k:coconut | `_kiosk_details` | `Real.place` | — | world_village.gd:1416 |  [em laço] |
-| PCA-508 | open sign | `_kiosk_details` | `D.open_sign` | — | world_village.gd:1417 |  |
-| PCA-509 | coconut pile | `_kiosk_details` | `D.coconut_pile` | — | world_village.gd:1419 | em volta |
-| PCA-510 | coconut pile | `_kiosk_details` | `D.coconut_pile` | — | world_village.gd:1420 |  |
-| PCA-511 | box | `_kiosk_details` | `B.box` | — | world_village.gd:1429 |  |
-| PCA-512 | m | `_kiosk_details` | `D.m` | — | world_village.gd:1429 |  |
-| PCA-515 | box deckwood | `_kiosk_details` | `B.box` | deckwood | world_village.gd:1441 |  [em laço] |
-| PCA-517 | coconut pile | `_kiosk_details` | `D.coconut_pile` | — | world_village.gd:1427 |  |
-| PCA-518 | trash bin | `_kiosk_details` | `D.trash_bin` | — | world_village.gd:1432 |  |
-| PCA-519 | trash bin | `_kiosk_details` | `D.trash_bin` | — | world_village.gd:1433 |  |
-| PCA-520 | lifebuoy | `_kiosk_details` | `B.model` | — | world_village.gd:1434 |  |
-| PCA-521 | signpost | `_kiosk_details` | `D.signpost` | — | world_village.gd:1435 |  |
-| PCA-522 | tiki torch | `_kiosk_details` | `D.tiki_torch` | — | world_village.gd:1437 |  [em laço] |
-| PCA-524 | box | `_back_bar` | `B.box` | — | world_village.gd:1450 |  [em laço] |
-| PCA-525 | box oak | `_back_bar` | `B.box` | oak | world_village.gd:1452 |  [em laço] |
-| PCA-526 | box | `_back_bar` | `B.box` | — | world_village.gd:1453 |  [em laço] |
-| PCA-527 | box planks | `_back_bar` | `B.box` | planks | world_village.gd:1454 |  |
-| PCA-528 | place | `_back_bar` | `Real.place` | — | world_village.gd:1461 |  [em laço] |
-| PCA-529 | k:bottle | `_back_bar` | `Real.place` | — | world_village.gd:1464 |  [em laço] |
-| PCA-530 | k:bottle | `_back_bar` | `Real.place` | — | world_village.gd:1466 |  [em laço] |
-| PCA-531 | box | `_surf_rack` | `B.box` | — | world_village.gd:1471 |  |
-| PCA-532 | box | `_surf_rack` | `B.box` | — | world_village.gd:1473 |  [em laço] |
-| PCA-533 | box | `_surf_rack` | `B.box` | — | world_village.gd:1474 |  [em laço] |
-| PCA-534 | box | `_surf_rack` | `B.box` | — | world_village.gd:1475 |  |
-| PCA-535 | surfboard | `_surf_rack` | `D.surfboard` | — | world_village.gd:1479 | base na frente, topo apoiado na trave (inclinação para trás = -X) [em laço] |
-| PCA-536 | wooden crate 02 | `_kiosk_drinks` | `Real.place` | — | world_village.gd:1488 |  |
-| PCA-537 | food lime 01 | `_kiosk_drinks` | `Real.place` | — | world_village.gd:1490 |  [em laço] |
-| PCA-538 | k:bottle-large | `_kiosk_drinks` | `Real.place` | — | world_village.gd:1492 |  [em laço] |
-| PCA-540 | box | `_kiosk_drinks` | `B.box` | — | world_village.gd:1494 |  |
-| PCA-541 | m | `_kiosk_drinks` | `D.m` | — | world_village.gd:1494 |  |
-| PCA-542 | label | `_kiosk_drinks` | `B.label` | — | world_village.gd:1495 |  |
-| PCA-543 | label | `_kiosk_drinks` | `B.label` | — | world_village.gd:1497 |  |
-| PCA-544 | box | `_road` | `B.box` | — | world_village.gd:1525 |  |
-| PCA-545 | platform | `_road` | `B.platform` | — | world_village.gd:1527 |  [em laço] |
-| PCA-546 | box | `_road` | `B.box` | — | world_village.gd:1528 |  [em laço] |
-| PCA-547 | box | `_road` | `B.box` | — | world_village.gd:1530 |  |
-| PCA-548 | platform | `_road` | `B.platform` | — | world_village.gd:1532 |  [em laço] |
-| PCA-549 | box | `_road` | `B.box` | — | world_village.gd:1533 |  [em laço] |
-| PCA-550 | street lamp 01 | `_add_lamp` | `B.model` | — | world_village.gd:1559 |  |
-| PCA-552 | box | `_village_expansion` | `B.box` | — | world_village.gd:1578 |  |
-| PCA-553 | platform | `_village_expansion` | `B.platform` | — | world_village.gd:1612 |  |
-| PCA-554 | stall | `_village_expansion` | `D.stall` | — | world_village.gd:1617 |  [em laço] |
-| PCA-555 | label | `_village_expansion` | `B.label` | — | world_village.gd:1619 |  |
-| PCA-556 | cyl | `_village_expansion` | `B.cyl` | — | world_village.gd:1627 |  [em laço] |
-| PCA-557 | m | `_village_expansion` | `D.m` | — | world_village.gd:1627 |  [em laço] |
-| PCA-558 | bunting | `_village_expansion` | `D.bunting` | — | world_village.gd:1628 |  |
-| PCA-561 | power pole | `_village_expansion` | `D.power_pole` | — | world_village.gd:1637 |  [em laço] |
-| PCA-562 | wire | `_village_expansion` | `D.wire` | — | world_village.gd:1640 |  [em laço] |
-| PCA-563 | mailbox | `_village_expansion` | `D.mailbox` | — | world_village.gd:1653 |  [em laço] |
-| PCA-564 | cat | `_village_expansion` | `D.cat` | — | world_village.gd:1655 | gatos com os pés no piso: varanda (topo a 0,09 m) ou calçada (topo a 0,15 m); antes ficava |
-| PCA-565 | cat | `_village_expansion` | `D.cat` | — | world_village.gd:1656 |  |
-| PCA-566 | cat | `_village_expansion` | `D.cat` | — | world_village.gd:1657 |  |
-| PCA-567 | dog | `_village_expansion` | `D.dog` | — | world_village.gd:1658 |  |
-| PCA-568 | dog | `_village_expansion` | `D.dog` | — | world_village.gd:1659 |  |
-| PCA-570 | pier | `_village_expansion` | `D.pier` | — | world_village.gd:1666 | píer e farol |
-| PCA-571 | wall | `_village_expansion` | `B.wall` | — | world_village.gd:1671 |  [em laço] |
-| PCA-572 | wall | `_village_expansion` | `B.wall` | — | world_village.gd:1672 |  |
-| PCA-573 | wall | `_village_expansion` | `B.wall` | — | world_village.gd:1686 |  [em laço] |
-| PCA-575 | lighthouse | `_village_expansion` | `D.lighthouse` | — | world_village.gd:1687 |  |
-| PCA-576 | beach spot | `_beach_life` | `D.beach_spot` | — | world_village.gd:1704 |  [em laço] |
-| PCA-577 | sand castle | `_beach_life` | `D.sand_castle` | — | world_village.gd:1705 |  |
-| PCA-578 | volley net | `_beach_life` | `D.volley_net` | — | world_village.gd:1706 |  |
-| PCA-579 | starfish | `_beach_life` | `D.starfish` | — | world_village.gd:1712 |  [em laço] |
-| PCA-580 | crab | `_beach_life` | `D.crab` | — | world_village.gd:1716 |  [em laço] |
-| PCA-581 | box | `_landmark_details` | `B.box` | — | world_village.gd:1765 |  [em laço] |
-| PCA-582 | box | `_landmark_details` | `B.box` | — | world_village.gd:1772 |  |
-| PCA-583 | arch | `_landmark_details` | `B.arch` | — | world_village.gd:1773 |  |
-| PCA-584 | arch | `_landmark_details` | `B.arch` | — | world_village.gd:1774 |  |
-| PCA-585 | box | `_landmark_details` | `B.box` | — | world_village.gd:1776 |  |
-| PCA-586 | box | `_landmark_details` | `B.box` | — | world_village.gd:1777 |  |
-| PCA-587 | box | `_landmark_details` | `B.box` | — | world_village.gd:1778 |  |
-| PCA-588 | box | `_landmark_details` | `B.box` | — | world_village.gd:1780 |  [em laço] |
-| PCA-589 | box | `_landmark_details` | `B.box` | — | world_village.gd:1781 |  |
-| PCA-590 | box | `_landmark_details` | `B.box` | — | world_village.gd:1782 |  |
-| PCA-591 | arch | `_landmark_details` | `B.arch` | — | world_village.gd:1784 | arco da porta, sino visível na torre e lanternas |
-| PCA-592 | arch | `_landmark_details` | `B.arch` | — | world_village.gd:1785 |  |
-| PCA-593 | cyl | `_landmark_details` | `B.cyl` | — | world_village.gd:1789 |  |
-| PCA-594 | sphere | `_landmark_details` | `B.sphere` | — | world_village.gd:1790 |  |
-| PCA-595 | sphere | `_landmark_details` | `B.sphere` | — | world_village.gd:1791 |  |
-| PCA-596 |  beam | `_landmark_details` | `B._beam` | — | world_village.gd:1792 |  |
-| PCA-597 | box | `_landmark_details` | `B.box` | — | world_village.gd:1795 |  [em laço] |
-| PCA-598 | cyl | `_landmark_details` | `B.cyl` | — | world_village.gd:1796 |  [em laço] |
-| PCA-599 | box | `_landmark_details` | `B.box` | — | world_village.gd:1800 |  [em laço] |
-| PCA-600 | sphere | `_landmark_details` | `B.sphere` | — | world_village.gd:1838 |  |
-| PCA-601 | cyl | `_landmark_details` | `B.cyl` | — | world_village.gd:1806 |  [em laço] |
-| PCA-602 | cyl | `_landmark_details` | `B.cyl` | — | world_village.gd:1807 |  [em laço] |
-| PCA-603 |  beam | `_landmark_details` | `B._beam` | — | world_village.gd:1809 |  [em laço] |
-| PCA-604 |  beam | `_landmark_details` | `B._beam` | — | world_village.gd:1810 |  |
-| PCA-605 | box | `_landmark_details` | `B.box` | — | world_village.gd:1818 |  |
-| PCA-606 | box | `_landmark_details` | `B.box` | — | world_village.gd:1825 |  |
-| PCA-607 | box | `_landmark_details` | `B.box` | — | world_village.gd:1857 |  |
-| PCA-608 | label | `_landmark_details` | `B.label` | — | world_village.gd:1816 |  |
-| PCA-609 | box | `_landmark_details` | `B.box` | — | world_village.gd:1861 |  [em laço] |
-| PCA-610 | box | `_landmark_details` | `B.box` | — | world_village.gd:1877 |  |
-| PCA-611 | sphere | `_landmark_details` | `B.sphere` | — | world_village.gd:1839 |  |
-| PCA-612 | cyl | `_landmark_details` | `B.cyl` | — | world_village.gd:1846 |  [em laço] |
-| PCA-613 | cyl | `_landmark_details` | `B.cyl` | — | world_village.gd:1865 |  [em laço] |
-| PCA-615 | label | `_landmark_details` | `B.label` | — | world_village.gd:1823 |  |
-| PCA-616 | sphere | `_landmark_details` | `B.sphere` | — | world_village.gd:1848 |  [em laço] |
-| PCA-621 | wooden crate 01 | `_landmark_details` | `B.model` | — | world_village.gd:1851 |  [em laço] |
-| PCA-622 | new | `_landmark_details` | `MeshInstance3D.new` | — | world_village.gd:1870 |  |
-| PCA-623 | box | `_landmark_details` | `B.box` | — | world_village.gd:1879 |  |
-| PCA-628 | hip roof | `_landmark_details` | `B.hip_roof` | — | world_village.gd:1878 |  |
-| PCA-630 | multimesh | `_map_details` | `D.multimesh` | — | world_village.gd:1901 |  [em laço] |
-| PCA-631 | multimesh | `_map_details` | `D.multimesh` | — | world_village.gd:1914 |  |
-| PCA-632 | multimesh | `_map_details` | `D.multimesh` | — | world_village.gd:1919 |  |
-| PCA-633 |  beam | `_map_details` | `B._beam` | — | world_village.gd:1930 |  |
-| PCA-634 | multimesh | `_map_details` | `D.multimesh` | — | world_village.gd:1945 |  |
-| PCA-635 | potted plant 01 | `_map_details` | `B.model` | — | world_village.gd:1952 |  [em laço] |
-| PCA-636 | cyl | `_map_details` | `B.cyl` | — | world_village.gd:1956 |  [em laço] |
-| PCA-637 | cyl | `_map_details` | `B.cyl` | — | world_village.gd:1968 |  [em laço] |
-| PCA-638 | wire | `_map_details` | `D.wire` | — | world_village.gd:1969 |  |
-| PCA-639 | box | `_map_details` | `B.box` | — | world_village.gd:1978 |  |
-| PCA-640 | island tree 01 | `_map_details` | `B.model` | — | world_village.gd:1980 |  [em laço] |
+| PCA-422 | platform deckwood | `_quiosque` | `B.platform` | deckwood | world_village.gd:728 |  |
+| PCA-423 | cyl post | `_quiosque` | `B.cyl` | post | world_village.gd:747 |  [em laço] |
+| PCA-424 | hip roof darkwood | `_quiosque` | `B.hip_roof` | darkwood | world_village.gd:731 |  |
+| PCA-425 | box | `_quiosque` | `B.box` | — | world_village.gd:735 |  |
+| PCA-426 | box | `_quiosque` | `B.box` | — | world_village.gd:736 |  |
+| PCA-427 | box | `_quiosque` | `B.box` | — | world_village.gd:737 |  |
+| PCA-428 | box darkwood | `_quiosque` | `B.box` | darkwood | world_village.gd:748 |  |
+| PCA-429 | g:kiosk roof | `_quiosque` | `Real.place` | — | world_village.gd:732 |  |
+| PCA-430 | wooden lantern 01 | `_quiosque` | `B.model` | — | world_village.gd:773 |  |
+| PCA-431 | bar chair round 01 | `_quiosque` | `B.model` | — | world_village.gd:796 |  [em laço] |
+| PCA-432 | box | `_quiosque` | `B.box` | — | world_village.gd:749 |  |
+| PCA-433 | label | `_quiosque` | `B.label` | — | world_village.gd:750 |  |
+| PCA-436 | outdoor table chair set 01 | `_kiosk_table` | `B.model` | — | world_village.gd:847 |  |
+| PCA-437 | box | `_kiosk_table` | `B.box` | — | world_village.gd:854 | cardapinho em pé na mesa |
+| PCA-443 | electric stove | `_kiosk_grill` | `B.model` | — | world_village.gd:909 |  |
+| PCA-444 | cyl | `_kiosk_grill` | `B.cyl` | — | world_village.gd:913 |  |
+| PCA-446 | cyl oak | `_barraca` | `B.cyl` | oak | world_village.gd:972 |  [em laço] |
+| PCA-447 | box | `_barraca` | `B.box` | — | world_village.gd:973 |  |
+| PCA-448 | box bamboo | `_barraca` | `B.box` | bamboo | world_village.gd:975 |  |
+| PCA-449 | label | `_barraca` | `B.label` | — | world_village.gd:976 |  |
+| PCA-450 | outdoor table chair set 01 | `_barraca` | `B.model` | — | world_village.gd:979 |  [em laço] |
+| PCA-451 | plastic crate 01 | `_barraca` | `B.model` | — | world_village.gd:982 |  |
+| PCA-452 | plastic monobloc chair 01 | `_barraca` | `B.model` | — | world_village.gd:983 |  |
+| PCA-453 | coconut pile | `_coco_piles` | `D.coconut_pile` | — | world_village.gd:1024 |  [em laço] |
+| PCA-454 | new | `_bike` | `MeshInstance3D.new` | — | world_village.gd:1078 |  [em laço] |
+| PCA-455 |  beam | `_bike` | `B._beam` | — | world_village.gd:1094 |  [em laço] |
+| PCA-456 | cyl | `_bike` | `B.cyl` | — | world_village.gd:1097 |  [em laço] |
+| PCA-457 |  beam | `_bike` | `B._beam` | — | world_village.gd:1101 |  [em laço] |
+| PCA-458 |  beam | `_bike` | `B._beam` | — | world_village.gd:1103 | guidão, selim, pedivela e pedais, descanso |
+| PCA-459 |  beam | `_bike` | `B._beam` | — | world_village.gd:1105 |  [em laço] |
+| PCA-460 | sphere | `_bike` | `B.sphere` | — | world_village.gd:1106 |  |
+| PCA-461 | cyl | `_bike` | `B.cyl` | — | world_village.gd:1107 |  |
+| PCA-462 |  beam | `_bike` | `B._beam` | — | world_village.gd:1109 |  |
+| PCA-463 |  beam | `_bike` | `B._beam` | — | world_village.gd:1110 |  |
+| PCA-464 | box | `_bike` | `B.box` | — | world_village.gd:1111 |  |
+| PCA-465 | box | `_bike` | `B.box` | — | world_village.gd:1112 |  |
+| PCA-466 |  beam | `_bike` | `B._beam` | — | world_village.gd:1113 |  |
+| PCA-467 |  beam | `_bike` | `B._beam` | — | world_village.gd:1114 |  |
+| PCA-468 | cyl | `_bike` | `B.cyl` | — | world_village.gd:1116 | cestinha na frente |
+| PCA-469 | cyl post | `_jangada2` | `B.cyl` | post | world_village.gd:1128 |  [em laço] |
+| PCA-470 | cyl oak | `_jangada2` | `B.cyl` | oak | world_village.gd:1130 |  |
+| PCA-471 | new | `_jangada2` | `MeshInstance3D.new` | — | world_village.gd:1131 |  |
+| PCA-472 | wall | `_jangada2` | `B.wall` | — | world_village.gd:1125 |  |
+| PCA-473 | k:boat-row-large | `_fishing_boat` | `Real.place` | — | world_village.gd:1153 | casco real (Kenney Pirate Kit, CC0, suavizado no Blender); pintado com a cor do barco |
+| PCA-474 | wooden crate 01 | `_fishing_boat` | `B.model` | — | world_village.gd:1156 |  |
+| PCA-475 | wooden bucket 01 | `_fishing_boat` | `B.model` | — | world_village.gd:1157 |  |
+| PCA-476 | cyl oak | `_fishing_boat` | `B.cyl` | oak | world_village.gd:1162 |  |
+| PCA-477 | new | `_fishing_boat` | `MeshInstance3D.new` | — | world_village.gd:1163 |  |
+| PCA-478 | wall | `_fishing_boat` | `B.wall` | — | world_village.gd:1160 |  |
+| PCA-479 | cyl | `_net` | `B.cyl` | — | world_village.gd:1228 |  |
+| PCA-480 | cyl | `_net` | `B.cyl` | — | world_village.gd:1229 |  |
+| PCA-481 | new | `_net` | `MeshInstance3D.new` | — | world_village.gd:1249 |  |
+| PCA-482 | wooden crate 01 | `_village_props` | `B.model` | — | world_village.gd:1288 |  [em laço] |
+| PCA-483 | wicker basket 02 | `_village_props` | `B.model` | — | world_village.gd:1289 |  [em laço] |
+| PCA-484 | potted plant 01 | `_village_props` | `B.model` | — | world_village.gd:1292 |  [em laço] |
+| PCA-485 | q:Bush Common | `_village_props` | `Real.place` | — | world_village.gd:1302 |  [em laço] |
+| PCA-486 | street lamp 01 | `_street_lamps` | `B.model` | — | world_village.gd:1348 |  [em laço] |
+| PCA-487 | cyl | `_street_lamps` | `B.cyl` | — | world_village.gd:1353 |  |
+| PCA-490 | bunting | `_kiosk_details` | `D.bunting` | — | world_village.gd:1408 |  [em laço] |
+| PCA-491 | bananas | `_kiosk_details` | `D.bananas` | — | world_village.gd:1410 | frutas penduradas nas vigas |
+| PCA-492 | bananas | `_kiosk_details` | `D.bananas` | — | world_village.gd:1411 |  |
+| PCA-493 | cyl | `_kiosk_details` | `B.cyl` | — | world_village.gd:1414 |  [em laço] |
+| PCA-494 | m | `_kiosk_details` | `D.m` | — | world_village.gd:1414 |  [em laço] |
+| PCA-495 | k:coconut | `_kiosk_details` | `Real.place` | — | world_village.gd:1415 |  [em laço] |
+| PCA-496 | tip jar | `_kiosk_details` | `D.tip_jar` | — | world_village.gd:1418 |  |
+| PCA-497 | straw cup | `_kiosk_details` | `D.straw_cup` | — | world_village.gd:1419 |  |
+| PCA-498 | cup stack | `_kiosk_details` | `D.cup_stack` | — | world_village.gd:1420 |  |
+| PCA-499 | cup stack | `_kiosk_details` | `D.cup_stack` | — | world_village.gd:1421 |  |
+| PCA-501 | pineapple | `_kiosk_details` | `D.pineapple` | — | world_village.gd:1423 |  |
+| PCA-502 | box | `_kiosk_details` | `B.box` | — | world_village.gd:1424 |  |
+| PCA-503 | m | `_kiosk_details` | `D.m` | — | world_village.gd:1424 |  |
+| PCA-508 | open sign | `_kiosk_details` | `D.open_sign` | — | world_village.gd:1426 |  |
+| PCA-511 | box deckwood | `_kiosk_details` | `B.box` | deckwood | world_village.gd:1436 |  [em laço] |
+| PCA-518 | trash bin | `_kiosk_details` | `D.trash_bin` | — | world_village.gd:1428 | Lixeira no lado interno do balcão; passagens laterais desobstruídas. |
+| PCA-520 | lifebuoy | `_kiosk_details` | `B.model` | — | world_village.gd:1429 |  |
+| PCA-521 | signpost | `_kiosk_details` | `D.signpost` | — | world_village.gd:1430 |  |
+| PCA-522 | tiki torch | `_kiosk_details` | `D.tiki_torch` | — | world_village.gd:1432 |  [em laço] |
+| PCA-524 | box | `_back_bar` | `B.box` | — | world_village.gd:1445 |  [em laço] |
+| PCA-525 | box oak | `_back_bar` | `B.box` | oak | world_village.gd:1447 |  [em laço] |
+| PCA-526 | box | `_back_bar` | `B.box` | — | world_village.gd:1448 |  [em laço] |
+| PCA-527 | box planks | `_back_bar` | `B.box` | planks | world_village.gd:1449 |  |
+| PCA-528 | place | `_back_bar` | `Real.place` | — | world_village.gd:1456 |  [em laço] |
+| PCA-529 | k:bottle | `_back_bar` | `Real.place` | — | world_village.gd:1459 |  [em laço] |
+| PCA-530 | k:bottle | `_back_bar` | `Real.place` | — | world_village.gd:1461 |  [em laço] |
+| PCA-531 | box | `_surf_rack` | `B.box` | — | world_village.gd:1466 |  |
+| PCA-532 | box | `_surf_rack` | `B.box` | — | world_village.gd:1468 |  [em laço] |
+| PCA-533 | box | `_surf_rack` | `B.box` | — | world_village.gd:1469 |  [em laço] |
+| PCA-534 | box | `_surf_rack` | `B.box` | — | world_village.gd:1470 |  |
+| PCA-535 | surfboard | `_surf_rack` | `D.surfboard` | — | world_village.gd:1474 | base na frente, topo apoiado na trave (inclinação para trás = -X) [em laço] |
+| PCA-536 | g:bottle cachaca | `_kiosk_drinks` | `Real.place` | — | world_village.gd:1482 | Decoração apoiada no tampo lateral; bebidas são preparadas nas estações. |
+| PCA-537 | food lime 01 | `_kiosk_drinks` | `Real.place` | — | world_village.gd:1483 |  |
+| PCA-544 | box | `_road` | `B.box` | — | world_village.gd:1511 |  |
+| PCA-545 | platform | `_road` | `B.platform` | — | world_village.gd:1513 |  [em laço] |
+| PCA-546 | box | `_road` | `B.box` | — | world_village.gd:1514 |  [em laço] |
+| PCA-547 | box | `_road` | `B.box` | — | world_village.gd:1516 |  |
+| PCA-548 | platform | `_road` | `B.platform` | — | world_village.gd:1518 |  [em laço] |
+| PCA-549 | box | `_road` | `B.box` | — | world_village.gd:1519 |  [em laço] |
+| PCA-550 | street lamp 01 | `_add_lamp` | `B.model` | — | world_village.gd:1545 |  |
+| PCA-552 | box | `_village_expansion` | `B.box` | — | world_village.gd:1564 |  |
+| PCA-553 | platform | `_village_expansion` | `B.platform` | — | world_village.gd:1598 |  |
+| PCA-554 | stall | `_village_expansion` | `D.stall` | — | world_village.gd:1603 |  [em laço] |
+| PCA-555 | label | `_village_expansion` | `B.label` | — | world_village.gd:1605 |  |
+| PCA-556 | cyl | `_village_expansion` | `B.cyl` | — | world_village.gd:1613 |  [em laço] |
+| PCA-557 | m | `_village_expansion` | `D.m` | — | world_village.gd:1613 |  [em laço] |
+| PCA-558 | bunting | `_village_expansion` | `D.bunting` | — | world_village.gd:1614 |  |
+| PCA-561 | power pole | `_village_expansion` | `D.power_pole` | — | world_village.gd:1623 |  [em laço] |
+| PCA-562 | wire | `_village_expansion` | `D.wire` | — | world_village.gd:1626 |  [em laço] |
+| PCA-563 | mailbox | `_village_expansion` | `D.mailbox` | — | world_village.gd:1639 |  [em laço] |
+| PCA-564 | cat | `_village_expansion` | `D.cat` | — | world_village.gd:1641 | gatos com os pés no piso: varanda (topo a 0,09 m) ou calçada (topo a 0,15 m); antes ficava |
+| PCA-565 | cat | `_village_expansion` | `D.cat` | — | world_village.gd:1642 |  |
+| PCA-566 | cat | `_village_expansion` | `D.cat` | — | world_village.gd:1643 |  |
+| PCA-567 | dog | `_village_expansion` | `D.dog` | — | world_village.gd:1644 |  |
+| PCA-568 | dog | `_village_expansion` | `D.dog` | — | world_village.gd:1645 |  |
+| PCA-570 | pier | `_village_expansion` | `D.pier` | — | world_village.gd:1652 | píer e farol |
+| PCA-571 | wall | `_village_expansion` | `B.wall` | — | world_village.gd:1657 |  [em laço] |
+| PCA-572 | wall | `_village_expansion` | `B.wall` | — | world_village.gd:1658 |  |
+| PCA-573 | wall | `_village_expansion` | `B.wall` | — | world_village.gd:1672 |  [em laço] |
+| PCA-575 | lighthouse | `_village_expansion` | `D.lighthouse` | — | world_village.gd:1673 |  |
+| PCA-576 | beach spot | `_beach_life` | `D.beach_spot` | — | world_village.gd:1690 |  [em laço] |
+| PCA-577 | sand castle | `_beach_life` | `D.sand_castle` | — | world_village.gd:1691 |  |
+| PCA-578 | volley net | `_beach_life` | `D.volley_net` | — | world_village.gd:1692 |  |
+| PCA-579 | starfish | `_beach_life` | `D.starfish` | — | world_village.gd:1698 |  [em laço] |
+| PCA-580 | crab | `_beach_life` | `D.crab` | — | world_village.gd:1702 |  [em laço] |
+| PCA-581 | box | `_landmark_details` | `B.box` | — | world_village.gd:1751 |  [em laço] |
+| PCA-582 | box | `_landmark_details` | `B.box` | — | world_village.gd:1758 |  |
+| PCA-583 | arch | `_landmark_details` | `B.arch` | — | world_village.gd:1759 |  |
+| PCA-584 | arch | `_landmark_details` | `B.arch` | — | world_village.gd:1760 |  |
+| PCA-585 | box | `_landmark_details` | `B.box` | — | world_village.gd:1762 |  |
+| PCA-586 | box | `_landmark_details` | `B.box` | — | world_village.gd:1763 |  |
+| PCA-587 | box | `_landmark_details` | `B.box` | — | world_village.gd:1764 |  |
+| PCA-588 | box | `_landmark_details` | `B.box` | — | world_village.gd:1766 |  [em laço] |
+| PCA-589 | box | `_landmark_details` | `B.box` | — | world_village.gd:1767 |  |
+| PCA-590 | box | `_landmark_details` | `B.box` | — | world_village.gd:1768 |  |
+| PCA-591 | arch | `_landmark_details` | `B.arch` | — | world_village.gd:1770 | arco da porta, sino visível na torre e lanternas |
+| PCA-592 | arch | `_landmark_details` | `B.arch` | — | world_village.gd:1771 |  |
+| PCA-593 | cyl | `_landmark_details` | `B.cyl` | — | world_village.gd:1775 |  |
+| PCA-594 | sphere | `_landmark_details` | `B.sphere` | — | world_village.gd:1776 |  |
+| PCA-595 | sphere | `_landmark_details` | `B.sphere` | — | world_village.gd:1777 |  |
+| PCA-596 |  beam | `_landmark_details` | `B._beam` | — | world_village.gd:1778 |  |
+| PCA-597 | box | `_landmark_details` | `B.box` | — | world_village.gd:1781 |  [em laço] |
+| PCA-598 | cyl | `_landmark_details` | `B.cyl` | — | world_village.gd:1782 |  [em laço] |
+| PCA-599 | box | `_landmark_details` | `B.box` | — | world_village.gd:1786 |  [em laço] |
+| PCA-600 | sphere | `_landmark_details` | `B.sphere` | — | world_village.gd:1824 |  |
+| PCA-601 | cyl | `_landmark_details` | `B.cyl` | — | world_village.gd:1792 |  [em laço] |
+| PCA-602 | cyl | `_landmark_details` | `B.cyl` | — | world_village.gd:1793 |  [em laço] |
+| PCA-603 |  beam | `_landmark_details` | `B._beam` | — | world_village.gd:1795 |  [em laço] |
+| PCA-604 |  beam | `_landmark_details` | `B._beam` | — | world_village.gd:1796 |  |
+| PCA-605 | box | `_landmark_details` | `B.box` | — | world_village.gd:1804 |  |
+| PCA-606 | box | `_landmark_details` | `B.box` | — | world_village.gd:1811 |  |
+| PCA-607 | box | `_landmark_details` | `B.box` | — | world_village.gd:1843 |  |
+| PCA-608 | label | `_landmark_details` | `B.label` | — | world_village.gd:1802 |  |
+| PCA-609 | box | `_landmark_details` | `B.box` | — | world_village.gd:1847 |  [em laço] |
+| PCA-610 | box | `_landmark_details` | `B.box` | — | world_village.gd:1863 |  |
+| PCA-611 | sphere | `_landmark_details` | `B.sphere` | — | world_village.gd:1825 |  |
+| PCA-612 | cyl | `_landmark_details` | `B.cyl` | — | world_village.gd:1832 |  [em laço] |
+| PCA-613 | cyl | `_landmark_details` | `B.cyl` | — | world_village.gd:1851 |  [em laço] |
+| PCA-615 | label | `_landmark_details` | `B.label` | — | world_village.gd:1809 |  |
+| PCA-616 | sphere | `_landmark_details` | `B.sphere` | — | world_village.gd:1834 |  [em laço] |
+| PCA-621 | wooden crate 01 | `_landmark_details` | `B.model` | — | world_village.gd:1837 |  [em laço] |
+| PCA-622 | new | `_landmark_details` | `MeshInstance3D.new` | — | world_village.gd:1856 |  |
+| PCA-623 | box | `_landmark_details` | `B.box` | — | world_village.gd:1865 |  |
+| PCA-628 | hip roof | `_landmark_details` | `B.hip_roof` | — | world_village.gd:1864 |  |
+| PCA-630 | multimesh | `_map_details` | `D.multimesh` | — | world_village.gd:1887 |  [em laço] |
+| PCA-631 | multimesh | `_map_details` | `D.multimesh` | — | world_village.gd:1900 |  |
+| PCA-632 | multimesh | `_map_details` | `D.multimesh` | — | world_village.gd:1905 |  |
+| PCA-633 |  beam | `_map_details` | `B._beam` | — | world_village.gd:1916 |  |
+| PCA-634 | multimesh | `_map_details` | `D.multimesh` | — | world_village.gd:1931 |  |
+| PCA-635 | potted plant 01 | `_map_details` | `B.model` | — | world_village.gd:1938 |  [em laço] |
+| PCA-636 | cyl | `_map_details` | `B.cyl` | — | world_village.gd:1942 |  [em laço] |
+| PCA-637 | cyl | `_map_details` | `B.cyl` | — | world_village.gd:1954 |  [em laço] |
+| PCA-638 | wire | `_map_details` | `D.wire` | — | world_village.gd:1955 |  |
+| PCA-639 | box | `_map_details` | `B.box` | — | world_village.gd:1964 |  |
+| PCA-640 | island tree 01 | `_map_details` | `B.model` | — | world_village.gd:1966 |  [em laço] |
 | PCA-641 | cyl | `tiki_torch` | `B.cyl` | — | details.gd:116 |  |
 | PCA-642 | cyl | `tiki_torch` | `B.cyl` | — | details.gd:117 |  |
 | PCA-644 | sphere | `tiki_torch` | `B.sphere` | — | details.gd:120 |  |
@@ -1949,17 +1932,17 @@ Total: 2055 itens. MOD 229 · NAT 68 · PRC 31 · CEN 283 · PRT 11 · DSH 9 · 
 | PCA-891 | place | `_run_shot` | `Real.place` | — | main.gd:406 |  [em laço] |
 | PCA-892 | label | `spawn_customer` | `B.label` | — | village_life.gd:326 |  |
 | PCA-893 | build | `_bungalow` | `P.build` | — | world.gd:638 |  |
-| PCA-894 | place | `_sand_clutter` | `Real.place` | — | world_village.gd:1743 |  |
+| PCA-894 | place | `_sand_clutter` | `Real.place` | — | world_village.gd:1729 |  |
 | PCA-895 | new | `_run_shot` | `MeshInstance3D.new` | — | main.gd:391 |  |
 | PCA-896 | g:lounger | `_lounger` | `Real.place` | — | world.gd:401 | No modelo a cabeceira fica em +Z do glTF? Não: a frente é +Z e a cabeceira -Z, como no cód |
 | PCA-897 |  beam | `_lot` | `B._beam` | — | world.gd:1957 |  |
 | PCA-898 |  beam | `_lot` | `B._beam` | — | world.gd:1958 |  |
 | PCA-899 |  beam | `_lot` | `B._beam` | — | world.gd:1959 |  |
-| PCA-900 | g:bike  | `_bike` | `Real.place` | — | world_village.gd:1057 |  |
-| PCA-901 | g:jangada | `_jangada2` | `Real.place` | — | world_village.gd:1108 | jangada de troncos com vela enfunada: modelo do Blender (tools/gen_code_props.py) |
-| PCA-902 | wall | `_jangada2` | `B.wall` | — | world_village.gd:1127 |  |
-| PCA-903 | g:boat mast | `_fishing_boat` | `Real.place` | — | world_village.gd:1142 |  |
-| PCA-904 | wall | `_fishing_boat` | `B.wall` | — | world_village.gd:1160 |  |
+| PCA-900 | g:bike  | `_bike` | `Real.place` | — | world_village.gd:1073 |  |
+| PCA-901 | g:jangada | `_jangada2` | `Real.place` | — | world_village.gd:1124 | jangada de troncos com vela enfunada: modelo do Blender (tools/gen_code_props.py) |
+| PCA-902 | wall | `_jangada2` | `B.wall` | — | world_village.gd:1143 |  |
+| PCA-903 | g:boat mast | `_fishing_boat` | `Real.place` | — | world_village.gd:1158 |  |
+| PCA-904 | wall | `_fishing_boat` | `B.wall` | — | world_village.gd:1176 |  |
 | PCA-905 | g:tiki torch | `tiki_torch` | `Real.place` | — | details.gd:115 | haste de bambu com nós, cordas e copo de barro: modelo do Blender (tools/gen_code_props.py |
 | PCA-906 | g:signpost post | `signpost` | `Real.place` | — | details.gd:132 |  |
 | PCA-907 | g:sign arrow | `signpost` | `Real.place` | — | details.gd:141 |  [em laço] |
@@ -1977,10 +1960,10 @@ Total: 2055 itens. MOD 229 · NAT 68 · PRC 31 · CEN 283 · PRT 11 · DSH 9 · 
 | PCA-919 | g:flowerbed | `_reception_details` | `Real.place` | — | world.gd:2180 |  [em laço] |
 | PCA-920 | g:tv antenna | `_house_extras` | `Real.place` | — | world_village.gd:389 |  |
 | PCA-921 | g:rose window | `_church_and_praca` | `Real.place` | — | world_village.gd:679 |  |
-| PCA-922 | brass pan 01 | `_kiosk_grill` | `Real.place` | — | world_village.gd:895 | frigideira real (Poly Haven) com três coxinhas em pé dentro (modelo do Blender), sem encos |
-| PCA-923 | g:bell | `_landmark_details` | `Real.place` | — | world_village.gd:1788 |  |
-| PCA-924 | g:flowerbed | `_landmark_details` | `Real.place` | — | world_village.gd:1801 |  [em laço] |
-| PCA-925 | g:newsstand | `_landmark_details` | `Real.place` | — | world_village.gd:1815 | v0.9.5: banca de jornal do Blender (frisos, toldo recortado, revistas nos expositores); fr |
+| PCA-922 | brass pan 01 | `_kiosk_grill` | `Real.place` | — | world_village.gd:911 | frigideira real (Poly Haven) com três coxinhas em pé dentro (modelo do Blender), sem encos |
+| PCA-923 | g:bell | `_landmark_details` | `Real.place` | — | world_village.gd:1774 |  |
+| PCA-924 | g:flowerbed | `_landmark_details` | `Real.place` | — | world_village.gd:1787 |  [em laço] |
+| PCA-925 | g:newsstand | `_landmark_details` | `Real.place` | — | world_village.gd:1801 | v0.9.5: banca de jornal do Blender (frisos, toldo recortado, revistas nos expositores); fr |
 | PCA-926 | g:volleyball | `volley_net` | `Real.place` | — | details.gd:284 |  |
 | PCA-927 | g:tree amendoeira %d | `model` | `Real.place` | — | build.gd:505 | v0.9.4: amendoeira-da-praia do Blender (folhas de verdade); a CommonTree da Quaternius tin |
 | PCA-928 | multimesh | `_string_lights` | `D.multimesh` | — | world.gd:1123 |  |
@@ -1989,14 +1972,14 @@ Total: 2055 itens. MOD 229 · NAT 68 · PRC 31 · CEN 283 · PRT 11 · DSH 9 · 
 | PCA-931 | g:door leaf | `_facade` | `Real.place` | — | world_village.gd:293 |  |
 | PCA-932 | g:brass knob | `_facade` | `Real.place` | — | world_village.gd:312 |  |
 | PCA-933 | g:win shutters | `_facade` | `Real.place` | — | world_village.gd:328 |  |
-| PCA-934 | new | `_lamp_head` | `MeshInstance3D.new` | — | world_village.gd:1548 |  |
-| PCA-935 | g:popcorn cart | `_landmark_details` | `Real.place` | — | world_village.gd:1821 | v0.9.5: carrinho de pipoca do Blender (vitrine, rodas raiadas, guarda-sol listrado); pipoc |
+| PCA-934 | new | `_lamp_head` | `MeshInstance3D.new` | — | world_village.gd:1534 |  |
+| PCA-935 | g:popcorn cart | `_landmark_details` | `Real.place` | — | world_village.gd:1807 | v0.9.5: carrinho de pipoca do Blender (vitrine, rodas raiadas, guarda-sol listrado); pipoc |
 | PCA-936 | painted wooden bench | `_bench` | `B.model` | — | world_village.gd:109 |  |
 | PCA-937 | bunting | `_street_bunting` | `D.bunting` | — | world_village.gd:131 |  |
 | PCA-938 | g:brass knob | `_street_bunting` | `Real.place` | — | world_village.gd:133 |  [em laço] |
 | PCA-939 | g:balcony rail | `_house` | `Real.place` | — | world_village.gd:459 |  |
-| PCA-940 | g:coxinha | `_kiosk_grill` | `Real.place` | — | world_village.gd:901 |  [em laço] |
-| PCA-941 | g:bamboo pole | `_village_expansion` | `Real.place` | — | world_village.gd:1624 |  [em laço] |
+| PCA-940 | g:coxinha | `_kiosk_grill` | `Real.place` | — | world_village.gd:917 |  [em laço] |
+| PCA-941 | g:bamboo pole | `_village_expansion` | `Real.place` | — | world_village.gd:1610 |  [em laço] |
 | PCA-942 |  beam | `_string_lights` | `B._beam` | — | world.gd:1112 |  [em laço] |
 | PCA-943 | g:balcony rail | `_house` | `Real.place` | — | world_village.gd:461 |  [em laço] |
 | PCA-944 | hip roof | `_house` | `B.hip_roof` | — | world_village.gd:469 |  |
@@ -2034,31 +2017,27 @@ Total: 2055 itens. MOD 229 · NAT 68 · PRC 31 · CEN 283 · PRT 11 · DSH 9 · 
 | PCA-977 | g:trellis planter | `_bougainvillea` | `Real.place` | — | world_village.gd:179 | v0.9.5: vaso torneado, treliça de ripas e galhos num modelo só (Blender); antes eram cilin |
 | PCA-978 | g:ac unit | `_house_extras` | `Real.place` | — | world_village.gd:393 |  |
 | PCA-979 | g:hanging planter | `_house_extras` | `Real.place` | — | world_village.gd:402 | vaso de barro com hera em cascata: modelo do Blender (centro do vaso a 0,97 m do ponto mai |
-| PCA-980 | g:coconut cart | `_kiosk_details` | `Real.place` | — | world_village.gd:1426 | carrinho de cocos de madeira do Blender (roda raiada, varais); cocos sobre as tábuas (topo |
-| PCA-981 | coconut pile | `_kiosk_details` | `D.coconut_pile` | — | world_village.gd:1430 |  |
-| PCA-982 | g:popcorn | `_landmark_details` | `Real.place` | — | world_village.gd:1822 |  |
-| PCA-983 | g:seagull perch | `_landmark_details` | `Real.place` | — | world_village.gd:1837 |  |
-| PCA-984 | g:rope coil | `_landmark_details` | `Real.place` | — | world_village.gd:1853 | rolo de corda de verdade (Blender), não argolas empilhadas |
-| PCA-985 | g:bamboo pole | `_map_details` | `Real.place` | — | world_village.gd:1967 |  [em laço] |
-| PCA-986 | g:cloth shirt | `_map_details` | `Real.place` | — | world_village.gd:1973 |  [em laço] |
-| PCA-987 | label | `spawn_customer` | `B.label` | — | village_life.gd:352 |  |
+| PCA-982 | g:popcorn | `_landmark_details` | `Real.place` | — | world_village.gd:1808 |  |
+| PCA-983 | g:seagull perch | `_landmark_details` | `Real.place` | — | world_village.gd:1823 |  |
+| PCA-984 | g:rope coil | `_landmark_details` | `Real.place` | — | world_village.gd:1839 | rolo de corda de verdade (Blender), não argolas empilhadas |
+| PCA-985 | g:bamboo pole | `_map_details` | `Real.place` | — | world_village.gd:1953 |  [em laço] |
+| PCA-986 | g:cloth shirt | `_map_details` | `Real.place` | — | world_village.gd:1959 |  [em laço] |
+| PCA-987 | label | `spawn_customer` | `B.label` | — | village_life.gd:353 |  |
 | PCA-988 | g:cup plastic | `_make_cup` | `Real.place` | — | guest.gd:241 |  |
 | PCA-989 | g:coxinha | `_make_food` | `Real.place` | — | guest.gd:248 |  |
-| PCA-990 | k:coconut | `_quiosque` | `Real.place` | — | world_village.gd:748 |  [em laço] |
-| PCA-991 | cyl post | `_quiosque` | `B.cyl` | post | world_village.gd:755 |  [em laço] |
-| PCA-992 | box | `_quiosque` | `B.box` | — | world_village.gd:757 |  |
-| PCA-993 | label | `_quiosque` | `B.label` | — | world_village.gd:774 |  |
-| PCA-994 | box | `_kiosk_neon` | `B.box` | — | world_village.gd:882 |  |
-| PCA-995 | box | `_village_expansion` | `B.box` | — | world_village.gd:1667 |  |
+| PCA-990 | carved wooden plate | `_quiosque` | `Real.place` | — | world_village.gd:742 |  |
+| PCA-993 | label | `_quiosque` | `B.label` | — | world_village.gd:766 |  |
+| PCA-995 | box | `_village_expansion` | `B.box` | — | world_village.gd:1653 |  |
 | PCA-996 | wall | `pier` | `B.wall` | — | details.gd:407 | O modelo visual não inclui colisão; o piso contínuo cobre as emendas. |
 | PCA-997 | wall | `pier` | `B.wall` | — | details.gd:415 |  |
+| PCA-999 | g:kiosk facade | `_kiosk_facade` | `Real.place` | — | world_village.gd:811 |  |
 
 ## MAT — Materiais nomeados (M.xxx) (24)
 
 | Código | Nome | Chave | Fonte | Usado em |
 |---|---|---|---|---|
 | MAT-001 | Azulejo | `azulejo` | world.gd:92 | hotel_world.gd:198, world.gd:278, world.gd:346 |
-| MAT-002 | Bamboo | `bamboo` | world.gd:88 | world.gd:2090, world.gd:744, world.gd:753, world_village.gd:959 |
+| MAT-002 | Bamboo | `bamboo` | world.gd:88 | world.gd:2090, world.gd:744, world.gd:753, world_village.gd:975 |
 | MAT-003 | Ceramic | `ceramic` | world.gd:111 | world.gd:856 |
 | MAT-004 | Dark | `dark` | world.gd:99 | — |
 | MAT-005 | Darkwood | `darkwood` | world.gd:101 | world.gd:1033, world.gd:1162, world.gd:2166, world.gd:413 (+13) |
@@ -2068,10 +2047,10 @@ Total: 2055 itens. MOD 229 · NAT 68 · PRC 31 · CEN 283 · PRT 11 · DSH 9 · 
 | MAT-009 | Linen | `linen` | world.gd:89 | — |
 | MAT-010 | Linen sand | `linen_sand` | world.gd:91 | world.gd:1251, world.gd:658, world.gd:666 |
 | MAT-011 | Linen teal | `linen_teal` | world.gd:90 | world.gd:1196, world.gd:405, world.gd:850 |
-| MAT-012 | Oak | `oak` | world.gd:87 | world.gd:1037, world.gd:1038, world.gd:1039, world.gd:1041 (+14) |
+| MAT-012 | Oak | `oak` | world.gd:87 | world.gd:1037, world.gd:1038, world.gd:1039, world.gd:1041 (+13) |
 | MAT-013 | Planks | `planks` | world.gd:85 | world.gd:1080, world.gd:1083, world.gd:1411, world.gd:2179 (+7) |
 | MAT-014 | Plaster | `plaster` | world.gd:82 | world.gd:244, world.gd:269, world.gd:287, world.gd:742 (+2) |
-| MAT-015 | Post | `post` | world.gd:98 | kiosk_operations.gd:32, world.gd:1029, world.gd:1205, world.gd:1409 (+8) |
+| MAT-015 | Post | `post` | world.gd:98 | world.gd:1029, world.gd:1205, world.gd:1409, world.gd:1410 (+6) |
 | MAT-016 | Rattan | `rattan` | world.gd:105 | world.gd:403, world.gd:404 |
 | MAT-017 | Rug | `rug` | world.gd:103 | world.gd:801, world.gd:811 |
 | MAT-018 | Rug teal | `rug_teal` | world.gd:104 | world.gd:805 |
@@ -2079,7 +2058,7 @@ Total: 2055 itens. MOD 229 · NAT 68 · PRC 31 · CEN 283 · PRT 11 · DSH 9 · 
 | MAT-020 | Teal | `teal` | world.gd:84 | world.gd:242, world.gd:247, world.gd:248, world.gd:249 (+3) |
 | MAT-021 | Terra tiles | `terra_tiles` | world.gd:94 | hotel_world.gd:139, world.gd:211 |
 | MAT-022 | Terracotta | `terracotta` | world.gd:83 | world.gd:271, world.gd:296, world.gd:743, world.gd:752 (+1) |
-| MAT-023 | Thatch | `thatch` | world.gd:97 | kiosk_operations.gd:39, world.gd:1030, world.gd:290, world.gd:569 (+2) |
+| MAT-023 | Thatch | `thatch` | world.gd:97 | world.gd:1030, world.gd:290, world.gd:569, world.gd:616 |
 | MAT-024 | Voile | `voile` | world.gd:110 | world.gd:796, world.gd:798, world.gd:859 |
 
 ## COR — Cores de paleta dos personagens (28)

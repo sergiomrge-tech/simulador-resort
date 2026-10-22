@@ -979,12 +979,12 @@ func show_order(text: String, urgent: = false) -> void :
 		_bubble = Label3D.new()
 		_bubble.billboard = BaseMaterial3D.BILLBOARD_ENABLED
 		_bubble.font = UiTheme.bold()
-		_bubble.font_size = 36
-		_bubble.pixel_size = 0.004
-		_bubble.outline_size = 12
+		_bubble.font_size = 22
+		_bubble.pixel_size = 0.0025
+		_bubble.outline_size = 4
 		_bubble.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		_bubble.width = 200.0
-		_bubble.no_depth_test = true
+		_bubble.no_depth_test = false
 		_bubble.render_priority = 10
 		_bubble.fixed_size = false
 		# A raiz sentada fica à frente do corpo; ancora o pedido acima da cabeça.
@@ -992,6 +992,10 @@ func show_order(text: String, urgent: = false) -> void :
 		_bubble.position = Vector3(0, 1.8 + (0.5 if spot.get("table", false) and cos(rotation.y) > 0.0 else 0.0), -0.3)
 		add_child(_bubble)
 	_bubble.text = text
+	if Core.company_enabled() and not spot.is_empty():
+		var world = _world()
+		if world != null:
+			_bubble.text = "#%02d" % (world.kiosk_spots.find(spot) + 1)
 	_bubble.modulate = Color(0.2, 0.12, 0.08)
 	_bubble.outline_modulate = Color(1.0, 0.55, 0.5) if urgent else (Color(1.0, 0.85, 0.25) if get_meta("vip", false) else Color(1, 1, 1))
 
