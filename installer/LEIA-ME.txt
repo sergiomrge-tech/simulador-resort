@@ -4,6 +4,8 @@ Abra pelo atalho "Maré Alta Resort" na área de trabalho ou no menu Iniciar.
 Saves, configurações e cache ficam em userdata\ dentro da pasta do jogo.
 
 NOVO NA 1.1.0 RC2
+- Celular mais compacto, apps em três colunas e textos ajustados à largura.
+  A tela acompanha o tamanho da janela; use a rolagem para ver os demais apps.
 - Vidros das janelas transparentes e sem cor; barcos afastados do piso do cais.
   Passos novos, mais suaves, com cinco variações por tipo de piso e cadência natural.
 - Cais corrigido: piso físico nas tábuas e na plataforma, acesso pela rampa

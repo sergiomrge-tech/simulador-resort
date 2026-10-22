@@ -342,6 +342,11 @@ func v1_test() -> void :
 
 func run(m) -> void :
 	main = m
+	if main.args.has("phone-layout-test"):
+		var phone_test = load("res://tests/phone_layout_regression.gd").new()
+		add_child(phone_test)
+		await phone_test.run(main)
+		return
 	if main.args.has("pier-test"):
 		var pier_test = load("res://tests/pier_regression.gd").new()
 		add_child(pier_test)

@@ -85,3 +85,13 @@ Passos antigos foram substituídos por quinze pisadas curtas Kenney Impact Sound
 PCK atualizado: SHA-256 `d339aec50cdbcfed030067f562cb85b4c2e8854f7412a88073f5357ea4dee464`. O ZIP `MareAltaResort_1.1_CaisCorrigido.zip` em Downloads foi atualizado com as três correções; CRC de todos os arquivos verificado.
 
 `glass-boat-steps-pack.log`: PIER_TEST PASS no pacote exportado, com as mesmas verificações de vidro, barcos e áudio e 29 pisadas. `glass-boat-loop-pack.log`: LOOP_TEST PASS (dinheiro=5232, estrelas=4,54, bar=12). Sem SCRIPT ERROR ou REAL_MISSING nesses logs; permanecem os avisos conhecidos de recursos no encerramento automático.
+
+### Celular sem corte lateral (22/10/2026)
+
+Relato: conteúdo do celular cortado nas laterais. A captura `shots/phone_before_home.png` confirmou que nomes compridos dos apps alargavam a grade de quatro colunas para fora da tela. O aparelho agora usa escala máxima 0,9 e se adapta à janela; ícones de 64 px, três colunas, fontes/botões menores e quebra de linha. Cartões usam a largura disponível do ScrollContainer, sem mínimo fixo que ignore a barra de rolagem. Prêmios do Álbum passam para outra linha quando necessário.
+
+`phone-layout-final.log`: PHONE_LAYOUT_TEST PASS, 132 verificações (21 apps + início, em 1280×720, 800×600 e 360×640), com nome de 24 letras W, equipe contratada e quatro bangalôs. Verifica os limites horizontais de todos os controles e o encaixe do aparelho na janela. Capturas inspecionadas: `shots/phone_after_home.png` e `shots/phone_company_fit.png`. Conteúdo longo continua acessível por rolagem vertical.
+
+`phone-layout-pack.log`: PHONE_LAYOUT_TEST PASS no pacote final, repetindo as 132 verificações. SHA-256 do PCK: `7f806518bf4aa584dd1eabd07ebda85f46bbe77b62261c84566f79148fb427a8`. O ZIP existente `MareAltaResort_1.1_CaisCorrigido.zip` em Downloads contém esta atualização; todos os CRCs foram verificados.
+
+Regressões do mesmo pacote: `phone-loop-pack.log` LOOP_TEST PASS (dinheiro=5147, estrelas=4,54, bar=12); `phone-company-pack.log` COMPANY_TEST PASS, incluindo formulário, rascunhos e gravação da placa. Sem SCRIPT ERROR ou REAL_MISSING nesses logs. Permanecem os avisos conhecidos de recursos no encerramento automático.

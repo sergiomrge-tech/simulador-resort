@@ -50,7 +50,9 @@ func _ready() -> void :
 	add_to_group("phone")
 	set_anchors_preset(Control.PRESET_FULL_RECT)
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
-	theme = T.get_theme()
+	theme = T.get_theme().duplicate()
+	for type_name in ["Button", "OptionButton", "CheckButton", "CheckBox", "LineEdit", "SpinBox"]:
+		theme.set_font_size("font_size", type_name, 16)
 	_phone = PanelContainer.new()
 	_phone.mouse_filter = Control.MOUSE_FILTER_STOP
 	_phone.custom_minimum_size = Vector2(W, H)
@@ -134,8 +136,12 @@ func _ready() -> void :
 
 func _place() -> void :
 	var vs: = get_viewport_rect().size if size.x < 10.0 else size
-	_phone.size = Vector2(W, minf(H, vs.y - 30.0))
-	_phone.position = Vector2(vs.x - W - 60.0, (vs.y - _phone.size.y) * 0.5)
+	# Mantém a área interna estável e adapta o aparelho inteiro à janela.
+	_phone.size = Vector2(W, H)
+	var factor := minf(0.9, minf((vs.x - 32.0) / W, (vs.y - 32.0) / H))
+	_phone.scale = Vector2.ONE * maxf(0.1, factor)
+	var fitted := _phone.size * _phone.scale
+	_phone.position = Vector2(maxf(16, vs.x - fitted.x - 32.0), (vs.y - fitted.y) * 0.5)
 
 func _refresh_if_open() -> void :
 	# O formulário mantém seu rascunho durante vendas e reposições, mesmo ao trocar de fonte.
@@ -188,15 +194,15 @@ static func app_for_tab(tab: String) -> String:
 	return ""
 
 # ------------------------------------------------------------------ helpers de UI
-func _lbl(parent: Node, t: String, fs: int, c: Color, strong: = false, wrap: = false) -> Label:
+func _lbl(parent: Node, t: String, fs: int, c: Color, strong: = false, _wrap: = false) -> Label:
 	var l: = Label.new()
 	l.text = t
-	l.add_theme_font_size_override("font_size", fs)
+	l.add_theme_font_size_override("font_size", maxi(13, roundi(fs * 0.9)))
 	l.add_theme_color_override("font_color", c)
 	l.add_theme_font_override("font", T.bold() if strong else T.font())
-	if wrap:
-		l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		l.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	# Todo texto pode quebrar linha: o nome de um app não alarga a tela.
+	l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	l.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	parent.add_child(l)
 	return l
 
@@ -247,7 +253,8 @@ func _badge(parent: Node, id: String, bg: Color, sz: = 44) -> void :
 func _btn(parent: Node, text: String, cb: Callable, c: = Color(0.1, 0.65, 0.68), enabled: = true) -> Button:
 	var b: = Button.new()
 	b.text = text
-	b.add_theme_font_size_override("font_size", 17)
+	b.add_theme_font_size_override("font_size", 15)
+	b.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	var n: = _box(c, 14, 8)
 	n.border_width_bottom = 4
 	n.border_color = c.darkened(0.3)
@@ -279,7 +286,8 @@ func _chip(parent: Node, text: String, fg: Color, bg: Color) -> void :
 	p.add_theme_stylebox_override("panel", st)
 	p.size_flags_horizontal = Control.SIZE_SHRINK_END
 	p.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	_lbl(p, text, 15, fg, true)
+	var label := _lbl(p, text, 15, fg, true)
+	label.autowrap_mode = TextServer.AUTOWRAP_OFF
 	parent.add_child(p)
 
 func _expand(c: Control) -> Control:
@@ -329,8 +337,8 @@ func refresh() -> void :
 	var list: = VBoxContainer.new()
 	list.add_theme_constant_override("separation", 10)
 	list.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	# largura fixa: sem isto os textos longos empurram os cartões para fora da tela do celular
-	list.custom_minimum_size.x = W - 28.0 - 24.0 - 10.0
+	# O ScrollContainer fornece a largura útil, descontando a barra de rolagem.
+	list.custom_minimum_size.x = 0
 	m.add_child(list)
 	match app:
 		"horarios":
@@ -421,17 +429,19 @@ func _home() -> void :
 		gv.add_child(pb)
 		_lbl(gv, tr("Pronto para comprar!") if st[0] == "ready" else str(st[1]), 15, GOOD if st[0] == "ready" else INK_SOFT, false, true)
 	var grid: = GridContainer.new()
-	grid.columns = 4
-	grid.add_theme_constant_override("h_separation", 12)
+	grid.columns = 3
+	grid.add_theme_constant_override("h_separation", 10)
 	grid.add_theme_constant_override("v_separation", 8)
 	grid.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	v.add_child(grid)
 	for a in APPS:
 		var cell: = VBoxContainer.new()
+		cell.custom_minimum_size.x = 100
 		cell.add_theme_constant_override("separation", 4)
 		grid.add_child(cell)
 		var b: = Button.new()
-		b.custom_minimum_size = Vector2(72, 72)
+		b.custom_minimum_size = Vector2(64, 64)
+		b.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 		var n: = _box(a[2], 22, 10)
 		n.shadow_color = Color(0, 0, 0, 0.18)
 		n.shadow_size = 5
@@ -615,7 +625,10 @@ func _app_album(list: VBoxContainer) -> void :
 	var head: = _card(list, Color(1.0, 0.96, 0.8, 0.97))
 	_lbl(head, tr("Clientes famosos: %d/%d") % [n, Economy.VIPS.size()], 20, INK, true)
 	_lbl(head, tr("Sirva um cliente VIP (balão dourado) para colocá-lo no álbum. Cada marco paga um prêmio."), 14, INK_SOFT, false, true)
-	var ms: = _row(head, 8)
+	var ms := HFlowContainer.new()
+	ms.add_theme_constant_override("h_separation", 8)
+	ms.add_theme_constant_override("v_separation", 6)
+	head.add_child(ms)
 	for k in Economy.ALBUM_REWARDS:
 		var done: = n >= int(k)
 		_chip(ms, "%d: %s" % [int(k), Core.fmt_money(int(Economy.ALBUM_REWARDS[k]))], Color.WHITE if done else INK, GOOD if done else Color(0.9, 0.9, 0.94))

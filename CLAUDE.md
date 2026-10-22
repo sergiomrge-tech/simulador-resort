@@ -64,6 +64,7 @@ Base de trabalho: v0.6.5 recuperada; versões atuais em `project.godot` / `expor
 - Download do itch.io pelo shell: GET na página, POST `/download_url` com `csrf_token`, abrir a URL devolvida, depois POST `/file/<id>?source=view_game&as_props=1&after_download_lightbox=true` (a URL assinada dura 60 s). Kenney, ambientCG e Poly Haven respondem direto do shell.
 
 ## 🖥️ Sala do Vídeo
+- **Celular (22/10/2026):** nomes de apps sem quebra de linha alargavam a grade e eram cortados pelo painel. Grade de três colunas, textos/botões com quebra e rolagem vertical; o Álbum usa FlowContainer nos prêmios. Dimensionar o aparelho por escala da janela e manter a largura útil dos cartões sob controle, sem mínimo fixo que ignore a barra de rolagem. `--loop-test --phone-layout-test` verifica todos os apps em 1280×720, 800×600 e 360×640.
 - DirectX 12: opção "API gráfica" grava um `override.cfg` ao lado do .exe (com volta automática para o Vulkan).
 - DLSS **não existe na Godot**. O upscaler é o FSR 2.2 / FSR 1, na opção "Upscaling" + "Escala 3D".
 

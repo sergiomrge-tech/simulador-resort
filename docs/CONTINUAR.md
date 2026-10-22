@@ -6,6 +6,8 @@
 
 > **Correção do cais (22/10/2026):** colisões dos módulos/platforma, rampa sem degrau, limite final alinhado e recuperação de quedas estão cobertos por `--loop-test --pier-test`. Conferir a validação local antes de entregar um pacote antigo.
 
+> **Celular ajustado (22/10/2026):** aparelho e controles menores, três colunas e quebra de linha corrigem os cortes laterais. `--loop-test --phone-layout-test` valida todos os apps em três tamanhos. O ZIP de Downloads foi atualizado novamente.
+
 Este arquivo é para qualquer assistente/IA (ou pessoa) que vá continuar o projeto. Leia também o `CLAUDE.md`
 na raiz: ele é o "palácio de memória" com TODAS as regras e erros já cometidos. Siga as regras dele.
 
