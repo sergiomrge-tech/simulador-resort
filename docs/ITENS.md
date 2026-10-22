@@ -2,7 +2,7 @@
 
 Gerado por `python3 tools/gen_item_catalog.py` — **não edite à mão**. Os códigos ficam em `docs/itens_registro.json` e nunca mudam. Para pedir uma alteração, cite o código (ex.: "troque o modelo de MOD-017").
 
-Total: 2034 itens. MOD 229 · NAT 68 · PRC 31 · CEN 282 · PRT 11 · DSH 9 · SUP 10 · EXP 9 · STF 4 · UPG 15 · QST 4 · VIP 12 · EVT 8 · NOU 154 · TEX 29 · AUD 25 · ICO 36 · FNT 1 · SHD 14 · ANI 43 · PCA 931 · MAT 24 · COR 28 · SCR 41 · PES 16
+Total: 2035 itens. MOD 229 · NAT 68 · PRC 31 · CEN 282 · PRT 11 · DSH 9 · SUP 10 · EXP 9 · STF 4 · UPG 15 · QST 4 · VIP 12 · EVT 8 · NOU 154 · TEX 29 · AUD 26 · ICO 36 · FNT 1 · SHD 14 · ANI 43 · PCA 931 · MAT 24 · COR 28 · SCR 41 · PES 16
 
 ## MOD — Modelos 3D em uso (reais, baixados da web) (229)
 
@@ -954,35 +954,36 @@ Total: 2034 itens. MOD 229 · NAT 68 · PRC 31 · CEN 282 · PRT 11 · DSH 9 · 
 | TEX-028 | White stucco | `white_stucco` | Poly Haven/ambientCG (CC0) ou gerado | toon.gd:10, world_village.gd:68, world_village.gd:86 |
 | TEX-029 | Smoke puff | `smoke_puff` | Poly Haven/ambientCG (CC0) ou gerado | — |
 
-## AUD — Sons e músicas (25)
+## AUD — Sons e músicas (26)
 
 | Código | Nome | Chave | Fonte | Usado em |
 |---|---|---|---|---|
-| AUD-001 | Bell | `bell` | assets/audio | audio.gd:129, guests.gd:74, progression.gd:151, progression.gd:429 (+3) |
-| AUD-002 | Bird1 | `bird1` | assets/audio | audio.gd:85 |
-| AUD-003 | Bird2 | `bird2` | assets/audio | audio.gd:85 |
+| AUD-001 | Bell | `bell` | assets/audio | audio.gd:125, guests.gd:74, progression.gd:151, progression.gd:429 (+3) |
+| AUD-002 | Bird1 | `bird1` | assets/audio | audio.gd:81 |
+| AUD-003 | Bird2 | `bird2` | assets/audio | audio.gd:81 |
 | AUD-004 | Clean | `clean` | assets/audio | world.gd:624, world.gd:716 |
 | AUD-005 | Click | `click` | assets/audio | hud.gd:255, menus.gd:123, menus.gd:348, minigame.gd:161 (+6) |
 | AUD-006 | Coin | `coin` | assets/audio | guests.gd:189, guests.gd:288, office_ui.gd:433, office_ui.gd:445 (+4) |
-| AUD-007 | Crickets loop | `crickets_loop` | assets/audio | audio.gd:39 |
-| AUD-008 | Dog | `dog` | assets/audio | audio.gd:95 |
+| AUD-007 | Crickets loop | `crickets_loop` | assets/audio | audio.gd:38 |
+| AUD-008 | Dog | `dog` | assets/audio | audio.gd:91 |
 | AUD-009 | Door | `door` | assets/audio | world_village.gd:279, world_village.gd:429, world_village.gd:579, world_village.gd:663 |
 | AUD-010 | Glass | `glass` | assets/audio | guests.gd:157, village_life.gd:205, village_life.gd:691, world_village.gd:1337 (+1) |
-| AUD-011 | Music bossa | `music_bossa` | assets/audio | audio.gd:37 |
-| AUD-012 | Ocean loop | `ocean_loop` | assets/audio | audio.gd:38 |
-| AUD-013 | Seagull1 | `seagull1` | assets/audio | audio.gd:90 |
-| AUD-014 | Seagull2 | `seagull2` | assets/audio | audio.gd:90 |
+| AUD-011 | Music bossa | `music_bossa` | assets/audio | — |
+| AUD-012 | Ocean loop | `ocean_loop` | assets/audio | audio.gd:37 |
+| AUD-013 | Seagull1 | `seagull1` | assets/audio | audio.gd:86 |
+| AUD-014 | Seagull2 | `seagull2` | assets/audio | audio.gd:86 |
 | AUD-015 | Step1 | `step1` | assets/audio | — |
 | AUD-016 | Step2 | `step2` | assets/audio | — |
 | AUD-017 | Step wood1 | `step_wood1` | assets/audio | — |
 | AUD-018 | Step wood2 | `step_wood2` | assets/audio | — |
 | AUD-019 | Swoosh | `swoosh` | assets/audio | — |
-| AUD-020 | Village murmur | `village_murmur` | assets/audio | audio.gd:40 |
-| AUD-021 | Dj loop | `dj_loop` | assets/audio | audio.gd:114 |
-| AUD-022 | Forro loop | `forro_loop` | assets/audio | audio.gd:114 |
-| AUD-023 | Rain loop | `rain_loop` | assets/audio | audio.gd:41 |
+| AUD-020 | Village murmur | `village_murmur` | assets/audio | — |
+| AUD-021 | Dj loop | `dj_loop` | assets/audio | audio.gd:110 |
+| AUD-022 | Forro loop | `forro_loop` | assets/audio | audio.gd:110 |
+| AUD-023 | Rain loop | `rain_loop` | assets/audio | audio.gd:39 |
 | AUD-024 | Thunder | `thunder` | assets/audio | event_fx.gd:484 |
-| AUD-025 | Wind loop | `wind_loop` | assets/audio | audio.gd:42 |
+| AUD-025 | Wind loop | `wind_loop` | assets/audio | audio.gd:40 |
+| AUD-026 | Music relax | `music_relax` | assets/audio | audio.gd:36 |
 
 ## ICO — Ícones de interface (36)
 

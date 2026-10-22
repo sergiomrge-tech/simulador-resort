@@ -5,7 +5,6 @@ extends Node
 var music: AudioStreamPlayer
 var ocean: AudioStreamPlayer
 var crickets: AudioStreamPlayer
-var murmur: AudioStreamPlayer
 var player: Node3D
 var _cache: = {}
 var _bird_t: = 8.0
@@ -34,10 +33,9 @@ static func ensure_buses() -> void :
 func _ready() -> void :
 	add_to_group("audio")
 	ensure_buses()
-	music = _loop("music_bossa", -13.0, "Music")
+	music = _loop("music_relax", -20.0, "Music")
 	ocean = _loop("ocean_loop", -8.0)
 	crickets = _loop("crickets_loop", -60.0)
-	murmur = _loop("village_murmur", -60.0)
 	rain_snd = _loop("rain_loop", -80.0)
 	wind_snd = _loop("wind_loop", -80.0)
 	party_snd = AudioStreamPlayer3D.new()
@@ -73,9 +71,7 @@ func _process(delta: float) -> void :
 		village_k = clampf(1.0 - (Vector2(pp.x, pp.z) - Vector2(VILLAGE.x, VILLAGE.z)).length() / 45.0, 0.0, 1.0)
 		beach_k = clampf(( - pp.z - 5.0) / 15.0, 0.0, 1.0)
 	crickets.volume_db = lerpf(-50.0, -12.0, _night)
-	music.volume_db = lerpf(-13.0, -17.0, _night) - village_k * 3.0
-	var day_k: = 1.0 - _night
-	murmur.volume_db = linear_to_db(maxf(0.0005, village_k * lerpf(0.15, 1.0, day_k) * 0.55))
+	music.volume_db = lerpf(-20.0, -24.0, _night) - village_k * 3.0
 	if get_tree().paused:
 		return
 	_bird_t -= delta

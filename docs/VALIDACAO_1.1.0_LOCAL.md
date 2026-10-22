@@ -36,7 +36,9 @@ Continuam os avisos conhecidos de UID com fallback textual na fonte e de recurso
 
 `build/rc2-playable/Jogar.vbs` abre `MareAltaResort.exe` e o PCK completo 1.1.0 exportado nesta máquina. O runtime Windows 4.5.1 foi reutilizado da instalação existente. Os saves desta cópia ficam em seu próprio `userdata/`; a instalação `D:/Games/MareAltaResort` não foi alterada.
 
-O PCK tem 1.733.165.240 bytes. SHA-256: `d6692c8b74f5e9f190424f916e42dbeebd5b1814dccfcdb2a9c493d9e6e344c1`.
+O primeiro PCK da integração tinha 1.733.165.240 bytes e SHA-256 `d6692c8b74f5e9f190424f916e42dbeebd5b1814dccfcdb2a9c493d9e6e344c1`.
+
+Atualização de áudio solicitada pelo Sergio no mesmo dia: trilha original `music_relax.ogg` (64 BPM, estéreo, 30 s, sem vozes/percussão marcada), música de fundo 7 dB mais baixa e remoção do `village_murmur`. Mar, aves e demais efeitos preservados. O pacote jogável foi reexportado. `build/logs/audio-pack-check.log` confirmou `AUDIO_TEST PASS`, faixa nova tocando em loop a -20 dB e ausência do player de vozes. SHA-256 do PCK atualizado: `98bb6643045371441eb4a2c13e0603502b376100b48a5e45ad6a6e9ae7ab02cd`.
 
 A cópia completa é necessária para carregar o núcleo e os autoloads 1.1.0 desde a inicialização. O candidato antigo `patch_1.0.1.pck` não é a entrega desta linha. Não foi publicada outra release nem alterado `latest_version.txt`.
 

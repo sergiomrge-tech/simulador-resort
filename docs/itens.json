@@ -770,7 +770,7 @@
   "usos": [
    {
     "arquivo": "audio.gd",
-    "linha": 129,
+    "linha": 125,
     "funcao": "_church_bell"
    },
    {
@@ -815,7 +815,7 @@
   "usos": [
    {
     "arquivo": "audio.gd",
-    "linha": 85,
+    "linha": 81,
     "funcao": "_process"
    }
   ],
@@ -830,7 +830,7 @@
   "usos": [
    {
     "arquivo": "audio.gd",
-    "linha": 85,
+    "linha": 81,
     "funcao": "_process"
    }
   ],
@@ -975,7 +975,7 @@
   "usos": [
    {
     "arquivo": "audio.gd",
-    "linha": 39,
+    "linha": 38,
     "funcao": "_ready"
    }
   ],
@@ -990,7 +990,7 @@
   "usos": [
    {
     "arquivo": "audio.gd",
-    "linha": 95,
+    "linha": 91,
     "funcao": "_process"
    }
   ],
@@ -1067,13 +1067,7 @@
   "chave": "music_bossa",
   "nome": "Music bossa",
   "fonte": "assets/audio",
-  "usos": [
-   {
-    "arquivo": "audio.gd",
-    "linha": 37,
-    "funcao": "_ready"
-   }
-  ],
+  "usos": [],
   "arquivo_modelo": "assets/audio/music_bossa.ogg"
  },
  {
@@ -1085,7 +1079,7 @@
   "usos": [
    {
     "arquivo": "audio.gd",
-    "linha": 38,
+    "linha": 37,
     "funcao": "_ready"
    }
   ],
@@ -1100,7 +1094,7 @@
   "usos": [
    {
     "arquivo": "audio.gd",
-    "linha": 90,
+    "linha": 86,
     "funcao": "_process"
    }
   ],
@@ -1115,7 +1109,7 @@
   "usos": [
    {
     "arquivo": "audio.gd",
-    "linha": 90,
+    "linha": 86,
     "funcao": "_process"
    }
   ],
@@ -1172,13 +1166,7 @@
   "chave": "village_murmur",
   "nome": "Village murmur",
   "fonte": "assets/audio",
-  "usos": [
-   {
-    "arquivo": "audio.gd",
-    "linha": 40,
-    "funcao": "_ready"
-   }
-  ],
+  "usos": [],
   "arquivo_modelo": "assets/audio/village_murmur.ogg"
  },
  {
@@ -1190,7 +1178,7 @@
   "usos": [
    {
     "arquivo": "audio.gd",
-    "linha": 114,
+    "linha": 110,
     "funcao": "_event_sounds"
    }
   ],
@@ -1205,7 +1193,7 @@
   "usos": [
    {
     "arquivo": "audio.gd",
-    "linha": 114,
+    "linha": 110,
     "funcao": "_event_sounds"
    }
   ],
@@ -1220,7 +1208,7 @@
   "usos": [
    {
     "arquivo": "audio.gd",
-    "linha": 41,
+    "linha": 39,
     "funcao": "_ready"
    }
   ],
@@ -1250,11 +1238,26 @@
   "usos": [
    {
     "arquivo": "audio.gd",
-    "linha": 42,
+    "linha": 40,
     "funcao": "_ready"
    }
   ],
   "arquivo_modelo": "assets/audio/wind_loop.ogg"
+ },
+ {
+  "codigo": "AUD-026",
+  "categoria": "AUD",
+  "chave": "music_relax",
+  "nome": "Music relax",
+  "fonte": "assets/audio",
+  "usos": [
+   {
+    "arquivo": "audio.gd",
+    "linha": 36,
+    "funcao": "_ready"
+   }
+  ],
+  "arquivo_modelo": "assets/audio/music_relax.ogg"
  },
  {
   "codigo": "CEN-001",
@@ -33727,7 +33730,7 @@
     "funcao": ""
    }
   ],
-  "linhas": 144,
+  "linhas": 140,
   "descricao": ""
  },
  {

@@ -159,3 +159,6 @@ Modelos **Poly Haven CC0**, obtidos por `MODELS_EXTRA` em `tools/fetch_assets.py
 Geladeira com porta de vidro separada, armário de pratos e terminal de caixa:
 modelos originais do projeto, gerados por `tools/gen_kiosk_service.py` no Blender.
 Nunito permanece sob sua licença incluída em assets/fonts.
+
+## Trilha ambiente suave (22/10/2026)
+`music_relax.ogg`: composição e síntese originais do projeto, sem samples nem vozes de terceiros. Gerada por `tools/gen_relax_music.py`: 64 BPM, acordes abertos, timbres suaves e loop estéreo de 30 segundos.
