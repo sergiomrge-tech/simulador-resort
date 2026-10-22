@@ -61,3 +61,15 @@ O pacote completo atualizado passou em `simulation-final-pack.log` (SIMULATION_T
 As telas de horários, estoque, equipe e resultado foram capturadas e inspecionadas em `shots/simulation_*.png`. O resultado exibido usa movimento de caixa e compras da despensa compartilhada; a margem por prato é uma estimativa pelo preço atual dos fornecedores.
 
 PCK final: SHA-256 `385a25fac6499ef3c0ce3eea6dc64c04e2b56918ba58b2c8b7c1247ffab6fd63`. A cópia jogável inclui `GESTAO_DO_QUIOSQUE.md`.
+
+### Cais: chão e recuperação de quedas (22/10/2026)
+
+Relato do jogador: queda sem fim ao andar no cais. A regressão reproduziu o defeito antes da correção (`pier-before.log`: PIER_TEST FAIL, 160 pontos sem piso). Os modelos do Blender eram somente visuais; a alternativa procedural tinha colisão, mas não era usada com os GLBs presentes.
+
+`details.gd` agora acrescenta piso físico aos oito módulos e à plataforma, com sobreposição nas emendas e topo coincidente com as tábuas (y=0,37). A rampa de acesso foi alinhada ao deck e tem piso visível com textura. Os limites da plataforma acompanham o final real do modelo. O nado só começa abaixo da superfície; o jogador sobre o cais continua andando. Quedas abaixo do terreno retornam ao último piso seguro, ou ao ponto de despertar se ainda não houver apoio registrado na sessão.
+
+`pier-ramp.log` e `pier-pack.log`: PIER_TEST PASS. A regressão verifica 171 pontos de piso, caminhada real da praia ao fim, contenção na borda, volta pela rampa, permanência sobre o mar sem nadar, recuperação de queda e nado fora do cais. `pier-loop.log`: LOOP_TEST PASS. Capturas Vulkan inspecionadas: `shots/pier_fixed.png` e `shots/pier_pack_fixed.png` (esta última do pacote exportado). Permanecem os avisos conhecidos no encerramento automático; sem SCRIPT ERROR ou REAL_MISSING nas validações do cais.
+
+Pacote corrigido: SHA-256 `46e78d8a6dd8c720f434141569239a1974d47faa9fee8095e4fe89f299c24a6a`. ZIP completo em `C:/Users/sergi/Downloads/MareAltaResort_1.1_CaisCorrigido.zip`, com CRC de todos os arquivos verificado. Os saves reais não foram alterados.
+
+`pier-loop-pack.log`: LOOP_TEST PASS no pacote final (dinheiro=5406, estrelas=4,48, bar=12), sem SCRIPT ERROR ou REAL_MISSING. `pier-visual-pack.log` confirmou SHOT_SAVED da captura Vulkan desse mesmo pacote.

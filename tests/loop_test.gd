@@ -342,6 +342,11 @@ func v1_test() -> void :
 
 func run(m) -> void :
 	main = m
+	if main.args.has("pier-test"):
+		var pier_test = load("res://tests/pier_regression.gd").new()
+		add_child(pier_test)
+		await pier_test.run(main)
+		return
 	if main.args.has("simulation-test"):
 		var simulation = load("res://tests/simulation_regression.gd").new()
 		add_child(simulation)

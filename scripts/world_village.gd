@@ -1639,11 +1639,12 @@ func _village_expansion() -> void :
 		_bike(Vector3(14.0 + k * 15.0, 0.15, BACK_Z - 2.6), PI * 0.5, D.FLAG_COLS[k % D.FLAG_COLS.size()])
 	# píer e farol
 	D.pier(self, Vector3(PIER_X, -0.25, -22.0), 27.0, 2.6)
-	var ramp: = B.wall(self, Vector3(2.6, 0.2, 2.2), Vector3(PIER_X, 0.12, -21.6))
-	ramp.rotation.x = 0.12
+	var ramp: = B.box(self, Vector3(2.6, 0.2, 2.4), Vector3(PIER_X, 0.065, -21.0), B.mat("weathered_planks", 0.6, Color(0.9, 0.7, 0.5), 0.85), true)
+	ramp.name = "PierAccessRamp"
+	ramp.rotation.x = 0.2
 	for sx in [-1.0, 1.0]:
 		B.wall(self, Vector3(0.2, 3.0, 28.0), Vector3(PIER_X + sx * 1.35, 1.6, -36.0))
-	B.wall(self, Vector3(5.0, 3.0, 0.2), Vector3(PIER_X, 1.6, -50.7))
+	B.wall(self, Vector3(5.0, 3.0, 0.2), Vector3(PIER_X, 1.6, -49.0))
 	# pesca no fim do píer (a lógica fica em village_life) e o Seu Zé na cabeceira
 	fish_spot = Interactable.new()
 	fish_spot.name = "Pesca"
@@ -1657,7 +1658,7 @@ func _village_expansion() -> void :
 	village_points.ze = Vector3(PIER_X + 3.0, 0.1, -23.7)
 	_quest_giver("peixe_ze", "Seu Zé", Vector3(PIER_X + 3.0, 1.0, -23.3), Vector3(1.0, 1.8, 1.0))
 	for sx in [-1.0, 1.0]:
-		B.wall(self, Vector3(0.2, 3.0, 3.2), Vector3(PIER_X + sx * 2.5, 1.6, -48.6))
+		B.wall(self, Vector3(0.2, 3.0, 3.2), Vector3(PIER_X + sx * 2.5, 1.6, -47.5))
 	_lighthouse = D.lighthouse(self, Vector3(108.0, 0.0, -40.0))
 	# caminhos novos dos moradores
 	var bn: = BACK_Z - 2.9

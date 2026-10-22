@@ -401,15 +401,19 @@ static func pier(parent: Node, from: Vector3, length: float, width: = 2.4) -> vo
 		var sg: = Real.place(parent, "g:pier_segment", from + Vector3(0, -2.8, - i * 3.0), -1.0, 0.0, Color.WHITE, 0.0, false)
 		if sg == null:
 			break
-		sg.rotation.y = PI    # +Y do Blender (mar) vira -Z no glTF; o módulo já aponta para o mar
 		sg.rotation.y = 0.0
 		sg.scale.x = width / 2.4
+		# O modelo visual não inclui colisão; o piso contínuo cobre as emendas.
+		var floor_body := B.wall(parent, Vector3(width, 0.18, 3.02), from + Vector3(0, 0.53, -i * 3.0 - 1.5))
+		floor_body.name = "PierFloor%d" % i
 		ok = true
 	if ok:
 		end = from + Vector3(0, 0.62, - float(segs) * 3.0 - 1.5)
 		var ep: = Real.place(parent, "g:pier_end", end + Vector3(0, -3.42, 0), -1.0, 0.0, Color.WHITE, 0.0, false)
 		if ep:
 			ep.scale.x = (width + 2.0) / 4.4
+			var floor_body := B.wall(parent, Vector3(width + 2.0, 0.18, 3.02), end + Vector3(0, -0.09, 0))
+			floor_body.name = "PierEndFloor"
 	else:
 		B.box(parent, Vector3(width, 0.14, length), c + Vector3(0, 0.55, 0), wood, true)
 		var k: = 0.0

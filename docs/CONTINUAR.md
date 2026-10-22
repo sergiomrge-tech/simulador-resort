@@ -4,6 +4,8 @@
 
 > **Expansão solicitada no mesmo dia:** horários/dias, placa, estoque e perdas, fornecedores, turnos/contratação e custos/resultado estão descritos em [SIMULACAO_QUIOSQUE.md](SIMULACAO_QUIOSQUE.md). Ler antes de continuar o trabalho de gestão.
 
+> **Correção do cais (22/10/2026):** colisões dos módulos/platforma, rampa sem degrau, limite final alinhado e recuperação de quedas estão cobertos por `--loop-test --pier-test`. Conferir a validação local antes de entregar um pacote antigo.
+
 Este arquivo é para qualquer assistente/IA (ou pessoa) que vá continuar o projeto. Leia também o `CLAUDE.md`
 na raiz: ele é o "palácio de memória" com TODAS as regras e erros já cometidos. Siga as regras dele.
 

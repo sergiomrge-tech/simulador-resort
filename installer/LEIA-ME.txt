@@ -4,6 +4,8 @@ Abra pelo atalho "Maré Alta Resort" na área de trabalho ou no menu Iniciar.
 Saves, configurações e cache ficam em userdata\ dentro da pasta do jogo.
 
 NOVO NA 1.1.0 RC2
+- Cais corrigido: piso físico nas tábuas e na plataforma, acesso pela rampa
+  e recuperação automática se o personagem cair abaixo do mapa.
 - Gestão ampliada no celular: Horários, Estoque e perdas, Escala e equipe e Resultado.
   Escolha expediente entre 06h e 23h e dias da semana. Personalize a placa em Meu Quiosque.
   A reposição usa os preços e contratos do Mercado, com meta e compra automática opcional.

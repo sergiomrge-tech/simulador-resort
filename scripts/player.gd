@@ -17,6 +17,8 @@ var _step_acc: = 0.0
 var _step_flip: = false
 var world: Node3D
 var swimming: = false
+var _safe_position := Vector3.ZERO
+var _has_safe_position := false
 
 func _ready() -> void :
 	var cs: = CollisionShape3D.new()
@@ -80,7 +82,13 @@ func _physics_process(delta: float) -> void :
 	var sp: = SPEED * (SPRINT if Input.is_action_pressed("sprint") else 1.0)
 	# v0.9.5: nado/snorkel no mar fundo (mais de 1 m de água): boia com a máscara logo abaixo da superfície; Shift mergulha até o fundo
 	var ground: = float(world.call("_height", global_position.x, global_position.z)) if world and world.has_method("_height") else 0.0
-	swimming = global_position.z < -24.0 and ground < -1.1
+	# Recupera também saves gravados durante uma queda abaixo do mapa.
+	if global_position.y < minf(ground - 4.0, -6.0):
+		global_position = _safe_position if _has_safe_position else (world.home_wake if world else Vector3(38, 0.5, -18))
+		velocity = Vector3.ZERO
+		ground = float(world.call("_height", global_position.x, global_position.z)) if world and world.has_method("_height") else 0.0
+	# A profundidade do mar não torna quem está SOBRE o cais um nadador.
+	swimming = global_position.z < -24.0 and ground < -1.1 and global_position.y < -0.6
 	if swimming:
 		sp = 2.1
 	velocity.x = dir.x * sp
@@ -101,6 +109,9 @@ func _physics_process(delta: float) -> void :
 	else:
 		velocity.y = -0.5
 	move_and_slide()
+	if is_on_floor() and not swimming:
+		_safe_position = global_position
+		_has_safe_position = true
 	var hv: = Vector2(velocity.x, velocity.z).length()
 	if hv > 0.5 and is_on_floor() and not swimming:
 		_step_acc += hv * delta
