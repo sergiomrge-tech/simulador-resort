@@ -249,6 +249,8 @@ func staff_eff(role: String) -> float:
 		e *= 0.6
 	if str(s.trait) == "rapido":
 		e *= 1.2
+	if Core.company.created and role in Core.CompanyRules.Simulation.ROLES:
+		e *= Core.CompanyRules.Simulation.Management.profile_factor(Core, role, "speed")
 	return e
 
 func staff_wage(role: String) -> int:
@@ -260,7 +262,7 @@ func staff_wage(role: String) -> int:
 	if bool(s.off):
 		w *= 0.5
 	if Core.company.created and role in Core.CompanyRules.Simulation.ROLES:
-		w *= Core.CompanyRules.Simulation.wage_factor(Core, role)
+		w *= Core.CompanyRules.Simulation.wage_factor(Core, role) * Core.CompanyRules.Simulation.Management.profile_factor(Core, role, "wage")
 	return int(round(w))
 
 func train(role: String) -> bool:

@@ -288,7 +288,7 @@ func _free_spot() -> int:
 	for i in world.kiosk_spots.size():
 		var sp: Dictionary = world.kiosk_spots[i]
 		var need: = str(sp.get("need", ""))
-		if not sp.busy and (need == "" or Core.has(need)) and (not Core.company_enabled() or i not in Core.company.dirty_seats):
+		if not sp.busy and (need == "" or Core.has(need)) and (not Core.company_enabled() or i not in Core.company.dirty_seats) and Core.CompanyRules.Simulation.Management.sheltered(Core, sp):
 			free.append(i)
 	if free.is_empty():
 		return -1
@@ -392,7 +392,7 @@ func _kiosk_tick(dmin: float) -> void :
 		kiosk_spawn_in -= dmin
 		if kiosk_spawn_in <= 0.0:
 			var rngv: Vector2 = Economy.KIOSK_SPAWN_TABLES if Core.has("kiosk_tables") else Economy.KIOSK_SPAWN
-			kiosk_spawn_in = rng.randf_range(rngv.x, rngv.y) / Core.demand_factor()
+			kiosk_spawn_in = rng.randf_range(rngv.x, rngv.y) / (Core.demand_factor() * Core.CompanyRules.Simulation.Management.arrival_factor(Core))
 			if Core.day_event == "lua" and Core.minutes >= 17.0 * 60.0:
 				kiosk_spawn_in *= 0.6
 			if rush_left > 0:
@@ -487,6 +487,7 @@ func _pick_dish(menu: Array) -> String:
 		# v0.9.5: na tempestade o povo quer comida quente e foge do coco gelado
 		if Core.day_event == "tempestade":
 			w = {"petiscos": 2.6, "coco_gelado": 0.35, "suco": 0.7}.get(d, 1.0)
+		w *= Core.CompanyRules.Simulation.Management.dish_weight(Core, str(d))
 		ws.append(w)
 		total += w
 	var r: = rng.randf() * total
@@ -710,6 +711,9 @@ func _complete_order(g, last_dish: String) -> void :
 			Core.toast.emit(tr("Combo x%d! +R$ %d de gorjeta") % [combo, tip], "good")
 	else:
 		combo = maxi(0, combo - 1)
+	if Core.company.created:
+		var social: float = Core.CompanyRules.Simulation.Management.profile_factor(Core, "garcom", "social")
+		tip = int(round(tip * social))
 	var adj: = Core.price_rating_adjust()
 	Core.add_rating(clampf((Economy.KIOSK_RATING_FAST if fast else Economy.KIOSK_RATING_SLOW) + adj, 1.0, 5.0))
 	if adj <= -0.3 and rng.randf() < 0.4:

@@ -8,6 +8,8 @@
 
 > **Celular ajustado (22/10/2026):** aparelho e controles menores, três colunas e quebra de linha corrigem os cortes laterais. `--loop-test --phone-layout-test` valida todos os apps em três tamanhos. O ZIP de Downloads foi atualizado novamente.
 
+> **Sugestões 2–7 implementadas (22/10/2026):** rotinas, candidatos, entregas, equipamentos, personalização com prévia e movimento por horário/clima. Ler [ROTINAS_QUIOSQUE.md](ROTINAS_QUIOSQUE.md) e executar `--loop-test --management-test`. Dados adicionais sob `company.sim.management`, com migração e checklist obrigatório opcional. O celular tem 27 apps.
+
 Este arquivo é para qualquer assistente/IA (ou pessoa) que vá continuar o projeto. Leia também o `CLAUDE.md`
 na raiz: ele é o "palácio de memória" com TODAS as regras e erros já cometidos. Siga as regras dele.
 

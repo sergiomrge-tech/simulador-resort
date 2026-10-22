@@ -215,7 +215,10 @@ func _actor(role: String, pos: Vector3):
 		g.state = "employee"
 		g.go([])
 		g.speed = 2.0
-		B.label(g, str(Economy.STAFF[role].name), Vector3(0, 2.1, 0), 26, Color(0.9, 1, 1))
+		var display_name: String = str(Economy.STAFF[role].name)
+		if Core.company.sim.management.profiles.has(role):
+			display_name = Core.CompanyRules.Simulation.Management.candidate(role, int(Core.company.sim.management.profiles[role].kind)).name
+		B.label(g, display_name, Vector3(0, 2.1, 0), 26, Color(0.9, 1, 1))
 		actors[role] = g
 	return actors[role]
 
@@ -242,6 +245,10 @@ func _staff_tick() -> void:
 		elif role == "limpeza":
 			pos = c + Vector3(-3.6, 0.1, 3.4)
 		var g = _actor(role, pos)
+		var uniform: String = str(Core.company.sim.management.look.uniform)
+		if Core.company.sim.management.look_owned and str(g.get_meta("uniform", "")) != uniform:
+			g.set_colors(g._skin, Core.CompanyRules.Simulation.Management.UNIFORMS[uniform], Color(0.15, 0.2, 0.27), g._hair_col)
+			g.set_meta("uniform", uniform)
 		g.speed = 2.0 * Core.prog.staff_eff(role)
 		if role == "caixa":
 			if not Core.company.receivables.is_empty():
@@ -254,6 +261,8 @@ func _staff_tick() -> void:
 			_waiter(g)
 
 func _cook() -> void:
+	if not Core.kiosk_accepting_customers() and main.village.waiting_customers().is_empty():
+		return
 	if not Core.company.production.is_empty():
 		return
 	for g in main.village.waiting_customers():

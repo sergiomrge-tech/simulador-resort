@@ -86,6 +86,7 @@ Base de trabalho: v0.6.5 recuperada; versões atuais em `project.godot` / `expor
 - O código antigo continua como fallback quando o .glb não existe.
 
 ## 🧪 Sala da Conferência — antes de entregar
+- **Gestão ampliada (22/10/2026):** normalizar os números de estado/higiene no sanitize evita diferenças de precisão em save/recarga. Personalização move modelo, assento, ponto de entrega e bloqueio juntos; prévia não cobra. Para cores de prévia iguais às do cenário, definir o albedo solicitado no material duplicado (Toon.material satura a cor). Testar encomendas e serviços pendentes após recarga e evitar avisos repetidos em cada tentativa automática de preparo.
 1. `godot --headless --check-only -s scripts/X.gd` em todo script editado. Erros "Identifier not found: Core/Quality/Economy" são normais (autoloads). Qualquer outro erro bloqueia.
 2. Erros já cometidos: função duplicada no mesmo arquivo (`oil_lamp`); `var w: = M.algo` sem tipo (use `var w: Material = ...`).
 3. Prints: `./shot.sh nome` ou câmera livre com `--cam=x,y,z,yaw,pitch[,hora]` (ver `main.gd`). Olhe de perto paredes, móveis, pessoas e chão.

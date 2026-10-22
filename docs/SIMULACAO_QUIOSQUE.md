@@ -1,5 +1,7 @@
 # Gestão do quiosque — expansão local de 22/10/2026
 
+> Ampliação posterior no mesmo dia: [ROTINAS_QUIOSQUE.md](ROTINAS_QUIOSQUE.md) documenta os seis novos apps de rotina, candidatos, entregas, equipamentos, personalização e movimento. No pacote, leia ROTINAS_DO_QUIOSQUE.md. As regras abaixo continuam válidas, com a nova exceção de guardar bebidas no freezer por uma única noite. Os seis apps novos aparecem antes dos apps citados nesta seção.
+
 Solicitação do Sergio: implementar as três frentes de simulação (estoque/fornecedores, equipe/turnos e custos/preços/resultado), além de horários e personalização da placa.
 
 ## Acesso

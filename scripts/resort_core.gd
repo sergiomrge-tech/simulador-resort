@@ -939,7 +939,7 @@ func build_bungalow() -> bool:
 	room_changed.emit(id)
 	return true
 
-func hire(role: String) -> bool:
+func hire(role: String, offered_fee: int = -1) -> bool:
 	if not Economy.STAFF.has(role):
 		return false
 	if bool(Economy.STAFF[role].get("company", false)) and not bool(company.created):
@@ -952,7 +952,7 @@ func hire(role: String) -> bool:
 	if need != "" and not has(need):
 		toast.emit(tr("Precisa de: %s") % tr(str(Economy.EXPANSIONS[need].name)), "bad")
 		return false
-	var cost: = int(Economy.STAFF[role].hire)
+	var cost: int = offered_fee if offered_fee >= 0 else int(Economy.STAFF[role].hire)
 	if money < cost:
 		toast.emit(tr("Dinheiro insuficiente para contratar (%s).") % fmt_money(cost), "bad")
 		return false
@@ -1137,9 +1137,12 @@ func kiosk_is_within_hours() -> bool:
 	return CompanyRules.Simulation.is_workday(self) and minutes >= kiosk_open_min() and minutes < kiosk_close_min()
 
 func kiosk_accepting_customers() -> bool:
-	return kiosk_is_within_hours() and bool(company.get("kiosk_open", true))
+	return kiosk_is_within_hours() and bool(company.get("kiosk_open", true)) and CompanyRules.Simulation.Management.opening_ready(self)
 
 func set_kiosk_open(value: bool) -> void:
+	if value and not CompanyRules.Simulation.Management.opening_ready(self):
+		toast.emit("Conclua o checklist de abertura no app Rotina.", "info")
+		return
 	company.kiosk_open = value
 	company_changed.emit()
 	save_game()
@@ -1187,6 +1190,8 @@ func dismiss_kiosk_staff(role: String) -> bool:
 		return false
 	staff[role] = false
 	company.sim.shifts.erase(role)
+	company.sim.management.profiles.erase(role)
+	prog.staff_info.erase(role)
 	CompanyRules.Simulation.record(self, "investment", fee)
 	book(-fee, "Rescisão: " + str(Economy.STAFF[role].name), "folha", true)
 	staff_changed.emit()
@@ -1240,6 +1245,9 @@ func prepare_company_dish(id: String) -> bool:
 		return false
 	if int(company.ready.get(id, 0)) >= CompanyRules.MAX_READY or not can_make(id):
 		return false
+	if not CompanyRules.Simulation.Management.can_prepare(self, id):
+		return false
+	CompanyRules.Simulation.Management.wear(self, id)
 	for ing in Economy.dish(id).uses:
 		stock[ing] = int(stock[ing]) - int(Economy.dish(id).uses[ing])
 	company.production = {"dish": id, "left": 3.0 if load("res://scripts/dish_presentation.gd").is_drink(id) else 6.0}
@@ -1250,10 +1258,15 @@ func prepare_company_dish(id: String) -> bool:
 func tick_company(delta: float) -> void:
 	if not company_enabled() or company.production.is_empty():
 		return
-	company.production.left = float(company.production.left) - maxf(delta, 0.0) * speed_mult * (1.0 + 0.25 * prog.staff_eff("cozinheiro"))
+	company.production.left = float(company.production.left) - maxf(delta, 0.0) * speed_mult * (1.0 + 0.25 * prog.staff_eff("cozinheiro")) * CompanyRules.Simulation.Management.prepare_speed(self, str(company.production.dish))
 	if float(company.production.left) <= 0.0:
 		var id: String = str(company.production.dish)
 		company.production = {}
+		if randf() < CompanyRules.Simulation.Management.error_risk(self, id):
+			CompanyRules.Simulation.record(self, "waste", 1)
+			toast.emit("Preparo perdido: cuide da higiene e do descanso da equipe.", "bad")
+			company_changed.emit()
+			return
 		company.ready[id] = mini(CompanyRules.MAX_READY, int(company.ready.get(id, 0)) + 1)
 		toast.emit(tr("Pronto para retirar: %s") % tr(str(Economy.dish(id).name)), "good")
 		company_changed.emit()

@@ -95,3 +95,25 @@ Relato: conteúdo do celular cortado nas laterais. A captura `shots/phone_before
 `phone-layout-pack.log`: PHONE_LAYOUT_TEST PASS no pacote final, repetindo as 132 verificações. SHA-256 do PCK: `7f806518bf4aa584dd1eabd07ebda85f46bbe77b62261c84566f79148fb427a8`. O ZIP existente `MareAltaResort_1.1_CaisCorrigido.zip` em Downloads contém esta atualização; todos os CRCs foram verificados.
 
 Regressões do mesmo pacote: `phone-loop-pack.log` LOOP_TEST PASS (dinheiro=5147, estrelas=4,54, bar=12); `phone-company-pack.log` COMPANY_TEST PASS, incluindo formulário, rascunhos e gravação da placa. Sem SCRIPT ERROR ou REAL_MISSING nesses logs. Permanecem os avisos conhecidos de recursos no encerramento automático.
+
+### Sugestões 2 a 7 — gestão completa (22/10/2026)
+
+Implementação e regras em [ROTINAS_QUIOSQUE.md](ROTINAS_QUIOSQUE.md): rotina de abertura/fechamento, perfis de contratação, encomendas com prazo, equipamentos, personalização com prévia e demanda por hora/clima. Dados sob `company.sim.management`, com padrões de migração e checklist obrigatório opcional. A simulação usa os modelos existentes; mesas movem malha, assento, entrega e bloqueio em conjunto. Ao carregar um save sem identidade comprada, o visual original é restaurado.
+
+Validação na fonte: `management-world-final.log` MANAGEMENT_TEST PASS com Vulkan e capturas; `management-company-check.log` COMPANY_TEST PASS; `management-simulation.log` SIMULATION_TEST PASS; `management-loop.log` LOOP_TEST PASS. Um problema de precisão dos floats no roundtrip foi corrigido normalizando estado/higiene no sanitize.
+
+Validação do PCK final:
+
+| Log em build/logs | Resultado |
+|---|---|
+| management-final-pack.log | MANAGEMENT_TEST PASS, com Vulkan e testes de interface/cenário |
+| management-loop-pack.log | LOOP_TEST PASS, dinheiro=5437, estrelas=4,57, bar=12 |
+| management-layout-pack.log | PHONE_LAYOUT_TEST PASS, 168 verificações nos 27 apps e início em três tamanhos |
+| management-company-pack.log | COMPANY_TEST PASS |
+| management-simulation-pack.log | SIMULATION_TEST PASS, preservando estoque, salários, custos e validade anteriores |
+
+O teste novo cobre cobrança e entrega única após recarga, quantidade mínima/cotação inválida, candidato pelo preço anunciado, salário e jornada, desgaste e bloqueio do equipamento sem consumir ingrediente, serviço pendente após recarga, duração/limpeza/melhoria, risco de perda, prévia sem gasto, compra pela interface, pintura real, deslocamento físico, uniforme, horário/clima e seleção de mesa abrigada, requisitos de fechamento, diferença de caixa sem criar dinheiro e conservação de bebida limitada a uma noite. Também verifica que editar quantidades não destrói o formulário.
+
+Capturas inspecionadas do pacote final: `shots/management_world.png`, `management_recrutamento.png`, `management_fornecedores.png`, `management_equipamentos.png`, `management_movimento.png` e `management_personalizar.png`. Os campos numéricos novos usam texto escuro após revisão de contraste. Não houve SCRIPT ERROR ou REAL_MISSING nos logs finais acima; continuam os avisos conhecidos de recursos no encerramento automático.
+
+PCK final: SHA-256 `5d992cdd678cafc044a2dc4a20cfc608ef2bf766c5aa11790539b8b6a0f56eb5`. ZIP atualizado no mesmo caminho `C:/Users/sergi/Downloads/MareAltaResort_1.1_CaisCorrigido.zip` (1.830.768.380 bytes), com todos os CRCs verificados. Inclui `ROTINAS_DO_QUIOSQUE.md` e a documentação anterior. Os saves reais do jogador e a instalação D:/Games não foram alterados.

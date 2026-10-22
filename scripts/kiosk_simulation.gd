@@ -1,5 +1,6 @@
 extends RefCounted
 ## Regras e contabilidade da operação; sem class_name para aceitar saves anteriores.
+const Management = preload("res://scripts/kiosk_management.gd")
 const ROLES = ["garcom", "caixa", "limpeza", "cozinheiro", "atendente"]
 const DAYS = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"]
 
@@ -7,7 +8,7 @@ static func stats() -> Dictionary:
 	return {"cash_in": 0, "supplies": 0, "payroll": 0, "overhead": 0, "investment": 0, "waste": 0, "stockouts": 0, "open_minutes": 0.0}
 
 static func defaults() -> Dictionary:
-	return {"start": 8, "end": 18, "custom_hours": false, "days": [0, 1, 2, 3, 4, 5, 6], "shifts": {}, "auto_order": false, "target": 6, "day": 0, "wage_day": -1, "staff_day": -1, "auto_due": false, "today": stats(), "history": []}
+	return {"start": 8, "end": 18, "custom_hours": false, "days": [0, 1, 2, 3, 4, 5, 6], "shifts": {}, "auto_order": false, "target": 6, "day": 0, "wage_day": -1, "staff_day": -1, "auto_due": false, "management": Management.defaults(), "today": stats(), "history": []}
 
 static func sanitize(raw: Variant) -> Dictionary:
 	var d := defaults()
@@ -22,6 +23,7 @@ static func sanitize(raw: Variant) -> Dictionary:
 	d.wage_day = maxi(-1, int(raw.get("wage_day", -1)))
 	d.staff_day = maxi(-1, int(raw.get("staff_day", -1)))
 	d.auto_due = bool(raw.get("auto_due", false))
+	d.management = Management.sanitize(raw.get("management", {}))
 	if raw.get("days") is Array:
 		d.days = []
 		for index in raw.days:
@@ -116,8 +118,9 @@ static func rollover(core) -> void:
 	report.overhead = overhead
 	# Produtos preparados na prateleira duram até a virada do dia; ingredientes usam spoil_stock().
 	for id in core.company.ready:
-		report.waste += int(core.company.ready[id])
-		core.company.ready[id] = 0
+		var keep: int = Management.retain(core, id, int(core.company.ready[id]))
+		report.waste += int(core.company.ready[id]) - keep
+		core.company.ready[id] = keep
 	for key in ["carry", "staff_carry"]:
 		if str(core.company[key]) != "":
 			report.waste += 1
@@ -129,6 +132,8 @@ static func rollover(core) -> void:
 	d.history.append(report)
 	if d.history.size() > 7:
 		d.history.pop_front()
+	d.management.store = {}
+	Management.new_day(core)
 	d.today = stats()
 	d.day = core.day  # gravar antes da compra impede fechamento repetido após recarga
 	d.auto_due = bool(d.auto_order)
@@ -142,5 +147,6 @@ static func run_auto_order(core) -> void:
 static func tick(core, elapsed_minutes: float) -> void:
 	rollover(core)
 	run_auto_order(core)
+	Management.tick(core, elapsed_minutes)
 	if core.company.created and core.kiosk_accepting_customers():
 		core.company.sim.today.open_minutes += clampf(elapsed_minutes, 0.0, 60.0)

@@ -342,6 +342,11 @@ func v1_test() -> void :
 
 func run(m) -> void :
 	main = m
+	if main.args.has("management-test"):
+		var management_test = load("res://tests/management_regression.gd").new()
+		add_child(management_test)
+		await management_test.run(main)
+		return
 	if main.args.has("phone-layout-test"):
 		var phone_test = load("res://tests/phone_layout_regression.gd").new()
 		add_child(phone_test)

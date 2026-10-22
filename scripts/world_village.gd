@@ -10,6 +10,11 @@ const CHURCH_C: = Vector3(75, 0, 50)
 const PRACA: = Rect2(66, 34.5, 18, 9.3)
 
 var company_signs: Array = []
+var _painted: Array = []
+var _sign_panels: Array = []
+var _table_looks: Array = []
+var _table_menus: Array = []
+var _look_key := ""
 
 var village_points: = {}
 var village_paths: Array = []
@@ -730,9 +735,9 @@ func _quiosque() -> void :
 	B.hip_roof(self, c + Vector3(0, y0 + 2.8, 0), 6.6, 6.6, 2.8, M.thatch, 0.22)
 	var ch: = 1.1
 	var wood: Material = M.darkwood
-	B.box(self, Vector3(4.6, ch, 0.6), c + Vector3(0, y0 + ch * 0.5, 2.0), wood, true)
-	B.box(self, Vector3(0.6, ch, 3.4), c + Vector3(-2.0, y0 + ch * 0.5, 0.5), wood, true)
-	B.box(self, Vector3(0.6, ch, 3.4), c + Vector3(2.0, y0 + ch * 0.5, 0.5), wood, true)
+	_painted.append(B.box(self, Vector3(4.6, ch, 0.6), c + Vector3(0, y0 + ch * 0.5, 2.0), wood, true))
+	_painted.append(B.box(self, Vector3(0.6, ch, 3.4), c + Vector3(-2.0, y0 + ch * 0.5, 0.5), wood, true))
+	_painted.append(B.box(self, Vector3(0.6, ch, 3.4), c + Vector3(2.0, y0 + ch * 0.5, 0.5), wood, true))
 	B.box(self, Vector3(4.9, 0.08, 0.9), c + Vector3(0, y0 + ch + 0.04, 2.0), M.oak)
 	_back_bar(c, y0)
 	# Altura real do tampo: base e acabamento; itens apoiados, sem sobreposição.
@@ -749,7 +754,7 @@ func _quiosque() -> void :
 	for sx in [-1.0, 1.0]:
 		B.cyl(self, 0.018, 0.018, 0.32, c + Vector3(sx * 1.55, y0 + 2.70, 3.38), M.post, 8)
 	B.box(self, Vector3(4.0, 0.64, 0.10), c + Vector3(0, y0 + 2.25, 3.40), M.darkwood)
-	B.box(self, Vector3(3.82, 0.5, 0.025), c + Vector3(0, y0 + 2.25, 3.465), wood_tint(Color(0.06, 0.29, 0.31)))
+	_sign_panels.append(B.box(self, Vector3(3.82, 0.5, 0.025), c + Vector3(0, y0 + 2.25, 3.465), wood_tint(Color(0.06, 0.29, 0.31))))
 	var brand: Label3D = B.label(self, "MARÉ ALTA", c + Vector3(0, y0 + 2.33, 3.49), 76, Color(1.0, 0.94, 0.78), Color(0.025, 0.1, 0.11, 0.8))
 	brand.outline_size = 4
 	company_signs.append({"label": brand, "width": 3.45})
@@ -809,6 +814,9 @@ func _quiosque() -> void :
 
 ## Mesa com duas cadeiras (dois lugares de cliente) e, opcionalmente, guarda-sol.
 func _kiosk_table(tp: Vector3, need: String, umb: Color, umbrella: bool) -> void :
+	var first_node := get_child_count()
+	var first_spot := kiosk_spots.size()
+	var block_index := block_rects.size()
 	B.model(self, "outdoor_table_chair_set_01", tp, 0.0, 1.0)
 	if umbrella:
 		_umbrella(tp, 1.45, umb, false)
@@ -817,6 +825,7 @@ func _kiosk_table(tp: Vector3, need: String, umb: Color, umbrella: bool) -> void
 	# Pratos e bebidas aparecem só quando o pedido deste lugar é entregue.
 	# cardapinho em pé na mesa
 	var menu: = B.box(self, Vector3(0.16, 0.22, 0.02), top + Vector3(0, 0.105, 0), B.flat(Color(1.0, 0.45, 0.35), 0.8))
+	_table_menus.append(menu)
 	menu.rotation.x = -0.2
 	# as duas cadeiras dobráveis do conjunto ficam na frente e atrás da mesa (eixo z), levemente giradas; assento a 0,384 m
 	for sd in [[Vector3(-0.017, 0.384, 0.447), Vector3(-0.343, 0, -0.94)], [Vector3(-0.089, 0.384, -0.371), Vector3(-0.148, 0, 0.989)]]:
@@ -824,9 +833,15 @@ func _kiosk_table(tp: Vector3, need: String, umb: Color, umbrella: bool) -> void
 		var fwd: Vector3 = sd[1]
 		var root: = tp + Vector3(seat_c.x, seat_c.y - SEAT_DROP, seat_c.z) + fwd * 0.27
 		var approach: = tp + Vector3(seat_c.x, 0.1, seat_c.z) - fwd * 0.85
-		kiosk_spots.append({"pos": root, "approach": approach, "rot": atan2(fwd.x, fwd.z), "busy": false, "need": need, "anim": "Sitting_Idle_Loop", "table": true, "serve_pos": top - fwd * 0.17, "serve_rot": atan2(fwd.x, fwd.z)})
+		kiosk_spots.append({"pos": root, "approach": approach, "rot": atan2(fwd.x, fwd.z), "busy": false, "need": need, "anim": "Sitting_Idle_Loop", "table": true, "covered": umbrella, "serve_pos": top - fwd * 0.17, "serve_rot": atan2(fwd.x, fwd.z)})
 	# mesa + cadeiras bloqueadas: pedestres contornam o conjunto todo (quem vai sentar entra)
 	_block(tp, 1.0, 1.9, 0.12)
+	var nodes: Array = []
+	for node in get_children().slice(first_node):
+		if node is Node3D: nodes.append({"node": node, "position": node.position})
+	var seats: Array = []
+	for spot in kiosk_spots.slice(first_spot): seats.append({"spot": spot, "base": spot.duplicate()})
+	_table_looks.append({"nodes": nodes, "seats": seats, "block": block_index, "rect": block_rects[block_index], "side": -1 if tp.x < KIOSK_C.x else 1})
 
 ## Quadro-negro do quiosque: mostra só os pratos liberados.
 func _refresh_kiosk_board() -> void :
@@ -854,6 +869,7 @@ func _kiosk_neon(c: Vector3, y0: float) -> void :
 	var pink: = P.glow(Color(1.0, 0.25, 0.65), 4.0)
 	var cyan: = P.glow(Color(0.2, 0.95, 1.0), 4.0)
 	var back: = B.box(self, Vector3(3.4, 0.9, 0.08), c + Vector3(0, y0 + 3.55, 3.30), B.flat(Color(0.12, 0.1, 0.16), 0.6))
+	_sign_panels.append(back)
 	back.rotation.x = -0.12
 	var l: = B.label(self, "MARÉ ALTA", c + Vector3(0, y0 + 3.62, 3.38), 120, Color(1.0, 0.45, 0.8), Color(1.0, 0.2, 0.6, 0.9))
 	company_signs.append({"label": l, "width": 2.95})
@@ -1964,7 +1980,36 @@ func _map_details() -> void :
 		B.model(self, "island_tree_01", Vector3(4.0 + k * 9.0 + rng.randf_range(-2, 2), 0, BACK_Z + 14.5 + rng.randf_range(-1, 2)), rng.randf() * TAU, rng.randf_range(1.6, 2.2))
 
 func _refresh_company_signs() -> void:
+	_apply_kiosk_look()
 	_on_time(Core.day, Core.minutes)
 	var rules = load("res://scripts/company_rules.gd")
 	for sign in company_signs:
 		rules.fit_sign(sign.label, str(Core.company.name) if Core.company.created else "MARÉ ALTA", str(Core.company.font), str(Core.company.color), float(sign.width))
+
+func _apply_kiosk_look() -> void:
+	var m: Dictionary = Core.company.sim.management
+	var key: String = JSON.stringify(m.look) if m.look_owned else "legacy"
+	if key == _look_key: return
+	_look_key = key
+	var rules = Core.CompanyRules.Simulation.Management
+	var look: Dictionary = m.look if m.look_owned else rules.defaults().look
+	var paint_material := B.mat("weathered_planks", 0.6, rules.PAINT[look.paint]).duplicate() as StandardMaterial3D
+	paint_material.albedo_color = rules.PAINT[look.paint]
+	var board_material := B.mat("weathered_planks", 0.6, rules.BOARDS[look.board]).duplicate() as StandardMaterial3D
+	board_material.albedo_color = rules.BOARDS[look.board]
+	for mesh in _painted:
+		if not mesh.has_meta("original_look"): mesh.set_meta("original_look", mesh.material_override)
+		mesh.material_override = paint_material if m.look_owned else mesh.get_meta("original_look")
+	for mesh in _sign_panels:
+		if not mesh.has_meta("original_look"): mesh.set_meta("original_look", mesh.material_override)
+		mesh.material_override = board_material if m.look_owned else mesh.get_meta("original_look")
+	if is_instance_valid(_kiosk_board): _kiosk_board.visible = bool(look.menu)
+	for menu in _table_menus: menu.visible = bool(look.menu)
+	for group in _table_looks:
+		var offset := Vector3(float(group.side) * 0.85, 0, 0.55) if look.layout == "amplo" else Vector3.ZERO
+		for entry in group.nodes: entry.node.position = entry.position + offset
+		for entry in group.seats:
+			for field in ["pos", "approach", "serve_pos"]: entry.spot[field] = entry.base[field] + offset
+		var rect: Rect2 = group.rect
+		rect.position += Vector2(offset.x, offset.z)
+		block_rects[int(group.block)] = rect
