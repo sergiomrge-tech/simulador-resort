@@ -164,21 +164,22 @@ static func towel(parent: Node, p: Vector3, rot: float, a: Color, b: Color) -> v
 		B.box(parent, Vector3(0.9, 0.012, 1.9), p + Vector3(0, 0.01, 0), m(a), false, rot)
 
 static func coconut_pile(parent: Node, p: Vector3, n: = 9) -> void :
-	# cocos reais (Kenney CC0) empilhados em pirâmide
+	# Camadas compactas: cada coco superior fica entre quatro cocos de apoio.
 	var rng: = RandomNumberGenerator.new()
 	rng.seed = int(p.x * 31.0 + p.z)
+	var side: = maxi(2, int(ceil(pow(float(maxi(n, 1)), 1.0 / 3.0))))
 	var layer: = 0
 	var placed: = 0
 	while placed < n:
-		var cnt: = maxi(1, 5 - layer * 2)
-		for k in cnt:
-			if placed >= n:
-				break
-			var a: = TAU * k / cnt + layer
-			var r: = 0.0 if cnt == 1 else 0.3 - layer * 0.1
-			var tint: = Color(1.0, 1.0, 1.0) if rng.randf() < 0.75 else Color(0.85, 0.7, 0.55)
-			Real.place(parent, "k:coconut", p + Vector3(cos(a) * r, layer * 0.2, sin(a) * r), 0.24, rng.randf() * TAU, tint)
-			placed += 1
+		var width: = maxi(1, side - layer)
+		for row in width:
+			for col in width:
+				if placed >= n:
+					break
+				var offset: = Vector3((col - (width - 1) * 0.5) * 0.16, layer * 0.17, (row - (width - 1) * 0.5) * 0.16)
+				var tint: = Color.WHITE if rng.randf() < 0.75 else Color(0.85, 0.7, 0.55)
+				Real.place(parent, "k:coconut", p + offset, 0.24, rng.randf() * TAU, tint)
+				placed += 1
 		layer += 1
 
 static func bananas(parent: Node, p: Vector3) -> void :

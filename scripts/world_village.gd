@@ -1352,15 +1352,12 @@ func _kiosk_details(c: Vector3, y0: float) -> void :
 	D.cup_stack(self, top + Vector3(-1.75, 0, 0.12), Color(0.3, 0.8, 1.0))
 	D.blender(self, top + Vector3(-1.2, 0, -0.15))
 	D.pineapple(self, top + Vector3(1.95, 0, -0.1))
-	B.box(self, Vector3(0.14, 0.12, 0.08), top + Vector3(-0.15, 0.06, 0.2), D.m(Color(0.95, 0.95, 0.98)))
+	Real.place(self, "g:towel_folded", top + Vector3(-0.15, 0.0, 0.2), 0.055)
 	D.radio(self, c + Vector3(-1.1, y0 + 1.79, -1.9), 0.0)
-	# frente do balcão: bambu e cocos cortados
+	# Frente revestida de bambu. Cocos abertos ficam apoiados no balcão;
+	# o modelo com canudo não serve de aplique horizontal na fachada.
 	for k in 15:
 		B.cyl(self, 0.05, 0.05, 1.0, c + Vector3(-2.2 + k * 0.315, y0 + 0.52, 2.33), D.m(Color(0.9, 0.76, 0.42)), 6)
-	for k in 3:
-		var half: = Real.place(self, "k:coconut-half", c + Vector3(-1.3 + k * 1.3, y0 + 0.66, 2.42), 0.2, 0.0)
-		if half:
-			half.rotation.x = -PI * 0.5
 	_open_sign = D.open_sign(self, c + Vector3(1.65, y0 + 2.3, 2.5), 0.0)
 	# em volta
 	D.coconut_pile(self, c + Vector3(3.7, 0.05, 0.8), 10)

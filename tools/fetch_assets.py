@@ -206,13 +206,22 @@ def kenney(url, names):
 
 
 def quaternius_nature():
-    """Stylized Nature MegaKit [Standard] (Quaternius, CC0) pelo itch.io: pasta glTF -> assets/models/qnat/ (chave "q:Nome")."""
+    """Stylized Nature MegaKit [Standard] (Quaternius, CC0)."""
+    quaternius_pack("stylized-nature-megakit", "qnat", "Bush_Common.gltf")
+
+
+def quaternius_characters():
+    """Universal Base Characters [Standard], Quaternius CC0: corpos e cabelos usados por Ppl."""
+    quaternius_pack("universal-base-characters", "ubc", "Superhero_Male_FullBody.gltf")
+
+
+def quaternius_pack(slug, folder, sentinel):
     import zipfile, io, http.cookiejar, urllib.parse, re
-    out = f"{A}/models/qnat"
-    if os.path.exists(f"{out}/Bush_Common.gltf") and not FORCE:
-        print("qnat skip")
+    out = f"{A}/models/{folder}"
+    if os.path.exists(f"{out}/{sentinel}") and not FORCE:
+        print(folder, "skip")
         return
-    base = "https://quaternius.itch.io/stylized-nature-megakit"
+    base = "https://quaternius.itch.io/" + slug
     jar = http.cookiejar.CookieJar()
     op = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(jar))
     def call(url, data=None):
@@ -225,14 +234,40 @@ def quaternius_nature():
     dlpage = call(dl)
     upload = re.search(r'data-upload_id="(\d+)"', dlpage.decode("utf-8", "ignore")).group(1)
     fj = json.loads(call(f"{base}/file/{upload}?source=view_game&as_props=1&after_download_lightbox=true", {"csrf_token": csrf(dlpage)}))
-    z = zipfile.ZipFile(io.BytesIO(get(fj["url"])))
+    archive = get(fj["url"])
+    cache = os.path.join(ROOT, "build", "asset-cache", slug + ".zip")
+    os.makedirs(os.path.dirname(cache), exist_ok=True)
+    with open(cache, "wb") as f:
+        f.write(archive)
+    z = zipfile.ZipFile(io.BytesIO(archive))
     os.makedirs(out, exist_ok=True)
     for n in z.namelist():
         parts = n.split("/")
-        if "glTF" in parts and not n.endswith("/"):
+        selected = ("Godot - UE" in parts or ("Origin at 0" in parts and "glTF (Godot)" in parts)) if folder == "ubc" else "glTF" in parts
+        if selected and not n.endswith("/"):
             with open(f"{out}/{parts[-1]}", "wb") as f:
                 f.write(z.read(n))
-    print("qnat ok", len(os.listdir(out)))
+    if not os.path.exists(f"{out}/{sentinel}"):
+        raise RuntimeError(f"{folder}: pacote sem {sentinel}; pastas: {z.namelist()[:25]}")
+    # O pacote UBC referencia algumas normais com sufixo _png que não existe no ZIP.
+    if folder == "ubc":
+        for name in os.listdir(out):
+            if not name.endswith(".gltf"):
+                continue
+            path = os.path.join(out, name)
+            with open(path, encoding="utf-8") as f:
+                doc = json.load(f)
+            changed = False
+            for image in doc.get("images", []):
+                uri = image.get("uri", "")
+                fixed = uri.replace("_png.", ".")
+                if uri and not os.path.exists(os.path.join(out, uri)) and os.path.exists(os.path.join(out, fixed)):
+                    image["uri"] = fixed
+                    changed = True
+            if changed:
+                with open(path, "w", encoding="utf-8") as f:
+                    json.dump(doc, f)
+    print(folder, "ok", len(os.listdir(out)))
 
 def animals_gen():
     """Gato/cachorro (Quaternius Animal Pack Vol.2, CC0) e caranguejo ("methodical pixel", CC0) pelo OpenGameArt -> assets/models/gen/*.glb
@@ -303,6 +338,7 @@ def main():
             futs += [ex.submit(kenney, u, n) for u, n in KENNEY.items()]
             futs.append(ex.submit(kenney_smoke))
             futs.append(ex.submit(quaternius_nature))
+            futs.append(ex.submit(quaternius_characters))
             futs.append(ex.submit(animals_gen))
         errs = 0
         for f in futs:

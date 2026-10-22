@@ -265,7 +265,7 @@ func _crowd_tick(delta: float) -> void :
 				if cyc < 1.1:
 					var u: = cyc / 1.1
 					var x: = lerpf(1.7 * d.side, -1.7 * d.side, u)
-					g.position = c + Vector3(x, sin(PI * u) * 0.75, 0.3)
+					g.position = c + Vector3(x, sin(PI * u) * 1.8, 0.3)
 					g.rotation.y = PI * 0.5 * -d.side
 					g.play("Jump_Loop")
 				else:

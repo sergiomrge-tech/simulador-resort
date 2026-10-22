@@ -343,10 +343,6 @@ func _run_shot(n: String) -> void :
 		Core.tour_done.emit("barco", 4, 100)
 	if args.has("farol"):
 		Core.tour_done.emit("farol", 4, 100)
-	if args.has("primcheck"):
-		get_tree().create_timer(1.5).timeout.connect(func(): load("res://tests/prim_check.gd").run(world))
-	if args.has("floatcheck"):
-		get_tree().create_timer(1.5).timeout.connect(func(): load("res://tests/float_check.gd").run(world))
 	if args.has("lineup"):   # depuração: --lineup=x,z -> fila de 8 pessoas para conferir calçados/roupas, e duas sentadas num banco
 		var lv: = str(args.lineup).split(",")
 		var base: = Vector3(float(lv[0]), 0.0, float(lv[1]))
@@ -506,6 +502,11 @@ func _run_shot(n: String) -> void :
 				break
 		for i in 2:
 			await get_tree().process_frame
+	# Auditoria síncrona: deve terminar antes de salvar o print e sair.
+	if args.has("primcheck"):
+		load("res://tests/prim_check.gd").run(world)
+	if args.has("floatcheck"):
+		load("res://tests/float_check.gd").run(world)
 	var img: = get_viewport().get_texture().get_image()
 	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path("res://shots"))
 	var out: String = args.get("out", "res://shots/%s.png" % n)

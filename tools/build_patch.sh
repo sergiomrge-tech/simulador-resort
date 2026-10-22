@@ -7,11 +7,12 @@ cd "$(dirname "$0")/.."
 BASE=${1:?commit base}
 GODOT=${GODOT:-/home/claude/godot/godot}
 STAGE=${STAGE:-/home/claude/inst/patch}
+PYTHON=${PYTHON:-python3}
+MAKENSIS=${MAKENSIS:-makensis}
 VER=$(grep -m1 '^config/version=' project.godot | sed 's/.*"\(.*\)".*/\1/')
 BASEVER=$(git show "$BASE:project.godot" | grep -m1 '^config/version=' | sed 's/.*"\(.*\)".*/\1/')
 echo "== patch $BASEVER -> $VER =="
-FILES=$( (git diff --name-only "$BASE" -- scripts shaders scenes assets *.tscn; git ls-files --others --exclude-standard -- scripts shaders scenes assets) \
-  | grep -E '\.(gd|gdshader|glb|gltf|ogg|tscn|tres|png|jpg)$' | grep -v '^tests/' | sort -u | while read f; do [ -f "$f" ] && echo "$f"; done)
+FILES=$("$PYTHON" tools/patch_files.py "$BASE")
 N=$(echo "$FILES" | grep -c . || true)
 echo "arquivos alterados: $N"
 LIST=$(echo "$FILES" | sed 's/^/"res:\/\//; s/$/"/' | paste -sd, -)
@@ -50,5 +51,5 @@ rm -f build/patch/patch_*.pck
 "$GODOT" --headless --path . --export-pack "Patch" "build/patch/patch_${VER}.pck" 2>&1 | tail -2
 ls -la "build/patch/patch_${VER}.pck"
 cp "build/patch/patch_${VER}.pck" installer/patch_loader.gd installer/patch.nsi installer/icon.ico "$STAGE/"
-(cd "$STAGE" && makensis -V2 -DVER="$VER" -DBASE="$BASEVER" patch.nsi)
+(cd "$STAGE" && "$MAKENSIS" -V2 -DVER="$VER" -DBASE="$BASEVER" patch.nsi)
 ls -la "$STAGE/Atualizar_MareAltaResort_v${VER}.exe"

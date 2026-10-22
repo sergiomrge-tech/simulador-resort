@@ -81,6 +81,7 @@ glTF 1k em `assets/models/` (normal/ARM reduzidos para 512) e glTF 2k em `assets
 | Asset | Fonte | Licença |
 |---|---|---|
 | Universal Animation Library (manequim + animações), `assets/models/ual/guest.glb` (zonas de cor adicionadas com `tools/color_zones.py`; incluído no repositório) | https://quaternius.com/packs/universalanimationlibrary.html | CC0 |
+| Universal Base Characters [Standard], corpos e cabelos `assets/models/ubc/`, restaurados por `tools/fetch_assets.py` | https://quaternius.com/packs/universalbasecharacters.html | CC0 |
 
 ## Áudio — OpenGameArt (CC0), incluído em `assets/audio/`
 | Arquivo | Fonte | Licença |
@@ -130,3 +131,8 @@ thunder, rain_loop, wind_loop, forro_loop, dj_loop.
 - v0.9.5 (Blender, próprios): trellis_planter, towel_folded, flipflops, pool_float, rope_coil, cloth_shirt, cloth_towel, ac_unit, tv_antenna, straw, popcorn_cart, newsstand, cooler_box, coconut_cart, bottle_cachaca/rum/green/wine.
 - v1.0 (Blender, próprios): negócios — biz_gelato, biz_booth, biz_kayak_rack, biz_board_rack, biz_canopy, biz_food_truck, biz_souvenir, biz_barrier (`tools/gen_business.py`); Grand Hotel 5★ — hotel_tower, hotel_restaurant, hotel_gym, gym_treadmill, gym_bike, gym_bench, gym_dumbbells, water_slide (`tools/gen_hotel.py`).
 - v1.0 ícones novos do game-icons.net (CC BY 3.0): shop, cooking-pot, village (Delapouite), trophy, laurel-crown (Lorc).
+
+## v1.0.1 — substituições de frutas, bebidas e objetos de praia
+
+- Modelos próprios detalhados no Blender, gerados por `tools/gen_food.py`: `coconut_green`, `coconut_open`, `pineapple`, `orange`, `frappe`, `cup_plastic`, `glass_juice`, `cocktail`, `campfire_logs`, `beach_flag`, `beach_spade` e `boat_hull`.
+- Modelos Poly Haven, CC0, registrados em `tools/fetch_assets.py`: [dead_tree_trunk](https://polyhaven.com/a/dead_tree_trunk), [stone_fire_pit](https://polyhaven.com/a/stone_fire_pit), [boulder_01](https://polyhaven.com/a/boulder_01), [sand_rocks_small_01](https://polyhaven.com/a/sand_rocks_small_01), [wooden_crate_02](https://polyhaven.com/a/wooden_crate_02), [Barrel_01](https://polyhaven.com/a/Barrel_01) e [croissant](https://polyhaven.com/a/croissant).

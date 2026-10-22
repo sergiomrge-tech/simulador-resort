@@ -238,66 +238,14 @@ func _arm_tree() -> void :
 
 func _make_cup() -> Node3D:
 	var n: = Node3D.new()
-	var cup: = MeshInstance3D.new()
-	var cm: = CylinderMesh.new()
-	cm.top_radius = 0.034
-	cm.bottom_radius = 0.026
-	cm.height = 0.08
-	cm.radial_segments = 8
-	cup.mesh = cm
-	var mat: = StandardMaterial3D.new()
-	mat.albedo_color = Color(0.15, 0.55, 0.42)
-	mat.roughness = 0.18
-	mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-	mat.albedo_color.a = 0.85
-	cup.material_override = mat
-	cup.position = Vector3(0.0, 0.06, 0.06)
-	cup.rotation.x = 0.4
-	n.add_child(cup)
+	var cup: = Real.place(n, "g:cup_plastic", Vector3(0.0, 0.02, 0.06), 0.11)
+	if cup:
+		cup.rotation.x = 0.4
 	return n
 
 func _make_food() -> Node3D:
 	var n: = Node3D.new()
-	var shell: = StandardMaterial3D.new()
-	shell.albedo_color = Color(0.46, 0.28, 0.13)
-	shell.roughness = 0.62
-	var s: = MeshInstance3D.new()
-	var sm: = SphereMesh.new()
-	sm.radius = 0.042
-	sm.height = 0.068
-	sm.radial_segments = 10
-	sm.rings = 6
-	s.mesh = sm
-	s.material_override = shell
-	s.position = Vector3(0.0, 0.045, 0.06)
-	n.add_child(s)
-	var top: = MeshInstance3D.new()
-	var tm: = SphereMesh.new()
-	tm.radius = 0.02
-	tm.height = 0.02
-	tm.radial_segments = 8
-	tm.rings = 4
-	top.mesh = tm
-	var wm: = StandardMaterial3D.new()
-	wm.albedo_color = Color(0.96, 0.94, 0.88)
-	wm.roughness = 0.4
-	top.material_override = wm
-	top.position = Vector3(0.0, 0.075, 0.06)
-	n.add_child(top)
-	var straw: = MeshInstance3D.new()
-	var cm: = CylinderMesh.new()
-	cm.top_radius = 0.004
-	cm.bottom_radius = 0.004
-	cm.height = 0.09
-	cm.radial_segments = 6
-	straw.mesh = cm
-	var rm: = StandardMaterial3D.new()
-	rm.albedo_color = Color(0.86, 0.18, 0.14)
-	rm.roughness = 0.4
-	straw.material_override = rm
-	straw.position = Vector3(0.01, 0.1, 0.055)
-	straw.rotation.z = -0.65
-	n.add_child(straw)
+	Real.place(n, "g:coxinha", Vector3(0.0, 0.02, 0.06), 0.085)
 	n.visible = false
 	return n
 
@@ -591,7 +539,101 @@ func _expand_route(route: Array) -> Array:
 				_push_pt(out, w)
 		_push_pt(out, pt)
 		cursor = pt
-	return out
+	# Antes só a piscina tinha desvio; mesas e casas prendiam o NPC na borda.
+	var safe: Array = []
+	cursor = position
+	for target in out:
+		for waypoint in _around_blocks(cursor, target):
+			_push_pt(safe, waypoint)
+		cursor = target
+	return safe
+
+func _hits_rect(a: Vector2, b: Vector2, rect: Rect2) -> bool:
+	var delta: = b - a
+	var lo: = 0.0
+	var hi: = 1.0
+	for axis in 2:
+		if absf(delta[axis]) < 0.00001:
+			if a[axis] < rect.position[axis] or a[axis] > rect.end[axis]:
+				return false
+		else:
+			var t0: float = (rect.position[axis] - a[axis]) / delta[axis]
+			var t1: float = (rect.end[axis] - a[axis]) / delta[axis]
+			lo = maxf(lo, minf(t0, t1))
+			hi = minf(hi, maxf(t0, t1))
+			if lo > hi:
+				return false
+	return hi > 0.00001 and lo < 0.99999
+
+func _blocks_clear(a: Vector2, b: Vector2, obstacles: Array) -> bool:
+	for rect in obstacles:
+		if _hits_rect(a, b, rect):
+			return false
+	return true
+
+func _around_blocks(from: Vector3, to: Vector3, search_margin: float = 3.0) -> Array:
+	var a: = Vector2(from.x, from.z)
+	var b: = Vector2(to.x, to.z)
+	var obstacles: Array = []
+	for raw in block_rects:
+		var rect: Rect2 = raw
+		if rect.grow(0.08).has_point(a) or rect.grow(0.08).has_point(b):
+			continue
+		obstacles.append(rect.grow(0.08))
+	if _blocks_clear(a, b, obstacles):
+		return [to]
+	var region: = Rect2(a, Vector2.ZERO).expand(b).grow(search_margin)
+	var points: Array[Vector2] = [a, b]
+	for raw in obstacles:
+		var rect: Rect2 = raw
+		if not rect.intersects(region):
+			continue
+		var edge: = rect.grow(0.03)
+		for corner in [edge.position, Vector2(edge.end.x, edge.position.y), edge.end, Vector2(edge.position.x, edge.end.y)]:
+			var inside: = false
+			for other in obstacles:
+				if other.has_point(corner):
+					inside = true
+					break
+			if not inside:
+				points.append(corner)
+	var distances: Array[float] = []
+	distances.resize(points.size())
+	distances.fill(INF)
+	distances[0] = 0.0
+	var previous: Array[int] = []
+	previous.resize(points.size())
+	previous.fill(-1)
+	var visited: = {}
+	for _step in points.size():
+		var current: = -1
+		var best: = INF
+		for i in points.size():
+			if not visited.has(i) and distances[i] < best:
+				current = i
+				best = distances[i]
+		if current < 0 or current == 1:
+			break
+		visited[current] = true
+		for i in points.size():
+			if visited.has(i):
+				continue
+			var candidate: = best + points[current].distance_to(points[i])
+			if candidate < distances[i] and _blocks_clear(points[current], points[i], obstacles):
+				distances[i] = candidate
+				previous[i] = current
+	if previous[1] < 0:
+		if search_margin < 24.0:
+			return _around_blocks(from, to, search_margin * 2.0)
+		print("NAV_BLOCKED ", from, " -> ", to)
+		return [to]
+	var path: Array = []
+	var index: = 1
+	while index > 0:
+		var p: Vector2 = points[index]
+		path.push_front(Vector3(p.x, to.y, p.y))
+		index = previous[index]
+	return path
 
 func _push_pt(out: Array, p: Vector3) -> void :
 	if out.is_empty() or (out[out.size() - 1] as Vector3).distance_squared_to(p) > 0.04:
@@ -705,7 +747,7 @@ func _slide_out_of_blocks(from: Vector3, to: Vector3) -> Vector3:
 	for _pass in 2:
 		for r in block_rects:
 			var rect: Rect2 = r
-			if not rect.has_point(Vector2(p.x, p.z)) or rect.has_point(dest):
+			if not rect.has_point(Vector2(p.x, p.z)) or rect.has_point(Vector2(from.x, from.z)) or rect.has_point(dest):
 				continue
 			var dl: = p.x - rect.position.x
 			var dr: = rect.end.x - p.x
@@ -937,13 +979,17 @@ func show_order(text: String, urgent: = false) -> void :
 		_bubble = Label3D.new()
 		_bubble.billboard = BaseMaterial3D.BILLBOARD_ENABLED
 		_bubble.font = UiTheme.bold()
-		_bubble.font_size = 46
-		_bubble.pixel_size = 0.0055
-		_bubble.outline_size = 34
+		_bubble.font_size = 36
+		_bubble.pixel_size = 0.004
+		_bubble.outline_size = 12
+		_bubble.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		_bubble.width = 200.0
 		_bubble.no_depth_test = true
 		_bubble.render_priority = 10
 		_bubble.fixed_size = false
-		_bubble.position = Vector3(0, 2.15, 0)
+		# A raiz sentada fica à frente do corpo; ancora o pedido acima da cabeça.
+		# Nas cadeiras opostas os balões têm alturas alternadas para não se cobrirem.
+		_bubble.position = Vector3(0, 1.8 + (0.5 if spot.get("table", false) and cos(rotation.y) > 0.0 else 0.0), -0.3)
 		add_child(_bubble)
 	_bubble.text = text
 	_bubble.modulate = Color(0.2, 0.12, 0.08)

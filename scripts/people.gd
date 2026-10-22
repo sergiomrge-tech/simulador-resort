@@ -30,6 +30,7 @@ static func build_body(female: bool) -> Node3D:
 	var old: Node = _anim_src.instantiate()
 	var ap: = old.find_child("AnimationPlayer", true, false)
 	if ap:
+		ap.owner = null
 		ap.get_parent().remove_child(ap)
 		root.add_child(ap)
 		ap.owner = null
@@ -197,6 +198,7 @@ static func hair_mesh(style: String) -> MeshInstance3D:
 		root.queue_free()
 		return null
 	var mi: MeshInstance3D = found[0]
+	mi.owner = null
 	mi.get_parent().remove_child(mi)
 	root.queue_free()
 	return mi
