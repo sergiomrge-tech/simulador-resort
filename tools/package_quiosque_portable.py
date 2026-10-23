@@ -20,6 +20,8 @@ Para atualizar uma cópia anterior, substitua os arquivos do programa e mantenha
 a pasta userdata/. O ZIP não inclui nem apaga saves.
 
 NOVO NESTA REVISÃO
+- Pedidos nas mesas: E no cliente com marcador E para anotar; depois pegue
+  os produtos e volte com E para entregar. Garçom também anota pessoalmente.
 - Atendimento simplificado: pegue o produto pronto e entregue. Sem preparar,
   sem cronômetro. Compras abastecem o estoque; retirada desconta uma vez.
 - Cores mais naturais no jogo inteiro: menor saturação, madeira/areia/telhas
@@ -51,6 +53,8 @@ NOVO NESTA REVISÃO
 - Textos e avisos menores; sem nomes grandes sobre as estações.
 
 ATENDER
+0. Espere o cliente escolher. Aproxime-se de quem tem E · #pedido e aperte E
+   para anotar. O pedido aparece no HUD e no celular.
 1. Entre pela lateral, mire na geladeira ou armário e aperte E.
 2. Escolha Pegar e levar ao cliente. O produto vai imediatamente para sua mão.
 3. E no cliente com o número/pedido correspondente para entregar.

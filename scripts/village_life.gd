@@ -281,7 +281,10 @@ func kiosk_open() -> bool:
 	return Core.kiosk_is_within_hours()
 
 func waiting_customers() -> Array:
-	return customers.filter( func(c): return c.state == "kwait")
+	return customers.filter( func(c): return c.state == "kwait" and (not Core.company_enabled() or bool(c.get_meta("order_taken", true))))
+
+func customers_to_order() -> Array:
+	return customers.filter(func(c): return c.state == "kwait" and not bool(c.get_meta("order_taken", true)))
 
 func _free_spot() -> int:
 	var free: = []
@@ -470,10 +473,11 @@ func _kiosk_tick(dmin: float) -> void :
 					g.queue_free()
 
 ## Termina de ler o cardápio e faz o pedido (balão sobre a cabeça).
-func _order(g) -> void :
+func _order(g, recorded: bool = false) -> void :
 	g.show_menu(false)
 	g.state = "kwait"
 	g.timer = _patience(g)
+	g.set_meta("order_taken", recorded or not Core.company_enabled())
 	g.set_meta("urgent", false)
 	g.show_order(_order_text(g))
 	g.play("Sitting_Talking_Loop")

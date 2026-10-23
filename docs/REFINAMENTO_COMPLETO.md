@@ -83,3 +83,19 @@ Validação da retirada direta: fonte passou empresa, prático, gestão, simula�
 ciclo geral; executável passou empresa e prático. Preparo de saves antigos vira
 unidade pronta uma vez, sem novo débito. Conferida practical_station.png no PCK.
 PCK SHA256: 8d95b71f92fdd3de2b877175fdbabb9fe1c91a7cd97ca68e0edfc67ecba6a192.
+
+## Anotar pedidos nas mesas — 23/10/2026
+Clientes no modo de retirada passam de leitura do cardápio para aguardando
+anotação (order_taken=false). E no cliente registra o pedido, mostra confirmação
+e inclui itens no HUD/celular. E depois consulta; com item correto, entrega.
+Pedidos não anotados exibem E · #n. Garçom vai até approach para anotar antes de
+voltar aos equipamentos. Atendimento legado mantém pedidos automáticos consultáveis.
+
+Interação foi ajustada à posição do tronco sentado e criada também em pausas de
+simulação. Anotar não consome estoque e repetir E não reinicia o tempo de espera.
+Fonte: table-practical.log PRACTICAL_TEST PASS; table-company.log COMPANY_TEST PASS.
+PCK: table-pack-practical.log PRACTICAL_TEST PASS e table-pack-company.log
+COMPANY_TEST PASS, sem SCRIPT ERROR ou recursos ausentes. Prático usa duas
+cadeiras opostas de uma mesa, transição real kchoose, raycast, E, retirada e entrega.
+Garçom testado com pedido ainda não anotado. Permanecem avisos conhecidos de saída.
+PCK SHA256: 99485047c0cf827b3d724d420d5c106b152192319777ce47c83a13eed1dab21a.

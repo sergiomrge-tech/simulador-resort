@@ -38,6 +38,11 @@ cozinha à direita. Caixa na frente e liquidificador no tampo lateral. Sem anexo
 
 ## Como atender (atualizado: sem preparo)
 
+Antes de pegar os produtos, vá até o cliente sentado. Quando ele terminar de
+escolher, aparece **E · #pedido**; mire nele e aperte **E para anotar**. O pedido
+entra na lista da tela e do celular. E novamente permite consultar; levando o
+produto correto, E entrega. O garçom também caminha até a mesa para anotar.
+
 1. E na geladeira para bebidas ou no armário/cozinha para alimentos.
 2. Escolha **Pegar e levar ao cliente**. O produto vai imediatamente para sua mão.
 3. E no cliente com o número correspondente para entregar.

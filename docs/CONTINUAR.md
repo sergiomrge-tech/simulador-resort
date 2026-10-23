@@ -1,5 +1,10 @@
 # Como continuar o Maré Alta Resort (passagem de bastão — 19/10/2026)
 
+> **Pedidos nas mesas (23/10):** no modo de retirada, cliente termina de escolher
+> e espera E para anotar (`order_taken=false`). Após anotação aparece no HUD/celular.
+> Mesma interação permite consultar ou entregar. Garçom anota indo até approach.
+> Teste prático verifica raycast/E nas duas cadeiras opostas de uma mesa real.
+
 > **Sem preparo (pedido mais recente, 23/10):** retirada imediata de produtos
 > prontos na geladeira/armário/cozinha. Compras abastecem, retirada desconta uma vez;
 > devolução fica pronta sem novo débito. Produção pendente de saves antigos migra

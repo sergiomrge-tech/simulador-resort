@@ -323,3 +323,14 @@ PRACTICAL_TEST PASS. Inspeção de practical_station.png confirma ausência de b
 Preparar e retirada com contagem de estoque. Sem SCRIPT ERROR/recursos ausentes;
 permanecem os avisos conhecidos de material/RID no encerramento do motor.
 PCK SHA256: 8d95b71f92fdd3de2b877175fdbabb9fe1c91a7cd97ca68e0edfc67ecba6a192.
+
+# Pedidos anotados nas mesas — 23/10/2026
+- E no cliente sentado anota; pedido vai para HUD/celular. E com produto entrega.
+- Garçom caminha para anotar. Antes do cadastro da empresa, pedidos legados seguem
+  automáticos e podem ser consultados no cliente. Sem reintroduzir preparo.
+- Fonte table-practical.log e table-company.log PASS. Executável
+  table-pack-practical.log e table-pack-company.log PASS; mira/E testados nas duas
+  cadeiras opostas de uma mesa real, sem débito na anotação, consulta sem reset
+  de paciência, retirada e entrega. Garçom testado anotando antes de retirar.
+- Sem SCRIPT ERROR/recursos ausentes. Avisos conhecidos de liberação no encerramento.
+- PCK SHA256: 99485047c0cf827b3d724d420d5c106b152192319777ce47c83a13eed1dab21a.

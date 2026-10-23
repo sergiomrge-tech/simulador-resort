@@ -29,7 +29,7 @@ func place_customer(v, index: int, items: Array):
 	g.set_meta("items", items)
 	g.set_meta("delivered", 0)
 	g.set_meta("revenue", 0)
-	v._order(g)
+	v._order(g, true)
 	g.timer = 10000.0
 	return g
 

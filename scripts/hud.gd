@@ -534,6 +534,9 @@ func objective() -> Array:
 		for g in village.waiting_customers():
 			if carried != "" and carried in village._remaining(g):
 				return ["Entregar " + str(Economy.dish(carried).name), g.spot.approach, 2.0]
+		if carried == "" and village.waiting_customers().is_empty() and not village.customers_to_order().is_empty():
+			var unrecorded = village.customers_to_order()[0]
+			return ["Anotar pedido " + ops.order_number(unrecorded) + " · E no cliente", unrecorded.spot.approach, 2.0]
 		if not village.waiting_customers().is_empty() and carried == "":
 			var next = village._next_customer()
 			var id: String = str(village._remaining(next)[0])
@@ -695,6 +698,9 @@ func _update_orders() -> void:
 	var ops = get_parent().operations
 	var waiting: Array = village.waiting_customers()
 	var lines: Array = []
+	var unrecorded: Array = village.customers_to_order()
+	if not unrecorded.is_empty():
+		lines.append("%d cliente(s) aguardando · E para anotar na mesa" % unrecorded.size())
 	for guest in waiting.slice(0, 3):
 		var items: Array = []
 		for id in village._remaining(guest):

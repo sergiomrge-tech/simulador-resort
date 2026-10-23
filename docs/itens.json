@@ -126,12 +126,12 @@
    },
    {
     "arquivo": "kiosk_operations.gd",
-    "linha": 236,
+    "linha": 267,
     "funcao": "_sync_staff_presence"
    },
    {
     "arquivo": "kiosk_operations.gd",
-    "linha": 304,
+    "linha": 349,
     "funcao": "_waiter"
    },
    {
@@ -181,7 +181,7 @@
    },
    {
     "arquivo": "village_life.gd",
-    "linha": 425,
+    "linha": 428,
     "funcao": "_kiosk_tick"
    }
   ]
@@ -534,17 +534,17 @@
    },
    {
     "arquivo": "village_life.gd",
-    "linha": 434,
+    "linha": 437,
     "funcao": "_kiosk_tick"
    },
    {
     "arquivo": "village_life.gd",
-    "linha": 451,
+    "linha": 454,
     "funcao": "_kiosk_tick"
    },
    {
     "arquivo": "village_life.gd",
-    "linha": 553,
+    "linha": 557,
     "funcao": "_leave"
    },
    {
@@ -593,12 +593,12 @@
    },
    {
     "arquivo": "village_life.gd",
-    "linha": 449,
+    "linha": 452,
     "funcao": "_kiosk_tick"
    },
    {
     "arquivo": "village_life.gd",
-    "linha": 479,
+    "linha": 483,
     "funcao": "_order"
    }
   ]
@@ -885,12 +885,12 @@
    },
    {
     "arquivo": "phone_ui.gd",
-    "linha": 1588,
+    "linha": 1591,
     "funcao": "_refresh_management_task"
    },
    {
     "arquivo": "phone_ui.gd",
-    "linha": 1600,
+    "linha": 1603,
     "funcao": "_app_equipment"
    },
    {
@@ -950,7 +950,7 @@
    },
    {
     "arquivo": "village_life.gd",
-    "linha": 649,
+    "linha": 653,
     "funcao": "prep_advance"
    },
    {
@@ -1005,7 +1005,7 @@
    },
    {
     "arquivo": "village_life.gd",
-    "linha": 735,
+    "linha": 739,
     "funcao": "_complete_order"
    }
   ],
@@ -1090,7 +1090,7 @@
    },
    {
     "arquivo": "village_life.gd",
-    "linha": 682,
+    "linha": 686,
     "funcao": "_deliver_item"
    },
    {
@@ -4503,7 +4503,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 286,
+    "linha": 289,
     "funcao": "_free_spot"
    }
   ]
@@ -4517,7 +4517,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 302,
+    "linha": 305,
     "funcao": "spawn_customer"
    }
   ]
@@ -4531,7 +4531,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 383,
+    "linha": 386,
     "funcao": "_kiosk_tick"
    }
   ]
@@ -4545,7 +4545,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 473,
+    "linha": 476,
     "funcao": "_order"
    }
   ]
@@ -4559,7 +4559,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 482,
+    "linha": 486,
     "funcao": "_pick_dish"
    }
   ]
@@ -4573,7 +4573,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 503,
+    "linha": 507,
     "funcao": "_pick_vip"
    }
   ]
@@ -4587,7 +4587,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 512,
+    "linha": 516,
     "funcao": "_vip_name"
    }
   ]
@@ -4601,7 +4601,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 518,
+    "linha": 522,
     "funcao": "_items"
    }
   ]
@@ -4615,7 +4615,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 522,
+    "linha": 526,
     "funcao": "_patience"
    }
   ]
@@ -4629,7 +4629,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 525,
+    "linha": 529,
     "funcao": "_remaining"
    }
   ]
@@ -4643,7 +4643,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 528,
+    "linha": 532,
     "funcao": "_order_text"
    }
   ]
@@ -4657,7 +4657,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 546,
+    "linha": 550,
     "funcao": "_leave"
    }
   ]
@@ -4671,7 +4671,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 561,
+    "linha": 565,
     "funcao": "_next_customer"
    }
   ]
@@ -4685,7 +4685,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 569,
+    "linha": 573,
     "funcao": "w0_vip"
    }
   ]
@@ -4699,7 +4699,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 572,
+    "linha": 576,
     "funcao": "_bar"
    }
   ]
@@ -4713,7 +4713,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 576,
+    "linha": 580,
     "funcao": "kiosk_prompt"
    }
   ]
@@ -4727,7 +4727,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 610,
+    "linha": 614,
     "funcao": "daily_goal"
    }
   ]
@@ -4741,7 +4741,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 618,
+    "linha": 622,
     "funcao": "kiosk_action"
    }
   ]
@@ -4755,7 +4755,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 634,
+    "linha": 638,
     "funcao": "_stage_secs"
    }
   ]
@@ -4769,7 +4769,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 640,
+    "linha": 644,
     "funcao": "prep_advance"
    }
   ]
@@ -4783,7 +4783,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 659,
+    "linha": 663,
     "funcao": "_deliver_item"
    }
   ]
@@ -4797,7 +4797,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 689,
+    "linha": 693,
     "funcao": "_complete_order"
    }
   ]
@@ -4811,7 +4811,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 745,
+    "linha": 749,
     "funcao": "kiosk_serve"
    }
   ]
@@ -4825,7 +4825,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 758,
+    "linha": 762,
     "funcao": "helper_serve"
    }
   ]
@@ -4839,7 +4839,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 763,
+    "linha": 767,
     "funcao": "_on_slept"
    }
   ]
@@ -5329,7 +5329,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 537,
+    "linha": 541,
     "funcao": "_release_spot"
    }
   ]
@@ -5357,7 +5357,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 783,
+    "linha": 787,
     "funcao": "_prep_position"
    }
   ]
@@ -5371,7 +5371,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 786,
+    "linha": 790,
     "funcao": "_clear_prep_visual"
    }
   ]
@@ -5385,7 +5385,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 792,
+    "linha": 796,
     "funcao": "_show_prep_visual"
    }
   ]
@@ -5399,7 +5399,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 800,
+    "linha": 804,
     "funcao": "served_dishes"
    }
   ]
@@ -5413,7 +5413,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 809,
+    "linha": 813,
     "funcao": "clear_served_visuals"
    }
   ]
@@ -5427,7 +5427,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 817,
+    "linha": 821,
     "funcao": "_show_delivered_visual"
    }
   ]
@@ -5457,6 +5457,20 @@
     "arquivo": "world_village.gd",
     "linha": 822,
     "funcao": "_kiosk_facade"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-285",
+  "categoria": "CEN",
+  "chave": "village_life.customers_to_order",
+  "nome": "Customers to order",
+  "fonte": "village_life.gd (código)",
+  "usos": [
+   {
+    "arquivo": "village_life.gd",
+    "linha": 286,
+    "funcao": "customers_to_order"
    }
   ]
  },
@@ -6287,7 +6301,7 @@
    },
    {
     "arquivo": "phone_ui.gd",
-    "linha": 490,
+    "linha": 493,
     "funcao": "_app_expansions"
    },
    {
@@ -6422,12 +6436,12 @@
    },
    {
     "arquivo": "phone_ui.gd",
-    "linha": 572,
+    "linha": 575,
     "funcao": "_app_menu"
    },
    {
     "arquivo": "phone_ui.gd",
-    "linha": 573,
+    "linha": 576,
     "funcao": "_app_menu"
    },
    {
@@ -6597,27 +6611,27 @@
    },
    {
     "arquivo": "kiosk_operations.gd",
-    "linha": 221,
+    "linha": 252,
     "funcao": "_staff_home"
    },
    {
     "arquivo": "kiosk_operations.gd",
-    "linha": 225,
+    "linha": 256,
     "funcao": "_sync_staff_presence"
    },
    {
     "arquivo": "kiosk_operations.gd",
-    "linha": 252,
+    "linha": 283,
     "funcao": "_staff_tick"
    },
    {
     "arquivo": "kiosk_operations.gd",
-    "linha": 261,
+    "linha": 292,
     "funcao": "_staff_tick"
    },
    {
     "arquivo": "kiosk_operations.gd",
-    "linha": 271,
+    "linha": 302,
     "funcao": "_staff_tick"
    },
    {
@@ -6832,7 +6846,7 @@
    },
    {
     "arquivo": "hud.gd",
-    "linha": 574,
+    "linha": 577,
     "funcao": "objective"
    },
    {
@@ -6902,7 +6916,7 @@
    },
    {
     "arquivo": "phone_ui.gd",
-    "linha": 1458,
+    "linha": 1461,
     "funcao": "_dismiss_staff"
    },
    {
@@ -7137,32 +7151,32 @@
    },
    {
     "arquivo": "phone_ui.gd",
-    "linha": 786,
+    "linha": 789,
     "funcao": "_app_staff"
    },
    {
     "arquivo": "phone_ui.gd",
-    "linha": 801,
+    "linha": 804,
     "funcao": "_app_staff"
    },
    {
     "arquivo": "phone_ui.gd",
-    "linha": 1260,
+    "linha": 1263,
     "funcao": "_company_staff"
    },
    {
     "arquivo": "phone_ui.gd",
-    "linha": 1426,
+    "linha": 1429,
     "funcao": "_refresh_staff_status"
    },
    {
     "arquivo": "phone_ui.gd",
-    "linha": 1493,
+    "linha": 1496,
     "funcao": "_app_routine"
    },
    {
     "arquivo": "phone_ui.gd",
-    "linha": 1537,
+    "linha": 1540,
     "funcao": "_app_candidates"
    }
   ],
@@ -7322,7 +7336,7 @@
    },
    {
     "arquivo": "phone_ui.gd",
-    "linha": 540,
+    "linha": 543,
     "funcao": "_app_market"
    },
    {
@@ -7377,17 +7391,17 @@
    },
    {
     "arquivo": "phone_ui.gd",
-    "linha": 643,
+    "linha": 646,
     "funcao": "_app_album"
    },
    {
     "arquivo": "village_life.gd",
-    "linha": 714,
+    "linha": 718,
     "funcao": "_complete_order"
    },
    {
     "arquivo": "village_life.gd",
-    "linha": 729,
+    "linha": 733,
     "funcao": "_complete_order"
    }
   ],
@@ -7562,7 +7576,7 @@
    },
    {
     "arquivo": "village_life.gd",
-    "linha": 733,
+    "linha": 737,
     "funcao": "_complete_order"
    }
   ],
@@ -7852,12 +7866,12 @@
    },
    {
     "arquivo": "phone_ui.gd",
-    "linha": 571,
+    "linha": 574,
     "funcao": "_app_menu"
    },
    {
     "arquivo": "phone_ui.gd",
-    "linha": 801,
+    "linha": 804,
     "funcao": "_app_staff"
    },
    {
@@ -8002,7 +8016,7 @@
    },
    {
     "arquivo": "phone_ui.gd",
-    "linha": 1602,
+    "linha": 1605,
     "funcao": "_app_equipment"
    },
    {
@@ -8067,7 +8081,7 @@
    },
    {
     "arquivo": "phone_ui.gd",
-    "linha": 860,
+    "linha": 863,
     "funcao": "_fame_bar"
    }
   ],
@@ -8092,7 +8106,7 @@
    },
    {
     "arquivo": "hud.gd",
-    "linha": 564,
+    "linha": 567,
     "funcao": "objective"
    },
    {
@@ -8127,7 +8141,7 @@
    },
    {
     "arquivo": "phone_ui.gd",
-    "linha": 912,
+    "linha": 915,
     "funcao": "_app_business"
    },
    {
@@ -8192,7 +8206,7 @@
    },
    {
     "arquivo": "phone_ui.gd",
-    "linha": 1047,
+    "linha": 1050,
     "funcao": "_app_village"
    }
   ],
@@ -13308,7 +13322,7 @@
    },
    {
     "arquivo": "kiosk_operations.gd",
-    "linha": 185,
+    "linha": 215,
     "funcao": "sync_company"
    },
    {
@@ -31014,7 +31028,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 326,
+    "linha": 329,
     "funcao": "spawn_customer"
    }
   ],
@@ -32762,7 +32776,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 353,
+    "linha": 356,
     "funcao": "spawn_customer"
    }
   ],
@@ -33832,7 +33846,7 @@
     "funcao": ""
    }
   ],
-  "linhas": 707,
+  "linhas": 713,
   "descricao": ""
  },
  {
@@ -33960,7 +33974,7 @@
     "funcao": ""
    }
   ],
-  "linhas": 1675,
+  "linhas": 1678,
   "descricao": "Celular do herói (v0.7): toda a gestão do negócio por apps — Expansões, Mercado, Cardápio,"
  },
  {
@@ -34088,7 +34102,7 @@
     "funcao": ""
    }
   ],
-  "linhas": 839,
+  "linhas": 843,
   "descricao": ""
  },
  {
@@ -34328,7 +34342,7 @@
     "funcao": ""
    }
   ],
-  "linhas": 453,
+  "linhas": 498,
   "descricao": "Operação do quiosque: estoque pronto separado de ingredientes e contas a receber."
  },
  {

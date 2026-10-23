@@ -124,16 +124,46 @@ func collect_payments() -> void:
 
 func customer_prompt(ref: WeakRef) -> String:
 	var g = ref.get_ref()
-	if not Core.company_enabled() or not is_instance_valid(g) or g.is_queued_for_deletion() or g.state != "kwait":
+	if not is_instance_valid(g) or g.is_queued_for_deletion():
 		return ""
+	if g.state == "kchoose": return "Cliente escolhendo no cardápio"
+	if g.state != "kwait": return ""
+	if not bool(g.get_meta("order_taken", true)): return "Anotar pedido " + order_number(g)
 	var id: String = str(Core.company.carry)
 	if id in main.village._remaining(g):
 		return "Entregar " + tr(str(Economy.dish(id).name))
-	return order_number(g) + " · " + main.village._order_text(g)
+	return "Ver pedido " + order_number(g) + " · " + main.village._order_text(g)
+
+func take_order(ref: WeakRef, by_staff: bool = false) -> bool:
+	var g = ref.get_ref()
+	if not is_instance_valid(g) or g.is_queued_for_deletion() or g.state != "kwait" or bool(g.get_meta("order_taken", true)):
+		return false
+	if not by_staff and main.player.global_position.distance_to(g.global_position) > 3.0:
+		return false
+	g.set_meta("order_taken", true)
+	g.timer = main.village._patience(g)
+	g.set_meta("urgent", false)
+	g.show_order(main.village._order_text(g))
+	main.hud._update_orders()
+	if not by_staff:
+		Core.toast.emit("Pedido anotado " + order_number(g) + ": " + main.village._order_text(g), "good")
+	return true
+
+func customer_action(ref: WeakRef) -> bool:
+	var g = ref.get_ref()
+	if not is_instance_valid(g) or g.is_queued_for_deletion() or g.state != "kwait":
+		return false
+	if main.player.global_position.distance_to(g.global_position) > 3.0: return false
+	if not bool(g.get_meta("order_taken", true)):
+		return take_order(ref)
+	if str(Core.company.carry) in main.village._remaining(g):
+		return deliver(ref)
+	Core.toast.emit("Pedido " + order_number(g) + ": " + main.village._order_text(g), "info")
+	return true
 
 func deliver(ref: WeakRef) -> bool:
 	var g = ref.get_ref()
-	if not Core.company_enabled() or not is_instance_valid(g) or g.is_queued_for_deletion() or g.state != "kwait":
+	if not Core.company_enabled() or not is_instance_valid(g) or g.is_queued_for_deletion() or g.state != "kwait" or not bool(g.get_meta("order_taken", true)):
 		return false
 	if str(Core.company.carry) not in main.village._remaining(g):
 		Core.toast.emit("Leve um dos itens pedidos por este cliente.", "bad")
@@ -187,13 +217,14 @@ func sync_company() -> void:
 		dirt[index] = root
 
 func _process(delta: float) -> void:
-	if not Core.company_enabled() or not Core.in_game or Core.paused or get_tree().paused:
-		return
 	for g in main.village.customers:
 		if is_instance_valid(g) and not g.has_meta("company_target"):
 			var ref: WeakRef = weakref(g)
-			_interaction(g, Vector3(0, 0.8, 0), Vector3(0.58, 1.3, 0.58), customer_prompt.bind(ref), deliver.bind(ref))
+			var target := _interaction(g, Vector3(0, 0.95, -0.28), Vector3(0.65, 1.0, 0.65), customer_prompt.bind(ref), customer_action.bind(ref))
+			target.name = "CustomerInteraction"
 			g.set_meta("company_target", true)
+	if not Core.company_enabled() or not Core.in_game or Core.paused or get_tree().paused:
+		return
 	pulse -= delta
 	if pulse > 0:
 		return
@@ -281,6 +312,20 @@ func _staff_tick() -> void:
 func _waiter(g) -> void:
 	if g.is_moving():
 		return
+	if waiter_phase == "order":
+		var target = waiter_target.get_ref() if waiter_target != null else null
+		if is_instance_valid(target) and not target.spot.is_empty() and g.position.distance_to(target.spot.approach) < 1.2:
+			take_order(waiter_target, true)
+		waiter_phase = ""
+		waiter_target = null
+		return
+	if waiter_phase == "" and Core.company.staff_carry == "" and main.village.waiting_customers().is_empty():
+		var pending: Array = main.village.customers_to_order()
+		if not pending.is_empty():
+			waiter_target = weakref(pending[0])
+			waiter_phase = "order"
+			g.go([center()+Vector3(3.2,.1,-.85), center()+Vector3(3.2,.1,3.5), pending[0].spot.approach])
+			return
 	if waiter_phase == "pickup":
 		if Time.get_ticks_msec() < int(g.get_meta("handoff_until",0)): return
 		waiter_phase = "deliver"

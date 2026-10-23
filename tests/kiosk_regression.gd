@@ -44,7 +44,7 @@ func run(main) -> void:
 	var waiting = v.spawn_customer()
 	check(waiting != null and waiting.state == "kqueue" and waiting.spot.is_empty(), "lotação cria espera fora das mesas")
 	var served = v.customers[0]
-	v._order(served)
+	v._order(served, true)
 	for ingredient in Core.stock:
 		Core.stock[ingredient] = 100
 	check(v.kiosk_serve() and served.state == "keat" and served.spot.busy, "consumo mantém assento reservado")

@@ -474,7 +474,10 @@ func _app_dashboard(list: VBoxContainer) -> void:
 func _app_orders(list: VBoxContainer) -> void:
 	var ops = _operations()
 	var waiting: Array = get_tree().current_scene.village.waiting_customers()
-	if waiting.is_empty(): _lbl(list, "Nenhum pedido esperando.", 18, INK_SOFT)
+	var pending: Array = get_tree().current_scene.village.customers_to_order()
+	for guest in pending:
+		_lbl(list, ops.order_number(guest) + " " + ops.seat_name(guest) + " · aproxime-se e aperte E para anotar", 16, INK, true, true)
+	if waiting.is_empty() and pending.is_empty(): _lbl(list, "Nenhum pedido esperando.", 18, INK_SOFT)
 	for guest in waiting:
 		var card := _card(list)
 		_lbl(card, ops.order_summary(guest), 17, INK, true, true)

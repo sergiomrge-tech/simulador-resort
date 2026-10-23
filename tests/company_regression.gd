@@ -128,7 +128,7 @@ func _integration(main) -> void:
 	g.set_meta("items", ["coco_gelado", "suco"])
 	g.set_meta("delivered", 0)
 	g.set_meta("vip", false)
-	village._order(g)
+	village._order(g, true)
 	Core.set_kiosk_open(false)
 	var before_close: int = village.customers.size()
 	village.enabled = true
@@ -229,7 +229,7 @@ func _integration(main) -> void:
 		main.operations._staff_tick()
 		await get_tree().process_frame
 		elapsed += get_process_delta_time()
-	check(g.state == "keat", "garçom retira e entrega diretamente pelo percurso real")
+	check(g.state == "keat", "garçom anota, retira e entrega diretamente pelo percurso real")
 	check(Core.company.receivables.is_empty(), "caixa recebe atendimento da equipe")
 	var waiter = main.operations.actors.get("garcom")
 	check(is_instance_valid(waiter) and waiter.position.distance_to(g.spot.approach) < 1.5, "garçom chegou ao cliente antes de entregar")

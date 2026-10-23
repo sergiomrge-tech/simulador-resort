@@ -775,7 +775,7 @@ func _stage_kiosk_orders() -> void:
 		customer.set_meta("items", orders[i])
 		customer.set_meta("delivered", 0)
 		customer.set_meta("revenue", 0)
-		village._order(customer)
+		village._order(customer, true)
 		customer.timer = 10000.0
 		village.kiosk_serve()
 		customer.set_meta("eat", 10000.0)

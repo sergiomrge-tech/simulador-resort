@@ -107,11 +107,57 @@ func run(main) -> void:
 		guest.position = guest.spot.pos
 		guest.set_meta("items", ["coco_gelado"])
 		guest.set_meta("delivered", 0)
-		main.village._order(guest)
+		main.village._order(guest, true)
 		main.hud._update_orders()
 		check(main.hud.orders_text.text.contains(main.operations.order_number(guest)) and main.hud.work_text.text.contains("Coco"), "pedido e item na mão claros no HUD")
 		check(guest._bubble.text.begins_with("#") and guest._bubble.text.length() == 3, "marcador curto no cliente")
 		check(main.operations.deliver(weakref(guest)) and guest.state == "keat", "entrega conclui pedido físico")
+	# Exercise E against seated clients on both sides of an actual table.
+	for seat_index in [2,3]:
+		var occupancy: Array = main.world.kiosk_spots.map(func(s): return s.busy)
+		for i in main.world.kiosk_spots.size(): main.world.kiosk_spots[i].busy = i != seat_index
+		var seated = main.village.spawn_customer()
+		for i in main.world.kiosk_spots.size():
+			if i != seat_index: main.world.kiosk_spots[i].busy = occupancy[i]
+		check(seated != null and seated.spot.get("table",false), "cliente em mesa real")
+		if seated == null: continue
+		seated.go([])
+		seated.position = seated.spot.pos
+		seated.rotation.y = seated.spot.rot
+		seated.play("Sitting_Idle_Loop")
+		seated.set_meta("items",["coco_gelado"])
+		seated.set_meta("delivered",0)
+		seated.state = "kchoose"
+		seated.set_meta("choose",0)
+		main.village._kiosk_tick(.01)
+		main.operations._process(0)
+		check(not bool(seated.get_meta("order_taken",true)) and seated not in main.village.waiting_customers(), "pedido aguarda anotação na mesa")
+		var target = seated.get_node("CustomerInteraction")
+		main.player.position = seated.spot.approach
+		main.player.cam.look_at(target.global_position+Vector3(0,.15,0),Vector3.UP)
+		await frames(4)
+		main.player.ray.force_raycast_update()
+		check(main.player.ray.get_collider() == target, "mira alcança cliente sentado sem bloqueio da mesa")
+		main.player.focus = target if main.player.ray.get_collider() == target else null
+		var stock_snapshot: Dictionary = Core.stock.duplicate()
+		if DisplayServer.get_name() != "headless":
+			await frames(2)
+			await RenderingServer.frame_post_draw
+			get_viewport().get_texture().get_image().save_png("res://shots/table_order_"+str(seat_index)+".png")
+		main.player.interact()
+		check(bool(seated.get_meta("order_taken",false)) and seated in main.village.waiting_customers(), "E anota pedido do cliente sentado")
+		check(Core.stock == stock_snapshot, "anotar não consome produtos")
+		var timer_before: float = seated.timer
+		main.player.interact()
+		check(seated.timer == timer_before, "consultar pedido anotado não reinicia paciência")
+		check(Core.pickup_company_dish("coco_gelado"), "pega produto pronto para a mesa")
+		main.player.interact()
+		check(seated.state == "keat" and Core.company.carry == "", "mesma interação entrega ao cliente sentado")
+		main.village._leave(seated)
+		main.village._release_spot(seated)
+		main.village.customers.erase(seated)
+		seated.queue_free()
+		Core.clean_company_seat(seat_index)
 	main.hud.phone.close()
 	main.hud._update_orders()
 	check(main.hud.money_l.get_theme_font_size("font_size") == 20 and main.hud.prompt_l.get_theme_font_size("font_size") == 16, "HUD compacto")
@@ -159,7 +205,7 @@ func run(main) -> void:
 			guest.state = "kwait"
 			guest.set_meta("items", ["suco"])
 			guest.set_meta("delivered", 0)
-			main.village._order(guest)
+			main.village._order(guest, true)
 		main.hud._update_orders()
 		await shot(main, "practical_orders", c + Vector3(0, .1, .7), 180, -4)
 		await shot(main, "practical_workroom", c + Vector3(0, .1, 1.15), 0, -7)
