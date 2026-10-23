@@ -42,7 +42,7 @@ AMBIENTCG = {"Wicker002": "rattan"}
 # v0.8 (regra "nada de bolas e quadrados"): modelos reais do Poly Haven (CC0) para todos os objetos do jogo, só 1k para não pesar.
 MODELS_EXTRA = [
     "painted_wooden_chair_01", "wooden_bowl_01",
-    "boombox", "lambis_shell", "lifebuoy", "ocean_buoy", "wicker_basket_01", "wicker_basket_02", "trashbag", "planter_pot_clay",
+    "boombox", "television_02", "lambis_shell", "lifebuoy", "ocean_buoy", "wicker_basket_01", "wicker_basket_02", "trashbag", "planter_pot_clay",
     "potted_plant_01", "potted_plant_02", "potted_plant_04", "vintage_oil_lamp", "vintage_radio_transceiver", "sweet_potato",
     # frutas, pães e cozinha
     "food_apple_01", "bananas", "lemon", "food_lime_01", "food_lychee_01", "food_kiwi_01", "food_avocado_01",

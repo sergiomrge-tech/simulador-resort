@@ -342,6 +342,11 @@ func v1_test() -> void :
 
 func run(m) -> void :
 	main = m
+	if main.args.has("home-test"):
+		var home_test = load("res://tests/home_regression.gd").new()
+		add_child(home_test)
+		await home_test.run(main)
+		return
 	if main.args.has("practical-test"):
 		var practical = load("res://tests/practical_regression.gd").new()
 		add_child(practical)

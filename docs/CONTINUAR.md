@@ -45,6 +45,10 @@ trabalhe nos mesmos arquivos ao mesmo tempo que outro chat sem coordenação.
    madeira/areia/terracota naturais e mapas dos modelos preservados. Casa com piso
    claro, detalhes, cortinas, persianas e cozinha; porta em madeira, não azul.
    Manter personagens estilizados; cores naturais não exigem trocar a engine.
+   A luz ambiente usa AMBIENT_SOURCE_COLOR neutra e sky_contribution zero;
+   não restaurar o banho azul/lilás do céu nos materiais. Sala da casa tem sofá,
+   mesa de centro, estante, TV e som: E liga/desliga. TV exibe animação silenciosa;
+   som respeita mute/volume e distância. Preservar passagem até cama/cozinha.
 8. **Pessoas sem óculos escuros, chapéus ou bonés.** Preservar cabelos presos à
    cabeça animada e roupas compatíveis com o rig. Não recolocar acessórios nos
    testes só para tirar imagens. Avental com caimento, alças, bolso e cintura.
@@ -70,6 +74,7 @@ para conferir. Atualize downloads/geradores e o catálogo (`tools/gen_item_catal
 | HUD e celular | `scripts/hud.gd`, `scripts/phone_ui.gd` |
 | Rotinas, manutenção, fornecedores, custos | `scripts/kiosk_management.gd`, `scripts/kiosk_simulation.gd` |
 | Vila, casa, quiosque, colisões | `scripts/world_village.gd`, `scripts/world.gd` |
+| Mobiliário da casa, TV, som e redução da trilha | `scripts/home_furnishings.gd`, `scripts/audio.gd`, `shaders/home_tv.gdshader` |
 | Paleta e ciclo de luz | `scripts/toon.gd`, `scripts/daycycle.gd`, `shaders/guest.gdshader` |
 | Fontes artísticas | `art/blender/`, `tools/gen_*.py`, `assets/models/gen/` |
 
@@ -98,6 +103,10 @@ não contém automaticamente todas as dependências da instalação do Sergio.
   texturas novas. Conferir `.gdignore` e cache quando um asset existente não carrega.
 - Geradores relevantes: `gen_kiosk_facade.py`, `gen_counter_details.py`,
   `gen_compatible_clothing.py`, `gen_player_home.py` e `gen_kiosk_soft_audio.py`.
+- Móveis da sala: `fetch_home_assets.py` baixa oito modelos CC0 e
+  `import_home_assets.py` preserva malhas/UVs, incorpora texturas nas fontes
+  `art/blender/home_*.blend` e exporta `assets/models/gen/home_*.glb`.
+  Aceita slugs individuais para reconstruir só o recurso alterado.
 - Não regenere tudo sem necessidade. Preserve pesos/UVs, escala e origem. No
   Blender, frente -Y vira +Z na Godot. Peças rígidas Hair_* precisam de
   BoneAttachment em Head; só mudar o caminho skeleton não resolve cabelo sem Skin.
@@ -145,6 +154,7 @@ ambiente de um servidor MCP já aberto.
 |---|---|---|
 | Fluxo físico, mão, estoque, entrega e equipe | `--company-test` | `COMPANY_TEST PASS` |
 | Quiosque, colisões, E nas mesas e visual | `--practical-test` | `PRACTICAL_TEST PASS` |
+| Casa, circulação, colisões, apoio, E na TV/som e mute | `--home-test` | `HOME_TEST PASS` |
 | Gestão, equipamentos e candidatos | `--management-test` | `MANAGEMENT_TEST PASS` |
 | Custos, perdas, virada e fornecedores | `--simulation-test` | `SIMULATION_TEST PASS` |
 | Celular em vários tamanhos | `--phone-layout-test` | conferir log do teste |

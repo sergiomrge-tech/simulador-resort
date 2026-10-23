@@ -334,3 +334,27 @@ PCK SHA256: 8d95b71f92fdd3de2b877175fdbabb9fe1c91a7cd97ca68e0edfc67ecba6a192.
   de paciência, retirada e entrega. Garçom testado anotando antes de retirar.
 - Sem SCRIPT ERROR/recursos ausentes. Avisos conhecidos de liberação no encerramento.
 - PCK SHA256: 99485047c0cf827b3d724d420d5c106b152192319777ce47c83a13eed1dab21a.
+
+# Casa decorada e iluminação sem banho azul — 23/10/2026
+- Oito modelos detalhados Poly Haven CC0, fontes Blender incorporadas/reabertas.
+  Sofá, mesa de centro, TV, som, aparador, estante, relógio e escultura; livros e
+  planta reutilizados. Apoios e circulação da entrada até cama/cozinha conferidos.
+- Ambiente de cor neutra sem contribuição/reflexão do céu nos materiais; lua mais
+  neutra, paredes claras e pintura da estante sem azul. Céu/ciclo solar preservados.
+- TV com vidro curvo separado, sem sobreposição causando manchas. E liga/desliga
+  animação silenciosa; som usa Music, respeita mute e distância e reduz trilha dupla.
+- Após entrega do garçom, o retorno às estações inicia no próximo tick, preservando
+  a chegada à mesa antes de reiniciar movimento. Estoque/entrega não mudaram.
+- Fonte: lounge-glass.log HOME_TEST PASS; lounge-practical.log PRACTICAL_TEST PASS;
+  lounge-company2.log COMPANY_TEST PASS; lounge-loop.log LOOP_TEST PASS.
+- Executável/PCK: lounge-pack-home.log HOME_TEST PASS, lounge-pack-company.log
+  COMPANY_TEST PASS e lounge-pack-practical.log PRACTICAL_TEST PASS.
+- Interior dia/noite e tela de perto inspecionados em home_lounge.png,
+  home_lounge_night.png e home_media.png, capturados também pelo executável.
+- Sem SCRIPT ERROR/recursos ausentes nos testes finais. Persistem os avisos já
+  registrados de material nulo, recursos/RIDs na liberação ao encerrar o Godot.
+  Não se trata de log inteiramente limpo do motor.
+- PCK SHA256: 4773c398136e28e5804a387e6f4f22d4600e25cf7e5eb92fa5d8756741a0bc39.
+- Fachada do quiosque conferida no executável em lounge_kiosk_colors.png
+  (--shot=lounge_kiosk_colors --cam=39.5,0.35,-6,15,-3,11 --hidehud).
+- ZIP portátil atualizado em Downloads, 10 arquivos e CRC verificado; sem saves.

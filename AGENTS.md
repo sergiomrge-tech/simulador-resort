@@ -23,7 +23,8 @@ o nome do arquivo não restringe seu uso à IA Claude.
 - **Pedidos nas mesas:** no modo físico, E no cliente após escolher para anotar;
   depois E com o produto para entregar. Garçom também anota junto à mesa.
 - **Cores naturais em tudo**, com texturas preservadas; porta da casa em madeira.
-  Não restaurar saturação exagerada nem iluminação artificialmente alaranjada.
+  Não restaurar saturação exagerada nem iluminação artificialmente alaranjada/azul.
+  Ambiente usa cor neutra, sem contribuição azul do céu nas superfícies.
 - Pessoas **sem óculos escuros, chapéus ou bonés**. Preservar roupa/cabelo animados.
 - Equipamentos sempre visíveis no quiosque, inclusive antes de criar empresa;
   expositores preenchidos no estoque zero, sem vender a referência visual.

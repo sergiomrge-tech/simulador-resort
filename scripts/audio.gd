@@ -13,6 +13,7 @@ var _dog_t: = 20.0
 var _night: = 0.0
 var _last_bell_hour: = -1
 var muted: = false
+var home_duck := 0.0
 # v0.9.3: sons de evento (sintetizados em tools/gen_audio.py)
 var rain_snd: AudioStreamPlayer
 var wind_snd: AudioStreamPlayer
@@ -71,7 +72,7 @@ func _process(delta: float) -> void :
 		village_k = clampf(1.0 - (Vector2(pp.x, pp.z) - Vector2(VILLAGE.x, VILLAGE.z)).length() / 45.0, 0.0, 1.0)
 		beach_k = clampf(( - pp.z - 5.0) / 15.0, 0.0, 1.0)
 	crickets.volume_db = lerpf(-50.0, -12.0, _night)
-	music.volume_db = lerpf(-20.0, -24.0, _night) - village_k * 3.0
+	music.volume_db = lerpf(-20.0, -24.0, _night) - village_k * 3.0 - home_duck
 	if get_tree().paused:
 		return
 	_bird_t -= delta

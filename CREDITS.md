@@ -211,3 +211,28 @@ Blender por este projeto: tools/gen_player_home.py; fonte editável com texturas
 incorporadas art/blender/player_home_details.blend, GLB player_home_details.
 Reutiliza a textura light_stone e o conjunto de livros book_encyclopedia_set_01,
 Poly Haven CC0, já disponíveis e catalogados neste projeto.
+
+## Sala decorada — 23/10/2026
+
+Modelos detalhados da Poly Haven, todos [CC0](https://polyhaven.com/license),
+com uso e redistribuição permitidos. Download em `tools/fetch_home_assets.py`:
+
+| Original e fonte oficial | Modelo de execução |
+|---|---|
+| [sofa_02](https://polyhaven.com/a/sofa_02) | home_sofa |
+| [television_02](https://polyhaven.com/a/television_02) | home_tv |
+| [boombox](https://polyhaven.com/a/boombox) | home_stereo |
+| [coffee_table_round_01](https://polyhaven.com/a/coffee_table_round_01) | home_coffee_table |
+| [painted_wooden_cabinet_02](https://polyhaven.com/a/painted_wooden_cabinet_02) | home_storage_cabinet |
+| [small_wooden_table_01](https://polyhaven.com/a/small_wooden_table_01) | home_tv_console |
+| [wall_clock](https://polyhaven.com/a/wall_clock) | home_clock |
+| [carved_wooden_elephant](https://polyhaven.com/a/carved_wooden_elephant) | home_wood_carving |
+
+Adaptações por `tools/import_home_assets.py`: imagens até 1K, pintura azul da
+estante convertida para tom neutro com desgaste preservado, vidro curvo da TV
+separado para ligar/desligar a imagem. Malhas e UVs preservados, sem decimação.
+Fontes editáveis `art/blender/home_*.blend` com texturas incorporadas, reabertas
+para validação; GLBs em `assets/models/gen/`. Planta e livros reutilizam
+potted_plant_04 e book_encyclopedia_set_01, Poly Haven CC0 da biblioteca existente.
+Imagem de mar da TV é animação original por shader, sem vídeo ou vozes externos.
+O som reutiliza a trilha suave existente, com atenuação espacial e controle de áudio.

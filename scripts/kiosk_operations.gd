@@ -347,6 +347,7 @@ func _waiter(g) -> void:
 		waiter_phase = ""
 		_clear_tray(g)
 		g.play("Idle_Loop")
+		return
 	# Return safely to the shelves before returning or taking an item.
 	var pickup: Vector3 = center() + Vector3(0, 0.1, -0.65)
 	if g.position.distance_to(pickup) > 0.5:

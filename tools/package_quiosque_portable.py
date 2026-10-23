@@ -20,13 +20,19 @@ Para atualizar uma cópia anterior, substitua os arquivos do programa e mantenha
 a pasta userdata/. O ZIP não inclui nem apaga saves.
 
 NOVO NESTA REVISÃO
+- Casa decorada com sofá, mesa de centro, TV, aparelho de som, estante,
+  livros, relógio, planta e escultura de madeira. Modelos detalhados Poly Haven CC0.
+- E na TV liga/desliga uma animação silenciosa do mar; E no som liga/desliga
+  a música suave, com volume pela distância e respeito às configurações de áudio.
+- Iluminação ambiente neutra no jogo inteiro, sem o banho azul do céu sobre
+  paredes, móveis e pessoas. Madeira e materiais mantêm as texturas originais.
 - Pedidos nas mesas: E no cliente com marcador E para anotar; depois pegue
   os produtos e volte com E para entregar. Garçom também anota pessoalmente.
 - Atendimento simplificado: pegue o produto pronto e entregue. Sem preparar,
   sem cronômetro. Compras abastecem o estoque; retirada desconta uma vez.
 - Cores mais naturais no jogo inteiro: menor saturação, madeira/areia/telhas
   revisadas, menos aquecimento artificial. Porta da casa em madeira natural.
-- Casa com piso claro, armários verde acinzentado, pia/torneira, cortinas,
+- Casa com piso claro, armários em tons suaves, pia/torneira, cortinas,
   persianas, molduras, prateleiras e iluminação neutra.
 - Geladeira, armário, bancada e produtos aparecem mesmo antes de criar a empresa.
   E nos equipamentos abre o cadastro do quiosque quando necessário.

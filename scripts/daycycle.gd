@@ -39,8 +39,8 @@ func setup(parent: Node3D) -> void :
 	env = Environment.new()
 	env.background_mode = Environment.BG_SKY
 	env.sky = sky
-	env.ambient_light_source = Environment.AMBIENT_SOURCE_SKY
-	env.reflected_light_source = Environment.REFLECTION_SOURCE_SKY
+	env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
+	env.reflected_light_source = Environment.REFLECTION_SOURCE_DISABLED
 	env.tonemap_mode = Environment.TONE_MAPPER_FILMIC
 	env.tonemap_exposure = 1.0
 	env.tonemap_white = 6.0
@@ -157,10 +157,10 @@ func apply() -> void :
 	env.glow_intensity = 0.22 if rain else lerpf(0.45, 1.1, night)
 	env.glow_bloom = 0.08 if night > 0.4 else 0.05
 	moon.light_energy = (0.15 if rain else 0.42) * night
-	moon.light_color = Color(0.65, 0.74, 1.0)
-	env.ambient_light_sky_contribution = 0.35 if rain else 0.45
-	# sombra cartoon: azulada/lilás em vez de cinza
-	env.ambient_light_color = Color(0.55, 0.58, 0.66) if rain else (Color(0.62, 0.68, 0.95).lerp(Color(1.0, 0.75, 0.7), golden * 0.4) if k[3] > 0.05 else Color(0.3, 0.32, 0.65))
+	moon.light_color = Color(0.82, 0.85, 0.90)
+	env.ambient_light_sky_contribution = 0.0
+	# Neutral fill preserves the actual albedo in shaded rooms and outdoors.
+	env.ambient_light_color = Color(.82,.83,.82) if rain else Color(.94,.93,.90).lerp(Color(.62,.64,.67),night)
 	if world:
 		world.set_night(night)
 		world.set_atmosphere(night, dawn, fog_c)
