@@ -1156,18 +1156,30 @@ func _menu_lines(ids: Array) -> PackedStringArray:
 
 func _chalkboard(pos: Vector3, rot: float, title: String, lines: PackedStringArray) -> void :
 	var n: = Node3D.new()
+	n.name = "Chalkboard"
 	n.position = pos
 	n.rotation.y = rot
 	add_child(n)
 	B.box(n, Vector3(1.2, 1.5, 0.08), Vector3.ZERO, M.darkwood)
 	B.box(n, Vector3(1.02, 1.28, 0.03), Vector3(0, 0, 0.04), B.flat(Color(0.1, 0.22, 0.18), 0.9))
-	B.label(n, title, Vector3(0, 0.46, 0.07), 36, Color(0.95, 0.9, 0.7), Color(0, 0, 0, 0))
-	var body: = ""
-	for ln in lines:
-		if body != "":
-			body += "\n"
-		body += ln
-	B.label(n, body, Vector3(0, -0.08, 0.07), 26, Color(0.9, 0.96, 0.88), Color(0, 0, 0, 0))
+	var heading := B.label(n, title, Vector3(0, 0.45, 0.071), 32, Color(0.95, 0.9, 0.7), Color.TRANSPARENT)
+	heading.name = "BoardTitle"
+	_fit_board_text(heading, PackedStringArray([title]), .86, .20)
+	var body := B.label(n, "\n".join(lines), Vector3(0, -0.11, 0.071), 28, Color(0.9, 0.96, 0.88), Color.TRANSPARENT)
+	body.name = "BoardMenu"
+	_fit_board_text(body, lines, .86, .86)
+
+func _fit_board_text(label: Label3D, lines: PackedStringArray, width: float, height: float) -> void:
+	# Label3D width is in pixels; its physical size also depends on pixel_size.
+	# Measure the actual localized text, including every unlocked menu row.
+	var widest := 1.0
+	for line in lines:
+		widest = maxf(widest, label.font.get_string_size(line, HORIZONTAL_ALIGNMENT_LEFT, -1, label.font_size).x)
+	var text_height := label.font.get_height(label.font_size) * maxf(1, lines.size()) * 1.15
+	label.pixel_size = minf(.0032, minf(width / widest, height / text_height))
+	label.outline_size = 0
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 
 
 func _beach_props() -> void :

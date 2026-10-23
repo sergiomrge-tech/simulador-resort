@@ -357,6 +357,11 @@ func run(m) -> void :
 		add_child(coast)
 		await coast.run(main)
 		return
+	if main.args.has("props-layout-test"):
+		var props_layout = load("res://tests/props_layout_regression.gd").new()
+		add_child(props_layout)
+		await props_layout.run(main)
+		return
 	if main.args.has("counter-test"):
 		var counter = load("res://tests/counter_regression.gd").new()
 		add_child(counter)

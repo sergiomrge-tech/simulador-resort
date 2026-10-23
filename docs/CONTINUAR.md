@@ -91,6 +91,14 @@ para conferir. Atualize downloads/geradores e o catálogo (`tools/gen_item_catal
 
 ## Onde alterar cada coisa
 
+Quadros: `world.gd::_chalkboard/_fit_board_text` mede a fonte localizada e reduz
+pixel_size para caber em 0,86 m de largura/altura. Quadro do quiosque em
+world_village.gd fica a Y=1,9 m para a escrita passar acima do guarda-corpo.
+Cesto fechado: `tools/import_closed_basket.py`, `g:wicker_basket_closed`,
+fonte Blender com texturas incorporadas. Alias de Real e desvio em B.model
+corrigem chamadas existentes sem alterar os downloads originais. Teste:
+`--loop-test --props-layout-test`, capturas no user://qa_shots isolado.
+
 | Área | Arquivos principais |
 |---|---|
 | Estado, compras, retirada, devolução, caixa, save | `scripts/resort_core.gd`, `scripts/company_rules.gd` |

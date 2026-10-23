@@ -498,6 +498,8 @@ static func _hip_roof_flat(parent: Node, center: Vector3, w: float, d: float, pe
 
 
 static func model(parent: Node, n: String, pos: Vector3, rot_y: = 0.0, s: = 1.0) -> Node3D:
+	if n == "wicker_basket_02" and not Core.proc_props:
+		return Real.place(parent, n, pos, -s, rot_y)
 	# a "árvore de bolas" (island_tree_01, esferas verdes) foi trocada por árvores reais da Quaternius (CC0)
 	if n == "island_tree_01":
 		var tk: = 1 + int(absf(pos.x * 3.0 + pos.z * 7.0)) % 5

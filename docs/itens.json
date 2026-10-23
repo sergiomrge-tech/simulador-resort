@@ -960,7 +960,7 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1104,
+    "linha": 1105,
     "funcao": "_coco_piles"
    }
   ],
@@ -1100,12 +1100,12 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1455,
+    "linha": 1456,
     "funcao": "set_night"
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1459,
+    "linha": 1460,
     "funcao": "set_night"
    }
   ],
@@ -2165,7 +2165,7 @@
   "usos": [
    {
     "arquivo": "build.gd",
-    "linha": 547,
+    "linha": 549,
     "funcao": "label"
    }
   ]
@@ -2179,7 +2179,7 @@
   "usos": [
    {
     "arquivo": "build.gd",
-    "linha": 568,
+    "linha": 570,
     "funcao": "has_model"
    }
   ]
@@ -2193,7 +2193,7 @@
   "usos": [
    {
     "arquivo": "build.gd",
-    "linha": 574,
+    "linha": 576,
     "funcao": "aabb_of"
    }
   ]
@@ -2319,7 +2319,7 @@
   "usos": [
    {
     "arquivo": "build.gd",
-    "linha": 563,
+    "linha": 565,
     "funcao": "_real_exists"
    }
   ]
@@ -2977,7 +2977,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1173,
+    "linha": 1185,
     "funcao": "_beach_props"
    }
   ]
@@ -2991,7 +2991,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1225,
+    "linha": 1237,
     "funcao": "_shore_details"
    }
   ]
@@ -3005,7 +3005,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1253,
+    "linha": 1265,
     "funcao": "_palms"
    }
   ]
@@ -3019,7 +3019,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1293,
+    "linha": 1305,
     "funcao": "_redes"
    }
   ]
@@ -3033,7 +3033,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1348,
+    "linha": 1360,
     "funcao": "_on_redes_changed"
    }
   ]
@@ -3047,7 +3047,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1352,
+    "linha": 1364,
     "funcao": "_lantern_posts"
    }
   ]
@@ -3061,7 +3061,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1382,
+    "linha": 1394,
     "funcao": "set_atmosphere"
    }
   ]
@@ -3075,7 +3075,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1394,
+    "linha": 1406,
     "funcao": "set_night"
    }
   ]
@@ -3089,7 +3089,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1407,
+    "linha": 1419,
     "funcao": "_signs"
    }
   ]
@@ -3103,7 +3103,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1416,
+    "linha": 1428,
     "funcao": "_route_points"
    }
   ]
@@ -3117,7 +3117,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1432,
+    "linha": 1444,
     "funcao": "route_to_room"
    }
   ]
@@ -3131,7 +3131,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1436,
+    "linha": 1448,
     "funcao": "route_room_to_hub"
    }
   ]
@@ -3145,7 +3145,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1439,
+    "linha": 1451,
     "funcao": "route_hub_to_room"
    }
   ]
@@ -3159,7 +3159,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1442,
+    "linha": 1454,
     "funcao": "route_hub_to_pool"
    }
   ]
@@ -3173,7 +3173,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1450,
+    "linha": 1462,
     "funcao": "route_hub_to_bar"
    }
   ]
@@ -3187,7 +3187,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1456,
+    "linha": 1468,
     "funcao": "route_exit"
    }
   ]
@@ -3201,7 +3201,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1466,
+    "linha": 1478,
     "funcao": "_veg_free"
    }
   ]
@@ -3215,7 +3215,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1472,
+    "linha": 1484,
     "funcao": "_cross_mesh"
    }
   ]
@@ -3229,7 +3229,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1485,
+    "linha": 1497,
     "funcao": "_scatter"
    }
   ]
@@ -3243,7 +3243,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1512,
+    "linha": 1524,
     "funcao": "_vegetation"
    }
   ]
@@ -3257,7 +3257,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1622,
+    "linha": 1634,
     "funcao": "_hermite"
    }
   ]
@@ -3271,7 +3271,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1626,
+    "linha": 1638,
     "funcao": "_ridge"
    }
   ]
@@ -3285,7 +3285,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1635,
+    "linha": 1647,
     "funcao": "_mtn_mask"
    }
   ]
@@ -3299,7 +3299,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1643,
+    "linha": 1655,
     "funcao": "_mtn"
    }
   ]
@@ -3313,7 +3313,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1655,
+    "linha": 1667,
     "funcao": "_mtn_material"
    }
   ]
@@ -3327,7 +3327,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1667,
+    "linha": 1679,
     "funcao": "_mtn_build_rect"
    }
   ]
@@ -3341,7 +3341,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1706,
+    "linha": 1718,
     "funcao": "_mtn_up"
    }
   ]
@@ -3355,7 +3355,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1712,
+    "linha": 1724,
     "funcao": "_mtn_corner"
    }
   ]
@@ -3369,7 +3369,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1721,
+    "linha": 1733,
     "funcao": "_mtn_show"
    }
   ]
@@ -3383,7 +3383,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1733,
+    "linha": 1745,
     "funcao": "_sphere_mid"
    }
   ]
@@ -3397,7 +3397,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1744,
+    "linha": 1756,
     "funcao": "_crown_mesh"
    }
   ]
@@ -3411,7 +3411,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1794,
+    "linha": 1806,
     "funcao": "_mtn_slope_y"
    }
   ]
@@ -3425,7 +3425,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1800,
+    "linha": 1812,
     "funcao": "_mtn_push_tree"
    }
   ]
@@ -3439,7 +3439,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1816,
+    "linha": 1828,
     "funcao": "_mtn_trees"
    }
   ]
@@ -3453,7 +3453,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1855,
+    "linha": 1867,
     "funcao": "_mtn_cards"
    }
   ]
@@ -3467,7 +3467,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1878,
+    "linha": 1890,
     "funcao": "_mountains"
    }
   ]
@@ -3481,7 +3481,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1917,
+    "linha": 1929,
     "funcao": "_area"
    }
   ]
@@ -3495,7 +3495,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1932,
+    "linha": 1944,
     "funcao": "_lot_post"
    }
   ]
@@ -3509,7 +3509,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1936,
+    "linha": 1948,
     "funcao": "_lot"
    }
   ]
@@ -3523,7 +3523,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1979,
+    "linha": 1991,
     "funcao": "_build_lots"
    }
   ]
@@ -3537,7 +3537,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1988,
+    "linha": 2000,
     "funcao": "sand_patch_mat"
    }
   ]
@@ -3551,7 +3551,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1991,
+    "linha": 2003,
     "funcao": "_set_live"
    }
   ]
@@ -3565,7 +3565,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1997,
+    "linha": 2009,
     "funcao": "_on_expansion"
    }
   ]
@@ -3579,7 +3579,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2000,
+    "linha": 2012,
     "funcao": "refresh_areas"
    }
   ]
@@ -3593,7 +3593,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2011,
+    "linha": 2023,
     "funcao": "hut_details"
    }
   ]
@@ -3607,7 +3607,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2056,
+    "linha": 2068,
     "funcao": "_bungalow_details"
    }
   ]
@@ -3621,7 +3621,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2109,
+    "linha": 2121,
     "funcao": "_pool_details"
    }
   ]
@@ -3635,7 +3635,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2171,
+    "linha": 2183,
     "funcao": "_reception_details"
    }
   ]
@@ -3943,7 +3943,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 949,
+    "linha": 950,
     "funcao": "on_areas_changed"
    }
   ]
@@ -3957,7 +3957,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 953,
+    "linha": 954,
     "funcao": "_kiosk_neon"
    }
   ]
@@ -3971,7 +3971,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 972,
+    "linha": 973,
     "funcao": "_kiosk_grill"
    }
   ]
@@ -3985,7 +3985,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1024,
+    "linha": 1025,
     "funcao": "_barraca"
    }
   ]
@@ -3999,7 +3999,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1053,
+    "linha": 1054,
     "funcao": "_quest_giver"
    }
   ]
@@ -4013,7 +4013,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1082,
+    "linha": 1083,
     "funcao": "_coco_piles"
    }
   ]
@@ -4027,7 +4027,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1110,
+    "linha": 1111,
     "funcao": "reset_coco_piles"
    }
   ]
@@ -4041,7 +4041,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1118,
+    "linha": 1119,
     "funcao": "_umbrella_hd"
    }
   ]
@@ -4055,7 +4055,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1124,
+    "linha": 1125,
     "funcao": "_bike"
    }
   ]
@@ -4069,7 +4069,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1182,
+    "linha": 1183,
     "funcao": "_jangada2"
    }
   ]
@@ -4083,7 +4083,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1209,
+    "linha": 1210,
     "funcao": "_fishing_boat"
    }
   ]
@@ -4097,7 +4097,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1243,
+    "linha": 1244,
     "funcao": "_boat_mesh"
    }
   ]
@@ -4111,7 +4111,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1277,
+    "linha": 1278,
     "funcao": "_boat_quad"
    }
   ]
@@ -4125,7 +4125,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1288,
+    "linha": 1289,
     "funcao": "_net"
    }
   ]
@@ -4139,7 +4139,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1319,
+    "linha": 1320,
     "funcao": "_net_mat"
    }
   ]
@@ -4153,7 +4153,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1336,
+    "linha": 1337,
     "funcao": "_village_props"
    }
   ]
@@ -4167,7 +4167,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1368,
+    "linha": 1369,
     "funcao": "_village_palms"
    }
   ]
@@ -4181,7 +4181,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1396,
+    "linha": 1397,
     "funcao": "_street_lamps"
    }
   ]
@@ -4195,7 +4195,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1430,
+    "linha": 1431,
     "funcao": "_village_routes"
    }
   ]
@@ -4209,7 +4209,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1443,
+    "linha": 1444,
     "funcao": "set_night"
    }
   ]
@@ -4223,7 +4223,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1470,
+    "linha": 1471,
     "funcao": "_kiosk_details"
    }
   ]
@@ -4237,7 +4237,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1504,
+    "linha": 1505,
     "funcao": "_back_bar"
    }
   ]
@@ -4251,7 +4251,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1528,
+    "linha": 1529,
     "funcao": "_surf_rack"
    }
   ]
@@ -4265,7 +4265,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1540,
+    "linha": 1541,
     "funcao": "rng_off"
    }
   ]
@@ -4279,7 +4279,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1544,
+    "linha": 1545,
     "funcao": "_kiosk_drinks"
    }
   ]
@@ -4293,7 +4293,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1550,
+    "linha": 1551,
     "funcao": "_on_time"
    }
   ]
@@ -4307,7 +4307,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1569,
+    "linha": 1570,
     "funcao": "_road"
    }
   ]
@@ -4321,7 +4321,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1608,
+    "linha": 1609,
     "funcao": "_add_lamp"
    }
   ]
@@ -4335,7 +4335,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1620,
+    "linha": 1621,
     "funcao": "_village_expansion"
    }
   ]
@@ -4349,7 +4349,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1749,
+    "linha": 1750,
     "funcao": "_beach_life"
    }
   ]
@@ -4363,7 +4363,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1798,
+    "linha": 1799,
     "funcao": "_landmark_details"
    }
   ]
@@ -4377,7 +4377,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1932,
+    "linha": 1933,
     "funcao": "_map_details"
    }
   ]
@@ -5161,7 +5161,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1771,
+    "linha": 1772,
     "funcao": "_sand_clutter"
    }
   ]
@@ -5189,7 +5189,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1585,
+    "linha": 1586,
     "funcao": "_lamp_glow_mat"
    }
   ]
@@ -5203,7 +5203,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1595,
+    "linha": 1596,
     "funcao": "_lamp_head"
    }
   ]
@@ -5273,7 +5273,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1187,
+    "linha": 1199,
     "funcao": "_beach_props_build"
    }
   ]
@@ -5329,7 +5329,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2210,
+    "linha": 2222,
     "funcao": "_setup_v1"
    }
   ]
@@ -5357,7 +5357,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 2033,
+    "linha": 2034,
     "funcao": "_refresh_company_signs"
    }
   ]
@@ -5455,7 +5455,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 2040,
+    "linha": 2041,
     "funcao": "_apply_kiosk_look"
    }
   ]
@@ -5541,6 +5541,20 @@
     "arquivo": "world_village.gd",
     "linha": 742,
     "funcao": "kiosk_rect"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-290",
+  "categoria": "CEN",
+  "chave": "world._fit_board_text",
+  "nome": "Fit board text",
+  "fonte": "world.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world.gd",
+    "linha": 1172,
+    "funcao": "_fit_board_text"
    }
   ]
  },
@@ -6566,7 +6580,7 @@
    },
    {
     "arquivo": "world.gd",
-    "linha": 1980,
+    "linha": 1992,
     "funcao": "_build_lots"
    }
   ],
@@ -7006,7 +7020,7 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1101,
+    "linha": 1102,
     "funcao": "_coco_piles"
    }
   ],
@@ -8326,12 +8340,12 @@
    },
    {
     "arquivo": "world.gd",
-    "linha": 2090,
+    "linha": 2102,
     "funcao": "_bungalow_details"
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1039,
+    "linha": 1040,
     "funcao": "_barraca"
    }
   ],
@@ -8420,12 +8434,12 @@
    },
    {
     "arquivo": "world.gd",
-    "linha": 1162,
+    "linha": 1163,
     "funcao": "_chalkboard"
    },
    {
     "arquivo": "world.gd",
-    "linha": 2166,
+    "linha": 2178,
     "funcao": "_pool_details"
    },
    {
@@ -8445,12 +8459,12 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1505,
+    "linha": 1506,
     "funcao": "_back_bar"
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1529,
+    "linha": 1530,
     "funcao": "_surf_rack"
    }
   ],
@@ -8495,7 +8509,7 @@
    },
    {
     "arquivo": "world.gd",
-    "linha": 2073,
+    "linha": 2085,
     "funcao": "_bungalow_details"
    },
    {
@@ -8510,7 +8524,7 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1500,
+    "linha": 1501,
     "funcao": "_kiosk_details"
    }
   ],
@@ -8568,7 +8582,7 @@
    },
    {
     "arquivo": "world.gd",
-    "linha": 1251,
+    "linha": 1263,
     "funcao": "_shore_details"
    }
   ],
@@ -8593,7 +8607,7 @@
    },
    {
     "arquivo": "world.gd",
-    "linha": 1196,
+    "linha": 1208,
     "funcao": "_beach_props_build"
    }
   ],
@@ -8648,37 +8662,37 @@
    },
    {
     "arquivo": "world.gd",
-    "linha": 1206,
+    "linha": 1218,
     "funcao": "_beach_props_build"
    },
    {
     "arquivo": "world.gd",
-    "linha": 1357,
+    "linha": 1369,
     "funcao": "_lantern_posts"
    },
    {
     "arquivo": "world.gd",
-    "linha": 1358,
+    "linha": 1370,
     "funcao": "_lantern_posts"
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1036,
+    "linha": 1037,
     "funcao": "_barraca"
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1194,
+    "linha": 1195,
     "funcao": "_jangada2"
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1226,
+    "linha": 1227,
     "funcao": "_fishing_boat"
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1511,
+    "linha": 1512,
     "funcao": "_back_bar"
    }
   ],
@@ -8728,12 +8742,12 @@
    },
    {
     "arquivo": "world.gd",
-    "linha": 1411,
+    "linha": 1423,
     "funcao": "_signs"
    },
    {
     "arquivo": "world.gd",
-    "linha": 2179,
+    "linha": 2191,
     "funcao": "_reception_details"
    },
    {
@@ -8743,7 +8757,7 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1513,
+    "linha": 1514,
     "funcao": "_back_bar"
    }
   ],
@@ -8813,27 +8827,27 @@
    },
    {
     "arquivo": "world.gd",
-    "linha": 1205,
+    "linha": 1217,
     "funcao": "_beach_props_build"
    },
    {
     "arquivo": "world.gd",
-    "linha": 1409,
+    "linha": 1421,
     "funcao": "_signs"
    },
    {
     "arquivo": "world.gd",
-    "linha": 1410,
+    "linha": 1422,
     "funcao": "_signs"
    },
    {
     "arquivo": "world.gd",
-    "linha": 2183,
+    "linha": 2195,
     "funcao": "_reception_details"
    },
    {
     "arquivo": "world.gd",
-    "linha": 2184,
+    "linha": 2196,
     "funcao": "_reception_details"
    },
    {
@@ -8843,7 +8857,7 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1192,
+    "linha": 1193,
     "funcao": "_jangada2"
    }
   ],
@@ -8968,12 +8982,12 @@
    },
    {
     "arquivo": "world.gd",
-    "linha": 1232,
+    "linha": 1244,
     "funcao": "_shore_details"
    },
    {
     "arquivo": "world.gd",
-    "linha": 2175,
+    "linha": 2187,
     "funcao": "_reception_details"
    }
   ],
@@ -9462,7 +9476,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1516,
+    "linha": 1517,
     "funcao": "_back_bar"
    }
   ],
@@ -9593,7 +9607,7 @@
   "usos": [
    {
     "arquivo": "real.gd",
-    "linha": 21,
+    "linha": 22,
     "funcao": ""
    },
    {
@@ -9623,7 +9637,7 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 973,
+    "linha": 974,
     "funcao": "_kiosk_grill"
    }
   ],
@@ -9739,7 +9753,7 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1547,
+    "linha": 1548,
     "funcao": "_kiosk_drinks"
    }
   ],
@@ -9850,7 +9864,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1516,
+    "linha": 1517,
     "funcao": "_back_bar"
    }
   ],
@@ -9885,17 +9899,17 @@
    },
    {
     "arquivo": "world.gd",
-    "linha": 1221,
+    "linha": 1233,
     "funcao": "_beach_props_build"
    },
    {
     "arquivo": "world.gd",
-    "linha": 1231,
+    "linha": 1243,
     "funcao": "_shore_details"
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1774,
+    "linha": 1775,
     "funcao": "_sand_clutter"
    }
   ],
@@ -9956,7 +9970,7 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1493,
+    "linha": 1494,
     "funcao": "_kiosk_details"
    }
   ],
@@ -10023,7 +10037,7 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1043,
+    "linha": 1044,
     "funcao": "_barraca"
    }
   ],
@@ -10065,7 +10079,7 @@
    },
    {
     "arquivo": "world.gd",
-    "linha": 2199,
+    "linha": 2211,
     "funcao": "_reception_details"
    },
    {
@@ -10190,12 +10204,12 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1356,
+    "linha": 1357,
     "funcao": "_village_props"
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 2003,
+    "linha": 2004,
     "funcao": "_map_details"
    }
   ],
@@ -10221,7 +10235,7 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1046,
+    "linha": 1047,
     "funcao": "_barraca"
    }
   ],
@@ -10257,7 +10271,7 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1047,
+    "linha": 1048,
     "funcao": "_barraca"
    }
   ],
@@ -10273,7 +10287,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1516,
+    "linha": 1517,
     "funcao": "_back_bar"
    }
   ],
@@ -10293,12 +10307,12 @@
    },
    {
     "arquivo": "world.gd",
-    "linha": 2205,
+    "linha": 2217,
     "funcao": "_reception_details"
    },
    {
     "arquivo": "world.gd",
-    "linha": 2206,
+    "linha": 2218,
     "funcao": "_reception_details"
    },
    {
@@ -10308,12 +10322,12 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1356,
+    "linha": 1357,
     "funcao": "_village_props"
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 2003,
+    "linha": 2004,
     "funcao": "_map_details"
    }
   ],
@@ -10349,7 +10363,7 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 2003,
+    "linha": 2004,
     "funcao": "_map_details"
    }
   ],
@@ -10390,12 +10404,12 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1356,
+    "linha": 1357,
     "funcao": "_village_props"
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 2003,
+    "linha": 2004,
     "funcao": "_map_details"
    }
   ],
@@ -10411,7 +10425,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1237,
+    "linha": 1249,
     "funcao": "_shore_details"
    }
   ],
@@ -10426,7 +10440,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1237,
+    "linha": 1249,
     "funcao": "_shore_details"
    }
   ],
@@ -10456,7 +10470,7 @@
    },
    {
     "arquivo": "world.gd",
-    "linha": 2161,
+    "linha": 2173,
     "funcao": "_pool_details"
    }
   ],
@@ -10477,17 +10491,17 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1411,
-    "funcao": "_street_lamps"
-   },
-   {
-    "arquivo": "world_village.gd",
     "linha": 1412,
     "funcao": "_street_lamps"
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1609,
+    "linha": 1413,
+    "funcao": "_street_lamps"
+   },
+   {
+    "arquivo": "world_village.gd",
+    "linha": 1610,
     "funcao": "_add_lamp"
    }
   ],
@@ -10635,6 +10649,11 @@
   "fonte": "Poly Haven (CC0)",
   "usos": [
    {
+    "arquivo": "build.gd",
+    "linha": 501,
+    "funcao": "model"
+   },
+   {
     "arquivo": "details.gd",
     "linha": 214,
     "funcao": "trash_bin"
@@ -10650,13 +10669,18 @@
     "funcao": "_init_builders"
    },
    {
+    "arquivo": "real.gd",
+    "linha": 19,
+    "funcao": ""
+   },
+   {
     "arquivo": "world.gd",
     "linha": 632,
     "funcao": "_bungalow"
    },
    {
     "arquivo": "world.gd",
-    "linha": 1198,
+    "linha": 1210,
     "funcao": "_beach_props_build"
    },
    {
@@ -10666,7 +10690,7 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1353,
+    "linha": 1354,
     "funcao": "_village_props"
    }
   ],
@@ -10703,7 +10727,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1516,
+    "linha": 1517,
     "funcao": "_back_bar"
    }
   ],
@@ -10738,12 +10762,12 @@
    },
    {
     "arquivo": "world.gd",
-    "linha": 1222,
+    "linha": 1234,
     "funcao": "_beach_props_build"
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1221,
+    "linha": 1222,
     "funcao": "_fishing_boat"
    }
   ],
@@ -10784,17 +10808,17 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1220,
+    "linha": 1221,
     "funcao": "_fishing_boat"
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1352,
+    "linha": 1353,
     "funcao": "_village_props"
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1901,
+    "linha": 1902,
     "funcao": "_landmark_details"
    }
   ],
@@ -10815,7 +10839,7 @@
    },
    {
     "arquivo": "real.gd",
-    "linha": 22,
+    "linha": 23,
     "funcao": ""
    }
   ],
@@ -10845,12 +10869,12 @@
    },
    {
     "arquivo": "world.gd",
-    "linha": 1359,
+    "linha": 1371,
     "funcao": "_lantern_posts"
    },
    {
     "arquivo": "world.gd",
-    "linha": 2083,
+    "linha": 2095,
     "funcao": "_bungalow_details"
    },
    {
@@ -10912,12 +10936,12 @@
   "usos": [
    {
     "arquivo": "real.gd",
-    "linha": 24,
+    "linha": 25,
     "funcao": ""
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1217,
+    "linha": 1218,
     "funcao": "_fishing_boat"
    }
   ],
@@ -10932,17 +10956,17 @@
   "usos": [
    {
     "arquivo": "real.gd",
-    "linha": 21,
+    "linha": 22,
     "funcao": ""
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1516,
+    "linha": 1517,
     "funcao": "_back_bar"
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1523,
+    "linha": 1524,
     "funcao": "_back_bar"
    }
   ],
@@ -10957,12 +10981,12 @@
   "usos": [
    {
     "arquivo": "real.gd",
-    "linha": 21,
+    "linha": 22,
     "funcao": ""
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1516,
+    "linha": 1517,
     "funcao": "_back_bar"
    }
   ],
@@ -10977,7 +11001,7 @@
   "usos": [
    {
     "arquivo": "real.gd",
-    "linha": 21,
+    "linha": 22,
     "funcao": ""
    },
    {
@@ -10987,17 +11011,17 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1516,
+    "linha": 1517,
     "funcao": "_back_bar"
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1523,
+    "linha": 1524,
     "funcao": "_back_bar"
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1525,
+    "linha": 1526,
     "funcao": "_back_bar"
    }
   ],
@@ -11012,7 +11036,7 @@
   "usos": [
    {
     "arquivo": "real.gd",
-    "linha": 21,
+    "linha": 22,
     "funcao": ""
    },
    {
@@ -11042,12 +11066,12 @@
    },
    {
     "arquivo": "real.gd",
-    "linha": 20,
+    "linha": 21,
     "funcao": ""
    },
    {
     "arquivo": "world.gd",
-    "linha": 2162,
+    "linha": 2174,
     "funcao": "_pool_details"
    }
   ],
@@ -11062,12 +11086,12 @@
   "usos": [
    {
     "arquivo": "real.gd",
-    "linha": 19,
+    "linha": 20,
     "funcao": ""
    },
    {
     "arquivo": "real.gd",
-    "linha": 27,
+    "linha": 28,
     "funcao": ""
    }
   ],
@@ -11087,7 +11111,7 @@
    },
    {
     "arquivo": "real.gd",
-    "linha": 19,
+    "linha": 20,
     "funcao": ""
    },
    {
@@ -11097,7 +11121,7 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1479,
+    "linha": 1480,
     "funcao": "_kiosk_details"
    }
   ],
@@ -11117,7 +11141,7 @@
    },
    {
     "arquivo": "real.gd",
-    "linha": 20,
+    "linha": 21,
     "funcao": ""
    },
    {
@@ -11142,7 +11166,7 @@
   "usos": [
    {
     "arquivo": "real.gd",
-    "linha": 24,
+    "linha": 25,
     "funcao": ""
    }
   ],
@@ -11167,7 +11191,7 @@
    },
    {
     "arquivo": "real.gd",
-    "linha": 20,
+    "linha": 21,
     "funcao": ""
    }
   ],
@@ -11187,12 +11211,12 @@
    },
    {
     "arquivo": "real.gd",
-    "linha": 20,
+    "linha": 21,
     "funcao": ""
    },
    {
     "arquivo": "real.gd",
-    "linha": 27,
+    "linha": 28,
     "funcao": ""
    }
   ],
@@ -11207,12 +11231,12 @@
   "usos": [
    {
     "arquivo": "real.gd",
-    "linha": 23,
+    "linha": 24,
     "funcao": ""
    },
    {
     "arquivo": "world.gd",
-    "linha": 1241,
+    "linha": 1253,
     "funcao": "_shore_details"
    }
   ],
@@ -11237,7 +11261,7 @@
    },
    {
     "arquivo": "real.gd",
-    "linha": 19,
+    "linha": 20,
     "funcao": ""
    },
    {
@@ -11262,7 +11286,7 @@
    },
    {
     "arquivo": "real.gd",
-    "linha": 19,
+    "linha": 20,
     "funcao": ""
    }
   ],
@@ -11277,12 +11301,12 @@
   "usos": [
    {
     "arquivo": "real.gd",
-    "linha": 23,
+    "linha": 24,
     "funcao": ""
    },
    {
     "arquivo": "world.gd",
-    "linha": 1237,
+    "linha": 1249,
     "funcao": "_shore_details"
    }
   ],
@@ -11297,12 +11321,12 @@
   "usos": [
    {
     "arquivo": "real.gd",
-    "linha": 23,
+    "linha": 24,
     "funcao": ""
    },
    {
     "arquivo": "world.gd",
-    "linha": 1237,
+    "linha": 1249,
     "funcao": "_shore_details"
    }
   ],
@@ -11317,7 +11341,7 @@
   "usos": [
    {
     "arquivo": "real.gd",
-    "linha": 24,
+    "linha": 25,
     "funcao": ""
    }
   ],
@@ -11467,7 +11491,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1776,
+    "linha": 1777,
     "funcao": "_sand_clutter"
    }
   ],
@@ -11482,7 +11506,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1776,
+    "linha": 1777,
     "funcao": "_sand_clutter"
    }
   ],
@@ -11512,7 +11536,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1222,
+    "linha": 1223,
     "funcao": "_fishing_boat"
    }
   ],
@@ -11542,7 +11566,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1188,
+    "linha": 1189,
     "funcao": "_jangada2"
    }
   ],
@@ -11732,12 +11756,12 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1250,
+    "linha": 1262,
     "funcao": "_shore_details"
    },
    {
     "arquivo": "world.gd",
-    "linha": 2146,
+    "linha": 2158,
     "funcao": "_pool_details"
    }
   ],
@@ -11757,7 +11781,7 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 981,
+    "linha": 982,
     "funcao": "_kiosk_grill"
    }
   ],
@@ -11772,12 +11796,12 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2180,
+    "linha": 2192,
     "funcao": "_reception_details"
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1851,
+    "linha": 1852,
     "funcao": "_landmark_details"
    }
   ],
@@ -11812,7 +11836,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1872,
+    "linha": 1873,
     "funcao": "_landmark_details"
    }
   ],
@@ -11857,7 +11881,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1887,
+    "linha": 1888,
     "funcao": "_landmark_details"
    }
   ],
@@ -11897,7 +11921,7 @@
    },
    {
     "arquivo": "real.gd",
-    "linha": 22,
+    "linha": 23,
     "funcao": ""
    }
   ],
@@ -11917,7 +11941,7 @@
    },
    {
     "arquivo": "real.gd",
-    "linha": 22,
+    "linha": 23,
     "funcao": ""
    }
   ],
@@ -11937,7 +11961,7 @@
    },
    {
     "arquivo": "real.gd",
-    "linha": 22,
+    "linha": 23,
     "funcao": ""
    }
   ],
@@ -11957,7 +11981,7 @@
    },
    {
     "arquivo": "real.gd",
-    "linha": 22,
+    "linha": 23,
     "funcao": ""
    }
   ],
@@ -11977,7 +12001,7 @@
    },
    {
     "arquivo": "real.gd",
-    "linha": 24,
+    "linha": 25,
     "funcao": ""
    }
   ],
@@ -11992,7 +12016,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1962,
+    "linha": 1963,
     "funcao": "_map_details"
    }
   ],
@@ -12007,7 +12031,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1838,
+    "linha": 1839,
     "funcao": "_landmark_details"
    }
   ],
@@ -12022,7 +12046,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2200,
+    "linha": 2212,
     "funcao": "_reception_details"
    },
    {
@@ -12127,7 +12151,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1365,
+    "linha": 1377,
     "funcao": "_lantern_posts"
    },
    {
@@ -12147,12 +12171,12 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1596,
+    "linha": 1597,
     "funcao": "_lamp_head"
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1897,
+    "linha": 1898,
     "funcao": "_landmark_details"
    }
   ],
@@ -12187,7 +12211,7 @@
    },
    {
     "arquivo": "world.gd",
-    "linha": 2151,
+    "linha": 2163,
     "funcao": "_pool_details"
    }
   ],
@@ -12202,7 +12226,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2103,
+    "linha": 2115,
     "funcao": "_bungalow_details"
    }
   ],
@@ -12217,7 +12241,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2103,
+    "linha": 2115,
     "funcao": "_bungalow_details"
    }
   ],
@@ -12277,7 +12301,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 975,
+    "linha": 976,
     "funcao": "_kiosk_grill"
    }
   ],
@@ -12307,12 +12331,12 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1674,
+    "linha": 1675,
     "funcao": "_village_expansion"
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 2018,
+    "linha": 2019,
     "funcao": "_map_details"
    }
   ],
@@ -12542,7 +12566,7 @@
   "usos": [
    {
     "arquivo": "real.gd",
-    "linha": 21,
+    "linha": 22,
     "funcao": ""
    },
    {
@@ -12552,7 +12576,7 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1546,
+    "linha": 1547,
     "funcao": "_kiosk_drinks"
    }
   ],
@@ -12567,7 +12591,7 @@
   "usos": [
    {
     "arquivo": "real.gd",
-    "linha": 21,
+    "linha": 22,
     "funcao": ""
    },
    {
@@ -12587,7 +12611,7 @@
   "usos": [
    {
     "arquivo": "real.gd",
-    "linha": 21,
+    "linha": 22,
     "funcao": ""
    },
    {
@@ -12622,7 +12646,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 2024,
+    "linha": 2025,
     "funcao": "_map_details"
    }
   ],
@@ -12637,12 +12661,12 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2076,
+    "linha": 2088,
     "funcao": "_bungalow_details"
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 2024,
+    "linha": 2025,
     "funcao": "_map_details"
    }
   ],
@@ -12687,7 +12711,7 @@
    },
    {
     "arquivo": "world.gd",
-    "linha": 2079,
+    "linha": 2091,
     "funcao": "_bungalow_details"
    }
   ],
@@ -12702,7 +12726,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1865,
+    "linha": 1866,
     "funcao": "_landmark_details"
    }
   ],
@@ -12717,7 +12741,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2131,
+    "linha": 2143,
     "funcao": "_pool_details"
    }
   ],
@@ -12732,7 +12756,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1871,
+    "linha": 1872,
     "funcao": "_landmark_details"
    }
   ],
@@ -12747,7 +12771,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1903,
+    "linha": 1904,
     "funcao": "_landmark_details"
    }
   ],
@@ -12877,7 +12901,7 @@
    },
    {
     "arquivo": "real.gd",
-    "linha": 24,
+    "linha": 25,
     "funcao": ""
    }
   ],
@@ -13082,7 +13106,7 @@
   "usos": [
    {
     "arquivo": "real.gd",
-    "linha": 22,
+    "linha": 23,
     "funcao": ""
    }
   ],
@@ -13097,7 +13121,7 @@
   "usos": [
    {
     "arquivo": "real.gd",
-    "linha": 23,
+    "linha": 24,
     "funcao": ""
    }
   ],
@@ -13112,7 +13136,7 @@
   "usos": [
    {
     "arquivo": "real.gd",
-    "linha": 23,
+    "linha": 24,
     "funcao": ""
    }
   ],
@@ -13127,7 +13151,7 @@
   "usos": [
    {
     "arquivo": "real.gd",
-    "linha": 23,
+    "linha": 24,
     "funcao": ""
    }
   ],
@@ -13142,7 +13166,7 @@
   "usos": [
    {
     "arquivo": "real.gd",
-    "linha": 22,
+    "linha": 23,
     "funcao": ""
    }
   ],
@@ -13162,7 +13186,7 @@
    },
    {
     "arquivo": "real.gd",
-    "linha": 24,
+    "linha": 25,
     "funcao": ""
    }
   ],
@@ -13182,7 +13206,7 @@
    },
    {
     "arquivo": "real.gd",
-    "linha": 24,
+    "linha": 25,
     "funcao": ""
    }
   ],
@@ -13197,7 +13221,7 @@
   "usos": [
    {
     "arquivo": "real.gd",
-    "linha": 24,
+    "linha": 25,
     "funcao": ""
    }
   ],
@@ -13212,7 +13236,7 @@
   "usos": [
    {
     "arquivo": "real.gd",
-    "linha": 22,
+    "linha": 23,
     "funcao": ""
    }
   ],
@@ -13232,7 +13256,7 @@
    },
    {
     "arquivo": "real.gd",
-    "linha": 20,
+    "linha": 21,
     "funcao": ""
    }
   ],
@@ -13247,7 +13271,7 @@
   "usos": [
    {
     "arquivo": "real.gd",
-    "linha": 19,
+    "linha": 20,
     "funcao": ""
    }
   ],
@@ -13267,7 +13291,7 @@
    },
    {
     "arquivo": "real.gd",
-    "linha": 19,
+    "linha": 20,
     "funcao": ""
    },
    {
@@ -13292,7 +13316,7 @@
    },
    {
     "arquivo": "real.gd",
-    "linha": 20,
+    "linha": 21,
     "funcao": ""
    },
    {
@@ -13312,7 +13336,7 @@
   "usos": [
    {
     "arquivo": "real.gd",
-    "linha": 20,
+    "linha": 21,
     "funcao": ""
    }
   ],
@@ -13332,7 +13356,7 @@
    },
    {
     "arquivo": "real.gd",
-    "linha": 20,
+    "linha": 21,
     "funcao": ""
    }
   ],
@@ -13347,7 +13371,7 @@
   "usos": [
    {
     "arquivo": "real.gd",
-    "linha": 19,
+    "linha": 20,
     "funcao": ""
    }
   ],
@@ -13362,7 +13386,7 @@
   "usos": [
    {
     "arquivo": "real.gd",
-    "linha": 19,
+    "linha": 20,
     "funcao": ""
    }
   ],
@@ -13622,7 +13646,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 960,
+    "linha": 961,
     "funcao": "_kiosk_neon"
    }
   ],
@@ -13894,6 +13918,21 @@
   "arquivo_modelo": "assets/models/gen/pirate_sailship.glb"
  },
  {
+  "codigo": "MOD-251",
+  "categoria": "MOD",
+  "chave": "g:wicker_basket_closed",
+  "nome": "Wicker basket closed",
+  "fonte": "Gerado no Blender (tools/gen_*.py)",
+  "usos": [
+   {
+    "arquivo": "real.gd",
+    "linha": 19,
+    "funcao": ""
+   }
+  ],
+  "arquivo_modelo": "assets/models/gen/wicker_basket_closed.glb"
+ },
+ {
   "codigo": "NAT-001",
   "categoria": "NAT",
   "chave": "q:Bush_Common",
@@ -13902,17 +13941,17 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1242,
+    "linha": 1254,
     "funcao": "_shore_details"
    },
    {
     "arquivo": "world.gd",
-    "linha": 1574,
+    "linha": 1586,
     "funcao": "_vegetation"
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1366,
+    "linha": 1367,
     "funcao": "_village_props"
    }
   ],
@@ -13927,17 +13966,17 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1242,
+    "linha": 1254,
     "funcao": "_shore_details"
    },
    {
     "arquivo": "world.gd",
-    "linha": 1575,
+    "linha": 1587,
     "funcao": "_vegetation"
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1366,
+    "linha": 1367,
     "funcao": "_village_props"
    }
   ],
@@ -14060,12 +14099,12 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1242,
+    "linha": 1254,
     "funcao": "_shore_details"
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1366,
+    "linha": 1367,
     "funcao": "_village_props"
    }
   ],
@@ -14080,7 +14119,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1775,
+    "linha": 1776,
     "funcao": "_sand_clutter"
    }
   ],
@@ -14104,7 +14143,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1775,
+    "linha": 1776,
     "funcao": "_sand_clutter"
    }
   ],
@@ -14128,7 +14167,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1774,
+    "linha": 1775,
     "funcao": "_sand_clutter"
    }
   ],
@@ -14152,7 +14191,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1774,
+    "linha": 1775,
     "funcao": "_sand_clutter"
    }
   ],
@@ -14194,7 +14233,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1773,
+    "linha": 1774,
     "funcao": "_sand_clutter"
    }
   ],
@@ -14218,7 +14257,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1773,
+    "linha": 1774,
     "funcao": "_sand_clutter"
    }
   ],
@@ -14260,7 +14299,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1773,
+    "linha": 1774,
     "funcao": "_sand_clutter"
    }
   ],
@@ -14410,12 +14449,12 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1242,
+    "linha": 1254,
     "funcao": "_shore_details"
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1366,
+    "linha": 1367,
     "funcao": "_village_props"
    }
   ],
@@ -17969,6 +18008,25 @@
   "comentario": ""
  },
  {
+  "codigo": "PCA-1008",
+  "categoria": "PCA",
+  "chave": "build.gd|model|Real.place|3",
+  "nome": "q:CommonTree %d",
+  "fonte": "build.gd (código)",
+  "usos": [
+   {
+    "arquivo": "build.gd",
+    "linha": 510,
+    "funcao": "model"
+   }
+  ],
+  "chamada": "Real.place",
+  "args": "parent, \"q:CommonTree_%d\" % tk, pos, 5.2 * s, rot_y",
+  "material": "",
+  "em_laco": false,
+  "comentario": ""
+ },
+ {
   "codigo": "PCA-101",
   "categoria": "PCA",
   "chave": "world.gd|_bungalow|Real.place|6",
@@ -19478,7 +19536,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1162,
+    "linha": 1163,
     "funcao": "_chalkboard"
    }
   ],
@@ -19497,7 +19555,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1163,
+    "linha": 1164,
     "funcao": "_chalkboard"
    }
   ],
@@ -19516,12 +19574,12 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1164,
+    "linha": 1165,
     "funcao": "_chalkboard"
    }
   ],
   "chamada": "B.label",
-  "args": "n, title, Vector3(0, 0.46, 0.07), 36, Color(0.95, 0.9, 0.7), Color(0, 0, 0, 0",
+  "args": "n, title, Vector3(0, 0.45, 0.071), 32, Color(0.95, 0.9, 0.7), Color.TRANSPARENT",
   "material": "",
   "em_laco": false,
   "comentario": ""
@@ -19535,12 +19593,12 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1170,
+    "linha": 1168,
     "funcao": "_chalkboard"
    }
   ],
   "chamada": "B.label",
-  "args": "n, body, Vector3(0, -0.08, 0.07), 26, Color(0.9, 0.96, 0.88), Color(0, 0, 0, 0",
+  "args": "n, \"\\n\".join(lines), Vector3(0, -0.11, 0.071), 28, Color(0.9, 0.96, 0.88), Color.TRANSPARENT",
   "material": "",
   "em_laco": false,
   "comentario": ""
@@ -19554,7 +19612,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1231,
+    "linha": 1243,
     "funcao": "_shore_details"
    }
   ],
@@ -19573,7 +19631,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1238,
+    "linha": 1250,
     "funcao": "_shore_details"
    }
   ],
@@ -19592,7 +19650,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1241,
+    "linha": 1253,
     "funcao": "_shore_details"
    }
   ],
@@ -19611,7 +19669,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1246,
+    "linha": 1258,
     "funcao": "_shore_details"
    }
   ],
@@ -19630,7 +19688,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1248,
+    "linha": 1260,
     "funcao": "_shore_details"
    }
   ],
@@ -19649,7 +19707,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1251,
+    "linha": 1263,
     "funcao": "_shore_details"
    }
   ],
@@ -19668,7 +19726,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1336,
+    "linha": 1348,
     "funcao": "_redes"
    }
   ],
@@ -19687,7 +19745,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1344,
+    "linha": 1356,
     "funcao": "_redes"
    }
   ],
@@ -19706,7 +19764,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1357,
+    "linha": 1369,
     "funcao": "_lantern_posts"
    }
   ],
@@ -19725,7 +19783,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1358,
+    "linha": 1370,
     "funcao": "_lantern_posts"
    }
   ],
@@ -19744,7 +19802,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1359,
+    "linha": 1371,
     "funcao": "_lantern_posts"
    }
   ],
@@ -19763,7 +19821,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1366,
+    "linha": 1378,
     "funcao": "_lantern_posts"
    }
   ],
@@ -19782,7 +19840,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1409,
+    "linha": 1421,
     "funcao": "_signs"
    }
   ],
@@ -19801,7 +19859,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1410,
+    "linha": 1422,
     "funcao": "_signs"
    }
   ],
@@ -19820,7 +19878,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1411,
+    "linha": 1423,
     "funcao": "_signs"
    }
   ],
@@ -19839,7 +19897,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1412,
+    "linha": 1424,
     "funcao": "_signs"
    }
   ],
@@ -19858,7 +19916,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1413,
+    "linha": 1425,
     "funcao": "_signs"
    }
   ],
@@ -19877,7 +19935,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1724,
+    "linha": 1736,
     "funcao": "_mtn_show"
    }
   ],
@@ -19896,7 +19954,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1909,
+    "linha": 1921,
     "funcao": "_mountains"
    }
   ],
@@ -19915,7 +19973,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1910,
+    "linha": 1922,
     "funcao": "_mountains"
    }
   ],
@@ -19934,7 +19992,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1911,
+    "linha": 1923,
     "funcao": "_mountains"
    }
   ],
@@ -19953,7 +20011,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1933,
+    "linha": 1945,
     "funcao": "_lot_post"
    }
   ],
@@ -19972,7 +20030,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1966,
+    "linha": 1978,
     "funcao": "_lot"
    }
   ],
@@ -19991,7 +20049,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1967,
+    "linha": 1979,
     "funcao": "_lot"
    }
   ],
@@ -20010,7 +20068,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1968,
+    "linha": 1980,
     "funcao": "_lot"
    }
   ],
@@ -20029,7 +20087,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1970,
+    "linha": 1982,
     "funcao": "_lot"
    }
   ],
@@ -20048,7 +20106,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1973,
+    "linha": 1985,
     "funcao": "_lot"
    }
   ],
@@ -20067,7 +20125,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1974,
+    "linha": 1986,
     "funcao": "_lot"
    }
   ],
@@ -20086,7 +20144,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1975,
+    "linha": 1987,
     "funcao": "_lot"
    }
   ],
@@ -20105,7 +20163,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1984,
+    "linha": 1996,
     "funcao": "_build_lots"
    }
   ],
@@ -20124,7 +20182,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2019,
+    "linha": 2031,
     "funcao": "hut_details"
    }
   ],
@@ -20143,7 +20201,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2023,
+    "linha": 2035,
     "funcao": "hut_details"
    }
   ],
@@ -20162,7 +20220,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2031,
+    "linha": 2043,
     "funcao": "hut_details"
    }
   ],
@@ -20181,7 +20239,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2043,
+    "linha": 2055,
     "funcao": "hut_details"
    }
   ],
@@ -20200,7 +20258,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2054,
+    "linha": 2066,
     "funcao": "hut_details"
    }
   ],
@@ -20219,7 +20277,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2066,
+    "linha": 2078,
     "funcao": "_bungalow_details"
    }
   ],
@@ -20238,7 +20296,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2069,
+    "linha": 2081,
     "funcao": "_bungalow_details"
    }
   ],
@@ -20257,7 +20315,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2070,
+    "linha": 2082,
     "funcao": "_bungalow_details"
    }
   ],
@@ -20276,7 +20334,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2073,
+    "linha": 2085,
     "funcao": "_bungalow_details"
    }
   ],
@@ -20295,7 +20353,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2080,
+    "linha": 2092,
     "funcao": "_bungalow_details"
    }
   ],
@@ -20314,7 +20372,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2084,
+    "linha": 2096,
     "funcao": "_bungalow_details"
    }
   ],
@@ -20333,7 +20391,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2097,
+    "linha": 2109,
     "funcao": "_bungalow_details"
    }
   ],
@@ -20352,7 +20410,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2090,
+    "linha": 2102,
     "funcao": "_bungalow_details"
    }
   ],
@@ -20371,7 +20429,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2083,
+    "linha": 2095,
     "funcao": "_bungalow_details"
    }
   ],
@@ -20390,7 +20448,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2085,
+    "linha": 2097,
     "funcao": "_bungalow_details"
    }
   ],
@@ -20409,7 +20467,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2094,
+    "linha": 2106,
     "funcao": "_bungalow_details"
    }
   ],
@@ -20428,7 +20486,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2096,
+    "linha": 2108,
     "funcao": "_bungalow_details"
    }
   ],
@@ -20447,7 +20505,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2082,
+    "linha": 2094,
     "funcao": "_bungalow_details"
    }
   ],
@@ -20466,7 +20524,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2101,
+    "linha": 2113,
     "funcao": "_bungalow_details"
    }
   ],
@@ -20485,7 +20543,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2107,
+    "linha": 2119,
     "funcao": "_bungalow_details"
    }
   ],
@@ -20504,7 +20562,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2115,
+    "linha": 2127,
     "funcao": "_pool_details"
    }
   ],
@@ -20523,7 +20581,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2116,
+    "linha": 2128,
     "funcao": "_pool_details"
    }
   ],
@@ -20542,7 +20600,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2117,
+    "linha": 2129,
     "funcao": "_pool_details"
    }
   ],
@@ -20561,7 +20619,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2119,
+    "linha": 2131,
     "funcao": "_pool_details"
    }
   ],
@@ -20580,7 +20638,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2127,
+    "linha": 2139,
     "funcao": "_pool_details"
    }
   ],
@@ -20599,7 +20657,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2155,
+    "linha": 2167,
     "funcao": "_pool_details"
    }
   ],
@@ -20618,7 +20676,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2163,
+    "linha": 2175,
     "funcao": "_pool_details"
    }
   ],
@@ -20637,7 +20695,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2166,
+    "linha": 2178,
     "funcao": "_pool_details"
    }
   ],
@@ -20656,7 +20714,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2167,
+    "linha": 2179,
     "funcao": "_pool_details"
    }
   ],
@@ -20675,7 +20733,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2168,
+    "linha": 2180,
     "funcao": "_pool_details"
    }
   ],
@@ -20694,7 +20752,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2175,
+    "linha": 2187,
     "funcao": "_reception_details"
    }
   ],
@@ -20713,7 +20771,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2176,
+    "linha": 2188,
     "funcao": "_reception_details"
    }
   ],
@@ -20732,7 +20790,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2179,
+    "linha": 2191,
     "funcao": "_reception_details"
    }
   ],
@@ -20751,7 +20809,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2204,
+    "linha": 2216,
     "funcao": "_reception_details"
    }
   ],
@@ -20770,7 +20828,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2183,
+    "linha": 2195,
     "funcao": "_reception_details"
    }
   ],
@@ -20789,7 +20847,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2184,
+    "linha": 2196,
     "funcao": "_reception_details"
    }
   ],
@@ -20808,7 +20866,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2185,
+    "linha": 2197,
     "funcao": "_reception_details"
    }
   ],
@@ -20827,7 +20885,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2186,
+    "linha": 2198,
     "funcao": "_reception_details"
    }
   ],
@@ -20846,7 +20904,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2190,
+    "linha": 2202,
     "funcao": "_reception_details"
    }
   ],
@@ -20865,7 +20923,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2192,
+    "linha": 2204,
     "funcao": "_reception_details"
    }
   ],
@@ -20884,7 +20942,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2193,
+    "linha": 2205,
     "funcao": "_reception_details"
    }
   ],
@@ -20903,7 +20961,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2194,
+    "linha": 2206,
     "funcao": "_reception_details"
    }
   ],
@@ -20922,7 +20980,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2195,
+    "linha": 2207,
     "funcao": "_reception_details"
    }
   ],
@@ -20941,7 +20999,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2196,
+    "linha": 2208,
     "funcao": "_reception_details"
    }
   ],
@@ -20960,7 +21018,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2198,
+    "linha": 2210,
     "funcao": "_reception_details"
    }
   ],
@@ -20979,7 +21037,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2199,
+    "linha": 2211,
     "funcao": "_reception_details"
    }
   ],
@@ -20998,7 +21056,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2205,
+    "linha": 2217,
     "funcao": "_reception_details"
    }
   ],
@@ -21017,7 +21075,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2206,
+    "linha": 2218,
     "funcao": "_reception_details"
    }
   ],
@@ -23696,7 +23754,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 973,
+    "linha": 974,
     "funcao": "_kiosk_grill"
    }
   ],
@@ -23715,7 +23773,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 977,
+    "linha": 978,
     "funcao": "_kiosk_grill"
    }
   ],
@@ -23734,7 +23792,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1036,
+    "linha": 1037,
     "funcao": "_barraca"
    }
   ],
@@ -23753,7 +23811,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1037,
+    "linha": 1038,
     "funcao": "_barraca"
    }
   ],
@@ -23772,7 +23830,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1039,
+    "linha": 1040,
     "funcao": "_barraca"
    }
   ],
@@ -23791,7 +23849,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1040,
+    "linha": 1041,
     "funcao": "_barraca"
    }
   ],
@@ -23810,7 +23868,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1043,
+    "linha": 1044,
     "funcao": "_barraca"
    }
   ],
@@ -23829,7 +23887,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1046,
+    "linha": 1047,
     "funcao": "_barraca"
    }
   ],
@@ -23848,7 +23906,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1047,
+    "linha": 1048,
     "funcao": "_barraca"
    }
   ],
@@ -23867,7 +23925,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1088,
+    "linha": 1089,
     "funcao": "_coco_piles"
    }
   ],
@@ -23886,7 +23944,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1142,
+    "linha": 1143,
     "funcao": "_bike"
    }
   ],
@@ -23905,7 +23963,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1158,
+    "linha": 1159,
     "funcao": "_bike"
    }
   ],
@@ -23924,7 +23982,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1161,
+    "linha": 1162,
     "funcao": "_bike"
    }
   ],
@@ -23943,7 +24001,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1165,
+    "linha": 1166,
     "funcao": "_bike"
    }
   ],
@@ -23962,7 +24020,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1167,
+    "linha": 1168,
     "funcao": "_bike"
    }
   ],
@@ -23981,7 +24039,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1169,
+    "linha": 1170,
     "funcao": "_bike"
    }
   ],
@@ -24000,7 +24058,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1170,
+    "linha": 1171,
     "funcao": "_bike"
    }
   ],
@@ -24019,7 +24077,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1171,
+    "linha": 1172,
     "funcao": "_bike"
    }
   ],
@@ -24038,7 +24096,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1173,
+    "linha": 1174,
     "funcao": "_bike"
    }
   ],
@@ -24057,7 +24115,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1174,
+    "linha": 1175,
     "funcao": "_bike"
    }
   ],
@@ -24076,7 +24134,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1175,
+    "linha": 1176,
     "funcao": "_bike"
    }
   ],
@@ -24095,7 +24153,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1176,
+    "linha": 1177,
     "funcao": "_bike"
    }
   ],
@@ -24114,7 +24172,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1177,
+    "linha": 1178,
     "funcao": "_bike"
    }
   ],
@@ -24133,7 +24191,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1178,
+    "linha": 1179,
     "funcao": "_bike"
    }
   ],
@@ -24152,7 +24210,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1180,
+    "linha": 1181,
     "funcao": "_bike"
    }
   ],
@@ -24171,7 +24229,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1192,
+    "linha": 1193,
     "funcao": "_jangada2"
    }
   ],
@@ -24190,7 +24248,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1194,
+    "linha": 1195,
     "funcao": "_jangada2"
    }
   ],
@@ -24209,7 +24267,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1195,
+    "linha": 1196,
     "funcao": "_jangada2"
    }
   ],
@@ -24228,7 +24286,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1189,
+    "linha": 1190,
     "funcao": "_jangada2"
    }
   ],
@@ -24247,7 +24305,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1217,
+    "linha": 1218,
     "funcao": "_fishing_boat"
    }
   ],
@@ -24266,7 +24324,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1220,
+    "linha": 1221,
     "funcao": "_fishing_boat"
    }
   ],
@@ -24285,7 +24343,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1221,
+    "linha": 1222,
     "funcao": "_fishing_boat"
    }
   ],
@@ -24304,7 +24362,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1226,
+    "linha": 1227,
     "funcao": "_fishing_boat"
    }
   ],
@@ -24323,7 +24381,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1227,
+    "linha": 1228,
     "funcao": "_fishing_boat"
    }
   ],
@@ -24342,7 +24400,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1224,
+    "linha": 1225,
     "funcao": "_fishing_boat"
    }
   ],
@@ -24361,7 +24419,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1292,
+    "linha": 1293,
     "funcao": "_net"
    }
   ],
@@ -24380,7 +24438,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1293,
+    "linha": 1294,
     "funcao": "_net"
    }
   ],
@@ -24399,7 +24457,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1313,
+    "linha": 1314,
     "funcao": "_net"
    }
   ],
@@ -24418,7 +24476,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1352,
+    "linha": 1353,
     "funcao": "_village_props"
    }
   ],
@@ -24437,7 +24495,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1353,
+    "linha": 1354,
     "funcao": "_village_props"
    }
   ],
@@ -24456,7 +24514,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1356,
+    "linha": 1357,
     "funcao": "_village_props"
    }
   ],
@@ -24475,7 +24533,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1366,
+    "linha": 1367,
     "funcao": "_village_props"
    }
   ],
@@ -24494,7 +24552,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1412,
+    "linha": 1413,
     "funcao": "_street_lamps"
    }
   ],
@@ -24513,7 +24571,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1417,
+    "linha": 1418,
     "funcao": "_street_lamps"
    }
   ],
@@ -24532,7 +24590,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1472,
+    "linha": 1473,
     "funcao": "_kiosk_details"
    }
   ],
@@ -24551,7 +24609,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1474,
+    "linha": 1475,
     "funcao": "_kiosk_details"
    }
   ],
@@ -24570,7 +24628,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1475,
+    "linha": 1476,
     "funcao": "_kiosk_details"
    }
   ],
@@ -24589,7 +24647,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1478,
+    "linha": 1479,
     "funcao": "_kiosk_details"
    }
   ],
@@ -24608,7 +24666,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1478,
+    "linha": 1479,
     "funcao": "_kiosk_details"
    }
   ],
@@ -24627,7 +24685,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1479,
+    "linha": 1480,
     "funcao": "_kiosk_details"
    }
   ],
@@ -24646,7 +24704,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1482,
+    "linha": 1483,
     "funcao": "_kiosk_details"
    }
   ],
@@ -24665,7 +24723,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1483,
+    "linha": 1484,
     "funcao": "_kiosk_details"
    }
   ],
@@ -24684,7 +24742,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1484,
+    "linha": 1485,
     "funcao": "_kiosk_details"
    }
   ],
@@ -24703,7 +24761,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1485,
+    "linha": 1486,
     "funcao": "_kiosk_details"
    }
   ],
@@ -24722,7 +24780,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1487,
+    "linha": 1488,
     "funcao": "_kiosk_details"
    }
   ],
@@ -24741,7 +24799,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1488,
+    "linha": 1489,
     "funcao": "_kiosk_details"
    }
   ],
@@ -24760,7 +24818,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1488,
+    "linha": 1489,
     "funcao": "_kiosk_details"
    }
   ],
@@ -24779,7 +24837,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1490,
+    "linha": 1491,
     "funcao": "_kiosk_details"
    }
   ],
@@ -24798,7 +24856,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1500,
+    "linha": 1501,
     "funcao": "_kiosk_details"
    }
   ],
@@ -24817,7 +24875,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1492,
+    "linha": 1493,
     "funcao": "_kiosk_details"
    }
   ],
@@ -24836,7 +24894,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1493,
+    "linha": 1494,
     "funcao": "_kiosk_details"
    }
   ],
@@ -24855,7 +24913,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1494,
+    "linha": 1495,
     "funcao": "_kiosk_details"
    }
   ],
@@ -24874,7 +24932,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1496,
+    "linha": 1497,
     "funcao": "_kiosk_details"
    }
   ],
@@ -24893,7 +24951,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1509,
+    "linha": 1510,
     "funcao": "_back_bar"
    }
   ],
@@ -24912,7 +24970,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1511,
+    "linha": 1512,
     "funcao": "_back_bar"
    }
   ],
@@ -24931,7 +24989,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1512,
+    "linha": 1513,
     "funcao": "_back_bar"
    }
   ],
@@ -24950,7 +25008,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1513,
+    "linha": 1514,
     "funcao": "_back_bar"
    }
   ],
@@ -24969,7 +25027,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1520,
+    "linha": 1521,
     "funcao": "_back_bar"
    }
   ],
@@ -24988,7 +25046,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1523,
+    "linha": 1524,
     "funcao": "_back_bar"
    }
   ],
@@ -25007,7 +25065,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1525,
+    "linha": 1526,
     "funcao": "_back_bar"
    }
   ],
@@ -25026,7 +25084,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1530,
+    "linha": 1531,
     "funcao": "_surf_rack"
    }
   ],
@@ -25045,7 +25103,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1532,
+    "linha": 1533,
     "funcao": "_surf_rack"
    }
   ],
@@ -25064,7 +25122,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1533,
+    "linha": 1534,
     "funcao": "_surf_rack"
    }
   ],
@@ -25083,7 +25141,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1534,
+    "linha": 1535,
     "funcao": "_surf_rack"
    }
   ],
@@ -25102,7 +25160,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1538,
+    "linha": 1539,
     "funcao": "_surf_rack"
    }
   ],
@@ -25121,7 +25179,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1546,
+    "linha": 1547,
     "funcao": "_kiosk_drinks"
    }
   ],
@@ -25140,7 +25198,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1547,
+    "linha": 1548,
     "funcao": "_kiosk_drinks"
    }
   ],
@@ -25159,7 +25217,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1575,
+    "linha": 1576,
     "funcao": "_road"
    }
   ],
@@ -25178,7 +25236,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1577,
+    "linha": 1578,
     "funcao": "_road"
    }
   ],
@@ -25197,7 +25255,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1578,
+    "linha": 1579,
     "funcao": "_road"
    }
   ],
@@ -25216,7 +25274,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1580,
+    "linha": 1581,
     "funcao": "_road"
    }
   ],
@@ -25235,7 +25293,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1582,
+    "linha": 1583,
     "funcao": "_road"
    }
   ],
@@ -25254,7 +25312,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1583,
+    "linha": 1584,
     "funcao": "_road"
    }
   ],
@@ -25273,7 +25331,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1609,
+    "linha": 1610,
     "funcao": "_add_lamp"
    }
   ],
@@ -25292,7 +25350,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1628,
+    "linha": 1629,
     "funcao": "_village_expansion"
    }
   ],
@@ -25311,7 +25369,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1662,
+    "linha": 1663,
     "funcao": "_village_expansion"
    }
   ],
@@ -25330,7 +25388,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1667,
+    "linha": 1668,
     "funcao": "_village_expansion"
    }
   ],
@@ -25349,7 +25407,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1669,
+    "linha": 1670,
     "funcao": "_village_expansion"
    }
   ],
@@ -25368,7 +25426,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1677,
+    "linha": 1678,
     "funcao": "_village_expansion"
    }
   ],
@@ -25387,7 +25445,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1677,
+    "linha": 1678,
     "funcao": "_village_expansion"
    }
   ],
@@ -25406,7 +25464,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1678,
+    "linha": 1679,
     "funcao": "_village_expansion"
    }
   ],
@@ -25425,7 +25483,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1687,
+    "linha": 1688,
     "funcao": "_village_expansion"
    }
   ],
@@ -25444,7 +25502,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1690,
+    "linha": 1691,
     "funcao": "_village_expansion"
    }
   ],
@@ -25463,7 +25521,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1703,
+    "linha": 1704,
     "funcao": "_village_expansion"
    }
   ],
@@ -25482,7 +25540,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1705,
+    "linha": 1706,
     "funcao": "_village_expansion"
    }
   ],
@@ -25501,7 +25559,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1706,
+    "linha": 1707,
     "funcao": "_village_expansion"
    }
   ],
@@ -25520,7 +25578,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1707,
+    "linha": 1708,
     "funcao": "_village_expansion"
    }
   ],
@@ -25539,7 +25597,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1708,
+    "linha": 1709,
     "funcao": "_village_expansion"
    }
   ],
@@ -25558,7 +25616,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1709,
+    "linha": 1710,
     "funcao": "_village_expansion"
    }
   ],
@@ -25577,7 +25635,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1716,
+    "linha": 1717,
     "funcao": "_village_expansion"
    }
   ],
@@ -25596,7 +25654,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1721,
+    "linha": 1722,
     "funcao": "_village_expansion"
    }
   ],
@@ -25615,7 +25673,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1722,
+    "linha": 1723,
     "funcao": "_village_expansion"
    }
   ],
@@ -25634,7 +25692,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1736,
+    "linha": 1737,
     "funcao": "_village_expansion"
    }
   ],
@@ -25653,7 +25711,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1737,
+    "linha": 1738,
     "funcao": "_village_expansion"
    }
   ],
@@ -25672,7 +25730,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1754,
+    "linha": 1755,
     "funcao": "_beach_life"
    }
   ],
@@ -25691,7 +25749,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1755,
+    "linha": 1756,
     "funcao": "_beach_life"
    }
   ],
@@ -25710,7 +25768,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1762,
+    "linha": 1763,
     "funcao": "_beach_life"
    }
   ],
@@ -25729,7 +25787,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1766,
+    "linha": 1767,
     "funcao": "_beach_life"
    }
   ],
@@ -25748,7 +25806,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1815,
+    "linha": 1816,
     "funcao": "_landmark_details"
    }
   ],
@@ -25767,7 +25825,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1822,
+    "linha": 1823,
     "funcao": "_landmark_details"
    }
   ],
@@ -25786,7 +25844,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1823,
+    "linha": 1824,
     "funcao": "_landmark_details"
    }
   ],
@@ -25805,7 +25863,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1824,
+    "linha": 1825,
     "funcao": "_landmark_details"
    }
   ],
@@ -25824,7 +25882,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1826,
+    "linha": 1827,
     "funcao": "_landmark_details"
    }
   ],
@@ -25843,7 +25901,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1827,
+    "linha": 1828,
     "funcao": "_landmark_details"
    }
   ],
@@ -25862,7 +25920,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1828,
+    "linha": 1829,
     "funcao": "_landmark_details"
    }
   ],
@@ -25881,7 +25939,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1830,
+    "linha": 1831,
     "funcao": "_landmark_details"
    }
   ],
@@ -25900,7 +25958,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1831,
+    "linha": 1832,
     "funcao": "_landmark_details"
    }
   ],
@@ -25919,7 +25977,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1832,
+    "linha": 1833,
     "funcao": "_landmark_details"
    }
   ],
@@ -25938,7 +25996,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1834,
+    "linha": 1835,
     "funcao": "_landmark_details"
    }
   ],
@@ -25957,7 +26015,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1835,
+    "linha": 1836,
     "funcao": "_landmark_details"
    }
   ],
@@ -25976,7 +26034,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1839,
+    "linha": 1840,
     "funcao": "_landmark_details"
    }
   ],
@@ -25995,7 +26053,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1840,
+    "linha": 1841,
     "funcao": "_landmark_details"
    }
   ],
@@ -26014,7 +26072,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1841,
+    "linha": 1842,
     "funcao": "_landmark_details"
    }
   ],
@@ -26033,7 +26091,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1842,
+    "linha": 1843,
     "funcao": "_landmark_details"
    }
   ],
@@ -26052,7 +26110,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1845,
+    "linha": 1846,
     "funcao": "_landmark_details"
    }
   ],
@@ -26071,7 +26129,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1846,
+    "linha": 1847,
     "funcao": "_landmark_details"
    }
   ],
@@ -26090,7 +26148,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1850,
+    "linha": 1851,
     "funcao": "_landmark_details"
    }
   ],
@@ -26109,7 +26167,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1888,
+    "linha": 1889,
     "funcao": "_landmark_details"
    }
   ],
@@ -26128,7 +26186,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1856,
+    "linha": 1857,
     "funcao": "_landmark_details"
    }
   ],
@@ -26147,7 +26205,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1857,
+    "linha": 1858,
     "funcao": "_landmark_details"
    }
   ],
@@ -26166,7 +26224,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1859,
+    "linha": 1860,
     "funcao": "_landmark_details"
    }
   ],
@@ -26185,7 +26243,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1860,
+    "linha": 1861,
     "funcao": "_landmark_details"
    }
   ],
@@ -26204,7 +26262,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1868,
+    "linha": 1869,
     "funcao": "_landmark_details"
    }
   ],
@@ -26223,7 +26281,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1875,
+    "linha": 1876,
     "funcao": "_landmark_details"
    }
   ],
@@ -26242,7 +26300,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1907,
+    "linha": 1908,
     "funcao": "_landmark_details"
    }
   ],
@@ -26261,7 +26319,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1866,
+    "linha": 1867,
     "funcao": "_landmark_details"
    }
   ],
@@ -26280,7 +26338,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1911,
+    "linha": 1912,
     "funcao": "_landmark_details"
    }
   ],
@@ -26299,7 +26357,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1927,
+    "linha": 1928,
     "funcao": "_landmark_details"
    }
   ],
@@ -26318,7 +26376,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1889,
+    "linha": 1890,
     "funcao": "_landmark_details"
    }
   ],
@@ -26337,7 +26395,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1896,
+    "linha": 1897,
     "funcao": "_landmark_details"
    }
   ],
@@ -26356,7 +26414,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1915,
+    "linha": 1916,
     "funcao": "_landmark_details"
    }
   ],
@@ -26375,7 +26433,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1873,
+    "linha": 1874,
     "funcao": "_landmark_details"
    }
   ],
@@ -26394,7 +26452,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1898,
+    "linha": 1899,
     "funcao": "_landmark_details"
    }
   ],
@@ -26413,7 +26471,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1901,
+    "linha": 1902,
     "funcao": "_landmark_details"
    }
   ],
@@ -26432,7 +26490,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1920,
+    "linha": 1921,
     "funcao": "_landmark_details"
    }
   ],
@@ -26451,7 +26509,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1929,
+    "linha": 1930,
     "funcao": "_landmark_details"
    }
   ],
@@ -26470,7 +26528,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1928,
+    "linha": 1929,
     "funcao": "_landmark_details"
    }
   ],
@@ -26489,7 +26547,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1952,
+    "linha": 1953,
     "funcao": "_map_details"
    }
   ],
@@ -26508,7 +26566,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1965,
+    "linha": 1966,
     "funcao": "_map_details"
    }
   ],
@@ -26527,7 +26585,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1970,
+    "linha": 1971,
     "funcao": "_map_details"
    }
   ],
@@ -26546,7 +26604,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1981,
+    "linha": 1982,
     "funcao": "_map_details"
    }
   ],
@@ -26565,7 +26623,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1996,
+    "linha": 1997,
     "funcao": "_map_details"
    }
   ],
@@ -26584,7 +26642,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 2003,
+    "linha": 2004,
     "funcao": "_map_details"
    }
   ],
@@ -26603,7 +26661,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 2007,
+    "linha": 2008,
     "funcao": "_map_details"
    }
   ],
@@ -26622,7 +26680,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 2019,
+    "linha": 2020,
     "funcao": "_map_details"
    }
   ],
@@ -26641,7 +26699,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 2020,
+    "linha": 2021,
     "funcao": "_map_details"
    }
   ],
@@ -26660,7 +26718,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 2029,
+    "linha": 2030,
     "funcao": "_map_details"
    }
   ],
@@ -26679,7 +26737,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 2031,
+    "linha": 2032,
     "funcao": "_map_details"
    }
   ],
@@ -28256,7 +28314,7 @@
   "usos": [
    {
     "arquivo": "build.gd",
-    "linha": 512,
+    "linha": 514,
     "funcao": "model"
    }
   ],
@@ -31277,7 +31335,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1793,
+    "linha": 1794,
     "funcao": "_sand_clutter"
    }
   ],
@@ -31334,7 +31392,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1957,
+    "linha": 1969,
     "funcao": "_lot"
    }
   ],
@@ -31353,7 +31411,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1958,
+    "linha": 1970,
     "funcao": "_lot"
    }
   ],
@@ -31372,7 +31430,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1959,
+    "linha": 1971,
     "funcao": "_lot"
    }
   ],
@@ -31391,7 +31449,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1137,
+    "linha": 1138,
     "funcao": "_bike"
    }
   ],
@@ -31410,7 +31468,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1188,
+    "linha": 1189,
     "funcao": "_jangada2"
    }
   ],
@@ -31429,7 +31487,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1207,
+    "linha": 1208,
     "funcao": "_jangada2"
    }
   ],
@@ -31448,7 +31506,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1222,
+    "linha": 1223,
     "funcao": "_fishing_boat"
    }
   ],
@@ -31467,7 +31525,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1240,
+    "linha": 1241,
     "funcao": "_fishing_boat"
    }
   ],
@@ -31714,7 +31772,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1250,
+    "linha": 1262,
     "funcao": "_shore_details"
    }
   ],
@@ -31733,7 +31791,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2131,
+    "linha": 2143,
     "funcao": "_pool_details"
    }
   ],
@@ -31752,7 +31810,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2180,
+    "linha": 2192,
     "funcao": "_reception_details"
    }
   ],
@@ -31809,7 +31867,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 975,
+    "linha": 976,
     "funcao": "_kiosk_grill"
    }
   ],
@@ -31828,7 +31886,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1838,
+    "linha": 1839,
     "funcao": "_landmark_details"
    }
   ],
@@ -31847,7 +31905,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1851,
+    "linha": 1852,
     "funcao": "_landmark_details"
    }
   ],
@@ -31866,7 +31924,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1865,
+    "linha": 1866,
     "funcao": "_landmark_details"
    }
   ],
@@ -31899,20 +31957,20 @@
   "codigo": "PCA-927",
   "categoria": "PCA",
   "chave": "build.gd|model|Real.place|1",
-  "nome": "g:tree amendoeira %d",
+  "nome": "place",
   "fonte": "build.gd (código)",
   "usos": [
    {
     "arquivo": "build.gd",
-    "linha": 505,
+    "linha": 502,
     "funcao": "model"
    }
   ],
   "chamada": "Real.place",
-  "args": "parent, \"g:tree_amendoeira_%d\" % (1 + tk % 3), pos, 6.0 * s, rot_y",
+  "args": "parent, n, pos, -s, rot_y",
   "material": "",
   "em_laco": false,
-  "comentario": "v0.9.4: amendoeira-da-praia do Blender (folhas de verdade); a CommonTree da Quaternius tin"
+  "comentario": ""
  },
  {
   "codigo": "PCA-928",
@@ -31942,7 +32000,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2076,
+    "linha": 2088,
     "funcao": "_bungalow_details"
    }
   ],
@@ -31961,7 +32019,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2200,
+    "linha": 2212,
     "funcao": "_reception_details"
    }
   ],
@@ -32037,7 +32095,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1598,
+    "linha": 1599,
     "funcao": "_lamp_head"
    }
   ],
@@ -32056,7 +32114,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1871,
+    "linha": 1872,
     "funcao": "_landmark_details"
    }
   ],
@@ -32151,7 +32209,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 981,
+    "linha": 982,
     "funcao": "_kiosk_grill"
    }
   ],
@@ -32170,7 +32228,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1674,
+    "linha": 1675,
     "funcao": "_village_expansion"
    }
   ],
@@ -32469,20 +32527,20 @@
   "codigo": "PCA-957",
   "categoria": "PCA",
   "chave": "build.gd|model|Real.place|2",
-  "nome": "q:CommonTree %d",
+  "nome": "g:tree amendoeira %d",
   "fonte": "build.gd (código)",
   "usos": [
    {
     "arquivo": "build.gd",
-    "linha": 508,
+    "linha": 507,
     "funcao": "model"
    }
   ],
   "chamada": "Real.place",
-  "args": "parent, \"q:CommonTree_%d\" % tk, pos, 5.2 * s, rot_y",
+  "args": "parent, \"g:tree_amendoeira_%d\" % (1 + tk % 3), pos, 6.0 * s, rot_y",
   "material": "",
   "em_laco": false,
-  "comentario": ""
+  "comentario": "v0.9.4: amendoeira-da-praia do Blender (folhas de verdade); a CommonTree da Quaternius tin"
  },
  {
   "codigo": "PCA-958",
@@ -32569,7 +32627,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1196,
+    "linha": 1208,
     "funcao": "_beach_props_build"
    }
   ],
@@ -32588,7 +32646,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1198,
+    "linha": 1210,
     "funcao": "_beach_props_build"
    }
   ],
@@ -32607,7 +32665,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1205,
+    "linha": 1217,
     "funcao": "_beach_props_build"
    }
   ],
@@ -32626,7 +32684,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1206,
+    "linha": 1218,
     "funcao": "_beach_props_build"
    }
   ],
@@ -32645,7 +32703,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1207,
+    "linha": 1219,
     "funcao": "_beach_props_build"
    }
   ],
@@ -32664,7 +32722,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1219,
+    "linha": 1231,
     "funcao": "_beach_props_build"
    }
   ],
@@ -32683,7 +32741,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1221,
+    "linha": 1233,
     "funcao": "_beach_props_build"
    }
   ],
@@ -32702,7 +32760,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1222,
+    "linha": 1234,
     "funcao": "_beach_props_build"
    }
   ],
@@ -32721,7 +32779,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2079,
+    "linha": 2091,
     "funcao": "_bungalow_details"
    }
   ],
@@ -32740,7 +32798,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2095,
+    "linha": 2107,
     "funcao": "_bungalow_details"
    }
   ],
@@ -32759,7 +32817,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2103,
+    "linha": 2115,
     "funcao": "_bungalow_details"
    }
   ],
@@ -32778,7 +32836,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2146,
+    "linha": 2158,
     "funcao": "_pool_details"
    }
   ],
@@ -32797,7 +32855,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2161,
+    "linha": 2173,
     "funcao": "_pool_details"
    }
   ],
@@ -32816,7 +32874,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 2162,
+    "linha": 2174,
     "funcao": "_pool_details"
    }
   ],
@@ -32892,7 +32950,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1872,
+    "linha": 1873,
     "funcao": "_landmark_details"
    }
   ],
@@ -32911,7 +32969,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1887,
+    "linha": 1888,
     "funcao": "_landmark_details"
    }
   ],
@@ -32930,7 +32988,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1903,
+    "linha": 1904,
     "funcao": "_landmark_details"
    }
   ],
@@ -32949,7 +33007,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 2018,
+    "linha": 2019,
     "funcao": "_map_details"
    }
   ],
@@ -32968,7 +33026,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 2024,
+    "linha": 2025,
     "funcao": "_map_details"
    }
   ],
@@ -33082,7 +33140,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1717,
+    "linha": 1718,
     "funcao": "_village_expansion"
    }
   ],
@@ -33929,7 +33987,7 @@
     "funcao": ""
    }
   ],
-  "linhas": 583,
+  "linhas": 585,
   "descricao": ""
  },
  {
@@ -34249,7 +34307,7 @@
     "funcao": ""
    }
   ],
-  "linhas": 163,
+  "linhas": 164,
   "descricao": "Carrega modelos REAIS baixados da web (Poly Haven e Kenney, CC0) e posiciona com tamanho certo."
  },
  {
@@ -34329,7 +34387,7 @@
     "funcao": ""
    }
   ],
-  "linhas": 2219,
+  "linhas": 2231,
   "descricao": ""
  },
  {
@@ -34345,7 +34403,7 @@
     "funcao": ""
    }
   ],
-  "linhas": 2067,
+  "linhas": 2068,
   "descricao": ""
  },
  {
@@ -34677,12 +34735,12 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1538,
+    "linha": 1550,
     "funcao": "_vegetation"
    },
    {
     "arquivo": "world.gd",
-    "linha": 1554,
+    "linha": 1566,
     "funcao": "_vegetation"
    }
   ],
@@ -34727,7 +34785,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1657,
+    "linha": 1669,
     "funcao": "_mtn_material"
    }
   ],
@@ -34862,7 +34920,7 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1818,
+    "linha": 1830,
     "funcao": "_mtn_trees"
    }
   ],
@@ -35344,12 +35402,12 @@
   "usos": [
    {
     "arquivo": "world.gd",
-    "linha": 1658,
+    "linha": 1670,
     "funcao": "_mtn_material"
    },
    {
     "arquivo": "world.gd",
-    "linha": 1659,
+    "linha": 1671,
     "funcao": "_mtn_material"
    }
   ],
@@ -35796,12 +35854,12 @@
    },
    {
     "arquivo": "world.gd",
-    "linha": 1660,
+    "linha": 1672,
     "funcao": "_mtn_material"
    },
    {
     "arquivo": "world.gd",
-    "linha": 1661,
+    "linha": 1673,
     "funcao": "_mtn_material"
    }
   ],
@@ -35852,12 +35910,12 @@
    },
    {
     "arquivo": "world.gd",
-    "linha": 1215,
+    "linha": 1227,
     "funcao": "_beach_props_build"
    },
    {
     "arquivo": "world.gd",
-    "linha": 1303,
+    "linha": 1315,
     "funcao": "_redes"
    },
    {
@@ -35872,12 +35930,12 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1203,
+    "linha": 1204,
     "funcao": "_jangada2"
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1235,
+    "linha": 1236,
     "funcao": "_fishing_boat"
    }
   ],
@@ -35969,17 +36027,17 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1717,
+    "linha": 1718,
     "funcao": "_village_expansion"
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 2047,
+    "linha": 2048,
     "funcao": "_apply_kiosk_look"
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 2049,
+    "linha": 2050,
     "funcao": "_apply_kiosk_look"
    }
   ],

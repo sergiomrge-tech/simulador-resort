@@ -16,6 +16,7 @@ const LIFT: = {
 ## v1.0.1: os modelos Kenney eram low-poly e, suavizados, viravam "bolas de círculos" (coco, abacaxi, garrafas...).
 ## Todas as chamadas antigas "k:..." agora caem em modelos detalhados: Blender (g:, tools/gen_food.py) ou Poly Haven (CC0).
 const ALIAS: = {
+	"wicker_basket_02": "g:wicker_basket_closed",
 	"k:coconut": "g:coconut_green", "k:coconut-half": "g:coconut_open", "k:pineapple": "g:pineapple", "k:orange": "g:orange",
 	"k:frappe": "g:frappe", "k:cup": "g:cup_plastic", "k:glass": "g:glass_juice", "k:cocktail": "g:cocktail",
 	"k:bottle": "g:bottle_green", "k:bottle-large": "g:bottle_rum", "k:bottle-oil": "g:bottle_cachaca", "k:bread": "croissant",

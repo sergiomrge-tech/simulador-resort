@@ -280,3 +280,9 @@ cruise ship de GeorgL (CC0), https://blendswap.com/blend/23316 . Ambos exigiram
 login para baixar nesta sessão e não foram instalados.
 Cruise Ship Quaternius CC0, https://poly.pizza/m/yq9EKmEmfC , foi testado e
 rejeitado pelo usuário por simplicidade visual; retirado da cena e distribuição.
+
+## Cesto de vime corrigido — 23/10/2026
+Variante fechada do wicker_basket_02, Poly Haven CC0:
+https://polyhaven.com/a/wicker_basket_02 . Malha escaneada e texturas preservadas;
+tampa reposicionada horizontalmente sobre a borda. Gerador import_closed_basket.py;
+fonte editável incorporada/reaberta wicker_basket_closed.blend, runtime GLB.

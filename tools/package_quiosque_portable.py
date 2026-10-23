@@ -20,6 +20,8 @@ Para atualizar uma cópia anterior, substitua os arquivos do programa e mantenha
 a pasta userdata/. O ZIP não inclui nem apaga saves.
 
 NOVO NESTA REVISÃO
+- Quadro HOJE com texto dentro da placa e acima do guarda-corpo, incluindo
+  cardápio expandido. Cestos de vime com tampa encaixada, sem peça solta lateral.
 - Cruzeiro detalhado: cabines com varandas, botes, radar e janelas iluminadas.
   Fica ancorado ao fundo à noite; o navio de madeira passa devagar de dia.
 - Baleias saltando ao fundo, com respingos, espuma, ondas e som suave de queda.

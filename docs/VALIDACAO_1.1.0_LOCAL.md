@@ -446,3 +446,26 @@ material/RID no encerramento continuam presentes. ZIP com CRC e sem saves.
 - PCK SHA256: `93087d9d711f9a77a47efb80b3d6df17af176803f1c50e6096657675e9359a28`.
   Catálogo regenerado: 2065 itens, mesmos códigos. ZIP portátil sem userdata.
 
+# Quadro do cardápio e cestos de vime — 23/10/2026
+
+- Texto do quadro mede a fonte real e ajusta pixel_size à área útil; título e
+  preços ficam dentro da placa, com outline removido. Quadro HOJE elevado a
+  Y=1,9 m e deslocado para fora do guarda-corpo/bandeirinhas (X autoral=3,05),
+  com dois suportes. Conferidas imagens do cardápio inicial e completo.
+- Cesto wicker_basket_02 tinha tampa separada inclinada na fonte original.
+  Variante fechada preserva malha, UVs e texturas Poly Haven CC0. Gerador
+  import_closed_basket.py; fonte .blend incorporada e reaberta. B.model e Real
+  carregam g:wicker_basket_closed, corrigindo as chamadas existentes.
+- `props-layout-clear-source.log`: PROPS_LAYOUT_TEST PASS, Vulkan 1280x720.
+- `props-layout-export.log`: exportação concluída e preset restaurado.
+- `props-layout-pack-confirm.log`: PROPS_LAYOUT_TEST PASS, exit 0, executável
+  exportado Vulkan RTX4060Ti; limites dos textos, cardápio inicial/completo,
+  área acima do guarda-corpo, variante e dimensões do cesto. Três capturas
+  gravadas em user://qa_shots e inspecionadas. Sem script/recurso ausente.
+- A primeira execução do PCK passou nas verificações/capturas e apresentou
+  access violation ao encerrar, após os erros conhecidos de material/RID.
+  Repetição do mesmo PCK terminou com exit 0. Esses avisos antigos persistem;
+  não declarar encerramento inteiramente limpo nem atribuir causa confirmada.
+- APPDATA isolado em build/qa/props-layout-pack-confirm; saves preservados.
+- PCK SHA256: `91bd98c16fe5e5b2ed2314d103867ebf55dea888df5fa214db7b56edccc271a0`.
+- Catálogo: 2068 itens, novos códigos estáveis para a variante/placa. ZIP sem saves.

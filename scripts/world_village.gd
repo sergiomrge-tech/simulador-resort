@@ -942,7 +942,11 @@ func _refresh_kiosk_board() -> void :
 		ch.queue_free()
 	var c: = _kiosk_menu_c
 	var before: = get_child_count()
-	_chalkboard(c + Vector3(2.35, 0.1 + 1.15, 0.9), PI * 0.5, "HOJE", _menu_lines(Core.kiosk_menu()))
+	# Outside the railing/bunting plane, with its full writing area above the rail.
+	_chalkboard(c + Vector3(3.05, 0.1 + 1.8, 0.9), PI * 0.5, "HOJE", _menu_lines(Core.kiosk_menu()))
+	var board = get_child(before)
+	for side in [-1.0, 1.0]:
+		B.box(board, Vector3(.07,.07,.28), Vector3(side*.40,-.65,-.16), M.darkwood)
 	for k in get_children().slice(before):
 		k.reparent(_kiosk_board, false)
 
