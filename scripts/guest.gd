@@ -881,7 +881,7 @@ func _caricature(rng: RandomNumberGenerator) -> void :
 		return
 	var hs: = SkeletonModifier3D.new()
 	hs.set_script(load("res://scripts/head_scaler.gd"))
-	hs.head_scale = rng.randf_range(1.12, 1.28)
+	hs.head_scale = rng.randf_range(1.06, 1.14)
 	_skel.add_child(hs)
 	var att: = BoneAttachment3D.new()
 	att.bone_name = "Head"
@@ -896,15 +896,6 @@ func _caricature(rng: RandomNumberGenerator) -> void :
 		att3.bone_name = "neck_01"
 		_skel.add_child(att3)
 		Real.place(att3, "Camera_01", Vector3(0, -0.2, 0.1), 0.0, PI, Color.WHITE, 0.14)
-	# colar de contas
-	if rng.randf() < 0.25:
-		var att2: = BoneAttachment3D.new()
-		att2.bone_name = "neck_01"
-		_skel.add_child(att2)
-		var bead_c: Color = PRINT_COLS[rng.randi() % PRINT_COLS.size()]
-		for k in 12:
-			var a: = TAU * k / 12.0
-			B.sphere(att2, 0.014, Vector3(cos(a) * 0.085, -0.02 + absf(sin(a * 0.5)) * -0.04, sin(a) * 0.08), B.flat(bead_c if k % 2 == 0 else Color(1, 1, 1), 0.4))
 
 ## Estampa da roupa e altura/porte variados.
 func _finish_look(rng: RandomNumberGenerator) -> void :
@@ -913,10 +904,10 @@ func _finish_look(rng: RandomNumberGenerator) -> void :
 	for mi in _mesh_insts:
 		mi.set_instance_shader_parameter("pattern", pat)
 		mi.set_instance_shader_parameter("shirt2", p2)
-		mi.set_instance_shader_parameter("shorts_pattern", 1.0 if rng.randf() < 0.3 else 0.0)
+		mi.set_instance_shader_parameter("shorts_pattern", 0.0)
 	if _model:
-		var h: = rng.randf_range(0.9, 1.08)
-		var w: = rng.randf_range(0.82, 1.06)
+		var h: = rng.randf_range(0.94, 1.06)
+		var w: = rng.randf_range(0.91, 1.04)
 		_model.scale = Vector3(w * lerpf(1.0, h, 0.5), h, w * lerpf(1.0, h, 0.5))
 
 const HAT_Y: = 0.14

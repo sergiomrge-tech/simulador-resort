@@ -30792,25 +30792,6 @@
   "comentario": ""
  },
  {
-  "codigo": "PCA-887",
-  "categoria": "PCA",
-  "chave": "guest.gd|_caricature|B.sphere|1",
-  "nome": "sphere",
-  "fonte": "guest.gd (código)",
-  "usos": [
-   {
-    "arquivo": "guest.gd",
-    "linha": 907,
-    "funcao": "_caricature"
-   }
-  ],
-  "chamada": "B.sphere",
-  "args": "att2, 0.014, Vector3(cos(a) * 0.085, -0.02 + absf(sin(a * 0.5)) * -0.04, sin(a) * 0.08), B.flat(bead_c if k % ",
-  "material": "",
-  "em_laco": true,
-  "comentario": ""
- },
- {
   "codigo": "PCA-888",
   "categoria": "PCA",
   "chave": "guest.gd|show_menu|B.box|1",
@@ -30819,7 +30800,7 @@
   "usos": [
    {
     "arquivo": "guest.gd",
-    "linha": 946,
+    "linha": 937,
     "funcao": "show_menu"
    }
   ],
@@ -30838,7 +30819,7 @@
   "usos": [
    {
     "arquivo": "guest.gd",
-    "linha": 947,
+    "linha": 938,
     "funcao": "show_menu"
    }
   ],
@@ -30857,7 +30838,7 @@
   "usos": [
    {
     "arquivo": "guest.gd",
-    "linha": 949,
+    "linha": 940,
     "funcao": "show_menu"
    }
   ],
@@ -33665,7 +33646,7 @@
     "funcao": ""
    }
   ],
-  "linhas": 1003,
+  "linhas": 994,
   "descricao": ""
  },
  {
@@ -33825,7 +33806,7 @@
     "funcao": ""
    }
   ],
-  "linhas": 342,
+  "linhas": 346,
   "descricao": "Pessoas (v0.7.3): corpo, rosto e cabelo vêm do pacote CC0 \"Universal Base Characters\" (Quaternius)."
  },
  {

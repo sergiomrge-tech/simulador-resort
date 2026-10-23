@@ -2,7 +2,7 @@
 
 Gerado por `python3 tools/gen_item_catalog.py` — **não edite à mão**. Os códigos ficam em `docs/itens_registro.json` e nunca mudam. Para pedir uma alteração, cite o código (ex.: "troque o modelo de MOD-017").
 
-Total: 2031 itens. MOD 227 · NAT 68 · PRC 31 · CEN 284 · PRT 13 · DSH 9 · SUP 10 · EXP 9 · STF 4 · UPG 15 · QST 4 · VIP 12 · EVT 8 · NOU 161 · TEX 29 · AUD 41 · ICO 36 · FNT 1 · SHD 14 · ANI 43 · PCA 901 · MAT 24 · COR 28 · SCR 43 · PES 16
+Total: 2030 itens. MOD 227 · NAT 68 · PRC 31 · CEN 284 · PRT 13 · DSH 9 · SUP 10 · EXP 9 · STF 4 · UPG 15 · QST 4 · VIP 12 · EVT 8 · NOU 161 · TEX 29 · AUD 41 · ICO 36 · FNT 1 · SHD 14 · ANI 43 · PCA 900 · MAT 24 · COR 28 · SCR 43 · PES 16
 
 ## MOD — Modelos 3D em uso (reais, baixados da web) (227)
 
@@ -1123,7 +1123,7 @@ Total: 2031 itens. MOD 227 · NAT 68 · PRC 31 · CEN 284 · PRT 13 · DSH 9 · 
 | ANI-042 | Walk formal loop | `Walk_Formal_Loop` | UAL (Quaternius CC0) | guest.gd:124 |
 | ANI-043 | Walk loop | `Walk_Loop` | UAL (Quaternius CC0) | event_fx.gd:261, guest.gd:124, guest.gd:180, main.gd:358 (+1) |
 
-## PCA — Peças construídas por código (uma linha = uma peça; ver coluna Função) (901)
+## PCA — Peças construídas por código (uma linha = uma peça; ver coluna Função) (900)
 
 | Código | Peça | Função | Chamada | Material | Linha | Obs |
 |---|---|---|---|---|---|---|
@@ -1922,10 +1922,9 @@ Total: 2031 itens. MOD 227 · NAT 68 · PRC 31 · CEN 284 · PRT 13 · DSH 9 · 
 | PCA-875 | new | `spawn` | `MeshInstance3D.new` | — | palm.gd:187 |  |
 | PCA-881 | g:sunglasses | `_caricature` | `Real.place` | — | guest.gd:893 |  |
 | PCA-882 | Camera 01 | `_caricature` | `Real.place` | — | guest.gd:898 |  |
-| PCA-887 | sphere | `_caricature` | `B.sphere` | — | guest.gd:907 |  [em laço] |
-| PCA-888 | box | `show_menu` | `B.box` | — | guest.gd:946 |  |
-| PCA-889 | box | `show_menu` | `B.box` | — | guest.gd:947 |  |
-| PCA-890 | box | `show_menu` | `B.box` | — | guest.gd:949 |  [em laço] |
+| PCA-888 | box | `show_menu` | `B.box` | — | guest.gd:937 |  |
+| PCA-889 | box | `show_menu` | `B.box` | — | guest.gd:938 |  |
+| PCA-890 | box | `show_menu` | `B.box` | — | guest.gd:940 |  [em laço] |
 | PCA-891 | place | `_run_shot` | `Real.place` | — | main.gd:406 |  [em laço] |
 | PCA-892 | label | `spawn_customer` | `B.label` | — | village_life.gd:326 |  |
 | PCA-893 | build | `_bungalow` | `P.build` | — | world.gd:638 |  |

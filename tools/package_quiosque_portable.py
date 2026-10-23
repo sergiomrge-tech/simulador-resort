@@ -20,6 +20,7 @@ Para atualizar uma cópia anterior, substitua os arquivos do programa e mantenha
 a pasta userdata/. O ZIP não inclui nem apaga saves.
 
 NOVO NESTA REVISÃO
+- Pessoas com proporções mais naturais, pele/cabelo suaves e roupas menos brilhantes.
 - Refinamento: revestimento areia retangular e iluminação quente na área de trabalho.
 - Quiosque com azulejos na cozinha, prateleira de madeira e coifa detalhada.
 - Roupas com barra reta, sem cinto medieval; calçados baixos em cores neutras.

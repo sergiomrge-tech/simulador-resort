@@ -241,3 +241,13 @@ CRCs verificados e sem userdata. Documentação e instruções do expositor atua
   sem SCRIPT ERROR ou recursos ausentes. Avisos conhecidos de saída permanecem.
 - PCK SHA-256: `be191881c6ee638e3697b1f855cdaac7cf27106034769a1207d43edac88a1388`.
 - ZIP de Downloads atualizado com CRC conferido e saves preservados.
+# Refinamento de pessoas — 23/10/2026
+
+- Cabeças entre 1,06–1,14 e menor variação de porte; preservado o estilo cartoon.
+- Pele e cabelo com iluminação difusa suave; menor brilho lateral e saturação
+  das roupas. Retirados colares de esferas e estampas aleatórias das calças.
+- Fonte `people-refine-proof.log` e pacote `people-refine-pack.log`:
+  PRACTICAL_TEST PASS, sem SCRIPT ERROR ou recursos ausentes. Inspeção de
+  `people_portraits.png` e capturas em pé/andando/sentado. Avisos de saída conhecidos.
+- PCK SHA-256: `40af90c04c7f7c2e013a63e15138c6756c6c04a850240f4ee730b4eab66aa486`.
+- ZIP atualizado em Downloads, CRC conferido e saves preservados.

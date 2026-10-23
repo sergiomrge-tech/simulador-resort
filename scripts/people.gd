@@ -228,6 +228,9 @@ static var _gray_hair: = {}
 ## Cabelo: a textura original é azulada; usa uma versão em tons de cinza (média 0,5) para a cor do cabelo sair exata.
 static func hair_copy(src: Material, tint: Color) -> Material:
 	var m: Material = toon_copy(src, tint)
+	if m is BaseMaterial3D:
+		m.diffuse_mode = BaseMaterial3D.DIFFUSE_BURLEY
+		m.roughness = 0.82
 	if m is BaseMaterial3D and (m as BaseMaterial3D).albedo_texture != null:
 		var bm: BaseMaterial3D = m as BaseMaterial3D
 		var tex: Texture2D = bm.albedo_texture
@@ -274,11 +277,12 @@ static func skin_material(female: bool, skin: Color) -> StandardMaterial3D:
 	var m: = StandardMaterial3D.new()
 	m.albedo_texture = load(path)
 	m.albedo_color = tint
-	m.diffuse_mode = BaseMaterial3D.DIFFUSE_TOON
-	m.specular_mode = BaseMaterial3D.SPECULAR_DISABLED
+	m.diffuse_mode = BaseMaterial3D.DIFFUSE_BURLEY
+	m.specular_mode = BaseMaterial3D.SPECULAR_SCHLICK_GGX
+	m.metallic_specular = 0.16
 	m.roughness = 0.8
 	m.rim_enabled = true
-	m.rim = 0.2
+	m.rim = 0.08
 	m.rim_tint = 0.6
 	return m
 

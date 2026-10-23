@@ -1,5 +1,9 @@
 # Quiosque reorganizado — 22/10/2026
 
+Pessoas refinadas em 23/10: proporções de cabeça e porte menos exageradas,
+sombreamento suave da pele/cabelo, roupa com menos saturação e brilho lateral.
+Sem colares de esferas nem estampas aleatórias nas calças. Sem chapéus/bonés.
+
 Refinamento visual de 23/10: revestimento retangular em tons areia, juntas
 mais suaves e pequenas variações cerâmicas. Luz de trabalho quente permanente
 no interior reduz a predominância azul da iluminação ambiente sobre equipamentos.

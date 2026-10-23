@@ -165,6 +165,7 @@ func run(main) -> void:
 					check(hair.get_parent() is BoneAttachment3D and hair.get_parent().bone_name == "Head", "cabelo rígido preso à cabeça animada")
 			if shown.size() == 2: break
 		await shot(main, "practical_clothing", c + Vector3(0, .1, 6.3), 0, -14)
+		await shot(main, "people_portraits", c + Vector3(0, .05, 5.55), 0, 0)
 		for person in shown.values(): person.play("Walk_Loop")
 		await frames(35)
 		await shot(main, "practical_clothing_walk", c + Vector3(0, .1, 6.3), 0, -14)
