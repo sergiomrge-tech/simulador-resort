@@ -347,6 +347,16 @@ func run(m) -> void :
 		add_child(home_test)
 		await home_test.run(main)
 		return
+	if main.args.has("coastal-test"):
+		var coast = load("res://tests/coastal_regression.gd").new()
+		add_child(coast)
+		await coast.run(main)
+		return
+	if main.args.has("counter-test"):
+		var counter = load("res://tests/counter_regression.gd").new()
+		add_child(counter)
+		await counter.run(main)
+		return
 	if main.args.has("practical-test"):
 		var practical = load("res://tests/practical_regression.gd").new()
 		add_child(practical)
@@ -484,7 +494,7 @@ func run(m) -> void :
 		get_tree().quit(1)
 		return
 	var km0: = Core.money
-	var kp: String = await aim(main.world.KIOSK_C + Vector3(0, 0.12, 0.4), 180.0, -32.0)
+	var kp: String = await aim(main.world.kiosk_point(Vector3(0, 0.12, 0.4)), 0.0, -32.0)
 	if check(kp.begins_with("Pegar"), "prompt do quiosque: '%s'" % kp):
 		main.player.interact()
 		check(main.village.prep.is_empty(), "atendimento legado também não exige preparo")

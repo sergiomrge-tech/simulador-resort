@@ -367,15 +367,11 @@ func spawn_customer() -> Node3D:
 			slot += 1
 		g.set_meta("queue_slot", slot)
 		# Fila a leste das mesas, fora das cadeiras e do corredor de acesso ao balcão.
-		g.go([world.KIOSK_C + Vector3(7.5, 0.1, 5.0 + slot * 1.1)])
+		g.go([world.kiosk_point(Vector3(7.5, 0.1, 5.0 + slot * 1.1))])
 		customers.append(g)
 		return g
 	if from_beach:
-		# contorna o quiosque pela lateral em vez de atravessar o balcão
-		var kc: Vector3 = world.KIOSK_C
-		var sx: = 1.0 if start.x >= kc.x else -1.0
-		route.append(Vector3(kc.x + sx * 5.2, 0.05, kc.z - 3.8))
-		route.append(Vector3(kc.x + sx * 5.2, 0.05, kc.z + 3.6))
+		route.append(world.kiosk_point(Vector3(-7.5,.05,12)))
 	# Chega por trás da cadeira, sem cruzar o tampo para alcançar a raiz da animação.
 	var front: Vector3 = spot.get("approach", Vector3(spot.pos.x, 0.1, spot.pos.z + 0.85))
 	route.append(front)
@@ -560,7 +556,7 @@ func _leave(g) -> void :
 	g.state = "kleave"
 	g.position.y = 0.1
 	var exit: Vector3 = g.spot.get("approach", g.position + Vector3(0, 0, 1.8))
-	g.go([exit, Vector3(world.KIOSK_C.x + 6.0, 0.1, world.KIOSK_C.z + 5.0), Vector3(rng.randf_range(44, 90), 0, rng.randf_range(-25, -21))])
+	g.go([exit, world.kiosk_point(Vector3(-7.5,.1,12)), Vector3(rng.randf_range(44, 90), 0, rng.randf_range(-25, -21))])
 
 func _next_customer():
 	var w: = waiting_customers()
@@ -785,7 +781,7 @@ func _on_slept(_d: int) -> void :
 
 ## Apresentação vinculada ao proprietário do pedido e à superfície do assento.
 func _prep_position() -> Vector3:
-	return world.KIOSK_C + Vector3(0, 1.28, 1.85)
+	return world.kiosk_point(Vector3(0, 1.28, 1.85))
 
 func _clear_prep_visual() -> void:
 	if is_instance_valid(prep_visual):

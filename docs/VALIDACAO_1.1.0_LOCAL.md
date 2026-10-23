@@ -358,3 +358,36 @@ PCK SHA256: 8d95b71f92fdd3de2b877175fdbabb9fe1c91a7cd97ca68e0edfc67ecba6a192.
 - Fachada do quiosque conferida no executável em lounge_kiosk_colors.png
   (--shot=lounge_kiosk_colors --cam=39.5,0.35,-6,15,-3,11 --hidehud).
 - ZIP portátil atualizado em Downloads, 10 arquivos e CRC verificado; sem saves.
+
+# Balcão interno, quiosque/praia e ambientação — 23/10/2026
+- KioskBeachFrame gira fachada, balcão, equipamentos, expansões e mesas para -Z.
+  Dados globais dos assentos, bloqueios de NPCs, layout e rotas convertidos juntos.
+  Garçom anota/entrega no staff_approach interno dos lugares do balcão.
+- Alvos de clientes maiores e foco tolerante de 11°/3 m com oclusão física.
+  E testado com desvios -8°, 0°, +8° nos dois lugares do balcão por dentro.
+- Reposição pela geladeira compra os ingredientes faltantes para dez unidades;
+  preço prévio, saldo integral, sem nova cobrança para estoque já reposto, sem
+  compra remota pela estação e retirada imediata após repor.
+- Save antigo no interior gira posição/yaw uma vez; gravação nova guarda
+  player.kiosk_facing=beach. Migração exercitada por _on_start_load real.
+- Quatro jogadores de vôlei com contatos de braços e trajetória acima da rede;
+  chuva/noite interrompem partida. Iate às 06h–19h, cruzeiro iluminado às 19h–06h;
+  ambos no mar distante. Pausa congela a ambientação. Quadra sem mobiliário antigo.
+- Fonte: beach-counter-save.log COUNTER_TEST PASS; beach-final-proof.log
+  COASTAL_TEST PASS; beach-company.log COMPANY_TEST PASS; beach-practical.log e
+  beach-visual.log PRACTICAL_TEST PASS; beach-loop.log LOOP_TEST PASS;
+  beach-management.log MANAGEMENT_TEST PASS; beach-phone.log PHONE_LAYOUT_TEST PASS
+  em 1280×720, 800×600 e 360×640, incluindo reposição na operação sem estoque.
+- Imagens em Vulkan: counter_service_inside.png, counter_restock.png,
+  kiosk_beach_front.png, kiosk_beach_tables.png, beach_volleyball.png,
+  beach_yacht.png e beach_cruise_night.png. Dois modelos coastal_*.blend
+  incorporados/reabertos, geometria sem decimação e mapas até 1K.
+- Executável/PCK: beach-pack-counter.log COUNTER_TEST PASS, incluindo save antigo
+  e nova gravação; beach-pack-coast.log COASTAL_TEST PASS, com imagens Vulkan.
+- PCK SHA256: 2872e9d18392b56e3055ce21c4de2bf7323136aea766a88866d9e40046ad4f96.
+- Executável: beach-pack-company.log COMPANY_TEST PASS e
+  beach-pack-practical.log PRACTICAL_TEST PASS. Sem SCRIPT ERROR, REAL_MISSING
+  ou falhas de carregamento nos testes finais; persistem avisos conhecidos de
+  material nulo/recursos/RID na liberação ao encerrar o motor.
+- ZIP em Downloads atualizado: 1.876.582.679 bytes, 11 arquivos incluindo
+  PRAIA_E_ATENDIMENTO.md e hashes. CRC verificado; não contém saves/userdata.

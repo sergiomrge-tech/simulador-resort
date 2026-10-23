@@ -23,6 +23,7 @@ var door_tween: Tween
 
 func _ready() -> void:
 	name = "KioskOperations"
+	transform = main.world.kiosk_root.transform
 	_build()
 	Core.company_changed.connect(sync_company)
 	Core.staff_changed.connect(sync_company)
@@ -32,6 +33,23 @@ func _ready() -> void:
 
 func center() -> Vector3:
 	return main.world.KIOSK_C
+
+func point(offset: Vector3) -> Vector3:
+	return main.world.kiosk_point(offset)
+
+func service_approach(g) -> Vector3:
+	return g.spot.get("staff_approach",g.spot.approach)
+
+func _route_to_customer(g) -> Array:
+	if g.spot.has("staff_approach"): return [service_approach(g)]
+	return [point(Vector3(3.2,.1,-.85)),point(Vector3(3.2,.1,3.5)),service_approach(g)]
+
+func _route_to_pickup(g) -> Array:
+	var local: Vector3 = main.world.kiosk_local(g.global_position)
+	if absf(local.x)<1.65 and local.z<1.5:
+		return [point(Vector3(0,.1,-.65))]
+	return [point(Vector3(3.2,.1,3.5)),point(Vector3(3.2,.1,-.85)),point(Vector3(1.1,.1,-.85)),point(Vector3(0,.1,-.65))]
+
 
 func _build() -> void:
 	var c: Vector3 = center()
@@ -93,7 +111,8 @@ func station_prompt(_kind: String, title: String) -> String:
 	return title if Core.company_enabled() else title + " · E para criar seu quiosque"
 
 func can_access(kind: String) -> bool:
-	return Core.company_enabled() and stations.has(kind) and main.player.global_position.distance_to(stations[kind].global_position) < 2.1 and absf(main.player.global_position.x - center().x) < 2.0 and main.player.global_position.z > center().z - 1.5
+	var p: Vector3 = main.world.kiosk_local(main.player.global_position)
+	return Core.company_enabled() and stations.has(kind) and main.player.global_position.distance_to(stations[kind].global_position) < 2.1 and absf(p.x) < 2.0 and p.z > -1.5 and p.z < 1.6
 
 func open_station(kind: String) -> void:
 	if not Core.company_enabled():
@@ -119,8 +138,33 @@ func _register_prompt() -> String:
 
 func collect_payments() -> void:
 	var amount: int = Core.collect_company_payments()
-	if amount > 0: main.audio.kiosk_sfx("cash",center()+Vector3(1.3,1.4,1.8))
+	if amount > 0: main.audio.kiosk_sfx("cash",point(Vector3(1.3,1.4,1.8)))
 	Core.toast.emit("Recebido: " + Core.fmt_money(amount), "good")
+
+## Soft aim only selects visible customers; physical walls still block targeting.
+func resolve_customer_focus(camera: Camera3D, direct: Interactable) -> Interactable:
+	if not Core.company_enabled(): return direct
+	if direct != null and direct != main.world.kiosk_counter and not direct.has_meta("customer_ref"):
+		return direct
+	if direct != null and direct.has_meta("customer_ref") and direct.get_prompt() != "": return direct
+	var best: Interactable = null
+	var score := cos(deg_to_rad(11.0))
+	var forward: Vector3 = -camera.global_basis.z
+	for g in main.village.customers:
+		if not is_instance_valid(g) or g.state not in ["kchoose","kwait"]: continue
+		var target := g.get_node_or_null("CustomerInteraction") as Interactable
+		if target == null or target.get_prompt() == "": continue
+		# Aim at seated upper torso, above the physical countertop.
+		var aim: Vector3 = target.global_position + Vector3(0,.20,0)
+		var offset := aim-camera.global_position
+		if offset.length()>3.0: continue
+		var dot := forward.dot(offset.normalized())
+		if dot < score: continue
+		var query := PhysicsRayQueryParameters3D.create(camera.global_position,aim,1,[main.player.get_rid()])
+		if not camera.get_world_3d().direct_space_state.intersect_ray(query).is_empty(): continue
+		best = target
+		score = dot
+	return best if best != null else direct
 
 func customer_prompt(ref: WeakRef) -> String:
 	var g = ref.get_ref()
@@ -131,7 +175,7 @@ func customer_prompt(ref: WeakRef) -> String:
 	if not bool(g.get_meta("order_taken", true)): return "Anotar pedido " + order_number(g)
 	var id: String = str(Core.company.carry)
 	if id in main.village._remaining(g):
-		return "Entregar " + tr(str(Economy.dish(id).name))
+		return "Entregar " + tr(str(Economy.dish(id).name)) + " · " + order_number(g)
 	return "Ver pedido " + order_number(g) + " · " + main.village._order_text(g)
 
 func take_order(ref: WeakRef, by_staff: bool = false) -> bool:
@@ -211,7 +255,7 @@ func sync_company() -> void:
 			continue
 		var root := Node3D.new()
 		add_child(root)
-		root.position = main.world.kiosk_spots[index].serve_pos
+		root.position = to_local(main.world.kiosk_spots[index].serve_pos)
 		Real.place(root, "k:plate-dinner", Vector3.ZERO, 0.022)
 		_interaction(root, Vector3(0, 0.1, 0), Vector3(0.5, 0.25, 0.5), clean_prompt.bind(index), clean.bind(index))
 		dirt[index] = root
@@ -220,8 +264,9 @@ func _process(delta: float) -> void:
 	for g in main.village.customers:
 		if is_instance_valid(g) and not g.has_meta("company_target"):
 			var ref: WeakRef = weakref(g)
-			var target := _interaction(g, Vector3(0, 0.95, -0.28), Vector3(0.65, 1.0, 0.65), customer_prompt.bind(ref), customer_action.bind(ref))
+			var target := _interaction(g, Vector3(0, 1.05, -0.20), Vector3(0.95, 1.35, 0.90), customer_prompt.bind(ref), customer_action.bind(ref))
 			target.name = "CustomerInteraction"
+			target.set_meta("customer_ref",ref)
 			g.set_meta("company_target", true)
 	if not Core.company_enabled() or not Core.in_game or Core.paused or get_tree().paused:
 		return
@@ -244,13 +289,13 @@ func _actor(role: String, pos: Vector3):
 			display_name = Core.CompanyRules.Simulation.Management.candidate(role, int(Core.company.sim.management.profiles[role].kind)).name
 		g.set_meta("staff_name", display_name)
 		g.apply_staff_uniform(role)
-		if role == "cozinheiro": g.rotation.y = PI
+		g.rotation.y = 0 if role == "cozinheiro" else PI
 		actors[role] = g
 	return actors[role]
 
 func _staff_home(role: String) -> Vector3:
 	var offsets := {"cozinheiro": Vector3(1.2, 0.1, -1.08), "atendente": Vector3(-0.9, 0.1, 0.55), "garcom": Vector3(0.1, 0.1, 0.7), "caixa": Vector3(1.25, 0.1, 1.15), "limpeza": Vector3(-3.6, 0.1, 3.4)}
-	return center() + offsets[role]
+	return point(offsets[role])
 
 func _sync_staff_presence() -> void:
 	for role in ["garcom", "atendente", "caixa", "cozinheiro", "limpeza"]:
@@ -286,13 +331,13 @@ func _staff_tick() -> void:
 			actors[role].set_process(active)
 		if not active:
 			continue
-		var pos: Vector3 = c + Vector3(1.05, 0.1, -0.2)
-		if role == "atendente": pos = c + Vector3(-0.9, 0.1, 0.55)
-		elif role == "garcom": pos = c + Vector3(0.1, 0.1, 0.7)
+		var pos: Vector3 = point(Vector3(1.05, 0.1, -0.2))
+		if role == "atendente": pos = point(Vector3(-0.9, 0.1, 0.55))
+		elif role == "garcom": pos = point(Vector3(0.1, 0.1, 0.7))
 		if role == "caixa":
-			pos = c + Vector3(1.25, 0.1, 1.15)
+			pos = point(Vector3(1.25, 0.1, 1.15))
 		elif role == "limpeza":
-			pos = c + Vector3(-3.6, 0.1, 3.4)
+			pos = point(Vector3(-3.6, 0.1, 3.4))
 		var g = _actor(role, pos)
 		var uniform: String = str(Core.company.sim.management.look.uniform)
 		if Core.company.sim.management.look_owned and str(g.get_meta("uniform", "")) != uniform:
@@ -314,7 +359,7 @@ func _waiter(g) -> void:
 		return
 	if waiter_phase == "order":
 		var target = waiter_target.get_ref() if waiter_target != null else null
-		if is_instance_valid(target) and not target.spot.is_empty() and g.position.distance_to(target.spot.approach) < 1.2:
+		if is_instance_valid(target) and not target.spot.is_empty() and g.position.distance_to(service_approach(target)) < 1.2:
 			take_order(waiter_target, true)
 		waiter_phase = ""
 		waiter_target = null
@@ -324,7 +369,7 @@ func _waiter(g) -> void:
 		if not pending.is_empty():
 			waiter_target = weakref(pending[0])
 			waiter_phase = "order"
-			g.go([center()+Vector3(3.2,.1,-.85), center()+Vector3(3.2,.1,3.5), pending[0].spot.approach])
+			g.go(_route_to_customer(pending[0]))
 			return
 	if waiter_phase == "pickup":
 		if Time.get_ticks_msec() < int(g.get_meta("handoff_until",0)): return
@@ -334,7 +379,7 @@ func _waiter(g) -> void:
 		return
 	if waiter_phase == "deliver":
 		var target = waiter_target.get_ref() if waiter_target != null else null
-		if is_instance_valid(target) and not target.is_queued_for_deletion() and target.state == "kwait" and str(Core.company.staff_carry) in main.village._remaining(target) and g.position.distance_to(target.spot.approach) < 1.0:
+		if is_instance_valid(target) and not target.is_queued_for_deletion() and target.state == "kwait" and str(Core.company.staff_carry) in main.village._remaining(target) and g.position.distance_to(service_approach(target)) < 1.0:
 			if not g.has_meta("delivering"):
 				g.set_meta("delivering",true)
 				g.set_meta("handoff_until",Time.get_ticks_msec()+400)
@@ -349,9 +394,9 @@ func _waiter(g) -> void:
 		g.play("Idle_Loop")
 		return
 	# Return safely to the shelves before returning or taking an item.
-	var pickup: Vector3 = center() + Vector3(0, 0.1, -0.65)
+	var pickup: Vector3 = point(Vector3(0, 0.1, -0.65))
 	if g.position.distance_to(pickup) > 0.5:
-		g.go([center() + Vector3(3.2, 0.1, 3.5), center() + Vector3(3.2, 0.1, -0.85), center() + Vector3(1.1, 0.1, -0.85), pickup])
+		g.go(_route_to_pickup(g))
 		return
 	if Core.company.staff_carry != "":
 		if not Core.return_company_staff_dish():
@@ -370,8 +415,8 @@ func _waiter(g) -> void:
 			tray.scale = Vector3.ONE * 0.65
 			Dishes.build(tray, id)
 			g.set_meta("work_kind","pickup")
-			g.set_meta("work_target",center()+Vector3(-.18,1.10,-1.10))
-			g.set_meta("delivery_route",[center() + Vector3(1.1, 0.1, -0.85), center() + Vector3(3.2, 0.1, -0.85), center() + Vector3(3.2, 0.1, 3.5), target.spot.approach])
+			g.set_meta("work_target",point(Vector3(-.18,1.10,-1.10)))
+			g.set_meta("delivery_route",_route_to_customer(target))
 			return
 
 func _cleaner(g) -> void:
@@ -388,7 +433,8 @@ func _cleaner(g) -> void:
 	cleaner_seat = int(Core.company.dirty_seats[0])
 	cleaner_time = 0.0
 	if cleaner_seat < main.world.kiosk_spots.size():
-		g.go([main.world.kiosk_spots[cleaner_seat].approach])
+		var spot: Dictionary = main.world.kiosk_spots[cleaner_seat]
+		g.go(_route_to_pickup(g) + [spot.staff_approach] if spot.has("staff_approach") else [spot.approach])
 
 func _clear_tray(g) -> void:
 	if g.has_meta("work_target"): g.remove_meta("work_target")

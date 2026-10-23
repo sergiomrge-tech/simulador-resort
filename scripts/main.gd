@@ -173,6 +173,9 @@ func _ready() -> void :
 	operations.set_script(load("res://scripts/kiosk_operations.gd"))
 	operations.main = self
 	add_child(operations)
+	var coast := Node3D.new()
+	coast.set_script(load("res://scripts/coastal_life.gd"))
+	add_child(coast)
 	menus = CanvasLayer.new()
 	menus.set_script(load("res://scripts/menus.gd"))
 	add_child(menus)
@@ -252,6 +255,10 @@ func _on_start_load(slot: int) -> void :
 	if lp.has("x"):
 		player.global_position = Vector3(float(lp.x), float(lp.y) + 0.05, float(lp.z))
 		player.yaw = float(lp.get("yaw", 0.0))
+		# Rotate old interior saves with the kiosk, preserving the worker's position.
+		if str(lp.get("kiosk_facing","")) != "beach" and absf(player.position.x-world.KIOSK_C.x)<2.9 and absf(player.position.z-world.KIOSK_C.z)<3.1:
+			player.position = world.kiosk_authored(player.position)
+			player.yaw += PI
 		player.pitch = 0.0
 		player._apply_look()
 	else:

@@ -1014,7 +1014,7 @@ func save_game() -> void :
 	}
 	if is_instance_valid(player_ref) and player_ref.is_inside_tree():
 		var pp: = player_ref.global_position
-		data["player"] = {"x": pp.x, "y": pp.y, "z": pp.z, "yaw": player_ref.rotation.y}
+		data["player"] = {"x": pp.x, "y": pp.y, "z": pp.z, "yaw": player_ref.rotation.y, "kiosk_facing": "beach"}
 	for r in rooms:
 		var st: String = r.state
 		var dirty: Dictionary = r.dirty.duplicate()
@@ -1339,4 +1339,27 @@ func return_company_staff_dish() -> bool:
 	company.ready[id] = int(company.ready.get(id, 0)) + 1
 	company.staff_carry = ""
 	company_changed.emit()
+	return true
+
+## Quote only the missing ingredients for a target number of ready portions.
+func company_restock_quote(id: String, servings: int = 10) -> Dictionary:
+	var result := {"items":{},"cost":0,"servings":servings}
+	if not company_enabled() or id not in kiosk_menu() or servings < 1 or servings > 100: return result
+	for ingredient in Economy.dish(id).uses:
+		var missing := maxi(0,int(Economy.dish(id).uses[ingredient])*servings-int(stock.get(ingredient,0)))
+		if missing > 0:
+			result.items[ingredient] = missing
+			result.cost += supply_total(ingredient,missing)
+	return result
+
+func restock_company_dish(id: String, servings: int = 10) -> bool:
+	var quote := company_restock_quote(id,servings)
+	if quote.items.is_empty(): return false
+	if money < int(quote.cost):
+		toast.emit("Saldo insuficiente para repor: " + fmt_money(int(quote.cost)), "bad")
+		return false
+	# Check the entire basket first, avoiding a partially purchased recipe.
+	for ingredient in quote.items:
+		buy_supply(ingredient,int(quote.items[ingredient]))
+	toast.emit("Estoque reposto para " + str(servings) + " unidades de " + str(Economy.dish(id).name), "good")
 	return true

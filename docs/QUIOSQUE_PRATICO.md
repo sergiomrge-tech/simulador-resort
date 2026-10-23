@@ -1,5 +1,11 @@
 # Quiosque reorganizado — 22/10/2026
 
+Revisão 23/10: fachada e todas as mesas voltadas para a praia. No balcão, permaneça
+dentro e mire no cliente para E anotar/entregar. A mira tolera pequenos desvios e
+mostra o número do pedido, preservando a escolha entre os dois lugares.
+Na geladeira/armário, produto esgotado oferece Repor 10 com preço dos insumos
+faltantes. A compra acontece na mesma tela e permite retirar logo depois.
+
 Pessoas sem óculos escuros, chapéus ou bonés, conforme preferência atual.
 
 Pessoas refinadas em 23/10: proporções de cabeça e porte menos exageradas,

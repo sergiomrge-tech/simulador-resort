@@ -533,10 +533,10 @@ func objective() -> Array:
 		var carried: String = str(Core.company.carry)
 		for g in village.waiting_customers():
 			if carried != "" and carried in village._remaining(g):
-				return ["Entregar " + str(Economy.dish(carried).name), g.spot.approach, 2.0]
+				return ["Entregar " + str(Economy.dish(carried).name), ops.service_approach(g), 2.0]
 		if carried == "" and village.waiting_customers().is_empty() and not village.customers_to_order().is_empty():
 			var unrecorded = village.customers_to_order()[0]
-			return ["Anotar pedido " + ops.order_number(unrecorded) + " · E no cliente", unrecorded.spot.approach, 2.0]
+			return ["Anotar pedido " + ops.order_number(unrecorded) + " · E no cliente", ops.service_approach(unrecorded), 2.0]
 		if not village.waiting_customers().is_empty() and carried == "":
 			var next = village._next_customer()
 			var id: String = str(village._remaining(next)[0])
@@ -546,7 +546,7 @@ func objective() -> Array:
 			var verb := "Retirar" if ready else "Repor estoque para"
 			return ["%s %s · %s" % [verb, Economy.dish(id).name, ops.order_number(next)], ops.stations[kind].global_position, 2.5]
 		if not Core.company.receivables.is_empty():
-			return ["Receber contas no caixa", world.KIOSK_C + Vector3(1.3, 1.28, 1.8), 2.5]
+			return ["Receber contas no caixa", world.kiosk_point(Vector3(1.3, 1.28, 1.8)), 2.5]
 		if not Core.company.dirty_seats.is_empty():
 			var seat: int = int(Core.company.dirty_seats[0])
 			if seat < world.kiosk_spots.size():

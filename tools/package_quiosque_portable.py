@@ -20,6 +20,12 @@ Para atualizar uma cópia anterior, substitua os arquivos do programa e mantenha
 a pasta userdata/. O ZIP não inclui nem apaga saves.
 
 NOVO NESTA REVISÃO
+- Quiosque e mesas voltados para a praia. Anote/entregue aos dois clientes do
+  balcão pelo lado de dentro. Mira nos clientes mais fácil, com número do pedido.
+- Acabou um produto? E na geladeira/armário: Repor 10 mostra o preço dos insumos
+  faltantes e compra ali mesmo. Depois pegue e entregue, sem etapa de preparo.
+- Praia com quatro pessoas jogando vôlei, iate passando de dia e navio de
+  cruzeiro iluminado ao fundo à noite. Quadra livre e barcos longe do cais/banho.
 - Casa decorada com sofá, mesa de centro, TV, aparelho de som, estante,
   livros, relógio, planta e escultura de madeira. Modelos detalhados Poly Haven CC0.
 - E na TV liga/desliga uma animação silenciosa do mar; E no som liga/desliga
@@ -80,12 +86,14 @@ passos mais suaves e trilha sem vozes. A instalação antiga em D:/Games não é
 '''
 (PORTABLE / 'LEIA-ME.txt').write_text(readme, encoding='utf-8')
 for src, dst in [('QUIOSQUE_PRATICO.md','QUIOSQUE_PRATICO.md'),
+                 ('PRAIA_E_ATENDIMENTO.md','PRAIA_E_ATENDIMENTO.md'),
                  ('ROTINAS_QUIOSQUE.md','ROTINAS_DO_QUIOSQUE.md'),
                  ('SIMULACAO_QUIOSQUE.md','GESTAO_DO_QUIOSQUE.md'),
                  ('REFINAMENTO_COMPLETO.md','REFINAMENTO_COMPLETO.md')]:
     shutil.copyfile(ROOT / 'docs' / src, PORTABLE / dst)
 
 names = ['MareAltaResort.exe','MareAltaResort.pck','Jogar.vbs','LEIA-ME.txt',
+         'PRAIA_E_ATENDIMENTO.md',
          'QUIOSQUE_PRATICO.md','ROTINAS_DO_QUIOSQUE.md','GESTAO_DO_QUIOSQUE.md','REFINAMENTO_COMPLETO.md','icon.ico']
 checks = []
 for name in names:

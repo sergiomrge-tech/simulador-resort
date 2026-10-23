@@ -29,6 +29,10 @@ o nome do arquivo não restringe seu uso à IA Claude.
 - Equipamentos sempre visíveis no quiosque, inclusive antes de criar empresa;
   expositores preenchidos no estoque zero, sem vender a referência visual.
 - Tudo usado no atendimento fica dentro do quiosque; manter as duas entradas.
+- Quiosque e mesas ficam voltados para a praia (-Z). Anotar/entregar aos dois
+  lugares do balcão por dentro, com mira tolerante. Não voltar a exigir sair.
+- Quando acaba um produto, oferecer reposição na própria geladeira/armário pelo
+  celular, com preço real dos insumos faltantes e sem cobrança parcial.
 - Modelos detalhados, assets licenciados/CC0 ou fontes Blender editáveis. Não trocar
   por low poly ou primitivas usadas como objetos finais. Registrar origem/licença.
 - HUD/celular compactos, sem opções duplicadas; interação na parte inferior da tela.

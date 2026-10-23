@@ -14,6 +14,8 @@ func run(main) -> void:
  Core.configure_company("W".repeat(24), "praia")
  Core.unlock_all()
  Core.reset_rooms(Economy.BUNGALOW_MAX)
+ Core.service_station = "bebidas"
+ for ingredient in Core.stock: Core.stock[ingredient] = 0
  for role in Core.CompanyRules.Simulation.ROLES:
   if not Core.staff.get(role, false): Core.hire(role)
  var apps: Array = [""]

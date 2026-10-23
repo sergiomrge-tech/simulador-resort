@@ -38,6 +38,11 @@ trabalhe nos mesmos arquivos ao mesmo tempo que outro chat sem coordenação.
 5. **Quiosque prático.** Todos os equipamentos usados ficam dentro; geladeira à
    esquerda, armário ao centro, cozinha à direita, caixa na frente. Manter parede
    traseira, piso físico, corredor e duas entradas laterais, sem anexo externo.
+   Quiosque e todas as mesas agora ficam virados para a praia (-Z). O frame
+   KioskBeachFrame gira geometria/luzes/colisões juntos. Construção usa coordenadas
+   autorais antigas (+Z); dados de NPCs e rotas usam kiosk_point/kiosk_local.
+   Nunca somar um offset antigo diretamente a KIOSK_C para rotas/objetivos.
+   Balcão tem staff_approach interno para anotar/entregar; mesas usam approach.
 6. **Exposição permanente.** Geladeira/armário mostram os produtos que vendem
    mesmo no estoque zero (12 apresentações de bebidas). A etiqueta informa a
    disponibilidade real. Não vender a referência visual nem criar estoque grátis.
@@ -56,6 +61,14 @@ trabalhe nos mesmos arquivos ao mesmo tempo que outro chat sem coordenação.
    áreas iniciais sem atalhos duplicados e layout que caiba em telas pequenas.
 10. **Áudio suave, sem vozes de fundo.** Preservar também o cais com colisão,
     recuperação de queda, barcos afastados e vidros sem coloração azul.
+11. **Reposição na estação.** E na geladeira/armário, produto esgotado → Repor 10.
+    Comprar só os insumos faltantes para dez porções; mostrar preço antes de cobrar.
+    Usar supply_total e buy_supply, respeitar saldo/contratos e evitar compra parcial.
+    Continuar na estação para pegar o produto pronto. Sem ressuscitar preparo.
+12. **Vida na praia.** Quatro jogadores na quadra de vôlei ao lado do quiosque,
+    bola e braços animados. Iate ao fundo de dia, cruzeiro iluminado à noite.
+    Embarcações distantes da faixa de banho/cais; congelar movimento na pausa.
+    Quadra deve ficar livre de guarda-sóis/espreguiçadeiras e outros props.
 
 Use modelos detalhados e licenciados, preferencialmente CC0, ou Blender com
 malha trabalhada. Não substituir objetos por low poly ou montagens de primitivas
@@ -75,10 +88,14 @@ para conferir. Atualize downloads/geradores e o catálogo (`tools/gen_item_catal
 | Rotinas, manutenção, fornecedores, custos | `scripts/kiosk_management.gd`, `scripts/kiosk_simulation.gd` |
 | Vila, casa, quiosque, colisões | `scripts/world_village.gd`, `scripts/world.gd` |
 | Mobiliário da casa, TV, som e redução da trilha | `scripts/home_furnishings.gd`, `scripts/audio.gd`, `shaders/home_tv.gdshader` |
+| Vôlei, tráfego marítimo e poses | `scripts/coastal_life.gd`, `scripts/volley_arm.gd`, `shaders/coastal_wake.gdshader` |
 | Paleta e ciclo de luz | `scripts/toon.gd`, `scripts/daycycle.gd`, `shaders/guest.gdshader` |
 | Fontes artísticas | `art/blender/`, `tools/gen_*.py`, `assets/models/gen/` |
 
-O quiosque está em `(38, 0, -13)`, frente +Z; a casa em `(46, 0, 21)`.
+O quiosque está em `(38, 0, -13)`, frente **-Z / praia**; a casa em `(46, 0, 21)`.
+Interação de clientes usa seleção tolerante de 11 graus/3 m, acima do tampo,
+com teste de visibilidade física. Estações diretamente miradas têm prioridade;
+paredes continuam bloqueando. Não fazer entrega a cliente escolhido arbitrariamente.
 `_order(g)` cria pedido aguardando anotação no modo físico; `order_taken` registra
 se foi anotado. `waiting_customers()` retorna os registrados; `customers_to_order()`
 os não anotados. Fixtures podem usar `_order(g, true)`; testes da interação real
@@ -107,6 +124,10 @@ não contém automaticamente todas as dependências da instalação do Sergio.
   `import_home_assets.py` preserva malhas/UVs, incorpora texturas nas fontes
   `art/blender/home_*.blend` e exporta `assets/models/gen/home_*.glb`.
   Aceita slugs individuais para reconstruir só o recurso alterado.
+- Tráfego marítimo: `tools/gen_coastal_traffic.py` baixa o cabin cruiser CC0 da
+  Innerscene e gera o cruzeiro autoral detalhado. Fontes coastal_*.blend incorporadas,
+  reabertas; GLBs e texturas runtime versionados. Aceita yacht/cruise separadamente.
+  Não reduzir os navios a caixas/cascos low poly; preservar decks, vidros e detalhes.
 - Não regenere tudo sem necessidade. Preserve pesos/UVs, escala e origem. No
   Blender, frente -Y vira +Z na Godot. Peças rígidas Hair_* precisam de
   BoneAttachment em Head; só mudar o caminho skeleton não resolve cabelo sem Skin.
@@ -155,6 +176,8 @@ ambiente de um servidor MCP já aberto.
 | Fluxo físico, mão, estoque, entrega e equipe | `--company-test` | `COMPANY_TEST PASS` |
 | Quiosque, colisões, E nas mesas e visual | `--practical-test` | `PRACTICAL_TEST PASS` |
 | Casa, circulação, colisões, apoio, E na TV/som e mute | `--home-test` | `HOME_TEST PASS` |
+| Balcão interno, mira, reposição na geladeira e migração da posição | `--counter-test` | `COUNTER_TEST PASS` |
+| Vôlei, iate, cruzeiro, horários, chuva e pausa | `--coastal-test` | `COASTAL_TEST PASS` |
 | Gestão, equipamentos e candidatos | `--management-test` | `MANAGEMENT_TEST PASS` |
 | Custos, perdas, virada e fornecedores | `--simulation-test` | `SIMULATION_TEST PASS` |
 | Celular em vários tamanhos | `--phone-layout-test` | conferir log do teste |

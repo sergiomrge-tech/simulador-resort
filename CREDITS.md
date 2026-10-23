@@ -236,3 +236,20 @@ para validação; GLBs em `assets/models/gen/`. Planta e livros reutilizam
 potted_plant_04 e book_encyclopedia_set_01, Poly Haven CC0 da biblioteca existente.
 Imagem de mar da TV é animação original por shader, sem vídeo ou vozes externos.
 O som reutiliza a trilha suave existente, com atenuação espacial e controle de áudio.
+
+## Vida na praia e tráfego marítimo — 23/10/2026
+
+Iate: [Cabin cruiser, Innerscene](https://www.innerscene.com/tools/library/3d-parts/cabin-cruiser-597d60da),
+modelo original disponibilizado em CC0. Download reproduzível pelo endpoint
+oficial em `tools/gen_coastal_traffic.py`, mapas até 1K e malha preservada sem
+decimação. Fonte editável incorporada `art/blender/coastal_yacht.blend`.
+Cruzeiro genérico: malha autoral deste projeto, casco curvo, cinco decks de
+passageiros, varandas/guarda-corpos, botes em turcos, ponte, chaminé e antenas.
+Gerador `tools/gen_coastal_traffic.py`, fonte `coastal_cruise.blend` incorporada
+e reaberta; sem logotipos de companhias nem geometria de modelos pagos.
+Referência visual geral de navio de múltiplos conveses observada em
+https://photoeverywhere.co.uk/travelstock/slides/cruise_ship6098.htm (foto não
+incluída no jogo). Janelas emissivas e esteira por shader originais.
+Jogadores reutilizam corpos/roupas/animações Quaternius CC0 existentes; contatos
+de braço e trajetórias da bola autorais. Rede e bola usam modelos Blender já
+catalogados deste projeto; sem novos samples ou vozes.

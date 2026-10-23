@@ -1283,6 +1283,13 @@ func _service_action(id: String, action: String) -> void:
 	else:
 		Core.toast.emit("Confira o estoque e se você já está carregando um item.", "bad")
 
+func _service_restock(id: String) -> void:
+	if not _operations().can_access(str(Core.service_station)): return
+	var drink: bool = load("res://scripts/dish_presentation.gd").is_drink(id)
+	if (str(Core.service_station) == "bebidas") != drink: return
+	Core.restock_company_dish(id,10)
+	refresh()
+
 func _app_service(list: VBoxContainer) -> void:
 	if not Core.company_enabled():
 		_lbl(list, "Crie a empresa e ative o atendimento com retirada em B → Quiosque.", 17, INK, false, true)
@@ -1290,7 +1297,7 @@ func _app_service(list: VBoxContainer) -> void:
 	var kind: String = str(Core.service_station)
 	var near: bool = _operations().can_access(kind)
 	_lbl(list, {"bebidas": "Geladeira", "pratos": "Armário de pratos", "cozinha": "Cozinha"}.get(kind, "Operação"), 23, INK, true)
-	_lbl(list, "Pegue o produto pronto e leve ao cliente. Não precisa preparar nem esperar.", 14, INK_SOFT, false, true)
+	_lbl(list, "Pegue e entregue. Se acabar, use Repor 10 aqui mesmo; o preço inclui só os insumos que faltam.", 14, INK_SOFT, false, true)
 	if not near:
 		_lbl(list, "Entre no quiosque e aproxime-se da estação e aperte E para pegar um produto.", 16, BAD, false, true)
 	var carried: String = str(Core.company.carry)
@@ -1314,7 +1321,14 @@ func _app_service(list: VBoxContainer) -> void:
 		var card := _card(list)
 		var count: int = Core.company_available(id)
 		_lbl(card, "%s · %d disponíveis" % [Economy.dish(id).name, count], 17, INK, true, true)
-		if count == 0: _lbl(card, "Reponha o estoque em Compras.", 14, INK_SOFT, false, true)
+		if count == 0:
+			var quote: Dictionary = Core.company_restock_quote(id,10)
+			var missing: Array[String] = []
+			for ingredient in quote.items:
+				missing.append("%d %s" % [int(quote.items[ingredient]),Economy.SUPPLIES[ingredient].name])
+			_lbl(card,"Faltando: " + ", ".join(missing),14,INK_SOFT,false,true)
+			_btn(card,"Repor 10 · " + Core.fmt_money(int(quote.cost)),_service_restock.bind(id),Color(.20,.52,.70),near and not quote.items.is_empty() and Core.money >= int(quote.cost))
+			if Core.money < int(quote.cost): _lbl(card,"Saldo insuficiente para esta reposição.",14,BAD,false,true)
 		if requests.has(id): _lbl(card, "Para: " + ", ".join(requests[id]), 14, GOOD, true, true)
 		_btn(card, "Pegar e levar ao cliente", _service_action.bind(id, "pickup"), GOOD, near and count > 0 and carried == "")
 	_lbl(list, "%d contas aguardando recebimento no terminal · %d lugares para limpar" % [Core.company.receivables.size(), Core.company.dirty_seats.size()], 15, INK_SOFT, false, true)

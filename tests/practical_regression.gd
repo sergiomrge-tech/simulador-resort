@@ -20,7 +20,7 @@ func walk(main, destination: Vector3) -> void:
 	check(absf(player.position.y - (0.1 if on_deck else 0.0)) < 0.09, "piso contínuo sem queda · y=%.3f" % player.position.y)
 func shot(main, label: String, pos: Vector3, yaw: float, pitch: float) -> void:
 	if DisplayServer.get_name() == "headless": return
-	main.player.set_view(pos, yaw, pitch)
+	main.player.set_view(pos, yaw+180.0, pitch)
 	main.day.force_update()
 	await frames(12)
 	await RenderingServer.frame_post_draw
@@ -55,21 +55,21 @@ func run(main) -> void:
 	for station in main.operations.stations.values():
 		check(absf(station.position.x - c.x) < 2 and absf(station.position.z - c.z) < 2.5, "estação dentro do quiosque")
 	check(main.operations.get_node_or_null("ServiceDeck") == null, "sem anexo externo")
-	check(main.world.get_node_or_null("KioskRearWall") != null, "parede traseira com colisão")
-	main.player.global_position = c + Vector3(3.6, 0.1, -0.85)
+	check(main.world.find_child("KioskRearWall",true,false) != null, "parede traseira com colisão")
+	main.player.global_position = main.world.kiosk_point(Vector3(3.6, 0.1, -0.85))
 	await frames(4)
-	var rear_ray := PhysicsRayQueryParameters3D.create(c + Vector3(0, 1.2, -3.0), c + Vector3(0, 1.2, -1.8), 1)
+	var rear_ray := PhysicsRayQueryParameters3D.create(main.world.kiosk_point(Vector3(0, 1.2, -3.0)), main.world.kiosk_point(Vector3(0, 1.2, -1.8)), 1)
 	var rear_hit: Dictionary = main.world.get_world_3d().direct_space_state.intersect_ray(rear_ray)
 	check(not rear_hit.is_empty() and rear_hit.collider.name == "KioskRearWall", "parede bloqueia passagem física atrás dos equipamentos")
-	await walk(main, c + Vector3(0, 0.1, -0.85))
-	await walk(main, c + Vector3(0, 0.1, 0.8))
-	await walk(main, c + Vector3(0, 0.1, -0.85))
-	await walk(main, c + Vector3(-3.6, 0.1, -0.85))
-	main.player.global_position = c + Vector3(-1.2, 0.1, -0.65)
+	await walk(main, main.world.kiosk_point(Vector3(0, 0.1, -0.85)))
+	await walk(main, main.world.kiosk_point(Vector3(0, 0.1, 0.8)))
+	await walk(main, main.world.kiosk_point(Vector3(0, 0.1, -0.85)))
+	await walk(main, main.world.kiosk_point(Vector3(-3.6, 0.1, -0.85)))
+	main.player.global_position = main.world.kiosk_point(Vector3(-1.2, 0.1, -0.65))
 	check(main.operations.can_access("bebidas"), "geladeira acessível pelo corredor interno")
-	main.player.global_position = c + Vector3(-1.2, 0.1, -3.0)
+	main.player.global_position = main.world.kiosk_point(Vector3(-1.2, 0.1, -3.0))
 	check(not main.operations.can_access("bebidas"), "não retira pela traseira do móvel")
-	main.player.global_position = c + Vector3(-1.2, 0.1, -0.65)
+	main.player.global_position = main.world.kiosk_point(Vector3(-1.2, 0.1, -0.65))
 	for ingredient in Core.stock: Core.stock[ingredient] = 0
 	Core.company.ready = {}
 	Core.company.production = {}
@@ -194,9 +194,9 @@ func run(main) -> void:
 	main.operations._update_work_lighting(Core.day,11*60)
 	if DisplayServer.get_name() != "headless":
 		main.operations.open_station("bebidas")
-		await shot(main, "practical_station", c + Vector3(0, .1, .75), 0, -5)
+		await shot(main, "practical_station", main.world.kiosk_point(Vector3(0, .1, .75)), 0, -5)
 		main.hud.phone.open("")
-		await shot(main, "practical_phone", c + Vector3(0, .1, .75), 0, -5)
+		await shot(main, "practical_phone", main.world.kiosk_point(Vector3(0, .1, .75)), 0, -5)
 		main.hud.phone.close()
 		Core.company.carry = ""
 		Core.company.ready.suco = 2
@@ -207,10 +207,10 @@ func run(main) -> void:
 			guest.set_meta("delivered", 0)
 			main.village._order(guest, true)
 		main.hud._update_orders()
-		await shot(main, "practical_orders", c + Vector3(0, .1, .7), 180, -4)
-		await shot(main, "practical_workroom", c + Vector3(0, .1, 1.15), 0, -7)
+		await shot(main, "practical_orders", main.world.kiosk_point(Vector3(0, .1, .7)), 180, -4)
+		await shot(main, "practical_workroom", main.world.kiosk_point(Vector3(0, .1, 1.15)), 0, -7)
 		main.hud.root.visible = false
-		await shot(main, "practical_facade", c + Vector3(1.5, .35, 7), 15, -3)
+		await shot(main, "practical_facade", main.world.kiosk_point(Vector3(1.5, .35, 7)), 15, -3)
 		# Isolate the two proof actors so passing pedestrians do not block the camera.
 		for pedestrian in get_tree().get_nodes_in_group("npc"): pedestrian.hide()
 		var shown: Dictionary = {}
@@ -221,7 +221,7 @@ func run(main) -> void:
 				person.queue_free()
 				continue
 			shown[gender] = person
-			person.position = c + Vector3(-.62 if person._female else .62, .1, 4.0)
+			person.position = main.world.kiosk_point(Vector3(-.62 if person._female else .62, .1, 4.0))
 			person.rotation.y = 0
 			person.go([])
 			person.set_process(false)
@@ -236,29 +236,29 @@ func run(main) -> void:
 				if str(hair.name).begins_with("Hair"):
 					check(hair.get_parent() is BoneAttachment3D and hair.get_parent().bone_name == "Head", "cabelo rígido preso à cabeça animada")
 			if shown.size() == 2: break
-		await shot(main, "practical_clothing", c + Vector3(0, .1, 6.3), 0, -14)
-		await shot(main, "people_portraits", c + Vector3(0, .05, 5.55), 0, 0)
+		await shot(main, "practical_clothing", main.world.kiosk_point(Vector3(0, .1, 6.3)), 0, -14)
+		await shot(main, "people_portraits", main.world.kiosk_point(Vector3(0, .05, 5.55)), 0, 0)
 		for person in shown.values():
 			var apron = person._skel.get_node_or_null("Tailored_apron")
 			check(apron != null and apron.visible == person._female,"avental apenas na função de cozinha")
 			person.set_meta("work_kind","prepare")
 			person.set_meta("work_target",person.global_position+Vector3(-.18,1.05,.40))
 		await frames(18)
-		await shot(main,"staff_preparing",c+Vector3(0,.05,5.55),0,0)
+		await shot(main,"staff_preparing",main.world.kiosk_point(Vector3(0,.05,5.55)),0,0)
 		for person in shown.values(): person.remove_meta("work_target")
 		for person in shown.values(): person.play("Walk_Loop")
 		await frames(35)
-		await shot(main, "practical_clothing_walk", c + Vector3(0, .1, 6.3), 0, -14)
+		await shot(main, "practical_clothing_walk", main.world.kiosk_point(Vector3(0, .1, 6.3)), 0, -14)
 		for person in shown.values(): person.play("Sitting_Idle_Loop")
 		await frames(35)
-		await shot(main, "practical_clothing_sit", c + Vector3(0, .1, 6.3), 0, -14)
+		await shot(main, "practical_clothing_sit", main.world.kiosk_point(Vector3(0, .1, 6.3)), 0, -14)
 	if DisplayServer.get_name() != "headless":
 		Core.minutes = 17.5*60
 		Core.time_changed.emit(Core.day,Core.minutes)
-		await shot(main,"kiosk_sunset",c+Vector3(1.5,.35,7),15,-3)
+		await shot(main,"kiosk_sunset",main.world.kiosk_point(Vector3(1.5,.35,7)),15,-3)
 		Core.minutes = 20*60
 		Core.time_changed.emit(Core.day,Core.minutes)
-		await shot(main,"kiosk_night",c+Vector3(1.5,.35,7),15,-3)
+		await shot(main,"kiosk_night",main.world.kiosk_point(Vector3(1.5,.35,7)),15,-3)
 		Core.minutes = 11*60
 	Core.company.created = false
 	Core.company_changed.emit()

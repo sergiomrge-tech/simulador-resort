@@ -62,7 +62,7 @@ func look_delta(d: Vector2, touch: = true) -> void :
 func _apply_look() -> void :
 	rotation.y = yaw
 	if cam:
-		cam.rotation.x = pitch
+		cam.rotation = Vector3(pitch,0,0)
 
 func _unhandled_input(e: InputEvent) -> void :
 	if e is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
@@ -121,12 +121,16 @@ func _physics_process(delta: float) -> void :
 			var surface := _footstep_surface()
 			get_tree().call_group("audio", "sfx", "footstep_%s_%03d" % [surface, _step_variant], -18.0)
 
+	refresh_focus()
+
+func refresh_focus() -> void:
 	focus = null
 	ray.force_raycast_update()
 	if ray.is_colliding():
 		var c: = ray.get_collider()
-		if c is Interactable and c.get_prompt() != "":
-			focus = c
+		if c is Interactable and c.get_prompt() != "": focus = c
+	var ops = get_parent().get("operations")
+	if is_instance_valid(ops): focus = ops.resolve_customer_focus(cam,focus)
 
 func interact() -> void :
 	if focus:

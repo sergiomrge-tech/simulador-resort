@@ -159,16 +159,16 @@ func _integration(main) -> void:
 	for sign in main.world.company_signs:
 		check(sign.label.text == "Quiosque do Sergio", "marca aplicada à placa real")
 	check(main.operations.stations.size() == 3, "geladeira, armário e cozinha presentes")
-	var deck = main.world.get_node("KioskFloor")
+	var deck = main.world.find_child("KioskFloor",true,false)
 	check(absf(deck.position.y + deck.mesh.get_aabb().end.y - main.operations.stations.pratos.position.y) < 0.005, "equipamentos apoiados no piso interno do quiosque")
 	var floors: Array = deck.find_children("*", "StaticBody3D", true, false)
 	check(floors.size() == 1 and floors[0].collision_layer == 1, "deck visível com colisão de piso")
 	check(not main.operations.can_access("bebidas"), "retirada remota bloqueada")
-	main.player.position = main.operations.stations.bebidas.global_position + Vector3(0, 0, 1.2)
+	main.player.position = main.operations.stations.bebidas.global_position + Vector3(0, 0, -1.2)
 	check(main.operations.can_access("bebidas"), "retirada disponível ao chegar à geladeira")
 
 	# Edição real do formulário e operações ligadas à cena.
-	main.world.get_node("KioskSign").use()
+	main.world.find_child("KioskSign",true,false).use()
 	check(main.hud.phone.app == "empresa" and main.hud.phone.visible, "interagir com a placa abre a personalização")
 	check(main.hud.phone.company_name.max_length == 24, "formulário limita o nome")
 	await get_tree().process_frame
@@ -232,7 +232,7 @@ func _integration(main) -> void:
 	check(g.state == "keat", "garçom anota, retira e entrega diretamente pelo percurso real")
 	check(Core.company.receivables.is_empty(), "caixa recebe atendimento da equipe")
 	var waiter = main.operations.actors.get("garcom")
-	check(is_instance_valid(waiter) and waiter.position.distance_to(g.spot.approach) < 1.5, "garçom chegou ao cliente antes de entregar")
+	check(is_instance_valid(waiter) and waiter.position.distance_to(main.operations.service_approach(g)) < 1.5, "garçom chegou ao cliente antes de entregar")
 	village._leave(g)
 	village._release_spot(g)
 	elapsed = 0.0

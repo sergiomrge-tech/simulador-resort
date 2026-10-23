@@ -18,6 +18,7 @@ var _look_key := ""
 
 var village_points: = {}
 var village_paths: Array = []
+var kiosk_root: Node3D
 var kiosk_counter: Interactable
 var kiosk_spots: Array = []
 var bed: Interactable
@@ -727,7 +728,23 @@ func _church_and_praca() -> void :
 	village_points.cart = pc + Vector3(-6.0, 0.1, 3.2)
 
 
+## Authoring axes: +Z is the service front. World front faces the beach (-Z).
+func kiosk_point(offset: Vector3) -> Vector3:
+	return KIOSK_C + Vector3(-offset.x, offset.y, -offset.z)
+
+func kiosk_local(point: Vector3) -> Vector3:
+	var p := point - KIOSK_C
+	return Vector3(-p.x,p.y,-p.z)
+
+func kiosk_authored(point: Vector3) -> Vector3:
+	return kiosk_point(point - KIOSK_C)
+
+func kiosk_rect(rect: Rect2) -> Rect2:
+	return Rect2(Vector2(2*KIOSK_C.x-rect.end.x,2*KIOSK_C.z-rect.end.y),rect.size)
+
 func _quiosque() -> void :
+	var first_node := get_child_count()
+	var first_block := block_rects.size()
 	var c: = KIOSK_C
 	# v0.7.1: ninguém atravessa o quiosque — área bloqueada para os moradores (os bancos da frente ficam fora)
 	block_rects.append(Rect2(c.x - 2.95, c.z - 3.05, 5.9, 5.35))
@@ -810,7 +827,7 @@ func _quiosque() -> void :
 		var p: = c + Vector3(-0.7 + k * 1.4, y0, 2.72)   # em cima do deck (antes na borda inclinada, 10 cm no ar)
 		B.model(self, "bar_chair_round_01", p, PI, 1.0)
 		# banqueta de bar: assento a 0,69 m; a raiz vai 0,22 m para a frente (para o balcão)
-		kiosk_spots.insert(k, {"approach": Vector3(p.x, 0.1, p.z + 0.63), "pos": p + Vector3(0, 0.69 - SEAT_DROP, -0.22), "rot": PI, "busy": false, "need": "", "serve_pos": c + Vector3(-0.7 + k * 1.4, snack_y, 2.1), "serve_rot": 0.0})
+		kiosk_spots.insert(k, {"approach": Vector3(p.x, 0.1, p.z + 0.63), "pos": p + Vector3(0, 0.69 - SEAT_DROP, -0.22), "rot": PI, "busy": false, "need": "", "serve_pos": c + Vector3(-0.7 + k * 1.4, snack_y, 2.1), "serve_rot": 0.0, "staff_approach": c + Vector3(-0.7 + k * 1.4, .1, 1.05)})
 	village_points.kiosk_work = c + Vector3(0, 0.1, 0.8)
 	var l: = OmniLight3D.new()
 	l.position = c + Vector3(0, 2.5, 0)
@@ -818,6 +835,20 @@ func _quiosque() -> void :
 	l.light_color = Color(1.0, 0.75, 0.45)
 	add_child(l)
 	lanterns.append([l, null, 0.95, false])
+	# One frame for all furniture, lights, colliders and expansion roots.
+	var built := get_children().slice(first_node)
+	kiosk_root = Node3D.new()
+	kiosk_root.name = "KioskBeachFrame"
+	add_child(kiosk_root)
+	for node in built: node.reparent(kiosk_root,false)
+	kiosk_root.transform = Transform3D(Basis(Vector3.UP,PI),Vector3(2*c.x,0,2*c.z))
+	for i in range(first_block,block_rects.size()): block_rects[i] = kiosk_rect(block_rects[i])
+	for spot in kiosk_spots:
+		for field in ["pos","approach","serve_pos","staff_approach"]:
+			if spot.has(field): spot[field] = kiosk_authored(spot[field])
+		spot.rot = wrapf(float(spot.rot)+PI,-PI,PI)
+		spot.serve_rot = wrapf(float(spot.serve_rot)+PI,-PI,PI)
+	village_points.kiosk_work = kiosk_point(Vector3(0,.1,.8))
 
 
 
@@ -1406,7 +1437,7 @@ func _village_routes() -> void :
 		[Vector3(38, 0.05, zn), Vector3(38, 0.05, 5.0), Vector3(38, 0.05, -7.0), Vector3(43.8, 0, -8.2), Vector3(44.2, 0, -17.0), Vector3(48, 0, -22), Vector3(90, 0, -24)], 
 		[Vector3(30, 0.15, zn), Vector3(55, 0.15, zn), Vector3(55, 0.15, zs), Vector3(85, 0.15, zs)], 
 	]
-	village_points.kiosk_approach = [Vector3(38, 0.15, zn), Vector3(38, 0.05, 5.0), Vector3(38, 0.05, -8.0)]
+	village_points.kiosk_approach = [Vector3(38, 0.15, zn), Vector3(45.5, 0.05, 5.0), Vector3(45.5, 0.05, -25.0)]
 	village_points.home_route = [village_points.home_door_out, Vector3(HOME_C.x + 1.7, 0.15, zn)]
 
 func set_night(t: float) -> void :
@@ -1716,13 +1747,13 @@ func _village_expansion() -> void :
 
 # ------------------------------------------------------------------ v0.7.1: vida na praia
 func _beach_life() -> void :
-	var spots: = [Vector3(28, 0, -21.5), Vector3(47, 0, -22.5), Vector3(22, 0, -24.0), Vector3(95, 0, -22.0), Vector3(-36, 0, -21.0)]
+	var spots: = [Vector3(55, 0, -22), Vector3(47, 0, -22.5), Vector3(4, 0, -27.0), Vector3(95, 0, -22.0), Vector3(-36, 0, -21.0)]
 	for i in spots.size():
 		var p: Vector3 = spots[i]
 		p.y = _height(p.x, p.z)
 		D.beach_spot(self, p, 50 + i)
 	D.sand_castle(self, Vector3(33.0, _height(33, -24.5), -24.5))
-	D.volley_net(self, Vector3(-30.0, 0.0, -20.0), 0.0)
+	# Active volleyball court is built by CoastalLife beside the beach-facing kiosk.
 	var rng: = RandomNumberGenerator.new()
 	rng.seed = 99
 	for k in 14:
@@ -1751,7 +1782,7 @@ func _sand_clutter(rng: RandomNumberGenerator) -> void :
 		var x: = rng.randf_range(-40.0, 98.0)
 		var z: = rng.randf_range(-25.0, -5.0)
 		var q: = Vector2(x, z)
-		var bad: = false
+		var bad: = Rect2(21.5,-27.5,9,9).has_point(q)
 		for r in block_rects:
 			if (r as Rect2).grow(1.2).has_point(q):
 				bad = true
@@ -1908,6 +1939,7 @@ func _map_details() -> void :
 		kx[kn] = []
 	for k in 900:
 		var p: = Vector3(rng.randf_range(-45, 104), 0, rng.randf_range(-30.0, -17.0))
+		if Rect2(21.5,-27.5,9,9).has_point(Vector2(p.x,p.z)): continue
 		p.y = _height(p.x, p.z) - 0.004
 		var kn: String = kinds[rng.randi() % kinds.size()]
 		var sc: = rng.randf_range(0.6, 1.5) * (1.0 if kn.begins_with("shell") else 1.3)
@@ -1941,7 +1973,7 @@ func _map_details() -> void :
 	# troncos trazidos pelo mar
 	for k in 10:
 		var p: = Vector3(rng.randf_range(-40, 100), 0, rng.randf_range(-27.0, -19.0))
-		if absf(p.x - KIOSK_C.x) < 7.0 or absf(p.x - PIER_X) < 4.0:
+		if absf(p.x - KIOSK_C.x) < 7.0 or absf(p.x - PIER_X) < 4.0 or Rect2(20.5,-28.5,11,11).has_point(Vector2(p.x,p.z)):
 			continue
 		p.y = _height(p.x, p.z) + 0.08
 		var a: = rng.randf() * TAU
@@ -2028,7 +2060,7 @@ func _apply_kiosk_look() -> void:
 		var offset := Vector3(float(group.side) * 0.85, 0, 0.55) if look.layout == "amplo" else Vector3.ZERO
 		for entry in group.nodes: entry.node.position = entry.position + offset
 		for entry in group.seats:
-			for field in ["pos", "approach", "serve_pos"]: entry.spot[field] = entry.base[field] + offset
+			for field in ["pos", "approach", "serve_pos"]: entry.spot[field] = kiosk_authored(entry.base[field] + offset)
 		var rect: Rect2 = group.rect
 		rect.position += Vector2(offset.x, offset.z)
-		block_rects[int(group.block)] = rect
+		block_rects[int(group.block)] = kiosk_rect(rect)
