@@ -1,98 +1,91 @@
-# Estado salvo para continuar com outra IA — 23/10/2026
+# Estado salvo para continuar com outra IA — 23/10/2026 (atualizado)
 
-O usuário pediu para salvar tudo até aqui e subir as instruções ao GitHub.
-Este é um checkpoint de implementação, com pendências de validação explícitas.
 Leia também AGENTS.md, CONTINUAR.md, COMPUTADOR_E_BALCAO.md e CLAUDE.md.
 
-## Base e mudanças implementadas
+## Base
 
 - Repositório: sergiomrge-tech/simulador-resort.
-- Branch: `codex/resort-1.1-mcp`. Continuar a versão 1.1.0 RC2, Godot 4.5.1.
-- Gestão no computador físico do balcão, E no monitor; B só perto dele.
-  Tela centralizada, cantos arredondados, seis áreas, layout mais compacto.
-  Nome interno PhoneUI preservado por compatibilidade. Retirada e reposição
-  continuam diretamente nas estações. A placa orienta para o computador.
-- Quiosque começa fechado e exige abertura manual. Migração de save antigo
-  fecha uma vez (opening_version=1), sem apagar o progresso. Dormir fecha novamente.
-- Clientes reservam mesa, pedem e retiram todos os produtos no balcão, em pé,
-  antes de sentar. Duas posições, fila, transporte dos itens e consumo na mesa.
-  Garçom atende no balcão. Não restaurar preparo, pedido sentado nem cobrança dupla.
-  Número do pedido usa a mesa reservada e fica estável durante o percurso.
-  No modo físico as banquetas deixam de ser assentos de consumo para liberar retirada.
-- Porta da casa em madeira com painéis/ferragens, E abre/fecha; colisão fechada
-  bloqueia passagem. Fecha após sair com arco livre. Evita fechar no jogador.
-- **Escolha explícita do usuário: tampo em madeira escura e base cinza.**
-  Não repintar o balcão ao aplicar a identidade da empresa. Preservar textura.
-- Seis copos na bandeja, caixa branca removida e promoções nas duas faces do
-  expositor, com preços reais configurados e texto ajustado ao papel.
-- Fontes Blender editáveis e incorporadas/reabertas, GLBs, geradores,
-  importações e catálogo incluídos. Origem/licença em CREDITS.md.
+- Branch de entrega: `codex/resort-1.1-mcp` (checkpoint anterior `07cbb20`).
+- Correções deste lote na branch de trabalho `cursor/loop-counter-aim-ee9e`
+  (a empilhar / mesclar em `codex/resort-1.1-mcp`).
+- Versão 1.1.0 RC2, Godot 4.5.1, Forward+ / Vulkan.
 
-## Verificação realizada e problemas restantes
+## O que já estava no checkpoint 07cbb20
 
-Testes com APPDATA separado, sem usar/apagar saves reais. Renderização Vulkan
-Forward+ na RTX 4060 Ti. Imagens do executável em images/computador-balcao.
+- Gestão no computador físico do balcão (E no monitor; B só perto).
+- Interface compacta, cantos arredondados, seis áreas.
+- Quiosque começa fechado; abertura manual; dormir fecha de novo.
+- Clientes pedem/retiram no balcão antes de sentar (modo físico).
+- Porta da casa com E; tampo escuro / base cinza; copos e promoções.
+- Fontes Blender, geradores, catálogo e docs.
 
-No **fonte**, os logs finais registraram PASS: terminal, counter-first, company,
-counter, practical, phone-layout, home, simulation e management. Os testes foram
-ajustados para o novo fluxo; counter-first verifica movimento real, E, pedido
-parcial/completo, estoque, fila, mesa e ausência de cobrança duplicada. Layout
-confere todas as páginas em 1280×720, 800×600 e 360×640.
+## Correções deste lote (mira, rush, encerramento)
 
-No **PCK exportado**, terminal e phone-layout registraram PASS com saída 0.
-Counter-first e company registraram PASS lógico, mas o processo terminou com
-**-1073741819 (access violation) durante o encerramento**. Não considerar essas
-duas execuções inteiramente verdes. Já existiam avisos de material nulo/RIDs
-ao encerrar no projeto anterior; a causa do access violation não foi resolvida.
-Não há evidência de erro de script/recurso ausente nesses testes específicos.
-Próximo passo: repetir as execuções e investigar a liberação de recursos da cena.
+1. **Interactable do balcão** (`world_village.gd`): caixa 3,0×1,2×0,4 m em
+   z≈1,88 (lado interno, à frente da madeira), sem cobrir o PC em x≈1,70.
+   A mira do staff deixa de bater na StaticBody da madeira com prompt vazio.
+2. **Fixture do `--loop-test`** (`loop_test.gd`): `Core.set_kiosk_open(true)`
+   antes do atendimento legado e do rush; mira pelo lado interno
+   (`kiosk_point(0, 0.12, 0.65)`, pitch −18). Verificações Pegar/venda/keat/combo
+   e chegadas do rush **mantidas** — não foram removidas nem o fluxo voltou
+   a atendimento sentado.
+3. **`coastal_life.gd`**: iate/cruzeiro nascem mesmo se o UBC faltar; jogadores
+   de vôlei só se os corpos existirem; `is_instance_valid` em `_process`;
+   `set_process(false)` + limpeza de refs em `tree_exiting` (mitiga AV no
+   encerramento após PASS lógico).
 
-O **ciclo geral legado** (`--loop-test`, sem teste específico) foi executado no
-PCK e apresentou falhas no trecho do balcão: prompt vazio, venda de R$0, cliente
-não entrou em keat, contador e combo não avançaram; rush sem chegadas/atendimentos.
-A execução terminou com **LOOP_TEST FAIL** (dinheiro=5230, estrelas=4,34, bar=74).
-As falhas foram registradas para a próxima IA; não foram corrigidas neste checkpoint.
-Investigar a mira/fixture legada após a mudança do Interactable do balcão
-(profundidade 1,4→0,6 m para não interceptar o PC). Não contornar removendo
-as verificações nem restaurar atendimento sentado no modo físico.
-Para o rush, conferir também a fixture de abertura: o novo padrão é fechado,
-então o teste legado deve abrir explicitamente antes de esperar chegadas.
+## Verificação neste ambiente (Linux, Godot 4.5.1, gl_compatibility)
 
-## Build local e entrega ainda pendente
+APPDATA/`XDG_DATA_HOME` isolados; saves reais não tocados. Após `fetch` do UBC
+e `--import`:
+
+| Teste | Fonte | PCK exportado (`--main-pack`) |
+|---|---|---|
+| `--loop-test` | PASS, exit 0, 0 SCRIPT ERROR | PASS, exit 0 |
+| `--counter-first-test` | PASS, exit 0 | PASS, exit 0 |
+| `--company-test` | PASS, exit 0 | PASS, exit 0 |
+| `--coastal-test` | PASS, exit 0 | (não reexportado dedicado) |
+| `--terminal-test` | PASS, exit 0 | — |
+
+PCK de fumaça gerado aqui (~439 MB, LITE/assets parciais) só para validar
+scripts no pack; **não** substitui o PCK Windows completo (~1,8 GB) da máquina
+do Sérgio. Imagens de referência em `docs/images/computador-balcao/` conferidas
+(gestão, balcão madeira/cinza, porta).
+
+O **access violation Windows (−1073741819)** do checkpoint anterior não se
+reproduz neste Linux (exit 0 + RID warnings conhecidos). A mitigação de
+liberação do `coastal_life` deve ser revalidada no executável Windows com
+`run_counter_batch.ps1 -Exported`.
+
+## Ainda pendente na máquina Windows do Sérgio
 
 - Projeto: `C:/Users/sergi/Documents/ChatGPT/resort 2`.
-- Engine correta: `C:/Users/sergi/Documents/ChatGPT/Gestao Facil/Ilha Selvagem/tools/Godot_v4.5.1-stable_win64.exe`
-  e console sibling. Não usar D:/Godot (outra versão).
-- Executável local: `build/rc2-playable/MareAltaResort.exe`; PCK exportado nesta
-  revisão com 1.798.930.836 bytes. Exportação concluída sem erro de script.
-  SHA256: `aea7e17c96e4d87a841d4d54a65da502cf690be1f8af679d0aafe7fabcdd5281`.
-- **ZIP em Downloads ainda é da revisão anterior** (23/10 às 16:40):
+- Engine: Godot 4.5.1 em
+  `C:/Users/sergi/Documents/ChatGPT/Gestao Facil/Ilha Selvagem/tools/`.
+- Reexportar PCK completo (prune → export-pack → restore), rodar o batch
+  `-Exported` (loop, counter-first, company, terminal) e confirmar exit 0
+  sem AV no encerramento.
+- **ZIP em Downloads ainda é da revisão anterior** (23/10 ~16:40):
   `C:/Users/sergi/Downloads/MareAltaResort_1.1_CaisCorrigido.zip`.
-  Não dizer ao usuário que esse ZIP já contém as mudanças atuais.
-- Após resolver/registrar os testes pendentes, usar
-  `tools/package_quiosque_portable.py` para atualizar o ZIP. O script já contém
-  README e documentação novos; o empacotamento desta revisão ainda não foi rodado.
-- Logs/capturas completos permanecem em build/logs e build/qa (não versionados).
-  Não subir build, saves ou caches gigantes ao Git.
+  Só atualizar com `tools/package_quiosque_portable.py` **depois** da
+  validação no PCK Windows completo. Este ambiente Linux não tem esse caminho.
 
 ## Comandos úteis
 
-PowerShell na raiz do projeto:
-
 ```powershell
-./tools/run_counter_batch.ps1 -Checks @('terminal','counter-first','company')
-./tools/run_counter_batch.ps1 -Exported -Checks @('terminal','counter-first','company','phone-layout')
-./tools/run_counter_batch.ps1 -Exported -Checks @('loop')
-build/python/Scripts/python.exe tools/gen_item_catalog.py
+./tools/run_counter_batch.ps1 -Checks @('loop','terminal','counter-first','company')
+./tools/run_counter_batch.ps1 -Exported -Checks @('loop','terminal','counter-first','company')
 ```
 
-O helper cria APPDATA isolado e verifica PASS, erros de script e código de saída.
-`loop` aciona o ciclo geral; não há teste separado loop_regression.gd.
-Exportar com `prune_export.py apply`, Godot 4.5.1 `--export-pack 'Windows Desktop'`,
-e restaurar o preset com `prune_export.py restore` em finally. Testar o executável
-sem --path para confirmar que usa o PCK. Preservar os arquivos da instalação antiga.
+Linux (dados isolados):
 
-## Imagens do executável
+```bash
+export XDG_DATA_HOME=/tmp/mare-qa/$RUN HOME=/tmp/mare-qa/$RUN-home
+godot --headless --path . --rendering-driver opengl3 --rendering-method gl_compatibility \
+  --audio-driver Dummy -- --loop-test --quality=0
+```
+
+## Imagens
 
 ![Gestão no computador](images/computador-balcao/gestao.png)
 

@@ -815,13 +815,15 @@ func _quiosque() -> void :
 	_area("neon", func(): _kiosk_neon(c, y0))
 	# Mantém o marco da expansão; a chapa integra a cozinha funcional interna.
 	_area("grill", func(): pass)
+	# Interactable fica um pouco à frente da madeira (lado interno) e mais
+	# estreito, para a mira do staff acertar o balcão sem cobrir o PC (x≈1,70).
 	kiosk_counter = Interactable.new()
 	var cs: = CollisionShape3D.new()
 	var sh: = BoxShape3D.new()
-	sh.size = Vector3(4.6, 1.5, 0.6)
+	sh.size = Vector3(3.0, 1.2, 0.4)
 	cs.shape = sh
 	kiosk_counter.add_child(cs)
-	kiosk_counter.position = c + Vector3(0, y0 + 0.9, 2.0)
+	kiosk_counter.position = c + Vector3(0, y0 + 0.85, 1.88)
 	kiosk_counter.name = "KioskCounter"
 	add_child(kiosk_counter)
 	for k in 2:

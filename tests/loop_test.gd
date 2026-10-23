@@ -136,6 +136,8 @@ func vip_rush_test() -> void :
 	for k in Core.stock.keys():
 		Core.stock[k] = 30   # o rush precisa de estoque para todos os pratos
 	Core.stock_changed.emit()
+	# Fixture: quiosque novo/após dormir começa fechado — abrir antes das chegadas.
+	Core.set_kiosk_open(true)
 	v.enabled = true
 	v.rush_left = 4
 	v.rush_done = true
@@ -502,6 +504,8 @@ func run(m) -> void :
 	Core.minutes = 8.5 * 60.0
 	main.village.enabled = false
 	main.village._on_slept(0)
+	# Quiosque começa fechado; abrir deliberadamente na fixture legada.
+	Core.set_kiosk_open(true)
 	var kc = main.village.spawn_customer()
 	if not check(kc != null, "cliente do quiosque criado"):
 		get_tree().quit(1)
@@ -514,7 +518,8 @@ func run(m) -> void :
 		get_tree().quit(1)
 		return
 	var km0: = Core.money
-	var kp: String = await aim(main.world.kiosk_point(Vector3(0, 0.12, 0.4)), 0.0, -32.0)
+	# Mira pelo lado interno: Interactable fica à frente da madeira do balcão.
+	var kp: String = await aim(main.world.kiosk_point(Vector3(0, 0.12, 0.65)), 0.0, -18.0)
 	if check(kp.begins_with("Pegar"), "prompt do quiosque: '%s'" % kp):
 		main.player.interact()
 		check(main.village.prep.is_empty(), "atendimento legado também não exige preparo")
