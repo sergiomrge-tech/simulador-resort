@@ -8,7 +8,7 @@ Total: 2030 itens. MOD 227 · NAT 68 · PRC 31 · CEN 284 · PRT 13 · DSH 9 · 
 
 | Código | Nome | Chave | Fonte | Usado em |
 |---|---|---|---|---|
-| MOD-001 | Camera 01 | `Camera_01` | Poly Haven (CC0) | guest.gd:898 |
+| MOD-001 | Camera 01 | `Camera_01` | Poly Haven (CC0) | guest.gd:901 |
 | MOD-002 | Cash register 01 | `CashRegister_01` | Poly Haven (CC0) | props.gd:44, world.gd:298 |
 | MOD-003 | Coffee cart 01 | `CoffeeCart_01` | Poly Haven (CC0) | props.gd:44, world_village.gd:720 |
 | MOD-004 | Gothic bed 01 | `GothicBed_01` | Poly Haven (CC0) | props.gd:40, real.gd:12, world.gd:778, world.gd:781 (+1) |
@@ -1921,10 +1921,10 @@ Total: 2030 itens. MOD 227 · NAT 68 · PRC 31 · CEN 284 · PRT 13 · DSH 9 · 
 | PCA-874 | sphere | `island_tree` | `B.sphere` | — | props.gd:422 |  [em laço] |
 | PCA-875 | new | `spawn` | `MeshInstance3D.new` | — | palm.gd:187 |  |
 | PCA-881 | g:sunglasses | `_caricature` | `Real.place` | — | guest.gd:893 |  |
-| PCA-882 | Camera 01 | `_caricature` | `Real.place` | — | guest.gd:898 |  |
-| PCA-888 | box | `show_menu` | `B.box` | — | guest.gd:937 |  |
-| PCA-889 | box | `show_menu` | `B.box` | — | guest.gd:938 |  |
-| PCA-890 | box | `show_menu` | `B.box` | — | guest.gd:940 |  [em laço] |
+| PCA-882 | Camera 01 | `_caricature` | `Real.place` | — | guest.gd:901 |  |
+| PCA-888 | box | `show_menu` | `B.box` | — | guest.gd:940 |  |
+| PCA-889 | box | `show_menu` | `B.box` | — | guest.gd:941 |  |
+| PCA-890 | box | `show_menu` | `B.box` | — | guest.gd:943 |  [em laço] |
 | PCA-891 | place | `_run_shot` | `Real.place` | — | main.gd:406 |  [em laço] |
 | PCA-892 | label | `spawn_customer` | `B.label` | — | village_life.gd:326 |  |
 | PCA-893 | build | `_bungalow` | `P.build` | — | world.gd:638 |  |

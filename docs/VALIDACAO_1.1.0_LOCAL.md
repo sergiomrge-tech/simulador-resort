@@ -251,3 +251,13 @@ CRCs verificados e sem userdata. Documentação e instruções do expositor atua
   `people_portraits.png` e capturas em pé/andando/sentado. Avisos de saída conhecidos.
 - PCK SHA-256: `40af90c04c7f7c2e013a63e15138c6756c6c04a850240f4ee730b4eab66aa486`.
 - ZIP atualizado em Downloads, CRC conferido e saves preservados.
+# Óculos proporcionais — 23/10/2026
+
+- Lentes menores/ovais, armação fina escura e encaixe a 0,093 m do osso da
+  cabeça, com escala 0,9. Fonte Blender salva/reaberta e GLB atualizado.
+- `glasses-proof.log`: PRACTICAL_TEST PASS, retrato masculino/feminino com
+  óculos forçados para inspeção, além de andar e sentar. Conferido people_portraits.png.
+- `glasses-pack.log`: PRACTICAL_TEST PASS. Sem erros de script/recursos ausentes.
+  Permanecem os avisos conhecidos de recursos no encerramento do motor.
+- SHA-256 PCK: `3ce2443d864a2eeff632c0efd803ead05823bbb786a91aa6b56872024d210170`.
+- ZIP de Downloads atualizado e CRC verificado; saves preservados.

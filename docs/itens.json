@@ -9019,7 +9019,7 @@
   "usos": [
    {
     "arquivo": "guest.gd",
-    "linha": 898,
+    "linha": 901,
     "funcao": "_caricature"
    }
   ],
@@ -30767,7 +30767,7 @@
    }
   ],
   "chamada": "Real.place",
-  "args": "_face, \"g:sunglasses\", Vector3(0, 0.075, 0.115), -1.0, 0.0, Color.WHITE, 0.0, false",
+  "args": "_face, \"g:sunglasses\", Vector3(0, 0.075, 0.093), -1.0, 0.0, Color.WHITE, 0.0, false",
   "material": "",
   "em_laco": false,
   "comentario": ""
@@ -30781,7 +30781,7 @@
   "usos": [
    {
     "arquivo": "guest.gd",
-    "linha": 898,
+    "linha": 901,
     "funcao": "_caricature"
    }
   ],
@@ -30800,7 +30800,7 @@
   "usos": [
    {
     "arquivo": "guest.gd",
-    "linha": 937,
+    "linha": 940,
     "funcao": "show_menu"
    }
   ],
@@ -30819,7 +30819,7 @@
   "usos": [
    {
     "arquivo": "guest.gd",
-    "linha": 938,
+    "linha": 941,
     "funcao": "show_menu"
    }
   ],
@@ -30838,7 +30838,7 @@
   "usos": [
    {
     "arquivo": "guest.gd",
-    "linha": 940,
+    "linha": 943,
     "funcao": "show_menu"
    }
   ],
@@ -33646,7 +33646,7 @@
     "funcao": ""
    }
   ],
-  "linhas": 994,
+  "linhas": 997,
   "descricao": ""
  },
  {

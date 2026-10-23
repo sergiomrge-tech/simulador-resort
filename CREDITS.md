@@ -176,6 +176,9 @@ Textura de madeira `oak_wood_planks` da [Poly Haven](https://polyhaven.com/a/oak
 CC0, incorporada na fonte Blender. Demais malhas e acabamentos são autorais.
 
 ## Passos (22/10/2026)
+
+Óculos de sol refinados (23/10): modelo autoral do projeto, gerado por
+`tools/gen_beach_props.py sunglasses`, fonte `art/blender/sunglasses.blend`.
 Kenney, **Impact Sounds 1.0**, CC0: https://kenney.nl/assets/impact-sounds . Quinze arquivos originais `footstep_carpet_000–004.ogg`, `footstep_concrete_000–004.ogg` e `footstep_wood_000–004.ogg`. Os impactos abafados de carpete são usados na areia/terra para evitar o ruído de raspagem anterior. Licença em `assets/audio/KENNEY_IMPACT_LICENSE.txt`; download reproduzível por `python tools/fetch_assets.py --only audio`.
 
 ## Roupas de pessoas e parede traseira (22/10/2026)

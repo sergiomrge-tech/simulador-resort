@@ -1,5 +1,8 @@
 # Quiosque reorganizado — 22/10/2026
 
+Acessórios de rosto: óculos menores, lentes ovais, armação fina escura e menor
+afastamento do rosto. Modelo Blender editável em `art/blender/sunglasses.blend`.
+
 Pessoas refinadas em 23/10: proporções de cabeça e porte menos exageradas,
 sombreamento suave da pele/cabelo, roupa com menos saturação e brilho lateral.
 Sem colares de esferas nem estampas aleatórias nas calças. Sem chapéus/bonés.
