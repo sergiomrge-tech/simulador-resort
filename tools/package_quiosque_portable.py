@@ -20,6 +20,8 @@ Para atualizar uma cópia anterior, substitua os arquivos do programa e mantenha
 a pasta userdata/. O ZIP não inclui nem apaga saves.
 
 NOVO NESTA REVISÃO
+- Dois barcos passando ao fundo em sentidos opostos, com velocidade perceptível.
+  Cruzeiro ancorado à noite: posição fixa, luzes acesas e sem esteira de navegação.
 - Acabamento visual: contornos finos e discretos em pessoas, móveis e vegetação;
   água com cores naturais, transições suaves e espuma menos recortada;
   brilho noturno mais contido, preservando janelas e luminárias legíveis.

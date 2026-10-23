@@ -21,8 +21,9 @@ retirada desconta uma vez; sem mecânica de preparo.
 Praia: quatro pessoas trocam a bola de vôlei em trajetórias sobre a rede, com
 movimento corporal/contato dos braços. A quadra fica ao lado do quiosque, livre
 de guarda-sóis e espreguiçadeiras. Funciona das 08h às 18h30 e para na chuva.
-Um iate cruza ao fundo das 06h às 19h; o cruzeiro com janelas iluminadas aparece
-das 19h às 06h. Ambos circulam no mar distante, fora do cais e da faixa de banho.
+Dois barcos cruzam ao fundo em sentidos opostos das 06h às 19h; o cruzeiro com
+janelas iluminadas fica ancorado das 19h às 06h, em posição fixa e sem esteira.
+Todos ficam no mar distante, fora do cais e da faixa de banho.
 São elementos de ambientação, sem embarque nem minijogo de vôlei nesta revisão.
 Pausa congela seu movimento.
 

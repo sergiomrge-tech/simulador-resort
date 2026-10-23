@@ -27,9 +27,11 @@ func run(main) -> void:
 	check(coast.players.size()==4 and coast.ball.visible,"quatro pessoas jogam vôlei de dia")
 	check(coast.yacht.visible and not coast.cruise.visible,"iate diurno sem cruzeiro sobreposto")
 	var before: Vector3 = coast.yacht.position
+	var other_before: Vector3 = coast.passing_boat.position
 	var ball_before: Vector3 = coast.ball.position
 	coast._advance(.825)
 	check(coast.yacht.position.x>before.x and coast.ball.position.distance_to(ball_before)>1,"iate navega e bola avança na jogada")
+	check(coast.passing_boat.position.x<other_before.x,"segundo barco passa na direção oposta")
 	check(absf(coast.ball.position.z)<.05 and coast.ball.position.y>2.5,"bola cruza acima da rede")
 	coast._advance(.825)
 	check(float(coast.players[1].get_meta("volley_weight"))>.9,"recebedor alcança a bola no contato")
@@ -44,6 +46,9 @@ func run(main) -> void:
 	check(not coast.yacht.visible and coast.cruise.visible,"cruzeiro aparece à noite e iate recolhe")
 	check(not coast.ball.visible and coast.players.all(func(g):return not g.visible),"quadra descansa à noite")
 	check(coast.cruise.position.z+9<main.world.SHORE_Z-100,"cruzeiro no mar distante")
+	var anchored: Vector3 = coast.cruise.position
+	coast._advance(15)
+	check(coast.cruise.position==anchored and not coast.cruise.has_node("Wake"),"cruzeiro noturno ancorado sem deslocamento ou esteira")
 	var emissive := false
 	for mi in coast.cruise.find_children("*","MeshInstance3D",true,false):
 		for i in mi.mesh.get_surface_count():

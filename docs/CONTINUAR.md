@@ -69,7 +69,9 @@ trabalhe nos mesmos arquivos ao mesmo tempo que outro chat sem coordenação.
     Usar supply_total e buy_supply, respeitar saldo/contratos e evitar compra parcial.
     Continuar na estação para pegar o produto pronto. Sem ressuscitar preparo.
 12. **Vida na praia.** Quatro jogadores na quadra de vôlei ao lado do quiosque,
-    bola e braços animados. Iate ao fundo de dia, cruzeiro iluminado à noite.
+    bola e braços animados. Dois barcos passam continuamente de dia, em sentidos
+    opostos e faixas afastadas. Cruzeiro iluminado fica ancorado à noite, sem
+    deslocamento nem esteira de propulsão, conforme correção do usuário.
     Embarcações distantes da faixa de banho/cais; congelar movimento na pausa.
     Quadra deve ficar livre de guarda-sóis/espreguiçadeiras e outros props.
 

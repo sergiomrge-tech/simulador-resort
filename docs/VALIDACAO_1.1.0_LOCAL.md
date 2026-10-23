@@ -361,6 +361,13 @@ PCK SHA256: 8d95b71f92fdd3de2b877175fdbabb9fe1c91a7cd97ca68e0edfc67ecba6a192.
 
 # Balcão interno, quiosque/praia e ambientação — 23/10/2026
 
+Correção posterior dos barcos: dois iates passam em sentidos opostos, 3,2/2,6 m/s,
+em faixas separadas. Cruzeiro noturno em posição fixa e sem esteira. Fonte
+boats-source.log e executável boats-pack.log COASTAL_TEST PASS: deslocamentos
+opostos, pausa, cruzeiro invariável após 15 s e luzes preservadas. Inspeção Vulkan.
+Sem SCRIPT ERROR/recursos ausentes; avisos conhecidos de encerramento permanecem.
+PCK SHA256 f0ce024ac26d4925dd4c9355a1f9b42fceb1b5e4e81b39b81653c988665acd7f.
+
 Refinamento visual posterior: contorno mais fino, menos opaco e com fade próximo;
 mar HD com gradientes naturais, espuma suave e resposta especular contínua;
 bloom noturno reduzido. Fonte polish-counter.log COUNTER_TEST PASS e
