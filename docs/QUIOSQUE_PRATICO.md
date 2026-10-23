@@ -1,5 +1,10 @@
 # Quiosque reorganizado — 22/10/2026
 
+Acabamento interno de 23/10: faixa de azulejos claros com juntas e bordas
+arredondadas na área de preparo, prateleira de madeira com suportes de latão e
+coifa modelada com filtro, duto e luz de trabalho. Equipamentos, corredor,
+parede traseira e entradas laterais mantêm suas posições funcionais.
+
 Revisão de roupas de 23/10: camisas com barra reta, sem cinto e abas inferiores
 medievais. Calçados baixos substituem as botas de cano alto, com pernas da base
 original preservadas entre o sapato e a calça. Cores dos calçados mais neutras.

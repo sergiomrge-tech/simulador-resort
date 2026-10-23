@@ -221,3 +221,13 @@ CRCs verificados e sem userdata. Documentação e instruções do expositor atua
   e sentado. Mantida a remoção dos chapéus.
 - PCK SHA-256: `87fe02c4ac8a50406cb41dbd9a80f54a909a989d308107838239b8e346b1902e`.
 - ZIP atualizado em Downloads e CRC conferido, preservando os saves.
+# Acabamento do quiosque — 23/10/2026
+
+- Azulejos com juntas, prateleira com suportes e coifa com filtro/duto/luz
+  integrados à fachada Blender existente. Fonte reaberta: KIOSK_BLEND_PORTABLE PASS.
+- Fonte `kiosk-finish-proof.log` e pacote `kiosk-finish-pack.log`:
+  PRACTICAL_TEST PASS. Conferida captura `practical_workroom.png` no Vulkan.
+  Circulação, preparo, retirada e entrega preservados; sem erros de script ou
+  recursos ausentes. Avisos conhecidos de encerramento do motor permanecem.
+- SHA-256 PCK: `df7c8c0799877648bd9742d01e9a4bf3ec091f0f1cb1992bdacdfd87c4c3596c`.
+- ZIP em Downloads atualizado e CRC conferido, sem incluir/apagar saves.

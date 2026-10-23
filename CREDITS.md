@@ -165,6 +165,10 @@ Nunito permanece sob sua licença incluída em assets/fonts.
 
 ### Quiosque prático (22/10/2026)
 
+Revisão de 23/10: azulejos, suportes, prateleira e coifa de cozinha são malhas
+autorais no mesmo gerador e fonte `kiosk_facade.blend`. Acabamentos cerâmicos
+e metálicos autorais; madeira Poly Haven CC0 preservada.
+
 `kiosk_facade`, `kiosk_roof`, `kiosk_neon_trim`, `kiosk_workbench` e `kiosk_blender`:
 malhas originais do projeto em Blender/bpy, geradas por `tools/gen_kiosk_facade.py`.
 Fontes editáveis em `art/blender/`, reabertas pelo gerador para verificar portabilidade.

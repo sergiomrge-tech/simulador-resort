@@ -237,6 +237,33 @@ for z in [.10, 1.94, 2.56]:
 for x in [-2.30, 0, 2.30]:
     box('Rear wall stile', (.085, .085, 2.65), (x, 2.26, 1.325), paint)
 
+# Washable tiled work wall, with real grout gaps and glazed bevels.
+tile=material('facade_glazed_ivory',(.72,.76,.65),.3)
+grout=material('facade_tile_grout',(.25,.31,.28))
+box('Washable backsplash backing',(3.48,.035,.88),(.48,2.205,1.49),grout,.006)
+for row in range(5):
+    for col in range(17):
+        box('Glazed kitchen tile',(.195,.025,.164),(-1.12+col*.20,2.178,1.14+row*.17),tile,.009)
+box('Backsplash brass edge',(3.49,.045,.028),(.48,2.15,1.94),brass,.006)
+# Open pass shelf above the food cabinet: brackets support a solid wooden slab.
+box('Service shelf timber',(.94,.33,.055),(-.02,2.03,1.94),wood,.018)
+for x in [-.36,.32]:
+    path('Shelf curved brass support',[(x,2.23,1.72),(x,2.22,1.89),(x,1.9,1.89)],.013,brass)
+# Extractor canopy, folded metal edges, chimney and removable slatted filter.
+steel=material('facade_kitchen_steel',(.27,.34,.34),.32)
+verts=[(.57,1.64,1.94),(1.83,1.64,1.94),(1.83,2.22,1.94),(.57,2.22,1.94),
+       (.89,1.87,2.31),(1.51,1.87,2.31),(1.51,2.22,2.31),(.89,2.22,2.31)]
+faces=[(0,1,5,4),(1,2,6,5),(2,3,7,6),(3,0,4,7),(4,5,6,7)]
+mesh=bpy.data.meshes.new('Folded extractor canopy');mesh.from_pydata(verts,[],faces);mesh.update()
+hood=bpy.data.objects.new('Folded extractor canopy',mesh);bpy.context.scene.collection.objects.link(hood);finish(hood,steel)
+edge=hood.modifiers.new('Folded steel edges','BEVEL');edge.width=.012;edge.segments=3
+bpy.context.view_layer.objects.active=hood;bpy.ops.object.modifier_apply(modifier=edge.name)
+box('Extractor chimney',(.39,.26,.34),(1.2,2.06,2.46),steel,.018)
+for i in range(15):
+    box('Extractor grease filter slat',(.025,.46,.025),(.69+i*.073,1.94,1.94),steel,.006)
+for y in [1.65,2.20]:box('Extractor rolled lip',(1.27,.035,.04),(1.2,y,1.935),brass,.009)
+box('Extractor work light',(.71,.025,.025),(1.2,1.68,1.92),glow,.006)
+
 # Join by material, keeping paint and sign independently customizable.
 bpy.ops.object.select_all(action='SELECT')
 bpy.ops.object.convert(target='MESH')
@@ -261,6 +288,9 @@ print('KIOSK_FACADE',len(bpy.context.scene.objects),'meshes',sum(len(o.data.poly
 bpy.ops.wm.open_mainfile(filepath=os.path.join(SOURCE,'kiosk_facade.blend'))
 assert all(i.packed_file for i in bpy.data.images if i.source=='FILE'), 'Unpacked external texture'
 print('KIOSK_BLEND_PORTABLE PASS')
+import sys
+if '--facade-only' in sys.argv:
+    sys.exit(0)
 
 # Separate upgrade model: neat continuous neon around the single main sign.
 bpy.ops.wm.read_factory_settings(use_empty=True)
