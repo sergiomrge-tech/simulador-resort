@@ -2,6 +2,11 @@
 
 > **Para continuar o trabalho (outra IA ou pessoa): leia primeiro [`docs/CONTINUAR.md`](docs/CONTINUAR.md).**
 
+> Instruções comuns a todas as IAs: [AGENTS.md](AGENTS.md). Este arquivo guarda
+> lições de várias versões; referências antigas a preparo, óculos, cores muito
+> saturadas, versão 1.0.x e entrega obrigatória por NSIS não substituem o guia
+> vigente. Preserve as lições técnicas, seguindo as preferências atuais do usuário.
+
 Regras aprendidas com erros reais deste projeto. Leia antes de mexer em qualquer coisa.
 Cada "cômodo" guarda um tipo de erro: o que aconteceu, a regra e como conferir.
 Ao corrigir um erro novo, acrescente uma linha no cômodo certo (ou crie um cômodo).

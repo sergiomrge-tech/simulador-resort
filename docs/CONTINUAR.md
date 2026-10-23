@@ -1,141 +1,214 @@
-# Como continuar o Maré Alta Resort (passagem de bastão — 19/10/2026)
+# Guia vigente para as próximas atualizações
 
-> **Pedidos nas mesas (23/10):** no modo de retirada, cliente termina de escolher
-> e espera E para anotar (`order_taken=false`). Após anotação aparece no HUD/celular.
-> Mesma interação permite consultar ou entregar. Garçom anota indo até approach.
-> Teste prático verifica raycast/E nas duas cadeiras opostas de uma mesa real.
+Atualizado em **23/10/2026**. Destinado a qualquer IA ou pessoa, sem depender deste
+chat. Leia junto com [AGENTS.md](../AGENTS.md). Novos pedidos do usuário prevalecem.
 
-> **Sem preparo (pedido mais recente, 23/10):** retirada imediata de produtos
-> prontos na geladeira/armário/cozinha. Compras abastecem, retirada desconta uma vez;
-> devolução fica pronta sem novo débito. Produção pendente de saves antigos migra
-> para ready. Sem botão/cronômetro de preparo e sem depender de cozinheiro.
+## Base correta
 
-> **Cores naturais em tudo (23/10):** pedido explícito mais recente: paleta global
-> menos saturada, madeira/areia/telhas naturais, materiais com mapas preservados,
-> sem aquecimento artificial do Toon e saturação extra do daycycle. Porta da casa
-> em madeira e tapete neutro. Não restaurar a antiga paleta exagerada.
+- Projeto: **Maré Alta Resort**, Godot **4.5.1**, GDScript, Forward+ / Vulkan.
+- Versão em `project.godot`: **1.1.0**; linha de trabalho **1.1.0 RC2**.
+- Branch usada nas entregas: **`codex/resort-1.1-mcp`**.
+- Repositório: https://github.com/sergiomrge-tech/simulador-resort
+- Última alteração funcional antes deste guia: **`6a0a3c2`**, pedidos nas mesas.
+  Verifique `git log` e `git status`; commits posteriores podem ter atualizado a base.
+- O jogo começa com o quiosque e evolui por expansões. Gestão no celular (B).
 
-> **Casa/equipamentos (23/10):** casa recebeu piso claro, cozinha detalhada,
-> cortinas, persianas e molduras em player_home_details.blend/GLB. Não ocultar
-> KioskOperations quando company.created=false: isso apagava os equipamentos no
-> jogo normal embora os testes com empresa criada passassem. Presença permanente;
-> E antes do cadastro abre empresa. Ver REFINAMENTO_COMPLETO.md.
+Antes de editar, confira branch/remoto e alterações pendentes. Não use reset,
+checkout ou cópia de um build antigo para substituir trabalho existente. Não
+trabalhe nos mesmos arquivos ao mesmo tempo que outro chat sem coordenação.
 
-> **Preferência/avental (23/10):** pessoas sem óculos escuros; não reintroduzir
-> `Sunglasses` no Guest nem nas provas visuais. Aventais agora têm alças, cintura,
-> bolso, espessura e perfil ajustado à roupa, com pesos contínuos no quadril.
-> Fonte/PCK prático e ciclo aprovados; detalhes em REFINAMENTO_COMPLETO.md.
+## Regras atuais de produto
 
-> **Sete refinamentos integrados (23/10/2026):** ler REFINAMENTO_COMPLETO.md.
-> Inclui bermudas, uniformes e aventais, gestos/porta animada, piscadas,
-> balcão detalhado, áudio posicional suave e iluminação de entardecer/noite.
-> Uniformes nascem em Guest.apply_staff_uniform; work_arm usa o eixo real dos
-> ossos, sem assumir que o membro aponta em Y. Rodar testes prático/empresa/ciclo.
+1. **Sem preparar produtos.** E na geladeira/armário/cozinha, escolher produto
+   pronto, levar ao cliente, E para entregar e receber no caixa. Sem espera,
+   cronômetro, etapas de montagem ou necessidade de cozinheiro.
+2. **Estoque continua existindo.** Compras abastecem a despensa compartilhada.
+   A retirada desconta os insumos uma vez; a entrega não desconta de novo.
+   Devolver guarda unidade já paga; retirar a devolução não cobra novamente.
+   Produção pendente de save antigo vira unidade pronta uma única vez.
+3. **Pedido na mesa.** No atendimento físico, o cliente senta, olha o cardápio e
+   aguarda E para anotar. Marcador `E · #pedido`; ao registrar, itens vão para
+   HUD/celular. E permite consultar ou entregar quando se carrega o item correto.
+   Garçom vai até a mesa para anotar, volta para buscar e entrega. Cliente fica
+   sentado para consumir. Não gastar estoque nem reiniciar paciência ao consultar.
+4. **Compatibilidade de modos.** `company_enabled()` exige empresa criada e modo
+   físico ativo. No modo legado, pedidos continuam automáticos e consultáveis;
+   atendimento no balcão é imediato, sem preparo. Antes da empresa, E na estação
+   abre o cadastro. Não esconder os móveis por causa desse estado.
+5. **Quiosque prático.** Todos os equipamentos usados ficam dentro; geladeira à
+   esquerda, armário ao centro, cozinha à direita, caixa na frente. Manter parede
+   traseira, piso físico, corredor e duas entradas laterais, sem anexo externo.
+6. **Exposição permanente.** Geladeira/armário mostram os produtos que vendem
+   mesmo no estoque zero (12 apresentações de bebidas). A etiqueta informa a
+   disponibilidade real. Não vender a referência visual nem criar estoque grátis.
+7. **Cores naturais em todo o jogo.** Menos saturação e menos laranja artificial,
+   madeira/areia/terracota naturais e mapas dos modelos preservados. Casa com piso
+   claro, detalhes, cortinas, persianas e cozinha; porta em madeira, não azul.
+   Manter personagens estilizados; cores naturais não exigem trocar a engine.
+8. **Pessoas sem óculos escuros, chapéus ou bonés.** Preservar cabelos presos à
+   cabeça animada e roupas compatíveis com o rig. Não recolocar acessórios nos
+   testes só para tirar imagens. Avental com caimento, alças, bolso e cintura.
+9. **Interface limpa.** HUD/textos compactos, prompt embaixo, celular com seis
+   áreas iniciais sem atalhos duplicados e layout que caiba em telas pequenas.
+10. **Áudio suave, sem vozes de fundo.** Preservar também o cais com colisão,
+    recuperação de queda, barcos afastados e vidros sem coloração azul.
 
-> **Parede e roupas (22/10/2026):** parede traseira com ripas na fonte
-> `kiosk_facade.blend`, colisão `KioskRearWall`, equipamentos e laterais preservados.
-> Roupas reais CC0 Quaternius em `assets/models/clothing/`, pesos originais,
-> gerador `tools/gen_compatible_clothing.py` e fontes `resort_outfit_*.blend`.
-> Cabelo/barba reanexados ao esqueleto correto. `--practical-test` confere
-> parede por raycast e captura roupa/cabelo em pé, andando e sentado.
+Use modelos detalhados e licenciados, preferencialmente CC0, ou Blender com
+malha trabalhada. Não substituir objetos por low poly ou montagens de primitivas
+como acabamento final. Reutilize a biblioteca existente e registre licenças em
+`CREDITS.md`. Salve fontes `.blend` editáveis, com texturas incorporadas; reabra
+para conferir. Atualize downloads/geradores e o catálogo (`tools/gen_item_catalog.py`).
 
-> **Contratados e geladeira (22/10/2026):** presença dos funcionários do quiosque
-> sincronizada em `staff_changed`, independente da operação/turno. Trabalho continua
-> condicionado a turno e abertura; folga/demissão ocultam. Atendente legado incluído.
-> Geladeira com 12 apresentações em duas fileiras; testar com `--practical-test`.
+## Onde alterar cada coisa
 
-> **Expositores sempre preenchidos (22/10/2026):** pedido explícito do Sergio: geladeira/armário não podem ficar vazios e devem exibir o que vendem. `KioskOperations._sync_products()` preenche as três prateleiras com apresentações de bebidas/comidas e etiquetas de estoque real. Referências continuam visíveis no zero, mas não são estoque vendável. Básicos bloqueados identificados; secretos só após descoberta. `--practical-test` cobre retirada da última unidade sem esvaziar o expositor e impede vender a referência no zero.
+| Área | Arquivos principais |
+|---|---|
+| Estado, compras, retirada, devolução, caixa, save | `scripts/resort_core.gd`, `scripts/company_rules.gd` |
+| Clientes, lugares, leitura, pedido e consumo | `scripts/village_life.gd` |
+| Estações físicas, interação E, equipe e exposição | `scripts/kiosk_operations.gd` |
+| Aparência, roupas, cabelo e gestos | `scripts/guest.gd`, `scripts/people.gd`, `scripts/work_arm.gd` |
+| HUD e celular | `scripts/hud.gd`, `scripts/phone_ui.gd` |
+| Rotinas, manutenção, fornecedores, custos | `scripts/kiosk_management.gd`, `scripts/kiosk_simulation.gd` |
+| Vila, casa, quiosque, colisões | `scripts/world_village.gd`, `scripts/world.gd` |
+| Paleta e ciclo de luz | `scripts/toon.gd`, `scripts/daycycle.gd`, `shaders/guest.gdshader` |
+| Fontes artísticas | `art/blender/`, `tools/gen_*.py`, `assets/models/gen/` |
 
-> **Quiosque prático (22/10/2026, revisão mais recente):** ler [QUIOSQUE_PRATICO.md](QUIOSQUE_PRATICO.md). Equipamentos dentro do quiosque, sem anexo; entradas laterais; seis áreas no início do celular; pedidos numerados e HUD menor. Modelos editáveis em `art/blender/`, gerador `tools/gen_kiosk_facade.py`. Validar com `--loop-test --practical-test`, empresa, gestão, celular e ciclo geral. Não repor o anexo nem os 27 atalhos iniciais dos checkpoints anteriores.
+O quiosque está em `(38, 0, -13)`, frente +Z; a casa em `(46, 0, 21)`.
+`_order(g)` cria pedido aguardando anotação no modo físico; `order_taken` registra
+se foi anotado. `waiting_customers()` retorna os registrados; `customers_to_order()`
+os não anotados. Fixtures podem usar `_order(g, true)`; testes da interação real
+precisam passar por `kchoose` e raycast/E, não apenas chamar a função diretamente.
 
-> **Atualização de 22/10/2026:** o Sergio escolheu continuar a **1.1.0 RC2**. A integração local e os testes na fonte e no PCK estão em [VALIDACAO_1.1.0_LOCAL.md](VALIDACAO_1.1.0_LOCAL.md). Branch ativa: `codex/resort-1.1-mcp`. Os checkpoints 1.0.x abaixo são históricos; não gerar uma atualização antiga sobre a linha 1.1.
+A leitura detalhada das lições técnicas continua obrigatória em [CLAUDE.md](../CLAUDE.md).
+Seus trechos antigos sobre preparo, cores exageradas, óculos e entrega obrigatória
+por NSIS foram substituídos pelas preferências atuais deste guia.
 
-> **Expansão solicitada no mesmo dia:** horários/dias, placa, estoque e perdas, fornecedores, turnos/contratação e custos/resultado estão descritos em [SIMULACAO_QUIOSQUE.md](SIMULACAO_QUIOSQUE.md). Ler antes de continuar o trabalho de gestão.
+## Assets e ambiente em outra máquina
 
-> **Correção do cais (22/10/2026):** colisões dos módulos/platforma, rampa sem degrau, limite final alinhado e recuperação de quedas estão cobertos por `--loop-test --pier-test`. Conferir a validação local antes de entregar um pacote antigo.
+Caches `.godot/`, `build/`, saves e muitos downloads não estão no Git. Um clone
+não contém automaticamente todas as dependências da instalação do Sergio.
 
-> **Celular ajustado (22/10/2026):** aparelho e controles menores, três colunas e quebra de linha corrigem os cortes laterais. `--loop-test --phone-layout-test` valida todos os apps em três tamanhos. O ZIP de Downloads foi atualizado novamente.
+- Localize Godot 4.5.1 e os templates Windows correspondentes; não adivinhe paths.
+- Use Python com as dependências dos geradores. Nesta máquina existe
+  `build/python/Scripts/python.exe` com `bpy` 4.5.3; esse ambiente não é versionado.
+- Examine `tools/fetch_assets.py` e seus wrappers para recuperar modelos/texturas
+  externos. O fetch também pode regenerar assets: revise antes de executá-lo sobre
+  fontes já personalizadas. Roupas base usam `tools/fetch_compatible_outfits.py`.
+- Importe o projeto, execute `tools/vram_textures.py` e importe novamente se houver
+  texturas novas. Conferir `.gdignore` e cache quando um asset existente não carrega.
+- Geradores relevantes: `gen_kiosk_facade.py`, `gen_counter_details.py`,
+  `gen_compatible_clothing.py`, `gen_player_home.py` e `gen_kiosk_soft_audio.py`.
+- Não regenere tudo sem necessidade. Preserve pesos/UVs, escala e origem. No
+  Blender, frente -Y vira +Z na Godot. Peças rígidas Hair_* precisam de
+  BoneAttachment em Head; só mudar o caminho skeleton não resolve cabelo sem Skin.
+- No Windows, o gerador de roupa salva em staging e copia para evitar o erro de
+  sobrescrita `file saved with @`. Preserve a fonte final e reabra para verificar.
 
-> **Sugestões 2–7 implementadas (22/10/2026):** rotinas, candidatos, entregas, equipamentos, personalização com prévia e movimento por horário/clima. Ler [ROTINAS_QUIOSQUE.md](ROTINAS_QUIOSQUE.md) e executar `--loop-test --management-test`. Dados adicionais sob `company.sim.management`, com migração e checklist obrigatório opcional. O celular tem 27 apps.
+Ausência de recurso, textura ou móvel é falha de integração, mesmo com PASS no
+log. Não considerar assets externos opcionais para reproduzir o visual atual.
 
-Este arquivo é para qualquer assistente/IA (ou pessoa) que vá continuar o projeto. Leia também o `CLAUDE.md`
-na raiz: ele é o "palácio de memória" com TODAS as regras e erros já cometidos. Siga as regras dele.
+## Testes sem mexer no save do jogador
 
-## 1. Estado atual
-- Versão publicada: **v1.0.0** (instalador completo entregue ao Sergio, instalado em `D:\Games\MareAltaResort`).
-- Em andamento: **v1.0.1** (correções), parcialmente feita e já comitada (commits `a575188` e `1be22de`).
-- O jogo instalado do Sergio está em **Vulkan** (o `override.cfg` dele foi trocado; o DirectX 12 dava tela preta).
-- Save de demonstração com tudo liberado no PC dele: **Slot 3** (`save_slot3.json`).
+Na instalação portátil, `Jogar.vbs` usa `userdata/`. **Não execute testes com os
+saves reais, não apague `userdata/` e não sobrescreva configurações do jogador.**
 
-## 2. Regras do Sergio (resumo — detalhes no CLAUDE.md, "Hall de entrada")
-- **Proibido low poly e proibido "bolas e quadrados"** (esferas/caixas/cilindros fazendo de objeto). Todo objeto visível vem de
-  **asset gratuito CC0** (Poly Haven, Kenney, Quaternius, KayKit, ambientCG, OpenGameArt, itch.io) ou é **modelado no Blender (bpy)**
-  com malha detalhada. Registrar fonte em `CREDITS.md` e download em `tools/fetch_assets.py`.
-- Ao ver defeito visual, **corrigir na hora**, não só avisar. **Nunca entregar nada quebrado**: testar antes.
-- Entregar **patch pequeno** quando ele já tem o jogo instalado (não o instalador de 1 GB), testado no pacote exportado.
-- Commit + push no GitHub a cada lote. Respostas em português do Brasil.
+Exemplo PowerShell para uma execução isolada. Ajuste o executável à máquina;
+`$Godot` deve ser um caminho absoluto válido do Godot, ou o EXE portátil para testar
+um PCK. Use uma pasta de trabalho separada por execução:
 
-## 3. Ambiente
-- Godot **4.5.1** (Forward+, GDScript). Blender via `python3` com módulo `bpy` (os scripts `tools/gen_*.py` rodam com `python3 tools/gen_X.py`).
-- Assets baixados **não vão no git**: rodar `python3 tools/fetch_assets.py` antes de importar/exportar.
-- Depois de criar/alterar modelos ou texturas: `godot --headless --path . --import` → `python3 tools/vram_textures.py` → importar de novo.
-- Teste automático: `tests/loop_test.gd` precisa dar **LOOP_TEST PASS**. Rodar com
-  `godot --path . --rendering-driver opengl3 --rendering-method gl_compatibility -- --loop-test --quality=0`.
-- Prints de conferência: `godot --path . -- --shot=NOME --cam=x,y,z,yaw,pitch[,hora] [--v1]` (salva em `shots/NOME.png`).
-  `--v1` libera tudo (negócios, capítulos, hotel 5★). Pitch negativo olha para baixo; y do `--cam` é o corpo (câmera = y+1,65).
-- Instalador completo: `bash tools/build_release.sh` (NSIS; limite de 2 GB para exe+pck — ver CLAUDE.md).
-- Patch: `bash tools/build_patch.sh <commit base>` (ver "Sala do Patch" no CLAUDE.md).
+```powershell
+$Root = (Get-Location).Path  # executar na raiz do checkout
+$Godot = (Get-Command godot -ErrorAction Stop).Source
+$RunId = 'company-' + [guid]::NewGuid().ToString('N')
+$TestData = Join-Path $Root ('build/qa/' + $RunId)
+$LogDir = Join-Path $Root 'build/logs'
+New-Item -ItemType Directory -Force -Path $TestData,$LogDir | Out-Null
+$Log = Join-Path $LogDir ($RunId + '.log')
+$PreviousAppData = $env:APPDATA
+try {
+    $env:APPDATA = $TestData
+    & $Godot --headless --path $Root --audio-driver Dummy --log-file $Log -- --loop-test --company-test --quality=1
+    $RunExitCode = $LASTEXITCODE
+} finally {
+    $env:APPDATA = $PreviousAppData
+}
+Get-Content -LiteralPath $Log
+# Conferir marcador PASS, exit code e erros de script/recursos, não só a última linha.
+```
 
-## 4. O que já foi feito na v1.0.1 (comitado)
-1. `tools/prune_export.py`: não exclui mais a pasta `assets/models/qnat` (arbustos/plantas Quaternius). No instalador v1.0 ela
-   ficou de fora e o jogo mostrava "placas redondas" no lugar dos arbustos. Também procura uso por caminho.
-2. `scripts/real.gd`: `Real.ALIAS` redireciona todas as chaves Kenney low-poly (`k:coconut`, `k:bottle`, `k:pineapple`, `k:orange`,
-   `k:frappe`, `k:cup`, `k:glass`, `k:cocktail`, `k:bread`, `k:barrel`, `k:crate-bottles`, `k:campfire_*`, `k:rock_small*`,
-   `k:log_large`, `k:tent_smallOpen`, `k:boat-row-large`, `k:flag-pennant`, `k:tool-paddle`) para modelos detalhados.
-   Imprime `REAL_MISSING <chave>` no log quando um modelo não existe.
-3. `tools/gen_food.py` (Blender) gera: coconut_green, coconut_open, pineapple, orange, frappe, cup_plastic, glass_juice, cocktail,
-   campfire_logs, beach_flag, beach_spade, boat_hull (já em `assets/models/gen/*.glb`).
-4. `scripts/reef.gd`: corais com altura limitada pela profundidade (antes furavam a água = "pontas no mar").
-5. `tools/gen_beach_props.py` e `tools/gen_code_props.py`: `box()` girava as peças em volta da origem do mundo — corrigido
-   (espreguiçadeira, venezianas, treliça, revistas da banca). Regerados.
-6. `project.godot`: limites de descritores do D3D12 aumentados.
+Em Linux/macOS, isole também o diretório de dados de usuário apropriado à plataforma
+(`XDG_DATA_HOME` em Linux), além da pasta/log por execução. Se usar Godot MCP,
+defina APPDATA no processo que cria o jogo filho; mudar só o shell não muda o
+ambiente de um servidor MCP já aberto.
 
-## 5. O que FALTA (fazer nesta ordem)
-1. **Pessoas travadas em pé na mesa do quiosque** (dois clientes no mesmo lugar, rótulos de pedido sobrepostos, em pé dentro
-   das cadeiras). Investigar a reserva de lugares em `scripts/village_life.gd` (mesas do quiosque, expansão `kiosk_tables`) e a
-   regra de sentar do CLAUDE.md ("Sala dos Assentos"). Cada lugar só pode ter um cliente; quem não acha lugar espera em pé fora da mesa.
-2. **Conferir em prints do jogo** (com `--v1` quando precisar): prateleira de garrafas do quiosque (x≈38, z≈-13), balcão com frutas
-   e coco aberto, carrinho de cocos, pilhas de coco perto das casas/barracas, fogueira da festa junina (`--event=junina`), tendas da
-   quermesse (`--event=quermesse`), barco de pesca (`g:boat_hull`, conferir altura do fundo 0,40 m e o mastro), castelo de areia
-   (bandeira e pazinha). Ajustar tamanhos/posições (o `Real.place` usa a altura pedida; alguns modelos novos têm canudo e ficam
-   menores — ver `ALIAS_H` em `real.gd`).
-3. Rodar `--primcheck` e `--floatcheck` (ver CLAUDE.md, "Sala da Faxina") e corrigir o que aparecer.
-4. Procurar outros itens low-poly que ainda restem (Quaternius de capim/flores/pedrinhas é estilizado mas aceito; o Sergio gostou
-   do arbusto Quaternius). Qualquer outro "k:" novo deve ganhar alias para modelo detalhado.
-5. Aplicar no `tools/build_release.sh` o smoke test sobre o **pacote exportado** (`--main-pack build/win/MareAltaResort.pck`,
-   `--v1`, procurar `not found`, `SCRIPT ERROR` e `REAL_MISSING` no log). Hoje o smoke roda sobre o projeto e não pega pastas
-   que ficaram fora do pacote.
-6. LOOP_TEST PASS.
-7. Atualizar `CREDITS.md` (modelos de `gen_food.py`; Poly Haven `dead_tree_trunk`, `stone_fire_pit`, `boulder_01`,
-   `sand_rocks_small_01`, `wooden_crate_02`, `Barrel_01`, `croissant`) e rodar `python3 tools/gen_item_catalog.py`.
-8. Gerar o **patch 1.0.1** com base na v1.0 instalada (base sugerida: commit `51921df`, que publicou a v1.0.0) e conferir que o patch
-   leva `assets/models/qnat/*` (arbustos) e os novos `assets/models/gen/*.glb`. Testar o patch sobre o pck da v1.0 antes de entregar.
-   Atualizar `docs/latest_version.txt` e copiar o .exe do patch para `patches/`.
+| O que mudou | Comando/flag após `-- --loop-test` | Resultado esperado |
+|---|---|---|
+| Fluxo físico, mão, estoque, entrega e equipe | `--company-test` | `COMPANY_TEST PASS` |
+| Quiosque, colisões, E nas mesas e visual | `--practical-test` | `PRACTICAL_TEST PASS` |
+| Gestão, equipamentos e candidatos | `--management-test` | `MANAGEMENT_TEST PASS` |
+| Custos, perdas, virada e fornecedores | `--simulation-test` | `SIMULATION_TEST PASS` |
+| Celular em vários tamanhos | `--phone-layout-test` | conferir log do teste |
+| Cais e queda | `--pier-test` | conferir log do teste |
+| Ciclo geral e atendimento legado | sem flag extra | `LOOP_TEST PASS` |
 
-## 6. Mapa rápido do código
-- `scripts/resort_core.gd` (autoload `Core`): economia, save (v6), expansões. `scripts/progression.gd` (`Core.prog`): fama, árvore,
-  negócios, equipe, temporadas, receitas, capítulos, hotel. `scripts/prog_data.gd` (`PD`): dados da evolução.
-- `scripts/world.gd` + `scripts/world_village.gd`: mapa (resort, praia, vila). `scripts/biz_world.gd`: negócios no mapa.
-  `scripts/hotel_world.gd`: Grand Hotel 5★. `scripts/event_fx.gd`: festas/eventos. `scripts/village_life.gd`: clientes e moradores.
-- `scripts/phone_ui.gd`: celular (todos os apps). `scripts/minigame.gd`: minijogo dos negócios.
-- `scripts/real.gd`: carrega modelos reais (`g:` Blender, `k:` Kenney, `q:` Quaternius, nome = Poly Haven).
-- `tools/gen_*.py`: modelos feitos no Blender. `tools/fetch_assets.py`: baixa os assets CC0.
+Rode um teste específico por processo: o dispatcher retorna após a primeira flag.
+Para visual, retire `--headless` e use Vulkan / `--resolution 1280x720`; as imagens
+ficam em `shots/`. Headless não valida aparência. Nesta máquina, use no máximo dois
+processos pesados simultâneos. O fallback OpenGL pode ajudar em outra GPU, mas não
+comprova o mesmo resultado visual de Vulkan. Erros de script/recursos bloqueiam a
+entrega; avisos conhecidos de material/RID ao encerrar foram registrados na validação
+anterior, não equivalem a um log inteiramente limpo.
 
-## 7. Atualização via GitHub MCP (19/10/2026 — validação Godot pendente)
-- O `main` avançou após o checkpoint `25e4554`. O commit `886c2de` contém reserva de assentos por `owner`, fila de espera e `tests/kiosk_regression.gd` (necessário executar no Godot).
-- `tools/build_release.sh` já possui smoke de pacote exportado via `--main-pack`, `--v1`, verificação de screenshot, `not found`, `SCRIPT ERROR` e `REAL_MISSING`.
-- `CREDITS.md` atualizado com os 12 modelos novos de `gen_food.py` e 7 fontes Poly Haven CC0 (commit `0bd920f`).
-- `tools/fetch_assets.py` agora gera, depois das texturas, os modelos de `gen_beach_props`, `gen_code_props`, `gen_business`, `gen_hotel` e `gen_food` ausentes, e confere as saídas (commits `4116230` e `4e85874`).
-- `tools/build_patch.sh` agora inclui a pasta `assets/models/qnat` e os GLBs novos/corrigidos da v1.0.1 mesmo quando ignorados pelo Git; aborta se faltarem (commit `cb7ff42`).
-- **Não foi executado Godot neste ambiente:** o computador Desktop Commander estava offline, sem clone local executável da pasta `resort 2`; nenhuma captura, import, `--primcheck`, `--floatcheck`, `LOOP_TEST PASS`, teste do PCK ou do patch sobre a v1.0 foi confirmado. **Não anunciar patch pronto.**
-- **Falta:** clonar localmente, baixar/regenerar assets, importar duas vezes com `vram_textures.py`, conferir prints do quiosque e todos os modelos novos, corrigir qualquer defeito, rodar testes e smoke reais, gerar catálogo com `tools/gen_item_catalog.py`, exportar patch com base `51921df`, testar contra PCK da v1.0 instalada, só então atualizar `docs/latest_version.txt` e publicar `patches/`.
+## Exportação e entrega
+
+1. Termine os testes da fonte e a inspeção visual. Preserve os saves existentes.
+2. Confirme todos os assets importados. O preset Windows exporta recursos; confira
+   `tools/prune_export.py`, pois ele remove pastas supostamente sem uso e já causou
+   exclusões indevidas. `apply` precisa de `restore` em `finally`, mesmo se falhar.
+3. Exporte o PCK com o preset **Windows Desktop**. Exemplo conceitual:
+   `godot --headless --path . --export-pack "Windows Desktop" CAMINHO/MareAltaResort.pck`.
+   Depois de iniciar uma exportação, espere terminar e examine os erros.
+4. Coloque EXE/PCK correspondentes na pasta portátil. Teste **esse EXE com esse PCK**,
+   com dados isolados; o exemplo acima adapta-se usando o EXE e `--path` da pasta
+   portátil. Não basta ter testado a fonte antes da exportação.
+5. Use `tools/package_quiosque_portable.py` após os testes. Ele inclui documentos,
+   hashes e verifica CRC do ZIP; não inclui saves. Revise seus caminhos se estiver
+   em outra máquina. O nome histórico do ZIP foi mantido nas atualizações.
+6. Atualize documentação, registre testes/limitações e o hash do pacote, faça
+   commit + push na branch correta e confirme o SHA remoto. Entregue o link real
+   para baixar o ZIP. Não alegue que um executável foi publicado no GitHub quando
+   apenas o código foi enviado.
+
+### Caminhos desta máquina (não portáteis)
+
+- Checkout: `C:/Users/sergi/Documents/ChatGPT/resort 2`.
+- EXE/PCK: `build/rc2-playable/`; launcher `Jogar.vbs`.
+- Staging com espaço: `D:/CodexTemp/marealta-quiosque-pratico/`.
+- ZIP: `C:/Users/sergi/Downloads/MareAltaResort_1.1_CaisCorrigido.zip`.
+- A instalação antiga em `D:/Games/MareAltaResort` não foi atualizada por esses ZIPs.
+- Disco C teve pouco espaço; exportar no staging D evita duplicações grandes.
+
+A entrega atual é o portátil Windows. NSIS e scripts bash antigos continuam no
+repositório para quando forem necessários, mas não são a única forma de entrega.
+Não trocar saves ao atualizar: substituir programa/PCK e manter `userdata/`.
+
+## Estado validado e histórico
+
+A entrega funcional `6a0a3c2` passou os testes de empresa e prático, na fonte e no
+executável; prático verificou raycast/E em cadeiras opostas da mesa. A anterior
+`5179265` validou retirada sem preparo, devolução, migração, gestão, simulação e
+ciclo. Leia [VALIDACAO_1.1.0_LOCAL.md](VALIDACAO_1.1.0_LOCAL.md) para hashes/logs.
+Isso é evidência daquelas entregas, não garantia sobre uma alteração futura.
+
+- [QUIOSQUE_PRATICO.md](QUIOSQUE_PRATICO.md): uso e disposição do quiosque.
+- [REFINAMENTO_COMPLETO.md](REFINAMENTO_COMPLETO.md): refinamentos e revisões.
+- [SIMULACAO_QUIOSQUE.md](SIMULACAO_QUIOSQUE.md), [ROTINAS_QUIOSQUE.md](ROTINAS_QUIOSQUE.md): gestão.
+- [ITENS.md](ITENS.md), `itens.json`, `itens_registro.json`: códigos estáveis.
+- [CREDITS.md](../CREDITS.md): origem e licenças.
+- [HISTORICO_CONTINUACAO_2026-10-19.md](HISTORICO_CONTINUACAO_2026-10-19.md):
+  cópia integral do antigo guia, preservada para consulta. Versões, pendências e
+  instruções antigas ali não devem ser executadas como plano atual.
+
+Ao concluir uma atualização, atualize este guia se a preferência/fluxo mudou,
+registre evidências em validação, preserve as lições em CLAUDE.md e deixe um resumo
+com o que mudou, como foi verificado, limitações e commit/branch para a próxima IA.
