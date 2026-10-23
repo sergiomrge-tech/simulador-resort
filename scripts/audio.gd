@@ -137,3 +137,20 @@ func sfx(n: String, db: = -6.0, pitch: = 1.0) -> void :
 	add_child(p)
 	p.play()
 	p.finished.connect(p.queue_free)
+
+var _kiosk_cooldowns: Dictionary = {}
+func kiosk_sfx(kind: String, pos: Vector3) -> void:
+	if muted: return
+	var now := Time.get_ticks_msec()
+	if now - int(_kiosk_cooldowns.get(kind, -1000)) < 400: return
+	_kiosk_cooldowns[kind] = now
+	var sound := AudioStreamPlayer3D.new()
+	sound.stream = load("res://assets/audio/kiosk_" + kind + ".wav")
+	sound.position = pos
+	sound.bus = "SFX"
+	sound.volume_db = -18.0
+	sound.unit_size = 2.0
+	sound.max_distance = 12.0
+	add_child(sound)
+	sound.play()
+	sound.finished.connect(sound.queue_free)

@@ -853,6 +853,15 @@ func _kiosk_facade(c: Vector3, y0: float) -> void:
 		lamp.omni_attenuation = 1.8
 		add_child(lamp)
 		lanterns.append([lamp, null, 0.65, false])
+	for x in [-1.4,1.4]:
+		var sign_light := OmniLight3D.new()
+		sign_light.name = "KioskSignWarmLight"
+		sign_light.position = c + Vector3(x,2.55,3.85)
+		sign_light.light_color = Color(1,.78,.48)
+		sign_light.omni_range = 2.1
+		sign_light.shadow_enabled = false
+		add_child(sign_light)
+		lanterns.append([sign_light,null,.42,false])
 	for x in [-2.43, 2.43]:
 		Real.place(self, "g:hanging_planter", c + Vector3(x, 1.92, -0.4), 0.98)
 

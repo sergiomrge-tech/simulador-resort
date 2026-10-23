@@ -1,5 +1,11 @@
 # Como continuar o Maré Alta Resort (passagem de bastão — 19/10/2026)
 
+> **Sete refinamentos integrados (23/10/2026):** ler REFINAMENTO_COMPLETO.md.
+> Inclui bermudas, uniformes e aventais, gestos/porta animada, piscadas,
+> balcão detalhado, áudio posicional suave e iluminação de entardecer/noite.
+> Uniformes nascem em Guest.apply_staff_uniform; work_arm usa o eixo real dos
+> ossos, sem assumir que o membro aponta em Y. Rodar testes prático/empresa/ciclo.
+
 > **Parede e roupas (22/10/2026):** parede traseira com ripas na fonte
 > `kiosk_facade.blend`, colisão `KioskRearWall`, equipamentos e laterais preservados.
 > Roupas reais CC0 Quaternius em `assets/models/clothing/`, pesos originais,

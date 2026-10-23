@@ -17,12 +17,16 @@ var cleaner_time := 0.0
 var pulse := 0.0
 var _display_key := ""
 var _hand_key := "?"
+var _production_key := ""
+var menu_card: Label3D
+var door_tween: Tween
 
 func _ready() -> void:
 	name = "KioskOperations"
 	_build()
 	Core.company_changed.connect(sync_company)
 	Core.staff_changed.connect(sync_company)
+	Core.time_changed.connect(_update_work_lighting)
 	sync_company()
 
 func center() -> Vector3:
@@ -48,6 +52,14 @@ func _build() -> void:
 	var register_pos: Vector3 = c + Vector3(1.3, 1.28, 1.8)
 	Real.place(self, "g:service_register", register_pos, -1.0)
 	_interaction(self, register_pos + Vector3(0, 0.12, 0), Vector3(0.4, 0.3, 0.4), _register_prompt, collect_payments)
+	Real.place(self, "g:kiosk_counter_details", c + Vector3(0,1.28,0), -1.0,0,Color.WHITE,0,false)
+	menu_card = B.label(self,"",c+Vector3(-.90,1.50,2.023),22,Color(.08,.16,.16),Color(0,0,0,0),0)
+	menu_card.pixel_size = .0008
+	menu_card.outline_size = 0
+	var pickup_label := B.label(self,"PEDIDOS PRONTOS",c+Vector3(.20,1.36,2.20),16,Color(.95,.89,.72),Color(.05,.12,.12),0)
+	pickup_label.pixel_size = .0006
+	Real.place(self,"k:utensil-fork",c+Vector3(-1.98,1.31,.93),0.0,PI*.5,Color.WHITE,.13)
+	Real.place(self,"k:utensil-spoon",c+Vector3(-1.90,1.31,.93),0.0,PI*.5,Color.WHITE,.13)
 	products = Node3D.new()
 	add_child(products)
 	hand = Node3D.new()
@@ -86,20 +98,23 @@ func open_station(kind: String) -> void:
 	if not can_access(kind):
 		return
 	Core.service_station = kind
+	main.audio.kiosk_sfx("fridge" if kind == "bebidas" else "pickup",stations[kind].global_position)
 	if kind == "bebidas":
-		door.rotation.y = -deg_to_rad(105)
+		_animate_door(-deg_to_rad(105))
 	main.hud.phone.open("servico")
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 
 func finish_station() -> void:
 	main.hud.toggle_shop()
-	door.rotation.y = 0.0
+	if absf(door.rotation.y) > .1: main.audio.kiosk_sfx("fridge",stations.bebidas.global_position)
+	_animate_door(0.0)
 
 func _register_prompt() -> String:
 	return "Caixa · receber %d contas" % Core.company.receivables.size() if Core.company_enabled() else ""
 
 func collect_payments() -> void:
 	var amount: int = Core.collect_company_payments()
+	if amount > 0: main.audio.kiosk_sfx("cash",center()+Vector3(1.3,1.4,1.8))
 	Core.toast.emit("Recebido: " + Core.fmt_money(amount), "good")
 
 func customer_prompt(ref: WeakRef) -> String:
@@ -142,8 +157,15 @@ func sync_company() -> void:
 	hand.visible = visible
 	_sync_staff_presence()
 	_sync_products()
+	_update_menu_card()
+	var production: String = str(Core.company.production.get("dish",""))
+	if production != _production_key:
+		if production != "": main.audio.kiosk_sfx("prepare",stations.cozinha.global_position)
+		elif _production_key != "": main.audio.kiosk_sfx("ready",stations.pratos.global_position)
+		_production_key = production
 	var held: String = str(Core.company.carry)
 	if held != _hand_key:
+		if held != "": main.audio.kiosk_sfx("pickup",main.player.global_position)
 		_hand_key = held
 		for child in hand.get_children():
 			hand.remove_child(child)
@@ -190,11 +212,13 @@ func _actor(role: String, pos: Vector3):
 		if Core.company.sim.management.profiles.has(role):
 			display_name = Core.CompanyRules.Simulation.Management.candidate(role, int(Core.company.sim.management.profiles[role].kind)).name
 		g.set_meta("staff_name", display_name)
+		g.apply_staff_uniform(role)
+		if role == "cozinheiro": g.rotation.y = PI
 		actors[role] = g
 	return actors[role]
 
 func _staff_home(role: String) -> Vector3:
-	var offsets := {"cozinheiro": Vector3(1.05, 0.1, -0.2), "atendente": Vector3(-0.9, 0.1, 0.55), "garcom": Vector3(0.1, 0.1, 0.7), "caixa": Vector3(1.25, 0.1, 1.15), "limpeza": Vector3(-3.6, 0.1, 3.4)}
+	var offsets := {"cozinheiro": Vector3(1.2, 0.1, -1.08), "atendente": Vector3(-0.9, 0.1, 0.55), "garcom": Vector3(0.1, 0.1, 0.7), "caixa": Vector3(1.25, 0.1, 1.15), "limpeza": Vector3(-3.6, 0.1, 3.4)}
 	return center() + offsets[role]
 
 func _sync_staff_presence() -> void:
@@ -207,6 +231,7 @@ func _sync_staff_presence() -> void:
 			var working: bool = Core.company_enabled() and Core.prog.staff_eff(role) > 0 and main.village.kiosk_open()
 			g.set_process(working)
 			if not working:
+				if g.has_meta("work_target"): g.remove_meta("work_target")
 				g.go([])
 				g.play("Idle_Loop")
 		elif actors.has(role):
@@ -248,6 +273,10 @@ func _staff_tick() -> void:
 				Core.collect_company_payments()
 		elif role == "cozinheiro" or (role == "atendente" and waiter_role == "garcom"):
 			_cook()
+			if not Core.company.production.is_empty():
+				g.set_meta("work_kind","prepare")
+				g.set_meta("work_target",center()+Vector3(1.2,1.08,-1.60))
+			elif g.has_meta("work_target"): g.remove_meta("work_target")
 		elif role == "limpeza":
 			_cleaner(g)
 		else:
@@ -269,9 +298,23 @@ func _cook() -> void:
 func _waiter(g) -> void:
 	if g.is_moving():
 		return
+	if waiter_phase == "pickup":
+		if Time.get_ticks_msec() < int(g.get_meta("handoff_until",0)): return
+		waiter_phase = "deliver"
+		g.set_meta("work_kind","carry")
+		g.go(g.get_meta("delivery_route",[]))
+		return
 	if waiter_phase == "deliver":
 		var target = waiter_target.get_ref() if waiter_target != null else null
 		if is_instance_valid(target) and not target.is_queued_for_deletion() and target.state == "kwait" and str(Core.company.staff_carry) in main.village._remaining(target) and g.position.distance_to(target.spot.approach) < 1.0:
+			if not g.has_meta("delivering"):
+				g.set_meta("delivering",true)
+				g.set_meta("handoff_until",Time.get_ticks_msec()+400)
+				g.set_meta("work_kind","handoff")
+				g.set_meta("work_target",target.global_position+Vector3(0,1.0,0))
+				return
+			if Time.get_ticks_msec() < int(g.get_meta("handoff_until")): return
+			g.remove_meta("delivering")
 			main.village._deliver_item(target, str(Core.company.staff_carry), true, true)
 		waiter_phase = ""
 		_clear_tray(g)
@@ -289,14 +332,17 @@ func _waiter(g) -> void:
 			if not Core.reserve_company_staff_dish(id):
 				continue
 			waiter_target = weakref(target)
-			waiter_phase = "deliver"
+			waiter_phase = "pickup"
+			g.set_meta("handoff_until",Time.get_ticks_msec()+400)
 			var tray := Node3D.new()
 			tray.name = "StaffTray"
 			g.add_child(tray)
 			tray.position = Vector3(0, 1.0, 0.32)
 			tray.scale = Vector3.ONE * 0.65
 			Dishes.build(tray, id)
-			g.go([center() + Vector3(1.1, 0.1, -0.85), center() + Vector3(3.2, 0.1, -0.85), center() + Vector3(3.2, 0.1, 3.5), target.spot.approach])
+			g.set_meta("work_kind","pickup")
+			g.set_meta("work_target",center()+Vector3(-.18,1.10,-1.10))
+			g.set_meta("delivery_route",[center() + Vector3(1.1, 0.1, -0.85), center() + Vector3(3.2, 0.1, -0.85), center() + Vector3(3.2, 0.1, 3.5), target.spot.approach])
 			return
 
 func _cleaner(g) -> void:
@@ -316,6 +362,8 @@ func _cleaner(g) -> void:
 		g.go([main.world.kiosk_spots[cleaner_seat].approach])
 
 func _clear_tray(g) -> void:
+	if g.has_meta("work_target"): g.remove_meta("work_target")
+	if g.has_meta("delivering"): g.remove_meta("delivering")
 	var tray = g.get_node_or_null("StaffTray")
 	if tray != null:
 		g.remove_child(tray)
@@ -399,3 +447,24 @@ func _sync_products() -> void:
 		tag.shaded = false
 		if drink: drink_slot += 1
 		else: food_slot += 1
+
+func _update_menu_card() -> void:
+	if menu_card == null: return
+	var lines: Array[String] = ["CARDÁPIO"]
+	for id in Core.kiosk_menu():
+		if lines.size() >= 5: break
+		lines.append(str(Economy.dish(id).name))
+	menu_card.text = "\n".join(lines)
+
+func _update_work_lighting(_day: int, minutes: float) -> void:
+	var evening := smoothstep(16.5,19.5,minutes/60.0)
+	var lamp = main.world.find_child("KioskWorkLight",true,false)
+	if lamp != null:
+		lamp.light_energy = lerpf(.65,.92,evening)
+		lamp.light_color = Color(1,.93,.82).lerp(Color(1,.84,.64),evening)
+
+func _animate_door(angle: float) -> void:
+	if door_tween != null and door_tween.is_valid(): door_tween.kill()
+	door_tween = create_tween()
+	door_tween.set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
+	door_tween.tween_property(door,"rotation:y",angle,.24).set_trans(Tween.TRANS_SINE)

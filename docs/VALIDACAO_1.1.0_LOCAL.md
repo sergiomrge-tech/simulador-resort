@@ -261,3 +261,18 @@ CRCs verificados e sem userdata. Documentação e instruções do expositor atua
   Permanecem os avisos conhecidos de recursos no encerramento do motor.
 - SHA-256 PCK: `3ce2443d864a2eeff632c0efd803ead05823bbb786a91aa6b56872024d210170`.
 - ZIP de Downloads atualizado e CRC verificado; saves preservados.
+# Sete refinamentos integrados — 23/10/2026
+
+- Escopo e limites em REFINAMENTO_COMPLETO.md. Fontes Blender de roupas/avental
+  e conjunto de balcão salvas e reabertas. Cinco WAVs originais sem vozes.
+- Fonte: `seven3-proof.log` PRACTICAL_TEST PASS, `seven2-company.log`
+  COMPANY_TEST PASS. Conferidos retratos, gesto de preparo, circulação, balcão,
+  bermudas e capturas de pôr do sol/noite.
+- PCK: `seven-pack-visual.log` PRACTICAL_TEST PASS em Vulkan;
+  `seven-pack-company.log` COMPANY_TEST PASS; `seven-pack-loop.log` LOOP_TEST PASS.
+- `seven-pack-audio.log`: PRACTICAL_TEST PASS com driver Dummy, incluindo
+  carregamento/duração dos cinco sons e reprodução posicional com limite de repetição.
+- Sem SCRIPT ERROR/recursos ausentes nos testes finais. Continuam avisos já
+  existentes de material/recursos no encerramento do motor.
+- SHA-256 PCK: `da59a2b1432376a332599587c7bd68e07771b918b4262b1699cfe807261d3014`.
+- ZIP em Downloads atualizado, CRC conferido, documentação incluída, sem saves.

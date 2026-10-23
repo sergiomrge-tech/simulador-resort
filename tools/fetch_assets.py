@@ -388,6 +388,7 @@ def generated_props():
     Rodar após baixar texturas evita exportar GLBs sem materiais/texturas.
     """
     groups = [
+        ("gen_counter_details.py", ("kiosk_counter_details",)),
         ("gen_kiosk_facade.py", ("kiosk_facade", "kiosk_neon_trim", "kiosk_roof", "kiosk_workbench", "kiosk_blender")),
         ("gen_kiosk_service.py", ("service_fridge", "service_fridge_door", "service_food_cabinet", "service_register")),
         ("gen_dishes.py", ("dish_petiscos", "dish_tapioca", "dish_pastel", "dish_acai", "dish_moqueca", "dish_batida")),
@@ -468,6 +469,8 @@ def main():
     with ThreadPoolExecutor(6) as ex:
         futs = []
         if only in ("", "audio"):
+            if not all(os.path.isfile(os.path.join(A,"audio","kiosk_"+n+".wav")) for n in ("fridge","pickup","prepare","ready","cash")):
+                subprocess.check_call([sys.executable,os.path.join(ROOT,"tools","gen_kiosk_soft_audio.py")],cwd=ROOT)
             futs.append(ex.submit(footstep_audio))
         if only in ("", "tex"):
             futs += [ex.submit(texture, s) for s in TEXTURES]

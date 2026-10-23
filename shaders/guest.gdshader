@@ -13,6 +13,7 @@ instance uniform vec4 sole : source_color = vec4(0.95, 0.93, 0.88, 1.0);
 instance uniform float pattern = 0.0;
 instance uniform vec4 shirt2 : source_color = vec4(1.0, 1.0, 1.0, 1.0);
 instance uniform float shorts_pattern = 0.0;
+instance uniform vec4 apron_color : source_color = vec4(0.92,0.86,0.72,1.0);
 varying float zone;
 varying vec3 opos;
 uniform float garment_zone = -1.0;
@@ -59,6 +60,12 @@ void fragment(){
 	}
 	else if (zone > 2.5 && zone < 3.5) { c = hair.rgb; r = 0.5; }
 	else if (zone > 3.5 && zone < 4.5) { c = shoes.rgb; r = 0.7; }
+	else if (zone > 5.5) {
+		c = apron_color.rgb; r = 0.95;
+		float seam = step(UV.x,.018)+step(.982,UV.x)+step(UV.y,.018)+step(.982,UV.y);
+		c *= mix(1.0,.78,clamp(seam,0.0,1.0));
+		c *= .98+.02*sin(UV.x*900.0)*sin(UV.y*900.0);
+	}
 	else if (zone > 4.5) { c = sole.rgb; r = 0.8; }
 	if (use_fabric) {
 		vec3 fabric = texture(fabric_texture, UV).rgb;

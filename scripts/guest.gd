@@ -175,6 +175,10 @@ func _build_anim(model: Node3D) -> void :
 		eat.set_script(load("res://scripts/eat_arm.gd"))
 		eat.guest = self
 		_skel.add_child(eat)
+		var work := SkeletonModifier3D.new()
+		work.set_script(load("res://scripts/work_arm.gd"))
+		work.guest = self
+		_skel.add_child(work)
 	var sm: = AnimationNodeStateMachine.new()
 	var specs: = {
 		"Idle": "Idle_Loop", "Talk": "Idle_Talking_Loop", "Walk": "Walk_Loop", "Jog": "Jog_Fwd_Loop", 
@@ -303,7 +307,11 @@ func _update_look() -> void :
 		face.y = 0.0
 		if dist > 0.45 and dist < 8.0 and face.length() > 0.01 and face.normalized().dot(to / dist) > -0.2:
 			ahead = pl.global_position + Vector3(0, 1.45, 0)
+	ahead.y += sin(float(Time.get_ticks_msec()) * 0.0011 + float(gid)) * 0.018
 	_look_pt.global_position = ahead
+	for brow in _hair_parts:
+		if str(brow.name).to_lower().contains("brow"):
+			brow.position.y = -0.003 if state == "kwait" else (0.002 if state == "keat" else 0.0)
 
 func play(an: String) -> void :
 	if _anim == null:
@@ -839,19 +847,28 @@ func _dress(m: Node3D, rng: RandomNumberGenerator) -> void :
 			mi.set_meta("src", mi.mesh.surface_get_material(0))
 			_hair_parts.append(mi)
 		elif n.contains("eye") and mi.mesh.surface_get_material(0) is BaseMaterial3D:
-			mi.material_override = Ppl.toon_copy(mi.mesh.surface_get_material(0), Color.WHITE)
+			var eye_mat := ShaderMaterial.new()
+			eye_mat.shader = load("res://shaders/npc_eyes.gdshader")
+			var source: BaseMaterial3D = mi.mesh.surface_get_material(0)
+			eye_mat.set_shader_parameter("tint", source.albedo_color)
+			eye_mat.set_shader_parameter("textured", source.albedo_texture != null)
+			if source.albedo_texture != null: eye_mat.set_shader_parameter("eye_texture", source.albedo_texture)
+			eye_mat.set_shader_parameter("center_y", mi.mesh.get_aabb().get_center().y)
+			eye_mat.set_shader_parameter("blink_offset", float(gid) * 0.73)
+			mi.material_override = eye_mat
 	var foot: = "shoes"
 	_body_mi.mesh = Ppl.covered_body(_female, _body_mi.mesh)
 	for cm in Ppl.outfit_parts(_female):
 		var garment_mat: ShaderMaterial = _mat.duplicate()
-		var garment_zone: float = 0.0 if str(cm.name).begins_with("skin_") else (4.0 if str(cm.name).contains("shoes") else (2.0 if str(cm.name).contains("trousers") else 1.0))
+		var garment_zone: float = 6.0 if str(cm.name).contains("apron") else (0.0 if str(cm.name).begins_with("skin_") else (4.0 if str(cm.name).contains("shoes") else (2.0 if str(cm.name).contains("trousers") else 1.0)))
 		garment_mat.set_shader_parameter("garment_zone", garment_zone)
 		var src: Material = cm.mesh.surface_get_material(0)
-		if garment_zone > 0.0 and src is BaseMaterial3D and src.albedo_texture != null:
+		if garment_zone > 0.0 and garment_zone < 5.0 and src is BaseMaterial3D and src.albedo_texture != null:
 			garment_mat.set_shader_parameter("use_fabric", true)
 			garment_mat.set_shader_parameter("fabric_texture", src.albedo_texture)
 		cm.material_override = garment_mat
 		cm.name = "Tailored_" + str(cm.name)
+		if garment_zone == 6.0: cm.hide()
 		skel.add_child(cm)
 		cm.skeleton = NodePath("..")
 		_mesh_insts.append(cm)
@@ -994,3 +1011,25 @@ func consume_dish(dish: String) -> void:
 			model.position = Vector3(0, 0.02, 0.04)
 	play("Eat")
 	_set_eating(true)
+
+func apply_staff_uniform(role: String) -> void:
+	var palette := {"cozinheiro": Color(0.88,0.85,0.75), "garcom": Color(0.12,0.42,0.42), "atendente": Color(0.12,0.42,0.42), "caixa": Color(0.74,0.50,0.28), "limpeza": Color(0.35,0.48,0.58)}
+	set_colors(_skin, palette.get(role, Color(0.2,0.4,0.4)), Color(0.16,0.22,0.25), _hair_col)
+	set_meta("staff_role", role)
+	var apron = _skel.get_node_or_null("Tailored_apron")
+	if apron != null:
+		apron.visible = role in ["cozinheiro","limpeza"]
+		apron.set_instance_shader_parameter("apron_color", Color(0.92,0.86,0.72) if role == "cozinheiro" else Color(0.29,0.40,0.46))
+	if not _skel.has_node("StaffBadge"):
+		var badge := BoneAttachment3D.new()
+		badge.name = "StaffBadge"
+		badge.bone_name = "spine_03"
+		_skel.add_child(badge)
+		var label := Label3D.new()
+		badge.add_child(label)
+		label.transform = _skel.get_bone_global_rest(_skel.find_bone("spine_03")).affine_inverse() * Transform3D(Basis.IDENTITY,Vector3(0.075,1.31,0.17))
+		label.text = str(Core.company.get("name","Quiosque")).left(18) + "\n" + str(Economy.STAFF[role].name)
+		label.font_size = 16
+		label.pixel_size = 0.0006
+		label.modulate = Color(1,0.94,0.76)
+		label.outline_size = 3

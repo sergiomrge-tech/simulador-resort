@@ -122,6 +122,25 @@ func run(main) -> void:
 	check(main.hud.phone.app == "painel", "voltar respeita a categoria")
 	main.hud.phone.close()
 	check(Core.hire("caixa"), "caixa contratado para conferência visual")
+	check(main.operations.actors.caixa._skel.has_node("StaffBadge"),"uniforme com identificação por função")
+	check(main.operations.menu_card.text.contains("CARDÁPIO"),"cardápio físico acompanha receitas disponíveis")
+	for cue in ["fridge","pickup","prepare","ready","cash"]:
+		var stream: AudioStream = load("res://assets/audio/kiosk_" + cue + ".wav")
+		check(stream != null and stream.get_length() > 0 and stream.get_length() < 1,"som curto sem vozes: " + cue)
+	if DisplayServer.get_name() == "headless":
+		main.audio.muted = false
+		var before: int = main.audio.find_children("*","AudioStreamPlayer3D",true,false).size()
+		main.audio.kiosk_sfx("cash",c)
+		var after: int = main.audio.find_children("*","AudioStreamPlayer3D",true,false).size()
+		main.audio.kiosk_sfx("cash",c)
+		check(after == before+1 and main.audio.find_children("*","AudioStreamPlayer3D",true,false).size() == after,"som posicional reproduz e impede repetição excessiva")
+		main.audio.muted = true
+	main.operations._update_work_lighting(Core.day,12*60)
+	var light = main.world.find_child("KioskWorkLight",true,false)
+	var day_energy: float = light.light_energy
+	main.operations._update_work_lighting(Core.day,20*60)
+	check(light.light_energy > day_energy and light.light_color.b < .82,"luz mais quente e legível à noite")
+	main.operations._update_work_lighting(Core.day,11*60)
 	if DisplayServer.get_name() != "headless":
 		main.operations.open_station("bebidas")
 		await shot(main, "practical_station", c + Vector3(0, .1, .75), 0, -5)
@@ -159,8 +178,9 @@ func run(main) -> void:
 				var glasses = Real.place(person._face, "g:sunglasses", Vector3(0, 0.075, 0.093), -1.0, 0.0, Color.WHITE, 0.0, false)
 				glasses.name = "Sunglasses"
 				glasses.scale *= 0.9
+			person.apply_staff_uniform("cozinheiro" if person._female else "garcom")
 			var clothes = person.find_children("Tailored_*", "MeshInstance3D", true, false)
-			check(clothes.size() == 4, "roupas importadas " + gender)
+			check(clothes.size() == 5, "roupas importadas " + gender)
 			check(person._body_mi.mesh.get_surface_count() > 0, "corpo preservado sob roupas " + gender)
 			for clothing in clothes:
 				check(clothing.skin != null and clothing.get_node(clothing.skeleton) == person._skel, "roupa ligada ao esqueleto existente")
@@ -170,12 +190,28 @@ func run(main) -> void:
 			if shown.size() == 2: break
 		await shot(main, "practical_clothing", c + Vector3(0, .1, 6.3), 0, -14)
 		await shot(main, "people_portraits", c + Vector3(0, .05, 5.55), 0, 0)
+		for person in shown.values():
+			var apron = person._skel.get_node_or_null("Tailored_apron")
+			check(apron != null and apron.visible == person._female,"avental apenas na função de cozinha")
+			person.set_meta("work_kind","prepare")
+			person.set_meta("work_target",person.global_position+Vector3(-.18,1.05,.40))
+		await frames(18)
+		await shot(main,"staff_preparing",c+Vector3(0,.05,5.55),0,0)
+		for person in shown.values(): person.remove_meta("work_target")
 		for person in shown.values(): person.play("Walk_Loop")
 		await frames(35)
 		await shot(main, "practical_clothing_walk", c + Vector3(0, .1, 6.3), 0, -14)
 		for person in shown.values(): person.play("Sitting_Idle_Loop")
 		await frames(35)
 		await shot(main, "practical_clothing_sit", c + Vector3(0, .1, 6.3), 0, -14)
+	if DisplayServer.get_name() != "headless":
+		Core.minutes = 17.5*60
+		Core.time_changed.emit(Core.day,Core.minutes)
+		await shot(main,"kiosk_sunset",c+Vector3(1.5,.35,7),15,-3)
+		Core.minutes = 20*60
+		Core.time_changed.emit(Core.day,Core.minutes)
+		await shot(main,"kiosk_night",c+Vector3(1.5,.35,7),15,-3)
+		Core.minutes = 11*60
 	Core.company.created = false
 	Core.staff.atendente = true
 	Core.staff_changed.emit()

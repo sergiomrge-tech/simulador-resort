@@ -20,6 +20,8 @@ Para atualizar uma cópia anterior, substitua os arquivos do programa e mantenha
 a pasta userdata/. O ZIP não inclui nem apaga saves.
 
 NOVO NESTA REVISÃO
+- Sete refinamentos: roupas de praia, uniformes por função, aventais, gestos,
+  piscadas, balcão equipado, sons suaves sem vozes e luz de entardecer/noite.
 - Óculos menores com lentes ovais e armação escura, mais próximos do rosto.
 - Pessoas com proporções mais naturais, pele/cabelo suaves e roupas menos brilhantes.
 - Refinamento: revestimento areia retangular e iluminação quente na área de trabalho.
@@ -60,11 +62,12 @@ passos mais suaves e trilha sem vozes. A instalação antiga em D:/Games não é
 (PORTABLE / 'LEIA-ME.txt').write_text(readme, encoding='utf-8')
 for src, dst in [('QUIOSQUE_PRATICO.md','QUIOSQUE_PRATICO.md'),
                  ('ROTINAS_QUIOSQUE.md','ROTINAS_DO_QUIOSQUE.md'),
-                 ('SIMULACAO_QUIOSQUE.md','GESTAO_DO_QUIOSQUE.md')]:
+                 ('SIMULACAO_QUIOSQUE.md','GESTAO_DO_QUIOSQUE.md'),
+                 ('REFINAMENTO_COMPLETO.md','REFINAMENTO_COMPLETO.md')]:
     shutil.copyfile(ROOT / 'docs' / src, PORTABLE / dst)
 
 names = ['MareAltaResort.exe','MareAltaResort.pck','Jogar.vbs','LEIA-ME.txt',
-         'QUIOSQUE_PRATICO.md','ROTINAS_DO_QUIOSQUE.md','GESTAO_DO_QUIOSQUE.md','icon.ico']
+         'QUIOSQUE_PRATICO.md','ROTINAS_DO_QUIOSQUE.md','GESTAO_DO_QUIOSQUE.md','REFINAMENTO_COMPLETO.md','icon.ico']
 checks = []
 for name in names:
     with (PORTABLE / name).open('rb') as f:

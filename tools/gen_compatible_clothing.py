@@ -1,6 +1,6 @@
 """Adapt original Quaternius rigged cloth; never transfer weights from a different body."""
 from pathlib import Path
-import bpy, bmesh, shutil
+import bpy, bmesh, shutil, math
 ROOT=Path(__file__).resolve().parents[1]
 FOLDER=ROOT/'art/vendor/quaternius_outfits/Modular Character Outfits - Fantasy[Standard]/Exports/glTF (Godot-Unreal)/Modular Parts'
 OUT=ROOT/'assets/models/clothing'
@@ -31,6 +31,15 @@ for female in [False,True]:
             height=1.025 if part=='Body' else .15
             bmesh.ops.bisect_plane(bm,geom=list(bm.verts)+list(bm.edges)+list(bm.faces),dist=.00001,plane_co=(0,0,height),plane_no=(0,0,1),clear_inner=part=='Body',clear_outer=part=='Feet')
             bm.to_mesh(ob.data);bm.free()
+        if part=='Legs':
+            bm=bmesh.new();bm.from_mesh(ob.data)
+            bmesh.ops.bisect_plane(bm,geom=list(bm.verts)+list(bm.edges)+list(bm.faces),dist=.00001,plane_co=(0,0,.62),plane_no=(0,0,1),clear_inner=True)
+            bm.to_mesh(ob.data);bm.free()
+        if part=='Body':
+            # Flatten small decorative fastenings into the fabric for a casual shirt.
+            for v in ob.data.vertices:
+                if abs(v.co.x)<.10 and 1.025<v.co.z<1.45:
+                    v.co.y=max(v.co.y,-.128)
         # A little ease over the muscular base; preserve original topology and weights.
         for v in ob.data.vertices:
             if part!='Arms':v.co+=v.normal*.004
@@ -54,6 +63,38 @@ for female in [False,True]:
         keep.append(ob)
         for other in added:
             if other not in keep and other!=first_rig:bpy.data.objects.remove(other,do_unlink=True)
+    # Tailored cloth apron: curved quad grid, rounded outline and stitched edge.
+    verts=[];faces=[];nx=18;nz=28
+    for j in range(nz+1):
+        z=.86+j/nz*.48
+        transition=max(0,min(1,(z-1.02)/.18))
+        transition=transition*transition*(3-2*transition)
+        width=.18*(1-transition)+.105*transition
+        width*=.97+.03*math.sin(math.pi*j/nz)
+        for i in range(nx+1):
+            x=(i/nx*2-1)*width
+            y=-.15-.025*math.cos(x/width*math.pi/2)+.003*math.sin(i*.7+j*.3)
+            verts.append((x,y,z))
+    for j in range(nz):
+        for i in range(nx):
+            a=j*(nx+1)+i;faces.append((a,a+1,a+nx+2,a+nx+1))
+    mesh=bpy.data.meshes.new('Tailored apron cloth');mesh.from_pydata(verts,[],faces);mesh.update()
+    uv=mesh.uv_layers.new(name='Apron sewing UV')
+    for poly in mesh.polygons:
+        for li in poly.loop_indices:
+            vi=mesh.loops[li].vertex_index
+            uv.data[li].uv=((vi%(nx+1))/nx,(vi//(nx+1))/nz)
+    apron=bpy.data.objects.new('apron',mesh);bpy.context.scene.collection.objects.link(apron)
+    for bone in ['pelvis','spine_01','spine_02']:apron.vertex_groups.new(name=bone)
+    for v in mesh.vertices:
+        blend=max(0,min(1,(v.co.z-1.04)/.22))
+        apron.vertex_groups['pelvis'].add([v.index],1-blend,'REPLACE')
+        apron.vertex_groups['spine_02'].add([v.index],blend,'REPLACE')
+    apron.parent=first_rig
+    mod=apron.modifiers.new('Original character rig','ARMATURE');mod.object=first_rig
+    apron.data.materials.append(keep[0].data.materials[0])
+    for polygon in mesh.polygons:polygon.use_smooth=True
+    keep.append(apron)
     first_rig.animation_data_clear()
     for action in list(bpy.data.actions):bpy.data.actions.remove(action)
     bpy.ops.file.pack_all()

@@ -183,6 +183,13 @@ Kenney, **Impact Sounds 1.0**, CC0: https://kenney.nl/assets/impact-sounds . Qui
 
 ## Roupas de pessoas e parede traseira (22/10/2026)
 
+Sete refinamentos (23/10): aventais modelados no Blender e adaptações das bermudas
+preservam o rig Quaternius CC0. Cardápio/suporte, porta-guardanapos e bandeja são
+modelos autorais, gerados por `tools/gen_counter_details.py`, com madeira Poly Haven
+CC0 existente e fonte `art/blender/kiosk_counter_details.blend`.
+Sons `kiosk_fridge/pickup/prepare/ready/cash.wav`: síntese original determinística,
+sem samples nem vozes; gerador `tools/gen_kiosk_soft_audio.py`.
+
 Revisão de 23/10: corte da barra das camisas e redução do cano dos calçados
 no Blender, preservando pesos, UVs e fontes editáveis. Pernas expostas utilizam
 a base original; paleta de calçados neutra.
