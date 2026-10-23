@@ -70,6 +70,7 @@ func run(main) -> void:
 	main.player.global_position = c + Vector3(-1.2, 0.1, -3.0)
 	check(not main.operations.can_access("bebidas"), "não retira pela traseira do móvel")
 	main.player.global_position = c + Vector3(-1.2, 0.1, -0.65)
+	for ingredient in Core.stock: Core.stock[ingredient] = 0
 	Core.company.ready = {}
 	Core.company.production = {}
 	main.operations.sync_company()
@@ -83,18 +84,22 @@ func run(main) -> void:
 			for child in display.get_children():
 				if child is Node3D and not child is Label3D: drink_models += 1
 	check(drink_models == 12, "doze bebidas visíveis na geladeira")
+	for ingredient in Core.stock: Core.stock[ingredient] = 30
+	main.operations.sync_company()
 	var stock_before: int = Core.stock.coco
 	main.operations.open_station("bebidas")
 	check(main.hud.phone.app == "servico", "E na geladeira abre a estação")
-	main.hud.phone._service_action("coco_gelado", "prepare")
-	check(Core.stock.coco == stock_before - 1 and not Core.company.production.is_empty(), "preparo consome ingrediente uma vez")
-	Core.tick_company(10)
-	check(int(Core.company.ready.get("coco_gelado", 0)) == 1, "preparo abastece geladeira")
-	check(main.operations.products.get_node("Shelf_coco_gelado").get_meta("stock_count") == 1, "etiqueta acompanha preparo real")
-	main.operations.open_station("bebidas")
+	var buttons: Array[String] = []
+	for button in main.hud.phone.screen.find_children("*","Button",true,false): buttons.append(button.text)
+	check(not "Preparar · 3 s" in buttons and "Pegar e levar ao cliente" in buttons, "estação oferece retirada sem preparo")
 	main.hud.phone._service_action("coco_gelado", "pickup")
-	check(Core.company.carry == "coco_gelado" and int(Core.company.ready.coco_gelado) == 0, "retirada transfere produto para a mão")
-	check(main.operations.products.get_node("Shelf_coco_gelado").get_meta("display_only") and main.operations.products.get_child_count() == main.operations.shelf_menu().size(), "retirar último item mantém os expositores completos")
+	check(Core.stock.coco == stock_before - 1 and Core.company.production.is_empty(), "retirada imediata consome estoque uma vez")
+	check(Core.company.carry == "coco_gelado", "produto na mão sem esperar")
+	check(main.operations.products.get_node("Shelf_coco_gelado").get_meta("stock_count") == 29, "etiqueta acompanha estoque de retirada")
+	check(Core.return_company_dish(), "devolve produto pronto")
+	main.operations.open_station("bebidas")
+	main.hud.phone._service_action("coco_gelado","pickup")
+	check(Core.stock.coco == stock_before - 1, "retirada após devolver não cobra duas vezes")
 	var guest = main.village.spawn_customer()
 	check(guest != null, "cliente para pedido de prova")
 	if guest != null:

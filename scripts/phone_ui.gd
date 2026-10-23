@@ -454,7 +454,7 @@ func _home() -> void:
 		button.expand_icon = true
 		button.add_theme_constant_override("icon_max_width", 26)
 	var help := _card(list)
-	_lbl(help, "No quiosque: E nos equipamentos para preparar e retirar; E no cliente para entregar.", 15, INK, false, true)
+	_lbl(help, "No quiosque: E na geladeira ou armário para pegar os produtos; E no cliente para entregar.", 15, INK, false, true)
 	_lbl(list, "%s fecha o celular" % Quality.key_name("shop"), 13, INK_SOFT)
 
 func _app_hub(list: VBoxContainer, links: Array) -> void:
@@ -1270,16 +1270,15 @@ func _service_action(id: String, action: String) -> void:
 		return
 	var drink: bool = load("res://scripts/dish_presentation.gd").is_drink(id)
 	var ok := false
-	if action == "prepare" and (kind == "cozinha" or (kind == "bebidas" and drink)):
-		ok = Core.prepare_company_dish(id)
-	elif action == "pickup" and ((kind == "bebidas" and drink) or (kind == "pratos" and not drink)):
+	var matches: bool = (kind == "bebidas" and drink) or (kind in ["pratos", "cozinha"] and not drink)
+	if action == "pickup" and matches:
 		ok = Core.pickup_company_dish(id)
-	elif action == "return" and ((kind == "bebidas" and drink) or (kind == "pratos" and not drink)):
+	elif action == "return" and matches:
 		ok = Core.return_company_dish()
 	if ok:
 		ops.finish_station()
 	else:
-		Core.toast.emit("Confira ingredientes, equipamentos, preparo e espaço disponível.", "bad")
+		Core.toast.emit("Confira o estoque e se você já está carregando um item.", "bad")
 
 func _app_service(list: VBoxContainer) -> void:
 	if not Core.company_enabled():
@@ -1288,21 +1287,14 @@ func _app_service(list: VBoxContainer) -> void:
 	var kind: String = str(Core.service_station)
 	var near: bool = _operations().can_access(kind)
 	_lbl(list, {"bebidas": "Geladeira", "pratos": "Armário de pratos", "cozinha": "Cozinha"}.get(kind, "Operação"), 23, INK, true)
-	_lbl(list, "Prepare primeiro; quando ficar pronto, retire um item e leve ao cliente. Até 4 prontos por receita.", 14, INK_SOFT, false, true)
+	_lbl(list, "Pegue o produto pronto e leve ao cliente. Não precisa preparar nem esperar.", 14, INK_SOFT, false, true)
 	if not near:
-		_lbl(list, "Entre no quiosque e aproxime-se da estação e aperte E para preparar ou retirar.", 16, BAD, false, true)
-	if not Core.company.production.is_empty():
-		_lbl(list, "Preparando %s · %.1f s estimados" % [Economy.dish(Core.company.production.dish).name, float(Core.company.production.left)], 15, INK, true, true)
+		_lbl(list, "Entre no quiosque e aproxime-se da estação e aperte E para pegar um produto.", 16, BAD, false, true)
 	var carried: String = str(Core.company.carry)
 	if carried != "":
 		_lbl(list, "Carregando: " + str(Economy.dish(carried).name), 17, GOOD, true, true)
-		var matches: bool = (kind == "bebidas") == load("res://scripts/dish_presentation.gd").is_drink(carried) and kind != "cozinha"
+		var matches: bool = (kind == "bebidas") == load("res://scripts/dish_presentation.gd").is_drink(carried)
 		_btn(list, "Devolver à prateleira", _service_action.bind(carried, "return"), GOOD, near and matches)
-	if kind == "bebidas":
-		var total := 0
-		for recipe in Core.kiosk_menu():
-			if load("res://scripts/dish_presentation.gd").is_drink(recipe): total += int(Core.company.ready.get(recipe, 0))
-		if total == 0: _lbl(list, "Sem bebidas prontas para vender. O expositor mantém os modelos visíveis; escolha Preparar para repor o estoque real.", 15, INK_SOFT, false, true)
 	var menu: Array = Core.kiosk_menu()
 	var requests: Dictionary = {}
 	for guest in get_tree().current_scene.village.waiting_customers():
@@ -1317,17 +1309,11 @@ func _app_service(list: VBoxContainer) -> void:
 		if kind == "cozinha" and drink:
 			continue
 		var card := _card(list)
-		var count: int = int(Core.company.ready.get(id, 0))
-		var required: Array = []
-		for ingredient in Economy.dish(id).uses:
-			required.append("%s: %d disponíveis (usa %d)" % [Economy.SUPPLIES[ingredient].name, int(Core.stock.get(ingredient, 0)), int(Economy.dish(id).uses[ingredient])])
-		_lbl(card, "Ingredientes: " + " · ".join(required), 14, INK_SOFT, false, true)
-		_lbl(card, "%s · %d prontos" % [Economy.dish(id).name, count], 17, INK, true, true)
+		var count: int = Core.company_available(id)
+		_lbl(card, "%s · %d disponíveis" % [Economy.dish(id).name, count], 17, INK, true, true)
+		if count == 0: _lbl(card, "Reponha o estoque em Compras.", 14, INK_SOFT, false, true)
 		if requests.has(id): _lbl(card, "Para: " + ", ".join(requests[id]), 14, GOOD, true, true)
-		if kind == "bebidas" or kind == "cozinha":
-			_btn(card, "Preparar · 3 s" if drink else "Preparar · 6 s", _service_action.bind(id, "prepare"), Color(0.15, 0.55, 0.5), near and Core.company.production.is_empty() and count < 4 and Core.can_make(id))
-		if kind != "cozinha":
-			_btn(card, "Retirar e levar ao cliente", _service_action.bind(id, "pickup"), GOOD, near and count > 0 and carried == "")
+		_btn(card, "Pegar e levar ao cliente", _service_action.bind(id, "pickup"), GOOD, near and count > 0 and carried == "")
 	_lbl(list, "%d contas aguardando recebimento no terminal · %d lugares para limpar" % [Core.company.receivables.size(), Core.company.dirty_seats.size()], 15, INK_SOFT, false, true)
 
 # ------------------------------------------------------------------ simulação de gestão
@@ -1381,7 +1367,7 @@ func _app_kiosk_schedule(list: VBoxContainer) -> void:
 
 func _app_kiosk_inventory(list: VBoxContainer) -> void:
 	_lbl(list, "Ingredientes e reposição", 22, INK, true)
-	_lbl(list, "Ingredientes ficam na despensa compartilhada. Produtos preparados na geladeira/armário vencem na virada do dia. Prepare conforme a demanda para evitar perdas.", 14, INK_SOFT, false, true)
+	_lbl(list, "As compras abastecem os produtos disponíveis. Pegue diretamente na geladeira ou no armário; não há etapa de preparo.", 14, INK_SOFT, false, true)
 	var cfg: Dictionary = Core.company.sim
 	var auto_order := CheckButton.new()
 	auto_order.text = "Repor ao começar o dia"
@@ -1556,7 +1542,7 @@ func _app_candidates(list: VBoxContainer) -> void:
 		_lbl(card, str(p.name) + " · " + str(p.title), 18, INK, true, true)
 		_lbl(card, "Velocidade %d%% · cuidado %d%% · simpatia %d%%\nContratação %s · diária base %s" % [int(p.speed * 100), int(p.care * 100), int(p.social * 100), Core.fmt_money(int(p.cost)), Core.fmt_money(int(p.daily))], 14, INK, false, true)
 		_btn(card, "Contratar " + str(p.name), _management_action.bind(Management.hire_candidate.bind(Core, _candidate_role, kind)), GOOD, not hired and Core.money >= int(p.cost))
-	_lbl(list, "Velocidade afeta o trabalho; cuidado reduz perdas por erros; simpatia do garçom melhora gorjetas. Exaustão aumenta o risco de perder um preparo.", 14, INK_SOFT, false, true)
+	_lbl(list, "Velocidade afeta o trabalho; simpatia do garçom melhora gorjetas. A equipe pega os produtos diretamente, sem preparar.", 14, INK_SOFT, false, true)
 
 func _app_suppliers(list: VBoxContainer) -> void:
 	var supplies: Array = Economy.SUPPLIES.keys()
@@ -1602,8 +1588,8 @@ func _refresh_management_task() -> void:
 	_management_task_label.text = "Nenhum serviço em andamento." if task.is_empty() else "%s: %s · faltam %.0f min do jogo" % [Management.EQUIPMENT[task.item], "limpeza" if task.kind == "clean" else "manutenção", float(task.left)]
 
 func _app_equipment(list: VBoxContainer) -> void:
-	_lbl(list, "Cuidar para continuar produzindo", 22, INK, true)
-	_lbl(list, "Feche novas chegadas e conclua o preparo para limpar, reparar ou melhorar. Limpeza leva 12 min do jogo e custa R$ 3; reparo leva 30 min e custa R$ 0,80 por ponto recuperado.", 14, INK_SOFT, false, true)
+	_lbl(list, "Conservar os equipamentos", 22, INK, true)
+	_lbl(list, "Feche novas chegadas para limpar, reparar ou melhorar. Limpeza leva 12 min do jogo e custa R$ 3; reparo leva 30 min e custa R$ 0,80 por ponto recuperado.", 14, INK_SOFT, false, true)
 	_management_task_label = _lbl(list, "", 16, INK, true, true)
 	_refresh_management_task()
 	for id in Management.EQUIPMENT:
@@ -1614,7 +1600,7 @@ func _app_equipment(list: VBoxContainer) -> void:
 		_btn(card, "Limpar · R$ 3", _management_action.bind(Management.equipment_action.bind(Core, str(id), "clean")), GOOD, float(item.hygiene) < 100)
 		_btn(card, "Reparar · " + Core.fmt_money(int(ceil((100 - float(item.condition)) * 0.8))), _management_action.bind(Management.equipment_action.bind(Core, str(id), "repair")), Color(0.8, 0.5, 0.2), float(item.condition) < 100)
 		_btn(card, "Melhorar · " + Core.fmt_money(240 * int(item.level)), _management_action.bind(Management.equipment_action.bind(Core, str(id), "upgrade")), Color(0.3, 0.55, 0.8), int(item.level) < 3)
-	_lbl(list, "Estado baixo deixa o preparo lento; abaixo de 10% para de funcionar. Higiene abaixo de 15% bloqueia preparo. Cada lote suja e desgasta; geladeira também se desgasta durante a operação. Melhorias aumentam velocidade, até +20%.", 14, INK_SOFT, false, true)
+	_lbl(list, "Mantenha os equipamentos limpos e conservados. A retirada dos produtos é imediata e não depende de preparo.", 14, INK_SOFT, false, true)
 
 func _app_customize(list: VBoxContainer) -> void:
 	_btn(list, "Nome e letras da placa", _open_management.bind("empresa"))

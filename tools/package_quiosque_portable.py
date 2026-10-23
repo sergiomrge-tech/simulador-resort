@@ -20,6 +20,8 @@ Para atualizar uma cópia anterior, substitua os arquivos do programa e mantenha
 a pasta userdata/. O ZIP não inclui nem apaga saves.
 
 NOVO NESTA REVISÃO
+- Atendimento simplificado: pegue o produto pronto e entregue. Sem preparar,
+  sem cronômetro. Compras abastecem o estoque; retirada desconta uma vez.
 - Cores mais naturais no jogo inteiro: menor saturação, madeira/areia/telhas
   revisadas, menos aquecimento artificial. Porta da casa em madeira natural.
 - Casa com piso claro, armários verde acinzentado, pia/torneira, cortinas,
@@ -49,15 +51,14 @@ NOVO NESTA REVISÃO
 - Textos e avisos menores; sem nomes grandes sobre as estações.
 
 ATENDER
-1. Entre pela lateral, mire na geladeira ou cozinha e aperte E.
-2. Escolha Preparar; acompanhe o andamento na tela.
-3. Quando pronto, E na geladeira ou retirada de pratos para pegar o produto.
-4. E no cliente com o número/pedido correspondente para entregar.
-5. Receba as contas no caixa e recolha a louça.
+1. Entre pela lateral, mire na geladeira ou armário e aperte E.
+2. Escolha Pegar e levar ao cliente. O produto vai imediatamente para sua mão.
+3. E no cliente com o número/pedido correspondente para entregar.
+4. Receba as contas no caixa e recolha a louça.
 
 Geladeira e armário sempre mostram os produtos vendidos, com etiquetas de estoque.
-No zero, o exemplar de exposição fica visível e indica Preparar mais. Prepare para
-repor as unidades vendáveis; o exemplar não é vendido. Sem ingredientes, use Compras.
+No zero, o exemplar de exposição fica visível e indica Repor estoque.
+Use Compras para abastecer. Não é necessário preparar nenhum produto.
 Detalhes: QUIOSQUE_PRATICO.md, ROTINAS_DO_QUIOSQUE.md e GESTAO_DO_QUIOSQUE.md.
 
 CONTROLES

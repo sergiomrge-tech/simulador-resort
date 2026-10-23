@@ -604,7 +604,7 @@ func kiosk_prompt() -> String:
 	if combo >= 2:
 		extra += "  ·  Combo x%d" % combo
 	extra += "  ·  " + tr("Meta %d/%d") % [mini(served_today, daily_goal()), daily_goal()]
-	return tr("Preparar %s (%s)") % [tr(str(d.name)), Core.fmt_money(Core.price_of(dish))] + extra
+	return tr("Pegar %s (%s)") % [tr(str(d.name)), Core.fmt_money(Core.price_of(dish))] + extra
 
 ## Quantos clientes atender por dia para ganhar a meta: cresce com as expansões compradas.
 func daily_goal() -> int:
@@ -625,23 +625,11 @@ func kiosk_action() -> bool:
 				return Core.clean_company_seat(index)
 		Core.toast.emit(kiosk_prompt(), "info")
 		return false
-	if not prep.is_empty() and is_instance_valid(prep.g) and prep.g.state == "kwait":
-		prep_advance(Economy.TAP_BURST * _stage_secs())
-		return true
 	prep = {}
 	var g = _next_customer()
 	if g == null:
 		return false
-	var dish: String = str(_remaining(g)[0])
-	if not Core.can_make(dish):
-		Core.note_stockout(dish)
-		combo = 0
-		_leave(g)
-		return false
-	prep = {"g": g, "dish": dish, "stage": 0, "p": 0.0, "away": 0.0}
-	_show_prep_visual(dish)
-	prep_advance(Economy.TAP_BURST * _stage_secs())
-	return true
+	return _deliver_item(g, str(_remaining(g)[0]))
 
 func _stage_secs() -> float:
 	if prep.is_empty():

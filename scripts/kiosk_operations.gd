@@ -26,6 +26,7 @@ func _ready() -> void:
 	_build()
 	Core.company_changed.connect(sync_company)
 	Core.staff_changed.connect(sync_company)
+	Core.stock_changed.connect(sync_company)
 	Core.time_changed.connect(_update_work_lighting)
 	sync_company()
 
@@ -162,11 +163,6 @@ func sync_company() -> void:
 	_sync_staff_presence()
 	_sync_products()
 	_update_menu_card()
-	var production: String = str(Core.company.production.get("dish",""))
-	if production != _production_key:
-		if production != "": main.audio.kiosk_sfx("prepare",stations.cozinha.global_position)
-		elif _production_key != "": main.audio.kiosk_sfx("ready",stations.pratos.global_position)
-		_production_key = production
 	var held: String = str(Core.company.carry)
 	if held != _hand_key:
 		if held != "": main.audio.kiosk_sfx("pickup",main.player.global_position)
@@ -245,12 +241,12 @@ func _sync_staff_presence() -> void:
 func _staff_tick() -> void:
 	_sync_staff_presence()
 	var c: Vector3 = center()
-	var waiter_role: String = "garcom" if Core.prog.staff_eff("garcom") > 0 else "atendente"
+	var waiter_role: String = "garcom" if Core.prog.staff_eff("garcom") > 0 else ("atendente" if Core.prog.staff_eff("atendente") > 0 else "cozinheiro")
 	if waiter_role != waiter_role_active:
 		waiter_role_active = waiter_role
 		waiter_phase = ""
 		waiter_target = null
-		for old_role in ["garcom", "atendente"]:
+		for old_role in ["garcom", "atendente", "cozinheiro"]:
 			if actors.has(old_role):
 				_clear_tray(actors[old_role])
 	for role in ["garcom", "atendente", "caixa", "cozinheiro", "limpeza"]:
@@ -271,33 +267,16 @@ func _staff_tick() -> void:
 		if Core.company.sim.management.look_owned and str(g.get_meta("uniform", "")) != uniform:
 			g.set_colors(g._skin, Core.CompanyRules.Simulation.Management.UNIFORMS[uniform], Color(0.15, 0.2, 0.27), g._hair_col)
 			g.set_meta("uniform", uniform)
-		g.speed = 2.0 * Core.prog.staff_eff(role)
+		g.speed = 2.0 * Core.prog.staff_eff(role) * (1.0 + Core.prog.eff("kiosk_speed"))
 		if role == "caixa":
 			if not Core.company.receivables.is_empty():
 				Core.collect_company_payments()
-		elif role == "cozinheiro" or (role == "atendente" and waiter_role == "garcom"):
-			_cook()
-			if not Core.company.production.is_empty():
-				g.set_meta("work_kind","prepare")
-				g.set_meta("work_target",center()+Vector3(1.2,1.08,-1.60))
-			elif g.has_meta("work_target"): g.remove_meta("work_target")
+		elif role == "cozinheiro" and waiter_role != "cozinheiro":
+			if g.has_meta("work_target"): g.remove_meta("work_target")
 		elif role == "limpeza":
 			_cleaner(g)
 		else:
 			_waiter(g)
-
-func _cook() -> void:
-	if not Core.kiosk_accepting_customers() and main.village.waiting_customers().is_empty():
-		return
-	if not Core.company.production.is_empty():
-		return
-	for g in main.village.waiting_customers():
-		for id in main.village._remaining(g):
-			if int(Core.company.ready.get(id, 0)) == 0 and Core.company.carry != id and Core.company.staff_carry != id and Core.prepare_company_dish(id):
-				return
-	for id in Core.kiosk_menu():
-		if int(Core.company.ready.get(id, 0)) < 2 and Core.prepare_company_dish(id):
-			return
 
 func _waiter(g) -> void:
 	if g.is_moving():
@@ -384,9 +363,8 @@ func seat_name(g) -> String:
 func order_summary(g) -> String:
 	var parts: Array = []
 	for id in main.village._remaining(g):
-		var available: bool = int(Core.company.ready.get(id, 0)) > 0
-		var preparing: bool = str(Core.company.production.get("dish", "")) == id
-		parts.append("%s · %s" % [Economy.dish(id).name, "pronto" if available else ("preparando" if preparing else "preparar")])
+		var available: bool = Core.company_available(id) > 0
+		parts.append("%s · %s" % [Economy.dish(id).name, "retirar" if available else "repor estoque"])
 	return "%s %s\n%s" % [order_number(g), seat_name(g), "\n".join(parts)]
 
 ## Uma vaga fixa por receita: o último produto retirado não deixa o expositor vazio.
@@ -401,7 +379,7 @@ func shelf_menu() -> Array:
 func _sync_products() -> void:
 	var catalog: Array = shelf_menu()
 	var menu: Array = Core.kiosk_menu()
-	var key := JSON.stringify([Core.company.ready, catalog, menu])
+	var key := JSON.stringify([Core.company.ready, Core.stock, catalog, menu])
 	if key == _display_key: return
 	_display_key = key
 	for child in products.get_children():
@@ -421,7 +399,7 @@ func _sync_products() -> void:
 		var row := int(slot / columns)
 		var shelf_y: float = [0.315, 0.795, 1.275][mini(row, 2)] if drink else [0.0625, 0.4125, 0.7625][mini(row, 2)]
 		var x := -0.22 + float(slot % columns) * 0.44 if drink else -0.31 + float(slot % columns) * 0.31
-		var count := int(Core.company.ready.get(id, 0))
+		var count := Core.company_available(id)
 		var display := Node3D.new()
 		display.name = "Shelf_" + str(id)
 		display.set_meta("shelf_dish_id", id)
@@ -443,7 +421,7 @@ func _sync_products() -> void:
 			Dishes.build(item, id)
 		var status: String = "%d prontos" % count
 		if count == 0:
-			status = "Preparar mais" if id in menu else ("Fora do cardápio" if Core.dish_unlocked(id) else "Desbloquear receita")
+			status = "Repor estoque" if id in menu else ("Fora do cardápio" if Core.dish_unlocked(id) else "Desbloquear receita")
 		var tag := B.label(display, "%s\n%s" % [Economy.dish(id).name, status], anchor.position + Vector3(x, shelf_y + 0.02, 0.335), 18, Color(1, 0.94, 0.72) if count > 0 else Color(1, 0.72, 0.52), Color(0.03, 0.08, 0.09))
 		tag.name = "StockTag"
 		tag.pixel_size = 0.0014

@@ -77,12 +77,13 @@ func run(main) -> void:
  Core.company.production = {}
  var health: float = d.equipment.fridge.condition
  stock_before = Core.stock.coco
- check(Core.prepare_company_dish("coco_gelado") and Core.stock.coco < stock_before and float(d.equipment.fridge.condition) < health, "preparo consome ingredientes e desgasta equipamento")
- Core.tick_company(20)
- check(Core.company.ready.get("coco_gelado", 0) == 1, "preparo saudável conclui sem perdas")
+ check(Core.pickup_company_dish("coco_gelado") and Core.stock.coco < stock_before and float(d.equipment.fridge.condition) == health, "retirada direta usa estoque sem preparo ou desgaste de lote")
+ check(Core.company.production.is_empty() and Core.company.carry == "coco_gelado", "produto vai direto para a mão")
+ check(Core.return_company_dish(), "produto pode voltar à geladeira")
  d.equipment.fridge.condition = 5.0
  stock_before = Core.stock.coco
- check(not Core.prepare_company_dish("coco_gelado") and Core.stock.coco == stock_before, "equipamento quebrado impede consumo de ingredientes")
+ check(Core.pickup_company_dish("coco_gelado") and Core.stock.coco == stock_before, "retirada de devolução não cobra estoque mesmo sem etapa de preparo")
+ check(Core.return_company_dish(), "libera mãos antes da manutenção")
  before = Core.money
  check(M.equipment_action(Core, "fridge", "repair") and Core.money == before - 76, "manutenção cobra o orçamento")
  M.tick(Core, 29)
@@ -93,7 +94,7 @@ func run(main) -> void:
  M.tick(Core, 1)
  check(d.task.is_empty() and float(d.equipment.fridge.condition) == 100, "manutenção termina após recarga sem nova cobrança")
  d.equipment.fridge.hygiene = 10.0
- check(not Core.prepare_company_dish("coco_gelado"), "higiene baixa bloqueia preparo")
+ check(Core.pickup_company_dish("coco_gelado") and Core.return_company_dish(), "retirada não exige etapa de preparo")
  check(M.equipment_action(Core, "fridge", "clean"), "inicia limpeza")
  M.tick(Core, 12)
  check(float(d.equipment.fridge.hygiene) == 100, "limpeza restaura higiene")

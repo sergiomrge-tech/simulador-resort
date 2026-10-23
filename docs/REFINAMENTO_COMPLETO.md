@@ -1,5 +1,12 @@
 # Refinamentos integrados — 23/10/2026
 
+> **Regra vigente — 23/10: sem preparo.** Pegar o produto pronto na geladeira,
+> armário ou cozinha e entregar. Sem cronômetro e sem precisar cozinheiro.
+> Compras abastecem o estoque; retirada desconta uma vez. Referências históricas
+> a preparo abaixo foram substituídas por este fluxo. Saves antigos recuperam
+> unidades já pagas sem consumir o estoque novamente.
+
+
 Revisão do avental: superfície ajustada ao volume da roupa, alça no pescoço,
 faixa na cintura, bolso duplo, bordas costuradas e dobras suaves. A parte inferior
 acompanha os ossos das pernas com transição contínua no quadril. É uma malha
@@ -71,3 +78,8 @@ home_natural.png, fachada home_exterior_pack.png, quiosque restaurado,
 pessoas e entardecer/noite. Sem SCRIPT ERROR/recursos ausentes nos testes finais.
 Persistem os avisos de liberação de material/RID ao encerrar o motor.
 PCK SHA256: 33bf471c1900967bf72671bfc613336ac5b44469ef567d4bad554ccef53330f5.
+
+Validação da retirada direta: fonte passou empresa, prático, gestão, simulação e
+ciclo geral; executável passou empresa e prático. Preparo de saves antigos vira
+unidade pronta uma vez, sem novo débito. Conferida practical_station.png no PCK.
+PCK SHA256: 8d95b71f92fdd3de2b877175fdbabb9fe1c91a7cd97ca68e0edfc67ecba6a192.

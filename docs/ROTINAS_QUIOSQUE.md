@@ -1,5 +1,12 @@
 # Quiosque: rotinas e decisões de gestão
 
+> **Regra vigente — 23/10: sem preparo.** Pegar o produto pronto na geladeira,
+> armário ou cozinha e entregar. Sem cronômetro e sem precisar cozinheiro.
+> Compras abastecem o estoque; retirada desconta uma vez. Referências históricas
+> a preparo abaixo foram substituídas por este fluxo. Saves antigos recuperam
+> unidades já pagas sem consumir o estoque novamente.
+
+
 Implementação das sugestões 2 a 7, em 22/10/2026. A revisão posterior reorganizou o acesso em seis áreas: consulte [QUIOSQUE_PRATICO.md](QUIOSQUE_PRATICO.md). No celular (B), use Quiosque para rotina/horários/equipamentos/aparência, Equipe para candidatos/turnos, Compras para entregas e Finanças para resultado. Os saves anteriores recebem padrões compatíveis; o checklist obrigatório começa desligado.
 
 ## Rotina do dia

@@ -216,25 +216,25 @@ Total: 2041 itens. MOD 229 · NAT 68 · PRC 31 · CEN 284 · PRT 13 · DSH 9 · 
 | MOD-215 | Orange | `g:orange` | Gerado no Blender (tools/gen_*.py) | real.gd:19 |
 | MOD-216 | Pineapple | `g:pineapple` | Gerado no Blender (tools/gen_*.py) | real.gd:19 |
 | MOD-217 | Plate deep | `k:plate-deep` | Kenney (CC0) | dish_presentation.gd:31 |
-| MOD-218 | Plate dinner | `k:plate-dinner` | Kenney (CC0) | dish_presentation.gd:31, kiosk_operations.gd:189, world_village.gd:629 |
-| MOD-219 | Utensil fork | `k:utensil-fork` | Kenney (CC0) | dish_presentation.gd:38, kiosk_operations.gd:61 |
-| MOD-220 | Utensil spoon | `k:utensil-spoon` | Kenney (CC0) | dish_presentation.gd:38, kiosk_operations.gd:62 |
+| MOD-218 | Plate dinner | `k:plate-dinner` | Kenney (CC0) | dish_presentation.gd:31, kiosk_operations.gd:185, world_village.gd:629 |
+| MOD-219 | Utensil fork | `k:utensil-fork` | Kenney (CC0) | dish_presentation.gd:38, kiosk_operations.gd:62 |
+| MOD-220 | Utensil spoon | `k:utensil-spoon` | Kenney (CC0) | dish_presentation.gd:38, kiosk_operations.gd:63 |
 | MOD-221 | Dish acai | `g:dish_acai` | Gerado no Blender (tools/gen_*.py) | dish_presentation.gd:11 |
 | MOD-222 | Dish batida | `g:dish_batida` | Gerado no Blender (tools/gen_*.py) | dish_presentation.gd:7 |
 | MOD-223 | Dish moqueca | `g:dish_moqueca` | Gerado no Blender (tools/gen_*.py) | dish_presentation.gd:12 |
 | MOD-224 | Dish pastel | `g:dish_pastel` | Gerado no Blender (tools/gen_*.py) | dish_presentation.gd:10 |
 | MOD-225 | Dish petiscos | `g:dish_petiscos` | Gerado no Blender (tools/gen_*.py) | dish_presentation.gd:8 |
 | MOD-226 | Dish tapioca | `g:dish_tapioca` | Gerado no Blender (tools/gen_*.py) | dish_presentation.gd:9 |
-| MOD-227 | Service food cabinet | `g:service_food_cabinet` | Gerado no Blender (tools/gen_*.py) | kiosk_operations.gd:42 |
-| MOD-228 | Service fridge | `g:service_fridge` | Gerado no Blender (tools/gen_*.py) | kiosk_operations.gd:41 |
-| MOD-229 | Service fridge door | `g:service_fridge_door` | Gerado no Blender (tools/gen_*.py) | kiosk_operations.gd:47 |
-| MOD-230 | Service register | `g:service_register` | Gerado no Blender (tools/gen_*.py) | kiosk_operations.gd:53 |
+| MOD-227 | Service food cabinet | `g:service_food_cabinet` | Gerado no Blender (tools/gen_*.py) | kiosk_operations.gd:43 |
+| MOD-228 | Service fridge | `g:service_fridge` | Gerado no Blender (tools/gen_*.py) | kiosk_operations.gd:42 |
+| MOD-229 | Service fridge door | `g:service_fridge_door` | Gerado no Blender (tools/gen_*.py) | kiosk_operations.gd:48 |
+| MOD-230 | Service register | `g:service_register` | Gerado no Blender (tools/gen_*.py) | kiosk_operations.gd:54 |
 | MOD-231 | Kiosk facade | `g:kiosk_facade` | Gerado no Blender (tools/gen_*.py) | world_village.gd:823 |
 | MOD-232 | Kiosk neon trim | `g:kiosk_neon_trim` | Gerado no Blender (tools/gen_*.py) | world_village.gd:926 |
 | MOD-233 | Kiosk roof | `g:kiosk_roof` | Gerado no Blender (tools/gen_*.py) | world_village.gd:735 |
-| MOD-234 | Kiosk blender | `g:kiosk_blender` | Gerado no Blender (tools/gen_*.py) | kiosk_operations.gd:51 |
-| MOD-235 | Kiosk workbench | `g:kiosk_workbench` | Gerado no Blender (tools/gen_*.py) | kiosk_operations.gd:43 |
-| MOD-236 | Kiosk counter details | `g:kiosk_counter_details` | Gerado no Blender (tools/gen_*.py) | kiosk_operations.gd:55 |
+| MOD-234 | Kiosk blender | `g:kiosk_blender` | Gerado no Blender (tools/gen_*.py) | kiosk_operations.gd:52 |
+| MOD-235 | Kiosk workbench | `g:kiosk_workbench` | Gerado no Blender (tools/gen_*.py) | kiosk_operations.gd:44 |
+| MOD-236 | Kiosk counter details | `g:kiosk_counter_details` | Gerado no Blender (tools/gen_*.py) | kiosk_operations.gd:56 |
 | MOD-237 | Book encyclopedia set 01 | `book_encyclopedia_set_01` | Poly Haven (CC0) | world_village.gd:632 |
 | MOD-238 | Player home details | `g:player_home_details` | Gerado no Blender (tools/gen_*.py) | world_village.gd:618 |
 
@@ -584,13 +584,13 @@ Total: 2041 itens. MOD 229 · NAT 68 · PRC 31 · CEN 284 · PRT 13 · DSH 9 · 
 | CEN-231 | Kiosk prompt | `village_life.kiosk_prompt` | village_life.gd (código) | village_life.gd:576 |
 | CEN-232 | Daily goal | `village_life.daily_goal` | village_life.gd (código) | village_life.gd:610 |
 | CEN-233 | Kiosk action | `village_life.kiosk_action` | village_life.gd (código) | village_life.gd:618 |
-| CEN-234 | Stage secs | `village_life._stage_secs` | village_life.gd (código) | village_life.gd:646 |
-| CEN-235 | Prep advance | `village_life.prep_advance` | village_life.gd (código) | village_life.gd:652 |
-| CEN-236 | Deliver item | `village_life._deliver_item` | village_life.gd (código) | village_life.gd:671 |
-| CEN-237 | Complete order | `village_life._complete_order` | village_life.gd (código) | village_life.gd:701 |
-| CEN-238 | Kiosk serve | `village_life.kiosk_serve` | village_life.gd (código) | village_life.gd:757 |
-| CEN-239 | Helper serve | `village_life.helper_serve` | village_life.gd (código) | village_life.gd:770 |
-| CEN-240 | On slept | `village_life._on_slept` | village_life.gd (código) | village_life.gd:775 |
+| CEN-234 | Stage secs | `village_life._stage_secs` | village_life.gd (código) | village_life.gd:634 |
+| CEN-235 | Prep advance | `village_life.prep_advance` | village_life.gd (código) | village_life.gd:640 |
+| CEN-236 | Deliver item | `village_life._deliver_item` | village_life.gd (código) | village_life.gd:659 |
+| CEN-237 | Complete order | `village_life._complete_order` | village_life.gd (código) | village_life.gd:689 |
+| CEN-238 | Kiosk serve | `village_life.kiosk_serve` | village_life.gd (código) | village_life.gd:745 |
+| CEN-239 | Helper serve | `village_life.helper_serve` | village_life.gd (código) | village_life.gd:758 |
+| CEN-240 | On slept | `village_life._on_slept` | village_life.gd (código) | village_life.gd:763 |
 | CEN-241 | Make guest | `guests._make_guest` | guests.gd (código) | guests.gd:34 |
 | CEN-242 | Spawn guest | `guests.spawn_guest` | guests.gd (código) | guests.gd:64 |
 | CEN-243 | On areas changed | `guests.on_areas_changed` | guests.gd (código) | guests.gd:77 |
@@ -627,12 +627,12 @@ Total: 2041 itens. MOD 229 · NAT 68 · PRC 31 · CEN 284 · PRT 13 · DSH 9 · 
 | CEN-274 | Setup v1 | `world._setup_v1` | world.gd (código) | world.gd:2210 |
 | CEN-275 | Release spot | `village_life._release_spot` | village_life.gd (código) | village_life.gd:537 |
 | CEN-276 | Refresh company signs | `world_village._refresh_company_signs` | world_village.gd (código) | world_village.gd:1998 |
-| CEN-277 | Prep position | `village_life._prep_position` | village_life.gd (código) | village_life.gd:795 |
-| CEN-278 | Clear prep visual | `village_life._clear_prep_visual` | village_life.gd (código) | village_life.gd:798 |
-| CEN-279 | Show prep visual | `village_life._show_prep_visual` | village_life.gd (código) | village_life.gd:804 |
-| CEN-280 | Served dishes | `village_life.served_dishes` | village_life.gd (código) | village_life.gd:812 |
-| CEN-281 | Clear served visuals | `village_life.clear_served_visuals` | village_life.gd (código) | village_life.gd:821 |
-| CEN-282 | Show delivered visual | `village_life._show_delivered_visual` | village_life.gd (código) | village_life.gd:829 |
+| CEN-277 | Prep position | `village_life._prep_position` | village_life.gd (código) | village_life.gd:783 |
+| CEN-278 | Clear prep visual | `village_life._clear_prep_visual` | village_life.gd (código) | village_life.gd:786 |
+| CEN-279 | Show prep visual | `village_life._show_prep_visual` | village_life.gd (código) | village_life.gd:792 |
+| CEN-280 | Served dishes | `village_life.served_dishes` | village_life.gd (código) | village_life.gd:800 |
+| CEN-281 | Clear served visuals | `village_life.clear_served_visuals` | village_life.gd (código) | village_life.gd:809 |
+| CEN-282 | Show delivered visual | `village_life._show_delivered_visual` | village_life.gd (código) | village_life.gd:817 |
 | CEN-283 | Apply kiosk look | `world_village._apply_kiosk_look` | world_village.gd (código) | world_village.gd:2005 |
 | CEN-284 | Kiosk facade | `world_village._kiosk_facade` | world_village.gd (código) | world_village.gd:822 |
 
@@ -978,7 +978,7 @@ Total: 2041 itens. MOD 229 · NAT 68 · PRC 31 · CEN 284 · PRT 13 · DSH 9 · 
 | AUD-007 | Crickets loop | `crickets_loop` | assets/audio | audio.gd:38 |
 | AUD-008 | Dog | `dog` | assets/audio | audio.gd:91 |
 | AUD-009 | Door | `door` | assets/audio | world_village.gd:291, world_village.gd:441, world_village.gd:591, world_village.gd:678 |
-| AUD-010 | Glass | `glass` | assets/audio | guests.gd:157, village_life.gd:205, village_life.gd:694, world_village.gd:1421 (+1) |
+| AUD-010 | Glass | `glass` | assets/audio | guests.gd:157, village_life.gd:205, village_life.gd:682, world_village.gd:1421 (+1) |
 | AUD-011 | Music bossa | `music_bossa` | assets/audio | — |
 | AUD-012 | Ocean loop | `ocean_loop` | assets/audio | audio.gd:37 |
 | AUD-013 | Seagull1 | `seagull1` | assets/audio | audio.gd:86 |

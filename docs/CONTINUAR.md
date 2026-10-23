@@ -1,5 +1,10 @@
 # Como continuar o Maré Alta Resort (passagem de bastão — 19/10/2026)
 
+> **Sem preparo (pedido mais recente, 23/10):** retirada imediata de produtos
+> prontos na geladeira/armário/cozinha. Compras abastecem, retirada desconta uma vez;
+> devolução fica pronta sem novo débito. Produção pendente de saves antigos migra
+> para ready. Sem botão/cronômetro de preparo e sem depender de cozinheiro.
+
 > **Cores naturais em tudo (23/10):** pedido explícito mais recente: paleta global
 > menos saturada, madeira/areia/telhas naturais, materiais com mapas preservados,
 > sem aquecimento artificial do Toon e saturação extra do daycycle. Porta da casa

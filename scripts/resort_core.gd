@@ -1233,49 +1233,51 @@ func set_company_service(enabled: bool) -> bool:
 	if not company.created:
 		return false
 	if not enabled and (company.carry != "" or company.staff_carry != "" or not company.production.is_empty() or not company.receivables.is_empty() or not company.dirty_seats.is_empty()):
-		toast.emit(tr("Entregue o item, finalize o preparo, receba as contas e limpe as mesas primeiro."), "bad")
+		toast.emit(tr("Entregue o item, receba as contas e limpe as mesas primeiro."), "bad")
 		return false
 	company.physical = enabled
 	company_changed.emit()
 	save_game()
 	return true
 
-func prepare_company_dish(id: String) -> bool:
-	if not company_enabled() or id not in kiosk_menu() or not company.production.is_empty():
-		return false
-	if int(company.ready.get(id, 0)) >= CompanyRules.MAX_READY or not can_make(id):
-		return false
-	if not CompanyRules.Simulation.Management.can_prepare(self, id):
-		return false
-	CompanyRules.Simulation.Management.wear(self, id)
+# Produtos são retirados prontos. O estoque compartilhado é debitado uma vez.
+func company_available(id: String) -> int:
+	if id not in Economy.KIOSK_MENU or not dish_unlocked(id):
+		return 0
+	var count := 9999
 	for ing in Economy.dish(id).uses:
-		stock[ing] = int(stock[ing]) - int(Economy.dish(id).uses[ing])
-	company.production = {"dish": id, "left": 3.0 if load("res://scripts/dish_presentation.gd").is_drink(id) else 6.0}
-	stock_changed.emit()
-	company_changed.emit()
+		count = mini(count, int(stock.get(ing, 0)) / int(Economy.dish(id).uses[ing]))
+	return int(company.ready.get(id, 0)) + count
+
+func _take_company_unit(id: String) -> bool:
+	if company_available(id) <= 0:
+		return false
+	if int(company.ready.get(id, 0)) > 0:
+		company.ready[id] = int(company.ready[id]) - 1
+	else:
+		for ing in Economy.dish(id).uses:
+			stock[ing] = int(stock[ing]) - int(Economy.dish(id).uses[ing])
 	return true
 
-func tick_company(delta: float) -> void:
-	if not company_enabled() or company.production.is_empty():
+func prepare_company_dish(_id: String) -> bool:
+	# Compatibility entry point for old saves/extensions; preparation is removed.
+	return false
+
+func tick_company(_delta: float) -> void:
+	# Recover an already-paid unit from an older save without another stock debit.
+	if company.production.is_empty():
 		return
-	company.production.left = float(company.production.left) - maxf(delta, 0.0) * speed_mult * (1.0 + 0.25 * prog.staff_eff("cozinheiro")) * CompanyRules.Simulation.Management.prepare_speed(self, str(company.production.dish))
-	if float(company.production.left) <= 0.0:
-		var id: String = str(company.production.dish)
-		company.production = {}
-		if randf() < CompanyRules.Simulation.Management.error_risk(self, id):
-			CompanyRules.Simulation.record(self, "waste", 1)
-			toast.emit("Preparo perdido: cuide da higiene e do descanso da equipe.", "bad")
-			company_changed.emit()
-			return
-		company.ready[id] = mini(CompanyRules.MAX_READY, int(company.ready.get(id, 0)) + 1)
-		toast.emit(tr("Pronto para retirar: %s") % tr(str(Economy.dish(id).name)), "good")
-		company_changed.emit()
+	var id: String = str(company.production.get("dish", ""))
+	company.production = {}
+	if id in Economy.KIOSK_MENU:
+		company.ready[id] = int(company.ready.get(id, 0)) + 1
+	company_changed.emit()
 
 func pickup_company_dish(id: String) -> bool:
-	if not company_enabled() or company.carry != "" or id not in Economy.KIOSK_MENU or int(company.ready.get(id, 0)) <= 0:
+	if not company_enabled() or company.carry != "" or not _take_company_unit(id):
 		return false
-	company.ready[id] = int(company.ready[id]) - 1
 	company.carry = id
+	stock_changed.emit()
 	company_changed.emit()
 	return true
 
@@ -1323,10 +1325,10 @@ func clean_company_seat(index: int) -> bool:
 	return true
 
 func reserve_company_staff_dish(id: String) -> bool:
-	if not company_enabled() or company.staff_carry != "" or int(company.ready.get(id, 0)) <= 0:
+	if not company_enabled() or company.staff_carry != "" or not _take_company_unit(id):
 		return false
-	company.ready[id] = int(company.ready[id]) - 1
 	company.staff_carry = id
+	stock_changed.emit()
 	company_changed.emit()
 	return true
 

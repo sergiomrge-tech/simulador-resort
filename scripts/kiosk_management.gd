@@ -154,7 +154,7 @@ static func close_shift(core, counted: int) -> bool:
  if not core.company.created: return false
  var d := state(core)
  if not can_close(core) or int(d.closed_day) == core.day:
-  core.toast.emit("Feche novas chegadas e conclua clientes, caixa, louça e preparo antes do fechamento.", "info")
+  core.toast.emit("Feche novas chegadas e conclua clientes, caixa e louça antes do fechamento.", "info")
   return false
  var expected: int = int(core.company.sim.today.cash_in)
  d.closing = {"day": core.day, "expected": expected, "counted": maxi(0, counted), "variance": maxi(0, counted) - expected}
@@ -256,7 +256,7 @@ static func equipment_action(core, id: String, action: String) -> bool:
  if not core.company.created: return false
  var d := state(core)
  if id not in EQUIPMENT or action not in ["clean", "repair", "upgrade"] or not d.task.is_empty() or not core.company.production.is_empty() or bool(core.company.kiosk_open):
-  core.toast.emit("Feche as chegadas e termine o preparo antes de cuidar dos equipamentos.", "info")
+  core.toast.emit("Feche as chegadas antes de cuidar dos equipamentos.", "info")
   return false
  var item: Dictionary = d.equipment[id]
  if action == "upgrade" and int(item.level) >= 3: return false

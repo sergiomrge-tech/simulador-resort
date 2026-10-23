@@ -302,3 +302,24 @@ CRCs verificados e sem userdata. Documentação e instruções do expositor atua
   kiosk_restored.png. Interior home_natural.png e fachada home_exterior_pack.png.
 - Sem SCRIPT ERROR/recursos ausentes nos testes finais; avisos conhecidos de saída.
 - PCK SHA256: 33bf471c1900967bf72671bfc613336ac5b44469ef567d4bad554ccef53330f5.
+
+## Retirada direta sem preparo — 23/10/2026
+Fluxo físico: E na geladeira/armário/cozinha, Pegar e levar ao cliente, E no
+cliente e receber no caixa. Retirada usa estoque compartilhado uma vez, prioriza
+unidades já pagas/devolvidas e impede segunda retirada com mãos ocupadas. Garçom
+retira sem cozinheiro; antigo cozinheiro auxilia entrega se não houver atendente.
+Sem preparo manual também no atendimento legado do balcão. A melhoria Mãos rápidas
+passou a Entrega ágil e acelera o deslocamento da equipe.
+
+Saves antigos convertem production em ready uma única vez. Unidades prontas,
+carregadas, contas, equipe e progresso continuam compatíveis. O abastecimento por
+Compras e as regras de conservação/virada de dia continuam existentes.
+
+Fonte: direct-company2.log COMPANY_TEST PASS; direct-practical.log PRACTICAL_TEST
+PASS; direct-management.log MANAGEMENT_TEST PASS; direct-simulation.log
+SIMULATION_TEST PASS; direct-loop.log LOOP_TEST PASS.
+Pacote: direct-pack-company.log COMPANY_TEST PASS e direct-pack-practical.log
+PRACTICAL_TEST PASS. Inspeção de practical_station.png confirma ausência de botão
+Preparar e retirada com contagem de estoque. Sem SCRIPT ERROR/recursos ausentes;
+permanecem os avisos conhecidos de material/RID no encerramento do motor.
+PCK SHA256: 8d95b71f92fdd3de2b877175fdbabb9fe1c91a7cd97ca68e0edfc67ecba6a192.

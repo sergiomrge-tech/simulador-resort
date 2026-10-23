@@ -12,6 +12,7 @@ Base de trabalho: v0.6.5 recuperada; versões atuais em `project.godot` / `expor
 ---
 
 ## 🚪 Hall de entrada — regras fixas do Sergio
+- **Sem preparo (23/10/2026):** pegar produtos prontos na geladeira/armário/cozinha e entregar. Removidos botões e cronômetros; estoque compartilhado debitado uma vez na retirada. Devolução guarda unidade já paga; empresa antiga com produção pendente converte em pronta sem novo débito. Não reintroduzir preparo manual, nem exigir cozinheiro. Garçom retira diretamente; cozinheiro pode auxiliar entrega se não houver outro atendente.
 - **Cores (23/10/2026):** Sergio pediu cores mais realistas em TUDO. Reduzir a saturação global e não reintroduzir reforços de laranja/saturação em Toon/daycycle. Preservar mapas dos modelos importados. Porta da casa deve parecer madeira natural, sem pintura azul. A nova preferência de cores prevalece sobre descrições históricas de paleta muito saturada.
 - **Quiosque vazio (23/10/2026):** nunca ocultar KioskOperations inteiro porque o save não criou a empresa. Equipamentos e expositores são permanentes; company_enabled controla gestão/atendimento e item carregado. Antes do cadastro, E na estação abre empresa. Testar cenário sem empresa, além dos testes que criam empresa no início.
 - **Nada de low poly**, principalmente móveis, casas e pessoas. Cilindro/esfera com poucos lados, caixa crua e corpo facetado são proibidos.

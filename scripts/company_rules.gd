@@ -2,7 +2,7 @@ extends RefCounted
 ## Dados versionados do negócio. Sem class_name para manter patches compatíveis.
 const Simulation = preload("res://scripts/kiosk_simulation.gd")
 const MAX_NAME := 24
-const MAX_READY := 4
+const MAX_READY := 9999
 const FONTS := {"praia": "Nunito · Praia", "classica": "Sans · Clássica", "elegante": "Nunito · Itálica"}
 const COLORS := {"creme": Color(1.0, 0.94, 0.78), "branco": Color.WHITE, "dourado": Color(1.0, 0.81, 0.35)}
 static var _fonts: Dictionary = {}
@@ -42,9 +42,8 @@ static func sanitize(value: Variant) -> Dictionary:
 	out.staff_carry = held if held in Economy.KIOSK_MENU else ""
 	var production: Variant = value.get("production", {})
 	if production is Dictionary and str(production.get("dish", "")) in Economy.KIOSK_MENU:
-		var left: Variant = production.get("left", 6.0)
-		if (left is int or left is float) and is_finite(float(left)):
-			out.production = {"dish": str(production.dish), "left": clampf(float(left), 0.0, 60.0)}
+		var id: String = str(production.dish)
+		out.ready[id] = int(out.ready.get(id, 0)) + 1
 	var bills: Variant = value.get("receivables", [])
 	if bills is Array:
 		for bill in bills.slice(0, 256):

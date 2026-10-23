@@ -480,9 +480,9 @@ func run(m) -> void :
 		return
 	var km0: = Core.money
 	var kp: String = await aim(main.world.KIOSK_C + Vector3(0, 0.12, 0.4), 180.0, -32.0)
-	if check(kp.begins_with("Preparar"), "prompt do quiosque: '%s'" % kp):
+	if check(kp.begins_with("Pegar"), "prompt do quiosque: '%s'" % kp):
 		main.player.interact()
-		check(not main.village.prep.is_empty(), "preparo começou ao apertar E")
+		check(main.village.prep.is_empty(), "atendimento legado também não exige preparo")
 		var tries: = 0
 		while kc.state == "kwait" and tries < 8:
 			if main.village.prep.is_empty():

@@ -1,7 +1,6 @@
 # Quiosque reorganizado — 22/10/2026
 
-Acessórios de rosto: óculos menores, lentes ovais, armação fina escura e menor
-afastamento do rosto. Modelo Blender editável em `art/blender/sunglasses.blend`.
+Pessoas sem óculos escuros, chapéus ou bonés, conforme preferência atual.
 
 Pessoas refinadas em 23/10: proporções de cabeça e porte menos exageradas,
 sombreamento suave da pele/cabelo, roupa com menos saturação e brilho lateral.
@@ -37,25 +36,25 @@ O quiosque mantém o acabamento novo e concentra o trabalho dentro da construç�
 Entre por uma das laterais: geladeira à esquerda, retirada de pratos ao centro e
 cozinha à direita. Caixa na frente e liquidificador no tampo lateral. Sem anexo externo.
 
-## Como atender
+## Como atender (atualizado: sem preparo)
 
-1. Mire na geladeira (bebidas) ou cozinha (comida) e aperte **E**. A estação informa
-   o estoque disponível e o consumo de cada receita. Pedidos pendentes aparecem primeiro.
-2. Escolha **Preparar**. A tela fecha e o andamento aparece discretamente no jogo.
-3. Quando ficar pronto, use **E** na geladeira ou na retirada de pratos e escolha
-   **Retirar e levar ao cliente**. Você carrega um item de cada vez.
-4. Cada cliente tem um marcador como **#03**. A lista no canto relaciona esse número
-   ao lugar e aos itens pendentes. **✓** indica unidade pronta para retirar. Mire no
-   cliente correto e aperte **E**.
-5. Receba no caixa e recolha a louça quando o cliente sair.
+1. E na geladeira para bebidas ou no armário/cozinha para alimentos.
+2. Escolha **Pegar e levar ao cliente**. O produto vai imediatamente para sua mão.
+3. E no cliente com o número correspondente para entregar.
+4. Receba no caixa e recolha a louça. O garçom também retira direto, sem cozinheiro.
+
+Não há botão Preparar, etapa de montagem nem cronômetro. Compras abastecem o
+estoque compartilhado; retirar desconta os insumos uma vez. Devolver guarda uma
+unidade pronta, que pode ser retirada de novo sem novo desconto. Saves antigos
+convertem o preparo já pago numa unidade pronta, uma única vez.
 
 Geladeira e armário mantêm **expositores com os produtos vendidos**, inclusive quando
 o estoque vendável chega a zero. Cada receita tem uma vaga fixa e uma etiqueta de
-quantidade; no zero, indica preparar mais. Receitas básicas ainda indisponíveis
+quantidade; no zero, indica repor estoque. Receitas básicas ainda indisponíveis
 ficam identificadas para desbloquear, e receitas secretas aparecem ao descobrir.
-O exemplar de exposição não pode ser retirado nem vendido. O preparo consome
-ingredientes uma vez e abastece o estoque real; retirada e entrega não consomem
-ingredientes novamente. Sem ingredientes, use Compras.
+O exemplar de exposição não pode ser retirado nem vendido sem estoque. A retirada
+desconta o estoque uma vez; entrega e retirada de um item devolvido não descontam
+novamente. Sem estoque, use Compras.
 
 ## Celular
 

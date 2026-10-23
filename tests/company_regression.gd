@@ -41,14 +41,11 @@ func run(main = null) -> void:
 	for key in Core.stock:
 		Core.stock[key] = 100
 	var before: Dictionary = Core.stock.duplicate()
-	check(Core.prepare_company_dish("suco"), "preparo começa")
-	check(not Core.prepare_company_dish("suco"), "produção simultânea recusada")
+	check(not Core.prepare_company_dish("suco"), "preparo removido")
+	check(Core.pickup_company_dish("suco") and Core.company.production.is_empty(), "retirada imediata sem preparo")
 	for ing in Economy.dish("suco").uses:
-		check(Core.stock[ing] == before[ing] - Economy.dish("suco").uses[ing], "ingrediente usado uma vez: " + ing)
-	Core.tick_company(10)
+		check(Core.stock[ing] == before[ing] - Economy.dish("suco").uses[ing], "estoque usado uma vez: " + ing)
 	var after: Dictionary = Core.stock.duplicate()
-	check(Core.company.ready.get("suco", 0) == 1, "preparo abastece geladeira")
-	check(Core.pickup_company_dish("suco"), "retirada de uma bebida")
 	check(not Core.pickup_company_dish("suco"), "não duplica retirada")
 	check(Core.sell_company_dish("coco_gelado") == -1 and Core.company.carry == "suco", "entrega errada preserva item")
 	var cash: int = Core.money
@@ -57,15 +54,22 @@ func run(main = null) -> void:
 	check(Core.stock == after and Core.money == cash, "entrega não gasta ingredientes nem antecipa caixa")
 	check(Core.collect_company_payments() == price and Core.money == cash + price, "caixa manual recebe conta")
 	check(Core.collect_company_payments() == 0 and Core.money == cash + price, "conta não pode ser recebida duas vezes")
-	Core.company.ready.suco = 4
-	check(not Core.prepare_company_dish("suco"), "capacidade da prateleira respeitada")
-	check(Core.pickup_company_dish("suco") and Core.prepare_company_dish("suco"), "preparo reserva espaço após retirada")
-	check(not Core.return_company_dish(), "devolução não ocupa espaço reservado pelo preparo")
-	Core.tick_company(10)
-	check(Core.company.ready.suco == 4 and Core.company.carry == "suco", "produto não se perde com prateleira cheia")
-	check(Core.sell_company_dish("suco") > 0, "libera mãos sem perder cobrança")
-	check(Core.reserve_company_staff_dish("suco") and Core.company.staff_carry == "suco", "garçom retira produto real")
+	Core.company.ready.suco = 0
+	before = Core.stock.duplicate()
+	check(Core.pickup_company_dish("suco") and Core.return_company_dish(), "devolução preserva produto retirado")
+	after = Core.stock.duplicate()
+	check(Core.pickup_company_dish("suco") and Core.stock == after, "retirar devolução não cobra estoque outra vez")
+	check(Core.sell_company_dish("suco") > 0, "entrega direta libera mãos")
+	check(Core.reserve_company_staff_dish("suco") and Core.company.staff_carry == "suco", "garçom retira direto sem cozinheiro")
+	after = Core.stock.duplicate()
+	check(not Core.reserve_company_staff_dish("suco") and Core.stock == after, "reserva repetida não gasta estoque")
 	check(Core.sell_company_dish("suco", true) > 0 and Core.company.staff_carry == "", "garçom entrega sem alterar mãos do jogador")
+	for ingredient in Economy.dish("suco").uses: Core.stock[ingredient] = 0
+	check(not Core.pickup_company_dish("suco") and Core.company_available("suco") == 0, "estoque zero bloqueia retirada sem valores negativos")
+	for ingredient in Core.stock: Core.stock[ingredient] = 100
+	var migrated: Dictionary = Rules.sanitize({"ready":{"suco":2},"production":{"dish":"suco","left":5.0}})
+	check(migrated.production.is_empty() and migrated.ready.suco == 3, "save antigo converte preparo pago em produto pronto uma vez")
+	check(Rules.sanitize(migrated).ready.suco == 3 and Rules.sanitize(migrated).production.is_empty(), "migração não duplica produto ao recarregar")
 	Core.money = 20000
 	check(Core.hire("caixa") and Core.hire("garcom") and Core.hire("limpeza") and Core.hire("cozinheiro"), "contratação dos quatro cargos")
 	cash = Core.money
@@ -212,7 +216,7 @@ func _integration(main) -> void:
 	g.set_meta("vip", false)
 	village._order(g)
 	village.set_process(false)
-	Core.staff.cozinheiro = true
+	Core.staff.cozinheiro = false
 	Core.staff.garcom = true
 	Core.staff.caixa = true
 	Core.staff.limpeza = true
@@ -225,7 +229,7 @@ func _integration(main) -> void:
 		main.operations._staff_tick()
 		await get_tree().process_frame
 		elapsed += get_process_delta_time()
-	check(g.state == "keat", "cozinheiro e garçom completam preparo, retirada e percurso real")
+	check(g.state == "keat", "garçom retira e entrega diretamente pelo percurso real")
 	check(Core.company.receivables.is_empty(), "caixa recebe atendimento da equipe")
 	var waiter = main.operations.actors.get("garcom")
 	check(is_instance_valid(waiter) and waiter.position.distance_to(g.spot.approach) < 1.5, "garçom chegou ao cliente antes de entregar")

@@ -537,10 +537,10 @@ func objective() -> Array:
 		if not village.waiting_customers().is_empty() and carried == "":
 			var next = village._next_customer()
 			var id: String = str(village._remaining(next)[0])
-			var ready: bool = int(Core.company.ready.get(id, 0)) > 0
+			var ready: bool = Core.company_available(id) > 0
 			var drink: bool = load("res://scripts/dish_presentation.gd").is_drink(id)
-			var kind: String = "bebidas" if drink else ("pratos" if ready else "cozinha")
-			var verb := "Retirar" if ready else ("Aguardar" if str(Core.company.production.get("dish", "")) == id else "Preparar")
+			var kind: String = "bebidas" if drink else "pratos"
+			var verb := "Retirar" if ready else "Repor estoque para"
 			return ["%s %s · %s" % [verb, Economy.dish(id).name, ops.order_number(next)], ops.stations[kind].global_position, 2.5]
 		if not Core.company.receivables.is_empty():
 			return ["Receber contas no caixa", world.KIOSK_C + Vector3(1.3, 1.28, 1.8), 2.5]
@@ -698,11 +698,9 @@ func _update_orders() -> void:
 	for guest in waiting.slice(0, 3):
 		var items: Array = []
 		for id in village._remaining(guest):
-			items.append(str(Economy.dish(id).name) + (" ✓" if int(Core.company.ready.get(id, 0)) > 0 else ""))
+			items.append(str(Economy.dish(id).name) + (" ✓" if Core.company_available(id) > 0 else ""))
 		lines.append("%s %s\n%s" % [ops.order_number(guest), ops.seat_name(guest), " + ".join(items)])
 	if waiting.size() > 3: lines.append("+%d pedidos · celular > Quiosque" % (waiting.size() - 3))
 	if not lines.is_empty(): orders_text.text = "PEDIDOS · ✓ pronto para retirar\n\n" + "\n\n".join(lines)
 	if str(Core.company.carry) != "":
 		work_text.text = "Na mão: %s · E no cliente com o mesmo pedido" % Economy.dish(str(Core.company.carry)).name
-	elif not Core.company.production.is_empty():
-		work_text.text = "Preparando %s · %.0f s" % [Economy.dish(str(Core.company.production.dish)).name, ceilf(float(Core.company.production.left))]
