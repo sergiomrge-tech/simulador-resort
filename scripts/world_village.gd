@@ -553,9 +553,9 @@ func _hero_house() -> void :
 	var c: = HOME_C
 	var w: = 7.0
 	var d: = 7.0
-	var col: = Color(0.55, 0.8, 0.88)
+	var col: = Color(0.82, 0.87, 0.83)
 	var y0: = 0.12
-	B.platform(self, Vector3(w + 0.4, 0.24, d + 0.4), c, VM.floor, 0.4)
+	B.platform(self, Vector3(w + 0.4, 0.24, d + 0.4), c, B.mat("light_stone", 1.0, Color(0.88, 0.91, 0.88), 0.85), 0.4)
 	var save: = [M.plaster, M.terracotta, M.teal]
 	M.plaster = stucco(col)
 	M.terracotta = stucco(col.darkened(0.35))
@@ -587,7 +587,7 @@ func _hero_house() -> void :
 	B.box(self, Vector3(0.04, 1.22, 1.15), Vector3(x0, y0 + 1.65, c.z), VM.window_glass)
 	B.label(self, "Casa", Vector3(c.x + 1.7, y0 + 2.75, zf + 0.2), 44, Color(1, 1, 1), Color(0.1, 0.25, 0.35, 0.9))
 
-	var door: = B.box(self, Vector3(0.06, 2.2, 1.15), Vector3(c.x + 2.35, y0 + 1.1, zf - 0.55), wood_tint(Color(0.1, 0.45, 0.55)))
+	var door: = B.box(self, Vector3(0.06, 2.2, 1.15), Vector3(c.x + 2.35, y0 + 1.1, zf - 0.55), wood_tint(Color(0.62, 0.48, 0.34)))
 	door.name = "door"
 
 	var bc: = Vector3(c.x - 2.15, y0, zb + 1.55)
@@ -610,30 +610,33 @@ func _hero_house() -> void :
 	add_child(bed)
 	B.model(self, "painted_wooden_cabinet", Vector3(x0 + 0.42, y0, c.z + 1.7), PI * 0.5, 1.0)
 	B.model(self, "Rockingchair_01", Vector3(c.x - 0.15, y0 - 0.09, c.z + 1.35), 0.5, 0.85)   # origem do modelo abaixo dos balanços
-	B.model(self, "pachira_aquatica_01", Vector3(x0 + 0.55, y0, zb + 0.55), 0.3, 0.85)
 	B.model(self, "electric_stove", Vector3(x1 - 0.5, y0, zb + 1.0), - PI * 0.5, 1.0)
 	var fan_root: = Node3D.new()
 	fan_root.position = Vector3(c.x, y0 + h - 0.02, c.z)
 	add_child(fan_root)
 	B.model(fan_root, "ceiling_fan", Vector3.ZERO, 0.2, 0.72)
-	B.box(self, Vector3(0.65, 0.9, 2.2), Vector3(x1 - 0.45, y0 + 0.45, zb + 2.7), M.oak, true)
-	B.box(self, Vector3(0.7, 0.05, 2.3), Vector3(x1 - 0.45, y0 + 0.92, zb + 2.7), VM.curb)
-	B.box(self, Vector3(0.45, 0.04, 0.4), Vector3(x1 - 0.45, y0 + 0.95, zb + 3.2), B.flat(Color(0.75, 0.78, 0.8), 0.25, 0.8))
-	B.box(self, Vector3(0.3, 0.6, 1.8), Vector3(x1 - 0.2, y0 + 1.9, zb + 2.7), M.oak)
+	Real.place(self, "g:player_home_details", c + Vector3(0,y0,0), -1.0, 0.0, Color.WHITE, 0.0, false)
+	B.wall(self, Vector3(.65,.88,2.2), Vector3(x1-.45,y0+.44,zb+2.7))
 	B.model(self, "WoodenTable_01", Vector3(c.x + 0.6, y0, c.z + 0.6), 0.0, 1.0)
 	B.model(self, "wooden_stool_01", Vector3(c.x + 0.6, y0, c.z + 1.25), 0.3, 1.0)
 	B.model(self, "wooden_stool_01", Vector3(c.x + 0.6, y0, c.z - 0.05), 1.1, 1.0)
 	B.model(self, "wooden_bowl_01" if B.has_model("wooden_bowl_01") else "wicker_basket_01", Vector3(c.x + 0.6, y0 + 0.55, c.z + 0.6), 0.0, 1.0)   # tampo da WoodenTable_01 a 0,55 m (flutuava 23 cm)
-	B.box(self, Vector3(2.2, 0.015, 1.5), Vector3(c.x - 0.9, y0 + 0.01, c.z + 0.4), B.mat("rough_linen", 1.5, Color(0.2, 0.5, 0.6), 0.95))
+	B.box(self, Vector3(2.2, 0.015, 1.5), Vector3(c.x - 0.9, y0 + 0.01, c.z + 0.4), B.mat("rough_linen", 1.5, Color(0.58, 0.57, 0.49), 0.95))
 	B.model(self, "potted_plant_04", Vector3(x0 + 0.5, y0, zb + 0.5), 0.0, 0.9)
 	B.model(self, "planter_box_01", Vector3(c.x - 1.7, 0.0, zf + 0.9), 0.0, 1.0)
+	B.model(self, "potted_plant_04", Vector3(x1-.60,y0,zf-.65), 0.3, .85)
+	B.model(self, "hanging_picture_frame_02", Vector3(c.x+.40,y0+1.85,zb+.12), 0, .70)
+	Real.place(self, "k:plate-dinner", Vector3(x1-.48,y0+.955,zb+3.55), 0,0,Color.WHITE,.22)
+	Real.place(self, "g:cup_plastic", Vector3(x1-.50,y0+.945,zb+2.25), .15)
+	B.model(self, "ceramic_vase_02", Vector3(x1-.27,y0+1.94,zb+2.15), 0.2, .45)
+	B.model(self, "book_encyclopedia_set_01", Vector3(x1-.27,y0+1.94,zb+3.22), PI*.5, .4)
 	var l: = OmniLight3D.new()
 	l.position = Vector3(c.x, y0 + 2.8, c.z)
 	l.omni_range = 7.0
-	l.light_color = Color(1.0, 0.82, 0.6)
+	l.light_color = Color(1.0, 0.96, 0.89)
 	add_child(l)
 	l.shadow_enabled = Quality.hd
-	lanterns.append([l, null, 2.2, true])
+	lanterns.append([l, null, 1.3, true])
 	village_points.home_door_out = Vector3(c.x + 1.7, 0.15, zf + 1.2)
 	village_points.home_door_in = Vector3(c.x + 1.7, 0.15, zf - 0.8)
 

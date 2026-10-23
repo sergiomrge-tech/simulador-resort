@@ -75,7 +75,7 @@ void fragment(){
 	}
 	// v0.7 cartoon: cores um pouco mais saturadas
 	float l = dot(c, vec3(0.3, 0.59, 0.11));
-	ALBEDO = mix(vec3(l), c, 1.05);
+	ALBEDO = mix(vec3(l), c, 0.94);
 	ROUGHNESS = r;
 	RIM = 0.12;
 	RIM_TINT = 0.5;

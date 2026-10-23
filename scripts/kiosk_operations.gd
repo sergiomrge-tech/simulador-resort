@@ -89,12 +89,16 @@ func _station(kind: String, title: String, pos: Vector3, size: Vector3) -> void:
 	station_bodies.append(_interaction(node, Vector3(0, size.y * 0.5, 0), size, station_prompt.bind(kind, title), open_station.bind(kind)))
 
 func station_prompt(_kind: String, title: String) -> String:
-	return title if Core.company_enabled() else ""
+	return title if Core.company_enabled() else title + " · E para criar seu quiosque"
 
 func can_access(kind: String) -> bool:
 	return Core.company_enabled() and stations.has(kind) and main.player.global_position.distance_to(stations[kind].global_position) < 2.1 and absf(main.player.global_position.x - center().x) < 2.0 and main.player.global_position.z > center().z - 1.5
 
 func open_station(kind: String) -> void:
+	if not Core.company_enabled():
+		main.hud.phone.open("empresa")
+		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+		return
 	if not can_access(kind):
 		return
 	Core.service_station = kind
@@ -148,13 +152,13 @@ func clean(index: int) -> void:
 	Core.clean_company_seat(index)
 
 func sync_company() -> void:
-	visible = Core.company_enabled()
+	visible = true
 	for body in find_children("*", "StaticBody3D", true, false):
 		if body is Interactable:
 			body.collision_layer = (3 if body in station_bodies else 2) if visible else 0
 		else:
 			body.collision_layer = 1 if visible else 0
-	hand.visible = visible
+	hand.visible = Core.company_enabled()
 	_sync_staff_presence()
 	_sync_products()
 	_update_menu_card()

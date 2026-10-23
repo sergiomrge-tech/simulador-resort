@@ -43,3 +43,31 @@ executável/PCK (`apron-pack-visual.log`: PRACTICAL_TEST PASS;
 e pose sentada. Permanecem os avisos já conhecidos de liberação de materiais/RID
 ao encerrar os testes; não houve SCRIPT ERROR nem recurso ausente nessa revisão.
 SHA256 do PCK: `25b4bfcd4e6827f0c314c31901e5d3f961ecee8a8b88d2539f6920dadaf5cc1b`.
+
+## Casa e equipamentos invisíveis — 23/10
+Casa com piso em pedra clara, paredes suaves, iluminação neutra, marcenaria verde
+acinzentada, portas/puxadores, pia com cuba e torneira, azulejos, prateleiras,
+livros, cortinas de malha com dobras, persianas externas e molduras.
+Fonte player_home_details.blend salva/reaberta, com imagens incorporadas.
+
+Correção do quiosque vazio em saves sem empresa: KioskOperations não pode usar
+company_enabled para esconder os móveis/expositores. O cadastro controla a gestão,
+o atendimento e o item na mão; a presença dos equipamentos é permanente. E na
+estação antes do cadastro abre o app empresa. Não cria empresa nem cobra sozinho.
+Fonte home-operations-final.log: PRACTICAL_TEST PASS incluindo cenário sem empresa.
+
+## Cores naturais no jogo inteiro — pedido de 23/10
+Retirado o aumento automático de saturação/valor do Toon e o clareamento
+alaranjado de modelos importados. Madeira, areia e terracota usam paleta mais
+natural; normal/roughness/metálico/AO dos modelos deixam de ser apagados pelo
+adaptador. Saturação ambiental moderada também no ciclo dia/noite e chuva.
+Pessoas sem reforço extra de saturação. Tapete da casa em linho neutro e porta
+em tom de madeira. Geometria e estilo dos personagens foram preservados.
+
+## Validação casa/cores/equipamentos — 23/10/2026
+Fonte natural-practical.log e pacote natural-pack-practical.log: PRACTICAL_TEST
+PASS, incluindo equipamentos visíveis sem empresa. Inspeção do interior
+home_natural.png, fachada home_exterior_pack.png, quiosque restaurado,
+pessoas e entardecer/noite. Sem SCRIPT ERROR/recursos ausentes nos testes finais.
+Persistem os avisos de liberação de material/RID ao encerrar o motor.
+PCK SHA256: 33bf471c1900967bf72671bfc613336ac5b44469ef567d4bad554ccef53330f5.

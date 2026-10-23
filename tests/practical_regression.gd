@@ -210,6 +210,8 @@ func run(main) -> void:
 		await shot(main,"kiosk_night",c+Vector3(1.5,.35,7),15,-3)
 		Core.minutes = 11*60
 	Core.company.created = false
+	Core.company_changed.emit()
+	check(main.operations.visible and main.operations.products.is_visible_in_tree(), "equipamentos e expositores presentes sem empresa criada")
 	Core.staff.atendente = true
 	Core.staff_changed.emit()
 	check(main.operations.actors.has("atendente") and main.operations.actors.atendente.visible, "atendente aparece no modo anterior à criação da empresa")

@@ -290,3 +290,15 @@ CRCs verificados e sem userdata. Documentação e instruções do expositor atua
   permanecem os avisos de materiais/RID já conhecidos no encerramento.
 - PCK SHA256: 25b4bfcd4e6827f0c314c31901e5d3f961ecee8a8b88d2539f6920dadaf5cc1b.
 - ZIP em Downloads atualizado, 10 arquivos, CRC verificado, sem incluir saves.
+
+# Casa, cores naturais e quiosque visível — 23/10/2026
+- Nova fonte editável player_home_details.blend salva/reaberta. Cozinha, cortinas,
+  persianas, molduras e acabamentos; piso claro, porta de madeira e tapete neutro.
+- Paleta global e saturação revisadas por pedido explícito em tudo; mapas dos
+  modelos mantidos, sem reforço artificial laranja. Ver REFINAMENTO_COMPLETO.md.
+- Corrigido KioskOperations oculto quando empresa não criada. E abre cadastro.
+- Fonte natural-practical.log e PCK natural-pack-practical.log: PRACTICAL_TEST PASS,
+  incluindo ausência de empresa. Cenário original sem empresa capturado também em
+  kiosk_restored.png. Interior home_natural.png e fachada home_exterior_pack.png.
+- Sem SCRIPT ERROR/recursos ausentes nos testes finais; avisos conhecidos de saída.
+- PCK SHA256: 33bf471c1900967bf72671bfc613336ac5b44469ef567d4bad554ccef53330f5.

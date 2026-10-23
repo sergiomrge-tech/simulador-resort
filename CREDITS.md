@@ -204,3 +204,10 @@ Quaternius existente; as peças de roupa utilizam seus pesos originais. Fontes e
 texturas incorporadas: `art/blender/resort_outfit_male.blend` e `resort_outfit_female.blend`.
 Modelos de execução: `assets/models/clothing/`. A parede de madeira com ripas e
 travessas integra a fonte autoral `kiosk_facade.blend`, com madeira Poly Haven CC0.
+
+## Casa do jogador — revisão 23/10/2026
+Marcenaria embutida, pia, torneira, molduras, persianas e cortinas modeladas no
+Blender por este projeto: tools/gen_player_home.py; fonte editável com texturas
+incorporadas art/blender/player_home_details.blend, GLB player_home_details.
+Reutiliza a textura light_stone e o conjunto de livros book_encyclopedia_set_01,
+Poly Haven CC0, já disponíveis e catalogados neste projeto.

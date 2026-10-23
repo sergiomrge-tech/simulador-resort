@@ -1,5 +1,16 @@
 # Como continuar o Maré Alta Resort (passagem de bastão — 19/10/2026)
 
+> **Cores naturais em tudo (23/10):** pedido explícito mais recente: paleta global
+> menos saturada, madeira/areia/telhas naturais, materiais com mapas preservados,
+> sem aquecimento artificial do Toon e saturação extra do daycycle. Porta da casa
+> em madeira e tapete neutro. Não restaurar a antiga paleta exagerada.
+
+> **Casa/equipamentos (23/10):** casa recebeu piso claro, cozinha detalhada,
+> cortinas, persianas e molduras em player_home_details.blend/GLB. Não ocultar
+> KioskOperations quando company.created=false: isso apagava os equipamentos no
+> jogo normal embora os testes com empresa criada passassem. Presença permanente;
+> E antes do cadastro abre empresa. Ver REFINAMENTO_COMPLETO.md.
+
 > **Preferência/avental (23/10):** pessoas sem óculos escuros; não reintroduzir
 > `Sunglasses` no Guest nem nas provas visuais. Aventais agora têm alças, cintura,
 > bolso, espessura e perfil ajustado à roupa, com pesos contínuos no quadril.

@@ -20,6 +20,12 @@ Para atualizar uma cópia anterior, substitua os arquivos do programa e mantenha
 a pasta userdata/. O ZIP não inclui nem apaga saves.
 
 NOVO NESTA REVISÃO
+- Cores mais naturais no jogo inteiro: menor saturação, madeira/areia/telhas
+  revisadas, menos aquecimento artificial. Porta da casa em madeira natural.
+- Casa com piso claro, armários verde acinzentado, pia/torneira, cortinas,
+  persianas, molduras, prateleiras e iluminação neutra.
+- Geladeira, armário, bancada e produtos aparecem mesmo antes de criar a empresa.
+  E nos equipamentos abre o cadastro do quiosque quando necessário.
 - Aventais ajustados ao corpo, com alças, cintura, bolso e dobras suaves;
   pesos contínuos no quadril para acompanhar as pernas ao andar e sentar.
 - Sete refinamentos: roupas de praia, uniformes por função, aventais, gestos,

@@ -8,10 +8,10 @@ class_name Toon
 const PALETTE: = {
 	"white_plaster": [Color(0.99, 0.95, 0.88), "plaster"],
 	"white_stucco": [Color(1.0, 0.97, 0.92), "plaster"],
-	"weathered_planks": [Color(0.86, 0.62, 0.4), "planks"],
-	"oak_wood_planks": [Color(0.9, 0.6, 0.32), "planks"],
-	"brown_planks_05": [Color(0.8, 0.52, 0.3), "planks"],
-	"dark_wooden_planks": [Color(0.56, 0.33, 0.2), "planks"],
+	"weathered_planks": [Color(0.55, 0.43, 0.32), "planks"],
+	"oak_wood_planks": [Color(0.64, 0.51, 0.36), "planks"],
+	"brown_planks_05": [Color(0.58, 0.44, 0.31), "planks"],
+	"dark_wooden_planks": [Color(0.40, 0.29, 0.22), "planks"],
 	"bamboo_wall": [Color(0.95, 0.8, 0.45), "bamboo"],
 	"rough_linen": [Color(0.98, 0.96, 0.92), "flat"],
 	"fabric_pattern_07": [Color(1.0, 0.55, 0.42), "stripes"],
@@ -19,13 +19,13 @@ const PALETTE: = {
 	"blue_floor_tiles_01": [Color(0.32, 0.74, 0.9), "tiles"],
 	"light_stone": [Color(0.95, 0.9, 0.82), "tiles"],
 	"patio_tiles": [Color(0.98, 0.78, 0.6), "tiles"],
-	"terracotta_floor_tiles": [Color(0.92, 0.52, 0.34), "tiles"],
+	"terracotta_floor_tiles": [Color(0.66, 0.40, 0.29), "tiles"],
 	"reed_roof_04": [Color(0.96, 0.75, 0.38), "thatch"],
 	"palm_tree_bark": [Color(0.66, 0.47, 0.32), "bark"],
 	"cobblestone_floor_04": [Color(0.78, 0.74, 0.7), "cobble"],
 	"calcada": [Color(0.98, 0.97, 0.94), "calcada"],
-	"clay_roof_tiles_02": [Color(0.95, 0.45, 0.3), "rooftiles"],
-	"coast_sand_01": [Color(1.0, 0.88, 0.62), "flat"],
+	"clay_roof_tiles_02": [Color(0.60, 0.34, 0.25), "rooftiles"],
+	"coast_sand_01": [Color(0.84, 0.78, 0.64), "flat"],
 	"damp_beach_sand": [Color(0.9, 0.74, 0.5), "flat"],
 	"forest_floor": [Color(0.36, 0.62, 0.3), "flat"],
 	"leafy_grass": [Color(0.42, 0.75, 0.32), "flat"],
@@ -45,7 +45,7 @@ static func resolve_color(n: String, tint: Color) -> Color:
 	var t: = Color(tint.r, tint.g, tint.b)
 	var c: Color
 	if t.s > 0.25 and maxf(t.r, maxf(t.g, t.b)) <= 1.0:
-		c = Color.from_hsv(t.h, clampf(t.s * 1.15, 0.0, 1.0), clampf(t.v * 1.12 + 0.06, 0.0, 1.0))
+		c = Color.from_hsv(t.h, clampf(t.s * 0.82, 0.0, 1.0), clampf(t.v, 0.0, 1.0))
 	else:
 		var bright: = (t.r + t.g + t.b) / 3.0
 		c = base * Color(bright, bright, bright)
@@ -291,7 +291,7 @@ static func flat(c: Color, rough: float, metal: float) -> StandardMaterial3D:
 		return _mats[key]
 	var cc: = c
 	if cc.s > 0.08:
-		cc = Color.from_hsv(cc.h, clampf(cc.s * 1.12, 0.0, 1.0), cc.v, cc.a)
+		cc = Color.from_hsv(cc.h, clampf(cc.s * 0.82, 0.0, 1.0), cc.v, cc.a)
 	var m: = _base(cc, rough)
 	m.metallic = metal * 0.5
 	_mats[key] = m
@@ -303,13 +303,9 @@ static func toonify(mt: Material) -> Material:
 		var s: StandardMaterial3D = mt.duplicate()
 		s.diffuse_mode = BaseMaterial3D.DIFFUSE_TOON
 		s.specular_mode = BaseMaterial3D.SPECULAR_TOON
-		s.normal_enabled = false
-		s.roughness_texture = null
-		s.metallic_texture = null
-		s.ao_enabled = false
 		# modelos reais vêm escuros/realistas: clareia e esquenta para casar com a paleta cartoon do jogo
 		# no modo de compatibilidade (OpenGL, PCs antigos) a imagem já sai mais clara: clareia menos para não desbotar
-		var lift: = Color(1.28, 1.22, 1.16) if RenderingServer.get_current_rendering_method() != "gl_compatibility" else Color(1.04, 1.02, 1.0)
+		var lift: = Color(1.12, 1.12, 1.12) if RenderingServer.get_current_rendering_method() != "gl_compatibility" else Color(1.02, 1.02, 1.02)
 		s.albedo_color = s.albedo_color * lift
 		s.rim_enabled = true
 		s.rim = 0.1

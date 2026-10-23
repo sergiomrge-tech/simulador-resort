@@ -53,7 +53,7 @@ func setup(parent: Node3D) -> void :
 	env.fog_density = 0.0016
 	env.fog_sky_affect = 0.25
 	env.adjustment_enabled = true
-	env.adjustment_saturation = 1.12
+	env.adjustment_saturation = 0.94
 	env.adjustment_contrast = 1.04
 	var we: = WorldEnvironment.new()
 	we.environment = env
@@ -148,8 +148,8 @@ func apply() -> void :
 	env.tonemap_white = 6.0
 	env.tonemap_exposure = (1.0 if compatibility else 0.98) if not rain else 0.88
 	env.adjustment_enabled = true
-	env.adjustment_saturation = 0.95 if rain else lerpf(1.08, 1.14, golden)
-	env.adjustment_contrast = lerpf(1.02, 1.05, golden)
+	env.adjustment_saturation = 0.90 if rain else lerpf(0.94, 0.96, golden)
+	env.adjustment_contrast = lerpf(1.0, 1.02, golden)
 	env.adjustment_brightness = 0.94 if rain else 1.0
 	env.volumetric_fog_albedo = fog_c
 	env.volumetric_fog_density = 0.012 if rain else lerpf(0.004, 0.008, maxf(golden, night * 0.7))
