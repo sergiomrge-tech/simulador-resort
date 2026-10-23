@@ -69,11 +69,16 @@ trabalhe nos mesmos arquivos ao mesmo tempo que outro chat sem coordenação.
     Usar supply_total e buy_supply, respeitar saldo/contratos e evitar compra parcial.
     Continuar na estação para pegar o produto pronto. Sem ressuscitar preparo.
 12. **Vida na praia.** Quatro jogadores na quadra de vôlei ao lado do quiosque,
-    bola e braços animados. Dois barcos passam continuamente de dia, em sentidos
-    opostos e faixas afastadas. Cruzeiro iluminado fica ancorado à noite, sem
+    bola e braços animados. Um navio de madeira/velas passa lentamente de dia,
+    um por vez, usando Ship Pinnace CC0 da Poly Haven. Cruzeiro fica ancorado à noite, sem
     deslocamento nem esteira de propulsão, conforme correção do usuário.
     Embarcações distantes da faixa de banho/cais; congelar movimento na pausa.
     Quadra deve ficar livre de guarda-sóis/espreguiçadeiras e outros props.
+13. Baleias saltam ao fundo em ciclos alternados, com respingos balísticos,
+    espuma, ondas dissipando e som suave SFX. Nuvens usam shader de céu, seguindo
+    horário/clima. Pausa congela animações. Scripts whale_wildlife.gd, shaders
+    sky_clouds/whale_foam; teste --whale-test. Geradores gen_whale_and_sailship.py
+    e gen_whale_splash_audio.py; fontes editáveis incorporadas em art/blender.
 
 Use modelos detalhados e licenciados, preferencialmente CC0, ou Blender com
 malha trabalhada. Não substituir objetos por low poly ou montagens de primitivas

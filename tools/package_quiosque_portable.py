@@ -20,6 +20,9 @@ Para atualizar uma cópia anterior, substitua os arquivos do programa e mantenha
 a pasta userdata/. O ZIP não inclui nem apaga saves.
 
 NOVO NESTA REVISÃO
+- Baleias saltando ao fundo, com respingos, espuma, ondas e som suave de queda.
+  Nuvens no céu acompanham dia/noite e chuva. Animações respeitam a pausa.
+- Um navio de madeira com velas por vez, passando devagar; cruzeiro ancorado à noite.
 - Dois barcos passando ao fundo em sentidos opostos, com velocidade perceptível.
   Cruzeiro ancorado à noite: posição fixa, luzes acesas e sem esteira de navegação.
 - Acabamento visual: contornos finos e discretos em pessoas, móveis e vegetação;

@@ -347,6 +347,11 @@ func run(m) -> void :
 		add_child(home_test)
 		await home_test.run(main)
 		return
+	if main.args.has("whale-test"):
+		var wildlife = load("res://tests/whale_regression.gd").new()
+		add_child(wildlife)
+		await wildlife.run(main)
+		return
 	if main.args.has("coastal-test"):
 		var coast = load("res://tests/coastal_regression.gd").new()
 		add_child(coast)

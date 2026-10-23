@@ -37,6 +37,8 @@ o nome do arquivo não restringe seu uso à IA Claude.
   por low poly ou primitivas usadas como objetos finais. Registrar origem/licença.
 - HUD/celular compactos, sem opções duplicadas; interação na parte inferior da tela.
 - Música/efeitos suaves e sem vozes de fundo.
+- No mar: um navio de madeira com velas por vez, passando bem devagar; cruzeiro
+  parado à noite. Baleias saltam ao fundo com efeitos na água; céu com nuvens.
 
 ## Forma de trabalhar
 

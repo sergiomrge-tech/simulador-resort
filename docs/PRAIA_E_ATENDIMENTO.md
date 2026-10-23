@@ -33,3 +33,10 @@ resort_core.gd (reposição), coastal_life.gd/volley_arm.gd (praia).
 Assets: tools/gen_coastal_traffic.py e fontes Blender coastal_*.blend;
 origens/licenças no CREDITS.md. Testes --counter-test e --coastal-test,
 além de --company-test, --practical-test e layout do celular. Dados sempre isolados.
+
+
+Revisão posterior: um único navio de madeira e velas por vez, passando devagar
+durante o dia, asset Ship Pinnace CC0 Poly Haven. Cruzeiro fixo à noite.
+Duas baleias saltam alternadamente ao fundo, com respingos balísticos, espuma,
+ondas circulares e som suave posicional respeitando mute/SFX. Céu com nuvens
+suaves animadas, cor acompanhando horário e chuva. Animações congelam na pausa.

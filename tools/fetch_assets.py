@@ -388,6 +388,7 @@ def generated_props():
     Rodar após baixar texturas evita exportar GLBs sem materiais/texturas.
     """
     groups = [
+        ("gen_whale_and_sailship.py", ("humpback_whale", "pirate_sailship")),
         ("gen_coastal_traffic.py", ("coastal_yacht", "coastal_cruise")),
         ("gen_counter_details.py", ("kiosk_counter_details",)),
         ("gen_kiosk_facade.py", ("kiosk_facade", "kiosk_neon_trim", "kiosk_roof", "kiosk_workbench", "kiosk_blender")),

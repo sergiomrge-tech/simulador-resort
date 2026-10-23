@@ -253,3 +253,17 @@ incluída no jogo). Janelas emissivas e esteira por shader originais.
 Jogadores reutilizam corpos/roupas/animações Quaternius CC0 existentes; contatos
 de braço e trajetórias da bola autorais. Rede e bola usam modelos Blender já
 catalogados deste projeto; sem novos samples ou vozes.
+
+
+## Baleias, nuvens e navio de madeira — 23/10/2026
+Ship Pinnace: https://polyhaven.com/a/ship_pinnace , Poly Haven CC0. Autores
+James Ray Cock, Nicolò Zubbini, Rico Cilliers e Yann Kervran. Modelo com casco,
+velas, mastros e cordame preservados; mapas 1K e fonte pirate_sailship.blend
+incorporada/reaberta. Gerador gen_whale_and_sailship.py reutiliza o download
+do fetch_assets.py. Powered by Poly Haven.
+Baleia jubarte: malha autoral deste projeto, loft denso, nadadeiras curvadas,
+cauda bilobada, olhos, mandíbula e sulcos ventrais; humpback_whale.blend salvo
+e reaberto, sem assets de terceiros no modelo. A busca web de baleias não foi
+usada como download: a API consultada estava indisponível. Nuvens, espuma,
+gotas balísticas e som de impacto (gen_whale_splash_audio.py) são originais,
+sem vozes/samples externos.

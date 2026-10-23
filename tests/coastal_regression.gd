@@ -26,12 +26,12 @@ func run(main) -> void:
 	coast._update_visibility()
 	check(coast.players.size()==4 and coast.ball.visible,"quatro pessoas jogam vôlei de dia")
 	check(coast.yacht.visible and not coast.cruise.visible,"iate diurno sem cruzeiro sobreposto")
+	check(coast.get_node_or_null("ReturningYacht")==null,"um único navio de madeira por vez")
 	var before: Vector3 = coast.yacht.position
-	var other_before: Vector3 = coast.passing_boat.position
 	var ball_before: Vector3 = coast.ball.position
 	coast._advance(.825)
 	check(coast.yacht.position.x>before.x and coast.ball.position.distance_to(ball_before)>1,"iate navega e bola avança na jogada")
-	check(coast.passing_boat.position.x<other_before.x,"segundo barco passa na direção oposta")
+	check(coast.yacht.position.x-before.x<.83,"navio passa lentamente")
 	check(absf(coast.ball.position.z)<.05 and coast.ball.position.y>2.5,"bola cruza acima da rede")
 	coast._advance(.825)
 	check(float(coast.players[1].get_meta("volley_weight"))>.9,"recebedor alcança a bola no contato")

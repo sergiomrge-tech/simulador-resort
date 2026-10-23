@@ -2,9 +2,9 @@
 
 Gerado por `python3 tools/gen_item_catalog.py` — **não edite à mão**. Os códigos ficam em `docs/itens_registro.json` e nunca mudam. Para pedir uma alteração, cite o código (ex.: "troque o modelo de MOD-017").
 
-Total: 2059 itens. MOD 239 · NAT 68 · PRC 31 · CEN 289 · PRT 13 · DSH 9 · SUP 10 · EXP 9 · STF 4 · UPG 15 · QST 4 · VIP 12 · EVT 8 · NOU 162 · TEX 29 · AUD 46 · ICO 36 · FNT 1 · SHD 17 · ANI 43 · PCA 899 · MAT 24 · COR 28 · SCR 47 · PES 16
+Total: 2065 itens. MOD 240 · NAT 68 · PRC 31 · CEN 289 · PRT 13 · DSH 9 · SUP 10 · EXP 9 · STF 4 · UPG 15 · QST 4 · VIP 12 · EVT 8 · NOU 163 · TEX 29 · AUD 47 · ICO 36 · FNT 1 · SHD 19 · ANI 43 · PCA 899 · MAT 24 · COR 28 · SCR 48 · PES 16
 
-## MOD — Modelos 3D em uso (reais, baixados da web) (239)
+## MOD — Modelos 3D em uso (reais, baixados da web) (240)
 
 | Código | Nome | Chave | Fonte | Usado em |
 |---|---|---|---|---|
@@ -246,7 +246,8 @@ Total: 2059 itens. MOD 239 · NAT 68 · PRC 31 · CEN 289 · PRT 13 · DSH 9 · 
 | MOD-245 | Home tv console | `g:home_tv_console` | Gerado no Blender (tools/gen_*.py) | home_furnishings.gd:20 |
 | MOD-246 | Home wood carving | `g:home_wood_carving` | Gerado no Blender (tools/gen_*.py) | home_furnishings.gd:26 |
 | MOD-247 | Coastal cruise | `g:coastal_cruise` | Gerado no Blender (tools/gen_*.py) | coastal_life.gd:45 |
-| MOD-248 | Coastal yacht | `g:coastal_yacht` | Gerado no Blender (tools/gen_*.py) | coastal_life.gd:37 |
+| MOD-249 | Humpback whale | `g:humpback_whale` | Gerado no Blender (tools/gen_*.py) | whale_wildlife.gd:12 |
+| MOD-250 | Pirate sailship | `g:pirate_sailship` | Gerado no Blender (tools/gen_*.py) | coastal_life.gd:37 |
 
 ## NAT — Natureza (Quaternius) (68)
 
@@ -780,7 +781,7 @@ Total: 2059 itens. MOD 239 · NAT 68 · PRC 31 · CEN 289 · PRT 13 · DSH 9 · 
 | EVT-007 | Show do DJ Maré | `show_dj` | O DJ Maré toca na praia e passa no quiosque. Clientes de sobra e caipirinha em alta. |
 | EVT-008 | Carnaval da Maré | `carnaval` | Bloco na areia à tarde e à noite! O dobro de clientes, bebidas em alta. Libere no capítulo do prefeito. |
 
-## NOU — Modelos baixados ainda sem uso (disponíveis) (162)
+## NOU — Modelos baixados ainda sem uso (disponíveis) (163)
 
 | Código | Nome | Chave | Fonte | Usado em |
 |---|---|---|---|---|
@@ -946,6 +947,7 @@ Total: 2059 itens. MOD 239 · NAT 68 · PRC 31 · CEN 289 · PRT 13 · DSH 9 · 
 | NOU-176 | Strawhat red | `g:strawhat_red` | Gerado no Blender (tools/gen_*.py) | — |
 | NOU-177 | Sunglasses | `g:sunglasses` | Gerado no Blender (tools/gen_*.py) | — |
 | NOU-178 | Television 02 | `television_02` | Poly Haven (CC0) | — |
+| NOU-179 | Coastal yacht | `g:coastal_yacht` | Gerado no Blender (tools/gen_*.py) | — |
 
 ## TEX — Texturas e materiais (29)
 
@@ -981,7 +983,7 @@ Total: 2059 itens. MOD 239 · NAT 68 · PRC 31 · CEN 289 · PRT 13 · DSH 9 · 
 | TEX-028 | White stucco | `white_stucco` | Poly Haven/ambientCG (CC0) ou gerado | toon.gd:10, world_village.gd:74, world_village.gd:99 |
 | TEX-029 | Smoke puff | `smoke_puff` | Poly Haven/ambientCG (CC0) ou gerado | — |
 
-## AUD — Sons e músicas (46)
+## AUD — Sons e músicas (47)
 
 | Código | Nome | Chave | Fonte | Usado em |
 |---|---|---|---|---|
@@ -1031,12 +1033,13 @@ Total: 2059 itens. MOD 239 · NAT 68 · PRC 31 · CEN 289 · PRT 13 · DSH 9 · 
 | AUD-044 | Kiosk pickup | `kiosk_pickup` | assets/audio | — |
 | AUD-045 | Kiosk prepare | `kiosk_prepare` | assets/audio | — |
 | AUD-046 | Kiosk ready | `kiosk_ready` | assets/audio | — |
+| AUD-047 | Whale splash | `whale_splash` | assets/audio | — |
 
 ## ICO — Ícones de interface (36)
 
 | Código | Nome | Chave | Fonte | Usado em |
 |---|---|---|---|---|
-| ICO-001 | Bangalo | `bangalo` | assets/ui/icons | economy.gd:53, economy.gd:67, main.gd:30, main.gd:425 (+9) |
+| ICO-001 | Bangalo | `bangalo` | assets/ui/icons | economy.gd:53, economy.gd:67, main.gd:30, main.gd:428 (+9) |
 | ICO-002 | Banho | `banho` | assets/ui/icons | economy.gd:323, economy.gd:57, economy.gd:61, world.gd:851 (+1) |
 | ICO-003 | Bar | `bar` | assets/ui/icons | economy.gd:114, economy.gd:336, economy.gd:48, economy.gd:49 (+25) |
 | ICO-004 | Bartender | `bartender` | assets/ui/icons | economy.gd:110, resort_core.gd:61, resort_core.gd:874, world.gd:1084 |
@@ -1048,28 +1051,28 @@ Total: 2059 itens. MOD 239 · NAT 68 · PRC 31 · CEN 289 · PRT 13 · DSH 9 · 
 | ICO-010 | Coco | `coco` | assets/ui/icons | economy.gd:131, economy.gd:178, economy.gd:195, economy.gd:205 (+7) |
 | ICO-011 | Compra | `compra` | assets/ui/icons | economy.gd:340, office_ui.gd:287, office_ui.gd:548, office_ui.gd:554 (+6) |
 | ICO-012 | Decor | `decor` | assets/ui/icons | economy.gd:315, world.gd:815, world.gd:829 |
-| ICO-013 | Diaria | `diaria` | assets/ui/icons | economy.gd:334, guests.gd:188, main.gd:750, main.gd:752 (+3) |
+| ICO-013 | Diaria | `diaria` | assets/ui/icons | economy.gd:334, guests.gd:188, main.gd:753, main.gd:755 (+3) |
 | ICO-014 | Equipe | `equipe` | assets/ui/icons | kiosk_management.gd:107, kiosk_management.gd:34, office_ui.gd:270, office_ui.gd:450 (+16) |
 | ICO-015 | Folha | `folha` | assets/ui/icons | economy.gd:341, office_ui.gd:554, progression.gd:275, progression.gd:603 (+4) |
 | ICO-016 | Frutas | `frutas` | assets/ui/icons | economy.gd:149, economy.gd:179, economy.gd:195, economy.gd:206 (+5) |
 | ICO-017 | Gelo | `gelo` | assets/ui/icons | economy.gd:181, economy.gd:195, economy.gd:205, economy.gd:206 (+7) |
-| ICO-018 | Gorjeta | `gorjeta` | assets/ui/icons | economy.gd:335, guests.gd:287, guests.gd:320, main.gd:750 (+5) |
-| ICO-019 | Insumo | `insumo` | assets/ui/icons | economy.gd:338, kiosk_management.gd:207, main.gd:750, main.gd:756 (+5) |
-| ICO-020 | Insumos | `insumos` | assets/ui/icons | main.gd:500, office_ui.gd:266, office_ui.gd:326, office_ui.gd:67 (+2) |
+| ICO-018 | Gorjeta | `gorjeta` | assets/ui/icons | economy.gd:335, guests.gd:287, guests.gd:320, main.gd:753 (+5) |
+| ICO-019 | Insumo | `insumo` | assets/ui/icons | economy.gd:338, kiosk_management.gd:207, main.gd:753, main.gd:759 (+5) |
+| ICO-020 | Insumos | `insumos` | assets/ui/icons | main.gd:503, office_ui.gd:266, office_ui.gd:326, office_ui.gd:67 (+2) |
 | ICO-021 | Missao | `missao` | assets/ui/icons | economy.gd:342, office_ui.gd:478, office_ui.gd:491, phone_ui.gd:45 (+10) |
-| ICO-022 | Multa | `multa` | assets/ui/icons | economy.gd:343, main.gd:306, office_ui.gd:554 |
+| ICO-022 | Multa | `multa` | assets/ui/icons | economy.gd:343, main.gd:309, office_ui.gd:554 |
 | ICO-023 | Novo | `novo` | assets/ui/icons | economy.gd:41, office_ui.gd:440 |
 | ICO-024 | Outro | `outro` | assets/ui/icons | economy.gd:346, office_ui.gd:291, office_ui.gd:319, office_ui.gd:574 (+3) |
 | ICO-025 | Pao | `pao` | assets/ui/icons | economy.gd:143, economy.gd:183, economy.gd:195, economy.gd:207 (+3) |
 | ICO-026 | Peixe | `peixe` | assets/ui/icons | economy.gd:137, economy.gd:182, economy.gd:195, economy.gd:207 (+6) |
 | ICO-027 | Prato | `prato` | assets/ui/icons | office_ui.gd:354, office_ui.gd:360, phone_ui.gd:26, phone_ui.gd:38 (+1) |
-| ICO-028 | Quiosque | `quiosque` | assets/ui/icons | economy.gd:33, economy.gd:337, main.gd:439, main.gd:489 (+10) |
+| ICO-028 | Quiosque | `quiosque` | assets/ui/icons | economy.gd:33, economy.gd:337, main.gd:442, main.gd:492 (+10) |
 | ICO-029 | Redes | `redes` | assets/ui/icons | office_ui.gd:428, office_ui.gd:581, resort_core.gd:1002 |
 | ICO-030 | Roupa | `roupa` | assets/ui/icons | economy.gd:299, world.gd:802, world.gd:807 |
 | ICO-031 | Upgrade | `upgrade` | assets/ui/icons | economy.gd:339, kiosk_management.gd:258, kiosk_management.gd:262, kiosk_management.gd:266 (+16) |
 | ICO-032 | Cooking pot | `cooking-pot` | assets/ui/icons | phone_ui.gd:51 |
 | ICO-033 | Laurel crown | `laurel-crown` | assets/ui/icons | phone_ui.gd:48, phone_ui.gd:863 |
-| ICO-034 | Shop | `shop` | assets/ui/icons | hud.gd:474, hud.gd:499, hud.gd:567, main.gd:281 (+11) |
+| ICO-034 | Shop | `shop` | assets/ui/icons | hud.gd:474, hud.gd:499, hud.gd:567, main.gd:284 (+11) |
 | ICO-035 | Trophy | `trophy` | assets/ui/icons | phone_ui.gd:50 |
 | ICO-036 | Village | `village` | assets/ui/icons | phone_ui.gd:1050, phone_ui.gd:25, phone_ui.gd:52 |
 
@@ -1079,7 +1082,7 @@ Total: 2059 itens. MOD 239 · NAT 68 · PRC 31 · CEN 289 · PRT 13 · DSH 9 · 
 |---|---|---|---|---|
 | FNT-001 | Nunito | `Nunito.ttf` | assets/fonts | — |
 
-## SHD — Shaders (17)
+## SHD — Shaders (19)
 
 | Código | Nome | Chave | Fonte | Usado em |
 |---|---|---|---|---|
@@ -1100,6 +1103,8 @@ Total: 2059 itens. MOD 239 · NAT 68 · PRC 31 · CEN 289 · PRT 13 · DSH 9 · 
 | SHD-015 | Npc eyes | `npc_eyes` | shaders | guest.gd:851 |
 | SHD-016 | Home tv | `home_tv` | shaders | home_furnishings.gd:40 |
 | SHD-017 | Coastal wake | `coastal_wake` | shaders | coastal_life.gd:58 |
+| SHD-018 | Sky clouds | `sky_clouds` | shaders | whale_wildlife.gd:46 |
+| SHD-019 | Whale foam | `whale_foam` | shaders | whale_wildlife.gd:18 |
 
 ## ANI — Animações dos personagens (43)
 
@@ -1135,7 +1140,7 @@ Total: 2059 itens. MOD 239 · NAT 68 · PRC 31 · CEN 289 · PRT 13 · DSH 9 · 
 | ANI-028 | Roll | `Roll` | UAL (Quaternius CC0) | — |
 | ANI-029 | Sitting enter | `Sitting_Enter` | UAL (Quaternius CC0) | — |
 | ANI-030 | Sitting exit | `Sitting_Exit` | UAL (Quaternius CC0) | — |
-| ANI-031 | Sitting idle loop | `Sitting_Idle_Loop` | UAL (Quaternius CC0) | guest.gd:128, guest.gd:185, hotel_world.gd:248, main.gd:325 (+11) |
+| ANI-031 | Sitting idle loop | `Sitting_Idle_Loop` | UAL (Quaternius CC0) | guest.gd:128, guest.gd:185, hotel_world.gd:248, main.gd:328 (+11) |
 | ANI-032 | Sitting talking loop | `Sitting_Talking_Loop` | UAL (Quaternius CC0) | guest.gd:130, guest.gd:185, hotel_world.gd:260, village_life.gd:448 (+1) |
 | ANI-033 | Spell simple enter | `Spell_Simple_Enter` | UAL (Quaternius CC0) | — |
 | ANI-034 | Spell simple exit | `Spell_Simple_Exit` | UAL (Quaternius CC0) | — |
@@ -1147,7 +1152,7 @@ Total: 2059 itens. MOD 239 · NAT 68 · PRC 31 · CEN 289 · PRT 13 · DSH 9 · 
 | ANI-040 | Sword attack | `Sword_Attack` | UAL (Quaternius CC0) | — |
 | ANI-041 | Sword idle | `Sword_Idle` | UAL (Quaternius CC0) | — |
 | ANI-042 | Walk formal loop | `Walk_Formal_Loop` | UAL (Quaternius CC0) | guest.gd:124 |
-| ANI-043 | Walk loop | `Walk_Loop` | UAL (Quaternius CC0) | event_fx.gd:261, guest.gd:124, guest.gd:184, main.gd:365 (+1) |
+| ANI-043 | Walk loop | `Walk_Loop` | UAL (Quaternius CC0) | event_fx.gd:261, guest.gd:124, guest.gd:184, main.gd:368 (+1) |
 
 ## PCA — Peças construídas por código (uma linha = uma peça; ver coluna Função) (899)
 
@@ -1950,11 +1955,11 @@ Total: 2059 itens. MOD 239 · NAT 68 · PRC 31 · CEN 289 · PRT 13 · DSH 9 · 
 | PCA-888 | box | `show_menu` | `B.box` | — | guest.gd:952 |  |
 | PCA-889 | box | `show_menu` | `B.box` | — | guest.gd:953 |  |
 | PCA-890 | box | `show_menu` | `B.box` | — | guest.gd:955 |  [em laço] |
-| PCA-891 | place | `_run_shot` | `Real.place` | — | main.gd:413 |  [em laço] |
+| PCA-891 | place | `_run_shot` | `Real.place` | — | main.gd:416 |  [em laço] |
 | PCA-892 | label | `spawn_customer` | `B.label` | — | village_life.gd:329 |  |
 | PCA-893 | build | `_bungalow` | `P.build` | — | world.gd:638 |  |
 | PCA-894 | place | `_sand_clutter` | `Real.place` | — | world_village.gd:1793 |  |
-| PCA-895 | new | `_run_shot` | `MeshInstance3D.new` | — | main.gd:398 |  |
+| PCA-895 | new | `_run_shot` | `MeshInstance3D.new` | — | main.gd:401 |  |
 | PCA-896 | g:lounger | `_lounger` | `Real.place` | — | world.gd:401 | No modelo a cabeceira fica em +Z do glTF? Não: a frente é +Z e a cabeceira -Z, como no cód |
 | PCA-897 |  beam | `_lot` | `B._beam` | — | world.gd:1957 |  |
 | PCA-898 |  beam | `_lot` | `B._beam` | — | world.gd:1958 |  |
@@ -2115,7 +2120,7 @@ Total: 2059 itens. MOD 239 · NAT 68 · PRC 31 · CEN 289 · PRT 13 · DSH 9 · 
 | COR-027 | Estampa 4 | `PRINT_COLS_3` | guest.gd | — |
 | COR-028 | Estampa 5 | `PRINT_COLS_4` | guest.gd | — |
 
-## SCR — Scripts (módulos do jogo) (47)
+## SCR — Scripts (módulos do jogo) (48)
 
 | Código | Nome | Chave | Fonte | Usado em |
 |---|---|---|---|---|
@@ -2166,6 +2171,7 @@ Total: 2059 itens. MOD 239 · NAT 68 · PRC 31 · CEN 289 · PRT 13 · DSH 9 · 
 | SCR-045 | home_furnishings.gd | `home_furnishings.gd` | scripts/ | home_furnishings.gd:1 |
 | SCR-046 | coastal_life.gd | `coastal_life.gd` | scripts/ | coastal_life.gd:1 |
 | SCR-047 | volley_arm.gd | `volley_arm.gd` | scripts/ | volley_arm.gd:1 |
+| SCR-048 | whale_wildlife.gd | `whale_wildlife.gd` | scripts/ | whale_wildlife.gd:1 |
 
 ## PES — Nomes de personagens (16)
 

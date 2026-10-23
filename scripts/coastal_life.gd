@@ -6,7 +6,6 @@ var court: Node3D
 var ball: Node3D
 var players: Array = []
 var yacht: Node3D
-var passing_boat: Node3D
 var cruise: Node3D
 var sea_time := 0.0
 var rally_time := 0.0
@@ -35,11 +34,8 @@ func _ready() -> void:
 		arms.guest = g
 		g._skel.add_child(arms)
 		players.append(g)
-	yacht = Real.place(self,"g:coastal_yacht",Vector3.ZERO,-1.5,0,Color.WHITE,0,false)
+	yacht = Real.place(self,"g:pirate_sailship",Vector3.ZERO,-1.0,PI*.5,Color.WHITE,0,false)
 	yacht.name = "PassingYacht"
-	passing_boat = Real.place(self,"g:coastal_yacht",Vector3.ZERO,-1.15,PI,Color.WHITE,0,false)
-	passing_boat.name = "ReturningYacht"
-	_wake(passing_boat,-10,18,4)
 	var windows := StandardMaterial3D.new()
 	windows.albedo_color = Color(.95,.78,.48)
 	windows.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
@@ -62,7 +58,8 @@ func _wake(parent: Node3D, offset: float, length: float, width: float) -> void:
 	mat.shader = load("res://shaders/coastal_wake.gdshader")
 	wake.material_override = mat
 	parent.add_child(wake)
-	wake.position = Vector3(offset,.90 if parent==yacht else .75,0)
+	wake.position = Vector3(0,2.5 if parent==yacht else 1.9,offset)
+	wake.rotation.y = -PI*.5
 	wake.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 func _process(delta: float) -> void:
 	_update_visibility()
@@ -72,7 +69,6 @@ func _update_visibility() -> void:
 	var hour: float = Core.minutes/60.0
 	var day: bool = hour>=6 and hour<19
 	yacht.visible = day
-	passing_boat.visible = day
 	cruise.visible = not day
 	var playing: bool = hour>=8 and hour<18.5 and Core.weather!="rain"
 	ball.visible = playing
@@ -80,9 +76,8 @@ func _update_visibility() -> void:
 func _advance(delta: float) -> void:
 	sea_time += delta
 	rally_time += delta
-	yacht.position = Vector3(-120+fposmod(160+sea_time*3.2,360),main.world.WATER_Y-.90+.035*sin(sea_time*1.2),-78)
+	yacht.position = Vector3(-120+fposmod(160+sea_time*.50,360),main.world.WATER_Y-2.4+.035*sin(sea_time*1.2),-78)
 	yacht.rotation.z = .008*sin(sea_time*.8)
-	passing_boat.position = Vector3(230-fposmod(140+sea_time*2.6,380),main.world.WATER_Y-.70+.025*sin(sea_time),-101)
 	cruise.position = Vector3(40,main.world.WATER_Y-3.50,-195)
 	var leg := int(floor(rally_time/1.65))%4
 	var t := fposmod(rally_time,1.65)/1.65

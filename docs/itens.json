@@ -141,27 +141,27 @@
    },
    {
     "arquivo": "main.gd",
-    "linha": 365,
+    "linha": 368,
     "funcao": "_run_shot"
    },
    {
     "arquivo": "main.gd",
-    "linha": 463,
+    "linha": 466,
     "funcao": "_run_shot"
    },
    {
     "arquivo": "main.gd",
-    "linha": 661,
+    "linha": 664,
     "funcao": "_stage_village"
    },
    {
     "arquivo": "main.gd",
-    "linha": 676,
+    "linha": 679,
     "funcao": "_stage_village"
    },
    {
     "arquivo": "main.gd",
-    "linha": 728,
+    "linha": 731,
     "funcao": "_stage_guests"
    },
    {
@@ -245,17 +245,17 @@
    },
    {
     "arquivo": "main.gd",
-    "linha": 463,
+    "linha": 466,
     "funcao": "_run_shot"
    },
    {
     "arquivo": "main.gd",
-    "linha": 703,
+    "linha": 706,
     "funcao": "_stage_village"
    },
    {
     "arquivo": "main.gd",
-    "linha": 728,
+    "linha": 731,
     "funcao": "_stage_guests"
    },
    {
@@ -514,22 +514,22 @@
    },
    {
     "arquivo": "main.gd",
-    "linha": 325,
+    "linha": 328,
     "funcao": "_process"
    },
    {
     "arquivo": "main.gd",
-    "linha": 370,
+    "linha": 373,
     "funcao": "_run_shot"
    },
    {
     "arquivo": "main.gd",
-    "linha": 457,
+    "linha": 460,
     "funcao": "_run_shot"
    },
    {
     "arquivo": "main.gd",
-    "linha": 573,
+    "linha": 576,
     "funcao": "_run_tour"
    },
    {
@@ -761,12 +761,12 @@
    },
    {
     "arquivo": "main.gd",
-    "linha": 365,
+    "linha": 368,
     "funcao": "_run_shot"
    },
    {
     "arquivo": "main.gd",
-    "linha": 738,
+    "linha": 741,
     "funcao": "_stage_guests"
    }
   ]
@@ -1488,6 +1488,15 @@
   "fonte": "assets/audio",
   "usos": [],
   "arquivo_modelo": "assets/audio/kiosk_ready.wav"
+ },
+ {
+  "codigo": "AUD-047",
+  "categoria": "AUD",
+  "chave": "whale_splash",
+  "nome": "Whale splash",
+  "fonte": "assets/audio",
+  "usos": [],
+  "arquivo_modelo": "assets/audio/whale_splash.wav"
  },
  {
   "codigo": "CEN-001",
@@ -6322,12 +6331,12 @@
    },
    {
     "arquivo": "main.gd",
-    "linha": 425,
+    "linha": 428,
     "funcao": "_run_shot"
    },
    {
     "arquivo": "main.gd",
-    "linha": 503,
+    "linha": 506,
     "funcao": "_run_shot"
    },
    {
@@ -6482,17 +6491,17 @@
    },
    {
     "arquivo": "main.gd",
-    "linha": 425,
+    "linha": 428,
     "funcao": "_run_shot"
    },
    {
     "arquivo": "main.gd",
-    "linha": 750,
+    "linha": 753,
     "funcao": "_demo_summary"
    },
    {
     "arquivo": "main.gd",
-    "linha": 753,
+    "linha": 756,
     "funcao": "_demo_summary"
    },
    {
@@ -6702,7 +6711,7 @@
    },
    {
     "arquivo": "main.gd",
-    "linha": 796,
+    "linha": 799,
     "funcao": "_stage_company_demo"
    },
    {
@@ -7107,12 +7116,12 @@
    },
    {
     "arquivo": "main.gd",
-    "linha": 750,
+    "linha": 753,
     "funcao": "_demo_summary"
    },
    {
     "arquivo": "main.gd",
-    "linha": 752,
+    "linha": 755,
     "funcao": "_demo_summary"
    },
    {
@@ -7437,12 +7446,12 @@
    },
    {
     "arquivo": "main.gd",
-    "linha": 750,
+    "linha": 753,
     "funcao": "_demo_summary"
    },
    {
     "arquivo": "main.gd",
-    "linha": 755,
+    "linha": 758,
     "funcao": "_demo_summary"
    },
    {
@@ -7487,12 +7496,12 @@
    },
    {
     "arquivo": "main.gd",
-    "linha": 750,
+    "linha": 753,
     "funcao": "_demo_summary"
    },
    {
     "arquivo": "main.gd",
-    "linha": 756,
+    "linha": 759,
     "funcao": "_demo_summary"
    },
    {
@@ -7532,7 +7541,7 @@
   "usos": [
    {
     "arquivo": "main.gd",
-    "linha": 500,
+    "linha": 503,
     "funcao": "_run_shot"
    },
    {
@@ -7657,7 +7666,7 @@
    },
    {
     "arquivo": "main.gd",
-    "linha": 306,
+    "linha": 309,
     "funcao": "go_to_sleep"
    },
    {
@@ -7897,32 +7906,32 @@
    },
    {
     "arquivo": "main.gd",
-    "linha": 439,
+    "linha": 442,
     "funcao": "_run_shot"
    },
    {
     "arquivo": "main.gd",
-    "linha": 489,
+    "linha": 492,
     "funcao": "_run_shot"
    },
    {
     "arquivo": "main.gd",
-    "linha": 508,
+    "linha": 511,
     "funcao": "_run_shot"
    },
    {
     "arquivo": "main.gd",
-    "linha": 509,
+    "linha": 512,
     "funcao": "_run_shot"
    },
    {
     "arquivo": "main.gd",
-    "linha": 750,
+    "linha": 753,
     "funcao": "_demo_summary"
    },
    {
     "arquivo": "main.gd",
-    "linha": 754,
+    "linha": 757,
     "funcao": "_demo_summary"
    },
    {
@@ -8042,27 +8051,27 @@
    },
    {
     "arquivo": "main.gd",
-    "linha": 425,
+    "linha": 428,
     "funcao": "_run_shot"
    },
    {
     "arquivo": "main.gd",
-    "linha": 501,
+    "linha": 504,
     "funcao": "_run_shot"
    },
    {
     "arquivo": "main.gd",
-    "linha": 508,
+    "linha": 511,
     "funcao": "_run_shot"
    },
    {
     "arquivo": "main.gd",
-    "linha": 750,
+    "linha": 753,
     "funcao": "_demo_summary"
    },
    {
     "arquivo": "main.gd",
-    "linha": 757,
+    "linha": 760,
     "funcao": "_demo_summary"
    },
    {
@@ -8172,7 +8181,7 @@
    },
    {
     "arquivo": "main.gd",
-    "linha": 281,
+    "linha": 284,
     "funcao": "_begin_play"
    },
    {
@@ -13855,10 +13864,25 @@
   "arquivo_modelo": "assets/models/gen/coastal_cruise.glb"
  },
  {
-  "codigo": "MOD-248",
+  "codigo": "MOD-249",
   "categoria": "MOD",
-  "chave": "g:coastal_yacht",
-  "nome": "Coastal yacht",
+  "chave": "g:humpback_whale",
+  "nome": "Humpback whale",
+  "fonte": "Gerado no Blender (tools/gen_*.py)",
+  "usos": [
+   {
+    "arquivo": "whale_wildlife.gd",
+    "linha": 12,
+    "funcao": "_ready"
+   }
+  ],
+  "arquivo_modelo": "assets/models/gen/humpback_whale.glb"
+ },
+ {
+  "codigo": "MOD-250",
+  "categoria": "MOD",
+  "chave": "g:pirate_sailship",
+  "nome": "Pirate sailship",
   "fonte": "Gerado no Blender (tools/gen_*.py)",
   "usos": [
    {
@@ -13867,7 +13891,7 @@
     "funcao": "_ready"
    }
   ],
-  "arquivo_modelo": "assets/models/gen/coastal_yacht.glb"
+  "arquivo_modelo": "assets/models/gen/pirate_sailship.glb"
  },
  {
   "codigo": "NAT-001",
@@ -16034,6 +16058,15 @@
   "fonte": "Poly Haven (CC0)",
   "usos": [],
   "arquivo_modelo": "assets/models\\television_02/television_02.gltf"
+ },
+ {
+  "codigo": "NOU-179",
+  "categoria": "NOU",
+  "chave": "g:coastal_yacht",
+  "nome": "Coastal yacht",
+  "fonte": "Gerado no Blender (tools/gen_*.py)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/gen/coastal_yacht.glb"
  },
  {
   "codigo": "PCA-001",
@@ -31187,7 +31220,7 @@
   "usos": [
    {
     "arquivo": "main.gd",
-    "linha": 413,
+    "linha": 416,
     "funcao": "_run_shot"
    }
   ],
@@ -31263,7 +31296,7 @@
   "usos": [
    {
     "arquivo": "main.gd",
-    "linha": 398,
+    "linha": 401,
     "funcao": "_run_shot"
    }
   ],
@@ -34072,7 +34105,7 @@
     "funcao": ""
    }
   ],
-  "linhas": 803,
+  "linhas": 806,
   "descricao": ""
  },
  {
@@ -34600,7 +34633,7 @@
     "funcao": ""
    }
   ],
-  "linhas": 97,
+  "linhas": 98,
   "descricao": "Ambient life, separate from customers, orders and player stock."
  },
  {
@@ -34618,6 +34651,22 @@
   ],
   "linhas": 34,
   "descricao": "Two arm contact pose layered over the existing idle animation."
+ },
+ {
+  "codigo": "SCR-048",
+  "categoria": "SCR",
+  "chave": "whale_wildlife.gd",
+  "nome": "whale_wildlife.gd",
+  "fonte": "scripts/",
+  "usos": [
+   {
+    "arquivo": "whale_wildlife.gd",
+    "linha": 1,
+    "funcao": ""
+   }
+  ],
+  "linhas": 91,
+  "descricao": ""
  },
  {
   "codigo": "SHD-001",
@@ -34893,6 +34942,36 @@
    }
   ],
   "arquivo_modelo": "shaders/coastal_wake.gdshader"
+ },
+ {
+  "codigo": "SHD-018",
+  "categoria": "SHD",
+  "chave": "sky_clouds",
+  "nome": "Sky clouds",
+  "fonte": "shaders",
+  "usos": [
+   {
+    "arquivo": "whale_wildlife.gd",
+    "linha": 46,
+    "funcao": "_ready"
+   }
+  ],
+  "arquivo_modelo": "shaders/sky_clouds.gdshader"
+ },
+ {
+  "codigo": "SHD-019",
+  "categoria": "SHD",
+  "chave": "whale_foam",
+  "nome": "Whale foam",
+  "fonte": "shaders",
+  "usos": [
+   {
+    "arquivo": "whale_wildlife.gd",
+    "linha": 18,
+    "funcao": "_ready"
+   }
+  ],
+  "arquivo_modelo": "shaders/whale_foam.gdshader"
  },
  {
   "codigo": "STF-001",

@@ -408,3 +408,18 @@ material/RID no encerramento continuam presentes. ZIP com CRC e sem saves.
   material nulo/recursos/RID na liberação ao encerrar o motor.
 - ZIP em Downloads atualizado: 1.876.582.679 bytes, 11 arquivos incluindo
   PRAIA_E_ATENDIMENTO.md e hashes. CRC verificado; não contém saves/userdata.
+
+
+# Baleias, nuvens e um navio de madeira — 23/10/2026
+- Baleias autorais detalhadas com fontes Blender reabertas; salto/queda em ciclos
+  alternados, 100 gotas balísticas por impacto, espuma/ondas dissipando e áudio
+  original suave no bus SFX. Respeita pausa e mute. Nuvens integradas ao sky shader,
+  seguindo cores do ciclo e clima, sem geometria transparente gigante.
+- Ship Pinnace Poly Haven CC0, casco/velas/cordame preservados; um navio por vez
+  a .5 m/s. Cruzeiro noturno permanece ancorado, sem esteira. Fontes incorporadas.
+- Fonte cloud-smooth.log e whale-audio.log WHALE_TEST PASS; pirate-final.log
+  COASTAL_TEST PASS. Executável wildlife-pack.log WHALE_TEST PASS e pirate-pack.log
+  COASTAL_TEST PASS, com inspeção Vulkan de whale_breach/splash/rings e beach_yacht.
+- Sem SCRIPT ERROR/SHADER ERROR/recursos ausentes. Avisos de material/RID conhecidos
+  no encerramento continuam presentes. Não alegar log do motor inteiramente limpo.
+- PCK SHA256: 700da65207242e158e0d5f04c57197f8f08d6e8eca0147dfe7351dd31878e2bc.
