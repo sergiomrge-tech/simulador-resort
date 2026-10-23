@@ -37,12 +37,12 @@ func _ready() -> void:
 	yacht = Real.place(self,"g:pirate_sailship",Vector3.ZERO,-1.0,PI*.5,Color.WHITE,0,false)
 	yacht.name = "PassingYacht"
 	var windows := StandardMaterial3D.new()
-	windows.albedo_color = Color(.95,.78,.48)
+	windows.albedo_color = Color(.88,.81,.65)
 	windows.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 	windows.emission_enabled = true
-	windows.emission = Color(1,.65,.28)
-	windows.emission_energy_multiplier = 2.5
-	cruise = Real.place_glow(self,"g:coastal_cruise",Vector3.ZERO,-1.0,PI,windows,false)
+	windows.emission = Color(1,.82,.56)
+	windows.emission_energy_multiplier = 1.6
+	cruise = Real.place_glow(self,"g:coastal_cruise",Vector3.ZERO,-1.6,PI-.12,windows,false)
 	cruise.name = "NightCruise"
 	_wake(yacht,-12,21,4.8)
 	# Anchored cruise ship has no propulsion wake.
@@ -78,7 +78,7 @@ func _advance(delta: float) -> void:
 	rally_time += delta
 	yacht.position = Vector3(-120+fposmod(160+sea_time*.50,360),main.world.WATER_Y-2.4+.035*sin(sea_time*1.2),-78)
 	yacht.rotation.z = .008*sin(sea_time*.8)
-	cruise.position = Vector3(40,main.world.WATER_Y-3.50,-195)
+	cruise.position = Vector3(40,main.world.WATER_Y-5.60,-210)
 	var leg := int(floor(rally_time/1.65))%4
 	var t := fposmod(rally_time,1.65)/1.65
 	var start: Vector3 = contacts[leg]

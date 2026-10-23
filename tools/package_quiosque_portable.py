@@ -20,11 +20,11 @@ Para atualizar uma cópia anterior, substitua os arquivos do programa e mantenha
 a pasta userdata/. O ZIP não inclui nem apaga saves.
 
 NOVO NESTA REVISÃO
+- Cruzeiro detalhado: cabines com varandas, botes, radar e janelas iluminadas.
+  Fica ancorado ao fundo à noite; o navio de madeira passa devagar de dia.
 - Baleias saltando ao fundo, com respingos, espuma, ondas e som suave de queda.
   Nuvens no céu acompanham dia/noite e chuva. Animações respeitam a pausa.
 - Um navio de madeira com velas por vez, passando devagar; cruzeiro ancorado à noite.
-- Dois barcos passando ao fundo em sentidos opostos, com velocidade perceptível.
-  Cruzeiro ancorado à noite: posição fixa, luzes acesas e sem esteira de navegação.
 - Acabamento visual: contornos finos e discretos em pessoas, móveis e vegetação;
   água com cores naturais, transições suaves e espuma menos recortada;
   brilho noturno mais contido, preservando janelas e luminárias legíveis.

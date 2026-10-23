@@ -423,3 +423,26 @@ material/RID no encerramento continuam presentes. ZIP com CRC e sem saves.
 - Sem SCRIPT ERROR/SHADER ERROR/recursos ausentes. Avisos de material/RID conhecidos
   no encerramento continuam presentes. Não alegar log do motor inteiramente limpo.
 - PCK SHA256: 700da65207242e158e0d5f04c57197f8f08d6e8eca0147dfe7351dd31878e2bc.
+# Cruzeiro refinado após rejeição da prévia simples — 23/10/2026
+
+- Quaternius low poly testado, rejeitado pelo usuário e retirado. Não incluído
+  no pacote. Alternativas gratuitas Sketchfab/BlendSwap exigiram login;
+  não foram instaladas. Usado modelo autoral `coastal_cruise` refinado em Blender.
+- Cabines com molduras e algumas janelas apagadas, varandas com guarda-corpos,
+  botes, radar, conveses e espreguiçadeiras. Escala 1,6 (cerca de 146 m),
+  posição Z=-210, fixo à noite e sem esteira. Um navio por vez preservado.
+- Gerador constrói encaixes chanfrados e tubos via BMesh/malha direta, evitando
+  centenas de atualizações do dependency graph. Fonte salva/reaberta com sucesso.
+- `build/logs/cruise-refined-source.log`: COASTAL_TEST PASS, Vulkan 1280x720,
+  escala, modelo correto, exclusividade dia/noite, janelas emissivas e pausa.
+- `build/logs/cruise-refined-export.log`: exportação concluída; preset restaurado.
+- `build/logs/cruise-refined-pack-final.log`: COASTAL_TEST PASS no EXE/PCK
+  entregue, Vulkan RTX4060Ti. Três capturas gravadas e imagem noturna inspecionada.
+  Capturas do teste agora usam user://qa_shots, pois res:// não é saída gravável
+  do PCK. Uma execução anterior revelou essa falha de captura e foi corrigida.
+- Sem erro de script/recurso ausente no teste final. Avisos conhecidos de
+  material/RID/recursos ao encerrar continuam; não é um log inteiramente limpo.
+- APPDATA isolado em build/qa/cruise-refined-pack-final; saves do jogador preservados.
+- PCK SHA256: `93087d9d711f9a77a47efb80b3d6df17af176803f1c50e6096657675e9359a28`.
+  Catálogo regenerado: 2065 itens, mesmos códigos. ZIP portátil sem userdata.
+

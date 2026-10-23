@@ -39,6 +39,8 @@ o nome do arquivo não restringe seu uso à IA Claude.
 - Música/efeitos suaves e sem vozes de fundo.
 - No mar: um navio de madeira com velas por vez, passando bem devagar; cruzeiro
   parado à noite. Baleias saltam ao fundo com efeitos na água; céu com nuvens.
+  Usuário rejeitou a prévia do cruzeiro low poly Quaternius por ser simples;
+  manter cabines, varandas, botes e detalhes legíveis na câmera da praia.
 
 ## Forma de trabalhar
 

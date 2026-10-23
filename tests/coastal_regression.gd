@@ -12,7 +12,12 @@ func shot(main,label: String,pos: Vector3,look: Vector3) -> void:
 	main.day.force_update()
 	await frames(20)
 	await RenderingServer.frame_post_draw
-	get_viewport().get_texture().get_image().save_png("res://shots/"+label+".png")
+	# Packaged res:// is not a writable output directory. Tests already isolate
+	# APPDATA, so captures belong with their disposable QA data.
+	var output := "user://qa_shots/"+label+".png"
+	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path("user://qa_shots"))
+	check(get_viewport().get_texture().get_image().save_png(output)==OK,"captura "+label+" gravada")
+	print("[coast] screenshot ",ProjectSettings.globalize_path(output))
 func run(main) -> void:
 	Core.new_game()
 	Core.paused = true
@@ -46,6 +51,9 @@ func run(main) -> void:
 	check(not coast.yacht.visible and coast.cruise.visible,"cruzeiro aparece à noite e iate recolhe")
 	check(not coast.ball.visible and coast.players.all(func(g):return not g.visible),"quadra descansa à noite")
 	check(coast.cruise.position.z+9<main.world.SHORE_Z-100,"cruzeiro no mar distante")
+	check(coast.cruise.get_child(0).scene_file_path=="res://assets/models/gen/coastal_cruise.glb","cruzeiro detalhado carregado, modelo simplificado retirado")
+	var bounds: AABB = Real._aabb(coast.cruise)
+	check(bounds.size.x>135 and bounds.size.x<160 and bounds.size.y>25 and bounds.size.y<40,"cruzeiro detalhado em escala correta, sem rotação vertical")
 	var anchored: Vector3 = coast.cruise.position
 	coast._advance(15)
 	check(coast.cruise.position==anchored and not coast.cruise.has_node("Wake"),"cruzeiro noturno ancorado sem deslocamento ou esteira")

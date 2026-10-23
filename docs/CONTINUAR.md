@@ -72,6 +72,9 @@ trabalhe nos mesmos arquivos ao mesmo tempo que outro chat sem coordenação.
     bola e braços animados. Um navio de madeira/velas passa lentamente de dia,
     um por vez, usando Ship Pinnace CC0 da Poly Haven. Cruzeiro fica ancorado à noite, sem
     deslocamento nem esteira de propulsão, conforme correção do usuário.
+    Usuário rejeitou a prévia do Cruise Ship Quaternius low poly por ser simples.
+    Cruzeiro vigente é o autoral detalhado, coastal_cruise, ampliado a 1,6 para
+    leitura na praia, com varandas, botes, radar e cabines parcialmente apagadas.
     Embarcações distantes da faixa de banho/cais; congelar movimento na pausa.
     Quadra deve ficar livre de guarda-sóis/espreguiçadeiras e outros props.
 13. Baleias saltam ao fundo em ciclos alternados, com respingos balísticos,
@@ -138,6 +141,10 @@ não contém automaticamente todas as dependências da instalação do Sergio.
   Innerscene e gera o cruzeiro autoral detalhado. Fontes coastal_*.blend incorporadas,
   reabertas; GLBs e texturas runtime versionados. Aceita yacht/cruise separadamente.
   Não reduzir os navios a caixas/cascos low poly; preservar decks, vidros e detalhes.
+- Cruzeiro: `tools/gen_coastal_traffic.py cruise` gera `coastal_cruise.blend/glb`.
+  Modelos gratuitos mais detalhados localizados em Sketchfab e BlendSwap exigem
+  login para download nesta sessão; não foram baixados. Não confundir resultados
+  de pesquisa com assets realmente instalados. Mantida fonte autoral editável.
 - Não regenere tudo sem necessidade. Preserve pesos/UVs, escala e origem. No
   Blender, frente -Y vira +Z na Godot. Peças rígidas Hair_* precisam de
   BoneAttachment em Head; só mudar o caminho skeleton não resolve cabelo sem Skin.
@@ -201,6 +208,10 @@ processos pesados simultâneos. O fallback OpenGL pode ajudar em outra GPU, mas 
 comprova o mesmo resultado visual de Vulkan. Erros de script/recursos bloqueiam a
 entrega; avisos conhecidos de material/RID ao encerrar foram registrados na validação
 anterior, não equivalem a um log inteiramente limpo.
+
+Exceção: `--coastal-test` grava capturas em `user://qa_shots` e imprime o caminho
+absoluto no log; assim o mesmo teste funciona com o PCK, onde `res://` não é
+um diretório de saída gravável. APPDATA deve continuar isolado para cada teste.
 
 ## Exportação e entrega
 

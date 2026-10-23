@@ -267,3 +267,16 @@ e reaberto, sem assets de terceiros no modelo. A busca web de baleias não foi
 usada como download: a API consultada estava indisponível. Nuvens, espuma,
 gotas balísticas e som de impacto (gen_whale_splash_audio.py) são originais,
 sem vozes/samples externos.
+
+## Revisão do cruzeiro — 23/10/2026
+Cruzeiro vigente: modelo autoral do projeto, `tools/gen_coastal_traffic.py cruise`,
+fonte editável `art/blender/coastal_cruise.blend`. Refinamento de cabines,
+molduras, varandas, radar e espreguiçadeiras, com escala/iluminação ajustadas.
+Não usa um asset externo de cruzeiro nesta revisão.
+
+Pesquisa de alternativas gratuitas: Cruise Ship de farhad.Guli (CC BY 4.0),
+https://sketchfab.com/3d-models/cruise-ship-bb782326932e4c179e34f3d6c8e36b86 ;
+cruise ship de GeorgL (CC0), https://blendswap.com/blend/23316 . Ambos exigiram
+login para baixar nesta sessão e não foram instalados.
+Cruise Ship Quaternius CC0, https://poly.pizza/m/yq9EKmEmfC , foi testado e
+rejeitado pelo usuário por simplicidade visual; retirado da cena e distribuição.

@@ -21,7 +21,7 @@ retirada desconta uma vez; sem mecânica de preparo.
 Praia: quatro pessoas trocam a bola de vôlei em trajetórias sobre a rede, com
 movimento corporal/contato dos braços. A quadra fica ao lado do quiosque, livre
 de guarda-sóis e espreguiçadeiras. Funciona das 08h às 18h30 e para na chuva.
-Dois barcos cruzam ao fundo em sentidos opostos das 06h às 19h; o cruzeiro com
+Um navio de madeira passa devagar ao fundo das 06h às 19h; o cruzeiro com
 janelas iluminadas fica ancorado das 19h às 06h, em posição fixa e sem esteira.
 Todos ficam no mar distante, fora do cais e da faixa de banho.
 São elementos de ambientação, sem embarque nem minijogo de vôlei nesta revisão.
@@ -40,3 +40,9 @@ durante o dia, asset Ship Pinnace CC0 Poly Haven. Cruzeiro fixo à noite.
 Duas baleias saltam alternadamente ao fundo, com respingos balísticos, espuma,
 ondas circulares e som suave posicional respeitando mute/SFX. Céu com nuvens
 suaves animadas, cor acompanhando horário e chuva. Animações congelam na pausa.
+
+Cruzeiro refinado: modelo Blender detalhado, com cabines/varandas, botes,
+conveses, radar e iluminação de janelas parcialmente apagadas. Escala maior
+para leitura desde a praia, ancorado em Z=-210, sem esteira. A prévia low poly
+Quaternius foi rejeitada e retirada. Assets gratuitos mais detalhados foram
+localizados em Sketchfab/BlendSwap, mas o download exigiu login; não instalados.

@@ -6,11 +6,25 @@ Preserves packed editable Blender sources; no mesh decimation.
 """
 from pathlib import Path
 import bpy, bmesh, math, tempfile, shutil, requests, sys
-from mathutils import Vector
+from mathutils import Vector, Matrix, Euler
 sys.path.insert(0,str(Path(__file__).resolve().parent))
-from gen_code_props import mat, box, lathe
+from gen_code_props import mat, lathe
 ROOT=Path(__file__).resolve().parents[1]
 OUT=ROOT/'assets/models/gen'
+
+def box(size, loc, material, bevel=.01, rot=(0,0,0)):
+    # Offline mesh construction avoids a dependency-graph update for each of
+    # the hundreds of cabin frames. Geometry is still bevelled, not runtime cubes.
+    bm=bmesh.new();bmesh.ops.create_cube(bm,size=1)
+    bmesh.ops.scale(bm,vec=Vector(size),verts=list(bm.verts))
+    if bevel>0:
+        bmesh.ops.bevel(bm,geom=list(bm.edges),offset=min(bevel,.45*min(size)),segments=3,affect='EDGES')
+    bmesh.ops.transform(bm,matrix=Matrix.Translation(Vector(loc)) @ Euler(rot).to_matrix().to_4x4(),verts=list(bm.verts))
+    bm.normal_update()
+    mesh=bpy.data.meshes.new('marine fitting');bm.to_mesh(mesh);bm.free()
+    obj=bpy.data.objects.new('marine fitting',mesh);bpy.context.collection.objects.link(obj)
+    mesh.materials.append(material)
+    return obj
 
 def save(name):
     # Merge by material to keep hundreds of windows from becoming draw calls.
@@ -70,15 +84,27 @@ def loft(name,rings,material):
     return ob
 
 def rail(points,material,radius=.035):
-    curve=bpy.data.curves.new('tubular railing','CURVE');curve.dimensions='3D';curve.bevel_depth=radius;curve.bevel_resolution=2
-    spline=curve.splines.new('POLY');spline.points.add(len(points)-1)
-    for p,v in zip(spline.points,points):p.co=(*v,1)
-    ob=bpy.data.objects.new('railing',curve);bpy.context.collection.objects.link(ob);curve.materials.append(material)
-    bpy.context.view_layer.objects.active=ob;ob.select_set(True);bpy.ops.object.convert(target='MESH');ob.select_set(False)
+    # Construct the tube directly: repeated curve conversion becomes expensive
+    # with hundreds of balcony rails in the same scene.
+    pts=[Vector(p) for p in points];verts=[];faces=[];n=12
+    for j,p in enumerate(pts):
+        tangent=(pts[min(j+1,len(pts)-1)]-pts[max(0,j-1)]).normalized()
+        u=tangent.orthogonal().normalized();v=tangent.cross(u).normalized()
+        for i in range(n):
+            angle=math.tau*i/n
+            verts.append(p+radius*(u*math.cos(angle)+v*math.sin(angle)))
+    for j in range(len(pts)-1):
+        for i in range(n):faces.append((j*n+i,j*n+(i+1)%n,(j+1)*n+(i+1)%n,(j+1)*n+i))
+    faces.extend([tuple(reversed(range(n))),tuple(range((len(pts)-1)*n,len(pts)*n))])
+    mesh=bpy.data.meshes.new('tubular railing');mesh.from_pydata(verts,[],faces);mesh.update()
+    ob=bpy.data.objects.new('railing',mesh);bpy.context.collection.objects.link(ob);mesh.materials.append(material)
+    for face in mesh.polygons:face.use_smooth=True
+    return ob
 
 def cruise():
     bpy.ops.wm.read_factory_settings(use_empty=True)
-    ivory=mat('ivory marine paint',(.78,.77,.72),.55)
+    print('Building detailed cruise cabins and decks',flush=True)
+    ivory=mat('ivory marine paint',(.72,.71,.67),.65)
     hull=mat('navy hull',(.035,.065,.085),.55)
     red=mat('antifouling',(.22,.055,.04),.85)
     teak=mat('teak deck',(.35,.24,.13),.85)
@@ -86,6 +112,7 @@ def cruise():
     metal=mat('railing steel',(.46,.47,.45),.35,metal=.25)
     orange=mat('lifeboat orange',(.67,.25,.065),.65)
     glow=mat('glow_cabin_windows',(.9,.71,.38),.35)
+    sleeping=mat('unoccupied cabin glazing',(.055,.075,.078),.3)
     bulb=next(n for n in glow.node_tree.nodes if n.type=='BSDF_PRINCIPLED')
     bulb.inputs['Emission Color'].default_value=(1,.64,.26,1)
     bulb.inputs['Emission Strength'].default_value=1.5
@@ -98,9 +125,15 @@ def cruise():
         # Recessed windows, projecting balcony slabs and fine steel rails.
         for side in [-1,1]:
             for x in range(-31+deck*2,32-deck*2,2):
-                box((1.10,.10,.82),(x,side*(width/2-.55),z+1.05),glow,.08)
+                # Dark frames and occasional unoccupied cabins break the uniform
+                # luminous grid without changing the deterministic layout.
+                box((1.24,.12,.96),(x,side*(width/2-.55),z+1.05),dark,.06)
+                lit = (x + deck * 3 + int(side)) % 11 not in (0, 1)
+                box((1.10,.10,.82),(x,side*(width/2-.48),z+1.05),glow if lit else sleeping,.05)
                 box((1.60,.45,.12),(x,side*(width/2-.22),z+.42),ivory,.03)
                 rail([(x-.78,side*(width/2),z+1.12),(x+.78,side*(width/2),z+1.12)],metal)
+                for xx in (x-.78,x+.78):
+                    rail([(xx,side*(width/2),z+.48),(xx,side*(width/2),z+1.12)],metal,.022)
             rail([(-length*.4,side*width*.48,z+2.1),(length*.4,side*width*.48,z+2.1)],metal)
     # Bow and stern promenade, bridge, upper sun deck, funnel and communications.
     loft('upper teak promenade',[(57,11.3,13.95),(57,11.3,14.1)],teak)
@@ -121,10 +154,19 @@ def cruise():
     rail([(10,0,18.4),(18,0,18.4)],metal,.08)
     for x in [11,17]:
         lathe([(.55,0),(.65,.45),(.45,.90),(0,1.1)],ivory,(x,0,14.1))
+    # Radar domes and aft terraced promenade with individual deck chairs.
+    for x in (-23,-18):
+        lathe([(.5,0),(.9,.35),(1.1,1.0),(.85,1.7),(0,2.0)],ivory,(x,0,14.1),verts=48)
+    for side in (-1,1):
+        for x in range(-25,24,3):
+            rail([(x,side*5.3,14.1),(x,side*5.3,15)],metal,.025)
+        rail([(-26,side*5.3,15),(26,side*5.3,15)],metal,.035)
     # Pool and sun loungers are modeled details, not runtime primitives.
     box((9,3,.2),(0,0,14.18),dark,.5)
     for side in [-1,1]:
-        for x in range(-5,7,2):box((1.2,.55,.23),(x,side*3.1,14.28),ivory,.10)
+        for x in range(-5,7,2):
+            box((1.2,.55,.23),(x,side*3.1,14.28),ivory,.10)
+            box((.42,.55,.65),(x-.42,side*3.1,14.55),ivory,.08,rot=(0,-.35,0))
     for side in [-1,1]:
         for x in range(-35,36,3):box((.65,.12,.4),(x,side*7.32,1.75),glow,.15)
     save('coastal_cruise')
