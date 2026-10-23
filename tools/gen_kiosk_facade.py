@@ -238,12 +238,13 @@ for x in [-2.30, 0, 2.30]:
     box('Rear wall stile', (.085, .085, 2.65), (x, 2.26, 1.325), paint)
 
 # Washable tiled work wall, with real grout gaps and glazed bevels.
-tile=material('facade_glazed_ivory',(.72,.76,.65),.3)
-grout=material('facade_tile_grout',(.25,.31,.28))
+tile=material('facade_glazed_ivory',(.80,.74,.60),.42)
+tile_soft=material('facade_glazed_sand',(.75,.70,.58),.44)
+grout=material('facade_tile_grout',(.49,.47,.40))
 box('Washable backsplash backing',(3.48,.035,.88),(.48,2.205,1.49),grout,.006)
-for row in range(5):
-    for col in range(17):
-        box('Glazed kitchen tile',(.195,.025,.164),(-1.12+col*.20,2.178,1.14+row*.17),tile,.009)
+for row in range(6):
+    for col in range(12):
+        box('Glazed kitchen tile',(.281,.025,.132),(-1.115+col*.29,2.178,1.13+row*.14),tile_soft if (row+col)%5==0 else tile,.006)
 box('Backsplash brass edge',(3.49,.045,.028),(.48,2.15,1.94),brass,.006)
 # Open pass shelf above the food cabinet: brackets support a solid wooden slab.
 box('Service shelf timber',(.94,.33,.055),(-.02,2.03,1.94),wood,.018)

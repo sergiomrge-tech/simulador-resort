@@ -835,6 +835,15 @@ func _kiosk_facade(c: Vector3, y0: float) -> void:
 			lit.emission_energy_multiplier = 0.0
 			part.material_override = lit
 			lanterns.append([null, lit, 0.8, false])
+	var task_light := OmniLight3D.new()
+	task_light.name = "KioskWorkLight"
+	task_light.position = c + Vector3(0.25, 2.32, -0.9)
+	task_light.light_color = Color(1.0, 0.93, 0.82)
+	task_light.light_energy = 0.65
+	task_light.omni_range = 3.4
+	task_light.omni_attenuation = 1.2
+	task_light.shadow_enabled = false
+	add_child(task_light)
 	for x in [-2.68, 2.68]:
 		var lamp := OmniLight3D.new()
 		lamp.name = "KioskPendantLight"

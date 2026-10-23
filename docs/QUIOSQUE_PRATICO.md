@@ -1,5 +1,9 @@
 # Quiosque reorganizado — 22/10/2026
 
+Refinamento visual de 23/10: revestimento retangular em tons areia, juntas
+mais suaves e pequenas variações cerâmicas. Luz de trabalho quente permanente
+no interior reduz a predominância azul da iluminação ambiente sobre equipamentos.
+
 Acabamento interno de 23/10: faixa de azulejos claros com juntas e bordas
 arredondadas na área de preparo, prateleira de madeira com suportes de latão e
 coifa modelada com filtro, duto e luz de trabalho. Equipamentos, corredor,

@@ -231,3 +231,13 @@ CRCs verificados e sem userdata. Documentação e instruções do expositor atua
   recursos ausentes. Avisos conhecidos de encerramento do motor permanecem.
 - SHA-256 PCK: `df7c8c0799877648bd9742d01e9a4bf3ec091f0f1cb1992bdacdfd87c4c3596c`.
 - ZIP em Downloads atualizado e CRC conferido, sem incluir/apagar saves.
+# Refinamento de materiais e luz — 23/10/2026
+
+- Azulejos retangulares areia com juntas suaves e variação discreta de material.
+- Luz de trabalho quente, sem sombra dinâmica, na área interna do quiosque.
+- Conferido `practical_workroom.png` no Vulkan: equipamentos mais legíveis e
+  madeira mais quente. Não foram alteradas posições, colisões ou interações.
+- `refine-proof.log` (fonte) e `refine-pack.log` (PCK): PRACTICAL_TEST PASS,
+  sem SCRIPT ERROR ou recursos ausentes. Avisos conhecidos de saída permanecem.
+- PCK SHA-256: `be191881c6ee638e3697b1f855cdaac7cf27106034769a1207d43edac88a1388`.
+- ZIP de Downloads atualizado com CRC conferido e saves preservados.
