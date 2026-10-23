@@ -473,6 +473,9 @@ def main():
             futs += [ex.submit(texture, s) for s in TEXTURES]
             futs += [ex.submit(ambientcg, k, v) for k, v in AMBIENTCG.items()]
         if only in ("", "models"):
+            if not os.path.isfile(os.path.join(A, "models", "clothing", "outfit_male.glb")) or not os.path.isfile(os.path.join(A, "models", "clothing", "outfit_female.glb")):
+                subprocess.check_call([sys.executable, os.path.join(ROOT, "tools", "fetch_compatible_outfits.py")], cwd=ROOT)
+                subprocess.check_call([sys.executable, os.path.join(ROOT, "tools", "gen_compatible_clothing.py")], cwd=ROOT)
             futs += [ex.submit(model, s, "1k", "models", True) for s in MODELS + MODELS_EXTRA]
             futs += [ex.submit(model, s, "2k", "models_hd") for s in MODELS + MODELS_EXTRA + MODELS_HD_ONLY]
             futs += [ex.submit(kenney, u, n) for u, n in KENNEY.items()]

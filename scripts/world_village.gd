@@ -736,6 +736,15 @@ func _quiosque() -> void :
 	_painted.append(B.box(self, Vector3(0.6, ch, 2.4), c + Vector3(-2.0, y0 + ch * 0.5, 0.95), wood, true))
 	_painted.append(B.box(self, Vector3(0.6, ch, 2.4), c + Vector3(2.0, y0 + ch * 0.5, 0.95), wood, true))
 	_kiosk_facade(c, y0)
+	var rear_wall := StaticBody3D.new()
+	rear_wall.name = "KioskRearWall"
+	add_child(rear_wall)
+	rear_wall.position = c + Vector3(0, y0 + 1.32, -2.4)
+	var rear_shape := CollisionShape3D.new()
+	var rear_box := BoxShape3D.new()
+	rear_box.size = Vector3(4.65, 2.64, 0.16)
+	rear_shape.shape = rear_box
+	rear_wall.add_child(rear_shape)
 	# Equipamentos funcionais ocupam a parede traseira; entradas laterais livres.
 	# Altura real do tampo: base e acabamento; itens apoiados, sem sobreposição.
 	var snack_y: = y0 + ch + 0.08

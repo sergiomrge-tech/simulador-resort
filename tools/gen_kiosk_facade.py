@@ -228,6 +228,15 @@ for x in [-2.68, 2.68]:
     box('Pendant bracket return',(.09,.72,.09),(x,-2.68,2.78),wood)
     lathe('Warm lamp bulb',[(.025,0),(.06,.04),(.065,.10),(.05,.16),(.02,.18)],(x,y,z+.16),glow)
 
+# Full rear wall behind the working stations. Blender +Y faces Godot -Z.
+box('Rear wall backing', (4.65, .12, 2.64), (0, 2.40, 1.32), dark)
+for i in range(31):
+    box('Rear teak wall plank', (.146, .055, 2.61), (-2.25+i*.15, 2.31, 1.32), wood, .008)
+for z in [.10, 1.94, 2.56]:
+    box('Rear wall horizontal rail', (4.70, .085, .10), (0, 2.26, z), paint)
+for x in [-2.30, 0, 2.30]:
+    box('Rear wall stile', (.085, .085, 2.65), (x, 2.26, 1.325), paint)
+
 # Join by material, keeping paint and sign independently customizable.
 bpy.ops.object.select_all(action='SELECT')
 bpy.ops.object.convert(target='MESH')

@@ -4,7 +4,7 @@ extends Node3D
 signal arrived
 
 const SKINS: = [Color(0.95, 0.78, 0.62), Color(0.8, 0.58, 0.42), Color(0.62, 0.42, 0.28), Color(0.42, 0.28, 0.18)]
-const SHIRTS: = [Color(0.95, 0.45, 0.2), Color(0.15, 0.55, 0.75), Color(0.95, 0.85, 0.3), Color(0.9, 0.9, 0.88), Color(0.85, 0.25, 0.35), Color(0.3, 0.7, 0.45), Color(0.55, 0.35, 0.7)]
+const SHIRTS: = [Color(0.70, 0.34, 0.26), Color(0.18, 0.52, 0.54), Color(0.85, 0.74, 0.55), Color(0.86, 0.83, 0.74), Color(0.16, 0.34, 0.46), Color(0.36, 0.55, 0.43), Color(0.32, 0.47, 0.65)]
 const SHORTS: = [Color(0.15, 0.25, 0.5), Color(0.85, 0.8, 0.65), Color(0.2, 0.2, 0.22), Color(0.3, 0.55, 0.65), Color(0.75, 0.3, 0.2)]
 const HAIRS: = [Color(0.08, 0.06, 0.05), Color(0.3, 0.18, 0.08), Color(0.75, 0.6, 0.35), Color(0.6, 0.57, 0.54), Color(0.5, 0.2, 0.1), Color(0.9, 0.78, 0.5), Color(0.18, 0.12, 0.08)]
 const NAMES: = ["Ana", "João", "Maria", "Pedro", "Luiza", "Rafael", "Camila", "Bruno", "Juliana", "Thiago", "Beatriz", "Lucas", "Fernanda", "Gabriel", "Larissa", "Diego"]
@@ -840,17 +840,20 @@ func _dress(m: Node3D, rng: RandomNumberGenerator) -> void :
 			_hair_parts.append(mi)
 		elif n.contains("eye") and mi.mesh.surface_get_material(0) is BaseMaterial3D:
 			mi.material_override = Ppl.toon_copy(mi.mesh.surface_get_material(0), Color.WHITE)
-	var cl: = Ppl.clothes(_female, _body_mi, skel)
-	var foot: = "sandals" if rng.randf() < 0.45 else "shoes"
-	for k in ["shirt", "shorts", foot]:
-		if not cl.has(k):
-			continue
-		var cm: = MeshInstance3D.new()
-		cm.name = "Clothes_" + k
-		cm.mesh = cl[k]
-		cm.skin = _body_mi.skin
-		cm.material_override = _mat
+	var foot: = "shoes"
+	_body_mi.mesh = Ppl.covered_body(_female, _body_mi.mesh)
+	for cm in Ppl.outfit_parts(_female):
+		var garment_mat: ShaderMaterial = _mat.duplicate()
+		var garment_zone: float = 0.0 if str(cm.name).begins_with("skin_") else (4.0 if str(cm.name).contains("shoes") else (2.0 if str(cm.name).contains("trousers") else 1.0))
+		garment_mat.set_shader_parameter("garment_zone", garment_zone)
+		var src: Material = cm.mesh.surface_get_material(0)
+		if garment_zone > 0.0 and src is BaseMaterial3D and src.albedo_texture != null:
+			garment_mat.set_shader_parameter("use_fabric", true)
+			garment_mat.set_shader_parameter("fabric_texture", src.albedo_texture)
+		cm.material_override = garment_mat
+		cm.name = "Tailored_" + str(cm.name)
 		skel.add_child(cm)
+		cm.skeleton = NodePath("..")
 		_mesh_insts.append(cm)
 	var shoe_cols: = [Color(0.95, 0.95, 0.93), Color(0.12, 0.12, 0.14), Color(0.15, 0.35, 0.75), Color(0.85, 0.2, 0.2), Color(0.35, 0.22, 0.12), Color(0.95, 0.75, 0.2), Color(0.2, 0.6, 0.55)]
 	var sc: Color = shoe_cols[rng.randi() % shoe_cols.size()]
@@ -862,14 +865,13 @@ func _dress(m: Node3D, rng: RandomNumberGenerator) -> void :
 	var styles: Array = Ppl.HAIR_FEMALE if _female else Ppl.HAIR_MALE
 	var hm: = Ppl.hair_mesh(styles[rng.randi() % styles.size()])
 	if hm:
-		skel.add_child(hm)
-		hm.skin = hm.skin
+		Ppl.attach_hair(hm, skel)
 		hm.set_meta("src", hm.mesh.surface_get_material(0))
 		_hair_parts.append(hm)
 	if not _female and rng.randf() < 0.28:
 		var bm: = Ppl.hair_mesh("Hair_Beard")
 		if bm:
-			skel.add_child(bm)
+			Ppl.attach_hair(bm, skel)
 			bm.set_meta("src", bm.mesh.surface_get_material(0))
 			_hair_parts.append(bm)
 
@@ -886,19 +888,6 @@ func _caricature(rng: RandomNumberGenerator) -> void :
 	_skel.add_child(att)
 	_face = Node3D.new()
 	att.add_child(_face)
-	var roll: = rng.randf()
-	# acessórios reais: chapéu de palha / boné / chapéu de pescador (Poly Haven) / flor (Poly Haven) — modelos em assets/models/gen e Poly Haven
-	if roll < 0.28:
-		var hat: String = ["g:strawhat_red", "g:strawhat_blue", "g:strawhat_dark"][rng.randi() % 3]
-		Real.place(_face, hat, Vector3(0, HAT_Y - 0.01, -0.02), -1.0, 0.0, Color.WHITE, 0.0, false)
-	elif roll < 0.5:
-		var cap_c: Color = [Color(1.0, 0.4, 0.3), Color(0.2, 0.6, 1.0), Color(1.0, 0.85, 0.2), Color(0.3, 0.8, 0.45)][rng.randi() % 4]
-		Real.place(_face, "g:cap", Vector3(0, HAT_Y - 0.05, -0.02), -1.0, 0.0, cap_c.lerp(Color.WHITE, 0.15), 0.0, false)
-	elif roll < 0.62:
-		var bucket: Color = [Color(1.0, 1.0, 0.96), Color(0.7, 0.9, 1.1)][rng.randi() % 2]
-		Real.place(_face, "fishermans_hat", Vector3(0, HAT_Y - 0.05, -0.02), 0.0, rng.randf() * TAU, bucket, 0.34)
-	elif roll < 0.7:
-		Real.place(_face, "flower_gazania", Vector3(0.12, HAT_Y - 0.07, 0.03), 0.0, 0.0, Color.WHITE, 0.1)
 	# óculos de sol e câmera no pescoço
 	if rng.randf() < 0.3:
 		Real.place(_face, "g:sunglasses", Vector3(0, 0.075, 0.115), -1.0, 0.0, Color.WHITE, 0.0, false)
@@ -920,15 +909,6 @@ func _caricature(rng: RandomNumberGenerator) -> void :
 ## Estampa da roupa e altura/porte variados.
 func _finish_look(rng: RandomNumberGenerator) -> void :
 	var pat: = 0.0
-	var roll: = rng.randf()
-	if roll < 0.2:
-		pat = 1.0
-	elif roll < 0.32:
-		pat = 2.0
-	elif roll < 0.48:
-		pat = 3.0
-	elif roll < 0.56:
-		pat = 4.0
 	var p2: Color = PRINT_COLS[rng.randi() % PRINT_COLS.size()]
 	for mi in _mesh_insts:
 		mi.set_instance_shader_parameter("pattern", pat)

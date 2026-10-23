@@ -15,7 +15,10 @@ instance uniform vec4 shirt2 : source_color = vec4(1.0, 1.0, 1.0, 1.0);
 instance uniform float shorts_pattern = 0.0;
 varying float zone;
 varying vec3 opos;
-void vertex(){ zone = COLOR.r * 255.0 / 32.0; opos = VERTEX; }
+uniform float garment_zone = -1.0;
+uniform bool use_fabric = false;
+uniform sampler2D fabric_texture : source_color;
+void vertex(){ zone = garment_zone >= 0.0 ? garment_zone : COLOR.r * 255.0 / 32.0; opos = VERTEX; }
 
 float flower(vec2 p) {
 	vec2 g = fract(p) - 0.5;
@@ -57,6 +60,11 @@ void fragment(){
 	else if (zone > 2.5 && zone < 3.5) { c = hair.rgb; r = 0.5; }
 	else if (zone > 3.5 && zone < 4.5) { c = shoes.rgb; r = 0.7; }
 	else if (zone > 4.5) { c = sole.rgb; r = 0.8; }
+	if (use_fabric) {
+		vec3 fabric = texture(fabric_texture, UV).rgb;
+		float detail = dot(fabric, vec3(0.3, 0.59, 0.11));
+		c *= clamp(detail * 1.5, 0.45, 1.15);
+	}
 	// v0.7 cartoon: cores um pouco mais saturadas
 	float l = dot(c, vec3(0.3, 0.59, 0.11));
 	ALBEDO = mix(vec3(l), c, 1.2);

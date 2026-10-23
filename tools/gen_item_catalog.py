@@ -147,7 +147,7 @@ for fname in ("details.gd", "build.gd", "world.gd", "world_village.gd", "village
                 [{"arquivo": fname, "linha": i + 1, "funcao": fn}])
 
 # partes dos personagens
-for base in ("assets/models/ubc", "assets/models/ual"):
+for base in ("assets/models/ubc", "assets/models/ual", "assets/models/clothing"):
     if os.path.isdir(base):
         for f in sorted(os.listdir(base)):
             if f.endswith((".gltf", ".glb")):

@@ -55,8 +55,12 @@ func run(main) -> void:
 	for station in main.operations.stations.values():
 		check(absf(station.position.x - c.x) < 2 and absf(station.position.z - c.z) < 2.5, "estação dentro do quiosque")
 	check(main.operations.get_node_or_null("ServiceDeck") == null, "sem anexo externo")
+	check(main.world.get_node_or_null("KioskRearWall") != null, "parede traseira com colisão")
 	main.player.global_position = c + Vector3(3.6, 0.1, -0.85)
 	await frames(4)
+	var rear_ray := PhysicsRayQueryParameters3D.create(c + Vector3(0, 1.2, -3.0), c + Vector3(0, 1.2, -1.8), 1)
+	var rear_hit: Dictionary = main.world.get_world_3d().direct_space_state.intersect_ray(rear_ray)
+	check(not rear_hit.is_empty() and rear_hit.collider.name == "KioskRearWall", "parede bloqueia passagem física atrás dos equipamentos")
 	await walk(main, c + Vector3(0, 0.1, -0.85))
 	await walk(main, c + Vector3(0, 0.1, 0.8))
 	await walk(main, c + Vector3(0, 0.1, -0.85))
@@ -137,6 +141,36 @@ func run(main) -> void:
 		await shot(main, "practical_workroom", c + Vector3(0, .1, 1.15), 0, -7)
 		main.hud.root.visible = false
 		await shot(main, "practical_facade", c + Vector3(1.5, .35, 7), 15, -3)
+		# Isolate the two proof actors so passing pedestrians do not block the camera.
+		for pedestrian in get_tree().get_nodes_in_group("npc"): pedestrian.hide()
+		var shown: Dictionary = {}
+		for i in 12:
+			var person = main.village._make()
+			var gender: String = "female" if person._female else "male"
+			if shown.has(gender):
+				person.queue_free()
+				continue
+			shown[gender] = person
+			person.position = c + Vector3(-.62 if person._female else .62, .1, 4.0)
+			person.rotation.y = 0
+			person.go([])
+			person.set_process(false)
+			var clothes = person.find_children("Tailored_*", "MeshInstance3D", true, false)
+			check(clothes.size() == 4, "roupas importadas " + gender)
+			check(person._body_mi.mesh.get_surface_count() > 0, "corpo preservado sob roupas " + gender)
+			for clothing in clothes:
+				check(clothing.skin != null and clothing.get_node(clothing.skeleton) == person._skel, "roupa ligada ao esqueleto existente")
+			for hair in person._hair_parts:
+				if str(hair.name).begins_with("Hair"):
+					check(hair.get_parent() is BoneAttachment3D and hair.get_parent().bone_name == "Head", "cabelo rígido preso à cabeça animada")
+			if shown.size() == 2: break
+		await shot(main, "practical_clothing", c + Vector3(0, .1, 6.3), 0, -14)
+		for person in shown.values(): person.play("Walk_Loop")
+		await frames(35)
+		await shot(main, "practical_clothing_walk", c + Vector3(0, .1, 6.3), 0, -14)
+		for person in shown.values(): person.play("Sitting_Idle_Loop")
+		await frames(35)
+		await shot(main, "practical_clothing_sit", c + Vector3(0, .1, 6.3), 0, -14)
 	Core.company.created = false
 	Core.staff.atendente = true
 	Core.staff_changed.emit()

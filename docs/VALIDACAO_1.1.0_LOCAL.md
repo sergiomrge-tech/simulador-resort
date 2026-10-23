@@ -201,3 +201,14 @@ CRCs verificados e sem userdata. Documentação e instruções do expositor atua
 - SHA-256 PCK: `35dce12a574def7353476ccab1de851bcb189ee3c4f848f52a2b2039de1f7fa2`.
 - ZIP de Downloads atualizado e CRC conferido, sem incluir saves. Avisos de
   material nulo e recursos na saída permanecem no encerramento dos testes.
+# Parede e personagens sem chapéus — 23/10/2026
+
+- `no-hats-proof.log` e `no-hats-pack.log`: PRACTICAL_TEST PASS em Vulkan.
+- Inspeção de roupa e cabelo em pé, andando e sentado nas capturas
+  `practical_clothing*.png`. Corpos preservados; braços/mãos da base original;
+  cabelos rígidos presos a Head. Removidos todos os chapéus/bonés.
+- Parede traseira com teste de raycast; entradas laterais e serviço preservados.
+- `clothes-whole-company.log`: COMPANY_TEST PASS.
+- PCK SHA-256: `a01c8728fc301431129ae3158e8e61a67f4405ce7caf09cb52b3d03465e6a0e6`.
+- ZIP em Downloads atualizado, CRC conferido e sem saves do jogador.
+- Permanecem avisos já existentes de recursos/material no encerramento do motor.

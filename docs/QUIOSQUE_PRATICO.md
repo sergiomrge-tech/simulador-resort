@@ -1,5 +1,12 @@
 # Quiosque reorganizado — 22/10/2026
 
+A traseira agora tem parede de madeira com ripas e travessas, combinando com o
+acabamento do balcão. A parede bloqueia passagem; as entradas laterais continuam
+livres e todos os equipamentos ficam dentro. Pessoas usam roupas CC0 Quaternius
+com pesos de animação originais, camisas, calças e calçados com acabamento suave.
+Personagens sem chapéus e bonés, conforme pedido. Cabelos rígidos seguem a cabeça
+por BoneAttachment3D, inclusive durante as animações de sentar e andar.
+
 Contratação cria imediatamente o funcionário no quiosque, inclusive com o celular
 aberto ou fora do horário. Ele trabalha apenas no turno; folga e demissão ocultam
 o personagem. O atendente também aparece antes da criação da empresa.

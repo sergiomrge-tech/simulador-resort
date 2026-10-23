@@ -1,5 +1,12 @@
 # Como continuar o Maré Alta Resort (passagem de bastão — 19/10/2026)
 
+> **Parede e roupas (22/10/2026):** parede traseira com ripas na fonte
+> `kiosk_facade.blend`, colisão `KioskRearWall`, equipamentos e laterais preservados.
+> Roupas reais CC0 Quaternius em `assets/models/clothing/`, pesos originais,
+> gerador `tools/gen_compatible_clothing.py` e fontes `resort_outfit_*.blend`.
+> Cabelo/barba reanexados ao esqueleto correto. `--practical-test` confere
+> parede por raycast e captura roupa/cabelo em pé, andando e sentado.
+
 > **Contratados e geladeira (22/10/2026):** presença dos funcionários do quiosque
 > sincronizada em `staff_changed`, independente da operação/turno. Trabalho continua
 > condicionado a turno e abertura; folga/demissão ocultam. Atendente legado incluído.

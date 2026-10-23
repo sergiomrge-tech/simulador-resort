@@ -173,3 +173,16 @@ CC0, incorporada na fonte Blender. Demais malhas e acabamentos são autorais.
 
 ## Passos (22/10/2026)
 Kenney, **Impact Sounds 1.0**, CC0: https://kenney.nl/assets/impact-sounds . Quinze arquivos originais `footstep_carpet_000–004.ogg`, `footstep_concrete_000–004.ogg` e `footstep_wood_000–004.ogg`. Os impactos abafados de carpete são usados na areia/terra para evitar o ruído de raspagem anterior. Licença em `assets/audio/KENNEY_IMPACT_LICENSE.txt`; download reproduzível por `python tools/fetch_assets.py --only audio`.
+
+## Roupas de pessoas e parede traseira (22/10/2026)
+
+Quaternius **Modular Character Outfits - Fantasy**, CC0, peças Peasant Body/Legs/Arms/Feet
+masculinas e femininas. Fonte oficial e licença:
+https://quaternius.itch.io/modular-character-outfits-fantasy .
+Download reproduzível: `tools/fetch_compatible_outfits.py`; adaptação em
+`tools/gen_compatible_clothing.py`. Preservados UVs e pesos de animação originais;
+ajustados acabamento suave, espessura e cores. Braços/mãos preservam a base
+Quaternius existente; as peças de roupa utilizam seus pesos originais. Fontes editáveis com
+texturas incorporadas: `art/blender/resort_outfit_male.blend` e `resort_outfit_female.blend`.
+Modelos de execução: `assets/models/clothing/`. A parede de madeira com ripas e
+travessas integra a fonte autoral `kiosk_facade.blend`, com madeira Poly Haven CC0.
