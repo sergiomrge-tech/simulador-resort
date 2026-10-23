@@ -2,7 +2,7 @@ class_name Economy
 ## Todos os números da progressão do Maré Alta. Não espalhar preço, diária ou salário pelo código.
 ##
 ## v0.7 — modo carreira: o jogo começa só com um quiosque simples na praia (coco gelado e suco).
-## Cada expansão (EXPANSIONS) é comprada pelo celular e aparece no mundo no lugar de um lote à venda.
+## Cada expansão (EXPANSIONS) é comprada pelo computador e aparece no mundo no lugar de um lote à venda.
 ## Caixa típico do dia 1: ~18 clientes no quiosque × ~R$ 13 ≈ R$ 230, menos ~R$ 70 de insumos.
 
 const BASE_NIGHTLY: = 100

@@ -20,6 +20,7 @@ var _hand_key := "?"
 var _production_key := ""
 var menu_card: Label3D
 var door_tween: Tween
+var computer: Node3D
 
 func _ready() -> void:
 	name = "KioskOperations"
@@ -68,13 +69,24 @@ func _build() -> void:
 		var label := B.label(self, "ENTRADA", c + Vector3(side * 2.42, 1.45, -0.75), 18, Color(1, 0.94, 0.75), Color(0.05, 0.12, 0.12), side * PI * 0.5)
 		label.pixel_size = 0.0018
 	Real.place(self, "g:kiosk_blender", c + Vector3(-2.0, 1.28, 0.25), -1.0)
-	var register_pos: Vector3 = c + Vector3(1.3, 1.28, 1.8)
+	var register_pos: Vector3 = c + Vector3(1.0, 1.28, 1.8)
 	Real.place(self, "g:service_register", register_pos, -1.0)
 	_interaction(self, register_pos + Vector3(0, 0.12, 0), Vector3(0.4, 0.3, 0.4), _register_prompt, collect_payments)
 	Real.place(self, "g:kiosk_counter_details", c + Vector3(0,1.28,0), -1.0,0,Color.WHITE,0,false)
-	menu_card = B.label(self,"",c+Vector3(-.90,1.50,2.023),22,Color(.08,.16,.16),Color(0,0,0,0),0)
-	menu_card.pixel_size = .0008
-	menu_card.outline_size = 0
+	computer = Real.place(self,"g:kiosk_computer",c+Vector3(1.70,1.28,1.65),-1.0,PI,Color.WHITE,0,false)
+	computer.name = "CounterComputer"
+	_interaction(self,c+Vector3(1.70,1.55,1.65),Vector3(.52,.55,.30),func(): return "Computador · gestão do quiosque",open_computer)
+	for side in [-1,1]:
+		var card := B.label(self,"",c+Vector3(-.90,1.498,1.89+side*.145),22,Color(.08,.12,.10),Color(0,0,0,0),0 if side==1 else PI)
+		card.name = "CounterPromotion" + str(side)
+		card.pixel_size = .0007
+		card.outline_size = 0
+		card.add_to_group("counter_promotions")
+		if side==1: menu_card = card
+	for row in 2:
+		for column in 3:
+			var cup := Real.place(self,"g:cup_plastic",c+Vector3(.04+column*.15,1.308,1.91+row*.14),.15,0,Color.WHITE,0,false)
+			cup.name = "CounterCup%d" % (row*3+column+1)
 	var pickup_label := B.label(self,"PEDIDOS PRONTOS",c+Vector3(.20,1.36,2.20),16,Color(.95,.89,.72),Color(.05,.12,.12),0)
 	pickup_label.pixel_size = .0006
 	Real.place(self,"k:utensil-fork",c+Vector3(-1.98,1.31,.93),0.0,PI*.5,Color.WHITE,.13)
@@ -84,6 +96,15 @@ func _build() -> void:
 	hand = Node3D.new()
 	main.player.cam.add_child(hand)
 	hand.position = Vector3(0.32, -0.32, -0.65)
+
+func can_use_computer() -> bool:
+	var local: Vector3 = main.world.kiosk_local(main.player.global_position)
+	return is_instance_valid(computer) and absf(local.x)<2.25 and local.z<1.6 and main.player.global_position.distance_to(computer.global_position)<2.2
+
+func open_computer() -> void:
+	if not can_use_computer(): return
+	main.hud.phone.open("")
+	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 
 func _interaction(parent: Node, pos: Vector3, size: Vector3, prompt: Callable, action: Callable) -> Interactable:
 	var item := Interactable.new()
@@ -108,7 +129,7 @@ func _station(kind: String, title: String, pos: Vector3, size: Vector3) -> void:
 	station_bodies.append(_interaction(node, Vector3(0, size.y * 0.5, 0), size, station_prompt.bind(kind, title), open_station.bind(kind)))
 
 func station_prompt(_kind: String, title: String) -> String:
-	return title if Core.company_enabled() else title + " · E para criar seu quiosque"
+	return title if Core.company_enabled() else title + " · crie seu quiosque no computador"
 
 func can_access(kind: String) -> bool:
 	var p: Vector3 = main.world.kiosk_local(main.player.global_position)
@@ -116,8 +137,7 @@ func can_access(kind: String) -> bool:
 
 func open_station(kind: String) -> void:
 	if not Core.company_enabled():
-		main.hud.phone.open("empresa")
-		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+		Core.toast.emit("Crie seu quiosque no computador do balcão antes de retirar produtos.","info")
 		return
 	if not can_access(kind):
 		return
@@ -445,10 +465,13 @@ func _clear_tray(g) -> void:
 		tray.queue_free()
 
 func order_number(g) -> String:
-	var index: int = main.world.kiosk_spots.find(g.spot)
+	var reserved: Dictionary = g.get_meta("dining_spot",g.spot)
+	var index: int = main.world.kiosk_spots.find(reserved)
 	return "#%02d" % (index + 1)
 
 func seat_name(g) -> String:
+	if g.has_meta("counter_slot") and g.state in ["kwalk","kchoose","kwait"]:
+		return "Retirada no balcão %d" % (int(g.get_meta("counter_slot"))+1)
 	var index: int = main.world.kiosk_spots.find(g.spot)
 	return "Balcão %d" % (index + 1) if index < 2 else "Mesa %d%s" % [1 + int((index - 2) / 2), "A" if index % 2 == 0 else "B"]
 
@@ -524,11 +547,17 @@ func _sync_products() -> void:
 
 func _update_menu_card() -> void:
 	if menu_card == null: return
-	var lines: Array[String] = ["CARDÁPIO"]
+	var lines: Array[String] = ["PROMOÇÕES"]
 	for id in Core.kiosk_menu():
 		if lines.size() >= 5: break
-		lines.append(str(Economy.dish(id).name))
-	menu_card.text = "\n".join(lines)
+		lines.append(tr(str(Economy.dish(id).name)))
+		lines.append(Core.fmt_money(Core.price_of(id)))
+	for card in get_tree().get_nodes_in_group("counter_promotions"):
+		card.text = "\n".join(lines)
+		var font: Font = card.font if card.font else ThemeDB.fallback_font
+		var width := 1.0
+		for line in lines: width=maxf(width,font.get_string_size(line,HORIZONTAL_ALIGNMENT_LEFT,-1,card.font_size).x)
+		card.pixel_size = minf(.30/width,.28/(font.get_height(card.font_size)*lines.size()))
 
 func _update_work_lighting(_day: int, minutes: float) -> void:
 	var evening := smoothstep(16.5,19.5,minutes/60.0)

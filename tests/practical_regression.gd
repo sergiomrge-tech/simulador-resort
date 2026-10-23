@@ -111,48 +111,48 @@ func run(main) -> void:
 		main.hud._update_orders()
 		check(main.hud.orders_text.text.contains(main.operations.order_number(guest)) and main.hud.work_text.text.contains("Coco"), "pedido e item na mão claros no HUD")
 		check(guest._bubble.text.begins_with("#") and guest._bubble.text.length() == 3, "marcador curto no cliente")
-		check(main.operations.deliver(weakref(guest)) and guest.state == "keat", "entrega conclui pedido físico")
-	# Exercise E against seated clients on both sides of an actual table.
+		check(main.operations.deliver(weakref(guest)) and guest.state == "kto_table", "entrega conclui pedido físico")
+	main.village._on_slept(0)
+	# Table reservations are served at the counter before the walk to a seat.
 	for seat_index in [2,3]:
 		var occupancy: Array = main.world.kiosk_spots.map(func(s): return s.busy)
 		for i in main.world.kiosk_spots.size(): main.world.kiosk_spots[i].busy = i != seat_index
 		var seated = main.village.spawn_customer()
 		for i in main.world.kiosk_spots.size():
 			if i != seat_index: main.world.kiosk_spots[i].busy = occupancy[i]
-		check(seated != null and seated.spot.get("table",false), "cliente em mesa real")
+		check(seated != null and seated.get_meta("dining_spot",{}).get("table",false), "cliente com mesa reservada")
 		if seated == null: continue
 		seated.go([])
 		seated.position = seated.spot.pos
 		seated.rotation.y = seated.spot.rot
-		seated.play("Sitting_Idle_Loop")
+		seated.play("Idle")
 		seated.set_meta("items",["coco_gelado"])
 		seated.set_meta("delivered",0)
 		seated.state = "kchoose"
 		seated.set_meta("choose",0)
 		main.village._kiosk_tick(.01)
 		main.operations._process(0)
-		check(not bool(seated.get_meta("order_taken",true)) and seated not in main.village.waiting_customers(), "pedido aguarda anotação na mesa")
+		check(not bool(seated.get_meta("order_taken",true)) and seated not in main.village.waiting_customers(), "pedido aguarda anotação no balcão")
 		var target = seated.get_node("CustomerInteraction")
-		main.player.position = seated.spot.approach
-		main.player.cam.look_at(target.global_position+Vector3(0,.15,0),Vector3.UP)
+		main.player.position = main.operations.service_approach(seated)
+		main.player.cam.look_at(target.global_position+Vector3(0,.20,0),Vector3.UP)
 		await frames(4)
-		main.player.ray.force_raycast_update()
-		check(main.player.ray.get_collider() == target, "mira alcança cliente sentado sem bloqueio da mesa")
-		main.player.focus = target if main.player.ray.get_collider() == target else null
+		main.player.refresh_focus()
+		check(main.player.focus == target, "mira alcança cliente no balcão pelo lado interno")
 		var stock_snapshot: Dictionary = Core.stock.duplicate()
 		if DisplayServer.get_name() != "headless":
 			await frames(2)
 			await RenderingServer.frame_post_draw
 			get_viewport().get_texture().get_image().save_png("res://shots/table_order_"+str(seat_index)+".png")
 		main.player.interact()
-		check(bool(seated.get_meta("order_taken",false)) and seated in main.village.waiting_customers(), "E anota pedido do cliente sentado")
+		check(bool(seated.get_meta("order_taken",false)) and seated in main.village.waiting_customers(), "E anota pedido do cliente no balcão")
 		check(Core.stock == stock_snapshot, "anotar não consome produtos")
 		var timer_before: float = seated.timer
 		main.player.interact()
 		check(seated.timer == timer_before, "consultar pedido anotado não reinicia paciência")
-		check(Core.pickup_company_dish("coco_gelado"), "pega produto pronto para a mesa")
+		check(Core.pickup_company_dish("coco_gelado"), "pega produto pronto para retirada")
 		main.player.interact()
-		check(seated.state == "keat" and Core.company.carry == "", "mesma interação entrega ao cliente sentado")
+		check(seated.state == "kto_table" and Core.company.carry == "", "mesma interação entrega ao cliente no balcão")
 		main.village._leave(seated)
 		main.village._release_spot(seated)
 		main.village.customers.erase(seated)
@@ -166,7 +166,7 @@ func run(main) -> void:
 	await frames(4)
 	var home_buttons := 0
 	for child in main.hud.phone.screen.find_children("*", "Button", true, false): home_buttons += 1
-	check(home_buttons == 6, "sem atalhos duplicados no início")
+	check(home_buttons == 7, "sem atalhos duplicados no início")
 	main.hud.phone._open_management("painel")
 	main.hud.phone._open_management("horarios")
 	main.hud.phone.back()
@@ -174,7 +174,7 @@ func run(main) -> void:
 	main.hud.phone.close()
 	check(Core.hire("caixa"), "caixa contratado para conferência visual")
 	check(main.operations.actors.caixa._skel.has_node("StaffBadge"),"uniforme com identificação por função")
-	check(main.operations.menu_card.text.contains("CARDÁPIO"),"cardápio físico acompanha receitas disponíveis")
+	check(main.operations.menu_card.text.contains("PROMOÇÕES"),"cardápio físico acompanha receitas disponíveis")
 	for cue in ["fridge","pickup","prepare","ready","cash"]:
 		var stream: AudioStream = load("res://assets/audio/kiosk_" + cue + ".wav")
 		check(stream != null and stream.get_length() > 0 and stream.get_length() < 1,"som curto sem vozes: " + cue)

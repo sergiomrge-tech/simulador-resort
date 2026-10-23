@@ -8,7 +8,7 @@ const COLORS := {"creme": Color(1.0, 0.94, 0.78), "branco": Color.WHITE, "dourad
 static var _fonts: Dictionary = {}
 
 static func defaults() -> Dictionary:
-	return {"created": false, "name": "Maré Alta", "font": "praia", "color": "creme", "physical": true, "kiosk_open": true, "sim": Simulation.defaults(),
+	return {"created": false, "name": "Maré Alta", "font": "praia", "color": "creme", "physical": true, "kiosk_open": false, "opening_version": 1, "sim": Simulation.defaults(),
 		"ready": {}, "carry": "", "staff_carry": "", "production": {}, "receivables": [], "dirty_seats": []}
 
 static func valid_name(value: String) -> bool:
@@ -29,7 +29,8 @@ static func sanitize(value: Variant) -> Dictionary:
 	out.font = str(value.get("font", "praia")) if FONTS.has(str(value.get("font", ""))) else "praia"
 	out.color = str(value.get("color", "creme")) if COLORS.has(str(value.get("color", ""))) else "creme"
 	out.physical = bool(value.get("physical", true))
-	out.kiosk_open = bool(value.get("kiosk_open", true))
+	# First update of older saves requires a deliberate opening, once.
+	out.kiosk_open = bool(value.get("kiosk_open", false)) if int(value.get("opening_version",0))>=1 else false
 	out.sim = Simulation.sanitize(value.get("sim", {}))
 	var ready: Variant = value.get("ready", {})
 	if ready is Dictionary:

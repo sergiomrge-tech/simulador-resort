@@ -38,7 +38,7 @@ func run(main) -> void:
 	for spot in world.kiosk_spots:
 		check(spot.pos.z<world.KIOSK_C.z,"balcão e todas as mesas no lado da praia")
 	var guests: Array = []
-	for seat_index in [0,1]:
+	for seat_index in [2,3]:
 		var previous: Array = world.kiosk_spots.map(func(sp): return sp.busy)
 		for i in world.kiosk_spots.size(): world.kiosk_spots[i].busy = i!=seat_index
 		var guest = main.village.spawn_customer()
@@ -49,7 +49,7 @@ func run(main) -> void:
 		guest.go([])
 		guest.position = guest.spot.pos
 		guest.rotation.y = guest.spot.rot
-		guest.play("Sitting_Idle_Loop")
+		guest.play("Idle_Loop")
 		guest.set_meta("items",["coco_gelado"])
 		guest.set_meta("delivered",0)
 		main.village._order(guest)
@@ -69,7 +69,7 @@ func run(main) -> void:
 		await aim(main,target,6)
 		if guest==guests[0]: await shot("counter_service_inside")
 		main.player.interact()
-		check(guest.state=="keat" and Core.company.carry=="","E entrega do lado interno sem sair · "+ops.order_number(guest))
+		check(guest.state=="kto_table" and Core.company.carry=="","E entrega do lado interno sem sair · "+ops.order_number(guest))
 	# A wall must still block the forgiving aim.
 	var blocked = guests[0]
 	blocked.state = "kwait"

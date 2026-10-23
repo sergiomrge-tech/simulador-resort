@@ -145,7 +145,7 @@ func _refresh_prainha() -> void:
 		var x: = -37.0
 		for k in 5:
 			Real.place(prainha, "g:biz_barrier", Vector3(x, 0, -29.0 + k * 3.6), -1.0, PI * 0.5 + (0.08 if k % 2 else -0.06))
-		var l: = B_.label(prainha, tr("Trilha da Prainha do Oeste fechada\nFale com o Padre Tomé (celular > Vila)"), Vector3(x, 1.9, -22.0), 48, Color(1, 0.95, 0.6), Color(0.15, 0.08, 0.0, 0.9), PI * 0.5)
+		var l: = B_.label(prainha, tr("Trilha da Prainha do Oeste fechada\nFale com o Padre Tomé (computador > Vila)"), Vector3(x, 1.9, -22.0), 48, Color(1, 0.95, 0.6), Color(0.15, 0.08, 0.0, 0.9), PI * 0.5)
 		l.double_sided = true
 		var wall: = StaticBody3D.new()
 		var cs: = CollisionShape3D.new()

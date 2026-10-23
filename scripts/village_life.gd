@@ -290,6 +290,8 @@ func _free_spot() -> int:
 	var free: = []
 	for i in world.kiosk_spots.size():
 		var sp: Dictionary = world.kiosk_spots[i]
+		# Balcão fica livre para retirada; no modo físico o consumo usa as mesas.
+		if Core.company_enabled() and not sp.get("table",false): continue
 		var need: = str(sp.get("need", ""))
 		if not sp.busy and (need == "" or Core.has(need)) and (not Core.company_enabled() or i not in Core.company.dirty_seats) and Core.CompanyRules.Simulation.Management.sheltered(Core, sp):
 			free.append(i)
@@ -304,8 +306,10 @@ func _free_spot() -> int:
 
 func spawn_customer() -> Node3D:
 	var si: = _free_spot()
-	var queued: Array = customers.filter(func(c): return c.state == "kqueue")
+	var queued: Array = customers.filter(func(c): return c.state in ["kqueue", "kcounter_queue"])
 	if si < 0 and queued.size() >= MAX_QUEUE:
+		return null
+	if Core.company_enabled() and queued.size()>=MAX_QUEUE and customers.filter(func(c):return c.has_meta("counter_slot")).size()>=2:
 		return null
 	var g: = _make()
 	var from_beach: = rng.randf() < Core.beach_share()
@@ -316,6 +320,7 @@ func spawn_customer() -> Node3D:
 		spot.busy = true
 		spot["owner"] = g.get_instance_id()
 	g.spot = spot
+	g.set_meta("counter_first", Core.company_enabled())
 	g.state = "kwalk" if si >= 0 else "kqueue"
 	g.timer = KIOSK_PATIENCE
 	var menu: Array = Core.kiosk_menu()
@@ -370,6 +375,10 @@ func spawn_customer() -> Node3D:
 		g.go([world.kiosk_point(Vector3(7.5, 0.1, 5.0 + slot * 1.1))])
 		customers.append(g)
 		return g
+	if bool(g.get_meta("counter_first", false)):
+		customers.append(g)
+		_join_counter(g, route)
+		return g
 	if from_beach:
 		route.append(world.kiosk_point(Vector3(-7.5,.05,12)))
 	# Chega por trás da cadeira, sem cruzar o tampo para alcançar a raiz da animação.
@@ -379,12 +388,70 @@ func spawn_customer() -> Node3D:
 	customers.append(g)
 	return g
 
+func _join_counter(g, route: Array = []) -> void:
+	if not g.has_meta("dining_spot"): g.set_meta("dining_spot", g.spot)
+	var occupied: Array = customers.filter(func(c): return c != g and c.has_meta("counter_slot")).map(func(c): return int(c.get_meta("counter_slot")))
+	var slot := -1
+	for i in 2:
+		if i not in occupied: slot = i; break
+	if slot < 0:
+		g.state = "kcounter_queue"
+		var queued: Array = customers.filter(func(c): return c != g and c.state in ["kqueue", "kcounter_queue"])
+		var used: Array = queued.map(func(c): return int(c.get_meta("queue_slot", 0)))
+		var queue_slot := 0
+		while queue_slot in used: queue_slot += 1
+		g.set_meta("queue_slot", queue_slot)
+		g.go([world.kiosk_point(Vector3(7.5,.1,5+queue_slot*1.1))])
+		return
+	g.set_meta("counter_slot", slot)
+	var x := -.7+slot*1.4
+	g.spot = {"pos":world.kiosk_point(Vector3(x,.1,3.6)), "approach":world.kiosk_point(Vector3(x,.1,4.3)),
+		"staff_approach":world.kiosk_point(Vector3(x,.1,1.05)), "serve_pos":world.kiosk_point(Vector3(x,1.30,2.15)),
+		"serve_rot":PI, "rot":world.kiosk_spots[slot].rot, "table":false}
+	g.state = "kwalk"
+	var path: Array = route.duplicate()
+	path.append(world.kiosk_point(Vector3(-3.3,.1,4.5)))
+	path.append(g.spot.approach)
+	g.go(path)
+
+func _walk_to_dining(g, dish: String) -> void:
+	clear_served_visuals(g)
+	g.set_meta("counter_departure", g.spot.pos)
+	g.spot = g.get_meta("dining_spot")
+	g.remove_meta("dining_spot")
+	g.set_meta("pickup_dish", dish)
+	g.state = "kto_table"
+	g.show_order("")
+	var tray := Node3D.new()
+	tray.name = "CustomerTray"
+	g.add_child(tray)
+	tray.position = Vector3(0,1.03,.32)
+	for i in _items(g).size():
+		var food = DishPresentation.build(tray, str(_items(g)[i]))
+		if food != null:
+			food.scale = Vector3.ONE*.45
+			food.position.x = (i-(_items(g).size()-1)*.5)*.16
+	g.set_meta("work_kind", "carry")
+	g.set_meta("work_target", tray.global_position)
+	var local: Vector3 = world.kiosk_local(g.spot.approach)
+	var side := -1.0 if local.x<0 else 1.0
+	g.go([world.kiosk_point(Vector3(side*3.3,.1,4.5)), g.spot.approach])
+
+func _sit_with_order(g, dish: String) -> void:
+	clear_served_visuals(g)
+	g.position = g.spot.pos
+	g.rotation.y = g.spot.rot
+	g.state = "keat"
+	g.set_meta("eat", rng.randf_range(EAT_MIN.x,EAT_MIN.y))
+	for i in _items(g).size(): _show_delivered_visual(g,str(_items(g)[i]),i)
+	g.consume_dish(dish)
+
 func _kiosk_tick(dmin: float) -> void :
 	# v0.7.1: depois do horário ninguém mais chega, e quem estava esperando vai embora (sem perder estrela)
 	if not kiosk_open():
 		var sent: = 0
 		for g in customers:
-			if g.state in ["kqueue", "kwalk", "kchoose", "kwait", "keat"]:
+			if g.state in ["kqueue", "kcounter_queue", "kwalk", "kchoose", "kwait", "kto_table", "keat"]:
 				_leave(g)
 				sent += 1
 		if sent > 0 and Core.in_game:
@@ -408,7 +475,20 @@ func _kiosk_tick(dmin: float) -> void :
 				kiosk_spawn_in = 1.5
 				Core.toast.emit(tr("Chegou um ônibus de turistas! Vem gente: sirva rápido para manter o combo."), "good")
 	for g in customers.duplicate():
+		if g.has_meta("counter_departure"):
+			if g.position.distance_to(g.get_meta("counter_departure"))>1.2:
+				g.remove_meta("counter_departure")
+				g.remove_meta("counter_slot")
+		if g.state == "kto_table" and g.has_node("CustomerTray"):
+			g.set_meta("work_target",g.get_node("CustomerTray").global_position)
 		match g.state:
+			"kcounter_queue":
+				g.timer -= dmin
+				if g.timer <= 0: _leave(g)
+				elif not g.is_moving():
+					var occupied := customers.filter(func(c): return c.has_meta("counter_slot"))
+					if occupied.size()<2: _join_counter(g)
+					else: g.play("Idle_Loop")
 			"kqueue":
 				g.timer -= dmin
 				if not g.is_moving():
@@ -417,6 +497,9 @@ func _kiosk_tick(dmin: float) -> void :
 						g.spot = world.kiosk_spots[si]
 						g.spot.busy = true
 						g.spot["owner"] = g.get_instance_id()
+						if bool(g.get_meta("counter_first", false)):
+							_join_counter(g)
+							continue
 						g.state = "kwalk"
 						var front: Vector3 = g.spot.get("approach", Vector3(g.spot.pos.x, 0.1, g.spot.pos.z + 0.85))
 						g.go([front])
@@ -430,7 +513,7 @@ func _kiosk_tick(dmin: float) -> void :
 					g.state = "kchoose"
 					g.position = g.spot.pos
 					g.rotation.y = g.spot.rot
-					g.play("Sitting_Idle_Loop")
+					g.play("Idle_Loop" if bool(g.get_meta("counter_first",false)) else "Sitting_Idle_Loop")
 					g.set_meta("choose", rng.randf_range(CHOOSE_MIN.x, CHOOSE_MIN.y))
 					g.show_menu(true)
 			"kchoose":
@@ -444,7 +527,9 @@ func _kiosk_tick(dmin: float) -> void :
 				if urgent and not g.get_meta("urgent", false):
 					g.set_meta("urgent", true)
 					g.show_order(_order_text(g), true)
-				if g.timer < _patience(g) * 0.22:
+				if bool(g.get_meta("counter_first",false)):
+					g.play("Idle_Talking_Loop")
+				elif g.timer < _patience(g) * 0.22:
 					g.play("Sitting_Talking_Loop")
 				else:
 					g.play("Sitting_Idle_Loop")
@@ -454,6 +539,8 @@ func _kiosk_tick(dmin: float) -> void :
 					Core.add_rating(Economy.KIOSK_RATING_LOST)
 					Core.toast.emit(tr("Um cliente cansou de esperar no quiosque. ★%.1f") % Economy.KIOSK_RATING_LOST, "bad")
 					_leave(g)
+			"kto_table":
+				if not g.is_moving(): _sit_with_order(g,str(g.get_meta("pickup_dish")))
 			"keat":
 				var left: float = float(g.get_meta("eat", 0.0)) - dmin
 				g.set_meta("eat", left)
@@ -476,7 +563,7 @@ func _order(g, recorded: bool = false) -> void :
 	g.set_meta("order_taken", recorded or not Core.company_enabled())
 	g.set_meta("urgent", false)
 	g.show_order(_order_text(g))
-	g.play("Sitting_Talking_Loop")
+	g.play("Idle_Talking_Loop" if bool(g.get_meta("counter_first",false)) else "Sitting_Talking_Loop")
 
 ## Sorteia o prato; em dia de calor coco e suco saem muito mais.
 func _pick_dish(menu: Array) -> String:
@@ -535,6 +622,14 @@ func _order_text(g) -> String:
 	return ("★ " if g.get_meta("vip", false) else "") + " + ".join(names) + "!"
 
 func _release_spot(g) -> void:
+	if g.has_meta("dining_spot"):
+		var dining: Dictionary = g.get_meta("dining_spot")
+		if int(dining.get("owner",-1))==g.get_instance_id():
+			dining.busy = false
+			dining.erase("owner")
+		g.remove_meta("dining_spot")
+	for key in ["counter_slot","counter_departure"]:
+		if g.has_meta(key): g.remove_meta(key)
 	if g.spot.is_empty():
 		return
 	# Uma saída atrasada nunca libera o assento que já pertence a outro cliente.
@@ -550,12 +645,13 @@ func _leave(g) -> void :
 	if not prep.is_empty() and prep.get("g") == g:
 		prep = {}
 		_clear_prep_visual()
-	g.play("Sitting_Idle_Loop")
+	var standing: bool = bool(g.get_meta("counter_first",false)) and g.state!="keat"
+	g.play("Idle_Loop" if standing else "Sitting_Idle_Loop")
 	g.show_menu(false)
 	g.show_order("")
 	g.state = "kleave"
 	g.position.y = 0.1
-	var exit: Vector3 = g.spot.get("approach", g.position + Vector3(0, 0, 1.8))
+	var exit: Vector3 = g.position if standing else g.spot.get("approach", g.position + Vector3(0, 0, 1.8))
 	g.go([exit, world.kiosk_point(Vector3(-7.5,.1,12)), Vector3(rng.randf_range(44, 90), 0, rng.randf_range(-25, -21))])
 
 func _next_customer():
@@ -707,7 +803,7 @@ func _complete_order(g, last_dish: String) -> void :
 	var adj: = Core.price_rating_adjust()
 	Core.add_rating(clampf((Economy.KIOSK_RATING_FAST if fast else Economy.KIOSK_RATING_SLOW) + adj, 1.0, 5.0))
 	if adj <= -0.3 and rng.randf() < 0.4:
-		Core.toast.emit(tr("Cliente reclamou: \"Tá caro!\" Baixe os preços no Cardápio do celular."), "bad")
+		Core.toast.emit(tr("Cliente reclamou: \"Tá caro!\" Baixe os preços no Cardápio do computador."), "bad")
 	var rev: = int(g.get_meta("revenue", 0))
 	if g.get_meta("vip", false) and rev > 0:
 		var vip_tip: = rev + 5
@@ -733,6 +829,9 @@ func _complete_order(g, last_dish: String) -> void :
 		Core.book(GOAL_REWARD, tr("Meta do dia"), "missao", false)
 		Core.toast.emit(tr("Meta do dia cumprida: %d clientes! +R$ %d") % [daily_goal(), GOAL_REWARD], "good")
 	get_tree().call_group("audio", "sfx", "coin", -8.0)
+	if bool(g.get_meta("counter_first",false)) and g.has_meta("dining_spot"):
+		_walk_to_dining(g,last_dish)
+		return
 	# v0.7.1: o cliente fica sentado consumindo antes de ir embora (o lugar continua ocupado)
 	g.position = g.spot.pos
 	g.rotation.y = g.spot.rot
@@ -807,6 +906,12 @@ func served_dishes(g) -> Array:
 	return result
 
 func clear_served_visuals(g) -> void:
+	var tray = g.get_node_or_null("CustomerTray")
+	if tray != null:
+		tray.visible = false
+		tray.queue_free()
+	for key in ["work_target","work_kind"]:
+		if g.has_meta(key): g.remove_meta(key)
 	var root = g.get_meta("served_visuals") if g.has_meta("served_visuals") else null
 	if is_instance_valid(root):
 		root.visible = false
@@ -814,7 +919,7 @@ func clear_served_visuals(g) -> void:
 	if g.has_meta("served_visuals"):
 		g.remove_meta("served_visuals")
 
-func _show_delivered_visual(g, dish: String) -> void:
+func _show_delivered_visual(g, dish: String, index_override: int = -1) -> void:
 	var root = g.get_meta("served_visuals") if g.has_meta("served_visuals") else null
 	if not is_instance_valid(root):
 		root = Node3D.new()
@@ -826,13 +931,16 @@ func _show_delivered_visual(g, dish: String) -> void:
 		g.set_meta("served_visuals", root)
 		# Callable de método: não captura um Node em lambda que possa ser liberado.
 		g.tree_exiting.connect(root.queue_free)
-	var index: int = int(g.get_meta("delivered", 0))
+	var index: int = index_override if index_override>=0 else int(g.get_meta("delivered", 0))
 	var count: int = _items(g).size()
 	var food: Node3D = DishPresentation.build(root, dish)
 	if food == null:
 		return
 	var target := Vector3((index - (count - 1) * 0.5) * 0.225, 0, 0)
 	food.scale = Vector3.ONE * (0.72 if bool(g.spot.get("table", false)) else 0.86)
+	if index_override>=0:
+		food.position = target
+		return
 	food.position = root.to_local(_prep_position())
 	var tween: Tween = food.create_tween()
 	tween.tween_property(food, "position", target, 0.35).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)

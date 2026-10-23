@@ -286,3 +286,13 @@ Variante fechada do wicker_basket_02, Poly Haven CC0:
 https://polyhaven.com/a/wicker_basket_02 . Malha escaneada e texturas preservadas;
 tampa reposicionada horizontalmente sobre a borda. Gerador import_closed_basket.py;
 fonte editável incorporada/reaberta wicker_basket_closed.blend, runtime GLB.
+
+
+### Computador, porta e balcão (23/10/2026)
+Computador do balcão e porta de madeira com painéis/ferragens: modelos autorais,
+gerados offline no Blender por tools/gen_kiosk_computer.py e gen_home_door.py;
+fontes .blend editáveis incorporadas e reabertas. Reutilizam os geradores de malha
+chanfrada existentes. Textura oak_wood_planks_diff Poly Haven CC0, já creditada,
+no balcão e porta. Variante escura preserva veios. Bandeja/expositor autorais
+atualizados por gen_counter_details.py, frente e verso, sem dispenser branco.
+Copos detalhados reutilizam cup_plastic existente. Não há asset novo de terceiros.

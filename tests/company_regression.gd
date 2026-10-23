@@ -28,7 +28,7 @@ func run(main = null) -> void:
 	Core.minutes = 22 * 60
 	check(not Core.kiosk_accepting_customers(), "abertura respeita o encerramento do dia")
 	Core.minutes = 10 * 60
-	check(Rules.sanitize({}).kiosk_open, "save antigo mantém abertura automática")
+	check(not Rules.sanitize({}).kiosk_open, "save antigo começa fechado até abertura deliberada")
 	check(not Rules.sanitize({"kiosk_open": false}).kiosk_open, "estado fechado preservado na migração")
 	for font in Rules.FONTS:
 		var sign := Label3D.new()
@@ -145,7 +145,8 @@ func _integration(main) -> void:
 	check(not main.operations.deliver(weakref(g)), "não repete item já entregue")
 	Core.company.ready.coco_gelado = 1
 	Core.pickup_company_dish("coco_gelado")
-	check(main.operations.deliver(weakref(g)) and g.state == "keat", "pedido completo mantém consumo, gorjeta e avaliação")
+	check(main.operations.deliver(weakref(g)) and g.state == "kto_table", "pedido completo libera cliente para sentar")
+	await to_table(village,g)
 	var index: int = main.world.kiosk_spots.find(g.spot)
 	village._leave(g)
 	check(index in Core.company.dirty_seats, "saída deixa louça para recolher")
@@ -168,8 +169,13 @@ func _integration(main) -> void:
 	check(main.operations.can_access("bebidas"), "retirada disponível ao chegar à geladeira")
 
 	# Edição real do formulário e operações ligadas à cena.
+	main.hud.phone.close()
 	main.world.find_child("KioskSign",true,false).use()
-	check(main.hud.phone.app == "empresa" and main.hud.phone.visible, "interagir com a placa abre a personalização")
+	check(not main.hud.phone.visible,"placa orienta para o computador sem gestão remota")
+	main.player.position = main.world.kiosk_point(Vector3(1.6,.1,.65))
+	main.operations.open_computer()
+	check(main.hud.phone.visible and main.hud.phone.app=="","PC abre a tela inicial da gestão")
+	main.hud.phone._open_management("empresa")
 	check(main.hud.phone.company_name.max_length == 24, "formulário limita o nome")
 	await get_tree().process_frame
 	await get_tree().process_frame
@@ -221,6 +227,7 @@ func _integration(main) -> void:
 	Core.staff.caixa = true
 	Core.staff.limpeza = true
 	Core.speed_mult = 16.0
+	var counter_approach: Vector3 = main.operations.service_approach(g)
 	# O teste aciona o mesmo passo de 0,25 s usado pelo processador da operação.
 	main.operations.pulse = 0.25
 	var elapsed := 0.0
@@ -229,10 +236,11 @@ func _integration(main) -> void:
 		main.operations._staff_tick()
 		await get_tree().process_frame
 		elapsed += get_process_delta_time()
-	check(g.state == "keat", "garçom anota, retira e entrega diretamente pelo percurso real")
+	check(g.state == "kto_table", "garçom anota, retira e entrega no balcão pelo percurso real")
 	check(Core.company.receivables.is_empty(), "caixa recebe atendimento da equipe")
 	var waiter = main.operations.actors.get("garcom")
-	check(is_instance_valid(waiter) and waiter.position.distance_to(main.operations.service_approach(g)) < 1.5, "garçom chegou ao cliente antes de entregar")
+	check(is_instance_valid(waiter) and waiter.position.distance_to(counter_approach) < 1.5, "garçom chegou ao cliente antes de entregar")
+	await to_table(village,g)
 	village._leave(g)
 	village._release_spot(g)
 	elapsed = 0.0
@@ -245,3 +253,12 @@ func _integration(main) -> void:
 	main.operations._staff_tick()
 	check(not waiter.visible, "folga suspende garçom")
 	Core.speed_mult = 1.0
+
+func to_table(village, guest) -> void:
+	guest.set_process(false)
+	for i in 2200:
+		if guest.state=="keat": break
+		guest._process(.05)
+		village._kiosk_tick(0)
+		if i%12==0: await get_tree().physics_frame
+	check(guest.state=="keat","cliente caminha para consumir após retirada completa")

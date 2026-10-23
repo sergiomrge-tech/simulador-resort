@@ -1,5 +1,7 @@
 # Quiosque de frente para a praia — 23/10/2026
 
+> **Revisão vigente:** [Computador e balcão](COMPUTADOR_E_BALCAO.md). Gestão no PC com E; abrir o quiosque antes das chegadas; clientes pedem/retiram tudo no balcão antes de sentar. Porta funcional; balcão madeira escura/base cinza. Essa revisão substitui os fluxos antigos descritos abaixo.
+
 Fachada, balcão, lugares dos clientes e todas as mesas/guarda-sóis agora ficam
 do lado da praia. As entradas laterais e a área interna continuam utilizáveis.
 Os caminhos dos clientes e funcionários acompanham a orientação; personalização
@@ -9,7 +11,7 @@ dentro da construção acompanham a rotação uma vez para evitar aparecer no m�
 No balcão, permaneça dentro e mire no cliente: E anota quando ele termina de
 escolher; levando o produto correto, E entrega. O prompt mostra o número do
 pedido. A área de seleção é maior e aceita pequenos desvios; paredes ainda
-bloqueiam. Nas mesas, continue aproximando-se e usando E no cliente.
+bloqueiam. O cliente leva os produtos à mesa após retirar todo o pedido no balcão.
 
 E na geladeira/armário abre a estação. Se o produto esgotar, Repor 10 mostra o
 valor e os ingredientes faltantes para dez porções. A compra usa os preços e
@@ -32,7 +34,7 @@ kiosk_operations.gd (balcão e foco), player.gd (seleção), phone_ui.gd e
 resort_core.gd (reposição), coastal_life.gd/volley_arm.gd (praia).
 Assets: tools/gen_coastal_traffic.py e fontes Blender coastal_*.blend;
 origens/licenças no CREDITS.md. Testes --counter-test e --coastal-test,
-além de --company-test, --practical-test e layout do celular. Dados sempre isolados.
+além de --company-test, --practical-test e layout do computador. Dados sempre isolados.
 
 
 Revisão posterior: um único navio de madeira e velas por vez, passando devagar

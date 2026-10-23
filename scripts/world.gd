@@ -1984,7 +1984,7 @@ func _lot(id: String, c: Vector3, size: Vector2, sign_pos: Vector3, sign_rot: fl
 	var lot_name: String = tr(str(e.name))
 	B.label(board, lot_name, Vector3(0, 1.85, 0.07), mini(56, int(780.0 / maxf(float(lot_name.length()), 1.0))), Color(0.2, 0.15, 0.1), Color(1, 1, 1, 0.9))   # nomes longos cabem na placa
 	B.label(board, Core.fmt_money(int(e.cost)), Vector3(0, 1.45, 0.07), 74, Color(0.1, 0.5, 0.25), Color(1, 1, 1, 0.9))
-	B.label(board, tr("Compre pelo celular (B)"), Vector3(0, 1.12, 0.07), 40, Color(0.35, 0.28, 0.2), Color(1, 1, 1, 0.9))
+	B.label(board, tr("Compre pelo computador (B)"), Vector3(0, 1.12, 0.07), 40, Color(0.35, 0.28, 0.2), Color(1, 1, 1, 0.9))
 	lots[id] = n
 	return n
 

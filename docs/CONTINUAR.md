@@ -3,15 +3,20 @@
 Atualizado em **23/10/2026**. Destinado a qualquer IA ou pessoa, sem depender deste
 chat. Leia junto com [AGENTS.md](../AGENTS.md). Novos pedidos do usuário prevalecem.
 
+**Passagem atual para outra IA:** leia primeiro
+[PASSAGEM_PARA_OUTRA_IA.md](PASSAGEM_PARA_OUTRA_IA.md), com o checkpoint,
+os testes que passaram, a falha no ciclo legado, o encerramento intermitente
+do executável e o ZIP ainda não atualizado. Não tratar esse lote como entrega final.
+
 ## Base correta
 
 - Projeto: **Maré Alta Resort**, Godot **4.5.1**, GDScript, Forward+ / Vulkan.
 - Versão em `project.godot`: **1.1.0**; linha de trabalho **1.1.0 RC2**.
 - Branch usada nas entregas: **`codex/resort-1.1-mcp`**.
 - Repositório: https://github.com/sergiomrge-tech/simulador-resort
-- Última alteração funcional antes deste guia: **`6a0a3c2`**, pedidos nas mesas.
-  Verifique `git log` e `git status`; commits posteriores podem ter atualizado a base.
-- O jogo começa com o quiosque e evolui por expansões. Gestão no celular (B).
+- Base anterior ao checkpoint de computador/balcão: **`80bc38d`**.
+  Verifique `git log` e `git status` para identificar o checkpoint mais recente.
+- O jogo começa com o quiosque e evolui por expansões. Gestão no computador do balcão (E; B só perto).
 
 Antes de editar, confira branch/remoto e alterações pendentes. Não use reset,
 checkout ou cópia de um build antigo para substituir trabalho existente. Não
@@ -26,15 +31,15 @@ trabalhe nos mesmos arquivos ao mesmo tempo que outro chat sem coordenação.
    A retirada desconta os insumos uma vez; a entrega não desconta de novo.
    Devolver guarda unidade já paga; retirar a devolução não cobra novamente.
    Produção pendente de save antigo vira unidade pronta uma única vez.
-3. **Pedido na mesa.** No atendimento físico, o cliente senta, olha o cardápio e
-   aguarda E para anotar. Marcador `E · #pedido`; ao registrar, itens vão para
-   HUD/celular. E permite consultar ou entregar quando se carrega o item correto.
-   Garçom vai até a mesa para anotar, volta para buscar e entrega. Cliente fica
-   sentado para consumir. Não gastar estoque nem reiniciar paciência ao consultar.
+3. **Balcão antes da mesa.** Clientes reservam mesa, pedem e retiram todos os
+   produtos de pé no balcão; só então levam os produtos e sentam para consumir.
+   E anota/entrega por dentro. Garçom também atende no balcão. Fila e duas retiradas,
+   sem duplicar estoque/cobrança. Não usar banquetas como assentos no modo físico.
+   Quiosque começa fechado; abertura explícita no PC, respeitando horário/checklist.
+   Migração opening_version=1 fecha save antigo uma vez; dormir fecha novo dia.
 4. **Compatibilidade de modos.** `company_enabled()` exige empresa criada e modo
    físico ativo. No modo legado, pedidos continuam automáticos e consultáveis;
-   atendimento no balcão é imediato, sem preparo. Antes da empresa, E na estação
-   abre o cadastro. Não esconder os móveis por causa desse estado.
+   atendimento no balcão é imediato, sem preparo. Antes da empresa, a estação orienta criar a empresa no computador. Não esconder os móveis por causa desse estado.
 5. **Quiosque prático.** Todos os equipamentos usados ficam dentro; geladeira à
    esquerda, armário ao centro, cozinha à direita, caixa na frente. Manter parede
    traseira, piso físico, corredor e duas entradas laterais, sem anexo externo.
@@ -60,7 +65,7 @@ trabalhe nos mesmos arquivos ao mesmo tempo que outro chat sem coordenação.
 8. **Pessoas sem óculos escuros, chapéus ou bonés.** Preservar cabelos presos à
    cabeça animada e roupas compatíveis com o rig. Não recolocar acessórios nos
    testes só para tirar imagens. Avental com caimento, alças, bolso e cintura.
-9. **Interface limpa.** HUD/textos compactos, prompt embaixo, celular com seis
+9. **Interface limpa.** HUD/textos compactos, prompt embaixo, computador com seis
    áreas iniciais sem atalhos duplicados e layout que caiba em telas pequenas.
 10. **Áudio suave, sem vozes de fundo.** Preservar também o cais com colisão,
     recuperação de queda, barcos afastados e vidros sem coloração azul.
@@ -88,6 +93,14 @@ malha trabalhada. Não substituir objetos por low poly ou montagens de primitiva
 como acabamento final. Reutilize a biblioteca existente e registre licenças em
 `CREDITS.md`. Salve fontes `.blend` editáveis, com texturas incorporadas; reabra
 para conferir. Atualize downloads/geradores e o catálogo (`tools/gen_item_catalog.py`).
+
+## Lote atual: computador e balcão
+
+Leia [COMPUTADOR_E_BALCAO.md](COMPUTADOR_E_BALCAO.md). PC físico com E, sem gestão
+remota; telas de estação continuam diretas. Porta da casa abre/fecha e fecha após
+sair com arco livre. Tampo madeira escura/base cinza, copos na bandeja, sem caixa
+branca e promoções nas duas faces com preços reais. Fontes Blender incorporadas.
+As novas regras substituem documentos históricos sobre celular e pedido sentado.
 
 ## Onde alterar cada coisa
 

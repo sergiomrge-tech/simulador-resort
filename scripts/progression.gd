@@ -624,7 +624,7 @@ func on_new_day() -> void:
 				add_fame(PD.XP.goal)
 		_season_end()
 		roll_week()
-		Core.toast.emit(tr("Começou o %s! Novas metas da semana no celular.") % tr(season_name()), "info")
+		Core.toast.emit(tr("Começou o %s! Novas metas da semana no computador.") % tr(season_name()), "info")
 
 func tick(dmin: float) -> void:
 	_hour_acc += dmin

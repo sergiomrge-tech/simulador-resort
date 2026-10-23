@@ -20,8 +20,15 @@ o nome do arquivo não restringe seu uso à IA Claude.
 - **Sem preparo:** pegar produtos prontos na geladeira/armário/cozinha e entregar.
   Sem botão Preparar, cronômetro ou exigência de cozinheiro. Compras abastecem;
   retirada desconta uma vez. Devolução e migração não duplicam cobranças.
-- **Pedidos nas mesas:** no modo físico, E no cliente após escolher para anotar;
-  depois E com o produto para entregar. Garçom também anota junto à mesa.
+- **Balcão antes de sentar:** no modo físico clientes pedem/retiram todos os itens
+  no balcão e só depois vão à mesa. Garçom também atende no balcão. Reservar mesas,
+  manter fila e liberar retirada ao sair. Não restaurar pedidos sentados.
+- **Gestão no computador do balcão**, com E; B somente perto. Seis áreas compactas,
+  cantos arredondados. Estações mantêm retirada/reposição direta. Quiosque começa
+  fechado, exige Abrir quiosque e volta a fechar ao dormir. Saves preservados.
+- **Balcão: madeira escura e base cinza**, independente da pintura da empresa.
+  Seis copos na bandeja, sem caixa branca, promoções com preços reais frente/verso.
+- **Porta da casa funcional:** E abre/fecha; fecha após sair com o arco livre.
 - **Cores naturais em tudo**, com texturas preservadas; porta da casa em madeira.
   Não restaurar saturação exagerada nem iluminação artificialmente alaranjada/azul.
   Ambiente usa cor neutra, sem contribuição azul do céu nas superfícies.
@@ -32,10 +39,10 @@ o nome do arquivo não restringe seu uso à IA Claude.
 - Quiosque e mesas ficam voltados para a praia (-Z). Anotar/entregar aos dois
   lugares do balcão por dentro, com mira tolerante. Não voltar a exigir sair.
 - Quando acaba um produto, oferecer reposição na própria geladeira/armário pelo
-  celular, com preço real dos insumos faltantes e sem cobrança parcial.
+  painel da estação, com preço real dos insumos faltantes e sem cobrança parcial.
 - Modelos detalhados, assets licenciados/CC0 ou fontes Blender editáveis. Não trocar
   por low poly ou primitivas usadas como objetos finais. Registrar origem/licença.
-- HUD/celular compactos, sem opções duplicadas; interação na parte inferior da tela.
+- HUD/gestão compactos, sem opções duplicadas; interação na parte inferior da tela.
 - Música/efeitos suaves e sem vozes de fundo.
 - No mar: um navio de madeira com velas por vez, passando bem devagar; cruzeiro
   parado à noite. Baleias saltam ao fundo com efeitos na água; céu com nuvens.

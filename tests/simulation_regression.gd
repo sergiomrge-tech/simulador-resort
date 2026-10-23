@@ -15,7 +15,9 @@ func run(main) -> void:
 	Core.minutes = 10 * 60
 	check(Core.set_kiosk_schedule(9, 22, [0, 1, 2, 3, 4]), "horários e dias válidos")
 	check(not Core.set_kiosk_schedule(22, 9, [0]), "recusa horário invertido sem alterar escala")
-	check(Core.kiosk_open_min() == 540 and Core.kiosk_close_min() == 1320 and Core.kiosk_accepting_customers(), "horários afetam abertura real")
+	check(Core.kiosk_open_min() == 540 and Core.kiosk_close_min() == 1320 and not Core.kiosk_accepting_customers(), "horários não substituem abertura manual")
+	Core.set_kiosk_open(true)
+	check(Core.kiosk_accepting_customers(),"abertura deliberada respeita o horário configurado")
 	Core.day = 7
 	check(not Core.kiosk_accepting_customers(), "domingo fechado pela escala semanal")
 	Core.day = 1

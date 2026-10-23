@@ -8,14 +8,8 @@ steel=material('counter_brushed_steel',(.20,.26,.25),.42)
 for y,angle in [(-1.98,-.12),(-1.80,.12)]:
     box('Menu wood stand',(.39,.028,.40),(-.90,y,.205),wood,.012,(angle,0,0))
 box('Menu inset paper',(.34,.008,.32),(-.90,-2.017,.218),paper,.006)
+box('Menu back inset paper',(.34,.008,.32),(-.90,-1.763,.218),paper,.006)
 path('Menu brass top hinge',[(-1.07,-1.89,.40),(-.73,-1.89,.40)],.009,brass)
-# Hollow dispenser on left side counter; layered folded napkins visible through slot.
-box('Dispenser weighted base',(.22,.24,.026),(-2.0,-.65,.013),steel,.015)
-for x in [-2.10,-1.90]:box('Dispenser rounded side',(.015,.21,.18),(x,-.65,.105),steel,.007)
-box('Dispenser back',(.21,.015,.18),(-2.0,-.55,.105),steel,.007)
-for i in range(14):
-    box('Folded paper napkin',(.176,.007,.145),(-2.0,-.715+i*.010,.105),paper,.003)
-path('Dispenser rolled front lip',[(-2.10,-.76,.035),(-2.10,-.76,.08),(-1.90,-.76,.08),(-1.90,-.76,.035)],.008,brass)
 # Serving tray with a recessed base and raised rounded perimeter.
 box('Serving tray inset base',(.65,.38,.025),(.20,-1.98,.016),wood,.018)
 for z in [.034,.052]:

@@ -39,6 +39,22 @@ def material(name, color, rough=.65, texture=None):
 
 
 wood = material('facade_teak', (.90, .67, .40), texture='oak_wood_planks_diff.jpg')
+counter_wood = material('counter_dark_oak', (.29, .20, .13), texture='oak_wood_planks_diff.jpg')
+# Bake the walnut tint into a dedicated packed texture: glTF ignores MixRGB tint.
+import numpy as np
+texture_node = next(n for n in counter_wood.node_tree.nodes if n.type=='TEX_IMAGE')
+original = texture_node.image
+pixels = np.empty(len(original.pixels),dtype=np.float32)
+original.pixels.foreach_get(pixels)
+pixels = pixels.reshape(-1,4)
+pixels[:,:3] *= (.29,.20,.13)
+image = bpy.data.images.new('counter_dark_oak_baked',width=original.size[0],height=original.size[1])
+image.pixels.foreach_set(pixels.ravel())
+image.pack()
+texture_node.image=image
+shader = next(n for n in counter_wood.node_tree.nodes if n.type=='BSDF_PRINCIPLED')
+counter_wood.node_tree.links.new(texture_node.outputs['Color'],shader.inputs['Base Color'])
+counter_gray = material('counter_neutral_gray', (.15, .16, .15), .78)
 dark = material('facade_shadow_wood', (.19, .09, .035))
 paint = material('facade_paint', (.045, .34, .34))
 brass = material('facade_brass', (.70, .46, .19), .34)
@@ -127,16 +143,16 @@ for side in [0, -1, 1]:
         return (u, y-depth, z-.1) if side == 0 else (x+side*depth, y+u, z-.1)
     def panel(name, size, pos, mat, bevel=.012):
         return box(name, size, pos, mat, bevel, (0, 0, 0 if side == 0 else math.pi/2))
-    panel('Painted backing', (w, .065, 1.08), local(0, 0, .65), paint)
+    panel('Painted backing', (w, .065, 1.08), local(0, 0, .65), counter_gray)
     count = round(w / .115)
     for i in range(count):
         u = -w/2 + (i+.5)*w/count
-        panel('Individual teak flute', (w/count-.027, .055, .87), local(u, .052, .65), wood)
+        panel('Individual teak flute', (w/count-.027, .055, .87), local(u, .052, .65), counter_gray)
     for z in [.19, 1.11]:
-        panel('Teal rail', (w+.07, .10, .13), local(0, .047, z), paint)
+        panel('Gray rail', (w+.07, .10, .13), local(0, .047, z), counter_gray)
         panel('Fine brass inlay', (w, .018, .015), local(0, .105, z+.032), brass, .003)
     for u in [-w/2, 0, w/2]:
-        panel('Frame upright', (.08, .09, .95), local(u, .06, .65), paint)
+        panel('Frame upright', (.08, .09, .95), local(u, .06, .65), counter_gray)
     # Raised corner rivets, genuinely rounded and recessed in the rails.
     for u in [-w/2+.12, w/2-.12]:
         for z in [.19, 1.11]:
@@ -146,11 +162,11 @@ for side in [0, -1, 1]:
 
 # Front slab remains at the existing serving height (1.28).
 for j in range(4):
-    box('Solid teak counter plank', (4.98, .224, .065), (0, -1.65-j*.225, 1.1475), wood, .018)
+    box('Solid teak counter plank', (4.98, .224, .065), (0, -1.65-j*.225, 1.1475), counter_wood, .018)
 box('Rounded brass counter lip', (5.02, .038, .045), (0, -2.465, 1.135), brass)
 box('Counter fascia shadow', (4.92, .07, .07), (0, -2.40, 1.065), dark)
 for x in [-2.0,2.0]:
-    box('Side counter solid slab',(.68,2.45,.08),(x,-.95,1.14),wood)
+    box('Side counter solid slab',(.68,2.45,.08),(x,-.95,1.14),counter_wood)
 
 # Turned support posts and rope collars replace octagonal cylinders.
 for x in [-2.4, 2.4]:

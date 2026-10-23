@@ -588,8 +588,10 @@ func _hero_house() -> void :
 	B.box(self, Vector3(0.04, 1.22, 1.15), Vector3(x0, y0 + 1.65, c.z), VM.window_glass)
 	B.label(self, "Casa", Vector3(c.x + 1.7, y0 + 2.75, zf + 0.2), 44, Color(1, 1, 1), Color(0.1, 0.25, 0.35, 0.9))
 
-	var door: = B.box(self, Vector3(0.06, 2.2, 1.15), Vector3(c.x + 2.35, y0 + 1.1, zf - 0.55), wood_tint(Color(0.62, 0.48, 0.34)))
-	door.name = "door"
+	var home_door := Node3D.new()
+	home_door.set_script(load("res://scripts/home_door.gd"))
+	home_door.position = Vector3(c.x+2.3,y0,zf)
+	add_child(home_door)
 
 	var bc: = Vector3(c.x - 2.15, y0, zb + 1.55)
 	var gothic: = B.model(self, "GothicBed_01", bc + Vector3(0.15, 0, 0.55), PI, 1.0)
@@ -790,10 +792,9 @@ func _quiosque() -> void :
 	sign_box.size = Vector3(4.0, 0.64, 0.18)
 	sign_shape.shape = sign_box
 	sign_action.add_child(sign_shape)
-	sign_action.prompt_fn = func(): return tr("Gerenciar quiosque · nome da placa e abrir/fechar")
+	sign_action.prompt_fn = func(): return tr("Gestão no computador do balcão")
 	sign_action.action_fn = func():
-		get_tree().call_group("phone", "open", "empresa")
-		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+		Core.toast.emit("Use o computador dentro do quiosque para personalizar e abrir o negócio.","info")
 	add_child(sign_action)
 	var subtitle: Label3D = B.label(self, "QUIOSQUE • SABORES DA PRAIA", c + Vector3(0, y0 + 2.08, 3.49), 24, Color(0.94, 0.83, 0.6), Color(0, 0, 0, 0))
 	subtitle.shaded = false
@@ -817,7 +818,7 @@ func _quiosque() -> void :
 	kiosk_counter = Interactable.new()
 	var cs: = CollisionShape3D.new()
 	var sh: = BoxShape3D.new()
-	sh.size = Vector3(4.6, 1.5, 1.4)
+	sh.size = Vector3(4.6, 1.5, 0.6)
 	cs.shape = sh
 	kiosk_counter.add_child(cs)
 	kiosk_counter.position = c + Vector3(0, y0 + 0.9, 2.0)
@@ -1489,7 +1490,6 @@ func _kiosk_details(c: Vector3, y0: float) -> void :
 	D.cup_stack(self, top + Vector3(-1.75, 0, 0.12), Color(0.3, 0.8, 1.0))
 
 	D.pineapple(self, top + Vector3(1.95, 0, -0.1))
-	B.box(self, Vector3(0.14, 0.12, 0.08), top + Vector3(-0.15, 0.06, 0.2), D.m(Color(0.95, 0.95, 0.98)))
 
 	_open_sign = D.open_sign(self, c + Vector3(1.65, y0 + 2.3, 2.5), 0.0)
 	# Lixeira no lado interno do balcão; passagens laterais desobstruídas.

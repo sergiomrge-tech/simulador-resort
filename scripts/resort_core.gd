@@ -343,6 +343,7 @@ func sleep() -> void :
 	if minutes >= 12.0 * 60.0:
 		day += 1
 	minutes = WAKE_MIN
+	company.kiosk_open = false
 	_pay_wages()
 	CompanyRules.Simulation.rollover(self)
 	prog.on_new_day()
@@ -581,7 +582,7 @@ func note_stockout(id: String) -> void :
 		name = str(Economy.dish(id).name)
 	toast.emit(tr("Sem estoque para %s") % tr(name), "bad")
 
-## Preço de venda atual do prato (o jogador ajusta pelo celular, em 5 níveis).
+## Preço de venda atual do prato (o jogador ajusta pelo computador, em 5 níveis).
 func price_tier_of(id: String) -> int:
 	return clampi(int(price_tier.get(id, Economy.PRICE_DEFAULT_TIER)), 0, Economy.PRICE_TIERS.size() - 1)
 
@@ -924,7 +925,7 @@ func upgrade_room(id: int, cat: String) -> bool:
 
 func build_bungalow() -> bool:
 	if not has("pousada"):
-		toast.emit(tr("Compre a pousada primeiro (celular → Expansões)."), "bad")
+		toast.emit(tr("Compre a pousada primeiro (computador → Expansões)."), "bad")
 		return false
 	if rooms.size() >= Economy.BUNGALOW_MAX:
 		toast.emit(tr("A pousada já tem o máximo de bangalôs."), "info")
@@ -943,7 +944,7 @@ func hire(role: String, offered_fee: int = -1) -> bool:
 	if not Economy.STAFF.has(role):
 		return false
 	if bool(Economy.STAFF[role].get("company", false)) and not bool(company.created):
-		toast.emit(tr("Crie sua empresa no celular primeiro."), "bad")
+		toast.emit(tr("Crie sua empresa no computador primeiro."), "bad")
 		return false
 	if bool(staff.get(role, false)):
 		toast.emit(tr("Já contratado: %s") % tr(str(Economy.STAFF[role].name)), "info")
@@ -1137,7 +1138,7 @@ func kiosk_is_within_hours() -> bool:
 	return CompanyRules.Simulation.is_workday(self) and minutes >= kiosk_open_min() and minutes < kiosk_close_min()
 
 func kiosk_accepting_customers() -> bool:
-	return kiosk_is_within_hours() and bool(company.get("kiosk_open", true)) and CompanyRules.Simulation.Management.opening_ready(self)
+	return kiosk_is_within_hours() and bool(company.get("kiosk_open", false)) and CompanyRules.Simulation.Management.opening_ready(self)
 
 func set_kiosk_open(value: bool) -> void:
 	if value and not CompanyRules.Simulation.Management.opening_ready(self):

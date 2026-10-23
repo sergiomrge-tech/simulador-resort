@@ -1,5 +1,7 @@
 # Refinamentos integrados — 23/10/2026
 
+> **Revisão vigente:** [Computador e balcão](COMPUTADOR_E_BALCAO.md). Gestão no PC com E; abrir o quiosque antes das chegadas; clientes pedem/retiram tudo no balcão antes de sentar. Porta funcional; balcão madeira escura/base cinza. Essa revisão substitui os fluxos antigos descritos abaixo.
+
 > **Regra vigente — 23/10: sem preparo.** Pegar o produto pronto na geladeira,
 > armário ou cozinha e entregar. Sem cronômetro e sem precisar cozinheiro.
 > Compras abastecem o estoque; retirada desconta uma vez. Referências históricas
@@ -87,7 +89,7 @@ PCK SHA256: 8d95b71f92fdd3de2b877175fdbabb9fe1c91a7cd97ca68e0edfc67ecba6a192.
 ## Anotar pedidos nas mesas — 23/10/2026
 Clientes no modo de retirada passam de leitura do cardápio para aguardando
 anotação (order_taken=false). E no cliente registra o pedido, mostra confirmação
-e inclui itens no HUD/celular. E depois consulta; com item correto, entrega.
+e inclui itens no HUD/computador. E depois consulta; com item correto, entrega.
 Pedidos não anotados exibem E · #n. Garçom vai até approach para anotar antes de
 voltar aos equipamentos. Atendimento legado mantém pedidos automáticos consultáveis.
 

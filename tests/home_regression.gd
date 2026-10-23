@@ -32,6 +32,8 @@ func run(main) -> void:
 	main.guests.enabled = false
 	main.operations.set_process(false)
 	var c: Vector3 = main.world.HOME_C+Vector3(0,.12,0)
+	main.world.find_child("PlayerHomeDoor",true,false).set_open(true)
+	await get_tree().create_timer(.55).timeout
 	var lounge = main.world.get_node("HomeLounge")
 	check(lounge.screen!=null,"tela derivada do CRT importado")
 	check(lounge.has_node("HomeSofaCollision") and lounge.has_node("TVConsoleCollision"),"móveis detalhados têm colisão")

@@ -20,6 +20,13 @@ Para atualizar uma cópia anterior, substitua os arquivos do programa e mantenha
 a pasta userdata/. O ZIP não inclui nem apaga saves.
 
 NOVO NESTA REVISÃO
+- Gestão no computador do balcão: E no monitor, seis áreas compactas. B só perto.
+- Começa fechado: crie a empresa e use Abrir quiosque antes de receber clientes.
+  Dormir fecha o quiosque novamente. A atualização preserva o progresso.
+- Clientes pedem e retiram todos os itens no balcão antes de sentar à mesa.
+- Balcão com madeira escura e base cinza, copos na bandeja, sem caixa branca,
+  promoções com preços reais nas duas faces do expositor.
+- Porta da casa abre/fecha com E e fecha após sair com o arco livre.
 - Quadro HOJE com texto dentro da placa e acima do guarda-corpo, incluindo
   cardápio expandido. Cestos de vime com tampa encaixada, sem peça solta lateral.
 - Cruzeiro detalhado: cabines com varandas, botes, radar e janelas iluminadas.
@@ -42,8 +49,6 @@ NOVO NESTA REVISÃO
   a música suave, com volume pela distância e respeito às configurações de áudio.
 - Iluminação ambiente neutra no jogo inteiro, sem o banho azul do céu sobre
   paredes, móveis e pessoas. Madeira e materiais mantêm as texturas originais.
-- Pedidos nas mesas: E no cliente com marcador E para anotar; depois pegue
-  os produtos e volte com E para entregar. Garçom também anota pessoalmente.
 - Atendimento simplificado: pegue o produto pronto e entregue. Sem preparar,
   sem cronômetro. Compras abastecem o estoque; retirada desconta uma vez.
 - Cores mais naturais no jogo inteiro: menor saturação, madeira/areia/telhas
@@ -51,7 +56,7 @@ NOVO NESTA REVISÃO
 - Casa com piso claro, armários em tons suaves, pia/torneira, cortinas,
   persianas, molduras, prateleiras e iluminação neutra.
 - Geladeira, armário, bancada e produtos aparecem mesmo antes de criar a empresa.
-  E nos equipamentos abre o cadastro do quiosque quando necessário.
+  E nos equipamentos orienta para o cadastro no computador quando necessário.
 - Aventais ajustados ao corpo, com alças, cintura, bolso e dobras suaves;
   pesos contínuos no quadril para acompanhar as pernas ao andar e sentar.
 - Sete refinamentos: roupas de praia, uniformes por função, aventais, gestos,
@@ -70,17 +75,17 @@ NOVO NESTA REVISÃO
 - Quiosque refeito: geladeira, retirada de pratos, cozinha, caixa e liquidificador
   dentro da construção, com entrada pelas duas laterais. Sem anexo externo.
 - Novo acabamento em madeira, cobertura de palha, luminárias de fibra e placa única.
-- Celular com seis áreas: Quiosque, Compras, Equipe, Finanças, Resort, Vila e lazer.
+- Computador com seis áreas: Quiosque, Compras, Equipe, Finanças, Resort, Vila e lazer.
 - Pedidos numerados (#01...), lista discreta no canto e indicação de produto pronto.
 - Textos e avisos menores; sem nomes grandes sobre as estações.
 
 ATENDER
-0. Espere o cliente escolher. Aproxime-se de quem tem E · #pedido e aperte E
-   para anotar. O pedido aparece no HUD e no celular.
+0. Abra o quiosque no computador. Espere o cliente escolher no balcão. Aproxime-se de quem tem E · #pedido e aperte E
+   para anotar. O pedido aparece no HUD e no computador.
 1. Entre pela lateral, mire na geladeira ou armário e aperte E.
 2. Escolha Pegar e levar ao cliente. O produto vai imediatamente para sua mão.
 3. E no cliente com o número/pedido correspondente para entregar.
-4. Receba as contas no caixa e recolha a louça.
+4. O cliente leva o pedido inteiro à mesa. Receba as contas e recolha a louça.
 
 Geladeira e armário sempre mostram os produtos vendidos, com etiquetas de estoque.
 No zero, o exemplar de exposição fica visível e indica Repor estoque.
@@ -88,7 +93,7 @@ Use Compras para abastecer. Não é necessário preparar nenhum produto.
 Detalhes: QUIOSQUE_PRATICO.md, ROTINAS_DO_QUIOSQUE.md e GESTAO_DO_QUIOSQUE.md.
 
 CONTROLES
-WASD andar · mouse olhar · E interagir · B celular · Shift correr · Esc menu
+WASD andar · mouse olhar · E interagir · B gestão perto do computador · Shift correr · Esc menu
 F11 tela cheia. O save de versões anteriores recebe os padrões compatíveis.
 
 Inclui também as correções do cais, vidros neutros, barcos afastados do cais,
@@ -96,6 +101,7 @@ passos mais suaves e trilha sem vozes. A instalação antiga em D:/Games não é
 '''
 (PORTABLE / 'LEIA-ME.txt').write_text(readme, encoding='utf-8')
 for src, dst in [('QUIOSQUE_PRATICO.md','QUIOSQUE_PRATICO.md'),
+                 ('COMPUTADOR_E_BALCAO.md','COMPUTADOR_E_BALCAO.md'),
                  ('PRAIA_E_ATENDIMENTO.md','PRAIA_E_ATENDIMENTO.md'),
                  ('ROTINAS_QUIOSQUE.md','ROTINAS_DO_QUIOSQUE.md'),
                  ('SIMULACAO_QUIOSQUE.md','GESTAO_DO_QUIOSQUE.md'),
@@ -103,7 +109,7 @@ for src, dst in [('QUIOSQUE_PRATICO.md','QUIOSQUE_PRATICO.md'),
     shutil.copyfile(ROOT / 'docs' / src, PORTABLE / dst)
 
 names = ['MareAltaResort.exe','MareAltaResort.pck','Jogar.vbs','LEIA-ME.txt',
-         'PRAIA_E_ATENDIMENTO.md',
+         'PRAIA_E_ATENDIMENTO.md','COMPUTADOR_E_BALCAO.md',
          'QUIOSQUE_PRATICO.md','ROTINAS_DO_QUIOSQUE.md','GESTAO_DO_QUIOSQUE.md','REFINAMENTO_COMPLETO.md','icon.ico']
 checks = []
 for name in names:

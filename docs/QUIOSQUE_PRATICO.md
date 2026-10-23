@@ -1,5 +1,7 @@
 # Quiosque reorganizado — 22/10/2026
 
+> **Revisão vigente:** [Computador e balcão](COMPUTADOR_E_BALCAO.md). Gestão no PC com E; abrir o quiosque antes das chegadas; clientes pedem/retiram tudo no balcão antes de sentar. Porta funcional; balcão madeira escura/base cinza. Essa revisão substitui os fluxos antigos descritos abaixo.
+
 Revisão 23/10: fachada e todas as mesas voltadas para a praia. No balcão, permaneça
 dentro e mire no cliente para E anotar/entregar. A mira tolera pequenos desvios e
 mostra o número do pedido, preservando a escolha entre os dois lugares.
@@ -32,7 +34,7 @@ com pesos de animação originais, camisas, calças e calçados com acabamento s
 Personagens sem chapéus e bonés, conforme pedido. Cabelos rígidos seguem a cabeça
 por BoneAttachment3D, inclusive durante as animações de sentar e andar.
 
-Contratação cria imediatamente o funcionário no quiosque, inclusive com o celular
+Contratação cria imediatamente o funcionário no quiosque, inclusive com o computador
 aberto ou fora do horário. Ele trabalha apenas no turno; folga e demissão ocultam
 o personagem. O atendente também aparece antes da criação da empresa.
 A geladeira exibe 12 bebidas em duas fileiras nas três prateleiras. As etiquetas
@@ -44,10 +46,10 @@ cozinha à direita. Caixa na frente e liquidificador no tampo lateral. Sem anexo
 
 ## Como atender (atualizado: sem preparo)
 
-Antes de pegar os produtos, vá até o cliente sentado. Quando ele terminar de
+Crie a empresa e abra o quiosque no computador. Vá até o cliente de pé no balcão. Quando ele terminar de
 escolher, aparece **E · #pedido**; mire nele e aperte **E para anotar**. O pedido
-entra na lista da tela e do celular. E novamente permite consultar; levando o
-produto correto, E entrega. O garçom também caminha até a mesa para anotar.
+entra na lista da tela e do computador. E novamente permite consultar; levando o
+produto correto, E entrega. O garçom também anota e entrega no balcão.
 
 1. E na geladeira para bebidas ou no armário/cozinha para alimentos.
 2. Escolha **Pegar e levar ao cliente**. O produto vai imediatamente para sua mão.
@@ -91,7 +93,7 @@ de neon na expansão, luminárias de fibra, plantas suspensas e cobertura baixa 
 doze fiadas de palha. Modelos originais Blender; fontes editáveis em `art/blender/`.
 
 HUD: valores 20 px, interação 16 px, avisos 15 px. Sem dica redundante no topo.
-Até três pedidos no canto, ocultos com o celular aberto ou longe do quiosque.
+Até três pedidos no canto, ocultos com o computador aberto ou longe do quiosque.
 Até dois avisos simultâneos, com repetidos filtrados. Funcionários sem nomes grandes.
 
 ## Validação
@@ -99,5 +101,5 @@ Até dois avisos simultâneos, com repetidos filtrados. Funcionários sem nomes 
 `--loop-test --practical-test` caminha pelas entradas/corredor com colisão real,
 verifica o piso, bloqueia retirada por trás da geladeira, confere ingredientes
 visíveis, preparo/retirada/entrega e navegação. Com renderização, captura interior,
-pedidos, estação, celular e fachada. Saves de teste separados do progresso do jogador.
-Executar também as regressões de empresa, gestão, celular e o ciclo geral.
+pedidos, estação, computador e fachada. Saves de teste separados do progresso do jogador.
+Executar também as regressões de empresa, gestão, computador e o ciclo geral.

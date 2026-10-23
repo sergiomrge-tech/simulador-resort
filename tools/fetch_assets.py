@@ -392,6 +392,8 @@ def generated_props():
         ("import_closed_basket.py", ("wicker_basket_closed",)),
         ("gen_coastal_traffic.py", ("coastal_yacht", "coastal_cruise")),
         ("gen_counter_details.py", ("kiosk_counter_details",)),
+        ("gen_kiosk_computer.py", ("kiosk_computer",)),
+        ("gen_home_door.py", ("player_home_door",)),
         ("gen_kiosk_facade.py", ("kiosk_facade", "kiosk_neon_trim", "kiosk_roof", "kiosk_workbench", "kiosk_blender")),
         ("gen_kiosk_service.py", ("service_fridge", "service_fridge_door", "service_food_cabinet", "service_register")),
         ("gen_dishes.py", ("dish_petiscos", "dish_tapioca", "dish_pastel", "dish_acai", "dish_moqueca", "dish_batida")),

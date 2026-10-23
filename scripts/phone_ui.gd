@@ -1,16 +1,16 @@
 extends Control
 class_name PhoneUI
-## Celular do herói (v0.7): toda a gestão do negócio por apps — Expansões, Mercado, Cardápio,
-## Bangalôs, Equipe e Caixa. Abre e fecha com B (ou Y no controle). Substitui o escritório.
+## Gestão no computador do balcão. Nome da classe preservado para compatibilidade.
+## Seis áreas principais; telas de retirada continuam acessíveis nas estações físicas.
 
 const T: = preload("res://scripts/ui_theme.gd")
 const Management = preload("res://scripts/kiosk_management.gd")
-const W: = 420.0
-const H: = 680.0
+const W: = 960.0
+const H: = 540.0
 const INK: = Color(0.16, 0.13, 0.2)
 const INK_SOFT: = Color(0.42, 0.38, 0.46)
-const SCREEN_TOP: = Color(0.62, 0.9, 1.0)
-const SCREEN_BOT: = Color(1.0, 0.95, 0.84)
+const SCREEN_TOP: = Color(0.95, 0.96, 0.94)
+const SCREEN_BOT: = Color(0.88, 0.91, 0.88)
 const GOOD: = Color(0.12, 0.62, 0.32)
 const BAD: = Color(0.85, 0.28, 0.22)
 
@@ -73,8 +73,8 @@ func _ready() -> void :
 	_phone.custom_minimum_size = Vector2(W, H)
 	_phone.size = Vector2(W, H)
 	var bezel: = StyleBoxFlat.new()
-	bezel.bg_color = Color(0.13, 0.12, 0.2)
-	bezel.set_corner_radius_all(46)
+	bezel.bg_color = Color(0.10, 0.12, 0.12)
+	bezel.set_corner_radius_all(24)
 	bezel.set_border_width_all(4)
 	bezel.border_color = Color(0.32, 0.3, 0.45)
 	bezel.shadow_color = Color(0, 0, 0, 0.45)
@@ -94,7 +94,8 @@ func _ready() -> void :
 	grad.fill_to = Vector2(0, 1)
 	var sb: = StyleBoxTexture.new()
 	sb.texture = grad
-	scr.add_theme_stylebox_override("panel", StyleBoxEmpty.new())
+	scr.add_theme_stylebox_override("panel", _box(SCREEN_BOT, 14, 0))
+	scr.clip_children = CanvasItem.CLIP_CHILDREN_AND_DRAW
 	_phone.add_child(scr)
 	var bg: = TextureRect.new()
 	bg.texture = grad
@@ -102,9 +103,6 @@ func _ready() -> void :
 	bg.stretch_mode = TextureRect.STRETCH_SCALE
 	bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	scr.add_child(bg)
-	var round_mask: = StyleBoxFlat.new()
-	round_mask.bg_color = Color(0, 0, 0, 0)
-	round_mask.set_corner_radius_all(34)
 	var col: = VBoxContainer.new()
 	col.set_anchors_preset(Control.PRESET_FULL_RECT)
 	col.add_theme_constant_override("separation", 0)
@@ -157,7 +155,7 @@ func _place() -> void :
 	var factor := minf(0.9, minf((vs.x - 32.0) / W, (vs.y - 32.0) / H))
 	_phone.scale = Vector2.ONE * maxf(0.1, factor)
 	var fitted := _phone.size * _phone.scale
-	_phone.position = Vector2(maxf(16, vs.x - fitted.x - 32.0), (vs.y - fitted.y) * 0.5)
+	_phone.position = (vs - fitted) * 0.5
 
 func _refresh_if_open() -> void :
 	# O formulário mantém seu rascunho durante vendas e reposições, mesmo ao trocar de fonte.
@@ -177,10 +175,7 @@ func open(which: String = "", arg: int = -1) -> void :
 	refresh()
 	if _tween:
 		_tween.kill()
-	var end_y: = _phone.position.y
-	_phone.position.y = size.y + 20.0
-	_tween = create_tween().set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-	_tween.tween_property(_phone, "position:y", end_y, 0.28)
+	# Terminal fixo: abertura imediata, sem animação de aparelho portátil.
 
 func close() -> void :
 	visible = false
@@ -350,10 +345,10 @@ func refresh() -> void :
 	var m: = MarginContainer.new()
 	m.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	for side in ["left", "right", "top", "bottom"]:
-		m.add_theme_constant_override("margin_" + side, 12)
+		m.add_theme_constant_override("margin_" + side, 10)
 	sc.add_child(m)
 	var list: = VBoxContainer.new()
-	list.add_theme_constant_override("separation", 10)
+	list.add_theme_constant_override("separation", 7)
 	list.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	# O ScrollContainer fornece a largura útil, descontando a barra de rolagem.
 	list.custom_minimum_size.x = 0
@@ -433,29 +428,47 @@ func refresh() -> void :
 			_app_hotel(list)
 
 func _home() -> void:
+	var scroll := ScrollContainer.new()
+	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	screen.add_child(scroll)
 	var margin := MarginContainer.new()
-	for side in ["left", "right", "top", "bottom"]: margin.add_theme_constant_override("margin_" + side, 18)
-	screen.add_child(margin)
+	margin.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	for side in ["left", "right", "top", "bottom"]: margin.add_theme_constant_override("margin_" + side, 12)
+	scroll.add_child(margin)
 	var list := VBoxContainer.new()
-	list.add_theme_constant_override("separation", 12)
+	list.add_theme_constant_override("separation", 9)
 	margin.add_child(list)
-	_lbl(list, str(Core.company.name) if Core.company.created else "Maré Alta", 25, INK, true)
-	_lbl(list, "Gestão do seu negócio", 14, INK_SOFT)
+	_lbl(list, str(Core.company.name) if Core.company.created else "Maré Alta", 23, INK, true)
+	var status := _card(list)
+	if Core.company.created:
+		company_status = _lbl(status, "", 17, INK, true)
+		company_open_button = _btn(status,"",_toggle_kiosk)
+		_refresh_kiosk_controls()
+	else:
+		_lbl(status,"Quiosque fechado",17,INK,true)
+		_btn(status,"Criar meu quiosque",_open_management.bind("empresa"))
+	var village = get_tree().current_scene.village
+	var waiting: int = village.waiting_customers().size()
+	var pending: int = village.customers_to_order().size()
+	_lbl(status,"%d para anotar  ·  %d em atendimento" % [pending,waiting],14,INK_SOFT)
 	var grid := GridContainer.new()
-	grid.columns = 2
+	grid.columns = 3
 	grid.add_theme_constant_override("h_separation", 10)
 	grid.add_theme_constant_override("v_separation", 10)
 	list.add_child(grid)
 	for id in HOME_APPS:
 		var info: Array = APPS.filter(func(entry): return entry[0] == id)[0]
 		var button := _btn(grid, str(info[1]), _open_management.bind(str(id)), info[2])
-		button.custom_minimum_size = Vector2(160, 78)
+		button.custom_minimum_size = Vector2(220, 84)
+		button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		button.icon = T.icon(str(info[3]))
 		button.expand_icon = true
 		button.add_theme_constant_override("icon_max_width", 26)
 	var help := _card(list)
-	_lbl(help, "No quiosque: E na geladeira ou armário para pegar os produtos; E no cliente para entregar.", 15, INK, false, true)
-	_lbl(list, "%s fecha o celular" % Quality.key_name("shop"), 13, INK_SOFT)
+	_lbl(help,"Atendimento no balcão",16,INK,true)
+	_lbl(help,"Abra o quiosque. Anote com E, pegue os produtos na geladeira/armário e entregue no balcão. O cliente leva o pedido para a mesa.",14,INK_SOFT,false,true)
+	_lbl(list, "Computador do balcão · Esc para voltar", 13, INK_SOFT)
 
 func _app_hub(list: VBoxContainer, links: Array) -> void:
 	for link in links: _btn(list, str(link[1]), _open_management.bind(str(link[0])))
@@ -1228,16 +1241,16 @@ func _app_company(list: VBoxContainer) -> void:
 		list.add_child(manual)
 
 func _refresh_kiosk_controls() -> void:
-	if app not in ["painel", "empresa"] or not is_instance_valid(company_status) or not is_instance_valid(company_open_button):
+	if app not in ["", "painel", "empresa"] or not is_instance_valid(company_status) or not is_instance_valid(company_open_button):
 		return
-	var requested: bool = bool(Core.company.get("kiosk_open", true))
+	var requested: bool = bool(Core.company.get("kiosk_open", false))
 	company_status.text = "Aberto · recebendo clientes" if Core.kiosk_accepting_customers() else ("Fora do horário de atendimento" if requested else "Fechado para novas chegadas")
 	if requested and not Management.opening_ready(Core): company_status.text = "Confira a abertura em Horários e rotina"
 	company_status.add_theme_color_override("font_color", GOOD if Core.kiosk_accepting_customers() else INK_SOFT)
 	company_open_button.text = "Fechar quiosque" if requested else ("Abrir quiosque" if Core.kiosk_is_within_hours() else "Programar próxima abertura")
 
 func _toggle_kiosk() -> void:
-	Core.set_kiosk_open(not bool(Core.company.get("kiosk_open", true)))
+	Core.set_kiosk_open(not bool(Core.company.get("kiosk_open", false)))
 
 func _preview_company() -> void:
 	var font_id: String = str(CompanyRules.FONTS.keys()[company_font.selected])

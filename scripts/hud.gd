@@ -239,7 +239,7 @@ func _build_shop() -> void :
 	shop = phone
 	shop.visible = false
 
-## Abre o celular direto num app (os nomes das abas do antigo escritório ainda funcionam).
+## Abre o computador direto num app (os nomes das abas do antigo escritório ainda funcionam).
 func open_office(tab: String = "caixa", room_id: int = -1) -> void :
 	phone.open(PhoneUI.app_for_tab(tab), room_id)
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
@@ -251,7 +251,11 @@ func toggle_shop() -> void :
 	if shop.visible:
 		phone.close()
 	else:
-		phone.open(phone.app)
+		var scene = get_tree().current_scene
+		if scene.operations == null or not scene.operations.can_use_computer():
+			Core.toast.emit("Use o computador no balcão para abrir a gestão.", "info")
+			return
+		phone.open("")
 		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 		if _pad_used:
 			var buttons: = shop.find_children("*", "Button", true, false)
@@ -358,7 +362,7 @@ func _process(delta: float) -> void :
 		_hint_t = 0.5
 		_update_objective()
 		_update_orders()
-	# com o celular aberto, some o que ficaria por baixo/por cima dele
+	# com o computador aberto, some o que ficaria por baixo/por cima dele
 	var phone_open: bool = shop != null and shop.visible
 	hint_l.visible = false
 	obj_l.visible = not phone_open
@@ -400,7 +404,7 @@ func _hint() -> String:
 
 
 func _input(e: InputEvent) -> void :
-	# Teclas do nome pertencem ao formulário, inclusive B (atalho do celular).
+	# Teclas do nome pertencem ao formulário, inclusive B (atalho do computador).
 	if shop != null and shop.visible and e is InputEventKey and get_viewport().gui_get_focus_owner() is LineEdit and not e.is_action("pause"):
 		return
 	if e is InputEventScreenTouch:
@@ -496,7 +500,7 @@ func _update_keys_hint() -> void :
 	if keys_l == null:
 		return
 	keys_l.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
-	keys_l.text = "%s interagir   ·   %s celular   ·   Esc menu" % [Quality.key_name("interact"), Quality.key_name("shop")]
+	keys_l.text = "%s interagir   ·   %s computador   ·   Esc menu" % [Quality.key_name("interact"), Quality.key_name("shop")]
 	if keys_l.is_inside_tree(): _hug(keys_l, 13, -30.0, 24.0)
 
 
@@ -528,6 +532,9 @@ func objective() -> Array:
 	var home: Vector3 = world.bed.global_position if world.get("bed") else Vector3.INF
 	if Core.can_sleep() and home != Vector3.INF:
 		return [tr("Já é tarde: volte para casa e durma"), home, 2.5]
+	var terminal = get_parent().operations
+	if not Core.company.created and terminal != null:
+		return ["Criar seu quiosque · E no computador do balcão",terminal.computer.global_position,2.0]
 	if Core.company_enabled() and village:
 		var ops = get_parent().operations
 		var carried: String = str(Core.company.carry)
@@ -551,6 +558,8 @@ func objective() -> Array:
 			var seat: int = int(Core.company.dirty_seats[0])
 			if seat < world.kiosk_spots.size():
 				return ["Recolher louça e limpar", world.kiosk_spots[seat].approach, 2.5]
+		if not Core.company.kiosk_open:
+			return ["Abrir quiosque no computador do balcão",ops.computer.global_position,2.0]
 		if pp.distance_to(world.KIOSK_C) < 18.0: return ["", Vector3.INF, 0.0]
 	for r in Core.rooms:
 		if r.state == "dirty":
@@ -564,7 +573,7 @@ func objective() -> Array:
 			return [tr("Turno no quiosque: clientes esperando"), kc, 4.0]
 	for id in Economy.EXPANSION_ORDER:
 		if Core.expansion_state(id)[0] == "ready":
-			return [tr("Dá para comprar: %s — abra o celular (%s)") % [tr(str(Economy.EXPANSIONS[id].name)), Quality.key_name("shop")], Vector3.INF, 0.0]
+			return [tr("Dá para comprar: %s — use o computador (%s)") % [tr(str(Economy.EXPANSIONS[id].name)), Quality.key_name("shop")], Vector3.INF, 0.0]
 	if village:
 		var kc: Vector3 = world.kiosk_counter.global_position
 		if Core.minutes < 8.0 * 60.0:
@@ -706,7 +715,7 @@ func _update_orders() -> void:
 		for id in village._remaining(guest):
 			items.append(str(Economy.dish(id).name) + (" ✓" if Core.company_available(id) > 0 else ""))
 		lines.append("%s %s\n%s" % [ops.order_number(guest), ops.seat_name(guest), " + ".join(items)])
-	if waiting.size() > 3: lines.append("+%d pedidos · celular > Quiosque" % (waiting.size() - 3))
+	if waiting.size() > 3: lines.append("+%d pedidos · computador > Quiosque" % (waiting.size() - 3))
 	if not lines.is_empty(): orders_text.text = "PEDIDOS · ✓ pronto para retirar\n\n" + "\n\n".join(lines)
 	if str(Core.company.carry) != "":
 		work_text.text = "Na mão: %s · E no cliente com o mesmo pedido" % Economy.dish(str(Core.company.carry)).name

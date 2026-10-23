@@ -1,5 +1,7 @@
 # Gestão do quiosque — expansão local de 22/10/2026
 
+> **Revisão vigente:** [Computador e balcão](COMPUTADOR_E_BALCAO.md). Gestão no PC com E; abrir o quiosque antes das chegadas; clientes pedem/retiram tudo no balcão antes de sentar. Porta funcional; balcão madeira escura/base cinza. Essa revisão substitui os fluxos antigos descritos abaixo.
+
 > **Regra vigente — 23/10: sem preparo.** Pegar o produto pronto na geladeira,
 > armário ou cozinha e entregar. Sem cronômetro e sem precisar cozinheiro.
 > Compras abastecem o estoque; retirada desconta uma vez. Referências históricas
@@ -7,7 +9,7 @@
 > unidades já pagas sem consumir o estoque novamente.
 
 
-> **Acesso atualizado:** [QUIOSQUE_PRATICO.md](QUIOSQUE_PRATICO.md) substitui a navegação antiga e o anexo externo citados abaixo. São seis áreas iniciais no celular e todas as estações ficam dentro do quiosque. A placa agora é única; a expansão neon acrescenta iluminação à moldura.
+> **Acesso atualizado:** [QUIOSQUE_PRATICO.md](QUIOSQUE_PRATICO.md) substitui a navegação antiga e o anexo externo citados abaixo. São seis áreas iniciais no computador e todas as estações ficam dentro do quiosque. A placa agora é única; a expansão neon acrescenta iluminação à moldura.
 
 > Ampliação posterior no mesmo dia: [ROTINAS_QUIOSQUE.md](ROTINAS_QUIOSQUE.md) documenta os seis novos apps de rotina, candidatos, entregas, equipamentos, personalização e movimento. No pacote, leia ROTINAS_DO_QUIOSQUE.md. As regras abaixo continuam válidas, com a nova exceção de guardar bebidas no freezer por uma única noite. Os seis apps novos aparecem antes dos apps citados nesta seção.
 
@@ -15,14 +17,19 @@ Solicitação do Sergio: implementar as três frentes de simulação (estoque/fo
 
 ## Acesso
 
-Abra o celular com **B**. Os primeiros apps são **Meu Quiosque**, **Horários**, **Estoque e perdas**, **Escala e equipe** e **Resultado**. Mirar na placa frontal e apertar **E** abre Meu Quiosque. Personalize nome (até 24 caracteres), fonte e cor e use **Salvar nome e placa**. A prévia e as duas placas reais recebem a marca.
+Entre no quiosque pela lateral e use **E no computador do balcão**. B abre a gestão
+somente perto dele. As seis áreas iniciais são Quiosque, Compras, Equipe,
+Finanças, Resort e Vila e lazer. Em Quiosque → Personalizar → Nome e placa,
+defina nome (até 24 caracteres), fonte e cor e use **Salvar nome e placa**.
+A placa frontal orienta para o computador, sem abrir gestão remotamente.
+
 
 ## Expediente
 
 - Abertura e fechamento em horas inteiras, entre 06h e 23h, sem atravessar a meia-noite.
 - Escolha os dias da semana. Dia 1 é segunda-feira. Os saves antigos preservam 08h–18h, ou até 21h com neon, até salvar um horário personalizado.
 - **Fechar quiosque** impede novas chegadas, mantendo os pedidos existentes até o término do expediente. O horário de encerramento conserva a regra do jogo de mandar os clientes embora.
-- O botão de abertura fora do expediente prepara a abertura para o próximo horário/dia programado.
+- O botão de abertura fora do expediente prepara a abertura para o próximo horário do dia. Dormir fecha o quiosque novamente.
 - A escolha manual e a escala persistem no save. A placa ABERTO/FECHADO muda imediatamente.
 
 ## Estoque e fornecedores

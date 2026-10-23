@@ -367,6 +367,16 @@ func run(m) -> void :
 		add_child(counter)
 		await counter.run(main)
 		return
+	if main.args.has("counter-first-test"):
+		var counter_first=load("res://tests/counter_first_regression.gd").new()
+		add_child(counter_first)
+		await counter_first.run(main)
+		return
+	if main.args.has("terminal-test"):
+		var terminal=load("res://tests/terminal_regression.gd").new()
+		add_child(terminal)
+		await terminal.run(main)
+		return
 	if main.args.has("practical-test"):
 		var practical = load("res://tests/practical_regression.gd").new()
 		add_child(practical)

@@ -24,6 +24,7 @@ func run(main) -> void:
   var viewport := SubViewport.new()
   viewport.size = viewport_size
   viewport.disable_3d = true
+  viewport.transparent_bg = true
   add_child(viewport)
   var phone := PhoneUI.new()
   viewport.add_child(phone)
@@ -34,6 +35,12 @@ func run(main) -> void:
    phone.refresh()
    phone._place()
    await frames(5)
+   if app=="" and DisplayServer.get_name()!="headless":
+    await RenderingServer.frame_post_draw
+    var picture=viewport.get_texture().get_image()
+    DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path("user://qa_shots"))
+    picture.save_png("user://qa_shots/phone_home_"+str(viewport_size.x)+".png")
+    print("PHONE_SHOT ",ProjectSettings.globalize_path("user://qa_shots/phone_home_"+str(viewport_size.x)+".png"))
    var frame := phone._phone.get_global_rect()
    var margin := 12.0 * phone._phone.scale.x
    var bad: Array = []

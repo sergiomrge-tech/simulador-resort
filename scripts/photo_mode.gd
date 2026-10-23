@@ -1,5 +1,5 @@
 extends Node
-## v0.9.5: câmera de fotos (tecla P). A foto vai para o álbum do celular (user://album). Cada tema fotografado pela 1ª vez
+## v0.9.5: câmera de fotos (tecla P). A foto vai para o álbum do computador (user://album). Cada tema fotografado pela 1ª vez
 ## paga um prêmio: festa, pôr do sol, farol, peixes no mergulho, gaivota e quiosque à noite.
 
 const DIR: = "user://album"
@@ -84,5 +84,5 @@ func snap() -> void:
 			Core.toast.emit(tr("Foto nova no álbum: %s! +%s") % [tr(str(THEMES[t][0])), Core.fmt_money(int(THEMES[t][1]))], "good")
 			paid = true
 	if not paid:
-		Core.toast.emit(tr("Foto salva no álbum do celular.") if themes.is_empty() else tr("Foto salva (esse tema já está no álbum)."), "info")
+		Core.toast.emit(tr("Foto salva no álbum do computador.") if themes.is_empty() else tr("Foto salva (esse tema já está no álbum)."), "info")
 	_save()
