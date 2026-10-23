@@ -1,5 +1,11 @@
 # Refinamentos integrados — 23/10/2026
 
+Revisão do avental: superfície ajustada ao volume da roupa, alça no pescoço,
+faixa na cintura, bolso duplo, bordas costuradas e dobras suaves. A parte inferior
+acompanha os ossos das pernas com transição contínua no quadril. É uma malha
+animada pelo esqueleto; não usa simulação física de tecido.
+Óculos escuros removidos de todos os personagens a pedido do Sergio.
+
 1. **Roupas de praia:** camisas simplificadas, bermudas na altura do joelho e
    calçados baixos. Malhas derivadas do pacote CC0 Quaternius com pesos originais.
 2. **Equipe identificável:** cozinha em creme com avental, atendimento em verde
@@ -30,3 +36,10 @@ Fontes Blender editáveis e com texturas incorporadas em `art/blender/`:
 
 Validação: `--loop-test --practical-test`, `--loop-test --company-test` e ciclo
 geral `--loop-test`, sempre com dados de teste separados do progresso do jogador.
+
+Revisão avental/sem óculos validada na fonte (`apron3-no-glasses.log`) e no
+executável/PCK (`apron-pack-visual.log`: PRACTICAL_TEST PASS;
+`apron-pack-loop.log`: LOOP_TEST PASS). Conferidos retrato, preparo, caminhada
+e pose sentada. Permanecem os avisos já conhecidos de liberação de materiais/RID
+ao encerrar os testes; não houve SCRIPT ERROR nem recurso ausente nessa revisão.
+SHA256 do PCK: `25b4bfcd4e6827f0c314c31901e5d3f961ecee8a8b88d2539f6920dadaf5cc1b`.

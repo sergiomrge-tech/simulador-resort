@@ -2,13 +2,13 @@
 
 Gerado por `python3 tools/gen_item_catalog.py` — **não edite à mão**. Os códigos ficam em `docs/itens_registro.json` e nunca mudam. Para pedir uma alteração, cite o código (ex.: "troque o modelo de MOD-017").
 
-Total: 2038 itens. MOD 228 · NAT 68 · PRC 31 · CEN 284 · PRT 13 · DSH 9 · SUP 10 · EXP 9 · STF 4 · UPG 15 · QST 4 · VIP 12 · EVT 8 · NOU 161 · TEX 29 · AUD 46 · ICO 36 · FNT 1 · SHD 15 · ANI 43 · PCA 900 · MAT 24 · COR 28 · SCR 44 · PES 16
+Total: 2037 itens. MOD 227 · NAT 68 · PRC 31 · CEN 284 · PRT 13 · DSH 9 · SUP 10 · EXP 9 · STF 4 · UPG 15 · QST 4 · VIP 12 · EVT 8 · NOU 162 · TEX 29 · AUD 46 · ICO 36 · FNT 1 · SHD 15 · ANI 43 · PCA 899 · MAT 24 · COR 28 · SCR 44 · PES 16
 
-## MOD — Modelos 3D em uso (reais, baixados da web) (228)
+## MOD — Modelos 3D em uso (reais, baixados da web) (227)
 
 | Código | Nome | Chave | Fonte | Usado em |
 |---|---|---|---|---|
-| MOD-001 | Camera 01 | `Camera_01` | Poly Haven (CC0) | guest.gd:918 |
+| MOD-001 | Camera 01 | `Camera_01` | Poly Haven (CC0) | guest.gd:913 |
 | MOD-002 | Cash register 01 | `CashRegister_01` | Poly Haven (CC0) | props.gd:44, world.gd:298 |
 | MOD-003 | Coffee cart 01 | `CoffeeCart_01` | Poly Haven (CC0) | props.gd:44, world_village.gd:720 |
 | MOD-004 | Gothic bed 01 | `GothicBed_01` | Poly Haven (CC0) | props.gd:40, real.gd:12, world.gd:778, world.gd:781 (+1) |
@@ -101,7 +101,6 @@ Total: 2038 itens. MOD 228 · NAT 68 · PRC 31 · CEN 284 · PRT 13 · DSH 9 · 
 | MOD-094 | Crab | `g:crab` | Gerado no Blender (tools/gen_*.py) | details.gd:255 |
 | MOD-095 | Dog | `g:dog` | Gerado no Blender (tools/gen_*.py) | details.gd:386 |
 | MOD-096 | Sandcastle | `g:sandcastle` | Gerado no Blender (tools/gen_*.py) | details.gd:232 |
-| MOD-100 | Sunglasses | `g:sunglasses` | Gerado no Blender (tools/gen_*.py) | guest.gd:910 |
 | MOD-101 | Surfboard | `g:surfboard` | Gerado no Blender (tools/gen_*.py) | biz_world.gd:131, biz_world.gd:68, details.gd:156 |
 | MOD-102 | Towel | `g:towel` | Gerado no Blender (tools/gen_*.py) | details.gd:162, world.gd:662, world.gd:667, world.gd:670 (+4) |
 | MOD-103 | Fern 02 | `fern_02` | Poly Haven (CC0) | world_village.gd:1739 |
@@ -764,7 +763,7 @@ Total: 2038 itens. MOD 228 · NAT 68 · PRC 31 · CEN 284 · PRT 13 · DSH 9 · 
 | EVT-007 | Show do DJ Maré | `show_dj` | O DJ Maré toca na praia e passa no quiosque. Clientes de sobra e caipirinha em alta. |
 | EVT-008 | Carnaval da Maré | `carnaval` | Bloco na areia à tarde e à noite! O dobro de clientes, bebidas em alta. Libere no capítulo do prefeito. |
 
-## NOU — Modelos baixados ainda sem uso (disponíveis) (161)
+## NOU — Modelos baixados ainda sem uso (disponíveis) (162)
 
 | Código | Nome | Chave | Fonte | Usado em |
 |---|---|---|---|---|
@@ -929,6 +928,7 @@ Total: 2038 itens. MOD 228 · NAT 68 · PRC 31 · CEN 284 · PRT 13 · DSH 9 · 
 | NOU-174 | Strawhat blue | `g:strawhat_blue` | Gerado no Blender (tools/gen_*.py) | — |
 | NOU-175 | Strawhat dark | `g:strawhat_dark` | Gerado no Blender (tools/gen_*.py) | — |
 | NOU-176 | Strawhat red | `g:strawhat_red` | Gerado no Blender (tools/gen_*.py) | — |
+| NOU-177 | Sunglasses | `g:sunglasses` | Gerado no Blender (tools/gen_*.py) | — |
 
 ## TEX — Texturas e materiais (29)
 
@@ -1024,7 +1024,7 @@ Total: 2038 itens. MOD 228 · NAT 68 · PRC 31 · CEN 284 · PRT 13 · DSH 9 · 
 | ICO-003 | Bar | `bar` | assets/ui/icons | economy.gd:114, economy.gd:336, economy.gd:48, economy.gd:49 (+25) |
 | ICO-004 | Bartender | `bartender` | assets/ui/icons | economy.gd:110, resort_core.gd:61, resort_core.gd:874, world.gd:1084 |
 | ICO-005 | Cachaca | `cachaca` | assets/ui/icons | economy.gd:180, economy.gd:195, economy.gd:206, economy.gd:213 (+2) |
-| ICO-006 | Caixa | `caixa` | assets/ui/icons | economy.gd:93, guest.gd:1016, hud.gd:243, hud.gd:64 (+26) |
+| ICO-006 | Caixa | `caixa` | assets/ui/icons | economy.gd:93, guest.gd:1011, hud.gd:243, hud.gd:64 (+26) |
 | ICO-007 | Cama | `cama` | assets/ui/icons | economy.gd:307, phone_ui.gd:24, phone_ui.gd:42, resort_core.gd:100 (+8) |
 | ICO-008 | Camareira | `camareira` | assets/ui/icons | economy.gd:103, resort_core.gd:186, resort_core.gd:187, resort_core.gd:61 |
 | ICO-009 | Clima | `clima` | assets/ui/icons | economy.gd:291, hud.gd:574, phone_ui.gd:32, phone_ui.gd:34 (+3) |
@@ -1130,7 +1130,7 @@ Total: 2038 itens. MOD 228 · NAT 68 · PRC 31 · CEN 284 · PRT 13 · DSH 9 · 
 | ANI-042 | Walk formal loop | `Walk_Formal_Loop` | UAL (Quaternius CC0) | guest.gd:124 |
 | ANI-043 | Walk loop | `Walk_Loop` | UAL (Quaternius CC0) | event_fx.gd:261, guest.gd:124, guest.gd:184, main.gd:358 (+1) |
 
-## PCA — Peças construídas por código (uma linha = uma peça; ver coluna Função) (900)
+## PCA — Peças construídas por código (uma linha = uma peça; ver coluna Função) (899)
 
 | Código | Peça | Função | Chamada | Material | Linha | Obs |
 |---|---|---|---|---|---|---|
@@ -1927,11 +1927,10 @@ Total: 2038 itens. MOD 228 · NAT 68 · PRC 31 · CEN 284 · PRT 13 · DSH 9 · 
 | PCA-873 | cyl | `island_tree` | `B.cyl` | — | props.gd:418 |  |
 | PCA-874 | sphere | `island_tree` | `B.sphere` | — | props.gd:422 |  [em laço] |
 | PCA-875 | new | `spawn` | `MeshInstance3D.new` | — | palm.gd:187 |  |
-| PCA-881 | g:sunglasses | `_caricature` | `Real.place` | — | guest.gd:910 |  |
-| PCA-882 | Camera 01 | `_caricature` | `Real.place` | — | guest.gd:918 |  |
-| PCA-888 | box | `show_menu` | `B.box` | — | guest.gd:957 |  |
-| PCA-889 | box | `show_menu` | `B.box` | — | guest.gd:958 |  |
-| PCA-890 | box | `show_menu` | `B.box` | — | guest.gd:960 |  [em laço] |
+| PCA-881 | Camera 01 | `_caricature` | `Real.place` | — | guest.gd:913 |  |
+| PCA-888 | box | `show_menu` | `B.box` | — | guest.gd:952 |  |
+| PCA-889 | box | `show_menu` | `B.box` | — | guest.gd:953 |  |
+| PCA-890 | box | `show_menu` | `B.box` | — | guest.gd:955 |  [em laço] |
 | PCA-891 | place | `_run_shot` | `Real.place` | — | main.gd:406 |  [em laço] |
 | PCA-892 | label | `spawn_customer` | `B.label` | — | village_life.gd:326 |  |
 | PCA-893 | build | `_bungalow` | `P.build` | — | world.gd:638 |  |

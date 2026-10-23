@@ -6572,7 +6572,7 @@
    },
    {
     "arquivo": "guest.gd",
-    "linha": 1016,
+    "linha": 1011,
     "funcao": "apply_staff_uniform"
    },
    {
@@ -9069,7 +9069,7 @@
   "usos": [
    {
     "arquivo": "guest.gd",
-    "linha": 918,
+    "linha": 913,
     "funcao": "_caricature"
    }
   ],
@@ -11303,21 +11303,6 @@
    }
   ],
   "arquivo_modelo": "assets/models/gen/sandcastle.glb"
- },
- {
-  "codigo": "MOD-100",
-  "categoria": "MOD",
-  "chave": "g:sunglasses",
-  "nome": "Sunglasses",
-  "fonte": "Gerado no Blender (tools/gen_*.py)",
-  "usos": [
-   {
-    "arquivo": "guest.gd",
-    "linha": 910,
-    "funcao": "_caricature"
-   }
-  ],
-  "arquivo_modelo": "assets/models/gen/sunglasses.glb"
  },
  {
   "codigo": "MOD-101",
@@ -15760,6 +15745,15 @@
   "fonte": "Gerado no Blender (tools/gen_*.py)",
   "usos": [],
   "arquivo_modelo": "assets/models/gen/strawhat_red.glb"
+ },
+ {
+  "codigo": "NOU-177",
+  "categoria": "NOU",
+  "chave": "g:sunglasses",
+  "nome": "Sunglasses",
+  "fonte": "Gerado no Blender (tools/gen_*.py)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/gen/sunglasses.glb"
  },
  {
   "codigo": "PCA-001",
@@ -30832,31 +30826,12 @@
   "codigo": "PCA-881",
   "categoria": "PCA",
   "chave": "guest.gd|_caricature|Real.place|1",
-  "nome": "g:sunglasses",
-  "fonte": "guest.gd (código)",
-  "usos": [
-   {
-    "arquivo": "guest.gd",
-    "linha": 910,
-    "funcao": "_caricature"
-   }
-  ],
-  "chamada": "Real.place",
-  "args": "_face, \"g:sunglasses\", Vector3(0, 0.075, 0.093), -1.0, 0.0, Color.WHITE, 0.0, false",
-  "material": "",
-  "em_laco": false,
-  "comentario": ""
- },
- {
-  "codigo": "PCA-882",
-  "categoria": "PCA",
-  "chave": "guest.gd|_caricature|Real.place|2",
   "nome": "Camera 01",
   "fonte": "guest.gd (código)",
   "usos": [
    {
     "arquivo": "guest.gd",
-    "linha": 918,
+    "linha": 913,
     "funcao": "_caricature"
    }
   ],
@@ -30875,7 +30850,7 @@
   "usos": [
    {
     "arquivo": "guest.gd",
-    "linha": 957,
+    "linha": 952,
     "funcao": "show_menu"
    }
   ],
@@ -30894,7 +30869,7 @@
   "usos": [
    {
     "arquivo": "guest.gd",
-    "linha": 958,
+    "linha": 953,
     "funcao": "show_menu"
    }
   ],
@@ -30913,7 +30888,7 @@
   "usos": [
    {
     "arquivo": "guest.gd",
-    "linha": 960,
+    "linha": 955,
     "funcao": "show_menu"
    }
   ],
@@ -33721,7 +33696,7 @@
     "funcao": ""
    }
   ],
-  "linhas": 1036,
+  "linhas": 1031,
   "descricao": ""
  },
  {

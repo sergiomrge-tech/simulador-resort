@@ -1,5 +1,10 @@
 # Como continuar o Maré Alta Resort (passagem de bastão — 19/10/2026)
 
+> **Preferência/avental (23/10):** pessoas sem óculos escuros; não reintroduzir
+> `Sunglasses` no Guest nem nas provas visuais. Aventais agora têm alças, cintura,
+> bolso, espessura e perfil ajustado à roupa, com pesos contínuos no quadril.
+> Fonte/PCK prático e ciclo aprovados; detalhes em REFINAMENTO_COMPLETO.md.
+
 > **Sete refinamentos integrados (23/10/2026):** ler REFINAMENTO_COMPLETO.md.
 > Inclui bermudas, uniformes e aventais, gestos/porta animada, piscadas,
 > balcão detalhado, áudio posicional suave e iluminação de entardecer/noite.

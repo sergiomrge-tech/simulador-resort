@@ -905,12 +905,7 @@ func _caricature(rng: RandomNumberGenerator) -> void :
 	_skel.add_child(att)
 	_face = Node3D.new()
 	att.add_child(_face)
-	# óculos de sol e câmera no pescoço
-	if rng.randf() < 0.3:
-		var glasses = Real.place(_face, "g:sunglasses", Vector3(0, 0.075, 0.093), -1.0, 0.0, Color.WHITE, 0.0, false)
-		if glasses != null:
-			glasses.name = "Sunglasses"
-			glasses.scale *= 0.9
+	# Câmera no pescoço; óculos escuros removidos a pedido do Sergio.
 	if rng.randf() < 0.14:
 		var att3: = BoneAttachment3D.new()
 		att3.bone_name = "neck_01"

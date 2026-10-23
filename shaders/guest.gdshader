@@ -62,6 +62,7 @@ void fragment(){
 	else if (zone > 3.5 && zone < 4.5) { c = shoes.rgb; r = 0.7; }
 	else if (zone > 5.5) {
 		c = apron_color.rgb; r = 0.95;
+		c *= COLOR.g; // Sewn pocket, binding and ties in the skinned cloth mesh.
 		float seam = step(UV.x,.018)+step(.982,UV.x)+step(UV.y,.018)+step(.982,UV.y);
 		c *= mix(1.0,.78,clamp(seam,0.0,1.0));
 		c *= .98+.02*sin(UV.x*900.0)*sin(UV.y*900.0);

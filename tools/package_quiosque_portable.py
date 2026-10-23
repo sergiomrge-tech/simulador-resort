@@ -20,9 +20,11 @@ Para atualizar uma cópia anterior, substitua os arquivos do programa e mantenha
 a pasta userdata/. O ZIP não inclui nem apaga saves.
 
 NOVO NESTA REVISÃO
+- Aventais ajustados ao corpo, com alças, cintura, bolso e dobras suaves;
+  pesos contínuos no quadril para acompanhar as pernas ao andar e sentar.
 - Sete refinamentos: roupas de praia, uniformes por função, aventais, gestos,
   piscadas, balcão equipado, sons suaves sem vozes e luz de entardecer/noite.
-- Óculos menores com lentes ovais e armação escura, mais próximos do rosto.
+- Pessoas sem óculos escuros, chapéus ou bonés.
 - Pessoas com proporções mais naturais, pele/cabelo suaves e roupas menos brilhantes.
 - Refinamento: revestimento areia retangular e iluminação quente na área de trabalho.
 - Quiosque com azulejos na cozinha, prateleira de madeira e coifa detalhada.

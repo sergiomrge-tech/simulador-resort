@@ -276,3 +276,17 @@ CRCs verificados e sem userdata. Documentação e instruções do expositor atua
   existentes de material/recursos no encerramento do motor.
 - SHA-256 PCK: `da59a2b1432376a332599587c7bd68e07771b918b4262b1699cfe807261d3014`.
 - ZIP em Downloads atualizado, CRC conferido, documentação incluída, sem saves.
+
+# Avental ajustado e pessoas sem óculos — 23/10/2026
+
+- Óculos escuros removidos de todos os Guest, inclusive da preparação das imagens
+  de teste. A biblioteca Blender do acessório foi preservada sem uso nas pessoas.
+- Aventais masculino/feminino com perfil ajustado à roupa, bolso, alças e cintura,
+  bordas e espessura; deformação contínua no quadril e folga para a caminhada.
+- Fontes Blender com texturas incorporadas salvas e reabertas.
+- Fonte: apron3-no-glasses.log PRACTICAL_TEST PASS. Executável/PCK:
+  apron-pack-visual.log PRACTICAL_TEST PASS; apron-pack-loop.log LOOP_TEST PASS.
+- Conferidos retrato, preparo, andar e sentar. Sem SCRIPT ERROR/recursos ausentes;
+  permanecem os avisos de materiais/RID já conhecidos no encerramento.
+- PCK SHA256: 25b4bfcd4e6827f0c314c31901e5d3f961ecee8a8b88d2539f6920dadaf5cc1b.
+- ZIP em Downloads atualizado, 10 arquivos, CRC verificado, sem incluir saves.

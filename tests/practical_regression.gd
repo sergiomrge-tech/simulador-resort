@@ -174,10 +174,7 @@ func run(main) -> void:
 			person.rotation.y = 0
 			person.go([])
 			person.set_process(false)
-			if person._face.get_node_or_null("Sunglasses") == null:
-				var glasses = Real.place(person._face, "g:sunglasses", Vector3(0, 0.075, 0.093), -1.0, 0.0, Color.WHITE, 0.0, false)
-				glasses.name = "Sunglasses"
-				glasses.scale *= 0.9
+			check(person._face.get_node_or_null("Sunglasses") == null, "pessoas sem óculos escuros")
 			person.apply_staff_uniform("cozinheiro" if person._female else "garcom")
 			var clothes = person.find_children("Tailored_*", "MeshInstance3D", true, false)
 			check(clothes.size() == 5, "roupas importadas " + gender)
