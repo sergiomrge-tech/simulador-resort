@@ -24,6 +24,13 @@ for female in [False,True]:
             for mod in ob.modifiers:
                 if mod.type=='ARMATURE':mod.object=first_rig
             ob.parent=first_rig
+        if part in ['Body','Feet']:
+            # Straight shirt hem removes the medieval belt/tails. Low shoes
+            # replace the tall boot silhouette while retaining original weights.
+            bm=bmesh.new();bm.from_mesh(ob.data)
+            height=1.025 if part=='Body' else .15
+            bmesh.ops.bisect_plane(bm,geom=list(bm.verts)+list(bm.edges)+list(bm.faces),dist=.00001,plane_co=(0,0,height),plane_no=(0,0,1),clear_inner=part=='Body',clear_outer=part=='Feet')
+            bm.to_mesh(ob.data);bm.free()
         # A little ease over the muscular base; preserve original topology and weights.
         for v in ob.data.vertices:
             if part!='Arms':v.co+=v.normal*.004

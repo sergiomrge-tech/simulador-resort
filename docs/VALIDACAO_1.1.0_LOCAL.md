@@ -212,3 +212,12 @@ CRCs verificados e sem userdata. Documentação e instruções do expositor atua
 - PCK SHA-256: `a01c8728fc301431129ae3158e8e61a67f4405ce7caf09cb52b3d03465e6a0e6`.
 - ZIP em Downloads atualizado, CRC conferido e sem saves do jogador.
 - Permanecem avisos já existentes de recursos/material no encerramento do motor.
+# Roupas casuais — 23/10/2026
+
+- Barra das camisas encurtada e reta; cano dos calçados reduzido a 15 cm,
+  com pernas da base original entre o calçado e a calça. Cores mais neutras.
+- Fonte `casual-proof.log` e PCK `casual-pack.log`: PRACTICAL_TEST PASS,
+  sem SCRIPT ERROR nem recursos ausentes. Conferidas capturas em pé, andando
+  e sentado. Mantida a remoção dos chapéus.
+- PCK SHA-256: `87fe02c4ac8a50406cb41dbd9a80f54a909a989d308107838239b8e346b1902e`.
+- ZIP atualizado em Downloads e CRC conferido, preservando os saves.

@@ -1,5 +1,9 @@
 # Quiosque reorganizado — 22/10/2026
 
+Revisão de roupas de 23/10: camisas com barra reta, sem cinto e abas inferiores
+medievais. Calçados baixos substituem as botas de cano alto, com pernas da base
+original preservadas entre o sapato e a calça. Cores dos calçados mais neutras.
+
 A traseira agora tem parede de madeira com ripas e travessas, combinando com o
 acabamento do balcão. A parede bloqueia passagem; as entradas laterais continuam
 livres e todos os equipamentos ficam dentro. Pessoas usam roupas CC0 Quaternius

@@ -176,6 +176,10 @@ Kenney, **Impact Sounds 1.0**, CC0: https://kenney.nl/assets/impact-sounds . Qui
 
 ## Roupas de pessoas e parede traseira (22/10/2026)
 
+Revisão de 23/10: corte da barra das camisas e redução do cano dos calçados
+no Blender, preservando pesos, UVs e fontes editáveis. Pernas expostas utilizam
+a base original; paleta de calçados neutra.
+
 Quaternius **Modular Character Outfits - Fantasy**, CC0, peças Peasant Body/Legs/Arms/Feet
 masculinas e femininas. Fonte oficial e licença:
 https://quaternius.itch.io/modular-character-outfits-fantasy .

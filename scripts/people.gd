@@ -316,7 +316,8 @@ static func covered_body(female: bool, mesh: ArrayMesh) -> ArrayMesh:
 			var neck: bool = p.y > 1.48 and absf(p.x) < 0.075
 			var head: bool = p.y >= 1.54 and absf(p.x) < 0.18
 			var forearms: bool = absf(p.x) > 0.36 and p.y > 1.20
-			if neck or head or forearms:
+			var lower_legs: bool = p.y > 0.13 and p.y < 0.48
+			if neck or head or forearms or lower_legs:
 				kept.append_array(indices.slice(i, i + 3))
 		arrays[Mesh.ARRAY_INDEX] = kept
 		for custom in range(Mesh.ARRAY_CUSTOM0, Mesh.ARRAY_CUSTOM3 + 1): arrays[custom] = null

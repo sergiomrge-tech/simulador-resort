@@ -855,7 +855,7 @@ func _dress(m: Node3D, rng: RandomNumberGenerator) -> void :
 		skel.add_child(cm)
 		cm.skeleton = NodePath("..")
 		_mesh_insts.append(cm)
-	var shoe_cols: = [Color(0.95, 0.95, 0.93), Color(0.12, 0.12, 0.14), Color(0.15, 0.35, 0.75), Color(0.85, 0.2, 0.2), Color(0.35, 0.22, 0.12), Color(0.95, 0.75, 0.2), Color(0.2, 0.6, 0.55)]
+	var shoe_cols: = [Color(0.82, 0.80, 0.74), Color(0.12, 0.14, 0.16), Color(0.22, 0.29, 0.34), Color(0.35, 0.24, 0.16)]
 	var sc: Color = shoe_cols[rng.randi() % shoe_cols.size()]
 	var so: Color = Color(0.95, 0.93, 0.88) if foot == "shoes" and sc.get_luminance() < 0.7 else Color(0.25, 0.2, 0.18)
 	for mi in _mesh_insts:
