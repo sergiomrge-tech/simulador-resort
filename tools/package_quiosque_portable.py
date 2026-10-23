@@ -20,6 +20,9 @@ Para atualizar uma cópia anterior, substitua os arquivos do programa e mantenha
 a pasta userdata/. O ZIP não inclui nem apaga saves.
 
 NOVO NESTA REVISÃO
+- Acabamento visual: contornos finos e discretos em pessoas, móveis e vegetação;
+  água com cores naturais, transições suaves e espuma menos recortada;
+  brilho noturno mais contido, preservando janelas e luminárias legíveis.
 - Quiosque e mesas voltados para a praia. Anote/entregue aos dois clientes do
   balcão pelo lado de dentro. Mira nos clientes mais fácil, com número do pedido.
 - Acabou um produto? E na geladeira/armário: Repor 10 mostra o preço dos insumos

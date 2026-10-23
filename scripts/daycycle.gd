@@ -154,8 +154,8 @@ func apply() -> void :
 	env.volumetric_fog_albedo = fog_c
 	env.volumetric_fog_density = 0.012 if rain else lerpf(0.004, 0.008, maxf(golden, night * 0.7))
 	env.volumetric_fog_emission = fog_c * (0.15 if rain else 0.05)
-	env.glow_intensity = 0.22 if rain else lerpf(0.45, 1.1, night)
-	env.glow_bloom = 0.08 if night > 0.4 else 0.05
+	env.glow_intensity = 0.22 if rain else lerpf(0.30, 0.58, night)
+	env.glow_bloom = 0.035 if night > 0.4 else 0.025
 	moon.light_energy = (0.15 if rain else 0.42) * night
 	moon.light_color = Color(0.82, 0.85, 0.90)
 	env.ambient_light_sky_contribution = 0.0

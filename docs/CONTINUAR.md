@@ -51,8 +51,11 @@ trabalhe nos mesmos arquivos ao mesmo tempo que outro chat sem coordenação.
    claro, detalhes, cortinas, persianas e cozinha; porta em madeira, não azul.
    Manter personagens estilizados; cores naturais não exigem trocar a engine.
    A luz ambiente usa AMBIENT_SOURCE_COLOR neutra e sky_contribution zero;
-   não restaurar o banho azul/lilás do céu nos materiais. Sala da casa tem sofá,
-   mesa de centro, estante, TV e som: E liga/desliga. TV exibe animação silenciosa;
+   não restaurar o banho azul/lilás do céu nos materiais.
+   Refinamento posterior: contorno fino/discreto com fade por distância, água HD
+   com gradientes suaves e espuma contínua, bloom noturno contido. Não restaurar
+   linhas escuras grossas nas folhas nem faixas duras e saturadas na água.
+   Sala da casa tem sofá, mesa de centro, estante, TV e som: E liga/desliga. TV exibe animação silenciosa;
    som respeita mute/volume e distância. Preservar passagem até cama/cozinha.
 8. **Pessoas sem óculos escuros, chapéus ou bonés.** Preservar cabelos presos à
    cabeça animada e roupas compatíveis com o rig. Não recolocar acessórios nos

@@ -360,6 +360,16 @@ PCK SHA256: 8d95b71f92fdd3de2b877175fdbabb9fe1c91a7cd97ca68e0edfc67ecba6a192.
 - ZIP portátil atualizado em Downloads, 10 arquivos e CRC verificado; sem saves.
 
 # Balcão interno, quiosque/praia e ambientação — 23/10/2026
+
+Refinamento visual posterior: contorno mais fino, menos opaco e com fade próximo;
+mar HD com gradientes naturais, espuma suave e resposta especular contínua;
+bloom noturno reduzido. Fonte polish-counter.log COUNTER_TEST PASS e
+polish-coast.log COASTAL_TEST PASS. Imagens de balcão, mar e cruzeiro noturno
+conferidas em Vulkan. PCK SHA256:
+a20e930d8eddcc7fb1ca3b0516592e8efe6676f24cde49d67f75c782ae6195b2.
+Executável: polish-pack-counter.log COUNTER_TEST PASS e polish-pack-coast.log
+COASTAL_TEST PASS. Sem erro de script/recurso ausente; avisos conhecidos de
+material/RID no encerramento continuam presentes. ZIP com CRC e sem saves.
 - KioskBeachFrame gira fachada, balcão, equipamentos, expansões e mesas para -Z.
   Dados globais dos assentos, bloqueios de NPCs, layout e rotas convertidos juntos.
   Garçom anota/entrega no staff_approach interno dos lugares do balcão.
