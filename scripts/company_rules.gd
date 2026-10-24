@@ -9,7 +9,7 @@ static var _fonts: Dictionary = {}
 
 static func defaults() -> Dictionary:
 	return {"created": false, "name": "Maré Alta", "font": "praia", "color": "creme", "physical": true, "kiosk_open": false, "opening_version": 1, "sim": Simulation.defaults(),
-		"ready": {}, "carry": "", "staff_carry": "", "production": {}, "receivables": [], "dirty_seats": []}
+		"ready": {}, "carry": "", "staff_carry": "", "production": {}, "receivables": [], "dirty_seats": [], "dirty_items": {}}
 
 static func valid_name(value: String) -> bool:
 	if value != value.strip_edges() or value.length() < 1 or value.length() > MAX_NAME:
@@ -57,6 +57,15 @@ static func sanitize(value: Variant) -> Dictionary:
 		for index in dirty:
 			if (index is int or index is float) and int(index) >= 0 and int(index) < 8 and int(index) not in out.dirty_seats:
 				out.dirty_seats.append(int(index))
+	var leftovers: Variant=value.get("dirty_items",{})
+	if leftovers is Dictionary:
+		for index in out.dirty_seats:
+			var items: Variant=leftovers.get(str(index),leftovers.get(index,[]))
+			if items is Array:
+				var safe: Array=[]
+				for id in items.slice(0,16):
+					if str(id) in Economy.KIOSK_MENU: safe.append(str(id))
+				if not safe.is_empty(): out.dirty_items[str(index)]=safe
 	return out
 
 static func font_for(id: String) -> Font:

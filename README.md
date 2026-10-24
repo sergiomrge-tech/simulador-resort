@@ -5,8 +5,8 @@ feito em **Godot 4.5.1**, GDScript, Forward+, para Windows.
 
 Linha atual: **1.1.0 RC2**, branch **`codex/resort-1.1-mcp`**.
 
-**Atualização de 23/10/2026:** notebook detalhado, gestão e compras simplificadas, pessoas, animais e pássaros.
-[Download para Windows — revisão visual e gestão](https://github.com/sergiomrge-tech/simulador-resort/releases/tag/v1.1.0-rc2.20261023-refinado).
+**Atualização de 24/10/2026:** louça correspondente ao que foi consumido e PC central no balcão; inclui o refinamento visual anterior.
+[Download para Windows — revisão visual e gestão](https://github.com/sergiomrge-tech/simulador-resort/releases/tag/v1.1.0-rc2.20261024-louca-balcao).
 Extraia o ZIP inteiro e abra Jogar.vbs. Preserve userdata ao atualizar.
 
 ## Vai continuar o projeto com outra IA?

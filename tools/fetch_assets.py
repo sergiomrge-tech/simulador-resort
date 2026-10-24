@@ -394,6 +394,7 @@ def generated_props():
         ("gen_kiosk_facade.py", ("kiosk_facade", "kiosk_neon_trim", "kiosk_roof", "kiosk_workbench", "kiosk_blender")),
         ("gen_kiosk_service.py", ("service_fridge", "service_fridge_door", "service_food_cabinet", "service_register")),
         ("gen_dishes.py", ("dish_petiscos", "dish_tapioca", "dish_pastel", "dish_acai", "dish_moqueca", "dish_batida")),
+        ("gen_used_drinks.py", ("used_glass_juice", "used_cocktail", "used_dish_batida", "table_plate", "table_bowl")),
         ("gen_beach_props.py", ("towel", "sandcastle", "lounger")),
         ("gen_code_props.py", ("tiki_torch", "win_shutters", "trellis_planter", "newsstand", "boat_mast")),
         ("gen_business.py", ("biz_gelato", "biz_canopy", "biz_food_truck", "biz_barrier")),

@@ -21,6 +21,7 @@ var _production_key := ""
 var menu_card: Label3D
 var door_tween: Tween
 var computer: Node3D
+var computer_target: Interactable
 
 func _ready() -> void:
 	name = "KioskOperations"
@@ -72,16 +73,16 @@ func _build() -> void:
 	var register_pos: Vector3 = c + Vector3(1.0, 1.28, 1.8)
 	_interaction(self, register_pos + Vector3(0, 0.12, 0), Vector3(0.4, 0.3, 0.4), _register_prompt, collect_payments)
 	Real.place(self, "g:kiosk_counter_details", c + Vector3(0,1.28,0), -1.0,0,Color.WHITE,0,false)
-	computer = Real.place(self,"g:kiosk_laptop",c+Vector3(1.65,1.28,1.65),.32,PI)
+	computer = Real.place(self,"g:kiosk_laptop",c+Vector3(0,1.28,1.65),.32,PI)
 	computer.name = "CounterComputer"
 	var display:=Node.new()
 	display.name="CounterDisplay"
 	display.set_script(load("res://scripts/counter_terminal_display.gd"))
 	display.laptop=computer
 	add_child(display)
-	_interaction(self,c+Vector3(1.65,1.45,1.65),Vector3(.65,.40,.55),func(): return "Computador · gestão do quiosque",open_computer)
+	computer_target=_interaction(self,c+Vector3(0,1.45,1.1),Vector3(.65,.7,.7),func(): return "Computador · gestão do quiosque",open_computer)
 	for side in [-1,1]:
-		var card := B.label(self,"",c+Vector3(-.90,1.497,2.006 if side==1 else 1.774),22,Color(.08,.12,.10),Color(0,0,0,0),0 if side==1 else PI)
+		var card := B.label(self,"",c+Vector3(1.10,1.497,2.006 if side==1 else 1.774),22,Color(.08,.12,.10),Color(0,0,0,0),0 if side==1 else PI)
 		card.rotation.x=-.43
 		card.name = "CounterPromotion" + str(side)
 		card.pixel_size = .0007
@@ -90,9 +91,9 @@ func _build() -> void:
 		if side==1: menu_card = card
 	for row in 2:
 		for column in 3:
-			var cup := Real.place(self,"g:cup_plastic",c+Vector3(.04+column*.15,1.308,1.91+row*.14),.15,0,Color.WHITE,0,false)
+			var cup := Real.place(self,"g:cup_plastic",c+Vector3(-1.36+column*.15,1.308,1.91+row*.14),.15,0,Color.WHITE,0,false)
 			cup.name = "CounterCup%d" % (row*3+column+1)
-	var pickup_label := B.label(self,"PEDIDOS PRONTOS",c+Vector3(.20,1.36,2.20),16,Color(.95,.89,.72),Color(.05,.12,.12),0)
+	var pickup_label := B.label(self,"PEDIDOS PRONTOS",c+Vector3(-1.20,1.36,2.20),16,Color(.95,.89,.72),Color(.05,.12,.12),0)
 	pickup_label.pixel_size = .0006
 	Real.place(self,"k:utensil-fork",c+Vector3(-1.98,1.31,.93),0.0,PI*.5,Color.WHITE,.13)
 	Real.place(self,"k:utensil-spoon",c+Vector3(-1.90,1.31,.93),0.0,PI*.5,Color.WHITE,.13)
@@ -243,10 +244,11 @@ func mark_dirty(g) -> void:
 	var index: int = main.world.kiosk_spots.find(g.spot)
 	if index >= 0 and index not in Core.company.dirty_seats:
 		Core.company.dirty_seats.append(index)
+		Core.company.dirty_items[str(index)]=main.village._items(g).duplicate()
 		Core.company_changed.emit()
 
 func clean_prompt(index: int) -> String:
-	return "Recolher pratos e limpar o lugar" if Core.company_enabled() and index in Core.company.dirty_seats else ""
+	return "Recolher louça e limpar o lugar" if Core.company_enabled() and index in Core.company.dirty_seats else ""
 
 func clean(index: int) -> void:
 	Core.clean_company_seat(index)
@@ -272,7 +274,7 @@ func sync_company() -> void:
 		if held != "":
 			Dishes.build(hand, held)
 	for index in dirt.keys():
-		if index not in Core.company.dirty_seats:
+		if index not in Core.company.dirty_seats or dirt[index].get_meta("consumed_items",[])!=Core.company.dirty_items.get(str(index),[]):
 			Core.release_visual(dirt[index])
 			dirt.erase(index)
 	for index in Core.company.dirty_seats:
@@ -281,7 +283,16 @@ func sync_company() -> void:
 		var root := Node3D.new()
 		add_child(root)
 		root.position = to_local(main.world.kiosk_spots[index].serve_pos)
-		Real.place(root, "k:plate-dinner", Vector3.ZERO, 0.022)
+		root.rotation.y=float(main.world.kiosk_spots[index].get("serve_rot",0))
+		var items: Array=Core.company.dirty_items.get(str(index),[])
+		root.set_meta("consumed_items",items.duplicate())
+		if items.is_empty():
+			# Save anterior não registrava o produto que deixou esta louça.
+			Real.place(root,"g:table_plate",Vector3.ZERO,0.0,0,Color.WHITE,.28)
+		for i in items.size():
+			var used:=Dishes.build_used(root,str(items[i]))
+			used.position.x=(i-(items.size()-1)*.5)*.225
+			used.scale=Vector3.ONE*(.72 if main.world.kiosk_spots[index].get("table",false) else .86)
 		_interaction(root, Vector3(0, 0.1, 0), Vector3(0.5, 0.25, 0.5), clean_prompt.bind(index), clean.bind(index))
 		dirt[index] = root
 

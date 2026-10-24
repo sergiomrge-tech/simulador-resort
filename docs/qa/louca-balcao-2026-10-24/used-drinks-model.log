@@ -1,0 +1,55 @@
+07:35:02 | INFO: Data are loaded, start creating Blender stuff
+07:35:02 | INFO: Blender create Mesh node anchor
+07:35:02 | INFO: glTF import finished in 0.01s
+Info: No new files have been packed
+Info: Saved as "used_glass_juice.blend"
+INFO Draco mesh compression is available, use library at C:\Users\sergi\Documents\ChatGPT\resort 2\build\python\Lib\site-packages\bpy\4.5\scripts\addons_core\io_scene_gltf2\extern_draco.dll
+07:35:03 | INFO: Starting glTF 2.0 export
+07:35:03 | INFO: Extracting primitive: anchor
+07:35:03 | INFO: Primitives created: 2
+07:35:03 | INFO: Finished glTF 2.0 export in 0.0 s
+
+USED_DRINK_PORTABLE PASS used_glass_juice 589
+07:35:03 | INFO: Data are loaded, start creating Blender stuff
+07:35:03 | INFO: Blender create Mesh node anchor
+07:35:03 | INFO: glTF import finished in 0.01s
+Info: No new files have been packed
+Info: Saved as "used_cocktail.blend"
+07:35:03 | INFO: Starting glTF 2.0 export
+07:35:03 | INFO: Extracting primitive: anchor
+07:35:03 | INFO: Primitives created: 1
+07:35:03 | INFO: Finished glTF 2.0 export in 0.0 s
+
+USED_DRINK_PORTABLE PASS used_cocktail 721
+07:35:03 | INFO: Data are loaded, start creating Blender stuff
+07:35:03 | INFO: Blender create Mesh node lathe
+07:35:03 | INFO: glTF import finished in 0.00s
+Info: No new files have been packed
+Info: Saved as "used_dish_batida.blend"
+07:35:03 | INFO: Starting glTF 2.0 export
+07:35:03 | INFO: Extracting primitive: lathe
+07:35:03 | INFO: Primitives created: 2
+07:35:03 | INFO: Finished glTF 2.0 export in 0.0060617923736572266 s
+
+USED_DRINK_PORTABLE PASS used_dish_batida 588
+Info: No new files have been packed
+Info: Saved as "table_plate.blend"
+07:35:03 | INFO: Starting glTF 2.0 export
+07:35:03 | INFO: Extracting primitive: lathe
+07:35:03 | INFO: Primitives created: 1
+07:35:03 | INFO: Finished glTF 2.0 export in 0.00341796875 s
+
+EMPTY_CERAMIC_PORTABLE PASS table_plate
+Info: No new files have been packed
+Info: Saved as "table_bowl.blend"
+07:35:03 | INFO: Starting glTF 2.0 export
+07:35:03 | INFO: Extracting primitive: lathe
+07:35:03 | INFO: Primitives created: 1
+07:35:03 | INFO: Finished glTF 2.0 export in 0.012253522872924805 s
+
+EMPTY_CERAMIC_PORTABLE PASS table_bowl
+Read blend: "C:\Users\sergi\Documents\ChatGPT\resort 2\art\blender\used_glass_juice.blend"
+Read blend: "C:\Users\sergi\Documents\ChatGPT\resort 2\art\blender\used_cocktail.blend"
+Read blend: "C:\Users\sergi\Documents\ChatGPT\resort 2\art\blender\used_dish_batida.blend"
+Read blend: "C:\Users\sergi\Documents\ChatGPT\resort 2\art\blender\table_plate.blend"
+Read blend: "C:\Users\sergi\Documents\ChatGPT\resort 2\art\blender\table_bowl.blend"

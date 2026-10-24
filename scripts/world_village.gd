@@ -785,8 +785,16 @@ func _quiosque() -> void :
 	# Equipamentos funcionais ocupam a parede traseira; entradas laterais livres.
 	# Altura real do tampo: base e acabamento; itens apoiados, sem sobreposição.
 	var snack_y: = y0 + ch + 0.08
-	Real.place(self, "carved_wooden_plate", c + Vector3(-1.45, snack_y, 1.85), 0.0, 0.0, Color(0.82, 0.68, 0.48), 0.8)
-	_fruit_row(c + Vector3(-1.69, snack_y + 0.105, 1.85))
+	var fruit_side:=Node3D.new()
+	fruit_side.name="CounterFruitSide"
+	add_child(fruit_side)
+	fruit_side.position=c+Vector3(2.0,0,.25)
+	fruit_side.rotation.y=PI*.5
+	var fruit_first:=get_child_count()
+	Real.place(self,"carved_wooden_plate",Vector3(0,snack_y,0),0.0,0.0,Color(.82,.68,.48),.8)
+	_fruit_row(Vector3(-.24,snack_y+.105,0))
+	var fruit_parts: Array=get_children().slice(fruit_first)
+	for part in fruit_parts: part.reparent(fruit_side,false)
 	# Placa abaixo da franja e à frente do beiral: texto inteiro visível.
 	# Mantém espaço livre entre o balcão e a borda inferior da moldura.
 	for sx in [-1.0, 1.0]:

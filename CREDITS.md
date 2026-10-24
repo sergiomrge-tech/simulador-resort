@@ -313,3 +313,11 @@ Gato/cão do **Quaternius Animal Pack Vol.2**, CC0, já creditado acima.
 `tools/refine_living_animals.py` mantém rig e clipes Idle/Walking, suaviza a malha
 original e acrescenta olhos, focinho/boca e bigodes autorais ligados à cabeça.
 Fontes editáveis `art/blender/cat_living.blend` e `dog_living.blend`.
+
+
+## Louça vazia — 24/10/2026
+
+Variantes vazias de glass_juice/cocktail/dish_batida derivam dos modelos autorais
+já existentes, removendo líquido/gelo/frutas por material. Prato/tigela de porcelana
+autorais com perfil torneado; gerador tools/gen_used_drinks.py e fontes .blend
+empacotadas em art/blender. Coco aberto reutiliza o modelo autoral existente.

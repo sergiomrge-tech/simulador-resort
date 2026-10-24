@@ -80,3 +80,10 @@ Não voltar a permitir botões estreitos que esticam os cartões de equipe.
 Animais mantêm rigs/animações e rostos refinados; não regenerar pelos antigos
 smooth_animals.py que removiam o rig. Pedestres mantêm 12 HD/5 baixa; chegadas
 em casas projetadas fora dos bloqueios com margem para o corpo.
+
+## Pedido de 24/10 — louça e balcão
+
+Louça deve corresponder ao que foi consumido: suco → copo vazio; coco → coco aberto;
+comida → prato/tigela vazios. Preservar lista por lugar no save e limpar junto dos
+objetos. PC central, copos à esquerda e promoções à direita. Downloads/builds no
+drive D, pois C ficou cheio. Guia: [docs/LOUCA_BALCAO_2026-10-24.md](docs/LOUCA_BALCAO_2026-10-24.md).

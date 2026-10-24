@@ -172,7 +172,7 @@ func _integration(main) -> void:
 	main.hud.phone.close()
 	main.world.find_child("KioskSign",true,false).use()
 	check(not main.hud.phone.visible,"placa orienta para o computador sem gestão remota")
-	main.player.position = main.world.kiosk_point(Vector3(1.6,.1,.65))
+	main.player.position = main.world.kiosk_point(Vector3(0,.1,.65))
 	main.operations.open_computer()
 	check(main.hud.phone.visible and main.hud.phone.app=="","PC abre a tela inicial da gestão")
 	main.hud.phone._open_management("empresa")

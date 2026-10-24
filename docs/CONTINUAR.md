@@ -1,7 +1,9 @@
 # Guia vigente para as próximas atualizações
 
-Atualizado em **23/10/2026**. Destinado a qualquer IA ou pessoa, sem depender deste
+Atualizado em **24/10/2026**. Destinado a qualquer IA ou pessoa, sem depender deste
 chat. Leia junto com [AGENTS.md](../AGENTS.md). Novos pedidos do usuário prevalecem.
+
+**Atualização de louça e balcão (24/10):** [LOUCA_BALCAO_2026-10-24.md](LOUCA_BALCAO_2026-10-24.md).
 
 **Revisão mais recente de visual e gestão:**
 [REFINAMENTO_2026-10-23.md](REFINAMENTO_2026-10-23.md). Notebook CC0 detalhado,
@@ -309,3 +311,10 @@ Não voltar a permitir botões estreitos que esticam os cartões de equipe.
 Animais mantêm rigs/animações e rostos refinados; não regenerar pelos antigos
 smooth_animals.py que removiam o rig. Pedestres mantêm 12 HD/5 baixa; chegadas
 em casas projetadas fora dos bloqueios com margem para o corpo.
+
+## Pedido de 24/10 — louça e balcão
+
+Louça deve corresponder ao que foi consumido: suco → copo vazio; coco → coco aberto;
+comida → prato/tigela vazios. Preservar lista por lugar no save e limpar junto dos
+objetos. PC central, copos à esquerda e promoções à direita. Downloads/builds no
+drive D, pois C ficou cheio. Guia: [LOUCA_BALCAO_2026-10-24.md](LOUCA_BALCAO_2026-10-24.md).

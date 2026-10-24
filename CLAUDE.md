@@ -211,3 +211,20 @@ na câmera: olhos de cachorro em x/y incorretos ficavam saltados; foram reposici
 na superfície da cabeça e reduzidos antes da entrega.
 Tela do Classic Laptop usa UV U=1..2; offset -1 e material unshaded mantêm a tela
 legível sem o clareamento de iluminação da cena. SubViewport mostra dados reais.
+
+
+## Louça e PC central — 24/10/2026
+
+Louça não pode ser sempre plate-dinner: esse GLB Kenney já contém alimento.
+Gerar recipientes vazios reais; suco precisa perder líquido/gelo/fruta e preservar
+vidro/canudo. Caipirinha vazia mantém escala do vidro servido (altura sem enfeite
+é 0,63865543 da altura total original). Registrar todos os itens consumidos por
+lugar, salvar/carregar validando IDs e limpar registro junto do objeto.
+No PC central a mira interna deve atingir sua área antes da área genérica do
+balcão, sem mudar colisões físicas. A área central está em Z local 1,1 com altura
+0,7; por fora o balcão continua primeiro. Atualizar fixtures que ainda apontavam
+para X=1,6. Testes de formulário devem abrir PC de verdade para não acessar campo
+que B acabou de liberar. Bandeja e frutas precisam de espaços separados; frutas
+passaram para a bancada lateral para não atravessar os seis copos.
+Builds foram movidos para D:/CodexTemp/resort-build/rc2-playable por junção, pois C
+ficou cheio. Nunca apagar saves/instalações para liberar espaço; novos ZIPs no D.

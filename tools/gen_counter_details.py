@@ -19,6 +19,10 @@ for z in [.034,.052]:
     path('Serving tray carved rim',coords,.014,wood,True)
 for x in [-.15,.55]:
     path('Tray brass carry handle',[(x,-2.06,.045),(x,-2.06,.085),(x,-1.90,.085),(x,-1.90,.045)],.007,brass)
+# Três zonas: bandeja à esquerda, computador central livre, promoções à direita.
+for obj in bpy.context.scene.objects:
+    if obj.name.startswith('Menu'): obj.location.x += 2.0
+    if obj.name.startswith(('Serving tray','Tray brass')): obj.location.x -= 1.4
 bpy.ops.object.select_all(action='SELECT');bpy.ops.object.convert(target='MESH')
 os.makedirs(SOURCE,exist_ok=True)
 source=os.path.join(SOURCE,'kiosk_counter_details.blend')

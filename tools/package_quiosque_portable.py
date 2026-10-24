@@ -10,15 +10,16 @@ import shutil
 import zipfile
 
 parser = argparse.ArgumentParser(description=__doc__)
-parser.add_argument('--variant', choices=['base','passaros','refinado'], default='base')
+parser.add_argument('--variant', choices=['base','passaros','refinado','louca'], default='base')
 parser.add_argument('--output', type=Path, help='Destino opcional do ZIP, sem alterar a instalação')
 options = parser.parse_args()
 
 ROOT = Path(__file__).resolve().parents[1]
 PORTABLE = ROOT / 'build/rc2-playable'
 STAGING = Path('D:/CodexTemp/marealta-quiosque-pratico')
-variant_label = {'passaros':'Passaros_','refinado':'Refinado_'}.get(options.variant,'')
-ZIP = options.output or Path.home() / ('Downloads/MareAltaResort_1.1_RC2_' + variant_label + '2026-10-23.zip')
+variant_label = {'passaros':'Passaros_','refinado':'Refinado_','louca':'Louca_Balcao_'}.get(options.variant,'')
+date_label = '2026-10-24' if options.variant=='louca' else '2026-10-23'
+ZIP = options.output or Path('D:/Downloads') / ('MareAltaResort_1.1_RC2_' + variant_label + date_label + '.zip')
 
 readme = '''MARÉ ALTA RESORT — 1.1.0 RC2 · ATUALIZAÇÃO 23/10/2026
 
@@ -106,10 +107,13 @@ F11 tela cheia. O save de versões anteriores recebe os padrões compatíveis.
 Inclui também as correções do cais, vidros neutros, barcos afastados do cais,
 passos mais suaves e trilha sem vozes. A instalação antiga em D:/Games não é alterada.
 '''
-if options.variant in ('passaros','refinado'):
+if options.variant in ('passaros','refinado','louca'):
     readme = readme.replace('NOVO NESTA REVISÃO\n','NOVO NESTA REVISÃO\n- Pássaros diurnos perto das árvores, com cantos direcionais suaves e intervalos.\n  Respeitam pausa, silêncio e volume de efeitos; silenciam à noite e na chuva.\n',1)
-if options.variant == 'refinado':
+if options.variant in ('refinado','louca'):
     readme = readme.replace('NOVO NESTA REVISÃO\n','NOVO NESTA REVISÃO\n- Notebook detalhado CC0 com dados reais na tela, seis abas de gestão compactas.\n- Compras por produto: estoque atual, preço e Repor para 10, com entrega imediata.\n- Equipe com cartões compactos e botões legíveis; cardápio alinhado frente/verso.\n- Cabelos completos, circulação de moradores corrigida e ruas de pedra detalhadas.\n- Gatos e cães com olhos, focinho e boca; caminham e descansam com animação.\n',1)
+if options.variant=='louca':
+    readme=readme.replace('ATUALIZAÇÃO 23/10/2026','ATUALIZAÇÃO 24/10/2026')
+    readme=readme.replace('NOVO NESTA REVISÃO\n','NOVO NESTA REVISÃO\n- Louça corresponde ao pedido consumido: suco deixa copo vazio, coco deixa o coco aberto.\n- Pratos/tigelas vazios para os alimentos; pedidos mistos deixam cada recipiente.\n- Registro preservado ao salvar/carregar; limpeza remove os objetos e libera a mesa.\n- Computador no centro do balcão, bandeja à esquerda e promoções à direita.\n',1)
 (PORTABLE / 'LEIA-ME.txt').write_text(readme, encoding='utf-8')
 for src, dst in [('QUIOSQUE_PRATICO.md','QUIOSQUE_PRATICO.md'),
                  ('ATUALIZACAO_2026-10-23.md','ATUALIZACAO_2026-10-23.md'),
@@ -124,12 +128,15 @@ names = ['MareAltaResort.exe','MareAltaResort.pck','Jogar.vbs','LEIA-ME.txt',
          'ATUALIZACAO_2026-10-23.md',
          'PRAIA_E_ATENDIMENTO.md','COMPUTADOR_E_BALCAO.md',
          'QUIOSQUE_PRATICO.md','ROTINAS_DO_QUIOSQUE.md','GESTAO_DO_QUIOSQUE.md','REFINAMENTO_COMPLETO.md','icon.ico']
-if options.variant in ('passaros','refinado'):
+if options.variant in ('passaros','refinado','louca'):
     shutil.copyfile(ROOT / 'docs/PASSAROS.md', PORTABLE / 'PASSAROS.md')
     names.append('PASSAROS.md')
-if options.variant == 'refinado':
+if options.variant in ('refinado','louca'):
     shutil.copyfile(ROOT / 'docs/REFINAMENTO_2026-10-23.md', PORTABLE / 'REFINAMENTO_2026-10-23.md')
     names.append('REFINAMENTO_2026-10-23.md')
+if options.variant=='louca':
+    shutil.copyfile(ROOT / 'docs/LOUCA_BALCAO_2026-10-24.md', PORTABLE / 'LOUCA_BALCAO_2026-10-24.md')
+    names.append('LOUCA_BALCAO_2026-10-24.md')
 checks = []
 for name in names:
     with (PORTABLE / name).open('rb') as f:

@@ -369,6 +369,11 @@ func run(m) -> void :
 		add_child(counter)
 		await counter.run(main)
 		return
+	if main.args.has("tableware-test"):
+		var tableware=load("res://tests/tableware_regression.gd").new()
+		add_child(tableware)
+		await tableware.run(main)
+		return
 	if main.args.has("refinement-test"):
 		var refinement=load("res://tests/refinement_regression.gd").new()
 		add_child(refinement)

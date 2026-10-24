@@ -43,7 +43,7 @@ func run(main) -> void:
 	main.hud.phone.close()
 	main.hud.toggle_shop()
 	check(not main.hud.phone.visible,"gestão não abre remotamente")
-	main.player.position=main.world.kiosk_point(Vector3(1.60,.1,.65))
+	main.player.position=main.world.kiosk_point(Vector3(0,.1,.65))
 	main.player.cam.look_at(ops.computer.global_position+Vector3(0,.3,0))
 	await frames(4)
 	main.player.refresh_focus()

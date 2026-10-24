@@ -1378,6 +1378,7 @@ func clean_company_seat(index: int) -> bool:
 	if index not in company.dirty_seats:
 		return false
 	company.dirty_seats.erase(index)
+	company.dirty_items.erase(str(index))
 	company_changed.emit()
 	return true
 

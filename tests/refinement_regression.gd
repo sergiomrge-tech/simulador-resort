@@ -55,11 +55,11 @@ func run(main) -> void:
 	# Display is a child of the physical model, outside its interaction Area.
 	display=main.operations.find_child("CounterDisplay",true,false) if display==null else display
 	check(display!=null,"tela física contém gestão real")
-	view(main,main.world.kiosk_point(Vector3(1.65,1.90,.8)),main.world.kiosk_point(Vector3(1.65,1.47,1.65)))
+	view(main,main.world.kiosk_point(Vector3(0,1.90,.8)),main.world.kiosk_point(Vector3(0,1.47,1.65)))
 	await shot("computador_detalhado")
-	view(main,main.world.kiosk_point(Vector3(-.9,1.85,.7)),main.world.kiosk_point(Vector3(-.9,1.5,1.95)))
+	view(main,main.world.kiosk_point(Vector3(1.1,1.85,.7)),main.world.kiosk_point(Vector3(1.1,1.5,1.95)))
 	await shot("cardapio_interno")
-	view(main,main.world.kiosk_point(Vector3(-.9,1.85,3.1)),main.world.kiosk_point(Vector3(-.9,1.5,1.85)))
+	view(main,main.world.kiosk_point(Vector3(1.1,1.85,3.1)),main.world.kiosk_point(Vector3(1.1,1.5,1.85)))
 	await shot("cardapio_externo")
 	main.hud.visible=false
 	var animals:=get_tree().get_nodes_in_group("village_animals")
