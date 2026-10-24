@@ -11,7 +11,9 @@ func _ready() -> void:
 	name = "PlayerHomeDoor"
 	hinge = Node3D.new()
 	add_child(hinge)
-	Real.place(hinge,"g:player_home_door",Vector3.ZERO,-1.0,0,Color.WHITE,0,false)
+	var leaf := Real.place(hinge, "g:player_home_door", Vector3.ZERO, -1.0, 0, Color.WHITE, 0, false)
+	if leaf != null:
+		_warm_door_wood(leaf)
 	var body := StaticBody3D.new()
 	hinge.add_child(body)
 	collider = CollisionShape3D.new()
@@ -76,3 +78,31 @@ func check_exit() -> void:
 	if was_inside and opened and not moving and p.z>1.55 and clear_to_close():
 		was_inside=false
 		set_open(false)
+
+## Mantém carvalho/latão naturais — evita o toon clarear demais a folha.
+func _warm_door_wood(root: Node3D) -> void:
+	for mi in root.find_children("*", "MeshInstance3D", true, false):
+		var mesh: MeshInstance3D = mi
+		if mesh.mesh == null:
+			continue
+		for si in mesh.mesh.get_surface_count():
+			var src: Material = mesh.get_active_material(si)
+			if src == null:
+				continue
+			var name := String(src.resource_name).to_lower()
+			var mat: StandardMaterial3D = src.duplicate() as StandardMaterial3D
+			if mat == null:
+				continue
+			if name.find("brass") >= 0 or name.find("lathe") >= 0 or name.find("handle") >= 0:
+				mat.albedo_color = Color(0.72, 0.52, 0.28)
+				mat.metallic = 0.45
+				mat.roughness = 0.35
+			elif name.find("shadow") >= 0 or name.find("panel") >= 0:
+				mat.albedo_color = Color(0.38, 0.26, 0.16)
+				mat.roughness = 0.78
+			else:
+				mat.albedo_color = Color(0.62, 0.44, 0.28)
+				mat.roughness = 0.72
+			mat.diffuse_mode = BaseMaterial3D.DIFFUSE_TOON
+			mat.specular_mode = BaseMaterial3D.SPECULAR_TOON
+			mesh.set_surface_override_material(si, mat)

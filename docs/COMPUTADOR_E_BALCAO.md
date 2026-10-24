@@ -26,20 +26,29 @@ Mantém veios, ripas, bordas e ferragens. Pintura da empresa não muda esse
 acabamento. Bandeja com seis copos, sem caixa branca. Expositor de madeira
 mostra duas ofertas com os preços reais do cardápio em ambas as faces;
 texto reduzido pelas medidas da fonte para caber no papel. Não cria desconto
-ou cobrança diferente do preço configurado.
+ou cobrança diferente do preço configurado. Detalhe visual do tampo:
+guardanapos, canudos, amostras de suco/fruta, cesto e garrafa decorativa,
+luzes quentes na retirada e no PC (sem esteira sob o monitor — ela fazia o
+PC parecer fora do tampo). Tip jar e canudos usam modelos `g:` detalhados.
+Fachada ganha flores, chinelos, cooler e corda. O terminal `g:kiosk_computer`
+fica grafite/alumínio (override em runtime se o Toon lavar a cor); base
+flush no tampo a 1,28 m. Entrada da casa: batente/soleira, treliça, correio,
+planta pendurada e facho quente.
 
-A porta da casa é de madeira, com painéis e ferragens. E abre/fecha e a folha
-fechada bloqueia passagem. Ao sair, fecha depois que o jogador libera o arco
-da porta. Fechamento manual no vão pede para se afastar. Pausa congela a
-detecção de saída. A colisão da folha é reativada ao terminar a animação.
+A porta da casa é de madeira, com painéis rebaixados, soleira, chapa de
+pé, caixa de correio e ferragens. E abre/fecha e a folha fechada bloqueia
+passagem. Ao sair, fecha depois que o jogador libera o arco da porta.
+Fechamento manual no vão pede para se afastar. Pausa congela a detecção
+de saída. A colisão da folha é reativada ao terminar a animação.
 
 ## Implementação e verificação
 
 - `phone_ui.gd` preserva a classe interna PhoneUI por compatibilidade; o produto
   é um terminal de gestão centralizado, com cantos arredondados e seis áreas.
 - `kiosk_operations.gd` integra PC/interação, copos e promoções frente/verso.
-  A área Interactable genérica do balcão tem profundidade de 0,6 m para não
-  interceptar o monitor; colisões físicas da construção continuam separadas.
+  A área Interactable genérica do balcão tem 3,0×1,2×0,4 m e fica em z≈1,88
+  (lado interno, à frente da madeira), para a mira do staff acertar o balcão
+  sem cobrir o monitor em x≈1,70; colisões físicas da construção seguem separadas.
 - `village_life.gd`: counter_first, dining_spot, counter_slot, kcounter_queue,
   kto_table. Reservas liberadas com verificação do dono, inclusive desistência.
 - `company_rules.gd`: opening_version=1 migra estado antigo para fechado.

@@ -4,9 +4,10 @@ Atualizado em **23/10/2026**. Destinado a qualquer IA ou pessoa, sem depender de
 chat. Leia junto com [AGENTS.md](../AGENTS.md). Novos pedidos do usuário prevalecem.
 
 **Passagem atual para outra IA:** leia primeiro
-[PASSAGEM_PARA_OUTRA_IA.md](PASSAGEM_PARA_OUTRA_IA.md), com o checkpoint,
-os testes que passaram, a falha no ciclo legado, o encerramento intermitente
-do executável e o ZIP ainda não atualizado. Não tratar esse lote como entrega final.
+[PASSAGEM_PARA_OUTRA_IA.md](PASSAGEM_PARA_OUTRA_IA.md). O ciclo legado
+(`LOOP_TEST`), counter-first e company passam no fonte e num PCK de fumaça
+Linux; falta revalidar o PCK Windows completo e só então atualizar o ZIP.
+Não tratar o ZIP antigo em Downloads como esta revisão.
 
 ## Base correta
 
@@ -14,8 +15,8 @@ do executável e o ZIP ainda não atualizado. Não tratar esse lote como entrega
 - Versão em `project.godot`: **1.1.0**; linha de trabalho **1.1.0 RC2**.
 - Branch usada nas entregas: **`codex/resort-1.1-mcp`**.
 - Repositório: https://github.com/sergiomrge-tech/simulador-resort
-- Base anterior ao checkpoint de computador/balcão: **`80bc38d`**.
-  Verifique `git log` e `git status` para identificar o checkpoint mais recente.
+- Checkpoint computador/balcão: **`07cbb20`**. Correções de mira/rush/coastal
+  na branch `cursor/loop-counter-aim-ee9e`. Confira `git log` / `git status`.
 - O jogo começa com o quiosque e evolui por expansões. Gestão no computador do balcão (E; B só perto).
 
 Antes de editar, confira branch/remoto e alterações pendentes. Não use reset,
@@ -100,7 +101,11 @@ Leia [COMPUTADOR_E_BALCAO.md](COMPUTADOR_E_BALCAO.md). PC físico com E, sem ges
 remota; telas de estação continuam diretas. Porta da casa abre/fecha e fecha após
 sair com arco livre. Tampo madeira escura/base cinza, copos na bandeja, sem caixa
 branca e promoções nas duas faces com preços reais. Fontes Blender incorporadas.
-As novas regras substituem documentos históricos sobre celular e pedido sentado.
+Detalhe visual na branch `cursor/loop-counter-aim-ee9e`: props do tampo,
+fachada (flores/chinelos), entrada da casa; terminal grafite. Conferir shots
+`visual_balcao` / `visual_fachada` / `visual_porta` com câmeras do PASSAGEM
+(y do corpo, não do olho). As novas regras substituem documentos históricos
+sobre celular e pedido sentado.
 
 ## Onde alterar cada coisa
 
