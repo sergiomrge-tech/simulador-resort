@@ -232,9 +232,9 @@ func _build_main() -> Control:
 	_btn(vb, "Carregar jogo", func(): _open_slots("load"), 62, 26)
 	_btn(vb, "Configurações", func(): _open_settings(main_p), 62, 26)
 	if not touch:
-		_btn(vb, "Sair", func(): get_tree().quit(), 62, 26, Color(0.55, 0.25, 0.2))
+		_btn(vb, "Sair", func(): Core.quit_game(), 62, 26, Color(0.55, 0.25, 0.2))
 	var ver: = Label.new()
-	ver.text = "v%s  ·  %s" % [ProjectSettings.get_setting("application/config/version", "0.2.0"), "PC" if Quality.hd else "Mobile"]
+	ver.text = "v%s  ·  %s  ·  %s" % [ProjectSettings.get_setting("application/config/version", "0.2.0"),ProjectSettings.get_setting("application/config/build_label",""), "PC" if Quality.hd else "Mobile"]
 	ver.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
 	ver.set_anchors_preset(Control.PRESET_BOTTOM_LEFT)
 	ver.position = Vector2(24, -44)
@@ -330,7 +330,7 @@ func _build_pause() -> Control:
 	if not touch:
 		_btn(vb, "Sair do jogo", func():
 			Core.save_game()
-			get_tree().quit(), 62, 26, Color(0.55, 0.25, 0.2))
+			Core.quit_game(), 62, 26, Color(0.55, 0.25, 0.2))
 	return p
 
 func toggle_pause() -> void :

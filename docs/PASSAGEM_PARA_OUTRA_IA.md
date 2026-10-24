@@ -1,5 +1,10 @@
 # Estado salvo para continuar com outra IA — 23/10/2026
 
+> **Documento histórico do checkpoint 07cbb20.** As pendências abaixo foram
+> resolvidas na atualização RC2 de 23/10/2026. Para o estado atual, leia
+> [VALIDACAO_2026-10-23.md](VALIDACAO_2026-10-23.md) e CONTINUAR.md.
+> Não usar os hashes, ZIP antigo ou falhas deste checkpoint como estado vigente.
+
 O usuário pediu para salvar tudo até aqui e subir as instruções ao GitHub.
 Este é um checkpoint de implementação, com pendências de validação explícitas.
 Leia também AGENTS.md, CONTINUAR.md, COMPUTADOR_E_BALCAO.md e CLAUDE.md.

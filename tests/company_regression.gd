@@ -106,7 +106,7 @@ func run(main = null) -> void:
 	Core.delete_save()
 	Core.SAVE_PATH = old_path
 	print("COMPANY_TEST FAIL" if failed else "COMPANY_TEST PASS")
-	get_tree().quit(1 if failed else 0)
+	Core.quit_game(1 if failed else 0)
 
 func _integration(main) -> void:
 	var village = main.village

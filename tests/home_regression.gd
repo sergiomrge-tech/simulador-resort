@@ -23,6 +23,7 @@ func use(main, node: Interactable) -> void:
 	main.player.focus = node if main.player.ray.get_collider()==node else null
 	main.player.interact()
 func run(main) -> void:
+	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path("user://qa_shots"))
 	Core.new_game()
 	Core.paused = true
 	Core.in_game = false
@@ -70,16 +71,16 @@ func run(main) -> void:
 		main.day.force_update()
 		await frames(15)
 		await RenderingServer.frame_post_draw
-		get_viewport().get_texture().get_image().save_png("res://shots/home_lounge.png")
+		get_viewport().get_texture().get_image().save_png("user://qa_shots/home_lounge.png")
 		main.player.set_view(c+Vector3(-1.4,.04,1.88),0,-9)
 		await frames(12)
 		await RenderingServer.frame_post_draw
-		get_viewport().get_texture().get_image().save_png("res://shots/home_media.png")
+		get_viewport().get_texture().get_image().save_png("user://qa_shots/home_media.png")
 		Core.minutes = 20*60
 		main.day.force_update()
 		main.player.set_view(c+Vector3(1.4,.06,2.8),56,-9)
 		await frames(12)
 		await RenderingServer.frame_post_draw
-		get_viewport().get_texture().get_image().save_png("res://shots/home_lounge_night.png")
+		get_viewport().get_texture().get_image().save_png("user://qa_shots/home_lounge_night.png")
 	print("HOME_TEST FAIL" if failed else "HOME_TEST PASS")
-	get_tree().quit(1 if failed else 0)
+	Core.quit_game(1 if failed else 0)

@@ -24,10 +24,11 @@ func shot(main, label: String, pos: Vector3, yaw: float, pitch: float) -> void:
 	main.day.force_update()
 	await frames(12)
 	await RenderingServer.frame_post_draw
-	var path := "res://shots/" + label + ".png"
+	var path := "user://qa_shots/" + label + ".png"
 	get_viewport().get_texture().get_image().save_png(path)
 	print("SHOT_SAVED ", path)
 func run(main) -> void:
+	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path("user://qa_shots"))
 	Core.new_game()
 	Core.paused = true
 	Core.in_game = false
@@ -143,7 +144,7 @@ func run(main) -> void:
 		if DisplayServer.get_name() != "headless":
 			await frames(2)
 			await RenderingServer.frame_post_draw
-			get_viewport().get_texture().get_image().save_png("res://shots/table_order_"+str(seat_index)+".png")
+			get_viewport().get_texture().get_image().save_png("user://qa_shots/table_order_"+str(seat_index)+".png")
 		main.player.interact()
 		check(bool(seated.get_meta("order_taken",false)) and seated in main.village.waiting_customers(), "E anota pedido do cliente no balcão")
 		check(Core.stock == stock_snapshot, "anotar não consome produtos")
@@ -270,4 +271,4 @@ func run(main) -> void:
 	Core.staff_changed.emit()
 	check(not main.operations.actors.atendente.visible, "folga oculta atendente")
 	print("PRACTICAL_TEST ", "FAIL" if failed else "PASS")
-	get_tree().quit(1 if failed else 0)
+	Core.quit_game(1 if failed else 0)

@@ -9,13 +9,14 @@ func shot(label: String) -> void:
 	if DisplayServer.get_name()=="headless": return
 	await frames(10)
 	await RenderingServer.frame_post_draw
-	get_viewport().get_texture().get_image().save_png("res://shots/"+label+".png")
+	get_viewport().get_texture().get_image().save_png("user://qa_shots/"+label+".png")
 func aim(main, target: Interactable, degrees: float = 0) -> void:
 	main.player.cam.look_at(target.global_position+Vector3(0,.20,0),Vector3.UP)
 	main.player.cam.rotate_object_local(Vector3.UP,deg_to_rad(degrees))
 	await frames(3)
 	main.player.refresh_focus()
 func run(main) -> void:
+	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path("user://qa_shots"))
 	Core.new_game()
 	Core.configure_company("Quiosque da Praia","praia")
 	Core.unlock_all()
@@ -136,4 +137,4 @@ func run(main) -> void:
 	main._on_start_load(Core.slot)
 	check(Vector2(main.player.position.x,main.player.position.z).distance_to(Vector2(migrated_position.x,migrated_position.z))<.01,"nova gravação não gira o jogador novamente")
 	print("COUNTER_TEST FAIL" if failed else "COUNTER_TEST PASS")
-	get_tree().quit(1 if failed else 0)
+	Core.quit_game(1 if failed else 0)

@@ -72,4 +72,4 @@ func run(main) -> void:
 			await get_tree().process_frame
 		get_viewport().get_texture().get_image().save_png(str(main.args.out))
 	print("KIOSK_TEST ", "FAIL" if failed else "PASS")
-	get_tree().quit(1 if failed else 0)
+	Core.quit_game(1 if failed else 0)

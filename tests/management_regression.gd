@@ -7,6 +7,7 @@ func check(ok: bool, label: String) -> void:
 func frames(count: int) -> void:
  for i in count: await get_tree().process_frame
 func run(main) -> void:
+ DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path("user://qa_shots"))
  Core.new_game()
  Core.paused = true
  Core.in_game = false
@@ -192,7 +193,7 @@ func run(main) -> void:
   main.hud.visible = false
   main.operations._staff_tick()
   await frames(30)
-  get_viewport().get_texture().get_image().save_png(ProjectSettings.globalize_path("res://shots/management_world.png"))
+  get_viewport().get_texture().get_image().save_png(ProjectSettings.globalize_path("user://qa_shots/management_world.png"))
   main.hud.visible = true
   for app in ["recrutamento", "fornecedores", "equipamentos", "movimento", "personalizar"]:
    phone.open(app)
@@ -203,9 +204,9 @@ func run(main) -> void:
     var scroll = phone.screen.find_children("*", "ScrollContainer", true, false)[0]
     scroll.scroll_vertical = 300
    await frames(30)
-   get_viewport().get_texture().get_image().save_png(ProjectSettings.globalize_path("res://shots/management_" + app + ".png"))
+   get_viewport().get_texture().get_image().save_png(ProjectSettings.globalize_path("user://qa_shots/management_" + app + ".png"))
   phone.close()
  var normalized := M.sanitize(JSON.parse_string(JSON.stringify(d)))
  check(normalized.look == look and normalized.profiles.has("garcom") and normalized.closing.has("variance"), "novo estado tem roundtrip JSON")
  print("MANAGEMENT_TEST ", "FAIL" if failed else "PASS")
- get_tree().quit(1 if failed else 0)
+ Core.quit_game(1 if failed else 0)

@@ -85,9 +85,11 @@ var _bar_batch_value: = 0
 var _bar_batch_t: = -1.0
 var _maid_acc: = 0.0
 var _helper_acc: = 0.0
+var _quitting := false
 
 func _ready() -> void :
 	process_mode = Node.PROCESS_MODE_ALWAYS
+	get_tree().auto_accept_quit = false
 	prog = Prog.new()
 	prog.name = "Prog"
 	add_child(prog)
@@ -1132,6 +1134,60 @@ func _notification(what: int) -> void :
 	if what == NOTIFICATION_APPLICATION_PAUSED or what == NOTIFICATION_WM_CLOSE_REQUEST or what == NOTIFICATION_APPLICATION_FOCUS_OUT:
 		if in_game:
 			save_game()
+	if what == NOTIFICATION_WM_CLOSE_REQUEST: quit_game()
+
+## Deixa o renderer terminar o quadro antes de liberar a cena e suas texturas.
+func quit_game(exit_code: int = 0) -> void:
+	if _quitting: return
+	_quitting=true
+	in_game=false
+	paused=true
+	var tree := get_tree()
+	tree.paused=false
+	var scene := tree.current_scene
+	var retained: Array[Resource] = []
+	if is_instance_valid(scene): _retain_render_resources(scene,retained)
+	if is_instance_valid(scene):
+		scene.process_mode=Node.PROCESS_MODE_DISABLED
+		if scene is Node3D: scene.visible=false
+	for i in 3: await tree.process_frame
+	if DisplayServer.get_name()!="headless": await RenderingServer.frame_post_draw
+	tree.current_scene=null
+	if is_instance_valid(scene): scene.queue_free()
+	for i in 3: await tree.process_frame
+	if DisplayServer.get_name()!="headless": await RenderingServer.frame_post_draw
+	retained.clear()
+	for i in 2: await tree.process_frame
+	print("SHUTDOWN_COMPLETE code=",exit_code)
+	tree.quit(exit_code)
+
+func _retain_render_resources(node: Node, retained: Array[Resource]) -> void:
+	if node is GeometryInstance3D:
+		if node.material_override: retained.append(node.material_override)
+		if node.material_overlay: retained.append(node.material_overlay)
+	if node is MeshInstance3D and node.mesh:
+		retained.append(node.mesh)
+		for i in node.mesh.get_surface_count():
+			var material: Material = node.get_surface_override_material(i)
+			if material: retained.append(material)
+	if node is MultiMeshInstance3D and node.multimesh: retained.append(node.multimesh)
+	if node is GPUParticles3D:
+		if node.process_material: retained.append(node.process_material)
+		for i in node.draw_passes:
+			var mesh: Mesh = node.get_draw_pass_mesh(i)
+			if mesh: retained.append(mesh)
+	for child in node.get_children(): _retain_render_resources(child,retained)
+
+## Produtos/NPCs também podem sair durante o jogo. Manter os materiais vivos
+## até o renderer processar a remoção da instância evita RIDs inválidos.
+func release_visual(node: Node) -> void:
+	if not is_instance_valid(node) or node.is_queued_for_deletion(): return
+	var retained: Array[Resource] = []
+	_retain_render_resources(node,retained)
+	if node is Node3D: node.hide()
+	node.queue_free()
+	for i in 3: await get_tree().process_frame
+	retained.clear()
 
 # ================================================================ empresa / operação física
 func kiosk_is_within_hours() -> bool:

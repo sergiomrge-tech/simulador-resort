@@ -54,4 +54,4 @@ func run(main) -> void:
   viewport.queue_free()
   await frames(2)
  print("PHONE_LAYOUT_TEST ", "FAIL" if failed else "PASS")
- get_tree().quit(1 if failed else 0)
+ Core.quit_game(1 if failed else 0)

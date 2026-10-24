@@ -59,4 +59,4 @@ func run(main) -> void:
 		var target: Vector3 = basket.global_position+Vector3.UP*.12
 		await shot(main, target, target+Vector3(.42,.38,.48), "basket_closed_fixed")
 	print("PROPS_LAYOUT_TEST FAIL" if failed else "PROPS_LAYOUT_TEST PASS")
-	get_tree().quit(1 if failed else 0)
+	Core.quit_game(1 if failed else 0)

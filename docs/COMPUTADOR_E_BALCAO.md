@@ -38,8 +38,9 @@ detecção de saída. A colisão da folha é reativada ao terminar a animação.
 - `phone_ui.gd` preserva a classe interna PhoneUI por compatibilidade; o produto
   é um terminal de gestão centralizado, com cantos arredondados e seis áreas.
 - `kiosk_operations.gd` integra PC/interação, copos e promoções frente/verso.
-  A área Interactable genérica do balcão tem profundidade de 0,6 m para não
-  interceptar o monitor; colisões físicas da construção continuam separadas.
+  A área Interactable genérica começa antes do tampo (profundidade de 1,4 m),
+  com largura de 3,2 m e centro X=-0,5 para deixar livre a extremidade do PC.
+  Colisões físicas da construção continuam separadas.
 - `village_life.gd`: counter_first, dining_spot, counter_slot, kcounter_queue,
   kto_table. Reservas liberadas com verificação do dono, inclusive desistência.
 - `company_rules.gd`: opening_version=1 migra estado antigo para fechado.

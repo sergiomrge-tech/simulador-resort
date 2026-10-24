@@ -18,11 +18,21 @@ foreach($check in $Checks) {
         $argsList=@('--path',('"'+$taskRoot+'"'))+$argsList
     }
     $process=Start-Process -FilePath $exe -WorkingDirectory $work -ArgumentList $argsList -WindowStyle Hidden -PassThru
-    $process.WaitForExit()
-    $errorsFound=Select-String -Path $log -Pattern 'SCRIPT ERROR|Parse Error|REAL_MISSING|TEST FAIL|FAIL '
+    $deadline=(Get-Date).AddMinutes(5)
+    while(-not $process.WaitForExit(1000)) {
+        $parseFailure=Test-Path -LiteralPath $log
+        if($parseFailure){$parseFailure=Select-String -Path $log -Pattern 'Parse Error|Failed to load script' -Quiet}
+        if($parseFailure -or (Get-Date) -gt $deadline) {
+            Stop-Process -Id $process.Id
+            $process.WaitForExit()
+            Write-Output "$check interrompido por falha de script ou timeout; veja $log"
+            break
+        }
+    }
+    $errorsFound=Select-String -Path $log -Pattern 'ERROR:|REAL_MISSING|TEST FAIL|FAIL '
     $passFound=Select-String -Path $log -Pattern 'TEST PASS|TEST.*PASS'
     Write-Output "$check $kind exit=$($process.ExitCode)"
-    $errorsFound | ForEach-Object {Write-Output $_.Line}
+    $errorsFound | Select-Object -First 12 | ForEach-Object {Write-Output $_.Line}
     $passFound | ForEach-Object {Write-Output $_.Line}
     if($process.ExitCode -ne 0 -or $errorsFound -or -not $passFound){$anyFailed=$true}
 }

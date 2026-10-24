@@ -818,8 +818,11 @@ func _quiosque() -> void :
 	kiosk_counter = Interactable.new()
 	var cs: = CollisionShape3D.new()
 	var sh: = BoxShape3D.new()
-	sh.size = Vector3(4.6, 1.5, 0.6)
+	# A área de serviço começa antes da colisão física do tampo. Recortar a
+	# extremidade direita deixa livre a mira do computador (x=1,70).
+	sh.size = Vector3(3.2, 1.5, 1.4)
 	cs.shape = sh
+	cs.position.x = -.5
 	kiosk_counter.add_child(cs)
 	kiosk_counter.position = c + Vector3(0, y0 + 0.9, 2.0)
 	kiosk_counter.name = "KioskCounter"

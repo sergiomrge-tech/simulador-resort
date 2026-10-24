@@ -112,4 +112,4 @@ func run(main) -> void:
  check(player.swimming, "nado preservado fora do cais")
  player.move_input = Vector2.ZERO
  print("PIER_TEST ", "FAIL" if failed else "PASS")
- get_tree().quit(1 if failed else 0)
+ Core.quit_game(1 if failed else 0)

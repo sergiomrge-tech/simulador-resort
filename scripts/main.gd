@@ -126,7 +126,7 @@ func _ready() -> void :
 			Core.set_slot(int(args.savequit))
 			Core.save_game()
 			print("SAVEQUIT ", Core.SAVE_PATH)
-			get_tree().quit()
+			Core.quit_game()
 			return
 	audio = Node.new()
 	audio.set_script(load("res://scripts/audio.gd"))
@@ -536,7 +536,7 @@ func _run_shot(n: String) -> void :
 	var out: String = args.get("out", "res://shots/%s.png" % n)
 	img.save_png(out)
 	print("SHOT_SAVED ", out)
-	get_tree().quit()
+	Core.quit_game()
 
 func _eat_at_bar() -> void :
 	for g in guests.get_children():

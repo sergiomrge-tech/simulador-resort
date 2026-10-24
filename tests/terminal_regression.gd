@@ -30,6 +30,13 @@ func run(main) -> void:
 	main.guests.enabled=false
 	main.player.set_physics_process(false)
 	main.day.force_update()
+	await frames(4)
+	var orphan_count := int(Performance.get_monitor(Performance.OBJECT_ORPHAN_NODE_COUNT))
+	for i in 3:
+		Palm._coco_mesh_cache = null
+		var coconut_mesh: Mesh = Palm._coco_mesh()
+		check(coconut_mesh!=null and coconut_mesh.get_surface_count()>0,"coco mantém a malha após liberar a instância temporária")
+	check(int(Performance.get_monitor(Performance.OBJECT_ORPHAN_NODE_COUNT))==orphan_count,"cache de cocos não acumula nós órfãos")
 	var ops=main.operations
 	check(is_instance_valid(ops.computer),"computador presente antes de criar empresa")
 	main.player.position=main.world.HOME_C
@@ -80,4 +87,4 @@ func run(main) -> void:
 	main.player.set_view(origin+Vector3(-.6,.1,2.4),0,-4)
 	await shot("home_door_closed")
 	print("TERMINAL_TEST FAIL" if failed else "TERMINAL_TEST PASS")
-	get_tree().quit(1 if failed else 0)
+	Core.quit_game(1 if failed else 0)

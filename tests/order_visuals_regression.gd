@@ -63,7 +63,7 @@ func run(m) -> void:
 	check(Presentation.is_drink("batida") and Presentation.is_drink("coco_gelado"), "bebidas reconhecidas")
 	var g = place_customer(v, 0, ["coco_gelado", "petiscos"])
 	if not check(g != null, "cliente exclusivo no balcão"):
-		get_tree().quit(1)
+		Core.quit_game(1)
 		return
 	check(v.served_dishes(g).is_empty(), "pedido não servido não aparece pronto")
 	check(v.kiosk_action() and is_instance_valid(v.prep_visual), "preparo aparece no balcão")
@@ -81,7 +81,7 @@ func run(m) -> void:
 	check(g.spot.busy, "limpeza visual não libera assento antes da saída")
 	var table = place_customer(v, 2, ["suco", "tapioca", "acai"])
 	if not check(table != null, "cliente exclusivo na mesa"):
-		get_tree().quit(1)
+		Core.quit_game(1)
 		return
 	check(v.kiosk_serve(), "pedido múltiplo atendido")
 	check(v.served_dishes(table) == ["suco", "tapioca", "acai"], "mesa mostra três itens diferentes")
@@ -92,7 +92,7 @@ func run(m) -> void:
 	check(root.get_child(0).position.distance_to(root.get_child(1).position) > 0.15, "itens têm posições distintas")
 	var other = place_customer(v, 4, ["suco", "suco"])
 	if not check(other != null, "segunda mesa independente"):
-		get_tree().quit(1)
+		Core.quit_game(1)
 		return
 	check(v.kiosk_serve() and v.served_dishes(other) == ["suco", "suco"], "quantidades repetidas são preservadas")
 	check(other.get_meta("served_visuals") != root, "pedidos não compartilham o nó de apresentação")
@@ -106,4 +106,4 @@ func run(m) -> void:
 	await frames(2)
 	check(not is_instance_valid(v.prep_visual), "novo dia limpa o preparo")
 	print("ORDER_VISUAL_TEST ", "FAIL" if failed else "PASS")
-	get_tree().quit(1 if failed else 0)
+	Core.quit_game(1 if failed else 0)

@@ -553,7 +553,7 @@ func _kiosk_tick(dmin: float) -> void :
 				if not g.is_moving():
 					_release_spot(g)
 					customers.erase(g)
-					g.queue_free()
+					Core.release_visual(g)
 
 ## Termina de ler o cardápio e faz o pedido (balão sobre a cabeça).
 func _order(g, recorded: bool = false) -> void :
@@ -686,7 +686,7 @@ func kiosk_prompt() -> String:
 			return tr("Cliente olhando o cardápio...")
 		if not kiosk_open():
 			return tr("Quiosque fechado · horário %02d:00–%02d:00") % [int(Core.kiosk_open_min() / 60.0), int(Core.kiosk_close_min() / 60.0)]
-		return tr("Quiosque fechado · abra em B → Quiosque") if not Core.kiosk_accepting_customers() else tr("Quiosque: aguardando clientes")
+		return tr("Quiosque fechado · abra no computador do balcão") if not Core.kiosk_accepting_customers() else tr("Quiosque: aguardando clientes")
 	var rem: Array = _remaining(g)
 	var dish: String = str(rem[0])
 	var d: Dictionary = Economy.dish(dish)
@@ -865,7 +865,7 @@ func _on_slept(_d: int) -> void :
 		clear_served_visuals(g)
 		_release_spot(g)
 		customers.erase(g)
-		g.queue_free()
+		Core.release_visual(g)
 	kiosk_spawn_in = 10.0
 	_dj_came = false
 	combo = 0
@@ -885,7 +885,7 @@ func _prep_position() -> Vector3:
 func _clear_prep_visual() -> void:
 	if is_instance_valid(prep_visual):
 		prep_visual.visible = false
-		prep_visual.queue_free()
+		Core.release_visual(prep_visual)
 	prep_visual = null
 
 func _show_prep_visual(dish: String) -> void:
@@ -909,13 +909,13 @@ func clear_served_visuals(g) -> void:
 	var tray = g.get_node_or_null("CustomerTray")
 	if tray != null:
 		tray.visible = false
-		tray.queue_free()
+		Core.release_visual(tray)
 	for key in ["work_target","work_kind"]:
 		if g.has_meta(key): g.remove_meta(key)
 	var root = g.get_meta("served_visuals") if g.has_meta("served_visuals") else null
 	if is_instance_valid(root):
 		root.visible = false
-		root.queue_free()
+		Core.release_visual(root)
 	if g.has_meta("served_visuals"):
 		g.remove_meta("served_visuals")
 

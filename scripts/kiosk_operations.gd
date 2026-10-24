@@ -263,12 +263,12 @@ func sync_company() -> void:
 		_hand_key = held
 		for child in hand.get_children():
 			hand.remove_child(child)
-			child.queue_free()
+			Core.release_visual(child)
 		if held != "":
 			Dishes.build(hand, held)
 	for index in dirt.keys():
 		if index not in Core.company.dirty_seats:
-			dirt[index].queue_free()
+			Core.release_visual(dirt[index])
 			dirt.erase(index)
 	for index in Core.company.dirty_seats:
 		if dirt.has(index) or index >= main.world.kiosk_spots.size():
@@ -462,7 +462,7 @@ func _clear_tray(g) -> void:
 	var tray = g.get_node_or_null("StaffTray")
 	if tray != null:
 		g.remove_child(tray)
-		tray.queue_free()
+		Core.release_visual(tray)
 
 func order_number(g) -> String:
 	var reserved: Dictionary = g.get_meta("dining_spot",g.spot)
@@ -499,7 +499,7 @@ func _sync_products() -> void:
 	_display_key = key
 	for child in products.get_children():
 		products.remove_child(child)
-		child.queue_free()
+		Core.release_visual(child)
 	var drink_slot := 0
 	var food_slot := 0
 	var drinks: Array = catalog.filter(func(id): return Dishes.is_drink(id))

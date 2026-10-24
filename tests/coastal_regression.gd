@@ -69,4 +69,4 @@ func run(main) -> void:
 	coast._update_visibility()
 	check(not coast.ball.visible,"vôlei interrompe na chuva")
 	print("COASTAL_TEST FAIL" if failed else "COASTAL_TEST PASS")
-	get_tree().quit(1 if failed else 0)
+	Core.quit_game(1 if failed else 0)

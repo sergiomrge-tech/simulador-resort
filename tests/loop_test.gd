@@ -137,6 +137,8 @@ func vip_rush_test() -> void :
 		Core.stock[k] = 30   # o rush precisa de estoque para todos os pratos
 	Core.stock_changed.emit()
 	v.enabled = true
+	Core.set_kiosk_open(true)
+	check(Core.kiosk_accepting_customers(),"rush começa após abertura manual do quiosque")
 	v.rush_left = 4
 	v.rush_done = true
 	v.kiosk_spawn_in = 0.5
@@ -420,7 +422,7 @@ func run(m) -> void :
 	var watchdog: = get_tree().create_timer(230.0)
 	watchdog.timeout.connect( func():
 		print("LOOP_TEST FAIL: watchdog timeout")
-		get_tree().quit(1))
+		Core.quit_game(1))
 	Quality.language = "pt"
 	Quality.apply_language()
 	main.allow_faint = false
@@ -504,14 +506,14 @@ func run(m) -> void :
 	main.village._on_slept(0)
 	var kc = main.village.spawn_customer()
 	if not check(kc != null, "cliente do quiosque criado"):
-		get_tree().quit(1)
+		Core.quit_game(1)
 		return
 	# A chegada pela praia é validada em kiosk_regression.gd.
 	var approach: Vector3 = kc.spot.get("approach", kc.spot.pos + Vector3(0, 0, 0.85))
 	kc.position = approach + Vector3(0, 0, 0.25)
 	kc.go([approach])
 	if not check(await StateWaiter.until_state(get_tree(), weakref(kc), "kwait", 30.0), "cliente esperando no balcão"):
-		get_tree().quit(1)
+		Core.quit_game(1)
 		return
 	var km0: = Core.money
 	var kp: String = await aim(main.world.kiosk_point(Vector3(0, 0.12, 0.4)), 0.0, -32.0)
@@ -681,4 +683,4 @@ func run(m) -> void :
 	check(Core.rooms.size() == keep_n and Core.money == keep_money and bool(Core.staff.camareira), "save guardou bangalôs, dinheiro e equipe")
 	Core.delete_save()
 	print("LOOP_TEST %s  dinheiro=%d estrelas=%.2f bar=%d" % ["FAIL" if failed else "PASS", Core.money, Core.stars(), Core.bar_sales_total])
-	get_tree().quit(1 if failed else 0)
+	Core.quit_game(1 if failed else 0)

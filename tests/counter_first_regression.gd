@@ -57,7 +57,7 @@ func run(main) -> void:
 	for i in main.world.kiosk_spots.size():
 		if i!=2: main.world.kiosk_spots[i].busy=occupancy[i]
 	check(g!=null and g.has_meta("dining_spot") and g.get_meta("dining_spot").get("table",false),"mesa reservada sem sentar antes de pedir")
-	if g==null: get_tree().quit(1); return
+	if g==null: Core.quit_game(1); return
 	g.set_meta("items",["coco_gelado","coco_gelado"])
 	g.set_meta("vip",false)
 	g.position=main.world.kiosk_point(Vector3(-3.3,.1,4.5))
@@ -116,4 +116,4 @@ func run(main) -> void:
 	Core.sleep()
 	check(not Core.company.kiosk_open,"cada novo dia começa fechado")
 	print("COUNTER_FIRST_TEST FAIL" if failed else "COUNTER_FIRST_TEST PASS")
-	get_tree().quit(1 if failed else 0)
+	Core.quit_game(1 if failed else 0)

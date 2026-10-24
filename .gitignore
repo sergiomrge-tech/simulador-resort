@@ -15,6 +15,7 @@ out/
 *.aab
 *.zip
 shots/
+docs/images/**/*.import
 
 # segredos — nunca versionar
 *.keystore

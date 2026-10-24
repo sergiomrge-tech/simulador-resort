@@ -5,6 +5,10 @@ feito em **Godot 4.5.1**, GDScript, Forward+, para Windows.
 
 Linha atual: **1.1.0 RC2**, branch **`codex/resort-1.1-mcp`**.
 
+**Atualização de 23/10/2026:** computador, porta, balcão e atendimento revisados.
+[Download para Windows](https://github.com/sergiomrge-tech/simulador-resort/releases/tag/v1.1.0-rc2.20261023).
+Extraia o ZIP inteiro e abra Jogar.vbs. Preserve userdata ao atualizar.
+
 ## Vai continuar o projeto com outra IA?
 
 Comece por **[AGENTS.md](AGENTS.md)** e **[docs/CONTINUAR.md](docs/CONTINUAR.md)**.
@@ -23,10 +27,12 @@ Você pode enviar este pedido à próxima IA:
 ## O que está implementado
 
 - Atendimento sem preparo: pegar produtos prontos e entregar aos clientes.
-- Pedidos anotados nos clientes sentados, com E; garçom também vai até a mesa.
+- Clientes pedem e retiram tudo no balcão antes de sentar; E anota/entrega por dentro.
 - Geladeira e armário com exposição permanente; compras e estoque real separados
   das referências visuais, sem desconto duplicado ao devolver um item.
-- Gestão pelo celular: nome/placa, horários, equipe, fornecedores e finanças.
+- Gestão no computador do balcão: nome/placa, horários, equipe, fornecedores e finanças.
+- Quiosque começa fechado e exige abertura manual; porta da casa abre/fecha com E.
+- Balcão com madeira escura/base cinza, copos e promoções nas duas faces.
 - Casa detalhada, paleta mais natural no jogo inteiro e pessoas sem óculos escuros,
   chapéus ou bonés.
 - Progressão do quiosque para resort, clima, vila, pousada e expansões.

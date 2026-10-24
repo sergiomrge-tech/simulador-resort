@@ -3,10 +3,12 @@
 Atualizado em **23/10/2026**. Destinado a qualquer IA ou pessoa, sem depender deste
 chat. Leia junto com [AGENTS.md](../AGENTS.md). Novos pedidos do usuário prevalecem.
 
-**Passagem atual para outra IA:** leia primeiro
-[PASSAGEM_PARA_OUTRA_IA.md](PASSAGEM_PARA_OUTRA_IA.md), com o checkpoint,
-os testes que passaram, a falha no ciclo legado, o encerramento intermitente
-do executável e o ZIP ainda não atualizado. Não tratar esse lote como entrega final.
+**Atualização concluída de 23/10:** leia
+[VALIDACAO_2026-10-23.md](VALIDACAO_2026-10-23.md) e
+[ATUALIZACAO_2026-10-23.md](ATUALIZACAO_2026-10-23.md).
+Corrigidos mira legada, abertura no rush, nós órfãos e liberação de recursos;
+bateria do executável com PASS e saída 0, sem erros nos logs.
+O documento PASSAGEM_PARA_OUTRA_IA.md guarda o checkpoint histórico anterior.
 
 ## Base correta
 

@@ -9,8 +9,9 @@ func capture(main,w,time: float,label: String) -> void:
 	for i in 12: await get_tree().physics_frame
 	if DisplayServer.get_name()=="headless":return
 	await RenderingServer.frame_post_draw
-	get_viewport().get_texture().get_image().save_png("res://shots/"+label+".png")
+	get_viewport().get_texture().get_image().save_png("user://qa_shots/"+label+".png")
 func run(main) -> void:
+	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path("user://qa_shots"))
 	Core.new_game()
 	Core.minutes=11*60
 	Core.paused=true
@@ -49,4 +50,4 @@ func run(main) -> void:
 	check(not w.whales[0].sound.playing,"impacto respeita mute")
 	Core.paused=true
 	print("WHALE_TEST FAIL" if failed else "WHALE_TEST PASS")
-	get_tree().quit(1 if failed else 0)
+	Core.quit_game(1 if failed else 0)

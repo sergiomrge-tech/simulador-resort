@@ -120,4 +120,4 @@ func run(main) -> void:
 	Core.delete_save()
 	Core.SAVE_PATH = old_path
 	print("SIMULATION_TEST FAIL" if failed else "SIMULATION_TEST PASS")
-	get_tree().quit(1 if failed else 0)
+	Core.quit_game(1 if failed else 0)

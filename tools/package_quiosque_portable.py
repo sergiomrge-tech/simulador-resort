@@ -11,9 +11,9 @@ import zipfile
 ROOT = Path(__file__).resolve().parents[1]
 PORTABLE = ROOT / 'build/rc2-playable'
 STAGING = Path('D:/CodexTemp/marealta-quiosque-pratico')
-ZIP = Path.home() / 'Downloads/MareAltaResort_1.1_CaisCorrigido.zip'
+ZIP = Path.home() / 'Downloads/MareAltaResort_1.1_RC2_2026-10-23.zip'
 
-readme = '''MARÉ ALTA RESORT — 1.1.0 RC2 · QUIOSQUE PRÁTICO
+readme = '''MARÉ ALTA RESORT — 1.1.0 RC2 · ATUALIZAÇÃO 23/10/2026
 
 Abra Jogar.vbs nesta pasta. O jogo guarda seu progresso em userdata/.
 Para atualizar uma cópia anterior, substitua os arquivos do programa e mantenha
@@ -101,6 +101,7 @@ passos mais suaves e trilha sem vozes. A instalação antiga em D:/Games não é
 '''
 (PORTABLE / 'LEIA-ME.txt').write_text(readme, encoding='utf-8')
 for src, dst in [('QUIOSQUE_PRATICO.md','QUIOSQUE_PRATICO.md'),
+                 ('ATUALIZACAO_2026-10-23.md','ATUALIZACAO_2026-10-23.md'),
                  ('COMPUTADOR_E_BALCAO.md','COMPUTADOR_E_BALCAO.md'),
                  ('PRAIA_E_ATENDIMENTO.md','PRAIA_E_ATENDIMENTO.md'),
                  ('ROTINAS_QUIOSQUE.md','ROTINAS_DO_QUIOSQUE.md'),
@@ -109,6 +110,7 @@ for src, dst in [('QUIOSQUE_PRATICO.md','QUIOSQUE_PRATICO.md'),
     shutil.copyfile(ROOT / 'docs' / src, PORTABLE / dst)
 
 names = ['MareAltaResort.exe','MareAltaResort.pck','Jogar.vbs','LEIA-ME.txt',
+         'ATUALIZACAO_2026-10-23.md',
          'PRAIA_E_ATENDIMENTO.md','COMPUTADOR_E_BALCAO.md',
          'QUIOSQUE_PRATICO.md','ROTINAS_DO_QUIOSQUE.md','GESTAO_DO_QUIOSQUE.md','REFINAMENTO_COMPLETO.md','icon.ico']
 checks = []
@@ -120,7 +122,7 @@ for name in names:
 names.append('SHA256SUMS.txt')
 STAGING.mkdir(parents=True,exist_ok=True)
 staged = STAGING / ZIP.name
-with zipfile.ZipFile(staged, 'w', compression=zipfile.ZIP_STORED, allowZip64=True) as z:
+with zipfile.ZipFile(staged, 'w', compression=zipfile.ZIP_DEFLATED, compresslevel=3, allowZip64=True) as z:
     for name in names:
         z.write(PORTABLE / name, 'MareAltaResort/' + name)
 with zipfile.ZipFile(staged) as z:
