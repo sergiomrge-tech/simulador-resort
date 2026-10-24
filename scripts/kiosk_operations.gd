@@ -73,14 +73,13 @@ func _build() -> void:
 	Real.place(self, "g:service_register", register_pos, -1.0)
 	_interaction(self, register_pos + Vector3(0, 0.12, 0), Vector3(0.4, 0.3, 0.4), _register_prompt, collect_payments)
 	Real.place(self, "g:kiosk_counter_details", c + Vector3(0,1.28,0), -1.0,0,Color.WHITE,0,false)
-	# Carvalho do tampo: z 1,54–2,44. Em z=1,65 o pé do monitor pendurava
-	# para o lado de quem atende. z=2,05 e x=1,45 deixam base, teclado e
-	# mouse inteiros na madeira, longe do caixa (x=1,0).
-	computer = Real.place(self, "g:kiosk_computer", c + Vector3(1.45, 1.28, 2.05), -1.0, PI, Color.WHITE, 0, false)
+	# Tampo carvalho ~y0+1,18≈1,28. z≈1,85 mantém base/teclado na madeira
+	# (em 1,65 o pé pendurava para o vão interno) e a mira em x≈1,70.
+	computer = Real.place(self, "g:kiosk_computer", c + Vector3(1.70, 1.28, 1.85), -1.0, PI, Color.WHITE, 0, false)
 	if computer != null:
 		computer.name = "CounterComputer"
 		_finish_kiosk_computer(computer)
-	_interaction(self, c + Vector3(1.45, 1.55, 2.05), Vector3(0.50, 0.52, 0.28), func(): return "Computador · gestão do quiosque", open_computer)
+	_interaction(self, c + Vector3(1.70, 1.55, 1.85), Vector3(0.52, 0.55, 0.30), func(): return "Computador · gestão do quiosque", open_computer)
 	for side in [-1,1]:
 		var card := B.label(self,"",c+Vector3(-.90,1.498,1.89+side*.145),22,Color(.08,.12,.10),Color(0,0,0,0),0 if side==1 else PI)
 		card.name = "CounterPromotion" + str(side)
@@ -172,13 +171,15 @@ func _finish_kiosk_computer(root: Node3D) -> void:
 			var mat := StandardMaterial3D.new()
 			mat.resource_name = name if not name.is_empty() else "terminal graphite"
 			mat.albedo_color = col
-			mat.roughness = rough
-			mat.metallic = metal
-			mat.metallic_specular = 0.15
-			mat.diffuse_mode = BaseMaterial3D.DIFFUSE_BURLEY
-			mat.specular_mode = BaseMaterial3D.SPECULAR_SCHLICK_GGX
+			# Roughness alta + sem metal/spec: bounce do céu/mar não pinta o verso de ciano.
+			mat.roughness = maxf(rough, 0.88)
+			mat.metallic = 0.0
+			mat.metallic_specular = 0.0
+			mat.diffuse_mode = BaseMaterial3D.DIFFUSE_LAMBERT
+			mat.specular_mode = BaseMaterial3D.SPECULAR_DISABLED
 			mat.rim_enabled = false
 			mat.emission_enabled = false
+			mat.shading_mode = BaseMaterial3D.SHADING_MODE_PER_PIXEL
 			mesh.set_surface_override_material(si, mat)
 	# Assenta a base no tampo (folga de bevel/AABB).
 	root.position.y = center().y + 1.278
