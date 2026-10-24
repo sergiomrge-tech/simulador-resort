@@ -76,13 +76,13 @@ func _ready() -> void :
 	var n_walk: = 12 if Quality.hd else 5
 	for i in n_walk:
 		var g: = _make()
-		var path: Array = world.village_paths[i % world.village_paths.size()]
+		var path: Array = world.village_paths[mini(world.village_paths.size()-1, floori(float(i)*world.village_paths.size()/n_walk))]
 		g.set_meta("path", path)
 		g.set_meta("dir", 1 if i % 2 == 0 else -1)
 		var k: = rng.randi() % path.size()
 		g.set_meta("idx", k)
 		g.set_meta("wait", rng.randf_range(0.0, 4.0))
-		g.position = path[k]
+		g.position = _outside_blocks(path[k])
 		g.speed = rng.randf_range(0.95, 1.3)
 		walkers.append(g)
 	var sit_n: = mini(3 if Quality.hd else 1, world.bench_spots.size())
@@ -149,6 +149,7 @@ func _process(delta: float) -> void :
 					if (dp as Vector3).distance_to(g.position) < best.distance_to(g.position):
 						best = dp
 				if best != Vector3.INF and best.distance_to(g.position) < 40.0:
+					best = _outside_blocks(best)
 					g.set_meta("home_target", best)
 					g.go([best])
 				else:
@@ -259,7 +260,7 @@ func _outside_blocks(p: Vector3) -> Vector3:
 	var q: = p
 	for _pass in 2:
 		for r in rects:
-			var rect: Rect2 = r
+			var rect: Rect2 = (r as Rect2).grow(0.38)
 			if not rect.has_point(Vector2(q.x, q.z)):
 				continue
 			var dl: = q.x - rect.position.x

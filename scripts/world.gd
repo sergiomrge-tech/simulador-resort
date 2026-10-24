@@ -1290,7 +1290,7 @@ func _palms() -> void :
 	for k in 26:
 		var x: = rng.randf_range(-110, 110)
 		var z: = rng.randf_range(50, 95)
-		if absf(x) < 50 and z < 52:
+		if (absf(x) < 50 and z < 52) or Rect2(-5,50,116,26).has_point(Vector2(x,z)):
 			continue
 		Palm.spawn(self, Vector3(x, _height(x, z) - 0.1, z), 200 + k, false)
 	for k in 12:

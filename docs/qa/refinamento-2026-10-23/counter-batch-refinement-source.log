@@ -1,0 +1,79 @@
+Godot Engine v4.5.1.stable.official.f62fdbde1 - https://godotengine.org
+Vulkan 1.4.351 - Forward+ - Using Device #0: NVIDIA - NVIDIA GeForce RTX 4060 Ti
+
+vegetacao: capim=4021 arbustos=99 coqueiros+=46
+serra: copas perto=250 crista=101
+serra: tris encosta=16884
+[refinement] ok seis áreas de gestão sempre acessíveis
+[refinement] ok captura compras_compactas
+[refinement] ok compra simples cobra somente cotação e abastece imediatamente
+[refinement] ok repetir reposição completa não cobra de novo
+[refinement] ok botão de equipe legível e compacto: ‹
+[refinement] ok botão de equipe legível e compacto: Escolher candidato
+[refinement] ok botão de equipe legível e compacto: Escolher candidato
+[refinement] ok botão de equipe legível e compacto: Escolher candidato
+[refinement] ok cartão de equipe sem grandes vazios
+[refinement] ok cartão de equipe sem grandes vazios
+[refinement] ok cartão de equipe sem grandes vazios
+[refinement] ok cartão de equipe sem grandes vazios
+[refinement] ok cartão de equipe sem grandes vazios
+[refinement] ok cartão de equipe sem grandes vazios
+[refinement] ok cartão de equipe sem grandes vazios
+[refinement] ok cartão de equipe sem grandes vazios
+[refinement] ok captura equipe_compacta
+[refinement] ok tela física contém gestão real
+[refinement] ok captura computador_detalhado
+[refinement] ok captura cardapio_interno
+[refinement] ok captura cardapio_externo
+[refinement] ok cinco animais preservados
+[refinement] ok rig com descanso e caminhada: cat
+[refinement] ok caminhada altera ossos e patas: cat
+[refinement] ok olhos modelados: cat
+[refinement] ok passeio real: cat
+[refinement] ok pausa congela animal: cat
+[refinement] ok captura animal_cat
+[refinement] ok rig com descanso e caminhada: cat
+[refinement] ok caminhada altera ossos e patas: cat
+[refinement] ok olhos modelados: cat
+[refinement] ok passeio real: cat
+[refinement] ok pausa congela animal: cat
+[refinement] ok rig com descanso e caminhada: cat
+[refinement] ok caminhada altera ossos e patas: cat
+[refinement] ok olhos modelados: cat
+[refinement] ok passeio real: cat
+[refinement] ok pausa congela animal: cat
+[refinement] ok rig com descanso e caminhada: dog
+[refinement] ok caminhada altera ossos e patas: dog
+[refinement] ok olhos modelados: dog
+[refinement] ok passeio real: dog
+[refinement] ok pausa congela animal: dog
+[refinement] ok captura animal_dog
+[refinement] ok rig com descanso e caminhada: dog
+[refinement] ok caminhada altera ossos e patas: dog
+[refinement] ok olhos modelados: dog
+[refinement] ok passeio real: dog
+[refinement] ok pausa congela animal: dog
+[refinement] ok quantidade HD de pedestres preservada
+[refinement] ok rotas da rua de trás recebem moradores
+[refinement] ok destino de casa mantém corpo fora da parede
+[refinement] ok morador chega à entrada sem ficar andando preso
+[refinement] ok destino de casa mantém corpo fora da parede
+[refinement] ok morador chega à entrada sem ficar andando preso
+[refinement] ok destino de casa mantém corpo fora da parede
+[refinement] ok morador chega à entrada sem ficar andando preso
+[refinement] ok destino de casa mantém corpo fora da parede
+[refinement] ok morador chega à entrada sem ficar andando preso
+[refinement] ok destino de casa mantém corpo fora da parede
+[refinement] ok morador chega à entrada sem ficar andando preso
+[refinement] ok destino de casa mantém corpo fora da parede
+[refinement] ok morador chega à entrada sem ficar andando preso
+[refinement] ok destino de casa mantém corpo fora da parede
+[refinement] ok morador chega à entrada sem ficar andando preso
+[refinement] ok destino de casa mantém corpo fora da parede
+[refinement] ok morador chega à entrada sem ficar andando preso
+[refinement] ok destino de casa mantém corpo fora da parede
+[refinement] ok morador chega à entrada sem ficar andando preso
+[refinement] ok captura rua_viva
+[refinement] ok captura pessoa_cabelo
+REFINEMENT_TEST PASS
+SHUTDOWN_COMPLETE code=0

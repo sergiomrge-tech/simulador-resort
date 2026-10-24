@@ -4,14 +4,21 @@ Executar após exportar/testar MareAltaResort.pck em build/rc2-playable.
 O ZIP é preparado e verificado em D: antes de substituir o ZIP entregue em Downloads.
 """
 from pathlib import Path
+import argparse
 import hashlib
 import shutil
 import zipfile
 
+parser = argparse.ArgumentParser(description=__doc__)
+parser.add_argument('--variant', choices=['base','passaros','refinado'], default='base')
+parser.add_argument('--output', type=Path, help='Destino opcional do ZIP, sem alterar a instalação')
+options = parser.parse_args()
+
 ROOT = Path(__file__).resolve().parents[1]
 PORTABLE = ROOT / 'build/rc2-playable'
 STAGING = Path('D:/CodexTemp/marealta-quiosque-pratico')
-ZIP = Path.home() / 'Downloads/MareAltaResort_1.1_RC2_2026-10-23.zip'
+variant_label = {'passaros':'Passaros_','refinado':'Refinado_'}.get(options.variant,'')
+ZIP = options.output or Path.home() / ('Downloads/MareAltaResort_1.1_RC2_' + variant_label + '2026-10-23.zip')
 
 readme = '''MARÉ ALTA RESORT — 1.1.0 RC2 · ATUALIZAÇÃO 23/10/2026
 
@@ -99,6 +106,10 @@ F11 tela cheia. O save de versões anteriores recebe os padrões compatíveis.
 Inclui também as correções do cais, vidros neutros, barcos afastados do cais,
 passos mais suaves e trilha sem vozes. A instalação antiga em D:/Games não é alterada.
 '''
+if options.variant in ('passaros','refinado'):
+    readme = readme.replace('NOVO NESTA REVISÃO\n','NOVO NESTA REVISÃO\n- Pássaros diurnos perto das árvores, com cantos direcionais suaves e intervalos.\n  Respeitam pausa, silêncio e volume de efeitos; silenciam à noite e na chuva.\n',1)
+if options.variant == 'refinado':
+    readme = readme.replace('NOVO NESTA REVISÃO\n','NOVO NESTA REVISÃO\n- Notebook detalhado CC0 com dados reais na tela, seis abas de gestão compactas.\n- Compras por produto: estoque atual, preço e Repor para 10, com entrega imediata.\n- Equipe com cartões compactos e botões legíveis; cardápio alinhado frente/verso.\n- Cabelos completos, circulação de moradores corrigida e ruas de pedra detalhadas.\n- Gatos e cães com olhos, focinho e boca; caminham e descansam com animação.\n',1)
 (PORTABLE / 'LEIA-ME.txt').write_text(readme, encoding='utf-8')
 for src, dst in [('QUIOSQUE_PRATICO.md','QUIOSQUE_PRATICO.md'),
                  ('ATUALIZACAO_2026-10-23.md','ATUALIZACAO_2026-10-23.md'),
@@ -113,6 +124,12 @@ names = ['MareAltaResort.exe','MareAltaResort.pck','Jogar.vbs','LEIA-ME.txt',
          'ATUALIZACAO_2026-10-23.md',
          'PRAIA_E_ATENDIMENTO.md','COMPUTADOR_E_BALCAO.md',
          'QUIOSQUE_PRATICO.md','ROTINAS_DO_QUIOSQUE.md','GESTAO_DO_QUIOSQUE.md','REFINAMENTO_COMPLETO.md','icon.ico']
+if options.variant in ('passaros','refinado'):
+    shutil.copyfile(ROOT / 'docs/PASSAROS.md', PORTABLE / 'PASSAROS.md')
+    names.append('PASSAROS.md')
+if options.variant == 'refinado':
+    shutil.copyfile(ROOT / 'docs/REFINAMENTO_2026-10-23.md', PORTABLE / 'REFINAMENTO_2026-10-23.md')
+    names.append('REFINAMENTO_2026-10-23.md')
 checks = []
 for name in names:
     with (PORTABLE / name).open('rb') as f:
@@ -129,6 +146,7 @@ with zipfile.ZipFile(staged) as z:
     assert z.testzip() is None, 'ZIP CRC mismatch'
     assert len(z.namelist()) == len(names)
     assert not any('userdata' in name for name in z.namelist())
-shutil.copyfile(staged, ZIP)
+ZIP.parent.mkdir(parents=True,exist_ok=True)
+if staged.resolve()!=ZIP.resolve(): shutil.copyfile(staged, ZIP)
 print('PORTABLE_ZIP_OK', ZIP, ZIP.stat().st_size)
 print(next(line for line in checks if line.endswith('MareAltaResort.pck')))

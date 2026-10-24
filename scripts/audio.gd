@@ -7,7 +7,9 @@ var ocean: AudioStreamPlayer
 var crickets: AudioStreamPlayer
 var player: Node3D
 var _cache: = {}
-var _bird_t: = 8.0
+var _bird_t: = 2.5
+var bird_voice: AudioStreamPlayer3D
+const BIRD_TREES := [Vector3(42,5,17),Vector3(53,5,36),Vector3(69,6,37),Vector3(83,5,18),Vector3(33,5,-10),Vector3(-15,5,7),Vector3(9,5,-9)]
 var _gull_t: = 5.0
 var _dog_t: = 20.0
 var _night: = 0.0
@@ -34,6 +36,15 @@ static func ensure_buses() -> void :
 func _ready() -> void :
 	add_to_group("audio")
 	ensure_buses()
+	bird_voice = AudioStreamPlayer3D.new()
+	bird_voice.name = "AmbientBirds"
+	bird_voice.process_mode = Node.PROCESS_MODE_PAUSABLE
+	bird_voice.bus = "SFX"
+	bird_voice.unit_size = 14.0
+	bird_voice.max_db = 0.0
+	bird_voice.max_distance = 50.0
+	bird_voice.max_polyphony = 1
+	add_child(bird_voice)
 	music = _loop("music_relax", -20.0, "Music")
 	ocean = _loop("ocean_loop", -8.0)
 	crickets = _loop("crickets_loop", -60.0)
@@ -73,13 +84,9 @@ func _process(delta: float) -> void :
 		beach_k = clampf(( - pp.z - 5.0) / 15.0, 0.0, 1.0)
 	crickets.volume_db = lerpf(-50.0, -12.0, _night)
 	music.volume_db = lerpf(-20.0, -24.0, _night) - village_k * 3.0 - home_duck
+	_tick_birds(delta)
 	if get_tree().paused:
 		return
-	_bird_t -= delta
-	if _bird_t <= 0.0:
-		_bird_t = randf_range(6.0, 16.0)
-		if _night < 0.3:
-			sfx("bird1" if randf() < 0.5 else "bird2", -18.0)
 	_gull_t -= delta
 	if _gull_t <= 0.0:
 		_gull_t = randf_range(8.0, 22.0)
@@ -97,6 +104,46 @@ func _process(delta: float) -> void :
 		_last_bell_hour = h
 		_church_bell(village_k, ((h - 1) % 12) + 1)
 	_event_sounds()
+
+func _tick_birds(delta: float) -> void:
+	if get_tree().paused:
+		bird_voice.stop()
+		return
+	var silent := muted or not Core.in_game or _night>=.6 or Core.weather=="rain" or Core.day_event=="tempestade"
+	for bus in ["Master","SFX"]:
+		var index := AudioServer.get_bus_index(bus)
+		if index>=0 and AudioServer.is_bus_mute(index): silent=true
+	if silent or not is_instance_valid(player):
+		bird_voice.stop()
+		_bird_t=maxf(_bird_t,2.0)
+		return
+	# Cantos saem das árvores, não de um som plano preso à câmera.
+	var nearby: Array[Vector3] = []
+	var nearest_distance := INF
+	for tree in BIRD_TREES:
+		var distance: float=player.global_position.distance_to(tree)
+		if distance<38.0:
+			nearby.append(tree)
+			nearest_distance=minf(nearest_distance,distance)
+	if nearby.is_empty():
+		bird_voice.stop()
+		return
+	var origins: Array[Vector3] = []
+	for tree in nearby:
+		if player.global_position.distance_to(tree)<=nearest_distance+8.0: origins.append(tree)
+	if bird_voice.playing: return
+	_bird_t-=delta
+	if _bird_t>0: return
+	_bird_t=randf_range(4.0,9.0)
+	var sound := "bird1" if randf()<.5 else "bird2"
+	if not _cache.has(sound): _cache[sound]=load("res://assets/audio/"+sound+".ogg")
+	bird_voice.stream=_cache[sound]
+	bird_voice.global_position=origins.pick_random()+Vector3(randf_range(-2,2),0,randf_range(-2,2))
+	bird_voice.pitch_scale=randf_range(.94,1.06)
+	var p: Vector3=player.global_position
+	var indoors := p.x>42.5 and p.x<49.5 and p.z>17.5 and p.z<24.5
+	bird_voice.volume_db=randf_range(-13.0,-10.0)-(8.0 if indoors else 0.0)
+	bird_voice.play()
 
 func _event_sounds() -> void :
 	var storm: = Core.weather == "rain"

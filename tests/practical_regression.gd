@@ -165,9 +165,7 @@ func run(main) -> void:
 	check(PhoneUI.HOME_APPS.size() == 6, "seis áreas na tela inicial")
 	main.hud.phone.open("")
 	await frames(4)
-	var home_buttons := 0
-	for child in main.hud.phone.screen.find_children("*", "Button", true, false): home_buttons += 1
-	check(home_buttons == 7, "sem atalhos duplicados no início")
+	check(main.hud.phone.navbar.get_child_count()==6, "seis abas distintas sem atalhos duplicados")
 	main.hud.phone._open_management("painel")
 	main.hud.phone._open_management("horarios")
 	main.hud.phone.back()

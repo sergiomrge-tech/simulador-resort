@@ -70,14 +70,19 @@ func _build() -> void:
 		label.pixel_size = 0.0018
 	Real.place(self, "g:kiosk_blender", c + Vector3(-2.0, 1.28, 0.25), -1.0)
 	var register_pos: Vector3 = c + Vector3(1.0, 1.28, 1.8)
-	Real.place(self, "g:service_register", register_pos, -1.0)
 	_interaction(self, register_pos + Vector3(0, 0.12, 0), Vector3(0.4, 0.3, 0.4), _register_prompt, collect_payments)
 	Real.place(self, "g:kiosk_counter_details", c + Vector3(0,1.28,0), -1.0,0,Color.WHITE,0,false)
-	computer = Real.place(self,"g:kiosk_computer",c+Vector3(1.70,1.28,1.65),-1.0,PI,Color.WHITE,0,false)
+	computer = Real.place(self,"g:kiosk_laptop",c+Vector3(1.65,1.28,1.65),.32,PI)
 	computer.name = "CounterComputer"
-	_interaction(self,c+Vector3(1.70,1.55,1.65),Vector3(.52,.55,.30),func(): return "Computador · gestão do quiosque",open_computer)
+	var display:=Node.new()
+	display.name="CounterDisplay"
+	display.set_script(load("res://scripts/counter_terminal_display.gd"))
+	display.laptop=computer
+	add_child(display)
+	_interaction(self,c+Vector3(1.65,1.45,1.65),Vector3(.65,.40,.55),func(): return "Computador · gestão do quiosque",open_computer)
 	for side in [-1,1]:
-		var card := B.label(self,"",c+Vector3(-.90,1.498,1.89+side*.145),22,Color(.08,.12,.10),Color(0,0,0,0),0 if side==1 else PI)
+		var card := B.label(self,"",c+Vector3(-.90,1.497,2.006 if side==1 else 1.774),22,Color(.08,.12,.10),Color(0,0,0,0),0 if side==1 else PI)
+		card.rotation.x=-.43
 		card.name = "CounterPromotion" + str(side)
 		card.pixel_size = .0007
 		card.outline_size = 0

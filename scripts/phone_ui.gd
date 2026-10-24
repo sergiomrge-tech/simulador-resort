@@ -58,6 +58,7 @@ var room_focus: = 0
 var body_frame: Control
 var screen: VBoxContainer
 var status_l: Label
+var navbar: HBoxContainer
 var _phone: Control
 var _tween: Tween
 
@@ -76,7 +77,7 @@ func _ready() -> void :
 	bezel.bg_color = Color(0.10, 0.12, 0.12)
 	bezel.set_corner_radius_all(24)
 	bezel.set_border_width_all(4)
-	bezel.border_color = Color(0.32, 0.3, 0.45)
+	bezel.border_color = Color(.23,.29,.27)
 	bezel.shadow_color = Color(0, 0, 0, 0.45)
 	bezel.shadow_size = 24
 	bezel.shadow_offset = Vector2(0, 10)
@@ -114,19 +115,19 @@ func _ready() -> void :
 	bar.add_theme_constant_override("margin_bottom", 4)
 	col.add_child(bar)
 	status_l = _lbl(bar, "", 16, INK, true)
+	navbar = HBoxContainer.new()
+	navbar.add_theme_constant_override("separation",5)
+	col.add_child(navbar)
+	for id in HOME_APPS:
+		var info: Array=APPS.filter(func(entry): return entry[0]==id)[0]
+		var tab := _btn(navbar,str(info[1]),_open_management.bind(str(id)),Color(.16,.34,.31))
+		tab.name="Nav_"+str(id)
+		tab.toggle_mode=true
+		tab.size_flags_horizontal=Control.SIZE_EXPAND_FILL
 	screen = VBoxContainer.new()
 	screen.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	screen.add_theme_constant_override("separation", 0)
 	col.add_child(screen)
-	var home_bar: = ColorRect.new()
-	home_bar.color = Color(0.13, 0.12, 0.2, 0.6)
-	home_bar.custom_minimum_size = Vector2(120, 5)
-	home_bar.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-	var hb_m: = MarginContainer.new()
-	hb_m.add_theme_constant_override("margin_bottom", 8)
-	hb_m.add_theme_constant_override("margin_top", 6)
-	hb_m.add_child(home_bar)
-	col.add_child(hb_m)
 	visible = false
 	resized.connect(_place)
 	Core.money_changed.connect(func(_v): _refresh_if_open())
@@ -268,6 +269,9 @@ func _btn(parent: Node, text: String, cb: Callable, c: = Color(0.1, 0.65, 0.68),
 	b.text = text
 	b.add_theme_font_size_override("font_size", 15)
 	b.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	# Em HBox, largura zero fazia o texto virar uma coluna com centenas de pixels.
+	b.custom_minimum_size = Vector2(clampf(T.bold().get_string_size(text,HORIZONTAL_ALIGNMENT_LEFT,-1,15).x+26,34 if text.length()<=2 else 100,230),34)
+	b.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	var n: = _box(c, 14, 8)
 	n.border_width_bottom = 4
 	n.border_color = c.darkened(0.3)
@@ -309,6 +313,9 @@ func _expand(c: Control) -> Control:
 
 # ------------------------------------------------------------------ telas
 func refresh() -> void :
+	if navbar:
+		for tab in navbar.get_children():
+			tab.set_pressed_no_signal(tab.name=="Nav_"+(app if app in HOME_APPS else str(PARENTS.get(app,"painel")) if app!="" else "painel"))
 	if screen == null:
 		return
 	for ch in screen.get_children():
@@ -325,19 +332,18 @@ func refresh() -> void :
 		return
 	var a: Array = info[0]
 	var head: = PanelContainer.new()
-	var hs: = _box(a[2], 0, 10)
+	var hs: = _box(Color(.94,.95,.93), 0, 6)
 	head.add_theme_stylebox_override("panel", hs)
 	screen.add_child(head)
 	var hr: = _row(head, 10)
 	var bk: = Button.new()
 	bk.text = "‹"
 	bk.flat = true
-	bk.add_theme_font_size_override("font_size", 34)
-	bk.add_theme_color_override("font_color", Color.WHITE)
+	bk.add_theme_font_size_override("font_size", 24)
+	bk.add_theme_color_override("font_color", INK)
 	bk.pressed.connect(back)
 	hr.add_child(bk)
-	hr.add_child(_icon(a[3], 30, Color.WHITE))
-	_expand(_lbl(hr, tr(str(a[1])), 24, Color.WHITE, true))
+	_expand(_lbl(hr, tr(str(a[1])), 20, INK, true))
 	var sc: = ScrollContainer.new()
 	sc.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	sc.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
@@ -361,8 +367,7 @@ func refresh() -> void :
 		"painel":
 			_app_dashboard(list)
 		"compras":
-			_app_suppliers(list)
-			_btn(list, "Estoque e reposição automática", _open_management.bind("estoque_quiosque"))
+			_app_product_shop(list)
 		"financas":
 			_app_kiosk_results(list)
 			_btn(list, "Extrato de entradas e saídas", _open_management.bind("caixa"))
@@ -452,23 +457,14 @@ func _home() -> void:
 	var waiting: int = village.waiting_customers().size()
 	var pending: int = village.customers_to_order().size()
 	_lbl(status,"%d para anotar  ·  %d em atendimento" % [pending,waiting],14,INK_SOFT)
-	var grid := GridContainer.new()
-	grid.columns = 3
-	grid.add_theme_constant_override("h_separation", 10)
-	grid.add_theme_constant_override("v_separation", 10)
-	list.add_child(grid)
-	for id in HOME_APPS:
-		var info: Array = APPS.filter(func(entry): return entry[0] == id)[0]
-		var button := _btn(grid, str(info[1]), _open_management.bind(str(id)), info[2])
-		button.custom_minimum_size = Vector2(220, 84)
-		button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		button.icon = T.icon(str(info[3]))
-		button.expand_icon = true
-		button.add_theme_constant_override("icon_max_width", 26)
-	var help := _card(list)
-	_lbl(help,"Atendimento no balcão",16,INK,true)
-	_lbl(help,"Abra o quiosque. Anote com E, pegue os produtos na geladeira/armário e entregue no balcão. O cliente leva o pedido para a mesa.",14,INK_SOFT,false,true)
-	_lbl(list, "Computador do balcão · Esc para voltar", 13, INK_SOFT)
+	if not Core.company.receivables.is_empty():
+		_btn(list,"Receber contas no caixa",func(): get_tree().current_scene.operations.collect_payments(); refresh(),GOOD)
+	var summary := _card(list)
+	_lbl(summary,"Produtos disponíveis",17,INK,true)
+	for id in Core.kiosk_menu():
+		_lbl(summary,"%s: %d porções" % [tr(str(Economy.dish(id).name)),Core.company_available(id)],15,INK)
+	_lbl(list,"Anote e entregue no balcão com E. Use Compras para repor os produtos.",14,INK_SOFT)
+	_lbl(list,"Esc · voltar ou fechar",13,INK_SOFT)
 
 func _app_hub(list: VBoxContainer, links: Array) -> void:
 	for link in links: _btn(list, str(link[1]), _open_management.bind(str(link[0])))
@@ -518,6 +514,33 @@ func _app_expansions(list: VBoxContainer) -> void :
 				_btn(r2, tr("Comprar"), func(): Core.buy_expansion(id), Color(1.0, 0.45, 0.35))
 			else:
 				_lbl(c, str(st[1]), 14, BAD if st[0] == "money" else INK_SOFT, true, true)
+
+func _app_product_shop(list: VBoxContainer) -> void:
+	_lbl(list,"Reposição imediata · produtos para vender",18,INK,true)
+	_lbl(list,"Abasteça até 10 porções. O valor inclui só os insumos que faltam.",14,INK_SOFT)
+	if not Core.company.created:
+		_btn(list,"Criar meu quiosque",_open_management.bind("empresa"))
+		return
+	for id in Core.kiosk_menu():
+		var card := _card(list)
+		var row := _row(card)
+		var text := VBoxContainer.new()
+		text.size_flags_horizontal=Control.SIZE_EXPAND_FILL
+		row.add_child(text)
+		var available: int=Core.company_available(id)
+		var quote: Dictionary=Core.company_restock_quote(id,10)
+		var cost: int=int(quote.get("cost",0))
+		_lbl(text,tr(str(Economy.dish(id).name)),17,INK,true)
+		_lbl(text,"Disponível: %d porções" % available,14,INK_SOFT)
+		_btn(row,"Estoque suficiente" if available>=10 else "Repor para 10 · "+Core.fmt_money(cost),_buy_product_stock.bind(str(id)),GOOD,available<10 and Core.money>=cost)
+	var extra := _row(list)
+	_btn(extra,"Reposição automática",_open_management.bind("estoque_quiosque"),Color(.35,.40,.39))
+	_btn(extra,"Fornecedores e entregas",_open_management.bind("fornecedores"),Color(.35,.40,.39))
+
+func _buy_product_stock(id: String) -> void:
+	if Core.restock_company_dish(id,10):
+		Core.toast.emit("Estoque reposto. Pegue os produtos na geladeira ou no armário.","good")
+	refresh()
 
 func _app_market(list: VBoxContainer) -> void :
 	_lbl(list, tr("Entrega na hora no quiosque. Fardos de %d. O preço do mercadinho muda todo dia (▲ caro, ▼ barato).") % Economy.PACK, 15, INK_SOFT, false, true)
@@ -807,6 +830,8 @@ func _app_staff(list: VBoxContainer) -> void :
 		_lbl(list, "Folha do quiosque: %s/dia" % Core.fmt_money(payroll), 19, INK, true, true)
 		_lbl(list, "Turnos de até 8h usam a diária proporcional (mínimo meia diária); turnos maiores custam mais. Folga paga meia diária. O salário é devido mesmo sem vendas.", 14, INK_SOFT, false, true)
 	for role in Economy.STAFF:
+		if role=="cozinheiro" and not Core.staff.get(role,false): continue
+		if str(Economy.STAFF[role].get("req",""))!="" and not Core.has(str(Economy.STAFF[role].req)) and not Core.staff.get(role,false): continue
 		if app == "gestao_equipe" and role not in Core.CompanyRules.Simulation.ROLES:
 			continue
 		var s: Dictionary = Economy.STAFF[role]
@@ -826,7 +851,7 @@ func _app_staff(list: VBoxContainer) -> void :
 			_chip(r2, tr("✓ Na equipe"), Color.WHITE, GOOD)
 			_staff_card(c, role)
 		elif bool(s.get("company", false)) and not Core.company.created:
-			_lbl(c, "Crie sua empresa em B → Quiosque.", 14, INK_SOFT, false, true)
+			_lbl(c, "Crie sua empresa em Quiosque → Nome e placa.", 14, INK_SOFT, false, true)
 		elif need != "" and not Core.has(need):
 			_lbl(c, tr("Precisa de: %s") % tr(str(Economy.EXPANSIONS[need].name)), 14, INK_SOFT, true, true)
 		elif role in Management.ROLES:

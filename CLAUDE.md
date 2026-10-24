@@ -191,3 +191,23 @@ Base de trabalho: v0.6.5 recuperada; versões atuais em `project.godot` / `expor
 - FEITO: `prune_export.py` não exclui mais `qnat` (arbustos Quaternius sumiam no jogo instalado = "placas redondas"); `Real` avisa `REAL_MISSING` no log; `Real.ALIAS` troca todo `k:` low-poly por modelo detalhado (`tools/gen_food.py`: coconut_green, coconut_open, pineapple, orange, frappe, cup_plastic, glass_juice, cocktail, campfire_logs, beach_flag, beach_spade, boat_hull; Poly Haven: croissant, Barrel_01, wooden_crate_02, stone_fire_pit, sand_rocks_small_01, boulder_01, dead_tree_trunk); recife com altura limitada pela profundidade (pontas no mar); espreguiçadeira/venezianas/treliça/banca corrigidas; D3D12 com mais descritores.
 - FALTA: (1) pessoas travadas em pé na mesa do quiosque (dois clientes no mesmo lugar, rótulos sobrepostos) em `village_life.gd`; (2) conferir em prints: prateleira do quiosque, balcão, carrinho de cocos, pilhas de coco, fogueira junina, tendas da quermesse, barco de pesca (`g:boat_hull`), castelo de areia; (3) `--primcheck`/`--floatcheck`; (4) LOOP_TEST; (5) gerar PATCH a partir da v1.0 instalada (base = commit da v1.0, ex. `51921df`) — o patch precisa levar a pasta `assets/models/qnat`; (6) atualizar CREDITS (gen_food + dead_tree_trunk Poly Haven) e catálogo.
 - A edição em `tools/build_release.sh` para o smoke testar o .pck exportado (`--main-pack`, `--v1`) ainda NÃO foi aplicada.
+
+
+## Interface, rotas e assets — 23/10/2026
+
+Botão sem largura mínima em HBox podia quebrar texto letra a letra e esticar um
+cartão de equipe para centenas de pixels. Reservar largura calculada pelo texto,
+limitar altura na regressão e conferir imagens. Compras começa em reposição de
+produto, reutilizando cotação/compra atômica do Core; não duplicar contabilidade.
+Hair_Long original só cobre laterais/nuca em alguns corpos: completar o topo com
+Hair_SimpleParted usando o mesmo BoneAttachment3D e cor, não prender ao chão.
+Portas de casas próximas à parede ficavam dentro do block_rect com padding:
+projetar destino de morador para fora com margem corporal; não retirar a exceção
+na chegada a mesas de clientes. Rotas extras ao fim da lista precisam receber
+pedestres por distribuição uniforme, preservando a contagem máxima.
+Não remover armature/animações dos animais ao suavizar. Aplicar Subsurf antes do
+Armature, manter pesos e ligar as feições ao osso da cabeça. Verificar a anatomia
+na câmera: olhos de cachorro em x/y incorretos ficavam saltados; foram reposicionados
+na superfície da cabeça e reduzidos antes da entrega.
+Tela do Classic Laptop usa UV U=1..2; offset -1 e material unshaded mantêm a tela
+legível sem o clareamento de iluminação da cena. SubViewport mostra dados reais.

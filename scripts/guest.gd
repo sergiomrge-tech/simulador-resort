@@ -880,11 +880,19 @@ func _dress(m: Node3D, rng: RandomNumberGenerator) -> void :
 		mi.set_instance_shader_parameter("sole", so)
 	# cabelo
 	var styles: Array = Ppl.HAIR_FEMALE if _female else Ppl.HAIR_MALE
-	var hm: = Ppl.hair_mesh(styles[rng.randi() % styles.size()])
+	var hairstyle: String=styles[rng.randi() % styles.size()]
+	var hm: = Ppl.hair_mesh(hairstyle)
 	if hm:
 		Ppl.attach_hair(hm, skel)
 		hm.set_meta("src", hm.mesh.surface_get_material(0))
 		_hair_parts.append(hm)
+		if hairstyle=="Hair_Long":
+			# Long cobre laterais/nuca, mas deixa o topo exposto nesse corpo.
+			var crown := Ppl.hair_mesh("Hair_SimpleParted")
+			if crown:
+				Ppl.attach_hair(crown,skel)
+				crown.set_meta("src",crown.mesh.surface_get_material(0))
+				_hair_parts.append(crown)
 	if not _female and rng.randf() < 0.28:
 		var bm: = Ppl.hair_mesh("Hair_Beard")
 		if bm:
@@ -898,7 +906,7 @@ func _caricature(rng: RandomNumberGenerator) -> void :
 		return
 	var hs: = SkeletonModifier3D.new()
 	hs.set_script(load("res://scripts/head_scaler.gd"))
-	hs.head_scale = rng.randf_range(1.06, 1.14)
+	hs.head_scale = rng.randf_range(1.0, 1.04)
 	_skel.add_child(hs)
 	var att: = BoneAttachment3D.new()
 	att.bone_name = "Head"

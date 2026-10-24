@@ -3,6 +3,14 @@
 Atualizado em **23/10/2026**. Destinado a qualquer IA ou pessoa, sem depender deste
 chat. Leia junto com [AGENTS.md](../AGENTS.md). Novos pedidos do usuário prevalecem.
 
+**Revisão mais recente de visual e gestão:**
+[REFINAMENTO_2026-10-23.md](REFINAMENTO_2026-10-23.md). Notebook CC0 detalhado,
+compras por produto, seis abas compactas, promoções alinhadas, cabelos, rotas,
+ruas, animais animados com rosto e pássaros. Inclui os resultados fonte/PCK.
+
+**Adição sonora:** [PASSAROS.md](PASSAROS.md) documenta os cantos direcionais
+diurnos perto das árvores, volume suave, pausa e respeito ao silêncio/SFX.
+
 **Atualização concluída de 23/10:** leia
 [VALIDACAO_2026-10-23.md](VALIDACAO_2026-10-23.md) e
 [ATUALIZACAO_2026-10-23.md](ATUALIZACAO_2026-10-23.md).
@@ -289,3 +297,15 @@ Isso é evidência daquelas entregas, não garantia sobre uma alteração futura
 Ao concluir uma atualização, atualize este guia se a preferência/fluxo mudou,
 registre evidências em validação, preserve as lições em CLAUDE.md e deixe um resumo
 com o que mudou, como foi verificado, limitações e commit/branch para a próxima IA.
+
+## Revisão visual e gestão de 23/10/2026
+
+Leia [REFINAMENTO_2026-10-23.md](REFINAMENTO_2026-10-23.md) para a revisão
+mais recente.
+PC usa Classic Laptop CC0; não voltar ao caixa azul/modelo de seis quadrados.
+Gestão com seis abas compactas; compras abre em produtos com reposição imediata
+para 10, custo dos insumos faltantes. Formulário de fornecedor é secundário.
+Não voltar a permitir botões estreitos que esticam os cartões de equipe.
+Animais mantêm rigs/animações e rostos refinados; não regenerar pelos antigos
+smooth_animals.py que removiam o rig. Pedestres mantêm 12 HD/5 baixa; chegadas
+em casas projetadas fora dos bloqueios com margem para o corpo.

@@ -8,7 +8,7 @@ class_name Ppl
 const DIR: = "res://assets/models/ubc/"
 const SHIRT_BONES: = ["spine_01", "spine_02", "spine_03", "clavicle_l", "clavicle_r", "upperarm_l", "upperarm_r"]
 const SHORTS_BONES: = ["pelvis", "thigh_l", "thigh_r"]
-const HAIR_MALE: = ["Hair_Buzzed", "Hair_SimpleParted", "Hair_SimpleParted", "Hair_Long", "Hair_Buzzed", ""]
+const HAIR_MALE: = ["Hair_Buzzed", "Hair_SimpleParted", "Hair_SimpleParted", "Hair_Long", "Hair_Buzzed"]
 const HAIR_FEMALE: = ["Hair_BuzzedFemale", "Hair_Long", "Hair_Buns", "Hair_SimpleParted", "Hair_Long", "Hair_Buns"]
 
 static var _scenes: = {}

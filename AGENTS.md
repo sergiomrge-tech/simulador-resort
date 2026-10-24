@@ -44,6 +44,8 @@ o nome do arquivo não restringe seu uso à IA Claude.
   por low poly ou primitivas usadas como objetos finais. Registrar origem/licença.
 - HUD/gestão compactos, sem opções duplicadas; interação na parte inferior da tela.
 - Música/efeitos suaves e sem vozes de fundo.
+- Pássaros diurnos suaves perto das árvores, com intervalos e atenuação; silêncio
+  à noite/chuva e respeito à pausa e volume SFX. Preservar gaivotas e grilos.
 - No mar: um navio de madeira com velas por vez, passando bem devagar; cruzeiro
   parado à noite. Baleias saltam ao fundo com efeitos na água; céu com nuvens.
   Usuário rejeitou a prévia do cruzeiro low poly Quaternius por ser simples;
@@ -66,3 +68,15 @@ o nome do arquivo não restringe seu uso à IA Claude.
 
 Consolidação de 23/10/2026. Novos pedidos explícitos do usuário podem alterar
 estas preferências; registre a mudança para a próxima IA.
+
+## Revisão visual e gestão de 23/10/2026
+
+Leia [REFINAMENTO_2026-10-23.md](docs/REFINAMENTO_2026-10-23.md) para a revisão
+mais recente.
+PC usa Classic Laptop CC0; não voltar ao caixa azul/modelo de seis quadrados.
+Gestão com seis abas compactas; compras abre em produtos com reposição imediata
+para 10, custo dos insumos faltantes. Formulário de fornecedor é secundário.
+Não voltar a permitir botões estreitos que esticam os cartões de equipe.
+Animais mantêm rigs/animações e rostos refinados; não regenerar pelos antigos
+smooth_animals.py que removiam o rig. Pedestres mantêm 12 HD/5 baixa; chegadas
+em casas projetadas fora dos bloqueios com margem para o corpo.

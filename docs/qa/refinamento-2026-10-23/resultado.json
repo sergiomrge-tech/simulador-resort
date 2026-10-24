@@ -1,0 +1,28 @@
+{
+  "engine": "4.5.1",
+  "build_label": "RC2 · 23/10/2026 · Refinado",
+  "pck_bytes": 1802697700,
+  "pck_sha256": "508ae472b6a1d783fdcb75cc2ed610db626cfa678a867ed09129764bf331174b",
+  "source_pass": [
+    "refinement",
+    "terminal",
+    "counter-first",
+    "company",
+    "practical",
+    "phone-layout",
+    "birds"
+  ],
+  "exported_pass": [
+    "refinement",
+    "terminal",
+    "counter-first",
+    "company",
+    "practical",
+    "phone-layout",
+    "birds"
+  ],
+  "all_exit_codes": 0,
+  "errors_in_logs": 0,
+  "zip_bytes": 1568441367,
+  "zip_sha256": "1bd28ffb2963ac3085ce47e1149d0f0c3e1313e5c88213af3b64406833a27bd0"
+}

@@ -131,12 +131,12 @@
    },
    {
     "arquivo": "kiosk_operations.gd",
-    "linha": 332,
+    "linha": 337,
     "funcao": "_sync_staff_presence"
    },
    {
     "arquivo": "kiosk_operations.gd",
-    "linha": 414,
+    "linha": 419,
     "funcao": "_waiter"
    },
    {
@@ -176,32 +176,32 @@
    },
    {
     "arquivo": "village_life.gd",
-    "linha": 169,
+    "linha": 170,
     "funcao": "_process"
    },
    {
     "arquivo": "village_life.gd",
-    "linha": 174,
+    "linha": 175,
     "funcao": "_process"
    },
    {
     "arquivo": "village_life.gd",
-    "linha": 491,
+    "linha": 492,
     "funcao": "_kiosk_tick"
    },
    {
     "arquivo": "village_life.gd",
-    "linha": 507,
+    "linha": 508,
     "funcao": "_kiosk_tick"
    },
    {
     "arquivo": "village_life.gd",
-    "linha": 516,
+    "linha": 517,
     "funcao": "_kiosk_tick"
    },
    {
     "arquivo": "village_life.gd",
-    "linha": 649,
+    "linha": 650,
     "funcao": "_leave"
    }
   ]
@@ -290,17 +290,17 @@
    },
    {
     "arquivo": "village_life.gd",
-    "linha": 169,
+    "linha": 170,
     "funcao": "_process"
    },
    {
     "arquivo": "village_life.gd",
-    "linha": 531,
+    "linha": 532,
     "funcao": "_kiosk_tick"
    },
    {
     "arquivo": "village_life.gd",
-    "linha": 566,
+    "linha": 567,
     "funcao": "_order"
    }
   ]
@@ -564,17 +564,17 @@
    },
    {
     "arquivo": "village_life.gd",
-    "linha": 516,
+    "linha": 517,
     "funcao": "_kiosk_tick"
    },
    {
     "arquivo": "village_life.gd",
-    "linha": 535,
+    "linha": 536,
     "funcao": "_kiosk_tick"
    },
    {
     "arquivo": "village_life.gd",
-    "linha": 649,
+    "linha": 650,
     "funcao": "_leave"
    },
    {
@@ -589,12 +589,12 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 115,
+    "linha": 127,
     "funcao": "_bench"
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 931,
+    "linha": 943,
     "funcao": "_kiosk_table"
    }
   ]
@@ -623,12 +623,12 @@
    },
    {
     "arquivo": "village_life.gd",
-    "linha": 533,
+    "linha": 534,
     "funcao": "_kiosk_tick"
    },
    {
     "arquivo": "village_life.gd",
-    "linha": 566,
+    "linha": 567,
     "funcao": "_order"
    }
   ]
@@ -805,7 +805,7 @@
   "usos": [
    {
     "arquivo": "audio.gd",
-    "linha": 126,
+    "linha": 173,
     "funcao": "_church_bell"
    },
    {
@@ -850,8 +850,8 @@
   "usos": [
    {
     "arquivo": "audio.gd",
-    "linha": 82,
-    "funcao": "_process"
+    "linha": 138,
+    "funcao": "_tick_birds"
    }
   ],
   "arquivo_modelo": "assets/audio/bird1.ogg"
@@ -865,8 +865,8 @@
   "usos": [
    {
     "arquivo": "audio.gd",
-    "linha": 82,
-    "funcao": "_process"
+    "linha": 138,
+    "funcao": "_tick_birds"
    }
   ],
   "arquivo_modelo": "assets/audio/bird2.ogg"
@@ -915,12 +915,12 @@
    },
    {
     "arquivo": "phone_ui.gd",
-    "linha": 1618,
+    "linha": 1643,
     "funcao": "_refresh_management_task"
    },
    {
     "arquivo": "phone_ui.gd",
-    "linha": 1630,
+    "linha": 1655,
     "funcao": "_app_equipment"
    },
    {
@@ -970,7 +970,7 @@
    },
    {
     "arquivo": "phone_ui.gd",
-    "linha": 289,
+    "linha": 293,
     "funcao": "_btn"
    },
    {
@@ -980,12 +980,12 @@
    },
    {
     "arquivo": "village_life.gd",
-    "linha": 745,
+    "linha": 746,
     "funcao": "prep_advance"
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1112,
+    "linha": 1124,
     "funcao": "_coco_piles"
    }
   ],
@@ -1030,12 +1030,12 @@
    },
    {
     "arquivo": "village_life.gd",
-    "linha": 235,
+    "linha": 236,
     "funcao": "fish_catch"
    },
    {
     "arquivo": "village_life.gd",
-    "linha": 831,
+    "linha": 832,
     "funcao": "_complete_order"
    }
   ],
@@ -1050,7 +1050,7 @@
   "usos": [
    {
     "arquivo": "audio.gd",
-    "linha": 39,
+    "linha": 50,
     "funcao": "_ready"
    }
   ],
@@ -1065,8 +1065,13 @@
   "usos": [
    {
     "arquivo": "audio.gd",
-    "linha": 92,
+    "linha": 99,
     "funcao": "_process"
+   },
+   {
+    "arquivo": "details.gd",
+    "linha": 374,
+    "funcao": "dog"
    }
   ],
   "arquivo_modelo": "assets/audio/dog.ogg"
@@ -1080,17 +1085,17 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 292,
+    "linha": 304,
     "funcao": "_facade"
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 442,
+    "linha": 454,
     "funcao": "_house"
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 684,
+    "linha": 696,
     "funcao": "_church_and_praca"
    }
   ],
@@ -1110,22 +1115,22 @@
    },
    {
     "arquivo": "village_life.gd",
-    "linha": 205,
+    "linha": 206,
     "funcao": "fish_action"
    },
    {
     "arquivo": "village_life.gd",
-    "linha": 778,
+    "linha": 779,
     "funcao": "_deliver_item"
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1463,
+    "linha": 1475,
     "funcao": "set_night"
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1467,
+    "linha": 1479,
     "funcao": "set_night"
    }
   ],
@@ -1149,7 +1154,7 @@
   "usos": [
    {
     "arquivo": "audio.gd",
-    "linha": 38,
+    "linha": 49,
     "funcao": "_ready"
    }
   ],
@@ -1164,7 +1169,7 @@
   "usos": [
    {
     "arquivo": "audio.gd",
-    "linha": 87,
+    "linha": 94,
     "funcao": "_process"
    }
   ],
@@ -1179,7 +1184,7 @@
   "usos": [
    {
     "arquivo": "audio.gd",
-    "linha": 87,
+    "linha": 94,
     "funcao": "_process"
    }
   ],
@@ -1248,7 +1253,7 @@
   "usos": [
    {
     "arquivo": "audio.gd",
-    "linha": 111,
+    "linha": 158,
     "funcao": "_event_sounds"
    }
   ],
@@ -1263,7 +1268,7 @@
   "usos": [
    {
     "arquivo": "audio.gd",
-    "linha": 111,
+    "linha": 158,
     "funcao": "_event_sounds"
    }
   ],
@@ -1278,7 +1283,7 @@
   "usos": [
    {
     "arquivo": "audio.gd",
-    "linha": 40,
+    "linha": 51,
     "funcao": "_ready"
    }
   ],
@@ -1308,7 +1313,7 @@
   "usos": [
    {
     "arquivo": "audio.gd",
-    "linha": 41,
+    "linha": 52,
     "funcao": "_ready"
    }
   ],
@@ -1323,7 +1328,7 @@
   "usos": [
    {
     "arquivo": "audio.gd",
-    "linha": 37,
+    "linha": 48,
     "funcao": "_ready"
    }
   ],
@@ -1919,7 +1924,7 @@
   "usos": [
    {
     "arquivo": "details.gd",
-    "linha": 380,
+    "linha": 373,
     "funcao": "dog"
    }
   ]
@@ -1933,7 +1938,7 @@
   "usos": [
    {
     "arquivo": "details.gd",
-    "linha": 392,
+    "linha": 387,
     "funcao": "pier"
    }
   ]
@@ -1947,7 +1952,7 @@
   "usos": [
    {
     "arquivo": "details.gd",
-    "linha": 434,
+    "linha": 429,
     "funcao": "lighthouse"
    }
   ]
@@ -3683,7 +3688,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 98,
+    "linha": 110,
     "funcao": "stucco"
    }
   ]
@@ -3697,7 +3702,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 101,
+    "linha": 113,
     "funcao": "wood_tint"
    }
   ]
@@ -3711,7 +3716,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 141,
+    "linha": 153,
     "funcao": "_block"
    }
   ]
@@ -3725,7 +3730,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 144,
+    "linha": 156,
     "funcao": "_occlude"
    }
   ]
@@ -3739,7 +3744,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 152,
+    "linha": 164,
     "funcao": "_bloom"
    }
   ]
@@ -3753,7 +3758,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 157,
+    "linha": 169,
     "funcao": "_flower_box"
    }
   ]
@@ -3767,7 +3772,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 164,
+    "linha": 176,
     "funcao": "_juliet"
    }
   ]
@@ -3781,7 +3786,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 175,
+    "linha": 187,
     "funcao": "_bougainvillea"
    }
   ]
@@ -3795,7 +3800,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 214,
+    "linha": 226,
     "funcao": "_finish_blooms"
    }
   ]
@@ -3809,7 +3814,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 243,
+    "linha": 255,
     "funcao": "_fence"
    }
   ]
@@ -3823,7 +3828,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 262,
+    "linha": 274,
     "funcao": "_street"
    }
   ]
@@ -3837,7 +3842,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 281,
+    "linha": 293,
     "funcao": "_facade"
    }
   ]
@@ -3851,7 +3856,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 361,
+    "linha": 373,
     "funcao": "_house_extras"
    }
   ]
@@ -3865,7 +3870,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 419,
+    "linha": 431,
     "funcao": "_house"
    }
   ]
@@ -3879,7 +3884,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 517,
+    "linha": 529,
     "funcao": "_houses"
    }
   ]
@@ -3893,7 +3898,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 553,
+    "linha": 565,
     "funcao": "_hero_house"
    }
   ]
@@ -3907,7 +3912,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 650,
+    "linha": 662,
     "funcao": "_church_and_praca"
    }
   ]
@@ -3921,7 +3926,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 747,
+    "linha": 759,
     "funcao": "_quiosque"
    }
   ]
@@ -3935,7 +3940,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 911,
+    "linha": 923,
     "funcao": "_kiosk_table"
    }
   ]
@@ -3949,7 +3954,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 942,
+    "linha": 954,
     "funcao": "_refresh_kiosk_board"
    }
   ]
@@ -3963,7 +3968,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 957,
+    "linha": 969,
     "funcao": "on_areas_changed"
    }
   ]
@@ -3977,7 +3982,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 961,
+    "linha": 973,
     "funcao": "_kiosk_neon"
    }
   ]
@@ -3991,7 +3996,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 980,
+    "linha": 992,
     "funcao": "_kiosk_grill"
    }
   ]
@@ -4005,7 +4010,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1032,
+    "linha": 1044,
     "funcao": "_barraca"
    }
   ]
@@ -4019,7 +4024,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1061,
+    "linha": 1073,
     "funcao": "_quest_giver"
    }
   ]
@@ -4033,7 +4038,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1090,
+    "linha": 1102,
     "funcao": "_coco_piles"
    }
   ]
@@ -4047,7 +4052,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1118,
+    "linha": 1130,
     "funcao": "reset_coco_piles"
    }
   ]
@@ -4061,7 +4066,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1126,
+    "linha": 1138,
     "funcao": "_umbrella_hd"
    }
   ]
@@ -4075,7 +4080,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1132,
+    "linha": 1144,
     "funcao": "_bike"
    }
   ]
@@ -4089,7 +4094,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1190,
+    "linha": 1202,
     "funcao": "_jangada2"
    }
   ]
@@ -4103,7 +4108,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1217,
+    "linha": 1229,
     "funcao": "_fishing_boat"
    }
   ]
@@ -4117,7 +4122,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1251,
+    "linha": 1263,
     "funcao": "_boat_mesh"
    }
   ]
@@ -4131,7 +4136,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1285,
+    "linha": 1297,
     "funcao": "_boat_quad"
    }
   ]
@@ -4145,7 +4150,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1296,
+    "linha": 1308,
     "funcao": "_net"
    }
   ]
@@ -4159,7 +4164,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1327,
+    "linha": 1339,
     "funcao": "_net_mat"
    }
   ]
@@ -4173,7 +4178,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1344,
+    "linha": 1356,
     "funcao": "_village_props"
    }
   ]
@@ -4187,7 +4192,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1376,
+    "linha": 1388,
     "funcao": "_village_palms"
    }
   ]
@@ -4201,7 +4206,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1404,
+    "linha": 1416,
     "funcao": "_street_lamps"
    }
   ]
@@ -4215,7 +4220,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1438,
+    "linha": 1450,
     "funcao": "_village_routes"
    }
   ]
@@ -4229,7 +4234,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1451,
+    "linha": 1463,
     "funcao": "set_night"
    }
   ]
@@ -4243,7 +4248,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1478,
+    "linha": 1490,
     "funcao": "_kiosk_details"
    }
   ]
@@ -4257,7 +4262,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1511,
+    "linha": 1523,
     "funcao": "_back_bar"
    }
   ]
@@ -4271,7 +4276,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1535,
+    "linha": 1547,
     "funcao": "_surf_rack"
    }
   ]
@@ -4285,7 +4290,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1547,
+    "linha": 1559,
     "funcao": "rng_off"
    }
   ]
@@ -4299,7 +4304,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1551,
+    "linha": 1563,
     "funcao": "_kiosk_drinks"
    }
   ]
@@ -4313,7 +4318,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1557,
+    "linha": 1569,
     "funcao": "_on_time"
    }
   ]
@@ -4327,7 +4332,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1576,
+    "linha": 1588,
     "funcao": "_road"
    }
   ]
@@ -4341,7 +4346,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1615,
+    "linha": 1627,
     "funcao": "_add_lamp"
    }
   ]
@@ -4355,7 +4360,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1627,
+    "linha": 1639,
     "funcao": "_village_expansion"
    }
   ]
@@ -4369,7 +4374,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1756,
+    "linha": 1776,
     "funcao": "_beach_life"
    }
   ]
@@ -4383,7 +4388,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1805,
+    "linha": 1825,
     "funcao": "_landmark_details"
    }
   ]
@@ -4397,7 +4402,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1939,
+    "linha": 1959,
     "funcao": "_map_details"
    }
   ]
@@ -4425,7 +4430,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 194,
+    "linha": 195,
     "funcao": "fish_prompt"
    }
   ]
@@ -4439,7 +4444,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 201,
+    "linha": 202,
     "funcao": "fish_action"
    }
   ]
@@ -4453,7 +4458,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 207,
+    "linha": 208,
     "funcao": "_fish_tick"
    }
   ]
@@ -4467,7 +4472,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 220,
+    "linha": 221,
     "funcao": "fish_catch"
    }
   ]
@@ -4481,7 +4486,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 239,
+    "linha": 240,
     "funcao": "_prep_tick"
    }
   ]
@@ -4495,7 +4500,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 257,
+    "linha": 258,
     "funcao": "_outside_blocks"
    }
   ]
@@ -4509,7 +4514,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 280,
+    "linha": 281,
     "funcao": "kiosk_open"
    }
   ]
@@ -4523,7 +4528,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 283,
+    "linha": 284,
     "funcao": "waiting_customers"
    }
   ]
@@ -4537,7 +4542,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 289,
+    "linha": 290,
     "funcao": "_free_spot"
    }
   ]
@@ -4551,7 +4556,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 307,
+    "linha": 308,
     "funcao": "spawn_customer"
    }
   ]
@@ -4565,7 +4570,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 449,
+    "linha": 450,
     "funcao": "_kiosk_tick"
    }
   ]
@@ -4579,7 +4584,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 559,
+    "linha": 560,
     "funcao": "_order"
    }
   ]
@@ -4593,7 +4598,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 569,
+    "linha": 570,
     "funcao": "_pick_dish"
    }
   ]
@@ -4607,7 +4612,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 590,
+    "linha": 591,
     "funcao": "_pick_vip"
    }
   ]
@@ -4621,7 +4626,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 599,
+    "linha": 600,
     "funcao": "_vip_name"
    }
   ]
@@ -4635,7 +4640,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 605,
+    "linha": 606,
     "funcao": "_items"
    }
   ]
@@ -4649,7 +4654,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 609,
+    "linha": 610,
     "funcao": "_patience"
    }
   ]
@@ -4663,7 +4668,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 612,
+    "linha": 613,
     "funcao": "_remaining"
    }
   ]
@@ -4677,7 +4682,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 615,
+    "linha": 616,
     "funcao": "_order_text"
    }
   ]
@@ -4691,7 +4696,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 641,
+    "linha": 642,
     "funcao": "_leave"
    }
   ]
@@ -4705,7 +4710,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 657,
+    "linha": 658,
     "funcao": "_next_customer"
    }
   ]
@@ -4719,7 +4724,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 665,
+    "linha": 666,
     "funcao": "w0_vip"
    }
   ]
@@ -4733,7 +4738,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 668,
+    "linha": 669,
     "funcao": "_bar"
    }
   ]
@@ -4747,7 +4752,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 672,
+    "linha": 673,
     "funcao": "kiosk_prompt"
    }
   ]
@@ -4761,7 +4766,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 706,
+    "linha": 707,
     "funcao": "daily_goal"
    }
   ]
@@ -4775,7 +4780,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 714,
+    "linha": 715,
     "funcao": "kiosk_action"
    }
   ]
@@ -4789,7 +4794,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 730,
+    "linha": 731,
     "funcao": "_stage_secs"
    }
   ]
@@ -4803,7 +4808,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 736,
+    "linha": 737,
     "funcao": "prep_advance"
    }
   ]
@@ -4817,7 +4822,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 755,
+    "linha": 756,
     "funcao": "_deliver_item"
    }
   ]
@@ -4831,7 +4836,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 785,
+    "linha": 786,
     "funcao": "_complete_order"
    }
   ]
@@ -4845,7 +4850,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 844,
+    "linha": 845,
     "funcao": "kiosk_serve"
    }
   ]
@@ -4859,7 +4864,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 857,
+    "linha": 858,
     "funcao": "helper_serve"
    }
   ]
@@ -4873,7 +4878,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 862,
+    "linha": 863,
     "funcao": "_on_slept"
    }
   ]
@@ -5181,7 +5186,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1778,
+    "linha": 1798,
     "funcao": "_sand_clutter"
    }
   ]
@@ -5195,7 +5200,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 199,
+    "linha": 211,
     "funcao": "_bloom_key"
    }
   ]
@@ -5209,7 +5214,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1592,
+    "linha": 1604,
     "funcao": "_lamp_glow_mat"
    }
   ]
@@ -5223,7 +5228,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1602,
+    "linha": 1614,
     "funcao": "_lamp_head"
    }
   ]
@@ -5237,7 +5242,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 108,
+    "linha": 120,
     "funcao": "_bench"
    }
   ]
@@ -5251,7 +5256,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 117,
+    "linha": 129,
     "funcao": "_front_at"
    }
   ]
@@ -5265,7 +5270,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 123,
+    "linha": 135,
     "funcao": "_street_bunting"
    }
   ]
@@ -5279,7 +5284,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 412,
+    "linha": 424,
     "funcao": "_roof_mat"
    }
   ]
@@ -5363,7 +5368,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 624,
+    "linha": 625,
     "funcao": "_release_spot"
    }
   ]
@@ -5377,7 +5382,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 2040,
+    "linha": 2060,
     "funcao": "_refresh_company_signs"
    }
   ]
@@ -5391,7 +5396,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 882,
+    "linha": 883,
     "funcao": "_prep_position"
    }
   ]
@@ -5405,7 +5410,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 885,
+    "linha": 886,
     "funcao": "_clear_prep_visual"
    }
   ]
@@ -5419,7 +5424,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 891,
+    "linha": 892,
     "funcao": "_show_prep_visual"
    }
   ]
@@ -5433,7 +5438,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 899,
+    "linha": 900,
     "funcao": "served_dishes"
    }
   ]
@@ -5447,7 +5452,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 908,
+    "linha": 909,
     "funcao": "clear_served_visuals"
    }
   ]
@@ -5461,7 +5466,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 922,
+    "linha": 923,
     "funcao": "_show_delivered_visual"
    }
   ]
@@ -5475,7 +5480,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 2047,
+    "linha": 2067,
     "funcao": "_apply_kiosk_look"
    }
   ]
@@ -5489,7 +5494,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 860,
+    "linha": 872,
     "funcao": "_kiosk_facade"
    }
   ]
@@ -5503,7 +5508,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 286,
+    "linha": 287,
     "funcao": "customers_to_order"
    }
   ]
@@ -5517,7 +5522,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 734,
+    "linha": 746,
     "funcao": "kiosk_point"
    }
   ]
@@ -5531,7 +5536,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 737,
+    "linha": 749,
     "funcao": "kiosk_local"
    }
   ]
@@ -5545,7 +5550,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 741,
+    "linha": 753,
     "funcao": "kiosk_authored"
    }
   ]
@@ -5559,7 +5564,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 744,
+    "linha": 756,
     "funcao": "kiosk_rect"
    }
   ]
@@ -5587,7 +5592,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 391,
+    "linha": 392,
     "funcao": "_join_counter"
    }
   ]
@@ -5601,7 +5606,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 417,
+    "linha": 418,
     "funcao": "_walk_to_dining"
    }
   ]
@@ -5615,8 +5620,22 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 440,
+    "linha": 441,
     "funcao": "_sit_with_order"
+   }
+  ]
+ },
+ {
+  "codigo": "CEN-294",
+  "categoria": "CEN",
+  "chave": "details._animal",
+  "nome": "Animal",
+  "fonte": "details.gd (código)",
+  "usos": [
+   {
+    "arquivo": "details.gd",
+    "linha": 376,
+    "funcao": "_animal"
    }
   ]
  },
@@ -6442,12 +6461,12 @@
    },
    {
     "arquivo": "phone_ui.gd",
-    "linha": 197,
+    "linha": 198,
     "funcao": "app_for_tab"
    },
    {
     "arquivo": "phone_ui.gd",
-    "linha": 506,
+    "linha": 502,
     "funcao": "_app_expansions"
    },
    {
@@ -6582,12 +6601,12 @@
    },
    {
     "arquivo": "phone_ui.gd",
-    "linha": 588,
+    "linha": 611,
     "funcao": "_app_menu"
    },
    {
     "arquivo": "phone_ui.gd",
-    "linha": 589,
+    "linha": 612,
     "funcao": "_app_menu"
    },
    {
@@ -6732,7 +6751,7 @@
    },
    {
     "arquivo": "guest.gd",
-    "linha": 1011,
+    "linha": 1019,
     "funcao": "apply_staff_uniform"
    },
    {
@@ -6757,27 +6776,27 @@
    },
    {
     "arquivo": "kiosk_operations.gd",
-    "linha": 317,
+    "linha": 322,
     "funcao": "_staff_home"
    },
    {
     "arquivo": "kiosk_operations.gd",
-    "linha": 321,
+    "linha": 326,
     "funcao": "_sync_staff_presence"
    },
    {
     "arquivo": "kiosk_operations.gd",
-    "linha": 348,
+    "linha": 353,
     "funcao": "_staff_tick"
    },
    {
     "arquivo": "kiosk_operations.gd",
-    "linha": 357,
+    "linha": 362,
     "funcao": "_staff_tick"
    },
    {
     "arquivo": "kiosk_operations.gd",
-    "linha": 367,
+    "linha": 372,
     "funcao": "_staff_tick"
    },
    {
@@ -6847,22 +6866,22 @@
    },
    {
     "arquivo": "phone_ui.gd",
-    "linha": 201,
-    "funcao": "app_for_tab"
-   },
-   {
-    "arquivo": "phone_ui.gd",
     "linha": 202,
     "funcao": "app_for_tab"
    },
    {
     "arquivo": "phone_ui.gd",
-    "linha": 368,
+    "linha": 203,
+    "funcao": "app_for_tab"
+   },
+   {
+    "arquivo": "phone_ui.gd",
+    "linha": 373,
     "funcao": "refresh"
    },
    {
     "arquivo": "phone_ui.gd",
-    "linha": 409,
+    "linha": 414,
     "funcao": "refresh"
    },
    {
@@ -7062,7 +7081,7 @@
    },
    {
     "arquivo": "phone_ui.gd",
-    "linha": 1488,
+    "linha": 1513,
     "funcao": "_dismiss_staff"
    },
    {
@@ -7082,7 +7101,7 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1109,
+    "linha": 1121,
     "funcao": "_coco_piles"
    }
   ],
@@ -7277,13 +7296,8 @@
    },
    {
     "arquivo": "phone_ui.gd",
-    "linha": 162,
+    "linha": 163,
     "funcao": "_refresh_if_open"
-   },
-   {
-    "arquivo": "phone_ui.gd",
-    "linha": 199,
-    "funcao": "app_for_tab"
    },
    {
     "arquivo": "phone_ui.gd",
@@ -7292,37 +7306,42 @@
    },
    {
     "arquivo": "phone_ui.gd",
-    "linha": 407,
+    "linha": 201,
+    "funcao": "app_for_tab"
+   },
+   {
+    "arquivo": "phone_ui.gd",
+    "linha": 412,
     "funcao": "refresh"
    },
    {
     "arquivo": "phone_ui.gd",
-    "linha": 802,
+    "linha": 825,
     "funcao": "_app_staff"
    },
    {
     "arquivo": "phone_ui.gd",
-    "linha": 817,
+    "linha": 842,
     "funcao": "_app_staff"
    },
    {
     "arquivo": "phone_ui.gd",
-    "linha": 1276,
+    "linha": 1301,
     "funcao": "_company_staff"
    },
    {
     "arquivo": "phone_ui.gd",
-    "linha": 1456,
+    "linha": 1481,
     "funcao": "_refresh_staff_status"
    },
    {
     "arquivo": "phone_ui.gd",
-    "linha": 1523,
+    "linha": 1548,
     "funcao": "_app_routine"
    },
    {
     "arquivo": "phone_ui.gd",
-    "linha": 1567,
+    "linha": 1592,
     "funcao": "_app_candidates"
    }
   ],
@@ -7482,7 +7501,7 @@
    },
    {
     "arquivo": "phone_ui.gd",
-    "linha": 556,
+    "linha": 579,
     "funcao": "_app_market"
    },
    {
@@ -7537,17 +7556,17 @@
    },
    {
     "arquivo": "phone_ui.gd",
-    "linha": 659,
+    "linha": 682,
     "funcao": "_app_album"
    },
    {
     "arquivo": "village_life.gd",
-    "linha": 810,
+    "linha": 811,
     "funcao": "_complete_order"
    },
    {
     "arquivo": "village_life.gd",
-    "linha": 825,
+    "linha": 826,
     "funcao": "_complete_order"
    }
   ],
@@ -7587,7 +7606,7 @@
    },
    {
     "arquivo": "phone_ui.gd",
-    "linha": 263,
+    "linha": 264,
     "funcao": "_badge"
    },
    {
@@ -7637,12 +7656,12 @@
    },
    {
     "arquivo": "phone_ui.gd",
-    "linha": 195,
+    "linha": 196,
     "funcao": "app_for_tab"
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 544,
+    "linha": 556,
     "funcao": "_houses"
    }
   ],
@@ -7722,7 +7741,7 @@
    },
    {
     "arquivo": "village_life.gd",
-    "linha": 829,
+    "linha": 830,
     "funcao": "_complete_order"
    }
   ],
@@ -7917,7 +7936,7 @@
    },
    {
     "arquivo": "village_life.gd",
-    "linha": 232,
+    "linha": 233,
     "funcao": "fish_catch"
    }
   ],
@@ -8012,12 +8031,12 @@
    },
    {
     "arquivo": "phone_ui.gd",
-    "linha": 587,
+    "linha": 610,
     "funcao": "_app_menu"
    },
    {
     "arquivo": "phone_ui.gd",
-    "linha": 817,
+    "linha": 842,
     "funcao": "_app_staff"
    },
    {
@@ -8162,7 +8181,7 @@
    },
    {
     "arquivo": "phone_ui.gd",
-    "linha": 1632,
+    "linha": 1657,
     "funcao": "_app_equipment"
    },
    {
@@ -8227,7 +8246,7 @@
    },
    {
     "arquivo": "phone_ui.gd",
-    "linha": 876,
+    "linha": 901,
     "funcao": "_fame_bar"
    }
   ],
@@ -8282,7 +8301,7 @@
    },
    {
     "arquivo": "phone_ui.gd",
-    "linha": 928,
+    "linha": 953,
     "funcao": "_app_business"
    },
    {
@@ -8347,7 +8366,7 @@
    },
    {
     "arquivo": "phone_ui.gd",
-    "linha": 1063,
+    "linha": 1088,
     "funcao": "_app_village"
    }
   ],
@@ -8402,7 +8421,7 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1047,
+    "linha": 1059,
     "funcao": "_barraca"
    }
   ],
@@ -8501,32 +8520,32 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 756,
+    "linha": 768,
     "funcao": "_quiosque"
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 759,
+    "linha": 771,
     "funcao": "_quiosque"
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 782,
+    "linha": 794,
     "funcao": "_quiosque"
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 953,
+    "linha": 965,
     "funcao": "_refresh_kiosk_board"
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1512,
+    "linha": 1524,
     "funcao": "_back_bar"
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1536,
+    "linha": 1548,
     "funcao": "_surf_rack"
    }
   ],
@@ -8576,17 +8595,17 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 274,
+    "linha": 286,
     "funcao": "_street"
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 753,
+    "linha": 765,
     "funcao": "_quiosque"
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1507,
+    "linha": 1519,
     "funcao": "_kiosk_details"
    }
   ],
@@ -8739,22 +8758,22 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1044,
+    "linha": 1056,
     "funcao": "_barraca"
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1202,
+    "linha": 1214,
     "funcao": "_jangada2"
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1234,
+    "linha": 1246,
     "funcao": "_fishing_boat"
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1518,
+    "linha": 1530,
     "funcao": "_back_bar"
    }
   ],
@@ -8814,12 +8833,12 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 580,
+    "linha": 592,
     "funcao": "_hero_house"
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1520,
+    "linha": 1532,
     "funcao": "_back_bar"
    }
   ],
@@ -8859,7 +8878,7 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 560,
+    "linha": 572,
     "funcao": "_hero_house"
    }
   ],
@@ -8914,12 +8933,12 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 781,
+    "linha": 793,
     "funcao": "_quiosque"
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1200,
+    "linha": 1212,
     "funcao": "_jangada2"
    }
   ],
@@ -9094,7 +9113,7 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 560,
+    "linha": 572,
     "funcao": "_hero_house"
    }
   ],
@@ -9149,7 +9168,7 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 560,
+    "linha": 572,
     "funcao": "_hero_house"
    }
   ],
@@ -9219,7 +9238,7 @@
   "usos": [
    {
     "arquivo": "guest.gd",
-    "linha": 913,
+    "linha": 921,
     "funcao": "_caricature"
    }
   ],
@@ -9260,7 +9279,7 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 729,
+    "linha": 741,
     "funcao": "_church_and_praca"
    }
   ],
@@ -9296,7 +9315,7 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 597,
+    "linha": 609,
     "funcao": "_hero_house"
    }
   ],
@@ -9327,7 +9346,7 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 613,
+    "linha": 625,
     "funcao": "_hero_house"
    }
   ],
@@ -9348,7 +9367,7 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 532,
+    "linha": 544,
     "funcao": "_houses"
    }
   ],
@@ -9390,7 +9409,7 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 621,
+    "linha": 633,
     "funcao": "_hero_house"
    }
   ],
@@ -9451,7 +9470,7 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 832,
+    "linha": 844,
     "funcao": "_quiosque"
    }
   ],
@@ -9487,7 +9506,7 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 776,
+    "linha": 788,
     "funcao": "_quiosque"
    }
   ],
@@ -9522,7 +9541,7 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 618,
+    "linha": 630,
     "funcao": "_hero_house"
    }
   ],
@@ -9538,7 +9557,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1523,
+    "linha": 1535,
     "funcao": "_back_bar"
    }
   ],
@@ -9568,12 +9587,12 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 603,
+    "linha": 615,
     "funcao": "_hero_house"
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 632,
+    "linha": 644,
     "funcao": "_hero_house"
    }
   ],
@@ -9589,7 +9608,7 @@
   "usos": [
    {
     "arquivo": "details.gd",
-    "linha": 436,
+    "linha": 431,
     "funcao": "lighthouse"
    }
   ],
@@ -9604,7 +9623,7 @@
   "usos": [
    {
     "arquivo": "details.gd",
-    "linha": 436,
+    "linha": 431,
     "funcao": "lighthouse"
    }
   ],
@@ -9619,7 +9638,7 @@
   "usos": [
    {
     "arquivo": "details.gd",
-    "linha": 436,
+    "linha": 431,
     "funcao": "lighthouse"
    }
   ],
@@ -9634,7 +9653,7 @@
   "usos": [
    {
     "arquivo": "details.gd",
-    "linha": 436,
+    "linha": 431,
     "funcao": "lighthouse"
    }
   ],
@@ -9649,12 +9668,12 @@
   "usos": [
    {
     "arquivo": "details.gd",
-    "linha": 436,
+    "linha": 431,
     "funcao": "lighthouse"
    },
    {
     "arquivo": "details.gd",
-    "linha": 440,
+    "linha": 435,
     "funcao": "lighthouse"
    }
   ],
@@ -9694,12 +9713,12 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 614,
+    "linha": 626,
     "funcao": "_hero_house"
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 981,
+    "linha": 993,
     "funcao": "_kiosk_grill"
    }
   ],
@@ -9815,7 +9834,7 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1554,
+    "linha": 1566,
     "funcao": "_kiosk_drinks"
    }
   ],
@@ -9905,12 +9924,12 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 602,
+    "linha": 614,
     "funcao": "_hero_house"
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 629,
+    "linha": 641,
     "funcao": "_hero_house"
    }
   ],
@@ -9926,7 +9945,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1523,
+    "linha": 1535,
     "funcao": "_back_bar"
    }
   ],
@@ -9971,7 +9990,7 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1781,
+    "linha": 1801,
     "funcao": "_sand_clutter"
    }
   ],
@@ -10012,7 +10031,7 @@
   "usos": [
    {
     "arquivo": "details.gd",
-    "linha": 428,
+    "linha": 423,
     "funcao": "pier"
    },
    {
@@ -10032,7 +10051,7 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1500,
+    "linha": 1512,
     "funcao": "_kiosk_details"
    }
   ],
@@ -10094,12 +10113,12 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 915,
+    "linha": 927,
     "funcao": "_kiosk_table"
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1051,
+    "linha": 1063,
     "funcao": "_barraca"
    }
   ],
@@ -10146,7 +10165,7 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 110,
+    "linha": 122,
     "funcao": "_bench"
    }
   ],
@@ -10188,7 +10207,7 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 505,
+    "linha": 517,
     "funcao": "_house"
    }
   ],
@@ -10214,7 +10233,7 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 600,
+    "linha": 612,
     "funcao": "_hero_house"
    }
   ],
@@ -10235,12 +10254,12 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 627,
+    "linha": 639,
     "funcao": "_hero_house"
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 727,
+    "linha": 739,
     "funcao": "_church_and_praca"
    }
   ],
@@ -10266,12 +10285,12 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1364,
+    "linha": 1376,
     "funcao": "_village_props"
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 2010,
+    "linha": 2030,
     "funcao": "_map_details"
    }
   ],
@@ -10292,12 +10311,12 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 531,
+    "linha": 543,
     "funcao": "_houses"
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1054,
+    "linha": 1066,
     "funcao": "_barraca"
    }
   ],
@@ -10333,7 +10352,7 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1055,
+    "linha": 1067,
     "funcao": "_barraca"
    }
   ],
@@ -10349,7 +10368,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1523,
+    "linha": 1535,
     "funcao": "_back_bar"
    }
   ],
@@ -10379,17 +10398,17 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 508,
+    "linha": 520,
     "funcao": "_house"
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1364,
+    "linha": 1376,
     "funcao": "_village_props"
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 2010,
+    "linha": 2030,
     "funcao": "_map_details"
    }
   ],
@@ -10425,7 +10444,7 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 2010,
+    "linha": 2030,
     "funcao": "_map_details"
    }
   ],
@@ -10451,27 +10470,32 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 506,
+    "linha": 518,
     "funcao": "_house"
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 626,
+    "linha": 638,
     "funcao": "_hero_house"
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 628,
+    "linha": 640,
     "funcao": "_hero_house"
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1364,
+    "linha": 1376,
     "funcao": "_village_props"
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 2010,
+    "linha": 1741,
+    "funcao": "_village_expansion"
+   },
+   {
+    "arquivo": "world_village.gd",
+    "linha": 2030,
     "funcao": "_map_details"
    }
   ],
@@ -10553,17 +10577,17 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1419,
+    "linha": 1431,
     "funcao": "_street_lamps"
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1420,
+    "linha": 1432,
     "funcao": "_street_lamps"
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1616,
+    "linha": 1628,
     "funcao": "_add_lamp"
    }
   ],
@@ -10589,7 +10613,7 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 599,
+    "linha": 611,
     "funcao": "_hero_house"
    }
   ],
@@ -10630,7 +10654,7 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 601,
+    "linha": 613,
     "funcao": "_hero_house"
    }
   ],
@@ -10696,7 +10720,7 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 624,
+    "linha": 636,
     "funcao": "_hero_house"
    }
   ],
@@ -10747,12 +10771,12 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 530,
+    "linha": 542,
     "funcao": "_houses"
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1361,
+    "linha": 1373,
     "funcao": "_village_props"
    }
   ],
@@ -10773,7 +10797,7 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 624,
+    "linha": 636,
     "funcao": "_hero_house"
    }
   ],
@@ -10789,7 +10813,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1523,
+    "linha": 1535,
     "funcao": "_back_bar"
    }
   ],
@@ -10804,7 +10828,7 @@
   "usos": [
    {
     "arquivo": "details.gd",
-    "linha": 429,
+    "linha": 424,
     "funcao": "pier"
    },
    {
@@ -10829,7 +10853,7 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1229,
+    "linha": 1241,
     "funcao": "_fishing_boat"
    }
   ],
@@ -10865,22 +10889,22 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 529,
+    "linha": 541,
     "funcao": "_houses"
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1228,
+    "linha": 1240,
     "funcao": "_fishing_boat"
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1360,
+    "linha": 1372,
     "funcao": "_village_props"
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1908,
+    "linha": 1928,
     "funcao": "_landmark_details"
    }
   ],
@@ -10941,7 +10965,7 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 806,
+    "linha": 818,
     "funcao": "_quiosque"
    }
   ],
@@ -10972,17 +10996,17 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 505,
+    "linha": 517,
     "funcao": "_house"
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 622,
+    "linha": 634,
     "funcao": "_hero_house"
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 623,
+    "linha": 635,
     "funcao": "_hero_house"
    }
   ],
@@ -11003,7 +11027,7 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1225,
+    "linha": 1237,
     "funcao": "_fishing_boat"
    }
   ],
@@ -11023,12 +11047,12 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1523,
+    "linha": 1535,
     "funcao": "_back_bar"
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1530,
+    "linha": 1542,
     "funcao": "_back_bar"
    }
   ],
@@ -11048,7 +11072,7 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1523,
+    "linha": 1535,
     "funcao": "_back_bar"
    }
   ],
@@ -11073,17 +11097,17 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1523,
+    "linha": 1535,
     "funcao": "_back_bar"
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1530,
+    "linha": 1542,
     "funcao": "_back_bar"
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1532,
+    "linha": 1544,
     "funcao": "_back_bar"
    }
   ],
@@ -11183,7 +11207,7 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1487,
+    "linha": 1499,
     "funcao": "_kiosk_details"
    }
   ],
@@ -11410,21 +11434,6 @@
   "arquivo_modelo": "assets/models/kenney/tool-paddle.glb"
  },
  {
-  "codigo": "MOD-093",
-  "categoria": "MOD",
-  "chave": "g:cat",
-  "nome": "Cat",
-  "fonte": "Gerado no Blender (tools/gen_*.py)",
-  "usos": [
-   {
-    "arquivo": "details.gd",
-    "linha": 376,
-    "funcao": "cat"
-   }
-  ],
-  "arquivo_modelo": "assets/models/gen/cat.glb"
- },
- {
   "codigo": "MOD-094",
   "categoria": "MOD",
   "chave": "g:crab",
@@ -11438,21 +11447,6 @@
    }
   ],
   "arquivo_modelo": "assets/models/gen/crab.glb"
- },
- {
-  "codigo": "MOD-095",
-  "categoria": "MOD",
-  "chave": "g:dog",
-  "nome": "Dog",
-  "fonte": "Gerado no Blender (tools/gen_*.py)",
-  "usos": [
-   {
-    "arquivo": "details.gd",
-    "linha": 386,
-    "funcao": "dog"
-   }
-  ],
-  "arquivo_modelo": "assets/models/gen/dog.glb"
  },
  {
   "codigo": "MOD-096",
@@ -11553,7 +11547,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1783,
+    "linha": 1803,
     "funcao": "_sand_clutter"
    }
   ],
@@ -11568,7 +11562,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1783,
+    "linha": 1803,
     "funcao": "_sand_clutter"
    }
   ],
@@ -11598,7 +11592,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1230,
+    "linha": 1242,
     "funcao": "_fishing_boat"
    }
   ],
@@ -11628,7 +11622,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1196,
+    "linha": 1208,
     "funcao": "_jangada2"
    }
   ],
@@ -11643,7 +11637,7 @@
   "usos": [
    {
     "arquivo": "details.gd",
-    "linha": 444,
+    "linha": 439,
     "funcao": "lighthouse"
    }
   ],
@@ -11688,7 +11682,7 @@
   "usos": [
    {
     "arquivo": "details.gd",
-    "linha": 412,
+    "linha": 407,
     "funcao": "pier"
    }
   ],
@@ -11703,7 +11697,7 @@
   "usos": [
    {
     "arquivo": "details.gd",
-    "linha": 401,
+    "linha": 396,
     "funcao": "pier"
    }
   ],
@@ -11843,7 +11837,7 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 989,
+    "linha": 1001,
     "funcao": "_kiosk_grill"
    }
   ],
@@ -11863,7 +11857,7 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1858,
+    "linha": 1878,
     "funcao": "_landmark_details"
    }
   ],
@@ -11878,12 +11872,12 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 403,
+    "linha": 415,
     "funcao": "_house_extras"
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 907,
+    "linha": 919,
     "funcao": "_kiosk_facade"
    }
   ],
@@ -11898,7 +11892,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1879,
+    "linha": 1899,
     "funcao": "_landmark_details"
    }
   ],
@@ -11913,7 +11907,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 688,
+    "linha": 700,
     "funcao": "_church_and_praca"
    }
   ],
@@ -11943,7 +11937,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1894,
+    "linha": 1914,
     "funcao": "_landmark_details"
    }
   ],
@@ -12078,7 +12072,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1969,
+    "linha": 1989,
     "funcao": "_map_details"
    }
   ],
@@ -12093,7 +12087,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1845,
+    "linha": 1865,
     "funcao": "_landmark_details"
    }
   ],
@@ -12113,12 +12107,12 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 134,
+    "linha": 146,
     "funcao": "_street_bunting"
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 313,
+    "linha": 325,
     "funcao": "_facade"
    }
   ],
@@ -12148,7 +12142,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 293,
+    "linha": 305,
     "funcao": "_facade"
    }
   ],
@@ -12163,7 +12157,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 294,
+    "linha": 306,
     "funcao": "_facade"
    }
   ],
@@ -12198,7 +12192,7 @@
   "usos": [
    {
     "arquivo": "details.gd",
-    "linha": 459,
+    "linha": 454,
     "funcao": "lighthouse"
    }
   ],
@@ -12218,7 +12212,7 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 324,
+    "linha": 336,
     "funcao": "_facade"
    }
   ],
@@ -12233,12 +12227,12 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1603,
+    "linha": 1615,
     "funcao": "_lamp_head"
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1904,
+    "linha": 1924,
     "funcao": "_landmark_details"
    }
   ],
@@ -12333,7 +12327,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 328,
+    "linha": 340,
     "funcao": "_facade"
    }
   ],
@@ -12348,7 +12342,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 329,
+    "linha": 341,
     "funcao": "_facade"
    }
   ],
@@ -12363,7 +12357,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 983,
+    "linha": 995,
     "funcao": "_kiosk_grill"
    }
   ],
@@ -12393,12 +12387,12 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1681,
+    "linha": 1693,
     "funcao": "_village_expansion"
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 2025,
+    "linha": 2045,
     "funcao": "_map_details"
    }
   ],
@@ -12548,7 +12542,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 501,
+    "linha": 513,
     "funcao": "_house"
    }
   ],
@@ -12578,12 +12572,12 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 460,
+    "linha": 472,
     "funcao": "_house"
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 462,
+    "linha": 474,
     "funcao": "_house"
    }
   ],
@@ -12613,7 +12607,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 394,
+    "linha": 406,
     "funcao": "_house_extras"
    }
   ],
@@ -12638,7 +12632,7 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1553,
+    "linha": 1565,
     "funcao": "_kiosk_drinks"
    }
   ],
@@ -12708,7 +12702,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 2031,
+    "linha": 2051,
     "funcao": "_map_details"
    }
   ],
@@ -12728,7 +12722,7 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 2031,
+    "linha": 2051,
     "funcao": "_map_details"
    }
   ],
@@ -12788,7 +12782,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1872,
+    "linha": 1892,
     "funcao": "_landmark_details"
    }
   ],
@@ -12818,7 +12812,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1878,
+    "linha": 1898,
     "funcao": "_landmark_details"
    }
   ],
@@ -12833,7 +12827,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1910,
+    "linha": 1930,
     "funcao": "_landmark_details"
    }
   ],
@@ -12863,7 +12857,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 180,
+    "linha": 192,
     "funcao": "_bougainvillea"
    }
   ],
@@ -12878,7 +12872,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 390,
+    "linha": 402,
     "funcao": "_house_extras"
    }
   ],
@@ -13378,7 +13372,7 @@
    },
    {
     "arquivo": "kiosk_operations.gd",
-    "linha": 88,
+    "linha": 93,
     "funcao": "_build"
    },
    {
@@ -13388,7 +13382,7 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 631,
+    "linha": 643,
     "funcao": "_hero_house"
    }
   ],
@@ -13488,12 +13482,12 @@
    },
    {
     "arquivo": "kiosk_operations.gd",
-    "linha": 279,
+    "linha": 284,
     "funcao": "sync_company"
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 630,
+    "linha": 642,
     "funcao": "_hero_house"
    }
   ],
@@ -13513,7 +13507,7 @@
    },
    {
     "arquivo": "kiosk_operations.gd",
-    "linha": 92,
+    "linha": 97,
     "funcao": "_build"
    }
   ],
@@ -13533,7 +13527,7 @@
    },
    {
     "arquivo": "kiosk_operations.gd",
-    "linha": 93,
+    "linha": 98,
     "funcao": "_build"
    }
   ],
@@ -13675,21 +13669,6 @@
   "arquivo_modelo": "assets/models/gen/service_fridge_door.glb"
  },
  {
-  "codigo": "MOD-230",
-  "categoria": "MOD",
-  "chave": "g:service_register",
-  "nome": "Service register",
-  "fonte": "Gerado no Blender (tools/gen_*.py)",
-  "usos": [
-   {
-    "arquivo": "kiosk_operations.gd",
-    "linha": 73,
-    "funcao": "_build"
-   }
-  ],
-  "arquivo_modelo": "assets/models/gen/service_register.glb"
- },
- {
   "codigo": "MOD-231",
   "categoria": "MOD",
   "chave": "g:kiosk_facade",
@@ -13698,7 +13677,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 861,
+    "linha": 873,
     "funcao": "_kiosk_facade"
    }
   ],
@@ -13713,7 +13692,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 968,
+    "linha": 980,
     "funcao": "_kiosk_neon"
    }
   ],
@@ -13728,7 +13707,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 757,
+    "linha": 769,
     "funcao": "_quiosque"
    }
   ],
@@ -13773,7 +13752,7 @@
   "usos": [
    {
     "arquivo": "kiosk_operations.gd",
-    "linha": 75,
+    "linha": 74,
     "funcao": "_build"
    }
   ],
@@ -13798,7 +13777,7 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 633,
+    "linha": 645,
     "funcao": "_hero_house"
    }
   ],
@@ -13813,7 +13792,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 619,
+    "linha": 631,
     "funcao": "_hero_house"
    }
   ],
@@ -14000,21 +13979,6 @@
   "arquivo_modelo": "assets/models/gen/wicker_basket_closed.glb"
  },
  {
-  "codigo": "MOD-252",
-  "categoria": "MOD",
-  "chave": "g:kiosk_computer",
-  "nome": "Kiosk computer",
-  "fonte": "Gerado no Blender (tools/gen_*.py)",
-  "usos": [
-   {
-    "arquivo": "kiosk_operations.gd",
-    "linha": 76,
-    "funcao": "_build"
-   }
-  ],
-  "arquivo_modelo": "assets/models/gen/kiosk_computer.glb"
- },
- {
   "codigo": "MOD-253",
   "categoria": "MOD",
   "chave": "g:player_home_door",
@@ -14028,6 +13992,21 @@
    }
   ],
   "arquivo_modelo": "assets/models/gen/player_home_door.glb"
+ },
+ {
+  "codigo": "MOD-254",
+  "categoria": "MOD",
+  "chave": "g:kiosk_laptop",
+  "nome": "Kiosk laptop",
+  "fonte": "Gerado no Blender (tools/gen_*.py)",
+  "usos": [
+   {
+    "arquivo": "kiosk_operations.gd",
+    "linha": 75,
+    "funcao": "_build"
+   }
+  ],
+  "arquivo_modelo": "assets/models/gen/kiosk_laptop.glb"
  },
  {
   "codigo": "NAT-001",
@@ -14048,7 +14027,7 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1374,
+    "linha": 1386,
     "funcao": "_village_props"
    }
   ],
@@ -14073,7 +14052,7 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1374,
+    "linha": 1386,
     "funcao": "_village_props"
    }
   ],
@@ -14201,7 +14180,7 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1374,
+    "linha": 1386,
     "funcao": "_village_props"
    }
   ],
@@ -14216,7 +14195,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1782,
+    "linha": 1802,
     "funcao": "_sand_clutter"
    }
   ],
@@ -14240,7 +14219,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1782,
+    "linha": 1802,
     "funcao": "_sand_clutter"
    }
   ],
@@ -14264,7 +14243,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1781,
+    "linha": 1801,
     "funcao": "_sand_clutter"
    }
   ],
@@ -14288,7 +14267,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1781,
+    "linha": 1801,
     "funcao": "_sand_clutter"
    }
   ],
@@ -14330,7 +14309,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1780,
+    "linha": 1800,
     "funcao": "_sand_clutter"
    }
   ],
@@ -14354,7 +14333,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1780,
+    "linha": 1800,
     "funcao": "_sand_clutter"
    }
   ],
@@ -14396,7 +14375,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1780,
+    "linha": 1800,
     "funcao": "_sand_clutter"
    }
   ],
@@ -14551,7 +14530,7 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1374,
+    "linha": 1386,
     "funcao": "_village_props"
    }
   ],
@@ -16203,6 +16182,42 @@
   "fonte": "Gerado no Blender (tools/gen_*.py)",
   "usos": [],
   "arquivo_modelo": "assets/models/gen/coastal_yacht.glb"
+ },
+ {
+  "codigo": "NOU-180",
+  "categoria": "NOU",
+  "chave": "g:cat",
+  "nome": "Cat",
+  "fonte": "Gerado no Blender (tools/gen_*.py)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/gen/cat.glb"
+ },
+ {
+  "codigo": "NOU-181",
+  "categoria": "NOU",
+  "chave": "g:dog",
+  "nome": "Dog",
+  "fonte": "Gerado no Blender (tools/gen_*.py)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/gen/dog.glb"
+ },
+ {
+  "codigo": "NOU-182",
+  "categoria": "NOU",
+  "chave": "g:kiosk_computer",
+  "nome": "Kiosk computer",
+  "fonte": "Gerado no Blender (tools/gen_*.py)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/gen/kiosk_computer.glb"
+ },
+ {
+  "codigo": "NOU-183",
+  "categoria": "NOU",
+  "chave": "g:service_register",
+  "nome": "Service register",
+  "fonte": "Gerado no Blender (tools/gen_*.py)",
+  "usos": [],
+  "arquivo_modelo": "assets/models/gen/service_register.glb"
  },
  {
   "codigo": "PCA-001",
@@ -17999,7 +18014,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 907,
+    "linha": 919,
     "funcao": "_kiosk_facade"
    }
   ],
@@ -18018,7 +18033,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 619,
+    "linha": 631,
     "funcao": "_hero_house"
    }
   ],
@@ -18037,7 +18052,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 620,
+    "linha": 632,
     "funcao": "_hero_house"
    }
   ],
@@ -18056,7 +18071,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 633,
+    "linha": 645,
     "funcao": "_hero_house"
    }
   ],
@@ -18075,7 +18090,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 630,
+    "linha": 642,
     "funcao": "_hero_house"
    }
   ],
@@ -18094,7 +18109,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 631,
+    "linha": 643,
     "funcao": "_hero_house"
    }
   ],
@@ -18132,7 +18147,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 953,
+    "linha": 965,
     "funcao": "_refresh_kiosk_board"
    }
   ],
@@ -18159,6 +18174,25 @@
   "args": "self, \"vintage_suitcase\", Vector3(c.x + 2.3, y0, c.z + 2.0), 0.4, -PI * 0.5 + 0.3, Color.WHITE, 0.0",
   "material": "",
   "em_laco": false,
+  "comentario": ""
+ },
+ {
+  "codigo": "PCA-1010",
+  "categoria": "PCA",
+  "chave": "world_village.gd|_village_expansion|Real.place|2",
+  "nome": "potted plant 04",
+  "fonte": "world_village.gd (código)",
+  "usos": [
+   {
+    "arquivo": "world_village.gd",
+    "linha": 1741,
+    "funcao": "_village_expansion"
+   }
+  ],
+  "chamada": "Real.place",
+  "args": "self,\"potted_plant_04\",plant_pos,.75,planter_x",
+  "material": "",
+  "em_laco": true,
   "comentario": ""
  },
  {
@@ -21210,7 +21244,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 159,
+    "linha": 171,
     "funcao": "_flower_box"
    }
   ],
@@ -21229,7 +21263,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 168,
+    "linha": 180,
     "funcao": "_juliet"
    }
   ],
@@ -21248,7 +21282,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 170,
+    "linha": 182,
     "funcao": "_juliet"
    }
   ],
@@ -21267,7 +21301,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 182,
+    "linha": 194,
     "funcao": "_bougainvillea"
    }
   ],
@@ -21286,7 +21320,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 184,
+    "linha": 196,
     "funcao": "_bougainvillea"
    }
   ],
@@ -21305,7 +21339,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 186,
+    "linha": 198,
     "funcao": "_bougainvillea"
    }
   ],
@@ -21324,7 +21358,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 254,
+    "linha": 266,
     "funcao": "_fence"
    }
   ],
@@ -21343,7 +21377,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 256,
+    "linha": 268,
     "funcao": "_fence"
    }
   ],
@@ -21362,7 +21396,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 258,
+    "linha": 270,
     "funcao": "_fence"
    }
   ],
@@ -21381,7 +21415,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 267,
+    "linha": 279,
     "funcao": "_street"
    }
   ],
@@ -21400,7 +21434,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 270,
+    "linha": 282,
     "funcao": "_street"
    }
   ],
@@ -21419,7 +21453,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 271,
+    "linha": 283,
     "funcao": "_street"
    }
   ],
@@ -21438,7 +21472,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 273,
+    "linha": 285,
     "funcao": "_street"
    }
   ],
@@ -21457,7 +21491,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 274,
+    "linha": 286,
     "funcao": "_street"
    }
   ],
@@ -21476,7 +21510,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 296,
+    "linha": 308,
     "funcao": "_facade"
    }
   ],
@@ -21495,7 +21529,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 297,
+    "linha": 309,
     "funcao": "_facade"
    }
   ],
@@ -21514,7 +21548,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 300,
+    "linha": 312,
     "funcao": "_facade"
    }
   ],
@@ -21533,7 +21567,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 301,
+    "linha": 313,
     "funcao": "_facade"
    }
   ],
@@ -21552,7 +21586,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 317,
+    "linha": 329,
     "funcao": "_facade"
    }
   ],
@@ -21571,7 +21605,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 302,
+    "linha": 314,
     "funcao": "_facade"
    }
   ],
@@ -21590,7 +21624,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 304,
+    "linha": 316,
     "funcao": "_facade"
    }
   ],
@@ -21609,7 +21643,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 305,
+    "linha": 317,
     "funcao": "_facade"
    }
   ],
@@ -21628,7 +21662,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 307,
+    "linha": 319,
     "funcao": "_facade"
    }
   ],
@@ -21647,7 +21681,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 309,
+    "linha": 321,
     "funcao": "_facade"
    }
   ],
@@ -21666,7 +21700,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 311,
+    "linha": 323,
     "funcao": "_facade"
    }
   ],
@@ -21685,7 +21719,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 320,
+    "linha": 332,
     "funcao": "_facade"
    }
   ],
@@ -21704,7 +21738,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 321,
+    "linha": 333,
     "funcao": "_facade"
    }
   ],
@@ -21723,7 +21757,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 323,
+    "linha": 335,
     "funcao": "_facade"
    }
   ],
@@ -21742,7 +21776,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 325,
+    "linha": 337,
     "funcao": "_facade"
    }
   ],
@@ -21761,7 +21795,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 326,
+    "linha": 338,
     "funcao": "_facade"
    }
   ],
@@ -21780,7 +21814,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 331,
+    "linha": 343,
     "funcao": "_facade"
    }
   ],
@@ -21799,7 +21833,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 332,
+    "linha": 344,
     "funcao": "_facade"
    }
   ],
@@ -21818,7 +21852,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 334,
+    "linha": 346,
     "funcao": "_facade"
    }
   ],
@@ -21837,7 +21871,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 335,
+    "linha": 347,
     "funcao": "_facade"
    }
   ],
@@ -21856,7 +21890,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 336,
+    "linha": 348,
     "funcao": "_facade"
    }
   ],
@@ -21875,7 +21909,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 337,
+    "linha": 349,
     "funcao": "_facade"
    }
   ],
@@ -21894,7 +21928,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 339,
+    "linha": 351,
     "funcao": "_facade"
    }
   ],
@@ -21913,7 +21947,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 340,
+    "linha": 352,
     "funcao": "_facade"
    }
   ],
@@ -21932,7 +21966,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 342,
+    "linha": 354,
     "funcao": "_facade"
    }
   ],
@@ -21951,7 +21985,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 343,
+    "linha": 355,
     "funcao": "_facade"
    }
   ],
@@ -21970,7 +22004,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 350,
+    "linha": 362,
     "funcao": "_facade"
    }
   ],
@@ -21989,7 +22023,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 352,
+    "linha": 364,
     "funcao": "_facade"
    }
   ],
@@ -22008,7 +22042,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 356,
+    "linha": 368,
     "funcao": "_facade"
    }
   ],
@@ -22027,7 +22061,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 358,
+    "linha": 370,
     "funcao": "_facade"
    }
   ],
@@ -22046,7 +22080,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 364,
+    "linha": 376,
     "funcao": "_house_extras"
    }
   ],
@@ -22065,7 +22099,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 367,
+    "linha": 379,
     "funcao": "_house_extras"
    }
   ],
@@ -22084,7 +22118,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 377,
+    "linha": 389,
     "funcao": "_house_extras"
    }
   ],
@@ -22103,7 +22137,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 380,
+    "linha": 392,
     "funcao": "_house_extras"
    }
   ],
@@ -22122,7 +22156,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 382,
+    "linha": 394,
     "funcao": "_house_extras"
    }
   ],
@@ -22141,7 +22175,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 385,
+    "linha": 397,
     "funcao": "_house_extras"
    }
   ],
@@ -22160,7 +22194,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 386,
+    "linha": 398,
     "funcao": "_house_extras"
    }
   ],
@@ -22179,7 +22213,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 401,
+    "linha": 413,
     "funcao": "_house_extras"
    }
   ],
@@ -22198,7 +22232,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 396,
+    "linha": 408,
     "funcao": "_house_extras"
    }
   ],
@@ -22217,7 +22251,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 404,
+    "linha": 416,
     "funcao": "_house_extras"
    }
   ],
@@ -22236,7 +22270,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 433,
+    "linha": 445,
     "funcao": "_house"
    }
   ],
@@ -22255,7 +22289,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 435,
+    "linha": 447,
     "funcao": "_house"
    }
   ],
@@ -22274,7 +22308,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 436,
+    "linha": 448,
     "funcao": "_house"
    }
   ],
@@ -22293,7 +22327,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 437,
+    "linha": 449,
     "funcao": "_house"
    }
   ],
@@ -22312,7 +22346,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 440,
+    "linha": 452,
     "funcao": "_house"
    }
   ],
@@ -22331,7 +22365,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 466,
+    "linha": 478,
     "funcao": "_house"
    }
   ],
@@ -22350,7 +22384,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 497,
+    "linha": 509,
     "funcao": "_house"
    }
   ],
@@ -22369,7 +22403,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 502,
+    "linha": 514,
     "funcao": "_house"
    }
   ],
@@ -22388,7 +22422,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 452,
+    "linha": 464,
     "funcao": "_house"
    }
   ],
@@ -22407,7 +22441,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 505,
+    "linha": 517,
     "funcao": "_house"
    }
   ],
@@ -22426,7 +22460,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 506,
+    "linha": 518,
     "funcao": "_house"
    }
   ],
@@ -22445,7 +22479,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 508,
+    "linha": 520,
     "funcao": "_house"
    }
   ],
@@ -22464,7 +22498,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 459,
+    "linha": 471,
     "funcao": "_house"
    }
   ],
@@ -22483,7 +22517,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 481,
+    "linha": 493,
     "funcao": "_house"
    }
   ],
@@ -22502,7 +22536,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 527,
+    "linha": 539,
     "funcao": "_houses"
    }
   ],
@@ -22521,7 +22555,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 529,
+    "linha": 541,
     "funcao": "_houses"
    }
   ],
@@ -22540,7 +22574,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 530,
+    "linha": 542,
     "funcao": "_houses"
    }
   ],
@@ -22559,7 +22593,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 531,
+    "linha": 543,
     "funcao": "_houses"
    }
   ],
@@ -22578,7 +22612,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 532,
+    "linha": 544,
     "funcao": "_houses"
    }
   ],
@@ -22597,7 +22631,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 559,
+    "linha": 571,
     "funcao": "_hero_house"
    }
   ],
@@ -22616,7 +22650,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 578,
+    "linha": 590,
     "funcao": "_hero_house"
    }
   ],
@@ -22635,7 +22669,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 579,
+    "linha": 591,
     "funcao": "_hero_house"
    }
   ],
@@ -22654,7 +22688,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 580,
+    "linha": 592,
     "funcao": "_hero_house"
    }
   ],
@@ -22673,7 +22707,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 581,
+    "linha": 593,
     "funcao": "_hero_house"
    }
   ],
@@ -22692,7 +22726,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 586,
+    "linha": 598,
     "funcao": "_hero_house"
    }
   ],
@@ -22711,7 +22745,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 587,
+    "linha": 599,
     "funcao": "_hero_house"
    }
   ],
@@ -22730,7 +22764,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 588,
+    "linha": 600,
     "funcao": "_hero_house"
    }
   ],
@@ -22749,7 +22783,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 589,
+    "linha": 601,
     "funcao": "_hero_house"
    }
   ],
@@ -22768,7 +22802,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 625,
+    "linha": 637,
     "funcao": "_hero_house"
    }
   ],
@@ -22787,7 +22821,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 597,
+    "linha": 609,
     "funcao": "_hero_house"
    }
   ],
@@ -22806,7 +22840,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 599,
+    "linha": 611,
     "funcao": "_hero_house"
    }
   ],
@@ -22825,7 +22859,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 600,
+    "linha": 612,
     "funcao": "_hero_house"
    }
   ],
@@ -22844,7 +22878,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 601,
+    "linha": 613,
     "funcao": "_hero_house"
    }
   ],
@@ -22863,7 +22897,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 602,
+    "linha": 614,
     "funcao": "_hero_house"
    }
   ],
@@ -22882,7 +22916,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 603,
+    "linha": 615,
     "funcao": "_hero_house"
    }
   ],
@@ -22901,7 +22935,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 613,
+    "linha": 625,
     "funcao": "_hero_house"
    }
   ],
@@ -22920,7 +22954,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 614,
+    "linha": 626,
     "funcao": "_hero_house"
    }
   ],
@@ -22939,7 +22973,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 618,
+    "linha": 630,
     "funcao": "_hero_house"
    }
   ],
@@ -22958,7 +22992,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 621,
+    "linha": 633,
     "funcao": "_hero_house"
    }
   ],
@@ -22977,7 +23011,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 622,
+    "linha": 634,
     "funcao": "_hero_house"
    }
   ],
@@ -22996,7 +23030,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 623,
+    "linha": 635,
     "funcao": "_hero_house"
    }
   ],
@@ -23015,7 +23049,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 624,
+    "linha": 636,
     "funcao": "_hero_house"
    }
   ],
@@ -23034,7 +23068,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 626,
+    "linha": 638,
     "funcao": "_hero_house"
    }
   ],
@@ -23053,7 +23087,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 627,
+    "linha": 639,
     "funcao": "_hero_house"
    }
   ],
@@ -23072,7 +23106,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 628,
+    "linha": 640,
     "funcao": "_hero_house"
    }
   ],
@@ -23091,7 +23125,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 629,
+    "linha": 641,
     "funcao": "_hero_house"
    }
   ],
@@ -23110,7 +23144,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 632,
+    "linha": 644,
     "funcao": "_hero_house"
    }
   ],
@@ -23129,7 +23163,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 653,
+    "linha": 665,
     "funcao": "_church_and_praca"
    }
   ],
@@ -23148,7 +23182,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 661,
+    "linha": 673,
     "funcao": "_church_and_praca"
    }
   ],
@@ -23167,7 +23201,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 664,
+    "linha": 676,
     "funcao": "_church_and_praca"
    }
   ],
@@ -23186,7 +23220,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 666,
+    "linha": 678,
     "funcao": "_church_and_praca"
    }
   ],
@@ -23205,7 +23239,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 667,
+    "linha": 679,
     "funcao": "_church_and_praca"
    }
   ],
@@ -23224,7 +23258,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 677,
+    "linha": 689,
     "funcao": "_church_and_praca"
    }
   ],
@@ -23243,7 +23277,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 683,
+    "linha": 695,
     "funcao": "_church_and_praca"
    }
   ],
@@ -23262,7 +23296,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 685,
+    "linha": 697,
     "funcao": "_church_and_praca"
    }
   ],
@@ -23281,7 +23315,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 689,
+    "linha": 701,
     "funcao": "_church_and_praca"
    }
   ],
@@ -23300,7 +23334,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 692,
+    "linha": 704,
     "funcao": "_church_and_praca"
    }
   ],
@@ -23319,7 +23353,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 695,
+    "linha": 707,
     "funcao": "_church_and_praca"
    }
   ],
@@ -23338,7 +23372,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 696,
+    "linha": 708,
     "funcao": "_church_and_praca"
    }
   ],
@@ -23357,7 +23391,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 697,
+    "linha": 709,
     "funcao": "_church_and_praca"
    }
   ],
@@ -23376,7 +23410,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 699,
+    "linha": 711,
     "funcao": "_church_and_praca"
    }
   ],
@@ -23395,7 +23429,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 701,
+    "linha": 713,
     "funcao": "_church_and_praca"
    }
   ],
@@ -23414,7 +23448,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 702,
+    "linha": 714,
     "funcao": "_church_and_praca"
    }
   ],
@@ -23433,7 +23467,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 703,
+    "linha": 715,
     "funcao": "_church_and_praca"
    }
   ],
@@ -23452,7 +23486,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 704,
+    "linha": 716,
     "funcao": "_church_and_praca"
    }
   ],
@@ -23471,7 +23505,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 705,
+    "linha": 717,
     "funcao": "_church_and_praca"
    }
   ],
@@ -23490,7 +23524,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 710,
+    "linha": 722,
     "funcao": "_church_and_praca"
    }
   ],
@@ -23509,7 +23543,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 712,
+    "linha": 724,
     "funcao": "_church_and_praca"
    }
   ],
@@ -23528,7 +23562,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 718,
+    "linha": 730,
     "funcao": "_church_and_praca"
    }
   ],
@@ -23547,7 +23581,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 727,
+    "linha": 739,
     "funcao": "_church_and_praca"
    }
   ],
@@ -23566,7 +23600,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 729,
+    "linha": 741,
     "funcao": "_church_and_praca"
    }
   ],
@@ -23585,7 +23619,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 753,
+    "linha": 765,
     "funcao": "_quiosque"
    }
   ],
@@ -23604,7 +23638,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 781,
+    "linha": 793,
     "funcao": "_quiosque"
    }
   ],
@@ -23623,7 +23657,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 756,
+    "linha": 768,
     "funcao": "_quiosque"
    }
   ],
@@ -23642,7 +23676,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 760,
+    "linha": 772,
     "funcao": "_quiosque"
    }
   ],
@@ -23661,7 +23695,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 761,
+    "linha": 773,
     "funcao": "_quiosque"
    }
   ],
@@ -23680,7 +23714,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 762,
+    "linha": 774,
     "funcao": "_quiosque"
    }
   ],
@@ -23699,7 +23733,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 782,
+    "linha": 794,
     "funcao": "_quiosque"
    }
   ],
@@ -23718,7 +23752,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 757,
+    "linha": 769,
     "funcao": "_quiosque"
    }
   ],
@@ -23737,7 +23771,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 806,
+    "linha": 818,
     "funcao": "_quiosque"
    }
   ],
@@ -23756,7 +23790,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 832,
+    "linha": 844,
     "funcao": "_quiosque"
    }
   ],
@@ -23775,7 +23809,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 783,
+    "linha": 795,
     "funcao": "_quiosque"
    }
   ],
@@ -23794,7 +23828,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 784,
+    "linha": 796,
     "funcao": "_quiosque"
    }
   ],
@@ -23813,7 +23847,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 915,
+    "linha": 927,
     "funcao": "_kiosk_table"
    }
   ],
@@ -23832,7 +23866,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 922,
+    "linha": 934,
     "funcao": "_kiosk_table"
    }
   ],
@@ -23851,7 +23885,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 981,
+    "linha": 993,
     "funcao": "_kiosk_grill"
    }
   ],
@@ -23870,7 +23904,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 985,
+    "linha": 997,
     "funcao": "_kiosk_grill"
    }
   ],
@@ -23889,7 +23923,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1044,
+    "linha": 1056,
     "funcao": "_barraca"
    }
   ],
@@ -23908,7 +23942,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1045,
+    "linha": 1057,
     "funcao": "_barraca"
    }
   ],
@@ -23927,7 +23961,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1047,
+    "linha": 1059,
     "funcao": "_barraca"
    }
   ],
@@ -23946,7 +23980,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1048,
+    "linha": 1060,
     "funcao": "_barraca"
    }
   ],
@@ -23965,7 +23999,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1051,
+    "linha": 1063,
     "funcao": "_barraca"
    }
   ],
@@ -23984,7 +24018,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1054,
+    "linha": 1066,
     "funcao": "_barraca"
    }
   ],
@@ -24003,7 +24037,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1055,
+    "linha": 1067,
     "funcao": "_barraca"
    }
   ],
@@ -24022,7 +24056,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1096,
+    "linha": 1108,
     "funcao": "_coco_piles"
    }
   ],
@@ -24041,7 +24075,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1150,
+    "linha": 1162,
     "funcao": "_bike"
    }
   ],
@@ -24060,7 +24094,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1166,
+    "linha": 1178,
     "funcao": "_bike"
    }
   ],
@@ -24079,7 +24113,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1169,
+    "linha": 1181,
     "funcao": "_bike"
    }
   ],
@@ -24098,7 +24132,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1173,
+    "linha": 1185,
     "funcao": "_bike"
    }
   ],
@@ -24117,7 +24151,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1175,
+    "linha": 1187,
     "funcao": "_bike"
    }
   ],
@@ -24136,7 +24170,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1177,
+    "linha": 1189,
     "funcao": "_bike"
    }
   ],
@@ -24155,7 +24189,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1178,
+    "linha": 1190,
     "funcao": "_bike"
    }
   ],
@@ -24174,7 +24208,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1179,
+    "linha": 1191,
     "funcao": "_bike"
    }
   ],
@@ -24193,7 +24227,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1181,
+    "linha": 1193,
     "funcao": "_bike"
    }
   ],
@@ -24212,7 +24246,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1182,
+    "linha": 1194,
     "funcao": "_bike"
    }
   ],
@@ -24231,7 +24265,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1183,
+    "linha": 1195,
     "funcao": "_bike"
    }
   ],
@@ -24250,7 +24284,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1184,
+    "linha": 1196,
     "funcao": "_bike"
    }
   ],
@@ -24269,7 +24303,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1185,
+    "linha": 1197,
     "funcao": "_bike"
    }
   ],
@@ -24288,7 +24322,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1186,
+    "linha": 1198,
     "funcao": "_bike"
    }
   ],
@@ -24307,7 +24341,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1188,
+    "linha": 1200,
     "funcao": "_bike"
    }
   ],
@@ -24326,7 +24360,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1200,
+    "linha": 1212,
     "funcao": "_jangada2"
    }
   ],
@@ -24345,7 +24379,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1202,
+    "linha": 1214,
     "funcao": "_jangada2"
    }
   ],
@@ -24364,7 +24398,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1203,
+    "linha": 1215,
     "funcao": "_jangada2"
    }
   ],
@@ -24383,7 +24417,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1197,
+    "linha": 1209,
     "funcao": "_jangada2"
    }
   ],
@@ -24402,7 +24436,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1225,
+    "linha": 1237,
     "funcao": "_fishing_boat"
    }
   ],
@@ -24421,7 +24455,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1228,
+    "linha": 1240,
     "funcao": "_fishing_boat"
    }
   ],
@@ -24440,7 +24474,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1229,
+    "linha": 1241,
     "funcao": "_fishing_boat"
    }
   ],
@@ -24459,7 +24493,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1234,
+    "linha": 1246,
     "funcao": "_fishing_boat"
    }
   ],
@@ -24478,7 +24512,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1235,
+    "linha": 1247,
     "funcao": "_fishing_boat"
    }
   ],
@@ -24497,7 +24531,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1232,
+    "linha": 1244,
     "funcao": "_fishing_boat"
    }
   ],
@@ -24516,7 +24550,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1300,
+    "linha": 1312,
     "funcao": "_net"
    }
   ],
@@ -24535,7 +24569,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1301,
+    "linha": 1313,
     "funcao": "_net"
    }
   ],
@@ -24554,7 +24588,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1321,
+    "linha": 1333,
     "funcao": "_net"
    }
   ],
@@ -24573,7 +24607,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1360,
+    "linha": 1372,
     "funcao": "_village_props"
    }
   ],
@@ -24592,7 +24626,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1361,
+    "linha": 1373,
     "funcao": "_village_props"
    }
   ],
@@ -24611,7 +24645,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1364,
+    "linha": 1376,
     "funcao": "_village_props"
    }
   ],
@@ -24630,7 +24664,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1374,
+    "linha": 1386,
     "funcao": "_village_props"
    }
   ],
@@ -24649,7 +24683,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1420,
+    "linha": 1432,
     "funcao": "_street_lamps"
    }
   ],
@@ -24668,7 +24702,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1425,
+    "linha": 1437,
     "funcao": "_street_lamps"
    }
   ],
@@ -24687,7 +24721,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1480,
+    "linha": 1492,
     "funcao": "_kiosk_details"
    }
   ],
@@ -24706,7 +24740,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1482,
+    "linha": 1494,
     "funcao": "_kiosk_details"
    }
   ],
@@ -24725,7 +24759,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1483,
+    "linha": 1495,
     "funcao": "_kiosk_details"
    }
   ],
@@ -24744,7 +24778,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1486,
+    "linha": 1498,
     "funcao": "_kiosk_details"
    }
   ],
@@ -24763,7 +24797,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1486,
+    "linha": 1498,
     "funcao": "_kiosk_details"
    }
   ],
@@ -24782,7 +24816,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1487,
+    "linha": 1499,
     "funcao": "_kiosk_details"
    }
   ],
@@ -24801,7 +24835,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1490,
+    "linha": 1502,
     "funcao": "_kiosk_details"
    }
   ],
@@ -24820,7 +24854,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1491,
+    "linha": 1503,
     "funcao": "_kiosk_details"
    }
   ],
@@ -24839,7 +24873,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1492,
+    "linha": 1504,
     "funcao": "_kiosk_details"
    }
   ],
@@ -24858,7 +24892,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1493,
+    "linha": 1505,
     "funcao": "_kiosk_details"
    }
   ],
@@ -24877,7 +24911,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1495,
+    "linha": 1507,
     "funcao": "_kiosk_details"
    }
   ],
@@ -24896,7 +24930,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1507,
+    "linha": 1519,
     "funcao": "_kiosk_details"
    }
   ],
@@ -24915,7 +24949,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1497,
+    "linha": 1509,
     "funcao": "_kiosk_details"
    }
   ],
@@ -24934,7 +24968,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1499,
+    "linha": 1511,
     "funcao": "_kiosk_details"
    }
   ],
@@ -24953,7 +24987,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1500,
+    "linha": 1512,
     "funcao": "_kiosk_details"
    }
   ],
@@ -24972,7 +25006,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1501,
+    "linha": 1513,
     "funcao": "_kiosk_details"
    }
   ],
@@ -24991,7 +25025,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1503,
+    "linha": 1515,
     "funcao": "_kiosk_details"
    }
   ],
@@ -25010,7 +25044,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1516,
+    "linha": 1528,
     "funcao": "_back_bar"
    }
   ],
@@ -25029,7 +25063,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1518,
+    "linha": 1530,
     "funcao": "_back_bar"
    }
   ],
@@ -25048,7 +25082,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1519,
+    "linha": 1531,
     "funcao": "_back_bar"
    }
   ],
@@ -25067,7 +25101,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1520,
+    "linha": 1532,
     "funcao": "_back_bar"
    }
   ],
@@ -25086,7 +25120,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1527,
+    "linha": 1539,
     "funcao": "_back_bar"
    }
   ],
@@ -25105,7 +25139,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1530,
+    "linha": 1542,
     "funcao": "_back_bar"
    }
   ],
@@ -25124,7 +25158,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1532,
+    "linha": 1544,
     "funcao": "_back_bar"
    }
   ],
@@ -25143,7 +25177,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1537,
+    "linha": 1549,
     "funcao": "_surf_rack"
    }
   ],
@@ -25162,7 +25196,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1539,
+    "linha": 1551,
     "funcao": "_surf_rack"
    }
   ],
@@ -25181,7 +25215,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1540,
+    "linha": 1552,
     "funcao": "_surf_rack"
    }
   ],
@@ -25200,7 +25234,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1541,
+    "linha": 1553,
     "funcao": "_surf_rack"
    }
   ],
@@ -25219,7 +25253,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1545,
+    "linha": 1557,
     "funcao": "_surf_rack"
    }
   ],
@@ -25238,7 +25272,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1553,
+    "linha": 1565,
     "funcao": "_kiosk_drinks"
    }
   ],
@@ -25257,7 +25291,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1554,
+    "linha": 1566,
     "funcao": "_kiosk_drinks"
    }
   ],
@@ -25276,7 +25310,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1582,
+    "linha": 1594,
     "funcao": "_road"
    }
   ],
@@ -25295,7 +25329,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1584,
+    "linha": 1596,
     "funcao": "_road"
    }
   ],
@@ -25314,7 +25348,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1585,
+    "linha": 1597,
     "funcao": "_road"
    }
   ],
@@ -25333,7 +25367,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1587,
+    "linha": 1599,
     "funcao": "_road"
    }
   ],
@@ -25352,7 +25386,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1589,
+    "linha": 1601,
     "funcao": "_road"
    }
   ],
@@ -25371,7 +25405,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1590,
+    "linha": 1602,
     "funcao": "_road"
    }
   ],
@@ -25390,7 +25424,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1616,
+    "linha": 1628,
     "funcao": "_add_lamp"
    }
   ],
@@ -25409,7 +25443,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1635,
+    "linha": 1647,
     "funcao": "_village_expansion"
    }
   ],
@@ -25428,7 +25462,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1669,
+    "linha": 1681,
     "funcao": "_village_expansion"
    }
   ],
@@ -25447,7 +25481,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1674,
+    "linha": 1686,
     "funcao": "_village_expansion"
    }
   ],
@@ -25466,7 +25500,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1676,
+    "linha": 1688,
     "funcao": "_village_expansion"
    }
   ],
@@ -25485,7 +25519,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1684,
+    "linha": 1696,
     "funcao": "_village_expansion"
    }
   ],
@@ -25504,7 +25538,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1684,
+    "linha": 1696,
     "funcao": "_village_expansion"
    }
   ],
@@ -25523,7 +25557,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1685,
+    "linha": 1697,
     "funcao": "_village_expansion"
    }
   ],
@@ -25542,7 +25576,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1694,
+    "linha": 1706,
     "funcao": "_village_expansion"
    }
   ],
@@ -25561,7 +25595,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1697,
+    "linha": 1709,
     "funcao": "_village_expansion"
    }
   ],
@@ -25580,7 +25614,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1710,
+    "linha": 1722,
     "funcao": "_village_expansion"
    }
   ],
@@ -25599,7 +25633,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1712,
+    "linha": 1724,
     "funcao": "_village_expansion"
    }
   ],
@@ -25618,7 +25652,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1713,
+    "linha": 1725,
     "funcao": "_village_expansion"
    }
   ],
@@ -25637,7 +25671,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1714,
+    "linha": 1726,
     "funcao": "_village_expansion"
    }
   ],
@@ -25656,7 +25690,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1715,
+    "linha": 1727,
     "funcao": "_village_expansion"
    }
   ],
@@ -25675,7 +25709,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1716,
+    "linha": 1728,
     "funcao": "_village_expansion"
    }
   ],
@@ -25694,7 +25728,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1723,
+    "linha": 1743,
     "funcao": "_village_expansion"
    }
   ],
@@ -25713,7 +25747,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1728,
+    "linha": 1748,
     "funcao": "_village_expansion"
    }
   ],
@@ -25732,7 +25766,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1729,
+    "linha": 1749,
     "funcao": "_village_expansion"
    }
   ],
@@ -25751,7 +25785,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1743,
+    "linha": 1763,
     "funcao": "_village_expansion"
    }
   ],
@@ -25770,7 +25804,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1744,
+    "linha": 1764,
     "funcao": "_village_expansion"
    }
   ],
@@ -25789,7 +25823,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1761,
+    "linha": 1781,
     "funcao": "_beach_life"
    }
   ],
@@ -25808,7 +25842,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1762,
+    "linha": 1782,
     "funcao": "_beach_life"
    }
   ],
@@ -25827,7 +25861,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1769,
+    "linha": 1789,
     "funcao": "_beach_life"
    }
   ],
@@ -25846,7 +25880,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1773,
+    "linha": 1793,
     "funcao": "_beach_life"
    }
   ],
@@ -25865,7 +25899,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1822,
+    "linha": 1842,
     "funcao": "_landmark_details"
    }
   ],
@@ -25884,7 +25918,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1829,
+    "linha": 1849,
     "funcao": "_landmark_details"
    }
   ],
@@ -25903,7 +25937,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1830,
+    "linha": 1850,
     "funcao": "_landmark_details"
    }
   ],
@@ -25922,7 +25956,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1831,
+    "linha": 1851,
     "funcao": "_landmark_details"
    }
   ],
@@ -25941,7 +25975,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1833,
+    "linha": 1853,
     "funcao": "_landmark_details"
    }
   ],
@@ -25960,7 +25994,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1834,
+    "linha": 1854,
     "funcao": "_landmark_details"
    }
   ],
@@ -25979,7 +26013,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1835,
+    "linha": 1855,
     "funcao": "_landmark_details"
    }
   ],
@@ -25998,7 +26032,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1837,
+    "linha": 1857,
     "funcao": "_landmark_details"
    }
   ],
@@ -26017,7 +26051,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1838,
+    "linha": 1858,
     "funcao": "_landmark_details"
    }
   ],
@@ -26036,7 +26070,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1839,
+    "linha": 1859,
     "funcao": "_landmark_details"
    }
   ],
@@ -26055,7 +26089,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1841,
+    "linha": 1861,
     "funcao": "_landmark_details"
    }
   ],
@@ -26074,7 +26108,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1842,
+    "linha": 1862,
     "funcao": "_landmark_details"
    }
   ],
@@ -26093,7 +26127,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1846,
+    "linha": 1866,
     "funcao": "_landmark_details"
    }
   ],
@@ -26112,7 +26146,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1847,
+    "linha": 1867,
     "funcao": "_landmark_details"
    }
   ],
@@ -26131,7 +26165,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1848,
+    "linha": 1868,
     "funcao": "_landmark_details"
    }
   ],
@@ -26150,7 +26184,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1849,
+    "linha": 1869,
     "funcao": "_landmark_details"
    }
   ],
@@ -26169,7 +26203,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1852,
+    "linha": 1872,
     "funcao": "_landmark_details"
    }
   ],
@@ -26188,7 +26222,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1853,
+    "linha": 1873,
     "funcao": "_landmark_details"
    }
   ],
@@ -26207,7 +26241,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1857,
+    "linha": 1877,
     "funcao": "_landmark_details"
    }
   ],
@@ -26226,7 +26260,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1895,
+    "linha": 1915,
     "funcao": "_landmark_details"
    }
   ],
@@ -26245,7 +26279,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1863,
+    "linha": 1883,
     "funcao": "_landmark_details"
    }
   ],
@@ -26264,7 +26298,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1864,
+    "linha": 1884,
     "funcao": "_landmark_details"
    }
   ],
@@ -26283,7 +26317,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1866,
+    "linha": 1886,
     "funcao": "_landmark_details"
    }
   ],
@@ -26302,7 +26336,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1867,
+    "linha": 1887,
     "funcao": "_landmark_details"
    }
   ],
@@ -26321,7 +26355,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1875,
+    "linha": 1895,
     "funcao": "_landmark_details"
    }
   ],
@@ -26340,7 +26374,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1882,
+    "linha": 1902,
     "funcao": "_landmark_details"
    }
   ],
@@ -26359,7 +26393,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1914,
+    "linha": 1934,
     "funcao": "_landmark_details"
    }
   ],
@@ -26378,7 +26412,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1873,
+    "linha": 1893,
     "funcao": "_landmark_details"
    }
   ],
@@ -26397,7 +26431,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1918,
+    "linha": 1938,
     "funcao": "_landmark_details"
    }
   ],
@@ -26416,7 +26450,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1934,
+    "linha": 1954,
     "funcao": "_landmark_details"
    }
   ],
@@ -26435,7 +26469,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1896,
+    "linha": 1916,
     "funcao": "_landmark_details"
    }
   ],
@@ -26454,7 +26488,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1903,
+    "linha": 1923,
     "funcao": "_landmark_details"
    }
   ],
@@ -26473,7 +26507,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1922,
+    "linha": 1942,
     "funcao": "_landmark_details"
    }
   ],
@@ -26492,7 +26526,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1880,
+    "linha": 1900,
     "funcao": "_landmark_details"
    }
   ],
@@ -26511,7 +26545,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1905,
+    "linha": 1925,
     "funcao": "_landmark_details"
    }
   ],
@@ -26530,7 +26564,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1908,
+    "linha": 1928,
     "funcao": "_landmark_details"
    }
   ],
@@ -26549,7 +26583,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1927,
+    "linha": 1947,
     "funcao": "_landmark_details"
    }
   ],
@@ -26568,7 +26602,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1936,
+    "linha": 1956,
     "funcao": "_landmark_details"
    }
   ],
@@ -26587,7 +26621,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1935,
+    "linha": 1955,
     "funcao": "_landmark_details"
    }
   ],
@@ -26606,7 +26640,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1959,
+    "linha": 1979,
     "funcao": "_map_details"
    }
   ],
@@ -26625,7 +26659,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1972,
+    "linha": 1992,
     "funcao": "_map_details"
    }
   ],
@@ -26644,7 +26678,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1977,
+    "linha": 1997,
     "funcao": "_map_details"
    }
   ],
@@ -26663,7 +26697,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1988,
+    "linha": 2008,
     "funcao": "_map_details"
    }
   ],
@@ -26682,7 +26716,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 2003,
+    "linha": 2023,
     "funcao": "_map_details"
    }
   ],
@@ -26701,7 +26735,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 2010,
+    "linha": 2030,
     "funcao": "_map_details"
    }
   ],
@@ -26720,7 +26754,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 2014,
+    "linha": 2034,
     "funcao": "_map_details"
    }
   ],
@@ -26739,7 +26773,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 2026,
+    "linha": 2046,
     "funcao": "_map_details"
    }
   ],
@@ -26758,7 +26792,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 2027,
+    "linha": 2047,
     "funcao": "_map_details"
    }
   ],
@@ -26777,7 +26811,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 2036,
+    "linha": 2056,
     "funcao": "_map_details"
    }
   ],
@@ -26796,7 +26830,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 2038,
+    "linha": 2058,
     "funcao": "_map_details"
    }
   ],
@@ -27852,82 +27886,6 @@
   "comentario": ""
  },
  {
-  "codigo": "PCA-697",
-  "categoria": "PCA",
-  "chave": "details.gd|cat|Real.place|1",
-  "nome": "g:cat",
-  "fonte": "details.gd (código)",
-  "usos": [
-   {
-    "arquivo": "details.gd",
-    "linha": 376,
-    "funcao": "cat"
-   }
-  ],
-  "chamada": "Real.place",
-  "args": "piv, \"g:cat\", Vector3.ZERO, 0.42, ANIMAL_YAW, Color.WHITE.lerp(col, 0.35",
-  "material": "",
-  "em_laco": false,
-  "comentario": ""
- },
- {
-  "codigo": "PCA-698",
-  "categoria": "PCA",
-  "chave": "details.gd|cat|B.sphere|1",
-  "nome": "sphere",
-  "fonte": "details.gd (código)",
-  "usos": [
-   {
-    "arquivo": "details.gd",
-    "linha": 378,
-    "funcao": "cat"
-   }
-  ],
-  "chamada": "B.sphere",
-  "args": "piv, 0.13, Vector3(0, 0.13, 0), m(col), Vector3(1.0, 0.85, 1.4",
-  "material": "",
-  "em_laco": false,
-  "comentario": ""
- },
- {
-  "codigo": "PCA-699",
-  "categoria": "PCA",
-  "chave": "details.gd|dog|Real.place|1",
-  "nome": "g:dog",
-  "fonte": "details.gd (código)",
-  "usos": [
-   {
-    "arquivo": "details.gd",
-    "linha": 386,
-    "funcao": "dog"
-   }
-  ],
-  "chamada": "Real.place",
-  "args": "piv, \"g:dog\", Vector3.ZERO, 0.62, ANIMAL_YAW, Color.WHITE.lerp(col, 0.5",
-  "material": "",
-  "em_laco": false,
-  "comentario": ""
- },
- {
-  "codigo": "PCA-700",
-  "categoria": "PCA",
-  "chave": "details.gd|dog|B.sphere|1",
-  "nome": "sphere",
-  "fonte": "details.gd (código)",
-  "usos": [
-   {
-    "arquivo": "details.gd",
-    "linha": 388,
-    "funcao": "dog"
-   }
-  ],
-  "chamada": "B.sphere",
-  "args": "piv, 0.18, Vector3(0, 0.32, 0), m(col), Vector3(1.0, 0.9, 1.6",
-  "material": "",
-  "em_laco": false,
-  "comentario": ""
- },
- {
   "codigo": "PCA-701",
   "categoria": "PCA",
   "chave": "details.gd|pier|B.box|1",
@@ -27936,7 +27894,7 @@
   "usos": [
    {
     "arquivo": "details.gd",
-    "linha": 418,
+    "linha": 413,
     "funcao": "pier"
    }
   ],
@@ -27955,7 +27913,7 @@
   "usos": [
    {
     "arquivo": "details.gd",
-    "linha": 422,
+    "linha": 417,
     "funcao": "pier"
    }
   ],
@@ -27974,7 +27932,7 @@
   "usos": [
    {
     "arquivo": "details.gd",
-    "linha": 423,
+    "linha": 418,
     "funcao": "pier"
    }
   ],
@@ -27993,7 +27951,7 @@
   "usos": [
    {
     "arquivo": "details.gd",
-    "linha": 426,
+    "linha": 421,
     "funcao": "pier"
    }
   ],
@@ -28012,7 +27970,7 @@
   "usos": [
    {
     "arquivo": "details.gd",
-    "linha": 427,
+    "linha": 422,
     "funcao": "pier"
    }
   ],
@@ -28031,7 +27989,7 @@
   "usos": [
    {
     "arquivo": "details.gd",
-    "linha": 428,
+    "linha": 423,
     "funcao": "pier"
    }
   ],
@@ -28050,7 +28008,7 @@
   "usos": [
    {
     "arquivo": "details.gd",
-    "linha": 429,
+    "linha": 424,
     "funcao": "pier"
    }
   ],
@@ -28069,7 +28027,7 @@
   "usos": [
    {
     "arquivo": "details.gd",
-    "linha": 430,
+    "linha": 425,
     "funcao": "pier"
    }
   ],
@@ -28088,7 +28046,7 @@
   "usos": [
    {
     "arquivo": "details.gd",
-    "linha": 439,
+    "linha": 434,
     "funcao": "lighthouse"
    }
   ],
@@ -28107,7 +28065,7 @@
   "usos": [
    {
     "arquivo": "details.gd",
-    "linha": 440,
+    "linha": 435,
     "funcao": "lighthouse"
    }
   ],
@@ -28126,7 +28084,7 @@
   "usos": [
    {
     "arquivo": "details.gd",
-    "linha": 449,
+    "linha": 444,
     "funcao": "lighthouse"
    }
   ],
@@ -28145,7 +28103,7 @@
   "usos": [
    {
     "arquivo": "details.gd",
-    "linha": 452,
+    "linha": 447,
     "funcao": "lighthouse"
    }
   ],
@@ -28164,7 +28122,7 @@
   "usos": [
    {
     "arquivo": "details.gd",
-    "linha": 453,
+    "linha": 448,
     "funcao": "lighthouse"
    }
   ],
@@ -28183,7 +28141,7 @@
   "usos": [
    {
     "arquivo": "details.gd",
-    "linha": 454,
+    "linha": 449,
     "funcao": "lighthouse"
    }
   ],
@@ -28202,7 +28160,7 @@
   "usos": [
    {
     "arquivo": "details.gd",
-    "linha": 460,
+    "linha": 455,
     "funcao": "lighthouse"
    }
   ],
@@ -28221,7 +28179,7 @@
   "usos": [
    {
     "arquivo": "details.gd",
-    "linha": 462,
+    "linha": 457,
     "funcao": "lighthouse"
    }
   ],
@@ -31261,7 +31219,7 @@
   "usos": [
    {
     "arquivo": "guest.gd",
-    "linha": 913,
+    "linha": 921,
     "funcao": "_caricature"
    }
   ],
@@ -31280,7 +31238,7 @@
   "usos": [
    {
     "arquivo": "guest.gd",
-    "linha": 952,
+    "linha": 960,
     "funcao": "show_menu"
    }
   ],
@@ -31299,7 +31257,7 @@
   "usos": [
    {
     "arquivo": "guest.gd",
-    "linha": 953,
+    "linha": 961,
     "funcao": "show_menu"
    }
   ],
@@ -31318,7 +31276,7 @@
   "usos": [
    {
     "arquivo": "guest.gd",
-    "linha": 955,
+    "linha": 963,
     "funcao": "show_menu"
    }
   ],
@@ -31356,7 +31314,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 334,
+    "linha": 335,
     "funcao": "spawn_customer"
    }
   ],
@@ -31394,7 +31352,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1800,
+    "linha": 1820,
     "funcao": "_sand_clutter"
    }
   ],
@@ -31508,7 +31466,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1145,
+    "linha": 1157,
     "funcao": "_bike"
    }
   ],
@@ -31527,7 +31485,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1196,
+    "linha": 1208,
     "funcao": "_jangada2"
    }
   ],
@@ -31546,7 +31504,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1215,
+    "linha": 1227,
     "funcao": "_jangada2"
    }
   ],
@@ -31565,7 +31523,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1230,
+    "linha": 1242,
     "funcao": "_fishing_boat"
    }
   ],
@@ -31584,7 +31542,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1248,
+    "linha": 1260,
     "funcao": "_fishing_boat"
    }
   ],
@@ -31755,7 +31713,7 @@
   "usos": [
    {
     "arquivo": "details.gd",
-    "linha": 401,
+    "linha": 396,
     "funcao": "pier"
    }
   ],
@@ -31774,7 +31732,7 @@
   "usos": [
    {
     "arquivo": "details.gd",
-    "linha": 412,
+    "linha": 407,
     "funcao": "pier"
    }
   ],
@@ -31793,7 +31751,7 @@
   "usos": [
    {
     "arquivo": "details.gd",
-    "linha": 444,
+    "linha": 439,
     "funcao": "lighthouse"
    }
   ],
@@ -31888,7 +31846,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 390,
+    "linha": 402,
     "funcao": "_house_extras"
    }
   ],
@@ -31907,7 +31865,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 688,
+    "linha": 700,
     "funcao": "_church_and_praca"
    }
   ],
@@ -31926,7 +31884,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 983,
+    "linha": 995,
     "funcao": "_kiosk_grill"
    }
   ],
@@ -31945,7 +31903,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1845,
+    "linha": 1865,
     "funcao": "_landmark_details"
    }
   ],
@@ -31964,7 +31922,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1858,
+    "linha": 1878,
     "funcao": "_landmark_details"
    }
   ],
@@ -31983,7 +31941,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1872,
+    "linha": 1892,
     "funcao": "_landmark_details"
    }
   ],
@@ -32097,7 +32055,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 294,
+    "linha": 306,
     "funcao": "_facade"
    }
   ],
@@ -32116,7 +32074,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 313,
+    "linha": 325,
     "funcao": "_facade"
    }
   ],
@@ -32135,7 +32093,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 329,
+    "linha": 341,
     "funcao": "_facade"
    }
   ],
@@ -32154,7 +32112,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1605,
+    "linha": 1617,
     "funcao": "_lamp_head"
    }
   ],
@@ -32173,7 +32131,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1878,
+    "linha": 1898,
     "funcao": "_landmark_details"
    }
   ],
@@ -32192,7 +32150,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 110,
+    "linha": 122,
     "funcao": "_bench"
    }
   ],
@@ -32211,7 +32169,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 132,
+    "linha": 144,
     "funcao": "_street_bunting"
    }
   ],
@@ -32230,7 +32188,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 134,
+    "linha": 146,
     "funcao": "_street_bunting"
    }
   ],
@@ -32249,7 +32207,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 460,
+    "linha": 472,
     "funcao": "_house"
    }
   ],
@@ -32268,7 +32226,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 989,
+    "linha": 1001,
     "funcao": "_kiosk_grill"
    }
   ],
@@ -32287,7 +32245,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1681,
+    "linha": 1693,
     "funcao": "_village_expansion"
    }
   ],
@@ -32325,7 +32283,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 462,
+    "linha": 474,
     "funcao": "_house"
    }
   ],
@@ -32344,7 +32302,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 470,
+    "linha": 482,
     "funcao": "_house"
    }
   ],
@@ -32363,7 +32321,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 472,
+    "linha": 484,
     "funcao": "_house"
    }
   ],
@@ -32382,7 +32340,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 473,
+    "linha": 485,
     "funcao": "_house"
    }
   ],
@@ -32401,7 +32359,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 475,
+    "linha": 487,
     "funcao": "_house"
    }
   ],
@@ -32420,7 +32378,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 476,
+    "linha": 488,
     "funcao": "_house"
    }
   ],
@@ -32439,7 +32397,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 478,
+    "linha": 490,
     "funcao": "_house"
    }
   ],
@@ -32458,7 +32416,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 479,
+    "linha": 491,
     "funcao": "_house"
    }
   ],
@@ -32477,7 +32435,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 480,
+    "linha": 492,
     "funcao": "_house"
    }
   ],
@@ -32496,7 +32454,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 484,
+    "linha": 496,
     "funcao": "_house"
    }
   ],
@@ -32515,7 +32473,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 501,
+    "linha": 513,
     "funcao": "_house"
    }
   ],
@@ -32534,7 +32492,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 503,
+    "linha": 515,
     "funcao": "_house"
    }
   ],
@@ -32553,7 +32511,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 510,
+    "linha": 522,
     "funcao": "_house"
    }
   ],
@@ -32572,7 +32530,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 511,
+    "linha": 523,
     "funcao": "_house"
    }
   ],
@@ -32952,7 +32910,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 180,
+    "linha": 192,
     "funcao": "_bougainvillea"
    }
   ],
@@ -32971,7 +32929,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 394,
+    "linha": 406,
     "funcao": "_house_extras"
    }
   ],
@@ -32990,7 +32948,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 403,
+    "linha": 415,
     "funcao": "_house_extras"
    }
   ],
@@ -33009,7 +32967,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1879,
+    "linha": 1899,
     "funcao": "_landmark_details"
    }
   ],
@@ -33028,7 +32986,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1894,
+    "linha": 1914,
     "funcao": "_landmark_details"
    }
   ],
@@ -33047,7 +33005,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1910,
+    "linha": 1930,
     "funcao": "_landmark_details"
    }
   ],
@@ -33066,7 +33024,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 2025,
+    "linha": 2045,
     "funcao": "_map_details"
    }
   ],
@@ -33085,7 +33043,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 2031,
+    "linha": 2051,
     "funcao": "_map_details"
    }
   ],
@@ -33104,7 +33062,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 361,
+    "linha": 362,
     "funcao": "spawn_customer"
    }
   ],
@@ -33161,7 +33119,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 776,
+    "linha": 788,
     "funcao": "_quiosque"
    }
   ],
@@ -33180,7 +33138,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 799,
+    "linha": 811,
     "funcao": "_quiosque"
    }
   ],
@@ -33199,7 +33157,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 1724,
+    "linha": 1744,
     "funcao": "_village_expansion"
    }
   ],
@@ -33218,7 +33176,7 @@
   "usos": [
    {
     "arquivo": "details.gd",
-    "linha": 407,
+    "linha": 402,
     "funcao": "pier"
    }
   ],
@@ -33237,7 +33195,7 @@
   "usos": [
    {
     "arquivo": "details.gd",
-    "linha": 415,
+    "linha": 410,
     "funcao": "pier"
    }
   ],
@@ -33256,7 +33214,7 @@
   "usos": [
    {
     "arquivo": "world_village.gd",
-    "linha": 861,
+    "linha": 873,
     "funcao": "_kiosk_facade"
    }
   ],
@@ -34030,7 +33988,7 @@
     "funcao": ""
    }
   ],
-  "linhas": 158,
+  "linhas": 205,
   "descricao": ""
  },
  {
@@ -34078,7 +34036,7 @@
     "funcao": ""
    }
   ],
-  "linhas": 477,
+  "linhas": 472,
   "descricao": "Detalhes cartoon (v0.7.1): bandeirinhas, franja de palha, tochas, placas, frutas, pranchas, barracas de"
  },
  {
@@ -34126,7 +34084,7 @@
     "funcao": ""
    }
   ],
-  "linhas": 1031,
+  "linhas": 1039,
   "descricao": ""
  },
  {
@@ -34302,7 +34260,7 @@
     "funcao": ""
    }
   ],
-  "linhas": 1705,
+  "linhas": 1730,
   "descricao": "Gestão no computador do balcão. Nome da classe preservado para compatibilidade."
  },
  {
@@ -34430,7 +34388,7 @@
     "funcao": ""
    }
   ],
-  "linhas": 947,
+  "linhas": 948,
   "descricao": ""
  },
  {
@@ -34462,7 +34420,7 @@
     "funcao": ""
    }
   ],
-  "linhas": 2074,
+  "linhas": 2094,
   "descricao": ""
  },
  {
@@ -34670,7 +34628,7 @@
     "funcao": ""
    }
   ],
-  "linhas": 574,
+  "linhas": 579,
   "descricao": "Operação do quiosque: estoque pronto separado de ingredientes e contas a receber."
  },
  {
@@ -34800,6 +34758,38 @@
   ],
   "linhas": 79,
   "descricao": "Porta física da casa: E alterna; fecha após sair e liberar a folha."
+ },
+ {
+  "codigo": "SCR-050",
+  "categoria": "SCR",
+  "chave": "counter_terminal_display.gd",
+  "nome": "counter_terminal_display.gd",
+  "fonte": "scripts/",
+  "usos": [
+   {
+    "arquivo": "counter_terminal_display.gd",
+    "linha": 1,
+    "funcao": ""
+   }
+  ],
+  "linhas": 62,
+  "descricao": "Tela física do notebook mostra dados reais, sem blocos de decoração vazios."
+ },
+ {
+  "codigo": "SCR-051",
+  "categoria": "SCR",
+  "chave": "village_animal.gd",
+  "nome": "village_animal.gd",
+  "fonte": "scripts/",
+  "usos": [
+   {
+    "arquivo": "village_animal.gd",
+    "linha": 1,
+    "funcao": ""
+   }
+  ],
+  "linhas": 90,
+  "descricao": "Passeio curto em área livre; rig e clipes originais CC0 preservados."
  },
  {
   "codigo": "SHD-001",
@@ -35010,7 +35000,7 @@
   "usos": [
    {
     "arquivo": "details.gd",
-    "linha": 464,
+    "linha": 459,
     "funcao": "lighthouse"
    }
   ],
@@ -35456,7 +35446,7 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 68,
+    "linha": 80,
     "funcao": "_village_materials"
    }
   ],
@@ -35513,7 +35503,7 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 70,
+    "linha": 82,
     "funcao": "_village_materials"
    }
   ],
@@ -35570,12 +35560,17 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 67,
+    "linha": 69,
     "funcao": "_village_materials"
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 73,
+    "linha": 72,
+    "funcao": "_village_materials"
+   },
+   {
+    "arquivo": "world_village.gd",
+    "linha": 85,
     "funcao": "_village_materials"
    }
   ],
@@ -35747,12 +35742,12 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 69,
+    "linha": 81,
     "funcao": "_village_materials"
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 559,
+    "linha": 571,
     "funcao": "_hero_house"
    }
   ],
@@ -35995,22 +35990,22 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 527,
+    "linha": 539,
     "funcao": "_houses"
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 625,
+    "linha": 637,
     "funcao": "_hero_house"
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1211,
+    "linha": 1223,
     "funcao": "_jangada2"
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1243,
+    "linha": 1255,
     "funcao": "_fishing_boat"
    }
   ],
@@ -36036,7 +36031,7 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 75,
+    "linha": 87,
     "funcao": "_village_materials"
    }
   ],
@@ -36062,7 +36057,7 @@
    },
    {
     "arquivo": "details.gd",
-    "linha": 393,
+    "linha": 388,
     "funcao": "pier"
    },
    {
@@ -36087,32 +36082,32 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 76,
+    "linha": 88,
     "funcao": "_village_materials"
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 102,
+    "linha": 114,
     "funcao": "wood_tint"
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 432,
+    "linha": 444,
     "funcao": "_house"
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 1724,
+    "linha": 1744,
     "funcao": "_village_expansion"
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 2054,
+    "linha": 2074,
     "funcao": "_apply_kiosk_look"
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 2056,
+    "linha": 2076,
     "funcao": "_apply_kiosk_look"
    }
   ],
@@ -36133,7 +36128,7 @@
   "usos": [
    {
     "arquivo": "details.gd",
-    "linha": 449,
+    "linha": 444,
     "funcao": "lighthouse"
    },
    {
@@ -36173,12 +36168,12 @@
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 74,
+    "linha": 86,
     "funcao": "_village_materials"
    },
    {
     "arquivo": "world_village.gd",
-    "linha": 99,
+    "linha": 111,
     "funcao": "stucco"
    }
   ],

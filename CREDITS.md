@@ -95,6 +95,9 @@ glTF 1k em `assets/models/` (normal/ARM reduzidos para 512) e glTF 2k em `assets
 | `village_murmur.ogg` (filtrado) | https://opengameart.org/content/crowd-shoutingspeaking-ambience | CC0 |
 | `seagull1.ogg`, `seagull2.ogg` | https://opengameart.org/content/solo-seagull-sound-effects | CC0 |
 
+Revisão sonora de 23/10/2026: bird1/bird2 são reutilizados com reprodução
+3D perto da vegetação, pausas e volume suave. Nenhum sample novo de terceiros.
+
 ## Gerados proceduralmente (código deste repositório)
 - `assets/tex*/calcada_*` — pedra portuguesa em ondas (`tools/gen_calcada.py`)
 - `assets/tex/palm_frond.png` (faixa antiga) e o folíolo com recorte gerado em runtime (`scripts/palm.gd`); `assets/tex_hd/grass_tuft.png`, `assets/tex_hd/bush.png`, `light_stone_*`, `white_plaster_*` (albedo e, na 1k, a normal reduzida de `grey_plaster_02`), `icon.png` (`tools/gen_textures.py`, `tools/gen_hd.py`)
@@ -117,7 +120,7 @@ glTF 1k em `assets/models/` (normal/ARM reduzidos para 512) e glTF 2k em `assets
 - **Poly Haven (CC0)**: frutas (lemon, food_apple_01, food_lime_01, food_lychee_01, bananas...), croissant, jarros, vasos, cestos de vime, caixotes, móveis, plantas e pedras listados em `MODELS_EXTRA` de `tools/fetch_assets.py`. https://polyhaven.com
 - **Kenney Food Kit e Pirate Kit (CC0)**: coco, drinque, frappé, taça, peixe, pão, abacaxi, garrafas, barcos a remo, palmeiras, barris. https://kenney.nl — suavizados no Blender por `tools/smooth_kenney.py`.
 - **Quaternius — Stylized Nature MegaKit [Standard] (CC0)**: arbustos, samambaias, plantas, flores, árvores e pedras (`assets/models/qnat/`, chave `q:Nome`). https://quaternius.com/packs/stylizednaturemegakit.html
-- **Quaternius — Animal Pack Vol.2 (CC0)**: gato e cachorro (`assets/models/gen/cat.glb`, `dog.glb`), do .blend original, suavizados por `tools/smooth_animals.py`. https://opengameart.org/content/animated-animales-low-poly
+- **Quaternius — Animal Pack Vol.2 (CC0)**: gato e cachorro (`assets/models/gen/cat.glb`, `dog.glb`), do .blend original, refinados com rig/animações por `tools/refine_living_animals.py`. https://opengameart.org/content/animated-animales-low-poly
 - **"methodical pixel" — Crab low poly (CC0)**: caranguejo (`assets/models/gen/crab.glb`, `tools/convert_crab.py`). https://opengameart.org/content/crab-low-poly-animated-3d-model
 - **Gerados no Blender** (não existem prontos grátis): toalha de praia, castelo de areia, chapéus, boné, óculos e espreguiçadeira (`tools/gen_beach_props.py`), prancha de surfe (`tools/gen_surfboard.py`), tocha tiki, poste e seta de direção, placa ABERTO, rede de vôlei, poste de luz, caixa de correio, estrela-do-mar, ventilador de teto, farol, píer, bicicletas, jangada e mastro/vela do barco de pesca, buganvília, hera pendurada, canteiro florido, bolas, gaivotas, coxinha, pipoca e rosácea (`tools/gen_code_props.py`).
 - **Kenney Smoke Particles (CC0)**: sprite de fumaça `smoke_puff.png`. https://kenney.nl/assets/smoke-particles — baixado por `tools/fetch_assets.py`.
@@ -296,3 +299,17 @@ chanfrada existentes. Textura oak_wood_planks_diff Poly Haven CC0, já creditada
 no balcão e porta. Variante escura preserva veios. Bandeja/expositor autorais
 atualizados por gen_counter_details.py, frente e verso, sem dispenser branco.
 Copos detalhados reutilizam cup_plastic existente. Não há asset novo de terceiros.
+
+
+## Notebook e animais refinados — 23/10/2026
+
+**Classic Laptop**, Arrangemonk / Poly Haven, CC0:
+https://polyhaven.com/a/classic_laptop . Modelo e mapas originais preservados;
+fonte empacotada `art/blender/kiosk_laptop.blend`, importador
+`tools/import_counter_laptop.py`. Tela de gestão dinâmica autoral.
+Licença: https://docs.polyhaven.com/en/faq?q=commercial .
+
+Gato/cão do **Quaternius Animal Pack Vol.2**, CC0, já creditado acima.
+`tools/refine_living_animals.py` mantém rig e clipes Idle/Walking, suaviza a malha
+original e acrescenta olhos, focinho/boca e bigodes autorais ligados à cabeça.
+Fontes editáveis `art/blender/cat_living.blend` e `dog_living.blend`.

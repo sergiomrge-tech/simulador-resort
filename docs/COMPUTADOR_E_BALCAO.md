@@ -1,5 +1,9 @@
 # Computador, retirada e acabamento — 23/10/2026
 
+> Revisão posterior: [visual e gestão](REFINAMENTO_2026-10-23.md). Notebook Classic
+> Laptop CC0, seis abas fixas e compras por produto com reposição imediata para 10.
+> Cartões de equipe compactos; promoções acompanham a inclinação das duas faces.
+
 A gestão agora fica no **computador sobre o balcão**. Entre por uma lateral,
 mire no monitor e use **E**. A tela tem seis áreas: Quiosque, Compras, Equipe,
 Finanças, Resort e Vila e lazer. B funciona perto do computador; longe dele

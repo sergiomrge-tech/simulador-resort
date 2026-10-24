@@ -367,25 +367,20 @@ static func mailbox(parent: Node, p: Vector3, rot: float) -> void :
 		B.cyl(parent, 0.04, 0.04, 1.0, p + Vector3(0, 0.5, 0), m(Color(0.4, 0.3, 0.2)), 6)
 		B.box(parent, Vector3(0.3, 0.25, 0.42), p + Vector3(0, 1.1, 0), m(Color(1.0, 0.85, 0.2)), false, rot)
 
-static func cat(parent: Node, p: Vector3, rot: float, col: Color) -> void :
-	# gato real (Quaternius Animal Pack Vol.2, CC0, suavizado no Blender)
-	var piv: = Node3D.new()
-	piv.position = p
-	piv.rotation.y = rot
-	parent.add_child(piv)
-	var h: = Real.place(piv, "g:cat", Vector3.ZERO, 0.42, ANIMAL_YAW, Color.WHITE.lerp(col, 0.35))
-	if h == null:
-		B.sphere(piv, 0.13, Vector3(0, 0.13, 0), m(col), Vector3(1.0, 0.85, 1.4))
+static func cat(parent: Node, p: Vector3, rot: float, col: Color) -> void:
+	_animal(parent,p,rot,col,"cat")
 
-static func dog(parent: Node, p: Vector3, rot: float, col: Color) -> void :
-	# cachorro real (Quaternius Animal Pack Vol.2, CC0, suavizado no Blender)
-	var piv: = Node3D.new()
-	piv.position = p
-	piv.rotation.y = rot
-	parent.add_child(piv)
-	var h: = Real.place(piv, "g:dog", Vector3.ZERO, 0.62, ANIMAL_YAW, Color.WHITE.lerp(col, 0.5))
-	if h == null:
-		B.sphere(piv, 0.18, Vector3(0, 0.32, 0), m(col), Vector3(1.0, 0.9, 1.6))
+static func dog(parent: Node, p: Vector3, rot: float, col: Color) -> void:
+	_animal(parent,p,rot,col,"dog")
+
+static func _animal(parent: Node, p: Vector3, rot: float, col: Color, kind: String) -> void:
+	var animal := Node3D.new()
+	animal.set_script(load("res://scripts/village_animal.gd"))
+	animal.kind=kind
+	animal.tint=col
+	animal.position=p
+	animal.rotation.y=rot
+	parent.add_child(animal)
 
 # ------------------------------------------------------------------ marcos
 ## Píer de madeira mar adentro (from = ponta na areia, para -Z).

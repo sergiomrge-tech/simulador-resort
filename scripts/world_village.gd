@@ -64,7 +64,19 @@ func _ready() -> void :
 	Core.time_changed.connect(_on_time)
 
 func _village_materials() -> void :
-	VM.road = B.mat("cobblestone_floor_04", 0.4, Color(0.92, 0.9, 0.86), 0.9)
+	# Pedra com escala real e textura preservada nas ruas, sem placas gigantes.
+	var paving := StandardMaterial3D.new()
+	paving.albedo_texture=B.tex("cobblestone_floor_04")
+	paving.albedo_color=Color(.94,.94,.92)
+	paving.normal_enabled=true
+	paving.normal_texture=B.nor("cobblestone_floor_04")
+	paving.normal_scale=.65
+	paving.roughness=.94
+	paving.uv1_triplanar=true
+	paving.uv1_world_triplanar=true
+	paving.uv1_scale=Vector3.ONE*.7
+	paving.texture_filter=BaseMaterial3D.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS_ANISOTROPIC
+	VM.road=paving
 	VM.calcada = B.mat("calcada", 0.55, Color(1, 1, 1), 0.85)
 	VM.curb = B.mat("light_stone", 1.2, Color(0.92, 0.92, 0.9), 0.8)
 	var clay: = B.mat("clay_roof_tiles_02", 0.55, Color(1, 1, 1), 0.8).duplicate()
@@ -1719,6 +1731,14 @@ func _village_expansion() -> void :
 		bench_spots.append(_bench(bp, PI))
 	for k in 6:
 		_bike(Vector3(14.0 + k * 15.0, 0.15, BACK_Z - 2.6), PI * 0.5, D.FLAG_COLS[k % D.FLAG_COLS.size()])
+	# Vasos junto às fachadas; o corredor de pedestres permanece livre.
+	for planter_x in [2.0,22.0,54.0,86.0,106.0]:
+		for side in [-1.0,1.0]:
+			var plant_pos:=Vector3(planter_x,.15,BACK_Z+side*3.65)
+			var clear:=true
+			for rect in block_rects:
+				if (rect as Rect2).grow(.25).has_point(Vector2(plant_pos.x,plant_pos.z)): clear=false
+			if clear: Real.place(self,"potted_plant_04",plant_pos,.75,planter_x)
 	# píer e farol
 	D.pier(self, Vector3(PIER_X, -0.25, -22.0), 27.0, 2.6)
 	var ramp: = B.box(self, Vector3(2.6, 0.2, 2.4), Vector3(PIER_X, 0.065, -21.0), B.mat("weathered_planks", 0.6, Color(0.9, 0.7, 0.5), 0.85), true)

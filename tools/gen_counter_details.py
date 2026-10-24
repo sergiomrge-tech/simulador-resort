@@ -5,11 +5,11 @@ exec((ROOT_PATH/'tools/gen_kiosk_facade.py').read_text(encoding='utf-8').split('
 paper=material('counter_warm_paper',(.88,.85,.73),.9)
 steel=material('counter_brushed_steel',(.20,.26,.25),.42)
 # Menu stand, brass hinges and inset printed card.
-for y,angle in [(-1.98,-.12),(-1.80,.12)]:
+for y,angle in [(-1.98,-.43),(-1.80,.43)]:
     box('Menu wood stand',(.39,.028,.40),(-.90,y,.205),wood,.012,(angle,0,0))
-box('Menu inset paper',(.34,.008,.32),(-.90,-2.017,.218),paper,.006)
-box('Menu back inset paper',(.34,.008,.32),(-.90,-1.763,.218),paper,.006)
-path('Menu brass top hinge',[(-1.07,-1.89,.40),(-.73,-1.89,.40)],.009,brass)
+box('Menu inset paper',(.34,.008,.32),(-.90,-1.999,.214),paper,.006,(-.43,0,0))
+box('Menu back inset paper',(.34,.008,.32),(-.90,-1.781,.214),paper,.006,(.43,0,0))
+path('Menu brass top hinge',[(-1.07,-1.89,.386),(-.73,-1.89,.386)],.009,brass)
 # Serving tray with a recessed base and raised rounded perimeter.
 box('Serving tray inset base',(.65,.38,.025),(.20,-1.98,.016),wood,.018)
 for z in [.034,.052]:

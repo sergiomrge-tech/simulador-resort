@@ -365,16 +365,13 @@ def universal_base_characters():
 
 def animals_gen():
     """Gato/cachorro (Quaternius Animal Pack Vol.2, CC0) e caranguejo ("methodical pixel", CC0) pelo OpenGameArt -> assets/models/gen/*.glb
-    (suavizados no Blender por tools/smooth_animals.py / convert_crab.py); toalha e castelo de areia saem de tools/gen_beach_props.py."""
+    (refinados com rig no Blender por tools/refine_living_animals.py / convert_crab.py); toalha e castelo de areia saem de tools/gen_beach_props.py."""
     import zipfile, io, tempfile
     gen = f"{A}/models/gen"
     os.makedirs(gen, exist_ok=True)
     tmp = tempfile.mkdtemp(prefix="animais_")
     if FORCE or not (os.path.exists(f"{gen}/cat.glb") and os.path.exists(f"{gen}/dog.glb")):
-        z = zipfile.ZipFile(io.BytesIO(get("https://opengameart.org/sites/default/files/Animal%20Pack%20Vol.2%20by%20%40Quaternius.zip")))
-        z.extractall(tmp)
-        blends = os.path.join(tmp, "Animal Pack Vol.2 by @Quaternius", "Blends")
-        subprocess.check_call([sys.executable, os.path.join(ROOT, "tools", "smooth_animals.py"), blends, gen, "Cat", "Dog"])
+        subprocess.check_call([sys.executable, os.path.join(ROOT, "tools", "refine_living_animals.py")])
     if FORCE or not os.path.exists(f"{gen}/crab.glb"):
         z = zipfile.ZipFile(io.BytesIO(get("https://opengameart.org/sites/default/files/crab_0.zip")))
         z.extractall(tmp)
@@ -392,7 +389,7 @@ def generated_props():
         ("import_closed_basket.py", ("wicker_basket_closed",)),
         ("gen_coastal_traffic.py", ("coastal_yacht", "coastal_cruise")),
         ("gen_counter_details.py", ("kiosk_counter_details",)),
-        ("gen_kiosk_computer.py", ("kiosk_computer",)),
+        ("import_counter_laptop.py", ("kiosk_laptop",)),
         ("gen_home_door.py", ("player_home_door",)),
         ("gen_kiosk_facade.py", ("kiosk_facade", "kiosk_neon_trim", "kiosk_roof", "kiosk_workbench", "kiosk_blender")),
         ("gen_kiosk_service.py", ("service_fridge", "service_fridge_door", "service_food_cabinet", "service_register")),

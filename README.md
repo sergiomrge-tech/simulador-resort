@@ -5,8 +5,8 @@ feito em **Godot 4.5.1**, GDScript, Forward+, para Windows.
 
 Linha atual: **1.1.0 RC2**, branch **`codex/resort-1.1-mcp`**.
 
-**Atualização de 23/10/2026:** computador, porta, balcão e atendimento revisados.
-[Download para Windows](https://github.com/sergiomrge-tech/simulador-resort/releases/tag/v1.1.0-rc2.20261023).
+**Atualização de 23/10/2026:** notebook detalhado, gestão e compras simplificadas, pessoas, animais e pássaros.
+[Download para Windows — revisão visual e gestão](https://github.com/sergiomrge-tech/simulador-resort/releases/tag/v1.1.0-rc2.20261023-refinado).
 Extraia o ZIP inteiro e abra Jogar.vbs. Preserve userdata ao atualizar.
 
 ## Vai continuar o projeto com outra IA?
@@ -33,6 +33,7 @@ Você pode enviar este pedido à próxima IA:
 - Gestão no computador do balcão: nome/placa, horários, equipe, fornecedores e finanças.
 - Quiosque começa fechado e exige abertura manual; porta da casa abre/fecha com E.
 - Balcão com madeira escura/base cinza, copos e promoções nas duas faces.
+- Cantos suaves de pássaros durante o dia perto das árvores, com áudio direcional.
 - Casa detalhada, paleta mais natural no jogo inteiro e pessoas sem óculos escuros,
   chapéus ou bonés.
 - Progressão do quiosque para resort, clima, vila, pousada e expansões.
