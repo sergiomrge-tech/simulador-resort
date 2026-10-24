@@ -200,12 +200,15 @@ static func blender(parent: Node, p: Vector3) -> void :
 	Real.place(parent, "k:frappe", p + Vector3(0.09, 0, 0.03), 0.22, 1.0, Color(1.0, 0.8, 0.8))
 
 static func tip_jar(parent: Node, p: Vector3) -> void :
-	Real.place(parent, "k:glass", p, 0.2, 0.0, Color(1.0, 0.95, 0.7))
-	var l: = B.label(parent, "GORJETA", p + Vector3(0, 0.1, 0.07), 18, Color(0.2, 0.15, 0.1), Color(1, 1, 1, 0.9))
+	Real.place(parent, "g:glass_juice", p, 0.2, 0.0, Color(1.0, 0.95, 0.72), 0.0, false)
+	Real.place(parent, "g:straw", p + Vector3(0.02, 0.06, 0.0), 0.12, 0.35)
+	var l: = B.label(parent, "GORJETA", p + Vector3(0, 0.14, 0.08), 18, Color(0.2, 0.15, 0.1), Color(1, 0.97, 0.88, 0.92))
 	l.pixel_size = 0.0025
 
 static func straw_cup(parent: Node, p: Vector3) -> void :
-	Real.place(parent, "k:cocktail", p, 0.24)
+	Real.place(parent, "g:cup_plastic", p, 0.16, 0.0, Color(0.95, 0.9, 0.75), 0.0, false)
+	Real.place(parent, "g:straw", p + Vector3(0.0, 0.08, 0.0), 0.14, 0.2)
+	Real.place(parent, "g:cocktail", p + Vector3(0.14, 0.0, 0.04), 0.18, -0.4, Color(1.0, 0.55, 0.4), 0.0, false)
 
 static func radio(parent: Node, p: Vector3, rot: float) -> void :
 	Real.place(parent, "boombox", p, 0.0, rot, Color.WHITE, 0.36)

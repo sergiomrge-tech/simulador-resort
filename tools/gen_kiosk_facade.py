@@ -160,7 +160,7 @@ for side in [0, -1, 1]:
             bpy.ops.mesh.primitive_uv_sphere_add(segments=12, ring_count=8, radius=.014, location=p)
             finish(bpy.context.object, brass)
 
-# Front slab remains at the existing serving height (1.28).
+# Front slab: model top ~1.18 + kiosk y0(0.1) = serving height 1.28 (props at y=1.28).
 for j in range(4):
     box('Solid teak counter plank', (4.98, .224, .065), (0, -1.65-j*.225, 1.1475), counter_wood, .018)
 box('Rounded brass counter lip', (5.02, .038, .045), (0, -2.465, 1.135), brass)

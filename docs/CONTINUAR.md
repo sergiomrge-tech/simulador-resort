@@ -101,7 +101,11 @@ Leia [COMPUTADOR_E_BALCAO.md](COMPUTADOR_E_BALCAO.md). PC físico com E, sem ges
 remota; telas de estação continuam diretas. Porta da casa abre/fecha e fecha após
 sair com arco livre. Tampo madeira escura/base cinza, copos na bandeja, sem caixa
 branca e promoções nas duas faces com preços reais. Fontes Blender incorporadas.
-As novas regras substituem documentos históricos sobre celular e pedido sentado.
+Detalhe visual na branch `cursor/loop-counter-aim-ee9e`: props do tampo,
+fachada (flores/chinelos), entrada da casa; terminal grafite. Conferir shots
+`visual_balcao` / `visual_fachada` / `visual_porta` com câmeras do PASSAGEM
+(y do corpo, não do olho). As novas regras substituem documentos históricos
+sobre celular e pedido sentado.
 
 ## Onde alterar cada coisa
 

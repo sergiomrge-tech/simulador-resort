@@ -73,15 +73,16 @@ func _ready() -> void :
 	_phone.custom_minimum_size = Vector2(W, H)
 	_phone.size = Vector2(W, H)
 	var bezel: = StyleBoxFlat.new()
-	bezel.bg_color = Color(0.10, 0.12, 0.12)
-	bezel.set_corner_radius_all(24)
-	bezel.set_border_width_all(4)
-	bezel.border_color = Color(0.32, 0.3, 0.45)
-	bezel.shadow_color = Color(0, 0, 0, 0.45)
-	bezel.shadow_size = 24
-	bezel.shadow_offset = Vector2(0, 10)
+	# Moldura do terminal: grafite com filete madeira/latão (casa e balcão).
+	bezel.bg_color = Color(0.09, 0.11, 0.105)
+	bezel.set_corner_radius_all(26)
+	bezel.set_border_width_all(5)
+	bezel.border_color = Color(0.42, 0.32, 0.20)
+	bezel.shadow_color = Color(0.02, 0.04, 0.04, 0.5)
+	bezel.shadow_size = 28
+	bezel.shadow_offset = Vector2(0, 12)
 	bezel.set_content_margin_all(14)
-	bezel.corner_detail = 12
+	bezel.corner_detail = 14
 	_phone.add_theme_stylebox_override("panel", bezel)
 	add_child(_phone)
 	var scr: = Panel.new()

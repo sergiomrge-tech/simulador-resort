@@ -73,8 +73,13 @@ func _build() -> void:
 	Real.place(self, "g:service_register", register_pos, -1.0)
 	_interaction(self, register_pos + Vector3(0, 0.12, 0), Vector3(0.4, 0.3, 0.4), _register_prompt, collect_payments)
 	Real.place(self, "g:kiosk_counter_details", c + Vector3(0,1.28,0), -1.0,0,Color.WHITE,0,false)
-	computer = Real.place(self,"g:kiosk_computer",c+Vector3(1.70,1.28,1.65),-1.0,PI,Color.WHITE,0,false)
-	computer.name = "CounterComputer"
+	# Tampo = y0(0,1)+carvalho(~1,18) ≈ 1,28. Sem pano sob o PC (parecia flutuando).
+	computer = Real.place(self, "g:kiosk_computer", c + Vector3(1.70, 1.28, 1.65), -1.0, PI, Color.WHITE, 0, false)
+	if computer != null:
+		computer.name = "CounterComputer"
+		_finish_kiosk_computer(computer)
+		# Assenta a base no tampo (AABB/bevel às vezes deixa 1–2 cm de folga).
+		computer.position.y = c.y + 1.28
 	_interaction(self,c+Vector3(1.70,1.55,1.65),Vector3(.52,.55,.30),func(): return "Computador · gestão do quiosque",open_computer)
 	for side in [-1,1]:
 		var card := B.label(self,"",c+Vector3(-.90,1.498,1.89+side*.145),22,Color(.08,.12,.10),Color(0,0,0,0),0 if side==1 else PI)
@@ -91,11 +96,91 @@ func _build() -> void:
 	pickup_label.pixel_size = .0006
 	Real.place(self,"k:utensil-fork",c+Vector3(-1.98,1.31,.93),0.0,PI*.5,Color.WHITE,.13)
 	Real.place(self,"k:utensil-spoon",c+Vector3(-1.90,1.31,.93),0.0,PI*.5,Color.WHITE,.13)
+	_dress_service_counter(c)
 	products = Node3D.new()
 	add_child(products)
 	hand = Node3D.new()
 	main.player.cam.add_child(hand)
 	hand.position = Vector3(0.32, -0.32, -0.65)
+
+## Detalhes do tampo: guardanapos, canudos, amostras e luzes quentes — sem cobrir o PC.
+func _dress_service_counter(c: Vector3) -> void:
+	# Sem esteira sob o monitor: o pano fazia o PC parecer fora do tampo de madeira.
+	# Guardanapos atrás da bandeja de copos (não na borda do oak — atravessava o tampo).
+	Real.place(self, "g:towel_folded", c + Vector3(-0.55, 1.286, 1.52), 0.07, 0.55, Color(0.92, 0.90, 0.84), 0.0, false)
+	Real.place(self, "g:straw", c + Vector3(0.52, 1.308, 1.96), 0.14, 0.4, Color.WHITE, 0.0, false)
+	Real.place(self, "g:straw", c + Vector3(0.58, 1.308, 1.92), 0.13, -0.55, Color(0.95, 0.75, 0.35), 0.0, false)
+	# Amostras no tampo, entre o caixa e a retirada — sem invadir entradas laterais.
+	Real.place(self, "g:glass_juice", c + Vector3(-0.95, 1.28, 1.88), 0.18, 0.2, Color(1.0, 0.85, 0.35), 0.0, false)
+	Real.place(self, "g:orange", c + Vector3(-0.78, 1.28, 1.72), 0.09, 0.7)
+	Real.place(self, "g:cocktail", c + Vector3(-0.45, 1.28, 1.70), 0.16, -0.3, Color(0.95, 0.55, 0.45), 0.0, false)
+	# Cesto e garrafa no vão interno esquerdo do balcão (não no corredor lateral).
+	Real.place(self, "g:wicker_basket_closed", c + Vector3(-1.55, 1.28, 1.48), 0.2, 0.15)
+	Real.place(self, "g:bottle_green", c + Vector3(-1.72, 1.28, 1.28), 0.26, 0.4)
+	# Luzes quentes (âmbar) — ciano/menta no monitor lavava o grafite e virava “verde”.
+	for spot in [[Vector3(0.2, 2.05, 1.95), Color(1.0, 0.88, 0.68), 0.55, 2.4], [Vector3(1.70, 2.05, 1.55), Color(1.0, 0.90, 0.72), 0.35, 1.8]]:
+		var lamp := OmniLight3D.new()
+		lamp.position = c + spot[0]
+		lamp.light_color = spot[1]
+		lamp.light_energy = spot[2]
+		lamp.omni_range = spot[3]
+		lamp.omni_attenuation = 1.6
+		lamp.shadow_enabled = false
+		add_child(lamp)
+
+## Força grafite/alumínio no terminal (Toon + luz fria tingiam o verso de menta).
+func _finish_kiosk_computer(root: Node3D) -> void:
+	const GRAPHITE := Color(0.20, 0.21, 0.22)
+	const ALUMINIUM := Color(0.58, 0.59, 0.58)
+	const GLASS := Color(0.09, 0.10, 0.11)
+	const SCREEN := Color(0.11, 0.13, 0.14)
+	const PAPER := Color(0.80, 0.82, 0.80)
+	const KEYS := Color(0.26, 0.27, 0.28)
+	for mi in root.find_children("*", "MeshInstance3D", true, false):
+		var mesh: MeshInstance3D = mi
+		if mesh.mesh == null:
+			continue
+		for si in mesh.mesh.get_surface_count():
+			var src: Material = mesh.mesh.surface_get_material(si)
+			var over: Material = mesh.get_surface_override_material(si)
+			var named: Material = over if over != null else src
+			var name := ""
+			if named != null:
+				name = String(named.resource_name).to_lower()
+			if name.is_empty() and src != null:
+				name = String(src.resource_name).to_lower()
+			var col := GRAPHITE
+			var rough := 0.72
+			var metal := 0.0
+			if name.find("aluminium") >= 0 or name.find("aluminum") >= 0:
+				col = ALUMINIUM
+				rough = 0.42
+				metal = 0.28
+			elif name.find("glass") >= 0:
+				col = GLASS
+				rough = 0.18
+			elif name.find("screen") >= 0:
+				col = SCREEN
+				rough = 0.55
+			elif name.find("dashboard") >= 0:
+				col = PAPER
+				rough = 0.85
+			elif name.find("key") >= 0:
+				col = KEYS
+				rough = 0.7
+			var mat := StandardMaterial3D.new()
+			mat.resource_name = name if not name.is_empty() else "terminal graphite"
+			mat.albedo_color = col
+			mat.roughness = rough
+			mat.metallic = metal
+			mat.metallic_specular = 0.2
+			mat.diffuse_mode = BaseMaterial3D.DIFFUSE_TOON
+			mat.specular_mode = BaseMaterial3D.SPECULAR_TOON
+			mat.rim_enabled = true
+			mat.rim = 0.04
+			mat.rim_tint = 0.25
+			mat.emission_enabled = false
+			mesh.set_surface_override_material(si, mat)
 
 func can_use_computer() -> bool:
 	var local: Vector3 = main.world.kiosk_local(main.player.global_position)

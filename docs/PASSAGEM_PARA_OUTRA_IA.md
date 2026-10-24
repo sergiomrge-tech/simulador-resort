@@ -19,7 +19,7 @@ Leia também AGENTS.md, CONTINUAR.md, COMPUTADOR_E_BALCAO.md e CLAUDE.md.
 - Porta da casa com E; tampo escuro / base cinza; copos e promoções.
 - Fontes Blender, geradores, catálogo e docs.
 
-## Correções deste lote (mira, rush, encerramento)
+## Correções deste lote (mira, rush, encerramento + detalhe visual)
 
 1. **Interactable do balcão** (`world_village.gd`): caixa 3,0×1,2×0,4 m em
    z≈1,88 (lado interno, à frente da madeira), sem cobrir o PC em x≈1,70.
@@ -33,6 +33,11 @@ Leia também AGENTS.md, CONTINUAR.md, COMPUTADOR_E_BALCAO.md e CLAUDE.md.
    de vôlei só se os corpos existirem; `is_instance_valid` em `_process`;
    `set_process(false)` + limpeza de refs em `tree_exiting` (mitiga AV no
    encerramento após PASS lógico).
+4. **Detalhe visual RC2**: tampo com guardanapos/canudos/amostras/cesto;
+   PC grafite (override Toon); fachada com flores/chinelos; casa com
+   batente/soleira, treliça, correio e planta. Shots: `--cam` usa **y do corpo**
+   (olho = y+1,65). Balcão staff: `37.6,0.12,-13.55,0,-34,11 --noroof`;
+   fachada praia: `38,0.15,-21.8,180,-20,15`; porta: `48.3,0.12,27.4,5,-6,10.5`.
 
 ## Verificação neste ambiente (Linux, Godot 4.5.1, gl_compatibility)
 

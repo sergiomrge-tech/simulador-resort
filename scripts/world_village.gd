@@ -592,6 +592,27 @@ func _hero_house() -> void :
 	home_door.set_script(load("res://scripts/home_door.gd"))
 	home_door.position = Vector3(c.x+2.3,y0,zf)
 	add_child(home_door)
+	# Soleira e ombreiras: a porta ganha leitura de batente, não só a folha.
+	var sill_wood: Material = wood_tint(Color(0.42, 0.28, 0.16))
+	B.box(self, Vector3(1.35, 0.08, 0.22), Vector3(c.x + 2.3 - 0.575, y0 + 0.04, zf + 0.08), sill_wood)
+	B.box(self, Vector3(0.12, 2.28, 0.14), Vector3(c.x + 2.3 + 0.08, y0 + 1.14, zf + 0.02), sill_wood)
+	B.box(self, Vector3(0.12, 2.28, 0.14), Vector3(c.x + 2.3 - 1.22, y0 + 1.14, zf + 0.02), sill_wood)
+	B.box(self, Vector3(1.42, 0.12, 0.14), Vector3(c.x + 2.3 - 0.575, y0 + 2.28, zf + 0.02), sill_wood)
+	# Detalhes da entrada: treliça e correio no piso (base y=0); vaso no lintel.
+	Real.place(self, "g:trellis_planter", Vector3(c.x + 0.95, 0.0, zf + 0.32), 0.82, 0.08)
+	Real.place(self, "g:mailbox", Vector3(c.x + 3.25, 0.0, zf + 0.28), 0.78, PI)
+	Real.place(self, "g:hanging_planter", Vector3(c.x + 1.05, y0 + 2.38, zf + 0.38), 0.45)
+	# Buganvília na parede (não no chão — o modelo deita se pousado em y=0).
+	Real.place(self, "g:bloom_rosa", Vector3(c.x + 3.7, y0 + 1.4, zf + 0.22), 0.48, -0.5)
+	var porch := OmniLight3D.new()
+	porch.name = "HomePorchLight"
+	porch.position = Vector3(c.x + 2.15, y0 + 2.45, zf + 0.55)
+	porch.light_color = Color(1.0, 0.82, 0.55)
+	porch.light_energy = 0.55
+	porch.omni_range = 3.2
+	porch.shadow_enabled = false
+	add_child(porch)
+	lanterns.append([porch, null, 0.55, true])
 
 	var bc: = Vector3(c.x - 2.15, y0, zb + 1.55)
 	var gothic: = B.model(self, "GothicBed_01", bc + Vector3(0.15, 0, 0.55), PI, 1.0)
@@ -917,10 +938,14 @@ func _kiosk_table(tp: Vector3, need: String, umb: Color, umbrella: bool) -> void
 	# tampo da mesa dobrável a 0,73 m, centrado em (-0,08; 0,07): petiscos e cardápio apoiados nele (antes flutuavam 5 cm)
 	var top: = tp + Vector3(-0.08, 0.732, 0.07)
 	# Pratos e bebidas aparecem só quando o pedido deste lugar é entregue.
-	# cardapinho em pé na mesa
-	var menu: = B.box(self, Vector3(0.16, 0.22, 0.02), top + Vector3(0, 0.105, 0), B.flat(Color(1.0, 0.45, 0.35), 0.8))
+	# Cardápio em pé + toalha dobrada como jogo americano (modelos detalhados).
+	Real.place(self, "g:towel_folded", top + Vector3(0.12, 0.0, -0.08), 0.05, 0.15, umb.lerp(Color(0.95, 0.9, 0.8), 0.55))
+	var menu: = B.box(self, Vector3(0.14, 0.20, 0.012), top + Vector3(-0.05, 0.10, 0.05), B.flat(Color(0.12, 0.38, 0.36), 0.75))
 	_table_menus.append(menu)
-	menu.rotation.x = -0.2
+	menu.rotation.x = -0.18
+	var card := B.label(self, "CARDÁPIO", top + Vector3(-0.05, 0.10, 0.06), 14, Color(0.98, 0.93, 0.78), Color(0, 0, 0, 0), 0)
+	card.pixel_size = 0.00045
+	card.rotation.x = -0.18
 	# as duas cadeiras dobráveis do conjunto ficam na frente e atrás da mesa (eixo z), levemente giradas; assento a 0,384 m
 	for sd in [[Vector3(-0.017, 0.384, 0.447), Vector3(-0.343, 0, -0.94)], [Vector3(-0.089, 0.384, -0.371), Vector3(-0.148, 0, 0.989)]]:
 		var seat_c: Vector3 = sd[0]
@@ -1484,19 +1509,27 @@ func _kiosk_details(c: Vector3, y0: float) -> void :
 		var cc: = c + Vector3(-0.6 + k * 0.6, y0 + 2.45, -2.25)
 		B.cyl(self, 0.014, 0.014, 0.62, cc + Vector3(0, 0.05, 0), D.m(Color(0.45, 0.3, 0.16)), 8)
 		Real.place(self, "k:coconut", cc + Vector3(0, -0.55, 0), 0.26, k * 1.3)
-	# balcão
+	# balcão — tip jar / canudos / frutas usam modelos detalhados (g:), não tintas na pele
 	var top: = c + Vector3(0, y0 + 1.18, 2.0)
 	D.tip_jar(self, top + Vector3(1.6, 0, 0.15))
 	D.straw_cup(self, c + Vector3(-2.0, y0 + 1.1, 0.95))
 	D.cup_stack(self, top + Vector3(-1.95, 0, 0.0), Color(1.0, 0.9, 0.3))
 	D.cup_stack(self, top + Vector3(-1.75, 0, 0.12), Color(0.3, 0.8, 1.0))
-
 	D.pineapple(self, top + Vector3(1.95, 0, -0.1))
+	Real.place(self, "g:coconut_open", top + Vector3(1.75, 0, -0.22), 0.14, 0.5)
+	# Toalha do lado da praia fica no kiosk_operations (tampo 1,28); evita atravessar o oak.
 
 	_open_sign = D.open_sign(self, c + Vector3(1.65, y0 + 2.3, 2.5), 0.0)
 	# Lixeira no lado interno do balcão; passagens laterais desobstruídas.
 	D.trash_bin(self, c + Vector3(-1.35, y0, 0.75))
+	# Cooler e corda no interior, longe dos vãos laterais (±2,4).
+	Real.place(self, "g:cooler_box", c + Vector3(1.45, y0, 0.45), 0.55, PI * 0.08)
+	Real.place(self, "g:rope_coil", c + Vector3(-1.55, y0, 0.55), 0.26, 0.4)
 	B.model(self, "lifebuoy", c + Vector3(2.48, y0 + 1.8, 2.48), PI * 0.25, 0.8).rotation.x = PI * 0.5
+	# Flores e chinelos na fachada praiana, fora do vão das entradas.
+	for side in [-1.0, 1.0]:
+		Real.place(self, "g:bloom_rosa" if side < 0 else "g:bloom_laranja", c + Vector3(side * 2.55, y0 + 1.55, 2.55), 0.55, side * 0.3)
+		Real.place(self, "g:flipflops", c + Vector3(side * 3.25, y0, 3.65), 0.12, side * 0.4, Color(0.2, 0.55, 0.55) if side < 0 else Color(0.9, 0.45, 0.25))
 	D.signpost(self, c + Vector3(-3.4, 0.05, 4.2), [["Vila", - PI * 0.5, Color(0.2, 0.55, 0.85)], ["Pousada", PI, Color(1.0, 0.45, 0.35)], ["Praia", PI * 0.5, Color(0.2, 0.7, 0.45)]])
 	for tp in [Vector3(-3.0, 0, 3.4), Vector3(3.0, 0, 3.6), Vector3(-3.4, 0, -2.6), Vector3(3.5, 0, -3.0)]:
 		var l: = D.tiki_torch(self, c + tp + Vector3(0, 0.05, 0))
