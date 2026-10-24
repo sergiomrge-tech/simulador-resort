@@ -79,7 +79,8 @@ func _build() -> void:
 	if computer != null:
 		computer.name = "CounterComputer"
 		_finish_kiosk_computer(computer)
-	_interaction(self, c + Vector3(1.70, 1.55, 1.85), Vector3(0.52, 0.55, 0.30), func(): return "Computador · gestão do quiosque", open_computer)
+	# Mira em z≈1,65 (lado interno): não coincide com o Interactable do balcão em z≈1,88.
+	_interaction(self, c + Vector3(1.70, 1.55, 1.65), Vector3(0.52, 0.55, 0.30), func(): return "Computador · gestão do quiosque", open_computer)
 	for side in [-1,1]:
 		var card := B.label(self,"",c+Vector3(-.90,1.498,1.89+side*.145),22,Color(.08,.12,.10),Color(0,0,0,0),0 if side==1 else PI)
 		card.name = "CounterPromotion" + str(side)
