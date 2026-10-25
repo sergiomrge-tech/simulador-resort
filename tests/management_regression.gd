@@ -57,19 +57,19 @@ func run(main) -> void:
  Core.day = 1
  Core.minutes = 9 * 60
  d.day = 1
- Core.staff.garcom = false
- Core.prog.staff_info.erase("garcom")
- var p := M.candidate("garcom", 0)
+ Core.staff.atendente = false
+ Core.prog.staff_info.erase("atendente")
+ var p := M.candidate("atendente", 0)
  Core.money = int(p.cost)
- check(M.hire_candidate(Core, "garcom", 0) and Core.money == 0, "candidato iniciante contrata pelo preço menor anunciado")
- check(is_equal_approx(M.profile_factor(Core, "garcom", "wage"), 0.85), "salário usa o perfil contratado")
- check(Core.prog.staff_wage("garcom") == int(p.daily), "diária da oferta corresponde ao salário inicial")
+ check(M.hire_candidate(Core, "atendente", 0) and Core.money == 0, "candidato iniciante contrata pelo preço menor anunciado")
+ check(is_equal_approx(M.profile_factor(Core, "atendente", "wage"), 0.85), "salário usa o perfil contratado")
+ check(Core.prog.staff_wage("atendente") == int(p.daily), "diária da oferta corresponde ao salário inicial")
  Core.money = 100000
- d.worked.garcom = 720.0
- var energy: int = Core.prog.staff_rec("garcom").energy
+ d.worked.atendente = 720.0
+ var energy: int = Core.prog.staff_rec("atendente").energy
  Core.day = 2
  M.new_day(Core)
- check(float(d.profiles.garcom.morale) < 100 and Core.prog.staff_rec("garcom").energy < energy, "jornada longa reduz satisfação e energia")
+ check(float(d.profiles.atendente.morale) < 100 and Core.prog.staff_rec("atendente").energy < energy, "jornada longa reduz satisfação e energia")
  Core.day = 1
  Core.minutes = 9 * 60
  d.day = 1
@@ -131,7 +131,7 @@ func run(main) -> void:
  check(not M.apply_look(Core, {"paint": "mar"}), "mudança de disposição exige quiosque fechado")
  Core.set_kiosk_open(false)
  main.operations._staff_tick()
- check(main.operations.actors.has("garcom") and main.operations.actors.garcom.get_meta("uniform", "") == "areia", "uniforme aplicado ao funcionário real")
+ check(main.operations.actors.has("atendente") and main.operations.actors.atendente.get_meta("uniform", "") == "areia", "uniforme aplicado ao funcionário real")
  Core.minutes = 12 * 60
  Core.weather = "clear"
  Core.day_event = ""
@@ -207,6 +207,6 @@ func run(main) -> void:
    get_viewport().get_texture().get_image().save_png(ProjectSettings.globalize_path("user://qa_shots/management_" + app + ".png"))
   phone.close()
  var normalized := M.sanitize(JSON.parse_string(JSON.stringify(d)))
- check(normalized.look == look and normalized.profiles.has("garcom") and normalized.closing.has("variance"), "novo estado tem roundtrip JSON")
+ check(normalized.look == look and normalized.profiles.has("atendente") and normalized.closing.has("variance"), "novo estado tem roundtrip JSON")
  print("MANAGEMENT_TEST ", "FAIL" if failed else "PASS")
  Core.quit_game(1 if failed else 0)

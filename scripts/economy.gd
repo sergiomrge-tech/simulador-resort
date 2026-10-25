@@ -97,8 +97,8 @@ const STAFF: = {
 		"name": "Atendente do quiosque",
 		"hire": 240,
 		"wage": 30,
-		"req": "kiosk_tables",
-		"blurb": "Serve um cliente do quiosque a cada 14 min, mesmo sem você. Salário no fim do dia.",
+		"req": "",
+		"blurb": "Cuida de todo o quiosque: anota pedidos, entrega produtos prontos, recebe e recolhe a louça.",
 	},
 	"camareira": {
 		"name": "Camareira",

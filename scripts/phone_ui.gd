@@ -830,6 +830,7 @@ func _app_staff(list: VBoxContainer) -> void :
 		_lbl(list, "Folha do quiosque: %s/dia" % Core.fmt_money(payroll), 19, INK, true, true)
 		_lbl(list, "Turnos de até 8h usam a diária proporcional (mínimo meia diária); turnos maiores custam mais. Folga paga meia diária. O salário é devido mesmo sem vendas.", 14, INK_SOFT, false, true)
 	for role in Economy.STAFF:
+		if role in Core.KIOSK_STAFF_ROLES and role!="atendente": continue
 		if role=="cozinheiro" and not Core.staff.get(role,false): continue
 		if str(Economy.STAFF[role].get("req",""))!="" and not Core.has(str(Economy.STAFF[role].req)) and not Core.staff.get(role,false): continue
 		if app == "gestao_equipe" and role not in Core.CompanyRules.Simulation.ROLES:
@@ -854,6 +855,8 @@ func _app_staff(list: VBoxContainer) -> void :
 			_lbl(c, "Crie sua empresa em Quiosque → Nome e placa.", 14, INK_SOFT, false, true)
 		elif need != "" and not Core.has(need):
 			_lbl(c, tr("Precisa de: %s") % tr(str(Economy.EXPANSIONS[need].name)), 14, INK_SOFT, true, true)
+		elif role=="atendente" and not Core.company.created:
+			_btn(c,"Criar meu quiosque",_open_management.bind("empresa"))
 		elif role in Management.ROLES:
 			_btn(r2, "Escolher candidato", _choose_candidate.bind(str(role)))
 		else:
@@ -1508,7 +1511,7 @@ func _dismiss_staff(role: String) -> void:
 		refresh()
 
 # ------------------------------------------------------------------ gestão ampliada
-var _candidate_role := "garcom"
+var _candidate_role := "atendente"
 var _supplier_id := "horta"
 var _supplier_ingredient := "coco"
 var _supplier_quantity := 12
@@ -1579,9 +1582,12 @@ func _choose_candidate(role: String) -> void:
 	_open_management("recrutamento")
 
 func _app_candidates(list: VBoxContainer) -> void:
-	var roles: Array = Management.ROLES
-	var picker := _choice(list, "Cargo", roles.map(func(role): return str(Economy.STAFF[role].name)), roles.find(_candidate_role))
-	picker.item_selected.connect(func(index): _candidate_role = roles[index]; refresh())
+	_candidate_role="atendente"
+	if not Core.company.created:
+		_lbl(list,"Crie sua empresa antes de contratar o atendente.",16,INK)
+		_btn(list,"Criar meu quiosque",_open_management.bind("empresa"))
+		return
+	_lbl(list,"Um atendente para todo o quiosque",18,INK,true)
 	var hired: bool = bool(Core.staff.get(_candidate_role, false))
 	var record: Dictionary = Management.state(Core).profiles.get(_candidate_role, {})
 	if hired:
@@ -1590,7 +1596,8 @@ func _app_candidates(list: VBoxContainer) -> void:
 		if not record.is_empty():
 			_lbl(list, "Satisfação: %d%%. Jornadas acima de 8h reduzem a satisfação e aceleram o cansaço; folgas ajudam a recuperar." % int(record.morale), 14, INK_SOFT, false, true)
 		_btn(list, "Gerenciar turnos, folgas e treinamento", _open_management.bind("equipe"))
-	_lbl(list, "Compare o custo e o perfil. A diária abaixo é a base de 8h no nível 1; turno, experiência e folga modificam o valor. Uma vaga por cargo.", 14, INK_SOFT, false, true)
+		return
+	_lbl(list, "Compare o custo e o perfil. A diária abaixo é a base de 8h no nível 1; turno, experiência e folga modificam o valor. Uma única vaga para o atendimento do quiosque.", 14, INK_SOFT, false, true)
 	for kind in 3:
 		var p := Management.candidate(_candidate_role, kind)
 		var card := _card(list)

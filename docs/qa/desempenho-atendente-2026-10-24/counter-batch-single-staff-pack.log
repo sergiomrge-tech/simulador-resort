@@ -1,0 +1,20 @@
+Godot Engine v4.5.1.stable.official.f62fdbde1 - https://godotengine.org
+Vulkan 1.4.351 - Forward+ - Using Device #0: NVIDIA - NVIDIA GeForce RTX 4060 Ti
+
+vegetacao: capim=4021 arbustos=99 coqueiros+=46
+serra: copas perto=250 crista=101
+serra: tris encosta=16884
+[single-staff] ok contratações antigas viram um atendente
+[single-staff] ok experiência do funcionário mais treinado preservada
+[single-staff] ok turno e perfil preservados
+[single-staff] ok histórico preservado sem rescisão ou nova cobrança
+[single-staff] ok migração repetida não duplica custos nem treinamento
+[single-staff] ok save recarrega um único funcionário
+[single-staff] ok folha cobra apenas um salário
+[single-staff] ok salário não é cobrado duas vezes no mesmo dia
+[single-staff] ok contrata atendente único
+[single-staff] ok não permite cargos duplicados nem cobra tentativas recusadas
+[single-staff] ok novo atendente cobre todo o expediente por padrão
+[single-staff] ok apenas um funcionário aparece no quiosque
+SINGLE_STAFF_TEST PASS
+SHUTDOWN_COMPLETE code=0

@@ -45,12 +45,12 @@ func run(main) -> void:
 	for role in Core.staff: Core.staff[role] = false
 	for id in Core.stock: Core.stock[id] = 30
 	Core.minutes = 22 * 60
-	check(Core.hire("cozinheiro"), "contratação fora do horário")
-	check(main.operations.actors.has("cozinheiro") and main.operations.actors.cozinheiro.visible, "contratado aparece imediatamente com jogo pausado e quiosque fechado")
-	check(Core.prog.staff_eff("cozinheiro") == 0, "presença não libera trabalho fora do turno")
-	Core.staff.cozinheiro = false
+	check(Core.hire("atendente"), "contratação fora do horário")
+	check(main.operations.actors.has("atendente") and main.operations.actors.atendente.visible, "contratado aparece imediatamente com jogo pausado e quiosque fechado")
+	check(Core.prog.staff_eff("atendente") == 0, "presença não libera trabalho fora do turno")
+	Core.staff.atendente = false
 	Core.staff_changed.emit()
-	check(not main.operations.actors.cozinheiro.visible, "demissão remove presença")
+	check(not main.operations.actors.atendente.visible, "demissão remove presença")
 	Core.minutes = 11 * 60
 	var c: Vector3 = main.world.KIOSK_C
 	for station in main.operations.stations.values():
@@ -171,8 +171,8 @@ func run(main) -> void:
 	main.hud.phone.back()
 	check(main.hud.phone.app == "painel", "voltar respeita a categoria")
 	main.hud.phone.close()
-	check(Core.hire("caixa"), "caixa contratado para conferência visual")
-	check(main.operations.actors.caixa._skel.has_node("StaffBadge"),"uniforme com identificação por função")
+	check(Core.hire("atendente"), "atendente contratado para conferência visual")
+	check(main.operations.actors.atendente._skel.has_node("StaffBadge"),"uniforme com identificação por função")
 	check(main.operations.menu_card.text.contains("PROMOÇÕES"),"cardápio físico acompanha receitas disponíveis")
 	for cue in ["fridge","pickup","prepare","ready","cash"]:
 		var stream: AudioStream = load("res://assets/audio/kiosk_" + cue + ".wav")
@@ -225,7 +225,7 @@ func run(main) -> void:
 			person.go([])
 			person.set_process(false)
 			check(person._face.get_node_or_null("Sunglasses") == null, "pessoas sem óculos escuros")
-			person.apply_staff_uniform("cozinheiro" if person._female else "garcom")
+			person.apply_staff_uniform("atendente")
 			var clothes = person.find_children("Tailored_*", "MeshInstance3D", true, false)
 			check(clothes.size() == 5, "roupas importadas " + gender)
 			check(person._body_mi.mesh.get_surface_count() > 0, "corpo preservado sob roupas " + gender)
@@ -239,8 +239,8 @@ func run(main) -> void:
 		await shot(main, "people_portraits", main.world.kiosk_point(Vector3(0, .05, 5.55)), 0, 0)
 		for person in shown.values():
 			var apron = person._skel.get_node_or_null("Tailored_apron")
-			check(apron != null and apron.visible == person._female,"avental apenas na função de cozinha")
-			person.set_meta("work_kind","prepare")
+			check(apron != null and not apron.visible,"atendente usa uniforme de atendimento sem função de cozinha")
+			person.set_meta("work_kind","pickup")
 			person.set_meta("work_target",person.global_position+Vector3(-.18,1.05,.40))
 		await frames(18)
 		await shot(main,"staff_preparing",main.world.kiosk_point(Vector3(0,.05,5.55)),0,0)

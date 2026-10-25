@@ -171,6 +171,7 @@ static func candidate(role: String, kind: int) -> Dictionary:
  return p
 
 static func hire_candidate(core, role: String, kind: int) -> bool:
+ if role!="atendente": return false
  if not core.company.created: return false
  if role not in ROLES or kind < 0 or kind > 2 or core.staff.get(role, false): return false
  var p := candidate(role, kind)

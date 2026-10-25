@@ -1,5 +1,9 @@
 # Gestão do quiosque — expansão local de 22/10/2026
 
+> **Atualização vigente de 24/10:** [Desempenho e atendente único](DESEMPENHO_ATENDENTE_2026-10-24.md).
+> No quiosque há somente um atendente para pedidos, entrega, recebimento e louça.
+> Essa regra substitui cargos separados, preparo e regras antigas de candidatos abaixo.
+
 > **Revisão vigente:** [Computador e balcão](COMPUTADOR_E_BALCAO.md). Gestão no PC com E; abrir o quiosque antes das chegadas; clientes pedem/retiram tudo no balcão antes de sentar. Porta funcional; balcão madeira escura/base cinza. Essa revisão substitui os fluxos antigos descritos abaixo.
 
 > **Regra vigente — 23/10: sem preparo.** Pegar o produto pronto na geladeira,

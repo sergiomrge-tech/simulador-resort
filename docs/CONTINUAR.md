@@ -3,6 +3,8 @@
 Atualizado em **24/10/2026**. Destinado a qualquer IA ou pessoa, sem depender deste
 chat. Leia junto com [AGENTS.md](../AGENTS.md). Novos pedidos do usuário prevalecem.
 
+**Atualização mais recente:** [Desempenho e atendente único](DESEMPENHO_ATENDENTE_2026-10-24.md).
+
 **Atualização de louça e balcão (24/10):** [LOUCA_BALCAO_2026-10-24.md](LOUCA_BALCAO_2026-10-24.md).
 
 **Revisão mais recente de visual e gestão:**
@@ -318,3 +320,12 @@ Louça deve corresponder ao que foi consumido: suco → copo vazio; coco → coc
 comida → prato/tigela vazios. Preservar lista por lugar no save e limpar junto dos
 objetos. PC central, copos à esquerda e promoções à direita. Downloads/builds no
 drive D, pois C ficou cheio. Guia: [LOUCA_BALCAO_2026-10-24.md](LOUCA_BALCAO_2026-10-24.md).
+
+## Pedido de 24/10 — desempenho e atendente único
+
+Somente **um atendente** faz todo o atendimento do quiosque: anotar, retirar pronto,
+entregar no balcão, receber no PC e recolher louça. Substitui cargos separados
+(garçom/caixa/limpeza/cozinheiro) no quiosque, preservando migração e histórico.
+Cargos de pousada/bar/passeios continuam separados. Não reabrir contratação de
+quatro cargos por seguir documentos antigos. Detalhes, métricas e validação em
+[DESEMPENHO_ATENDENTE_2026-10-24.md](DESEMPENHO_ATENDENTE_2026-10-24.md).

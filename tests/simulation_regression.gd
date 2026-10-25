@@ -37,20 +37,20 @@ func run(main) -> void:
 	Core.money = 0
 	check(not Core.restock_kiosk() and Core.stock.coco == 0 and Core.money == 0, "orçamento insuficiente não compra parcialmente")
 	Core.money = 10000
-	check(Core.hire("cozinheiro"), "contratação disponível")
-	Core.prog.staff_rec("cozinheiro").trait = "rapido"
-	Core.set_kiosk_shift("cozinheiro", 8, 16)
-	var base: int = Core.prog.staff_wage("cozinheiro")
-	Core.set_kiosk_shift("cozinheiro", 8, 20)
-	check(Core.prog.staff_wage("cozinheiro") == int(round(base * 1.5)), "turno de 12h custa mais que turno de 8h")
+	check(Core.hire("atendente"), "contratação disponível")
+	Core.prog.staff_rec("atendente").trait = "rapido"
+	Core.set_kiosk_shift("atendente", 8, 16)
+	var base: int = Core.prog.staff_wage("atendente")
+	Core.set_kiosk_shift("atendente", 8, 20)
+	check(Core.prog.staff_wage("atendente") == int(round(base * 1.5)), "turno de 12h custa mais que turno de 8h")
 	Core.minutes = 10 * 60
-	check(Core.prog.staff_eff("cozinheiro") > 0, "funcionário trabalha dentro do turno")
+	check(Core.prog.staff_eff("atendente") > 0, "funcionário trabalha dentro do turno")
 	Core.minutes = 21 * 60
-	check(Core.prog.staff_eff("cozinheiro") == 0, "funcionário para fora do turno")
+	check(Core.prog.staff_eff("atendente") == 0, "funcionário para fora do turno")
 	Core.minutes = 10 * 60
-	Core.prog.toggle_off("cozinheiro")
-	check(Core.prog.staff_eff("cozinheiro") == 0, "folga impede trabalho")
-	Core.prog.toggle_off("cozinheiro")
+	Core.prog.toggle_off("atendente")
+	check(Core.prog.staff_eff("atendente") == 0, "folga impede trabalho")
+	Core.prog.toggle_off("atendente")
 	Core.company.sim.today = Sim.stats()
 	Core.company.sim.today.open_minutes = 120.0
 	Core.company.sim.today.cash_in = 150
@@ -60,22 +60,22 @@ func run(main) -> void:
 	Core.company.carry = "coco_gelado"
 	Core.company.production = {"dish": "suco", "left": 1.0}
 	Core.day = 2
-	var wage: int = Core.prog.staff_wage("cozinheiro")
+	var wage: int = Core.prog.staff_wage("atendente")
 	Core._pay_wages(true)
 	cash = Core.money
 	Core._pay_wages(true)
 	check(Core.money == cash and Core.company.sim.today.payroll == wage, "folha cobrada uma única vez por dia")
-	var energy_before: int = Core.prog.staff_rec("cozinheiro").energy
+	var energy_before: int = Core.prog.staff_rec("atendente").energy
 	Sim.rollover(Core)
-	check(int(Core.prog.staff_rec("cozinheiro").energy) < energy_before, "turno longo aumenta cansaço na virada")
-	var energy_after: int = Core.prog.staff_rec("cozinheiro").energy
+	check(int(Core.prog.staff_rec("atendente").energy) < energy_before, "turno longo aumenta cansaço na virada")
+	var energy_after: int = Core.prog.staff_rec("atendente").energy
 	var report: Dictionary = Core.company.sim.history.back()
 	check(Core.money == cash - 16 and report.overhead == 16, "estrutura cobra 12 mais 2 por hora aberta")
 	check(report.net == 150 - 25 - wage - 16, "relatório concilia recebimentos, compras, folha e custos")
 	check(report.waste == 5 and Core.company.carry == "" and Core.company.production.is_empty() and Core.company.ready.suco == 0, "virada descarta produtos preparados e registra desperdício")
 	cash = Core.money
 	Sim.rollover(Core)
-	check(Core.money == cash and Core.company.sim.history.size() == 1 and Core.prog.staff_rec("cozinheiro").energy == energy_after, "virada repetida não cobra, descarta nem cansa novamente")
+	check(Core.money == cash and Core.company.sim.history.size() == 1 and Core.prog.staff_rec("atendente").energy == energy_after, "virada repetida não cobra, descarta nem cansa novamente")
 	Core.set_kiosk_reorder(true, 4)
 	for id in Sim.ingredients(Core):
 		Core.stock[id] = 0
@@ -95,11 +95,11 @@ func run(main) -> void:
 	cash = Core.money
 	Core._pay_wages(true)
 	check(Core.money == cash, "recarga não repete salário já pago")
-	var fee: int = Core.prog.staff_wage("cozinheiro") * 3
-	check(Core.dismiss_kiosk_staff("cozinheiro") and not Core.staff.cozinheiro and Core.money == cash - fee, "dispensa remove funcionário e cobra rescisão")
+	var fee: int = Core.prog.staff_wage("atendente") * 3
+	check(Core.dismiss_kiosk_staff("atendente") and not Core.staff.atendente and Core.money == cash - fee, "dispensa remove funcionário e cobra rescisão")
 	main.hud.phone.open("gestao_equipe")
-	main.hud.phone._hire_staff("garcom")
-	check(Core.staff.garcom, "contratação pelo painel da equipe")
+	main.hud.phone._hire_staff("atendente")
+	check(Core.staff.atendente, "contratação pelo painel da equipe")
 	for page in ["horarios", "estoque_quiosque", "gestao_equipe", "resultado"]:
 		main.hud.phone.open(page)
 		await get_tree().process_frame

@@ -228,3 +228,32 @@ que B acabou de liberar. Bandeja e frutas precisam de espaços separados; frutas
 passaram para a bancada lateral para não atravessar os seis copos.
 Builds foram movidos para D:/CodexTemp/resort-build/rc2-playable por junção, pois C
 ficou cheio. Nunca apagar saves/instalações para liberar espaço; novos ZIPs no D.
+
+
+## Performance e atendente único — 24/10/2026
+
+Material compartilhado deve ser imutável: cache por fonte/cor/natureza em Real,
+utilizado também por B.model. Pintura individual duplica o material antes de
+alterar. Não duplicar todos os materiais de cada instância idêntica: impede
+agrupamento e aumenta draw calls. PC renderiza o SubViewport somente ao mudar o
+conteúdo; UPDATE_ONCE pode permanecer pendente quando a tela não está visível.
+Testar ausência de UPDATE_ALWAYS e atualização real de conteúdo, não presumir
+que a propriedade já virou DISABLED após alguns process_frames sem renderização.
+NPCs reutilizam candidatos de colisão próximos por passo, mantendo o teste do
+algoritmo anterior (1200 trajetos aleatórios). Ao mover a posição para fora da
+janela de busca, recomputar candidatos; não criar cache persistente de blocos que
+ficam obsoletos ao mudar o layout.
+Volumes de occlusion culling devem ficar estritamente dentro de geometria opaca:
+casas decorativas têm caixas menores que o corpo sólido. Não criar uma caixa
+fechando a casa acessível do jogador, o quiosque ou entradas/janelas abertas.
+Medir antes/depois na mesma resolução/preset e repetir invertendo a ordem:
+comparações sequenciais oscilaram por atividade de outros programas nesta máquina.
+Não atribuir toda a diferença ao patch. Preservar dados brutos e imagens.
+Um único role ativo atende o quiosque: atendente. Antigos garcom/caixa/limpeza/
+cozinheiro ficam apenas no formato de save/histórico. Unificar na carga, preservar
+experiência/turno/perfil e cobrar uma única diária, sem custo de migração. Na falta
+de estoque, continuar anotando/limpando em vez de ficar tentando retirar um item
+inexistente. Para receber, o atendente precisa caminhar ao PC; ao limpar precisa
+chegar à mesa. Não restaurar recebimento remoto automático pelo antigo role caixa.
+
+- Cache de materiais usa Color como chave completa. to_html() quantiza e limita HDR: Color(1.2,1.2,1.2) não pode colidir com branco; preservar os fatores LIFT.

@@ -354,6 +354,7 @@ func is_moving() -> bool:
 	return not _route.is_empty()
 
 func _process(delta: float) -> void :
+	_local_block_frame=-1
 	if _eating:
 		_eat_t += delta
 	var prev: = position
@@ -743,6 +744,23 @@ func _around(a: Vector3, b: Vector3) -> Array:
 		seq3.append(corners[(nearest + k) % 4])
 	return seq3
 
+static var use_block_cache: bool=true
+var _local_blocks: Array=[]
+var _local_block_bounds:=Rect2()
+var _local_block_frame: int=-1
+
+func _nearby_blocks(from: Vector3,to: Vector3) -> Array:
+	var a:=Vector2(from.x,from.z)
+	var b:=Vector2(to.x,to.z)
+	var frame: int=Engine.get_process_frames()
+	if frame!=_local_block_frame or not _local_block_bounds.has_point(a) or not _local_block_bounds.has_point(b):
+		_local_block_frame=frame
+		_local_block_bounds=Rect2(a,Vector2.ZERO).expand(b).grow(2.0)
+		_local_blocks=[]
+		for rect in block_rects:
+			if (rect as Rect2).intersects(_local_block_bounds,true): _local_blocks.append(rect)
+	return _local_blocks
+
 func _slide_out_of_blocks(from: Vector3, to: Vector3) -> Vector3:
 	if block_rects.is_empty():
 		return to
@@ -753,7 +771,7 @@ func _slide_out_of_blocks(from: Vector3, to: Vector3) -> Vector3:
 		var last: Vector3 = _route[_route.size() - 1]
 		dest = Vector2(last.x, last.z)
 	for _pass in 2:
-		for r in block_rects:
+		for r in (_nearby_blocks(from,p) if use_block_cache else block_rects):
 			var rect: Rect2 = r
 			if not rect.has_point(Vector2(p.x, p.z)) or rect.has_point(Vector2(from.x, from.z)) or rect.has_point(dest):
 				continue

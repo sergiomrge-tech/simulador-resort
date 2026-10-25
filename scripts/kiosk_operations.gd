@@ -334,12 +334,14 @@ func _staff_home(role: String) -> Vector3:
 	return point(offsets[role])
 
 func _sync_staff_presence() -> void:
+	Core.consolidate_kiosk_staff()
 	for role in ["garcom", "atendente", "caixa", "cozinheiro", "limpeza"]:
 		var hired: bool = bool(Core.staff.get(role, false))
 		var present: bool = hired and not bool(Core.prog.staff_rec(role).get("off", false))
 		if present:
 			var g = _actor(role, _staff_home(role))
 			g.visible = true
+			if g._tree: g._tree.active=true
 			var working: bool = Core.company_enabled() and Core.prog.staff_eff(role) > 0 and main.village.kiosk_open()
 			g.set_process(working)
 			if not working:
@@ -348,47 +350,58 @@ func _sync_staff_presence() -> void:
 				g.play("Idle_Loop")
 		elif actors.has(role):
 			actors[role].visible = false
+			if actors[role]._tree: actors[role]._tree.active=false
 			actors[role].set_process(false)
+
+var attendant_task: String=""
 
 func _staff_tick() -> void:
 	_sync_staff_presence()
-	var c: Vector3 = center()
-	var waiter_role: String = "garcom" if Core.prog.staff_eff("garcom") > 0 else ("atendente" if Core.prog.staff_eff("atendente") > 0 else "cozinheiro")
-	if waiter_role != waiter_role_active:
-		waiter_role_active = waiter_role
-		waiter_phase = ""
-		waiter_target = null
-		for old_role in ["garcom", "atendente", "cozinheiro"]:
-			if actors.has(old_role):
-				_clear_tray(actors[old_role])
-	for role in ["garcom", "atendente", "caixa", "cozinheiro", "limpeza"]:
-		var active: bool = Core.prog.staff_eff(role) > 0 and main.village.kiosk_open()
-		if actors.has(role):
-			actors[role].set_process(active)
-		if not active:
-			continue
-		var pos: Vector3 = point(Vector3(1.05, 0.1, -0.2))
-		if role == "atendente": pos = point(Vector3(-0.9, 0.1, 0.55))
-		elif role == "garcom": pos = point(Vector3(0.1, 0.1, 0.7))
-		if role == "caixa":
-			pos = point(Vector3(1.25, 0.1, 1.15))
-		elif role == "limpeza":
-			pos = point(Vector3(-3.6, 0.1, 3.4))
-		var g = _actor(role, pos)
-		var uniform: String = str(Core.company.sim.management.look.uniform)
-		if Core.company.sim.management.look_owned and str(g.get_meta("uniform", "")) != uniform:
-			g.set_colors(g._skin, Core.CompanyRules.Simulation.Management.UNIFORMS[uniform], Color(0.15, 0.2, 0.27), g._hair_col)
-			g.set_meta("uniform", uniform)
-		g.speed = 2.0 * Core.prog.staff_eff(role) * (1.0 + Core.prog.eff("kiosk_speed"))
-		if role == "caixa":
-			if not Core.company.receivables.is_empty():
-				Core.collect_company_payments()
-		elif role == "cozinheiro" and waiter_role != "cozinheiro":
-			if g.has_meta("work_target"): g.remove_meta("work_target")
-		elif role == "limpeza":
-			_cleaner(g)
-		else:
-			_waiter(g)
+	if Core.prog.staff_eff("atendente")<=0 or not main.village.kiosk_open(): return
+	var g=_actor("atendente",_staff_home("atendente"))
+	var uniform: String=str(Core.company.sim.management.look.uniform)
+	if Core.company.sim.management.look_owned and str(g.get_meta("uniform",""))!=uniform:
+		g.set_colors(g._skin,Core.CompanyRules.Simulation.Management.UNIFORMS[uniform],Color(.15,.2,.27),g._hair_col)
+		g.set_meta("uniform",uniform)
+	g.speed=2.0*Core.prog.staff_eff("atendente")*(1.0+Core.prog.eff("kiosk_speed"))
+	if g.is_moving(): return
+	if attendant_task=="payments":
+		if g.position.distance_to(point(Vector3(0,.1,.7)))>.8:
+			g.go(_route_to_pickup(g)+[point(Vector3(0,.1,.7))])
+			return
+		Core.collect_company_payments()
+		attendant_task=""
+		return
+	if cleaner_seat>=0:
+		_cleaner(g)
+		return
+	if waiter_phase!="" or Core.company.staff_carry!="":
+		_waiter(g)
+		return
+	if not Core.company.receivables.is_empty():
+		attendant_task="payments"
+		g.go(_route_to_pickup(g)+[point(Vector3(0,.1,.7))])
+		return
+	var local: Vector3=main.world.kiosk_local(g.global_position)
+	if absf(local.x)>2.25 or local.z>1.6:
+		g.go(_route_to_pickup(g))
+		return
+	var available:=false
+	for target in main.village.waiting_customers():
+		for id in main.village._remaining(target):
+			if Core.company_available(id)>0: available=true
+	if available or not main.village.customers_to_order().is_empty():
+		_waiter(g)
+	elif not Core.company.dirty_seats.is_empty():
+		_cleaner(g)
+	elif g.position.distance_to(_staff_home("atendente"))>.3:
+		g.go([_staff_home("atendente")])
+
+func _can_fill_waiting() -> bool:
+	for customer in main.village.waiting_customers():
+		for id in main.village._remaining(customer):
+			if Core.company_available(id)>0: return true
+	return false
 
 func _waiter(g) -> void:
 	if g.is_moving():
@@ -400,7 +413,7 @@ func _waiter(g) -> void:
 		waiter_phase = ""
 		waiter_target = null
 		return
-	if waiter_phase == "" and Core.company.staff_carry == "" and main.village.waiting_customers().is_empty():
+	if waiter_phase == "" and Core.company.staff_carry == "" and not _can_fill_waiting():
 		var pending: Array = main.village.customers_to_order()
 		if not pending.is_empty():
 			waiter_target = weakref(pending[0])
@@ -459,6 +472,11 @@ func _cleaner(g) -> void:
 	if g.is_moving():
 		return
 	if cleaner_seat >= 0:
+		var place: Dictionary=main.world.kiosk_spots[cleaner_seat]
+		var target: Vector3=place.get("staff_approach",place.approach)
+		if g.position.distance_to(target)>.9:
+			g.go(_cleaning_route(g,place))
+			return
 		cleaner_time += pulse
 		if cleaner_time < 2.0:
 			return
@@ -470,7 +488,14 @@ func _cleaner(g) -> void:
 	cleaner_time = 0.0
 	if cleaner_seat < main.world.kiosk_spots.size():
 		var spot: Dictionary = main.world.kiosk_spots[cleaner_seat]
-		g.go(_route_to_pickup(g) + [spot.staff_approach] if spot.has("staff_approach") else [spot.approach])
+		g.go(_cleaning_route(g,spot))
+
+func _cleaning_route(g,spot: Dictionary) -> Array:
+	if spot.has("staff_approach"): return _route_to_pickup(g)+[spot.staff_approach]
+	var local: Vector3=main.world.kiosk_local(g.global_position)
+	if absf(local.x)<2.25 and local.z<1.6:
+		return [point(Vector3(1.1,.1,-.85)),point(Vector3(3.2,.1,-.85)),point(Vector3(3.2,.1,3.5)),spot.approach]
+	return [spot.approach]
 
 func _clear_tray(g) -> void:
 	if g.has_meta("work_target"): g.remove_meta("work_target")

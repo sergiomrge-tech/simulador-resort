@@ -93,6 +93,11 @@ func _ready() -> void :
 	for a in OS.get_cmdline_user_args():
 		var kv: PackedStringArray = a.trim_prefix("--").split("=", true, 1)
 		args[kv[0]] = kv[1] if kv.size() > 1 else "1"
+	if args.has("perf-test"):
+		seed(414141)
+		if args.has("perf-original"):
+			Real.use_material_cache=false
+			preload("res://scripts/guest.gd").use_block_cache=false
 	Core.in_game = false
 	Core.proc_props = args.has("proc")
 	var testing: = args.has("shot") or args.has("loop-test") or args.has("tour")
@@ -796,7 +801,7 @@ func _stage_company_demo() -> void:
 	for id in Core.kiosk_menu():
 		if Core.prepare_company_dish(id):
 			Core.tick_company(100.0)
-	for role in ["cozinheiro", "caixa", "garcom", "limpeza"]:
+	for role in ["atendente"]:
 		Core.staff[role] = true
 	operations._staff_tick()
 	for role in operations.actors:

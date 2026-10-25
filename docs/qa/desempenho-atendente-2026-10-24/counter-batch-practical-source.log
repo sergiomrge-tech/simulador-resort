@@ -1,0 +1,109 @@
+Godot Engine v4.5.1.stable.official.f62fdbde1 - https://godotengine.org
+Vulkan 1.4.351 - Forward+ - Using Device #0: NVIDIA - NVIDIA GeForce RTX 4060 Ti
+
+vegetacao: capim=4021 arbustos=99 coqueiros+=46
+serra: copas perto=250 crista=101
+serra: tris encosta=16884
+[practical] ok contratação fora do horário
+[practical] ok contratado aparece imediatamente com jogo pausado e quiosque fechado
+[practical] ok presença não libera trabalho fora do turno
+[practical] ok demissão remove presença
+[practical] ok estação dentro do quiosque
+[practical] ok estação dentro do quiosque
+[practical] ok estação dentro do quiosque
+[practical] ok sem anexo externo
+[practical] ok parede traseira com colisão
+[practical] ok parede bloqueia passagem física atrás dos equipamentos
+[practical] ok passagem física (38.0, 0.1, -12.15)
+[practical] ok piso contínuo sem queda · y=0.101
+[practical] ok passagem física (38.0, 0.1, -13.8)
+[practical] ok piso contínuo sem queda · y=0.101
+[practical] ok passagem física (38.0, 0.1, -12.15)
+[practical] ok piso contínuo sem queda · y=0.101
+[practical] ok passagem física (41.6, 0.1, -12.15)
+[practical] ok piso contínuo sem queda · y=0.001
+[practical] ok geladeira acessível pelo corredor interno
+[practical] ok não retira pela traseira do móvel
+[practical] ok todos os produtos do expositor visíveis com estoque zero
+[practical] ok geladeira e armário têm produtos próprios
+[practical] ok referência visual não cria estoque vendável
+[practical] ok não vende exemplar de referência com estoque zero
+[practical] ok doze bebidas visíveis na geladeira
+[practical] ok E na geladeira abre a estação
+[practical] ok estação oferece retirada sem preparo
+[practical] ok retirada imediata consome estoque uma vez
+[practical] ok produto na mão sem esperar
+[practical] ok etiqueta acompanha estoque de retirada
+[practical] ok devolve produto pronto
+[practical] ok retirada após devolver não cobra duas vezes
+[practical] ok cliente para pedido de prova
+[practical] ok pedido e item na mão claros no HUD
+[practical] ok marcador curto no cliente
+[practical] ok entrega conclui pedido físico
+[practical] ok cliente com mesa reservada
+[practical] ok pedido aguarda anotação no balcão
+[practical] ok mira alcança cliente no balcão pelo lado interno
+[practical] ok E anota pedido do cliente no balcão
+[practical] ok anotar não consome produtos
+[practical] ok consultar pedido anotado não reinicia paciência
+[practical] ok pega produto pronto para retirada
+[practical] ok mesma interação entrega ao cliente no balcão
+[practical] ok cliente com mesa reservada
+[practical] ok pedido aguarda anotação no balcão
+[practical] ok mira alcança cliente no balcão pelo lado interno
+[practical] ok E anota pedido do cliente no balcão
+[practical] ok anotar não consome produtos
+[practical] ok consultar pedido anotado não reinicia paciência
+[practical] ok pega produto pronto para retirada
+[practical] ok mesma interação entrega ao cliente no balcão
+[practical] ok HUD compacto
+[practical] ok seis áreas na tela inicial
+[practical] ok seis abas distintas sem atalhos duplicados
+[practical] ok voltar respeita a categoria
+[practical] ok atendente contratado para conferência visual
+[practical] ok uniforme com identificação por função
+[practical] ok cardápio físico acompanha receitas disponíveis
+[practical] ok som curto sem vozes: fridge
+[practical] ok som curto sem vozes: pickup
+[practical] ok som curto sem vozes: prepare
+[practical] ok som curto sem vozes: ready
+[practical] ok som curto sem vozes: cash
+[practical] ok luz mais quente e legível à noite
+SHOT_SAVED user://qa_shots/practical_station.png
+SHOT_SAVED user://qa_shots/practical_phone.png
+SHOT_SAVED user://qa_shots/practical_orders.png
+SHOT_SAVED user://qa_shots/practical_workroom.png
+SHOT_SAVED user://qa_shots/practical_facade.png
+[practical] ok pessoas sem óculos escuros
+[practical] ok roupas importadas female
+[practical] ok corpo preservado sob roupas female
+[practical] ok roupa ligada ao esqueleto existente
+[practical] ok roupa ligada ao esqueleto existente
+[practical] ok roupa ligada ao esqueleto existente
+[practical] ok roupa ligada ao esqueleto existente
+[practical] ok roupa ligada ao esqueleto existente
+[practical] ok cabelo rígido preso à cabeça animada
+[practical] ok cabelo rígido preso à cabeça animada
+[practical] ok pessoas sem óculos escuros
+[practical] ok roupas importadas male
+[practical] ok corpo preservado sob roupas male
+[practical] ok roupa ligada ao esqueleto existente
+[practical] ok roupa ligada ao esqueleto existente
+[practical] ok roupa ligada ao esqueleto existente
+[practical] ok roupa ligada ao esqueleto existente
+[practical] ok roupa ligada ao esqueleto existente
+[practical] ok cabelo rígido preso à cabeça animada
+SHOT_SAVED user://qa_shots/practical_clothing.png
+SHOT_SAVED user://qa_shots/people_portraits.png
+[practical] ok atendente usa uniforme de atendimento sem função de cozinha
+[practical] ok atendente usa uniforme de atendimento sem função de cozinha
+SHOT_SAVED user://qa_shots/staff_preparing.png
+SHOT_SAVED user://qa_shots/practical_clothing_walk.png
+SHOT_SAVED user://qa_shots/practical_clothing_sit.png
+SHOT_SAVED user://qa_shots/kiosk_sunset.png
+SHOT_SAVED user://qa_shots/kiosk_night.png
+[practical] ok equipamentos e expositores presentes sem empresa criada
+[practical] ok atendente aparece no modo anterior à criação da empresa
+[practical] ok folga oculta atendente
+PRACTICAL_TEST PASS
+SHUTDOWN_COMPLETE code=0

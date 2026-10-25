@@ -87,3 +87,12 @@ Louça deve corresponder ao que foi consumido: suco → copo vazio; coco → coc
 comida → prato/tigela vazios. Preservar lista por lugar no save e limpar junto dos
 objetos. PC central, copos à esquerda e promoções à direita. Downloads/builds no
 drive D, pois C ficou cheio. Guia: [docs/LOUCA_BALCAO_2026-10-24.md](docs/LOUCA_BALCAO_2026-10-24.md).
+
+## Pedido de 24/10 — desempenho e atendente único
+
+Somente **um atendente** faz todo o atendimento do quiosque: anotar, retirar pronto,
+entregar no balcão, receber no PC e recolher louça. Substitui cargos separados
+(garçom/caixa/limpeza/cozinheiro) no quiosque, preservando migração e histórico.
+Cargos de pousada/bar/passeios continuam separados. Não reabrir contratação de
+quatro cargos por seguir documentos antigos. Detalhes, métricas e validação em
+[docs/DESEMPENHO_ATENDENTE_2026-10-24.md](docs/DESEMPENHO_ATENDENTE_2026-10-24.md).

@@ -1,0 +1,14 @@
+Godot Engine v4.5.1.stable.official.f62fdbde1 - https://godotengine.org
+Vulkan 1.4.351 - Forward+ - Using Device #0: NVIDIA - NVIDIA GeForce RTX 4060 Ti
+
+vegetacao: capim=4021 arbustos=99 coqueiros+=46
+serra: copas perto=250 crista=101
+serra: tris encosta=16884
+BENCH_PAIRED {"arm":"original","draw_calls":{"mean":2187.01526717557,"p50":2187.0,"p95":2194.0},"fps":108.919018709589,"frame_ms":{"mean":9.16710381679389,"p50":8.871,"p95":12.141},"gpu_ms":{"mean":4.86876947242795,"p50":4.70300006866455,"p95":5.47599983215332},"primitives":{"mean":13090332.919084,"p50":13083626.0,"p95":13134784.0},"scene":"quiosque"}
+BENCH_PAIRED {"arm":"optimized","draw_calls":{"mean":1970.30395136778,"p50":1966.0,"p95":1990.0},"fps":109.350244839692,"frame_ms":{"mean":9.13100000000001,"p50":8.634,"p95":11.914},"gpu_ms":{"mean":4.19637081905701,"p50":4.01000022888184,"p95":4.67199993133545},"primitives":{"mean":9671395.60790274,"p50":9661658.0,"p95":9706904.0},"scene":"quiosque"}
+BENCH_PAIRED {"arm":"original","draw_calls":{"mean":3947.69379014989,"p50":3948.0,"p95":3962.0},"fps":77.6038851236017,"frame_ms":{"mean":12.8583254817987,"p50":11.875,"p95":18.202},"gpu_ms":{"mean":8.85737687055763,"p50":8.48600006103516,"p95":10.1529998779297},"primitives":{"mean":22689788.5631692,"p50":22714880.0,"p95":22745116.0},"scene":"vila"}
+BENCH_PAIRED {"arm":"optimized","draw_calls":{"mean":2969.49169435216,"p50":2967.0,"p95":2989.0},"fps":100.035786512646,"frame_ms":{"mean":9.97979568106312,"p50":9.72,"p95":11.477},"gpu_ms":{"mean":7.23105647872849,"p50":7.07000017166138,"p95":7.7350001335144},"primitives":{"mean":17549234.6511628,"p50":17549362.0,"p95":17550434.0},"scene":"vila"}
+BENCH_PAIRED {"arm":"original","draw_calls":{"mean":375.706451612903,"p50":375.0,"p95":382.0},"fps":154.784782506554,"frame_ms":{"mean":6.45362150537633,"p50":6.167,"p95":8.21},"gpu_ms":{"mean":2.94821505110751,"p50":2.85400009155273,"p95":3.43700003623962},"primitives":{"mean":4675585.59354839,"p50":4677139.0,"p95":4684639.0},"scene":"praia"}
+BENCH_PAIRED {"arm":"optimized","draw_calls":{"mean":385.776180698152,"p50":385.0,"p95":394.0},"fps":162.01267362039,"frame_ms":{"mean":6.16600924024641,"p50":6.0,"p95":7.503},"gpu_ms":{"mean":2.41010780403012,"p50":2.34999990463257,"p95":2.90599989891052},"primitives":{"mean":2871880.92505133,"p50":2869617.0,"p95":2885394.0},"scene":"praia"}
+PERFORMANCE_TEST PASS
+SHUTDOWN_COMPLETE code=0

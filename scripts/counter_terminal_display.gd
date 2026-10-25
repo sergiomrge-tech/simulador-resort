@@ -11,7 +11,7 @@ func _ready() -> void:
 	viewport.size=Vector2i(480,280)
 	viewport.disable_3d=true
 	viewport.gui_disable_input=true
-	viewport.render_target_update_mode=SubViewport.UPDATE_ALWAYS
+	viewport.render_target_update_mode=SubViewport.UPDATE_ONCE
 	add_child(viewport)
 	var panel:=PanelContainer.new()
 	panel.size=Vector2(480,280)
@@ -44,6 +44,7 @@ func _ready() -> void:
 				mesh.set_surface_override_material(surface,lcd)
 	Core.company_changed.connect(refresh)
 	Core.stock_changed.connect(refresh)
+	Core.time_changed.connect(func(_day,_minutes): refresh())
 	Core.money_changed.connect(func(_amount): refresh())
 	refresh()
 func _label(parent: Node, size: int) -> Label:
@@ -54,8 +55,13 @@ func _label(parent: Node, size: int) -> Label:
 	label.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
 	parent.add_child(label)
 	return label
+var _last_content: String=""
 func refresh() -> void:
 	title.text=str(Core.company.name) if Core.company.created else "MARÉ ALTA · GESTÃO"
 	status.text="ABERTO" if Core.kiosk_accepting_customers() else "QUIOSQUE FECHADO"
 	money.text="Caixa: "+Core.fmt_money(Core.money)
 	stock.text="%d pedidos aguardando pagamento" % Core.company.receivables.size()
+	var content: String=title.text+status.text+money.text+stock.text
+	if content!=_last_content:
+		_last_content=content
+		viewport.render_target_update_mode=SubViewport.UPDATE_ONCE

@@ -444,6 +444,14 @@ func _house(c: Vector3, w: float, d: float, front: float, col: Color, shutter: C
 		wall_m = B.mat("weathered_planks", 0.45, col.lightened(0.15), 0.85)
 	var body: = B.box(self, Vector3(w, h, d), c + Vector3(0, h * 0.5, 0), wall_m, true)
 	body.name = "house"
+	# Volume estritamente dentro de uma casa opaca, sem interior acessível.
+	var occluder:=OccluderInstance3D.new()
+	occluder.name="HouseBodyOccluder"
+	var volume:=BoxOccluder3D.new()
+	volume.size=Vector3(w-.24,h-.30,d-.24)
+	occluder.occluder=volume
+	occluder.position=c+Vector3(0,h*.5,0)
+	add_child(occluder)
 	B.box(self, Vector3(w + 0.06, 0.7, d + 0.06), c + Vector3(0, 0.35, 0), VM.stone)
 	B.box(self, Vector3(w + 0.14, 0.07, d + 0.14), c + Vector3(0, 0.72, 0), VM.trim)
 	B.box(self, Vector3(w + 0.16, 0.28, d + 0.16), c + Vector3(0, h - 0.1, 0), VM.trim)

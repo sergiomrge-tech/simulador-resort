@@ -1,0 +1,73 @@
+{
+  "engine": "Godot 4.5.1",
+  "pck_bytes": 1802919064,
+  "pck_sha256": "0c2cbfa8878e3c72e7835c13aa1d5d2e40f74c9b1263ddf75488982f03977495",
+  "exported_regressions": [
+    {
+      "check": "optimization",
+      "result": "PASS",
+      "exit_code": 0,
+      "log": "counter-batch-optimization-pack.log"
+    },
+    {
+      "check": "single-staff",
+      "result": "PASS",
+      "exit_code": 0,
+      "log": "counter-batch-single-staff-pack.log"
+    },
+    {
+      "check": "company",
+      "result": "PASS",
+      "exit_code": 0,
+      "log": "counter-batch-company-pack.log"
+    },
+    {
+      "check": "practical",
+      "result": "PASS",
+      "exit_code": 0,
+      "log": "counter-batch-practical-pack.log"
+    },
+    {
+      "check": "simulation",
+      "result": "PASS",
+      "exit_code": 0,
+      "log": "counter-batch-simulation-pack.log"
+    },
+    {
+      "check": "management",
+      "result": "PASS",
+      "exit_code": 0,
+      "log": "counter-batch-management-pack.log"
+    },
+    {
+      "check": "counter-first",
+      "result": "PASS",
+      "exit_code": 0,
+      "log": "counter-batch-counter-first-pack.log"
+    },
+    {
+      "check": "tableware",
+      "result": "PASS",
+      "exit_code": 0,
+      "log": "counter-batch-tableware-pack.log"
+    },
+    {
+      "check": "home",
+      "result": "PASS",
+      "exit_code": 0,
+      "log": "counter-batch-home-pack.log"
+    },
+    {
+      "check": "counter",
+      "result": "PASS",
+      "exit_code": 0,
+      "log": "counter-batch-counter-pack.log"
+    },
+    {
+      "check": "phone-layout",
+      "result": "PASS",
+      "exit_code": 0,
+      "log": "counter-batch-phone-layout-pack.log"
+    }
+  ]
+}

@@ -553,7 +553,7 @@ func objective() -> Array:
 			var verb := "Retirar" if ready else "Repor estoque para"
 			return ["%s %s · %s" % [verb, Economy.dish(id).name, ops.order_number(next)], ops.stations[kind].global_position, 2.5]
 		if not Core.company.receivables.is_empty():
-			return ["Receber contas no caixa", world.kiosk_point(Vector3(1.3, 1.28, 1.8)), 2.5]
+			return ["Receber contas no computador", ops.computer.global_position, 2.5]
 		if not Core.company.dirty_seats.is_empty():
 			var seat: int = int(Core.company.dirty_seats[0])
 			if seat < world.kiosk_spots.size():

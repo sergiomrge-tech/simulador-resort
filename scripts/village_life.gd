@@ -799,7 +799,7 @@ func _complete_order(g, last_dish: String) -> void :
 	else:
 		combo = maxi(0, combo - 1)
 	if Core.company.created:
-		var social: float = Core.CompanyRules.Simulation.Management.profile_factor(Core, "garcom", "social")
+		var social: float = Core.CompanyRules.Simulation.Management.profile_factor(Core, "atendente", "social")
 		tip = int(round(tip * social))
 	var adj: = Core.price_rating_adjust()
 	Core.add_rating(clampf((Economy.KIOSK_RATING_FAST if fast else Economy.KIOSK_RATING_SLOW) + adj, 1.0, 5.0))

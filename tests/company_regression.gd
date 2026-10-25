@@ -71,11 +71,13 @@ func run(main = null) -> void:
 	check(migrated.production.is_empty() and migrated.ready.suco == 3, "save antigo converte preparo pago em produto pronto uma vez")
 	check(Rules.sanitize(migrated).ready.suco == 3 and Rules.sanitize(migrated).production.is_empty(), "migração não duplica produto ao recarregar")
 	Core.money = 20000
-	check(Core.hire("caixa") and Core.hire("garcom") and Core.hire("limpeza") and Core.hire("cozinheiro"), "contratação dos quatro cargos")
+	check(Core.hire("atendente") and not Core.hire("caixa") and not Core.hire("garcom"), "uma única vaga faz todo o atendimento")
 	cash = Core.money
 	check(Core.pickup_company_dish("suco"), "retirada para caixa contratado")
 	price = Core.sell_company_dish("suco")
-	check(Core.money > cash and Core.company.receivables.is_empty(), "caixa contratado recebe inclusive contas anteriores")
+	check(Core.money==cash and not Core.company.receivables.is_empty(),"conta aguarda o atendente chegar ao caixa")
+	Core.collect_company_payments()
+	check(Core.money>cash and Core.company.receivables.is_empty(),"receber no caixa liquida as contas uma vez")
 	Core.company.dirty_seats = [0]
 	check(not Core.set_company_service(false), "não desativa operação com louça pendente")
 	check(Core.clean_company_seat(0) and not Core.clean_company_seat(0), "limpeza idempotente")
@@ -223,9 +225,10 @@ func _integration(main) -> void:
 	village._order(g)
 	village.set_process(false)
 	Core.staff.cozinheiro = false
-	Core.staff.garcom = true
-	Core.staff.caixa = true
-	Core.staff.limpeza = true
+	Core.staff.atendente = true
+	Core.staff.garcom = false
+	Core.staff.caixa = false
+	Core.staff.limpeza = false
 	Core.speed_mult = 16.0
 	var counter_approach: Vector3 = main.operations.service_approach(g)
 	# O teste aciona o mesmo passo de 0,25 s usado pelo processador da operação.
@@ -237,9 +240,14 @@ func _integration(main) -> void:
 		await get_tree().process_frame
 		elapsed += get_process_delta_time()
 	check(g.state == "kto_table", "garçom anota, retira e entrega no balcão pelo percurso real")
-	check(Core.company.receivables.is_empty(), "caixa recebe atendimento da equipe")
-	var waiter = main.operations.actors.get("garcom")
+	var waiter = main.operations.actors.get("atendente")
 	check(is_instance_valid(waiter) and waiter.position.distance_to(counter_approach) < 1.5, "garçom chegou ao cliente antes de entregar")
+	elapsed=0
+	while not Core.company.receivables.is_empty() and elapsed<8:
+		main.operations._staff_tick()
+		await get_tree().process_frame
+		elapsed+=get_process_delta_time()
+	check(Core.company.receivables.is_empty(),"o mesmo atendente caminha ao PC e recebe")
 	await to_table(village,g)
 	village._leave(g)
 	village._release_spot(g)
@@ -249,7 +257,7 @@ func _integration(main) -> void:
 		await get_tree().process_frame
 		elapsed += get_process_delta_time()
 	check(Core.company.dirty_seats.is_empty(), "auxiliar caminha e limpa a louça")
-	Core.prog.staff_rec("garcom").off = true
+	Core.prog.staff_rec("atendente").off = true
 	main.operations._staff_tick()
 	check(not waiter.visible, "folga suspende garçom")
 	Core.speed_mult = 1.0

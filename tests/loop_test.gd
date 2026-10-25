@@ -369,6 +369,21 @@ func run(m) -> void :
 		add_child(counter)
 		await counter.run(main)
 		return
+	if main.args.has("optimization-test"):
+		var check_test=load("res://tests/optimization_regression.gd").new()
+		add_child(check_test)
+		await check_test.run(main)
+		return
+	if main.args.has("single-staff-test"):
+		var check_test=load("res://tests/single_staff_regression.gd").new()
+		add_child(check_test)
+		await check_test.run(main)
+		return
+	if main.args.has("perf-test"):
+		var benchmark=load("res://tests/performance_benchmark.gd").new()
+		add_child(benchmark)
+		await benchmark.run(main)
+		return
 	if main.args.has("tableware-test"):
 		var tableware=load("res://tests/tableware_regression.gd").new()
 		add_child(tableware)

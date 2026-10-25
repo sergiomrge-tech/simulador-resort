@@ -1,5 +1,9 @@
 # Computador, retirada e acabamento — 23/10/2026
 
+> **Atualização vigente de 24/10:** [Desempenho e atendente único](DESEMPENHO_ATENDENTE_2026-10-24.md).
+> No quiosque há somente um atendente para pedidos, entrega, recebimento e louça.
+> Essa regra substitui cargos separados, preparo e regras antigas de candidatos abaixo.
+
 > Revisão posterior: [visual e gestão](REFINAMENTO_2026-10-23.md). Notebook Classic
 > Laptop CC0, seis abas fixas e compras por produto com reposição imediata para 10.
 > Cartões de equipe compactos; promoções acompanham a inclinação das duas faces.

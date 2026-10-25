@@ -364,6 +364,7 @@ func sleep() -> void :
 	save_game()
 
 func _pay_wages(company_only: bool = false) -> void :
+	consolidate_kiosk_staff()
 	var total: = 0
 	var pay_day: int = day - 1
 	for role in staff:
@@ -942,7 +943,32 @@ func build_bungalow() -> bool:
 	room_changed.emit(id)
 	return true
 
+const KIOSK_STAFF_ROLES=["atendente","garcom","caixa","limpeza","cozinheiro"]
+
+func consolidate_kiosk_staff() -> void:
+	var source: String="atendente" if staff.get("atendente",false) else ""
+	for role in KIOSK_STAFF_ROLES:
+		if not staff.get(role,false): continue
+		if source=="": source=role
+		else:
+			var current: Dictionary=prog.staff_rec(role)
+			var best: Dictionary=prog.staff_rec(source)
+			if int(current.lvl)>int(best.lvl) or (int(current.lvl)==int(best.lvl) and int(current.xp)>int(best.xp)): source=role
+	if source=="": return
+	if source!="atendente":
+		prog.staff_info["atendente"]=prog.staff_rec(source).duplicate(true)
+		for records in [company.sim.shifts,company.sim.management.profiles]:
+			if records.has(source): records["atendente"]=records[source].duplicate(true)
+	staff.atendente=true
+	# Registros históricos de treinamento/contratos continuam no save, sem cargos ativos duplicados.
+	for role in KIOSK_STAFF_ROLES:
+		if role!="atendente": staff[role]=false
+
 func hire(role: String, offered_fee: int = -1) -> bool:
+	if role in KIOSK_STAFF_ROLES and role!="atendente":
+		toast.emit("O quiosque usa um único atendente para pedidos, entregas, caixa e limpeza.","info")
+		return false
+	consolidate_kiosk_staff()
 	if not Economy.STAFF.has(role):
 		return false
 	if bool(Economy.STAFF[role].get("company", false)) and not bool(company.created):
@@ -961,8 +987,7 @@ func hire(role: String, offered_fee: int = -1) -> bool:
 		return false
 	staff[role] = true
 	if role in CompanyRules.Simulation.ROLES and company.created:
-		var begin: int = int(kiosk_open_min() / 60)
-		company.sim.shifts[role] = {"start": begin, "end": mini(23, begin + 8)}
+		company.sim.shifts.erase(role) # Segue todo o expediente; turno personalizado continua opcional.
 		CompanyRules.Simulation.record(self, "investment", cost)
 	book( - cost, tr("Contratação: %s") % tr(str(Economy.STAFF[role].name)), "folha", true)
 	staff_changed.emit()
@@ -1105,6 +1130,7 @@ func load_game() -> bool:
 					unlocked[k] = bool(ul[k])
 	var pd = data.get("prog", {})
 	prog.from_dict(pd if typeof(pd) == TYPE_DICTIONARY else {})
+	consolidate_kiosk_staff()
 	reset_rooms(data.rooms.size())
 	for i in data.rooms.size():
 		rooms[i].state = data.rooms[i].state
@@ -1282,6 +1308,7 @@ func configure_company(title: String, font_id: String, color_id: String = "creme
 	company.name = title
 	company.font = font_id
 	company.color = color_id
+	consolidate_kiosk_staff()
 	company_changed.emit()
 	save_game()
 	return true
@@ -1351,14 +1378,12 @@ func sell_company_dish(id: String, by_staff: bool = false) -> int:
 	var source: String = "staff_carry" if by_staff else "carry"
 	if not company_enabled() or company[source] != id or id not in Economy.KIOSK_MENU:
 		return -1
-	if company.receivables.size() >= 256 and prog.staff_eff("caixa") <= 0.0:
+	if company.receivables.size() >= 256:
 		return -1
 	var price: int = price_of(id)
 	company[source] = ""
 	company.receivables.append({"dish": id, "value": price})
 	company_changed.emit()
-	if prog.staff_eff("caixa") > 0.0:
-		collect_company_payments()
 	return price
 
 func collect_company_payments() -> int:

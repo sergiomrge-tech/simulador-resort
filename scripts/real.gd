@@ -61,6 +61,26 @@ static func _scene(key: String) -> PackedScene:
 ## Instancia o modelo, ajusta para `height` (m) de altura (ou `width` se height <= 0), centra em XZ e apoia a base em y = 0.
 ## `tint` multiplica a cor (deixa mais vivo/cartoon). Retorna null se o arquivo não existe.
 ## height < 0: escala uniforme direta (-height); center_xz = false mantém a origem do modelo em XZ (chapéus, óculos).
+static var _styled_materials: Dictionary = {}
+static var use_material_cache: bool=true
+
+static func styled_material(source: Material, tint: Color, nature: bool) -> Material:
+	if not use_material_cache: return _make_styled_material(source,tint,nature)
+	# Mesma fonte/cor = mesmo material. Variações e luzes mantêm overrides próprios.
+	if not _styled_materials.has(source): _styled_materials[source]={}
+	if not _styled_materials[source].has(nature): _styled_materials[source][nature]={}
+	var variants: Dictionary=_styled_materials[source][nature]
+	if not variants.has(tint): variants[tint]=_make_styled_material(source,tint,nature)
+	return variants[tint]
+
+static func _make_styled_material(source: Material,tint: Color,nature: bool) -> Material:
+	var material: Material=Toon.toonify(source)
+	if nature and material is BaseMaterial3D and source is BaseMaterial3D:
+		material.albedo_color=source.albedo_color
+	if material is BaseMaterial3D and tint!=Color.WHITE:
+		material.albedo_color=material.albedo_color*tint
+	return material
+
 static func place(parent: Node, key: String, pos: Vector3, height: float, rot_y: = 0.0, tint: = Color.WHITE, width: = 0.0, center_xz: = true) -> Node3D:
 	if ALIAS.has(key):
 		if height > 0.0:
@@ -77,12 +97,9 @@ static func place(parent: Node, key: String, pos: Vector3, height: float, rot_y:
 		for si in mesh.get_surface_count():
 			var sm: Material = mesh.surface_get_material(si)
 			if sm:
-				var tm: Material = Toon.toonify(sm)
-				if key.begins_with("q:") and tm is BaseMaterial3D and sm is BaseMaterial3D:
-					(tm as BaseMaterial3D).albedo_color = (sm as BaseMaterial3D).albedo_color   # já são estilizados: sem o clareamento do toonify
-				if tm is BaseMaterial3D and tint != Color.WHITE:
-					(tm as BaseMaterial3D).albedo_color = (tm as BaseMaterial3D).albedo_color * tint
+				var tm: Material = styled_material(sm,tint,key.begins_with("q:"))
 				(mi as MeshInstance3D).set_surface_override_material(si, tm)
+				mi.set_meta("performance_material",true)
 	var holder: = Node3D.new()
 	holder.position = pos
 	holder.rotation.y = rot_y

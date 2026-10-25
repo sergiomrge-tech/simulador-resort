@@ -1,0 +1,40 @@
+Godot Engine v4.5.1.stable.official.f62fdbde1 - https://godotengine.org
+Vulkan 1.4.351 - Forward+ - Using Device #0: NVIDIA - NVIDIA GeForce RTX 4060 Ti
+
+vegetacao: capim=4021 arbustos=99 coqueiros+=46
+serra: copas perto=250 crista=101
+serra: tris encosta=16884
+[simulation] ok horários e dias válidos
+[simulation] ok recusa horário invertido sem alterar escala
+[simulation] ok horários não substituem abertura manual
+[simulation] ok abertura deliberada respeita o horário configurado
+[simulation] ok domingo fechado pela escala semanal
+[simulation] ok reposição usa cotação e contrato reais
+[simulation] ok reposição atende meta do cardápio
+[simulation] ok repor acima da meta não compra novamente
+[simulation] ok orçamento insuficiente não compra parcialmente
+[simulation] ok contratação disponível
+[simulation] ok turno de 12h custa mais que turno de 8h
+[simulation] ok funcionário trabalha dentro do turno
+[simulation] ok funcionário para fora do turno
+[simulation] ok folga impede trabalho
+[simulation] ok folha cobrada uma única vez por dia
+[simulation] ok turno longo aumenta cansaço na virada
+[simulation] ok estrutura cobra 12 mais 2 por hora aberta
+[simulation] ok relatório concilia recebimentos, compras, folha e custos
+[simulation] ok virada descarta produtos preparados e registra desperdício
+[simulation] ok virada repetida não cobra, descarta nem cansa novamente
+[simulation] ok reposição automática ocorre uma vez na virada
+[simulation] ok save preserva horários, escala, custos e histórico
+[simulation] ok recarga não repete salário já pago
+[simulation] ok dispensa remove funcionário e cobra rescisão
+[simulation] ok contratação pelo painel da equipe
+[simulation] ok painel disponível: horarios
+[simulation] ok vendas não apagam edição: horarios
+[simulation] ok painel disponível: estoque_quiosque
+[simulation] ok vendas não apagam edição: estoque_quiosque
+[simulation] ok painel disponível: gestao_equipe
+[simulation] ok vendas não apagam edição: gestao_equipe
+[simulation] ok painel disponível: resultado
+SIMULATION_TEST PASS
+SHUTDOWN_COMPLETE code=0

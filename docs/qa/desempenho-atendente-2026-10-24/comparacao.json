@@ -1,0 +1,44 @@
+{
+  "quiosque": {
+    "original": {
+      "fps_mean": 100.3986175320538,
+      "draw_calls_mean": 2063.04396429834,
+      "primitives_mean": 9711371.809252385,
+      "gpu_ms_mean": 4.130442942487726
+    },
+    "optimized": {
+      "fps_mean": 115.788181859283,
+      "draw_calls_mean": 1147.199700434825,
+      "primitives_mean": 5332463.62646256,
+      "gpu_ms_mean": 3.351751645903505
+    }
+  },
+  "vila": {
+    "original": {
+      "fps_mean": 77.54766782790325,
+      "draw_calls_mean": 3819.8173528349553,
+      "primitives_mean": 19256429.6760633,
+      "gpu_ms_mean": 7.699563314028045
+    },
+    "optimized": {
+      "fps_mean": 97.7398274197422,
+      "draw_calls_mean": 1991.9808692748452,
+      "primitives_mean": 13129842.5806355,
+      "gpu_ms_mean": 6.336293086137725
+    }
+  },
+  "praia": {
+    "original": {
+      "fps_mean": 151.0378459963315,
+      "draw_calls_mean": 401.6527484143765,
+      "primitives_mean": 2873512.39215752,
+      "gpu_ms_mean": 2.33149765115849
+    },
+    "optimized": {
+      "fps_mean": 150.254126182031,
+      "draw_calls_mean": 436.4827750538815,
+      "primitives_mean": 2691627.947895825,
+      "gpu_ms_mean": 2.28853503542659
+    }
+  }
+}
