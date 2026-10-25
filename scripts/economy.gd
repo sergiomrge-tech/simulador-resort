@@ -175,6 +175,8 @@ const FISH_SECONDS: = 3.2
 const COCO_PILE_YIELD: = 2
 
 const SUPPLIES: = {
+	"sorvete_morango": {"name":"Sorvete pronto de morango", "cost":4},
+	"sorvete_chocolate": {"name":"Sorvete pronto de chocolate", "cost":5},
 	"coco": {"name": "Coco", "cost": 3}, 
 	"frutas": {"name": "Frutas", "cost": 2}, 
 	"cachaca": {"name": "Cachaça", "cost": 6}, 
@@ -192,6 +194,7 @@ const SUPPLIES: = {
 
 ## Despensa de abertura do quiosque (presente, não entra no caixa): dá para a manhã do dia 1.
 const START_STOCK: = {
+	"sorvete_morango":6,"sorvete_chocolate":6,
 	"coco": 12, "frutas": 12, "cachaca": 0, "gelo": 18, "peixe": 0, "pao": 0,
 	"tapioca": 0, "queijo": 0, "camarao": 0, "acai": 0,
 }
@@ -202,6 +205,8 @@ const START_STOCK: = {
 
 
 const DISHES: = {
+	"sorvete_morango": {"name":"Sorvete de morango", "price":12, "uses":{"sorvete_morango":1}},
+	"sorvete_chocolate": {"name":"Sorvete de chocolate", "price":14, "uses":{"sorvete_chocolate":1}},
 	"coco_gelado": {"name": "Coco gelado", "price": 12, "uses": {"coco": 1, "gelo": 1}}, 
 	"caipirinha": {"name": "Caipirinha", "price": 22, "uses": {"cachaca": 1, "frutas": 1, "gelo": 1}}, 
 	"petiscos": {"name": "Petiscos", "price": 26, "uses": {"peixe": 1, "pao": 1, "frutas": 1}}, 
@@ -272,7 +277,7 @@ const TOURS: = {
 	"barco": {"name": "Passeio de barco", "at": 13.5 * 60.0, "price": 70, "cost": 45, "seats": 8, "sea": true},
 	"farol": {"name": "Trilha ao farol", "at": 16.0 * 60.0, "price": 35, "cost": 10, "seats": 5, "sea": false},
 }
-const KIOSK_MENU: = ["coco_gelado", "suco", "caipirinha", "petiscos", "tapioca", "pastel", "acai", "batida", "moqueca"]
+const KIOSK_MENU: = ["coco_gelado", "suco", "caipirinha", "petiscos", "tapioca", "pastel", "acai", "batida", "moqueca", "sorvete_morango", "sorvete_chocolate"]
 const BAR_MENU: = ["coco_gelado", "caipirinha", "petiscos", "suco"]
 const PACK: = 6
 

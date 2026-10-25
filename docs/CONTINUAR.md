@@ -3,7 +3,9 @@
 Atualizado em **24/10/2026**. Destinado a qualquer IA ou pessoa, sem depender deste
 chat. Leia junto com [AGENTS.md](../AGENTS.md). Novos pedidos do usuário prevalecem.
 
-**Atualização mais recente:** [Desempenho e atendente único](DESEMPENHO_ATENDENTE_2026-10-24.md).
+**Atualização mais recente:** [Produtos nas mãos e sorvetes](MAOS_SORVETES_2026-10-24.md).
+
+[Desempenho e atendente único](DESEMPENHO_ATENDENTE_2026-10-24.md) continua vigente.
 
 **Atualização de louça e balcão (24/10):** [LOUCA_BALCAO_2026-10-24.md](LOUCA_BALCAO_2026-10-24.md).
 
@@ -329,3 +331,7 @@ entregar no balcão, receber no PC e recolher louça. Substitui cargos separados
 Cargos de pousada/bar/passeios continuam separados. Não reabrir contratação de
 quatro cargos por seguir documentos antigos. Detalhes, métricas e validação em
 [DESEMPENHO_ATENDENTE_2026-10-24.md](DESEMPENHO_ATENDENTE_2026-10-24.md).
+
+## Pedido de 24/10 — produtos nas mãos e sorvetes
+
+Produtos transportados acompanham as mãos animadas, inclusive o atendente. Pedidos maiores usam bandeja com apoio dos braços. Sorvetes de morango/chocolate são produtos prontos da geladeira, com reposição direta e pote vazio após consumo. Preservar o único atendente, sem preparo. Guia: [MAOS_SORVETES_2026-10-24.md](MAOS_SORVETES_2026-10-24.md).

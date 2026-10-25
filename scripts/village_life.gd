@@ -423,17 +423,7 @@ func _walk_to_dining(g, dish: String) -> void:
 	g.set_meta("pickup_dish", dish)
 	g.state = "kto_table"
 	g.show_order("")
-	var tray := Node3D.new()
-	tray.name = "CustomerTray"
-	g.add_child(tray)
-	tray.position = Vector3(0,1.03,.32)
-	for i in _items(g).size():
-		var food = DishPresentation.build(tray, str(_items(g)[i]))
-		if food != null:
-			food.scale = Vector3.ONE*.45
-			food.position.x = (i-(_items(g).size()-1)*.5)*.16
-	g.set_meta("work_kind", "carry")
-	g.set_meta("work_target", tray.global_position)
+	g.hold_order(_items(g))
 	var local: Vector3 = world.kiosk_local(g.spot.approach)
 	var side := -1.0 if local.x<0 else 1.0
 	g.go([world.kiosk_point(Vector3(side*3.3,.1,4.5)), g.spot.approach])
@@ -480,8 +470,6 @@ func _kiosk_tick(dmin: float) -> void :
 			if g.position.distance_to(g.get_meta("counter_departure"))>1.2:
 				g.remove_meta("counter_departure")
 				g.remove_meta("counter_slot")
-		if g.state == "kto_table" and g.has_node("CustomerTray"):
-			g.set_meta("work_target",g.get_node("CustomerTray").global_position)
 		match g.state:
 			"kcounter_queue":
 				g.timer -= dmin
@@ -907,10 +895,7 @@ func served_dishes(g) -> Array:
 	return result
 
 func clear_served_visuals(g) -> void:
-	var tray = g.get_node_or_null("CustomerTray")
-	if tray != null:
-		tray.visible = false
-		Core.release_visual(tray)
+	g.clear_held_order()
 	for key in ["work_target","work_kind"]:
 		if g.has_meta(key): g.remove_meta(key)
 	var root = g.get_meta("served_visuals") if g.has_meta("served_visuals") else null

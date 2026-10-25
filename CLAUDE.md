@@ -257,3 +257,7 @@ inexistente. Para receber, o atendente precisa caminhar ao PC; ao limpar precisa
 chegar à mesa. Não restaurar recebimento remoto automático pelo antigo role caixa.
 
 - Cache de materiais usa Color como chave completa. to_html() quantiza e limita HDR: Color(1.2,1.2,1.2) não pode colidir com branco; preservar os fatores LIFT.
+
+## Transporte nas mãos — 24/10/2026
+
+Não prender produtos de NPC em posição fixa no peito. Usar âncora hand_r após os SkeletonModifiers, manter apresentação em pé e remover âncora/conexão ao sentar ou sair. IK precisa respeitar os lados dos braços: alvo direito X negativo, esquerdo X positivo no rig atual; alturas baixas demais deixavam um braço sem alcance. Poses consultadas fora do ciclo dos modificadores são restauradas pela Godot; conferir a âncora e capturas renderizadas. Sorvete é refrigerado, mas não bebida: separar is_chilled de is_drink na estação, interface e regressão da exposição. Não restaurar preparo para satisfazer teste histórico.

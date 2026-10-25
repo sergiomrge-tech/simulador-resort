@@ -96,3 +96,7 @@ entregar no balcão, receber no PC e recolher louça. Substitui cargos separados
 Cargos de pousada/bar/passeios continuam separados. Não reabrir contratação de
 quatro cargos por seguir documentos antigos. Detalhes, métricas e validação em
 [docs/DESEMPENHO_ATENDENTE_2026-10-24.md](docs/DESEMPENHO_ATENDENTE_2026-10-24.md).
+
+## Pedido de 24/10 — produtos nas mãos e sorvetes
+
+Produtos transportados acompanham as mãos animadas, inclusive o atendente. Pedidos maiores usam bandeja com apoio dos braços. Sorvetes de morango/chocolate são produtos prontos da geladeira, com reposição direta e pote vazio após consumo. Preservar o único atendente, sem preparo. Guia: [docs/MAOS_SORVETES_2026-10-24.md](docs/MAOS_SORVETES_2026-10-24.md).

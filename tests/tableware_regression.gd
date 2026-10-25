@@ -42,7 +42,7 @@ func run(main) -> void:
 	guest.set_process(false)
 	var before_stock: Dictionary=Core.stock.duplicate()
 	var before_cash: int=Core.money
-	var expected: Dictionary={"suco":"g:used_glass_juice","coco_gelado":"g:coconut_open","caipirinha":"g:used_cocktail","batida":"g:used_dish_batida","acai":"g:table_bowl","moqueca":"g:table_bowl","petiscos":"g:table_plate","tapioca":"g:table_plate","pastel":"g:table_plate"}
+	var expected: Dictionary={"sorvete_morango":"g:used_icecream_cup","sorvete_chocolate":"g:used_icecream_cup","suco":"g:used_glass_juice","coco_gelado":"g:coconut_open","caipirinha":"g:used_cocktail","batida":"g:used_dish_batida","acai":"g:table_bowl","moqueca":"g:table_bowl","petiscos":"g:table_plate","tapioca":"g:table_plate","pastel":"g:table_plate"}
 	for id in expected:
 		guest.spot=spot
 		guest.state="keat"

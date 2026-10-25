@@ -457,12 +457,7 @@ func _waiter(g) -> void:
 			waiter_target = weakref(target)
 			waiter_phase = "pickup"
 			g.set_meta("handoff_until",Time.get_ticks_msec()+400)
-			var tray := Node3D.new()
-			tray.name = "StaffTray"
-			g.add_child(tray)
-			tray.position = Vector3(0, 1.0, 0.32)
-			tray.scale = Vector3.ONE * 0.65
-			Dishes.build(tray, id)
+			g.hold_order([id],"StaffTray")
 			g.set_meta("work_kind","pickup")
 			g.set_meta("work_target",point(Vector3(-.18,1.10,-1.10)))
 			g.set_meta("delivery_route",_route_to_customer(target))
@@ -500,10 +495,7 @@ func _cleaning_route(g,spot: Dictionary) -> Array:
 func _clear_tray(g) -> void:
 	if g.has_meta("work_target"): g.remove_meta("work_target")
 	if g.has_meta("delivering"): g.remove_meta("delivering")
-	var tray = g.get_node_or_null("StaffTray")
-	if tray != null:
-		g.remove_child(tray)
-		Core.release_visual(tray)
+	g.clear_held_order()
 
 func order_number(g) -> String:
 	var reserved: Dictionary = g.get_meta("dining_spot",g.spot)
@@ -543,10 +535,10 @@ func _sync_products() -> void:
 		Core.release_visual(child)
 	var drink_slot := 0
 	var food_slot := 0
-	var drinks: Array = catalog.filter(func(id): return Dishes.is_drink(id))
+	var drinks: Array = catalog.filter(func(id): return Dishes.is_chilled(id))
 	var food_count := catalog.size() - drinks.size()
 	for id in catalog:
-		var drink: bool = Dishes.is_drink(id)
+		var drink: bool = Dishes.is_chilled(id)
 		var slot: int = drink_slot if drink else food_slot
 		var anchor: Node3D = stations.bebidas if drink else stations.pratos
 		var columns := 2 if drink else 3

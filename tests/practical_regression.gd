@@ -81,10 +81,10 @@ func run(main) -> void:
 	check(not Core.pickup_company_dish("coco_gelado"), "não vende exemplar de referência com estoque zero")
 	var drink_models := 0
 	for display in main.operations.products.get_children():
-		if main.operations.Dishes.is_drink(str(display.get_meta("shelf_dish_id"))):
+		if main.operations.Dishes.is_chilled(str(display.get_meta("shelf_dish_id"))):
 			for child in display.get_children():
 				if child is Node3D and not child is Label3D: drink_models += 1
-	check(drink_models == 12, "doze bebidas visíveis na geladeira")
+	check(drink_models == 12, "doze produtos refrigerados visíveis na geladeira")
 	for ingredient in Core.stock: Core.stock[ingredient] = 30
 	main.operations.sync_company()
 	var stock_before: int = Core.stock.coco

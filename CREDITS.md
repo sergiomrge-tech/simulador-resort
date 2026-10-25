@@ -321,3 +321,7 @@ Variantes vazias de glass_juice/cocktail/dish_batida derivam dos modelos autorai
 já existentes, removendo líquido/gelo/frutas por material. Prato/tigela de porcelana
 autorais com perfil torneado; gerador tools/gen_used_drinks.py e fontes .blend
 empacotadas em art/blender. Coco aberto reutiliza o modelo autoral existente.
+
+## Sorvetes e bandeja de transporte — 24/10/2026
+
+Modelos originais deste projeto, dedicados a CC0: icecream_strawberry, icecream_chocolate, used_icecream_cup, service_carry_tray. Gerador tools/gen_icecream.py; fontes editáveis art/blender/*.blend, reabertas para verificar portabilidade. Sem texturas externas. Potes torneados, colher, sorvete com superfície irregular e fragmentos de fruta/chocolate; bandeja chanfrada.

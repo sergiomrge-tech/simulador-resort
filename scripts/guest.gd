@@ -35,6 +35,8 @@ var _skel: Skeleton3D
 var _look_pt: Marker3D
 var _cup: Node3D
 var _food: Node3D
+var _meal: Node3D
+var _meal_scale: float=1.0
 var _eating: = false
 var _eat_t: = 0.0
 ## true = leva o copo/coco à boca em vez da comida (v0.7.1)
@@ -179,6 +181,7 @@ func _build_anim(model: Node3D) -> void :
 		work.set_script(load("res://scripts/work_arm.gd"))
 		work.guest = self
 		_skel.add_child(work)
+		_skel.skeleton_updated.connect(_sync_consumed_dish)
 	var sm: = AnimationNodeStateMachine.new()
 	var specs: = {
 		"Idle": "Idle_Loop", "Talk": "Idle_Talking_Loop", "Walk": "Walk_Loop", "Jog": "Jog_Fwd_Loop", 
@@ -1028,8 +1031,10 @@ func consume_dish(dish: String) -> void:
 			child.queue_free()
 		var model: Node3D = presentation.build(holder, dish)
 		if model != null:
-			model.scale = Vector3.ONE * (0.42 if _consume_drink else 0.32)
-			model.position = Vector3(0, 0.02, 0.04)
+			_meal=model
+			model.top_level=true
+			_meal_scale=1.0 if presentation.is_handheld(dish) else .8
+			model.scale=Vector3.ONE*_meal_scale
 	play("Eat")
 	_set_eating(true)
 
@@ -1054,3 +1059,53 @@ func apply_staff_uniform(role: String) -> void:
 		label.pixel_size = 0.0006
 		label.modulate = Color(1,0.94,0.76)
 		label.outline_size = 3
+
+# Produtos acompanham o esqueleto depois de IK/animação, inclusive durante curvas.
+var _held_root: Node3D
+var _held_anchor: BoneAttachment3D
+var _held_tray: bool=false
+func hold_order(items: Array, holder_name: String="CustomerTray") -> void:
+	clear_held_order()
+	if _skel==null or items.is_empty(): return
+	_held_tray=items.size()>1 or not load("res://scripts/dish_presentation.gd").is_handheld(str(items[0]))
+	_held_anchor=BoneAttachment3D.new()
+	_held_anchor.bone_name="hand_r"
+	_skel.add_child(_held_anchor)
+	_held_root=Node3D.new()
+	_held_root.name=holder_name
+	_held_root.set_meta("hand_bound",true)
+	add_child(_held_root)
+	var presentation=load("res://scripts/dish_presentation.gd")
+	if _held_tray:
+		Real.place(_held_root,"g:service_carry_tray",Vector3(.19,0,-.12),0.0,0,Color.WHITE,.40)
+	for i in items.size():
+		var model: Node3D=presentation.build(_held_root,str(items[i]))
+		if model:
+			model.scale=Vector3.ONE*(.80 if _held_tray else 1.0)
+			model.position=Vector3((i-(items.size()-1)*.5)*.13+.19,.015,-.10) if _held_tray else Vector3(0,-.07,.025)
+	set_meta("hand_carry",true)
+	set_meta("carry_tray",_held_tray)
+	set_meta("work_kind","carry")
+	set_meta("work_target",global_position)
+	_skel.skeleton_updated.connect(_sync_held_order)
+	_sync_held_order()
+func _sync_held_order() -> void:
+	if not is_instance_valid(_held_root) or not is_instance_valid(_held_anchor): return
+	_held_root.global_transform=Transform3D(global_basis.orthonormalized(),_held_anchor.global_position)
+func clear_held_order() -> void:
+	if _skel and _skel.skeleton_updated.is_connected(_sync_held_order): _skel.skeleton_updated.disconnect(_sync_held_order)
+	for node in [_held_root,_held_anchor]:
+		if is_instance_valid(node):
+			if node is Node3D: node.visible=false
+			Core.release_visual(node)
+	_held_root=null
+	_held_anchor=null
+	for key in ["hand_carry","carry_tray"]:
+		if has_meta(key): remove_meta(key)
+
+func _sync_consumed_dish() -> void:
+	if not _eating or not is_instance_valid(_meal): return
+	var holder: Node3D=_cup if _consume_drink else _food
+	if holder==null: return
+	var size: float=_meal_scale
+	_meal.global_transform=Transform3D(global_basis.orthonormalized().scaled(Vector3.ONE*size),holder.get_parent().global_position+global_basis*Vector3(0,-.07,.025))

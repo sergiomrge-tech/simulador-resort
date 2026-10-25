@@ -1312,7 +1312,7 @@ func _service_action(id: String, action: String) -> void:
 	var kind: String = str(Core.service_station)
 	if not ops.can_access(kind):
 		return
-	var drink: bool = load("res://scripts/dish_presentation.gd").is_drink(id)
+	var drink: bool = load("res://scripts/dish_presentation.gd").is_chilled(id)
 	var ok := false
 	var matches: bool = (kind == "bebidas" and drink) or (kind in ["pratos", "cozinha"] and not drink)
 	if action == "pickup" and matches:
@@ -1326,7 +1326,7 @@ func _service_action(id: String, action: String) -> void:
 
 func _service_restock(id: String) -> void:
 	if not _operations().can_access(str(Core.service_station)): return
-	var drink: bool = load("res://scripts/dish_presentation.gd").is_drink(id)
+	var drink: bool = load("res://scripts/dish_presentation.gd").is_chilled(id)
 	if (str(Core.service_station) == "bebidas") != drink: return
 	Core.restock_company_dish(id,10)
 	refresh()
@@ -1344,7 +1344,7 @@ func _app_service(list: VBoxContainer) -> void:
 	var carried: String = str(Core.company.carry)
 	if carried != "":
 		_lbl(list, "Carregando: " + str(Economy.dish(carried).name), 17, GOOD, true, true)
-		var matches: bool = (kind == "bebidas") == load("res://scripts/dish_presentation.gd").is_drink(carried)
+		var matches: bool = (kind == "bebidas") == load("res://scripts/dish_presentation.gd").is_chilled(carried)
 		_btn(list, "Devolver à prateleira", _service_action.bind(carried, "return"), GOOD, near and matches)
 	var menu: Array = Core.kiosk_menu()
 	var requests: Dictionary = {}
@@ -1354,7 +1354,7 @@ func _app_service(list: VBoxContainer) -> void:
 			requests[recipe].append(_operations().order_number(guest))
 	menu.sort_custom(func(a, b): return requests.get(a, []).size() > requests.get(b, []).size())
 	for id in menu:
-		var drink: bool = load("res://scripts/dish_presentation.gd").is_drink(id)
+		var drink: bool = load("res://scripts/dish_presentation.gd").is_chilled(id)
 		if kind != "cozinha" and (kind == "bebidas") != drink:
 			continue
 		if kind == "cozinha" and drink:

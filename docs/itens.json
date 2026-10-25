@@ -37,12 +37,12 @@
    },
    {
     "arquivo": "guest.gd",
-    "linha": 136,
+    "linha": 138,
     "funcao": "_state_for"
    },
    {
     "arquivo": "guest.gd",
-    "linha": 187,
+    "linha": 190,
     "funcao": "_build_anim"
    }
   ]
@@ -111,17 +111,17 @@
    },
    {
     "arquivo": "guest.gd",
-    "linha": 89,
+    "linha": 91,
     "funcao": "setup"
    },
    {
     "arquivo": "guest.gd",
-    "linha": 120,
+    "linha": 122,
     "funcao": "_state_for"
    },
    {
     "arquivo": "guest.gd",
-    "linha": 184,
+    "linha": 187,
     "funcao": "_build_anim"
    },
    {
@@ -186,22 +186,22 @@
    },
    {
     "arquivo": "village_life.gd",
-    "linha": 492,
+    "linha": 480,
     "funcao": "_kiosk_tick"
    },
    {
     "arquivo": "village_life.gd",
-    "linha": 508,
+    "linha": 496,
     "funcao": "_kiosk_tick"
    },
    {
     "arquivo": "village_life.gd",
-    "linha": 517,
+    "linha": 505,
     "funcao": "_kiosk_tick"
    },
    {
     "arquivo": "village_life.gd",
-    "linha": 650,
+    "linha": 638,
     "funcao": "_leave"
    }
   ]
@@ -230,12 +230,12 @@
    },
    {
     "arquivo": "guest.gd",
-    "linha": 122,
+    "linha": 124,
     "funcao": "_state_for"
    },
    {
     "arquivo": "guest.gd",
-    "linha": 184,
+    "linha": 187,
     "funcao": "_build_anim"
    },
    {
@@ -295,12 +295,12 @@
    },
    {
     "arquivo": "village_life.gd",
-    "linha": 532,
+    "linha": 520,
     "funcao": "_kiosk_tick"
    },
    {
     "arquivo": "village_life.gd",
-    "linha": 567,
+    "linha": 555,
     "funcao": "_order"
    }
   ]
@@ -327,12 +327,12 @@
    },
    {
     "arquivo": "guest.gd",
-    "linha": 142,
+    "linha": 144,
     "funcao": "_state_for"
    },
    {
     "arquivo": "guest.gd",
-    "linha": 186,
+    "linha": 189,
     "funcao": "_build_anim"
    },
    {
@@ -351,12 +351,12 @@
   "usos": [
    {
     "arquivo": "guest.gd",
-    "linha": 126,
+    "linha": 128,
     "funcao": "_state_for"
    },
    {
     "arquivo": "guest.gd",
-    "linha": 184,
+    "linha": 187,
     "funcao": "_build_anim"
    },
    {
@@ -393,12 +393,12 @@
    },
    {
     "arquivo": "guest.gd",
-    "linha": 138,
+    "linha": 140,
     "funcao": "_state_for"
    },
    {
     "arquivo": "guest.gd",
-    "linha": 187,
+    "linha": 190,
     "funcao": "_build_anim"
    }
   ]
@@ -524,12 +524,12 @@
   "usos": [
    {
     "arquivo": "guest.gd",
-    "linha": 128,
+    "linha": 130,
     "funcao": "_state_for"
    },
    {
     "arquivo": "guest.gd",
-    "linha": 185,
+    "linha": 188,
     "funcao": "_build_anim"
    },
    {
@@ -564,17 +564,17 @@
    },
    {
     "arquivo": "village_life.gd",
-    "linha": 517,
+    "linha": 505,
     "funcao": "_kiosk_tick"
    },
    {
     "arquivo": "village_life.gd",
-    "linha": 536,
+    "linha": 524,
     "funcao": "_kiosk_tick"
    },
    {
     "arquivo": "village_life.gd",
-    "linha": 650,
+    "linha": 638,
     "funcao": "_leave"
    },
    {
@@ -608,12 +608,12 @@
   "usos": [
    {
     "arquivo": "guest.gd",
-    "linha": 130,
+    "linha": 132,
     "funcao": "_state_for"
    },
    {
     "arquivo": "guest.gd",
-    "linha": 185,
+    "linha": 188,
     "funcao": "_build_anim"
    },
    {
@@ -623,12 +623,12 @@
    },
    {
     "arquivo": "village_life.gd",
-    "linha": 534,
+    "linha": 522,
     "funcao": "_kiosk_tick"
    },
    {
     "arquivo": "village_life.gd",
-    "linha": 567,
+    "linha": 555,
     "funcao": "_order"
    }
   ]
@@ -674,12 +674,12 @@
   "usos": [
    {
     "arquivo": "guest.gd",
-    "linha": 140,
+    "linha": 142,
     "funcao": "_state_for"
    },
    {
     "arquivo": "guest.gd",
-    "linha": 187,
+    "linha": 190,
     "funcao": "_build_anim"
    }
   ]
@@ -693,12 +693,12 @@
   "usos": [
    {
     "arquivo": "guest.gd",
-    "linha": 132,
+    "linha": 134,
     "funcao": "_state_for"
    },
    {
     "arquivo": "guest.gd",
-    "linha": 186,
+    "linha": 189,
     "funcao": "_build_anim"
    }
   ]
@@ -712,12 +712,12 @@
   "usos": [
    {
     "arquivo": "guest.gd",
-    "linha": 134,
+    "linha": 136,
     "funcao": "_state_for"
    },
    {
     "arquivo": "guest.gd",
-    "linha": 186,
+    "linha": 189,
     "funcao": "_build_anim"
    },
    {
@@ -757,7 +757,7 @@
   "usos": [
    {
     "arquivo": "guest.gd",
-    "linha": 124,
+    "linha": 126,
     "funcao": "_state_for"
    }
   ]
@@ -776,12 +776,12 @@
    },
    {
     "arquivo": "guest.gd",
-    "linha": 124,
+    "linha": 126,
     "funcao": "_state_for"
    },
    {
     "arquivo": "guest.gd",
-    "linha": 184,
+    "linha": 187,
     "funcao": "_build_anim"
    },
    {
@@ -980,7 +980,7 @@
    },
    {
     "arquivo": "village_life.gd",
-    "linha": 746,
+    "linha": 734,
     "funcao": "prep_advance"
    },
    {
@@ -1035,7 +1035,7 @@
    },
    {
     "arquivo": "village_life.gd",
-    "linha": 832,
+    "linha": 820,
     "funcao": "_complete_order"
    }
   ],
@@ -1120,7 +1120,7 @@
    },
    {
     "arquivo": "village_life.gd",
-    "linha": 779,
+    "linha": 767,
     "funcao": "_deliver_item"
    },
    {
@@ -4570,7 +4570,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 450,
+    "linha": 440,
     "funcao": "_kiosk_tick"
    }
   ]
@@ -4584,7 +4584,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 560,
+    "linha": 548,
     "funcao": "_order"
    }
   ]
@@ -4598,7 +4598,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 570,
+    "linha": 558,
     "funcao": "_pick_dish"
    }
   ]
@@ -4612,7 +4612,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 591,
+    "linha": 579,
     "funcao": "_pick_vip"
    }
   ]
@@ -4626,7 +4626,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 600,
+    "linha": 588,
     "funcao": "_vip_name"
    }
   ]
@@ -4640,7 +4640,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 606,
+    "linha": 594,
     "funcao": "_items"
    }
   ]
@@ -4654,7 +4654,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 610,
+    "linha": 598,
     "funcao": "_patience"
    }
   ]
@@ -4668,7 +4668,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 613,
+    "linha": 601,
     "funcao": "_remaining"
    }
   ]
@@ -4682,7 +4682,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 616,
+    "linha": 604,
     "funcao": "_order_text"
    }
   ]
@@ -4696,7 +4696,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 642,
+    "linha": 630,
     "funcao": "_leave"
    }
   ]
@@ -4710,7 +4710,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 658,
+    "linha": 646,
     "funcao": "_next_customer"
    }
   ]
@@ -4724,7 +4724,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 666,
+    "linha": 654,
     "funcao": "w0_vip"
    }
   ]
@@ -4738,7 +4738,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 669,
+    "linha": 657,
     "funcao": "_bar"
    }
   ]
@@ -4752,7 +4752,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 673,
+    "linha": 661,
     "funcao": "kiosk_prompt"
    }
   ]
@@ -4766,7 +4766,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 707,
+    "linha": 695,
     "funcao": "daily_goal"
    }
   ]
@@ -4780,7 +4780,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 715,
+    "linha": 703,
     "funcao": "kiosk_action"
    }
   ]
@@ -4794,7 +4794,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 731,
+    "linha": 719,
     "funcao": "_stage_secs"
    }
   ]
@@ -4808,7 +4808,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 737,
+    "linha": 725,
     "funcao": "prep_advance"
    }
   ]
@@ -4822,7 +4822,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 756,
+    "linha": 744,
     "funcao": "_deliver_item"
    }
   ]
@@ -4836,7 +4836,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 786,
+    "linha": 774,
     "funcao": "_complete_order"
    }
   ]
@@ -4850,7 +4850,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 845,
+    "linha": 833,
     "funcao": "kiosk_serve"
    }
   ]
@@ -4864,7 +4864,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 858,
+    "linha": 846,
     "funcao": "helper_serve"
    }
   ]
@@ -4878,7 +4878,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 863,
+    "linha": 851,
     "funcao": "_on_slept"
    }
   ]
@@ -5368,7 +5368,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 625,
+    "linha": 613,
     "funcao": "_release_spot"
    }
   ]
@@ -5396,7 +5396,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 883,
+    "linha": 871,
     "funcao": "_prep_position"
    }
   ]
@@ -5410,7 +5410,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 886,
+    "linha": 874,
     "funcao": "_clear_prep_visual"
    }
   ]
@@ -5424,7 +5424,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 892,
+    "linha": 880,
     "funcao": "_show_prep_visual"
    }
   ]
@@ -5438,7 +5438,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 900,
+    "linha": 888,
     "funcao": "served_dishes"
    }
   ]
@@ -5452,7 +5452,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 909,
+    "linha": 897,
     "funcao": "clear_served_visuals"
    }
   ]
@@ -5466,7 +5466,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 923,
+    "linha": 908,
     "funcao": "_show_delivered_visual"
    }
   ]
@@ -5620,7 +5620,7 @@
   "usos": [
    {
     "arquivo": "village_life.gd",
-    "linha": 441,
+    "linha": 431,
     "funcao": "_sit_with_order"
    }
   ]
@@ -5900,7 +5900,7 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 205,
+    "linha": 210,
     "funcao": ""
    }
   ],
@@ -5975,7 +5975,7 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 208,
+    "linha": 213,
     "funcao": ""
    }
   ],
@@ -6000,7 +6000,7 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 185,
+    "linha": 187,
     "funcao": ""
    }
   ],
@@ -6025,7 +6025,7 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 211,
+    "linha": 216,
     "funcao": ""
    }
   ],
@@ -6050,7 +6050,7 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 188,
+    "linha": 190,
     "funcao": ""
    }
   ],
@@ -6100,7 +6100,7 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 214,
+    "linha": 219,
     "funcao": ""
    }
   ],
@@ -6121,6 +6121,36 @@
   ]
  },
  {
+  "codigo": "DSH-010",
+  "categoria": "DSH",
+  "chave": "sorvete_morango",
+  "nome": "Sorvete de morango",
+  "fonte": "economy.gd",
+  "usos": [
+   {
+    "arquivo": "economy.gd",
+    "linha": 178,
+    "funcao": ""
+   }
+  ],
+  "preco": "12"
+ },
+ {
+  "codigo": "DSH-011",
+  "categoria": "DSH",
+  "chave": "sorvete_chocolate",
+  "nome": "Sorvete de chocolate",
+  "fonte": "economy.gd",
+  "usos": [
+   {
+    "arquivo": "economy.gd",
+    "linha": 179,
+    "funcao": ""
+   }
+  ],
+  "preco": "14"
+ },
+ {
   "codigo": "EVT-001",
   "categoria": "EVT",
   "chave": "calor",
@@ -6129,7 +6159,7 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 238,
+    "linha": 243,
     "funcao": ""
    }
   ],
@@ -6144,7 +6174,7 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 239,
+    "linha": 244,
     "funcao": ""
    }
   ],
@@ -6159,7 +6189,7 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 240,
+    "linha": 245,
     "funcao": ""
    }
   ],
@@ -6174,7 +6204,7 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 241,
+    "linha": 246,
     "funcao": ""
    }
   ],
@@ -6189,7 +6219,7 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 242,
+    "linha": 247,
     "funcao": ""
    }
   ],
@@ -6204,7 +6234,7 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 243,
+    "linha": 248,
     "funcao": ""
    }
   ],
@@ -6219,7 +6249,7 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 244,
+    "linha": 249,
     "funcao": ""
    }
   ],
@@ -6496,7 +6526,7 @@
    },
    {
     "arquivo": "economy.gd",
-    "linha": 323,
+    "linha": 328,
     "funcao": ""
    },
    {
@@ -6546,7 +6576,7 @@
    },
    {
     "arquivo": "economy.gd",
-    "linha": 336,
+    "linha": 341,
     "funcao": ""
    },
    {
@@ -6711,22 +6741,22 @@
    },
    {
     "arquivo": "economy.gd",
-    "linha": 180,
+    "linha": 182,
     "funcao": ""
    },
    {
     "arquivo": "economy.gd",
-    "linha": 195,
+    "linha": 198,
     "funcao": ""
    },
    {
     "arquivo": "economy.gd",
-    "linha": 206,
+    "linha": 211,
     "funcao": ""
    },
    {
     "arquivo": "economy.gd",
-    "linha": 213,
+    "linha": 218,
     "funcao": ""
    },
    {
@@ -6751,7 +6781,7 @@
    },
    {
     "arquivo": "guest.gd",
-    "linha": 1037,
+    "linha": 1042,
     "funcao": "apply_staff_uniform"
    },
    {
@@ -6881,7 +6911,7 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 307,
+    "linha": 312,
     "funcao": ""
    },
    {
@@ -6981,7 +7011,7 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 291,
+    "linha": 296,
     "funcao": ""
    },
    {
@@ -7031,27 +7061,27 @@
    },
    {
     "arquivo": "economy.gd",
-    "linha": 178,
+    "linha": 180,
     "funcao": ""
    },
    {
     "arquivo": "economy.gd",
-    "linha": 195,
+    "linha": 198,
     "funcao": ""
    },
    {
     "arquivo": "economy.gd",
-    "linha": 205,
+    "linha": 210,
     "funcao": ""
    },
    {
     "arquivo": "economy.gd",
-    "linha": 213,
+    "linha": 218,
     "funcao": ""
    },
    {
     "arquivo": "economy.gd",
-    "linha": 214,
+    "linha": 219,
     "funcao": ""
    },
    {
@@ -7091,7 +7121,7 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 340,
+    "linha": 345,
     "funcao": ""
    },
    {
@@ -7151,7 +7181,7 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 315,
+    "linha": 320,
     "funcao": ""
    },
    {
@@ -7176,7 +7206,7 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 334,
+    "linha": 339,
     "funcao": ""
    },
    {
@@ -7331,7 +7361,7 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 341,
+    "linha": 346,
     "funcao": ""
    },
    {
@@ -7386,27 +7416,17 @@
    },
    {
     "arquivo": "economy.gd",
-    "linha": 179,
+    "linha": 181,
     "funcao": ""
    },
    {
     "arquivo": "economy.gd",
-    "linha": 195,
+    "linha": 198,
     "funcao": ""
    },
    {
     "arquivo": "economy.gd",
-    "linha": 206,
-    "funcao": ""
-   },
-   {
-    "arquivo": "economy.gd",
-    "linha": 207,
-    "funcao": ""
-   },
-   {
-    "arquivo": "economy.gd",
-    "linha": 208,
+    "linha": 211,
     "funcao": ""
    },
    {
@@ -7416,7 +7436,17 @@
    },
    {
     "arquivo": "economy.gd",
-    "linha": 234,
+    "linha": 213,
+    "funcao": ""
+   },
+   {
+    "arquivo": "economy.gd",
+    "linha": 217,
+    "funcao": ""
+   },
+   {
+    "arquivo": "economy.gd",
+    "linha": 239,
     "funcao": ""
    },
    {
@@ -7436,32 +7466,22 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 181,
+    "linha": 183,
     "funcao": ""
    },
    {
     "arquivo": "economy.gd",
-    "linha": 195,
+    "linha": 198,
     "funcao": ""
    },
    {
     "arquivo": "economy.gd",
-    "linha": 205,
+    "linha": 210,
     "funcao": ""
    },
    {
     "arquivo": "economy.gd",
-    "linha": 206,
-    "funcao": ""
-   },
-   {
-    "arquivo": "economy.gd",
-    "linha": 208,
-    "funcao": ""
-   },
-   {
-    "arquivo": "economy.gd",
-    "linha": 212,
+    "linha": 211,
     "funcao": ""
    },
    {
@@ -7471,7 +7491,17 @@
    },
    {
     "arquivo": "economy.gd",
-    "linha": 234,
+    "linha": 217,
+    "funcao": ""
+   },
+   {
+    "arquivo": "economy.gd",
+    "linha": 218,
+    "funcao": ""
+   },
+   {
+    "arquivo": "economy.gd",
+    "linha": 239,
     "funcao": ""
    },
    {
@@ -7501,7 +7531,7 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 335,
+    "linha": 340,
     "funcao": ""
    },
    {
@@ -7536,12 +7566,12 @@
    },
    {
     "arquivo": "village_life.gd",
-    "linha": 811,
+    "linha": 799,
     "funcao": "_complete_order"
    },
    {
     "arquivo": "village_life.gd",
-    "linha": 826,
+    "linha": 814,
     "funcao": "_complete_order"
    }
   ],
@@ -7556,7 +7586,7 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 338,
+    "linha": 343,
     "funcao": ""
    },
    {
@@ -7651,7 +7681,7 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 342,
+    "linha": 347,
     "funcao": ""
    },
    {
@@ -7716,7 +7746,7 @@
    },
    {
     "arquivo": "village_life.gd",
-    "linha": 830,
+    "linha": 818,
     "funcao": "_complete_order"
    }
   ],
@@ -7731,7 +7761,7 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 343,
+    "linha": 348,
     "funcao": ""
    },
    {
@@ -7776,7 +7806,7 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 346,
+    "linha": 351,
     "funcao": ""
    },
    {
@@ -7826,27 +7856,27 @@
    },
    {
     "arquivo": "economy.gd",
-    "linha": 183,
+    "linha": 185,
     "funcao": ""
    },
    {
     "arquivo": "economy.gd",
-    "linha": 195,
+    "linha": 198,
     "funcao": ""
    },
    {
     "arquivo": "economy.gd",
-    "linha": 207,
+    "linha": 212,
     "funcao": ""
    },
    {
     "arquivo": "economy.gd",
-    "linha": 211,
+    "linha": 216,
     "funcao": ""
    },
    {
     "arquivo": "economy.gd",
-    "linha": 234,
+    "linha": 239,
     "funcao": ""
    },
    {
@@ -7876,27 +7906,27 @@
    },
    {
     "arquivo": "economy.gd",
-    "linha": 182,
+    "linha": 184,
     "funcao": ""
    },
    {
     "arquivo": "economy.gd",
-    "linha": 195,
+    "linha": 198,
     "funcao": ""
    },
    {
     "arquivo": "economy.gd",
-    "linha": 207,
+    "linha": 212,
     "funcao": ""
    },
    {
     "arquivo": "economy.gd",
-    "linha": 214,
+    "linha": 219,
     "funcao": ""
    },
    {
     "arquivo": "economy.gd",
-    "linha": 234,
+    "linha": 239,
     "funcao": ""
    },
    {
@@ -7966,7 +7996,7 @@
    },
    {
     "arquivo": "economy.gd",
-    "linha": 337,
+    "linha": 342,
     "funcao": ""
    },
    {
@@ -8066,7 +8096,7 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 299,
+    "linha": 304,
     "funcao": ""
    },
    {
@@ -8091,7 +8121,7 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 339,
+    "linha": 344,
     "funcao": ""
    },
    {
@@ -9213,7 +9243,7 @@
   "usos": [
    {
     "arquivo": "guest.gd",
-    "linha": 939,
+    "linha": 942,
     "funcao": "_caricature"
    }
   ],
@@ -11807,7 +11837,7 @@
   "usos": [
    {
     "arquivo": "guest.gd",
-    "linha": 252,
+    "linha": 255,
     "funcao": "_make_food"
    },
    {
@@ -13282,7 +13312,7 @@
   "usos": [
    {
     "arquivo": "dish_presentation.gd",
-    "linha": 6,
+    "linha": 8,
     "funcao": ""
    },
    {
@@ -13317,12 +13347,12 @@
   "usos": [
    {
     "arquivo": "dish_presentation.gd",
-    "linha": 4,
+    "linha": 6,
     "funcao": ""
    },
    {
     "arquivo": "dish_presentation.gd",
-    "linha": 24,
+    "linha": 31,
     "funcao": "build_used"
    },
    {
@@ -13347,7 +13377,7 @@
   "usos": [
    {
     "arquivo": "guest.gd",
-    "linha": 245,
+    "linha": 248,
     "funcao": "_make_cup"
    },
    {
@@ -13392,7 +13422,7 @@
   "usos": [
    {
     "arquivo": "dish_presentation.gd",
-    "linha": 5,
+    "linha": 7,
     "funcao": ""
    },
    {
@@ -13457,12 +13487,12 @@
   "usos": [
    {
     "arquivo": "dish_presentation.gd",
-    "linha": 33,
+    "linha": 40,
     "funcao": "build_used"
    },
    {
     "arquivo": "dish_presentation.gd",
-    "linha": 56,
+    "linha": 63,
     "funcao": "build"
    },
    {
@@ -13482,12 +13512,12 @@
   "usos": [
    {
     "arquivo": "dish_presentation.gd",
-    "linha": 33,
+    "linha": 40,
     "funcao": "build_used"
    },
    {
     "arquivo": "dish_presentation.gd",
-    "linha": 56,
+    "linha": 63,
     "funcao": "build"
    },
    {
@@ -13507,7 +13537,7 @@
   "usos": [
    {
     "arquivo": "dish_presentation.gd",
-    "linha": 11,
+    "linha": 13,
     "funcao": ""
    }
   ],
@@ -13522,7 +13552,7 @@
   "usos": [
    {
     "arquivo": "dish_presentation.gd",
-    "linha": 7,
+    "linha": 9,
     "funcao": ""
    }
   ],
@@ -13537,7 +13567,7 @@
   "usos": [
    {
     "arquivo": "dish_presentation.gd",
-    "linha": 12,
+    "linha": 14,
     "funcao": ""
    }
   ],
@@ -13552,7 +13582,7 @@
   "usos": [
    {
     "arquivo": "dish_presentation.gd",
-    "linha": 10,
+    "linha": 12,
     "funcao": ""
    }
   ],
@@ -13567,7 +13597,7 @@
   "usos": [
    {
     "arquivo": "dish_presentation.gd",
-    "linha": 8,
+    "linha": 10,
     "funcao": ""
    }
   ],
@@ -13582,7 +13612,7 @@
   "usos": [
    {
     "arquivo": "dish_presentation.gd",
-    "linha": 9,
+    "linha": 11,
     "funcao": ""
    }
   ],
@@ -13982,12 +14012,12 @@
   "usos": [
    {
     "arquivo": "dish_presentation.gd",
-    "linha": 30,
+    "linha": 37,
     "funcao": "build_used"
    },
    {
     "arquivo": "dish_presentation.gd",
-    "linha": 49,
+    "linha": 56,
     "funcao": "build"
    }
   ],
@@ -14002,12 +14032,12 @@
   "usos": [
    {
     "arquivo": "dish_presentation.gd",
-    "linha": 30,
+    "linha": 37,
     "funcao": "build_used"
    },
    {
     "arquivo": "dish_presentation.gd",
-    "linha": 49,
+    "linha": 56,
     "funcao": "build"
    },
    {
@@ -14027,7 +14057,7 @@
   "usos": [
    {
     "arquivo": "dish_presentation.gd",
-    "linha": 24,
+    "linha": 31,
     "funcao": "build_used"
    }
   ],
@@ -14042,7 +14072,7 @@
   "usos": [
    {
     "arquivo": "dish_presentation.gd",
-    "linha": 24,
+    "linha": 31,
     "funcao": "build_used"
    }
   ],
@@ -14057,11 +14087,71 @@
   "usos": [
    {
     "arquivo": "dish_presentation.gd",
-    "linha": 24,
+    "linha": 31,
     "funcao": "build_used"
    }
   ],
   "arquivo_modelo": "assets/models/gen/used_glass_juice.glb"
+ },
+ {
+  "codigo": "MOD-260",
+  "categoria": "MOD",
+  "chave": "g:icecream_chocolate",
+  "nome": "Icecream chocolate",
+  "fonte": "Gerado no Blender (tools/gen_*.py)",
+  "usos": [
+   {
+    "arquivo": "dish_presentation.gd",
+    "linha": 5,
+    "funcao": ""
+   }
+  ],
+  "arquivo_modelo": "assets/models/gen/icecream_chocolate.glb"
+ },
+ {
+  "codigo": "MOD-261",
+  "categoria": "MOD",
+  "chave": "g:icecream_strawberry",
+  "nome": "Icecream strawberry",
+  "fonte": "Gerado no Blender (tools/gen_*.py)",
+  "usos": [
+   {
+    "arquivo": "dish_presentation.gd",
+    "linha": 4,
+    "funcao": ""
+   }
+  ],
+  "arquivo_modelo": "assets/models/gen/icecream_strawberry.glb"
+ },
+ {
+  "codigo": "MOD-262",
+  "categoria": "MOD",
+  "chave": "g:service_carry_tray",
+  "nome": "Service carry tray",
+  "fonte": "Gerado no Blender (tools/gen_*.py)",
+  "usos": [
+   {
+    "arquivo": "guest.gd",
+    "linha": 1080,
+    "funcao": "hold_order"
+   }
+  ],
+  "arquivo_modelo": "assets/models/gen/service_carry_tray.glb"
+ },
+ {
+  "codigo": "MOD-263",
+  "categoria": "MOD",
+  "chave": "g:used_icecream_cup",
+  "nome": "Used icecream cup",
+  "fonte": "Gerado no Blender (tools/gen_*.py)",
+  "usos": [
+   {
+    "arquivo": "dish_presentation.gd",
+    "linha": 31,
+    "funcao": "build_used"
+   }
+  ],
+  "arquivo_modelo": "assets/models/gen/used_icecream_cup.glb"
  },
  {
   "codigo": "NAT-001",
@@ -18257,6 +18347,25 @@
   "args": "self,\"potted_plant_04\",plant_pos,.75,planter_x",
   "material": "",
   "em_laco": true,
+  "comentario": ""
+ },
+ {
+  "codigo": "PCA-1011",
+  "categoria": "PCA",
+  "chave": "guest.gd|hold_order|Real.place|1",
+  "nome": "g:service carry tray",
+  "fonte": "guest.gd (código)",
+  "usos": [
+   {
+    "arquivo": "guest.gd",
+    "linha": 1080,
+    "funcao": "hold_order"
+   }
+  ],
+  "chamada": "Real.place",
+  "args": "_held_root,\"g:service_carry_tray\",Vector3(.19,0,-.12),0.0,0,Color.WHITE,.40",
+  "material": "",
+  "em_laco": false,
   "comentario": ""
  },
  {
@@ -31283,7 +31392,7 @@
   "usos": [
    {
     "arquivo": "guest.gd",
-    "linha": 939,
+    "linha": 942,
     "funcao": "_caricature"
    }
   ],
@@ -31302,7 +31411,7 @@
   "usos": [
    {
     "arquivo": "guest.gd",
-    "linha": 978,
+    "linha": 981,
     "funcao": "show_menu"
    }
   ],
@@ -31321,7 +31430,7 @@
   "usos": [
    {
     "arquivo": "guest.gd",
-    "linha": 979,
+    "linha": 982,
     "funcao": "show_menu"
    }
   ],
@@ -31340,7 +31449,7 @@
   "usos": [
    {
     "arquivo": "guest.gd",
-    "linha": 981,
+    "linha": 984,
     "funcao": "show_menu"
    }
   ],
@@ -33145,7 +33254,7 @@
   "usos": [
    {
     "arquivo": "guest.gd",
-    "linha": 245,
+    "linha": 248,
     "funcao": "_make_cup"
    }
   ],
@@ -33164,7 +33273,7 @@
   "usos": [
    {
     "arquivo": "guest.gd",
-    "linha": 252,
+    "linha": 255,
     "funcao": "_make_food"
    }
   ],
@@ -34132,7 +34241,7 @@
     "funcao": ""
    }
   ],
-  "linhas": 386,
+  "linhas": 391,
   "descricao": "Todos os números da progressão do Maré Alta. Não espalhar preço, diária ou salário pelo código."
  },
  {
@@ -34148,7 +34257,7 @@
     "funcao": ""
    }
   ],
-  "linhas": 1057,
+  "linhas": 1112,
   "descricao": ""
  },
  {
@@ -34452,7 +34561,7 @@
     "funcao": ""
    }
   ],
-  "linhas": 948,
+  "linhas": 933,
   "descricao": ""
  },
  {
@@ -34676,7 +34785,7 @@
     "funcao": ""
    }
   ],
-  "linhas": 58,
+  "linhas": 65,
   "descricao": "Um ID do cardápio = uma apresentação própria; nenhuma primitiva genérica."
  },
  {
@@ -34692,7 +34801,7 @@
     "funcao": ""
    }
   ],
-  "linhas": 615,
+  "linhas": 607,
   "descricao": "Operação do quiosque: estoque pronto separado de ingredientes e contas a receber."
  },
  {
@@ -34740,7 +34849,7 @@
     "funcao": ""
    }
   ],
-  "linhas": 41,
+  "linhas": 70,
   "descricao": "Bounded two-bone reach using the actual imported limb lengths."
  },
  {
@@ -34899,7 +35008,7 @@
   "usos": [
    {
     "arquivo": "guest.gd",
-    "linha": 70,
+    "linha": 72,
     "funcao": "setup"
    }
   ],
@@ -35094,7 +35203,7 @@
   "usos": [
    {
     "arquivo": "guest.gd",
-    "linha": 869,
+    "linha": 872,
     "funcao": "_dress"
    }
   ],
@@ -35283,7 +35392,7 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 181,
+    "linha": 183,
     "funcao": ""
    }
   ],
@@ -35331,7 +35440,7 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 185,
+    "linha": 187,
     "funcao": ""
    }
   ],
@@ -35346,7 +35455,7 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 186,
+    "linha": 188,
     "funcao": ""
    }
   ],
@@ -35361,7 +35470,7 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 187,
+    "linha": 189,
     "funcao": ""
    }
   ],
@@ -35376,11 +35485,41 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 188,
+    "linha": 190,
     "funcao": ""
    }
   ],
   "custo": "6"
+ },
+ {
+  "codigo": "SUP-011",
+  "categoria": "SUP",
+  "chave": "sorvete_morango",
+  "nome": "Sorvete pronto de morango",
+  "fonte": "economy.gd",
+  "usos": [
+   {
+    "arquivo": "economy.gd",
+    "linha": 178,
+    "funcao": ""
+   }
+  ],
+  "custo": "4"
+ },
+ {
+  "codigo": "SUP-012",
+  "categoria": "SUP",
+  "chave": "sorvete_chocolate",
+  "nome": "Sorvete pronto de chocolate",
+  "fonte": "economy.gd",
+  "usos": [
+   {
+    "arquivo": "economy.gd",
+    "linha": 179,
+    "funcao": ""
+   }
+  ],
+  "custo": "5"
  },
  {
   "codigo": "TEX-001",
@@ -36269,7 +36408,7 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 291,
+    "linha": 296,
     "funcao": ""
    }
   ],
@@ -36285,7 +36424,7 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 291,
+    "linha": 296,
     "funcao": ""
    }
   ],
@@ -36301,7 +36440,7 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 291,
+    "linha": 296,
     "funcao": ""
    }
   ],
@@ -36317,7 +36456,7 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 299,
+    "linha": 304,
     "funcao": ""
    }
   ],
@@ -36333,7 +36472,7 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 299,
+    "linha": 304,
     "funcao": ""
    }
   ],
@@ -36349,7 +36488,7 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 299,
+    "linha": 304,
     "funcao": ""
    }
   ],
@@ -36365,7 +36504,7 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 307,
+    "linha": 312,
     "funcao": ""
    }
   ],
@@ -36381,7 +36520,7 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 307,
+    "linha": 312,
     "funcao": ""
    }
   ],
@@ -36397,7 +36536,7 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 307,
+    "linha": 312,
     "funcao": ""
    }
   ],
@@ -36413,7 +36552,7 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 315,
+    "linha": 320,
     "funcao": ""
    }
   ],
@@ -36429,7 +36568,7 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 315,
+    "linha": 320,
     "funcao": ""
    }
   ],
@@ -36445,7 +36584,7 @@
   "usos": [
    {
     "arquivo": "economy.gd",
-    "linha": 315,
+    "linha": 320,
     "funcao": ""
    }
   ],

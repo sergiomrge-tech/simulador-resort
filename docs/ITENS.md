@@ -2,13 +2,13 @@
 
 Gerado por `python3 tools/gen_item_catalog.py` — **não edite à mão**. Os códigos ficam em `docs/itens_registro.json` e nunca mudam. Para pedir uma alteração, cite o código (ex.: "troque o modelo de MOD-017").
 
-Total: 2078 itens. MOD 244 · NAT 68 · PRC 31 · CEN 294 · PRT 13 · DSH 9 · SUP 10 · EXP 9 · STF 4 · UPG 15 · QST 4 · VIP 12 · EVT 8 · NOU 168 · TEX 29 · AUD 47 · ICO 36 · FNT 1 · SHD 19 · ANI 43 · PCA 895 · MAT 24 · COR 28 · SCR 51 · PES 16
+Total: 2087 itens. MOD 248 · NAT 68 · PRC 31 · CEN 294 · PRT 13 · DSH 11 · SUP 12 · EXP 9 · STF 4 · UPG 15 · QST 4 · VIP 12 · EVT 8 · NOU 168 · TEX 29 · AUD 47 · ICO 36 · FNT 1 · SHD 19 · ANI 43 · PCA 896 · MAT 24 · COR 28 · SCR 51 · PES 16
 
-## MOD — Modelos 3D em uso (reais, baixados da web) (244)
+## MOD — Modelos 3D em uso (reais, baixados da web) (248)
 
 | Código | Nome | Chave | Fonte | Usado em |
 |---|---|---|---|---|
-| MOD-001 | Camera 01 | `Camera_01` | Poly Haven (CC0) | guest.gd:939 |
+| MOD-001 | Camera 01 | `Camera_01` | Poly Haven (CC0) | guest.gd:942 |
 | MOD-002 | Cash register 01 | `CashRegister_01` | Poly Haven (CC0) | props.gd:44, world.gd:298 |
 | MOD-003 | Coffee cart 01 | `CoffeeCart_01` | Poly Haven (CC0) | props.gd:44, world_village.gd:749 |
 | MOD-004 | Gothic bed 01 | `GothicBed_01` | Poly Haven (CC0) | props.gd:40, real.gd:12, world.gd:778, world.gd:781 (+1) |
@@ -119,7 +119,7 @@ Total: 2078 itens. MOD 244 · NAT 68 · PRC 31 · CEN 294 · PRT 13 · DSH 9 · 
 | MOD-118 | Tiki torch | `g:tiki_torch` | Gerado no Blender (tools/gen_*.py) | details.gd:115 |
 | MOD-119 | Volley net | `g:volley_net` | Gerado no Blender (tools/gen_*.py) | coastal_life.gd:20, details.gd:278 |
 | MOD-120 | Beach ball | `g:beach_ball` | Gerado no Blender (tools/gen_*.py) | world.gd:1262, world.gd:2158 |
-| MOD-121 | Coxinha | `g:coxinha` | Gerado no Blender (tools/gen_*.py) | guest.gd:252, world_village.gd:1017 |
+| MOD-121 | Coxinha | `g:coxinha` | Gerado no Blender (tools/gen_*.py) | guest.gd:255, world_village.gd:1017 |
 | MOD-122 | Flowerbed | `g:flowerbed` | Gerado no Blender (tools/gen_*.py) | world.gd:2192, world_village.gd:1894 |
 | MOD-123 | Hanging planter | `g:hanging_planter` | Gerado no Blender (tools/gen_*.py) | world_village.gd:415, world_village.gd:935 |
 | MOD-124 | Popcorn | `g:popcorn` | Gerado no Blender (tools/gen_*.py) | world_village.gd:1915 |
@@ -205,23 +205,23 @@ Total: 2078 itens. MOD 244 · NAT 68 · PRC 31 · CEN 294 · PRT 13 · DSH 9 · 
 | MOD-206 | Beach spade | `g:beach_spade` | Gerado no Blender (tools/gen_*.py) | details.gd:240, real.gd:25 |
 | MOD-207 | Boat hull | `g:boat_hull` | Gerado no Blender (tools/gen_*.py) | real.gd:25 |
 | MOD-208 | Campfire logs | `g:campfire_logs` | Gerado no Blender (tools/gen_*.py) | real.gd:23 |
-| MOD-209 | Cocktail | `g:cocktail` | Gerado no Blender (tools/gen_*.py) | dish_presentation.gd:6, real.gd:21 |
+| MOD-209 | Cocktail | `g:cocktail` | Gerado no Blender (tools/gen_*.py) | dish_presentation.gd:8, real.gd:21 |
 | MOD-210 | Coconut green | `g:coconut_green` | Gerado no Blender (tools/gen_*.py) | real.gd:20 |
-| MOD-211 | Coconut open | `g:coconut_open` | Gerado no Blender (tools/gen_*.py) | dish_presentation.gd:24, dish_presentation.gd:4, real.gd:20, world.gd:579 |
-| MOD-212 | Cup plastic | `g:cup_plastic` | Gerado no Blender (tools/gen_*.py) | guest.gd:245, kiosk_operations.gd:94, real.gd:21, world_village.gd:651 |
+| MOD-211 | Coconut open | `g:coconut_open` | Gerado no Blender (tools/gen_*.py) | dish_presentation.gd:31, dish_presentation.gd:6, real.gd:20, world.gd:579 |
+| MOD-212 | Cup plastic | `g:cup_plastic` | Gerado no Blender (tools/gen_*.py) | guest.gd:248, kiosk_operations.gd:94, real.gd:21, world_village.gd:651 |
 | MOD-213 | Frappe | `g:frappe` | Gerado no Blender (tools/gen_*.py) | real.gd:21 |
-| MOD-214 | Glass juice | `g:glass_juice` | Gerado no Blender (tools/gen_*.py) | dish_presentation.gd:5, real.gd:21 |
+| MOD-214 | Glass juice | `g:glass_juice` | Gerado no Blender (tools/gen_*.py) | dish_presentation.gd:7, real.gd:21 |
 | MOD-215 | Orange | `g:orange` | Gerado no Blender (tools/gen_*.py) | real.gd:20 |
 | MOD-216 | Pineapple | `g:pineapple` | Gerado no Blender (tools/gen_*.py) | real.gd:20 |
 | MOD-218 | Plate dinner | `k:plate-dinner` | Kenney (CC0) | world_village.gd:650 |
-| MOD-219 | Utensil fork | `k:utensil-fork` | Kenney (CC0) | dish_presentation.gd:33, dish_presentation.gd:56, kiosk_operations.gd:98 |
-| MOD-220 | Utensil spoon | `k:utensil-spoon` | Kenney (CC0) | dish_presentation.gd:33, dish_presentation.gd:56, kiosk_operations.gd:99 |
-| MOD-221 | Dish acai | `g:dish_acai` | Gerado no Blender (tools/gen_*.py) | dish_presentation.gd:11 |
-| MOD-222 | Dish batida | `g:dish_batida` | Gerado no Blender (tools/gen_*.py) | dish_presentation.gd:7 |
-| MOD-223 | Dish moqueca | `g:dish_moqueca` | Gerado no Blender (tools/gen_*.py) | dish_presentation.gd:12 |
-| MOD-224 | Dish pastel | `g:dish_pastel` | Gerado no Blender (tools/gen_*.py) | dish_presentation.gd:10 |
-| MOD-225 | Dish petiscos | `g:dish_petiscos` | Gerado no Blender (tools/gen_*.py) | dish_presentation.gd:8 |
-| MOD-226 | Dish tapioca | `g:dish_tapioca` | Gerado no Blender (tools/gen_*.py) | dish_presentation.gd:9 |
+| MOD-219 | Utensil fork | `k:utensil-fork` | Kenney (CC0) | dish_presentation.gd:40, dish_presentation.gd:63, kiosk_operations.gd:98 |
+| MOD-220 | Utensil spoon | `k:utensil-spoon` | Kenney (CC0) | dish_presentation.gd:40, dish_presentation.gd:63, kiosk_operations.gd:99 |
+| MOD-221 | Dish acai | `g:dish_acai` | Gerado no Blender (tools/gen_*.py) | dish_presentation.gd:13 |
+| MOD-222 | Dish batida | `g:dish_batida` | Gerado no Blender (tools/gen_*.py) | dish_presentation.gd:9 |
+| MOD-223 | Dish moqueca | `g:dish_moqueca` | Gerado no Blender (tools/gen_*.py) | dish_presentation.gd:14 |
+| MOD-224 | Dish pastel | `g:dish_pastel` | Gerado no Blender (tools/gen_*.py) | dish_presentation.gd:12 |
+| MOD-225 | Dish petiscos | `g:dish_petiscos` | Gerado no Blender (tools/gen_*.py) | dish_presentation.gd:10 |
+| MOD-226 | Dish tapioca | `g:dish_tapioca` | Gerado no Blender (tools/gen_*.py) | dish_presentation.gd:11 |
 | MOD-227 | Service food cabinet | `g:service_food_cabinet` | Gerado no Blender (tools/gen_*.py) | kiosk_operations.gd:63 |
 | MOD-228 | Service fridge | `g:service_fridge` | Gerado no Blender (tools/gen_*.py) | kiosk_operations.gd:62 |
 | MOD-229 | Service fridge door | `g:service_fridge_door` | Gerado no Blender (tools/gen_*.py) | kiosk_operations.gd:68 |
@@ -247,11 +247,15 @@ Total: 2078 itens. MOD 244 · NAT 68 · PRC 31 · CEN 294 · PRT 13 · DSH 9 · 
 | MOD-251 | Wicker basket closed | `g:wicker_basket_closed` | Gerado no Blender (tools/gen_*.py) | real.gd:19 |
 | MOD-253 | Player home door | `g:player_home_door` | Gerado no Blender (tools/gen_*.py) | home_door.gd:14 |
 | MOD-254 | Kiosk laptop | `g:kiosk_laptop` | Gerado no Blender (tools/gen_*.py) | kiosk_operations.gd:76 |
-| MOD-255 | Table bowl | `g:table_bowl` | Gerado no Blender (tools/gen_*.py) | dish_presentation.gd:30, dish_presentation.gd:49 |
-| MOD-256 | Table plate | `g:table_plate` | Gerado no Blender (tools/gen_*.py) | dish_presentation.gd:30, dish_presentation.gd:49, kiosk_operations.gd:291 |
-| MOD-257 | Used cocktail | `g:used_cocktail` | Gerado no Blender (tools/gen_*.py) | dish_presentation.gd:24 |
-| MOD-258 | Used dish batida | `g:used_dish_batida` | Gerado no Blender (tools/gen_*.py) | dish_presentation.gd:24 |
-| MOD-259 | Used glass juice | `g:used_glass_juice` | Gerado no Blender (tools/gen_*.py) | dish_presentation.gd:24 |
+| MOD-255 | Table bowl | `g:table_bowl` | Gerado no Blender (tools/gen_*.py) | dish_presentation.gd:37, dish_presentation.gd:56 |
+| MOD-256 | Table plate | `g:table_plate` | Gerado no Blender (tools/gen_*.py) | dish_presentation.gd:37, dish_presentation.gd:56, kiosk_operations.gd:291 |
+| MOD-257 | Used cocktail | `g:used_cocktail` | Gerado no Blender (tools/gen_*.py) | dish_presentation.gd:31 |
+| MOD-258 | Used dish batida | `g:used_dish_batida` | Gerado no Blender (tools/gen_*.py) | dish_presentation.gd:31 |
+| MOD-259 | Used glass juice | `g:used_glass_juice` | Gerado no Blender (tools/gen_*.py) | dish_presentation.gd:31 |
+| MOD-260 | Icecream chocolate | `g:icecream_chocolate` | Gerado no Blender (tools/gen_*.py) | dish_presentation.gd:5 |
+| MOD-261 | Icecream strawberry | `g:icecream_strawberry` | Gerado no Blender (tools/gen_*.py) | dish_presentation.gd:4 |
+| MOD-262 | Service carry tray | `g:service_carry_tray` | Gerado no Blender (tools/gen_*.py) | guest.gd:1080 |
+| MOD-263 | Used icecream cup | `g:used_icecream_cup` | Gerado no Blender (tools/gen_*.py) | dish_presentation.gd:31 |
 
 ## NAT — Natureza (Quaternius) (68)
 
@@ -583,29 +587,29 @@ Total: 2078 itens. MOD 244 · NAT 68 · PRC 31 · CEN 294 · PRT 13 · DSH 9 · 
 | CEN-215 | Waiting customers | `village_life.waiting_customers` | village_life.gd (código) | village_life.gd:284 |
 | CEN-216 | Free spot | `village_life._free_spot` | village_life.gd (código) | village_life.gd:290 |
 | CEN-217 | Spawn customer | `village_life.spawn_customer` | village_life.gd (código) | village_life.gd:308 |
-| CEN-218 | Kiosk tick | `village_life._kiosk_tick` | village_life.gd (código) | village_life.gd:450 |
-| CEN-219 | Order | `village_life._order` | village_life.gd (código) | village_life.gd:560 |
-| CEN-220 | Pick dish | `village_life._pick_dish` | village_life.gd (código) | village_life.gd:570 |
-| CEN-221 | Pick vip | `village_life._pick_vip` | village_life.gd (código) | village_life.gd:591 |
-| CEN-222 | Vip name | `village_life._vip_name` | village_life.gd (código) | village_life.gd:600 |
-| CEN-223 | Items | `village_life._items` | village_life.gd (código) | village_life.gd:606 |
-| CEN-224 | Patience | `village_life._patience` | village_life.gd (código) | village_life.gd:610 |
-| CEN-225 | Remaining | `village_life._remaining` | village_life.gd (código) | village_life.gd:613 |
-| CEN-226 | Order text | `village_life._order_text` | village_life.gd (código) | village_life.gd:616 |
-| CEN-227 | Leave | `village_life._leave` | village_life.gd (código) | village_life.gd:642 |
-| CEN-228 | Next customer | `village_life._next_customer` | village_life.gd (código) | village_life.gd:658 |
-| CEN-229 | W0 vip | `village_life.w0_vip` | village_life.gd (código) | village_life.gd:666 |
-| CEN-230 | Bar | `village_life._bar` | village_life.gd (código) | village_life.gd:669 |
-| CEN-231 | Kiosk prompt | `village_life.kiosk_prompt` | village_life.gd (código) | village_life.gd:673 |
-| CEN-232 | Daily goal | `village_life.daily_goal` | village_life.gd (código) | village_life.gd:707 |
-| CEN-233 | Kiosk action | `village_life.kiosk_action` | village_life.gd (código) | village_life.gd:715 |
-| CEN-234 | Stage secs | `village_life._stage_secs` | village_life.gd (código) | village_life.gd:731 |
-| CEN-235 | Prep advance | `village_life.prep_advance` | village_life.gd (código) | village_life.gd:737 |
-| CEN-236 | Deliver item | `village_life._deliver_item` | village_life.gd (código) | village_life.gd:756 |
-| CEN-237 | Complete order | `village_life._complete_order` | village_life.gd (código) | village_life.gd:786 |
-| CEN-238 | Kiosk serve | `village_life.kiosk_serve` | village_life.gd (código) | village_life.gd:845 |
-| CEN-239 | Helper serve | `village_life.helper_serve` | village_life.gd (código) | village_life.gd:858 |
-| CEN-240 | On slept | `village_life._on_slept` | village_life.gd (código) | village_life.gd:863 |
+| CEN-218 | Kiosk tick | `village_life._kiosk_tick` | village_life.gd (código) | village_life.gd:440 |
+| CEN-219 | Order | `village_life._order` | village_life.gd (código) | village_life.gd:548 |
+| CEN-220 | Pick dish | `village_life._pick_dish` | village_life.gd (código) | village_life.gd:558 |
+| CEN-221 | Pick vip | `village_life._pick_vip` | village_life.gd (código) | village_life.gd:579 |
+| CEN-222 | Vip name | `village_life._vip_name` | village_life.gd (código) | village_life.gd:588 |
+| CEN-223 | Items | `village_life._items` | village_life.gd (código) | village_life.gd:594 |
+| CEN-224 | Patience | `village_life._patience` | village_life.gd (código) | village_life.gd:598 |
+| CEN-225 | Remaining | `village_life._remaining` | village_life.gd (código) | village_life.gd:601 |
+| CEN-226 | Order text | `village_life._order_text` | village_life.gd (código) | village_life.gd:604 |
+| CEN-227 | Leave | `village_life._leave` | village_life.gd (código) | village_life.gd:630 |
+| CEN-228 | Next customer | `village_life._next_customer` | village_life.gd (código) | village_life.gd:646 |
+| CEN-229 | W0 vip | `village_life.w0_vip` | village_life.gd (código) | village_life.gd:654 |
+| CEN-230 | Bar | `village_life._bar` | village_life.gd (código) | village_life.gd:657 |
+| CEN-231 | Kiosk prompt | `village_life.kiosk_prompt` | village_life.gd (código) | village_life.gd:661 |
+| CEN-232 | Daily goal | `village_life.daily_goal` | village_life.gd (código) | village_life.gd:695 |
+| CEN-233 | Kiosk action | `village_life.kiosk_action` | village_life.gd (código) | village_life.gd:703 |
+| CEN-234 | Stage secs | `village_life._stage_secs` | village_life.gd (código) | village_life.gd:719 |
+| CEN-235 | Prep advance | `village_life.prep_advance` | village_life.gd (código) | village_life.gd:725 |
+| CEN-236 | Deliver item | `village_life._deliver_item` | village_life.gd (código) | village_life.gd:744 |
+| CEN-237 | Complete order | `village_life._complete_order` | village_life.gd (código) | village_life.gd:774 |
+| CEN-238 | Kiosk serve | `village_life.kiosk_serve` | village_life.gd (código) | village_life.gd:833 |
+| CEN-239 | Helper serve | `village_life.helper_serve` | village_life.gd (código) | village_life.gd:846 |
+| CEN-240 | On slept | `village_life._on_slept` | village_life.gd (código) | village_life.gd:851 |
 | CEN-241 | Make guest | `guests._make_guest` | guests.gd (código) | guests.gd:34 |
 | CEN-242 | Spawn guest | `guests.spawn_guest` | guests.gd (código) | guests.gd:64 |
 | CEN-243 | On areas changed | `guests.on_areas_changed` | guests.gd (código) | guests.gd:77 |
@@ -640,14 +644,14 @@ Total: 2078 itens. MOD 244 · NAT 68 · PRC 31 · CEN 294 · PRT 13 · DSH 9 · 
 | CEN-272 | Save regulars | `village_life._save_regulars` | village_life.gd (código) | village_life.gd:59 |
 | CEN-273 | Pick regular | `village_life._pick_regular` | village_life.gd (código) | village_life.gd:64 |
 | CEN-274 | Setup v1 | `world._setup_v1` | world.gd (código) | world.gd:2222 |
-| CEN-275 | Release spot | `village_life._release_spot` | village_life.gd (código) | village_life.gd:625 |
+| CEN-275 | Release spot | `village_life._release_spot` | village_life.gd (código) | village_life.gd:613 |
 | CEN-276 | Refresh company signs | `world_village._refresh_company_signs` | world_village.gd (código) | world_village.gd:2076 |
-| CEN-277 | Prep position | `village_life._prep_position` | village_life.gd (código) | village_life.gd:883 |
-| CEN-278 | Clear prep visual | `village_life._clear_prep_visual` | village_life.gd (código) | village_life.gd:886 |
-| CEN-279 | Show prep visual | `village_life._show_prep_visual` | village_life.gd (código) | village_life.gd:892 |
-| CEN-280 | Served dishes | `village_life.served_dishes` | village_life.gd (código) | village_life.gd:900 |
-| CEN-281 | Clear served visuals | `village_life.clear_served_visuals` | village_life.gd (código) | village_life.gd:909 |
-| CEN-282 | Show delivered visual | `village_life._show_delivered_visual` | village_life.gd (código) | village_life.gd:923 |
+| CEN-277 | Prep position | `village_life._prep_position` | village_life.gd (código) | village_life.gd:871 |
+| CEN-278 | Clear prep visual | `village_life._clear_prep_visual` | village_life.gd (código) | village_life.gd:874 |
+| CEN-279 | Show prep visual | `village_life._show_prep_visual` | village_life.gd (código) | village_life.gd:880 |
+| CEN-280 | Served dishes | `village_life.served_dishes` | village_life.gd (código) | village_life.gd:888 |
+| CEN-281 | Clear served visuals | `village_life.clear_served_visuals` | village_life.gd (código) | village_life.gd:897 |
+| CEN-282 | Show delivered visual | `village_life._show_delivered_visual` | village_life.gd (código) | village_life.gd:908 |
 | CEN-283 | Apply kiosk look | `world_village._apply_kiosk_look` | world_village.gd (código) | world_village.gd:2083 |
 | CEN-284 | Kiosk facade | `world_village._kiosk_facade` | world_village.gd (código) | world_village.gd:888 |
 | CEN-285 | Customers to order | `village_life.customers_to_order` | village_life.gd (código) | village_life.gd:287 |
@@ -658,7 +662,7 @@ Total: 2078 itens. MOD 244 · NAT 68 · PRC 31 · CEN 294 · PRT 13 · DSH 9 · 
 | CEN-290 | Fit board text | `world._fit_board_text` | world.gd (código) | world.gd:1172 |
 | CEN-291 | Join counter | `village_life._join_counter` | village_life.gd (código) | village_life.gd:392 |
 | CEN-292 | Walk to dining | `village_life._walk_to_dining` | village_life.gd (código) | village_life.gd:418 |
-| CEN-293 | Sit with order | `village_life._sit_with_order` | village_life.gd (código) | village_life.gd:441 |
+| CEN-293 | Sit with order | `village_life._sit_with_order` | village_life.gd (código) | village_life.gd:431 |
 | CEN-294 | Animal | `details._animal` | details.gd (código) | details.gd:376 |
 
 ## PRT — Partes dos personagens (13)
@@ -679,7 +683,7 @@ Total: 2078 itens. MOD 244 · NAT 68 · PRC 31 · CEN 294 · PRT 13 · DSH 9 · 
 | PRT-012 | Outfit female | `clothing/outfit_female.glb` | Quaternius UBC/UAL (CC0) | — |
 | PRT-013 | Outfit male | `clothing/outfit_male.glb` | Quaternius UBC/UAL (CC0) | — |
 
-## DSH — Pratos e bebidas (9)
+## DSH — Pratos e bebidas (11)
 
 | Código | Nome | Chave | Dados |
 |---|---|---|---|
@@ -692,8 +696,10 @@ Total: 2078 itens. MOD 244 · NAT 68 · PRC 31 · CEN 294 · PRT 13 · DSH 9 · 
 | DSH-007 | Açaí na tigela | `acai` | preco=22 |
 | DSH-008 | Batida de coco | `batida` | preco=20 |
 | DSH-009 | Moqueca da casa | `moqueca` | preco=42 |
+| DSH-010 | Sorvete de morango | `sorvete_morango` | preco=12 |
+| DSH-011 | Sorvete de chocolate | `sorvete_chocolate` | preco=14 |
 
-## SUP — Insumos (10)
+## SUP — Insumos (12)
 
 | Código | Nome | Chave | Dados |
 |---|---|---|---|
@@ -707,6 +713,8 @@ Total: 2078 itens. MOD 244 · NAT 68 · PRC 31 · CEN 294 · PRT 13 · DSH 9 · 
 | SUP-008 | Queijo coalho | `queijo` | custo=5 |
 | SUP-009 | Camarão | `camarao` | custo=9 |
 | SUP-010 | Polpa de açaí | `acai` | custo=6 |
+| SUP-011 | Sorvete pronto de morango | `sorvete_morango` | custo=4 |
+| SUP-012 | Sorvete pronto de chocolate | `sorvete_chocolate` | custo=5 |
 
 ## EXP — Expansões (9)
 
@@ -1010,7 +1018,7 @@ Total: 2078 itens. MOD 244 · NAT 68 · PRC 31 · CEN 294 · PRT 13 · DSH 9 · 
 | AUD-007 | Crickets loop | `crickets_loop` | assets/audio | audio.gd:50 |
 | AUD-008 | Dog | `dog` | assets/audio | audio.gd:99, details.gd:374 |
 | AUD-009 | Door | `door` | assets/audio | world_village.gd:304, world_village.gd:462, world_village.gd:704 |
-| AUD-010 | Glass | `glass` | assets/audio | guests.gd:157, village_life.gd:206, village_life.gd:779, world_village.gd:1491 (+1) |
+| AUD-010 | Glass | `glass` | assets/audio | guests.gd:157, village_life.gd:206, village_life.gd:767, world_village.gd:1491 (+1) |
 | AUD-011 | Music bossa | `music_bossa` | assets/audio | — |
 | AUD-012 | Ocean loop | `ocean_loop` | assets/audio | audio.gd:49 |
 | AUD-013 | Seagull1 | `seagull1` | assets/audio | audio.gd:94 |
@@ -1054,36 +1062,36 @@ Total: 2078 itens. MOD 244 · NAT 68 · PRC 31 · CEN 294 · PRT 13 · DSH 9 · 
 | Código | Nome | Chave | Fonte | Usado em |
 |---|---|---|---|---|
 | ICO-001 | Bangalo | `bangalo` | assets/ui/icons | economy.gd:53, economy.gd:67, main.gd:30, main.gd:433 (+9) |
-| ICO-002 | Banho | `banho` | assets/ui/icons | economy.gd:323, economy.gd:57, economy.gd:61, world.gd:851 (+1) |
-| ICO-003 | Bar | `bar` | assets/ui/icons | economy.gd:114, economy.gd:336, economy.gd:48, economy.gd:49 (+25) |
+| ICO-002 | Banho | `banho` | assets/ui/icons | economy.gd:328, economy.gd:57, economy.gd:61, world.gd:851 (+1) |
+| ICO-003 | Bar | `bar` | assets/ui/icons | economy.gd:114, economy.gd:341, economy.gd:48, economy.gd:49 (+25) |
 | ICO-004 | Bartender | `bartender` | assets/ui/icons | economy.gd:110, resort_core.gd:61, resort_core.gd:878, world.gd:1084 |
-| ICO-005 | Cachaca | `cachaca` | assets/ui/icons | economy.gd:180, economy.gd:195, economy.gd:206, economy.gd:213 (+2) |
-| ICO-006 | Caixa | `caixa` | assets/ui/icons | economy.gd:93, guest.gd:1037, hud.gd:243, hud.gd:64 (+21) |
-| ICO-007 | Cama | `cama` | assets/ui/icons | economy.gd:307, phone_ui.gd:24, phone_ui.gd:42, resort_core.gd:102 (+8) |
+| ICO-005 | Cachaca | `cachaca` | assets/ui/icons | economy.gd:182, economy.gd:198, economy.gd:211, economy.gd:218 (+2) |
+| ICO-006 | Caixa | `caixa` | assets/ui/icons | economy.gd:93, guest.gd:1042, hud.gd:243, hud.gd:64 (+21) |
+| ICO-007 | Cama | `cama` | assets/ui/icons | economy.gd:312, phone_ui.gd:24, phone_ui.gd:42, resort_core.gd:102 (+8) |
 | ICO-008 | Camareira | `camareira` | assets/ui/icons | economy.gd:103, resort_core.gd:188, resort_core.gd:189, resort_core.gd:61 |
-| ICO-009 | Clima | `clima` | assets/ui/icons | economy.gd:291, hud.gd:586, phone_ui.gd:32, phone_ui.gd:34 (+3) |
-| ICO-010 | Coco | `coco` | assets/ui/icons | economy.gd:131, economy.gd:178, economy.gd:195, economy.gd:205 (+7) |
-| ICO-011 | Compra | `compra` | assets/ui/icons | economy.gd:340, office_ui.gd:287, office_ui.gd:548, office_ui.gd:554 (+6) |
-| ICO-012 | Decor | `decor` | assets/ui/icons | economy.gd:315, world.gd:815, world.gd:829 |
-| ICO-013 | Diaria | `diaria` | assets/ui/icons | economy.gd:334, guests.gd:188, main.gd:758, main.gd:760 (+3) |
+| ICO-009 | Clima | `clima` | assets/ui/icons | economy.gd:296, hud.gd:586, phone_ui.gd:32, phone_ui.gd:34 (+3) |
+| ICO-010 | Coco | `coco` | assets/ui/icons | economy.gd:131, economy.gd:180, economy.gd:198, economy.gd:210 (+7) |
+| ICO-011 | Compra | `compra` | assets/ui/icons | economy.gd:345, office_ui.gd:287, office_ui.gd:548, office_ui.gd:554 (+6) |
+| ICO-012 | Decor | `decor` | assets/ui/icons | economy.gd:320, world.gd:815, world.gd:829 |
+| ICO-013 | Diaria | `diaria` | assets/ui/icons | economy.gd:339, guests.gd:188, main.gd:758, main.gd:760 (+3) |
 | ICO-014 | Equipe | `equipe` | assets/ui/icons | kiosk_management.gd:107, kiosk_management.gd:34, office_ui.gd:270, office_ui.gd:450 (+16) |
-| ICO-015 | Folha | `folha` | assets/ui/icons | economy.gd:341, office_ui.gd:554, progression.gd:275, progression.gd:603 (+4) |
-| ICO-016 | Frutas | `frutas` | assets/ui/icons | economy.gd:149, economy.gd:179, economy.gd:195, economy.gd:206 (+5) |
-| ICO-017 | Gelo | `gelo` | assets/ui/icons | economy.gd:181, economy.gd:195, economy.gd:205, economy.gd:206 (+7) |
-| ICO-018 | Gorjeta | `gorjeta` | assets/ui/icons | economy.gd:335, guests.gd:287, guests.gd:320, main.gd:758 (+5) |
-| ICO-019 | Insumo | `insumo` | assets/ui/icons | economy.gd:338, kiosk_management.gd:208, main.gd:758, main.gd:764 (+5) |
+| ICO-015 | Folha | `folha` | assets/ui/icons | economy.gd:346, office_ui.gd:554, progression.gd:275, progression.gd:603 (+4) |
+| ICO-016 | Frutas | `frutas` | assets/ui/icons | economy.gd:149, economy.gd:181, economy.gd:198, economy.gd:211 (+5) |
+| ICO-017 | Gelo | `gelo` | assets/ui/icons | economy.gd:183, economy.gd:198, economy.gd:210, economy.gd:211 (+7) |
+| ICO-018 | Gorjeta | `gorjeta` | assets/ui/icons | economy.gd:340, guests.gd:287, guests.gd:320, main.gd:758 (+5) |
+| ICO-019 | Insumo | `insumo` | assets/ui/icons | economy.gd:343, kiosk_management.gd:208, main.gd:758, main.gd:764 (+5) |
 | ICO-020 | Insumos | `insumos` | assets/ui/icons | main.gd:508, office_ui.gd:266, office_ui.gd:326, office_ui.gd:67 (+2) |
-| ICO-021 | Missao | `missao` | assets/ui/icons | economy.gd:342, office_ui.gd:478, office_ui.gd:491, phone_ui.gd:45 (+10) |
-| ICO-022 | Multa | `multa` | assets/ui/icons | economy.gd:343, main.gd:314, office_ui.gd:554 |
+| ICO-021 | Missao | `missao` | assets/ui/icons | economy.gd:347, office_ui.gd:478, office_ui.gd:491, phone_ui.gd:45 (+10) |
+| ICO-022 | Multa | `multa` | assets/ui/icons | economy.gd:348, main.gd:314, office_ui.gd:554 |
 | ICO-023 | Novo | `novo` | assets/ui/icons | economy.gd:41, office_ui.gd:440 |
-| ICO-024 | Outro | `outro` | assets/ui/icons | economy.gd:346, office_ui.gd:291, office_ui.gd:319, office_ui.gd:574 (+3) |
-| ICO-025 | Pao | `pao` | assets/ui/icons | economy.gd:143, economy.gd:183, economy.gd:195, economy.gd:207 (+3) |
-| ICO-026 | Peixe | `peixe` | assets/ui/icons | economy.gd:137, economy.gd:182, economy.gd:195, economy.gd:207 (+6) |
+| ICO-024 | Outro | `outro` | assets/ui/icons | economy.gd:351, office_ui.gd:291, office_ui.gd:319, office_ui.gd:574 (+3) |
+| ICO-025 | Pao | `pao` | assets/ui/icons | economy.gd:143, economy.gd:185, economy.gd:198, economy.gd:212 (+3) |
+| ICO-026 | Peixe | `peixe` | assets/ui/icons | economy.gd:137, economy.gd:184, economy.gd:198, economy.gd:212 (+6) |
 | ICO-027 | Prato | `prato` | assets/ui/icons | office_ui.gd:354, office_ui.gd:360, phone_ui.gd:26, phone_ui.gd:38 (+1) |
-| ICO-028 | Quiosque | `quiosque` | assets/ui/icons | economy.gd:33, economy.gd:337, main.gd:447, main.gd:497 (+10) |
+| ICO-028 | Quiosque | `quiosque` | assets/ui/icons | economy.gd:33, economy.gd:342, main.gd:447, main.gd:497 (+10) |
 | ICO-029 | Redes | `redes` | assets/ui/icons | office_ui.gd:428, office_ui.gd:581, resort_core.gd:1030 |
-| ICO-030 | Roupa | `roupa` | assets/ui/icons | economy.gd:299, world.gd:802, world.gd:807 |
-| ICO-031 | Upgrade | `upgrade` | assets/ui/icons | economy.gd:339, kiosk_management.gd:259, kiosk_management.gd:263, kiosk_management.gd:267 (+16) |
+| ICO-030 | Roupa | `roupa` | assets/ui/icons | economy.gd:304, world.gd:802, world.gd:807 |
+| ICO-031 | Upgrade | `upgrade` | assets/ui/icons | economy.gd:344, kiosk_management.gd:259, kiosk_management.gd:263, kiosk_management.gd:267 (+16) |
 | ICO-032 | Cooking pot | `cooking-pot` | assets/ui/icons | phone_ui.gd:51 |
 | ICO-033 | Laurel crown | `laurel-crown` | assets/ui/icons | phone_ui.gd:48, phone_ui.gd:904 |
 | ICO-034 | Shop | `shop` | assets/ui/icons | hud.gd:478, hud.gd:503, hud.gd:576, main.gd:289 (+10) |
@@ -1102,7 +1110,7 @@ Total: 2078 itens. MOD 244 · NAT 68 · PRC 31 · CEN 294 · PRT 13 · DSH 9 · 
 |---|---|---|---|---|
 | SHD-001 | Foliage | `foliage` | shaders | world.gd:1550, world.gd:1566 |
 | SHD-002 | Ground | `ground` | shaders | world.gd:156 |
-| SHD-003 | Guest | `guest` | shaders | guest.gd:70 |
+| SHD-003 | Guest | `guest` | shaders | guest.gd:72 |
 | SHD-004 | Mountain | `mountain` | shaders | world.gd:1669 |
 | SHD-005 | Ocean | `ocean` | shaders | world.gd:185 |
 | SHD-006 | Ocean hd | `ocean_hd` | shaders | world.gd:185 |
@@ -1114,7 +1122,7 @@ Total: 2078 itens. MOD 244 · NAT 68 · PRC 31 · CEN 294 · PRT 13 · DSH 9 · 
 | SHD-012 | Tree card | `tree_card` | shaders | world.gd:1830 |
 | SHD-013 | Light beam | `light_beam` | shaders | details.gd:459 |
 | SHD-014 | Underwater | `underwater` | shaders | underwater.gd:16 |
-| SHD-015 | Npc eyes | `npc_eyes` | shaders | guest.gd:869 |
+| SHD-015 | Npc eyes | `npc_eyes` | shaders | guest.gd:872 |
 | SHD-016 | Home tv | `home_tv` | shaders | home_furnishings.gd:40 |
 | SHD-017 | Coastal wake | `coastal_wake` | shaders | coastal_life.gd:58 |
 | SHD-018 | Sky clouds | `sky_clouds` | shaders | whale_wildlife.gd:46 |
@@ -1127,19 +1135,19 @@ Total: 2078 itens. MOD 244 · NAT 68 · PRC 31 · CEN 294 · PRT 13 · DSH 9 · 
 | ANI-001 | A tpose | `A_TPose` | UAL (Quaternius CC0) | — |
 | ANI-002 | Crouch fwd loop | `Crouch_Fwd_Loop` | UAL (Quaternius CC0) | — |
 | ANI-003 | Crouch idle loop | `Crouch_Idle_Loop` | UAL (Quaternius CC0) | — |
-| ANI-004 | Dance loop | `Dance_Loop` | UAL (Quaternius CC0) | event_fx.gd:254, guest.gd:136, guest.gd:187 |
+| ANI-004 | Dance loop | `Dance_Loop` | UAL (Quaternius CC0) | event_fx.gd:254, guest.gd:138, guest.gd:190 |
 | ANI-005 | Death01 | `Death01` | UAL (Quaternius CC0) | — |
 | ANI-006 | Driving loop | `Driving_Loop` | UAL (Quaternius CC0) | — |
 | ANI-007 | Fixing kneeling | `Fixing_Kneeling` | UAL (Quaternius CC0) | — |
 | ANI-008 | Hit chest | `Hit_Chest` | UAL (Quaternius CC0) | — |
 | ANI-009 | Hit head | `Hit_Head` | UAL (Quaternius CC0) | — |
-| ANI-010 | Idle loop | `Idle_Loop` | UAL (Quaternius CC0) | coastal_life.gd:31, event_fx.gd:301, event_fx.gd:327, guest.gd:120 (+18) |
-| ANI-011 | Idle talking loop | `Idle_Talking_Loop` | UAL (Quaternius CC0) | event_fx.gd:275, event_fx.gd:327, event_fx.gd:371, guest.gd:122 (+14) |
+| ANI-010 | Idle loop | `Idle_Loop` | UAL (Quaternius CC0) | coastal_life.gd:31, event_fx.gd:301, event_fx.gd:327, guest.gd:122 (+18) |
+| ANI-011 | Idle talking loop | `Idle_Talking_Loop` | UAL (Quaternius CC0) | event_fx.gd:275, event_fx.gd:327, event_fx.gd:371, guest.gd:124 (+14) |
 | ANI-012 | Idle torch loop | `Idle_Torch_Loop` | UAL (Quaternius CC0) | — |
-| ANI-013 | Interact | `Interact` | UAL (Quaternius CC0) | event_fx.gd:301, guest.gd:142, guest.gd:186, i18n.gd:49 |
-| ANI-014 | Jog fwd loop | `Jog_Fwd_Loop` | UAL (Quaternius CC0) | guest.gd:126, guest.gd:184, hotel_world.gd:255, hotel_world.gd:257 |
+| ANI-013 | Interact | `Interact` | UAL (Quaternius CC0) | event_fx.gd:301, guest.gd:144, guest.gd:189, i18n.gd:49 |
+| ANI-014 | Jog fwd loop | `Jog_Fwd_Loop` | UAL (Quaternius CC0) | guest.gd:128, guest.gd:187, hotel_world.gd:255, hotel_world.gd:257 |
 | ANI-015 | Jump land | `Jump_Land` | UAL (Quaternius CC0) | — |
-| ANI-016 | Jump loop | `Jump_Loop` | UAL (Quaternius CC0) | event_fx.gd:270, guest.gd:138, guest.gd:187 |
+| ANI-016 | Jump loop | `Jump_Loop` | UAL (Quaternius CC0) | event_fx.gd:270, guest.gd:140, guest.gd:190 |
 | ANI-017 | Jump start | `Jump_Start` | UAL (Quaternius CC0) | — |
 | ANI-018 | Pick up table | `PickUp_Table` | UAL (Quaternius CC0) | — |
 | ANI-019 | Pistol aim down | `Pistol_Aim_Down` | UAL (Quaternius CC0) | — |
@@ -1154,21 +1162,21 @@ Total: 2078 itens. MOD 244 · NAT 68 · PRC 31 · CEN 294 · PRT 13 · DSH 9 · 
 | ANI-028 | Roll | `Roll` | UAL (Quaternius CC0) | — |
 | ANI-029 | Sitting enter | `Sitting_Enter` | UAL (Quaternius CC0) | — |
 | ANI-030 | Sitting exit | `Sitting_Exit` | UAL (Quaternius CC0) | — |
-| ANI-031 | Sitting idle loop | `Sitting_Idle_Loop` | UAL (Quaternius CC0) | guest.gd:128, guest.gd:185, hotel_world.gd:248, main.gd:333 (+11) |
-| ANI-032 | Sitting talking loop | `Sitting_Talking_Loop` | UAL (Quaternius CC0) | guest.gd:130, guest.gd:185, hotel_world.gd:260, village_life.gd:534 (+1) |
+| ANI-031 | Sitting idle loop | `Sitting_Idle_Loop` | UAL (Quaternius CC0) | guest.gd:130, guest.gd:188, hotel_world.gd:248, main.gd:333 (+11) |
+| ANI-032 | Sitting talking loop | `Sitting_Talking_Loop` | UAL (Quaternius CC0) | guest.gd:132, guest.gd:188, hotel_world.gd:260, village_life.gd:522 (+1) |
 | ANI-033 | Spell simple enter | `Spell_Simple_Enter` | UAL (Quaternius CC0) | — |
 | ANI-034 | Spell simple exit | `Spell_Simple_Exit` | UAL (Quaternius CC0) | — |
 | ANI-035 | Spell simple idle loop | `Spell_Simple_Idle_Loop` | UAL (Quaternius CC0) | — |
 | ANI-036 | Spell simple shoot | `Spell_Simple_Shoot` | UAL (Quaternius CC0) | — |
-| ANI-037 | Sprint loop | `Sprint_Loop` | UAL (Quaternius CC0) | guest.gd:140, guest.gd:187 |
-| ANI-038 | Swim fwd loop | `Swim_Fwd_Loop` | UAL (Quaternius CC0) | guest.gd:132, guest.gd:186 |
-| ANI-039 | Swim idle loop | `Swim_Idle_Loop` | UAL (Quaternius CC0) | guest.gd:134, guest.gd:186, hotel_world.gd:252, world.gd:384 |
+| ANI-037 | Sprint loop | `Sprint_Loop` | UAL (Quaternius CC0) | guest.gd:142, guest.gd:190 |
+| ANI-038 | Swim fwd loop | `Swim_Fwd_Loop` | UAL (Quaternius CC0) | guest.gd:134, guest.gd:189 |
+| ANI-039 | Swim idle loop | `Swim_Idle_Loop` | UAL (Quaternius CC0) | guest.gd:136, guest.gd:189, hotel_world.gd:252, world.gd:384 |
 | ANI-040 | Sword attack | `Sword_Attack` | UAL (Quaternius CC0) | — |
 | ANI-041 | Sword idle | `Sword_Idle` | UAL (Quaternius CC0) | — |
-| ANI-042 | Walk formal loop | `Walk_Formal_Loop` | UAL (Quaternius CC0) | guest.gd:124 |
-| ANI-043 | Walk loop | `Walk_Loop` | UAL (Quaternius CC0) | event_fx.gd:261, guest.gd:124, guest.gd:184, main.gd:373 (+1) |
+| ANI-042 | Walk formal loop | `Walk_Formal_Loop` | UAL (Quaternius CC0) | guest.gd:126 |
+| ANI-043 | Walk loop | `Walk_Loop` | UAL (Quaternius CC0) | event_fx.gd:261, guest.gd:126, guest.gd:187, main.gd:373 (+1) |
 
-## PCA — Peças construídas por código (uma linha = uma peça; ver coluna Função) (895)
+## PCA — Peças construídas por código (uma linha = uma peça; ver coluna Função) (896)
 
 | Código | Peça | Função | Chamada | Material | Linha | Obs |
 |---|---|---|---|---|---|---|
@@ -1276,6 +1284,7 @@ Total: 2078 itens. MOD 244 · NAT 68 · PRC 31 · CEN 294 · PRT 13 · DSH 9 · 
 | PCA-1009 | box darkwood | `_refresh_kiosk_board` | `B.box` | darkwood | world_village.gd:981 |  [em laço] |
 | PCA-101 | vintage suitcase | `_bungalow` | `Real.place` | — | world.gd:645 |  |
 | PCA-1010 | potted plant 04 | `_village_expansion` | `Real.place` | — | world_village.gd:1757 |  [em laço] |
+| PCA-1011 | g:service carry tray | `hold_order` | `Real.place` | — | guest.gd:1080 |  |
 | PCA-102 | alarm clock 01 | `_bungalow` | `Real.place` | — | world.gd:646 |  |
 | PCA-103 | box linen sand | `_bungalow` | `B.box` | linen_sand | world.gd:658 |  |
 | PCA-104 | g:towel | `_bungalow` | `Real.place` | — | world.gd:662 |  [em laço] |
@@ -1961,10 +1970,10 @@ Total: 2078 itens. MOD 244 · NAT 68 · PRC 31 · CEN 294 · PRT 13 · DSH 9 · 
 | PCA-873 | cyl | `island_tree` | `B.cyl` | — | props.gd:418 |  |
 | PCA-874 | sphere | `island_tree` | `B.sphere` | — | props.gd:422 |  [em laço] |
 | PCA-875 | new | `spawn` | `MeshInstance3D.new` | — | palm.gd:191 |  |
-| PCA-881 | Camera 01 | `_caricature` | `Real.place` | — | guest.gd:939 |  |
-| PCA-888 | box | `show_menu` | `B.box` | — | guest.gd:978 |  |
-| PCA-889 | box | `show_menu` | `B.box` | — | guest.gd:979 |  |
-| PCA-890 | box | `show_menu` | `B.box` | — | guest.gd:981 |  [em laço] |
+| PCA-881 | Camera 01 | `_caricature` | `Real.place` | — | guest.gd:942 |  |
+| PCA-888 | box | `show_menu` | `B.box` | — | guest.gd:981 |  |
+| PCA-889 | box | `show_menu` | `B.box` | — | guest.gd:982 |  |
+| PCA-890 | box | `show_menu` | `B.box` | — | guest.gd:984 |  [em laço] |
 | PCA-891 | place | `_run_shot` | `Real.place` | — | main.gd:421 |  [em laço] |
 | PCA-892 | label | `spawn_customer` | `B.label` | — | village_life.gd:335 |  |
 | PCA-893 | build | `_bungalow` | `P.build` | — | world.gd:638 |  |
@@ -2059,8 +2068,8 @@ Total: 2078 itens. MOD 244 · NAT 68 · PRC 31 · CEN 294 · PRT 13 · DSH 9 · 
 | PCA-985 | g:bamboo pole | `_map_details` | `Real.place` | — | world_village.gd:2061 |  [em laço] |
 | PCA-986 | g:cloth shirt | `_map_details` | `Real.place` | — | world_village.gd:2067 |  [em laço] |
 | PCA-987 | label | `spawn_customer` | `B.label` | — | village_life.gd:362 |  |
-| PCA-988 | g:cup plastic | `_make_cup` | `Real.place` | — | guest.gd:245 |  |
-| PCA-989 | g:coxinha | `_make_food` | `Real.place` | — | guest.gd:252 |  |
+| PCA-988 | g:cup plastic | `_make_cup` | `Real.place` | — | guest.gd:248 |  |
+| PCA-989 | g:coxinha | `_make_food` | `Real.place` | — | guest.gd:255 |  |
 | PCA-990 | carved wooden plate | `_quiosque` | `Real.place` | — | world_village.gd:802 |  |
 | PCA-993 | label | `_quiosque` | `B.label` | — | world_village.gd:827 |  |
 | PCA-995 | box | `_village_expansion` | `B.box` | — | world_village.gd:1760 |  |

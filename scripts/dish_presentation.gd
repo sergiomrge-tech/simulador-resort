@@ -1,6 +1,8 @@
 extends RefCounted
 ## Um ID do cardápio = uma apresentação própria; nenhuma primitiva genérica.
 const RECIPES = {
+	"sorvete_morango": {"model":"g:icecream_strawberry", "height":.15, "drink":false,"handheld":true,"chilled":true},
+	"sorvete_chocolate": {"model":"g:icecream_chocolate", "height":.15, "drink":false,"handheld":true,"chilled":true},
 	"coco_gelado": {"model": "g:coconut_open", "height": 0.29, "drink": true},
 	"suco": {"model": "g:glass_juice", "height": 0.26, "drink": true},
 	"caipirinha": {"model": "g:cocktail", "height": 0.27, "drink": true},
@@ -15,16 +17,21 @@ const RECIPES = {
 static func is_drink(id: String) -> bool:
 	return bool(RECIPES.get(id, {}).get("drink", false))
 
+static func is_chilled(id: String) -> bool:
+	return is_drink(id) or bool(RECIPES.get(id,{}).get("chilled",false))
+static func is_handheld(id: String) -> bool:
+	return is_drink(id) or bool(RECIPES.get(id,{}).get("handheld",false))
+
 static func build_used(parent: Node3D, id: String) -> Node3D:
 	var root:=Node3D.new()
 	root.name="Used_"+id
 	root.set_meta("dish_id",id)
 	root.set_meta("used",true)
 	parent.add_child(root)
-	var containers: Dictionary={"suco":"g:used_glass_juice","coco_gelado":"g:coconut_open","caipirinha":"g:used_cocktail","batida":"g:used_dish_batida"}
+	var containers: Dictionary={"suco":"g:used_glass_juice","coco_gelado":"g:coconut_open","caipirinha":"g:used_cocktail","batida":"g:used_dish_batida","sorvete_morango":"g:used_icecream_cup","sorvete_chocolate":"g:used_icecream_cup"}
 	if containers.has(id):
 		root.set_meta("container",str(containers[id]))
-		Real.place(root,str(containers[id]),Vector3.ZERO,float(RECIPES[id].height)*(.63865543 if id=="caipirinha" else 1.0))
+		Real.place(root,str(containers[id]),Vector3.ZERO,(.095 if id.begins_with("sorvete_") else float(RECIPES[id].height)*(.63865543 if id=="caipirinha" else 1.0)))
 	else:
 		var deep: bool=bool(RECIPES.get(id,{}).get("deep",false))
 		var container: String="g:table_bowl" if deep else "g:table_plate"
@@ -42,7 +49,7 @@ static func build(parent: Node3D, id: String) -> Node3D:
 	root.name = "Dish_" + id
 	root.set_meta("dish_id", id)
 	parent.add_child(root)
-	if is_drink(id):
+	if is_handheld(id):
 		Real.place(root, str(spec.model), Vector3.ZERO, float(spec.height))
 	else:
 		var deep: bool = bool(spec.deep)

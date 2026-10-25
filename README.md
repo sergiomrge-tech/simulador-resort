@@ -5,8 +5,8 @@ feito em **Godot 4.5.1**, GDScript, Forward+, para Windows.
 
 Linha atual: **1.1.0 RC2**, branch **`codex/resort-1.1-mcp`**.
 
-**Atualização de 24/10/2026:** otimizações de desempenho para RTX 4060 Ti e um atendente para todo o quiosque; inclui as revisões anteriores.
-[Download para Windows — desempenho e atendente único](https://github.com/sergiomrge-tech/simulador-resort/releases/tag/v1.1.0-rc2.20261024-performance-atendente).
+**Atualização de 24/10/2026:** produtos presos às mãos animadas e sorvetes na geladeira, com otimizações de desempenho e atendente único; inclui as revisões anteriores.
+[Download para Windows — produtos nas mãos e sorvetes](https://github.com/sergiomrge-tech/simulador-resort/releases/tag/v1.1.0-rc2.20261024-maos-sorvetes).
 Extraia o ZIP inteiro e abra Jogar.vbs. Preserve userdata ao atualizar.
 
 ## Vai continuar o projeto com outra IA?
