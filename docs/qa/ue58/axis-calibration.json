@@ -1,0 +1,7 @@
+[
+  {
+    "path": "/Game/Migration/Calibration/Calibration/StaticMeshes/Calibration.Calibration",
+    "center": "<Struct 'Vector' (0x00000239BE8D6640) {x: 100.000000, y: 300.000000, z: 200.000000}>",
+    "extent": "<Struct 'Vector' (0x00000239BE8D6658) {x: 50.000000, y: 50.000000, z: 50.000000}>"
+  }
+]

@@ -1,0 +1,273 @@
+{
+	"album": [],
+	"bar": 0.0,
+	"company": {
+		"carry": "",
+		"color": "creme",
+		"created": false,
+		"dirty_items": {
+
+		},
+		"dirty_seats": [],
+		"font": "praia",
+		"kiosk_open": false,
+		"name": "Maré Alta",
+		"opening_version": 1.0,
+		"physical": true,
+		"production": {
+
+		},
+		"ready": {
+
+		},
+		"receivables": [],
+		"sim": {
+			"auto_due": false,
+			"auto_order": false,
+			"custom_hours": false,
+			"day": 0.0,
+			"days": [
+				0.0,
+				1.0,
+				2.0,
+				3.0,
+				4.0,
+				5.0,
+				6.0
+			],
+			"end": 18.0,
+			"history": [],
+			"management": {
+				"aged": [],
+				"checks": [],
+				"closed_day": -1.0,
+				"closing": {
+
+				},
+				"counter": 100.0,
+				"day": 0.0,
+				"delivery_log": [],
+				"equipment": {
+					"blender": {
+						"condition": 100.0,
+						"hygiene": 100.0,
+						"level": 1.0
+					},
+					"fridge": {
+						"condition": 100.0,
+						"hygiene": 100.0,
+						"level": 1.0
+					},
+					"grill": {
+						"condition": 100.0,
+						"hygiene": 100.0,
+						"level": 1.0
+					}
+				},
+				"look": {
+					"board": "madeira",
+					"layout": "original",
+					"menu": true,
+					"paint": "mar",
+					"uniform": "mar"
+				},
+				"look_owned": false,
+				"next_order": 1.0,
+				"orders": [],
+				"profiles": {
+
+				},
+				"store": {
+
+				},
+				"strict": false,
+				"task": {
+
+				},
+				"worked": {
+
+				}
+			},
+			"shifts": {
+
+			},
+			"staff_day": -1.0,
+			"start": 8.0,
+			"target": 6.0,
+			"today": {
+				"cash_in": 0.0,
+				"investment": 0.0,
+				"open_minutes": 0.0,
+				"overhead": 0.0,
+				"payroll": 0.0,
+				"stockouts": 0.0,
+				"supplies": 0.0,
+				"waste": 0.0
+			},
+			"wage_day": -1.0
+		},
+		"staff_carry": ""
+	},
+	"contracts": {
+
+	},
+	"day": 1.0,
+	"day_in": 0.0,
+	"day_out": 0.0,
+	"event": "",
+	"forecast": "",
+	"forecast_set": false,
+	"freezer": false,
+	"kiosk": 0.0,
+	"kiosk_n": 0.0,
+	"ledger": [],
+	"minutes": 390.0,
+	"money": 150.0,
+	"prep_active": false,
+	"prep_paid": false,
+	"prog": {
+		"biz": {
+
+		},
+		"campaign": {
+			"fish": 0.0,
+			"icecream": 0.0,
+			"side_done": [],
+			"stage": 0.0
+		},
+		"ch": {
+
+		},
+		"chp": {
+
+		},
+		"disc": {
+
+		},
+		"experience": {
+			"decor": {
+
+			},
+			"greeted": {
+
+			}
+		},
+		"fame_xp": 0.0,
+		"goals": [
+			{
+				"done": false,
+				"float": true,
+				"kind": "rating",
+				"money": false,
+				"reward": 160.0,
+				"target": 4.2,
+				"text": "Terminar a semana com ★ %.1f ou mais"
+			},
+			{
+				"done": false,
+				"float": false,
+				"kind": "vip",
+				"money": false,
+				"reward": 130.0,
+				"target": 1.0,
+				"text": "Receber %d cliente(s) VIP"
+			},
+			{
+				"done": false,
+				"float": false,
+				"kind": "dish",
+				"money": false,
+				"reward": 110.0,
+				"target": 8.0,
+				"text": "Vender %d petiscos ou pratos da cozinha"
+			}
+		],
+		"hotel": {
+
+		},
+		"medals": [],
+		"off": {
+
+		},
+		"prem": {
+
+		},
+		"sstats": {
+			"earn": 0.0
+		},
+		"staff": {
+
+		},
+		"tree": {
+
+		},
+		"wstats": {
+			"biz": 0.0,
+			"dish": 0.0,
+			"earn": 0.0,
+			"photo": 0.0,
+			"serve": 0.0,
+			"tour": 0.0,
+			"vip": 0.0
+		}
+	},
+	"ptier": {
+
+	},
+	"quests": {
+
+	},
+	"ratings": [
+		3.0,
+		3.0,
+		3.0
+	],
+	"redes": 0.0,
+	"rooms": [],
+	"saved_at": "2026-10-27 06:57:21",
+	"served": 0.0,
+	"smult": {
+
+	},
+	"staff": {
+		"atendente": false,
+		"bartender": false,
+		"caixa": false,
+		"camareira": false,
+		"cozinheiro": false,
+		"garcom": false,
+		"guia": false,
+		"limpeza": false
+	},
+	"stock": {
+		"acai": 0.0,
+		"batata_pronta": 6.0,
+		"cachaca": 0.0,
+		"camarao": 0.0,
+		"coco": 12.0,
+		"frutas": 12.0,
+		"gelo": 18.0,
+		"pao": 0.0,
+		"peixe": 0.0,
+		"peixe_pronto": 6.0,
+		"queijo": 0.0,
+		"sorvete_chocolate": 6.0,
+		"sorvete_morango": 6.0,
+		"tapioca": 0.0
+	},
+	"stockouts": 0.0,
+	"summary": {
+
+	},
+	"tours_done": {
+
+	},
+	"tours_n": 0.0,
+	"tours_rev": 0.0,
+	"tut": 0.0,
+	"unlocked": {
+
+	},
+	"v": 7.0,
+	"weather": "sun"
+}

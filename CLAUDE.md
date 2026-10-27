@@ -323,3 +323,16 @@ A sobreposição vista no cliente era lounger decorativo x33 sobre cadeira real;
 afastar BeachSet e conferir a pessoa sentada com copo por imagem.
 
 Rotinas temporárias usam dia*1440+minutos; comparar só horário fazia descanso continuar até a tarde seguinte depois de dormir. Ao expirar, restaurar abordagem apenas se ainda estiver a menos de1,5m do banco; não teleportar de volta quem já foi para casa.
+
+## UE5.8 nativa / MCP
+
+UE5.8 usa FJsonObject com chaves UE::FSharedString: passe FString(Pair.Key.ToView())
+ou FStringView, sem habilitar macros legadas para mascarar incompatibilidades.
+UGameInstanceSubsystem deve ser criado com UGameInstance como Outer, inclusive em
+AutomationTests. IFileManager::Move retorna bool, não código COPY_OK.
+Actor não expõe add_component_by_class no Python desta engine; usar o helper
+ActorTools.add_component baseado no SubobjectDataSubsystem. EditorActorSubsystem
+ou LevelEditorSubsystem.get_world pode retornarNone; obtenha o mundo pelo editor.
+MCP5.8 CaptureViewport exige parâmetros explícitos captureTransform/annotations
+apesar de o schema não os listar como obrigatórios. Plugin MCP somente no editor.
+Calibração real GLTF: Godot(x,y,z)m → UE(x,z,y)*100cm.

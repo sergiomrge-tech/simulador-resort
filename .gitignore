@@ -48,3 +48,16 @@ export_presets.cfg.bak
 assets/models/qnat/
 
 !patches/*.exe
+
+# Unreal: generated output stays out of Git
+unreal/**/Binaries/
+unreal/**/Intermediate/
+unreal/**/Saved/
+unreal/**/DerivedDataCache/
+unreal/**/*.sln
+unreal/**/*.VC.db
+unreal/**/.vs/
+# Export bruto e saídas temporárias; Models/Textures são fontes portáveis.
+unreal/**/SourceArt/World/
+**/__pycache__/
+unreal/**/*.pyc

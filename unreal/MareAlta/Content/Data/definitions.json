@@ -1,0 +1,765 @@
+{
+	"art_direction": "realista estilizado, sem toon/contornos",
+	"businesses": {
+		"aluguel": {
+			"blurb": "Fecha com mar bravo. Rende mais com ondas boas (maré alta).",
+			"chapter": "pier",
+			"cost": 1400,
+			"fame": 3,
+			"game": "Encerar a prancha",
+			"hour": 22,
+			"name": "Aluguel de pranchas e caiaques",
+			"open": [
+				8.0,
+				17.0
+			],
+			"pos": [
+				67.3000030517578,
+				0.0,
+				-20.0
+			],
+			"rot": 0.0,
+			"tint": [
+				0.300000011920929,
+				0.699999988079071,
+				0.949999988079071,
+				1.0
+			],
+			"wage": 45
+		},
+		"food_truck": {
+			"blurb": "Na rua principal. Funciona até tarde e bomba nas festas.",
+			"chapter": "sabores",
+			"cost": 1800,
+			"fame": 4,
+			"game": "Fritar o pastel",
+			"hour": 26,
+			"name": "Food truck do Pastel",
+			"open": [
+				11.0,
+				23.0
+			],
+			"pos": [
+				27.0,
+				0.0450000017881393,
+				30.8500003814697
+			],
+			"rot": 0.0,
+			"tint": [
+				0.949999988079071,
+				0.349999994039536,
+				0.25,
+				1.0
+			],
+			"wage": 50
+		},
+		"sorveteria": {
+			"blurb": "Vende muito no calor; quase nada na chuva e no inverno.",
+			"chapter": "",
+			"cost": 900,
+			"fame": 2,
+			"game": "Montar a casquinha",
+			"hour": 18,
+			"name": "Sorveteria Gelato da Maré",
+			"open": [
+				9.0,
+				19.0
+			],
+			"pos": [
+				47.5,
+				0.0,
+				-18.5
+			],
+			"rot": 0.4,
+			"tint": [
+				1.0,
+				0.550000011920929,
+				0.699999988079071,
+				1.0
+			],
+			"wage": 40
+		},
+		"souvenir": {
+			"blurb": "Na praça. Quanto mais fama, mais turista compra lembrancinha.",
+			"chapter": "carnaval",
+			"cost": 1600,
+			"fame": 5,
+			"game": "Embrulhar o presente",
+			"hour": 20,
+			"name": "Lojinha de souvenires",
+			"open": [
+				9.0,
+				20.0
+			],
+			"pos": [
+				82.8000030517578,
+				0.100000001490116,
+				40.5
+			],
+			"rot": -1.5707963267949,
+			"tint": [
+				0.550000011920929,
+				0.850000023841858,
+				0.449999988079071,
+				1.0
+			],
+			"wage": 40
+		},
+		"surfe": {
+			"blurb": "Fica na Prainha do Oeste. Turistas e famílias adoram.",
+			"chapter": "prainha",
+			"cost": 2200,
+			"fame": 4,
+			"game": "Aula na areia",
+			"hour": 32,
+			"name": "Escolinha de surfe",
+			"open": [
+				7.0,
+				16.0
+			],
+			"pos": [
+				-46.0,
+				0.0,
+				-21.0
+			],
+			"rot": 0.2,
+			"tint": [
+				1.0,
+				0.75,
+				0.25,
+				1.0
+			],
+			"wage": 55
+		}
+	},
+	"campaign": [
+		{
+			"id": "chegada",
+			"kind": "company",
+			"qty": 1,
+			"reward": 40,
+			"story": "Dona Rita confia a você o antigo quiosque. Dê um nome a ele e comece sua história.",
+			"task": "Criar sua empresa no celular",
+			"title": "Uma nova maré"
+		},
+		{
+			"id": "portas",
+			"kind": "open",
+			"qty": 1,
+			"reward": 30,
+			"story": "O primeiro expediente começa com uma decisão sua: abrir o quiosque para a praia.",
+			"task": "Abrir o quiosque no celular",
+			"title": "Portas abertas"
+		},
+		{
+			"id": "primeiros",
+			"kind": "sales",
+			"qty": 8,
+			"reward": 100,
+			"story": "Conquiste os primeiros fregueses: anote, retire pronto e entregue no balcão.",
+			"task": "Vender 8 produtos no quiosque",
+			"title": "O sabor da primeira manhã"
+		},
+		{
+			"id": "mesas",
+			"item": "kiosk_tables",
+			"kind": "expansion",
+			"qty": 1,
+			"reward": 80,
+			"story": "Transforme uma parada rápida em um ponto de encontro da comunidade.",
+			"task": "Comprar Mesas e guarda-sóis",
+			"title": "Um lugar para ficar"
+		},
+		{
+			"id": "equipe",
+			"kind": "staff",
+			"qty": 1,
+			"reward": 80,
+			"story": "Uma pessoa de confiança pode cuidar de todo o atendimento enquanto você explora a vila.",
+			"task": "Contratar o atendente único",
+			"title": "Uma parceria de verdade"
+		},
+		{
+			"id": "comunidade",
+			"item": "pier",
+			"kind": "chapter",
+			"qty": 1,
+			"reward": 150,
+			"story": "Seu Zé precisa de ajuda para o píer. Conclua os três passos da história dele.",
+			"task": "Concluir O píer do Seu Zé em Histórias da vila",
+			"title": "O quiosque e o mar"
+		},
+		{
+			"id": "encontro",
+			"item": "bar",
+			"kind": "expansion",
+			"qty": 1,
+			"reward": 200,
+			"story": "A vila já conhece seu trabalho. Amplie o negócio com o Bar do Coqueiro.",
+			"task": "Comprar o Bar do Coqueiro",
+			"title": "O encontro dos viajantes"
+		},
+		{
+			"id": "hospedar",
+			"item": "pousada",
+			"kind": "expansion",
+			"qty": 1,
+			"reward": 300,
+			"story": "Os visitantes querem conhecer a vila com calma. Receba-os na sua pousada.",
+			"task": "Abrir a pousada",
+			"title": "Fique mais um dia"
+		},
+		{
+			"id": "verao",
+			"item": "pool",
+			"kind": "expansion",
+			"qty": 1,
+			"reward": 400,
+			"story": "Ofereça descanso aos hóspedes e dê mais um motivo para voltar.",
+			"task": "Construir a piscina",
+			"title": "Um verão inesquecível"
+		},
+		{
+			"id": "marealta",
+			"item": "grand_hotel",
+			"kind": "expansion",
+			"qty": 1,
+			"reward": 1000,
+			"story": "Do primeiro coco ao resort: faça da vila um destino sem perder sua identidade.",
+			"task": "Construir o Grand Hotel Maré Alta",
+			"title": "A Maré Alta da vila"
+		}
+	],
+	"chapters": [
+		{
+			"giver": "Seu Zé",
+			"id": "pier",
+			"reward": 200,
+			"steps": [
+				{
+					"item": "peixe",
+					"kind": "deliver",
+					"qty": 4,
+					"text": "Levar 4 peixes para o almoço dos pescadores"
+				},
+				{
+					"kind": "serve",
+					"qty": 15,
+					"text": "Atender 15 clientes (o povo precisa conhecer o quiosque)"
+				},
+				{
+					"kind": "pay",
+					"qty": 150,
+					"text": "Doar R$ 150 para as tábuas novas"
+				}
+			],
+			"story": "O píer está caindo aos pedaços. Seu Zé quer reformá-lo para os barcos e para alugar pranchas.",
+			"title": "O píer do Seu Zé",
+			"unlock": "Aluguel de pranchas e caiaques no píer"
+		},
+		{
+			"giver": "Padre Tomé",
+			"id": "prainha",
+			"reward": 300,
+			"steps": [
+				{
+					"kind": "fame",
+					"qty": 3,
+					"text": "Chegar à fama \"Ponto da praia\""
+				},
+				{
+					"item": "farol",
+					"kind": "photo",
+					"text": "Fotografar o farol (tecla P)"
+				},
+				{
+					"item": "coco",
+					"kind": "deliver",
+					"qty": 6,
+					"text": "Levar 6 cocos para o mutirão"
+				}
+			],
+			"story": "Depois das pedras existe uma prainha esquecida. Padre Tomé quer reabrir a trilha para a comunidade.",
+			"title": "A Prainha do Oeste",
+			"unlock": "Prainha do Oeste aberta + Escolinha de surfe"
+		},
+		{
+			"giver": "Dona Lourdes",
+			"id": "sabores",
+			"reward": 300,
+			"steps": [
+				{
+					"kind": "recipes",
+					"qty": 2,
+					"text": "Descobrir 2 receitas na Cozinha experimental"
+				},
+				{
+					"item": "petiscos",
+					"kind": "sell",
+					"qty": 10,
+					"text": "Vender 10 petiscos"
+				},
+				{
+					"kind": "pay",
+					"qty": 250,
+					"text": "Pagar R$ 250 da reforma do food truck"
+				}
+			],
+			"story": "Dona Lourdes quer resgatar as receitas da avó e levar comida boa até a rua principal.",
+			"title": "Sabores da vila",
+			"unlock": "Food truck do Pastel + dica da moqueca"
+		},
+		{
+			"giver": "Sr. Prefeito",
+			"id": "carnaval",
+			"reward": 500,
+			"steps": [
+				{
+					"kind": "fame",
+					"qty": 5,
+					"text": "Chegar à fama \"Famoso na região\""
+				},
+				{
+					"kind": "biz",
+					"qty": 2,
+					"text": "Ter 2 negócios funcionando"
+				},
+				{
+					"kind": "pay",
+					"qty": 400,
+					"text": "Pagar R$ 400 da decoração"
+				}
+			],
+			"story": "O prefeito sonha com um carnaval de praia que traga turistas de longe. Ele conta com você.",
+			"title": "O Carnaval da Maré",
+			"unlock": "Carnaval no fim de cada verão + Lojinha de souvenires"
+		}
+	],
+	"dishes": {
+		"acai": {
+			"name": "Açaí na tigela",
+			"price": 22,
+			"secret": true,
+			"uses": {
+				"acai": 1,
+				"frutas": 1,
+				"gelo": 1
+			}
+		},
+		"batata_frita": {
+			"name": "Porção de batata frita",
+			"price": 16,
+			"uses": {
+				"batata_pronta": 1
+			}
+		},
+		"batida": {
+			"name": "Batida de coco",
+			"price": 20,
+			"secret": true,
+			"uses": {
+				"cachaca": 1,
+				"coco": 1,
+				"gelo": 1
+			}
+		},
+		"caipirinha": {
+			"name": "Caipirinha",
+			"price": 22,
+			"uses": {
+				"cachaca": 1,
+				"frutas": 1,
+				"gelo": 1
+			}
+		},
+		"coco_gelado": {
+			"name": "Coco gelado",
+			"price": 12,
+			"uses": {
+				"coco": 1,
+				"gelo": 1
+			}
+		},
+		"moqueca": {
+			"name": "Moqueca da casa",
+			"price": 42,
+			"secret": true,
+			"uses": {
+				"camarao": 1,
+				"coco": 1,
+				"peixe": 1
+			}
+		},
+		"pastel": {
+			"name": "Pastel de camarão",
+			"price": 24,
+			"secret": true,
+			"uses": {
+				"camarao": 1,
+				"pao": 1
+			}
+		},
+		"petiscos": {
+			"name": "Petiscos",
+			"price": 26,
+			"uses": {
+				"frutas": 1,
+				"pao": 1,
+				"peixe": 1
+			}
+		},
+		"porcao_peixe": {
+			"name": "Porção de peixe",
+			"price": 28,
+			"uses": {
+				"peixe_pronto": 1
+			}
+		},
+		"sorvete_chocolate": {
+			"name": "Sorvete de chocolate",
+			"price": 14,
+			"uses": {
+				"sorvete_chocolate": 1
+			}
+		},
+		"sorvete_morango": {
+			"name": "Sorvete de morango",
+			"price": 12,
+			"uses": {
+				"sorvete_morango": 1
+			}
+		},
+		"suco": {
+			"name": "Suco da fruta",
+			"price": 14,
+			"uses": {
+				"frutas": 2,
+				"gelo": 1
+			}
+		},
+		"tapioca": {
+			"name": "Tapioca de queijo",
+			"price": 18,
+			"secret": true,
+			"uses": {
+				"queijo": 1,
+				"tapioca": 1
+			}
+		}
+	},
+	"engine": "Unreal Engine 5.8.3",
+	"expansion_order": [
+		"kiosk_tables",
+		"drinks",
+		"neon",
+		"grill",
+		"bar",
+		"pousada",
+		"pool",
+		"passeios",
+		"grand_hotel"
+	],
+	"expansions": {
+		"bar": {
+			"area": "bar",
+			"blurb": "Um bar de praia com barman. Banhistas sentam e pedem drinks sozinhos.",
+			"cost": 1200,
+			"icon": "bar",
+			"name": "Bar do Coqueiro",
+			"req": [
+				"grill",
+				"drinks"
+			],
+			"stars": 3.6
+		},
+		"drinks": {
+			"blurb": "Libera a caipirinha no cardápio do quiosque.",
+			"cost": 260,
+			"icon": "cachaca",
+			"name": "Licença de drinks",
+			"req": [],
+			"stars": 0.0
+		},
+		"grand_hotel": {
+			"area": "",
+			"blurb": "A fase final: hotel de 5 andares com 32 suítes, restaurante com buffet, academia, spa, piscina com tobogã e bar da piscina.",
+			"chapter": "carnaval",
+			"cost": 30000,
+			"fame": 8,
+			"icon": "bangalo",
+			"name": "Grand Hotel Maré Alta 5★",
+			"req": [
+				"pool",
+				"passeios"
+			],
+			"stars": 4.3
+		},
+		"grill": {
+			"blurb": "Libera os petiscos de peixe (o prato mais caro).",
+			"cost": 380,
+			"icon": "peixe",
+			"name": "Chapa de petiscos",
+			"req": [
+				"kiosk_tables"
+			],
+			"stars": 3.4
+		},
+		"kiosk_tables": {
+			"blurb": "+2 lugares no quiosque e clientes chegando mais rápido.",
+			"cost": 180,
+			"icon": "quiosque",
+			"name": "Mesas e guarda-sóis",
+			"req": [],
+			"stars": 0.0
+		},
+		"neon": {
+			"blurb": "O quiosque fica aberto até 21:00, com luzes coloridas.",
+			"cost": 150,
+			"icon": "novo",
+			"name": "Letreiro neon",
+			"req": [
+				"kiosk_tables"
+			],
+			"stars": 0.0
+		},
+		"passeios": {
+			"area": "",
+			"blurb": "Mergulho, barco e trilha ao farol. Com um guia contratado, os passeios rendem sozinhos.",
+			"cost": 1800,
+			"icon": "banho",
+			"name": "Passeios turísticos",
+			"req": [
+				"pousada"
+			],
+			"stars": 3.5
+		},
+		"pool": {
+			"area": "pool",
+			"blurb": "Piscina com espreguiçadeiras. Hóspedes ficam mais felizes (+★).",
+			"cost": 2000,
+			"icon": "banho",
+			"name": "Piscina",
+			"req": [
+				"pousada"
+			],
+			"rooms": 2,
+			"stars": 4.0
+		},
+		"pousada": {
+			"area": "pousada",
+			"blurb": "Recepção e o primeiro bangalô. Hóspedes pagam diária e dão gorjeta.",
+			"cost": 2400,
+			"icon": "bangalo",
+			"name": "Pousada: recepção + bangalô",
+			"req": [
+				"bar"
+			],
+			"stars": 3.8
+		}
+	},
+	"quests": {
+		"cocos_rita": {
+			"desc": "A barraca compra 4 cocos do seu estoque.",
+			"giver": "Dona Rita",
+			"need": "coco",
+			"qty": 4,
+			"req": "",
+			"reward": 50,
+			"title": "Cocos da Dona Rita",
+			"where": "Barraca, no fim da praia"
+		},
+		"frutas_lourdes": {
+			"desc": "A padaria quer 8 frutas para a geleia da casa.",
+			"giver": "Dona Lourdes",
+			"need": "frutas",
+			"qty": 8,
+			"req": "drinks",
+			"reward": 85,
+			"title": "Geleia da Dona Lourdes",
+			"where": "Padaria e Mercadinho"
+		},
+		"paes_padre": {
+			"desc": "Padre Tomé precisa de 6 pães para a festa de São Pedro.",
+			"giver": "Padre Tomé",
+			"need": "pao",
+			"qty": 6,
+			"rating": 5.0,
+			"req": "kiosk_tables",
+			"reward": 90,
+			"title": "Quermesse da igreja",
+			"where": "Em frente à igreja"
+		},
+		"peixe_ze": {
+			"desc": "Seu Zé quer 3 peixes para o almoço. Pesque no fim do píer e entregue.",
+			"giver": "Seu Zé",
+			"need": "peixe",
+			"qty": 3,
+			"req": "",
+			"reward": 75,
+			"title": "Peixe fresco do Seu Zé",
+			"where": "Início do píer"
+		}
+	},
+	"schema": 1,
+	"side_missions": [
+		{
+			"id": "pescador",
+			"kind": "fish",
+			"qty": 5,
+			"reward": 80,
+			"story": "Seu Zé ensina que peixe bom pede paciência.",
+			"task": "Pescar 5 peixes no píer",
+			"title": "Um dia com os pescadores"
+		},
+		{
+			"id": "gelados",
+			"kind": "icecream",
+			"qty": 12,
+			"reward": 100,
+			"story": "Dona Rita quer apresentar os dois sabores aos visitantes.",
+			"task": "Vender 12 sorvetes no quiosque",
+			"title": "O verão pede sorvete"
+		},
+		{
+			"id": "faroleiro",
+			"item": "farol",
+			"kind": "photo",
+			"qty": 1,
+			"reward": 50,
+			"story": "Registre o farol para guardar a memória da comunidade.",
+			"task": "Fotografar o farol com P",
+			"title": "Cartão-postal da vila"
+		},
+		{
+			"id": "entardecer",
+			"item": "por_do_sol",
+			"kind": "photo",
+			"qty": 1,
+			"reward": 50,
+			"story": "Encontre um bom ângulo para o sol se despedir do mar.",
+			"task": "Fotografar o pôr do sol com P",
+			"title": "As cores do entardecer"
+		}
+	],
+	"source_commit": "8d3be2d",
+	"staff": {
+		"atendente": {
+			"blurb": "Cuida de todo o quiosque: anota pedidos, entrega produtos prontos, recebe e recolhe a louça.",
+			"hire": 240,
+			"name": "Atendente do quiosque",
+			"req": "",
+			"wage": 30
+		},
+		"bartender": {
+			"blurb": "Os preços do bar sobem 15%. Salário no fim do dia.",
+			"hire": 260,
+			"name": "Bartender",
+			"req": "bar",
+			"wage": 42
+		},
+		"caixa": {
+			"blurb": "Recebe automaticamente as contas dos pedidos entregues. Sem caixa, receba no terminal.",
+			"company": true,
+			"hire": 220,
+			"name": "Operador de caixa",
+			"req": "",
+			"wage": 32
+		},
+		"camareira": {
+			"blurb": "Limpa um item de bangalô a cada 20 min. Salário no fim do dia.",
+			"hire": 220,
+			"name": "Camareira",
+			"req": "pousada",
+			"wage": 36
+		},
+		"cozinheiro": {
+			"blurb": "Prepara os itens pedidos, repõe os armários e acelera a produção.",
+			"company": true,
+			"hire": 300,
+			"name": "Cozinheiro",
+			"req": "",
+			"wage": 44
+		},
+		"garcom": {
+			"blurb": "Retira produtos prontos e atende os clientes no balcão antes de se sentarem.",
+			"company": true,
+			"hire": 260,
+			"name": "Garçom",
+			"req": "",
+			"wage": 38
+		},
+		"guia": {
+			"blurb": "Conduz os passeios turísticos nos horários marcados. Salário no fim do dia.",
+			"hire": 280,
+			"name": "Guia de passeios",
+			"req": "passeios",
+			"wage": 45
+		},
+		"limpeza": {
+			"blurb": "Recolhe a louça suja e libera as mesas do quiosque para novos clientes.",
+			"company": true,
+			"hire": 180,
+			"name": "Auxiliar de limpeza",
+			"req": "",
+			"wage": 28
+		}
+	},
+	"supplies": {
+		"acai": {
+			"cost": 6,
+			"name": "Polpa de açaí"
+		},
+		"batata_pronta": {
+			"cost": 4,
+			"name": "Porção pronta de batata"
+		},
+		"cachaca": {
+			"cost": 6,
+			"name": "Cachaça"
+		},
+		"camarao": {
+			"cost": 9,
+			"name": "Camarão"
+		},
+		"coco": {
+			"cost": 3,
+			"name": "Coco"
+		},
+		"frutas": {
+			"cost": 2,
+			"name": "Frutas"
+		},
+		"gelo": {
+			"cost": 1,
+			"name": "Gelo"
+		},
+		"pao": {
+			"cost": 2,
+			"name": "Pão"
+		},
+		"peixe": {
+			"cost": 7,
+			"name": "Peixe"
+		},
+		"peixe_pronto": {
+			"cost": 8,
+			"name": "Porção pronta de peixe"
+		},
+		"queijo": {
+			"cost": 5,
+			"name": "Queijo coalho"
+		},
+		"sorvete_chocolate": {
+			"cost": 5,
+			"name": "Sorvete pronto de chocolate"
+		},
+		"sorvete_morango": {
+			"cost": 4,
+			"name": "Sorvete pronto de morango"
+		},
+		"tapioca": {
+			"cost": 4,
+			"name": "Goma de tapioca"
+		}
+	}
+}

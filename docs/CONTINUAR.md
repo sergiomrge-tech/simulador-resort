@@ -341,3 +341,9 @@ quatro cargos por seguir documentos antigos. Detalhes, métricas e validação e
 ## Pedido de 24/10 — produtos nas mãos e sorvetes
 
 Produtos transportados acompanham as mãos animadas, inclusive o atendente. Pedidos maiores usam bandeja com apoio dos braços. Sorvetes de morango/chocolate são produtos prontos da geladeira, com reposição direta e pote vazio após consumo. Preservar o único atendente, sem preparo. Guia: [MAOS_SORVETES_2026-10-24.md](MAOS_SORVETES_2026-10-24.md).
+
+## Migração vigente para UE5.8 — em andamento
+
+Pedido atual do usuário: conversão integral com visual **realista estilizado**.
+Branch `codex/ue58-migration`; guia [ue58/MIGRACAO.md](ue58/MIGRACAO.md).
+A entrega Godot acima permanece sendo a última versão jogável aprovada.
