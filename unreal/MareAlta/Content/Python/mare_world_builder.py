@@ -39,12 +39,18 @@ def build():
         if not native:missing.add(canonical);continue
         groups[(native,row.get('region',''))].append(row)
     count=0
+    mesh_editor=unreal.get_editor_subsystem(unreal.StaticMeshEditorSubsystem)
     for (native,region),rows in groups.items():
         mesh=unreal.load_asset(native)
         body=mesh.get_editor_property('body_setup')
         if body and body.get_editor_property('collision_trace_flag')!=unreal.CollisionTraceFlag.CTF_USE_COMPLEX_AS_SIMPLE:
             body.set_editor_property('collision_trace_flag',unreal.CollisionTraceFlag.CTF_USE_COMPLEX_AS_SIMPLE)
-            unreal.EditorAssetLibrary.save_loaded_asset(mesh)
+            unreal.EditorAssetLibrary.save_loaded_asset(mesh,False)
+        # Recast exports convex hulls even when physics uses complex triangles.
+        # Imported auto-hulls can bridge doors and turn the whole coast into a box.
+        if mesh_editor.get_simple_collision_count(mesh)+mesh_editor.get_convex_collision_count(mesh)>0:
+            if not mesh_editor.remove_collisions_with_notification(mesh,False):raise RuntimeError('Cannot refresh scenery collision: '+native)
+            unreal.EditorAssetLibrary.save_loaded_asset(mesh,False)
         actor=actors.spawn_actor_from_class(unreal.Actor,unreal.Vector())
         actor.set_actor_label('Maré · '+rows[0]['name'])
         actor.tags=['MareGenerated','Region_'+region]

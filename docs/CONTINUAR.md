@@ -352,3 +352,8 @@ A entrega Godot acima permanece sendo a última versão jogável aprovada.
 ## Trabalho atual UE5.8
 
 Pedido posterior migrou o destino para UE5.8, realista estilizado. Branch codex/ue58-migration no D. Leia [checkpoint UE](ue58/CHECKPOINT_2026-10-27.md). Godot permanece a última versão jogável; o port UE ainda não está pronto.
+
+
+## Continuação UE5.8 — cenário e atendimento
+
+Guia atual: [Cenário completo e atendimento nativo](ue58/NAVEGACAO_ATENDIMENTO_2026-10-27.md). São 1.620 modelos, 12.910 instâncias e zero modelos ausentes. O bloqueio de navegação em Z910 foi corrigido. A migração integral e a aprovação visual continuam pendentes; a versão Godot aprovada permanece preservada.

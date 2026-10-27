@@ -1,0 +1,16 @@
+{
+  "tests": [
+    {
+      "name": "MareAlta.Migration.NativeEconomy",
+      "state": "Success",
+      "duration": 0.07712219655513763,
+      "errors": [],
+      "warnings": []
+    }
+  ],
+  "passed": 1,
+  "failed": 0,
+  "skipped": 0,
+  "total": 1,
+  "duration": 0.07712219655513763
+}

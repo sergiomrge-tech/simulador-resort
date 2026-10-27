@@ -5,6 +5,7 @@
 #include "MareKioskWorld.h"
 #include "AIController.h"
 #include "Navigation/PathFollowingComponent.h"
+#include "NavigationSystem.h"
 #include "Animation/AnimSequence.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
@@ -69,14 +70,22 @@ void AMarePerson::PlayPose(const FString& Name,bool bLoop)
 }
 bool AMarePerson::WalkTo(const FVector& Goal)
 {
- Destination=Goal;GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+ Destination=Goal;
+ if(auto Nav=FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld())){
+  FNavLocation Projected;
+  if(!Nav->ProjectPointToNavigation(Goal,Projected,FVector(80,80,150)))return false;
+  Destination=Projected.Location;
+ }
+ GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
  GetCharacterMovement()->SetMovementMode(MOVE_Walking);SpawnDefaultController();
  auto AI=Cast<AAIController>(GetController());if(!AI)return false;
- const auto Result=AI->MoveToLocation(Goal,30,true,true,false,true,nullptr,true);
+ // Stop-on-overlap adds the capsule radius to acceptance, leaving customers
+ // outside the arrival threshold even after a successful path completion.
+ const auto Result=AI->MoveToLocation(Destination,20,false,true,false,true,nullptr,false);
  if(Result==EPathFollowingRequestResult::Failed)return false;
  PlayPose(TEXT("Walk"));return true;
 }
-bool AMarePerson::AtGoal()const{return FVector::DistSquared2D(GetActorLocation(),Destination)<FMath::Square(45.f);}
+bool AMarePerson::AtGoal()const{return FVector::DistSquared2D(GetActorLocation(),Destination)<FMath::Square(35.f);}
 void AMarePerson::HoldProduct(const FString& Dish)
 {
  auto MeshAsset=ProductMesh(Dish);if(!MeshAsset)return;

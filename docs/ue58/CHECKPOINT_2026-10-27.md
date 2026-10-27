@@ -1,5 +1,7 @@
 # Checkpoint UE5.8 — 27/10/2026
 
+**Histórico: contagens e bloqueio substituídos por [Cenário e atendimento](NAVEGACAO_ATENDIMENTO_2026-10-27.md).**
+
 Branch `codex/ue58-migration`, checkout `D:/Projetos/MareAltaUE58`.
 Direção: realista estilizado, sem cartoon. Migração incompleta; nenhuma nova release jogável UE publicada.
 A entrega Godot 8d3be2d e os saves permanecem preservados.

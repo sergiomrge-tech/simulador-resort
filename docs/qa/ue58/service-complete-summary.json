@@ -1,0 +1,31 @@
+{
+  "samples": 56,
+  "time_start": 1.4875340014696121,
+  "time_end": 111.83325401321054,
+  "cash_start": 2000.0,
+  "cash_end": 2012.0,
+  "exactly_one_employee": true,
+  "seated": [
+    {
+      "id": "MarePerson_1",
+      "z_range_cm": 0.0,
+      "delivered_before_seating": [
+        "coco_gelado"
+      ]
+    }
+  ],
+  "departures_cm": [
+    {
+      "id": "MarePerson_1",
+      "distance": 503.35284480151984
+    },
+    {
+      "id": "MarePerson_2",
+      "distance": 450.9306902178807
+    }
+  ],
+  "dirty_table_observed": true,
+  "dirty_table_cleared": true,
+  "closed_no_waiting_guests": true,
+  "passed": true
+}

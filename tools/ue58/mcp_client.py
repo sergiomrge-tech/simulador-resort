@@ -21,7 +21,7 @@ class UnrealClient:
             message['params'] = params
         request = urllib.request.Request(os.environ.get('MARE_MCP_URL', 'http://127.0.0.1:8000/mcp'),
             data=json.dumps(message).encode(), headers=self.headers)
-        with urllib.request.urlopen(request, timeout=180) as response:
+        with urllib.request.urlopen(request, timeout=float(os.environ.get('MARE_MCP_TIMEOUT','180'))) as response:
             session = response.headers.get('Mcp-Session-Id')
             if session:
                 self.headers['Mcp-Session-Id'] = session

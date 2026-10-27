@@ -1,0 +1,54 @@
+{
+  "system": "<Object '/Game/Maps/Coast.Coast:NavigationSystemV1_0' (0x00000241467E9000) Class 'NavigationSystemV1'>",
+  "data": [
+    "/Game/Maps/Coast.Coast:PersistentLevel.RecastNavMesh-Default"
+  ],
+  "volumes": [
+    "(<Struct 'Vector' (0x0000024094F003D0) {x: 4200.000000, y: 300.000000, z: 250.000000}>, <Struct 'Vector' (0x00000240E66183D0) {x: 3000.000000, y: 4500.000000, z: 1000.000000}>)"
+  ],
+  "projection": "<Struct 'Vector' (0x00000240E66184C0) {x: 3870.000000, y: -1653.000000, z: 10.000000}>",
+  "routes": [
+    {
+      "valid": true,
+      "partial": false,
+      "points": [
+        [
+          4520.0,
+          -1815.0,
+          10.0
+        ],
+        [
+          4275.0,
+          -1900.0,
+          10.0
+        ],
+        [
+          4199.0,
+          -1900.0,
+          10.0
+        ],
+        [
+          3870.0,
+          -1653.0,
+          10.0
+        ]
+      ]
+    },
+    {
+      "valid": true,
+      "partial": false,
+      "points": [
+        [
+          3700.0,
+          -1230.0,
+          20.0
+        ],
+        [
+          3857.6923076923076,
+          -1402.5384615384614,
+          20.0
+        ]
+      ]
+    }
+  ]
+}

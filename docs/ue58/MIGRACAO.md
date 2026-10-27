@@ -29,18 +29,17 @@ mapa e recarga das ferramentas do projeto. Não exige plugin de terceiros.
 - `MareAlta.Migration.NativeEconomy` executado por MCP: **Success**, sem erros ou
   avisos. Testa consumo/devolução, ausência de duplicação, reposição sem cobrança
   parcial, pagamento por produto, fechamento ao dormir e recompensa idempotente.
-- Celular Slate, personagem e estações nativas compilados. A interação E na geladeira abriu o painel em PIE; o atendimento completo permanece bloqueado pela navegação.
+- Celular Slate, personagem e estações nativas compilados. A interação E na geladeira abriu o painel em PIE; o bloqueio de navegação foi corrigido, com atendimento físico e limpeza exercitados em PIE.
 - Exportados 12.910 posicionamentos do cenário, 2.985 variantes de modelo, reduzidas
   a 1.620 modelos canônicos. Fontes glTF portáveis e imagens compartilhadas geradas.
 - Calibração real de importação: Godot(1,2,3)m → UE(100,300,200)cm.
-- Primeiros 730 modelos nativos importados/validados por MCP (zero recursos ausentes). Importação restante,
-  mapa, render e aprovação visual continuam pendentes.
+- Todos os 1.620 modelos do cenário importados/validados por MCP. Mapa com 12.910 instâncias e zero modelos ausentes; revisão visual final e port dos demais sistemas continuam pendentes.
 - O acesso a EpicGames/UnrealEngine retornou404 nesta conta; a engine instalada
   permite compilar. Não redistribuir o código/binários da engine neste repositório.
 
 ## Próximas etapas obrigatórias
 
-1. Completar importação pelo MCP e inspecionar materiais PBR, orientação, colisões
+1. Inspecionar materiais PBR, orientação, colisões
    e escala no mapa. Não aceitar cenário incompleto ou cores planas como final.
 2. Concluir personagem, estações, fila, reserva de mesas, mãos/rig/animações,
    atendente físico, louça, navegação e porta da casa.
@@ -65,7 +64,7 @@ catálogos existentes. O exportador transforma materiais toon em PBR sem remover
 `prepare_assets.py` gera glTF e texturas por hash, sem executar o Godot no jogo UE.
 Fontes e assets Unreal usam Git LFS. Caches, builds e export bruto não entram no Git.
 
-## Nota técnica de integração MCP
+## Histórico inicial de integração MCP
 
 A chamada direta `mcp__unreal_topgpt` foi validada no chat: status identifica o
 projeto no D, teste nativo retornaSuccess e CaptureViewport devolve imagem real.
@@ -83,3 +82,8 @@ preparadas em glTF estão no Git LFS (1.620modelos e texturas compartilhadas);
 
 Leia [CHECKPOINT_2026-10-27.md](CHECKPOINT_2026-10-27.md) antes de retomar.
 Ele substitui as contagens e limitações dos checkpoints iniciais acima.
+
+
+## Continuação UE5.8 — cenário e atendimento
+
+Guia atual: [Cenário completo e atendimento nativo](NAVEGACAO_ATENDIMENTO_2026-10-27.md). São 1.620 modelos, 12.910 instâncias e zero modelos ausentes. O bloqueio de navegação em Z910 foi corrigido. A migração integral e a aprovação visual continuam pendentes; a versão Godot aprovada permanece preservada.

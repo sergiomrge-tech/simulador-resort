@@ -138,4 +138,9 @@ Preserve a entrega Godot e saves. Não declarar o port concluído antes de valid
 mecânicas, imagens reais e executável exportado.
 
 
-Checkpoint UE atual: [docs/ue58/CHECKPOINT_2026-10-27.md](docs/ue58/CHECKPOINT_2026-10-27.md). Ler antes de retomar. Navegação dos clientes ainda bloqueada; não declarar migração finalizada.
+Checkpoint UE anterior (histórico): [docs/ue58/CHECKPOINT_2026-10-27.md](docs/ue58/CHECKPOINT_2026-10-27.md). O bloqueio de navegação foi corrigido no guia posterior; não declarar a migração integral finalizada.
+
+
+## Continuação UE5.8 — cenário e atendimento
+
+Guia atual: [Cenário completo e atendimento nativo](docs/ue58/NAVEGACAO_ATENDIMENTO_2026-10-27.md). São 1.620 modelos, 12.910 instâncias e zero modelos ausentes. O bloqueio de navegação em Z910 foi corrigido. A migração integral e a aprovação visual continuam pendentes; a versão Godot aprovada permanece preservada.
