@@ -44,7 +44,7 @@ func _build_lot() -> Node3D:
 	for k in 6:
 		Real.place(n, "g:biz_barrier", Vector3(-36.0 + k * 6.0, 0.0, 24.5), -1.0, 0.0)
 	Real.place(n, "g:signpost_post", Vector3(-22.0, 0.0, 23.2), 2.6, 0.0)
-	var l: = B_.label(n, tr("Futuro Grand Hotel Maré Alta 5★\n(computador > Hotel 5★)"), Vector3(-22.0, 2.9, 23.0), 60, Color(1, 0.92, 0.55), Color(0.2, 0.1, 0.0, 0.9))
+	var l: = B_.label(n, tr("Futuro Grand Hotel Maré Alta 5★\n(celular > Hotel 5★)"), Vector3(-22.0, 2.9, 23.0), 60, Color(1, 0.92, 0.55), Color(0.2, 0.1, 0.0, 0.9))
 	l.double_sided = true
 	return n
 
@@ -130,7 +130,7 @@ func _build() -> Node3D:
 	if world.get("block_rects") != null:
 		world.block_rects.append(Rect2(TER_MIN.x - 0.5, TER_MIN.y - 0.5, TER_MAX.x - TER_MIN.x + 1.0, TER_MAX.y - TER_MIN.y + 1.0))
 		world.block_rects.append(Rect2(TOWER.x - 16.5, TOWER.z - 13.0, 33.0, 20.0))
-	Core.toast.emit(tr("O Grand Hotel Maré Alta 5★ abriu as portas! Ele rende toda noite (computador > Hotel 5★)."), "good")
+	Core.toast.emit(tr("O Grand Hotel Maré Alta 5★ abriu as portas! Ele rende toda noite (celular > Hotel 5★)."), "good")
 	return root
 
 ## Terraço elevado de pedra com degraus ao norte e ao leste (acesso pelo resort), com borda e muro de contenção.

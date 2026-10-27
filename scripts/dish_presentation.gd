@@ -1,6 +1,8 @@
 extends RefCounted
 ## Um ID do cardápio = uma apresentação própria; nenhuma primitiva genérica.
 const RECIPES = {
+	"batata_frita":{"model":"g:dish_fries","deep":false,"drink":false},
+	"porcao_peixe":{"model":"g:dish_fish_portion","deep":false,"drink":false},
 	"sorvete_morango": {"model":"g:icecream_strawberry", "height":.15, "drink":false,"handheld":true,"chilled":true},
 	"sorvete_chocolate": {"model":"g:icecream_chocolate", "height":.15, "drink":false,"handheld":true,"chilled":true},
 	"coco_gelado": {"model": "g:coconut_open", "height": 0.29, "drink": true},

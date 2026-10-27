@@ -261,3 +261,41 @@ chegar à mesa. Não restaurar recebimento remoto automático pelo antigo role c
 ## Transporte nas mãos — 24/10/2026
 
 Não prender produtos de NPC em posição fixa no peito. Usar âncora hand_r após os SkeletonModifiers, manter apresentação em pé e remover âncora/conexão ao sentar ou sair. IK precisa respeitar os lados dos braços: alvo direito X negativo, esquerdo X positivo no rig atual; alturas baixas demais deixavam um braço sem alcance. Poses consultadas fora do ciclo dos modificadores são restauradas pela Godot; conferir a âncora e capturas renderizadas. Sorvete é refrigerado, mas não bebida: separar is_chilled de is_drink na estação, interface e regressão da exposição. Não restaurar preparo para satisfazer teste histórico.
+
+## Correções visuais e operação — 26/10/2026
+
+Ativar use_occlusion_culling também ativa oclusores legados. _hero_house tinha
+uma chamada antiga _occlude preenchendo a casa inteira, apesar da regra escrita
+proibindo isso. Remover o volume e comparar a mesma câmera na janela com culling
+ligado/desligado; conferir por imagem, não só existência/colisão de móveis.
+PC usa AABB do modelo em coordenadas locais, cacheada na montagem, e raio curto
+horizontal: não usar grande cone magnético que rouba a mira de clientes.
+Clientes de pé no balcão têm cabeça acima do tampo: mirar 1,55 m e usar alcance
+interno até staff_approach, preservando linha de visão e bloqueio de paredes.
+Número do pedido vem da reserva dining_spot; g.spot temporário da retirada não
+existe em kiosk_spots e gerava #00. Excluir alvo invisível do caixa antigo.
+Pagamento agora é imediato na entrega; liquidar contas históricas uma vez na
+carga. Regressão deve considerar registro financeiro atualizado, sem esperar que
+sim/ledger seja idêntico ao snapshot anterior ao recebimento.
+Importar GLBs novos no editor antes do runtime: existir no disco não garante
+ResourceLoader.exists até a criação de .import/cache. REAL_MISSING reprova o lote
+mesmo que o teste lógico tenha PASS. Fontes editáveis/geradores são versionados.
+Campanha é lida sem efeitos pelo HUD; recompensa exige etapa/id atual e grava
+estado antes do crédito. Estações usam painel compacto à direita para preservar
+missões/pedidos à esquerda, inclusive durante retirada/reposição.
+
+## Pedidos finais do lote de 26/10
+
+Usuário substituiu os pedidos de PC lateral/alcance por EXCLUIR O PC. Gestão no
+celular portátil B em qualquer lugar. Remover modelo, alvo e SubViewport; deixar
+alias de métodos antigos somente para compatibilidade, sem objetos invisíveis.
+HUD é CanvasLayer: usar get_viewport().get_visible_rect(), não get_viewport_rect().
+Antes de iniciar nova execução, zerar apenas seu log de QA: o runner lia Parse Error
+de tentativa antiga antes de a engine abrir o log e interrompia processos corretos.
+Chuva alimentava w=max(shore,rain*.6), e o mesmo w ativava espuma em TODO terreno.
+Separar umidade de espuma; usar smoothstep crescente e restringir espuma à costa.
+Testar e inspecionar render de chuva, sem aceitar manchas brancas como poças.
+Botões usam largura do texto; cartões/menus ficam em celular vertical 420×700,
+com seis abas numa grade 3×2. Nenhum painel horizontal largo vazio como terminal.
+
+Teste de otimização precisa aguardar a inicialização diferida e um frame renderizado antes do encerramento. Sair no primeiro frame deixava partículas/instâncias pendentes no renderer, embora o PASS lógico já tivesse sido impresso. Objetos temporários pertencem à cena principal para passar pela retenção/liberação de Core.quit_game. Rejeitar ERROR mesmo após PASS.

@@ -1,6 +1,6 @@
 extends Node
 ## v0.9.5: ao abrir o jogo, consulta no GitHub a última versão publicada (docs/latest_version.txt).
-## Se houver patch novo, avisa no topo da tela e no computador (botão que abre a pasta de patches no navegador).
+## Se houver patch novo, avisa no topo da tela e no celular (botão que abre a pasta de patches no navegador).
 ## Sem internet ou sem resposta, não faz nada.
 
 const URL: = "https://raw.githubusercontent.com/sergiomrge-tech/simulador-resort/main/docs/latest_version.txt"
@@ -28,5 +28,5 @@ func _done(result: int, code: int, _h: PackedStringArray, body: PackedByteArray)
 		if _num(latest) > _num(mine):
 			Engine.set_meta("update_ver", latest)
 			Engine.set_meta("update_page", PAGE)
-			Core.toast.emit(tr("Atualização %s disponível! Veja no computador (app inicial).") % latest, "info")
+			Core.toast.emit(tr("Atualização %s disponível! Veja no celular (app inicial).") % latest, "info")
 	queue_free()

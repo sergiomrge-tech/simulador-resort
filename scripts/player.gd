@@ -130,7 +130,9 @@ func refresh_focus() -> void:
 		var c: = ray.get_collider()
 		if c is Interactable and c.get_prompt() != "": focus = c
 	var ops = get_parent().get("operations")
-	if is_instance_valid(ops): focus = ops.resolve_customer_focus(cam,focus)
+	if is_instance_valid(ops):
+		focus = ops.resolve_computer_focus(cam,focus)
+		focus = ops.resolve_customer_focus(cam,focus)
 
 func interact() -> void :
 	if focus:

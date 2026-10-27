@@ -1,0 +1,162 @@
+{
+  "pck_sha256": "5e420931892f379c7e6e3dc3a66501c120fb9cde39d79ea2185e020b97f9d0c5",
+  "pck_bytes": 1805368728,
+  "regressions": [
+    {
+      "check": "revision26",
+      "kind": "pack",
+      "result": "PASS",
+      "exit_code": 0,
+      "pck_sha256": "5e420931892f379c7e6e3dc3a66501c120fb9cde39d79ea2185e020b97f9d0c5"
+    },
+    {
+      "check": "home",
+      "kind": "pack",
+      "result": "PASS",
+      "exit_code": 0,
+      "pck_sha256": "473f3b68c0c847edae459ea1281ed67f50a36669d12e2b9c65970da550b20609"
+    },
+    {
+      "check": "company",
+      "kind": "pack",
+      "result": "PASS",
+      "exit_code": 0,
+      "pck_sha256": "473f3b68c0c847edae459ea1281ed67f50a36669d12e2b9c65970da550b20609"
+    },
+    {
+      "check": "counter-first",
+      "kind": "pack",
+      "result": "PASS",
+      "exit_code": 0,
+      "pck_sha256": "473f3b68c0c847edae459ea1281ed67f50a36669d12e2b9c65970da550b20609"
+    },
+    {
+      "check": "phone-layout",
+      "kind": "pack",
+      "result": "PASS",
+      "exit_code": 0,
+      "pck_sha256": "5e420931892f379c7e6e3dc3a66501c120fb9cde39d79ea2185e020b97f9d0c5"
+    },
+    {
+      "check": "coastal",
+      "kind": "pack",
+      "result": "PASS",
+      "exit_code": 0,
+      "pck_sha256": "473f3b68c0c847edae459ea1281ed67f50a36669d12e2b9c65970da550b20609"
+    },
+    {
+      "check": "held-order",
+      "kind": "pack",
+      "result": "PASS",
+      "exit_code": 0,
+      "pck_sha256": "473f3b68c0c847edae459ea1281ed67f50a36669d12e2b9c65970da550b20609"
+    },
+    {
+      "check": "tableware",
+      "kind": "pack",
+      "result": "PASS",
+      "exit_code": 0,
+      "pck_sha256": "473f3b68c0c847edae459ea1281ed67f50a36669d12e2b9c65970da550b20609"
+    },
+    {
+      "check": "management",
+      "kind": "pack",
+      "result": "PASS",
+      "exit_code": 0,
+      "pck_sha256": "473f3b68c0c847edae459ea1281ed67f50a36669d12e2b9c65970da550b20609"
+    },
+    {
+      "check": "practical",
+      "kind": "pack",
+      "result": "PASS",
+      "exit_code": 0,
+      "pck_sha256": "473f3b68c0c847edae459ea1281ed67f50a36669d12e2b9c65970da550b20609"
+    },
+    {
+      "check": "terminal",
+      "kind": "pack",
+      "result": "PASS",
+      "exit_code": 0,
+      "pck_sha256": "473f3b68c0c847edae459ea1281ed67f50a36669d12e2b9c65970da550b20609"
+    },
+    {
+      "check": "optimization",
+      "kind": "pack",
+      "result": "PASS",
+      "exit_code": 0,
+      "pck_sha256": "5e420931892f379c7e6e3dc3a66501c120fb9cde39d79ea2185e020b97f9d0c5"
+    },
+    {
+      "check": "revision26",
+      "kind": "source",
+      "result": "PASS",
+      "exit_code": 0
+    },
+    {
+      "check": "phone-layout",
+      "kind": "source",
+      "result": "PASS",
+      "exit_code": 0
+    },
+    {
+      "check": "company",
+      "kind": "source",
+      "result": "PASS",
+      "exit_code": 0
+    },
+    {
+      "check": "terminal",
+      "kind": "source",
+      "result": "PASS",
+      "exit_code": 0
+    },
+    {
+      "check": "tableware",
+      "kind": "source",
+      "result": "PASS",
+      "exit_code": 0
+    },
+    {
+      "check": "practical",
+      "kind": "source",
+      "result": "PASS",
+      "exit_code": 0
+    },
+    {
+      "check": "management",
+      "kind": "source",
+      "result": "PASS",
+      "exit_code": 0
+    },
+    {
+      "check": "optimization",
+      "kind": "source",
+      "result": "PASS",
+      "exit_code": 0
+    }
+  ],
+  "visual_review": [
+    "celular vertical e botões compactos",
+    "pedidos e missões à esquerda",
+    "porções no expositor",
+    "interior através da janela",
+    "chuva sem faixas de espuma no chão",
+    "navio distante",
+    "pavimentação e decoração da vila"
+  ],
+  "user_saves_accessed": false,
+  "full_suite_pck_sha256": "473f3b68c0c847edae459ea1281ed67f50a36669d12e2b9c65970da550b20609",
+  "full_suite_pck_bytes": 1805368760,
+  "final_text_review": "Avisos remanescentes de computador trocados por celular; nenhuma lógica de jogo alterada após a suíte completa. Repetir revision26, phone-layout e optimization no PCK final.",
+  "final_text_checks": [
+    "optimization",
+    "revision26",
+    "phone-layout"
+  ],
+  "zip_sha256": "98fa6f812905ab609990fe2b5381bd109cbe33544a89f97e0a7c5d458912a189",
+  "zip_bytes": 1571095557,
+  "zip_crc_verified": true,
+  "zip_manifest_verified": true,
+  "ready_directory": "D:\\Downloads\\MareAltaResort_Celular_Campanha_2026-10-26",
+  "ready_files_verified": true
+}

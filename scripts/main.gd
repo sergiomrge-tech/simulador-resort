@@ -286,7 +286,7 @@ func _begin_play(fresh: bool) -> void :
 		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 	if fresh:
 		Core.toast.emit(tr("Bom dia! Hoje você abre o seu quiosque na praia. Siga a seta amarela."), "good")
-		Core.toast.emit(tr("Junte dinheiro e compre expansões pelo computador do balcão (%s): mesas, drinks, bar, pousada...") % Quality.key_name("shop"), "info")
+		Core.toast.emit(tr("Junte dinheiro e compre expansões pelo celular (%s): mesas, drinks, bar, pousada...") % Quality.key_name("shop"), "info")
 	else:
 		Core.toast.emit(tr("Bem-vindo de volta! Dia %d") % Core.day, "info")
 

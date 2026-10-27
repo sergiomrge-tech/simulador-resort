@@ -21,6 +21,7 @@ var _production_key := ""
 var menu_card: Label3D
 var door_tween: Tween
 var computer: Node3D
+var _computer_bounds: AABB
 var computer_target: Interactable
 
 func _ready() -> void:
@@ -70,17 +71,9 @@ func _build() -> void:
 		var label := B.label(self, "ENTRADA", c + Vector3(side * 2.42, 1.45, -0.75), 18, Color(1, 0.94, 0.75), Color(0.05, 0.12, 0.12), side * PI * 0.5)
 		label.pixel_size = 0.0018
 	Real.place(self, "g:kiosk_blender", c + Vector3(-2.0, 1.28, 0.25), -1.0)
-	var register_pos: Vector3 = c + Vector3(1.0, 1.28, 1.8)
-	_interaction(self, register_pos + Vector3(0, 0.12, 0), Vector3(0.4, 0.3, 0.4), _register_prompt, collect_payments)
+	# Pagamento na entrega: nenhum alvo invisível de caixa disputa a mira dos clientes.
 	Real.place(self, "g:kiosk_counter_details", c + Vector3(0,1.28,0), -1.0,0,Color.WHITE,0,false)
-	computer = Real.place(self,"g:kiosk_laptop",c+Vector3(0,1.28,1.65),.32,PI)
-	computer.name = "CounterComputer"
-	var display:=Node.new()
-	display.name="CounterDisplay"
-	display.set_script(load("res://scripts/counter_terminal_display.gd"))
-	display.laptop=computer
-	add_child(display)
-	computer_target=_interaction(self,c+Vector3(0,1.45,1.1),Vector3(.65,.7,.7),func(): return "Computador · gestão do quiosque",open_computer)
+	# Gestão portátil: notebook e alvo físico removidos do balcão.
 	for side in [-1,1]:
 		var card := B.label(self,"",c+Vector3(1.10,1.497,2.006 if side==1 else 1.774),22,Color(.08,.12,.10),Color(0,0,0,0),0 if side==1 else PI)
 		card.rotation.x=-.43
@@ -103,9 +96,18 @@ func _build() -> void:
 	main.player.cam.add_child(hand)
 	hand.position = Vector3(0.32, -0.32, -0.65)
 
+# Alias preservado para scripts anteriores; a gestão agora é portátil.
 func can_use_computer() -> bool:
-	var local: Vector3 = main.world.kiosk_local(main.player.global_position)
-	return is_instance_valid(computer) and absf(local.x)<2.25 and local.z<1.6 and main.player.global_position.distance_to(computer.global_position)<2.2
+	return true
+
+func resolve_computer_focus(_camera: Camera3D,direct: Interactable) -> Interactable:
+	return direct
+
+func can_reach_customer(g) -> bool:
+	var here: Vector3=main.world.kiosk_local(main.player.global_position)
+	if g.has_meta("counter_slot") and absf(here.x)<2.3 and here.z> -1.5 and here.z<2.15:
+		return main.player.global_position.distance_to(service_approach(g))<3.5
+	return main.player.global_position.distance_to(g.global_position)<3.0
 
 func open_computer() -> void:
 	if not can_use_computer(): return
@@ -135,7 +137,7 @@ func _station(kind: String, title: String, pos: Vector3, size: Vector3) -> void:
 	station_bodies.append(_interaction(node, Vector3(0, size.y * 0.5, 0), size, station_prompt.bind(kind, title), open_station.bind(kind)))
 
 func station_prompt(_kind: String, title: String) -> String:
-	return title if Core.company_enabled() else title + " · crie seu quiosque no computador"
+	return title if Core.company_enabled() else title + " · crie seu quiosque no celular"
 
 func can_access(kind: String) -> bool:
 	var p: Vector3 = main.world.kiosk_local(main.player.global_position)
@@ -143,7 +145,7 @@ func can_access(kind: String) -> bool:
 
 func open_station(kind: String) -> void:
 	if not Core.company_enabled():
-		Core.toast.emit("Crie seu quiosque no computador do balcão antes de retirar produtos.","info")
+		Core.toast.emit("Crie seu quiosque no celular antes de retirar produtos.","info")
 		return
 	if not can_access(kind):
 		return
@@ -160,7 +162,7 @@ func finish_station() -> void:
 	_animate_door(0.0)
 
 func _register_prompt() -> String:
-	return "Caixa · receber %d contas" % Core.company.receivables.size() if Core.company_enabled() else ""
+	return "Pagamento automático na entrega" if Core.company_enabled() else ""
 
 func collect_payments() -> void:
 	var amount: int = Core.collect_company_payments()
@@ -181,9 +183,9 @@ func resolve_customer_focus(camera: Camera3D, direct: Interactable) -> Interacta
 		var target := g.get_node_or_null("CustomerInteraction") as Interactable
 		if target == null or target.get_prompt() == "": continue
 		# Aim at seated upper torso, above the physical countertop.
-		var aim: Vector3 = target.global_position + Vector3(0,.20,0)
+		var aim: Vector3 = g.global_position + Vector3(0,1.55,0)
 		var offset := aim-camera.global_position
-		if offset.length()>3.0: continue
+		if offset.length()>4.5 or not can_reach_customer(g): continue
 		var dot := forward.dot(offset.normalized())
 		if dot < score: continue
 		var query := PhysicsRayQueryParameters3D.create(camera.global_position,aim,1,[main.player.get_rid()])
@@ -208,7 +210,7 @@ func take_order(ref: WeakRef, by_staff: bool = false) -> bool:
 	var g = ref.get_ref()
 	if not is_instance_valid(g) or g.is_queued_for_deletion() or g.state != "kwait" or bool(g.get_meta("order_taken", true)):
 		return false
-	if not by_staff and main.player.global_position.distance_to(g.global_position) > 3.0:
+	if not by_staff and not can_reach_customer(g):
 		return false
 	g.set_meta("order_taken", true)
 	g.timer = main.village._patience(g)
@@ -223,7 +225,7 @@ func customer_action(ref: WeakRef) -> bool:
 	var g = ref.get_ref()
 	if not is_instance_valid(g) or g.is_queued_for_deletion() or g.state != "kwait":
 		return false
-	if main.player.global_position.distance_to(g.global_position) > 3.0: return false
+	if not can_reach_customer(g): return false
 	if not bool(g.get_meta("order_taken", true)):
 		return take_order(ref)
 	if str(Core.company.carry) in main.village._remaining(g):
@@ -365,22 +367,11 @@ func _staff_tick() -> void:
 		g.set_meta("uniform",uniform)
 	g.speed=2.0*Core.prog.staff_eff("atendente")*(1.0+Core.prog.eff("kiosk_speed"))
 	if g.is_moving(): return
-	if attendant_task=="payments":
-		if g.position.distance_to(point(Vector3(0,.1,.7)))>.8:
-			g.go(_route_to_pickup(g)+[point(Vector3(0,.1,.7))])
-			return
-		Core.collect_company_payments()
-		attendant_task=""
-		return
 	if cleaner_seat>=0:
 		_cleaner(g)
 		return
 	if waiter_phase!="" or Core.company.staff_carry!="":
 		_waiter(g)
-		return
-	if not Core.company.receivables.is_empty():
-		attendant_task="payments"
-		g.go(_route_to_pickup(g)+[point(Vector3(0,.1,.7))])
 		return
 	var local: Vector3=main.world.kiosk_local(g.global_position)
 	if absf(local.x)>2.25 or local.z>1.6:

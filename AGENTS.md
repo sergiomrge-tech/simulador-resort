@@ -23,7 +23,7 @@ o nome do arquivo não restringe seu uso à IA Claude.
 - **Balcão antes de sentar:** no modo físico clientes pedem/retiram todos os itens
   no balcão e só depois vão à mesa. Garçom também atende no balcão. Reservar mesas,
   manter fila e liberar retirada ao sair. Não restaurar pedidos sentados.
-- **Gestão no computador do balcão**, com E; B somente perto. Seis áreas compactas,
+- **Gestão no celular portátil**, aberto com B em qualquer lugar. Sem PC no balcão. Seis áreas compactas,
   cantos arredondados. Estações mantêm retirada/reposição direta. Quiosque começa
   fechado, exige Abrir quiosque e volta a fechar ao dormir. Saves preservados.
 - **Balcão: madeira escura e base cinza**, independente da pintura da empresa.
@@ -85,13 +85,13 @@ em casas projetadas fora dos bloqueios com margem para o corpo.
 
 Louça deve corresponder ao que foi consumido: suco → copo vazio; coco → coco aberto;
 comida → prato/tigela vazios. Preservar lista por lugar no save e limpar junto dos
-objetos. PC central, copos à esquerda e promoções à direita. Downloads/builds no
+objetos. Sem PC no balcão (pedido de 26/10); copos à esquerda e promoções à direita. Downloads/builds no
 drive D, pois C ficou cheio. Guia: [docs/LOUCA_BALCAO_2026-10-24.md](docs/LOUCA_BALCAO_2026-10-24.md).
 
 ## Pedido de 24/10 — desempenho e atendente único
 
 Somente **um atendente** faz todo o atendimento do quiosque: anotar, retirar pronto,
-entregar no balcão, receber no PC e recolher louça. Substitui cargos separados
+entregar no balcão com pagamento automático e recolher louça. Substitui cargos separados
 (garçom/caixa/limpeza/cozinheiro) no quiosque, preservando migração e histórico.
 Cargos de pousada/bar/passeios continuam separados. Não reabrir contratação de
 quatro cargos por seguir documentos antigos. Detalhes, métricas e validação em
@@ -100,3 +100,21 @@ quatro cargos por seguir documentos antigos. Detalhes, métricas e validação e
 ## Pedido de 24/10 — produtos nas mãos e sorvetes
 
 Produtos transportados acompanham as mãos animadas, inclusive o atendente. Pedidos maiores usam bandeja com apoio dos braços. Sorvetes de morango/chocolate são produtos prontos da geladeira, com reposição direta e pote vazio após consumo. Preservar o único atendente, sem preparo. Guia: [docs/MAOS_SORVETES_2026-10-24.md](docs/MAOS_SORVETES_2026-10-24.md).
+
+## Pedidos de 26/10 — campanha, HUD e operação
+
+Pagamento automático ao entregar cada produto: cliente pega e já paga. Não
+restaurar recebimento manual nem caminhada do atendente ao PC para cobrar.
+PC excluído por pedido final do usuário; gestão volta ao celular portátil com B,
+formato vertical e seis abas compactas. Isso substitui os pedidos de mover para a
+lateral e de reduzir alcance. Não deixar PC nem alvo invisível no balcão.
+Clientes continuam com mira tolerante e atendimento pelo lado interno.
+Pedidos e missões fixos à esquerda, inclusive nas estações; pedidos ficam até
+entregar todos os itens. Estações compactas, sem seis abas de gestão duplicadas.
+Campanha principal e secundárias persistem e recompensas não repetem.
+Porções de batata frita e peixe prontas no armário, com estoque/reposição como coco.
+Nunca colocar volume sólido de oclusão no interior acessível da casa.
+Navio diurno mais ao fundo (-220 Z), um por vez e lento; cruzeiro noturno ancorado.
+Guia atual: [docs/CAMPANHA_CORRECOES_2026-10-26.md](docs/CAMPANHA_CORRECOES_2026-10-26.md).
+
+Chuva deve umedecer a areia sem criar faixas brancas; espuma depende somente da orla. Botões e cartões ajustam-se ao conteúdo, sem faixas verdes esticadas.

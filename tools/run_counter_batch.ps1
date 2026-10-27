@@ -17,6 +17,8 @@ foreach($check in $Checks) {
         $exe=$engine
         $argsList=@('--path',('"'+$taskRoot+'"'))+$argsList
     }
+    # Não interpretar uma falha antiga antes que a nova engine abra o log.
+    [System.IO.File]::WriteAllText($log, "")
     $process=Start-Process -FilePath $exe -WorkingDirectory $work -ArgumentList $argsList -WindowStyle Hidden -PassThru
     $deadline=(Get-Date).AddMinutes(5)
     while(-not $process.WaitForExit(1000)) {

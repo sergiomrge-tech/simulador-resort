@@ -230,6 +230,7 @@ func fish_catch(r: float) -> int:
 	if n == 0:
 		Core.toast.emit(tr("Você pescou uma bota velha. Tente de novo!"), "info")
 		return 0
+	Core.prog.campaign.fish+=n
 	Core.stock["peixe"] = int(Core.stock.get("peixe", 0)) + n
 	Core.stock_changed.emit()
 	Core.toast.emit((tr("Peixe grande! +%d peixes") % n) if n == 3 else (tr("Você pescou +%d peixe") % n if n == 1 else tr("Você pescou +%d peixes") % n), "good")
@@ -665,7 +666,7 @@ func kiosk_prompt() -> String:
 		for index in Core.company.dirty_seats:
 			if index < 2 and not world.kiosk_spots[index].busy:
 				return "Recolher louça do balcão"
-		return tr("Entre pela lateral · geladeira e cozinha dentro do quiosque")
+		return tr("Mire no cliente para anotar ou entregar · E")
 	if not prep.is_empty():
 		var st: Array = Economy.DISH_STAGES[prep.dish]
 		return "%s  %s  (%d/%d)  ·  %s" % [tr(str(st[prep.stage][0])), _bar(float(prep.p)), int(prep.stage) + 1, st.size(), tr("segure E")]
@@ -675,7 +676,7 @@ func kiosk_prompt() -> String:
 			return tr("Cliente olhando o cardápio...")
 		if not kiosk_open():
 			return tr("Quiosque fechado · horário %02d:00–%02d:00") % [int(Core.kiosk_open_min() / 60.0), int(Core.kiosk_close_min() / 60.0)]
-		return tr("Quiosque fechado · abra no computador do balcão") if not Core.kiosk_accepting_customers() else tr("Quiosque: aguardando clientes")
+		return tr("Quiosque fechado · abra no celular") if not Core.kiosk_accepting_customers() else tr("Quiosque: aguardando clientes")
 	var rem: Array = _remaining(g)
 	var dish: String = str(rem[0])
 	var d: Dictionary = Economy.dish(dish)
@@ -792,7 +793,7 @@ func _complete_order(g, last_dish: String) -> void :
 	var adj: = Core.price_rating_adjust()
 	Core.add_rating(clampf((Economy.KIOSK_RATING_FAST if fast else Economy.KIOSK_RATING_SLOW) + adj, 1.0, 5.0))
 	if adj <= -0.3 and rng.randf() < 0.4:
-		Core.toast.emit(tr("Cliente reclamou: \"Tá caro!\" Baixe os preços no Cardápio do computador."), "bad")
+		Core.toast.emit(tr("Cliente reclamou: \"Tá caro!\" Baixe os preços no Cardápio do celular."), "bad")
 	var rev: = int(g.get_meta("revenue", 0))
 	if g.get_meta("vip", false) and rev > 0:
 		var vip_tip: = rev + 5

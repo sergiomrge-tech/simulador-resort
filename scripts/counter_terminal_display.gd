@@ -27,7 +27,7 @@ func _ready() -> void:
 	status=_label(column,22)
 	money=_label(column,25)
 	stock=_label(column,20)
-	_label(column,18).text="E · abrir gestão"
+	_label(column,18).text="E ou clique · abrir gestão"
 	for mesh in laptop.find_children("*","MeshInstance3D",true,false):
 		for surface in mesh.mesh.get_surface_count():
 			var original: Material=mesh.mesh.surface_get_material(surface)
@@ -60,7 +60,7 @@ func refresh() -> void:
 	title.text=str(Core.company.name) if Core.company.created else "MARÉ ALTA · GESTÃO"
 	status.text="ABERTO" if Core.kiosk_accepting_customers() else "QUIOSQUE FECHADO"
 	money.text="Caixa: "+Core.fmt_money(Core.money)
-	stock.text="%d pedidos aguardando pagamento" % Core.company.receivables.size()
+	stock.text="Pagamento automático na entrega"
 	var content: String=title.text+status.text+money.text+stock.text
 	if content!=_last_content:
 		_last_content=content

@@ -1,5 +1,7 @@
 extends Node
 class_name Prog
+const Campaign=preload("res://scripts/campaign.gd")
+var campaign: Dictionary=Campaign.defaults()
 ## v1.0 — sistemas de evolução: fama, árvore de melhorias, negócios, equipe com nível, temporadas e metas,
 ## receitas/fornecedores e capítulos da vila. Vive como filho do Core (Core.prog) e é salvo junto (save v6).
 
@@ -43,6 +45,7 @@ func reset() -> void:
 	chapters = {}
 	chapter_photo = {}
 	hotel_last = {}
+	campaign=Campaign.defaults()
 	_hour_acc = 0.0
 	roll_week()
 
@@ -542,6 +545,7 @@ func advance_chapter(id: String) -> bool:
 
 # ================================================================== ganchos chamados pelo Core
 func on_sale(dish: String, channel: String) -> void:
+	if channel=="kiosk" and dish.begins_with("sorvete_"): campaign.icecream+=1
 	add_fame(PD.XP.sale)
 	if channel != "bar":
 		_goal_add("serve", 1)
@@ -624,7 +628,7 @@ func on_new_day() -> void:
 				add_fame(PD.XP.goal)
 		_season_end()
 		roll_week()
-		Core.toast.emit(tr("Começou o %s! Novas metas da semana no computador.") % tr(season_name()), "info")
+		Core.toast.emit(tr("Começou o %s! Novas metas da semana no celular.") % tr(season_name()), "info")
 
 func tick(dmin: float) -> void:
 	_hour_acc += dmin
@@ -636,7 +640,7 @@ func tick(dmin: float) -> void:
 func to_dict() -> Dictionary:
 	return {"fame_xp": fame_xp, "tree": tree.duplicate(), "biz": biz.duplicate(true), "staff": staff_info.duplicate(true),
 		"goals": week_goals.duplicate(true), "wstats": week_stats.duplicate(), "sstats": season_stats.duplicate(), "medals": medals.duplicate(true),
-		"disc": discovered.duplicate(), "off": menu_off.duplicate(), "prem": premium.duplicate(), "ch": chapters.duplicate(), "chp": chapter_photo.duplicate(), "hotel": hotel_last.duplicate()}
+		"disc": discovered.duplicate(), "off": menu_off.duplicate(), "prem": premium.duplicate(), "ch": chapters.duplicate(), "chp": chapter_photo.duplicate(), "hotel": hotel_last.duplicate(), "campaign":campaign.duplicate(true)}
 
 func from_dict(d: Dictionary) -> void:
 	reset()
@@ -658,6 +662,7 @@ func from_dict(d: Dictionary) -> void:
 	premium = d.get("prem", {}) if typeof(d.get("prem")) == TYPE_DICTIONARY else {}
 	chapters = d.get("ch", {}) if typeof(d.get("ch")) == TYPE_DICTIONARY else {}
 	chapter_photo = d.get("chp", {}) if typeof(d.get("chp")) == TYPE_DICTIONARY else {}
+	campaign=Campaign.sanitize(d.get("campaign",{}))
 	hotel_last = d.get("hotel", {}) if typeof(d.get("hotel")) == TYPE_DICTIONARY else {}
 	fame_changed.emit(fame_level, fame_xp)
 	tree_changed.emit()

@@ -51,8 +51,8 @@ func run(main = null) -> void:
 	var cash: int = Core.money
 	var price: int = Core.sell_company_dish("suco")
 	check(price > 0 and Core.company.carry == "", "entrega consome apenas item carregado")
-	check(Core.stock == after and Core.money == cash, "entrega não gasta ingredientes nem antecipa caixa")
-	check(Core.collect_company_payments() == price and Core.money == cash + price, "caixa manual recebe conta")
+	check(Core.stock == after and Core.money == cash+price, "entrega paga automaticamente sem gastar ingredientes outra vez")
+	check(Core.collect_company_payments() == 0 and Core.money == cash + price, "pagamento da entrega não cria conta pendente")
 	check(Core.collect_company_payments() == 0 and Core.money == cash + price, "conta não pode ser recebida duas vezes")
 	Core.company.ready.suco = 0
 	before = Core.stock.duplicate()
@@ -75,7 +75,7 @@ func run(main = null) -> void:
 	cash = Core.money
 	check(Core.pickup_company_dish("suco"), "retirada para caixa contratado")
 	price = Core.sell_company_dish("suco")
-	check(Core.money==cash and not Core.company.receivables.is_empty(),"conta aguarda o atendente chegar ao caixa")
+	check(Core.money==cash+price and Core.company.receivables.is_empty(),"produto entregue já está pago")
 	Core.collect_company_payments()
 	check(Core.money>cash and Core.company.receivables.is_empty(),"receber no caixa liquida as contas uma vez")
 	Core.company.dirty_seats = [0]
@@ -89,12 +89,20 @@ func run(main = null) -> void:
 	Core.company.dirty_seats = [1]
 	Core.set_kiosk_open(false)
 	var snapshot: Dictionary = Core.company.duplicate(true)
+	var saved_cash: int=Core.money
+	snapshot.receivables=[]
 	Core.save_game()
 	Core.company = Rules.defaults()
-	check(Core.load_game() and Core.company == Rules.sanitize(snapshot), "save v7 mantém marca, preparo, produtos, mãos, contas e louça")
+	var loaded: bool=Core.load_game()
+	var expected: Dictionary=Rules.sanitize(snapshot)
+	var actual: Dictionary=Core.company.duplicate(true)
+	expected.erase("sim")
+	actual.erase("sim")
+	check(loaded and actual==expected and Core.money==saved_cash+7, "save mantém produtos e louça, liquidando conta antiga uma vez")
 	check(not Core.company.kiosk_open, "save e recarga preservam quiosque fechado")
 	var file = FileAccess.open(Core.SAVE_PATH, FileAccess.READ)
 	var legacy: Dictionary = JSON.parse_string(file.get_as_text())
+	legacy.money=Core.money
 	file.close()
 	legacy.erase("company")
 	legacy.v = 6
@@ -173,10 +181,10 @@ func _integration(main) -> void:
 	# Edição real do formulário e operações ligadas à cena.
 	main.hud.phone.close()
 	main.world.find_child("KioskSign",true,false).use()
-	check(not main.hud.phone.visible,"placa orienta para o computador sem gestão remota")
+	check(not main.hud.phone.visible,"placa orienta para o celular sem abrir ao esbarrar")
 	main.player.position = main.world.kiosk_point(Vector3(0,.1,.65))
 	main.operations.open_computer()
-	check(main.hud.phone.visible and main.hud.phone.app=="","PC abre a tela inicial da gestão")
+	check(main.hud.phone.visible and main.hud.phone.app=="","celular abre a tela inicial da gestão")
 	main.hud.phone._open_management("empresa")
 	check(main.hud.phone.company_name.max_length == 24, "formulário limita o nome")
 	await get_tree().process_frame
@@ -247,7 +255,7 @@ func _integration(main) -> void:
 		main.operations._staff_tick()
 		await get_tree().process_frame
 		elapsed+=get_process_delta_time()
-	check(Core.company.receivables.is_empty(),"o mesmo atendente caminha ao PC e recebe")
+	check(Core.company.receivables.is_empty(),"o pedido termina pago, sem caminhada ao caixa")
 	await to_table(village,g)
 	village._leave(g)
 	village._release_spot(g)

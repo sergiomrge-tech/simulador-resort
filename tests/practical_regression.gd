@@ -92,7 +92,7 @@ func run(main) -> void:
 	check(main.hud.phone.app == "servico", "E na geladeira abre a estação")
 	var buttons: Array[String] = []
 	for button in main.hud.phone.screen.find_children("*","Button",true,false): buttons.append(button.text)
-	check(not "Preparar · 3 s" in buttons and "Pegar e levar ao cliente" in buttons, "estação oferece retirada sem preparo")
+	check(not "Preparar · 3 s" in buttons and "Pegar" in buttons, "estação oferece retirada sem preparo")
 	main.hud.phone._service_action("coco_gelado", "pickup")
 	check(Core.stock.coco == stock_before - 1 and Core.company.production.is_empty(), "retirada imediata consome estoque uma vez")
 	check(Core.company.carry == "coco_gelado", "produto na mão sem esperar")

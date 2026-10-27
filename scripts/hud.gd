@@ -39,6 +39,7 @@ var office: OfficeUI
 var phone: PhoneUI
 var orders_panel: PanelContainer
 var orders_text: Label
+var mission_text: Label
 var work_text: Label
 var _toast_last := ""
 var _toast_time := -10.0
@@ -239,7 +240,7 @@ func _build_shop() -> void :
 	shop = phone
 	shop.visible = false
 
-## Abre o computador direto num app (os nomes das abas do antigo escritório ainda funcionam).
+## Abre o celular direto num app (os nomes das abas do antigo escritório ainda funcionam).
 func open_office(tab: String = "caixa", room_id: int = -1) -> void :
 	phone.open(PhoneUI.app_for_tab(tab), room_id)
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
@@ -251,10 +252,6 @@ func toggle_shop() -> void :
 	if shop.visible:
 		phone.close()
 	else:
-		var scene = get_tree().current_scene
-		if scene.operations == null or not scene.operations.can_use_computer():
-			Core.toast.emit("Use o computador no balcão para abrir a gestão.", "info")
-			return
 		phone.open("")
 		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 		if _pad_used:
@@ -362,17 +359,20 @@ func _process(delta: float) -> void :
 		_hint_t = 0.5
 		_update_objective()
 		_update_orders()
-	# com o computador aberto, some o que ficaria por baixo/por cima dele
+	# com o celular aberto, some o que ficaria por baixo/por cima dele
 	var phone_open: bool = shop != null and shop.visible
 	hint_l.visible = false
-	obj_l.visible = not phone_open
+	obj_l.visible = false
+	mission_text.visible=not phone_open or get_viewport().get_visible_rect().size.x>=900
+	orders_panel.position.y=mission_text.position.y+mission_text.get_minimum_size().y+14
 	obj_draw.visible = not phone_open
-	orders_panel.visible = not phone_open and orders_text.text != ""
+	orders_panel.visible = (not phone_open or get_viewport().get_visible_rect().size.x>=900) and orders_text.text != ""
+	orders_panel.z_index=2
 	work_text.visible = not phone_open and work_text.text != ""
 	prompt_l.visible = prompt_l.visible and not phone_open
 	if phone_open and desk_card: desk_card.visible = false
 	toasts.visible = not phone_open
-	toasts.position.y = orders_panel.position.y + orders_panel.size.y + 12.0 if orders_panel.visible else 18.0
+	toasts.position.y = 18.0
 	if keys_l:
 		keys_l.visible = not phone_open and not touch
 	crosshair.visible = not phone_open
@@ -404,7 +404,7 @@ func _hint() -> String:
 
 
 func _input(e: InputEvent) -> void :
-	# Teclas do nome pertencem ao formulário, inclusive B (atalho do computador).
+	# Teclas do nome pertencem ao formulário, inclusive B (atalho do celular).
 	if shop != null and shop.visible and e is InputEventKey and get_viewport().gui_get_focus_owner() is LineEdit and not e.is_action("pause"):
 		return
 	if e is InputEventScreenTouch:
@@ -445,6 +445,13 @@ func _input(e: InputEvent) -> void :
 		get_viewport().set_input_as_handled()
 	elif e is InputEventMouseButton and e.pressed and e.button_index == MOUSE_BUTTON_LEFT:
 		_pad_used = false
+		if not shop.visible and not get_tree().paused and Core.in_game and not _over_button(e.position):
+			player.refresh_focus()
+			var ops=get_parent().operations
+			if player.focus!=null and player.focus.has_meta("customer_ref"):
+				player.interact()
+				get_viewport().set_input_as_handled()
+				return
 		if not shop.visible and not (office and office.summary.visible) and not get_tree().paused and Core.in_game and Input.mouse_mode != Input.MOUSE_MODE_CAPTURED and not _over_button(e.position):
 			Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 	elif (e is InputEventKey or e is InputEventJoypadButton) and e.is_pressed() and not e.is_echo():
@@ -500,7 +507,7 @@ func _update_keys_hint() -> void :
 	if keys_l == null:
 		return
 	keys_l.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
-	keys_l.text = "%s interagir   ·   %s computador   ·   Esc menu" % [Quality.key_name("interact"), Quality.key_name("shop")]
+	keys_l.text = "%s interagir   ·   %s celular   ·   Esc menu" % [Quality.key_name("interact"), Quality.key_name("shop")]
 	if keys_l.is_inside_tree(): _hug(keys_l, 13, -30.0, 24.0)
 
 
@@ -534,7 +541,7 @@ func objective() -> Array:
 		return [tr("Já é tarde: volte para casa e durma"), home, 2.5]
 	var terminal = get_parent().operations
 	if not Core.company.created and terminal != null:
-		return ["Criar seu quiosque · E no computador do balcão",terminal.computer.global_position,2.0]
+		return ["Criar seu quiosque · B no celular",Vector3.INF,2.0]
 	if Core.company_enabled() and village:
 		var ops = get_parent().operations
 		var carried: String = str(Core.company.carry)
@@ -548,18 +555,18 @@ func objective() -> Array:
 			var next = village._next_customer()
 			var id: String = str(village._remaining(next)[0])
 			var ready: bool = Core.company_available(id) > 0
-			var drink: bool = load("res://scripts/dish_presentation.gd").is_drink(id)
+			var drink: bool = load("res://scripts/dish_presentation.gd").is_chilled(id)
 			var kind: String = "bebidas" if drink else "pratos"
 			var verb := "Retirar" if ready else "Repor estoque para"
 			return ["%s %s · %s" % [verb, Economy.dish(id).name, ops.order_number(next)], ops.stations[kind].global_position, 2.5]
 		if not Core.company.receivables.is_empty():
-			return ["Receber contas no computador", ops.computer.global_position, 2.5]
+			return ["Receber contas no celular", Vector3.INF, 2.5]
 		if not Core.company.dirty_seats.is_empty():
 			var seat: int = int(Core.company.dirty_seats[0])
 			if seat < world.kiosk_spots.size():
 				return ["Recolher louça e limpar", world.kiosk_spots[seat].approach, 2.5]
 		if not Core.company.kiosk_open:
-			return ["Abrir quiosque no computador do balcão",ops.computer.global_position,2.0]
+			return ["Abrir quiosque no celular",Vector3.INF,2.0]
 		if pp.distance_to(world.KIOSK_C) < 18.0: return ["", Vector3.INF, 0.0]
 	for r in Core.rooms:
 		if r.state == "dirty":
@@ -573,7 +580,7 @@ func objective() -> Array:
 			return [tr("Turno no quiosque: clientes esperando"), kc, 4.0]
 	for id in Economy.EXPANSION_ORDER:
 		if Core.expansion_state(id)[0] == "ready":
-			return [tr("Dá para comprar: %s — use o computador (%s)") % [tr(str(Economy.EXPANSIONS[id].name)), Quality.key_name("shop")], Vector3.INF, 0.0]
+			return [tr("Dá para comprar: %s — use o celular (%s)") % [tr(str(Economy.EXPANSIONS[id].name)), Quality.key_name("shop")], Vector3.INF, 0.0]
 	if village:
 		var kc: Vector3 = world.kiosk_counter.global_position
 		if Core.minutes < 8.0 * 60.0:
@@ -677,17 +684,24 @@ func _draw_compass() -> void :
 	compass.draw_string(get_theme_default_font(), Vector2(cx + 138, y + 4), wind, HORIZONTAL_ALIGNMENT_LEFT, -1, 16, Color(0.85, 0.95, 1))
 
 func _build_orders() -> void:
+	mission_text=_label(root,"",13,Color(1,.93,.68))
+	mission_text.position=Vector2(18,64)
+	mission_text.size=Vector2(285,100)
+	mission_text.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
+	mission_text.mouse_filter=Control.MOUSE_FILTER_IGNORE
+	mission_text.add_theme_color_override("font_outline_color",Color(0,.04,.04,.9))
+	mission_text.add_theme_constant_override("outline_size",2)
 	orders_panel = PanelContainer.new()
 	orders_panel.name = "KioskOrders"
-	orders_panel.set_anchors_preset(Control.PRESET_TOP_RIGHT)
-	orders_panel.position = Vector2(-304, 18)
-	orders_panel.custom_minimum_size = Vector2(286, 0)
+	orders_panel.set_anchors_preset(Control.PRESET_TOP_LEFT)
+	orders_panel.position = Vector2(18, 154)
+	orders_panel.custom_minimum_size = Vector2(270, 0)
 	orders_panel.add_theme_stylebox_override("panel", UiTheme.box(Color(0.025, 0.13, 0.15, 0.83), 12, Color(1, 1, 1, 0.12), 1, 9, 12))
 	orders_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	root.add_child(orders_panel)
-	orders_text = _label(orders_panel, "", 15, Color(1, 0.97, 0.88))
+	orders_text = _label(orders_panel, "", 14, Color(1, 0.97, 0.88))
 	orders_text.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	orders_text.custom_minimum_size = Vector2(260, 0)
+	orders_text.custom_minimum_size = Vector2(246, 0)
 	work_text = Label.new()
 	work_text.set_anchors_preset(Control.PRESET_CENTER_BOTTOM)
 	work_text.position = Vector2(-260, -114)
@@ -701,21 +715,22 @@ func _build_orders() -> void:
 	orders_panel.visible = false
 
 func _update_orders() -> void:
+	mission_text.text=Core.prog.Campaign.tracker(Core.prog)
 	orders_text.text = ""
 	work_text.text = ""
-	if not Core.company_enabled() or village == null or player.global_position.distance_to(world.KIOSK_C) > 20.0: return
+	if not Core.company_enabled() or village == null: return
 	var ops = get_parent().operations
 	var waiting: Array = village.waiting_customers()
 	var lines: Array = []
 	var unrecorded: Array = village.customers_to_order()
 	if not unrecorded.is_empty():
-		lines.append("%d cliente(s) aguardando · E para anotar na mesa" % unrecorded.size())
-	for guest in waiting.slice(0, 3):
+		for guest in unrecorded:
+			lines.append("%s · Anotar no balcão" % ops.order_number(guest))
+	for guest in waiting:
 		var items: Array = []
 		for id in village._remaining(guest):
 			items.append(str(Economy.dish(id).name) + (" ✓" if Core.company_available(id) > 0 else ""))
 		lines.append("%s %s\n%s" % [ops.order_number(guest), ops.seat_name(guest), " + ".join(items)])
-	if waiting.size() > 3: lines.append("+%d pedidos · computador > Quiosque" % (waiting.size() - 3))
-	if not lines.is_empty(): orders_text.text = "PEDIDOS · ✓ pronto para retirar\n\n" + "\n\n".join(lines)
+	if not lines.is_empty(): orders_text.text = "PEDIDOS · ✓ disponível\n" + "\n".join(lines)
 	if str(Core.company.carry) != "":
 		work_text.text = "Na mão: %s · E no cliente com o mesmo pedido" % Economy.dish(str(Core.company.carry)).name

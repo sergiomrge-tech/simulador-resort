@@ -325,3 +325,7 @@ empacotadas em art/blender. Coco aberto reutiliza o modelo autoral existente.
 ## Sorvetes e bandeja de transporte — 24/10/2026
 
 Modelos originais deste projeto, dedicados a CC0: icecream_strawberry, icecream_chocolate, used_icecream_cup, service_carry_tray. Gerador tools/gen_icecream.py; fontes editáveis art/blender/*.blend, reabertas para verificar portabilidade. Sem texturas externas. Potes torneados, colher, sorvete com superfície irregular e fragmentos de fruta/chocolate; bandeja chanfrada.
+
+## Porções prontas — 26/10/2026
+
+Modelos originais deste projeto dedicados a CC0: dish_fries e dish_fish_portion. Gerador tools/gen_portions.py e fontes editáveis art/blender/dish_fries.blend e dish_fish_portion.blend, salvas e reabertas. Batatas chanfradas com pontas tostadas/sal; filés empanados com lascas, crosta, limão e salsa. Sem texturas externas.

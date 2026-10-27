@@ -55,6 +55,7 @@ func _ready() -> void :
 	_village_palms()
 	_village_routes()
 	_village_expansion()
+	_neighborhood_finish()
 	_beach_life()
 	_landmark_details()
 	_map_details()
@@ -276,7 +277,7 @@ func _street() -> void :
 	var x1: = 99.0
 	var L: = x1 - x0
 	var cx: = (x0 + x1) * 0.5
-	B.box(self, Vector3(L, 0.05, 4.0), Vector3(cx, 0.02, STREET_Z), VM.road)
+	B.box(self, Vector3(L, 0.06, 7.6), Vector3(cx, 0.02, STREET_Z), VM.road)
 	for side in [-1.0, 1.0]:
 		var z_side: float = STREET_Z + side * 2.9
 		B.platform(self, Vector3(L, 0.3, 1.8), Vector3(cx, 0.0, z_side), VM.calcada, 0.35)
@@ -600,7 +601,7 @@ func _hero_house() -> void :
 	B.box(self, Vector3(w - 0.2, 0.06, d - 0.2), Vector3(c.x, y0 + h - 0.05, c.z), M.planks)
 	B.hip_roof(self, Vector3(c.x, y0 + h + 0.05, c.z), w + 1.8, d + 1.8, 2.15, VM.clay, 0.14)
 	_block(c, w, d, 0.38)
-	_occlude(c, w * 0.85, d * 0.85, h * 0.85)
+	# Interior acessível: nunca preencher a casa com um oclusor sólido.
 	_bougainvillea(Vector3(x0 + 0.75, 0.0, zf + 0.62), 1.0)
 
 	B.box(self, Vector3(1.35, 1.22, 0.04), Vector3(c.x - 1.7, y0 + 1.65, zf), VM.window_glass)
@@ -820,9 +821,9 @@ func _quiosque() -> void :
 	sign_box.size = Vector3(4.0, 0.64, 0.18)
 	sign_shape.shape = sign_box
 	sign_action.add_child(sign_shape)
-	sign_action.prompt_fn = func(): return tr("Gestão no computador do balcão")
+	sign_action.prompt_fn = func(): return tr("Gestão no celular")
 	sign_action.action_fn = func():
-		Core.toast.emit("Use o computador dentro do quiosque para personalizar e abrir o negócio.","info")
+		Core.toast.emit("Use o celular (B) para personalizar e abrir o negócio.","info")
 	add_child(sign_action)
 	var subtitle: Label3D = B.label(self, "QUIOSQUE • SABORES DA PRAIA", c + Vector3(0, y0 + 2.08, 3.49), 24, Color(0.94, 0.83, 0.6), Color(0, 0, 0, 0))
 	subtitle.shaded = false
@@ -847,7 +848,7 @@ func _quiosque() -> void :
 	var cs: = CollisionShape3D.new()
 	var sh: = BoxShape3D.new()
 	# A área de serviço começa antes da colisão física do tampo. Recortar a
-	# extremidade direita deixa livre a mira do computador (x=1,70).
+	# extremidade direita mantém livre a faixa de interação do balcão.
 	sh.size = Vector3(3.2, 1.5, 1.4)
 	cs.shape = sh
 	cs.position.x = -.5
@@ -1607,12 +1608,12 @@ func _road(a: Vector3, b: Vector3) -> void :
 	_road_n += 1
 	var c: = (a + b) * 0.5 + Vector3(0, 0.005 * (_road_n % 4), 0)
 	if horizontal:
-		B.box(self, Vector3(L, 0.05, 4.0), Vector3(c.x, 0.02 + c.y, c.z), VM.road)
+		B.box(self, Vector3(L, 0.06, 7.6), Vector3(c.x, 0.02 + c.y, c.z), VM.road)
 		for side in [-1.0, 1.0]:
 			B.platform(self, Vector3(L, 0.3, 1.8), Vector3(c.x, c.y, c.z + side * 2.9), VM.calcada, 0.35)
 			B.box(self, Vector3(L, 0.32, 0.22), Vector3(c.x, c.y, c.z + side * 2.05), VM.curb)
 	else:
-		B.box(self, Vector3(4.0, 0.05, L), Vector3(c.x, 0.02 + c.y, c.z), VM.road)
+		B.box(self, Vector3(7.6, 0.06, L), Vector3(c.x, 0.02 + c.y, c.z), VM.road)
 		for side in [-1.0, 1.0]:
 			B.platform(self, Vector3(1.8, 0.3, L), Vector3(c.x + side * 2.9, c.y, c.z), VM.calcada, 0.35)
 			B.box(self, Vector3(0.22, 0.32, L), Vector3(c.x + side * 2.05, c.y, c.z), VM.curb)
@@ -2107,3 +2108,24 @@ func _apply_kiosk_look() -> void:
 		var rect: Rect2 = group.rect
 		rect.position += Vector2(offset.x, offset.z)
 		block_rects[int(group.block)] = kiosk_rect(rect)
+
+func _neighborhood_finish() -> void:
+	# Passeio entre os fundos das casas: feira e igreja ficam livres.
+	for segment in [[1.5,22.0],[46.0,66.0],[84.0,104.0]]:
+		var a: float=segment[0]
+		var b: float=segment[1]
+		B.box(self,Vector3(b-a,.06,3.0),Vector3((a+b)*.5,.04,48),VM.road)
+	for x in [12.0,54.0,94.0]:
+		bench_spots.append(_bench(Vector3(x,.04,50.1),PI))
+		_add_lamp(Vector3(x+2.0,.05,50.1))
+	for x in [6.0,18.0,50.0,62.0,88.0,100.0]:
+		B.model(self,"potted_plant_04",Vector3(x,.03,51.4),0,.9)
+	for z in [STREET_Z,BACK_Z]:
+		for x in [14.0,46.0,86.0]:
+			bench_spots.append(_bench(Vector3(x,.15,z-2.8),0))
+			B.model(self,"potted_plant_02",Vector3(x+1.2,.15,z-3.0),0,.65)
+		for x in [24.0,58.0,96.0]:
+			B.model(self,"planter_pot_clay",Vector3(x,.15,z+3.2),.3,.8)
+	for x in [1.5,104.0]:
+		for z in [42.0,56.0]:
+			B.model(self,"potted_plant_04",Vector3(x+3.2,.15,z),0,.7)

@@ -1,5 +1,6 @@
 extends Node3D
 ## Ambient life, separate from customers, orders and player stock.
+const SAILSHIP_Z := -220.0
 const COURT := Vector3(26,0,-23)
 var main
 var court: Node3D
@@ -76,7 +77,7 @@ func _update_visibility() -> void:
 func _advance(delta: float) -> void:
 	sea_time += delta
 	rally_time += delta
-	yacht.position = Vector3(-120+fposmod(160+sea_time*.50,360),main.world.WATER_Y-2.4+.035*sin(sea_time*1.2),-78)
+	yacht.position = Vector3(-120+fposmod(160+sea_time*.50,360),main.world.WATER_Y-2.4+.035*sin(sea_time*1.2),SAILSHIP_Z)
 	yacht.rotation.z = .008*sin(sea_time*.8)
 	cruise.position = Vector3(40,main.world.WATER_Y-5.60,-210)
 	var leg := int(floor(rally_time/1.65))%4

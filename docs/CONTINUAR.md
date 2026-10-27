@@ -1,9 +1,13 @@
 # Guia vigente para as próximas atualizações
 
-Atualizado em **24/10/2026**. Destinado a qualquer IA ou pessoa, sem depender deste
+Atualizado em **26/10/2026**. Destinado a qualquer IA ou pessoa, sem depender deste
 chat. Leia junto com [AGENTS.md](../AGENTS.md). Novos pedidos do usuário prevalecem.
 
-**Atualização mais recente:** [Produtos nas mãos e sorvetes](MAOS_SORVETES_2026-10-24.md).
+**Atualização mais recente:** [Campanha e correções de 26/10](CAMPANHA_CORRECOES_2026-10-26.md).
+
+Pagamento na entrega substitui o recebimento manual. Sem PC: gestão no celular portátil com B em qualquer lugar; missões e pedidos fixos à esquerda. Porções prontas de batata e peixe no armário.
+
+[Produtos nas mãos e sorvetes](MAOS_SORVETES_2026-10-24.md) continua vigente.
 
 [Desempenho e atendente único](DESEMPENHO_ATENDENTE_2026-10-24.md) continua vigente.
 
@@ -32,7 +36,7 @@ O documento PASSAGEM_PARA_OUTRA_IA.md guarda o checkpoint histórico anterior.
 - Repositório: https://github.com/sergiomrge-tech/simulador-resort
 - Base anterior ao checkpoint de computador/balcão: **`80bc38d`**.
   Verifique `git log` e `git status` para identificar o checkpoint mais recente.
-- O jogo começa com o quiosque e evolui por expansões. Gestão no computador do balcão (E; B só perto).
+- O jogo começa com o quiosque e evolui por expansões. Gestão no celular portátil (B; sem computador físico).
 
 Antes de editar, confira branch/remoto e alterações pendentes. Não use reset,
 checkout ou cópia de um build antigo para substituir trabalho existente. Não

@@ -7,7 +7,7 @@ class_name PD
 const FAME_XP: = [0, 100, 250, 450, 700, 1000, 1400, 1900, 2500, 3200]
 const FAME_NAMES: = ["Desconhecido", "Falado na vila", "Ponto da praia", "Queridinho da cidade", "Famoso na região",
 	"Roteiro turístico", "Destaque na TV", "Destino do verão", "Paraíso famoso", "Lenda da costa"]
-## O que cada nível novo libera (texto mostrado no computador e no aviso de subida).
+## O que cada nível novo libera (texto mostrado no celular e no aviso de subida).
 const FAME_PERKS: = {
 	2: "Sorveteria disponível nos Negócios",
 	3: "Turistas chegam à praia: gorjetas maiores",

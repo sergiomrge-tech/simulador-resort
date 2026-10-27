@@ -1,0 +1,31 @@
+Godot Engine v4.5.1.stable.official.f62fdbde1 - https://godotengine.org
+Vulkan 1.4.351 - Forward+ - Using Device #0: NVIDIA - NVIDIA GeForce RTX 4060 Ti
+
+vegetacao: capim=4021 arbustos=99 coqueiros+=46
+serra: copas perto=250 crista=101
+serra: tris encosta=16884
+[coast] ok quatro pessoas jogam vôlei de dia
+[coast] ok iate diurno sem cruzeiro sobreposto
+[coast] ok um único navio de madeira por vez
+[coast] ok iate navega e bola avança na jogada
+[coast] ok navio passa lentamente
+[coast] ok bola cruza acima da rede
+[coast] ok recebedor alcança a bola no contato
+[coast] ok iate longe da faixa de banho e do cais
+[coast] ok captura beach_volleyball gravada
+[coast] screenshot C:/Users/sergi/Documents/ChatGPT/resort 2/build/qa/counter-batch-coastal-pack/Godot/app_userdata/Maré Alta Resort/qa_shots/beach_volleyball.png
+[coast] ok captura beach_yacht gravada
+[coast] screenshot C:/Users/sergi/Documents/ChatGPT/resort 2/build/qa/counter-batch-coastal-pack/Godot/app_userdata/Maré Alta Resort/qa_shots/beach_yacht.png
+[coast] ok pausa congela movimento ambiente
+[coast] ok cruzeiro aparece à noite e iate recolhe
+[coast] ok quadra descansa à noite
+[coast] ok cruzeiro no mar distante
+[coast] ok cruzeiro detalhado carregado, modelo simplificado retirado
+[coast] ok cruzeiro detalhado em escala correta, sem rotação vertical
+[coast] ok cruzeiro noturno ancorado sem deslocamento ou esteira
+[coast] ok janelas iluminadas no navio
+[coast] ok captura beach_cruise_night gravada
+[coast] screenshot C:/Users/sergi/Documents/ChatGPT/resort 2/build/qa/counter-batch-coastal-pack/Godot/app_userdata/Maré Alta Resort/qa_shots/beach_cruise_night.png
+[coast] ok vôlei interrompe na chuva
+COASTAL_TEST PASS
+SHUTDOWN_COMPLETE code=0

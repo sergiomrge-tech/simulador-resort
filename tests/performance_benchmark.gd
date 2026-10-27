@@ -22,7 +22,8 @@ func run(main) -> void:
 	main.day.force_update()
 	Core.time_changed.emit(Core.day,Core.minutes)
 	if main.args.has("perf-original"):
-		main.operations.find_child("CounterDisplay",true,false).viewport.render_target_update_mode=SubViewport.UPDATE_ALWAYS
+		var old_display=main.operations.find_child("CounterDisplay",true,false)
+		if old_display: old_display.viewport.render_target_update_mode=SubViewport.UPDATE_ALWAYS
 	var viewport:=get_viewport()
 	RenderingServer.viewport_set_measure_render_time(viewport.get_viewport_rid(),true)
 	var scenarios: Array=[
@@ -98,7 +99,7 @@ func run_paired(main, scenarios: Array) -> void:
 				if not is_instance_valid(pair[0]): continue
 				for surface in pair[1].size(): pair[0].set_surface_override_material(surface,pair[2 if original else 1][surface])
 			var display=main.operations.find_child("CounterDisplay",true,false)
-			display.viewport.render_target_update_mode=SubViewport.UPDATE_ALWAYS if original else SubViewport.UPDATE_ONCE
+			if display: display.viewport.render_target_update_mode=SubViewport.UPDATE_ALWAYS if original else SubViewport.UPDATE_ONCE
 			await get_tree().create_timer(2.0).timeout
 			var times: Array=[]
 			var gpu: Array=[]

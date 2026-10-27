@@ -1010,7 +1010,7 @@ func show_order(text: String, urgent: = false) -> void :
 	if Core.company_enabled() and not spot.is_empty():
 		var world = _world()
 		if world != null:
-			_bubble.text = ("E · " if not bool(get_meta("order_taken", true)) else "") + "#%02d" % (world.kiosk_spots.find(spot) + 1)
+			_bubble.text = ("E · " if not bool(get_meta("order_taken", true)) else "") + get_tree().current_scene.operations.order_number(self)
 	_bubble.modulate = Color(0.2, 0.12, 0.08)
 	_bubble.outline_modulate = Color(1.0, 0.55, 0.5) if urgent else (Color(1.0, 0.85, 0.25) if get_meta("vip", false) else Color(1, 1, 1))
 

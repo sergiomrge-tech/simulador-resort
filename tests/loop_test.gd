@@ -53,7 +53,7 @@ func career_test() -> void :
 	check( not w.areas.bar.visible and w.lots.bar.visible, "bar é um lote à venda")
 	check( not w.areas.pool.visible and w.lots.pool.visible, "piscina é um lote à venda")
 	check( not w.areas.kiosk_tables.visible and not w.areas.neon.visible, "quiosque começa simples")
-	check(Core.kiosk_menu() == ["coco_gelado", "suco", "sorvete_morango", "sorvete_chocolate"], "cardápio inicial: coco gelado e suco")
+	check(Core.kiosk_menu() == ["coco_gelado", "suco", "sorvete_morango", "sorvete_chocolate", "batata_frita", "porcao_peixe"], "cardápio inicial: coco gelado e suco")
 	check(Core.expansion_state("bar")[0] == "locked", "bar bloqueado no início")
 	check( not main.guests.bartender.visible, "barman ainda não existe")
 	check(Core.expansion_state("kiosk_tables")[0] == "money", "mesas exigem juntar dinheiro no 1º dia")
@@ -79,7 +79,7 @@ func career_test() -> void :
 	for id in ["bar", "pousada", "pool", "neon", "grill"]:
 		check(w.areas[id].visible and (not w.lots.has(id) or not w.lots[id].visible), "área %s visível" % id)
 	check(main.guests.bartender.visible, "barman no bar")
-	check(Core.kiosk_menu().size() == 6, "cardápio completo no quiosque")
+	check(Core.kiosk_menu().size() == 8, "cardápio completo no quiosque")
 	check(Core.rooms.size() == 2 and w.room_nodes.size() == 2, "dois bangalôs no mundo")
 	var visitor = main.guests.spawn_bar_visitor()
 	check(visitor != null and visitor.has_meta("visitor"), "banhista indo ao bar")
@@ -368,6 +368,11 @@ func run(m) -> void :
 		var counter = load("res://tests/counter_regression.gd").new()
 		add_child(counter)
 		await counter.run(main)
+		return
+	if main.args.has("revision26-test"):
+		var test=load("res://tests/revision26_regression.gd").new()
+		add_child(test)
+		await test.run(main)
 		return
 	if main.args.has("held-order-test"):
 		var test=load("res://tests/held_order_regression.gd").new()

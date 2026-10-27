@@ -2,7 +2,7 @@ class_name Economy
 ## Todos os números da progressão do Maré Alta. Não espalhar preço, diária ou salário pelo código.
 ##
 ## v0.7 — modo carreira: o jogo começa só com um quiosque simples na praia (coco gelado e suco).
-## Cada expansão (EXPANSIONS) é comprada pelo computador e aparece no mundo no lugar de um lote à venda.
+## Cada expansão (EXPANSIONS) é comprada pelo celular e aparece no mundo no lugar de um lote à venda.
 ## Caixa típico do dia 1: ~18 clientes no quiosque × ~R$ 13 ≈ R$ 230, menos ~R$ 70 de insumos.
 
 const BASE_NIGHTLY: = 100
@@ -175,6 +175,8 @@ const FISH_SECONDS: = 3.2
 const COCO_PILE_YIELD: = 2
 
 const SUPPLIES: = {
+	"batata_pronta":{"name":"Porção pronta de batata","cost":4},
+	"peixe_pronto":{"name":"Porção pronta de peixe","cost":8},
 	"sorvete_morango": {"name":"Sorvete pronto de morango", "cost":4},
 	"sorvete_chocolate": {"name":"Sorvete pronto de chocolate", "cost":5},
 	"coco": {"name": "Coco", "cost": 3}, 
@@ -194,6 +196,7 @@ const SUPPLIES: = {
 
 ## Despensa de abertura do quiosque (presente, não entra no caixa): dá para a manhã do dia 1.
 const START_STOCK: = {
+	"batata_pronta":6,"peixe_pronto":6,
 	"sorvete_morango":6,"sorvete_chocolate":6,
 	"coco": 12, "frutas": 12, "cachaca": 0, "gelo": 18, "peixe": 0, "pao": 0,
 	"tapioca": 0, "queijo": 0, "camarao": 0, "acai": 0,
@@ -205,6 +208,8 @@ const START_STOCK: = {
 
 
 const DISHES: = {
+	"batata_frita":{"name":"Porção de batata frita","price":16,"uses":{"batata_pronta":1}},
+	"porcao_peixe":{"name":"Porção de peixe","price":28,"uses":{"peixe_pronto":1}},
 	"sorvete_morango": {"name":"Sorvete de morango", "price":12, "uses":{"sorvete_morango":1}},
 	"sorvete_chocolate": {"name":"Sorvete de chocolate", "price":14, "uses":{"sorvete_chocolate":1}},
 	"coco_gelado": {"name": "Coco gelado", "price": 12, "uses": {"coco": 1, "gelo": 1}}, 
@@ -277,7 +282,7 @@ const TOURS: = {
 	"barco": {"name": "Passeio de barco", "at": 13.5 * 60.0, "price": 70, "cost": 45, "seats": 8, "sea": true},
 	"farol": {"name": "Trilha ao farol", "at": 16.0 * 60.0, "price": 35, "cost": 10, "seats": 5, "sea": false},
 }
-const KIOSK_MENU: = ["coco_gelado", "suco", "caipirinha", "petiscos", "tapioca", "pastel", "acai", "batida", "moqueca", "sorvete_morango", "sorvete_chocolate"]
+const KIOSK_MENU: = ["coco_gelado", "suco", "caipirinha", "petiscos", "tapioca", "pastel", "acai", "batida", "moqueca", "sorvete_morango", "sorvete_chocolate", "batata_frita", "porcao_peixe"]
 const BAR_MENU: = ["coco_gelado", "caipirinha", "petiscos", "suco"]
 const PACK: = 6
 

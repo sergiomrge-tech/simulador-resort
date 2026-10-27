@@ -585,7 +585,7 @@ func note_stockout(id: String) -> void :
 		name = str(Economy.dish(id).name)
 	toast.emit(tr("Sem estoque para %s") % tr(name), "bad")
 
-## Preço de venda atual do prato (o jogador ajusta pelo computador, em 5 níveis).
+## Preço de venda atual do prato (o jogador ajusta pelo celular, em 5 níveis).
 func price_tier_of(id: String) -> int:
 	return clampi(int(price_tier.get(id, Economy.PRICE_DEFAULT_TIER)), 0, Economy.PRICE_TIERS.size() - 1)
 
@@ -928,7 +928,7 @@ func upgrade_room(id: int, cat: String) -> bool:
 
 func build_bungalow() -> bool:
 	if not has("pousada"):
-		toast.emit(tr("Compre a pousada primeiro (computador → Expansões)."), "bad")
+		toast.emit(tr("Compre a pousada primeiro (celular → Expansões)."), "bad")
 		return false
 	if rooms.size() >= Economy.BUNGALOW_MAX:
 		toast.emit(tr("A pousada já tem o máximo de bangalôs."), "info")
@@ -972,7 +972,7 @@ func hire(role: String, offered_fee: int = -1) -> bool:
 	if not Economy.STAFF.has(role):
 		return false
 	if bool(Economy.STAFF[role].get("company", false)) and not bool(company.created):
-		toast.emit(tr("Crie sua empresa no computador primeiro."), "bad")
+		toast.emit(tr("Crie sua empresa no celular primeiro."), "bad")
 		return false
 	if bool(staff.get(role, false)):
 		toast.emit(tr("Já contratado: %s") % tr(str(Economy.STAFF[role].name)), "info")
@@ -1150,6 +1150,7 @@ func load_game() -> bool:
 	expansion_bought.emit("")
 	if is_inside_tree():
 		get_tree().call_group("world", "sync_bungalows")
+	if company_enabled() and not company.receivables.is_empty(): collect_company_payments()
 	return true
 
 func delete_save() -> void :
@@ -1383,6 +1384,7 @@ func sell_company_dish(id: String, by_staff: bool = false) -> int:
 	var price: int = price_of(id)
 	company[source] = ""
 	company.receivables.append({"dish": id, "value": price})
+	collect_company_payments()
 	company_changed.emit()
 	return price
 

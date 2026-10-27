@@ -33,13 +33,13 @@ void fragment(){
 	float streak = smoothstep(0.92, 0.97, sin(wpos.x * 1.3 + noise(wpos.xz * 0.4) * 6.0 + wpos.z * 0.4) * 0.5 + 0.5);
 	dry = mix(dry, sand_light * 1.015, streak * 0.18);
 	float shore_n = (noise(wpos.xz * 0.11) - 0.5) * 3.0 + (noise(wpos.xz * 0.33) - 0.5) * 1.2;
-	float w = smoothstep(wet_start, wet_end, wpos.z + shore_n);
-	w = max(w, rain_wet * 0.6);
-	float wet_band = smoothstep(0.35, 0.42, w);
+	// Chuva umedece, mas nunca cria espuma fora da orla.
+	float w = 1.0 - smoothstep(wet_end, wet_start, wpos.z + shore_n);
+	float wet_band = max(smoothstep(0.35, 0.75, w), clamp(rain_wet, 0.0, 1.0) * 0.65);
 	vec3 col = mix(dry, sand_wet, wet_band);
 	// linha de espuma branca recortada na beira da areia molhada
 	float wash = smoothstep(0.3, 0.34, w) * (1.0 - smoothstep(0.4, 0.44, w));
-	wash *= step(0.4, noise(vec2(wpos.x * 0.5, TIME * 0.2)));
+	wash *= step(0.4, noise(vec2(wpos.x * 0.5, TIME * 0.2))) * 0.45;
 	col = mix(col, foam, wash);
 	// conchinhas coloridas
 	float sp = noise(wpos.xz * 4.1);
@@ -47,6 +47,6 @@ void fragment(){
 	vec3 shell_c = mix(vec3(1.0, 0.62, 0.55), vec3(1.0, 0.95, 0.85), step(0.5, hash(floor(wpos.xz * 4.1))));
 	col = mix(col, shell_c, shell);
 	ALBEDO = col;
-	ROUGHNESS = mix(0.95, 0.35, wet_band);
-	SPECULAR = mix(0.05, 0.4, wet_band);
+	ROUGHNESS = mix(0.95, 0.50, wet_band);
+	SPECULAR = mix(0.05, 0.22, wet_band);
 }

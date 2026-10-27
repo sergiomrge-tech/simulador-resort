@@ -5,8 +5,8 @@ feito em **Godot 4.5.1**, GDScript, Forward+, para Windows.
 
 Linha atual: **1.1.0 RC2**, branch **`codex/resort-1.1-mcp`**.
 
-**Atualização de 24/10/2026:** produtos presos às mãos animadas e sorvetes na geladeira, com otimizações de desempenho e atendente único; inclui as revisões anteriores.
-[Download para Windows — produtos nas mãos e sorvetes](https://github.com/sergiomrge-tech/simulador-resort/releases/tag/v1.1.0-rc2.20261024-maos-sorvetes).
+**Atualização de 26/10/2026:** celular portátil, campanha principal e secundárias, HUD compacto à esquerda, pagamento na entrega, porções prontas, casa corrigida, chuva corrigida e navio distante; inclui as revisões anteriores.
+[Download para Windows — campanha e correções](https://github.com/sergiomrge-tech/simulador-resort/releases/tag/v1.1.0-rc2.20261026-campanha-correcoes).
 Extraia o ZIP inteiro e abra Jogar.vbs. Preserve userdata ao atualizar.
 
 ## Vai continuar o projeto com outra IA?
