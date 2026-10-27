@@ -136,5 +136,3 @@ void AMareHUD::DrawHUD()
  Canvas->DrawText(Font,TEXT("B · celular     E · interagir"),22,Canvas->ClipY-35);
 }
 AMareGameMode::AMareGameMode(){DefaultPawnClass=AMareCharacter::StaticClass();PlayerControllerClass=AMareController::StaticClass();HUDClass=AMareHUD::StaticClass();}
-
-

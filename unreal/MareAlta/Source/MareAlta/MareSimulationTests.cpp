@@ -53,4 +53,3 @@ bool FMareEconomyTest::RunTest(const FString& Parameters)
  Sim->RemoveFromRoot();Instance->RemoveFromRoot();return true;
 }
 #endif
-

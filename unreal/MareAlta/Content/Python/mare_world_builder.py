@@ -81,4 +81,3 @@ def build():
     result={'map':path,'model_groups':len(groups),'instances':count,'missing_models':len(missing),'visual_approval':False}
     (data/'map_build.json').write_text(json.dumps(result,indent=2),encoding='utf-8')
     return result
-

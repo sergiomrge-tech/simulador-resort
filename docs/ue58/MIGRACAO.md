@@ -34,7 +34,7 @@ mapa e recarga das ferramentas do projeto. Não exige plugin de terceiros.
 - Exportados 12.910 posicionamentos do cenário, 2.985 variantes de modelo, reduzidas
   a 1.620 modelos canônicos. Fontes glTF portáveis e imagens compartilhadas geradas.
 - Calibração real de importação: Godot(1,2,3)m → UE(100,300,200)cm.
-- Primeiros 18 modelos nativos importados/validados por MCP. Importação restante,
+- Primeiros 306 modelos nativos importados/validados por MCP (zero recursos ausentes). Importação restante,
   mapa, render e aprovação visual continuam pendentes.
 - O acesso a EpicGames/UnrealEngine retornou404 nesta conta; a engine instalada
   permite compilar. Não redistribuir o código/binários da engine neste repositório.
@@ -74,3 +74,7 @@ Foi salvo `/Game/Maps/Coast` com 19grupos/36instâncias importadas; faltam1602mo
 A primeira captura confirma posicionamento básico, mas está com exterior claro
 excessivo e preenchimento insuficiente. **Reprovada como resultado visual final**;
 completar cenário e corrigir luz antes de apresentar como jogo migrado.
+
+Checkpoint inicial enviado e verificado no GitHub: `75b8d7b`. Fontes completas
+preparadas em glTF estão no Git LFS (1.620modelos e texturas compartilhadas);
+306modelos já têm assets nativos importados. A importação restante não foi concluída.
