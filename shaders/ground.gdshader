@@ -49,7 +49,7 @@ void fragment(){
 	col = mix(col, shell_c, shell);
 	float inland = smoothstep(-12.0,-5.0,wpos.z+(noise(wpos.xz*.23)-.5)*3.0);
 	vec3 grass_sample=texture(grass_tex,wpos.xz*.52).rgb;
-	vec3 lawn=mix(vec3(.19,.27,.095),vec3(.31,.39,.17),big)*(.70+grass_sample*.50);
+	vec3 lawn=mix(vec3(.07,.14,.035),vec3(.13,.23,.065),big)*(.70+grass_sample*.50);
 	lawn*=1.0-clamp(rain_wet,0.0,1.0)*.12;
 	col=mix(col,lawn,inland);
 	ALBEDO = col;

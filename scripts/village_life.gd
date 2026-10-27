@@ -956,18 +956,25 @@ func _day_routine(g, index: int, delta: float) -> bool:
 	if g.has_meta("shelter") and g.get_meta("shelter"):return false
 	if g.has_meta("routine_seat"):
 		var seat: Dictionary=g.get_meta("routine_seat")
+		if g.position.distance_to(seat.pos)>1.5:
+			g.remove_meta("routine_seat")
+			g.set_meta("routine_cooldown",25.0)
+			return false
 		g.set_meta("routine_return",g.position)
 		g.position=seat.pos
 		g.rotation.y=seat.rot
 		g.set_meta("routine_kind","banco")
-		g.set_meta("routine_until",Core.minutes+12)
+		g.set_meta("routine_until",Core.day*1440.0+Core.minutes+12)
 		g.remove_meta("routine_seat")
 		return true
 	if g.has_meta("routine_until"):
-		if Core.minutes<float(g.get_meta("routine_until")):
+		if Core.day*1440.0+Core.minutes<float(g.get_meta("routine_until")):
 			g.play("Sitting_Idle_Loop" if g.get_meta("routine_kind")=="banco" else "Idle_Talking_Loop")
 			return true
-		if g.has_meta("routine_return"):g.position=g.get_meta("routine_return")
+		if g.has_meta("routine_return"):
+			var approach: Vector3=g.get_meta("routine_return")
+			if g.position.distance_to(approach)<1.5:g.position=approach
+			g.remove_meta("routine_return")
 		g.remove_meta("routine_until")
 		g.set_meta("routine_cooldown",45.0)
 		g.play("Idle_Loop")
@@ -978,7 +985,7 @@ func _day_routine(g, index: int, delta: float) -> bool:
 	if index%3==0 and not world.bench_spots.is_empty():
 		for seat in world.bench_spots:
 			if g.position.distance_to(seat.pos)>3.5:continue
-			var occupied: bool=walkers.any(func(other):return other!=g and other.position.distance_to(seat.pos)<1.0)
+			var occupied: bool=get_tree().get_nodes_in_group("npc").any(func(other):return other!=g and other.position.distance_to(seat.pos)<1.0)
 			if occupied:continue
 			g.set_meta("routine_seat",seat)
 			g.go([_outside_blocks(seat.pos+Vector3(0,0,.85).rotated(Vector3.UP,seat.rot))])
@@ -989,7 +996,7 @@ func _day_routine(g, index: int, delta: float) -> bool:
 		if dist>.85 and dist<2.8:
 			g.rotation.y=atan2(g.position.x-other.position.x,g.position.z-other.position.z)
 			g.set_meta("routine_kind","conversa")
-			g.set_meta("routine_until",Core.minutes+8)
+			g.set_meta("routine_until",Core.day*1440.0+Core.minutes+8)
 			return true
 	g.set_meta("routine_cooldown",25.0)
 	return false

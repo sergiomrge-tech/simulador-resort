@@ -31,7 +31,7 @@ static func ensure_buses() -> void :
 			AudioServer.add_bus()
 			var i: = AudioServer.bus_count - 1
 			AudioServer.set_bus_name(i, b)
-			AudioServer.set_bus_send(i, "Master")
+			AudioServer.set_bus_send(i, "SFX" if b=="Ambiente" else "Master")
 
 func _ready() -> void :
 	add_to_group("audio")

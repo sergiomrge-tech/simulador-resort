@@ -304,3 +304,22 @@ Teste de otimização precisa aguardar a inicialização diferida e um frame ren
 ## Checkpoint interrompido — refinamentos de 26/10
 
 Botão criado vazio pode manter largura mínima de 34px depois de ganhar texto: recalcular em _refresh_kiosk_controls. Não aumentar mínimo de todas as setas/controles curtos: isso fez Bangalôs ultrapassar o celular. O exemplo de pessoa atravessando espreguiçadeira coincide com BeachSet em x33,z-22 sobreposto às novas mesas; não presumir que basta mudar a pose. Conferir layout completo por imagem. WAV de reggae é original e tem loop explícito; soundfile ao gravar OGG nessa instalação encerrou o processo e deixou arquivo de4KB inválido. Não reutilizar esse arquivo. Estado e pendências em docs/REFINAMENTOS_EM_ANDAMENTO_2026-10-26.md; usuário pediu terminar depois.
+
+
+## Retomada de 27/10 — integração e revisão visual
+
+Anexo a leste da casa invadia o vizinho em x54, e PASS de passagem não detectou.
+Mover banheiro para trás/norte com rotação 90°, abrir a parede norte e restaurar a
+leste; usar coordenadas locais nos testes e clear_to_close. Excluir vegetação do
+retângulo do anexo, incluindo instâncias MultiMesh, sem esconder o grupo inteiro.
+Escalar a instância indesejada para epsilon preserva AABB/culling (não mover -100m).
+Testar controle de densidade por redução real agregada/algum grupo; chunks com
+uma instância ficam em 1 e não devem reprovar a política de preservar ao menos uma.
+Sombras têm índice próprio separado do preset; mudar sombras não altera SSAO/LOD.
+Conversas são uma página responsiva do celular, evitando modal fora da tela em
+resoluções pequenas. Resultado inicial inclui investment, como o relatório financeiro.
+Ambiente é sub-bus de SFX para preservar o volume dos efeitos nos pássaros/folhas.
+A sobreposição vista no cliente era lounger decorativo x33 sobre cadeira real;
+afastar BeachSet e conferir a pessoa sentada com copo por imagem.
+
+Rotinas temporárias usam dia*1440+minutos; comparar só horário fazia descanso continuar até a tarde seguinte depois de dormir. Ao expirar, restaurar abordagem apenas se ainda estiver a menos de1,5m do banco; não teleportar de volta quem já foi para casa.

@@ -722,10 +722,6 @@ func _update_orders() -> void:
 	var ops = get_parent().operations
 	var waiting: Array = village.waiting_customers()
 	var lines: Array = []
-	var unrecorded: Array = village.customers_to_order()
-	if not unrecorded.is_empty():
-		for guest in unrecorded:
-			lines.append(str(guest.gname)+"\nAnotar pedido")
 	for guest in waiting:
 		var items: Array = []
 		for id in village._remaining(guest):

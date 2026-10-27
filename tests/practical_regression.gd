@@ -110,7 +110,7 @@ func run(main) -> void:
 		guest.set_meta("delivered", 0)
 		main.village._order(guest, true)
 		main.hud._update_orders()
-		check(main.hud.orders_text.text.contains(main.operations.order_number(guest)) and main.hud.work_text.text.contains("Coco"), "pedido e item na mão claros no HUD")
+		check(main.hud.orders_text.text.contains(guest.gname) and main.hud.work_text.text.contains("Coco"), "pedido e item na mão claros no HUD")
 		check(guest._bubble.text.begins_with("#") and guest._bubble.text.length() == 3, "marcador curto no cliente")
 		check(main.operations.deliver(weakref(guest)) and guest.state == "kto_table", "entrega conclui pedido físico")
 	main.village._on_slept(0)

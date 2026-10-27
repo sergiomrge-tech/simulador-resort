@@ -133,6 +133,8 @@ func refresh_focus() -> void:
 	if is_instance_valid(ops):
 		focus = ops.resolve_computer_focus(cam,focus)
 		focus = ops.resolve_customer_focus(cam,focus)
+	var refinements=get_parent().get_node_or_null("Refinements")
+	if refinements:focus=refinements.resolve_resident_focus(cam,focus)
 
 func interact() -> void :
 	if focus:

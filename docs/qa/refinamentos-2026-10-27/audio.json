@@ -1,0 +1,20 @@
+{
+  "reggae_praia": {
+    "seconds": 48.0,
+    "sample_rate": 44100,
+    "channels": 2,
+    "peak": 0.309356689453125,
+    "rms": 0.07155103148437851,
+    "loop_boundary_delta": 0.01885986328125,
+    "clipped_samples": 0
+  },
+  "leaves_soft": {
+    "seconds": 4.0,
+    "sample_rate": 44100,
+    "channels": 1,
+    "peak": 0.18524169921875,
+    "rms": 0.026378702745068285,
+    "loop_boundary_delta": 0.0,
+    "clipped_samples": 0
+  }
+}

@@ -108,44 +108,12 @@ func _conversations() -> void:
 func show_conversation(who: String,npc=null) -> void:
  if is_instance_valid(npc):npc.service_reaction("pedir")
  Core.prog.experience.greeted[who]=true
+ Core.save_game()
  var phone=main.hud.phone
- phone.open("missoes")
+ phone.resident_name=who
+ phone.open("conversa")
  Input.mouse_mode=Input.MOUSE_MODE_VISIBLE
- var panel:=PanelContainer.new()
- panel.name="ResidentConversation"
- panel.add_theme_stylebox_override("panel",UiTheme.box(Color(.95,.95,.90),18,Color(.25,.35,.30),2,10,14))
- panel.set_anchors_preset(Control.PRESET_CENTER)
- panel.size=Vector2(360,250)
- panel.position=(phone.size-panel.size)*.5
- phone.add_child(panel)
- var col:=VBoxContainer.new()
- col.add_theme_constant_override("separation",10)
- panel.add_child(col)
- var q: Dictionary=Core.prog.Campaign.current(Core.prog)
- var speaker: String=SPEAKERS[mini(int(Core.prog.campaign.stage),SPEAKERS.size()-1)]
- var title:=Label.new()
- title.text=who
- title.add_theme_font_size_override("font_size",20)
- col.add_child(title)
- var text:=Label.new()
- text.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
- text.custom_minimum_size.x=325
- text.text=(str(q.get("story","A vila cresceu com seu cuidado. Obrigado!"))+"\n\n"+str(q.get("task","Explore as missões secundárias."))) if who==speaker else "Que bom ver você! "+speaker+" está acompanhando sua próxima etapa.\n\n"+str(q.get("task","Aproveite a vila e conheça os moradores."))
- col.add_child(text)
- var button:=Button.new()
- button.text="Concluir etapa" if who==speaker and Core.prog.Campaign.ready(Core.prog,q) else "Acompanhar missão"
- button.custom_minimum_size=Vector2(180,38)
- button.size_flags_horizontal=Control.SIZE_SHRINK_BEGIN
- col.add_child(button)
- button.pressed.connect(func():
-  if who==speaker and Core.prog.Campaign.ready(Core.prog,q):Core.prog.Campaign.claim(Core.prog,str(q.id))
-  panel.queue_free()
-  phone.refresh())
- var close:=Button.new()
- close.text="Até logo"
- close.size_flags_horizontal=Control.SIZE_SHRINK_BEGIN
- col.add_child(close)
- close.pressed.connect(panel.queue_free)
+
 func apply_details() -> void:
  _geometry(main.world)
  for mm in get_tree().get_nodes_in_group("scalable_vegetation"):
@@ -202,3 +170,20 @@ func _dog_walk() -> void:
    if d<distance:nearest=walker;distance=d
   if nearest!=null:animal.walking_partner=weakref(nearest)
   break
+
+func resolve_resident_focus(camera: Camera3D,direct: Interactable) -> Interactable:
+ if direct!=null and direct.has_meta("customer_ref"):return direct
+ var choice: Interactable=direct
+ var score: float=cos(deg_to_rad(9.0))
+ for npc in main.village.get_children():
+  if not npc is Node3D or not npc.has_meta("resident_name"):continue
+  var aim: Vector3=npc.global_position+Vector3(0,1.6,0)
+  var offset: Vector3=aim-camera.global_position
+  if offset.length()>2.8 or offset.length()<.1:continue
+  var dot: float=(-camera.global_basis.z).dot(offset.normalized())
+  if dot<score:continue
+  var query:=PhysicsRayQueryParameters3D.create(camera.global_position,aim,1,[main.player.get_rid()])
+  if not main.get_world_3d().direct_space_state.intersect_ray(query).is_empty():continue
+  choice=npc.get_node("Conversation")
+  score=dot
+ return choice

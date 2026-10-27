@@ -123,3 +123,8 @@ Chuva deve umedecer a areia sem criar faixas brancas; espuma depende somente da 
 ## Checkpoint de refinamentos de 26/10 (em andamento)
 
 Usuário pediu encerrar e terminar depois por limite. Ler [docs/REFINAMENTOS_EM_ANDAMENTO_2026-10-26.md](docs/REFINAMENTOS_EM_ANDAMENTO_2026-10-26.md) antes de retomar. Não declarar este lote concluído nem substituir o PCK aprovado antes de validar. Preferências novas: aba Missões direta, pedidos apenas nome/itens, gramado após areia, reggae instrumental suave original, banheiro claro/madeira/praia e mais detalhes/sombras no quiosque.
+
+
+## Entrega de 27/10 — refinamentos concluídos
+
+O checkpoint em andamento de 26/10 foi retomado. Guia atual: [docs/REFINAMENTOS_2026-10-27.md](docs/REFINAMENTOS_2026-10-27.md). Missões é aba direta; pedidos mostram apenas nome e itens restantes. Banheiro fica atrás/norte da casa, evitando o vizinho a leste. Preservar decoração comprada em Prog.experience, reggae original, gramado depois da areia e controles independentes de qualidade. Os limites de pedestres são configuráveis, padrão 12 HD/5 baixa. Ambiente passa por SFX e possui volume próprio.

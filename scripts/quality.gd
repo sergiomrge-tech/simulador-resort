@@ -349,7 +349,8 @@ func apply() -> void :
 	if not hd:
 		changed.emit()
 		return
-	var p: = shadows if shadows>=0 else preset
+	var p: = preset
+	var sp: int=shadows if shadows>=0 else preset
 
 	# v0.7: o contorno cartoon lê profundidade/normais da tela, o que não funciona com MSAA.
 	# FXAA suaviza as linhas sem borrar as cores chapadas (TAA borraria).
@@ -368,15 +369,15 @@ func apply() -> void :
 	var original: bool=benchmark_original or OS.get_cmdline_user_args().has("--perf-original")
 	vp.use_occlusion_culling=not original
 	vp.mesh_lod_threshold = [2.0,1.0,1.0,.5][p] if original else [3.0,2.0,1.5,1.0][p]
-	vp.positional_shadow_atlas_size = [2048, 2048, 4096, 4096][p]
+	vp.positional_shadow_atlas_size = [2048, 2048, 4096, 4096][sp]
 
-	RenderingServer.directional_shadow_atlas_set_size(2048 if p == 0 else 4096, true)
-	RenderingServer.directional_soft_shadow_filter_set_quality([RenderingServer.SHADOW_QUALITY_SOFT_LOW, RenderingServer.SHADOW_QUALITY_SOFT_LOW, RenderingServer.SHADOW_QUALITY_SOFT_MEDIUM, RenderingServer.SHADOW_QUALITY_SOFT_MEDIUM][p])
-	RenderingServer.positional_soft_shadow_filter_set_quality([RenderingServer.SHADOW_QUALITY_HARD, RenderingServer.SHADOW_QUALITY_SOFT_LOW, RenderingServer.SHADOW_QUALITY_SOFT_MEDIUM, RenderingServer.SHADOW_QUALITY_SOFT_HIGH][p])
+	RenderingServer.directional_shadow_atlas_set_size(2048 if sp == 0 else 4096, true)
+	RenderingServer.directional_soft_shadow_filter_set_quality([RenderingServer.SHADOW_QUALITY_SOFT_LOW, RenderingServer.SHADOW_QUALITY_SOFT_LOW, RenderingServer.SHADOW_QUALITY_SOFT_MEDIUM, RenderingServer.SHADOW_QUALITY_SOFT_MEDIUM][sp])
+	RenderingServer.positional_soft_shadow_filter_set_quality([RenderingServer.SHADOW_QUALITY_HARD, RenderingServer.SHADOW_QUALITY_SOFT_LOW, RenderingServer.SHADOW_QUALITY_SOFT_MEDIUM, RenderingServer.SHADOW_QUALITY_SOFT_HIGH][sp])
 	if sun:
 		sun.shadow_enabled=shadows!=0
-		sun.directional_shadow_mode = DirectionalLight3D.SHADOW_PARALLEL_2_SPLITS if p <= (0 if original else 2) else DirectionalLight3D.SHADOW_PARALLEL_4_SPLITS
-		sun.directional_shadow_max_distance = [50.0,80.0,110.0,150.0][p] if original else [35.0,50.0,75.0,110.0][p]
+		sun.directional_shadow_mode = DirectionalLight3D.SHADOW_PARALLEL_2_SPLITS if sp <= (0 if original else 2) else DirectionalLight3D.SHADOW_PARALLEL_4_SPLITS
+		sun.directional_shadow_max_distance = [50.0,80.0,110.0,150.0][sp] if original else [35.0,50.0,75.0,110.0][sp]
 		sun.shadow_blur = 1.0
 		sun.light_angular_distance = 0.5 if p >= 2 else 0.0
 

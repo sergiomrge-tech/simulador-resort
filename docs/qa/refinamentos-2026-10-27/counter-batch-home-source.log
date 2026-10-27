@@ -1,0 +1,27 @@
+Godot Engine v4.5.1.stable.official.f62fdbde1 - https://godotengine.org
+Vulkan 1.4.351 - Forward+ - Using Device #0: NVIDIA - NVIDIA GeForce RTX 4060 Ti
+
+vegetacao: capim=4010 arbustos=112 coqueiros+=46
+serra: copas perto=250 crista=101
+serra: tris encosta=16884
+[home] ok tela derivada do CRT importado
+[home] ok móveis detalhados têm colisão
+[home] ok TV e som apoiados no tampo real
+[home] ok corredor livre (47.7, 0.12, 23.7)
+[home] ok corredor livre (47.7, 0.12, 21.75)
+[home] ok corredor livre (45.55, 0.12, 21.75)
+[home] ok corredor livre (46.0, 0.12, 20.4)
+[home] ok corredor livre (45.2, 0.12, 20.4)
+[home] ok corredor livre (45.55, 0.12, 21.75)
+[home] ok mira alcança TV · ligar
+[home] ok E liga imagem silenciosa da TV
+[home] ok mira alcança TV · desligar
+[home] ok E desliga TV
+[home] ok mira alcança Som · ligar
+[home] ok som respeita mute
+[home] ok som posicional toca e reduz trilha sobreposta
+[home] ok mira alcança Som · desligar
+[home] ok desligar som restaura trilha
+[home] ok jogador não atravessa sofá
+HOME_TEST PASS
+SHUTDOWN_COMPLETE code=0

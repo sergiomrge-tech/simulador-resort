@@ -1,0 +1,186 @@
+{
+  "regressions": [
+    {
+      "check": "home",
+      "kind": "pack",
+      "result": "PASS",
+      "exit_code": 0,
+      "pck_sha256": "136303c3e84a4bd2903b8ceae5f056bfc5ce082fd0e58ac417279b250dcf3ac8"
+    },
+    {
+      "check": "birds",
+      "kind": "pack",
+      "result": "PASS",
+      "exit_code": 0,
+      "pck_sha256": "136303c3e84a4bd2903b8ceae5f056bfc5ce082fd0e58ac417279b250dcf3ac8"
+    },
+    {
+      "check": "company",
+      "kind": "pack",
+      "result": "PASS",
+      "exit_code": 0,
+      "pck_sha256": "136303c3e84a4bd2903b8ceae5f056bfc5ce082fd0e58ac417279b250dcf3ac8"
+    },
+    {
+      "check": "held-order",
+      "kind": "pack",
+      "result": "PASS",
+      "exit_code": 0,
+      "pck_sha256": "136303c3e84a4bd2903b8ceae5f056bfc5ce082fd0e58ac417279b250dcf3ac8"
+    },
+    {
+      "check": "tableware",
+      "kind": "pack",
+      "result": "PASS",
+      "exit_code": 0,
+      "pck_sha256": "136303c3e84a4bd2903b8ceae5f056bfc5ce082fd0e58ac417279b250dcf3ac8"
+    },
+    {
+      "check": "optimization",
+      "kind": "pack",
+      "result": "PASS",
+      "exit_code": 0,
+      "pck_sha256": "136303c3e84a4bd2903b8ceae5f056bfc5ce082fd0e58ac417279b250dcf3ac8"
+    },
+    {
+      "check": "management",
+      "kind": "pack",
+      "result": "PASS",
+      "exit_code": 0,
+      "pck_sha256": "136303c3e84a4bd2903b8ceae5f056bfc5ce082fd0e58ac417279b250dcf3ac8"
+    },
+    {
+      "check": "coastal",
+      "kind": "pack",
+      "result": "PASS",
+      "exit_code": 0,
+      "pck_sha256": "136303c3e84a4bd2903b8ceae5f056bfc5ce082fd0e58ac417279b250dcf3ac8"
+    },
+    {
+      "check": "refinements",
+      "kind": "source",
+      "result": "PASS",
+      "exit_code": 0
+    },
+    {
+      "check": "home",
+      "kind": "source",
+      "result": "PASS",
+      "exit_code": 0
+    },
+    {
+      "check": "phone-layout",
+      "kind": "source",
+      "result": "PASS",
+      "exit_code": 0
+    },
+    {
+      "check": "revision26",
+      "kind": "source",
+      "result": "PASS",
+      "exit_code": 0
+    },
+    {
+      "check": "birds",
+      "kind": "source",
+      "result": "PASS",
+      "exit_code": 0
+    },
+    {
+      "check": "company",
+      "kind": "source",
+      "result": "PASS",
+      "exit_code": 0
+    },
+    {
+      "check": "counter-first",
+      "kind": "source",
+      "result": "PASS",
+      "exit_code": 0
+    },
+    {
+      "check": "held-order",
+      "kind": "source",
+      "result": "PASS",
+      "exit_code": 0
+    },
+    {
+      "check": "tableware",
+      "kind": "source",
+      "result": "PASS",
+      "exit_code": 0
+    },
+    {
+      "check": "optimization",
+      "kind": "source",
+      "result": "PASS",
+      "exit_code": 0
+    },
+    {
+      "check": "perf",
+      "kind": "source",
+      "result": "PASS",
+      "exit_code": 0
+    },
+    {
+      "check": "counter-first",
+      "kind": "pack",
+      "result": "PASS",
+      "exit_code": 0,
+      "pck_sha256": "8b836162980ba9fc4fa7556f7ff7719e662977a4e0e6d1e54eaf7f2c0bd3443e"
+    },
+    {
+      "check": "phone-layout",
+      "kind": "pack",
+      "result": "PASS",
+      "exit_code": 0,
+      "pck_sha256": "8b836162980ba9fc4fa7556f7ff7719e662977a4e0e6d1e54eaf7f2c0bd3443e"
+    },
+    {
+      "check": "practical",
+      "kind": "pack",
+      "result": "PASS",
+      "exit_code": 0,
+      "pck_sha256": "8b836162980ba9fc4fa7556f7ff7719e662977a4e0e6d1e54eaf7f2c0bd3443e"
+    },
+    {
+      "check": "refinements",
+      "kind": "pack",
+      "result": "PASS",
+      "exit_code": 0,
+      "pck_sha256": "8256611f0885e90cb489ff500345a8de03809b7c753fbe92a67344ba7da9383f"
+    },
+    {
+      "check": "revision26",
+      "kind": "pack",
+      "result": "PASS",
+      "exit_code": 0,
+      "pck_sha256": "8256611f0885e90cb489ff500345a8de03809b7c753fbe92a67344ba7da9383f"
+    }
+  ],
+  "user_saves_accessed": false,
+  "pck_sha256": "8256611f0885e90cb489ff500345a8de03809b7c753fbe92a67344ba7da9383f",
+  "pck_bytes": 1820044456,
+  "full_suite_pck_sha256": "136303c3e84a4bd2903b8ceae5f056bfc5ce082fd0e58ac417279b250dcf3ac8",
+  "visual_review": [
+    "banheiro sem vizinho/plantas dentro",
+    "porta e passagem",
+    "casa náutica",
+    "celular compacto e aba Missões",
+    "gramado seco e chuva",
+    "quiosque e melhorias",
+    "cliente sentado sem espreguiçadeira sobreposta",
+    "campanha por conversa"
+  ],
+  "final_focus_checks": [
+    "refinements",
+    "revision26"
+  ],
+  "final_change": "Mira tolerante de moradores, HUD por nome e rotinas com tempo absoluto/sem teleporte após dormir; testes de E, recompensas e mudança de dia.",
+  "zip_sha256": "21e89efcd295cab3c1868b32e45e025e589138c3bb49f3bbfe33b1a3a2d432d2",
+  "zip_bytes": 1584870851,
+  "zip_crc_verified": true,
+  "zip_manifest_verified": true,
+  "ready_directory": "D:\\Downloads\\MareAltaResort_Refinamentos_2026-10-27",
+  "ready_files_verified": true
+}

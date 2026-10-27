@@ -5,6 +5,7 @@ class_name PhoneUI
 
 const T: = preload("res://scripts/ui_theme.gd")
 const Management = preload("res://scripts/kiosk_management.gd")
+var resident_name: String="Dona Rita"
 const W: = 420.0
 const H: = 700.0
 const INK: = Color(0.16, 0.13, 0.2)
@@ -16,8 +17,9 @@ const BAD: = Color(0.85, 0.28, 0.22)
 
 ## id, nome, cor, ícone
 const HOME_APPS := ["painel", "compras", "equipe", "financas", "resort", "missoes"]
-const PARENTS := {"empresa":"personalizar", "personalizar":"painel", "horarios":"painel", "rotina":"horarios", "movimento":"painel", "equipamentos":"painel", "pedidos":"painel", "cardapio":"painel", "cozinha":"cardapio", "estoque_quiosque":"compras", "mercado":"compras", "fornecedores":"compras", "gestao_equipe":"equipe", "recrutamento":"equipe", "resultado":"financas", "caixa":"financas", "expansoes":"resort", "bangalos":"resort", "hotel":"resort", "evolucao":"resort", "temporada":"resort", "negocios":"resort", "mundo":"missoes", "album":"mundo", "agenda":"mundo", "vila":"mundo"}
+const PARENTS := {"empresa":"personalizar", "personalizar":"painel", "horarios":"painel", "rotina":"horarios", "movimento":"painel", "equipamentos":"painel", "pedidos":"painel", "cardapio":"painel", "cozinha":"cardapio", "estoque_quiosque":"compras", "mercado":"compras", "fornecedores":"compras", "gestao_equipe":"equipe", "recrutamento":"equipe", "resultado":"financas", "caixa":"financas", "expansoes":"resort", "bangalos":"resort", "hotel":"resort", "evolucao":"resort", "temporada":"resort", "negocios":"resort", "mundo":"missoes", "conversa":"missoes", "album":"mundo", "agenda":"mundo", "vila":"mundo"}
 const APPS: = [
+	["conversa","Conversa",Color(.2,.5,.4),"village"],
 	["painel", "Quiosque", Color(0.15, 0.55, 0.5), "shop"],
 	["compras", "Compras", Color(0.25, 0.65, 0.35), "compra"],
 	["financas", "Finanças", Color(0.1, 0.6, 0.55), "caixa"],
@@ -374,6 +376,8 @@ func refresh() -> void :
 		_btn(list, "Criar meu quiosque", _open_management.bind("empresa"))
 		return
 	match app:
+		"conversa":
+			_app_conversation(list)
 		"painel":
 			_app_dashboard(list)
 		"compras":
@@ -472,7 +476,7 @@ func _app_dashboard(list: VBoxContainer) -> void:
 	var summary := _card(list)
 	_lbl(summary,"Hoje",17,INK,true)
 	var day_data: Dictionary=Core.company.sim.get("today",{})
-	_lbl(summary,"Resultado: "+Core.fmt_money(int(day_data.get("cash_in",0))-int(day_data.get("supplies",0))-int(day_data.get("payroll",0))-int(day_data.get("overhead",0)),true),15,INK)
+	_lbl(summary,"Resultado: "+Core.fmt_money(int(day_data.get("cash_in",0))-int(day_data.get("supplies",0))-int(day_data.get("payroll",0))-int(day_data.get("overhead",0))-int(day_data.get("investment",0)),true),15,INK)
 	_lbl(summary,"Atendente: "+("contratado" if Core.staff.get("atendente",false) else "nenhum · contratação em Equipe"),14,INK_SOFT,false,true)
 	var low: Array=[]
 	for id in Core.kiosk_menu():
@@ -482,16 +486,14 @@ func _app_dashboard(list: VBoxContainer) -> void:
 	_app_hub(list, [["pedidos","Pedidos"],["cardapio","Cardápio e preços"],["horarios","Horários e rotina"],["equipamentos","Equipamentos"],["personalizar","Decoração e nome"],["movimento","Movimento"]])
 
 func _app_orders(list: VBoxContainer) -> void:
-	var ops = _operations()
 	var waiting: Array = get_tree().current_scene.village.waiting_customers()
-	var pending: Array = get_tree().current_scene.village.customers_to_order()
-	for guest in pending:
-		_lbl(list, ops.order_number(guest) + " " + ops.seat_name(guest) + " · aproxime-se e aperte E para anotar", 16, INK, true, true)
-	if waiting.is_empty() and pending.is_empty(): _lbl(list, "Nenhum pedido esperando.", 18, INK_SOFT)
+	if waiting.is_empty():_lbl(list,"Nenhum pedido anotado.",17,INK_SOFT)
 	for guest in waiting:
-		var card := _card(list)
-		_lbl(card, ops.order_summary(guest), 17, INK, true, true)
-	_lbl(list, "Os números aqui correspondem aos marcadores junto aos clientes.", 14, INK_SOFT, false, true)
+		var card:=_card(list)
+		_lbl(card,guest.gname,16,INK,true,true)
+		var items: Array=[]
+		for id in get_tree().current_scene.village._remaining(guest):items.append(str(Economy.dish(id).name))
+		_lbl(card," + ".join(items),14,INK_SOFT,false,true)
 
 func _app_expansions(list: VBoxContainer) -> void :
 	for id in Economy.EXPANSION_ORDER:
@@ -1789,3 +1791,19 @@ func _decor_shop(list: VBoxContainer) -> void:
 		_btn(card,"Instalado" if owned else "Comprar · "+Core.fmt_money(int(data.price)),func():
 			refinement.buy_decor(str(id))
 			refresh(),GOOD,not owned and Core.money>=int(data.price))
+
+func _app_conversation(list: VBoxContainer) -> void:
+	var q: Dictionary=Core.prog.Campaign.current(Core.prog)
+	var ref=get_tree().current_scene.get_node("Refinements")
+	var speaker: String=ref.SPEAKERS[mini(int(Core.prog.campaign.stage),ref.SPEAKERS.size()-1)]
+	_lbl(list,resident_name,20,INK,true,true)
+	var card:=_card(list)
+	var own: bool=resident_name==speaker
+	_lbl(card,str(q.get("story","A vila cresceu com seu cuidado. Obrigado!")) if own else "Que bom ver você! "+speaker+" está acompanhando sua próxima etapa.",16,INK,false,true)
+	_lbl(card,str(q.get("task","Explore as missões secundárias.")),15,INK_SOFT,true,true)
+	if own and Core.prog.Campaign.ready(Core.prog,q):
+		_btn(card,"Concluir etapa",func():
+			Core.prog.Campaign.claim(Core.prog,str(q.id))
+			refresh(),GOOD)
+	_btn(list,"Acompanhar missões",_open_management.bind("missoes"))
+	_btn(list,"Até logo",close)

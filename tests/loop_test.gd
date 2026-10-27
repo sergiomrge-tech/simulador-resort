@@ -369,6 +369,11 @@ func run(m) -> void :
 		add_child(counter)
 		await counter.run(main)
 		return
+	if main.args.has("refinements-test"):
+		var refinement_test=load("res://tests/refinements_regression.gd").new()
+		add_child(refinement_test)
+		await refinement_test.run(main)
+		return
 	if main.args.has("revision26-test"):
 		var test=load("res://tests/revision26_regression.gd").new()
 		add_child(test)

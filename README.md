@@ -5,8 +5,8 @@ feito em **Godot 4.5.1**, GDScript, Forward+, para Windows.
 
 Linha atual: **1.1.0 RC2**, branch **`codex/resort-1.1-mcp`**.
 
-**Atualização de 26/10/2026:** celular portátil, campanha principal e secundárias, HUD compacto à esquerda, pagamento na entrega, porções prontas, casa corrigida, chuva corrigida e navio distante; inclui as revisões anteriores.
-[Download para Windows — campanha e correções](https://github.com/sergiomrge-tech/simulador-resort/releases/tag/v1.1.0-rc2.20261026-campanha-correcoes).
+**Atualização de 27/10/2026:** casa com banheiro e decoração de praia, celular com Missões direta, pedidos por nome/itens, gramado, reggae instrumental original, diálogos da campanha, rotinas, decoração comprável e controles de qualidade.
+[Download para Windows — refinamentos de 27/10](https://github.com/sergiomrge-tech/simulador-resort/releases/tag/v1.1.0-rc2.20261027-refinamentos).
 Extraia o ZIP inteiro e abra Jogar.vbs. Preserve userdata ao atualizar.
 
 ## Vai continuar o projeto com outra IA?

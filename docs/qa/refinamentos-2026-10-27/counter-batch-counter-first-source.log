@@ -1,0 +1,39 @@
+Godot Engine v4.5.1.stable.official.f62fdbde1 - https://godotengine.org
+Vulkan 1.4.351 - Forward+ - Using Device #0: NVIDIA - NVIDIA GeForce RTX 4060 Ti
+
+vegetacao: capim=4010 arbustos=112 coqueiros+=46
+serra: copas perto=250 crista=101
+serra: tris encosta=16884
+[counter-first] ok novo quiosque começa fechado
+[counter-first] ok save anterior exige abrir uma vez
+[counter-first] ok abertura deliberada persiste no save atual
+[counter-first] ok sem chegadas antes de abrir
+[counter-first] ok abertura manual libera chegadas no horário
+[counter-first] ok mesa reservada sem sentar antes de pedir
+[counter-first] ok percurso real até kchoose · (38.7, 0.1, -16.6)
+[counter-first] ok espera de pé no balcão
+[counter-first] ok mira no cliente de pé pelo lado interno do balcão
+[counter-first] ok E anota o pedido no balcão
+[counter-first] ok pedidos possuem números distintos e válidos no balcão
+[counter-first] ok fila aguarda quando as duas retiradas estão ocupadas
+[counter-first] ok captura counter_first_waiting
+COUNTER_FIRST_SHOT C:/Users/sergi/Documents/ChatGPT/resort 2/build/qa/counter-batch-counter-first-source/Godot/app_userdata/Maré Alta Resort/qa_shots/counter_first_waiting.png
+[counter-first] ok retira produto pronto 1
+[counter-first] ok só parte para a mesa após receber o pedido inteiro
+[counter-first] ok retira produto pronto 2
+[counter-first] ok só parte para a mesa após receber o pedido inteiro
+[counter-first] ok estoque descontado uma vez por item
+[counter-first] ok transporta os produtos sem consumir em pé
+[counter-first] ok percurso real até keat · (42.50961, -0.071, -17.7932)
+[counter-first] ok senta e consome apenas depois da retirada
+[counter-first] ok libera a retirada ao se afastar do balcão
+[counter-first] ok produtos acompanham o cliente até a mesa
+[counter-first] ok trajeto não duplica estoque nem cobrança
+[counter-first] ok captura counter_first_dining
+COUNTER_FIRST_SHOT C:/Users/sergi/Documents/ChatGPT/resort 2/build/qa/counter-batch-counter-first-source/Godot/app_userdata/Maré Alta Resort/qa_shots/counter_first_dining.png
+[counter-first] ok percurso real até kchoose · (38.7, 0.1, -16.6)
+[counter-first] ok próximo da fila ocupa a retirada liberada
+[counter-first] ok fechar bloqueia novas chegadas sem expulsar atendidos
+[counter-first] ok cada novo dia começa fechado
+COUNTER_FIRST_TEST PASS
+SHUTDOWN_COMPLETE code=0

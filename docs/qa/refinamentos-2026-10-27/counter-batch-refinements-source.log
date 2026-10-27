@@ -1,0 +1,51 @@
+Godot Engine v4.5.1.stable.official.f62fdbde1 - https://godotengine.org
+Vulkan 1.4.351 - Forward+ - Using Device #0: NVIDIA - NVIDIA GeForce RTX 4060 Ti
+
+vegetacao: capim=4010 arbustos=112 coqueiros+=46
+serra: copas perto=250 crista=101
+serra: tris encosta=16884
+[revision26] ok Missões em aba direta, seis áreas
+[revision26] ok Fechar quiosque tem largura de texto e altura compacta
+[revision26] ok Abrir recalcula largura
+[revision26] ok compras mostra imagem de cada produto
+[revision26] ok compra melhoria visual: floreiras
+[revision26] ok melhoria não cobra duas vezes
+[revision26] ok melhoria aparece no cenário
+[revision26] ok compra melhoria visual: luzes
+[revision26] ok melhoria não cobra duas vezes
+[revision26] ok melhoria aparece no cenário
+[revision26] ok compra melhoria visual: expositor
+[revision26] ok melhoria não cobra duas vezes
+[revision26] ok melhoria aparece no cenário
+[revision26] ok custos reais das três melhorias
+[revision26] ok melhorias persistem
+[revision26] ok mira E encontra conversa da moradora
+[revision26] ok conversa física apresenta campanha no celular
+[revision26] ok conversa conclui etapa e paga uma vez
+[revision26] ok conversa não duplica recompensa
+[revision26] ok conversa fecha com celular
+[revision26] ok reggae original 48s em loop
+[revision26] ok ambiente e música em volumes separados
+[revision26] ok sombras desligam pelo controle
+[revision26] ok sombras de contato habilitadas, bias moderado
+[revision26] ok controle reduz vegetação real
+[revision26] ok controle reduz pedestres reais
+[revision26] ok pedestres podem voltar sem reconstruir mapa
+[revision26] ok opções e FPS persistem em settings isolado
+[revision26] ok pedestres alternam caminhada e conversa
+[revision26] ok morador caminha até banco livre
+[revision26] ok morador senta após chegar à abordagem
+[revision26] ok descanso expira mesmo ao dormir e voltar ao amanhecer
+[revision26] ok cachorro pode acompanhar morador existente
+[revision26] ok cliente tem perfil e nome identificável
+[revision26] ok cliente tem perfil e nome identificável
+[revision26] ok cliente tem perfil e nome identificável
+[revision26] ok cliente tem perfil e nome identificável
+[revision26] ok banheiro tem modelos detalhados e arquitetura
+[revision26] ok mira encontra porta do banheiro
+[revision26] ok porta do banheiro abre
+[revision26] ok jogador atravessa abertura entre cozinha e banheiro
+[revision26] ok HUD só nomes e itens, sem números ou legendas
+[revision26] ok cliente reage ao receber
+REFINEMENTS_TEST PASS
+SHUTDOWN_COMPLETE code=0

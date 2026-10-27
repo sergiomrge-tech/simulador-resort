@@ -1,4 +1,6 @@
-# Checkpoint de refinamentos — 26/10/2026 (trabalho em andamento)
+# Checkpoint histórico de refinamentos — 26/10/2026
+
+**Retomado e concluído em27/10. Leia [REFINAMENTOS_2026-10-27.md](REFINAMENTOS_2026-10-27.md). As pendências abaixo descrevem o estado histórico, não uma lista atual.**
 
 O usuário pediu encerrar agora por limite de uso e terminar depois. Este é um
 checkpoint de código/assets, não uma nova versão jogável aprovada. Não declarar

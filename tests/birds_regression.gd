@@ -28,7 +28,7 @@ func run(main) -> void:
 		check(sound!=null and sound.get_length()>.4,"canto CC0 carregado: "+name)
 	audio._bird_t=0
 	audio._tick_birds(.1)
-	check(audio.bird_voice.playing and audio.bird_voice.bus=="SFX","canto diurno posicional ativo no quiosque")
+	check(audio.bird_voice.playing and audio.bird_voice.bus=="Ambiente","canto diurno posicional ativo no quiosque")
 	check(audio.bird_voice.global_position.y>=5 and audio.bird_voice.max_polyphony==1,"vem das árvores e não sobrepõe cantos")
 	check(audio._bird_t>=4 and audio._bird_t<=9,"intervalo entre cantos")
 	await get_tree().create_timer(.25).timeout

@@ -60,6 +60,7 @@ func _ready() -> void :
 	_landmark_details()
 	_map_details()
 	_finish_blooms()
+	_clear_bath_garden()
 	Core.company_changed.connect(_refresh_company_signs)
 	_refresh_company_signs()
 	Core.time_changed.connect(_on_time)
@@ -588,9 +589,9 @@ func _hero_house() -> void :
 	var zf: = c.z + d * 0.5
 	var zb: = c.z - d * 0.5
 	_wall_x(x0, x1, zf, h, [[c.x + 1.1, c.x + 2.3, 0.0, 2.35], [c.x - 2.4, c.x - 1.0, 1.0, 2.3]], y0)
-	_wall_x(x0, x1, zb, h, [[c.x - 2.6, c.x - 0.2, 0.85, 2.35]], y0)
+	_wall_x(x0, x1, zb, h, [[c.x - 2.6, c.x - 0.2, 0.85, 2.35], [c.x+1.1,c.x+2.3,0.0,2.35]], y0)
 	_wall_z(zb, zf, x0, h, [[c.z - 0.6, c.z + 0.6, 1.0, 2.3]], y0)
-	_wall_z(zb, zf, x1, h, [[c.z+1.30,c.z+2.45,0.0,2.35]], y0)
+	_wall_z(zb, zf, x1, h, [], y0)
 	M.plaster = save[0]
 	M.terracotta = save[1]
 	M.teal = save[2]
@@ -2132,10 +2133,11 @@ func _neighborhood_finish() -> void:
 			B.model(self,"potted_plant_04",Vector3(x+3.2,.15,z),0,.7)
 
 func _home_bathroom() -> void:
-	var c: Vector3=HOME_C+Vector3(5.10,.12,1.95)
+	var c: Vector3=HOME_C+Vector3(1.75,.12,-5.10)
 	var root:=Node3D.new()
 	root.name="HomeBathroom"
 	root.position=c
+	root.rotation.y=PI*.5
 	add_child(root)
 	var plaster:=stucco(Color(.89,.88,.82))
 	var floor_mat:=B.mat("light_stone",1.6,Color(.87,.85,.78),.87)
@@ -2147,6 +2149,9 @@ func _home_bathroom() -> void:
 	B.hip_roof(root,Vector3(0,3.05,0),3.7,3.5,.65,VM.clay,.1)
 	Real.place(root,"g:home_bathroom_fixtures",Vector3.ZERO,-1,0,Color.WHITE,0,false)
 	Real.place(root,"lambis_shell",Vector3(-.9,.83,-1.15),.09)
+	B.wall(root,Vector3(1.1,.80,.52),Vector3(-.48,.40,-1.10))
+	B.wall(root,Vector3(.40,.76,.72),Vector3(.85,.38,-.70))
+	B.wall(root,Vector3(.025,1.98,1.12),Vector3(.25,1.12,.79))
 	var door:=Node3D.new()
 	door.set_script(load("res://scripts/home_door.gd"))
 	door.position=Vector3(-1.60,0,.50)
@@ -2165,4 +2170,26 @@ func _home_bathroom() -> void:
 	lamp.shadow_bias=.025
 	lamp.shadow_normal_bias=.22
 	root.add_child(lamp)
-	_block(HOME_C+Vector3(5.15,0,1.95),3.25,3.15,.1)
+	_block(HOME_C+Vector3(1.75,0,-5.10),3.15,3.25,.1)
+
+func _veg_free(p: Vector2,margin: float=.5) -> bool:
+	if Rect2(45.5,13.8,4.5,4.0).grow(margin).has_point(p):return false
+	return super._veg_free(p,margin)
+
+func _clear_bath_garden() -> void:
+	var area:=Rect2(45.4,13.7,4.4,4.25)
+	for node in get_children():
+		if not node is Node3D or node.name=="HomeBathroom":continue
+		if node is MultiMeshInstance3D:
+			for i in node.multimesh.instance_count:
+				var t: Transform3D=node.multimesh.get_instance_transform(i)
+				var point: Vector3=node.to_global(t.origin)
+				if area.has_point(Vector2(point.x,point.z)):
+					t.basis=t.basis.scaled(Vector3.ONE*.00001)
+					node.multimesh.set_instance_transform(i,t)
+			continue
+		if not area.has_point(Vector2(node.position.x,node.position.z)):continue
+		var paths: String=node.scene_file_path.to_lower()
+		for part in node.find_children("*","Node3D",true,false):paths+=" "+str(part.scene_file_path).to_lower()
+		if ["plant","fern","bloom","bush","flower","tree","grass"].any(func(word):return paths.contains(word)):
+			node.hide()

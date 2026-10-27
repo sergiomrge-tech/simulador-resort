@@ -1,11 +1,11 @@
 # Guia vigente para as próximas atualizações
 
-**Checkpoint mais recente — trabalho em andamento:** [Refinamentos interrompidos a pedido do usuário](REFINAMENTOS_EM_ANDAMENTO_2026-10-26.md). Código/assets salvos para terminar depois; ainda sem novo executável aprovado. O último pacote validado continua sendo Celular/Campanha, commit 45fc277.
+**Entrega vigente:** [Refinamentos de 27/10](REFINAMENTOS_2026-10-27.md). Retomada do checkpoint concluída; celular com Missões direta, banheiro atrás da casa, gramado, reggae original e configurações independentes. Evidências de fonte/PCK no guia.
 
-Atualizado em **26/10/2026**. Destinado a qualquer IA ou pessoa, sem depender deste
+Atualizado em **27/10/2026**. Destinado a qualquer IA ou pessoa, sem depender deste
 chat. Leia junto com [AGENTS.md](../AGENTS.md). Novos pedidos do usuário prevalecem.
 
-**Atualização mais recente:** [Campanha e correções de 26/10](CAMPANHA_CORRECOES_2026-10-26.md).
+**Atualização anterior:** [Campanha e correções de 26/10](CAMPANHA_CORRECOES_2026-10-26.md).
 
 Pagamento na entrega substitui o recebimento manual. Sem PC: gestão no celular portátil com B em qualquer lugar; missões e pedidos fixos à esquerda. Porções prontas de batata e peixe no armário.
 
@@ -47,7 +47,7 @@ trabalhe nos mesmos arquivos ao mesmo tempo que outro chat sem coordenação.
 ## Regras atuais de produto
 
 1. **Sem preparar produtos.** E na geladeira/armário/cozinha, escolher produto
-   pronto, levar ao cliente, E para entregar e receber no caixa. Sem espera,
+   pronto, levar ao cliente, E para entregar com pagamento automático. Sem espera,
    cronômetro, etapas de montagem ou necessidade de cozinheiro.
 2. **Estoque continua existindo.** Compras abastecem a despensa compartilhada.
    A retirada desconta os insumos uma vez; a entrega não desconta de novo.
@@ -57,11 +57,11 @@ trabalhe nos mesmos arquivos ao mesmo tempo que outro chat sem coordenação.
    produtos de pé no balcão; só então levam os produtos e sentam para consumir.
    E anota/entrega por dentro. Garçom também atende no balcão. Fila e duas retiradas,
    sem duplicar estoque/cobrança. Não usar banquetas como assentos no modo físico.
-   Quiosque começa fechado; abertura explícita no PC, respeitando horário/checklist.
+   Quiosque começa fechado; abertura explícita no celular, respeitando horário/checklist.
    Migração opening_version=1 fecha save antigo uma vez; dormir fecha novo dia.
 4. **Compatibilidade de modos.** `company_enabled()` exige empresa criada e modo
    físico ativo. No modo legado, pedidos continuam automáticos e consultáveis;
-   atendimento no balcão é imediato, sem preparo. Antes da empresa, a estação orienta criar a empresa no computador. Não esconder os móveis por causa desse estado.
+   atendimento no balcão é imediato, sem preparo. Antes da empresa, a estação orienta criar a empresa no celular. Não esconder os móveis por causa desse estado.
 5. **Quiosque prático.** Todos os equipamentos usados ficam dentro; geladeira à
    esquerda, armário ao centro, cozinha à direita, caixa na frente. Manter parede
    traseira, piso físico, corredor e duas entradas laterais, sem anexo externo.
@@ -87,7 +87,7 @@ trabalhe nos mesmos arquivos ao mesmo tempo que outro chat sem coordenação.
 8. **Pessoas sem óculos escuros, chapéus ou bonés.** Preservar cabelos presos à
    cabeça animada e roupas compatíveis com o rig. Não recolocar acessórios nos
    testes só para tirar imagens. Avental com caimento, alças, bolso e cintura.
-9. **Interface limpa.** HUD/textos compactos, prompt embaixo, computador com seis
+9. **Interface limpa.** HUD/textos compactos, prompt embaixo, celular com seis
    áreas iniciais sem atalhos duplicados e layout que caiba em telas pequenas.
 10. **Áudio suave, sem vozes de fundo.** Preservar também o cais com colisão,
     recuperação de queda, barcos afastados e vidros sem coloração azul.
@@ -116,13 +116,13 @@ como acabamento final. Reutilize a biblioteca existente e registre licenças em
 `CREDITS.md`. Salve fontes `.blend` editáveis, com texturas incorporadas; reabra
 para conferir. Atualize downloads/geradores e o catálogo (`tools/gen_item_catalog.py`).
 
-## Lote atual: computador e balcão
+## Histórico: computador e balcão (substituído pelo celular em 26/10)
 
 Leia [COMPUTADOR_E_BALCAO.md](COMPUTADOR_E_BALCAO.md). PC físico com E, sem gestão
 remota; telas de estação continuam diretas. Porta da casa abre/fecha e fecha após
 sair com arco livre. Tampo madeira escura/base cinza, copos na bandeja, sem caixa
 branca e promoções nas duas faces com preços reais. Fontes Blender incorporadas.
-As novas regras substituem documentos históricos sobre celular e pedido sentado.
+As regras de PC deste trecho são históricas; celular portátil e pagamento automático prevalecem.
 
 ## Onde alterar cada coisa
 
