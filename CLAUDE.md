@@ -336,3 +336,8 @@ ou LevelEditorSubsystem.get_world pode retornarNone; obtenha o mundo pelo editor
 MCP5.8 CaptureViewport exige parâmetros explícitos captureTransform/annotations
 apesar de o schema não os listar como obrigatórios. Plugin MCP somente no editor.
 Calibração real GLTF: Godot(x,y,z)m → UE(x,z,y)*100cm.
+
+
+## UE5.8 — importação e navegação
+
+AssetImportTask.options deve receber InterchangePipelineStackOverride contendo SoftObjectPath(pipeline), não a pipeline diretamente. Remover subárvores ocultas antes do glTF evita KHR_node_visibility exigida e rejeitada pela UE. Para limpar grafo de material, remover cada expressão de uma cópia da lista; delete_all_material_expressions deixou nós antigos. recompile_material retorna lista de erros, conferir vazia. SingleLayerWater requer Nanite desativado. Alterar BodySetup não garante atualizar UNavCollision: projeção Z910 com física no chão exige investigar cache de navegação. A limpeza de imports pelo Editor encontrou inconsistência de referências e encerrou o processo; não repetir sem diagnóstico. Desativar AndroidFileServer desnecessário e revisar configurações geradas para não versionar SecurityToken.

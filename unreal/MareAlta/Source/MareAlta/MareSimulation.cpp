@@ -1,6 +1,8 @@
 #include "MareSimulation.h"
 #include "Misc/FileHelper.h"
 #include "Misc/Paths.h"
+#include "Misc/CommandLine.h"
+#include "Misc/Parse.h"
 #include "HAL/FileManager.h"
 #include "Serialization/JsonSerializer.h"
 
@@ -37,6 +39,7 @@ FString UMareSimulation::SavePath() const
 void UMareSimulation::Initialize(FSubsystemCollectionBase& Collection)
 {
  Super::Initialize(Collection);
+ FParse::Value(FCommandLine::Get(),TEXT("MareSaveRoot="),SaveDirectory);
  ReadJson(FPaths::ProjectContentDir()/TEXT("Data/definitions.json"),Definitions);
  if(!ReadJson(SavePath(),State)) ReadJson(FPaths::ProjectContentDir()/TEXT("Data/default_save.json"),State);
  if(!State.IsValid()) State=MakeShared<FJsonObject>();
@@ -44,7 +47,7 @@ void UMareSimulation::Initialize(FSubsystemCollectionBase& Collection)
 }
 bool UMareSimulation::Fail(const FString& Message){LastMessage=Message;return false;}
 double UMareSimulation::Money() const{return Number(State,TEXT("money"));}
-FString UMareSimulation::Carry() const{return String(Object(State,TEXT("company")),TEXT("carry"));}
+FString UMareSimulation::Carry(bool bStaff) const{return String(Object(State,TEXT("company")),bStaff?TEXT("staff_carry"):TEXT("carry"));}
 void UMareSimulation::Book(double Amount,const FString& Label)
 {
  State->SetNumberField(TEXT("money"),Money()+Amount);
@@ -103,20 +106,20 @@ bool UMareSimulation::Restock(const FString& Dish,int32 Quantity)
  if(Cost>0) Book(-Cost,TEXT("Reposição: ")+Dish);
  LastMessage=TEXT("Estoque reposto."); return Save();
 }
-bool UMareSimulation::Pickup(const FString& Dish)
+bool UMareSimulation::Pickup(const FString& Dish,bool bStaff)
 {
- if(!Carry().IsEmpty()) return Fail(TEXT("Entregue ou devolva o produto que está na mão."));
+ if(!Carry(bStaff).IsEmpty()) return Fail(TEXT("Entregue ou devolva o produto que está na mão."));
  if(Available(Dish)<1) return Fail(TEXT("Produto esgotado. Reponha nesta estação."));
  auto Uses=Object(Object(Object(Definitions,TEXT("dishes")),Dish),TEXT("uses")); auto Stock=Object(State,TEXT("stock"));
  for(const auto& Pair:Uses->Values) Stock->SetNumberField(FString(Pair.Key.ToView()),Number(Stock,FString(Pair.Key.ToView()))-Pair.Value->AsNumber());
- Object(State,TEXT("company"))->SetStringField(TEXT("carry"),Dish); return Save();
+ Object(State,TEXT("company"))->SetStringField(bStaff?TEXT("staff_carry"):TEXT("carry"),Dish); return Save();
 }
-bool UMareSimulation::ReturnCarry()
+bool UMareSimulation::ReturnCarry(bool bStaff)
 {
- const FString Dish=Carry(); if(Dish.IsEmpty()) return false;
+ const FString Dish=Carry(bStaff); if(Dish.IsEmpty()) return false;
  auto Uses=Object(Object(Object(Definitions,TEXT("dishes")),Dish),TEXT("uses")); auto Stock=Object(State,TEXT("stock"));
  for(const auto& Pair:Uses->Values) Stock->SetNumberField(FString(Pair.Key.ToView()),Number(Stock,FString(Pair.Key.ToView()))+Pair.Value->AsNumber());
- Object(State,TEXT("company"))->SetStringField(TEXT("carry"),TEXT("")); return Save();
+ Object(State,TEXT("company"))->SetStringField(bStaff?TEXT("staff_carry"):TEXT("carry"),TEXT("")); return Save();
 }
 FString UMareSimulation::AddOrder(const FString& Customer,const TArray<FString>& Dishes)
 {
@@ -126,15 +129,15 @@ FString UMareSimulation::AddOrder(const FString& Customer,const TArray<FString>&
  for(const auto& Dish:Dishes){if(!Object(Definitions,TEXT("dishes"))->HasField(Dish)) return TEXT("");Items.Add(MakeShared<FJsonValueString>(Dish));}
  Order->SetArrayField(TEXT("remaining"),Items); Orders->SetObjectField(Id,Order); Save(); return Id;
 }
-bool UMareSimulation::Deliver(const FString& OrderId,const FString& Dish)
+bool UMareSimulation::Deliver(const FString& OrderId,const FString& Dish,bool bStaff)
 {
- auto Orders=Object(State,TEXT("ue_orders")); if(Carry()!=Dish || !Orders->HasField(OrderId)) return false;
+ auto Orders=Object(State,TEXT("ue_orders")); if(Carry(bStaff)!=Dish || !Orders->HasField(OrderId)) return false;
  auto Order=Object(Orders,OrderId); const TArray<TSharedPtr<FJsonValue>>* Existing=nullptr;
  if(!Order->TryGetArrayField(TEXT("remaining"),Existing)) return false;
  auto Items=*Existing; const int32 Index=Items.IndexOfByPredicate([&](const auto& V){return V->AsString()==Dish;});
  if(Index==INDEX_NONE) return false;
  Items.RemoveAt(Index); Order->SetArrayField(TEXT("remaining"),Items);
- Object(State,TEXT("company"))->SetStringField(TEXT("carry"),TEXT(""));
+ Object(State,TEXT("company"))->SetStringField(bStaff?TEXT("staff_carry"):TEXT("carry"),TEXT(""));
  const double Price=Number(Object(Object(Definitions,TEXT("dishes")),Dish),TEXT("price")); Book(Price,TEXT("Venda: ")+Dish);
  State->SetNumberField(TEXT("kiosk_n"),Number(State,TEXT("kiosk_n"))+1); State->SetNumberField(TEXT("kiosk"),Number(State,TEXT("kiosk"))+Price);
  if(Dish.StartsWith(TEXT("sorvete_"))){auto Campaign=Object(Object(State,TEXT("prog")),TEXT("campaign"));Campaign->SetNumberField(TEXT("icecream"),Number(Campaign,TEXT("icecream"))+1);}
@@ -189,7 +192,7 @@ bool UMareSimulation::ClaimMission(const FString& Id,bool bSide)
 void UMareSimulation::AdvanceMinutes(double Minutes){State->SetNumberField(TEXT("minutes"),FMath::Clamp(Number(State,TEXT("minutes"))+Minutes,0.,1440.));}
 void UMareSimulation::Sleep()
 {
- ReturnCarry();Object(State,TEXT("company"))->SetBoolField(TEXT("kiosk_open"),false);
+ ReturnCarry();ReturnCarry(true);Object(State,TEXT("company"))->SetBoolField(TEXT("kiosk_open"),false);
  State->SetNumberField(TEXT("day"),Number(State,TEXT("day"),1)+1);State->SetNumberField(TEXT("minutes"),480);
  State->SetObjectField(TEXT("ue_orders"),MakeShared<FJsonObject>());Save();
 }

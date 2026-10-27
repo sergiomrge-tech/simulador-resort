@@ -136,3 +136,6 @@ estilizado**, sem cartoon. A migração está na branch `codex/ue58-migration`;
 leia [docs/ue58/MIGRACAO.md](docs/ue58/MIGRACAO.md). Use MCP nativo da UE disponível.
 Preserve a entrega Godot e saves. Não declarar o port concluído antes de validar
 mecânicas, imagens reais e executável exportado.
+
+
+Checkpoint UE atual: [docs/ue58/CHECKPOINT_2026-10-27.md](docs/ue58/CHECKPOINT_2026-10-27.md). Ler antes de retomar. Navegação dos clientes ainda bloqueada; não declarar migração finalizada.

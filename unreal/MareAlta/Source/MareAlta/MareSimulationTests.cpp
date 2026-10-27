@@ -49,6 +49,14 @@ bool FMareEconomyTest::RunTest(const FString& Parameters)
  TestTrue(TEXT("Campaign reward"),Sim->ClaimMission(TEXT("chegada")));const double Rewarded=Sim->Money();
  TestFalse(TEXT("Campaign reward idempotent"),Sim->ClaimMission(TEXT("chegada")));TestEqual(TEXT("No repeated reward"),Sim->Money(),Rewarded);
  TestTrue(TEXT("Native save created in isolated directory"),FPaths::FileExists(Sim->SaveDirectory/TEXT("slot1.json")));
+ Sim->ReturnCarry();const int32 StockBefore=Sim->Available(TEXT("coco_gelado"));
+ TestTrue(TEXT("Player picks a product"),Sim->Pickup(TEXT("coco_gelado")));
+ TestTrue(TEXT("Attendant has independent carry"),Sim->Pickup(TEXT("coco_gelado"),true));
+ TestEqual(TEXT("Two inventories consume two products"),Sim->Available(TEXT("coco_gelado")),StockBefore-2);
+ TestEqual(TEXT("Player item preserved"),Sim->Carry(),FString(TEXT("coco_gelado")));
+ TestTrue(TEXT("Attendant return independent"),Sim->ReturnCarry(true));
+ TestEqual(TEXT("Attendant return does not clear player hand"),Sim->Carry(),FString(TEXT("coco_gelado")));
+ Sim->ReturnCarry();TestEqual(TEXT("Both returns restore exact inventory"),Sim->Available(TEXT("coco_gelado")),StockBefore);
  Sim->Sleep();TestFalse(TEXT("Sleeping closes business"),Sim->IsOpen());
  Sim->RemoveFromRoot();Instance->RemoveFromRoot();return true;
 }

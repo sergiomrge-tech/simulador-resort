@@ -4,3 +4,5 @@ unreal/**/*.umap filter=lfs diff=lfs merge=lfs -text
 unreal/**/SourceArt/**/*.bin filter=lfs diff=lfs merge=lfs -text
 unreal/**/SourceArt/**/*.png filter=lfs diff=lfs merge=lfs -text
 unreal/**/SourceArt/**/*.jpg filter=lfs diff=lfs merge=lfs -text
+
+unreal/**/SourceArt/**/*.glb filter=lfs diff=lfs merge=lfs -text

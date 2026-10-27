@@ -1,5 +1,7 @@
 #include "MareGame.h"
 #include "MareSimulation.h"
+#include "Engine/GameInstance.h"
+#include "MareServiceTarget.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Engine/Canvas.h"
@@ -29,16 +31,17 @@ namespace MareUI
 class SMarePhone : public SCompoundWidget
 {
 public:
- SLATE_BEGIN_ARGS(SMarePhone){} SLATE_ARGUMENT(TWeakObjectPtr<AMareController>,Owner) SLATE_ARGUMENT(int32,Tab) SLATE_END_ARGS()
+ SLATE_BEGIN_ARGS(SMarePhone){} SLATE_ARGUMENT(TWeakObjectPtr<AMareController>,Owner) SLATE_ARGUMENT(int32,Tab) SLATE_ARGUMENT(FName,Station) SLATE_END_ARGS()
  void Construct(const FArguments& Args)
  {
-  Owner=Args._Owner;Tab=Args._Tab; Rebuild();
+  Owner=Args._Owner;Tab=Args._Tab;Station=Args._Station; Rebuild();
  }
 private:
  TWeakObjectPtr<AMareController> Owner;
  TSharedPtr<SVerticalBox> Body;
  TSharedPtr<SEditableTextBox> CompanyName;
  int32 Tab=0;
+ FName Station;
  UMareSimulation* Sim()const{return Owner.IsValid()?Owner->GetGameInstance()->GetSubsystem<UMareSimulation>():nullptr;}
  TSharedRef<SWidget> Button(const FString& Label,TFunction<void()> Action)
  {
@@ -49,7 +52,10 @@ private:
  void Stock(bool bPickup)
  {
   auto S=Sim();const TArray<FString> Products={TEXT("coco_gelado"),TEXT("suco"),TEXT("sorvete_morango"),TEXT("sorvete_chocolate"),TEXT("batata_frita"),TEXT("porcao_peixe")};
-  for(const auto& Id:Products){auto Dish=UMareSimulation::Object(UMareSimulation::Object(S->Definitions,TEXT("dishes")),Id);
+  for(const auto& Id:Products){
+   if(bPickup && Station==TEXT("Cupboard") && Id!=TEXT("batata_frita") && Id!=TEXT("porcao_peixe"))continue;
+   if(bPickup && Station==TEXT("Fridge") && (Id==TEXT("batata_frita") || Id==TEXT("porcao_peixe")))continue;
+   auto Dish=UMareSimulation::Object(UMareSimulation::Object(S->Definitions,TEXT("dishes")),Id);
    Line(UMareSimulation::String(Dish,TEXT("name"))+FString::Printf(TEXT(" · %d disponíveis"),S->Available(Id)));
    auto Row=SNew(SHorizontalBox);
    if(bPickup)Row->AddSlot().AutoWidth().Padding(0,0,6,0)[Button(TEXT("Pegar pronto"),[S,Id](){S->Pickup(Id);})];
@@ -77,16 +83,20 @@ private:
   for(int32 R=0;R<2;++R){auto Row=SNew(SHorizontalBox);for(int32 C=0;C<3;++C){const int32 Index=R*3+C;
    Row->AddSlot().FillWidth(1).Padding(2)[Button(Titles[Index],[this,Index](){Tab=Index;})];}Tabs->AddSlot().AutoHeight()[Row];}
   SAssignNew(Body,SVerticalBox);
-  ChildSlot.HAlign(HAlign_Right).VAlign(VAlign_Center).Padding(20)[SNew(SBox).WidthOverride(420).HeightOverride(680)[SNew(SBorder).BorderImage(&MareUI::Phone).Padding(10)[SNew(SBorder).BorderImage(&MareUI::Surface).Padding(14)[SNew(SVerticalBox)
+  FVector2D ViewSize(1280,720);if(GEngine && GEngine->GameViewport)GEngine->GameViewport->GetViewportSize(ViewSize);
+  const float Height=FMath::Max(220.f,FMath::Min(Station.IsNone()?680.f:450.f,ViewSize.Y-40.f));
+  const float Width=FMath::Max(240.f,FMath::Min(420.f,ViewSize.X-40.f));
+  ChildSlot.HAlign(HAlign_Right).VAlign(VAlign_Center).Padding(20)[SNew(SBox).WidthOverride(Width).HeightOverride(Height)[SNew(SBorder).BorderImage(&MareUI::Phone).Padding(10)[SNew(SBorder).BorderImage(&MareUI::Surface).Padding(14)[SNew(SVerticalBox)
    +SVerticalBox::Slot().AutoHeight().Padding(0,0,0,10)[MareUI::Text(FString::Printf(TEXT("Maré Alta       R$ %.0f"),S->Money()),17)]
-   +SVerticalBox::Slot().AutoHeight()[Tabs]
+   +SVerticalBox::Slot().AutoHeight()[Station.IsNone()?StaticCastSharedRef<SWidget>(Tabs):StaticCastSharedRef<SWidget>(MareUI::Text(Station==TEXT("Fridge")?TEXT("Geladeira"):TEXT("Porções prontas"),18))]
    +SVerticalBox::Slot().FillHeight(1).Padding(0,10)[SNew(SScrollBox)+SScrollBox::Slot()[Body.ToSharedRef()]]
    +SVerticalBox::Slot().AutoHeight()[MareUI::Text(S->LastMessage,12)]
    +SVerticalBox::Slot().AutoHeight().Padding(0,8,0,0)[SNew(SButton).OnClicked_Lambda([this](){if(Owner.IsValid())Owner->ClosePhone();return FReply::Handled();})[MareUI::Text(TEXT("Fechar · B / Esc"),13)]]]]]];
+  if(!Station.IsNone()){Stock(true);if(!S->Carry().IsEmpty())Action(TEXT("Devolver produto"),[S](){S->ReturnCarry();});return;}
   if(Tab==0){auto Company=UMareSimulation::Object(S->State,TEXT("company"));bool bCreated=false;Company->TryGetBoolField(TEXT("created"),bCreated);
    if(!bCreated){Line(TEXT("Seu quiosque"),20);Body->AddSlot().AutoHeight()[SAssignNew(CompanyName,SEditableTextBox).Text(FText::FromString(TEXT("Maré Alta")))];Action(TEXT("Criar empresa"),[this,S](){S->CreateCompany(CompanyName->GetText().ToString());});}
    else{Line(S->IsOpen()?TEXT("Aberto · recebendo clientes"):TEXT("Quiosque fechado"),18);Action(S->IsOpen()?TEXT("Fechar quiosque"):TEXT("Abrir quiosque"),[S](){S->SetOpen(!S->IsOpen());});}
-   if(!S->Carry().IsEmpty())Action(TEXT("Devolver produto"),[S](){S->ReturnCarry();});Stock(true);
+   if(!S->Carry().IsEmpty())Action(TEXT("Devolver produto"),[S](){S->ReturnCarry();});Line(TEXT("Retire os produtos prontos na geladeira e no armário do quiosque."),13);
   }else if(Tab==1){Line(TEXT("Reposição imediata"),18);Stock(false);}
   else if(Tab==2){Line(TEXT("Um atendente para todo o quiosque"),18);Line(TEXT("Anota, retira os produtos, entrega e recolhe a louça."));Action(TEXT("Contratar atendente"),[S](){S->HireAttendant();});}
   else if(Tab==3){Line(FString::Printf(TEXT("Caixa · R$ %.0f"),S->Money()),20);const TArray<TSharedPtr<FJsonValue>>* Ledger=nullptr;if(S->State->TryGetArrayField(TEXT("ledger"),Ledger))for(int32 I=Ledger->Num()-1;I>=FMath::Max(0,Ledger->Num()-12);--I){auto Row=(*Ledger)[I]->AsObject();Line(UMareSimulation::String(Row,TEXT("label"))+FString::Printf(TEXT(" · R$ %.0f"),UMareSimulation::Number(Row,TEXT("amount"))),13);}}
@@ -111,13 +121,20 @@ void AMareCharacter::Right(float Value){if(Controller)AddMovementInput(FRotation
 void AMareCharacter::LookX(float Value){AddControllerYawInput(Value);}
 void AMareCharacter::LookY(float Value){AddControllerPitchInput(Value);}
 void AMareCharacter::Phone(){if(auto PC=Cast<AMareController>(Controller))PC->TogglePhone();}
-void AMareCharacter::Interact(){}
+void AMareCharacter::Interact(){if(auto PC=Cast<AMareController>(Controller))if(auto Target=AMareServiceTarget::FindFocused(PC))Target->Use(PC);}
 void AMareController::TogglePhone(){if(bPhoneOpen)ClosePhone();else OpenPhone();}
 void AMareController::OpenPhone(int32 Tab)
 {
  if(!GEngine || !GEngine->GameViewport)return;
  if(bPhoneOpen)ClosePhone();bPhoneOpen=true;
  SAssignNew(PhoneWidget,SMarePhone).Owner(this).Tab(Tab);GEngine->GameViewport->AddViewportWidgetContent(PhoneWidget.ToSharedRef(),20);
+ bShowMouseCursor=true;SetInputMode(FInputModeGameAndUI().SetWidgetToFocus(PhoneWidget).SetHideCursorDuringCapture(false));SetIgnoreMoveInput(true);SetIgnoreLookInput(true);
+}
+void AMareController::OpenStation(FName Station)
+{
+ if(!GEngine || !GEngine->GameViewport)return;
+ if(bPhoneOpen)ClosePhone();bPhoneOpen=true;
+ SAssignNew(PhoneWidget,SMarePhone).Owner(this).Tab(0).Station(Station);GEngine->GameViewport->AddViewportWidgetContent(PhoneWidget.ToSharedRef(),20);
  bShowMouseCursor=true;SetInputMode(FInputModeGameAndUI().SetWidgetToFocus(PhoneWidget).SetHideCursorDuringCapture(false));SetIgnoreMoveInput(true);SetIgnoreLookInput(true);
 }
 void AMareController::ClosePhone()
@@ -133,6 +150,16 @@ void AMareHUD::DrawHUD()
  auto Line=[&](const FString& Text,FLinearColor Color=FLinearColor::White){Canvas->SetDrawColor(Color.ToFColor(true));Canvas->DrawText(Font,Text,22,Y);Y+=22;};
  Line(FString::Printf(TEXT("R$ %.0f   Dia %.0f   %02d:%02d"),S->Money(),UMareSimulation::Number(S->State,TEXT("day"),1),int32(UMareSimulation::Number(S->State,TEXT("minutes")))/60,int32(UMareSimulation::Number(S->State,TEXT("minutes")))%60));
  auto Orders=UMareSimulation::Object(S->State,TEXT("ue_orders"));for(const auto& Pair:Orders->Values){auto Order=Pair.Value->AsObject();const TArray<TSharedPtr<FJsonValue>>* Items=nullptr;FString Text=UMareSimulation::String(Order,TEXT("name"))+TEXT(" · ");if(Order->TryGetArrayField(TEXT("remaining"),Items))for(const auto& Item:*Items)Text+=UMareSimulation::String(UMareSimulation::Object(UMareSimulation::Object(S->Definitions,TEXT("dishes")),Item->AsString()),TEXT("name"))+TEXT("  ");Line(Text);}
+ if(auto Target=AMareServiceTarget::FindFocused(GetOwningPlayerController()))Canvas->DrawText(Font,TEXT("E · ")+Target->Prompt(),22,Canvas->ClipY-62);
+ if(!S->Carry().IsEmpty())Line(TEXT("Na mão: ")+UMareSimulation::String(UMareSimulation::Object(UMareSimulation::Object(S->Definitions,TEXT("dishes")),S->Carry()),TEXT("name")));
  Canvas->DrawText(Font,TEXT("B · celular     E · interagir"),22,Canvas->ClipY-35);
 }
-AMareGameMode::AMareGameMode(){DefaultPawnClass=AMareCharacter::StaticClass();PlayerControllerClass=AMareController::StaticClass();HUDClass=AMareHUD::StaticClass();}
+AMareGameMode::AMareGameMode(){PrimaryActorTick.bCanEverTick=true;DefaultPawnClass=AMareCharacter::StaticClass();PlayerControllerClass=AMareController::StaticClass();HUDClass=AMareHUD::StaticClass();}
+
+void AMareGameMode::Tick(float DeltaSeconds)
+{
+ Super::Tick(DeltaSeconds);auto Sim=GetGameInstance()->GetSubsystem<UMareSimulation>();if(!Sim)return;
+ Sim->AdvanceMinutes(DeltaSeconds*2.0);SaveClock+=DeltaSeconds;if(SaveClock>=30){Sim->Save();SaveClock=0;}
+}
+
+UMareSimulation* AMareController::GetSimulation()const{return GetGameInstance()->GetSubsystem<UMareSimulation>();}

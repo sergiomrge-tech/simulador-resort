@@ -347,3 +347,8 @@ Produtos transportados acompanham as mãos animadas, inclusive o atendente. Pedi
 Pedido atual do usuário: conversão integral com visual **realista estilizado**.
 Branch `codex/ue58-migration`; guia [ue58/MIGRACAO.md](ue58/MIGRACAO.md).
 A entrega Godot acima permanece sendo a última versão jogável aprovada.
+
+
+## Trabalho atual UE5.8
+
+Pedido posterior migrou o destino para UE5.8, realista estilizado. Branch codex/ue58-migration no D. Leia [checkpoint UE](ue58/CHECKPOINT_2026-10-27.md). Godot permanece a última versão jogável; o port UE ainda não está pronto.

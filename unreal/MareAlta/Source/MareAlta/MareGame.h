@@ -29,11 +29,13 @@ class MAREALTA_API AMareController : public APlayerController
 {
  GENERATED_BODY()
 public:
- void TogglePhone();
+ UFUNCTION(BlueprintCallable,Category="Maré Alta") void TogglePhone();
  void OpenPhone(int32 Tab=0);
- void ClosePhone();
+ UFUNCTION(BlueprintCallable,Category="Maré Alta") void ClosePhone();
+ UFUNCTION(BlueprintPure,Category="Maré Alta") UMareSimulation* GetSimulation()const;
+ void OpenStation(FName Station);
  virtual void EndPlay(const EEndPlayReason::Type Reason) override;
- bool bPhoneOpen=false;
+ UPROPERTY(BlueprintReadOnly,Category="Maré Alta") bool bPhoneOpen=false;
 private:
  TSharedPtr<SMarePhone> PhoneWidget;
 };
@@ -52,4 +54,7 @@ class MAREALTA_API AMareGameMode : public AGameModeBase
  GENERATED_BODY()
 public:
  AMareGameMode();
+ virtual void Tick(float DeltaSeconds) override;
+private:
+ float SaveClock=0.f;
 };

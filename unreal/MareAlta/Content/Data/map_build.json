@@ -1,7 +1,7 @@
 {
   "map": "/Game/Maps/Coast",
-  "model_groups": 19,
-  "instances": 36,
-  "missing_models": 1602,
+  "model_groups": 784,
+  "instances": 4472,
+  "missing_models": 890,
   "visual_approval": false
 }

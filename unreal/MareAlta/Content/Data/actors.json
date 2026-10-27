@@ -1,0 +1,304 @@
+{
+  "coconut_open": {
+    "static_meshes": [
+      "/Game/Actors/coconut_open/coconut_open/StaticMeshes/coconut_open.coconut_open"
+    ],
+    "skeletal_meshes": [],
+    "animations": {}
+  },
+  "cup_plastic": {
+    "static_meshes": [
+      "/Game/Actors/cup_plastic/cup_plastic/StaticMeshes/cup_plastic.cup_plastic"
+    ],
+    "skeletal_meshes": [],
+    "animations": {}
+  },
+  "dish_fish_portion": {
+    "static_meshes": [
+      "/Game/Actors/Combined/dish_fish_portion/dish_fish_portion.dish_fish_portion"
+    ],
+    "skeletal_meshes": [],
+    "animations": {}
+  },
+  "dish_fries": {
+    "static_meshes": [
+      "/Game/Actors/Combined/dish_fries/dish_fries.dish_fries"
+    ],
+    "skeletal_meshes": [],
+    "animations": {}
+  },
+  "Human_0": {
+    "static_meshes": [
+      "/Game/Actors/Combined/Human_0/Hair_Beard.Hair_Beard",
+      "/Game/Actors/Combined/Human_0/Hair_Long.Hair_Long",
+      "/Game/Actors/Combined/Human_0/Hair_SimpleParted.Hair_SimpleParted"
+    ],
+    "skeletal_meshes": [
+      "/Game/Actors/Combined/Human_0/Eyebrows.Eyebrows"
+    ],
+    "animations": {
+      "Human_0Crouch_Idle": "/Game/Actors/Combined/Human_0/Human_0Crouch_Idle.Human_0Crouch_Idle",
+      "Human_0Idle": "/Game/Actors/Combined/Human_0/Human_0Idle.Human_0Idle",
+      "Human_0Idle_Talking": "/Game/Actors/Combined/Human_0/Human_0Idle_Talking.Human_0Idle_Talking",
+      "Human_0Interact": "/Game/Actors/Combined/Human_0/Human_0Interact.Human_0Interact",
+      "Human_0Pistol_Idle": "/Game/Actors/Combined/Human_0/Human_0Pistol_Idle.Human_0Pistol_Idle",
+      "Human_0Sitting_Idle": "/Game/Actors/Combined/Human_0/Human_0Sitting_Idle.Human_0Sitting_Idle",
+      "Human_0Spell_Simple_Idle": "/Game/Actors/Combined/Human_0/Human_0Spell_Simple_Idle.Human_0Spell_Simple_Idle",
+      "Human_0Swim_Idle": "/Game/Actors/Combined/Human_0/Human_0Swim_Idle.Human_0Swim_Idle",
+      "Human_0Sword_Idle": "/Game/Actors/Combined/Human_0/Human_0Sword_Idle.Human_0Sword_Idle",
+      "Human_0Walk": "/Game/Actors/Combined/Human_0/Human_0Walk.Human_0Walk"
+    }
+  },
+  "Human_1": {
+    "static_meshes": [
+      "/Game/Actors/Combined/Human_1/Camera_01.Camera_01",
+      "/Game/Actors/Combined/Human_1/Camera_01_strap.Camera_01_strap",
+      "/Game/Actors/Combined/Human_1/Hair_Beard.Hair_Beard",
+      "/Game/Actors/Combined/Human_1/Hair_SimpleParted.Hair_SimpleParted"
+    ],
+    "skeletal_meshes": [
+      "/Game/Actors/Combined/Human_1/Eyebrows.Eyebrows"
+    ],
+    "animations": {
+      "Human_1Crouch_Idle": "/Game/Actors/Combined/Human_1/Human_1Crouch_Idle.Human_1Crouch_Idle",
+      "Human_1Idle": "/Game/Actors/Combined/Human_1/Human_1Idle.Human_1Idle",
+      "Human_1Idle_Talking": "/Game/Actors/Combined/Human_1/Human_1Idle_Talking.Human_1Idle_Talking",
+      "Human_1Interact": "/Game/Actors/Combined/Human_1/Human_1Interact.Human_1Interact",
+      "Human_1Pistol_Idle": "/Game/Actors/Combined/Human_1/Human_1Pistol_Idle.Human_1Pistol_Idle",
+      "Human_1Sitting_Idle": "/Game/Actors/Combined/Human_1/Human_1Sitting_Idle.Human_1Sitting_Idle",
+      "Human_1Spell_Simple_Idle": "/Game/Actors/Combined/Human_1/Human_1Spell_Simple_Idle.Human_1Spell_Simple_Idle",
+      "Human_1Swim_Idle": "/Game/Actors/Combined/Human_1/Human_1Swim_Idle.Human_1Swim_Idle",
+      "Human_1Sword_Idle": "/Game/Actors/Combined/Human_1/Human_1Sword_Idle.Human_1Sword_Idle",
+      "Human_1Walk": "/Game/Actors/Combined/Human_1/Human_1Walk.Human_1Walk"
+    }
+  },
+  "Human_2": {
+    "static_meshes": [
+      "/Game/Actors/Combined/Human_2/Hair_SimpleParted.Hair_SimpleParted"
+    ],
+    "skeletal_meshes": [
+      "/Game/Actors/Combined/Human_2/Eyebrows.Eyebrows"
+    ],
+    "animations": {
+      "Human_2Crouch_Idle": "/Game/Actors/Combined/Human_2/Human_2Crouch_Idle.Human_2Crouch_Idle",
+      "Human_2Idle": "/Game/Actors/Combined/Human_2/Human_2Idle.Human_2Idle",
+      "Human_2Idle_Talking": "/Game/Actors/Combined/Human_2/Human_2Idle_Talking.Human_2Idle_Talking",
+      "Human_2Interact": "/Game/Actors/Combined/Human_2/Human_2Interact.Human_2Interact",
+      "Human_2Pistol_Idle": "/Game/Actors/Combined/Human_2/Human_2Pistol_Idle.Human_2Pistol_Idle",
+      "Human_2Sitting_Idle": "/Game/Actors/Combined/Human_2/Human_2Sitting_Idle.Human_2Sitting_Idle",
+      "Human_2Spell_Simple_Idle": "/Game/Actors/Combined/Human_2/Human_2Spell_Simple_Idle.Human_2Spell_Simple_Idle",
+      "Human_2Swim_Idle": "/Game/Actors/Combined/Human_2/Human_2Swim_Idle.Human_2Swim_Idle",
+      "Human_2Sword_Idle": "/Game/Actors/Combined/Human_2/Human_2Sword_Idle.Human_2Sword_Idle",
+      "Human_2Walk": "/Game/Actors/Combined/Human_2/Human_2Walk.Human_2Walk"
+    }
+  },
+  "Human_3": {
+    "static_meshes": [
+      "/Game/Actors/Combined/Human_3/Hair_SimpleParted.Hair_SimpleParted"
+    ],
+    "skeletal_meshes": [
+      "/Game/Actors/Combined/Human_3/Eyebrows.Eyebrows"
+    ],
+    "animations": {
+      "Human_3Crouch_Idle": "/Game/Actors/Combined/Human_3/Human_3Crouch_Idle.Human_3Crouch_Idle",
+      "Human_3Idle": "/Game/Actors/Combined/Human_3/Human_3Idle.Human_3Idle",
+      "Human_3Idle_Talking": "/Game/Actors/Combined/Human_3/Human_3Idle_Talking.Human_3Idle_Talking",
+      "Human_3Interact": "/Game/Actors/Combined/Human_3/Human_3Interact.Human_3Interact",
+      "Human_3Pistol_Idle": "/Game/Actors/Combined/Human_3/Human_3Pistol_Idle.Human_3Pistol_Idle",
+      "Human_3Sitting_Idle": "/Game/Actors/Combined/Human_3/Human_3Sitting_Idle.Human_3Sitting_Idle",
+      "Human_3Spell_Simple_Idle": "/Game/Actors/Combined/Human_3/Human_3Spell_Simple_Idle.Human_3Spell_Simple_Idle",
+      "Human_3Swim_Idle": "/Game/Actors/Combined/Human_3/Human_3Swim_Idle.Human_3Swim_Idle",
+      "Human_3Sword_Idle": "/Game/Actors/Combined/Human_3/Human_3Sword_Idle.Human_3Sword_Idle",
+      "Human_3Walk": "/Game/Actors/Combined/Human_3/Human_3Walk.Human_3Walk"
+    }
+  },
+  "player_home_door": {
+    "static_meshes": [
+      "/Game/Actors/Combined/player_home_door/player_home_door.player_home_door"
+    ],
+    "skeletal_meshes": [],
+    "animations": {}
+  },
+  "Dish_acai": {
+    "static_meshes": [
+      "/Game/Actors/Combined/Dish_acai/Dish_acai.Dish_acai"
+    ],
+    "skeletal_meshes": [],
+    "animations": {}
+  },
+  "Dish_batata_frita": {
+    "static_meshes": [
+      "/Game/Actors/Combined/Dish_batata_frita/Dish_batata_frita.Dish_batata_frita"
+    ],
+    "skeletal_meshes": [],
+    "animations": {}
+  },
+  "Dish_batida": {
+    "static_meshes": [
+      "/Game/Actors/Combined/Dish_batida/Dish_batida.Dish_batida"
+    ],
+    "skeletal_meshes": [],
+    "animations": {}
+  },
+  "Dish_caipirinha": {
+    "static_meshes": [
+      "/Game/Actors/Combined/Dish_caipirinha/Dish_caipirinha.Dish_caipirinha"
+    ],
+    "skeletal_meshes": [],
+    "animations": {}
+  },
+  "Dish_coco_gelado": {
+    "static_meshes": [
+      "/Game/Actors/Combined/Dish_coco_gelado/Dish_coco_gelado.Dish_coco_gelado"
+    ],
+    "skeletal_meshes": [],
+    "animations": {}
+  },
+  "Dish_moqueca": {
+    "static_meshes": [
+      "/Game/Actors/Combined/Dish_moqueca/Dish_moqueca.Dish_moqueca"
+    ],
+    "skeletal_meshes": [],
+    "animations": {}
+  },
+  "Dish_pastel": {
+    "static_meshes": [
+      "/Game/Actors/Combined/Dish_pastel/Dish_pastel.Dish_pastel"
+    ],
+    "skeletal_meshes": [],
+    "animations": {}
+  },
+  "Dish_petiscos": {
+    "static_meshes": [
+      "/Game/Actors/Combined/Dish_petiscos/Dish_petiscos.Dish_petiscos"
+    ],
+    "skeletal_meshes": [],
+    "animations": {}
+  },
+  "Dish_porcao_peixe": {
+    "static_meshes": [
+      "/Game/Actors/Combined/Dish_porcao_peixe/Dish_porcao_peixe.Dish_porcao_peixe"
+    ],
+    "skeletal_meshes": [],
+    "animations": {}
+  },
+  "Dish_sorvete_chocolate": {
+    "static_meshes": [
+      "/Game/Actors/Combined/Dish_sorvete_chocolate/Dish_sorvete_chocolate.Dish_sorvete_chocolate"
+    ],
+    "skeletal_meshes": [],
+    "animations": {}
+  },
+  "Dish_sorvete_morango": {
+    "static_meshes": [
+      "/Game/Actors/Combined/Dish_sorvete_morango/Dish_sorvete_morango.Dish_sorvete_morango"
+    ],
+    "skeletal_meshes": [],
+    "animations": {}
+  },
+  "Dish_suco": {
+    "static_meshes": [
+      "/Game/Actors/Combined/Dish_suco/Dish_suco.Dish_suco"
+    ],
+    "skeletal_meshes": [],
+    "animations": {}
+  },
+  "Dish_tapioca": {
+    "static_meshes": [
+      "/Game/Actors/Combined/Dish_tapioca/Dish_tapioca.Dish_tapioca"
+    ],
+    "skeletal_meshes": [],
+    "animations": {}
+  },
+  "Used_acai": {
+    "static_meshes": [
+      "/Game/Actors/Combined/Used_acai/Used_acai.Used_acai"
+    ],
+    "skeletal_meshes": [],
+    "animations": {}
+  },
+  "Used_batata_frita": {
+    "static_meshes": [
+      "/Game/Actors/Combined/Used_batata_frita/Used_batata_frita.Used_batata_frita"
+    ],
+    "skeletal_meshes": [],
+    "animations": {}
+  },
+  "Used_batida": {
+    "static_meshes": [
+      "/Game/Actors/Combined/Used_batida/Used_batida.Used_batida"
+    ],
+    "skeletal_meshes": [],
+    "animations": {}
+  },
+  "Used_caipirinha": {
+    "static_meshes": [
+      "/Game/Actors/Combined/Used_caipirinha/Used_caipirinha.Used_caipirinha"
+    ],
+    "skeletal_meshes": [],
+    "animations": {}
+  },
+  "Used_coco_gelado": {
+    "static_meshes": [
+      "/Game/Actors/Combined/Used_coco_gelado/Used_coco_gelado.Used_coco_gelado"
+    ],
+    "skeletal_meshes": [],
+    "animations": {}
+  },
+  "Used_moqueca": {
+    "static_meshes": [
+      "/Game/Actors/Combined/Used_moqueca/Used_moqueca.Used_moqueca"
+    ],
+    "skeletal_meshes": [],
+    "animations": {}
+  },
+  "Used_pastel": {
+    "static_meshes": [
+      "/Game/Actors/Combined/Used_pastel/Used_pastel.Used_pastel"
+    ],
+    "skeletal_meshes": [],
+    "animations": {}
+  },
+  "Used_petiscos": {
+    "static_meshes": [
+      "/Game/Actors/Combined/Used_petiscos/Used_petiscos.Used_petiscos"
+    ],
+    "skeletal_meshes": [],
+    "animations": {}
+  },
+  "Used_porcao_peixe": {
+    "static_meshes": [
+      "/Game/Actors/Combined/Used_porcao_peixe/Used_porcao_peixe.Used_porcao_peixe"
+    ],
+    "skeletal_meshes": [],
+    "animations": {}
+  },
+  "Used_sorvete_chocolate": {
+    "static_meshes": [
+      "/Game/Actors/Combined/Used_sorvete_chocolate/Used_sorvete_chocolate.Used_sorvete_chocolate"
+    ],
+    "skeletal_meshes": [],
+    "animations": {}
+  },
+  "Used_sorvete_morango": {
+    "static_meshes": [
+      "/Game/Actors/Combined/Used_sorvete_morango/Used_sorvete_morango.Used_sorvete_morango"
+    ],
+    "skeletal_meshes": [],
+    "animations": {}
+  },
+  "Used_suco": {
+    "static_meshes": [
+      "/Game/Actors/Combined/Used_suco/Used_suco.Used_suco"
+    ],
+    "skeletal_meshes": [],
+    "animations": {}
+  },
+  "Used_tapioca": {
+    "static_meshes": [
+      "/Game/Actors/Combined/Used_tapioca/Used_tapioca.Used_tapioca"
+    ],
+    "skeletal_meshes": [],
+    "animations": {}
+  }
+}

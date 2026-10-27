@@ -29,12 +29,11 @@ mapa e recarga das ferramentas do projeto. Não exige plugin de terceiros.
 - `MareAlta.Migration.NativeEconomy` executado por MCP: **Success**, sem erros ou
   avisos. Testa consumo/devolução, ausência de duplicação, reposição sem cobrança
   parcial, pagamento por produto, fechamento ao dormir e recompensa idempotente.
-- Celular Slate e personagem nativo compilados. Interações físicas ainda pendentes:
-  não declarar esses recursos jogáveis só porque o módulo compila.
+- Celular Slate, personagem e estações nativas compilados. A interação E na geladeira abriu o painel em PIE; o atendimento completo permanece bloqueado pela navegação.
 - Exportados 12.910 posicionamentos do cenário, 2.985 variantes de modelo, reduzidas
   a 1.620 modelos canônicos. Fontes glTF portáveis e imagens compartilhadas geradas.
 - Calibração real de importação: Godot(1,2,3)m → UE(100,300,200)cm.
-- Primeiros 306 modelos nativos importados/validados por MCP (zero recursos ausentes). Importação restante,
+- Primeiros 730 modelos nativos importados/validados por MCP (zero recursos ausentes). Importação restante,
   mapa, render e aprovação visual continuam pendentes.
 - O acesso a EpicGames/UnrealEngine retornou404 nesta conta; a engine instalada
   permite compilar. Não redistribuir o código/binários da engine neste repositório.
@@ -77,4 +76,10 @@ completar cenário e corrigir luz antes de apresentar como jogo migrado.
 
 Checkpoint inicial enviado e verificado no GitHub: `75b8d7b`. Fontes completas
 preparadas em glTF estão no Git LFS (1.620modelos e texturas compartilhadas);
-306modelos já têm assets nativos importados. A importação restante não foi concluída.
+730modelos já têm assets nativos importados. A importação restante não foi concluída.
+
+
+## Checkpoint mais recente
+
+Leia [CHECKPOINT_2026-10-27.md](CHECKPOINT_2026-10-27.md) antes de retomar.
+Ele substitui as contagens e limitações dos checkpoints iniciais acima.
