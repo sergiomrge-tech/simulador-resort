@@ -590,7 +590,7 @@ func _hero_house() -> void :
 	_wall_x(x0, x1, zf, h, [[c.x + 1.1, c.x + 2.3, 0.0, 2.35], [c.x - 2.4, c.x - 1.0, 1.0, 2.3]], y0)
 	_wall_x(x0, x1, zb, h, [[c.x - 2.6, c.x - 0.2, 0.85, 2.35]], y0)
 	_wall_z(zb, zf, x0, h, [[c.z - 0.6, c.z + 0.6, 1.0, 2.3]], y0)
-	_wall_z(zb, zf, x1, h, [], y0)
+	_wall_z(zb, zf, x1, h, [[c.z+1.30,c.z+2.45,0.0,2.35]], y0)
 	M.plaster = save[0]
 	M.terracotta = save[1]
 	M.teal = save[2]
@@ -652,6 +652,7 @@ func _hero_house() -> void :
 	Real.place(self, "g:cup_plastic", Vector3(x1-.50,y0+.945,zb+2.25), .15)
 	B.model(self, "ceramic_vase_02", Vector3(x1-.27,y0+1.94,zb+2.15), 0.2, .45)
 	B.model(self, "book_encyclopedia_set_01", Vector3(x1-.27,y0+1.94,zb+3.22), PI*.5, .4)
+	_home_bathroom()
 	var lounge := Node3D.new()
 	lounge.set_script(load("res://scripts/home_furnishings.gd"))
 	lounge.name = "HomeLounge"
@@ -2129,3 +2130,39 @@ func _neighborhood_finish() -> void:
 	for x in [1.5,104.0]:
 		for z in [42.0,56.0]:
 			B.model(self,"potted_plant_04",Vector3(x+3.2,.15,z),0,.7)
+
+func _home_bathroom() -> void:
+	var c: Vector3=HOME_C+Vector3(5.10,.12,1.95)
+	var root:=Node3D.new()
+	root.name="HomeBathroom"
+	root.position=c
+	add_child(root)
+	var plaster:=stucco(Color(.89,.88,.82))
+	var floor_mat:=B.mat("light_stone",1.6,Color(.87,.85,.78),.87)
+	B.box(root,Vector3(3.25,.15,3.15),Vector3(0,-.075,0),floor_mat,true)
+	for x in [-1.65,1.65]:
+		if x>0:B.box(root,Vector3(.14,2.9,3.1),Vector3(x,1.45,0),plaster,true)
+	for z in [-1.55,1.55]:B.box(root,Vector3(3.4,2.9,.14),Vector3(0,1.45,z),plaster,true)
+	B.box(root,Vector3(3.4,.12,3.2),Vector3(0,2.95,0),plaster,true)
+	B.hip_roof(root,Vector3(0,3.05,0),3.7,3.5,.65,VM.clay,.1)
+	Real.place(root,"g:home_bathroom_fixtures",Vector3.ZERO,-1,0,Color.WHITE,0,false)
+	Real.place(root,"lambis_shell",Vector3(-.9,.83,-1.15),.09)
+	var door:=Node3D.new()
+	door.set_script(load("res://scripts/home_door.gd"))
+	door.position=Vector3(-1.60,0,.50)
+	door.rotation.y=-PI*.5
+	door.door_label="Porta do banheiro"
+	door.auto_close=false
+	# Adicionar à árvore somente depois de configurar o script/posição.
+	door.name="BathroomDoor"
+	root.add_child(door)
+	var lamp:=OmniLight3D.new()
+	lamp.position=Vector3(0,2.5,0)
+	lamp.light_color=Color(1,.98,.93)
+	lamp.light_energy=.7
+	lamp.omni_range=4
+	lamp.shadow_enabled=true
+	lamp.shadow_bias=.025
+	lamp.shadow_normal_bias=.22
+	root.add_child(lamp)
+	_block(HOME_C+Vector3(5.15,0,1.95),3.25,3.15,.1)

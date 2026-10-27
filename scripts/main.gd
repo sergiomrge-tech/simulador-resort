@@ -178,6 +178,10 @@ func _ready() -> void :
 	operations.set_script(load("res://scripts/kiosk_operations.gd"))
 	operations.main = self
 	add_child(operations)
+	var refinements:=Node3D.new()
+	refinements.name="Refinements"
+	refinements.set_script(load("res://scripts/refinements.gd"))
+	add_child(refinements)
 	var coast := Node3D.new()
 	coast.set_script(load("res://scripts/coastal_life.gd"))
 	add_child(coast)

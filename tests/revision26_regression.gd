@@ -183,7 +183,7 @@ func run(main) -> void:
  main.hud.phone.close()
  for slot in guests.size():
   var g=guests[slot]
-  var number: String=ops.order_number(g)
+  var number: String=g.gname
   main.player.position=world.kiosk_point(Vector3(-.7+slot*1.4,.1,.15))
   main.player.cam.look_at(g.global_position+Vector3(0,1.2,0))
   for dish in ["suco","batata_frita"]:

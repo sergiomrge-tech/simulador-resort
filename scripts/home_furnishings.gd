@@ -16,6 +16,9 @@ var _main
 
 func _ready() -> void:
 	_main = get_parent().get_parent()
+	Real.place(self,"g:nautical_wall_set",Vector3(.45,1.3,-3.35),-1,0)
+	Real.place(self,"lambis_shell",Vector3(-1.4,.42,1.35),.12,.35)
+	Real.place(self,"lifebuoy",Vector3(-3.30,1.55,2.55),.55,PI*.5)
 	sofa = _place("g:home_sofa",Vector3(-1.65,0,2.55),0,PI,2.30,"HomeSofa")
 	console = _place("g:home_tv_console",Vector3(-1.65,0,.12),0,0,1.35,"TVConsole")
 	var top: float = Real._aabb(console).end.y

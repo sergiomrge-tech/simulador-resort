@@ -10,6 +10,7 @@ var animation: AnimationPlayer
 var idle_clip := ""
 var walk_clip := ""
 var moving := false
+var walking_partner: WeakRef
 
 func _ready() -> void:
 	name="VillageAnimal_"+kind
@@ -64,6 +65,13 @@ func _process(delta: float) -> void:
 	var running:=Core.in_game and not Core.paused
 	if animation: animation.active=running
 	if not running: return
+	if walking_partner!=null:
+		var owner=walking_partner.get_ref()
+		if is_instance_valid(owner) and owner.visible and Core.weather!="rain" and position.distance_to(owner.position)<18:
+			var follow: Vector3=owner.position+owner.basis.x*.85
+			if position.distance_to(follow)>1.4 and _clear_segment(position,follow):
+				target=follow
+				_play(true)
 	if moving:
 		var offset:=target-position
 		offset.y=0
@@ -72,7 +80,7 @@ func _process(delta: float) -> void:
 			wait=rng.randf_range(3,7)
 		else:
 			rotation.y=lerp_angle(rotation.y,atan2(offset.x,offset.z),minf(1,delta*5))
-			position+=offset.normalized()*minf(offset.length(),delta*(.36 if kind=="cat" else .48))
+			position+=offset.normalized()*minf(offset.length(),delta*(1.15 if walking_partner!=null else (.36 if kind=="cat" else .48)))
 	else:
 		wait-=delta
 		if wait<=0:

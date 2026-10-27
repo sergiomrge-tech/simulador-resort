@@ -299,3 +299,8 @@ Botões usam largura do texto; cartões/menus ficam em celular vertical 420×700
 com seis abas numa grade 3×2. Nenhum painel horizontal largo vazio como terminal.
 
 Teste de otimização precisa aguardar a inicialização diferida e um frame renderizado antes do encerramento. Sair no primeiro frame deixava partículas/instâncias pendentes no renderer, embora o PASS lógico já tivesse sido impresso. Objetos temporários pertencem à cena principal para passar pela retenção/liberação de Core.quit_game. Rejeitar ERROR mesmo após PASS.
+
+
+## Checkpoint interrompido — refinamentos de 26/10
+
+Botão criado vazio pode manter largura mínima de 34px depois de ganhar texto: recalcular em _refresh_kiosk_controls. Não aumentar mínimo de todas as setas/controles curtos: isso fez Bangalôs ultrapassar o celular. O exemplo de pessoa atravessando espreguiçadeira coincide com BeachSet em x33,z-22 sobreposto às novas mesas; não presumir que basta mudar a pose. Conferir layout completo por imagem. WAV de reggae é original e tem loop explícito; soundfile ao gravar OGG nessa instalação encerrou o processo e deixou arquivo de4KB inválido. Não reutilizar esse arquivo. Estado e pendências em docs/REFINAMENTOS_EM_ANDAMENTO_2026-10-26.md; usuário pediu terminar depois.

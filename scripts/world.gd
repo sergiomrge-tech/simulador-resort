@@ -154,6 +154,7 @@ func _ground() -> void :
 	mi.mesh = st.commit()
 	var sm: = ShaderMaterial.new()
 	sm.shader = load("res://shaders/ground.gdshader")
+	sm.set_shader_parameter("grass_tex",B.tex("leafy_grass"))
 	sm.set_shader_parameter("dry_tex", B.tex("coast_sand_01"))
 	sm.set_shader_parameter("dry_nor", B.nor("coast_sand_01"))
 	sm.set_shader_parameter("wet_tex", B.tex("damp_beach_sand"))
@@ -1197,7 +1198,7 @@ func _beach_props() -> void :
 		ch.reparent(root)
 
 func _beach_props_build() -> void :
-	var spots: = [Vector3(-28, 0, -21), Vector3(-17, 0, -22), Vector3(-6, 0, -23), Vector3(4, 0, -22), Vector3(15, 0, -22), Vector3(33, 0, -22)]
+	var spots: = [Vector3(-28, 0, -21), Vector3(-17, 0, -22), Vector3(-6, 0, -23), Vector3(4, 0, -22), Vector3(15, 0, -22), Vector3(82, 0, -22)]
 	var tints: = [Color(0.86, 0.22, 0.18), Color(0.95, 0.78, 0.35), Color(0.95, 0.95, 0.9), Color(0.12, 0.55, 0.58), Color(0.2, 0.38, 0.72), Color(0.9, 0.45, 0.25)]
 	for i in spots.size():
 		var p: Vector3 = spots[i]
@@ -1514,6 +1515,7 @@ func _scatter(mesh: Mesh, mat: Material, xforms: Array, vis_end: float, shadows:
 		mmi.multimesh = mm
 		if mat != null:
 			mmi.material_override = mat
+		mmi.add_to_group("scalable_vegetation")
 		mmi.visibility_range_end = vis_end
 		mmi.visibility_range_end_margin = 8.0
 		mmi.visibility_range_fade_mode = GeometryInstance3D.VISIBILITY_RANGE_FADE_SELF

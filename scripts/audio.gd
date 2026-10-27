@@ -26,7 +26,7 @@ const PARTY_C: = Vector3(52.0, 1.5, -23.0)
 const VILLAGE: = Vector3(70, 0, 30)
 
 static func ensure_buses() -> void :
-	for b in ["Music", "SFX"]:
+	for b in ["Music", "SFX", "Ambiente"]:
 		if AudioServer.get_bus_index(b) == -1:
 			AudioServer.add_bus()
 			var i: = AudioServer.bus_count - 1
@@ -39,17 +39,18 @@ func _ready() -> void :
 	bird_voice = AudioStreamPlayer3D.new()
 	bird_voice.name = "AmbientBirds"
 	bird_voice.process_mode = Node.PROCESS_MODE_PAUSABLE
-	bird_voice.bus = "SFX"
+	bird_voice.bus = "Ambiente"
 	bird_voice.unit_size = 14.0
 	bird_voice.max_db = 0.0
 	bird_voice.max_distance = 50.0
 	bird_voice.max_polyphony = 1
 	add_child(bird_voice)
-	music = _loop("music_relax", -20.0, "Music")
+	music = _loop("reggae_praia", -20.0, "Music")
 	ocean = _loop("ocean_loop", -8.0)
 	crickets = _loop("crickets_loop", -60.0)
 	rain_snd = _loop("rain_loop", -80.0)
 	wind_snd = _loop("wind_loop", -80.0)
+	for natural in [ocean,crickets,rain_snd,wind_snd]:natural.bus="Ambiente"
 	party_snd = AudioStreamPlayer3D.new()
 	party_snd.position = PARTY_C
 	party_snd.unit_size = 9.0
@@ -60,8 +61,11 @@ func _ready() -> void :
 
 func _loop(n: String, db: float, bus: = "SFX") -> AudioStreamPlayer:
 	var p: = AudioStreamPlayer.new()
-	var s: AudioStreamOggVorbis = load("res://assets/audio/%s.ogg" % n)
-	s.loop = true
+	var s: AudioStream=load("res://assets/audio/%s.%s" % [n,"wav" if n=="reggae_praia" else "ogg"])
+	if s is AudioStreamOggVorbis:s.loop=true
+	elif s is AudioStreamWAV:
+		s.loop_mode=AudioStreamWAV.LOOP_FORWARD
+		s.loop_end=roundi(s.get_length()*s.mix_rate)
 	p.stream = s
 	p.volume_db = db
 	p.bus = bus
@@ -110,7 +114,7 @@ func _tick_birds(delta: float) -> void:
 		bird_voice.stop()
 		return
 	var silent := muted or not Core.in_game or _night>=.6 or Core.weather=="rain" or Core.day_event=="tempestade"
-	for bus in ["Master","SFX"]:
+	for bus in ["Master","SFX","Ambiente"]:
 		var index := AudioServer.get_bus_index(bus)
 		if index>=0 and AudioServer.is_bus_mute(index): silent=true
 	if silent or not is_instance_valid(player):
@@ -188,7 +192,7 @@ func sfx(n: String, db: = -6.0, pitch: = 1.0) -> void :
 
 var _kiosk_cooldowns: Dictionary = {}
 func kiosk_sfx(kind: String, pos: Vector3) -> void:
-	if muted: return
+	if muted or get_tree().paused: return
 	var now := Time.get_ticks_msec()
 	if now - int(_kiosk_cooldowns.get(kind, -1000)) < 400: return
 	_kiosk_cooldowns[kind] = now
@@ -202,3 +206,17 @@ func kiosk_sfx(kind: String, pos: Vector3) -> void:
 	add_child(sound)
 	sound.play()
 	sound.finished.connect(sound.queue_free)
+
+func at_position(sound_name: String,point: Vector3,db: float=-24.0,bus: String="SFX") -> void:
+	if muted or get_tree().paused:return
+	var voice:=AudioStreamPlayer3D.new()
+	voice.stream=load("res://assets/audio/"+sound_name+(".wav" if sound_name=="leaves_soft" else ".ogg"))
+	voice.bus=bus
+	voice.position=point
+	voice.volume_db=db
+	voice.unit_size=3
+	voice.max_distance=22
+	voice.process_mode=Node.PROCESS_MODE_PAUSABLE
+	add_child(voice)
+	voice.play()
+	voice.finished.connect(voice.queue_free)

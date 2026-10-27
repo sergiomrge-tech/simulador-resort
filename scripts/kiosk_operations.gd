@@ -218,7 +218,7 @@ func take_order(ref: WeakRef, by_staff: bool = false) -> bool:
 	g.show_order(main.village._order_text(g))
 	main.hud._update_orders()
 	if not by_staff:
-		Core.toast.emit("Pedido anotado " + order_number(g) + ": " + main.village._order_text(g), "good")
+		Core.toast.emit(g.gname+": " + main.village._order_text(g), "good")
 	return true
 
 func customer_action(ref: WeakRef) -> bool:

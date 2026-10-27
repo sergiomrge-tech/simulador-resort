@@ -23,6 +23,12 @@ var fov: = 75.0
 var vol_master: = 1.0
 var vol_music: = 0.8
 var vol_sfx: = 1.0
+var vol_ambience: float=.75
+var shadows: int=-1
+var vegetation: float=1.0
+var detail_distance: float=1.0
+var population: int=12
+var show_fps: bool=false
 var sensitivity: = 1.0
 var invert_y: = false
 var language: = "pt"
@@ -80,6 +86,12 @@ func _load() -> void :
 	ui_scale = clampf(float(c.get_value("general", "ui_scale", ui_scale)), 0.75, 1.5)
 	upscaler = clampi(int(c.get_value("video", "upscaler", upscaler)), 0, 2)
 	api = 1 if current_api() == "d3d12" else 0
+	shadows=clampi(int(c.get_value("video","shadows",-1)),-1,3)
+	vegetation=clampf(float(c.get_value("video","vegetation",1.0)),.35,1.0)
+	detail_distance=clampf(float(c.get_value("video","detail_distance",1.0)),.5,1.5)
+	population=clampi(int(c.get_value("video","population",12)),4,18)
+	show_fps=bool(c.get_value("video","show_fps",false))
+	vol_ambience=clampf(float(c.get_value("audio","ambience",.75)),0,1)
 	var kb = c.get_value("controls", "keys", {})
 	if typeof(kb) == TYPE_DICTIONARY:
 		keybinds = kb
@@ -87,6 +99,8 @@ func _load() -> void :
 func save() -> void :
 	var c: = ConfigFile.new()
 	c.set_value("video", "preset", preset)
+	for key in ["shadows","vegetation","detail_distance","population","show_fps"]:c.set_value("video",key,get(key))
+	c.set_value("audio","ambience",vol_ambience)
 	c.set_value("video", "scale", scale)
 	c.set_value("video", "vsync", vsync)
 	c.set_value("video", "window_mode", window_mode)
@@ -209,13 +223,14 @@ func set_volume(bus: String, v: float) -> void :
 		"Master": vol_master = v
 		"Music": vol_music = v
 		"SFX": vol_sfx = v
+		"Ambiente": vol_ambience=v
 	apply_audio()
 	save()
 
 func apply_audio() -> void :
 	var a = load("res://scripts/audio.gd")
 	a.ensure_buses()
-	for pair in [["Master", vol_master], ["Music", vol_music], ["SFX", vol_sfx]]:
+	for pair in [["Master", vol_master], ["Music", vol_music], ["SFX", vol_sfx], ["Ambiente",vol_ambience]]:
 		var i: = AudioServer.get_bus_index(pair[0])
 		if i >= 0:
 			AudioServer.set_bus_volume_db(i, linear_to_db(maxf(pair[1], 0.0001)))
@@ -266,6 +281,7 @@ func set_resolution(i: int) -> void :
 
 func set_preset(p: int) -> void :
 	preset = clampi(p, 0, 3)
+	shadows=-1
 	apply()
 	save()
 
@@ -333,7 +349,7 @@ func apply() -> void :
 	if not hd:
 		changed.emit()
 		return
-	var p: = preset
+	var p: = shadows if shadows>=0 else preset
 
 	# v0.7: o contorno cartoon lê profundidade/normais da tela, o que não funciona com MSAA.
 	# FXAA suaviza as linhas sem borrar as cores chapadas (TAA borraria).
@@ -358,6 +374,7 @@ func apply() -> void :
 	RenderingServer.directional_soft_shadow_filter_set_quality([RenderingServer.SHADOW_QUALITY_SOFT_LOW, RenderingServer.SHADOW_QUALITY_SOFT_LOW, RenderingServer.SHADOW_QUALITY_SOFT_MEDIUM, RenderingServer.SHADOW_QUALITY_SOFT_MEDIUM][p])
 	RenderingServer.positional_soft_shadow_filter_set_quality([RenderingServer.SHADOW_QUALITY_HARD, RenderingServer.SHADOW_QUALITY_SOFT_LOW, RenderingServer.SHADOW_QUALITY_SOFT_MEDIUM, RenderingServer.SHADOW_QUALITY_SOFT_HIGH][p])
 	if sun:
+		sun.shadow_enabled=shadows!=0
 		sun.directional_shadow_mode = DirectionalLight3D.SHADOW_PARALLEL_2_SPLITS if p <= (0 if original else 2) else DirectionalLight3D.SHADOW_PARALLEL_4_SPLITS
 		sun.directional_shadow_max_distance = [50.0,80.0,110.0,150.0][p] if original else [35.0,50.0,75.0,110.0][p]
 		sun.shadow_blur = 1.0
@@ -383,3 +400,16 @@ func apply() -> void :
 	RenderingServer.environment_set_sdfgi_ray_count(RenderingServer.ENV_SDFGI_RAY_COUNT_64 if p < 3 else RenderingServer.ENV_SDFGI_RAY_COUNT_96)
 	RenderingServer.environment_set_volumetric_fog_volume_size(64 if p == 2 else 128, 64 if p == 2 else 96)
 	changed.emit()
+
+func people_limit() -> int:
+	return population if hd else mini(5,population)
+func set_detail(key: String,value: Variant) -> void:
+	if key not in ["shadows","vegetation","detail_distance","population","show_fps"]:return
+	match key:
+		"shadows":value=clampi(int(value),-1,3)
+		"vegetation":value=clampf(float(value),.35,1)
+		"detail_distance":value=clampf(float(value),.5,1.5)
+		"population":value=clampi(int(value),4,18)
+	set(key,value)
+	apply()
+	save()

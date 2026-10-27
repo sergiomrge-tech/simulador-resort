@@ -1,5 +1,7 @@
 # Guia vigente para as próximas atualizações
 
+**Checkpoint mais recente — trabalho em andamento:** [Refinamentos interrompidos a pedido do usuário](REFINAMENTOS_EM_ANDAMENTO_2026-10-26.md). Código/assets salvos para terminar depois; ainda sem novo executável aprovado. O último pacote validado continua sendo Celular/Campanha, commit 45fc277.
+
 Atualizado em **26/10/2026**. Destinado a qualquer IA ou pessoa, sem depender deste
 chat. Leia junto com [AGENTS.md](../AGENTS.md). Novos pedidos do usuário prevalecem.
 

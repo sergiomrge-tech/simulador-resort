@@ -7,6 +7,7 @@ uniform sampler2D dry_tex : source_color, filter_linear_mipmap, repeat_enable;
 uniform sampler2D dry_nor : hint_normal, filter_linear_mipmap, repeat_enable;
 uniform sampler2D wet_tex : source_color, filter_linear_mipmap, repeat_enable;
 uniform sampler2D wet_nor : hint_normal, filter_linear_mipmap, repeat_enable;
+uniform sampler2D grass_tex : source_color, filter_linear_mipmap, repeat_enable;
 uniform float tile = 0.22;
 uniform float wet_start = -27.0;
 uniform float wet_end = -34.0;
@@ -46,7 +47,12 @@ void fragment(){
 	float shell = step(0.988, sp) * (1.0 - wet_band);
 	vec3 shell_c = mix(vec3(1.0, 0.62, 0.55), vec3(1.0, 0.95, 0.85), step(0.5, hash(floor(wpos.xz * 4.1))));
 	col = mix(col, shell_c, shell);
+	float inland = smoothstep(-12.0,-5.0,wpos.z+(noise(wpos.xz*.23)-.5)*3.0);
+	vec3 grass_sample=texture(grass_tex,wpos.xz*.52).rgb;
+	vec3 lawn=mix(vec3(.19,.27,.095),vec3(.31,.39,.17),big)*(.70+grass_sample*.50);
+	lawn*=1.0-clamp(rain_wet,0.0,1.0)*.12;
+	col=mix(col,lawn,inland);
 	ALBEDO = col;
-	ROUGHNESS = mix(0.95, 0.50, wet_band);
+	ROUGHNESS = mix(mix(0.95, 0.50, wet_band),.94,inland);
 	SPECULAR = mix(0.05, 0.22, wet_band);
 }

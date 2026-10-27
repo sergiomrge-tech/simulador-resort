@@ -118,3 +118,8 @@ Navio diurno mais ao fundo (-220 Z), um por vez e lento; cruzeiro noturno ancora
 Guia atual: [docs/CAMPANHA_CORRECOES_2026-10-26.md](docs/CAMPANHA_CORRECOES_2026-10-26.md).
 
 Chuva deve umedecer a areia sem criar faixas brancas; espuma depende somente da orla. Botões e cartões ajustam-se ao conteúdo, sem faixas verdes esticadas.
+
+
+## Checkpoint de refinamentos de 26/10 (em andamento)
+
+Usuário pediu encerrar e terminar depois por limite. Ler [docs/REFINAMENTOS_EM_ANDAMENTO_2026-10-26.md](docs/REFINAMENTOS_EM_ANDAMENTO_2026-10-26.md) antes de retomar. Não declarar este lote concluído nem substituir o PCK aprovado antes de validar. Preferências novas: aba Missões direta, pedidos apenas nome/itens, gramado após areia, reggae instrumental suave original, banheiro claro/madeira/praia e mais detalhes/sombras no quiosque.

@@ -725,12 +725,12 @@ func _update_orders() -> void:
 	var unrecorded: Array = village.customers_to_order()
 	if not unrecorded.is_empty():
 		for guest in unrecorded:
-			lines.append("%s · Anotar no balcão" % ops.order_number(guest))
+			lines.append(str(guest.gname)+"\nAnotar pedido")
 	for guest in waiting:
 		var items: Array = []
 		for id in village._remaining(guest):
-			items.append(str(Economy.dish(id).name) + (" ✓" if Core.company_available(id) > 0 else ""))
-		lines.append("%s %s\n%s" % [ops.order_number(guest), ops.seat_name(guest), " + ".join(items)])
-	if not lines.is_empty(): orders_text.text = "PEDIDOS · ✓ disponível\n" + "\n".join(lines)
+			items.append(str(Economy.dish(id).name))
+		lines.append("%s\n%s" % [guest.gname, " + ".join(items)])
+	if not lines.is_empty(): orders_text.text = "\n\n".join(lines)
 	if str(Core.company.carry) != "":
 		work_text.text = "Na mão: %s · E no cliente com o mesmo pedido" % Economy.dish(str(Core.company.carry)).name

@@ -1,0 +1,83 @@
+Godot Engine v4.5.1.stable.official.f62fdbde1 - https://godotengine.org
+Vulkan 1.4.351 - Forward+ - Using Device #0: NVIDIA - NVIDIA GeForce RTX 4060 Ti
+
+vegetacao: capim=4021 arbustos=99 coqueiros+=46
+serra: copas perto=250 crista=101
+serra: tris encosta=16884
+[revision26] ok campanha começa com criação da empresa, sem recompensa grátis
+[revision26] ok campanha progride e paga uma vez: chegada
+[revision26] ok missão principal não repete prêmio
+[revision26] ok campanha progride e paga uma vez: portas
+[revision26] ok missão principal não repete prêmio
+[revision26] ok campanha progride e paga uma vez: primeiros
+[revision26] ok missão principal não repete prêmio
+[revision26] ok campanha progride e paga uma vez: mesas
+[revision26] ok missão principal não repete prêmio
+[revision26] ok campanha progride e paga uma vez: equipe
+[revision26] ok missão principal não repete prêmio
+[revision26] ok campanha progride e paga uma vez: comunidade
+[revision26] ok missão principal não repete prêmio
+[revision26] ok campanha progride e paga uma vez: encontro
+[revision26] ok missão principal não repete prêmio
+[revision26] ok campanha progride e paga uma vez: hospedar
+[revision26] ok missão principal não repete prêmio
+[revision26] ok campanha progride e paga uma vez: verao
+[revision26] ok missão principal não repete prêmio
+[revision26] ok campanha progride e paga uma vez: marealta
+[revision26] ok missão principal não repete prêmio
+[revision26] ok campanha tem final após dez capítulos
+[revision26] ok secundária independente, sem repetir prêmio
+[revision26] ok campanha e secundárias persistem no save
+[revision26] ok save antigo recebe campanha sem apagar dados externos
+[revision26] ok porção pronta liberada: batata_frita
+[revision26] ok retirada desconta uma vez e entrega já paga: batata_frita
+[revision26] ok entrega não pode pagar duas vezes
+[revision26] ok porção pronta liberada: porcao_peixe
+[revision26] ok retirada desconta uma vez e entrega já paga: porcao_peixe
+[revision26] ok entrega não pode pagar duas vezes
+[revision26] ok conta histórica liquidada automaticamente ao carregar
+[revision26] ok recarregar não duplica pagamento histórico
+[revision26] ok nenhuma caixa sólida de oclusão preenche a casa acessível
+[revision26] ok chuva não espalha espuma branca pelo chão: excesso -0.01197916666667
+[revision26] ok chuva mantém gotas e areia úmida
+[revision26] ok imagem da janela mantém o interior com oclusão ligada: erro 0.00016403696112
+[revision26] ok navio passa ao fundo a mais de 190 m da praia
+[revision26] ok PC, alvo e tela física removidos
+[revision26] ok celular portátil vertical abre longe do balcão
+[revision26] ok cliente disponível na retirada 1
+[revision26] ok mira alcança cliente pelo lado interno 1
+[revision26] ok E anota pelo balcão 1
+[revision26] ok pedido usa número da reserva, sem #00
+[revision26] ok cliente disponível na retirada 2
+[revision26] ok mira alcança cliente pelo lado interno 2
+[revision26] ok E anota pelo balcão 2
+[revision26] ok pedido usa número da reserva, sem #00
+[revision26] ok pedidos persistem ao sair de perto e olhar para outro lado
+[revision26] ok pedidos continuam à esquerda com estação aberta
+[revision26] ok estação compacta deixa pedidos livres à esquerda
+[revision26] ok botão Pegar compacto
+[revision26] ok botão Pegar compacto
+[revision26] ok botão Pegar compacto
+[revision26] ok botão Pegar compacto
+[revision26] ok expositor tem modelo detalhado distinto: batata_frita
+[revision26] ok expositor tem modelo detalhado distinto: porcao_peixe
+[revision26] ok Concluir ocupa apenas a largura do texto e margens
+[revision26] ok Concluir ocupa apenas a largura do texto e margens
+[revision26] ok Concluir ocupa apenas a largura do texto e margens
+[revision26] ok Concluir ocupa apenas a largura do texto e margens
+[revision26] ok Concluir ocupa apenas a largura do texto e margens
+[revision26] ok retira produto para entrega interna
+[revision26] ok E entrega pelo lado interno nos dois lugares
+[revision26] ok pedido permanece na entrega parcial e some após último item
+[revision26] ok retira produto para entrega interna
+[revision26] ok E entrega pelo lado interno nos dois lugares
+[revision26] ok pedido permanece na entrega parcial e some após último item
+[revision26] ok retira produto para entrega interna
+[revision26] ok E entrega pelo lado interno nos dois lugares
+[revision26] ok pedido permanece na entrega parcial e some após último item
+[revision26] ok retira produto para entrega interna
+[revision26] ok E entrega pelo lado interno nos dois lugares
+[revision26] ok pedido permanece na entrega parcial e some após último item
+[revision26] ok todas as entregas terminam pagas, sem receber no caixa
+REVISION26_TEST PASS
+SHUTDOWN_COMPLETE code=0

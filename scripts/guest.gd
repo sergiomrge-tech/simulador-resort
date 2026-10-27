@@ -39,6 +39,8 @@ var _meal: Node3D
 var _meal_scale: float=1.0
 var _eating: = false
 var _eat_t: = 0.0
+var _service_time: float=0.0
+var _service_kind: String=""
 ## true = leva o copo/coco à boca em vez da comida (v0.7.1)
 var _consume_drink: = false
 var _mesh_insts: Array = []
@@ -358,6 +360,11 @@ func is_moving() -> bool:
 
 func _process(delta: float) -> void :
 	_local_block_frame=-1
+	if _service_time>0:
+		_service_time-=delta
+		if _service_time<=0 and not get_meta("hand_carry",false):
+			for key in ["work_target","work_kind"]:
+				if has_meta(key):remove_meta(key)
 	if _eating:
 		_eat_t += delta
 	var prev: = position
@@ -1109,3 +1116,10 @@ func _sync_consumed_dish() -> void:
 	if holder==null: return
 	var size: float=_meal_scale
 	_meal.global_transform=Transform3D(global_basis.orthonormalized().scaled(Vector3.ONE*size),holder.get_parent().global_position+global_basis*Vector3(0,-.07,.025))
+
+func service_reaction(kind: String) -> void:
+	_service_kind=kind
+	_service_time=1.2
+	if not get_meta("hand_carry",false):
+		set_meta("work_kind","receive" if kind=="receber" else "greet")
+		set_meta("work_target",global_position+global_basis*Vector3(-.22,1.22,.32))

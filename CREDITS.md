@@ -329,3 +329,8 @@ Modelos originais deste projeto, dedicados a CC0: icecream_strawberry, icecream_
 ## Porções prontas — 26/10/2026
 
 Modelos originais deste projeto dedicados a CC0: dish_fries e dish_fish_portion. Gerador tools/gen_portions.py e fontes editáveis art/blender/dish_fries.blend e dish_fish_portion.blend, salvas e reabertas. Batatas chanfradas com pontas tostadas/sal; filés empanados com lascas, crosta, limão e salsa. Sem texturas externas.
+
+
+## Refinamentos em andamento — 26/10/2026
+
+Banheiro, quadros/ornamentos náuticos, cordão de luzes e expositores: modelos originais CC0 em tools/gen_nautical_home.py, fontes art/blender/home_bathroom_fixtures.blend e nautical_*.blend, GLBs em assets/models/gen. Textura brown_planks_05 da biblioteca Poly Haven CC0 já registrada, incorporada nas fontes. Ícones de produtos SVG originais CC0 gerados por tools/gen_product_icons.py. Música reggae_praia.wav e folhas leaves_soft.wav: síntese original CC0 por tools/gen_reggae.py, sem samples, vozes, letras ou melodias de terceiros.

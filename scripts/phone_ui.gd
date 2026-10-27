@@ -15,8 +15,8 @@ const GOOD: = Color(0.12, 0.62, 0.32)
 const BAD: = Color(0.85, 0.28, 0.22)
 
 ## id, nome, cor, ícone
-const HOME_APPS := ["painel", "compras", "equipe", "financas", "resort", "mundo"]
-const PARENTS := {"empresa":"personalizar", "personalizar":"painel", "horarios":"painel", "rotina":"horarios", "movimento":"painel", "equipamentos":"painel", "pedidos":"painel", "cardapio":"painel", "cozinha":"cardapio", "estoque_quiosque":"compras", "mercado":"compras", "fornecedores":"compras", "gestao_equipe":"equipe", "recrutamento":"equipe", "resultado":"financas", "caixa":"financas", "expansoes":"resort", "bangalos":"resort", "hotel":"resort", "evolucao":"resort", "temporada":"resort", "negocios":"resort", "missoes":"mundo", "album":"mundo", "agenda":"mundo", "vila":"mundo"}
+const HOME_APPS := ["painel", "compras", "equipe", "financas", "resort", "missoes"]
+const PARENTS := {"empresa":"personalizar", "personalizar":"painel", "horarios":"painel", "rotina":"horarios", "movimento":"painel", "equipamentos":"painel", "pedidos":"painel", "cardapio":"painel", "cozinha":"cardapio", "estoque_quiosque":"compras", "mercado":"compras", "fornecedores":"compras", "gestao_equipe":"equipe", "recrutamento":"equipe", "resultado":"financas", "caixa":"financas", "expansoes":"resort", "bangalos":"resort", "hotel":"resort", "evolucao":"resort", "temporada":"resort", "negocios":"resort", "mundo":"missoes", "album":"mundo", "agenda":"mundo", "vila":"mundo"}
 const APPS: = [
 	["painel", "Quiosque", Color(0.15, 0.55, 0.5), "shop"],
 	["compras", "Compras", Color(0.25, 0.65, 0.35), "compra"],
@@ -185,6 +185,8 @@ func open(which: String = "", arg: int = -1) -> void :
 	# Terminal fixo: abertura imediata, sem animação de aparelho portátil.
 
 func close() -> void :
+	for child in get_children():
+		if child.name=="ResidentConversation":child.queue_free()
 	visible = false
 	var scene = get_tree().current_scene
 	if scene != null and scene.get("operations") != null and is_instance_valid(scene.operations.door): scene.operations.door.rotation.y = 0
@@ -453,25 +455,7 @@ func _home() -> void:
 	list.add_theme_constant_override("separation", 9)
 	margin.add_child(list)
 	_lbl(list, str(Core.company.name) if Core.company.created else "Maré Alta", 23, INK, true)
-	var status := _card(list)
-	if Core.company.created:
-		company_status = _lbl(status, "", 17, INK, true)
-		company_open_button = _btn(status,"",_toggle_kiosk)
-		_refresh_kiosk_controls()
-	else:
-		_lbl(status,"Quiosque fechado",17,INK,true)
-		_btn(status,"Criar meu quiosque",_open_management.bind("empresa"))
-	var village = get_tree().current_scene.village
-	var waiting: int = village.waiting_customers().size()
-	var pending: int = village.customers_to_order().size()
-	_lbl(status,"%d para anotar  ·  %d em atendimento" % [pending,waiting],14,INK_SOFT)
-	_lbl(status,"Pagamento automático na entrega",13,GOOD)
-	var summary := _card(list)
-	_lbl(summary,"Produtos disponíveis",17,INK,true)
-	for id in Core.kiosk_menu():
-		_lbl(summary,"%s: %d porções" % [tr(str(Economy.dish(id).name)),Core.company_available(id)],15,INK)
-	_lbl(list,"Anote e entregue no balcão com E. Use Compras para repor os produtos.",14,INK_SOFT)
-	_lbl(list,"Esc · voltar ou fechar",13,INK_SOFT)
+	_app_dashboard(list)
 
 func _app_hub(list: VBoxContainer, links: Array) -> void:
 	for link in links: _btn(list, str(link[1]), _open_management.bind(str(link[0])))
@@ -485,7 +469,17 @@ func _app_dashboard(list: VBoxContainer) -> void:
 	company_status = _lbl(card, "", 18, INK, true)
 	company_open_button = _btn(card, "", _toggle_kiosk)
 	_refresh_kiosk_controls()
-	_app_hub(list, [["pedidos","Pedidos do momento"],["cardapio","Cardápio e receitas"],["horarios","Horários e rotina"],["equipamentos","Cuidado dos equipamentos"],["personalizar","Aparência e nome"],["movimento","Movimento por horário e clima"]])
+	var summary := _card(list)
+	_lbl(summary,"Hoje",17,INK,true)
+	var day_data: Dictionary=Core.company.sim.get("today",{})
+	_lbl(summary,"Resultado: "+Core.fmt_money(int(day_data.get("cash_in",0))-int(day_data.get("supplies",0))-int(day_data.get("payroll",0))-int(day_data.get("overhead",0)),true),15,INK)
+	_lbl(summary,"Atendente: "+("contratado" if Core.staff.get("atendente",false) else "nenhum · contratação em Equipe"),14,INK_SOFT,false,true)
+	var low: Array=[]
+	for id in Core.kiosk_menu():
+		if Core.company_available(id)<=3:low.append(str(Economy.dish(id).name))
+	_lbl(summary,"Estoque baixo: "+(", ".join(low) if not low.is_empty() else "tudo abastecido"),14,BAD if not low.is_empty() else GOOD,false,true)
+	if not low.is_empty():_btn(summary,"Repor produtos",_open_management.bind("compras"),GOOD)
+	_app_hub(list, [["pedidos","Pedidos"],["cardapio","Cardápio e preços"],["horarios","Horários e rotina"],["equipamentos","Equipamentos"],["personalizar","Decoração e nome"],["movimento","Movimento"]])
 
 func _app_orders(list: VBoxContainer) -> void:
 	var ops = _operations()
@@ -531,6 +525,12 @@ func _app_product_shop(list: VBoxContainer) -> void:
 	for id in Core.kiosk_menu():
 		var card := _card(list)
 		var row := _row(card)
+		var picture:=TextureRect.new()
+		picture.texture=load("res://assets/ui/products/"+str(id)+".svg")
+		picture.custom_minimum_size=Vector2(42,42)
+		picture.expand_mode=TextureRect.EXPAND_IGNORE_SIZE
+		picture.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		row.add_child(picture)
 		var text := VBoxContainer.new()
 		text.size_flags_horizontal=Control.SIZE_EXPAND_FILL
 		row.add_child(text)
@@ -642,6 +642,7 @@ func _app_menu(list: VBoxContainer) -> void :
 			_lbl(c, tr("Sem insumos! Compre no Mercado."), 14, BAD, true)
 
 func _app_quests(list: VBoxContainer) -> void :
+	_btn(list,"Vila, fotos e lazer",_open_management.bind("mundo"))
 	_campaign_cards(list)
 	_lbl(list,"ENCOMENDAS DOS MORADORES",17,INK,true)
 
@@ -1286,7 +1287,8 @@ func _refresh_kiosk_controls() -> void:
 	company_status.text = "Aberto · recebendo clientes" if Core.kiosk_accepting_customers() else ("Fora do horário de atendimento" if requested else "Fechado para novas chegadas")
 	if requested and not Management.opening_ready(Core): company_status.text = "Confira a abertura em Horários e rotina"
 	company_status.add_theme_color_override("font_color", GOOD if Core.kiosk_accepting_customers() else INK_SOFT)
-	company_open_button.text = "Fechar quiosque" if requested else ("Abrir quiosque" if Core.kiosk_is_within_hours() else "Programar próxima abertura")
+	company_open_button.text = "Fechar quiosque" if requested else ("Abrir quiosque" if Core.kiosk_is_within_hours() else "Programar abertura")
+	company_open_button.custom_minimum_size.x = clampf(T.bold().get_string_size(company_open_button.text,HORIZONTAL_ALIGNMENT_LEFT,-1,15).x+30,150,270)
 
 func _toggle_kiosk() -> void:
 	Core.set_kiosk_open(not bool(Core.company.get("kiosk_open", false)))
@@ -1677,6 +1679,7 @@ func _app_equipment(list: VBoxContainer) -> void:
 	_lbl(list, "Mantenha os equipamentos limpos e conservados. A retirada dos produtos é imediata e não depende de preparo.", 14, INK_SOFT, false, true)
 
 func _app_customize(list: VBoxContainer) -> void:
+	_decor_shop(list)
 	_btn(list, "Nome e letras da placa", _open_management.bind("empresa"))
 	var current: Dictionary = Management.state(Core).look
 	var paints: Array = Management.PAINT.keys()
@@ -1773,3 +1776,16 @@ func _campaign_cards(list: VBoxContainer) -> void:
 func _claim_campaign(id: String,side: bool) -> void:
 	Core.prog.Campaign.claim(Core.prog,id,side)
 	refresh()
+
+func _decor_shop(list: VBoxContainer) -> void:
+	var refinement=get_tree().current_scene.get_node("Refinements")
+	_lbl(list,"Melhorias que aparecem no quiosque",17,INK,true,true)
+	for id in refinement.DECOR:
+		var data: Dictionary=refinement.DECOR[id]
+		var card:=_card(list)
+		_lbl(card,str(data.title),16,INK,true,true)
+		_lbl(card,str(data.description),13,INK_SOFT,false,true)
+		var owned: bool=bool(Core.prog.experience.decor.get(id,false))
+		_btn(card,"Instalado" if owned else "Comprar · "+Core.fmt_money(int(data.price)),func():
+			refinement.buy_decor(str(id))
+			refresh(),GOOD,not owned and Core.money>=int(data.price))

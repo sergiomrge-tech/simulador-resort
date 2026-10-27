@@ -73,7 +73,7 @@ func _ready() -> void :
 	add_to_group("kiosk")
 	_load_regulars()
 	rng.seed = 7171
-	var n_walk: = 12 if Quality.hd else 5
+	var n_walk: int=Quality.people_limit()
 	for i in n_walk:
 		var g: = _make()
 		var path: Array = world.village_paths[mini(world.village_paths.size()-1, floori(float(i)*world.village_paths.size()/n_walk))]
@@ -165,6 +165,7 @@ func _process(delta: float) -> void :
 			continue
 		if g.is_moving():
 			continue
+		if _day_routine(g,i,delta):continue
 		if g.get_meta("shelter", false):
 			# tempestade: fica abrigado sob o beiral até a chuva passar (EventFX)
 			g.play("Idle_Talking_Loop" if i % 2 else "Idle_Loop")
@@ -326,11 +327,15 @@ func spawn_customer() -> Node3D:
 	g.state = "kwalk" if si >= 0 else "kqueue"
 	g.timer = KIOSK_PATIENCE
 	var menu: Array = Core.kiosk_menu()
-	var dish: String = _pick_dish(menu)
+	var profile: String=["refrescos","sorvetes","porcoes"][rng.randi()%3]
+	g.set_meta("preference",profile)
+	var preferred: Array=menu.filter(func(id):return (str(id).begins_with("sorvete_") if profile=="sorvetes" else str(id) in (["batata_frita","porcao_peixe","petiscos"] if profile=="porcoes" else ["suco","coco_gelado"])))
+	var dish: String = _pick_dish(preferred if not preferred.is_empty() and rng.randf()<.8 else menu)
 	var reg: Dictionary = _pick_regular(menu, bool(g.get("_female"))) if rng.randf() < 0.25 and not Core.day_event == "show_dj" else {}
 	if not reg.is_empty():
 		dish = str(reg.fav)
 		g.set_meta("regular", reg.id)
+		g.gname=str(reg.name)
 		g.set_colors(reg.skin, reg.shirt, Color(0.2, 0.25, 0.4), reg.hair)
 		var visits: = int(regulars.get(reg.id, 0))
 		var rl: = B.label(g, "%s ♥%d" % [reg.name, visits] if visits > 0 else str(reg.name), Vector3(0, 2.1, 0), 20, Color(0.75, 1.0, 0.75), Color(0.05, 0.25, 0.08, 1))
@@ -338,6 +343,14 @@ func spawn_customer() -> Node3D:
 		rl.pixel_size = 0.0025
 		rl.no_depth_test = false
 		rl.visible = not Core.company_enabled()
+	if reg.is_empty():
+		var names: Array=["Ana","Camila","Luiza","Fernanda"] if bool(g.get("_female")) else ["João","Pedro","Bruno","Rafael"]
+		var surnames: Array=["Silva","Costa","Santos","Lima","Mendes","Alves"]
+		g.gname=str(names[rng.randi()%names.size()])+" "+str(surnames[rng.randi()%surnames.size()])
+		var suffix: int=0
+		while customers.any(func(other):return is_instance_valid(other) and other.gname==g.gname):
+			suffix+=1
+			g.gname=str(names[rng.randi()%names.size()])+" "+str(surnames[suffix%surnames.size()])
 	g.set_meta("dish", dish)
 	# quiosque cheio (ou mesas compradas) = pedidos maiores
 	var items: Array = [dish]
@@ -553,6 +566,10 @@ func _order(g, recorded: bool = false) -> void :
 	g.set_meta("order_taken", recorded or not Core.company_enabled())
 	g.set_meta("urgent", false)
 	g.show_order(_order_text(g))
+	g.service_reaction("pedir")
+	if g.has_meta("regular"):
+		var visits: int=int(regulars.get(g.get_meta("regular"),0))
+		Core.toast.emit(g.gname+(": voltei pelo meu favorito!" if visits>0 else ": bom dia! Vou conhecer o cardápio."),"info")
 	g.play("Idle_Talking_Loop" if bool(g.get_meta("counter_first",false)) else "Sitting_Talking_Loop")
 
 ## Sorteia o prato; em dia de calor coco e suco saem muito mais.
@@ -763,6 +780,7 @@ func _deliver_item(g, dish: String, prepared: bool = false, by_staff: bool = fal
 	items[index] = previous
 	g.set_meta("items", items)
 	_show_delivered_visual(g, dish)
+	g.service_reaction("receber")
 	g.set_meta("revenue", int(g.get_meta("revenue", 0)) + maxi(price, 0))
 	g.set_meta("delivered", int(g.get_meta("delivered", 0)) + 1)
 	get_tree().call_group("audio", "sfx", "glass", -8.0)
@@ -773,6 +791,7 @@ func _deliver_item(g, dish: String, prepared: bool = false, by_staff: bool = fal
 	return true
 
 func _complete_order(g, last_dish: String) -> void :
+	g.service_reaction("agradecer")
 	var fast: bool = g.timer > _patience(g) * 0.6
 	var tip: = (2 if fast else 0) * _items(g).size()
 	if Core.has("kiosk_tables") and fast:
@@ -931,3 +950,46 @@ func _show_delivered_visual(g, dish: String, index_override: int = -1) -> void:
 	food.position = root.to_local(_prep_position())
 	var tween: Tween = food.create_tween()
 	tween.tween_property(food, "position", target, 0.35).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+
+# Mesmos pedestres alternam passeio, conversa e descanso; sem aumentar população.
+func _day_routine(g, index: int, delta: float) -> bool:
+	if g.has_meta("shelter") and g.get_meta("shelter"):return false
+	if g.has_meta("routine_seat"):
+		var seat: Dictionary=g.get_meta("routine_seat")
+		g.set_meta("routine_return",g.position)
+		g.position=seat.pos
+		g.rotation.y=seat.rot
+		g.set_meta("routine_kind","banco")
+		g.set_meta("routine_until",Core.minutes+12)
+		g.remove_meta("routine_seat")
+		return true
+	if g.has_meta("routine_until"):
+		if Core.minutes<float(g.get_meta("routine_until")):
+			g.play("Sitting_Idle_Loop" if g.get_meta("routine_kind")=="banco" else "Idle_Talking_Loop")
+			return true
+		if g.has_meta("routine_return"):g.position=g.get_meta("routine_return")
+		g.remove_meta("routine_until")
+		g.set_meta("routine_cooldown",45.0)
+		g.play("Idle_Loop")
+		return false
+	var cooldown: float=float(g.get_meta("routine_cooldown",12.0+index*5))-delta*Core.speed_mult
+	g.set_meta("routine_cooldown",cooldown)
+	if cooldown>0 or Core.weather=="rain":return false
+	if index%3==0 and not world.bench_spots.is_empty():
+		for seat in world.bench_spots:
+			if g.position.distance_to(seat.pos)>3.5:continue
+			var occupied: bool=walkers.any(func(other):return other!=g and other.position.distance_to(seat.pos)<1.0)
+			if occupied:continue
+			g.set_meta("routine_seat",seat)
+			g.go([_outside_blocks(seat.pos+Vector3(0,0,.85).rotated(Vector3.UP,seat.rot))])
+			return true
+	for other in walkers:
+		if other==g or other.is_moving() or not other.visible or other.has_meta("home_target"):continue
+		var dist: float=g.position.distance_to(other.position)
+		if dist>.85 and dist<2.8:
+			g.rotation.y=atan2(g.position.x-other.position.x,g.position.z-other.position.z)
+			g.set_meta("routine_kind","conversa")
+			g.set_meta("routine_until",Core.minutes+8)
+			return true
+	g.set_meta("routine_cooldown",25.0)
+	return false

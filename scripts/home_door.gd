@@ -1,5 +1,7 @@
 extends Node3D
 ## Porta física da casa: E alterna; fecha após sair e liberar a folha.
+var door_label: String="Porta da casa"
+var auto_close: bool=true
 var opened := false
 var moving := false
 var was_inside := false
@@ -8,7 +10,7 @@ var collider: CollisionShape3D
 var tween: Tween
 
 func _ready() -> void:
-	name = "PlayerHomeDoor"
+	name = "PlayerHomeDoor" if door_label=="Porta da casa" else "BathroomDoor"
 	hinge = Node3D.new()
 	add_child(hinge)
 	Real.place(hinge,"g:player_home_door",Vector3.ZERO,-1.0,0,Color.WHITE,0,false)
@@ -28,7 +30,7 @@ func _ready() -> void:
 	target_shape.size = Vector3(1.15,2.2,.20)
 	target.shape = target_shape
 	action.add_child(target)
-	action.prompt_fn = func(): return "Porta da casa · " + ("fechar" if opened else "abrir")
+	action.prompt_fn = func(): return door_label+" · " + ("fechar" if opened else "abrir")
 	action.action_fn = toggle
 
 func player() -> Node3D:
@@ -38,7 +40,7 @@ func player() -> Node3D:
 func clear_to_close() -> bool:
 	var hero := player()
 	if hero == null: return true
-	var p := hero.global_position-global_position
+	var p := to_local(hero.global_position)
 	# A folha abre para fora: esperar o jogador sair de todo o arco de varredura.
 	return not (p.x> -1.5 and p.x<.4 and p.z>-.45 and p.z<1.55)
 
@@ -64,13 +66,13 @@ func set_open(value: bool) -> void:
 		collider.set_deferred("disabled",false))
 
 func _process(_delta: float) -> void:
-	if not Core.in_game or Core.paused: return
+	if not auto_close or not Core.in_game or Core.paused: return
 	check_exit()
 
 func check_exit() -> void:
 	var hero := player()
 	if hero==null: return
-	var p := hero.global_position-global_position
+	var p := to_local(hero.global_position)
 	if p.x> -5.8 and p.x<1.2 and p.z> -7.0 and p.z<-.4:
 		was_inside=true
 	if was_inside and opened and not moving and p.z>1.55 and clear_to_close():

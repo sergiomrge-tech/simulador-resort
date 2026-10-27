@@ -2,6 +2,7 @@ extends Node
 class_name Prog
 const Campaign=preload("res://scripts/campaign.gd")
 var campaign: Dictionary=Campaign.defaults()
+var experience: Dictionary={"decor":{},"greeted":{}}
 ## v1.0 — sistemas de evolução: fama, árvore de melhorias, negócios, equipe com nível, temporadas e metas,
 ## receitas/fornecedores e capítulos da vila. Vive como filho do Core (Core.prog) e é salvo junto (save v6).
 
@@ -46,6 +47,7 @@ func reset() -> void:
 	chapter_photo = {}
 	hotel_last = {}
 	campaign=Campaign.defaults()
+	experience={"decor":{},"greeted":{}}
 	_hour_acc = 0.0
 	roll_week()
 
@@ -640,7 +642,7 @@ func tick(dmin: float) -> void:
 func to_dict() -> Dictionary:
 	return {"fame_xp": fame_xp, "tree": tree.duplicate(), "biz": biz.duplicate(true), "staff": staff_info.duplicate(true),
 		"goals": week_goals.duplicate(true), "wstats": week_stats.duplicate(), "sstats": season_stats.duplicate(), "medals": medals.duplicate(true),
-		"disc": discovered.duplicate(), "off": menu_off.duplicate(), "prem": premium.duplicate(), "ch": chapters.duplicate(), "chp": chapter_photo.duplicate(), "hotel": hotel_last.duplicate(), "campaign":campaign.duplicate(true)}
+		"disc": discovered.duplicate(), "off": menu_off.duplicate(), "prem": premium.duplicate(), "ch": chapters.duplicate(), "chp": chapter_photo.duplicate(), "hotel": hotel_last.duplicate(), "campaign":campaign.duplicate(true), "experience":experience.duplicate(true)}
 
 func from_dict(d: Dictionary) -> void:
 	reset()
@@ -663,6 +665,10 @@ func from_dict(d: Dictionary) -> void:
 	chapters = d.get("ch", {}) if typeof(d.get("ch")) == TYPE_DICTIONARY else {}
 	chapter_photo = d.get("chp", {}) if typeof(d.get("chp")) == TYPE_DICTIONARY else {}
 	campaign=Campaign.sanitize(d.get("campaign",{}))
+	var saved_experience=d.get("experience",{})
+	if saved_experience is Dictionary:
+		for key in ["decor","greeted"]:
+			if saved_experience.get(key) is Dictionary:experience[key]=saved_experience[key].duplicate(true)
 	hotel_last = d.get("hotel", {}) if typeof(d.get("hotel")) == TYPE_DICTIONARY else {}
 	fame_changed.emit(fame_level, fame_xp)
 	tree_changed.emit()
