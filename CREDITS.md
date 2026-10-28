@@ -342,3 +342,7 @@ Banheiro, quadros/ornamentos náuticos, cordão de luzes e expositores: modelos 
 acima; o catálogo registra cada arquivo de origem. Conversão por
 `tools/ue58/prepare_audio.py`, sem vozes ou música comercial. `swim_splash`,
 `swim_stroke` e `underwater_loop` são síntese original CC0 desse script.
+
+## Abertura UE — asset em preparação
+
+- Ônibus **3D Bus**, ajanhallinta, [OpenGameArt](https://opengameart.org/content/3d-bus), CC0. Fonte Blender e FBX preservados em `unreal/MareAlta/SourceArt/Intro/`; importação Unreal em `/Game/Intro/Bus/`. O modelo não inclui interior e ainda necessita adaptação e validação na cena; não é uma sequência concluída.

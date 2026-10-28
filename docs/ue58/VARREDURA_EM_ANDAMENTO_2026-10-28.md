@@ -26,6 +26,17 @@ commit publicado antes deste trabalho `5eb6e649`.
 
 ## Pendências e cuidados
 
+- Pedido posterior: após terminar os pedidos anteriores, apresentar **três
+  propostas de HUD e interface totalmente diferentes**. O usuário pediu para
+  receber as opções depois das correções e da abertura; não escolher nem
+  implementar uma das três antes de apresentar as alternativas.
+- Pedido de abertura: jogador chega à vila de ônibus, desce, entra na casa e
+  encontra uma carta emocionante do avô entregando o quiosque e convidando-o a
+  expandir o negócio da família. Proteger saves anteriores e ligar a introdução
+  à campanha. O ônibus CC0 de ajanhallinta foi localizado e baixado para
+  `D:/CodexTemp/ue58-intro-assets/bus.zip`; é sem interior e requer adaptação
+  visual/porta. Fonte: https://opengameart.org/content/3d-bus .
+
 - Processo de build/QA iniciado para `D:/Builds/MareAltaUE58_Varredura_2026-10-28`;
   consultar log `D:/CodexTemp/ue58-sweep-build.log` e o processo antes de repetir.
   O QA do EXE foi ampliado para verificar quatro personagens e produtos nas mãos.
@@ -43,3 +54,21 @@ commit publicado antes deste trabalho `5eb6e649`.
 - Após validação: atualizar instruções, commit e push do lote, pacote com nome novo
   no D, ZIP sem dados pessoais, e publicação identificada como prévia. A versão
   anterior e seus saves permanecem intactos.
+
+## Checkpoint posterior — rádio, placa e roteiro
+
+- Implementados e enviados em `e5c3b130`: rádio instrumental com seleção e
+  volume persistidos; placa física vermelha/verde abre e fecha o quiosque. O
+  controle de abertura saiu do celular. Build `D:/Builds/MareAltaUE58_RadioPlaca_2026-10-28/Windows`;
+  regressão isolada do pacote teve 48 verificações aprovadas, incluindo clique
+  na placa e seleção de rádio. Esse build ainda não contém a abertura e não deve
+  ser anunciado como entrega final dos pedidos posteriores.
+- Roteiro da chegada e texto da carta em `ABERTURA_UMA_NOVA_MARE.md`. Asset CC0
+  do ônibus importado para `/Game/Intro/Bus/`; fontes editáveis em
+  `unreal/MareAlta/SourceArt/Intro/`. O veículo é uma malha combinada sem interior:
+  não há ainda animação de porta, ônibus no mundo, sequência, carta interativa,
+  estado persistido ou validação visual. Fazer essas etapas antes de afirmar que
+  a abertura está pronta. O manifesto `intro_bus.json` registra os limites reais
+  (origem deslocada); corrigir o pivô ao posicionar.
+- Depois que o lote anterior estiver realmente concluído, propor três interfaces
+  de HUD distintas. O usuário não autorizou escolher uma antecipadamente.

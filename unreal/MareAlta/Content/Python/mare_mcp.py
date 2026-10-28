@@ -45,6 +45,14 @@ class MareMigrationTools(unreal.ToolsetDefinition):
 
     @toolset_registry.tool_call
     @staticmethod
+    def import_intro_bus() -> str:
+        """Import the original CC0 bus and report its real bounds."""
+        import importlib,mare_intro_assets
+        importlib.reload(mare_intro_assets)
+        return json.dumps(mare_intro_assets.import_bus())
+
+    @toolset_registry.tool_call
+    @staticmethod
     def import_radio() -> str:
         """Import the two licensed instrumental tracks without rebuilding scenery."""
         import importlib,mare_audio
