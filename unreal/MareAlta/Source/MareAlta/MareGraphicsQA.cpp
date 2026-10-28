@@ -31,7 +31,8 @@ void AMareGraphicsQA::Tick(float DeltaSeconds)
   if(!Root.StartsWith(TEXT("D:/CodexTemp/"))){Destroy();return;}
   auto Sim=PC->GetSimulation();Sim->AdvanceMinutes(720-UMareSimulation::Number(Sim->State,TEXT("minutes")));GetWorld()->GetAuthGameMode()->SetActorTickEnabled(false);
   Hero->GetCharacterMovement()->SetMovementMode(MOVE_Flying);Hero->SetActorLocation(FVector(2800,-750,100));PC->SetControlRotation(FRotator(-4,145,0));
-  for(const TCHAR* C:{TEXT("t.MaxFPS 0"),TEXT("r.VSync 0"),TEXT("r.ScreenPercentage 80"),TEXT("sg.GlobalIlluminationQuality 2"),TEXT("sg.ReflectionQuality 2"),TEXT("sg.ShadowQuality 2"),TEXT("sg.ViewDistanceQuality 2")})GEngine->Exec(GetWorld(),C);
+  RenderPercentage=FParse::Param(FCommandLine::Get(),TEXT("MareNativeResolution"))?100:80;GEngine->Exec(GetWorld(),*FString::Printf(TEXT("r.ScreenPercentage %d"),RenderPercentage));
+  for(const TCHAR* C:{TEXT("t.MaxFPS 0"),TEXT("r.VSync 0"),TEXT("sg.GlobalIlluminationQuality 2"),TEXT("sg.ReflectionQuality 2"),TEXT("sg.ShadowQuality 2"),TEXT("sg.ViewDistanceQuality 2")})GEngine->Exec(GetWorld(),C);
   Configure();Next=FPlatformTime::Seconds()+15;Stage=0;
  }
  if(FPlatformTime::Seconds()<Next)return;
@@ -40,7 +41,7 @@ void AMareGraphicsQA::Tick(float DeltaSeconds)
  if(Stage==1){Capture=FCsvProfiler::Get()->EndCapture();FScreenshotRequest::RequestScreenshot(Root/(FString(Names[Variant])+TEXT(".png")),true,false);Stage=2;Next=FPlatformTime::Seconds()+3;return;}
  if(!Capture.IsReady()){Next=FPlatformTime::Seconds()+1;return;}
  auto Row=MakeShared<FJsonObject>();Row->SetStringField(TEXT("variant"),Names[Variant]);Row->SetStringField(TEXT("csv"),Capture.Get());FVector2D Size;GEngine->GameViewport->GetViewportSize(Size);
- Row->SetNumberField(TEXT("viewport_x"),Size.X);Row->SetNumberField(TEXT("viewport_y"),Size.Y);Row->SetNumberField(TEXT("screen_percentage"),80);
+ Row->SetNumberField(TEXT("viewport_x"),Size.X);Row->SetNumberField(TEXT("viewport_y"),Size.Y);Row->SetNumberField(TEXT("screen_percentage"),RenderPercentage);
  int32 Instances=0;for(TActorIterator<AActor> It(GetWorld());It;++It)if(It->ActorHasTag(TEXT("MareGraphicsPCG"))){TArray<UInstancedStaticMeshComponent*> Cs;It->GetComponents(Cs);for(auto C:Cs)Instances+=C->GetInstanceCount();}
  Row->SetNumberField(TEXT("pcg_instances"),Instances);Records.Add(MakeShared<FJsonValueObject>(Row));
  if(++Variant<4){Configure();Stage=0;Next=FPlatformTime::Seconds()+10;return;}

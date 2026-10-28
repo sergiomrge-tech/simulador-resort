@@ -12,6 +12,7 @@ public:
  virtual void Tick(float DeltaSeconds) override;
 private:
  FString Root;
+ int32 RenderPercentage=80;
  int32 Variant=0;
  int32 Stage=0;
  double Next=0;

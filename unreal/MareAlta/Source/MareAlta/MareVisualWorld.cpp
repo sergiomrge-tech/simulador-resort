@@ -4,6 +4,7 @@
 #include "MareServiceTarget.h"
 #include "Engine/GameInstance.h"
 #include "Engine/Light.h"
+#include "Engine/PostProcessVolume.h"
 #include "Engine/ExponentialHeightFog.h"
 #include "Components/LightComponent.h"
 #include "Components/ExponentialHeightFogComponent.h"
@@ -48,6 +49,7 @@ void UMareVisualWorld::Tick(float DeltaSeconds)
  RefreshExpansions();
  if(!Sun){for(TActorIterator<ALight> It(GetWorld());It;++It){if(It->ActorHasTag(TEXT("MareSun")))Sun=*It;if(It->ActorHasTag(TEXT("MareMoon")))Moon=*It;if(It->ActorHasTag(TEXT("MarePractical")))Practical.AddUnique(*It);}
   for(TActorIterator<AExponentialHeightFog> It(GetWorld());It;++It)Fog=*It;
+  for(TActorIterator<APostProcessVolume> It(GetWorld());It;++It)if(It->bUnbound){Exposure=*It;break;}
   for(TActorIterator<ATextRenderActor> It(GetWorld());It;++It)if(It->ActorHasTag(TEXT("MareText"))){Signs.Add(*It);
    if(It->ActorHasTag(TEXT("MareStatusSign"))){auto Target=GetWorld()->SpawnActor<AMareServiceTarget>(It->GetActorLocation(),FRotator::ZeroRotator);
     Target->Action=TEXT("KioskSign");Target->Label=TEXT("Placa do quiosque");Target->Reach=330;Target->OcclusionTolerance=100;Target->SetOwner(*It);}
@@ -56,6 +58,7 @@ void UMareVisualWorld::Tick(float DeltaSeconds)
  const float Hour=UMareSimulation::Number(Sim->State,TEXT("minutes"))/60.f;
  const float Solar=FMath::Sin((Hour-6.f)/12.f*PI);const float Day=FMath::SmoothStep(-.04f,.18f,Solar);
  const bool Rain=UMareSimulation::String(Sim->State,TEXT("weather"))==TEXT("rain");
+ if(Exposure){Exposure->Settings.bOverride_AutoExposureMinBrightness=true;Exposure->Settings.bOverride_AutoExposureMaxBrightness=true;Exposure->Settings.AutoExposureMinBrightness=FMath::Lerp(0.f,5.f,Day);Exposure->Settings.AutoExposureMaxBrightness=FMath::Lerp(8.f,14.f,Day);}
  if(Sun){Sun->SetActorRotation(FRotator(-Solar*58.f,-65.f+(Hour-12.f)*12.f,0));Sun->GetLightComponent()->SetIntensity(FMath::Max(0.f,Solar)*65000.f*(Rain?.2f:1.f));
   Sun->GetLightComponent()->SetLightColor(FLinearColor(1.f,FMath::Lerp(.95f,.99f,Day),FMath::Lerp(.88f,.975f,Day)),false);}
  if(Moon)Moon->GetLightComponent()->SetIntensity((1-Day)*.8f);

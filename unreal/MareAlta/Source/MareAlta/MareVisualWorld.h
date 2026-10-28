@@ -5,6 +5,7 @@
 class ALight;
 class AExponentialHeightFog;
 class ATextRenderActor;
+class APostProcessVolume;
 /** Natural daylight and practical interior light linked to the saved game clock. */
 UCLASS()
 class MAREALTA_API UMareVisualWorld : public UTickableWorldSubsystem
@@ -20,6 +21,7 @@ private:
  bool bRegionsIndexed=false;
  TMap<FName,TArray<TWeakObjectPtr<AActor>>> ExpansionRegions;
  TMap<FName,bool> RegionVisibility;
+ UPROPERTY() TObjectPtr<APostProcessVolume> Exposure;
  UPROPERTY() TObjectPtr<ALight> Sun;
  UPROPERTY() TObjectPtr<ALight> Moon;
  UPROPERTY() TObjectPtr<AExponentialHeightFog> Fog;

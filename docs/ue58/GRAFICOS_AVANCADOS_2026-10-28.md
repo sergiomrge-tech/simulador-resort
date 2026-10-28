@@ -73,3 +73,27 @@ Não houve alteração dos sistemas de economia/gameplay para esta etapa gráfic
 3. Conferir dia/noite e interiores reais; expandir PCG apenas após validação das zonas.
 4. Rever modelos estilizados simples com o usuário na etapa de arte; Nanite/Lumen
    não substituem remodelagem. Os pedidos anteriores da migração continuam vigentes.
+
+## Benchmark exportado inicial (80%)
+
+Executável do commit `b29c787f`, sem editor aberto, 1920×1080, TSR em 80%, RTX4060Ti8GB.
+Quatro capturas CSV de 12 s após aquecimento, câmera fixa no bosque, perfil novo.
+
+| Configuração | Frame médio | GPU média | FPS médio | Frame P95 |
+|---|---:|---:|---:|---:|
+| Tudo ativo | 10,290 ms | 8,932 ms | 97,2 | 14,257 ms |
+| PCG oculto | 10,664 ms | 8,976 ms | 93,8 | 15,391 ms |
+| Nanite desligado | 10,902 ms | 10,192 ms | 91,7 | 13,230 ms |
+| Lumen desligado | 8,801 ms | 7,945 ms | 113,6 | 11,360 ms |
+
+Memória local de GPU em torno de 3.065 MiB no caso completo. Não atribuir a pequena
+variação ao ocultar PCG a uma melhoria; o resultado está sujeito a ruído. Os custos
+separados dos passes constam de `package-benchmark.json`; eventos podem se sobrepor.
+Dados brutos em `D:/CodexTemp/ue58-render-profile-20261028-182707`. Os quatro cenários
+preservaram 60 instâncias serializadas e não geraram erros de script/material/Nanite.
+Esta medição não substitui o teste em resolução nativa nem a regressão funcional.
+
+A exposição agora usa limites EV100 0–8 à noite e 5–14 de dia, evitando que o limite
+mínimo diurno torne a noite inteira preta. Alteração apenas visual, aguardando fotos
+do próximo pacote. Novo parâmetro de QA permite medir resolução nativa com
+`-MareNativeResolution`; ele não altera a preferência gráfica do jogador.
