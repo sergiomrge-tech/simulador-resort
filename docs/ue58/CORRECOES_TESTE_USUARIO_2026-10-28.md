@@ -50,6 +50,17 @@ Evidências versionadas em `docs/qa/ue58/expansion-*-20261028.*`.
 Build testado: `D:/Builds/MareAltaUE58_Expansoes_2026-10-28/Windows`.
 Não confundir este resultado com validação das sete frentes abaixo.
 
+Pacote local: `D:/Downloads/MareAltaResort_UE58_Expansoes_2026-10-28` e ZIP de
+mesmo nome. A pasta pronta recebeu cópias verificadas do slot e GameUserSettings
+da instalação UE usada no último teste do usuário; os originais foram preservados.
+O ZIP não contém esses dados, e passou na verificação CRC.
+
+Publicação verificada: [prévia 20261028.2](https://github.com/sergiomrge-tech/simulador-resort/releases/tag/v1.1.0-ue58-preview.20261028.2).
+Fonte `70425f6b418df3d15bb1b8d7705960e8fd9a6383`, ZIP 1.676.050.977 bytes,
+asset `uploaded`, digest GitHub igual ao SHA-256 local:
+`398ad2bb5d8e56a95f0f3c20cdb0133f2d06abd5e37260ba2fe3f2717aacfb2c`.
+Release marcada como prévia, sem substituir a entrega Godot.
+
 ## Escopo autorizado que continua pendente
 
 O usuário aprovou sete frentes. Esta correção de expansões não conclui o lote:
