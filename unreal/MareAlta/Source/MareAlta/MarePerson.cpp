@@ -1,4 +1,5 @@
 #include "MarePerson.h"
+#include "MareServiceAnimation.h"
 #include "MareServiceTarget.h"
 #include "MareSimulation.h"
 #include "Engine/GameInstance.h"
@@ -40,6 +41,7 @@ AMarePerson::AMarePerson()
  GetCharacterMovement()->RotationRate=FRotator(0,180,0);GetCharacterMovement()->MaxStepHeight=32;
  AIControllerClass=AAIController::StaticClass();AutoPossessAI=EAutoPossessAI::PlacedInWorldOrSpawned;
  bUseControllerRotationYaw=false;
+ auto Carry=CreateDefaultSubobject<UMareCarryPresentation>(TEXT("CarryPresentation"));Carry->AddTickPrerequisiteComponent(GetMesh());
 }
 FTransform AMarePerson::ReferenceBoneTransform(FName Bone)const
 {
@@ -53,21 +55,22 @@ bool AMarePerson::SetAppearance(int32 AppearanceVariant)
  const FString Key=FString::Printf(TEXT("Human_%d"),AppearanceVariant%4);auto Row=UMareSimulation::Object(AssetCatalog(),Key);
  const TArray<TSharedPtr<FJsonValue>>* Paths=nullptr;if(!Row->TryGetArrayField(TEXT("skeletal_meshes"),Paths) || Paths->IsEmpty())return false;
  auto MeshAsset=LoadObject<USkeletalMesh>(nullptr,*(*Paths)[0]->AsString());if(!MeshAsset)return false;
- GetMesh()->SetSkeletalMeshAsset(MeshAsset);GetMesh()->SetAnimationMode(EAnimationMode::AnimationSingleNode);
+ GetMesh()->SetSkeletalMeshAsset(MeshAsset);GetMesh()->SetAnimInstanceClass(UMareServiceAnimInstance::StaticClass());
  for(const FString& Name:{TEXT("Idle"),TEXT("Idle_Talking"),TEXT("Walk"),TEXT("Sitting_Idle"),TEXT("Interact")}){
   const FString Path=UMareSimulation::String(UMareSimulation::Object(Row,TEXT("animations")),Key+Name);
   if(auto Clip=LoadObject<UAnimSequence>(nullptr,*Path))Clips.Add(Name,Clip);
  }
  if(Row->TryGetArrayField(TEXT("static_meshes"),Paths))for(const auto& Path:*Paths){auto Part=LoadObject<UStaticMesh>(nullptr,*Path->AsString());if(!Part)continue;
   const FName Bone=Part->GetName().StartsWith(TEXT("Camera_"))?TEXT("neck_01"):TEXT("Head");
-  auto Hair=NewObject<UStaticMeshComponent>(this);AddInstanceComponent(Hair);Hair->SetStaticMesh(Part);Hair->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+  auto Hair=NewObject<UStaticMeshComponent>(this);AddInstanceComponent(Hair);Hair->SetMobility(EComponentMobility::Movable);Hair->SetStaticMesh(Part);Hair->SetCollisionEnabled(ECollisionEnabled::NoCollision);
   Hair->AttachToComponent(GetMesh(),FAttachmentTransformRules::KeepRelativeTransform,Bone);Hair->SetRelativeTransform(ReferenceBoneTransform(Bone).Inverse());Hair->RegisterComponent();HairMeshes.Add(Hair);
  }
  PlayPose(TEXT("Idle"));return true;
 }
 void AMarePerson::PlayPose(const FString& Name,bool bLoop)
 {
- if(Playing==Name || !Clips.Contains(Name))return;Playing=Name;GetMesh()->PlayAnimation(Clips[Name],bLoop);
+ if(Playing==Name || !Clips.Contains(Name))return;Playing=Name;
+ if(auto Instance=Cast<UMareServiceAnimInstance>(GetMesh()->GetAnimInstance())){Instance->SetAnimationAsset(Clips[Name],bLoop);Instance->SetPlaying(true);}
 }
 bool AMarePerson::WalkTo(const FVector& Goal)
 {
@@ -92,11 +95,20 @@ void AMarePerson::HoldProduct(const FString& Dish)
  auto MeshAsset=ProductMesh(Dish);if(!MeshAsset)return;
  const FName Hand=CarriedMeshes.Num()%2==0?TEXT("hand_r"):TEXT("hand_l");
  if(!GetMesh()->DoesSocketExist(Hand))return;
- auto Product=NewObject<UStaticMeshComponent>(this);AddInstanceComponent(Product);Product->SetStaticMesh(MeshAsset);
+ auto Product=NewObject<UStaticMeshComponent>(this);AddInstanceComponent(Product);Product->SetMobility(EComponentMobility::Movable);Product->SetStaticMesh(MeshAsset);
  Product->SetCollisionEnabled(ECollisionEnabled::NoCollision);Product->AttachToComponent(GetMesh(),FAttachmentTransformRules::SnapToTargetNotIncludingScale,Hand);
- Product->SetRelativeLocation(FVector(3,0,-2));Product->SetRelativeRotation(FRotator(0,0,90));Product->RegisterComponent();CarriedMeshes.Add(Product);
+ Product->SetUsingAbsoluteRotation(true);
+ Product->SetUsingAbsoluteScale(true);Product->SetWorldScale3D(FVector::OneVector);
+ if(Dish==TEXT("suco") || Dish==TEXT("coco_gelado") || Dish==TEXT("caipirinha") || Dish==TEXT("batida"))Product->ComponentTags.Add(TEXT("MareVessel"));
+ Product->RegisterComponent();CarriedMeshes.Add(Product);
 }
 void AMarePerson::ClearProducts(){for(auto Part:CarriedMeshes)if(Part)Part->DestroyComponent();CarriedMeshes.Empty();}
+float AMarePerson::DrinkGesture()const
+{
+ if(Stage!=EMarePersonStage::Eating || bConsumed || Elapsed>=7.f)return 0;
+ const float Phase=FMath::Fmod(Elapsed,3.2f)/3.2f;
+ return FMath::SmoothStep(.1f,.4f,Phase)*(1-FMath::SmoothStep(.65f,.95f,Phase));
+}
 void AMarePerson::Interact(APlayerController* Player)
 {
  if(auto Kiosk=GetWorld()->GetSubsystem<UMareKioskWorld>())Kiosk->Serve(this,false);

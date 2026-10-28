@@ -53,9 +53,9 @@ void UMareVisualWorld::Tick(float DeltaSeconds)
  const float Solar=FMath::Sin((Hour-6.f)/12.f*PI);const float Day=FMath::SmoothStep(-.04f,.18f,Solar);
  const bool Rain=UMareSimulation::String(Sim->State,TEXT("weather"))==TEXT("rain");
  if(Sun){Sun->SetActorRotation(FRotator(-Solar*58.f,-65.f+(Hour-12.f)*12.f,0));Sun->GetLightComponent()->SetIntensity(FMath::Max(0.f,Solar)*65000.f*(Rain?.2f:1.f));
-  Sun->GetLightComponent()->SetLightColor(FLinearColor(1.f,FMath::Lerp(.9f,.98f,Day),FMath::Lerp(.79f,.94f,Day)),false);}
+  Sun->GetLightComponent()->SetLightColor(FLinearColor(1.f,FMath::Lerp(.95f,.99f,Day),FMath::Lerp(.88f,.975f,Day)),false);}
  if(Moon)Moon->GetLightComponent()->SetIntensity((1-Day)*.8f);
- for(auto Light:Practical)if(IsValid(Light))Light->GetLightComponent()->SetIntensity(Light->ActorHasTag(TEXT("MareHomeLight"))?FMath::Lerp(1100.f,120.f,Day):Light->ActorHasTag(TEXT("MareBounce"))?FMath::Lerp(450.f,2500.f,Day):FMath::Lerp(2200.f,9000.f,Day));
+ for(auto Light:Practical)if(IsValid(Light))Light->GetLightComponent()->SetIntensity(Light->ActorHasTag(TEXT("MareHomeLight"))?FMath::Lerp(1000.f,180.f,Day):Light->ActorHasTag(TEXT("MareBounce"))?FMath::Lerp(400.f,6500.f,Day):FMath::Lerp(2200.f,10000.f,Day));
  if(Fog)Fog->GetComponent()->SetFogDensity(Rain?.0018f:.00065f);
  auto Dishes=UMareSimulation::Object(Sim->Definitions,TEXT("dishes"));
  auto Price=[&](const FString& Id){auto Dish=UMareSimulation::Object(Dishes,Id);return UMareSimulation::String(Dish,TEXT("name"))+FString::Printf(TEXT("   R$ %.0f"),UMareSimulation::Number(Dish,TEXT("price")));};

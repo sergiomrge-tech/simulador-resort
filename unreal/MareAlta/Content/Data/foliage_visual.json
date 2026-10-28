@@ -1,0 +1,12 @@
+{
+  "palms": [
+    "/Game/World/Models/World_0507/World_0507/StaticMeshes/World_0507.World_0507",
+    "/Game/World/Models/World_0508/World_0508/StaticMeshes/World_0508.World_0508",
+    "/Game/World/Models/World_0509/World_0509/StaticMeshes/World_0509.World_0509",
+    "/Game/World/Models/World_0510/World_0510/StaticMeshes/World_0510.World_0510"
+  ],
+  "leaf_material": "/Game/World/Materials/M_PalmLeaflets_PBR.M_PalmLeaflets_PBR",
+  "alpha_clip": 0.42,
+  "two_sided": true,
+  "geometry_preserved": true
+}

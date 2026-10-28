@@ -148,7 +148,7 @@ func pbr(source: Material) -> Material:
   if source is ShaderMaterial:
    var tex=source.get_shader_parameter("tex")
    if tex is Texture2D:m.albedo_texture=tex
-   if source.shader.resource_path.contains("foliage"):
+   if source.shader.resource_path.contains("foliage") or source.shader.resource_path.contains("palm_wind"):
     m.transparency=BaseMaterial3D.TRANSPARENCY_ALPHA_SCISSOR
     m.alpha_scissor_threshold=.4
     m.cull_mode=BaseMaterial3D.CULL_DISABLED

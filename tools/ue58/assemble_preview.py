@@ -11,6 +11,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--qa', required=True, type=Path)
 parser.add_argument('--source', type=Path, default=Path('D:/Builds/MareAltaUE58_AudioVisual_2026-10-28/Windows'))
 parser.add_argument('--output', type=Path, default=Path('D:/Downloads/MareAltaResort_UE58_AudioVisual_2026-10-28'))
+parser.add_argument('--edition', default='Correção de expansões')
 args = parser.parse_args()
 result = json.loads((args.qa/'package-result.json').read_text(encoding='utf-8-sig'))
 if not result['passed'] or not result.get('audio_mix_passed',False) or result.get('visual_review_required', True):
@@ -23,7 +24,7 @@ args.output.mkdir(parents=True)
 shutil.copytree(args.source, args.output/'Windows', ignore=shutil.ignore_patterns('*.pdb'))
 (args.output/'Jogar.cmd').write_text('@echo off\r\nstart "" "%~dp0Windows\\MareAlta.exe" -MareSaveRoot="%~dp0userdata" -UserDir="%~dp0userdata\\Unreal" -windowed -ResX=1280 -ResY=720\r\n', encoding='ascii')
 (args.output/'Jogar.vbs').write_text('Option Explicit\r\nDim sh, fs, base, cmd\r\nSet sh=CreateObject("WScript.Shell")\r\nSet fs=CreateObject("Scripting.FileSystemObject")\r\nbase=fs.GetParentFolderName(WScript.ScriptFullName)\r\nsh.CurrentDirectory=base & "\\Windows"\r\ncmd=Chr(34) & base & "\\Windows\\MareAlta.exe" & Chr(34) & " -MareSaveRoot=" & Chr(34) & base & "\\userdata" & Chr(34) & " -UserDir=" & Chr(34) & base & "\\userdata\\Unreal" & Chr(34) & " -windowed -ResX=1280 -ResY=720"\r\nsh.Run cmd, 1, False\r\n', encoding='ascii')
-(args.output/'LEIA-ME.txt').write_text('''MARÉ ALTA RESORT — PRÉVIA UE5.8 / CORREÇÃO DE EXPANSÕES — 28/10/2026
+(args.output/'LEIA-ME.txt').write_text(f'''MARÉ ALTA RESORT — PRÉVIA UE5.8 / {args.edition.upper()} — 28/10/2026
 
 Abra Jogar.vbs (ou Jogar.cmd). Não precisa instalar a Unreal Engine.
 Mantenha toda a pasta Windows junto dos atalhos. Saves desta prévia ficam em
@@ -48,6 +49,8 @@ no menu Esc, luz diurna/noturna, letreiros e materiais refinados.
 Não equivale ao jogo inteiro convertido: outros negócios, clima completo,
 vida marinha, opções completas e o restante dos capítulos continuam pendentes.
 A câmera ainda não tem braços/corpo com animação de natação.
+Os peixes do recife ainda podem aparecer fora da água. Esta versão serve para
+avaliar o atendimento, as animações e os ajustes visuais em andamento.
 
 Requer Windows 64 bits e GPU compatível com DirectX 12 / Shader Model 6.
 Se o Windows pedir o Visual C++ Runtime, instale o redistribuível x64 da Microsoft.

@@ -56,7 +56,7 @@ def build_ground():
             connect(uv,'',node,'UVs')
             inputs[key+('Normal' if normal else '')]=node
     blend='float edge=sin(Position.x*.0017)*90+sin(Position.x*.0041)*35; float wet=1-smoothstep(-3400,-2400,Position.y+edge); float inland=smoothstep(-1200,-500,Position.y+edge*.6); '
-    color=custom(mat,blend+'return lerp(lerp(Sand.rgb,Wet.rgb,wet),Grass.rgb,inland);',unreal.CustomMaterialOutputType.CMOT_FLOAT3,{k:v for k,v in inputs.items() if 'Normal' not in k})
+    color=custom(mat,blend+'float l=dot(Grass.rgb,float3(.2126,.7152,.0722)); float macro=.94+.06*sin(Position.x*.0013)*sin(Position.y*.0011); float3 turf=lerp(Grass.rgb,float3(.28,.48,.15)*l*1.8,.45)*macro; return lerp(lerp(Sand.rgb,Wet.rgb,wet),turf,inland);',unreal.CustomMaterialOutputType.CMOT_FLOAT3,{k:v for k,v in inputs.items() if 'Normal' not in k})
     normal=custom(mat,blend+'return normalize(lerp(lerp(SandNormal.xyz,WetNormal.xyz,wet),GrassNormal.xyz,inland));',unreal.CustomMaterialOutputType.CMOT_FLOAT3,{k:v for k,v in inputs.items() if k=='Position' or 'Normal' in k})
     rough=custom(mat,blend+'return lerp(lerp(.9,.45,wet),.96,inland);',unreal.CustomMaterialOutputType.CMOT_FLOAT1,{'Position':pos})
     for node,prop in [(color,unreal.MaterialProperty.MP_BASE_COLOR),(normal,unreal.MaterialProperty.MP_NORMAL),(rough,unreal.MaterialProperty.MP_ROUGHNESS)]:MEL.connect_material_property(node,'',prop)
@@ -81,9 +81,11 @@ def build_water():
     for uv in (uv1,uv2):
         node=expression(mat,unreal.MaterialExpressionTextureSample,texture=water_normal,sampler_type=unreal.MaterialSamplerType.SAMPLERTYPE_NORMAL)
         connect(uv,'',node,'UVs');samples.append(node)
-    normal=custom(mat,'return normalize(float3((A.xy+B.xy)*.23,max(.65,A.z*B.z)));',unreal.CustomMaterialOutputType.CMOT_FLOAT3,{'A':samples[0],'B':samples[1]})
-    color=expression(mat,unreal.MaterialExpressionConstant3Vector,constant=unreal.LinearColor(.012,.058,.067,1))
-    rough=expression(mat,unreal.MaterialExpressionConstant,r=.2)
+    normal=custom(mat,'return normalize(float3((A.xy+B.xy)*.32,max(.65,A.z*B.z)));',unreal.CustomMaterialOutputType.CMOT_FLOAT3,{'A':samples[0],'B':samples[1]})
+    color=custom(mat,'float offshore=1-smoothstep(-17000,-4000,Position.y); return lerp(float3(.018,.075,.067),float3(.006,.025,.039),offshore);',unreal.CustomMaterialOutputType.CMOT_FLOAT3,{'Position':pos})
+    rough=expression(mat,unreal.MaterialExpressionConstant,r=.18)
+    specular=expression(mat,unreal.MaterialExpressionConstant,r=.25)
+    MEL.connect_material_property(specular,'',unreal.MaterialProperty.MP_SPECULAR)
     opacity=expression(mat,unreal.MaterialExpressionConstant,r=.5)
     for node,prop in [(wpo,unreal.MaterialProperty.MP_WORLD_POSITION_OFFSET),(normal,unreal.MaterialProperty.MP_NORMAL),(color,unreal.MaterialProperty.MP_BASE_COLOR),(rough,unreal.MaterialProperty.MP_ROUGHNESS),(opacity,unreal.MaterialProperty.MP_OPACITY)]:MEL.connect_material_property(node,'',prop)
     output=expression(mat,unreal.MaterialExpressionSingleLayerWaterMaterialOutput)

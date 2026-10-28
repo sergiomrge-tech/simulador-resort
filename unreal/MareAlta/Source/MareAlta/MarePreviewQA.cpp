@@ -1,5 +1,9 @@
 #include "MarePreviewQA.h"
 #include "MareGame.h"
+#include "MarePerson.h"
+#include "MareServiceAnimation.h"
+#include "Components/SkeletalMeshComponent.h"
+#include "Components/StaticMeshComponent.h"
 #include "MareSimulation.h"
 #include "MareAudioWorld.h"
 #include "MareVisualWorld.h"
@@ -24,6 +28,18 @@
 #include "Serialization/JsonSerializer.h"
 
 AMarePreviewQA::AMarePreviewQA(){PrimaryActorTick.bCanEverTick=true;PrimaryActorTick.bTickEvenWhenPaused=true;}
+AMarePerson* AMarePreviewQA::SpawnInspectionPerson(UObject* WorldContextObject,FVector Location,int32 Variant,const FString& Dish)
+{
+ FString Profile;FParse::Value(FCommandLine::Get(),TEXT("MareSaveRoot="),Profile);Profile.ReplaceInline(TEXT("\\"),TEXT("/"));
+ auto World=GEngine->GetWorldFromContextObject(WorldContextObject,EGetWorldErrorMode::ReturnNull);
+ if(!Profile.StartsWith(TEXT("D:/CodexTemp/")) || !World || !World->IsGameWorld())return nullptr;
+ FActorSpawnParameters Params;Params.SpawnCollisionHandlingOverride=ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+ auto Person=World->SpawnActor<AMarePerson>(Location,FRotator(0,-90,0),Params);if(!Person)return nullptr;
+ Person->Tags.Add(TEXT("MareAuditFixture"));Person->SetAppearance(Variant);Person->HoldProduct(Dish);
+ Person->Stage=EMarePersonStage::Eating;Person->Delivered.Add(Dish);Person->PlayPose(TEXT("Idle"));
+ Person->GetCharacterMovement()->DisableMovement();Person->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+ return Person;
+}
 void AMarePreviewQA::Check(const FString& Name,bool bPass)
 {
  auto Row=MakeShared<FJsonObject>();Row->SetStringField(TEXT("name"),Name);Row->SetBoolField(TEXT("pass"),bPass);
@@ -58,6 +74,10 @@ void AMarePreviewQA::Tick(float DeltaSeconds)
  switch(Phase++){
  case 0:{
   Check(TEXT("coast_and_dry_land"),GetWorld()->GetMapName().Contains(TEXT("Coast")) && !Move->IsSwimming());
+  int32 Variant=0;for(const FString Dish:{TEXT("coco_gelado"),TEXT("suco"),TEXT("batata_frita"),TEXT("sorvete_morango")}){
+   if(auto Person=SpawnInspectionPerson(this,FVector(3000+Variant*120,-2400,90),Variant,Dish))PresentationFixtures.Add(Person);++Variant;
+  }
+  Check(TEXT("customer_models_spawn"),PresentationFixtures.Num()==4);
   auto Visual=GetWorld()->GetSubsystem<UMareVisualWorld>();Visual->RefreshExpansions();
   auto Ownership=UMareSimulation::Object(Sim->State,TEXT("unlocked"));
   auto RegionMatches=[&](const FString& Region,bool bOwned){
@@ -101,7 +121,17 @@ void AMarePreviewQA::Tick(float DeltaSeconds)
   Audio->SetVolume(TEXT("Master"),.85f);UAudioMixerBlueprintLibrary::StartRecordingOutput(this,10);
   Hero->SetActorLocation(FVector(3800,-7200,-100));Move->StopMovementImmediately();PC->SetControlRotation(FRotator(0,-90,0));break;
  }
- case 1:UAudioMixerBlueprintLibrary::StopRecordingOutput(this,EAudioRecordingExportType::WavFile,TEXT("mix_audible"),Root);Audio->SetVolume(TEXT("Master"),0);UAudioMixerBlueprintLibrary::StartRecordingOutput(this,5);Check(TEXT("water_entry_and_float"),Move->IsSwimming() && Hero->GetActorLocation().Z>-90 && Hero->GetActorLocation().Z<-25);Check(TEXT("surface_camera_above_water"),Eyes && Eyes->GetComponentLocation().Z>-30);Before=Hero->GetActorLocation();Key(EKeys::LeftControl,true);Capture(TEXT("surface"));break;
+ case 1:{
+  bool bAnimated=PresentationFixtures.Num()==4,bGripped=bAnimated;
+  for(auto Person:PresentationFixtures){if(!IsValid(Person)){bAnimated=bGripped=false;continue;}
+   auto Anim=Cast<UMareServiceAnimInstance>(Person->GetMesh()->GetAnimInstance());bAnimated&=Anim && Anim->GetCurrentAsset()!=nullptr;
+   bGripped&=Person->CarriedMeshes.Num()==1;
+   for(auto Part:Person->CarriedMeshes)if(IsValid(Part))bGripped&=FVector::Distance(Part->GetComponentLocation(),Person->GetMesh()->GetSocketLocation(Part->GetAttachSocketName()))<25.f;
+   Person->Destroy();
+  }
+  PresentationFixtures.Empty();Check(TEXT("customer_authored_animation_active"),bAnimated);Check(TEXT("products_follow_animated_hands"),bGripped);
+  UAudioMixerBlueprintLibrary::StopRecordingOutput(this,EAudioRecordingExportType::WavFile,TEXT("mix_audible"),Root);Audio->SetVolume(TEXT("Master"),0);UAudioMixerBlueprintLibrary::StartRecordingOutput(this,5);Check(TEXT("water_entry_and_float"),Move->IsSwimming() && Hero->GetActorLocation().Z>-90 && Hero->GetActorLocation().Z<-25);Check(TEXT("surface_camera_above_water"),Eyes && Eyes->GetComponentLocation().Z>-30);Before=Hero->GetActorLocation();Key(EKeys::LeftControl,true);Capture(TEXT("surface"));break;
+ }
  case 2:UAudioMixerBlueprintLibrary::StopRecordingOutput(this,EAudioRecordingExportType::WavFile,TEXT("mix_muted"),Root);Audio->SetVolume(TEXT("Master"),.85f);Key(EKeys::LeftControl,false);Check(TEXT("ctrl_dives"),Hero->GetActorLocation().Z<Before.Z-70);Check(TEXT("underwater_camera"),Eyes && Eyes->PostProcessBlendWeight>.8);Capture(TEXT("underwater"));Key(EKeys::SpaceBar,true);break;
  case 3:Key(EKeys::SpaceBar,false);Check(TEXT("space_surfaces"),Hero->GetActorLocation().Z>-90 && Move->IsSwimming());Before=Hero->GetActorLocation();Key(EKeys::W,true);break;
  case 4:Key(EKeys::W,false);Check(TEXT("swimming_forward"),FVector::Dist2D(Before,Hero->GetActorLocation())>150);Hero->SetActorLocation(FVector(3800,-2900,180));Move->StopMovementImmediately();break;

@@ -19,7 +19,7 @@ def refine():
         if isinstance(actor,unreal.PlayerStart):actor.set_actor_rotation(unreal.Rotator(pitch=0,yaw=-90,roll=0),False)
         if isinstance(actor,unreal.PostProcessVolume):
             settings=actor.settings
-            for key,value in {'auto_exposure_min_brightness':-2.,'auto_exposure_max_brightness':14.,'auto_exposure_low_percent':70.,'auto_exposure_high_percent':95.,'auto_exposure_speed_up':3.,'auto_exposure_speed_down':2.,'local_exposure_shadow_contrast_scale':.4,'ambient_occlusion_intensity':.65,'ambient_occlusion_radius':70.,'bloom_intensity':.15}.items():
+            for key,value in {'auto_exposure_min_brightness':-2.,'auto_exposure_max_brightness':14.,'auto_exposure_low_percent':65.,'auto_exposure_high_percent':92.,'auto_exposure_speed_up':3.,'auto_exposure_speed_down':2.,'auto_exposure_bias':.2,'local_exposure_shadow_contrast_scale':.55,'local_exposure_highlight_contrast_scale':.65,'local_exposure_detail_strength':.7,'white_temp':6500.,'ambient_occlusion_intensity':.7,'ambient_occlusion_radius':60.,'bloom_intensity':.1}.items():
                 settings.set_editor_property('override_'+key,True);settings.set_editor_property(key,value)
             actor.settings=settings
         for component in actor.get_components_by_class(unreal.PrimitiveComponent):
@@ -34,13 +34,13 @@ def refine():
     fill=actors.spawn_actor_from_class(unreal.RectLight,unreal.Vector(3800,-1230,160),unreal.Rotator(pitch=-15,yaw=-90,roll=0))
     fill.set_actor_label('Quiosque · preenchimento indireto');fill.tags=['MareGenerated','MareVisualExtra','MarePractical','MareBounce']
     fill.light_component.set_mobility(unreal.ComponentMobility.MOVABLE)
-    for key,value in {'intensity':2500.,'attenuation_radius':520.,'source_width':300.,'source_height':140.,'cast_shadows':False,'use_temperature':True,'temperature':5200.}.items():fill.light_component.set_editor_property(key,value)
-    for name,position in [('Sala',unreal.Vector(4600,1990,240)),('Cozinha',unreal.Vector(4780,2310,240)),('Banheiro',unreal.Vector(4570,2940,240))]:
+    for key,value in {'intensity':6500.,'attenuation_radius':520.,'source_width':340.,'source_height':150.,'cast_shadows':False,'use_temperature':True,'temperature':5800.}.items():fill.light_component.set_editor_property(key,value)
+    for name,position in [('Sala',unreal.Vector(4600,1990,240)),('Cozinha',unreal.Vector(4780,2310,240)),('Banheiro',unreal.Vector(4770,1580,240))]:
         light=actors.spawn_actor_from_class(unreal.RectLight,position,unreal.Rotator(pitch=-90,yaw=0,roll=0))
         light.set_actor_label('Casa · luz '+name);light.tags=['MareGenerated','MareVisualExtra','MarePractical','MareHomeLight']
         comp=light.light_component;comp.set_mobility(unreal.ComponentMobility.MOVABLE)
         comp.set_editor_property('intensity_units',unreal.LightUnits.LUMENS);comp.set_editor_property('intensity',120.)
         comp.set_editor_property('attenuation_radius',520.);comp.set_editor_property('source_width',70.);comp.set_editor_property('source_height',70.)
-        comp.set_editor_property('use_temperature',True);comp.set_editor_property('temperature',4800.)
+        comp.set_editor_property('use_temperature',True);comp.set_editor_property('temperature',5200.)
     unreal.get_editor_subsystem(unreal.LevelEditorSubsystem).save_current_level()
     return {'actors_reviewed':len(touched),'home_practicals':3,'moon':True}

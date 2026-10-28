@@ -45,6 +45,47 @@ class MareMigrationTools(unreal.ToolsetDefinition):
 
     @toolset_registry.tool_call
     @staticmethod
+    def audit_actor_materials(fix: bool=False) -> str:
+        """Find/persist missing skeletal and Nanite usage without changing material artwork."""
+        import importlib,mare_asset_audit
+        importlib.reload(mare_asset_audit)
+        merged=mare_asset_audit.deduplicate_actor_slots() if fix else None
+        return json.dumps({'deduplication':merged,'usage':mare_asset_audit.actor_materials(fix)})
+
+    @toolset_registry.tool_call
+    @staticmethod
+    def audit_animation_fixture(mode: str) -> str:
+        """Create or clear four isolated-profile rig/grip inspection customers."""
+        import importlib,mare_audit
+        importlib.reload(mare_audit)
+        return json.dumps(mare_audit.fixture(mode))
+
+    @toolset_registry.tool_call
+    @staticmethod
+    def inspect_world_audit() -> str:
+        """Inspect customer animation/bone state and transformed kiosk prop bounds."""
+        import importlib,mare_audit
+        importlib.reload(mare_audit)
+        return json.dumps(mare_audit.inspect())
+
+    @toolset_registry.tool_call
+    @staticmethod
+    def world_audit_view(name: str,capture: bool=False) -> str:
+        """Position isolated QA camera or capture kiosk/counter/front/sea/village/home/bathroom/pier."""
+        import importlib,mare_audit
+        importlib.reload(mare_audit)
+        return json.dumps(mare_audit.view(name,capture))
+
+    @toolset_registry.tool_call
+    @staticmethod
+    def refine_coast_visuals() -> str:
+        """Repair palm cutouts and tune natural terrain, sea and interior lighting."""
+        import importlib,mare_foliage,mare_visual,mare_materials
+        for module in (mare_materials,mare_foliage,mare_visual):importlib.reload(module)
+        return json.dumps({'foliage':mare_foliage.build(),'lighting':mare_visual.refine(),'ground':mare_materials.build_ground().get_path_name(),'sea':mare_materials.build_water().get_path_name()})
+
+    @toolset_registry.tool_call
+    @staticmethod
     def repair_expansion_regions() -> str:
         """Split legacy hotel/business geometry into ownership groups, keeping all instances."""
         import importlib,mare_expansions

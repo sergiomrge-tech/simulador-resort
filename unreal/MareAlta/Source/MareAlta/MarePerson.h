@@ -17,12 +17,14 @@ class MAREALTA_API AMarePerson : public ACharacter
 public:
  AMarePerson();
  virtual void Tick(float DeltaSeconds) override;
- bool SetAppearance(int32 AppearanceVariant);
- void PlayPose(const FString& Name,bool bLoop=true);
- bool WalkTo(const FVector& Goal);
+ UFUNCTION(BlueprintCallable,Category="Presentation") bool SetAppearance(int32 AppearanceVariant);
+ UFUNCTION(BlueprintCallable,Category="Presentation") void PlayPose(const FString& Name,bool bLoop=true);
+ UFUNCTION(BlueprintCallable,Category="Presentation") bool WalkTo(const FVector& Goal);
  bool AtGoal()const;
- void HoldProduct(const FString& Dish);
+ UFUNCTION(BlueprintCallable,Category="Presentation") void HoldProduct(const FString& Dish);
  void ClearProducts();
+ /** Smooth drinking gesture during consumption; zero while walking or after disposal. */
+ float DrinkGesture()const;
  void Interact(APlayerController* Player);
  UPROPERTY() TObjectPtr<AMareServiceTarget> Interaction;
  UPROPERTY() TArray<TObjectPtr<UStaticMeshComponent>> CarriedMeshes;
