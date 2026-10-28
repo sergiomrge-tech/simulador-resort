@@ -52,3 +52,29 @@ versionados em `graphics-reference/`; CSVs e logs brutos em D:/CodexTemp.
 A migração geral ainda tem pendências de gameplay/arte/abertura. Consultar também
 `VARREDURA_EM_ANDAMENTO_2026-10-28.md`. Apresentar as três propostas de interface
 somente depois de concluir os pedidos anteriores, conforme a ordem do usuário.
+
+## Novo pedido do usuário — gerador de grama em toda a terra exposta
+
+Registrado após o encerramento por limite; **ainda não implementado**.
+O usuário quer um gerador de grama para toda área que não seja areia: cobrir o
+piso onde hoje há somente terra, formando um gramado contínuo, sem ficar apenas
+em pequenos tufos isolados com grandes espaços marrons entre eles.
+
+Ao retomar:
+
+- Integrar ao sistema PCG/material de terreno existente, com máscara de areia,
+  terra e superfícies construídas. Cobrir toda a terra exposta apropriada do mapa,
+  não apenas as duas faixas do piloto gráfico.
+- Manter a praia de areia e sua transição natural para o gramado. Excluir pisos
+  construídos, ruas, caminhos, interiores, piscinas, água, portas e áreas de
+  interação; preservar circulação e rotas dos NPCs.
+- Usar base de solo verde texturizada para cobertura contínua, complementada por
+  grama 3D com densidade e altura naturais. Evitar terra marrom visível à distância
+  por depender somente de tufos; não encobrir madeira, pedra ou areia com verde.
+- Preservar a vegetação existente. Utilizar instâncias, distâncias de exibição e
+  níveis de qualidade adequados à RTX4060Ti8GB, medindo o impacto real no frame.
+- Conferir o resultado na câmera do jogador em várias regiões, perto e longe,
+  de dia/noite e sob chuva; verificar navegação e não criar faixas brancas.
+
+Este pedido deve entrar no próximo lote de trabalho junto às pendências acima.
+O registro não representa implementação nem validação do gerador.

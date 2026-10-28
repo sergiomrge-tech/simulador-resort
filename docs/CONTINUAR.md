@@ -389,3 +389,7 @@ e [relatório Nanite/Lumen/PCG](ue58/GRAFICOS_AVANCADOS_2026-10-28.md) antes de 
 Projeto ativo no D, branch codex/ue58-migration. Há implementação real, mapas e
 benchmark nativo; o último pacote integrado ainda precisa de regressão e inspeção
 após a divisão do hotel. Não declarar o lote inteiro nem a migração concluídos.
+
+Pedido adicional de 28/10, registrado no checkpoint gráfico: implementar gerador
+de grama em toda a terra exposta fora da areia, com gramado contínuo e cobertura
+verde de base, preservando pisos construídos, caminhos e circulação. Ainda pendente.
