@@ -162,3 +162,11 @@ para a placa física: clique/E na placa alterna o estado. Fechado é vermelho,
 aberto é verde; abertura programada fora do expediente deve ser compreensível.
 Não restaurar o botão de abertura no celular. Há rádio com reggae e música
 praiana instrumental, com seleção/desligamento e volume de música independente.
+
+## Checkpoint gráfico de 28/10 — Nanite, Lumen e PCG
+
+Ler `docs/ue58/CHECKPOINT_GRAFICOS_2026-10-28.md` para continuar. Preservar os grafos
+PCG, os proxies opaco/vidro do hotel e o colisor original. Não ativar Nanite em
+materiais transparentes só porque o material-base é opaco: considerar overrides
+das Material Instances. O último pacote integrado foi construído, mas ainda não
+passou pelos testes finais após essa alteração. O usuário pediu encerrar por limite.
