@@ -1,0 +1,21 @@
+#pragma once
+#include "CoreMinimal.h"
+#include "GameFramework/Actor.h"
+#include "MareGraphicsQA.generated.h"
+/** Opt-in fixed-view render profiling, restricted to a disposable profile. */
+UCLASS()
+class AMareGraphicsQA : public AActor
+{
+ GENERATED_BODY()
+public:
+ AMareGraphicsQA();
+ virtual void Tick(float DeltaSeconds) override;
+private:
+ FString Root;
+ int32 Variant=0;
+ int32 Stage=0;
+ double Next=0;
+ TSharedFuture<FString> Capture;
+ TArray<TSharedPtr<class FJsonValue>> Records;
+ void Configure();
+};

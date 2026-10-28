@@ -1,6 +1,7 @@
 #include "MareGame.h"
 #include "MareIntro.h"
 #include "MareIntroQA.h"
+#include "MareGraphicsQA.h"
 #include "EngineUtils.h"
 #include "MarePreviewQA.h"
 #include "MareAudioWorld.h"
@@ -320,7 +321,7 @@ void AMareHUD::DrawHUD()
  Canvas->DrawText(Font,TEXT("B · celular     E · interagir"),22,Canvas->ClipY-35);
 }
 AMareGameMode::AMareGameMode(){PrimaryActorTick.bCanEverTick=true;DefaultPawnClass=AMareCharacter::StaticClass();PlayerControllerClass=AMareController::StaticClass();HUDClass=AMareHUD::StaticClass();}
-void AMareGameMode::BeginPlay(){Super::BeginPlay();GetWorld()->SpawnActor<AMareIntro>();if(FParse::Param(FCommandLine::Get(),TEXT("MareIntroQA")))GetWorld()->SpawnActor<AMareIntroQA>();if(FParse::Param(FCommandLine::Get(),TEXT("MarePreviewQA")))GetWorld()->SpawnActor<AMarePreviewQA>();}
+void AMareGameMode::BeginPlay(){Super::BeginPlay();GetWorld()->SpawnActor<AMareIntro>();if(FParse::Param(FCommandLine::Get(),TEXT("MareGraphicsQA")))GetWorld()->SpawnActor<AMareGraphicsQA>();if(FParse::Param(FCommandLine::Get(),TEXT("MareIntroQA")))GetWorld()->SpawnActor<AMareIntroQA>();if(FParse::Param(FCommandLine::Get(),TEXT("MarePreviewQA")))GetWorld()->SpawnActor<AMarePreviewQA>();}
 
 void AMareGameMode::Tick(float DeltaSeconds)
 {

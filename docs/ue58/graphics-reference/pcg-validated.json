@@ -1,0 +1,100 @@
+[
+  {
+    "actor": "PCG Pilot \u00b7 Palms",
+    "instances": 1,
+    "collision": [
+      "<CollisionEnabled.NO_COLLISION: 0>"
+    ]
+  },
+  {
+    "actor": "PCG Pilot \u00b7 TropicalTrees",
+    "instances": 1,
+    "collision": [
+      "<CollisionEnabled.NO_COLLISION: 0>"
+    ]
+  },
+  {
+    "actor": "PCG Pilot \u00b7 Shrubs",
+    "instances": 4,
+    "collision": [
+      "<CollisionEnabled.NO_COLLISION: 0>"
+    ]
+  },
+  {
+    "actor": "PCG Pilot \u00b7 GroundPlants",
+    "instances": 6,
+    "collision": [
+      "<CollisionEnabled.NO_COLLISION: 0>"
+    ]
+  },
+  {
+    "actor": "PCG Pilot \u00b7 Rocks",
+    "instances": 4,
+    "collision": [
+      "<CollisionEnabled.NO_COLLISION: 0>"
+    ]
+  },
+  {
+    "actor": "PCG Pilot \u00b7 OrnamentalGarden",
+    "instances": 8,
+    "collision": [
+      "<CollisionEnabled.NO_COLLISION: 0>"
+    ]
+  },
+  {
+    "actor": "PCG Pilot \u00b7 NaturalDetails",
+    "instances": 6,
+    "collision": [
+      "<CollisionEnabled.NO_COLLISION: 0>"
+    ]
+  },
+  {
+    "actor": "PCG East \u00b7 Palms",
+    "instances": 1,
+    "collision": [
+      "<CollisionEnabled.NO_COLLISION: 0>"
+    ]
+  },
+  {
+    "actor": "PCG East \u00b7 TropicalTrees",
+    "instances": 1,
+    "collision": [
+      "<CollisionEnabled.NO_COLLISION: 0>"
+    ]
+  },
+  {
+    "actor": "PCG East \u00b7 Shrubs",
+    "instances": 4,
+    "collision": [
+      "<CollisionEnabled.NO_COLLISION: 0>"
+    ]
+  },
+  {
+    "actor": "PCG East \u00b7 GroundPlants",
+    "instances": 6,
+    "collision": [
+      "<CollisionEnabled.NO_COLLISION: 0>"
+    ]
+  },
+  {
+    "actor": "PCG East \u00b7 Rocks",
+    "instances": 4,
+    "collision": [
+      "<CollisionEnabled.NO_COLLISION: 0>"
+    ]
+  },
+  {
+    "actor": "PCG East \u00b7 OrnamentalGarden",
+    "instances": 8,
+    "collision": [
+      "<CollisionEnabled.NO_COLLISION: 0>"
+    ]
+  },
+  {
+    "actor": "PCG East \u00b7 NaturalDetails",
+    "instances": 6,
+    "collision": [
+      "<CollisionEnabled.NO_COLLISION: 0>"
+    ]
+  }
+]

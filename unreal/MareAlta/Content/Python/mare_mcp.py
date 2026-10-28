@@ -23,6 +23,26 @@ class MareMigrationTools(unreal.ToolsetDefinition):
 
     @toolset_registry.tool_call
     @staticmethod
+    def graphics_pass(action: str, label: str="kiosk") -> str:
+        """Audit or measure the graphics pilot; staged mutations are explicit."""
+        import importlib,mare_graphics
+        importlib.reload(mare_graphics)
+        if action=="inspect":return json.dumps(mare_graphics.inspect())
+        if action=="runtime":return json.dumps(mare_graphics.runtime_info())
+        if action=="pilot":return mare_graphics.pilot()
+        if action=="view":return mare_graphics.view(label)
+        if action=="nanite":return json.dumps(mare_graphics.nanite_apply())
+        if action=="nanite-repair":return json.dumps(mare_graphics.nanite_repair())
+        if action=="pcg":return json.dumps(mare_graphics.pcg_build())
+        if action=="pcg-east":return json.dumps(mare_graphics.pcg_build("east"))
+        if action=="pcg-status":return json.dumps(mare_graphics.pcg_status())
+        if action=="pcg-show":return str(mare_graphics.pcg_visibility(label=="on"))
+        if action=="lumen":return json.dumps(mare_graphics.lumen_apply())
+        if action=="integrate":return json.dumps(mare_graphics.integrate_grove())
+        return json.dumps(mare_graphics.profile(action,label))
+
+    @toolset_registry.tool_call
+    @staticmethod
     def import_marine_models() -> str:
         """Import the existing credited ship, cruise and whale models."""
         import importlib,mare_marine_import
