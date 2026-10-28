@@ -8,6 +8,7 @@
 #include "MareAudioWorld.h"
 #include "MareVisualWorld.h"
 #include "MareReefWorld.h"
+#include "MareMarineWorld.h"
 #include "MareServiceTarget.h"
 #include "EngineUtils.h"
 #include "AudioMixerBlueprintLibrary.h"
@@ -55,7 +56,7 @@ void AMarePreviewQA::Check(const FString& Name,bool bPass)
   if(GetWorld()->LineTraceSingleByChannel(Hit,P,P+FVector(0,0,180),ECC_Visibility,Query))Row->SetStringField(TEXT("overhead"),GetNameSafe(Hit.GetActor()));
  }
  Results.Add(MakeShared<FJsonValueObject>(Row));UE_LOG(LogTemp,Display,TEXT("MARE_PREVIEW_QA %s %s"),*Name,bPass?TEXT("PASS"):TEXT("FAIL"));
- auto Report=MakeShared<FJsonObject>();Report->SetArrayField(TEXT("checks"),Results);Report->SetBoolField(TEXT("finished"),Name==TEXT("reef_motion"));
+ auto Report=MakeShared<FJsonObject>();Report->SetArrayField(TEXT("checks"),Results);Report->SetBoolField(TEXT("finished"),Name==TEXT("marine_night_visible"));
  FString Text;FJsonSerializer::Serialize(Report,TJsonWriterFactory<>::Create(&Text));FFileHelper::SaveStringToFile(Text,*(Root/TEXT("preview-qa.json")));
 }
 void AMarePreviewQA::Capture(const FString& Name){FScreenshotRequest::RequestScreenshot(Root/(Name+TEXT(".png")),true,false);}
@@ -69,13 +70,14 @@ void AMarePreviewQA::Tick(float DeltaSeconds)
   if(!Root.StartsWith(TEXT("D:/CodexTemp/"))){Destroy();return;}
   FApp::SetUnfocusedVolumeMultiplier(1.f);Next=FPlatformTime::Seconds()+12;Phase=0;
  }
- if(FPlatformTime::Seconds()<Next || Phase>27)return;
+ if(FPlatformTime::Seconds()<Next || Phase>31)return;
  auto Move=Hero->GetCharacterMovement();auto Eyes=Hero->FindComponentByClass<UCameraComponent>();
  auto Audio=GetWorld()->GetSubsystem<UMareAudioWorld>();auto Sim=PC->GetSimulation();
  auto Key=[&](FKey K,bool Down){PC->InputKey(FInputKeyEventArgs(GEngine->GameViewport->Viewport,INPUTDEVICEID_NONE,K,Down?IE_Pressed:IE_Released,FPlatformTime::Cycles64()));};
  switch(Phase++){
  case 0:{
   Check(TEXT("coast_and_dry_land"),GetWorld()->GetMapName().Contains(TEXT("Coast")) && !Move->IsSwimming());
+  {auto Marine=GetWorld()->GetSubsystem<UMareMarineWorld>();Check(TEXT("marine_models_loaded"),Marine && Marine->HasMarineModels());}
   int32 Variant=0;for(const FString Dish:{TEXT("coco_gelado"),TEXT("suco"),TEXT("batata_frita"),TEXT("sorvete_morango")}){
    if(auto Person=SpawnInspectionPerson(this,FVector(3000+Variant*120,-2400,90),Variant,Dish))PresentationFixtures.Add(Person);++Variant;
   }
@@ -150,9 +152,9 @@ void AMarePreviewQA::Tick(float DeltaSeconds)
  case 10:Check(TEXT("kiosk_open"),PC->GetSimulation()->IsOpen());Hero->SetActorLocation(FVector(3800,-1200,100));PC->SetControlRotation(FRotator(-6,-90,0));PC->TogglePhone();Capture(TEXT("kiosk-phone"));break;
  case 11:PC->ClosePhone();Check(TEXT("save_succeeds"),PC->GetSimulation()->Save());break;
  case 12:Sim->AdvanceMinutes(1320-UMareSimulation::Number(Sim->State,TEXT("minutes")));break;
- case 13:Check(TEXT("night_crickets"),Audio->LoopLevel(TEXT("crickets_loop"))>.02f);Capture(TEXT("kiosk-night"));Sim->State->SetStringField(TEXT("weather"),TEXT("rain"));break;
+ case 13:{auto Marine=GetWorld()->GetSubsystem<UMareMarineWorld>();Check(TEXT("night_cruise_only"),Marine && Marine->IsCruiseVisible() && !Marine->IsSailVisible());}Check(TEXT("night_crickets"),Audio->LoopLevel(TEXT("crickets_loop"))>.02f);Capture(TEXT("kiosk-night"));Sim->State->SetStringField(TEXT("weather"),TEXT("rain"));break;
  case 14:Check(TEXT("rain_mix"),Audio->LoopLevel(TEXT("rain_loop"))>.02f && Audio->LoopLevel(TEXT("crickets_loop"))<.005f);Capture(TEXT("kiosk-rain"));Sim->State->SetStringField(TEXT("weather"),InitialWeather);Sim->AdvanceMinutes(720-UMareSimulation::Number(Sim->State,TEXT("minutes")));break;
- case 15:Capture(TEXT("kiosk-day"));break;
+ case 15:{auto Marine=GetWorld()->GetSubsystem<UMareMarineWorld>();Check(TEXT("day_sail_only"),Marine && Marine->IsSailVisible() && !Marine->IsCruiseVisible());Capture(TEXT("kiosk-day"));break;}
  case 16:{Hero->SetActorLocation(FVector(4520,2120,100));PC->SetControlRotation(FRotator(-8,25,0));
   AMareServiceTarget* Door=nullptr;for(TActorIterator<AMareServiceTarget> It(GetWorld());It;++It)if(It->Action==TEXT("Door") && It->bAutoClose){Door=*It;break;}
   if(Door){const FBoxSphereBounds Bounds=Door->DoorMesh->Bounds;Check(TEXT("home_door_fits_frame"),Bounds.Origin.Z+Bounds.BoxExtent.Z>245.f && Bounds.Origin.Z+Bounds.BoxExtent.Z<247.5f && Bounds.Origin.X-Bounds.BoxExtent.X<4711.f);if(Door->IsOpen())Door->Use(PC);Door->Use(PC);}
@@ -194,7 +196,11 @@ void AMarePreviewQA::Tick(float DeltaSeconds)
   break;}
  case 25:Hero->SetActorLocation(FVector(3800,-2600,100));Move->StopMovementImmediately();PC->SetControlRotation(FRotator(-3,-90,0));break;
  case 26:Capture(TEXT("shore-waves"));break;
- case 27:if(GetWorld()->WorldType!=EWorldType::PIE)GEngine->Exec(GetWorld(),TEXT("QUIT"));break;
+ case 27:{auto Marine=GetWorld()->GetSubsystem<UMareMarineWorld>();if(Marine && Marine->WhalePhase()>.8f && Marine->WhalePhase()<2.8f){Check(TEXT("whale_breaches"),Marine->IsWhaleVisible());Capture(TEXT("whale-breach"));}else --Phase;break;}
+ case 28:{auto Marine=GetWorld()->GetSubsystem<UMareMarineWorld>();if(Marine && Marine->WhalePhase()>4.3f && Marine->WhalePhase()<5.8f){Check(TEXT("marine_splash"),Marine->IsRippleVisible() && !Marine->IsWhaleVisible());Capture(TEXT("whale-splash"));}else --Phase;break;}
+ case 29:Sim->AdvanceMinutes(1320-UMareSimulation::Number(Sim->State,TEXT("minutes")));break;
+ case 30:{auto Marine=GetWorld()->GetSubsystem<UMareMarineWorld>();Check(TEXT("marine_night_visible"),Marine && Marine->IsCruiseVisible() && !Marine->IsSailVisible());Capture(TEXT("cruise-night"));break;}
+ case 31:if(GetWorld()->WorldType!=EWorldType::PIE)GEngine->Exec(GetWorld(),TEXT("QUIT"));break;
  }
- Next=FPlatformTime::Seconds()+(Phase==13?10:Phase==1?7:Phase==3?4:Phase==4?5:3);
+ Next=FPlatformTime::Seconds()+((Phase==27 || Phase==28)?.5:Phase==13?10:Phase==1?7:Phase==3?4:Phase==4?5:3);
 }

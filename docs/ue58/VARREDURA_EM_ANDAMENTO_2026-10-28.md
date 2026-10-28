@@ -157,3 +157,12 @@ percurso real porta-carta e o visual do papel não foram testados inteiramente a
 O usuário autorizou começar sem preservar o progresso anterior; não copiar saves
 para o próximo pacote. Não tratar este pacote como entrega final, nem apresentar
 as três propostas de interface antes de concluir as pendências existentes.
+
+## Checkpoint anterior ao lote gráfico avançado
+
+O usuário solicitou uma nova etapa de Nanite, Lumen e PCG, começando por baseline.
+Trabalho marítimo anterior preservado neste checkpoint: modelos originais de veleiro,
+cruzeiro e baleia importados, subsistema nativo e teste do editor com imagens.
+Ainda não há pacote aprovado desse trabalho. Aumentado spray após a primeira
+captura porque não ficou legível; requer nova inspeção. Não confundir esse lote
+com a implementação gráfica solicitada depois.

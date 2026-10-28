@@ -1,0 +1,41 @@
+{
+  "pirate_sailship": {
+    "path": "/Game/Marine/pirate_sailship/pirate_sailship.pirate_sailship",
+    "origin": [
+      1.2884368896484375,
+      96.2791748046875,
+      1387.5350494384766
+    ],
+    "extent": [
+      476.3285369873047,
+      1989.4486083984375,
+      1628.7535247802734
+    ]
+  },
+  "coastal_cruise": {
+    "path": "/Game/Marine/coastal_cruise/coastal_cruise.coastal_cruise",
+    "origin": [
+      0.0,
+      0.0,
+      825.0
+    ],
+    "extent": [
+      4550.0,
+      835.0,
+      1175.0
+    ]
+  },
+  "humpback_whale": {
+    "path": "/Game/Marine/humpback_whale/humpback_whale.humpback_whale",
+    "origin": [
+      -45.259796142578125,
+      0.0,
+      31.496105194091797
+    ],
+    "extent": [
+      584.6347961425781,
+      399.0034484863281,
+      148.5038948059082
+    ]
+  }
+}

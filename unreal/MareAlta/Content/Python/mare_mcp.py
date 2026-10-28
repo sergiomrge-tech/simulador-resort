@@ -23,6 +23,14 @@ class MareMigrationTools(unreal.ToolsetDefinition):
 
     @toolset_registry.tool_call
     @staticmethod
+    def import_marine_models() -> str:
+        """Import the existing credited ship, cruise and whale models."""
+        import importlib,mare_marine_import
+        importlib.reload(mare_marine_import)
+        return json.dumps({"models":mare_marine_import.build(),"splash":mare_marine_import.build_splash_material()})
+
+    @toolset_registry.tool_call
+    @staticmethod
     def refine_shore_waves() -> str:
         """Rebuild coastal wave and foam material, limited to the shoreline."""
         import importlib,mare_materials
