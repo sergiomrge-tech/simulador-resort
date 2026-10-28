@@ -91,6 +91,13 @@ Destino da pasta e ZIP: `D:/Downloads/MareAltaResort_UE58_AudioVisual_2026-10-28
 Abrir `Jogar.vbs` ou `Jogar.cmd`. A prévia usa `userdata` ao lado do launcher;
 essa pasta não entra no ZIP e não escreve na instalação Godot.
 
+Publicação verificada:
+[v1.1.0-ue58-preview.20261028.1](https://github.com/sergiomrge-tech/simulador-resort/releases/tag/v1.1.0-ue58-preview.20261028.1),
+marcada como prévia. Código do pacote: `667a646c11ba3d826b465ee4f9210033c331f9bb`.
+ZIP de 1.676.007.251 bytes, integridade CRC conferida, sem userdata. SHA-256 local
+igual ao digest confirmado pelo GitHub:
+`0e40342f5c00f71cce9f713c0f4a2e2cbb9c8cb000dd549cdc6247c546b20ada`.
+
 É uma prévia da migração. Permanecem outros negócios, atividades, salários,
 capítulos restantes, clima completo e sistemas marinhos/animais. O herói usa câmera
 em primeira pessoa, sem braços/corpo com animação de natação. Não substituir a
