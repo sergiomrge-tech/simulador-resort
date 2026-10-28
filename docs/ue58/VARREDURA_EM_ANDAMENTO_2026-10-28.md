@@ -92,3 +92,36 @@ com pulo foi testada na versão anterior do protótipo, mas deve ser repetida ap
 as alterações. Falta validar partida, abertura e roteiro no executável exportado,
 colisão/caminho até a casa, visual da carta na mesa, perfil existente e reinício.
 A sequência não substitui os demais recursos pendentes da varredura.
+
+### Teste empacotado do protótipo
+
+O build interno `D:/Builds/MareAltaUE58_IntroWIP_2026-10-28/Windows` foi
+compilado a partir de `b9bcee78`. Teste `tools/ue58/test_intro_package.ps1`
+rodou com dois perfis descartáveis: chegada natural e avanço, seis verificações
+em cada, saída 0 e sem erros no log. Capturas em
+`D:/CodexTemp/ue58-intro-package-20261028-125625/` mostram o ônibus na rua,
+a vista da casa e a carta. São testes parciais: ainda não comprovam o percurso a
+pé nem visualização clara do objeto sobre a mesa. O modelo do ônibus é simples,
+sem interior/porta; melhorar antes de declarar o roteiro acabado. Não disponibilizar
+este build como entrega final, pois o usuário prefere testar após as correções e
+adições pendentes. Os três conceitos de interface vêm depois desse lote.
+
+### Pedidos adicionais: batente e ondas
+
+- Porta principal: a folha tinha topo a 232 cm e o batente começava em 247 cm,
+  deixando vão de 15 cm. Ajustada a escala vertical da folha em runtime; o lado
+  da porta principal também foi aproximado do batente, com o pivô preservado.
+  A escala faz parte do gerador do mapa. Captura anterior ao último ajuste lateral
+  `D:/CodexTemp/ue58-door-waves/door.png` confirma o vão superior resolvido;
+  repetir verificação da lateral e ciclo de abertura/fechamento no pacote.
+- Material do oceano: ondulação animada mais forte perto da orla e espuma
+  fragmentada com movimento para a praia, restrita à faixa costeira. Captura
+  preliminar `D:/CodexTemp/ue58-door-waves/sea-b.png`; ainda verificar a espuma
+  em tempo real, também sob chuva, e no pacote. Os peixes estáticos fora d'água
+  continuam um defeito separado. Inspeção aponta 97 pares Body/Tail nos modelos
+  0544/0545, 0546/0547, 0555/0556 e 0564/0565, escalados até cerca de 3x e
+  profundos apenas 29–97 cm. `mare_fish_audit.py` registra as dimensões antes de
+  implementar natação e profundidade adequadas; ainda não corrige os peixes.
+- Regressão do executável com abertura, anterior a estes dois ajustes: 48 checks
+  passaram (`D:/CodexTemp/ue58-package-qa-20261028-125730`), áudio audível,
+  silenciado e pausado aprovados. Repetir após a porta e água.

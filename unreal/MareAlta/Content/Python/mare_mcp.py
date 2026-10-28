@@ -23,6 +23,38 @@ class MareMigrationTools(unreal.ToolsetDefinition):
 
     @toolset_registry.tool_call
     @staticmethod
+    def refine_shore_waves() -> str:
+        """Rebuild coastal wave and foam material, limited to the shoreline."""
+        import importlib,mare_materials
+        importlib.reload(mare_materials)
+        return mare_materials.build_water().get_path_name()
+
+    @toolset_registry.tool_call
+    @staticmethod
+    def capture_door_waves(name: str) -> str:
+        """Capture an isolated profile view for door and surf visual QA."""
+        import importlib,mare_door_audit
+        importlib.reload(mare_door_audit)
+        return mare_door_audit.capture(name)
+
+    @toolset_registry.tool_call
+    @staticmethod
+    def inspect_house_door() -> str:
+        """Inspect the physical home door and its pivot."""
+        import importlib,mare_door_audit
+        importlib.reload(mare_door_audit)
+        return json.dumps(mare_door_audit.inspect())
+
+    @toolset_registry.tool_call
+    @staticmethod
+    def inspect_reef_fish() -> str:
+        """Inspect imported reef fish bounds and source transforms."""
+        import importlib,mare_fish_audit
+        importlib.reload(mare_fish_audit)
+        return json.dumps(mare_fish_audit.inspect())
+
+    @toolset_registry.tool_call
+    @staticmethod
     def inspect_audio() -> str:
         """Read current game audio component state, without changing player settings."""
         world=unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()

@@ -1,6 +1,6 @@
 # Abertura — Uma nova maré
 
-Roteiro original para a versão Unreal; ainda não integrado ao jogo. A cena deve
+Roteiro original para a versão Unreal; integrado como protótipo em teste. A cena deve
 ser jogável, com legendas em português e sem exigir dublagem. O jogador pode
 avançar ou pular a parte cinematográfica, sem pular a leitura da carta nem criar
 empresa automaticamente. Usar um perfil novo para testes e preservar saves antigos.

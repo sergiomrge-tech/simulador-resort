@@ -152,10 +152,15 @@ void AMarePreviewQA::Tick(float DeltaSeconds)
  case 13:Check(TEXT("night_crickets"),Audio->LoopLevel(TEXT("crickets_loop"))>.02f);Capture(TEXT("kiosk-night"));Sim->State->SetStringField(TEXT("weather"),TEXT("rain"));break;
  case 14:Check(TEXT("rain_mix"),Audio->LoopLevel(TEXT("rain_loop"))>.02f && Audio->LoopLevel(TEXT("crickets_loop"))<.005f);Capture(TEXT("kiosk-rain"));Sim->State->SetStringField(TEXT("weather"),InitialWeather);Sim->AdvanceMinutes(720-UMareSimulation::Number(Sim->State,TEXT("minutes")));break;
  case 15:Capture(TEXT("kiosk-day"));break;
- case 16:Hero->SetActorLocation(FVector(4520,2120,100));PC->SetControlRotation(FRotator(-8,25,0));break;
- case 17:Capture(TEXT("house-day"));Audio->SetRadioStation(TEXT("music_bossa"));break;
+ case 16:{Hero->SetActorLocation(FVector(4520,2120,100));PC->SetControlRotation(FRotator(-8,25,0));
+  AMareServiceTarget* Door=nullptr;for(TActorIterator<AMareServiceTarget> It(GetWorld());It;++It)if(It->Action==TEXT("Door") && It->bAutoClose){Door=*It;break;}
+  if(Door){const FBoxSphereBounds Bounds=Door->DoorMesh->Bounds;Check(TEXT("home_door_fits_frame"),Bounds.Origin.Z+Bounds.BoxExtent.Z>245.f && Bounds.Origin.Z+Bounds.BoxExtent.Z<247.5f && Bounds.Origin.X-Bounds.BoxExtent.X<4711.f);if(Door->IsOpen())Door->Use(PC);Door->Use(PC);}
+  else Check(TEXT("home_door_fits_frame"),false);break;}
+
+ case 17:{Capture(TEXT("house-day"));Audio->SetRadioStation(TEXT("music_bossa"));AMareServiceTarget* Door=nullptr;for(TActorIterator<AMareServiceTarget> It(GetWorld());It;++It)if(It->Action==TEXT("Door") && It->bAutoClose){Door=*It;break;}Check(TEXT("home_door_opens_after_fit"),Door && Door->IsOpen());if(Door)Door->Use(PC);break;}
  case 18:Check(TEXT("radio_bossa_plays"),Audio->LoopLevel(TEXT("music_bossa"))>.01f);Audio->SetRadioStation(TEXT("music_relax"));Hero->SetActorLocation(FVector(3800,-1200,100));PC->SetControlRotation(FRotator(-6,-90,0));Sim->AdvanceMinutes(InitialMinutes-UMareSimulation::Number(Sim->State,TEXT("minutes")));break;
  case 19:{
+  AMareServiceTarget* Door=nullptr;for(TActorIterator<AMareServiceTarget> It(GetWorld());It;++It)if(It->Action==TEXT("Door") && It->bAutoClose){Door=*It;break;}Check(TEXT("home_door_closes_after_fit"),Door && !Door->IsOpen());
   Check(TEXT("radio_relax_plays"),Audio->LoopLevel(TEXT("music_relax"))>.01f);Audio->SetRadioStation(TEXT("off"));
   ExpansionOwnership=MakeShared<FJsonObject>(*UMareSimulation::Object(Sim->State,TEXT("unlocked")));ExpansionCash=Sim->Money();
   FBox Bounds(ForceInit);for(TActorIterator<AActor> It(GetWorld());It;++It)if(It->ActorHasTag(TEXT("Region_pool")))Bounds+=It->GetComponentsBoundingBox(true);

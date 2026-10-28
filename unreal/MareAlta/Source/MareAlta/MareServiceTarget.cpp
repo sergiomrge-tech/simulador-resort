@@ -19,6 +19,12 @@ AMareServiceTarget::AMareServiceTarget()
  DoorMesh=CreateDefaultSubobject<UStaticMeshComponent>(TEXT("DoorLeaf"));DoorMesh->SetupAttachment(RootComponent);
  DoorMesh->SetMobility(EComponentMobility::Movable);
 }
+void AMareServiceTarget::BeginPlay()
+{
+ Super::BeginPlay();
+ // The leaf is 220 cm high; the lintel starts at 247 cm and the pivot is 12 cm above ground.
+ if(Action==TEXT("Door"))DoorMesh->SetRelativeScale3D(FVector(bAutoClose?1.04f:1.f,1.f,1.065f));
+}
 AMareServiceTarget* AMareServiceTarget::FindFocused(APlayerController* Controller)
 {
  if(!Controller || !Controller->GetPawn())return nullptr;

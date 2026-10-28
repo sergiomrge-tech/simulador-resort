@@ -144,6 +144,7 @@ def build():
             target.set_editor_property('action','Door');target.set_editor_property('label',row['label'])
             target.set_editor_property('auto_close',row['auto_close']);target.set_editor_property('focus_offset',unreal.Vector(-57.5,0,110))
             target.get_editor_property('door_mesh').set_static_mesh(leaf)
+            target.get_editor_property('door_mesh').set_relative_scale3d(unreal.Vector(1.04 if row['auto_close'] else 1,1,1.065))
     nav=spawn(unreal.NavMeshBoundsVolume,'Navegação do quiosque e da casa',unreal.Vector(4200,300,250))
     nav.set_actor_scale3d(unreal.Vector(30,45,10))
     origin,extent=nav.get_actor_bounds(False)

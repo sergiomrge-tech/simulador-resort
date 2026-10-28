@@ -12,6 +12,7 @@ class MAREALTA_API AMareServiceTarget : public AActor
  GENERATED_BODY()
 public:
  AMareServiceTarget();
+ virtual void BeginPlay() override;
  virtual void Tick(float DeltaSeconds) override;
  UPROPERTY(EditAnywhere,BlueprintReadWrite,Category="Interaction") FName Action=TEXT("Fridge");
  UPROPERTY(EditAnywhere,BlueprintReadWrite,Category="Interaction") FString Label=TEXT("Geladeira");
