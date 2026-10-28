@@ -1,0 +1,307 @@
+{
+  "GPU/RayTracingGeometry": {
+    "mean": 0.0006011896431070678,
+    "p95": 0.0003,
+    "samples": 2858
+  },
+  "GPU/DistanceFields": {
+    "mean": 0.04424511725586279,
+    "p95": 0.0521,
+    "samples": 2857
+  },
+  "GPU/GlobalDistanceFieldUpdate": {
+    "mean": 0.20293226032190342,
+    "p95": 0.2249,
+    "samples": 2858
+  },
+  "GPU/AllocateRendertargets": {
+    "mean": 0.000851767588379419,
+    "p95": 0.0011,
+    "samples": 2857
+  },
+  "GPU/VisibilityCommands": {
+    "mean": 0.000948582429121456,
+    "p95": 0.0013,
+    "samples": 2857
+  },
+  "GPU/UpdateLumenSceneBuffers": {
+    "mean": 0.0066128806440322015,
+    "p95": 0.0096,
+    "samples": 2857
+  },
+  "GPU/GPUSceneUpdate": {
+    "mean": 0.014795204760238012,
+    "p95": 0.0199,
+    "samples": 2857
+  },
+  "GPU/NaniteStreaming": {
+    "mean": 0.0011035701785089254,
+    "p95": 0.0019,
+    "samples": 2857
+  },
+  "GPU/NaniteReadback": {
+    "mean": 0.170576793839692,
+    "p95": 0.1862,
+    "samples": 2857
+  },
+  "GPU/FXSystemPreRender": {
+    "mean": 0.013261498074903745,
+    "p95": 0.0209,
+    "samples": 2857
+  },
+  "GPU/BuildRenderingCommandsDeferred": {
+    "mean": 0.043806405320266015,
+    "p95": 0.0471,
+    "samples": 2857
+  },
+  "GPU/Prepass": {
+    "mean": 0.03357752887644382,
+    "p95": 0.0423,
+    "samples": 2857
+  },
+  "GPU/RenderVelocities": {
+    "mean": 0.06675869793489675,
+    "p95": 0.0791,
+    "samples": 2857
+  },
+  "GPU/NaniteVisBuffer": {
+    "mean": 0.4422053202660133,
+    "p95": 0.5977,
+    "samples": 2857
+  },
+  "GPU/NaniteBasePass": {
+    "mean": 0.5122314665733286,
+    "p95": 0.6842,
+    "samples": 2857
+  },
+  "GPU/HZB": {
+    "mean": 0.01987238361918096,
+    "p95": 0.0215,
+    "samples": 2857
+  },
+  "GPU/BeginOcclusionTests": {
+    "mean": 0.0070669233461673085,
+    "p95": 0.0072,
+    "samples": 2857
+  },
+  "GPU/LightGrid": {
+    "mean": 0.027648092404620232,
+    "p95": 0.0323,
+    "samples": 2857
+  },
+  "GPU/LightFunctionAtlasGeneration": {
+    "mean": 4.940517844646606e-05,
+    "p95": 0.0,
+    "samples": 2858
+  },
+  "GPU/SkyAtmosphereLUTs": {
+    "mean": 0.07297021351067554,
+    "p95": 0.0767,
+    "samples": 2857
+  },
+  "GPU/CaptureConvolveSkyEnvMap": {
+    "mean": 0.10612256822953114,
+    "p95": 0.5254,
+    "samples": 2858
+  },
+  "GPU/SingleLayerWaterDepthPrepass": {
+    "mean": 0.09094889744487224,
+    "p95": 0.1075,
+    "samples": 2857
+  },
+  "GPU/LumenSceneUpdate": {
+    "mean": 0.23409104268719383,
+    "p95": 0.4601,
+    "samples": 2858
+  },
+  "GPU/BuildRenderingCommands": {
+    "mean": 0.0017962898144907246,
+    "p95": 0.0122,
+    "samples": 2857
+  },
+  "GPU/LumenScreenProbeGather": {
+    "mean": 0.028691077676696992,
+    "p95": 0.0327,
+    "samples": 2858
+  },
+  "GPU/Basepass": {
+    "mean": 0.08571473573678684,
+    "p95": 0.1017,
+    "samples": 2857
+  },
+  "GPU/RenderAnisotropyPass": {
+    "mean": 0.0534463610916725,
+    "p95": 0.0621,
+    "samples": 2858
+  },
+  "GPU/RenderDeferredLighting": {
+    "mean": 0.1533940847042352,
+    "p95": 0.1668,
+    "samples": 2857
+  },
+  "GPU/ShadowDepths": {
+    "mean": 1.0351298810356893,
+    "p95": 1.3337,
+    "samples": 2858
+  },
+  "GPU/LumenReflections": {
+    "mean": 0.28784133706685333,
+    "p95": 0.426,
+    "samples": 2857
+  },
+  "GPU/TranslucentLighting": {
+    "mean": 0.06929506475323766,
+    "p95": 0.0789,
+    "samples": 2857
+  },
+  "GPU/Lights": {
+    "mean": 0.13570311515575778,
+    "p95": 0.1628,
+    "samples": 2857
+  },
+  "GPU/ShadowProjection": {
+    "mean": 0.04721242127361792,
+    "p95": 0.0564,
+    "samples": 2858
+  },
+  "GPU/DistanceFieldShadows": {
+    "mean": 0.06412586629331467,
+    "p95": 0.0747,
+    "samples": 2857
+  },
+  "GPU/VolumetricCloud": {
+    "mean": 0.6122157452764171,
+    "p95": 0.7725,
+    "samples": 2858
+  },
+  "GPU/VolCloudReconstruction": {
+    "mean": 0.015546657332866644,
+    "p95": 0.0204,
+    "samples": 2857
+  },
+  "GPU/TemporalSuperResolution": {
+    "mean": 0.7049839398180546,
+    "p95": 0.257,
+    "samples": 2858
+  },
+  "GPU/SingleLayerWater": {
+    "mean": 0.14359597479873995,
+    "p95": 0.1557,
+    "samples": 2857
+  },
+  "GPU/SkyAtmosphere": {
+    "mean": 0.2524965710286914,
+    "p95": 0.0011,
+    "samples": 2858
+  },
+  "GPU/Fog": {
+    "mean": 0.00045134756737836895,
+    "p95": 0.0011,
+    "samples": 2857
+  },
+  "GPU/VolCloudComposeOverScene": {
+    "mean": 0.009935024492652204,
+    "p95": 0.0112,
+    "samples": 2858
+  },
+  "GPU/PostRenderOpsFX": {
+    "mean": 0.0031063353167658384,
+    "p95": 0.0041,
+    "samples": 2857
+  },
+  "GPU/FXSystemPostRenderOpaque": {
+    "mean": 0.004116065803290165,
+    "p95": 0.0052,
+    "samples": 2857
+  },
+  "GPU/Translucency": {
+    "mean": 0.10723920196009801,
+    "p95": 0.1132,
+    "samples": 2857
+  },
+  "GPU/PostProcessing": {
+    "mean": 0.22935670283514176,
+    "p95": 0.2426,
+    "samples": 2857
+  },
+  "GPU/VirtualTextureUpdate": {
+    "mean": 0.07071032551627582,
+    "p95": 0.0771,
+    "samples": 2857
+  },
+  "GPU/SlateUI": {
+    "mean": 0.22294819740987049,
+    "p95": 0.2349,
+    "samples": 2857
+  },
+  "GPU/Unaccounted": {
+    "mean": 0.7997642982149108,
+    "p95": 0.9981,
+    "samples": 2857
+  },
+  "TransientMemoryUsedMB": {
+    "mean": 511.910395519776,
+    "p95": 512.0,
+    "samples": 2857
+  },
+  "TransientMemoryAliasedMB": {
+    "mean": 127.955197759888,
+    "p95": 128.0,
+    "samples": 2857
+  },
+  "GPUMem/LocalBudgetMB": {
+    "mean": 7178.486524326217,
+    "p95": 7181.0,
+    "samples": 2857
+  },
+  "GPUMem/LocalUsedMB": {
+    "mean": 3823.6236793489675,
+    "p95": 3824.7773,
+    "samples": 2857
+  },
+  "GPUMem/SystemBudgetMB": {
+    "mean": 15506.096094644732,
+    "p95": 15511.5254,
+    "samples": 2857
+  },
+  "GPUMem/SystemUsedMB": {
+    "mean": 241.04750392019602,
+    "p95": 241.1602,
+    "samples": 2857
+  },
+  "FrameTime": {
+    "mean": 16.37174427721386,
+    "p95": 22.1426,
+    "samples": 2857
+  },
+  "TextureStreaming/ResidentMeshMem": {
+    "mean": 0.0,
+    "p95": 0.0,
+    "samples": 2857
+  },
+  "TextureStreaming/StreamedMeshMem": {
+    "mean": 0.0,
+    "p95": 0.0,
+    "samples": 2857
+  },
+  "Shaders/ShaderMemoryMB": {
+    "mean": 10.842679243962198,
+    "p95": 10.8731,
+    "samples": 2857
+  },
+  "MemoryFreeMB": {
+    "mean": 8792.495388484424,
+    "p95": 8892.2773,
+    "samples": 2857
+  },
+  "RenderThreadTime": {
+    "mean": 14.277014525726287,
+    "p95": 19.1818,
+    "samples": 2857
+  },
+  "GameThreadTime": {
+    "mean": 16.29833685684284,
+    "p95": 22.4903,
+    "samples": 2857
+  }
+}
