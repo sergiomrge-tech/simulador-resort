@@ -103,6 +103,9 @@ func transform(t: Transform3D) -> Dictionary:
  return {"position":t.origin,"basis":[t.basis.x,t.basis.y,t.basis.z]}
 func visit(node: Node,region: String) -> void:
  if area_nodes.has(node):region=area_nodes[node]
+ if node.name=="HotelWorld":region="grand_hotel"
+ if str(node.name).begins_with("Biz_"):region=str(node.name)
+ if node.has_meta("ue_region"):region=str(node.get_meta("ue_region"))
  if node is Node3D and not node.is_visible_in_tree():return
  if node.get_script()!=null and str(node.get_script().resource_path).ends_with("home_door.gd"):
   metadata.doors.append({"name":str(node.name),"transform":transform(node.global_transform),"label":node.door_label,"auto_close":node.auto_close})

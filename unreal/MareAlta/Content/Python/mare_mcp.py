@@ -37,6 +37,22 @@ class MareMigrationTools(unreal.ToolsetDefinition):
 
     @toolset_registry.tool_call
     @staticmethod
+    def rebuild_expansion_signs() -> str:
+        """Restore region ownership tags on signs without reimporting scenery or audio."""
+        import importlib,mare_signs
+        importlib.reload(mare_signs)
+        return json.dumps(mare_signs.build())
+
+    @toolset_registry.tool_call
+    @staticmethod
+    def repair_expansion_regions() -> str:
+        """Split legacy hotel/business geometry into ownership groups, keeping all instances."""
+        import importlib,mare_expansions
+        importlib.reload(mare_expansions)
+        return json.dumps(mare_expansions.repair())
+
+    @toolset_registry.tool_call
+    @staticmethod
     def build_audio_visual() -> str:
         """Import attributed audio and refine native contact lighting and water."""
         import importlib,mare_audio,mare_visual,mare_materials,mare_signs

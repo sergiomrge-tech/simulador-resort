@@ -23,6 +23,12 @@ public:
  bool SetOpen(bool bOpen);
  UFUNCTION(BlueprintCallable,Category="Maré Alta")
  bool IsOpen() const;
+ /** Expansion licences gate sale/pickup while keeping display props visible. */
+ UFUNCTION(BlueprintPure,Category="Maré Alta")
+ bool IsDishUnlocked(const FString& Dish) const;
+ /** Previously accepted orders remain fulfillable after the licence migration. */
+ UFUNCTION(BlueprintPure,Category="Maré Alta")
+ bool CanSupplyDish(const FString& Dish) const;
  UFUNCTION(BlueprintCallable,Category="Maré Alta")
  int32 Available(const FString& Dish) const;
  UFUNCTION(BlueprintCallable,Category="Maré Alta")

@@ -11,10 +11,40 @@
 #include "Components/TextRenderComponent.h"
 
 TStatId UMareVisualWorld::GetStatId()const{RETURN_QUICK_DECLARE_CYCLE_STAT(UMareVisualWorld,STATGROUP_Tickables);}
+void UMareVisualWorld::RefreshExpansions()
+{
+ auto World=GetWorld();
+ if(!World || !World->IsGameWorld() || !World->GetGameInstance())return;
+ auto Sim=World->GetGameInstance()->GetSubsystem<UMareSimulation>();if(!Sim)return;
+ const auto Definitions=UMareSimulation::Object(Sim->Definitions,TEXT("expansions"));
+ const auto Businesses=UMareSimulation::Object(Sim->Definitions,TEXT("businesses"));
+ if(!bRegionsIndexed){
+  for(TActorIterator<AActor> It(World);It;++It)for(FName Tag:It->Tags){
+   const FString Name=Tag.ToString();
+   const FString Id=Name.StartsWith(TEXT("Region_"))?Name.RightChop(7):Name.StartsWith(TEXT("Lot_"))?Name.RightChop(4):TEXT("");
+   if(Definitions->HasField(Id) || (Id.StartsWith(TEXT("Biz_")) && Businesses->HasField(Id.RightChop(4))))ExpansionRegions.FindOrAdd(Tag).Add(*It);
+  }
+  bRegionsIndexed=true;
+ }
+ const auto Unlocked=UMareSimulation::Object(Sim->State,TEXT("unlocked"));
+ for(const auto& Region:ExpansionRegions){
+  const FString Tag=Region.Key.ToString();const bool bLot=Tag.StartsWith(TEXT("Lot_"));const FString Id=Tag.RightChop(bLot?4:7);
+  bool bOwned=false;
+  if(Id.StartsWith(TEXT("Biz_")))bOwned=UMareSimulation::Number(UMareSimulation::Object(UMareSimulation::Object(UMareSimulation::Object(Sim->State,TEXT("prog")),TEXT("biz")),Id.RightChop(4)),TEXT("lvl"))>0;
+  else Unlocked->TryGetBoolField(Id,bOwned);
+  const bool bVisible=bLot?!bOwned:bOwned;
+  const bool* Previous=RegionVisibility.Find(Region.Key);if(Previous && *Previous==bVisible)continue;
+  for(const auto& Entry:Region.Value)if(auto Actor=Entry.Get()){
+   Actor->SetActorHiddenInGame(!bVisible);Actor->SetActorEnableCollision(bVisible);
+  }
+  RegionVisibility.Add(Region.Key,bVisible);
+ }
+}
 void UMareVisualWorld::Tick(float DeltaSeconds)
 {
  if(!GetWorld()->IsGameWorld() || !Cast<AMareGameMode>(GetWorld()->GetAuthGameMode()))return;
  Clock-=DeltaSeconds;if(Clock>0)return;Clock=2.f;
+ RefreshExpansions();
  if(!Sun){for(TActorIterator<ALight> It(GetWorld());It;++It){if(It->ActorHasTag(TEXT("MareSun")))Sun=*It;if(It->ActorHasTag(TEXT("MareMoon")))Moon=*It;if(It->ActorHasTag(TEXT("MarePractical")))Practical.AddUnique(*It);}
   for(TActorIterator<AExponentialHeightFog> It(GetWorld());It;++It)Fog=*It;
   for(TActorIterator<ATextRenderActor> It(GetWorld());It;++It)if(It->ActorHasTag(TEXT("MareText")))Signs.Add(*It);}
@@ -33,7 +63,7 @@ void UMareVisualWorld::Tick(float DeltaSeconds)
   if(Sign->ActorHasTag(TEXT("MareCompanySign")))Text=UMareSimulation::String(UMareSimulation::Object(Sim->State,TEXT("company")),TEXT("name"));
   if(Sign->ActorHasTag(TEXT("MareStatusSign"))){Text=Sim->IsOpen()?TEXT("ABERTO"):TEXT("FECHADO");Sign->GetTextRender()->SetTextRenderColor(FColor(36,31,24));}
   if(Sign->ActorHasTag(TEXT("MarePromoSign")))Text=FString::Printf(TEXT("PROMOÇÕES<br>Coco gelado<br>R$ %.0f<br>Suco da fruta<br>R$ %.0f"),UMareSimulation::Number(UMareSimulation::Object(Dishes,TEXT("coco_gelado")),TEXT("price")),UMareSimulation::Number(UMareSimulation::Object(Dishes,TEXT("suco")),TEXT("price")));
-  if(Sign->ActorHasTag(TEXT("MareMenuSign")))for(FString Id:{TEXT("coco_gelado"),TEXT("suco"),TEXT("caipirinha"),TEXT("petiscos"),TEXT("sorvete_morango"),TEXT("sorvete_chocolate"),TEXT("batata_frita"),TEXT("porcao_peixe")})Text+=Price(Id)+TEXT("<br>");
+  if(Sign->ActorHasTag(TEXT("MareMenuSign")))for(FString Id:{TEXT("coco_gelado"),TEXT("suco"),TEXT("caipirinha"),TEXT("petiscos"),TEXT("sorvete_morango"),TEXT("sorvete_chocolate"),TEXT("batata_frita"),TEXT("porcao_peixe")})if(Sim->IsDishUnlocked(Id))Text+=Price(Id)+TEXT("<br>");
   for(FName Tag:Sign->Tags)if(Tag.ToString().StartsWith(TEXT("MareStock_"))){FString Id=Tag.ToString().RightChop(10);Text=UMareSimulation::String(UMareSimulation::Object(Dishes,Id),TEXT("name"))+FString::Printf(TEXT("<br>%d prontos"),Sim->Available(Id));}
   if(!Text.IsEmpty() && Sign->GetTextRender()->Text.ToString()!=Text)Sign->GetTextRender()->SetText(FText::FromString(Text));
  }

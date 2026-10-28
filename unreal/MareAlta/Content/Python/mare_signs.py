@@ -18,7 +18,7 @@ def build():
         cv=lambda v:unreal.Vector(v[0],v[2],v[1])
         rotation=unreal.MathLibrary.make_rotation_from_axes(cv(bz),-cv(bx),cv(by))
         actor=actors.spawn_actor_from_class(unreal.TextRenderActor,unreal.Vector(p[0]*100,p[2]*100,p[1]*100),rotation)
-        actor.set_actor_label('Letreiro · '+row['text'].split('\n')[0]);actor.tags=['MareGenerated','MareText']
+        actor.set_actor_label('Letreiro · '+row['text'].split('\n')[0]);actor.tags=['MareGenerated','MareText','Region_'+row.get('region','')]
         comp=actor.get_component_by_class(unreal.TextRenderComponent)
         comp.set_text(row['text'].replace('\n','<br>'))
         comp.set_world_size(row['size']*row['pixel_size']*100)

@@ -50,6 +50,9 @@ func _build_lot() -> Node3D:
 
 # ------------------------------------------------------------------ hotel construído
 func _build() -> Node3D:
+	# Some helpers append loungers/umbrellas directly to World. Keep their
+	# ownership when exporting the full scene to another engine.
+	var world_children_before: Array = world.get_children()
 	var root: = Node3D.new()
 	root.name = "GrandHotel"
 	add_child(root)
@@ -131,6 +134,9 @@ func _build() -> Node3D:
 		world.block_rects.append(Rect2(TER_MIN.x - 0.5, TER_MIN.y - 0.5, TER_MAX.x - TER_MIN.x + 1.0, TER_MAX.y - TER_MIN.y + 1.0))
 		world.block_rects.append(Rect2(TOWER.x - 16.5, TOWER.z - 13.0, 33.0, 20.0))
 	Core.toast.emit(tr("O Grand Hotel Maré Alta 5★ abriu as portas! Ele rende toda noite (celular > Hotel 5★)."), "good")
+	for child in world.get_children():
+		if not world_children_before.has(child):
+			child.set_meta("ue_region", "grand_hotel")
 	return root
 
 ## Terraço elevado de pedra com degraus ao norte e ao leste (acesso pelo resort), com borda e muro de contenção.

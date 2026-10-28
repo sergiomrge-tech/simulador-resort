@@ -1,5 +1,6 @@
 #include "MareSimulation.h"
 #include "MareKioskWorld.h"
+#include "MareVisualWorld.h"
 #include "Engine/World.h"
 #include "Misc/FileHelper.h"
 #include "Misc/Paths.h"
@@ -86,8 +87,27 @@ bool UMareSimulation::IsOpen() const
  auto Sim=Object(Company,TEXT("sim")); const double Hour=Number(State,TEXT("minutes"),480)/60.;
  return bOpen && bCreated && Hour>=Number(Sim,TEXT("start"),8) && Hour<Number(Sim,TEXT("end"),18);
 }
+bool UMareSimulation::IsDishUnlocked(const FString& Dish) const
+{
+ if(!Object(Definitions,TEXT("dishes"))->HasField(Dish))return false;
+ const FString Requirement=(Dish==TEXT("caipirinha") || Dish==TEXT("batida"))?TEXT("drinks"):Dish==TEXT("petiscos")?TEXT("grill"):TEXT("");
+ if(Requirement.IsEmpty())return true;
+ bool bOwned=false;Object(State,TEXT("unlocked"))->TryGetBoolField(Requirement,bOwned);return bOwned;
+}
+bool UMareSimulation::CanSupplyDish(const FString& Dish) const
+{
+ if(IsDishUnlocked(Dish))return true;
+ if(!Object(Definitions,TEXT("dishes"))->HasField(Dish))return false;
+ for(const auto& Pair:Object(State,TEXT("ue_orders"))->Values){
+  const TArray<TSharedPtr<FJsonValue>>* Remaining=nullptr;
+  if(Pair.Value->AsObject()->TryGetArrayField(TEXT("remaining"),Remaining))
+   for(const auto& Item:*Remaining)if(Item->AsString()==Dish)return true;
+ }
+ return false;
+}
 int32 UMareSimulation::Available(const FString& Dish) const
 {
+ if(!CanSupplyDish(Dish))return 0;
  auto Dishes=Object(Definitions,TEXT("dishes")); if(!Dishes->HasField(Dish)) return 0;
  auto Uses=Object(Object(Dishes,Dish),TEXT("uses")); auto Stock=Object(State,TEXT("stock")); int32 Count=MAX_int32;
  for(const auto& Pair:Uses->Values) Count=FMath::Min(Count,FMath::FloorToInt(Number(Stock,FString(Pair.Key.ToView()))/FMath::Max(1.,Pair.Value->AsNumber())));
@@ -95,7 +115,7 @@ int32 UMareSimulation::Available(const FString& Dish) const
 }
 double UMareSimulation::RestockCost(const FString& Dish,int32 Quantity) const
 {
- if(Quantity<1 || Quantity>48 || !Object(Definitions,TEXT("dishes"))->HasField(Dish)) return -1;
+ if(Quantity<1 || Quantity>48 || !CanSupplyDish(Dish)) return -1;
  auto Uses=Object(Object(Object(Definitions,TEXT("dishes")),Dish),TEXT("uses"));
  auto Stock=Object(State,TEXT("stock")); auto Supplies=Object(Definitions,TEXT("supplies")); double Cost=0;
  for(const auto& Pair:Uses->Values) Cost+=FMath::Max(0.,Quantity*Pair.Value->AsNumber()-Number(Stock,FString(Pair.Key.ToView())))*Number(Object(Supplies,FString(Pair.Key.ToView())),TEXT("cost"));
@@ -113,6 +133,7 @@ bool UMareSimulation::Restock(const FString& Dish,int32 Quantity)
 }
 bool UMareSimulation::Pickup(const FString& Dish,bool bStaff)
 {
+ if(!CanSupplyDish(Dish))return Fail(TEXT("Compre a expansão que libera este produto no celular."));
  if(!Carry(bStaff).IsEmpty()) return Fail(TEXT("Entregue ou devolva o produto que está na mão."));
  if(Available(Dish)<1) return Fail(TEXT("Produto esgotado. Reponha nesta estação."));
  auto Uses=Object(Object(Object(Definitions,TEXT("dishes")),Dish),TEXT("uses")); auto Stock=Object(State,TEXT("stock"));
@@ -131,7 +152,7 @@ FString UMareSimulation::AddOrder(const FString& Customer,const TArray<FString>&
  if(!IsOpen() || Dishes.IsEmpty()) return TEXT("");
  auto Orders=Object(State,TEXT("ue_orders")); const FString Id=FGuid::NewGuid().ToString(EGuidFormats::Digits);
  auto Order=MakeShared<FJsonObject>(); Order->SetStringField(TEXT("name"),Customer); TArray<TSharedPtr<FJsonValue>> Items;
- for(const auto& Dish:Dishes){if(!Object(Definitions,TEXT("dishes"))->HasField(Dish)) return TEXT("");Items.Add(MakeShared<FJsonValueString>(Dish));}
+ for(const auto& Dish:Dishes){if(!IsDishUnlocked(Dish)) return TEXT("");Items.Add(MakeShared<FJsonValueString>(Dish));}
  Order->SetArrayField(TEXT("remaining"),Items);Order->SetArrayField(TEXT("items"),Items); Orders->SetObjectField(Id,Order); Save(); return Id;
 }
 bool UMareSimulation::Deliver(const FString& OrderId,const FString& Dish,bool bStaff)
@@ -160,11 +181,13 @@ bool UMareSimulation::HireAttendant()
 bool UMareSimulation::BuyExpansion(const FString& Id)
 {
  auto Expansions=Object(Definitions,TEXT("expansions")); if(!Expansions->HasField(Id)) return false;
- auto Unlocked=Object(State,TEXT("unlocked")); bool bOwned=false;Unlocked->TryGetBoolField(Id,bOwned);if(bOwned)return false;
+ auto Unlocked=Object(State,TEXT("unlocked")); bool bOwned=false;Unlocked->TryGetBoolField(Id,bOwned);if(bOwned)return Fail(TEXT("Esta expansão já foi comprada."));
  auto Expansion=Object(Expansions,Id); const TArray<TSharedPtr<FJsonValue>>* Required=nullptr;
  if(Expansion->TryGetArrayField(TEXT("req"),Required)) for(const auto& Req:*Required){bool bHas=false;Unlocked->TryGetBoolField(Req->AsString(),bHas);if(!bHas)return Fail(TEXT("Compre as expansões anteriores."));}
  const double Cost=Number(Expansion,TEXT("cost")); if(Money()<Cost) return Fail(TEXT("Saldo insuficiente."));
- Unlocked->SetBoolField(Id,true);Book(-Cost,TEXT("Expansão: ")+Id);return Save();
+ Unlocked->SetBoolField(Id,true);Book(-Cost,TEXT("Expansão: ")+Id);
+ if(auto World=GetWorld())if(auto Visual=World->GetSubsystem<UMareVisualWorld>())Visual->RefreshExpansions();
+ LastMessage=TEXT("Expansão desbloqueada: ")+String(Expansion,TEXT("name"));return Save();
 }
 int32 UMareSimulation::MissionAmount(const TSharedPtr<FJsonObject>& Mission) const
 {

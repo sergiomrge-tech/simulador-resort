@@ -1,7 +1,8 @@
 {
   "map": "/Game/Maps/Coast",
-  "model_groups": 1689,
+  "model_groups": 1721,
   "instances": 12910,
   "missing_models": 0,
-  "visual_approval": false
+  "visual_approval": false,
+  "pool_lot": true
 }

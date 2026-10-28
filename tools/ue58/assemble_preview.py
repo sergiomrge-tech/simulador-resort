@@ -23,19 +23,24 @@ args.output.mkdir(parents=True)
 shutil.copytree(args.source, args.output/'Windows', ignore=shutil.ignore_patterns('*.pdb'))
 (args.output/'Jogar.cmd').write_text('@echo off\r\nstart "" "%~dp0Windows\\MareAlta.exe" -MareSaveRoot="%~dp0userdata" -UserDir="%~dp0userdata\\Unreal" -windowed -ResX=1280 -ResY=720\r\n', encoding='ascii')
 (args.output/'Jogar.vbs').write_text('Option Explicit\r\nDim sh, fs, base, cmd\r\nSet sh=CreateObject("WScript.Shell")\r\nSet fs=CreateObject("Scripting.FileSystemObject")\r\nbase=fs.GetParentFolderName(WScript.ScriptFullName)\r\nsh.CurrentDirectory=base & "\\Windows"\r\ncmd=Chr(34) & base & "\\Windows\\MareAlta.exe" & Chr(34) & " -MareSaveRoot=" & Chr(34) & base & "\\userdata" & Chr(34) & " -UserDir=" & Chr(34) & base & "\\userdata\\Unreal" & Chr(34) & " -windowed -ResX=1280 -ResY=720"\r\nsh.Run cmd, 1, False\r\n', encoding='ascii')
-(args.output/'LEIA-ME.txt').write_text('''MARÉ ALTA RESORT — PRÉVIA UE5.8 / ÁUDIO, VISUAL E NATAÇÃO — 28/10/2026
+(args.output/'LEIA-ME.txt').write_text('''MARÉ ALTA RESORT — PRÉVIA UE5.8 / CORREÇÃO DE EXPANSÕES — 28/10/2026
 
 Abra Jogar.vbs (ou Jogar.cmd). Não precisa instalar a Unreal Engine.
 Mantenha toda a pasta Windows junto dos atalhos. Saves desta prévia ficam em
 userdata, ao lado dos atalhos. A versão e o progresso Godot não são alterados.
 
-WASD: andar/nadar | Mouse: olhar | E: interagir | B: celular
+WASD: andar/nadar | Mouse: olhar | E ou clique: interagir | B: celular
 Espaço: pular em terra / subir na água | Ctrl ou Shift: mergulhar
 Shift em terra: correr | Esc: pausar, salvar, qualidade e sair
 
 No celular, crie a empresa e abra o quiosque. Produtos já estão prontos:
 retire nas estações dentro do quiosque e entregue aos clientes no balcão.
 O pagamento é automático. Você pode contratar um único atendente.
+
+Expansões começam bloqueadas e aparecem após a compra no celular, aba Resort.
+Compras já registradas no save são preservadas. Caipirinha exige licença de drinks;
+petiscos exigem a chapa. Os demais produtos prontos básicos continuam disponíveis.
+Pedidos anteriores à correção ainda podem ser entregues.
 
 Esta é uma PRÉVIA DA MIGRAÇÃO, com cenário, quiosque e natação para teste.
 Inclui reggae instrumental original, ambiente e efeitos sem vozes, quatro volumes

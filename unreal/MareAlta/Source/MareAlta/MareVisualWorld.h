@@ -13,8 +13,13 @@ class MAREALTA_API UMareVisualWorld : public UTickableWorldSubsystem
 public:
  virtual void Tick(float DeltaSeconds) override;
  virtual TStatId GetStatId()const override;
+ /** Apply saved ownership to region geometry without changing the player's save. */
+ void RefreshExpansions();
 private:
  float Clock=0;
+ bool bRegionsIndexed=false;
+ TMap<FName,TArray<TWeakObjectPtr<AActor>>> ExpansionRegions;
+ TMap<FName,bool> RegionVisibility;
  UPROPERTY() TObjectPtr<ALight> Sun;
  UPROPERTY() TObjectPtr<ALight> Moon;
  UPROPERTY() TObjectPtr<AExponentialHeightFog> Fog;

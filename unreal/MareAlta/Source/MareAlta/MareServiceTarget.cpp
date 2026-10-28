@@ -24,6 +24,7 @@ AMareServiceTarget* AMareServiceTarget::FindFocused(APlayerController* Controlle
  FVector Eye;FRotator View;Controller->GetPlayerViewPoint(Eye,View);const FVector Aim=View.Vector();
  AMareServiceTarget* Best=nullptr;float Score=FLT_MAX;
  for(TActorIterator<AMareServiceTarget> It(Controller->GetWorld());It;++It){auto Target=*It;
+  if(Target->IsHidden() || (Target->GetOwner() && Target->GetOwner()->IsHidden()))continue;
   const FVector Focus=Target->GetActorTransform().TransformPosition(Target->FocusOffset);
   const FVector Delta=Focus-Eye;const float Distance=Delta.Size();if(Distance>Target->Reach || Distance<1)continue;
   const float Along=FVector::DotProduct(Delta,Aim);if(Along<=0)continue;

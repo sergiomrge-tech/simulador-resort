@@ -21,6 +21,8 @@ private:
  float InitialMaster=.85f;
  double InitialMinutes=420;
  FString InitialWeather;
+ TSharedPtr<FJsonObject> ExpansionOwnership;
+ double ExpansionCash=0;
  TArray<TSharedPtr<FJsonValue>> Results;
  void Check(const FString& Name,bool bPass);
  void Capture(const FString& Name);

@@ -362,3 +362,15 @@ Colisão do oceano exige UseDefaultCollision=false, perfil NoCollision e Collisi
 O gravador do master submix da UE5.8 recebe áudio antes do ganho de saída: conferir também o roteamento master e silêncio sustentado das fontes depois dos buffers/efeitos. PIE pode mutar o dispositivo quando em segundo plano; testar o EXE é obrigatório. O volume geral controla o submix master para silenciar caudas, e loops silenciosos mantêm a posição.
 
 O save padrão começa às 6h30 e o expediente às 8h. O teste de abertura precisa configurar o horário explicitamente, sem depender do tempo gasto carregando assets. Uma abertura antecipada fica ativada e o celular deve explicar a espera e permitir fechar. Cook inicial levou 25min10s; -iterativecooking preserva os pacotes e shaders válidos. Não compilar a DLL do editor enquanto editor/commandlet a mantém aberta, nem rodar dois UBT ao mesmo tempo.
+
+O cenário UE foi exportado com --v1 (tudo liberado), mas default_save é um perfil
+novo. Não usar presença de geometria como propriedade. Region_ segue unlocked;
+negócios seguem prog.biz.lvl. O export antigo perdeu a identificação do HotelWorld
+e Biz_*; dividir grupos de instâncias preservando todas as transformações, não
+ocultar o grupo compartilhado inteiro. Ao ocultar piscina, cobrir o buraco real na
+malha de terreno: o retângulo azul era o fundo visível, não água restante.
+FScreenshotRequest captura no fim do quadro; comprar no mesmo tick da captura
+"antes" produz imagem já desbloqueada. Separar captura e compra por um quadro.
+Licença comprada não cria ingredientes: testar compra, reposição e retirada em
+sequência. Pedidos legados continuam atendíveis, sem liberar novos pedidos da
+receita que ainda não foi licenciada.

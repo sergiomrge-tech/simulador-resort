@@ -1,0 +1,11 @@
+{
+  "qa_root": "D:/CodexTemp/ue58-package-qa-20261028-074759",
+  "executable": "D:\\Builds\\MareAltaUE58_Expansoes_2026-10-28\\Windows\\MareAlta.exe",
+  "checks": 40,
+  "passed": true,
+  "exit_code": 0,
+  "tested_at": "2026-10-28T07:49:47.7188254-03:00",
+  "visual_review_required": false,
+  "audio_mix_passed": true,
+  "visual_review": "Piscina oculta com gramado contínuo, Grand Hotel e negócios ocultos antes da compra; piscina liberada após compra. Celular e quiosque conferidos."
+}

@@ -153,6 +153,8 @@ def build():
     unreal.SystemLibrary.execute_console_command(unreal.EditorLevelLibrary.get_editor_world(),'RebuildNavigation')
     mode=unreal.load_class(None,'/Script/MareAlta.MareGameMode')
     if mode:unreal.EditorLevelLibrary.get_editor_world().get_world_settings().set_editor_property('default_game_mode',mode)
+    import mare_expansions
+    mare_expansions.ensure_pool_lot()
     import mare_water
     mare_water.ensure_volume()
     import mare_visual

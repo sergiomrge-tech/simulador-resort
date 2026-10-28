@@ -367,3 +367,13 @@ Guia atual: [Saves e continuidade do atendimento](ue58/PERSISTENCIA_2026-10-27.m
 ## Continuação UE5.8 — prévia de 28/10
 
 Leia [Áudio, visual, natação e entrega Windows](ue58/AUDIO_VISUAL_2026-10-28.md). Esta seção substitui o estado anterior de executável ainda não exportado: a prévia Windows passou no teste externo, com 22 verificações, mixagem gravada e imagens reais revisadas. A conversão integral continua em andamento; não declarar os demais negócios e sistemas marinhos concluídos. Entrega no D, branch `codex/ue58-migration`; manter a instalação Godot.
+
+## Retorno do teste do usuário — expansões
+
+Guia mais recente: [Correções do teste UE de 28/10](ue58/CORRECOES_TESTE_USUARIO_2026-10-28.md).
+O usuário relatou ausência de pessoas, interações confusas, objetos deslocados,
+visual insuficiente e expansões aparentando ativas. O lote de expansões foi
+corrigido e passou em 40 verificações no EXE, com imagens antes/depois da compra.
+Inclui hotel, negócios e terreno da piscina, preservando propriedade salva e
+pedidos antigos. **As sete frentes aprovadas e os demais relatos permanecem
+pendentes conforme a lista do guia; não declarar a conversão integral concluída.**
