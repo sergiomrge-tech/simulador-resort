@@ -23,6 +23,15 @@ class MareMigrationTools(unreal.ToolsetDefinition):
 
     @toolset_registry.tool_call
     @staticmethod
+    def nanite_architecture(action: str) -> str:
+        """Split hotel render surfaces while preserving the original collider."""
+        import importlib,mare_nanite_architecture
+        importlib.reload(mare_nanite_architecture)
+        if action in ("on","off"):return json.dumps(mare_nanite_architecture.preview(action=="on"))
+        return json.dumps(mare_nanite_architecture.build() if action=="import" else mare_nanite_architecture.integrate())
+
+    @toolset_registry.tool_call
+    @staticmethod
     def graphics_pass(action: str, label: str="kiosk") -> str:
         """Audit or measure the graphics pilot; staged mutations are explicit."""
         import importlib,mare_graphics

@@ -40,7 +40,7 @@ def pilot():
 def view(name):
  world=unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()
  if not world:raise RuntimeError('PIE required')
- views={'kiosk':((3800,-1200,100),(-6,-90,0)),'grove':((2800,-750,100),(-4,145,0)),'home':((4520,2120,100),(-8,25,0)),'beach':((3800,-2600,100),(-3,-90,0)),'east':((6800,-750,100),(-4,145,0))}
+ views={'kiosk':((3800,-1200,100),(-6,-90,0)),'grove':((2800,-750,100),(-4,145,0)),'home':((4520,2120,100),(-8,25,0)),'beach':((3800,-2600,100),(-3,-90,0)),'east':((6800,-750,100),(-4,145,0)),'hotel':((-2100,3500,450),(10,90,0))}
  p,r=views[name];pc=unreal.GameplayStatics.get_player_controller(world,0);hero=unreal.GameplayStatics.get_player_pawn(world,0);pc.close_phone();hero.character_movement.set_movement_mode(unreal.MovementMode.MOVE_FLYING);hero.set_actor_location(unreal.Vector(*p),False,False);pc.set_control_rotation(unreal.Rotator(pitch=r[0],yaw=r[1],roll=r[2]));sim=pc.get_simulation();sim.save();state=json.loads((OUT/"slot1.json").read_text(encoding="utf-8-sig"));sim.advance_minutes(720-state["minutes"]);unreal.GameplayStatics.get_game_mode(world).set_actor_tick_enabled(False)
  for cmd in ['sg.GlobalIlluminationQuality 2','sg.ReflectionQuality 2','sg.ShadowQuality 2','sg.ViewDistanceQuality 2','t.MaxFPS 0','r.VSync 0','r.ScreenPercentage 80','r.SetRes 1280x720w','r.ProfileGPU.ShowUI 0']:unreal.SystemLibrary.execute_console_command(world,cmd)
  return name

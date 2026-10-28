@@ -97,3 +97,53 @@ A exposição agora usa limites EV100 0–8 à noite e 5–14 de dia, evitando q
 mínimo diurno torne a noite inteira preta. Alteração apenas visual, aguardando fotos
 do próximo pacote. Novo parâmetro de QA permite medir resolução nativa com
 `-MareNativeResolution`; ele não altera a preferência gráfica do jogador.
+
+## Resolução nativa — benchmark do executável
+
+Pacote `D:/Builds/MareAltaUE58_GraphicsNative_2026-10-28/Windows`, commit `52fd8f51`.
+Saída 1920×1080 com ScreenPercentage=100, perfil descartável e quatro variantes:
+
+| Variante | FPS médio | Frame P95 | GPU média |
+|---|---:|---:|---:|
+| Tudo ativo | 79,6 | 16,203 ms | 11,490 ms |
+| PCG oculto | 83,0 | 14,115 ms | 11,384 ms |
+| Nanite desligado | 79,7 | 14,101 ms | 12,067 ms |
+| Lumen desligado | 91,3 | 13,275 ms | 10,211 ms |
+
+Os resultados atendem à meta de 60 FPS **nesta câmera e neste intervalo**, não
+comprovam o desempenho em todos os ambientes. O teste preservou 60 instâncias PCG
+no pacote, dimensões corretas e log sem erros. Dados em
+`D:/CodexTemp/ue58-render-profile-20261028-183344`, sumário versionado em
+`graphics-reference/native-1080-benchmark.json`. A regressão funcional e revisão
+específica de cada interior ainda são necessárias. Não comparar diretamente esses
+valores com as primeiras capturas de viewport menor do editor.
+
+## Nanite arquitetônico adicional — hotel
+
+Para superar a limitação de transparência do modelo original, foram criadas duas
+exportações derivadas de `SourceArt/Models/World_2365.gltf`, reutilizando seu BIN e
+texturas, sem editar a fonte original:
+
+- `HotelTower_Opaque`: 230.384 triângulos virtuais Nanite; fallback 3.404.
+- `HotelTower_Glass`: 1.656 triângulos, transparência mantida, Nanite desativado.
+
+A soma dos triângulos e a união dos limites foram comparadas com o original de
+232.040 triângulos (tolerância de 1 cm para bounds). Duas novas ISMs cuidam somente
+da renderização; a ISM original continua como colisor invisível com as mesmas
+instâncias e QueryAndPhysics. As tags de expansão permanecem no mesmo ator, para
+não liberar hotel antes da compra. Material-base derivado dentro de `/Game` quando
+necessário; nenhum material da instalação Unreal foi editado.
+
+Integração em Coast e imagens reais com câmera coincidente em
+`graphics-reference/images/hotel-match-before.png` e `hotel-match-after.png`.
+Relatório em `nanite-architecture-integration.json`. Isto substitui a conclusão
+anterior de que não havia ativação adicional aprovada; o poste e a sorveteria
+seguem sem Nanite porque misturam vidro no mesmo mesh. Falta medir o proxy novo
+no executável com `test_graphics_package.ps1 -Hotel`, incluindo a variante
+`hotel-legacy`, que mantém o modelo original completo como comparação de render.
+A colisão detalhada antiga ainda gera aviso de muitos triângulos na navegação;
+ela foi preservada, não otimizada nem ignorada como problema inexistente.
+
+Para reconstruir o mapa posteriormente, aplicar `mare_nanite_architecture.integrate()`
+após o gerador-base, e reaplicar `mare_graphics` para os setores de PCG/Lumen. A
+adição não implementa gameplay dos negócios e não conclui a migração geral.
