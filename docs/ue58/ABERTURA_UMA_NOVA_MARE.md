@@ -71,3 +71,8 @@ Legenda ao chegar: “Um balcão, alguns cocos e um sonho. É por aqui que come�
 - Validar início, desembarque, carta, releitura, progressão, saves antigos,
   continuação após interrupção e funcionamento do objetivo no executável empacotado,
   em pasta de dados separada. Conferir imagens e áudio reais.
+
+**Estado de implementação:** há um protótipo em C++ no projeto Unreal. A carta e a
+cena ainda requerem acabamento visual e testes no executável; o ônibus importado
+não tem interior nem porta animada. Consulte o checkpoint da varredura antes de
+tratar a abertura como concluída.

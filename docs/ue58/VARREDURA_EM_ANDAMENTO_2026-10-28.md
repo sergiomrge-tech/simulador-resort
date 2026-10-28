@@ -72,3 +72,23 @@ commit publicado antes deste trabalho `5eb6e649`.
   (origem deslocada); corrigir o pivô ao posicionar.
 - Depois que o lote anterior estiver realmente concluído, propor três interfaces
   de HUD distintas. O usuário não autorizou escolher uma antecipadamente.
+
+## Protótipo de abertura — código em teste (28/10)
+
+Há uma implementação inicial em `MareIntro`: para perfil novo, ônibus cruza a
+vila, câmera passa para uma breve descida em primeira pessoa, e a carta pode ser
+lida na mesa da casa. E/Esc avança a chegada; a carta pode ser relida e o estado
+é salvo. O ônibus é uma malha sem interior ou porta funcional, e a movimentação
+de descida é uma aproximação: não chamar de cena acabada. O usuário informou que
+não precisa preservar o save, portanto a próxima entrega pode começar um perfil
+novo sem copiar o progresso; não apagar seus arquivos existentes desnecessariamente.
+
+No teste do editor com perfil descartável `D:/CodexTemp/ue58-intro-qa-d`, seis
+checagens passaram: chegada natural, interação na carta, abertura, conclusão e
+releitura. A captura de saída coloca o jogador diante da casa. O editor em modo
+jogo apresentou erros de inicialização dos plugins Python experimentais da engine;
+essa execução não prova ausência de erros no executável empacotado. A chegada
+com pulo foi testada na versão anterior do protótipo, mas deve ser repetida após
+as alterações. Falta validar partida, abertura e roteiro no executável exportado,
+colisão/caminho até a casa, visual da carta na mesa, perfil existente e reinício.
+A sequência não substitui os demais recursos pendentes da varredura.

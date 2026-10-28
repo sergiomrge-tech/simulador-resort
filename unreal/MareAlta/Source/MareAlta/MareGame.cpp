@@ -1,4 +1,7 @@
 #include "MareGame.h"
+#include "MareIntro.h"
+#include "MareIntroQA.h"
+#include "EngineUtils.h"
 #include "MarePreviewQA.h"
 #include "MareAudioWorld.h"
 #include "Misc/CommandLine.h"
@@ -207,7 +210,7 @@ void AMareCharacter::Right(float Value){if(Controller)AddMovementInput(FRotation
 void AMareCharacter::LookX(float Value){AddControllerYawInput(Value);}
 void AMareCharacter::LookY(float Value){AddControllerPitchInput(Value);}
 void AMareCharacter::Phone(){if(auto PC=Cast<AMareController>(Controller))PC->TogglePhone();}
-void AMareCharacter::Interact(){if(auto PC=Cast<AMareController>(Controller))if(!PC->bPhoneOpen && !GetWorld()->IsPaused())if(auto Target=AMareServiceTarget::FindFocused(PC))Target->Use(PC);}
+void AMareCharacter::Interact(){for(TActorIterator<AMareIntro> It(GetWorld());It;++It)if(It->IsArrival()){It->FinishArrival();return;}if(auto PC=Cast<AMareController>(Controller))if(!PC->bPhoneOpen && !GetWorld()->IsPaused())if(auto Target=AMareServiceTarget::FindFocused(PC))Target->Use(PC);}
 void AMareCharacter::SwimVertical(float Value){VerticalSwimInput=FMath::Clamp(Value,-1.f,1.f);}
 void AMareCharacter::Tick(float DeltaSeconds)
 {
@@ -227,6 +230,7 @@ void AMareController::SetupInputComponent()
 }
 void AMareController::TogglePauseMenu()
 {
+ for(TActorIterator<AMareIntro> It(GetWorld());It;++It)if(It->IsLetterOpen()){It->CloseLetter();return;}else if(It->IsArrival()){It->FinishArrival();return;}
  if(bPhoneOpen){ClosePhone();return;}
  if(!GEngine || !GEngine->GameViewport)return;
  if(PauseWidget.IsValid()){
@@ -251,7 +255,7 @@ void AMareController::TogglePauseMenu()
  GEngine->GameViewport->AddViewportWidgetContent(PauseWidget.ToSharedRef(),30);bShowMouseCursor=true;
  SetInputMode(FInputModeGameAndUI());SetIgnoreMoveInput(true);SetIgnoreLookInput(true);
 }
-void AMareController::TogglePhone(){if(PauseWidget.IsValid())return;if(bPhoneOpen)ClosePhone();else OpenPhone();}
+void AMareController::TogglePhone(){for(TActorIterator<AMareIntro> It(GetWorld());It;++It)if(It->IsArrival() || It->IsLetterOpen())return;if(PauseWidget.IsValid())return;if(bPhoneOpen)ClosePhone();else OpenPhone();}
 void AMareController::OpenPhone(int32 Tab)
 {
  if(!GEngine || !GEngine->GameViewport)return;
@@ -280,6 +284,9 @@ void AMareHUD::DrawHUD()
  const float TextWidth=FMath::Clamp(Canvas->ClipX-44.f-(PC && PC->bPhoneOpen?460.f:0.f),180.f,540.f);
  auto Line=[&](const FString& Text,FLinearColor Color=FLinearColor::White){MareUI::HUDLine(Canvas,Font,Text,Color,Y,TextWidth);};
  Line(FString::Printf(TEXT("R$ %.0f   Dia %.0f   %02d:%02d"),S->Money(),UMareSimulation::Number(S->State,TEXT("day"),1),int32(UMareSimulation::Number(S->State,TEXT("minutes")))/60,int32(UMareSimulation::Number(S->State,TEXT("minutes")))%60));
+ const int32 IntroStage=UMareSimulation::Number(S->State,TEXT("ue_intro_stage"),2);
+ if(IntroStage==0){Line(TEXT("A vila parecia menor... e o mar, do tamanho das minhas lembranças."),FLinearColor(1.f,.88f,.56f));Line(TEXT("E · avançar"));return;}
+ if(IntroStage==1)Line(TEXT("Entre na casa e leia a carta do avô"),FLinearColor(1.f,.88f,.56f));
  bool bCreated=false;auto Company=UMareSimulation::Object(S->State,TEXT("company"));Company->TryGetBoolField(TEXT("created"),bCreated);
  if(!bCreated)Line(TEXT("Comece aqui: B · Celular → Quiosque → Criar empresa"),FLinearColor(1.f,.88f,.56f));
  else if(!S->IsOpen())Line(TEXT("Aponte para a placa FECHADO e clique para abrir"),FLinearColor(1.f,.88f,.56f));
@@ -313,7 +320,7 @@ void AMareHUD::DrawHUD()
  Canvas->DrawText(Font,TEXT("B · celular     E · interagir"),22,Canvas->ClipY-35);
 }
 AMareGameMode::AMareGameMode(){PrimaryActorTick.bCanEverTick=true;DefaultPawnClass=AMareCharacter::StaticClass();PlayerControllerClass=AMareController::StaticClass();HUDClass=AMareHUD::StaticClass();}
-void AMareGameMode::BeginPlay(){Super::BeginPlay();if(FParse::Param(FCommandLine::Get(),TEXT("MarePreviewQA")))GetWorld()->SpawnActor<AMarePreviewQA>();}
+void AMareGameMode::BeginPlay(){Super::BeginPlay();GetWorld()->SpawnActor<AMareIntro>();if(FParse::Param(FCommandLine::Get(),TEXT("MareIntroQA")))GetWorld()->SpawnActor<AMareIntroQA>();if(FParse::Param(FCommandLine::Get(),TEXT("MarePreviewQA")))GetWorld()->SpawnActor<AMarePreviewQA>();}
 
 void AMareGameMode::Tick(float DeltaSeconds)
 {
