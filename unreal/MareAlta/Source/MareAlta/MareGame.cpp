@@ -161,7 +161,11 @@ private:
    else{bool Requested=false;Company->TryGetBoolField(TEXT("kiosk_open"),Requested);auto Hours=UMareSimulation::Object(Company,TEXT("sim"));
     Body->AddSlot().AutoHeight().Padding(0,4)[MareUI::LiveText([S,Requested](){return S->IsOpen()?TEXT("Aberto · recebendo clientes"):Requested?TEXT("Abertura ativada · aguardando horário"):TEXT("Quiosque fechado");},18)];
     Line(FString::Printf(TEXT("Atendimento: %.0fh às %.0fh"),UMareSimulation::Number(Hours,TEXT("start"),8),UMareSimulation::Number(Hours,TEXT("end"),18)),12);
-    Action(Requested?TEXT("Fechar quiosque"):TEXT("Abrir quiosque"),[S,Requested](){S->SetOpen(!Requested);});}
+    Line(TEXT("Use a placa do balcão para abrir ou fechar."),12);}
+   if(auto Audio=Owner->GetWorld()->GetSubsystem<UMareAudioWorld>()){
+    const FName Radio=Audio->GetRadioStation();const FString Name=Radio==TEXT("off")?TEXT("Desligada"):Radio==TEXT("music_bossa")?TEXT("Bossa praiana"):Radio==TEXT("music_relax")?TEXT("Brisa instrumental"):TEXT("Reggae praiano");
+    Action(TEXT("Rádio: ")+Name+TEXT(" · trocar"),[Audio,Radio](){Audio->SetRadioStation(Radio==TEXT("reggae_praia")?FName(TEXT("music_bossa")):Radio==TEXT("music_bossa")?FName(TEXT("music_relax")):Radio==TEXT("music_relax")?FName(TEXT("off")):FName(TEXT("reggae_praia")));});
+   }
    if(!S->Carry().IsEmpty())Action(TEXT("Devolver produto"),[S](){S->ReturnCarry();});Line(TEXT("Retire os produtos prontos na geladeira e no armário do quiosque."),13);HomeSummary();
   }else if(Tab==1){Line(TEXT("Reposição imediata"),18);Stock(false);}
   else if(Tab==2){Line(TEXT("Um atendente para todo o quiosque"),18);Line(TEXT("Anota, retira os produtos, entrega e recolhe a louça."));Action(TEXT("Contratar atendente"),[S](){S->HireAttendant();});}
@@ -278,7 +282,7 @@ void AMareHUD::DrawHUD()
  Line(FString::Printf(TEXT("R$ %.0f   Dia %.0f   %02d:%02d"),S->Money(),UMareSimulation::Number(S->State,TEXT("day"),1),int32(UMareSimulation::Number(S->State,TEXT("minutes")))/60,int32(UMareSimulation::Number(S->State,TEXT("minutes")))%60));
  bool bCreated=false;auto Company=UMareSimulation::Object(S->State,TEXT("company"));Company->TryGetBoolField(TEXT("created"),bCreated);
  if(!bCreated)Line(TEXT("Comece aqui: B · Celular → Quiosque → Criar empresa"),FLinearColor(1.f,.88f,.56f));
- else if(!S->IsOpen())Line(TEXT("B · Celular → Quiosque → Abrir quiosque"),FLinearColor(1.f,.88f,.56f));
+ else if(!S->IsOpen())Line(TEXT("Aponte para a placa FECHADO e clique para abrir"),FLinearColor(1.f,.88f,.56f));
  auto Orders=UMareSimulation::Object(S->State,TEXT("ue_orders"));for(const auto& Pair:Orders->Values){auto Order=Pair.Value->AsObject();const TArray<TSharedPtr<FJsonValue>>* Items=nullptr;FString Text=UMareSimulation::String(Order,TEXT("name"))+TEXT(" · ");if(Order->TryGetArrayField(TEXT("remaining"),Items))for(const auto& Item:*Items)Text+=UMareSimulation::String(UMareSimulation::Object(UMareSimulation::Object(S->Definitions,TEXT("dishes")),Item->AsString()),TEXT("name"))+TEXT("  ");Line(Text);}
  const auto Campaign=UMareSimulation::Object(UMareSimulation::Object(S->State,TEXT("prog")),TEXT("campaign"));
  const TArray<TSharedPtr<FJsonValue>>* Missions=nullptr;

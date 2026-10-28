@@ -7,6 +7,7 @@
 #include "MareSimulation.h"
 #include "MareAudioWorld.h"
 #include "MareVisualWorld.h"
+#include "MareServiceTarget.h"
 #include "EngineUtils.h"
 #include "AudioMixerBlueprintLibrary.h"
 #include "Misc/App.h"
@@ -113,11 +114,11 @@ void AMarePreviewQA::Tick(float DeltaSeconds)
    }
   }
   Check(TEXT("runtime_actor_catalog"),Count>60 && Missing==0);
-  Check(TEXT("audio_catalog"),Audio->LoadedSounds()==41);
+  Check(TEXT("audio_catalog"),Audio->LoadedSounds()==43);
   Check(TEXT("master_submix_routed"),Audio->HasMasterMix());
   if(auto Device=GetWorld()->GetAudioDevice()){UE_LOG(LogTemp,Display,TEXT("MARE_QA_AUDIO_DEVICE muted=%d primary=%f app=%f"),Device->IsAudioDeviceMuted(),Device->GetPrimaryVolume(),FApp::GetVolumeMultiplier());Device->SetDeviceMuted(false);Device->SetTransientPrimaryVolume(1.f);}
   FApp::SetVolumeMultiplier(1.f);
-  InitialMaster=Audio->GetVolume(TEXT("Master"));InitialMinutes=UMareSimulation::Number(Sim->State,TEXT("minutes"));InitialWeather=UMareSimulation::String(Sim->State,TEXT("weather"));
+  InitialMaster=Audio->GetVolume(TEXT("Master"));InitialRadio=Audio->GetRadioStation();Audio->SetRadioStation(TEXT("reggae_praia"));InitialMinutes=UMareSimulation::Number(Sim->State,TEXT("minutes"));InitialWeather=UMareSimulation::String(Sim->State,TEXT("weather"));
   Audio->SetVolume(TEXT("Master"),.85f);UAudioMixerBlueprintLibrary::StartRecordingOutput(this,10);
   Hero->SetActorLocation(FVector(3800,-7200,-100));Move->StopMovementImmediately();PC->SetControlRotation(FRotator(0,-90,0));break;
  }
@@ -138,8 +139,13 @@ void AMarePreviewQA::Tick(float DeltaSeconds)
  case 5:Check(TEXT("return_to_walking"),Move->IsMovingOnGround() && !Move->IsSwimming());Hero->SetActorLocation(FVector(3800,-2900,-6000));break;
  case 6:Check(TEXT("void_recovery"),Hero->GetActorLocation().Z>-500 && !Move->IsSwimming());PC->TogglePhone();Capture(TEXT("phone"));break;
  case 7:Check(TEXT("portable_phone"),PC->bPhoneOpen && PC->IsMoveInputIgnored());PC->ClosePhone();PC->TogglePauseMenu();PausedTime=GetWorld()->GetTimeSeconds();Capture(TEXT("pause"));UAudioMixerBlueprintLibrary::StartRecordingOutput(this,5);break;
- case 8:UAudioMixerBlueprintLibrary::StopRecordingOutput(this,EAudioRecordingExportType::WavFile,TEXT("mix_paused"),Root);Check(TEXT("pause_freezes_world"),UGameplayStatics::IsGamePaused(this) && FMath::IsNearlyEqual(PausedTime,double(GetWorld()->GetTimeSeconds()),.01));PC->TogglePhone();Check(TEXT("pause_blocks_duplicate_phone"),!PC->bPhoneOpen);PC->TogglePauseMenu();break;
- case 9:Check(TEXT("resume"),!UGameplayStatics::IsGamePaused(this) && !PC->IsMoveInputIgnored());Sim->CreateCompany(TEXT("Prévia QA"));Sim->AdvanceMinutes(390-UMareSimulation::Number(Sim->State,TEXT("minutes")));Sim->SetOpen(true);Check(TEXT("opening_respects_schedule"),!Sim->IsOpen());Sim->AdvanceMinutes(600-UMareSimulation::Number(Sim->State,TEXT("minutes")));Sim->SetOpen(true);break;
+ case 8:UAudioMixerBlueprintLibrary::StopRecordingOutput(this,EAudioRecordingExportType::WavFile,TEXT("mix_paused"),Root);Check(TEXT("pause_freezes_world"),UGameplayStatics::IsGamePaused(this) && FMath::IsNearlyEqual(PausedTime,double(GetWorld()->GetTimeSeconds()),.01));PC->TogglePhone();Check(TEXT("pause_blocks_duplicate_phone"),!PC->bPhoneOpen);PC->TogglePauseMenu();Hero->SetActorLocation(FVector(3650,-1300,100));PC->SetControlRotation((FVector(3650,-1553,232)-FVector(3650,-1300,164)).Rotation());break;
+ case 9:{Check(TEXT("resume"),!UGameplayStatics::IsGamePaused(this) && !PC->IsMoveInputIgnored());Sim->CreateCompany(TEXT("Prévia QA"));Sim->AdvanceMinutes(390-UMareSimulation::Number(Sim->State,TEXT("minutes")));
+  AMareServiceTarget* Sign=nullptr;for(TActorIterator<AMareServiceTarget> It(GetWorld());It;++It)if(It->Action==TEXT("KioskSign")){Sign=*It;break;}
+  Check(TEXT("sign_is_aimable_from_inside"),Sign && AMareServiceTarget::FindFocused(PC) && AMareServiceTarget::FindFocused(PC)->Action==TEXT("KioskSign"));
+  if(Sign)Sign->Use(PC);Check(TEXT("opening_respects_schedule"),Sign && !Sim->IsOpen());if(Sign)Sign->Use(PC);
+  bool Requested=true;UMareSimulation::Object(Sim->State,TEXT("company"))->TryGetBoolField(TEXT("kiosk_open"),Requested);Check(TEXT("sign_toggles_open_request"),Sign && !Requested);
+  Sim->AdvanceMinutes(600-UMareSimulation::Number(Sim->State,TEXT("minutes")));Key(EKeys::LeftMouseButton,true);Key(EKeys::LeftMouseButton,false);break;}
  case 10:Check(TEXT("kiosk_open"),PC->GetSimulation()->IsOpen());Hero->SetActorLocation(FVector(3800,-1200,100));PC->SetControlRotation(FRotator(-6,-90,0));PC->TogglePhone();Capture(TEXT("kiosk-phone"));break;
  case 11:PC->ClosePhone();Check(TEXT("save_succeeds"),PC->GetSimulation()->Save());break;
  case 12:Sim->AdvanceMinutes(1320-UMareSimulation::Number(Sim->State,TEXT("minutes")));break;
@@ -147,9 +153,10 @@ void AMarePreviewQA::Tick(float DeltaSeconds)
  case 14:Check(TEXT("rain_mix"),Audio->LoopLevel(TEXT("rain_loop"))>.02f && Audio->LoopLevel(TEXT("crickets_loop"))<.005f);Capture(TEXT("kiosk-rain"));Sim->State->SetStringField(TEXT("weather"),InitialWeather);Sim->AdvanceMinutes(720-UMareSimulation::Number(Sim->State,TEXT("minutes")));break;
  case 15:Capture(TEXT("kiosk-day"));break;
  case 16:Hero->SetActorLocation(FVector(4520,2120,100));PC->SetControlRotation(FRotator(-8,25,0));break;
- case 17:Capture(TEXT("house-day"));break;
- case 18:Hero->SetActorLocation(FVector(3800,-1200,100));PC->SetControlRotation(FRotator(-6,-90,0));Sim->AdvanceMinutes(InitialMinutes-UMareSimulation::Number(Sim->State,TEXT("minutes")));Audio->SetVolume(TEXT("Master"),InitialMaster);Sim->Save();Check(TEXT("audio_settings_restored"),FMath::IsNearlyEqual(Audio->GetVolume(TEXT("Master")),InitialMaster));break;
+ case 17:Capture(TEXT("house-day"));Audio->SetRadioStation(TEXT("music_bossa"));break;
+ case 18:Check(TEXT("radio_bossa_plays"),Audio->LoopLevel(TEXT("music_bossa"))>.01f);Audio->SetRadioStation(TEXT("music_relax"));Hero->SetActorLocation(FVector(3800,-1200,100));PC->SetControlRotation(FRotator(-6,-90,0));Sim->AdvanceMinutes(InitialMinutes-UMareSimulation::Number(Sim->State,TEXT("minutes")));break;
  case 19:{
+  Check(TEXT("radio_relax_plays"),Audio->LoopLevel(TEXT("music_relax"))>.01f);Audio->SetRadioStation(TEXT("off"));
   ExpansionOwnership=MakeShared<FJsonObject>(*UMareSimulation::Object(Sim->State,TEXT("unlocked")));ExpansionCash=Sim->Money();
   FBox Bounds(ForceInit);for(TActorIterator<AActor> It(GetWorld());It;++It)if(It->ActorHasTag(TEXT("Region_pool")))Bounds+=It->GetComponentsBoundingBox(true);
   if(Bounds.IsValid){const FVector Center=Bounds.GetCenter();const FVector View=Center+FVector(1400,-1400,800);
@@ -157,7 +164,7 @@ void AMarePreviewQA::Tick(float DeltaSeconds)
   }
   break;
  }
- case 20:Capture(TEXT("expansion-pool-locked"));break;
+ case 20:Check(TEXT("radio_can_turn_off"),Audio->LoopLevel(TEXT("music_bossa"))<.001f && Audio->LoopLevel(TEXT("music_relax"))<.001f && Audio->LoopLevel(TEXT("reggae_praia"))<.001f);Audio->SetRadioStation(InitialRadio);Audio->SetVolume(TEXT("Master"),InitialMaster);Check(TEXT("audio_settings_restored"),FMath::IsNearlyEqual(Audio->GetVolume(TEXT("Master")),InitialMaster));Capture(TEXT("expansion-pool-locked"));break;
  case 21:{
   Sim->State->SetNumberField(TEXT("money"),100000);bool bPurchased=true;
   for(const FString Id:{TEXT("kiosk_tables"),TEXT("drinks"),TEXT("grill"),TEXT("bar"),TEXT("pousada"),TEXT("pool")}){

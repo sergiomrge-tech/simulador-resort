@@ -45,6 +45,14 @@ class MareMigrationTools(unreal.ToolsetDefinition):
 
     @toolset_registry.tool_call
     @staticmethod
+    def import_radio() -> str:
+        """Import the two licensed instrumental tracks without rebuilding scenery."""
+        import importlib,mare_audio
+        importlib.reload(mare_audio)
+        return json.dumps(mare_audio.import_radio())
+
+    @toolset_registry.tool_call
+    @staticmethod
     def audit_actor_materials(fix: bool=False) -> str:
         """Find/persist missing skeletal and Nanite usage without changing material artwork."""
         import importlib,mare_asset_audit

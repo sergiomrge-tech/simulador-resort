@@ -1,6 +1,7 @@
 #include "MareVisualWorld.h"
 #include "MareSimulation.h"
 #include "MareGame.h"
+#include "MareServiceTarget.h"
 #include "Engine/GameInstance.h"
 #include "Engine/Light.h"
 #include "Engine/ExponentialHeightFog.h"
@@ -47,7 +48,10 @@ void UMareVisualWorld::Tick(float DeltaSeconds)
  RefreshExpansions();
  if(!Sun){for(TActorIterator<ALight> It(GetWorld());It;++It){if(It->ActorHasTag(TEXT("MareSun")))Sun=*It;if(It->ActorHasTag(TEXT("MareMoon")))Moon=*It;if(It->ActorHasTag(TEXT("MarePractical")))Practical.AddUnique(*It);}
   for(TActorIterator<AExponentialHeightFog> It(GetWorld());It;++It)Fog=*It;
-  for(TActorIterator<ATextRenderActor> It(GetWorld());It;++It)if(It->ActorHasTag(TEXT("MareText")))Signs.Add(*It);}
+  for(TActorIterator<ATextRenderActor> It(GetWorld());It;++It)if(It->ActorHasTag(TEXT("MareText"))){Signs.Add(*It);
+   if(It->ActorHasTag(TEXT("MareStatusSign"))){auto Target=GetWorld()->SpawnActor<AMareServiceTarget>(It->GetActorLocation(),FRotator::ZeroRotator);
+    Target->Action=TEXT("KioskSign");Target->Label=TEXT("Placa do quiosque");Target->Reach=330;Target->OcclusionTolerance=100;Target->SetOwner(*It);}
+  }}
  auto Sim=GetWorld()->GetGameInstance()->GetSubsystem<UMareSimulation>();if(!Sim)return;
  const float Hour=UMareSimulation::Number(Sim->State,TEXT("minutes"))/60.f;
  const float Solar=FMath::Sin((Hour-6.f)/12.f*PI);const float Day=FMath::SmoothStep(-.04f,.18f,Solar);
@@ -61,7 +65,7 @@ void UMareVisualWorld::Tick(float DeltaSeconds)
  auto Price=[&](const FString& Id){auto Dish=UMareSimulation::Object(Dishes,Id);return UMareSimulation::String(Dish,TEXT("name"))+FString::Printf(TEXT("   R$ %.0f"),UMareSimulation::Number(Dish,TEXT("price")));};
  for(auto Sign:Signs){if(!IsValid(Sign))continue;FString Text;
   if(Sign->ActorHasTag(TEXT("MareCompanySign")))Text=UMareSimulation::String(UMareSimulation::Object(Sim->State,TEXT("company")),TEXT("name"));
-  if(Sign->ActorHasTag(TEXT("MareStatusSign"))){Text=Sim->IsOpen()?TEXT("ABERTO"):TEXT("FECHADO");Sign->GetTextRender()->SetTextRenderColor(FColor(36,31,24));}
+  if(Sign->ActorHasTag(TEXT("MareStatusSign"))){bool Requested=false;UMareSimulation::Object(Sim->State,TEXT("company"))->TryGetBoolField(TEXT("kiosk_open"),Requested);Text=Sim->IsOpen()?TEXT("ABERTO"):Requested?TEXT("AGUARDE O HORÁRIO"):TEXT("FECHADO");Sign->GetTextRender()->SetTextRenderColor(Sim->IsOpen()?FColor(24,135,64):Requested?FColor(145,96,18):FColor(186,35,35));}
   if(Sign->ActorHasTag(TEXT("MarePromoSign")))Text=FString::Printf(TEXT("PROMOÇÕES<br>Coco gelado<br>R$ %.0f<br>Suco da fruta<br>R$ %.0f"),UMareSimulation::Number(UMareSimulation::Object(Dishes,TEXT("coco_gelado")),TEXT("price")),UMareSimulation::Number(UMareSimulation::Object(Dishes,TEXT("suco")),TEXT("price")));
   if(Sign->ActorHasTag(TEXT("MareMenuSign")))for(FString Id:{TEXT("coco_gelado"),TEXT("suco"),TEXT("caipirinha"),TEXT("petiscos"),TEXT("sorvete_morango"),TEXT("sorvete_chocolate"),TEXT("batata_frita"),TEXT("porcao_peixe")})if(Sim->IsDishUnlocked(Id))Text+=Price(Id)+TEXT("<br>");
   for(FName Tag:Sign->Tags)if(Tag.ToString().StartsWith(TEXT("MareStock_"))){FString Id=Tag.ToString().RightChop(10);Text=UMareSimulation::String(UMareSimulation::Object(Dishes,Id),TEXT("name"))+FString::Printf(TEXT("<br>%d prontos"),Sim->Available(Id));}

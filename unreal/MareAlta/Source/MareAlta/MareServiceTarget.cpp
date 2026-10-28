@@ -38,6 +38,7 @@ AMareServiceTarget* AMareServiceTarget::FindFocused(APlayerController* Controlle
 FString AMareServiceTarget::Prompt()const
 {
  if(Action==TEXT("Door"))return Label+(bOpened?TEXT(" · fechar"):TEXT(" · abrir"));
+ if(Action==TEXT("KioskSign")){auto Sim=GetGameInstance()->GetSubsystem<UMareSimulation>();bool Requested=false;UMareSimulation::Object(Sim->State,TEXT("company"))->TryGetBoolField(TEXT("kiosk_open"),Requested);return Requested?(Sim->IsOpen()?TEXT("Fechar quiosque"):TEXT("Abertura programada · cancelar")):TEXT("Abrir quiosque");}
  return Label;
 }
 void AMareServiceTarget::RestoreDoorState(bool bOpen)
@@ -55,6 +56,7 @@ void AMareServiceTarget::Use(APlayerController* Controller)
 {
  auto PC=Cast<AMareController>(Controller);if(!PC)return;
  auto Sim=PC->GetGameInstance()->GetSubsystem<UMareSimulation>();
+ if(Action==TEXT("KioskSign")){bool Requested=false;UMareSimulation::Object(Sim->State,TEXT("company"))->TryGetBoolField(TEXT("kiosk_open"),Requested);Sim->SetOpen(!Requested);return;}
  if(Action==TEXT("Fridge") || Action==TEXT("Cupboard")){GetWorld()->GetSubsystem<UMareAudioWorld>()->PlayCue(TEXT("kiosk_fridge"),.3f);PC->OpenStation(Action);return;}
  if(Action==TEXT("Customer")){if(auto Person=Cast<AMarePerson>(GetOwner()))Person->Interact(PC);return;}
  if(Action==TEXT("Clean")){GetWorld()->GetSubsystem<UMareKioskWorld>()->CleanTable(DataIndex);GetWorld()->GetSubsystem<UMareAudioWorld>()->PlayCue(TEXT("clean"),.3f);return;}

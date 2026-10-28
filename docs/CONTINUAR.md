@@ -377,3 +377,7 @@ corrigido e passou em 40 verificações no EXE, com imagens antes/depois da comp
 Inclui hotel, negócios e terreno da piscina, preservando propriedade salva e
 pedidos antigos. **As sete frentes aprovadas e os demais relatos permanecem
 pendentes conforme a lista do guia; não declarar a conversão integral concluída.**
+
+Pedidos posteriores: rádio com reggae e músicas praianas instrumentais; a placa
+física do balcão abre/fecha o quiosque, vermelha quando fechado e verde quando
+aberto. Retirar a opção de abrir/fechar do celular, mantendo gestão e horários.

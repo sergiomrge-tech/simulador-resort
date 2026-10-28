@@ -34,7 +34,10 @@ WASD: andar/nadar | Mouse: olhar | E ou clique: interagir | B: celular
 Espaço: pular em terra / subir na água | Ctrl ou Shift: mergulhar
 Shift em terra: correr | Esc: pausar, salvar, qualidade e sair
 
-No celular, crie a empresa e abra o quiosque. Produtos já estão prontos:
+No celular, crie a empresa; clique na placa FECHADO para abrir o quiosque.
+A placa fica verde quando o quiosque está aberto. Para fechar, clique novamente.
+No celular, use Rádio para trocar entre reggae, bossa, brisa e desligado.
+Produtos já estão prontos:
 retire nas estações dentro do quiosque e entregue aos clientes no balcão.
 O pagamento é automático. Você pode contratar um único atendente.
 

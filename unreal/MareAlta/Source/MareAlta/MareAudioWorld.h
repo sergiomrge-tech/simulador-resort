@@ -25,6 +25,8 @@ public:
  UFUNCTION(BlueprintPure,Category="Audio") int32 LoadedSounds()const{return Sounds.Num();}
  UFUNCTION(BlueprintPure,Category="Audio") float LoopLevel(FName Name)const;
  UFUNCTION(BlueprintPure,Category="Audio") bool HasMasterMix()const{return MasterMix!=nullptr;}
+ UFUNCTION(BlueprintCallable,Category="Audio") void SetRadioStation(FName Station);
+ UFUNCTION(BlueprintPure,Category="Audio") FName GetRadioStation()const{return RadioStation;}
 private:
  UPROPERTY() TMap<FName,TObjectPtr<USoundWave>> Sounds;
  UPROPERTY() TMap<FName,TObjectPtr<UAudioComponent>> Loops;
@@ -32,6 +34,7 @@ private:
  UPROPERTY() TObjectPtr<USoundAttenuation> Attenuation;
  UPROPERTY() TObjectPtr<USoundSubmix> MasterMix;
  TMap<FName,float> Volumes;
+ FName RadioStation=TEXT("reggae_praia");
  TMap<FName,double> LastCue;
  float BirdClock=3,GullClock=8,DogClock=25,StepClock=0,ThunderClock=12,IndoorClock=0;
  bool bReady=false,bUnderwater=false,bIndoors=false,bWasPhone=false,bWasSwimming=false;

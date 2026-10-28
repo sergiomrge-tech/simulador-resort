@@ -25,6 +25,7 @@ private:
  float InitialMaster=.85f;
  double InitialMinutes=420;
  FString InitialWeather;
+ FName InitialRadio;
  TSharedPtr<FJsonObject> ExpansionOwnership;
  double ExpansionCash=0;
  TArray<TSharedPtr<FJsonValue>> Results;

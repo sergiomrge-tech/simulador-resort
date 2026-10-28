@@ -154,3 +154,11 @@ Guia atual: [Saves e continuidade do atendimento](docs/ue58/PERSISTENCIA_2026-10
 ## Prévia UE5.8 — áudio, visual e natação de 28/10
 
 Guia vigente: [docs/ue58/AUDIO_VISUAL_2026-10-28.md](docs/ue58/AUDIO_VISUAL_2026-10-28.md). Branch `codex/ue58-migration`, projeto no D. Há prévia Windows exportada e testada; isso não conclui a migração inteira. Preservar áudio sem vozes, volumes independentes, 114 letreiros nativos, horário de atendimento explicado no celular, natação e perfil separado. A versão Godot e seus saves continuam preservados.
+
+## Pedidos posteriores — rádio e placa
+
+A gestão continua no celular, mas a abertura e o fechamento do quiosque passam
+para a placa física: clique/E na placa alterna o estado. Fechado é vermelho,
+aberto é verde; abertura programada fora do expediente deve ser compreensível.
+Não restaurar o botão de abertura no celular. Há rádio com reggae e música
+praiana instrumental, com seleção/desligamento e volume de música independente.

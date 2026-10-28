@@ -244,5 +244,17 @@
     "path": "/Game/Audio/wind_loop.wind_loop",
     "duration": 10.5,
     "loop": true
+  },
+  {
+    "id": "music_bossa",
+    "path": "/Game/Audio/music_bossa.music_bossa",
+    "duration": 96.0,
+    "loop": true
+  },
+  {
+    "id": "music_relax",
+    "path": "/Game/Audio/music_relax.music_relax",
+    "duration": 30.0,
+    "loop": true
   }
 ]
