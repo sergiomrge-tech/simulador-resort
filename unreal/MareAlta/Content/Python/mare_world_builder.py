@@ -81,10 +81,12 @@ def build():
             ocean.static_mesh_component.set_editor_property('disallow_nanite',True)
             ocean.static_mesh_component.set_material(0,unreal.load_asset('/Game/World/Materials/M_CoastalWater_PBR'))
             ocean.static_mesh_component.set_collision_enabled(unreal.CollisionEnabled.NO_COLLISION)
+            ocean.static_mesh_component.set_editor_property('use_default_collision',False)
+            ocean.static_mesh_component.set_collision_profile_name('NoCollision')
             ocean.static_mesh_component.set_editor_property('cast_shadow',False)
             ocean.static_mesh_component.set_editor_property('bounds_scale',1.1)
             break
-    sun=spawn(unreal.DirectionalLight,'Sol · luz natural',rotation=unreal.Rotator(-42,-30,0))
+    sun=spawn(unreal.DirectionalLight,'Sol · luz natural',rotation=unreal.Rotator(pitch=-42,yaw=-30,roll=0))
     sun.light_component.set_mobility(unreal.ComponentMobility.MOVABLE)
     sun.light_component.set_editor_property('intensity',65000.)
     sun.light_component.set_editor_property('light_color',unreal.Color(255,248,235,255))
@@ -119,7 +121,7 @@ def build():
         settings.set_editor_property('override_'+key,True)
         settings.set_editor_property(key,value)
     post.settings=settings
-    fill=spawn(unreal.RectLight,'Luminária do quiosque',unreal.Vector(3800,-1300,245),unreal.Rotator(-90,0,0))
+    fill=spawn(unreal.RectLight,'Luminária do quiosque',unreal.Vector(3800,-1300,245),unreal.Rotator(pitch=-90,yaw=0,roll=0))
     fill.light_component.set_mobility(unreal.ComponentMobility.MOVABLE)
     fill.light_component.set_editor_property('intensity_units',unreal.LightUnits.LUMENS)
     fill.light_component.set_editor_property('intensity',4500.)
@@ -128,7 +130,7 @@ def build():
     fill.light_component.set_editor_property('attenuation_radius',750.)
     fill.light_component.set_editor_property('use_temperature',True)
     fill.light_component.set_editor_property('temperature',5200.)
-    start=spawn(unreal.PlayerStart,'Entrada do quiosque',unreal.Vector(3800,-1200,100),unreal.Rotator(0,-90,0))
+    start=spawn(unreal.PlayerStart,'Entrada do quiosque',unreal.Vector(3800,-1200,100),unreal.Rotator(pitch=0,yaw=-90,roll=0))
     target_class=unreal.load_class(None,'/Script/MareAlta.MareServiceTarget')
     if target_class:
         for action,label,position in [('Fridge','Geladeira',unreal.Vector(3920,-1120,105)),('Cupboard','Porções prontas',unreal.Vector(3800,-1120,85)),('Bed','Dormir e encerrar o dia',unreal.Vector(4385,1945,90))]:
@@ -151,7 +153,13 @@ def build():
     unreal.SystemLibrary.execute_console_command(unreal.EditorLevelLibrary.get_editor_world(),'RebuildNavigation')
     mode=unreal.load_class(None,'/Script/MareAlta.MareGameMode')
     if mode:unreal.EditorLevelLibrary.get_editor_world().get_world_settings().set_editor_property('default_game_mode',mode)
-    unreal.EditorLevelLibrary.set_level_viewport_camera_info(unreal.Vector(3900,-1130,165),unreal.Rotator(-8,-100,0))
+    import mare_water
+    mare_water.ensure_volume()
+    import mare_visual
+    mare_visual.refine()
+    import mare_signs
+    mare_signs.build()
+    unreal.EditorLevelLibrary.set_level_viewport_camera_info(unreal.Vector(3900,-1130,165),unreal.Rotator(pitch=-8,yaw=-100,roll=0))
     level.save_current_level()
     result={'map':path,'model_groups':len(groups),'instances':count,'missing_models':len(missing),'visual_approval':False}
     (data/'map_build.json').write_text(json.dumps(result,indent=2),encoding='utf-8')

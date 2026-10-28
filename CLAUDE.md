@@ -351,3 +351,14 @@ Recast exporta hulls convexos do AggGeom mesmo com CTF_UseComplexAsSimple. Remov
 ## UE5.8 — snapshots físicos e transações
 
 Salvar atores antes de OnWorldBeginTearDown destruir os objetos, não após Deinitialize. No Save da economia, capturar o snapshot no mesmo JSON atômico; AddOrder e Deliver gravam antes de o chamador atualizar o personagem, então reconciliar id/itens a partir de ue_orders. Manter estágio Approaching de pedidos recuperados ainda a caminho do balcão. Um marcador consumed impede recriar louça após a limpeza enquanto o cliente continua sentado; a cadeira só é liberada quando ele sai. Não simular o quiosque no mapa Entry sem MareGameMode. SubsystemBlueprintLibrary não está exposta no Python desta instalação; ObjectIterator filtrado pelo outer obtém a instância do mundo. Copiar metadados desconhecidos também por cliente/jogador/atendente, não apenas na raiz.
+
+
+## UE5.8 — áudio, apresentação e pacote de 28/10
+
+Usar Rotator com pitch/yaw/roll nomeados no Python; a ordem posicional desta instalação levou a câmera ao piso e deixou luzes práticas de lado. Ler/escrever código com encoding UTF-8 explícito: o Python da engine usa a página de código do Windows e read_text sem encoding corrompe acentos. Exportar também world.texts: os modelos não contêm Label3D. TextRender usa normal local +X e precisa adaptar os eixos do Godot; promoções mantêm cinco linhas para caber.
+
+Colisão do oceano exige UseDefaultCollision=false, perfil NoCollision e CollisionEnabled=NoCollision. Natação com estado Swimming não basta: conferir câmera acima da superfície, mergulho e retorno real. Capturar Lumen depois de estabilizar a câmera, evitando avaliar o ruído do primeiro quadro após teleporte.
+
+O gravador do master submix da UE5.8 recebe áudio antes do ganho de saída: conferir também o roteamento master e silêncio sustentado das fontes depois dos buffers/efeitos. PIE pode mutar o dispositivo quando em segundo plano; testar o EXE é obrigatório. O volume geral controla o submix master para silenciar caudas, e loops silenciosos mantêm a posição.
+
+O save padrão começa às 6h30 e o expediente às 8h. O teste de abertura precisa configurar o horário explicitamente, sem depender do tempo gasto carregando assets. Uma abertura antecipada fica ativada e o celular deve explicar a espera e permitir fechar. Cook inicial levou 25min10s; -iterativecooking preserva os pacotes e shaders válidos. Não compilar a DLL do editor enquanto editor/commandlet a mantém aberta, nem rodar dois UBT ao mesmo tempo.

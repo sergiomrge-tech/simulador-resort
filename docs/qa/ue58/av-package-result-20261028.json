@@ -1,0 +1,18 @@
+{
+  "qa_root": "D:/CodexTemp/ue58-package-qa-20261028-013144",
+  "executable": "D:\\Builds\\MareAltaUE58_AudioVisual_2026-10-28\\Windows\\MareAlta.exe",
+  "checks": 22,
+  "passed": true,
+  "exit_code": 0,
+  "tested_at": "2026-10-28T01:33:17.4784204-03:00",
+  "visual_review_required": false,
+  "audio_mix_passed": true,
+  "visual_review_scope": [
+    "kiosk day/night",
+    "house",
+    "phone",
+    "pause",
+    "surface/underwater"
+  ],
+  "full_migration_complete": false
+}

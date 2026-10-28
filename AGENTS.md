@@ -149,3 +149,8 @@ Guia atual: [Cenário completo e atendimento nativo](docs/ue58/NAVEGACAO_ATENDIM
 ## Continuação UE5.8 — persistência nativa
 
 Guia atual: [Saves e continuidade do atendimento](docs/ue58/PERSISTENCIA_2026-10-27.md). Clientes, pedidos parciais, transporte, louça, reservas, jogador e portas são reconstruídos nos saves UE. Preservar a transação atômica entre atendimento e economia, o marcador de consumo e os campos desconhecidos. A conversão integral e o executável UE aprovado continuam pendentes.
+
+
+## Prévia UE5.8 — áudio, visual e natação de 28/10
+
+Guia vigente: [docs/ue58/AUDIO_VISUAL_2026-10-28.md](docs/ue58/AUDIO_VISUAL_2026-10-28.md). Branch `codex/ue58-migration`, projeto no D. Há prévia Windows exportada e testada; isso não conclui a migração inteira. Preservar áudio sem vozes, volumes independentes, 114 letreiros nativos, horário de atendimento explicado no celular, natação e perfil separado. A versão Godot e seus saves continuam preservados.

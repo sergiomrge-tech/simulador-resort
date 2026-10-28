@@ -334,3 +334,11 @@ Modelos originais deste projeto dedicados a CC0: dish_fries e dish_fish_portion.
 ## Refinamentos em andamento — 26/10/2026
 
 Banheiro, quadros/ornamentos náuticos, cordão de luzes e expositores: modelos originais CC0 em tools/gen_nautical_home.py, fontes art/blender/home_bathroom_fixtures.blend e nautical_*.blend, GLBs em assets/models/gen. Textura brown_planks_05 da biblioteca Poly Haven CC0 já registrada, incorporada nas fontes. Ícones de produtos SVG originais CC0 gerados por tools/gen_product_icons.py. Música reggae_praia.wav e folhas leaves_soft.wav: síntese original CC0 por tools/gen_reggae.py, sem samples, vozes, letras ou melodias de terceiros.
+
+## Áudio nativo UE5.8 — 28/10/2026
+
+41 SoundWave em `unreal/MareAlta/Content/Audio`, com fontes PCM em
+`unreal/MareAlta/SourceArt/Audio`. 38 reutilizam os sons CC0/originais já atribuídos
+acima; o catálogo registra cada arquivo de origem. Conversão por
+`tools/ue58/prepare_audio.py`, sem vozes ou música comercial. `swim_splash`,
+`swim_stroke` e `underwater_loop` são síntese original CC0 desse script.

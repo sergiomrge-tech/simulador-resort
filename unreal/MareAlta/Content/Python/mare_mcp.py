@@ -23,6 +23,28 @@ class MareMigrationTools(unreal.ToolsetDefinition):
 
     @toolset_registry.tool_call
     @staticmethod
+    def inspect_audio() -> str:
+        """Read current game audio component state, without changing player settings."""
+        world=unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()
+        if not world:return json.dumps({'pie':False})
+        audio=next(item for item in unreal.ObjectIterator(unreal.MareAudioWorld) if item.get_outer()==world)
+        components=[]
+        for value in unreal.ObjectIterator(unreal.AudioComponent):
+            sound=value.get_editor_property('sound')
+            if sound and sound.get_path_name().startswith('/Game/Audio/'):
+                components.append({'playing':value.is_playing(),'volume':value.get_editor_property('volume_multiplier'),'sound':sound.get_name(),'ui':value.get_editor_property('is_ui_sound')})
+        return json.dumps({'loaded':audio.loaded_sounds(),'buses':{key:audio.get_volume(key) for key in ['Master','Music','Effects','Ambient']},'components':components})
+
+    @toolset_registry.tool_call
+    @staticmethod
+    def build_audio_visual() -> str:
+        """Import attributed audio and refine native contact lighting and water."""
+        import importlib,mare_audio,mare_visual,mare_materials,mare_signs
+        for module in (mare_audio,mare_visual,mare_materials,mare_signs):importlib.reload(module)
+        return json.dumps({'audio':mare_audio.build(),'visual':mare_visual.refine(),'signs':mare_signs.build(),'water':mare_materials.build_water().get_path_name()})
+
+    @toolset_registry.tool_call
+    @staticmethod
     def migration_status() -> str:
         """Report engine, current project, available source models and imported native meshes."""
         world=read('world.json',{})
@@ -133,6 +155,14 @@ class MareMigrationTools(unreal.ToolsetDefinition):
         import mare_world_builder,importlib
         importlib.reload(mare_world_builder)
         return json.dumps(mare_world_builder.build())
+
+    @toolset_registry.tool_call
+    @staticmethod
+    def build_swimming_volume() -> str:
+        """Install native swimming physics under the current coast ocean and save the map."""
+        import mare_water,importlib
+        importlib.reload(mare_water)
+        return json.dumps(mare_water.ensure_volume())
 
 
     @toolset_registry.tool_call
@@ -265,7 +295,10 @@ class MareMigrationTools(unreal.ToolsetDefinition):
             player.set_actor_location(position,False,False)
             focus=target.get_actor_transform().transform_location(target.get_editor_property('focus_offset'))
             controller.set_control_rotation(unreal.MathLibrary.find_look_at_rotation(position+unreal.Vector(0,0,64),focus))
-        if phase in ('position_fridge','position_cupboard'):
+        if phase in ('position_kiosk','position_house','position_beach'):
+            choices={'position_kiosk':(unreal.Vector(3750,-1160,100),unreal.Rotator(pitch=-8,yaw=-90,roll=0)),'position_house':(unreal.Vector(4520,2120,100),unreal.Rotator(pitch=-8,yaw=25,roll=0)),'position_beach':(unreal.Vector(3800,-2350,90),unreal.Rotator(pitch=-4,yaw=90,roll=0))}
+            position,rotation=choices[phase];controller.close_phone();player.set_actor_location(position,False,False);controller.set_control_rotation(rotation)
+        elif phase in ('position_fridge','position_cupboard'):
             action='Fridge' if phase.endswith('fridge') else 'Cupboard'
             target=next(a for a in actors if str(a.get_editor_property('action'))==action)
             location=target.get_actor_location();aim(target,unreal.Vector(location.x,-1280,98))

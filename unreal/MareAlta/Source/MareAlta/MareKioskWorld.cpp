@@ -54,7 +54,7 @@ bool UMareKioskWorld::Serve(AMarePerson* Person,bool bStaff)
 {
  auto S=Sim();if(!S || !IsValid(Person))return false;
  if(Person->Stage==EMarePersonStage::Order){
-  const TArray<FString> Menu={TEXT("coco_gelado"),TEXT("suco"),TEXT("sorvete_morango"),TEXT("sorvete_chocolate"),TEXT("batata_frita"),TEXT("porcao_peixe")};
+  const TArray<FString> Menu={TEXT("coco_gelado"),TEXT("suco"),TEXT("caipirinha"),TEXT("petiscos"),TEXT("sorvete_morango"),TEXT("sorvete_chocolate"),TEXT("batata_frita"),TEXT("porcao_peixe")};
   Person->Plan={Menu[FMath::RandRange(0,Menu.Num()-1)]};if(FMath::RandRange(0,3)==0)Person->Plan.Add(Menu[FMath::RandRange(0,Menu.Num()-1)]);
   Person->OrderId=S->AddOrder(Person->PersonName,Person->Plan);if(Person->OrderId.IsEmpty())return false;
   Person->Stage=EMarePersonStage::Products;Person->Elapsed=0;return true;

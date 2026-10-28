@@ -92,3 +92,8 @@ Guia atual: [Cenário completo e atendimento nativo](NAVEGACAO_ATENDIMENTO_2026-
 ## Continuação UE5.8 — persistência nativa
 
 Guia atual: [Saves e continuidade do atendimento](PERSISTENCIA_2026-10-27.md). Clientes, pedidos parciais, transporte, louça, reservas, jogador e portas são reconstruídos nos saves UE. Preservar a transação atômica entre atendimento e economia, o marcador de consumo e os campos desconhecidos. A conversão integral e o executável UE aprovado continuam pendentes.
+
+
+## Prévia executável de 28/10
+
+Guia atual: [Áudio, visual e natação](AUDIO_VISUAL_2026-10-28.md). Inclui 41 sons nativos, 114 letreiros, luz diurna/noturna, celular compacto e natação. O EXE exportado passou no lote funcional e sonoro; a prévia usa dados próprios no D. Continua sendo uma migração parcial: não substituir a versão Godot aprovada nem afirmar que outros negócios, capítulos e vida marinha estão portados.

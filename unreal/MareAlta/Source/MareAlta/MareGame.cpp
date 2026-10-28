@@ -1,4 +1,8 @@
 #include "MareGame.h"
+#include "MarePreviewQA.h"
+#include "MareAudioWorld.h"
+#include "Misc/CommandLine.h"
+#include "Misc/Parse.h"
 #include "MareSimulation.h"
 #include "Engine/GameInstance.h"
 #include "MareServiceTarget.h"
@@ -9,6 +13,9 @@
 #include "Engine/Engine.h"
 #include "Engine/GameViewportClient.h"
 #include "Engine/UserInterfaceSettings.h"
+#include "GameFramework/GameUserSettings.h"
+#include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Widgets/SCompoundWidget.h"
 #include "Widgets/Layout/SBorder.h"
@@ -17,6 +24,7 @@
 #include "Widgets/Layout/SDPIScaler.h"
 #include "Widgets/Input/SButton.h"
 #include "Widgets/Input/SEditableTextBox.h"
+#include "Widgets/Input/SSlider.h"
 #include "Widgets/Text/STextBlock.h"
 #include "Widgets/SBoxPanel.h"
 #include "Brushes/SlateRoundedBoxBrush.h"
@@ -50,6 +58,10 @@ namespace MareUI
  {
   return SNew(STextBlock).Text(FText::FromString(Value)).Font(FCoreStyle::GetDefaultFontStyle("Regular",Size)).ColorAndOpacity(Color).AutoWrapText(true);
  }
+ TSharedRef<STextBlock> LiveText(TFunction<FString()> Value,int32 Size=14)
+ {
+  return SNew(STextBlock).Text_Lambda([Value](){return FText::FromString(Value());}).Font(FCoreStyle::GetDefaultFontStyle("Regular",Size)).ColorAndOpacity(FLinearColor(.08f,.12f,.11f)).AutoWrapText(true);
+ }
 }
 class SMarePhone : public SCompoundWidget
 {
@@ -74,16 +86,31 @@ private:
  UMareSimulation* Sim()const{return Owner.IsValid()?Owner->GetGameInstance()->GetSubsystem<UMareSimulation>():nullptr;}
  TSharedRef<SWidget> Button(const FString& Label,TFunction<void()> Action)
  {
-  return SNew(SButton).ButtonStyle(&MareUI::ActionButton).ContentPadding(FMargin(8,5)).OnClicked_Lambda([this,Action](){Action();Rebuild();return FReply::Handled();})[MareUI::Text(Label,12,FLinearColor::White)];
+  return SNew(SButton).ButtonStyle(&MareUI::ActionButton).ContentPadding(FMargin(8,5)).OnClicked_Lambda([this,Action](){if(Owner.IsValid())Owner->GetWorld()->GetSubsystem<UMareAudioWorld>()->PlayCue(TEXT("click"),.16f);Action();Rebuild();return FReply::Handled();})[MareUI::Text(Label,12,FLinearColor::White)];
  }
  void Line(const FString& Value,int32 Size=14){Body->AddSlot().AutoHeight().Padding(0,4)[MareUI::Text(Value,Size)];}
  void Action(const FString& Label,TFunction<void()> Callback){Body->AddSlot().AutoHeight().HAlign(HAlign_Left).Padding(0,3)[Button(Label,Callback)];}
+ void HomeSummary()
+ {
+  auto S=Sim();Line(TEXT("Seu turno"),15);
+  Body->AddSlot().AutoHeight().Padding(0,3)[MareUI::LiveText([S](){return FString::Printf(TEXT("Pedidos ativos: %d"),UMareSimulation::Object(S->State,TEXT("ue_orders"))->Values.Num());},12)];
+  Body->AddSlot().AutoHeight().Padding(0,3)[MareUI::LiveText([S](){bool Hired=false;UMareSimulation::Object(S->State,TEXT("staff"))->TryGetBoolField(TEXT("atendente"),Hired);return Hired?TEXT("Equipe: 1 atendente contratado"):TEXT("Equipe: atendimento pelo jogador");},12)];
+  Line(TEXT("Estoque pronto"),15);
+  const TArray<FString> Products={TEXT("coco_gelado"),TEXT("suco"),TEXT("caipirinha"),TEXT("petiscos"),TEXT("sorvete_morango"),TEXT("sorvete_chocolate"),TEXT("batata_frita"),TEXT("porcao_peixe")};
+  for(int32 I=0;I<Products.Num();I+=2){auto Row=SNew(SHorizontalBox);
+   for(int32 J=0;J<2 && I+J<Products.Num();++J){const FString Id=Products[I+J];auto Dish=UMareSimulation::Object(UMareSimulation::Object(S->Definitions,TEXT("dishes")),Id);
+    Row->AddSlot().FillWidth(1).Padding(2)[SNew(SBorder).BorderImage(&MareUI::Card).Padding(8)[SNew(SVerticalBox)
+     +SVerticalBox::Slot().AutoHeight()[MareUI::Text(UMareSimulation::String(Dish,TEXT("name")),11)]
+     +SVerticalBox::Slot().AutoHeight().Padding(0,3,0,0)[MareUI::LiveText([S,Id](){const int32 Count=S->Available(Id);return Count>0?FString::Printf(TEXT("%d prontos"),Count):TEXT("Repor estoque");},12)]]];
+   }Body->AddSlot().AutoHeight()[Row];
+  }
+ }
  void Stock(bool bPickup)
  {
-  auto S=Sim();const TArray<FString> Products={TEXT("coco_gelado"),TEXT("suco"),TEXT("sorvete_morango"),TEXT("sorvete_chocolate"),TEXT("batata_frita"),TEXT("porcao_peixe")};
+  auto S=Sim();const TArray<FString> Products={TEXT("coco_gelado"),TEXT("suco"),TEXT("caipirinha"),TEXT("petiscos"),TEXT("sorvete_morango"),TEXT("sorvete_chocolate"),TEXT("batata_frita"),TEXT("porcao_peixe")};
   for(const auto& Id:Products){
-   if(bPickup && Station==TEXT("Cupboard") && Id!=TEXT("batata_frita") && Id!=TEXT("porcao_peixe"))continue;
-   if(bPickup && Station==TEXT("Fridge") && (Id==TEXT("batata_frita") || Id==TEXT("porcao_peixe")))continue;
+   if(bPickup && Station==TEXT("Cupboard") && Id!=TEXT("batata_frita") && Id!=TEXT("porcao_peixe") && Id!=TEXT("petiscos"))continue;
+   if(bPickup && Station==TEXT("Fridge") && (Id==TEXT("batata_frita") || Id==TEXT("porcao_peixe") || Id==TEXT("petiscos")))continue;
    auto Dish=UMareSimulation::Object(UMareSimulation::Object(S->Definitions,TEXT("dishes")),Id);
    Line(UMareSimulation::String(Dish,TEXT("name"))+FString::Printf(TEXT(" · %d disponíveis"),S->Available(Id)));
    auto Row=SNew(SHorizontalBox);
@@ -122,7 +149,7 @@ private:
   ChildSlot.HAlign(HAlign_Right).VAlign(VAlign_Center).Padding(20.f/UIScale)[SNew(SDPIScaler).DPIScale(1.f/UIScale)[SNew(SBox).WidthOverride(Width).HeightOverride(Height)[SNew(SBorder).BorderImage(&MareUI::Phone).Padding(10)[SNew(SBorder).BorderImage(&MareUI::Surface).Padding(14)[SNew(SVerticalBox)
    +SVerticalBox::Slot().AutoHeight().Padding(0,0,0,8)[SNew(SHorizontalBox)
     +SHorizontalBox::Slot().FillWidth(1)[MareUI::Text(TEXT("Maré Alta"),14)]
-    +SHorizontalBox::Slot().AutoWidth()[MareUI::Text(FString::Printf(TEXT("R$ %.0f"),S->Money()),13)]]
+    +SHorizontalBox::Slot().AutoWidth()[MareUI::LiveText([S](){return FString::Printf(TEXT("R$ %.0f"),S->Money());},13)]]
    +SVerticalBox::Slot().AutoHeight()[Station.IsNone()?StaticCastSharedRef<SWidget>(Tabs):StaticCastSharedRef<SWidget>(MareUI::Text(Station==TEXT("Fridge")?TEXT("Geladeira"):TEXT("Porções prontas"),18))]
    +SVerticalBox::Slot().FillHeight(1).Padding(0,10)[SNew(SScrollBox)+SScrollBox::Slot()[Body.ToSharedRef()]]
    +SVerticalBox::Slot().AutoHeight()[Message]
@@ -130,8 +157,11 @@ private:
   if(!Station.IsNone()){Stock(true);if(!S->Carry().IsEmpty())Action(TEXT("Devolver produto"),[S](){S->ReturnCarry();});return;}
   if(Tab==0){auto Company=UMareSimulation::Object(S->State,TEXT("company"));bool bCreated=false;Company->TryGetBoolField(TEXT("created"),bCreated);
    if(!bCreated){Line(TEXT("Seu quiosque"),20);Body->AddSlot().AutoHeight()[SAssignNew(CompanyName,SEditableTextBox).Text(FText::FromString(TEXT("Maré Alta")))];Action(TEXT("Criar empresa"),[this,S](){S->CreateCompany(CompanyName->GetText().ToString());});}
-   else{Line(S->IsOpen()?TEXT("Aberto · recebendo clientes"):TEXT("Quiosque fechado"),18);Action(S->IsOpen()?TEXT("Fechar quiosque"):TEXT("Abrir quiosque"),[S](){S->SetOpen(!S->IsOpen());});}
-   if(!S->Carry().IsEmpty())Action(TEXT("Devolver produto"),[S](){S->ReturnCarry();});Line(TEXT("Retire os produtos prontos na geladeira e no armário do quiosque."),13);
+   else{bool Requested=false;Company->TryGetBoolField(TEXT("kiosk_open"),Requested);auto Hours=UMareSimulation::Object(Company,TEXT("sim"));
+    Body->AddSlot().AutoHeight().Padding(0,4)[MareUI::LiveText([S,Requested](){return S->IsOpen()?TEXT("Aberto · recebendo clientes"):Requested?TEXT("Abertura ativada · aguardando horário"):TEXT("Quiosque fechado");},18)];
+    Line(FString::Printf(TEXT("Atendimento: %.0fh às %.0fh"),UMareSimulation::Number(Hours,TEXT("start"),8),UMareSimulation::Number(Hours,TEXT("end"),18)),12);
+    Action(Requested?TEXT("Fechar quiosque"):TEXT("Abrir quiosque"),[S,Requested](){S->SetOpen(!Requested);});}
+   if(!S->Carry().IsEmpty())Action(TEXT("Devolver produto"),[S](){S->ReturnCarry();});Line(TEXT("Retire os produtos prontos na geladeira e no armário do quiosque."),13);HomeSummary();
   }else if(Tab==1){Line(TEXT("Reposição imediata"),18);Stock(false);}
   else if(Tab==2){Line(TEXT("Um atendente para todo o quiosque"),18);Line(TEXT("Anota, retira os produtos, entrega e recolhe a louça."));Action(TEXT("Contratar atendente"),[S](){S->HireAttendant();});}
   else if(Tab==3){Line(FString::Printf(TEXT("Caixa · R$ %.0f"),S->Money()),20);const TArray<TSharedPtr<FJsonValue>>* Ledger=nullptr;if(S->State->TryGetArrayField(TEXT("ledger"),Ledger))for(int32 I=Ledger->Num()-1;I>=FMath::Max(0,Ledger->Num()-12);--I){auto Row=(*Ledger)[I]->AsObject();Line(UMareSimulation::String(Row,TEXT("label"))+FString::Printf(TEXT(" · R$ %.0f"),UMareSimulation::Number(Row,TEXT("amount"))),13);}}
@@ -141,23 +171,74 @@ private:
 };
 AMareCharacter::AMareCharacter()
 {
+ PrimaryActorTick.bCanEverTick=true;
  GetCapsuleComponent()->InitCapsuleSize(32,88);
- auto Camera=CreateDefaultSubobject<UCameraComponent>(TEXT("Eyes"));Camera->SetupAttachment(GetCapsuleComponent());Camera->SetRelativeLocation(FVector(0,0,64));Camera->bUsePawnControlRotation=true;
+ Eyes=CreateDefaultSubobject<UCameraComponent>(TEXT("Eyes"));Eyes->SetupAttachment(GetCapsuleComponent());Eyes->SetRelativeLocation(FVector(0,0,64));Eyes->bUsePawnControlRotation=true;
+ Eyes->PostProcessSettings.bOverride_SceneColorTint=true;Eyes->PostProcessSettings.SceneColorTint=FLinearColor(.72f,.86f,.83f);
+ Eyes->PostProcessSettings.bOverride_VignetteIntensity=true;Eyes->PostProcessSettings.VignetteIntensity=.28f;Eyes->PostProcessBlendWeight=0;
  GetCharacterMovement()->MaxWalkSpeed=260;GetCharacterMovement()->JumpZVelocity=360;GetCharacterMovement()->MaxStepHeight=35;
+ GetCharacterMovement()->GetNavAgentPropertiesRef().bCanSwim=true;
+ GetCharacterMovement()->MaxSwimSpeed=210;GetCharacterMovement()->Buoyancy=1.35f;GetCharacterMovement()->BrakingDecelerationSwimming=180;
 }
 void AMareCharacter::SetupPlayerInputComponent(UInputComponent* Input)
 {
  Super::SetupPlayerInputComponent(Input);Input->BindAxis(TEXT("Forward"),this,&AMareCharacter::Forward);Input->BindAxis(TEXT("Right"),this,&AMareCharacter::Right);
  Input->BindAxis(TEXT("LookX"),this,&AMareCharacter::LookX);Input->BindAxis(TEXT("LookY"),this,&AMareCharacter::LookY);
  Input->BindAction(TEXT("Phone"),IE_Pressed,this,&AMareCharacter::Phone);Input->BindAction(TEXT("Interact"),IE_Pressed,this,&AMareCharacter::Interact);Input->BindAction(TEXT("Jump"),IE_Pressed,this,&ACharacter::Jump);
+ Input->BindAction(TEXT("Jump"),IE_Released,this,&ACharacter::StopJumping);
+ Input->BindAxis(TEXT("SwimVertical"),this,&AMareCharacter::SwimVertical);
+ Input->BindAction(TEXT("Sprint"),IE_Pressed,this,&AMareCharacter::SprintPressed);Input->BindAction(TEXT("Sprint"),IE_Released,this,&AMareCharacter::SprintReleased);
 }
-void AMareCharacter::Forward(float Value){if(Controller)AddMovementInput(FRotationMatrix(FRotator(0,Controller->GetControlRotation().Yaw,0)).GetUnitAxis(EAxis::X),Value);}
+void AMareCharacter::Forward(float Value){if(Controller){auto Rotation=Controller->GetControlRotation();if(!GetCharacterMovement()->IsSwimming())Rotation.Pitch=0;Rotation.Roll=0;AddMovementInput(Rotation.Vector(),Value);}}
 void AMareCharacter::Right(float Value){if(Controller)AddMovementInput(FRotationMatrix(FRotator(0,Controller->GetControlRotation().Yaw,0)).GetUnitAxis(EAxis::Y),Value);}
 void AMareCharacter::LookX(float Value){AddControllerYawInput(Value);}
 void AMareCharacter::LookY(float Value){AddControllerPitchInput(Value);}
 void AMareCharacter::Phone(){if(auto PC=Cast<AMareController>(Controller))PC->TogglePhone();}
 void AMareCharacter::Interact(){if(auto PC=Cast<AMareController>(Controller))if(auto Target=AMareServiceTarget::FindFocused(PC))Target->Use(PC);}
-void AMareController::TogglePhone(){if(bPhoneOpen)ClosePhone();else OpenPhone();}
+void AMareCharacter::SwimVertical(float Value){VerticalSwimInput=FMath::Clamp(Value,-1.f,1.f);}
+void AMareCharacter::Tick(float DeltaSeconds)
+{
+ Super::Tick(DeltaSeconds);auto Movement=GetCharacterMovement();auto PC=Cast<APlayerController>(Controller);
+ const bool bSwimming=Movement->IsSwimming();const float Vertical=PC && PC->IsMoveInputIgnored()?0.f:VerticalSwimInput;
+ Movement->MaxWalkSpeed=bSprint?420:260;Movement->Buoyancy=Vertical<0?1.f:1.35f;
+ if(bSwimming && (Vertical<=0 || GetActorLocation().Z<-78))AddMovementInput(FVector::UpVector,Vertical);
+ const bool bUnderwater=bSwimming && Eyes->GetComponentLocation().Z<-38;
+ Eyes->PostProcessBlendWeight=FMath::FInterpTo(Eyes->PostProcessBlendWeight,bUnderwater?1.f:0.f,DeltaSeconds,5);
+ if(Movement->IsMovingOnGround() && !bSwimming && GetActorLocation().Z>-100)SafeLandLocation=GetActorLocation();
+ if(GetActorLocation().Z<-5000){SetActorLocation(SafeLandLocation);Movement->StopMovementImmediately();VerticalSwimInput=0;}
+}
+
+void AMareController::SetupInputComponent()
+{
+ Super::SetupInputComponent();InputComponent->BindAction(TEXT("Pause"),IE_Pressed,this,&AMareController::TogglePauseMenu).bExecuteWhenPaused=true;
+}
+void AMareController::TogglePauseMenu()
+{
+ if(bPhoneOpen){ClosePhone();return;}
+ if(!GEngine || !GEngine->GameViewport)return;
+ if(PauseWidget.IsValid()){
+  GEngine->GameViewport->RemoveViewportWidgetContent(PauseWidget.ToSharedRef());PauseWidget.Reset();SetPause(false);
+  bShowMouseCursor=false;SetInputMode(FInputModeGameOnly());ResetIgnoreMoveInput();ResetIgnoreLookInput();return;
+ }
+ SetPause(true);auto Menu=SNew(SVerticalBox);
+ auto Add=[&](const FString& Label,TFunction<void()> Callback){Menu->AddSlot().AutoHeight().Padding(0,5)[SNew(SButton).ButtonStyle(&MareUI::ActionButton).ContentPadding(FMargin(14,8)).OnClicked_Lambda([Callback](){Callback();return FReply::Handled();})[MareUI::Text(Label,14,FLinearColor::White)]];};
+ Menu->AddSlot().AutoHeight().Padding(0,0,0,12)[MareUI::Text(TEXT("Maré Alta · pausa"),20)];
+ Add(TEXT("Retomar"),[this](){TogglePauseMenu();});
+ Add(TEXT("Salvar progresso"),[this](){GetSimulation()->Save();});
+ Add(TEXT("Qualidade: média"),[](){auto Settings=UGameUserSettings::GetGameUserSettings();Settings->SetOverallScalabilityLevel(1);Settings->ApplyNonResolutionSettings();Settings->SaveSettings();});
+ Add(TEXT("Qualidade: alta"),[](){auto Settings=UGameUserSettings::GetGameUserSettings();Settings->SetOverallScalabilityLevel(2);Settings->ApplyNonResolutionSettings();Settings->SaveSettings();});
+ auto Audio=GetWorld()->GetSubsystem<UMareAudioWorld>();
+ const TArray<FName> Buses={TEXT("Master"),TEXT("Music"),TEXT("Effects"),TEXT("Ambient")};
+ const TArray<FString> Labels={TEXT("Volume geral"),TEXT("Música"),TEXT("Efeitos"),TEXT("Ambiente")};
+ for(int32 I=0;I<Buses.Num();++I){const FName Bus=Buses[I];Menu->AddSlot().AutoHeight().Padding(0,5)[SNew(SHorizontalBox)
+  +SHorizontalBox::Slot().AutoWidth().Padding(0,0,12,0)[SNew(SBox).WidthOverride(110)[MareUI::Text(Labels[I],12)]]
+  +SHorizontalBox::Slot().FillWidth(1)[SNew(SSlider).Value(Audio->GetVolume(Bus)).OnValueChanged_Lambda([Audio,Bus](float Value){Audio->SetVolume(Bus,Value);})]];}
+ Add(TEXT("Sair para o desktop"),[this](){GetSimulation()->Save();UKismetSystemLibrary::QuitGame(this,this,EQuitPreference::Quit,false);});
+ PauseWidget=SNew(SBorder).BorderBackgroundColor(FLinearColor(0,0,0,.65f)).HAlign(HAlign_Center).VAlign(VAlign_Center)[SNew(SBox).WidthOverride(340)[SNew(SBorder).BorderImage(&MareUI::Surface).Padding(20)[Menu]]];
+ GEngine->GameViewport->AddViewportWidgetContent(PauseWidget.ToSharedRef(),30);bShowMouseCursor=true;
+ SetInputMode(FInputModeGameAndUI());SetIgnoreMoveInput(true);SetIgnoreLookInput(true);
+}
+void AMareController::TogglePhone(){if(PauseWidget.IsValid())return;if(bPhoneOpen)ClosePhone();else OpenPhone();}
 void AMareController::OpenPhone(int32 Tab)
 {
  if(!GEngine || !GEngine->GameViewport)return;
@@ -177,7 +258,7 @@ void AMareController::ClosePhone()
  if(PhoneWidget.IsValid() && GEngine && GEngine->GameViewport)GEngine->GameViewport->RemoveViewportWidgetContent(PhoneWidget.ToSharedRef());
  PhoneWidget.Reset();bPhoneOpen=false;bShowMouseCursor=false;SetInputMode(FInputModeGameOnly());ResetIgnoreMoveInput();ResetIgnoreLookInput();
 }
-void AMareController::EndPlay(const EEndPlayReason::Type Reason){ClosePhone();Super::EndPlay(Reason);}
+void AMareController::EndPlay(const EEndPlayReason::Type Reason){if(PauseWidget.IsValid() && GEngine && GEngine->GameViewport)GEngine->GameViewport->RemoveViewportWidgetContent(PauseWidget.ToSharedRef());PauseWidget.Reset();ClosePhone();Super::EndPlay(Reason);}
 void AMareHUD::DrawHUD()
 {
  Super::DrawHUD();if(!Canvas)return;auto S=GetGameInstance()->GetSubsystem<UMareSimulation>();if(!S)return;
@@ -206,9 +287,11 @@ void AMareHUD::DrawHUD()
  }
  if(auto Target=AMareServiceTarget::FindFocused(GetOwningPlayerController()))Canvas->DrawText(Font,TEXT("E · ")+Target->Prompt(),22,Canvas->ClipY-62);
  if(!S->Carry().IsEmpty())Line(TEXT("Na mão: ")+UMareSimulation::String(UMareSimulation::Object(UMareSimulation::Object(S->Definitions,TEXT("dishes")),S->Carry()),TEXT("name")));
+ if(auto Hero=Cast<AMareCharacter>(GetOwningPawn()))if(Hero->GetCharacterMovement()->IsSwimming())Line(TEXT("Nadando · Espaço sobe · Ctrl / Shift mergulha"));
  Canvas->DrawText(Font,TEXT("B · celular     E · interagir"),22,Canvas->ClipY-35);
 }
 AMareGameMode::AMareGameMode(){PrimaryActorTick.bCanEverTick=true;DefaultPawnClass=AMareCharacter::StaticClass();PlayerControllerClass=AMareController::StaticClass();HUDClass=AMareHUD::StaticClass();}
+void AMareGameMode::BeginPlay(){Super::BeginPlay();if(FParse::Param(FCommandLine::Get(),TEXT("MarePreviewQA")))GetWorld()->SpawnActor<AMarePreviewQA>();}
 
 void AMareGameMode::Tick(float DeltaSeconds)
 {

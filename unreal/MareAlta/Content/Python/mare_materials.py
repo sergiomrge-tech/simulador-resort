@@ -81,7 +81,7 @@ def build_water():
     for uv in (uv1,uv2):
         node=expression(mat,unreal.MaterialExpressionTextureSample,texture=water_normal,sampler_type=unreal.MaterialSamplerType.SAMPLERTYPE_NORMAL)
         connect(uv,'',node,'UVs');samples.append(node)
-    normal=custom(mat,'return normalize(float3((A.xy+B.xy)*.7,max(.3,A.z*B.z)));',unreal.CustomMaterialOutputType.CMOT_FLOAT3,{'A':samples[0],'B':samples[1]})
+    normal=custom(mat,'return normalize(float3((A.xy+B.xy)*.23,max(.65,A.z*B.z)));',unreal.CustomMaterialOutputType.CMOT_FLOAT3,{'A':samples[0],'B':samples[1]})
     color=expression(mat,unreal.MaterialExpressionConstant3Vector,constant=unreal.LinearColor(.012,.058,.067,1))
     rough=expression(mat,unreal.MaterialExpressionConstant,r=.2)
     opacity=expression(mat,unreal.MaterialExpressionConstant,r=.5)

@@ -1,0 +1,269 @@
+{
+	"checks": [
+		{
+			"name": "coast_and_dry_land",
+			"pass": true,
+			"position": [
+				3800,
+				-1200,
+				100
+			],
+			"movement": "Walking",
+			"volume": "DefaultPhysicsVolume_2147482413",
+			"volume_collision": "Custom"
+		},
+		{
+			"name": "runtime_actor_catalog",
+			"pass": true,
+			"position": [
+				3800,
+				-1200,
+				100
+			],
+			"movement": "Walking",
+			"volume": "DefaultPhysicsVolume_2147482413",
+			"volume_collision": "Custom"
+		},
+		{
+			"name": "audio_catalog",
+			"pass": true,
+			"position": [
+				3800,
+				-1200,
+				100
+			],
+			"movement": "Walking",
+			"volume": "DefaultPhysicsVolume_2147482413",
+			"volume_collision": "Custom"
+		},
+		{
+			"name": "master_submix_routed",
+			"pass": true,
+			"position": [
+				3800,
+				-1200,
+				100
+			],
+			"movement": "Walking",
+			"volume": "DefaultPhysicsVolume_2147482413",
+			"volume_collision": "Custom"
+		},
+		{
+			"name": "water_entry_and_float",
+			"pass": true,
+			"position": [
+				3800,
+				-7200,
+				-79.184862361160228
+			],
+			"movement": "Swimming",
+			"volume": "PhysicsVolume_1",
+			"volume_collision": "OverlapAllDynamic"
+		},
+		{
+			"name": "surface_camera_above_water",
+			"pass": true,
+			"position": [
+				3800,
+				-7200,
+				-79.184862361160228
+			],
+			"movement": "Swimming",
+			"volume": "PhysicsVolume_1",
+			"volume_collision": "OverlapAllDynamic"
+		},
+		{
+			"name": "ctrl_dives",
+			"pass": true,
+			"position": [
+				3800,
+				-7200,
+				-671.89248137582615
+			],
+			"movement": "Swimming",
+			"volume": "PhysicsVolume_1",
+			"volume_collision": "OverlapAllDynamic"
+		},
+		{
+			"name": "underwater_camera",
+			"pass": true,
+			"position": [
+				3800,
+				-7200,
+				-671.89248137582615
+			],
+			"movement": "Swimming",
+			"volume": "PhysicsVolume_1",
+			"volume_collision": "OverlapAllDynamic"
+		},
+		{
+			"name": "space_surfaces",
+			"pass": true,
+			"position": [
+				3800,
+				-7200,
+				-67.354216730201586
+			],
+			"movement": "Swimming",
+			"volume": "PhysicsVolume_1",
+			"volume_collision": "OverlapAllDynamic"
+		},
+		{
+			"name": "swimming_forward",
+			"pass": true,
+			"position": [
+				3800,
+				-8244.3677593978427,
+				-72.330963302540894
+			],
+			"movement": "Swimming",
+			"volume": "PhysicsVolume_1",
+			"volume_collision": "OverlapAllDynamic"
+		},
+		{
+			"name": "return_to_walking",
+			"pass": true,
+			"position": [
+				3800,
+				-2900,
+				72.024738318678942
+			],
+			"movement": "Walking",
+			"volume": "DefaultPhysicsVolume_2147482413",
+			"volume_collision": "Custom"
+		},
+		{
+			"name": "void_recovery",
+			"pass": true,
+			"position": [
+				3800,
+				-2900,
+				72.024738318678828
+			],
+			"movement": "Walking",
+			"volume": "DefaultPhysicsVolume_2147482413",
+			"volume_collision": "Custom"
+		},
+		{
+			"name": "portable_phone",
+			"pass": true,
+			"position": [
+				3800,
+				-2900,
+				72.024738318678828
+			],
+			"movement": "Walking",
+			"volume": "DefaultPhysicsVolume_2147482413",
+			"volume_collision": "Custom"
+		},
+		{
+			"name": "pause_freezes_world",
+			"pass": true,
+			"position": [
+				3800,
+				-2900,
+				72.024738318678828
+			],
+			"movement": "Walking",
+			"volume": "DefaultPhysicsVolume_2147482413",
+			"volume_collision": "Custom"
+		},
+		{
+			"name": "pause_blocks_duplicate_phone",
+			"pass": true,
+			"position": [
+				3800,
+				-2900,
+				72.024738318678828
+			],
+			"movement": "Walking",
+			"volume": "DefaultPhysicsVolume_2147482413",
+			"volume_collision": "Custom"
+		},
+		{
+			"name": "resume",
+			"pass": true,
+			"position": [
+				3800,
+				-2900,
+				72.024738318678828
+			],
+			"movement": "Walking",
+			"volume": "DefaultPhysicsVolume_2147482413",
+			"volume_collision": "Custom"
+		},
+		{
+			"name": "opening_respects_schedule",
+			"pass": true,
+			"position": [
+				3800,
+				-2900,
+				72.024738318678828
+			],
+			"movement": "Walking",
+			"volume": "DefaultPhysicsVolume_2147482413",
+			"volume_collision": "Custom"
+		},
+		{
+			"name": "kiosk_open",
+			"pass": true,
+			"position": [
+				3800,
+				-2900,
+				72.024738318678828
+			],
+			"movement": "Walking",
+			"volume": "DefaultPhysicsVolume_2147482413",
+			"volume_collision": "Custom"
+		},
+		{
+			"name": "save_succeeds",
+			"pass": true,
+			"position": [
+				3800,
+				-1200,
+				100
+			],
+			"movement": "Walking",
+			"volume": "DefaultPhysicsVolume_2147482413",
+			"volume_collision": "Custom"
+		},
+		{
+			"name": "night_crickets",
+			"pass": true,
+			"position": [
+				3800,
+				-1200,
+				100
+			],
+			"movement": "Walking",
+			"volume": "DefaultPhysicsVolume_2147482413",
+			"volume_collision": "Custom"
+		},
+		{
+			"name": "rain_mix",
+			"pass": true,
+			"position": [
+				3800,
+				-1200,
+				100
+			],
+			"movement": "Walking",
+			"volume": "DefaultPhysicsVolume_2147482413",
+			"volume_collision": "Custom"
+		},
+		{
+			"name": "audio_settings_restored",
+			"pass": true,
+			"position": [
+				3800,
+				-1200,
+				100
+			],
+			"movement": "Walking",
+			"volume": "DefaultPhysicsVolume_2147482413",
+			"volume_collision": "Custom"
+		}
+	],
+	"finished": true
+}

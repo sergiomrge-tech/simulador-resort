@@ -20,6 +20,9 @@ bool FMareEconomyTest::RunTest(const FString& Parameters)
  TestTrue(TEXT("Closed kiosk refuses arrivals"),Sim->AddOrder(TEXT("Ana"),{TEXT("suco")}).IsEmpty());
  TestFalse(TEXT("Cannot open before creating company"),Sim->SetOpen(true));
  TestTrue(TEXT("Create company"),Sim->CreateCompany(TEXT("Maré de teste")));
+ TestTrue(TEXT("Opening can be requested before hours"),Sim->SetOpen(true));
+ TestFalse(TEXT("Requested opening still respects working hours"),Sim->IsOpen());
+ TestTrue(TEXT("Queued opening can be cancelled"),Sim->SetOpen(false));
  Sim->State->SetNumberField(TEXT("minutes"),600);
  TestTrue(TEXT("Open explicitly"),Sim->SetOpen(true));
  const FString Id=Sim->AddOrder(TEXT("Ana"),{TEXT("suco"),TEXT("coco_gelado")});

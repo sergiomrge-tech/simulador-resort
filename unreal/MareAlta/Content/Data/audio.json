@@ -1,0 +1,248 @@
+[
+  {
+    "id": "bell",
+    "path": "/Game/Audio/bell.bell",
+    "duration": 0.5419374704360962,
+    "loop": false
+  },
+  {
+    "id": "bird1",
+    "path": "/Game/Audio/bird1.bird1",
+    "duration": 0.6791836619377136,
+    "loop": false
+  },
+  {
+    "id": "bird2",
+    "path": "/Game/Audio/bird2.bird2",
+    "duration": 1.1319727897644043,
+    "loop": false
+  },
+  {
+    "id": "clean",
+    "path": "/Game/Audio/clean.clean",
+    "duration": 0.5703125,
+    "loop": false
+  },
+  {
+    "id": "click",
+    "path": "/Game/Audio/click.click",
+    "duration": 0.22724999487400055,
+    "loop": false
+  },
+  {
+    "id": "coin",
+    "path": "/Game/Audio/coin.coin",
+    "duration": 0.6651458144187927,
+    "loop": false
+  },
+  {
+    "id": "crickets_loop",
+    "path": "/Game/Audio/crickets_loop.crickets_loop",
+    "duration": 22.935510635375977,
+    "loop": true
+  },
+  {
+    "id": "dog",
+    "path": "/Game/Audio/dog.dog",
+    "duration": 2.0385940074920654,
+    "loop": false
+  },
+  {
+    "id": "door",
+    "path": "/Game/Audio/door.door",
+    "duration": 0.41491666436195374,
+    "loop": false
+  },
+  {
+    "id": "footstep_carpet_000",
+    "path": "/Game/Audio/footstep_carpet_000.footstep_carpet_000",
+    "duration": 0.1447845846414566,
+    "loop": false
+  },
+  {
+    "id": "footstep_carpet_001",
+    "path": "/Game/Audio/footstep_carpet_001.footstep_carpet_001",
+    "duration": 0.1447845846414566,
+    "loop": false
+  },
+  {
+    "id": "footstep_carpet_002",
+    "path": "/Game/Audio/footstep_carpet_002.footstep_carpet_002",
+    "duration": 0.1447845846414566,
+    "loop": false
+  },
+  {
+    "id": "footstep_carpet_003",
+    "path": "/Game/Audio/footstep_carpet_003.footstep_carpet_003",
+    "duration": 0.1447845846414566,
+    "loop": false
+  },
+  {
+    "id": "footstep_carpet_004",
+    "path": "/Game/Audio/footstep_carpet_004.footstep_carpet_004",
+    "duration": 0.1447845846414566,
+    "loop": false
+  },
+  {
+    "id": "footstep_concrete_000",
+    "path": "/Game/Audio/footstep_concrete_000.footstep_concrete_000",
+    "duration": 0.10591837018728256,
+    "loop": false
+  },
+  {
+    "id": "footstep_concrete_001",
+    "path": "/Game/Audio/footstep_concrete_001.footstep_concrete_001",
+    "duration": 0.10764172673225403,
+    "loop": false
+  },
+  {
+    "id": "footstep_concrete_002",
+    "path": "/Game/Audio/footstep_concrete_002.footstep_concrete_002",
+    "duration": 0.11278911679983139,
+    "loop": false
+  },
+  {
+    "id": "footstep_concrete_003",
+    "path": "/Game/Audio/footstep_concrete_003.footstep_concrete_003",
+    "duration": 0.11049886792898178,
+    "loop": false
+  },
+  {
+    "id": "footstep_concrete_004",
+    "path": "/Game/Audio/footstep_concrete_004.footstep_concrete_004",
+    "duration": 0.1143537387251854,
+    "loop": false
+  },
+  {
+    "id": "footstep_wood_000",
+    "path": "/Game/Audio/footstep_wood_000.footstep_wood_000",
+    "duration": 0.24959184229373932,
+    "loop": false
+  },
+  {
+    "id": "footstep_wood_001",
+    "path": "/Game/Audio/footstep_wood_001.footstep_wood_001",
+    "duration": 0.251564621925354,
+    "loop": false
+  },
+  {
+    "id": "footstep_wood_002",
+    "path": "/Game/Audio/footstep_wood_002.footstep_wood_002",
+    "duration": 0.2513832151889801,
+    "loop": false
+  },
+  {
+    "id": "footstep_wood_003",
+    "path": "/Game/Audio/footstep_wood_003.footstep_wood_003",
+    "duration": 0.25151926279067993,
+    "loop": false
+  },
+  {
+    "id": "footstep_wood_004",
+    "path": "/Game/Audio/footstep_wood_004.footstep_wood_004",
+    "duration": 0.24791383743286133,
+    "loop": false
+  },
+  {
+    "id": "glass",
+    "path": "/Game/Audio/glass.glass",
+    "duration": 0.23549999296665192,
+    "loop": false
+  },
+  {
+    "id": "kiosk_cash",
+    "path": "/Game/Audio/kiosk_cash.kiosk_cash",
+    "duration": 0.3199999928474426,
+    "loop": false
+  },
+  {
+    "id": "kiosk_fridge",
+    "path": "/Game/Audio/kiosk_fridge.kiosk_fridge",
+    "duration": 0.2199999988079071,
+    "loop": false
+  },
+  {
+    "id": "kiosk_pickup",
+    "path": "/Game/Audio/kiosk_pickup.kiosk_pickup",
+    "duration": 0.18000000715255737,
+    "loop": false
+  },
+  {
+    "id": "leaves_soft",
+    "path": "/Game/Audio/leaves_soft.leaves_soft",
+    "duration": 4.0,
+    "loop": true
+  },
+  {
+    "id": "ocean_loop",
+    "path": "/Game/Audio/ocean_loop.ocean_loop",
+    "duration": 24.0,
+    "loop": true
+  },
+  {
+    "id": "rain_loop",
+    "path": "/Game/Audio/rain_loop.rain_loop",
+    "duration": 8.5,
+    "loop": true
+  },
+  {
+    "id": "reggae_praia",
+    "path": "/Game/Audio/reggae_praia.reggae_praia",
+    "duration": 48.0,
+    "loop": true
+  },
+  {
+    "id": "seagull1",
+    "path": "/Game/Audio/seagull1.seagull1",
+    "duration": 3.892244815826416,
+    "loop": false
+  },
+  {
+    "id": "seagull2",
+    "path": "/Game/Audio/seagull2.seagull2",
+    "duration": 1.555737018585205,
+    "loop": false
+  },
+  {
+    "id": "swim_splash",
+    "path": "/Game/Audio/swim_splash.swim_splash",
+    "duration": 0.6499999761581421,
+    "loop": false
+  },
+  {
+    "id": "swim_stroke",
+    "path": "/Game/Audio/swim_stroke.swim_stroke",
+    "duration": 0.44999998807907104,
+    "loop": false
+  },
+  {
+    "id": "swoosh",
+    "path": "/Game/Audio/swoosh.swoosh",
+    "duration": 2.6375832557678223,
+    "loop": false
+  },
+  {
+    "id": "thunder",
+    "path": "/Game/Audio/thunder.thunder",
+    "duration": 5.0,
+    "loop": false
+  },
+  {
+    "id": "underwater_loop",
+    "path": "/Game/Audio/underwater_loop.underwater_loop",
+    "duration": 8.0,
+    "loop": true
+  },
+  {
+    "id": "whale_splash",
+    "path": "/Game/Audio/whale_splash.whale_splash",
+    "duration": 3.0,
+    "loop": false
+  },
+  {
+    "id": "wind_loop",
+    "path": "/Game/Audio/wind_loop.wind_loop",
+    "duration": 10.5,
+    "loop": true
+  }
+]

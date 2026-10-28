@@ -1,0 +1,40 @@
+#include "MareVisualWorld.h"
+#include "MareSimulation.h"
+#include "MareGame.h"
+#include "Engine/GameInstance.h"
+#include "Engine/Light.h"
+#include "Engine/ExponentialHeightFog.h"
+#include "Components/LightComponent.h"
+#include "Components/ExponentialHeightFogComponent.h"
+#include "EngineUtils.h"
+#include "Engine/TextRenderActor.h"
+#include "Components/TextRenderComponent.h"
+
+TStatId UMareVisualWorld::GetStatId()const{RETURN_QUICK_DECLARE_CYCLE_STAT(UMareVisualWorld,STATGROUP_Tickables);}
+void UMareVisualWorld::Tick(float DeltaSeconds)
+{
+ if(!GetWorld()->IsGameWorld() || !Cast<AMareGameMode>(GetWorld()->GetAuthGameMode()))return;
+ Clock-=DeltaSeconds;if(Clock>0)return;Clock=2.f;
+ if(!Sun){for(TActorIterator<ALight> It(GetWorld());It;++It){if(It->ActorHasTag(TEXT("MareSun")))Sun=*It;if(It->ActorHasTag(TEXT("MareMoon")))Moon=*It;if(It->ActorHasTag(TEXT("MarePractical")))Practical.AddUnique(*It);}
+  for(TActorIterator<AExponentialHeightFog> It(GetWorld());It;++It)Fog=*It;
+  for(TActorIterator<ATextRenderActor> It(GetWorld());It;++It)if(It->ActorHasTag(TEXT("MareText")))Signs.Add(*It);}
+ auto Sim=GetWorld()->GetGameInstance()->GetSubsystem<UMareSimulation>();if(!Sim)return;
+ const float Hour=UMareSimulation::Number(Sim->State,TEXT("minutes"))/60.f;
+ const float Solar=FMath::Sin((Hour-6.f)/12.f*PI);const float Day=FMath::SmoothStep(-.04f,.18f,Solar);
+ const bool Rain=UMareSimulation::String(Sim->State,TEXT("weather"))==TEXT("rain");
+ if(Sun){Sun->SetActorRotation(FRotator(-Solar*58.f,-65.f+(Hour-12.f)*12.f,0));Sun->GetLightComponent()->SetIntensity(FMath::Max(0.f,Solar)*65000.f*(Rain?.2f:1.f));
+  Sun->GetLightComponent()->SetLightColor(FLinearColor(1.f,FMath::Lerp(.9f,.98f,Day),FMath::Lerp(.79f,.94f,Day)),false);}
+ if(Moon)Moon->GetLightComponent()->SetIntensity((1-Day)*.8f);
+ for(auto Light:Practical)if(IsValid(Light))Light->GetLightComponent()->SetIntensity(Light->ActorHasTag(TEXT("MareHomeLight"))?FMath::Lerp(1100.f,120.f,Day):Light->ActorHasTag(TEXT("MareBounce"))?FMath::Lerp(450.f,2500.f,Day):FMath::Lerp(2200.f,9000.f,Day));
+ if(Fog)Fog->GetComponent()->SetFogDensity(Rain?.0018f:.00065f);
+ auto Dishes=UMareSimulation::Object(Sim->Definitions,TEXT("dishes"));
+ auto Price=[&](const FString& Id){auto Dish=UMareSimulation::Object(Dishes,Id);return UMareSimulation::String(Dish,TEXT("name"))+FString::Printf(TEXT("   R$ %.0f"),UMareSimulation::Number(Dish,TEXT("price")));};
+ for(auto Sign:Signs){if(!IsValid(Sign))continue;FString Text;
+  if(Sign->ActorHasTag(TEXT("MareCompanySign")))Text=UMareSimulation::String(UMareSimulation::Object(Sim->State,TEXT("company")),TEXT("name"));
+  if(Sign->ActorHasTag(TEXT("MareStatusSign"))){Text=Sim->IsOpen()?TEXT("ABERTO"):TEXT("FECHADO");Sign->GetTextRender()->SetTextRenderColor(FColor(36,31,24));}
+  if(Sign->ActorHasTag(TEXT("MarePromoSign")))Text=FString::Printf(TEXT("PROMOÇÕES<br>Coco gelado<br>R$ %.0f<br>Suco da fruta<br>R$ %.0f"),UMareSimulation::Number(UMareSimulation::Object(Dishes,TEXT("coco_gelado")),TEXT("price")),UMareSimulation::Number(UMareSimulation::Object(Dishes,TEXT("suco")),TEXT("price")));
+  if(Sign->ActorHasTag(TEXT("MareMenuSign")))for(FString Id:{TEXT("coco_gelado"),TEXT("suco"),TEXT("caipirinha"),TEXT("petiscos"),TEXT("sorvete_morango"),TEXT("sorvete_chocolate"),TEXT("batata_frita"),TEXT("porcao_peixe")})Text+=Price(Id)+TEXT("<br>");
+  for(FName Tag:Sign->Tags)if(Tag.ToString().StartsWith(TEXT("MareStock_"))){FString Id=Tag.ToString().RightChop(10);Text=UMareSimulation::String(UMareSimulation::Object(Dishes,Id),TEXT("name"))+FString::Printf(TEXT("<br>%d prontos"),Sim->Available(Id));}
+  if(!Text.IsEmpty() && Sign->GetTextRender()->Text.ToString()!=Text)Sign->GetTextRender()->SetText(FText::FromString(Text));
+ }
+}

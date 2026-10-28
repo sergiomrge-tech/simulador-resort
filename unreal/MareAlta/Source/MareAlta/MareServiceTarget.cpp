@@ -1,5 +1,6 @@
 #include "MareServiceTarget.h"
 #include "MareGame.h"
+#include "MareAudioWorld.h"
 #include "MareSimulation.h"
 #include "Engine/GameInstance.h"
 #include "MarePerson.h"
@@ -53,13 +54,14 @@ void AMareServiceTarget::Use(APlayerController* Controller)
 {
  auto PC=Cast<AMareController>(Controller);if(!PC)return;
  auto Sim=PC->GetGameInstance()->GetSubsystem<UMareSimulation>();
- if(Action==TEXT("Fridge") || Action==TEXT("Cupboard")){PC->OpenStation(Action);return;}
+ if(Action==TEXT("Fridge") || Action==TEXT("Cupboard")){GetWorld()->GetSubsystem<UMareAudioWorld>()->PlayCue(TEXT("kiosk_fridge"),.3f);PC->OpenStation(Action);return;}
  if(Action==TEXT("Customer")){if(auto Person=Cast<AMarePerson>(GetOwner()))Person->Interact(PC);return;}
- if(Action==TEXT("Clean")){GetWorld()->GetSubsystem<UMareKioskWorld>()->CleanTable(DataIndex);return;}
+ if(Action==TEXT("Clean")){GetWorld()->GetSubsystem<UMareKioskWorld>()->CleanTable(DataIndex);GetWorld()->GetSubsystem<UMareAudioWorld>()->PlayCue(TEXT("clean"),.3f);return;}
  if(Action==TEXT("Bed")){Sim->Sleep();return;}
  if(Action==TEXT("Door")){
   if(bOpened && !CanClose(PC->GetPawn()->GetActorLocation())){Sim->LastMessage=TEXT("Afaste-se do arco da porta para fechar.");return;}
   bOpened=!bOpened;
+  const FVector Spot=GetActorLocation();GetWorld()->GetSubsystem<UMareAudioWorld>()->PlayCue(TEXT("door"),.24f,&Spot);
  }
 }
 void AMareServiceTarget::Tick(float DeltaSeconds)

@@ -74,7 +74,10 @@ bool UMareSimulation::SetOpen(bool bOpen)
  auto Company=Object(State,TEXT("company")); bool bCreated=false;
  Company->TryGetBoolField(TEXT("created"),bCreated);
  if(bOpen && !bCreated) return Fail(TEXT("Crie sua empresa primeiro."));
- Company->SetBoolField(TEXT("kiosk_open"),bOpen); return Save();
+ Company->SetBoolField(TEXT("kiosk_open"),bOpen);
+ auto Hours=Object(Company,TEXT("sim"));
+ LastMessage=bOpen?(IsOpen()?TEXT("Quiosque aberto. Recebendo clientes."):FString::Printf(TEXT("Abertura ativada. Atendimento das %.0fh às %.0fh."),Number(Hours,TEXT("start"),8),Number(Hours,TEXT("end"),18))):TEXT("Quiosque fechado.");
+ return Save();
 }
 bool UMareSimulation::IsOpen() const
 {
