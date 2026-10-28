@@ -125,3 +125,15 @@ adições pendentes. Os três conceitos de interface vêm depois desse lote.
 - Regressão do executável com abertura, anterior a estes dois ajustes: 48 checks
   passaram (`D:/CodexTemp/ue58-package-qa-20261028-125730`), áudio audível,
   silenciado e pausado aprovados. Repetir após a porta e água.
+
+### Peixes fora d'água
+
+O usuário relatou o problema também na versão UE. Identificados e agrupados os 97
+pares de corpo e cauda originais. Um subsistema reposiciona os peixes em função do
+fundo e os reduz a tamanhos compatíveis, mantendo os modelos. Corpos e caudas têm
+movimento suave somente perto do jogador, sem colisão; todas as instâncias são
+recolocadas abaixo da menor superfície da onda. No teste do editor, as 54
+verificações passaram, incluindo quantidade, limites abaixo d'água e movimento;
+a imagem da praia as grandes formas coloridas já não atravessam o mar. A captura
+subaquática inicial falhou por mudar a câmera no mesmo quadro e foi corrigida no
+script de teste. Falta confirmar essa imagem e executar a regressão no pacote.

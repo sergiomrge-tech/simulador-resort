@@ -7,6 +7,7 @@
 #include "MareSimulation.h"
 #include "MareAudioWorld.h"
 #include "MareVisualWorld.h"
+#include "MareReefWorld.h"
 #include "MareServiceTarget.h"
 #include "EngineUtils.h"
 #include "AudioMixerBlueprintLibrary.h"
@@ -54,7 +55,7 @@ void AMarePreviewQA::Check(const FString& Name,bool bPass)
   if(GetWorld()->LineTraceSingleByChannel(Hit,P,P+FVector(0,0,180),ECC_Visibility,Query))Row->SetStringField(TEXT("overhead"),GetNameSafe(Hit.GetActor()));
  }
  Results.Add(MakeShared<FJsonValueObject>(Row));UE_LOG(LogTemp,Display,TEXT("MARE_PREVIEW_QA %s %s"),*Name,bPass?TEXT("PASS"):TEXT("FAIL"));
- auto Report=MakeShared<FJsonObject>();Report->SetArrayField(TEXT("checks"),Results);Report->SetBoolField(TEXT("finished"),Name==TEXT("expansion_profile_restored"));
+ auto Report=MakeShared<FJsonObject>();Report->SetArrayField(TEXT("checks"),Results);Report->SetBoolField(TEXT("finished"),Name==TEXT("reef_motion"));
  FString Text;FJsonSerializer::Serialize(Report,TJsonWriterFactory<>::Create(&Text));FFileHelper::SaveStringToFile(Text,*(Root/TEXT("preview-qa.json")));
 }
 void AMarePreviewQA::Capture(const FString& Name){FScreenshotRequest::RequestScreenshot(Root/(Name+TEXT(".png")),true,false);}
@@ -68,7 +69,7 @@ void AMarePreviewQA::Tick(float DeltaSeconds)
   if(!Root.StartsWith(TEXT("D:/CodexTemp/"))){Destroy();return;}
   FApp::SetUnfocusedVolumeMultiplier(1.f);Next=FPlatformTime::Seconds()+12;Phase=0;
  }
- if(FPlatformTime::Seconds()<Next || Phase>24)return;
+ if(FPlatformTime::Seconds()<Next || Phase>27)return;
  auto Move=Hero->GetCharacterMovement();auto Eyes=Hero->FindComponentByClass<UCameraComponent>();
  auto Audio=GetWorld()->GetSubsystem<UMareAudioWorld>();auto Sim=PC->GetSimulation();
  auto Key=[&](FKey K,bool Down){PC->InputKey(FInputKeyEventArgs(GEngine->GameViewport->Viewport,INPUTDEVICEID_NONE,K,Down?IE_Pressed:IE_Released,FPlatformTime::Cycles64()));};
@@ -185,8 +186,15 @@ void AMarePreviewQA::Tick(float DeltaSeconds)
   Sim->State->SetObjectField(TEXT("unlocked"),ExpansionOwnership);Sim->State->SetNumberField(TEXT("money"),ExpansionCash);
   GetWorld()->GetSubsystem<UMareVisualWorld>()->RefreshExpansions();
   Hero->SetActorLocation(FVector(3800,-1200,100));Move->SetMovementMode(MOVE_Walking);PC->SetControlRotation(FRotator(-6,-90,0));
-  Check(TEXT("expansion_profile_restored"),Sim->Save());break;
- case 24:if(GetWorld()->WorldType!=EWorldType::PIE)GEngine->Exec(GetWorld(),TEXT("QUIT"));break;
+  Check(TEXT("expansion_profile_restored"),Sim->Save());
+  {auto Reef=GetWorld()->GetSubsystem<UMareReefWorld>();Check(TEXT("reef_pairs_present"),Reef && Reef->FishCount()==97);Check(TEXT("reef_below_wave_surface"),Reef && Reef->AllFishUnderwater());
+   if(Reef){Before=Reef->SamplePosition();Move->SetMovementMode(MOVE_Flying);Hero->SetActorLocation(Before+FVector(0,130,-64));Move->StopMovementImmediately();PC->SetControlRotation((Before-(Hero->GetActorLocation()+FVector(0,0,64))).Rotation());}}
+  break;
+ case 24:{auto Reef=GetWorld()->GetSubsystem<UMareReefWorld>();Capture(TEXT("reef-underwater"));Check(TEXT("reef_motion"),Reef && FVector::Distance(Before,Reef->SamplePosition())>1.f && Reef->AllFishUnderwater());
+  break;}
+ case 25:Hero->SetActorLocation(FVector(3800,-2600,100));Move->StopMovementImmediately();PC->SetControlRotation(FRotator(-3,-90,0));break;
+ case 26:Capture(TEXT("shore-waves"));break;
+ case 27:if(GetWorld()->WorldType!=EWorldType::PIE)GEngine->Exec(GetWorld(),TEXT("QUIT"));break;
  }
  Next=FPlatformTime::Seconds()+(Phase==13?10:Phase==1?7:Phase==3?4:Phase==4?5:3);
 }
