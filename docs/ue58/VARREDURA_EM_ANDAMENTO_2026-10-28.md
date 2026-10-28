@@ -137,3 +137,23 @@ verificações passaram, incluindo quantidade, limites abaixo d'água e moviment
 a imagem da praia as grandes formas coloridas já não atravessam o mar. A captura
 subaquática inicial falhou por mudar a câmera no mesmo quadro e foi corrigida no
 script de teste. Falta confirmar essa imagem e executar a regressão no pacote.
+
+### Validação do pacote de 28/10
+
+O executável interno `D:/Builds/MareAltaUE58_PeixesOndasWIP_2026-10-28/Windows`
+foi construído do commit `b933a95c` e testado com perfil descartável: **54/54**
+verificações, incluindo encaixe e abertura/fechamento da porta, 97 pares de peixes,
+profundidade e movimento; saída 0 e log sem erro. Áudio audível/silenciado/pausado
+aprovado. Evidências em `D:/CodexTemp/ue58-package-qa-20261028-131859/`: na foto
+da praia os peixes não furam a água; na subaquática os peixes aparecem. A imagem
+subaquática ainda mostra corais estilizados e um limite visual azul do horizonte:
+são problemas de acabamento a tratar, não considerar o mar finalizado. A espuma da
+orla é discreta e também precisa de revisão em movimento e chuva.
+
+A abertura natural e o avanço foram novamente exercitados nesse mesmo pacote:
+6/6 checagens por cenário em `D:/CodexTemp/ue58-intro-package-20261028-132156/`.
+A foto mostra a porta ajustada; o ônibus e o desembarque ainda são protótipos. O
+percurso real porta-carta e o visual do papel não foram testados inteiramente a pé.
+O usuário autorizou começar sem preservar o progresso anterior; não copiar saves
+para o próximo pacote. Não tratar este pacote como entrega final, nem apresentar
+as três propostas de interface antes de concluir as pendências existentes.
