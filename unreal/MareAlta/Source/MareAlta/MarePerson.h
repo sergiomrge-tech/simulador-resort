@@ -30,6 +30,10 @@ public:
  UPROPERTY() TMap<FString,TObjectPtr<UAnimSequence>> Clips;
  UPROPERTY(BlueprintReadOnly,Category="Maré Alta")
  FString PersonName;
+ UPROPERTY(BlueprintReadOnly,Category="Maré Alta") FString SaveId;
+ UPROPERTY(BlueprintReadOnly,Category="Maré Alta") bool bConsumed=false;
+ /** Keep future save fields when rewriting this customer's known state. */
+ TSharedPtr<class FJsonObject> SaveMetadata;
  UPROPERTY(BlueprintReadOnly,Category="Maré Alta")
  FString OrderId;
  UPROPERTY(BlueprintReadOnly,Category="Maré Alta")

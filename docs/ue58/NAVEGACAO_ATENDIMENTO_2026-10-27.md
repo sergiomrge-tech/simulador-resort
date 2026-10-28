@@ -31,7 +31,7 @@ O empacotamento inclui os diretórios dos atores carregados pelo catálogo JSON 
 
 ## Pendências que continuam
 
-- Persistência/reconstrução de clientes e louça ao recarregar, sem pedidos órfãos.
+- Persistência nativa foi concluída no lote posterior: [Saves e atendimento](PERSISTENCIA_2026-10-27.md). Conferir esse guia antes de retomar.
 - Refinar mãos/bandejas/apoio dos braços, pessoas e materiais; revisar iluminação e desempenho na câmera final. A importação completa não equivale à aprovação visual.
 - Completar negócios, capítulos, progressão, salários, atividades, clima, dia/noite, navios, baleias, animais, áudio e opções.
 - Validar porta, todas as entradas/áreas, saves copiados e executável empacotado antes de publicar download.

@@ -1,4 +1,6 @@
 #include "MareSimulation.h"
+#include "MareKioskWorld.h"
+#include "Engine/World.h"
 #include "Misc/FileHelper.h"
 #include "Misc/Paths.h"
 #include "Misc/CommandLine.h"
@@ -127,7 +129,7 @@ FString UMareSimulation::AddOrder(const FString& Customer,const TArray<FString>&
  auto Orders=Object(State,TEXT("ue_orders")); const FString Id=FGuid::NewGuid().ToString(EGuidFormats::Digits);
  auto Order=MakeShared<FJsonObject>(); Order->SetStringField(TEXT("name"),Customer); TArray<TSharedPtr<FJsonValue>> Items;
  for(const auto& Dish:Dishes){if(!Object(Definitions,TEXT("dishes"))->HasField(Dish)) return TEXT("");Items.Add(MakeShared<FJsonValueString>(Dish));}
- Order->SetArrayField(TEXT("remaining"),Items); Orders->SetObjectField(Id,Order); Save(); return Id;
+ Order->SetArrayField(TEXT("remaining"),Items);Order->SetArrayField(TEXT("items"),Items); Orders->SetObjectField(Id,Order); Save(); return Id;
 }
 bool UMareSimulation::Deliver(const FString& OrderId,const FString& Dish,bool bStaff)
 {
@@ -198,6 +200,7 @@ void UMareSimulation::Sleep()
 }
 bool UMareSimulation::Save()
 {
+ if(GetWorld() && GetWorld()->IsGameWorld())if(auto Kiosk=GetWorld()->GetSubsystem<UMareKioskWorld>())Kiosk->CaptureState();
  FString Text;if(!FJsonSerializer::Serialize(State.ToSharedRef(),TJsonWriterFactory<>::Create(&Text))) return false;
  const FString Path=SavePath(),Temp=Path+TEXT(".tmp");IFileManager::Get().MakeDirectory(*FPaths::GetPath(Path),true);
  if(!FFileHelper::SaveStringToFile(Text,*Temp,FFileHelper::EEncodingOptions::ForceUTF8WithoutBOM)) return Fail(TEXT("Falha ao salvar."));
@@ -207,5 +210,8 @@ bool UMareSimulation::ImportLegacySave(const FString& Path)
 {
  TSharedPtr<FJsonObject> Imported;if(!ReadJson(Path,Imported) || !Imported->HasTypedField<EJson::Object>(TEXT("company")) || !Imported->HasTypedField<EJson::Number>(TEXT("money"))) return Fail(TEXT("Save incompatível."));
  if(FPaths::ConvertRelativePathToFull(Path)==FPaths::ConvertRelativePathToFull(SavePath())) return false;
- auto Previous=State;State=Imported;if(Save()) return true;State=Previous;return false;
+ auto Previous=State;State=Imported;
+ auto Kiosk=GetWorld() && GetWorld()->IsGameWorld()?GetWorld()->GetSubsystem<UMareKioskWorld>():nullptr;
+ if(Kiosk)Kiosk->ResetPhysicalState();
+ if(Save())return true;State=Previous;return false;
 }

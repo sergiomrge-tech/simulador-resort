@@ -1,0 +1,1430 @@
+{
+  "checks": [
+    "restore partial order with one held product",
+    "restore consumed-product history",
+    "restore seated customer pose",
+    "restore four matching used dishes",
+    "reserve busy and dirty seats",
+    "reload does not charge or pay again",
+    "no duplicated held products",
+    "no duplicated used dishes",
+    "player carry survives reload",
+    "stock deducted once across reload",
+    "automatic payment exactly once",
+    "completed order removed atomically",
+    "transaction snapshot includes final product",
+    "unknown customer fields preserved",
+    "completed sale survives reload without duplicate payment",
+    "customer carries both paid products",
+    "cleaning target removes its matching dishes",
+    "seated customer finishes consumption",
+    "clean chair remains reserved while occupied",
+    "cleaned dishes do not respawn",
+    "consumption flag survives reload",
+    "cleaned dishes stay absent after reload",
+    "sleep saves no old customers or orders",
+    "no customers resurrect next day",
+    "unknown root fields preserved",
+    "unknown native snapshot fields preserved",
+    "unknown player fields preserved",
+    "old unbound order gains a physical customer",
+    "legacy remaining-only order restores only unpaid item",
+    "recovered arrival survives reload without freezing",
+    "recorded order can reach counter while closed",
+    "recovery never repeats earlier payment",
+    "new order transaction already binds customer id",
+    "noting order never charges or consumes stock",
+    "new order survives reload with same owner",
+    "no extra orphan customer after transaction reload",
+    "restore exactly one attendant with their held product",
+    "restore never charges another hire fee",
+    "attendant reload does not duplicate withdrawn stock",
+    "restored attendant resumes delivery and payment once",
+    "staff delivery reload preserves exact payment and stock",
+    "delivered staff product is not resurrected in hand",
+    "unknown attendant fields preserved",
+    "open house door survives reload",
+    "player position survives reload"
+  ],
+  "snapshots": {
+    "initial": {
+      "pie": true,
+      "time": 0.008333399891853333,
+      "paused": true,
+      "open": false,
+      "game_mode": "<Object '/Game/Maps/UEDPIE_0_Coast.Coast:PersistentLevel.MareGameMode_0' (0x000001BF7AF3F600) Class 'MareGameMode'>",
+      "mode_tick": true,
+      "location": [
+        3870.0,
+        -1405.0,
+        100.0
+      ],
+      "velocity": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "cash": 1000.0,
+      "carry": "",
+      "panel_open": false,
+      "focus": "Customer",
+      "people": [
+        {
+          "id": "MarePerson_0",
+          "save_id": "qa-partial",
+          "order": "qa-order",
+          "consumed": false,
+          "held_count": 1,
+          "name": "Ana",
+          "stage": "<MarePersonStage.PRODUCTS: 2>",
+          "counter": 0,
+          "table": 0,
+          "employee": false,
+          "plan": [
+            "suco",
+            "coco_gelado"
+          ],
+          "delivered": [
+            "suco"
+          ],
+          "position": [
+            3870.0,
+            -1653.0,
+            97.14999866485596
+          ]
+        },
+        {
+          "id": "MarePerson_1",
+          "save_id": "qa-seated",
+          "order": "",
+          "consumed": false,
+          "held_count": 1,
+          "name": "Maria",
+          "stage": "<MarePersonStage.EATING: 4>",
+          "counter": -1,
+          "table": 2,
+          "employee": false,
+          "plan": [
+            "porcao_peixe"
+          ],
+          "delivered": [
+            "porcao_peixe"
+          ],
+          "position": [
+            3370.9606170654297,
+            -1779.3201446533199,
+            80.90000051259995
+          ]
+        }
+      ],
+      "used_dishes": [
+        {
+          "table": [
+            "Table_1"
+          ],
+          "mesh": "/Game/Actors/Combined/Used_suco/Used_suco.Used_suco"
+        },
+        {
+          "table": [
+            "Table_1"
+          ],
+          "mesh": "/Game/Actors/Combined/Used_coco_gelado/Used_coco_gelado.Used_coco_gelado"
+        },
+        {
+          "table": [
+            "Table_1"
+          ],
+          "mesh": "/Game/Actors/Combined/Used_sorvete_morango/Used_sorvete_morango.Used_sorvete_morango"
+        },
+        {
+          "table": [
+            "Table_1"
+          ],
+          "mesh": "/Game/Actors/Combined/Used_batata_frita/Used_batata_frita.Used_batata_frita"
+        }
+      ],
+      "reserved_tables": [
+        0,
+        1,
+        2
+      ],
+      "doors": [
+        {
+          "name": "Porta da casa",
+          "opened": false
+        },
+        {
+          "name": "Porta do banheiro",
+          "opened": false
+        }
+      ]
+    },
+    "partial_reload": {
+      "pie": true,
+      "time": 0.4835520088672638,
+      "paused": true,
+      "open": false,
+      "game_mode": "<Object '/Game/Maps/UEDPIE_0_Coast.Coast:PersistentLevel.MareGameMode_0' (0x000001BF99780000) Class 'MareGameMode'>",
+      "mode_tick": true,
+      "location": [
+        3870.0,
+        -1405.0,
+        100.0
+      ],
+      "velocity": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "cash": 1000.0,
+      "carry": "",
+      "panel_open": false,
+      "focus": "Customer",
+      "people": [
+        {
+          "id": "MarePerson_0",
+          "save_id": "qa-partial",
+          "order": "qa-order",
+          "consumed": false,
+          "held_count": 1,
+          "name": "Ana",
+          "stage": "<MarePersonStage.PRODUCTS: 2>",
+          "counter": 0,
+          "table": 0,
+          "employee": false,
+          "plan": [
+            "suco",
+            "coco_gelado"
+          ],
+          "delivered": [
+            "suco"
+          ],
+          "position": [
+            3870.0,
+            -1653.0,
+            97.14999866485596
+          ]
+        },
+        {
+          "id": "MarePerson_1",
+          "save_id": "qa-seated",
+          "order": "",
+          "consumed": false,
+          "held_count": 1,
+          "name": "Maria",
+          "stage": "<MarePersonStage.EATING: 4>",
+          "counter": -1,
+          "table": 2,
+          "employee": false,
+          "plan": [
+            "porcao_peixe"
+          ],
+          "delivered": [
+            "porcao_peixe"
+          ],
+          "position": [
+            3370.9606170654297,
+            -1779.3201446533199,
+            80.90000051259995
+          ]
+        }
+      ],
+      "used_dishes": [
+        {
+          "table": [
+            "Table_1"
+          ],
+          "mesh": "/Game/Actors/Combined/Used_suco/Used_suco.Used_suco"
+        },
+        {
+          "table": [
+            "Table_1"
+          ],
+          "mesh": "/Game/Actors/Combined/Used_coco_gelado/Used_coco_gelado.Used_coco_gelado"
+        },
+        {
+          "table": [
+            "Table_1"
+          ],
+          "mesh": "/Game/Actors/Combined/Used_sorvete_morango/Used_sorvete_morango.Used_sorvete_morango"
+        },
+        {
+          "table": [
+            "Table_1"
+          ],
+          "mesh": "/Game/Actors/Combined/Used_batata_frita/Used_batata_frita.Used_batata_frita"
+        }
+      ],
+      "reserved_tables": [
+        0,
+        1,
+        2
+      ],
+      "doors": [
+        {
+          "name": "Porta da casa",
+          "opened": false
+        },
+        {
+          "name": "Porta do banheiro",
+          "opened": false
+        }
+      ]
+    },
+    "carrying_reload": {
+      "pie": true,
+      "time": 0.4268448054790497,
+      "paused": true,
+      "open": false,
+      "game_mode": "<Object '/Game/Maps/UEDPIE_0_Coast.Coast:PersistentLevel.MareGameMode_0' (0x000001BF76F2DE00) Class 'MareGameMode'>",
+      "mode_tick": true,
+      "location": [
+        3909.3899229241474,
+        -1288.1404541533552,
+        100.39999628067017
+      ],
+      "velocity": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "cash": 1000.0,
+      "carry": "coco_gelado",
+      "panel_open": false,
+      "focus": "Fridge",
+      "people": [
+        {
+          "id": "MarePerson_0",
+          "save_id": "qa-partial",
+          "order": "qa-order",
+          "consumed": false,
+          "held_count": 1,
+          "name": "Ana",
+          "stage": "<MarePersonStage.PRODUCTS: 2>",
+          "counter": 0,
+          "table": 0,
+          "employee": false,
+          "plan": [
+            "suco",
+            "coco_gelado"
+          ],
+          "delivered": [
+            "suco"
+          ],
+          "position": [
+            3870.0,
+            -1653.0,
+            97.14999866485596
+          ]
+        },
+        {
+          "id": "MarePerson_1",
+          "save_id": "qa-seated",
+          "order": "",
+          "consumed": false,
+          "held_count": 1,
+          "name": "Maria",
+          "stage": "<MarePersonStage.EATING: 4>",
+          "counter": -1,
+          "table": 2,
+          "employee": false,
+          "plan": [
+            "porcao_peixe"
+          ],
+          "delivered": [
+            "porcao_peixe"
+          ],
+          "position": [
+            3370.9606170654297,
+            -1779.3201446533199,
+            80.90000051259995
+          ]
+        }
+      ],
+      "used_dishes": [
+        {
+          "table": [
+            "Table_1"
+          ],
+          "mesh": "/Game/Actors/Combined/Used_suco/Used_suco.Used_suco"
+        },
+        {
+          "table": [
+            "Table_1"
+          ],
+          "mesh": "/Game/Actors/Combined/Used_coco_gelado/Used_coco_gelado.Used_coco_gelado"
+        },
+        {
+          "table": [
+            "Table_1"
+          ],
+          "mesh": "/Game/Actors/Combined/Used_sorvete_morango/Used_sorvete_morango.Used_sorvete_morango"
+        },
+        {
+          "table": [
+            "Table_1"
+          ],
+          "mesh": "/Game/Actors/Combined/Used_batata_frita/Used_batata_frita.Used_batata_frita"
+        }
+      ],
+      "reserved_tables": [
+        0,
+        1,
+        2
+      ],
+      "doors": [
+        {
+          "name": "Porta da casa",
+          "opened": false
+        },
+        {
+          "name": "Porta do banheiro",
+          "opened": false
+        }
+      ]
+    },
+    "delivered": {
+      "pie": true,
+      "time": 0.8430027067661285,
+      "paused": false,
+      "open": false,
+      "game_mode": "<Object '/Game/Maps/UEDPIE_0_Coast.Coast:PersistentLevel.MareGameMode_0' (0x000001BF76F2DE00) Class 'MareGameMode'>",
+      "mode_tick": true,
+      "location": [
+        3870.0000762939503,
+        -1405.00001907349,
+        100.15000310540198
+      ],
+      "velocity": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "cash": 1012.0,
+      "carry": "",
+      "panel_open": false,
+      "focus": null,
+      "people": [
+        {
+          "id": "MarePerson_0",
+          "save_id": "qa-partial",
+          "order": "qa-order",
+          "consumed": false,
+          "held_count": 2,
+          "name": "Ana",
+          "stage": "<MarePersonStage.TO_TABLE: 3>",
+          "counter": -1,
+          "table": 0,
+          "employee": false,
+          "plan": [
+            "suco",
+            "coco_gelado"
+          ],
+          "delivered": [
+            "suco",
+            "coco_gelado"
+          ],
+          "position": [
+            3870.0,
+            -1653.0,
+            97.14999866485596
+          ]
+        },
+        {
+          "id": "MarePerson_1",
+          "save_id": "qa-seated",
+          "order": "",
+          "consumed": false,
+          "held_count": 1,
+          "name": "Maria",
+          "stage": "<MarePersonStage.EATING: 4>",
+          "counter": -1,
+          "table": 2,
+          "employee": false,
+          "plan": [
+            "porcao_peixe"
+          ],
+          "delivered": [
+            "porcao_peixe"
+          ],
+          "position": [
+            3370.9606170654297,
+            -1779.3201446533199,
+            80.90000051259995
+          ]
+        }
+      ],
+      "used_dishes": [
+        {
+          "table": [
+            "Table_1"
+          ],
+          "mesh": "/Game/Actors/Combined/Used_suco/Used_suco.Used_suco"
+        },
+        {
+          "table": [
+            "Table_1"
+          ],
+          "mesh": "/Game/Actors/Combined/Used_coco_gelado/Used_coco_gelado.Used_coco_gelado"
+        },
+        {
+          "table": [
+            "Table_1"
+          ],
+          "mesh": "/Game/Actors/Combined/Used_sorvete_morango/Used_sorvete_morango.Used_sorvete_morango"
+        },
+        {
+          "table": [
+            "Table_1"
+          ],
+          "mesh": "/Game/Actors/Combined/Used_batata_frita/Used_batata_frita.Used_batata_frita"
+        }
+      ],
+      "reserved_tables": [
+        0,
+        1,
+        2
+      ],
+      "doors": [
+        {
+          "name": "Porta da casa",
+          "opened": false
+        },
+        {
+          "name": "Porta do banheiro",
+          "opened": false
+        }
+      ]
+    },
+    "completed_reload": {
+      "pie": true,
+      "time": 0.419450007379055,
+      "paused": true,
+      "open": false,
+      "game_mode": "<Object '/Game/Maps/UEDPIE_0_Coast.Coast:PersistentLevel.MareGameMode_0' (0x000001BF66F17200) Class 'MareGameMode'>",
+      "mode_tick": true,
+      "location": [
+        3870.0000762939503,
+        -1405.00001907349,
+        100.15000310540198
+      ],
+      "velocity": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "cash": 1012.0,
+      "carry": "",
+      "panel_open": false,
+      "focus": null,
+      "people": [
+        {
+          "id": "MarePerson_0",
+          "save_id": "qa-partial",
+          "order": "qa-order",
+          "consumed": false,
+          "held_count": 2,
+          "name": "Ana",
+          "stage": "<MarePersonStage.TO_TABLE: 3>",
+          "counter": -1,
+          "table": 0,
+          "employee": false,
+          "plan": [
+            "suco",
+            "coco_gelado"
+          ],
+          "delivered": [
+            "suco",
+            "coco_gelado"
+          ],
+          "position": [
+            3909.0817405404505,
+            -1682.341002776569,
+            91.54770374298096
+          ]
+        },
+        {
+          "id": "MarePerson_1",
+          "save_id": "qa-seated",
+          "order": "",
+          "consumed": false,
+          "held_count": 1,
+          "name": "Maria",
+          "stage": "<MarePersonStage.EATING: 4>",
+          "counter": -1,
+          "table": 2,
+          "employee": false,
+          "plan": [
+            "porcao_peixe"
+          ],
+          "delivered": [
+            "porcao_peixe"
+          ],
+          "position": [
+            3370.9606170654297,
+            -1779.3201446533199,
+            80.90000051259995
+          ]
+        }
+      ],
+      "used_dishes": [
+        {
+          "table": [
+            "Table_1"
+          ],
+          "mesh": "/Game/Actors/Combined/Used_suco/Used_suco.Used_suco"
+        },
+        {
+          "table": [
+            "Table_1"
+          ],
+          "mesh": "/Game/Actors/Combined/Used_coco_gelado/Used_coco_gelado.Used_coco_gelado"
+        },
+        {
+          "table": [
+            "Table_1"
+          ],
+          "mesh": "/Game/Actors/Combined/Used_sorvete_morango/Used_sorvete_morango.Used_sorvete_morango"
+        },
+        {
+          "table": [
+            "Table_1"
+          ],
+          "mesh": "/Game/Actors/Combined/Used_batata_frita/Used_batata_frita.Used_batata_frita"
+        }
+      ],
+      "reserved_tables": [
+        0,
+        1,
+        2
+      ],
+      "doors": [
+        {
+          "name": "Porta da casa",
+          "opened": false
+        },
+        {
+          "name": "Porta do banheiro",
+          "opened": false
+        }
+      ]
+    },
+    "consumed": {
+      "pie": true,
+      "time": 4.916076201945543,
+      "paused": true,
+      "open": false,
+      "game_mode": "<Object '/Game/Maps/UEDPIE_0_Coast.Coast:PersistentLevel.MareGameMode_0' (0x000001BF66F17200) Class 'MareGameMode'>",
+      "mode_tick": true,
+      "location": [
+        3870.0000762939503,
+        -1405.00001907349,
+        100.15000310540198
+      ],
+      "velocity": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "cash": 1012.0,
+      "carry": "",
+      "panel_open": false,
+      "focus": null,
+      "people": [
+        {
+          "id": "MarePerson_0",
+          "save_id": "qa-partial",
+          "order": "qa-order",
+          "consumed": false,
+          "held_count": 2,
+          "name": "Ana",
+          "stage": "<MarePersonStage.EATING: 4>",
+          "counter": -1,
+          "table": 0,
+          "employee": false,
+          "plan": [
+            "suco",
+            "coco_gelado"
+          ],
+          "delivered": [
+            "suco",
+            "coco_gelado"
+          ],
+          "position": [
+            4250.96092224121,
+            -1779.3201446533199,
+            80.90000051259995
+          ]
+        },
+        {
+          "id": "MarePerson_1",
+          "save_id": "qa-seated",
+          "order": "",
+          "consumed": true,
+          "held_count": 0,
+          "name": "Maria",
+          "stage": "<MarePersonStage.EATING: 4>",
+          "counter": -1,
+          "table": 2,
+          "employee": false,
+          "plan": [
+            "porcao_peixe"
+          ],
+          "delivered": [
+            "porcao_peixe"
+          ],
+          "position": [
+            3370.9606170654297,
+            -1779.3201446533199,
+            80.90000051259995
+          ]
+        }
+      ],
+      "used_dishes": [
+        {
+          "table": [
+            "Table_2"
+          ],
+          "mesh": "/Game/Actors/Combined/Used_porcao_peixe/Used_porcao_peixe.Used_porcao_peixe"
+        }
+      ],
+      "reserved_tables": [
+        0,
+        2
+      ],
+      "doors": [
+        {
+          "name": "Porta da casa",
+          "opened": false
+        },
+        {
+          "name": "Porta do banheiro",
+          "opened": false
+        }
+      ]
+    },
+    "cleaned_reload": {
+      "pie": true,
+      "time": 0.4177576079964638,
+      "paused": true,
+      "open": false,
+      "game_mode": "<Object '/Game/Maps/UEDPIE_0_Coast.Coast:PersistentLevel.MareGameMode_0' (0x000001C096166600) Class 'MareGameMode'>",
+      "mode_tick": true,
+      "location": [
+        3870.0000762939503,
+        -1405.00001907349,
+        100.15000310540198
+      ],
+      "velocity": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "cash": 1012.0,
+      "carry": "",
+      "panel_open": false,
+      "focus": null,
+      "people": [
+        {
+          "id": "MarePerson_0",
+          "save_id": "qa-partial",
+          "order": "qa-order",
+          "consumed": false,
+          "held_count": 2,
+          "name": "Ana",
+          "stage": "<MarePersonStage.EATING: 4>",
+          "counter": -1,
+          "table": 0,
+          "employee": false,
+          "plan": [
+            "suco",
+            "coco_gelado"
+          ],
+          "delivered": [
+            "suco",
+            "coco_gelado"
+          ],
+          "position": [
+            4250.96092224121,
+            -1779.3201446533199,
+            80.90000051259995
+          ]
+        },
+        {
+          "id": "MarePerson_1",
+          "save_id": "qa-seated",
+          "order": "",
+          "consumed": true,
+          "held_count": 0,
+          "name": "Maria",
+          "stage": "<MarePersonStage.EATING: 4>",
+          "counter": -1,
+          "table": 2,
+          "employee": false,
+          "plan": [
+            "porcao_peixe"
+          ],
+          "delivered": [
+            "porcao_peixe"
+          ],
+          "position": [
+            3370.9606170654297,
+            -1779.3201446533199,
+            80.90000051259995
+          ]
+        }
+      ],
+      "used_dishes": [],
+      "reserved_tables": [
+        0,
+        2
+      ],
+      "doors": [
+        {
+          "name": "Porta da casa",
+          "opened": false
+        },
+        {
+          "name": "Porta do banheiro",
+          "opened": false
+        }
+      ]
+    },
+    "morning": {
+      "pie": true,
+      "time": 0.41698330268263817,
+      "paused": true,
+      "open": false,
+      "game_mode": "<Object '/Game/Maps/UEDPIE_0_Coast.Coast:PersistentLevel.MareGameMode_0' (0x000001BFEF341E00) Class 'MareGameMode'>",
+      "mode_tick": true,
+      "location": [
+        3870.0000762939503,
+        -1405.00001907349,
+        100.15000310540198
+      ],
+      "velocity": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "cash": 1012.0,
+      "carry": "",
+      "panel_open": false,
+      "focus": null,
+      "people": [],
+      "used_dishes": [],
+      "reserved_tables": [],
+      "doors": [
+        {
+          "name": "Porta da casa",
+          "opened": false
+        },
+        {
+          "name": "Porta do banheiro",
+          "opened": false
+        }
+      ]
+    },
+    "legacy_recovered": {
+      "pie": true,
+      "time": 0.018760699778795242,
+      "paused": true,
+      "open": false,
+      "game_mode": "<Object '/Game/Maps/UEDPIE_0_Coast.Coast:PersistentLevel.MareGameMode_0' (0x000001BFEB2F2400) Class 'MareGameMode'>",
+      "mode_tick": true,
+      "location": [
+        3870.0000762939503,
+        -1405.00001907349,
+        100.15000310540198
+      ],
+      "velocity": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "cash": 1012.0,
+      "carry": "",
+      "panel_open": false,
+      "focus": null,
+      "people": [
+        {
+          "id": "MarePerson_0",
+          "save_id": "1F6DEE324BFACB746EEAEC945BB481AC",
+          "order": "legacy-unbound",
+          "consumed": false,
+          "held_count": 0,
+          "name": "Rafael",
+          "stage": "<MarePersonStage.APPROACHING: 0>",
+          "counter": 0,
+          "table": 0,
+          "employee": false,
+          "plan": [
+            "coco_gelado"
+          ],
+          "delivered": [],
+          "position": [
+            3220.0000762939503,
+            -1815.0000381469702,
+            90.4073339998722
+          ]
+        }
+      ],
+      "used_dishes": [],
+      "reserved_tables": [
+        0
+      ],
+      "doors": [
+        {
+          "name": "Porta da casa",
+          "opened": false
+        },
+        {
+          "name": "Porta do banheiro",
+          "opened": false
+        }
+      ]
+    },
+    "legacy_at_counter": {
+      "pie": true,
+      "time": 7.104009184986353,
+      "paused": true,
+      "open": false,
+      "game_mode": "<Object '/Game/Maps/UEDPIE_0_Coast.Coast:PersistentLevel.MareGameMode_0' (0x000001BFE8ABA200) Class 'MareGameMode'>",
+      "mode_tick": true,
+      "location": [
+        3870.0000762939503,
+        -1405.00001907349,
+        100.15000310540198
+      ],
+      "velocity": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "cash": 1012.0,
+      "carry": "",
+      "panel_open": false,
+      "focus": "Customer",
+      "people": [
+        {
+          "id": "MarePerson_0",
+          "save_id": "1F6DEE324BFACB746EEAEC945BB481AC",
+          "order": "legacy-unbound",
+          "consumed": false,
+          "held_count": 0,
+          "name": "Rafael",
+          "stage": "<MarePersonStage.PRODUCTS: 2>",
+          "counter": 0,
+          "table": 0,
+          "employee": false,
+          "plan": [
+            "coco_gelado"
+          ],
+          "delivered": [],
+          "position": [
+            3853.9766363935237,
+            -1664.3205454778029,
+            96.91338050912326
+          ]
+        }
+      ],
+      "used_dishes": [],
+      "reserved_tables": [
+        0
+      ],
+      "doors": [
+        {
+          "name": "Porta da casa",
+          "opened": false
+        },
+        {
+          "name": "Porta do banheiro",
+          "opened": false
+        }
+      ]
+    },
+    "new_order": {
+      "pie": true,
+      "time": 0.8276247158646584,
+      "paused": false,
+      "open": true,
+      "game_mode": "<Object '/Game/Maps/UEDPIE_0_Coast.Coast:PersistentLevel.MareGameMode_0' (0x000001BFE841F000) Class 'MareGameMode'>",
+      "mode_tick": true,
+      "location": [
+        3729.9999237060497,
+        -1405.00001907349,
+        100.15000310540198
+      ],
+      "velocity": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "cash": 1012.0,
+      "carry": "",
+      "panel_open": false,
+      "focus": "Customer",
+      "people": [
+        {
+          "id": "MarePerson_0",
+          "save_id": "1F6DEE324BFACB746EEAEC945BB481AC",
+          "order": "legacy-unbound",
+          "consumed": false,
+          "held_count": 0,
+          "name": "Rafael",
+          "stage": "<MarePersonStage.PRODUCTS: 2>",
+          "counter": 0,
+          "table": 0,
+          "employee": false,
+          "plan": [
+            "coco_gelado"
+          ],
+          "delivered": [],
+          "position": [
+            3853.9766363935237,
+            -1664.3205454778029,
+            96.91338050912326
+          ]
+        },
+        {
+          "id": "MarePerson_1",
+          "save_id": "qa-neworder",
+          "order": "B7266AAA46D046413523469B2A20B3EE",
+          "consumed": false,
+          "held_count": 0,
+          "name": "João",
+          "stage": "<MarePersonStage.PRODUCTS: 2>",
+          "counter": 1,
+          "table": 2,
+          "employee": false,
+          "plan": [
+            "batata_frita",
+            "sorvete_chocolate"
+          ],
+          "delivered": [],
+          "position": [
+            3730.0,
+            -1653.0,
+            96.63004684448242
+          ]
+        }
+      ],
+      "used_dishes": [],
+      "reserved_tables": [
+        0,
+        2
+      ],
+      "doors": [
+        {
+          "name": "Porta da casa",
+          "opened": false
+        },
+        {
+          "name": "Porta do banheiro",
+          "opened": false
+        }
+      ]
+    },
+    "new_order_reload": {
+      "pie": true,
+      "time": 0.42274030297994614,
+      "paused": true,
+      "open": true,
+      "game_mode": "<Object '/Game/Maps/UEDPIE_0_Coast.Coast:PersistentLevel.MareGameMode_0' (0x000001BFF0B90C00) Class 'MareGameMode'>",
+      "mode_tick": true,
+      "location": [
+        3729.9999237060497,
+        -1405.00001907349,
+        100.15000310540198
+      ],
+      "velocity": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "cash": 1012.0,
+      "carry": "",
+      "panel_open": false,
+      "focus": "Customer",
+      "people": [
+        {
+          "id": "MarePerson_0",
+          "save_id": "1F6DEE324BFACB746EEAEC945BB481AC",
+          "order": "legacy-unbound",
+          "consumed": false,
+          "held_count": 0,
+          "name": "Rafael",
+          "stage": "<MarePersonStage.PRODUCTS: 2>",
+          "counter": 0,
+          "table": 0,
+          "employee": false,
+          "plan": [
+            "coco_gelado"
+          ],
+          "delivered": [],
+          "position": [
+            3853.9766363935237,
+            -1664.3205454778029,
+            96.91338050912326
+          ]
+        },
+        {
+          "id": "MarePerson_1",
+          "save_id": "qa-neworder",
+          "order": "B7266AAA46D046413523469B2A20B3EE",
+          "consumed": false,
+          "held_count": 0,
+          "name": "João",
+          "stage": "<MarePersonStage.PRODUCTS: 2>",
+          "counter": 1,
+          "table": 2,
+          "employee": false,
+          "plan": [
+            "batata_frita",
+            "sorvete_chocolate"
+          ],
+          "delivered": [],
+          "position": [
+            3730.0,
+            -1653.0,
+            96.63004684448242
+          ]
+        }
+      ],
+      "used_dishes": [],
+      "reserved_tables": [
+        0,
+        2
+      ],
+      "doors": [
+        {
+          "name": "Porta da casa",
+          "opened": false
+        },
+        {
+          "name": "Porta do banheiro",
+          "opened": false
+        }
+      ]
+    },
+    "staff_carry": {
+      "pie": true,
+      "time": 0.5968994125723839,
+      "paused": true,
+      "open": false,
+      "game_mode": "<Object '/Game/Maps/UEDPIE_0_Coast.Coast:PersistentLevel.MareGameMode_0' (0x000001BFF12EF000) Class 'MareGameMode'>",
+      "mode_tick": true,
+      "location": [
+        3670.0,
+        -1300.0,
+        100.0
+      ],
+      "velocity": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "cash": 1012.0,
+      "carry": "",
+      "panel_open": false,
+      "focus": null,
+      "people": [
+        {
+          "id": "MarePerson_0",
+          "save_id": "qa-staff-customer",
+          "order": "staff-order",
+          "consumed": false,
+          "held_count": 0,
+          "name": "Ana",
+          "stage": "<MarePersonStage.PRODUCTS: 2>",
+          "counter": 0,
+          "table": 0,
+          "employee": false,
+          "plan": [
+            "coco_gelado"
+          ],
+          "delivered": [],
+          "position": [
+            3870.0,
+            -1653.0,
+            97.14999866485596
+          ]
+        },
+        {
+          "id": "MarePerson_1",
+          "save_id": "6E1606A9444BED99538393A6B80242D6",
+          "order": "",
+          "consumed": false,
+          "held_count": 1,
+          "name": "Atendente",
+          "stage": "<MarePersonStage.APPROACHING: 0>",
+          "counter": -1,
+          "table": -1,
+          "employee": true,
+          "plan": [],
+          "delivered": [],
+          "position": [
+            3913.3540876953875,
+            -1235.331726140258,
+            100.15000086977639
+          ]
+        }
+      ],
+      "used_dishes": [],
+      "reserved_tables": [
+        0
+      ],
+      "doors": [
+        {
+          "name": "Porta da casa",
+          "opened": false
+        },
+        {
+          "name": "Porta do banheiro",
+          "opened": false
+        }
+      ]
+    },
+    "staff_delivered": {
+      "pie": true,
+      "time": 3.575499825179577,
+      "paused": true,
+      "open": false,
+      "game_mode": "<Object '/Game/Maps/UEDPIE_0_Coast.Coast:PersistentLevel.MareGameMode_0' (0x000001BFF1979C00) Class 'MareGameMode'>",
+      "mode_tick": true,
+      "location": [
+        3670.0,
+        -1300.0,
+        100.0
+      ],
+      "velocity": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "cash": 1024.0,
+      "carry": "",
+      "panel_open": false,
+      "focus": null,
+      "people": [
+        {
+          "id": "MarePerson_0",
+          "save_id": "qa-staff-customer",
+          "order": "staff-order",
+          "consumed": false,
+          "held_count": 1,
+          "name": "Ana",
+          "stage": "<MarePersonStage.TO_TABLE: 3>",
+          "counter": -1,
+          "table": 0,
+          "employee": false,
+          "plan": [
+            "coco_gelado"
+          ],
+          "delivered": [
+            "coco_gelado"
+          ],
+          "position": [
+            3916.9326463078373,
+            -1688.2351478359744,
+            90.36214256286621
+          ]
+        },
+        {
+          "id": "MarePerson_1",
+          "save_id": "45BAA3F447C9FE5D80032790285B41C0",
+          "order": "",
+          "consumed": false,
+          "held_count": 0,
+          "name": "Atendente",
+          "stage": "<MarePersonStage.APPROACHING: 0>",
+          "counter": -1,
+          "table": -1,
+          "employee": true,
+          "plan": [],
+          "delivered": [],
+          "position": [
+            3863.4930542412676,
+            -1384.6535769467832,
+            100.15000058289596
+          ]
+        }
+      ],
+      "used_dishes": [],
+      "reserved_tables": [
+        0
+      ],
+      "doors": [
+        {
+          "name": "Porta da casa",
+          "opened": false
+        },
+        {
+          "name": "Porta do banheiro",
+          "opened": false
+        }
+      ]
+    },
+    "staff_after_delivery_reload": {
+      "pie": true,
+      "time": 0.5754633098840714,
+      "paused": true,
+      "open": false,
+      "game_mode": "<Object '/Game/Maps/UEDPIE_0_Coast.Coast:PersistentLevel.MareGameMode_0' (0x000001C099BA7200) Class 'MareGameMode'>",
+      "mode_tick": true,
+      "location": [
+        3670.0,
+        -1300.0,
+        100.0
+      ],
+      "velocity": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "cash": 1024.0,
+      "carry": "",
+      "panel_open": false,
+      "focus": null,
+      "people": [
+        {
+          "id": "MarePerson_0",
+          "save_id": "qa-staff-customer",
+          "order": "staff-order",
+          "consumed": false,
+          "held_count": 1,
+          "name": "Ana",
+          "stage": "<MarePersonStage.TO_TABLE: 3>",
+          "counter": -1,
+          "table": 0,
+          "employee": false,
+          "plan": [
+            "coco_gelado"
+          ],
+          "delivered": [
+            "coco_gelado"
+          ],
+          "position": [
+            3971.898961094494,
+            -1729.5016516423705,
+            90.36214256286621
+          ]
+        },
+        {
+          "id": "MarePerson_1",
+          "save_id": "B2A865A544812FC138FD989615A07B4E",
+          "order": "",
+          "consumed": false,
+          "held_count": 0,
+          "name": "Atendente",
+          "stage": "<MarePersonStage.APPROACHING: 0>",
+          "counter": -1,
+          "table": -1,
+          "employee": true,
+          "plan": [],
+          "delivered": [],
+          "position": [
+            3863.4930542412676,
+            -1384.6535769467832,
+            100.15000058289596
+          ]
+        }
+      ],
+      "used_dishes": [],
+      "reserved_tables": [
+        0
+      ],
+      "doors": [
+        {
+          "name": "Porta da casa",
+          "opened": false
+        },
+        {
+          "name": "Porta do banheiro",
+          "opened": false
+        }
+      ]
+    },
+    "open_door_reload": {
+      "pie": true,
+      "time": 0.5557252019643784,
+      "paused": true,
+      "open": false,
+      "game_mode": "<Object '/Game/Maps/UEDPIE_0_Coast.Coast:PersistentLevel.MareGameMode_0' (0x000001C097E0D200) Class 'MareGameMode'>",
+      "mode_tick": true,
+      "location": [
+        4772.49992370605,
+        2640.0,
+        105.15000650286674
+      ],
+      "velocity": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "cash": 1024.0,
+      "carry": "",
+      "panel_open": false,
+      "focus": null,
+      "people": [
+        {
+          "id": "MarePerson_0",
+          "save_id": "qa-staff-customer",
+          "order": "staff-order",
+          "consumed": false,
+          "held_count": 1,
+          "name": "Ana",
+          "stage": "<MarePersonStage.TO_TABLE: 3>",
+          "counter": -1,
+          "table": 0,
+          "employee": false,
+          "plan": [
+            "coco_gelado"
+          ],
+          "delivered": [
+            "coco_gelado"
+          ],
+          "position": [
+            4059.0889301958014,
+            -1794.9603822442637,
+            90.36214256286621
+          ]
+        },
+        {
+          "id": "MarePerson_1",
+          "save_id": "E61C548F4DBF0E218509A6994A2E8436",
+          "order": "",
+          "consumed": false,
+          "held_count": 0,
+          "name": "Atendente",
+          "stage": "<MarePersonStage.APPROACHING: 0>",
+          "counter": -1,
+          "table": -1,
+          "employee": true,
+          "plan": [],
+          "delivered": [],
+          "position": [
+            3863.4930542412676,
+            -1384.6535769467832,
+            100.15000058289596
+          ]
+        }
+      ],
+      "used_dishes": [],
+      "reserved_tables": [
+        0
+      ],
+      "doors": [
+        {
+          "name": "Porta da casa",
+          "opened": true
+        },
+        {
+          "name": "Porta do banheiro",
+          "opened": false
+        }
+      ]
+    }
+  },
+  "passed": true
+}

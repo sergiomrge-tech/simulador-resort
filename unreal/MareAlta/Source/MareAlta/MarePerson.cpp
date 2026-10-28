@@ -49,6 +49,7 @@ FTransform AMarePerson::ReferenceBoneTransform(FName Bone)const
 }
 bool AMarePerson::SetAppearance(int32 AppearanceVariant)
 {
+ if(SaveId.IsEmpty())SaveId=FGuid::NewGuid().ToString(EGuidFormats::Digits);
  const FString Key=FString::Printf(TEXT("Human_%d"),AppearanceVariant%4);auto Row=UMareSimulation::Object(AssetCatalog(),Key);
  const TArray<TSharedPtr<FJsonValue>>* Paths=nullptr;if(!Row->TryGetArrayField(TEXT("skeletal_meshes"),Paths) || Paths->IsEmpty())return false;
  auto MeshAsset=LoadObject<USkeletalMesh>(nullptr,*(*Paths)[0]->AsString());if(!MeshAsset)return false;

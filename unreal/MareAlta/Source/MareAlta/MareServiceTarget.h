@@ -24,6 +24,8 @@ public:
  /** Uses the target from a validated player interaction. */
  UFUNCTION(BlueprintCallable,Category="Interaction") void Use(APlayerController* Controller);
  UFUNCTION(BlueprintPure,Category="Door") bool IsOpen()const{return bOpened;}
+ /** Restore the saved leaf without toggling an interaction. */
+ void RestoreDoorState(bool bOpen);
  FString Prompt()const;
  bool CanClose(const FVector& PlayerLocation)const;
  UFUNCTION(BlueprintPure,Category="Interaction")

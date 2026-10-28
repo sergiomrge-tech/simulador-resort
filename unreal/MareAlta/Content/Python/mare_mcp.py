@@ -1,5 +1,5 @@
 """Project-owned native MCP tools. No shell, arbitrary script, or external paths."""
-import json
+import json,re
 from pathlib import Path
 import unreal
 import toolset_registry
@@ -26,7 +26,8 @@ class MareMigrationTools(unreal.ToolsetDefinition):
     def migration_status() -> str:
         """Report engine, current project, available source models and imported native meshes."""
         world=read('world.json',{})
-        return json.dumps({'engine':unreal.SystemLibrary.get_engine_version(),'project':str(ROOT),'direction':'realista estilizado','source_models':len(list(SOURCE.glob('World_*.gltf'))),'manifest_models':len(world.get('chunks',[])),'instances':len(world.get('instances',[])),'imported_models':len(read('imported_meshes.json',{}))},ensure_ascii=False)
+        match=re.search(r'-MareSaveRoot=(?:"([^"]+)"|(\S+))',unreal.SystemLibrary.get_command_line())
+        return json.dumps({'engine':unreal.SystemLibrary.get_engine_version(),'project':str(ROOT),'qa_save_root':(match.group(1) or match.group(2)) if match else '', 'direction':'realista estilizado','source_models':len(list(SOURCE.glob('World_*.gltf'))),'manifest_models':len(world.get('chunks',[])),'instances':len(world.get('instances',[])),'imported_models':len(read('imported_meshes.json',{}))},ensure_ascii=False)
 
     @toolset_registry.tool_call
     @staticmethod
@@ -257,6 +258,7 @@ class MareMigrationTools(unreal.ToolsetDefinition):
         sim=controller.get_simulation()
         actors=unreal.GameplayStatics.get_all_actors_of_class(world,unreal.MareServiceTarget)
         people=unreal.GameplayStatics.get_all_actors_of_class(world,unreal.MarePerson)
+        kiosk=next(item for item in unreal.ObjectIterator(unreal.MareKioskWorld) if item.get_outer()==world)
         def point(v):return [v.x,v.y,v.z]
         def aim(target,position):
             controller.close_phone()
@@ -269,6 +271,7 @@ class MareMigrationTools(unreal.ToolsetDefinition):
             location=target.get_actor_location();aim(target,unreal.Vector(location.x,-1280,98))
         elif phase=='position_customer':
             customers=[p for p in people if not p.get_editor_property('employee') and p.get_editor_property('counter_index')>=0]
+            if dish.isdigit():customers=[p for p in customers if p.get_editor_property('counter_index')==int(dish)]
             if not customers:return json.dumps({'pending':'customer arrival'})
             person=customers[0];target=next(a for a in actors if a.get_owner()==person)
             spots=read('world.json',{})['tables'];position=spots[person.get_editor_property('counter_index')]['staff_approach']
@@ -279,6 +282,11 @@ class MareMigrationTools(unreal.ToolsetDefinition):
             person=seated[0];location=person.get_actor_location();position=location+person.get_actor_forward_vector()*230
             position.z=100;controller.close_phone();player.set_actor_location(position,False,False)
             controller.set_control_rotation(unreal.MathLibrary.find_look_at_rotation(position+unreal.Vector(0,0,64),location+unreal.Vector(0,0,60)))
+        elif phase=='position_clean':
+            index=int(dish)
+            target=next(a for a in actors if str(a.get_editor_property('action'))=='Clean' and a.get_editor_property('data_index')==index)
+            position=read('world.json',{})['tables'][index+2]['approach']
+            aim(target,unreal.Vector(position[0]*100,position[2]*100,position[1]*100+88))
         elif phase in ('position_door','door_inside','door_outside'):
             target=next(a for a in actors if str(a.get_editor_property('action'))=='Door' and a.get_editor_property('auto_close'))
             offset={'position_door':unreal.Vector(-57.5,190,100),'door_inside':unreal.Vector(-57.5,-150,100),'door_outside':unreal.Vector(-57.5,200,100)}[phase]
@@ -288,6 +296,14 @@ class MareMigrationTools(unreal.ToolsetDefinition):
             if not target:return json.dumps({'error':'No focused target'})
             target.use(controller)
         elif phase=='close_panel':controller.close_phone()
+        elif phase=='save':sim.save()
+        elif phase=='pause':unreal.GameplayStatics.set_game_paused(world,True)
+        elif phase=='resume':unreal.GameplayStatics.set_game_paused(world,False)
+        elif phase=='return':sim.return_carry(False)
+        elif phase=='sleep':sim.sleep()
+        elif phase=='clean':
+            target=next(a for a in actors if str(a.get_editor_property('action'))=='Clean' and a.get_editor_property('data_index')==int(dish))
+            target.use(controller)
         elif phase=='phone':controller.toggle_phone()
         elif phase=='pickup':
             if not controller.get_editor_property('phone_open'):return json.dumps({'error':'Physical station panel must be open'})
@@ -305,7 +321,7 @@ class MareMigrationTools(unreal.ToolsetDefinition):
             sim.set_open(True)
         elif phase=='close_kiosk':sim.set_open(False)
         focus=unreal.MareServiceTarget.find_focused(controller)
-        return json.dumps({'pie':True,'time':unreal.GameplayStatics.get_time_seconds(world),'paused':unreal.GameplayStatics.is_game_paused(world),'open':sim.is_open(),'game_mode':str(unreal.GameplayStatics.get_game_mode(world)),'mode_tick':unreal.GameplayStatics.get_game_mode(world).is_actor_tick_enabled(),'location':point(player.get_actor_location()),'velocity':point(player.get_velocity()),'cash':sim.money(),'carry':sim.carry(False),'panel_open':controller.get_editor_property('phone_open'),'focus':str(focus.get_editor_property('action')) if focus else None,'people':[{'id':p.get_name(),'name':p.get_editor_property('person_name'),'stage':str(p.get_editor_property('stage')),'counter':p.get_editor_property('counter_index'),'table':p.get_editor_property('table_index'),'employee':p.get_editor_property('employee'),'plan':list(p.get_editor_property('plan')),'delivered':list(p.get_editor_property('delivered')),'position':point(p.get_actor_location())} for p in people],'doors':[{'name':a.get_editor_property('label'),'opened':a.is_open()} for a in actors if str(a.get_editor_property('action'))=='Door']},ensure_ascii=False)
+        return json.dumps({'pie':True,'time':unreal.GameplayStatics.get_time_seconds(world),'paused':unreal.GameplayStatics.is_game_paused(world),'open':sim.is_open(),'game_mode':str(unreal.GameplayStatics.get_game_mode(world)),'mode_tick':unreal.GameplayStatics.get_game_mode(world).is_actor_tick_enabled(),'location':point(player.get_actor_location()),'velocity':point(player.get_velocity()),'cash':sim.money(),'carry':sim.carry(False),'panel_open':controller.get_editor_property('phone_open'),'focus':str(focus.get_editor_property('action')) if focus else None,'people':[{'id':p.get_name(),'save_id':p.get_editor_property('save_id'),'order':p.get_editor_property('order_id'),'consumed':p.get_editor_property('consumed'),'held_count':len([part for part in p.get_components_by_class(unreal.StaticMeshComponent) if str(part.get_attach_socket_name()) in ('hand_r','hand_l')]),'name':p.get_editor_property('person_name'),'stage':str(p.get_editor_property('stage')),'counter':p.get_editor_property('counter_index'),'table':p.get_editor_property('table_index'),'employee':p.get_editor_property('employee'),'plan':list(p.get_editor_property('plan')),'delivered':list(p.get_editor_property('delivered')),'position':point(p.get_actor_location())} for p in people],'used_dishes':[{'table':[str(tag) for tag in a.tags if str(tag).startswith('Table_')],'mesh':a.static_mesh_component.static_mesh.get_path_name()} for a in unreal.GameplayStatics.get_all_actors_of_class(world,unreal.StaticMeshActor) if any(str(tag).startswith('Table_') for tag in a.tags)],'reserved_tables':[i for i in range(len(read('world.json',{})['tables'])-2) if kiosk.is_table_reserved(i)],'doors':[{'name':a.get_editor_property('label'),'opened':a.is_open()} for a in actors if str(a.get_editor_property('action'))=='Door']},ensure_ascii=False)
 
 
     @toolset_registry.tool_call

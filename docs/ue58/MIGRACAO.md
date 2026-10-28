@@ -87,3 +87,8 @@ Ele substitui as contagens e limitações dos checkpoints iniciais acima.
 ## Continuação UE5.8 — cenário e atendimento
 
 Guia atual: [Cenário completo e atendimento nativo](NAVEGACAO_ATENDIMENTO_2026-10-27.md). São 1.620 modelos, 12.910 instâncias e zero modelos ausentes. O bloqueio de navegação em Z910 foi corrigido. A migração integral e a aprovação visual continuam pendentes; a versão Godot aprovada permanece preservada.
+
+
+## Continuação UE5.8 — persistência nativa
+
+Guia atual: [Saves e continuidade do atendimento](PERSISTENCIA_2026-10-27.md). Clientes, pedidos parciais, transporte, louça, reservas, jogador e portas são reconstruídos nos saves UE. Preservar a transação atômica entre atendimento e economia, o marcador de consumo e os campos desconhecidos. A conversão integral e o executável UE aprovado continuam pendentes.

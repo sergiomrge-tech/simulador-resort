@@ -38,6 +38,12 @@ FString AMareServiceTarget::Prompt()const
  if(Action==TEXT("Door"))return Label+(bOpened?TEXT(" · fechar"):TEXT(" · abrir"));
  return Label;
 }
+void AMareServiceTarget::RestoreDoorState(bool bOpen)
+{
+ bOpened=bOpen;bWasInside=false;DoorAngle=bOpen?-90.f:0.f;
+ DoorMesh->SetRelativeRotation(FRotator(0,DoorAngle,0));
+ FocusOffset=FRotator(0,DoorAngle,0).RotateVector(FVector(-57.5,0,110));
+}
 bool AMareServiceTarget::CanClose(const FVector& PlayerLocation)const
 {
  const FVector P=GetActorTransform().InverseTransformPosition(PlayerLocation);

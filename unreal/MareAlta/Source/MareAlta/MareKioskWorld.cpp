@@ -2,6 +2,7 @@
 #include "MarePerson.h"
 #include "MareServiceTarget.h"
 #include "MareSimulation.h"
+#include "MareGame.h"
 #include "Engine/GameInstance.h"
 #include "AIController.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -19,7 +20,7 @@ TStatId UMareKioskWorld::GetStatId()const{RETURN_QUICK_DECLARE_CYCLE_STAT(UMareK
 FVector UMareKioskWorld::FromGodot(const TArray<TSharedPtr<FJsonValue>>& V,float Height){return V.Num()==3?FVector(V[0]->AsNumber()*100,V[2]->AsNumber()*100,V[1]->AsNumber()*100+Height):FVector::ZeroVector;}
 void UMareKioskWorld::Initialize(FSubsystemCollectionBase& Collection)
 {
- Super::Initialize(Collection);FString Text;TSharedPtr<FJsonObject> World;
+ Super::Initialize(Collection);TearDownHandle=FWorldDelegates::OnWorldBeginTearDown.AddUObject(this,&UMareKioskWorld::BeforeTearDown);FString Text;TSharedPtr<FJsonObject> World;
  FFileHelper::LoadFileToString(Text,*(FPaths::ProjectContentDir()/TEXT("Data/world.json")));
  if(!FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Text),World))return;
  const TArray<TSharedPtr<FJsonValue>>* Spots=nullptr;if(!World->TryGetArrayField(TEXT("tables"),Spots))return;
@@ -42,6 +43,10 @@ void UMareKioskWorld::SpawnCustomer()
  Person->PersonName=Names[FMath::RandRange(0,Names.Num()-1)];Person->CounterIndex=Counter;Person->TableIndex=Table;
  if(Table!=INDEX_NONE)ReservedTables.Add(Table);
  Guests.Add(Person);Person->WalkTo(CounterPoints[Counter]);
+ CreateInteraction(Person);
+}
+void UMareKioskWorld::CreateInteraction(AMarePerson* Person)
+{
  auto Target=GetWorld()->SpawnActor<AMareServiceTarget>();Target->Action=TEXT("Customer");Target->Label=Person->PersonName;Target->SetOwner(Person);
  Target->AttachToActor(Person,FAttachmentTransformRules::SnapToTargetNotIncludingScale);Target->SetActorRelativeLocation(FVector(0,0,45));Target->Reach=350;Target->OcclusionTolerance=90;Person->Interaction=Target;
 }
@@ -87,26 +92,36 @@ void UMareKioskWorld::Leave(AMarePerson* Person)
 void UMareKioskWorld::MakeDirty(AMarePerson* Person)
 {
  const int32 Table=Person->TableIndex;if(Table==INDEX_NONE || DirtyTables.Contains(Table))return;
- DirtyTables.Add(Table);TArray<TSharedPtr<FJsonValue>> Items;
- for(int32 I=0;I<Person->Delivered.Num();++I){const FString& Dish=Person->Delivered[I];Items.Add(MakeShared<FJsonValueString>(Dish));
+ SpawnDirtyTable(Table,Person->Delivered);TArray<TSharedPtr<FJsonValue>> Items;
+ for(const auto& Dish:Person->Delivered)Items.Add(MakeShared<FJsonValueString>(Dish));
+ if(auto S=Sim())UMareSimulation::Object(S->State,TEXT("ue_dirty_tables"))->SetArrayField(FString::FromInt(Table),Items);
+}
+void UMareKioskWorld::SpawnDirtyTable(int32 Table,const TArray<FString>& Items)
+{
+ if(!TableSurfaces.IsValidIndex(Table) || DirtyTables.Contains(Table))return;
+ DirtyTables.Add(Table);ReservedTables.Add(Table);
+ for(int32 I=0;I<Items.Num();++I){const FString& Dish=Items[I];
   auto Mesh=AMarePerson::ProductMesh(Dish,true);if(!Mesh)continue;
-  auto Object=GetWorld()->SpawnActor<AStaticMeshActor>(TableSurfaces[Table]+FVector(I*13,0,1),FRotator::ZeroRotator);
+  const FRotator Orientation(0,TableYaw[Table],0);
+  const FVector Offset=Orientation.RotateVector(FVector((I/2)*16.f,Items.Num()>1?(I%2==0?-8.f:8.f):0.f,1));
+  auto Object=GetWorld()->SpawnActor<AStaticMeshActor>(TableSurfaces[Table]+Offset,FRotator::ZeroRotator);
   Object->GetStaticMeshComponent()->SetMobility(EComponentMobility::Movable);Object->GetStaticMeshComponent()->SetStaticMesh(Mesh);Object->GetStaticMeshComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);Object->Tags.Add(FName(*FString::Printf(TEXT("Table_%d"),Table)));DirtyObjects.Add(Object);
  }
  auto Target=GetWorld()->SpawnActor<AMareServiceTarget>(TableSurfaces[Table],FRotator::ZeroRotator);Target->Action=TEXT("Clean");Target->Label=TEXT("Recolher louça");Target->DataIndex=Table;Target->Tags.Add(FName(*FString::Printf(TEXT("Table_%d"),Table)));DirtyObjects.Add(Target);
- if(auto S=Sim())UMareSimulation::Object(S->State,TEXT("ue_dirty_tables"))->SetArrayField(FString::FromInt(Table),Items);
 }
 void UMareKioskWorld::CleanTable(int32 Index)
 {
  const FName Tag(*FString::Printf(TEXT("Table_%d"),Index));
  for(int32 I=DirtyObjects.Num()-1;I>=0;--I)if(!IsValid(DirtyObjects[I]) || DirtyObjects[I]->Tags.Contains(Tag)){if(IsValid(DirtyObjects[I]))DirtyObjects[I]->Destroy();DirtyObjects.RemoveAt(I);}
- DirtyTables.Remove(Index);ReservedTables.Remove(Index);if(auto S=Sim()){UMareSimulation::Object(S->State,TEXT("ue_dirty_tables"))->RemoveField(FString::FromInt(Index));S->Save();}
+ DirtyTables.Remove(Index);
+ if(!Guests.ContainsByPredicate([&](auto P){return IsValid(P) && P->TableIndex==Index && P->Stage!=EMarePersonStage::Leaving;}))ReservedTables.Remove(Index);
+ if(auto S=Sim()){UMareSimulation::Object(S->State,TEXT("ue_dirty_tables"))->RemoveField(FString::FromInt(Index));S->Save();}
 }
 void UMareKioskWorld::UpdateCustomer(AMarePerson* P)
 {
  if(P->Stage==EMarePersonStage::Approaching && P->Elapsed>45){Leave(P);return;}
  if(P->Stage==EMarePersonStage::Approaching && P->AtGoal()){
-  P->Stage=EMarePersonStage::Order;P->Elapsed=0;
+  P->Stage=P->OrderId.IsEmpty()?EMarePersonStage::Order:EMarePersonStage::Products;P->Elapsed=0;
   if(CounterStaffPoints.IsValidIndex(P->CounterIndex))
    P->SetActorRotation(FRotator(0,(CounterStaffPoints[P->CounterIndex]-P->GetActorLocation()).Rotation().Yaw,0));
  }
@@ -117,7 +132,7 @@ void UMareKioskWorld::UpdateCustomer(AMarePerson* P)
   else P->PlayPose(TEXT("Idle"));
   P->Stage=EMarePersonStage::Eating;P->Elapsed=0;
  }
- else if(P->Stage==EMarePersonStage::Eating){if(P->Elapsed>8){P->ClearProducts();MakeDirty(P);}if(P->Elapsed>18)Leave(P);}
+ else if(P->Stage==EMarePersonStage::Eating){if(P->Elapsed>8 && !P->bConsumed){P->bConsumed=true;P->ClearProducts();MakeDirty(P);}if(P->Elapsed>18)Leave(P);}
  else if(P->Stage==EMarePersonStage::Leaving && (P->Elapsed>25 || P->AtGoal()))P->Destroy();
 }
 void UMareKioskWorld::UpdateAttendant(float DeltaSeconds)
@@ -134,6 +149,10 @@ void UMareKioskWorld::UpdateAttendant(float DeltaSeconds)
   auto Order=UMareSimulation::Object(UMareSimulation::Object(S->State,TEXT("ue_orders")),P->OrderId);const TArray<TSharedPtr<FJsonValue>>* Items=nullptr;
   if(!Order->TryGetArrayField(TEXT("remaining"),Items) || Items->IsEmpty())continue;
   const FString Dish=(*Items)[0]->AsString();
+  const FString Held=S->Carry(true);
+  if(!Held.IsEmpty() && !Items->ContainsByPredicate([&](const auto& Item){return Item->AsString()==Held;})){
+   S->ReturnCarry(true);Attendant->ClearProducts();return;
+  }
   if(S->Carry(true).IsEmpty()){
    const FVector Storage=Dish==TEXT("batata_frita") || Dish==TEXT("porcao_peixe")?FVector(3800,-1240,98):FVector(3920,-1240,98);
    if(FVector::DistSquared2D(Attendant->GetActorLocation(),Storage)>FMath::Square(95.f)){Attendant->WalkTo(Storage);return;}
@@ -141,6 +160,7 @@ void UMareKioskWorld::UpdateAttendant(float DeltaSeconds)
   }
   if(Serve(P,true))Attendant->ClearProducts();return;
  }
+ if(!S->Carry(true).IsEmpty()){S->ReturnCarry(true);Attendant->ClearProducts();}
  if(!DirtyTables.IsEmpty()){const int32 Table=*DirtyTables.CreateConstIterator();
   if(FVector::DistSquared2D(Attendant->GetActorLocation(),TableApproaches[Table])>FMath::Square(100.f)){Attendant->WalkTo(TableApproaches[Table]);return;}
   CleanTable(Table);
@@ -148,14 +168,16 @@ void UMareKioskWorld::UpdateAttendant(float DeltaSeconds)
 }
 void UMareKioskWorld::Tick(float DeltaSeconds)
 {
- auto S=Sim();if(!S || !GetWorld()->IsGameWorld() || GetWorld()->IsPaused())return;
+ auto S=Sim();if(!S || !GetWorld()->IsGameWorld() || !GetWorld()->GetAuthGameMode<AMareGameMode>() || GetWorld()->IsPaused())return;
+ if(!bRestored){RestoreWorld();bRestored=true;}
  const int32 Day=UMareSimulation::Number(S->State,TEXT("day"),1);
- if(LastDay!=INDEX_NONE && LastDay!=Day){for(auto P:Guests)if(IsValid(P)){if(P->Interaction)P->Interaction->Destroy();P->Destroy();}Guests.Empty();ReservedTables.Empty();}
+ if(LastDay!=INDEX_NONE && LastDay!=Day){for(auto P:Guests)if(IsValid(P)){if(P->Interaction)P->Interaction->Destroy();P->Destroy();}Guests.Empty();ReservedTables=DirtyTables;if(IsValid(Attendant))Attendant->ClearProducts();}
  LastDay=Day;
  Guests.RemoveAll([](auto P){return !IsValid(P);});
+ RecoverOrders();
  if(S->IsOpen()){Arrival-=DeltaSeconds;if(Arrival<=0){SpawnCustomer();Arrival=FMath::FRandRange(18.f,30.f);}}
  for(auto P:Guests){
-  if(!S->IsOpen() && (P->Stage==EMarePersonStage::Approaching || P->Stage==EMarePersonStage::Order))Leave(P);
+  if(!S->IsOpen() && P->OrderId.IsEmpty() && (P->Stage==EMarePersonStage::Approaching || P->Stage==EMarePersonStage::Order))Leave(P);
   UpdateCustomer(P);
  }
  UpdateAttendant(DeltaSeconds);
