@@ -37,6 +37,9 @@ AMarePerson* UMareVillageWorld::SpawnPerson(FVector Position,int32 Variant,const
 }
 void UMareVillageWorld::Setup()
 {
+ // Retry on a later tick while navigation is loading/building; do not mark an empty population ready.
+ auto Nav=FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld());FNavLocation ReadyPoint;
+ if(!Nav || Nav->IsNavigationBuildInProgress() || !Nav->ProjectPointToNavigation(FVector(3700,-1230,98),ReadyPoint,FVector(80,80,150)))return;
  FString Text;TSharedPtr<FJsonObject> Data;
  if(!FFileHelper::LoadFileToString(Text,*(FPaths::ProjectContentDir()/TEXT("Data/village_routes.json"))) || !FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Text),Data))return;
  const auto Vector=[](const TArray<TSharedPtr<FJsonValue>>& A){return FVector(A[0]->AsNumber(),A[1]->AsNumber(),A[2]->AsNumber());};

@@ -92,3 +92,11 @@ a qualidade de distância real em vez do índice global (-1 em presets mistos).
 Compilação MareAltaEditor Win64 Development aprovada após a mudança. Sem nova
 execução do jogo ou exportação; o EXE testado continua sendo o de f7ab170d.
 Demais pendências continuam pausadas até novo pedido.
+
+### Pequenos ajustes autorizados posteriormente
+
+O usuário autorizou continuar em pequenos lotes enquanto houver limite.
+Inicialização da vila agora espera a navegação terminar e um ponto conhecido
+ficar projetável antes de criar a população. Aparência registra corretamente
+a variante carregada; reaplicá-la limpa cabelo anterior e reinicia o clip para
+evitar peças acumuladas e animação vazia. Validar em PIE antes de exportar.

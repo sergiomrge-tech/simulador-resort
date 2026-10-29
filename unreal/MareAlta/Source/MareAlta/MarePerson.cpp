@@ -52,9 +52,14 @@ FTransform AMarePerson::ReferenceBoneTransform(FName Bone)const
 bool AMarePerson::SetAppearance(int32 AppearanceVariant)
 {
  if(SaveId.IsEmpty())SaveId=FGuid::NewGuid().ToString(EGuidFormats::Digits);
- const FString Key=FString::Printf(TEXT("Human_%d"),AppearanceVariant%4);auto Row=UMareSimulation::Object(AssetCatalog(),Key);
+ const int32 Selected=(AppearanceVariant%4+4)%4;
+ const FString Key=FString::Printf(TEXT("Human_%d"),Selected);auto Row=UMareSimulation::Object(AssetCatalog(),Key);
  const TArray<TSharedPtr<FJsonValue>>* Paths=nullptr;if(!Row->TryGetArrayField(TEXT("skeletal_meshes"),Paths) || Paths->IsEmpty())return false;
  auto MeshAsset=LoadObject<USkeletalMesh>(nullptr,*(*Paths)[0]->AsString());if(!MeshAsset)return false;
+ Variant=Selected;
+ // Reapplying a look must not stack hair or leave the new anim instance without a clip.
+ for(auto Part:HairMeshes)if(IsValid(Part))Part->DestroyComponent();HairMeshes.Empty();
+ Clips.Empty();Playing.Reset();
  GetMesh()->SetSkeletalMeshAsset(MeshAsset);GetMesh()->SetAnimInstanceClass(UMareServiceAnimInstance::StaticClass());
  for(const FString& Name:{TEXT("Idle"),TEXT("Idle_Talking"),TEXT("Walk"),TEXT("Sitting_Idle"),TEXT("Interact")}){
   const FString Path=UMareSimulation::String(UMareSimulation::Object(Row,TEXT("animations")),Key+Name);
