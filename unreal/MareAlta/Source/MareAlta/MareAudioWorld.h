@@ -19,7 +19,7 @@ public:
  virtual void Tick(float DeltaSeconds) override;
  virtual TStatId GetStatId()const override;
  /** Playback uses the effects bus; positional cues use distance attenuation. */
- void PlayCue(FName Name,float Gain=.35f,const FVector* Position=nullptr,bool bAmbient=false);
+ UAudioComponent* PlayCue(FName Name,float Gain=.35f,const FVector* Position=nullptr,bool bAmbient=false);
  UFUNCTION(BlueprintCallable,Category="Audio") void SetVolume(FName Bus,float Value);
  UFUNCTION(BlueprintPure,Category="Audio") float GetVolume(FName Bus)const;
  UFUNCTION(BlueprintPure,Category="Audio") int32 LoadedSounds()const{return Sounds.Num();}

@@ -2,6 +2,7 @@
 #include "MarePerson.h"
 #include "MareGame.h"
 #include "MarePlayerPresentation.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Animation/AnimSingleNodeInstanceProxy.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/StaticMeshComponent.h"
@@ -22,6 +23,7 @@ struct FServiceProxy : FAnimSingleNodeInstanceProxy
  TWeakObjectPtr<UAnimationAsset> PreviousAsset;
  TArray<FTransform> LastLocals,BlendFrom;
  float BlendTime=.2f;bool bNewClip=false;
+ bool bOpenSwimmingHands=false;
  virtual void PreUpdate(UAnimInstance* Instance,float DeltaSeconds) override
  {
   FAnimSingleNodeInstanceProxy::PreUpdate(Instance,DeltaSeconds);
@@ -30,6 +32,7 @@ struct FServiceProxy : FAnimSingleNodeInstanceProxy
   BlendTime+=DeltaSeconds;
   auto Person=Cast<AMarePerson>(Instance->GetOwningActor());
   if(!Person){if(auto Hero=Cast<AMareCharacter>(Instance->GetOwningActor()))if(auto Presentation=Hero->FindComponentByClass<UMarePlayerPresentation>()){
+   bOpenSwimmingHands=Hero->GetCharacterMovement()->IsSwimming() && Instance->GetSkelMeshComponent()==Presentation->ViewBody;
    const auto Inverse=Instance->GetSkelMeshComponent()->GetComponentTransform().Inverse();
    for(int32 Hand=0;Hand<2;++Hand){FVector Target=FVector::ZeroVector,Elbow=FVector::ZeroVector;float Weight=0;Presentation->HandTarget(Hand,Target,Elbow,Weight);
     Strength[Hand]=FMath::FInterpTo(Strength[Hand],Weight,DeltaSeconds,12.f);Targets[Hand]=Inverse.TransformPosition(Target);Elbows[Hand]=Inverse.TransformPosition(Elbow);}
@@ -61,6 +64,13 @@ struct FServiceProxy : FAnimSingleNodeInstanceProxy
    for(int32 I=0;I<Count;++I){auto& Local=Output.Pose[FCompactPoseBoneIndex(I)];const auto Target=Local;Local.Blend(BlendFrom[I],Target,Alpha);}
   }
   LastLocals.SetNumUninitialized(Count);for(int32 I=0;I<Count;++I)LastLocals[I]=Output.Pose[FCompactPoseBoneIndex(I)];
+  if(bOpenSwimmingHands){
+   const auto& Bones=Output.Pose.GetBoneContainer();const auto& Ref=Bones.GetReferenceSkeleton();
+   for(int32 I=0;I<Count;++I){const FCompactPoseBoneIndex Index(I);const int32 SkeletonIndex=Bones.GetSkeletonIndex(Index);
+    if(SkeletonIndex==INDEX_NONE)continue;const FString Name=Ref.GetBoneName(SkeletonIndex).ToString();
+    if(Name.StartsWith(TEXT("index_")) || Name.StartsWith(TEXT("middle_")) || Name.StartsWith(TEXT("ring_")) || Name.StartsWith(TEXT("pinky_")) || Name.StartsWith(TEXT("thumb_")))Output.Pose[Index].SetRotation(Ref.GetRefBonePose()[SkeletonIndex].GetRotation());
+   }
+  }
   if(Strength[0]<.001f && Strength[1]<.001f)return true;
   FCSPose<FCompactPose> Pose;Pose.InitPose(Output.Pose);const auto& Bones=Output.Pose.GetBoneContainer();
   for(int32 Hand=0;Hand<2;++Hand){if(Strength[Hand]<.001f)continue;

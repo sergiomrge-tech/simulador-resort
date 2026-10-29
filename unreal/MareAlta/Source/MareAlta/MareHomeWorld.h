@@ -22,11 +22,13 @@ public:
  bool IsTVOn()const{return bTV;}
  bool IsStereoOn()const{return bStereo;}
  bool IsShowerOn()const{return bShower;}
+ /** Saves resume on free floor rather than inside the sofa collision. */
+ FTransform StandingPose(const FTransform& Current)const{return bSeated?Standing:Current;}
 private:
  bool bReady=false,bTV=false,bStereo=false,bShower=false,bSeated=false;
  FTransform Standing;
  UPROPERTY() TObjectPtr<AStaticMeshActor> TVScreen;
  UPROPERTY() TObjectPtr<UInstancedStaticMeshComponent> ShowerDrops;
  void Setup();
- void Target(FName Action,const FString& Label,FVector Position,float Reach=170);
+ AMareServiceTarget* Target(FName Action,const FString& Label,FVector Position,float Reach=170);
 };

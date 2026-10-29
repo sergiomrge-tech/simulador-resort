@@ -31,7 +31,7 @@ void UMareAudioWorld::SetRadioStation(FName Station)
  if(Station!=TEXT("off") && Station!=TEXT("reggae_praia") && Station!=TEXT("music_bossa") && Station!=TEXT("music_relax"))return;
  RadioStation=Station;GConfig->SetString(TEXT("MareAudio"),TEXT("Radio"),*Station.ToString(),GGameUserSettingsIni);GConfig->Flush(false,GGameUserSettingsIni);
 }
-float UMareAudioWorld::LoopLevel(FName Name)const{auto Component=Loops.FindRef(Name);return IsValid(Component)?Component->VolumeMultiplier:0.f;}
+float UMareAudioWorld::LoopLevel(FName Name)const{UAudioComponent* Component=Name==TEXT("home_stereo")?HomeStereo.Get():Loops.FindRef(Name).Get();return IsValid(Component)?Component->VolumeMultiplier:0.f;}
 void UMareAudioWorld::SetHomeStereo(bool bEnabled,FVector Position)
 {
  bHomeStereo=bEnabled;if(!bReady)return;
@@ -68,12 +68,13 @@ void UMareAudioWorld::StartSoundscape(UMareSimulation* Sim)
  LastCash=Sim->Money();LastCarry=Sim->Carry();LastOrders=UMareSimulation::Object(Sim->State,TEXT("ue_orders"))->Values.Num();bReady=true;
  UE_LOG(LogTemp,Display,TEXT("MARE_AUDIO_READY %d sounds"),Sounds.Num());
 }
-void UMareAudioWorld::PlayCue(FName Name,float Volume,const FVector* Position,bool bAmbient)
+UAudioComponent* UMareAudioWorld::PlayCue(FName Name,float Volume,const FVector* Position,bool bAmbient)
 {
- auto Wave=Sounds.FindRef(Name);if(!Wave || GetVolume(TEXT("Master"))<=.001 || Gain(bAmbient)<=.001 || UGameplayStatics::IsGamePaused(this))return;
- const double Now=GetWorld()->GetTimeSeconds();if(Voices.Num()>=16 || (LastCue.Contains(Name) && Now-LastCue[Name]<.12))return;LastCue.Add(Name,Now);
+ auto Wave=Sounds.FindRef(Name);if(!Wave || GetVolume(TEXT("Master"))<=.001 || Gain(bAmbient)<=.001 || UGameplayStatics::IsGamePaused(this))return nullptr;
+ const double Now=GetWorld()->GetTimeSeconds();if(Voices.Num()>=16 || (LastCue.Contains(Name) && Now-LastCue[Name]<.12))return nullptr;LastCue.Add(Name,Now);
  auto Component=Position?UGameplayStatics::SpawnSoundAtLocation(this,Wave,*Position,FRotator::ZeroRotator,Volume*Gain(bAmbient),FMath::FRandRange(.97f,1.03f),0,Attenuation):UGameplayStatics::SpawnSound2D(this,Wave,Volume*Gain(bAmbient));
  if(Component){Component->SetUISound(false);if(bAmbient)Component->ComponentTags.Add(TEXT("Ambient"));Voices.Add(Component,Volume);}
+ return Component;
 }
 void UMareAudioWorld::UpdateLayers(float DeltaSeconds,UMareSimulation* Sim,FVector Position,bool bRain,bool bNight)
 {

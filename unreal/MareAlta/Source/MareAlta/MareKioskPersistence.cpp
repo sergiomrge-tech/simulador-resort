@@ -1,6 +1,7 @@
 #include "MareKioskWorld.h"
 #include "MarePerson.h"
 #include "MareServiceTarget.h"
+#include "MareHomeWorld.h"
 #include "MareSimulation.h"
 #include "AIController.h"
 #include "Components/CapsuleComponent.h"
@@ -84,7 +85,9 @@ void UMareKioskWorld::CaptureState()
  Snapshot->SetNumberField(TEXT("arrival"),LastDay==Day?Arrival:15);
  if(IsValid(Attendant))Snapshot->SetObjectField(TEXT("attendant"),Pose(Attendant,UMareSimulation::Object(Snapshot,TEXT("attendant"))));
  if(auto Player=UGameplayStatics::GetPlayerPawn(this,0)){
-  auto Saved=Pose(Player,UMareSimulation::Object(Snapshot,TEXT("player")));if(auto PC=UGameplayStatics::GetPlayerController(this,0))Saved->SetArrayField(TEXT("view"),Vector(PC->GetControlRotation().Euler()));
+  auto Saved=Pose(Player,UMareSimulation::Object(Snapshot,TEXT("player")));
+  if(auto Home=GetWorld()->GetSubsystem<UMareHomeWorld>())Saved->SetArrayField(TEXT("position"),Vector(Home->StandingPose(Player->GetActorTransform()).GetLocation()));
+  if(auto PC=UGameplayStatics::GetPlayerController(this,0))Saved->SetArrayField(TEXT("view"),Vector(PC->GetControlRotation().Euler()));
   Snapshot->SetObjectField(TEXT("player"),Saved);
  }
  auto Doors=UMareSimulation::Object(Snapshot,TEXT("doors"));

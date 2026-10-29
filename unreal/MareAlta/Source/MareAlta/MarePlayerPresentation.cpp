@@ -71,7 +71,7 @@ bool UMarePlayerPresentation::HandTarget(int32 Hand,FVector& Target,FVector& Elb
  Elbow=Hero->GetActorLocation()+Right*Side*40+Forward*6+FVector(0,0,20);
  if(Hero->GetCharacterMovement()->IsSwimming() && !bCarrying){
   const float Phase=GetWorld()->GetTimeSeconds()*(Hero->GetVelocity().Size2D()>30?2.3f:1.4f);
-  Target=Eyes->GetComponentLocation()+Forward*(40+12*FMath::Cos(Phase))+Right*Side*(24+13*FMath::Sin(Phase))-FVector(0,0,23+8*FMath::Sin(Phase));
+  Target=Eyes->GetComponentLocation()+Forward*(40+12*FMath::Cos(Phase))+Right*Side*(24+13*FMath::Sin(Phase))-FVector(0,0,11+6*FMath::Sin(Phase));
   Elbow=Eyes->GetComponentLocation()+Right*Side*44+Forward*8-FVector(0,0,18);Weight=1.f;
  }
  if(bReaching){const float Alpha=FMath::Sin(FMath::Clamp(1-ReachRemaining/.65f,0.f,1.f)*PI);
@@ -85,18 +85,24 @@ void UMarePlayerPresentation::UpdateAnimation()
  auto Hero=Cast<AMareCharacter>(GetOwner());if(!Hero || !ViewBody)return;
  const bool bSwimming=Hero->GetCharacterMovement()->IsSwimming();
  const bool bSeated=GetWorld()->GetSubsystem<UMareHomeWorld>()->IsSeated();
- const FString Clip=bSeated?TEXT("Sitting_Idle"):bSwimming?TEXT("Swim_Idle"):ReachRemaining>0?TEXT("Interact"):Hero->GetVelocity().SizeSquared2D()>25?TEXT("Walk"):TEXT("Idle");
+ const FString Clip=bSeated?TEXT("Sitting_Idle"):bSwimming?TEXT("Swim_Idle"):ReachRemaining>0?TEXT("Interact"):(bScriptedWalking || Hero->GetVelocity().SizeSquared2D()>25)?TEXT("Walk"):TEXT("Idle");
  if(Playing!=Clip && Clips.Contains(Clip)){
   Playing=Clip;for(auto Body:{Hero->GetMesh(),ViewBody.Get()})if(auto Instance=Cast<UMareServiceAnimInstance>(Body->GetAnimInstance())){
-   Instance->SetAnimationAsset(Clips[Clip],Clip!=TEXT("Interact"));Instance->SetPlaying(true);}
+   // World body uses the horizontal swim pose. The first-person shoulders keep
+   // their upright reference so the arm IK does not put the torso in the lens.
+   const FString BodyClip=Body==ViewBody && bSwimming?TEXT("Idle"):Clip;
+   Instance->SetAnimationAsset(Clips[BodyClip],Clip!=TEXT("Interact"));Instance->SetPlaying(true);}
  }
  for(auto Body:{Hero->GetMesh(),ViewBody.Get()})if(auto Instance=Cast<UMareServiceAnimInstance>(Body->GetAnimInstance()))Instance->SetPlayRate(bSwimming?1.25f:Clip==TEXT("Walk")?FMath::Clamp(Hero->GetVelocity().Size2D()/160.f,.65f,2.6f):1.f);
  // Changing the single-node animation can reinitialize bone visibility.
  ViewBody->HideBoneByName(TEXT("neck_01"),EPhysBodyOp::PBO_None);
  ViewBody->HideBoneByName(TEXT("Head"),EPhysBodyOp::PBO_None);
+ for(const FName Bone:{FName(TEXT("thigh_l")),FName(TEXT("thigh_r"))}){
+  if(bSwimming)ViewBody->HideBoneByName(Bone,EPhysBodyOp::PBO_None);else ViewBody->UnHideBoneByName(Bone);
+ }
  const FVector Position=bSwimming?FVector(-10,0,62):FVector(0,0,-88);
  const FRotator Rotation=bSwimming?FRotator(0,90,-85):FRotator(0,-90,0);
- Hero->GetMesh()->SetRelativeLocationAndRotation(Position,Rotation);ViewBody->SetRelativeLocationAndRotation(Position,Rotation);
+ Hero->GetMesh()->SetRelativeLocationAndRotation(Position,Rotation);ViewBody->SetRelativeLocationAndRotation(FVector(0,0,-88),FRotator(0,-90,0));
 }
 void UMarePlayerPresentation::UpdateCarry()
 {

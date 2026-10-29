@@ -17,6 +17,8 @@ public:
  virtual void TickComponent(float DeltaSeconds,ELevelTick TickType,FActorComponentTickFunction* Function) override;
  /** A brief reaching gesture, shared by E and mouse interactions. */
  void ReachFor(const FVector& Position);
+ /** Controlled opening traversal still plays locomotion while character movement is locked. */
+ void SetScriptedWalking(bool bWalking){bScriptedWalking=bWalking;}
  /** Snapshot used by the animation proxy before worker-thread pose evaluation. */
  bool HandTarget(int32 Hand,FVector& Target,FVector& Elbow,float& Weight)const;
  UPROPERTY() TObjectPtr<USkeletalMeshComponent> ViewBody;
@@ -25,6 +27,7 @@ public:
  FString HeldDish;
 private:
  FString Playing;
+ bool bScriptedWalking=false;
  float ReachRemaining=0;
  FVector ReachPosition=FVector::ZeroVector;
  void UpdateAnimation();
