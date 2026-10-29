@@ -57,8 +57,9 @@ ruas e pisos. A grama 3D usa instâncias e distância limitada para controlar o 
 Há Lumen e grafos PCG, além de renderização Nanite separada do vidro no hotel.
 Não equivale ao jogo inteiro convertido: outros negócios, clima completo,
 opções completas e o restante dos capítulos continuam pendentes.
-Inclui corpo e mãos em primeira pessoa, produtos nas mãos, natação, TV, som,
-sofá e chuveiro. A vila tem moradores para conversar e pedestres caminhando;
+Inclui corpo e mãos em primeira pessoa, produtos nas mãos, natação, TV, som
+e sofá. O efeito visual do chuveiro ainda precisa de acabamento.
+A vila tem moradores para conversar e pedestres caminhando;
 E/Esc encerra a conversa. A população se reduz na configuração de distância baixa.
 Os peixes do recife foram reposicionados sob a água. Navio diurno, cruzeiro
 noturno e salto da baleia fazem parte da prévia; o acabamento marinho continua

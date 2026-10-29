@@ -32,6 +32,8 @@ AMarePerson* UMareVillageWorld::SpawnPerson(FVector Position,int32 Variant,const
  auto Person=GetWorld()->SpawnActor<AMarePerson>(Ground.Location+FVector(0,0,88),FRotator::ZeroRotator);
  if(!Person)return nullptr;if(!Person->SetAppearance(Variant)){Person->Destroy();return nullptr;}
  Person->PersonName=Name;Person->bAmbient=true;Person->GetCharacterMovement()->MaxWalkSpeed=105+Variant*7;
+ Person->GetCapsuleComponent()->SetCapsuleRadius(34);
+ Person->GetCharacterMovement()->AvoidanceConsiderationRadius=300;Person->GetCharacterMovement()->SetAvoidanceEnabled(true);
  Person->GetMesh()->VisibilityBasedAnimTickOption=EVisibilityBasedAnimTickOption::OnlyTickPoseWhenRendered;
  Person->Tags.Add(TEXT("MareVillagePerson"));return Person;
 }
@@ -101,9 +103,9 @@ void UMareVillageWorld::Speak(AMarePerson* Person,APlayerController* Controller)
   TEXT("Bem-vindo à vila! É bom ver o quiosque da família ganhando vida outra vez.");
  static const FSlateRoundedBoxBrush Card(FLinearColor(.95f,.94f,.88f),12.f);
  Dialogue=SNew(SBorder).BorderBackgroundColor(FLinearColor(0,0,0,.25f)).HAlign(HAlign_Center).VAlign(VAlign_Bottom).Padding(20)
- [SNew(SBox).MaxDesiredWidth(580)[SNew(SBorder).BorderImage(&Card).Padding(18)[SNew(SVerticalBox)
+ [SNew(SBox).WidthOverride(580)[SNew(SBorder).BorderImage(&Card).Padding(18)[SNew(SVerticalBox)
   +SVerticalBox::Slot().AutoHeight()[SNew(STextBlock).Text(FText::FromString(Person->PersonName)).Font(FCoreStyle::GetDefaultFontStyle("Bold",19)).ColorAndOpacity(FLinearColor(.08f,.16f,.14f))]
-  +SVerticalBox::Slot().AutoHeight().Padding(0,9)[SNew(STextBlock).Text(FText::FromString(Greeting)).AutoWrapText(true).Font(FCoreStyle::GetDefaultFontStyle("Regular",15)).ColorAndOpacity(FLinearColor(.12f,.13f,.12f))]
+  +SVerticalBox::Slot().AutoHeight().Padding(0,9)[SNew(STextBlock).Text(FText::FromString(Greeting)).WrapTextAt(544).Font(FCoreStyle::GetDefaultFontStyle("Regular",15)).ColorAndOpacity(FLinearColor(.12f,.13f,.12f))]
   +SVerticalBox::Slot().AutoHeight().HAlign(HAlign_Left)[SNew(SButton).ContentPadding(FMargin(12,6)).OnClicked_Lambda([this](){CloseDialogue();return FReply::Handled();})[SNew(STextBlock).Text(FText::FromString(TEXT("Até logo · E / Esc")))]]]]];
  GEngine->GameViewport->AddViewportWidgetContent(Dialogue.ToSharedRef(),35);Controller->bShowMouseCursor=true;Controller->SetInputMode(FInputModeGameAndUI());Controller->SetIgnoreMoveInput(true);Controller->SetIgnoreLookInput(true);
  auto Sim=GetWorld()->GetGameInstance()->GetSubsystem<UMareSimulation>();UMareSimulation::Object(UMareSimulation::Object(UMareSimulation::Object(Sim->State,TEXT("prog")),TEXT("experience")),TEXT("greeted"))->SetBoolField(Person->PersonName,true);Sim->Save();
