@@ -44,8 +44,10 @@ void UMareVillageWorld::Setup()
  if(!FFileHelper::LoadFileToString(Text,*(FPaths::ProjectContentDir()/TEXT("Data/village_routes.json"))) || !FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Text),Data))return;
  const auto Vector=[](const TArray<TSharedPtr<FJsonValue>>& A){return FVector(A[0]->AsNumber(),A[1]->AsNumber(),A[2]->AsNumber());};
  for(const auto& Item:Data->GetArrayField(TEXT("routes"))){TArray<FVector> Points;for(const auto& P:Item->AsObject()->GetArrayField(TEXT("points")))Points.Add(Vector(P->AsArray()));if(Points.Num()>1)Routes.Add(Points);}
- int32 Variant=0;
- for(const auto& Item:Data->GetArrayField(TEXT("residents"))){auto Row=Item->AsObject();auto Person=SpawnPerson(Vector(Row->GetArrayField(TEXT("position"))),Variant++%4,UMareSimulation::String(Row,TEXT("name")));if(!Person)continue;
+ if(Routes.IsEmpty())return;
+ for(const auto& Item:Data->GetArrayField(TEXT("residents"))){auto Row=Item->AsObject();const FString Name=UMareSimulation::String(Row,TEXT("name"));
+  const int32 Look=Name==TEXT("Dona Rita") || Name==TEXT("Dona Lourdes")?3:Name==TEXT("Seu Zé") || Name==TEXT("Padre Tomé")?2:1;
+  auto Person=SpawnPerson(Vector(Row->GetArrayField(TEXT("position"))),Look,Name);if(!Person)continue;
   Person->SetActorRotation(FRotator(0,UMareSimulation::Number(Row,TEXT("yaw")),0));Residents.Add(Person);
   auto Target=GetWorld()->SpawnActor<AMareServiceTarget>();Target->Action=TEXT("Resident");Target->Label=Person->PersonName+TEXT(" · conversar");Target->Reach=260;Target->OcclusionTolerance=40;Target->SetOwner(Person);
   Target->AttachToActor(Person,FAttachmentTransformRules::SnapToTargetNotIncludingScale);Target->SetActorRelativeLocation(FVector(0,0,38));Person->Interaction=Target;
@@ -70,9 +72,13 @@ void UMareVillageWorld::UpdateWalkers(float Dt)
   const auto& Points=Routes[W.Route];
   if(P->AtGoal()){
    if(W.Point==Points.Num()-1)W.Direction=-1;else if(W.Point==0)W.Direction=1;W.Point+=W.Direction;W.Wait=2.f+(I%4);
-   if(auto AI=Cast<AAIController>(P->GetController()))AI->StopMovement();P->PlayPose(TEXT("Idle"));W.Stuck=0;
-  }else if(P->GetVelocity().Size2D()<8)W.Stuck+=Dt;else W.Stuck=0;
-  if(W.Stuck>5){if(!P->WalkTo(Points[W.Point])){W.Direction=-W.Direction;W.Point=FMath::Clamp(W.Point+W.Direction,0,Points.Num()-1);P->WalkTo(Points[W.Point]);}W.Stuck=0;}
+   if(auto AI=Cast<AAIController>(P->GetController()))AI->StopMovement();P->PlayPose(TEXT("Idle"));W.Stuck=0;W.BlockedAttempts=0;
+  }else if(P->GetVelocity().Size2D()<8)W.Stuck+=Dt;else{W.Stuck=0;W.BlockedAttempts=0;}
+  if(W.Stuck>5){
+   // A valid path request can still hit a physical obstruction. Do not retry it forever.
+   if(++W.BlockedAttempts>=2){W.Direction=-W.Direction;W.Point=FMath::Clamp(W.Point+W.Direction,0,Points.Num()-1);W.BlockedAttempts=0;}
+   if(!P->WalkTo(Points[W.Point])){W.Direction=-W.Direction;W.Point=FMath::Clamp(W.Point+W.Direction,0,Points.Num()-1);P->WalkTo(Points[W.Point]);}W.Stuck=0;
+  }
   W.Previous=P->GetActorLocation();
  }
 }

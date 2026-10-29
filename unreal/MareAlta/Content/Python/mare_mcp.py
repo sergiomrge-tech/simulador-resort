@@ -23,6 +23,52 @@ class MareMigrationTools(unreal.ToolsetDefinition):
 
     @toolset_registry.tool_call
     @staticmethod
+    def village_runtime_probe(reapply: bool=False) -> str:
+        """Inspect real village movement and optionally verify a reversible appearance cycle in QA PIE."""
+        if '-MareSaveRoot=D:/CodexTemp/' not in unreal.SystemLibrary.get_command_line():raise RuntimeError('QA profile required')
+        world=unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()
+        if not world:raise RuntimeError('Start PIE first')
+        people=[p for p in unreal.GameplayStatics.get_all_actors_of_class(world,unreal.MarePerson) if 'MareVillagePerson' in [str(t) for t in p.tags]]
+        cycle=None
+        if reapply:
+            person=next(p for p in people if p.get_editor_property('person_name')=='Morador')
+            original=person.get_editor_property('variant');alternate=(original+1)%4
+            changed=person.set_appearance(alternate);restored=person.set_appearance(original)
+            mesh=person.get_component_by_class(unreal.SkeletalMeshComponent);clip=mesh.get_anim_instance().get_animation_asset()
+            expected=len(read('actors.json',{})['Human_'+str(original)]['static_meshes'])
+            hair=[m for m in person.get_components_by_class(unreal.StaticMeshComponent) if str(m.get_attach_socket_name()) in ('Head','neck_01')]
+            cycle={'changed':changed,'restored':restored,'variant':person.get_editor_property('variant'),'hair_count':len(hair),'expected_hair':expected,'clip':clip.get_path_name() if clip else None}
+            cycle['passed']=changed and restored and cycle['variant']==original and cycle['hair_count']==expected and clip is not None
+        rows=[]
+        for p in people:
+            pos=p.get_actor_location();v=p.get_velocity();mesh=p.get_component_by_class(unreal.SkeletalMeshComponent);anim=mesh.get_anim_instance();clip=anim.get_animation_asset() if anim else None
+            rows.append({'id':p.get_name(),'name':p.get_editor_property('person_name'),'variant':p.get_editor_property('variant'),'position':[pos.x,pos.y,pos.z],'speed':(v.x*v.x+v.y*v.y+v.z*v.z)**.5,'clip':clip.get_path_name() if clip else None})
+        return json.dumps({'people':rows,'appearance_cycle':cycle})
+
+    @toolset_registry.tool_call
+    @staticmethod
+    def village_dialogue_probe(action: str) -> str:
+        """Exercise a real resident target and dialogue/phone/pause input in QA PIE."""
+        if '-MareSaveRoot=D:/CodexTemp/' not in unreal.SystemLibrary.get_command_line():raise RuntimeError('QA profile required')
+        world=unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()
+        if not world:raise RuntimeError('Start PIE first')
+        pc=unreal.GameplayStatics.get_player_controller(world,0);hero=pc.get_pawn()
+        resident=next(t for t in unreal.GameplayStatics.get_all_actors_of_class(world,unreal.MareServiceTarget) if str(t.action)=='Resident' and t.get_owner().get_editor_property('person_name')=='Dona Rita')
+        focused=None;phone_blocked=None
+        if action=='position':
+            hero.set_actor_location(resident.get_owner().get_actor_location()+unreal.Vector(0,150,0),False,False)
+            pc.set_control_rotation(unreal.MathLibrary.find_look_at_rotation(hero.get_component_by_class(unreal.CameraComponent).get_world_location(),resident.get_actor_location()))
+        elif action=='open':
+            focused=unreal.MareServiceTarget.find_focused(pc)
+            if focused==resident:focused.use(pc)
+        elif action=='close':
+            pc.toggle_phone();phone_blocked=not pc.get_editor_property('phone_open')
+            pc.toggle_pause_menu()
+        else:raise ValueError(action)
+        return json.dumps({'action':action,'resident_focused':focused==resident if action=='open' else None,'move_ignored':pc.is_move_input_ignored(),'phone_open':pc.get_editor_property('phone_open'),'phone_blocked':phone_blocked,'paused':unreal.GameplayStatics.is_game_paused(world)})
+
+    @toolset_registry.tool_call
+    @staticmethod
     def village_navigation(action: str) -> str:
         """Expand the existing bounds and separately validate authored complete village paths."""
         import importlib,mare_village

@@ -20,15 +20,16 @@ concluída. Nenhum editor, jogo ou build estava ativo ao encerrar.
   Caminho: `D:/CodexTemp/ue58-render-profile-20261029-132139/summary.json`.
   Câmera fixa; não garante 60 FPS no mapa inteiro ou com a nova população.
 
-## WIP posterior preservado — compila, ainda NÃO testado no jogo
+## População em validação — testes iniciais PIE, ainda sem EXE novo
 
 - `MareVillageWorld.h/.cpp`: subsistema separado do quiosque, cinco moradores
   físicos, pedestres nas rotas existentes, orçamento padrão 12/5 por qualidade,
   pausas/caminhada, diálogo compacto e registro de pessoas cumprimentadas.
 - Integração em `MarePerson`, `MareServiceTarget` e `MareGame`: pessoas ambientes
   não entram nos pedidos do quiosque; E/Esc fecha diálogo e B evita sobreposição.
-- Build de **MareAltaEditor Win64 Development aprovado** após essas alterações
-  (última sessão de build 40459). Nenhum teste PIE/EXE da população foi executado.
+- Build de **MareAltaEditor Win64 Development aprovado** após essas alterações.
+  Teste inicial PIE confirmou 5 moradores/12 pedestres e troca de aparência sem
+  cabelo duplicado, com clip ativo. Ainda não há teste EXE da população.
 - NavMesh existente ampliado para centro (5000,1800,250), extensões
   (6500,6000,1000). Rebuild real executado; rotas consultadas no editor.
 - `village_routes.json`: oito rotas completas e cinco moradores projetados;
@@ -100,3 +101,12 @@ Inicialização da vila agora espera a navegação terminar e um ponto conhecido
 ficar projetável antes de criar a população. Aparência registra corretamente
 a variante carregada; reaplicá-la limpa cabelo anterior e reinicia o clip para
 evitar peças acumuladas e animação vazia. Validar em PIE antes de exportar.
+
+O primeiro probe PIE está em `D:/CodexTemp/ue58-small-fixes-20261029/`:
+`village-probe-a.json` e `village-probe-b.json`. 11 dos 12 pedestres mudaram de
+posição entre as leituras; um ficou bloqueado na praia. Pequena correção posterior
+faz inverter o trajeto após duas tentativas bloqueadas, mesmo quando a solicitação
+de caminho foi aceita. Sem teleporte. Compilação aprovada; repetir a observação.
+Associados modelos femininos a Dona Rita/Lourdes e masculinos a Seu Zé/Padre Tomé.
+Ferramentas MCP novas: village_runtime_probe e village_dialogue_probe, restritas
+a perfis isolados D:/CodexTemp. Teste seguinte em pasta com sufixo `-b`.

@@ -21,7 +21,7 @@ public:
  int32 ResidentCount()const{return Residents.Num();}
  int32 PedestrianCount()const{return Pedestrians.Num();}
 private:
- struct FWalker{TWeakObjectPtr<AMarePerson> Person;int32 Route=0,Point=0,Direction=1;float Wait=0,Stuck=0;FVector Previous;};
+ struct FWalker{TWeakObjectPtr<AMarePerson> Person;int32 Route=0,Point=0,Direction=1,BlockedAttempts=0;float Wait=0,Stuck=0;FVector Previous;};
  TArray<TArray<FVector>> Routes;
  TArray<FWalker> Pedestrians;
  UPROPERTY() TArray<TObjectPtr<AMarePerson>> Residents;
