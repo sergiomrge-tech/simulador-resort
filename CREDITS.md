@@ -1,5 +1,11 @@
 # Créditos e licenças
 
+Gramado UE de 29/10/2026: redistribuição e materiais derivados de
+`Grass_Common_Short` e `Grass_Wispy_Short`, Quaternius CC0, já catalogados
+como NAT-020/NAT-022 em docs/ITENS.md; base/normais `leafy_grass` Poly Haven CC0
+da biblioteca existente. Gerador `unreal/MareAlta/Content/Python/mare_grass.py`.
+As fontes e a vegetação original foram preservadas.
+
 Quase todo o conteúdo de terceiros deste projeto é **CC0 1.0 (domínio público)**. As exceções são a fonte Nunito (SIL OFL 1.1) e os ícones do game-icons.net (CC BY 3.0, atribuição obrigatória), listados no fim.
 
 ## Texturas — Poly Haven (CC0)

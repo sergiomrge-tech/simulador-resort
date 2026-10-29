@@ -4,6 +4,7 @@
 #include "MareServiceAnimation.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/StaticMeshComponent.h"
+#include "Components/InstancedStaticMeshComponent.h"
 #include "MareSimulation.h"
 #include "MareAudioWorld.h"
 #include "MareVisualWorld.h"
@@ -56,7 +57,7 @@ void AMarePreviewQA::Check(const FString& Name,bool bPass)
   if(GetWorld()->LineTraceSingleByChannel(Hit,P,P+FVector(0,0,180),ECC_Visibility,Query))Row->SetStringField(TEXT("overhead"),GetNameSafe(Hit.GetActor()));
  }
  Results.Add(MakeShared<FJsonValueObject>(Row));UE_LOG(LogTemp,Display,TEXT("MARE_PREVIEW_QA %s %s"),*Name,bPass?TEXT("PASS"):TEXT("FAIL"));
- auto Report=MakeShared<FJsonObject>();Report->SetArrayField(TEXT("checks"),Results);Report->SetBoolField(TEXT("finished"),Name==TEXT("marine_night_visible"));
+ auto Report=MakeShared<FJsonObject>();Report->SetArrayField(TEXT("checks"),Results);Report->SetBoolField(TEXT("finished"),Name==TEXT("grass_cycle_captured"));
  FString Text;FJsonSerializer::Serialize(Report,TJsonWriterFactory<>::Create(&Text));FFileHelper::SaveStringToFile(Text,*(Root/TEXT("preview-qa.json")));
 }
 void AMarePreviewQA::Capture(const FString& Name){FScreenshotRequest::RequestScreenshot(Root/(Name+TEXT(".png")),true,false);}
@@ -70,12 +71,22 @@ void AMarePreviewQA::Tick(float DeltaSeconds)
   if(!Root.StartsWith(TEXT("D:/CodexTemp/"))){Destroy();return;}
   FApp::SetUnfocusedVolumeMultiplier(1.f);Next=FPlatformTime::Seconds()+12;Phase=0;
  }
- if(FPlatformTime::Seconds()<Next || Phase>31)return;
+ if(FPlatformTime::Seconds()<Next || Phase>37)return;
  auto Move=Hero->GetCharacterMovement();auto Eyes=Hero->FindComponentByClass<UCameraComponent>();
  auto Audio=GetWorld()->GetSubsystem<UMareAudioWorld>();auto Sim=PC->GetSimulation();
  auto Key=[&](FKey K,bool Down){PC->InputKey(FInputKeyEventArgs(GEngine->GameViewport->Viewport,INPUTDEVICEID_NONE,K,Down?IE_Pressed:IE_Released,FPlatformTime::Cycles64()));};
  switch(Phase++){
  case 0:{
+  int32 GrassInstances=0;bool bGrassSafe=true;
+  for(TActorIterator<AActor> It(GetWorld());It;++It)if(It->ActorHasTag(TEXT("MareGrassPCG"))){
+   TArray<UInstancedStaticMeshComponent*> Components;It->GetComponents(Components);
+   for(auto C:Components){GrassInstances+=C->GetInstanceCount();bGrassSafe &= C->GetCollisionEnabled()==ECollisionEnabled::NoCollision && C->InstanceEndCullDistance==3000;}
+  }
+  FString GrassJson;TSharedPtr<FJsonObject> GrassConfig;
+  FFileHelper::LoadFileToString(GrassJson,*(FPaths::ProjectContentDir()/TEXT("Data/grass_coverage.json")));
+  FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(GrassJson),GrassConfig);
+  Check(TEXT("grass_coverage_cooked"),GrassConfig.IsValid() && GrassInstances>100000 && GrassInstances==UMareSimulation::Number(GrassConfig,TEXT("instances")));
+  Check(TEXT("grass_nonblocking_culled"),bGrassSafe);
   Check(TEXT("coast_and_dry_land"),GetWorld()->GetMapName().Contains(TEXT("Coast")) && !Move->IsSwimming());
   {auto Marine=GetWorld()->GetSubsystem<UMareMarineWorld>();Check(TEXT("marine_models_loaded"),Marine && Marine->HasMarineModels());}
   int32 Variant=0;for(const FString Dish:{TEXT("coco_gelado"),TEXT("suco"),TEXT("batata_frita"),TEXT("sorvete_morango")}){
@@ -200,7 +211,13 @@ void AMarePreviewQA::Tick(float DeltaSeconds)
  case 28:{auto Marine=GetWorld()->GetSubsystem<UMareMarineWorld>();if(Marine && Marine->WhalePhase()>4.3f && Marine->WhalePhase()<5.8f){Check(TEXT("marine_splash"),Marine->IsRippleVisible() && !Marine->IsWhaleVisible());Capture(TEXT("whale-splash"));}else --Phase;break;}
  case 29:Sim->AdvanceMinutes(1320-UMareSimulation::Number(Sim->State,TEXT("minutes")));break;
  case 30:{auto Marine=GetWorld()->GetSubsystem<UMareMarineWorld>();Check(TEXT("marine_night_visible"),Marine && Marine->IsCruiseVisible() && !Marine->IsSailVisible());Capture(TEXT("cruise-night"));break;}
- case 31:if(GetWorld()->WorldType!=EWorldType::PIE)GEngine->Exec(GetWorld(),TEXT("QUIT"));break;
+ case 31:Sim->State->SetStringField(TEXT("weather"),TEXT("sun"));Sim->AdvanceMinutes(720-UMareSimulation::Number(Sim->State,TEXT("minutes")));Hero->SetActorLocation(FVector(2800,-750,100));Move->SetMovementMode(MOVE_Flying);Move->StopMovementImmediately();PC->SetControlRotation(FRotator(-4,145,0));break;
+ case 32:Capture(TEXT("grass-day"));break;
+ case 33:Sim->State->SetStringField(TEXT("weather"),TEXT("rain"));break;
+ case 34:Capture(TEXT("grass-rain"));break;
+ case 35:Sim->State->SetStringField(TEXT("weather"),TEXT("sun"));Sim->AdvanceMinutes(1320-UMareSimulation::Number(Sim->State,TEXT("minutes")));break;
+ case 36:Capture(TEXT("grass-night"));Check(TEXT("grass_cycle_captured"),true);break;
+ case 37:if(GetWorld()->WorldType!=EWorldType::PIE)GEngine->Exec(GetWorld(),TEXT("QUIT"));break;
  }
  Next=FPlatformTime::Seconds()+((Phase==27 || Phase==28)?.5:Phase==13?10:Phase==1?7:Phase==3?4:Phase==4?5:3);
 }

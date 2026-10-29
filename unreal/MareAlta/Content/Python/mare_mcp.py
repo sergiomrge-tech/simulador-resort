@@ -23,6 +23,21 @@ class MareMigrationTools(unreal.ToolsetDefinition):
 
     @toolset_registry.tool_call
     @staticmethod
+    def grass_coverage(action: str) -> str:
+        """Inspect, generate or validate grass on exposed inland terrain."""
+        import importlib,mare_grass
+        importlib.reload(mare_grass)
+        if action == 'inspect':return json.dumps(mare_grass.inspect())
+        if action == 'build':return json.dumps(mare_grass.build())
+        if action == 'status':return json.dumps(mare_grass.status())
+        if action == 'ground':
+            import importlib,mare_materials
+            importlib.reload(mare_materials)
+            return mare_materials.build_ground().get_path_name()
+        raise ValueError(action)
+
+    @toolset_registry.tool_call
+    @staticmethod
     def nanite_architecture(action: str) -> str:
         """Split hotel render surfaces while preserving the original collider."""
         import importlib,mare_nanite_architecture

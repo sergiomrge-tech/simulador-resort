@@ -22,7 +22,7 @@ void AMareGraphicsQA::Configure()
  for(const TCHAR* Command:Commands)GEngine->Exec(GetWorld(),Command);
  if(Variant==2)GEngine->Exec(GetWorld(),TEXT("r.Nanite 0"));
  if(Variant==3){GEngine->Exec(GetWorld(),TEXT("r.DynamicGlobalIlluminationMethod 0"));GEngine->Exec(GetWorld(),TEXT("r.ReflectionMethod 2"));}
- for(TActorIterator<AActor> It(GetWorld());It;++It){if(It->ActorHasTag(TEXT("MareGraphicsPCG")))It->SetActorHiddenInGame(Variant==1);
+ for(TActorIterator<AActor> It(GetWorld());It;++It){if(It->ActorHasTag(TEXT("MareGraphicsPCG")) || It->ActorHasTag(TEXT("MareGrassPCG")))It->SetActorHiddenInGame(Variant==1);
   if(bHotelScene){TArray<UInstancedStaticMeshComponent*> Cs;It->GetComponents(Cs);for(auto C:Cs){if(C->GetStaticMesh() && C->GetStaticMesh()->GetName()==TEXT("World_2365")){C->SetVisibility(Variant==4);C->SetCastShadow(Variant==4);}
    for(auto Tag:C->ComponentTags)if(Tag.ToString().StartsWith(TEXT("HotelTower_")))C->SetVisibility(Variant!=4);}}
  }
@@ -48,7 +48,9 @@ void AMareGraphicsQA::Tick(float DeltaSeconds)
  auto Row=MakeShared<FJsonObject>();Row->SetStringField(TEXT("variant"),Names[Variant]);Row->SetStringField(TEXT("csv"),Capture.Get());FVector2D Size;GEngine->GameViewport->GetViewportSize(Size);
  Row->SetNumberField(TEXT("viewport_x"),Size.X);Row->SetNumberField(TEXT("viewport_y"),Size.Y);Row->SetNumberField(TEXT("screen_percentage"),RenderPercentage);
  int32 Instances=0;for(TActorIterator<AActor> It(GetWorld());It;++It)if(It->ActorHasTag(TEXT("MareGraphicsPCG"))){TArray<UInstancedStaticMeshComponent*> Cs;It->GetComponents(Cs);for(auto C:Cs)Instances+=C->GetInstanceCount();}
- Row->SetNumberField(TEXT("pcg_instances"),Instances);Records.Add(MakeShared<FJsonValueObject>(Row));
+ Row->SetNumberField(TEXT("pcg_instances"),Instances);
+ int32 GrassInstances=0;for(TActorIterator<AActor> It(GetWorld());It;++It)if(It->ActorHasTag(TEXT("MareGrassPCG"))){TArray<UInstancedStaticMeshComponent*> Cs;It->GetComponents(Cs);for(auto C:Cs)GrassInstances+=C->GetInstanceCount();}
+ Row->SetNumberField(TEXT("grass_instances"),GrassInstances);Records.Add(MakeShared<FJsonValueObject>(Row));
  if(++Variant<VariantCount){Configure();Stage=0;Next=FPlatformTime::Seconds()+10;return;}
  Variant=0;Configure();auto Report=MakeShared<FJsonObject>();Report->SetArrayField(TEXT("captures"),Records);Report->SetBoolField(TEXT("finished"),true);FString Text;FJsonSerializer::Serialize(Report,TJsonWriterFactory<>::Create(&Text));FFileHelper::SaveStringToFile(Text,*(Root/TEXT("graphics-qa.json")));GEngine->Exec(GetWorld(),TEXT("QUIT"));
 }

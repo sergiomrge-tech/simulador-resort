@@ -19,6 +19,8 @@ if(-not (Test-Path -LiteralPath $reportPath)){throw "Jogo encerrou sem relatóri
 $report=Get-Content -LiteralPath $reportPath -Raw | ConvertFrom-Json
 if(-not $report.finished -or $report.checks.Count -lt 20 -or @($report.checks | Where-Object {-not $_.pass}).Count){$report | ConvertTo-Json -Depth 8;throw "Regressão reprovada: $qa"}
 $required=@('home_door_fits_frame','home_door_opens_after_fit','home_door_closes_after_fit','reef_pairs_present','reef_below_wave_surface','reef_motion','marine_models_loaded','day_sail_only','night_cruise_only','whale_breaches','marine_splash','marine_night_visible')
+$required+=@('grass_coverage_cooked','grass_nonblocking_culled','grass_cycle_captured')
+foreach($picture in @('grass-day.png','grass-rain.png','grass-night.png')){if(-not (Test-Path -LiteralPath "$qa/$picture")){throw "Captura de gramado ausente: $picture"}}
 foreach($name in $required){if(-not @($report.checks | Where-Object {$_.name -eq $name -and $_.pass}).Count){throw "Verificação ausente: $name em $qa"}}
 $issues=@(Select-String -LiteralPath "$qa/runtime.log" -Pattern 'Error:|Fatal error|Assertion failed|Ensure condition failed|missing usage flag|Default Material will be used|Failed to compile Material' | ForEach-Object {$_.Line})
 if($issues.Count){$issues;throw "Erros no log: $qa"}
