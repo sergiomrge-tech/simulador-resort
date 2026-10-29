@@ -42,26 +42,24 @@ def grass_material(source, name):
 
 
 def excluded(x, y, manifest):
-    """Centimetres in UE XY. Leave generous clearances around paths/doors."""
-    if y < -500:
+    """Centimetres in UE XY. Keep sand and building/door clearances."""
+    edge=math.sin(x*.0017)*90+math.sin(x*.0041)*35
+    if y+edge*.6 < -1050:
         return True
     for bx, by, width, depth in manifest['blocks']:
         if abs(x-bx*100) < width*50+60 and abs(y-by*100) < depth*50+60:
             return True
-    routes = manifest['paths']+[manifest['points']['kiosk_approach']]
-    for route in routes:
-        for a, b in zip(route, route[1:]):
-            ax, ay, bx, by = a[0]*100, a[2]*100, b[0]*100, b[2]*100
-            dx, dy = bx-ax, by-ay
-            t = max(0, min(1, ((x-ax)*dx+(y-ay)*dy)/max(1, dx*dx+dy*dy)))
-            if math.hypot(x-ax-t*dx, y-ay-t*dy) < 160:
-                return True
+    # Low, nonblocking lawn may cover natural dirt traversed by pedestrians.
+    # Actual built paths are rejected by the first-hit surface test below.
+    # Do not leave broad bald strips on the soil for abstract NPC route lines.
     return False
 
 
 def build():
     """Generate fixed editor points from actual ground hits; preserve existing flora."""
     from editor_toolset.toolsets.actor import ActorTools
+    if unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world():
+        raise RuntimeError('Stop PIE before generating grass')
     world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_editor_world()
     if '/Coast.' not in world.get_path_name():
         raise RuntimeError('Generate only in the approved Coast map')
@@ -82,7 +80,7 @@ def build():
     samples = []
     spacing = 30
     for xi in range(math.ceil((center.x-extent.x)/spacing), math.floor((center.x+extent.x)/spacing)):
-        for yi in range(math.ceil(-500/spacing), math.floor((center.y+extent.y)/spacing)):
+        for yi in range(math.ceil(-1200/spacing), math.floor((center.y+extent.y)/spacing)):
             x, y = xi*spacing+rng.uniform(-4,4), yi*spacing+rng.uniform(-4,4)
             if excluded(x, y, manifest):
                 rejected['mask'] += 1

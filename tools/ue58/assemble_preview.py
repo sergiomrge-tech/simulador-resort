@@ -5,6 +5,7 @@ import json
 import shutil
 import subprocess
 import zipfile
+from datetime import date
 from pathlib import Path
 
 parser = argparse.ArgumentParser()
@@ -24,7 +25,7 @@ args.output.mkdir(parents=True)
 shutil.copytree(args.source, args.output/'Windows', ignore=shutil.ignore_patterns('*.pdb'))
 (args.output/'Jogar.cmd').write_text('@echo off\r\nstart "" "%~dp0Windows\\MareAlta.exe" -MareSaveRoot="%~dp0userdata" -UserDir="%~dp0userdata\\Unreal" -windowed -ResX=1280 -ResY=720\r\n', encoding='ascii')
 (args.output/'Jogar.vbs').write_text('Option Explicit\r\nDim sh, fs, base, cmd\r\nSet sh=CreateObject("WScript.Shell")\r\nSet fs=CreateObject("Scripting.FileSystemObject")\r\nbase=fs.GetParentFolderName(WScript.ScriptFullName)\r\nsh.CurrentDirectory=base & "\\Windows"\r\ncmd=Chr(34) & base & "\\Windows\\MareAlta.exe" & Chr(34) & " -MareSaveRoot=" & Chr(34) & base & "\\userdata" & Chr(34) & " -UserDir=" & Chr(34) & base & "\\userdata\\Unreal" & Chr(34) & " -windowed -ResX=1280 -ResY=720"\r\nsh.Run cmd, 1, False\r\n', encoding='ascii')
-(args.output/'LEIA-ME.txt').write_text(f'''MARÉ ALTA RESORT — PRÉVIA UE5.8 / {args.edition.upper()} — 28/10/2026
+(args.output/'LEIA-ME.txt').write_text(f'''MARÉ ALTA RESORT — PRÉVIA UE5.8 / {args.edition.upper()} — {date.today():%d/%m/%Y}
 
 Abra Jogar.vbs (ou Jogar.cmd). Não precisa instalar a Unreal Engine.
 Mantenha toda a pasta Windows junto dos atalhos. Saves desta prévia ficam em
@@ -49,11 +50,15 @@ Pedidos anteriores à correção ainda podem ser entregues.
 Esta é uma PRÉVIA DA MIGRAÇÃO, com cenário, quiosque e natação para teste.
 Inclui reggae instrumental original, ambiente e efeitos sem vozes, quatro volumes
 no menu Esc, luz diurna/noturna, letreiros e materiais refinados.
+Inclui gramado verde contínuo e denso nas áreas de terra, preservando areia,
+ruas e pisos. A grama 3D usa instâncias e distância limitada para controlar o custo.
+Há Lumen e grafos PCG, além de renderização Nanite separada do vidro no hotel.
 Não equivale ao jogo inteiro convertido: outros negócios, clima completo,
-vida marinha, opções completas e o restante dos capítulos continuam pendentes.
+opções completas e o restante dos capítulos continuam pendentes.
 A câmera ainda não tem braços/corpo com animação de natação.
-Os peixes do recife ainda podem aparecer fora da água. Esta versão serve para
-avaliar o atendimento, as animações e os ajustes visuais em andamento.
+Os peixes do recife foram reposicionados sob a água. Navio diurno, cruzeiro
+noturno e salto da baleia fazem parte da prévia; o acabamento marinho continua
+evoluindo. A chegada de ônibus e a carta do avô ainda são uma abertura provisória.
 
 Requer Windows 64 bits e GPU compatível com DirectX 12 / Shader Model 6.
 Se o Windows pedir o Visual C++ Runtime, instale o redistribuível x64 da Microsoft.
