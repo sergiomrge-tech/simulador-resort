@@ -8,11 +8,13 @@ def refine():
     touched=[]
     for actor in actors.get_all_level_actors():
         if isinstance(actor,unreal.DirectionalLight):
+            if 'MareMoon' in [str(t) for t in actor.tags]:continue
             actor.set_actor_rotation(unreal.Rotator(pitch=-42,yaw=-30,roll=0),False)
             actor.tags=list(actor.tags)+['MareSun']
             light=actor.light_component
             light.set_editor_property('contact_shadow_length',.15)
             light.set_editor_property('light_source_angle',.65)
+            light.set_editor_property('forward_shading_priority',2)
         if isinstance(actor,unreal.RectLight):
             actor.tags=list(actor.tags)+['MarePractical']
             actor.set_actor_rotation(unreal.Rotator(pitch=-90,yaw=0,roll=0),False)
@@ -30,6 +32,7 @@ def refine():
     moon.set_actor_label('Luar · luz natural');moon.tags=['MareGenerated','MareVisualExtra','MareMoon']
     moon.light_component.set_mobility(unreal.ComponentMobility.MOVABLE)
     moon.light_component.set_editor_property('intensity',0.)
+    moon.light_component.set_editor_property('forward_shading_priority',1)
     moon.light_component.set_editor_property('light_color',unreal.Color(235,242,255,255))
     fill=actors.spawn_actor_from_class(unreal.RectLight,unreal.Vector(3800,-1230,160),unreal.Rotator(pitch=-15,yaw=-90,roll=0))
     fill.set_actor_label('Quiosque · preenchimento indireto');fill.tags=['MareGenerated','MareVisualExtra','MarePractical','MareBounce']

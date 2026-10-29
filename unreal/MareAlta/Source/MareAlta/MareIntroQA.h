@@ -15,4 +15,6 @@ private:
  int32 Phase=0;double Next=0;FString Root;
  TArray<TSharedPtr<FJsonValue>> Checks;
  void Check(const FString& Name,bool Passed);
+ bool bWalking=false;FVector WalkTarget;double WalkDeadline=0;
+ void WalkTo(const FVector& Position);
 };

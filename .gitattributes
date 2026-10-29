@@ -7,3 +7,4 @@ unreal/**/SourceArt/**/*.jpg filter=lfs diff=lfs merge=lfs -text
 
 unreal/**/SourceArt/**/*.glb filter=lfs diff=lfs merge=lfs -text
 unreal/**/SourceArt/**/*.wav filter=lfs diff=lfs merge=lfs -text
+unreal/**/SourceArt/**/*.blend filter=lfs diff=lfs merge=lfs -text

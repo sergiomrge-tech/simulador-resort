@@ -352,3 +352,16 @@ acima; o catálogo registra cada arquivo de origem. Conversão por
 ## Abertura UE — asset em preparação
 
 - Ônibus **3D Bus**, ajanhallinta, [OpenGameArt](https://opengameart.org/content/3d-bus), CC0. Fonte Blender e FBX preservados em `unreal/MareAlta/SourceArt/Intro/`; importação Unreal em `/Game/Intro/Bus/`. O modelo não inclui interior e ainda necessita adaptação e validação na cena; não é uma sequência concluída.
+
+### Adaptações originais da abertura — 29/10/2026
+
+`tools/ue58/build_intro_bus.py` preserva a carroceria e rodas de ajanhallinta
+(CC0) e acrescenta interior, 32 bancos, degraus, corrimãos, volante, painel,
+identificação e porta articulada. Fonte independente editável:
+`unreal/MareAlta/SourceArt/Intro/Refined/bus_refined.blend`. As adições deste
+projeto são dedicadas a CC0. O original permanece intacto.
+
+Carta de papel e envelope autorais CC0, gerados por `build_intro_letter.py`,
+fonte `letter_home.blend`; texto e história originais do projeto. Motor e freio
+pneumático são síntese original CC0 por `build_intro_audio.py`, mono, sem vozes,
+samples externos ou gravação de terceiros. WAVs em `SourceArt/Audio`.

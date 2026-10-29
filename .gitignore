@@ -61,3 +61,4 @@ unreal/**/.vs/
 unreal/**/SourceArt/World/
 **/__pycache__/
 unreal/**/*.pyc
+unreal/**/SourceArt/**/*.blend1

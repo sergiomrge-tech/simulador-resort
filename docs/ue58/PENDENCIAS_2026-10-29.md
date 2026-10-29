@@ -1,6 +1,9 @@
 # Continuação integral autorizada — 29/10/2026
 
 O usuário pediu conferir o checkpoint e **concluir todas as pendências**.
+**Retomado em 29/10 após novo “continue/go”.** A seção de pausa ao final é
+histórica; o trabalho está autorizado novamente. Ver o progresso abaixo antes
+de seguir os detalhes do WIP antigo.
 Não encerrar a migração apenas por terminar o gramado. Trabalhar na branch
 `codex/ue58-migration`, projeto `D:/Projetos/MareAltaUE58`, Unreal 5.8.3.
 
@@ -99,3 +102,53 @@ ao pausar. Não confundir o checkpoint testado b7eb5390 com o WIP posterior.
 
 Usuário autorizou aceitar permissões necessárias que a Unreal apresentar para
 o trabalho do projeto. Não é pedido para alterar segurança/driver/TDR do sistema.
+
+## Retomada — corpo, casa e abertura (29/10, ainda em validação)
+
+- Falha de compilação da casa corrigida. TV usa o vidro original, escala aplicada
+  depois de definir mobilidade e projeção planar no material (malha sem UV).
+  Interação mira a tela; sofá devolve o jogador à posição livre, inclusive no save.
+- Pacote intermediário `D:/Builds/MareAltaUE58_CorpoCasa_2026-10-29/Windows`
+  passou em 78 verificações e áudio audível/mute/pausa, dados separados em
+  `D:/CodexTemp/ue58-package-qa-20261029-121853`. Não é pacote final: a inspeção
+  encontrou torso/mãos sobrepostos na natação e chuveiro pouco visível.
+- Correção posterior em andamento: pose da malha visível em primeira pessoa
+  separada do corpo horizontal de natação; 128 gotas no chuveiro e captura lateral.
+- Ônibus CC0 original preservado e fonte editável nova em
+  `SourceArt/Intro/Refined/bus_refined.blend`: interior com 32 lugares, degraus,
+  porta articulada, rodas separadas, motorista com rig existente. Abertura tem
+  câmera no interior, freada, descida pelos degraus e partida. Fontes sonoras
+  sintetizadas originais sem vozes. Carta e envelope agora são modelo editável.
+- Primeiro teste da sequência no editor encontrou caminho encostando na mesa e
+  materiais legados do ônibus não ligados ao Principled; corrigidos. Primeiro
+  pacote da abertura revelou ausência de `/Game/Intro/Refined` no cook. Diretório
+  adicionado explicitamente; repetir teste natural e avançado no pacote corrigido.
+- QA da abertura agora anda de verdade da parada à porta e à carta, com colisão;
+  não teleporta para dentro da casa. Cadastro no celular espera leitura da carta.
+  Campanha descreve herança do avô e abertura pela placa física, não pelo celular.
+- Sol e lua têm prioridades distintas para transparências (2/1), mantendo
+  intensidade/exposição e eliminando a disputa entre duas luzes direcionais.
+- Nada deste bloco deve ser anunciado como conversão completa. Demais negócios,
+  vida ambiente, progressão, arte e auditorias globais continuam na lista acima.
+
+### Pacote do lote funcional verificado (13:18 de 29/10)
+
+`D:/Builds/MareAltaUE58_CasaAbertura_2026-10-29/Windows`: 79/79 verificações,
+saída 0 e logs sem erros de script/material/recursos ausentes. Dados separados:
+`D:/CodexTemp/ue58-package-qa-20261029-131428`. Áudio master audível/mute/pausa
+também passou. Abertura natural 12/12 e avanço 11/11 em
+`D:/CodexTemp/ue58-intro-package-20261029-131337`.
+
+Revisadas capturas REAIS exportadas do ônibus exterior/interior e degraus, carta,
+corpo, transporte e natação. Materiais do ônibus precisaram ser reconstruídos em
+PBR explícito: reimportar GLB preservava os antigos shaders brancos. Corpo visível
+separado do corpo de sombra e dedos abertos resolveram torso/mãos na lente ao nadar.
+Exemplos em `graphics-reference/casa-abertura-20261029/`.
+
+**Limites desta validação:** captura do chuveiro precisa reposicionar a câmera,
+pois o ponto lateral encostou no vidro. Controle abre/fecha passou, porém não
+aprovar o efeito visual com essa imagem. Horizonte subaquático ainda azul/vazio;
+fauna antiga foi examinada em render de FONTE (não print do jogo) e continua
+cartoon. Vida ambiente, outros negócios e demais itens acima ainda não concluídos.
+Não publicar este checkpoint como migração final. Não substituir o download do
+gramado já documentado sem montar e identificar outra prévia testada.

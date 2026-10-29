@@ -23,6 +23,30 @@ class MareMigrationTools(unreal.ToolsetDefinition):
 
     @toolset_registry.tool_call
     @staticmethod
+    def repair_directional_priority() -> str:
+        """Assign distinct sun/moon translucent-light priority without changing exposure or intensity."""
+        if unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world():raise RuntimeError('Stop PIE first')
+        rows=[]
+        for actor in unreal.get_editor_subsystem(unreal.EditorActorSubsystem).get_all_level_actors():
+            if not isinstance(actor,unreal.DirectionalLight):continue
+            tags=[str(t) for t in actor.tags];moon='MareMoon' in tags
+            if moon:actor.tags=[t for t in actor.tags if str(t)!='MareSun']
+            actor.light_component.set_editor_property('forward_shading_priority',1 if moon else 2)
+            rows.append({'actor':actor.get_actor_label(),'moon':moon,'priority':1 if moon else 2})
+        if len(rows)!=2:raise RuntimeError('Unexpected directional-light count: '+str(rows))
+        if not unreal.get_editor_subsystem(unreal.LevelEditorSubsystem).save_current_level():raise RuntimeError('Level save failed')
+        return json.dumps(rows)
+
+    @toolset_registry.tool_call
+    @staticmethod
+    def import_refined_intro_bus() -> str:
+        """Import the separately authored cabin, hinged door and wheels, checking axes."""
+        import importlib,mare_intro_bus
+        importlib.reload(mare_intro_bus)
+        return json.dumps(mare_intro_bus.build())
+
+    @toolset_registry.tool_call
+    @staticmethod
     def build_home_appliances() -> str:
         """Build original TV content and shower VFX materials using existing models."""
         import importlib,mare_home_materials
@@ -41,10 +65,26 @@ class MareMigrationTools(unreal.ToolsetDefinition):
         pc.close_phone()
         hero.set_actor_rotation(unreal.Rotator(yaw=-90),False)
         pc.set_control_rotation(unreal.Rotator(pitch=-10 if mode=='swim' else -65,yaw=-90))
-        hero.swim_vertical(-.3 if mode=='swim' else 0)
+        hero.swim_vertical(-1 if mode=='swim' else 0)
         hero.set_actor_location(unreal.Vector(3800,-5000,-250) if mode=='swim' else unreal.Vector(3800,-1300,100),False,False)
         hero.character_movement.set_movement_mode(unreal.MovementMode.MOVE_SWIMMING if mode=='swim' else unreal.MovementMode.MOVE_WALKING)
         return mode
+
+    @toolset_registry.tool_call
+    @staticmethod
+    def home_appliance_fixture(action: str) -> str:
+        """Inspect a physical home appliance in an isolated PIE profile, without modifying the map."""
+        if '-MareSaveRoot=D:/CodexTemp/' not in unreal.SystemLibrary.get_command_line():raise RuntimeError('QA profile required')
+        world=unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()
+        hero=unreal.GameplayStatics.get_player_pawn(world,0);pc=unreal.GameplayStatics.get_player_controller(world,0)
+        targets=unreal.GameplayStatics.get_all_actors_of_class(world,unreal.MareServiceTarget)
+        if action=='shower':
+            hero.swim_vertical(0);hero.character_movement.set_movement_mode(unreal.MovementMode.MOVE_WALKING)
+            hero.set_actor_location(unreal.Vector(4805,1580,110),False,False)
+            pc.set_control_rotation(unreal.MathLibrary.find_look_at_rotation(hero.get_component_by_class(unreal.CameraComponent).get_world_location(),unreal.Vector(4882,1500,138)))
+            target=next(t for t in targets if str(t.action)=='HomeShower');target.use(pc)
+        else:raise ValueError(action)
+        return action
 
     @toolset_registry.tool_call
     @staticmethod

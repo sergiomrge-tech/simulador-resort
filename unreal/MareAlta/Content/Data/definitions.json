@@ -138,7 +138,7 @@
 			"kind": "company",
 			"qty": 1,
 			"reward": 40,
-			"story": "Dona Rita confia a você o antigo quiosque. Dê um nome a ele e comece sua história.",
+			"story": "Seu avô confiou a você o quiosque da família. Dê um nome a ele e continue essa história.",
 			"task": "Criar sua empresa no celular",
 			"title": "Uma nova maré"
 		},
@@ -148,7 +148,7 @@
 			"qty": 1,
 			"reward": 30,
 			"story": "O primeiro expediente começa com uma decisão sua: abrir o quiosque para a praia.",
-			"task": "Abrir o quiosque no celular",
+			"task": "Abrir o quiosque pela placa vermelha",
 			"title": "Portas abertas"
 		},
 		{

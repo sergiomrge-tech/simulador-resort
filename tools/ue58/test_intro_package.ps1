@@ -14,9 +14,10 @@ foreach($mode in @('natural','skip')){
  if($process.ExitCode -ne 0){throw "Jogo terminou com código $($process.ExitCode): $qa"}
  $report=Get-Content -LiteralPath "$qa/intro-qa.json" -Raw | ConvertFrom-Json
  if(-not $report.finished -or $report.checks.Count -lt 6 -or @($report.checks | Where-Object {-not $_.pass}).Count){$report | ConvertTo-Json -Depth 8;throw "Falha na abertura: $qa"}
- $issues=@(Select-String -LiteralPath "$qa/runtime.log" -Pattern 'Error:|Fatal error|Assertion failed|Ensure condition failed|missing usage flag|Default Material will be used|Failed to compile Material')
+ $issues=@(Select-String -LiteralPath "$qa/runtime.log" -Pattern 'Error:|Fatal error|Assertion failed|Ensure condition failed|missing usage flag|Default Material will be used|Failed to compile Material|Failed to find object|SkipPackage:')
  if($issues.Count){$issues;throw "Erros no log: $qa"}
- foreach($file in @('intro-bus.png','intro-after-arrival.png','intro-letter.png','slot1.json')){if(-not (Test-Path -LiteralPath "$qa/$file")){throw "Evidência ausente: $qa/$file"}}
+ foreach($file in @('intro-bus.png','intro-interior.png','intro-after-arrival.png','intro-letter-table.png','intro-letter.png','slot1.json')){if(-not (Test-Path -LiteralPath "$qa/$file")){throw "Evidência ausente: $qa/$file"}}
+ foreach($check in @('refined_bus_loaded','home_walk_segment_5','arrival_home_door_focus','home_walk_segment_8','home_walk_segment_9','letter_can_be_aimed')){if(-not @($report.checks | Where-Object {$_.name -eq $check -and $_.pass}).Count){throw "Verificação ausente: $check"}}
  $save=Get-Content -LiteralPath "$qa/slot1.json" -Raw | ConvertFrom-Json
  if($save.ue_intro_stage -ne 2){throw "Conclusão não persistida: $qa"}
  [pscustomobject]@{Mode=$mode;Checks=$report.checks.Count;Profile=$qa;Result='PASS'}

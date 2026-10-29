@@ -1,8 +1,8 @@
 extends RefCounted
 ## Campanha principal e objetivos opcionais; sem cobranças ou alterações ao consultar o HUD.
 const MAIN=[
- {"id":"chegada","title":"Uma nova maré","story":"Dona Rita confia a você o antigo quiosque. Dê um nome a ele e comece sua história.","task":"Criar sua empresa no celular","kind":"company","qty":1,"reward":40},
- {"id":"portas","title":"Portas abertas","story":"O primeiro expediente começa com uma decisão sua: abrir o quiosque para a praia.","task":"Abrir o quiosque no celular","kind":"open","qty":1,"reward":30},
+ {"id":"chegada","title":"Uma nova maré","story":"Seu avô confiou a você o quiosque da família. Dê um nome a ele e continue essa história.","task":"Criar sua empresa no celular","kind":"company","qty":1,"reward":40},
+ {"id":"portas","title":"Portas abertas","story":"O primeiro expediente começa com uma decisão sua: abrir o quiosque para a praia.","task":"Abrir o quiosque pela placa vermelha","kind":"open","qty":1,"reward":30},
  {"id":"primeiros","title":"O sabor da primeira manhã","story":"Conquiste os primeiros fregueses: anote, retire pronto e entregue no balcão.","task":"Vender 8 produtos no quiosque","kind":"sales","qty":8,"reward":100},
  {"id":"mesas","title":"Um lugar para ficar","story":"Transforme uma parada rápida em um ponto de encontro da comunidade.","task":"Comprar Mesas e guarda-sóis","kind":"expansion","item":"kiosk_tables","qty":1,"reward":80},
  {"id":"equipe","title":"Uma parceria de verdade","story":"Uma pessoa de confiança pode cuidar de todo o atendimento enquanto você explora a vila.","task":"Contratar o atendente único","kind":"staff","qty":1,"reward":80},

@@ -1,6 +1,7 @@
 #include "MarePreviewQA.h"
 #include "MareGame.h"
 #include "MarePlayerPresentation.h"
+#include "MareHomeWorld.h"
 #include "Animation/AnimSingleNodeInstance.h"
 #include "MarePerson.h"
 #include "MareServiceAnimation.h"
@@ -59,7 +60,7 @@ void AMarePreviewQA::Check(const FString& Name,bool bPass)
   if(GetWorld()->LineTraceSingleByChannel(Hit,P,P+FVector(0,0,180),ECC_Visibility,Query))Row->SetStringField(TEXT("overhead"),GetNameSafe(Hit.GetActor()));
  }
  Results.Add(MakeShared<FJsonValueObject>(Row));UE_LOG(LogTemp,Display,TEXT("MARE_PREVIEW_QA %s %s"),*Name,bPass?TEXT("PASS"):TEXT("FAIL"));
- auto Report=MakeShared<FJsonObject>();Report->SetArrayField(TEXT("checks"),Results);Report->SetBoolField(TEXT("finished"),Name==TEXT("player_body_visible"));
+ auto Report=MakeShared<FJsonObject>();Report->SetArrayField(TEXT("checks"),Results);Report->SetBoolField(TEXT("finished"),Name==TEXT("home_appliances_cycle"));
  FString Text;FJsonSerializer::Serialize(Report,TJsonWriterFactory<>::Create(&Text));FFileHelper::SaveStringToFile(Text,*(Root/TEXT("preview-qa.json")));
 }
 void AMarePreviewQA::Capture(const FString& Name){FScreenshotRequest::RequestScreenshot(Root/(Name+TEXT(".png")),true,false);}
@@ -71,9 +72,9 @@ void AMarePreviewQA::Tick(float DeltaSeconds)
  if(Root.IsEmpty()){
   FParse::Value(FCommandLine::Get(),TEXT("MareSaveRoot="),Root);Root.ReplaceInline(TEXT("\\"),TEXT("/"));
   if(!Root.StartsWith(TEXT("D:/CodexTemp/"))){Destroy();return;}
-  FApp::SetUnfocusedVolumeMultiplier(1.f);Next=FPlatformTime::Seconds()+12;Phase=0;
+  FApp::SetUnfocusedVolumeMultiplier(1.f);Next=FPlatformTime::Seconds()+12;Phase=FParse::Param(FCommandLine::Get(),TEXT("MareHomeOnlyQA"))?41:0;
  }
- if(FPlatformTime::Seconds()<Next || Phase>41)return;
+ if(FPlatformTime::Seconds()<Next || Phase>54)return;
  auto Move=Hero->GetCharacterMovement();auto Eyes=Hero->FindComponentByClass<UCameraComponent>();
  auto Audio=GetWorld()->GetSubsystem<UMareAudioWorld>();auto Sim=PC->GetSimulation();
  auto Key=[&](FKey K,bool Down){PC->InputKey(FInputKeyEventArgs(GEngine->GameViewport->Viewport,INPUTDEVICEID_NONE,K,Down?IE_Pressed:IE_Released,FPlatformTime::Cycles64()));};
@@ -131,7 +132,7 @@ void AMarePreviewQA::Tick(float DeltaSeconds)
    }
   }
   Check(TEXT("runtime_actor_catalog"),Count>60 && Missing==0);
-  Check(TEXT("audio_catalog"),Audio->LoadedSounds()==43);
+  Check(TEXT("audio_catalog"),Audio->LoadedSounds()==45);
   Check(TEXT("master_submix_routed"),Audio->HasMasterMix());
   if(auto Device=GetWorld()->GetAudioDevice()){UE_LOG(LogTemp,Display,TEXT("MARE_QA_AUDIO_DEVICE muted=%d primary=%f app=%f"),Device->IsAudioDeviceMuted(),Device->GetPrimaryVolume(),FApp::GetVolumeMultiplier());Device->SetDeviceMuted(false);Device->SetTransientPrimaryVolume(1.f);}
   FApp::SetVolumeMultiplier(1.f);
@@ -150,7 +151,11 @@ void AMarePreviewQA::Tick(float DeltaSeconds)
   PresentationFixtures.Empty();Check(TEXT("customer_authored_animation_active"),bAnimated);Check(TEXT("products_follow_animated_hands"),bGripped);
   UAudioMixerBlueprintLibrary::StopRecordingOutput(this,EAudioRecordingExportType::WavFile,TEXT("mix_audible"),Root);Audio->SetVolume(TEXT("Master"),0);UAudioMixerBlueprintLibrary::StartRecordingOutput(this,5);Check(TEXT("water_entry_and_float"),Move->IsSwimming() && Hero->GetActorLocation().Z>-90 && Hero->GetActorLocation().Z<-25);Check(TEXT("surface_camera_above_water"),Eyes && Eyes->GetComponentLocation().Z>-30);Before=Hero->GetActorLocation();Key(EKeys::LeftControl,true);Capture(TEXT("surface"));break;
  }
- case 2:UAudioMixerBlueprintLibrary::StopRecordingOutput(this,EAudioRecordingExportType::WavFile,TEXT("mix_muted"),Root);Audio->SetVolume(TEXT("Master"),.85f);Key(EKeys::LeftControl,false);Check(TEXT("ctrl_dives"),Hero->GetActorLocation().Z<Before.Z-70);Check(TEXT("underwater_camera"),Eyes && Eyes->PostProcessBlendWeight>.8);Capture(TEXT("underwater"));Key(EKeys::SpaceBar,true);break;
+ case 2:{UAudioMixerBlueprintLibrary::StopRecordingOutput(this,EAudioRecordingExportType::WavFile,TEXT("mix_muted"),Root);Audio->SetVolume(TEXT("Master"),.85f);Key(EKeys::LeftControl,false);Check(TEXT("ctrl_dives"),Hero->GetActorLocation().Z<Before.Z-70);Check(TEXT("underwater_camera"),Eyes && Eyes->PostProcessBlendWeight>.8);
+  auto Body=Hero->FindComponentByClass<UMarePlayerPresentation>();bool Hands=Body && Body->ViewBody;
+  if(Hands){const FVector R=Body->ViewBody->GetSocketLocation(TEXT("hand_r"))-Eyes->GetComponentLocation(),L=Body->ViewBody->GetSocketLocation(TEXT("hand_l"))-Eyes->GetComponentLocation();
+   Hands=FVector::DotProduct(R,Hero->GetActorForwardVector())>10 && FVector::DotProduct(L,Hero->GetActorForwardVector())>10 && FVector::DotProduct(R-L,Hero->GetActorRightVector())>15;}
+  Check(TEXT("swim_hands_in_front_separated"),Hands);Capture(TEXT("underwater"));Key(EKeys::SpaceBar,true);break;}
  case 3:Key(EKeys::SpaceBar,false);Check(TEXT("space_surfaces"),Hero->GetActorLocation().Z>-90 && Move->IsSwimming());Before=Hero->GetActorLocation();Key(EKeys::W,true);break;
  case 4:Key(EKeys::W,false);Check(TEXT("swimming_forward"),FVector::Dist2D(Before,Hero->GetActorLocation())>150);Hero->SetActorLocation(FVector(3800,-2900,180));Move->StopMovementImmediately();break;
  case 5:Check(TEXT("return_to_walking"),Move->IsMovingOnGround() && !Move->IsSwimming());Hero->SetActorLocation(FVector(3800,-2900,-6000));break;
@@ -224,7 +229,20 @@ void AMarePreviewQA::Tick(float DeltaSeconds)
  case 38:{auto P=Hero->FindComponentByClass<UMarePlayerPresentation>();Check(TEXT("player_carry_hands"),P && P->HeldProduct && P->HeldProduct->GetAttachParent()==P->ViewBody && P->HeldProduct->GetAttachSocketName()==TEXT("hand_r") && FVector::Dist(P->HeldProduct->GetComponentLocation(),P->ViewBody->GetSocketLocation(TEXT("hand_r")))<30);Capture(TEXT("player-carry"));break;}
  case 39:Check(TEXT("player_returns_product"),Sim->ReturnCarry());PC->SetControlRotation(FRotator(-75,-90,0));break;
  case 40:{auto P=Hero->FindComponentByClass<UMarePlayerPresentation>();Capture(TEXT("player-body"));Check(TEXT("player_body_visible"),P && P->ViewBody && P->ViewBody->IsVisible() && !P->HeldProduct);break;}
- case 41:if(GetWorld()->WorldType!=EWorldType::PIE)GEngine->Exec(GetWorld(),TEXT("QUIT"));break;
+ case 41:{Hero->SetActorLocation(FVector(4510,2160,100));Move->SetMovementMode(MOVE_Walking);Move->StopMovementImmediately();for(TActorIterator<AMareServiceTarget> It(GetWorld());It;++It)if(It->Action==TEXT("HomeTV"))PC->SetControlRotation((It->GetActorLocation()-Eyes->GetComponentLocation()).Rotation());break;}
+ case 42:Capture(TEXT("home-tv-off"));break;
+ case 43:{auto T=AMareServiceTarget::FindFocused(PC);Check(TEXT("home_tv_focus"),T && T->Action==TEXT("HomeTV"));if(T)T->Use(PC);break;}
+ case 44:Check(TEXT("home_tv_on"),GetWorld()->GetSubsystem<UMareHomeWorld>()->IsTVOn());Capture(TEXT("home-tv-on"));break;
+ case 45:GetWorld()->GetSubsystem<UMareHomeWorld>()->Use(TEXT("HomeTV"));GetWorld()->GetSubsystem<UMareHomeWorld>()->Use(TEXT("HomeStereo"));break;
+ case 46:{Check(TEXT("home_stereo_plays"),Audio->LoopLevel(TEXT("home_stereo"))>.001f);const float Music=Audio->GetVolume(TEXT("Music"));Audio->SetVolume(TEXT("Music"),0);Check(TEXT("home_stereo_music_volume"),Audio->LoopLevel(TEXT("home_stereo"))==0);Audio->SetVolume(TEXT("Music"),Music);GetWorld()->GetSubsystem<UMareHomeWorld>()->Use(TEXT("HomeStereo"));break;}
+ case 47:Hero->SetActorLocation(FVector(4610,2280,100));Move->StopMovementImmediately();PC->SetControlRotation((FVector(4435,2342,65)-Eyes->GetComponentLocation()).Rotation());break;
+ case 48:{auto T=AMareServiceTarget::FindFocused(PC);Check(TEXT("home_sofa_focus"),T && T->Action==TEXT("HomeSofa"));if(T)T->Use(PC);break;}
+ case 49:Check(TEXT("home_sofa_sits"),GetWorld()->GetSubsystem<UMareHomeWorld>()->IsSeated() && FVector::Dist(Hero->GetMesh()->GetSocketLocation(TEXT("pelvis")),FVector(4435,2325,56))<4);Capture(TEXT("home-sofa"));Key(EKeys::E,true);Key(EKeys::E,false);break;
+ case 50:Check(TEXT("home_sofa_stands"),!GetWorld()->GetSubsystem<UMareHomeWorld>()->IsSeated() && Move->IsMovingOnGround());Hero->SetActorLocation(FVector(4850,1500,110));Move->StopMovementImmediately();PC->SetControlRotation((FVector(4919,1500,116)-Eyes->GetComponentLocation()).Rotation());break;
+ case 51:{auto T=AMareServiceTarget::FindFocused(PC);Check(TEXT("home_shower_focus"),T && T->Action==TEXT("HomeShower"));if(T)T->Use(PC);Hero->SetActorLocation(FVector(4805,1580,110));PC->SetControlRotation((FVector(4882,1500,138)-Eyes->GetComponentLocation()).Rotation());break;}
+ case 52:Check(TEXT("home_shower_on"),GetWorld()->GetSubsystem<UMareHomeWorld>()->IsShowerOn());Capture(TEXT("home-shower"));GetWorld()->GetSubsystem<UMareHomeWorld>()->Use(TEXT("HomeShower"));break;
+ case 53:{auto Home=GetWorld()->GetSubsystem<UMareHomeWorld>();Check(TEXT("home_appliances_cycle"),!Home->IsTVOn() && !Home->IsStereoOn() && !Home->IsShowerOn() && !Home->IsSeated() && Sim->Save());break;}
+ case 54:if(GetWorld()->WorldType!=EWorldType::PIE)GEngine->Exec(GetWorld(),TEXT("QUIT"));break;
  }
  Next=FPlatformTime::Seconds()+((Phase==27 || Phase==28)?.5:Phase==13?10:Phase==1?7:Phase==3?4:Phase==4?5:3);
 }

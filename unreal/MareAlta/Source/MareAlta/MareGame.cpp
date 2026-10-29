@@ -163,7 +163,9 @@ private:
    +SVerticalBox::Slot().AutoHeight().HAlign(HAlign_Left).Padding(0,8,0,0)[SNew(SButton).ButtonStyle(&MareUI::ActionButton).ContentPadding(FMargin(8,5)).OnClicked_Lambda([this](){if(Owner.IsValid())Owner->ClosePhone();return FReply::Handled();})[MareUI::Text(TEXT("Fechar · B / Esc"),12,FLinearColor::White)]]]]]]];
   if(!Station.IsNone()){Stock(true);if(!S->Carry().IsEmpty())Action(TEXT("Devolver produto"),[S](){S->ReturnCarry();});return;}
   if(Tab==0){auto Company=UMareSimulation::Object(S->State,TEXT("company"));bool bCreated=false;Company->TryGetBoolField(TEXT("created"),bCreated);
-   if(!bCreated){Line(TEXT("Seu quiosque"),20);Body->AddSlot().AutoHeight()[SAssignNew(CompanyName,SEditableTextBox).Text(FText::FromString(TEXT("Maré Alta")))];Action(TEXT("Criar empresa"),[this,S](){S->CreateCompany(CompanyName->GetText().ToString());});}
+   if(!bCreated){Line(TEXT("Seu quiosque"),20);
+    if(UMareSimulation::Number(S->State,TEXT("ue_intro_stage"),2)<2)Line(TEXT("Primeiro, entre na casa e leia a carta que seu avô deixou para você."),14);
+    else{Body->AddSlot().AutoHeight()[SAssignNew(CompanyName,SEditableTextBox).Text(FText::FromString(TEXT("Maré Alta")))];Action(TEXT("Criar empresa"),[this,S](){S->CreateCompany(CompanyName->GetText().ToString());});}}
    else{bool Requested=false;Company->TryGetBoolField(TEXT("kiosk_open"),Requested);auto Hours=UMareSimulation::Object(Company,TEXT("sim"));
     Body->AddSlot().AutoHeight().Padding(0,4)[MareUI::LiveText([S,Requested](){return S->IsOpen()?TEXT("Aberto · recebendo clientes"):Requested?TEXT("Abertura ativada · aguardando horário"):TEXT("Quiosque fechado");},18)];
     Line(FString::Printf(TEXT("Atendimento: %.0fh às %.0fh"),UMareSimulation::Number(Hours,TEXT("start"),8),UMareSimulation::Number(Hours,TEXT("end"),18)),12);
@@ -299,7 +301,7 @@ void AMareHUD::DrawHUD()
  if(IntroStage==0){Line(TEXT("A vila parecia menor... e o mar, do tamanho das minhas lembranças."),FLinearColor(1.f,.88f,.56f));Line(TEXT("E · avançar"));return;}
  if(IntroStage==1)Line(TEXT("Entre na casa e leia a carta do avô"),FLinearColor(1.f,.88f,.56f));
  bool bCreated=false;auto Company=UMareSimulation::Object(S->State,TEXT("company"));Company->TryGetBoolField(TEXT("created"),bCreated);
- if(!bCreated)Line(TEXT("Comece aqui: B · Celular → Quiosque → Criar empresa"),FLinearColor(1.f,.88f,.56f));
+ if(!bCreated && IntroStage>=2)Line(TEXT("Comece aqui: B · Celular → Quiosque → Criar empresa"),FLinearColor(1.f,.88f,.56f));
  else if(!S->IsOpen())Line(TEXT("Aponte para a placa FECHADO e clique para abrir"),FLinearColor(1.f,.88f,.56f));
  auto Orders=UMareSimulation::Object(S->State,TEXT("ue_orders"));for(const auto& Pair:Orders->Values){auto Order=Pair.Value->AsObject();const TArray<TSharedPtr<FJsonValue>>* Items=nullptr;FString Text=UMareSimulation::String(Order,TEXT("name"))+TEXT(" · ");if(Order->TryGetArrayField(TEXT("remaining"),Items))for(const auto& Item:*Items)Text+=UMareSimulation::String(UMareSimulation::Object(UMareSimulation::Object(S->Definitions,TEXT("dishes")),Item->AsString()),TEXT("name"))+TEXT("  ");Line(Text);}
  const auto Campaign=UMareSimulation::Object(UMareSimulation::Object(S->State,TEXT("prog")),TEXT("campaign"));
