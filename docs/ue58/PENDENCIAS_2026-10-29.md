@@ -1,9 +1,9 @@
 # Continuação integral autorizada — 29/10/2026
 
-**Última instrução: pausar e salvar por limite.** Ver
-[checkpoint de pausa](CHECKPOINT_PAUSA_2026-10-29.md), com fonte/EXE testados,
-WIP da população, desempenho e próximos passos. Esse pedido substitui a retomada
-descrita nos blocos históricos abaixo até o usuário pedir continuar novamente.
+**Estado mais recente:** usuário retomou pequenos ajustes e pediu um teste.
+[Prévia da vila entregue](TESTE_VILA_2026-10-29.md), fonte EXE 45cc1e69, com
+população/diálogos verificados, 87 checks e pacote no D. O checkpoint de pausa
+abaixo é histórico. Outros negócios, capítulos e acabamento continuam pendentes.
 
 O usuário pediu conferir o checkpoint e **concluir todas as pendências**.
 **Retomado em 29/10 após novo “continue/go”.** A seção de pausa ao final é

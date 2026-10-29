@@ -1,9 +1,10 @@
 # Guia vigente para as próximas atualizações
 
-**Pausa por limite em 29/10:** ler primeiro
-[checkpoint de continuação UE](ue58/CHECKPOINT_PAUSA_2026-10-29.md).
-O EXE testado é f7ab170d; o WIP posterior da população compila, mas ainda não foi
-validado em execução. Retomar somente após novo pedido do usuário.
+**Prévia UE atual de 29/10:** ler primeiro
+[teste da vila, casa e abertura](ue58/TESTE_VILA_2026-10-29.md).
+EXE fonte 45cc1e69: população/diálogos testados, 87 verificações, pasta e ZIP no D.
+Migração ainda incompleta. O [checkpoint anterior](ue58/CHECKPOINT_PAUSA_2026-10-29.md)
+guarda histórico; suas referências a WIP não testado foram superadas por esta entrega.
 
 **Continuação UE de 29/10:** ler [pendências consolidadas](ue58/PENDENCIAS_2026-10-29.md).
 O usuário autorizou concluir toda a migração pendente. O gramado e a regressão

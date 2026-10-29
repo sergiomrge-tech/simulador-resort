@@ -1,5 +1,9 @@
 # Checkpoint de pausa — 29/10/2026
 
+**Atualização posterior:** pequenos ajustes foram retomados e uma prévia foi
+entregue. Ver [TESTE_VILA_2026-10-29.md](TESTE_VILA_2026-10-29.md): fonte 45cc1e69,
+87 verificações e ZIP/pasta no D. As seções abaixo são histórico anterior a ela.
+
 O usuário pediu finalizar e salvar porque o limite está acabando. **Pausar aqui.
 Retomar somente após novo pedido.** Não tratar este checkpoint como migração
 concluída. Nenhum editor, jogo ou build estava ativo ao encerrar.
