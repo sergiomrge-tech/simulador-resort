@@ -1,0 +1,85 @@
+# Checkpoint de pausa — 29/10/2026
+
+O usuário pediu finalizar e salvar porque o limite está acabando. **Pausar aqui.
+Retomar somente após novo pedido.** Não tratar este checkpoint como migração
+concluída. Nenhum editor, jogo ou build estava ativo ao encerrar.
+
+## Repositório e referência testada
+
+- Pasta: `D:/Projetos/MareAltaUE58`.
+- Branch: `codex/ue58-migration`.
+- GitHub: https://github.com/sergiomrge-tech/simulador-resort/tree/codex/ue58-migration
+- Unreal 5.8.3 em `D:/UE_5.8`; alvo Windows/DX12/RTX 4060 Ti 8 GB.
+- Última fonte testada no EXE: **`f7ab170d`**, precedida por `a646ebf0`.
+- Pacote correspondente: `D:/Builds/MareAltaUE58_CasaAbertura_2026-10-29/Windows/MareAlta.exe`.
+- 79/79 verificações; áudio audível/mute/pausa aprovado; abertura natural 12/12
+  e avanço 11/11. Evidências em `PENDENCIAS_2026-10-29.md`.
+- Perfil real do bosque após corpo/casa/abertura, 1920×1080 nativo:
+  **75,8 FPS médios**, frame médio 13,195 ms, P95 14,561 ms, GPU 12,692 ms,
+  game thread 3,707 ms, render thread 13,218 ms, memória local GPU ~3158 MB.
+  Caminho: `D:/CodexTemp/ue58-render-profile-20261029-132139/summary.json`.
+  Câmera fixa; não garante 60 FPS no mapa inteiro ou com a nova população.
+
+## WIP posterior preservado — compila, ainda NÃO testado no jogo
+
+- `MareVillageWorld.h/.cpp`: subsistema separado do quiosque, cinco moradores
+  físicos, pedestres nas rotas existentes, orçamento padrão 12/5 por qualidade,
+  pausas/caminhada, diálogo compacto e registro de pessoas cumprimentadas.
+- Integração em `MarePerson`, `MareServiceTarget` e `MareGame`: pessoas ambientes
+  não entram nos pedidos do quiosque; E/Esc fecha diálogo e B evita sobreposição.
+- Build de **MareAltaEditor Win64 Development aprovado** após essas alterações
+  (última sessão de build 40459). Nenhum teste PIE/EXE da população foi executado.
+- NavMesh existente ampliado para centro (5000,1800,250), extensões
+  (6500,6000,1000). Rebuild real executado; rotas consultadas no editor.
+- `village_routes.json`: oito rotas completas e cinco moradores projetados;
+  três rotas antigas excluídas explicitamente por percurso parcial/fora da malha.
+  Não usar trajetos rejeitados nem teleportar pessoas através de obstáculos.
+- Ferramenta MCP `village_navigation(prepare/validate)` e módulo `mare_village.py`.
+  Projeção pode retornar None: já tratado. O comando RebuildNavigation funcionou;
+  não é necessário criar uma biblioteca C++ apenas para forçar essa reconstrução.
+
+### Primeiros passos na retomada
+
+1. Conferir Git, ler AGENTS, CONTINUAR, CLAUDE e este arquivo. O guia integral de
+   pendências é `PENDENCIAS_2026-10-29.md`; históricos não substituem essa lista.
+2. Executar a população em PIE com dados D:/CodexTemp separados. Conferir presença,
+   aparência, circulação, paradas, pessoas presas, diálogo/E/Esc/B e persistência.
+   Verificar que moradores/pedestres não viram clientes no save do quiosque.
+3. Revisar `Setup`: se projeção falhar na primeira inicialização, moradores podem
+   não reaparecer porque bReady depende das rotas. Validar/reparar se necessário.
+   Verificar orçamento quando GetOverallScalabilityLevel retorna -1 (qualidade
+   personalizada); usar qualidade de distância ou política explícita nessa situação.
+4. Ajustar a captura do chuveiro: o ponto lateral (4805,1580) encosta no vidro.
+   Testar posição livre à frente do box, sem aprovar a imagem atual. Controle
+   abre/fecha já passou, efeito visual ainda precisa de inspeção correta.
+5. Continuar capítulos/fama, pesca/fotos e negócios reais; implementar vôlei e
+   animais animados. Depois arte/auditoria global, três opções de interface e
+   regressão/desempenho/exportação final. Não encerrar apenas por ter pedestres.
+
+## Pesquisa de animais — candidatos, sem instalação no jogo
+
+- `tools/ue58/render_animal_source.py` faz render de FONTE no Blender/CPU, nunca
+  captura do jogo. Animais antigos têm rig/Idle/Walking, mas são cartoon.
+- Labrador do pack Pets and Companions HD foi baixado e examinado: **rejeitado**,
+  anatomia/qualidade inadequadas. Não instalar só por a página dizer "HD".
+- Gato Tabby Grab3D ficou visualmente melhor; candidato estático, sem rig:
+  https://grab3d.com/api/v1/models/cat.json e https://grab3d.com/dl/cat/cat-light.glb
+  A página/API declaram CC0 e origem assistida por IA. Variante light tem ~382 mil
+  triângulos/1K; precisa redução, rig/skin/animação e validação antes de integrar.
+  Fonte local `D:/CodexTemp/ue58-animal-candidates/tabby.glb`; metadados em
+  `D:/CodexTemp/ue58-cat-cc0-candidate.json`. Não substituir modelos por estátuas.
+- Renderizações da fonte em `D:/CodexTemp/ue58-animal-source-review/`.
+- Blender portátil verificado: `D:/Tools/blender-5.2.2-windows-x64/blender.exe`.
+  Blender MCP estava desconectado; usar o executável ou reconectar antes de chamar.
+
+## Restrições e entrega
+
+Preservar celular B, placa física vermelha/verde, sem preparo, atendimento no
+balcão antes da mesa, um atendente e pagamento automático. Manter Lumen async=0
+pela mitigação de estabilidade registrada. Gramado contínuo tem 177454 instâncias.
+Não apagar as três pastas Actors antigas não rastreadas (dish_fries,
+dish_fish_portion, player_home_door), saves, fontes ou instalações anteriores.
+
+O EXE de f7ab170d **não contém este WIP da população**. Não sobrescrever esse
+pacote antes de validar/exportar a continuação. Não foi publicada release nova
+nem montado outro ZIP em Downloads neste lote; o download anterior permanece.

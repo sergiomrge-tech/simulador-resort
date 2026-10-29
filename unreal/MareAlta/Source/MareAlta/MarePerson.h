@@ -52,6 +52,8 @@ public:
  int32 TableIndex=-1;
  UPROPERTY(BlueprintReadOnly,Category="Maré Alta")
  bool bEmployee=false;
+ /** Village walkers/residents never participate in the kiosk order state machine. */
+ bool bAmbient=false,bConversing=false;
  UPROPERTY(BlueprintReadOnly,Category="Maré Alta")
  float Elapsed=0;
  UPROPERTY(BlueprintReadOnly,Category="Maré Alta")

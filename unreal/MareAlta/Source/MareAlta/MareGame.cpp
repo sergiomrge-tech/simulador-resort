@@ -1,6 +1,7 @@
 #include "MareGame.h"
 #include "MarePlayerPresentation.h"
 #include "MareHomeWorld.h"
+#include "MareVillageWorld.h"
 #include "MareIntro.h"
 #include "MareIntroQA.h"
 #include "MareGraphicsQA.h"
@@ -219,6 +220,7 @@ void AMareCharacter::LookY(float Value){AddControllerPitchInput(Value);}
 void AMareCharacter::Phone(){if(auto PC=Cast<AMareController>(Controller))PC->TogglePhone();}
 void AMareCharacter::Interact()
 {
+ if(auto Village=GetWorld()->GetSubsystem<UMareVillageWorld>())if(Village->IsDialogueOpen()){Village->CloseDialogue();return;}
  for(TActorIterator<AMareIntro> It(GetWorld());It;++It)if(It->IsArrival()){It->FinishArrival();return;}
  auto PC=Cast<AMareController>(Controller);if(!PC || PC->bPhoneOpen || GetWorld()->IsPaused())return;
  if(auto Home=GetWorld()->GetSubsystem<UMareHomeWorld>())if(Home->IsSeated()){Home->Stand();return;}
@@ -243,6 +245,7 @@ void AMareController::SetupInputComponent()
 }
 void AMareController::TogglePauseMenu()
 {
+ if(auto Village=GetWorld()->GetSubsystem<UMareVillageWorld>())if(Village->IsDialogueOpen()){Village->CloseDialogue();return;}
  for(TActorIterator<AMareIntro> It(GetWorld());It;++It)if(It->IsLetterOpen()){It->CloseLetter();return;}else if(It->IsArrival()){It->FinishArrival();return;}
  if(bPhoneOpen){ClosePhone();return;}
  if(!GEngine || !GEngine->GameViewport)return;
@@ -268,7 +271,7 @@ void AMareController::TogglePauseMenu()
  GEngine->GameViewport->AddViewportWidgetContent(PauseWidget.ToSharedRef(),30);bShowMouseCursor=true;
  SetInputMode(FInputModeGameAndUI());SetIgnoreMoveInput(true);SetIgnoreLookInput(true);
 }
-void AMareController::TogglePhone(){for(TActorIterator<AMareIntro> It(GetWorld());It;++It)if(It->IsArrival() || It->IsLetterOpen())return;if(PauseWidget.IsValid())return;if(bPhoneOpen)ClosePhone();else OpenPhone();}
+void AMareController::TogglePhone(){if(auto Village=GetWorld()->GetSubsystem<UMareVillageWorld>())if(Village->IsDialogueOpen())return;for(TActorIterator<AMareIntro> It(GetWorld());It;++It)if(It->IsArrival() || It->IsLetterOpen())return;if(PauseWidget.IsValid())return;if(bPhoneOpen)ClosePhone();else OpenPhone();}
 void AMareController::OpenPhone(int32 Tab)
 {
  if(!GEngine || !GEngine->GameViewport)return;

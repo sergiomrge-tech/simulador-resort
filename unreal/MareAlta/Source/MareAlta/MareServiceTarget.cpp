@@ -1,6 +1,7 @@
 #include "MareServiceTarget.h"
 #include "MarePlayerPresentation.h"
 #include "MareHomeWorld.h"
+#include "MareVillageWorld.h"
 #include "MareGame.h"
 #include "MareIntro.h"
 #include "MareAudioWorld.h"
@@ -68,6 +69,7 @@ void AMareServiceTarget::Use(APlayerController* Controller)
  auto Sim=PC->GetGameInstance()->GetSubsystem<UMareSimulation>();
  if(Action.ToString().StartsWith(TEXT("Home"))){GetWorld()->GetSubsystem<UMareHomeWorld>()->Use(Action);return;}
  if(Action==TEXT("IntroLetter")){if(auto Intro=Cast<AMareIntro>(GetOwner()))Intro->ReadLetter();return;}
+ if(Action==TEXT("Resident")){GetWorld()->GetSubsystem<UMareVillageWorld>()->Speak(Cast<AMarePerson>(GetOwner()),Controller);return;}
  if(Action==TEXT("KioskSign")){bool Requested=false;UMareSimulation::Object(Sim->State,TEXT("company"))->TryGetBoolField(TEXT("kiosk_open"),Requested);Sim->SetOpen(!Requested);return;}
  if(Action==TEXT("Fridge") || Action==TEXT("Cupboard")){GetWorld()->GetSubsystem<UMareAudioWorld>()->PlayCue(TEXT("kiosk_fridge"),.3f);PC->OpenStation(Action);return;}
  if(Action==TEXT("Customer")){if(auto Person=Cast<AMarePerson>(GetOwner()))Person->Interact(PC);return;}

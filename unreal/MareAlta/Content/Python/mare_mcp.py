@@ -23,6 +23,16 @@ class MareMigrationTools(unreal.ToolsetDefinition):
 
     @toolset_registry.tool_call
     @staticmethod
+    def village_navigation(action: str) -> str:
+        """Expand the existing bounds and separately validate authored complete village paths."""
+        import importlib,mare_village
+        importlib.reload(mare_village)
+        if action=='prepare':return json.dumps(mare_village.prepare())
+        if action=='validate':return json.dumps(mare_village.validate())
+        raise ValueError(action)
+
+    @toolset_registry.tool_call
+    @staticmethod
     def repair_directional_priority() -> str:
         """Assign distinct sun/moon translucent-light priority without changing exposure or intensity."""
         if unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world():raise RuntimeError('Stop PIE first')
