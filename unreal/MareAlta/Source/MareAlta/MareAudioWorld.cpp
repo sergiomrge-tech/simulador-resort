@@ -32,12 +32,24 @@ void UMareAudioWorld::SetRadioStation(FName Station)
  RadioStation=Station;GConfig->SetString(TEXT("MareAudio"),TEXT("Radio"),*Station.ToString(),GGameUserSettingsIni);GConfig->Flush(false,GGameUserSettingsIni);
 }
 float UMareAudioWorld::LoopLevel(FName Name)const{auto Component=Loops.FindRef(Name);return IsValid(Component)?Component->VolumeMultiplier:0.f;}
+void UMareAudioWorld::SetHomeStereo(bool bEnabled,FVector Position)
+{
+ bHomeStereo=bEnabled;if(!bReady)return;
+ if(bEnabled && !HomeStereo)if(auto Wave=Sounds.FindRef(TEXT("music_relax"))){
+  auto Local=NewObject<USoundAttenuation>(this);Local->Attenuation.bAttenuate=true;Local->Attenuation.bSpatialize=true;
+  Local->Attenuation.AttenuationShapeExtents=FVector(150);Local->Attenuation.FalloffDistance=650;
+  HomeStereo=UGameplayStatics::SpawnSoundAtLocation(this,Wave,Position,FRotator::ZeroRotator,.001f,1,0,Local,nullptr,false);
+  if(HomeStereo)HomeStereo->SetUISound(false);
+ }
+ if(HomeStereo){HomeStereo->SetWorldLocation(Position);HomeStereo->SetVolumeMultiplier(bEnabled && GetVolume(TEXT("Master"))>0?GetVolume(TEXT("Music"))*.24f*(MasterMix?1.f:GetVolume(TEXT("Master"))):0.f);}
+}
 float UMareAudioWorld::Gain(bool bAmbient)const{return (MasterMix?1.f:GetVolume(TEXT("Master")))*GetVolume(TEXT("Effects"))*(bAmbient?GetVolume(TEXT("Ambient")):1.f);}
 void UMareAudioWorld::SetVolume(FName Bus,float Value)
 {
  if(!Volumes.Contains(Bus))return;Value=FMath::Clamp(Value,0.f,1.f);Volumes[Bus]=Value;
  GConfig->SetFloat(TEXT("MareAudio"),*Bus.ToString(),Value,GGameUserSettingsIni);GConfig->Flush(false,GGameUserSettingsIni);
  if(Bus==TEXT("Master") && MasterMix)MasterMix->SetSubmixOutputVolume(this,Value);
+ if(HomeStereo && (GetVolume(TEXT("Master"))==0 || GetVolume(TEXT("Music"))==0))HomeStereo->SetVolumeMultiplier(0);
  for(auto& Voice:Voices)if(IsValid(Voice.Key))Voice.Key->SetVolumeMultiplier(GetVolume(TEXT("Master"))==0?0:Voice.Value*Gain(Voice.Key->ComponentHasTag(TEXT("Ambient"))));
  for(auto Pair:Loops)if(IsValid(Pair.Value) && (GetVolume(TEXT("Master"))==0 || ((Pair.Key==TEXT("reggae_praia") || Pair.Key==TEXT("music_bossa") || Pair.Key==TEXT("music_relax"))?GetVolume(TEXT("Music"))==0:GetVolume(TEXT("Effects"))*GetVolume(TEXT("Ambient"))==0)))Pair.Value->SetVolumeMultiplier(0);
 }
@@ -70,7 +82,7 @@ void UMareAudioWorld::UpdateLayers(float DeltaSeconds,UMareSimulation* Sim,FVect
  IndoorClock-=DeltaSeconds;if(IndoorClock<=0 && Eyes){IndoorClock=.5f;FHitResult Hit;FCollisionQueryParams Query;Query.AddIgnoredActor(Hero);bIndoors=GetWorld()->LineTraceSingleByChannel(Hit,Eyes->GetComponentLocation(),Eyes->GetComponentLocation()+FVector(0,0,350),ECC_Visibility,Query);}
  const float Beach=FMath::Clamp(1.f-(Position.Y+3200.f)/7000.f,.08f,1.f);
  for(auto Pair:Loops){const FName Name=Pair.Key;float Target=0;
-  if(Name==RadioStation && (Name==TEXT("reggae_praia") || Name==TEXT("music_bossa") || Name==TEXT("music_relax")))Target=(MasterMix?1.f:GetVolume(TEXT("Master")))*GetVolume(TEXT("Music"))*(bNight?.22f:.32f)*(bIndoors?.65f:1.f);
+  if(Name==RadioStation && (Name==TEXT("reggae_praia") || Name==TEXT("music_bossa") || Name==TEXT("music_relax")))Target=(MasterMix?1.f:GetVolume(TEXT("Master")))*GetVolume(TEXT("Music"))*(bNight?.22f:.32f)*(bIndoors?.65f:1.f)*(bHomeStereo && HomeStereo?FMath::Clamp(FVector::Dist(Position,HomeStereo->GetComponentLocation())/800.f,.12f,1.f):1.f);
   if(Name==TEXT("ocean_loop"))Target=Gain(true)*Beach*(bIndoors?.1f:.4f);
   if(Name==TEXT("rain_loop"))Target=Gain(true)*(bRain?(bIndoors?.12f:.48f):0.f);
   if(Name==TEXT("wind_loop"))Target=Gain(true)*(bRain?.16f:.055f)*(bIndoors?.15f:1.f);
@@ -120,4 +132,4 @@ void UMareAudioWorld::Tick(float DeltaSeconds)
  UpdateLayers(DeltaSeconds,Sim,Hero->GetActorLocation(),Rain,Night);UpdateEvents(DeltaSeconds,Sim,Hero->GetActorLocation(),Rain,Night);
  for(auto It=Voices.CreateIterator();It;++It){if(!IsValid(It.Key()) || !It.Key()->IsPlaying())It.RemoveCurrent();else{It.Key()->SetVolumeMultiplier(GetVolume(TEXT("Master"))==0?0:It.Value()*Gain(It.Key()->ComponentHasTag(TEXT("Ambient"))));It.Key()->SetLowPassFilterEnabled(bUnderwater);It.Key()->SetLowPassFilterFrequency(bUnderwater?900:18000);if((Rain || Night) && It.Key()->ComponentHasTag(TEXT("Ambient")) && It.Key()->Sound && It.Key()->Sound->GetName().StartsWith(TEXT("bird")))It.Key()->Stop();}}
 }
-void UMareAudioWorld::Deinitialize(){for(auto Pair:Loops)if(IsValid(Pair.Value))Pair.Value->Stop();for(auto Pair:Voices)if(IsValid(Pair.Key))Pair.Key->Stop();Loops.Empty();Voices.Empty();Sounds.Empty();Super::Deinitialize();}
+void UMareAudioWorld::Deinitialize(){if(HomeStereo)HomeStereo->Stop();for(auto Pair:Loops)if(IsValid(Pair.Value))Pair.Value->Stop();for(auto Pair:Voices)if(IsValid(Pair.Key))Pair.Key->Stop();Loops.Empty();Voices.Empty();Sounds.Empty();Super::Deinitialize();}

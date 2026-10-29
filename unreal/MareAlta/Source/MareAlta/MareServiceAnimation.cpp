@@ -1,5 +1,7 @@
 #include "MareServiceAnimation.h"
 #include "MarePerson.h"
+#include "MareGame.h"
+#include "MarePlayerPresentation.h"
 #include "Animation/AnimSingleNodeInstanceProxy.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/StaticMeshComponent.h"
@@ -26,7 +28,12 @@ struct FServiceProxy : FAnimSingleNodeInstanceProxy
   auto Single=Cast<UAnimSingleNodeInstance>(Instance);
   if(Single && Single->GetCurrentAsset()!=PreviousAsset.Get()){PreviousAsset=Single->GetCurrentAsset();BlendTime=0;bNewClip=true;}
   BlendTime+=DeltaSeconds;
-  auto Person=Cast<AMarePerson>(Instance->GetOwningActor());if(!Person)return;
+  auto Person=Cast<AMarePerson>(Instance->GetOwningActor());
+  if(!Person){if(auto Hero=Cast<AMareCharacter>(Instance->GetOwningActor()))if(auto Presentation=Hero->FindComponentByClass<UMarePlayerPresentation>()){
+   const auto Inverse=Instance->GetSkelMeshComponent()->GetComponentTransform().Inverse();
+   for(int32 Hand=0;Hand<2;++Hand){FVector Target=FVector::ZeroVector,Elbow=FVector::ZeroVector;float Weight=0;Presentation->HandTarget(Hand,Target,Elbow,Weight);
+    Strength[Hand]=FMath::FInterpTo(Strength[Hand],Weight,DeltaSeconds,12.f);Targets[Hand]=Inverse.TransformPosition(Target);Elbows[Hand]=Inverse.TransformPosition(Elbow);}
+  }return;}
   auto Mesh=Person->GetMesh();const auto ToComponent=Mesh->GetComponentTransform().Inverse();
   for(int32 Hand=0;Hand<2;++Hand){
    const FName Socket=Hand==0?TEXT("hand_r"):TEXT("hand_l");

@@ -27,12 +27,16 @@ public:
  UFUNCTION(BlueprintPure,Category="Audio") bool HasMasterMix()const{return MasterMix!=nullptr;}
  UFUNCTION(BlueprintCallable,Category="Audio") void SetRadioStation(FName Station);
  UFUNCTION(BlueprintPure,Category="Audio") FName GetRadioStation()const{return RadioStation;}
+ /** Physical home stereo is spatial, uses Music volume and ducks the portable radio nearby. */
+ void SetHomeStereo(bool bEnabled,FVector Position);
 private:
  UPROPERTY() TMap<FName,TObjectPtr<USoundWave>> Sounds;
  UPROPERTY() TMap<FName,TObjectPtr<UAudioComponent>> Loops;
  UPROPERTY() TMap<TObjectPtr<UAudioComponent>,float> Voices;
  UPROPERTY() TObjectPtr<USoundAttenuation> Attenuation;
  UPROPERTY() TObjectPtr<USoundSubmix> MasterMix;
+ UPROPERTY() TObjectPtr<UAudioComponent> HomeStereo;
+ bool bHomeStereo=false;
  TMap<FName,float> Volumes;
  FName RadioStation=TEXT("reggae_praia");
  TMap<FName,double> LastCue;

@@ -1,4 +1,6 @@
 #include "MareServiceTarget.h"
+#include "MarePlayerPresentation.h"
+#include "MareHomeWorld.h"
 #include "MareGame.h"
 #include "MareIntro.h"
 #include "MareAudioWorld.h"
@@ -62,7 +64,9 @@ bool AMareServiceTarget::CanClose(const FVector& PlayerLocation)const
 void AMareServiceTarget::Use(APlayerController* Controller)
 {
  auto PC=Cast<AMareController>(Controller);if(!PC)return;
+ if(auto Presentation=PC->GetPawn()?PC->GetPawn()->FindComponentByClass<UMarePlayerPresentation>():nullptr)Presentation->ReachFor(GetActorTransform().TransformPosition(FocusOffset));
  auto Sim=PC->GetGameInstance()->GetSubsystem<UMareSimulation>();
+ if(Action.ToString().StartsWith(TEXT("Home"))){GetWorld()->GetSubsystem<UMareHomeWorld>()->Use(Action);return;}
  if(Action==TEXT("IntroLetter")){if(auto Intro=Cast<AMareIntro>(GetOwner()))Intro->ReadLetter();return;}
  if(Action==TEXT("KioskSign")){bool Requested=false;UMareSimulation::Object(Sim->State,TEXT("company"))->TryGetBoolField(TEXT("kiosk_open"),Requested);Sim->SetOpen(!Requested);return;}
  if(Action==TEXT("Fridge") || Action==TEXT("Cupboard")){GetWorld()->GetSubsystem<UMareAudioWorld>()->PlayCue(TEXT("kiosk_fridge"),.3f);PC->OpenStation(Action);return;}

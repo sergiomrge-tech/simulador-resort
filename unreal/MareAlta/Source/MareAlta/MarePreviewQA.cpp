@@ -1,5 +1,7 @@
 #include "MarePreviewQA.h"
 #include "MareGame.h"
+#include "MarePlayerPresentation.h"
+#include "Animation/AnimSingleNodeInstance.h"
 #include "MarePerson.h"
 #include "MareServiceAnimation.h"
 #include "Components/SkeletalMeshComponent.h"
@@ -57,7 +59,7 @@ void AMarePreviewQA::Check(const FString& Name,bool bPass)
   if(GetWorld()->LineTraceSingleByChannel(Hit,P,P+FVector(0,0,180),ECC_Visibility,Query))Row->SetStringField(TEXT("overhead"),GetNameSafe(Hit.GetActor()));
  }
  Results.Add(MakeShared<FJsonValueObject>(Row));UE_LOG(LogTemp,Display,TEXT("MARE_PREVIEW_QA %s %s"),*Name,bPass?TEXT("PASS"):TEXT("FAIL"));
- auto Report=MakeShared<FJsonObject>();Report->SetArrayField(TEXT("checks"),Results);Report->SetBoolField(TEXT("finished"),Name==TEXT("grass_cycle_captured"));
+ auto Report=MakeShared<FJsonObject>();Report->SetArrayField(TEXT("checks"),Results);Report->SetBoolField(TEXT("finished"),Name==TEXT("player_body_visible"));
  FString Text;FJsonSerializer::Serialize(Report,TJsonWriterFactory<>::Create(&Text));FFileHelper::SaveStringToFile(Text,*(Root/TEXT("preview-qa.json")));
 }
 void AMarePreviewQA::Capture(const FString& Name){FScreenshotRequest::RequestScreenshot(Root/(Name+TEXT(".png")),true,false);}
@@ -71,12 +73,13 @@ void AMarePreviewQA::Tick(float DeltaSeconds)
   if(!Root.StartsWith(TEXT("D:/CodexTemp/"))){Destroy();return;}
   FApp::SetUnfocusedVolumeMultiplier(1.f);Next=FPlatformTime::Seconds()+12;Phase=0;
  }
- if(FPlatformTime::Seconds()<Next || Phase>37)return;
+ if(FPlatformTime::Seconds()<Next || Phase>41)return;
  auto Move=Hero->GetCharacterMovement();auto Eyes=Hero->FindComponentByClass<UCameraComponent>();
  auto Audio=GetWorld()->GetSubsystem<UMareAudioWorld>();auto Sim=PC->GetSimulation();
  auto Key=[&](FKey K,bool Down){PC->InputKey(FInputKeyEventArgs(GEngine->GameViewport->Viewport,INPUTDEVICEID_NONE,K,Down?IE_Pressed:IE_Released,FPlatformTime::Cycles64()));};
  switch(Phase++){
  case 0:{
+  {auto Presentation=Hero->FindComponentByClass<UMarePlayerPresentation>();Check(TEXT("player_rig_loaded"),Presentation && Presentation->ViewBody && Presentation->ViewBody->DoesSocketExist(TEXT("hand_r")) && Presentation->Clips.Num()>=4);}
   int32 GrassInstances=0;bool bGrassSafe=true;
   for(TActorIterator<AActor> It(GetWorld());It;++It)if(It->ActorHasTag(TEXT("MareGrassPCG"))){
    TArray<UInstancedStaticMeshComponent*> Components;It->GetComponents(Components);
@@ -217,7 +220,11 @@ void AMarePreviewQA::Tick(float DeltaSeconds)
  case 34:Capture(TEXT("grass-rain"));break;
  case 35:Sim->State->SetStringField(TEXT("weather"),TEXT("sun"));Sim->AdvanceMinutes(1320-UMareSimulation::Number(Sim->State,TEXT("minutes")));break;
  case 36:Capture(TEXT("grass-night"));Check(TEXT("grass_cycle_captured"),true);break;
- case 37:if(GetWorld()->WorldType!=EWorldType::PIE)GEngine->Exec(GetWorld(),TEXT("QUIT"));break;
+ case 37:Sim->AdvanceMinutes(720-UMareSimulation::Number(Sim->State,TEXT("minutes")));Hero->SetActorLocation(FVector(3800,-1300,100));Move->SetMovementMode(MOVE_Walking);Move->StopMovementImmediately();PC->SetControlRotation(FRotator(-25,-90,0));Check(TEXT("player_pickup_ready"),Sim->Pickup(TEXT("coco_gelado")));break;
+ case 38:{auto P=Hero->FindComponentByClass<UMarePlayerPresentation>();Check(TEXT("player_carry_hands"),P && P->HeldProduct && P->HeldProduct->GetAttachParent()==P->ViewBody && P->HeldProduct->GetAttachSocketName()==TEXT("hand_r") && FVector::Dist(P->HeldProduct->GetComponentLocation(),P->ViewBody->GetSocketLocation(TEXT("hand_r")))<30);Capture(TEXT("player-carry"));break;}
+ case 39:Check(TEXT("player_returns_product"),Sim->ReturnCarry());PC->SetControlRotation(FRotator(-75,-90,0));break;
+ case 40:{auto P=Hero->FindComponentByClass<UMarePlayerPresentation>();Capture(TEXT("player-body"));Check(TEXT("player_body_visible"),P && P->ViewBody && P->ViewBody->IsVisible() && !P->HeldProduct);break;}
+ case 41:if(GetWorld()->WorldType!=EWorldType::PIE)GEngine->Exec(GetWorld(),TEXT("QUIT"));break;
  }
  Next=FPlatformTime::Seconds()+((Phase==27 || Phase==28)?.5:Phase==13?10:Phase==1?7:Phase==3?4:Phase==4?5:3);
 }

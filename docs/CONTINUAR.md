@@ -1,5 +1,10 @@
 # Guia vigente para as próximas atualizações
 
+**Continuação UE de 29/10:** ler [pendências consolidadas](ue58/PENDENCIAS_2026-10-29.md).
+O usuário autorizou concluir toda a migração pendente. O gramado e a regressão
+gráfica têm checkpoint testado; isso não encerra abertura, animações, vida ambiente,
+negócios, campanha, arte e as três propostas posteriores de interface.
+
 **Entrega vigente:** [Refinamentos de 27/10](REFINAMENTOS_2026-10-27.md). Retomada do checkpoint concluída; celular com Missões direta, banheiro atrás da casa, gramado, reggae original e configurações independentes. Evidências de fonte/PCK no guia.
 
 Atualizado em **27/10/2026**. Destinado a qualquer IA ou pessoa, sem depender deste

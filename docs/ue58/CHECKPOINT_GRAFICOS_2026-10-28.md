@@ -1,5 +1,10 @@
 # Checkpoint solicitado pelo usuário — 28/10/2026
 
+**Retomado em 29/10:** o estado abaixo é histórico. Ler
+[PENDENCIAS_2026-10-29.md](PENDENCIAS_2026-10-29.md) e
+[GRAMADO_2026-10-29.md](GRAMADO_2026-10-29.md). Gramado já implementado e pacote
+testado; o usuário pediu concluir todas as demais pendências, não parar neste lote.
+
 O usuário pediu finalizar por limite. Não iniciar outros testes neste encerramento.
 Projeto: `D:/Projetos/MareAltaUE58`, branch `codex/ue58-migration`.
 Implementação gráfica até `47fe15b8`, já enviada ao GitHub. Nenhum editor ou jogo

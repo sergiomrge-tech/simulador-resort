@@ -1,4 +1,6 @@
 #include "MareGame.h"
+#include "MarePlayerPresentation.h"
+#include "MareHomeWorld.h"
 #include "MareIntro.h"
 #include "MareIntroQA.h"
 #include "MareGraphicsQA.h"
@@ -188,9 +190,11 @@ private:
 };
 AMareCharacter::AMareCharacter()
 {
+ CreateDefaultSubobject<UMarePlayerPresentation>(TEXT("PlayerPresentation"));
+ bUseControllerRotationYaw=true;
  PrimaryActorTick.bCanEverTick=true;
  GetCapsuleComponent()->InitCapsuleSize(32,88);
- Eyes=CreateDefaultSubobject<UCameraComponent>(TEXT("Eyes"));Eyes->SetupAttachment(GetCapsuleComponent());Eyes->SetRelativeLocation(FVector(0,0,64));Eyes->bUsePawnControlRotation=true;
+ Eyes=CreateDefaultSubobject<UCameraComponent>(TEXT("Eyes"));Eyes->SetupAttachment(GetCapsuleComponent());Eyes->SetRelativeLocation(FVector(12,0,74));Eyes->bUsePawnControlRotation=true;
  Eyes->PostProcessSettings.bOverride_SceneColorTint=true;Eyes->PostProcessSettings.SceneColorTint=FLinearColor(.72f,.86f,.83f);
  Eyes->PostProcessSettings.bOverride_VignetteIntensity=true;Eyes->PostProcessSettings.VignetteIntensity=.28f;Eyes->PostProcessBlendWeight=0;
  GetCharacterMovement()->MaxWalkSpeed=260;GetCharacterMovement()->JumpZVelocity=360;GetCharacterMovement()->MaxStepHeight=35;
@@ -206,12 +210,18 @@ void AMareCharacter::SetupPlayerInputComponent(UInputComponent* Input)
  Input->BindAxis(TEXT("SwimVertical"),this,&AMareCharacter::SwimVertical);
  Input->BindAction(TEXT("Sprint"),IE_Pressed,this,&AMareCharacter::SprintPressed);Input->BindAction(TEXT("Sprint"),IE_Released,this,&AMareCharacter::SprintReleased);
 }
-void AMareCharacter::Forward(float Value){if(Controller){auto Rotation=Controller->GetControlRotation();if(!GetCharacterMovement()->IsSwimming())Rotation.Pitch=0;Rotation.Roll=0;AddMovementInput(Rotation.Vector(),Value);}}
-void AMareCharacter::Right(float Value){if(Controller)AddMovementInput(FRotationMatrix(FRotator(0,Controller->GetControlRotation().Yaw,0)).GetUnitAxis(EAxis::Y),Value);}
+void AMareCharacter::Forward(float Value){if(FMath::Abs(Value)>.1f)if(auto Home=GetWorld()->GetSubsystem<UMareHomeWorld>())Home->Stand();if(Controller){auto Rotation=Controller->GetControlRotation();if(!GetCharacterMovement()->IsSwimming())Rotation.Pitch=0;Rotation.Roll=0;AddMovementInput(Rotation.Vector(),Value);}}
+void AMareCharacter::Right(float Value){if(FMath::Abs(Value)>.1f)if(auto Home=GetWorld()->GetSubsystem<UMareHomeWorld>())Home->Stand();if(Controller)AddMovementInput(FRotationMatrix(FRotator(0,Controller->GetControlRotation().Yaw,0)).GetUnitAxis(EAxis::Y),Value);}
 void AMareCharacter::LookX(float Value){AddControllerYawInput(Value);}
 void AMareCharacter::LookY(float Value){AddControllerPitchInput(Value);}
 void AMareCharacter::Phone(){if(auto PC=Cast<AMareController>(Controller))PC->TogglePhone();}
-void AMareCharacter::Interact(){for(TActorIterator<AMareIntro> It(GetWorld());It;++It)if(It->IsArrival()){It->FinishArrival();return;}if(auto PC=Cast<AMareController>(Controller))if(!PC->bPhoneOpen && !GetWorld()->IsPaused())if(auto Target=AMareServiceTarget::FindFocused(PC))Target->Use(PC);}
+void AMareCharacter::Interact()
+{
+ for(TActorIterator<AMareIntro> It(GetWorld());It;++It)if(It->IsArrival()){It->FinishArrival();return;}
+ auto PC=Cast<AMareController>(Controller);if(!PC || PC->bPhoneOpen || GetWorld()->IsPaused())return;
+ if(auto Home=GetWorld()->GetSubsystem<UMareHomeWorld>())if(Home->IsSeated()){Home->Stand();return;}
+ if(auto Target=AMareServiceTarget::FindFocused(PC))Target->Use(PC);
+}
 void AMareCharacter::SwimVertical(float Value){VerticalSwimInput=FMath::Clamp(Value,-1.f,1.f);}
 void AMareCharacter::Tick(float DeltaSeconds)
 {

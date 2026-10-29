@@ -374,3 +374,25 @@ FScreenshotRequest captura no fim do quadro; comprar no mesmo tick da captura
 Licença comprada não cria ingredientes: testar compra, reposição e retirada em
 sequência. Pedidos legados continuam atendíveis, sem liberar novos pedidos da
 receita que ainda não foi licenciada.
+
+## UE5.8 — materiais exportados e gramado de 29/10
+
+Tratar Material direto e MaterialInstanceConstant; seguir parents e considerar
+blend overrides. Habilitar/salvar os usos Nanite e InstancedStaticMeshes antes
+do cook, inclusive em materiais de vidro sem Nanite usados por ISMs. O editor
+pode recompilar automaticamente e parecer correto, enquanto o EXE mostra xadrez.
+Reprovar também avisos missing usage flag e Default Material will be used,
+não somente Error/Fatal. Essa auditoria encontrou problemas no hotel e no mar.
+
+Houve GPU MMU page fault na inicialização do hotel desbloqueado, sem falta de
+VRAM (2,8 GB usados). A execução diagnóstica com r.Lumen.AsyncCompute=0 passou;
+Lumen GI/reflexos e Nanite permanecem ativos. A configuração foi persistida em
+[SystemSettings]. Isso é uma mitigação verificada nessa máquina, não prova da
+causa exata no driver/engine. Não mexer em TDR, registro ou driver do usuário.
+
+Grama baixa sem colisão pode cobrir terra natural percorrida pelos NPCs; pisos
+construídos são rejeitados pelo primeiro hit do raycast. Usar a linha abstrata
+da rota com grande margem deixava faixas verdes carecas. Fazer a borda 3D
+acompanhar a transição/ruído do material, não iniciar vários metros depois dela.
+O usuário rejeitou pequenos tufos espaçados: manter base verde contínua e grade
+sobreposta de 30 cm, duas variantes HISM, geração no editor e culling 18–30 m.

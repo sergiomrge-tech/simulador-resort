@@ -23,6 +23,43 @@ class MareMigrationTools(unreal.ToolsetDefinition):
 
     @toolset_registry.tool_call
     @staticmethod
+    def build_home_appliances() -> str:
+        """Build original TV content and shower VFX materials using existing models."""
+        import importlib,mare_home_materials
+        importlib.reload(mare_home_materials)
+        return json.dumps(mare_home_materials.build())
+
+    @toolset_registry.tool_call
+    @staticmethod
+    def player_body_pose(mode: str) -> str:
+        """Place an isolated presentation fixture for body/hand visual inspection."""
+        if 'MareSaveRoot=D:/CodexTemp/' not in unreal.SystemLibrary.get_command_line():raise RuntimeError('QA profile required')
+        world=unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()
+        for a in unreal.GameplayStatics.get_all_actors_of_class(world,unreal.Actor):
+            if a.get_class().get_name()=='MarePreviewQA':a.set_actor_tick_enabled(False)
+        hero=unreal.GameplayStatics.get_player_pawn(world,0);pc=unreal.GameplayStatics.get_player_controller(world,0)
+        pc.close_phone()
+        hero.set_actor_rotation(unreal.Rotator(yaw=-90),False)
+        pc.set_control_rotation(unreal.Rotator(pitch=-10 if mode=='swim' else -65,yaw=-90))
+        hero.swim_vertical(-.3 if mode=='swim' else 0)
+        hero.set_actor_location(unreal.Vector(3800,-5000,-250) if mode=='swim' else unreal.Vector(3800,-1300,100),False,False)
+        hero.character_movement.set_movement_mode(unreal.MovementMode.MOVE_SWIMMING if mode=='swim' else unreal.MovementMode.MOVE_WALKING)
+        return mode
+
+    @toolset_registry.tool_call
+    @staticmethod
+    def inspect_player_body() -> str:
+        """Inspect first-person rig placement and animated hand positions in PIE."""
+        world=unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()
+        hero=unreal.GameplayStatics.get_player_pawn(world,0)
+        eyes=hero.get_component_by_class(unreal.CameraComponent)
+        rows=[]
+        for mesh in hero.get_components_by_class(unreal.SkeletalMeshComponent):
+            rows.append({'name':mesh.get_name(),'transform':str(mesh.get_world_transform()),'bounds':str(unreal.SystemLibrary.get_component_bounds(mesh)),'bones':[str(n) for n in mesh.get_all_socket_names()],'samples':{n:str(mesh.get_socket_location(n)) for n in ['Head','neck_01','hand_r','foot_r','pelvis']}})
+        return json.dumps({'hero':str(hero.get_actor_location()),'camera':str(eyes.get_world_location()),'components':rows})
+
+    @toolset_registry.tool_call
+    @staticmethod
     def grass_coverage(action: str) -> str:
         """Inspect, generate or validate grass on exposed inland terrain."""
         import importlib,mare_grass
