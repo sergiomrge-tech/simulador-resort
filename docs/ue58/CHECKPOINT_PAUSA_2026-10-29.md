@@ -47,8 +47,9 @@ concluída. Nenhum editor, jogo ou build estava ativo ao encerrar.
    Verificar que moradores/pedestres não viram clientes no save do quiosque.
 3. Revisar `Setup`: se projeção falhar na primeira inicialização, moradores podem
    não reaparecer porque bReady depende das rotas. Validar/reparar se necessário.
-   Verificar orçamento quando GetOverallScalabilityLevel retorna -1 (qualidade
-   personalizada); usar qualidade de distância ou política explícita nessa situação.
+   A correção pequena posterior usa GetViewDistanceQuality para o orçamento:
+   presets personalizados não são mais tratados como qualidade baixa apenas
+   porque GetOverallScalabilityLevel retorna -1. Validar essa seleção em execução.
 4. Ajustar a captura do chuveiro: o ponto lateral (4805,1580) encosta no vidro.
    Testar posição livre à frente do box, sem aprovar a imagem atual. Controle
    abre/fecha já passou, efeito visual ainda precisa de inspeção correta.
@@ -83,3 +84,11 @@ dish_fish_portion, player_home_door), saves, fontes ou instalações anteriores.
 O EXE de f7ab170d **não contém este WIP da população**. Não sobrescrever esse
 pacote antes de validar/exportar a continuação. Não foi publicada release nova
 nem montado outro ZIP em Downloads neste lote; o download anterior permanece.
+
+## Correção pequena após a pausa
+
+Com autorização para apenas algo pequeno, o orçamento de pedestres passou a usar
+a qualidade de distância real em vez do índice global (-1 em presets mistos).
+Compilação MareAltaEditor Win64 Development aprovada após a mudança. Sem nova
+execução do jogo ou exportação; o EXE testado continua sendo o de f7ab170d.
+Demais pendências continuam pausadas até novo pedido.

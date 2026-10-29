@@ -52,7 +52,8 @@ void UMareVillageWorld::Setup()
 void UMareVillageWorld::UpdateWalkers(float Dt)
 {
  auto Hero=UGameplayStatics::GetPlayerPawn(this,0);if(!Hero)return;
- const bool Low=UGameUserSettings::GetGameUserSettings()->GetOverallScalabilityLevel()<=1;int32 Budget=Low?5:12;
+ // Mixed/custom presets report overall quality -1; use the actual distance setting.
+ const bool Low=UGameUserSettings::GetGameUserSettings()->GetViewDistanceQuality()<=1;int32 Budget=Low?5:12;
  GConfig->GetInt(TEXT("MareCrowd"),Low?TEXT("LowBudget"):TEXT("HighBudget"),Budget,GGameUserSettingsIni);Budget=FMath::Clamp(Budget,0,24);
  if(Pedestrians.Num()<Budget && Routes.Num()){
   const int32 Index=Pedestrians.Num(),Route=Index%Routes.Num();const auto& Points=Routes[Route];const int32 Start=(Index/Routes.Num())%Points.Num();
