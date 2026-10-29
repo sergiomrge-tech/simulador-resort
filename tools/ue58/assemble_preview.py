@@ -68,6 +68,7 @@ Fonte e continuidade: github.com/sergiomrge-tech/simulador-resort
 Branch: codex/ue58-migration
 ''', encoding='utf-8-sig')
 root = Path(__file__).resolve().parents[2]
+shutil.copyfile(root/'CREDITS.md',args.output/'CREDITOS.md')
 commit = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=root, text=True).strip()
 hashes = {p.relative_to(args.output).as_posix(): hashlib.file_digest(p.open('rb'), 'sha256').hexdigest()
           for p in (args.output/'Windows').rglob('*') if p.is_file() and p.suffix in ('.exe', '.pak', '.ucas', '.utoc')}

@@ -1,4 +1,4 @@
-param([Parameter(Mandatory=$true)][string]$Package,[int]$Width=1920,[int]$Height=1080,[switch]$Hotel)
+param([Parameter(Mandatory=$true)][string]$Package,[int]$Width=1920,[int]$Height=1080,[switch]$Hotel,[switch]$SerialLumen)
 $ErrorActionPreference='Stop'
 $qa='D:/CodexTemp/ue58-render-profile-'+(Get-Date -Format 'yyyyMMdd-HHmmss')
 New-Item -ItemType Directory -Path $qa -Force | Out-Null
@@ -11,6 +11,7 @@ nvidia-smi --query-gpu=name,memory.total,driver_version,temperature.gpu --format
 $exe=Join-Path $Package 'MareAlta.exe'
 $gameArgs=@('-MareGraphicsQA','-MareNativeResolution','-csvGpuStats',"-MareSaveRoot=$qa","-UserDir=$qa/UE","-abslog=$qa/runtime.log",'-RenderOffscreen','-unattended','-nosplash','-windowed','-ForceRes',"-ResX=$Width","-ResY=$Height")
 if($Hotel){$gameArgs+='-MareProfileHotel'}
+if($SerialLumen){$gameArgs+='-ExecCmds="r.Lumen.AsyncCompute 0"'}
 $p=Start-Process -FilePath $exe -WorkingDirectory $Package -ArgumentList $gameArgs -WindowStyle Hidden -PassThru
 $start=Get-Date
 while(-not $p.HasExited){if(((Get-Date)-$start).TotalSeconds -gt 300){Stop-Process -Id $p.Id;throw "Profiling timeout: $qa"};Start-Sleep -Seconds 2;$p.Refresh()}
