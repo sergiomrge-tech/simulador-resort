@@ -46,7 +46,8 @@ void UMareVillageWorld::Setup()
  for(const auto& Item:Data->GetArrayField(TEXT("routes"))){TArray<FVector> Points;for(const auto& P:Item->AsObject()->GetArrayField(TEXT("points")))Points.Add(Vector(P->AsArray()));if(Points.Num()>1)Routes.Add(Points);}
  if(Routes.IsEmpty())return;
  for(const auto& Item:Data->GetArrayField(TEXT("residents"))){auto Row=Item->AsObject();const FString Name=UMareSimulation::String(Row,TEXT("name"));
-  const int32 Look=Name==TEXT("Dona Rita") || Name==TEXT("Dona Lourdes")?3:Name==TEXT("Seu Zé") || Name==TEXT("Padre Tomé")?2:1;
+  // Verified against the exported GLB roots: Human_2 is the female rig; 0/1/3 are male.
+  const int32 Look=Name==TEXT("Dona Rita") || Name==TEXT("Dona Lourdes")?2:Name==TEXT("Seu Zé") || Name==TEXT("Padre Tomé")?1:3;
   auto Person=SpawnPerson(Vector(Row->GetArrayField(TEXT("position"))),Look,Name);if(!Person)continue;
   Person->SetActorRotation(FRotator(0,UMareSimulation::Number(Row,TEXT("yaw")),0));Residents.Add(Person);
   auto Target=GetWorld()->SpawnActor<AMareServiceTarget>();Target->Action=TEXT("Resident");Target->Label=Person->PersonName+TEXT(" · conversar");Target->Reach=260;Target->OcclusionTolerance=40;Target->SetOwner(Person);

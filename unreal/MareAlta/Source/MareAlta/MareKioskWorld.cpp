@@ -39,7 +39,7 @@ void UMareKioskWorld::SpawnCustomer()
  const FVector Start=CounterPoints[Counter]+FVector(FMath::RandBool()?650:-650,-180,0);
  auto Person=GetWorld()->SpawnActor<AMarePerson>(Start,FRotator::ZeroRotator);if(!Person)return;
  Person->Variant=FMath::RandRange(0,3);if(!Person->SetAppearance(Person->Variant)){Person->Destroy();return;}
- const TArray<FString> Names=Person->Variant==3?TArray<FString>{TEXT("Ana"),TEXT("Maria"),TEXT("Luiza"),TEXT("Camila")}:TArray<FString>{TEXT("João"),TEXT("Pedro"),TEXT("Rafael"),TEXT("Bruno")};
+ const TArray<FString> Names=Person->Variant==2?TArray<FString>{TEXT("Ana"),TEXT("Maria"),TEXT("Luiza"),TEXT("Camila")}:TArray<FString>{TEXT("João"),TEXT("Pedro"),TEXT("Rafael"),TEXT("Bruno")};
  Person->PersonName=Names[FMath::RandRange(0,Names.Num()-1)];Person->CounterIndex=Counter;Person->TableIndex=Table;
  if(Table!=INDEX_NONE)ReservedTables.Add(Table);
  Guests.Add(Person);Person->WalkTo(CounterPoints[Counter]);

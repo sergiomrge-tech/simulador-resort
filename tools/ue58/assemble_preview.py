@@ -35,7 +35,9 @@ WASD: andar/nadar | Mouse: olhar | E ou clique: interagir | B: celular
 Espaço: pular em terra / subir na água | Ctrl ou Shift: mergulhar
 Shift em terra: correr | Esc: pausar, salvar, qualidade e sair
 
-No celular, crie a empresa; clique na placa FECHADO para abrir o quiosque.
+Em um jogo novo, você chega de ônibus. E permite avançar a viagem.
+Entre na casa e leia a carta do avô sobre a mesa; depois crie a empresa no celular.
+Clique na placa FECHADO para abrir o quiosque.
 A placa fica verde quando o quiosque está aberto. Para fechar, clique novamente.
 No celular, use Rádio para trocar entre reggae, bossa, brisa e desligado.
 Produtos já estão prontos:
@@ -55,10 +57,13 @@ ruas e pisos. A grama 3D usa instâncias e distância limitada para controlar o 
 Há Lumen e grafos PCG, além de renderização Nanite separada do vidro no hotel.
 Não equivale ao jogo inteiro convertido: outros negócios, clima completo,
 opções completas e o restante dos capítulos continuam pendentes.
-A câmera ainda não tem braços/corpo com animação de natação.
+Inclui corpo e mãos em primeira pessoa, produtos nas mãos, natação, TV, som,
+sofá e chuveiro. A vila tem moradores para conversar e pedestres caminhando;
+E/Esc encerra a conversa. A população se reduz na configuração de distância baixa.
 Os peixes do recife foram reposicionados sob a água. Navio diurno, cruzeiro
 noturno e salto da baleia fazem parte da prévia; o acabamento marinho continua
-evoluindo. A chegada de ônibus e a carta do avô ainda são uma abertura provisória.
+evoluindo, especialmente o horizonte subaquático. A abertura inclui ônibus com
+interior, motorista e porta, descida pelos degraus e a carta do avô na casa.
 
 Requer Windows 64 bits e GPU compatível com DirectX 12 / Shader Model 6.
 Se o Windows pedir o Visual C++ Runtime, instale o redistribuível x64 da Microsoft.

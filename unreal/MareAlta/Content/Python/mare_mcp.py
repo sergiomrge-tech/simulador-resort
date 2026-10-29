@@ -52,7 +52,7 @@ class MareMigrationTools(unreal.ToolsetDefinition):
         if '-MareSaveRoot=D:/CodexTemp/' not in unreal.SystemLibrary.get_command_line():raise RuntimeError('QA profile required')
         world=unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()
         if not world:raise RuntimeError('Start PIE first')
-        pc=unreal.GameplayStatics.get_player_controller(world,0);hero=pc.get_pawn()
+        pc=unreal.GameplayStatics.get_player_controller(world,0);hero=unreal.GameplayStatics.get_player_pawn(world,0)
         resident=next(t for t in unreal.GameplayStatics.get_all_actors_of_class(world,unreal.MareServiceTarget) if str(t.action)=='Resident' and t.get_owner().get_editor_property('person_name')=='Dona Rita')
         focused=None;phone_blocked=None
         if action=='position':
@@ -136,7 +136,7 @@ class MareMigrationTools(unreal.ToolsetDefinition):
         targets=unreal.GameplayStatics.get_all_actors_of_class(world,unreal.MareServiceTarget)
         if action=='shower':
             hero.swim_vertical(0);hero.character_movement.set_movement_mode(unreal.MovementMode.MOVE_WALKING)
-            hero.set_actor_location(unreal.Vector(4805,1580,110),False,False)
+            hero.set_actor_location(unreal.Vector(4850,1650,110),False,False)
             pc.set_control_rotation(unreal.MathLibrary.find_look_at_rotation(hero.get_component_by_class(unreal.CameraComponent).get_world_location(),unreal.Vector(4882,1500,138)))
             target=next(t for t in targets if str(t.action)=='HomeShower');target.use(pc)
         else:raise ValueError(action)

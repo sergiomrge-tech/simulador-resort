@@ -2,6 +2,7 @@
 #include "MareGame.h"
 #include "MarePlayerPresentation.h"
 #include "MareHomeWorld.h"
+#include "MareVillageWorld.h"
 #include "Animation/AnimSingleNodeInstance.h"
 #include "MarePerson.h"
 #include "MareServiceAnimation.h"
@@ -60,7 +61,7 @@ void AMarePreviewQA::Check(const FString& Name,bool bPass)
   if(GetWorld()->LineTraceSingleByChannel(Hit,P,P+FVector(0,0,180),ECC_Visibility,Query))Row->SetStringField(TEXT("overhead"),GetNameSafe(Hit.GetActor()));
  }
  Results.Add(MakeShared<FJsonValueObject>(Row));UE_LOG(LogTemp,Display,TEXT("MARE_PREVIEW_QA %s %s"),*Name,bPass?TEXT("PASS"):TEXT("FAIL"));
- auto Report=MakeShared<FJsonObject>();Report->SetArrayField(TEXT("checks"),Results);Report->SetBoolField(TEXT("finished"),Name==TEXT("home_appliances_cycle"));
+ auto Report=MakeShared<FJsonObject>();Report->SetArrayField(TEXT("checks"),Results);Report->SetBoolField(TEXT("finished"),Name==TEXT("village_dialogue_cycle"));
  FString Text;FJsonSerializer::Serialize(Report,TJsonWriterFactory<>::Create(&Text));FFileHelper::SaveStringToFile(Text,*(Root/TEXT("preview-qa.json")));
 }
 void AMarePreviewQA::Capture(const FString& Name){FScreenshotRequest::RequestScreenshot(Root/(Name+TEXT(".png")),true,false);}
@@ -74,7 +75,7 @@ void AMarePreviewQA::Tick(float DeltaSeconds)
   if(!Root.StartsWith(TEXT("D:/CodexTemp/"))){Destroy();return;}
   FApp::SetUnfocusedVolumeMultiplier(1.f);Next=FPlatformTime::Seconds()+12;Phase=FParse::Param(FCommandLine::Get(),TEXT("MareHomeOnlyQA"))?41:0;
  }
- if(FPlatformTime::Seconds()<Next || Phase>54)return;
+ if(FPlatformTime::Seconds()<Next || Phase>58)return;
  auto Move=Hero->GetCharacterMovement();auto Eyes=Hero->FindComponentByClass<UCameraComponent>();
  auto Audio=GetWorld()->GetSubsystem<UMareAudioWorld>();auto Sim=PC->GetSimulation();
  auto Key=[&](FKey K,bool Down){PC->InputKey(FInputKeyEventArgs(GEngine->GameViewport->Viewport,INPUTDEVICEID_NONE,K,Down?IE_Pressed:IE_Released,FPlatformTime::Cycles64()));};
@@ -239,10 +240,21 @@ void AMarePreviewQA::Tick(float DeltaSeconds)
  case 48:{auto T=AMareServiceTarget::FindFocused(PC);Check(TEXT("home_sofa_focus"),T && T->Action==TEXT("HomeSofa"));if(T)T->Use(PC);break;}
  case 49:Check(TEXT("home_sofa_sits"),GetWorld()->GetSubsystem<UMareHomeWorld>()->IsSeated() && FVector::Dist(Hero->GetMesh()->GetSocketLocation(TEXT("pelvis")),FVector(4435,2325,56))<4);Capture(TEXT("home-sofa"));Key(EKeys::E,true);Key(EKeys::E,false);break;
  case 50:Check(TEXT("home_sofa_stands"),!GetWorld()->GetSubsystem<UMareHomeWorld>()->IsSeated() && Move->IsMovingOnGround());Hero->SetActorLocation(FVector(4850,1500,110));Move->StopMovementImmediately();PC->SetControlRotation((FVector(4919,1500,116)-Eyes->GetComponentLocation()).Rotation());break;
- case 51:{auto T=AMareServiceTarget::FindFocused(PC);Check(TEXT("home_shower_focus"),T && T->Action==TEXT("HomeShower"));if(T)T->Use(PC);Hero->SetActorLocation(FVector(4805,1580,110));PC->SetControlRotation((FVector(4882,1500,138)-Eyes->GetComponentLocation()).Rotation());break;}
+ case 51:{auto T=AMareServiceTarget::FindFocused(PC);Check(TEXT("home_shower_focus"),T && T->Action==TEXT("HomeShower"));if(T)T->Use(PC);Hero->SetActorLocation(FVector(4850,1650,110));PC->SetControlRotation((FVector(4882,1500,138)-Eyes->GetComponentLocation()).Rotation());break;}
  case 52:Check(TEXT("home_shower_on"),GetWorld()->GetSubsystem<UMareHomeWorld>()->IsShowerOn());Capture(TEXT("home-shower"));GetWorld()->GetSubsystem<UMareHomeWorld>()->Use(TEXT("HomeShower"));break;
  case 53:{auto Home=GetWorld()->GetSubsystem<UMareHomeWorld>();Check(TEXT("home_appliances_cycle"),!Home->IsTVOn() && !Home->IsStereoOn() && !Home->IsShowerOn() && !Home->IsSeated() && Sim->Save());break;}
- case 54:if(GetWorld()->WorldType!=EWorldType::PIE)GEngine->Exec(GetWorld(),TEXT("QUIT"));break;
+ case 54:{
+  auto Village=GetWorld()->GetSubsystem<UMareVillageWorld>();Check(TEXT("village_residents_present"),Village->ResidentCount()==5);Check(TEXT("village_pedestrian_budget"),Village->PedestrianCount()==12);
+  int32 Moving=0;bool Looks=true;for(TActorIterator<AMarePerson> It(GetWorld());It;++It){if(It->bAmbient && It->PersonName==TEXT("Morador") && It->GetVelocity().Size2D()>15)++Moving;
+   if(It->PersonName==TEXT("Dona Rita") || It->PersonName==TEXT("Dona Lourdes"))Looks &= It->Variant==2;}
+  Check(TEXT("village_walkers_active"),Moving>=5);Check(TEXT("village_resident_looks"),Looks);
+  for(TActorIterator<AMareServiceTarget> It(GetWorld());It;++It)if(It->Action==TEXT("Resident") && It->Label.StartsWith(TEXT("Dona Rita"))){
+   Hero->SetActorLocation(It->GetOwner()->GetActorLocation()+FVector(0,150,0));PC->SetControlRotation((It->GetActorLocation()-Eyes->GetComponentLocation()).Rotation());break;}break;}
+ case 55:{auto Target=AMareServiceTarget::FindFocused(PC);Check(TEXT("village_resident_focus"),Target && Target->Action==TEXT("Resident"));if(Target && Target->Action==TEXT("Resident"))Target->Use(PC);
+  Check(TEXT("village_dialogue_opens"),GetWorld()->GetSubsystem<UMareVillageWorld>()->IsDialogueOpen() && PC->IsMoveInputIgnored());Capture(TEXT("village-dialogue"));break;}
+ case 56:PC->TogglePhone();Check(TEXT("village_dialogue_blocks_phone"),!PC->bPhoneOpen);PC->TogglePauseMenu();Capture(TEXT("village-day"));break;
+ case 57:Check(TEXT("village_dialogue_cycle"),!GetWorld()->GetSubsystem<UMareVillageWorld>()->IsDialogueOpen() && !PC->IsMoveInputIgnored() && !UGameplayStatics::IsGamePaused(this) && Sim->Save());break;
+ case 58:if(GetWorld()->WorldType!=EWorldType::PIE)GEngine->Exec(GetWorld(),TEXT("QUIT"));break;
  }
  Next=FPlatformTime::Seconds()+((Phase==27 || Phase==28)?.5:Phase==13?10:Phase==1?7:Phase==3?4:Phase==4?5:3);
 }

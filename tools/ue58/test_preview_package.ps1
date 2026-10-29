@@ -21,6 +21,8 @@ if(-not $report.finished -or $report.checks.Count -lt 20 -or @($report.checks | 
 $required=@('home_door_fits_frame','home_door_opens_after_fit','home_door_closes_after_fit','reef_pairs_present','reef_below_wave_surface','reef_motion','marine_models_loaded','day_sail_only','night_cruise_only','whale_breaches','marine_splash','marine_night_visible')
 $required+=@('grass_coverage_cooked','grass_nonblocking_culled','grass_cycle_captured')
 $required+=@('swim_hands_in_front_separated')
+$required+=@('village_residents_present','village_pedestrian_budget','village_walkers_active','village_resident_looks','village_resident_focus','village_dialogue_opens','village_dialogue_blocks_phone','village_dialogue_cycle')
+foreach($picture in @('village-dialogue.png','village-day.png')){if(-not (Test-Path -LiteralPath "$qa/$picture")){throw "Captura da vila ausente: $picture"}}
 $required+=@('player_rig_loaded','player_pickup_ready','player_carry_hands','player_returns_product','player_body_visible','home_tv_focus','home_tv_on','home_stereo_plays','home_stereo_music_volume','home_sofa_focus','home_sofa_sits','home_sofa_stands','home_shower_focus','home_shower_on','home_appliances_cycle')
 foreach($picture in @('player-carry.png','player-body.png','home-tv-off.png','home-tv-on.png','home-sofa.png','home-shower.png')){if(-not (Test-Path -LiteralPath "$qa/$picture")){throw "Captura de corpo/casa ausente: $picture"}}
 foreach($picture in @('grass-day.png','grass-rain.png','grass-night.png')){if(-not (Test-Path -LiteralPath "$qa/$picture")){throw "Captura de gramado ausente: $picture"}}

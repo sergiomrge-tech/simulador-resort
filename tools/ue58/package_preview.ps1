@@ -5,6 +5,9 @@ param(
 $ErrorActionPreference='Stop'
 $repo=Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
 $project=Join-Path $repo 'unreal/MareAlta/MareAlta.uproject'
+$projectMatch=[regex]::Escape([IO.Path]::GetFullPath($project).Replace('\','/'))
+$openEditors=@(Get-CimInstance Win32_Process -Filter "Name='UnrealEditor.exe'" | Where-Object {$_.CommandLine -and $_.CommandLine.Replace('\','/') -match $projectMatch})
+if($openEditors.Count){throw 'Feche o Unreal Editor deste projeto antes de exportar: a DLL em uso impede o link.'}
 if(-not [IO.Path]::GetFullPath($Output).StartsWith('D:\',[StringComparison]::OrdinalIgnoreCase)){throw 'Build deve ficar no drive D.'}
 $env:TEMP='D:/CodexTemp/ue58-temp'
 $env:TMP=$env:TEMP
