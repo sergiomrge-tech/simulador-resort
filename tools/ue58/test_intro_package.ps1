@@ -14,7 +14,7 @@ foreach($mode in @('natural','skip')){
  if($process.ExitCode -ne 0){throw "Jogo terminou com código $($process.ExitCode): $qa"}
  $report=Get-Content -LiteralPath "$qa/intro-qa.json" -Raw | ConvertFrom-Json
  if(-not $report.finished -or $report.checks.Count -lt 6 -or @($report.checks | Where-Object {-not $_.pass}).Count){$report | ConvertTo-Json -Depth 8;throw "Falha na abertura: $qa"}
- $issues=@(Select-String -LiteralPath "$qa/runtime.log" -Pattern 'Error:|Fatal error|Assertion failed|Ensure condition failed')
+ $issues=@(Select-String -LiteralPath "$qa/runtime.log" -Pattern 'Error:|Fatal error|Assertion failed|Ensure condition failed|missing usage flag|Default Material will be used|Failed to compile Material')
  if($issues.Count){$issues;throw "Erros no log: $qa"}
  foreach($file in @('intro-bus.png','intro-after-arrival.png','intro-letter.png','slot1.json')){if(-not (Test-Path -LiteralPath "$qa/$file")){throw "Evidência ausente: $qa/$file"}}
  $save=Get-Content -LiteralPath "$qa/slot1.json" -Raw | ConvertFrom-Json

@@ -16,9 +16,11 @@ $start=Get-Date
 while(-not $p.HasExited){if(((Get-Date)-$start).TotalSeconds -gt 300){Stop-Process -Id $p.Id;throw "Profiling timeout: $qa"};Start-Sleep -Seconds 2;$p.Refresh()}
 if($p.ExitCode -ne 0){throw "Exit $($p.ExitCode): $qa"}
 $report=Get-Content -LiteralPath "$qa/graphics-qa.json" -Raw | ConvertFrom-Json
+$expectedGrass=(Get-Content -LiteralPath 'unreal/MareAlta/Content/Data/grass_coverage.json' -Raw | ConvertFrom-Json).instances
+foreach($capture in $report.captures){if($capture.grass_instances -ne $expectedGrass){throw "Missing cooked grass: $($capture.grass_instances), expected $expectedGrass"}}
 if(-not $report.finished -or $report.captures.Count -ne $(if($Hotel){5}else{4})){throw "Incomplete: $qa"}
 foreach($c in $report.captures){if(-not (Test-Path -LiteralPath $c.csv)){throw "CSV missing: $($c.csv)"};if($c.pcg_instances -ne 60){throw "Missing cooked PCG: $($c.pcg_instances)"};if($c.viewport_x -ne $Width -or $c.viewport_y -ne $Height){throw "Unexpected viewport: $($c.viewport_x)x$($c.viewport_y)"}}
-$issues=@(Select-String -LiteralPath "$qa/runtime.log" -Pattern 'Error:|Fatal error|Assertion failed|Ensure condition failed|Invalid material.*Nanite')
+$issues=@(Select-String -LiteralPath "$qa/runtime.log" -Pattern 'Error:|Fatal error|Assertion failed|Ensure condition failed|missing usage flag|Default Material will be used|Failed to compile Material|Invalid material.*Nanite')
 if($issues.Count){$issues;throw "Render issues: $qa"}
 Write-Output $qa
 
