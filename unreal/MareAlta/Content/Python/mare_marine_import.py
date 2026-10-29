@@ -18,7 +18,30 @@ def build():
    meshes=[unreal.load_asset(p) for p in unreal.EditorAssetLibrary.list_assets(dest,recursive=True)]
    meshes=[m for m in meshes if isinstance(m,unreal.StaticMesh)]
   if len(meshes)!=1:raise RuntimeError(name+' expected one static mesh, got '+str([x.get_path_name() for x in meshes]))
-  mesh=meshes[0];b=mesh.get_bounds()
+  mesh=meshes[0]
+  settings=mesh.get_editor_property('nanite_settings')
+  roots=[];safe=True
+  for slot in mesh.static_materials:
+   mat=slot.material_interface;blend=None
+   while isinstance(mat,unreal.MaterialInstanceConstant):
+    overrides=mat.get_editor_property('base_property_overrides')
+    if overrides.override_blend_mode and blend is None:blend=overrides.blend_mode
+    mat=mat.get_editor_property('parent')
+   if not isinstance(mat,unreal.Material):raise RuntimeError('Unresolved marine material')
+   if not mat.get_path_name().startswith('/Game/'):raise RuntimeError('Marine materials must be project assets')
+   blend=mat.get_editor_property('blend_mode') if blend is None else blend
+   safe &= blend in (unreal.BlendMode.BLEND_OPAQUE,unreal.BlendMode.BLEND_MASKED)
+   roots.append(mat)
+  if settings.enabled and not safe:
+   settings.enabled=False;unreal.get_editor_subsystem(unreal.StaticMeshEditorSubsystem).set_nanite_settings(mesh,settings,True)
+  for root in set(roots):
+   root.set_editor_property('used_with_nanite',bool(settings.enabled))
+   root.set_editor_property('used_with_instanced_static_meshes',True)
+   errors=list(unreal.MaterialEditingLibrary.recompile_material(root))
+   if errors:raise RuntimeError(str(errors))
+   unreal.EditorAssetLibrary.save_loaded_asset(root,False)
+  unreal.EditorAssetLibrary.save_loaded_asset(mesh,False)
+  b=mesh.get_bounds()
   catalog[name]={'path':mesh.get_path_name(),'origin':[b.origin.x,b.origin.y,b.origin.z],'extent':[b.box_extent.x,b.box_extent.y,b.box_extent.z]}
  (ROOT/'Content/Data/marine_assets.json').write_text(json.dumps(catalog,indent=2),encoding='utf-8')
  return catalog
