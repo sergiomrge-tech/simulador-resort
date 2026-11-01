@@ -1,5 +1,7 @@
 # Continuação integral autorizada — 29/10/2026
 
+**01/11:** item 6 (campanha) avançou: ver [PROGRESSAO_2026-11-01.md](PROGRESSAO_2026-11-01.md).
+
 **Estado mais recente:** usuário retomou pequenos ajustes e pediu um teste.
 [Prévia da vila entregue](TESTE_VILA_2026-10-29.md), fonte EXE 45cc1e69, com
 população/diálogos verificados, 87 checks e pacote no D. O checkpoint de pausa

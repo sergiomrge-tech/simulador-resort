@@ -169,6 +169,14 @@ bool UMareSimulation::Deliver(const FString& OrderId,const FString& Dish,bool bS
  const double Price=Number(Object(Object(Definitions,TEXT("dishes")),Dish),TEXT("price")); Book(Price,TEXT("Venda: ")+Dish);
  State->SetNumberField(TEXT("kiosk_n"),Number(State,TEXT("kiosk_n"))+1); State->SetNumberField(TEXT("kiosk"),Number(State,TEXT("kiosk"))+Price);
  if(Dish.StartsWith(TEXT("sorvete_"))){auto Campaign=Object(Object(State,TEXT("prog")),TEXT("campaign"));Campaign->SetNumberField(TEXT("icecream"),Number(Campaign,TEXT("icecream"))+1);}
+ AddFame(2);
+ // Serve/sell steps count only sales made while that chapter step is active.
+ const TArray<TSharedPtr<FJsonValue>>* Chapters=nullptr;auto Progress=Object(Object(State,TEXT("prog")),TEXT("ch"));
+ if(Definitions->TryGetArrayField(TEXT("chapters"),Chapters))for(const auto& Value:*Chapters){const FString Chapter=String(Value->AsObject(),TEXT("id"));
+  if(!IsChapterOpen(Chapter) || IsChapterDone(Chapter))continue;
+  const auto Step=Value->AsObject()->GetArrayField(TEXT("steps"))[ChapterStep(Chapter)]->AsObject();const FString Kind=String(Step,TEXT("kind"));
+  if(Kind==TEXT("serve") || (Kind==TEXT("sell") && String(Step,TEXT("item"))==Dish))Progress->SetNumberField(Chapter+TEXT("_")+Kind,Number(Progress,Chapter+TEXT("_")+Kind)+1);
+ }
  if(Items.IsEmpty()) Orders->RemoveField(OrderId);
  return Save();
 }
@@ -203,7 +211,76 @@ int32 UMareSimulation::MissionAmount(const TSharedPtr<FJsonObject>& Mission) con
  if(Kind==TEXT("staff")) Object(State,TEXT("staff"))->TryGetBoolField(TEXT("atendente"),bValue);
  if(Kind==TEXT("photo")) Object(Prog,TEXT("chapter_photo"))->TryGetBoolField(Item,bValue);
  if(Kind==TEXT("expansion"))Object(State,TEXT("unlocked"))->TryGetBoolField(Item,bValue);
+ if(Kind==TEXT("chapter"))bValue=IsChapterDone(Item);
  return bValue?1:0;
+}
+TSharedPtr<FJsonObject> UMareSimulation::ChapterDefinition(const FString& Id) const
+{
+ const TArray<TSharedPtr<FJsonValue>>* Chapters=nullptr;
+ if(Definitions->TryGetArrayField(TEXT("chapters"),Chapters))for(const auto& Value:*Chapters)if(String(Value->AsObject(),TEXT("id"))==Id)return Value->AsObject();
+ return nullptr;
+}
+int32 UMareSimulation::ChapterStep(const FString& Id) const{return Number(Object(Object(State,TEXT("prog")),TEXT("ch")),Id);}
+bool UMareSimulation::IsChapterOpen(const FString& Id) const
+{
+ const TArray<TSharedPtr<FJsonValue>>* Chapters=nullptr;if(!Definitions->TryGetArrayField(TEXT("chapters"),Chapters))return false;
+ for(int32 I=0;I<Chapters->Num();++I)if(String((*Chapters)[I]->AsObject(),TEXT("id"))==Id)return I==0 || IsChapterDone(String((*Chapters)[I-1]->AsObject(),TEXT("id")));
+ return false;
+}
+int32 UMareSimulation::ChapterStepProgress(const FString& Id,int32& Goal) const
+{
+ Goal=1;auto Chapter=ChapterDefinition(Id);if(!Chapter.IsValid() || IsChapterDone(Id))return 1;
+ const auto Step=Chapter->GetArrayField(TEXT("steps"))[ChapterStep(Id)]->AsObject();const FString Kind=String(Step,TEXT("kind")),Item=String(Step,TEXT("item"));
+ Goal=FMath::Max(1,int32(Number(Step,TEXT("qty"),1)));auto Prog=Object(State,TEXT("prog"));bool bValue=false;int32 Amount=0;
+ if(Kind==TEXT("deliver"))Amount=Number(Object(State,TEXT("stock")),Item);
+ else if(Kind==TEXT("pay"))Amount=FMath::Max(0.,Money());
+ else if(Kind==TEXT("serve") || Kind==TEXT("sell"))Amount=Number(Object(Prog,TEXT("ch")),Id+TEXT("_")+Kind);
+ else if(Kind==TEXT("fame"))Amount=FameLevel();
+ else if(Kind==TEXT("recipes"))Amount=Object(Prog,TEXT("disc"))->Values.Num();
+ else if(Kind==TEXT("biz"))Amount=Object(Prog,TEXT("biz"))->Values.Num();
+ else if(Kind==TEXT("photo")){Object(Prog,TEXT("chp"))->TryGetBoolField(Item,bValue);Amount=bValue?1:0;}
+ return FMath::Min(Amount,Goal);
+}
+bool UMareSimulation::AdvanceChapter(const FString& Id)
+{
+ auto Chapter=ChapterDefinition(Id);if(!Chapter.IsValid() || !IsChapterOpen(Id) || IsChapterDone(Id))return false;
+ int32 Goal=1;if(ChapterStepProgress(Id,Goal)<Goal)return Fail(TEXT("Este passo da história ainda não foi cumprido."));
+ const int32 StepIndex=ChapterStep(Id);const auto Step=Chapter->GetArrayField(TEXT("steps"))[StepIndex]->AsObject();const FString Kind=String(Step,TEXT("kind"));
+ if(Kind==TEXT("deliver")){auto Stock=Object(State,TEXT("stock"));const FString Item=String(Step,TEXT("item"));Stock->SetNumberField(Item,Number(Stock,Item)-Goal);}
+ if(Kind==TEXT("pay"))Book(-Goal,String(Chapter,TEXT("title"))+TEXT(": ")+String(Step,TEXT("text")));
+ Object(Object(State,TEXT("prog")),TEXT("ch"))->SetNumberField(Id,StepIndex+1);
+ LastMessage=TEXT("Passo concluído: ")+String(Step,TEXT("text"));
+ if(IsChapterDone(Id)){Book(Number(Chapter,TEXT("reward")),TEXT("Capítulo concluído: ")+String(Chapter,TEXT("title")));AddFame(80);
+  LastMessage=TEXT("Capítulo concluído! Liberado: ")+String(Chapter,TEXT("unlock"));}
+ return Save();
+}
+double UMareSimulation::SupplyCost(const FString& Item,int32 Quantity) const
+{
+ auto Supplies=Object(Definitions,TEXT("supplies"));if(Quantity<1 || Quantity>48 || !Supplies->HasField(Item))return -1;
+ return Quantity*Number(Object(Supplies,Item),TEXT("cost"));
+}
+bool UMareSimulation::BuySupply(const FString& Item,int32 Quantity)
+{
+ const double Cost=SupplyCost(Item,Quantity);if(Cost<0)return Fail(TEXT("Insumo ou quantidade inválida."));
+ if(Money()<Cost)return Fail(TEXT("Saldo insuficiente. Nenhum insumo foi cobrado."));
+ auto Stock=Object(State,TEXT("stock"));Stock->SetNumberField(Item,Number(Stock,Item)+Quantity);
+ Book(-Cost,TEXT("Mercadinho: ")+String(Object(Object(Definitions,TEXT("supplies")),Item),TEXT("name")));
+ LastMessage=TEXT("Compra feita no mercadinho.");return Save();
+}
+namespace{const int32 FameThresholds[]={0,100,250,450,700,1000,1400,1900,2500,3200};
+ const TCHAR* FameNames[]={TEXT("Desconhecido"),TEXT("Falado na vila"),TEXT("Ponto da praia"),TEXT("Queridinho da cidade"),TEXT("Famoso na região"),
+  TEXT("Roteiro turístico"),TEXT("Destaque na TV"),TEXT("Destino do verão"),TEXT("Paraíso famoso"),TEXT("Lenda da costa")};}
+int32 UMareSimulation::FameLevel() const
+{
+ const double Xp=Number(Object(State,TEXT("prog")),TEXT("fame_xp"));int32 Level=1;
+ for(int32 I=0;I<UE_ARRAY_COUNT(FameThresholds);++I)if(Xp>=FameThresholds[I])Level=I+1;
+ return Level;
+}
+FString UMareSimulation::FameName() const{return FameNames[FMath::Clamp(FameLevel()-1,0,9)];}
+void UMareSimulation::AddFame(int32 Xp)
+{
+ if(Xp<=0)return;const int32 Before=FameLevel();auto Prog=Object(State,TEXT("prog"));Prog->SetNumberField(TEXT("fame_xp"),Number(Prog,TEXT("fame_xp"))+Xp);
+ if(FameLevel()>Before)LastMessage=TEXT("Sua fama subiu: ")+FameName()+TEXT("!");
 }
 bool UMareSimulation::ClaimMission(const FString& Id,bool bSide)
 {
@@ -222,8 +299,28 @@ bool UMareSimulation::ClaimMission(const FString& Id,bool bSide)
 void UMareSimulation::AdvanceMinutes(double Minutes){State->SetNumberField(TEXT("minutes"),FMath::Clamp(Number(State,TEXT("minutes"))+Minutes,0.,1440.));}
 void UMareSimulation::Sleep()
 {
- ReturnCarry();ReturnCarry(true);Object(State,TEXT("company"))->SetBoolField(TEXT("kiosk_open"),false);
- State->SetNumberField(TEXT("day"),Number(State,TEXT("day"),1)+1);State->SetNumberField(TEXT("minutes"),480);
+ ReturnCarry();ReturnCarry(true);auto Company=Object(State,TEXT("company"));Company->SetBoolField(TEXT("kiosk_open"),false);
+ const int32 Day=Number(State,TEXT("day"),1);auto Hours=Object(Company,TEXT("sim"));
+ // wage_day guards against charging the same day twice after a reload, as in the Godot save.
+ double Wages=0;
+ if(Number(Hours,TEXT("wage_day"),-1)<Day){
+  auto Staff=Object(State,TEXT("staff"));auto Roles=Object(Definitions,TEXT("staff"));
+  for(const auto& Pair:Staff->Values){bool bHired=false;const FString Role(Pair.Key.ToView());
+   // Legacy kiosk roles were merged into the single attendant; never charge them again.
+   if(!Pair.Value->TryGetBool(bHired) || !bHired || !Roles->HasField(Role))continue;
+   bool bLegacyKiosk=false;Object(Roles,Role)->TryGetBoolField(TEXT("company"),bLegacyKiosk);if(bLegacyKiosk)continue;
+   const double Wage=Number(Object(Roles,Role),TEXT("wage"));Wages+=Wage;Book(-Wage,TEXT("Salário: ")+String(Object(Roles,Role),TEXT("name")));
+  }
+  Hours->SetNumberField(TEXT("wage_day"),Day);
+ }
+ auto Summary=MakeShared<FJsonObject>();const double In=Number(State,TEXT("day_in")),Out=Number(State,TEXT("day_out"));
+ Summary->SetNumberField(TEXT("day"),Day);Summary->SetNumberField(TEXT("income"),In);Summary->SetNumberField(TEXT("expense"),Out);
+ Summary->SetNumberField(TEXT("wages"),Wages);Summary->SetNumberField(TEXT("sales"),Number(State,TEXT("kiosk_n"))-Number(State,TEXT("ue_day_sales_start")));
+ Summary->SetNumberField(TEXT("money"),Money());State->SetObjectField(TEXT("ue_last_day"),Summary);
+ State->SetNumberField(TEXT("day_in"),0);State->SetNumberField(TEXT("day_out"),0);State->SetNumberField(TEXT("ue_day_sales_start"),Number(State,TEXT("kiosk_n")));
+ LastMessage=FString::Printf(TEXT("Dia %d encerrado · vendas R$ %.0f · despesas R$ %.0f · saldo do dia R$ %.0f."),Day,In,Out,In-Out);
+ if(Money()<0)LastMessage+=TEXT(" Caixa negativo: venda mais antes de repor estoque.");
+ State->SetNumberField(TEXT("day"),Day+1);State->SetNumberField(TEXT("minutes"),480);
  State->SetObjectField(TEXT("ue_orders"),MakeShared<FJsonObject>());Save();
 }
 bool UMareSimulation::Save()

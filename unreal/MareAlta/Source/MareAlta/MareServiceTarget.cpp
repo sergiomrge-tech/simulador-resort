@@ -12,6 +12,7 @@
 #include "Components/StaticMeshComponent.h"
 #include "Components/SceneComponent.h"
 #include "EngineUtils.h"
+#include "Engine/StaticMesh.h"
 #include "GameFramework/PlayerController.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -35,7 +36,18 @@ AMareServiceTarget* AMareServiceTarget::FindFocused(APlayerController* Controlle
  AMareServiceTarget* Best=nullptr;float Score=FLT_MAX;
  for(TActorIterator<AMareServiceTarget> It(Controller->GetWorld());It;++It){auto Target=*It;
   if(Target->IsHidden() || (Target->GetOwner() && Target->GetOwner()->IsHidden()))continue;
-  const FVector Focus=Target->GetActorTransform().TransformPosition(Target->FocusOffset);
+  FVector Focus=Target->GetActorTransform().TransformPosition(Target->FocusOffset);
+  // Select the visible leaf/mattress surface, not a single point hidden inside it.
+  if(Target->Action==TEXT("Door") && Target->DoorMesh->GetStaticMesh()){
+   const FTransform Frame=Target->DoorMesh->GetComponentTransform();
+   const FBox Box=Target->DoorMesh->GetStaticMesh()->GetBoundingBox();
+   const FVector Center=Frame.TransformPosition(Box.GetCenter());
+   const FVector RayPoint=Eye+Aim*FMath::Max(0.f,FVector::DotProduct(Center-Eye,Aim));
+   Focus=Frame.TransformPosition(Box.GetClosestPointTo(Frame.InverseTransformPosition(RayPoint)));
+  }else if(Target->Action==TEXT("Bed")){
+   const FBox Mattress(FVector(4330,1875,58),FVector(4465,2050,82));
+   Focus=Mattress.GetClosestPointTo(Eye+Aim*FMath::Max(0.f,FVector::DotProduct(Mattress.GetCenter()-Eye,Aim)));
+  }
   const FVector Delta=Focus-Eye;const float Distance=Delta.Size();if(Distance>Target->Reach || Distance<1)continue;
   const float Along=FVector::DotProduct(Delta,Aim);if(Along<=0)continue;
   const float Miss=(Delta-Aim*Along).Size();if(Miss>FMath::Max(25.f,Distance*.19f))continue;
@@ -74,7 +86,7 @@ void AMareServiceTarget::Use(APlayerController* Controller)
  if(Action==TEXT("Fridge") || Action==TEXT("Cupboard")){GetWorld()->GetSubsystem<UMareAudioWorld>()->PlayCue(TEXT("kiosk_fridge"),.3f);PC->OpenStation(Action);return;}
  if(Action==TEXT("Customer")){if(auto Person=Cast<AMarePerson>(GetOwner()))Person->Interact(PC);return;}
  if(Action==TEXT("Clean")){GetWorld()->GetSubsystem<UMareKioskWorld>()->CleanTable(DataIndex);GetWorld()->GetSubsystem<UMareAudioWorld>()->PlayCue(TEXT("clean"),.3f);return;}
- if(Action==TEXT("Bed")){Sim->Sleep();return;}
+ if(Action==TEXT("Bed")){GetWorld()->GetSubsystem<UMareHomeWorld>()->StartSleep();return;}
  if(Action==TEXT("Door")){
   if(bOpened && !CanClose(PC->GetPawn()->GetActorLocation())){Sim->LastMessage=TEXT("Afaste-se do arco da porta para fechar.");return;}
   bOpened=!bOpened;

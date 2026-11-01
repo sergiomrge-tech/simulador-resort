@@ -59,6 +59,10 @@ class MAREALTA_API AMareHUD : public AHUD
  GENERATED_BODY()
 public:
  virtual void DrawHUD() override;
+private:
+ /** Short-lived notice for messages produced outside the phone (sleep, chapters, fame). */
+ FString Notice;
+ double NoticeUntil=0;
 };
 
 UCLASS()

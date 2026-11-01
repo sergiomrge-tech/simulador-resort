@@ -23,6 +23,22 @@ class MareMigrationTools(unreal.ToolsetDefinition):
 
     @toolset_registry.tool_call
     @staticmethod
+    def inspect_home_kiosk(action: str='inspect') -> str:
+        """Audit physical glass, bed and kiosk support geometry in an isolated QA profile."""
+        import importlib,mare_home_kiosk_audit
+        importlib.reload(mare_home_kiosk_audit)
+        return json.dumps(mare_home_kiosk_audit.run(action),ensure_ascii=False)
+
+    @toolset_registry.tool_call
+    @staticmethod
+    def progression_probe(action: str, arg: str='') -> str:
+        """Exercise village chapter dialogue, market purchase, chapter steps and sleep in QA PIE."""
+        import importlib,mare_progression_probe
+        importlib.reload(mare_progression_probe)
+        return json.dumps(mare_progression_probe.run(action,arg),ensure_ascii=False)
+
+    @toolset_registry.tool_call
+    @staticmethod
     def village_runtime_probe(reapply: bool=False) -> str:
         """Inspect real village movement and optionally verify a reversible appearance cycle in QA PIE."""
         if '-MareSaveRoot=D:/CodexTemp/' not in unreal.SystemLibrary.get_command_line():raise RuntimeError('QA profile required')

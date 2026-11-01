@@ -1,5 +1,6 @@
 #include "MareHomeWorld.h"
 #include "MareGame.h"
+#include "Camera/PlayerCameraManager.h"
 #include "MarePlayerPresentation.h"
 #include "MareSimulation.h"
 #include "MareServiceTarget.h"
@@ -57,6 +58,16 @@ void UMareHomeWorld::Setup()
  ShowerDrops->RegisterComponent();for(int32 I=0;I<128;++I)ShowerDrops->AddInstance(FTransform(FVector(4882,1500,100)));
  ShowerDrops->SetVisibility(false);bReady=true;
 }
+void UMareHomeWorld::StartSleep()
+{
+ if(IsSleeping())return;
+ auto Hero=Cast<AMareCharacter>(UGameplayStatics::GetPlayerCharacter(this,0));
+ auto PC=Hero?Cast<APlayerController>(Hero->GetController()):nullptr;if(!PC)return;
+ Stand();Hero->GetCharacterMovement()->StopMovementImmediately();
+ PC->SetIgnoreMoveInput(true);PC->SetIgnoreLookInput(true);
+ PC->PlayerCameraManager->StartCameraFade(0,1,.65f,FLinearColor::Black,false,true);
+ SleepTime=0;bDayAdvanced=false;
+}
 void UMareHomeWorld::Stand()
 {
  if(!bSeated)return;auto Hero=Cast<AMareCharacter>(UGameplayStatics::GetPlayerCharacter(this,0));if(!Hero)return;
@@ -81,6 +92,17 @@ void UMareHomeWorld::Tick(float Dt)
  if(UGameplayStatics::IsGamePaused(this))return;
  auto Hero=Cast<AMareCharacter>(UGameplayStatics::GetPlayerCharacter(this,0));if(!Hero)return;
  auto Audio=GetWorld()->GetSubsystem<UMareAudioWorld>();Audio->SetHomeStereo(bStereo,FVector(4475,2111,108));
+ if(IsSleeping()){
+  SleepTime+=Dt;auto PC=Cast<APlayerController>(Hero->GetController());
+  if(SleepTime>=.75f && !bDayAdvanced){
+   auto Sim=GetWorld()->GetGameInstance()->GetSubsystem<UMareSimulation>();
+   bDayAdvanced=true;bShower=false;Hero->SetActorLocation(FVector(4540,2000,110));
+   Hero->GetCharacterMovement()->SetMovementMode(MOVE_Walking);Sim->Sleep();
+   Sim->LastMessage=TEXT("Bom dia! ")+Sim->LastMessage+TEXT(" O quiosque está fechado; abra a placa quando estiver pronto.");
+   if(PC)PC->PlayerCameraManager->StartCameraFade(1,0,.8f,FLinearColor::Black,false,false);
+  }
+  if(SleepTime>=1.65f){SleepTime=-1;if(PC){PC->SetIgnoreMoveInput(false);PC->SetIgnoreLookInput(false);}}
+ }
  if(bShower && FVector::DistSquared(Hero->GetActorLocation(),FVector(4800,1590,100))>FMath::Square(1000.f))bShower=false;
  if(ShowerDrops){ShowerDrops->SetVisibility(bShower);if(bShower)for(int32 I=0;I<128;++I){
   const float Phase=FMath::Fmod(GetWorld()->GetTimeSeconds()*1.2f+I/128.f,1.f),Angle=I*2.39996f;

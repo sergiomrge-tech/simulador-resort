@@ -139,6 +139,15 @@ private:
     Action(FString::Printf(TEXT("Concluir · R$ %.0f"),UMareSimulation::Number(Q,TEXT("reward"))),[S,Id,bSide](){S->ClaimMission(Id,bSide);});
    }
   }
+  // Chapter steps are completed in person with the giver; the phone only tracks them.
+  Line(TEXT("Histórias da vila"),17);const TArray<TSharedPtr<FJsonValue>>* Chapters=nullptr;
+  if(S->Definitions->TryGetArrayField(TEXT("chapters"),Chapters))for(const auto& Value:*Chapters){auto C=Value->AsObject();const FString Id=UMareSimulation::String(C,TEXT("id"));
+   if(!S->IsChapterOpen(Id))continue;Line(UMareSimulation::String(C,TEXT("title"))+TEXT(" · ")+UMareSimulation::String(C,TEXT("giver")),15);
+   if(S->IsChapterDone(Id)){Line(TEXT("Concluída · ")+UMareSimulation::String(C,TEXT("unlock")),12);continue;}
+   int32 Goal=1;const int32 Have=S->ChapterStepProgress(Id,Goal);const int32 Step=S->ChapterStep(Id);
+   Line(FString::Printf(TEXT("Passo %d/3 · "),Step+1)+UMareSimulation::String(C->GetArrayField(TEXT("steps"))[Step]->AsObject(),TEXT("text"))+FString::Printf(TEXT(" · %d/%d"),Have,Goal),12);
+   Line(TEXT("Converse com ")+UMareSimulation::String(C,TEXT("giver"))+TEXT(" para avançar."),12);
+  }
  }
  void Rebuild()
  {
@@ -177,8 +186,14 @@ private:
    }
    if(!S->Carry().IsEmpty())Action(TEXT("Devolver produto"),[S](){S->ReturnCarry();});Line(TEXT("Retire os produtos prontos na geladeira e no armário do quiosque."),13);HomeSummary();
   }else if(Tab==1){Line(TEXT("Reposição imediata"),18);Stock(false);}
-  else if(Tab==2){Line(TEXT("Um atendente para todo o quiosque"),18);Line(TEXT("Anota, retira os produtos, entrega e recolhe a louça."));Action(TEXT("Contratar atendente"),[S](){S->HireAttendant();});}
-  else if(Tab==3){Line(FString::Printf(TEXT("Caixa · R$ %.0f"),S->Money()),20);const TArray<TSharedPtr<FJsonValue>>* Ledger=nullptr;if(S->State->TryGetArrayField(TEXT("ledger"),Ledger))for(int32 I=Ledger->Num()-1;I>=FMath::Max(0,Ledger->Num()-12);--I){auto Row=(*Ledger)[I]->AsObject();Line(UMareSimulation::String(Row,TEXT("label"))+FString::Printf(TEXT(" · R$ %.0f"),UMareSimulation::Number(Row,TEXT("amount"))),13);}}
+  else if(Tab==2){Line(TEXT("Um atendente para todo o quiosque"),18);Line(TEXT("Anota, retira os produtos, entrega e recolhe a louça."));
+   Line(FString::Printf(TEXT("Contratação R$ %.0f · salário R$ %.0f por dia, pago ao dormir."),UMareSimulation::Number(UMareSimulation::Object(UMareSimulation::Object(S->Definitions,TEXT("staff")),TEXT("atendente")),TEXT("hire")),UMareSimulation::Number(UMareSimulation::Object(UMareSimulation::Object(S->Definitions,TEXT("staff")),TEXT("atendente")),TEXT("wage"))),12);Action(TEXT("Contratar atendente"),[S](){S->HireAttendant();});}
+  else if(Tab==3){Line(FString::Printf(TEXT("Caixa · R$ %.0f"),S->Money()),20);
+   Line(FString::Printf(TEXT("Hoje · entradas R$ %.0f · saídas R$ %.0f"),UMareSimulation::Number(S->State,TEXT("day_in")),UMareSimulation::Number(S->State,TEXT("day_out"))),13);
+   if(S->State->HasTypedField<EJson::Object>(TEXT("ue_last_day"))){auto Last=UMareSimulation::Object(S->State,TEXT("ue_last_day"));
+    Line(FString::Printf(TEXT("Dia %.0f · %.0f vendas · lucro R$ %.0f (salários R$ %.0f)"),UMareSimulation::Number(Last,TEXT("day")),UMareSimulation::Number(Last,TEXT("sales")),
+     UMareSimulation::Number(Last,TEXT("income"))-UMareSimulation::Number(Last,TEXT("expense")),UMareSimulation::Number(Last,TEXT("wages"))),13);}
+   Line(TEXT("Últimos lançamentos"),15);const TArray<TSharedPtr<FJsonValue>>* Ledger=nullptr;if(S->State->TryGetArrayField(TEXT("ledger"),Ledger))for(int32 I=Ledger->Num()-1;I>=FMath::Max(0,Ledger->Num()-12);--I){auto Row=(*Ledger)[I]->AsObject();Line(UMareSimulation::String(Row,TEXT("label"))+FString::Printf(TEXT(" · R$ %.0f"),UMareSimulation::Number(Row,TEXT("amount"))),13);}}
   else if(Tab==4){
    Line(TEXT("Expansões do resort"),18);Line(TEXT("As áreas são liberadas após a compra."),12);
    auto Expansions=UMareSimulation::Object(S->Definitions,TEXT("expansions"));
@@ -224,6 +239,7 @@ void AMareCharacter::Interact()
  for(TActorIterator<AMareIntro> It(GetWorld());It;++It)if(It->IsArrival()){It->FinishArrival();return;}
  auto PC=Cast<AMareController>(Controller);if(!PC || PC->bPhoneOpen || GetWorld()->IsPaused())return;
  if(auto Home=GetWorld()->GetSubsystem<UMareHomeWorld>())if(Home->IsSeated()){Home->Stand();return;}
+ if(auto Home=GetWorld()->GetSubsystem<UMareHomeWorld>())if(Home->IsSleeping())return;
  if(auto Target=AMareServiceTarget::FindFocused(PC))Target->Use(PC);
 }
 void AMareCharacter::SwimVertical(float Value){VerticalSwimInput=FMath::Clamp(Value,-1.f,1.f);}
@@ -271,7 +287,7 @@ void AMareController::TogglePauseMenu()
  GEngine->GameViewport->AddViewportWidgetContent(PauseWidget.ToSharedRef(),30);bShowMouseCursor=true;
  SetInputMode(FInputModeGameAndUI());SetIgnoreMoveInput(true);SetIgnoreLookInput(true);
 }
-void AMareController::TogglePhone(){if(auto Village=GetWorld()->GetSubsystem<UMareVillageWorld>())if(Village->IsDialogueOpen())return;for(TActorIterator<AMareIntro> It(GetWorld());It;++It)if(It->IsArrival() || It->IsLetterOpen())return;if(PauseWidget.IsValid())return;if(bPhoneOpen)ClosePhone();else OpenPhone();}
+void AMareController::TogglePhone(){if(auto Home=GetWorld()->GetSubsystem<UMareHomeWorld>())if(Home->IsSleeping())return;if(auto Village=GetWorld()->GetSubsystem<UMareVillageWorld>())if(Village->IsDialogueOpen())return;for(TActorIterator<AMareIntro> It(GetWorld());It;++It)if(It->IsArrival() || It->IsLetterOpen())return;if(PauseWidget.IsValid())return;if(bPhoneOpen)ClosePhone();else OpenPhone();}
 void AMareController::OpenPhone(int32 Tab)
 {
  if(!GEngine || !GEngine->GameViewport)return;
@@ -299,7 +315,10 @@ void AMareHUD::DrawHUD()
  const auto PC=Cast<AMareController>(GetOwningPlayerController());
  const float TextWidth=FMath::Clamp(Canvas->ClipX-44.f-(PC && PC->bPhoneOpen?460.f:0.f),180.f,540.f);
  auto Line=[&](const FString& Text,FLinearColor Color=FLinearColor::White){MareUI::HUDLine(Canvas,Font,Text,Color,Y,TextWidth);};
- Line(FString::Printf(TEXT("R$ %.0f   Dia %.0f   %02d:%02d"),S->Money(),UMareSimulation::Number(S->State,TEXT("day"),1),int32(UMareSimulation::Number(S->State,TEXT("minutes")))/60,int32(UMareSimulation::Number(S->State,TEXT("minutes")))%60));
+ Line(FString::Printf(TEXT("R$ %.0f   Dia %.0f   %02d:%02d   Fama: %s"),S->Money(),UMareSimulation::Number(S->State,TEXT("day"),1),int32(UMareSimulation::Number(S->State,TEXT("minutes")))/60,int32(UMareSimulation::Number(S->State,TEXT("minutes")))%60,*S->FameName()));
+ const double Now=GetWorld()->GetRealTimeSeconds();
+ if(S->LastMessage!=Notice){Notice=S->LastMessage;NoticeUntil=Notice.IsEmpty()?0:Now+7;}
+ if(Now<NoticeUntil && !(PC && PC->bPhoneOpen))Line(Notice,FLinearColor(.78f,1.f,.86f));
  const int32 IntroStage=UMareSimulation::Number(S->State,TEXT("ue_intro_stage"),2);
  if(IntroStage==0){Line(TEXT("A vila parecia menor... e o mar, do tamanho das minhas lembranças."),FLinearColor(1.f,.88f,.56f));Line(TEXT("E · avançar"));return;}
  if(IntroStage==1)Line(TEXT("Entre na casa e leia a carta do avô"),FLinearColor(1.f,.88f,.56f));

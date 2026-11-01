@@ -102,13 +102,34 @@ void UMareVillageWorld::Speak(AMarePerson* Person,APlayerController* Controller)
   Person->PersonName==TEXT("Padre Tomé")?TEXT("A vila fica melhor quando cuidamos uns dos outros. Seu avô fez isso por muitos anos. Fico feliz em ver você por aqui."):
   TEXT("Bem-vindo à vila! É bom ver o quiosque da família ganhando vida outra vez.");
  static const FSlateRoundedBoxBrush Card(FLinearColor(.95f,.94f,.88f),12.f);
+ auto Sim=GetWorld()->GetGameInstance()->GetSubsystem<UMareSimulation>();
+ // The giver of the open chapter offers its current step in person.
+ FString Story;auto Actions=SNew(SHorizontalBox);TWeakObjectPtr<AMarePerson> WeakPerson(Person);TWeakObjectPtr<APlayerController> WeakController(Controller);
+ const FString Result=ActionResult;ActionResult.Empty();
+ const auto AddAction=[&](const FString& Label,TFunction<void()> Callback){Actions->AddSlot().AutoWidth().Padding(0,0,8,0)[SNew(SButton).ContentPadding(FMargin(12,6)).OnClicked_Lambda([this,Sim,Callback,WeakPerson,WeakController](){
+  Sim->LastMessage.Empty();Callback();const FString Message=Sim->LastMessage;CloseDialogue();ActionResult=Message;
+  if(WeakPerson.IsValid() && WeakController.IsValid())Speak(WeakPerson.Get(),WeakController.Get());return FReply::Handled();})[SNew(STextBlock).Text(FText::FromString(Label))]];};
+ const TArray<TSharedPtr<FJsonValue>>* Chapters=nullptr;
+ if(Sim->Definitions->TryGetArrayField(TEXT("chapters"),Chapters))for(const auto& Value:*Chapters){auto C=Value->AsObject();const FString Id=UMareSimulation::String(C,TEXT("id"));
+  if(UMareSimulation::String(C,TEXT("giver"))!=Person->PersonName || !Sim->IsChapterOpen(Id))continue;
+  if(Sim->IsChapterDone(Id)){Story=TEXT("Obrigado pela ajuda com \"")+UMareSimulation::String(C,TEXT("title"))+TEXT("\". A vila não vai esquecer.");break;}
+  const int32 StepIndex=Sim->ChapterStep(Id);const auto Step=C->GetArrayField(TEXT("steps"))[StepIndex]->AsObject();const FString Kind=UMareSimulation::String(Step,TEXT("kind")),Item=UMareSimulation::String(Step,TEXT("item"));
+  int32 Goal=1;const int32 Have=Sim->ChapterStepProgress(Id,Goal);
+  Story=(StepIndex==0?UMareSimulation::String(C,TEXT("story"))+TEXT("\n\n"):FString())+FString::Printf(TEXT("%s · passo %d/3: "),*UMareSimulation::String(C,TEXT("title")),StepIndex+1)+UMareSimulation::String(Step,TEXT("text"))+FString::Printf(TEXT(" (%d/%d)"),Have,Goal);
+  if(Kind==TEXT("deliver") && Have<Goal){const int32 Missing=Goal-Have;
+   AddAction(FString::Printf(TEXT("Comprar %d no mercadinho · R$ %.0f"),Missing,Sim->SupplyCost(Item,Missing)),[Sim,Item,Missing](){Sim->BuySupply(Item,Missing);});}
+  else if(Have>=Goal)AddAction(Kind==TEXT("deliver")?FString::Printf(TEXT("Entregar %d do estoque"),Goal):Kind==TEXT("pay")?FString::Printf(TEXT("Doar R$ %d"),Goal):FString(TEXT("Concluir passo")),[Sim,Id](){Sim->AdvanceChapter(Id);});
+  break;
+ }
+ Actions->AddSlot().AutoWidth()[SNew(SButton).ContentPadding(FMargin(12,6)).OnClicked_Lambda([this](){CloseDialogue();return FReply::Handled();})[SNew(STextBlock).Text(FText::FromString(TEXT("Até logo · E / Esc")))]];
  Dialogue=SNew(SBorder).BorderBackgroundColor(FLinearColor(0,0,0,.25f)).HAlign(HAlign_Center).VAlign(VAlign_Bottom).Padding(20)
  [SNew(SBox).WidthOverride(580)[SNew(SBorder).BorderImage(&Card).Padding(18)[SNew(SVerticalBox)
   +SVerticalBox::Slot().AutoHeight()[SNew(STextBlock).Text(FText::FromString(Person->PersonName)).Font(FCoreStyle::GetDefaultFontStyle("Bold",19)).ColorAndOpacity(FLinearColor(.08f,.16f,.14f))]
-  +SVerticalBox::Slot().AutoHeight().Padding(0,9)[SNew(STextBlock).Text(FText::FromString(Greeting)).WrapTextAt(544).Font(FCoreStyle::GetDefaultFontStyle("Regular",15)).ColorAndOpacity(FLinearColor(.12f,.13f,.12f))]
-  +SVerticalBox::Slot().AutoHeight().HAlign(HAlign_Left)[SNew(SButton).ContentPadding(FMargin(12,6)).OnClicked_Lambda([this](){CloseDialogue();return FReply::Handled();})[SNew(STextBlock).Text(FText::FromString(TEXT("Até logo · E / Esc")))]]]]];
+  +SVerticalBox::Slot().AutoHeight().Padding(0,9)[SNew(STextBlock).Text(FText::FromString(Story.IsEmpty()?Greeting:Story)).WrapTextAt(544).Font(FCoreStyle::GetDefaultFontStyle("Regular",15)).ColorAndOpacity(FLinearColor(.12f,.13f,.12f))]
+  +SVerticalBox::Slot().AutoHeight().Padding(0,0,0,6)[SNew(STextBlock).Text(FText::FromString(Result)).Visibility(Result.IsEmpty()?EVisibility::Collapsed:EVisibility::Visible).WrapTextAt(544).Font(FCoreStyle::GetDefaultFontStyle("Italic",12)).ColorAndOpacity(FLinearColor(.2f,.3f,.27f))]
+  +SVerticalBox::Slot().AutoHeight().HAlign(HAlign_Left)[Actions]]]];
  GEngine->GameViewport->AddViewportWidgetContent(Dialogue.ToSharedRef(),35);Controller->bShowMouseCursor=true;Controller->SetInputMode(FInputModeGameAndUI());Controller->SetIgnoreMoveInput(true);Controller->SetIgnoreLookInput(true);
- auto Sim=GetWorld()->GetGameInstance()->GetSubsystem<UMareSimulation>();UMareSimulation::Object(UMareSimulation::Object(UMareSimulation::Object(Sim->State,TEXT("prog")),TEXT("experience")),TEXT("greeted"))->SetBoolField(Person->PersonName,true);Sim->Save();
+ UMareSimulation::Object(UMareSimulation::Object(UMareSimulation::Object(Sim->State,TEXT("prog")),TEXT("experience")),TEXT("greeted"))->SetBoolField(Person->PersonName,true);Sim->Save();
 }
 void UMareVillageWorld::CloseDialogue()
 {

@@ -28,6 +28,8 @@ private:
  TWeakObjectPtr<AMarePerson> Speaker;
  TWeakObjectPtr<APlayerController> DialogController;
  TSharedPtr<SWidget> Dialogue;
+ /** Result of a chapter action, shown once when the conversation reopens. */
+ FString ActionResult;
  bool bReady=false;float Clock=0;
  void Setup();
  void UpdateWalkers(float Dt);

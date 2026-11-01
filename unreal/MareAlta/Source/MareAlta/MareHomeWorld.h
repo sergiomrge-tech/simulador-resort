@@ -18,6 +18,9 @@ public:
  void Use(FName Action);
  /** Restore the free standing location before leaving a seat. */
  void Stand();
+ /** Fade out, advance one day and wake on the free bedside floor. */
+ void StartSleep();
+ bool IsSleeping()const{return SleepTime>=0;}
  bool IsSeated()const{return bSeated;}
  bool IsTVOn()const{return bTV;}
  bool IsStereoOn()const{return bStereo;}
@@ -26,6 +29,8 @@ public:
  FTransform StandingPose(const FTransform& Current)const{return bSeated?Standing:Current;}
 private:
  bool bReady=false,bTV=false,bStereo=false,bShower=false,bSeated=false;
+ float SleepTime=-1;
+ bool bDayAdvanced=false;
  FTransform Standing;
  UPROPERTY() TObjectPtr<AStaticMeshActor> TVScreen;
  UPROPERTY() TObjectPtr<UInstancedStaticMeshComponent> ShowerDrops;

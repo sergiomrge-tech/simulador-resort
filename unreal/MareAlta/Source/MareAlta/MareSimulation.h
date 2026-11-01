@@ -51,8 +51,26 @@ public:
  UFUNCTION(BlueprintCallable,Category="Maré Alta")
  bool ClaimMission(const FString& Id, bool bSide=false);
  int32 MissionAmount(const TSharedPtr<FJsonObject>& Mission) const;
+ /** Village chapters open in sequence and keep their step in prog.ch, as in the approved save. */
+ TSharedPtr<FJsonObject> ChapterDefinition(const FString& Id) const;
+ int32 ChapterStep(const FString& Id) const;
+ bool IsChapterOpen(const FString& Id) const;
+ bool IsChapterDone(const FString& Id) const{return ChapterStep(Id)>=3;}
+ /** Current/required amount of the active step; deliver/pay consume only in AdvanceChapter. */
+ int32 ChapterStepProgress(const FString& Id,int32& Goal) const;
+ UFUNCTION(BlueprintCallable,Category="Maré Alta")
+ bool AdvanceChapter(const FString& Id);
+ /** Market purchase of raw supplies, charged once and only when the full amount is affordable. */
+ UFUNCTION(BlueprintCallable,Category="Maré Alta")
+ bool BuySupply(const FString& Item,int32 Quantity);
+ double SupplyCost(const FString& Item,int32 Quantity) const;
+ /** Fame level 1..10 from prog.fame_xp using the original thresholds. */
+ int32 FameLevel() const;
+ FString FameName() const;
+ void AddFame(int32 Xp);
  UFUNCTION(BlueprintCallable,Category="Maré Alta")
  void AdvanceMinutes(double Minutes);
+ /** Closes the day: wages once per day, summary in ue_last_day, ledger totals reset. */
  UFUNCTION(BlueprintCallable,Category="Maré Alta")
  void Sleep();
  UFUNCTION(BlueprintCallable,Category="Maré Alta")

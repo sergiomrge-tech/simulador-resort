@@ -97,4 +97,54 @@ bool FMareEconomyTest::RunTest(const FString& Parameters)
  Sim->Sleep();TestFalse(TEXT("Sleeping closes business"),Sim->IsOpen());
  Sim->RemoveFromRoot();Instance->RemoveFromRoot();return true;
 }
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FMareProgressionTest,"MareAlta.Migration.DayCloseAndChapters",EAutomationTestFlags::EditorContext|EAutomationTestFlags::EngineFilter)
+bool FMareProgressionTest::RunTest(const FString& Parameters)
+{
+ auto Instance=NewObject<UGameInstance>();Instance->AddToRoot();
+ auto Sim=NewObject<UMareSimulation>(Instance);Sim->AddToRoot();
+ Sim->SaveDirectory=FPaths::ProjectSavedDir()/TEXT("Automation/DayCloseAndChapters")/FGuid::NewGuid().ToString(EGuidFormats::Digits);
+ auto Load=[&](const FString& Name,TSharedPtr<FJsonObject>& Result){FString Text;FFileHelper::LoadFileToString(Text,*(FPaths::ProjectContentDir()/TEXT("Data")/Name));return FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Text),Result);};
+ if(!TestTrue(TEXT("Definitions"),Load(TEXT("definitions.json"),Sim->Definitions)) || !TestTrue(TEXT("Default save"),Load(TEXT("default_save.json"),Sim->State))){Sim->RemoveFromRoot();Instance->RemoveFromRoot();return false;}
+ Sim->State->SetNumberField(TEXT("money"),1000);Sim->CreateCompany(TEXT("Teste"));
+ const double Wage=Sim->Number(Sim->Object(Sim->Object(Sim->Definitions,TEXT("staff")),TEXT("atendente")),TEXT("wage"));
+ // Legacy kiosk roles from old saves must not be billed after the single-attendant merge.
+ Sim->Object(Sim->State,TEXT("staff"))->SetBoolField(TEXT("garcom"),true);
+ TestTrue(TEXT("Hire attendant"),Sim->HireAttendant());const double AfterHire=Sim->Money();
+ Sim->Sleep();
+ TestEqual(TEXT("Only the attendant wage is charged"),Sim->Money(),AfterHire-Wage);
+ TestEqual(TEXT("Day advanced"),int32(Sim->Number(Sim->State,TEXT("day"))),2);
+ auto Last=Sim->Object(Sim->State,TEXT("ue_last_day"));
+ TestEqual(TEXT("Summary keeps wages"),Sim->Number(Last,TEXT("wages")),Wage);
+ TestEqual(TEXT("Daily totals reset"),Sim->Number(Sim->State,TEXT("day_out")),0.);
+ Sim->State->SetNumberField(TEXT("day"),1);const double BeforeRepeat=Sim->Money();Sim->Sleep();
+ TestEqual(TEXT("Reloaded day is not paid twice"),Sim->Money(),BeforeRepeat);
+ TestEqual(TEXT("Fame starts unknown"),Sim->FameLevel(),1);
+ TestTrue(TEXT("First chapter open"),Sim->IsChapterOpen(TEXT("pier")));TestFalse(TEXT("Second chapter waits"),Sim->IsChapterOpen(TEXT("prainha")));
+ // Step 1: deliver four fish bought at the market, consumed exactly once.
+ Sim->Object(Sim->State,TEXT("stock"))->SetNumberField(TEXT("peixe"),0);
+ TestFalse(TEXT("Cannot deliver without fish"),Sim->AdvanceChapter(TEXT("pier")));
+ const double Market=Sim->Money();TestTrue(TEXT("Buy fish"),Sim->BuySupply(TEXT("peixe"),4));
+ TestEqual(TEXT("Market charged once"),Sim->Money(),Market-Sim->SupplyCost(TEXT("peixe"),4));
+ TestTrue(TEXT("Deliver fish"),Sim->AdvanceChapter(TEXT("pier")));
+ TestEqual(TEXT("Fish consumed"),Sim->Number(Sim->Object(Sim->State,TEXT("stock")),TEXT("peixe")),0.);
+ TestEqual(TEXT("Step 2 active"),Sim->ChapterStep(TEXT("pier")),1);
+ // Step 2: serve counts only deliveries after the step starts.
+ Sim->State->SetNumberField(TEXT("minutes"),600);Sim->SetOpen(true);Sim->Restock(TEXT("coco_gelado"),20);
+ for(int32 I=0;I<15;++I){const FString Id=Sim->AddOrder(TEXT("Cliente"),{TEXT("coco_gelado")});Sim->Pickup(TEXT("coco_gelado"));Sim->Deliver(Id,TEXT("coco_gelado"));}
+ int32 Goal=0;TestEqual(TEXT("Fifteen served"),Sim->ChapterStepProgress(TEXT("pier"),Goal),15);
+ TestTrue(TEXT("Serve step"),Sim->AdvanceChapter(TEXT("pier")));
+ TestTrue(TEXT("Sales add fame"),Sim->Number(Sim->Object(Sim->State,TEXT("prog")),TEXT("fame_xp"))>=30);
+ // Step 3: pay once, then reward once.
+ const double BeforePay=Sim->Money();const double Reward=Sim->Number(Sim->ChapterDefinition(TEXT("pier")),TEXT("reward"));
+ TestTrue(TEXT("Pay step completes chapter"),Sim->AdvanceChapter(TEXT("pier")));
+ TestEqual(TEXT("Donation and reward booked once"),Sim->Money(),BeforePay-150+Reward);
+ TestFalse(TEXT("Completed chapter cannot repeat"),Sim->AdvanceChapter(TEXT("pier")));
+ TestEqual(TEXT("No repeated reward"),Sim->Money(),BeforePay-150+Reward);
+ TestTrue(TEXT("Next chapter opens"),Sim->IsChapterOpen(TEXT("prainha")));
+ auto Comunidade=MakeShared<FJsonObject>();Comunidade->SetStringField(TEXT("kind"),TEXT("chapter"));Comunidade->SetStringField(TEXT("item"),TEXT("pier"));
+ TestEqual(TEXT("Campaign chapter mission is reachable"),Sim->MissionAmount(Comunidade),1);
+ TSharedPtr<FJsonObject> Saved;FString Text;FFileHelper::LoadFileToString(Text,*(Sim->SaveDirectory/TEXT("slot1.json")));FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Text),Saved);
+ TestEqual(TEXT("Chapter step persisted"),int32(Sim->Number(Sim->Object(Sim->Object(Saved,TEXT("prog")),TEXT("ch")),TEXT("pier"))),3);
+ Sim->RemoveFromRoot();Instance->RemoveFromRoot();return true;
+}
 #endif

@@ -1,5 +1,7 @@
 # Guia vigente para as próximas atualizações
 
+**Continuidade assumida pelo Claude em 01/11:** ler [progressão, fim do dia e capítulos](ue58/PROGRESSAO_2026-11-01.md). Campanha não trava mais no capítulo do píer; salário diário, fama e histórias da vila nativos. Testes 2/2 e PIE pelo MCP; **EXE ainda não gerado com este lote** (prévia jogável segue a de 29/10).
+
 **Ideias aprovadas em 31/10 — humor opcional na demo e no resort:** ver [eventos cômicos e NPCs](ue58/HUMOR_EVENTOS_COMICOS.md) e a [tarefa #4](https://github.com/sergiomrge-tech/simulador-resort/issues/4). **PLANEJADO, NÃO IMPLEMENTADO**; priorizar conclusão da migração UE, operação dos negócios e estabilidade antes de incluir os eventos. Para a demo, começar por diálogos engraçados, turista influenciador e gaivota, sem quebrar estoque, atendimento ou saves.
 
 **Prévia UE atual de 29/10:** ler primeiro
