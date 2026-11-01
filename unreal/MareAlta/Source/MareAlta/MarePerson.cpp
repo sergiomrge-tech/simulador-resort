@@ -141,8 +141,13 @@ void AMarePerson::ApplyOutfit(EOutfit Style)
  const FLinearColor Shorts[]={{.66f,.56f,.38f},{.12f,.16f,.32f},{.86f,.86f,.80f},{.24f,.36f,.58f},{.85f,.40f,.18f}};
  const FLinearColor Swim[]={{.86f,.12f,.22f},{.05f,.45f,.75f},{.98f,.80f,.10f},{.08f,.08f,.10f},{.92f,.42f,.62f},{.12f,.62f,.42f},{.96f,.94f,.90f}};
  switch(Style){
- case EOutfit::Swim:{for(int32 Part:{3,4,5,6})Hide(Part);const int32 I=Slot(2);if(I!=INDEX_NONE){auto M=UMaterialInstanceDynamic::Create(Skin,this);
-  if(auto T=Tex(2))M->SetTextureParameterValue(TEXT("Atlas"),T);M->SetVectorParameterValue(TEXT("SwimTint"),Swim[Rng.RandRange(0,6)]);Body->SetMaterial(I,M);}break;}
+ case EOutfit::Swim:{
+  // The garments were generated from the body mesh and keep its UVs, while the body itself has no skin
+  // under them: painting every piece with the body atlas shows bare skin, and the underwear painted on
+  // that atlas becomes the bikini / swim trunks in one colour (M_PersonBody).
+  auto M=UMaterialInstanceDynamic::Create(Skin,this);if(auto T=Tex(2))M->SetTextureParameterValue(TEXT("Atlas"),T);
+  M->SetVectorParameterValue(TEXT("SwimTint"),Swim[Rng.RandRange(0,6)]);
+  for(int32 Part:{2,3,4,5,6}){const int32 I=Slot(Part);if(I!=INDEX_NONE)Body->SetMaterial(I,M);}break;}
  case EOutfit::Beach:{const FLinearColor Top=Bright[Rng.RandRange(0,6)];Dye(3,Top);Dye(4,Top);
   Dye(6,Shorts[Rng.RandRange(0,4)]);Dye(5,Pick({{.70f,.55f,.35f},{.90f,.88f,.84f},{.20f,.45f,.60f}}));break;}
  case EOutfit::Social:{const FLinearColor Top=Pick({{.93f,.93f,.91f},{.66f,.76f,.90f},{.90f,.86f,.74f},{.93f,.93f,.91f}});Dye(3,Top);Dye(4,Top);
@@ -161,8 +166,8 @@ void AMarePerson::Tick(float DeltaSeconds)
    if(bEmployee)Style=EOutfit::Uniform;
    else if(Tags.Contains(TEXT("MareHotelGuest")))Style=(PersonName==TEXT("Recepcionista") || PersonName==TEXT("Barman") || bSeated || GetActorLocation().Y>5600)?EOutfit::Social:EOutfit::Beach;
    else if(bAmbient)Style=R.FRand()<.3f?EOutfit::Beach:EOutfit::Casual;
-   // Swimwear waits for the full UBC body: the exported body has no skin from knee to chest (it was
-   // cut away under the clothes), so removing garments would leave holes.
+   // Swimwear (EOutfit::Swim) stays off until the people get real garments (MetaHuman outfits):
+   // painting the generated clothes with the body atlas works but looks like underwear.
    else Style=EOutfit::Beach;}
   ApplyOutfit(Style);}
  if(GetVelocity().SizeSquared2D()>25)PlayPose(TEXT("Walk"));else if(bAmbient)PlayPose(bSeated?TEXT("Sitting_Idle"):bConversing?TEXT("Idle_Talking"):TEXT("Idle"));else if(Stage!=EMarePersonStage::Eating)PlayPose(TEXT("Idle"));

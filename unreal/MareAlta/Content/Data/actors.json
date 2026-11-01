@@ -30,7 +30,6 @@
   "Human_0": {
     "static_meshes": [
       "/Game/Actors/Combined/Human_0/Hair_Beard.Hair_Beard",
-      "/Game/Actors/Combined/Human_0/Hair_Long.Hair_Long",
       "/Game/Actors/Combined/Human_0/Hair_SimpleParted.Hair_SimpleParted"
     ],
     "skeletal_meshes": [
