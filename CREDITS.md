@@ -543,3 +543,7 @@ Móveis originais modelados para o projeto com bpy (`tools/ue58/gen_custom_furni
 ### Mosaico da orca na piscina (UE5.8) — 01/11/2026
 
 - Desenho da orca em pastilhas gerado com a IA do Canva na conta do projeto (mídia `MAHZtktVk0M`), convertido em uma cor por pastilha por `tools/ue58/orca_mural.py`.
+
+### Farol e barracas (UE5.8) — 01/11/2026
+
+Modelados com bpy (`tools/ue58/gen_landmarks.py`) com texturas CC0 do Poly Haven: painted_plaster_wall, plaster_stone_wall_01, metal_plate, distressed_painted_planks, clay_roof_tiles_02, oak_wood_planks, rough_linen.

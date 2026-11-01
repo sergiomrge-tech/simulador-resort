@@ -173,7 +173,38 @@ def clock(minutes):
     return {'minutes': float(minutes)}
 
 
+def swap_mesh(arg):
+    """'World_2020:mare_lighthouse,...': every instanced component of an exported mesh gets the custom
+    model (Data/custom_assets.json) in its place, keeping the instance transforms; overrides cleared."""
+    import json
+    from pathlib import Path
+    if unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world():
+        raise RuntimeError('Stop PIE first')
+    assets = json.loads((Path(unreal.Paths.project_dir()) / 'Content/Data/custom_assets.json').read_text(encoding='utf-8'))
+    pairs = dict(p.split(':') for p in arg.split(','))
+    changed = []
+    for a in unreal.get_editor_subsystem(unreal.EditorActorSubsystem).get_all_level_actors():
+        # Instanced pieces and plain mesh components (business booths are separate actors).
+        for c in a.get_components_by_class(unreal.StaticMeshComponent):
+            name = c.static_mesh.get_name() if c.static_mesh else ''
+            if name in pairs and pairs[name] == 'none':
+                # Superseded prop (e.g. the flat souvenir display in front of the new stall).
+                c.set_visibility(False)
+                c.set_collision_enabled(unreal.CollisionEnabled.NO_COLLISION)
+                changed.append([a.get_actor_label(), name, 'hidden'])
+                continue
+            if name in pairs:
+                mesh = unreal.load_asset(assets[pairs[name]])
+                c.set_static_mesh(mesh)
+                c.set_editor_property('override_materials', [])
+                changed.append([a.get_actor_label(), name, pairs[name]])
+    unreal.get_editor_subsystem(unreal.LevelEditorSubsystem).save_current_level()
+    return changed
+
+
 def run(action, arg=''):
+    if action == 'swapmesh':
+        return swap_mesh(arg)
     if action == 'clock':
         return clock(arg)
     if action == 'windows':
