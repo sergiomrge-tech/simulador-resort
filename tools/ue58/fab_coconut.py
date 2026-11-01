@@ -7,6 +7,7 @@ exported Godot coconut: same width, centre and resting base.
   blender -b --factory-startup --python tools/ue58/fab_coconut.py -- World_0326 World_1414
 """
 import json
+import math
 import shutil
 import sys
 from pathlib import Path
@@ -17,6 +18,7 @@ from mathutils import Matrix, Vector
 MODELS = Path(__file__).resolve().parents[2] / 'unreal/MareAlta/SourceArt/Models'
 SRC = Path('D:/Assets/Fab/coconut_rabeya/n1.glb')
 BACKUP = Path('D:/CodexTemp/coconuts/orig')
+LAY_YAW = {'World_0326': 0, 'World_1414': 70}
 
 
 def backup(name):
@@ -53,10 +55,15 @@ def build(name):
         o.data.materials.append(mat)
     for o in [o for o in bpy.context.scene.objects if o.type != 'MESH']:
         bpy.data.objects.remove(o)
+    # A dry coconut is egg-shaped and never balances on its tip: lay the long axis down, turned a
+    # little differently per variant, slightly rolled so the three eyes face sideways.
+    lay = Matrix.Rotation(math.radians(LAY_YAW.get(name, 0)), 4, 'Z') @ Matrix.Rotation(math.radians(90), 4, 'X') @ Matrix.Rotation(math.radians(25), 4, 'Z')
+    for o in meshes:
+        o.data.transform(lay)
     # Fit on the husk (fibres stick out a little, as on a real dry coconut).
     lo_n, hi_n = bounds([husk])
-    # Width, not height: the coconuts sit in tight piles (16 cm apart) and must not interpenetrate.
-    s = .92 * (hi_o.x - lo_o.x) / (hi_n.x - lo_n.x)
+    # Longest horizontal side to the old width: the coconuts sit in tight piles (16 cm apart).
+    s = .95 * (hi_o.x - lo_o.x) / max(hi_n.x - lo_n.x, hi_n.y - lo_n.y)
     centre_o = (lo_o + hi_o) / 2
     centre_n = (lo_n + hi_n) / 2
     m = Matrix.Translation((centre_o.x, centre_o.y, lo_o.z)) @ Matrix.Scale(s, 4) @ Matrix.Translation((-centre_n.x, -centre_n.y, -lo_n.z))
