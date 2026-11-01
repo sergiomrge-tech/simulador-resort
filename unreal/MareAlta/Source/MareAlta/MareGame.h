@@ -59,7 +59,10 @@ class MAREALTA_API AMareHUD : public AHUD
  GENERATED_BODY()
 public:
  virtual void DrawHUD() override;
+ virtual void EndPlay(const EEndPlayReason::Type Reason) override;
 private:
+ /** "Maré Tropical" overlay (wood plank, order tickets, mission note, prompt); rebuilt only on change. */
+ TSharedPtr<class SMareHud> Overlay;
  /** Short-lived notice for messages produced outside the phone (sleep, chapters, fame). */
  FString Notice;
  double NoticeUntil=0;
