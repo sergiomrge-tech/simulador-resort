@@ -27,6 +27,12 @@ public:
  UFUNCTION(BlueprintPure,Category="Audio") bool HasMasterMix()const{return MasterMix!=nullptr;}
  UFUNCTION(BlueprintCallable,Category="Audio") void SetRadioStation(FName Station);
  UFUNCTION(BlueprintPure,Category="Audio") FName GetRadioStation()const{return RadioStation;}
+ /** Ordered radio stations (original instrumental music) followed by "off". */
+ static const TArray<FName>& RadioStations();
+ static bool IsRadioStation(FName Name){return Name!=TEXT("off") && RadioStations().Contains(Name);}
+ static FString RadioName(FName Station);
+ /** Cycle to the next station, ending with the radio switched off. */
+ UFUNCTION(BlueprintCallable,Category="Audio") void NextRadioStation();
  /** Physical home stereo is spatial, uses Music volume and ducks the portable radio nearby. */
  void SetHomeStereo(bool bEnabled,FVector Position);
 private:

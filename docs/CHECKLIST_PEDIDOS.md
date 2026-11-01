@@ -20,10 +20,10 @@ Legenda: [x] feito e validado · [~] em andamento/parcial · [ ] pendente.
 - [x] Ondas quadradas: corrigir (malha do mar graduada 0,75 m).
 - [x] Vegetação nas montanhas ao redor (16.896 instâncias CC0).
 - [~] Polimento visual: objetos flutuando (26 itens corrigidos; varredura em `D:/CodexTemp/float-audit`). Falta: guarda-sol listrado e outras peças low poly da praia.
-- [ ] Rádio: mais músicas praianas/reggae instrumentais originais, seleção no jogo.
+- [x] Rádio: 3 novas músicas originais (Reggae Roots, Calipso Caribe, Praia Pop/ukulele), 6 estações + desligado, nome no celular; testado no PIE.
 - [ ] Andar pela vila, principalmente quiosque e hotel, e corrigir o que não funcionar.
 - [ ] HUD/celular mais comercial, amigável e fácil: apresentar 3 propostas e implementar a escolhida (depois do lote atual).
-- [x] Manter este checklist sempre que o usuário pedir algo.
+- [x] Manter este checklist sempre que o usuário pedir algo (regra salva na memória).
 
 ## Regras permanentes já pedidas
 

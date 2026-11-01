@@ -407,3 +407,7 @@ Casca do térreo (núcleo removido, entrada, paredes, forro, colunas, balcão e 
 - Shrub 03 (`shrub_03`), Rico Cilliers, CC0 — https://polyhaven.com/a/shrub_03
 - Shrub 04 (`shrub_04`), Rico Cilliers, CC0 — https://polyhaven.com/a/shrub_04
 - Tree Small 02 (`tree_small_02`), Rico Cilliers, CC0 — https://polyhaven.com/a/tree_small_02
+
+### Rádio praiano — 01/11/2026
+
+Reggae Roots, Calipso Caribe e Praia Pop (ukulele): composições e síntese originais deste projeto, dedicadas a CC0, geradas por `tools/ue58/gen_radio_music.py` (cordas Karplus-Strong, steel pan modal, percussão sintetizada; sem vozes nem samples de terceiros). WAVs em `unreal/MareAlta/SourceArt/Audio/radio_*.wav`.

@@ -16,11 +16,31 @@
 #include "Serialization/JsonSerializer.h"
 
 TStatId UMareAudioWorld::GetStatId()const{RETURN_QUICK_DECLARE_CYCLE_STAT(UMareAudioWorld,STATGROUP_Tickables);}
+const TArray<FName>& UMareAudioWorld::RadioStations()
+{
+ static const TArray<FName> Stations={TEXT("reggae_praia"),TEXT("radio_reggae_roots"),TEXT("radio_calypso"),TEXT("radio_beach_pop"),TEXT("music_bossa"),TEXT("music_relax"),TEXT("off")};
+ return Stations;
+}
+FString UMareAudioWorld::RadioName(FName Station)
+{
+ if(Station==TEXT("reggae_praia"))return TEXT("Reggae da Praia");
+ if(Station==TEXT("radio_reggae_roots"))return TEXT("Reggae Roots");
+ if(Station==TEXT("radio_calypso"))return TEXT("Calipso Caribe");
+ if(Station==TEXT("radio_beach_pop"))return TEXT("Praia Pop · ukulele");
+ if(Station==TEXT("music_bossa"))return TEXT("Bossa praiana");
+ if(Station==TEXT("music_relax"))return TEXT("Brisa instrumental");
+ return TEXT("Desligada");
+}
+void UMareAudioWorld::NextRadioStation()
+{
+ const int32 Index=RadioStations().IndexOfByKey(RadioStation);
+ SetRadioStation(RadioStations()[(Index+1)%RadioStations().Num()]);
+}
 void UMareAudioWorld::Initialize(FSubsystemCollectionBase& Collection)
 {
  Super::Initialize(Collection);
  FString Station;GConfig->GetString(TEXT("MareAudio"),TEXT("Radio"),Station,GGameUserSettingsIni);
- if(Station==TEXT("off") || Station==TEXT("music_bossa") || Station==TEXT("music_relax") || Station==TEXT("reggae_praia"))RadioStation=FName(Station);
+ if(RadioStations().Contains(FName(Station)))RadioStation=FName(Station);
  for(auto Pair:TMap<FName,float>{{TEXT("Master"),.85f},{TEXT("Music"),.3f},{TEXT("Effects"),.75f},{TEXT("Ambient"),.7f}}){
   float Value=Pair.Value;GConfig->GetFloat(TEXT("MareAudio"),*Pair.Key.ToString(),Value,GGameUserSettingsIni);Volumes.Add(Pair.Key,FMath::Clamp(Value,0.f,1.f));
  }
@@ -28,7 +48,7 @@ void UMareAudioWorld::Initialize(FSubsystemCollectionBase& Collection)
 float UMareAudioWorld::GetVolume(FName Bus)const{const float* Value=Volumes.Find(Bus);return Value?*Value:1.f;}
 void UMareAudioWorld::SetRadioStation(FName Station)
 {
- if(Station!=TEXT("off") && Station!=TEXT("reggae_praia") && Station!=TEXT("music_bossa") && Station!=TEXT("music_relax"))return;
+ if(!RadioStations().Contains(Station))return;
  RadioStation=Station;GConfig->SetString(TEXT("MareAudio"),TEXT("Radio"),*Station.ToString(),GGameUserSettingsIni);GConfig->Flush(false,GGameUserSettingsIni);
 }
 float UMareAudioWorld::LoopLevel(FName Name)const{UAudioComponent* Component=Name==TEXT("home_stereo")?HomeStereo.Get():Loops.FindRef(Name).Get();return IsValid(Component)?Component->VolumeMultiplier:0.f;}
@@ -51,7 +71,7 @@ void UMareAudioWorld::SetVolume(FName Bus,float Value)
  if(Bus==TEXT("Master") && MasterMix)MasterMix->SetSubmixOutputVolume(this,Value);
  if(HomeStereo && (GetVolume(TEXT("Master"))==0 || GetVolume(TEXT("Music"))==0))HomeStereo->SetVolumeMultiplier(0);
  for(auto& Voice:Voices)if(IsValid(Voice.Key))Voice.Key->SetVolumeMultiplier(GetVolume(TEXT("Master"))==0?0:Voice.Value*Gain(Voice.Key->ComponentHasTag(TEXT("Ambient"))));
- for(auto Pair:Loops)if(IsValid(Pair.Value) && (GetVolume(TEXT("Master"))==0 || ((Pair.Key==TEXT("reggae_praia") || Pair.Key==TEXT("music_bossa") || Pair.Key==TEXT("music_relax"))?GetVolume(TEXT("Music"))==0:GetVolume(TEXT("Effects"))*GetVolume(TEXT("Ambient"))==0)))Pair.Value->SetVolumeMultiplier(0);
+ for(auto Pair:Loops)if(IsValid(Pair.Value) && (GetVolume(TEXT("Master"))==0 || (IsRadioStation(Pair.Key)?GetVolume(TEXT("Music"))==0:GetVolume(TEXT("Effects"))*GetVolume(TEXT("Ambient"))==0)))Pair.Value->SetVolumeMultiplier(0);
 }
 void UMareAudioWorld::StartSoundscape(UMareSimulation* Sim)
 {
@@ -60,7 +80,9 @@ void UMareAudioWorld::StartSoundscape(UMareSimulation* Sim)
  FString Text;TArray<TSharedPtr<FJsonValue>> Catalog;
  if(FFileHelper::LoadFileToString(Text,*(FPaths::ProjectContentDir()/TEXT("Data/audio.json"))))FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Text),Catalog);
  for(auto Item:Catalog){auto Row=Item->AsObject();const FString Name=UMareSimulation::String(Row,TEXT("id"));if(auto Wave=LoadObject<USoundWave>(nullptr,*UMareSimulation::String(Row,TEXT("path"))))Sounds.Add(FName(Name),Wave);}
- for(FName Name:{TEXT("reggae_praia"),TEXT("music_bossa"),TEXT("music_relax"),TEXT("ocean_loop"),TEXT("wind_loop"),TEXT("rain_loop"),TEXT("crickets_loop"),TEXT("leaves_soft"),TEXT("underwater_loop")}){
+ TArray<FName> LoopNames=RadioStations();LoopNames.Remove(TEXT("off"));
+ LoopNames.Append({TEXT("ocean_loop"),TEXT("wind_loop"),TEXT("rain_loop"),TEXT("crickets_loop"),TEXT("leaves_soft"),TEXT("underwater_loop")});
+ for(FName Name:LoopNames){
   if(auto Wave=Sounds.FindRef(Name)){auto Component=UGameplayStatics::SpawnSound2D(this,Wave,.001f,1,0,nullptr,false,false);if(Component){Component->SetUISound(false);Loops.Add(Name,Component);}}
  }
  Attenuation=NewObject<USoundAttenuation>(this);Attenuation->Attenuation.bAttenuate=true;Attenuation->Attenuation.bSpatialize=true;
@@ -83,7 +105,7 @@ void UMareAudioWorld::UpdateLayers(float DeltaSeconds,UMareSimulation* Sim,FVect
  IndoorClock-=DeltaSeconds;if(IndoorClock<=0 && Eyes){IndoorClock=.5f;FHitResult Hit;FCollisionQueryParams Query;Query.AddIgnoredActor(Hero);bIndoors=GetWorld()->LineTraceSingleByChannel(Hit,Eyes->GetComponentLocation(),Eyes->GetComponentLocation()+FVector(0,0,350),ECC_Visibility,Query);}
  const float Beach=FMath::Clamp(1.f-(Position.Y+3200.f)/7000.f,.08f,1.f);
  for(auto Pair:Loops){const FName Name=Pair.Key;float Target=0;
-  if(Name==RadioStation && (Name==TEXT("reggae_praia") || Name==TEXT("music_bossa") || Name==TEXT("music_relax")))Target=(MasterMix?1.f:GetVolume(TEXT("Master")))*GetVolume(TEXT("Music"))*(bNight?.22f:.32f)*(bIndoors?.65f:1.f)*(bHomeStereo && HomeStereo?FMath::Clamp(FVector::Dist(Position,HomeStereo->GetComponentLocation())/800.f,.12f,1.f):1.f);
+  if(Name==RadioStation && IsRadioStation(Name))Target=(MasterMix?1.f:GetVolume(TEXT("Master")))*GetVolume(TEXT("Music"))*(bNight?.22f:.32f)*(bIndoors?.65f:1.f)*(bHomeStereo && HomeStereo?FMath::Clamp(FVector::Dist(Position,HomeStereo->GetComponentLocation())/800.f,.12f,1.f):1.f);
   if(Name==TEXT("ocean_loop"))Target=Gain(true)*Beach*(bIndoors?.1f:.4f);
   if(Name==TEXT("rain_loop"))Target=Gain(true)*(bRain?(bIndoors?.12f:.48f):0.f);
   if(Name==TEXT("wind_loop"))Target=Gain(true)*(bRain?.16f:.055f)*(bIndoors?.15f:1.f);

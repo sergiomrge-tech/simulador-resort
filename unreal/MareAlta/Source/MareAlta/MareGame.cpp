@@ -181,8 +181,7 @@ private:
     Line(FString::Printf(TEXT("Atendimento: %.0fh às %.0fh"),UMareSimulation::Number(Hours,TEXT("start"),8),UMareSimulation::Number(Hours,TEXT("end"),18)),12);
     Line(TEXT("Use a placa do balcão para abrir ou fechar."),12);}
    if(auto Audio=Owner->GetWorld()->GetSubsystem<UMareAudioWorld>()){
-    const FName Radio=Audio->GetRadioStation();const FString Name=Radio==TEXT("off")?TEXT("Desligada"):Radio==TEXT("music_bossa")?TEXT("Bossa praiana"):Radio==TEXT("music_relax")?TEXT("Brisa instrumental"):TEXT("Reggae praiano");
-    Action(TEXT("Rádio: ")+Name+TEXT(" · trocar"),[Audio,Radio](){Audio->SetRadioStation(Radio==TEXT("reggae_praia")?FName(TEXT("music_bossa")):Radio==TEXT("music_bossa")?FName(TEXT("music_relax")):Radio==TEXT("music_relax")?FName(TEXT("off")):FName(TEXT("reggae_praia")));});
+    Action(TEXT("Rádio: ")+UMareAudioWorld::RadioName(Audio->GetRadioStation())+TEXT(" · próxima"),[Audio](){Audio->NextRadioStation();});
    }
    if(!S->Carry().IsEmpty())Action(TEXT("Devolver produto"),[S](){S->ReturnCarry();});Line(TEXT("Retire os produtos prontos na geladeira e no armário do quiosque."),13);HomeSummary();
   }else if(Tab==1){Line(TEXT("Reposição imediata"),18);Stock(false);}

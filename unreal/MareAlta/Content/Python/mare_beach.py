@@ -69,7 +69,26 @@ def pie_shot(arg):
     return {'placed': name}
 
 
+def radio_probe(station):
+    """QA PIE: select a station and report the current loop levels of all stations."""
+    world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()
+    if not world:
+        raise RuntimeError('Start PIE first')
+    # World subsystems are reached through ObjectIterator filtered by outer in this engine build.
+    audio = next(a for a in unreal.ObjectIterator(unreal.MareAudioWorld) if a.get_outer() == world)
+    if station:
+        audio.set_radio_station(station)
+    names = ['reggae_praia', 'radio_reggae_roots', 'radio_calypso', 'radio_beach_pop', 'music_bossa', 'music_relax']
+    return {'station': str(audio.get_radio_station()), 'sounds': audio.loaded_sounds(), 'levels': {n: round(audio.loop_level(n), 4) for n in names}}
+
+
 def run(action, arg=''):
+    if action == 'radio':
+        return radio_probe(arg)
+    if action == 'audio':
+        import mare_audio
+        importlib.reload(mare_audio)
+        return mare_audio.build()
     if action == 'pie':
         return pie_shot(arg)
     if action == 'rebuild':

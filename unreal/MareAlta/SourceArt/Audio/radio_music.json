@@ -1,0 +1,20 @@
+{
+ "license": "CC0 (original, synthesised by tools/ue58/gen_radio_music.py)",
+ "tracks": {
+  "radio_reggae_roots": {
+   "seconds": 138.9,
+   "peak": 0.336,
+   "rms": 0.09
+  },
+  "radio_calypso": {
+   "seconds": 94.3,
+   "peak": 0.399,
+   "rms": 0.09
+  },
+  "radio_beach_pop": {
+   "seconds": 110.0,
+   "peak": 0.406,
+   "rms": 0.09
+  }
+ }
+}

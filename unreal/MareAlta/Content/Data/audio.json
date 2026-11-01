@@ -204,6 +204,24 @@
     "loop": true
   },
   {
+    "id": "radio_beach_pop",
+    "path": "/Game/Audio/radio_beach_pop.radio_beach_pop",
+    "duration": 110.0,
+    "loop": true
+  },
+  {
+    "id": "radio_calypso",
+    "path": "/Game/Audio/radio_calypso.radio_calypso",
+    "duration": 94.28571319580078,
+    "loop": true
+  },
+  {
+    "id": "radio_reggae_roots",
+    "path": "/Game/Audio/radio_reggae_roots.radio_reggae_roots",
+    "duration": 138.9473419189453,
+    "loop": true
+  },
+  {
     "id": "rain_loop",
     "path": "/Game/Audio/rain_loop.rain_loop",
     "duration": 8.5,

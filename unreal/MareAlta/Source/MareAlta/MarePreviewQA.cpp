@@ -133,7 +133,7 @@ void AMarePreviewQA::Tick(float DeltaSeconds)
    }
   }
   Check(TEXT("runtime_actor_catalog"),Count>60 && Missing==0);
-  Check(TEXT("audio_catalog"),Audio->LoadedSounds()==45);
+  Check(TEXT("audio_catalog"),Audio->LoadedSounds()==48);
   Check(TEXT("master_submix_routed"),Audio->HasMasterMix());
   if(auto Device=GetWorld()->GetAudioDevice()){UE_LOG(LogTemp,Display,TEXT("MARE_QA_AUDIO_DEVICE muted=%d primary=%f app=%f"),Device->IsAudioDeviceMuted(),Device->GetPrimaryVolume(),FApp::GetVolumeMultiplier());Device->SetDeviceMuted(false);Device->SetTransientPrimaryVolume(1.f);}
   FApp::SetVolumeMultiplier(1.f);
@@ -192,7 +192,7 @@ void AMarePreviewQA::Tick(float DeltaSeconds)
   }
   break;
  }
- case 20:Check(TEXT("radio_can_turn_off"),Audio->LoopLevel(TEXT("music_bossa"))<.001f && Audio->LoopLevel(TEXT("music_relax"))<.001f && Audio->LoopLevel(TEXT("reggae_praia"))<.001f);Audio->SetRadioStation(InitialRadio);Audio->SetVolume(TEXT("Master"),InitialMaster);Check(TEXT("audio_settings_restored"),FMath::IsNearlyEqual(Audio->GetVolume(TEXT("Master")),InitialMaster));Capture(TEXT("expansion-pool-locked"));break;
+ case 20:Check(TEXT("radio_can_turn_off"),Audio->LoopLevel(TEXT("music_bossa"))<.001f && Audio->LoopLevel(TEXT("music_relax"))<.001f && Audio->LoopLevel(TEXT("reggae_praia"))<.001f);{TSet<FName> Seen;const FName Start=Audio->GetRadioStation();for(int32 I=0;I<UMareAudioWorld::RadioStations().Num();++I){Audio->NextRadioStation();Seen.Add(Audio->GetRadioStation());}Check(TEXT("radio_cycles_all_stations"),Seen.Num()==UMareAudioWorld::RadioStations().Num() && Audio->GetRadioStation()==Start && Audio->LoadedSounds()>=48);}Audio->SetRadioStation(InitialRadio);Audio->SetVolume(TEXT("Master"),InitialMaster);Check(TEXT("audio_settings_restored"),FMath::IsNearlyEqual(Audio->GetVolume(TEXT("Master")),InitialMaster));Capture(TEXT("expansion-pool-locked"));break;
  case 21:{
   Sim->State->SetNumberField(TEXT("money"),100000);bool bPurchased=true;
   for(const FString Id:{TEXT("kiosk_tables"),TEXT("drinks"),TEXT("grill"),TEXT("bar"),TEXT("pousada"),TEXT("pool"),TEXT("passeios"),TEXT("grand_hotel")}){
