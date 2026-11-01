@@ -31,6 +31,22 @@ class MareMigrationTools(unreal.ToolsetDefinition):
 
     @toolset_registry.tool_call
     @staticmethod
+    def float_audit(action: str, arg: str='') -> str:
+        """Scan or fix props resting above their supports (editor level, PIE stopped)."""
+        import importlib,mare_float_audit
+        importlib.reload(mare_float_audit)
+        return json.dumps(mare_float_audit.run(action,arg),ensure_ascii=False,default=str)
+
+    @toolset_registry.tool_call
+    @staticmethod
+    def mountain_vegetation(action: str, arg: str='') -> str:
+        """Survey the terrain and populate the surrounding hills with CC0 trees and shrubs."""
+        import importlib,mare_mountains
+        importlib.reload(mare_mountains)
+        return json.dumps(mare_mountains.run(action,arg),ensure_ascii=False,default=str)
+
+    @toolset_registry.tool_call
+    @staticmethod
     def caribbean_coast(action: str, arg: str='') -> str:
         """Rebuild the coast sand/water materials or return comparison camera views."""
         import importlib,mare_beach

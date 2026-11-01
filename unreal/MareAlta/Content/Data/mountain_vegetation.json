@@ -1,0 +1,28 @@
+{
+ "region": [
+  -34000,
+  42000,
+  6000,
+  72000
+ ],
+ "min_z": 600,
+ "seed": 20261101,
+ "instances": {
+  "island_tree_01": 1655,
+  "island_tree_03": 1122,
+  "island_tree_02": 1705,
+  "jacaranda_tree": 610,
+  "tree_small_02": 1183,
+  "shrub_04": 1789,
+  "shrub_03": 1787,
+  "shrub_01": 2701,
+  "fern_02": 1722,
+  "shrub_02": 2622
+ },
+ "total": 16896,
+ "rejected": {
+  "miss": 23576,
+  "low": 2148,
+  "steep": 7755
+ }
+}

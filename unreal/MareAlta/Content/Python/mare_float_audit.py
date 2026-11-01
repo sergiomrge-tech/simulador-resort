@@ -1,0 +1,193 @@
+"""Global floating-prop audit: compare each prop instance's real mesh base with the surface below.
+
+scan -> D:/CodexTemp/float-audit/report.json ; fix -> lower props resting 3..120 cm above a support,
+updating both the level instances and Content/Data/world.json (so a rebuild keeps the fix)."""
+import json
+from pathlib import Path
+import unreal
+
+ROOT = Path(unreal.Paths.project_dir()).resolve()
+DATA = ROOT / 'Content/Data'
+OUT = Path('D:/CodexTemp/float-audit')
+# Things that legitimately hang, fly, float on water or are attached to people/buildings.
+SKIP = ('lamp', 'lantern', 'bulb', 'globe', 'sign', 'placa', 'flag', 'bandeir', 'bunting', 'rope', 'corda', 'net', 'rede',
+        'cloud', 'gull', 'gaivota', 'bird', 'boat', 'barco', 'ship', 'navio', 'cruise', 'whale', 'baleia', 'hair', 'chama', 'flame',
+        'fan', 'ventilador', 'shelf', 'prateleira', 'frame', 'quadro', 'curtain', 'cortina', 'window', 'janela', 'door', 'porta',
+        'roof', 'telhado', 'awning', 'toldo', 'wire', 'fio', 'neon', 'letreiro', 'text', 'clock', 'buoy', 'boia', 'kite', 'pipa',
+        'umbrella_top', 'canopy', 'ac_unit', 'antenna', 'antena', 'bracket', 'hanging', 'pendant', 'chain', 'swing', 'balanço',
+        'venezianas', 'shutter', 'balcony', 'sacada', 'gutter', 'calha', 'pier', 'cais', 'deck', 'stair', 'escada', 'step', 'degrau')
+GROUND_ACTORS = ('Maré · Ground', 'PCG', 'Mare · Vegetação', 'Hotel lobby')
+
+
+def _skip(label):
+    low = label.lower()
+    return any(s in low for s in SKIP) or any(label.startswith(g) for g in GROUND_ACTORS)
+
+
+def _bottom(mesh, t):
+    b = mesh.get_bounds()
+    pts = [t.transform_location(b.origin + unreal.Vector(dx * b.box_extent.x, dy * b.box_extent.y, dz * b.box_extent.z))
+           for dx in (-1, 1) for dy in (-1, 1) for dz in (-1, 1)]
+    lo = min(p.z for p in pts)
+    cx = sum(p.x for p in pts) / 8
+    cy = sum(p.y for p in pts) / 8
+    span = max(max(p.x for p in pts) - min(p.x for p in pts), max(p.y for p in pts) - min(p.y for p in pts))
+    return lo, cx, cy, span, max(p.z for p in pts) - lo
+
+
+def scan():
+    world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_editor_world()
+    rows = []
+    for a in unreal.get_editor_subsystem(unreal.EditorActorSubsystem).get_all_level_actors():
+        label = a.get_actor_label()
+        if not label.startswith('Maré · ') or _skip(label) or label.startswith('Maré · @'):
+            continue
+        for c in a.get_components_by_class(unreal.InstancedStaticMeshComponent):
+            mesh = c.static_mesh
+            if not mesh or not c.is_visible():
+                continue
+            for i in range(c.get_instance_count()):
+                t = c.get_instance_transform(i, True)
+                lo, cx, cy, span, height = _bottom(mesh, t)
+                if span > 600 or height > 800:          # buildings and big structures
+                    continue
+                # Supported if any of five footprint samples touches something below the mesh base.
+                gaps, support = [], None
+                b = mesh.get_bounds()
+                for fx, fy in ((0, 0), (-.6, -.6), (.6, -.6), (-.6, .6), (.6, .6)):
+                    p = t.transform_location(b.origin + unreal.Vector(fx * b.box_extent.x, fy * b.box_extent.y, 0))
+                    hit = unreal.SystemLibrary.line_trace_single(world, unreal.Vector(p.x, p.y, lo + 15), unreal.Vector(p.x, p.y, lo - 300),
+                                                                 unreal.TraceTypeQuery.TRACE_TYPE_QUERY1, True, [a], unreal.DrawDebugTrace.NONE, True)
+                    if hit:
+                        tt = hit.to_tuple()
+                        gaps.append(lo - tt[4].z)
+                        support = tt[9].get_actor_label() if tt[9] else support
+                if not gaps:
+                    continue
+                gap = min(gaps)
+                if gap > 3:
+                    rows.append({'actor': label, 'mesh': mesh.get_name(), 'index': i, 'gap_cm': round(gap, 1),
+                                 'at': [round(cx), round(cy), round(lo)], 'support': support, 'size_cm': [round(span), round(height)]})
+    rows.sort(key=lambda r: -r['gap_cm'])
+    OUT.mkdir(parents=True, exist_ok=True)
+    (OUT / 'report.json').write_text(json.dumps(rows, indent=1, ensure_ascii=False), encoding='utf-8')
+    summary = {}
+    for r in rows:
+        summary[r['actor']] = summary.get(r['actor'], 0) + 1
+    return {'floating': len(rows), 'by_actor': dict(sorted(summary.items(), key=lambda kv: -kv[1])[:40]),
+            'worst': rows[:15]}
+
+
+LOOSE = ('orange', 'lemon', 'food_lime_01', 'food_lychee_01', 'food_apple_01', 'food_pomegranate_01', 'coconut_green',
+         'food_pears_asian_01_a', 'food_pears_asian_01_b', 'food_pears_asian_01_c', 'food_pears_asian_01_d', 'food_pears_asian_01_e',
+         'cup_plastic', 'glass_juice', 'pineapple', 'shell_a', 'shell_b', 'shell_c')
+
+
+def _support_gap(world, comp, index, mesh, t, lo):
+    """Smallest gap below five footprint samples, counting other instances of the same pile."""
+    b = mesh.get_bounds()
+    best = None
+    for fx, fy in ((0, 0), (-.5, -.5), (.5, -.5), (-.5, .5), (.5, .5)):
+        p = t.transform_location(b.origin + unreal.Vector(fx * b.box_extent.x, fy * b.box_extent.y, 0))
+        hits = unreal.SystemLibrary.line_trace_multi(world, unreal.Vector(p.x, p.y, lo + 6), unreal.Vector(p.x, p.y, lo - 120),
+                                                     unreal.TraceTypeQuery.TRACE_TYPE_QUERY1, True, [], unreal.DrawDebugTrace.NONE, True) or []
+        for h in hits:
+            tt = h.to_tuple()
+            if tt[10] == comp and tt[13] == index:      # the instance itself
+                continue
+            gap = lo - tt[4].z
+            best = gap if best is None else min(best, gap)
+            break
+    return best
+
+
+def fix():
+    world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_editor_world()
+    from mare_world_builder import transform
+    data = json.loads((DATA / 'world.json').read_text(encoding='utf-8-sig'))
+    moved = []
+    for a in unreal.get_editor_subsystem(unreal.EditorActorSubsystem).get_all_level_actors():
+        label = a.get_actor_label()
+        if not label.startswith('Maré · ') or label[7:] not in LOOSE:
+            continue
+        for c in a.get_components_by_class(unreal.InstancedStaticMeshComponent):
+            mesh = c.static_mesh
+            if not mesh:
+                continue
+            for i in range(c.get_instance_count()):
+                t = c.get_instance_transform(i, True)
+                lo = _bottom(mesh, t)[0]
+                gap = _support_gap(world, c, i, mesh, t, lo)
+                if gap is None or not (2.5 < gap <= 40):
+                    continue
+                old = unreal.Vector(t.translation.x, t.translation.y, t.translation.z)
+                t.translation = unreal.Vector(old.x, old.y, old.z - gap + 0.4)
+                c.update_instance_transform(i, t, True, True, True)
+                # Keep the exported layout in sync (Godot axes, metres: UE z is Godot y).
+                for row in data['instances']:
+                    if row['name'] != label[7:]:
+                        continue
+                    rt = transform(row['transform'])
+                    if rt is not None and (rt.translation - old).length() < 1.0:
+                        row['transform']['position'][1] -= (gap - 0.4) / 100
+                        break
+                moved.append({'actor': label, 'index': i, 'lowered_cm': round(gap - 0.4, 1), 'at': [round(old.x), round(old.y), round(old.z)]})
+    (DATA / 'world.json').write_text(json.dumps(data, ensure_ascii=False, indent='\t'), encoding='utf-8')
+    unreal.get_editor_subsystem(unreal.LevelEditorSubsystem).save_current_level()
+    OUT.mkdir(parents=True, exist_ok=True)
+    (OUT / 'fixed.json').write_text(json.dumps(moved, indent=1, ensure_ascii=False), encoding='utf-8')
+    return {'moved': len(moved), 'sample': moved[:12]}
+
+
+def debug(name):
+    from mare_world_builder import transform
+    data = json.loads((DATA / 'world.json').read_text(encoding='utf-8-sig'))
+    rows = [transform(r['transform']).translation for r in data['instances'] if r['name'] == name]
+    out = []
+    for a in unreal.get_editor_subsystem(unreal.EditorActorSubsystem).get_all_level_actors():
+        if a.get_actor_label() != 'Maré · ' + name:
+            continue
+        out.append({'actor_loc': str(a.get_actor_location())})
+        for c in a.get_components_by_class(unreal.InstancedStaticMeshComponent):
+            for i in range(min(4, c.get_instance_count())):
+                p = c.get_instance_transform(i, True).translation
+                out.append({'i': i, 'pivot': [p.x, p.y, p.z], 'nearest_row_cm': min((r - p).length() for r in rows)})
+    return out
+
+
+def sync():
+    """Copy current instance heights of loose props back to world.json (same name, same X/Y)."""
+    from mare_world_builder import transform
+    data = json.loads((DATA / 'world.json').read_text(encoding='utf-8-sig'))
+    updated = 0
+    for a in unreal.get_editor_subsystem(unreal.EditorActorSubsystem).get_all_level_actors():
+        label = a.get_actor_label()
+        if not label.startswith('Maré · ') or label[7:] not in LOOSE:
+            continue
+        rows = [r for r in data['instances'] if r['name'] == label[7:]]
+        for c in a.get_components_by_class(unreal.InstancedStaticMeshComponent):
+            for i in range(c.get_instance_count()):
+                p = c.get_instance_transform(i, True).translation
+                for r in rows:
+                    rt = transform(r['transform'])
+                    if rt is None:
+                        continue
+                    q = rt.translation
+                    if abs(q.x - p.x) < 0.5 and abs(q.y - p.y) < 0.5 and 0.5 < abs(q.z - p.z) < 41:
+                        r['transform']['position'][1] = p.z / 100
+                        updated += 1
+                        break
+    (DATA / 'world.json').write_text(json.dumps(data, ensure_ascii=False, indent='	'), encoding='utf-8')
+    return {'rows_updated': updated}
+
+
+def run(action, arg=''):
+    if action == 'sync':
+        return sync()
+    if action == 'debug':
+        return debug(arg)
+    if action == 'scan':
+        return scan()
+    if action == 'fix':
+        return fix()
+    raise ValueError(action)

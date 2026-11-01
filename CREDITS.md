@@ -392,3 +392,18 @@ Móveis e plantas **Poly Haven CC0** baixados por `tools/ue58/fetch_polyhaven.py
 - Standing Picture Frame 01 (`standing_picture_frame_01`), James Ray Cock, CC0 — https://polyhaven.com/a/standing_picture_frame_01
 
 Casca do térreo (núcleo removido, entrada, paredes, forro, colunas, balcão e elevadores) é adaptação autoral CC0 do modelo `hotel_tower` do projeto, gerada por `tools/ue58/hotel_lobby_shell.py`; superfície do oceano graduada autoral por `tools/ue58/gen_ocean.py`.
+
+### Mata dos morros ao redor (UE5.8) — 01/11/2026
+
+16896 instâncias Nanite sem colisão geradas por `Content/Python/mare_mountains.py` (região, seed e contagem em `Content/Data/mountain_vegetation.json`), modelos **Poly Haven CC0** em `/Game/Nature/Mountain/`:
+
+- Fern 02 (`fern_02`), Rob Tuytel, Rico Cilliers, CC0 — https://polyhaven.com/a/fern_02
+- Island Tree 01 (`island_tree_01`), Rob Tuytel, Rico Cilliers, CC0 — https://polyhaven.com/a/island_tree_01
+- Island Tree 02 (`island_tree_02`), Rob Tuytel, Rico Cilliers, CC0 — https://polyhaven.com/a/island_tree_02
+- Island Tree 03 (`island_tree_03`), Rob Tuytel, Rico Cilliers, CC0 — https://polyhaven.com/a/island_tree_03
+- Jacaranda Tree (`jacaranda_tree`), Rob Tuytel, Rico Cilliers, CC0 — https://polyhaven.com/a/jacaranda_tree
+- Shrub 01 (`shrub_01`), Rico Cilliers, CC0 — https://polyhaven.com/a/shrub_01
+- Shrub 02 (`shrub_02`), Rico Cilliers, CC0 — https://polyhaven.com/a/shrub_02
+- Shrub 03 (`shrub_03`), Rico Cilliers, CC0 — https://polyhaven.com/a/shrub_03
+- Shrub 04 (`shrub_04`), Rico Cilliers, CC0 — https://polyhaven.com/a/shrub_04
+- Tree Small 02 (`tree_small_02`), Rico Cilliers, CC0 — https://polyhaven.com/a/tree_small_02
