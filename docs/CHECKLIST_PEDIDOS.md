@@ -29,7 +29,7 @@ Legenda: [x] feito e validado · [~] em andamento/parcial · [ ] pendente.
 - [x] "Corrigiu os vidros opacos?": sim, na leva da auditoria (janelas das casas com vidro refletivo e luz à noite; demais vidros transparentes). Conferido de novo nas capturas da vila.
 - [x] "Os braços ao nadar estão muito estranhos e feios" (01/11): braçada de peito em primeira pessoa (mãos se encontram, estendem, abrem e recolhem, no terço inferior da tela); parado na água, sculling suave. Regressão 100/100. Observação: o modelo da mão é o do personagem e continua simples.
 - [ ] "Após terminar os ajustes gráficos e visuais vamos trabalhar no gameplay" (01/11): próxima fase depois dos coqueiros.
-- [ ] "Os coqueiros não combinam com o ambiente, substitua por assets mais realistas, procure na web" (01/11): pesquisado — não há coqueiro realista com licença livre baixável sem conta (Poly Haven não tem; Fab/Megascans exigem conta Epic). Aguardando escolha: Fab pela conta do usuário ou coqueiro feito aqui com texturas fotográficas CC0 (`palm_tree_bark`).
+- [ ] "Os coqueiros não combinam com o ambiente, substitua por assets mais realistas, procure na web" (01/11): pesquisado — não há coqueiro realista com licença livre baixável sem conta (Poly Haven não tem; Fab/Megascans exigem conta Epic). Usuário escolheu o Fab (01/11): ele adiciona o pacote na conta Epic e eu importo e troco os 171 coqueiros.
 - [x] Manter este checklist sempre que o usuário pedir algo (regra salva na memória).
 
 ## Regras permanentes já pedidas
