@@ -211,7 +211,69 @@ def reimport_props(names):
     return out
 
 
+BROKEN = ('Maré · Copas', 'Maré · CopasCrista')   # Godot multimesh crowns exported without transforms
+
+
+def hide_broken():
+    """The 'Copas' crowns were exported with every instance at the world origin, which is the
+    centre of the pousada pool: a dark bush inside the water. Hide them (reversible, no collision)."""
+    out = []
+    for a in unreal.get_editor_subsystem(unreal.EditorActorSubsystem).get_all_level_actors():
+        if a.get_actor_label() in BROKEN:
+            a.set_actor_hidden_in_game(True)
+            a.set_is_temporarily_hidden_in_editor(True)
+            a.set_actor_enable_collision(False)
+            for c in a.get_components_by_class(unreal.PrimitiveComponent):
+                c.set_visibility(False, True)
+            a.tags = list(a.tags) + [unreal.Name('MareBrokenExportHidden')]
+            out.append(a.get_actor_label())
+    unreal.get_editor_subsystem(unreal.LevelEditorSubsystem).save_current_level()
+    return out
+
+
+def remove_stacked():
+    """Godot MultiMesh groups exported without per-instance transforms ended up stacked at the
+    world origin (centre of the pousada pool). Remove small props pinned exactly at (0,0,0) from
+    the level and from world.json; the removed rows are kept in stacked_origin_removed.json."""
+    from mare_world_builder import transform
+    removed = {}
+    for a in unreal.get_editor_subsystem(unreal.EditorActorSubsystem).get_all_level_actors():
+        if not a.get_actor_label().startswith('Maré · '):
+            continue
+        for c in a.get_components_by_class(unreal.InstancedStaticMeshComponent):
+            m = c.static_mesh
+            if not m:
+                continue
+            e = m.get_bounds().box_extent
+            if max(e.x, e.y, e.z) * 2 > 400:
+                continue
+            doomed = [i for i in range(c.get_instance_count()) if c.get_instance_transform(i, True).translation.length() < 1.0]
+            if doomed:
+                c.remove_instances(doomed)
+                removed[a.get_actor_label() + ' / ' + m.get_name()] = len(doomed)
+    data = json.loads((DATA / 'world.json').read_text(encoding='utf-8-sig'))
+    mapping = json.loads((DATA / 'imported_meshes.json').read_text(encoding='utf-8-sig'))
+    aliases = json.loads((DATA / 'model_aliases.json').read_text(encoding='utf-8-sig'))
+    keep, dropped = [], []
+    for r in data['instances']:
+        key = aliases.get(f"World_{r['mesh_index']:04d}", f"World_{r['mesh_index']:04d}")
+        small = False
+        if all(abs(v) < 1e-6 for v in r['transform']['position']) and key in mapping:
+            mesh = unreal.load_asset(mapping[key])
+            small = mesh is not None and max(mesh.get_bounds().box_extent.x, mesh.get_bounds().box_extent.y, mesh.get_bounds().box_extent.z) * 2 <= 400
+        (dropped if small else keep).append(r)
+    data['instances'] = keep
+    (DATA / 'world.json').write_text(json.dumps(data, ensure_ascii=False, indent='	'), encoding='utf-8')
+    (DATA / 'stacked_origin_removed.json').write_text(json.dumps({'reason': 'Godot MultiMesh exported without per-instance transforms; all stacked at origin', 'rows': dropped}, ensure_ascii=False, indent=1), encoding='utf-8')
+    unreal.get_editor_subsystem(unreal.LevelEditorSubsystem).save_current_level()
+    return {'level_instances_removed': sum(removed.values()), 'groups': removed, 'world_rows_removed': len(dropped)}
+
+
 def run(action, arg=''):
+    if action == 'stacked':
+        return remove_stacked()
+    if action == 'hidebroken':
+        return hide_broken()
     if action == 'reimport':
         return reimport_props(arg.split())
     if action == 'near':

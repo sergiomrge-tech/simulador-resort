@@ -16,7 +16,16 @@ Legenda: [x] corrigido e conferido em captura · [~] parcial · [ ] pendente.
   piscina, ondulação leve) só nos dois planos de água. Conferido no PIE.
 - [x] **Espuma do mar em manchas espalhadas**: agora faixas longas de arrebentação paralelas à praia.
 
+- [x] **Arbusto vermelho e entulho dentro da piscina da pousada**: 25 grupos MultiMesh da Godot
+  (grama, conchas, seixos, flores, arbustos, copas) foram exportados sem a transformação por
+  instância e ficaram empilhados na origem do mundo, que é o centro da piscina. Removidas 5.729
+  instâncias do nível e do `world.json` (lista guardada em `Content/Data/stacked_origin_removed.json`).
+  Terreno e morros, com pivô legítimo na origem, foram preservados.
+
 ## Pendente (próximas levas, em ordem)
+
+- [ ] Reconstruir os grupos perdidos (grama, conchas, seixos, flores) nas posições corretas,
+  quando houver o export Godot com transformações por instância ou por PCG equivalente.
 
 - [x] Piscinas: água clara e transparente (turquesa), conferido no PIE.
 - [x] Janelas acesas à noite: `MPC_MareTime.Night` escrito pelo `UMareVisualWorld`; ~55% das janelas acendem (aleatório por instância). Conferido às 22h no PIE.
