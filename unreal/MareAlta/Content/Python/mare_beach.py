@@ -82,7 +82,56 @@ def radio_probe(station):
     return {'station': str(audio.get_radio_station()), 'sounds': audio.loaded_sounds(), 'levels': {n: round(audio.loop_level(n), 4) for n in names}}
 
 
+POOL_WATER = ('World_0086', 'World_2401')   # pousada pool, Grand Hotel pool (flat water planes)
+
+
+def pool_water():
+    import mare_materials
+    importlib.reload(mare_materials)
+    mat = mare_materials.build_pool_water()
+    changed = []
+    for a in unreal.get_editor_subsystem(unreal.EditorActorSubsystem).get_all_level_actors():
+        for c in a.get_components_by_class(unreal.InstancedStaticMeshComponent):
+            if c.static_mesh and c.static_mesh.get_name() in POOL_WATER:
+                c.set_material(0, mat)
+                c.set_editor_property('disallow_nanite', True)
+                c.set_editor_property('cast_shadow', False)
+                changed.append([a.get_actor_label(), c.static_mesh.get_name(), c.get_instance_count()])
+    unreal.get_editor_subsystem(unreal.LevelEditorSubsystem).save_current_level()
+    return {'material': mat.get_path_name(), 'components': changed}
+
+
+def window_glass():
+    """All building windows: the exported glass slot (MA_a357...) imported milky/opaque; use the
+    neutral clear glass on every component that carries it (village, shops, hotel, kiosk)."""
+    import mare_materials
+    importlib.reload(mare_materials)
+    glass = unreal.load_asset('/Game/World/Materials/M_ClearWindowGlass')
+    pane = mare_materials.build_window_pane()
+    facade = ('World_0688', 'World_0683')   # village 'janela' and 'batente' panes flush on walls
+    changed = 0
+    meshes = set()
+    for a in unreal.get_editor_subsystem(unreal.EditorActorSubsystem).get_all_level_actors():
+        for c in a.get_components_by_class(unreal.StaticMeshComponent):
+            if not c.static_mesh:
+                continue
+            for j, slot in enumerate(c.static_mesh.static_materials):
+                if slot.material_interface and 'a3573534a1ac' in slot.material_interface.get_name():
+                    flush = c.static_mesh.get_name() in facade
+                    c.set_material(j, pane if flush else glass)
+                    if isinstance(c, unreal.InstancedStaticMeshComponent) and not flush:
+                        c.set_editor_property('disallow_nanite', True)
+                    changed += 1
+                    meshes.add(c.static_mesh.get_name())
+    unreal.get_editor_subsystem(unreal.LevelEditorSubsystem).save_current_level()
+    return {'slots': changed, 'meshes': len(meshes)}
+
+
 def run(action, arg=''):
+    if action == 'windows':
+        return window_glass()
+    if action == 'pool':
+        return pool_water()
     if action == 'radio':
         return radio_probe(arg)
     if action == 'audio':

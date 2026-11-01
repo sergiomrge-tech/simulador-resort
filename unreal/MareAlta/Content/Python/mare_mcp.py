@@ -31,6 +31,14 @@ class MareMigrationTools(unreal.ToolsetDefinition):
 
     @toolset_registry.tool_call
     @staticmethod
+    def game_tour(action: str='views', arg: str='') -> str:
+        """Camera views covering every region, business and landmark for visual audits."""
+        import importlib,mare_tour
+        importlib.reload(mare_tour)
+        return json.dumps(mare_tour.run(action,arg),ensure_ascii=False,default=str)
+
+    @toolset_registry.tool_call
+    @staticmethod
     def float_audit(action: str, arg: str='') -> str:
         """Scan or fix props resting above their supports (editor level, PIE stopped)."""
         import importlib,mare_float_audit

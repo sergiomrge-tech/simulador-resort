@@ -23,7 +23,7 @@ Legenda: [x] feito e validado · [~] em andamento/parcial · [ ] pendente.
 - [x] Rádio: 3 novas músicas originais (Reggae Roots, Calipso Caribe, Praia Pop/ukulele), 6 estações + desligado, nome no celular; testado no PIE.
 - [x] Andar pela vila, principalmente quiosque e hotel: regressão 99/99 no PIE, atendimento real com e sem atendente, hotel acessível; adicionado dispensar atendente. (`ue58/CAMINHADA_2026-11-01.md`)
 - [x] HUD/celular mais comercial, amigável e fácil: 3 propostas apresentadas (`ue58/hud-propostas/propostas.html`); usuário escolheu **B · Maré Tropical com o celular em abas laterais como na C** — implementado (faixa de madeira, comandas, bilhete de missões, placa de interação, avisos; celular/estações com abas laterais). Captura: `ue58/graphics-reference/hud-b-20261101`.
-- [ ] Andar por todo o jogo, montar checklist do que precisa ser corrigido e corrigir (ex.: janelas opacas de todas as construções). Lista detalhada em `ue58/AUDITORIA_GERAL.md`.
+- [~] Andar por todo o jogo, montar checklist do que precisa ser corrigido e corrigir (1ª leva feita: janelas, piscinas, espuma) (ex.: janelas opacas de todas as construções). Lista detalhada em `ue58/AUDITORIA_GERAL.md`.
 - [x] Manter este checklist sempre que o usuário pedir algo (regra salva na memória).
 
 ## Regras permanentes já pedidas
