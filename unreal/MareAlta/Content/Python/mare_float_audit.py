@@ -409,6 +409,20 @@ def run(action, arg=''):
                 out.append([name, j, kind])
             unreal.EditorAssetLibrary.save_loaded_asset(mesh, False)
         return out
+    if action == 'coconut':
+        import mare_materials, importlib
+        importlib.reload(mare_materials)
+        mats = mare_materials.build_coconut()
+        mapping = json.loads((DATA / 'imported_meshes.json').read_text(encoding='utf-8-sig'))
+        out = []
+        for name in arg.split():
+            mesh = unreal.load_asset(mapping[name])
+            for j, slot in enumerate(mesh.static_materials):
+                kind = 'husk' if 'husk' in str(slot.material_slot_name).lower() else 'fiber'
+                mesh.set_material(j, mats[kind])
+                out.append([name, j, kind])
+            unreal.EditorAssetLibrary.save_loaded_asset(mesh, False)
+        return out
     if action == 'mesh_materials':
         out = []
         for slot in unreal.load_asset(arg).static_materials:

@@ -31,7 +31,7 @@ Legenda: [x] feito e validado · [~] em andamento/parcial · [ ] pendente.
 - [ ] "Após terminar os ajustes gráficos e visuais vamos trabalhar no gameplay" (01/11): próxima fase depois dos coqueiros.
 - [x] "Os coqueiros não combinam com o ambiente, substitua por assets mais realistas, procure na web" (01/11): Coconut Tree do Fab (Darmawan Pujisetyadi, CC BY 4.0), baixado pelo Chrome logado do usuário para `D:/Assets/Fab`, aplicado nos 171 coqueiros mantendo posições ("Bem melhor").
 - [x] "Troque essas árvores também por assets mais realistas" (01/11): as 16 amendoeiras facetadas viraram o HighPoly Tree Model do Fab (Next Spring, CC BY 4.0).
-- [ ] "Substitua os cocos do jogo por esses da foto" (01/11): Coconut da Quixel Megascans — o grátis é só para Fortnite (UEFN); licença Personal R$ 10,80 aguarda o "sim" do usuário.
+- [x] "Substitua os cocos do jogo por esses da foto" + "Procure no Fab que tem grátis" (01/11): Megascans só é grátis para Fortnite (Personal R$ 10,80); usado o Coconut grátis de Rabeya Akter (Fab Standard License) com casca CC0 palm_bark nos 26 cocos soltos.
 - [x] Manter este checklist sempre que o usuário pedir algo (regra salva na memória).
 
 ## Regras permanentes já pedidas

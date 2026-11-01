@@ -258,3 +258,38 @@ def build_hp_tree():
         if errors: raise RuntimeError(str(errors))
         unreal.EditorAssetLibrary.save_loaded_asset(m)
     return {'leaf': leaf, 'trunk': bark}
+
+
+def build_coconut():
+    """Dry coconut (Fab, Rabeya Akter): husk with the CC0 Poly Haven palm_bark maps, fibre strands."""
+    folder = '/Game/Nature/Coconut'
+    diff = _model_texture('coconut_husk_diff.jpg', folder)
+    nor = _model_texture('coconut_husk_nor_gl.jpg', folder, True)
+    nor.set_editor_property('flip_green_channel', True)
+    rough = _model_texture('coconut_husk_rough.jpg', folder)
+    rough.set_editor_property('srgb', False)
+    unreal.EditorAssetLibrary.save_loaded_asset(nor); unreal.EditorAssetLibrary.save_loaded_asset(rough)
+    husk = material('M_CoconutHusk_PBR')
+    fibre = material('M_CoconutFiber_PBR')
+    fibre.set_editor_property('two_sided', True)
+    for m in (husk, fibre):
+        m.set_editor_property('used_with_nanite', True)
+        m.set_editor_property('used_with_instanced_static_meshes', True)
+    uv = custom(husk, 'return UV * 2.0;', unreal.CustomMaterialOutputType.CMOT_FLOAT2, {'UV': expression(husk, unreal.MaterialExpressionTextureCoordinate)})
+    nodes = {}
+    for key, tex, kind in (('c', diff, unreal.MaterialSamplerType.SAMPLERTYPE_COLOR), ('n', nor, unreal.MaterialSamplerType.SAMPLERTYPE_NORMAL),
+                           ('r', rough, unreal.MaterialSamplerType.SAMPLERTYPE_LINEAR_COLOR)):
+        nodes[key] = expression(husk, unreal.MaterialExpressionTextureSample, texture=tex, sampler_type=kind)
+        connect(uv, '', nodes[key], 'UVs')
+    # Palm bark is grey-brown; a dry husk is warmer and darker.
+    color = custom(husk, 'float l=dot(Base.rgb,float3(.2126,.7152,.0722)); return float3(.50,.27,.11)*clamp(l*2.3,.45,1.45);', unreal.CustomMaterialOutputType.CMOT_FLOAT3, {'Base': nodes['c']})
+    MEL.connect_material_property(color, '', unreal.MaterialProperty.MP_BASE_COLOR)
+    MEL.connect_material_property(nodes['n'], 'RGB', unreal.MaterialProperty.MP_NORMAL)
+    MEL.connect_material_property(nodes['r'], 'R', unreal.MaterialProperty.MP_ROUGHNESS)
+    MEL.connect_material_property(expression(fibre, unreal.MaterialExpressionConstant3Vector, constant=unreal.LinearColor(.22, .13, .06, 1)), '', unreal.MaterialProperty.MP_BASE_COLOR)
+    MEL.connect_material_property(expression(fibre, unreal.MaterialExpressionConstant, r=.9), '', unreal.MaterialProperty.MP_ROUGHNESS)
+    for m in (husk, fibre):
+        errors = list(MEL.recompile_material(m))
+        if errors: raise RuntimeError(str(errors))
+        unreal.EditorAssetLibrary.save_loaded_asset(m)
+    return {'husk': husk, 'fiber': fibre}

@@ -426,6 +426,10 @@ Os 171 coqueiros (variações `World_0507`–`World_0510`) usam **Coconut Tree**
 
 As 16 amendoeiras facetadas (`World_0504`, `World_0505`, `World_1206`) usam **HighPoly Tree Model**, de Next Spring, licença **Creative Commons Attribution 4.0 (CC BY 4.0)** — https://www.fab.com/listings/2f1f43fe-fd59-42ff-967d-c8eb1a0785e7. Adaptação: altura 1,35× a original, giro por variação (`tools/ue58/fab_trees.py`, materiais `M_HPTreeLeaf_PBR`/`M_HPTreeTrunk_PBR`). Original em `D:/Assets/Fab/highpoly_tree`.
 
+### Cocos secos (UE5.8) — 01/11/2026
+
+Os 26 cocos soltos (`World_0326`, `World_1414`: pilhas na praia, prateleira do quiosque, carrinho) usam a geometria de **Coconut**, de Rabeya Akter, **Fab Standard License** — https://www.fab.com/listings/445ef60f-f704-4a44-8bb7-c903944680a0 (só a malha de casca e fibras; nenhuma imagem embutida no .blend é usada). Casca texturizada com **Palm Bark**, de Charlotte Baglioni, Poly Haven, **CC0** — https://polyhaven.com/a/palm_bark (`tools/ue58/fab_coconut.py`, `M_CoconutHusk_PBR`/`M_CoconutFiber_PBR`). Coco aberto e coco gelado (produto) continuam verdes.
+
 ### Rádio praiano — 01/11/2026
 
 Reggae Roots, Calipso Caribe e Praia Pop (ukulele): composições e síntese originais deste projeto, dedicadas a CC0, geradas por `tools/ue58/gen_radio_music.py` (cordas Karplus-Strong, steel pan modal, percussão sintetizada; sem vozes nem samples de terceiros). WAVs em `unreal/MareAlta/SourceArt/Audio/radio_*.wav`.
