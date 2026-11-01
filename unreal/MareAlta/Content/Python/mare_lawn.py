@@ -34,7 +34,7 @@ def probe(arg):
     return out
 
 
-REGION = (-16000, 16500, -1000, 15500)  # x0, x1, y0, y1 (cm): resort, village, lots and the foothills
+REGION = (-20000, 22500, -1000, 15500)  # x0, x1, y0, y1 (cm): resort, village, lots and the foothills
 MAX_Z = 1500                              # up into the lower edge of the hill forest (trees start at 600)
 CENTRE, CORE = (3000, 3000), 9000         # outside this radius grass clumps are a bit larger
 # slug, weight, scale range (real-size understorey; mountain_vegetation uses 2-3x for the far hills)
@@ -93,6 +93,7 @@ def populate(seed=20261102):
     blocks = [r for r in manifest['blocks'] if r[2] * r[3] < 600]
     # Village ground plus the tall hill tiles around it (same selection as mare_mountains.populate).
     terrain = {a.get_actor_label() for a in every if a.get_actor_label() == 'Maré · Ground' or
+               a.get_actor_label().startswith('Maré · Preenchimento costeiro') or
                (a.get_actor_label().startswith('Maré · @MeshInstance3D') and a.get_actor_bounds(False)[1].z > 1500)}
     # Pedestrian routes (Godot x,z in m) stay free of shrubs: segments as UE cm.
     routes = [((a[0] * 100, a[2] * 100), (b[0] * 100, b[2] * 100)) for path in manifest['paths'] for a, b in zip(path, path[1:])]

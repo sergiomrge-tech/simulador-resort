@@ -33,6 +33,10 @@ Legenda: [x] feito e validado · [~] em andamento/parcial · [ ] pendente.
 - [x] "Troque essas árvores também por assets mais realistas" (01/11): as 16 amendoeiras facetadas viraram o HighPoly Tree Model do Fab (Next Spring, CC BY 4.0).
 - [x] "Substitua os cocos do jogo por esses da foto" + "Procure no Fab que tem grátis" (01/11): Megascans só é grátis para Fortnite (Personal R$ 10,80); usado o Coconut grátis de Rabeya Akter (Fab Standard License) com casca CC0 palm_bark nos 26 cocos soltos.
 - [x] "Nenhum coco fica em pé assim por causa da gravidade" (01/11): cocos deitados de lado (eixo comprido na horizontal), giro diferente por variação. "Os prints mostram em pé": o modelo do Fab era quase uma bola; agora é oval (1,28:1) e achatado onde apoia, afundado 1,5 cm na areia, e o 5º coco de cada pilha encaixa no vão entre os quatro.
+- [x] "Veja o que precisa de refinamento visual" + "Corrigir tudo" (01/11): tour de 38 câmeras. Corrigido: vãos azuis entre a vila e os morros (o plano do oceano aparecia; terreno de preenchimento `tools/ue58/coast_fill.py`), quinas retas de areia no mar (`tools/ue58/round_beach.py`), árvores estilizadas dos morros (island_tree → HighPoly Tree do Fab).
+- [x] "Arredonde os cantos para não ficar quadrado, corrigir dos 2 lados da praia" (01/11): praia curva nas duas pontas, sem bancos de areia.
+- [x] "Corrigir, precisa ser arredondados e suaves" (01/11): 70 blocos de morro suavizados (subdivisão com bordas compartilhadas, `tools/ue58/smooth_hills.py`) e textura CC0 aerial_grass_rock em projeção tri-planar.
+- [x] "Coloque rochas nos morros também, use assets do Poly Haven" (01/11): ~10 mil rochas CC0 (rock_face_01/02, coast_rocks_01/02/03/05) em grupos, mais densas nas encostas íngremes.
 - [x] Manter este checklist sempre que o usuário pedir algo (regra salva na memória).
 
 ## Regras permanentes já pedidas

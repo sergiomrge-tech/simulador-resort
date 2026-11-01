@@ -409,6 +409,120 @@ def run(action, arg=''):
                 out.append([name, j, kind])
             unreal.EditorAssetLibrary.save_loaded_asset(mesh, False)
         return out
+    if action == 'hillmeshes':
+        mapping = json.loads((DATA / 'imported_meshes.json').read_text(encoding='utf-8-sig'))
+        inverse = {v.split('.')[0]: k for k, v in mapping.items()}
+        out = {}
+        for a in unreal.get_editor_subsystem(unreal.EditorActorSubsystem).get_all_level_actors():
+            l = a.get_actor_label()
+            if l.startswith('Maré · @MeshInstance3D@'):
+                try:
+                    n = int(l.rsplit('@', 1)[1])
+                except ValueError:
+                    continue
+                if 1869 <= n <= 1938:
+                    for c in a.get_components_by_class(unreal.StaticMeshComponent):
+                        if c.static_mesh:
+                            out[l] = [inverse.get(c.static_mesh.get_path_name().split('.')[0]), c.static_mesh.get_num_triangles(0)]
+        return out
+    if action == 'hillmat':
+        # Godot backdrop hill tiles (labels @MeshInstance3D@1869..1938): textured terrain material.
+        import mare_materials, importlib
+        importlib.reload(mare_materials)
+        mat = mare_materials.build_hill_ground()
+        out = []
+        for a in unreal.get_editor_subsystem(unreal.EditorActorSubsystem).get_all_level_actors():
+            l = a.get_actor_label()
+            if not l.startswith('Maré · @MeshInstance3D@'):
+                continue
+            try:
+                n = int(l.rsplit('@', 1)[1])
+            except ValueError:
+                continue
+            if not 1869 <= n <= 1938:
+                continue
+            for c in a.get_components_by_class(unreal.StaticMeshComponent):
+                if c.static_mesh:
+                    for j in range(len(c.static_mesh.static_materials)):
+                        c.set_material(j, mat)
+                    out.append(l)
+        unreal.get_editor_subsystem(unreal.LevelEditorSubsystem).save_current_level()
+        return {'tiles': len(out)}
+    if action == 'coastfill':
+        # tools/ue58/coast_fill.py meshes: ground between the resort tile and the hills.
+        import mare_hotel_lobby
+        actors = unreal.get_editor_subsystem(unreal.EditorActorSubsystem)
+        for a in actors.get_all_level_actors():
+            if a.get_actor_label().startswith('Maré · Preenchimento costeiro'):
+                actors.destroy_actor(a)
+        ground_mat = unreal.load_asset('/Game/World/Materials/M_CoastGround_PBR')
+        out = []
+        for side in ('W', 'E'):
+            name = 'CoastFill_' + side
+            mesh = mare_hotel_lobby._import(ROOT / 'SourceArt/Models' / (name + '.gltf'), '/Game/World/Terrain/' + name, name, True)
+            mare_hotel_lobby._complex_collision(mesh)
+            mesh.set_material(0, ground_mat)
+            unreal.EditorAssetLibrary.save_loaded_asset(mesh, False)
+            actor = actors.spawn_actor_from_class(unreal.StaticMeshActor, unreal.Vector())
+            actor.set_actor_label('Maré · Preenchimento costeiro ' + side)
+            actor.tags = [unreal.Name('MareGenerated'), unreal.Name('MareCoastFill')]
+            actor.static_mesh_component.set_static_mesh(mesh)
+            actor.static_mesh_component.set_mobility(unreal.ComponentMobility.STATIC)
+            o, e = actor.get_actor_bounds(False)
+            out.append({'mesh': name, 'min': [round(o.x - e.x), round(o.y - e.y), round(o.z - e.z)], 'max': [round(o.x + e.x), round(o.y + e.y), round(o.z + e.z)]})
+        unreal.get_editor_subsystem(unreal.LevelEditorSubsystem).save_current_level()
+        return out
+    if action == 'grid':
+        # 'x0,x1,y0,y1,step' -> rows of [x, y, z, label] from downward traces (no actor ignored).
+        x0, x1, y0, y1, step = [int(float(v)) for v in arg.split(',')]
+        world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_editor_world()
+        out = []
+        for x in range(x0, x1 + 1, step):
+            for y in range(y0, y1 + 1, step):
+                hit = unreal.SystemLibrary.line_trace_single(world, unreal.Vector(x, y, 40000), unreal.Vector(x, y, -3000), unreal.TraceTypeQuery.TRACE_TYPE_QUERY1, True, [], unreal.DrawDebugTrace.NONE, True)
+                if hit:
+                    t = hit.to_tuple()
+                    out.append([x, y, round(t[4].z), t[9].get_actor_label() if t[9] else ''])
+                else:
+                    out.append([x, y, None, ''])
+        Path('D:/CodexTemp/terrain').mkdir(parents=True, exist_ok=True)
+        Path('D:/CodexTemp/terrain/grid_%s.json' % arg.replace(',', '_')).write_text(json.dumps(out), encoding='utf-8')
+        return {'samples': len(out)}
+    if action == 'hills':
+        out = []
+        for a in unreal.get_editor_subsystem(unreal.EditorActorSubsystem).get_all_level_actors():
+            l = a.get_actor_label()
+            if l == 'Maré · Ground' or l.startswith('Maré · @MeshInstance3D') or 'Oceano' in l or 'Ocean' in l:
+                o, e = a.get_actor_bounds(False)
+                if l == 'Maré · Ground' or 'Ocean' in l or 'Oceano' in l or e.z > 1500 or (e.x > 3000 and e.y > 3000):
+                    out.append([l, round(o.x - e.x), round(o.x + e.x), round(o.y - e.y), round(o.y + e.y), round(o.z - e.z), round(o.z + e.z)])
+        return out
+    if action == 'tall':
+        out = {}
+        for a in unreal.get_editor_subsystem(unreal.EditorActorSubsystem).get_all_level_actors():
+            for c in a.get_components_by_class(unreal.StaticMeshComponent):
+                m = c.static_mesh
+                if not m:
+                    continue
+                e = m.get_bounds().box_extent
+                if e.z * 2 < 300 or min(e.x, e.y) * 2 < 200 or max(e.x, e.y) * 2 > 3000:
+                    continue
+                n = c.get_instance_count() if isinstance(c, unreal.InstancedStaticMeshComponent) else 1
+                k = a.get_actor_label() + ' | ' + m.get_name()
+                mats = sorted({s.material_interface.get_name() for s in m.static_materials if s.material_interface})
+                out[k] = {'n': out.get(k, {}).get('n', 0) + n, 'size': [round(e.x * 2), round(e.y * 2), round(e.z * 2)], 'tris': m.get_num_triangles(0), 'mats': mats[:4]}
+        return out
+    if action == 'trace':
+        # What does a ray from a camera point toward a target hit first? 'x,y,z;tx,ty,tz'
+        (a1, b1) = [[float(v) for v in part.split(',')] for part in arg.split(';')]
+        world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_editor_world()
+        hit = unreal.SystemLibrary.line_trace_single(world, unreal.Vector(*a1), unreal.Vector(*b1), unreal.TraceTypeQuery.TRACE_TYPE_QUERY1, True, [], unreal.DrawDebugTrace.NONE, True)
+        if not hit:
+            return None
+        t = hit.to_tuple()
+        comp = t[10]
+        mesh = comp.static_mesh.get_name() if hasattr(comp, 'static_mesh') and comp.static_mesh else None
+        return {'actor': t[9].get_actor_label() if t[9] else None, 'component': comp.get_name() if comp else None, 'class': comp.get_class().get_name() if comp else None, 'mesh': mesh, 'at': [round(v) for v in (t[4].x, t[4].y, t[4].z)]}
     if action == 'coconut_piles':
         # The dry coconuts lie on their side (15 cm tall): the fifth coconut of each Godot pile sat
         # 17 cm up and now floats. Rest it in the hollow between the four below.

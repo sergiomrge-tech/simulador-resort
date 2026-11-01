@@ -430,6 +430,10 @@ As 16 amendoeiras facetadas (`World_0504`, `World_0505`, `World_1206`) usam **Hi
 
 Os 26 cocos soltos (`World_0326`, `World_1414`: pilhas na praia, prateleira do quiosque, carrinho) usam a geometria de **Coconut**, de Rabeya Akter, **Fab Standard License** — https://www.fab.com/listings/445ef60f-f704-4a44-8bb7-c903944680a0 (só a malha de casca e fibras; nenhuma imagem embutida no .blend é usada). Casca texturizada com **Palm Bark**, de Charlotte Baglioni, Poly Haven, **CC0** — https://polyhaven.com/a/palm_bark (`tools/ue58/fab_coconut.py`, `M_CoconutHusk_PBR`/`M_CoconutFiber_PBR`). Coco aberto e coco gelado (produto) continuam verdes.
 
+### Morros, rochas e enseadas (UE5.8) — 01/11/2026
+
+Textura dos morros: **Aerial Grass Rock**, de Rob Tuytel, Poly Haven, **CC0** — https://polyhaven.com/a/aerial_grass_rock (`M_HillGround_PBR`). Rochas dos morros (Poly Haven, CC0, já listadas acima na mata dos morros/praia): `rock_face_01`, `rock_face_02`, `coast_rocks_01`, `coast_rocks_02`, `coast_rocks_03`, `coast_rocks_05`. Terreno de preenchimento das enseadas e cantos arredondados gerados pelo projeto.
+
 ### Rádio praiano — 01/11/2026
 
 Reggae Roots, Calipso Caribe e Praia Pop (ukulele): composições e síntese originais deste projeto, dedicadas a CC0, geradas por `tools/ue58/gen_radio_music.py` (cordas Karplus-Strong, steel pan modal, percussão sintetizada; sem vozes nem samples de terceiros). WAVs em `unreal/MareAlta/SourceArt/Audio/radio_*.wav`.

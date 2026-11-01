@@ -293,3 +293,36 @@ def build_coconut():
         if errors: raise RuntimeError(str(errors))
         unreal.EditorAssetLibrary.save_loaded_asset(m)
     return {'husk': husk, 'fiber': fibre}
+
+
+def build_hill_ground():
+    """Low-poly Godot hill tiles: CC0 Poly Haven aerial_grass_rock projected tri-planar in world space
+    (no stretching on the steep faces), tinted toward the lawn green, with a second larger sample
+    and macro variation so the tile repeat and the facets read as terrain."""
+    folder = '/Game/World/Terrain'
+    diff = _model_texture('hill_grass_rock_diff.jpg', folder)
+    nor = _model_texture('hill_grass_rock_nor_gl.jpg', folder, True)
+    nor.set_editor_property('flip_green_channel', True)
+    unreal.EditorAssetLibrary.save_loaded_asset(nor)
+    mat = material('M_HillGround_PBR')
+    mat.set_editor_property('used_with_nanite', True)
+    mat.set_editor_property('used_with_instanced_static_meshes', True)
+    fn = unreal.load_asset('/Engine/Functions/Engine_MaterialFunctions01/Texturing/WorldAlignedTexture')
+    def projected(tex, size):
+        obj = expression(mat, unreal.MaterialExpressionTextureObject, texture=tex)
+        call = expression(mat, unreal.MaterialExpressionMaterialFunctionCall)
+        call.set_editor_property('material_function', fn)
+        connect(obj, '', call, 'TextureObject')
+        connect(expression(mat, unreal.MaterialExpressionConstant3Vector, constant=unreal.LinearColor(size, size, size, 1)), '', call, 'TextureSize')
+        return call
+    near, far, nrm = projected(diff, 900.0), projected(diff, 4100.0), projected(nor, 900.0)
+    pos = expression(mat, unreal.MaterialExpressionWorldPosition)
+    color = custom(mat, 'float m=.5+.5*sin(P.x*.00021+sin(P.y*.00017)*2.0); float3 c=lerp(A.rgb,B.rgb,.45*m); float l=dot(c,float3(.2126,.7152,.0722)); float3 turf=float3(.11,.22,.05)*clamp(l*2.6,.55,1.35); return lerp(c,turf,.55)*(.9+.12*sin(P.x*.0009)*sin(P.y*.0007));',
+                   unreal.CustomMaterialOutputType.CMOT_FLOAT3, {'A': near, 'B': far, 'P': pos})
+    MEL.connect_material_property(color, '', unreal.MaterialProperty.MP_BASE_COLOR)
+    MEL.connect_material_property(nrm, 'XYZ Texture', unreal.MaterialProperty.MP_NORMAL)
+    MEL.connect_material_property(expression(mat, unreal.MaterialExpressionConstant, r=.92), '', unreal.MaterialProperty.MP_ROUGHNESS)
+    errors = list(MEL.recompile_material(mat))
+    if errors: raise RuntimeError(str(errors))
+    unreal.EditorAssetLibrary.save_loaded_asset(mat)
+    return mat
