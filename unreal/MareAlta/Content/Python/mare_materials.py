@@ -121,14 +121,40 @@ def build_pool_water():
         uv=custom(mat,code,unreal.CustomMaterialOutputType.CMOT_FLOAT2,{'Position':pos,'Time':time})
         node=expression(mat,unreal.MaterialExpressionTextureSample,texture=water_normal,sampler_type=unreal.MaterialSamplerType.SAMPLERTYPE_NORMAL)
         connect(uv,'',node,'UVs');samples.append(node)
-    normal=custom(mat,'return normalize(float3((A.xy+B.xy)*.12,1));',unreal.CustomMaterialOutputType.CMOT_FLOAT3,{'A':samples[0],'B':samples[1]})
-    color=expression(mat,unreal.MaterialExpressionConstant3Vector,constant=unreal.LinearColor(.06,.42,.50,1))
-    rough=expression(mat,unreal.MaterialExpressionConstant,r=.04)
+    normal=custom(mat,'return normalize(float3((A.xy+B.xy)*.07,1));',unreal.CustomMaterialOutputType.CMOT_FLOAT3,{'A':samples[0],'B':samples[1]})
+    # Clear, chlorinated water: little colour of its own; the tint comes from depth (absorption below).
+    color=expression(mat,unreal.MaterialExpressionConstant3Vector,constant=unreal.LinearColor(.02,.11,.12,1))
+    rough=expression(mat,unreal.MaterialExpressionConstant,r=.02)
+    MEL.connect_material_property(expression(mat,unreal.MaterialExpressionConstant,r=.5),'',unreal.MaterialProperty.MP_SPECULAR)
     opacity=expression(mat,unreal.MaterialExpressionConstant,r=.5)
     for node,prop in [(normal,unreal.MaterialProperty.MP_NORMAL),(color,unreal.MaterialProperty.MP_BASE_COLOR),(rough,unreal.MaterialProperty.MP_ROUGHNESS),(opacity,unreal.MaterialProperty.MP_OPACITY)]:MEL.connect_material_property(node,'',prop)
     output=expression(mat,unreal.MaterialExpressionSingleLayerWaterMaterialOutput)
-    connect(expression(mat,unreal.MaterialExpressionConstant3Vector,constant=unreal.LinearColor(.002,.016,.02,1)),'',output,'ScatteringCoefficients')
-    connect(expression(mat,unreal.MaterialExpressionConstant3Vector,constant=unreal.LinearColor(.02,.004,.003,1)),'',output,'AbsorptionCoefficients')
+    # Per cm, like the sea (M_CoastalWater_PBR) but ~4x clearer: 1.5 m keeps ~70% green/blue and ~15% red,
+    # so the tiled floor stays visible with the natural cyan of a real pool.
+    connect(expression(mat,unreal.MaterialExpressionConstant3Vector,constant=unreal.LinearColor(.0003,.0016,.0018,1)),'',output,'ScatteringCoefficients')
+    connect(expression(mat,unreal.MaterialExpressionConstant3Vector,constant=unreal.LinearColor(.013,.0026,.002,1)),'',output,'AbsorptionCoefficients')
+    errors=list(MEL.recompile_material(mat))
+    if errors:raise RuntimeError(str(errors))
+    unreal.EditorAssetLibrary.save_loaded_asset(mat)
+    return mat
+
+
+def build_pool_tiles():
+    """Pool floor and walls: 5 cm glass mosaic (aqua tiles, light grout, per-tile shade) with sunlit
+    caustics, so the bottom reads through the clear M_PoolWater_PBR like in a real pool."""
+    mat=material('M_PoolTiles_PBR')
+    mat.set_editor_property('used_with_instanced_static_meshes',True)
+    mat.set_editor_property('used_with_nanite',True)
+    pos=expression(mat,unreal.MaterialExpressionWorldPosition)
+    nrm=expression(mat,unreal.MaterialExpressionVertexNormalWS)
+    time=expression(mat,unreal.MaterialExpressionTime)
+    night=expression(mat,unreal.MaterialExpressionCollectionParameter,collection=time_collection(),parameter_name='Night')
+    plane='float3 an=abs(N); float2 uv=an.z>.5?P.xy:(an.x>an.y?P.yz:P.xz);'
+    color=custom(mat,plane+'float2 cell=floor(uv/5.0); float2 g=frac(uv/5.0); float grout=smoothstep(.0,.07,min(g.x,g.y))*smoothstep(1.0,.93,max(g.x,g.y)); float h=frac(sin(dot(cell,float2(12.9898,78.233)))*43758.5453); float3 tile=lerp(float3(.50,.80,.86),float3(.62,.87,.90),h); tile*=.94+.06*frac(h*7.31); return lerp(float3(.80,.83,.80),tile,grout);',unreal.CustomMaterialOutputType.CMOT_FLOAT3,{'P':pos,'N':nrm})
+    rough=custom(mat,plane+'float2 g=frac(uv/5.0); float grout=smoothstep(.0,.07,min(g.x,g.y))*smoothstep(1.0,.93,max(g.x,g.y)); return lerp(.75,.18,grout);',unreal.CustomMaterialOutputType.CMOT_FLOAT1,{'P':pos,'N':nrm})
+    # Caustics: three warped sine fields; bright thin lines where their sum crosses zero, drifting slowly.
+    caustic=custom(mat,plane+'float2 q=uv*.02; float t=T*.55; float a=sin(q.x*1.7+sin(q.y*1.3+t)*1.6+t*.7); float b=sin(q.y*1.9+sin(q.x*1.1-t*.8)*1.7-t*.5); float c=sin((q.x+q.y)*1.3+sin(q.x*.7-q.y*.9+t*.9)*1.4+t*.4); float v=abs(a+b+c)/3.0; float lines=pow(saturate(1.0-v),6.0); float floorOnly=saturate(abs(N.z)*1.5-.3); return float3(1.0,.98,.9)*lines*floorOnly*(1.0-Night)*1.1;',unreal.CustomMaterialOutputType.CMOT_FLOAT3,{'P':pos,'N':nrm,'T':time,'Night':night})
+    for node,prop in [(color,unreal.MaterialProperty.MP_BASE_COLOR),(rough,unreal.MaterialProperty.MP_ROUGHNESS),(caustic,unreal.MaterialProperty.MP_EMISSIVE_COLOR)]:MEL.connect_material_property(node,'',prop)
     errors=list(MEL.recompile_material(mat))
     if errors:raise RuntimeError(str(errors))
     unreal.EditorAssetLibrary.save_loaded_asset(mat)

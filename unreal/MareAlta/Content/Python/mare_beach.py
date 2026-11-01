@@ -112,12 +112,14 @@ def radio_probe(station):
 
 
 POOL_WATER = ('World_0086', 'World_2401')   # pousada pool, Grand Hotel pool (flat water planes)
+POOL_SHELL = ('World_0083', 'World_0084', 'World_0085', 'World_2398', 'World_2399', 'World_2400')   # floors and inner walls
 
 
 def pool_water():
     import mare_materials
     importlib.reload(mare_materials)
     mat = mare_materials.build_pool_water()
+    tiles = mare_materials.build_pool_tiles()
     changed = []
     for a in unreal.get_editor_subsystem(unreal.EditorActorSubsystem).get_all_level_actors():
         for c in a.get_components_by_class(unreal.InstancedStaticMeshComponent):
@@ -126,6 +128,10 @@ def pool_water():
                 c.set_editor_property('disallow_nanite', True)
                 c.set_editor_property('cast_shadow', False)
                 changed.append([a.get_actor_label(), c.static_mesh.get_name(), c.get_instance_count()])
+            if c.static_mesh and c.static_mesh.get_name() in POOL_SHELL:
+                for slot in range(c.get_num_materials()):
+                    c.set_material(slot, tiles)
+                changed.append([a.get_actor_label(), c.static_mesh.get_name(), 'tiles'])
     unreal.get_editor_subsystem(unreal.LevelEditorSubsystem).save_current_level()
     return {'material': mat.get_path_name(), 'components': changed}
 
