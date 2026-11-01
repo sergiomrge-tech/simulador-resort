@@ -30,4 +30,12 @@ private:
  /** Interaction point on the Grand Hotel reception desk, hidden until the hotel is bought. */
  UPROPERTY() TObjectPtr<class AMareServiceTarget> Reception;
  UPROPERTY() TObjectPtr<class UMaterialParameterCollection> TimeCollection;
+ UPROPERTY() TObjectPtr<class ASkyLight> Sky;
+ /** Night lamps: one shadowless point light per street-lamp globe, bulb, lantern and pool light. */
+ struct FLamp{TWeakObjectPtr<class UPointLightComponent> Light;TWeakObjectPtr<AActor> Source;float Candela=0;};
+ TArray<FLamp> Lamps;
+ UPROPERTY() TObjectPtr<AActor> LampHolder;
+ void BuildLamps();
+public:
+ int32 LampCount()const{return Lamps.Num();}
 };

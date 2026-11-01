@@ -13,8 +13,33 @@
 #include "Components/TextRenderComponent.h"
 #include "Kismet/KismetMaterialLibrary.h"
 #include "Materials/MaterialParameterCollection.h"
+#include "Components/PointLightComponent.h"
+#include "Components/InstancedStaticMeshComponent.h"
+#include "Components/SkyLightComponent.h"
+#include "Engine/SkyLight.h"
 
 TStatId UMareVisualWorld::GetStatId()const{RETURN_QUICK_DECLARE_CYCLE_STAT(UMareVisualWorld,STATGROUP_Tickables);}
+void UMareVisualWorld::BuildLamps()
+{
+ // Light sources exported from Godot (their glow materials were lost): mesh, glass centre above the
+ // pivot (cm), candela at full night, reach (cm), colour temperature (K).
+ struct FKind{const TCHAR* Mesh;float Up,Candela,Radius,Kelvin;};
+ static const FKind Kinds[]={{TEXT("World_1392"),40,150,1900,2900},{TEXT("World_2205"),40,150,1900,2900},{TEXT("World_0687"),9,32,800,2700},
+  {TEXT("World_0515"),9,32,800,2700},{TEXT("World_0199"),19,12,550,2200},{TEXT("World_0138"),2,30,700,9000}};
+ LampHolder=GetWorld()->SpawnActor<AActor>();if(!LampHolder)return;
+ LampHolder->SetRootComponent(NewObject<USceneComponent>(LampHolder,TEXT("LampRoot")));LampHolder->GetRootComponent()->RegisterComponent();
+ for(TActorIterator<AActor> It(GetWorld());It;++It){if(*It==LampHolder)continue;
+  TArray<UInstancedStaticMeshComponent*> Parts;It->GetComponents(Parts);
+  for(auto Part:Parts){if(!Part->GetStaticMesh())continue;const FString Mesh=Part->GetStaticMesh()->GetName();
+   const FKind* Kind=nullptr;for(const auto& K:Kinds)if(Mesh==K.Mesh)Kind=&K;if(!Kind)continue;
+   for(int32 I=0;I<Part->GetInstanceCount();++I){FTransform T;Part->GetInstanceTransform(I,T,true);
+    auto Light=NewObject<UPointLightComponent>(LampHolder);Light->SetupAttachment(LampHolder->GetRootComponent());Light->RegisterComponent();
+    Light->SetWorldLocation(T.TransformPosition(FVector(0,0,Kind->Up)));Light->SetIntensityUnits(ELightUnits::Candelas);Light->SetIntensity(0);
+    Light->SetAttenuationRadius(Kind->Radius);Light->SetUseTemperature(true);Light->SetTemperature(Kind->Kelvin);Light->SetCastShadows(false);
+    Light->SetSourceRadius(4);Light->SetVisibility(false);Lamps.Add({Light,*It,Kind->Candela});}
+  }
+ }
+}
 void UMareVisualWorld::RefreshExpansions()
 {
  auto World=GetWorld();
@@ -52,6 +77,8 @@ void UMareVisualWorld::Tick(float DeltaSeconds)
  if(!Sun){for(TActorIterator<ALight> It(GetWorld());It;++It){if(It->ActorHasTag(TEXT("MareSun")))Sun=*It;if(It->ActorHasTag(TEXT("MareMoon")))Moon=*It;if(It->ActorHasTag(TEXT("MarePractical")))Practical.AddUnique(*It);}
   for(TActorIterator<AExponentialHeightFog> It(GetWorld());It;++It)Fog=*It;
   for(TActorIterator<APostProcessVolume> It(GetWorld());It;++It)if(It->bUnbound){Exposure=*It;break;}
+  for(TActorIterator<ASkyLight> It(GetWorld());It;++It){Sky=*It;break;}
+  BuildLamps();
   for(TActorIterator<ATextRenderActor> It(GetWorld());It;++It)if(It->ActorHasTag(TEXT("MareText"))){Signs.Add(*It);
    if(It->ActorHasTag(TEXT("MareStatusSign"))){auto Target=GetWorld()->SpawnActor<AMareServiceTarget>(It->GetActorLocation(),FRotator::ZeroRotator);
     Target->Action=TEXT("KioskSign");Target->Label=TEXT("Placa do quiosque");Target->Reach=330;Target->OcclusionTolerance=100;Target->SetOwner(*It);}
@@ -64,10 +91,17 @@ void UMareVisualWorld::Tick(float DeltaSeconds)
  const float Hour=UMareSimulation::Number(Sim->State,TEXT("minutes"))/60.f;
  const float Solar=FMath::Sin((Hour-6.f)/12.f*PI);const float Day=FMath::SmoothStep(-.04f,.18f,Solar);
  const bool Rain=UMareSimulation::String(Sim->State,TEXT("weather"))==TEXT("rain");
- if(Exposure){Exposure->Settings.bOverride_AutoExposureMinBrightness=true;Exposure->Settings.bOverride_AutoExposureMaxBrightness=true;Exposure->Settings.AutoExposureMinBrightness=FMath::Lerp(0.f,5.f,Day);Exposure->Settings.AutoExposureMaxBrightness=FMath::Lerp(8.f,14.f,Day);}
+ // Night: the eye must not adapt up to daylight brightness (that washed the scene out white); keep a
+ // narrow dark EV100 window so moonlight reads blue-dim and lamps/windows carry the image.
+ if(Exposure){Exposure->Settings.bOverride_AutoExposureMinBrightness=true;Exposure->Settings.bOverride_AutoExposureMaxBrightness=true;Exposure->Settings.AutoExposureMinBrightness=FMath::Lerp(-1.9f,5.f,Day);Exposure->Settings.AutoExposureMaxBrightness=FMath::Lerp(-.9f,14.f,Day);}
+ if(Sky)Sky->GetLightComponent()->SetIntensity(FMath::Lerp(.035f,1.f,Day));
  if(Sun){Sun->SetActorRotation(FRotator(-Solar*58.f,-65.f+(Hour-12.f)*12.f,0));Sun->GetLightComponent()->SetIntensity(FMath::Max(0.f,Solar)*65000.f*(Rain?.2f:1.f));
   Sun->GetLightComponent()->SetLightColor(FLinearColor(1.f,FMath::Lerp(.95f,.99f,Day),FMath::Lerp(.88f,.975f,Day)),false);}
- if(Moon)Moon->GetLightComponent()->SetIntensity((1-Day)*.8f);
+ if(Moon){Moon->GetLightComponent()->SetIntensity((1-Day)*.45f);Moon->GetLightComponent()->SetLightColor(FLinearColor(.62f,.72f,1.f),false);}
+ // Lamps switch on at dusk and only where the area is built (region actors hidden until bought).
+ const float Dark=FMath::SmoothStep(.55f,.05f,Day);
+ for(const auto& Lamp:Lamps)if(auto Light=Lamp.Light.Get()){const bool bOn=Dark>.01f && Lamp.Source.IsValid() && !Lamp.Source->IsHidden();
+  Light->SetVisibility(bOn);Light->SetIntensity(bOn?Lamp.Candela*Dark:0.f);}
  // Facade windows glow at night through MPC_MareTime.Night (M_WindowPane_PBR).
  if(!TimeCollection)TimeCollection=LoadObject<UMaterialParameterCollection>(nullptr,TEXT("/Game/World/Materials/MPC_MareTime.MPC_MareTime"));
  if(TimeCollection)UKismetMaterialLibrary::SetScalarParameterValue(this,TimeCollection,TEXT("Night"),FMath::Clamp(1.f-Day,0.f,1.f)*(Rain?.8f:1.f));

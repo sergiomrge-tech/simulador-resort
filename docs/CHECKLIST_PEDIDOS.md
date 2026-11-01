@@ -37,6 +37,7 @@ Legenda: [x] feito e validado · [~] em andamento/parcial · [ ] pendente.
 - [x] "Arredonde os cantos para não ficar quadrado, corrigir dos 2 lados da praia" (01/11): praia curva nas duas pontas, sem bancos de areia.
 - [x] "Corrigir, precisa ser arredondados e suaves" (01/11): 70 blocos de morro suavizados (subdivisão com bordas compartilhadas, `tools/ue58/smooth_hills.py`) e textura CC0 aerial_grass_rock em projeção tri-planar.
 - [x] "Coloque rochas nos morros também, use assets do Poly Haven" (01/11): ~10 mil rochas CC0 (rock_face_01/02, coast_rocks_01/02/03/05) em grupos, mais densas nas encostas íngremes.
+- [x] "Trabalhe agora na iluminação noturna: postes de luz, janelas das casas acesas à noite" (01/11): a noite saía estourada (luz do céu fixa em 1 + exposição sem limite) — céu e exposição agora escurecem, lua azulada; 134 luzes reais sem sombra (globos dos postes, lâmpadas, lanternas, piscina) acendem ao anoitecer só nas áreas construídas; vidros das lâmpadas brilham (`M_LampGlow_PBR`); janelas quentes acesas. QA `night_lamps_built`.
 - [x] Manter este checklist sempre que o usuário pedir algo (regra salva na memória).
 
 ## Regras permanentes já pedidas

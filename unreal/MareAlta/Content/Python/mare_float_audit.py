@@ -409,6 +409,31 @@ def run(action, arg=''):
                 out.append([name, j, kind])
             unreal.EditorAssetLibrary.save_loaded_asset(mesh, False)
         return out
+    if action == 'lampglow':
+        # 'World_1392:1 World_0687:1 ...' -> glass slot of each lamp mesh gets M_LampGlow_PBR.
+        import mare_materials, importlib
+        importlib.reload(mare_materials)
+        mat = mare_materials.build_lamp_glow()
+        mapping = json.loads((DATA / 'imported_meshes.json').read_text(encoding='utf-8-sig'))
+        out = []
+        for spec in arg.split():
+            name, slot = spec.split(':')
+            mesh = unreal.load_asset(mapping[name])
+            mesh.set_material(int(slot), mat)
+            unreal.EditorAssetLibrary.save_loaded_asset(mesh, False)
+            out.append(spec)
+        return out
+    if action == 'lights':
+        import collections
+        out = collections.Counter()
+        detail = []
+        for a in unreal.get_editor_subsystem(unreal.EditorActorSubsystem).get_all_level_actors():
+            for c in a.get_components_by_class(unreal.LightComponentBase):
+                k = (c.get_class().get_name(), ','.join(str(t) for t in a.tags if 'Mare' in str(t)))
+                out[str(k)] += 1
+                if len(detail) < 25 or c.get_class().get_name() in ('SkyLightComponent', 'DirectionalLightComponent'):
+                    detail.append([a.get_actor_label(), c.get_class().get_name(), round(c.get_editor_property('intensity'), 2), [round(v) for v in (a.get_actor_location().x, a.get_actor_location().y, a.get_actor_location().z)]])
+        return {'counts': dict(out), 'detail': detail}
     if action == 'hillmeshes':
         mapping = json.loads((DATA / 'imported_meshes.json').read_text(encoding='utf-8-sig'))
         inverse = {v.split('.')[0]: k for k, v in mapping.items()}

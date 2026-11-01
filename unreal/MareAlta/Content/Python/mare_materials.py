@@ -326,3 +326,20 @@ def build_hill_ground():
     if errors: raise RuntimeError(str(errors))
     unreal.EditorAssetLibrary.save_loaded_asset(mat)
     return mat
+
+
+def build_lamp_glow():
+    """Lamp globes and bulbs: frosted warm glass, softly lit by day, glowing at night (MPC_MareTime.Night).
+    The Godot 'glow' materials were lost in the glTF export (they came in as the default grey)."""
+    mat = material('M_LampGlow_PBR')
+    mat.set_editor_property('used_with_nanite', True)
+    mat.set_editor_property('used_with_instanced_static_meshes', True)
+    night = expression(mat, unreal.MaterialExpressionCollectionParameter, collection=time_collection(), parameter_name='Night')
+    MEL.connect_material_property(expression(mat, unreal.MaterialExpressionConstant3Vector, constant=unreal.LinearColor(.92, .86, .72, 1)), '', unreal.MaterialProperty.MP_BASE_COLOR)
+    MEL.connect_material_property(expression(mat, unreal.MaterialExpressionConstant, r=.25), '', unreal.MaterialProperty.MP_ROUGHNESS)
+    glow = custom(mat, 'return float3(1.0,.70,.38)*(.05+N*N*60.0);', unreal.CustomMaterialOutputType.CMOT_FLOAT3, {'N': night})
+    MEL.connect_material_property(glow, '', unreal.MaterialProperty.MP_EMISSIVE_COLOR)
+    errors = list(MEL.recompile_material(mat))
+    if errors: raise RuntimeError(str(errors))
+    unreal.EditorAssetLibrary.save_loaded_asset(mat)
+    return mat
