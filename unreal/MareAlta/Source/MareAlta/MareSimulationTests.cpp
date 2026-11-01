@@ -157,4 +157,61 @@ bool FMareProgressionTest::RunTest(const FString& Parameters)
  TestEqual(TEXT("Day advanced with hotel"),int32(Sim->Number(Sim->State,TEXT("day"))),DayBefore+1);
  Sim->RemoveFromRoot();Instance->RemoveFromRoot();return true;
 }
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FMareCustomizationTest,"MareAlta.Migration.Customization",EAutomationTestFlags::EditorContext|EAutomationTestFlags::EngineFilter)
+bool FMareCustomizationTest::RunTest(const FString& Parameters)
+{
+ auto Instance=NewObject<UGameInstance>();Instance->AddToRoot();
+ auto Sim=NewObject<UMareSimulation>(Instance);Sim->AddToRoot();
+ Sim->SaveDirectory=FPaths::ProjectSavedDir()/TEXT("Automation/Customization")/FGuid::NewGuid().ToString(EGuidFormats::Digits);
+ auto Load=[&](const FString& Name,TSharedPtr<FJsonObject>& Result){FString Text;FFileHelper::LoadFileToString(Text,*(FPaths::ProjectContentDir()/TEXT("Data")/Name));return FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Text),Result);};
+ Load(TEXT("definitions.json"),Sim->Definitions);Load(TEXT("default_save.json"),Sim->State);
+ TestTrue(TEXT("Catalogue loads"),Sim->CustomSlot(TEXT("kiosk"),TEXT("banquetas")).IsValid());
+ // Every slot of every place has exactly five tiers.
+ const TArray<TSharedPtr<FJsonValue>>* Slots=nullptr;int32 SlotCount=0;
+ if(Sim->Object(Sim->Object(Sim->CustomDefs(),TEXT("places")),TEXT("kiosk"))->TryGetArrayField(TEXT("slots"),Slots))for(const auto& V:*Slots){
+  const TArray<TSharedPtr<FJsonValue>>* Tiers=nullptr;TestTrue(TEXT("Slot has tiers"),V->AsObject()->TryGetArrayField(TEXT("tiers"),Tiers) && Tiers->Num()==5);++SlotCount;}
+ TestTrue(TEXT("Kiosk has at least eight customizable objects"),SlotCount>=8);
+ TestEqual(TEXT("Starting tier is Simples"),Sim->CustomTier(TEXT("kiosk"),TEXT("banquetas")),1);
+ TestEqual(TEXT("Decor starts neutral"),Sim->KioskArrivalFactor(),1.0);
+ TestEqual(TEXT("Tier prices grow"),Sim->CustomPrice(TEXT("kiosk"),TEXT("banquetas"),2),75.0);
+ TestTrue(TEXT("Higher tier costs more"),Sim->CustomPrice(TEXT("kiosk"),TEXT("banquetas"),5)>Sim->CustomPrice(TEXT("kiosk"),TEXT("banquetas"),4));
+ Sim->State->SetNumberField(TEXT("money"),50);
+ TestFalse(TEXT("Cannot buy without money"),Sim->BuyCustom(TEXT("kiosk"),TEXT("banquetas"),2));
+ TestEqual(TEXT("Refused purchase keeps tier"),Sim->CustomTier(TEXT("kiosk"),TEXT("banquetas")),1);
+ Sim->State->SetNumberField(TEXT("money"),10000);
+ TestFalse(TEXT("Table decor needs the tables expansion"),Sim->BuyCustom(TEXT("kiosk"),TEXT("mesas"),2));
+ TestTrue(TEXT("Buy stools tier 3"),Sim->BuyCustom(TEXT("kiosk"),TEXT("banquetas"),3));
+ TestEqual(TEXT("Charged once"),Sim->Money(),10000-180.0);
+ TestEqual(TEXT("Tier selected"),Sim->CustomTier(TEXT("kiosk"),TEXT("banquetas")),3);
+ TestTrue(TEXT("Back to Simples is free"),Sim->BuyCustom(TEXT("kiosk"),TEXT("banquetas"),1));
+ TestTrue(TEXT("Re-using an owned tier is free"),Sim->BuyCustom(TEXT("kiosk"),TEXT("banquetas"),3));
+ TestEqual(TEXT("No double charge"),Sim->Money(),10000-180.0);
+ TestEqual(TEXT("Comfort from stools"),Sim->PlaceComfort(TEXT("kiosk")),2.0);
+ TestTrue(TEXT("Decor brings more customers"),Sim->KioskArrivalFactor()>1.0);
+ TestTrue(TEXT("Counter tier speeds the attendant"),Sim->BuyCustom(TEXT("kiosk"),TEXT("balcao"),5) && FMath::IsNearlyEqual(Sim->KioskServiceSpeed(),1.4,1e-6));
+ // Saved and reloaded.
+ TSharedPtr<FJsonObject> Saved;FString Text;FFileHelper::LoadFileToString(Text,*(Sim->SaveDirectory/TEXT("slot1.json")));FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Text),Saved);
+ TestEqual(TEXT("Tier persists"),int32(Sim->Number(Sim->Object(Sim->Object(Sim->Object(Saved,TEXT("custom")),TEXT("kiosk")),TEXT("banquetas")),TEXT("tier"))),3);
+ // Kiosk must be closed to change furniture.
+ Sim->CreateCompany(TEXT("Teste"));Sim->State->SetNumberField(TEXT("minutes"),600);Sim->SetOpen(true);
+ TestFalse(TEXT("Open kiosk refuses decor change"),Sim->BuyCustom(TEXT("kiosk"),TEXT("iluminacao"),2));
+ // Recipes: price and demand grow, upgrade charged once, max level.
+ const double Base=Sim->DishPrice(TEXT("coco_gelado"));TestEqual(TEXT("Base coconut price"),Base,12.0);
+ const double Cost=Sim->RecipeUpgradeCost(TEXT("coco_gelado"));TestEqual(TEXT("First recipe upgrade cost"),Cost,144.0);
+ const double Money=Sim->Money();TestTrue(TEXT("Upgrade recipe"),Sim->UpgradeRecipe(TEXT("coco_gelado")));
+ TestEqual(TEXT("Recipe charged"),Sim->Money(),Money-Cost);
+ TestEqual(TEXT("Recipe raises the price"),Sim->DishPrice(TEXT("coco_gelado")),15.0);
+ TestTrue(TEXT("Better recipe sells more"),Sim->DishDemand(TEXT("coco_gelado"))>Sim->DishDemand(TEXT("suco")));
+ for(int32 I=0;I<3;++I)Sim->UpgradeRecipe(TEXT("coco_gelado"));
+ TestEqual(TEXT("Max recipe level"),Sim->RecipeLevel(TEXT("coco_gelado")),5);
+ TestFalse(TEXT("No upgrade past level 5"),Sim->UpgradeRecipe(TEXT("coco_gelado")));
+ TestFalse(TEXT("Locked product recipe refused"),Sim->UpgradeRecipe(TEXT("caipirinha")));
+ // A sale pays the recipe price plus the comfort tip.
+ const FString Order=Sim->AddOrder(TEXT("Ana"),{TEXT("coco_gelado")});
+ const double BeforeSale=Sim->Money();Sim->Pickup(TEXT("coco_gelado"));
+ TestTrue(TEXT("Deliver upgraded coconut"),Sim->Deliver(Order,TEXT("coco_gelado")));
+ const double Price=Sim->DishPrice(TEXT("coco_gelado"));
+ TestEqual(TEXT("Sale = recipe price + tip"),Sim->Money(),BeforeSale+Price+FMath::RoundToDouble(Price*Sim->KioskTipRate()*100)/100);
+ Sim->RemoveFromRoot();Instance->RemoveFromRoot();return true;
+}
 #endif

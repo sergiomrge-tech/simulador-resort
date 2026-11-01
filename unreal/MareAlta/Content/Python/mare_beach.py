@@ -181,6 +181,11 @@ def run(action, arg=''):
         return pie_shot(arg)
     if action == 'outfit':
         return outfit_probe(arg)
+    if action == 'phone':
+        world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()
+        pc = unreal.GameplayStatics.get_player_controller(world, 0)
+        pc.open_phone(int(arg))
+        return {'phone': int(arg)}
     if action == 'rebuild':
         return rebuild()
     if action == 'ocean':

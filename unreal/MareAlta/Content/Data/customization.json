@@ -1,0 +1,110 @@
+{
+ "schema": 1,
+ "tiers": ["Simples", "Bom", "Caprichado", "Luxo", "Premium"],
+ "price_mult": [0, 2.5, 6, 14, 30],
+ "effects": {
+  "arrival_per_point": 0.035,
+  "tip_per_comfort": 0.015,
+  "patience_per_comfort": 0.03,
+  "speed_per_counter_tier": 0.1,
+  "fame_beauty_threshold": 20
+ },
+ "places": {
+  "kiosk": {
+   "name": "Quiosque",
+   "area": [2900, 4800, -2500, -800],
+   "requires_closed": true,
+   "slots": [
+    {"id": "mesas", "name": "Mesas", "base_price": 60, "comfort": 2, "beauty": 1, "unlock": "kiosk_tables",
+     "anchor": "World_0333", "hide": ["World_0333"],
+     "tiers": [
+      {"name": "Mesa dobrável de madeira", "desc": "A mesa simples que veio com o quiosque."},
+      {"name": "Mesa chinesa quadrada", "desc": "Madeira escura maciça, firme na areia.", "parts": [{"model": "chinese_tea_table", "w": 78, "h": 74}]},
+      {"name": "Mesa redonda de madeira", "desc": "Pé central torneado, cabe mais um prato.", "parts": [{"model": "WoodenTable_02", "w": 80, "h": 75}]},
+      {"name": "Mesa de mármore", "desc": "Tampo de mármore claro e base cromada.", "parts": [{"model": "coffee_table_round_01", "w": 82, "h": 75}]},
+      {"name": "Mesa posta com toalha", "desc": "Toalha xadrez e madeira nobre: clima de restaurante.", "parts": [{"model": "dining_table", "w": 95, "h": 76}]}
+     ]},
+    {"id": "cadeiras", "name": "Cadeiras", "base_price": 50, "comfort": 2, "beauty": 1, "unlock": "kiosk_tables",
+     "anchor": "World_0333", "hide": ["World_0332", "World_0334"],
+     "tiers": [
+      {"name": "Cadeiras dobráveis", "desc": "Dobram e empilham, mas cansam logo."},
+      {"name": "Cadeira rústica azul", "desc": "Madeira pintada à mão, cara de casa de praia.", "parts": [{"model": "painted_wooden_chair_02", "h": 92, "at": [-11, 56, 0], "yaw": 180}, {"model": "painted_wooden_chair_02", "h": 92, "at": [7, -50, 0], "yaw": 0}]},
+      {"name": "Cadeira branca de madeira", "desc": "Encosto alto e assento largo.", "parts": [{"model": "painted_wooden_chair_01", "h": 92, "at": [-11, 56, 0], "yaw": 180}, {"model": "painted_wooden_chair_01", "h": 92, "at": [7, -50, 0], "yaw": 0}]},
+      {"name": "Cadeira estofada de couro", "desc": "Estofado macio: o cliente fica mais tempo.", "parts": [{"model": "dining_chair_02", "h": 90, "at": [-11, 58, 0], "yaw": 180}, {"model": "dining_chair_02", "h": 90, "at": [7, -52, 0], "yaw": 0}]},
+      {"name": "Poltrona de couro e madeira", "desc": "Poltrona de lounge, conforto de hotel.", "parts": [{"model": "modern_arm_chair_01", "h": 82, "at": [-11, 64, 0], "yaw": 180}, {"model": "modern_arm_chair_01", "h": 82, "at": [7, -58, 0], "yaw": 0}]}
+     ]},
+    {"id": "banquetas", "name": "Banquetas do balcão", "base_price": 30, "comfort": 1, "beauty": 1,
+     "anchor": "World_0327", "hide": ["World_0327"],
+     "tiers": [
+      {"name": "Banco rústico", "desc": "Tronco de madeira bruta.", "parts": [{"model": "wooden_stool_02", "h": 72}]},
+      {"name": "Banqueta de madeira", "desc": "Assento redondo e pés abertos.", "parts": [{"model": "wooden_stool_01", "h": 74}]},
+      {"name": "Banqueta pintada", "desc": "Madeira pintada e desgastada pelo sal.", "parts": [{"model": "painted_wooden_stool", "h": 74}]},
+      {"name": "Banqueta industrial", "desc": "Assento de madeira, pés de ferro.", "parts": [{"model": "metal_stool_02", "h": 76}]},
+      {"name": "Banqueta estofada", "desc": "Assento acolchoado com encosto baixo.", "parts": [{"model": "bar_chair_round_01", "h": 85}]}
+     ]},
+    {"id": "guarda_sois", "name": "Guarda-sóis", "base_price": 40, "comfort": 1, "beauty": 2,
+     "anchor": "World_1239", "also": ["World_1245"],
+     "tiers": [
+      {"name": "Lona crua", "desc": "Lona simples, sombra básica.", "material": "M_Custom_Umbrella_1"},
+      {"name": "Listrado azul", "desc": "Listras azul e branco.", "material": "M_Custom_Umbrella_2"},
+      {"name": "Listrado coral", "desc": "Listras coral e areia.", "material": "M_Custom_Umbrella_3"},
+      {"name": "Palha trançada", "desc": "Palha natural, sombra fresca.", "material": "M_Custom_Umbrella_4"},
+      {"name": "Lona náutica premium", "desc": "Lona marinho com acabamento de iate.", "material": "M_Custom_Umbrella_5"}
+     ]},
+    {"id": "balcao", "name": "Balcão", "base_price": 70, "comfort": 0, "beauty": 1, "speed": true,
+     "anchor": "World_1215",
+     "tiers": [
+      {"name": "Pintura cinza", "desc": "Acabamento de fábrica."},
+      {"name": "Madeira natural", "desc": "Tábuas envernizadas. Atendente +10% rápido.", "material": "M_Custom_Counter_2"},
+      {"name": "Madeira azul-turquesa", "desc": "Cor da praia. Atendente +20% rápido.", "material": "M_Custom_Counter_3"},
+      {"name": "Azulejo português", "desc": "Azulejos azuis pintados. Atendente +30% rápido.", "material": "M_Custom_Counter_4"},
+      {"name": "Teca polida e latão", "desc": "Acabamento de bar de luxo. Atendente +40% rápido.", "material": "M_Custom_Counter_5"}
+     ]},
+    {"id": "iluminacao", "name": "Iluminação", "base_price": 30, "comfort": 0, "beauty": 2,
+     "anchor": "World_0199", "hide": ["World_0199", "World_0200", "World_0201"],
+     "tiers": [
+      {"name": "Lanterna de madeira", "desc": "Luz de vela."},
+      {"name": "Lampião", "desc": "Lampião de metal clássico.", "parts": [{"model": "Lantern_01", "h": 40}]},
+      {"name": "Lamparina antiga", "desc": "Vidro pintado com flores.", "parts": [{"model": "vintage_oil_lamp", "h": 42}]},
+      {"name": "Lanterna de latão", "desc": "Latão trabalhado, luz dourada.", "parts": [{"model": "brass_diya_lantern", "h": 46}]},
+      {"name": "Lustre de lanternas", "desc": "Conjunto de lanternas penduradas.", "parts": [{"model": "lantern_chandelier_01", "h": 60}]}
+     ]},
+    {"id": "plantas", "name": "Plantas e vasos", "base_price": 25, "comfort": 0, "beauty": 2,
+     "spots": [[3420, -1680], [4180, -1680], [3330, -1320], [4270, -1320], [3600, -1720], [4000, -1720]],
+     "tiers": [
+      {"name": "Suculentas", "desc": "Dois vasinhos de suculenta.", "parts": [{"model": "potted_plant_04", "h": 32}], "count": 2},
+      {"name": "Ervas no vaso de barro", "desc": "Quatro vasos de ervas.", "parts": [{"model": "potted_plant_01", "h": 45}], "count": 4},
+      {"name": "Costela-de-adão", "desc": "Folhas grandes em vasos de cerâmica.", "parts": [{"model": "potted_plant_02", "h": 60}], "count": 4},
+      {"name": "Floreiras de madeira", "desc": "Floreiras com flores de praia.", "parts": [{"model": "planter_box_02", "w": 70, "h": 45}, {"model": "flower_gazania", "h": 30, "at": [0, 0, 40]}], "count": 6},
+      {"name": "Jardim tropical", "desc": "Árvores em vaso e antúrios.", "parts": [{"model": "pachira_aquatica_01", "h": 170}], "count": 6}
+     ]},
+    {"id": "letreiro", "name": "Letreiro", "base_price": 35, "comfort": 0, "beauty": 1, "fame": true,
+     "anchor": "World_1343",
+     "tiers": [
+      {"name": "Placa pintada", "desc": "Sem iluminação.", "material": "M_Custom_Sign_1"},
+      {"name": "Neon branco", "desc": "Contorno de neon branco.", "material": "M_Custom_Sign_2"},
+      {"name": "Neon turquesa", "desc": "Neon da cor do mar.", "material": "M_Custom_Sign_3"},
+      {"name": "Neon rosa", "desc": "Neon rosa vibrante à noite.", "material": "M_Custom_Sign_4"},
+      {"name": "Neon arco-íris", "desc": "Neon que muda de cor. Mais fama por venda.", "material": "M_Custom_Sign_5"}
+     ]}
+   ]
+  }
+ },
+ "recipes": {
+  "levels": ["Receita da casa", "Caprichada", "Especial", "Gourmet", "Assinatura do chef"],
+  "price_mult": [1, 1.25, 1.55, 1.9, 2.3],
+  "cost_mult": [0, 12, 30, 70, 150],
+  "demand_per_level": 0.5,
+  "fame_from_level": 4,
+  "notes": {
+   "coco_gelado": ["Coco gelado na hora", "Com canudo de bambu", "Coco com raspas da polpa", "Coco com gelo de água de coco", "Coco premium com flor comestível"],
+   "suco": ["Suco da fruta", "Suco com frutas frescas", "Suco duplo de frutas da estação", "Suco detox com gengibre", "Suco tropical da casa com frutas exóticas"],
+   "caipirinha": ["Caipirinha", "Caipirinha com limão-taiti", "Caipirinha de frutas vermelhas", "Caipirinha de cachaça envelhecida", "Caipirinha do chef com cachaça artesanal"],
+   "petiscos": ["Petiscos", "Petiscos com molho da casa", "Tábua de petiscos", "Petiscos de frutos do mar", "Tábua premium do chef"],
+   "sorvete_morango": ["Sorvete de morango", "Sorvete com calda", "Sorvete artesanal", "Taça com frutas e calda", "Taça do chef com morangos frescos"],
+   "sorvete_chocolate": ["Sorvete de chocolate", "Sorvete com calda", "Sorvete artesanal belga", "Taça com brownie", "Taça do chef com chocolate 70%"],
+   "batata_frita": ["Porção de batata frita", "Batata rústica com alecrim", "Batata com cheddar e bacon", "Batata trufada", "Batata da casa com molhos especiais"],
+   "porcao_peixe": ["Porção de peixe", "Peixe empanado na hora", "Peixe com molho tártaro", "Isca de peixe nobre", "Peixe do dia com molho do chef"]
+  }
+ }
+}

@@ -166,10 +166,13 @@ bool UMareSimulation::Deliver(const FString& OrderId,const FString& Dish,bool bS
  if(Index==INDEX_NONE) return false;
  Items.RemoveAt(Index); Order->SetArrayField(TEXT("remaining"),Items);
  Object(State,TEXT("company"))->SetStringField(bStaff?TEXT("staff_carry"):TEXT("carry"),TEXT(""));
- const double Price=Number(Object(Object(Definitions,TEXT("dishes")),Dish),TEXT("price")); Book(Price,TEXT("Venda: ")+Dish);
- State->SetNumberField(TEXT("kiosk_n"),Number(State,TEXT("kiosk_n"))+1); State->SetNumberField(TEXT("kiosk"),Number(State,TEXT("kiosk"))+Price);
+ // Recipe level sets the price; the comfort of the kiosk decor adds a tip on top.
+ const double Price=DishPrice(Dish); Book(Price,TEXT("Venda: ")+Dish);
+ const double Tip=FMath::RoundToDouble(Price*KioskTipRate()*100)/100; if(Tip>=.01) Book(Tip,TEXT("Gorjeta"));
+ State->SetNumberField(TEXT("kiosk_n"),Number(State,TEXT("kiosk_n"))+1); State->SetNumberField(TEXT("kiosk"),Number(State,TEXT("kiosk"))+Price+Tip);
  if(Dish.StartsWith(TEXT("sorvete_"))){auto Campaign=Object(Object(State,TEXT("prog")),TEXT("campaign"));Campaign->SetNumberField(TEXT("icecream"),Number(Campaign,TEXT("icecream"))+1);}
- AddFame(2);
+ // Signature recipes and a beautiful kiosk spread the word faster.
+ AddFame(2+(RecipeLevel(Dish)>=Number(Object(CustomDefs(),TEXT("recipes")),TEXT("fame_from_level"),4)?1:0)+(PlaceBeauty(TEXT("kiosk"))>=CustomEffect(TEXT("fame_beauty_threshold"),20)?1:0));
  // Serve/sell steps count only sales made while that chapter step is active.
  const TArray<TSharedPtr<FJsonValue>>* Chapters=nullptr;auto Progress=Object(Object(State,TEXT("prog")),TEXT("ch"));
  if(Definitions->TryGetArrayField(TEXT("chapters"),Chapters))for(const auto& Value:*Chapters){const FString Chapter=String(Value->AsObject(),TEXT("id"));
@@ -375,4 +378,105 @@ bool UMareSimulation::ImportLegacySave(const FString& Path)
  auto Kiosk=GetWorld() && GetWorld()->IsGameWorld()?GetWorld()->GetSubsystem<UMareKioskWorld>():nullptr;
  if(Kiosk)Kiosk->ResetPhysicalState();
  if(Save())return true;State=Previous;return false;
+}
+
+// ---------------------------------------------------------------------------------------------
+// Customization: tiers of every object and recipe levels (catalogue in Data/customization.json).
+TSharedPtr<FJsonObject> UMareSimulation::CustomDefs() const
+{
+ if(!CustomCatalog.IsValid()){if(!ReadJson(FPaths::ProjectContentDir()/TEXT("Data/customization.json"),CustomCatalog))CustomCatalog=MakeShared<FJsonObject>();}
+ return CustomCatalog;
+}
+TSharedPtr<FJsonObject> UMareSimulation::CustomSlot(const FString& Place,const FString& Slot) const
+{
+ const TArray<TSharedPtr<FJsonValue>>* Slots=nullptr;
+ if(Object(Object(CustomDefs(),TEXT("places")),Place)->TryGetArrayField(TEXT("slots"),Slots))
+  for(const auto& Value:*Slots)if(String(Value->AsObject(),TEXT("id"))==Slot)return Value->AsObject();
+ return nullptr;
+}
+int32 UMareSimulation::CustomTier(const FString& Place,const FString& Slot) const
+{
+ return FMath::Clamp(int32(Number(Object(Object(Object(State,TEXT("custom")),Place),Slot),TEXT("tier"),1)),1,5);
+}
+bool UMareSimulation::OwnsCustomTier(const FString& Place,const FString& Slot,int32 Tier) const
+{
+ if(Tier<=1)return true;const TArray<TSharedPtr<FJsonValue>>* Owned=nullptr;
+ return Object(Object(Object(State,TEXT("custom")),Place),Slot)->TryGetArrayField(TEXT("owned"),Owned) && Owned->ContainsByPredicate([Tier](const TSharedPtr<FJsonValue>& V){return int32(V->AsNumber())==Tier;});
+}
+double UMareSimulation::CustomPrice(const FString& Place,const FString& Slot,int32 Tier) const
+{
+ auto Def=CustomSlot(Place,Slot);if(!Def.IsValid() || Tier<1 || Tier>5)return 0;
+ const TArray<TSharedPtr<FJsonValue>>* Mult=nullptr;if(!CustomDefs()->TryGetArrayField(TEXT("price_mult"),Mult) || !Mult->IsValidIndex(Tier-1))return 0;
+ return FMath::RoundToDouble(Number(Def,TEXT("base_price"))*(*Mult)[Tier-1]->AsNumber());
+}
+bool UMareSimulation::BuyCustom(const FString& Place,const FString& Slot,int32 Tier)
+{
+ auto Def=CustomSlot(Place,Slot);if(!Def.IsValid() || Tier<1 || Tier>5)return Fail(TEXT("Item de personalização desconhecido."));
+ const FString Unlock=String(Def,TEXT("unlock"));bool bUnlocked=Unlock.IsEmpty();if(!bUnlocked)Object(State,TEXT("unlocked"))->TryGetBoolField(Unlock,bUnlocked);
+ if(!bUnlocked)return Fail(TEXT("Compre antes a expansão ")+String(Object(Object(Definitions,TEXT("expansions")),Unlock),TEXT("name"))+TEXT("."));
+ bool bRequiresClosed=false;Object(Object(CustomDefs(),TEXT("places")),Place)->TryGetBoolField(TEXT("requires_closed"),bRequiresClosed);
+ if(bRequiresClosed && IsOpen())return Fail(TEXT("Feche o quiosque para trocar a decoração."));
+ const TArray<TSharedPtr<FJsonValue>>* Tiers=nullptr;
+ const FString Name=Def->TryGetArrayField(TEXT("tiers"),Tiers) && Tiers->IsValidIndex(Tier-1)?String((*Tiers)[Tier-1]->AsObject(),TEXT("name")):String(Def,TEXT("name"));
+ const bool bOwned=OwnsCustomTier(Place,Slot,Tier);
+ if(!bOwned){const double Price=CustomPrice(Place,Slot,Tier);if(Money()<Price)return Fail(FString::Printf(TEXT("Saldo insuficiente: %s custa R$ %.0f."),*Name,Price));}
+ // Object() hands back a detached object for missing keys: attach the chain before writing.
+ auto Custom=Object(State,TEXT("custom"));if(!State->HasField(TEXT("custom")))State->SetObjectField(TEXT("custom"),Custom);
+ auto PlaceState=Object(Custom,Place);if(!Custom->HasField(Place))Custom->SetObjectField(Place,PlaceState);
+ auto Entry=Object(PlaceState,Slot);if(!PlaceState->HasField(Slot))PlaceState->SetObjectField(Slot,Entry);
+ if(!bOwned){const double Price=CustomPrice(Place,Slot,Tier);Book(-Price,String(Def,TEXT("name"))+TEXT(": ")+Name);
+  TArray<TSharedPtr<FJsonValue>> Owned;const TArray<TSharedPtr<FJsonValue>>* Existing=nullptr;
+  if(Entry->TryGetArrayField(TEXT("owned"),Existing))Owned=*Existing;Owned.Add(MakeShared<FJsonValueNumber>(Tier));Entry->SetArrayField(TEXT("owned"),Owned);
+  LastMessage=FString::Printf(TEXT("Comprado: %s (%s)."),*Name,*String(Def,TEXT("name")));}
+ else LastMessage=FString::Printf(TEXT("Em uso: %s."),*Name);
+ Entry->SetNumberField(TEXT("tier"),Tier);
+ return Save();
+}
+static double SlotPoints(const UMareSimulation* Sim,const FString& Place,const TCHAR* Key)
+{
+ double Points=0;const TArray<TSharedPtr<FJsonValue>>* Slots=nullptr;
+ if(UMareSimulation::Object(UMareSimulation::Object(Sim->CustomDefs(),TEXT("places")),Place)->TryGetArrayField(TEXT("slots"),Slots))
+  for(const auto& V:*Slots){auto Def=V->AsObject();Points+=UMareSimulation::Number(Def,Key)*(Sim->CustomTier(Place,UMareSimulation::String(Def,TEXT("id")))-1);}
+ return Points;
+}
+double UMareSimulation::PlaceComfort(const FString& Place) const{return SlotPoints(this,Place,TEXT("comfort"));}
+double UMareSimulation::PlaceBeauty(const FString& Place) const{return SlotPoints(this,Place,TEXT("beauty"));}
+double UMareSimulation::CustomEffect(const FString& Key,double Fallback) const{return Number(Object(CustomDefs(),TEXT("effects")),Key,Fallback);}
+double UMareSimulation::KioskArrivalFactor() const{return 1+CustomEffect(TEXT("arrival_per_point"),.035)*(PlaceComfort(TEXT("kiosk"))+PlaceBeauty(TEXT("kiosk")));}
+double UMareSimulation::KioskTipRate() const{return CustomEffect(TEXT("tip_per_comfort"),.015)*PlaceComfort(TEXT("kiosk"));}
+double UMareSimulation::KioskPatienceFactor() const{return 1+CustomEffect(TEXT("patience_per_comfort"),.03)*PlaceComfort(TEXT("kiosk"));}
+double UMareSimulation::KioskServiceSpeed() const{return 1+CustomEffect(TEXT("speed_per_counter_tier"),.1)*(CustomTier(TEXT("kiosk"),TEXT("balcao"))-1);}
+int32 UMareSimulation::RecipeLevel(const FString& Dish) const{return FMath::Clamp(int32(Number(Object(State,TEXT("recipes")),Dish,1)),1,5);}
+double UMareSimulation::DishPrice(const FString& Dish) const
+{
+ const double Base=Number(Object(Object(Definitions,TEXT("dishes")),Dish),TEXT("price"));const TArray<TSharedPtr<FJsonValue>>* Mult=nullptr;
+ const int32 Level=RecipeLevel(Dish);
+ return Object(CustomDefs(),TEXT("recipes"))->TryGetArrayField(TEXT("price_mult"),Mult) && Mult->IsValidIndex(Level-1)?FMath::RoundToDouble(Base*(*Mult)[Level-1]->AsNumber()):Base;
+}
+double UMareSimulation::RecipeUpgradeCost(const FString& Dish) const
+{
+ const int32 Level=RecipeLevel(Dish);if(Level>=5)return 0;const TArray<TSharedPtr<FJsonValue>>* Mult=nullptr;
+ if(!Object(CustomDefs(),TEXT("recipes"))->TryGetArrayField(TEXT("cost_mult"),Mult) || !Mult->IsValidIndex(Level))return 0;
+ return FMath::RoundToDouble(Number(Object(Object(Definitions,TEXT("dishes")),Dish),TEXT("price"))*(*Mult)[Level]->AsNumber());
+}
+FString UMareSimulation::RecipeTitle(const FString& Dish,int32 Level) const
+{
+ if(Level<=0)Level=RecipeLevel(Dish);const TArray<TSharedPtr<FJsonValue>>* Notes=nullptr;
+ if(Object(Object(CustomDefs(),TEXT("recipes")),TEXT("notes"))->TryGetArrayField(Dish,Notes) && Notes->IsValidIndex(Level-1))return (*Notes)[Level-1]->AsString();
+ return String(Object(Object(Definitions,TEXT("dishes")),Dish),TEXT("name"));
+}
+bool UMareSimulation::UpgradeRecipe(const FString& Dish)
+{
+ if(!Object(Definitions,TEXT("dishes"))->HasField(Dish))return Fail(TEXT("Prato desconhecido."));
+ if(!IsDishUnlocked(Dish))return Fail(TEXT("Libere este produto antes de melhorar a receita."));
+ const int32 Level=RecipeLevel(Dish);if(Level>=5)return Fail(TEXT("Esta receita já está no nível máximo."));
+ const double Cost=RecipeUpgradeCost(Dish);if(Money()<Cost)return Fail(FString::Printf(TEXT("Saldo insuficiente: a receita custa R$ %.0f."),Cost));
+ auto Recipes=Object(State,TEXT("recipes"));if(!State->HasField(TEXT("recipes")))State->SetObjectField(TEXT("recipes"),Recipes);
+ Book(-Cost,TEXT("Receita: ")+RecipeTitle(Dish,Level+1));Recipes->SetNumberField(Dish,Level+1);
+ LastMessage=FString::Printf(TEXT("Nova receita: %s · agora R$ %.0f."),*RecipeTitle(Dish),DishPrice(Dish));
+ return Save();
+}
+double UMareSimulation::DishDemand(const FString& Dish) const
+{
+ return 1+Number(Object(CustomDefs(),TEXT("recipes")),TEXT("demand_per_level"),.5)*(RecipeLevel(Dish)-1);
 }

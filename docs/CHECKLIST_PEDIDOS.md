@@ -41,7 +41,13 @@ Legenda: [x] feito e validado · [~] em andamento/parcial · [ ] pendente.
 - [~] "Todas as correções visuais já foram feitas? Se não, mostre e corrija" (01/11): feito — faixas azuis do norte cobertas, mata dos morros 50% mais densa. Pendente/menor: telhado plano da barraca de souvenir (só visível do alto), farol simples, quartos do hotel sem interior.
 - [~] "Personagens com roupas diferentes: praia, social, para o hotel; procure assets ou crie no Blender" (01/11): estilos por cor já no jogo (praia colorida, social para hóspedes/recepção/barman, casual para moradores, uniforme para funcionários; `M_PersonOutfit`). Não existem roupas modernas CC0 para o rig Quaternius (só fantasia).
 - [ ] "Na praia precisa ter pessoas com biquíni" (01/11): o corpo exportado não tem pele do joelho ao peito (cortada sob a roupa); precisa restaurar o corpo completo do UBC (Quaternius CC0) no Blender e gerar variantes biquíni/sunga. Material `M_PersonBody` (roupa de banho a partir da roupa íntima pintada) já pronto.
-- [ ] "Personalização de tudo, 5 opções de cada, valores crescentes, mais bonitos e detalhados — quiosque, expansões, hotel, piscina, tobogã, casa (cama, sofá, armário, TV)" (01/11): sistema de personalização — próxima fase (gameplay), em planejamento.
+- [~] "Personalização de tudo, 5 opções de cada, valores crescentes, mais bonitos e detalhados — quiosque, expansões, hotel, piscina, tobogã, casa (cama, sofá, armário, TV)" (01/11): sistema de personalização — próxima fase (gameplay), em planejamento.
+  - [x] Sistema (01/11): catálogo `Content/Data/customization.json` (5 níveis por objeto, preços ×1/2,5/6/14/30), compra/troca grátis do que já tem/prévia grátis, save `custom.*`; efeitos no quiosque: movimento de clientes ×até 3,4, gorjeta, paciência, atendente mais rápido (balcão), fama; aba "Personalizar" no celular; teste `MareAlta.Migration.Customization`.
+  - [x] "Melhoria nos pratos, valores" (01/11): 5 níveis de receita por prato (preço ×1 até ×2,3, mais pedidos, fama a partir de Gourmet), nomes por nível.
+  - [x] Quiosque: 8 objetos × 5 níveis definidos (mesas, cadeiras, banquetas, guarda-sóis, balcão, iluminação, plantas, letreiro).
+  - [ ] Quiosque: importar os modelos Poly Haven dos níveis e criar os acabamentos com texturas PBR realistas ("coloque texturas realistas para não precisar refazer"); Canva só para os cartões do celular.
+  - [ ] Casa, praia, piscina/tobogã, hotel (com quartos) e expansões.
+- [ ] "Procure um modelo real de celular (asset) e adapte a tela" (01/11): celular 3D na mão com a interface na tela.
 - [x] Manter este checklist sempre que o usuário pedir algo (regra salva na memória).
 
 ## Regras permanentes já pedidas

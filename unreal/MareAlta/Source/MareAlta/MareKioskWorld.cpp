@@ -56,7 +56,10 @@ bool UMareKioskWorld::Serve(AMarePerson* Person,bool bStaff)
  if(Person->Stage==EMarePersonStage::Order){
   TArray<FString> Menu={TEXT("coco_gelado"),TEXT("suco"),TEXT("caipirinha"),TEXT("petiscos"),TEXT("sorvete_morango"),TEXT("sorvete_chocolate"),TEXT("batata_frita"),TEXT("porcao_peixe")};
   Menu.RemoveAll([S](const FString& Id){return !S->IsDishUnlocked(Id);});if(Menu.IsEmpty())return false;
-  Person->Plan={Menu[FMath::RandRange(0,Menu.Num()-1)]};if(FMath::RandRange(0,3)==0)Person->Plan.Add(Menu[FMath::RandRange(0,Menu.Num()-1)]);
+  // Better recipes are ordered more often (weight 1 + 0.5 per recipe level above the first).
+  auto PickDish=[S,&Menu](){double Total=0;for(const auto& Id:Menu)Total+=S->DishDemand(Id);double R=FMath::FRandRange(0.,Total);
+   for(const auto& Id:Menu){R-=S->DishDemand(Id);if(R<=0)return Id;}return Menu.Last();};
+  Person->Plan={PickDish()};if(FMath::RandRange(0,3)==0)Person->Plan.Add(PickDish());
   Person->OrderId=S->AddOrder(Person->PersonName,Person->Plan);if(Person->OrderId.IsEmpty())return false;
   Person->Stage=EMarePersonStage::Products;Person->Elapsed=0;return true;
  }
@@ -118,15 +121,24 @@ void UMareKioskWorld::CleanTable(int32 Index)
  if(!Guests.ContainsByPredicate([&](auto P){return IsValid(P) && P->TableIndex==Index && P->Stage!=EMarePersonStage::Leaving;}))ReservedTables.Remove(Index);
  if(auto S=Sim()){UMareSimulation::Object(S->State,TEXT("ue_dirty_tables"))->RemoveField(FString::FromInt(Index));S->Save();}
 }
+bool UMareKioskWorld::CanCustomize(FString& Reason)const
+{
+ auto S=GetWorld() && GetWorld()->GetGameInstance()?GetWorld()->GetGameInstance()->GetSubsystem<UMareSimulation>():nullptr;
+ if(S && S->IsOpen()){Reason=TEXT("Feche o quiosque pela placa do balcão para trocar a decoração.");return false;}
+ if(Guests.ContainsByPredicate([](const auto& P){return IsValid(P);})){Reason=TEXT("Espere os clientes saírem para trocar a decoração.");return false;}
+ if(!DirtyTables.IsEmpty()){Reason=TEXT("Recolha a louça das mesas antes de trocar a decoração.");return false;}
+ Reason.Empty();return true;
+}
 void UMareKioskWorld::UpdateCustomer(AMarePerson* P)
 {
+ auto S=Sim();if(!S)return;
  if(P->Stage==EMarePersonStage::Approaching && P->Elapsed>45){Leave(P);return;}
  if(P->Stage==EMarePersonStage::Approaching && P->AtGoal()){
   P->Stage=P->OrderId.IsEmpty()?EMarePersonStage::Order:EMarePersonStage::Products;P->Elapsed=0;
   if(CounterStaffPoints.IsValidIndex(P->CounterIndex))
    P->SetActorRotation(FRotator(0,(CounterStaffPoints[P->CounterIndex]-P->GetActorLocation()).Rotation().Yaw,0));
  }
- else if((P->Stage==EMarePersonStage::Order || P->Stage==EMarePersonStage::Products) && P->Elapsed>120)Leave(P);
+ else if((P->Stage==EMarePersonStage::Order || P->Stage==EMarePersonStage::Products) && P->Elapsed>120*S->KioskPatienceFactor())Leave(P);
  else if(P->Stage==EMarePersonStage::ToTable && (P->AtGoal() || P->Elapsed>35)){
   if(!P->AtGoal()){Leave(P);return;}
   if(P->TableIndex!=INDEX_NONE){if(auto AI=Cast<AAIController>(P->GetController()))AI->StopMovement();P->GetCharacterMovement()->DisableMovement();P->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);P->SetActorLocation(TablePoints[P->TableIndex]);P->SetActorRotation(FRotator(0,TableYaw[P->TableIndex],0));P->PlayPose(TEXT("Sitting_Idle"));}
@@ -176,7 +188,9 @@ void UMareKioskWorld::Tick(float DeltaSeconds)
  LastDay=Day;
  Guests.RemoveAll([](auto P){return !IsValid(P);});
  RecoverOrders();
- if(S->IsOpen()){Arrival-=DeltaSeconds;if(Arrival<=0){SpawnCustomer();Arrival=FMath::FRandRange(18.f,30.f);}}
+ // Decor comfort + beauty bring customers more often (KioskArrivalFactor, 1 .. ~3.4).
+ if(S->IsOpen()){Arrival-=DeltaSeconds;if(Arrival<=0){SpawnCustomer();Arrival=FMath::FRandRange(18.f,30.f)/float(S->KioskArrivalFactor());}}
+ if(IsValid(Attendant))Attendant->GetCharacterMovement()->MaxWalkSpeed=125.f*float(S->KioskServiceSpeed());
  for(auto P:Guests){
   if(!S->IsOpen() && P->OrderId.IsEmpty() && (P->Stage==EMarePersonStage::Approaching || P->Stage==EMarePersonStage::Order))Leave(P);
   UpdateCustomer(P);

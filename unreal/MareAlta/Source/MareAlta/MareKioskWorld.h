@@ -17,6 +17,8 @@ public:
  virtual void Tick(float DeltaSeconds) override;
  virtual TStatId GetStatId()const override;
  bool Serve(AMarePerson* Person,bool bStaff);
+ /** Furniture may change only with the kiosk closed and empty (rule from the approved Godot version). */
+ bool CanCustomize(FString& Reason)const;
  void CleanTable(int32 Index);
  /** Capture physical state in the same atomic save as its economy. Never writes a file. */
  void CaptureState();

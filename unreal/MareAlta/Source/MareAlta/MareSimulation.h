@@ -87,6 +87,35 @@ public:
  /** Read-only legacy import; destination always belongs to the Unreal project. */
  UFUNCTION(BlueprintCallable,Category="Maré Alta")
  bool ImportLegacySave(const FString& Path);
+ // ---- Customization (Content/Data/customization.json): 5 tiers per object, tier 1 is the starting look.
+ /** Catalogue loaded on first use (also works in automation tests that skip Initialize). */
+ TSharedPtr<FJsonObject> CustomDefs() const;
+ TSharedPtr<FJsonObject> CustomSlot(const FString& Place,const FString& Slot) const;
+ /** Selected tier 1..5 (state custom.<place>.<slot>.tier). */
+ UFUNCTION(BlueprintPure,Category="Maré Alta") int32 CustomTier(const FString& Place,const FString& Slot) const;
+ UFUNCTION(BlueprintPure,Category="Maré Alta") bool OwnsCustomTier(const FString& Place,const FString& Slot,int32 Tier) const;
+ /** Price of a tier: slot base_price x price_mult[tier-1]; tier 1 is free. */
+ UFUNCTION(BlueprintPure,Category="Maré Alta") double CustomPrice(const FString& Place,const FString& Slot,int32 Tier) const;
+ /** Buys the tier when not owned (charged once), then selects it. Owned tiers switch for free. */
+ UFUNCTION(BlueprintCallable,Category="Maré Alta") bool BuyCustom(const FString& Place,const FString& Slot,int32 Tier);
+ /** Comfort / beauty points of a place: sum over slots of weight x (tier-1). */
+ double PlaceComfort(const FString& Place) const;
+ double PlaceBeauty(const FString& Place) const;
+ double CustomEffect(const FString& Key,double Fallback=0) const;
+ /** Kiosk gameplay from the decor: customer arrival rate x, tip share, patience x, attendant speed x. */
+ UFUNCTION(BlueprintPure,Category="Maré Alta") double KioskArrivalFactor() const;
+ UFUNCTION(BlueprintPure,Category="Maré Alta") double KioskTipRate() const;
+ UFUNCTION(BlueprintPure,Category="Maré Alta") double KioskPatienceFactor() const;
+ UFUNCTION(BlueprintPure,Category="Maré Alta") double KioskServiceSpeed() const;
+ /** Recipe level 1..5 per dish (state recipes.<dish>): raises the sale price and the demand. */
+ UFUNCTION(BlueprintPure,Category="Maré Alta") int32 RecipeLevel(const FString& Dish) const;
+ UFUNCTION(BlueprintPure,Category="Maré Alta") double DishPrice(const FString& Dish) const;
+ /** Cost of the next recipe level (0 when maxed). */
+ UFUNCTION(BlueprintPure,Category="Maré Alta") double RecipeUpgradeCost(const FString& Dish) const;
+ UFUNCTION(BlueprintCallable,Category="Maré Alta") bool UpgradeRecipe(const FString& Dish);
+ FString RecipeTitle(const FString& Dish,int32 Level=0) const;
+ /** Relative chance a customer orders this dish (recipe level makes it more popular). */
+ double DishDemand(const FString& Dish) const;
  UFUNCTION(BlueprintCallable,Category="Maré Alta")
  double Money() const;
  UFUNCTION(BlueprintCallable,Category="Maré Alta")
@@ -99,4 +128,5 @@ private:
  void Book(double Amount,const FString& Label);
  bool Fail(const FString& Message);
  FString SavePath() const;
+ mutable TSharedPtr<FJsonObject> CustomCatalog;
 };

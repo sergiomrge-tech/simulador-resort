@@ -42,7 +42,7 @@ public:
  UFUNCTION(BlueprintCallable,Category="Maré Alta") void TogglePhone();
  UFUNCTION(BlueprintCallable,Category="Maré Alta") void TogglePauseMenu();
  virtual void SetupInputComponent() override;
- void OpenPhone(int32 Tab=0);
+ UFUNCTION(BlueprintCallable,Category="Maré Alta") void OpenPhone(int32 Tab=0);
  UFUNCTION(BlueprintCallable,Category="Maré Alta") void ClosePhone();
  UFUNCTION(BlueprintPure,Category="Maré Alta") UMareSimulation* GetSimulation()const;
  void OpenStation(FName Station);

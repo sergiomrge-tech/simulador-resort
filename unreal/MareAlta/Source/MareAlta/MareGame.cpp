@@ -8,6 +8,8 @@
 #include "EngineUtils.h"
 #include "MarePreviewQA.h"
 #include "MareAudioWorld.h"
+#include "MareCustomWorld.h"
+#include "MareKioskWorld.h"
 #include "Misc/CommandLine.h"
 #include "Misc/Parse.h"
 #include "MareSimulation.h"
@@ -90,7 +92,7 @@ namespace MareTropical
  const FSlateRoundedBoxBrush& Dot(FLinearColor C){static TMap<uint32,TSharedPtr<FSlateRoundedBoxBrush>> Cache;auto& B=Cache.FindOrAdd(C.ToFColor(false).ToPackedARGB());if(!B.IsValid())B=MakeShared<FSlateRoundedBoxBrush>(C,6.f);return *B;}
  const FButtonStyle& NavOn(){static const FButtonStyle S=FButtonStyle().SetNormal(FSlateRoundedBoxBrush(Hex(232,121,79),9.f)).SetHovered(FSlateRoundedBoxBrush(Hex(240,138,98),9.f)).SetPressed(FSlateRoundedBoxBrush(Hex(205,100,62),9.f));return S;}
  const FButtonStyle& NavOff(){static const FButtonStyle S=FButtonStyle().SetNormal(FSlateNoResource()).SetHovered(FSlateRoundedBoxBrush(Hex(255,255,255,.14f),9.f)).SetPressed(FSlateRoundedBoxBrush(Hex(255,255,255,.22f),9.f));return S;}
- FLinearColor TabColor(int32 I){static const FColor C[]={FColor(232,121,79),FColor(47,158,143),FColor(90,123,214),FColor(217,164,59),FColor(201,91,124),FColor(59,143,178)};return FLinearColor(C[FMath::Clamp(I,0,5)]);}
+ FLinearColor TabColor(int32 I){static const FColor C[]={FColor(232,121,79),FColor(47,158,143),FColor(90,123,214),FColor(217,164,59),FColor(201,91,124),FColor(59,143,178),FColor(150,105,190)};return FLinearColor(C[FMath::Clamp(I,0,6)]);}
  float Scale()
  {
   FVector2D View(1280,720);if(GEngine && GEngine->GameViewport)GEngine->GameViewport->GetViewportSize(View);
@@ -185,10 +187,57 @@ private:
    Line(TEXT("Converse com ")+UMareSimulation::String(C,TEXT("giver"))+TEXT(" para avançar."),12);
   }
  }
+ /** Personalizar: every kiosk object in 5 tiers (buy, use, free preview) and 5 recipe levels per dish. */
+ void Customize()
+ {
+  auto S=Sim();auto World=Owner->GetWorld();auto Custom=World->GetSubsystem<UMareCustomWorld>();auto Kiosk=World->GetSubsystem<UMareKioskWorld>();
+  const TArray<TSharedPtr<FJsonValue>>* TierNames=nullptr;S->CustomDefs()->TryGetArrayField(TEXT("tiers"),TierNames);
+  Line(TEXT("Quiosque"),18);
+  Line(FString::Printf(TEXT("Conforto %.0f · Beleza %.0f · movimento ×%.2f · gorjeta %.0f%% · paciência ×%.2f"),S->PlaceComfort(TEXT("kiosk")),S->PlaceBeauty(TEXT("kiosk")),
+   S->KioskArrivalFactor(),S->KioskTipRate()*100,S->KioskPatienceFactor()),12);
+  FString Reason;const bool bCanChange=!Kiosk || Kiosk->CanCustomize(Reason);
+  if(!bCanChange)Line(Reason,12);
+  const TArray<TSharedPtr<FJsonValue>>* Slots=nullptr;
+  if(UMareSimulation::Object(UMareSimulation::Object(S->CustomDefs(),TEXT("places")),TEXT("kiosk"))->TryGetArrayField(TEXT("slots"),Slots))for(const auto& Value:*Slots){
+   auto Def=Value->AsObject();const FString Slot=UMareSimulation::String(Def,TEXT("id"));const int32 Current=S->CustomTier(TEXT("kiosk"),Slot);
+   const TArray<TSharedPtr<FJsonValue>>* Tiers=nullptr;if(!Def->TryGetArrayField(TEXT("tiers"),Tiers))continue;
+   const FString Unlock=UMareSimulation::String(Def,TEXT("unlock"));bool bUnlocked=Unlock.IsEmpty();if(!bUnlocked)UMareSimulation::Object(S->State,TEXT("unlocked"))->TryGetBoolField(Unlock,bUnlocked);
+   Line(FString::Printf(TEXT("%s · %s"),*UMareSimulation::String(Def,TEXT("name")),*UMareSimulation::String((*Tiers)[Current-1]->AsObject(),TEXT("name"))),15);
+   const double C=UMareSimulation::Number(Def,TEXT("comfort")),B=UMareSimulation::Number(Def,TEXT("beauty"));
+   Line(FString::Printf(TEXT("Cada nível acima do Simples: +%.0f conforto, +%.0f beleza%s%s"),C,B,Def->HasField(TEXT("speed"))?TEXT(", atendente +10% rápido"):TEXT(""),Def->HasField(TEXT("fame"))?TEXT(", mais fama"):TEXT("")),11);
+   if(!bUnlocked){Line(TEXT("Disponível após comprar a expansão ")+UMareSimulation::String(UMareSimulation::Object(UMareSimulation::Object(S->Definitions,TEXT("expansions")),Unlock),TEXT("name"))+TEXT(" (Resort)."),12);continue;}
+   for(int32 Tier=1;Tier<=Tiers->Num();++Tier){auto TierDef=(*Tiers)[Tier-1]->AsObject();
+    const FString Level=TierNames && TierNames->IsValidIndex(Tier-1)?(*TierNames)[Tier-1]->AsString():FString::FromInt(Tier);
+    Body->AddSlot().AutoHeight().Padding(0,2)[SNew(SBorder).BorderImage(&MareUI::Card).Padding(8)[SNew(SVerticalBox)
+     +SVerticalBox::Slot().AutoHeight()[MareUI::Text(FString::Printf(TEXT("%d · %s — %s"),Tier,*Level,*UMareSimulation::String(TierDef,TEXT("name"))),12)]
+     +SVerticalBox::Slot().AutoHeight().Padding(0,2,0,0)[MareUI::Text(UMareSimulation::String(TierDef,TEXT("desc")),11,FLinearColor(.35f,.32f,.26f))]]];
+    auto Row=SNew(SHorizontalBox);const bool bOwned=S->OwnsCustomTier(TEXT("kiosk"),Slot,Tier);
+    if(Tier==Current)Row->AddSlot().AutoWidth().VAlign(VAlign_Center).Padding(0,0,8,0)[MareUI::Text(TEXT("Em uso"),12,FLinearColor(.12f,.45f,.3f))];
+    else if(bCanChange)Row->AddSlot().AutoWidth().Padding(0,0,6,0)[Button(bOwned?FString(TEXT("Usar")):FString::Printf(TEXT("Comprar · R$ %.0f"),S->CustomPrice(TEXT("kiosk"),Slot,Tier)),[S,Custom,Slot,Tier](){
+      if(S->BuyCustom(TEXT("kiosk"),Slot,Tier) && Custom)Custom->ApplyAll();})];
+    if(Tier!=Current && Custom)Row->AddSlot().AutoWidth()[Button(TEXT("Prévia"),[S,Custom,Slot,Tier](){Custom->Apply(TEXT("kiosk"),Slot,Tier,true);
+      S->LastMessage=TEXT("Prévia no quiosque. Feche o celular para voltar ao que está em uso.");})];
+    Body->AddSlot().AutoHeight().Padding(0,0,0,6)[Row];
+   }
+  }
+  Line(TEXT("Receitas"),18);
+  Line(TEXT("Receita melhor: preço maior, mais pedidos e, a partir de Gourmet, mais fama por venda."),12);
+  const TArray<FString> Products={TEXT("coco_gelado"),TEXT("suco"),TEXT("caipirinha"),TEXT("petiscos"),TEXT("sorvete_morango"),TEXT("sorvete_chocolate"),TEXT("batata_frita"),TEXT("porcao_peixe")};
+  const TArray<TSharedPtr<FJsonValue>>* Levels=nullptr;UMareSimulation::Object(S->CustomDefs(),TEXT("recipes"))->TryGetArrayField(TEXT("levels"),Levels);
+  for(const auto& Id:Products){auto Dish=UMareSimulation::Object(UMareSimulation::Object(S->Definitions,TEXT("dishes")),Id);const int32 Level=S->RecipeLevel(Id);
+   const FString LevelName=Levels && Levels->IsValidIndex(Level-1)?(*Levels)[Level-1]->AsString():FString::FromInt(Level);
+   Body->AddSlot().AutoHeight().Padding(0,2)[SNew(SBorder).BorderImage(&MareUI::Card).Padding(8)[SNew(SVerticalBox)
+    +SVerticalBox::Slot().AutoHeight()[MareUI::Text(FString::Printf(TEXT("%s · nível %d (%s) · R$ %.0f"),*UMareSimulation::String(Dish,TEXT("name")),Level,*LevelName,S->DishPrice(Id)),12)]
+    +SVerticalBox::Slot().AutoHeight().Padding(0,2,0,0)[MareUI::Text(S->RecipeTitle(Id),11,FLinearColor(.35f,.32f,.26f))]]];
+   if(!S->IsDishUnlocked(Id)){Line(TEXT("Libere o produto em Resort para melhorar a receita."),11);continue;}
+   if(Level>=5){Line(TEXT("Receita no nível máximo."),11);continue;}
+   Action(FString::Printf(TEXT("Melhorar para \"%s\" · R$ %.0f"),*S->RecipeTitle(Id,Level+1),S->RecipeUpgradeCost(Id)),[S,Id](){S->UpgradeRecipe(Id);});
+  }
+ }
  void Rebuild()
  {
   if(!Sim())return;auto S=Sim();using namespace MareTropical;
-  const TArray<FString> Titles={TEXT("Quiosque"),TEXT("Compras"),TEXT("Equipe"),TEXT("Finanças"),TEXT("Resort"),TEXT("Missões")};
+  const TArray<FString> Titles={TEXT("Quiosque"),TEXT("Compras"),TEXT("Equipe"),TEXT("Finanças"),TEXT("Resort"),TEXT("Missões"),TEXT("Personalizar")};
   auto Close=SNew(SButton).ButtonStyle(&MareUI::ActionButton).ContentPadding(FMargin(10,6)).OnClicked_Lambda([this](){if(Owner.IsValid())Owner->ClosePhone();return FReply::Handled();})[MareUI::Text(TEXT("Fechar · B / Esc"),12,FLinearColor::White)];
   // Side navigation like proposal C: company, balance and six coloured tabs.
   auto Nav=SNew(SVerticalBox);
@@ -203,7 +252,7 @@ private:
   SAssignNew(Body,SVerticalBox);
   auto Message=MareUI::Text(S->LastMessage,12,Hex(162,76,43));
   Message->SetVisibility(S->LastMessage.IsEmpty()?EVisibility::Collapsed:EVisibility::Visible);
-  const FString Heading=Station.IsNone()?Titles[FMath::Clamp(Tab,0,5)]:Station==TEXT("Fridge")?TEXT("Geladeira"):TEXT("Porções prontas");
+  const FString Heading=Station.IsNone()?Titles[FMath::Clamp(Tab,0,Titles.Num()-1)]:Station==TEXT("Fridge")?TEXT("Geladeira"):TEXT("Porções prontas");
   auto Content=SNew(SVerticalBox)
    +SVerticalBox::Slot().AutoHeight()[SNew(SHorizontalBox)
     +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(0,0,10,0)[SNew(SBox).WidthOverride(14).HeightOverride(14)[SNew(SBorder).BorderImage(&Dot(Station.IsNone()?TabColor(Tab):TabColor(1)))]]
@@ -253,7 +302,8 @@ private:
     else Action(UMareSimulation::String(Row,TEXT("name"))+FString::Printf(TEXT(" · R$ %.0f"),UMareSimulation::Number(Row,TEXT("cost"))),[S,Id](){S->BuyExpansion(Id);});
    }
   }
-  else Missions();
+  else if(Tab==5)Missions();
+  else Customize();
  }
 };
 AMareCharacter::AMareCharacter()
@@ -355,6 +405,8 @@ void AMareController::OpenStation(FName Station)
 void AMareController::ClosePhone()
 {
  if(PhoneWidget.IsValid() && GEngine && GEngine->GameViewport)GEngine->GameViewport->RemoveViewportWidgetContent(PhoneWidget.ToSharedRef());
+ // A furniture preview ends with the phone: show what is really in use again.
+ if(auto Custom=GetWorld()->GetSubsystem<UMareCustomWorld>())if(Custom->IsPreviewing())Custom->ApplyAll();
  PhoneWidget.Reset();bPhoneOpen=false;bShowMouseCursor=false;SetInputMode(FInputModeGameOnly());ResetIgnoreMoveInput();ResetIgnoreLookInput();
 }
 void AMareController::EndPlay(const EEndPlayReason::Type Reason){if(PauseWidget.IsValid() && GEngine && GEngine->GameViewport)GEngine->GameViewport->RemoveViewportWidgetContent(PauseWidget.ToSharedRef());PauseWidget.Reset();ClosePhone();Super::EndPlay(Reason);}
