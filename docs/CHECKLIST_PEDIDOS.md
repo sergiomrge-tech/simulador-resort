@@ -30,8 +30,8 @@ Legenda: [x] feito e validado · [~] em andamento/parcial · [ ] pendente.
 - [x] "Os braços ao nadar estão muito estranhos e feios" (01/11): braçada de peito em primeira pessoa (mãos se encontram, estendem, abrem e recolhem, no terço inferior da tela); parado na água, sculling suave. Regressão 100/100. Observação: o modelo da mão é o do personagem e continua simples.
 - [ ] "Após terminar os ajustes gráficos e visuais vamos trabalhar no gameplay" (01/11): próxima fase depois dos coqueiros.
 - [x] "Os coqueiros não combinam com o ambiente, substitua por assets mais realistas, procure na web" (01/11): Coconut Tree do Fab (Darmawan Pujisetyadi, CC BY 4.0), baixado pelo Chrome logado do usuário para `D:/Assets/Fab`, aplicado nos 171 coqueiros mantendo posições ("Bem melhor").
-- [ ] "Troque essas árvores também por assets mais realistas" (01/11): árvores low poly da vila (amendoeiras).
-- [ ] "Substitua os cocos do jogo por esses da foto" (01/11): Coconut da Quixel Megascans.
+- [x] "Troque essas árvores também por assets mais realistas" (01/11): as 16 amendoeiras facetadas viraram o HighPoly Tree Model do Fab (Next Spring, CC BY 4.0).
+- [ ] "Substitua os cocos do jogo por esses da foto" (01/11): Coconut da Quixel Megascans — o grátis é só para Fortnite (UEFN); licença Personal R$ 10,80 aguarda o "sim" do usuário.
 - [x] Manter este checklist sempre que o usuário pedir algo (regra salva na memória).
 
 ## Regras permanentes já pedidas

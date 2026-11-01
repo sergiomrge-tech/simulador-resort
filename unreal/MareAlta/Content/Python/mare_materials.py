@@ -225,3 +225,36 @@ def build_palm_fab():
     if errors: raise RuntimeError(str(errors))
     unreal.EditorAssetLibrary.save_loaded_asset(mat)
     return mat
+
+
+def build_hp_tree():
+    """Fab "HighPoly Tree Model" (Next Spring, CC BY 4.0): alpha-cut two-sided leaves + bark with normal."""
+    folder = '/Game/Nature/Trees'
+    leaf_tex = _model_texture('hp_tree_leaf.png', folder)
+    bark_tex = _model_texture('hp_tree_trunk.png', folder)
+    bark_nrm = _model_texture('hp_tree_trunk_normal.png', folder, True)
+    leaf = material('M_HPTreeLeaf_PBR')
+    leaf.set_editor_property('blend_mode', unreal.BlendMode.BLEND_MASKED)
+    leaf.set_editor_property('two_sided', True)
+    leaf.set_editor_property('shading_model', unreal.MaterialShadingModel.MSM_TWO_SIDED_FOLIAGE)
+    for m in (leaf,):
+        m.set_editor_property('used_with_nanite', True)
+        m.set_editor_property('used_with_instanced_static_meshes', True)
+    color = expression(leaf, unreal.MaterialExpressionTextureSample, texture=leaf_tex, sampler_type=unreal.MaterialSamplerType.SAMPLERTYPE_COLOR)
+    MEL.connect_material_property(color, 'RGB', unreal.MaterialProperty.MP_BASE_COLOR)
+    MEL.connect_material_property(color, 'A', unreal.MaterialProperty.MP_OPACITY_MASK)
+    MEL.connect_material_property(custom(leaf, 'return Base.rgb * float3(.6,.8,.4);', unreal.CustomMaterialOutputType.CMOT_FLOAT3, {'Base': color}), '', unreal.MaterialProperty.MP_SUBSURFACE_COLOR)
+    MEL.connect_material_property(expression(leaf, unreal.MaterialExpressionConstant, r=.65), '', unreal.MaterialProperty.MP_ROUGHNESS)
+    bark = material('M_HPTreeTrunk_PBR')
+    bark.set_editor_property('used_with_nanite', True)
+    bark.set_editor_property('used_with_instanced_static_meshes', True)
+    c = expression(bark, unreal.MaterialExpressionTextureSample, texture=bark_tex, sampler_type=unreal.MaterialSamplerType.SAMPLERTYPE_COLOR)
+    n = expression(bark, unreal.MaterialExpressionTextureSample, texture=bark_nrm, sampler_type=unreal.MaterialSamplerType.SAMPLERTYPE_NORMAL)
+    MEL.connect_material_property(c, 'RGB', unreal.MaterialProperty.MP_BASE_COLOR)
+    MEL.connect_material_property(n, 'RGB', unreal.MaterialProperty.MP_NORMAL)
+    MEL.connect_material_property(expression(bark, unreal.MaterialExpressionConstant, r=.85), '', unreal.MaterialProperty.MP_ROUGHNESS)
+    for m in (leaf, bark):
+        errors = list(MEL.recompile_material(m))
+        if errors: raise RuntimeError(str(errors))
+        unreal.EditorAssetLibrary.save_loaded_asset(m)
+    return {'leaf': leaf, 'trunk': bark}

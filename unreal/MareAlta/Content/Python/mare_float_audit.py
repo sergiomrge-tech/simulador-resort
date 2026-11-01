@@ -395,6 +395,20 @@ def run(action, arg=''):
             mesh.set_material(0, mat)
             unreal.EditorAssetLibrary.save_loaded_asset(mesh, False)
         return {'material': mat.get_path_name(), 'meshes': arg.split()}
+    if action == 'hptree':
+        import mare_materials, importlib
+        importlib.reload(mare_materials)
+        mats = mare_materials.build_hp_tree()
+        mapping = json.loads((DATA / 'imported_meshes.json').read_text(encoding='utf-8-sig'))
+        out = []
+        for name in arg.split():
+            mesh = unreal.load_asset(mapping[name])
+            for j, slot in enumerate(mesh.static_materials):
+                kind = 'leaf' if 'leaf' in str(slot.material_slot_name).lower() else 'trunk'
+                mesh.set_material(j, mats[kind])
+                out.append([name, j, kind])
+            unreal.EditorAssetLibrary.save_loaded_asset(mesh, False)
+        return out
     if action == 'mesh_materials':
         out = []
         for slot in unreal.load_asset(arg).static_materials:
