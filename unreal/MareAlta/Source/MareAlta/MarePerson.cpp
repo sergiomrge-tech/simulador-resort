@@ -121,5 +121,5 @@ void AMarePerson::Interact(APlayerController* Player)
 void AMarePerson::Tick(float DeltaSeconds)
 {
  Super::Tick(DeltaSeconds);Elapsed+=DeltaSeconds;
- if(GetVelocity().SizeSquared2D()>25)PlayPose(TEXT("Walk"));else if(bAmbient)PlayPose(bConversing?TEXT("Idle_Talking"):TEXT("Idle"));else if(Stage!=EMarePersonStage::Eating)PlayPose(TEXT("Idle"));
+ if(GetVelocity().SizeSquared2D()>25)PlayPose(TEXT("Walk"));else if(bAmbient)PlayPose(bSeated?TEXT("Sitting_Idle"):bConversing?TEXT("Idle_Talking"):TEXT("Idle"));else if(Stage!=EMarePersonStage::Eating)PlayPose(TEXT("Idle"));
 }

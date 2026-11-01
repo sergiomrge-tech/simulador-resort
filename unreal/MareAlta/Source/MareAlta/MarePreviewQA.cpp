@@ -73,7 +73,9 @@ void AMarePreviewQA::Tick(float DeltaSeconds)
  if(Root.IsEmpty()){
   FParse::Value(FCommandLine::Get(),TEXT("MareSaveRoot="),Root);Root.ReplaceInline(TEXT("\\"),TEXT("/"));
   if(!Root.StartsWith(TEXT("D:/CodexTemp/"))){Destroy();return;}
-  FApp::SetUnfocusedVolumeMultiplier(1.f);Next=FPlatformTime::Seconds()+12;Phase=FParse::Param(FCommandLine::Get(),TEXT("MareHomeOnlyQA"))?41:0;
+  FApp::SetUnfocusedVolumeMultiplier(1.f);Next=FPlatformTime::Seconds()+12;
+  // A run stopped during the muted-mix recording leaves Master=0 in GameUserSettings; start audible.
+  if(auto StartAudio=GetWorld()->GetSubsystem<UMareAudioWorld>())if(StartAudio->GetVolume(TEXT("Master"))==0)StartAudio->SetVolume(TEXT("Master"),.85f);Phase=FParse::Param(FCommandLine::Get(),TEXT("MareHomeOnlyQA"))?41:0;
  }
  if(FPlatformTime::Seconds()<Next || Phase>64)return;
  auto Move=Hero->GetCharacterMovement();auto Eyes=Hero->FindComponentByClass<UCameraComponent>();
@@ -115,7 +117,8 @@ void AMarePreviewQA::Tick(float DeltaSeconds)
   for(const FString Id:{TEXT("sorveteria"),TEXT("aluguel"),TEXT("surfe"),TEXT("food_truck"),TEXT("souvenir")})
    Check(TEXT("business_saved_visibility_")+Id,RegionMatches(TEXT("Biz_")+Id,UMareSimulation::Number(UMareSimulation::Object(BusinessState,Id),TEXT("lvl"))>0));
   bool bPoolOwned=false;Ownership->TryGetBoolField(TEXT("pool"),bPoolOwned);int32 LotCount=0;bool bLotCorrect=true;
-  for(TActorIterator<AActor> It(GetWorld());It;++It)if(It->ActorHasTag(TEXT("Lot_pool"))){++LotCount;bLotCorrect&=It->IsHidden()==bPoolOwned && It->GetActorEnableCollision()!=bPoolOwned;}
+  // Lawn plants on the lot (tag MareLawn) follow the cover but are not the cover itself.
+  for(TActorIterator<AActor> It(GetWorld());It;++It)if(It->ActorHasTag(TEXT("Lot_pool"))){LotCount+=!It->ActorHasTag(TEXT("MareLawn"));bLotCorrect&=It->IsHidden()==bPoolOwned && It->GetActorEnableCollision()!=bPoolOwned;}
   Check(TEXT("pool_ground_cover_before_purchase"),LotCount==1 && bLotCorrect);
   const double OriginalCash=Sim->Money();const auto OriginalOwnership=MakeShared<FJsonObject>(*Ownership);
   Ownership->RemoveField(TEXT("kiosk_tables"));Visual->RefreshExpansions();
@@ -200,7 +203,7 @@ void AMarePreviewQA::Tick(float DeltaSeconds)
    if(!bOwned)bPurchased&=Sim->BuyExpansion(Id);
   }
   Check(TEXT("expansion_pool_dependency_chain"),bPurchased);
-  bool bCoverRemoved=false;for(TActorIterator<AActor> It(GetWorld());It;++It)if(It->ActorHasTag(TEXT("Lot_pool")))bCoverRemoved=It->IsHidden() && !It->GetActorEnableCollision();
+  bool bCoverRemoved=true;for(TActorIterator<AActor> It(GetWorld());It;++It)if(It->ActorHasTag(TEXT("Lot_pool")))bCoverRemoved&=It->IsHidden() && !It->GetActorEnableCollision();
   Check(TEXT("pool_ground_cover_removed_after_purchase"),bCoverRemoved);break;
  }
  case 22:{Capture(TEXT("expansion-pool-purchased"));
@@ -209,7 +212,7 @@ void AMarePreviewQA::Tick(float DeltaSeconds)
   const bool bBlocked=GetWorld()->SweepSingleByChannel(Hit,FVector(-2100,5350,140),FVector(-2100,6550,140),FQuat::Identity,ECC_Pawn,FCollisionShape::MakeCapsule(32,70),Query);
   Check(TEXT("hotel_entrance_walkable"),!bBlocked);
   bool bReception=false;for(TActorIterator<AMareServiceTarget> It(GetWorld());It;++It)if(It->Action==TEXT("HotelReception"))bReception=!It->IsHidden();
-  Check(TEXT("hotel_reception_after_purchase"),bReception);Check(TEXT("hotel_lobby_guests"),GetWorld()->GetSubsystem<UMareVillageWorld>()->HotelGuestCount()>=4);break;}
+  Check(TEXT("hotel_reception_after_purchase"),bReception);Check(TEXT("hotel_lobby_guests"),GetWorld()->GetSubsystem<UMareVillageWorld>()->HotelGuestCount()>=15);break;}
  case 23:
   Sim->State->SetObjectField(TEXT("unlocked"),ExpansionOwnership);Sim->State->SetNumberField(TEXT("money"),ExpansionCash);
   GetWorld()->GetSubsystem<UMareVisualWorld>()->RefreshExpansions();

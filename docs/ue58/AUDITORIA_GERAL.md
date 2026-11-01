@@ -27,8 +27,15 @@ Legenda: [x] corrigido e conferido em captura · [~] parcial · [ ] pendente.
 
 ## Pendente (próximas levas, em ordem)
 
-- [ ] Reconstruir os grupos perdidos (grama, conchas, seixos, flores) nas posições corretas,
-  quando houver o export Godot com transformações por instância ou por PCG equivalente.
+- [x] Grupos perdidos recolocados: a causa era o export em `--headless` (o servidor de render falso
+  da Godot devolve identidade em `MultiMesh.get_instance_transform`). `tools/ue58/export_multimesh.gd`
+  roda a Godot com janela e grava as transformações reais; `float_audit restore_stacked` pareia os
+  grupos pela ordem de criação/contagem e devolve 3.994 instâncias ao nível e ao `world.json`:
+  seixos, conchas e algas na areia, canteiros floridos, caibros dos beirais das casas, fiação da rua.
+  Ficam de fora as copas low poly (`Copas*`, os morros já têm árvores CC0) e 1.735 itens sem par
+  seguro (grupos com nome/contagem diferente entre as execuções).
+- [x] 34 cabelos e câmeras de hóspedes da Godot flutuavam sobre as cadeiras do hotel (o corpo
+  animado não é exportado, os acessórios estáticos sim). Removidos (`float_audit remove_orphans`).
 
 - [x] Piscinas: água clara e transparente (turquesa), conferido no PIE.
 - [x] Janelas acesas à noite: `MPC_MareTime.Night` escrito pelo `UMareVisualWorld`; ~55% das janelas acendem (aleatório por instância). Conferido às 22h no PIE.
@@ -36,7 +43,10 @@ Legenda: [x] corrigido e conferido em captura · [~] parcial · [ ] pendente.
 - [x] Amendoeiras conferidas: 356 mil vértices com folhas modeladas, não são low poly. As "bolhas" eram as `Copas` empilhadas na origem (removidas).
 - [x] Vela plana do `mastro` agora enfunada (barriga máxima no terço da testa, `tools/ue58/billow_sail.py`); a vela da jangada já tinha curvatura.
 - [x] Hotel: recepcionista e 4 hóspedes no lobby após a compra (conversando, check-in, elevador); QA `hotel_lobby_guests`.
-- [ ] Hotel: restaurante/academia/quartos ainda sem interior utilizável.
+- [x] Hotel: restaurante (casais e cliente sozinho sentados nas mesas), academia (dupla conversando)
+  e bar da piscina (dois clientes e barman) ganham gente após a compra — 15 pessoas no total; QA
+  `hotel_lobby_guests` exige as 15.
+- [ ] Hotel: quartos ainda sem interior visitável (torre é casca com fachada).
 - [ ] Medir desempenho com mata, mar graduado, palmeiras e lobby (exige executável — só quando o usuário pedir).
 - [ ] Ícones de TextRender e linhas laranja aparecem só no editor (não no jogo) — sem ação.
 

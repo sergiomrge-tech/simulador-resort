@@ -92,14 +92,26 @@ void UMareVillageWorld::UpdateHotelGuests()
  if(!bHotel){for(auto P:HotelGuests)if(IsValid(P))P->Destroy();HotelGuests.Empty();return;}
  if(HotelGuests.Num())return;
  // Lobby floor is 45 cm above the terrace; capsule half-height 88 (tools/ue58/hotel_lobby_shell.py layout).
- struct FSpot{FVector At;float Yaw;int32 Look;bool bTalk;const TCHAR* Name;};
- const FSpot Spots[]={{FVector(-1390,6565,133),-90,2,true,TEXT("Recepcionista")},{FVector(-1390,6330,133),90,0,true,TEXT("Hóspede")},
-  {FVector(-1560,5760,133),90,3,true,TEXT("Hóspede")},{FVector(-1560,5880,133),-90,2,true,TEXT("Hóspede")},{FVector(-2600,6690,133),90,1,false,TEXT("Hóspede")}};
+ // Terrace venues follow the Godot hotel_world.gd layout: restaurant floor 155, gym floor 148, pool bar 120.
+ struct FSpot{FVector At;float Yaw;int32 Look;bool bTalk,bSeat;const TCHAR* Name;};
+ TArray<FSpot> Spots={{FVector(-1390,6565,133),-90,2,true,false,TEXT("Recepcionista")},{FVector(-1390,6330,133),90,0,true,false,TEXT("Hóspede")},
+  {FVector(-1560,5760,133),90,3,true,false,TEXT("Hóspede")},{FVector(-1560,5880,133),-90,2,true,false,TEXT("Hóspede")},{FVector(-2600,6690,133),90,1,false,false,TEXT("Hóspede")},
+  {FVector(-1290,3000,236),0,1,true,false,TEXT("Hóspede")},{FVector(-1180,3000,236),180,0,true,false,TEXT("Hóspede")},
+  {FVector(-2660,4520,208),90,3,true,false,TEXT("Hóspede")},{FVector(-2530,4510,208),110,2,true,false,TEXT("Hóspede")},{FVector(-2600,4760,208),-90,0,false,false,TEXT("Barman")}};
+ // Restaurant chairs: each outdoor_table_chair_set has one chair on each side of the table (local +Y / -Y);
+ // the second column of tables is turned 0.4 rad in Godot (-22.9° yaw here).
+ // Seated capsule centre sits as high above the floor as the kiosk diners (seat point + 88).
+ const float RestaurantSeat=105;
+ const struct{FVector Table;float Yaw;bool bBoth;int32 Look;}Tables[]={{FVector(-1200,3860,155),0,true,0},{FVector(-920,4200,155),-22.9f,true,2},{FVector(-1200,4540,155),0,false,1}};
+ for(const auto& T:Tables){const FRotator R(0,T.Yaw,0);
+  Spots.Add({T.Table+R.RotateVector(FVector(-11,52,RestaurantSeat)),T.Yaw-90,T.Look,true,true,TEXT("Hóspede")});
+  if(T.bBoth)Spots.Add({T.Table+R.RotateVector(FVector(7,-46,RestaurantSeat)),T.Yaw+90,(T.Look+3)%4,true,true,TEXT("Hóspede")});}
  for(const auto& S:Spots){FActorSpawnParameters Params;Params.SpawnCollisionHandlingOverride=ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
   auto P=GetWorld()->SpawnActor<AMarePerson>(S.At,FRotator(0,S.Yaw,0),Params);if(!P)continue;
   if(!P->SetAppearance(S.Look)){P->Destroy();continue;}
-  P->PersonName=S.Name;P->bAmbient=true;P->bConversing=S.bTalk;P->GetCharacterMovement()->DisableMovement();
-  P->GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Pawn,ECR_Block);P->Tags.Add(TEXT("MareHotelGuest"));HotelGuests.Add(P);}
+  P->PersonName=S.Name;P->bAmbient=true;P->bConversing=S.bTalk;P->bSeated=S.bSeat;P->GetCharacterMovement()->DisableMovement();
+  if(S.bSeat)P->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);else P->GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Pawn,ECR_Block);
+  P->Tags.Add(TEXT("MareHotelGuest"));HotelGuests.Add(P);}
 }
 void UMareVillageWorld::Tick(float Dt)
 {

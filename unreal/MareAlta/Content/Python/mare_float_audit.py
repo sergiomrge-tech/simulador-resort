@@ -231,6 +231,84 @@ def hide_broken():
     return out
 
 
+def restore_stacked(source):
+    """Put the MultiMesh groups removed by remove_stacked() back where Godot draws them, using the
+    per-instance transforms from tools/ue58/export_multimesh.gd (Godot run with a window). Groups are
+    paired in creation order by instance count (node names shift between runs); low-poly canopy
+    blobs (Copas*) stay out because the hills now carry real CC0 trees."""
+    import difflib
+    import re
+    from collections import defaultdict
+    from mare_world_builder import transform
+    fresh = json.loads(Path(source).read_text(encoding='utf-8'))
+    removed_doc = json.loads((DATA / 'stacked_origin_removed.json').read_text(encoding='utf-8'))
+    order = lambda n: int(re.sub(r'\D', '', n.split('#')[0]) or 0)
+    old = defaultdict(list)
+    for r in removed_doc['rows']:
+        if r['name'].startswith('@MultiMeshInstance3D@'):
+            old[r['name']].append(r)
+    old_names = sorted(old, key=order)
+    new_names = sorted((n for n in fresh if n.startswith('@MultiMeshInstance3D@')), key=order)
+    matcher = difflib.SequenceMatcher(None, [len(old[n]) for n in old_names], [fresh[n]['count'] for n in new_names], autojunk=False)
+    # A lone pairing of very common counts (8, 10…) is not evidence; keep runs of 3+ groups.
+    pairs = [(old_names[b.a + k], new_names[b.b + k]) for b in matcher.get_matching_blocks() if b.size >= 3 for k in range(b.size)]
+    mapping = json.loads((DATA / 'imported_meshes.json').read_text(encoding='utf-8-sig'))
+    aliases = json.loads((DATA / 'model_aliases.json').read_text(encoding='utf-8-sig'))
+    components = {}
+    for a in unreal.get_editor_subsystem(unreal.EditorActorSubsystem).get_all_level_actors():
+        if a.get_actor_label().startswith('Maré · '):
+            for c in a.get_components_by_class(unreal.InstancedStaticMeshComponent):
+                if c.static_mesh:
+                    components.setdefault(c.static_mesh.get_path_name().split('.')[0], c)
+    data = json.loads((DATA / 'world.json').read_text(encoding='utf-8-sig'))
+    restored, groups, used = 0, {}, set()
+    for old_name, new_name in pairs:
+        rows = old[old_name]
+        if len(rows) < 5:
+            continue
+        key = aliases.get(f"World_{rows[0]['mesh_index']:04d}", f"World_{rows[0]['mesh_index']:04d}")
+        native = mapping.get(key)
+        comp = components.get(native.split('.')[0]) if native else None
+        if comp is None:
+            continue
+        xforms = []
+        for row, t in zip(rows, fresh[new_name]['transforms']):
+            row = dict(row, transform=t)
+            ut = transform(t)
+            if ut is None:
+                continue
+            data['instances'].append(row)
+            xforms.append(ut)
+        comp.add_instances(xforms, False, True)
+        restored += len(xforms)
+        groups[old_name + ' -> ' + new_name] = len(xforms)
+        used.add(old_name)
+    data_rows = [r for r in removed_doc['rows'] if r['name'] not in used]
+    (DATA / 'world.json').write_text(json.dumps(data, ensure_ascii=False, indent='	'), encoding='utf-8')
+    removed_doc['rows'] = data_rows
+    removed_doc['restored'] = removed_doc.get('restored', 0) + restored
+    (DATA / 'stacked_origin_removed.json').write_text(json.dumps(removed_doc, ensure_ascii=False, indent=1), encoding='utf-8')
+    unreal.get_editor_subsystem(unreal.LevelEditorSubsystem).save_current_level()
+    return {'restored': restored, 'groups': len(groups), 'still_removed': len(data_rows), 'detail': groups}
+
+
+def remove_orphan_accessories():
+    """Godot hotel guests are skinned (not exported), but their hair and camera props are static and
+    were exported alone, floating over the hotel chairs. Drop them; the UE guests carry their own hair."""
+    prefixes = ('Hair_', 'Camera_')
+    removed = 0
+    for a in unreal.get_editor_subsystem(unreal.EditorActorSubsystem).get_all_level_actors():
+        if a.get_actor_label().startswith(tuple('Maré · ' + p for p in prefixes)):
+            removed += sum(c.get_instance_count() for c in a.get_components_by_class(unreal.InstancedStaticMeshComponent))
+            unreal.get_editor_subsystem(unreal.EditorActorSubsystem).destroy_actor(a)
+    data = json.loads((DATA / 'world.json').read_text(encoding='utf-8-sig'))
+    before = len(data['instances'])
+    data['instances'] = [r for r in data['instances'] if not r['name'].startswith(prefixes)]
+    (DATA / 'world.json').write_text(json.dumps(data, ensure_ascii=False, indent='	'), encoding='utf-8')
+    unreal.get_editor_subsystem(unreal.LevelEditorSubsystem).save_current_level()
+    return {'level_instances_removed': removed, 'world_rows_removed': before - len(data['instances'])}
+
+
 def remove_stacked():
     """Godot MultiMesh groups exported without per-instance transforms ended up stacked at the
     world origin (centre of the pousada pool). Remove small props pinned exactly at (0,0,0) from
@@ -294,6 +372,26 @@ def run(action, arg=''):
         return hide_broken()
     if action == 'reimport':
         return reimport_props(arg.split())
+    if action == 'bounds':
+        mapping = json.loads((DATA / 'imported_meshes.json').read_text(encoding='utf-8-sig'))
+        out = {}
+        for n in arg.split(','):
+            b = unreal.load_asset(mapping[n]).get_bounds()
+            out[n] = {'origin': [round(b.origin.x), round(b.origin.y), round(b.origin.z)], 'extent': [round(b.box_extent.x), round(b.box_extent.y), round(b.box_extent.z)]}
+        return out
+    if action == 'mesh_info':
+        out = {}
+        for path in arg.split(','):
+            m = unreal.load_asset(path)
+            out[path] = {'tris': m.get_num_triangles(0), 'nanite': m.get_editor_property('nanite_settings').enabled, 'size': [round(v * 2) for v in (m.get_bounds().box_extent.x, m.get_bounds().box_extent.y, m.get_bounds().box_extent.z)]}
+        return out
+    if action == 'skel_materials':
+        mesh = unreal.load_asset(arg)
+        return [{'slot': str(m.material_slot_name), 'material': m.material_interface.get_path_name() if m.material_interface else None} for m in mesh.materials]
+    if action == 'remove_orphans':
+        return remove_orphan_accessories()
+    if action == 'restore_stacked':
+        return restore_stacked(arg or 'D:/CodexTemp/multimesh/multimesh.json')
     if action == 'near':
         x, y, r = [float(v) for v in arg.split(',')]
         return near(x, y, r)

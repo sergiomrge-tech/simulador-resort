@@ -26,7 +26,7 @@ private:
  TArray<TArray<FVector>> Routes;
  TArray<FWalker> Pedestrians;
  UPROPERTY() TArray<TObjectPtr<AMarePerson>> Residents;
- /** Receptionist and guests in the Grand Hotel lobby, present only once the hotel is owned. */
+ /** Receptionist, lobby guests, restaurant diners, gym and pool-bar regulars of the Grand Hotel, present only once it is owned. */
  UPROPERTY() TArray<TObjectPtr<AMarePerson>> HotelGuests;
  void UpdateHotelGuests();
  TWeakObjectPtr<AMarePerson> Speaker;

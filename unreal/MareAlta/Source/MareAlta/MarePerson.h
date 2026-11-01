@@ -54,6 +54,8 @@ public:
  bool bEmployee=false;
  /** Village walkers/residents never participate in the kiosk order state machine. */
  bool bAmbient=false,bConversing=false;
+ /** Ambient guest placed on a chair (hotel restaurant); keeps the sitting pose. */
+ bool bSeated=false;
  UPROPERTY(BlueprintReadOnly,Category="Maré Alta")
  float Elapsed=0;
  UPROPERTY(BlueprintReadOnly,Category="Maré Alta")

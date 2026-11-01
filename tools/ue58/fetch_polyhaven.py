@@ -24,6 +24,7 @@ SETS = {
                  'mountainside', 'coastal_cliff_01', 'coastal_cliff_02', 'coastal_cliff_04'],
     'beach': ['coast_rocks_01', 'coast_rocks_02', 'coast_rocks_03', 'coast_rocks_05', 'sand_rocks_small_01',
               'lambis_shell', 'grass_bermuda_01'],
+    'lawn': ['grass_medium_01', 'grass_medium_02', 'wild_rooibos_bush', 'shrub_sorrel_01', 'flower_gazania', 'periwinkle_plant'],
 }
 
 

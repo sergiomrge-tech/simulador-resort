@@ -55,6 +55,14 @@ class MareMigrationTools(unreal.ToolsetDefinition):
 
     @toolset_registry.tool_call
     @staticmethod
+    def lawn_dressing(action: str, arg: str='') -> str:
+        """Probe lawn surfaces and dress open green areas with grass tufts, ferns and CC0 shrubs."""
+        import importlib,mare_lawn
+        importlib.reload(mare_lawn)
+        return json.dumps(mare_lawn.run(action,arg),ensure_ascii=False,default=str)
+
+    @toolset_registry.tool_call
+    @staticmethod
     def caribbean_coast(action: str, arg: str='') -> str:
         """Rebuild the coast sand/water materials or return comparison camera views."""
         import importlib,mare_beach

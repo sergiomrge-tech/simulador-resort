@@ -408,6 +408,16 @@ Casca do térreo (núcleo removido, entrada, paredes, forro, colunas, balcão e 
 - Shrub 04 (`shrub_04`), Rico Cilliers, CC0 — https://polyhaven.com/a/shrub_04
 - Tree Small 02 (`tree_small_02`), Rico Cilliers, CC0 — https://polyhaven.com/a/tree_small_02
 
+### Gramado e arbustos até os morros (UE5.8) — 01/11/2026
+
+Grama, arbustos, samambaias e flores (~115 mil instâncias Nanite, sem colisão) geradas por `Content/Python/mare_lawn.py` (contagem em `Content/Data/lawn_dressing.json`). Reutiliza os arbustos/samambaia da mata dos morros e acrescenta, em `/Game/Nature/Lawn/`, modelos **Poly Haven CC0**:
+
+- Grass Medium 01 (`grass_medium_01`), Rob Tuytel, Rico Cilliers, CC0 — https://polyhaven.com/a/grass_medium_01
+- Grass Medium 02 (`grass_medium_02`), Rico Cilliers, CC0 — https://polyhaven.com/a/grass_medium_02
+- Flower Gazania (`flower_gazania`), James Ray Cock, Jenelle van Heerden, CC0 — https://polyhaven.com/a/flower_gazania
+- Periwinkle Plant (`periwinkle_plant`), Amal Kumar, CC0 — https://polyhaven.com/a/periwinkle_plant
+- Importados mas fora do gramado (ficavam como manchas escuras): Wild Rooibos Bush (`wild_rooibos_bush`), James Ray Cock, Jenelle van Heerden, CC0 — https://polyhaven.com/a/wild_rooibos_bush; Shrub Sorrel 01 (`shrub_sorrel_01`), Rico Cilliers, CC0 — https://polyhaven.com/a/shrub_sorrel_01
+
 ### Rádio praiano — 01/11/2026
 
 Reggae Roots, Calipso Caribe e Praia Pop (ukulele): composições e síntese originais deste projeto, dedicadas a CC0, geradas por `tools/ue58/gen_radio_music.py` (cordas Karplus-Strong, steel pan modal, percussão sintetizada; sem vozes nem samples de terceiros). WAVs em `unreal/MareAlta/SourceArt/Audio/radio_*.wav`.

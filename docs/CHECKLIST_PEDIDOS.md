@@ -24,6 +24,11 @@ Legenda: [x] feito e validado · [~] em andamento/parcial · [ ] pendente.
 - [x] Andar pela vila, principalmente quiosque e hotel: regressão 99/99 no PIE, atendimento real com e sem atendente, hotel acessível; adicionado dispensar atendente. (`ue58/CAMINHADA_2026-11-01.md`)
 - [x] HUD/celular mais comercial, amigável e fácil: 3 propostas apresentadas (`ue58/hud-propostas/propostas.html`); usuário escolheu **B · Maré Tropical com o celular em abas laterais como na C** — implementado (faixa de madeira, comandas, bilhete de missões, placa de interação, avisos; celular/estações com abas laterais). Captura: `ue58/graphics-reference/hud-b-20261101`.
 - [~] Andar por todo o jogo, montar checklist do que precisa ser corrigido e corrigir (feito: janelas + luz noturna, piscinas, espuma, 5.729 objetos empilhados na piscina, mata das pontas; ver `ue58/AUDITORIA_GERAL.md`) (ex.: janelas opacas de todas as construções). Lista detalhada em `ue58/AUDITORIA_GERAL.md`.
+- [~] "Continue com os ajustes gráficos" (01/11): grama/conchas/seixos/flores/caibros/fiação recolocados nas posições da Godot (3.994 instâncias); 34 cabelos/câmeras de hóspedes flutuando no hotel removidos; hotel ganha hóspedes no restaurante, academia e bar da piscina. Pendente: interiores dos quartos.
+- [x] "Coloque grama e arbustos" + "Preencha até as montanhas, coloque arbustos também" (01/11): gramado cheio (grama CC0 Poly Haven) do resort, vila e lotes até a mata dos morros, com arbustos, samambaias e flores; lotes de expansão somem com a compra (`mare_lawn.py`).
+- [x] "Corrigiu os vidros opacos?": sim, na leva da auditoria (janelas das casas com vidro refletivo e luz à noite; demais vidros transparentes). Conferido de novo nas capturas da vila.
+- [ ] "Os braços ao nadar estão muito estranhos e feios" (01/11): refazer a braçada em primeira pessoa.
+- [ ] "Os coqueiros não combinam com o ambiente, substitua por assets mais realistas, procure na web" (01/11).
 - [x] Manter este checklist sempre que o usuário pedir algo (regra salva na memória).
 
 ## Regras permanentes já pedidas
