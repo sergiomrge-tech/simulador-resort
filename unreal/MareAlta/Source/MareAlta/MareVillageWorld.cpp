@@ -85,11 +85,27 @@ void UMareVillageWorld::UpdateWalkers(float Dt)
   W.Previous=P->GetActorLocation();
  }
 }
+void UMareVillageWorld::UpdateHotelGuests()
+{
+ auto Sim=GetWorld()->GetGameInstance()->GetSubsystem<UMareSimulation>();bool bHotel=false;
+ UMareSimulation::Object(Sim->State,TEXT("unlocked"))->TryGetBoolField(TEXT("grand_hotel"),bHotel);
+ if(!bHotel){for(auto P:HotelGuests)if(IsValid(P))P->Destroy();HotelGuests.Empty();return;}
+ if(HotelGuests.Num())return;
+ // Lobby floor is 45 cm above the terrace; capsule half-height 88 (tools/ue58/hotel_lobby_shell.py layout).
+ struct FSpot{FVector At;float Yaw;int32 Look;bool bTalk;const TCHAR* Name;};
+ const FSpot Spots[]={{FVector(-1390,6565,133),-90,2,true,TEXT("Recepcionista")},{FVector(-1390,6330,133),90,0,true,TEXT("Hóspede")},
+  {FVector(-1560,5760,133),90,3,true,TEXT("Hóspede")},{FVector(-1560,5880,133),-90,2,true,TEXT("Hóspede")},{FVector(-2600,6690,133),90,1,false,TEXT("Hóspede")}};
+ for(const auto& S:Spots){FActorSpawnParameters Params;Params.SpawnCollisionHandlingOverride=ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+  auto P=GetWorld()->SpawnActor<AMarePerson>(S.At,FRotator(0,S.Yaw,0),Params);if(!P)continue;
+  if(!P->SetAppearance(S.Look)){P->Destroy();continue;}
+  P->PersonName=S.Name;P->bAmbient=true;P->bConversing=S.bTalk;P->GetCharacterMovement()->DisableMovement();
+  P->GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Pawn,ECR_Block);P->Tags.Add(TEXT("MareHotelGuest"));HotelGuests.Add(P);}
+}
 void UMareVillageWorld::Tick(float Dt)
 {
  if(!GetWorld()->IsGameWorld() || !Cast<AMareGameMode>(GetWorld()->GetAuthGameMode()) || UGameplayStatics::IsGamePaused(this))return;
  Clock-=Dt;if(Clock>0)return;Clock=.25f;if(!bReady){Setup();if(!bReady)return;}
- UpdateWalkers(.25f);
+ UpdateWalkers(.25f);UpdateHotelGuests();
 }
 void UMareVillageWorld::Speak(AMarePerson* Person,APlayerController* Controller)
 {
@@ -137,4 +153,4 @@ void UMareVillageWorld::CloseDialogue()
  if(auto Person=Speaker.Get())Person->bConversing=false;Speaker.Reset();
  if(auto PC=DialogController.Get()){PC->bShowMouseCursor=false;PC->SetInputMode(FInputModeGameOnly());PC->ResetIgnoreMoveInput();PC->ResetIgnoreLookInput();}DialogController.Reset();
 }
-void UMareVillageWorld::Deinitialize(){CloseDialogue();Residents.Empty();Pedestrians.Empty();Super::Deinitialize();}
+void UMareVillageWorld::Deinitialize(){CloseDialogue();Residents.Empty();HotelGuests.Empty();Pedestrians.Empty();Super::Deinitialize();}

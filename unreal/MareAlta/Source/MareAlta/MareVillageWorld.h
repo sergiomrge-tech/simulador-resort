@@ -20,11 +20,15 @@ public:
  bool IsDialogueOpen()const{return Dialogue.IsValid();}
  int32 ResidentCount()const{return Residents.Num();}
  int32 PedestrianCount()const{return Pedestrians.Num();}
+ int32 HotelGuestCount()const{return HotelGuests.Num();}
 private:
  struct FWalker{TWeakObjectPtr<AMarePerson> Person;int32 Route=0,Point=0,Direction=1,BlockedAttempts=0;float Wait=0,Stuck=0;FVector Previous;};
  TArray<TArray<FVector>> Routes;
  TArray<FWalker> Pedestrians;
  UPROPERTY() TArray<TObjectPtr<AMarePerson>> Residents;
+ /** Receptionist and guests in the Grand Hotel lobby, present only once the hotel is owned. */
+ UPROPERTY() TArray<TObjectPtr<AMarePerson>> HotelGuests;
+ void UpdateHotelGuests();
  TWeakObjectPtr<AMarePerson> Speaker;
  TWeakObjectPtr<APlayerController> DialogController;
  TSharedPtr<SWidget> Dialogue;

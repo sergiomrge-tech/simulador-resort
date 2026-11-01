@@ -209,7 +209,7 @@ void AMarePreviewQA::Tick(float DeltaSeconds)
   const bool bBlocked=GetWorld()->SweepSingleByChannel(Hit,FVector(-2100,5350,140),FVector(-2100,6550,140),FQuat::Identity,ECC_Pawn,FCollisionShape::MakeCapsule(32,70),Query);
   Check(TEXT("hotel_entrance_walkable"),!bBlocked);
   bool bReception=false;for(TActorIterator<AMareServiceTarget> It(GetWorld());It;++It)if(It->Action==TEXT("HotelReception"))bReception=!It->IsHidden();
-  Check(TEXT("hotel_reception_after_purchase"),bReception);break;}
+  Check(TEXT("hotel_reception_after_purchase"),bReception);Check(TEXT("hotel_lobby_guests"),GetWorld()->GetSubsystem<UMareVillageWorld>()->HotelGuestCount()>=4);break;}
  case 23:
   Sim->State->SetObjectField(TEXT("unlocked"),ExpansionOwnership);Sim->State->SetNumberField(TEXT("money"),ExpansionCash);
   GetWorld()->GetSubsystem<UMareVisualWorld>()->RefreshExpansions();

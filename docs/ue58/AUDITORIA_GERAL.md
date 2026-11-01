@@ -35,7 +35,9 @@ Legenda: [x] corrigido e conferido em captura · [~] parcial · [ ] pendente.
 - [x] Palmeiras (4 variantes, 171 instâncias): frondes de cartão trocadas por frondes modeladas (raque curvada, ~90 folíolos por fronde, 18 frondes + 4 jovens), material de folhagem com luz atravessando (`M_PalmFrond_PBR`); troncos/cocos mantidos (`tools/ue58/palm_fronds.py`).
 - [x] Amendoeiras conferidas: 356 mil vértices com folhas modeladas, não são low poly. As "bolhas" eram as `Copas` empilhadas na origem (removidas).
 - [x] Vela plana do `mastro` agora enfunada (barriga máxima no terço da testa, `tools/ue58/billow_sail.py`); a vela da jangada já tinha curvatura.
-- [ ] Hotel: hóspedes no lobby; restaurante/academia/quartos sem interior utilizável.
+- [x] Hotel: recepcionista e 4 hóspedes no lobby após a compra (conversando, check-in, elevador); QA `hotel_lobby_guests`.
+- [ ] Hotel: restaurante/academia/quartos ainda sem interior utilizável.
+- [ ] Medir desempenho com mata, mar graduado, palmeiras e lobby (exige executável — só quando o usuário pedir).
 - [ ] Ícones de TextRender e linhas laranja aparecem só no editor (não no jogo) — sem ação.
 
 Validação desta leva: capturas antes/depois em `graphics-reference/auditoria-20261101/`.

@@ -23,7 +23,7 @@ $required+=@('grass_coverage_cooked','grass_nonblocking_culled','grass_cycle_cap
 $required+=@('swim_hands_in_front_separated')
 $required+=@('village_residents_present','village_pedestrian_budget','village_walkers_active','village_resident_looks','village_resident_focus','village_dialogue_opens','village_dialogue_blocks_phone','village_dialogue_cycle')
 $required+=@('radio_cycles_all_stations')
-$required+=@('hotel_entrance_walkable','hotel_reception_after_purchase')
+$required+=@('hotel_entrance_walkable','hotel_reception_after_purchase','hotel_lobby_guests')
 $required+=@('chapter_giver_focus','chapter_dialogue_opens','chapter_market_purchase_once','chapter_deliver_consumes_once','bed_focus','sleep_starts_and_locks_input','sleep_advances_day_and_wakes','sleep_pays_wage_once','progression_day_close')
 foreach($picture in @('chapter-ze.png','chapter-ze-step2.png','sleep-wake.png')){if(-not (Test-Path -LiteralPath "$qa/$picture")){throw "Captura de progressão ausente: $picture"}}
 foreach($picture in @('village-dialogue.png','village-day.png')){if(-not (Test-Path -LiteralPath "$qa/$picture")){throw "Captura da vila ausente: $picture"}}
