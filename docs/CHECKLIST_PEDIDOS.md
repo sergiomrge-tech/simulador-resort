@@ -22,7 +22,7 @@ Legenda: [x] feito e validado · [~] em andamento/parcial · [ ] pendente.
 - [x] Polimento visual: objetos flutuando (26 itens corrigidos; varredura `mare_float_audit`) e 36 malhas facetadas da praia suavizadas (guarda-sóis listrados/palha/sombreiros, armações e mastros; `tools/ue58/smooth_props.py`).
 - [x] Rádio: 3 novas músicas originais (Reggae Roots, Calipso Caribe, Praia Pop/ukulele), 6 estações + desligado, nome no celular; testado no PIE.
 - [x] Andar pela vila, principalmente quiosque e hotel: regressão 99/99 no PIE, atendimento real com e sem atendente, hotel acessível; adicionado dispensar atendente. (`ue58/CAMINHADA_2026-11-01.md`)
-- [ ] HUD/celular mais comercial, amigável e fácil: apresentar 3 propostas e implementar a escolhida (depois do lote atual).
+- [~] HUD/celular mais comercial, amigável e fácil: 3 propostas apresentadas (`ue58/hud-propostas/propostas.html`); **aguardando escolha do usuário** para implementar.
 - [x] Manter este checklist sempre que o usuário pedir algo (regra salva na memória).
 
 ## Regras permanentes já pedidas
