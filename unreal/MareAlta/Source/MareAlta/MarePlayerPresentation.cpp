@@ -69,6 +69,13 @@ bool UMarePlayerPresentation::HandTarget(int32 Hand,FVector& Target,FVector& Elb
  const FVector Forward=Hero->GetActorForwardVector(),Right=Hero->GetActorRightVector();
  Target=Eyes->GetComponentLocation()+Forward*43+Right*Side*17-FVector(0,0,28);
  Elbow=Hero->GetActorLocation()+Right*Side*40+Forward*6+FVector(0,0,20);
+ if(auto Phone=Hero->GetHeldPhone()){
+  // One hand (the right) holds the phone by its right end, below the glass; the left arm stays down.
+  if(Hand!=0){Weight=0.f;return false;}
+  const FVector Center=Phone->Bounds.Origin,EyeRight=Eyes->GetRightVector(),EyeUp=Eyes->GetUpVector();
+  Target=Center+EyeRight*Side*16.5f-EyeUp*4.f-Eyes->GetForwardVector()*1.5f;
+  Elbow=Eyes->GetComponentLocation()+EyeRight*Side*34.f-EyeUp*48.f+Eyes->GetForwardVector()*4.f;Weight=1.f;return true;
+ }
  if(Hero->GetCharacterMovement()->IsSwimming() && !bCarrying){
   // Breaststroke seen from the eyes: hands meet under the chin, glide forward, sweep out, pull
   // back low and recover. Offsets are (forward, outward, down) in cm from the eyes; keeping the

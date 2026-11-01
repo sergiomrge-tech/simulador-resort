@@ -534,3 +534,8 @@ Móveis originais modelados para o projeto com bpy (`tools/ue58/gen_custom_furni
 ### Celular na mão (UE5.8) — 01/11/2026
 
 - "Realistic Smartphone" por dimension Dazzle — Fab, licença Creative Commons Attribution 4.0 (CC BY 4.0) — https://www.fab.com/listings/b4214af8-b5d2-45fd-82bc-72e86329857b (as três peças foram unidas no Blender para importar).
+
+### Fontes do celular (UE5.8) — 01/11/2026
+
+- Patrick Hand — Patrick Wagesreiter — SIL Open Font License 1.1 (`Content/UI/Fonts/OFL-PatrickHand.txt`).
+- Nunito SemiBold/ExtraBold — Vernon Adams, Cyreal, Jacques Le Bailly — SIL Open Font License 1.1 (`Content/UI/Fonts/OFL-Nunito.txt`).

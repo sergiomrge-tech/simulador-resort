@@ -19,8 +19,15 @@ public:
  virtual void Tick(float DeltaSeconds) override;
  /** Shared vertical swim control for keyboard, gamepad and QA. Positive rises, negative dives. */
  UFUNCTION(BlueprintCallable,Category="Movement") void SwimVertical(float Value);
+ /** Real smartphone (Data/custom_assets.json "realistic_smartphone") held in front of the eyes while the phone is open. */
+ void SetPhoneVisible(bool bVisible);
+ /** The held phone, or null while it is put away (hand IK grips its short edges). */
+ class UStaticMeshComponent* GetHeldPhone()const;
+ /** Glass of the held phone projected to the viewport, in pixels: the phone UI is drawn exactly there. */
+ bool PhoneScreenRect(FVector2D& Min,FVector2D& Max)const;
 private:
  UPROPERTY() TObjectPtr<UCameraComponent> Eyes;
+ UPROPERTY() TObjectPtr<class UStaticMeshComponent> PhoneModel;
  float VerticalSwimInput=0.f;
  bool bSprint=false;
  FVector SafeLandLocation=FVector(3800,-1200,100);

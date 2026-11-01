@@ -310,7 +310,7 @@
 			"unlock": "Food truck do Pastel + dica da moqueca"
 		},
 		{
-			"giver": "Prefeita Alana",
+			"giver": "Prefeita Tuanny",
 			"id": "carnaval",
 			"reward": 500,
 			"steps": [
@@ -330,7 +330,7 @@
 					"text": "Pagar R$ 400 da decoração"
 				}
 			],
-			"story": "A prefeita Alana sonha com um carnaval de praia que traga turistas de longe. Ele conta com você.",
+			"story": "A prefeita Tuanny sonha com um carnaval de praia que traga turistas de longe. Ele conta com você.",
 			"title": "O Carnaval da Maré",
 			"unlock": "Carnaval no fim de cada verão + Lojinha de souvenires"
 		}
