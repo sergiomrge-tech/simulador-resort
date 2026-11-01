@@ -61,7 +61,7 @@ void AMarePreviewQA::Check(const FString& Name,bool bPass)
   if(GetWorld()->LineTraceSingleByChannel(Hit,P,P+FVector(0,0,180),ECC_Visibility,Query))Row->SetStringField(TEXT("overhead"),GetNameSafe(Hit.GetActor()));
  }
  Results.Add(MakeShared<FJsonValueObject>(Row));UE_LOG(LogTemp,Display,TEXT("MARE_PREVIEW_QA %s %s"),*Name,bPass?TEXT("PASS"):TEXT("FAIL"));
- auto Report=MakeShared<FJsonObject>();Report->SetArrayField(TEXT("checks"),Results);Report->SetBoolField(TEXT("finished"),Name==TEXT("village_dialogue_cycle"));
+ auto Report=MakeShared<FJsonObject>();Report->SetArrayField(TEXT("checks"),Results);Report->SetBoolField(TEXT("finished"),Name==TEXT("progression_day_close"));
  FString Text;FJsonSerializer::Serialize(Report,TJsonWriterFactory<>::Create(&Text));FFileHelper::SaveStringToFile(Text,*(Root/TEXT("preview-qa.json")));
 }
 void AMarePreviewQA::Capture(const FString& Name){FScreenshotRequest::RequestScreenshot(Root/(Name+TEXT(".png")),true,false);}
@@ -75,7 +75,7 @@ void AMarePreviewQA::Tick(float DeltaSeconds)
   if(!Root.StartsWith(TEXT("D:/CodexTemp/"))){Destroy();return;}
   FApp::SetUnfocusedVolumeMultiplier(1.f);Next=FPlatformTime::Seconds()+12;Phase=FParse::Param(FCommandLine::Get(),TEXT("MareHomeOnlyQA"))?41:0;
  }
- if(FPlatformTime::Seconds()<Next || Phase>58)return;
+ if(FPlatformTime::Seconds()<Next || Phase>64)return;
  auto Move=Hero->GetCharacterMovement();auto Eyes=Hero->FindComponentByClass<UCameraComponent>();
  auto Audio=GetWorld()->GetSubsystem<UMareAudioWorld>();auto Sim=PC->GetSimulation();
  auto Key=[&](FKey K,bool Down){PC->InputKey(FInputKeyEventArgs(GEngine->GameViewport->Viewport,INPUTDEVICEID_NONE,K,Down?IE_Pressed:IE_Released,FPlatformTime::Cycles64()));};
@@ -254,7 +254,28 @@ void AMarePreviewQA::Tick(float DeltaSeconds)
   Check(TEXT("village_dialogue_opens"),GetWorld()->GetSubsystem<UMareVillageWorld>()->IsDialogueOpen() && PC->IsMoveInputIgnored());Capture(TEXT("village-dialogue"));break;}
  case 56:PC->TogglePhone();Check(TEXT("village_dialogue_blocks_phone"),!PC->bPhoneOpen);PC->TogglePauseMenu();Capture(TEXT("village-day"));break;
  case 57:Check(TEXT("village_dialogue_cycle"),!GetWorld()->GetSubsystem<UMareVillageWorld>()->IsDialogueOpen() && !PC->IsMoveInputIgnored() && !UGameplayStatics::IsGamePaused(this) && Sim->Save());break;
- case 58:if(GetWorld()->WorldType!=EWorldType::PIE)GEngine->Exec(GetWorld(),TEXT("QUIT"));break;
+ case 58:for(TActorIterator<AMareServiceTarget> It(GetWorld());It;++It)if(It->Action==TEXT("Resident") && It->Label.StartsWith(TEXT("Seu Zé"))){
+  Hero->SetActorLocation(It->GetOwner()->GetActorLocation()+FVector(-200,0,0));Move->StopMovementImmediately();PC->SetControlRotation((It->GetActorLocation()-(Hero->GetActorLocation()+FVector(0,0,74))).Rotation());break;}break;
+ case 59:{auto Target=AMareServiceTarget::FindFocused(PC);const bool bZe=Target && Target->Action==TEXT("Resident") && Target->Label.StartsWith(TEXT("Seu Zé"));
+  Check(TEXT("chapter_giver_focus"),bZe);if(bZe)Target->Use(PC);
+  Check(TEXT("chapter_dialogue_opens"),GetWorld()->GetSubsystem<UMareVillageWorld>()->IsDialogueOpen() && Sim->IsChapterOpen(TEXT("pier")) && Sim->ChapterStep(TEXT("pier"))==0);Capture(TEXT("chapter-ze"));break;}
+ case 60:{GetWorld()->GetSubsystem<UMareVillageWorld>()->CloseDialogue();Sim->State->SetNumberField(TEXT("money"),1000);
+  auto Stock=UMareSimulation::Object(Sim->State,TEXT("stock"));Stock->SetNumberField(TEXT("peixe"),0);const double Cash=Sim->Money();
+  Check(TEXT("chapter_market_purchase_once"),Sim->BuySupply(TEXT("peixe"),4) && Sim->Money()==Cash-Sim->SupplyCost(TEXT("peixe"),4));
+  Check(TEXT("chapter_deliver_consumes_once"),Sim->AdvanceChapter(TEXT("pier")) && UMareSimulation::Number(Stock,TEXT("peixe"))==0 && Sim->ChapterStep(TEXT("pier"))==1 && !Sim->AdvanceChapter(TEXT("pier")));
+  for(TActorIterator<AMareServiceTarget> It(GetWorld());It;++It)if(It->Action==TEXT("Resident") && It->Label.StartsWith(TEXT("Seu Zé"))){It->Use(PC);break;}
+  Capture(TEXT("chapter-ze-step2"));break;}
+ case 61:{GetWorld()->GetSubsystem<UMareVillageWorld>()->CloseDialogue();bool bHired=false;UMareSimulation::Object(Sim->State,TEXT("staff"))->TryGetBoolField(TEXT("atendente"),bHired);if(!bHired)Sim->HireAttendant();
+  SleepDay=UMareSimulation::Number(Sim->State,TEXT("day"),1);SleepCash=Sim->Money();
+  for(TActorIterator<AMareServiceTarget> It(GetWorld());It;++It)if(It->Action==TEXT("Bed")){Hero->SetActorLocation(It->GetActorLocation()+FVector(0,160,40));Move->StopMovementImmediately();
+   PC->SetControlRotation((It->GetActorLocation()-(Hero->GetActorLocation()+FVector(0,0,74))).Rotation());break;}break;}
+ case 62:{auto Target=AMareServiceTarget::FindFocused(PC);Check(TEXT("bed_focus"),Target && Target->Action==TEXT("Bed"));if(Target && Target->Action==TEXT("Bed"))Target->Use(PC);
+  Check(TEXT("sleep_starts_and_locks_input"),GetWorld()->GetSubsystem<UMareHomeWorld>()->IsSleeping() && PC->IsMoveInputIgnored());break;}
+ case 63:{const double Wage=UMareSimulation::Number(UMareSimulation::Object(UMareSimulation::Object(Sim->Definitions,TEXT("staff")),TEXT("atendente")),TEXT("wage"));
+  Check(TEXT("sleep_advances_day_and_wakes"),UMareSimulation::Number(Sim->State,TEXT("day"),1)==SleepDay+1 && !GetWorld()->GetSubsystem<UMareHomeWorld>()->IsSleeping() && !PC->IsMoveInputIgnored() && !Sim->IsOpen());
+  Check(TEXT("sleep_pays_wage_once"),FMath::IsNearlyEqual(Sim->Money(),SleepCash-Wage) && Sim->State->HasTypedField<EJson::Object>(TEXT("ue_last_day")));
+  Capture(TEXT("sleep-wake"));Check(TEXT("progression_day_close"),Sim->Save());break;}
+ case 64:if(GetWorld()->WorldType!=EWorldType::PIE)GEngine->Exec(GetWorld(),TEXT("QUIT"));break;
  }
  Next=FPlatformTime::Seconds()+((Phase==27 || Phase==28)?.5:Phase==13?10:Phase==1?7:Phase==3?4:Phase==4?5:3);
 }

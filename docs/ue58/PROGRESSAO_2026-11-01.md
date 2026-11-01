@@ -62,8 +62,6 @@ um atendente e pagamento automático.
 
 ## Limitações
 
-- **Executável não empacotado nem testado neste lote.** A prévia jogável continua a
-  de 29/10 (`45cc1e69`). Não chamar este lote de jogável antes do pacote.
 - O botão do diálogo foi exercitado chamando as mesmas funções da simulação; o clique
   Slate em si não foi automatizado.
 - Passos de capítulo de fama/foto/receitas/negócios têm contagem nativa, mas foto (P),
@@ -81,3 +79,19 @@ um atendente e pagamento automático.
 3. Operação real da pousada (diárias, hóspedes, camareira) ligada ao fechamento do dia.
 
 Commit do lote: `e6028353` (push confirmado em origin/codex/ue58-migration).
+
+## Prévia Windows testada (01/11)
+
+- Pacote: `D:/Builds/MareAltaUE58_Progressao_2026-11-01/Windows` (BuildCookRun iterativo, 0 erros).
+- Pasta: `D:/Downloads/MareAltaResort_UE58_Progressao_2026-11-01` (Jogar.vbs/Jogar.cmd, saves em userdata).
+- ZIP: `D:/Downloads/MareAltaResort_UE58_Progressao_2026-11-01.zip`, 1.733.983.861 bytes,
+  SHA-256 `95f2b5b5c7ee3935f1ad219dd6b62d86ce23b8dd65aef09120f527fe90ade5ce`.
+- Regressão do EXE: **96/96** verificações, saída 0, log sem erros, perfil
+  `D:/CodexTemp/ue58-package-qa-20261101-071127`. Inclui 9 checks novos do
+  `MarePreviewQA`: mira e diálogo do Seu Zé, compra única no mercadinho, entrega
+  consumindo uma vez, mira na cama, sono bloqueando entrada, dia avançado e
+  despertar, salário único e salvamento.
+- Abertura: natural 12/12 e avanço 11/11 (`D:/CodexTemp/ue58-intro-package-20261101-071550`).
+- Áudio master audível/mute/pausa aprovado (`audio-mix-result.json`).
+- Montagem de capturas reais do EXE: `graphics-reference/progressao-20261101/exe/montagem-exe.png`.
+  O resumo do despertar mostra despesas altas porque o QA compra expansões antes; não é bug de jogo.

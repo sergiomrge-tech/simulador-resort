@@ -28,6 +28,7 @@ private:
  FName InitialRadio;
  TSharedPtr<FJsonObject> ExpansionOwnership;
  double ExpansionCash=0;
+ double SleepDay=1,SleepCash=0;
  TArray<TSharedPtr<FJsonValue>> Results;
  UPROPERTY() TArray<TObjectPtr<AMarePerson>> PresentationFixtures;
  void Check(const FString& Name,bool bPass);

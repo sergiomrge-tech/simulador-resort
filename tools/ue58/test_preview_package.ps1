@@ -10,7 +10,7 @@ $env:TMP=$env:TEMP
 $start=Get-Date
 $process=Start-Process -FilePath $exe -WorkingDirectory $Package -ArgumentList @('-MarePreviewQA',"-MareSaveRoot=$qa","-UserDir=$qa/Unreal", "-abslog=$qa/runtime.log",'-RenderOffscreen','-unattended','-nosplash','-windowed','-ResX=1280','-ResY=720') -WindowStyle Hidden -PassThru
 while(-not $process.HasExited){
- if(((Get-Date)-$start).TotalSeconds -gt 300){Stop-Process -Id $process.Id -ErrorAction SilentlyContinue;throw "Timeout: $qa"}
+ if(((Get-Date)-$start).TotalSeconds -gt 420){Stop-Process -Id $process.Id -ErrorAction SilentlyContinue;throw "Timeout: $qa"}
  Start-Sleep -Seconds 2
  $process.Refresh()
 }
@@ -22,6 +22,8 @@ $required=@('home_door_fits_frame','home_door_opens_after_fit','home_door_closes
 $required+=@('grass_coverage_cooked','grass_nonblocking_culled','grass_cycle_captured')
 $required+=@('swim_hands_in_front_separated')
 $required+=@('village_residents_present','village_pedestrian_budget','village_walkers_active','village_resident_looks','village_resident_focus','village_dialogue_opens','village_dialogue_blocks_phone','village_dialogue_cycle')
+$required+=@('chapter_giver_focus','chapter_dialogue_opens','chapter_market_purchase_once','chapter_deliver_consumes_once','bed_focus','sleep_starts_and_locks_input','sleep_advances_day_and_wakes','sleep_pays_wage_once','progression_day_close')
+foreach($picture in @('chapter-ze.png','chapter-ze-step2.png','sleep-wake.png')){if(-not (Test-Path -LiteralPath "$qa/$picture")){throw "Captura de progressão ausente: $picture"}}
 foreach($picture in @('village-dialogue.png','village-day.png')){if(-not (Test-Path -LiteralPath "$qa/$picture")){throw "Captura da vila ausente: $picture"}}
 $required+=@('player_rig_loaded','player_pickup_ready','player_carry_hands','player_returns_product','player_body_visible','home_tv_focus','home_tv_on','home_stereo_plays','home_stereo_music_volume','home_sofa_focus','home_sofa_sits','home_sofa_stands','home_shower_focus','home_shower_on','home_appliances_cycle')
 foreach($picture in @('player-carry.png','player-body.png','home-tv-off.png','home-tv-on.png','home-sofa.png','home-shower.png')){if(-not (Test-Path -LiteralPath "$qa/$picture")){throw "Captura de corpo/casa ausente: $picture"}}
