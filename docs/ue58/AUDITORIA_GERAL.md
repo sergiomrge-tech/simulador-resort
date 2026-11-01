@@ -18,8 +18,8 @@ Legenda: [x] corrigido e conferido em captura · [~] parcial · [ ] pendente.
 
 ## Pendente (próximas levas, em ordem)
 
-- [ ] Piscinas: água um pouco mais clara/transparente e fundo com azulejo visível.
-- [ ] Janelas acesas à noite (na Godot, `glow_glass` acendia em 3 horários).
+- [x] Piscinas: água clara e transparente (turquesa), conferido no PIE.
+- [x] Janelas acesas à noite: `MPC_MareTime.Night` escrito pelo `UMareVisualWorld`; ~55% das janelas acendem (aleatório por instância). Conferido às 22h no PIE.
 - [ ] Palmeiras com folhas em cartões chapados (low poly) — buscar/modelar palmeira detalhada.
 - [ ] Amendoeiras com copa em "bolhas" facetadas (`tree_amendoeira`).
 - [ ] Velas dos barcos de praia chapadas, sem tecido/costuras.

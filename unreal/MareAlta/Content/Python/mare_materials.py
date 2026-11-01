@@ -122,17 +122,29 @@ def build_pool_water():
         node=expression(mat,unreal.MaterialExpressionTextureSample,texture=water_normal,sampler_type=unreal.MaterialSamplerType.SAMPLERTYPE_NORMAL)
         connect(uv,'',node,'UVs');samples.append(node)
     normal=custom(mat,'return normalize(float3((A.xy+B.xy)*.12,1));',unreal.CustomMaterialOutputType.CMOT_FLOAT3,{'A':samples[0],'B':samples[1]})
-    color=expression(mat,unreal.MaterialExpressionConstant3Vector,constant=unreal.LinearColor(.03,.22,.30,1))
+    color=expression(mat,unreal.MaterialExpressionConstant3Vector,constant=unreal.LinearColor(.06,.42,.50,1))
     rough=expression(mat,unreal.MaterialExpressionConstant,r=.04)
     opacity=expression(mat,unreal.MaterialExpressionConstant,r=.5)
     for node,prop in [(normal,unreal.MaterialProperty.MP_NORMAL),(color,unreal.MaterialProperty.MP_BASE_COLOR),(rough,unreal.MaterialProperty.MP_ROUGHNESS),(opacity,unreal.MaterialProperty.MP_OPACITY)]:MEL.connect_material_property(node,'',prop)
     output=expression(mat,unreal.MaterialExpressionSingleLayerWaterMaterialOutput)
-    connect(expression(mat,unreal.MaterialExpressionConstant3Vector,constant=unreal.LinearColor(.0015,.009,.012,1)),'',output,'ScatteringCoefficients')
-    connect(expression(mat,unreal.MaterialExpressionConstant3Vector,constant=unreal.LinearColor(.045,.010,.007,1)),'',output,'AbsorptionCoefficients')
+    connect(expression(mat,unreal.MaterialExpressionConstant3Vector,constant=unreal.LinearColor(.002,.016,.02,1)),'',output,'ScatteringCoefficients')
+    connect(expression(mat,unreal.MaterialExpressionConstant3Vector,constant=unreal.LinearColor(.02,.004,.003,1)),'',output,'AbsorptionCoefficients')
     errors=list(MEL.recompile_material(mat))
     if errors:raise RuntimeError(str(errors))
     unreal.EditorAssetLibrary.save_loaded_asset(mat)
     return mat
+
+
+def time_collection():
+    """MPC_MareTime: scalar Night (0 day .. 1 night) written by UMareVisualWorld every tick."""
+    path='/Game/World/Materials/MPC_MareTime'
+    mpc=unreal.load_asset(path)
+    if not mpc:
+        mpc=unreal.AssetToolsHelpers.get_asset_tools().create_asset('MPC_MareTime','/Game/World/Materials',unreal.MaterialParameterCollection,unreal.MaterialParameterCollectionFactoryNew())
+        p=unreal.CollectionScalarParameter();p.set_editor_property('parameter_name','Night');p.set_editor_property('default_value',0.0)
+        mpc.set_editor_property('scalar_parameters',[p])
+        unreal.EditorAssetLibrary.save_loaded_asset(mpc)
+    return mpc
 
 
 def build_window_pane():
@@ -145,6 +157,11 @@ def build_window_pane():
     pos=expression(mat,unreal.MaterialExpressionWorldPosition)
     color=custom(mat,'float band=smoothstep(.15,.35,frac(Position.z/280.0))*(1-smoothstep(.75,.95,frac(Position.z/280.0))); float folds=.85+.15*sin(Position.x*.21+Position.y*.21); return lerp(float3(.018,.026,.03),float3(.11,.10,.085)*folds,band*.35);',unreal.CustomMaterialOutputType.CMOT_FLOAT3,{'Position':pos})
     for node,prop in [(color,unreal.MaterialProperty.MP_BASE_COLOR),(expression(mat,unreal.MaterialExpressionConstant,r=.035),unreal.MaterialProperty.MP_ROUGHNESS),(expression(mat,unreal.MaterialExpressionConstant,r=.9),unreal.MaterialProperty.MP_SPECULAR)]:MEL.connect_material_property(node,'',prop)
+    # Night: about 55% of the windows glow warm behind the curtain (per-instance random), like Godot.
+    night=expression(mat,unreal.MaterialExpressionCollectionParameter,collection=time_collection(),parameter_name='Night')
+    rnd=expression(mat,unreal.MaterialExpressionPerInstanceRandom)
+    glow=custom(mat,'float lit=step(.45,R); float band=.6+.4*sin(Position.z*.02); return float3(1.0,.62,.30)*N*lit*band*3.0;',unreal.CustomMaterialOutputType.CMOT_FLOAT3,{'R':rnd,'N':night,'Position':pos})
+    MEL.connect_material_property(glow,'',unreal.MaterialProperty.MP_EMISSIVE_COLOR)
     errors=list(MEL.recompile_material(mat))
     if errors:raise RuntimeError(str(errors))
     unreal.EditorAssetLibrary.save_loaded_asset(mat)

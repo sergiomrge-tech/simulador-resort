@@ -29,4 +29,5 @@ private:
  UPROPERTY() TArray<TObjectPtr<ATextRenderActor>> Signs;
  /** Interaction point on the Grand Hotel reception desk, hidden until the hotel is bought. */
  UPROPERTY() TObjectPtr<class AMareServiceTarget> Reception;
+ UPROPERTY() TObjectPtr<class UMaterialParameterCollection> TimeCollection;
 };

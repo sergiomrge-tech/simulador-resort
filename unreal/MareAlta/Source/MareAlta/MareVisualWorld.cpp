@@ -11,6 +11,8 @@
 #include "EngineUtils.h"
 #include "Engine/TextRenderActor.h"
 #include "Components/TextRenderComponent.h"
+#include "Kismet/KismetMaterialLibrary.h"
+#include "Materials/MaterialParameterCollection.h"
 
 TStatId UMareVisualWorld::GetStatId()const{RETURN_QUICK_DECLARE_CYCLE_STAT(UMareVisualWorld,STATGROUP_Tickables);}
 void UMareVisualWorld::RefreshExpansions()
@@ -66,6 +68,9 @@ void UMareVisualWorld::Tick(float DeltaSeconds)
  if(Sun){Sun->SetActorRotation(FRotator(-Solar*58.f,-65.f+(Hour-12.f)*12.f,0));Sun->GetLightComponent()->SetIntensity(FMath::Max(0.f,Solar)*65000.f*(Rain?.2f:1.f));
   Sun->GetLightComponent()->SetLightColor(FLinearColor(1.f,FMath::Lerp(.95f,.99f,Day),FMath::Lerp(.88f,.975f,Day)),false);}
  if(Moon)Moon->GetLightComponent()->SetIntensity((1-Day)*.8f);
+ // Facade windows glow at night through MPC_MareTime.Night (M_WindowPane_PBR).
+ if(!TimeCollection)TimeCollection=LoadObject<UMaterialParameterCollection>(nullptr,TEXT("/Game/World/Materials/MPC_MareTime.MPC_MareTime"));
+ if(TimeCollection)UKismetMaterialLibrary::SetScalarParameterValue(this,TimeCollection,TEXT("Night"),FMath::Clamp(1.f-Day,0.f,1.f)*(Rain?.8f:1.f));
  for(auto Light:Practical)if(IsValid(Light))Light->GetLightComponent()->SetIntensity(Light->ActorHasTag(TEXT("MareHomeLight"))?FMath::Lerp(1000.f,180.f,Day):Light->ActorHasTag(TEXT("MareBounce"))?FMath::Lerp(400.f,6500.f,Day):FMath::Lerp(2200.f,10000.f,Day));
  if(Fog)Fog->GetComponent()->SetFogDensity(Rain?.0018f:.00065f);
  auto Dishes=UMareSimulation::Object(Sim->Definitions,TEXT("dishes"));

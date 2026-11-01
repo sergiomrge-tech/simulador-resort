@@ -127,7 +127,17 @@ def window_glass():
     return {'slots': changed, 'meshes': len(meshes)}
 
 
+def clock(minutes):
+    world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()
+    sim = unreal.GameplayStatics.get_player_controller(world, 0).get_simulation()
+    sim.advance_minutes(-5000)
+    sim.advance_minutes(float(minutes))
+    return {'minutes': float(minutes)}
+
+
 def run(action, arg=''):
+    if action == 'clock':
+        return clock(arg)
     if action == 'windows':
         return window_glass()
     if action == 'pool':
