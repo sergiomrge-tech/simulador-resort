@@ -32,9 +32,9 @@ Legenda: [x] corrigido e conferido em captura · [~] parcial · [ ] pendente.
 
 - [x] Piscinas: água clara e transparente (turquesa), conferido no PIE.
 - [x] Janelas acesas à noite: `MPC_MareTime.Night` escrito pelo `UMareVisualWorld`; ~55% das janelas acendem (aleatório por instância). Conferido às 22h no PIE.
-- [ ] Palmeiras com folhas em cartões chapados (low poly) — buscar/modelar palmeira detalhada.
-- [ ] Amendoeiras com copa em "bolhas" facetadas (`tree_amendoeira`).
-- [ ] Velas dos barcos de praia chapadas, sem tecido/costuras.
+- [x] Palmeiras (4 variantes, 171 instâncias): frondes de cartão trocadas por frondes modeladas (raque curvada, ~90 folíolos por fronde, 18 frondes + 4 jovens), material de folhagem com luz atravessando (`M_PalmFrond_PBR`); troncos/cocos mantidos (`tools/ue58/palm_fronds.py`).
+- [x] Amendoeiras conferidas: 356 mil vértices com folhas modeladas, não são low poly. As "bolhas" eram as `Copas` empilhadas na origem (removidas).
+- [x] Vela plana do `mastro` agora enfunada (barriga máxima no terço da testa, `tools/ue58/billow_sail.py`); a vela da jangada já tinha curvatura.
 - [ ] Hotel: hóspedes no lobby; restaurante/academia/quartos sem interior utilizável.
 - [ ] Ícones de TextRender e linhas laranja aparecem só no editor (não no jogo) — sem ação.
 

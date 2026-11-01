@@ -166,3 +166,21 @@ def build_window_pane():
     if errors:raise RuntimeError(str(errors))
     unreal.EditorAssetLibrary.save_loaded_asset(mat)
     return mat
+
+
+def build_palm_frond():
+    """Modelled palm leaflets: two-sided foliage with back-lighting and gentle colour variation."""
+    mat=material('M_PalmFrond_PBR')
+    mat.set_editor_property('two_sided',True)
+    mat.set_editor_property('shading_model',unreal.MaterialShadingModel.MSM_TWO_SIDED_FOLIAGE)
+    mat.set_editor_property('used_with_nanite',True)
+    mat.set_editor_property('used_with_instanced_static_meshes',True)
+    pos=expression(mat,unreal.MaterialExpressionWorldPosition)
+    uv=expression(mat,unreal.MaterialExpressionTextureCoordinate)
+    color=custom(mat,'float v=.5+.5*sin(Position.x*.013+Position.y*.017); float tip=UV.y; float3 a=float3(.055,.17,.03); float3 b=float3(.12,.26,.045); return lerp(lerp(a,b,v),float3(.16,.24,.06),tip*.35);',unreal.CustomMaterialOutputType.CMOT_FLOAT3,{'Position':pos,'UV':uv})
+    sss=expression(mat,unreal.MaterialExpressionConstant3Vector,constant=unreal.LinearColor(.18,.32,.04,1))
+    for node,prop in [(color,unreal.MaterialProperty.MP_BASE_COLOR),(expression(mat,unreal.MaterialExpressionConstant,r=.55),unreal.MaterialProperty.MP_ROUGHNESS),(sss,unreal.MaterialProperty.MP_SUBSURFACE_COLOR)]:MEL.connect_material_property(node,'',prop)
+    errors=list(MEL.recompile_material(mat))
+    if errors:raise RuntimeError(str(errors))
+    unreal.EditorAssetLibrary.save_loaded_asset(mat)
+    return mat

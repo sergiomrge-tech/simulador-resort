@@ -269,7 +269,25 @@ def remove_stacked():
     return {'level_instances_removed': sum(removed.values()), 'groups': removed, 'world_rows_removed': len(dropped)}
 
 
+def palm_material(names):
+    import mare_materials, importlib
+    importlib.reload(mare_materials)
+    mat = mare_materials.build_palm_frond()
+    mapping = json.loads((DATA / 'imported_meshes.json').read_text(encoding='utf-8-sig'))
+    out = []
+    for name in names:
+        mesh = unreal.load_asset(mapping[name])
+        for j, slot in enumerate(mesh.static_materials):
+            if slot.material_slot_name and 'palm_frond_geo' in str(slot.material_slot_name) or (slot.material_interface and 'palm_frond_geo' in slot.material_interface.get_name()):
+                mesh.set_material(j, mat)
+                out.append([name, j])
+        unreal.EditorAssetLibrary.save_loaded_asset(mesh, False)
+    return out
+
+
 def run(action, arg=''):
+    if action == 'palmmat':
+        return palm_material(arg.split())
     if action == 'stacked':
         return remove_stacked()
     if action == 'hidebroken':
