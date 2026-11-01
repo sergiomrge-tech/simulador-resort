@@ -46,6 +46,9 @@ public:
  FString AddOrder(const FString& Customer, const TArray<FString>& Dishes);
  UFUNCTION(BlueprintCallable,Category="Maré Alta")
  bool HireAttendant();
+ /** Lets the attendant go: carried product returns to stock, no refund, no wage from the next night. */
+ UFUNCTION(BlueprintCallable,Category="Maré Alta")
+ bool DismissAttendant();
  UFUNCTION(BlueprintCallable,Category="Maré Alta")
  bool BuyExpansion(const FString& Id);
  UFUNCTION(BlueprintCallable,Category="Maré Alta")

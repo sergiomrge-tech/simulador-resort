@@ -188,6 +188,13 @@ bool UMareSimulation::HireAttendant()
  if(Money()<Cost) return Fail(TEXT("Saldo insuficiente."));
  Staff->SetBoolField(TEXT("atendente"),true); Book(-Cost,TEXT("Contratação do atendente"));return Save();
 }
+bool UMareSimulation::DismissAttendant()
+{
+ auto Staff=Object(State,TEXT("staff"));bool bHired=false;Staff->TryGetBoolField(TEXT("atendente"),bHired);
+ if(!bHired)return Fail(TEXT("Não há atendente contratado."));
+ ReturnCarry(true);Staff->SetBoolField(TEXT("atendente"),false);
+ LastMessage=TEXT("Atendente dispensado. Você volta a atender o quiosque sozinho.");return Save();
+}
 bool UMareSimulation::BuyExpansion(const FString& Id)
 {
  auto Expansions=Object(Definitions,TEXT("expansions")); if(!Expansions->HasField(Id)) return false;

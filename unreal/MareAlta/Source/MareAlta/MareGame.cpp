@@ -186,7 +186,8 @@ private:
    if(!S->Carry().IsEmpty())Action(TEXT("Devolver produto"),[S](){S->ReturnCarry();});Line(TEXT("Retire os produtos prontos na geladeira e no armário do quiosque."),13);HomeSummary();
   }else if(Tab==1){Line(TEXT("Reposição imediata"),18);Stock(false);}
   else if(Tab==2){Line(TEXT("Um atendente para todo o quiosque"),18);Line(TEXT("Anota, retira os produtos, entrega e recolhe a louça."));
-   Line(FString::Printf(TEXT("Contratação R$ %.0f · salário R$ %.0f por dia, pago ao dormir."),UMareSimulation::Number(UMareSimulation::Object(UMareSimulation::Object(S->Definitions,TEXT("staff")),TEXT("atendente")),TEXT("hire")),UMareSimulation::Number(UMareSimulation::Object(UMareSimulation::Object(S->Definitions,TEXT("staff")),TEXT("atendente")),TEXT("wage"))),12);Action(TEXT("Contratar atendente"),[S](){S->HireAttendant();});}
+   Line(FString::Printf(TEXT("Contratação R$ %.0f · salário R$ %.0f por dia, pago ao dormir."),UMareSimulation::Number(UMareSimulation::Object(UMareSimulation::Object(S->Definitions,TEXT("staff")),TEXT("atendente")),TEXT("hire")),UMareSimulation::Number(UMareSimulation::Object(UMareSimulation::Object(S->Definitions,TEXT("staff")),TEXT("atendente")),TEXT("wage"))),12);bool bHired=false;UMareSimulation::Object(S->State,TEXT("staff"))->TryGetBoolField(TEXT("atendente"),bHired);
+   if(bHired)Action(TEXT("Dispensar atendente"),[S](){S->DismissAttendant();});else Action(TEXT("Contratar atendente"),[S](){S->HireAttendant();});}
   else if(Tab==3){Line(FString::Printf(TEXT("Caixa · R$ %.0f"),S->Money()),20);
    Line(FString::Printf(TEXT("Hoje · entradas R$ %.0f · saídas R$ %.0f"),UMareSimulation::Number(S->State,TEXT("day_in")),UMareSimulation::Number(S->State,TEXT("day_out"))),13);
    if(S->State->HasTypedField<EJson::Object>(TEXT("ue_last_day"))){auto Last=UMareSimulation::Object(S->State,TEXT("ue_last_day"));
