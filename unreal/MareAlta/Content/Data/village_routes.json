@@ -198,7 +198,7 @@
   ],
   "residents": [
     {
-      "name": "Dona Rita",
+      "name": "Dona Roberta",
       "position": [
         6040.00015258789,
         -2052.0,
@@ -207,7 +207,7 @@
       "yaw": 90.0
     },
     {
-      "name": "Vendedor",
+      "name": "Tuany",
       "position": [
         6916.0,
         4199.0,
@@ -216,7 +216,7 @@
       "yaw": 180.00000250447835
     },
     {
-      "name": "Seu Zé",
+      "name": "Seu Gregory",
       "position": [
         7500.0,
         -2370.00007629395,
@@ -225,7 +225,7 @@
       "yaw": 90.0
     },
     {
-      "name": "Padre Tomé",
+      "name": "Padre Robson",
       "position": [
         7743.999816894531,
         4108.000091552734,
@@ -234,7 +234,7 @@
       "yaw": -90.00000500895615
     },
     {
-      "name": "Dona Lourdes",
+      "name": "Dona Cecília",
       "position": [
         7209.999847412109,
         2527.0,

@@ -138,7 +138,7 @@
 			"kind": "company",
 			"qty": 1,
 			"reward": 40,
-			"story": "Seu avô confiou a você o quiosque da família. Dê um nome a ele e continue essa história.",
+			"story": "Sua avó Dilce confiou a você o quiosque da família. Dê um nome a ele e continue essa história.",
 			"task": "Criar sua empresa no celular",
 			"title": "Uma nova maré"
 		},
@@ -185,8 +185,8 @@
 			"kind": "chapter",
 			"qty": 1,
 			"reward": 150,
-			"story": "Seu Zé precisa de ajuda para o píer. Conclua os três passos da história dele.",
-			"task": "Concluir O píer do Seu Zé em Histórias da vila",
+			"story": "Seu Gregory precisa de ajuda para o píer. Conclua os três passos da história dele.",
+			"task": "Concluir O píer do Seu Gregory em Histórias da vila",
 			"title": "O quiosque e o mar"
 		},
 		{
@@ -232,7 +232,7 @@
 	],
 	"chapters": [
 		{
-			"giver": "Seu Zé",
+			"giver": "Seu Gregory",
 			"id": "pier",
 			"reward": 200,
 			"steps": [
@@ -253,12 +253,12 @@
 					"text": "Doar R$ 150 para as tábuas novas"
 				}
 			],
-			"story": "O píer está caindo aos pedaços. Seu Zé quer reformá-lo para os barcos e para alugar pranchas.",
-			"title": "O píer do Seu Zé",
+			"story": "O píer está caindo aos pedaços. Seu Gregory quer reformá-lo para os barcos e para alugar pranchas.",
+			"title": "O píer do Seu Gregory",
 			"unlock": "Aluguel de pranchas e caiaques no píer"
 		},
 		{
-			"giver": "Padre Tomé",
+			"giver": "Padre Robson",
 			"id": "prainha",
 			"reward": 300,
 			"steps": [
@@ -279,12 +279,12 @@
 					"text": "Levar 6 cocos para o mutirão"
 				}
 			],
-			"story": "Depois das pedras existe uma prainha esquecida. Padre Tomé quer reabrir a trilha para a comunidade.",
+			"story": "Depois das pedras existe uma prainha esquecida. Padre Robson quer reabrir a trilha para a comunidade.",
 			"title": "A Prainha do Oeste",
 			"unlock": "Prainha do Oeste aberta + Escolinha de surfe"
 		},
 		{
-			"giver": "Dona Lourdes",
+			"giver": "Dona Cecília",
 			"id": "sabores",
 			"reward": 300,
 			"steps": [
@@ -305,12 +305,12 @@
 					"text": "Pagar R$ 250 da reforma do food truck"
 				}
 			],
-			"story": "Dona Lourdes quer resgatar as receitas da avó e levar comida boa até a rua principal.",
+			"story": "Dona Cecília quer resgatar as receitas da avó e levar comida boa até a rua principal.",
 			"title": "Sabores da vila",
 			"unlock": "Food truck do Pastel + dica da moqueca"
 		},
 		{
-			"giver": "Sr. Prefeito",
+			"giver": "Prefeita Alana",
 			"id": "carnaval",
 			"reward": 500,
 			"steps": [
@@ -330,7 +330,7 @@
 					"text": "Pagar R$ 400 da decoração"
 				}
 			],
-			"story": "O prefeito sonha com um carnaval de praia que traga turistas de longe. Ele conta com você.",
+			"story": "A prefeita Alana sonha com um carnaval de praia que traga turistas de longe. Ele conta com você.",
 			"title": "O Carnaval da Maré",
 			"unlock": "Carnaval no fim de cada verão + Lojinha de souvenires"
 		}
@@ -560,27 +560,27 @@
 	"quests": {
 		"cocos_rita": {
 			"desc": "A barraca compra 4 cocos do seu estoque.",
-			"giver": "Dona Rita",
+			"giver": "Dona Roberta",
 			"need": "coco",
 			"qty": 4,
 			"req": "",
 			"reward": 50,
-			"title": "Cocos da Dona Rita",
+			"title": "Cocos da Dona Roberta",
 			"where": "Barraca, no fim da praia"
 		},
 		"frutas_lourdes": {
 			"desc": "A padaria quer 8 frutas para a geleia da casa.",
-			"giver": "Dona Lourdes",
+			"giver": "Dona Cecília",
 			"need": "frutas",
 			"qty": 8,
 			"req": "drinks",
 			"reward": 85,
-			"title": "Geleia da Dona Lourdes",
+			"title": "Geleia da Dona Cecília",
 			"where": "Padaria e Mercadinho"
 		},
 		"paes_padre": {
-			"desc": "Padre Tomé precisa de 6 pães para a festa de São Pedro.",
-			"giver": "Padre Tomé",
+			"desc": "Padre Robson precisa de 6 pães para a festa de São Pedro.",
+			"giver": "Padre Robson",
 			"need": "pao",
 			"qty": 6,
 			"rating": 5.0,
@@ -590,13 +590,13 @@
 			"where": "Em frente à igreja"
 		},
 		"peixe_ze": {
-			"desc": "Seu Zé quer 3 peixes para o almoço. Pesque no fim do píer e entregue.",
-			"giver": "Seu Zé",
+			"desc": "Seu Gregory quer 3 peixes para o almoço. Pesque no fim do píer e entregue.",
+			"giver": "Seu Gregory",
 			"need": "peixe",
 			"qty": 3,
 			"req": "",
 			"reward": 75,
-			"title": "Peixe fresco do Seu Zé",
+			"title": "Peixe fresco do Seu Gregory",
 			"where": "Início do píer"
 		}
 	},
@@ -607,7 +607,7 @@
 			"kind": "fish",
 			"qty": 5,
 			"reward": 80,
-			"story": "Seu Zé ensina que peixe bom pede paciência.",
+			"story": "Seu Gregory ensina que peixe bom pede paciência.",
 			"task": "Pescar 5 peixes no píer",
 			"title": "Um dia com os pescadores"
 		},
@@ -616,7 +616,7 @@
 			"kind": "icecream",
 			"qty": 12,
 			"reward": 100,
-			"story": "Dona Rita quer apresentar os dois sabores aos visitantes.",
+			"story": "Dona Roberta quer apresentar os dois sabores aos visitantes.",
 			"task": "Vender 12 sorvetes no quiosque",
 			"title": "O verão pede sorvete"
 		},

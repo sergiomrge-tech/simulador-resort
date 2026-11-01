@@ -468,7 +468,7 @@ HOME = {
     'effects': {'speed_per_comfort': 0.005, 'fame_per_beauty_night': 0.25},
     'slots': [
         slot('cama', 'Cama', 90, 3, 1, [
-            tier('Cama de madeira entalhada', 'A cama que era do seu avô.'),
+            tier('Cama de madeira entalhada', 'A cama que era do sua avó Dilce.'),
             tier('Cama de ferro', 'Cabeceira de ferro trabalhado.', part('old_bed_frame', 110, 215)),
             tier('Divã de madeira', 'Cama de solteiro larga com encosto.', part('vintage_day_bed', 95, 205)),
             tier('Cama estofada', 'Cabeceira de linho e colchão novo.', part('mare_bed_upholstered', 120, 215)),
@@ -531,7 +531,7 @@ HOME = {
             tier('Luminária articulada', 'Braço de metal para leitura.', part('desk_lamp_arm_01', 48)),
         ], anchor='World_0936', hide=['World_0935', 'World_0936', 'World_0937']),
         slot('poltrona', 'Poltrona da varanda', 55, 2, 1, [
-            tier('Cadeira de balanço', 'A cadeira de balanço do avô.'),
+            tier('Cadeira de balanço', 'A cadeira de balanço da avó Dilce.'),
             tier('Cadeira estofada verde', 'Assento acolchoado.', part('GreenChair_01', 100)),
             tier('Poltrona clássica', 'Tecido e braços largos.', part('ArmChair_01', 105)),
             tier('Poltrona de madeira nobre', 'Madeira escura entalhada.', part('chinese_armchair', 135)),

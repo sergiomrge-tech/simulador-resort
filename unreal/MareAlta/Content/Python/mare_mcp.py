@@ -125,7 +125,7 @@ class MareMigrationTools(unreal.ToolsetDefinition):
         world=unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()
         if not world:raise RuntimeError('Start PIE first')
         pc=unreal.GameplayStatics.get_player_controller(world,0);hero=unreal.GameplayStatics.get_player_pawn(world,0)
-        resident=next(t for t in unreal.GameplayStatics.get_all_actors_of_class(world,unreal.MareServiceTarget) if str(t.action)=='Resident' and t.get_owner().get_editor_property('person_name')=='Dona Rita')
+        resident=next(t for t in unreal.GameplayStatics.get_all_actors_of_class(world,unreal.MareServiceTarget) if str(t.action)=='Resident' and t.get_owner().get_editor_property('person_name')=='Dona Roberta')
         focused=None;phone_blocked=None
         if action=='position':
             hero.set_actor_location(resident.get_owner().get_actor_location()+unreal.Vector(0,150,0),False,False)

@@ -49,7 +49,7 @@ void UMareVillageWorld::Setup()
  if(Routes.IsEmpty())return;
  for(const auto& Item:Data->GetArrayField(TEXT("residents"))){auto Row=Item->AsObject();const FString Name=UMareSimulation::String(Row,TEXT("name"));
   // Verified against the exported GLB roots: Human_2 is the female rig; 0/1/3 are male.
-  const int32 Look=Name==TEXT("Dona Rita") || Name==TEXT("Dona Lourdes")?2:Name==TEXT("Seu Zé") || Name==TEXT("Padre Tomé")?1:3;
+  const int32 Look=Name==TEXT("Dona Roberta") || Name==TEXT("Dona Cecília") || Name==TEXT("Tuany")?2:Name==TEXT("Seu Gregory") || Name==TEXT("Padre Robson")?1:3;
   auto Person=SpawnPerson(Vector(Row->GetArrayField(TEXT("position"))),Look,Name);if(!Person)continue;
   Person->SetActorRotation(FRotator(0,UMareSimulation::Number(Row,TEXT("yaw")),0));Residents.Add(Person);
   auto Target=GetWorld()->SpawnActor<AMareServiceTarget>();Target->Action=TEXT("Resident");Target->Label=Person->PersonName+TEXT(" · conversar");Target->Reach=260;Target->OcclusionTolerance=40;Target->SetOwner(Person);
@@ -124,10 +124,10 @@ void UMareVillageWorld::Speak(AMarePerson* Person,APlayerController* Controller)
  if(!IsValid(Person) || !Controller || Dialogue.IsValid() || !GEngine || !GEngine->GameViewport)return;
  auto PC=Cast<AMareController>(Controller);if(!PC || PC->bPhoneOpen)return;
  Speaker=Person;DialogController=Controller;Person->bConversing=true;
- const FString Greeting=Person->PersonName==TEXT("Dona Rita")?TEXT("Seu avô sempre disse que você voltaria. O quiosque guardou muitas histórias — agora vai ganhar as suas. Se precisar de ajuda, a vila está por perto."):
-  Person->PersonName==TEXT("Seu Zé")?TEXT("Eu conheci seu avô quando aquele píer ainda era novo. Venha conversar comigo para ajudar os pescadores e fazer o negócio da família crescer."):
-  Person->PersonName==TEXT("Dona Lourdes")?TEXT("Bem-vindo de volta! As melhores receitas da vila carregam lembranças. Seu avô nunca deixava ninguém sair do quiosque sem um sorriso."):
-  Person->PersonName==TEXT("Padre Tomé")?TEXT("A vila fica melhor quando cuidamos uns dos outros. Seu avô fez isso por muitos anos. Fico feliz em ver você por aqui."):
+ const FString Greeting=Person->PersonName==TEXT("Dona Roberta")?TEXT("Sua avó Dilce sempre disse que você voltaria. O quiosque guardou muitas histórias — agora vai ganhar as suas. Se precisar de ajuda, a vila está por perto."):
+  Person->PersonName==TEXT("Seu Gregory")?TEXT("Eu conheci sua avó Dilce quando aquele píer ainda era novo. Venha conversar comigo para ajudar os pescadores e fazer o negócio da família crescer."):
+  Person->PersonName==TEXT("Dona Cecília")?TEXT("Bem-vindo de volta! As melhores receitas da vila carregam lembranças. Sua avó Dilce nunca deixava ninguém sair do quiosque sem um sorriso."):
+  Person->PersonName==TEXT("Padre Robson")?TEXT("A vila fica melhor quando cuidamos uns dos outros. Sua avó Dilce fez isso por muitos anos. Fico feliz em ver você por aqui."):
   TEXT("Bem-vindo à vila! É bom ver o quiosque da família ganhando vida outra vez.");
  static const FSlateRoundedBoxBrush Card(FLinearColor(.95f,.94f,.88f),12.f);
  auto Sim=GetWorld()->GetGameInstance()->GetSubsystem<UMareSimulation>();

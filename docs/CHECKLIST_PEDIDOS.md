@@ -56,6 +56,8 @@ Legenda: [x] feito e validado · [~] em andamento/parcial · [ ] pendente.
 - [~] "Procure um modelo real de celular (asset) e adapte a tela" (01/11): modelo "Realistic Smartphone" (dimension Dazzle, Fab, CC BY 4.0) baixado em `D:/Assets/Fab/realistic_smartphone`, peças unidas no Blender e importado em `/Game/Custom/realistic_smartphone`. Falta prender na câmera e desenhar a interface sobre a tela.
 - [ ] "Aproveite que está mexendo no celular e me ajude a melhorar a interface dele; quando for fazer isso, mude para alto o Opus" (01/11): redesenho da interface junto com o celular 3D — começar com esforço alto.
 - [ ] "A água da piscina precisa ser real como a da praia, limpa, transparente e realista" (01/11).
+- [x] "Mudar o nome dos personagens: Seu Zé vai se chamar Gregory, a avó Dilce; os outros você decide, com Roberta, Charbele, Alana, Tuany, Yasmin, Robson, Ayla e Cecília" (01/11): Seu Gregory (píer), avó Dilce (quem deixou o quiosque e assina a carta; o jogo tinha um avô), Dona Roberta (ex-Rita), Dona Cecília (ex-Lourdes), Padre Robson (ex-Tomé), Tuany (vendedora da praça), Prefeita Alana (carnaval); clientes Charbele, Yasmin e Ayla. Dados, diálogos, missões, histórias, carta e QA atualizados; testes 4/4.
+- [~] "No celular quero 5 opções totalmente diferentes para decidir" / "Use o Canva para ajudar" (01/11): 5 maquetes no canvas (Maré Tropical, Noite de Praia, Caderno do Quiosque, Painel Executivo, Retrô Verão) e moodboard no Canva — aguardando a escolha.
 - [x] Manter este checklist sempre que o usuário pedir algo (regra salva na memória).
 
 ## Regras permanentes já pedidas

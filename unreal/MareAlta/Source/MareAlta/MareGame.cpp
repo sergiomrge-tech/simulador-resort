@@ -316,7 +316,7 @@ private:
   if(!Station.IsNone()){Stock(true);if(!S->Carry().IsEmpty())Action(TEXT("Devolver produto"),[S](){S->ReturnCarry();});return;}
   if(Tab==0){auto Company=UMareSimulation::Object(S->State,TEXT("company"));bool bCreated=false;Company->TryGetBoolField(TEXT("created"),bCreated);
    if(!bCreated){Line(TEXT("Seu quiosque"),20);
-    if(UMareSimulation::Number(S->State,TEXT("ue_intro_stage"),2)<2)Line(TEXT("Primeiro, entre na casa e leia a carta que seu avô deixou para você."),14);
+    if(UMareSimulation::Number(S->State,TEXT("ue_intro_stage"),2)<2)Line(TEXT("Primeiro, entre na casa e leia a carta que sua avó Dilce deixou para você."),14);
     else{Body->AddSlot().AutoHeight()[SAssignNew(CompanyName,SEditableTextBox).Text(FText::FromString(TEXT("Maré Alta")))];Action(TEXT("Criar empresa"),[this,S](){S->CreateCompany(CompanyName->GetText().ToString());});}}
    else{bool Requested=false;Company->TryGetBoolField(TEXT("kiosk_open"),Requested);auto Hours=UMareSimulation::Object(Company,TEXT("sim"));
     Body->AddSlot().AutoHeight().Padding(0,4)[MareUI::LiveText([S,Requested](){return S->IsOpen()?TEXT("Aberto · recebendo clientes"):Requested?TEXT("Abertura ativada · aguardando horário"):TEXT("Quiosque fechado");},18)];
@@ -553,7 +553,7 @@ void AMareHUD::DrawHUD()
  if(IntroStage==0)M.Note={{TEXT("Chegada"),0},{TEXT("A vila parecia menor... e o mar, do tamanho das minhas lembranças."),2},{TEXT("E · avançar"),3}};
  else{
   M.Note.Add({TEXT("Missões"),0});
-  if(IntroStage==1)M.Note.Add({TEXT("Entre na casa e leia a carta do avô"),3});
+  if(IntroStage==1)M.Note.Add({TEXT("Entre na casa e leia a carta da avó Dilce"),3});
   bool bCreated=false;UMareSimulation::Object(S->State,TEXT("company"))->TryGetBoolField(TEXT("created"),bCreated);
   if(!bCreated && IntroStage>=2)M.Note.Add({TEXT("Comece aqui: B · Celular → Quiosque → Criar empresa"),3});
   else if(bCreated && !S->IsOpen())M.Note.Add({TEXT("Clique na placa FECHADO do balcão para abrir"),3});
