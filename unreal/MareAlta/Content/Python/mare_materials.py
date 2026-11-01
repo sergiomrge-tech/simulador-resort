@@ -150,11 +150,25 @@ def build_pool_tiles():
     time=expression(mat,unreal.MaterialExpressionTime)
     night=expression(mat,unreal.MaterialExpressionCollectionParameter,collection=time_collection(),parameter_name='Night')
     plane='float3 an=abs(N); float2 uv=an.z>.5?P.xy:(an.x>an.y?P.yz:P.xz);'
-    color=custom(mat,plane+'float2 cell=floor(uv/5.0); float2 g=frac(uv/5.0); float grout=smoothstep(.0,.07,min(g.x,g.y))*smoothstep(1.0,.93,max(g.x,g.y)); float h=frac(sin(dot(cell,float2(12.9898,78.233)))*43758.5453); float3 tile=lerp(float3(.50,.80,.86),float3(.62,.87,.90),h); tile*=.94+.06*frac(h*7.31); return lerp(float3(.80,.83,.80),tile,grout);',unreal.CustomMaterialOutputType.CMOT_FLOAT3,{'P':pos,'N':nrm})
+    color=custom(mat,plane+'float2 cell=floor(uv/5.0); float2 g=frac(uv/5.0); float grout=smoothstep(.0,.07,min(g.x,g.y))*smoothstep(1.0,.93,max(g.x,g.y)); float h=frac(sin(dot(cell,float2(12.9898,78.233)))*43758.5453); float3 tile=lerp(float3(.30,.60,.74),float3(.38,.68,.80),h); tile*=.94+.06*frac(h*7.31); return lerp(float3(.80,.83,.80),tile,grout);',unreal.CustomMaterialOutputType.CMOT_FLOAT3,{'P':pos,'N':nrm})
     rough=custom(mat,plane+'float2 g=frac(uv/5.0); float grout=smoothstep(.0,.07,min(g.x,g.y))*smoothstep(1.0,.93,max(g.x,g.y)); return lerp(.75,.18,grout);',unreal.CustomMaterialOutputType.CMOT_FLOAT1,{'P':pos,'N':nrm})
     # Caustics: three warped sine fields; bright thin lines where their sum crosses zero, drifting slowly.
     caustic=custom(mat,plane+'float2 q=uv*.02; float t=T*.55; float a=sin(q.x*1.7+sin(q.y*1.3+t)*1.6+t*.7); float b=sin(q.y*1.9+sin(q.x*1.1-t*.8)*1.7-t*.5); float c=sin((q.x+q.y)*1.3+sin(q.x*.7-q.y*.9+t*.9)*1.4+t*.4); float v=abs(a+b+c)/3.0; float lines=pow(saturate(1.0-v),6.0); float floorOnly=saturate(abs(N.z)*1.5-.3); return float3(1.0,.98,.9)*lines*floorOnly*(1.0-Night)*1.1;',unreal.CustomMaterialOutputType.CMOT_FLOAT3,{'P':pos,'N':nrm,'T':time,'Night':night})
-    for node,prop in [(color,unreal.MaterialProperty.MP_BASE_COLOR),(rough,unreal.MaterialProperty.MP_ROUGHNESS),(caustic,unreal.MaterialProperty.MP_EMISSIVE_COLOR)]:MEL.connect_material_property(node,'',prop)
+    # Orca mural on each pool floor (Canva mosaic, one texel per 5 cm tile, tools/ue58/orca_mural.py):
+    # 6 x 3 m in the resort pool, 9 x 4.5 m in the Grand Hotel pool, aligned to the tile grid.
+    mural=_custom_texture('orca_mural.png')
+    mural.set_editor_property('filter',unreal.TextureFilter.TF_NEAREST)
+    mural.set_editor_property('mip_gen_settings',unreal.TextureMipGenSettings.TMGS_NO_MIPMAPS)
+    mural.set_editor_property('compression_settings',unreal.TextureCompressionSettings.TC_EDITOR_ICON)
+    mural.set_editor_property('address_x',unreal.TextureAddress.TA_CLAMP);mural.set_editor_property('address_y',unreal.TextureAddress.TA_CLAMP)
+    unreal.EditorAssetLibrary.save_loaded_asset(mural)
+    place='bool hotel=abs(P.x+2600)<1300 && abs(P.y-3600)<800; float2 c=hotel?float2(-2600,3600):float2(0,400); float2 size=hotel?float2(900,450):float2(600,300);'
+    mural_uv=custom(mat,place+'float2 cell=floor((P.xy-c+size*.5)/5.0); float2 uv=(cell+.5)/(size/5.0); return float2(uv.x,1.0-uv.y);',unreal.CustomMaterialOutputType.CMOT_FLOAT2,{'P':pos})
+    sample=expression(mat,unreal.MaterialExpressionTextureSample,texture=mural)
+    connect(mural_uv,'',sample,'UVs')
+    final=custom(mat,plane+place+'float2 m=(P.xy-c)/size+.5; float inside=(all(m>0) && all(m<1))?1.0:0.0; float floorOnly=step(.7,an.z); float2 g=frac(uv/5.0); float grout=smoothstep(.0,.07,min(g.x,g.y))*smoothstep(1.0,.93,max(g.x,g.y)); float k=MuralA*inside*floorOnly*grout; return lerp(Tiles,MuralRGB,k);',unreal.CustomMaterialOutputType.CMOT_FLOAT3,{'P':pos,'N':nrm,'Tiles':color,'MuralRGB':sample,'MuralA':sample})
+    MEL.connect_material_expressions(sample,'A',final,'MuralA');MEL.connect_material_expressions(sample,'RGB',final,'MuralRGB')
+    for node,prop in [(final,unreal.MaterialProperty.MP_BASE_COLOR),(rough,unreal.MaterialProperty.MP_ROUGHNESS),(caustic,unreal.MaterialProperty.MP_EMISSIVE_COLOR)]:MEL.connect_material_property(node,'',prop)
     errors=list(MEL.recompile_material(mat))
     if errors:raise RuntimeError(str(errors))
     unreal.EditorAssetLibrary.save_loaded_asset(mat)

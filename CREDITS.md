@@ -539,3 +539,7 @@ Móveis originais modelados para o projeto com bpy (`tools/ue58/gen_custom_furni
 
 - Patrick Hand — Patrick Wagesreiter — SIL Open Font License 1.1 (`Content/UI/Fonts/OFL-PatrickHand.txt`).
 - Nunito SemiBold/ExtraBold — Vernon Adams, Cyreal, Jacques Le Bailly — SIL Open Font License 1.1 (`Content/UI/Fonts/OFL-Nunito.txt`).
+
+### Mosaico da orca na piscina (UE5.8) — 01/11/2026
+
+- Desenho da orca em pastilhas gerado com a IA do Canva na conta do projeto (mídia `MAHZtktVk0M`), convertido em uma cor por pastilha por `tools/ue58/orca_mural.py`.
