@@ -79,3 +79,5 @@ um atendente e pagamento automático.
 2. Fama influenciando chegada de clientes; pesca no píer e foto com P (destravam
    secundárias e o capítulo 2).
 3. Operação real da pousada (diárias, hóspedes, camareira) ligada ao fechamento do dia.
+
+Commit do lote: `e6028353` (push confirmado em origin/codex/ue58-migration).
