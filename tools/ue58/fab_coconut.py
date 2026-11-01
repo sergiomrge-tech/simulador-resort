@@ -57,16 +57,21 @@ def build(name):
         bpy.data.objects.remove(o)
     # A dry coconut is egg-shaped and never balances on its tip: lay the long axis down, turned a
     # little differently per variant, slightly rolled so the three eyes face sideways.
-    lay = Matrix.Rotation(math.radians(LAY_YAW.get(name, 0)), 4, 'Z') @ Matrix.Rotation(math.radians(90), 4, 'X') @ Matrix.Rotation(math.radians(25), 4, 'Z')
+    lay = Matrix.Rotation(math.radians(90), 4, 'X') @ Matrix.Rotation(math.radians(25), 4, 'Z')
+    # The Fab model is almost a ball (12% longer than wide), which reads as standing whichever way
+    # it lies. A dry husked coconut is an oval about 1.3:1, flattened where it rests: stretch the
+    # (now horizontal) long axis and squash the height a little.
+    shape = Matrix.Diagonal((1, 1.28, .9, 1))
     for o in meshes:
-        o.data.transform(lay)
+        o.data.transform(Matrix.Rotation(math.radians(LAY_YAW.get(name, 0)), 4, 'Z') @ shape @ lay)
     # Fit on the husk (fibres stick out a little, as on a real dry coconut).
     lo_n, hi_n = bounds([husk])
     # Longest horizontal side to the old width: the coconuts sit in tight piles (16 cm apart).
     s = .95 * (hi_o.x - lo_o.x) / max(hi_n.x - lo_n.x, hi_n.y - lo_n.y)
     centre_o = (lo_o + hi_o) / 2
     centre_n = (lo_n + hi_n) / 2
-    m = Matrix.Translation((centre_o.x, centre_o.y, lo_o.z)) @ Matrix.Scale(s, 4) @ Matrix.Translation((-centre_n.x, -centre_n.y, -lo_n.z))
+    # Bedded 1.5 cm into the sand/shelf so it rests on its body, not on a single point.
+    m = Matrix.Translation((centre_o.x, centre_o.y, lo_o.z - .015)) @ Matrix.Scale(s, 4) @ Matrix.Translation((-centre_n.x, -centre_n.y, -lo_n.z))
     for o in meshes:
         o.data.transform(m)
     bpy.ops.object.select_all(action='DESELECT')

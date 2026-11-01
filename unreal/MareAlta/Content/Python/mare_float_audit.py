@@ -409,6 +409,27 @@ def run(action, arg=''):
                 out.append([name, j, kind])
             unreal.EditorAssetLibrary.save_loaded_asset(mesh, False)
         return out
+    if action == 'coconut_piles':
+        # The dry coconuts lie on their side (15 cm tall): the fifth coconut of each Godot pile sat
+        # 17 cm up and now floats. Rest it in the hollow between the four below.
+        mapping = json.loads((DATA / 'imported_meshes.json').read_text(encoding='utf-8-sig'))
+        targets = {mapping[n].split('.')[0] for n in arg.split()}
+        moved = 0
+        for a in unreal.get_editor_subsystem(unreal.EditorActorSubsystem).get_all_level_actors():
+            for c in a.get_components_by_class(unreal.InstancedStaticMeshComponent):
+                if not c.static_mesh or c.static_mesh.get_path_name().split('.')[0] not in targets:
+                    continue
+                ts = [c.get_instance_transform(i, True) for i in range(c.get_instance_count())]
+                for i, t in enumerate(ts):
+                    p = t.translation
+                    below = [u.translation for u in ts if (u.translation.x - p.x) ** 2 + (u.translation.y - p.y) ** 2 < 20 * 20 and 10 < p.z - u.translation.z < 25]
+                    if len(below) >= 3:
+                        base = sum(u.z for u in below) / len(below)
+                        nt = unreal.Transform(unreal.Vector(p.x, p.y, base + 8.5), t.rotation.rotator(), t.scale3d)
+                        c.update_instance_transform(i, nt, True, True, True)
+                        moved += 1
+        unreal.get_editor_subsystem(unreal.LevelEditorSubsystem).save_current_level()
+        return {'moved': moved}
     if action == 'coconut':
         import mare_materials, importlib
         importlib.reload(mare_materials)
