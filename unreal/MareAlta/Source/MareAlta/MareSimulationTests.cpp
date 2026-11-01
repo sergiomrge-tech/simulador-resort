@@ -214,4 +214,61 @@ bool FMareCustomizationTest::RunTest(const FString& Parameters)
  TestEqual(TEXT("Sale = recipe price + tip"),Sim->Money(),BeforeSale+Price+FMath::RoundToDouble(Price*Sim->KioskTipRate()*100)/100);
  Sim->RemoveFromRoot();Instance->RemoveFromRoot();return true;
 }
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FMareExpansionOpsTest,"MareAlta.Migration.ExpansionOperations",EAutomationTestFlags::EditorContext|EAutomationTestFlags::EngineFilter)
+bool FMareExpansionOpsTest::RunTest(const FString& Parameters)
+{
+ auto Instance=NewObject<UGameInstance>();Instance->AddToRoot();
+ auto Sim=NewObject<UMareSimulation>(Instance);Sim->AddToRoot();
+ Sim->SaveDirectory=FPaths::ProjectSavedDir()/TEXT("Automation/ExpansionOps")/FGuid::NewGuid().ToString(EGuidFormats::Digits);
+ auto Load=[&](const FString& Name,TSharedPtr<FJsonObject>& Result){FString Text;FFileHelper::LoadFileToString(Text,*(FPaths::ProjectContentDir()/TEXT("Data")/Name));return FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Text),Result);};
+ Load(TEXT("definitions.json"),Sim->Definitions);Load(TEXT("default_save.json"),Sim->State);
+ // Every place: five tiers per object.
+ int32 Slots=0,Places=0;for(const auto& Pair:Sim->Object(Sim->CustomDefs(),TEXT("places"))->Values){++Places;const TArray<TSharedPtr<FJsonValue>>* Defs=nullptr;
+  if(Pair.Value->AsObject()->TryGetArrayField(TEXT("slots"),Defs))for(const auto& V:*Defs){const TArray<TSharedPtr<FJsonValue>>* Tiers=nullptr;
+   TestTrue(TEXT("Five tiers"),V->AsObject()->TryGetArrayField(TEXT("tiers"),Tiers) && Tiers->Num()==5);++Slots;}}
+ TestTrue(TEXT("All resort places customizable"),Places>=15 && Slots>=70);
+ TestFalse(TEXT("Bar decor waits for the bar"),Sim->IsPlaceAvailable(TEXT("bar")));
+ Sim->State->SetNumberField(TEXT("money"),100000);Sim->State->SetStringField(TEXT("weather"),TEXT("sun"));
+ TestFalse(TEXT("Locked place refuses purchase"),Sim->BuyCustom(TEXT("bar"),TEXT("carta"),2));
+ for(const TCHAR* Id:{TEXT("bar"),TEXT("pousada"),TEXT("pool"),TEXT("passeios")})Sim->Object(Sim->State,TEXT("unlocked"))->SetBoolField(Id,true);
+ TestTrue(TEXT("Bar decor available"),Sim->IsPlaceAvailable(TEXT("bar")));
+ // Hourly income: bar and pool book once per game hour, only while open.
+ Sim->State->SetNumberField(TEXT("minutes"),600);double Before=Sim->Money();Sim->AdvanceMinutes(60);
+ TestTrue(TEXT("Bar earns while open"),Sim->OpsToday(TEXT("bar"))>0 && Sim->OpsToday(TEXT("pool"))>0);
+ TestEqual(TEXT("Hour booked into cash"),Sim->Money(),Before+Sim->OpsToday(TEXT("bar"))+Sim->OpsToday(TEXT("pool")));
+ const double BarHour=Sim->OpsToday(TEXT("bar"));Sim->State->SetNumberField(TEXT("minutes"),600);Sim->AdvanceMinutes(60);
+ TestEqual(TEXT("Same hour never booked twice"),Sim->OpsToday(TEXT("bar")),BarHour);
+ const double Plain=Sim->HourlyIncome(TEXT("bar"));
+ TestTrue(TEXT("Drinks menu upgrade"),Sim->BuyCustom(TEXT("bar"),TEXT("carta"),5));
+ TestTrue(TEXT("Better bar earns more"),Sim->HourlyIncome(TEXT("bar"))>Plain*1.3);
+ // Tours need the guide.
+ Sim->State->SetNumberField(TEXT("minutes"),780);Sim->AdvanceMinutes(60);
+ TestEqual(TEXT("No guide, no tour"),Sim->OpsToday(TEXT("passeios")),0.);
+ TestTrue(TEXT("Hire guide"),Sim->HireStaff(TEXT("guia")));TestTrue(TEXT("Guide is hired"),Sim->HasStaff(TEXT("guia")));
+ const int32 Seats=Sim->TourSeats(Sim->Object(Sim->State,TEXT("none")));TestTrue(TEXT("Boat upgrade"),Sim->BuyCustom(TEXT("passeios"),TEXT("barco"),5));
+ TestEqual(TEXT("Bigger boat, more seats"),Sim->TourSeats(Sim->Object(Sim->State,TEXT("none"))),Seats+4);
+ Sim->State->SetNumberField(TEXT("minutes"),840);Sim->AdvanceMinutes(60);
+ TestTrue(TEXT("Boat tour departs at 14h"),Sim->OpsToday(TEXT("passeios"))>0);
+ // Businesses: bought once, earn in their hours.
+ TestFalse(TEXT("Business needs fame"),Sim->BuyBusiness(TEXT("sorveteria")));
+ Sim->Object(Sim->State,TEXT("prog"))->SetNumberField(TEXT("fame_xp"),100000);
+ Before=Sim->Money();TestTrue(TEXT("Buy ice cream shop"),Sim->BuyBusiness(TEXT("sorveteria")));
+ TestEqual(TEXT("Business charged once"),Sim->Money(),Before-900.);TestFalse(TEXT("Not twice"),Sim->BuyBusiness(TEXT("sorveteria")));
+ Sim->State->SetNumberField(TEXT("minutes"),900);Sim->AdvanceMinutes(60);
+ TestTrue(TEXT("Business earns"),Sim->OpsToday(TEXT("biz_sorveteria"))>0);
+ // Pousada: rooms from expansions, rate from room upgrades, night booked at sleep.
+ TestEqual(TEXT("Bungalow plus two pool rooms"),Sim->PousadaRooms(),3);
+ const double Rate=Sim->PousadaRate();TestTrue(TEXT("Better beds"),Sim->BuyCustom(TEXT("pousada"),TEXT("cama"),3));
+ TestEqual(TEXT("Beds raise the nightly rate"),Sim->PousadaRate(),Rate+60);
+ Sim->Sleep();auto Night=Sim->Object(Sim->Object(Sim->State,TEXT("prog")),TEXT("pousada"));
+ TestEqual(TEXT("Pousada night recorded"),int32(Sim->Number(Night,TEXT("rooms"))),3);
+ // Home: comfort makes the player faster.
+ TestEqual(TEXT("Plain home"),Sim->HomeSpeedFactor(),1.);TestTrue(TEXT("New bed"),Sim->BuyCustom(TEXT("home"),TEXT("cama"),5));
+ TestTrue(TEXT("Rested player walks faster"),Sim->HomeSpeedFactor()>1.05);
+ // Grand Hotel areas raise the hotel occupancy and suite rate.
+ Sim->Object(Sim->State,TEXT("unlocked"))->SetBoolField(TEXT("grand_hotel"),true);const double Occ=Sim->HotelOccupancy();
+ TestTrue(TEXT("Spa upgrade"),Sim->BuyCustom(TEXT("hotel_lazer"),TEXT("spa"),5));
+ TestTrue(TEXT("Hotel decor fills rooms"),Sim->HotelOccupancy()>Occ || Occ>=.98);
+ Sim->RemoveFromRoot();Instance->RemoveFromRoot();return true;
+}
 #endif

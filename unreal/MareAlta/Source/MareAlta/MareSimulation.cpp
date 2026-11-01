@@ -295,14 +295,15 @@ double UMareSimulation::Stars() const
 double UMareSimulation::HotelOccupancy() const
 {
  // Season, parties and upgrade tree are not ported yet; their terms stay neutral.
- return FMath::Clamp(.42+.12*(Stars()-4.)+.03*(FameLevel()-7),.15,.98);
+ // Decor of the four hotel areas and the resort pool add their own occupancy bonus.
+ return FMath::Clamp(.42+.12*(Stars()-4.)+.03*(FameLevel()-7)+HotelCustomBonus()+StayBonus(),.15,.98);
 }
 void UMareSimulation::HotelNight()
 {
  bool bOwned=false;Object(State,TEXT("unlocked"))->TryGetBoolField(TEXT("grand_hotel"),bOwned);if(!bOwned)return;
- constexpr int32 Rooms=32,Rate=220,Dining=35,StaffCost=900;
+ constexpr int32 Rooms=32,Dining=35,StaffCost=900;const double Rate=220+SlotSum(TEXT("hotel_suites"),TEXT("rate"));
  const double Occupancy=HotelOccupancy();const int32 Occupied=FMath::RoundToInt(Rooms*Occupancy);
- const double Revenue=Occupied*Rate,Meals=FMath::RoundToDouble(Occupied*1.7*Dining);
+ const double Revenue=Occupied*Rate,Meals=FMath::RoundToDouble(Occupied*1.7*Dining*PlaceIncomeFactor(TEXT("hotel_restaurante"))*PlaceIncomeFactor(TEXT("hotel_piscina")));
  Book(Revenue,FString::Printf(TEXT("Grand Hotel: %d suítes ocupadas"),Occupied));
  Book(Meals,TEXT("Grand Hotel: restaurante e bar"));
  Book(-StaffCost,TEXT("Grand Hotel: equipe (recepção, cozinha, spa, limpeza)"));
@@ -334,7 +335,12 @@ bool UMareSimulation::ClaimMission(const FString& Id,bool bSide)
   Book(Number(M,TEXT("reward")),TEXT("Missão: ")+String(M,TEXT("title"))); return Save();}
  return false;
 }
-void UMareSimulation::AdvanceMinutes(double Minutes){State->SetNumberField(TEXT("minutes"),FMath::Clamp(Number(State,TEXT("minutes"))+Minutes,0.,1440.));}
+void UMareSimulation::AdvanceMinutes(double Minutes)
+{
+ const double Before=Number(State,TEXT("minutes")),After=FMath::Clamp(Before+Minutes,0.,1440.);State->SetNumberField(TEXT("minutes"),After);
+ // Expansions and businesses earn by the hour: book every full hour the clock has just crossed.
+ for(int32 Hour=FMath::FloorToInt(Before/60)+1;Hour<=FMath::FloorToInt(After/60);++Hour)OperateHour(Hour);
+}
 void UMareSimulation::Sleep()
 {
  ReturnCarry();ReturnCarry(true);auto Company=Object(State,TEXT("company"));Company->SetBoolField(TEXT("kiosk_open"),false);
@@ -349,8 +355,14 @@ void UMareSimulation::Sleep()
    bool bLegacyKiosk=false;Object(Roles,Role)->TryGetBoolField(TEXT("company"),bLegacyKiosk);if(bLegacyKiosk)continue;
    const double Wage=Number(Object(Roles,Role),TEXT("wage"));Wages+=Wage;Book(-Wage,TEXT("Salário: ")+String(Object(Roles,Role),TEXT("name")));
   }
+  // Businesses pay their own clerk once per day, like the staff wages above.
+  for(const auto& Pair:Object(Definitions,TEXT("businesses"))->Values)if(OwnsBusiness(FString(Pair.Key.ToView()))){
+   const double Wage=Number(Pair.Value->AsObject(),TEXT("wage"));Wages+=Wage;Book(-Wage,TEXT("Funcionário: ")+String(Pair.Value->AsObject(),TEXT("name")));}
   Hours->SetNumberField(TEXT("wage_day"),Day);
+  PousadaNight();
   HotelNight();
+  // A beautiful home brings visitors and talk in the village.
+  AddFame(FMath::FloorToInt(PlaceBeauty(TEXT("home"))*PlaceEffect(TEXT("home"),TEXT("fame_per_beauty_night"))));
  }
  auto Summary=MakeShared<FJsonObject>();const double In=Number(State,TEXT("day_in")),Out=Number(State,TEXT("day_out"));
  Summary->SetNumberField(TEXT("day"),Day);Summary->SetNumberField(TEXT("income"),In);Summary->SetNumberField(TEXT("expense"),Out);
@@ -414,6 +426,7 @@ bool UMareSimulation::BuyCustom(const FString& Place,const FString& Slot,int32 T
  auto Def=CustomSlot(Place,Slot);if(!Def.IsValid() || Tier<1 || Tier>5)return Fail(TEXT("Item de personalização desconhecido."));
  const FString Unlock=String(Def,TEXT("unlock"));bool bUnlocked=Unlock.IsEmpty();if(!bUnlocked)Object(State,TEXT("unlocked"))->TryGetBoolField(Unlock,bUnlocked);
  if(!bUnlocked)return Fail(TEXT("Compre antes a expansão ")+String(Object(Object(Definitions,TEXT("expansions")),Unlock),TEXT("name"))+TEXT("."));
+ FString Reason;if(!IsPlaceAvailable(Place,&Reason))return Fail(Reason);
  bool bRequiresClosed=false;Object(Object(CustomDefs(),TEXT("places")),Place)->TryGetBoolField(TEXT("requires_closed"),bRequiresClosed);
  if(bRequiresClosed && IsOpen())return Fail(TEXT("Feche o quiosque para trocar a decoração."));
  const TArray<TSharedPtr<FJsonValue>>* Tiers=nullptr;
@@ -479,4 +492,185 @@ bool UMareSimulation::UpgradeRecipe(const FString& Dish)
 double UMareSimulation::DishDemand(const FString& Dish) const
 {
  return 1+Number(Object(CustomDefs(),TEXT("recipes")),TEXT("demand_per_level"),.5)*(RecipeLevel(Dish)-1);
+}
+// Places beyond the kiosk: decor effects and the operations of the expansions (customization.json).
+static TSharedPtr<FJsonObject> Child(const TSharedPtr<FJsonObject>& Parent,const FString& Key)
+{
+ if(!Parent->HasTypedField<EJson::Object>(Key))Parent->SetObjectField(Key,MakeShared<FJsonObject>());
+ return Parent->GetObjectField(Key);
+}
+static bool Owns(const TSharedPtr<FJsonObject>& State,const FString& Expansion)
+{
+ bool bOwned=false;UMareSimulation::Object(State,TEXT("unlocked"))->TryGetBoolField(Expansion,bOwned);return bOwned;
+}
+TSharedPtr<FJsonObject> UMareSimulation::PlaceDef(const FString& Place) const{return Object(Object(CustomDefs(),TEXT("places")),Place);}
+bool UMareSimulation::IsPlaceAvailable(const FString& Place,FString* Reason) const
+{
+ auto Def=PlaceDef(Place);const FString Unlock=String(Def,TEXT("unlock")),Business=String(Def,TEXT("business"));
+ if(!Unlock.IsEmpty() && !Owns(State,Unlock)){if(Reason)*Reason=TEXT("Compre antes a expansão ")+String(Object(Object(Definitions,TEXT("expansions")),Unlock),TEXT("name"))+TEXT(" (Resort).");return false;}
+ if(!Business.IsEmpty() && !OwnsBusiness(Business)){if(Reason)*Reason=TEXT("Compre antes o negócio ")+String(Object(Object(Definitions,TEXT("businesses")),Business),TEXT("name"))+TEXT(" (Resort).");return false;}
+ return true;
+}
+double UMareSimulation::PlaceEffect(const FString& Place,const FString& Key,double Fallback) const{return Number(Object(PlaceDef(Place),TEXT("effects")),Key,Fallback);}
+double UMareSimulation::SlotSum(const FString& Place,const FString& Key) const
+{
+ double Sum=0;const TArray<TSharedPtr<FJsonValue>>* Slots=nullptr;
+ if(PlaceDef(Place)->TryGetArrayField(TEXT("slots"),Slots))for(const auto& V:*Slots){auto Def=V->AsObject();Sum+=Number(Def,Key)*(CustomTier(Place,String(Def,TEXT("id")))-1);}
+ return Sum;
+}
+double UMareSimulation::PlaceIncomeFactor(const FString& Place) const
+{
+ return 1+PlaceEffect(Place,TEXT("income_per_point"))*(PlaceComfort(Place)+PlaceBeauty(Place))+SlotSum(Place,TEXT("income"));
+}
+double UMareSimulation::StayBonus() const
+{
+ return Owns(State,TEXT("pool"))?PlaceEffect(TEXT("pool"),TEXT("stay_per_point"))*(PlaceComfort(TEXT("pool"))+PlaceBeauty(TEXT("pool"))):0;
+}
+double UMareSimulation::HotelCustomBonus() const
+{
+ double Bonus=0;for(const TCHAR* Place:{TEXT("hotel_restaurante"),TEXT("hotel_piscina"),TEXT("hotel_suites"),TEXT("hotel_lazer")})
+  Bonus+=PlaceEffect(Place,TEXT("hotel_per_point"))*(PlaceComfort(Place)+PlaceBeauty(Place));
+ return Bonus;
+}
+// Pousada: one bungalow, two more rooms with the pool expansion ("rooms" in definitions), as in the original.
+int32 UMareSimulation::PousadaRooms() const
+{
+ if(!Owns(State,TEXT("pousada")))return 0;auto Ops=Object(Object(CustomDefs(),TEXT("operations")),TEXT("pousada"));
+ int32 Rooms=Number(Ops,TEXT("rooms_base"),1);for(const auto& Pair:Object(Definitions,TEXT("expansions"))->Values)
+  if(Owns(State,FString(Pair.Key.ToView())))Rooms+=Number(Pair.Value->AsObject(),TEXT("rooms"));
+ return Rooms;
+}
+double UMareSimulation::PousadaRate() const
+{
+ auto Ops=Object(Object(CustomDefs(),TEXT("operations")),TEXT("pousada"));
+ return FMath::RoundToDouble(Number(Ops,TEXT("rate_base"),100)+Number(Ops,TEXT("star_bonus"),12)*Stars()+SlotSum(TEXT("pousada"),TEXT("rate")));
+}
+double UMareSimulation::PousadaOccupancy() const
+{
+ auto Ops=Object(Object(CustomDefs(),TEXT("operations")),TEXT("pousada"));
+ const double Maid=HasStaff(String(Ops,TEXT("maid")))?Number(Ops,TEXT("maid_bonus"),.1):0;
+ return FMath::Clamp(Number(Ops,TEXT("occupancy"),.45)+Number(Ops,TEXT("fame_occupancy"),.03)*(FameLevel()-1)+PlaceEffect(TEXT("pousada"),TEXT("occupancy_per_comfort"))*PlaceComfort(TEXT("pousada"))
+  +PlaceEffect(TEXT("pousada"),TEXT("occupancy_per_beauty"))*PlaceBeauty(TEXT("pousada"))+StayBonus()+Maid,.15,1.);
+}
+void UMareSimulation::PousadaNight()
+{
+ const int32 Rooms=PousadaRooms();if(Rooms<=0)return;
+ // Expected occupancy, rounded with chance so a single bungalow is not always full or always empty.
+ const double Expected=Rooms*PousadaOccupancy();const int32 Occupied=FMath::Clamp(int32(Expected)+(FMath::FRand()<FMath::Frac(Expected)?1:0),0,Rooms);
+ const double Rate=PousadaRate(),Revenue=Occupied*Rate;
+ const double Tips=FMath::RoundToDouble(Revenue*Number(Object(Object(CustomDefs(),TEXT("operations")),TEXT("pousada")),TEXT("tip"),.04)*PlaceIncomeFactor(TEXT("pousada")));
+ if(Revenue>0)Book(Revenue,FString::Printf(TEXT("Pousada: %d de %d quartos ocupados"),Occupied,Rooms));
+ if(Tips>0)Book(Tips,TEXT("Pousada: gorjetas"));
+ auto Last=MakeShared<FJsonObject>();Last->SetNumberField(TEXT("rooms"),Rooms);Last->SetNumberField(TEXT("occupied"),Occupied);
+ Last->SetNumberField(TEXT("rate"),Rate);Last->SetNumberField(TEXT("rev"),Revenue+Tips);Child(State,TEXT("prog"))->SetObjectField(TEXT("pousada"),Last);
+ if(Occupied>0){TArray<TSharedPtr<FJsonValue>> Ratings;const TArray<TSharedPtr<FJsonValue>>* Existing=nullptr;if(State->TryGetArrayField(TEXT("ratings"),Existing))Ratings=*Existing;
+  const double Comfort=PlaceComfort(TEXT("pousada"));
+  for(int32 I=0;I<Occupied;++I)Ratings.Add(MakeShared<FJsonValueNumber>(FMath::Clamp(FMath::FRandRange(3.4,4.4)+.025*Comfort,1.,5.)));
+  while(Ratings.Num()>40)Ratings.RemoveAt(0);State->SetArrayField(TEXT("ratings"),Ratings);AddFame(Occupied);}
+}
+int32 UMareSimulation::TourSeats(const TSharedPtr<FJsonObject>& Tour) const
+{
+ return Number(Tour,TEXT("seats"),6)+FMath::RoundToInt(SlotSum(TEXT("passeios"),TEXT("seats")))+(FameLevel()>=8?2:0);
+}
+int32 UMareSimulation::TourPassengers(const TSharedPtr<FJsonObject>& Tour) const
+{
+ const double Guests=Number(Object(Object(State,TEXT("prog")),TEXT("pousada")),TEXT("occupied"));
+ const double Pax=1+Stars()*1.2+Guests*1.5+.3*(FameLevel()-1)+.08*(PlaceComfort(TEXT("passeios"))+PlaceBeauty(TEXT("passeios")));
+ return FMath::Clamp(FMath::RoundToInt(Pax*(String(State,TEXT("weather"))==TEXT("rain")?.6:1.)),1,TourSeats(Tour));
+}
+double UMareSimulation::HourlyIncome(const FString& Id) const
+{
+ auto Op=Object(Object(Object(CustomDefs(),TEXT("operations")),TEXT("hourly")),Id);
+ const FString Role=String(Op,TEXT("staff"));const double Staff=!Role.IsEmpty() && HasStaff(Role)?1+Number(Op,TEXT("staff_bonus")):1;
+ const double Weather=String(State,TEXT("weather"))==TEXT("rain")?.6:1;
+ return Number(Op,TEXT("guests"),2)*Number(Op,TEXT("spend"),10)*PlaceIncomeFactor(Id)*(1+.04*(FameLevel()-1))*Staff*Weather;
+}
+double UMareSimulation::BusinessRate(const FString& Id) const
+{
+ auto Ops=Object(CustomDefs(),TEXT("operations"));auto Def=Object(Object(Definitions,TEXT("businesses")),Id);
+ const bool bRainProof=Id==TEXT("food_truck") || Id==TEXT("souvenir");
+ const double Weather=!bRainProof && String(State,TEXT("weather"))==TEXT("rain")?Number(Ops,TEXT("business_rain"),.4):1;
+ return Number(Def,TEXT("hour"))*(1+Number(Ops,TEXT("business_fame"),.06)*(FameLevel()-1))*PlaceIncomeFactor(TEXT("biz_")+Id)*Weather;
+}
+void UMareSimulation::OperateHour(int32 Hour)
+{
+ // The hour index guards against booking twice when tests or the day close move the clock back.
+ const int32 Day=Number(State,TEXT("day"),1);auto Ops=Child(State,TEXT("ue_ops"));const int32 Index=Day*24+Hour;
+ if(Number(Ops,TEXT("hour"),-1)>=Index)return;Ops->SetNumberField(TEXT("hour"),Index);
+ if(Number(Ops,TEXT("day"),-1)!=Day){Ops->SetNumberField(TEXT("day"),Day);Ops->SetObjectField(TEXT("today"),MakeShared<FJsonObject>());}
+ auto Today=Child(Ops,TEXT("today"));const int32 Started=Hour-1;double Total=0;TArray<FString> Parts;
+ auto Add=[&](const FString& Place,const FString& Label,double Amount){Amount=FMath::RoundToDouble(Amount);if(Amount<=0)return;
+  Today->SetNumberField(Place,Number(Today,Place)+Amount);Total+=Amount;Parts.Add(FString::Printf(TEXT("%s R$ %.0f"),*Label,Amount));};
+ auto Defs=Object(CustomDefs(),TEXT("operations"));
+ for(const auto& Pair:Object(Defs,TEXT("hourly"))->Values){const FString Id(Pair.Key.ToView());auto Op=Pair.Value->AsObject();
+  const TArray<TSharedPtr<FJsonValue>>* Open=nullptr;if(!Owns(State,String(Op,TEXT("unlock"))) || !Op->TryGetArrayField(TEXT("open"),Open) || Open->Num()!=2)continue;
+  if(Started>=(*Open)[0]->AsNumber() && Started<(*Open)[1]->AsNumber())Add(Id,String(Op,TEXT("name")),HourlyIncome(Id)*FMath::FRandRange(.85,1.15));}
+ const TArray<TSharedPtr<FJsonValue>>* Tours=nullptr;
+ if(Owns(State,TEXT("passeios")) && HasStaff(String(Defs,TEXT("tour_guide"))) && Defs->TryGetArrayField(TEXT("tours"),Tours))for(const auto& V:*Tours){auto Tour=V->AsObject();
+  if(int32(Number(Tour,TEXT("hour")))!=Started)continue;const int32 Pax=TourPassengers(Tour);
+  Add(TEXT("passeios"),FString::Printf(TEXT("%s (%d pessoas)"),*String(Tour,TEXT("name")),Pax),Pax*Number(Tour,TEXT("price"))*PlaceIncomeFactor(TEXT("passeios"))-Number(Tour,TEXT("cost")));
+  AddFame(Pax/2);}
+ for(const auto& Pair:Object(Definitions,TEXT("businesses"))->Values){const FString Id(Pair.Key.ToView());if(!OwnsBusiness(Id))continue;
+  const TArray<TSharedPtr<FJsonValue>>* Open=nullptr;if(!Pair.Value->AsObject()->TryGetArrayField(TEXT("open"),Open) || Open->Num()!=2)continue;
+  if(Started>=(*Open)[0]->AsNumber() && Started<(*Open)[1]->AsNumber())Add(TEXT("biz_")+Id,String(Pair.Value->AsObject(),TEXT("name")),BusinessRate(Id)*FMath::FRandRange(.85,1.15));}
+ // One ledger line per hour keeps the statement readable; the phone shows the split per place.
+ if(Total>0)Book(Total,FString::Printf(TEXT("Resort %02dh–%02dh: "),Started,Hour)+FString::Join(Parts,TEXT(" · ")));
+}
+double UMareSimulation::OpsToday(const FString& Place) const
+{
+ auto Ops=Object(State,TEXT("ue_ops"));return Number(Ops,TEXT("day"),-1)==Number(State,TEXT("day"),1)?Number(Object(Ops,TEXT("today")),Place):0;
+}
+bool UMareSimulation::HasStaff(const FString& Role) const{bool bHired=false;Object(State,TEXT("staff"))->TryGetBoolField(Role,bHired);return bHired;}
+bool UMareSimulation::HireStaff(const FString& Role)
+{
+ auto Def=Object(Object(Definitions,TEXT("staff")),Role);bool bLegacy=false;Def->TryGetBoolField(TEXT("company"),bLegacy);
+ if(!Object(Definitions,TEXT("staff"))->HasField(Role) || bLegacy)return Fail(TEXT("Cargo desconhecido."));
+ if(HasStaff(Role))return Fail(String(Def,TEXT("name"))+TEXT(" já foi contratado."));
+ const FString Req=String(Def,TEXT("req"));if(!Req.IsEmpty() && !Owns(State,Req))return Fail(TEXT("Compre antes a expansão ")+String(Object(Object(Definitions,TEXT("expansions")),Req),TEXT("name"))+TEXT("."));
+ const double Cost=Number(Def,TEXT("hire"));if(Money()<Cost)return Fail(FString::Printf(TEXT("Saldo insuficiente: a contratação custa R$ %.0f."),Cost));
+ Child(State,TEXT("staff"))->SetBoolField(Role,true);Book(-Cost,TEXT("Contratação: ")+String(Def,TEXT("name")));
+ LastMessage=String(Def,TEXT("name"))+TEXT(" contratado. Salário pago ao dormir.");return Save();
+}
+bool UMareSimulation::DismissStaff(const FString& Role)
+{
+ if(Role==TEXT("atendente"))return DismissAttendant();if(!HasStaff(Role))return Fail(TEXT("Ninguém contratado neste cargo."));
+ Child(State,TEXT("staff"))->SetBoolField(Role,false);LastMessage=String(Object(Object(Definitions,TEXT("staff")),Role),TEXT("name"))+TEXT(" dispensado.");return Save();
+}
+bool UMareSimulation::OwnsBusiness(const FString& Id) const{return Number(Object(Object(Object(State,TEXT("prog")),TEXT("biz")),Id),TEXT("lvl"))>0;}
+bool UMareSimulation::CanBuyBusiness(const FString& Id,FString& Reason) const
+{
+ auto Def=Object(Object(Definitions,TEXT("businesses")),Id);if(!Object(Definitions,TEXT("businesses"))->HasField(Id)){Reason=TEXT("Negócio desconhecido.");return false;}
+ if(OwnsBusiness(Id)){Reason=TEXT("Você já é dono deste negócio.");return false;}
+ const FString Chapter=String(Def,TEXT("chapter"));
+ if(!Chapter.IsEmpty() && !IsChapterDone(Chapter)){Reason=TEXT("Conclua a história \"")+String(ChapterDefinition(Chapter),TEXT("title"))+TEXT("\" da vila.");return false;}
+ if(FameLevel()<Number(Def,TEXT("fame"))){Reason=FString::Printf(TEXT("Precisa de fama nível %.0f."),Number(Def,TEXT("fame")));return false;}
+ return true;
+}
+bool UMareSimulation::BuyBusiness(const FString& Id)
+{
+ FString Reason;if(!CanBuyBusiness(Id,Reason))return Fail(Reason);auto Def=Object(Object(Definitions,TEXT("businesses")),Id);
+ const double Cost=Number(Def,TEXT("cost"));if(Money()<Cost)return Fail(FString::Printf(TEXT("Saldo insuficiente: o negócio custa R$ %.0f."),Cost));
+ auto Business=MakeShared<FJsonObject>();Business->SetNumberField(TEXT("lvl"),1);Child(Child(State,TEXT("prog")),TEXT("biz"))->SetObjectField(Id,Business);
+ Book(-Cost,TEXT("Negócio: ")+String(Def,TEXT("name")));
+ if(auto World=GetWorld())if(auto Visual=World->GetSubsystem<UMareVisualWorld>())Visual->RefreshExpansions();
+ LastMessage=TEXT("Negócio comprado: ")+String(Def,TEXT("name"))+TEXT(". Ele rende sozinho no horário de funcionamento.");return Save();
+}
+double UMareSimulation::HomeSpeedFactor() const{return 1+PlaceEffect(TEXT("home"),TEXT("speed_per_comfort"))*PlaceComfort(TEXT("home"));}
+FString UMareSimulation::PlaceSummary(const FString& Place) const
+{
+ const double Comfort=PlaceComfort(Place),Beauty=PlaceBeauty(Place);FString Head=FString::Printf(TEXT("Conforto %.0f · Beleza %.0f"),Comfort,Beauty);
+ if(Place==TEXT("kiosk"))return Head+FString::Printf(TEXT(" · movimento ×%.2f · gorjeta %.0f%% · paciência ×%.2f"),KioskArrivalFactor(),KioskTipRate()*100,KioskPatienceFactor());
+ if(Place==TEXT("bar") || Place==TEXT("pool")){FString Line=Head+FString::Printf(TEXT(" · renda ×%.2f · ~R$ %.0f por hora aberta · hoje R$ %.0f"),PlaceIncomeFactor(Place),HourlyIncome(Place),OpsToday(Place));
+  if(Place==TEXT("bar"))Line+=HasStaff(TEXT("bartender"))?TEXT(" · bartender +15%"):TEXT(" · contrate um bartender (+15%)");
+  if(Place==TEXT("pool"))Line+=FString::Printf(TEXT(" · hóspedes +%.0f%% de ocupação"),StayBonus()*100);return Line;}
+ if(Place==TEXT("pousada"))return Head+FString::Printf(TEXT(" · %d quarto(s) · diária R$ %.0f · ocupação prevista %.0f%%%s"),PousadaRooms(),PousadaRate(),PousadaOccupancy()*100,HasStaff(TEXT("camareira"))?TEXT(""):TEXT(" · contrate uma camareira (+10%)"));
+ if(Place==TEXT("passeios")){FString Line=Head+FString::Printf(TEXT(" · preço ×%.2f · hoje R$ %.0f"),PlaceIncomeFactor(Place),OpsToday(Place));const TArray<TSharedPtr<FJsonValue>>* Tours=nullptr;
+  if(Object(CustomDefs(),TEXT("operations"))->TryGetArrayField(TEXT("tours"),Tours))for(const auto& V:*Tours){auto Tour=V->AsObject();Line+=FString::Printf(TEXT(" · %s %.0fh %d/%d vagas"),*String(Tour,TEXT("name")),Number(Tour,TEXT("hour")),TourPassengers(Tour),TourSeats(Tour));}
+  return Line+(HasStaff(TEXT("guia"))?TEXT(""):TEXT(" · sem guia contratado os passeios não saem"));}
+ if(Place.StartsWith(TEXT("hotel_")))return Head+FString::Printf(TEXT(" · ocupação do hotel %.0f%% · diária R$ %.0f · decoração do hotel +%.0f%%"),HotelOccupancy()*100,220+SlotSum(TEXT("hotel_suites"),TEXT("rate")),HotelCustomBonus()*100);
+ if(Place.StartsWith(TEXT("biz_"))){const FString Id=Place.RightChop(4);const TArray<TSharedPtr<FJsonValue>>* Open=nullptr;FString Hours;
+  if(Object(Object(Definitions,TEXT("businesses")),Id)->TryGetArrayField(TEXT("open"),Open) && Open->Num()==2)Hours=FString::Printf(TEXT(" · aberto %.0fh–%.0fh"),(*Open)[0]->AsNumber(),(*Open)[1]->AsNumber());
+  return Head+FString::Printf(TEXT(" · ~R$ %.0f por hora%s · hoje R$ %.0f"),BusinessRate(Id),*Hours,OpsToday(Place));}
+ if(Place==TEXT("home"))return Head+FString::Printf(TEXT(" · você anda %.0f%% mais rápido · +%.0f de fama por noite"),(HomeSpeedFactor()-1)*100,FMath::FloorToDouble(Beauty*PlaceEffect(Place,TEXT("fame_per_beauty_night"))));
+ return Head;
 }

@@ -30,6 +30,7 @@
 #include "Widgets/Layout/SBorder.h"
 #include "Widgets/Layout/SBox.h"
 #include "Widgets/Layout/SScrollBox.h"
+#include "Widgets/Layout/SWrapBox.h"
 #include "Widgets/Layout/SDPIScaler.h"
 #include "Widgets/Input/SButton.h"
 #include "Widgets/Input/SEditableTextBox.h"
@@ -128,6 +129,7 @@ private:
  TSharedPtr<SEditableTextBox> CompanyName;
  int32 Tab=0;
  FName Station;
+ FString Place=TEXT("kiosk");
  UMareSimulation* Sim()const{return Owner.IsValid()?Owner->GetGameInstance()->GetSubsystem<UMareSimulation>():nullptr;}
  TSharedRef<SWidget> Button(const FString& Label,TFunction<void()> Action)
  {
@@ -187,39 +189,57 @@ private:
    Line(TEXT("Converse com ")+UMareSimulation::String(C,TEXT("giver"))+TEXT(" para avançar."),12);
   }
  }
- /** Personalizar: every kiosk object in 5 tiers (buy, use, free preview) and 5 recipe levels per dish. */
+ /** Personalizar: every place of the resort (kiosk, expansions, hotel, businesses, home), each object in
+  *  5 tiers (buy, use, free preview) and, at the kiosk, 5 recipe levels per dish. */
  void Customize()
  {
   auto S=Sim();auto World=Owner->GetWorld();auto Custom=World->GetSubsystem<UMareCustomWorld>();auto Kiosk=World->GetSubsystem<UMareKioskWorld>();
   const TArray<TSharedPtr<FJsonValue>>* TierNames=nullptr;S->CustomDefs()->TryGetArrayField(TEXT("tiers"),TierNames);
-  Line(TEXT("Quiosque"),18);
-  Line(FString::Printf(TEXT("Conforto %.0f · Beleza %.0f · movimento ×%.2f · gorjeta %.0f%% · paciência ×%.2f"),S->PlaceComfort(TEXT("kiosk")),S->PlaceBeauty(TEXT("kiosk")),
-   S->KioskArrivalFactor(),S->KioskTipRate()*100,S->KioskPatienceFactor()),12);
-  FString Reason;const bool bCanChange=!Kiosk || Kiosk->CanCustomize(Reason);
+  static const TArray<FString> Order={TEXT("kiosk"),TEXT("bar"),TEXT("pool"),TEXT("pousada"),TEXT("passeios"),TEXT("hotel_restaurante"),TEXT("hotel_piscina"),TEXT("hotel_suites"),TEXT("hotel_lazer"),
+   TEXT("biz_aluguel"),TEXT("biz_sorveteria"),TEXT("biz_food_truck"),TEXT("biz_souvenir"),TEXT("biz_surfe"),TEXT("home")};
+  if(!Order.Contains(Place))Place=TEXT("kiosk");
+  auto Picker=SNew(SWrapBox).UseAllottedSize(true).InnerSlotPadding(FVector2D(4,4));
+  for(const FString& Id:Order){const FString Name=UMareSimulation::String(S->PlaceDef(Id),TEXT("name"));const bool bOn=Id==Place;const bool bOpen=S->IsPlaceAvailable(Id);
+   Picker->AddSlot()[SNew(SButton).ButtonStyle(&MareUI::ActionButton).ContentPadding(FMargin(7,4)).OnClicked_Lambda([this,Id](){Place=Id;Rebuild();return FReply::Handled();})
+    [MareUI::Text((bOn?TEXT("● "):TEXT(""))+Name+(bOpen?TEXT(""):TEXT(" (bloqueado)")),11,bOpen?FLinearColor::White:FLinearColor(.82f,.86f,.84f))]];}
+  Body->AddSlot().AutoHeight().Padding(0,2,0,8)[Picker];
+  const FString PlaceName=UMareSimulation::String(S->PlaceDef(Place),TEXT("name"));
+  Line(PlaceName,18);
+  FString Locked;if(!S->IsPlaceAvailable(Place,&Locked)){Line(Locked,13);return;}
+  Line(S->PlaceSummary(Place),12);
+  FString Reason;const bool bCanChange=Place!=TEXT("kiosk") || !Kiosk || Kiosk->CanCustomize(Reason);
   if(!bCanChange)Line(Reason,12);
   const TArray<TSharedPtr<FJsonValue>>* Slots=nullptr;
-  if(UMareSimulation::Object(UMareSimulation::Object(S->CustomDefs(),TEXT("places")),TEXT("kiosk"))->TryGetArrayField(TEXT("slots"),Slots))for(const auto& Value:*Slots){
-   auto Def=Value->AsObject();const FString Slot=UMareSimulation::String(Def,TEXT("id"));const int32 Current=S->CustomTier(TEXT("kiosk"),Slot);
+  if(S->PlaceDef(Place)->TryGetArrayField(TEXT("slots"),Slots))for(const auto& Value:*Slots){
+   auto Def=Value->AsObject();const FString Slot=UMareSimulation::String(Def,TEXT("id"));const int32 Current=S->CustomTier(Place,Slot);
    const TArray<TSharedPtr<FJsonValue>>* Tiers=nullptr;if(!Def->TryGetArrayField(TEXT("tiers"),Tiers))continue;
    const FString Unlock=UMareSimulation::String(Def,TEXT("unlock"));bool bUnlocked=Unlock.IsEmpty();if(!bUnlocked)UMareSimulation::Object(S->State,TEXT("unlocked"))->TryGetBoolField(Unlock,bUnlocked);
+   bool bVisual=true;Def->TryGetBoolField(TEXT("visual"),bVisual);
    Line(FString::Printf(TEXT("%s · %s"),*UMareSimulation::String(Def,TEXT("name")),*UMareSimulation::String((*Tiers)[Current-1]->AsObject(),TEXT("name"))),15);
-   const double C=UMareSimulation::Number(Def,TEXT("comfort")),B=UMareSimulation::Number(Def,TEXT("beauty"));
-   Line(FString::Printf(TEXT("Cada nível acima do Simples: +%.0f conforto, +%.0f beleza%s%s"),C,B,Def->HasField(TEXT("speed"))?TEXT(", atendente +10% rápido"):TEXT(""),Def->HasField(TEXT("fame"))?TEXT(", mais fama"):TEXT("")),11);
+   // Effect of each level above the first, in the words of the place.
+   TArray<FString> Effects;const double C=UMareSimulation::Number(Def,TEXT("comfort")),B=UMareSimulation::Number(Def,TEXT("beauty"));
+   if(C>0)Effects.Add(FString::Printf(TEXT("+%.0f conforto"),C));if(B>0)Effects.Add(FString::Printf(TEXT("+%.0f beleza"),B));
+   if(Def->HasField(TEXT("speed")))Effects.Add(TEXT("atendente +10% rápido"));if(Def->HasField(TEXT("fame")))Effects.Add(TEXT("mais fama"));
+   if(Def->HasField(TEXT("income")))Effects.Add(FString::Printf(TEXT("renda +%.0f%%"),UMareSimulation::Number(Def,TEXT("income"))*100));
+   if(Def->HasField(TEXT("rate")))Effects.Add(FString::Printf(TEXT("diária +R$ %.0f"),UMareSimulation::Number(Def,TEXT("rate"))));
+   if(Def->HasField(TEXT("seats")))Effects.Add(FString::Printf(TEXT("+%.0f vaga por passeio"),UMareSimulation::Number(Def,TEXT("seats"))));
+   Line(TEXT("Cada nível acima do Simples: ")+FString::Join(Effects,TEXT(", ")),11);
    if(!bUnlocked){Line(TEXT("Disponível após comprar a expansão ")+UMareSimulation::String(UMareSimulation::Object(UMareSimulation::Object(S->Definitions,TEXT("expansions")),Unlock),TEXT("name"))+TEXT(" (Resort)."),12);continue;}
    for(int32 Tier=1;Tier<=Tiers->Num();++Tier){auto TierDef=(*Tiers)[Tier-1]->AsObject();
     const FString Level=TierNames && TierNames->IsValidIndex(Tier-1)?(*TierNames)[Tier-1]->AsString():FString::FromInt(Tier);
     Body->AddSlot().AutoHeight().Padding(0,2)[SNew(SBorder).BorderImage(&MareUI::Card).Padding(8)[SNew(SVerticalBox)
      +SVerticalBox::Slot().AutoHeight()[MareUI::Text(FString::Printf(TEXT("%d · %s — %s"),Tier,*Level,*UMareSimulation::String(TierDef,TEXT("name"))),12)]
      +SVerticalBox::Slot().AutoHeight().Padding(0,2,0,0)[MareUI::Text(UMareSimulation::String(TierDef,TEXT("desc")),11,FLinearColor(.35f,.32f,.26f))]]];
-    auto Row=SNew(SHorizontalBox);const bool bOwned=S->OwnsCustomTier(TEXT("kiosk"),Slot,Tier);
+    auto Row=SNew(SHorizontalBox);const bool bOwned=S->OwnsCustomTier(Place,Slot,Tier);const FString P=Place;
     if(Tier==Current)Row->AddSlot().AutoWidth().VAlign(VAlign_Center).Padding(0,0,8,0)[MareUI::Text(TEXT("Em uso"),12,FLinearColor(.12f,.45f,.3f))];
-    else if(bCanChange)Row->AddSlot().AutoWidth().Padding(0,0,6,0)[Button(bOwned?FString(TEXT("Usar")):FString::Printf(TEXT("Comprar · R$ %.0f"),S->CustomPrice(TEXT("kiosk"),Slot,Tier)),[S,Custom,Slot,Tier](){
-      if(S->BuyCustom(TEXT("kiosk"),Slot,Tier) && Custom)Custom->ApplyAll();})];
-    if(Tier!=Current && Custom)Row->AddSlot().AutoWidth()[Button(TEXT("Prévia"),[S,Custom,Slot,Tier](){Custom->Apply(TEXT("kiosk"),Slot,Tier,true);
-      S->LastMessage=TEXT("Prévia no quiosque. Feche o celular para voltar ao que está em uso.");})];
+    else if(bCanChange)Row->AddSlot().AutoWidth().Padding(0,0,6,0)[Button(bOwned?FString(TEXT("Usar")):FString::Printf(TEXT("Comprar · R$ %.0f"),S->CustomPrice(Place,Slot,Tier)),[S,Custom,P,Slot,Tier](){
+      if(S->BuyCustom(P,Slot,Tier) && Custom)Custom->ApplyAll();})];
+    if(Tier!=Current && Custom && bVisual)Row->AddSlot().AutoWidth()[Button(TEXT("Prévia"),[S,Custom,P,Slot,Tier,PlaceName](){Custom->Apply(P,Slot,Tier,true);
+      S->LastMessage=TEXT("Prévia em ")+PlaceName+TEXT(". Feche o celular para voltar ao que está em uso.");})];
     Body->AddSlot().AutoHeight().Padding(0,0,0,6)[Row];
    }
   }
+  if(Place!=TEXT("kiosk"))return;
   Line(TEXT("Receitas"),18);
   Line(TEXT("Receita melhor: preço maior, mais pedidos e, a partir de Gourmet, mais fama por venda."),12);
   const TArray<FString> Products={TEXT("coco_gelado"),TEXT("suco"),TEXT("caipirinha"),TEXT("petiscos"),TEXT("sorvete_morango"),TEXT("sorvete_chocolate"),TEXT("batata_frita"),TEXT("porcao_peixe")};
@@ -232,6 +252,35 @@ private:
    if(!S->IsDishUnlocked(Id)){Line(TEXT("Libere o produto em Resort para melhorar a receita."),11);continue;}
    if(Level>=5){Line(TEXT("Receita no nível máximo."),11);continue;}
    Action(FString::Printf(TEXT("Melhorar para \"%s\" · R$ %.0f"),*S->RecipeTitle(Id,Level+1),S->RecipeUpgradeCost(Id)),[S,Id](){S->UpgradeRecipe(Id);});
+  }
+ }
+ /** Expansion roles: one row each with the wage and a hire / dismiss button. */
+ void ExpansionStaff()
+ {
+  auto S=Sim();Line(TEXT("Equipe das expansões"),18);auto Roles=UMareSimulation::Object(S->Definitions,TEXT("staff"));
+  for(const TCHAR* Role:{TEXT("bartender"),TEXT("camareira"),TEXT("guia")}){auto Def=UMareSimulation::Object(Roles,Role);const FString R=Role;
+   Line(FString::Printf(TEXT("%s · salário R$ %.0f por dia"),*UMareSimulation::String(Def,TEXT("name")),UMareSimulation::Number(Def,TEXT("wage"))),14);
+   Line(UMareSimulation::String(Def,TEXT("blurb")),11);
+   if(S->HasStaff(R))Action(TEXT("Dispensar"),[S,R](){S->DismissStaff(R);});
+   else Action(FString::Printf(TEXT("Contratar · R$ %.0f"),UMareSimulation::Number(Def,TEXT("hire"))),[S,R](){S->HireStaff(R);});
+  }
+ }
+ /** Village businesses and what every place earned today. */
+ void Businesses()
+ {
+  auto S=Sim();Line(TEXT("Hoje no resort"),18);
+  for(const TCHAR* Id:{TEXT("bar"),TEXT("pool"),TEXT("passeios")})if(S->IsPlaceAvailable(Id))
+   Line(FString::Printf(TEXT("%s · R$ %.0f"),*UMareSimulation::String(S->PlaceDef(Id),TEXT("name")),S->OpsToday(Id)),12);
+  auto Pousada=UMareSimulation::Object(UMareSimulation::Object(S->State,TEXT("prog")),TEXT("pousada"));
+  if(S->PousadaRooms()>0)Line(Pousada->HasField(TEXT("rooms"))?FString::Printf(TEXT("Pousada, última noite · %.0f de %.0f quartos · R$ %.0f"),UMareSimulation::Number(Pousada,TEXT("occupied")),
+   UMareSimulation::Number(Pousada,TEXT("rooms")),UMareSimulation::Number(Pousada,TEXT("rev"))):FString(TEXT("Pousada · os primeiros hóspedes pagam quando você dormir.")),12);
+  Line(TEXT("Negócios da vila"),18);Line(TEXT("Cada negócio rende sozinho no horário de funcionamento e paga um funcionário por dia."),12);
+  for(const auto& Pair:UMareSimulation::Object(S->Definitions,TEXT("businesses"))->Values){const FString Id(Pair.Key.ToView());auto Def=Pair.Value->AsObject();
+   const FString Title=UMareSimulation::String(Def,TEXT("name"));
+   if(S->OwnsBusiness(Id)){Line(FString::Printf(TEXT("%s · seu · hoje R$ %.0f"),*Title,S->OpsToday(TEXT("biz_")+Id)),14);continue;}
+   Line(FString::Printf(TEXT("%s · ~R$ %.0f/h · funcionário R$ %.0f/dia"),*Title,UMareSimulation::Number(Def,TEXT("hour")),UMareSimulation::Number(Def,TEXT("wage"))),14);
+   Line(UMareSimulation::String(Def,TEXT("blurb")),11);FString Reason;
+   if(S->CanBuyBusiness(Id,Reason))Action(FString::Printf(TEXT("Comprar · R$ %.0f"),UMareSimulation::Number(Def,TEXT("cost"))),[S,Id](){S->BuyBusiness(Id);});else Line(Reason,11);
   }
  }
  void Rebuild()
@@ -280,7 +329,7 @@ private:
   }else if(Tab==1){Line(TEXT("Reposição imediata"),18);Stock(false);}
   else if(Tab==2){Line(TEXT("Um atendente para todo o quiosque"),18);Line(TEXT("Anota, retira os produtos, entrega e recolhe a louça."));
    Line(FString::Printf(TEXT("Contratação R$ %.0f · salário R$ %.0f por dia, pago ao dormir."),UMareSimulation::Number(UMareSimulation::Object(UMareSimulation::Object(S->Definitions,TEXT("staff")),TEXT("atendente")),TEXT("hire")),UMareSimulation::Number(UMareSimulation::Object(UMareSimulation::Object(S->Definitions,TEXT("staff")),TEXT("atendente")),TEXT("wage"))),12);bool bHired=false;UMareSimulation::Object(S->State,TEXT("staff"))->TryGetBoolField(TEXT("atendente"),bHired);
-   if(bHired)Action(TEXT("Dispensar atendente"),[S](){S->DismissAttendant();});else Action(TEXT("Contratar atendente"),[S](){S->HireAttendant();});}
+   if(bHired)Action(TEXT("Dispensar atendente"),[S](){S->DismissAttendant();});else Action(TEXT("Contratar atendente"),[S](){S->HireAttendant();});ExpansionStaff();}
   else if(Tab==3){Line(FString::Printf(TEXT("Caixa · R$ %.0f"),S->Money()),20);
    Line(FString::Printf(TEXT("Hoje · entradas R$ %.0f · saídas R$ %.0f"),UMareSimulation::Number(S->State,TEXT("day_in")),UMareSimulation::Number(S->State,TEXT("day_out"))),13);
    if(S->State->HasTypedField<EJson::Object>(TEXT("ue_last_day"))){auto Last=UMareSimulation::Object(S->State,TEXT("ue_last_day"));
@@ -301,6 +350,7 @@ private:
     if(bOwned)Line(UMareSimulation::String(Row,TEXT("name"))+TEXT(" · Comprada"),14);
     else Action(UMareSimulation::String(Row,TEXT("name"))+FString::Printf(TEXT(" · R$ %.0f"),UMareSimulation::Number(Row,TEXT("cost"))),[S,Id](){S->BuyExpansion(Id);});
    }
+   Businesses();
   }
   else if(Tab==5)Missions();
   else Customize();
@@ -347,7 +397,9 @@ void AMareCharacter::Tick(float DeltaSeconds)
 {
  Super::Tick(DeltaSeconds);auto Movement=GetCharacterMovement();auto PC=Cast<APlayerController>(Controller);
  const bool bSwimming=Movement->IsSwimming();const float Vertical=PC && PC->IsMoveInputIgnored()?0.f:VerticalSwimInput;
- Movement->MaxWalkSpeed=bSprint?420:260;Movement->Buoyancy=Vertical<0?1.f:1.35f;
+ // A comfortable home leaves the player rested: walking and running get faster.
+ const UMareSimulation* HomeSim=GetGameInstance()?GetGameInstance()->GetSubsystem<UMareSimulation>():nullptr;
+ Movement->MaxWalkSpeed=(bSprint?420:260)*(HomeSim?float(HomeSim->HomeSpeedFactor()):1.f);Movement->Buoyancy=Vertical<0?1.f:1.35f;
  if(bSwimming && (Vertical<=0 || GetActorLocation().Z<-78))AddMovementInput(FVector::UpVector,Vertical);
  const bool bUnderwater=bSwimming && Eyes->GetComponentLocation().Z<-38;
  Eyes->PostProcessBlendWeight=FMath::FInterpTo(Eyes->PostProcessBlendWeight,bUnderwater?1.f:0.f,DeltaSeconds,5);

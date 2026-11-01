@@ -116,6 +116,44 @@ public:
  FString RecipeTitle(const FString& Dish,int32 Level=0) const;
  /** Relative chance a customer orders this dish (recipe level makes it more popular). */
  double DishDemand(const FString& Dish) const;
+ // ---- Places beyond the kiosk (customization.json "places" + "operations").
+ TSharedPtr<FJsonObject> PlaceDef(const FString& Place) const;
+ /** Bought expansion / business behind a place (the home and the kiosk are always available). */
+ bool IsPlaceAvailable(const FString& Place,FString* Reason=nullptr) const;
+ double PlaceEffect(const FString& Place,const FString& Key,double Fallback=0) const;
+ /** Sum over slots of Key x (tier-1), e.g. "rate", "income", "seats". */
+ double SlotSum(const FString& Place,const FString& Key) const;
+ /** Income multiplier of a place: 1 + income_per_point x (comfort+beauty) + service upgrades. */
+ double PlaceIncomeFactor(const FString& Place) const;
+ /** Extra occupancy from the pool (pousada and hotel) and from the four hotel areas. */
+ double StayBonus() const;
+ double HotelCustomBonus() const;
+ int32 PousadaRooms() const;
+ double PousadaRate() const;
+ double PousadaOccupancy() const;
+ /** Books one night of the pousada (rooms x rate x occupancy, plus tips); stores prog.pousada. */
+ void PousadaNight();
+ int32 TourSeats(const TSharedPtr<FJsonObject>& Tour) const;
+ int32 TourPassengers(const TSharedPtr<FJsonObject>& Tour) const;
+ /** Expected income of an hourly operation (bar, pool) or business for one open hour, before chance. */
+ double HourlyIncome(const FString& Id) const;
+ double BusinessRate(const FString& Id) const;
+ /** Books the hour that just ended [Hour-1, Hour): bar, pool, tours and businesses. Once per game hour. */
+ void OperateHour(int32 Hour);
+ /** Income booked today by a place (bar, pool, passeios, biz_<id>). */
+ double OpsToday(const FString& Place) const;
+ UFUNCTION(BlueprintPure,Category="Maré Alta") bool HasStaff(const FString& Role) const;
+ /** Hires an expansion role (bartender, camareira, guia): needs its expansion; wage charged at night. */
+ UFUNCTION(BlueprintCallable,Category="Maré Alta") bool HireStaff(const FString& Role);
+ UFUNCTION(BlueprintCallable,Category="Maré Alta") bool DismissStaff(const FString& Role);
+ UFUNCTION(BlueprintPure,Category="Maré Alta") bool OwnsBusiness(const FString& Id) const;
+ /** Buys a village business (definitions.businesses): needs its chapter and fame level. */
+ UFUNCTION(BlueprintCallable,Category="Maré Alta") bool BuyBusiness(const FString& Id);
+ bool CanBuyBusiness(const FString& Id,FString& Reason) const;
+ /** Home comfort makes the player walk faster; home beauty brings fame every night. */
+ UFUNCTION(BlueprintPure,Category="Maré Alta") double HomeSpeedFactor() const;
+ /** One line with the current effect of a place's decor, for the phone. */
+ FString PlaceSummary(const FString& Place) const;
  UFUNCTION(BlueprintCallable,Category="Maré Alta")
  double Money() const;
  UFUNCTION(BlueprintCallable,Category="Maré Alta")

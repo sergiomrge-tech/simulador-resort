@@ -61,7 +61,7 @@ void UMareCustomWorld::Index()
    if(Def->TryGetArrayField(TEXT("spots"),Spots))for(int32 I=0;I<Spots->Num();++I){const auto& P=(*Spots)[I]->AsArray();if(P.Num()<2)continue;
     const FVector Top(P[0]->AsNumber(),P[1]->AsNumber(),3000);FHitResult Hit;FCollisionQueryParams Query(TEXT("MareCustomSpot"),true);
     const float Z=GetWorld()->LineTraceSingleByChannel(Hit,Top,Top-FVector(0,0,6000),ECC_Visibility,Query)?Hit.ImpactPoint.Z:0.f;
-    State.Anchors.Add(FTransform(FRotator(0,37.f*I,0),FVector(Top.X,Top.Y,Z)));}
+    State.Anchors.Add(FTransform(FRotator(0,P.Num()>=3?P[2]->AsNumber():37.f*I,0),FVector(Top.X,Top.Y,Z)));}
    UE_LOG(LogTemp,Display,TEXT("MARE_CUSTOM %s/%s anchors=%d hide=%d materials=%d"),*Place,*UMareSimulation::String(Def,TEXT("id")),State.Anchors.Num(),State.HideTargets.Num(),State.MaterialTargets.Num());
   }
  }
@@ -121,7 +121,8 @@ bool UMareCustomWorld::HasVisual(const FString& Place,const FString& Slot,int32 
 {
  auto S=Sim();auto Def=S?S->CustomSlot(Place,Slot):nullptr;const TArray<TSharedPtr<FJsonValue>>* Tiers=nullptr;
  if(!Def.IsValid() || !Def->TryGetArrayField(TEXT("tiers"),Tiers) || !Tiers->IsValidIndex(Tier-1))return false;
- auto TierDef=(*Tiers)[Tier-1]->AsObject();const FString Material=UMareSimulation::String(TierDef,TEXT("material"));
+  auto TierDef=(*Tiers)[Tier-1]->AsObject();const FString Material=UMareSimulation::String(TierDef,TEXT("material"));
+ bool bVisual=true;Def->TryGetBoolField(TEXT("visual"),bVisual);if(!bVisual)return true;
  if(!Material.IsEmpty())return LoadObject<UMaterialInterface>(nullptr,*FString::Printf(TEXT("/Game/Custom/Materials/%s.%s"),*Material,*Material))!=nullptr;
  const TArray<TSharedPtr<FJsonValue>>* PartDefs=nullptr;if(!TierDef->TryGetArrayField(TEXT("parts"),PartDefs))return Tier==1;
  for(const auto& P:*PartDefs)if(!PartMesh(UMareSimulation::String(P->AsObject(),TEXT("model"))))return false;return true;

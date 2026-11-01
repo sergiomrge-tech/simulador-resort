@@ -1,7 +1,19 @@
 {
  "schema": 1,
- "tiers": ["Simples", "Bom", "Caprichado", "Luxo", "Premium"],
- "price_mult": [0, 2.5, 6, 14, 30],
+ "tiers": [
+  "Simples",
+  "Bom",
+  "Caprichado",
+  "Luxo",
+  "Premium"
+ ],
+ "price_mult": [
+  0,
+  2.5,
+  6,
+  14,
+  30
+ ],
  "effects": {
   "arrival_per_point": 0.035,
   "tip_per_comfort": 0.015,
@@ -12,99 +24,4600 @@
  "places": {
   "kiosk": {
    "name": "Quiosque",
-   "area": [2900, 4800, -2500, -800],
+   "area": [
+    2900,
+    4800,
+    -2500,
+    -800
+   ],
    "requires_closed": true,
    "slots": [
-    {"id": "mesas", "name": "Mesas", "base_price": 60, "comfort": 2, "beauty": 1, "unlock": "kiosk_tables",
-     "anchor": "World_0333", "hide": ["World_0333"],
+    {
+     "id": "mesas",
+     "name": "Mesas",
+     "base_price": 60,
+     "comfort": 2,
+     "beauty": 1,
+     "unlock": "kiosk_tables",
+     "anchor": "World_0333",
+     "hide": [
+      "World_0333"
+     ],
      "tiers": [
-      {"name": "Mesa dobrável de madeira", "desc": "A mesa simples que veio com o quiosque."},
-      {"name": "Mesa chinesa quadrada", "desc": "Madeira escura maciça, firme na areia.", "parts": [{"model": "chinese_tea_table", "w": 78, "h": 74}]},
-      {"name": "Mesa redonda de madeira", "desc": "Pé central torneado, cabe mais um prato.", "parts": [{"model": "WoodenTable_02", "w": 72, "h": 75}]},
-      {"name": "Mesa de mármore", "desc": "Tampo de mármore claro e base cromada.", "parts": [{"model": "coffee_table_round_01", "w": 82, "h": 75}]},
-      {"name": "Mesa posta com toalha", "desc": "Toalha xadrez e madeira nobre: clima de restaurante.", "parts": [{"model": "dining_table", "w": 95, "h": 76}]}
-     ]},
-    {"id": "cadeiras", "name": "Cadeiras", "base_price": 50, "comfort": 2, "beauty": 1, "unlock": "kiosk_tables",
-     "anchor": "World_0333", "hide": ["World_0332", "World_0334"],
+      {
+       "name": "Mesa dobrável de madeira",
+       "desc": "A mesa simples que veio com o quiosque."
+      },
+      {
+       "name": "Mesa chinesa quadrada",
+       "desc": "Madeira escura maciça, firme na areia.",
+       "parts": [
+        {
+         "model": "chinese_tea_table",
+         "w": 78,
+         "h": 74
+        }
+       ]
+      },
+      {
+       "name": "Mesa redonda de madeira",
+       "desc": "Pé central torneado, cabe mais um prato.",
+       "parts": [
+        {
+         "model": "WoodenTable_02",
+         "w": 72,
+         "h": 75
+        }
+       ]
+      },
+      {
+       "name": "Mesa de mármore",
+       "desc": "Tampo de mármore claro e base cromada.",
+       "parts": [
+        {
+         "model": "coffee_table_round_01",
+         "w": 82,
+         "h": 75
+        }
+       ]
+      },
+      {
+       "name": "Mesa posta com toalha",
+       "desc": "Toalha xadrez e madeira nobre: clima de restaurante.",
+       "parts": [
+        {
+         "model": "dining_table",
+         "w": 95,
+         "h": 76
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "cadeiras",
+     "name": "Cadeiras",
+     "base_price": 50,
+     "comfort": 2,
+     "beauty": 1,
+     "unlock": "kiosk_tables",
+     "anchor": "World_0333",
+     "hide": [
+      "World_0332",
+      "World_0334"
+     ],
      "tiers": [
-      {"name": "Cadeiras dobráveis", "desc": "Dobram e empilham, mas cansam logo."},
-      {"name": "Cadeira rústica azul", "desc": "Madeira pintada à mão, cara de casa de praia.", "parts": [{"model": "painted_wooden_chair_02", "h": 92, "at": [-11, 56, 0], "yaw": 180}, {"model": "painted_wooden_chair_02", "h": 92, "at": [7, -50, 0], "yaw": 0}]},
-      {"name": "Cadeira branca de madeira", "desc": "Encosto alto e assento largo.", "parts": [{"model": "painted_wooden_chair_01", "h": 92, "at": [-11, 56, 0], "yaw": 180}, {"model": "painted_wooden_chair_01", "h": 92, "at": [7, -50, 0], "yaw": 0}]},
-      {"name": "Cadeira estofada de couro", "desc": "Estofado macio: o cliente fica mais tempo.", "parts": [{"model": "dining_chair_02", "h": 90, "at": [-11, 58, 0], "yaw": 180}, {"model": "dining_chair_02", "h": 90, "at": [7, -52, 0], "yaw": 0}]},
-      {"name": "Poltrona de couro e madeira", "desc": "Poltrona de lounge, conforto de hotel.", "parts": [{"model": "modern_arm_chair_01", "h": 82, "at": [-11, 64, 0], "yaw": 180}, {"model": "modern_arm_chair_01", "h": 82, "at": [7, -58, 0], "yaw": 0}]}
-     ]},
-    {"id": "banquetas", "name": "Banquetas do balcão", "base_price": 30, "comfort": 1, "beauty": 1,
-     "anchor": "World_0327", "hide": ["World_0327"],
+      {
+       "name": "Cadeiras dobráveis",
+       "desc": "Dobram e empilham, mas cansam logo."
+      },
+      {
+       "name": "Cadeira rústica azul",
+       "desc": "Madeira pintada à mão, cara de casa de praia.",
+       "parts": [
+        {
+         "model": "painted_wooden_chair_02",
+         "h": 92,
+         "at": [
+          -11,
+          56,
+          0
+         ],
+         "yaw": 180
+        },
+        {
+         "model": "painted_wooden_chair_02",
+         "h": 92,
+         "at": [
+          7,
+          -50,
+          0
+         ],
+         "yaw": 0
+        }
+       ]
+      },
+      {
+       "name": "Cadeira branca de madeira",
+       "desc": "Encosto alto e assento largo.",
+       "parts": [
+        {
+         "model": "painted_wooden_chair_01",
+         "h": 92,
+         "at": [
+          -11,
+          56,
+          0
+         ],
+         "yaw": 180
+        },
+        {
+         "model": "painted_wooden_chair_01",
+         "h": 92,
+         "at": [
+          7,
+          -50,
+          0
+         ],
+         "yaw": 0
+        }
+       ]
+      },
+      {
+       "name": "Cadeira estofada de couro",
+       "desc": "Estofado macio: o cliente fica mais tempo.",
+       "parts": [
+        {
+         "model": "dining_chair_02",
+         "h": 90,
+         "at": [
+          -11,
+          58,
+          0
+         ],
+         "yaw": 180
+        },
+        {
+         "model": "dining_chair_02",
+         "h": 90,
+         "at": [
+          7,
+          -52,
+          0
+         ],
+         "yaw": 0
+        }
+       ]
+      },
+      {
+       "name": "Poltrona de couro e madeira",
+       "desc": "Poltrona de lounge, conforto de hotel.",
+       "parts": [
+        {
+         "model": "modern_arm_chair_01",
+         "h": 82,
+         "at": [
+          -11,
+          64,
+          0
+         ],
+         "yaw": 180
+        },
+        {
+         "model": "modern_arm_chair_01",
+         "h": 82,
+         "at": [
+          7,
+          -58,
+          0
+         ],
+         "yaw": 0
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "banquetas",
+     "name": "Banquetas do balcão",
+     "base_price": 30,
+     "comfort": 1,
+     "beauty": 1,
+     "anchor": "World_0327",
+     "hide": [
+      "World_0327"
+     ],
      "tiers": [
-      {"name": "Banquinho dobrável", "desc": "Madeira simples que dobra e empilha.", "parts": [{"model": "folding_wooden_stool", "w": 42, "h": 66}]},
-      {"name": "Banqueta de madeira", "desc": "Assento redondo e pés abertos.", "parts": [{"model": "wooden_stool_01", "w": 40, "h": 74}]},
-      {"name": "Banqueta pintada", "desc": "Madeira pintada e desgastada pelo sal.", "parts": [{"model": "painted_wooden_stool", "w": 40, "h": 74}]},
-      {"name": "Banqueta industrial", "desc": "Assento de madeira, pés de ferro.", "parts": [{"model": "metal_stool_02", "w": 42, "h": 76}]},
-      {"name": "Banqueta estofada", "desc": "Assento acolchoado com encosto baixo.", "parts": [{"model": "bar_chair_round_01", "h": 85}]}
-     ]},
-    {"id": "guarda_sois", "name": "Guarda-sóis", "base_price": 40, "comfort": 1, "beauty": 2,
-     "anchor": "World_1239", "also": ["World_1245"],
+      {
+       "name": "Banquinho dobrável",
+       "desc": "Madeira simples que dobra e empilha.",
+       "parts": [
+        {
+         "model": "folding_wooden_stool",
+         "w": 42,
+         "h": 66
+        }
+       ]
+      },
+      {
+       "name": "Banqueta de madeira",
+       "desc": "Assento redondo e pés abertos.",
+       "parts": [
+        {
+         "model": "wooden_stool_01",
+         "w": 40,
+         "h": 74
+        }
+       ]
+      },
+      {
+       "name": "Banqueta pintada",
+       "desc": "Madeira pintada e desgastada pelo sal.",
+       "parts": [
+        {
+         "model": "painted_wooden_stool",
+         "w": 40,
+         "h": 74
+        }
+       ]
+      },
+      {
+       "name": "Banqueta industrial",
+       "desc": "Assento de madeira, pés de ferro.",
+       "parts": [
+        {
+         "model": "metal_stool_02",
+         "w": 42,
+         "h": 76
+        }
+       ]
+      },
+      {
+       "name": "Banqueta estofada",
+       "desc": "Assento acolchoado com encosto baixo.",
+       "parts": [
+        {
+         "model": "bar_chair_round_01",
+         "h": 85
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "guarda_sois",
+     "name": "Guarda-sóis",
+     "base_price": 40,
+     "comfort": 1,
+     "beauty": 2,
+     "anchor": "World_1239",
+     "also": [
+      "World_1245"
+     ],
      "tiers": [
-      {"name": "Lona crua", "desc": "Lona simples, sombra básica.", "material": "M_Custom_Umbrella_1"},
-      {"name": "Listrado azul", "desc": "Listras azul e branco.", "material": "M_Custom_Umbrella_2"},
-      {"name": "Listrado coral", "desc": "Listras coral e areia.", "material": "M_Custom_Umbrella_3"},
-      {"name": "Palha trançada", "desc": "Palha natural, sombra fresca.", "material": "M_Custom_Umbrella_4"},
-      {"name": "Lona náutica premium", "desc": "Lona marinho com acabamento de iate.", "material": "M_Custom_Umbrella_5"}
-     ]},
-    {"id": "balcao", "name": "Balcão", "base_price": 70, "comfort": 0, "beauty": 1, "speed": true,
+      {
+       "name": "Lona crua",
+       "desc": "Lona simples, sombra básica.",
+       "material": "M_Custom_Umbrella_1"
+      },
+      {
+       "name": "Listrado azul",
+       "desc": "Listras azul e branco.",
+       "material": "M_Custom_Umbrella_2"
+      },
+      {
+       "name": "Listrado coral",
+       "desc": "Listras coral e areia.",
+       "material": "M_Custom_Umbrella_3"
+      },
+      {
+       "name": "Palha trançada",
+       "desc": "Palha natural, sombra fresca.",
+       "material": "M_Custom_Umbrella_4"
+      },
+      {
+       "name": "Lona náutica premium",
+       "desc": "Lona marinho com acabamento de iate.",
+       "material": "M_Custom_Umbrella_5"
+      }
+     ]
+    },
+    {
+     "id": "balcao",
+     "name": "Balcão",
+     "base_price": 70,
+     "comfort": 0,
+     "beauty": 1,
+     "speed": true,
      "anchor": "World_1215",
      "tiers": [
-      {"name": "Pintura cinza", "desc": "Acabamento de fábrica."},
-      {"name": "Madeira natural", "desc": "Tábuas envernizadas. Atendente +10% rápido.", "material": "M_Custom_Counter_2"},
-      {"name": "Madeira azul-turquesa", "desc": "Cor da praia. Atendente +20% rápido.", "material": "M_Custom_Counter_3"},
-      {"name": "Azulejo português", "desc": "Azulejos azuis pintados. Atendente +30% rápido.", "material": "M_Custom_Counter_4"},
-      {"name": "Teca polida e latão", "desc": "Acabamento de bar de luxo. Atendente +40% rápido.", "material": "M_Custom_Counter_5"}
-     ]},
-    {"id": "iluminacao", "name": "Iluminação", "base_price": 30, "comfort": 0, "beauty": 2,
-     "anchor": "World_0199", "hide": ["World_0199", "World_0200", "World_0201"],
+      {
+       "name": "Pintura cinza",
+       "desc": "Acabamento de fábrica."
+      },
+      {
+       "name": "Madeira natural",
+       "desc": "Tábuas envernizadas. Atendente +10% rápido.",
+       "material": "M_Custom_Counter_2"
+      },
+      {
+       "name": "Madeira azul-turquesa",
+       "desc": "Cor da praia. Atendente +20% rápido.",
+       "material": "M_Custom_Counter_3"
+      },
+      {
+       "name": "Azulejo português",
+       "desc": "Azulejos azuis pintados. Atendente +30% rápido.",
+       "material": "M_Custom_Counter_4"
+      },
+      {
+       "name": "Teca polida e latão",
+       "desc": "Acabamento de bar de luxo. Atendente +40% rápido.",
+       "material": "M_Custom_Counter_5"
+      }
+     ]
+    },
+    {
+     "id": "iluminacao",
+     "name": "Iluminação",
+     "base_price": 30,
+     "comfort": 0,
+     "beauty": 2,
+     "anchor": "World_0199",
+     "hide": [
+      "World_0199",
+      "World_0200",
+      "World_0201"
+     ],
      "tiers": [
-      {"name": "Lanterna de madeira", "desc": "Luz de vela."},
-      {"name": "Lampião", "desc": "Lampião de metal clássico.", "parts": [{"model": "Lantern_01", "h": 40}]},
-      {"name": "Lamparina antiga", "desc": "Vidro pintado com flores.", "parts": [{"model": "vintage_oil_lamp", "h": 42}]},
-      {"name": "Lanterna de latão", "desc": "Latão trabalhado, luz dourada.", "parts": [{"model": "brass_diya_lantern", "h": 46}]},
-      {"name": "Lustre de lanternas", "desc": "Conjunto de lanternas penduradas.", "parts": [{"model": "lantern_chandelier_01", "h": 60}]}
-     ]},
-    {"id": "plantas", "name": "Plantas e vasos", "base_price": 25, "comfort": 0, "beauty": 2,
-     "spots": [[3420, -1680], [4180, -1680], [3330, -1320], [4270, -1320], [3600, -1720], [4000, -1720]],
+      {
+       "name": "Lanterna de madeira",
+       "desc": "Luz de vela."
+      },
+      {
+       "name": "Lampião",
+       "desc": "Lampião de metal clássico.",
+       "parts": [
+        {
+         "model": "Lantern_01",
+         "h": 40
+        }
+       ]
+      },
+      {
+       "name": "Lamparina antiga",
+       "desc": "Vidro pintado com flores.",
+       "parts": [
+        {
+         "model": "vintage_oil_lamp",
+         "h": 42
+        }
+       ]
+      },
+      {
+       "name": "Lanterna de latão",
+       "desc": "Latão trabalhado, luz dourada.",
+       "parts": [
+        {
+         "model": "brass_diya_lantern",
+         "h": 46
+        }
+       ]
+      },
+      {
+       "name": "Lustre de lanternas",
+       "desc": "Conjunto de lanternas penduradas.",
+       "parts": [
+        {
+         "model": "lantern_chandelier_01",
+         "h": 60
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "plantas",
+     "name": "Plantas e vasos",
+     "base_price": 25,
+     "comfort": 0,
+     "beauty": 2,
+     "spots": [
+      [
+       3420,
+       -1680
+      ],
+      [
+       4180,
+       -1680
+      ],
+      [
+       3330,
+       -1320
+      ],
+      [
+       4270,
+       -1320
+      ],
+      [
+       3600,
+       -1720
+      ],
+      [
+       4000,
+       -1720
+      ]
+     ],
      "tiers": [
-      {"name": "Suculentas", "desc": "Dois vasinhos de suculenta.", "parts": [{"model": "potted_plant_04", "h": 34}], "count": 2},
-      {"name": "Costela-de-adão", "desc": "Quatro vasos de folhagem.", "parts": [{"model": "potted_plant_02", "h": 70}], "count": 4},
-      {"name": "Palmeirinhas em vaso", "desc": "Plantas altas em vasos de barro.", "parts": [{"model": "potted_plant_01", "h": 130}], "count": 4},
-      {"name": "Floreiras de madeira", "desc": "Floreiras com gazânias floridas.", "parts": [{"model": "planter_box_02", "w": 90, "h": 42}, {"model": "flower_gazania", "w": 80, "h": 16, "at": [0, 0, 36]}], "count": 6},
-      {"name": "Jardim tropical", "desc": "Plantas altas, folhagens e floreira.", "parts": [{"model": "potted_plant_01", "h": 165}, {"model": "potted_plant_02", "h": 70, "at": [55, 30, 0], "yaw": 40}], "count": 6}
-     ]},
-    {"id": "letreiro", "name": "Letreiro", "base_price": 35, "comfort": 0, "beauty": 1, "fame": true,
+      {
+       "name": "Suculentas",
+       "desc": "Dois vasinhos de suculenta.",
+       "parts": [
+        {
+         "model": "potted_plant_04",
+         "h": 34
+        }
+       ],
+       "count": 2
+      },
+      {
+       "name": "Costela-de-adão",
+       "desc": "Quatro vasos de folhagem.",
+       "parts": [
+        {
+         "model": "potted_plant_02",
+         "h": 70
+        }
+       ],
+       "count": 4
+      },
+      {
+       "name": "Palmeirinhas em vaso",
+       "desc": "Plantas altas em vasos de barro.",
+       "parts": [
+        {
+         "model": "potted_plant_01",
+         "h": 130
+        }
+       ],
+       "count": 4
+      },
+      {
+       "name": "Floreiras de madeira",
+       "desc": "Floreiras com gazânias floridas.",
+       "parts": [
+        {
+         "model": "planter_box_02",
+         "w": 90,
+         "h": 42
+        },
+        {
+         "model": "flower_gazania",
+         "w": 80,
+         "h": 16,
+         "at": [
+          0,
+          0,
+          36
+         ]
+        }
+       ],
+       "count": 6
+      },
+      {
+       "name": "Jardim tropical",
+       "desc": "Plantas altas, folhagens e floreira.",
+       "parts": [
+        {
+         "model": "potted_plant_01",
+         "h": 165
+        },
+        {
+         "model": "potted_plant_02",
+         "h": 70,
+         "at": [
+          55,
+          30,
+          0
+         ],
+         "yaw": 40
+        }
+       ],
+       "count": 6
+      }
+     ]
+    },
+    {
+     "id": "letreiro",
+     "name": "Letreiro",
+     "base_price": 35,
+     "comfort": 0,
+     "beauty": 1,
+     "fame": true,
      "anchor": "World_1343",
      "tiers": [
-      {"name": "Placa pintada", "desc": "Sem iluminação.", "material": "M_Custom_Sign_1"},
-      {"name": "Neon branco", "desc": "Contorno de neon branco.", "material": "M_Custom_Sign_2"},
-      {"name": "Neon turquesa", "desc": "Neon da cor do mar.", "material": "M_Custom_Sign_3"},
-      {"name": "Neon rosa", "desc": "Neon rosa vibrante à noite.", "material": "M_Custom_Sign_4"},
-      {"name": "Neon arco-íris", "desc": "Neon que muda de cor. Mais fama por venda.", "material": "M_Custom_Sign_5"}
-     ]}
+      {
+       "name": "Placa pintada",
+       "desc": "Sem iluminação.",
+       "material": "M_Custom_Sign_1"
+      },
+      {
+       "name": "Neon branco",
+       "desc": "Contorno de neon branco.",
+       "material": "M_Custom_Sign_2"
+      },
+      {
+       "name": "Neon turquesa",
+       "desc": "Neon da cor do mar.",
+       "material": "M_Custom_Sign_3"
+      },
+      {
+       "name": "Neon rosa",
+       "desc": "Neon rosa vibrante à noite.",
+       "material": "M_Custom_Sign_4"
+      },
+      {
+       "name": "Neon arco-íris",
+       "desc": "Neon que muda de cor. Mais fama por venda.",
+       "material": "M_Custom_Sign_5"
+      }
+     ]
+    }
+   ]
+  },
+  "bar": {
+   "name": "Bar do Coqueiro",
+   "unlock": "bar",
+   "area": [
+    500,
+    1800,
+    -1800,
+    -800
+   ],
+   "effects": {
+    "income_per_point": 0.045
+   },
+   "slots": [
+    {
+     "id": "banquetas",
+     "name": "Banquetas do balcão",
+     "base_price": 90,
+     "comfort": 1,
+     "beauty": 1,
+     "anchor": "World_0327",
+     "hide": [
+      "World_0327"
+     ],
+     "tiers": [
+      {
+       "name": "Banqueta estofada redonda",
+       "desc": "As banquetas originais do bar."
+      },
+      {
+       "name": "Banqueta de ferro",
+       "desc": "Ferro pintado e assento de madeira.",
+       "parts": [
+        {
+         "model": "metal_stool_01",
+         "w": 42,
+         "h": 78
+        }
+       ]
+      },
+      {
+       "name": "Banqueta pintada alta",
+       "desc": "Madeira desgastada pelo sal.",
+       "parts": [
+        {
+         "model": "painted_wooden_stool",
+         "w": 40,
+         "h": 78
+        }
+       ]
+      },
+      {
+       "name": "Banqueta industrial",
+       "desc": "Assento de madeira, pés de ferro.",
+       "parts": [
+        {
+         "model": "metal_stool_02",
+         "w": 42,
+         "h": 78
+        }
+       ]
+      },
+      {
+       "name": "Banqueta de madeira nobre",
+       "desc": "Madeira escura maciça, acabamento de bar de hotel.",
+       "parts": [
+        {
+         "model": "chinese_stool",
+         "w": 42,
+         "h": 78
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "mesas",
+     "name": "Mesas",
+     "base_price": 110,
+     "comfort": 2,
+     "beauty": 1,
+     "anchor": "World_0333",
+     "hide": [
+      "World_0333"
+     ],
+     "tiers": [
+      {
+       "name": "Mesa de madeira do conjunto",
+       "desc": "Mesa original do conjunto."
+      },
+      {
+       "name": "Mesa redonda de madeira",
+       "desc": "Tampo redondo e pé central.",
+       "parts": [
+        {
+         "model": "round_wooden_table_01",
+         "w": 80,
+         "h": 75
+        }
+       ]
+      },
+      {
+       "name": "Mesa rústica de jardim",
+       "desc": "Madeira maciça, pés torneados.",
+       "parts": [
+        {
+         "model": "gallinera_table",
+         "w": 90,
+         "h": 75
+        }
+       ]
+      },
+      {
+       "name": "Mesa de mármore",
+       "desc": "Tampo de mármore e base cromada.",
+       "parts": [
+        {
+         "model": "coffee_table_round_01",
+         "w": 82,
+         "h": 75
+        }
+       ]
+      },
+      {
+       "name": "Mesa posta com toalha",
+       "desc": "Toalha e madeira nobre: clima de restaurante.",
+       "parts": [
+        {
+         "model": "dining_table",
+         "w": 95,
+         "h": 76
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "cadeiras",
+     "name": "Cadeiras",
+     "base_price": 90,
+     "comfort": 2,
+     "beauty": 1,
+     "anchor": "World_0333",
+     "hide": [
+      "World_0332",
+      "World_0334"
+     ],
+     "tiers": [
+      {
+       "name": "Cadeiras dobráveis",
+       "desc": "As cadeiras do conjunto original."
+      },
+      {
+       "name": "Cadeira de jardim",
+       "desc": "Madeira clara com encosto curvo.",
+       "parts": [
+        {
+         "model": "gallinera_chair",
+         "h": 90,
+         "at": [
+          -11,
+          56,
+          0
+         ],
+         "yaw": 180
+        },
+        {
+         "model": "gallinera_chair",
+         "h": 90,
+         "at": [
+          7,
+          -50,
+          0
+         ],
+         "yaw": 0
+        }
+       ]
+      },
+      {
+       "name": "Cadeira branca de madeira",
+       "desc": "Encosto alto e assento largo.",
+       "parts": [
+        {
+         "model": "painted_wooden_chair_01",
+         "h": 92,
+         "at": [
+          -11,
+          56,
+          0
+         ],
+         "yaw": 180
+        },
+        {
+         "model": "painted_wooden_chair_01",
+         "h": 92,
+         "at": [
+          7,
+          -50,
+          0
+         ],
+         "yaw": 0
+        }
+       ]
+      },
+      {
+       "name": "Cadeira de madeira nobre",
+       "desc": "Madeira escura entalhada à mão.",
+       "parts": [
+        {
+         "model": "chinese_armchair",
+         "h": 95,
+         "at": [
+          -11,
+          60,
+          0
+         ],
+         "yaw": 180
+        },
+        {
+         "model": "chinese_armchair",
+         "h": 95,
+         "at": [
+          7,
+          -54,
+          0
+         ],
+         "yaw": 0
+        }
+       ]
+      },
+      {
+       "name": "Poltrona de couro e madeira",
+       "desc": "Conforto de lounge.",
+       "parts": [
+        {
+         "model": "modern_arm_chair_01",
+         "h": 82,
+         "at": [
+          -11,
+          64,
+          0
+         ],
+         "yaw": 180
+        },
+        {
+         "model": "modern_arm_chair_01",
+         "h": 82,
+         "at": [
+          7,
+          -58,
+          0
+         ],
+         "yaw": 0
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "balcao",
+     "name": "Balcão",
+     "base_price": 140,
+     "comfort": 0,
+     "beauty": 2,
+     "anchor": "World_0318",
+     "also": [
+      "World_0319",
+      "World_0320",
+      "World_0321"
+     ],
+     "income": 0.04,
+     "tiers": [
+      {
+       "name": "Madeira rústica",
+       "desc": "O balcão original do bar."
+      },
+      {
+       "name": "Madeira natural",
+       "desc": "Tábuas envernizadas.",
+       "material": "M_Custom_Counter_2"
+      },
+      {
+       "name": "Madeira azul-turquesa",
+       "desc": "A cor do mar no balcão.",
+       "material": "M_Custom_Counter_3"
+      },
+      {
+       "name": "Azulejo português",
+       "desc": "Azulejos azuis pintados.",
+       "material": "M_Custom_Counter_4"
+      },
+      {
+       "name": "Teca polida",
+       "desc": "Acabamento de bar de luxo.",
+       "material": "M_Custom_Counter_5"
+      }
+     ]
+    },
+    {
+     "id": "iluminacao",
+     "name": "Iluminação",
+     "base_price": 70,
+     "comfort": 0,
+     "beauty": 2,
+     "anchor": "World_0199",
+     "hide": [
+      "World_0199",
+      "World_0200",
+      "World_0201"
+     ],
+     "tiers": [
+      {
+       "name": "Lanterna de madeira",
+       "desc": "A luminária que já estava lá."
+      },
+      {
+       "name": "Pendente industrial",
+       "desc": "Cúpula de metal e luz quente.",
+       "parts": [
+        {
+         "model": "hanging_industrial_lamp",
+         "h": 55
+        }
+       ]
+      },
+      {
+       "name": "Lampião de metal",
+       "desc": "Lampião clássico de vidro.",
+       "parts": [
+        {
+         "model": "Lantern_01",
+         "h": 40
+        }
+       ]
+      },
+      {
+       "name": "Lanterna de latão",
+       "desc": "Latão trabalhado, luz dourada.",
+       "parts": [
+        {
+         "model": "brass_diya_lantern",
+         "h": 46
+        }
+       ]
+      },
+      {
+       "name": "Lustre de lanternas",
+       "desc": "Conjunto de lanternas penduradas.",
+       "parts": [
+        {
+         "model": "lantern_chandelier_01",
+         "h": 60
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "plantas",
+     "name": "Plantas",
+     "base_price": 60,
+     "comfort": 0,
+     "beauty": 2,
+     "spots": [
+      [
+       880,
+       -1720,
+       0
+      ],
+      [
+       1720,
+       -1720,
+       90
+      ],
+      [
+       1720,
+       -880,
+       180
+      ],
+      [
+       880,
+       -880,
+       270
+      ]
+     ],
+     "tiers": [
+      {
+       "name": "Vasinhos de suculenta",
+       "desc": "Vasos pequenos de suculenta.",
+       "parts": [
+        {
+         "model": "potted_plant_04",
+         "h": 34
+        }
+       ],
+       "count": 2
+      },
+      {
+       "name": "Costela-de-adão",
+       "desc": "Folhagens em vasos de barro.",
+       "parts": [
+        {
+         "model": "potted_plant_02",
+         "h": 70
+        }
+       ],
+       "count": 4
+      },
+      {
+       "name": "Palmeirinhas em vaso",
+       "desc": "Plantas altas em vasos de cerâmica.",
+       "parts": [
+        {
+         "model": "potted_plant_01",
+         "h": 130
+        }
+       ],
+       "count": 4
+      },
+      {
+       "name": "Floreiras de madeira",
+       "desc": "Floreiras com gazânias.",
+       "parts": [
+        {
+         "model": "planter_box_02",
+         "w": 90,
+         "h": 42
+        },
+        {
+         "model": "flower_gazania",
+         "w": 80,
+         "h": 16,
+         "at": [
+          0,
+          0,
+          36
+         ]
+        }
+       ],
+       "count": 4
+      },
+      {
+       "name": "Jardim tropical",
+       "desc": "Árvore-da-fortuna e folhagens.",
+       "parts": [
+        {
+         "model": "pachira_aquatica_01",
+         "h": 175
+        },
+        {
+         "model": "potted_plant_02",
+         "h": 70,
+         "at": [
+          55,
+          30,
+          0
+         ],
+         "yaw": 40
+        }
+       ],
+       "count": 4
+      }
+     ]
+    },
+    {
+     "id": "carta",
+     "name": "Carta de drinks",
+     "base_price": 150,
+     "comfort": 0,
+     "beauty": 1,
+     "visual": false,
+     "income": 0.08,
+     "tiers": [
+      {
+       "name": "Caipirinha e cerveja",
+       "desc": "O básico gelado."
+      },
+      {
+       "name": "Drinks de frutas",
+       "desc": "Batidas e caipirinhas de frutas da estação."
+      },
+      {
+       "name": "Coquetéis clássicos",
+       "desc": "Mojito, piña colada e cuba libre."
+      },
+      {
+       "name": "Coquetelaria autoral",
+       "desc": "Drinks da casa com cachaças envelhecidas."
+      },
+      {
+       "name": "Carta de mixologia premium",
+       "desc": "Destilados raros e drinks assinados."
+      }
+     ]
+    },
+    {
+     "id": "som",
+     "name": "Som e ambiente",
+     "base_price": 110,
+     "comfort": 1,
+     "beauty": 1,
+     "visual": false,
+     "income": 0.05,
+     "tiers": [
+      {
+       "name": "Rádio de pilha",
+       "desc": "Música baixinha."
+      },
+      {
+       "name": "Caixa de som",
+       "desc": "Playlist de praia."
+      },
+      {
+       "name": "Voz e violão",
+       "desc": "Música ao vivo no fim de tarde."
+      },
+      {
+       "name": "Trio de forró",
+       "desc": "Música ao vivo todas as noites."
+      },
+      {
+       "name": "DJ ao pôr do sol",
+       "desc": "Set de música eletrônica tropical."
+      }
+     ]
+    }
+   ]
+  },
+  "pool": {
+   "name": "Piscina",
+   "unlock": "pool",
+   "area": [
+    -900,
+    900,
+    -200,
+    1000
+   ],
+   "effects": {
+    "income_per_point": 0.04,
+    "stay_per_point": 0.003
+   },
+   "slots": [
+    {
+     "id": "espreguicadeiras",
+     "name": "Espreguiçadeiras",
+     "base_price": 120,
+     "comfort": 3,
+     "beauty": 1,
+     "anchor": "World_0087",
+     "hide": [
+      "World_0087",
+      "World_0088",
+      "World_0090",
+      "World_0091",
+      "World_0092",
+      "World_0093",
+      "World_0094"
+     ],
+     "tiers": [
+      {
+       "name": "Espreguiçadeira simples",
+       "desc": "A espreguiçadeira que veio com a área."
+      },
+      {
+       "name": "Espreguiçadeira de ripas",
+       "desc": "Madeira tratada com encosto regulável.",
+       "parts": [
+        {
+         "model": "mare_lounger_slats",
+         "w": 195,
+         "h": 95
+        }
+       ]
+      },
+      {
+       "name": "Espreguiçadeira com colchonete",
+       "desc": "Colchonete listrado sobre madeira.",
+       "parts": [
+        {
+         "model": "mare_lounger_cushion",
+         "w": 195,
+         "h": 95
+        }
+       ]
+      },
+      {
+       "name": "Espreguiçadeira de vime",
+       "desc": "Trama de fibra natural e almofada.",
+       "parts": [
+        {
+         "model": "mare_lounger_wicker",
+         "w": 198,
+         "h": 92
+        }
+       ]
+      },
+      {
+       "name": "Daybed com dossel",
+       "desc": "Cama de praia com cortinas de linho.",
+       "parts": [
+        {
+         "model": "mare_daybed",
+         "w": 210,
+         "h": 230
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "guarda_sois",
+     "name": "Guarda-sóis",
+     "base_price": 80,
+     "comfort": 1,
+     "beauty": 2,
+     "anchor": "World_0101",
+     "also": [
+      "World_0106",
+      "World_0111",
+      "World_0116"
+     ],
+     "tiers": [
+      {
+       "name": "Lona crua",
+       "desc": "Lona simples, sombra básica.",
+       "material": "M_Custom_Umbrella_1"
+      },
+      {
+       "name": "Listrado azul",
+       "desc": "Listras azul e branco.",
+       "material": "M_Custom_Umbrella_2"
+      },
+      {
+       "name": "Listrado coral",
+       "desc": "Listras coral e areia.",
+       "material": "M_Custom_Umbrella_3"
+      },
+      {
+       "name": "Palha trançada",
+       "desc": "Palha natural, sombra fresca.",
+       "material": "M_Custom_Umbrella_4"
+      },
+      {
+       "name": "Lona náutica premium",
+       "desc": "Lona marinho de iate.",
+       "material": "M_Custom_Umbrella_5"
+      }
+     ]
+    },
+    {
+     "id": "mesinhas",
+     "name": "Mesinhas de apoio",
+     "base_price": 60,
+     "comfort": 1,
+     "beauty": 1,
+     "anchor": "World_0139",
+     "hide": [
+      "World_0139"
+     ],
+     "tiers": [
+      {
+       "name": "Mesinha de madeira",
+       "desc": "A mesinha original ao lado da espreguiçadeira."
+      },
+      {
+       "name": "Mesinha redonda",
+       "desc": "Madeira clara de pé central.",
+       "parts": [
+        {
+         "model": "small_wooden_table_01",
+         "w": 50,
+         "h": 58
+        }
+       ]
+      },
+      {
+       "name": "Mesa de jardim baixa",
+       "desc": "Madeira maciça e pés torneados.",
+       "parts": [
+        {
+         "model": "round_wooden_table_02",
+         "w": 56,
+         "h": 58
+        }
+       ]
+      },
+      {
+       "name": "Mesa de centro moderna",
+       "desc": "Madeira e metal escovado.",
+       "parts": [
+        {
+         "model": "modern_coffee_table_01",
+         "w": 60,
+         "h": 58
+        }
+       ]
+      },
+      {
+       "name": "Mesa industrial",
+       "desc": "Tampo de madeira de demolição.",
+       "parts": [
+        {
+         "model": "industrial_coffee_table",
+         "w": 62,
+         "h": 58
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "plantas",
+     "name": "Plantas",
+     "base_price": 70,
+     "comfort": 0,
+     "beauty": 2,
+     "spots": [
+      [
+       -880,
+       -190,
+       45
+      ],
+      [
+       880,
+       -190,
+       135
+      ],
+      [
+       -880,
+       990,
+       315
+      ],
+      [
+       880,
+       990,
+       225
+      ],
+      [
+       -320,
+       -190,
+       0
+      ],
+      [
+       320,
+       -190,
+       0
+      ]
+     ],
+     "tiers": [
+      {
+       "name": "Vasinhos de suculenta",
+       "desc": "Vasos pequenos de suculenta.",
+       "parts": [
+        {
+         "model": "potted_plant_04",
+         "h": 34
+        }
+       ],
+       "count": 2
+      },
+      {
+       "name": "Costela-de-adão",
+       "desc": "Folhagens em vasos de barro.",
+       "parts": [
+        {
+         "model": "potted_plant_02",
+         "h": 70
+        }
+       ],
+       "count": 4
+      },
+      {
+       "name": "Palmeirinhas em vaso",
+       "desc": "Plantas altas em vasos de cerâmica.",
+       "parts": [
+        {
+         "model": "potted_plant_01",
+         "h": 130
+        }
+       ],
+       "count": 6
+      },
+      {
+       "name": "Floreiras de madeira",
+       "desc": "Floreiras com gazânias.",
+       "parts": [
+        {
+         "model": "planter_box_02",
+         "w": 90,
+         "h": 42
+        },
+        {
+         "model": "flower_gazania",
+         "w": 80,
+         "h": 16,
+         "at": [
+          0,
+          0,
+          36
+         ]
+        }
+       ],
+       "count": 6
+      },
+      {
+       "name": "Jardim tropical",
+       "desc": "Árvore-da-fortuna e folhagens.",
+       "parts": [
+        {
+         "model": "pachira_aquatica_01",
+         "h": 175
+        },
+        {
+         "model": "potted_plant_02",
+         "h": 70,
+         "at": [
+          55,
+          30,
+          0
+         ],
+         "yaw": 40
+        }
+       ],
+       "count": 6
+      }
+     ]
+    },
+    {
+     "id": "toalhas",
+     "name": "Toalhas e enxoval",
+     "base_price": 90,
+     "comfort": 2,
+     "beauty": 0,
+     "visual": false,
+     "tiers": [
+      {
+       "name": "Toalha de algodão",
+       "desc": "Toalha simples por pessoa."
+      },
+      {
+       "name": "Toalhas felpudas",
+       "desc": "Toalhas grossas trocadas todo dia."
+      },
+      {
+       "name": "Kit piscina",
+       "desc": "Toalha, chinelo e protetor solar."
+      },
+      {
+       "name": "Roupões de praia",
+       "desc": "Roupão e toalha de banho por hóspede."
+      },
+      {
+       "name": "Concierge de piscina",
+       "desc": "Toalhas geladas e água aromatizada."
+      }
+     ]
+    },
+    {
+     "id": "bar_molhado",
+     "name": "Serviço na piscina",
+     "base_price": 160,
+     "comfort": 1,
+     "beauty": 1,
+     "visual": false,
+     "income": 0.08,
+     "tiers": [
+      {
+       "name": "Água e refrigerante",
+       "desc": "Isopor na borda."
+      },
+      {
+       "name": "Sucos naturais",
+       "desc": "Garçom passa a cada hora."
+      },
+      {
+       "name": "Petiscos na espreguiçadeira",
+       "desc": "Cardápio de petiscos."
+      },
+      {
+       "name": "Drinks na piscina",
+       "desc": "Garçom dedicado e drinks gelados."
+      },
+      {
+       "name": "Serviço completo de lounge",
+       "desc": "Champanhe, frutas e petiscos finos."
+      }
+     ]
+    }
+   ]
+  },
+  "pousada": {
+   "name": "Pousada",
+   "unlock": "pousada",
+   "area": [
+    -600,
+    600,
+    1200,
+    2200
+   ],
+   "effects": {
+    "occupancy_per_comfort": 0.01,
+    "occupancy_per_beauty": 0.008
+   },
+   "slots": [
+    {
+     "id": "recepcao",
+     "name": "Balcão da recepção",
+     "base_price": 160,
+     "comfort": 0,
+     "beauty": 2,
+     "anchor": "World_0040",
+     "also": [
+      "World_0041",
+      "World_0042",
+      "World_0043"
+     ],
+     "tiers": [
+      {
+       "name": "Madeira pintada",
+       "desc": "O balcão original da recepção."
+      },
+      {
+       "name": "Madeira natural",
+       "desc": "Tábuas envernizadas.",
+       "material": "M_Custom_Counter_2"
+      },
+      {
+       "name": "Madeira azul-turquesa",
+       "desc": "Cor da praia.",
+       "material": "M_Custom_Counter_3"
+      },
+      {
+       "name": "Azulejo português",
+       "desc": "Azulejos azuis pintados.",
+       "material": "M_Custom_Counter_4"
+      },
+      {
+       "name": "Teca polida",
+       "desc": "Recepção de hotel boutique.",
+       "material": "M_Custom_Counter_5"
+      }
+     ]
+    },
+    {
+     "id": "espera",
+     "name": "Poltronas da recepção",
+     "base_price": 140,
+     "comfort": 2,
+     "beauty": 1,
+     "spots": [
+      [
+       -330,
+       1420,
+       90
+      ],
+      [
+       330,
+       1420,
+       270
+      ]
+     ],
+     "tiers": [
+      {
+       "name": "Cadeira de madeira",
+       "desc": "Cadeira simples para quem espera.",
+       "parts": [
+        {
+         "model": "WoodenChair_01",
+         "h": 92
+        }
+       ]
+      },
+      {
+       "name": "Cadeira estofada verde",
+       "desc": "Assento acolchoado.",
+       "parts": [
+        {
+         "model": "GreenChair_01",
+         "h": 88
+        }
+       ]
+      },
+      {
+       "name": "Poltrona clássica",
+       "desc": "Poltrona de tecido com braços.",
+       "parts": [
+        {
+         "model": "ArmChair_01",
+         "h": 95
+        }
+       ]
+      },
+      {
+       "name": "Poltrona de madeira nobre",
+       "desc": "Madeira escura entalhada.",
+       "parts": [
+        {
+         "model": "chinese_armchair",
+         "h": 95
+        }
+       ]
+      },
+      {
+       "name": "Poltrona de design",
+       "desc": "Lounge chair de couro e madeira.",
+       "parts": [
+        {
+         "model": "mid_century_lounge_chair",
+         "h": 85
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "banco",
+     "name": "Banco da entrada",
+     "base_price": 120,
+     "comfort": 1,
+     "beauty": 1,
+     "anchor": "World_0073",
+     "hide": [
+      "World_0073"
+     ],
+     "tiers": [
+      {
+       "name": "Banco pintado",
+       "desc": "O banco original da entrada."
+      },
+      {
+       "name": "Sofá de madeira pintada",
+       "desc": "Encosto de ripas e almofadas.",
+       "parts": [
+        {
+         "model": "painted_wooden_sofa",
+         "w": 170,
+         "h": 90
+        }
+       ]
+      },
+      {
+       "name": "Sofá de madeira nobre",
+       "desc": "Madeira escura de linhas retas.",
+       "parts": [
+        {
+         "model": "chinese_sofa",
+         "w": 180,
+         "h": 90
+        }
+       ]
+      },
+      {
+       "name": "Sofá de linho",
+       "desc": "Estofado claro e macio.",
+       "parts": [
+        {
+         "model": "Sofa_01",
+         "w": 190,
+         "h": 85
+        }
+       ]
+      },
+      {
+       "name": "Sofá de veludo",
+       "desc": "Veludo e pés de madeira torneada.",
+       "parts": [
+        {
+         "model": "sofa_03",
+         "w": 200,
+         "h": 90
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "plantas",
+     "name": "Plantas",
+     "base_price": 100,
+     "comfort": 0,
+     "beauty": 2,
+     "anchor": "World_0048",
+     "hide": [
+      "World_0047",
+      "World_0048",
+      "World_0049"
+     ],
+     "tiers": [
+      {
+       "name": "Costela-de-adão",
+       "desc": "Os vasos originais da varanda."
+      },
+      {
+       "name": "Palmeirinhas em vaso",
+       "desc": "Plantas altas em vasos de cerâmica.",
+       "parts": [
+        {
+         "model": "potted_plant_01",
+         "h": 130
+        }
+       ]
+      },
+      {
+       "name": "Árvore-da-fortuna",
+       "desc": "Pachira trançada em vaso.",
+       "parts": [
+        {
+         "model": "pachira_aquatica_01",
+         "h": 170
+        }
+       ]
+      },
+      {
+       "name": "Floreiras de madeira",
+       "desc": "Floreiras com gazânias.",
+       "parts": [
+        {
+         "model": "planter_box_02",
+         "w": 90,
+         "h": 42
+        },
+        {
+         "model": "flower_gazania",
+         "w": 80,
+         "h": 16,
+         "at": [
+          0,
+          0,
+          36
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Jardim tropical",
+       "desc": "Pachira com folhagens.",
+       "parts": [
+        {
+         "model": "pachira_aquatica_01",
+         "h": 185
+        },
+        {
+         "model": "potted_plant_02",
+         "h": 70,
+         "at": [
+          55,
+          30,
+          0
+         ],
+         "yaw": 40
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "clima",
+     "name": "Clima dos quartos",
+     "base_price": 220,
+     "comfort": 2,
+     "beauty": 0,
+     "visual": false,
+     "rate": 22,
+     "tiers": [
+      {
+       "name": "Janela aberta",
+       "desc": "Brisa do mar e mosquiteiro."
+      },
+      {
+       "name": "Ventilador de teto",
+       "desc": "Ventilador silencioso."
+      },
+      {
+       "name": "Ar-condicionado",
+       "desc": "Split com controle remoto."
+      },
+      {
+       "name": "Ar inverter silencioso",
+       "desc": "Temperatura estável a noite toda."
+      },
+      {
+       "name": "Climatização inteligente",
+       "desc": "Ar, umidificador e cortinas automáticas."
+      }
+     ]
+    },
+    {
+     "id": "enxoval",
+     "name": "Enxoval",
+     "base_price": 200,
+     "comfort": 2,
+     "beauty": 1,
+     "visual": false,
+     "rate": 20,
+     "tiers": [
+      {
+       "name": "Lençol simples",
+       "desc": "Algodão básico."
+      },
+      {
+       "name": "Algodão colorido",
+       "desc": "Jogo de cama estampado."
+      },
+      {
+       "name": "Linho da pousada",
+       "desc": "Linho lavado e passado."
+      },
+      {
+       "name": "Percal 400 fios",
+       "desc": "Lençol de hotel e travesseiros de pluma."
+      },
+      {
+       "name": "Enxoval egípcio",
+       "desc": "Algodão egípcio 600 fios e menu de travesseiros."
+      }
+     ]
+    },
+    {
+     "id": "cama",
+     "name": "Camas",
+     "base_price": 260,
+     "comfort": 3,
+     "beauty": 0,
+     "visual": false,
+     "rate": 30,
+     "tiers": [
+      {
+       "name": "Cama de casal",
+       "desc": "Colchão de espuma."
+      },
+      {
+       "name": "Colchão de molas",
+       "desc": "Molas ensacadas."
+      },
+      {
+       "name": "Cama queen",
+       "desc": "Colchão queen com pillow top."
+      },
+      {
+       "name": "Cama king",
+       "desc": "Colchão king e cabeceira estofada."
+      },
+      {
+       "name": "Cama com dossel",
+       "desc": "King com dossel de linho."
+      }
+     ]
+    },
+    {
+     "id": "decoracao",
+     "name": "Decoração dos quartos",
+     "base_price": 180,
+     "comfort": 0,
+     "beauty": 2,
+     "visual": false,
+     "rate": 18,
+     "tiers": [
+      {
+       "name": "Básico",
+       "desc": "Paredes brancas."
+      },
+      {
+       "name": "Tapete e quadro",
+       "desc": "Tapete de sisal e quadro da praia."
+      },
+      {
+       "name": "Artesanato local",
+       "desc": "Peças de artesãos da vila."
+      },
+      {
+       "name": "Lounge e luminária",
+       "desc": "Poltrona de leitura e luminária."
+      },
+      {
+       "name": "Suíte de design",
+       "desc": "Móveis assinados e arte original."
+      }
+     ]
+    },
+    {
+     "id": "banheiro",
+     "name": "Banheiros",
+     "base_price": 240,
+     "comfort": 2,
+     "beauty": 1,
+     "visual": false,
+     "rate": 25,
+     "tiers": [
+      {
+       "name": "Chuveiro elétrico",
+       "desc": "Água quente simples."
+      },
+      {
+       "name": "Chuveiro a gás",
+       "desc": "Pressão forte."
+      },
+      {
+       "name": "Ducha com amenities",
+       "desc": "Sabonetes e xampus da casa."
+      },
+      {
+       "name": "Banheira",
+       "desc": "Banheira e roupões."
+      },
+      {
+       "name": "Banheiro spa",
+       "desc": "Ducha de chuva, banheira e sais de banho."
+      }
+     ]
+    }
+   ]
+  },
+  "passeios": {
+   "name": "Passeios",
+   "unlock": "passeios",
+   "effects": {
+    "income_per_point": 0.05
+   },
+   "slots": [
+    {
+     "id": "barco",
+     "name": "Barco",
+     "base_price": 260,
+     "comfort": 2,
+     "beauty": 1,
+     "visual": false,
+     "seats": 1,
+     "tiers": [
+      {
+       "name": "Canoa a remo",
+       "desc": "Cabe pouca gente."
+      },
+      {
+       "name": "Lancha de alumínio",
+       "desc": "Mais rápida e estável (+1 vaga)."
+      },
+      {
+       "name": "Escuna de madeira",
+       "desc": "Toldo e bancos acolchoados (+2 vagas)."
+      },
+      {
+       "name": "Catamarã",
+       "desc": "Rede de proa e banheiro (+3 vagas)."
+      },
+      {
+       "name": "Iate de passeio",
+       "desc": "Deck de sol e cabine (+4 vagas)."
+      }
+     ]
+    },
+    {
+     "id": "mergulho",
+     "name": "Equipamento de mergulho",
+     "base_price": 180,
+     "comfort": 1,
+     "beauty": 0,
+     "visual": false,
+     "income": 0.08,
+     "tiers": [
+      {
+       "name": "Máscara e snorkel",
+       "desc": "Equipamento básico."
+      },
+      {
+       "name": "Nadadeiras e colete",
+       "desc": "Mais segurança na água."
+      },
+      {
+       "name": "Equipamento novo",
+       "desc": "Máscaras panorâmicas e coletes."
+      },
+      {
+       "name": "Câmera subaquática",
+       "desc": "Fotos do mergulho incluídas."
+      },
+      {
+       "name": "Batismo com cilindro",
+       "desc": "Mergulho de cilindro com instrutor."
+      }
+     ]
+    },
+    {
+     "id": "roteiro",
+     "name": "Roteiros",
+     "base_price": 160,
+     "comfort": 0,
+     "beauty": 2,
+     "visual": false,
+     "income": 0.07,
+     "tiers": [
+      {
+       "name": "Volta na baía",
+       "desc": "O roteiro de sempre."
+      },
+      {
+       "name": "Ilhas e piscinas naturais",
+       "desc": "Parada para banho."
+      },
+      {
+       "name": "Pôr do sol no mar",
+       "desc": "Saída no fim da tarde."
+      },
+      {
+       "name": "Observação de golfinhos",
+       "desc": "Roteiro com guia biólogo."
+      },
+      {
+       "name": "Expedição exclusiva",
+       "desc": "Praias desertas e almoço na ilha."
+      }
+     ]
+    },
+    {
+     "id": "lanche",
+     "name": "Lanche a bordo",
+     "base_price": 120,
+     "comfort": 2,
+     "beauty": 0,
+     "visual": false,
+     "income": 0.05,
+     "tiers": [
+      {
+       "name": "Água mineral",
+       "desc": "Garrafinha gelada."
+      },
+      {
+       "name": "Frutas da estação",
+       "desc": "Bandeja de frutas."
+      },
+      {
+       "name": "Lanche natural",
+       "desc": "Sanduíche e suco."
+      },
+      {
+       "name": "Petiscos e drinks",
+       "desc": "Isopor com drinks e petiscos."
+      },
+      {
+       "name": "Almoço a bordo",
+       "desc": "Peixe grelhado servido no barco."
+      }
+     ]
+    },
+    {
+     "id": "fotos",
+     "name": "Fotos e lembranças",
+     "base_price": 100,
+     "comfort": 0,
+     "beauty": 1,
+     "visual": false,
+     "income": 0.06,
+     "tiers": [
+      {
+       "name": "Sem fotos",
+       "desc": "Cada um tira as suas."
+      },
+      {
+       "name": "Foto impressa",
+       "desc": "Uma foto do grupo."
+      },
+      {
+       "name": "Álbum digital",
+       "desc": "Fotos enviadas no celular."
+      },
+      {
+       "name": "Vídeo com drone",
+       "desc": "Imagens aéreas do passeio."
+      },
+      {
+       "name": "Ensaio profissional",
+       "desc": "Fotógrafo acompanha o passeio."
+      }
+     ]
+    }
+   ]
+  },
+  "hotel_restaurante": {
+   "name": "Grand Hotel · Restaurante",
+   "unlock": "grand_hotel",
+   "area": [
+    -1500,
+    -600,
+    3700,
+    4700
+   ],
+   "effects": {
+    "income_per_point": 0.04,
+    "hotel_per_point": 0.002
+   },
+   "slots": [
+    {
+     "id": "mesas",
+     "name": "Mesas do restaurante",
+     "base_price": 400,
+     "comfort": 2,
+     "beauty": 1,
+     "anchor": "World_0333",
+     "hide": [
+      "World_0333"
+     ],
+     "tiers": [
+      {
+       "name": "Mesa de madeira do conjunto",
+       "desc": "Mesa do conjunto do terraço."
+      },
+      {
+       "name": "Mesa redonda de madeira",
+       "desc": "Tampo redondo e pé central.",
+       "parts": [
+        {
+         "model": "round_wooden_table_01",
+         "w": 80,
+         "h": 75
+        }
+       ]
+      },
+      {
+       "name": "Mesa rústica de jardim",
+       "desc": "Madeira maciça, pés torneados.",
+       "parts": [
+        {
+         "model": "gallinera_table",
+         "w": 90,
+         "h": 75
+        }
+       ]
+      },
+      {
+       "name": "Mesa de mármore",
+       "desc": "Tampo de mármore e base cromada.",
+       "parts": [
+        {
+         "model": "coffee_table_round_01",
+         "w": 82,
+         "h": 75
+        }
+       ]
+      },
+      {
+       "name": "Mesa posta com toalha",
+       "desc": "Toalha e madeira nobre: clima de restaurante.",
+       "parts": [
+        {
+         "model": "dining_table",
+         "w": 95,
+         "h": 76
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "cadeiras",
+     "name": "Cadeiras do restaurante",
+     "base_price": 360,
+     "comfort": 2,
+     "beauty": 1,
+     "anchor": "World_0333",
+     "hide": [
+      "World_0332",
+      "World_0334"
+     ],
+     "tiers": [
+      {
+       "name": "Cadeiras dobráveis",
+       "desc": "As cadeiras do conjunto original."
+      },
+      {
+       "name": "Cadeira de jardim",
+       "desc": "Madeira clara com encosto curvo.",
+       "parts": [
+        {
+         "model": "gallinera_chair",
+         "h": 90,
+         "at": [
+          -11,
+          56,
+          0
+         ],
+         "yaw": 180
+        },
+        {
+         "model": "gallinera_chair",
+         "h": 90,
+         "at": [
+          7,
+          -50,
+          0
+         ],
+         "yaw": 0
+        }
+       ]
+      },
+      {
+       "name": "Cadeira branca de madeira",
+       "desc": "Encosto alto e assento largo.",
+       "parts": [
+        {
+         "model": "painted_wooden_chair_01",
+         "h": 92,
+         "at": [
+          -11,
+          56,
+          0
+         ],
+         "yaw": 180
+        },
+        {
+         "model": "painted_wooden_chair_01",
+         "h": 92,
+         "at": [
+          7,
+          -50,
+          0
+         ],
+         "yaw": 0
+        }
+       ]
+      },
+      {
+       "name": "Cadeira de madeira nobre",
+       "desc": "Madeira escura entalhada à mão.",
+       "parts": [
+        {
+         "model": "chinese_armchair",
+         "h": 95,
+         "at": [
+          -11,
+          60,
+          0
+         ],
+         "yaw": 180
+        },
+        {
+         "model": "chinese_armchair",
+         "h": 95,
+         "at": [
+          7,
+          -54,
+          0
+         ],
+         "yaw": 0
+        }
+       ]
+      },
+      {
+       "name": "Poltrona de couro e madeira",
+       "desc": "Conforto de lounge.",
+       "parts": [
+        {
+         "model": "modern_arm_chair_01",
+         "h": 82,
+         "at": [
+          -11,
+          64,
+          0
+         ],
+         "yaw": 180
+        },
+        {
+         "model": "modern_arm_chair_01",
+         "h": 82,
+         "at": [
+          7,
+          -58,
+          0
+         ],
+         "yaw": 0
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "cardapio",
+     "name": "Cardápio",
+     "base_price": 600,
+     "comfort": 1,
+     "beauty": 1,
+     "visual": false,
+     "income": 0.1,
+     "tiers": [
+      {
+       "name": "Buffet de café da manhã",
+       "desc": "Pães, frutas e café."
+      },
+      {
+       "name": "Bufê regional",
+       "desc": "Moqueca, tapioca e cuscuz."
+      },
+      {
+       "name": "À la carte",
+       "desc": "Pratos preparados na hora."
+      },
+      {
+       "name": "Menu degustação",
+       "desc": "Sete tempos com frutos do mar."
+      },
+      {
+       "name": "Chef estrelado",
+       "desc": "Menu sazonal do chef convidado."
+      }
+     ]
+    },
+    {
+     "id": "adega",
+     "name": "Adega",
+     "base_price": 500,
+     "comfort": 0,
+     "beauty": 1,
+     "visual": false,
+     "income": 0.08,
+     "tiers": [
+      {
+       "name": "Vinho da casa",
+       "desc": "Tinto e branco."
+      },
+      {
+       "name": "Rótulos nacionais",
+       "desc": "Vinícolas do Sul."
+      },
+      {
+       "name": "Importados",
+       "desc": "Chile, Argentina e Portugal."
+      },
+      {
+       "name": "Sommelier",
+       "desc": "Harmonização com cada prato."
+      },
+      {
+       "name": "Adega climatizada",
+       "desc": "Rótulos raros e espumantes."
+      }
+     ]
+    }
+   ]
+  },
+  "hotel_piscina": {
+   "name": "Grand Hotel · Piscina",
+   "unlock": "grand_hotel",
+   "area": [
+    -4405,
+    -1500,
+    2800,
+    4400
+   ],
+   "effects": {
+    "hotel_per_point": 0.0025
+   },
+   "slots": [
+    {
+     "id": "espreguicadeiras",
+     "name": "Espreguiçadeiras",
+     "base_price": 450,
+     "comfort": 3,
+     "beauty": 1,
+     "anchor": "World_0087",
+     "hide": [
+      "World_0087",
+      "World_2443",
+      "World_2444",
+      "World_2455",
+      "World_2456",
+      "World_2457",
+      "World_2458",
+      "World_2469",
+      "World_2470",
+      "World_2471",
+      "World_2472",
+      "World_2483",
+      "World_2484"
+     ],
+     "tiers": [
+      {
+       "name": "Espreguiçadeira do hotel",
+       "desc": "A espreguiçadeira que veio com a área."
+      },
+      {
+       "name": "Espreguiçadeira de ripas",
+       "desc": "Madeira tratada com encosto regulável.",
+       "parts": [
+        {
+         "model": "mare_lounger_slats",
+         "w": 195,
+         "h": 95
+        }
+       ]
+      },
+      {
+       "name": "Espreguiçadeira com colchonete",
+       "desc": "Colchonete listrado sobre madeira.",
+       "parts": [
+        {
+         "model": "mare_lounger_cushion",
+         "w": 195,
+         "h": 95
+        }
+       ]
+      },
+      {
+       "name": "Espreguiçadeira de vime",
+       "desc": "Trama de fibra natural e almofada.",
+       "parts": [
+        {
+         "model": "mare_lounger_wicker",
+         "w": 198,
+         "h": 92
+        }
+       ]
+      },
+      {
+       "name": "Daybed com dossel",
+       "desc": "Cama de praia com cortinas de linho.",
+       "parts": [
+        {
+         "model": "mare_daybed",
+         "w": 210,
+         "h": 230
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "tochas",
+     "name": "Iluminação da piscina",
+     "base_price": 380,
+     "comfort": 0,
+     "beauty": 2,
+     "anchor": "World_1272",
+     "hide": [
+      "World_1272",
+      "World_1273"
+     ],
+     "tiers": [
+      {
+       "name": "Tochas tiki",
+       "desc": "Tochas de bambu com chama."
+      },
+      {
+       "name": "Poste de ferro",
+       "desc": "Poste baixo de ferro fundido.",
+       "parts": [
+        {
+         "model": "street_lamp_02",
+         "h": 260
+        }
+       ]
+      },
+      {
+       "name": "Poste clássico",
+       "desc": "Poste de praça com globo.",
+       "parts": [
+        {
+         "model": "street_lamp_01",
+         "h": 280
+        }
+       ]
+      },
+      {
+       "name": "Poste com jardineira",
+       "desc": "Poste clássico com suculentas na base.",
+       "parts": [
+        {
+         "model": "street_lamp_02",
+         "h": 260
+        },
+        {
+         "model": "potted_plant_04",
+         "h": 34,
+         "at": [
+          45,
+          0,
+          0
+         ]
+        }
+       ]
+      },
+      {
+       "name": "Poste com floreira",
+       "desc": "Poste de praça com floreira de gazânias.",
+       "parts": [
+        {
+         "model": "street_lamp_01",
+         "h": 280
+        },
+        {
+         "model": "planter_box_02",
+         "w": 90,
+         "h": 42,
+         "at": [
+          0,
+          60,
+          0
+         ]
+        },
+        {
+         "model": "flower_gazania",
+         "w": 80,
+         "h": 16,
+         "at": [
+          0,
+          60,
+          36
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "tobogã",
+     "name": "Tobogã",
+     "base_price": 500,
+     "comfort": 0,
+     "beauty": 2,
+     "anchor": "World_2402",
+     "tiers": [
+      {
+       "name": "Fibra branca",
+       "desc": "Acabamento de fábrica."
+      },
+      {
+       "name": "Azul-piscina",
+       "desc": "Fibra azul brilhante.",
+       "material": "M_Custom_Slide_2"
+      },
+      {
+       "name": "Amarelo-sol",
+       "desc": "Fibra amarela vibrante.",
+       "material": "M_Custom_Slide_3"
+      },
+      {
+       "name": "Coral",
+       "desc": "Fibra coral com brilho.",
+       "material": "M_Custom_Slide_4"
+      },
+      {
+       "name": "Arco-íris noturno",
+       "desc": "Tobogã que brilha em cores à noite.",
+       "material": "M_Custom_Slide_5"
+      }
+     ]
+    },
+    {
+     "id": "bar_piscina",
+     "name": "Bar da piscina",
+     "base_price": 650,
+     "comfort": 1,
+     "beauty": 1,
+     "visual": false,
+     "income": 0.06,
+     "tiers": [
+      {
+       "name": "Sucos e refrigerantes",
+       "desc": "O básico gelado."
+      },
+      {
+       "name": "Coquetéis tropicais",
+       "desc": "Drinks de frutas."
+      },
+      {
+       "name": "Petiscos finos",
+       "desc": "Ceviche e camarão."
+      },
+      {
+       "name": "Bar molhado",
+       "desc": "Banquetas dentro d'água."
+      },
+      {
+       "name": "Lounge com DJ",
+       "desc": "DJ ao pôr do sol e espumante."
+      }
+     ]
+    }
+   ]
+  },
+  "hotel_suites": {
+   "name": "Grand Hotel · Suítes",
+   "unlock": "grand_hotel",
+   "effects": {
+    "hotel_per_point": 0.002
+   },
+   "slots": [
+    {
+     "id": "camas",
+     "name": "Camas das suítes",
+     "base_price": 900,
+     "comfort": 3,
+     "beauty": 0,
+     "visual": false,
+     "rate": 18,
+     "tiers": [
+      {
+       "name": "King padrão",
+       "desc": "Colchão de hotel."
+      },
+      {
+       "name": "Pillow top",
+       "desc": "Pillow top e travesseiros de pluma."
+      },
+      {
+       "name": "Cama ortopédica",
+       "desc": "Colchão de molas ensacadas."
+      },
+      {
+       "name": "Cama de dossel",
+       "desc": "Dossel de linho."
+      },
+      {
+       "name": "Cama sob medida",
+       "desc": "Colchão artesanal e menu de travesseiros."
+      }
+     ]
+    },
+    {
+     "id": "enxoval",
+     "name": "Enxoval",
+     "base_price": 700,
+     "comfort": 2,
+     "beauty": 1,
+     "visual": false,
+     "rate": 14,
+     "tiers": [
+      {
+       "name": "Percal 200 fios",
+       "desc": "Branco de hotel."
+      },
+      {
+       "name": "Percal 400 fios",
+       "desc": "Mais macio."
+      },
+      {
+       "name": "Algodão egípcio",
+       "desc": "600 fios."
+      },
+      {
+       "name": "Linho italiano",
+       "desc": "Lavado à mão."
+      },
+      {
+       "name": "Seda e linho",
+       "desc": "Enxoval de suíte presidencial."
+      }
+     ]
+    },
+    {
+     "id": "banheiro",
+     "name": "Banheiros",
+     "base_price": 850,
+     "comfort": 2,
+     "beauty": 1,
+     "visual": false,
+     "rate": 16,
+     "tiers": [
+      {
+       "name": "Ducha",
+       "desc": "Box de vidro."
+      },
+      {
+       "name": "Ducha de chuva",
+       "desc": "Cabeça larga e amenities."
+      },
+      {
+       "name": "Banheira",
+       "desc": "Banheira e roupões."
+      },
+      {
+       "name": "Ofurô",
+       "desc": "Ofurô de madeira na varanda."
+      },
+      {
+       "name": "Spa privativo",
+       "desc": "Sauna e hidromassagem na suíte."
+      }
+     ]
+    },
+    {
+     "id": "minibar",
+     "name": "Frigobar",
+     "base_price": 500,
+     "comfort": 1,
+     "beauty": 0,
+     "visual": false,
+     "rate": 10,
+     "tiers": [
+      {
+       "name": "Água e refrigerante",
+       "desc": "O essencial."
+      },
+      {
+       "name": "Cervejas locais",
+       "desc": "Cervejas artesanais."
+      },
+      {
+       "name": "Petiscos gourmet",
+       "desc": "Castanhas e chocolates."
+      },
+      {
+       "name": "Espumante",
+       "desc": "Garrafa de cortesia."
+      },
+      {
+       "name": "Adega na suíte",
+       "desc": "Vinhos e destilados selecionados."
+      }
+     ]
+    },
+    {
+     "id": "vista",
+     "name": "Varandas",
+     "base_price": 1000,
+     "comfort": 1,
+     "beauty": 2,
+     "visual": false,
+     "rate": 20,
+     "tiers": [
+      {
+       "name": "Janela",
+       "desc": "Vista para o jardim."
+      },
+      {
+       "name": "Varanda",
+       "desc": "Cadeiras e vista lateral do mar."
+      },
+      {
+       "name": "Varanda com rede",
+       "desc": "Rede e vista do mar."
+      },
+      {
+       "name": "Varanda gourmet",
+       "desc": "Mesa para jantar ao ar livre."
+      },
+      {
+       "name": "Terraço com piscina",
+       "desc": "Piscina de borda infinita privativa."
+      }
+     ]
+    }
+   ]
+  },
+  "hotel_lazer": {
+   "name": "Grand Hotel · Lazer",
+   "unlock": "grand_hotel",
+   "effects": {
+    "hotel_per_point": 0.0025
+   },
+   "slots": [
+    {
+     "id": "academia",
+     "name": "Academia",
+     "base_price": 600,
+     "comfort": 2,
+     "beauty": 0,
+     "visual": false,
+     "tiers": [
+      {
+       "name": "Esteira e bicicleta",
+       "desc": "Aparelhos básicos."
+      },
+      {
+       "name": "Musculação",
+       "desc": "Pesos livres e estação."
+      },
+      {
+       "name": "Aparelhos de ponta",
+       "desc": "Esteiras com tela e bicicletas de spinning."
+      },
+      {
+       "name": "Personal trainer",
+       "desc": "Treinos agendados."
+      },
+      {
+       "name": "Centro de bem-estar",
+       "desc": "Pilates, ioga e funcional."
+      }
+     ]
+    },
+    {
+     "id": "spa",
+     "name": "Spa",
+     "base_price": 800,
+     "comfort": 3,
+     "beauty": 1,
+     "visual": false,
+     "tiers": [
+      {
+       "name": "Massagem",
+       "desc": "Uma sala de massagem."
+      },
+      {
+       "name": "Sauna",
+       "desc": "Sauna seca e a vapor."
+      },
+      {
+       "name": "Tratamentos",
+       "desc": "Pedras quentes e argila."
+      },
+      {
+       "name": "Circuito de águas",
+       "desc": "Hidromassagem e piscina fria."
+      },
+      {
+       "name": "Spa completo",
+       "desc": "Terapias exclusivas e ritual de chegada."
+      }
+     ]
+    },
+    {
+     "id": "recreacao",
+     "name": "Recreação",
+     "base_price": 500,
+     "comfort": 1,
+     "beauty": 1,
+     "visual": false,
+     "tiers": [
+      {
+       "name": "Jogos de mesa",
+       "desc": "Dama e baralho."
+      },
+      {
+       "name": "Monitores",
+       "desc": "Atividades de dia."
+      },
+      {
+       "name": "Clube infantil",
+       "desc": "Espaço para crianças."
+      },
+      {
+       "name": "Shows à noite",
+       "desc": "Música e dança."
+      },
+      {
+       "name": "Programação completa",
+       "desc": "Aulas, festas e shows."
+      }
+     ]
+    },
+    {
+     "id": "lobby",
+     "name": "Lobby",
+     "base_price": 700,
+     "comfort": 1,
+     "beauty": 2,
+     "visual": false,
+     "tiers": [
+      {
+       "name": "Recepção padrão",
+       "desc": "Balcão e sofás."
+      },
+      {
+       "name": "Check-in com drink",
+       "desc": "Suco de boas-vindas."
+      },
+      {
+       "name": "Arte local",
+       "desc": "Obras de artistas da vila."
+      },
+      {
+       "name": "Concierge",
+       "desc": "Atendimento personalizado."
+      },
+      {
+       "name": "Lounge executivo",
+       "desc": "Sala vip e transfer."
+      }
+     ]
+    }
+   ]
+  },
+  "biz_aluguel": {
+   "name": "Aluguel de pranchas",
+   "business": "aluguel",
+   "effects": {
+    "income_per_point": 0.06
+   },
+   "slots": [
+    {
+     "id": "equipamento",
+     "name": "Equipamento",
+     "base_price": 90,
+     "comfort": 1,
+     "beauty": 1,
+     "visual": false,
+     "income": 0.1,
+     "tiers": [
+      {
+       "name": "Pranchas usadas",
+       "desc": "Pranchas e caiaques de segunda mão."
+      },
+      {
+       "name": "Pranchas novas",
+       "desc": "Pranchas de epóxi."
+      },
+      {
+       "name": "Caiaques duplos",
+       "desc": "Caiaques para dois."
+      },
+      {
+       "name": "Stand up paddle",
+       "desc": "Pranchas de SUP e remos de carbono."
+      },
+      {
+       "name": "Frota completa",
+       "desc": "SUP, caiaques e pranchas de todos os tamanhos."
+      }
+     ]
+    },
+    {
+     "id": "atendimento",
+     "name": "Atendimento",
+     "base_price": 70,
+     "comfort": 2,
+     "beauty": 0,
+     "visual": false,
+     "income": 0.06,
+     "tiers": [
+      {
+       "name": "Um vendedor",
+       "desc": "Atende como dá."
+      },
+      {
+       "name": "Uniforme e crachá",
+       "desc": "Equipe identificada."
+      },
+      {
+       "name": "Pagamento por aproximação",
+       "desc": "Fila anda mais rápido."
+      },
+      {
+       "name": "Atendimento bilíngue",
+       "desc": "Turistas estrangeiros compram mais."
+      },
+      {
+       "name": "Clube de fidelidade",
+       "desc": "Clientes voltam toda semana."
+      }
+     ]
+    },
+    {
+     "id": "plantas",
+     "name": "Plantas da fachada",
+     "base_price": 60,
+     "comfort": 0,
+     "beauty": 2,
+     "spots": [
+      [
+       6600,
+       -1840,
+       0
+      ],
+      [
+       6860,
+       -1840,
+       90
+      ]
+     ],
+     "tiers": [
+      {
+       "name": "Vasinhos de suculenta",
+       "desc": "Vasos pequenos de suculenta.",
+       "parts": [
+        {
+         "model": "potted_plant_04",
+         "h": 34
+        }
+       ],
+       "count": 2
+      },
+      {
+       "name": "Costela-de-adão",
+       "desc": "Folhagens em vasos de barro.",
+       "parts": [
+        {
+         "model": "potted_plant_02",
+         "h": 70
+        }
+       ],
+       "count": 2
+      },
+      {
+       "name": "Palmeirinhas em vaso",
+       "desc": "Plantas altas em vasos de cerâmica.",
+       "parts": [
+        {
+         "model": "potted_plant_01",
+         "h": 130
+        }
+       ],
+       "count": 2
+      },
+      {
+       "name": "Floreiras de madeira",
+       "desc": "Floreiras com gazânias.",
+       "parts": [
+        {
+         "model": "planter_box_02",
+         "w": 90,
+         "h": 42
+        },
+        {
+         "model": "flower_gazania",
+         "w": 80,
+         "h": 16,
+         "at": [
+          0,
+          0,
+          36
+         ]
+        }
+       ],
+       "count": 2
+      },
+      {
+       "name": "Jardim tropical",
+       "desc": "Árvore-da-fortuna e folhagens.",
+       "parts": [
+        {
+         "model": "pachira_aquatica_01",
+         "h": 175
+        },
+        {
+         "model": "potted_plant_02",
+         "h": 70,
+         "at": [
+          55,
+          30,
+          0
+         ],
+         "yaw": 40
+        }
+       ],
+       "count": 2
+      }
+     ]
+    }
+   ]
+  },
+  "biz_sorveteria": {
+   "name": "Sorveteria",
+   "business": "sorveteria",
+   "effects": {
+    "income_per_point": 0.06
+   },
+   "slots": [
+    {
+     "id": "equipamento",
+     "name": "Sabores",
+     "base_price": 90,
+     "comfort": 1,
+     "beauty": 1,
+     "visual": false,
+     "income": 0.1,
+     "tiers": [
+      {
+       "name": "Três sabores",
+       "desc": "Morango, chocolate e creme."
+      },
+      {
+       "name": "Frutas tropicais",
+       "desc": "Cupuaçu, açaí e manga."
+      },
+      {
+       "name": "Picolés artesanais",
+       "desc": "Picolés de fruta de verdade."
+      },
+      {
+       "name": "Gelato italiano",
+       "desc": "Massa feita na hora."
+      },
+      {
+       "name": "Gelateria gourmet",
+       "desc": "Sabores autorais e casquinha artesanal."
+      }
+     ]
+    },
+    {
+     "id": "atendimento",
+     "name": "Atendimento",
+     "base_price": 70,
+     "comfort": 2,
+     "beauty": 0,
+     "visual": false,
+     "income": 0.06,
+     "tiers": [
+      {
+       "name": "Um vendedor",
+       "desc": "Atende como dá."
+      },
+      {
+       "name": "Uniforme e crachá",
+       "desc": "Equipe identificada."
+      },
+      {
+       "name": "Pagamento por aproximação",
+       "desc": "Fila anda mais rápido."
+      },
+      {
+       "name": "Atendimento bilíngue",
+       "desc": "Turistas estrangeiros compram mais."
+      },
+      {
+       "name": "Clube de fidelidade",
+       "desc": "Clientes voltam toda semana."
+      }
+     ]
+    },
+    {
+     "id": "plantas",
+     "name": "Plantas da fachada",
+     "base_price": 60,
+     "comfort": 0,
+     "beauty": 2,
+     "spots": [
+      [
+       4600,
+       -1700,
+       0
+      ],
+      [
+       4900,
+       -1700,
+       90
+      ]
+     ],
+     "tiers": [
+      {
+       "name": "Vasinhos de suculenta",
+       "desc": "Vasos pequenos de suculenta.",
+       "parts": [
+        {
+         "model": "potted_plant_04",
+         "h": 34
+        }
+       ],
+       "count": 2
+      },
+      {
+       "name": "Costela-de-adão",
+       "desc": "Folhagens em vasos de barro.",
+       "parts": [
+        {
+         "model": "potted_plant_02",
+         "h": 70
+        }
+       ],
+       "count": 2
+      },
+      {
+       "name": "Palmeirinhas em vaso",
+       "desc": "Plantas altas em vasos de cerâmica.",
+       "parts": [
+        {
+         "model": "potted_plant_01",
+         "h": 130
+        }
+       ],
+       "count": 2
+      },
+      {
+       "name": "Floreiras de madeira",
+       "desc": "Floreiras com gazânias.",
+       "parts": [
+        {
+         "model": "planter_box_02",
+         "w": 90,
+         "h": 42
+        },
+        {
+         "model": "flower_gazania",
+         "w": 80,
+         "h": 16,
+         "at": [
+          0,
+          0,
+          36
+         ]
+        }
+       ],
+       "count": 2
+      },
+      {
+       "name": "Jardim tropical",
+       "desc": "Árvore-da-fortuna e folhagens.",
+       "parts": [
+        {
+         "model": "pachira_aquatica_01",
+         "h": 175
+        },
+        {
+         "model": "potted_plant_02",
+         "h": 70,
+         "at": [
+          55,
+          30,
+          0
+         ],
+         "yaw": 40
+        }
+       ],
+       "count": 2
+      }
+     ]
+    }
+   ]
+  },
+  "biz_food_truck": {
+   "name": "Food truck",
+   "business": "food_truck",
+   "effects": {
+    "income_per_point": 0.06
+   },
+   "slots": [
+    {
+     "id": "equipamento",
+     "name": "Cardápio",
+     "base_price": 90,
+     "comfort": 1,
+     "beauty": 1,
+     "visual": false,
+     "income": 0.1,
+     "tiers": [
+      {
+       "name": "Pastel de queijo",
+       "desc": "O clássico."
+      },
+      {
+       "name": "Pastéis variados",
+       "desc": "Carne, frango e palmito."
+      },
+      {
+       "name": "Pastel de camarão",
+       "desc": "Recheio da praia."
+      },
+      {
+       "name": "Caldo de cana",
+       "desc": "Pastel com caldo gelado."
+      },
+      {
+       "name": "Pastelaria gourmet",
+       "desc": "Recheios de chef."
+      }
+     ]
+    },
+    {
+     "id": "atendimento",
+     "name": "Atendimento",
+     "base_price": 70,
+     "comfort": 2,
+     "beauty": 0,
+     "visual": false,
+     "income": 0.06,
+     "tiers": [
+      {
+       "name": "Um vendedor",
+       "desc": "Atende como dá."
+      },
+      {
+       "name": "Uniforme e crachá",
+       "desc": "Equipe identificada."
+      },
+      {
+       "name": "Pagamento por aproximação",
+       "desc": "Fila anda mais rápido."
+      },
+      {
+       "name": "Atendimento bilíngue",
+       "desc": "Turistas estrangeiros compram mais."
+      },
+      {
+       "name": "Clube de fidelidade",
+       "desc": "Clientes voltam toda semana."
+      }
+     ]
+    },
+    {
+     "id": "plantas",
+     "name": "Plantas da fachada",
+     "base_price": 60,
+     "comfort": 0,
+     "beauty": 2,
+     "spots": [
+      [
+       2480,
+       3200,
+       0
+      ],
+      [
+       2920,
+       3200,
+       90
+      ]
+     ],
+     "tiers": [
+      {
+       "name": "Vasinhos de suculenta",
+       "desc": "Vasos pequenos de suculenta.",
+       "parts": [
+        {
+         "model": "potted_plant_04",
+         "h": 34
+        }
+       ],
+       "count": 2
+      },
+      {
+       "name": "Costela-de-adão",
+       "desc": "Folhagens em vasos de barro.",
+       "parts": [
+        {
+         "model": "potted_plant_02",
+         "h": 70
+        }
+       ],
+       "count": 2
+      },
+      {
+       "name": "Palmeirinhas em vaso",
+       "desc": "Plantas altas em vasos de cerâmica.",
+       "parts": [
+        {
+         "model": "potted_plant_01",
+         "h": 130
+        }
+       ],
+       "count": 2
+      },
+      {
+       "name": "Floreiras de madeira",
+       "desc": "Floreiras com gazânias.",
+       "parts": [
+        {
+         "model": "planter_box_02",
+         "w": 90,
+         "h": 42
+        },
+        {
+         "model": "flower_gazania",
+         "w": 80,
+         "h": 16,
+         "at": [
+          0,
+          0,
+          36
+         ]
+        }
+       ],
+       "count": 2
+      },
+      {
+       "name": "Jardim tropical",
+       "desc": "Árvore-da-fortuna e folhagens.",
+       "parts": [
+        {
+         "model": "pachira_aquatica_01",
+         "h": 175
+        },
+        {
+         "model": "potted_plant_02",
+         "h": 70,
+         "at": [
+          55,
+          30,
+          0
+         ],
+         "yaw": 40
+        }
+       ],
+       "count": 2
+      }
+     ]
+    }
+   ]
+  },
+  "biz_souvenir": {
+   "name": "Lojinha de souvenires",
+   "business": "souvenir",
+   "effects": {
+    "income_per_point": 0.06
+   },
+   "slots": [
+    {
+     "id": "equipamento",
+     "name": "Produtos",
+     "base_price": 90,
+     "comfort": 1,
+     "beauty": 1,
+     "visual": false,
+     "income": 0.1,
+     "tiers": [
+      {
+       "name": "Ímãs e chaveiros",
+       "desc": "Lembrancinhas simples."
+      },
+      {
+       "name": "Camisetas",
+       "desc": "Estampas da praia."
+      },
+      {
+       "name": "Artesanato",
+       "desc": "Peças da vila."
+      },
+      {
+       "name": "Cerâmica pintada",
+       "desc": "Peças assinadas."
+      },
+      {
+       "name": "Galeria local",
+       "desc": "Arte e joias de artistas da vila."
+      }
+     ]
+    },
+    {
+     "id": "atendimento",
+     "name": "Atendimento",
+     "base_price": 70,
+     "comfort": 2,
+     "beauty": 0,
+     "visual": false,
+     "income": 0.06,
+     "tiers": [
+      {
+       "name": "Um vendedor",
+       "desc": "Atende como dá."
+      },
+      {
+       "name": "Uniforme e crachá",
+       "desc": "Equipe identificada."
+      },
+      {
+       "name": "Pagamento por aproximação",
+       "desc": "Fila anda mais rápido."
+      },
+      {
+       "name": "Atendimento bilíngue",
+       "desc": "Turistas estrangeiros compram mais."
+      },
+      {
+       "name": "Clube de fidelidade",
+       "desc": "Clientes voltam toda semana."
+      }
+     ]
+    },
+    {
+     "id": "plantas",
+     "name": "Plantas da fachada",
+     "base_price": 60,
+     "comfort": 0,
+     "beauty": 2,
+     "spots": [
+      [
+       7950,
+       3880,
+       0
+      ],
+      [
+       8450,
+       3880,
+       90
+      ]
+     ],
+     "tiers": [
+      {
+       "name": "Vasinhos de suculenta",
+       "desc": "Vasos pequenos de suculenta.",
+       "parts": [
+        {
+         "model": "potted_plant_04",
+         "h": 34
+        }
+       ],
+       "count": 2
+      },
+      {
+       "name": "Costela-de-adão",
+       "desc": "Folhagens em vasos de barro.",
+       "parts": [
+        {
+         "model": "potted_plant_02",
+         "h": 70
+        }
+       ],
+       "count": 2
+      },
+      {
+       "name": "Palmeirinhas em vaso",
+       "desc": "Plantas altas em vasos de cerâmica.",
+       "parts": [
+        {
+         "model": "potted_plant_01",
+         "h": 130
+        }
+       ],
+       "count": 2
+      },
+      {
+       "name": "Floreiras de madeira",
+       "desc": "Floreiras com gazânias.",
+       "parts": [
+        {
+         "model": "planter_box_02",
+         "w": 90,
+         "h": 42
+        },
+        {
+         "model": "flower_gazania",
+         "w": 80,
+         "h": 16,
+         "at": [
+          0,
+          0,
+          36
+         ]
+        }
+       ],
+       "count": 2
+      },
+      {
+       "name": "Jardim tropical",
+       "desc": "Árvore-da-fortuna e folhagens.",
+       "parts": [
+        {
+         "model": "pachira_aquatica_01",
+         "h": 175
+        },
+        {
+         "model": "potted_plant_02",
+         "h": 70,
+         "at": [
+          55,
+          30,
+          0
+         ],
+         "yaw": 40
+        }
+       ],
+       "count": 2
+      }
+     ]
+    }
+   ]
+  },
+  "biz_surfe": {
+   "name": "Escolinha de surfe",
+   "business": "surfe",
+   "effects": {
+    "income_per_point": 0.06
+   },
+   "slots": [
+    {
+     "id": "equipamento",
+     "name": "Aulas",
+     "base_price": 90,
+     "comfort": 1,
+     "beauty": 1,
+     "visual": false,
+     "income": 0.1,
+     "tiers": [
+      {
+       "name": "Aula em grupo",
+       "desc": "Pranchas de espuma."
+      },
+      {
+       "name": "Aulas com vídeo",
+       "desc": "Correção pela filmagem."
+      },
+      {
+       "name": "Turmas por nível",
+       "desc": "Iniciante a avançado."
+      },
+      {
+       "name": "Instrutores certificados",
+       "desc": "Equipe da federação."
+      },
+      {
+       "name": "Escola completa",
+       "desc": "Aulas, surf trip e campeonato."
+      }
+     ]
+    },
+    {
+     "id": "atendimento",
+     "name": "Atendimento",
+     "base_price": 70,
+     "comfort": 2,
+     "beauty": 0,
+     "visual": false,
+     "income": 0.06,
+     "tiers": [
+      {
+       "name": "Um vendedor",
+       "desc": "Atende como dá."
+      },
+      {
+       "name": "Uniforme e crachá",
+       "desc": "Equipe identificada."
+      },
+      {
+       "name": "Pagamento por aproximação",
+       "desc": "Fila anda mais rápido."
+      },
+      {
+       "name": "Atendimento bilíngue",
+       "desc": "Turistas estrangeiros compram mais."
+      },
+      {
+       "name": "Clube de fidelidade",
+       "desc": "Clientes voltam toda semana."
+      }
+     ]
+    },
+    {
+     "id": "plantas",
+     "name": "Plantas da fachada",
+     "base_price": 60,
+     "comfort": 0,
+     "beauty": 2,
+     "spots": [
+      [
+       -4800,
+       -1940,
+       0
+      ],
+      [
+       -4400,
+       -1940,
+       90
+      ]
+     ],
+     "tiers": [
+      {
+       "name": "Vasinhos de suculenta",
+       "desc": "Vasos pequenos de suculenta.",
+       "parts": [
+        {
+         "model": "potted_plant_04",
+         "h": 34
+        }
+       ],
+       "count": 2
+      },
+      {
+       "name": "Costela-de-adão",
+       "desc": "Folhagens em vasos de barro.",
+       "parts": [
+        {
+         "model": "potted_plant_02",
+         "h": 70
+        }
+       ],
+       "count": 2
+      },
+      {
+       "name": "Palmeirinhas em vaso",
+       "desc": "Plantas altas em vasos de cerâmica.",
+       "parts": [
+        {
+         "model": "potted_plant_01",
+         "h": 130
+        }
+       ],
+       "count": 2
+      },
+      {
+       "name": "Floreiras de madeira",
+       "desc": "Floreiras com gazânias.",
+       "parts": [
+        {
+         "model": "planter_box_02",
+         "w": 90,
+         "h": 42
+        },
+        {
+         "model": "flower_gazania",
+         "w": 80,
+         "h": 16,
+         "at": [
+          0,
+          0,
+          36
+         ]
+        }
+       ],
+       "count": 2
+      },
+      {
+       "name": "Jardim tropical",
+       "desc": "Árvore-da-fortuna e folhagens.",
+       "parts": [
+        {
+         "model": "pachira_aquatica_01",
+         "h": 175
+        },
+        {
+         "model": "potted_plant_02",
+         "h": 70,
+         "at": [
+          55,
+          30,
+          0
+         ],
+         "yaw": 40
+        }
+       ],
+       "count": 2
+      }
+     ]
+    }
+   ]
+  },
+  "home": {
+   "name": "Sua casa",
+   "area": [
+    4250,
+    4950,
+    1740,
+    2480
+   ],
+   "effects": {
+    "speed_per_comfort": 0.005,
+    "fame_per_beauty_night": 0.25
+   },
+   "slots": [
+    {
+     "id": "cama",
+     "name": "Cama",
+     "base_price": 90,
+     "comfort": 3,
+     "beauty": 1,
+     "anchor": "World_0252",
+     "hide": [
+      "World_0252",
+      "World_0933",
+      "World_0934"
+     ],
+     "tiers": [
+      {
+       "name": "Cama de madeira entalhada",
+       "desc": "A cama que era do seu avô."
+      },
+      {
+       "name": "Cama de ferro",
+       "desc": "Cabeceira de ferro trabalhado.",
+       "parts": [
+        {
+         "model": "old_bed_frame",
+         "w": 215,
+         "h": 110
+        }
+       ]
+      },
+      {
+       "name": "Divã de madeira",
+       "desc": "Cama de solteiro larga com encosto.",
+       "parts": [
+        {
+         "model": "vintage_day_bed",
+         "w": 205,
+         "h": 95
+        }
+       ]
+      },
+      {
+       "name": "Cama estofada",
+       "desc": "Cabeceira de linho e colchão novo.",
+       "parts": [
+        {
+         "model": "mare_bed_upholstered",
+         "w": 215,
+         "h": 120
+        }
+       ]
+      },
+      {
+       "name": "Cama com dossel",
+       "desc": "Dossel de madeira e cortinas de linho.",
+       "parts": [
+        {
+         "model": "mare_bed_canopy",
+         "w": 220,
+         "h": 230
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "sofa",
+     "name": "Sofá",
+     "base_price": 80,
+     "comfort": 3,
+     "beauty": 1,
+     "anchor": "World_1160",
+     "hide": [
+      "World_1160",
+      "World_1161"
+     ],
+     "tiers": [
+      {
+       "name": "Sofá de tecido",
+       "desc": "O sofá antigo da sala."
+      },
+      {
+       "name": "Sofá de madeira pintada",
+       "desc": "Ripas e almofadas.",
+       "parts": [
+        {
+         "model": "painted_wooden_sofa",
+         "w": 170,
+         "h": 90
+        }
+       ]
+      },
+      {
+       "name": "Sofá de madeira nobre",
+       "desc": "Madeira escura de linhas retas.",
+       "parts": [
+        {
+         "model": "chinese_sofa",
+         "w": 180,
+         "h": 90
+        }
+       ]
+      },
+      {
+       "name": "Sofá de linho",
+       "desc": "Estofado claro e macio.",
+       "parts": [
+        {
+         "model": "Sofa_01",
+         "w": 190,
+         "h": 85
+        }
+       ]
+      },
+      {
+       "name": "Sofá de veludo",
+       "desc": "Veludo e pés torneados.",
+       "parts": [
+        {
+         "model": "sofa_03",
+         "w": 200,
+         "h": 90
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "mesa_centro",
+     "name": "Mesa de centro",
+     "base_price": 50,
+     "comfort": 0,
+     "beauty": 2,
+     "anchor": "World_1166",
+     "hide": [
+      "World_1166"
+     ],
+     "tiers": [
+      {
+       "name": "Mesa redonda de mármore",
+       "desc": "A mesa de centro original."
+      },
+      {
+       "name": "Mesa de madeira clara",
+       "desc": "Tampo de ripas.",
+       "parts": [
+        {
+         "model": "CoffeeTable_01",
+         "w": 90,
+         "h": 32
+        }
+       ]
+      },
+      {
+       "name": "Mesa de centro moderna",
+       "desc": "Madeira e metal.",
+       "parts": [
+        {
+         "model": "modern_coffee_table_02",
+         "w": 100,
+         "h": 32
+        }
+       ]
+      },
+      {
+       "name": "Mesa gótica",
+       "desc": "Madeira entalhada escura.",
+       "parts": [
+        {
+         "model": "gothic_coffee_table",
+         "w": 100,
+         "h": 32
+        }
+       ]
+      },
+      {
+       "name": "Mesa industrial",
+       "desc": "Madeira de demolição e ferro.",
+       "parts": [
+        {
+         "model": "industrial_coffee_table",
+         "w": 105,
+         "h": 32
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "armario",
+     "name": "Armário",
+     "base_price": 70,
+     "comfort": 1,
+     "beauty": 2,
+     "anchor": "World_1168",
+     "hide": [
+      "World_1168",
+      "World_1169",
+      "World_1170"
+     ],
+     "tiers": [
+      {
+       "name": "Armário pintado",
+       "desc": "O armário do quarto."
+      },
+      {
+       "name": "Cômoda pintada",
+       "desc": "Madeira pintada com gavetas.",
+       "parts": [
+        {
+         "model": "painted_wooden_cabinet",
+         "h": 110
+        }
+       ]
+      },
+      {
+       "name": "Armário de madeira nobre",
+       "desc": "Portas entalhadas.",
+       "parts": [
+        {
+         "model": "chinese_cabinet",
+         "h": 160
+        }
+       ]
+      },
+      {
+       "name": "Cristaleira antiga",
+       "desc": "Madeira e vidro bisotado.",
+       "parts": [
+        {
+         "model": "vintage_cabinet_01",
+         "h": 180
+        }
+       ]
+      },
+      {
+       "name": "Armário gótico",
+       "desc": "Madeira escura com ferragens.",
+       "parts": [
+        {
+         "model": "GothicCabinet_01",
+         "h": 200
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "rack",
+     "name": "Rack da TV",
+     "base_price": 60,
+     "comfort": 0,
+     "beauty": 2,
+     "anchor": "World_1162",
+     "hide": [
+      "World_1162"
+     ],
+     "tiers": [
+      {
+       "name": "Mesinha de madeira",
+       "desc": "A mesinha onde fica a TV."
+      },
+      {
+       "name": "Gaveteiro antigo",
+       "desc": "Madeira com puxadores de latão.",
+       "parts": [
+        {
+         "model": "vintage_wooden_drawer_01",
+         "w": 90,
+         "h": 79
+        }
+       ]
+      },
+      {
+       "name": "Rack moderno",
+       "desc": "Madeira clara e portas de correr.",
+       "parts": [
+        {
+         "model": "modern_wooden_cabinet",
+         "w": 110,
+         "h": 79
+        }
+       ]
+      },
+      {
+       "name": "Aparador de madeira nobre",
+       "desc": "Madeira escura entalhada.",
+       "parts": [
+        {
+         "model": "chinese_console_table",
+         "w": 120,
+         "h": 79
+        }
+       ]
+      },
+      {
+       "name": "Gaveteiro de designer",
+       "desc": "Gavetas de madeira maciça.",
+       "parts": [
+        {
+         "model": "drawer_cabinet",
+         "w": 100,
+         "h": 79
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "mesa_jantar",
+     "name": "Mesa de jantar",
+     "base_price": 60,
+     "comfort": 1,
+     "beauty": 1,
+     "anchor": "World_1111",
+     "hide": [
+      "World_1111",
+      "World_1112"
+     ],
+     "tiers": [
+      {
+       "name": "Mesa de madeira",
+       "desc": "A mesa da cozinha."
+      },
+      {
+       "name": "Mesa pintada",
+       "desc": "Madeira pintada à mão.",
+       "parts": [
+        {
+         "model": "painted_wooden_table",
+         "w": 110,
+         "h": 55
+        }
+       ]
+      },
+      {
+       "name": "Mesa redonda",
+       "desc": "Tampo redondo e pé central.",
+       "parts": [
+        {
+         "model": "round_wooden_table_01",
+         "w": 100,
+         "h": 55
+        }
+       ]
+      },
+      {
+       "name": "Mesa de jardim",
+       "desc": "Madeira maciça torneada.",
+       "parts": [
+        {
+         "model": "gallinera_table",
+         "w": 110,
+         "h": 55
+        }
+       ]
+      },
+      {
+       "name": "Mesa posta",
+       "desc": "Toalha e madeira nobre.",
+       "parts": [
+        {
+         "model": "dining_table",
+         "w": 120,
+         "h": 56
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "cadeiras_jantar",
+     "name": "Cadeiras da cozinha",
+     "base_price": 45,
+     "comfort": 2,
+     "beauty": 0,
+     "anchor": "World_1111",
+     "hide": [
+      "World_0218"
+     ],
+     "tiers": [
+      {
+       "name": "Banquinhos de madeira",
+       "desc": "Os banquinhos de sempre."
+      },
+      {
+       "name": "Cadeira azul",
+       "desc": "Madeira pintada à mão.",
+       "parts": [
+        {
+         "model": "painted_wooden_chair_02",
+         "h": 92,
+         "at": [
+          0,
+          -70,
+          0
+         ],
+         "yaw": 90
+        },
+        {
+         "model": "painted_wooden_chair_02",
+         "h": 92,
+         "at": [
+          0,
+          70,
+          0
+         ],
+         "yaw": 270
+        }
+       ]
+      },
+      {
+       "name": "Cadeira de madeira",
+       "desc": "Madeira maciça e encosto alto.",
+       "parts": [
+        {
+         "model": "WoodenChair_01",
+         "h": 92,
+         "at": [
+          0,
+          -70,
+          0
+         ],
+         "yaw": 90
+        },
+        {
+         "model": "WoodenChair_01",
+         "h": 92,
+         "at": [
+          0,
+          70,
+          0
+         ],
+         "yaw": 270
+        }
+       ]
+      },
+      {
+       "name": "Cadeira estofada",
+       "desc": "Couro e madeira.",
+       "parts": [
+        {
+         "model": "dining_chair_02",
+         "h": 90,
+         "at": [
+          0,
+          -72,
+          0
+         ],
+         "yaw": 90
+        },
+        {
+         "model": "dining_chair_02",
+         "h": 90,
+         "at": [
+          0,
+          72,
+          0
+         ],
+         "yaw": 270
+        }
+       ]
+      },
+      {
+       "name": "Cadeira de jardim",
+       "desc": "Madeira clara com encosto curvo.",
+       "parts": [
+        {
+         "model": "gallinera_chair",
+         "h": 90,
+         "at": [
+          0,
+          -72,
+          0
+         ],
+         "yaw": 90
+        },
+        {
+         "model": "gallinera_chair",
+         "h": 90,
+         "at": [
+          0,
+          72,
+          0
+         ],
+         "yaw": 270
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "criado",
+     "name": "Criado-mudo",
+     "base_price": 40,
+     "comfort": 1,
+     "beauty": 1,
+     "anchor": "World_0222",
+     "hide": [
+      "World_0222",
+      "World_0223"
+     ],
+     "tiers": [
+      {
+       "name": "Criado pintado",
+       "desc": "O criado-mudo ao lado da cama."
+      },
+      {
+       "name": "Criado clássico",
+       "desc": "Madeira escura com gaveta.",
+       "parts": [
+        {
+         "model": "ClassicNightstand_01",
+         "h": 58
+        }
+       ]
+      },
+      {
+       "name": "Mesinha de apoio",
+       "desc": "Madeira clara.",
+       "parts": [
+        {
+         "model": "side_table_01",
+         "h": 58
+        }
+       ]
+      },
+      {
+       "name": "Gaveteiro antigo",
+       "desc": "Puxadores de latão.",
+       "parts": [
+        {
+         "model": "vintage_wooden_drawer_01",
+         "w": 60,
+         "h": 58
+        }
+       ]
+      },
+      {
+       "name": "Criado de design",
+       "desc": "Madeira maciça de linhas retas.",
+       "parts": [
+        {
+         "model": "modern_wooden_cabinet",
+         "w": 60,
+         "h": 58
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "luminaria",
+     "name": "Luminária",
+     "base_price": 35,
+     "comfort": 0,
+     "beauty": 2,
+     "anchor": "World_0936",
+     "hide": [
+      "World_0935",
+      "World_0936",
+      "World_0937"
+     ],
+     "tiers": [
+      {
+       "name": "Lamparina antiga",
+       "desc": "A lamparina de vidro pintado."
+      },
+      {
+       "name": "Lampião de metal",
+       "desc": "Lampião clássico.",
+       "parts": [
+        {
+         "model": "Lantern_01",
+         "h": 35
+        }
+       ]
+      },
+      {
+       "name": "Lanterna de latão",
+       "desc": "Luz dourada.",
+       "parts": [
+        {
+         "model": "brass_diya_lantern",
+         "h": 40
+        }
+       ]
+      },
+      {
+       "name": "Lanterna de madeira",
+       "desc": "Madeira e vidro.",
+       "parts": [
+        {
+         "model": "wooden_lantern_01",
+         "h": 42
+        }
+       ]
+      },
+      {
+       "name": "Luminária articulada",
+       "desc": "Braço de metal para leitura.",
+       "parts": [
+        {
+         "model": "desk_lamp_arm_01",
+         "h": 48
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "poltrona",
+     "name": "Poltrona da varanda",
+     "base_price": 55,
+     "comfort": 2,
+     "beauty": 1,
+     "anchor": "World_0940",
+     "hide": [
+      "World_0940"
+     ],
+     "tiers": [
+      {
+       "name": "Cadeira de balanço",
+       "desc": "A cadeira de balanço do avô."
+      },
+      {
+       "name": "Cadeira estofada verde",
+       "desc": "Assento acolchoado.",
+       "parts": [
+        {
+         "model": "GreenChair_01",
+         "h": 88
+        }
+       ]
+      },
+      {
+       "name": "Poltrona clássica",
+       "desc": "Tecido e braços largos.",
+       "parts": [
+        {
+         "model": "ArmChair_01",
+         "h": 95
+        }
+       ]
+      },
+      {
+       "name": "Poltrona de madeira nobre",
+       "desc": "Madeira escura entalhada.",
+       "parts": [
+        {
+         "model": "chinese_armchair",
+         "h": 95
+        }
+       ]
+      },
+      {
+       "name": "Poltrona de design",
+       "desc": "Lounge chair de couro.",
+       "parts": [
+        {
+         "model": "mid_century_lounge_chair",
+         "h": 85
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "quadros",
+     "name": "Quadros",
+     "base_price": 30,
+     "comfort": 0,
+     "beauty": 2,
+     "anchor": "World_0938",
+     "hide": [
+      "World_0938"
+     ],
+     "tiers": [
+      {
+       "name": "Molduras simples",
+       "desc": "Os quadros da parede."
+      },
+      {
+       "name": "Moldura clara",
+       "desc": "Madeira clara.",
+       "parts": [
+        {
+         "model": "hanging_picture_frame_01",
+         "h": 50
+        }
+       ]
+      },
+      {
+       "name": "Gravura antiga",
+       "desc": "Moldura escura de época.",
+       "parts": [
+        {
+         "model": "hanging_picture_frame_03",
+         "h": 55
+        }
+       ]
+      },
+      {
+       "name": "Moldura dourada",
+       "desc": "Moldura trabalhada.",
+       "parts": [
+        {
+         "model": "fancy_picture_frame_01",
+         "h": 60
+        }
+       ]
+      },
+      {
+       "name": "Pintura a óleo",
+       "desc": "Moldura barroca dourada.",
+       "parts": [
+        {
+         "model": "fancy_picture_frame_02",
+         "h": 70
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "plantas",
+     "name": "Plantas",
+     "base_price": 35,
+     "comfort": 0,
+     "beauty": 2,
+     "anchor": "World_0738",
+     "hide": [
+      "World_0735",
+      "World_0736",
+      "World_0737",
+      "World_0738"
+     ],
+     "tiers": [
+      {
+       "name": "Suculentas",
+       "desc": "Os vasinhos da casa."
+      },
+      {
+       "name": "Costela-de-adão",
+       "desc": "Folhagem em vaso de barro.",
+       "parts": [
+        {
+         "model": "potted_plant_02",
+         "h": 70
+        }
+       ]
+      },
+      {
+       "name": "Palmeirinha",
+       "desc": "Planta alta em vaso.",
+       "parts": [
+        {
+         "model": "potted_plant_01",
+         "h": 120
+        }
+       ]
+      },
+      {
+       "name": "Calateia",
+       "desc": "Folhas listradas.",
+       "parts": [
+        {
+         "model": "calathea_orbifolia_01",
+         "h": 75
+        }
+       ]
+      },
+      {
+       "name": "Árvore-da-fortuna",
+       "desc": "Pachira trançada.",
+       "parts": [
+        {
+         "model": "pachira_aquatica_01",
+         "h": 160
+        }
+       ]
+      }
+     ]
+    }
    ]
   }
  },
  "recipes": {
-  "levels": ["Receita da casa", "Caprichada", "Especial", "Gourmet", "Assinatura do chef"],
-  "price_mult": [1, 1.25, 1.55, 1.9, 2.3],
-  "cost_mult": [0, 12, 30, 70, 150],
+  "levels": [
+   "Receita da casa",
+   "Caprichada",
+   "Especial",
+   "Gourmet",
+   "Assinatura do chef"
+  ],
+  "price_mult": [
+   1,
+   1.25,
+   1.55,
+   1.9,
+   2.3
+  ],
+  "cost_mult": [
+   0,
+   12,
+   30,
+   70,
+   150
+  ],
   "demand_per_level": 0.5,
   "fame_from_level": 4,
   "notes": {
-   "coco_gelado": ["Coco gelado na hora", "Com canudo de bambu", "Coco com raspas da polpa", "Coco com gelo de água de coco", "Coco premium com flor comestível"],
-   "suco": ["Suco da fruta", "Suco com frutas frescas", "Suco duplo de frutas da estação", "Suco detox com gengibre", "Suco tropical da casa com frutas exóticas"],
-   "caipirinha": ["Caipirinha", "Caipirinha com limão-taiti", "Caipirinha de frutas vermelhas", "Caipirinha de cachaça envelhecida", "Caipirinha do chef com cachaça artesanal"],
-   "petiscos": ["Petiscos", "Petiscos com molho da casa", "Tábua de petiscos", "Petiscos de frutos do mar", "Tábua premium do chef"],
-   "sorvete_morango": ["Sorvete de morango", "Sorvete com calda", "Sorvete artesanal", "Taça com frutas e calda", "Taça do chef com morangos frescos"],
-   "sorvete_chocolate": ["Sorvete de chocolate", "Sorvete com calda", "Sorvete artesanal belga", "Taça com brownie", "Taça do chef com chocolate 70%"],
-   "batata_frita": ["Porção de batata frita", "Batata rústica com alecrim", "Batata com cheddar e bacon", "Batata trufada", "Batata da casa com molhos especiais"],
-   "porcao_peixe": ["Porção de peixe", "Peixe empanado na hora", "Peixe com molho tártaro", "Isca de peixe nobre", "Peixe do dia com molho do chef"]
+   "coco_gelado": [
+    "Coco gelado na hora",
+    "Com canudo de bambu",
+    "Coco com raspas da polpa",
+    "Coco com gelo de água de coco",
+    "Coco premium com flor comestível"
+   ],
+   "suco": [
+    "Suco da fruta",
+    "Suco com frutas frescas",
+    "Suco duplo de frutas da estação",
+    "Suco detox com gengibre",
+    "Suco tropical da casa com frutas exóticas"
+   ],
+   "caipirinha": [
+    "Caipirinha",
+    "Caipirinha com limão-taiti",
+    "Caipirinha de frutas vermelhas",
+    "Caipirinha de cachaça envelhecida",
+    "Caipirinha do chef com cachaça artesanal"
+   ],
+   "petiscos": [
+    "Petiscos",
+    "Petiscos com molho da casa",
+    "Tábua de petiscos",
+    "Petiscos de frutos do mar",
+    "Tábua premium do chef"
+   ],
+   "sorvete_morango": [
+    "Sorvete de morango",
+    "Sorvete com calda",
+    "Sorvete artesanal",
+    "Taça com frutas e calda",
+    "Taça do chef com morangos frescos"
+   ],
+   "sorvete_chocolate": [
+    "Sorvete de chocolate",
+    "Sorvete com calda",
+    "Sorvete artesanal belga",
+    "Taça com brownie",
+    "Taça do chef com chocolate 70%"
+   ],
+   "batata_frita": [
+    "Porção de batata frita",
+    "Batata rústica com alecrim",
+    "Batata com cheddar e bacon",
+    "Batata trufada",
+    "Batata da casa com molhos especiais"
+   ],
+   "porcao_peixe": [
+    "Porção de peixe",
+    "Peixe empanado na hora",
+    "Peixe com molho tártaro",
+    "Isca de peixe nobre",
+    "Peixe do dia com molho do chef"
+   ]
   }
+ },
+ "operations": {
+  "hourly": {
+   "bar": {
+    "name": "Bar do Coqueiro",
+    "unlock": "bar",
+    "open": [
+     10,
+     22
+    ],
+    "guests": 2,
+    "spend": 14,
+    "staff": "bartender",
+    "staff_bonus": 0.15
+   },
+   "pool": {
+    "name": "Piscina (day use)",
+    "unlock": "pool",
+    "open": [
+     9,
+     18
+    ],
+    "guests": 2,
+    "spend": 10
+   }
+  },
+  "pousada": {
+   "rooms_base": 1,
+   "rate_base": 100,
+   "star_bonus": 12,
+   "occupancy": 0.45,
+   "fame_occupancy": 0.03,
+   "maid": "camareira",
+   "maid_bonus": 0.1,
+   "tip": 0.04
+  },
+  "tours": [
+   {
+    "id": "snorkel",
+    "name": "Mergulho com snorkel",
+    "hour": 10,
+    "price": 45,
+    "cost": 25,
+    "seats": 6
+   },
+   {
+    "id": "barco",
+    "name": "Passeio de barco",
+    "hour": 14,
+    "price": 70,
+    "cost": 45,
+    "seats": 8
+   },
+   {
+    "id": "farol",
+    "name": "Trilha ao farol",
+    "hour": 16,
+    "price": 35,
+    "cost": 10,
+    "seats": 5
+   }
+  ],
+  "tour_guide": "guia",
+  "business_fame": 0.06,
+  "business_rain": 0.4
  }
 }
