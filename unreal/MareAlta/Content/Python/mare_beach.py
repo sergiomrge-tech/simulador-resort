@@ -181,6 +181,12 @@ def run(action, arg=''):
         return pie_shot(arg)
     if action == 'outfit':
         return outfit_probe(arg)
+    if action == 'custom':
+        world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()
+        custom = next(c for c in unreal.ObjectIterator(unreal.MareCustomWorld) if c.get_outer() == world)
+        place, tier = arg.split(',')
+        custom.preview_place(place, int(tier))
+        return {'preview': place, 'tier': int(tier)}
     if action == 'phone':
         world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()
         pc = unreal.GameplayStatics.get_player_controller(world, 0)

@@ -63,6 +63,14 @@ class MareMigrationTools(unreal.ToolsetDefinition):
 
     @toolset_registry.tool_call
     @staticmethod
+    def customization(action: str, arg: str='') -> str:
+        """Import customization tier models / build tier materials (Data/customization.json)."""
+        import importlib,mare_custom
+        importlib.reload(mare_custom)
+        return json.dumps(mare_custom.run(action,arg),ensure_ascii=False,default=str)
+
+    @toolset_registry.tool_call
+    @staticmethod
     def caribbean_coast(action: str, arg: str='') -> str:
         """Rebuild the coast sand/water materials or return comparison camera views."""
         import importlib,mare_beach

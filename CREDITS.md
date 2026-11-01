@@ -434,6 +434,43 @@ Os 26 cocos soltos (`World_0326`, `World_1414`: pilhas na praia, prateleira do q
 
 Textura dos morros: **Aerial Grass Rock**, de Rob Tuytel, Poly Haven, **CC0** — https://polyhaven.com/a/aerial_grass_rock (`M_HillGround_PBR`). Rochas dos morros (Poly Haven, CC0, já listadas acima na mata dos morros/praia): `rock_face_01`, `rock_face_02`, `coast_rocks_01`, `coast_rocks_02`, `coast_rocks_03`, `coast_rocks_05`. Terreno de preenchimento das enseadas e cantos arredondados gerados pelo projeto.
 
+### Personalização do quiosque (UE5.8) — 01/11/2026
+
+Modelos dos níveis (Poly Haven, CC0), importados em `/Game/Custom` por `Content/Python/mare_custom.py`:
+
+- Chinese Tea Table (`chinese_tea_table`), Kirill Sannikov, CC0 — https://polyhaven.com/a/chinese_tea_table
+- Wooden Table 02 (`WoodenTable_02`), Fran Calvente, CC0 — https://polyhaven.com/a/WoodenTable_02
+- Coffee Table Round 01 (`coffee_table_round_01`), Ulan Cabanilla, CC0 — https://polyhaven.com/a/coffee_table_round_01
+- Dining Table (`dining_table`), Aron Łyczek, CC0 — https://polyhaven.com/a/dining_table
+- Painted Wooden Chair 02 (`painted_wooden_chair_02`), Kirill Sannikov, CC0 — https://polyhaven.com/a/painted_wooden_chair_02
+- Painted Wooden Chair 01 (`painted_wooden_chair_01`), Kuutti Siitonen, CC0 — https://polyhaven.com/a/painted_wooden_chair_01
+- Dining Chair 02 (`dining_chair_02`), James Ray Cock, CC0 — https://polyhaven.com/a/dining_chair_02
+- Modern Arm Chair 01 (`modern_arm_chair_01`), Vibrant Nordic, CC0 — https://polyhaven.com/a/modern_arm_chair_01
+- Folding Wooden Stool (`folding_wooden_stool`), Ulan Cabanilla, CC0 — https://polyhaven.com/a/folding_wooden_stool
+- Wooden Stool 01 (`wooden_stool_01`), Kuutti Siitonen, CC0 — https://polyhaven.com/a/wooden_stool_01
+- Painted Wooden Stool (`painted_wooden_stool`), Kirill Sannikov, CC0 — https://polyhaven.com/a/painted_wooden_stool
+- Metal Stool 02 (`metal_stool_02`), Ulan Cabanilla, CC0 — https://polyhaven.com/a/metal_stool_02
+- Bar Chair Round 01 (`bar_chair_round_01`), Dairon Sanchez, CC0 — https://polyhaven.com/a/bar_chair_round_01
+- Lantern 01 (`Lantern_01`), Rajil Jose Macatangay, CC0 — https://polyhaven.com/a/Lantern_01
+- Vintage Oil Lamp (`vintage_oil_lamp`), Monsta3D, CC0 — https://polyhaven.com/a/vintage_oil_lamp
+- Brass Diya Lantern (`brass_diya_lantern`), Bhargav Kubal, CC0 — https://polyhaven.com/a/brass_diya_lantern
+- Lantern Chandelier 01 (`lantern_chandelier_01`), Kirill Sannikov, CC0 — https://polyhaven.com/a/lantern_chandelier_01
+- Potted Plant 04 (`potted_plant_04`), James Ray Cock, CC0 — https://polyhaven.com/a/potted_plant_04
+- Potted Plant 01 (`potted_plant_01`), Rico Cilliers, CC0 — https://polyhaven.com/a/potted_plant_01
+- Potted Plant 02 (`potted_plant_02`), Rico Cilliers, CC0 — https://polyhaven.com/a/potted_plant_02
+- Planter Box 02 (`planter_box_02`), James Ray Cock, CC0 — https://polyhaven.com/a/planter_box_02
+- Flower Gazania (`flower_gazania`), James Ray Cock, Jenelle van Heerden, CC0 — https://polyhaven.com/a/flower_gazania
+
+Texturas PBR dos acabamentos (balcão, guarda-sóis, letreiro; Poly Haven, CC0), materiais `/Game/Custom/Materials/M_Custom_*`:
+
+- Oak Wood Planks (`oak_wood_planks`), Dimitrios Savva, CC0 — https://polyhaven.com/a/oak_wood_planks
+- Blue Painted Planks (`blue_painted_planks`), Rob Tuytel, CC0 — https://polyhaven.com/a/blue_painted_planks
+- Blue Floor Tiles 01 (`blue_floor_tiles_01`), Rob Tuytel, CC0 — https://polyhaven.com/a/blue_floor_tiles_01
+- Teak Veneer (`teak_veneer`), Jenelle van Heerden, CC0 — https://polyhaven.com/a/teak_veneer
+- Rough Linen (`rough_linen`), colormass, Rico Cilliers, CC0 — https://polyhaven.com/a/rough_linen
+- Thatch Roof Angled (`thatch_roof_angled`), Rob Tuytel, Dimitrios Savva, CC0 — https://polyhaven.com/a/thatch_roof_angled
+- Denim Fabric (`denim_fabric`), Rob Tuytel, CC0 — https://polyhaven.com/a/denim_fabric
+
 ### Rádio praiano — 01/11/2026
 
 Reggae Roots, Calipso Caribe e Praia Pop (ukulele): composições e síntese originais deste projeto, dedicadas a CC0, geradas por `tools/ue58/gen_radio_music.py` (cordas Karplus-Strong, steel pan modal, percussão sintetizada; sem vozes nem samples de terceiros). WAVs em `unreal/MareAlta/SourceArt/Audio/radio_*.wav`.

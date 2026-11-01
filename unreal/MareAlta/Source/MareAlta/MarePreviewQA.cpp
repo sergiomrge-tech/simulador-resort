@@ -12,6 +12,7 @@
 #include "MareSimulation.h"
 #include "MareAudioWorld.h"
 #include "MareVisualWorld.h"
+#include "MareCustomWorld.h"
 #include "MareReefWorld.h"
 #include "MareMarineWorld.h"
 #include "MareServiceTarget.h"
@@ -206,7 +207,13 @@ void AMarePreviewQA::Tick(float DeltaSeconds)
   bool bCoverRemoved=true;for(TActorIterator<AActor> It(GetWorld());It;++It)if(It->ActorHasTag(TEXT("Lot_pool")))bCoverRemoved&=It->IsHidden() && !It->GetActorEnableCollision();
   Check(TEXT("pool_ground_cover_removed_after_purchase"),bCoverRemoved);break;
  }
- case 22:{Capture(TEXT("expansion-pool-purchased"));
+ case 22:{if(auto Custom=GetWorld()->GetSubsystem<UMareCustomWorld>()){bool bAll=true;
+   for(const TCHAR* Slot:{TEXT("mesas"),TEXT("cadeiras"),TEXT("banquetas"),TEXT("guarda_sois"),TEXT("balcao"),TEXT("iluminacao"),TEXT("plantas"),TEXT("letreiro")})
+    for(int32 Tier=1;Tier<=5;++Tier)if(!Custom->HasVisual(TEXT("kiosk"),Slot,Tier)){bAll=false;UE_LOG(LogTemp,Warning,TEXT("MARE_QA custom visual missing %s %d"),Slot,Tier);}
+   Check(TEXT("custom_all_tiers_have_visuals"),bAll);
+   Custom->PreviewPlace(TEXT("kiosk"),3);Check(TEXT("custom_preview_swaps_tables"),Custom->PartInstances(TEXT("kiosk"),TEXT("mesas"))==3 && Custom->PartInstances(TEXT("kiosk"),TEXT("cadeiras"))==6);
+   Custom->PreviewPlace(TEXT("kiosk"),0);}
+  Capture(TEXT("expansion-pool-purchased"));
   // Grand Hotel: the opened ground floor must admit the player capsule from the canopy to the reception.
   FHitResult Hit;FCollisionQueryParams Query;Query.AddIgnoredActor(Hero);
   const bool bBlocked=GetWorld()->SweepSingleByChannel(Hit,FVector(-2100,5350,140),FVector(-2100,6550,140),FQuat::Identity,ECC_Pawn,FCollisionShape::MakeCapsule(32,70),Query);

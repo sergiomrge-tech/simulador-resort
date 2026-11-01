@@ -45,7 +45,9 @@ Legenda: [x] feito e validado · [~] em andamento/parcial · [ ] pendente.
   - [x] Sistema (01/11): catálogo `Content/Data/customization.json` (5 níveis por objeto, preços ×1/2,5/6/14/30), compra/troca grátis do que já tem/prévia grátis, save `custom.*`; efeitos no quiosque: movimento de clientes ×até 3,4, gorjeta, paciência, atendente mais rápido (balcão), fama; aba "Personalizar" no celular; teste `MareAlta.Migration.Customization`.
   - [x] "Melhoria nos pratos, valores" (01/11): 5 níveis de receita por prato (preço ×1 até ×2,3, mais pedidos, fama a partir de Gourmet), nomes por nível.
   - [x] Quiosque: 8 objetos × 5 níveis definidos (mesas, cadeiras, banquetas, guarda-sóis, balcão, iluminação, plantas, letreiro).
-  - [ ] Quiosque: importar os modelos Poly Haven dos níveis e criar os acabamentos com texturas PBR realistas ("coloque texturas realistas para não precisar refazer"); Canva só para os cartões do celular.
+  - [x] Quiosque: 22 modelos Poly Haven importados (`/Game/Custom`, `mare_custom.py`) e 14 acabamentos PBR fotográficos (carvalho, madeira azul, azulejo, teca, linho listrado, palha, lona, neon); QA `custom_all_tiers_have_visuals`, `custom_preview_swaps_tables`.
+  - [x] "Toda personalização é uma melhoria e precisa ser paga com o dinheiro do quiosque" (01/11): já é assim — níveis 2–5 e receitas são cobrados do caixa (o nível 1 é o item inicial; voltar a um nível já pago não cobra de novo).
+  - [ ] Cartões com imagem no celular (Canva) — opcional.
   - [ ] Casa, praia, piscina/tobogã, hotel (com quartos) e expansões.
 - [ ] "Procure um modelo real de celular (asset) e adapte a tela" (01/11): celular 3D na mão com a interface na tela.
 - [x] Manter este checklist sempre que o usuário pedir algo (regra salva na memória).

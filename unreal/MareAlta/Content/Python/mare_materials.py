@@ -402,3 +402,90 @@ def build_person_body():
     if errors: raise RuntimeError(str(errors))
     unreal.EditorAssetLibrary.save_loaded_asset(hidden)
     return mat
+
+
+
+def _custom_texture(file, normal=False, linear=False):
+    """CC0 Poly Haven maps copied to SourceArt/Textures/Custom, imported into /Game/Custom/Textures."""
+    name = Path(file).stem
+    path = '/Game/Custom/Textures/' + name
+    tex = unreal.load_asset(path)
+    if not tex:
+        task = unreal.AssetImportTask(); task.filename = str(ROOT / 'SourceArt/Textures/Custom' / file); task.destination_path = '/Game/Custom/Textures'
+        task.destination_name = name; task.automated = True; task.save = True
+        unreal.AssetToolsHelpers.get_asset_tools().import_asset_tasks([task]); tex = unreal.load_asset(path)
+    if normal:
+        tex.set_editor_property('srgb', False); tex.set_editor_property('compression_settings', unreal.TextureCompressionSettings.TC_NORMALMAP)
+        tex.set_editor_property('flip_green_channel', True)
+    elif linear:
+        tex.set_editor_property('srgb', False)
+    unreal.EditorAssetLibrary.save_loaded_asset(tex)
+    return tex
+
+
+def _custom_pbr(name, slug, size_cm, color_code='return A.rgb;', emissive_code=None, two_sided=False, rough_const=None):
+    """World-aligned (tri-planar) PBR so any exported mesh UV works; color_code may recolour A (diffuse)."""
+    path = '/Game/Custom/Materials/' + name
+    mat = unreal.load_asset(path)
+    if not mat:
+        mat = unreal.AssetToolsHelpers.get_asset_tools().create_asset(name, '/Game/Custom/Materials', unreal.Material, unreal.MaterialFactoryNew())
+    for old in list(MEL.get_material_expressions(mat)):
+        MEL.delete_material_expression(mat, old)
+    mat.set_editor_property('used_with_nanite', True)
+    mat.set_editor_property('used_with_instanced_static_meshes', True)
+    mat.set_editor_property('two_sided', two_sided)
+    fn = unreal.load_asset('/Engine/Functions/Engine_MaterialFunctions01/Texturing/WorldAlignedTexture')
+
+    def projected(tex):
+        obj = expression(mat, unreal.MaterialExpressionTextureObject, texture=tex)
+        call = expression(mat, unreal.MaterialExpressionMaterialFunctionCall)
+        call.set_editor_property('material_function', fn)
+        connect(obj, '', call, 'TextureObject')
+        connect(expression(mat, unreal.MaterialExpressionConstant3Vector, constant=unreal.LinearColor(size_cm, size_cm, size_cm, 1)), '', call, 'TextureSize')
+        return call
+    diff = projected(_custom_texture(slug + '_diff_1k.jpg'))
+    nor = projected(_custom_texture(slug + '_nor_1k.jpg', normal=True))
+    inputs = {'A': diff, 'P': expression(mat, unreal.MaterialExpressionWorldPosition), 'O': expression(mat, unreal.MaterialExpressionObjectPositionWS)}
+    color = custom(mat, color_code, unreal.CustomMaterialOutputType.CMOT_FLOAT3, inputs)
+    MEL.connect_material_property(color, '', unreal.MaterialProperty.MP_BASE_COLOR)
+    MEL.connect_material_property(nor, 'XYZ Texture', unreal.MaterialProperty.MP_NORMAL)
+    rough_file = ROOT / 'SourceArt/Textures/Custom' / (slug + '_rough_1k.jpg')
+    if rough_const is None and rough_file.exists():
+        MEL.connect_material_property(projected(_custom_texture(slug + '_rough_1k.jpg', linear=True)), 'XYZ Texture', unreal.MaterialProperty.MP_ROUGHNESS)
+    else:
+        MEL.connect_material_property(expression(mat, unreal.MaterialExpressionConstant, r=rough_const or .6), '', unreal.MaterialProperty.MP_ROUGHNESS)
+    if emissive_code:
+        night = expression(mat, unreal.MaterialExpressionCollectionParameter, collection=time_collection(), parameter_name='Night')
+        t = expression(mat, unreal.MaterialExpressionTime)
+        glow = custom(mat, emissive_code, unreal.CustomMaterialOutputType.CMOT_FLOAT3, {'N': night, 'T': t, 'P': inputs['P']})
+        MEL.connect_material_property(glow, '', unreal.MaterialProperty.MP_EMISSIVE_COLOR)
+    errors = list(MEL.recompile_material(mat))
+    if errors:
+        raise RuntimeError(name + str(errors))
+    unreal.EditorAssetLibrary.save_loaded_asset(mat)
+    return mat.get_path_name()
+
+
+def build_custom_materials():
+    """Material tiers of Data/customization.json from CC0 Poly Haven photo-scanned PBR sets."""
+    lum = 'float l=dot(A.rgb,float3(.2126,.7152,.0722));'
+    # Radial stripes around the umbrella centre (object position), over the linen weave detail.
+    stripes = lum + 'float2 d=P.xy-O.xy; float a=atan2(d.y,d.x)/6.2831853+.5; float s=step(.5,frac(a*12.0)); float detail=clamp(l*2.2,.7,1.25); return lerp(%s,%s,s)*detail;'
+    out = {}
+    out['M_Custom_Counter_2'] = _custom_pbr('M_Custom_Counter_2', 'oak_wood_planks', 120)
+    out['M_Custom_Counter_3'] = _custom_pbr('M_Custom_Counter_3', 'blue_painted_planks', 120, lum + 'return lerp(A.rgb,float3(.10,.52,.55)*clamp(l*2.6,.5,1.4),.65);')
+    out['M_Custom_Counter_4'] = _custom_pbr('M_Custom_Counter_4', 'blue_floor_tiles_01', 90, 'return A.rgb*1.45;')
+    out['M_Custom_Counter_5'] = _custom_pbr('M_Custom_Counter_5', 'teak_veneer', 140, 'return A.rgb*1.05;', rough_const=.32)
+    out['M_Custom_Umbrella_1'] = _custom_pbr('M_Custom_Umbrella_1', 'rough_linen', 60, lum + 'return float3(.86,.80,.68)*clamp(l*2.0,.7,1.2);', two_sided=True)
+    out['M_Custom_Umbrella_2'] = _custom_pbr('M_Custom_Umbrella_2', 'rough_linen', 60, stripes % ('float3(.08,.32,.62)', 'float3(.92,.92,.88)'), two_sided=True)
+    out['M_Custom_Umbrella_3'] = _custom_pbr('M_Custom_Umbrella_3', 'rough_linen', 60, stripes % ('float3(.90,.38,.30)', 'float3(.93,.86,.70)'), two_sided=True)
+    out['M_Custom_Umbrella_4'] = _custom_pbr('M_Custom_Umbrella_4', 'thatch_roof_angled', 140, lum + 'return lerp(A.rgb,float3(.66,.50,.28)*clamp(l*2.4,.5,1.4),.6);', two_sided=True)
+    out['M_Custom_Umbrella_5'] = _custom_pbr('M_Custom_Umbrella_5', 'denim_fabric', 50, lum + 'return float3(.05,.09,.22)*clamp(l*3.0,.6,1.5);', two_sided=True)
+    neon = 'return %s*(.8+N*N*40.0);'
+    out['M_Custom_Sign_1'] = _custom_pbr('M_Custom_Sign_1', 'oak_wood_planks', 80)
+    out['M_Custom_Sign_2'] = _custom_pbr('M_Custom_Sign_2', 'rough_linen', 40, 'return float3(.9,.9,.9);', emissive_code=neon % 'float3(1.0,.97,.92)', rough_const=.2)
+    out['M_Custom_Sign_3'] = _custom_pbr('M_Custom_Sign_3', 'rough_linen', 40, 'return float3(.4,.9,.9);', emissive_code=neon % 'float3(.10,.95,.90)', rough_const=.2)
+    out['M_Custom_Sign_4'] = _custom_pbr('M_Custom_Sign_4', 'rough_linen', 40, 'return float3(.95,.5,.8);', emissive_code=neon % 'float3(1.0,.18,.62)', rough_const=.2)
+    rainbow = 'float h=frac(T*.08+P.x*.0015); float3 c=saturate(abs(frac(h+float3(0,.333,.667))*6-3)-1); return c*(.8+N*N*40.0);'
+    out['M_Custom_Sign_5'] = _custom_pbr('M_Custom_Sign_5', 'rough_linen', 40, 'return float3(.9,.9,.9);', emissive_code=rainbow, rough_const=.2)
+    return out

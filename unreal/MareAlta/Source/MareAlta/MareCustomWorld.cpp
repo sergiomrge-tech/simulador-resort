@@ -136,3 +136,12 @@ void UMareCustomWorld::Tick(float DeltaSeconds)
  for(auto& Pair:Slots){const bool bHidden=Pair.Value.AnchorActor.IsValid() && Pair.Value.AnchorActor->IsHidden();
   for(const auto& Part:Pair.Value.Parts)if(Part.IsValid() && Part->IsVisible()==bHidden){Part->SetVisibility(!bHidden);Part->SetCollisionEnabled(bHidden?ECollisionEnabled::NoCollision:ECollisionEnabled::QueryAndPhysics);}}
 }
+
+void UMareCustomWorld::PreviewPlace(const FString& Place,int32 Tier)
+{
+ auto S=Sim();if(!S)return;if(!bIndexed){Index();}
+ if(Tier<=0){ApplyAll();return;}
+ const TArray<TSharedPtr<FJsonValue>>* Defs=nullptr;
+ if(UMareSimulation::Object(UMareSimulation::Object(S->CustomDefs(),TEXT("places")),Place)->TryGetArrayField(TEXT("slots"),Defs))
+  for(const auto& V:*Defs)Apply(Place,UMareSimulation::String(V->AsObject(),TEXT("id")),Tier,true);
+}

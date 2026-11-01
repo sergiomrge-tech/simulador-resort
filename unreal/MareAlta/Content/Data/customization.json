@@ -20,7 +20,7 @@
      "tiers": [
       {"name": "Mesa dobrável de madeira", "desc": "A mesa simples que veio com o quiosque."},
       {"name": "Mesa chinesa quadrada", "desc": "Madeira escura maciça, firme na areia.", "parts": [{"model": "chinese_tea_table", "w": 78, "h": 74}]},
-      {"name": "Mesa redonda de madeira", "desc": "Pé central torneado, cabe mais um prato.", "parts": [{"model": "WoodenTable_02", "w": 80, "h": 75}]},
+      {"name": "Mesa redonda de madeira", "desc": "Pé central torneado, cabe mais um prato.", "parts": [{"model": "WoodenTable_02", "w": 72, "h": 75}]},
       {"name": "Mesa de mármore", "desc": "Tampo de mármore claro e base cromada.", "parts": [{"model": "coffee_table_round_01", "w": 82, "h": 75}]},
       {"name": "Mesa posta com toalha", "desc": "Toalha xadrez e madeira nobre: clima de restaurante.", "parts": [{"model": "dining_table", "w": 95, "h": 76}]}
      ]},
@@ -36,10 +36,10 @@
     {"id": "banquetas", "name": "Banquetas do balcão", "base_price": 30, "comfort": 1, "beauty": 1,
      "anchor": "World_0327", "hide": ["World_0327"],
      "tiers": [
-      {"name": "Banco rústico", "desc": "Tronco de madeira bruta.", "parts": [{"model": "wooden_stool_02", "h": 72}]},
-      {"name": "Banqueta de madeira", "desc": "Assento redondo e pés abertos.", "parts": [{"model": "wooden_stool_01", "h": 74}]},
-      {"name": "Banqueta pintada", "desc": "Madeira pintada e desgastada pelo sal.", "parts": [{"model": "painted_wooden_stool", "h": 74}]},
-      {"name": "Banqueta industrial", "desc": "Assento de madeira, pés de ferro.", "parts": [{"model": "metal_stool_02", "h": 76}]},
+      {"name": "Banquinho dobrável", "desc": "Madeira simples que dobra e empilha.", "parts": [{"model": "folding_wooden_stool", "w": 42, "h": 66}]},
+      {"name": "Banqueta de madeira", "desc": "Assento redondo e pés abertos.", "parts": [{"model": "wooden_stool_01", "w": 40, "h": 74}]},
+      {"name": "Banqueta pintada", "desc": "Madeira pintada e desgastada pelo sal.", "parts": [{"model": "painted_wooden_stool", "w": 40, "h": 74}]},
+      {"name": "Banqueta industrial", "desc": "Assento de madeira, pés de ferro.", "parts": [{"model": "metal_stool_02", "w": 42, "h": 76}]},
       {"name": "Banqueta estofada", "desc": "Assento acolchoado com encosto baixo.", "parts": [{"model": "bar_chair_round_01", "h": 85}]}
      ]},
     {"id": "guarda_sois", "name": "Guarda-sóis", "base_price": 40, "comfort": 1, "beauty": 2,
@@ -72,11 +72,11 @@
     {"id": "plantas", "name": "Plantas e vasos", "base_price": 25, "comfort": 0, "beauty": 2,
      "spots": [[3420, -1680], [4180, -1680], [3330, -1320], [4270, -1320], [3600, -1720], [4000, -1720]],
      "tiers": [
-      {"name": "Suculentas", "desc": "Dois vasinhos de suculenta.", "parts": [{"model": "potted_plant_04", "h": 32}], "count": 2},
-      {"name": "Ervas no vaso de barro", "desc": "Quatro vasos de ervas.", "parts": [{"model": "potted_plant_01", "h": 45}], "count": 4},
-      {"name": "Costela-de-adão", "desc": "Folhas grandes em vasos de cerâmica.", "parts": [{"model": "potted_plant_02", "h": 60}], "count": 4},
-      {"name": "Floreiras de madeira", "desc": "Floreiras com flores de praia.", "parts": [{"model": "planter_box_02", "w": 70, "h": 45}, {"model": "flower_gazania", "h": 30, "at": [0, 0, 40]}], "count": 6},
-      {"name": "Jardim tropical", "desc": "Árvores em vaso e antúrios.", "parts": [{"model": "pachira_aquatica_01", "h": 170}], "count": 6}
+      {"name": "Suculentas", "desc": "Dois vasinhos de suculenta.", "parts": [{"model": "potted_plant_04", "h": 34}], "count": 2},
+      {"name": "Costela-de-adão", "desc": "Quatro vasos de folhagem.", "parts": [{"model": "potted_plant_02", "h": 70}], "count": 4},
+      {"name": "Palmeirinhas em vaso", "desc": "Plantas altas em vasos de barro.", "parts": [{"model": "potted_plant_01", "h": 130}], "count": 4},
+      {"name": "Floreiras de madeira", "desc": "Floreiras com gazânias floridas.", "parts": [{"model": "planter_box_02", "w": 90, "h": 42}, {"model": "flower_gazania", "w": 80, "h": 16, "at": [0, 0, 36]}], "count": 6},
+      {"name": "Jardim tropical", "desc": "Plantas altas, folhagens e floreira.", "parts": [{"model": "potted_plant_01", "h": 165}, {"model": "potted_plant_02", "h": 70, "at": [55, 30, 0], "yaw": 40}], "count": 6}
      ]},
     {"id": "letreiro", "name": "Letreiro", "base_price": 35, "comfort": 0, "beauty": 1, "fame": true,
      "anchor": "World_1343",
