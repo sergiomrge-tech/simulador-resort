@@ -395,7 +395,7 @@ Casca do térreo (núcleo removido, entrada, paredes, forro, colunas, balcão e 
 
 ### Mata dos morros ao redor (UE5.8) — 01/11/2026
 
-16896 instâncias Nanite sem colisão geradas por `Content/Python/mare_mountains.py` (região, seed e contagem em `Content/Data/mountain_vegetation.json`), modelos **Poly Haven CC0** em `/Game/Nature/Mountain/`:
+19324 instâncias Nanite sem colisão geradas por `Content/Python/mare_mountains.py` (região, seed e contagem em `Content/Data/mountain_vegetation.json`), modelos **Poly Haven CC0** em `/Game/Nature/Mountain/`:
 
 - Fern 02 (`fern_02`), Rob Tuytel, Rico Cilliers, CC0 — https://polyhaven.com/a/fern_02
 - Island Tree 01 (`island_tree_01`), Rob Tuytel, Rico Cilliers, CC0 — https://polyhaven.com/a/island_tree_01

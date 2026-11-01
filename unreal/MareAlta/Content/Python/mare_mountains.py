@@ -71,7 +71,7 @@ def big_actors(min_extent=4000):
     return out
 
 
-REGION = (-34000, 42000, 6000, 72000)    # x0, x1, y0, y1 (cm): hills around the village
+REGION = (-34000, 42000, -20000, 72000)  # x0, x1, y0, y1 (cm): hills and headlands around the village
 MIN_Z = 600                               # above the village/beach ground
 # slug, weight, scale range, cull distance (0 = never), casts shadow
 # Backdrop hills are seen from 150-400 m: trees are scaled up so the canopy reads as forest.

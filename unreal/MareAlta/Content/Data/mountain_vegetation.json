@@ -2,27 +2,27 @@
  "region": [
   -34000,
   42000,
-  6000,
+  -20000,
   72000
  ],
  "min_z": 600,
  "seed": 20261101,
  "instances": {
-  "island_tree_01": 1655,
-  "island_tree_03": 1122,
-  "island_tree_02": 1705,
-  "jacaranda_tree": 610,
-  "tree_small_02": 1183,
-  "shrub_04": 1789,
-  "shrub_03": 1787,
-  "shrub_01": 2701,
-  "fern_02": 1722,
-  "shrub_02": 2622
+  "island_tree_03": 1270,
+  "island_tree_02": 1963,
+  "island_tree_01": 2022,
+  "tree_small_02": 1309,
+  "jacaranda_tree": 614,
+  "shrub_03": 2017,
+  "shrub_01": 3060,
+  "shrub_02": 3046,
+  "fern_02": 2023,
+  "shrub_04": 2000
  },
- "total": 16896,
+ "total": 19324,
  "rejected": {
-  "miss": 23576,
-  "low": 2148,
-  "steep": 7755
+  "miss": 37629,
+  "low": 5064,
+  "steep": 8123
  }
 }

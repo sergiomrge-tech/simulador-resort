@@ -22,6 +22,9 @@ Legenda: [x] corrigido e conferido em captura · [~] parcial · [ ] pendente.
   instâncias do nível e do `world.json` (lista guardada em `Content/Data/stacked_origin_removed.json`).
   Terreno e morros, com pivô legítimo na origem, foram preservados.
 
+- [x] **Morros costeiros sem mata** (atrás do farol e pontas da praia): área da vegetação
+  estendida às pontas; 19.324 instâncias CC0 só sobre os morros (nada na praia/vila).
+
 ## Pendente (próximas levas, em ordem)
 
 - [ ] Reconstruir os grupos perdidos (grama, conchas, seixos, flores) nas posições corretas,

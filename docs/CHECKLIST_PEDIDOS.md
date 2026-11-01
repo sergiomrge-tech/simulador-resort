@@ -18,12 +18,12 @@ Legenda: [x] feito e validado · [~] em andamento/parcial · [ ] pendente.
 - [x] Hotel 5★: conseguir entrar, decoração e funcionalidade (recepção, renda noturna). (`HOTEL_PRAIA_2026-11-01.md`)
 - [x] Praia mais bonita estilo Caribe: areia mais branca, águas claras e belas.
 - [x] Ondas quadradas: corrigir (malha do mar graduada 0,75 m).
-- [x] Vegetação nas montanhas ao redor (16.896 instâncias CC0).
+- [x] Vegetação nas montanhas ao redor e pontas da costa (19.324 instâncias CC0).
 - [x] Polimento visual: objetos flutuando (26 itens corrigidos; varredura `mare_float_audit`) e 36 malhas facetadas da praia suavizadas (guarda-sóis listrados/palha/sombreiros, armações e mastros; `tools/ue58/smooth_props.py`).
 - [x] Rádio: 3 novas músicas originais (Reggae Roots, Calipso Caribe, Praia Pop/ukulele), 6 estações + desligado, nome no celular; testado no PIE.
 - [x] Andar pela vila, principalmente quiosque e hotel: regressão 99/99 no PIE, atendimento real com e sem atendente, hotel acessível; adicionado dispensar atendente. (`ue58/CAMINHADA_2026-11-01.md`)
 - [x] HUD/celular mais comercial, amigável e fácil: 3 propostas apresentadas (`ue58/hud-propostas/propostas.html`); usuário escolheu **B · Maré Tropical com o celular em abas laterais como na C** — implementado (faixa de madeira, comandas, bilhete de missões, placa de interação, avisos; celular/estações com abas laterais). Captura: `ue58/graphics-reference/hud-b-20261101`.
-- [~] Andar por todo o jogo, montar checklist do que precisa ser corrigido e corrigir (1ª leva feita: janelas, piscinas, espuma) (ex.: janelas opacas de todas as construções). Lista detalhada em `ue58/AUDITORIA_GERAL.md`.
+- [~] Andar por todo o jogo, montar checklist do que precisa ser corrigido e corrigir (feito: janelas + luz noturna, piscinas, espuma, 5.729 objetos empilhados na piscina, mata das pontas; ver `ue58/AUDITORIA_GERAL.md`) (ex.: janelas opacas de todas as construções). Lista detalhada em `ue58/AUDITORIA_GERAL.md`.
 - [x] Manter este checklist sempre que o usuário pedir algo (regra salva na memória).
 
 ## Regras permanentes já pedidas
