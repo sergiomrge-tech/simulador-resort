@@ -27,8 +27,9 @@ Legenda: [x] feito e validado · [~] em andamento/parcial · [ ] pendente.
 - [~] "Continue com os ajustes gráficos" (01/11): grama/conchas/seixos/flores/caibros/fiação recolocados nas posições da Godot (3.994 instâncias); 34 cabelos/câmeras de hóspedes flutuando no hotel removidos; hotel ganha hóspedes no restaurante, academia e bar da piscina. Pendente: interiores dos quartos.
 - [x] "Coloque grama e arbustos" + "Preencha até as montanhas, coloque arbustos também" (01/11): gramado cheio (grama CC0 Poly Haven) do resort, vila e lotes até a mata dos morros, com arbustos, samambaias e flores; lotes de expansão somem com a compra (`mare_lawn.py`).
 - [x] "Corrigiu os vidros opacos?": sim, na leva da auditoria (janelas das casas com vidro refletivo e luz à noite; demais vidros transparentes). Conferido de novo nas capturas da vila.
-- [ ] "Os braços ao nadar estão muito estranhos e feios" (01/11): refazer a braçada em primeira pessoa.
-- [ ] "Os coqueiros não combinam com o ambiente, substitua por assets mais realistas, procure na web" (01/11).
+- [x] "Os braços ao nadar estão muito estranhos e feios" (01/11): braçada de peito em primeira pessoa (mãos se encontram, estendem, abrem e recolhem, no terço inferior da tela); parado na água, sculling suave. Regressão 100/100. Observação: o modelo da mão é o do personagem e continua simples.
+- [ ] "Após terminar os ajustes gráficos e visuais vamos trabalhar no gameplay" (01/11): próxima fase depois dos coqueiros.
+- [ ] "Os coqueiros não combinam com o ambiente, substitua por assets mais realistas, procure na web" (01/11): pesquisado — não há coqueiro realista com licença livre baixável sem conta (Poly Haven não tem; Fab/Megascans exigem conta Epic). Aguardando escolha: Fab pela conta do usuário ou coqueiro feito aqui com texturas fotográficas CC0 (`palm_tree_bark`).
 - [x] Manter este checklist sempre que o usuário pedir algo (regra salva na memória).
 
 ## Regras permanentes já pedidas

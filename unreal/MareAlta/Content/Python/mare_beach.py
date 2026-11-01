@@ -60,10 +60,21 @@ def pie_shot(arg):
     name, x, y, z, pitch, yaw = arg.split(',')
     pc = unreal.GameplayStatics.get_player_controller(world, 0)
     hero = unreal.GameplayStatics.get_player_pawn(world, 0)
+    if name.endswith('>'):
+        # Swim-stroke QA: shove the swimmer forward so the stroke (not treading) pose is shown.
+        move = hero.get_component_by_class(unreal.CharacterMovementComponent)
+        move.set_editor_property('velocity', hero.get_actor_forward_vector() * 200)
+        return {'pushed': move.is_swimming()}
+    if name.endswith('^'):
+        # Viewport shot (first-person body and HUD included) to Saved/Screenshots/WindowsEditor.
+        move = hero.get_component_by_class(unreal.CharacterMovementComponent)
+        unreal.SystemLibrary.execute_console_command(world, 'Shot showui')
+        return {'shot': name[:-1], 'swimming': move.is_swimming(), 'z': hero.get_actor_location().z}
     if name.endswith('!'):
         unreal.SystemLibrary.execute_console_command(world, 'HighResShot 1280x720 filename=D:/CodexTemp/beach/pie-' + name[:-1] + '.png')
         return {'shot': name[:-1]}
-    hero.get_component_by_class(unreal.CharacterMovementComponent).set_movement_mode(unreal.MovementMode.MOVE_FLYING)
+    move = hero.get_component_by_class(unreal.CharacterMovementComponent)
+    move.set_movement_mode(unreal.MovementMode.MOVE_SWIMMING if name.startswith('swim') else unreal.MovementMode.MOVE_FLYING)
     hero.set_actor_location(unreal.Vector(float(x), float(y), float(z)), False, True)
     pc.set_control_rotation(unreal.Rotator(roll=0, pitch=float(pitch), yaw=float(yaw)))
     return {'placed': name}

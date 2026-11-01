@@ -70,9 +70,25 @@ bool UMarePlayerPresentation::HandTarget(int32 Hand,FVector& Target,FVector& Elb
  Target=Eyes->GetComponentLocation()+Forward*43+Right*Side*17-FVector(0,0,28);
  Elbow=Hero->GetActorLocation()+Right*Side*40+Forward*6+FVector(0,0,20);
  if(Hero->GetCharacterMovement()->IsSwimming() && !bCarrying){
-  const float Phase=GetWorld()->GetTimeSeconds()*(Hero->GetVelocity().Size2D()>30?2.3f:1.4f);
-  Target=Eyes->GetComponentLocation()+Forward*(40+12*FMath::Cos(Phase))+Right*Side*(24+13*FMath::Sin(Phase))-FVector(0,0,11+6*FMath::Sin(Phase));
-  Elbow=Eyes->GetComponentLocation()+Right*Side*44+Forward*8-FVector(0,0,18);Weight=1.f;
+  // Breaststroke seen from the eyes: hands meet under the chin, glide forward, sweep out, pull
+  // back low and recover. Offsets are (forward, outward, down) in cm from the eyes; keeping the
+  // hands low and far keeps the forearms small in the lower third of the view.
+  const bool bStroke=Hero->GetVelocity().Size()>30;
+  FVector Local;
+  if(bStroke){
+   static const FVector Keys[]={FVector(34,9,13),FVector(64,10,7),FVector(54,36,11),FVector(34,24,17)};
+   static const float Ends[]={.35f,.6f,.85f,1.f};
+   const float T=FMath::Fractional(GetWorld()->GetTimeSeconds()/1.6f);int32 K=0;while(T>Ends[K])++K;
+   const float Start=K?Ends[K-1]:0.f;const float A=FMath::SmoothStep(0.f,1.f,(T-Start)/(Ends[K]-Start));
+   Local=FMath::Lerp(Keys[K],Keys[(K+1)%4],A);
+  }else{
+   // Treading water: slow sculling figure-eights just under the surface.
+   const float Phase=GetWorld()->GetTimeSeconds()*2.1f;
+   Local=FVector(46+4*FMath::Sin(Phase*.5f),24+8*FMath::Sin(Phase),14+3*FMath::Cos(Phase));
+  }
+  const FVector EyePos=Eyes->GetComponentLocation();
+  Target=EyePos+Forward*Local.X+Right*Side*Local.Y-FVector(0,0,Local.Z);
+  Elbow=EyePos+Right*Side*(30+Local.Y*.5f)+Forward*(Local.X*.35f)-FVector(0,0,36);Weight=1.f;
  }
  if(bReaching){const float Alpha=FMath::Sin(FMath::Clamp(1-ReachRemaining/.65f,0.f,1.f)*PI);
   const FVector Delta=ReachPosition-Eyes->GetComponentLocation();
