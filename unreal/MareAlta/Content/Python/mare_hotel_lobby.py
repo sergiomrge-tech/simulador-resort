@@ -11,19 +11,20 @@ LIB = Path('D:/Assets/PolyHaven')
 TOWER = '/Game/World/Models/World_2365/World_2365.World_2365'
 
 
-def _pipeline(nanite):
+def _pipeline(nanite, search=True):
     p = unreal.InterchangeGenericAssetsPipeline()
     p.mesh_pipeline.combine_static_meshes_behavior = unreal.InterchangeCombineStaticMeshesBehavior.ALL
     p.mesh_pipeline.build_nanite = nanite
     p.mesh_pipeline.fallback_collision_type = unreal.InterchangeMeshCollision.NONE
     p.common_meshes_properties.bake_meshes = True
-    p.material_pipeline.search_location = unreal.InterchangeMaterialSearchLocation.ALL_ASSETS
+    # Own models (bpy) must not pick up same-named textures elsewhere (a linen normal map became the colour).
+    p.material_pipeline.search_location = unreal.InterchangeMaterialSearchLocation.ALL_ASSETS if search else unreal.InterchangeMaterialSearchLocation.LOCAL
     stack = unreal.InterchangePipelineStackOverride()
     stack.set_editor_property('override_pipelines', [unreal.SoftObjectPath(p.get_path_name())])
     return stack
 
 
-def _import(source, destination, name, nanite):
+def _import(source, destination, name, nanite, search=True):
     task = unreal.AssetImportTask()
     task.filename = str(source)
     task.destination_path = destination
@@ -31,7 +32,7 @@ def _import(source, destination, name, nanite):
     task.automated = True
     task.replace_existing = True
     task.save = True
-    task.options = _pipeline(nanite)
+    task.options = _pipeline(nanite, search)
     unreal.AssetToolsHelpers.get_asset_tools().import_asset_tasks([task])
     meshes = [unreal.load_asset(p) for p in unreal.EditorAssetLibrary.list_assets(destination, recursive=True)]
     meshes = [m for m in meshes if isinstance(m, unreal.StaticMesh)]

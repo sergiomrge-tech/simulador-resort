@@ -35,6 +35,10 @@ private:
   TArray<TWeakObjectPtr<UInstancedStaticMeshComponent>> MaterialTargets;
   TMap<TWeakObjectPtr<UInstancedStaticMeshComponent>,TArray<TObjectPtr<UMaterialInterface>>> Originals;
   TArray<TWeakObjectPtr<UHierarchicalInstancedStaticMeshComponent>> Parts;
+  // Room slots ("rooms": true): one anchor per bungalow actor (tag MareBungalow); its parts follow that
+  // building's visibility, so the furniture of a room appears together with the room.
+  TArray<TWeakObjectPtr<AActor>> AnchorOwners;
+  TArray<TWeakObjectPtr<AActor>> PartOwners;
   int32 Shown=0;
  };
  TMap<FString,FSlotState> Slots;

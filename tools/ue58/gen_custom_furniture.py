@@ -20,9 +20,24 @@ OUT = Path('D:/Assets/Mare')
 
 
 # ---------------------------------------------------------------- materials
+def _pow2(img):
+    """UE refuses textures that are not power-of-two (some 1k scans are 1024 x 683): resample them."""
+    w, h = img.size
+    p2 = lambda v: 1 << max(0, int(round(math.log2(max(v, 1)))))
+    if (w, h) != (p2(w), p2(h)):
+        img.scale(p2(w), p2(h))
+        # Save the resampled pixels so packing embeds them, not the original file.
+        pot = OUT / '_pot'
+        pot.mkdir(parents=True, exist_ok=True)
+        img.filepath_raw = str(pot / (Path(img.filepath).stem + '.png'))
+        img.file_format = 'PNG'
+        img.save()
+    return img
+
+
 def texture(slug, kind='diff', tint=None, out=None):
     src = LIB / slug / f'{slug}_{kind}_1k.jpg'
-    img = bpy.data.images.load(str(src))
+    img = _pow2(bpy.data.images.load(str(src)))
     if tint is None:
         return img
     # Bake the tint into a copy: glTF keeps a plain image texture, not a Multiply node.
@@ -245,6 +260,20 @@ def reset():
 def export(slug, desc):
     folder = OUT / slug
     folder.mkdir(parents=True, exist_ok=True)
+    # Unique names: the UE importer looks materials/textures up by name across the whole project, so a
+    # generic 'Linen' or 'Wood' would be shared by every model imported after the first one.
+    for m in bpy.data.materials:
+        if not m.name.startswith(slug):
+            m.name = f'{slug}_{m.name}'
+    for im in bpy.data.images:
+        if im.users == 0:
+            continue
+        # Packed and detached from its file so the glTF image takes this unique name, not the file's.
+        if not im.packed_file:
+            im.pack()
+        im.filepath_raw = ''
+        if not im.name.startswith(slug):
+            im.name = f'{slug}_{im.name}'
     bpy.ops.export_scene.gltf(filepath=str(folder / f'{slug}.glb'), export_format='GLB', export_apply=True)
     (folder / 'info.json').write_text(json.dumps({'slug': slug, 'name': desc, 'gltf': f'{slug}.glb',
         'authors': {'Maré Alta (bpy)': 'model'}, 'license': 'Original model; textures CC0 1.0 Poly Haven',
@@ -342,7 +371,13 @@ def bed_core(out, L, W, mattress_top, duvet, linen, frame_mat):
     cushion('fold', (W + .02, .22, .06), (0, -L * .13 + L * .36 - .05, mattress_top + .06), linen, puff=.02)
     for i, x in enumerate([-W / 4, W / 4]):
         cushion(f'pillow{i}', (W / 2 - .08, .4, .16), (x, L / 2 - .3, mattress_top + .09), linen, rot=(math.radians(-12), 0, 0), puff=.05)
-    cushion('throw', (W + .06, .5, .02), (0, -L / 2 + .35, mattress_top + .055), duvet, puff=.005)
+    # Dressing: two terracotta accent cushions and a folded teal blanket across the foot.
+    accent = material(f'Accent', 'rough_linen', (.78, .40, .28), rough=.85, out=out)
+    blanket = material(f'Blanket', 'waffle_pique_cotton', (.16, .40, .42), rough=.9, out=out)
+    for i, x in enumerate([-W / 5, W / 5]):
+        cushion(f'accent{i}', (.42, .14, .38), (x, L / 2 - .5, mattress_top + .2), accent, rot=(math.radians(-18), 0, 0), puff=.06)
+    cushion('throw', (W + .06, .5, .03), (0, -L / 2 + .35, mattress_top + .06), blanket, puff=.006)
+    cushion('throwfold', (W + .06, .14, .05), (0, -L / 2 + .12, mattress_top + .07), blanket, puff=.01)
 
 
 def daybed():

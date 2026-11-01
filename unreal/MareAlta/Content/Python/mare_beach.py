@@ -202,7 +202,55 @@ def swap_mesh(arg):
     return changed
 
 
+# Pousada bungalows in the palm grove west of the reception, doors (model +Y) turned to the sea (-Y).
+# The first comes with the pousada, the other two with the pool (definitions: pool "rooms": 2).
+BUNGALOWS = [(-1600, 1620, 'Region_pousada'), (-2380, 1620, 'Region_pool'), (-3160, 1620, 'Region_pool')]
+
+
+def place_bungalows():
+    import json
+    from pathlib import Path
+    if unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world():
+        raise RuntimeError('Stop PIE first')
+    assets = json.loads((Path(unreal.Paths.project_dir()) / 'Content/Data/custom_assets.json').read_text(encoding='utf-8'))
+    mesh = unreal.load_asset(assets['mare_bungalow'])
+    actors = unreal.get_editor_subsystem(unreal.EditorActorSubsystem)
+    world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_editor_world()
+    for a in actors.get_all_level_actors():
+        if 'MareBungalow' in [str(t) for t in a.tags]:
+            actors.destroy_actor(a)
+    report = []
+    for i, (x, y, region) in enumerate(BUNGALOWS):
+        # Ground under the room centre (the stone plinth reaches 0.5 m below for uneven lawn).
+        hit = unreal.SystemLibrary.line_trace_single(world, unreal.Vector(x, y, 3000), unreal.Vector(x, y, -2000), unreal.TraceTypeQuery.TRACE_TYPE_QUERY1, True, [], unreal.DrawDebugTrace.NONE, True)
+        z = hit.to_tuple()[4].z if hit else 0.0
+        actor = actors.spawn_actor_from_object(mesh, unreal.Vector(x, y, z), unreal.Rotator(roll=0, pitch=0, yaw=180))
+        actor.set_actor_label(f'Bangalô {i + 1}')
+        actor.tags = [unreal.Name('MareBungalow'), unreal.Name(region)]
+        comp = actor.static_mesh_component
+        comp.set_mobility(unreal.ComponentMobility.STATIC)
+        report.append([x, y, round(z), region])
+    # Palms and trees that would grow through a room or its deck: shrink those instances to epsilon.
+    removed = 0
+    for a in actors.get_all_level_actors():
+        for c in a.get_components_by_class(unreal.InstancedStaticMeshComponent):
+            name = c.static_mesh.get_name().lower() if c.static_mesh else ''
+            if not any(k in name for k in ('palm', 'coconut', 'tree', 'shrub', 'bush')):
+                continue
+            for i in range(c.get_instance_count()):
+                tr = c.get_instance_transform(i, True)
+                p = tr.translation
+                if any(abs(p.x - bx) < 400 and (by - 520) < p.y < (by + 280) for bx, by, _ in BUNGALOWS):
+                    tr.scale3d = unreal.Vector(.001, .001, .001)
+                    c.update_instance_transform(i, tr, True, True, True)
+                    removed += 1
+    unreal.get_editor_subsystem(unreal.LevelEditorSubsystem).save_current_level()
+    return {'bungalows': report, 'vegetation_removed': removed}
+
+
 def run(action, arg=''):
+    if action == 'bungalows':
+        return place_bungalows()
     if action == 'swapmesh':
         return swap_mesh(arg)
     if action == 'clock':

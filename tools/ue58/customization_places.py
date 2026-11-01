@@ -218,13 +218,14 @@ POUSADA = {
             tier('Floreiras de madeira', 'Floreiras com gazânias.', part('planter_box_02', 42, 90), part('flower_gazania', 16, 80, at=[0, 0, 36])),
             tier('Jardim tropical', 'Pachira com folhagens.', part('pachira_aquatica_01', 185), part('potted_plant_02', 70, at=[55, 30, 0], yaw=40)),
         ], anchor='World_0048', hide=['World_0047', 'World_0048', 'World_0049']),
-        service('clima', 'Clima dos quartos', 220, 2, 0, [
-            ('Janela aberta', 'Brisa do mar e mosquiteiro.'),
-            ('Ventilador de teto', 'Ventilador silencioso.'),
-            ('Ar-condicionado', 'Split com controle remoto.'),
-            ('Ar inverter silencioso', 'Temperatura estável a noite toda.'),
-            ('Climatização inteligente', 'Ar, umidificador e cortinas automáticas.'),
-        ], rate=22),
+        # Room slots: furniture inside every bungalow (actors tagged MareBungalow), local cm, floor at 45.
+        slot('clima', 'Clima dos quartos', 220, 2, 0, [
+            tier('Janela aberta', 'Brisa do mar e venezianas abertas.'),
+            tier('Ventilador de teto', 'Ventilador silencioso de madeira e latão.', part('mare_ceiling_fan', at=[0, 10, 264])),
+            tier('Ar-condicionado', 'Split na parede, com controle remoto.', part('mare_ac_unit', at=[0, -184, 262])),
+            tier('Ar inverter silencioso', 'Split inverter e ventilador de teto.', part('mare_ac_unit', at=[0, -184, 262]), part('mare_ceiling_fan', at=[0, 10, 264])),
+            tier('Climatização inteligente', 'Ar inverter, ventilador e brisa controlada.', part('mare_ac_unit', at=[0, -184, 262]), part('mare_ceiling_fan', at=[0, 10, 264]), part('potted_plant_01', 120, at=[190, 150, 45])),
+        ], rate=22, rooms=True),
         service('enxoval', 'Enxoval', 200, 2, 1, [
             ('Lençol simples', 'Algodão básico.'),
             ('Algodão colorido', 'Jogo de cama estampado.'),
@@ -232,20 +233,20 @@ POUSADA = {
             ('Percal 400 fios', 'Lençol de hotel e travesseiros de pluma.'),
             ('Enxoval egípcio', 'Algodão egípcio 600 fios e menu de travesseiros.'),
         ], rate=20),
-        service('cama', 'Camas', 260, 3, 0, [
-            ('Cama de casal', 'Colchão de espuma.'),
-            ('Colchão de molas', 'Molas ensacadas.'),
-            ('Cama queen', 'Colchão queen com pillow top.'),
-            ('Cama king', 'Colchão king e cabeceira estofada.'),
-            ('Cama com dossel', 'King com dossel de linho.'),
-        ], rate=30),
-        service('decoracao', 'Decoração dos quartos', 180, 0, 2, [
-            ('Básico', 'Paredes brancas.'),
-            ('Tapete e quadro', 'Tapete de sisal e quadro da praia.'),
-            ('Artesanato local', 'Peças de artesãos da vila.'),
-            ('Lounge e luminária', 'Poltrona de leitura e luminária.'),
-            ('Suíte de design', 'Móveis assinados e arte original.'),
-        ], rate=18),
+        slot('cama', 'Camas', 260, 3, 0, [
+            tier('Cama de madeira', 'Cama de casal com cabeceira de ripas.', part('mare_bed_simple', at=[0, -82, 45])),
+            tier('Cama de ferro', 'Cabeceira de ferro branco e colchão de molas.', part('mare_bed_iron', at=[0, -82, 45])),
+            tier('Cama queen estofada', 'Cabeceira capitonê e pillow top.', part('mare_bed_upholstered', at=[0, -78, 45])),
+            tier('Cama king', 'King com cabeceira de couro em painéis.', part('mare_bed_king', at=[0, -72, 45])),
+            tier('Cama com dossel', 'King com dossel de madeira torneada e cortinas de linho.', part('mare_bed_canopy', at=[0, -76, 45])),
+        ], rate=30, rooms=True),
+        slot('decoracao', 'Decoração dos quartos', 180, 0, 2, [
+            tier('Básico', 'Paredes brancas e piso de madeira.'),
+            tier('Tapete trançado', 'Tapete de fibra aos pés da cama.', part('mare_rug', at=[0, 80, 45])),
+            tier('Artesanato local', 'Tapete e folhagem em vaso de barro.', part('mare_rug', at=[0, 80, 45]), part('potted_plant_02', 70, at=[195, 150, 45])),
+            tier('Lounge de leitura', 'Tapete, folhagem e poltrona de leitura.', part('mare_rug', at=[0, 80, 45]), part('potted_plant_02', 70, at=[195, 150, 45]), part('ArmChair_01', 105, at=[165, 60, 45], yaw=-120)),
+            tier('Suíte de design', 'Tapete, poltrona de designer e árvore-da-fortuna.', part('mare_rug', at=[0, 80, 45]), part('mid_century_lounge_chair', 100, at=[160, 60, 45], yaw=-120), part('pachira_aquatica_01', 170, at=[200, -120, 45])),
+        ], rate=18, rooms=True),
         service('banheiro', 'Banheiros', 240, 2, 1, [
             ('Chuveiro elétrico', 'Água quente simples.'),
             ('Chuveiro a gás', 'Pressão forte.'),

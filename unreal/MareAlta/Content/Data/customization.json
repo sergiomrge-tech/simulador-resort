@@ -1726,28 +1726,93 @@
      "base_price": 220,
      "comfort": 2,
      "beauty": 0,
-     "visual": false,
      "rate": 22,
+     "rooms": true,
      "tiers": [
       {
        "name": "Janela aberta",
-       "desc": "Brisa do mar e mosquiteiro."
+       "desc": "Brisa do mar e venezianas abertas."
       },
       {
        "name": "Ventilador de teto",
-       "desc": "Ventilador silencioso."
+       "desc": "Ventilador silencioso de madeira e latão.",
+       "parts": [
+        {
+         "model": "mare_ceiling_fan",
+         "at": [
+          0,
+          10,
+          264
+         ]
+        }
+       ]
       },
       {
        "name": "Ar-condicionado",
-       "desc": "Split com controle remoto."
+       "desc": "Split na parede, com controle remoto.",
+       "parts": [
+        {
+         "model": "mare_ac_unit",
+         "at": [
+          0,
+          -184,
+          262
+         ]
+        }
+       ]
       },
       {
        "name": "Ar inverter silencioso",
-       "desc": "Temperatura estável a noite toda."
+       "desc": "Split inverter e ventilador de teto.",
+       "parts": [
+        {
+         "model": "mare_ac_unit",
+         "at": [
+          0,
+          -184,
+          262
+         ]
+        },
+        {
+         "model": "mare_ceiling_fan",
+         "at": [
+          0,
+          10,
+          264
+         ]
+        }
+       ]
       },
       {
        "name": "Climatização inteligente",
-       "desc": "Ar, umidificador e cortinas automáticas."
+       "desc": "Ar inverter, ventilador e brisa controlada.",
+       "parts": [
+        {
+         "model": "mare_ac_unit",
+         "at": [
+          0,
+          -184,
+          262
+         ]
+        },
+        {
+         "model": "mare_ceiling_fan",
+         "at": [
+          0,
+          10,
+          264
+         ]
+        },
+        {
+         "model": "potted_plant_01",
+         "h": 120,
+         "at": [
+          190,
+          150,
+          45
+         ]
+        }
+       ]
       }
      ]
     },
@@ -1788,28 +1853,78 @@
      "base_price": 260,
      "comfort": 3,
      "beauty": 0,
-     "visual": false,
      "rate": 30,
+     "rooms": true,
      "tiers": [
       {
-       "name": "Cama de casal",
-       "desc": "Colchão de espuma."
+       "name": "Cama de madeira",
+       "desc": "Cama de casal com cabeceira de ripas.",
+       "parts": [
+        {
+         "model": "mare_bed_simple",
+         "at": [
+          0,
+          -82,
+          45
+         ]
+        }
+       ]
       },
       {
-       "name": "Colchão de molas",
-       "desc": "Molas ensacadas."
+       "name": "Cama de ferro",
+       "desc": "Cabeceira de ferro branco e colchão de molas.",
+       "parts": [
+        {
+         "model": "mare_bed_iron",
+         "at": [
+          0,
+          -82,
+          45
+         ]
+        }
+       ]
       },
       {
-       "name": "Cama queen",
-       "desc": "Colchão queen com pillow top."
+       "name": "Cama queen estofada",
+       "desc": "Cabeceira capitonê e pillow top.",
+       "parts": [
+        {
+         "model": "mare_bed_upholstered",
+         "at": [
+          0,
+          -78,
+          45
+         ]
+        }
+       ]
       },
       {
        "name": "Cama king",
-       "desc": "Colchão king e cabeceira estofada."
+       "desc": "King com cabeceira de couro em painéis.",
+       "parts": [
+        {
+         "model": "mare_bed_king",
+         "at": [
+          0,
+          -72,
+          45
+         ]
+        }
+       ]
       },
       {
        "name": "Cama com dossel",
-       "desc": "King com dossel de linho."
+       "desc": "King com dossel de madeira torneada e cortinas de linho.",
+       "parts": [
+        {
+         "model": "mare_bed_canopy",
+         "at": [
+          0,
+          -76,
+          45
+         ]
+        }
+       ]
       }
      ]
     },
@@ -1819,28 +1934,115 @@
      "base_price": 180,
      "comfort": 0,
      "beauty": 2,
-     "visual": false,
      "rate": 18,
+     "rooms": true,
      "tiers": [
       {
        "name": "Básico",
-       "desc": "Paredes brancas."
+       "desc": "Paredes brancas e piso de madeira."
       },
       {
-       "name": "Tapete e quadro",
-       "desc": "Tapete de sisal e quadro da praia."
+       "name": "Tapete trançado",
+       "desc": "Tapete de fibra aos pés da cama.",
+       "parts": [
+        {
+         "model": "mare_rug",
+         "at": [
+          0,
+          80,
+          45
+         ]
+        }
+       ]
       },
       {
        "name": "Artesanato local",
-       "desc": "Peças de artesãos da vila."
+       "desc": "Tapete e folhagem em vaso de barro.",
+       "parts": [
+        {
+         "model": "mare_rug",
+         "at": [
+          0,
+          80,
+          45
+         ]
+        },
+        {
+         "model": "potted_plant_02",
+         "h": 70,
+         "at": [
+          195,
+          150,
+          45
+         ]
+        }
+       ]
       },
       {
-       "name": "Lounge e luminária",
-       "desc": "Poltrona de leitura e luminária."
+       "name": "Lounge de leitura",
+       "desc": "Tapete, folhagem e poltrona de leitura.",
+       "parts": [
+        {
+         "model": "mare_rug",
+         "at": [
+          0,
+          80,
+          45
+         ]
+        },
+        {
+         "model": "potted_plant_02",
+         "h": 70,
+         "at": [
+          195,
+          150,
+          45
+         ]
+        },
+        {
+         "model": "ArmChair_01",
+         "h": 105,
+         "at": [
+          165,
+          60,
+          45
+         ],
+         "yaw": -120
+        }
+       ]
       },
       {
        "name": "Suíte de design",
-       "desc": "Móveis assinados e arte original."
+       "desc": "Tapete, poltrona de designer e árvore-da-fortuna.",
+       "parts": [
+        {
+         "model": "mare_rug",
+         "at": [
+          0,
+          80,
+          45
+         ]
+        },
+        {
+         "model": "mid_century_lounge_chair",
+         "h": 100,
+         "at": [
+          160,
+          60,
+          45
+         ],
+         "yaw": -120
+        },
+        {
+         "model": "pachira_aquatica_01",
+         "h": 170,
+         "at": [
+          200,
+          -120,
+          45
+         ]
+        }
+       ]
       }
      ]
     },

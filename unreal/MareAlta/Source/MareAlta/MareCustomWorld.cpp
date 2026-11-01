@@ -62,6 +62,8 @@ void UMareCustomWorld::Index()
     const FVector Top(P[0]->AsNumber(),P[1]->AsNumber(),3000);FHitResult Hit;FCollisionQueryParams Query(TEXT("MareCustomSpot"),true);
     const float Z=GetWorld()->LineTraceSingleByChannel(Hit,Top,Top-FVector(0,0,6000),ECC_Visibility,Query)?Hit.ImpactPoint.Z:0.f;
     State.Anchors.Add(FTransform(FRotator(0,P.Num()>=3?P[2]->AsNumber():37.f*I,0),FVector(Top.X,Top.Y,Z)));}
+   bool bRooms=false;Def->TryGetBoolField(TEXT("rooms"),bRooms);
+   if(bRooms)for(TActorIterator<AActor> It(GetWorld());It;++It)if(It->ActorHasTag(TEXT("MareBungalow"))){State.Anchors.Add(FTransform(It->GetActorRotation(),It->GetActorLocation()));State.AnchorOwners.Add(*It);}
    UE_LOG(LogTemp,Display,TEXT("MARE_CUSTOM %s/%s anchors=%d hide=%d materials=%d"),*Place,*UMareSimulation::String(Def,TEXT("id")),State.Anchors.Num(),State.HideTargets.Num(),State.MaterialTargets.Num());
   }
  }
@@ -74,7 +76,7 @@ void UMareCustomWorld::Apply(const FString& Place,const FString& Slot,int32 Tier
  if(bPreviewTier)bPreview=true;
  const TArray<TSharedPtr<FJsonValue>>* Tiers=nullptr;if(!Def->TryGetArrayField(TEXT("tiers"),Tiers) || !Tiers->IsValidIndex(Tier-1))return;
  auto TierDef=(*Tiers)[Tier-1]->AsObject();
- for(auto Part:State->Parts)if(Part.IsValid())Part->DestroyComponent();State->Parts.Empty();
+ for(auto Part:State->Parts)if(Part.IsValid())Part->DestroyComponent();State->Parts.Empty();State->PartOwners.Empty();
  // Materials: tier material when present, otherwise the original look.
  const FString MaterialName=UMareSimulation::String(TierDef,TEXT("material"));
  UMaterialInterface* Material=MaterialName.IsEmpty()?nullptr:LoadObject<UMaterialInterface>(nullptr,*FString::Printf(TEXT("/Game/Custom/Materials/%s.%s"),*MaterialName,*MaterialName));
@@ -94,10 +96,14 @@ void UMareCustomWorld::Apply(const FString& Place,const FString& Slot,int32 Tier
   const FRotator Yaw(0,UMareSimulation::Number(PartDef,TEXT("yaw")),0);
   const FVector Centre=FVector(B.Origin.X,B.Origin.Y,B.Origin.Z-B.BoxExtent.Z)*FVector(Sxy,Sxy,Sz);
   const FTransform Fit=FTransform(FRotator::ZeroRotator,-Centre,FVector(Sxy,Sxy,Sz))*FTransform(Yaw,Local);
-  auto Component=NewObject<UHierarchicalInstancedStaticMeshComponent>(Holder);Component->SetupAttachment(Holder->GetRootComponent());Component->SetStaticMesh(Mesh);
-  Component->SetMobility(EComponentMobility::Movable);Component->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);Component->RegisterComponent();
-  for(int32 I=0;I<Count;++I)Component->AddInstance(Fit*FTransform(State->Anchors[I].GetRotation(),State->Anchors[I].GetLocation()),true);
-  State->Parts.Add(Component);bBuilt=true;}
+  // Room furniture gets one component per bungalow; everything else one component for all anchors.
+  const bool bRooms=State->AnchorOwners.Num()==State->Anchors.Num() && State->AnchorOwners.Num()>0;
+  for(int32 Group=0;Group<(bRooms?Count:1);++Group){
+   auto Component=NewObject<UHierarchicalInstancedStaticMeshComponent>(Holder);Component->SetupAttachment(Holder->GetRootComponent());Component->SetStaticMesh(Mesh);
+   Component->SetMobility(EComponentMobility::Movable);Component->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);Component->RegisterComponent();
+   for(int32 I=bRooms?Group:0;I<(bRooms?Group+1:Count);++I)Component->AddInstance(Fit*FTransform(State->Anchors[I].GetRotation(),State->Anchors[I].GetLocation()),true);
+   State->Parts.Add(Component);State->PartOwners.Add(bRooms?State->AnchorOwners[Group]:nullptr);}
+  bBuilt=true;}
  // Original instances step aside (epsilon scale keeps their bounds valid) only when a replacement exists.
  const bool bReplace=bBuilt && State->HideTargets.Num()>0;
  for(const auto& Hidden:State->HideTargets)if(auto Component=Hidden.Component.Get()){
@@ -134,8 +140,10 @@ void UMareCustomWorld::Tick(float DeltaSeconds)
  Clock-=DeltaSeconds;if(Clock>0)return;Clock=1.f;
  if(!bIndexed){Index();ApplyAll();}
  // Replacement furniture follows region visibility (kiosk tables appear only once bought).
- for(auto& Pair:Slots){const bool bHidden=Pair.Value.AnchorActor.IsValid() && Pair.Value.AnchorActor->IsHidden();
-  for(const auto& Part:Pair.Value.Parts)if(Part.IsValid() && Part->IsVisible()==bHidden){Part->SetVisibility(!bHidden);Part->SetCollisionEnabled(bHidden?ECollisionEnabled::NoCollision:ECollisionEnabled::QueryAndPhysics);}}
+ for(auto& Pair:Slots){const bool bSlotHidden=Pair.Value.AnchorActor.IsValid() && Pair.Value.AnchorActor->IsHidden();
+  for(int32 I=0;I<Pair.Value.Parts.Num();++I){const auto& Part=Pair.Value.Parts[I];if(!Part.IsValid())continue;
+   const auto Owner=Pair.Value.PartOwners.IsValidIndex(I)?Pair.Value.PartOwners[I]:nullptr;const bool bHidden=Owner.IsValid()?Owner->IsHidden():bSlotHidden;
+   if(Part->IsVisible()==bHidden){Part->SetVisibility(!bHidden);Part->SetCollisionEnabled(bHidden?ECollisionEnabled::NoCollision:ECollisionEnabled::QueryAndPhysics);}}}
 }
 
 void UMareCustomWorld::PreviewPlace(const FString& Place,int32 Tier)

@@ -547,3 +547,7 @@ Móveis originais modelados para o projeto com bpy (`tools/ue58/gen_custom_furni
 ### Farol e barracas (UE5.8) — 01/11/2026
 
 Modelados com bpy (`tools/ue58/gen_landmarks.py`) com texturas CC0 do Poly Haven: painted_plaster_wall, plaster_stone_wall_01, metal_plate, distressed_painted_planks, clay_roof_tiles_02, oak_wood_planks, rough_linen.
+
+### Bangalôs da pousada (UE5.8) — 01/11/2026
+
+Modelados com bpy (`tools/ue58/gen_rooms.py`): bangalô, camas de madeira/ferro/king, ventilador de teto, ar-condicionado e tapete, com texturas CC0 do Poly Haven (painted_plaster_wall, plaster_stone_wall_01, oak_wood_planks, distressed_painted_planks, thatch_roof_angled, teak_veneer, rough_linen, waffle_pique_cotton, brown_leather, metal_plate, fabric_pattern_07). Quadro: aquarela gerada com a IA do Canva na conta do projeto (mídia `MAHZt5_7p3k`).

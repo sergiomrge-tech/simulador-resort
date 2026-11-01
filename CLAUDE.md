@@ -396,3 +396,8 @@ da rota com grande margem deixava faixas verdes carecas. Fazer a borda 3D
 acompanhar a transição/ruído do material, não iniciar vários metros depois dela.
 O usuário rejeitou pequenos tufos espaçados: manter base verde contínua e grade
 sobreposta de 30 cm, duas variantes HISM, geração no editor e culling 18–30 m.
+
+
+## UE5.8 — importação de modelos próprios e celular (01/11)
+
+Interchange reaproveita materiais/texturas por NOME no projeto inteiro: modelos bpy usam prefixo do modelo nos materiais e imagens e busca LOCAL (`mare_hotel_lobby._import(search=False)`); reimportar mantém materiais antigos, então importar em pasta nova (`mare_custom fresh`) e reapontar. Texturas glTF fora de potência de 2 são descartadas em silêncio (log "poder de duas dimensões"): `gen_custom_furniture._pow2` redimensiona e salva antes de empacotar. Conferir o log após cada importação. Celular: `SBox.WidthOverride` inclui o Padding; converter pixels do viewport pela geometria do widget (DPI); fonte manuscrita sem "→ ★ −". Lista completa no CLAUDE.md global.
