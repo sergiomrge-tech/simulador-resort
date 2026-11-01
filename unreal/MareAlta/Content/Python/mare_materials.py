@@ -55,9 +55,15 @@ def build_ground():
             node=expression(mat,unreal.MaterialExpressionTextureSample,texture=tex,sampler_type=unreal.MaterialSamplerType.SAMPLERTYPE_NORMAL if normal else unreal.MaterialSamplerType.SAMPLERTYPE_COLOR)
             connect(uv,'',node,'UVs')
             inputs[key+('Normal' if normal else '')]=node
+    # Second, rotated and larger sampling of the dry sand hides the 4.5 m tile grid on pale sand.
+    uv_b=custom(mat,'return float2(Position.x*.8-Position.y*.6,Position.x*.6+Position.y*.8)*0.00083;',unreal.CustomMaterialOutputType.CMOT_FLOAT2,{'Position':pos})
+    for normal in (False,True):
+        node=expression(mat,unreal.MaterialExpressionTextureSample,texture=texture('coast_sand_01'+('_nor' if normal else '_diff'),normal),sampler_type=unreal.MaterialSamplerType.SAMPLERTYPE_NORMAL if normal else unreal.MaterialSamplerType.SAMPLERTYPE_COLOR)
+        connect(uv_b,'',node,'UVs')
+        inputs['SandB'+('Normal' if normal else '')]=node
     blend='float edge=sin(Position.x*.0017)*90+sin(Position.x*.0041)*35; float wet=1-smoothstep(-3400,-2400,Position.y+edge); float inland=smoothstep(-1200,-500,Position.y+edge*.6); '
-    color=custom(mat,blend+'float l=dot(Grass.rgb,float3(.2126,.7152,.0722)); float macro=.94+.06*sin(Position.x*.0013)*sin(Position.y*.0011); float detail=clamp(l*2.4,.65,1.25); float3 turf=lerp(Grass.rgb,float3(.10,.24,.045)*detail,.78)*macro; return lerp(lerp(Sand.rgb,Wet.rgb,wet),turf,inland);',unreal.CustomMaterialOutputType.CMOT_FLOAT3,{k:v for k,v in inputs.items() if 'Normal' not in k})
-    normal=custom(mat,blend+'return normalize(lerp(lerp(SandNormal.xyz,WetNormal.xyz,wet),GrassNormal.xyz,inland));',unreal.CustomMaterialOutputType.CMOT_FLOAT3,{k:v for k,v in inputs.items() if k=='Position' or 'Normal' in k})
+    color=custom(mat,blend+'float l=dot(Grass.rgb,float3(.2126,.7152,.0722)); float macro=.94+.06*sin(Position.x*.0013)*sin(Position.y*.0011); float detail=clamp(l*2.4,.65,1.25); float3 turf=lerp(Grass.rgb,float3(.10,.24,.045)*detail,.78)*macro; float mixb=.5+.35*sin(Position.x*.00031+sin(Position.y*.00047)*2.1)*sin(Position.y*.00027); float3 sand=lerp(Sand.rgb,SandB.rgb,mixb); float sl=dot(sand,float3(.2126,.7152,.0722)); float3 pale=lerp(sand,float3(sl,sl,sl),.45)*float3(1.85,1.8,1.68); float3 dry=min(pale+float3(.08,.075,.065),float3(.90,.88,.82)); float wl=dot(Wet.rgb,float3(.2126,.7152,.0722)); float3 damp=min(lerp(Wet.rgb,float3(wl,wl,wl),.3)*float3(1.35,1.3,1.2),float3(.66,.61,.53)); return lerp(lerp(dry,damp,wet),turf,inland);',unreal.CustomMaterialOutputType.CMOT_FLOAT3,{k:v for k,v in inputs.items() if 'Normal' not in k})
+    normal=custom(mat,blend+'float mixb=.5+.35*sin(Position.x*.00031+sin(Position.y*.00047)*2.1)*sin(Position.y*.00027); float3 sn=normalize(lerp(SandNormal.xyz,SandBNormal.xyz,mixb)); return normalize(lerp(lerp(sn,WetNormal.xyz,wet),GrassNormal.xyz,inland));',unreal.CustomMaterialOutputType.CMOT_FLOAT3,{k:v for k,v in inputs.items() if k=='Position' or 'Normal' in k})
     rough=custom(mat,blend+'return lerp(lerp(.9,.45,wet),.96,inland);',unreal.CustomMaterialOutputType.CMOT_FLOAT1,{'Position':pos})
     for node,prop in [(color,unreal.MaterialProperty.MP_BASE_COLOR),(normal,unreal.MaterialProperty.MP_NORMAL),(rough,unreal.MaterialProperty.MP_ROUGHNESS)]:MEL.connect_material_property(node,'',prop)
     errors=list(MEL.recompile_material(mat))
@@ -73,7 +79,7 @@ def build_water():
     mat.set_editor_property('automatically_set_usage_in_editor',False)
     pos=expression(mat,unreal.MaterialExpressionWorldPosition)
     time=expression(mat,unreal.MaterialExpressionTime)
-    wpo=custom(mat,'float a=Position.x*.003+Position.y*.0017-Time*.55; float b=Position.y*.004-Position.x*.0012-Time*.38; float shore=smoothstep(-6500,-4300,Position.y)*(1-smoothstep(-3000,-2300,Position.y)); float swell=sin(Position.y*.009+sin(Position.x*.0025)*.7-Time*.8); return float3(0,0,sin(a)*9+sin(b)*5+shore*swell*18);',unreal.CustomMaterialOutputType.CMOT_FLOAT3,{'Position':pos,'Time':time})
+    wpo=custom(mat,'float a=Position.x*.003+Position.y*.0017-Time*.55; float b=Position.y*.004-Position.x*.0012-Time*.38; float shore=smoothstep(-6500,-4300,Position.y)*(1-smoothstep(-3000,-2300,Position.y)); float swell=sin(Position.y*.009+sin(Position.x*.0025)*.7-Time*.8); float2 outside=max(float2(abs(Position.x-4000)-16000,-9500-Position.y),0); float fade=1-smoothstep(1500,6000,length(outside))*.85; float offshoreWaves=smoothstep(-2300,-4800,Position.y); return float3(0,0,(sin(a)*9+sin(b)*5)*fade*offshoreWaves+shore*(swell*.5+.5)*14);',unreal.CustomMaterialOutputType.CMOT_FLOAT3,{'Position':pos,'Time':time})
     uv1=custom(mat,'return Position.xy*.0015 + Time*float2(.017,.011);',unreal.CustomMaterialOutputType.CMOT_FLOAT2,{'Position':pos,'Time':time})
     uv2=custom(mat,'return float2(Position.x-Position.y*.37,Position.y+Position.x*.29)*.0021 + Time*float2(-.013,.008);',unreal.CustomMaterialOutputType.CMOT_FLOAT2,{'Position':pos,'Time':time})
     water_normal=unreal.load_asset('/Engine/Functions/Engine_MaterialFunctions02/ExampleContent/Textures/water_n')
@@ -81,16 +87,16 @@ def build_water():
     for uv in (uv1,uv2):
         node=expression(mat,unreal.MaterialExpressionTextureSample,texture=water_normal,sampler_type=unreal.MaterialSamplerType.SAMPLERTYPE_NORMAL)
         connect(uv,'',node,'UVs');samples.append(node)
-    normal=custom(mat,'return normalize(float3((A.xy+B.xy)*.32,max(.65,A.z*B.z)));',unreal.CustomMaterialOutputType.CMOT_FLOAT3,{'A':samples[0],'B':samples[1]})
-    color=custom(mat,'float offshore=1-smoothstep(-17000,-4000,Position.y); float3 sea=lerp(float3(.018,.075,.067),float3(.006,.025,.039),offshore); float shore=smoothstep(-6500,-4300,Position.y)*(1-smoothstep(-3000,-2300,Position.y)); float phase=Position.y*.009+sin(Position.x*.0025)*.7-Time*.8; float crest=smoothstep(.82,.97,sin(phase)); float breaks=smoothstep(-.25,.65,sin(Position.x*.014+sin(Position.y*.011+Time*.4))*sin(Position.x*.004-Time*.25)); return lerp(sea,float3(.48,.59,.55),shore*crest*breaks*.68);',unreal.CustomMaterialOutputType.CMOT_FLOAT3,{'Position':pos,'Time':time})
+    normal=custom(mat,'return normalize(float3((A.xy+B.xy)*.22,max(.72,A.z*B.z)));',unreal.CustomMaterialOutputType.CMOT_FLOAT3,{'A':samples[0],'B':samples[1]})
+    color=custom(mat,'float offshore=1-smoothstep(-17000,-4000,Position.y); float near=1-smoothstep(-9000,-4200,Position.y); float3 sea=lerp(lerp(float3(.02,.16,.15),float3(.012,.07,.085),near),float3(.006,.03,.055),offshore); float shore=smoothstep(-6500,-4300,Position.y)*(1-smoothstep(-3000,-2300,Position.y)); float phase=Position.y*.009+sin(Position.x*.0025)*.7-Time*.8; float crest=smoothstep(.80,.985,sin(phase)); float n1=sin(Position.x*.011+sin(Position.y*.017+Time*.3)*1.7)*.5+.5; float n2=sin(Position.x*.0047-Position.y*.003+Time*.2+sin(Position.x*.023)*.6)*.5+.5; float breaks=smoothstep(.25,.85,n1)*smoothstep(.2,.9,n2); return lerp(sea,float3(.84,.89,.88),shore*crest*breaks*.55);',unreal.CustomMaterialOutputType.CMOT_FLOAT3,{'Position':pos,'Time':time})
     rough=expression(mat,unreal.MaterialExpressionConstant,r=.18)
     specular=expression(mat,unreal.MaterialExpressionConstant,r=.25)
     MEL.connect_material_property(specular,'',unreal.MaterialProperty.MP_SPECULAR)
     opacity=expression(mat,unreal.MaterialExpressionConstant,r=.5)
     for node,prop in [(wpo,unreal.MaterialProperty.MP_WORLD_POSITION_OFFSET),(normal,unreal.MaterialProperty.MP_NORMAL),(color,unreal.MaterialProperty.MP_BASE_COLOR),(rough,unreal.MaterialProperty.MP_ROUGHNESS),(opacity,unreal.MaterialProperty.MP_OPACITY)]:MEL.connect_material_property(node,'',prop)
     output=expression(mat,unreal.MaterialExpressionSingleLayerWaterMaterialOutput)
-    scattering=expression(mat,unreal.MaterialExpressionConstant3Vector,constant=unreal.LinearColor(.001,.003,.004,1))
-    absorption=expression(mat,unreal.MaterialExpressionConstant3Vector,constant=unreal.LinearColor(.04,.012,.008,1))
+    scattering=expression(mat,unreal.MaterialExpressionConstant3Vector,constant=unreal.LinearColor(.0012,.0058,.0062,1))
+    absorption=expression(mat,unreal.MaterialExpressionConstant3Vector,constant=unreal.LinearColor(.026,.0055,.0042,1))
     connect(scattering,'',output,'ScatteringCoefficients')
     connect(absorption,'',output,'AbsorptionCoefficients')
     errors=list(MEL.recompile_material(mat))

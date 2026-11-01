@@ -49,6 +49,9 @@ def excluded(x, y, manifest):
     for bx, by, width, depth in manifest['blocks']:
         if abs(x-bx*100) < width*50+60 and abs(y-by*100) < depth*50+60:
             return True
+    # Grand Hotel footprint: the ground floor is now an open lobby (hotel_lobby_shell.py).
+    if -3740 < x < -460 and 5610 < y < 6990:
+        return True
     # Low, nonblocking lawn may cover natural dirt traversed by pedestrians.
     # Actual built paths are rejected by the first-hit surface test below.
     # Do not leave broad bald strips on the soil for abstract NPC route lines.

@@ -87,6 +87,9 @@ void AMareServiceTarget::Use(APlayerController* Controller)
  if(Action==TEXT("Customer")){if(auto Person=Cast<AMarePerson>(GetOwner()))Person->Interact(PC);return;}
  if(Action==TEXT("Clean")){GetWorld()->GetSubsystem<UMareKioskWorld>()->CleanTable(DataIndex);GetWorld()->GetSubsystem<UMareAudioWorld>()->PlayCue(TEXT("clean"),.3f);return;}
  if(Action==TEXT("Bed")){GetWorld()->GetSubsystem<UMareHomeWorld>()->StartSleep();return;}
+ if(Action==TEXT("HotelReception")){
+  Sim->LastMessage=FString::Printf(TEXT("Recepção: ocupação prevista de %.0f%% esta noite. Diárias e restaurante entram ao dormir."),Sim->HotelOccupancy()*100);
+  PC->OpenPhone(4);return;}
  if(Action==TEXT("Door")){
   if(bOpened && !CanClose(PC->GetPawn()->GetActorLocation())){Sim->LastMessage=TEXT("Afaste-se do arco da porta para fechar.");return;}
   bOpened=!bOpened;

@@ -68,6 +68,12 @@ public:
  int32 FameLevel() const;
  FString FameName() const;
  void AddFame(int32 Xp);
+ /** Average guest rating (1..5) over the saved ratings list. */
+ double Stars() const;
+ /** Grand Hotel occupancy 0.15..0.98 from rating and fame, as in the approved version. */
+ double HotelOccupancy() const;
+ /** Books one night of the Grand Hotel (suites, dining, staff) and stores prog.hotel. */
+ void HotelNight();
  UFUNCTION(BlueprintCallable,Category="Maré Alta")
  void AdvanceMinutes(double Minutes);
  /** Closes the day: wages once per day, summary in ue_last_day, ledger totals reset. */

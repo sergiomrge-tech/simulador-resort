@@ -1,8 +1,8 @@
 {
   "HotelTower_Opaque": {
     "path": "/Game/Graphics/Architecture/HotelTower_Opaque/HotelTower_Opaque.HotelTower_Opaque",
-    "triangles": 230384,
-    "fallback_triangles": 3404,
+    "triangles": 243176,
+    "fallback_triangles": 4133,
     "nanite": true,
     "min": [
       -1629.9998779296875,
@@ -17,8 +17,8 @@
   },
   "HotelTower_Glass": {
     "path": "/Game/Graphics/Architecture/HotelTower_Glass/HotelTower_Glass.HotelTower_Glass",
-    "triangles": 1656,
-    "fallback_triangles": 1656,
+    "triangles": 1688,
+    "fallback_triangles": 1688,
     "nanite": false,
     "min": [
       -1580.0,

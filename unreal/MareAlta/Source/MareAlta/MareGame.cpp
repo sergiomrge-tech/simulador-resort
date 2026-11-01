@@ -195,6 +195,12 @@ private:
      UMareSimulation::Number(Last,TEXT("income"))-UMareSimulation::Number(Last,TEXT("expense")),UMareSimulation::Number(Last,TEXT("wages"))),13);}
    Line(TEXT("Últimos lançamentos"),15);const TArray<TSharedPtr<FJsonValue>>* Ledger=nullptr;if(S->State->TryGetArrayField(TEXT("ledger"),Ledger))for(int32 I=Ledger->Num()-1;I>=FMath::Max(0,Ledger->Num()-12);--I){auto Row=(*Ledger)[I]->AsObject();Line(UMareSimulation::String(Row,TEXT("label"))+FString::Printf(TEXT(" · R$ %.0f"),UMareSimulation::Number(Row,TEXT("amount"))),13);}}
   else if(Tab==4){
+   bool bHotel=false;UMareSimulation::Object(S->State,TEXT("unlocked"))->TryGetBoolField(TEXT("grand_hotel"),bHotel);
+   if(bHotel){Line(TEXT("Grand Hotel Maré Alta 5★"),18);
+    Line(FString::Printf(TEXT("32 suítes · diária R$ 220 · ocupação prevista %.0f%% (nota %.1f★, fama %s)"),S->HotelOccupancy()*100,S->Stars(),*S->FameName()),12);
+    auto Last=UMareSimulation::Object(UMareSimulation::Object(S->State,TEXT("prog")),TEXT("hotel"));
+    if(Last->HasField(TEXT("rooms")))Line(FString::Printf(TEXT("Última noite: %.0f suítes · diárias R$ %.0f · restaurante R$ %.0f · equipe −R$ %.0f"),UMareSimulation::Number(Last,TEXT("rooms")),UMareSimulation::Number(Last,TEXT("rev")),UMareSimulation::Number(Last,TEXT("dining")),UMareSimulation::Number(Last,TEXT("staff"))),12);
+    else Line(TEXT("Os hóspedes chegam esta noite; o resultado aparece depois que você dormir."),12);}
    Line(TEXT("Expansões do resort"),18);Line(TEXT("As áreas são liberadas após a compra."),12);
    auto Expansions=UMareSimulation::Object(S->Definitions,TEXT("expansions"));
    for(const auto& Pair:Expansions->Values){const FString Id(Pair.Key.ToView());auto Row=Pair.Value->AsObject();

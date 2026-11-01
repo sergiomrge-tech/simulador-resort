@@ -31,6 +31,22 @@ class MareMigrationTools(unreal.ToolsetDefinition):
 
     @toolset_registry.tool_call
     @staticmethod
+    def caribbean_coast(action: str, arg: str='') -> str:
+        """Rebuild the coast sand/water materials or return comparison camera views."""
+        import importlib,mare_beach
+        importlib.reload(mare_beach)
+        return json.dumps(mare_beach.run(action,arg),ensure_ascii=False,default=str)
+
+    @toolset_registry.tool_call
+    @staticmethod
+    def hotel_lobby(action: str, arg: str='') -> str:
+        """Reimport the opened Grand Hotel tower, furnish the lobby or inspect it (editor, PIE stopped)."""
+        import importlib,mare_hotel_lobby
+        importlib.reload(mare_hotel_lobby)
+        return json.dumps(mare_hotel_lobby.run(action,arg),ensure_ascii=False,default=str)
+
+    @toolset_registry.tool_call
+    @staticmethod
     def progression_probe(action: str, arg: str='') -> str:
         """Exercise village chapter dialogue, market purchase, chapter steps and sleep in QA PIE."""
         import importlib,mare_progression_probe

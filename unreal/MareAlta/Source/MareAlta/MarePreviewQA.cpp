@@ -195,7 +195,7 @@ void AMarePreviewQA::Tick(float DeltaSeconds)
  case 20:Check(TEXT("radio_can_turn_off"),Audio->LoopLevel(TEXT("music_bossa"))<.001f && Audio->LoopLevel(TEXT("music_relax"))<.001f && Audio->LoopLevel(TEXT("reggae_praia"))<.001f);Audio->SetRadioStation(InitialRadio);Audio->SetVolume(TEXT("Master"),InitialMaster);Check(TEXT("audio_settings_restored"),FMath::IsNearlyEqual(Audio->GetVolume(TEXT("Master")),InitialMaster));Capture(TEXT("expansion-pool-locked"));break;
  case 21:{
   Sim->State->SetNumberField(TEXT("money"),100000);bool bPurchased=true;
-  for(const FString Id:{TEXT("kiosk_tables"),TEXT("drinks"),TEXT("grill"),TEXT("bar"),TEXT("pousada"),TEXT("pool")}){
+  for(const FString Id:{TEXT("kiosk_tables"),TEXT("drinks"),TEXT("grill"),TEXT("bar"),TEXT("pousada"),TEXT("pool"),TEXT("passeios"),TEXT("grand_hotel")}){
    bool bOwned=false;UMareSimulation::Object(Sim->State,TEXT("unlocked"))->TryGetBoolField(Id,bOwned);
    if(!bOwned)bPurchased&=Sim->BuyExpansion(Id);
   }
@@ -203,7 +203,13 @@ void AMarePreviewQA::Tick(float DeltaSeconds)
   bool bCoverRemoved=false;for(TActorIterator<AActor> It(GetWorld());It;++It)if(It->ActorHasTag(TEXT("Lot_pool")))bCoverRemoved=It->IsHidden() && !It->GetActorEnableCollision();
   Check(TEXT("pool_ground_cover_removed_after_purchase"),bCoverRemoved);break;
  }
- case 22:Capture(TEXT("expansion-pool-purchased"));break;
+ case 22:{Capture(TEXT("expansion-pool-purchased"));
+  // Grand Hotel: the opened ground floor must admit the player capsule from the canopy to the reception.
+  FHitResult Hit;FCollisionQueryParams Query;Query.AddIgnoredActor(Hero);
+  const bool bBlocked=GetWorld()->SweepSingleByChannel(Hit,FVector(-2100,5350,140),FVector(-2100,6550,140),FQuat::Identity,ECC_Pawn,FCollisionShape::MakeCapsule(32,70),Query);
+  Check(TEXT("hotel_entrance_walkable"),!bBlocked);
+  bool bReception=false;for(TActorIterator<AMareServiceTarget> It(GetWorld());It;++It)if(It->Action==TEXT("HotelReception"))bReception=!It->IsHidden();
+  Check(TEXT("hotel_reception_after_purchase"),bReception);break;}
  case 23:
   Sim->State->SetObjectField(TEXT("unlocked"),ExpansionOwnership);Sim->State->SetNumberField(TEXT("money"),ExpansionCash);
   GetWorld()->GetSubsystem<UMareVisualWorld>()->RefreshExpansions();

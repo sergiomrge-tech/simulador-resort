@@ -7,7 +7,7 @@
     "surface": 111512,
     "slope": 111
   },
-  "instances": 177454,
+  "instances": 177397,
   "graphs": [
     {
       "graph": "/Game/Graphics/Grass/PCG_Grass_Common_Short",
@@ -19,5 +19,6 @@
       "mesh": "/Game/World/Models/World_2071/World_2071/StaticMeshes/World_2071.World_2071",
       "points": 88991
     }
-  ]
+  ],
+  "hotel_lobby_removed": 57
 }

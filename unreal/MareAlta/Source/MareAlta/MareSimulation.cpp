@@ -277,6 +277,34 @@ int32 UMareSimulation::FameLevel() const
  return Level;
 }
 FString UMareSimulation::FameName() const{return FameNames[FMath::Clamp(FameLevel()-1,0,9)];}
+double UMareSimulation::Stars() const
+{
+ const TArray<TSharedPtr<FJsonValue>>* Ratings=nullptr;if(!State->TryGetArrayField(TEXT("ratings"),Ratings) || Ratings->IsEmpty())return 3;
+ double Sum=0;for(const auto& Value:*Ratings)Sum+=Value->AsNumber();return Sum/Ratings->Num();
+}
+double UMareSimulation::HotelOccupancy() const
+{
+ // Season, parties and upgrade tree are not ported yet; their terms stay neutral.
+ return FMath::Clamp(.42+.12*(Stars()-4.)+.03*(FameLevel()-7),.15,.98);
+}
+void UMareSimulation::HotelNight()
+{
+ bool bOwned=false;Object(State,TEXT("unlocked"))->TryGetBoolField(TEXT("grand_hotel"),bOwned);if(!bOwned)return;
+ constexpr int32 Rooms=32,Rate=220,Dining=35,StaffCost=900;
+ const double Occupancy=HotelOccupancy();const int32 Occupied=FMath::RoundToInt(Rooms*Occupancy);
+ const double Revenue=Occupied*Rate,Meals=FMath::RoundToDouble(Occupied*1.7*Dining);
+ Book(Revenue,FString::Printf(TEXT("Grand Hotel: %d suítes ocupadas"),Occupied));
+ Book(Meals,TEXT("Grand Hotel: restaurante e bar"));
+ Book(-StaffCost,TEXT("Grand Hotel: equipe (recepção, cozinha, spa, limpeza)"));
+ auto Last=MakeShared<FJsonObject>();Last->SetNumberField(TEXT("occ"),Occupancy);Last->SetNumberField(TEXT("rooms"),Occupied);
+ Last->SetNumberField(TEXT("rev"),Revenue);Last->SetNumberField(TEXT("dining"),Meals);Last->SetNumberField(TEXT("staff"),StaffCost);
+ Object(State,TEXT("prog"))->SetObjectField(TEXT("hotel"),Last);
+ // Five-star guests rate their stay; keep the list bounded like the original rolling window.
+ TArray<TSharedPtr<FJsonValue>> Ratings;const TArray<TSharedPtr<FJsonValue>>* Existing=nullptr;if(State->TryGetArrayField(TEXT("ratings"),Existing))Ratings=*Existing;
+ for(int32 I=0;I<FMath::Min(6,FMath::Max(1,Occupied/5));++I)Ratings.Add(MakeShared<FJsonValueNumber>(FMath::FRandRange(4.3,5.0)));
+ while(Ratings.Num()>40)Ratings.RemoveAt(0);State->SetArrayField(TEXT("ratings"),Ratings);
+ AddFame(Occupied/2);
+}
 void UMareSimulation::AddFame(int32 Xp)
 {
  if(Xp<=0)return;const int32 Before=FameLevel();auto Prog=Object(State,TEXT("prog"));Prog->SetNumberField(TEXT("fame_xp"),Number(Prog,TEXT("fame_xp"))+Xp);
@@ -312,6 +340,7 @@ void UMareSimulation::Sleep()
    const double Wage=Number(Object(Roles,Role),TEXT("wage"));Wages+=Wage;Book(-Wage,TEXT("Salário: ")+String(Object(Roles,Role),TEXT("name")));
   }
   Hours->SetNumberField(TEXT("wage_day"),Day);
+  HotelNight();
  }
  auto Summary=MakeShared<FJsonObject>();const double In=Number(State,TEXT("day_in")),Out=Number(State,TEXT("day_out"));
  Summary->SetNumberField(TEXT("day"),Day);Summary->SetNumberField(TEXT("income"),In);Summary->SetNumberField(TEXT("expense"),Out);

@@ -365,3 +365,30 @@ Carta de papel e envelope autorais CC0, gerados por `build_intro_letter.py`,
 fonte `letter_home.blend`; texto e história originais do projeto. Motor e freio
 pneumático são síntese original CC0 por `build_intro_audio.py`, mono, sem vozes,
 samples externos ou gravação de terceiros. WAVs em `SourceArt/Audio`.
+
+### Recepção do Grand Hotel (UE5.8) — 01/11/2026
+
+Móveis e plantas **Poly Haven CC0** baixados por `tools/ue58/fetch_polyhaven.py` para `D:/Assets/PolyHaven` e importados em `/Game/Hotel/Lobby/` (posição em `Content/Data/hotel_lobby.json`):
+
+- Arm Chair 01 (`ArmChair_01`), Kirill Sannikov, CC0 — https://polyhaven.com/a/ArmChair_01
+- Ottoman 01 (`Ottoman_01`), Caspian Fortune, CC0 — https://polyhaven.com/a/Ottoman_01
+- Sofa 01 (`Sofa_01`), Kirill Sannikov, CC0 — https://polyhaven.com/a/Sofa_01
+- Anthurium Botany 01 (`anthurium_botany_01`), Rob Tuytel, Rico Cilliers, CC0 — https://polyhaven.com/a/anthurium_botany_01
+- Calathea Orbifolia 01 (`calathea_orbifolia_01`), Rob Tuytel, Rico Cilliers, CC0 — https://polyhaven.com/a/calathea_orbifolia_01
+- Ceramic Vase 01 (`ceramic_vase_01`), James Ray Cock, CC0 — https://polyhaven.com/a/ceramic_vase_01
+- Ceramic Vase 03 (`ceramic_vase_03`), James Ray Cock, CC0 — https://polyhaven.com/a/ceramic_vase_03
+- Hanging Picture Frame 01 (`hanging_picture_frame_01`), James Ray Cock, CC0 — https://polyhaven.com/a/hanging_picture_frame_01
+- Hanging Picture Frame 03 (`hanging_picture_frame_03`), James Ray Cock, CC0 — https://polyhaven.com/a/hanging_picture_frame_03
+- Mid Century Lounge Chair (`mid_century_lounge_chair`), Kuutti Siitonen, CC0 — https://polyhaven.com/a/mid_century_lounge_chair
+- Modern Arm Chair 01 (`modern_arm_chair_01`), Vibrant Nordic, CC0 — https://polyhaven.com/a/modern_arm_chair_01
+- Modern Ceiling Lamp 01 (`modern_ceiling_lamp_01`), James Ray Cock, CC0 — https://polyhaven.com/a/modern_ceiling_lamp_01
+- Modern Coffee Table 01 (`modern_coffee_table_01`), Amin, CC0 — https://polyhaven.com/a/modern_coffee_table_01
+- Modern Coffee Table 02 (`modern_coffee_table_02`), Amin, CC0 — https://polyhaven.com/a/modern_coffee_table_02
+- Pachira Aquatica 01 (`pachira_aquatica_01`), Rob Tuytel, Rico Cilliers, CC0 — https://polyhaven.com/a/pachira_aquatica_01
+- Potted Plant 01 (`potted_plant_01`), Rico Cilliers, CC0 — https://polyhaven.com/a/potted_plant_01
+- Potted Plant 02 (`potted_plant_02`), Rico Cilliers, CC0 — https://polyhaven.com/a/potted_plant_02
+- Side Table Tall 01 (`side_table_tall_01`), James Ray Cock, CC0 — https://polyhaven.com/a/side_table_tall_01
+- Sofa 03 (`sofa_03`), Fran Calvente, CC0 — https://polyhaven.com/a/sofa_03
+- Standing Picture Frame 01 (`standing_picture_frame_01`), James Ray Cock, CC0 — https://polyhaven.com/a/standing_picture_frame_01
+
+Casca do térreo (núcleo removido, entrada, paredes, forro, colunas, balcão e elevadores) é adaptação autoral CC0 do modelo `hotel_tower` do projeto, gerada por `tools/ue58/hotel_lobby_shell.py`; superfície do oceano graduada autoral por `tools/ue58/gen_ocean.py`.
