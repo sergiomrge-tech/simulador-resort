@@ -80,6 +80,24 @@ def pie_shot(arg):
     return {'placed': name}
 
 
+def outfit_probe(arg):
+    """QA PIE: 'look,style' -> dress the nearest ambient person and stand the camera in front of them."""
+    look, style = [int(v) for v in arg.split(',')]
+    world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()
+    people = [p for p in unreal.ObjectIterator(unreal.MarePerson) if p.get_world() == world]
+    hero = unreal.GameplayStatics.get_player_pawn(world, 0)
+    people.sort(key=lambda p: (p.get_actor_location() - hero.get_actor_location()).length())
+    p = people[0]
+    p.set_appearance(look)
+    p.set_outfit_style(style)
+    loc, fwd = p.get_actor_location(), p.get_actor_forward_vector()
+    hero.get_component_by_class(unreal.CharacterMovementComponent).set_movement_mode(unreal.MovementMode.MOVE_FLYING)
+    hero.set_actor_location(unreal.Vector(loc.x + fwd.x * 260, loc.y + fwd.y * 260, loc.z + 40), False, True)
+    import math
+    unreal.GameplayStatics.get_player_controller(world, 0).set_control_rotation(unreal.Rotator(roll=0, pitch=-6, yaw=math.degrees(math.atan2(-fwd.y, -fwd.x))))
+    return {'person': p.get_editor_property('person_name'), 'look': look, 'style': style}
+
+
 def radio_probe(station):
     """QA PIE: select a station and report the current loop levels of all stations."""
     world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()
@@ -161,6 +179,8 @@ def run(action, arg=''):
         return mare_audio.build()
     if action == 'pie':
         return pie_shot(arg)
+    if action == 'outfit':
+        return outfit_probe(arg)
     if action == 'rebuild':
         return rebuild()
     if action == 'ocean':

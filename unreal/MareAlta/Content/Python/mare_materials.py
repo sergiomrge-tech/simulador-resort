@@ -343,3 +343,62 @@ def build_lamp_glow():
     if errors: raise RuntimeError(str(errors))
     unreal.EditorAssetLibrary.save_loaded_asset(mat)
     return mat
+
+
+def build_person_outfit():
+    """Tintable clothing for the UBC people: the outfit atlas is desaturated (keeps folds, seams and
+    stitching) and recoloured by 'Tint', so beach / social / casual outfits differ per person."""
+    path = '/Game/Actors/Combined/Shared/M_PersonOutfit'
+    mat = unreal.load_asset(path)
+    if not mat:
+        mat = unreal.AssetToolsHelpers.get_asset_tools().create_asset('M_PersonOutfit', '/Game/Actors/Combined/Shared', unreal.Material, unreal.MaterialFactoryNew())
+    for old in list(MEL.get_material_expressions(mat)):
+        MEL.delete_material_expression(mat, old)
+    mat.set_editor_property('used_with_skeletal_mesh', True)
+    atlas = expression(mat, unreal.MaterialExpressionTextureSampleParameter2D, parameter_name='Atlas',
+                       texture=unreal.load_asset('/Game/Actors/Combined/Human_0/Human_0_texture_6'))
+    tint = expression(mat, unreal.MaterialExpressionVectorParameter, parameter_name='Tint', default_value=unreal.LinearColor(.8, .8, .8, 1))
+    color = custom(mat, 'float l=dot(A.rgb,float3(.2126,.7152,.0722)); float detail=clamp(l*2.8,.45,1.25); return T.rgb*detail;',
+                   unreal.CustomMaterialOutputType.CMOT_FLOAT3, {'A': atlas, 'T': tint})
+    MEL.connect_material_property(color, '', unreal.MaterialProperty.MP_BASE_COLOR)
+    MEL.connect_material_property(expression(mat, unreal.MaterialExpressionConstant, r=.82), '', unreal.MaterialProperty.MP_ROUGHNESS)
+    errors = list(MEL.recompile_material(mat))
+    if errors: raise RuntimeError(str(errors))
+    unreal.EditorAssetLibrary.save_loaded_asset(mat)
+    return mat
+
+
+def build_person_body():
+    """UBC body with swimwear: the dark-grey underwear painted on the body atlas (bra/briefs) becomes a
+    bikini or swim trunks in 'SwimTint'; skin is untouched. M_PersonHidden removes garment pieces."""
+    path = '/Game/Actors/Combined/Shared/M_PersonBody'
+    mat = unreal.load_asset(path)
+    if not mat:
+        mat = unreal.AssetToolsHelpers.get_asset_tools().create_asset('M_PersonBody', '/Game/Actors/Combined/Shared', unreal.Material, unreal.MaterialFactoryNew())
+    for old in list(MEL.get_material_expressions(mat)):
+        MEL.delete_material_expression(mat, old)
+    mat.set_editor_property('used_with_skeletal_mesh', True)
+    atlas = expression(mat, unreal.MaterialExpressionTextureSampleParameter2D, parameter_name='Atlas',
+                       texture=unreal.load_asset('/Game/Actors/Combined/Human_2/Human_2_texture_2'))
+    tint = expression(mat, unreal.MaterialExpressionVectorParameter, parameter_name='SwimTint', default_value=unreal.LinearColor(.85, .2, .3, 1))
+    code = ('float mx=max(A.r,max(A.g,A.b)); float mn=min(A.r,min(A.g,A.b)); float sat=(mx-mn)/max(mx,.001); float l=dot(A.rgb,float3(.2126,.7152,.0722));'
+            ' float cloth=(1-smoothstep(.16,.30,sat))*(1-smoothstep(.22,.40,l)); float detail=clamp(l*4.0,.55,1.2);'
+            ' return lerp(A.rgb,T.rgb*detail,cloth);')
+    color = custom(mat, code, unreal.CustomMaterialOutputType.CMOT_FLOAT3, {'A': atlas, 'T': tint})
+    MEL.connect_material_property(color, '', unreal.MaterialProperty.MP_BASE_COLOR)
+    MEL.connect_material_property(expression(mat, unreal.MaterialExpressionConstant, r=.62), '', unreal.MaterialProperty.MP_ROUGHNESS)
+    errors = list(MEL.recompile_material(mat))
+    if errors: raise RuntimeError(str(errors))
+    unreal.EditorAssetLibrary.save_loaded_asset(mat)
+    hidden = unreal.load_asset('/Game/Actors/Combined/Shared/M_PersonHidden')
+    if not hidden:
+        hidden = unreal.AssetToolsHelpers.get_asset_tools().create_asset('M_PersonHidden', '/Game/Actors/Combined/Shared', unreal.Material, unreal.MaterialFactoryNew())
+    for old in list(MEL.get_material_expressions(hidden)):
+        MEL.delete_material_expression(hidden, old)
+    hidden.set_editor_property('used_with_skeletal_mesh', True)
+    hidden.set_editor_property('blend_mode', unreal.BlendMode.BLEND_MASKED)
+    MEL.connect_material_property(expression(hidden, unreal.MaterialExpressionConstant, r=0), '', unreal.MaterialProperty.MP_OPACITY_MASK)
+    errors = list(MEL.recompile_material(hidden))
+    if errors: raise RuntimeError(str(errors))
+    unreal.EditorAssetLibrary.save_loaded_asset(hidden)
+    return mat

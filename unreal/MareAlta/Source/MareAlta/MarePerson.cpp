@@ -8,6 +8,8 @@
 #include "Navigation/PathFollowingComponent.h"
 #include "NavigationSystem.h"
 #include "Animation/AnimSequence.h"
+#include "Materials/MaterialInstanceDynamic.h"
+#include "Engine/Texture2D.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/StaticMeshComponent.h"
@@ -59,7 +61,7 @@ bool AMarePerson::SetAppearance(int32 AppearanceVariant)
  Variant=Selected;
  // Reapplying a look must not stack hair or leave the new anim instance without a clip.
  for(auto Part:HairMeshes)if(IsValid(Part))Part->DestroyComponent();HairMeshes.Empty();
- Clips.Empty();Playing.Reset();
+ Clips.Empty();Playing.Reset();bOutfitApplied=false;   // a new mesh brings its default materials back
  GetMesh()->SetSkeletalMeshAsset(MeshAsset);GetMesh()->SetAnimInstanceClass(UMareServiceAnimInstance::StaticClass());
  for(const FString& Name:{TEXT("Idle"),TEXT("Idle_Talking"),TEXT("Walk"),TEXT("Sitting_Idle"),TEXT("Interact")}){
   const FString Path=UMareSimulation::String(UMareSimulation::Object(Row,TEXT("animations")),Key+Name);
@@ -118,8 +120,50 @@ void AMarePerson::Interact(APlayerController* Player)
 {
  if(auto Kiosk=GetWorld()->GetSubsystem<UMareKioskWorld>())Kiosk->Serve(this,false);
 }
+void AMarePerson::ApplyOutfit(EOutfit Style)
+{
+ Outfit=Style;bOutfitApplied=true;if(Style==EOutfit::Uniform || Style==EOutfit::Auto)return;
+ auto Body=GetMesh();if(!Body || !Body->GetSkeletalMeshAsset())return;
+ static UMaterialInterface* Cloth=nullptr;static UMaterialInterface* Skin=nullptr;static UMaterialInterface* Hidden=nullptr;
+ if(!Cloth)Cloth=LoadObject<UMaterialInterface>(nullptr,TEXT("/Game/Actors/Combined/Shared/M_PersonOutfit.M_PersonOutfit"));
+ if(!Skin)Skin=LoadObject<UMaterialInterface>(nullptr,TEXT("/Game/Actors/Combined/Shared/M_PersonBody.M_PersonBody"));
+ if(!Hidden)Hidden=LoadObject<UMaterialInterface>(nullptr,TEXT("/Game/Actors/Combined/Shared/M_PersonHidden.M_PersonHidden"));
+ if(!Cloth || !Skin || !Hidden)return;
+ FRandomStream Rng(int32(FCrc::StrCrc32(*SaveId)));
+ auto Pick=[&](std::initializer_list<FLinearColor> List){TArray<FLinearColor> A(List);return A[Rng.RandRange(0,A.Num()-1)];};
+ // Slots of the UBC rig: 2 body, 3 shirt, 4 sleeves, 5 shoes, 6 trousers/shorts.
+ auto Slot=[&](int32 Part){return Body->GetMaterialIndex(*FString::Printf(TEXT("Human_%d_material_%d"),Variant,Part));};
+ auto Tex=[&](int32 Part){return LoadObject<UTexture2D>(nullptr,*FString::Printf(TEXT("/Game/Actors/Combined/Human_%d/Human_%d_texture_%d.Human_%d_texture_%d"),Variant,Variant,Part,Variant,Part));};
+ auto Dye=[&](int32 Part,const FLinearColor& Color){const int32 I=Slot(Part);if(I==INDEX_NONE)return;auto M=UMaterialInstanceDynamic::Create(Cloth,this);
+  if(auto T=Tex(Part))M->SetTextureParameterValue(TEXT("Atlas"),T);M->SetVectorParameterValue(TEXT("Tint"),Color);Body->SetMaterial(I,M);};
+ auto Hide=[&](int32 Part){const int32 I=Slot(Part);if(I!=INDEX_NONE)Body->SetMaterial(I,Hidden);};
+ const FLinearColor Bright[]={{.85f,.28f,.22f},{.95f,.74f,.18f},{.92f,.92f,.88f},{.08f,.58f,.62f},{.86f,.34f,.55f},{.52f,.74f,.24f},{.98f,.55f,.25f}};
+ const FLinearColor Shorts[]={{.66f,.56f,.38f},{.12f,.16f,.32f},{.86f,.86f,.80f},{.24f,.36f,.58f},{.85f,.40f,.18f}};
+ const FLinearColor Swim[]={{.86f,.12f,.22f},{.05f,.45f,.75f},{.98f,.80f,.10f},{.08f,.08f,.10f},{.92f,.42f,.62f},{.12f,.62f,.42f},{.96f,.94f,.90f}};
+ switch(Style){
+ case EOutfit::Swim:{for(int32 Part:{3,4,5,6})Hide(Part);const int32 I=Slot(2);if(I!=INDEX_NONE){auto M=UMaterialInstanceDynamic::Create(Skin,this);
+  if(auto T=Tex(2))M->SetTextureParameterValue(TEXT("Atlas"),T);M->SetVectorParameterValue(TEXT("SwimTint"),Swim[Rng.RandRange(0,6)]);Body->SetMaterial(I,M);}break;}
+ case EOutfit::Beach:{const FLinearColor Top=Bright[Rng.RandRange(0,6)];Dye(3,Top);Dye(4,Top);
+  Dye(6,Shorts[Rng.RandRange(0,4)]);Dye(5,Pick({{.70f,.55f,.35f},{.90f,.88f,.84f},{.20f,.45f,.60f}}));break;}
+ case EOutfit::Social:{const FLinearColor Top=Pick({{.93f,.93f,.91f},{.66f,.76f,.90f},{.90f,.86f,.74f},{.93f,.93f,.91f}});Dye(3,Top);Dye(4,Top);
+  Dye(6,Pick({{.10f,.10f,.11f},{.08f,.10f,.20f},{.58f,.54f,.44f}}));Dye(5,Pick({{.04f,.04f,.04f},{.20f,.11f,.06f}}));break;}
+ default:{const FLinearColor Top=Pick({{.55f,.62f,.70f},{.80f,.78f,.70f},{.62f,.30f,.25f},{.30f,.42f,.30f},{.85f,.84f,.80f},{.25f,.30f,.45f}});Dye(3,Top);Dye(4,Top);
+  Dye(6,Shorts[Rng.RandRange(0,4)]);Dye(5,Pick({{.85f,.85f,.82f},{.35f,.25f,.18f},{.10f,.10f,.12f}}));break;}
+ }
+}
 void AMarePerson::Tick(float DeltaSeconds)
 {
  Super::Tick(DeltaSeconds);Elapsed+=DeltaSeconds;
+ // Choose the outfit once the spawner has set the role: staff in uniform, hotel staff and diners in
+ // social clothes, beach-goers in beach or swimwear, villagers casual.
+ if(!bOutfitApplied && Elapsed>.05f){EOutfit Style=Outfit;
+  if(Style==EOutfit::Auto){FRandomStream R(int32(FCrc::StrCrc32(*SaveId))+7);
+   if(bEmployee)Style=EOutfit::Uniform;
+   else if(Tags.Contains(TEXT("MareHotelGuest")))Style=(PersonName==TEXT("Recepcionista") || PersonName==TEXT("Barman") || bSeated || GetActorLocation().Y>5600)?EOutfit::Social:EOutfit::Beach;
+   else if(bAmbient)Style=R.FRand()<.3f?EOutfit::Beach:EOutfit::Casual;
+   // Swimwear waits for the full UBC body: the exported body has no skin from knee to chest (it was
+   // cut away under the clothes), so removing garments would leave holes.
+   else Style=EOutfit::Beach;}
+  ApplyOutfit(Style);}
  if(GetVelocity().SizeSquared2D()>25)PlayPose(TEXT("Walk"));else if(bAmbient)PlayPose(bSeated?TEXT("Sitting_Idle"):bConversing?TEXT("Idle_Talking"):TEXT("Idle"));else if(Stage!=EMarePersonStage::Eating)PlayPose(TEXT("Idle"));
 }

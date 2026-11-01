@@ -423,6 +423,59 @@ def run(action, arg=''):
             unreal.EditorAssetLibrary.save_loaded_asset(mesh, False)
             out.append(spec)
         return out
+    if action == 'outfitmat':
+        import mare_materials, importlib
+        importlib.reload(mare_materials)
+        return [mare_materials.build_person_outfit().get_path_name(), mare_materials.build_person_body().get_path_name()]
+    if action == 'exporttex':
+        # 'MaterialPath' -> export every TextureObject/Sample texture of that material to D:/CodexTemp/tex
+        m = unreal.load_asset(arg)
+        out = []
+        Path('D:/CodexTemp/tex').mkdir(parents=True, exist_ok=True)
+        for e in unreal.MaterialEditingLibrary.get_material_expressions(m):
+            t = e.get_editor_property('texture') if isinstance(e, (unreal.MaterialExpressionTextureObject, unreal.MaterialExpressionTextureSample)) else None
+            if t:
+                task = unreal.AssetExportTask()
+                task.object = t; task.filename = 'D:/CodexTemp/tex/' + t.get_name() + '.png'; task.automated = True; task.replace_identical = True; task.prompt = False
+                task.exporter = unreal.TextureExporterPNG()
+                unreal.Exporter.run_asset_export_task(task)
+                out.append([t.get_name(), t.get_path_name()])
+        return out
+    if action == 'matinfo':
+        out = {}
+        for path in arg.split(','):
+            m = unreal.load_asset(path)
+            info = {'class': m.get_class().get_name()}
+            if isinstance(m, unreal.MaterialInstance):
+                info['vectors'] = [[str(v.parameter_info.name), [round(v.parameter_value.r, 2), round(v.parameter_value.g, 2), round(v.parameter_value.b, 2)]] for v in m.get_editor_property('vector_parameter_values')]
+                info['textures'] = [[str(t.parameter_info.name), t.parameter_value.get_name() if t.parameter_value else None] for t in m.get_editor_property('texture_parameter_values')]
+                info['parent'] = m.get_editor_property('parent').get_path_name()
+            if isinstance(m, unreal.Material):
+                n = unreal.MaterialEditingLibrary.get_material_property_input_node(m, unreal.MaterialProperty.MP_BASE_COLOR)
+                info['base'] = n.get_class().get_name() if n else None
+                if isinstance(n, unreal.MaterialExpressionConstant3Vector):
+                    c = n.get_editor_property('constant'); info['color'] = [round(c.r, 2), round(c.g, 2), round(c.b, 2)]
+                if isinstance(n, unreal.MaterialExpressionMaterialFunctionCall):
+                    info['function'] = n.get_editor_property('material_function').get_path_name() if n.get_editor_property('material_function') else None
+                    exprs = unreal.MaterialEditingLibrary.get_material_expressions(m) if hasattr(unreal.MaterialEditingLibrary, 'get_material_expressions') else []
+                    info['nodes'] = sorted({e.get_class().get_name() for e in exprs})
+                    info['tex'] = sorted({e.texture.get_name() for e in exprs if isinstance(e, unreal.MaterialExpressionTextureSample) and e.texture})
+                    info['consts'] = [[round(e.get_editor_property('constant').r, 2), round(e.get_editor_property('constant').g, 2), round(e.get_editor_property('constant').b, 2)] for e in exprs if isinstance(e, unreal.MaterialExpressionConstant3Vector)][:4]
+                    info['vecs'] = [[str(e.get_editor_property('parameter_name')), round(e.get_editor_property('default_value').r, 2), round(e.get_editor_property('default_value').g, 2), round(e.get_editor_property('default_value').b, 2)] for e in exprs if isinstance(e, unreal.MaterialExpressionVectorParameter)][:4]
+                if isinstance(n, unreal.MaterialExpressionTextureSample) and n.texture:
+                    info['texture'] = n.texture.get_name()
+                info['blend'] = str(m.get_editor_property('blend_mode'))
+            out[path] = info
+        return out
+    if action == 'lots':
+        out = []
+        for a in unreal.get_editor_subsystem(unreal.EditorActorSubsystem).get_all_level_actors():
+            tags = [str(t) for t in a.tags if str(t).startswith('Lot_')]
+            if tags and 'MareLawn' not in [str(t) for t in a.tags]:
+                o, e = a.get_actor_bounds(False)
+                meshes = [c.static_mesh.get_name() for c in a.get_components_by_class(unreal.StaticMeshComponent) if c.static_mesh]
+                out.append([a.get_actor_label(), tags, meshes[:3], [round(o.x), round(o.y), round(o.z)], [round(e.x * 2), round(e.y * 2), round(e.z * 2)]])
+        return out
     if action == 'lights':
         import collections
         out = collections.Counter()

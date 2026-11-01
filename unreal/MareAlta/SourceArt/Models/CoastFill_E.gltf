@@ -54,11 +54,11 @@
 		{
 			"bufferView":0,
 			"componentType":5126,
-			"count":2006,
+			"count":2054,
 			"max":[
 				221,
 				4.25,
-				95
+				115
 			],
 			"min":[
 				122.5,
@@ -70,51 +70,51 @@
 		{
 			"bufferView":1,
 			"componentType":5126,
-			"count":2006,
+			"count":2054,
 			"type":"VEC3"
 		},
 		{
 			"bufferView":2,
 			"componentType":5126,
-			"count":2006,
+			"count":2054,
 			"type":"VEC2"
 		},
 		{
 			"bufferView":3,
 			"componentType":5123,
-			"count":11424,
+			"count":11664,
 			"type":"SCALAR"
 		}
 	],
 	"bufferViews":[
 		{
 			"buffer":0,
-			"byteLength":24072,
+			"byteLength":24648,
 			"byteOffset":0,
 			"target":34962
 		},
 		{
 			"buffer":0,
-			"byteLength":24072,
-			"byteOffset":24072,
+			"byteLength":24648,
+			"byteOffset":24648,
 			"target":34962
 		},
 		{
 			"buffer":0,
-			"byteLength":16048,
-			"byteOffset":48144,
+			"byteLength":16432,
+			"byteOffset":49296,
 			"target":34962
 		},
 		{
 			"buffer":0,
-			"byteLength":22848,
-			"byteOffset":64192,
+			"byteLength":23328,
+			"byteOffset":65728,
 			"target":34963
 		}
 	],
 	"buffers":[
 		{
-			"byteLength":87040,
+			"byteLength":89056,
 			"uri":"CoastFill_E.bin"
 		}
 	]

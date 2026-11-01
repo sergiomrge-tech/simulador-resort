@@ -56,6 +56,15 @@ public:
  bool bAmbient=false,bConversing=false;
  /** Ambient guest placed on a chair (hotel restaurant); keeps the sitting pose. */
  bool bSeated=false;
+ /** Clothing style, applied on the first tick once role flags are set (employees keep the uniform). */
+ enum class EOutfit:uint8{Auto,Uniform,Casual,Beach,Swim,Social};
+ EOutfit Outfit=EOutfit::Auto;
+ void ApplyOutfit(EOutfit Style);
+ /** QA/tools: 1 uniform, 2 casual, 3 beach, 4 swim (bikini/trunks), 5 social. */
+ UFUNCTION(BlueprintCallable,Category="Presentation") void SetOutfitStyle(int32 Style){ApplyOutfit(EOutfit(FMath::Clamp(Style,1,5)));}
+private:
+ bool bOutfitApplied=false;
+public:
  UPROPERTY(BlueprintReadOnly,Category="Maré Alta")
  float Elapsed=0;
  UPROPERTY(BlueprintReadOnly,Category="Maré Alta")

@@ -128,7 +128,7 @@ def populate(seed=20261101):
     placements = {}
     rejected = {'miss': 0, 'low': 0, 'steep': 0}
     x0, x1, y0, y1 = REGION
-    for layer, table, step, jitter in (('tree', TREES, 520, 220), ('under', UNDER, 400, 170)):
+    for layer, table, step, jitter in (('tree', TREES, 420, 190), ('under', UNDER, 360, 150)):
         x = x0
         while x <= x1:
             y = y0

@@ -61,7 +61,8 @@ def build(grid, side):
         xo = outer(lo)[0] + (outer(hi)[0] - outer(lo)[0]) * f
         zo = outer(lo)[1] + (outer(hi)[1] - outer(lo)[1]) * f
         return g, xo, zo
-    y0, y1 = profile[0][0], profile[-1][0]
+    # North of the last ground row the gap still runs into the hills: carry the last profile on.
+    y0, y1 = profile[0][0], profile[-1][0] + 2000
     bm = bmesh.new()
     rows = []
     y = y0
