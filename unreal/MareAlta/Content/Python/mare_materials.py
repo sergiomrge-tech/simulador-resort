@@ -184,3 +184,44 @@ def build_palm_frond():
     if errors:raise RuntimeError(str(errors))
     unreal.EditorAssetLibrary.save_loaded_asset(mat)
     return mat
+
+
+def _model_texture(file, folder, normal=False):
+    """Texture shipped next to a re-exported model glTF (SourceArt/Models)."""
+    name = Path(file).stem
+    path = folder + '/' + name
+    tex = unreal.load_asset(path)
+    if not tex:
+        task = unreal.AssetImportTask(); task.filename = str(ROOT / 'SourceArt' / 'Models' / file); task.destination_path = folder
+        task.destination_name = name; task.automated = True; task.save = True
+        unreal.AssetToolsHelpers.get_asset_tools().import_asset_tasks([task]); tex = unreal.load_asset(path)
+    if normal:
+        tex.set_editor_property('srgb', False); tex.set_editor_property('compression_settings', unreal.TextureCompressionSettings.TC_NORMALMAP)
+    unreal.EditorAssetLibrary.save_loaded_asset(tex)
+    return tex
+
+
+def build_palm_fab():
+    """Fab "Coconut Tree" (CC BY 4.0): one atlas for trunk, fronds and nuts; fronds cut out by the
+    alpha channel, lit from both sides like foliage."""
+    folder = '/Game/Nature/Palms'
+    color_tex = _model_texture('palm_fab_basecolor.png', folder)
+    normal_tex = _model_texture('palm_fab_normal.jpg', folder, True)
+    mat = material('M_PalmFab_PBR')
+    mat.set_editor_property('blend_mode', unreal.BlendMode.BLEND_MASKED)
+    mat.set_editor_property('two_sided', True)
+    mat.set_editor_property('shading_model', unreal.MaterialShadingModel.MSM_TWO_SIDED_FOLIAGE)
+    mat.set_editor_property('used_with_nanite', True)
+    mat.set_editor_property('used_with_instanced_static_meshes', True)
+    color = expression(mat, unreal.MaterialExpressionTextureSample, texture=color_tex, sampler_type=unreal.MaterialSamplerType.SAMPLERTYPE_COLOR)
+    normal = expression(mat, unreal.MaterialExpressionTextureSample, texture=normal_tex, sampler_type=unreal.MaterialSamplerType.SAMPLERTYPE_NORMAL)
+    sss = custom(mat, 'return Base.rgb * float3(.55,.75,.35);', unreal.CustomMaterialOutputType.CMOT_FLOAT3, {'Base': color})
+    MEL.connect_material_property(color, 'RGB', unreal.MaterialProperty.MP_BASE_COLOR)
+    MEL.connect_material_property(color, 'A', unreal.MaterialProperty.MP_OPACITY_MASK)
+    MEL.connect_material_property(normal, 'RGB', unreal.MaterialProperty.MP_NORMAL)
+    MEL.connect_material_property(sss, '', unreal.MaterialProperty.MP_SUBSURFACE_COLOR)
+    MEL.connect_material_property(expression(mat, unreal.MaterialExpressionConstant, r=.7), '', unreal.MaterialProperty.MP_ROUGHNESS)
+    errors = list(MEL.recompile_material(mat))
+    if errors: raise RuntimeError(str(errors))
+    unreal.EditorAssetLibrary.save_loaded_asset(mat)
+    return mat

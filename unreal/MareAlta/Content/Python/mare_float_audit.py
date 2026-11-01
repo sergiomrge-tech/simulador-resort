@@ -385,6 +385,30 @@ def run(action, arg=''):
             m = unreal.load_asset(path)
             out[path] = {'tris': m.get_num_triangles(0), 'nanite': m.get_editor_property('nanite_settings').enabled, 'size': [round(v * 2) for v in (m.get_bounds().box_extent.x, m.get_bounds().box_extent.y, m.get_bounds().box_extent.z)]}
         return out
+    if action == 'palmfab':
+        import mare_materials, importlib
+        importlib.reload(mare_materials)
+        mat = mare_materials.build_palm_fab()
+        mapping = json.loads((DATA / 'imported_meshes.json').read_text(encoding='utf-8-sig'))
+        for name in arg.split():
+            mesh = unreal.load_asset(mapping[name])
+            mesh.set_material(0, mat)
+            unreal.EditorAssetLibrary.save_loaded_asset(mesh, False)
+        return {'material': mat.get_path_name(), 'meshes': arg.split()}
+    if action == 'mesh_materials':
+        out = []
+        for slot in unreal.load_asset(arg).static_materials:
+            m = slot.material_interface
+            info = {'slot': str(slot.material_slot_name), 'material': m.get_path_name() if m else None}
+            if m:
+                base = m
+                while isinstance(base, unreal.MaterialInstance):
+                    info.setdefault('textures', [str(t.parameter_value.get_path_name()) if t.parameter_value else None for t in base.get_editor_property('texture_parameter_values')])
+                    base = base.get_editor_property('parent')
+                info['root'] = base.get_path_name() if base else None
+                info['blend'] = str(base.get_editor_property('blend_mode')) if base else None
+            out.append(info)
+        return out
     if action == 'skel_materials':
         mesh = unreal.load_asset(arg)
         return [{'slot': str(m.material_slot_name), 'material': m.material_interface.get_path_name() if m.material_interface else None} for m in mesh.materials]

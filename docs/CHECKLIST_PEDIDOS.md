@@ -29,7 +29,9 @@ Legenda: [x] feito e validado · [~] em andamento/parcial · [ ] pendente.
 - [x] "Corrigiu os vidros opacos?": sim, na leva da auditoria (janelas das casas com vidro refletivo e luz à noite; demais vidros transparentes). Conferido de novo nas capturas da vila.
 - [x] "Os braços ao nadar estão muito estranhos e feios" (01/11): braçada de peito em primeira pessoa (mãos se encontram, estendem, abrem e recolhem, no terço inferior da tela); parado na água, sculling suave. Regressão 100/100. Observação: o modelo da mão é o do personagem e continua simples.
 - [ ] "Após terminar os ajustes gráficos e visuais vamos trabalhar no gameplay" (01/11): próxima fase depois dos coqueiros.
-- [ ] "Os coqueiros não combinam com o ambiente, substitua por assets mais realistas, procure na web" (01/11): pesquisado — não há coqueiro realista com licença livre baixável sem conta (Poly Haven não tem; Fab/Megascans exigem conta Epic). Usuário escolheu o Fab (01/11): ele adiciona o pacote na conta Epic e eu importo e troco os 171 coqueiros.
+- [x] "Os coqueiros não combinam com o ambiente, substitua por assets mais realistas, procure na web" (01/11): Coconut Tree do Fab (Darmawan Pujisetyadi, CC BY 4.0), baixado pelo Chrome logado do usuário para `D:/Assets/Fab`, aplicado nos 171 coqueiros mantendo posições ("Bem melhor").
+- [ ] "Troque essas árvores também por assets mais realistas" (01/11): árvores low poly da vila (amendoeiras).
+- [ ] "Substitua os cocos do jogo por esses da foto" (01/11): Coconut da Quixel Megascans.
 - [x] Manter este checklist sempre que o usuário pedir algo (regra salva na memória).
 
 ## Regras permanentes já pedidas

@@ -418,6 +418,10 @@ Grama, arbustos, samambaias e flores (~115 mil instâncias Nanite, sem colisão)
 - Periwinkle Plant (`periwinkle_plant`), Amal Kumar, CC0 — https://polyhaven.com/a/periwinkle_plant
 - Importados mas fora do gramado (ficavam como manchas escuras): Wild Rooibos Bush (`wild_rooibos_bush`), James Ray Cock, Jenelle van Heerden, CC0 — https://polyhaven.com/a/wild_rooibos_bush; Shrub Sorrel 01 (`shrub_sorrel_01`), Rico Cilliers, CC0 — https://polyhaven.com/a/shrub_sorrel_01
 
+### Coqueiros (UE5.8) — 01/11/2026
+
+Os 171 coqueiros (variações `World_0507`–`World_0510`) usam **Coconut Tree**, de Darmawan Pujisetyadi, licença **Creative Commons Attribution 4.0 (CC BY 4.0)** — https://www.fab.com/listings/94b12021-87da-4990-bdfe-02c81de529f0. Adaptação: escala, inclinação e base ajustadas a cada variação, difusa + máscara alfa unidas em uma textura RGBA (`tools/ue58/fab_palms.py`, material `M_PalmFab_PBR`). Original em `D:/Assets/Fab/coconut_tree`.
+
 ### Rádio praiano — 01/11/2026
 
 Reggae Roots, Calipso Caribe e Praia Pop (ukulele): composições e síntese originais deste projeto, dedicadas a CC0, geradas por `tools/ue58/gen_radio_music.py` (cordas Karplus-Strong, steel pan modal, percussão sintetizada; sem vozes nem samples de terceiros). WAVs em `unreal/MareAlta/SourceArt/Audio/radio_*.wav`.
