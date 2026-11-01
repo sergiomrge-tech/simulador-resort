@@ -181,7 +181,42 @@ def sync():
     return {'rows_updated': updated}
 
 
+def near(x, y, r):
+    out = []
+    for a in unreal.get_editor_subsystem(unreal.EditorActorSubsystem).get_all_level_actors():
+        for c in a.get_components_by_class(unreal.InstancedStaticMeshComponent):
+            m = c.static_mesh
+            if not m:
+                continue
+            for i in range(c.get_instance_count()):
+                p = c.get_instance_transform(i, True).translation
+                if (p.x - x) ** 2 + (p.y - y) ** 2 < r * r and p.z < 900:
+                    b = m.get_bounds()
+                    out.append({'actor': a.get_actor_label(), 'mesh': m.get_name(), 'at': [round(p.x), round(p.y), round(p.z)],
+                                'tris': m.get_num_triangles(0), 'size': [round(b.box_extent.x * 2), round(b.box_extent.y * 2), round(b.box_extent.z * 2)]})
+    return out
+
+
+def reimport_props(names):
+    """Reimport refined scene meshes into their existing assets (instances update in place)."""
+    import mare_hotel_lobby
+    mapping = json.loads((DATA / 'imported_meshes.json').read_text(encoding='utf-8-sig'))
+    out = []
+    for name in names:
+        path = mapping[name]
+        folder = path.rsplit('/', 1)[0]
+        mesh = mare_hotel_lobby._import(ROOT / 'SourceArt/Models' / (name + '.gltf'), folder, name, True)
+        mare_hotel_lobby._complex_collision(mesh)
+        out.append({'mesh': name, 'triangles': mesh.get_num_triangles(0)})
+    return out
+
+
 def run(action, arg=''):
+    if action == 'reimport':
+        return reimport_props(arg.split())
+    if action == 'near':
+        x, y, r = [float(v) for v in arg.split(',')]
+        return near(x, y, r)
     if action == 'sync':
         return sync()
     if action == 'debug':
