@@ -627,11 +627,11 @@
        ]
       },
       {
-       "name": "Banqueta de madeira nobre",
-       "desc": "Madeira escura maciça, acabamento de bar de hotel.",
+       "name": "Banqueta de madeira torneada",
+       "desc": "Madeira maciça torneada, acabamento de bar de hotel.",
        "parts": [
         {
-         "model": "chinese_stool",
+         "model": "wooden_stool_02",
          "w": 42,
          "h": 78
         }
@@ -666,12 +666,12 @@
        ]
       },
       {
-       "name": "Mesa rústica de jardim",
-       "desc": "Madeira maciça, pés torneados.",
+       "name": "Mesa de bistrô",
+       "desc": "Madeira escura, pé central torneado.",
        "parts": [
         {
-         "model": "gallinera_table",
-         "w": 90,
+         "model": "round_wooden_table_02",
+         "w": 80,
          "h": 75
         }
        ]
@@ -774,7 +774,7 @@
        "parts": [
         {
          "model": "chinese_armchair",
-         "h": 95,
+         "h": 135,
          "at": [
           -11,
           60,
@@ -784,7 +784,7 @@
         },
         {
          "model": "chinese_armchair",
-         "h": 95,
+         "h": 135,
          "at": [
           7,
           -54,
@@ -885,7 +885,7 @@
        "parts": [
         {
          "model": "hanging_industrial_lamp",
-         "h": 55
+         "h": 110
         }
        ]
       },
@@ -1179,11 +1179,12 @@
      "base_price": 80,
      "comfort": 1,
      "beauty": 2,
-     "anchor": "World_0101",
+     "anchor": "World_0100",
      "also": [
-      "World_0106",
+      "World_0101",
+      "World_0110",
       "World_0111",
-      "World_0116"
+      "World_0115"
      ],
      "tiers": [
       {
@@ -1251,11 +1252,11 @@
        ]
       },
       {
-       "name": "Mesa de centro moderna",
-       "desc": "Madeira e metal escovado.",
+       "name": "Mesinha de jardim",
+       "desc": "Madeira maciça de pés torneados.",
        "parts": [
         {
-         "model": "modern_coffee_table_01",
+         "model": "gallinera_table",
          "w": 60,
          "h": 58
         }
@@ -1527,11 +1528,11 @@
      ],
      "tiers": [
       {
-       "name": "Cadeira de madeira",
+       "name": "Cadeira branca de madeira",
        "desc": "Cadeira simples para quem espera.",
        "parts": [
         {
-         "model": "WoodenChair_01",
+         "model": "painted_wooden_chair_01",
          "h": 92
         }
        ]
@@ -1542,7 +1543,7 @@
        "parts": [
         {
          "model": "GreenChair_01",
-         "h": 88
+         "h": 100
         }
        ]
       },
@@ -1552,7 +1553,7 @@
        "parts": [
         {
          "model": "ArmChair_01",
-         "h": 95
+         "h": 105
         }
        ]
       },
@@ -1562,7 +1563,7 @@
        "parts": [
         {
          "model": "chinese_armchair",
-         "h": 95
+         "h": 135
         }
        ]
       },
@@ -1572,7 +1573,7 @@
        "parts": [
         {
          "model": "mid_century_lounge_chair",
-         "h": 85
+         "h": 100
         }
        ]
       }
@@ -1600,7 +1601,7 @@
         {
          "model": "painted_wooden_sofa",
          "w": 170,
-         "h": 90
+         "h": 89
         }
        ]
       },
@@ -1611,7 +1612,7 @@
         {
          "model": "chinese_sofa",
          "w": 180,
-         "h": 90
+         "h": 68
         }
        ]
       },
@@ -1621,8 +1622,8 @@
        "parts": [
         {
          "model": "Sofa_01",
-         "w": 190,
-         "h": 85
+         "w": 157,
+         "h": 80
         }
        ]
       },
@@ -1633,7 +1634,7 @@
         {
          "model": "sofa_03",
          "w": 200,
-         "h": 90
+         "h": 82
         }
        ]
       }
@@ -2081,12 +2082,12 @@
        ]
       },
       {
-       "name": "Mesa rústica de jardim",
-       "desc": "Madeira maciça, pés torneados.",
+       "name": "Mesa de bistrô",
+       "desc": "Madeira escura, pé central torneado.",
        "parts": [
         {
-         "model": "gallinera_table",
-         "w": 90,
+         "model": "round_wooden_table_02",
+         "w": 80,
          "h": 75
         }
        ]
@@ -2189,7 +2190,7 @@
        "parts": [
         {
          "model": "chinese_armchair",
-         "h": 95,
+         "h": 135,
          "at": [
           -11,
           60,
@@ -2199,7 +2200,7 @@
         },
         {
          "model": "chinese_armchair",
-         "h": 95,
+         "h": 135,
          "at": [
           7,
           -54,
@@ -2308,7 +2309,7 @@
     -4405,
     -1500,
     2800,
-    4400
+    4700
    ],
    "effects": {
     "hotel_per_point": 0.0025
@@ -3773,7 +3774,7 @@
         {
          "model": "painted_wooden_sofa",
          "w": 170,
-         "h": 90
+         "h": 89
         }
        ]
       },
@@ -3784,7 +3785,7 @@
         {
          "model": "chinese_sofa",
          "w": 180,
-         "h": 90
+         "h": 68
         }
        ]
       },
@@ -3794,8 +3795,8 @@
        "parts": [
         {
          "model": "Sofa_01",
-         "w": 190,
-         "h": 85
+         "w": 157,
+         "h": 80
         }
        ]
       },
@@ -3806,7 +3807,7 @@
         {
          "model": "sofa_03",
          "w": 200,
-         "h": 90
+         "h": 82
         }
        ]
       }
@@ -3866,8 +3867,8 @@
        "parts": [
         {
          "model": "industrial_coffee_table",
-         "w": 105,
-         "h": 32
+         "w": 80,
+         "h": 34
         }
        ]
       }
@@ -3953,17 +3954,17 @@
        "parts": [
         {
          "model": "vintage_wooden_drawer_01",
-         "w": 90,
+         "w": 120,
          "h": 79
         }
        ]
       },
       {
-       "name": "Rack moderno",
-       "desc": "Madeira clara e portas de correr.",
+       "name": "Aparador pintado",
+       "desc": "Madeira pintada com portas.",
        "parts": [
         {
-         "model": "modern_wooden_cabinet",
+         "model": "painted_wooden_cabinet",
          "w": 110,
          "h": 79
         }
@@ -3975,18 +3976,18 @@
        "parts": [
         {
          "model": "chinese_console_table",
-         "w": 120,
+         "w": 150,
          "h": 79
         }
        ]
       },
       {
-       "name": "Gaveteiro de designer",
-       "desc": "Gavetas de madeira maciça.",
+       "name": "Aparador industrial",
+       "desc": "Madeira de demolição e ferro.",
        "parts": [
         {
-         "model": "drawer_cabinet",
-         "w": 100,
+         "model": "industrial_coffee_table",
+         "w": 90,
          "h": 79
         }
        ]
@@ -4097,11 +4098,11 @@
        ]
       },
       {
-       "name": "Cadeira de madeira",
-       "desc": "Madeira maciça e encosto alto.",
+       "name": "Cadeira branca",
+       "desc": "Madeira pintada de encosto alto.",
        "parts": [
         {
-         "model": "WoodenChair_01",
+         "model": "painted_wooden_chair_01",
          "h": 92,
          "at": [
           0,
@@ -4111,7 +4112,7 @@
          "yaw": 90
         },
         {
-         "model": "WoodenChair_01",
+         "model": "painted_wooden_chair_01",
          "h": 92,
          "at": [
           0,
@@ -4193,16 +4194,6 @@
        "desc": "O criado-mudo ao lado da cama."
       },
       {
-       "name": "Criado clássico",
-       "desc": "Madeira escura com gaveta.",
-       "parts": [
-        {
-         "model": "ClassicNightstand_01",
-         "h": 58
-        }
-       ]
-      },
-      {
        "name": "Mesinha de apoio",
        "desc": "Madeira clara.",
        "parts": [
@@ -4213,23 +4204,33 @@
        ]
       },
       {
-       "name": "Gaveteiro antigo",
-       "desc": "Puxadores de latão.",
+       "name": "Criado clássico",
+       "desc": "Madeira escura com gaveta.",
        "parts": [
         {
-         "model": "vintage_wooden_drawer_01",
+         "model": "ClassicNightstand_01",
+         "h": 58
+        }
+       ]
+      },
+      {
+       "name": "Mesinha de madeira",
+       "desc": "Madeira clara de pés finos.",
+       "parts": [
+        {
+         "model": "small_wooden_table_01",
          "w": 60,
          "h": 58
         }
        ]
       },
       {
-       "name": "Criado de design",
-       "desc": "Madeira maciça de linhas retas.",
+       "name": "Criado industrial",
+       "desc": "Madeira de demolição e ferro.",
        "parts": [
         {
-         "model": "modern_wooden_cabinet",
-         "w": 60,
+         "model": "industrial_coffee_table",
+         "w": 55,
          "h": 58
         }
        ]
@@ -4316,7 +4317,7 @@
        "parts": [
         {
          "model": "GreenChair_01",
-         "h": 88
+         "h": 100
         }
        ]
       },
@@ -4326,7 +4327,7 @@
        "parts": [
         {
          "model": "ArmChair_01",
-         "h": 95
+         "h": 105
         }
        ]
       },
@@ -4336,7 +4337,7 @@
        "parts": [
         {
          "model": "chinese_armchair",
-         "h": 95
+         "h": 135
         }
        ]
       },
@@ -4346,7 +4347,7 @@
        "parts": [
         {
          "model": "mid_century_lounge_chair",
-         "h": 85
+         "h": 100
         }
        ]
       }
@@ -4448,12 +4449,12 @@
        ]
       },
       {
-       "name": "Calateia",
-       "desc": "Folhas listradas.",
+       "name": "Antúrio",
+       "desc": "Flores vermelhas em vaso.",
        "parts": [
         {
-         "model": "calathea_orbifolia_01",
-         "h": 75
+         "model": "anthurium_botany_01",
+         "h": 70
         }
        ]
       },

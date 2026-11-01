@@ -474,3 +474,59 @@ Texturas PBR dos acabamentos (balcão, guarda-sóis, letreiro; Poly Haven, CC0),
 ### Rádio praiano — 01/11/2026
 
 Reggae Roots, Calipso Caribe e Praia Pop (ukulele): composições e síntese originais deste projeto, dedicadas a CC0, geradas por `tools/ue58/gen_radio_music.py` (cordas Karplus-Strong, steel pan modal, percussão sintetizada; sem vozes nem samples de terceiros). WAVs em `unreal/MareAlta/SourceArt/Audio/radio_*.wav`.
+
+### Personalização do resort inteiro (UE5.8) — 01/11/2026
+
+Modelos dos níveis de bar, piscina, pousada, hotel, negócios e casa (Poly Haven, CC0 1.0), em `/Game/Custom`:
+
+- Metal Stool 01 (`metal_stool_01`) — Ulan Cabanilla — https://polyhaven.com/a/metal_stool_01
+- Round Wooden Table 01 (`round_wooden_table_01`) — Ulan Cabanilla — https://polyhaven.com/a/round_wooden_table_01
+- Round Wooden Table 02 (`round_wooden_table_02`) — Ulan Cabanilla — https://polyhaven.com/a/round_wooden_table_02
+- Gallinera Table (`gallinera_table`) — Ulan Cabanilla — https://polyhaven.com/a/gallinera_table
+- Gallinera Chair (`gallinera_chair`) — Ulan Cabanilla — https://polyhaven.com/a/gallinera_chair
+- Chinese Armchair (`chinese_armchair`) — Kirill Sannikov — https://polyhaven.com/a/chinese_armchair
+- Hanging Industrial Lamp (`hanging_industrial_lamp`) — Kuutti Siitonen — https://polyhaven.com/a/hanging_industrial_lamp
+- Small Wooden Table 01 (`small_wooden_table_01`) — Ulan Cabanilla — https://polyhaven.com/a/small_wooden_table_01
+- Industrial Coffee Table (`industrial_coffee_table`) — Ulan Cabanilla — https://polyhaven.com/a/industrial_coffee_table
+- Green Chair 01 (`GreenChair_01`) — Kirill Sannikov — https://polyhaven.com/a/GreenChair_01
+- Arm Chair 01 (`ArmChair_01`) — Kirill Sannikov — https://polyhaven.com/a/ArmChair_01
+- Mid Century Lounge Chair (`mid_century_lounge_chair`) — Kuutti Siitonen — https://polyhaven.com/a/mid_century_lounge_chair
+- Painted Wooden Sofa (`painted_wooden_sofa`) — Kirill Sannikov — https://polyhaven.com/a/painted_wooden_sofa
+- Chinese Sofa (`chinese_sofa`) — Kirill Sannikov — https://polyhaven.com/a/chinese_sofa
+- Sofa 01 (`Sofa_01`) — Kirill Sannikov — https://polyhaven.com/a/Sofa_01
+- Sofa 03 (`sofa_03`) — Fran Calvente — https://polyhaven.com/a/sofa_03
+- Street Lamp 01 (`street_lamp_01`) — Josh Dean — https://polyhaven.com/a/street_lamp_01
+- Street Lamp 02 (`street_lamp_02`) — Josh Dean — https://polyhaven.com/a/street_lamp_02
+- Old Bed Frame (`old_bed_frame`) — Luca B — https://polyhaven.com/a/old_bed_frame
+- Vintage Day Bed (`vintage_day_bed`) — Aron Łyczek — https://polyhaven.com/a/vintage_day_bed
+- Coffee Table 01 (`CoffeeTable_01`) — Fernando Quinn — https://polyhaven.com/a/CoffeeTable_01
+- Modern Coffee Table 02 (`modern_coffee_table_02`) — Amin — https://polyhaven.com/a/modern_coffee_table_02
+- Gothic Coffee Table (`gothic_coffee_table`) — Ulan Cabanilla — https://polyhaven.com/a/gothic_coffee_table
+- Painted Wooden Cabinet (`painted_wooden_cabinet`) — Kirill Sannikov — https://polyhaven.com/a/painted_wooden_cabinet
+- Chinese Cabinet (`chinese_cabinet`) — Kirill Sannikov — https://polyhaven.com/a/chinese_cabinet
+- Vintage Cabinet 01 (`vintage_cabinet_01`) — Rico Cilliers — https://polyhaven.com/a/vintage_cabinet_01
+- Gothic Cabinet 01 (`GothicCabinet_01`) — Kirill Sannikov — https://polyhaven.com/a/GothicCabinet_01
+- Vintage Wooden Drawer 01 (`vintage_wooden_drawer_01`) — James Ray Cock — https://polyhaven.com/a/vintage_wooden_drawer_01
+- Chinese Console Table (`chinese_console_table`) — Kirill Sannikov — https://polyhaven.com/a/chinese_console_table
+- Classic Nightstand 01 (`ClassicNightstand_01`) — Kirill Sannikov — https://polyhaven.com/a/ClassicNightstand_01
+- Side Table 01 (`side_table_01`) — James Ray Cock — https://polyhaven.com/a/side_table_01
+- Wooden Lantern 01 (`wooden_lantern_01`) — James Ray Cock — https://polyhaven.com/a/wooden_lantern_01
+- Desk Lamp Arm 01 (`desk_lamp_arm_01`) — Yann Kervran, Kuutti Siitonen — https://polyhaven.com/a/desk_lamp_arm_01
+- Hanging Picture Frame 01 (`hanging_picture_frame_01`) — James Ray Cock — https://polyhaven.com/a/hanging_picture_frame_01
+- Hanging Picture Frame 03 (`hanging_picture_frame_03`) — James Ray Cock — https://polyhaven.com/a/hanging_picture_frame_03
+- Fancy Picture Frame 01 (`fancy_picture_frame_01`) — Rob Tuytel, Rico Cilliers — https://polyhaven.com/a/fancy_picture_frame_01
+- Fancy Picture Frame 02 (`fancy_picture_frame_02`) — Rob Tuytel, Rico Cilliers — https://polyhaven.com/a/fancy_picture_frame_02
+- Wooden Stool 02 (`wooden_stool_02`) — Kuutti Siitonen — https://polyhaven.com/a/wooden_stool_02
+- Anthurium Botany 01 (`anthurium_botany_01`) — Rob Tuytel, Rico Cilliers — https://polyhaven.com/a/anthurium_botany_01
+
+Tecidos e couros fotográficos (Poly Haven, CC0 1.0) usados nos móveis modelados em bpy:
+
+- Fabric Pattern 07 (`fabric_pattern_07`) — Rob Tuytel — https://polyhaven.com/a/fabric_pattern_07
+- Velour Velvet (`velour_velvet`) — colormass, Rico Cilliers — https://polyhaven.com/a/velour_velvet
+- Waffle Pique Cotton (`waffle_pique_cotton`) — colormass, Rico Cilliers — https://polyhaven.com/a/waffle_pique_cotton
+- Quatrefoil Jacquard Fabric (`quatrefoil_jacquard_fabric`) — colormass, Rico Cilliers — https://polyhaven.com/a/quatrefoil_jacquard_fabric
+- Brown Leather (`brown_leather`) — Rob Tuytel — https://polyhaven.com/a/brown_leather
+- Rough Linen (`rough_linen`) — colormass, Rico Cilliers — https://polyhaven.com/a/rough_linen
+- Teak Veneer (`teak_veneer`) — Jenelle van Heerden — https://polyhaven.com/a/teak_veneer
+
+Móveis originais modelados para o projeto com bpy (`tools/ue58/gen_custom_furniture.py`): espreguiçadeira de ripas, espreguiçadeira com colchonete, espreguiçadeira de vime (trama real), daybed com dossel, cama estofada capitonê e cama com dossel torneada.

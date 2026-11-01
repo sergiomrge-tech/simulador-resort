@@ -70,7 +70,7 @@ def table_tiers(h=75, orig='Mesa original do conjunto.'):
     return [
         tier('Mesa de madeira do conjunto', orig),
         tier('Mesa redonda de madeira', 'Tampo redondo e pé central.', part('round_wooden_table_01', h, 80)),
-        tier('Mesa rústica de jardim', 'Madeira maciça, pés torneados.', part('gallinera_table', h, 90)),
+        tier('Mesa de bistrô', 'Madeira escura, pé central torneado.', part('round_wooden_table_02', h, 80)),
         tier('Mesa de mármore', 'Tampo de mármore e base cromada.', part('coffee_table_round_01', h, 82)),
         tier('Mesa posta com toalha', 'Toalha e madeira nobre: clima de restaurante.', part('dining_table', h + 1, 95)),
     ]
@@ -81,7 +81,7 @@ def chair_tiers():
         tier('Cadeiras dobráveis', 'As cadeiras do conjunto original.'),
         tier('Cadeira de jardim', 'Madeira clara com encosto curvo.', *chairs('gallinera_chair', 90)),
         tier('Cadeira branca de madeira', 'Encosto alto e assento largo.', *chairs('painted_wooden_chair_01', 92)),
-        tier('Cadeira de madeira nobre', 'Madeira escura entalhada à mão.', *chairs('chinese_armchair', 95, 60, -54)),
+        tier('Cadeira de madeira nobre', 'Madeira escura entalhada à mão.', *chairs('chinese_armchair', 135, 60, -54)),
         tier('Poltrona de couro e madeira', 'Conforto de lounge.', *chairs('modern_arm_chair_01', 82, 64, -58)),
     ]
 
@@ -89,7 +89,7 @@ def chair_tiers():
 def lamp_tiers(orig):
     return [
         tier(orig, 'A luminária que já estava lá.'),
-        tier('Pendente industrial', 'Cúpula de metal e luz quente.', part('hanging_industrial_lamp', 55)),
+        tier('Pendente industrial', 'Cúpula de metal e luz quente.', part('hanging_industrial_lamp', 110)),
         tier('Lampião de metal', 'Lampião clássico de vidro.', part('Lantern_01', 40)),
         tier('Lanterna de latão', 'Latão trabalhado, luz dourada.', part('brass_diya_lantern', 46)),
         tier('Lustre de lanternas', 'Conjunto de lanternas penduradas.', part('lantern_chandelier_01', 60)),
@@ -119,7 +119,7 @@ BAR = {
             tier('Banqueta de ferro', 'Ferro pintado e assento de madeira.', part('metal_stool_01', 78, 42)),
             tier('Banqueta pintada alta', 'Madeira desgastada pelo sal.', part('painted_wooden_stool', 78, 40)),
             tier('Banqueta industrial', 'Assento de madeira, pés de ferro.', part('metal_stool_02', 78, 42)),
-            tier('Banqueta de madeira nobre', 'Madeira escura maciça, acabamento de bar de hotel.', part('chinese_stool', 78, 42)),
+            tier('Banqueta de madeira torneada', 'Madeira maciça torneada, acabamento de bar de hotel.', part('wooden_stool_02', 78, 42)),
         ], anchor='World_0327', hide=['World_0327']),
         slot('mesas', 'Mesas', 110, 2, 1, table_tiers(), anchor='World_0333', hide=['World_0333']),
         slot('cadeiras', 'Cadeiras', 90, 2, 1, chair_tiers(), anchor='World_0333', hide=['World_0332', 'World_0334']),
@@ -160,12 +160,12 @@ POOL = {
             tier('Listrado coral', 'Listras coral e areia.', material='M_Custom_Umbrella_3'),
             tier('Palha trançada', 'Palha natural, sombra fresca.', material='M_Custom_Umbrella_4'),
             tier('Lona náutica premium', 'Lona marinho de iate.', material='M_Custom_Umbrella_5'),
-        ], anchor='World_0101', also=['World_0106', 'World_0111', 'World_0116']),
+        ], anchor='World_0100', also=['World_0101', 'World_0110', 'World_0111', 'World_0115']),
         slot('mesinhas', 'Mesinhas de apoio', 60, 1, 1, [
             tier('Mesinha de madeira', 'A mesinha original ao lado da espreguiçadeira.'),
             tier('Mesinha redonda', 'Madeira clara de pé central.', part('small_wooden_table_01', 58, 50)),
             tier('Mesa de jardim baixa', 'Madeira maciça e pés torneados.', part('round_wooden_table_02', 58, 56)),
-            tier('Mesa de centro moderna', 'Madeira e metal escovado.', part('modern_coffee_table_01', 58, 60)),
+            tier('Mesinha de jardim', 'Madeira maciça de pés torneados.', part('gallinera_table', 58, 60)),
             tier('Mesa industrial', 'Tampo de madeira de demolição.', part('industrial_coffee_table', 58, 62)),
         ], anchor='World_0139', hide=['World_0139']),
         slot('plantas', 'Plantas', 70, 0, 2, plants(2, 4, 6, 6, 6), spots=[[-880, -190, 45], [880, -190, 135], [-880, 990, 315], [880, 990, 225], [-320, -190, 0], [320, -190, 0]]),
@@ -198,18 +198,18 @@ POUSADA = {
             tier('Teca polida', 'Recepção de hotel boutique.', material='M_Custom_Counter_5'),
         ], anchor='World_0040', also=['World_0041', 'World_0042', 'World_0043']),
         slot('espera', 'Poltronas da recepção', 140, 2, 1, [
-            tier('Cadeira de madeira', 'Cadeira simples para quem espera.', part('WoodenChair_01', 92)),
-            tier('Cadeira estofada verde', 'Assento acolchoado.', part('GreenChair_01', 88)),
-            tier('Poltrona clássica', 'Poltrona de tecido com braços.', part('ArmChair_01', 95)),
-            tier('Poltrona de madeira nobre', 'Madeira escura entalhada.', part('chinese_armchair', 95)),
-            tier('Poltrona de design', 'Lounge chair de couro e madeira.', part('mid_century_lounge_chair', 85)),
+            tier('Cadeira branca de madeira', 'Cadeira simples para quem espera.', part('painted_wooden_chair_01', 92)),
+            tier('Cadeira estofada verde', 'Assento acolchoado.', part('GreenChair_01', 100)),
+            tier('Poltrona clássica', 'Poltrona de tecido com braços.', part('ArmChair_01', 105)),
+            tier('Poltrona de madeira nobre', 'Madeira escura entalhada.', part('chinese_armchair', 135)),
+            tier('Poltrona de design', 'Lounge chair de couro e madeira.', part('mid_century_lounge_chair', 100)),
         ], spots=[[-330, 1420, 90], [330, 1420, 270]]),
         slot('banco', 'Banco da entrada', 120, 1, 1, [
             tier('Banco pintado', 'O banco original da entrada.'),
-            tier('Sofá de madeira pintada', 'Encosto de ripas e almofadas.', part('painted_wooden_sofa', 90, 170)),
-            tier('Sofá de madeira nobre', 'Madeira escura de linhas retas.', part('chinese_sofa', 90, 180)),
-            tier('Sofá de linho', 'Estofado claro e macio.', part('Sofa_01', 85, 190)),
-            tier('Sofá de veludo', 'Veludo e pés de madeira torneada.', part('sofa_03', 90, 200)),
+            tier('Sofá de madeira pintada', 'Encosto de ripas e almofadas.', part('painted_wooden_sofa', 89, 170)),
+            tier('Sofá de madeira nobre', 'Madeira escura de linhas retas.', part('chinese_sofa', 68, 180)),
+            tier('Sofá de linho', 'Estofado claro e macio.', part('Sofa_01', 80, 157)),
+            tier('Sofá de veludo', 'Veludo e pés de madeira torneada.', part('sofa_03', 82, 200)),
         ], anchor='World_0073', hide=['World_0073']),
         slot('plantas', 'Plantas', 100, 0, 2, [
             tier('Costela-de-adão', 'Os vasos originais da varanda.'),
@@ -322,7 +322,7 @@ HOTEL_RESTAURANT = {
 }
 
 HOTEL_POOL = {
-    'name': 'Grand Hotel · Piscina', 'unlock': 'grand_hotel', 'area': [-4405, -1500, 2800, 4400],
+    'name': 'Grand Hotel · Piscina', 'unlock': 'grand_hotel', 'area': [-4405, -1500, 2800, 4700],
     'effects': {'hotel_per_point': 0.0025},
     'slots': [
         slot('espreguicadeiras', 'Espreguiçadeiras', 450, 3, 1, lounger_tiers('Espreguiçadeira do hotel'), anchor='World_0087', hide=['World_0087'] + TOWELS_HOTEL),
@@ -476,17 +476,17 @@ HOME = {
         ], anchor='World_0252', hide=['World_0252', 'World_0933', 'World_0934']),
         slot('sofa', 'Sofá', 80, 3, 1, [
             tier('Sofá de tecido', 'O sofá antigo da sala.'),
-            tier('Sofá de madeira pintada', 'Ripas e almofadas.', part('painted_wooden_sofa', 90, 170)),
-            tier('Sofá de madeira nobre', 'Madeira escura de linhas retas.', part('chinese_sofa', 90, 180)),
-            tier('Sofá de linho', 'Estofado claro e macio.', part('Sofa_01', 85, 190)),
-            tier('Sofá de veludo', 'Veludo e pés torneados.', part('sofa_03', 90, 200)),
+            tier('Sofá de madeira pintada', 'Ripas e almofadas.', part('painted_wooden_sofa', 89, 170)),
+            tier('Sofá de madeira nobre', 'Madeira escura de linhas retas.', part('chinese_sofa', 68, 180)),
+            tier('Sofá de linho', 'Estofado claro e macio.', part('Sofa_01', 80, 157)),
+            tier('Sofá de veludo', 'Veludo e pés torneados.', part('sofa_03', 82, 200)),
         ], anchor='World_1160', hide=['World_1160', 'World_1161']),
         slot('mesa_centro', 'Mesa de centro', 50, 0, 2, [
             tier('Mesa redonda de mármore', 'A mesa de centro original.'),
             tier('Mesa de madeira clara', 'Tampo de ripas.', part('CoffeeTable_01', 32, 90)),
             tier('Mesa de centro moderna', 'Madeira e metal.', part('modern_coffee_table_02', 32, 100)),
             tier('Mesa gótica', 'Madeira entalhada escura.', part('gothic_coffee_table', 32, 100)),
-            tier('Mesa industrial', 'Madeira de demolição e ferro.', part('industrial_coffee_table', 32, 105)),
+            tier('Mesa industrial', 'Madeira de demolição e ferro.', part('industrial_coffee_table', 34, 80)),
         ], anchor='World_1166', hide=['World_1166']),
         slot('armario', 'Armário', 70, 1, 2, [
             tier('Armário pintado', 'O armário do quarto.'),
@@ -497,10 +497,10 @@ HOME = {
         ], anchor='World_1168', hide=['World_1168', 'World_1169', 'World_1170']),
         slot('rack', 'Rack da TV', 60, 0, 2, [
             tier('Mesinha de madeira', 'A mesinha onde fica a TV.'),
-            tier('Gaveteiro antigo', 'Madeira com puxadores de latão.', part('vintage_wooden_drawer_01', 79, 90)),
-            tier('Rack moderno', 'Madeira clara e portas de correr.', part('modern_wooden_cabinet', 79, 110)),
-            tier('Aparador de madeira nobre', 'Madeira escura entalhada.', part('chinese_console_table', 79, 120)),
-            tier('Gaveteiro de designer', 'Gavetas de madeira maciça.', part('drawer_cabinet', 79, 100)),
+            tier('Gaveteiro antigo', 'Madeira com puxadores de latão.', part('vintage_wooden_drawer_01', 79, 120)),
+            tier('Aparador pintado', 'Madeira pintada com portas.', part('painted_wooden_cabinet', 79, 110)),
+            tier('Aparador de madeira nobre', 'Madeira escura entalhada.', part('chinese_console_table', 79, 150)),
+            tier('Aparador industrial', 'Madeira de demolição e ferro.', part('industrial_coffee_table', 79, 90)),
         ], anchor='World_1162', hide=['World_1162']),
         slot('mesa_jantar', 'Mesa de jantar', 60, 1, 1, [
             tier('Mesa de madeira', 'A mesa da cozinha.'),
@@ -512,16 +512,16 @@ HOME = {
         slot('cadeiras_jantar', 'Cadeiras da cozinha', 45, 2, 0, [
             tier('Banquinhos de madeira', 'Os banquinhos de sempre.'),
             tier('Cadeira azul', 'Madeira pintada à mão.', part('painted_wooden_chair_02', 92, at=[0, -70, 0], yaw=90), part('painted_wooden_chair_02', 92, at=[0, 70, 0], yaw=270)),
-            tier('Cadeira de madeira', 'Madeira maciça e encosto alto.', part('WoodenChair_01', 92, at=[0, -70, 0], yaw=90), part('WoodenChair_01', 92, at=[0, 70, 0], yaw=270)),
+            tier('Cadeira branca', 'Madeira pintada de encosto alto.', part('painted_wooden_chair_01', 92, at=[0, -70, 0], yaw=90), part('painted_wooden_chair_01', 92, at=[0, 70, 0], yaw=270)),
             tier('Cadeira estofada', 'Couro e madeira.', part('dining_chair_02', 90, at=[0, -72, 0], yaw=90), part('dining_chair_02', 90, at=[0, 72, 0], yaw=270)),
             tier('Cadeira de jardim', 'Madeira clara com encosto curvo.', part('gallinera_chair', 90, at=[0, -72, 0], yaw=90), part('gallinera_chair', 90, at=[0, 72, 0], yaw=270)),
         ], anchor='World_1111', hide=['World_0218']),
         slot('criado', 'Criado-mudo', 40, 1, 1, [
             tier('Criado pintado', 'O criado-mudo ao lado da cama.'),
-            tier('Criado clássico', 'Madeira escura com gaveta.', part('ClassicNightstand_01', 58)),
             tier('Mesinha de apoio', 'Madeira clara.', part('side_table_01', 58)),
-            tier('Gaveteiro antigo', 'Puxadores de latão.', part('vintage_wooden_drawer_01', 58, 60)),
-            tier('Criado de design', 'Madeira maciça de linhas retas.', part('modern_wooden_cabinet', 58, 60)),
+            tier('Criado clássico', 'Madeira escura com gaveta.', part('ClassicNightstand_01', 58)),
+            tier('Mesinha de madeira', 'Madeira clara de pés finos.', part('small_wooden_table_01', 58, 60)),
+            tier('Criado industrial', 'Madeira de demolição e ferro.', part('industrial_coffee_table', 58, 55)),
         ], anchor='World_0222', hide=['World_0222', 'World_0223']),
         slot('luminaria', 'Luminária', 35, 0, 2, [
             tier('Lamparina antiga', 'A lamparina de vidro pintado.'),
@@ -532,10 +532,10 @@ HOME = {
         ], anchor='World_0936', hide=['World_0935', 'World_0936', 'World_0937']),
         slot('poltrona', 'Poltrona da varanda', 55, 2, 1, [
             tier('Cadeira de balanço', 'A cadeira de balanço do avô.'),
-            tier('Cadeira estofada verde', 'Assento acolchoado.', part('GreenChair_01', 88)),
-            tier('Poltrona clássica', 'Tecido e braços largos.', part('ArmChair_01', 95)),
-            tier('Poltrona de madeira nobre', 'Madeira escura entalhada.', part('chinese_armchair', 95)),
-            tier('Poltrona de design', 'Lounge chair de couro.', part('mid_century_lounge_chair', 85)),
+            tier('Cadeira estofada verde', 'Assento acolchoado.', part('GreenChair_01', 100)),
+            tier('Poltrona clássica', 'Tecido e braços largos.', part('ArmChair_01', 105)),
+            tier('Poltrona de madeira nobre', 'Madeira escura entalhada.', part('chinese_armchair', 135)),
+            tier('Poltrona de design', 'Lounge chair de couro.', part('mid_century_lounge_chair', 100)),
         ], anchor='World_0940', hide=['World_0940']),
         slot('quadros', 'Quadros', 30, 0, 2, [
             tier('Molduras simples', 'Os quadros da parede.'),
@@ -548,7 +548,7 @@ HOME = {
             tier('Suculentas', 'Os vasinhos da casa.'),
             tier('Costela-de-adão', 'Folhagem em vaso de barro.', part('potted_plant_02', 70)),
             tier('Palmeirinha', 'Planta alta em vaso.', part('potted_plant_01', 120)),
-            tier('Calateia', 'Folhas listradas.', part('calathea_orbifolia_01', 75)),
+            tier('Antúrio', 'Flores vermelhas em vaso.', part('anthurium_botany_01', 70)),
             tier('Árvore-da-fortuna', 'Pachira trançada.', part('pachira_aquatica_01', 160)),
         ], anchor='World_0738', hide=['World_0735', 'World_0736', 'World_0737', 'World_0738']),
     ],

@@ -7,7 +7,7 @@ import unreal
 
 ROOT = Path(unreal.Paths.project_dir()).resolve()
 DATA = ROOT / 'Content/Data'
-LIBS = [Path('D:/Assets/PolyHaven'), Path('D:/Assets/Fab')]
+LIBS = [Path('D:/Assets/PolyHaven'), Path('D:/Assets/Fab'), Path('D:/Assets/Mare')]
 
 
 def _slugs():

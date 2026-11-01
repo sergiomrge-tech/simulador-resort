@@ -211,6 +211,11 @@ void AMarePreviewQA::Tick(float DeltaSeconds)
    for(const TCHAR* Slot:{TEXT("mesas"),TEXT("cadeiras"),TEXT("banquetas"),TEXT("guarda_sois"),TEXT("balcao"),TEXT("iluminacao"),TEXT("plantas"),TEXT("letreiro")})
     for(int32 Tier=1;Tier<=5;++Tier)if(!Custom->HasVisual(TEXT("kiosk"),Slot,Tier)){bAll=false;UE_LOG(LogTemp,Warning,TEXT("MARE_QA custom visual missing %s %d"),Slot,Tier);}
    Check(TEXT("custom_all_tiers_have_visuals"),bAll);
+   // Every place of the resort (expansions, hotel, businesses, home): each tier resolves its models.
+   bool bPlaces=true;for(const auto& PlacePair:UMareSimulation::Object(Sim->CustomDefs(),TEXT("places"))->Values){const FString Place(PlacePair.Key.ToView());
+    const TArray<TSharedPtr<FJsonValue>>* Defs=nullptr;if(PlacePair.Value->AsObject()->TryGetArrayField(TEXT("slots"),Defs))for(const auto& V:*Defs){const FString Slot=UMareSimulation::String(V->AsObject(),TEXT("id"));
+     for(int32 Tier=1;Tier<=5;++Tier)if(!Custom->HasVisual(Place,Slot,Tier)){bPlaces=false;UE_LOG(LogTemp,Warning,TEXT("MARE_QA custom visual missing %s/%s %d"),*Place,*Slot,Tier);}}}
+   Check(TEXT("custom_all_places_have_visuals"),bPlaces);
    Custom->PreviewPlace(TEXT("kiosk"),3);Check(TEXT("custom_preview_swaps_tables"),Custom->PartInstances(TEXT("kiosk"),TEXT("mesas"))==3 && Custom->PartInstances(TEXT("kiosk"),TEXT("cadeiras"))==6);
    Custom->PreviewPlace(TEXT("kiosk"),0);}
   Capture(TEXT("expansion-pool-purchased"));

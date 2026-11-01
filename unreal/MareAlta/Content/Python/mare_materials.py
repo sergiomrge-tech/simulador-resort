@@ -488,4 +488,10 @@ def build_custom_materials():
     out['M_Custom_Sign_4'] = _custom_pbr('M_Custom_Sign_4', 'rough_linen', 40, 'return float3(.95,.5,.8);', emissive_code=neon % 'float3(1.0,.18,.62)', rough_const=.2)
     rainbow = 'float h=frac(T*.08+P.x*.0015); float3 c=saturate(abs(frac(h+float3(0,.333,.667))*6-3)-1); return c*(.8+N*N*40.0);'
     out['M_Custom_Sign_5'] = _custom_pbr('M_Custom_Sign_5', 'rough_linen', 40, 'return float3(.9,.9,.9);', emissive_code=rainbow, rough_const=.2)
+    # Water slide fibreglass: glossy colour over a faint weave so it does not read as flat plastic.
+    glass = lum + 'return %s*clamp(l*1.6,.85,1.12);'
+    out['M_Custom_Slide_2'] = _custom_pbr('M_Custom_Slide_2', 'rough_linen', 200, glass % 'float3(.05,.45,.75)', rough_const=.18)
+    out['M_Custom_Slide_3'] = _custom_pbr('M_Custom_Slide_3', 'rough_linen', 200, glass % 'float3(.95,.72,.08)', rough_const=.18)
+    out['M_Custom_Slide_4'] = _custom_pbr('M_Custom_Slide_4', 'rough_linen', 200, glass % 'float3(.93,.38,.30)', rough_const=.18)
+    out['M_Custom_Slide_5'] = _custom_pbr('M_Custom_Slide_5', 'rough_linen', 200, 'return float3(.85,.85,.9);', emissive_code='float h=frac(T*.05+P.z*.002); float3 c=saturate(abs(frac(h+float3(0,.333,.667))*6-3)-1); return c*N*N*12.0;', rough_const=.18)
     return out
