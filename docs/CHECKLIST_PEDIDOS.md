@@ -53,7 +53,9 @@ Legenda: [x] feito e validado · [~] em andamento/parcial · [ ] pendente.
   - [x] Modelos (01/11): 41 móveis Poly Haven CC0 baixados em `D:/Assets/PolyHaven`; 6 móveis detalhados modelados em bpy (`tools/ue58/gen_custom_furniture.py`: 3 espreguiçadeiras, daybed, cama estofada, cama com dossel) com tecidos fotográficos CC0.
   - [x] Modelos importados na UE (47 novos em `/Game/Custom`), proporções naturais corrigidas, guarda-sóis da piscina e tochas do hotel reconhecidos, tobogã em 5 acabamentos (`M_Custom_Slide_2..5`); imagens de bar, piscina, pousada, hotel (restaurante e piscina) e casa nos 5 níveis; QA PIE 104/104 com `custom_all_places_have_visuals`.
   - [ ] Interior de quartos da pousada/suítes do hotel (os itens de quarto e de serviço já têm efeito, ainda sem móveis próprios no mapa).
-- [ ] "Procure um modelo real de celular (asset) e adapte a tela" (01/11): celular 3D na mão com a interface na tela.
+- [~] "Procure um modelo real de celular (asset) e adapte a tela" (01/11): modelo "Realistic Smartphone" (dimension Dazzle, Fab, CC BY 4.0) baixado em `D:/Assets/Fab/realistic_smartphone`, peças unidas no Blender e importado em `/Game/Custom/realistic_smartphone`. Falta prender na câmera e desenhar a interface sobre a tela.
+- [ ] "Aproveite que está mexendo no celular e me ajude a melhorar a interface dele; quando for fazer isso, mude para alto o Opus" (01/11): redesenho da interface junto com o celular 3D — começar com esforço alto.
+- [ ] "A água da piscina precisa ser real como a da praia, limpa, transparente e realista" (01/11).
 - [x] Manter este checklist sempre que o usuário pedir algo (regra salva na memória).
 
 ## Regras permanentes já pedidas

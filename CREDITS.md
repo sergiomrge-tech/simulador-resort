@@ -530,3 +530,7 @@ Tecidos e couros fotográficos (Poly Haven, CC0 1.0) usados nos móveis modelado
 - Teak Veneer (`teak_veneer`) — Jenelle van Heerden — https://polyhaven.com/a/teak_veneer
 
 Móveis originais modelados para o projeto com bpy (`tools/ue58/gen_custom_furniture.py`): espreguiçadeira de ripas, espreguiçadeira com colchonete, espreguiçadeira de vime (trama real), daybed com dossel, cama estofada capitonê e cama com dossel torneada.
+
+### Celular na mão (UE5.8) — 01/11/2026
+
+- "Realistic Smartphone" por dimension Dazzle — Fab, licença Creative Commons Attribution 4.0 (CC BY 4.0) — https://www.fab.com/listings/b4214af8-b5d2-45fd-82bc-72e86329857b (as três peças foram unidas no Blender para importar).

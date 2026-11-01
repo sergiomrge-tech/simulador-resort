@@ -32,12 +32,12 @@ def _find(slug):
     return None
 
 
-def import_all(force=False):
+def import_all(force=False, only=None):
     import mare_hotel_lobby
     path = DATA / 'custom_assets.json'
     assets = json.loads(path.read_text(encoding='utf-8')) if path.exists() else {}
     report = {}
-    for slug in _slugs():
+    for slug in only or _slugs():
         if slug in assets and not force and unreal.load_asset(assets[slug]):
             report[slug] = 'kept'
             continue
@@ -87,6 +87,10 @@ def fix_usage():
 def run(action, arg=''):
     if action == 'fixusage':
         return fix_usage()
+    if action == 'one':
+        # Single props outside the catalogue (e.g. the hand-held phone 'realistic_smartphone').
+        unreal.EditorAssetLibrary.delete_directory('/Game/Custom/' + arg)  # a failed import leaves an empty mesh behind
+        return import_all(True, [arg])
     if action == 'import':
         return import_all(arg == 'force')
     if action == 'slugs':
