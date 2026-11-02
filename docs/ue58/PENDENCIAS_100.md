@@ -23,7 +23,9 @@ Marcar `[x]` só depois de testado no jogo, com foto ou teste automático.
 - [x] P0 **Roupa padrão da Epic** pintada por papel (`metahumans.json` → `clothes`), conferida no PIE, 02/11. Roupas de modelos
   variados (regata, vestido, camisa social) continuam na seção 5.
 - [x] P1 Toalha em cima da cama do bangalô sujo: ampliada 2,8× (foto `toalha-negociacao-20261102.jpg`).
-- [ ] P1 Faixa de pele um pouco mais clara onde ficava a roupa íntima assada em algumas banhistas (ajustar o preenchimento).
+- [x] P1 Faixa de pele um pouco mais clara onde ficava a roupa íntima assada (02/11): a cor já estava certa; o mapa
+  SRMF mantinha rugosidade/especular de tecido (255/127 contra ~160/160 da pele). `mh_skin_underwear.py` agora preenche
+  também o SRMF; 7 corpos de banho reimportados; foto `docs/ue58/graphics-reference/pele-banhistas-20261102.jpg`.
 - [x] P1 Zuri careca (preset da Epic): retirada dos elencos (02/11) até ganhar cabelo.
 - [ ] P1 Vasos de pachira do saguão do hotel com colisão de copa enorme (bloqueia a mira). Corrigir a colisão
   quando o Sergio liberar esses arquivos, que têm mudanças dele.

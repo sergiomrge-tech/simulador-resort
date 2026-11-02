@@ -3,7 +3,8 @@
 The MetaHuman Optimized build bakes grey briefs into T_Body_BC (show_top_underwear only removes the top).
 Swim bodies wear small bikinis/trunks made in Blender, so the briefs would show around them: this finds the
 grey, desaturated texels and fills them by normalized convolution of the surrounding skin (colour) plus a
-little fine noise; the normal map is filled the same way so the brief seams disappear.
+little fine noise; the normal and specular/roughness (SRMF) maps are filled the same way so the brief seams
+and the fabric's matte finish disappear.
 
 python tools/ue58/mh_skin_underwear.py D:/CodexTemp/mh/Ada_Swim   -> writes *_Skin.tga next to the inputs
 """
@@ -69,6 +70,12 @@ def main(folder):
     nmask = np.asarray(Image.fromarray((mask_small * 255).astype(np.uint8)).resize(n.shape[:2][::-1], Image.BILINEAR)) > 127
     nfill = fill(n, nmask, 4)
     Image.fromarray(np.clip(nfill, 0, 255).astype(np.uint8)).save(f'{folder}/T_Body_N_Skin.tga')
+    # Specular/roughness: the briefs keep fabric values (roughness 255, specular ~127 against ~160 on skin),
+    # which read as a lighter, matte band in the game. Fill them from the surrounding skin as well.
+    srmf = np.asarray(Image.open(f'{folder}/T_Body_SRMF.tga').convert('RGBA'))
+    smask = np.asarray(Image.fromarray((mask_small * 255).astype(np.uint8)).resize(srmf.shape[:2][::-1], Image.BILINEAR)) > 127
+    sfill = fill(srmf, smask, 4)
+    Image.fromarray(np.clip(sfill, 0, 255).astype(np.uint8), 'RGBA').save(f'{folder}/T_Body_SRMF_Skin.tga')
     Image.fromarray(np.clip(out, 0, 255).astype(np.uint8)).resize((1024, 1024)).save(f'{folder}/bc_skin_small.jpg', quality=90)
     print('mask texels %.2f%%' % (100 * mask_small.mean()))
 

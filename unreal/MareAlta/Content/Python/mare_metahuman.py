@@ -215,10 +215,16 @@ def import_garment(name, fbx, kind):
 
 
 def replace_skin(name, folder):
-    """Swap the swim build's baked body colour/normal for the underwear-free versions (tools/ue58/mh_skin_underwear.py)."""
+    """Swap the swim build's baked body colour/normal/specular-roughness for the underwear-free versions
+    (tools/ue58/mh_skin_underwear.py)."""
+    import os
     baked = f'{FOLDER}/{name}_Swim/MH_{name}_Swim/Body/Baked'
     out = {}
-    for tex, normal in (('T_Body_BC', False), ('T_Body_N', True)):
+    for tex, normal in (('T_Body_BC', False), ('T_Body_N', True), ('T_Body_SRMF', None)):
+        if not os.path.exists(f'{folder}/{tex}_Skin.tga'):
+            continue
+        before = unreal.load_asset(f'{baked}/{tex}')
+        keep = {p: before.get_editor_property(p) for p in ('srgb', 'compression_settings')} if before else {}
         task = unreal.AssetImportTask()
         task.filename = f'{folder}/{tex}_Skin.tga'
         task.destination_path = baked
@@ -228,8 +234,12 @@ def replace_skin(name, folder):
         task.save = False
         unreal.AssetToolsHelpers.get_asset_tools().import_asset_tasks([task])
         t = unreal.load_asset(f'{baked}/{tex}')
-        t.set_editor_property('srgb', not normal)
-        t.set_editor_property('compression_settings', unreal.TextureCompressionSettings.TC_NORMALMAP if normal else unreal.TextureCompressionSettings.TC_DEFAULT)
+        if normal is None:   # data map: keep the baked texture's own settings (linear, masks)
+            for p, v in keep.items():
+                t.set_editor_property(p, v)
+        else:
+            t.set_editor_property('srgb', not normal)
+            t.set_editor_property('compression_settings', unreal.TextureCompressionSettings.TC_NORMALMAP if normal else unreal.TextureCompressionSettings.TC_DEFAULT)
         unreal.EditorAssetLibrary.save_loaded_asset(t, False)
         out[tex] = [t.blueprint_get_size_x(), str(t.get_editor_property('compression_settings'))]
     return out
