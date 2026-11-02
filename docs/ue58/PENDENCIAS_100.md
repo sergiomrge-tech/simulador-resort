@@ -30,7 +30,9 @@ Marcar `[x]` só depois de testado no jogo, com foto ou teste automático.
 - [ ] P1 Vasos de pachira do saguão do hotel com colisão de copa enorme (bloqueia a mira). Corrigir a colisão
   quando o Sergio liberar esses arquivos, que têm mudanças dele.
 - [x] P1 Painel da negociação: detalhes numa linha própria e botões em duas fileiras, conferido no jogo (02/11).
-- [ ] P2 Bainha das pernas da sunga boxer levemente marcada; pequenos furos no cós.
+- [x] P2 Bainha da sunga boxer marcada e furos no cós (02/11): a sunga agora é uma peça única copiada da pele entre o
+  cós e as barras (cortes retos, costura central soldada, uma subdivisão), sem o degrau entre quadril e pernas;
+  foto `docs/ue58/graphics-reference/sunga-20261102.jpg`.
 
 ## 2. Migração Godot → Unreal ainda incompleta
 - [x] P1 **Pesca no píer** e **modo foto (P)** com álbum (02/11): E na ponta do píer abre a pescaria (espera, "fisgou!",

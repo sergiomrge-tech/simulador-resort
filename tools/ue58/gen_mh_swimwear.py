@@ -21,6 +21,7 @@ args = sys.argv[sys.argv.index('--') + 1:]
 SRC, DST, KIND = args[0], args[1], (args[2] if len(args) > 2 else 'bikini')
 LIFT = .0032
 STEP = .0035
+BODY = None   # body skin (world space bmesh), set in main
 
 
 def load_body():
@@ -247,33 +248,48 @@ def tube_rows(bm_out, tree, rows, centre_of, steps=72, lift=.001):
 
 
 def trunks(bm_out, tree, m):
-    """Boxer swim trunks: a waist-to-crotch tube around the hips, then one short leg tube per thigh, and a
-    gusset under the crotch joining them."""
+    """Boxer swim trunks as ONE continuous surface: the body's own skin between the waistband and the leg hems,
+    cut by straight planes, lifted off the skin and draped over the groin and buttock creases. Earlier versions
+    built a hip tube and separate thigh tubes, which always left a visible step or seam where they met."""
     cz = m['crotch'].z
-    top = cz + .17
-    # Hip tube down to just below the crotch (bridging between the legs), then thigh tubes that start under it.
-    hip_rows = [top - k * .012 for k in range(int((top - (cz - .025)) / .012) + 1)]
-    hips = tube_rows(bm_out, tree, hip_rows, lambda z: (0.0, -.01))
-    # Settle the cloth: the lower rows smooth out where they bridge between the legs and the buttocks.
-    drape(bm_out, tree, [v for ring in hips[2:] for v in ring], cz + .06, rounds=14)
-    leg_rows = [cz - .005 - k * .012 for k in range(int(.10 / .012) + 1)]
-    for s in (1, -1):
-        def thigh(z, s=s):
-            # Thigh axis: midpoint of the leg's inner and outer surface at this height.
-            inner = tree.ray_cast(Vector((s * .25, -.01, z)), Vector((-s, 0, 0)))
-            outer = tree.ray_cast(Vector((s * .01, -.01, z)), Vector((s, 0, 0)))
-            if inner[0] is None or outer[0] is None:
-                return s * .09, -.01
-            return (inner[0].x + outer[0].x) / 2, -.01
-        tube_rows(bm_out, tree, leg_rows, thigh, lift=.0004)   # just under the hip tube where they overlap
-    fy = cast(tree, Vector((0, -.6, cz + .02)), Vector((0, 1, 0)))
-    by = cast(tree, Vector((0, .6, cz + .02)), Vector((0, -1, 0)))
-    if fy and by:
-        patch(bm_out, tree, [(-.03, fy.y - .015), (.03, fy.y - .015), (.035, by.y + .015), (-.035, by.y + .015)], 'under', .0008)
+    top, hem = cz + .17, cz - .11
+    skin = BODY.copy()
+    geom = skin.verts[:] + skin.edges[:] + skin.faces[:]
+    bmesh.ops.bisect_plane(skin, geom=geom, plane_co=(0, 0, top), plane_no=(0, 0, 1), clear_outer=True)
+    geom = skin.verts[:] + skin.edges[:] + skin.faces[:]
+    bmesh.ops.bisect_plane(skin, geom=geom, plane_co=(0, 0, hem), plane_no=(0, 0, -1), clear_outer=True)
+    # Hands hang beside the hips in the A pose: keep only the trunk and the thighs.
+    far = [f for f in skin.faces if abs(f.calc_center_median().x) > m['hip_x'] + .04]
+    bmesh.ops.delete(skin, geom=far, context='FACES')
+    loose = [v for v in skin.verts if not v.link_faces]
+    bmesh.ops.delete(skin, geom=loose, context='VERTS')
+    # One smooth subdivision: the body is a game mesh, and its coarse faces let skin poke through the cloth.
+    # The MetaHuman body is split along its UV seams (the mid line too): weld it so the cloth is one sheet.
+    bmesh.ops.remove_doubles(skin, verts=skin.verts[:], dist=.0005)
+    bmesh.ops.subdivide_edges(skin, edges=skin.edges[:], cuts=1, use_grid_fill=True, smooth=1.0)
+    # The smooth subdivision moves the cut edges off their planes (a frayed look): put them back.
+    for v in skin.verts:
+        if v.is_boundary and min(abs(v.co.z - top), abs(v.co.z - hem)) < .012:
+            v.co.z = top if abs(v.co.z - top) < abs(v.co.z - hem) else hem
+    skin.normal_update()
+    for v in skin.verts:
+        v.co += v.normal * (LIFT + .001)
+    mesh = bpy.data.meshes.new('trunks_tmp')
+    skin.to_mesh(mesh)
+    skin.free()
+    first = len(bm_out.verts)
+    bm_out.from_mesh(mesh)
+    bpy.data.meshes.remove(mesh)
+    bm_out.verts.ensure_lookup_table()
+    verts = bm_out.verts[first:]
+    # Fabric bridges the creases instead of following them (boundary rows stay on the cut planes).
+    drape(bm_out, tree, verts, -1.0, rounds=12)
 
 
 def main():
+    global BODY
     body, arm, bm, tree = load_body()
+    BODY = bm
     m = measure(bm)
     out = bmesh.new()
     (bikini if KIND == 'bikini' else trunks)(out, tree, m)
