@@ -1,0 +1,25 @@
+{
+ "_doc": "Grand Hotel restaurant, hands-on (gameplay plan: serve the tables, room service, events). During the services guests sit at the tables; E on a table takes the order, the kitchen cooks for cook_minutes, E at the kitchen pass picks up what is ready, E on the table serves it (price + tip for speed). Suites order room service, delivered with E at the lift. Whatever waits longer than crew_minutes is served by the hotel crew at crew_share. Events are booked a day ahead and happen at event_hour. World cm: tables = table centres, pass and room_service = E targets [x, y, z, yaw].",
+ "services": [[12, 15], [19, 22]],
+ "cook_minutes": 20,
+ "crew_minutes": 45,
+ "crew_share": 0.7,
+ "room_fee": 0.15,
+ "event_hour": 20,
+ "tables": [[-1200, 3860, 155], [-920, 3860, 155], [-1200, 4200, 155], [-920, 4200, 155], [-1200, 4540, 155], [-920, 4540, 155]],
+ "pass": [-620, 4030, 225, 180],
+ "room_service": [-2750, 6700, 140, 90],
+ "menu": [
+  {"id": "moqueca", "name": "Moqueca de peixe", "price": 68},
+  {"id": "camarao_moranga", "name": "Camarão na moranga", "price": 82},
+  {"id": "peixe_grelhado", "name": "Peixe grelhado com pirão", "price": 64},
+  {"id": "bobo", "name": "Bobó de camarão", "price": 74},
+  {"id": "salada", "name": "Salada tropical", "price": 38},
+  {"id": "cartola", "name": "Cartola (sobremesa)", "price": 28}
+ ],
+ "events": [
+  {"id": "aniversario", "name": "Festa de aniversário", "cost": 600, "income": 1600, "fame": 8, "guests": 30},
+  {"id": "casamento", "name": "Casamento na praia", "cost": 2200, "income": 5600, "fame": 20, "guests": 80},
+  {"id": "empresa", "name": "Jantar de empresa", "cost": 900, "income": 2400, "fame": 10, "guests": 40}
+ ]
+}

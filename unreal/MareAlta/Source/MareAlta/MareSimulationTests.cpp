@@ -661,3 +661,39 @@ bool FMareToursHandsOnTest::RunTest(const FString& Parameters)
  IFileManager::Get().DeleteDirectory(*Sim->SaveDirectory,false,true);
  Sim->RemoveFromRoot();Instance->RemoveFromRoot();return true;
 }
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FMareRestaurantTest,"MareAlta.Gameplay.HotelRestaurant",EAutomationTestFlags::EditorContext|EAutomationTestFlags::EngineFilter)
+bool FMareRestaurantTest::RunTest(const FString& Parameters)
+{
+ auto Instance=NewObject<UGameInstance>();Instance->AddToRoot();
+ auto Sim=NewObject<UMareSimulation>(Instance);Sim->AddToRoot();
+ Sim->SaveDirectory=FPaths::ProjectSavedDir()/TEXT("Automation/HotelRestaurant")/FGuid::NewGuid().ToString(EGuidFormats::Digits);
+ auto Load=[&](const FString& Name,TSharedPtr<FJsonObject>& Result){FString Text;FFileHelper::LoadFileToString(Text,*(FPaths::ProjectContentDir()/TEXT("Data")/Name));return FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Text),Result);};
+ if(!TestTrue(TEXT("Definitions"),Load(TEXT("definitions.json"),Sim->Definitions)) || !TestTrue(TEXT("Default save"),Load(TEXT("default_save.json"),Sim->State))){Sim->RemoveFromRoot();Instance->RemoveFromRoot();return false;}
+ Sim->State->SetNumberField(TEXT("money"),5000);Sim->State->SetNumberField(TEXT("minutes"),12*60+5);
+ TestTrue(TEXT("No restaurant before the hotel"),Sim->SeatDiners(0).IsEmpty());
+ Sim->Object(Sim->State,TEXT("unlocked"))->SetBoolField(TEXT("grand_hotel"),true);
+ TestTrue(TEXT("Lunch service open"),Sim->IsRestaurantOpen());
+ TestFalse(TEXT("Diners seated"),Sim->SeatDiners(1).IsEmpty());TestTrue(TEXT("Table taken once"),Sim->SeatDiners(1).IsEmpty());
+ TestTrue(TEXT("Order taken"),Sim->UseTable(1));TestEqual(TEXT("Cooking"),Sim->String(Sim->TableOrder(1),TEXT("stage")),FString(TEXT("cooking")));
+ TestFalse(TEXT("Cannot serve while cooking"),Sim->UseTable(1));TestEqual(TEXT("Nothing ready yet"),Sim->PickUpPass(),0);
+ Sim->State->SetNumberField(TEXT("minutes"),12*60+30);TestEqual(TEXT("Dish on the tray"),Sim->PickUpPass(),1);
+ double Before=Sim->Money();const double Price=Sim->MenuPrice(Sim->String(Sim->TableOrder(1),TEXT("dish")));
+ TestTrue(TEXT("Served"),Sim->UseTable(1));TestTrue(TEXT("Paid at least the menu price"),Sim->Money()-Before>=Price);TestFalse(TEXT("Table free"),Sim->TableOrder(1).IsValid());
+ // Room service: cooked, picked up and delivered at the lift with the room fee.
+ auto Room=MakeShared<FJsonObject>();Room->SetStringField(TEXT("dish"),TEXT("salada"));Room->SetStringField(TEXT("stage"),TEXT("cooking"));Room->SetNumberField(TEXT("suite"),305);
+ Room->SetNumberField(TEXT("since"),Sim->RestaurantNow());Room->SetNumberField(TEXT("ready"),Sim->RestaurantNow());
+ Sim->Restaurant()->SetArrayField(TEXT("room"),{MakeShared<FJsonValueObject>(Room)});
+ TestEqual(TEXT("Nothing to deliver before the pass"),Sim->DeliverRoomService(),0);TestEqual(TEXT("Room dish picked up"),Sim->PickUpPass(),1);
+ Before=Sim->Money();TestEqual(TEXT("Room service delivered"),Sim->DeliverRoomService(),1);TestTrue(TEXT("Room fee"),Sim->Money()-Before>Sim->MenuPrice(TEXT("salada")));
+ // A party left waiting is served by the crew at a share of the price.
+ Sim->SeatDiners(2);Sim->State->SetNumberField(TEXT("minutes"),13*60+30);Before=Sim->Money();Sim->RestaurantHour(14);
+ TestTrue(TEXT("Crew served the long wait"),Sim->Money()>Before);
+ // Event: paid now, earns tomorrow at the event hour.
+ Before=Sim->Money();TestTrue(TEXT("Event booked"),Sim->BookEvent(TEXT("aniversario")));TestEqual(TEXT("Preparation paid"),Sim->Money(),Before-600.);
+ TestFalse(TEXT("One event at a time"),Sim->BookEvent(TEXT("casamento")));
+ Sim->State->SetNumberField(TEXT("day"),Sim->Number(Sim->State,TEXT("day"),1)+1);Sim->State->SetNumberField(TEXT("minutes"),21*60);Before=Sim->Money();
+ Sim->RestaurantHour(21);TestTrue(TEXT("Event income"),Sim->Money()-Before>=1600);TestEqual(TEXT("Event done"),Sim->Object(Sim->Restaurant(),TEXT("event"))->Values.Num(),0);
+ IFileManager::Get().DeleteDirectory(*Sim->SaveDirectory,false,true);
+ Sim->RemoveFromRoot();Instance->RemoveFromRoot();return true;
+}

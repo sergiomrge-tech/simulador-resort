@@ -73,7 +73,12 @@ Pronto e testado (02/11):
   jogador e sem guia o passeio é cancelado e os bilhetes devolvidos; passageiros esperam no píer e embarcam.
   `MareTours.cpp`, `MareToursWorld.cpp`, `Content/Data/tours.json`, teste `MareAlta.Gameplay.ToursHandsOn`.
   Falta: barco saindo do píer com os passageiros e as paradas mostradas em cena.
-- [ ] P1 **Restaurante do hotel**: atender as mesas, serviço de quarto, eventos (casamento, festa).
+- [x] P1 **Restaurante do hotel** (02/11): no almoço e no jantar clientes sentam nas 6 mesas do terraço; E na mesa anota o
+  pedido, a cozinha prepara em 20 min, E no passe (balcão do bufê) pega os pratos prontos, E na mesa serve (gorjeta pela
+  rapidez); serviço de quarto das suítes entregue no elevador; a equipe do hotel atende quem esperar 45 min; eventos
+  (aniversário, casamento na praia, jantar de empresa) marcados para o dia seguinte. `MareRestaurant.cpp`,
+  `MareRestaurantWorld.cpp`, `Content/Data/restaurant.json`, teste `MareAlta.Gameplay.HotelRestaurant`.
+  Falta: pratos visíveis nas mesas e na bandeja, decoração do evento em cena.
 - [ ] P1 **Salão de jogos**:
   - partida de sinuca jogada até o fim no jogo;
   - pebolim;
@@ -177,3 +182,8 @@ Fazer depois de todo o resto, quando os textos estiverem estáveis.
   japonês, coreano e português de Portugal; fontes com suporte a CJK e cirílico.
 - [ ] Revisão por falante nativo de cada idioma e teste de layout (textos maiores em alemão/russo não podem cortar).
 - [ ] Página da Steam e conquistas nos mesmos idiomas.
+
+## 12. Ilha do passeio de barco (pedido do Sergio em 02/11, para o final)
+- [ ] Ilha circular ao fundo, no mar, destino do passeio de barco: bastante árvores e vegetação (nada de low poly),
+  praia em volta e uma trilha passando pelo meio.
+- [ ] O passeio de barco sai do píer, vai até a ilha (desembarque e trilha) e volta; paradas do passeio guiado na ilha.

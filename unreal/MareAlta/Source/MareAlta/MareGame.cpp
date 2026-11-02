@@ -308,6 +308,38 @@ private:
     +SVerticalBox::Slot().AutoHeight()[SNew(STextBlock).Font(MareNotebook::Hand(18)).ColorAndOpacity_Lambda([S,Id](){return FSlateColor(S->IsDishUnlocked(Id) && S->Available(Id)>0?MareNotebook::Green:MareNotebook::Red);})
      .Text_Lambda([S,Id](){if(!S->IsDishUnlocked(Id))return FText::FromString(TEXT("precisa de expansão"));const int32 N=S->Available(Id);return FText::FromString(N>0?FString::Printf(TEXT("%d prontos"),N):TEXT("acabou · repor"));})],TiltOf(I))];++I;}
  }
+ /** Grand Hotel restaurant: tables, kitchen, the tray, room service and the events book (MareRestaurant.cpp). */
+ void RestaurantPage()
+ {
+  auto S=Sim();using namespace MareNotebook;auto R=S->Restaurant();const double Now=S->RestaurantNow();
+  Title(TEXT("Restaurante"),S->IsRestaurantOpen()?TEXT("em serviço"):TEXT("fechado"));
+  Line(FString::Printf(TEXT("Almoço 12h–15h e jantar 19h–22h · %.0f pratos servidos"),UMareSimulation::Number(R,TEXT("served"))),12,Faded);
+  auto DishName=[S](const FString& Id){return UMareSimulation::String(S->MenuDish(Id),TEXT("name"));};
+  Heading(TEXT("Mesas"),TEXT("E na mesa anota o pedido e serve o prato"));
+  const TArray<TSharedPtr<FJsonValue>>* Tables=nullptr;R->TryGetArrayField(TEXT("tables"),Tables);
+  if(!Tables || Tables->IsEmpty())Line(TEXT("Nenhuma mesa ocupada."),13,Faded);
+  else for(const auto& V:*Tables){const auto O=V->AsObject();const FString Stage=UMareSimulation::String(O,TEXT("stage"));
+   const double Left=UMareSimulation::Number(O,TEXT("ready"))-Now;
+   const FString What=Stage==TEXT("order")?TEXT("esperando você anotar"):Stage==TEXT("tray")?TEXT("na bandeja: ")+DishName(UMareSimulation::String(O,TEXT("dish")))
+    :Left>0?FString::Printf(TEXT("%s · pronto em %.0f min"),*DishName(UMareSimulation::String(O,TEXT("dish"))),Left):DishName(UMareSimulation::String(O,TEXT("dish")))+TEXT(" · pronto no passe");
+   Line(FString::Printf(TEXT("Mesa %.0f · %s · %s"),UMareSimulation::Number(O,TEXT("table"))+1,*UMareSimulation::String(O,TEXT("name")),*What),12.5f,Stage==TEXT("tray")?Green:Ink);}
+  Heading(TEXT("Serviço de quarto"),TEXT("entregue no elevador do saguão"));
+  const TArray<TSharedPtr<FJsonValue>>* Room=nullptr;R->TryGetArrayField(TEXT("room"),Room);
+  if(!Room || Room->IsEmpty())Line(TEXT("Nenhum pedido das suítes."),13,Faded);
+  else for(const auto& V:*Room){const auto O=V->AsObject();const bool bTray=UMareSimulation::String(O,TEXT("stage"))==TEXT("tray");const double Left=UMareSimulation::Number(O,TEXT("ready"))-Now;
+   Line(FString::Printf(TEXT("Suíte %.0f · %s · %s"),UMareSimulation::Number(O,TEXT("suite")),*DishName(UMareSimulation::String(O,TEXT("dish"))),
+    bTray?TEXT("na bandeja"):Left>0?*FString::Printf(TEXT("pronto em %.0f min"),Left):TEXT("pronto no passe")),12.5f,bTray?Green:Ink);}
+  Body->AddSlot().AutoHeight().HAlign(HAlign_Left).Padding(0,6)[Button(TEXT("Pegar pratos prontos"),[this,S](){if(S->PickUpPass()>0)UMareAudioWorld::Action(Owner.Get(),TEXT("bar_ice_glass"));})];
+  Heading(TEXT("Eventos"),TEXT("marque para amanhã à noite"));
+  const auto Booked=UMareSimulation::Object(R,TEXT("event"));const TArray<TSharedPtr<FJsonValue>>* Events=nullptr;S->RestaurantDefs()->TryGetArrayField(TEXT("events"),Events);
+  if(Booked->Values.Num()){FString Name;if(Events)for(const auto& V:*Events)if(UMareSimulation::String(V->AsObject(),TEXT("id"))==UMareSimulation::String(Booked,TEXT("id")))Name=UMareSimulation::String(V->AsObject(),TEXT("name"));
+   Line(FString::Printf(TEXT("%s marcado para o dia %.0f às %.0fh."),*Name,UMareSimulation::Number(Booked,TEXT("day")),UMareSimulation::Number(S->RestaurantDefs(),TEXT("event_hour"),20)),13,Green);}
+  else if(Events)for(const auto& V:*Events){const auto E=V->AsObject();const FString Id=UMareSimulation::String(E,TEXT("id"));
+   auto Row=SNew(SHorizontalBox)+SHorizontalBox::Slot().FillWidth(1).VAlign(VAlign_Center)[BodyText(FString::Printf(TEXT("%s · %.0f convidados · custo R$ %.0f · rende ~R$ %.0f"),
+    *UMareSimulation::String(E,TEXT("name")),UMareSimulation::Number(E,TEXT("guests")),UMareSimulation::Number(E,TEXT("cost")),UMareSimulation::Number(E,TEXT("income"))),12)]
+    +SHorizontalBox::Slot().AutoWidth()[Button(TEXT("Marcar"),[S,Id](){S->BookEvent(Id);},S->Money()>=UMareSimulation::Number(E,TEXT("cost")))];
+   Body->AddSlot().AutoHeight().Padding(0,2)[Row];}
+ }
  /** Pier booth: today's tours with buyers to serve, and the guided tour (three stops) in the departure hour. */
  void ToursPage()
  {
@@ -629,7 +661,7 @@ private:
   if(bPhone)for(int32 I=0;I<Titles.Num();++I){const bool bOn=I==Tab;
    Tabs->AddSlot().AutoWidth().VAlign(VAlign_Bottom).Padding(0,0,3,0)[SNew(SMarePadButton).ButtonStyle(&MareNotebook::Plain()).ContentPadding(FMargin(0)).OnClicked_Lambda([this,I](){if(Owner.IsValid())Owner->GetWorld()->GetSubsystem<UMareAudioWorld>()->PlayCue(TEXT("click"),.16f);Tab=I;Rebuild();return FReply::Handled();})
     [SNew(SBorder).BorderImage(&TabBrush(bOn?Paper:TabColor(I))).Padding(bOn?FMargin(11,4,11,3):FMargin(8,2,8,2))[SNew(STextBlock).Text(FText::FromString(Titles[I])).Font(MareNotebook::Hand(bOn?17:15)).ColorAndOpacity(Ink)]]];}
-  else Tabs->AddSlot().AutoWidth().VAlign(VAlign_Bottom)[SNew(SBorder).BorderImage(&TabBrush(Paper)).Padding(FMargin(16,6,16,5))[SNew(STextBlock).Text(FText::FromString(Station==TEXT("Fridge")?TEXT("Geladeira"):Station==TEXT("Reception") || Station==TEXT("ReceptionHotel")?TEXT("Recepção"):Station==TEXT("Bar")?TEXT("Bar"):Station==TEXT("Tours")?TEXT("Píer"):TEXT("Porções prontas"))).Font(MareNotebook::Hand(19)).ColorAndOpacity(Ink)]];
+  else Tabs->AddSlot().AutoWidth().VAlign(VAlign_Bottom)[SNew(SBorder).BorderImage(&TabBrush(Paper)).Padding(FMargin(16,6,16,5))[SNew(STextBlock).Text(FText::FromString(Station==TEXT("Fridge")?TEXT("Geladeira"):Station==TEXT("Reception") || Station==TEXT("ReceptionHotel")?TEXT("Recepção"):Station==TEXT("Bar")?TEXT("Bar"):Station==TEXT("Tours")?TEXT("Píer"):Station==TEXT("Restaurant")?TEXT("Cozinha"):TEXT("Porções prontas"))).Font(MareNotebook::Hand(19)).ColorAndOpacity(Ink)]];
   Tabs->AddSlot().FillWidth(1)[SNullWidget::NullWidget];
   Tabs->AddSlot().AutoWidth().VAlign(VAlign_Bottom)[SNew(SMarePadButton).ButtonStyle(&MareNotebook::Plain()).ContentPadding(FMargin(0)).OnClicked_Lambda([this](){if(Owner.IsValid())Owner->ClosePhone();return FReply::Handled();})
    [SNew(SBorder).BorderImage(&TabBrush(Hex(226,150,140))).Padding(FMargin(8,2,8,2))[SNew(STextBlock).Text(FText::FromString(TEXT("fechar"))).Font(MareNotebook::Hand(15)).ColorAndOpacity(Ink)]]];
@@ -650,6 +682,7 @@ private:
   if(PrevFocus>=0)MareGamepad::FocusSoon(AsShared(),PrevFocus);
   if(Station==TEXT("Bar")){BarPage();return;}
   if(Station==TEXT("Tours")){ToursPage();return;}
+  if(Station==TEXT("Restaurant")){RestaurantPage();return;}
   if(Station==TEXT("Reception") || Station==TEXT("ReceptionHotel")){ReceptionPage(Station==TEXT("ReceptionHotel")?TEXT("hotel"):TEXT("pousada"));return;}
   if(!bPhone){StockPage(true);if(!S->Carry().IsEmpty())Body->AddSlot().AutoHeight().HAlign(HAlign_Left).Padding(0,6)[Button(TEXT("Devolver produto"),[S](){S->ReturnCarry();})];return;}
   switch(Tab){

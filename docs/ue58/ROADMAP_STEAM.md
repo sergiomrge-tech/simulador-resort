@@ -140,3 +140,7 @@ Legenda de prioridade:
 - [ ] Traduzir o jogo inteiro para o **inglês** e para **vários idiomas** (espanhol, chinês simplificado, russo,
   alemão, francês, japonês, coreano, português de Portugal), com tabelas de localização, fontes CJK/cirílico,
   revisão nativa, teste de layout e página da Steam/conquistas traduzidas. Detalhes em `PENDENCIAS_100.md`, seção 11.
+
+## Final — ilha do passeio de barco (pedido do Sergio, 02/11)
+- [ ] Ilha circular ao fundo no mar, com muitas árvores e vegetação e uma trilha no meio, como destino do passeio de barco
+  (detalhes em `PENDENCIAS_100.md`, seção 12).

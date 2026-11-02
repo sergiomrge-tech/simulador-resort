@@ -218,6 +218,29 @@ public:
   *  filled by StaysNight for the hotel, cleared at 13:00); removed from the list. Null when nobody is left. */
  TSharedPtr<FJsonObject> TakeDeparture(const FString& Place);
  TSharedPtr<FJsonObject> Stays();
+ // --- Grand Hotel restaurant, hands-on (MareRestaurant.cpp, Content/Data/restaurant.json) ---
+ // State "restaurant": tables [{table, name, stage order|cooking|tray, dish, since, ready}], room [{suite, dish, stage,
+ // since, ready}], event {id, day}, served, next.
+ TSharedPtr<FJsonObject> RestaurantDefs() const;
+ TSharedPtr<FJsonObject> Restaurant();
+ double RestaurantNow() const;
+ /** Hotel bought and inside a service (lunch or dinner). */
+ bool IsRestaurantOpen() const;
+ TSharedPtr<FJsonObject> MenuDish(const FString& Id) const;
+ double MenuPrice(const FString& Id) const;
+ TSharedPtr<FJsonObject> TableOrder(int32 Table) const;
+ /** Seats a party at a free table while the restaurant is open; returns its name or empty. */
+ UFUNCTION(BlueprintCallable,Category="Maré Alta|Restaurant") FString SeatDiners(int32 Table);
+ /** E on a table: takes the order (to the kitchen) or serves the dish on the tray (price + tip for speed). */
+ bool UseTable(int32 Table);
+ /** E at the kitchen pass: every cooked dish (tables and room service) goes on the tray; returns how many. */
+ int32 PickUpPass();
+ /** E at the lift: delivers the room service on the tray (price + room fee). */
+ int32 DeliverRoomService();
+ /** Books an event (restaurant.json "events") for tomorrow's event hour; pays the preparation now. */
+ bool BookEvent(const FString& Id);
+ /** Hourly: event of the day, crew serving long waits, new diners and room service while open. */
+ void RestaurantHour(int32 Hour);
  // --- Tours, hands-on (MareTours.cpp, Content/Data/tours.json; the tours are customization.json operations.tours) ---
  // State "tours" (reset each day): queue {tour: buyers at the booth}, sold {tour: tickets}, done {tour: guided|guide|cancelled|empty}, rating.
  TSharedPtr<FJsonObject> ToursDefs() const;

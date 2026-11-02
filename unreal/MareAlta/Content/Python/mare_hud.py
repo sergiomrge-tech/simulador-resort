@@ -205,7 +205,30 @@ def target_qa(arg):
         return 'used'
 
 
+def trace_fan(arg):
+    """PIE: traces from the camera at yaw offsets (arg "pitch,from,to,step"): hit point, actor label and mesh."""
+    world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()
+    pc = unreal.GameplayStatics.get_player_controller(world, 0)
+    loc, rot = pc.get_player_view_point()
+    pitch, a, b, step = [float(v) for v in arg.split(',')]
+    out = []
+    y = a
+    while y <= b:
+        d = unreal.MathLibrary.get_forward_vector(unreal.Rotator(roll=0, pitch=pitch, yaw=rot.yaw + y))
+        hit = unreal.SystemLibrary.line_trace_single(world, loc, loc + d * 3000, unreal.TraceTypeQuery.TRACE_TYPE_QUERY1, False,
+                                                    [unreal.GameplayStatics.get_player_pawn(world, 0)], unreal.DrawDebugTrace.NONE, True)
+        t = hit.to_tuple() if hit else None
+        if t and t[0]:
+            comp = t[10]
+            mesh = comp.static_mesh.get_name() if comp and hasattr(comp, 'static_mesh') and comp.static_mesh else ''
+            out.append([y, [round(t[4].x), round(t[4].y), round(t[4].z)], t[9].get_actor_label()[-30:] if t[9] else '', mesh])
+        y += step
+    return {'cam': [round(loc.x), round(loc.y), round(loc.z), round(rot.yaw)], 'hits': out}
+
+
 def run(action, arg=''):
+    if action == 'fan':
+        return trace_fan(arg)
     if action == 'target':
         return target_qa(arg)
     if action == 'inst':
