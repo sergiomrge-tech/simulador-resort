@@ -51,7 +51,8 @@ Marcar `[x]` só depois de testado no jogo, com foto ou teste automático.
 - [x] P1 **Minijogo dos negócios** (3 rodadas da Godot): portado em 02/11 (balcão de cada negócio, seção 3).
 - [x] P1 Corpo do jogador em primeira pessoa: pegar, carregar, devolver, portas, natação e mergulho re-testados pela QA
   completa (`-MarePreviewQA`, 104/104 em 02/11, pasta de save limpa antes de cada rodada).
-- [ ] P1 Abertura: ônibus detalhado, desembarque, caminhada até a casa e carta (provisórios em 29/10); re-testar.
+- [x] P1 Abertura: ônibus detalhado, desembarque (pode pular), caminhada até a casa, porta e carta re-testados pela
+  QA `-MareIntroQA` (11/11 em 02/11, save limpo).
 - [x] P1 Casa: sofá, TV, som, chuveiro e cama conferidos pela QA completa com capturas (02/11, `home-*.png`).
 - [ ] P2 Animais da vila e fauna marinha ainda com aparência cartoon; horizonte subaquático azul e vazio.
 - [ ] P2 Interior dos quartos do hotel além da suíte visitável (a torre é casca com fachada).
