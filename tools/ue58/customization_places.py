@@ -87,12 +87,15 @@ def chair_tiers():
 
 
 def lamp_tiers(orig):
+    # The original lantern hangs by its handle from the beam 52 cm above the anchor: every tier hangs from
+    # that point (top at +40 cm like the old lantern, brass chain up to +52; the pendant brings its own cable).
+    chain = part('mare_hang_chain', 12, at=[0, 0, 40])
     return [
         tier(orig, 'A luminária que já estava lá.'),
-        tier('Pendente industrial', 'Cúpula de metal e luz quente.', part('hanging_industrial_lamp', 110)),
-        tier('Lampião de metal', 'Lampião clássico de vidro.', part('Lantern_01', 40)),
-        tier('Lanterna de latão', 'Latão trabalhado, luz dourada.', part('brass_diya_lantern', 46)),
-        tier('Lustre de lanternas', 'Conjunto de lanternas penduradas.', part('lantern_chandelier_01', 60)),
+        tier('Pendente industrial', 'Cúpula de metal e luz quente.', part('hanging_industrial_lamp', 110, at=[0, 0, -58])),
+        tier('Lampião de metal', 'Lampião clássico de vidro.', part('Lantern_01', 40, at=[0, 0, 0]), chain),
+        tier('Lanterna de latão', 'Latão trabalhado, luz dourada.', part('brass_diya_lantern', 46, at=[0, 0, -6]), chain),
+        tier('Lustre de lanternas', 'Conjunto de lanternas penduradas.', part('lantern_chandelier_01', 60, at=[0, 0, -8])),
     ]
 
 
@@ -355,13 +358,14 @@ HOTEL_SUITES = {
     'name': 'Grand Hotel · Suítes', 'unlock': 'grand_hotel',
     'effects': {'hotel_per_point': 0.002},
     'slots': [
-        service('camas', 'Camas das suítes', 900, 3, 0, [
-            ('King padrão', 'Colchão de hotel.'),
-            ('Pillow top', 'Pillow top e travesseiros de pluma.'),
-            ('Cama ortopédica', 'Colchão de molas ensacadas.'),
-            ('Cama de dossel', 'Dossel de linho.'),
-            ('Cama sob medida', 'Colchão artesanal e menu de travesseiros.'),
-        ], rate=18),
+        # The visitable suite (actor tagged MareSuite) shows the bed tier; head against the slatted west wall.
+        slot('camas', 'Camas das suítes', 900, 3, 0, [
+            tier('King padrão', 'Cama estofada com cabeceira capitonê.', part('mare_bed_upholstered', at=[-725, -50, 3], yaw=-90)),
+            tier('Pillow top', 'King com cabeceira de couro em painéis.', part('mare_bed_king', at=[-718, -50, 3], yaw=-90)),
+            tier('Cama ortopédica', 'King com pufe de couro aos pés.', part('mare_bed_king', at=[-718, -50, 3], yaw=-90), part('Ottoman_01', 45, at=[-540, -50, 3])),
+            tier('Cama de dossel', 'Dossel de madeira torneada e cortinas de linho.', part('mare_bed_canopy', at=[-720, -50, 3], yaw=-90)),
+            tier('Cama sob medida', 'Dossel, pufe e chaise de leitura.', part('mare_bed_canopy', at=[-720, -50, 3], yaw=-90), part('Ottoman_01', 45, at=[-540, -50, 3]), part('mid_century_lounge_chair', 100, at=[-560, -330, 3], yaw=60)),
+        ], rate=18, rooms=True, room_tag='MareSuite'),
         service('enxoval', 'Enxoval', 700, 2, 1, [
             ('Percal 200 fios', 'Branco de hotel.'),
             ('Percal 400 fios', 'Mais macio.'),

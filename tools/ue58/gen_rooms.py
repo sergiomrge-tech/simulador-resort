@@ -272,7 +272,26 @@ def rug():
     export(slug, 'Tapete trançado')
 
 
+def hang_chain():
+    """Short brass chain for hanging lamps: 12 cm of interlocked links plus a hook. Origin at the bottom."""
+    reset()
+    slug = 'mare_hang_chain'
+    out = OUT / slug
+    out.mkdir(parents=True, exist_ok=True)
+    brass = material('Brass', 'metal_plate', (.66, .52, .28), rough=.35, out=out)
+    for i in range(6):
+        z = .012 + i * .018
+        bpy.ops.mesh.primitive_torus_add(major_radius=.009, minor_radius=.0022, major_segments=16, minor_segments=8,
+                                         location=(0, 0, z), rotation=(math.pi / 2, 0, (math.pi / 2) * (i % 2)))
+        link = bpy.context.active_object
+        link.scale = (1, 1, 1.4)
+        link.data.materials.append(brass)
+    lathe('hook', [(0, 0), (.006, 0), (.006, .015), (.012, .02), (0, .02)], (0, 0, .105), brass, 12)
+    export(slug, 'Corrente de lampião')
+
+
 BUILD = {
+    'mare_hang_chain': hang_chain,
     'mare_bungalow': bungalow,
     'mare_bed_simple': lambda: bed_simple(),
     'mare_bed_iron': lambda: bed_simple('mare_bed_iron', True),

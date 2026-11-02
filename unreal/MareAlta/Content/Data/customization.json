@@ -380,7 +380,21 @@
        "parts": [
         {
          "model": "Lantern_01",
-         "h": 40
+         "h": 40,
+         "at": [
+          0,
+          0,
+          0
+         ]
+        },
+        {
+         "model": "mare_hang_chain",
+         "h": 12,
+         "at": [
+          0,
+          0,
+          40
+         ]
         }
        ]
       },
@@ -390,7 +404,21 @@
        "parts": [
         {
          "model": "vintage_oil_lamp",
-         "h": 42
+         "h": 42,
+         "at": [
+          0,
+          0,
+          -2
+         ]
+        },
+        {
+         "model": "mare_hang_chain",
+         "h": 12,
+         "at": [
+          0,
+          0,
+          40
+         ]
         }
        ]
       },
@@ -400,7 +428,21 @@
        "parts": [
         {
          "model": "brass_diya_lantern",
-         "h": 46
+         "h": 46,
+         "at": [
+          0,
+          0,
+          -6
+         ]
+        },
+        {
+         "model": "mare_hang_chain",
+         "h": 12,
+         "at": [
+          0,
+          0,
+          40
+         ]
         }
        ]
       },
@@ -410,7 +452,12 @@
        "parts": [
         {
          "model": "lantern_chandelier_01",
-         "h": 60
+         "h": 60,
+         "at": [
+          0,
+          0,
+          -8
+         ]
         }
        ]
       }
@@ -885,7 +932,12 @@
        "parts": [
         {
          "model": "hanging_industrial_lamp",
-         "h": 110
+         "h": 110,
+         "at": [
+          0,
+          0,
+          -58
+         ]
         }
        ]
       },
@@ -895,7 +947,21 @@
        "parts": [
         {
          "model": "Lantern_01",
-         "h": 40
+         "h": 40,
+         "at": [
+          0,
+          0,
+          0
+         ]
+        },
+        {
+         "model": "mare_hang_chain",
+         "h": 12,
+         "at": [
+          0,
+          0,
+          40
+         ]
         }
        ]
       },
@@ -905,7 +971,21 @@
        "parts": [
         {
          "model": "brass_diya_lantern",
-         "h": 46
+         "h": 46,
+         "at": [
+          0,
+          0,
+          -6
+         ]
+        },
+        {
+         "model": "mare_hang_chain",
+         "h": 12,
+         "at": [
+          0,
+          0,
+          40
+         ]
         }
        ]
       },
@@ -915,7 +995,12 @@
        "parts": [
         {
          "model": "lantern_chandelier_01",
-         "h": 60
+         "h": 60,
+         "at": [
+          0,
+          0,
+          -8
+         ]
         }
        ]
       }
