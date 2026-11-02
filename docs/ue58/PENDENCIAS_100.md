@@ -49,9 +49,10 @@ Marcar `[x]` só depois de testado no jogo, com foto ou teste automático.
   `MareAlta.Gameplay.DayEventsParties`. Falta: mar mais agitado na tempestade e na maré alta (o material do mar não tem
   parâmetro de ondas), pessoas dançando a quadrilha e música própria de cada festa.
 - [x] P1 **Minijogo dos negócios** (3 rodadas da Godot): portado em 02/11 (balcão de cada negócio, seção 3).
-- [ ] P1 Corpo do jogador em primeira pessoa: pegar, carregar, portas e natação. Estava em validação em 29/10; re-testar.
+- [x] P1 Corpo do jogador em primeira pessoa: pegar, carregar, devolver, portas, natação e mergulho re-testados pela QA
+  completa (`-MarePreviewQA`, 104/104 em 02/11, pasta de save limpa antes de cada rodada).
 - [ ] P1 Abertura: ônibus detalhado, desembarque, caminhada até a casa e carta (provisórios em 29/10); re-testar.
-- [ ] P1 Casa: todas as interações da Godot (sofá, TV, som, chuveiro); a captura do chuveiro ficou pendente.
+- [x] P1 Casa: sofá, TV, som, chuveiro e cama conferidos pela QA completa com capturas (02/11, `home-*.png`).
 - [ ] P2 Animais da vila e fauna marinha ainda com aparência cartoon; horizonte subaquático azul e vazio.
 - [ ] P2 Interior dos quartos do hotel além da suíte visitável (a torre é casca com fachada).
 
@@ -103,6 +104,14 @@ Pronto e testado (02/11):
   bartender, guia e os novos piscineiro (peneira e toalhas a cada hora) e garçom do restaurante (atende mesas e serviço de
   quarto após 15 min a 90%); descrições reescritas; teste `MareAlta.Gameplay.NewStaffRoles`. Turnos por horário ainda não
   existem (todos trabalham no horário do lugar).
+- [ ] P1 **Refinamento dos funcionários** (pedido do Sergio em 02/11):
+  - cada funcionário visível no lugar onde trabalha e fazendo a tarefa de verdade (camareira indo ao bangalô e arrumando,
+    piscineiro com a peneira, bartender atrás do balcão preparando, guia levando o grupo, garçom levando pratos às mesas,
+    recepcionista no balcão), em vez de só o efeito na simulação;
+  - uniforme por cargo (cores do resort, crachá) e MetaHuman próprio de cada cargo;
+  - turnos por horário (manhã/tarde/noite), folgas e contratação de mais de um por cargo;
+  - nível e experiência: quem trabalha mais fica mais rápido e pede aumento; humor/cansaço afetando o serviço;
+  - página de equipe mostrando o que cada um está fazendo agora e quanto rendeu no dia.
 - [ ] P2 Pedidos especiais e clientes VIP/influenciador no quiosque (eventos cômicos da tarefa #4).
 
 ## 4. Progressão, economia e conteúdo

@@ -137,7 +137,7 @@ void AMarePreviewQA::Tick(float DeltaSeconds)
    }
   }
   Check(TEXT("runtime_actor_catalog"),Count>60 && Missing==0);
-  Check(TEXT("audio_catalog"),Audio->LoadedSounds()==48);
+  Check(TEXT("audio_catalog"),Audio->LoadedSounds()==90);   // 48 ambience/UI sounds + 42 action sounds (fetch_action_sfx.py)
   Check(TEXT("master_submix_routed"),Audio->HasMasterMix());
   if(auto Device=GetWorld()->GetAudioDevice()){UE_LOG(LogTemp,Display,TEXT("MARE_QA_AUDIO_DEVICE muted=%d primary=%f app=%f"),Device->IsAudioDeviceMuted(),Device->GetPrimaryVolume(),FApp::GetVolumeMultiplier());Device->SetDeviceMuted(false);Device->SetTransientPrimaryVolume(1.f);}
   FApp::SetVolumeMultiplier(1.f);
@@ -298,5 +298,5 @@ void AMarePreviewQA::Tick(float DeltaSeconds)
   Capture(TEXT("sleep-wake"));Check(TEXT("progression_day_close"),Sim->Save());break;}
  case 64:if(GetWorld()->WorldType!=EWorldType::PIE)GEngine->Exec(GetWorld(),TEXT("QUIT"));break;
  }
- Next=FPlatformTime::Seconds()+((Phase==27 || Phase==28)?.5:Phase==13?10:Phase==1?7:Phase==3?4:Phase==4?5:3);
+ Next=FPlatformTime::Seconds()+((Phase==27 || Phase==28)?.5:Phase==13?10:Phase==1?10:Phase==3?4:Phase==4?5:3);   // water entry settles slower with the MetaHuman crowd loaded
 }
