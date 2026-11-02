@@ -113,6 +113,14 @@ LAYOUT = [
     ('hanging_picture_frame_01', -15.45, -0.5, 170.0, (1, 0), 1.0),
     ('hanging_picture_frame_03', 15.45, 1.8, 170.0, (-1, 0), 1.0),
     ('ceramic_vase_03', -14.6, -2.5, 'on:side_table_tall_01', (1, 0), 1.0),
+    ('fab:145', -6.5, -4.6, 'floor', (0, -1), 1.0),
+    ('fab:145', 6.5, -4.6, 'floor', (0, -1), 1.0),
+    ('fab:143', -11.6, 5.2, 'floor', (0, -1), 1.0),
+    ('fab:144', 12.4, 5.0, 'floor', (0, -1), 1.0),
+    ('fab:242', -12.6, -4.3, 'floor', (1, 0), 1.0),
+    ('fab:242', 12.6, -4.3, 'floor', (-1, 0), 1.0),
+    ('fab:84', -14.8, 1.2, 'floor', (1, 0), 1.0),
+    ('fab:84', 14.8, -0.4, 'floor', (-1, 0), 1.0),
 ] + [('modern_ceiling_lamp_01', x, y, 'ceiling', (0, -1), 1.0) for x in (-12.5, -7.0, 0.0, 7.0, 12.5) for y in (-2.5, 2.5)]
 
 
@@ -146,7 +154,19 @@ def furnish(front_offset=0.0):
         if 'MareHotelLobby' in [str(t) for t in a.tags]:
             actors.destroy_actor(a)
     placed, tops = [], {}
+    import importlib, mare_fab
+    importlib.reload(mare_fab)
     for slug, x, y, base, face, scale in LAYOUT:
+        if slug.startswith('fab:'):
+            import math
+            w = _to_world(x, y)
+            yaw = math.degrees(math.atan2(face[1], -face[0])) + front_offset
+            actor, height = mare_fab.place(actors, slug, w.x, w.y, FLOOR if base == 'floor' else base, yaw, scale)
+            actor.set_actor_label('Hotel lobby · ' + slug)
+            actor.tags = [unreal.Name('MareGenerated'), unreal.Name('Region_grand_hotel'), unreal.Name('MareHotelLobby')]
+            actor.set_folder_path('Hotel/Lobby')
+            placed.append({'slug': slug, 'location': [w.x, w.y], 'yaw': yaw, 'height_cm': height})
+            continue
         mesh = _lib_mesh(slug)
         b = mesh.get_bounds()
         lo_z = (b.origin.z - b.box_extent.z) * scale
@@ -349,4 +369,8 @@ def run(action, arg=''):
         return near(x, y, r)
     if action == 'view':
         return view(arg)
+    if action.startswith('fab'):
+        import importlib, mare_fab
+        importlib.reload(mare_fab)
+        return mare_fab.run(action[4:], arg)
     raise ValueError(action)

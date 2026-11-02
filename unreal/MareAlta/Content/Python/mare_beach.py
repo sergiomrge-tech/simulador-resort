@@ -252,11 +252,13 @@ def place_bungalows():
 SUITE_ORIGIN = (-2800.0, 6342.0, 851.0)
 SUITE_FURNITURE = [
     ('sofa_03', -0.5, 1.6, (0, -1)), ('modern_coffee_table_01', -0.5, .45, (0, -1)),
-    ('ArmChair_01', -2.6, -4.4, (1, .4)), ('mid_century_lounge_chair', 1.6, -4.4, (-1, .4)),
+    ('ArmChair_01', -2.6, -4.4, (1, .4)), ('fab:114', 1.6, -4.4, (-1, .4)),
     ('modern_coffee_table_02', -.5, -4.5, (0, 1)), ('ClassicNightstand_01', -7.85, -1.65, (1, 0)),
-    ('ClassicNightstand_01', -7.85, .55, (1, 0)), ('pachira_aquatica_01', -8.0, -5.1, (1, 0)),
-    ('pachira_aquatica_01', 2.6, -5.1, (-1, 0)), ('potted_plant_01', -5.6, 5.2, (0, -1)),
-    ('calathea_orbifolia_01', 1.6, 5.2, (0, -1)), ('potted_plant_02', -2.6, -1.6, (0, 1)),
+    ('ClassicNightstand_01', -7.85, .55, (1, 0)), ('fab:145', -7.8, -4.9, (1, 0)),
+    ('fab:144', 2.5, -4.9, (-1, 0)), ('potted_plant_01', -5.6, 5.2, (0, -1)),
+    ('fab:143', 1.6, 5.0, (0, -1)), ('potted_plant_02', -2.6, -1.6, (0, 1)),
+    # Wabi Sabi (Mint Studio): stump side table by the armchair, rattan chair at the wardrobe, floor vase.
+    ('fab:242', -3.5, -3.7, (1, 0)), ('fab:17', -6.0, 4.6, (0, -1)), ('fab:84', -1.3, 5.2, (0, -1)),
 ]
 SUITE_LIGHTS = [(-6.0, -.5), (-.5, .6), (-.5, -3.6), (5.7, 2.8), (-4.0, 4.3), (2.0, 3.8)]
 
@@ -286,7 +288,16 @@ def place_suite():
         if slot.material_interface and 'DaylightPanel' in slot.material_interface.get_name():
             comp.set_material(i, daylight)
     placed = []
+    import mare_fab
+    importlib.reload(mare_fab)
     for slug, x, y, face in SUITE_FURNITURE:
+        if slug.startswith('fab:'):
+            actor, _ = mare_fab.place(actors, slug, ox + x * 100, oy + y * 100, oz + 3, math.degrees(math.atan2(face[1], face[0])))
+            actor.set_actor_label('Hotel suíte · ' + slug)
+            actor.tags = tags
+            actor.set_folder_path('Hotel/Suite')
+            placed.append(slug)
+            continue
         mesh = mare_hotel_lobby._lib_mesh(slug)
         b = mesh.get_bounds()
         z = oz + 3 - (b.origin.z - b.box_extent.z)
