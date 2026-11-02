@@ -176,7 +176,7 @@ bool FMareCustomizationTest::RunTest(const FString& Parameters)
   const TArray<TSharedPtr<FJsonValue>>* Tiers=nullptr;TestTrue(TEXT("Slot has tiers"),V->AsObject()->TryGetArrayField(TEXT("tiers"),Tiers) && Tiers->Num()==5);++SlotCount;}
  TestTrue(TEXT("Kiosk has at least eight customizable objects"),SlotCount>=8);
  TestEqual(TEXT("Starting tier is Simples"),Sim->CustomTier(TEXT("kiosk"),TEXT("banquetas")),1);
- TestEqual(TEXT("Decor starts neutral"),Sim->KioskArrivalFactor(),1.0);
+ TestEqual(TEXT("Decor starts neutral"),Sim->KioskArrivalFactor()/Sim->EventDemand(),1.0);   // season and event demand apart
  TestEqual(TEXT("Tier prices grow"),Sim->CustomPrice(TEXT("kiosk"),TEXT("banquetas"),2),75.0);
  TestTrue(TEXT("Higher tier costs more"),Sim->CustomPrice(TEXT("kiosk"),TEXT("banquetas"),5)>Sim->CustomPrice(TEXT("kiosk"),TEXT("banquetas"),4));
  Sim->State->SetNumberField(TEXT("money"),50);
@@ -803,6 +803,30 @@ bool FMareTutorialTest::RunTest(const FString& Parameters)
   TestTrue(FString(TEXT("Tip exists: "))+Key,Sim->ShowTip(Key));
  // Next goal: the cheapest expansion with its prerequisites owned.
  FString Goal;double Cost=0;TestTrue(TEXT("A goal at the start"),Sim->NextGoal(Goal,Cost));TestTrue(TEXT("Goal costs something"),Cost>0);
+ IFileManager::Get().DeleteDirectory(*Sim->SaveDirectory,false,true);
+ Sim->RemoveFromRoot();Instance->RemoveFromRoot();return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FMareSeasonsEndTest,"MareAlta.Gameplay.SeasonsAndEndOfContent",EAutomationTestFlags::EditorContext|EAutomationTestFlags::EngineFilter)
+bool FMareSeasonsEndTest::RunTest(const FString& Parameters)
+{
+ auto Instance=NewObject<UGameInstance>();Instance->AddToRoot();
+ auto Sim=NewObject<UMareSimulation>(Instance);Sim->AddToRoot();
+ Sim->SaveDirectory=FPaths::ProjectSavedDir()/TEXT("Automation/Seasons")/FGuid::NewGuid().ToString(EGuidFormats::Digits);
+ auto Load=[&](const FString& Name,TSharedPtr<FJsonObject>& Result){FString Text;FFileHelper::LoadFileToString(Text,*(FPaths::ProjectContentDir()/TEXT("Data")/Name));return FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Text),Result);};
+ if(!TestTrue(TEXT("Definitions"),Load(TEXT("definitions.json"),Sim->Definitions)) || !TestTrue(TEXT("Default save"),Load(TEXT("default_save.json"),Sim->State))){Sim->RemoveFromRoot();Instance->RemoveFromRoot();return false;}
+ // Seasons: 14 days each, cycling; summer draws more than winter.
+ Sim->State->SetNumberField(TEXT("day"),1);TestEqual(TEXT("Day 1 is summer"),Sim->String(Sim->Season(),TEXT("id")),FString(TEXT("verao")));const double Summer=Sim->EventDemand();
+ Sim->State->SetNumberField(TEXT("day"),30);TestEqual(TEXT("Day 30 is winter"),Sim->String(Sim->Season(),TEXT("id")),FString(TEXT("inverno")));
+ TestTrue(TEXT("Winter quieter than summer"),Sim->EventDemand()<Summer);
+ Sim->State->SetNumberField(TEXT("day"),57);TestEqual(TEXT("Cycle restarts"),Sim->String(Sim->Season(),TEXT("id")),FString(TEXT("verao")));
+ // End of content: only with every expansion and every chapter, and only once.
+ TestFalse(TEXT("Not at the start"),Sim->IsEndOfContentDue());
+ for(const auto& Pair:Sim->Object(Sim->Definitions,TEXT("expansions"))->Values)Sim->Object(Sim->State,TEXT("unlocked"))->SetBoolField(FString(Pair.Key.ToView()),true);
+ TestFalse(TEXT("Chapters still open"),Sim->IsEndOfContentDue());
+ const TArray<TSharedPtr<FJsonValue>>* Chapters=nullptr;Sim->Definitions->TryGetArrayField(TEXT("chapters"),Chapters);
+ for(const auto& V:*Chapters){const auto C=V->AsObject();Sim->Object(Sim->Object(Sim->State,TEXT("prog")),TEXT("ch"))->SetNumberField(Sim->String(C,TEXT("id")),C->GetArrayField(TEXT("steps")).Num());}
+ TestTrue(TEXT("Everything done"),Sim->IsEndOfContentDue());Sim->MarkEndOfContentShown();TestFalse(TEXT("Shown once"),Sim->IsEndOfContentDue());
  IFileManager::Get().DeleteDirectory(*Sim->SaveDirectory,false,true);
  Sim->RemoveFromRoot();Instance->RemoveFromRoot();return true;
 }

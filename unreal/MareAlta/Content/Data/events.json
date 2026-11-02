@@ -1,21 +1,133 @@
 {
- "_doc": "Day events (port of the Godot Economy.DAY_EVENTS): one event per day, decided the night before so the phone can forecast it. Parties follow the weekly calendar (day % 7) from party_from_day; the carnaval needs the mayor's chapter. Random events by odds. demand multiplies the kiosk arrivals (deco = with the paid preparations). Paid preparations: decoration for a party, storm protection for a storm (otherwise storm_loss of the supplies is lost). Sea tours are cancelled on rough_sea events. party_spot = centre of the party on the beach [x, y, yaw] in world cm.",
+ "_doc": "Day events (port of the Godot Economy.DAY_EVENTS): one event per day, decided the night before so the phone can forecast it. Parties follow the weekly calendar (day % 7) from party_from_day; the carnaval needs the mayor's chapter. Random events by odds. demand multiplies the kiosk arrivals (deco = with the paid preparations). Paid preparations: decoration for a party, storm protection for a storm (otherwise storm_loss of the supplies is lost). Sea tours are cancelled on rough_sea events. party_spot = centre of the party on the beach [x, y, yaw] in world cm. Seasons cycle every sum(days) days from day 1; each multiplies the kiosk arrivals (demand) and sets the chance of a rainy day (rain_odds).",
  "events": {
-  "calor": {"name": "Dia de calor", "blurb": "Todo mundo quer coco e suco gelado: mais clientes.", "demand": 1.15},
-  "lua": {"name": "Noite de lua cheia", "blurb": "À noite o bar e o quiosque lotam.", "demand": 1.1},
-  "mare": {"name": "Maré alta", "blurb": "O mar sobe: menos gente na areia e passeios de barco e mergulho cancelados.", "demand": 0.8, "rough_sea": true},
-  "tempestade": {"name": "Tempestade", "blurb": "Chuva forte e vento: poucos clientes, passeios cancelados e estoque exposto.", "demand": 0.35, "rough_sea": true, "rain": true, "prep": "storm"},
-  "quermesse": {"name": "Quermesse da praia", "blurb": "Barraquinhas e música: mais clientes; com decoração, ainda mais.", "demand": 1.4, "deco_demand": 1.7, "party": true, "prep": "deco"},
-  "junina": {"name": "Festa junina", "blurb": "Fogueira, quadrilha e petiscos; decoração atrai mais gente.", "demand": 1.4, "deco_demand": 1.7, "party": true, "prep": "deco"},
-  "show_dj": {"name": "Show do DJ Maré", "blurb": "O DJ Maré toca na praia: clientes de sobra e caipirinha em alta.", "demand": 1.4, "deco_demand": 1.7, "party": true, "prep": "deco"},
-  "carnaval": {"name": "Carnaval da Maré", "blurb": "Bloco na areia: o dobro de clientes.", "demand": 2.0, "deco_demand": 2.2, "party": true, "prep": "deco"}
+  "calor": {
+   "name": "Dia de calor",
+   "blurb": "Todo mundo quer coco e suco gelado: mais clientes.",
+   "demand": 1.15
+  },
+  "lua": {
+   "name": "Noite de lua cheia",
+   "blurb": "À noite o bar e o quiosque lotam.",
+   "demand": 1.1
+  },
+  "mare": {
+   "name": "Maré alta",
+   "blurb": "O mar sobe: menos gente na areia e passeios de barco e mergulho cancelados.",
+   "demand": 0.8,
+   "rough_sea": true
+  },
+  "tempestade": {
+   "name": "Tempestade",
+   "blurb": "Chuva forte e vento: poucos clientes, passeios cancelados e estoque exposto.",
+   "demand": 0.35,
+   "rough_sea": true,
+   "rain": true,
+   "prep": "storm"
+  },
+  "quermesse": {
+   "name": "Quermesse da praia",
+   "blurb": "Barraquinhas e música: mais clientes; com decoração, ainda mais.",
+   "demand": 1.4,
+   "deco_demand": 1.7,
+   "party": true,
+   "prep": "deco"
+  },
+  "junina": {
+   "name": "Festa junina",
+   "blurb": "Fogueira, quadrilha e petiscos; decoração atrai mais gente.",
+   "demand": 1.4,
+   "deco_demand": 1.7,
+   "party": true,
+   "prep": "deco"
+  },
+  "show_dj": {
+   "name": "Show do DJ Maré",
+   "blurb": "O DJ Maré toca na praia: clientes de sobra e caipirinha em alta.",
+   "demand": 1.4,
+   "deco_demand": 1.7,
+   "party": true,
+   "prep": "deco"
+  },
+  "carnaval": {
+   "name": "Carnaval da Maré",
+   "blurb": "Bloco na areia: o dobro de clientes.",
+   "demand": 2.0,
+   "deco_demand": 2.2,
+   "party": true,
+   "prep": "deco"
+  }
  },
- "odds": [["calor", 0.22], ["lua", 0.12], ["mare", 0.10], ["tempestade", 0.08]],
- "party_calendar": {"2": "quermesse", "4": "junina", "6": "show_dj", "0": "carnaval"},
+ "odds": [
+  [
+   "calor",
+   0.22
+  ],
+  [
+   "lua",
+   0.12
+  ],
+  [
+   "mare",
+   0.1
+  ],
+  [
+   "tempestade",
+   0.08
+  ]
+ ],
+ "party_calendar": {
+  "2": "quermesse",
+  "4": "junina",
+  "6": "show_dj",
+  "0": "carnaval"
+ },
  "party_from_day": 8,
  "carnaval_chapter": "carnaval",
  "rain_odds": 0.12,
- "prep_cost": {"deco": 120, "storm": 80},
+ "prep_cost": {
+  "deco": 120,
+  "storm": 80
+ },
  "storm_loss": 0.35,
- "party_spot": [2600, -2550, 0]
+ "party_spot": [
+  2600,
+  -2550,
+  0
+ ],
+ "seasons": [
+  {
+   "id": "verao",
+   "name": "Alta temporada (verão)",
+   "days": 14,
+   "demand": 1.2,
+   "rain_odds": 0.08
+  },
+  {
+   "id": "outono",
+   "name": "Outono",
+   "days": 14,
+   "demand": 1.0,
+   "rain_odds": 0.12
+  },
+  {
+   "id": "inverno",
+   "name": "Inverno",
+   "days": 14,
+   "demand": 0.8,
+   "rain_odds": 0.24
+  },
+  {
+   "id": "primavera",
+   "name": "Primavera",
+   "days": 14,
+   "demand": 1.0,
+   "rain_odds": 0.12
+  }
+ ],
+ "end_of_content": {
+  "_doc": "Early Access end screen: shown once when every expansion is owned and every village chapter is done.",
+  "title": "Obrigado por jogar o Acesso Antecipado!",
+  "text": "Você transformou o quiosque da avó Dilce num resort inteiro. O Maré Alta continua crescendo: novas expansões, a ilha do passeio de barco, temporadas e muito mais chegam nas próximas atualizações. Pode continuar jogando: o resort segue aberto."
+ }
 }

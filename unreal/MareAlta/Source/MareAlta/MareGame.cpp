@@ -305,6 +305,7 @@ private:
   // Agenda: today's event and tomorrow's forecast with the paid preparations (events.json).
   {const auto Today=S->EventDef(S->TodayEvent()),Next=S->EventDef(S->TomorrowEvent());
    Heading(TEXT("Agenda"),Today->Values.Num()?TEXT("hoje: ")+UMareSimulation::String(Today,TEXT("name")):FString(TEXT("hoje: dia normal")));
+   Line(TEXT("Temporada: ")+UMareSimulation::String(S->Season(),TEXT("name")),12,MareNotebook::Green);
    if(Today->Values.Num())Line(UMareSimulation::String(Today,TEXT("blurb"))+(S->IsPrepActive()?TEXT(" Preparativos feitos."):TEXT("")),12,MareNotebook::Faded);
    if(Next->Values.Num()){const FString Kind=UMareSimulation::String(Next,TEXT("prep"));
     Line(TEXT("Amanhã: ")+UMareSimulation::String(Next,TEXT("name"))+TEXT(". ")+UMareSimulation::String(Next,TEXT("blurb")),12.5f,MareNotebook::Ink);
@@ -913,6 +914,37 @@ private:
   Timer=2.2f;bRecast=true;
  }
 };
+/** Early Access end screen (events.json "end_of_content"): thanks, the save's numbers, and "keep playing". */
+class SMareEndScreen : public SCompoundWidget
+{
+public:
+ SLATE_BEGIN_ARGS(SMareEndScreen){} SLATE_ARGUMENT(TWeakObjectPtr<AMareController>,Owner) SLATE_END_ARGS()
+ void Construct(const FArguments& Args)
+ {
+  using namespace MareNotebook;Owner=Args._Owner;auto S=Owner.IsValid()?Owner->GetSimulation():nullptr;if(!S){ChildSlot[SNullWidget::NullWidget];return;}
+  const auto End=UMareSimulation::Object(S->EventDefs(),TEXT("end_of_content"));
+  const TArray<TSharedPtr<FJsonValue>>* Album=nullptr;UMareSimulation::Object(S->State,TEXT("prog"))->TryGetArrayField(TEXT("album"),Album);
+  const FString Stats=FString::Printf(TEXT("%.0f dias · R$ %.0f em caixa · fama: %s · %.1f estrelas · %d drinks descobertos · %d fotos no álbum"),
+   UMareSimulation::Number(S->State,TEXT("day"),1),S->Money(),*S->FameName(),S->Stars(),S->BarDiscoveries(),Album?Album->Num():0);
+  ChildSlot.HAlign(HAlign_Center).VAlign(VAlign_Center)[SNew(SBorder).BorderImage(FCoreStyle::Get().GetBrush("WhiteBrush")).BorderBackgroundColor(Paper).Padding(FMargin(34,26))
+   [SNew(SBox).WidthOverride(640)[SNew(SVerticalBox)
+    +SVerticalBox::Slot().AutoHeight()[HandText(UMareSimulation::String(End,TEXT("title")),34,Brown)]
+    +SVerticalBox::Slot().AutoHeight().Padding(0,10)[BodyText(UMareSimulation::String(End,TEXT("text")),14,Ink)]
+    +SVerticalBox::Slot().AutoHeight().Padding(0,6)[HandText(Stats,18,Green)]
+    +SVerticalBox::Slot().AutoHeight().HAlign(HAlign_Left).Padding(0,14,0,0)[SAssignNew(Continue,SMarePadButton).ButtonStyle(&InkButton()).ContentPadding(FMargin(14,4))
+     .OnClicked_Lambda([this](){if(Owner.IsValid())Owner->CloseBusinessGame();return FReply::Handled();})
+     [SNew(STextBlock).Text(FText::FromString(TEXT("Continuar jogando"))).Font(Hand(20)).ColorAndOpacity(MareNotebook::Tag)]]]]];
+ }
+ virtual bool SupportsKeyboardFocus()const override{return true;}
+ virtual FReply OnKeyDown(const FGeometry&,const FKeyEvent& Event) override
+ {
+  const FKey K=Event.GetKey();
+  if(K==EKeys::Escape || K==EKeys::Enter || K==EKeys::Gamepad_FaceButton_Bottom || K==EKeys::Gamepad_FaceButton_Right){if(Owner.IsValid())Owner->CloseBusinessGame();return FReply::Handled();}
+  return FReply::Unhandled();
+ }
+private:
+ TWeakObjectPtr<AMareController> Owner;TSharedPtr<SWidget> Continue;
+};
 class SMareMainMenu : public SCompoundWidget
 {
 public:
@@ -1027,6 +1059,15 @@ void AMareController::TakePhoto()
  const FString File=FPaths::ProjectSavedDir()/TEXT("Album")/FString::Printf(TEXT("foto_dia%02d_%04.0f_%d.png"),int32(UMareSimulation::Number(S->State,TEXT("day"),1)),UMareSimulation::Number(S->State,TEXT("minutes")),int32(GFrameNumber%100000));
  FScreenshotRequest::RequestScreenshot(File,false,false);
  S->RecordPhoto(Subjects,File);UMareAudioWorld::Action(this,TEXT("reception_checkin"),nullptr,.7f);S->ShowTip(TEXT("photo"));
+}
+void AMareController::ShowEndOfContent()
+{
+ auto S=GetSimulation();if(!S || !GEngine || !GEngine->GameViewport || GameWidget.IsValid() || bPhoneOpen || IsMainMenuOpen())return;
+ S->MarkEndOfContentShown();SetPause(true);
+ const TSharedRef<SMareEndScreen> Screen=SNew(SMareEndScreen).Owner(this);GameWidget=Screen;
+ GEngine->GameViewport->AddViewportWidgetContent(Screen,45);bShowMouseCursor=true;
+ SetInputMode(FInputModeUIOnly().SetWidgetToFocus(Screen));SetIgnoreMoveInput(true);SetIgnoreLookInput(true);
+ UMareAudioWorld::Action(this,TEXT("deal_accept"));
 }
 void AMareController::OpenMainMenu()
 {
@@ -1480,6 +1521,7 @@ void AMareHUD::DrawHUD()
  if(const int32 Rooms=S->RoomsTotal())M.Rooms=FString::Printf(TEXT("%d/%d"),FMath::Min(S->RoomsOccupied(),Rooms),Rooms);
  M.Served=FString::Printf(TEXT("%d hoje"),S->ServedToday());
  if(S->LastMessage!=Notice){Notice=S->LastMessage;NoticeUntil=Notice.IsEmpty()?0:Now+7;}
+ if(S->IsEndOfContentDue())if(auto EndPC=Cast<AMareController>(GetOwningPlayerController()))EndPC->ShowEndOfContent();
  // First-time tips (tutorial.json): taken from the simulation and kept on screen for a while.
  if(!S->PendingTipTitle.IsEmpty()){TipTitle=S->PendingTipTitle;TipText=S->PendingTipText;S->PendingTipTitle.Reset();TipUntil=Now+14;}
  if(Now<TipUntil && !M.bPhone){M.TipTitle=TipTitle;M.TipText=TipText;}

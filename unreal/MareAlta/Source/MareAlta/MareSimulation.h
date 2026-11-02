@@ -306,6 +306,12 @@ public:
  bool IsSeaRough() const;
  /** Kiosk arrivals multiplier of today's event (decorated parties draw more). */
  double EventDemand() const;
+ /** Season of the current day (events.json "seasons", cycling from day 1). */
+ TSharedPtr<FJsonObject> Season() const;
+ /** Every expansion owned and every village chapter done, and the end screen not shown yet. */
+ bool IsEndOfContentDue() const;
+ /** Marks the Early Access end screen as shown (once per save). */
+ void MarkEndOfContentShown();
  /** New day: today's event from the forecast, tomorrow's forecast, weather, storm losses without preparations. */
  void StartDayEvent();
  /** Pays tomorrow's preparations (party decoration or storm protection). */

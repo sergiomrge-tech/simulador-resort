@@ -107,6 +107,8 @@ Legenda: [x] feito e validado · [~] em andamento/parcial · [ ] pendente.
 - [ ] "Fogueira low poly, é proibido assets low poly nesse jogo, coloque no checklist final para correção" (02/11): registrado no fim de `PENDENCIAS_100.md` (seção 13) e do `ROADMAP_STEAM.md`.
 - [x] "Sim, equipe" (02/11): piscineiro e garçom do restaurante novos, recepcionista de volta à página de equipe, descrições coerentes com as tarefas; 21/21 testes; balanceamento: modelo da economia e análise em `docs/ue58/BALANCEAMENTO.md` (falta playtest cronometrado).
 - [x] "Sim, tutorial" (02/11): dicas de primeira vez em todos os sistemas e próxima meta sempre visível; 22/22 testes; foto em `docs/ue58/graphics-reference/tutorial-dica-20261102.png`.
+- [x] "Sim, sigo" → temporadas e tela de fim do Acesso Antecipado (02/11); 23/23 testes; foto em `docs/ue58/graphics-reference/fim-acesso-antecipado-20261102.png`.
+- [x] "Sempre siga o checklist, não precisa ficar me perguntando a cada etapa" / "salve essa regra no global" (02/11): regra salva no CLAUDE.md global e na memória; trabalho segue item a item sem pedir confirmação.
 - [x] Manter este checklist sempre que o usuário pedir algo (regra salva na memória).
 
 ## Regras permanentes já pedidas

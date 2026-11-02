@@ -66,6 +66,8 @@ public:
  void StartBusinessGame(const FString& Biz);
  /** Fishing at the pier (cast, wait, strike) over the running world. */
  void StartFishing();
+ /** Early Access end screen (once per save, when everything is bought and the village stories are done). */
+ UFUNCTION(BlueprintCallable,Category="Maré Alta") void ShowEndOfContent();
  /** Photo mode (P / D-pad down): screenshot to Saved/Album and the subjects in frame to the album. */
  UFUNCTION(BlueprintCallable,Category="Maré Alta") void TakePhoto();
  void CloseBusinessGame();

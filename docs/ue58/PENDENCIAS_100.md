@@ -116,8 +116,11 @@ Pronto e testado (02/11):
   num cartão no canto inferior esquerdo, uma vez por save; e "Próxima meta" sempre visível na nota de missões (próxima
   expansão e quanto falta). Teste `MareAlta.Gameplay.TutorialTips`. Falta: opção para desligar as dicas.
 - [ ] P1 Campanha e missões secundárias auditadas (contadores, recompensas únicas, ligação com capítulos e expansões).
-- [ ] P2 Temporadas (verão/carnaval) e calendário com variedade de clientes.
-- [ ] P2 Tela de fim do conteúdo do Acesso Antecipado.
+- [x] P2 Temporadas (02/11): ciclo de 56 dias (alta temporada de verão, outono, inverno chuvoso, primavera) que muda o
+  movimento e a chance de chuva; aparece na agenda do celular. Variedade de tipos de cliente por temporada ainda não.
+- [x] P2 Tela de fim do conteúdo do Acesso Antecipado (02/11): quando tudo está comprado e as histórias da vila concluídas,
+  agradecimento com as estatísticas da partida e "Continuar jogando" (uma vez por save). Teste
+  `MareAlta.Gameplay.SeasonsAndEndOfContent`.
 
 ## 5. Pessoas
 - [x] 21 MetaHumans por papel; banhistas com biquíni e sunga; mãos corrigidas.

@@ -33,11 +33,34 @@ FString UMareSimulation::TomorrowEvent() const{return String(State,TEXT("forecas
 bool UMareSimulation::IsPrepActive() const{return int32(Number(State,TEXT("prep_day"),-1))==int32(Number(State,TEXT("day"),1));}
 bool UMareSimulation::IsSeaRough() const{bool b=false;EventDef(TodayEvent())->TryGetBoolField(TEXT("rough_sea"),b);return b;}
 
+TSharedPtr<FJsonObject> UMareSimulation::Season() const
+{
+ const TArray<TSharedPtr<FJsonValue>>* List=nullptr;if(!EventDefs()->TryGetArrayField(TEXT("seasons"),List) || List->IsEmpty())return MakeShared<FJsonObject>();
+ int32 Cycle=0;for(const auto& V:*List)Cycle+=FMath::Max(1,int32(Number(V->AsObject(),TEXT("days"),14)));
+ int32 Left=(int32(Number(State,TEXT("day"),1))-1)%Cycle;
+ for(const auto& V:*List){const int32 Days=FMath::Max(1,int32(Number(V->AsObject(),TEXT("days"),14)));if(Left<Days)return V->AsObject();Left-=Days;}
+ return (*List)[0]->AsObject();
+}
+
 double UMareSimulation::EventDemand() const
 {
- const auto E=EventDef(TodayEvent());if(!E->Values.Num())return 1;
- return IsPrepActive() && E->HasField(TEXT("deco_demand"))?Number(E,TEXT("deco_demand")):Number(E,TEXT("demand"),1);
+ // Season of the year times today's event (a decorated party draws more).
+ const double SeasonDemand=Number(Season(),TEXT("demand"),1);
+ const auto E=EventDef(TodayEvent());if(!E->Values.Num())return SeasonDemand;
+ return SeasonDemand*(IsPrepActive() && E->HasField(TEXT("deco_demand"))?Number(E,TEXT("deco_demand")):Number(E,TEXT("demand"),1));
 }
+
+bool UMareSimulation::IsEndOfContentDue() const
+{
+ bool bShown=false;Object(State,TEXT("prog"))->TryGetBoolField(TEXT("ea_end_shown"),bShown);if(bShown)return false;
+ auto Unlocked=Object(State,TEXT("unlocked"));
+ for(const auto& Pair:Object(Definitions,TEXT("expansions"))->Values){bool b=false;Unlocked->TryGetBoolField(FString(Pair.Key.ToView()),b);if(!b)return false;}
+ const TArray<TSharedPtr<FJsonValue>>* Chapters=nullptr;
+ if(Definitions->TryGetArrayField(TEXT("chapters"),Chapters))for(const auto& V:*Chapters)if(!IsChapterDone(String(V->AsObject(),TEXT("id"))))return false;
+ return true;
+}
+
+void UMareSimulation::MarkEndOfContentShown(){Object(State,TEXT("prog"))->SetBoolField(TEXT("ea_end_shown"),true);Save();}
 
 void UMareSimulation::StartDayEvent()
 {
@@ -47,7 +70,8 @@ void UMareSimulation::StartDayEvent()
  State->SetStringField(TEXT("day_event"),Today);
  State->SetStringField(TEXT("forecast"),RollEvent(Day+1));State->SetNumberField(TEXT("forecast_day"),Day+1);
  bool bRain=false;EventDef(Today)->TryGetBoolField(TEXT("rain"),bRain);
- State->SetStringField(TEXT("weather"),bRain || FMath::FRand()<Number(EventDefs(),TEXT("rain_odds"),.12)?TEXT("rain"):TEXT("sun"));
+ const double RainOdds=Number(Season(),TEXT("rain_odds"),Number(EventDefs(),TEXT("rain_odds"),.12));
+ State->SetStringField(TEXT("weather"),bRain || FMath::FRand()<RainOdds?TEXT("rain"):TEXT("sun"));
  // A storm without preparations ruins part of the supplies left outside.
  if(Today==TEXT("tempestade") && !IsPrepActive()){const double Loss=Number(EventDefs(),TEXT("storm_loss"),.35);auto Stock=Object(State,TEXT("stock"));int32 Lost=0;
   for(auto& Pair:Stock->Values){double N=0;if(!Pair.Value->TryGetNumber(N) || N<=0)continue;const int32 Gone=FMath::FloorToInt(N*Loss);Lost+=Gone;Pair.Value=MakeShared<FJsonValueNumber>(N-Gone);}
