@@ -106,7 +106,8 @@ Pronto e testado (02/11):
 - [ ] P2 Pedidos especiais e clientes VIP/influenciador no quiosque (eventos cômicos da tarefa #4).
 
 ## 4. Progressão, economia e conteúdo
-- [ ] P1 **Balanceamento** jogando do zero até o Grand Hotel:
+- [~] P1 **Balanceamento** jogando do zero até o Grand Hotel (02/11: primeira passada por modelo em
+  `docs/ue58/BALANCEAMENTO.md` e `tools/ue58/balance_model.py`; falta o playtest cronometrado para trocar as hipóteses):
   - desbloqueio novo a cada 10–20 min;
   - preços das expansões, salários, diárias e renda do salão.
 - [ ] P1 Duração do Acesso Antecipado: 6–10 h de conteúdo com objetivo sempre visível.
