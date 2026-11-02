@@ -1,5 +1,6 @@
 #include "MareGame.h"
 #include "UnrealClient.h"
+#include "Widgets/SCanvas.h"
 #include "MarePlayerPresentation.h"
 #include "MareHomeWorld.h"
 #include "MareVillageWorld.h"
@@ -1415,6 +1416,8 @@ void AMareController::EndPlay(const EEndPlayReason::Type Reason){CloseMainMenu()
 struct FMareHudModel
 {
  FString Money,Day,Fame,Notice,Prompt,Carry,Hint,Stars,Rooms,Served,TipTitle,TipText;
+ /** Compass: label and horizontal position 0..100 (50 = straight ahead) + 1000 x row, in steps of 1% so the HUD rebuilds rarely. */
+ TArray<TPair<FString,int32>> Compass;
  FString InteractKey=TEXT("E"),PhoneKey=TEXT("B"),PauseKey=TEXT("Esc"); // remapped keys, or gamepad buttons after gamepad input
  FString PadHint; // gamepad help over the open phone
  int32 StarsFlash=0; // 1 up (green), -1 down (red)
@@ -1423,8 +1426,9 @@ struct FMareHudModel
  bool bPhone=false;
  FString Signature()const
  {
-  FString S=Money+Day+Fame+Notice+Prompt+Carry+Hint+Stars+Rooms+Served+TipTitle+TipText+InteractKey+PhoneKey+PauseKey+PadHint+FString::FromInt(StarsFlash)+(bPhone?TEXT("P"):TEXT(""));
+  FString S=Money+Day+Fame+Notice+Prompt+Carry+Hint+Stars+Rooms+Served+TipTitle+TipText+FString::FromInt(Compass.Num())+InteractKey+PhoneKey+PauseKey+PadHint+FString::FromInt(StarsFlash)+(bPhone?TEXT("P"):TEXT(""));
   for(const auto& T:Tickets)S+=T.Key+T.Value;
+  for(const auto& C:Compass)S+=C.Key+FString::FromInt(C.Value);
   for(const auto& N:Note)S+=N.Key+FString::FromInt(N.Value);
   return S;
  }
@@ -1439,6 +1443,13 @@ public:
   const FString Sig=M.Signature();if(Sig==Last)return;Last=Sig;using namespace MareTropical;
   const FLinearColor Ink=Hex(74,58,28),Paper=Hex(255,246,230),Accent=Hex(162,76,43);
   auto Root=SNew(SOverlay);
+  // Compass strip under the plank: cardinal letters and the resort's places by direction (map_markers.json).
+  if(M.Compass.Num()){auto Strip=SNew(SCanvas);const float Width=560;
+   for(const auto& C:M.Compass){const bool bCardinal=C.Key.Len()==1;
+    Strip->AddSlot().Position(FVector2D(C.Value%1000/100.f*Width,bCardinal?0:16+15*(C.Value/1000))).Size(FVector2D(130,18)).HAlign(HAlign_Center).VAlign(VAlign_Top)
+     [Txt(bCardinal?C.Key:FString(TEXT("| "))+C.Key,bCardinal?14:11.5f,bCardinal?Hex(255,215,106):Paper,bCardinal)];}
+   Root->AddSlot().VAlign(VAlign_Top).HAlign(HAlign_Center).Padding(FMargin(0,46,0,0))[SNew(SBorder).BorderImage(FCoreStyle::Get().GetBrush("WhiteBrush")).BorderBackgroundColor(FLinearColor(0,0,0,.28f)).Padding(FMargin(4,2))
+    [SNew(SBox).WidthOverride(Width).HeightOverride(48)[Strip]]];}
   // First-time tip card, bottom left above the key hints.
   if(!M.TipTitle.IsEmpty())Root->AddSlot().VAlign(VAlign_Bottom).HAlign(HAlign_Left).Padding(FMargin(24,0,0,96))[SNew(SBox).WidthOverride(400)
    [SNew(SBorder).BorderImage(&Ticket()).Padding(FMargin(14,10))[SNew(SVerticalBox)
@@ -1529,6 +1540,33 @@ void AMareHUD::DrawHUD()
  M.Served=FString::Printf(TEXT("%d hoje"),S->ServedToday());
  if(S->LastMessage!=Notice){Notice=S->LastMessage;NoticeUntil=Notice.IsEmpty()?0:Now+7;}
  if(S->IsEndOfContentDue())if(auto EndPC=Cast<AMareController>(GetOwningPlayerController()))EndPC->ShowEndOfContent();
+ // Compass: places by direction relative to where the player looks.
+ if(auto View=GetOwningPlayerController()?GetOwningPlayerController()->PlayerCameraManager:nullptr){
+  static TSharedPtr<FJsonObject> Markers;
+  if(!Markers.IsValid()){FString Text;FFileHelper::LoadFileToString(Text,*(FPaths::ProjectContentDir()/TEXT("Data/map_markers.json")));
+   FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Text),Markers);if(!Markers.IsValid())Markers=MakeShared<FJsonObject>();}
+  const FVector Eye=View->GetCameraLocation();const float Yaw=View->GetCameraRotation().Yaw;const float Half=UMareSimulation::Number(Markers,TEXT("field_of_view"),75);
+  auto Slot=[&](float Bearing){const float Delta=FRotator::NormalizeAxis(Bearing-Yaw);return FMath::Abs(Delta)>Half?-1:FMath::RoundToInt(50.f+50.f*Delta/Half);};
+  auto Place=[&](const FString& Label,float Bearing){const int32 X=Slot(Bearing);if(X>=0)M.Compass.Add({Label,X});};
+  // UE yaw: 0 = +X (east on this map), 90 = +Y (south): letters for the four directions.
+  Place(TEXT("L"),0);Place(TEXT("S"),90);Place(TEXT("O"),180);Place(TEXT("N"),-90);
+  const TArray<TSharedPtr<FJsonValue>>* List=nullptr;const double Near=UMareSimulation::Number(Markers,TEXT("near"),900);
+  TArray<TTuple<double,FString,int32>> Found;   // distance, name, position
+  if(Markers->TryGetArrayField(TEXT("markers"),List))for(const auto& V:*List){const auto Mk=V->AsObject();const TArray<TSharedPtr<FJsonValue>>* At=nullptr;
+   if(!Mk->TryGetArrayField(TEXT("at"),At) || At->Num()<2)continue;
+   const FString Req=UMareSimulation::String(Mk,TEXT("requires")),Biz=UMareSimulation::String(Mk,TEXT("biz"));bool bShow=true;
+   if(!Req.IsEmpty()){bShow=false;UMareSimulation::Object(S->State,TEXT("unlocked"))->TryGetBoolField(Req,bShow);}
+   if(!Biz.IsEmpty())bShow=S->OwnsBusiness(Biz);
+   const FVector To=FVector((*At)[0]->AsNumber(),(*At)[1]->AsNumber(),Eye.Z)-Eye;if(!bShow || To.Size2D()<Near)continue;
+   const int32 X=Slot(To.Rotation().Yaw);if(X>=0)Found.Add({To.Size2D(),UMareSimulation::String(Mk,TEXT("name")),X});}
+  // Places in the same direction would print over each other: nearest first, two rows, the farthest ones left out.
+  Found.Sort([](const auto& A,const auto& B){return A.template Get<0>()<B.template Get<0>();});
+  TArray<FVector2D> Used[2];
+  for(const auto& F:Found){const FString& Name=F.template Get<1>();const int32 X=F.template Get<2>();
+   const float HalfWidth=(Name.Len()*6.3f+14.f)/560.f*50.f;   // estimated label width in % of the strip
+   for(int32 Row=0;Row<2;Row++){bool bFree=true;for(const FVector2D& U:Used[Row])if(FMath::Abs(U.X-X)<U.Y+HalfWidth){bFree=false;break;}
+    if(bFree){Used[Row].Add(FVector2D(X,HalfWidth));M.Compass.Add({Name,X+1000*Row});break;}}}
+ }
  // First-time tips (tutorial.json): taken from the simulation and kept on screen for a while.
  if(!S->PendingTipTitle.IsEmpty()){TipTitle=S->PendingTipTitle;TipText=S->PendingTipText;S->PendingTipTitle.Reset();TipUntil=Now+14;}
  if(Now<TipUntil && !M.bPhone){M.TipTitle=TipTitle;M.TipText=TipText;}

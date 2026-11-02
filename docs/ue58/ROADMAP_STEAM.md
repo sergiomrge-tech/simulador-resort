@@ -148,3 +148,8 @@ Legenda de prioridade:
 ## Final — correção de low poly (pedido do Sergio, 02/11)
 - [ ] Refazer a fogueira da festa junina (lenha e chamas) sem low poly e revisar os demais props vindos da Godot
   (detalhes em `PENDENCIAS_100.md`, seção 13).
+
+## Final — eventos cômicos e NPCs memoráveis (pedido do Sergio, 31/10, issue #4)
+- [ ] Gaivota ladra de batatas, influenciador exigente, cachorro com chinelo, guarda-sol no vento, turista perdido,
+  atendente iniciante atrapalhado, Seu Arnaldo e o pescador contador de histórias
+  (detalhes em `HUMOR_EVENTOS_COMICOS.md` e `PENDENCIAS_100.md`, seção 14).

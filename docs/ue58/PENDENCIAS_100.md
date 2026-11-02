@@ -193,7 +193,9 @@ Pronto e testado (02/11):
 - [x] P1 Acessibilidade (02/11): tamanho da interface e do texto (85–150%, foto `interface-130-20261102.png`), dicas do
   tutorial liga/desliga, modo para daltonismo (+/- nas variações de estrelas). Não há falas, então legendas não se aplicam.
   Em janelas pequenas, 140–150% encosta nas bordas do celular.
-- [ ] P2 Indicador no mapa ou bússola com os lugares (pousada, hotel, salão, negócios).
+- [x] P2 Indicador no mapa ou bússola com os lugares (pousada, hotel, salão, negócios): faixa sob a placa com N/S/L/O e
+  os lugares liberados na direção do olhar (`Content/Data/map_markers.json`), mais perto primeiro, em duas linhas;
+  foto `docs/ue58/graphics-reference/bussola-20261102.png`.
 
 ## 9. Desempenho e estabilidade
 - [ ] P0 FPS medido no executável:
@@ -231,3 +233,18 @@ Regra do projeto: nenhum asset low poly no jogo.
   na base, pedras em volta) e um fogo convincente (chamas em camadas com movimento, faíscas e fumaça em partículas).
 - [ ] Revisar os outros modelos trazidos da versão Godot para as festas (cabine do DJ, faixa) e qualquer outro prop com
   poucas faces que aparecer na varredura visual final.
+
+## 14. Eventos cômicos e personagens memoráveis (pedido do Sergio em 31/10, issue #4; para o final)
+Especificação completa em `docs/ue58/HUMOR_EVENTOS_COMICOS.md`
+([issue #4](https://github.com/sergiomrge-tech/simulador-resort/issues/4)). Humor ocasional, sem pastelão, sem travar
+atendimento, economia ou saves; um evento por vez, com cooldown e seed testável; textos em PT-BR e EN.
+- [ ] Gestor leve de eventos cômicos (IDs `HUM-00x`, estados idle/active/resolved, cooldown, um por vez), dados em JSON.
+- [ ] HUM-005 Turista perdido pergunta onde fica a praia (olhando para ela); resposta curta, E/Esc fecha.
+- [ ] Diálogos recorrentes: **Seu Arnaldo** (reclamão carismático) e o **pescador** com histórias cada vez mais exageradas.
+- [ ] HUM-002 Turista influenciador exigente (selfies, pede mesa com vista), sem atrasar a fila; bônus pequeno depois.
+- [ ] HUM-001 Gaivota rouba batata da mesa, turista reage; sem mexer em estoque/pagamento no começo.
+- [ ] HUM-003 Cachorro foge com um chinelo; recolher é opcional.
+- [ ] HUM-004 Guarda-sol levado pelo vento; recolocar é opcional; física controlada.
+- [ ] HUM-006 Atendente iniciante atrapalhado (quase derruba bandeja), diminui com treinamento; sem perder pedido/dinheiro.
+- [ ] Critérios de aceite da especificação: 100 ciclos sem travar NPC/fila, sem cobrança/estoque duplicados no reload,
+  fotos e clipe do EXE.

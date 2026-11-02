@@ -110,6 +110,8 @@ Legenda: [x] feito e validado · [~] em andamento/parcial · [ ] pendente.
 - [x] "Sim, sigo" → temporadas e tela de fim do Acesso Antecipado (02/11); 23/23 testes; foto em `docs/ue58/graphics-reference/fim-acesso-antecipado-20261102.png`.
 - [x] "Sempre siga o checklist, não precisa ficar me perguntando a cada etapa" / "salve essa regra no global" (02/11): regra salva no CLAUDE.md global e na memória; trabalho segue item a item sem pedir confirmação.
 - [ ] "Coloque no checklist o refinamento dos funcionários" (02/11): registrado em `PENDENCIAS_100.md`, seção 3 (funcionários visíveis fazendo as tarefas, uniformes, turnos, níveis e humor, página de equipe com o que cada um faz).
+- [ ] "Coloquei no GitHub itens cômicos para acrescentar no jogo; coloque no checklist, mas para o final" (02/11): issue #4 e `docs/ue58/HUMOR_EVENTOS_COMICOS.md` (HUM-001..006, Seu Arnaldo, pescador) registrados em `PENDENCIAS_100.md`, seção 14.
+- [x] Bússola no HUD com os lugares do resort (02/11): foto `docs/ue58/graphics-reference/bussola-20261102.png`.
 - [x] Manter este checklist sempre que o usuário pedir algo (regra salva na memória).
 
 ## Regras permanentes já pedidas
