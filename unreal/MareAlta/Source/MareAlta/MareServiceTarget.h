@@ -21,6 +21,9 @@ public:
  UPROPERTY(EditAnywhere,BlueprintReadWrite,Category="Interaction") float OcclusionTolerance=70.f;
  UPROPERTY(EditAnywhere,BlueprintReadWrite,Category="Door") bool bAutoClose=false;
  UPROPERTY(EditAnywhere,BlueprintReadWrite,Category="Interaction") int32 DataIndex=-1;
+ /** Elevator: where E takes the player (feet-level capsule centre) and the yaw to face on arrival. */
+ UPROPERTY(EditAnywhere,BlueprintReadWrite,Category="Interaction") FVector TeleportTo=FVector::ZeroVector;
+ UPROPERTY(EditAnywhere,BlueprintReadWrite,Category="Interaction") float TeleportYaw=0.f;
  UPROPERTY(VisibleAnywhere,BlueprintReadOnly,Category="Door") TObjectPtr<UStaticMeshComponent> DoorMesh;
  /** Uses the target from a validated player interaction. */
  UFUNCTION(BlueprintCallable,Category="Interaction") void Use(APlayerController* Controller);

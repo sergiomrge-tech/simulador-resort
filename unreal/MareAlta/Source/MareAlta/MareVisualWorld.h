@@ -22,6 +22,9 @@ private:
  TMap<FName,TArray<TWeakObjectPtr<AActor>>> ExpansionRegions;
  TMap<FName,bool> RegionVisibility;
  UPROPERTY() TObjectPtr<APostProcessVolume> Exposure;
+ /** Bounded volumes inside buildings (tag MareInterior): their own exposure, so the night setting that
+  *  brightens the dark street does not blow the lit lobby, suite and bungalows out to white. */
+ UPROPERTY() TArray<TObjectPtr<APostProcessVolume>> Interiors;
  UPROPERTY() TObjectPtr<ALight> Sun;
  UPROPERTY() TObjectPtr<ALight> Moon;
  UPROPERTY() TObjectPtr<AExponentialHeightFog> Fog;
@@ -29,6 +32,8 @@ private:
  UPROPERTY() TArray<TObjectPtr<ATextRenderActor>> Signs;
  /** Interaction point on the Grand Hotel reception desk, hidden until the hotel is bought. */
  UPROPERTY() TObjectPtr<class AMareServiceTarget> Reception;
+ /** Grand Hotel elevators: the two lobby doors go up to the suite, the suite door comes back down. */
+ UPROPERTY() TArray<TObjectPtr<class AMareServiceTarget>> Elevators;
  UPROPERTY() TObjectPtr<class UMaterialParameterCollection> TimeCollection;
  UPROPERTY() TObjectPtr<class ASkyLight> Sky;
  /** Night lamps: one shadowless point light per street-lamp globe, bulb, lantern and pool light. */

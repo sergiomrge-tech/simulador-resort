@@ -175,6 +175,19 @@ def build_pool_tiles():
     return mat
 
 
+def build_suite_daylight():
+    """Suite windows (gen_suite 'DaylightPanel'): bright sky by day behind the sheers, deep blue at night."""
+    mat=material('M_SuiteDaylight')
+    night=expression(mat,unreal.MaterialExpressionCollectionParameter,collection=time_collection(),parameter_name='Night')
+    glow=custom(mat,'return lerp(float3(.75,.86,.96)*3.2,float3(.03,.05,.10),saturate(N));',unreal.CustomMaterialOutputType.CMOT_FLOAT3,{'N':night})
+    MEL.connect_material_property(glow,'',unreal.MaterialProperty.MP_EMISSIVE_COLOR)
+    MEL.connect_material_property(expression(mat,unreal.MaterialExpressionConstant3Vector,constant=unreal.LinearColor(.8,.88,.95,1)),'',unreal.MaterialProperty.MP_BASE_COLOR)
+    errors=list(MEL.recompile_material(mat))
+    if errors:raise RuntimeError(str(errors))
+    unreal.EditorAssetLibrary.save_loaded_asset(mat)
+    return mat
+
+
 def time_collection():
     """MPC_MareTime: scalar Night (0 day .. 1 night) written by UMareVisualWorld every tick."""
     path='/Game/World/Materials/MPC_MareTime'

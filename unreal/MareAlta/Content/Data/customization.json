@@ -2757,28 +2757,112 @@
      "base_price": 900,
      "comfort": 3,
      "beauty": 0,
-     "visual": false,
      "rate": 18,
+     "rooms": true,
+     "room_tag": "MareSuite",
      "tiers": [
       {
        "name": "King padrão",
-       "desc": "Colchão de hotel."
+       "desc": "Cama estofada com cabeceira capitonê.",
+       "parts": [
+        {
+         "model": "mare_bed_upholstered",
+         "at": [
+          -725,
+          -50,
+          3
+         ],
+         "yaw": -90
+        }
+       ]
       },
       {
        "name": "Pillow top",
-       "desc": "Pillow top e travesseiros de pluma."
+       "desc": "King com cabeceira de couro em painéis.",
+       "parts": [
+        {
+         "model": "mare_bed_king",
+         "at": [
+          -718,
+          -50,
+          3
+         ],
+         "yaw": -90
+        }
+       ]
       },
       {
        "name": "Cama ortopédica",
-       "desc": "Colchão de molas ensacadas."
+       "desc": "King com pufe de couro aos pés.",
+       "parts": [
+        {
+         "model": "mare_bed_king",
+         "at": [
+          -718,
+          -50,
+          3
+         ],
+         "yaw": -90
+        },
+        {
+         "model": "Ottoman_01",
+         "h": 45,
+         "at": [
+          -540,
+          -50,
+          3
+         ]
+        }
+       ]
       },
       {
        "name": "Cama de dossel",
-       "desc": "Dossel de linho."
+       "desc": "Dossel de madeira torneada e cortinas de linho.",
+       "parts": [
+        {
+         "model": "mare_bed_canopy",
+         "at": [
+          -720,
+          -50,
+          3
+         ],
+         "yaw": -90
+        }
+       ]
       },
       {
        "name": "Cama sob medida",
-       "desc": "Colchão artesanal e menu de travesseiros."
+       "desc": "Dossel, pufe e chaise de leitura.",
+       "parts": [
+        {
+         "model": "mare_bed_canopy",
+         "at": [
+          -720,
+          -50,
+          3
+         ],
+         "yaw": -90
+        },
+        {
+         "model": "Ottoman_01",
+         "h": 45,
+         "at": [
+          -540,
+          -50,
+          3
+         ]
+        },
+        {
+         "model": "mid_century_lounge_chair",
+         "h": 100,
+         "at": [
+          -560,
+          -330,
+          3
+         ],
+         "yaw": 60
+        }
+       ]
       }
      ]
     },

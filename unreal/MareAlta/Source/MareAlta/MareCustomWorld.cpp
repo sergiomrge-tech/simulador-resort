@@ -63,7 +63,9 @@ void UMareCustomWorld::Index()
     const float Z=GetWorld()->LineTraceSingleByChannel(Hit,Top,Top-FVector(0,0,6000),ECC_Visibility,Query)?Hit.ImpactPoint.Z:0.f;
     State.Anchors.Add(FTransform(FRotator(0,P.Num()>=3?P[2]->AsNumber():37.f*I,0),FVector(Top.X,Top.Y,Z)));}
    bool bRooms=false;Def->TryGetBoolField(TEXT("rooms"),bRooms);
-   if(bRooms)for(TActorIterator<AActor> It(GetWorld());It;++It)if(It->ActorHasTag(TEXT("MareBungalow"))){State.Anchors.Add(FTransform(It->GetActorRotation(),It->GetActorLocation()));State.AnchorOwners.Add(*It);}
+   // Rooms are pousada bungalows by default; "room_tag" picks another set (the hotel suite: MareSuite).
+   const FString RoomTag=Def->HasField(TEXT("room_tag"))?UMareSimulation::String(Def,TEXT("room_tag")):FString(TEXT("MareBungalow"));
+   if(bRooms)for(TActorIterator<AActor> It(GetWorld());It;++It)if(It->ActorHasTag(FName(*RoomTag))){State.Anchors.Add(FTransform(It->GetActorRotation(),It->GetActorLocation()));State.AnchorOwners.Add(*It);}
    UE_LOG(LogTemp,Display,TEXT("MARE_CUSTOM %s/%s anchors=%d hide=%d materials=%d"),*Place,*UMareSimulation::String(Def,TEXT("id")),State.Anchors.Num(),State.HideTargets.Num(),State.MaterialTargets.Num());
   }
  }

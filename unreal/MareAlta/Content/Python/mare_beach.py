@@ -248,7 +248,114 @@ def place_bungalows():
     return {'bungalows': report, 'vegetation_removed': removed}
 
 
+# Grand Hotel suite on the 3rd floor (tools/ue58/gen_suite.py); furniture in suite metres, facing in world axes.
+SUITE_ORIGIN = (-2800.0, 6342.0, 851.0)
+SUITE_FURNITURE = [
+    ('sofa_03', -0.5, 1.6, (0, -1)), ('modern_coffee_table_01', -0.5, .45, (0, -1)),
+    ('ArmChair_01', -2.6, -4.4, (1, .4)), ('mid_century_lounge_chair', 1.6, -4.4, (-1, .4)),
+    ('modern_coffee_table_02', -.5, -4.5, (0, 1)), ('ClassicNightstand_01', -7.85, -1.65, (1, 0)),
+    ('ClassicNightstand_01', -7.85, .55, (1, 0)), ('pachira_aquatica_01', -8.0, -5.1, (1, 0)),
+    ('pachira_aquatica_01', 2.6, -5.1, (-1, 0)), ('potted_plant_01', -5.6, 5.2, (0, -1)),
+    ('calathea_orbifolia_01', 1.6, 5.2, (0, -1)), ('potted_plant_02', -2.6, -1.6, (0, 1)),
+]
+SUITE_LIGHTS = [(-6.0, -.5), (-.5, .6), (-.5, -3.6), (5.7, 2.8), (-4.0, 4.3), (2.0, 3.8)]
+
+
+def place_suite():
+    import json, math, importlib
+    from pathlib import Path
+    import mare_hotel_lobby, mare_materials
+    importlib.reload(mare_hotel_lobby)
+    importlib.reload(mare_materials)
+    if unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world():
+        raise RuntimeError('Stop PIE first')
+    assets = json.loads((Path(unreal.Paths.project_dir()) / 'Content/Data/custom_assets.json').read_text(encoding='utf-8'))
+    actors = unreal.get_editor_subsystem(unreal.EditorActorSubsystem)
+    for a in actors.get_all_level_actors():
+        if 'MareSuitePart' in [str(t) for t in a.tags]:
+            actors.destroy_actor(a)
+    ox, oy, oz = SUITE_ORIGIN
+    tags = [unreal.Name('MareGenerated'), unreal.Name('Region_grand_hotel'), unreal.Name('MareSuitePart')]
+    room = actors.spawn_actor_from_object(unreal.load_asset(assets['mare_suite']), unreal.Vector(ox, oy, oz), unreal.Rotator(roll=0, pitch=0, yaw=0))
+    room.set_actor_label('Hotel · suíte')
+    room.tags = tags + [unreal.Name('MareSuite')]
+    room.set_folder_path('Hotel/Suite')
+    comp = room.static_mesh_component
+    daylight = mare_materials.build_suite_daylight()
+    for i, slot in enumerate(comp.static_mesh.static_materials):
+        if slot.material_interface and 'DaylightPanel' in slot.material_interface.get_name():
+            comp.set_material(i, daylight)
+    placed = []
+    for slug, x, y, face in SUITE_FURNITURE:
+        mesh = mare_hotel_lobby._lib_mesh(slug)
+        b = mesh.get_bounds()
+        z = oz + 3 - (b.origin.z - b.box_extent.z)
+        actor = actors.spawn_actor_from_class(unreal.StaticMeshActor, unreal.Vector(ox + x * 100, oy + y * 100, z), unreal.Rotator(roll=0, pitch=0, yaw=math.degrees(math.atan2(face[1], face[0]))))
+        actor.static_mesh_component.set_static_mesh(mesh)
+        actor.set_actor_label('Hotel suíte · ' + slug)
+        actor.tags = tags
+        actor.set_folder_path('Hotel/Suite')
+        placed.append(slug)
+    rug = actors.spawn_actor_from_object(unreal.load_asset(assets['mare_rug']), unreal.Vector(ox - 50, oy + 80, oz + 3), unreal.Rotator(roll=0, pitch=0, yaw=0))
+    rug.tags = tags
+    rug.set_folder_path('Hotel/Suite')
+    for x, y in SUITE_LIGHTS:
+        light = actors.spawn_actor_from_class(unreal.PointLight, unreal.Vector(ox + x * 100, oy + y * 100, oz + 270))
+        c = light.point_light_component
+        c.set_intensity(1800.0)
+        c.set_light_color(unreal.LinearColor(1.0, .86, .70, 1.0))
+        c.set_attenuation_radius(750.0)
+        c.set_editor_property('cast_shadows', False)
+        light.tags = tags
+        light.set_folder_path('Hotel/Suite')
+    unreal.get_editor_subsystem(unreal.LevelEditorSubsystem).save_current_level()
+    return {'suite': True, 'furniture': placed, 'lights': len(SUITE_LIGHTS)}
+
+
+def interiors():
+    """Bounded post-process volumes for every interior (lobby, suite, bungalows) plus bungalow lamps.
+    UMareVisualWorld drives their exposure (tag MareInterior) and the lamps (MarePractical/MareHomeLight)."""
+    if unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world():
+        raise RuntimeError('Stop PIE first')
+    actors = unreal.get_editor_subsystem(unreal.EditorActorSubsystem)
+    for a in actors.get_all_level_actors():
+        if 'MareInteriorPart' in [str(t) for t in a.tags]:
+            actors.destroy_actor(a)
+    ox, oy, oz = SUITE_ORIGIN
+    boxes = [('lobby', (-2100, 6342, 255), (1630, 577, 210), 'Region_grand_hotel'),
+             ('suite', (ox, oy, oz + 154), (850, 577, 154), 'Region_grand_hotel')]
+    boxes += [(f'bangalo{i + 1}', (x, y + 8, 200), (240, 207, 150), region) for i, (x, y, region) in enumerate(BUNGALOWS)]
+    for name, centre, extent, region in boxes:
+        vol = actors.spawn_actor_from_class(unreal.PostProcessVolume, unreal.Vector(*centre))
+        vol.set_actor_scale3d(unreal.Vector(extent[0] / 100, extent[1] / 100, extent[2] / 100))
+        vol.set_editor_property('unbound', False)
+        vol.set_editor_property('priority', 5.0)
+        vol.set_editor_property('blend_radius', 60.0)
+        vol.set_actor_label('Interior · ' + name)
+        vol.tags = [unreal.Name('MareInterior'), unreal.Name('MareInteriorPart')]
+        vol.set_folder_path('Interiors')
+    lamps = 0
+    for i, (x, y, region) in enumerate(BUNGALOWS):
+        # Bungalow yaw 180: local (lx, ly) -> world (x - lx, y - ly). Ceiling light and the two bedside lamps.
+        for lx, ly, lz, power in [(0, 0, 290, 1.0), (135, -178, 110, .35), (-135, -178, 110, .35)]:
+            light = actors.spawn_actor_from_class(unreal.PointLight, unreal.Vector(x - lx, y - ly, lz))
+            c = light.point_light_component
+            c.set_intensity(1000.0 * power)
+            c.set_light_color(unreal.LinearColor(1.0, .82, .62, 1.0))
+            c.set_attenuation_radius(520.0)
+            c.set_editor_property('cast_shadows', False)
+            light.tags = [unreal.Name('MarePractical'), unreal.Name('MareHomeLight'), unreal.Name(region), unreal.Name('MareInteriorPart')]
+            light.set_folder_path('Interiors')
+            lamps += 1
+    unreal.get_editor_subsystem(unreal.LevelEditorSubsystem).save_current_level()
+    return {'volumes': len(boxes), 'lamps': lamps}
+
+
 def run(action, arg=''):
+    if action == 'interiors':
+        return interiors()
+    if action == 'suite':
+        return place_suite()
     if action == 'bungalows':
         return place_bungalows()
     if action == 'swapmesh':

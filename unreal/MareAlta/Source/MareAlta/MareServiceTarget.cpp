@@ -87,6 +87,11 @@ void AMareServiceTarget::Use(APlayerController* Controller)
  if(Action==TEXT("Customer")){if(auto Person=Cast<AMarePerson>(GetOwner()))Person->Interact(PC);return;}
  if(Action==TEXT("Clean")){GetWorld()->GetSubsystem<UMareKioskWorld>()->CleanTable(DataIndex);GetWorld()->GetSubsystem<UMareAudioWorld>()->PlayCue(TEXT("clean"),.3f);return;}
  if(Action==TEXT("Bed")){GetWorld()->GetSubsystem<UMareHomeWorld>()->StartSleep();return;}
+ if(Action==TEXT("Elevator")){
+  // Grand Hotel elevator between the lobby and the suite on the 3rd floor.
+  if(auto Pawn=PC->GetPawn()){Pawn->SetActorLocation(TeleportTo,false,nullptr,ETeleportType::TeleportPhysics);PC->SetControlRotation(FRotator(0,TeleportYaw,0));}
+  const FVector Spot=TeleportTo;GetWorld()->GetSubsystem<UMareAudioWorld>()->PlayCue(TEXT("door"),.3f,&Spot);
+  Sim->LastMessage=DataIndex==1?TEXT("Suíte do Grand Hotel · 3º andar"):TEXT("Lobby do Grand Hotel");return;}
  if(Action==TEXT("HotelReception")){
   Sim->LastMessage=FString::Printf(TEXT("Recepção: ocupação prevista de %.0f%% esta noite. Diárias e restaurante entram ao dormir."),Sim->HotelOccupancy()*100);
   PC->OpenPhone(4);return;}

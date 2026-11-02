@@ -77,6 +77,7 @@ void UMareVisualWorld::Tick(float DeltaSeconds)
  if(!Sun){for(TActorIterator<ALight> It(GetWorld());It;++It){if(It->ActorHasTag(TEXT("MareSun")))Sun=*It;if(It->ActorHasTag(TEXT("MareMoon")))Moon=*It;if(It->ActorHasTag(TEXT("MarePractical")))Practical.AddUnique(*It);}
   for(TActorIterator<AExponentialHeightFog> It(GetWorld());It;++It)Fog=*It;
   for(TActorIterator<APostProcessVolume> It(GetWorld());It;++It)if(It->bUnbound){Exposure=*It;break;}
+  for(TActorIterator<APostProcessVolume> It(GetWorld());It;++It)if(It->ActorHasTag(TEXT("MareInterior")))Interiors.Add(*It);
   for(TActorIterator<ASkyLight> It(GetWorld());It;++It){Sky=*It;break;}
   BuildLamps();
   for(TActorIterator<ATextRenderActor> It(GetWorld());It;++It)if(It->ActorHasTag(TEXT("MareText"))){Signs.Add(*It);
@@ -86,13 +87,22 @@ void UMareVisualWorld::Tick(float DeltaSeconds)
   // Grand Hotel reception desk inside the opened ground floor (tools/ue58/hotel_lobby_shell.py).
   if(!Reception){Reception=GetWorld()->SpawnActor<AMareServiceTarget>(FVector(-1390,6470,160),FRotator::ZeroRotator);
    Reception->Action=TEXT("HotelReception");Reception->Label=TEXT("Recepção do Grand Hotel");Reception->Reach=280;Reception->OcclusionTolerance=60;}}
- if(Reception){bool bHotel=false;UMareSimulation::Object(GetWorld()->GetGameInstance()->GetSubsystem<UMareSimulation>()->State,TEXT("unlocked"))->TryGetBoolField(TEXT("grand_hotel"),bHotel);Reception->SetActorHiddenInGame(!bHotel);}
+ if(Reception){bool bHotel=false;UMareSimulation::Object(GetWorld()->GetGameInstance()->GetSubsystem<UMareSimulation>()->State,TEXT("unlocked"))->TryGetBoolField(TEXT("grand_hotel"),bHotel);Reception->SetActorHiddenInGame(!bHotel);
+  // Suite on the 3rd floor (tools/ue58/gen_suite.py, origin -2800,6342,851): arrival points face into the room.
+  if(Elevators.IsEmpty()){auto Make=[this](FVector At,FVector To,float Yaw,int32 Index,const TCHAR* Label){auto T=GetWorld()->SpawnActor<AMareServiceTarget>(At,FRotator::ZeroRotator);
+    T->Action=TEXT("Elevator");T->Label=Label;T->Reach=260;T->OcclusionTolerance=60;T->TeleportTo=To;T->TeleportYaw=Yaw;T->DataIndex=Index;Elevators.Add(T);};
+   Make(FVector(-2600,6862,195),FVector(-2800,6690,943),-90,1,TEXT("Elevador · subir para a suíte"));
+   Make(FVector(-2900,6862,195),FVector(-2800,6690,943),-90,1,TEXT("Elevador · subir para a suíte"));
+   Make(FVector(-2800,6895,1001),FVector(-2750,6640,137),-90,0,TEXT("Elevador · descer ao lobby"));}
+  for(auto T:Elevators)if(T)T->SetActorHiddenInGame(!bHotel);}
  auto Sim=GetWorld()->GetGameInstance()->GetSubsystem<UMareSimulation>();if(!Sim)return;
  const float Hour=UMareSimulation::Number(Sim->State,TEXT("minutes"))/60.f;
  const float Solar=FMath::Sin((Hour-6.f)/12.f*PI);const float Day=FMath::SmoothStep(-.04f,.18f,Solar);
  const bool Rain=UMareSimulation::String(Sim->State,TEXT("weather"))==TEXT("rain");
  // Night: the eye must not adapt up to daylight brightness (that washed the scene out white); keep a
  // narrow dark EV100 window so moonlight reads blue-dim and lamps/windows carry the image.
+ for(auto Volume:Interiors)if(Volume){auto& S=Volume->Settings;S.bOverride_AutoExposureMinBrightness=S.bOverride_AutoExposureMaxBrightness=true;
+  S.AutoExposureMinBrightness=FMath::Lerp(3.5f,5.f,Day);S.AutoExposureMaxBrightness=FMath::Lerp(4.5f,9.f,Day);}
  if(Exposure){Exposure->Settings.bOverride_AutoExposureMinBrightness=true;Exposure->Settings.bOverride_AutoExposureMaxBrightness=true;Exposure->Settings.AutoExposureMinBrightness=FMath::Lerp(-1.9f,5.f,Day);Exposure->Settings.AutoExposureMaxBrightness=FMath::Lerp(-.9f,14.f,Day);}
  if(Sky)Sky->GetLightComponent()->SetIntensity(FMath::Lerp(.035f,1.f,Day));
  if(Sun){Sun->SetActorRotation(FRotator(-Solar*58.f,-65.f+(Hour-12.f)*12.f,0));Sun->GetLightComponent()->SetIntensity(FMath::Max(0.f,Solar)*65000.f*(Rain?.2f:1.f));
