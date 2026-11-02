@@ -1,4 +1,5 @@
 #include "MareGame.h"
+#include "UnrealClient.h"
 #include "MarePlayerPresentation.h"
 #include "MareHomeWorld.h"
 #include "MareVillageWorld.h"
@@ -849,6 +850,59 @@ private:
  }
  void Close(){if(Owner.IsValid())Owner->CloseBusinessGame();}
 };
+/** Fishing at the pier: the line goes in, a random wait, then "Fisgou!" and a short window to strike
+ *  (E, Space, Enter, click or A). Esc or B reels in. Several casts in a row; each catch goes to the stock. */
+class SMareFishingGame : public SCompoundWidget
+{
+public:
+ SLATE_BEGIN_ARGS(SMareFishingGame){} SLATE_ARGUMENT(TWeakObjectPtr<AMareController>,Owner) SLATE_END_ARGS()
+ void Construct(const FArguments& Args)
+ {
+  using namespace MareNotebook;Owner=Args._Owner;Cast();
+  ChildSlot.HAlign(HAlign_Center).VAlign(VAlign_Bottom).Padding(0,0,0,70)[SNew(SBorder).BorderImage(FCoreStyle::Get().GetBrush("WhiteBrush")).BorderBackgroundColor(Paper).Padding(FMargin(26,16))
+   [SNew(SBox).WidthOverride(560)[SNew(SVerticalBox)
+    +SVerticalBox::Slot().AutoHeight()[HandText(TEXT("Pescaria no píer"),30,Brown)]
+    +SVerticalBox::Slot().AutoHeight().Padding(0,6)[SNew(STextBlock).Font(Hand(26)).ColorAndOpacity_Lambda([this](){return FSlateColor(bBite?MareNotebook::Red:MareNotebook::Ink);})
+     .Text_Lambda([this](){return FText::FromString(Status);})]
+    +SVerticalBox::Slot().AutoHeight()[SNew(STextBlock).Font(Hand(18)).ColorAndOpacity(Green).Text_Lambda([this](){return FText::FromString(FString::Printf(TEXT("Peixes hoje: %d"),Caught));})]
+    +SVerticalBox::Slot().AutoHeight()[HandText(TEXT("Espere o peixe fisgar e aperte E, Espaço, clique ou A na hora · Esc ou B recolhe a linha"),15,Faded)]]]];
+ }
+ virtual bool SupportsKeyboardFocus()const override{return true;}
+ virtual FReply OnKeyDown(const FGeometry&,const FKeyEvent& Event) override
+ {
+  const FKey K=Event.GetKey();
+  if(K==EKeys::Escape || K==EKeys::Gamepad_FaceButton_Right){if(Owner.IsValid())Owner->CloseBusinessGame();return FReply::Handled();}
+  if(K==EKeys::E || K==EKeys::SpaceBar || K==EKeys::Enter || K==EKeys::Gamepad_FaceButton_Bottom || K==EKeys::Gamepad_FaceButton_Left){Strike();return FReply::Handled();}
+  return FReply::Unhandled();
+ }
+ virtual FReply OnMouseButtonDown(const FGeometry&,const FPointerEvent&) override{Strike();return FReply::Handled();}
+ virtual void Tick(const FGeometry& Geometry,const double Time,const float Delta) override
+ {
+  SCompoundWidget::Tick(Geometry,Time,Delta);Timer-=Delta;
+  if(Timer>0)return;
+  if(bBite){bBite=false;Status=TEXT("Escapou... a linha voltou vazia.");Timer=1.2f;bRecast=true;return;}
+  if(bRecast){bRecast=false;Cast();return;}
+  bBite=true;Status=TEXT("FISGOU! Puxe agora!");Timer=Window;if(Owner.IsValid())UMareAudioWorld::Action(Owner.Get(),TEXT("pool_rail_bounce"));
+ }
+private:
+ TWeakObjectPtr<AMareController> Owner;FString Status;float Timer=0,Window=1.1f;bool bBite=false,bRecast=false;int32 Caught=0;
+ void Cast()
+ {
+  auto S=Owner.IsValid()?Owner->GetSimulation():nullptr;float Low=2,High=6;
+  if(S){const TArray<TSharedPtr<FJsonValue>>* Wait=nullptr;if(S->LeisureDefs()->TryGetArrayField(TEXT("bite_wait"),Wait) && Wait->Num()==2){Low=(*Wait)[0]->AsNumber();High=(*Wait)[1]->AsNumber();}
+   Window=UMareSimulation::Number(S->LeisureDefs(),TEXT("bite_window"),1.1);}
+  Timer=FMath::FRandRange(Low,High);Status=TEXT("Linha na água... espere.");bBite=false;
+  if(Owner.IsValid())UMareAudioWorld::Action(Owner.Get(),TEXT("bar_pour"),nullptr,.5f);
+ }
+ void Strike()
+ {
+  if(bRecast)return;
+  if(!bBite){Status=TEXT("Cedo demais! O peixe se assustou.");Timer=1.2f;bRecast=true;return;}
+  bBite=false;auto S=Owner.IsValid()?Owner->GetSimulation():nullptr;
+  if(S && !S->CatchFish().IsEmpty()){++Caught;Status=S->LastMessage;if(Owner.IsValid())UMareAudioWorld::Action(Owner.Get(),TEXT("deal_accept"));}
+  Timer=2.2f;bRecast=true;
+ }
+};
 class SMareMainMenu : public SCompoundWidget
 {
 public:
@@ -938,6 +992,31 @@ void AMareController::CloseBusinessGame()
 {
  if(GameWidget.IsValid() && GEngine && GEngine->GameViewport)GEngine->GameViewport->RemoveViewportWidgetContent(GameWidget.ToSharedRef());
  GameWidget.Reset();SetPause(false);bShowMouseCursor=false;SetInputMode(FInputModeGameOnly());ResetIgnoreMoveInput();ResetIgnoreLookInput();
+}
+void AMareController::StartFishing()
+{
+ if(!GEngine || !GEngine->GameViewport || GameWidget.IsValid())return;
+ ClosePhone();
+ const TSharedRef<SMareFishingGame> Game=SNew(SMareFishingGame).Owner(this);GameWidget=Game;
+ GEngine->GameViewport->AddViewportWidgetContent(Game,40);bShowMouseCursor=true;
+ SetInputMode(FInputModeUIOnly().SetWidgetToFocus(Game));SetIgnoreMoveInput(true);SetIgnoreLookInput(true);
+}
+void AMareController::TakePhoto()
+{
+ // Photo mode: everything in frame (inside the view cone, close enough, not behind a wall) goes to the album.
+ auto S=GetSimulation();if(!S || !PlayerCameraManager || IsPaused() || bPhoneOpen || GameWidget.IsValid() || IsMainMenuOpen())return;
+ const FVector Eye=PlayerCameraManager->GetCameraLocation();const FVector Forward=PlayerCameraManager->GetCameraRotation().Vector();
+ const float HalfFov=FMath::DegreesToRadians(PlayerCameraManager->GetFOVAngle()*.45f);
+ TArray<FString> Subjects;const TArray<TSharedPtr<FJsonValue>>* List=nullptr;
+ if(S->LeisureDefs()->TryGetArrayField(TEXT("photo_subjects"),List))for(const auto& V:*List){const auto Sub=V->AsObject();const TArray<TSharedPtr<FJsonValue>>* At=nullptr;
+  if(!Sub->TryGetArrayField(TEXT("at"),At) || At->Num()!=3)continue;const FVector Point((*At)[0]->AsNumber(),(*At)[1]->AsNumber(),(*At)[2]->AsNumber());
+  const FVector To=Point-Eye;if(To.Size()>UMareSimulation::Number(Sub,TEXT("max"),5000) || FMath::Acos(FVector::DotProduct(To.GetSafeNormal(),Forward))>HalfFov)continue;
+  FHitResult Hit;FCollisionQueryParams Query;Query.AddIgnoredActor(GetPawn());
+  if(GetWorld()->LineTraceSingleByChannel(Hit,Eye,Point,ECC_Visibility,Query) && FVector::Dist(Hit.ImpactPoint,Point)>UMareSimulation::Number(Sub,TEXT("radius"),400))continue;
+  Subjects.Add(UMareSimulation::String(Sub,TEXT("id")));}
+ const FString File=FPaths::ProjectSavedDir()/TEXT("Album")/FString::Printf(TEXT("foto_dia%02d_%04.0f_%d.png"),int32(UMareSimulation::Number(S->State,TEXT("day"),1)),UMareSimulation::Number(S->State,TEXT("minutes")),int32(GFrameNumber%100000));
+ FScreenshotRequest::RequestScreenshot(File,false,false);
+ S->RecordPhoto(Subjects,File);UMareAudioWorld::Action(this,TEXT("reception_checkin"),nullptr,.7f);
 }
 void AMareController::OpenMainMenu()
 {
@@ -1203,6 +1282,7 @@ TSharedRef<SWidget> AMareController::MakeOptionsPanel(){return SNew(SMareOptions
 void AMareController::SetupInputComponent()
 {
  Super::SetupInputComponent();InputComponent->BindAction(TEXT("Pause"),IE_Pressed,this,&AMareController::TogglePauseMenu).bExecuteWhenPaused=true;
+ InputComponent->BindKey(EKeys::P,IE_Pressed,this,&AMareController::TakePhoto);InputComponent->BindKey(EKeys::Gamepad_DPad_Down,IE_Pressed,this,&AMareController::TakePhoto);
  MareGamepad::Startup();
  FMareOptions::Get().ApplyKeys(PlayerInput);
 }

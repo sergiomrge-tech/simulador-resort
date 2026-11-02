@@ -21,6 +21,7 @@ private:
  float Clock=0;
  UPROPERTY() TObjectPtr<AMareServiceTarget> Booth;
  UPROPERTY() TObjectPtr<AStaticMeshActor> BoothModel;
+ UPROPERTY() TObjectPtr<AMareServiceTarget> Fishing;
  UPROPERTY() TArray<TObjectPtr<AMarePerson>> Buyers;
  /** Passengers with a ticket, per tour. */
  TMap<FString,TArray<TWeakObjectPtr<AMarePerson>>> Passengers;

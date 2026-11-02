@@ -255,7 +255,27 @@ def rays(arg):
     return out
 
 
+def photo_qa(arg):
+    """PIE: "x,y,z,pitch,yaw" places the player and takes a photo (P); returns the message and the album size."""
+    world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()
+    pc = unreal.GameplayStatics.get_player_controller(world, 0)
+    hero = unreal.GameplayStatics.get_player_pawn(world, 0)
+    x, y, z, pitch, yaw = [float(v) for v in arg.split(',')]
+    hero.set_actor_location(unreal.Vector(x, y, z), False, True)
+    pc.set_control_rotation(unreal.Rotator(roll=0, pitch=pitch, yaw=yaw))
+    return 'placed'
+
+
+def photo_take():
+    world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()
+    pc = unreal.GameplayStatics.get_player_controller(world, 0)
+    pc.take_photo()
+    return 'taken'
+
+
 def run(action, arg=''):
+    if action == 'photo':
+        return photo_qa(arg) if arg else photo_take()
     if action == 'rays':
         return rays(arg)
     if action == 'gameroomx':

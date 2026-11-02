@@ -64,6 +64,10 @@ public:
  /** Main menu over the paused world at start-up; the session (intro) only starts after a choice. */
  /** Business counter task (three timing rounds) over the paused world; the result pays through PlayBusiness. */
  void StartBusinessGame(const FString& Biz);
+ /** Fishing at the pier (cast, wait, strike) over the running world. */
+ void StartFishing();
+ /** Photo mode (P / D-pad down): screenshot to Saved/Album and the subjects in frame to the album. */
+ UFUNCTION(BlueprintCallable,Category="Maré Alta") void TakePhoto();
  void CloseBusinessGame();
  void OpenMainMenu();
  bool IsMainMenuOpen()const{return MainMenuWidget.IsValid();}

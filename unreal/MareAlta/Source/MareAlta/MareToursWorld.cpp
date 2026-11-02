@@ -13,7 +13,7 @@ TStatId UMareToursWorld::GetStatId() const{RETURN_QUICK_DECLARE_CYCLE_STAT(UMare
 
 void UMareToursWorld::Deinitialize()
 {
- if(IsValid(Booth))Booth->Destroy();if(IsValid(BoothModel))BoothModel->Destroy();
+ if(IsValid(Booth))Booth->Destroy();if(IsValid(BoothModel))BoothModel->Destroy();if(IsValid(Fishing))Fishing->Destroy();
  for(auto& P:Buyers)if(IsValid(P))P->Destroy();
  for(auto& Pair:Passengers)for(auto& P:Pair.Value)if(P.IsValid())P->Destroy();
  for(auto& Pair:Leaving)if(IsValid(Pair.Key))Pair.Key->Destroy();
@@ -49,6 +49,12 @@ void UMareToursWorld::Tick(float DeltaSeconds)
    BoothModel=GetWorld()->SpawnActor<AStaticMeshActor>(At,Yaw);BoothModel->SetMobility(EComponentMobility::Movable);BoothModel->GetStaticMeshComponent()->SetStaticMesh(Mesh);}
   Booth=GetWorld()->SpawnActor<AMareServiceTarget>(At+FVector(0,0,(*B)[2]->AsNumber()),Yaw);
   Booth->Action=TEXT("TourBooth");Booth->Label=TEXT("Bilheteria dos passeios");Booth->Reach=260;Booth->OcclusionTolerance=80;}
+ // Fishing spot at the end of the pier, always there (Seu Gregory's chapter asks for fish).
+ const TArray<TSharedPtr<FJsonValue>>* F=nullptr;
+ if(!Fishing && S->LeisureDefs()->TryGetArrayField(TEXT("fishing_spot"),F) && F->Num()==4){
+  const FVector At=Ground(FVector((*F)[0]->AsNumber(),(*F)[1]->AsNumber(),0));
+  Fishing=GetWorld()->SpawnActor<AMareServiceTarget>(At+FVector(0,0,90),FRotator(0,(*F)[3]->AsNumber(),0));
+  if(Fishing){Fishing->Action=TEXT("Fishing");Fishing->Label=TEXT("Pescar na ponta do píer");Fishing->Reach=250;Fishing->OcclusionTolerance=90;}}
  if(Booth)Booth->SetActorHiddenInGame(!bOwned);
  if(BoothModel){BoothModel->SetActorHiddenInGame(!bOwned);BoothModel->SetActorEnableCollision(bOwned);}
  if(!bOwned)return;

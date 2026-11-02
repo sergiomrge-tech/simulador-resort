@@ -286,6 +286,14 @@ public:
  UFUNCTION(BlueprintCallable,Category="Maré Alta|Business") double PlayBusiness(const FString& Id,int32 Hits);
  /** Hourly: night tokens of the game room (business_games.json game_room), more players with the hotel full. */
  void GameRoomHour(int32 Hour);
+ // --- Fishing and the photo album (MareLeisure.cpp, Content/Data/leisure.json) ---
+ TSharedPtr<FJsonObject> LeisureDefs() const;
+ /** A fish on the hook: species drawn by weight, +1 'peixe' in the stock, fishing log (prog.fish) and fame. */
+ UFUNCTION(BlueprintCallable,Category="Maré Alta|Leisure") FString CatchFish();
+ /** A photo with these subjects in frame: album entry (prog.album), chapter flags (prog.chp), fame for new subjects. */
+ int32 RecordPhoto(const TArray<FString>& Subjects,const FString& File);
+ /** Bar recipes found by mixing, i.e. not on the starting menu. */
+ int32 BarDiscoveries() const;
  // --- Bar do Coqueiro (gameplay plan M8; MareBar.cpp, Content/Data/bar.json) ---
  // State "bar": stock {ingredient: n}, known [recipe ids], orders [{id, name, want (recipe id or "surpresa"), hint, since
  // (day*1440+minutes)}], next, served.

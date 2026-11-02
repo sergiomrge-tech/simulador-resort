@@ -705,3 +705,27 @@ bool FMareRestaurantTest::RunTest(const FString& Parameters)
  IFileManager::Get().DeleteDirectory(*Sim->SaveDirectory,false,true);
  Sim->RemoveFromRoot();Instance->RemoveFromRoot();return true;
 }
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FMareLeisureChaptersTest,"MareAlta.Gameplay.FishingPhotoChapters",EAutomationTestFlags::EditorContext|EAutomationTestFlags::EngineFilter)
+bool FMareLeisureChaptersTest::RunTest(const FString& Parameters)
+{
+ auto Instance=NewObject<UGameInstance>();Instance->AddToRoot();
+ auto Sim=NewObject<UMareSimulation>(Instance);Sim->AddToRoot();
+ Sim->SaveDirectory=FPaths::ProjectSavedDir()/TEXT("Automation/FishingPhoto")/FGuid::NewGuid().ToString(EGuidFormats::Digits);
+ auto Load=[&](const FString& Name,TSharedPtr<FJsonObject>& Result){FString Text;FFileHelper::LoadFileToString(Text,*(FPaths::ProjectContentDir()/TEXT("Data")/Name));return FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Text),Result);};
+ if(!TestTrue(TEXT("Definitions"),Load(TEXT("definitions.json"),Sim->Definitions)) || !TestTrue(TEXT("Default save"),Load(TEXT("default_save.json"),Sim->State))){Sim->RemoveFromRoot();Instance->RemoveFromRoot();return false;}
+ // Fishing: each catch adds a 'peixe' to the stock (Seu Gregory's chapter delivers from there).
+ const double Fish=Sim->Number(Sim->Object(Sim->State,TEXT("stock")),TEXT("peixe"));
+ for(int32 I=0;I<4;++I)TestFalse(TEXT("Caught a fish"),Sim->CatchFish().IsEmpty());
+ TestEqual(TEXT("Four fish in the stock"),Sim->Number(Sim->Object(Sim->State,TEXT("stock")),TEXT("peixe")),Fish+4);
+ // Photo of the lighthouse flags Padre Robson's step; a repeated subject gives no new fame.
+ TestEqual(TEXT("New subject"),Sim->RecordPhoto({TEXT("farol")},TEXT("a.png")),1);TestEqual(TEXT("Already photographed"),Sim->RecordPhoto({TEXT("farol")},TEXT("b.png")),0);
+ bool bFlag=false;Sim->Object(Sim->Object(Sim->State,TEXT("prog")),TEXT("chp"))->TryGetBoolField(TEXT("farol"),bFlag);TestTrue(TEXT("Lighthouse flag"),bFlag);
+ const TArray<TSharedPtr<FJsonValue>>* Album=nullptr;TestTrue(TEXT("Album has two photos"),Sim->Object(Sim->State,TEXT("prog"))->TryGetArrayField(TEXT("album"),Album) && Album->Num()==2);
+ // Bar discoveries count as recipes; only bought businesses count.
+ Sim->Bar();TestEqual(TEXT("No discoveries yet"),Sim->BarDiscoveries(),0);
+ Sim->Object(Sim->State,TEXT("bar"))->SetArrayField(TEXT("known"),{MakeShared<FJsonValueString>(TEXT("caipirinha")),MakeShared<FJsonValueString>(TEXT("mojito")),MakeShared<FJsonValueString>(TEXT("pina_colada"))});
+ TestEqual(TEXT("Two drinks discovered"),Sim->BarDiscoveries(),2);
+ IFileManager::Get().DeleteDirectory(*Sim->SaveDirectory,false,true);
+ Sim->RemoveFromRoot();Instance->RemoveFromRoot();return true;
+}

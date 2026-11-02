@@ -107,6 +107,7 @@ void AMareServiceTarget::Use(APlayerController* Controller)
  if(Action==TEXT("RestaurantTable")){if(Sim->UseTable(DataIndex))UMareAudioWorld::Action(this,TEXT("reception_checkin"));return;}
  if(Action==TEXT("RestaurantPass")){if(Sim->PickUpPass()>0)UMareAudioWorld::Action(this,TEXT("bar_ice_glass"));PC->OpenStation(TEXT("Restaurant"));return;}
  if(Action==TEXT("RoomService")){if(Sim->DeliverRoomService()>0)UMareAudioWorld::Action(this,TEXT("money_coins"));return;}
+ if(Action==TEXT("Fishing")){PC->StartFishing();return;}
  if(Action==TEXT("BarCounter")){PC->OpenStation(TEXT("Bar"));return;}
  if(Action==TEXT("HotelReception")){const FVector Bell=GetActorLocation();UMareAudioWorld::Action(this,TEXT("reception_bell"),&Bell);PC->OpenStation(TEXT("ReceptionHotel"));return;}
  if(Action==TEXT("Door")){

@@ -31,8 +31,15 @@ Marcar `[x]` só depois de testado no jogo, com foto ou teste automático.
 - [ ] P2 Bainha das pernas da sunga boxer levemente marcada; pequenos furos no cós.
 
 ## 2. Migração Godot → Unreal ainda incompleta
-- [ ] P1 **Pesca no píer** (missão do pescador) e **modo foto (P)** com álbum: destravam os capítulos 2–4 da vila.
-- [ ] P1 **Capítulos 2–4 da vila** (fama, foto, receitas, negócios) com contagem real.
+- [x] P1 **Pesca no píer** e **modo foto (P)** com álbum (02/11): E na ponta do píer abre a pescaria (espera, "fisgou!",
+  janela curta para puxar; 5 espécies com tamanho, garoupa rara); cada peixe vai ao estoque (capítulo do Seu Gregory).
+  P (ou direcional para baixo) tira a foto sem a interface, salva em `Saved/Album` e registra no álbum o que estava
+  enquadrado (farol, píer, hotel, quiosque, bar, piscina): a foto do farol cumpre o passo do Padre Robson.
+  `MareLeisure.cpp`, `Content/Data/leisure.json`, teste `MareAlta.Gameplay.FishingPhotoChapters`. Falta: vara de pesca na mão
+  e uma página de álbum no celular.
+- [x] P1 **Capítulos 2–4 da vila** com contagem real (02/11): peixes da pescaria, foto do farol, receitas = drinks
+  descobertos no bar (o texto do capítulo "Sabores" foi atualizado; a cozinha experimental da Godot não foi portada),
+  negócios contam só os comprados.
 - [ ] P1 **Festas e eventos do calendário**:
   - junina, quermesse, DJ, tempestade, maré alta;
   - preparativos pagos, tendas, fogueira, bandeirinhas.

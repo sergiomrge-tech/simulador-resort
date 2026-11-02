@@ -293,8 +293,8 @@ int32 UMareSimulation::ChapterStepProgress(const FString& Id,int32& Goal) const
  else if(Kind==TEXT("pay"))Amount=FMath::Max(0.,Money());
  else if(Kind==TEXT("serve") || Kind==TEXT("sell"))Amount=Number(Object(Prog,TEXT("ch")),Id+TEXT("_")+Kind);
  else if(Kind==TEXT("fame"))Amount=FameLevel();
- else if(Kind==TEXT("recipes"))Amount=Object(Prog,TEXT("disc"))->Values.Num();
- else if(Kind==TEXT("biz"))Amount=Object(Prog,TEXT("biz"))->Values.Num();
+ else if(Kind==TEXT("recipes"))Amount=Object(Prog,TEXT("disc"))->Values.Num()+BarDiscoveries();
+ else if(Kind==TEXT("biz")){for(const auto& Pair:Object(Prog,TEXT("biz"))->Values)Amount+=OwnsBusiness(FString(Pair.Key.ToView()));}   // bought ones only
  else if(Kind==TEXT("photo")){Object(Prog,TEXT("chp"))->TryGetBoolField(Item,bValue);Amount=bValue?1:0;}
  return FMath::Min(Amount,Goal);
 }

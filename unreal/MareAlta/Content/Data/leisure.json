@@ -1,0 +1,21 @@
+{
+ "_doc": "Fishing at the pier and the photo mode (village chapters). Fishing: E at the spot casts; after a random wait the fish bites and the player has bite_window seconds to strike (E, Space, click or A); a strike gives one fish of a species drawn by weight, which goes to the stock as 'peixe' (Seu Gregory's chapter asks for 4). Photo mode: P takes a picture (saved in Saved/Album); every subject inside the frame, closer than its max distance and not hidden behind a wall, is recorded in the album (prog.album) and flags its chapter step (prog.chp). World cm.",
+ "fishing_spot": [7200, -4650, 0, 90],
+ "bite_wait": [2.0, 6.0],
+ "bite_window": 1.1,
+ "species": [
+  {"id": "sardinha", "name": "Sardinha", "weight": 40, "cm": [12, 20]},
+  {"id": "pargo", "name": "Pargo", "weight": 25, "cm": [25, 45]},
+  {"id": "robalo", "name": "Robalo", "weight": 20, "cm": [35, 70]},
+  {"id": "cioba", "name": "Cioba", "weight": 12, "cm": [30, 55]},
+  {"id": "garoupa", "name": "Garoupa (rara!)", "weight": 3, "cm": [50, 95]}
+ ],
+ "photo_subjects": [
+  {"id": "farol", "name": "Farol", "at": [10800, -4000, 900], "max": 9000, "radius": 500},
+  {"id": "pier", "name": "Píer dos pescadores", "at": [7200, -3500, 50], "max": 4000, "radius": 600},
+  {"id": "hotel", "name": "Grand Hotel", "at": [-1800, 6500, 1500], "max": 12000, "radius": 1500},
+  {"id": "quiosque", "name": "Quiosque", "at": [3800, -1200, 250], "max": 3000, "radius": 400},
+  {"id": "bar", "name": "Bar do Coqueiro", "at": [1300, -1300, 250], "max": 3000, "radius": 400},
+  {"id": "piscina", "name": "Piscina", "at": [0, 400, 0], "max": 3000, "radius": 600}
+ ]
+}
