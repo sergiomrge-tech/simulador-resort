@@ -705,6 +705,12 @@ class MareMigrationTools(unreal.ToolsetDefinition):
             if not sim.pickup(dish,False):return json.dumps({'error':'Pickup refused'})
         elif phase=='hire':sim.hire_attendant()
         elif phase=='tables':sim.buy_expansion('kiosk_tables')
+        elif phase=='bar_orders':
+            return json.dumps({'orders':[sim.add_bar_order('') for _ in range(4)]})
+        elif phase=='position_bar':
+            target=next(a for a in actors if str(a.get_editor_property('action'))=='BarCounter')
+            aim(target,unreal.Vector(1330,-1300,100))
+            return json.dumps({'at':point(player.get_actor_location())})
         elif phase.startswith('arrival'):
             return json.dumps({'arrival':[sim.add_arrival(phase.split(':')[1] if ':' in phase else 'pousada') for _ in range(3)]})
         elif phase=='capture':

@@ -53,7 +53,11 @@ Pronto e testado (02/11):
 - fama trazendo clientes;
 - sinuca (física, IA e aposta).
 
-- [ ] P1 **Bar do Coqueiro**: drinks por combinação de ingredientes (M8), receitas a descobrir, barman automatiza.
+- [x] P1 **Bar do Coqueiro** (M8, 02/11): clientes sentam nas banquetas com pedidos (do cardápio, "me surpreenda" ou um
+  drink desconhecido com dica); o jogador mistura até 5 ingredientes na coqueteleira; 11 receitas (2 conhecidas no início),
+  descobrir dá fama; gorjeta pela rapidez; reposição de ingredientes; o bartender serve sozinho o que está no cardápio.
+  Dados em `Content/Data/bar.json`, lógica em `MareBar.cpp`, mundo em `MareBarWorld.cpp`, teste `MareAlta.Gameplay.BarDrinks`.
+  Falta: animação do bartender preparando e copo no balcão.
 - [ ] P1 **Negócios da vila**, uma tarefa curta cada:
   - pranchas e caiaques;
   - food truck do pastel;

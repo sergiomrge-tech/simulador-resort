@@ -1,0 +1,273 @@
+{
+ "_doc": "Bar do Coqueiro (gameplay plan M8, MareBar.cpp): ingredients bought by the bottle/box and mixed at the counter. A drink is the exact SET of its ingredients (order does not matter). Recipes with known=true are on the menu from the start; the others are discovered by mixing them (fame). Customers order known drinks, a 'surpresa' (any recipe, new ones count as discoveries) or ask for an unknown one with a hint. mesh = kiosk product shown in the guest's hand. Places in world cm: station = player's E target inside the U counter, barman = where the bartender stands, stools = [x, y, yaw facing the counter]. seat = [stool seat top cm, how far the root sits ahead of the stool toward the counter].",
+ "open": [
+  10,
+  23
+ ],
+ "max_orders": 4,
+ "patience_hours": 3,
+ "restock_qty": 10,
+ "max_mix": 5,
+ "bartender_share": 0.85,
+ "discovery_fame": 6,
+ "station": [
+  1180,
+  -1300,
+  112
+ ],
+ "barman": [
+  1330,
+  -1300,
+  0,
+  180
+ ],
+ "stools": [
+  [
+   1000,
+   -1390,
+   0
+  ],
+  [
+   1000,
+   -1210,
+   0
+  ],
+  [
+   1210,
+   -1600,
+   90
+  ],
+  [
+   1390,
+   -1600,
+   90
+  ],
+  [
+   1210,
+   -1000,
+   -90
+  ],
+  [
+   1390,
+   -1000,
+   -90
+  ]
+ ],
+ "seat": [
+  82,
+  30
+ ],
+ "ingredients": [
+  {
+   "id": "cachaca",
+   "name": "Cachaça",
+   "cost": 2.5
+  },
+  {
+   "id": "vodka",
+   "name": "Vodca",
+   "cost": 3
+  },
+  {
+   "id": "rum",
+   "name": "Rum",
+   "cost": 3
+  },
+  {
+   "id": "limao",
+   "name": "Limão",
+   "cost": 0.8
+  },
+  {
+   "id": "maracuja",
+   "name": "Maracujá",
+   "cost": 1.2
+  },
+  {
+   "id": "morango",
+   "name": "Morango",
+   "cost": 1.5
+  },
+  {
+   "id": "abacaxi",
+   "name": "Abacaxi",
+   "cost": 1.2
+  },
+  {
+   "id": "coco",
+   "name": "Leite de coco",
+   "cost": 1.4
+  },
+  {
+   "id": "leite_condensado",
+   "name": "Leite condensado",
+   "cost": 1.3
+  },
+  {
+   "id": "hortela",
+   "name": "Hortelã",
+   "cost": 0.6
+  },
+  {
+   "id": "acucar",
+   "name": "Açúcar",
+   "cost": 0.2
+  },
+  {
+   "id": "agua_gas",
+   "name": "Água com gás",
+   "cost": 0.7
+  },
+  {
+   "id": "gelo",
+   "name": "Gelo",
+   "cost": 0.2
+  }
+ ],
+ "recipes": [
+  {
+   "id": "caipirinha",
+   "name": "Caipirinha",
+   "needs": [
+    "cachaca",
+    "limao",
+    "acucar",
+    "gelo"
+   ],
+   "price": 18,
+   "mesh": "caipirinha",
+   "known": true
+  },
+  {
+   "id": "limonada",
+   "name": "Limonada suíça",
+   "needs": [
+    "limao",
+    "acucar",
+    "agua_gas",
+    "gelo"
+   ],
+   "price": 10,
+   "mesh": "suco",
+   "known": true
+  },
+  {
+   "id": "caipiroska",
+   "name": "Caipiroska",
+   "needs": [
+    "vodka",
+    "limao",
+    "acucar",
+    "gelo"
+   ],
+   "price": 20,
+   "mesh": "caipirinha",
+   "hint": "a caipirinha de vodca"
+  },
+  {
+   "id": "caipi_morango",
+   "name": "Caipirinha de morango",
+   "needs": [
+    "cachaca",
+    "morango",
+    "acucar",
+    "gelo"
+   ],
+   "price": 22,
+   "mesh": "caipirinha",
+   "hint": "cachaça com uma fruta vermelha"
+  },
+  {
+   "id": "caipi_maracuja",
+   "name": "Caipirinha de maracujá",
+   "needs": [
+    "cachaca",
+    "maracuja",
+    "acucar",
+    "gelo"
+   ],
+   "price": 22,
+   "mesh": "caipirinha",
+   "hint": "cachaça com a fruta da paixão"
+  },
+  {
+   "id": "batida_coco",
+   "name": "Batida de coco",
+   "needs": [
+    "cachaca",
+    "coco",
+    "leite_condensado",
+    "gelo"
+   ],
+   "price": 22,
+   "mesh": "batida",
+   "hint": "cremosa, com coco e cachaça"
+  },
+  {
+   "id": "batida_maracuja",
+   "name": "Batida de maracujá",
+   "needs": [
+    "cachaca",
+    "maracuja",
+    "leite_condensado",
+    "gelo"
+   ],
+   "price": 22,
+   "mesh": "batida",
+   "hint": "cremosa e azedinha, de cachaça"
+  },
+  {
+   "id": "pina_colada",
+   "name": "Piña colada",
+   "needs": [
+    "rum",
+    "abacaxi",
+    "coco",
+    "gelo"
+   ],
+   "price": 26,
+   "mesh": "batida",
+   "hint": "rum, abacaxi e coco"
+  },
+  {
+   "id": "mojito",
+   "name": "Mojito",
+   "needs": [
+    "rum",
+    "limao",
+    "hortela",
+    "acucar",
+    "agua_gas"
+   ],
+   "price": 26,
+   "mesh": "suco",
+   "hint": "rum com hortelã e borbulhas"
+  },
+  {
+   "id": "abacaxi_hortela",
+   "name": "Suco de abacaxi com hortelã",
+   "needs": [
+    "abacaxi",
+    "hortela",
+    "gelo"
+   ],
+   "price": 12,
+   "mesh": "suco",
+   "hint": "sem álcool, abacaxi e uma erva"
+  },
+  {
+   "id": "coqueiro",
+   "name": "Drink do Coqueiro",
+   "needs": [
+    "rum",
+    "maracuja",
+    "coco",
+    "hortela",
+    "gelo"
+   ],
+   "price": 32,
+   "mesh": "coco_gelado",
+   "hint": "o drink da casa: rum, coco e mais três coisas"
+  }
+ ]
+}

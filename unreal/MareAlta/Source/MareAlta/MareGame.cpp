@@ -221,6 +221,9 @@ private:
  FString Place=TEXT("kiosk");
  /** Reception: the nightly price the player is about to ask each waiting guest (starts at the guest's offer). */
  TMap<FString,double> Ask;
+ /** Bar station: ingredients in the shaker and the guest being served. */
+ TArray<FString> Shaker;
+ FString BarOrder;
  UMareSimulation* Sim()const{return Owner.IsValid()?Owner->GetGameInstance()->GetSubsystem<UMareSimulation>():nullptr;}
  // ---- Where the page goes: exactly over the glass of the 3D phone, else a fixed sheet.
  // Viewport pixels -> units inside the DPI scaler: measured from this widget, so monitor DPI is included.
@@ -301,6 +304,60 @@ private:
    Stock->AddSlot(I%4,I/4)[MareNotebook::PriceTag(SNew(SVerticalBox)+SVerticalBox::Slot().AutoHeight()[MareNotebook::BodyText(UMareSimulation::String(Dish,TEXT("name")),12,MareNotebook::Ink,true)]
     +SVerticalBox::Slot().AutoHeight()[SNew(STextBlock).Font(MareNotebook::Hand(18)).ColorAndOpacity_Lambda([S,Id](){return FSlateColor(S->IsDishUnlocked(Id) && S->Available(Id)>0?MareNotebook::Green:MareNotebook::Red);})
      .Text_Lambda([S,Id](){if(!S->IsDishUnlocked(Id))return FText::FromString(TEXT("precisa de expansão"));const int32 N=S->Available(Id);return FText::FromString(N>0?FString::Printf(TEXT("%d prontos"),N):TEXT("acabou · repor"));})],TiltOf(I))];++I;}
+ }
+ /** Bar do Coqueiro: guests' orders, the shaker and the ingredient shelf, the recipe book (MareBar.cpp). */
+ void BarPage()
+ {
+  auto S=Sim();using namespace MareNotebook;auto B=S->Bar();auto Defs=S->BarDefs();
+  auto IngredientName=[&Defs](const FString& Id){const TArray<TSharedPtr<FJsonValue>>* L=nullptr;if(Defs->TryGetArrayField(TEXT("ingredients"),L))
+   for(const auto& V:*L)if(UMareSimulation::String(V->AsObject(),TEXT("id"))==Id)return UMareSimulation::String(V->AsObject(),TEXT("name"));return Id;};
+  const TArray<TSharedPtr<FJsonValue>>* Open=nullptr;Defs->TryGetArrayField(TEXT("open"),Open);
+  Title(TEXT("Bar do Coqueiro"),S->IsBarOpen()?FString::Printf(TEXT("aberto · %.0f drinks servidos"),UMareSimulation::Number(B,TEXT("served")))
+   :FString::Printf(TEXT("fechado · abre das %.0fh às %.0fh"),Open && Open->Num()==2?(*Open)[0]->AsNumber():10.,Open && Open->Num()==2?(*Open)[1]->AsNumber():23.));
+  const TArray<TSharedPtr<FJsonValue>>* Orders=nullptr;B->TryGetArrayField(TEXT("orders"),Orders);
+  Heading(TEXT("Pedidos no balcão"),S->HasStaff(TEXT("bartender"))?TEXT("o bartender serve o que está no cardápio"):TEXT("escolha quem vai atender"));
+  bool bPickedOpen=false;
+  if(!Orders || Orders->IsEmpty())Line(TEXT("Ninguém no balcão agora."),13,Faded);
+  else for(const auto& V:*Orders){const auto O=V->AsObject();const FString Id=UMareSimulation::String(O,TEXT("id")),Want=UMareSimulation::String(O,TEXT("want"));
+   if(BarOrder.IsEmpty())BarOrder=Id;bPickedOpen|=BarOrder==Id;
+   const double Waited=UMareSimulation::Number(S->State,TEXT("day"),1)*1440+UMareSimulation::Number(S->State,TEXT("minutes"))-UMareSimulation::Number(O,TEXT("since"));
+   FString What;if(Want==TEXT("surpresa"))What=TEXT("me surpreenda (qualquer drink)");
+   else if(S->IsRecipeKnown(Want))What=UMareSimulation::String(S->BarRecipe(Want),TEXT("name"));
+   else What=TEXT("um drink que você não conhece: ")+UMareSimulation::String(O,TEXT("hint"));
+   auto Row=SNew(SHorizontalBox)+SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(0,0,8,0)
+    [Button(BarOrder==Id?TEXT("atendendo"):TEXT("atender"),[this,Id](){BarOrder=Id;},true)]
+    +SHorizontalBox::Slot().FillWidth(1).VAlign(VAlign_Center)[BodyText(FString::Printf(TEXT("%s · %s · espera %.0f min"),*UMareSimulation::String(O,TEXT("name")),*What,Waited),12.5f,BarOrder==Id?Ink:Faded,BarOrder==Id)];
+   Body->AddSlot().AutoHeight().Padding(0,2)[Row];}
+  if(!bPickedOpen)BarOrder.Reset();
+  TArray<FString> Names;for(const FString& I:Shaker)Names.Add(IngredientName(I));
+  Heading(TEXT("Coqueteleira"),Shaker.IsEmpty()?TEXT("vazia"):FString::Join(Names,TEXT(" + ")));
+  auto Actions=SNew(SHorizontalBox);
+  Actions->AddSlot().AutoWidth().Padding(0,0,8,0)[Button(TEXT("Esvaziar"),[this](){Shaker.Reset();},!Shaker.IsEmpty())];
+  Actions->AddSlot().AutoWidth()[Button(TEXT("Bater e servir"),[this,S](){
+   const bool bCreamy=Shaker.Contains(TEXT("leite_condensado")) || Shaker.Contains(TEXT("coco")) || Shaker.Contains(TEXT("abacaxi"));
+   const auto Result=S->ServeBar(BarOrder,Shaker);
+   if(!Result.Recipe.IsEmpty() || Result.bServed){UMareAudioWorld::Action(Owner.Get(),bCreamy?TEXT("bar_blender"):TEXT("bar_shaker"));UMareAudioWorld::Action(Owner.Get(),TEXT("bar_pour"));}
+   if(Result.bServed){UMareAudioWorld::Action(Owner.Get(),TEXT("money_coins"));BarOrder.Reset();}
+   if(Result.bDiscovered)UMareAudioWorld::Action(Owner.Get(),TEXT("deal_accept"));
+   Shaker.Reset();},!Shaker.IsEmpty() && !BarOrder.IsEmpty())];
+  Body->AddSlot().AutoHeight().Padding(0,4)[Actions];
+  auto Stock=UMareSimulation::Object(B,TEXT("stock"));const int32 MaxMix=int32(UMareSimulation::Number(Defs,TEXT("max_mix"),5));
+  Heading(TEXT("Ingredientes"),FString::Printf(TEXT("até %d na coqueteleira"),MaxMix));
+  auto G=Grid();int32 I=0;const TArray<TSharedPtr<FJsonValue>>* List=nullptr;
+  if(Defs->TryGetArrayField(TEXT("ingredients"),List))for(const auto& V:*List){const FString Id=UMareSimulation::String(V->AsObject(),TEXT("id"));
+   const int32 Have=int32(UMareSimulation::Number(Stock,Id));
+   G->AddSlot(I%3,I/3)[Button(FString::Printf(TEXT("%s (%d)"),*UMareSimulation::String(V->AsObject(),TEXT("name")),Have),[this,Id](){
+    Shaker.Add(Id);if(Id==TEXT("gelo"))UMareAudioWorld::Action(Owner.Get(),TEXT("bar_ice_glass"));},Have>0 && !Shaker.Contains(Id) && Shaker.Num()<MaxMix)];++I;}
+  const double Cost=S->BarRestockCost();
+  Body->AddSlot().AutoHeight().HAlign(HAlign_Left).Padding(0,6)[Button(Cost>0?FString::Printf(TEXT("Repor ingredientes · R$ %.0f"),Cost):FString(TEXT("Estoque cheio")),[S](){S->RestockBar();},Cost>0 && S->Money()>=Cost)];
+  int32 Known=0,Total=0;const TArray<TSharedPtr<FJsonValue>>* Recipes=nullptr;Defs->TryGetArrayField(TEXT("recipes"),Recipes);
+  if(Recipes)for(const auto& V:*Recipes){++Total;Known+=S->IsRecipeKnown(UMareSimulation::String(V->AsObject(),TEXT("id")));}
+  Heading(TEXT("Receitas"),FString::Printf(TEXT("%d de %d descobertas · cada descoberta dá fama"),Known,Total));
+  if(Recipes)for(const auto& V:*Recipes){const auto R=V->AsObject();const FString Id=UMareSimulation::String(R,TEXT("id"));
+   if(S->IsRecipeKnown(Id)){TArray<FString> Parts;const TArray<TSharedPtr<FJsonValue>>* Needs=nullptr;
+    if(R->TryGetArrayField(TEXT("needs"),Needs))for(const auto& N:*Needs)Parts.Add(IngredientName(N->AsString()));
+    Line(FString::Printf(TEXT("%s · R$ %.0f · %s"),*UMareSimulation::String(R,TEXT("name")),S->DrinkPrice(Id),*FString::Join(Parts,TEXT(", "))),12,Ink);}
+   else Line(TEXT("??? · dica: ")+UMareSimulation::String(R,TEXT("hint")),12,Faded);}
  }
  /** Pousada reception: waiting guests with their offer, ask/counter buttons, and the room board. */
  void ReceptionPage(const FString& Where)
@@ -533,7 +590,7 @@ private:
   if(bPhone)for(int32 I=0;I<Titles.Num();++I){const bool bOn=I==Tab;
    Tabs->AddSlot().AutoWidth().VAlign(VAlign_Bottom).Padding(0,0,3,0)[SNew(SMarePadButton).ButtonStyle(&MareNotebook::Plain()).ContentPadding(FMargin(0)).OnClicked_Lambda([this,I](){if(Owner.IsValid())Owner->GetWorld()->GetSubsystem<UMareAudioWorld>()->PlayCue(TEXT("click"),.16f);Tab=I;Rebuild();return FReply::Handled();})
     [SNew(SBorder).BorderImage(&TabBrush(bOn?Paper:TabColor(I))).Padding(bOn?FMargin(11,4,11,3):FMargin(8,2,8,2))[SNew(STextBlock).Text(FText::FromString(Titles[I])).Font(MareNotebook::Hand(bOn?17:15)).ColorAndOpacity(Ink)]]];}
-  else Tabs->AddSlot().AutoWidth().VAlign(VAlign_Bottom)[SNew(SBorder).BorderImage(&TabBrush(Paper)).Padding(FMargin(16,6,16,5))[SNew(STextBlock).Text(FText::FromString(Station==TEXT("Fridge")?TEXT("Geladeira"):Station==TEXT("Reception") || Station==TEXT("ReceptionHotel")?TEXT("Recepção"):TEXT("Porções prontas"))).Font(MareNotebook::Hand(19)).ColorAndOpacity(Ink)]];
+  else Tabs->AddSlot().AutoWidth().VAlign(VAlign_Bottom)[SNew(SBorder).BorderImage(&TabBrush(Paper)).Padding(FMargin(16,6,16,5))[SNew(STextBlock).Text(FText::FromString(Station==TEXT("Fridge")?TEXT("Geladeira"):Station==TEXT("Reception") || Station==TEXT("ReceptionHotel")?TEXT("Recepção"):Station==TEXT("Bar")?TEXT("Bar"):TEXT("Porções prontas"))).Font(MareNotebook::Hand(19)).ColorAndOpacity(Ink)]];
   Tabs->AddSlot().FillWidth(1)[SNullWidget::NullWidget];
   Tabs->AddSlot().AutoWidth().VAlign(VAlign_Bottom)[SNew(SMarePadButton).ButtonStyle(&MareNotebook::Plain()).ContentPadding(FMargin(0)).OnClicked_Lambda([this](){if(Owner.IsValid())Owner->ClosePhone();return FReply::Handled();})
    [SNew(SBorder).BorderImage(&TabBrush(Hex(226,150,140))).Padding(FMargin(8,2,8,2))[SNew(STextBlock).Text(FText::FromString(TEXT("fechar"))).Font(MareNotebook::Hand(15)).ColorAndOpacity(Ink)]]];
@@ -552,6 +609,7 @@ private:
    .WidthOverride_Lambda([this](){return FOptionalSize(ScreenRect().Right);})
    .HeightOverride_Lambda([this](){return FOptionalSize(ScreenRect().Bottom);})[Screen]]];
   if(PrevFocus>=0)MareGamepad::FocusSoon(AsShared(),PrevFocus);
+  if(Station==TEXT("Bar")){BarPage();return;}
   if(Station==TEXT("Reception") || Station==TEXT("ReceptionHotel")){ReceptionPage(Station==TEXT("ReceptionHotel")?TEXT("hotel"):TEXT("pousada"));return;}
   if(!bPhone){StockPage(true);if(!S->Carry().IsEmpty())Body->AddSlot().AutoHeight().HAlign(HAlign_Left).Padding(0,6)[Button(TEXT("Devolver produto"),[S](){S->ReturnCarry();})];return;}
   switch(Tab){

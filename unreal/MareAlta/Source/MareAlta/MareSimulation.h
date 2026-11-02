@@ -218,6 +218,30 @@ public:
   *  filled by StaysNight for the hotel, cleared at 13:00); removed from the list. Null when nobody is left. */
  TSharedPtr<FJsonObject> TakeDeparture(const FString& Place);
  TSharedPtr<FJsonObject> Stays();
+ // --- Bar do Coqueiro (gameplay plan M8; MareBar.cpp, Content/Data/bar.json) ---
+ // State "bar": stock {ingredient: n}, known [recipe ids], orders [{id, name, want (recipe id or "surpresa"), hint, since
+ // (day*1440+minutes)}], next, served.
+ TSharedPtr<FJsonObject> BarDefs() const;
+ TSharedPtr<FJsonObject> Bar();
+ TSharedPtr<FJsonObject> BarRecipe(const FString& Recipe) const;
+ /** Recipe made of exactly these ingredients (any order, no repeats), or empty. */
+ FString MixRecipe(const TArray<FString>& Ingredients) const;
+ bool IsRecipeKnown(const FString& Recipe) const;
+ /** Bar bought and inside its opening hours (bar.json "open"). */
+ bool IsBarOpen() const;
+ /** A guest sits at the bar and orders Want (empty = picks one); returns the order id, empty when closed or full. */
+ UFUNCTION(BlueprintCallable,Category="Maré Alta|Bar") FString AddBarOrder(const FString& Want=TEXT(""));
+ struct FBarResult{bool bServed=false;bool bDiscovered=false;FString Recipe;double Paid=0;};
+ /** Shakes the ingredients (always used up) for an order: the drink asked for (or any recipe for a "surpresa") pays
+  *  price plus a tip for speed; an unknown recipe is discovered (fame) even when it is not what was ordered. */
+ FBarResult ServeBar(const FString& Order,const TArray<FString>& Ingredients);
+ /** Buys every ingredient up to bar.json restock_qty; false without enough money. */
+ bool RestockBar();
+ double BarRestockCost() const;
+ /** Menu price of a drink: recipe price × bar decor factor × fame. */
+ double DrinkPrice(const FString& Recipe) const;
+ /** Hourly: impatient guests leave, the bartender serves known drinks from the stock, new guests arrive. */
+ void BarHour(int32 Hour);
  /** Bets and prizes from minigames (game room): books the amount with a label, like any other income or expense. */
  void SettleBet(double Amount,const FString& Label){Book(Amount,Label);}
  int32 FreeCleanRooms(const FString& Place=TEXT("pousada")) const;

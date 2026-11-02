@@ -504,3 +504,60 @@ bool FMareSaveSlotsTest::RunTest(const FString& Parameters)
  IFileManager::Get().DeleteDirectory(*Dir,false,true);return true;
 }
 #endif
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FMareBarDrinksTest,"MareAlta.Gameplay.BarDrinks",EAutomationTestFlags::EditorContext|EAutomationTestFlags::EngineFilter)
+bool FMareBarDrinksTest::RunTest(const FString& Parameters)
+{
+ auto Instance=NewObject<UGameInstance>();Instance->AddToRoot();
+ auto Sim=NewObject<UMareSimulation>(Instance);Sim->AddToRoot();
+ Sim->SaveDirectory=FPaths::ProjectSavedDir()/TEXT("Automation/BarDrinks")/FGuid::NewGuid().ToString(EGuidFormats::Digits);
+ auto Load=[&](const FString& Name,TSharedPtr<FJsonObject>& Result){FString Text;FFileHelper::LoadFileToString(Text,*(FPaths::ProjectContentDir()/TEXT("Data")/Name));return FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Text),Result);};
+ if(!TestTrue(TEXT("Definitions"),Load(TEXT("definitions.json"),Sim->Definitions)) || !TestTrue(TEXT("Default save"),Load(TEXT("default_save.json"),Sim->State))){Sim->RemoveFromRoot();Instance->RemoveFromRoot();return false;}
+ Sim->State->SetNumberField(TEXT("money"),1000);Sim->State->SetNumberField(TEXT("minutes"),600);
+ auto Orders=[&](){const TArray<TSharedPtr<FJsonValue>>* O=nullptr;Sim->Bar()->TryGetArrayField(TEXT("orders"),O);return O?O->Num():0;};
+ // Mixing is by the set of ingredients: order is free, repeats and extras are no recipe.
+ TestEqual(TEXT("Caipirinha in any order"),Sim->MixRecipe({TEXT("gelo"),TEXT("acucar"),TEXT("cachaca"),TEXT("limao")}),FString(TEXT("caipirinha")));
+ TestTrue(TEXT("Extra ingredient is nothing"),Sim->MixRecipe({TEXT("gelo"),TEXT("acucar"),TEXT("cachaca"),TEXT("limao"),TEXT("morango")}).IsEmpty());
+ TestTrue(TEXT("Repeated ingredient is nothing"),Sim->MixRecipe({TEXT("gelo"),TEXT("gelo"),TEXT("cachaca"),TEXT("limao")}).IsEmpty());
+ // Closed until bought.
+ TestTrue(TEXT("No orders before the bar is bought"),Sim->AddBarOrder().IsEmpty());
+ Sim->Object(Sim->State,TEXT("unlocked"))->SetBoolField(TEXT("bar"),true);
+ TestTrue(TEXT("Starting menu"),Sim->IsRecipeKnown(TEXT("caipirinha")) && !Sim->IsRecipeKnown(TEXT("mojito")));
+ const double Lime=Sim->Number(Sim->Object(Sim->Bar(),TEXT("stock")),TEXT("limao"));TestTrue(TEXT("Shelf starts with stock"),Lime>0);
+ // Right drink: paid with a tip, ingredients used, guest gone.
+ const FString A=Sim->AddBarOrder(TEXT("caipirinha"));TestFalse(TEXT("Guest sits down"),A.IsEmpty());
+ double Before=Sim->Money();
+ auto R=Sim->ServeBar(A,{TEXT("cachaca"),TEXT("limao"),TEXT("acucar"),TEXT("gelo")});
+ TestTrue(TEXT("Caipirinha served"),R.bServed && !R.bDiscovered);TestTrue(TEXT("Paid at least the price"),Sim->Money()-Before>=Sim->DrinkPrice(TEXT("caipirinha")));
+ TestEqual(TEXT("Lime used"),Sim->Number(Sim->Object(Sim->Bar(),TEXT("stock")),TEXT("limao")),Lime-1);TestEqual(TEXT("Order closed"),Orders(),0);
+ // Wrong drink: discovered anyway (fame), but not paid and the guest keeps waiting.
+ const FString B=Sim->AddBarOrder(TEXT("caipirinha"));Before=Sim->Money();
+ const double FameBefore=Sim->Number(Sim->Object(Sim->State,TEXT("prog")),TEXT("fame_xp"));
+ R=Sim->ServeBar(B,{TEXT("rum"),TEXT("limao"),TEXT("hortela"),TEXT("acucar"),TEXT("agua_gas")});
+ TestTrue(TEXT("Mojito discovered"),R.bDiscovered && R.Recipe==TEXT("mojito") && Sim->IsRecipeKnown(TEXT("mojito")));
+ TestFalse(TEXT("Wrong drink not served"),R.bServed);TestEqual(TEXT("Wrong drink not paid"),Sim->Money(),Before);TestEqual(TEXT("Guest still waiting"),Orders(),1);
+ TestTrue(TEXT("Discovery gives fame"),Sim->Number(Sim->Object(Sim->State,TEXT("prog")),TEXT("fame_xp"))>FameBefore);
+ // Nonsense mix is used up and pays nothing.
+ R=Sim->ServeBar(B,{TEXT("leite_condensado"),TEXT("agua_gas")});TestTrue(TEXT("Nonsense is no drink"),R.Recipe.IsEmpty() && !R.bServed);
+ // A surprise accepts any recipe.
+ const FString C=Sim->AddBarOrder(TEXT("surpresa"));
+ R=Sim->ServeBar(C,{TEXT("limao"),TEXT("acucar"),TEXT("agua_gas"),TEXT("gelo")});TestTrue(TEXT("Surprise accepts limonada"),R.bServed);
+ // Restock costs money and fills the shelf; with no money it is refused.
+ const double Cost=Sim->BarRestockCost();TestTrue(TEXT("Restock has a cost"),Cost>0);Before=Sim->Money();
+ TestTrue(TEXT("Restock bought"),Sim->RestockBar());TestEqual(TEXT("Restock charged"),Sim->Money(),Before-Cost);
+ TestEqual(TEXT("Shelf full"),Sim->BarRestockCost(),0.);
+ // Out of an ingredient: nothing is used and the guest waits.
+ Sim->Object(Sim->Bar(),TEXT("stock"))->SetNumberField(TEXT("cachaca"),0);
+ R=Sim->ServeBar(B,{TEXT("cachaca"),TEXT("limao"),TEXT("acucar"),TEXT("gelo")});TestFalse(TEXT("No cachaça, no drink"),R.bServed || !R.Recipe.IsEmpty());
+ TestEqual(TEXT("Lime kept when the mix is refused"),Sim->Number(Sim->Object(Sim->Bar(),TEXT("stock")),TEXT("limao")),10.);
+ Sim->Object(Sim->Bar(),TEXT("stock"))->SetNumberField(TEXT("cachaca"),10);
+ // Hourly: the bartender serves known drinks; the waiting guest was a caipirinha.
+ Sim->Object(Sim->State,TEXT("staff"))->SetBoolField(TEXT("bartender"),true);Before=Sim->Money();
+ Sim->BarHour(11);TestTrue(TEXT("Bartender served and was paid"),Sim->Money()>Before);
+ // Impatient guests leave; nobody stays after closing.
+ Sim->Object(Sim->State,TEXT("staff"))->SetBoolField(TEXT("bartender"),false);
+ Sim->State->SetNumberField(TEXT("minutes"),1400);Sim->BarHour(23);TestEqual(TEXT("Bar empty after closing"),Orders(),0);
+ TestTrue(TEXT("No orders while closed"),Sim->AddBarOrder().IsEmpty());
+ IFileManager::Get().DeleteDirectory(*Sim->SaveDirectory,false,true);
+ Sim->RemoveFromRoot();Instance->RemoveFromRoot();return true;
+}

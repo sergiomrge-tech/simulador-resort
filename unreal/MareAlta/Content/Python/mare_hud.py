@@ -77,7 +77,33 @@ def import_sfx():
     return {'imported': done, 'catalog': len(catalog)}
 
 
+def bar_qa(arg):
+    """PIE: 'orders' seats four guests at the bar, 'stand' puts the player inside the counter looking at the
+    station, 'open' uses the station (bar page), 'close' closes it."""
+    world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()
+    pc = unreal.GameplayStatics.get_player_controller(world, 0)
+    hero = unreal.GameplayStatics.get_player_pawn(world, 0)
+    sim = pc.get_simulation()
+    if arg == 'orders':
+        return [sim.add_bar_order('') for _ in range(4)]
+    target = next((a for a in unreal.GameplayStatics.get_all_actors_of_class(world, unreal.MareServiceTarget)
+                   if str(a.get_editor_property('action')) == 'BarCounter'), None)
+    if arg == 'stand' and target:
+        hero.set_actor_location(unreal.Vector(1340, -1300, 100), False, True)
+        focus = target.get_actor_location()
+        pc.set_control_rotation(unreal.MathLibrary.find_look_at_rotation(unreal.Vector(1340, -1300, 164), focus))
+    if arg == 'open' and target:
+        target.use(pc)
+    if arg == 'close':
+        pc.close_phone()
+    if arg == 'shot':
+        unreal.SystemLibrary.execute_console_command(world, 'Shot showui')
+    return {'target': bool(target), 'phone': pc.get_editor_property('phone_open')}
+
+
 def run(action, arg=''):
+    if action == 'bar':
+        return bar_qa(arg)
     if action == 'sfx':
         return import_sfx()
     if action == 'icons':
