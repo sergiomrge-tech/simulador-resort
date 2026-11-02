@@ -1,0 +1,27 @@
+{
+ "_doc": "First-time tips (tutorial): shown once per save in a card at the bottom left the first time the player uses each thing (key = the E target action, or phone / photo / sleep). Seen keys are kept in prog.tips. Keep each tip to two short sentences.",
+ "seconds": 14,
+ "tips": {
+  "phone": {"title": "Celular", "text": "Aqui você cuida de tudo: estoque, equipe, finanças, expansões e personalização. As abas ficam no topo; feche com Esc."},
+  "KioskSign": {"title": "Abrir o quiosque", "text": "A placa abre e fecha o quiosque. Os clientes chegam das 8h às 18h; à noite ele fecha sozinho quando você dorme."},
+  "Customer": {"title": "Atender no balcão", "text": "Mire no cliente e aperte E para anotar o pedido. Pegue o produto na geladeira ou no armário e entregue a ele."},
+  "Fridge": {"title": "Geladeira", "text": "Os produtos já vêm prontos: pegue o que o cliente pediu. Quando acabar, reponha pelo celular ou aqui mesmo."},
+  "Cupboard": {"title": "Armário de porções", "text": "Batata, peixe e petiscos ficam aqui, prontos para servir. Reponha pelo celular quando acabar."},
+  "PousadaReception": {"title": "Recepção da pousada", "text": "Os hóspedes oferecem um preço por noite: aceite ou peça mais (até 3 rodadas, cuidado com o humor). Sem quarto limpo, não há check-in."},
+  "RoomTask": {"title": "Arrumar o bangalô", "text": "Depois do check-out, arrume a cama, recolha as toalhas e tire o lixo. A camareira faz isso por você."},
+  "HotelReception": {"title": "Recepção do Grand Hotel", "text": "Negocie a diária dos hóspedes do hotel como na pousada. Quem você não atender em 2 horas, a equipe recebe pela oferta."},
+  "BarCounter": {"title": "Bar do Coqueiro", "text": "Escolha um cliente, ponha até 5 ingredientes na coqueteleira e sirva. Misturas novas viram receitas e dão fama."},
+  "BusinessCounter": {"title": "Balcão do negócio", "text": "Pare o cursor na faixa verde nas 3 rodadas. Quanto mais acertos, mais o cliente paga; um atendimento por hora."},
+  "TourBooth": {"title": "Bilheteria dos passeios", "text": "Venda os bilhetes para quem está na fila. Na hora da saída, guie o passeio: boas escolhas dão gorjeta e fama."},
+  "Fishing": {"title": "Pescaria", "text": "Espere o peixe fisgar e aperte na hora certa. Os peixes vão para o estoque, e o Seu Gregory precisa de alguns."},
+  "PoolLeaves": {"title": "Peneira da piscina", "text": "Folhas na água espantam os banhistas e baixam as estrelas. O piscineiro limpa sozinho."},
+  "PoolTowel": {"title": "Toalhas usadas", "text": "Recolha as toalhas largadas nas espreguiçadeiras para manter a piscina bem avaliada."},
+  "PoolCooler": {"title": "Picolés", "text": "Nos dias de sol os banhistas pedem picolé. Venda todos de uma vez aqui no cooler."},
+  "RestaurantTable": {"title": "Mesa do restaurante", "text": "Anote o pedido, pegue o prato pronto no passe da cozinha e sirva. Rapidez rende gorjeta."},
+  "RestaurantPass": {"title": "Passe da cozinha", "text": "Os pratos ficam prontos em 20 minutos. Aqui você pega tudo o que está pronto, inclusive o serviço de quarto."},
+  "RoomService": {"title": "Serviço de quarto", "text": "Entregue aqui no elevador os pratos das suítes que estão na sua bandeja."},
+  "PoolTable": {"title": "Sinuca", "text": "Mova o mouse para mirar, segure o clique para dar força e solte. Q sai da partida."},
+  "photo": {"title": "Modo foto", "text": "P tira uma foto sem a interface. O que estiver enquadrado entra no álbum, e algumas fotos fazem parte das histórias da vila."},
+  "Bed": {"title": "Dormir", "text": "Dormir fecha o dia: salários são pagos, o jogo é salvo e o celular mostra o resumo e a previsão de amanhã."}
+ }
+}

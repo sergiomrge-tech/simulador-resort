@@ -1026,7 +1026,7 @@ void AMareController::TakePhoto()
   Subjects.Add(UMareSimulation::String(Sub,TEXT("id")));}
  const FString File=FPaths::ProjectSavedDir()/TEXT("Album")/FString::Printf(TEXT("foto_dia%02d_%04.0f_%d.png"),int32(UMareSimulation::Number(S->State,TEXT("day"),1)),UMareSimulation::Number(S->State,TEXT("minutes")),int32(GFrameNumber%100000));
  FScreenshotRequest::RequestScreenshot(File,false,false);
- S->RecordPhoto(Subjects,File);UMareAudioWorld::Action(this,TEXT("reception_checkin"),nullptr,.7f);
+ S->RecordPhoto(Subjects,File);UMareAudioWorld::Action(this,TEXT("reception_checkin"),nullptr,.7f);S->ShowTip(TEXT("photo"));
 }
 void AMareController::OpenMainMenu()
 {
@@ -1341,6 +1341,7 @@ void AMareController::OpenPhone(int32 Tab)
 {
  if(!GEngine || !GEngine->GameViewport)return;
  if(bPhoneOpen)ClosePhone();bPhoneOpen=true;
+ if(auto Sim=GetSimulation())Sim->ShowTip(TEXT("phone"));
  if(auto Hero=Cast<AMareCharacter>(GetPawn()))Hero->SetPhoneVisible(true);
  SAssignNew(PhoneWidget,SMarePhone).Owner(this).Tab(Tab);GEngine->GameViewport->AddViewportWidgetContent(PhoneWidget.ToSharedRef(),20);
  {const TWeakObjectPtr<AMareController> Weak(this);MareGamepad::PushMenu(PhoneWidget.ToSharedRef(),[Weak](){if(Weak.IsValid())Weak->ClosePhone();});}
@@ -1366,7 +1367,7 @@ void AMareController::EndPlay(const EEndPlayReason::Type Reason){CloseMainMenu()
 /** Everything the tropical HUD shows; Signature() decides when Slate must rebuild. */
 struct FMareHudModel
 {
- FString Money,Day,Fame,Notice,Prompt,Carry,Hint,Stars,Rooms,Served;
+ FString Money,Day,Fame,Notice,Prompt,Carry,Hint,Stars,Rooms,Served,TipTitle,TipText;
  FString InteractKey=TEXT("E"),PhoneKey=TEXT("B"),PauseKey=TEXT("Esc"); // remapped keys, or gamepad buttons after gamepad input
  FString PadHint; // gamepad help over the open phone
  int32 StarsFlash=0; // 1 up (green), -1 down (red)
@@ -1375,7 +1376,7 @@ struct FMareHudModel
  bool bPhone=false;
  FString Signature()const
  {
-  FString S=Money+Day+Fame+Notice+Prompt+Carry+Hint+Stars+Rooms+Served+InteractKey+PhoneKey+PauseKey+PadHint+FString::FromInt(StarsFlash)+(bPhone?TEXT("P"):TEXT(""));
+  FString S=Money+Day+Fame+Notice+Prompt+Carry+Hint+Stars+Rooms+Served+TipTitle+TipText+InteractKey+PhoneKey+PauseKey+PadHint+FString::FromInt(StarsFlash)+(bPhone?TEXT("P"):TEXT(""));
   for(const auto& T:Tickets)S+=T.Key+T.Value;
   for(const auto& N:Note)S+=N.Key+FString::FromInt(N.Value);
   return S;
@@ -1391,6 +1392,11 @@ public:
   const FString Sig=M.Signature();if(Sig==Last)return;Last=Sig;using namespace MareTropical;
   const FLinearColor Ink=Hex(74,58,28),Paper=Hex(255,246,230),Accent=Hex(162,76,43);
   auto Root=SNew(SOverlay);
+  // First-time tip card, bottom left above the key hints.
+  if(!M.TipTitle.IsEmpty())Root->AddSlot().VAlign(VAlign_Bottom).HAlign(HAlign_Left).Padding(FMargin(24,0,0,96))[SNew(SBox).WidthOverride(400)
+   [SNew(SBorder).BorderImage(&Ticket()).Padding(FMargin(14,10))[SNew(SVerticalBox)
+    +SVerticalBox::Slot().AutoHeight()[Txt(TEXT("Dica · ")+M.TipTitle,14,Accent,true)]
+    +SVerticalBox::Slot().AutoHeight().Padding(0,4,0,0)[Txt(M.TipText,12.5f,Ink,false,370)]]]];
   // Wood plank: coin + money, day/time, fame.
   Root->AddSlot().VAlign(VAlign_Top).HAlign(HAlign_Fill)[SNew(SBorder).BorderImage(&Plank()).Padding(FMargin(22,9))[SNew(SHorizontalBox)
    +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(0,0,8,0)[SNew(SBox).WidthOverride(18).HeightOverride(18)[SNew(SBorder).BorderImage(&Coin())]]
@@ -1474,6 +1480,9 @@ void AMareHUD::DrawHUD()
  if(const int32 Rooms=S->RoomsTotal())M.Rooms=FString::Printf(TEXT("%d/%d"),FMath::Min(S->RoomsOccupied(),Rooms),Rooms);
  M.Served=FString::Printf(TEXT("%d hoje"),S->ServedToday());
  if(S->LastMessage!=Notice){Notice=S->LastMessage;NoticeUntil=Notice.IsEmpty()?0:Now+7;}
+ // First-time tips (tutorial.json): taken from the simulation and kept on screen for a while.
+ if(!S->PendingTipTitle.IsEmpty()){TipTitle=S->PendingTipTitle;TipText=S->PendingTipText;S->PendingTipTitle.Reset();TipUntil=Now+14;}
+ if(Now<TipUntil && !M.bPhone){M.TipTitle=TipTitle;M.TipText=TipText;}
  if(Now<NoticeUntil)M.Notice=Notice;
  const int32 IntroStage=UMareSimulation::Number(S->State,TEXT("ue_intro_stage"),2);
  if(IntroStage==0)M.Note={{TEXT("Chegada"),0},{TEXT("A vila parecia menor... e o mar, do tamanho das minhas lembranças."),2},{M.InteractKey+TEXT(" · avançar"),3}};
@@ -1499,6 +1508,9 @@ void AMareHUD::DrawHUD()
     if(++Shown>=2)break;
    }
   }
+  // The next thing to save for, always visible.
+  {FString Goal;double Cost=0;if(bCreated && S->NextGoal(Goal,Cost))M.Note.Add({Cost>S->Money()?FString::Printf(TEXT("Próxima meta: %s · faltam R$ %.0f"),*Goal,Cost-S->Money())
+   :FString::Printf(TEXT("Próxima meta: %s · já dá para comprar no celular"),*Goal),3});}
   // Village story step currently open (talk to its giver to advance).
   const TArray<TSharedPtr<FJsonValue>>* Chapters=nullptr;
   if(S->Definitions->TryGetArrayField(TEXT("chapters"),Chapters))for(const auto& Value:*Chapters){

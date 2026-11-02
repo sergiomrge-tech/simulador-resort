@@ -286,6 +286,13 @@ public:
  UFUNCTION(BlueprintCallable,Category="Maré Alta|Business") double PlayBusiness(const FString& Id,int32 Hits);
  /** Hourly: night tokens of the game room (business_games.json game_room), more players with the hotel full. */
  void GameRoomHour(int32 Hour);
+ // --- Tutorial (MareLeisure.cpp, Content/Data/tutorial.json) ---
+ /** First-time tip for Key (target action, phone, photo...): once per save (prog.tips); sets PendingTip. */
+ bool ShowTip(const FString& Key);
+ /** Title and text of the tip waiting to be shown by the HUD (cleared by it). */
+ FString PendingTipTitle,PendingTipText;
+ /** Cheapest expansion that can be bought next (prerequisites met) and its price; false when none is left. */
+ bool NextGoal(FString& Name,double& Cost) const;
  // --- Day events and parties (MareEvents.cpp, Content/Data/events.json) ---
  // State: day_event (today), forecast + forecast_day (tomorrow), prep_day (paid preparations), weather.
  TSharedPtr<FJsonObject> EventDefs() const;

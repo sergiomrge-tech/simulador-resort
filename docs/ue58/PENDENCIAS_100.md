@@ -111,7 +111,10 @@ Pronto e testado (02/11):
   - desbloqueio novo a cada 10–20 min;
   - preços das expansões, salários, diárias e renda do salão.
 - [ ] P1 Duração do Acesso Antecipado: 6–10 h de conteúdo com objetivo sempre visível.
-- [ ] P1 **Tutorial**: dica na primeira vez de cada sistema (balcão, celular, recepção, limpeza, sinuca, bar…).
+- [x] P1 **Tutorial** (02/11): dica na primeira vez de cada sistema (21 dicas em `Content/Data/tutorial.json`: celular,
+  placa, balcão, geladeira, recepções, limpeza, bar, negócios, passeios, pesca, piscina, restaurante, sinuca, foto, cama),
+  num cartão no canto inferior esquerdo, uma vez por save; e "Próxima meta" sempre visível na nota de missões (próxima
+  expansão e quanto falta). Teste `MareAlta.Gameplay.TutorialTips`. Falta: opção para desligar as dicas.
 - [ ] P1 Campanha e missões secundárias auditadas (contadores, recompensas únicas, ligação com capítulos e expansões).
 - [ ] P2 Temporadas (verão/carnaval) e calendário com variedade de clientes.
 - [ ] P2 Tela de fim do conteúdo do Acesso Antecipado.

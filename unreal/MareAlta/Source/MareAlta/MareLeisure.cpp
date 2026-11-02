@@ -55,3 +55,24 @@ int32 UMareSimulation::BarDiscoveries() const
  if(Object(State,TEXT("bar"))->TryGetArrayField(TEXT("known"),Known))for(const auto& V:*Known){bool bStart=false;if(auto R=BarRecipe(V->AsString()))R->TryGetBoolField(TEXT("known"),bStart);N+=!bStart;}
  return N;
 }
+
+bool UMareSimulation::ShowTip(const FString& Key)
+{
+ static TSharedPtr<FJsonObject> Tips;
+ if(!Tips.IsValid()){FString Text;FFileHelper::LoadFileToString(Text,*(FPaths::ProjectContentDir()/TEXT("Data/tutorial.json")));
+  FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Text),Tips);if(!Tips.IsValid())Tips=MakeShared<FJsonObject>();}
+ const auto Tip=Object(Object(Tips,TEXT("tips")),Key);if(!Tip->Values.Num())return false;
+ auto Seen=Object(Object(State,TEXT("prog")),TEXT("tips"));bool bSeen=false;Seen->TryGetBoolField(Key,bSeen);if(bSeen)return false;
+ Seen->SetBoolField(Key,true);PendingTipTitle=String(Tip,TEXT("title"));PendingTipText=String(Tip,TEXT("text"));return true;
+}
+
+bool UMareSimulation::NextGoal(FString& Name,double& Cost) const
+{
+ // The cheapest expansion whose prerequisites are owned: the next thing worth saving for.
+ auto Unlocked=Object(State,TEXT("unlocked"));Cost=0;Name.Reset();
+ for(const auto& Pair:Object(Definitions,TEXT("expansions"))->Values){const auto E=Pair.Value->AsObject();const FString Id(Pair.Key.ToView());
+  bool bOwned=false;Unlocked->TryGetBoolField(Id,bOwned);if(bOwned)continue;bool bReady=true;const TArray<TSharedPtr<FJsonValue>>* Req=nullptr;
+  if(E->TryGetArrayField(TEXT("req"),Req))for(const auto& R:*Req){bool b=false;Unlocked->TryGetBoolField(R->AsString(),b);bReady&=b;}
+  if(!bReady)continue;const double Price=Number(E,TEXT("cost"));if(Name.IsEmpty() || Price<Cost){Name=String(E,TEXT("name"));Cost=Price;}}
+ return !Name.IsEmpty();
+}

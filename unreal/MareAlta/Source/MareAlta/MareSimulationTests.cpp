@@ -780,7 +780,29 @@ bool FMareNewStaffTest::RunTest(const FString& Parameters)
  TestTrue(TEXT("Pool stays clean"),Sim->Number(Sim->Pool(),TEXT("dirt"))<20);TestEqual(TEXT("Towels collected"),Sim->PoolTowels(),0);
  // The waiter serves a waiting table after 15 minutes at 90%.
  Sim->State->SetNumberField(TEXT("minutes"),12*60+5);Sim->SeatDiners(0);Sim->State->SetNumberField(TEXT("minutes"),12*60+30);
- const double Before=Sim->Money();Sim->RestaurantHour(13);TestTrue(TEXT("Waiter served"),Sim->Money()>Before && !Sim->TableOrder(0).IsValid());
+ const double Since=Sim->Number(Sim->TableOrder(0),TEXT("since"));const double Before=Sim->Money();Sim->RestaurantHour(13);
+ // New diners may sit at the freed table in the same hour: the original party must be gone.
+ TestTrue(TEXT("Waiter served"),Sim->Money()>Before && (!Sim->TableOrder(0).IsValid() || Sim->Number(Sim->TableOrder(0),TEXT("since"))!=Since));
+ IFileManager::Get().DeleteDirectory(*Sim->SaveDirectory,false,true);
+ Sim->RemoveFromRoot();Instance->RemoveFromRoot();return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FMareTutorialTest,"MareAlta.Gameplay.TutorialTips",EAutomationTestFlags::EditorContext|EAutomationTestFlags::EngineFilter)
+bool FMareTutorialTest::RunTest(const FString& Parameters)
+{
+ auto Instance=NewObject<UGameInstance>();Instance->AddToRoot();
+ auto Sim=NewObject<UMareSimulation>(Instance);Sim->AddToRoot();
+ Sim->SaveDirectory=FPaths::ProjectSavedDir()/TEXT("Automation/Tutorial")/FGuid::NewGuid().ToString(EGuidFormats::Digits);
+ auto Load=[&](const FString& Name,TSharedPtr<FJsonObject>& Result){FString Text;FFileHelper::LoadFileToString(Text,*(FPaths::ProjectContentDir()/TEXT("Data")/Name));return FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Text),Result);};
+ if(!TestTrue(TEXT("Definitions"),Load(TEXT("definitions.json"),Sim->Definitions)) || !TestTrue(TEXT("Default save"),Load(TEXT("default_save.json"),Sim->State))){Sim->RemoveFromRoot();Instance->RemoveFromRoot();return false;}
+ // Each tip once per save; unknown keys show nothing.
+ TestTrue(TEXT("First bar visit shows the tip"),Sim->ShowTip(TEXT("BarCounter")));TestFalse(TEXT("Tip title set"),Sim->PendingTipTitle.IsEmpty());
+ TestFalse(TEXT("Not twice"),Sim->ShowTip(TEXT("BarCounter")));TestFalse(TEXT("Unknown key"),Sim->ShowTip(TEXT("Nothing")));
+ // Every E target action used in the game has a tip.
+ for(const TCHAR* Key:{TEXT("Fridge"),TEXT("Customer"),TEXT("PousadaReception"),TEXT("RoomTask"),TEXT("BusinessCounter"),TEXT("TourBooth"),TEXT("Fishing"),TEXT("RestaurantTable"),TEXT("PoolLeaves"),TEXT("phone"),TEXT("photo")})
+  TestTrue(FString(TEXT("Tip exists: "))+Key,Sim->ShowTip(Key));
+ // Next goal: the cheapest expansion with its prerequisites owned.
+ FString Goal;double Cost=0;TestTrue(TEXT("A goal at the start"),Sim->NextGoal(Goal,Cost));TestTrue(TEXT("Goal costs something"),Cost>0);
  IFileManager::Get().DeleteDirectory(*Sim->SaveDirectory,false,true);
  Sim->RemoveFromRoot();Instance->RemoveFromRoot();return true;
 }

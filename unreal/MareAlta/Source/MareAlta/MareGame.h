@@ -106,6 +106,8 @@ private:
  /** Short-lived notice for messages produced outside the phone (sleep, chapters, fame). */
  FString Notice;
  double NoticeUntil=0;
+ /** First-time tip on screen (MareSimulation::ShowTip) and until when. */
+ FString TipTitle,TipText;double TipUntil=0;
  /** Star average shown last frame; a change flashes the value green/red for a moment. */
  double ShownStars=-1,StarsFlashUntil=0;
  bool bStarsUp=true;
