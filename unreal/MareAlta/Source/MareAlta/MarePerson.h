@@ -23,6 +23,9 @@ public:
  UPROPERTY(BlueprintReadOnly,Category="Maré Alta") FString MetaHuman;
  UPROPERTY() TObjectPtr<class UChildActorComponent> MetaHumanBody;
  UPROPERTY() TObjectPtr<USkeletalMeshComponent> Swimwear;
+ UPROPERTY() TObjectPtr<USkeletalMeshComponent> Shoes;
+ /** Roster role (staff, hotel, pousada, village, beach) picking clothes colours and footwear. */
+ FString MetaRole;
  UFUNCTION(BlueprintCallable,Category="Presentation") void PlayPose(const FString& Name,bool bLoop=true);
  UFUNCTION(BlueprintCallable,Category="Presentation") bool WalkTo(const FVector& Goal);
  bool AtGoal()const;

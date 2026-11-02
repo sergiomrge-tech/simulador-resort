@@ -41,10 +41,11 @@ void UMareAudioWorld::Initialize(FSubsystemCollectionBase& Collection)
  Super::Initialize(Collection);
  FString Station;GConfig->GetString(TEXT("MareAudio"),TEXT("Radio"),Station,GGameUserSettingsIni);
  if(RadioStations().Contains(FName(Station)))RadioStation=FName(Station);
- for(auto Pair:TMap<FName,float>{{TEXT("Master"),.85f},{TEXT("Music"),.3f},{TEXT("Effects"),.75f},{TEXT("Ambient"),.7f}}){
-  float Value=Pair.Value;GConfig->GetFloat(TEXT("MareAudio"),*Pair.Key.ToString(),Value,GGameUserSettingsIni);Volumes.Add(Pair.Key,FMath::Clamp(Value,0.f,1.f));
+ for(const FName Bus:{FName(TEXT("Master")),FName(TEXT("Music")),FName(TEXT("Effects")),FName(TEXT("Ambient"))}){
+  float Value=DefaultVolume(Bus);GConfig->GetFloat(TEXT("MareAudio"),*Bus.ToString(),Value,GGameUserSettingsIni);Volumes.Add(Bus,FMath::Clamp(Value,0.f,1.f));
  }
 }
+float UMareAudioWorld::DefaultVolume(FName Bus){return Bus==TEXT("Master")?.85f:Bus==TEXT("Music")?.3f:Bus==TEXT("Effects")?.75f:Bus==TEXT("Ambient")?.7f:1.f;}
 float UMareAudioWorld::GetVolume(FName Bus)const{const float* Value=Volumes.Find(Bus);return Value?*Value:1.f;}
 void UMareAudioWorld::SetRadioStation(FName Station)
 {

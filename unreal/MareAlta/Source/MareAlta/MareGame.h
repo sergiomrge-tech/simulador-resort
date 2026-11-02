@@ -55,9 +55,28 @@ public:
  void OpenStation(FName Station);
  virtual void EndPlay(const EEndPlayReason::Type Reason) override;
  UPROPERTY(BlueprintReadOnly,Category="Maré Alta") bool bPhoneOpen=false;
+ /** Main menu over the paused world at start-up; the session (intro) only starts after a choice. */
+ void OpenMainMenu();
+ bool IsMainMenuOpen()const{return MainMenuWidget.IsValid();}
+ /** Continue/Load: the slot already behind the menu just resumes, another slot reloads the level. */
+ bool MenuLoadSlot(int32 Slot);
+ /** New game in a slot (an occupied slot keeps its old file as .bak), then the arrival intro. */
+ bool MenuNewGame(int32 Slot);
+ /** Saves and reloads the level with the main menu open again. */
+ void ReturnToMainMenu();
+ /** Full options (graphics, display, audio, controls, language) shared by the pause menu and the main menu. */
+ TSharedRef<SWidget> MakeOptionsPanel();
+ virtual void OnPossess(APawn* InPawn) override;
 private:
+ void BuildPauseMenu(bool bOptions);
  TSharedPtr<SMarePhone> PhoneWidget;
  TSharedPtr<SWidget> PauseWidget;
+ TSharedPtr<SWidget> MainMenuWidget;
+ /** Slot whose state the current world was built from, and whether that state came from a file. */
+ int32 WorldSlot=1;
+ bool bWorldFromFile=false;
+ void CloseMainMenu();
+ void ReloadWorld();
 };
 
 UCLASS()
@@ -86,6 +105,8 @@ public:
  AMareGameMode();
  virtual void BeginPlay() override;
  virtual void Tick(float DeltaSeconds) override;
+ /** Starts play after the main menu (or directly in QA runs): arrival intro and the letter. */
+ void StartSession();
 private:
  float SaveClock=0.f;
 };

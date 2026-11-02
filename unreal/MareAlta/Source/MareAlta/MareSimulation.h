@@ -4,6 +4,16 @@
 #include "Dom/JsonObject.h"
 #include "MareSimulation.generated.h"
 
+/** Summary of one save slot for the main menu (read straight from slotN.json). */
+struct FMareSlotInfo
+{
+ bool bExists=false;
+ int32 Day=0;
+ double Money=0;
+ FString Company;
+ FDateTime SavedAt;
+};
+
 /** Native economy and progression. JSON retains fields from the original save format. */
 UCLASS()
 class MAREALTA_API UMareSimulation : public UGameInstanceSubsystem
@@ -84,6 +94,24 @@ public:
  void Sleep();
  UFUNCTION(BlueprintCallable,Category="Maré Alta")
  bool Save();
+ // ---- Save slots: slot1..3.json in the save folder, slots.json keeps the last used one.
+ static constexpr int32 SlotCount=3;
+ /** Slot read and written by Save(); chosen by -MareSlot=N, else the last used slot (1 for legacy profiles). */
+ int32 ActiveSlot=1;
+ /** Session flag: the main menu was already answered (survives level reloads, not the process). */
+ bool bMainMenuDone=false;
+ /** While the world reloads into another slot, the old world must not write its actors into the new state. */
+ bool bHoldSaves=false;
+ FString SaveFolder() const;
+ FString SlotPath(int32 Slot) const;
+ FMareSlotInfo SlotInfo(int32 Slot) const;
+ bool HasAnySave() const;
+ /** Last used slot from slots.json; a legacy folder with only slot1.json becomes slot 1 (index written). */
+ int32 LastSlot() const;
+ /** Replaces State with the slot (falls back to its .bak when the file is damaged) and makes it active. */
+ bool LoadSlot(int32 Slot);
+ /** Fresh profile (default_save + arrival intro) written to the slot; the previous file is kept as .bak. */
+ bool NewGame(int32 Slot);
  /** Read-only legacy import; destination always belongs to the Unreal project. */
  UFUNCTION(BlueprintCallable,Category="Maré Alta")
  bool ImportLegacySave(const FString& Path);
@@ -202,5 +230,9 @@ private:
  void Book(double Amount,const FString& Label);
  bool Fail(const FString& Message);
  FString SavePath() const;
+ /** Writes State to the active slot (previous file copied to .bak first), without capturing actors. */
+ bool WriteState();
+ bool ReadSave(const FString& Path,TSharedPtr<FJsonObject>& Target) const;
+ void WriteSlotIndex(int32 Slot) const;
  mutable TSharedPtr<FJsonObject> CustomCatalog;
 };

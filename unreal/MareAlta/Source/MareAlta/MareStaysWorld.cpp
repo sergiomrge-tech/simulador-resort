@@ -14,10 +14,11 @@
 namespace
 {
  /** Where each mess sits inside a bungalow (actor-local cm; floor is 49 cm above the actor origin, bed origin at
-  *  (0,-82,45) from customization_places.py). The mesh, its yaw and the E focus height. */
- struct FMessSpot{const TCHAR* Task;const TCHAR* Mesh;FVector Local;float Yaw;float Focus;const TCHAR* Label;};
+  *  (0,-82,45) from customization_places.py). The mesh, its yaw, the E focus height and the mesh scale
+  *  (the bed's towel is spread wider so it reads from the door). */
+ struct FMessSpot{const TCHAR* Task;const TCHAR* Mesh;FVector Local;float Yaw;float Focus;const TCHAR* Label;float Scale=1.f;};
  const FMessSpot Spots[]={
-  {TEXT("bed"),TEXT("/Game/Custom/RoomMess/mess_towel/mess_towel.mess_towel"),FVector(10,-40,108),25,10,TEXT("Arrumar a cama")},
+  {TEXT("bed"),TEXT("/Game/Custom/RoomMess/mess_towel/mess_towel.mess_towel"),FVector(10,-40,108),25,10,TEXT("Arrumar a cama"),1.8f},
   {TEXT("towels"),TEXT("/Game/Custom/RoomMess/mess_towel/mess_towel.mess_towel"),FVector(-95,70,49),-40,8,TEXT("Recolher as toalhas")},
   {TEXT("trash"),TEXT("/Game/Custom/RoomMess/mess_trash_bag/mess_trash_bag.mess_trash_bag"),FVector(120,115,49),0,20,TEXT("Tirar o lixo")}};
  UMareSimulation* Sim(const UWorld* World){return World && World->GetGameInstance()?World->GetGameInstance()->GetSubsystem<UMareSimulation>():nullptr;}
@@ -92,7 +93,7 @@ void UMareStaysWorld::SyncTasks()
   const FRotator Yaw(0,Bungalows[Room]->GetActorRotation().Yaw+Spot->Yaw,0);
   if(auto Mesh=LoadObject<UStaticMesh>(nullptr,Spot->Mesh)){
    auto Prop=GetWorld()->SpawnActor<AStaticMeshActor>(At,Yaw);Prop->SetMobility(EComponentMobility::Movable);
-   Prop->GetStaticMeshComponent()->SetStaticMesh(Mesh);Prop->GetStaticMeshComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);Mess.Add(Key,Prop);}
+   Prop->GetStaticMeshComponent()->SetStaticMesh(Mesh);Prop->SetActorScale3D(FVector(Spot->Scale,Spot->Scale,1.f));Prop->GetStaticMeshComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);Mess.Add(Key,Prop);}
   auto Target=GetWorld()->SpawnActor<AMareServiceTarget>(At,Yaw);
   Target->Action=TEXT("RoomTask");Target->Label=FString(Spot->Label)+TEXT(" · bangalô ")+FString::FromInt(Room+1);
   Target->DataIndex=Room;Target->Tags.Add(*(TEXT("task:")+Task));Target->FocusOffset=FVector(0,0,Spot->Focus);Target->Reach=220;Target->OcclusionTolerance=60;

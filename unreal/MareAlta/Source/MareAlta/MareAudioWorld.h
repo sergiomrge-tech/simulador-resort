@@ -22,6 +22,8 @@ public:
  UAudioComponent* PlayCue(FName Name,float Gain=.35f,const FVector* Position=nullptr,bool bAmbient=false);
  UFUNCTION(BlueprintCallable,Category="Audio") void SetVolume(FName Bus,float Value);
  UFUNCTION(BlueprintPure,Category="Audio") float GetVolume(FName Bus)const;
+ /** Factory volume of a bus (Master, Music, Effects, Ambient), used by "Restaurar padrão". */
+ static float DefaultVolume(FName Bus);
  UFUNCTION(BlueprintPure,Category="Audio") int32 LoadedSounds()const{return Sounds.Num();}
  UFUNCTION(BlueprintPure,Category="Audio") float LoopLevel(FName Name)const;
  UFUNCTION(BlueprintPure,Category="Audio") bool HasMasterMix()const{return MasterMix!=nullptr;}

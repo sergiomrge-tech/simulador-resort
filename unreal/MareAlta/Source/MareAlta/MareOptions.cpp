@@ -1,0 +1,245 @@
+#include "MareOptions.h"
+#include "Camera/CameraComponent.h"
+#include "CoreGlobals.h"
+#include "Engine/Engine.h"
+#include "GameFramework/GameUserSettings.h"
+#include "GameFramework/Pawn.h"
+#include "GameFramework/PlayerController.h"
+#include "GameFramework/PlayerInput.h"
+#include "HAL/FileManager.h"
+#include "HAL/IConsoleManager.h"
+#include "Internationalization/Culture.h"
+#include "Internationalization/Internationalization.h"
+#include "Misc/CommandLine.h"
+#include "Misc/ConfigCacheIni.h"
+#include "Misc/FileHelper.h"
+#include "Misc/Parse.h"
+#include "Misc/Paths.h"
+#include "Serialization/JsonSerializer.h"
+
+#define LOCTEXT_NAMESPACE "MareOptions"
+namespace MareOptionsData
+{
+ const TPair<const TCHAR*,int32 FMareOptions::*> Ints[]={{TEXT("preset"),&FMareOptions::Preset},{TEXT("shadows"),&FMareOptions::Shadows},
+  {TEXT("global_illumination"),&FMareOptions::GlobalIllumination},{TEXT("reflections"),&FMareOptions::Reflections},{TEXT("post_process"),&FMareOptions::PostProcess},
+  {TEXT("textures"),&FMareOptions::Textures},{TEXT("foliage"),&FMareOptions::Foliage},{TEXT("anti_aliasing"),&FMareOptions::AntiAliasing},
+  {TEXT("window_mode"),&FMareOptions::WindowMode},{TEXT("frame_limit"),&FMareOptions::FrameLimit}};
+ const TPair<const TCHAR*,float FMareOptions::*> Floats[]={{TEXT("resolution_scale"),&FMareOptions::ResolutionScale},{TEXT("field_of_view"),&FMareOptions::FieldOfView},{TEXT("mouse_sensitivity"),&FMareOptions::MouseSensitivity}};
+ const TPair<const TCHAR*,bool FMareOptions::*> Bools[]={{TEXT("vsync"),&FMareOptions::bVSync},{TEXT("invert_y"),&FMareOptions::bInvertY}};
+ /** Legacy mappings (DefaultInput.ini) driven by each remappable action; axes carry their scale. */
+ struct FBinding{FName Name;bool bAxis;float Scale;};
+ TArray<FBinding> Bindings(FName Action)
+ {
+  static const TMap<FName,TArray<FBinding>> Map={
+   {TEXT("MoveForward"),{{TEXT("Forward"),true,1.f}}},{TEXT("MoveBack"),{{TEXT("Forward"),true,-1.f}}},
+   {TEXT("MoveLeft"),{{TEXT("Right"),true,-1.f}}},{TEXT("MoveRight"),{{TEXT("Right"),true,1.f}}},
+   {TEXT("Jump"),{{TEXT("Jump"),false,0.f},{TEXT("SwimVertical"),true,1.f}}},
+   {TEXT("Sprint"),{{TEXT("Sprint"),false,0.f},{TEXT("SwimVertical"),true,-1.f}}},
+   {TEXT("Dive"),{{TEXT("SwimVertical"),true,-1.f}}},
+   {TEXT("Interact"),{{TEXT("Interact"),false,0.f}}},{TEXT("Phone"),{{TEXT("Phone"),false,0.f}}}};
+  const auto* Found=Map.Find(Action);return Found?*Found:TArray<FBinding>();
+ }
+ // Plugin upscalers are only offered when their console variables exist.
+ const TCHAR* DLSSVar=TEXT("r.NGX.DLSS.Enable");
+ const TCHAR* FSRVars[]={TEXT("r.FidelityFX.FSR4.Enabled"),TEXT("r.FidelityFX.FSR3.Enabled"),TEXT("r.FidelityFX.FSR.Enabled")};
+ void SetVar(const TCHAR* Name,int32 Value){if(auto Var=IConsoleManager::Get().FindConsoleVariable(Name))if(Var->GetInt()!=Value)Var->Set(Value,ECVF_SetByCode);}
+ void ApplyUpscaler(const FString& Wanted)
+ {
+  const FString Use=FMareOptions::Upscalers().Contains(Wanted)?Wanted:FString(TEXT("TSR"));
+  SetVar(DLSSVar,Use==TEXT("DLSS"));for(const TCHAR* Name:FSRVars)SetVar(Name,Use==TEXT("FSR"));
+ }
+ FMareOptions& Live()
+ {
+  static FMareOptions Options=[](){
+   if(FMareOptions::IsQARun())return FMareOptions::Defaults();
+   FMareOptions Result=FMareOptions::FromEngine();Result.LoadFile(FMareOptions::DefaultPath());return Result;}();
+  return Options;
+ }
+}
+
+const TArray<FMareOptions::FAction>& FMareOptions::Actions()
+{
+ static const TArray<FAction> List={
+  {TEXT("MoveForward"),LOCTEXT("MoveForward","Andar para frente"),EKeys::W},{TEXT("MoveBack"),LOCTEXT("MoveBack","Andar para trás"),EKeys::S},
+  {TEXT("MoveLeft"),LOCTEXT("MoveLeft","Andar para a esquerda"),EKeys::A},{TEXT("MoveRight"),LOCTEXT("MoveRight","Andar para a direita"),EKeys::D},
+  {TEXT("Jump"),LOCTEXT("Jump","Pular / subir nadando"),EKeys::SpaceBar},{TEXT("Sprint"),LOCTEXT("Sprint","Correr"),EKeys::LeftShift},
+  {TEXT("Dive"),LOCTEXT("Dive","Mergulhar"),EKeys::LeftControl},{TEXT("Interact"),LOCTEXT("Interact","Interagir"),EKeys::E},
+  {TEXT("Phone"),LOCTEXT("Phone","Celular"),EKeys::B}};
+ return List;
+}
+const TArray<int32>& FMareOptions::FrameLimits(){static const TArray<int32> List={30,60,120,144,0};return List;}
+const TArray<FString>& FMareOptions::Cultures(){static const TArray<FString> List={TEXT("pt-BR"),TEXT("en")};return List;}
+FText FMareOptions::CultureName(const FString& Name){return FText::FromString(Name==TEXT("en")?TEXT("English"):TEXT("Português (Brasil)"));}
+TArray<FString> FMareOptions::Upscalers()
+{
+ TArray<FString> List={TEXT("TSR")};auto& Console=IConsoleManager::Get();
+ if(Console.FindConsoleVariable(MareOptionsData::DLSSVar))List.Add(TEXT("DLSS"));
+ for(const TCHAR* Name:MareOptionsData::FSRVars)if(Console.FindConsoleVariable(Name)){List.Add(TEXT("FSR"));break;}
+ return List;
+}
+FMareOptions FMareOptions::Defaults()
+{
+ // Same values as Config/DefaultGameUserSettings.ini.
+ FMareOptions Options;for(const auto& Action:Actions())Options.Keys.Add(Action.Id,Action.Default);
+ return Options;
+}
+FMareOptions FMareOptions::FromEngine()
+{
+ FMareOptions Options=Defaults();
+ if(auto Settings=GEngine?UGameUserSettings::GetGameUserSettings():nullptr){
+  const int32 Overall=Settings->GetOverallScalabilityLevel();
+  Options.Preset=Overall>=0?Overall:Settings->GetViewDistanceQuality();
+  Options.Shadows=Settings->GetShadowQuality();Options.GlobalIllumination=Settings->GetGlobalIlluminationQuality();Options.Reflections=Settings->GetReflectionQuality();
+  Options.PostProcess=Settings->GetPostProcessingQuality();Options.Textures=Settings->GetTextureQuality();Options.Foliage=Settings->GetFoliageQuality();Options.AntiAliasing=Settings->GetAntiAliasingQuality();
+  float Normalized,Value,Min,Max;Settings->GetResolutionScaleInformationEx(Normalized,Value,Min,Max);Options.ResolutionScale=Value;
+  Options.Resolution=Settings->GetScreenResolution();Options.WindowMode=Settings->GetFullscreenMode();
+  Options.bVSync=Settings->IsVSyncEnabled();Options.FrameLimit=FMath::RoundToInt(Settings->GetFrameRateLimit());
+ }
+ Options.Sanitize();return Options;
+}
+FString FMareOptions::DefaultPath(){return FPaths::ProjectSavedDir()/TEXT("MareOptions.json");}
+bool FMareOptions::LoadFile(const FString& Path)
+{
+ FString Text;TSharedPtr<FJsonObject> Json;
+ if(!FFileHelper::LoadFileToString(Text,*Path) || !FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Text),Json) || !Json.IsValid())return false;
+ using namespace MareOptionsData;double Number;
+ for(const auto& Field:Ints)if(Json->TryGetNumberField(Field.Key,Number))this->*Field.Value=FMath::RoundToInt(FMath::Clamp(Number,-1e6,1e6));
+ for(const auto& Field:Floats)if(Json->TryGetNumberField(Field.Key,Number))this->*Field.Value=float(FMath::Clamp(Number,-1e6,1e6));
+ for(const auto& Field:Bools)Json->TryGetBoolField(Field.Key,this->*Field.Value);
+ if(Json->TryGetNumberField(TEXT("resolution_x"),Number))Resolution.X=FMath::RoundToInt(FMath::Clamp(Number,0.,1e5));
+ if(Json->TryGetNumberField(TEXT("resolution_y"),Number))Resolution.Y=FMath::RoundToInt(FMath::Clamp(Number,0.,1e5));
+ Json->TryGetStringField(TEXT("upscaler"),Upscaler);Json->TryGetStringField(TEXT("culture"),Culture);
+ const TSharedPtr<FJsonObject>* KeyObject=nullptr;
+ if(Json->TryGetObjectField(TEXT("keys"),KeyObject))for(const auto& Action:Actions()){FString Name;
+  if((*KeyObject)->TryGetStringField(Action.Id.ToString(),Name)){const FKey Loaded(*Name);if(Loaded.IsValid())Keys.Add(Action.Id,Loaded);}}
+ Sanitize();return true;
+}
+bool FMareOptions::SaveFile(const FString& Path)const
+{
+ using namespace MareOptionsData;auto Json=MakeShared<FJsonObject>();
+ Json->SetNumberField(TEXT("version"),1);
+ for(const auto& Field:Ints)Json->SetNumberField(Field.Key,this->*Field.Value);
+ for(const auto& Field:Floats)Json->SetNumberField(Field.Key,this->*Field.Value);
+ for(const auto& Field:Bools)Json->SetBoolField(Field.Key,this->*Field.Value);
+ Json->SetNumberField(TEXT("resolution_x"),Resolution.X);Json->SetNumberField(TEXT("resolution_y"),Resolution.Y);
+ Json->SetStringField(TEXT("upscaler"),Upscaler);Json->SetStringField(TEXT("culture"),Culture);
+ auto KeyObject=MakeShared<FJsonObject>();for(const auto& Action:Actions())KeyObject->SetStringField(Action.Id.ToString(),Key(Action.Id).GetFName().ToString());
+ Json->SetObjectField(TEXT("keys"),KeyObject);
+ FString Text;if(!FJsonSerializer::Serialize(Json,TJsonWriterFactory<>::Create(&Text)))return false;
+ const FString Temp=Path+TEXT(".tmp");
+ return FFileHelper::SaveStringToFile(Text,*Temp,FFileHelper::EEncodingOptions::ForceUTF8WithoutBOM) && IFileManager::Get().Move(*Path,*Temp,true);
+}
+void FMareOptions::Sanitize()
+{
+ for(int32* Level:{&Preset,&Shadows,&GlobalIllumination,&Reflections,&PostProcess,&Textures,&Foliage,&AntiAliasing})*Level=FMath::Clamp(*Level,0,3);
+ ResolutionScale=FMath::Clamp(FMath::RoundToFloat(ResolutionScale),25.f,100.f);
+ if(Upscaler!=TEXT("TSR") && Upscaler!=TEXT("DLSS") && Upscaler!=TEXT("FSR"))Upscaler=TEXT("TSR");
+ Resolution=FIntPoint(FMath::Clamp(Resolution.X,640,16384),FMath::Clamp(Resolution.Y,480,16384));
+ WindowMode=FMath::Clamp(WindowMode,0,2);
+ if(!FrameLimits().Contains(FrameLimit)){
+  // Unknown caps snap to the nearest listed one; very high or non-positive means unlimited.
+  int32 Best=0;if(FrameLimit>0 && FrameLimit<=200)for(int32 Limit:FrameLimits())if(Limit>0 && (Best==0 || FMath::Abs(Limit-FrameLimit)<FMath::Abs(Best-FrameLimit)))Best=Limit;
+  FrameLimit=Best;
+ }
+ FieldOfView=FMath::Clamp(FMath::RoundToFloat(FieldOfView),70.f,110.f);
+ MouseSensitivity=FMath::Clamp(MouseSensitivity,.1f,5.f);
+ if(!Cultures().Contains(Culture))Culture=TEXT("pt-BR");
+ // Missing or invalid keys go back to their default; a duplicated key resets the whole map.
+ TMap<FName,FKey> Clean;TSet<FKey> Used;bool bDuplicate=false;
+ for(const auto& Action:Actions()){const FKey* Found=Keys.Find(Action.Id);const FKey Value=Found && Found->IsValid() && !Found->IsGamepadKey()?*Found:Action.Default;
+  bDuplicate|=Used.Contains(Value);Used.Add(Value);Clean.Add(Action.Id,Value);}
+ if(bDuplicate){Clean.Reset();for(const auto& Action:Actions())Clean.Add(Action.Id,Action.Default);}
+ Keys=MoveTemp(Clean);
+}
+bool FMareOptions::Equals(const FMareOptions& Other)const
+{
+ using namespace MareOptionsData;
+ for(const auto& Field:Ints)if(this->*Field.Value!=Other.*Field.Value)return false;
+ for(const auto& Field:Floats)if(!FMath::IsNearlyEqual(this->*Field.Value,Other.*Field.Value,1e-4f))return false;
+ for(const auto& Field:Bools)if(this->*Field.Value!=Other.*Field.Value)return false;
+ for(const auto& Action:Actions())if(Key(Action.Id)!=Other.Key(Action.Id))return false;
+ return Resolution==Other.Resolution && Upscaler==Other.Upscaler && Culture==Other.Culture;
+}
+bool FMareOptions::IsCustomPreset()const
+{
+ for(int32 Level:{Shadows,GlobalIllumination,Reflections,PostProcess,Textures,Foliage,AntiAliasing})if(Level!=Preset)return true;
+ return false;
+}
+void FMareOptions::SetPreset(int32 Level){Preset=Shadows=GlobalIllumination=Reflections=PostProcess=Textures=Foliage=AntiAliasing=FMath::Clamp(Level,0,3);}
+FKey FMareOptions::Key(FName Action)const
+{
+ if(const FKey* Found=Keys.Find(Action))return *Found;
+ const FAction* Default=Actions().FindByPredicate([Action](const FAction& Item){return Item.Id==Action;});
+ return Default?Default->Default:EKeys::Invalid;
+}
+void FMareOptions::Bind(FName Action,FKey NewKey)
+{
+ if(!NewKey.IsValid() || !Actions().ContainsByPredicate([Action](const FAction& Item){return Item.Id==Action;}))return;
+ const FKey Old=Key(Action);
+ for(const auto& Item:Actions())if(Item.Id!=Action && Key(Item.Id)==NewKey)Keys.Add(Item.Id,Old);
+ Keys.Add(Action,NewKey);
+}
+bool FMareOptions::IsQARun()
+{
+ const TCHAR* Cmd=FCommandLine::Get();
+ return GIsAutomationTesting || FParse::Param(Cmd,TEXT("MareGraphicsQA")) || FParse::Param(Cmd,TEXT("MareIntroQA")) || FParse::Param(Cmd,TEXT("MarePreviewQA"));
+}
+const FMareOptions& FMareOptions::Get(){return MareOptionsData::Live();}
+void FMareOptions::Set(const FMareOptions& Options)
+{
+ auto& Live=MareOptionsData::Live();Live=Options;Live.Sanitize();
+ if(!IsQARun() && !Live.SaveFile(DefaultPath()))UE_LOG(LogTemp,Warning,TEXT("MareOptions: could not save %s"),*DefaultPath());
+}
+void FMareOptions::KeepLumenSafe(){MareOptionsData::SetVar(TEXT("r.Lumen.AsyncCompute"),0);}
+void FMareOptions::ApplyGraphics()const
+{
+ auto Settings=GEngine?UGameUserSettings::GetGameUserSettings():nullptr;if(!Settings)return;
+ Settings->SetOverallScalabilityLevel(Preset);
+ Settings->SetShadowQuality(Shadows);Settings->SetGlobalIlluminationQuality(GlobalIllumination);Settings->SetReflectionQuality(Reflections);
+ Settings->SetPostProcessingQuality(PostProcess);Settings->SetTextureQuality(Textures);Settings->SetFoliageQuality(Foliage);Settings->SetAntiAliasingQuality(AntiAliasing);
+ Settings->SetResolutionScaleValueEx(ResolutionScale);   // after the overall level, which also sets the 3D scale
+ Settings->SetVSyncEnabled(bVSync);Settings->SetFrameRateLimit(float(FrameLimit));
+ Settings->ApplyNonResolutionSettings();Settings->SaveSettings();
+ MareOptionsData::ApplyUpscaler(Upscaler);KeepLumenSafe();
+}
+bool FMareOptions::ApplyDisplay()const
+{
+ auto Settings=GEngine?UGameUserSettings::GetGameUserSettings():nullptr;if(!Settings)return false;
+ const EWindowMode::Type Mode=static_cast<EWindowMode::Type>(WindowMode);
+ const bool bChanged=Settings->GetScreenResolution()!=Resolution || Settings->GetFullscreenMode()!=Mode;
+ if(!bChanged)return false;
+ Settings->SetScreenResolution(Resolution);Settings->SetFullscreenMode(Mode);Settings->ApplyResolutionSettings(false);
+ return true;
+}
+void FMareOptions::ApplyCulture()const
+{
+ // In the editor this would switch the editor's own language: only the game applies it.
+ if(GIsEditor){UE_LOG(LogTemp,Log,TEXT("MareOptions: culture %s saved, applied only outside the editor."),*Culture);return;}
+ if(FInternationalization::Get().GetCurrentCulture()->GetName()!=Culture)FInternationalization::Get().SetCurrentCulture(Culture);
+ GConfig->SetString(TEXT("Internationalization"),TEXT("Culture"),*Culture,GGameUserSettingsIni);GConfig->Flush(false,GGameUserSettingsIni);
+}
+void FMareOptions::ApplyKeys(UPlayerInput* Input)const
+{
+ if(!Input)return;
+ Input->ForceRebuildingKeyMaps(true);   // project mappings, then the remaps relative to them
+ for(const auto& Action:Actions()){const FKey Wanted=Key(Action.Id);if(Wanted==Action.Default)continue;
+  for(const auto& Binding:MareOptionsData::Bindings(Action.Id)){
+   if(Binding.bAxis){Input->RemoveAxisMapping(FInputAxisKeyMapping(Binding.Name,Action.Default,Binding.Scale));Input->AddAxisMapping(FInputAxisKeyMapping(Binding.Name,Wanted,Binding.Scale));}
+   else{Input->RemoveActionMapping(FInputActionKeyMapping(Binding.Name,Action.Default));Input->AddActionMapping(FInputActionKeyMapping(Binding.Name,Wanted));}}}
+ Input->ForceRebuildingKeyMaps(false);
+}
+void FMareOptions::ApplyToPlayer(APlayerController* Player)const
+{
+ if(!Player)return;ApplyKeys(Player->PlayerInput);
+ if(auto Pawn=Player->GetPawn())if(auto Camera=Pawn->FindComponentByClass<UCameraComponent>())Camera->SetFieldOfView(FieldOfView);
+}
+void FMareOptions::ApplyStartup()
+{
+ static bool bDone=false;KeepLumenSafe();if(bDone)return;bDone=true;
+ const FMareOptions& Options=Get();
+ // The packaged game re-applies its saved graphics (the editor keeps its own viewport settings).
+ if(!GIsEditor && !IsQARun() && FPaths::FileExists(DefaultPath()))Options.ApplyGraphics();
+ else MareOptionsData::ApplyUpscaler(Options.Upscaler);
+ Options.ApplyCulture();KeepLumenSafe();
+}
+#undef LOCTEXT_NAMESPACE

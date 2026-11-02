@@ -5,6 +5,7 @@
 #include "Engine/GameInstance.h"
 #include "Misc/FileHelper.h"
 #include "Misc/Paths.h"
+#include "HAL/FileManager.h"
 #include "Serialization/JsonSerializer.h"
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FMareEconomyTest,"MareAlta.Migration.NativeEconomy",EAutomationTestFlags::EditorContext|EAutomationTestFlags::EngineFilter)
@@ -396,5 +397,46 @@ bool FMarePoolPhysicsTest::RunTest(const FString& Parameters)
  double Angle=0,Speed=0;Room->PlanGuestShot(Angle,Speed,7);Room->Shoot(Angle,Speed);while(Room->Step(1./30)){}
  TestTrue(TEXT("Guest hits a ball"),Room->Balls[2].P!=FVector2D(.6,.1) || Room->Balls[2].bIn);
  Room->RemoveFromRoot();return true;
+}
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FMareSaveSlotsTest,"MareAlta.Saves.Slots",EAutomationTestFlags::EditorContext|EAutomationTestFlags::EngineFilter)
+bool FMareSaveSlotsTest::RunTest(const FString& Parameters)
+{
+ auto Instance=NewObject<UGameInstance>();Instance->AddToRoot();
+ auto Sim=NewObject<UMareSimulation>(Instance);Sim->AddToRoot();
+ const FString Dir=FPaths::ProjectSavedDir()/TEXT("Automation/SaveSlots")/FGuid::NewGuid().ToString(EGuidFormats::Digits);Sim->SaveDirectory=Dir;
+ auto ReadFile=[](const FString& Path){TSharedPtr<FJsonObject> Result;FString Text;FFileHelper::LoadFileToString(Text,*Path);FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Text),Result);return Result;};
+ auto Legacy=ReadFile(FPaths::ProjectContentDir()/TEXT("Data/default_save.json"));Sim->Definitions=ReadFile(FPaths::ProjectContentDir()/TEXT("Data/definitions.json"));
+ if(!TestTrue(TEXT("Default save available"),Legacy.IsValid() && Sim->Definitions.IsValid())){Sim->RemoveFromRoot();Instance->RemoveFromRoot();return false;}
+ // A profile from before the slots: only slot1.json, no index.
+ Legacy->SetNumberField(TEXT("day"),7);Legacy->SetNumberField(TEXT("money"),1234);FString LegacyText;
+ FJsonSerializer::Serialize(Legacy.ToSharedRef(),TJsonWriterFactory<>::Create(&LegacyText));IFileManager::Get().MakeDirectory(*Dir,true);
+ FFileHelper::SaveStringToFile(LegacyText,*(Dir/TEXT("slot1.json")),FFileHelper::EEncodingOptions::ForceUTF8WithoutBOM);
+ TestEqual(TEXT("Legacy save becomes slot 1"),Sim->LastSlot(),1);
+ TestTrue(TEXT("Slot index created by the migration"),FPaths::FileExists(Dir/TEXT("slots.json")));
+ const FMareSlotInfo First=Sim->SlotInfo(1);
+ TestTrue(TEXT("Slot 1 listed"),First.bExists);TestEqual(TEXT("Slot 1 day"),First.Day,7);TestEqual(TEXT("Slot 1 money"),First.Money,1234.0);
+ TestFalse(TEXT("Slot 2 empty"),Sim->SlotInfo(2).bExists);TestFalse(TEXT("Empty slot cannot load"),Sim->LoadSlot(3));
+ TestTrue(TEXT("Load legacy slot"),Sim->LoadSlot(1));TestEqual(TEXT("Legacy state loaded"),UMareSimulation::Number(Sim->State,TEXT("day")),7.0);
+ // New game in slot 2, then two saves: the second keeps the first one as .bak.
+ TestTrue(TEXT("New game in slot 2"),Sim->NewGame(2));
+ TestEqual(TEXT("Slot 2 active"),Sim->ActiveSlot,2);TestEqual(TEXT("Index points to slot 2"),Sim->LastSlot(),2);
+ TestEqual(TEXT("New game starts with the arrival"),UMareSimulation::Number(Sim->State,TEXT("ue_intro_stage"),-1),0.0);
+ Sim->State->SetNumberField(TEXT("day"),3);Sim->State->SetNumberField(TEXT("money"),500);TestTrue(TEXT("Save slot 2"),Sim->Save());
+ Sim->State->SetNumberField(TEXT("money"),600);TestTrue(TEXT("Save slot 2 again"),Sim->Save());
+ TestTrue(TEXT("Backup created"),FPaths::FileExists(Dir/TEXT("slot2.json.bak")));
+ TestEqual(TEXT("Backup holds the previous save"),UMareSimulation::Number(ReadFile(Dir/TEXT("slot2.json.bak")),TEXT("money")),500.0);
+ TestEqual(TEXT("Slot 1 untouched"),UMareSimulation::Number(ReadFile(Dir/TEXT("slot1.json")),TEXT("day")),7.0);
+ Sim->Sleep();TestEqual(TEXT("Day close autosaves the active slot"),UMareSimulation::Number(ReadFile(Dir/TEXT("slot2.json")),TEXT("day")),4.0);
+ // Another session reads the slot; a damaged file falls back to its backup.
+ auto Other=NewObject<UMareSimulation>(Instance);Other->AddToRoot();Other->SaveDirectory=Dir;Other->Definitions=Sim->Definitions;
+ TestEqual(TEXT("Last slot remembered"),Other->LastSlot(),2);
+ TestTrue(TEXT("Load slot 2"),Other->LoadSlot(2));TestEqual(TEXT("Slot 2 day"),UMareSimulation::Number(Other->State,TEXT("day")),4.0);
+ FFileHelper::SaveStringToFile(FString(TEXT("{broken")),*(Dir/TEXT("slot2.json")));
+ TestTrue(TEXT("Damaged slot loads its backup"),Other->LoadSlot(2));TestEqual(TEXT("Backup state"),UMareSimulation::Number(Other->State,TEXT("money")),600.0);
+ // Starting over in an occupied slot keeps the old profile as .bak.
+ TestTrue(TEXT("New game over slot 1"),Other->NewGame(1));
+ TestEqual(TEXT("Old slot 1 kept as backup"),UMareSimulation::Number(ReadFile(Dir/TEXT("slot1.json.bak")),TEXT("day")),7.0);
+ Other->RemoveFromRoot();Sim->RemoveFromRoot();Instance->RemoveFromRoot();
+ IFileManager::Get().DeleteDirectory(*Dir,false,true);return true;
 }
 #endif

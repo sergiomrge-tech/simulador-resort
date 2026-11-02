@@ -83,6 +83,14 @@ Legenda: [x] feito e validado · [~] em andamento/parcial · [ ] pendente.
 - [x] "Os biquínis estão errados" / "A amarração no ombro da parte de cima" / "Parte de baixo está pegando coxa, precisa subir" (02/11): alças refeitas (sobem do bojo pelo ombro ao lado do pescoço e descem às costas até a faixa), parte de baixo termina na virilha (frente e trás) com fundo estreito, material M_MH_Swim religado (estava com a grade padrão: cinza). Aoi é homem → sunga. Antes/depois: `docs/ue58/graphics-reference/biquini-sunga-20261102.jpg`.
 - [x] "Faça um checklist com TUDO que ainda precisa ser feito em ordem de prioridade para lançar na Steam" (02/11): `docs/ue58/ROADMAP_STEAM.md` (P0 obrigatório, P1 gameplay do AE, P2 qualidade, P3 pós-lançamento, ordem sugerida).
 - [x] "Agora faça um checklist de pendências para o jogo ficar 100%" (02/11): `docs/ue58/PENDENCIAS_100.md` (defeitos, migração Godot, gameplay por lugar, progressão, pessoas, mundo, áudio, interface, desempenho).
+- [x] "Faça um biquíni estilo top" / "a parte de baixo precisa terminar na virilha" (02/11): top faixa sem alças e parte de baixo cavada até a virilha nas 6 banhistas (Ada, Asha, Zuri, Celeste, Jelena, Tuya), conferidas no editor (`D:/CodexTemp/mh/bathers6c.jpg`); Celeste, Jelena e Tuya entraram no elenco da praia.
+- [~] "Vamos finalizar todas as pendências e depois seguir o checklist" (02/11), com até 3 trabalhos em paralelo:
+  - [x] menu principal (Novo jogo, Continuar, Carregar, Opções, Créditos, Sair) e 3 slots com backup, autosave ao dormir e migração do save antigo; teste `MareAlta.Saves.Slots` (10/10 testes MareAlta.* passando; foto do menu no PIE);
+  - [x] opções completas em 5 abas (gráficos, tela, áudio, controles com remapeamento, idioma); teste `MareAlta.Options.SaveAndReload`;
+  - [x] efeitos sonoros CC0 de recepção, limpeza, sinuca, bar e dinheiro (42 WAVs em `SourceArt/Audio/Actions`, `tools/ue58/fetch_action_sfx.py`); falta importar e ligar no jogo;
+  - [x] calçados feitos no Blender sobre o pé dos MetaHumans (`tools/ue58/gen_mh_shoes.py`): chinelo e tênis, par feminino e masculino, sola e cabedal com cores por pessoa; chinelo na praia/pousada, tênis na equipe/hotel/vila (conferido no PIE);
+  - [x] roupa padrão da Epic pintada por papel (`metahumans.json` → `clothes`): uniforme verde-água/cáqui da equipe, social claro no hotel, cores variadas na praia e vila (conferido no PIE);
+  - [x] toalha da cama do bangalô 1,8× maior (falta foto no PIE).
 - [x] Manter este checklist sempre que o usuário pedir algo (regra salva na memória).
 
 ## Regras permanentes já pedidas

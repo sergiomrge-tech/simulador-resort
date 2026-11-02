@@ -566,3 +566,20 @@ Modelados com bpy, próprios do projeto:
 - `tools/ue58/gen_pool_table.py`: mesa de sinuca de 7 pés com medidas reais, 16 bolas numeradas (texturas geradas pelo script com Pillow e Arial do sistema só para os números) e taco.
 - `tools/ue58/gen_hud_icons.py`: ícones do HUD (estrela, cama, pessoa).
 - `tools/ue58/gen_boats.py`: jangada nordestina e bote de pesca de tábuas (texturas CC0 Poly Haven: bark_brown_02, rough_linen, oak_wood_planks, distressed_painted_planks).
+
+### Áudio: efeitos das ações novas (UE5.8), 02/11/2026
+
+42 WAVs (PCM 16-bit, 48 kHz, mono) em `unreal/MareAlta/SourceArt/Audio/Actions/`, com o mapa ação→arquivos e o volume sugerido em `manifest.json`. São gerados do zero por `python tools/ue58/fetch_action_sfx.py`, que baixa os pacotes em `D:/CodexTemp/sfx_dl/`, escolhe, filtra (passa-baixa suave), normaliza e converte. Ainda não importados no Unreal. Todas as fontes são CC0:
+
+| Pacote | Fonte | Licença | Arquivos usados |
+|---|---|---|---|
+| Kenney, **Impact Sounds** | https://kenney.nl/assets/impact-sounds | CC0 | `impactGeneric_light_001–004`, `impactSoft_medium_000–003`, `impactWood_light_000/002` (sinuca) |
+| Kenney, **Interface Sounds** | https://kenney.nl/assets/interface-sounds | CC0 | `confirmation_001/004`, `question_002/004`, `scratch_004/005` (negociação, caneta) |
+| Kenney, **Casino Audio** | https://kenney.nl/assets/casino-audio | CC0 | `dice-shake-1/3` (coqueteleira) |
+| Kenney, **RPG Audio** | https://kenney.nl/assets/rpg-audio | CC0 | `cloth1–4`, `dropLeather`, `bookPlace1/3`, `handleCoins`, `metalLatch` (cama, toalhas, lixo, carimbo, moedas, caixa) |
+| OpenGameArt, "100 CC0 SFX" | https://opengameart.org/content/100-cc0-sfx | CC0 | `bell_01`, `paper_01/02` (campainha, papel, saco) |
+| OpenGameArt, "100 CC0 SFX #2" | https://opengameart.org/content/100-cc0-sfx-2 | CC0 | `sfx100v2_glass_02/05`, `sfx100v2_stones_02`, trecho de `sfx100v2_loop_water_01` (gelo, bola, servir) |
+| OpenGameArt, "100 CC0 metal and wood SFX" | https://opengameart.org/content/100-cc0-metal-and-wood-sfx | CC0 | `keys_01–03` (chaves) |
+| OpenGameArt, "80 CC0 RPG SFX" | https://opengameart.org/content/80-cc0-rpg-sfx | CC0 | `item_stone_02/04`, `item_coins_03` (bola contra bola, taco, moedas) |
+
+Síntese original (numpy, no mesmo script, dedicada a CC0): duas campainhas de balcão (`reception_bell_2/3`), o sininho da caixa registradora (`money_register_1`, junto com Kenney), o liquidificador (`bar_blender_1/2`), uma coqueteleira (`bar_shaker_3`), o gelo no copo (`bar_ice_glass_3`), servir líquido (`bar_pour_1`; `bar_pour_2` mistura com a água do "100 CC0 SFX #2"), o plástico do saco de lixo (`cleaning_trash_2`) e a bola rolando na canaleta (`pool_pocket_1/2`, junto com os impactos Kenney).

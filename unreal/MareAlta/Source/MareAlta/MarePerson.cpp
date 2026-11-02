@@ -17,6 +17,8 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Engine/SkeletalMesh.h"
+#include "Animation/Skeleton.h"
+#include "Materials/MaterialInterface.h"
 #include "Engine/StaticMesh.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Misc/FileHelper.h"
@@ -120,6 +122,33 @@ bool AMarePerson::SetMetaHuman(const FString& Name)
    if(MetaHumanRoster()->TryGetArrayField(TEXT("swim_colours"),Colours) && Colours->Num()){
     const FColor C=FColor::FromHex((*Colours)[int32(FCrc::StrCrc32(*SaveId)%uint32(Colours->Num()))]->AsString());
     for(int32 I=0;I<Swimwear->GetNumMaterials();++I)if(auto M=Swimwear->CreateDynamicMaterialInstance(I))M->SetVectorParameterValue(TEXT("Tint"),FLinearColor(C));}}}
+ const bool bSwim=Name.EndsWith(TEXT("_Swim"));const FString RoleKey=bSwim?TEXT("swim"):MetaRole.IsEmpty()?TEXT("village"):MetaRole;
+ auto Pick=[this](const TArray<TSharedPtr<FJsonValue>>& List,const TCHAR* Salt,int32 First=0){
+  return FLinearColor(FColor::FromHex(List[First+int32(FCrc::StrCrc32(*(SaveId+Salt))%uint32(List.Num()-First))]->AsString()));};
+ // Default Epic garment (white shirt/shorts): colours per role from the roster (uniform for staff).
+ const TSharedPtr<FJsonObject>* Clothes=nullptr;const TSharedPtr<FJsonObject>* Palette=nullptr;
+ if(!bSwim && MetaHumanRoster()->TryGetObjectField(TEXT("clothes"),Clothes) && (*Clothes)->TryGetObjectField(RoleKey,Palette))
+  if(AActor* Child=MetaHumanBody->GetChildActor()){TArray<UMeshComponent*> Garments;Child->GetComponents(Garments);
+   for(UMeshComponent* Garment:Garments)for(int32 I=0;I<Garment->GetNumMaterials();++I){const UMaterialInterface* Mat=Garment->GetMaterial(I);
+    if(!Mat || !Mat->GetPathName().Contains(TEXT("DefaultGarment")))continue;
+    const TCHAR* Part=Mat->GetPathName().Contains(TEXT("_Short"))?TEXT("short"):TEXT("shirt");const TArray<TSharedPtr<FJsonValue>>* List=nullptr;
+    if(!(*Palette)->TryGetArrayField(Part,List) || !List->Num())continue;
+    if(auto M=Garment->CreateDynamicMaterialInstance(I)){const FLinearColor C=Pick(*List,Part);
+     for(const TCHAR* P:{TEXT("diffuse_color_1"),TEXT("diffuse_color_2"),TEXT("B_diffuse_color_1")})M->SetVectorParameterValue(P,C);}}}
+ // Footwear fitted in Blender to a woman's or a man's MetaHuman foot (tools/ue58/gen_mh_shoes.py): nobody barefoot.
+ if(Shoes){Shoes->DestroyComponent();Shoes=nullptr;}
+ const TSharedPtr<FJsonObject>* ShoeKinds=nullptr;FString Kind;
+ if(MetaHumanRoster()->TryGetObjectField(TEXT("shoes"),ShoeKinds) && (*ShoeKinds)->TryGetStringField(RoleKey,Kind)){
+  const TCHAR* Foot=Body->GetSkeleton() && Body->GetSkeleton()->GetPathName().Contains(TEXT("/Female/"))?TEXT("Ada"):TEXT("Mateo");
+  if(auto Pair=LoadObject<USkeletalMesh>(nullptr,*FString::Printf(TEXT("/Game/People/Swimwear/SKM_%s_%s.SKM_%s_%s"),*Kind,Foot,*Kind,Foot))){
+   Shoes=NewObject<USkeletalMeshComponent>(this);AddInstanceComponent(Shoes);Shoes->SetupAttachment(GetMesh());
+   Shoes->SetSkeletalMeshAsset(Pair);Shoes->SetCollisionEnabled(ECollisionEnabled::NoCollision);Shoes->RegisterComponent();
+   Shoes->SetLeaderPoseComponent(GetMesh());
+   const TSharedPtr<FJsonObject>* Colours=nullptr;const TArray<TSharedPtr<FJsonValue>>* List=nullptr;
+   if(MetaHumanRoster()->TryGetObjectField(TEXT("shoe_colours"),Colours) && (*Colours)->TryGetArrayField(Kind,List) && List->Num()>1){
+    // Slot 0 = upper or strap, slot 1 = sole (first colour of the list).
+    if(auto M=Shoes->CreateDynamicMaterialInstance(0))M->SetVectorParameterValue(TEXT("Tint"),Pick(*List,TEXT("shoe"),1));
+    if(auto M=Shoes->CreateDynamicMaterialInstance(1))M->SetVectorParameterValue(TEXT("Tint"),FLinearColor(FColor::FromHex((*List)[0]->AsString())));}}}
  PlayPose(TEXT("Idle"));return true;
 }
 void AMarePerson::PlayPose(const FString& Name,bool bLoop)
@@ -218,6 +247,7 @@ void AMarePerson::Tick(float DeltaSeconds)
    const TArray<TSharedPtr<FJsonValue>>* List=nullptr;
    if(MetaHumanRoster()->TryGetArrayField(RoleKey,List) && List->Num())
     Wanted=(*List)[int32(FCrc::StrCrc32(*(SaveId+PersonName))%uint32(List->Num()))]->AsString();
+   MetaRole=RoleKey;
   }
   if(!Wanted.IsEmpty())SetMetaHuman(Wanted);
  }

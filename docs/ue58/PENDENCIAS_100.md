@@ -17,11 +17,12 @@ Prioridade:
 Marcar `[x]` só depois de testado no jogo, com foto ou teste automático.
 
 ## 1. Defeitos conhecidos (corrigir primeiro)
-- [ ] P0 **Biquíni novo (top faixa e parte de baixo até a virilha)** importado e conferido no jogo nas 6 banhistas
-  (Ada, Asha, Zuri, Celeste, Jelena, Tuya). Em andamento.
-- [ ] P0 **MetaHumans descalços** fora da areia (regra do projeto: ninguém descalço).
-- [ ] P0 **Roupa padrão da Epic** (camiseta e bermuda brancas) em todos que não são banhistas.
-- [ ] P1 Toalha em cima da cama do bangalô sujo pequena demais.
+- [x] P0 **Biquíni novo (top faixa e parte de baixo até a virilha)** importado e conferido nas 6 banhistas
+  (Ada, Asha, Zuri, Celeste, Jelena, Tuya), 02/11.
+- [x] P0 **MetaHumans descalços**: chinelo e tênis feitos sobre o pé dos MetaHumans (`tools/ue58/gen_mh_shoes.py`), conferidos no PIE, 02/11.
+- [x] P0 **Roupa padrão da Epic** pintada por papel (`metahumans.json` → `clothes`), conferida no PIE, 02/11. Roupas de modelos
+  variados (regata, vestido, camisa social) continuam na seção 5.
+- [~] P1 Toalha em cima da cama do bangalô sujo: ampliada 1,8× (falta foto no PIE).
 - [ ] P1 Faixa de pele um pouco mais clara onde ficava a roupa íntima assada em algumas banhistas (ajustar o preenchimento).
 - [ ] P1 Zuri careca (preset da Epic): dar cabelo ou trocar de banhista.
 - [ ] P1 Vasos de pachira do saguão do hotel com colisão de copa enorme (bloqueia a mira). Corrigir a colisão
@@ -89,7 +90,7 @@ Pronto e testado (02/11):
   - social: camisa, vestido;
   - uniforme da equipe com cores do resort;
   - moradores.
-- [ ] P0 Calçados: chinelo, sandália, tênis, sapato social.
+- [~] P0 Calçados: chinelo e tênis feitos (02/11); faltam sandália e sapato social.
 - [ ] P1 Mais banhistas: mulheres e homens de outras idades e tipos de corpo.
 - [ ] P1 Animações:
   - deitar na espreguiçadeira e na canga;
@@ -124,8 +125,9 @@ Pronto e testado (02/11):
 - [ ] P2 Vozes curtas (murmúrios) sem diálogo falado, respeitando a regra de áudio suave.
 
 ## 8. Interface e experiência
-- [ ] P0 **Menu principal**: Novo jogo, Continuar, Carregar (3 slots), Opções, Créditos, Sair.
-- [ ] P0 **Opções completas**:
+- [x] P0 **Menu principal**: Novo jogo, Continuar, Carregar (3 slots), Opções, Créditos, Sair (02/11, foto no PIE;
+  QA de PIE usa `-MareSkipMenu`).
+- [x] P0 **Opções completas** (02/11, teste `MareAlta.Options.SaveAndReload`; idioma só troca fora do editor):
   - gráficos detalhados, resolução, janela, VSync, FPS, upscaler, FOV;
   - mouse e controle, remapear teclas;
   - idioma.
@@ -139,7 +141,7 @@ Pronto e testado (02/11):
   - setores pesados: praia com pessoas, saguão do hotel, vila à noite;
   - MetaHumans: limite visível, LOD, grooms.
 - [ ] P0 Sessões de 2 h sem crash (GPU page fault do hotel mitigado com `r.Lumen.AsyncCompute=0`; re-testar).
-- [ ] P0 Saves: 3 slots, autosave, migração de saves antigos (pousada passiva → estadias reais), backup.
+- [x] P0 Saves: 3 slots, autosave ao dormir, migração do slot1 antigo, backup `.bak` (teste `MareAlta.Saves.Slots`, 02/11).
 - [ ] P1 Memória: build de pessoas e texturas 8K das banhistas (avaliar 4K), tamanho do pacote final.
 - [ ] P1 Testes automáticos cobrindo cada sistema novo (hoje 8 testes MareAlta.*) e QA de PIE com fotos por sistema.
 

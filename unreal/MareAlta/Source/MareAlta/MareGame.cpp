@@ -11,6 +11,7 @@
 #include "MareCustomWorld.h"
 #include "MareKioskWorld.h"
 #include "Misc/CommandLine.h"
+#include "CoreGlobals.h"
 #include "Misc/Parse.h"
 #include "MareSimulation.h"
 #include "Engine/GameInstance.h"
@@ -50,7 +51,9 @@
 #include "Brushes/SlateRoundedBoxBrush.h"
 #include "Widgets/Images/SImage.h"
 #include "MareGameRoom.h"
+#include "MareOptions.h"
 #include "Engine/Texture2D.h"
+#include "Framework/Application/SlateApplication.h"
 
 namespace MareUI
 {
@@ -580,8 +583,8 @@ void AMareCharacter::SetupPlayerInputComponent(UInputComponent* Input)
 }
 void AMareCharacter::Forward(float Value){if(FMath::Abs(Value)>.1f)if(auto Home=GetWorld()->GetSubsystem<UMareHomeWorld>())Home->Stand();if(Controller){auto Rotation=Controller->GetControlRotation();if(!GetCharacterMovement()->IsSwimming())Rotation.Pitch=0;Rotation.Roll=0;AddMovementInput(Rotation.Vector(),Value);}}
 void AMareCharacter::Right(float Value){if(FMath::Abs(Value)>.1f)if(auto Home=GetWorld()->GetSubsystem<UMareHomeWorld>())Home->Stand();if(Controller)AddMovementInput(FRotationMatrix(FRotator(0,Controller->GetControlRotation().Yaw,0)).GetUnitAxis(EAxis::Y),Value);}
-void AMareCharacter::LookX(float Value){AddControllerYawInput(Value);}
-void AMareCharacter::LookY(float Value){AddControllerPitchInput(Value);}
+void AMareCharacter::LookX(float Value){AddControllerYawInput(Value*FMareOptions::Get().MouseSensitivity);}
+void AMareCharacter::LookY(float Value){const auto& Options=FMareOptions::Get();AddControllerPitchInput(Value*Options.MouseSensitivity*(Options.bInvertY?-1.f:1.f));}
 void AMareCharacter::Phone(){if(auto PC=Cast<AMareController>(Controller))PC->TogglePhone();}
 void AMareCharacter::Interact()
 {
@@ -630,12 +633,323 @@ void AMareCharacter::Tick(float DeltaSeconds)
  if(GetActorLocation().Z<-5000){SetActorLocation(SafeLandLocation);Movement->StopMovementImmediately();VerticalSwimInput=0;}
 }
 
+#define LOCTEXT_NAMESPACE "MareMenu"
+/** Main menu: new game, continue, three load slots, options, credits, quit. */
+class SMareMainMenu : public SCompoundWidget
+{
+public:
+ SLATE_BEGIN_ARGS(SMareMainMenu){} SLATE_ARGUMENT(AMareController*,Controller) SLATE_END_ARGS()
+ void Construct(const FArguments& Args){Controller=Args._Controller;Show(EPage::Main);}
+private:
+ enum class EPage:uint8{Main,Load,New,Confirm,Options,Credits};
+ TWeakObjectPtr<AMareController> Controller;
+ int32 PendingSlot=0;
+ FText Error;
+ UMareSimulation* Sim()const{return Controller.IsValid()?Controller->GetSimulation():nullptr;}
+ static FText SlotLabel(int32 Index,const FMareSlotInfo& Info)
+ {
+  if(!Info.bExists)return FText::Format(LOCTEXT("SlotEmpty","Slot {0} · vazio"),Index);
+  const FDateTime Local=Info.SavedAt+(FDateTime::Now()-FDateTime::UtcNow());
+  const FText Name=Info.Company.IsEmpty()?LOCTEXT("SlotNoCompany","sem empresa"):FText::FromString(Info.Company);
+  return FText::Format(LOCTEXT("SlotFull","Slot {0} · Dia {1} · R$ {2}\n{3} · salvo em {4}"),Index,Info.Day,FText::FromString(FString::Printf(TEXT("%.0f"),Info.Money)),Name,FText::FromString(Local.ToString(TEXT("%d/%m/%Y %H:%M"))));
+ }
+ void Fail(){Error=Sim()?FText::FromString(Sim()->LastMessage):FText::GetEmpty();Show(EPage::Main);}
+ void Show(EPage Page)
+ {
+  auto S=Sim();if(!S)return;
+  auto Box=SNew(SVerticalBox);
+  auto Button=[&Box](const FText& Label,TFunction<void()> Callback,bool bEnabled){Box->AddSlot().AutoHeight().Padding(0,5)[SNew(SButton).IsEnabled(bEnabled).ButtonStyle(&MareUI::ActionButton).ContentPadding(FMargin(14,8)).OnClicked_Lambda([Callback](){Callback();return FReply::Handled();})[MareUI::Text(Label.ToString(),14,FLinearColor::White)]];};
+  auto Back=[this,&Button](){Button(LOCTEXT("Back","Voltar"),[this](){Show(EPage::Main);},true);};
+  Box->AddSlot().AutoHeight().Padding(0,0,0,4)[MareUI::Text(TEXT("Maré Alta Resort"),24)];
+  switch(Page){
+  case EPage::Main:{
+   Box->AddSlot().AutoHeight().Padding(0,0,0,12)[MareUI::Text(LOCTEXT("Subtitle","O quiosque da avó Dilce espera por você.").ToString(),12)];
+   const int32 Last=S->LastSlot();const FMareSlotInfo LastInfo=S->SlotInfo(Last);
+   Button(LOCTEXT("NewGame","Novo jogo"),[this](){Error=FText::GetEmpty();Show(EPage::New);},true);
+   Button(LastInfo.bExists?FText::Format(LOCTEXT("ContinueSlot","Continuar · slot {0}, dia {1}"),Last,LastInfo.Day):LOCTEXT("Continue","Continuar"),[this,Last](){if(!Controller.IsValid() || !Controller->MenuLoadSlot(Last))Fail();},LastInfo.bExists);
+   Button(LOCTEXT("Load","Carregar"),[this](){Error=FText::GetEmpty();Show(EPage::Load);},S->HasAnySave());
+   Button(LOCTEXT("Options","Opções"),[this](){Show(EPage::Options);},true);
+   Button(LOCTEXT("Credits","Créditos"),[this](){Show(EPage::Credits);},true);
+   Button(LOCTEXT("Quit","Sair"),[this](){if(Controller.IsValid())UKismetSystemLibrary::QuitGame(Controller.Get(),Controller.Get(),EQuitPreference::Quit,false);},true);
+   if(!Error.IsEmpty())Box->AddSlot().AutoHeight().Padding(0,10,0,0)[MareUI::Text(Error.ToString(),12,FLinearColor(.7f,.15f,.1f))];
+   break;}
+  case EPage::Load:case EPage::New:{
+   const bool bNew=Page==EPage::New;
+   Box->AddSlot().AutoHeight().Padding(0,0,0,10)[MareUI::Text((bNew?LOCTEXT("PickNew","Escolha o slot do novo jogo"):LOCTEXT("PickLoad","Escolha o save")).ToString(),14)];
+   for(int32 Index=1;Index<=UMareSimulation::SlotCount;++Index){const FMareSlotInfo Info=S->SlotInfo(Index);
+    Button(SlotLabel(Index,Info),[this,Index,bNew,bExists=Info.bExists](){
+     if(!Controller.IsValid())return;
+     if(!bNew){if(!Controller->MenuLoadSlot(Index))Fail();}
+     else if(bExists){PendingSlot=Index;Show(EPage::Confirm);}
+     else if(!Controller->MenuNewGame(Index))Fail();},bNew || Info.bExists);}
+   Back();break;}
+  case EPage::Confirm:
+   Box->AddSlot().AutoHeight().Padding(0,0,0,10)[MareUI::Text(FText::Format(LOCTEXT("ConfirmText","Começar um novo jogo no slot {0}? O progresso atual desse slot fica guardado só como backup (.bak)."),PendingSlot).ToString(),13)];
+   Button(LOCTEXT("ConfirmYes","Sim, começar do zero"),[this](){if(!Controller.IsValid() || !Controller->MenuNewGame(PendingSlot))Fail();},true);
+   Button(LOCTEXT("ConfirmNo","Cancelar"),[this](){Show(EPage::New);},true);
+   break;
+  case EPage::Options:
+   Box->AddSlot().AutoHeight().Padding(0,0,0,8)[MareUI::Text(LOCTEXT("OptionsTitle","Opções").ToString(),16)];
+   if(Controller.IsValid())Box->AddSlot().AutoHeight()[Controller->MakeOptionsPanel()];
+   Back();break;
+  case EPage::Credits:
+   Box->AddSlot().AutoHeight().Padding(0,0,0,8)[MareUI::Text(LOCTEXT("CreditsTitle","Créditos").ToString(),16)];
+   Box->AddSlot().AutoHeight().Padding(0,0,0,8)[SNew(SBox).MaxDesiredHeight(320)[SNew(SScrollBox)+SScrollBox::Slot()[MareUI::Text(LOCTEXT("CreditsText",
+    "Maré Alta Resort — criado por Sergio.\n\n"
+    "Feito na Unreal Engine 5.8.\n\n"
+    "Modelos, texturas e sons de terceiros: quase tudo CC0 (domínio público) — Poly Haven, Quaternius, Kenney, ambientCG e outros. "
+    "Fonte Nunito (SIL OFL 1.1). Ícones de game-icons.net (CC BY 3.0).\n\n"
+    "A lista completa de fontes e licenças está no arquivo CREDITS.md que acompanha o jogo.\n\n"
+    "Obrigado por jogar!").ToString(),12)]]];
+   Back();break;
+  }
+  ChildSlot[SNew(SBorder).BorderBackgroundColor(FLinearColor(0,0,0,.55f)).HAlign(HAlign_Center).VAlign(VAlign_Center)[SNew(SBox).WidthOverride(Page==EPage::Options?540:440)[SNew(SBorder).BorderImage(&MareUI::Surface).Padding(22)[Box]]]];
+ }
+};
+void AMareController::OpenMainMenu()
+{
+ auto S=GetSimulation();if(!GEngine || !GEngine->GameViewport || !S || MainMenuWidget.IsValid())return;
+ WorldSlot=S->ActiveSlot;bWorldFromFile=S->SlotInfo(WorldSlot).bExists;
+ SetPause(true);MainMenuWidget=SNew(SMareMainMenu).Controller(this);
+ GEngine->GameViewport->AddViewportWidgetContent(MainMenuWidget.ToSharedRef(),50);bShowMouseCursor=true;
+ SetInputMode(FInputModeUIOnly().SetWidgetToFocus(MainMenuWidget));SetIgnoreMoveInput(true);SetIgnoreLookInput(true);
+}
+void AMareController::CloseMainMenu()
+{
+ if(MainMenuWidget.IsValid() && GEngine && GEngine->GameViewport)GEngine->GameViewport->RemoveViewportWidgetContent(MainMenuWidget.ToSharedRef());
+ MainMenuWidget.Reset();
+}
+void AMareController::ReloadWorld()
+{
+ // The old world must not write its actors into the newly selected state while it is torn down.
+ if(auto S=GetSimulation()){S->bMainMenuDone=true;S->bHoldSaves=true;}
+ CloseMainMenu();UGameplayStatics::OpenLevel(this,FName(*UGameplayStatics::GetCurrentLevelName(this,true)));
+}
+bool AMareController::MenuLoadSlot(int32 Slot)
+{
+ auto S=GetSimulation();if(!S)return false;
+ if(Slot==WorldSlot && bWorldFromFile && S->ActiveSlot==Slot){
+  S->bMainMenuDone=true;CloseMainMenu();SetPause(false);bShowMouseCursor=false;SetInputMode(FInputModeGameOnly());ResetIgnoreMoveInput();ResetIgnoreLookInput();
+  if(auto Mode=GetWorld()->GetAuthGameMode<AMareGameMode>())Mode->StartSession();
+  return true;
+ }
+ if(!S->LoadSlot(Slot))return false;
+ ReloadWorld();return true;
+}
+bool AMareController::MenuNewGame(int32 Slot)
+{
+ auto S=GetSimulation();if(!S)return false;
+ // The world behind the menu already is a brand-new profile of this slot: just start the arrival.
+ if(Slot==WorldSlot && !bWorldFromFile && !S->SlotInfo(Slot).bExists && S->ActiveSlot==Slot){
+  S->bMainMenuDone=true;CloseMainMenu();SetPause(false);bShowMouseCursor=false;SetInputMode(FInputModeGameOnly());ResetIgnoreMoveInput();ResetIgnoreLookInput();
+  if(auto Mode=GetWorld()->GetAuthGameMode<AMareGameMode>())Mode->StartSession();
+  return true;
+ }
+ if(!S->NewGame(Slot))return false;
+ ReloadWorld();return true;
+}
+void AMareController::ReturnToMainMenu()
+{
+ auto S=GetSimulation();if(!S)return;
+ S->Save();S->bMainMenuDone=false;S->bHoldSaves=true;
+ if(PauseWidget.IsValid() && GEngine && GEngine->GameViewport)GEngine->GameViewport->RemoveViewportWidgetContent(PauseWidget.ToSharedRef());PauseWidget.Reset();
+ UGameplayStatics::OpenLevel(this,FName(*UGameplayStatics::GetCurrentLevelName(this,true)));
+}
+/** Options in tabs: edits a pending copy until "Aplicar" (audio sliders act at once). */
+class SMareOptions : public SCompoundWidget
+{
+public:
+ SLATE_BEGIN_ARGS(SMareOptions){} SLATE_ARGUMENT(AMareController*,Controller) SLATE_END_ARGS()
+ void Construct(const FArguments& Args)
+ {
+  Controller=Args._Controller;Pending=FMareOptions::Get();
+  TArray<FIntPoint> Supported;UKismetSystemLibrary::GetSupportedFullscreenResolutions(Supported);
+  for(const FIntPoint& Size:Supported)if(Size.X>=1024 && Size.Y>=576)Resolutions.AddUnique(Size);
+  if(Resolutions.IsEmpty())Resolutions={FIntPoint(1280,720),FIntPoint(1600,900),FIntPoint(1920,1080),FIntPoint(2560,1440),FIntPoint(3840,2160)};
+  Resolutions.AddUnique(Pending.Resolution);
+  Resolutions.Sort([](const FIntPoint& A,const FIntPoint& B){return A.X*A.Y!=B.X*B.Y?A.X*A.Y<B.X*B.Y:A.X<B.X;});
+  Rebuild();
+ }
+ // Closing the menu while a new video mode is unconfirmed goes back to the previous one.
+ virtual ~SMareOptions() override{if(RevertAt>0 && GEngine && !IsEngineExitRequested())Revert();}
+ virtual bool SupportsKeyboardFocus()const override{return true;}
+ virtual FReply OnKeyDown(const FGeometry& Geometry,const FKeyEvent& Event) override
+ {
+  if(Listening.IsNone())return FReply::Unhandled();
+  const FKey Pressed=Event.GetKey();if(Pressed.IsGamepadKey())return FReply::Handled();
+  if(Pressed!=EKeys::Escape)Pending.Bind(Listening,Pressed);
+  Listening=NAME_None;return FReply::Handled();
+ }
+ virtual FReply OnMouseButtonDown(const FGeometry& Geometry,const FPointerEvent& Event) override
+ {
+  if(Listening.IsNone())return FReply::Unhandled();
+  if(Event.GetEffectingButton()!=EKeys::LeftMouseButton)Pending.Bind(Listening,Event.GetEffectingButton());
+  Listening=NAME_None;return FReply::Handled();
+ }
+private:
+ TWeakObjectPtr<AMareController> Controller;
+ FMareOptions Pending;
+ int32 Tab=0;
+ FName Listening;
+ double RevertAt=0;   // > 0 while a new resolution waits for confirmation
+ TArray<FIntPoint> Resolutions;
+ FText Status;
+ static FLinearColor Ink(){return FLinearColor(.08f,.12f,.11f);}
+ static const FButtonStyle& Light(){static const FButtonStyle S=FButtonStyle().SetNormal(FSlateRoundedBoxBrush(FLinearColor(.84f,.87f,.84f),8.f)).SetHovered(FSlateRoundedBoxBrush(FLinearColor(.76f,.82f,.79f),8.f)).SetPressed(FSlateRoundedBoxBrush(FLinearColor(.68f,.76f,.73f),8.f));return S;}
+ static FText Level(int32 Value)
+ {
+  static const FText Names[]={LOCTEXT("OptLow","Baixo"),LOCTEXT("OptMedium","Médio"),LOCTEXT("OptHigh","Alto"),LOCTEXT("OptEpic","Épico")};
+  return Names[FMath::Clamp(Value,0,3)];
+ }
+ static FText OnOff(bool bOn){return bOn?LOCTEXT("OptOn","Ligado"):LOCTEXT("OptOff","Desligado");}
+ UMareAudioWorld* Audio()const{return Controller.IsValid()?Controller->GetWorld()->GetSubsystem<UMareAudioWorld>():nullptr;}
+ TSharedRef<SWidget> Button(const FText& Label,TFunction<void()> Callback,bool bMain=true)
+ {
+  return SNew(SButton).ButtonStyle(bMain?&MareUI::ActionButton:&Light()).ContentPadding(FMargin(12,6)).IsFocusable(false).OnClicked_Lambda([Callback](){Callback();return FReply::Handled();})
+   [MareUI::Text(Label.ToString(),13,bMain?FLinearColor::White:Ink())];
+ }
+ /** Label, "<" value ">"; Step receives -1 or +1. */
+ TSharedRef<SWidget> Row(const FText& Label,TFunction<FText()> Value,TFunction<void(int32)> Step)
+ {
+  auto Arrow=[Step](const TCHAR* Glyph,int32 Direction){return SNew(SButton).ButtonStyle(&MareUI::ActionButton).ContentPadding(FMargin(9,2)).IsFocusable(false)
+   .OnClicked_Lambda([Step,Direction](){Step(Direction);return FReply::Handled();})[MareUI::Text(Glyph,13,FLinearColor::White)];};
+  return SNew(SHorizontalBox)
+   +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center)[SNew(SBox).WidthOverride(180)[MareUI::Text(Label.ToString(),12)]]
+   +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center)[Arrow(TEXT("<"),-1)]
+   +SHorizontalBox::Slot().FillWidth(1).VAlign(VAlign_Center).HAlign(HAlign_Center).Padding(6,0)
+    [SNew(STextBlock).Text_Lambda([Value](){return Value();}).Font(FCoreStyle::GetDefaultFontStyle("Bold",12)).ColorAndOpacity(Ink())]
+   +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center)[Arrow(TEXT(">"),1)];
+ }
+ void GraphicsPage(const TSharedRef<SVerticalBox>& Page)
+ {
+  auto Add=[&Page](TSharedRef<SWidget> Widget){Page->AddSlot().AutoHeight().Padding(0,3)[Widget];};
+  Add(Row(LOCTEXT("OptPreset","Predefinição"),[this](){return Pending.IsCustomPreset()?FText::Format(LOCTEXT("OptCustom","Personalizado ({0})"),Level(Pending.Preset)):Level(Pending.Preset);},
+   [this](int32 Step){Pending.SetPreset(FMath::Clamp(Pending.Preset+Step,0,3));}));
+  const TPair<FText,int32 FMareOptions::*> Groups[]={{LOCTEXT("OptShadows","Sombras"),&FMareOptions::Shadows},{LOCTEXT("OptGI","Iluminação global (Lumen)"),&FMareOptions::GlobalIllumination},
+   {LOCTEXT("OptReflections","Reflexos"),&FMareOptions::Reflections},{LOCTEXT("OptPost","Pós-processamento"),&FMareOptions::PostProcess},{LOCTEXT("OptTextures","Texturas"),&FMareOptions::Textures},
+   {LOCTEXT("OptFoliage","Folhagem"),&FMareOptions::Foliage},{LOCTEXT("OptAA","Anti-serrilhado"),&FMareOptions::AntiAliasing}};
+  for(const auto& Group:Groups){int32 FMareOptions::*Field=Group.Value;
+   Add(Row(Group.Key,[this,Field](){return Level(Pending.*Field);},[this,Field](int32 Step){Pending.*Field=FMath::Clamp(Pending.*Field+Step,0,3);}));}
+  Add(Row(LOCTEXT("OptScale","Escala 3D"),[this](){return FText::FromString(FString::Printf(TEXT("%.0f%%"),Pending.ResolutionScale));},
+   [this](int32 Step){Pending.ResolutionScale=FMath::Clamp(Pending.ResolutionScale+5.f*Step,50.f,100.f);}));
+  Add(Row(LOCTEXT("OptUpscaler","Upscaler"),[this](){return FText::FromString(Pending.Upscaler);},[this](int32 Step){const TArray<FString> List=FMareOptions::Upscalers();
+   const int32 Index=FMath::Max(0,List.IndexOfByKey(Pending.Upscaler));Pending.Upscaler=List[(Index+Step+List.Num())%List.Num()];}));
+ }
+ void DisplayPage(const TSharedRef<SVerticalBox>& Page)
+ {
+  auto Add=[&Page](TSharedRef<SWidget> Widget){Page->AddSlot().AutoHeight().Padding(0,3)[Widget];};
+  Add(Row(LOCTEXT("OptResolution","Resolução"),[this](){return Pending.WindowMode==1?LOCTEXT("OptDesktopRes","igual à área de trabalho"):FText::FromString(FString::Printf(TEXT("%d x %d"),Pending.Resolution.X,Pending.Resolution.Y));},
+   [this](int32 Step){if(Pending.WindowMode==1)return;const int32 Index=Resolutions.IndexOfByKey(Pending.Resolution);Pending.Resolution=Resolutions[FMath::Clamp(Index<0?0:Index+Step,0,Resolutions.Num()-1)];}));
+  Add(Row(LOCTEXT("OptWindow","Modo de exibição"),[this](){return Pending.WindowMode==0?LOCTEXT("OptFullscreen","Tela cheia"):Pending.WindowMode==1?LOCTEXT("OptBorderless","Tela cheia sem bordas"):LOCTEXT("OptWindowed","Janela");},
+   [this](int32 Step){Pending.WindowMode=(Pending.WindowMode+Step+3)%3;}));
+  Add(Row(LOCTEXT("OptVSync","VSync"),[this](){return OnOff(Pending.bVSync);},[this](int32){Pending.bVSync=!Pending.bVSync;}));
+  Add(Row(LOCTEXT("OptFPS","Limite de FPS"),[this](){return Pending.FrameLimit>0?FText::AsNumber(Pending.FrameLimit):LOCTEXT("OptUnlimited","Ilimitado");},
+   [this](int32 Step){const auto& List=FMareOptions::FrameLimits();const int32 Index=FMath::Max(0,List.IndexOfByKey(Pending.FrameLimit));Pending.FrameLimit=List[(Index+Step+List.Num())%List.Num()];}));
+  Add(Row(LOCTEXT("OptFOV","Campo de visão"),[this](){return FText::FromString(FString::Printf(TEXT("%.0f°"),Pending.FieldOfView));},
+   [this](int32 Step){Pending.FieldOfView=FMath::Clamp(Pending.FieldOfView+5.f*Step,70.f,110.f);}));
+ }
+ void AudioPage(const TSharedRef<SVerticalBox>& Page)
+ {
+  auto Sound=Audio();if(!Sound)return;
+  const FName Buses[]={TEXT("Master"),TEXT("Music"),TEXT("Effects"),TEXT("Ambient")};
+  const FText Labels[]={LOCTEXT("VolumeMaster","Volume geral"),LOCTEXT("VolumeMusic","Música"),LOCTEXT("VolumeEffects","Efeitos"),LOCTEXT("VolumeAmbient","Ambiente")};
+  TWeakObjectPtr<UMareAudioWorld> Weak(Sound);
+  for(int32 I=0;I<4;++I){const FName Bus=Buses[I];Page->AddSlot().AutoHeight().Padding(0,6)[SNew(SHorizontalBox)
+   +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(0,0,12,0)[SNew(SBox).WidthOverride(130)[MareUI::Text(Labels[I].ToString(),12)]]
+   +SHorizontalBox::Slot().FillWidth(1).VAlign(VAlign_Center)[SNew(SSlider).IsFocusable(false).Value_Lambda([Weak,Bus](){return Weak.IsValid()?Weak->GetVolume(Bus):0.f;})
+    .OnValueChanged_Lambda([Weak,Bus](float Value){if(Weak.IsValid())Weak->SetVolume(Bus,Value);})]
+   +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(8,0,0,0)[SNew(SBox).WidthOverride(40)[SNew(STextBlock).ColorAndOpacity(Ink())
+    .Text_Lambda([Weak,Bus](){return FText::FromString(FString::Printf(TEXT("%.0f%%"),Weak.IsValid()?Weak->GetVolume(Bus)*100.f:0.f));})]]];}
+ }
+ void ControlsPage(const TSharedRef<SVerticalBox>& Page)
+ {
+  auto Add=[&Page](TSharedRef<SWidget> Widget){Page->AddSlot().AutoHeight().Padding(0,3)[Widget];};
+  Add(Row(LOCTEXT("OptSensitivity","Sensibilidade do mouse"),[this](){return FText::FromString(FString::Printf(TEXT("%.1f"),Pending.MouseSensitivity));},
+   [this](int32 Step){Pending.MouseSensitivity=FMath::Clamp(FMath::RoundToFloat((Pending.MouseSensitivity+.1f*Step)*10.f)/10.f,.2f,3.f);}));
+  Add(Row(LOCTEXT("OptInvertY","Inverter eixo Y"),[this](){return OnOff(Pending.bInvertY);},[this](int32){Pending.bInvertY=!Pending.bInvertY;}));
+  Page->AddSlot().AutoHeight().Padding(0,10,0,4)[MareUI::Text(LOCTEXT("OptKeysHint","Clique numa ação e aperte a nova tecla (Esc cancela). Se a tecla já estiver em uso, as duas ações trocam.").ToString(),11)];
+  for(const auto& Action:FMareOptions::Actions()){const FName Id=Action.Id;
+   Page->AddSlot().AutoHeight().Padding(0,2)[SNew(SHorizontalBox)
+    +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center)[SNew(SBox).WidthOverride(180)[MareUI::Text(Action.Label.ToString(),12)]]
+    +SHorizontalBox::Slot().FillWidth(1)[SNew(SButton).ButtonStyle(&Light()).HAlign(HAlign_Center).ContentPadding(FMargin(8,4)).IsFocusable(false)
+     .OnClicked_Lambda([this,Id](){Listening=Id;FSlateApplication::Get().SetKeyboardFocus(SharedThis(this),EFocusCause::SetDirectly);return FReply::Handled();})
+     [SNew(STextBlock).Font(FCoreStyle::GetDefaultFontStyle("Bold",12)).ColorAndOpacity(Ink())
+      .Text_Lambda([this,Id](){return Listening==Id?LOCTEXT("OptPressKey","aperte uma tecla..."):Pending.Key(Id).GetDisplayName();})]]];}
+ }
+ void LanguagePage(const TSharedRef<SVerticalBox>& Page)
+ {
+  Page->AddSlot().AutoHeight().Padding(0,3)[Row(LOCTEXT("OptLanguage","Idioma"),[this](){return FMareOptions::CultureName(Pending.Culture);},[this](int32 Step){const auto& List=FMareOptions::Cultures();
+   const int32 Index=FMath::Max(0,List.IndexOfByKey(Pending.Culture));Pending.Culture=List[(Index+Step+List.Num())%List.Num()];})];
+  Page->AddSlot().AutoHeight().Padding(0,10,0,0)[MareUI::Text(LOCTEXT("OptLanguageHint","A tradução para o inglês ainda está sendo feita: alguns textos podem continuar em português.").ToString(),11)];
+ }
+ void Rebuild()
+ {
+  auto Body=SNew(SVerticalBox);auto Tabs=SNew(SHorizontalBox);
+  const FText Names[]={LOCTEXT("OptTabGraphics","Gráficos"),LOCTEXT("OptTabDisplay","Tela"),LOCTEXT("OptTabAudio","Áudio"),LOCTEXT("OptTabControls","Controles"),LOCTEXT("OptTabLanguage","Idioma")};
+  for(int32 I=0;I<5;++I)Tabs->AddSlot().FillWidth(1).Padding(I?3:0,0,0,0)[SNew(SButton).ButtonStyle(I==Tab?&MareUI::ActionButton:&Light()).HAlign(HAlign_Center).ContentPadding(FMargin(4,6)).IsFocusable(false)
+   .OnClicked_Lambda([this,I](){Tab=I;Listening=NAME_None;Rebuild();return FReply::Handled();})[SNew(STextBlock).Text(Names[I]).Font(FCoreStyle::GetDefaultFontStyle("Bold",12)).ColorAndOpacity(I==Tab?FLinearColor::White:Ink())]];
+  Body->AddSlot().AutoHeight().Padding(0,0,0,10)[Tabs];
+  auto Page=SNew(SVerticalBox);
+  switch(Tab){case 0:GraphicsPage(Page);break;case 1:DisplayPage(Page);break;case 2:AudioPage(Page);break;case 3:ControlsPage(Page);break;default:LanguagePage(Page);}
+  Body->AddSlot().AutoHeight()[SNew(SBox).MaxDesiredHeight(380)[SNew(SScrollBox)+SScrollBox::Slot()[Page]]];
+  // Apply / defaults, or the 10 s confirmation after a resolution change.
+  Body->AddSlot().AutoHeight().Padding(0,12,0,0)[SNew(SBox).Visibility_Lambda([this](){return RevertAt>0?EVisibility::Collapsed:EVisibility::Visible;})[SNew(SHorizontalBox)
+   +SHorizontalBox::Slot().AutoWidth().Padding(0,0,8,0)[Button(LOCTEXT("OptApply","Aplicar"),[this](){Apply();})]
+   +SHorizontalBox::Slot().AutoWidth()[Button(LOCTEXT("OptDefaults","Restaurar padrão"),[this](){RestoreDefaults();},false)]]];
+  Body->AddSlot().AutoHeight().Padding(0,12,0,0)[SNew(SBox).Visibility_Lambda([this](){return RevertAt>0?EVisibility::Visible:EVisibility::Collapsed;})[SNew(SVerticalBox)
+   +SVerticalBox::Slot().AutoHeight().Padding(0,0,0,6)[SNew(STextBlock).AutoWrapText(true).Font(FCoreStyle::GetDefaultFontStyle("Bold",12)).ColorAndOpacity(Ink())
+    .Text_Lambda([this](){return FText::Format(LOCTEXT("OptKeepVideo","Manter este modo de tela? Volta ao anterior em {0} s."),FMath::Max(0,FMath::CeilToInt(RevertAt-FPlatformTime::Seconds())));})]
+   +SVerticalBox::Slot().AutoHeight()[SNew(SHorizontalBox)
+    +SHorizontalBox::Slot().AutoWidth().Padding(0,0,8,0)[Button(LOCTEXT("OptKeep","Manter"),[this](){Confirm();})]
+    +SHorizontalBox::Slot().AutoWidth()[Button(LOCTEXT("OptRevert","Reverter"),[this](){Revert();},false)]]]];
+  Body->AddSlot().AutoHeight().Padding(0,8,0,0)[SNew(STextBlock).AutoWrapText(true).Font(FCoreStyle::GetDefaultFontStyle("Regular",11)).ColorAndOpacity(FLinearColor(.15f,.4f,.36f)).Text_Lambda([this](){return Status;})];
+  ChildSlot[Body];
+ }
+ void Apply()
+ {
+  if(RevertAt>0)return;
+  Listening=NAME_None;Pending.Sanitize();FMareOptions::Set(Pending);
+  Pending.ApplyGraphics();Pending.ApplyCulture();
+  if(Controller.IsValid())for(auto It=Controller->GetWorld()->GetPlayerControllerIterator();It;++It)Pending.ApplyToPlayer(It->Get());
+  if(Pending.ApplyDisplay()){RevertAt=FPlatformTime::Seconds()+10;Status=FText::GetEmpty();RegisterActiveTimer(.25f,FWidgetActiveTimerDelegate::CreateSP(this,&SMareOptions::Countdown));}
+  else Status=LOCTEXT("OptApplied","Configurações aplicadas.");
+ }
+ EActiveTimerReturnType Countdown(double,float)
+ {
+  if(RevertAt<=0)return EActiveTimerReturnType::Stop;
+  if(FPlatformTime::Seconds()<RevertAt)return EActiveTimerReturnType::Continue;
+  Revert();return EActiveTimerReturnType::Stop;
+ }
+ void Confirm()
+ {
+  RevertAt=0;if(auto Settings=UGameUserSettings::GetGameUserSettings()){Settings->ConfirmVideoMode();Settings->SaveSettings();}
+  Status=LOCTEXT("OptApplied","Configurações aplicadas.");
+ }
+ void Revert()
+ {
+  RevertAt=0;auto Settings=UGameUserSettings::GetGameUserSettings();if(!Settings)return;
+  Settings->RevertVideoMode();Settings->ApplyResolutionSettings(false);Settings->SaveSettings();
+  FMareOptions Live=FMareOptions::Get();Live.Resolution=Settings->GetScreenResolution();Live.WindowMode=Settings->GetFullscreenMode();FMareOptions::Set(Live);
+  Pending.Resolution=FMareOptions::Get().Resolution;Pending.WindowMode=FMareOptions::Get().WindowMode;
+  Status=LOCTEXT("OptReverted","O modo de tela anterior foi restaurado.");
+ }
+ void RestoreDefaults()
+ {
+  Listening=NAME_None;Pending=FMareOptions::Defaults();
+  if(auto Sound=Audio())for(const FName Bus:{FName(TEXT("Master")),FName(TEXT("Music")),FName(TEXT("Effects")),FName(TEXT("Ambient"))})Sound->SetVolume(Bus,UMareAudioWorld::DefaultVolume(Bus));
+  Status=LOCTEXT("OptDefaultsLoaded","Valores padrão carregados (o áudio já mudou). Clique em Aplicar para usar o resto.");
+ }
+};
+TSharedRef<SWidget> AMareController::MakeOptionsPanel(){return SNew(SMareOptions).Controller(this);}
 void AMareController::SetupInputComponent()
 {
  Super::SetupInputComponent();InputComponent->BindAction(TEXT("Pause"),IE_Pressed,this,&AMareController::TogglePauseMenu).bExecuteWhenPaused=true;
+ FMareOptions::Get().ApplyKeys(PlayerInput);
 }
+void AMareController::OnPossess(APawn* InPawn){Super::OnPossess(InPawn);FMareOptions::Get().ApplyToPlayer(this);}
 void AMareController::TogglePauseMenu()
 {
+ if(MainMenuWidget.IsValid())return;
  if(auto Village=GetWorld()->GetSubsystem<UMareVillageWorld>())if(Village->IsDialogueOpen()){Village->CloseDialogue();return;}
  for(TActorIterator<AMareIntro> It(GetWorld());It;++It)if(It->IsLetterOpen()){It->CloseLetter();return;}else if(It->IsArrival()){It->FinishArrival();return;}
  if(bPhoneOpen){ClosePhone();return;}
@@ -644,25 +958,32 @@ void AMareController::TogglePauseMenu()
   GEngine->GameViewport->RemoveViewportWidgetContent(PauseWidget.ToSharedRef());PauseWidget.Reset();SetPause(false);
   bShowMouseCursor=false;SetInputMode(FInputModeGameOnly());ResetIgnoreMoveInput();ResetIgnoreLookInput();return;
  }
- SetPause(true);auto Menu=SNew(SVerticalBox);
- auto Add=[&](const FString& Label,TFunction<void()> Callback){Menu->AddSlot().AutoHeight().Padding(0,5)[SNew(SButton).ButtonStyle(&MareUI::ActionButton).ContentPadding(FMargin(14,8)).OnClicked_Lambda([Callback](){Callback();return FReply::Handled();})[MareUI::Text(Label,14,FLinearColor::White)]];};
- Menu->AddSlot().AutoHeight().Padding(0,0,0,12)[MareUI::Text(TEXT("Maré Alta · pausa"),20)];
- Add(TEXT("Retomar"),[this](){TogglePauseMenu();});
- Add(TEXT("Salvar progresso"),[this](){GetSimulation()->Save();});
- Add(TEXT("Qualidade: média"),[](){auto Settings=UGameUserSettings::GetGameUserSettings();Settings->SetOverallScalabilityLevel(1);Settings->ApplyNonResolutionSettings();Settings->SaveSettings();});
- Add(TEXT("Qualidade: alta"),[](){auto Settings=UGameUserSettings::GetGameUserSettings();Settings->SetOverallScalabilityLevel(2);Settings->ApplyNonResolutionSettings();Settings->SaveSettings();});
- auto Audio=GetWorld()->GetSubsystem<UMareAudioWorld>();
- const TArray<FName> Buses={TEXT("Master"),TEXT("Music"),TEXT("Effects"),TEXT("Ambient")};
- const TArray<FString> Labels={TEXT("Volume geral"),TEXT("Música"),TEXT("Efeitos"),TEXT("Ambiente")};
- for(int32 I=0;I<Buses.Num();++I){const FName Bus=Buses[I];Menu->AddSlot().AutoHeight().Padding(0,5)[SNew(SHorizontalBox)
-  +SHorizontalBox::Slot().AutoWidth().Padding(0,0,12,0)[SNew(SBox).WidthOverride(110)[MareUI::Text(Labels[I],12)]]
-  +SHorizontalBox::Slot().FillWidth(1)[SNew(SSlider).Value(Audio->GetVolume(Bus)).OnValueChanged_Lambda([Audio,Bus](float Value){Audio->SetVolume(Bus,Value);})]];}
- Add(TEXT("Sair para o desktop"),[this](){GetSimulation()->Save();UKismetSystemLibrary::QuitGame(this,this,EQuitPreference::Quit,false);});
- PauseWidget=SNew(SBorder).BorderBackgroundColor(FLinearColor(0,0,0,.65f)).HAlign(HAlign_Center).VAlign(VAlign_Center)[SNew(SBox).WidthOverride(340)[SNew(SBorder).BorderImage(&MareUI::Surface).Padding(20)[Menu]]];
- GEngine->GameViewport->AddViewportWidgetContent(PauseWidget.ToSharedRef(),30);bShowMouseCursor=true;
+ SetPause(true);BuildPauseMenu(false);bShowMouseCursor=true;
  SetInputMode(FInputModeGameAndUI());SetIgnoreMoveInput(true);SetIgnoreLookInput(true);
 }
-void AMareController::TogglePhone(){if(auto Home=GetWorld()->GetSubsystem<UMareHomeWorld>())if(Home->IsSleeping())return;if(auto Village=GetWorld()->GetSubsystem<UMareVillageWorld>())if(Village->IsDialogueOpen())return;for(TActorIterator<AMareIntro> It(GetWorld());It;++It)if(It->IsArrival() || It->IsLetterOpen())return;if(PauseWidget.IsValid())return;if(bPhoneOpen)ClosePhone();else OpenPhone();}
+void AMareController::BuildPauseMenu(bool bOptions)
+{
+ if(!GEngine || !GEngine->GameViewport)return;
+ if(PauseWidget.IsValid())GEngine->GameViewport->RemoveViewportWidgetContent(PauseWidget.ToSharedRef());
+ auto Menu=SNew(SVerticalBox);
+ auto Add=[&](const FString& Label,TFunction<void()> Callback){Menu->AddSlot().AutoHeight().Padding(0,5)[SNew(SButton).ButtonStyle(&MareUI::ActionButton).ContentPadding(FMargin(14,8)).OnClicked_Lambda([Callback](){Callback();return FReply::Handled();})[MareUI::Text(Label,14,FLinearColor::White)]];};
+ if(bOptions){
+  Menu->AddSlot().AutoHeight().Padding(0,0,0,10)[MareUI::Text(LOCTEXT("OptionsTitle","Opções").ToString(),20)];
+  Menu->AddSlot().AutoHeight()[MakeOptionsPanel()];
+  Add(LOCTEXT("Back","Voltar").ToString(),[this](){BuildPauseMenu(false);});
+ }else{
+  Menu->AddSlot().AutoHeight().Padding(0,0,0,12)[MareUI::Text(LOCTEXT("PauseTitle","Maré Alta · pausa").ToString(),20)];
+  Add(LOCTEXT("Resume","Retomar").ToString(),[this](){TogglePauseMenu();});
+  const int32 SaveSlot=GetSimulation()->ActiveSlot;
+  Add(FText::Format(LOCTEXT("SaveSlot","Salvar progresso (slot {0})"),SaveSlot).ToString(),[this](){GetSimulation()->Save();});
+  Add(LOCTEXT("Options","Opções").ToString(),[this](){BuildPauseMenu(true);});
+  Add(LOCTEXT("MainMenu","Voltar ao menu principal").ToString(),[this](){SetPause(false);ReturnToMainMenu();});
+  Add(LOCTEXT("QuitDesktop","Sair para o desktop").ToString(),[this](){GetSimulation()->Save();UKismetSystemLibrary::QuitGame(this,this,EQuitPreference::Quit,false);});
+ }
+ PauseWidget=SNew(SBorder).BorderBackgroundColor(FLinearColor(0,0,0,.65f)).HAlign(HAlign_Center).VAlign(VAlign_Center)[SNew(SBox).WidthOverride(bOptions?540:340)[SNew(SBorder).BorderImage(&MareUI::Surface).Padding(20)[Menu]]];
+ GEngine->GameViewport->AddViewportWidgetContent(PauseWidget.ToSharedRef(),30);
+}
+void AMareController::TogglePhone(){if(MainMenuWidget.IsValid())return;if(auto Home=GetWorld()->GetSubsystem<UMareHomeWorld>())if(Home->IsSleeping())return;if(auto Village=GetWorld()->GetSubsystem<UMareVillageWorld>())if(Village->IsDialogueOpen())return;for(TActorIterator<AMareIntro> It(GetWorld());It;++It)if(It->IsArrival() || It->IsLetterOpen())return;if(PauseWidget.IsValid())return;if(bPhoneOpen)ClosePhone();else OpenPhone();}
 void AMareController::OpenPhone(int32 Tab)
 {
  if(!GEngine || !GEngine->GameViewport)return;
@@ -686,18 +1007,19 @@ void AMareController::ClosePhone()
  if(auto Custom=GetWorld()->GetSubsystem<UMareCustomWorld>())if(Custom->IsPreviewing())Custom->ApplyAll();
  PhoneWidget.Reset();bPhoneOpen=false;bShowMouseCursor=false;SetInputMode(FInputModeGameOnly());ResetIgnoreMoveInput();ResetIgnoreLookInput();
 }
-void AMareController::EndPlay(const EEndPlayReason::Type Reason){if(PauseWidget.IsValid() && GEngine && GEngine->GameViewport)GEngine->GameViewport->RemoveViewportWidgetContent(PauseWidget.ToSharedRef());PauseWidget.Reset();ClosePhone();Super::EndPlay(Reason);}
+void AMareController::EndPlay(const EEndPlayReason::Type Reason){CloseMainMenu();if(PauseWidget.IsValid() && GEngine && GEngine->GameViewport)GEngine->GameViewport->RemoveViewportWidgetContent(PauseWidget.ToSharedRef());PauseWidget.Reset();ClosePhone();Super::EndPlay(Reason);}
 /** Everything the tropical HUD shows; Signature() decides when Slate must rebuild. */
 struct FMareHudModel
 {
  FString Money,Day,Fame,Notice,Prompt,Carry,Hint,Stars,Rooms,Served;
+ FString InteractKey=TEXT("E"),PhoneKey=TEXT("B"); // follow the remapped keys
  int32 StarsFlash=0; // 1 up (green), -1 down (red)
  TArray<TPair<FString,FString>> Tickets;
  TArray<TPair<FString,int32>> Note; // text, style: 0 heading, 1 main goal, 2 secondary, 3 guidance
  bool bPhone=false;
  FString Signature()const
  {
-  FString S=Money+Day+Fame+Notice+Prompt+Carry+Hint+Stars+Rooms+Served+FString::FromInt(StarsFlash)+(bPhone?TEXT("P"):TEXT(""));
+  FString S=Money+Day+Fame+Notice+Prompt+Carry+Hint+Stars+Rooms+Served+InteractKey+PhoneKey+FString::FromInt(StarsFlash)+(bPhone?TEXT("P"):TEXT(""));
   for(const auto& T:Tickets)S+=T.Key+T.Value;
   for(const auto& N:Note)S+=N.Key+FString::FromInt(N.Value);
   return S;
@@ -749,11 +1071,11 @@ public:
   auto Bottom=SNew(SVerticalBox);
   if(!M.Carry.IsEmpty())Bottom->AddSlot().AutoHeight().HAlign(HAlign_Center).Padding(0,0,0,6)[SNew(SBorder).BorderImage(&Toast()).Padding(FMargin(12,5))[Txt(TEXT("Na mão: ")+M.Carry,13,Hex(20,60,56),true)]];
   if(!M.Prompt.IsEmpty())Bottom->AddSlot().AutoHeight().HAlign(HAlign_Center)[SNew(SBorder).BorderImage(&Sign()).Padding(FMargin(16,8))[SNew(SHorizontalBox)
-   +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(0,0,10,0)[Key(TEXT("E"))]
+   +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(0,0,10,0)[Key(M.InteractKey)]
    +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center)[Txt(M.Prompt,15,Hex(90,58,30),true)]]];
   Root->AddSlot().VAlign(VAlign_Bottom).HAlign(HAlign_Center).Padding(0,0,0,58)[Bottom];
   if(!M.bPhone)Root->AddSlot().VAlign(VAlign_Bottom).HAlign(HAlign_Left).Padding(22,0,0,16)[SNew(SHorizontalBox)
-   +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(0,0,6,0)[Key(TEXT("B"))]
+   +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(0,0,6,0)[Key(M.PhoneKey)]
    +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(0,0,16,0)[Txt(TEXT("Celular"),12,FLinearColor::White,true)]
    +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(0,0,6,0)[Key(TEXT("Esc"))]
    +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(0,0,16,0)[Txt(TEXT("Pausa"),12,FLinearColor::White,true)]
@@ -773,8 +1095,12 @@ void AMareHUD::DrawHUD()
  Super::DrawHUD();if(!Canvas)return;auto S=GetGameInstance()->GetSubsystem<UMareSimulation>();if(!S)return;
  if(!Overlay.IsValid() && GEngine && GEngine->GameViewport){SAssignNew(Overlay,SMareHud);GEngine->GameViewport->AddViewportWidgetContent(Overlay.ToSharedRef(),10);}
  const auto PC=Cast<AMareController>(GetOwningPlayerController());
+ if(Overlay.IsValid())Overlay->SetVisibility(PC && PC->IsMainMenuOpen()?EVisibility::Collapsed:EVisibility::Visible);
+ if(PC && PC->IsMainMenuOpen())return;
  auto Dish=[&](const FString& Id){return UMareSimulation::String(UMareSimulation::Object(UMareSimulation::Object(S->Definitions,TEXT("dishes")),Id),TEXT("name"));};
  FMareHudModel M;M.bPhone=PC && PC->bPhoneOpen;
+ auto KeyName=[](const TCHAR* Action){return FMareOptions::Get().Key(Action).GetDisplayName(false).ToString();};
+ M.InteractKey=KeyName(TEXT("Interact"));M.PhoneKey=KeyName(TEXT("Phone"));
  const int32 Minutes=UMareSimulation::Number(S->State,TEXT("minutes"));
  M.Money=FString::Printf(TEXT("R$ %.0f"),S->Money());
  M.Day=FString::Printf(TEXT("Dia %.0f · %02d:%02d"),UMareSimulation::Number(S->State,TEXT("day"),1),Minutes/60,Minutes%60);
@@ -789,12 +1115,12 @@ void AMareHUD::DrawHUD()
  if(S->LastMessage!=Notice){Notice=S->LastMessage;NoticeUntil=Notice.IsEmpty()?0:Now+7;}
  if(Now<NoticeUntil)M.Notice=Notice;
  const int32 IntroStage=UMareSimulation::Number(S->State,TEXT("ue_intro_stage"),2);
- if(IntroStage==0)M.Note={{TEXT("Chegada"),0},{TEXT("A vila parecia menor... e o mar, do tamanho das minhas lembranças."),2},{TEXT("E · avançar"),3}};
+ if(IntroStage==0)M.Note={{TEXT("Chegada"),0},{TEXT("A vila parecia menor... e o mar, do tamanho das minhas lembranças."),2},{M.InteractKey+TEXT(" · avançar"),3}};
  else{
   M.Note.Add({TEXT("Missões"),0});
   if(IntroStage==1)M.Note.Add({TEXT("Entre na casa e leia a carta da avó Dilce"),3});
   bool bCreated=false;UMareSimulation::Object(S->State,TEXT("company"))->TryGetBoolField(TEXT("created"),bCreated);
-  if(!bCreated && IntroStage>=2)M.Note.Add({TEXT("Comece aqui: B · Celular → Quiosque → Criar empresa"),3});
+  if(!bCreated && IntroStage>=2)M.Note.Add({TEXT("Comece aqui: ")+M.PhoneKey+TEXT(" · Celular → Quiosque → Criar empresa"),3});
   else if(bCreated && !S->IsOpen())M.Note.Add({TEXT("Clique na placa FECHADO do balcão para abrir"),3});
   const auto Campaign=UMareSimulation::Object(UMareSimulation::Object(S->State,TEXT("prog")),TEXT("campaign"));
   const TArray<TSharedPtr<FJsonValue>>* Missions=nullptr;const int32 Stage=UMareSimulation::Number(Campaign,TEXT("stage"));
@@ -833,7 +1159,7 @@ void AMareHUD::DrawHUD()
   }
  }
  if(!S->Carry().IsEmpty())M.Carry=Dish(S->Carry());
- if(auto Hero=Cast<AMareCharacter>(GetOwningPawn()))if(Hero->GetCharacterMovement()->IsSwimming())M.Hint=TEXT("Nadando · Espaço sobe · Ctrl/Shift mergulha");
+ if(auto Hero=Cast<AMareCharacter>(GetOwningPawn()))if(Hero->GetCharacterMovement()->IsSwimming())M.Hint=FString::Printf(TEXT("Nadando · %s sobe · %s/%s mergulha"),*KeyName(TEXT("Jump")),*KeyName(TEXT("Dive")),*KeyName(TEXT("Sprint")));
  // The mission note would sit on top of the held phone.
  if(M.bPhone){M.Note.Empty();M.Tickets.Empty();}
  // Pool match: aim guide, power bar and score instead of the crosshair and the mission note.
@@ -852,7 +1178,17 @@ void AMareHUD::DrawHUD()
  Overlay->Refresh(M);
 }
 AMareGameMode::AMareGameMode(){PrimaryActorTick.bCanEverTick=true;DefaultPawnClass=AMareCharacter::StaticClass();PlayerControllerClass=AMareController::StaticClass();HUDClass=AMareHUD::StaticClass();}
-void AMareGameMode::BeginPlay(){Super::BeginPlay();GetWorld()->SpawnActor<AMareIntro>();if(FParse::Param(FCommandLine::Get(),TEXT("MareGraphicsQA")))GetWorld()->SpawnActor<AMareGraphicsQA>();if(FParse::Param(FCommandLine::Get(),TEXT("MareIntroQA")))GetWorld()->SpawnActor<AMareIntroQA>();if(FParse::Param(FCommandLine::Get(),TEXT("MarePreviewQA")))GetWorld()->SpawnActor<AMarePreviewQA>();}
+void AMareGameMode::StartSession(){GetWorld()->SpawnActor<AMareIntro>();}
+void AMareGameMode::BeginPlay()
+{
+ Super::BeginPlay();auto Sim=GetGameInstance()->GetSubsystem<UMareSimulation>();if(Sim)Sim->bHoldSaves=false;
+ FMareOptions::ApplyStartup();
+ const TCHAR* Cmd=FCommandLine::Get();
+ const bool bQA=FParse::Param(Cmd,TEXT("MareGraphicsQA")) || FParse::Param(Cmd,TEXT("MareIntroQA")) || FParse::Param(Cmd,TEXT("MarePreviewQA")) || FParse::Param(Cmd,TEXT("MareSkipMenu")) || GIsAutomationTesting;
+ auto PC=Cast<AMareController>(GetWorld()->GetFirstPlayerController());
+ if(Sim && !Sim->bMainMenuDone && !bQA && PC)PC->OpenMainMenu();
+ if(!PC || !PC->IsMainMenuOpen()){if(Sim)Sim->bMainMenuDone=true;StartSession();}
+ if(FParse::Param(FCommandLine::Get(),TEXT("MareGraphicsQA")))GetWorld()->SpawnActor<AMareGraphicsQA>();if(FParse::Param(FCommandLine::Get(),TEXT("MareIntroQA")))GetWorld()->SpawnActor<AMareIntroQA>();if(FParse::Param(FCommandLine::Get(),TEXT("MarePreviewQA")))GetWorld()->SpawnActor<AMarePreviewQA>();}
 
 void AMareGameMode::Tick(float DeltaSeconds)
 {
@@ -861,3 +1197,4 @@ void AMareGameMode::Tick(float DeltaSeconds)
 }
 
 UMareSimulation* AMareController::GetSimulation()const{return GetGameInstance()->GetSubsystem<UMareSimulation>();}
+#undef LOCTEXT_NAMESPACE

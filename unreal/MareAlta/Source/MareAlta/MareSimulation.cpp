@@ -35,17 +35,64 @@ bool UMareSimulation::ReadJson(const FString& Path,TSharedPtr<FJsonObject>& Targ
  if(!FFileHelper::LoadFileToString(Text,*Path)) return false;
  return FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Text),Target) && Target.IsValid();
 }
-FString UMareSimulation::SavePath() const
+FString UMareSimulation::SaveFolder() const{return SaveDirectory.IsEmpty()?FPaths::ProjectSavedDir()/TEXT("SaveGames"):SaveDirectory;}
+FString UMareSimulation::SlotPath(int32 Slot) const{return SaveFolder()/FString::Printf(TEXT("slot%d.json"),FMath::Clamp(Slot,1,SlotCount));}
+FString UMareSimulation::SavePath() const{return SlotPath(ActiveSlot);}
+bool UMareSimulation::ReadSave(const FString& Path,TSharedPtr<FJsonObject>& Target) const
 {
- return (SaveDirectory.IsEmpty()?FPaths::ProjectSavedDir()/TEXT("SaveGames"):SaveDirectory)/TEXT("slot1.json");
+ return ReadJson(Path,Target) || ReadJson(Path+TEXT(".bak"),Target);
+}
+FMareSlotInfo UMareSimulation::SlotInfo(int32 Slot) const
+{
+ FMareSlotInfo Info;TSharedPtr<FJsonObject> Saved;const FString Path=SlotPath(Slot);
+ if(!ReadSave(Path,Saved))return Info;
+ Info.bExists=true;Info.Day=Number(Saved,TEXT("day"),1);Info.Money=Number(Saved,TEXT("money"));
+ Info.Company=String(Object(Saved,TEXT("company")),TEXT("name"));
+ Info.SavedAt=IFileManager::Get().GetTimeStamp(*(IFileManager::Get().FileExists(*Path)?Path:Path+TEXT(".bak")));
+ return Info;
+}
+bool UMareSimulation::HasAnySave() const
+{
+ for(int32 Slot=1;Slot<=SlotCount;++Slot)if(IFileManager::Get().FileExists(*SlotPath(Slot)) || IFileManager::Get().FileExists(*(SlotPath(Slot)+TEXT(".bak"))))return true;
+ return false;
+}
+void UMareSimulation::WriteSlotIndex(int32 Slot) const
+{
+ auto Index=MakeShared<FJsonObject>();Index->SetNumberField(TEXT("last"),Slot);FString Text;
+ IFileManager::Get().MakeDirectory(*SaveFolder(),true);
+ if(FJsonSerializer::Serialize(Index,TJsonWriterFactory<>::Create(&Text)))FFileHelper::SaveStringToFile(Text,*(SaveFolder()/TEXT("slots.json")),FFileHelper::EEncodingOptions::ForceUTF8WithoutBOM);
+}
+int32 UMareSimulation::LastSlot() const
+{
+ TSharedPtr<FJsonObject> Index;
+ if(ReadJson(SaveFolder()/TEXT("slots.json"),Index)){const int32 Slot=Number(Index,TEXT("last"),1);if(Slot>=1 && Slot<=SlotCount)return Slot;}
+ // Profiles from before the slots only have slot1.json: it is slot 1 and the index is created now.
+ if(IFileManager::Get().FileExists(*SlotPath(1)))WriteSlotIndex(1);
+ return 1;
+}
+bool UMareSimulation::LoadSlot(int32 Slot)
+{
+ if(Slot<1 || Slot>SlotCount)return Fail(TEXT("Slot inválido."));
+ TSharedPtr<FJsonObject> Loaded;if(!ReadSave(SlotPath(Slot),Loaded))return Fail(TEXT("Slot vazio ou danificado."));
+ State=Loaded;ActiveSlot=Slot;WriteSlotIndex(Slot);LastMessage.Empty();return true;
+}
+bool UMareSimulation::NewGame(int32 Slot)
+{
+ if(Slot<1 || Slot>SlotCount)return Fail(TEXT("Slot inválido."));
+ TSharedPtr<FJsonObject> Fresh;if(!ReadJson(FPaths::ProjectContentDir()/TEXT("Data/default_save.json"),Fresh))return Fail(TEXT("Perfil inicial não encontrado."));
+ Fresh->SetNumberField(TEXT("ue_intro_stage"),0);
+ auto Previous=State;const int32 PreviousSlot=ActiveSlot;State=Fresh;ActiveSlot=Slot;
+ if(!WriteState()){State=Previous;ActiveSlot=PreviousSlot;return false;}
+ WriteSlotIndex(Slot);LastMessage.Empty();return true;
 }
 void UMareSimulation::Initialize(FSubsystemCollectionBase& Collection)
 {
  Super::Initialize(Collection);
  FParse::Value(FCommandLine::Get(),TEXT("MareSaveRoot="),SaveDirectory);
+ int32 Slot=0;ActiveSlot=FParse::Value(FCommandLine::Get(),TEXT("MareSlot="),Slot)?FMath::Clamp(Slot,1,SlotCount):LastSlot();
  ReadJson(FPaths::ProjectContentDir()/TEXT("Data/definitions.json"),Definitions);
- const bool bExistingSave=IFileManager::Get().FileExists(*SavePath());
- if(!ReadJson(SavePath(),State)) ReadJson(FPaths::ProjectContentDir()/TEXT("Data/default_save.json"),State);
+ const bool bExistingSave=IFileManager::Get().FileExists(*SavePath()) || IFileManager::Get().FileExists(*(SavePath()+TEXT(".bak")));
+ if(!ReadSave(SavePath(),State)) ReadJson(FPaths::ProjectContentDir()/TEXT("Data/default_save.json"),State);
  if(!bExistingSave && State.IsValid() && !FParse::Param(FCommandLine::Get(),TEXT("MarePreviewQA")) && !FParse::Param(FCommandLine::Get(),TEXT("MareGraphicsQA"))) State->SetNumberField(TEXT("ue_intro_stage"),0);
  if(!State.IsValid()) State=MakeShared<FJsonObject>();
  if(!Definitions.IsValid()) Definitions=MakeShared<FJsonObject>();
@@ -373,15 +420,26 @@ void UMareSimulation::Sleep()
   if(Number(P,TEXT("rooms"))>0)LastMessage+=FString::Printf(TEXT(" Hospedagem: %d quarto(s) ocupado(s), %d check-out(s), nota média %.1f."),int32(Number(P,TEXT("occupied"))),Checkouts,Stars());}
  if(Money()<0)LastMessage+=TEXT(" Caixa negativo: venda mais antes de repor estoque.");
  State->SetNumberField(TEXT("day"),Day+1);State->SetNumberField(TEXT("minutes"),480);
- State->SetObjectField(TEXT("ue_orders"),MakeShared<FJsonObject>());Save();
+ State->SetObjectField(TEXT("ue_orders"),MakeShared<FJsonObject>());
+ // End of day autosave in the active slot.
+ if(Save())LastMessage+=FString::Printf(TEXT(" Jogo salvo no slot %d."),ActiveSlot);
 }
 bool UMareSimulation::Save()
 {
+ if(bHoldSaves)return true;
  if(GetWorld() && GetWorld()->IsGameWorld())if(auto Kiosk=GetWorld()->GetSubsystem<UMareKioskWorld>())Kiosk->CaptureState();
- FString Text;if(!FJsonSerializer::Serialize(State.ToSharedRef(),TJsonWriterFactory<>::Create(&Text))) return false;
+ return WriteState();
+}
+bool UMareSimulation::WriteState()
+{
+ FString Text;if(!State.IsValid() || !FJsonSerializer::Serialize(State.ToSharedRef(),TJsonWriterFactory<>::Create(&Text))) return false;
  const FString Path=SavePath(),Temp=Path+TEXT(".tmp");IFileManager::Get().MakeDirectory(*FPaths::GetPath(Path),true);
  if(!FFileHelper::SaveStringToFile(Text,*Temp,FFileHelper::EEncodingOptions::ForceUTF8WithoutBOM)) return Fail(TEXT("Falha ao salvar."));
- return IFileManager::Get().Move(*Path,*Temp,true,true);
+ // The previous good file survives as .bak until the next save.
+ if(IFileManager::Get().FileExists(*Path) && IFileManager::Get().Copy(*(Path+TEXT(".bak")),*Path,true,true)!=COPY_OK) return Fail(TEXT("Falha ao criar o backup do save."));
+ if(!IFileManager::Get().Move(*Path,*Temp,true,true)) return Fail(TEXT("Falha ao salvar."));
+ if(!IFileManager::Get().FileExists(*(SaveFolder()/TEXT("slots.json"))))WriteSlotIndex(ActiveSlot);
+ return true;
 }
 bool UMareSimulation::ImportLegacySave(const FString& Path)
 {
