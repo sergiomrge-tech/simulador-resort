@@ -103,6 +103,7 @@ Legenda: [x] feito e validado · [~] em andamento/parcial · [ ] pendente.
 - [x] "Continue" → restaurante do hotel (02/11): mesas com pedidos, passe da cozinha no bufê, serviço de quarto no elevador, equipe atende atrasos, eventos marcados; 18/18 testes; fotos em `docs/ue58/graphics-reference/restaurante-hotel-20261102.jpg`.
 - [x] "Continue" → salão de jogos (02/11): pebolim e 2 fliperamas modelados no Blender, partidas rápidas, hóspedes jogando à noite e renda das fichas; 18/18 testes; foto em `docs/ue58/graphics-reference/salao-jogos-20261102.jpg`.
 - [x] "Go" → pesca no píer e modo foto (02/11): pescaria com espécies e tamanhos, peixes para o capítulo do Seu Gregory, tecla P com álbum e foto do farol para o Padre Robson; capítulos 2–4 com contagem real; 19/19 testes; foto em `docs/ue58/graphics-reference/pesca-foto-20261102.jpg`.
+- [x] "Sim, festas" (02/11): calendário de eventos e festas portado da Godot, previsão e preparativos no celular, cenário das festas na praia (barracas, bandeirinhas, fogueira junina, DJ); 20/20 testes; foto em `docs/ue58/graphics-reference/festa-junina-20261102.jpg`.
 - [x] Manter este checklist sempre que o usuário pedir algo (regra salva na memória).
 
 ## Regras permanentes já pedidas

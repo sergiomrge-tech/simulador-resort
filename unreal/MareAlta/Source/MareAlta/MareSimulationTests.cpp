@@ -729,3 +729,35 @@ bool FMareLeisureChaptersTest::RunTest(const FString& Parameters)
  IFileManager::Get().DeleteDirectory(*Sim->SaveDirectory,false,true);
  Sim->RemoveFromRoot();Instance->RemoveFromRoot();return true;
 }
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FMareDayEventsTest,"MareAlta.Gameplay.DayEventsParties",EAutomationTestFlags::EditorContext|EAutomationTestFlags::EngineFilter)
+bool FMareDayEventsTest::RunTest(const FString& Parameters)
+{
+ auto Instance=NewObject<UGameInstance>();Instance->AddToRoot();
+ auto Sim=NewObject<UMareSimulation>(Instance);Sim->AddToRoot();
+ Sim->SaveDirectory=FPaths::ProjectSavedDir()/TEXT("Automation/DayEvents")/FGuid::NewGuid().ToString(EGuidFormats::Digits);
+ auto Load=[&](const FString& Name,TSharedPtr<FJsonObject>& Result){FString Text;FFileHelper::LoadFileToString(Text,*(FPaths::ProjectContentDir()/TEXT("Data")/Name));return FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Text),Result);};
+ if(!TestTrue(TEXT("Definitions"),Load(TEXT("definitions.json"),Sim->Definitions)) || !TestTrue(TEXT("Default save"),Load(TEXT("default_save.json"),Sim->State))){Sim->RemoveFromRoot();Instance->RemoveFromRoot();return false;}
+ Sim->State->SetNumberField(TEXT("money"),1000);
+ // Weekly calendar from day 8: quermesse (day%7==2), junina (4), DJ (6); the carnaval waits for the mayor's chapter.
+ TestEqual(TEXT("Quermesse on day 9"),Sim->RollEvent(9),FString(TEXT("quermesse")));TestEqual(TEXT("Junina on day 11"),Sim->RollEvent(11),FString(TEXT("junina")));
+ TestEqual(TEXT("DJ on day 13"),Sim->RollEvent(13),FString(TEXT("show_dj")));TestNotEqual(TEXT("No carnaval before the chapter"),Sim->RollEvent(14),FString(TEXT("carnaval")));
+ TestNotEqual(TEXT("No party before day 8"),Sim->RollEvent(2),FString(TEXT("quermesse")));
+ // Forecast becomes today's event at the next day; a decorated party draws more than a plain one.
+ Sim->State->SetNumberField(TEXT("day"),8);Sim->State->SetStringField(TEXT("forecast"),TEXT("quermesse"));Sim->State->SetNumberField(TEXT("forecast_day"),9);
+ const double Plain=Sim->KioskArrivalFactor();double Before=Sim->Money();
+ TestTrue(TEXT("Decoration bought"),Sim->BuyPrep());TestEqual(TEXT("Decoration paid"),Sim->Money(),Before-120.);TestFalse(TEXT("Not twice"),Sim->BuyPrep());
+ Sim->State->SetNumberField(TEXT("day"),9);Sim->StartDayEvent();
+ TestEqual(TEXT("Today is the forecast"),Sim->TodayEvent(),FString(TEXT("quermesse")));TestTrue(TEXT("Preparations active"),Sim->IsPrepActive());
+ TestTrue(TEXT("Decorated party draws more"),Sim->KioskArrivalFactor()>Plain*1.6);
+ // A storm without preparations ruins part of the stock and keeps the boats in.
+ Sim->Object(Sim->State,TEXT("stock"))->SetNumberField(TEXT("coco"),20);
+ Sim->State->SetStringField(TEXT("forecast"),TEXT("tempestade"));Sim->State->SetNumberField(TEXT("day"),10);Sim->State->SetNumberField(TEXT("forecast_day"),10);Sim->StartDayEvent();
+ TestEqual(TEXT("Storm day"),Sim->TodayEvent(),FString(TEXT("tempestade")));TestEqual(TEXT("Rain with the storm"),Sim->String(Sim->State,TEXT("weather")),FString(TEXT("rain")));
+ TestEqual(TEXT("Storm loss"),Sim->Number(Sim->Object(Sim->State,TEXT("stock")),TEXT("coco")),13.);TestTrue(TEXT("Rough sea"),Sim->IsSeaRough());
+ TestTrue(TEXT("Storm keeps the customers away"),Sim->KioskArrivalFactor()<Plain*.5);
+ Sim->Object(Sim->State,TEXT("unlocked"))->SetBoolField(TEXT("passeios"),true);Sim->State->SetNumberField(TEXT("minutes"),660);Sim->AdvanceMinutes(60);
+ TestEqual(TEXT("Boat tour cancelled"),Sim->TourStatus(TEXT("barco")),FString(TEXT("cancelled")));
+ IFileManager::Get().DeleteDirectory(*Sim->SaveDirectory,false,true);
+ Sim->RemoveFromRoot();Instance->RemoveFromRoot();return true;
+}

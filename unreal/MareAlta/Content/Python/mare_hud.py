@@ -274,6 +274,15 @@ def photo_take():
 
 
 def run(action, arg=''):
+    if action == 'festival':
+        return import_models('Festival', '/Game/Custom/Festival')
+    if action == 'festival1':
+        import mare_hotel_lobby
+        glb = MODELS / 'Festival' / f'{arg}.glb'
+        dest = f'/Game/Custom/Festival/{arg}'
+        if unreal.EditorAssetLibrary.does_directory_exist(dest):
+            unreal.EditorAssetLibrary.delete_directory(dest)
+        return mare_hotel_lobby._import(glb, dest, arg, False, search=False).get_path_name()
     if action == 'photo':
         return photo_qa(arg) if arg else photo_take()
     if action == 'rays':

@@ -1,0 +1,50 @@
+#include "MareEventsWorld.h"
+#include "MareSimulation.h"
+#include "Engine/GameInstance.h"
+#include "Engine/World.h"
+#include "Engine/StaticMesh.h"
+#include "Engine/StaticMeshActor.h"
+#include "Engine/PointLight.h"
+#include "Components/PointLightComponent.h"
+#include "Components/StaticMeshComponent.h"
+
+TStatId UMareEventsWorld::GetStatId() const{RETURN_QUICK_DECLARE_CYCLE_STAT(UMareEventsWorld,STATGROUP_Tickables);}
+
+void UMareEventsWorld::Clear()
+{
+ for(auto& P:Props)if(IsValid(P))P->Destroy();Props.Empty();
+ if(IsValid(Fire))Fire->Destroy();Fire=nullptr;
+}
+
+void UMareEventsWorld::Deinitialize(){Clear();Super::Deinitialize();}
+
+void UMareEventsWorld::Tick(float DeltaSeconds)
+{
+ if(!GetWorld() || !GetWorld()->IsGameWorld() || !GetWorld()->GetGameInstance())return;
+ auto S=GetWorld()->GetGameInstance()->GetSubsystem<UMareSimulation>();if(!S)return;
+ // The bonfire flickers every frame; the layout is checked twice a second.
+ if(IsValid(Fire))Fire->PointLightComponent->SetIntensity(9000.f*(.8f+.2f*FMath::Sin(GetWorld()->GetTimeSeconds()*11.f)*FMath::Sin(GetWorld()->GetTimeSeconds()*4.3f)));
+ Clock-=DeltaSeconds;if(Clock>0)return;Clock=.5f;
+ const FString Event=S->TodayEvent();bool bParty=false;S->EventDef(Event)->TryGetBoolField(TEXT("party"),bParty);
+ const FString Want=bParty?Event+(S->IsPrepActive()?TEXT("+deco"):TEXT("")):FString();
+ if(Want==Shown)return;Shown=Want;Clear();if(Want.IsEmpty())return;
+ const TArray<TSharedPtr<FJsonValue>>* Spot=nullptr;if(!S->EventDefs()->TryGetArrayField(TEXT("party_spot"),Spot) || Spot->Num()!=3)return;
+ const FVector Centre((*Spot)[0]->AsNumber(),(*Spot)[1]->AsNumber(),(*Spot)[2]->AsNumber());
+ auto Ground=[this](FVector At){FHitResult Hit;if(GetWorld()->LineTraceSingleByChannel(Hit,At+FVector(0,0,600),At-FVector(0,0,800),ECC_Visibility))At.Z=Hit.ImpactPoint.Z;return At;};
+ // Local layout in metres around the centre (x east, y north), yaw in degrees.
+ auto Put=[&](const TCHAR* Name,float X,float Y,float Yaw,float Lift=0,float Scale=1){
+  if(auto Mesh=LoadObject<UStaticMesh>(nullptr,*FString::Printf(TEXT("/Game/Custom/Festival/%s/%s.%s"),Name,Name,Name))){
+   auto A=GetWorld()->SpawnActor<AStaticMeshActor>(Ground(Centre+FVector(X*100,Y*100,0))+FVector(0,0,Lift),FRotator(0,Yaw,0));
+   A->SetMobility(EComponentMobility::Movable);A->SetActorScale3D(FVector(Scale));A->GetStaticMeshComponent()->SetStaticMesh(Mesh);A->GetStaticMeshComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);Props.Add(A);}};
+ const bool bDeco=Want.EndsWith(TEXT("+deco"));
+ if(Event==TEXT("quermesse")){Put(TEXT("festa_stall"),-3,0,90);Put(TEXT("festa_stall"),0,2,0);Put(TEXT("festa_stall"),3,0,-90);
+  Put(TEXT("festa_bunting"),-1.5,-1.5,0);Put(TEXT("festa_bunting"),1.5,-1.5,0);}
+ else if(Event==TEXT("junina")){Put(TEXT("festa_campfire_logs"),0,0,0,0,2.4f);Put(TEXT("festa_fire"),0,0,0,5,1.5f);Put(TEXT("festa_stall"),0,4,0);   // a real junina bonfire, ~1.5 m of flame
+  Put(TEXT("festa_bunting"),-3.5,0,90);Put(TEXT("festa_bunting"),3.5,0,90);
+  Fire=GetWorld()->SpawnActor<APointLight>(Ground(Centre)+FVector(0,0,120),FRotator::ZeroRotator);
+  if(Fire){Fire->PointLightComponent->SetLightColor(FLinearColor(1,.55,.2));Fire->PointLightComponent->SetAttenuationRadius(1400);Fire->PointLightComponent->SetMobility(EComponentMobility::Movable);}}
+ else if(Event==TEXT("show_dj")){Put(TEXT("festa_dj_booth"),0,2,0);Put(TEXT("festa_bunting"),0,-1,0);}
+ else if(Event==TEXT("carnaval")){Put(TEXT("festa_dj_booth"),0,2,0);Put(TEXT("festa_bunting"),-3,-1,0);Put(TEXT("festa_bunting"),3,-1,0);Put(TEXT("festa_stall"),-5,1,90);}
+ // Paid decoration: the party banner at the entrance and an extra row of bunting.
+ if(bDeco){Put(TEXT("festa_party_banner"),0,-8,0);Put(TEXT("festa_bunting"),0,-5.5f,0);}
+}

@@ -40,9 +40,14 @@ Marcar `[x]` só depois de testado no jogo, com foto ou teste automático.
 - [x] P1 **Capítulos 2–4 da vila** com contagem real (02/11): peixes da pescaria, foto do farol, receitas = drinks
   descobertos no bar (o texto do capítulo "Sabores" foi atualizado; a cozinha experimental da Godot não foi portada),
   negócios contam só os comprados.
-- [ ] P1 **Festas e eventos do calendário**:
-  - junina, quermesse, DJ, tempestade, maré alta;
-  - preparativos pagos, tendas, fogueira, bandeirinhas.
+- [x] P1 **Festas e eventos do calendário** (02/11): eventos do dia da Godot (calor, lua cheia, maré alta, tempestade) e
+  festas semanais a partir do dia 8 (quermesse, junina, show do DJ; carnaval depois do capítulo da prefeita); previsão
+  do dia seguinte e preparativos pagos na agenda do celular (decoração da festa ou proteção do estoque); clientes
+  conforme o evento; tempestade com chuva, perda de estoque sem preparativos e passeios de mar cancelados.
+  Cenário na praia: barracas, bandeirinhas, fogueira com chamas e luz tremulando, cabine do DJ, faixa (modelos
+  `tools/ue58/gen_festival.py`). `MareEvents.cpp`, `MareEventsWorld.cpp`, `Content/Data/events.json`, teste
+  `MareAlta.Gameplay.DayEventsParties`. Falta: mar mais agitado na tempestade e na maré alta (o material do mar não tem
+  parâmetro de ondas), pessoas dançando a quadrilha e música própria de cada festa.
 - [ ] P1 **Minijogo dos negócios** (3 rodadas da Godot), ainda não portado.
 - [ ] P1 Corpo do jogador em primeira pessoa: pegar, carregar, portas e natação. Estava em validação em 29/10; re-testar.
 - [ ] P1 Abertura: ônibus detalhado, desembarque, caminhada até a casa e carta (provisórios em 29/10); re-testar.

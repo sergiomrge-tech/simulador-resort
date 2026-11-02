@@ -302,6 +302,16 @@ private:
     +SVerticalBox::Slot().AutoHeight().Padding(0,0,0,6)[MareNotebook::BodyText(UMareAudioWorld::RadioName(Audio->GetRadioStation()),12.5f,MareNotebook::Ink,true)]
     +SVerticalBox::Slot().AutoHeight().HAlign(HAlign_Left)[Button(TEXT("próxima"),[Audio](){Audio->NextRadioStation();})],TiltOf(2))];
   if(!S->Carry().IsEmpty())Body->AddSlot().AutoHeight().HAlign(HAlign_Left).Padding(0,4)[Button(TEXT("Devolver o produto que está na mão"),[S](){S->ReturnCarry();})];
+  // Agenda: today's event and tomorrow's forecast with the paid preparations (events.json).
+  {const auto Today=S->EventDef(S->TodayEvent()),Next=S->EventDef(S->TomorrowEvent());
+   Heading(TEXT("Agenda"),Today->Values.Num()?TEXT("hoje: ")+UMareSimulation::String(Today,TEXT("name")):FString(TEXT("hoje: dia normal")));
+   if(Today->Values.Num())Line(UMareSimulation::String(Today,TEXT("blurb"))+(S->IsPrepActive()?TEXT(" Preparativos feitos."):TEXT("")),12,MareNotebook::Faded);
+   if(Next->Values.Num()){const FString Kind=UMareSimulation::String(Next,TEXT("prep"));
+    Line(TEXT("Amanhã: ")+UMareSimulation::String(Next,TEXT("name"))+TEXT(". ")+UMareSimulation::String(Next,TEXT("blurb")),12.5f,MareNotebook::Ink);
+    const bool bPaid=int32(UMareSimulation::Number(S->State,TEXT("prep_day"),-1))==int32(UMareSimulation::Number(S->State,TEXT("day"),1))+1;
+    if(!Kind.IsEmpty())Body->AddSlot().AutoHeight().HAlign(HAlign_Left).Padding(0,2)[Button(bPaid?FString(TEXT("Preparativos pagos")):FString::Printf(TEXT("%s · R$ %.0f"),
+     Kind==TEXT("storm")?TEXT("Proteger o estoque"):TEXT("Encomendar decoração"),UMareSimulation::Number(UMareSimulation::Object(S->EventDefs(),TEXT("prep_cost")),Kind)),[S](){S->BuyPrep();},!bPaid)];}
+   else Line(TEXT("Amanhã: dia normal."),12.5f,MareNotebook::Ink);}
   Heading(TEXT("Estoque pronto"),TEXT("(pegue na geladeira e no armário do quiosque)"));
   auto Stock=Grid();int32 I=0;
   for(const auto& Id:Products()){auto Dish=UMareSimulation::Object(UMareSimulation::Object(S->Definitions,TEXT("dishes")),Id);

@@ -419,7 +419,7 @@ void UMareSimulation::Sleep()
  {const auto P=Object(Object(State,TEXT("prog")),TEXT("pousada"));const int32 Checkouts=Number(P,TEXT("checkouts"));
   if(Number(P,TEXT("rooms"))>0)LastMessage+=FString::Printf(TEXT(" Hospedagem: %d quarto(s) ocupado(s), %d check-out(s), nota média %.1f."),int32(Number(P,TEXT("occupied"))),Checkouts,Stars());}
  if(Money()<0)LastMessage+=TEXT(" Caixa negativo: venda mais antes de repor estoque.");
- State->SetNumberField(TEXT("day"),Day+1);State->SetNumberField(TEXT("minutes"),480);
+ State->SetNumberField(TEXT("day"),Day+1);State->SetNumberField(TEXT("minutes"),480);StartDayEvent();
  State->SetObjectField(TEXT("ue_orders"),MakeShared<FJsonObject>());
  // End of day autosave in the active slot.
  if(Save())LastMessage+=FString::Printf(TEXT(" Jogo salvo no slot %d."),ActiveSlot);
@@ -515,7 +515,7 @@ double UMareSimulation::PlaceComfort(const FString& Place) const{return SlotPoin
 double UMareSimulation::PlaceBeauty(const FString& Place) const{return SlotPoints(this,Place,TEXT("beauty"));}
 double UMareSimulation::CustomEffect(const FString& Key,double Fallback) const{return Number(Object(CustomDefs(),TEXT("effects")),Key,Fallback);}
 // Fame brings people to the beach (+4% per level, as in the Godot version); decor adds its own points.
-double UMareSimulation::KioskArrivalFactor() const{return (1+CustomEffect(TEXT("arrival_per_point"),.035)*(PlaceComfort(TEXT("kiosk"))+PlaceBeauty(TEXT("kiosk"))))*(1+.04*(FameLevel()-1));}
+double UMareSimulation::KioskArrivalFactor() const{return (1+CustomEffect(TEXT("arrival_per_point"),.035)*(PlaceComfort(TEXT("kiosk"))+PlaceBeauty(TEXT("kiosk"))))*(1+.04*(FameLevel()-1))*EventDemand();}
 double UMareSimulation::KioskTipRate() const{return CustomEffect(TEXT("tip_per_comfort"),.015)*PlaceComfort(TEXT("kiosk"));}
 double UMareSimulation::KioskPatienceFactor() const{return 1+CustomEffect(TEXT("patience_per_comfort"),.03)*PlaceComfort(TEXT("kiosk"));}
 double UMareSimulation::KioskServiceSpeed() const{return 1+CustomEffect(TEXT("speed_per_counter_tier"),.1)*(CustomTier(TEXT("kiosk"),TEXT("balcao"))-1);}

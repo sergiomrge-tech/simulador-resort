@@ -113,6 +113,9 @@ void UMareSimulation::ToursHour(int32 Hour)
  const int32 Started=Hour-1;const bool bGuide=HasStaff(String(Object(CustomDefs(),TEXT("operations")),TEXT("tour_guide")));
  for(const FString& Id:TourIds()){const auto Tour=TourDef(Id);if(!String(Done,Id).IsEmpty())continue;
   const int32 Departs=int32(Number(Tour,TEXT("hour")));
+  // High tide or a storm keeps the boats in: sea tours are called off for the day (the lighthouse trail still goes).
+  if(IsSeaRough() && Id!=TEXT("farol")){if(Number(Sold,Id)>0){const double Refund=Number(Sold,Id)*TicketPrice(Id);Book(-Refund,String(Tour,TEXT("name"))+TEXT(": mar bravo, bilhetes devolvidos"));}
+   Queue->SetNumberField(Id,0);Done->SetStringField(Id,TEXT("cancelled"));continue;}
   // Buyers walk up to the booth during the three hours before the departure (sea tours need calm sea).
   if(Started>=Departs-3 && Started<Departs){const int32 Wanted=TourPassengers(Tour);
    const int32 Room=TourSeats(Tour)-int32(Number(Sold,Id))-int32(Number(Queue,Id));

@@ -286,6 +286,23 @@ public:
  UFUNCTION(BlueprintCallable,Category="Maré Alta|Business") double PlayBusiness(const FString& Id,int32 Hits);
  /** Hourly: night tokens of the game room (business_games.json game_room), more players with the hotel full. */
  void GameRoomHour(int32 Hour);
+ // --- Day events and parties (MareEvents.cpp, Content/Data/events.json) ---
+ // State: day_event (today), forecast + forecast_day (tomorrow), prep_day (paid preparations), weather.
+ TSharedPtr<FJsonObject> EventDefs() const;
+ TSharedPtr<FJsonObject> EventDef(const FString& Id) const;
+ /** Party of the weekly calendar or a random event (may be empty) for that day. */
+ FString RollEvent(int32 Day) const;
+ FString TodayEvent() const;
+ FString TomorrowEvent() const;
+ bool IsPrepActive() const;
+ /** High tide or storm: sea tours do not leave. */
+ bool IsSeaRough() const;
+ /** Kiosk arrivals multiplier of today's event (decorated parties draw more). */
+ double EventDemand() const;
+ /** New day: today's event from the forecast, tomorrow's forecast, weather, storm losses without preparations. */
+ void StartDayEvent();
+ /** Pays tomorrow's preparations (party decoration or storm protection). */
+ UFUNCTION(BlueprintCallable,Category="Maré Alta|Events") bool BuyPrep();
  // --- Fishing and the photo album (MareLeisure.cpp, Content/Data/leisure.json) ---
  TSharedPtr<FJsonObject> LeisureDefs() const;
  /** A fish on the hook: species drawn by weight, +1 'peixe' in the stock, fishing log (prog.fish) and fame. */
