@@ -122,7 +122,7 @@ namespace MareTropical
  {
   FVector2D View(1280,720);if(GEngine && GEngine->GameViewport)GEngine->GameViewport->GetViewportSize(View);
   const float UIScale=FMath::Max(.1f,GetDefault<UUserInterfaceSettings>()->GetDPIScaleBasedOnSize(FIntPoint(View.X,View.Y)));
-  return FMath::Clamp(View.Y/720.f,.75f,1.8f)/UIScale;
+  return FMath::Clamp(View.Y/720.f,.75f,1.8f)/UIScale*FMareOptions::Get().TextScale;   // accessibility: interface size option
  }
  TSharedRef<STextBlock> Txt(const FString& V,int32 Size,FLinearColor C,bool bBold=false,float Wrap=0)
  {
@@ -1218,6 +1218,10 @@ private:
    [this](int32 Step){const auto& List=FMareOptions::FrameLimits();const int32 Index=FMath::Max(0,List.IndexOfByKey(Pending.FrameLimit));Pending.FrameLimit=List[(Index+Step+List.Num())%List.Num()];}));
   Add(Row(LOCTEXT("OptFOV","Campo de visão"),[this](){return FText::FromString(FString::Printf(TEXT("%.0f°"),Pending.FieldOfView));},
    [this](int32 Step){Pending.FieldOfView=FMath::Clamp(Pending.FieldOfView+5.f*Step,70.f,110.f);}));
+  Add(Row(LOCTEXT("OptTextScale","Tamanho da interface e do texto"),[this](){return FText::FromString(FString::Printf(TEXT("%.0f%%"),Pending.TextScale*100.f));},
+   [this](int32 Step){Pending.TextScale=FMath::Clamp(FMath::RoundToFloat((Pending.TextScale+.05f*Step)*20.f)/20.f,.85f,1.5f);}));
+  Add(Row(LOCTEXT("OptTips","Dicas do tutorial"),[this](){return OnOff(Pending.bTips);},[this](int32){Pending.bTips=!Pending.bTips;}));
+  Add(Row(LOCTEXT("OptColorSafe","Modo para daltonismo (+/- nas variações)"),[this](){return OnOff(Pending.bColorSafe);},[this](int32){Pending.bColorSafe=!Pending.bColorSafe;}));
  }
  void AudioPage(const TSharedRef<SVerticalBox>& Page)
  {
@@ -1520,6 +1524,7 @@ void AMareHUD::DrawHUD()
  if(ShownStars>=0 && Stars!=ShownStars){bStarsUp=Stars>ShownStars;StarsFlashUntil=Now+1.5;}
  ShownStars=Stars;if(Now<StarsFlashUntil)M.StarsFlash=bStarsUp?1:-1;
  M.Stars=FString::Printf(TEXT("%.1f"),Stars).Replace(TEXT("."),TEXT(","));
+ if(M.StarsFlash && FMareOptions::Get().bColorSafe)M.Stars+=M.StarsFlash>0?TEXT(" +"):TEXT(" -");   // not only green/red
  if(const int32 Rooms=S->RoomsTotal())M.Rooms=FString::Printf(TEXT("%d/%d"),FMath::Min(S->RoomsOccupied(),Rooms),Rooms);
  M.Served=FString::Printf(TEXT("%d hoje"),S->ServedToday());
  if(S->LastMessage!=Notice){Notice=S->LastMessage;NoticeUntil=Notice.IsEmpty()?0:Now+7;}

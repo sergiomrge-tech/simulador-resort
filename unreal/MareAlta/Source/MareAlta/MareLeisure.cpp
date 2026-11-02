@@ -1,6 +1,7 @@
 // Fishing at the pier and the photo album: the player's own leisure, feeding the village chapters
 // (Seu Gregory's fish, Padre Robson's lighthouse photo). Content/Data/leisure.json.
 #include "MareSimulation.h"
+#include "MareOptions.h"
 #include "Dom/JsonValue.h"
 #include "Misc/FileHelper.h"
 #include "Misc/Paths.h"
@@ -62,6 +63,7 @@ bool UMareSimulation::ShowTip(const FString& Key)
  if(!Tips.IsValid()){FString Text;FFileHelper::LoadFileToString(Text,*(FPaths::ProjectContentDir()/TEXT("Data/tutorial.json")));
   FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Text),Tips);if(!Tips.IsValid())Tips=MakeShared<FJsonObject>();}
  const auto Tip=Object(Object(Tips,TEXT("tips")),Key);if(!Tip->Values.Num())return false;
+ if(!FMareOptions::Get().bTips)return false;   // tips switched off in the options (not marked as seen)
  auto Seen=Object(Object(State,TEXT("prog")),TEXT("tips"));bool bSeen=false;Seen->TryGetBoolField(Key,bSeen);if(bSeen)return false;
  Seen->SetBoolField(Key,true);PendingTipTitle=String(Tip,TEXT("title"));PendingTipText=String(Tip,TEXT("text"));return true;
 }

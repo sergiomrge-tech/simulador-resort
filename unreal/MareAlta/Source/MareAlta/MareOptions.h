@@ -28,6 +28,13 @@ struct MAREALTA_API FMareOptions
  bool bInvertY=false;
  /** Button names shown for the gamepad: 0 Xbox (A, B, X, Y), 1 PlayStation (Cruz, Círculo...). */
  int32 PadGlyphs=0;
+ // Accessibility.
+ /** Size of the whole interface (HUD, phone, menus): 0.85 .. 1.5. */
+ float TextScale=1.f;
+ /** First-time tutorial tips (Content/Data/tutorial.json). */
+ bool bTips=true;
+ /** Changes are also told by sign (+ / -), not only by green and red. */
+ bool bColorSafe=false;
  TMap<FName,FKey> Keys;
  // Language (culture name).
  FString Culture=TEXT("pt-BR");

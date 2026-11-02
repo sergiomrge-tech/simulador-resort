@@ -124,7 +124,7 @@ Pronto e testado (02/11):
 - [x] P1 **Tutorial** (02/11): dica na primeira vez de cada sistema (21 dicas em `Content/Data/tutorial.json`: celular,
   placa, balcão, geladeira, recepções, limpeza, bar, negócios, passeios, pesca, piscina, restaurante, sinuca, foto, cama),
   num cartão no canto inferior esquerdo, uma vez por save; e "Próxima meta" sempre visível na nota de missões (próxima
-  expansão e quanto falta). Teste `MareAlta.Gameplay.TutorialTips`. Falta: opção para desligar as dicas.
+  expansão e quanto falta). Teste `MareAlta.Gameplay.TutorialTips`. As dicas podem ser desligadas nas opções.
 - [ ] P1 Campanha e missões secundárias auditadas (contadores, recompensas únicas, ligação com capítulos e expansões).
 - [x] P2 Temporadas (02/11): ciclo de 56 dias (alta temporada de verão, outono, inverno chuvoso, primavera) que muda o
   movimento e a chance de chuva; aparece na agenda do celular. Variedade de tipos de cliente por temporada ainda não.
@@ -190,7 +190,9 @@ Pronto e testado (02/11):
     analógico direito rola. Sinuca: analógico mira, segurar RT dá força, B sai. HUD mostra botão ou tecla conforme a última entrada;
     opção "Botões do controle" Xbox/PlayStation. Testes: `MareAlta.Gamepad.MappingsAndLabels` e `MareAlta.Gamepad.MenuFocusAndBack`.
 - [ ] P1 Três propostas de HUD/celular mais comercial (pedido antigo, apresentar antes de escolher).
-- [ ] P1 Acessibilidade: tamanho do texto, legendas, daltonismo nos ícones de estrela e humor.
+- [x] P1 Acessibilidade (02/11): tamanho da interface e do texto (85–150%, foto `interface-130-20261102.png`), dicas do
+  tutorial liga/desliga, modo para daltonismo (+/- nas variações de estrelas). Não há falas, então legendas não se aplicam.
+  Em janelas pequenas, 140–150% encosta nas bordas do celular.
 - [ ] P2 Indicador no mapa ou bússola com os lugares (pousada, hotel, salão, negócios).
 
 ## 9. Desempenho e estabilidade
