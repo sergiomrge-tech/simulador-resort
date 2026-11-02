@@ -1,0 +1,12 @@
+{
+ "_doc": "Music by place and time (UMareAudioWorld::UpdateLayers): the first zone the player is inside (2D distance to centre < radius, game hour in hours) plays its looping track at volume x the Music bus, fading over the last fade cm of the radius; the portable radio ducks to radio_duck while a zone track plays. More specific zones go first. World cm.",
+ "fade": 300,
+ "radio_duck": 0.2,
+ "zones": [
+  {"id": "game_room", "name": "Salão de jogos", "centre": [-2050, 6400, 0], "radius": 700, "hours": [18, 24], "track": "radio_beach_pop", "volume": 0.3, "requires": "salao_jogos"},
+  {"id": "hotel_lobby", "name": "Saguão do Grand Hotel", "centre": [-1800, 6300, 0], "radius": 1300, "hours": [7, 24], "track": "music_bossa", "volume": 0.28, "requires": "grand_hotel"},
+  {"id": "restaurant", "name": "Restaurante do hotel", "centre": [-1000, 4200, 0], "radius": 800, "hours": [12, 23], "track": "music_relax", "volume": 0.26, "requires": "grand_hotel"},
+  {"id": "bar", "name": "Bar do Coqueiro", "centre": [1300, -1300, 0], "radius": 900, "hours": [10, 23], "track": "reggae_praia", "volume": 0.3, "requires": "bar"},
+  {"id": "pool", "name": "Piscina", "centre": [0, 400, 0], "radius": 1200, "hours": [9, 18], "track": "radio_calypso", "volume": 0.22, "requires": "pool"}
+ ]
+}

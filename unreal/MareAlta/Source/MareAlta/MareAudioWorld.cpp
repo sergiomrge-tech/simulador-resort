@@ -115,8 +115,24 @@ void UMareAudioWorld::UpdateLayers(float DeltaSeconds,UMareSimulation* Sim,FVect
  bUnderwater=Hero && Hero->GetCharacterMovement()->IsSwimming() && Eyes && Eyes->GetComponentLocation().Z<-38;
  IndoorClock-=DeltaSeconds;if(IndoorClock<=0 && Eyes){IndoorClock=.5f;FHitResult Hit;FCollisionQueryParams Query;Query.AddIgnoredActor(Hero);bIndoors=GetWorld()->LineTraceSingleByChannel(Hit,Eyes->GetComponentLocation(),Eyes->GetComponentLocation()+FVector(0,0,350),ECC_Visibility,Query);}
  const float Beach=FMath::Clamp(1.f-(Position.Y+3200.f)/7000.f,.08f,1.f);
+ // Music by place and time (Content/Data/audio_zones.json): the zone's track rises inside it and the radio ducks.
+ static TSharedPtr<FJsonObject> Zones;
+ if(!Zones.IsValid()){FString Text;FFileHelper::LoadFileToString(Text,*(FPaths::ProjectContentDir()/TEXT("Data/audio_zones.json")));
+  FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Text),Zones);if(!Zones.IsValid())Zones=MakeShared<FJsonObject>();}
+ FName ZoneTrack;float ZoneLevel=0;const double Hour=Sim?UMareSimulation::Number(Sim->State,TEXT("minutes"))/60:12;
+ const TArray<TSharedPtr<FJsonValue>>* ZoneList=nullptr;const double Fade=FMath::Max(1.,UMareSimulation::Number(Zones,TEXT("fade"),300));
+ if(Sim && Zones->TryGetArrayField(TEXT("zones"),ZoneList))for(const auto& V:*ZoneList){const auto Z=V->AsObject();
+  const FString Requires=UMareSimulation::String(Z,TEXT("requires"));bool bOwned=Requires.IsEmpty();if(!bOwned)UMareSimulation::Object(Sim->State,TEXT("unlocked"))->TryGetBoolField(Requires,bOwned);
+  const TArray<TSharedPtr<FJsonValue>>* C=nullptr;const TArray<TSharedPtr<FJsonValue>>* H=nullptr;
+  if(!bOwned || !Z->TryGetArrayField(TEXT("centre"),C) || C->Num()<2 || !Z->TryGetArrayField(TEXT("hours"),H) || H->Num()!=2)continue;
+  if(Hour<(*H)[0]->AsNumber() || Hour>=(*H)[1]->AsNumber())continue;
+  const double Dist=FVector::Dist2D(Position,FVector((*C)[0]->AsNumber(),(*C)[1]->AsNumber(),0)),Radius=UMareSimulation::Number(Z,TEXT("radius"));
+  if(Dist>=Radius)continue;
+  ZoneTrack=FName(UMareSimulation::String(Z,TEXT("track")));ZoneLevel=float(UMareSimulation::Number(Z,TEXT("volume"),.25)*FMath::Clamp((Radius-Dist)/Fade,0.,1.));break;}
+ const float Duck=ZoneTrack.IsNone()?1.f:FMath::Lerp(1.f,float(UMareSimulation::Number(Zones,TEXT("radio_duck"),.2)),FMath::Clamp(ZoneLevel/.15f,0.f,1.f));
  for(auto Pair:Loops){const FName Name=Pair.Key;float Target=0;
-  if(Name==RadioStation && IsRadioStation(Name))Target=(MasterMix?1.f:GetVolume(TEXT("Master")))*GetVolume(TEXT("Music"))*(bNight?.22f:.32f)*(bIndoors?.65f:1.f)*(bHomeStereo && HomeStereo?FMath::Clamp(FVector::Dist(Position,HomeStereo->GetComponentLocation())/800.f,.12f,1.f):1.f);
+  if(Name==ZoneTrack)Target=(MasterMix?1.f:GetVolume(TEXT("Master")))*GetVolume(TEXT("Music"))*ZoneLevel*(bIndoors?.8f:1.f);
+  else if(Name==RadioStation && IsRadioStation(Name))Target=Duck*(MasterMix?1.f:GetVolume(TEXT("Master")))*GetVolume(TEXT("Music"))*(bNight?.22f:.32f)*(bIndoors?.65f:1.f)*(bHomeStereo && HomeStereo?FMath::Clamp(FVector::Dist(Position,HomeStereo->GetComponentLocation())/800.f,.12f,1.f):1.f);
   if(Name==TEXT("ocean_loop"))Target=Gain(true)*Beach*(bIndoors?.1f:.4f);
   if(Name==TEXT("rain_loop"))Target=Gain(true)*(bRain?(bIndoors?.12f:.48f):0.f);
   if(Name==TEXT("wind_loop"))Target=Gain(true)*(bRain?.16f:.055f)*(bIndoors?.15f:1.f);

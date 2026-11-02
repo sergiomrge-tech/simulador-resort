@@ -166,7 +166,8 @@ Pronto e testado (02/11):
 - [ ] P2 Detalhes de vida: pássaros, gaivotas, cachorros e gatos animados, barcos passando.
 
 ## 7. Áudio
-- [ ] P1 Música por lugar e horário (quiosque, hotel, salão, noite).
+- [x] P1 Música por lugar e horário (02/11): zonas em `Content/Data/audio_zones.json` (saguão do hotel bossa, restaurante relax,
+  salão de jogos à noite pop, bar reggae, piscina calipso), rádio portátil abaixa dentro das zonas; níveis medidos no PIE.
 - [x] P1 Efeitos de todas as ações novas (02/11, 42 sons CC0 ligados: recepção, limpeza, sinuca, bar, dinheiro, negociação):
   - campainha da recepção, chaves, cama, lixo;
   - tacadas e bolas da sinuca;
