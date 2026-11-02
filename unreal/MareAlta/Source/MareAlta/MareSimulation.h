@@ -110,6 +110,11 @@ public:
  /** Recipe level 1..5 per dish (state recipes.<dish>): raises the sale price and the demand. */
  UFUNCTION(BlueprintPure,Category="Maré Alta") int32 RecipeLevel(const FString& Dish) const;
  UFUNCTION(BlueprintPure,Category="Maré Alta") double DishPrice(const FString& Dish) const;
+ /** Price the player charges (phone, state prices.<dish>, 50%-200% of DishPrice); DishPrice stays the fair reference. */
+ UFUNCTION(BlueprintPure,Category="Maré Alta") double SalePrice(const FString& Dish) const;
+ UFUNCTION(BlueprintCallable,Category="Maré Alta") bool SetSalePrice(const FString& Dish,double Price);
+ /** SalePrice / DishPrice: 1 is fair, above sells less and earns smaller tips, below sells more. */
+ double PriceRatio(const FString& Dish) const;
  /** Cost of the next recipe level (0 when maxed). */
  UFUNCTION(BlueprintPure,Category="Maré Alta") double RecipeUpgradeCost(const FString& Dish) const;
  UFUNCTION(BlueprintCallable,Category="Maré Alta") bool UpgradeRecipe(const FString& Dish);
@@ -129,6 +134,10 @@ public:
  double StayBonus() const;
  double HotelCustomBonus() const;
  int32 PousadaRooms() const;
+ /** HUD reputation: pousada rooms plus Grand Hotel suites, how many were occupied last night, products sold today. */
+ int32 RoomsTotal() const;
+ int32 RoomsOccupied() const;
+ int32 ServedToday() const;
  double PousadaRate() const;
  double PousadaOccupancy() const;
  /** Books one night of the pousada (rooms x rate x occupancy, plus tips); stores prog.pousada. */
@@ -154,6 +163,33 @@ public:
  UFUNCTION(BlueprintPure,Category="Maré Alta") double HomeSpeedFactor() const;
  /** One line with the current effect of a place's decor, for the phone. */
  FString PlaceSummary(const FString& Place) const;
+ // --- Hands-on lodging (docs/ue58/GAMEPLAY_PLANO_2026-11-02.md, M2/M3; MareStays.cpp) ---
+ // State "stays": rooms [{id, place, state free|occupied|dirty, guest, nights, rate, mood, tasks}],
+ // queue [{id, name, profile, limit, offer, round, mood, nights}]. Everything lives in the save, not in actors.
+ /** Room list of the pousada matches PousadaRooms() (new rooms start clean). */
+ void SyncRooms();
+ /** A guest joins the reception queue (max 3); returns the guest id or empty. */
+ FString AddArrival(const FString& Place=TEXT("pousada"));
+ /** Reference nightly rate and stay settings (customization.json operations.pousada / hotel_stays). */
+ double StayRate(const FString& Place) const;
+ TSharedPtr<FJsonObject> StayOps(const FString& Place) const;
+ enum class EHaggle:uint8{Accepted,Countered,Left,Invalid};
+ /** The player asks Price per night. Under the guest's secret limit it is accepted (sometimes after one counter),
+  *  above it the guest refuses, loses mood and raises the offer a little; after 3 refusals or no mood, he leaves.
+  *  OutOffer is the guest's offer afterwards. Accepted checks the guest in and charges all nights at once. */
+ EHaggle Haggle(const FString& Guest,double Price,double& OutOffer);
+ /** Takes the guest's current offer (no haggling) and checks him in. */
+ bool AcceptOffer(const FString& Guest);
+ /** One cleaning task of a dirty room ("bed", "towels", "trash"); the room is free when none is left. */
+ bool CleanRoom(const FString& Room,const FString& Task);
+ /** Night: stays lose a night; finished stays check out (rating from mood, comfort and cleanliness), room dirty. */
+ void StaysNight();
+ /** Hourly: arrivals during the day, the receptionist checks guests in at their offer, the maid cleans. */
+ void StaysHour(int32 Hour);
+ TSharedPtr<FJsonObject> Stays();
+ /** Bets and prizes from minigames (game room): books the amount with a label, like any other income or expense. */
+ void SettleBet(double Amount,const FString& Label){Book(Amount,Label);}
+ int32 FreeCleanRooms(const FString& Place=TEXT("pousada")) const;
  UFUNCTION(BlueprintCallable,Category="Maré Alta")
  double Money() const;
  UFUNCTION(BlueprintCallable,Category="Maré Alta")

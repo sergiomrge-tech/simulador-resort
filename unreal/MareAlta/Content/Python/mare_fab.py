@@ -103,6 +103,8 @@ def run(action, arg=''):
         return import_pack(arg or 'wabi')
     if action == 'decor':
         return decor()
+    if action == 'clearbox':
+        return clear_box(arg.replace('!', ''), arg.endswith('!'))
     if action == 'clearrooms':
         return clear_rooms(arg == 'apply')
     if action == 'probe':
@@ -335,6 +337,29 @@ def decor():
         out.append([slug, 'restaurant', round(z), round(h)])
     unreal.get_editor_subsystem(unreal.LevelEditorSubsystem).save_current_level()
     return out
+
+
+def clear_box(arg, apply=False):
+    """Lawn/flower instances poking through a building floor: "x0,x1,y0,y1,label_part" shrinks every instance of
+    actors whose label contains label_part inside the box (Grand Hotel lobby: the 'lote grand_hotel' lawn dressing)."""
+    x0, x1, y0, y1, part = arg.split(',')
+    x0, x1, y0, y1 = float(x0), float(x1), float(y0), float(y1)
+    hits = 0
+    for a in unreal.get_editor_subsystem(unreal.EditorActorSubsystem).get_all_level_actors():
+        if part not in a.get_actor_label():
+            continue
+        for c in a.get_components_by_class(unreal.InstancedStaticMeshComponent):
+            for i in range(c.get_instance_count()):
+                tr = c.get_instance_transform(i, True)
+                p = tr.translation
+                if tr.scale3d.x > .01 and x0 < p.x < x1 and y0 < p.y < y1:
+                    hits += 1
+                    if apply:
+                        tr.scale3d = unreal.Vector(.001, .001, .001)
+                        c.update_instance_transform(i, tr, True, True, True)
+    if apply and hits:
+        unreal.get_editor_subsystem(unreal.LevelEditorSubsystem).save_current_level()
+    return hits
 
 
 def clear_rooms(apply=False):

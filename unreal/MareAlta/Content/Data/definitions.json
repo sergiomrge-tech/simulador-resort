@@ -457,7 +457,8 @@
 		"pousada",
 		"pool",
 		"passeios",
-		"grand_hotel"
+		"grand_hotel",
+		"salao_jogos"
 	],
 	"expansions": {
 		"bar": {
@@ -555,6 +556,17 @@
 				"bar"
 			],
 			"stars": 3.8
+		},
+		"salao_jogos": {
+			"area": "",
+			"blurb": "Salão de jogos do Grand Hotel: sinuca de verdade contra os hóspedes, fichas à noite e hóspedes mais satisfeitos.",
+			"cost": 6500,
+			"icon": "bar",
+			"name": "Salão de jogos do hotel",
+			"req": [
+				"grand_hotel"
+			],
+			"stars": 4.4
 		}
 	},
 	"quests": {
@@ -702,6 +714,13 @@
 			"name": "Auxiliar de limpeza",
 			"req": "",
 			"wage": 28
+		},
+		"recepcionista": {
+			"blurb": "Faz o check-in dos hóspedes da pousada pela oferta deles, sem negociar. Salário no fim do dia.",
+			"hire": 240,
+			"name": "Recepcionista",
+			"req": "pousada",
+			"wage": 34
 		}
 	},
 	"supplies": {

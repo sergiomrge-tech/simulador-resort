@@ -166,9 +166,9 @@ bool UMareSimulation::Deliver(const FString& OrderId,const FString& Dish,bool bS
  if(Index==INDEX_NONE) return false;
  Items.RemoveAt(Index); Order->SetArrayField(TEXT("remaining"),Items);
  Object(State,TEXT("company"))->SetStringField(bStaff?TEXT("staff_carry"):TEXT("carry"),TEXT(""));
- // Recipe level sets the price; the comfort of the kiosk decor adds a tip on top.
- const double Price=DishPrice(Dish); Book(Price,TEXT("Venda: ")+Dish);
- const double Tip=FMath::RoundToDouble(Price*KioskTipRate()*100)/100; if(Tip>=.01) Book(Tip,TEXT("Gorjeta"));
+ // The player's price is charged; the comfort of the kiosk decor adds a tip, smaller when the price feels high.
+ const double Price=SalePrice(Dish); Book(Price,TEXT("Venda: ")+Dish);
+ const double Tip=FMath::RoundToDouble(Price*KioskTipRate()*FMath::Clamp(2-PriceRatio(Dish),0.,1.)*100)/100; if(Tip>=.01) Book(Tip,TEXT("Gorjeta"));
  State->SetNumberField(TEXT("kiosk_n"),Number(State,TEXT("kiosk_n"))+1); State->SetNumberField(TEXT("kiosk"),Number(State,TEXT("kiosk"))+Price+Tip);
  if(Dish.StartsWith(TEXT("sorvete_"))){auto Campaign=Object(Object(State,TEXT("prog")),TEXT("campaign"));Campaign->SetNumberField(TEXT("icecream"),Number(Campaign,TEXT("icecream"))+1);}
  // Signature recipes and a beautiful kiosk spread the word faster.
@@ -298,23 +298,21 @@ double UMareSimulation::HotelOccupancy() const
  // Decor of the four hotel areas and the resort pool add their own occupancy bonus.
  return FMath::Clamp(.42+.12*(Stars()-4.)+.03*(FameLevel()-7)+HotelCustomBonus()+StayBonus(),.15,.98);
 }
+static constexpr int32 HotelSuites=32;
 void UMareSimulation::HotelNight()
 {
  bool bOwned=false;Object(State,TEXT("unlocked"))->TryGetBoolField(TEXT("grand_hotel"),bOwned);if(!bOwned)return;
- constexpr int32 Rooms=32,Dining=35,StaffCost=900;const double Rate=220+SlotSum(TEXT("hotel_suites"),TEXT("rate"));
- const double Occupancy=HotelOccupancy();const int32 Occupied=FMath::RoundToInt(Rooms*Occupancy);
- const double Revenue=Occupied*Rate,Meals=FMath::RoundToDouble(Occupied*1.7*Dining*PlaceIncomeFactor(TEXT("hotel_restaurante"))*PlaceIncomeFactor(TEXT("hotel_piscina")));
- Book(Revenue,FString::Printf(TEXT("Grand Hotel: %d suítes ocupadas"),Occupied));
- Book(Meals,TEXT("Grand Hotel: restaurante e bar"));
+ // Suites are paid at check-in at the reception (MareStays.cpp); the night books the restaurant of the
+ // guests staying and the hotel crew. Ratings come from the real check-outs.
+ constexpr int32 Dining=35,StaffCost=900;int32 Occupied=0;const TArray<TSharedPtr<FJsonValue>>* Rooms=nullptr;
+ if(Object(State,TEXT("stays"))->TryGetArrayField(TEXT("rooms"),Rooms))for(const auto& R:*Rooms)
+  Occupied+=String(R->AsObject(),TEXT("place"))==TEXT("hotel") && String(R->AsObject(),TEXT("state"))==TEXT("occupied");
+ const double Meals=FMath::RoundToDouble(Occupied*1.7*Dining*PlaceIncomeFactor(TEXT("hotel_restaurante"))*PlaceIncomeFactor(TEXT("hotel_piscina")));
+ if(Meals>0)Book(Meals,TEXT("Grand Hotel: restaurante e bar"));
  Book(-StaffCost,TEXT("Grand Hotel: equipe (recepção, cozinha, spa, limpeza)"));
- auto Last=MakeShared<FJsonObject>();Last->SetNumberField(TEXT("occ"),Occupancy);Last->SetNumberField(TEXT("rooms"),Occupied);
- Last->SetNumberField(TEXT("rev"),Revenue);Last->SetNumberField(TEXT("dining"),Meals);Last->SetNumberField(TEXT("staff"),StaffCost);
+ auto Last=MakeShared<FJsonObject>();Last->SetNumberField(TEXT("occ"),Occupied/double(HotelSuites));Last->SetNumberField(TEXT("rooms"),Occupied);
+ Last->SetNumberField(TEXT("dining"),Meals);Last->SetNumberField(TEXT("staff"),StaffCost);
  Object(State,TEXT("prog"))->SetObjectField(TEXT("hotel"),Last);
- // Five-star guests rate their stay; keep the list bounded like the original rolling window.
- TArray<TSharedPtr<FJsonValue>> Ratings;const TArray<TSharedPtr<FJsonValue>>* Existing=nullptr;if(State->TryGetArrayField(TEXT("ratings"),Existing))Ratings=*Existing;
- for(int32 I=0;I<FMath::Min(6,FMath::Max(1,Occupied/5));++I)Ratings.Add(MakeShared<FJsonValueNumber>(FMath::FRandRange(4.3,5.0)));
- while(Ratings.Num()>40)Ratings.RemoveAt(0);State->SetArrayField(TEXT("ratings"),Ratings);
- AddFame(Occupied/2);
 }
 void UMareSimulation::AddFame(int32 Xp)
 {
@@ -359,7 +357,8 @@ void UMareSimulation::Sleep()
   for(const auto& Pair:Object(Definitions,TEXT("businesses"))->Values)if(OwnsBusiness(FString(Pair.Key.ToView()))){
    const double Wage=Number(Pair.Value->AsObject(),TEXT("wage"));Wages+=Wage;Book(-Wage,TEXT("Funcionário: ")+String(Pair.Value->AsObject(),TEXT("name")));}
   Hours->SetNumberField(TEXT("wage_day"),Day);
-  PousadaNight();
+  // Hands-on stays replace the old sorted pousada occupancy (MareStays.cpp).
+  StaysNight();
   HotelNight();
   // A beautiful home brings visitors and talk in the village.
   AddFame(FMath::FloorToInt(PlaceBeauty(TEXT("home"))*PlaceEffect(TEXT("home"),TEXT("fame_per_beauty_night"))));
@@ -370,6 +369,8 @@ void UMareSimulation::Sleep()
  Summary->SetNumberField(TEXT("money"),Money());State->SetObjectField(TEXT("ue_last_day"),Summary);
  State->SetNumberField(TEXT("day_in"),0);State->SetNumberField(TEXT("day_out"),0);State->SetNumberField(TEXT("ue_day_sales_start"),Number(State,TEXT("kiosk_n")));
  LastMessage=FString::Printf(TEXT("Dia %d encerrado · vendas R$ %.0f · despesas R$ %.0f · saldo do dia R$ %.0f."),Day,In,Out,In-Out);
+ {const auto P=Object(Object(State,TEXT("prog")),TEXT("pousada"));const int32 Checkouts=Number(P,TEXT("checkouts"));
+  if(Number(P,TEXT("rooms"))>0)LastMessage+=FString::Printf(TEXT(" Hospedagem: %d quarto(s) ocupado(s), %d check-out(s), nota média %.1f."),int32(Number(P,TEXT("occupied"))),Checkouts,Stars());}
  if(Money()<0)LastMessage+=TEXT(" Caixa negativo: venda mais antes de repor estoque.");
  State->SetNumberField(TEXT("day"),Day+1);State->SetNumberField(TEXT("minutes"),480);
  State->SetObjectField(TEXT("ue_orders"),MakeShared<FJsonObject>());Save();
@@ -455,7 +456,8 @@ static double SlotPoints(const UMareSimulation* Sim,const FString& Place,const T
 double UMareSimulation::PlaceComfort(const FString& Place) const{return SlotPoints(this,Place,TEXT("comfort"));}
 double UMareSimulation::PlaceBeauty(const FString& Place) const{return SlotPoints(this,Place,TEXT("beauty"));}
 double UMareSimulation::CustomEffect(const FString& Key,double Fallback) const{return Number(Object(CustomDefs(),TEXT("effects")),Key,Fallback);}
-double UMareSimulation::KioskArrivalFactor() const{return 1+CustomEffect(TEXT("arrival_per_point"),.035)*(PlaceComfort(TEXT("kiosk"))+PlaceBeauty(TEXT("kiosk")));}
+// Fame brings people to the beach (+4% per level, as in the Godot version); decor adds its own points.
+double UMareSimulation::KioskArrivalFactor() const{return (1+CustomEffect(TEXT("arrival_per_point"),.035)*(PlaceComfort(TEXT("kiosk"))+PlaceBeauty(TEXT("kiosk"))))*(1+.04*(FameLevel()-1));}
 double UMareSimulation::KioskTipRate() const{return CustomEffect(TEXT("tip_per_comfort"),.015)*PlaceComfort(TEXT("kiosk"));}
 double UMareSimulation::KioskPatienceFactor() const{return 1+CustomEffect(TEXT("patience_per_comfort"),.03)*PlaceComfort(TEXT("kiosk"));}
 double UMareSimulation::KioskServiceSpeed() const{return 1+CustomEffect(TEXT("speed_per_counter_tier"),.1)*(CustomTier(TEXT("kiosk"),TEXT("balcao"))-1);}
@@ -466,6 +468,19 @@ double UMareSimulation::DishPrice(const FString& Dish) const
  const int32 Level=RecipeLevel(Dish);
  return Object(CustomDefs(),TEXT("recipes"))->TryGetArrayField(TEXT("price_mult"),Mult) && Mult->IsValidIndex(Level-1)?FMath::RoundToDouble(Base*(*Mult)[Level-1]->AsNumber()):Base;
 }
+double UMareSimulation::SalePrice(const FString& Dish) const
+{
+ const double Reference=DishPrice(Dish),Set=Number(Object(State,TEXT("prices")),Dish);
+ return Set>0?FMath::Clamp(Set,FMath::RoundToDouble(Reference*.5),FMath::RoundToDouble(Reference*2)):Reference;
+}
+bool UMareSimulation::SetSalePrice(const FString& Dish,double Price)
+{
+ const double Reference=DishPrice(Dish);if(Reference<=0)return false;
+ Price=FMath::Clamp(FMath::RoundToDouble(Price),FMath::RoundToDouble(Reference*.5),FMath::RoundToDouble(Reference*2));
+ if(!State->HasTypedField<EJson::Object>(TEXT("prices")))State->SetObjectField(TEXT("prices"),MakeShared<FJsonObject>());
+ State->GetObjectField(TEXT("prices"))->SetNumberField(Dish,Price);return true;
+}
+double UMareSimulation::PriceRatio(const FString& Dish) const{const double Reference=DishPrice(Dish);return Reference>0?SalePrice(Dish)/Reference:1;}
 double UMareSimulation::RecipeUpgradeCost(const FString& Dish) const
 {
  const int32 Level=RecipeLevel(Dish);if(Level>=5)return 0;const TArray<TSharedPtr<FJsonValue>>* Mult=nullptr;
@@ -491,7 +506,9 @@ bool UMareSimulation::UpgradeRecipe(const FString& Dish)
 }
 double UMareSimulation::DishDemand(const FString& Dish) const
 {
- return 1+Number(Object(CustomDefs(),TEXT("recipes")),TEXT("demand_per_level"),.5)*(RecipeLevel(Dish)-1);
+ // Price elasticity: fair price x1, +30% about x0.5, -20% about x1.55 (never below x0.15 or above x1.6).
+ const double Elastic=FMath::Clamp(FMath::Exp(-2.2*(PriceRatio(Dish)-1)),.15,1.6);
+ return (1+Number(Object(CustomDefs(),TEXT("recipes")),TEXT("demand_per_level"),.5)*(RecipeLevel(Dish)-1))*Elastic;
 }
 // Places beyond the kiosk: decor effects and the operations of the expansions (customization.json).
 static TSharedPtr<FJsonObject> Child(const TSharedPtr<FJsonObject>& Parent,const FString& Key)
@@ -533,6 +550,18 @@ double UMareSimulation::HotelCustomBonus() const
  return Bonus;
 }
 // Pousada: one bungalow, two more rooms with the pool expansion ("rooms" in definitions), as in the original.
+int32 UMareSimulation::RoomsTotal() const
+{
+ bool bHotel=false;Object(State,TEXT("unlocked"))->TryGetBoolField(TEXT("grand_hotel"),bHotel);
+ return PousadaRooms()+(bHotel?HotelSuites:0);
+}
+int32 UMareSimulation::RoomsOccupied() const
+{
+ int32 Occupied=0;const TArray<TSharedPtr<FJsonValue>>* Rooms=nullptr;
+ if(Object(State,TEXT("stays"))->TryGetArrayField(TEXT("rooms"),Rooms))for(const auto& R:*Rooms)Occupied+=String(R->AsObject(),TEXT("state"))==TEXT("occupied");
+ return Occupied;
+}
+int32 UMareSimulation::ServedToday() const{return FMath::Max(0,int32(Number(State,TEXT("kiosk_n"))-Number(State,TEXT("ue_day_sales_start"))));}
 int32 UMareSimulation::PousadaRooms() const
 {
  if(!Owns(State,TEXT("pousada")))return 0;auto Ops=Object(Object(CustomDefs(),TEXT("operations")),TEXT("pousada"));
@@ -601,6 +630,7 @@ void UMareSimulation::OperateHour(int32 Hour)
  auto Today=Child(Ops,TEXT("today"));const int32 Started=Hour-1;double Total=0;TArray<FString> Parts;
  auto Add=[&](const FString& Place,const FString& Label,double Amount){Amount=FMath::RoundToDouble(Amount);if(Amount<=0)return;
   Today->SetNumberField(Place,Number(Today,Place)+Amount);Total+=Amount;Parts.Add(FString::Printf(TEXT("%s R$ %.0f"),*Label,Amount));};
+ StaysHour(Hour);
  auto Defs=Object(CustomDefs(),TEXT("operations"));
  for(const auto& Pair:Object(Defs,TEXT("hourly"))->Values){const FString Id(Pair.Key.ToView());auto Op=Pair.Value->AsObject();
   const TArray<TSharedPtr<FJsonValue>>* Open=nullptr;if(!Owns(State,String(Op,TEXT("unlock"))) || !Op->TryGetArrayField(TEXT("open"),Open) || Open->Num()!=2)continue;

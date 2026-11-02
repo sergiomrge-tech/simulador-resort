@@ -11,6 +11,9 @@
 #include "Materials/MaterialInstanceDynamic.h"
 #include "Engine/Texture2D.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/ChildActorComponent.h"
+#include "EngineUtils.h"
+#include "HAL/IConsoleManager.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Engine/SkeletalMesh.h"
@@ -19,6 +22,18 @@
 #include "Misc/FileHelper.h"
 #include "Misc/Paths.h"
 #include "Serialization/JsonSerializer.h"
+
+static TAutoConsoleVariable<int32> CVarMareMetaHumans(TEXT("mare.MetaHumans"),1,TEXT("People wear the built MetaHumans of Content/Data/metahumans.json (0 = original rig people)."));
+static TAutoConsoleVariable<FString> CVarMareMetaHuman(TEXT("mare.MetaHuman"),TEXT(""),TEXT("QA: force this built MetaHuman on every new person (empty = roster choice)."));
+
+/** Content/Data/metahumans.json: built MetaHumans per role (staff, hotel, village, beach) and swimwear colours. */
+static TSharedPtr<FJsonObject> MetaHumanRoster()
+{
+ static TSharedPtr<FJsonObject> Roster;
+ if(!Roster.IsValid()){FString Text;FFileHelper::LoadFileToString(Text,*(FPaths::ProjectContentDir()/TEXT("Data/metahumans.json")));
+  FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Text),Roster);if(!Roster.IsValid())Roster=MakeShared<FJsonObject>();}
+ return Roster;
+}
 
 TSharedPtr<FJsonObject> AMarePerson::AssetCatalog()
 {
@@ -72,6 +87,39 @@ bool AMarePerson::SetAppearance(int32 AppearanceVariant)
   auto Hair=NewObject<UStaticMeshComponent>(this);AddInstanceComponent(Hair);Hair->SetMobility(EComponentMobility::Movable);Hair->SetStaticMesh(Part);Hair->SetCollisionEnabled(ECollisionEnabled::NoCollision);
   Hair->AttachToComponent(GetMesh(),FAttachmentTransformRules::KeepRelativeTransform,Bone);Hair->SetRelativeTransform(ReferenceBoneTransform(Bone).Inverse());Hair->RegisterComponent();HairMeshes.Add(Hair);
  }
+ PlayPose(TEXT("Idle"));return true;
+}
+bool AMarePerson::SetMetaHuman(const FString& Name)
+{
+ const FString Root=FString::Printf(TEXT("/Game/People/MetaHumans/%s/MH_%s/"),*Name,*Name);
+ auto Body=LoadObject<USkeletalMesh>(nullptr,*FString::Printf(TEXT("%sBody/SKM_MH_%s_BodyMesh.SKM_MH_%s_BodyMesh"),*Root,*Name,*Name));
+ UClass* Look=LoadClass<AActor>(nullptr,*FString::Printf(TEXT("%sBP_MH_%s.BP_MH_%s_C"),*Root,*Name,*Name));
+ if(!Body || !Look)return false;
+ for(auto Part:HairMeshes)if(IsValid(Part))Part->DestroyComponent();HairMeshes.Empty();
+ Clips.Empty();Playing.Reset();bOutfitApplied=true;MetaHuman=Name;
+ // The rig mesh becomes the MetaHuman body skeleton and keeps driving the pose (clips retargeted from UAL
+ // by mare_metahuman.retarget_clips); it stays hidden while the blueprint's body, face, clothes and grooms follow it.
+ GetMesh()->SetSkeletalMeshAsset(Body);GetMesh()->SetAnimInstanceClass(UMareServiceAnimInstance::StaticClass());
+ for(const FString& Clip:{TEXT("Idle"),TEXT("Idle_Talking"),TEXT("Walk"),TEXT("Sitting_Idle"),TEXT("Interact")})
+  if(auto Anim=LoadObject<UAnimSequence>(nullptr,*FString::Printf(TEXT("/Game/People/Animations/MH_%s.MH_%s"),*Clip,*Clip)))Clips.Add(Clip,Anim);
+ GetMesh()->SetVisibility(false,false);
+ if(MetaHumanBody)MetaHumanBody->DestroyComponent();
+ MetaHumanBody=NewObject<UChildActorComponent>(this);AddInstanceComponent(MetaHumanBody);
+ MetaHumanBody->SetupAttachment(GetMesh());MetaHumanBody->SetChildActorClass(Look);MetaHumanBody->RegisterComponent();
+ if(AActor* Child=MetaHumanBody->GetChildActor()){TArray<USkeletalMeshComponent*> Parts;Child->GetComponents(Parts);
+  for(auto Part:Parts){Part->SetLeaderPoseComponent(GetMesh());Part->SetCollisionEnabled(ECollisionEnabled::NoCollision);}}
+ // Swim builds (<Name>_Swim, whole body) wear the bikini/trunks made for that body (tools/ue58/gen_mh_swimwear.py).
+ if(Swimwear){Swimwear->DestroyComponent();Swimwear=nullptr;}
+ if(Name.EndsWith(TEXT("_Swim"))){const FString Base=Name.LeftChop(5);USkeletalMesh* Garment=nullptr;
+  for(const TCHAR* Kind:{TEXT("Bikini"),TEXT("Trunks")})
+   if(!Garment)Garment=LoadObject<USkeletalMesh>(nullptr,*FString::Printf(TEXT("/Game/People/Swimwear/SKM_%s_%s.SKM_%s_%s"),Kind,*Base,Kind,*Base));
+  if(Garment){Swimwear=NewObject<USkeletalMeshComponent>(this);AddInstanceComponent(Swimwear);Swimwear->SetupAttachment(GetMesh());
+   Swimwear->SetSkeletalMeshAsset(Garment);Swimwear->SetCollisionEnabled(ECollisionEnabled::NoCollision);Swimwear->RegisterComponent();
+   Swimwear->SetLeaderPoseComponent(GetMesh());
+   const TArray<TSharedPtr<FJsonValue>>* Colours=nullptr;
+   if(MetaHumanRoster()->TryGetArrayField(TEXT("swim_colours"),Colours) && Colours->Num()){
+    const FColor C=FColor::FromHex((*Colours)[int32(FCrc::StrCrc32(*SaveId)%uint32(Colours->Num()))]->AsString());
+    for(int32 I=0;I<Swimwear->GetNumMaterials();++I)if(auto M=Swimwear->CreateDynamicMaterialInstance(I))M->SetVectorParameterValue(TEXT("Tint"),FLinearColor(C));}}}
  PlayPose(TEXT("Idle"));return true;
 }
 void AMarePerson::PlayPose(const FString& Name,bool bLoop)
@@ -161,6 +209,18 @@ void AMarePerson::Tick(float DeltaSeconds)
  Super::Tick(DeltaSeconds);Elapsed+=DeltaSeconds;
  // Choose the outfit once the spawner has set the role: staff in uniform, hotel staff and diners in
  // social clothes, beach-goers in beach or swimwear, villagers casual.
+ // MetaHumans replace the rig people once the role is known: a stable pick (save id) from the role's roster;
+ // the dyed rig outfits below remain the fallback when a MetaHuman is missing or mare.MetaHumans is 0.
+ if(!bOutfitApplied && Elapsed>.05f && MetaHuman.IsEmpty() && CVarMareMetaHumans.GetValueOnGameThread()){
+  FString Wanted=CVarMareMetaHuman.GetValueOnGameThread();
+  if(Wanted.IsEmpty()){
+   const TCHAR* RoleKey=bEmployee?TEXT("staff"):Tags.Contains(TEXT("MareHotelGuest"))?TEXT("hotel"):Tags.Contains(TEXT("MarePousadaGuest"))?TEXT("pousada"):bAmbient?TEXT("village"):TEXT("beach");
+   const TArray<TSharedPtr<FJsonValue>>* List=nullptr;
+   if(MetaHumanRoster()->TryGetArrayField(RoleKey,List) && List->Num())
+    Wanted=(*List)[int32(FCrc::StrCrc32(*(SaveId+PersonName))%uint32(List->Num()))]->AsString();
+  }
+  if(!Wanted.IsEmpty())SetMetaHuman(Wanted);
+ }
  if(!bOutfitApplied && Elapsed>.05f){EOutfit Style=Outfit;
   if(Style==EOutfit::Auto){FRandomStream R(int32(FCrc::StrCrc32(*SaveId))+7);
    if(bEmployee)Style=EOutfit::Uniform;

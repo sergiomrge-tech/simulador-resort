@@ -1,6 +1,7 @@
 #include "MareSimulation.h"
 #if WITH_DEV_AUTOMATION_TESTS
 #include "Misc/AutomationTest.h"
+#include "MareGameRoom.h"
 #include "Engine/GameInstance.h"
 #include "Misc/FileHelper.h"
 #include "Misc/Paths.h"
@@ -152,8 +153,9 @@ bool FMareProgressionTest::RunTest(const FString& Parameters)
  const double Occupancy=Sim->HotelOccupancy();TestTrue(TEXT("Occupancy clamped"),Occupancy>=.15 && Occupancy<=.98);
  const double BeforeNight=Sim->Money();const int32 DayBefore=Sim->Number(Sim->State,TEXT("day"));Sim->Sleep();
  auto Hotel=Sim->Object(Sim->Object(Sim->State,TEXT("prog")),TEXT("hotel"));const int32 Rooms=Sim->Number(Hotel,TEXT("rooms"));
- TestEqual(TEXT("Rooms from occupancy"),Rooms,int32(FMath::RoundToInt(32*Occupancy)));
- TestEqual(TEXT("Hotel night booked once with wage"),Sim->Money(),double(BeforeNight+Rooms*220.+FMath::RoundToDouble(Rooms*1.7*35)-900.-Wage));
+ // Suites are paid at the reception (MareStays); the night books the restaurant of real stays and the crew.
+ TestEqual(TEXT("No guests checked in yet"),Rooms,0);
+ TestEqual(TEXT("Hotel night booked once with wage"),Sim->Money(),double(BeforeNight+FMath::RoundToDouble(Rooms*1.7*35)-900.-Wage));
  TestEqual(TEXT("Day advanced with hotel"),int32(Sim->Number(Sim->State,TEXT("day"))),DayBefore+1);
  Sim->RemoveFromRoot();Instance->RemoveFromRoot();return true;
 }
@@ -270,5 +272,129 @@ bool FMareExpansionOpsTest::RunTest(const FString& Parameters)
  TestTrue(TEXT("Spa upgrade"),Sim->BuyCustom(TEXT("hotel_lazer"),TEXT("spa"),5));
  TestTrue(TEXT("Hotel decor fills rooms"),Sim->HotelOccupancy()>Occ || Occ>=.98);
  Sim->RemoveFromRoot();Instance->RemoveFromRoot();return true;
+}
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FMareReputationHudTest,"MareAlta.Gameplay.ReputationHud",EAutomationTestFlags::EditorContext|EAutomationTestFlags::EngineFilter)
+bool FMareReputationHudTest::RunTest(const FString& Parameters)
+{
+ auto Instance=NewObject<UGameInstance>();Instance->AddToRoot();
+ auto Sim=NewObject<UMareSimulation>(Instance);Sim->AddToRoot();
+ Sim->SaveDirectory=FPaths::ProjectSavedDir()/TEXT("Automation/ReputationHud")/FGuid::NewGuid().ToString(EGuidFormats::Digits);
+ auto Load=[&](const FString& Name,TSharedPtr<FJsonObject>& Result){FString Text;FFileHelper::LoadFileToString(Text,*(FPaths::ProjectContentDir()/TEXT("Data")/Name));return FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Text),Result);};
+ if(!TestTrue(TEXT("Definitions"),Load(TEXT("definitions.json"),Sim->Definitions)) || !TestTrue(TEXT("Default save"),Load(TEXT("default_save.json"),Sim->State))){Sim->RemoveFromRoot();Instance->RemoveFromRoot();return false;}
+ // New game: no rooms yet, nothing sold, neutral 3-star average.
+ TestEqual(TEXT("No rooms before the pousada"),Sim->RoomsTotal(),0);
+ TestEqual(TEXT("Nothing sold yet"),Sim->ServedToday(),0);
+ TestEqual(TEXT("Neutral stars"),Sim->Stars(),3.);
+ // Sales today count from the day's starting mark, and the mark moves at the day close.
+ Sim->State->SetNumberField(TEXT("ue_day_sales_start"),10);Sim->State->SetNumberField(TEXT("kiosk_n"),17);
+ TestEqual(TEXT("Seven sold today"),Sim->ServedToday(),7);
+ // Rooms occupied come from last night's pousada and hotel results.
+ // Rooms occupied: live pousada stays plus last night's hotel suites.
+ auto Room=MakeShared<FJsonObject>();Room->SetStringField(TEXT("id"),TEXT("pousada_0"));Room->SetStringField(TEXT("state"),TEXT("occupied"));
+ Sim->Stays()->SetArrayField(TEXT("rooms"),{MakeShared<FJsonValueObject>(Room)});
+ TestEqual(TEXT("Occupied rooms are the live stays"),Sim->RoomsOccupied(),1);
+ Sim->Object(Sim->State,TEXT("unlocked"))->SetBoolField(TEXT("grand_hotel"),true);
+ TestEqual(TEXT("Hotel suites count"),Sim->RoomsTotal(),Sim->PousadaRooms()+32);
+ Sim->RemoveFromRoot();Instance->RemoveFromRoot();return true;
+}
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FMarePousadaStaysTest,"MareAlta.Gameplay.PousadaStays",EAutomationTestFlags::EditorContext|EAutomationTestFlags::EngineFilter)
+bool FMarePousadaStaysTest::RunTest(const FString& Parameters)
+{
+ auto Instance=NewObject<UGameInstance>();Instance->AddToRoot();
+ auto Sim=NewObject<UMareSimulation>(Instance);Sim->AddToRoot();
+ Sim->SaveDirectory=FPaths::ProjectSavedDir()/TEXT("Automation/PousadaStays")/FGuid::NewGuid().ToString(EGuidFormats::Digits);
+ auto Load=[&](const FString& Name,TSharedPtr<FJsonObject>& Result){FString Text;FFileHelper::LoadFileToString(Text,*(FPaths::ProjectContentDir()/TEXT("Data")/Name));return FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Text),Result);};
+ if(!TestTrue(TEXT("Definitions"),Load(TEXT("definitions.json"),Sim->Definitions)) || !TestTrue(TEXT("Default save"),Load(TEXT("default_save.json"),Sim->State))){Sim->RemoveFromRoot();Instance->RemoveFromRoot();return false;}
+ Sim->State->SetNumberField(TEXT("money"),1000);Sim->Object(Sim->State,TEXT("unlocked"))->SetBoolField(TEXT("pousada"),true);
+ Sim->SyncRooms();const int32 Rooms=Sim->PousadaRooms();
+ TestTrue(TEXT("Pousada has rooms"),Rooms>=1);TestEqual(TEXT("All rooms start clean"),Sim->FreeCleanRooms(),Rooms);
+ auto Queue=[&](){const TArray<TSharedPtr<FJsonValue>>* Q=nullptr;Sim->Stays()->TryGetArrayField(TEXT("queue"),Q);return Q?Q->Num():0;};
+ auto Guest=[&](const FString& Id){const TArray<TSharedPtr<FJsonValue>>* Q=nullptr;Sim->Stays()->TryGetArrayField(TEXT("queue"),Q);
+  if(Q)for(const auto& V:*Q)if(Sim->String(V->AsObject(),TEXT("id"))==Id)return V->AsObject();return TSharedPtr<FJsonObject>();};
+ // A greedy price is refused twice and the guest leaves; nothing is charged.
+ const FString First=Sim->AddArrival();TestFalse(TEXT("Guest arrived"),First.IsEmpty());TestEqual(TEXT("Queue has one"),Queue(),1);
+ const double Limit=Sim->Number(Guest(First),TEXT("limit"));double Offer=0;const double Before=Sim->Money();
+ TestTrue(TEXT("Greedy ask countered"),Sim->Haggle(First,Limit*1.5,Offer)==UMareSimulation::EHaggle::Countered);
+ TestTrue(TEXT("Counter offer stays under the limit"),Offer<=Limit);
+ TestTrue(TEXT("Second greedy ask: guest leaves"),Sim->Haggle(First,Limit*1.5,Offer)==UMareSimulation::EHaggle::Left);
+ TestEqual(TEXT("Queue empty after leaving"),Queue(),0);TestEqual(TEXT("Nothing charged"),Sim->Money(),Before);
+ // Taking the offer checks in and charges every night once.
+ const FString Second=Sim->AddArrival();auto G=Guest(Second);const double Rate=Sim->Number(G,TEXT("offer"));const int32 Nights=Sim->Number(G,TEXT("nights"));
+ TestTrue(TEXT("Accept the offer"),Sim->AcceptOffer(Second));
+ TestEqual(TEXT("All nights charged at check-in"),Sim->Money(),Before+Rate*Nights);
+ TestEqual(TEXT("Room taken"),Sim->FreeCleanRooms(),Rooms-1);TestEqual(TEXT("Occupied count"),Sim->RoomsOccupied(),1);
+ // Nights pass; the check-out leaves a rating and a dirty room with three tasks; no extra charge.
+ const TArray<TSharedPtr<FJsonValue>>* Ratings=nullptr;Sim->State->TryGetArrayField(TEXT("ratings"),Ratings);const int32 RatingsBefore=Ratings?Ratings->Num():0;
+ const double Paid=Sim->Money();for(int32 I=0;I<Nights;++I)Sim->StaysNight();
+ TestEqual(TEXT("Nights do not charge again"),Sim->Money(),Paid);
+ Sim->State->TryGetArrayField(TEXT("ratings"),Ratings);TestEqual(TEXT("Check-out rated"),Ratings?Ratings->Num():0,FMath::Min(40,RatingsBefore+1));
+ TestEqual(TEXT("Room dirty"),Sim->FreeCleanRooms(),Rooms-1);
+ TestFalse(TEXT("Unknown task"),Sim->CleanRoom(TEXT("pousada_0"),TEXT("window")));
+ TestTrue(TEXT("Make the bed"),Sim->CleanRoom(TEXT("pousada_0"),TEXT("bed")));TestFalse(TEXT("Bed only once"),Sim->CleanRoom(TEXT("pousada_0"),TEXT("bed")));
+ TestTrue(TEXT("Towels"),Sim->CleanRoom(TEXT("pousada_0"),TEXT("towels")));TestTrue(TEXT("Trash"),Sim->CleanRoom(TEXT("pousada_0"),TEXT("trash")));
+ TestEqual(TEXT("Room free again"),Sim->FreeCleanRooms(),Rooms);
+ // The maid cleans dirty rooms by the hour.
+ const FString Third=Sim->AddArrival();Sim->AcceptOffer(Third);
+ for(int32 I=0;I<6;++I)Sim->StaysNight();
+ TestEqual(TEXT("Dirty again"),Sim->FreeCleanRooms(),Rooms-1);
+ Sim->Object(Sim->State,TEXT("staff"))->SetBoolField(TEXT("camareira"),true);Sim->StaysHour(9);
+ TestEqual(TEXT("Maid cleaned the room"),Sim->FreeCleanRooms(),Rooms);
+ // Grand Hotel: 32 suites, five-star rates, the hotel desk checks guests in after two hours, housekeeping cleans.
+ Sim->Object(Sim->State,TEXT("unlocked"))->SetBoolField(TEXT("grand_hotel"),true);Sim->SyncRooms();
+ TestEqual(TEXT("Hotel suites"),Sim->FreeCleanRooms(TEXT("hotel")),32);TestEqual(TEXT("Pousada untouched"),Sim->FreeCleanRooms(),Rooms);
+ TestTrue(TEXT("Hotel rate above the pousada"),Sim->StayRate(TEXT("hotel"))>Sim->StayRate(TEXT("pousada")));
+ const FString Vip=Sim->AddArrival(TEXT("hotel"));TestFalse(TEXT("VIP arrived"),Vip.IsEmpty());
+ Sim->StaysHour(9);TestEqual(TEXT("Desk waits two hours"),Sim->FreeCleanRooms(TEXT("hotel")),32);
+ Sim->State->SetNumberField(TEXT("minutes"),Sim->Number(Sim->State,TEXT("minutes"))+130);Sim->StaysHour(9);
+ TestEqual(TEXT("Hotel desk checked the VIP in"),Sim->FreeCleanRooms(TEXT("hotel")),31);
+ for(int32 I=0;I<8;++I)Sim->StaysNight();
+ TestEqual(TEXT("Housekeeping freed the suite"),Sim->FreeCleanRooms(TEXT("hotel")),32);
+ Sim->RemoveFromRoot();Instance->RemoveFromRoot();return true;
+}
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FMarePricesTest,"MareAlta.Gameplay.PricesAndFame",EAutomationTestFlags::EditorContext|EAutomationTestFlags::EngineFilter)
+bool FMarePricesTest::RunTest(const FString& Parameters)
+{
+ auto Instance=NewObject<UGameInstance>();Instance->AddToRoot();
+ auto Sim=NewObject<UMareSimulation>(Instance);Sim->AddToRoot();
+ Sim->SaveDirectory=FPaths::ProjectSavedDir()/TEXT("Automation/PricesAndFame")/FGuid::NewGuid().ToString(EGuidFormats::Digits);
+ auto Load=[&](const FString& Name,TSharedPtr<FJsonObject>& Result){FString Text;FFileHelper::LoadFileToString(Text,*(FPaths::ProjectContentDir()/TEXT("Data")/Name));return FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Text),Result);};
+ if(!TestTrue(TEXT("Definitions"),Load(TEXT("definitions.json"),Sim->Definitions)) || !TestTrue(TEXT("Default save"),Load(TEXT("default_save.json"),Sim->State))){Sim->RemoveFromRoot();Instance->RemoveFromRoot();return false;}
+ const FString Coco=TEXT("coco_gelado");const double Fair=Sim->DishPrice(Coco),FairDemand=Sim->DishDemand(Coco);
+ TestEqual(TEXT("Sale price starts fair"),Sim->SalePrice(Coco),Fair);TestEqual(TEXT("Fair ratio"),Sim->PriceRatio(Coco),1.);
+ TestTrue(TEXT("Set a higher price"),Sim->SetSalePrice(Coco,Fair*1.3));TestTrue(TEXT("Expensive sells less"),Sim->DishDemand(Coco)<FairDemand*.6);
+ Sim->SetSalePrice(Coco,Fair*.8);TestTrue(TEXT("Cheap sells more"),Sim->DishDemand(Coco)>FairDemand*1.4);
+ Sim->SetSalePrice(Coco,Fair*10);TestEqual(TEXT("Clamped at double"),Sim->SalePrice(Coco),FMath::RoundToDouble(Fair*2));
+ Sim->SetSalePrice(Coco,1);TestEqual(TEXT("Clamped at half"),Sim->SalePrice(Coco),FMath::RoundToDouble(Fair*.5));
+ const double Start=Sim->KioskArrivalFactor();
+ Sim->Object(Sim->State,TEXT("prog"))->SetNumberField(TEXT("fame_xp"),1e6);
+ TestTrue(TEXT("Fame brings more customers"),Sim->KioskArrivalFactor()>Start*1.2);
+ Sim->RemoveFromRoot();Instance->RemoveFromRoot();return true;
+}
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FMarePoolPhysicsTest,"MareAlta.Gameplay.PoolPhysics",EAutomationTestFlags::EditorContext|EAutomationTestFlags::EngineFilter)
+bool FMarePoolPhysicsTest::RunTest(const FString& Parameters)
+{
+ auto Room=NewObject<UMareGameRoom>();Room->AddToRoot();namespace R=MarePool;
+ // Break: everything stops within 20 s and stays on the table.
+ Room->Rack();Room->Shoot(0,5.5);double T=0;while(Room->Step(1./30) && T<20)T+=1./30;
+ TestFalse(TEXT("Balls stop after the break"),Room->Moving());TestTrue(TEXT("Break settles in time"),T<20);
+ bool bInside=true;for(const auto& B:Room->Balls)if(!B.bIn)bInside&=FMath::Abs(B.P.X)<=R::L/2+.001 && FMath::Abs(B.P.Y)<=R::W/2+.001;
+ TestTrue(TEXT("Every ball on the cloth"),bInside);
+ // A straight shot pockets a ball sitting in front of the corner pocket; the shooter keeps the turn.
+ Room->Rack();for(int32 I=1;I<16;++I)Room->Balls[I].bIn=true;
+ Room->Balls[3].bIn=false;Room->Balls[3].P=FVector2D(R::L/2-.15,R::W/2-.15);
+ const FVector2D ToPocket=(FVector2D(R::L/2,R::W/2)-Room->Balls[3].P).GetSafeNormal();Room->Balls[0].P=Room->Balls[3].P-ToPocket*.5;
+ Room->Shoot(FMath::Atan2(ToPocket.Y,ToPocket.X),2.5);
+ while(Room->Step(1./30)){}
+ TestTrue(TEXT("Ball 3 potted"),Room->Balls[3].bIn);Room->ResolveShot();
+ TestEqual(TEXT("Player scored"),Room->Score[0],1);TestEqual(TEXT("Player keeps the turn"),Room->Turn,0);
+ // The 8 before three balls loses; the cue ball in a pocket passes the turn and is respotted.
+ Room->Rack();Room->PottedThisShot={8};Room->ResolveShot();TestEqual(TEXT("Early 8 loses"),Room->Winner,1);
+ Room->Rack();Room->Balls[0].bIn=true;Room->PottedThisShot={0};Room->ResolveShot();TestEqual(TEXT("Scratch passes the turn"),Room->Turn,1);TestFalse(TEXT("Cue ball back"),Room->Balls[0].bIn);
+ Room->Rack();Room->Score[0]=3;Room->PottedThisShot={5};Room->ResolveShot();TestEqual(TEXT("Fourth ball wins"),Room->Winner,0);
+ // The guest finds a clean pot when one exists.
+ Room->Rack();for(int32 I=1;I<16;++I)Room->Balls[I].bIn=true;Room->Balls[2].bIn=false;Room->Balls[2].P=FVector2D(.6,.1);Room->Balls[0].P=FVector2D(-.2,.05);Room->Turn=1;
+ double Angle=0,Speed=0;Room->PlanGuestShot(Angle,Speed,7);Room->Shoot(Angle,Speed);while(Room->Step(1./30)){}
+ TestTrue(TEXT("Guest hits a ball"),Room->Balls[2].P!=FVector2D(.6,.1) || Room->Balls[2].bIn);
+ Room->RemoveFromRoot();return true;
 }
 #endif

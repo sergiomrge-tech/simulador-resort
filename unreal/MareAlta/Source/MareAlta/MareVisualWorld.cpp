@@ -118,11 +118,11 @@ void UMareVisualWorld::Tick(float DeltaSeconds)
  for(auto Light:Practical)if(IsValid(Light))Light->GetLightComponent()->SetIntensity(Light->ActorHasTag(TEXT("MareHomeLight"))?FMath::Lerp(1000.f,180.f,Day):Light->ActorHasTag(TEXT("MareBounce"))?FMath::Lerp(400.f,6500.f,Day):FMath::Lerp(2200.f,10000.f,Day));
  if(Fog)Fog->GetComponent()->SetFogDensity(Rain?.0018f:.00065f);
  auto Dishes=UMareSimulation::Object(Sim->Definitions,TEXT("dishes"));
- auto Price=[&](const FString& Id){return UMareSimulation::String(UMareSimulation::Object(Dishes,Id),TEXT("name"))+FString::Printf(TEXT("   R$ %.0f"),Sim->DishPrice(Id));};
+ auto Price=[&](const FString& Id){return UMareSimulation::String(UMareSimulation::Object(Dishes,Id),TEXT("name"))+FString::Printf(TEXT("   R$ %.0f"),Sim->SalePrice(Id));};
  for(auto Sign:Signs){if(!IsValid(Sign))continue;FString Text;
   if(Sign->ActorHasTag(TEXT("MareCompanySign")))Text=UMareSimulation::String(UMareSimulation::Object(Sim->State,TEXT("company")),TEXT("name"));
   if(Sign->ActorHasTag(TEXT("MareStatusSign"))){bool Requested=false;UMareSimulation::Object(Sim->State,TEXT("company"))->TryGetBoolField(TEXT("kiosk_open"),Requested);Text=Sim->IsOpen()?TEXT("ABERTO"):Requested?TEXT("AGUARDE O HORÁRIO"):TEXT("FECHADO");Sign->GetTextRender()->SetTextRenderColor(Sim->IsOpen()?FColor(24,135,64):Requested?FColor(145,96,18):FColor(186,35,35));}
-  if(Sign->ActorHasTag(TEXT("MarePromoSign")))Text=FString::Printf(TEXT("PROMOÇÕES<br>Coco gelado<br>R$ %.0f<br>Suco da fruta<br>R$ %.0f"),Sim->DishPrice(TEXT("coco_gelado")),Sim->DishPrice(TEXT("suco")));
+  if(Sign->ActorHasTag(TEXT("MarePromoSign")))Text=FString::Printf(TEXT("PROMOÇÕES<br>Coco gelado<br>R$ %.0f<br>Suco da fruta<br>R$ %.0f"),Sim->SalePrice(TEXT("coco_gelado")),Sim->SalePrice(TEXT("suco")));
   if(Sign->ActorHasTag(TEXT("MareMenuSign")))for(FString Id:{TEXT("coco_gelado"),TEXT("suco"),TEXT("caipirinha"),TEXT("petiscos"),TEXT("sorvete_morango"),TEXT("sorvete_chocolate"),TEXT("batata_frita"),TEXT("porcao_peixe")})if(Sim->IsDishUnlocked(Id))Text+=Price(Id)+TEXT("<br>");
   for(FName Tag:Sign->Tags)if(Tag.ToString().StartsWith(TEXT("MareStock_"))){FString Id=Tag.ToString().RightChop(10);Text=UMareSimulation::String(UMareSimulation::Object(Dishes,Id),TEXT("name"))+FString::Printf(TEXT("<br>%d prontos"),Sim->Available(Id));}
   if(!Text.IsEmpty() && Sign->GetTextRender()->Text.ToString()!=Text)Sign->GetTextRender()->SetText(FText::FromString(Text));

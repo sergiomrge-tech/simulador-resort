@@ -553,3 +553,15 @@ Modelados com bpy (`tools/ue58/gen_landmarks.py`) com texturas CC0 do Poly Haven
 ### Bangalôs da pousada (UE5.8) — 01/11/2026
 
 Modelados com bpy (`tools/ue58/gen_rooms.py`): bangalô, camas de madeira/ferro/king, ventilador de teto, ar-condicionado e tapete, com texturas CC0 do Poly Haven (painted_plaster_wall, plaster_stone_wall_01, oak_wood_planks, distressed_painted_planks, thatch_roof_angled, teak_veneer, rough_linen, waffle_pique_cotton, brown_leather, metal_plate, fabric_pattern_07). Quadro: aquarela gerada com a IA do Canva na conta do projeto (mídia `MAHZt5_7p3k`).
+
+### Pessoas MetaHuman (UE5.8) — 02/11/2026
+
+Presets MetaHuman que vêm com a Unreal Engine 5.8 (plugin MetaHumanCharacter: Ada, Aoi, Asha, Celeste, Dominic, Etta, Grace, Isaiah, Jelena, Jorge, Kelvin, Lani, Lorenzo, Mateo, Omari, Sunita, Trey, Tuya, Vivian, Walter, Zuri). O rig facial e as texturas foram gerados no serviço em nuvem da Epic, com a conta do usuário. Uso conforme o EULA da Unreal Engine e a licença MetaHuman (somente em projetos Unreal). Animações: Universal Animation Library da Quaternius (CC0), retargetadas para o esqueleto MetaHuman (`unreal/MareAlta/Content/Python/mare_metahuman.py`).
+
+### Gameplay: hospedagem e salão de jogos — 02/11/2026
+
+Modelados com bpy, próprios do projeto:
+- `tools/ue58/gen_room_mess.py`: toalha amassada e saco de lixo amarrado dos bangalôs sujos.
+- `tools/ue58/gen_mh_swimwear.py`: biquíni e sunga ajustados ao corpo de cada MetaHuman, com os pesos do esqueleto dele.
+- `tools/ue58/gen_pool_table.py`: mesa de sinuca de 7 pés com medidas reais, 16 bolas numeradas (texturas geradas pelo script com Pillow e Arial do sistema só para os números) e taco.
+- `tools/ue58/gen_hud_icons.py`: ícones do HUD (estrela, cama, pessoa).

@@ -18,6 +18,11 @@ public:
  AMarePerson();
  virtual void Tick(float DeltaSeconds) override;
  UFUNCTION(BlueprintCallable,Category="Presentation") bool SetAppearance(int32 AppearanceVariant);
+ /** MetaHuman built in /Game/People/MetaHumans/<Name>: its blueprint follows this rig mesh, animated with the retargeted clips. */
+ UFUNCTION(BlueprintCallable,Category="Presentation") bool SetMetaHuman(const FString& Name);
+ UPROPERTY(BlueprintReadOnly,Category="Maré Alta") FString MetaHuman;
+ UPROPERTY() TObjectPtr<class UChildActorComponent> MetaHumanBody;
+ UPROPERTY() TObjectPtr<USkeletalMeshComponent> Swimwear;
  UFUNCTION(BlueprintCallable,Category="Presentation") void PlayPose(const FString& Name,bool bLoop=true);
  UFUNCTION(BlueprintCallable,Category="Presentation") bool WalkTo(const FVector& Goal);
  bool AtGoal()const;

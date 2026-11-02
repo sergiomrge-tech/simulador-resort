@@ -1,0 +1,76 @@
+{
+  "_doc": "MetaHumans built in /Game/People/MetaHumans (mare_metahuman.py) chosen by AMarePerson per role from the save id. <Name>_Swim = whole-body build wearing /Game/People/Swimwear/SKM_Bikini|Trunks_<Name>.",
+  "staff": [
+    "Mateo",
+    "Sunita"
+  ],
+  "hotel": [
+    "Celeste",
+    "Lorenzo",
+    "Vivian",
+    "Dominic",
+    "Grace",
+    "Isaiah",
+    "Jelena"
+  ],
+  "pousada": [
+    "Ada",
+    "Aoi",
+    "Celeste",
+    "Jelena",
+    "Vivian",
+    "Mateo",
+    "Lorenzo",
+    "Isaiah",
+    "Tuya",
+    "Omari"
+  ],
+  "village": [
+    "Lani",
+    "Ada",
+    "Aoi",
+    "Asha",
+    "Celeste",
+    "Jelena",
+    "Sunita",
+    "Vivian",
+    "Zuri",
+    "Grace",
+    "Tuya",
+    "Mateo",
+    "Omari",
+    "Lorenzo",
+    "Trey",
+    "Isaiah",
+    "Jorge",
+    "Kelvin",
+    "Dominic",
+    "Etta",
+    "Walter"
+  ],
+  "beach": [
+    "Ada_Swim",
+    "Ada_Swim",
+    "Aoi",
+    "Asha",
+    "Zuri",
+    "Tuya",
+    "Mateo",
+    "Omari",
+    "Trey",
+    "Jorge",
+    "Kelvin",
+    "Lani"
+  ],
+  "swim_colours": [
+    "C8102E",
+    "1E5AA8",
+    "F2C230",
+    "151515",
+    "E85D9F",
+    "1F8A5B",
+    "F5F5F0",
+    "FF7A3D",
+    "6A3FA0"
+  ]
+}

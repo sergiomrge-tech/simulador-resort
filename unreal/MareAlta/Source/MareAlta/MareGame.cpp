@@ -48,6 +48,9 @@
 #include "Widgets/SOverlay.h"
 #include "Widgets/SNullWidget.h"
 #include "Brushes/SlateRoundedBoxBrush.h"
+#include "Widgets/Images/SImage.h"
+#include "MareGameRoom.h"
+#include "Engine/Texture2D.h"
 
 namespace MareUI
 {
@@ -88,6 +91,14 @@ namespace MareTropical
  /** "Maré Tropical" palette chosen by the user (proposal B) with C-style side tabs on the phone. */
  FLinearColor Hex(uint8 R,uint8 G,uint8 B,float A=1.f){FLinearColor C(FColor(R,G,B));C.A=A;return C;}
  const FSlateRoundedBoxBrush& Plank(){static const FSlateRoundedBoxBrush B(Hex(116,74,43),0.f,Hex(78,47,26),3.f);return B;}
+ /** White HUD icons (tools/ue58/gen_hud_icons.py -> /Game/UI/Icons), tinted by the widget; the fonts have no ★ or bed glyph. */
+ const FSlateBrush& Icon(const TCHAR* Name)
+ {
+  static TMap<FString,TSharedPtr<FSlateBrush>> Cache;auto& B=Cache.FindOrAdd(Name);
+  if(!B.IsValid()){B=MakeShared<FSlateBrush>();B->ImageSize=FVector2D(18,18);
+   if(auto T=LoadObject<UTexture2D>(nullptr,*FString::Printf(TEXT("/Game/UI/Icons/T_Icon_%s.T_Icon_%s"),Name,Name))){T->AddToRoot();B->SetResourceObject(T);}}   // rooted: the brush cache outlives levels
+  return *B;
+ }
  const FSlateRoundedBoxBrush& Coin(){static const FSlateRoundedBoxBrush B(Hex(255,207,92),9.f,Hex(176,124,31),2.f);return B;}
  const FSlateRoundedBoxBrush& Ticket(){static const FSlateRoundedBoxBrush B(Hex(255,250,238),5.f,Hex(222,196,160),1.f);return B;}
  const FSlateRoundedBoxBrush& TicketStrip(){static const FSlateRoundedBoxBrush B(Hex(233,199,155),2.f);return B;}
@@ -201,6 +212,8 @@ private:
  int32 Tab=0;
  FName Station;
  FString Place=TEXT("kiosk");
+ /** Reception: the nightly price the player is about to ask each waiting guest (starts at the guest's offer). */
+ TMap<FString,double> Ask;
  UMareSimulation* Sim()const{return Owner.IsValid()?Owner->GetGameInstance()->GetSubsystem<UMareSimulation>():nullptr;}
  // ---- Where the page goes: exactly over the glass of the 3D phone, else a fixed sheet.
  // Viewport pixels -> units inside the DPI scaler: measured from this widget, so monitor DPI is included.
@@ -281,6 +294,50 @@ private:
    Stock->AddSlot(I%4,I/4)[MareNotebook::PriceTag(SNew(SVerticalBox)+SVerticalBox::Slot().AutoHeight()[MareNotebook::BodyText(UMareSimulation::String(Dish,TEXT("name")),12,MareNotebook::Ink,true)]
     +SVerticalBox::Slot().AutoHeight()[SNew(STextBlock).Font(MareNotebook::Hand(18)).ColorAndOpacity_Lambda([S,Id](){return FSlateColor(S->IsDishUnlocked(Id) && S->Available(Id)>0?MareNotebook::Green:MareNotebook::Red);})
      .Text_Lambda([S,Id](){if(!S->IsDishUnlocked(Id))return FText::FromString(TEXT("precisa de expansão"));const int32 N=S->Available(Id);return FText::FromString(N>0?FString::Printf(TEXT("%d prontos"),N):TEXT("acabou · repor"));})],TiltOf(I))];++I;}
+ }
+ /** Pousada reception: waiting guests with their offer, ask/counter buttons, and the room board. */
+ void ReceptionPage(const FString& Where)
+ {
+  auto S=Sim();using namespace MareNotebook;S->SyncRooms();const bool bHotel=Where==TEXT("hotel");
+  const int32 Free=S->FreeCleanRooms(Where);
+  Title(bHotel?TEXT("Recepção do Grand Hotel"):TEXT("Recepção da pousada"));
+  Line(FString::Printf(TEXT("%s livres: %d de %d · diária de referência R$ %.0f"),bHotel?TEXT("Suítes"):TEXT("Quartos limpos"),Free,bHotel?32:S->PousadaRooms(),S->StayRate(Where)),13,Faded);
+  if(bHotel)Line(TEXT("Quem você não atender em 2 horas, a equipe do hotel recebe pela oferta do hóspede."),12,Faded);
+  const TArray<TSharedPtr<FJsonValue>>* All=nullptr;S->Stays()->TryGetArrayField(TEXT("queue"),All);
+  TArray<TSharedPtr<FJsonValue>> Mine;if(All)for(const auto& V:*All){const FString P=UMareSimulation::String(V->AsObject(),TEXT("place"));if(P==Where || (P.IsEmpty() && !bHotel))Mine.Add(V);}
+  const TArray<TSharedPtr<FJsonValue>>* Queue=&Mine;
+  if(Queue->IsEmpty())Line(TEXT("Ninguém esperando agora. Hóspedes chegam entre 10h e 20h."),13,Faded);
+  else if(!Free)Line(bHotel?TEXT("Hotel lotado esta noite."):TEXT("Sem quarto limpo: arrume um bangalô para fazer o check-in."),13,Red);
+  for(const auto& Value:*Queue){
+   const auto G=Value->AsObject();const FString Id=UMareSimulation::String(G,TEXT("id"));
+   const double Offer=UMareSimulation::Number(G,TEXT("offer")),Mood=UMareSimulation::Number(G,TEXT("mood"));
+   double& Price=Ask.FindOrAdd(Id,Offer);if(Price<Offer)Price=Offer;
+   const FString Humor=Mood>.7?TEXT("animado"):Mood>.35?TEXT("hesitante"):TEXT("irritado");
+   Heading(FString::Printf(TEXT("%s · %s"),*UMareSimulation::String(G,TEXT("name")),*UMareSimulation::String(G,TEXT("label"))),
+    FString::Printf(TEXT("%.0f noite(s) · humor: %s · rodada %.0f de 3"),UMareSimulation::Number(G,TEXT("nights")),*Humor,UMareSimulation::Number(G,TEXT("round"))+1));
+   Line(FString::Printf(TEXT("Oferece R$ %.0f por noite. Você pede R$ %.0f."),Offer,Price),14,Ink);
+   auto Row=SNew(SHorizontalBox);
+   for(const int32 Step:{-10,-5,5,10})Row->AddSlot().AutoWidth().Padding(0,0,6,0)[Button(FString::Printf(TEXT("%+d%%"),Step),[this,Id,Step,Offer](){double& P=Ask.FindOrAdd(Id,Offer);P=FMath::Max(Offer,FMath::RoundToDouble(P*(1+Step/100.)));},true)];
+   Row->AddSlot().AutoWidth().Padding(10,0,6,0)[Button(FString::Printf(TEXT("Pedir R$ %.0f"),Price),[this,S,Id](){double Out=0;const double P=Ask.FindRef(Id);
+    switch(S->Haggle(Id,P,Out)){
+     case UMareSimulation::EHaggle::Accepted:S->LastMessage=FString::Printf(TEXT("Fechado por R$ %.0f a noite. Chave entregue."),Out);Ask.Remove(Id);break;
+     case UMareSimulation::EHaggle::Countered:S->LastMessage=FString::Printf(TEXT("Contraproposta: R$ %.0f por noite."),Out);Ask.Add(Id,Out);break;
+     case UMareSimulation::EHaggle::Left:Ask.Remove(Id);break;
+     default:S->LastMessage=TEXT("Sem quarto limpo livre.");}},Free>0)];
+   Row->AddSlot().AutoWidth()[Button(FString::Printf(TEXT("Aceitar R$ %.0f"),Offer),[this,S,Id,Offer](){if(S->AcceptOffer(Id)){S->LastMessage=FString::Printf(TEXT("Check-in por R$ %.0f a noite."),Offer);Ask.Remove(Id);}else S->LastMessage=TEXT("Sem quarto limpo livre.");},Free>0)];
+   Body->AddSlot().AutoHeight().Padding(0,2,0,8)[Row];
+  }
+  if(bHotel)return;   // 32 suites: the hotel crew keeps them; only the pousada shows the room board
+  Heading(TEXT("Quartos"));
+  const TArray<TSharedPtr<FJsonValue>>* Rooms=nullptr;S->Stays()->TryGetArrayField(TEXT("rooms"),Rooms);
+  if(Rooms)for(int32 I=0;I<Rooms->Num();++I){const auto R=(*Rooms)[I]->AsObject();if(UMareSimulation::String(R,TEXT("place"))==TEXT("hotel"))continue;
+   const FString State=UMareSimulation::String(R,TEXT("state"));FString Text;
+   if(State==TEXT("occupied"))Text=FString::Printf(TEXT("Bangalô %d · %s · mais %.0f noite(s) · R$ %.0f"),I+1,*UMareSimulation::String(UMareSimulation::Object(R,TEXT("guest")),TEXT("name")),UMareSimulation::Number(R,TEXT("nights")),UMareSimulation::Number(R,TEXT("rate")));
+   else if(State==TEXT("dirty")){TArray<FString> Tasks;const TArray<TSharedPtr<FJsonValue>>* T=nullptr;
+    if(R->TryGetArrayField(TEXT("tasks"),T))for(const auto& V:*T)Tasks.Add(V->AsString()==TEXT("bed")?TEXT("arrumar a cama"):V->AsString()==TEXT("towels")?TEXT("recolher toalhas"):TEXT("tirar o lixo"));
+    Text=FString::Printf(TEXT("Bangalô %d · sujo: %s"),I+1,*FString::Join(Tasks,TEXT(", ")));}
+   else Text=FString::Printf(TEXT("Bangalô %d · limpo e livre"),I+1);
+   Line(Text,13,State==TEXT("dirty")?Red:State==TEXT("occupied")?Ink:Green);}
  }
  static const TArray<FString>& Products(){static const TArray<FString> P={TEXT("coco_gelado"),TEXT("suco"),TEXT("caipirinha"),TEXT("petiscos"),TEXT("sorvete_morango"),TEXT("sorvete_chocolate"),TEXT("batata_frita"),TEXT("porcao_peixe")};return P;}
  /** Restock cards; at a station also the "take it ready" button for what that station keeps. */
@@ -430,7 +487,7 @@ private:
     G->AddSlot(Tier-1,0)[MareNotebook::PriceTag(Card,TiltOf(Tier-1),UMareSimulation::String(TierDef,TEXT("desc")))];}
   }
   if(Place!=TEXT("kiosk"))return;
-  Heading(TEXT("Receitas"),TEXT("(preço maior, mais pedidos e, a partir de Gourmet, mais fama)"));
+  Heading(TEXT("Receitas e preços"),TEXT("(receita melhor: preço de referência maior, mais pedidos e fama · seu preço muda a procura)"));
   const TArray<TSharedPtr<FJsonValue>>* Levels=nullptr;UMareSimulation::Object(S->CustomDefs(),TEXT("recipes"))->TryGetArrayField(TEXT("levels"),Levels);auto G=Grid();int32 I=0;
   for(const auto& Id:Products()){auto Dish=UMareSimulation::Object(UMareSimulation::Object(S->Definitions,TEXT("dishes")),Id);const int32 Level=S->RecipeLevel(Id);
    const FString LevelName=Levels && Levels->IsValidIndex(Level-1)?(*Levels)[Level-1]->AsString():FString::FromInt(Level);
@@ -439,6 +496,13 @@ private:
    if(!S->IsDishUnlocked(Id))Card->AddSlot().AutoHeight()[MareNotebook::HandText(TEXT("libere o produto em Resort"),15,MareNotebook::Pencil)];
    else if(Level>=5)Card->AddSlot().AutoHeight()[MareNotebook::Stamp(TEXT("NO MÁXIMO"),MareNotebook::Green)];
    else Card->AddSlot().AutoHeight().HAlign(HAlign_Left)[Button(FString::Printf(TEXT("Melhorar · R$ %.0f"),S->RecipeUpgradeCost(Id)),[S,Id](){S->UpgradeRecipe(Id);})];
+   // Your price (50%-200% of the recipe price): cheap sells more, expensive sells less and earns smaller tips.
+   if(S->IsDishUnlocked(Id)){const double R=S->PriceRatio(Id);
+    Card->AddSlot().AutoHeight().Padding(0,6,0,0)[MareNotebook::BodyText(FString::Printf(TEXT("Seu preço: R$ %.0f · %s"),S->SalePrice(Id),R>1.15?TEXT("caro"):R<.9?TEXT("barato"):TEXT("justo")),12.5f,R>1.15?MareNotebook::Red:R<.9?MareNotebook::Green:MareNotebook::Ink,true)];
+    Card->AddSlot().AutoHeight().HAlign(HAlign_Left)[SNew(SHorizontalBox)
+     +SHorizontalBox::Slot().AutoWidth().Padding(0,0,6,0)[Button(TEXT("-R$ 1"),[S,Id](){S->SetSalePrice(Id,S->SalePrice(Id)-1);})]
+     +SHorizontalBox::Slot().AutoWidth().Padding(0,0,6,0)[Button(TEXT("+R$ 1"),[S,Id](){S->SetSalePrice(Id,S->SalePrice(Id)+1);})]
+     +SHorizontalBox::Slot().AutoWidth()[Button(TEXT("justo"),[S,Id](){S->SetSalePrice(Id,S->DishPrice(Id));})]];}
    G->AddSlot(I%4,I/4)[MareNotebook::PriceTag(Card,TiltOf(I),TEXT("Próxima: ")+S->RecipeTitle(Id,FMath::Min(Level+1,5)))];++I;}
  }
  void Rebuild()
@@ -459,7 +523,7 @@ private:
   if(bPhone)for(int32 I=0;I<Titles.Num();++I){const bool bOn=I==Tab;
    Tabs->AddSlot().AutoWidth().VAlign(VAlign_Bottom).Padding(0,0,3,0)[SNew(SButton).ButtonStyle(&MareNotebook::Plain()).ContentPadding(FMargin(0)).OnClicked_Lambda([this,I](){if(Owner.IsValid())Owner->GetWorld()->GetSubsystem<UMareAudioWorld>()->PlayCue(TEXT("click"),.16f);Tab=I;Rebuild();return FReply::Handled();})
     [SNew(SBorder).BorderImage(&TabBrush(bOn?Paper:TabColor(I))).Padding(bOn?FMargin(11,4,11,3):FMargin(8,2,8,2))[SNew(STextBlock).Text(FText::FromString(Titles[I])).Font(MareNotebook::Hand(bOn?17:15)).ColorAndOpacity(Ink)]]];}
-  else Tabs->AddSlot().AutoWidth().VAlign(VAlign_Bottom)[SNew(SBorder).BorderImage(&TabBrush(Paper)).Padding(FMargin(16,6,16,5))[SNew(STextBlock).Text(FText::FromString(Station==TEXT("Fridge")?TEXT("Geladeira"):TEXT("Porções prontas"))).Font(MareNotebook::Hand(19)).ColorAndOpacity(Ink)]];
+  else Tabs->AddSlot().AutoWidth().VAlign(VAlign_Bottom)[SNew(SBorder).BorderImage(&TabBrush(Paper)).Padding(FMargin(16,6,16,5))[SNew(STextBlock).Text(FText::FromString(Station==TEXT("Fridge")?TEXT("Geladeira"):Station==TEXT("Reception") || Station==TEXT("ReceptionHotel")?TEXT("Recepção"):TEXT("Porções prontas"))).Font(MareNotebook::Hand(19)).ColorAndOpacity(Ink)]];
   Tabs->AddSlot().FillWidth(1)[SNullWidget::NullWidget];
   Tabs->AddSlot().AutoWidth().VAlign(VAlign_Bottom)[SNew(SButton).ButtonStyle(&MareNotebook::Plain()).ContentPadding(FMargin(0)).OnClicked_Lambda([this](){if(Owner.IsValid())Owner->ClosePhone();return FReply::Handled();})
    [SNew(SBorder).BorderImage(&TabBrush(Hex(226,150,140))).Padding(FMargin(8,2,8,2))[SNew(STextBlock).Text(FText::FromString(TEXT("fechar"))).Font(MareNotebook::Hand(15)).ColorAndOpacity(Ink)]]];
@@ -477,6 +541,7 @@ private:
    .Padding_Lambda([this](){const FSlateRect R=ScreenRect();return FMargin(R.Left,R.Top,0,0);})
    .WidthOverride_Lambda([this](){return FOptionalSize(ScreenRect().Right);})
    .HeightOverride_Lambda([this](){return FOptionalSize(ScreenRect().Bottom);})[Screen]]];
+  if(Station==TEXT("Reception") || Station==TEXT("ReceptionHotel")){ReceptionPage(Station==TEXT("ReceptionHotel")?TEXT("hotel"):TEXT("pousada"));return;}
   if(!bPhone){StockPage(true);if(!S->Carry().IsEmpty())Body->AddSlot().AutoHeight().HAlign(HAlign_Left).Padding(0,6)[Button(TEXT("Devolver produto"),[S](){S->ReturnCarry();})];return;}
   switch(Tab){
    case 0:KioskPage();break;
@@ -625,13 +690,14 @@ void AMareController::EndPlay(const EEndPlayReason::Type Reason){if(PauseWidget.
 /** Everything the tropical HUD shows; Signature() decides when Slate must rebuild. */
 struct FMareHudModel
 {
- FString Money,Day,Fame,Notice,Prompt,Carry,Hint;
+ FString Money,Day,Fame,Notice,Prompt,Carry,Hint,Stars,Rooms,Served;
+ int32 StarsFlash=0; // 1 up (green), -1 down (red)
  TArray<TPair<FString,FString>> Tickets;
  TArray<TPair<FString,int32>> Note; // text, style: 0 heading, 1 main goal, 2 secondary, 3 guidance
  bool bPhone=false;
  FString Signature()const
  {
-  FString S=Money+Day+Fame+Notice+Prompt+Carry+Hint+(bPhone?TEXT("P"):TEXT(""));
+  FString S=Money+Day+Fame+Notice+Prompt+Carry+Hint+Stars+Rooms+Served+FString::FromInt(StarsFlash)+(bPhone?TEXT("P"):TEXT(""));
   for(const auto& T:Tickets)S+=T.Key+T.Value;
   for(const auto& N:Note)S+=N.Key+FString::FromInt(N.Value);
   return S;
@@ -652,7 +718,14 @@ public:
    +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(0,0,8,0)[SNew(SBox).WidthOverride(18).HeightOverride(18)[SNew(SBorder).BorderImage(&Coin())]]
    +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(0,0,34,0)[Txt(M.Money,17,Hex(255,215,106),true)]
    +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(0,0,34,0)[Txt(M.Day,15,Paper,true)]
-   +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center)[Txt(M.Fame,15,Paper,true)]]];
+   +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(0,0,34,0)[Txt(M.Fame,15,Paper,true)]
+   // Reputation, always visible: star average, rooms occupied (when there are rooms) and sales today.
+   +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(0,0,6,0)[SNew(SImage).Image(&Icon(TEXT("Star"))).ColorAndOpacity(Hex(255,207,92))]
+   +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(0,0,24,0)[Txt(M.Stars,15,M.StarsFlash>0?Hex(140,230,140):M.StarsFlash<0?Hex(255,130,110):Paper,true)]
+   +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(0,0,6,0)[M.Rooms.IsEmpty()?SNullWidget::NullWidget:SNew(SImage).Image(&Icon(TEXT("Bed"))).ColorAndOpacity(Paper)]
+   +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(0,0,M.Rooms.IsEmpty()?0:24,0)[Txt(M.Rooms,15,Paper,true)]
+   +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(0,0,6,0)[SNew(SImage).Image(&Icon(TEXT("Person"))).ColorAndOpacity(Paper)]
+   +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center)[Txt(M.Served,15,Paper,true)]]];
   // Order tickets, slightly tilted like paper slips.
   if(M.Tickets.Num()){
    auto Row=SNew(SHorizontalBox);
@@ -707,6 +780,12 @@ void AMareHUD::DrawHUD()
  M.Day=FString::Printf(TEXT("Dia %.0f · %02d:%02d"),UMareSimulation::Number(S->State,TEXT("day"),1),Minutes/60,Minutes%60);
  M.Fame=TEXT("Fama: ")+S->FameName();
  const double Now=GetWorld()->GetRealTimeSeconds();
+ const double Stars=FMath::RoundToDouble(S->Stars()*10)/10;
+ if(ShownStars>=0 && Stars!=ShownStars){bStarsUp=Stars>ShownStars;StarsFlashUntil=Now+1.5;}
+ ShownStars=Stars;if(Now<StarsFlashUntil)M.StarsFlash=bStarsUp?1:-1;
+ M.Stars=FString::Printf(TEXT("%.1f"),Stars).Replace(TEXT("."),TEXT(","));
+ if(const int32 Rooms=S->RoomsTotal())M.Rooms=FString::Printf(TEXT("%d/%d"),FMath::Min(S->RoomsOccupied(),Rooms),Rooms);
+ M.Served=FString::Printf(TEXT("%d hoje"),S->ServedToday());
  if(S->LastMessage!=Notice){Notice=S->LastMessage;NoticeUntil=Notice.IsEmpty()?0:Now+7;}
  if(Now<NoticeUntil)M.Notice=Notice;
  const int32 IntroStage=UMareSimulation::Number(S->State,TEXT("ue_intro_stage"),2);
@@ -746,13 +825,23 @@ void AMareHUD::DrawHUD()
   for(const auto& Pair:Orders->Values){
    if(++Number>5)break;auto Order=Pair.Value->AsObject();const TArray<TSharedPtr<FJsonValue>>* Items=nullptr;FString Text;
    if(Order->TryGetArrayField(TEXT("remaining"),Items))for(const auto& Item:*Items)Text+=(Text.IsEmpty()?TEXT(""):TEXT("\n"))+Dish(Item->AsString());
-   M.Tickets.Add({FString::Printf(TEXT("#%d %s"),Number,*UMareSimulation::String(Order,TEXT("name"))),Text});
+   // How the customer felt about your prices when ordering.
+   double High=0,Low=9;const TArray<TSharedPtr<FJsonValue>>* All=nullptr;
+   if(Order->TryGetArrayField(TEXT("items"),All) || Order->TryGetArrayField(TEXT("remaining"),All))for(const auto& Item:*All){const double R=S->PriceRatio(Item->AsString());High=FMath::Max(High,R);Low=FMath::Min(Low,R);}
+   const TCHAR* Feel=High>1.25?TEXT(" · achou caro"):Low<.85?TEXT(" · que barato!"):TEXT("");
+   M.Tickets.Add({FString::Printf(TEXT("#%d %s%s"),Number,*UMareSimulation::String(Order,TEXT("name")),Feel),Text});
   }
  }
  if(!S->Carry().IsEmpty())M.Carry=Dish(S->Carry());
  if(auto Hero=Cast<AMareCharacter>(GetOwningPawn()))if(Hero->GetCharacterMovement()->IsSwimming())M.Hint=TEXT("Nadando · Espaço sobe · Ctrl/Shift mergulha");
  // The mission note would sit on top of the held phone.
  if(M.bPhone){M.Note.Empty();M.Tickets.Empty();}
+ // Pool match: aim guide, power bar and score instead of the crosshair and the mission note.
+ if(auto Room=GetWorld()->GetSubsystem<UMareGameRoom>())if(Room->IsPlaying()){
+  M.Note.Empty();M.Tickets.Empty();M.Hint=Room->Status();FVector From,To;FVector2D A,B;
+  if(Room->AimLine(From,To) && PC && PC->ProjectWorldLocationToScreen(From,A) && PC->ProjectWorldLocationToScreen(To,B))DrawLine(A.X,A.Y,B.X,B.Y,FLinearColor(1,1,1,.7f),1.5f);
+  if(Room->Power()>0){const float X=Canvas->ClipX*.5f-120,Y=Canvas->ClipY-150;DrawRect(FLinearColor(0,0,0,.4f),X,Y,240,10);DrawRect(FLinearColor(1.f,.8f-.5f*Room->Power(),.3f),X,Y,240*Room->Power(),10);}
+  Overlay->Refresh(M);return;}
  if(PC && !PC->bPhoneOpen && !GetWorld()->IsPaused()){
   const auto Target=AMareServiceTarget::FindFocused(GetOwningPlayerController());
   const FLinearColor FocusColor=Target?FLinearColor(1.f,.88f,.56f):FLinearColor(.9f,.9f,.9f,.8f);

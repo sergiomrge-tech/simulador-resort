@@ -4960,7 +4960,43 @@
    "fame_occupancy": 0.03,
    "maid": "camareira",
    "maid_bonus": 0.1,
-   "tip": 0.04
+   "tip": 0.04,
+   "receptionist": "recepcionista",
+   "maid_tasks_per_hour": 3,
+   "arrivals_per_room_hour": 0.25,
+   "profiles": [
+    {
+     "id": "mochileiro",
+     "label": "Mochileiro",
+     "min": 0.7,
+     "max": 0.9,
+     "nights_min": 1,
+     "nights_max": 2
+    },
+    {
+     "id": "casal",
+     "label": "Casal",
+     "min": 0.9,
+     "max": 1.1,
+     "nights_min": 2,
+     "nights_max": 4
+    },
+    {
+     "id": "familia",
+     "label": "Família",
+     "min": 1.0,
+     "max": 1.2,
+     "nights_min": 2,
+     "nights_max": 5
+    }
+   ],
+   "reception": [
+    -1080,
+    1080,
+    200,
+    0
+   ],
+   "reception_mesh_yaw": 0
   },
   "tours": [
    {
@@ -4990,6 +5026,43 @@
   ],
   "tour_guide": "guia",
   "business_fame": 0.06,
-  "business_rain": 0.4
+  "business_rain": 0.4,
+  "hotel_stays": {
+   "arrivals_per_room_hour": 0.035,
+   "profiles": [
+    {
+     "id": "executivo",
+     "label": "Executivo",
+     "min": 1.1,
+     "max": 1.4,
+     "nights_min": 1,
+     "nights_max": 3
+    },
+    {
+     "id": "lua_de_mel",
+     "label": "Lua de mel",
+     "min": 1.0,
+     "max": 1.3,
+     "nights_min": 3,
+     "nights_max": 6
+    },
+    {
+     "id": "familia_vip",
+     "label": "Família",
+     "min": 0.95,
+     "max": 1.2,
+     "nights_min": 3,
+     "nights_max": 7
+    },
+    {
+     "id": "influenciador",
+     "label": "Influenciador",
+     "min": 0.8,
+     "max": 1.05,
+     "nights_min": 1,
+     "nights_max": 2
+    }
+   ]
+  }
  }
 }

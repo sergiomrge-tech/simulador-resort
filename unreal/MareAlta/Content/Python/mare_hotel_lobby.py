@@ -369,6 +369,14 @@ def run(action, arg=''):
         return near(x, y, r)
     if action == 'view':
         return view(arg)
+    if action.startswith('hud_'):
+        import importlib, mare_hud
+        importlib.reload(mare_hud)
+        return mare_hud.run(action[4:], arg)
+    if action.startswith('mh_'):
+        import importlib, mare_metahuman
+        importlib.reload(mare_metahuman)
+        return mare_metahuman.run(action[3:], arg)
     if action.startswith('fab'):
         import importlib, mare_fab
         importlib.reload(mare_fab)

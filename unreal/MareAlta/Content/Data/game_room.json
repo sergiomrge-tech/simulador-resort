@@ -1,0 +1,9 @@
+{
+ "_doc": "Pool table of the Grand Hotel game room (UMareGameRoom): world cm [x, y, z of the floor, yaw]. Set from the editor after choosing the room.",
+ "table": [
+  -2050,
+  6050,
+  45,
+  180
+ ]
+}

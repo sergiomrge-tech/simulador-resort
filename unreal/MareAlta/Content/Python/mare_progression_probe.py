@@ -50,6 +50,12 @@ def run(action, arg=''):
         result['focused'] = str(focused.label) if focused else None
         if focused:
             focused.use(pc)
+    elif action == 'face':
+        # "Action|dx,dy,dz": stand at the target plus an offset, looking at it (any MareServiceTarget action).
+        target = _target(world, arg)
+        dx, dy, dz = (float(v) for v in (arg2 or '200,0,0').split(','))
+        _face(world, hero, pc, target.get_actor_location(), unreal.Vector(dx, dy, dz))
+        result['target'] = [target.get_actor_location().x, target.get_actor_location().y, target.get_actor_location().z]
     elif action == 'buy':
         result['ok'] = sim.buy_supply('peixe', int(arg or 4))
     elif action == 'advance':
