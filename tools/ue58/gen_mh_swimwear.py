@@ -38,10 +38,11 @@ def load_body():
 
 def measure(bm):
     ws = [v.co.copy() for v in bm.verts]
-    bust = min((w for w in ws if .03 < w.x < .15 and 1.05 < w.z < 1.36), key=lambda w: w.y)
+    neck = max(w.z for w in ws if abs(w.x) < .05)
+    # The bust sits 12-23 cm below the neck cut; searching lower picks a rounder belly (Asha: belly at 29 cm).
+    bust = min((w for w in ws if .03 < w.x < .15 and neck - .23 < w.z < neck - .12), key=lambda w: w.y)
     crotch = min((w for w in ws if abs(w.x) < .015 and .55 < w.z < 1.0), key=lambda w: w.z)
     hips = max((w for w in ws if .75 < w.z < 1.0 and abs(w.x) < .26), key=lambda w: abs(w.x))
-    neck = max(w.z for w in ws if abs(w.x) < .05)
     return {'bust': bust, 'crotch': crotch, 'hip_z': hips.z, 'hip_x': abs(hips.x), 'neck': neck}
 
 
@@ -176,16 +177,17 @@ def bikini(bm_out, tree, m):
     bust, cz = m['bust'], m['crotch'].z
     top = cz + .155                     # low-rise waistline, ~15 cm above the crotch
     # Bottom: small front triangle, cheeky back, gusset under the crotch.
-    front = patch(bm_out, tree, curve((-.085, top), (-.022, cz + .014), -.018) + [(-.02, cz + .007), (.02, cz + .007)] +
-          curve((.022, cz + .014), (.085, top), -.018) + curve((.085, top), (-.085, top), .006), 'front')
-    back = patch(bm_out, tree, curve((.10, top + .008), (.028, cz + .03), .02) + [(.025, cz + .012), (-.025, cz + .012)] +
-          curve((-.028, cz + .03), (-.10, top + .008), .02) + curve((-.10, top + .008), (.10, top + .008), -.008), 'back')
+    front = patch(bm_out, tree, curve((-.085, top), (-.022, cz + .042), -.018) + [(-.017, cz + .028), (.017, cz + .028)] +
+          curve((.022, cz + .042), (.085, top), -.018) + curve((.085, top), (-.085, top), .006), 'front')
+    back = patch(bm_out, tree, curve((.10, top + .008), (.026, cz + .05), .02) + [(.02, cz + .03), (-.02, cz + .03)] +
+          curve((-.026, cz + .05), (-.10, top + .008), .02) + curve((-.10, top + .008), (.10, top + .008), -.008), 'back')
     drape(bm_out, tree, front, cz + .05)   # the narrow part between the legs may tighten like fabric
     drape(bm_out, tree, back, cz + .05)
-    fy = cast(tree, Vector((0, -.6, cz + .012)), Vector((0, 1, 0)))
+    # Narrow gusset joining both pieces under the crotch, kept between the thighs.
+    fy = cast(tree, Vector((0, -.6, cz + .03)), Vector((0, 1, 0)))
     by = cast(tree, Vector((0, .6, cz + .03)), Vector((0, -1, 0)))
     if fy and by:
-        patch(bm_out, tree, [(-.022, fy.y - .01), (.022, fy.y - .01), (.026, by.y + .01), (-.026, by.y + .01)], 'under', .0006)
+        patch(bm_out, tree, [(-.016, fy.y - .006), (.016, fy.y - .006), (.018, by.y + .006), (-.018, by.y + .006)], 'under', .0006)
     # Side strings over the hips, front corner to back corner.
     for s in (1, -1):
         f = cast(tree, Vector((s * .083, -.6, top - .002)), Vector((0, 1, 0)))
@@ -213,24 +215,77 @@ def bikini(bm_out, tree, m):
     for s, a in zip((1, -1), apexes):
         if a is None:
             continue
-        # Up beside the neck and tied at its back (halter), never across the throat.
-        keys = [a, Vector((s * .066, -.05, nz - .07)), Vector((s * .064, -.008, nz - .04)), Vector((s * .04, .045, nz - .035)),
-                Vector((0, .06, nz - .04))]
-        guide = catmull(keys, 8)
-        ribbon(bm_out, tree, guide, .009)
+        # Shoulder strap: from the cup tip up the chest, over the top of the shoulder beside the neck (trapezius),
+        # down the back to the back band. It never crosses the throat or the neck opening.
+        x = s * .085
+        # Nearest skin to a point just above the shoulder line (a downward ray would fall into the neck opening).
+        top = tree.find_nearest(Vector((x, -.005, nz + .01)))
+        back = tree.ray_cast(Vector((s * .07, .6, under + .004)), Vector((0, -1, 0)))
+        front_mid = tree.ray_cast(Vector((s * .08, -.6, (a.z + nz) / 2 - .02)), Vector((0, 1, 0)))
+        back_mid = tree.ray_cast(Vector((s * .08, .6, (under + nz) / 2)), Vector((0, -1, 0)))
+        if top[0] is None or back[0] is None or front_mid[0] is None or back_mid[0] is None:
+            continue
+        lift = top[1] * .004
+        keys = [a, front_mid[0], top[0] + lift + Vector((0, -.012, 0)), top[0] + lift + Vector((0, .012, 0)), back_mid[0], back[0]]
+        guide = catmull(keys, 10)
+        ribbon(bm_out, tree, guide, .010)
+
+
+def tube_rows(bm_out, tree, rows, centre_of, steps=72, lift=.001):
+    """Continuous fabric through stacked rings: each row is cast from an axis point outward (so the cloth hugs
+    the hips or a thigh), lifted off the skin, and consecutive rows are joined into quads. Where a ray finds no
+    skin (between the legs, below the crotch) the cloth hangs straight down from the row above, like real fabric
+    bridging the gap."""
+    rings, prev = [], None
+    for z in rows:
+        cx, cy = centre_of(z)
+        ring, pts = [], []
+        for k in range(steps):
+            a = 2 * math.pi * k / steps
+            d = Vector((math.sin(a), -math.cos(a), 0))
+            hit = tree.ray_cast(Vector((cx, cy, z)), d)
+            if hit[0] is not None and (prev is None or (hit[0] - prev[k]).length < .08):
+                pts.append(hit[0] + hit[1] * (LIFT + lift))
+            elif prev is not None:
+                pts.append(Vector((prev[k].x, prev[k].y, z)))
+            else:
+                pts = None
+                break
+        if pts is None:
+            continue
+        ring = [bm_out.verts.new(q) for q in pts]
+        rings.append(ring)
+        prev = pts
+    for a, b in zip(rings, rings[1:]):
+        for k in range(steps):
+            bm_out.faces.new((a[k], a[(k + 1) % steps], b[(k + 1) % steps], b[k]))
+    return rings
 
 
 def trunks(bm_out, tree, m):
+    """Boxer swim trunks: a waist-to-crotch tube around the hips, then one short leg tube per thigh, and a
+    gusset under the crotch joining them."""
     cz = m['crotch'].z
-    top = cz + .19
-    leg = cz - .015
-    for plane, sy in (('front', -1), ('back', 1)):
-        w = m['hip_x'] + .01
-        patch(bm_out, tree, [(-w, top), (w, top), (w, leg - .06), (.012, leg), (-.012, leg), (-w, leg - .06)], plane)
+    top = cz + .17
+    # Hip tube down to just below the crotch (bridging between the legs), then thigh tubes that start under it.
+    hip_rows = [top - k * .012 for k in range(int((top - (cz - .025)) / .012) + 1)]
+    hips = tube_rows(bm_out, tree, hip_rows, lambda z: (0.0, -.01))
+    # Settle the cloth: the lower rows smooth out where they bridge between the legs and the buttocks.
+    drape(bm_out, tree, [v for ring in hips[2:] for v in ring], cz + .06, rounds=14)
+    leg_rows = [cz - .005 - k * .012 for k in range(int(.10 / .012) + 1)]
     for s in (1, -1):
-        ring = ring_path(tree, top - .005, 70 * s, 110 * s, steps=12)
-        for z in [top - .01 - k * .012 for k in range(int((top - leg + .06) / .012))]:
-            ribbon(bm_out, tree, ring_path(tree, z, 60 * s, 120 * s, steps=12), .013, Vector((0, 0, 1)))
+        def thigh(z, s=s):
+            # Thigh axis: midpoint of the leg's inner and outer surface at this height.
+            inner = tree.ray_cast(Vector((s * .25, -.01, z)), Vector((-s, 0, 0)))
+            outer = tree.ray_cast(Vector((s * .01, -.01, z)), Vector((s, 0, 0)))
+            if inner[0] is None or outer[0] is None:
+                return s * .09, -.01
+            return (inner[0].x + outer[0].x) / 2, -.01
+        tube_rows(bm_out, tree, leg_rows, thigh, lift=.0004)   # just under the hip tube where they overlap
+    fy = cast(tree, Vector((0, -.6, cz + .02)), Vector((0, 1, 0)))
+    by = cast(tree, Vector((0, .6, cz + .02)), Vector((0, -1, 0)))
+    if fy and by:
+        patch(bm_out, tree, [(-.03, fy.y - .015), (.03, fy.y - .015), (.035, by.y + .015), (-.035, by.y + .015)], 'under', .0008)
 
 
 def main():

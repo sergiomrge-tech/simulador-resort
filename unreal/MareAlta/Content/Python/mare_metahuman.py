@@ -178,6 +178,21 @@ def _swim_material():
     return mat
 
 
+def _bind_swim_material(mesh):
+    """Every slot of a swim garment uses M_MH_Swim (Tint is set per person at runtime). Struct copies from
+    get_editor_property do not write back, so the slot array is rebuilt with new SkeletalMaterial entries."""
+    mat = _swim_material()
+    slots = []
+    for old in mesh.get_editor_property('materials'):
+        new = unreal.SkeletalMaterial()
+        new.set_editor_property('material_interface', mat)
+        new.set_editor_property('material_slot_name', old.get_editor_property('material_slot_name'))
+        slots.append(new)
+    mesh.set_editor_property('materials', slots)
+    unreal.EditorAssetLibrary.save_loaded_asset(mesh, False)
+    return [str(m.get_editor_property('material_interface').get_path_name()) for m in mesh.get_editor_property('materials')]
+
+
 def import_garment(name, fbx, kind):
     """Blender swim garment for <name>_Swim -> /Game/People/Swimwear/SKM_<Kind>_<name> on that body's skeleton."""
     body = unreal.load_asset(f'{FOLDER}/{name}_Swim/MH_{name}_Swim/Body/SKM_MH_{name}_Swim_BodyMesh')
@@ -194,11 +209,7 @@ def import_garment(name, fbx, kind):
     mesh = unreal.load_asset(f'{SWIM}/{asset}')
     if not isinstance(mesh, unreal.SkeletalMesh):
         raise RuntimeError(f'{asset}: import gave {mesh}; imported {list(task.imported_object_paths)}')
-    mats = mesh.get_editor_property('materials')
-    for m in mats:
-        m.set_editor_property('material_interface', _swim_material())
-    mesh.set_editor_property('materials', mats)
-    unreal.EditorAssetLibrary.save_loaded_asset(mesh, False)
+    _bind_swim_material(mesh)
     return {'mesh': mesh.get_path_name(), 'skeleton': mesh.skeleton.get_path_name(), 'body_skeleton': body.skeleton.get_path_name(),
             'imported': [str(p) for p in task.imported_object_paths]}
 
@@ -271,6 +282,16 @@ def preview(name, loc, clip='', at=.5, keep=False):
     x, y, z = (float(v) for v in loc.split(','))
     actor = sub.spawn_actor_from_object(bp, unreal.Vector(x, y, z), unreal.Rotator(roll=0, pitch=0, yaw=0))
     actor.tags = [unreal.Name('MareMHPreview')]
+    if name.endswith('_Swim'):
+        # Reference-pose check of the garment: a skeletal mesh actor at the same transform as the body.
+        base = name[:-5]
+        for kind in ('Bikini', 'Trunks'):
+            path = f'{SWIM}/SKM_{kind}_{base}'
+            if unreal.EditorAssetLibrary.does_asset_exist(path):
+                g = sub.spawn_actor_from_class(unreal.SkeletalMeshActor, unreal.Vector(x, y, z), unreal.Rotator(roll=0, pitch=0, yaw=0))
+                g.skeletal_mesh_component.set_skeletal_mesh_asset(unreal.load_asset(path))
+                g.tags = [unreal.Name('MareMHPreview')]
+                break
     if clip == 'bare':
         # Body check without the garment (does the build cut skin under the clothes?).
         for c in actor.get_components_by_class(unreal.SkeletalMeshComponent):
@@ -417,6 +438,13 @@ def run(action, arg=''):
         tup = hit.to_tuple() if hit else None
         return {'eye': [loc.x, loc.y, loc.z], 'rot': [rot.pitch, rot.yaw], 'target': [t.get_actor_location().x, t.get_actor_location().y, t.get_actor_location().z],
                 'hidden': t.is_hidden_ed() if hasattr(t, 'is_hidden_ed') else None, 'hit': [str(tup[9].get_name()) if tup and tup[9] else None, str(tup[9].static_mesh_component.static_mesh.get_path_name()) if tup and tup[9] and hasattr(tup[9], 'static_mesh_component') else None, str(tup[9].get_actor_location()) if tup and tup[9] else None, tup[1] if tup else None] if tup else None}
+    if action == 'fixmats':
+        return {p: _bind_swim_material(unreal.load_asset(p)) for p in unreal.EditorAssetLibrary.list_assets(SWIM, False, False) if '/SKM_' in p}
+    if action == 'mats':
+        m = unreal.load_asset(arg)
+        return [str(x.get_editor_property('material_interface').get_path_name()) if x.get_editor_property('material_interface') else None for x in m.get_editor_property('materials')]
+    if action == 'delasset':
+        return unreal.EditorAssetLibrary.delete_asset(arg)
     if action == 'closephone':
         pc = unreal.GameplayStatics.get_player_controller(_pie_world(), 0)
         pc.close_phone()
