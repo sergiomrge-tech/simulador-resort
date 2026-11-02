@@ -1,5 +1,5 @@
 {
-  "_doc": "MetaHumans built in /Game/People/MetaHumans (mare_metahuman.py) chosen by AMarePerson per role from the save id. <Name>_Swim = whole-body build wearing /Game/People/Swimwear/SKM_Bikini|Trunks_<Name>. clothes: shirt/short colours (hex) per role tinting the default Epic garment; shoes: footwear kind per role (SKM_Flipflops|Sneakers_Ada for women, _Mateo for men, tools/ue58/gen_mh_shoes.py); shoe_colours: upper colours per kind, sole colour first.",
+  "_doc": "MetaHumans built in /Game/People/MetaHumans (mare_metahuman.py) chosen by AMarePerson per role from the save id. <Name>_Swim = whole-body build wearing /Game/People/Swimwear/SKM_Bikini|Trunks_<Name>. clothes: shirt/short colours (hex) per role tinting the default Epic garment; shoes: footwear kinds per role (one picked per person) (SKM_Flipflops|Sneakers|Sandals|Dress_Ada for women, _Mateo for men, tools/ue58/gen_mh_shoes.py); shoe_colours: upper colours per kind, sole colour first.",
   "staff": [
     "Mateo",
     "Sunita"
@@ -165,12 +165,30 @@
     }
   },
   "shoes": {
-    "staff": "Sneakers",
-    "hotel": "Sneakers",
-    "village": "Sneakers",
-    "pousada": "Flipflops",
-    "beach": "Flipflops",
-    "swim": "Flipflops"
+    "staff": [
+      "Sneakers"
+    ],
+    "hotel": [
+      "Dress",
+      "Dress",
+      "Sandals"
+    ],
+    "village": [
+      "Sneakers",
+      "Sandals",
+      "Flipflops"
+    ],
+    "pousada": [
+      "Sandals",
+      "Flipflops"
+    ],
+    "beach": [
+      "Flipflops",
+      "Sandals"
+    ],
+    "swim": [
+      "Flipflops"
+    ]
   },
   "shoe_colours": {
     "Flipflops": [
@@ -189,6 +207,21 @@
       "3A5F8F",
       "B23A3A",
       "C9B48A"
+    ],
+    "Sandals": [
+      "5A3E2B",
+      "8B5A2B",
+      "C9A27A",
+      "2B2B2E",
+      "B23A3A",
+      "1E5AA8"
+    ],
+    "Dress": [
+      "1C1A18",
+      "3B2416",
+      "5A3E2B",
+      "1C1A18",
+      "2B2B2E"
     ]
   }
 }

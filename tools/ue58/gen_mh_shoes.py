@@ -1,6 +1,6 @@
 """Footwear fitted to an exported MetaHuman body (same pipeline as gen_mh_swimwear.py): flip-flops or sneakers,
 skinned with the body's weights. Run with the bpy venv:
-  D:/CodexTemp/claude/bpy-env/Scripts/python.exe -I tools/ue58/gen_mh_shoes.py -- <body.fbx> <out.fbx> flipflops|sneakers
+  D:/CodexTemp/claude/bpy-env/Scripts/python.exe -I tools/ue58/gen_mh_shoes.py -- <body.fbx> <out.fbx> flipflops|sneakers|sandals|dress
 Feet rest on z=0 in the exported body (Blender metres, front = -Y)."""
 import sys
 import math
@@ -96,14 +96,65 @@ def ray_hull(poly, cx, cy, a):
 
 
 def sneakers(bm_out, tree, bm):
+    closed_shoe(bm_out, tree, bm, 13, .024)
+
+
+def dress(bm_out, tree, bm):
+    """Dress shoe: lower collar, thin sole and a heel block under the back third."""
+    closed_shoe(bm_out, tree, bm, 11, .014, heel=.016)
+
+
+def skin_band(bm_out, bm, tree, keep, edge, lift=.003):
+    """Strap copied from the skin itself: every body face whose centre passes `keep`, pushed out along the normals;
+    `edge` moves each border vertex onto the strap's straight edge before it is snapped back onto the skin."""
+    faces = [f for f in bm.faces if keep(f.calc_center_median())]
+    made = {}
+    for f in faces:
+        for v in f.verts:
+            if v not in made:
+                made[v] = bm_out.verts.new(v.co + v.normal * lift)
+    for f in faces:
+        try:
+            bm_out.faces.new([made[v] for v in f.verts])
+        except ValueError:
+            pass
+    for v in made.values():
+        if v.is_boundary:
+            edge(v.co)
+            q, n = tree.find_nearest(v.co)[:2]
+            v.co = q + n * lift
+
+
+def sandals(bm_out, tree, bm):
+    """Strappy sandal: sole, a strap over the toes and one over the instep (skin bands from sole edge to sole
+    edge) and a strap around the back of the heel."""
+    for side in (1, -1):
+        outline, (cx, cy) = foot_outline(bm, side)
+        sole(bm_out, outline, .014, -.004)
+        ys = [p[1] for p in outline]
+        front, back = min(ys), max(ys)
+        length = back - front
+        for t, w in ((.2, .02), (.47, .024)):
+            y0 = front + length * t
+            def to_edge(co, y0=y0, w=w):
+                if co.z > .014:
+                    co.y = y0 - w / 2 if co.y < y0 else y0 + w / 2
+            skin_band(bm_out, bm, tree, lambda c, y0=y0, w=w: side * c.x > .02 and abs(c.y - y0) < w / 2 and .008 < c.z < .09, to_edge)
+        def heel_edge(co):
+            if co.y > back - .065:
+                co.z = .042 if co.z < .051 else .06
+        skin_band(bm_out, bm, tree, lambda c: side * c.x > .02 and c.y > back - .07 and .042 < c.z < .06, heel_edge)
+
+
+def closed_shoe(bm_out, tree, bm, n_rows, sole_thick, heel=0.0):
     """Closed shoe lofted like a last: each height's slice of the foot is convex-hulled (toes merge into one toe
     box), sampled by angle from a common axis, pushed out 6 mm and joined to the next slice; the top slice is
-    the collar around the ankle. A thicker sole goes under it."""
+    the collar around the ankle. A sole (and optionally a heel block) goes under it."""
     steps = 96
     for side in (1, -1):
         outline, (cx, cy) = foot_outline(bm, side)
         foot = [v.co for v in bm.verts if side * v.co.x > .02 and v.co.z < .095]
-        rows = [.006 + k * .006 for k in range(13)]
+        rows = [.006 + k * .006 for k in range(n_rows)]
         polys = [hull2d([(round(c.x, 4), round(c.y, 4)) for c in foot if abs(c.z - z) < .005]) for z in rows]
         # Each slice is sampled from its own centre (the ankle slice lies behind the toe slices' centre).
         centres = [(sum(q[0] for q in pl) / len(pl), sum(q[1] for q in pl) / len(pl)) for pl in polys]
@@ -134,13 +185,18 @@ def sneakers(bm_out, tree, bm):
         for r0, r1 in zip(rings, rings[1:]):
             for k in range(steps):
                 bm_out.faces.new((r0[k], r0[(k + 1) % steps], r1[(k + 1) % steps], r1[k]))
-        sole(bm_out, outline, .024, -.006)
+        sole(bm_out, outline, sole_thick, -.006)
+        if heel:
+            ys = [p[1] for p in outline]
+            cut = max(ys) - (max(ys) - min(ys)) * .3
+            back = [p for p in outline if p[1] >= cut]
+            sole(bm_out, hull2d(back + [(min(p[0] for p in back), cut), (max(p[0] for p in back), cut)]), heel, -.006 - heel)
 
 
 def main():
     body, arm, bm, tree = sw.load_body()
     out = bmesh.new()
-    (flipflops if KIND == 'flipflops' else sneakers)(out, tree, bm)
+    {'flipflops': flipflops, 'sneakers': sneakers, 'sandals': sandals, 'dress': dress}[KIND](out, tree, bm)
     bmesh.ops.remove_doubles(out, verts=out.verts, dist=.0005)
     mesh = bpy.data.meshes.new(f'SKM_{KIND}')
     out.to_mesh(mesh)

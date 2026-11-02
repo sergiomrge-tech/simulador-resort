@@ -90,7 +90,8 @@ Pronto e testado (02/11):
   - social: camisa, vestido;
   - uniforme da equipe com cores do resort;
   - moradores.
-- [~] P0 Calçados: chinelo e tênis feitos (02/11); faltam sandália e sapato social.
+- [x] P0 Calçados: chinelo, sandália de tiras, tênis e sapato social com saltinho (02/11), sorteados por papel
+  (`metahumans.json` → `shoes`); sandália e sapato social ainda sem foto no PIE.
 - [ ] P1 Mais banhistas: mulheres e homens de outras idades e tipos de corpo.
 - [ ] P1 Animações:
   - deitar na espreguiçadeira e na canga;
