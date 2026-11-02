@@ -176,9 +176,10 @@ def angle_of(p):
 def bikini(bm_out, tree, m):
     bust, cz = m['bust'], m['crotch'].z
     top = cz + .155                     # low-rise waistline, ~15 cm above the crotch
-    # Bottom: small front triangle, cheeky back, gusset under the crotch.
-    front = patch(bm_out, tree, curve((-.085, top), (-.022, cz + .042), -.018) + [(-.017, cz + .028), (.017, cz + .028)] +
-          curve((.022, cz + .042), (.085, top), -.018) + curve((.085, top), (-.085, top), .006), 'front')
+    # Bottom: small front triangle whose leg openings follow the groin crease (curving in toward the centre, so
+    # the cloth never reaches the front of the thighs), cheeky back, gusset under the crotch.
+    front = patch(bm_out, tree, curve((-.085, top), (-.03, cz + .075), .022) + curve((-.03, cz + .075), (-.015, cz + .03), .004) + [(-.013, cz + .026), (.013, cz + .026)] +
+          curve((.015, cz + .03), (.03, cz + .075), .004) + curve((.03, cz + .075), (.085, top), .022) + curve((.085, top), (-.085, top), .006), 'front')
     back = patch(bm_out, tree, curve((.10, top + .008), (.026, cz + .05), .02) + [(.02, cz + .03), (-.02, cz + .03)] +
           curve((-.026, cz + .05), (-.10, top + .008), .02) + curve((-.10, top + .008), (.10, top + .008), -.008), 'back')
     drape(bm_out, tree, front, cz + .05)   # the narrow part between the legs may tighten like fabric
@@ -197,38 +198,12 @@ def bikini(bm_out, tree, m):
             path = [p.lerp(Vector((p.x, p.y, top + .012)), math.sin(math.pi * k / 30) * .6)
                     for k, p in enumerate(ring_path(tree, top + .002, a0, a1, steps=30))]
             ribbon(bm_out, tree, path, .011, Vector((0, 0, 1)))
-    # Top: two triangle cups, an under-bust band and halter straps to the back of the neck.
-    under = bust.z - .058
-    apexes = []
-    for s in (1, -1):
-        ax = s * abs(bust.x)
-        apex = (ax + s * .004, bust.z + .085)
-        poly = curve((s * .012, under), (s * .128, under + .006), -.004 * s) + \
-            curve((s * .128, under + .006), apex, .012 * s) + curve(apex, (s * .012, under), .010 * s)
-        if s < 0:
-            poly = poly[::-1]
-        patch(bm_out, tree, poly, 'front')
-        apexes.append(cast(tree, Vector((apex[0], -.6, apex[1] - .006)), Vector((0, 1, 0))))
-    band = ring_path(tree, under + .004, 62, 298, steps=70)   # cup side edge, around the back, other cup
-    ribbon(bm_out, tree, band, .012, Vector((0, 0, 1)))
-    nz = m['neck']
-    for s, a in zip((1, -1), apexes):
-        if a is None:
-            continue
-        # Shoulder strap: from the cup tip up the chest, over the top of the shoulder beside the neck (trapezius),
-        # down the back to the back band. It never crosses the throat or the neck opening.
-        x = s * .085
-        # Nearest skin to a point just above the shoulder line (a downward ray would fall into the neck opening).
-        top = tree.find_nearest(Vector((x, -.005, nz + .01)))
-        back = tree.ray_cast(Vector((s * .07, .6, under + .004)), Vector((0, -1, 0)))
-        front_mid = tree.ray_cast(Vector((s * .08, -.6, (a.z + nz) / 2 - .02)), Vector((0, 1, 0)))
-        back_mid = tree.ray_cast(Vector((s * .08, .6, (under + nz) / 2)), Vector((0, -1, 0)))
-        if top[0] is None or back[0] is None or front_mid[0] is None or back_mid[0] is None:
-            continue
-        lift = top[1] * .004
-        keys = [a, front_mid[0], top[0] + lift + Vector((0, -.012, 0)), top[0] + lift + Vector((0, .012, 0)), back_mid[0], back[0]]
-        guide = catmull(keys, 10)
-        ribbon(bm_out, tree, guide, .010)
+    # Top: strapless bandeau (user's choice, 02/11): a band of fabric around the chest from just under the bust
+    # to above the nipple line, settled over the breasts and across the cleavage like stretched cloth.
+    under = bust.z - .06
+    rows = [bust.z + .05 - k * .011 for k in range(int((bust.z + .05 - under) / .011) + 1)]
+    band = tube_rows(bm_out, tree, rows, lambda z: (0.0, -.01), lift=.0012)
+    drape(bm_out, tree, [v for ring in band for v in ring], -1.0, rounds=10)
 
 
 def tube_rows(bm_out, tree, rows, centre_of, steps=72, lift=.001):
@@ -253,6 +228,15 @@ def tube_rows(bm_out, tree, rows, centre_of, steps=72, lift=.001):
                 break
         if pts is None:
             continue
+        # Points that landed on an arm (far out near the armpit) take the average of their nearest torso neighbours.
+        radii = [math.hypot(q.x - cx, q.y - cy) for q in pts]
+        limit = sorted(radii)[len(radii) // 2] * 1.22
+        good = [r <= limit for r in radii]
+        for k in range(steps):
+            if not good[k]:
+                lo = next((pts[(k - d) % steps] for d in range(1, steps) if good[(k - d) % steps]), pts[k])
+                hi = next((pts[(k + d) % steps] for d in range(1, steps) if good[(k + d) % steps]), pts[k])
+                pts[k] = (lo + hi) / 2
         ring = [bm_out.verts.new(q) for q in pts]
         rings.append(ring)
         prev = pts
@@ -337,4 +321,5 @@ def main():
     print('WROTE', DST)
 
 
-main()
+if __name__ == '__main__':
+    main()

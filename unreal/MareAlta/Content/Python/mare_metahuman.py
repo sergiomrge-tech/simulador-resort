@@ -440,6 +440,17 @@ def run(action, arg=''):
                 'hidden': t.is_hidden_ed() if hasattr(t, 'is_hidden_ed') else None, 'hit': [str(tup[9].get_name()) if tup and tup[9] else None, str(tup[9].static_mesh_component.static_mesh.get_path_name()) if tup and tup[9] and hasattr(tup[9], 'static_mesh_component') else None, str(tup[9].get_actor_location()) if tup and tup[9] else None, tup[1] if tup else None] if tup else None}
     if action == 'fixmats':
         return {p: _bind_swim_material(unreal.load_asset(p)) for p in unreal.EditorAssetLibrary.list_assets(SWIM, False, False) if '/SKM_' in p}
+    if action == 'mparams':
+        mi = unreal.load_asset(arg)
+        out = {'parent': str(mi.get_editor_property('parent').get_path_name()) if hasattr(mi, 'parent') and mi.get_editor_property('parent') else None}
+        mel = unreal.MaterialEditingLibrary
+        base = mi
+        while isinstance(base, unreal.MaterialInstance):
+            base = base.get_editor_property('parent')
+        out['vectors'] = [str(n) for n in mel.get_vector_parameter_names(base)]
+        out['scalars'] = [str(n) for n in mel.get_scalar_parameter_names(base)][:40]
+        out['textures'] = [str(n) for n in mel.get_texture_parameter_names(base)]
+        return out
     if action == 'mats':
         m = unreal.load_asset(arg)
         return [str(x.get_editor_property('material_interface').get_path_name()) if x.get_editor_property('material_interface') else None for x in m.get_editor_property('materials')]

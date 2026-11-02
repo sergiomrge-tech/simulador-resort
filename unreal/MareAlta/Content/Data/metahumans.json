@@ -1,5 +1,5 @@
 {
-  "_doc": "MetaHumans built in /Game/People/MetaHumans (mare_metahuman.py) chosen by AMarePerson per role from the save id. <Name>_Swim = whole-body build wearing /Game/People/Swimwear/SKM_Bikini|Trunks_<Name>.",
+  "_doc": "MetaHumans built in /Game/People/MetaHumans (mare_metahuman.py) chosen by AMarePerson per role from the save id. <Name>_Swim = whole-body build wearing /Game/People/Swimwear/SKM_Bikini|Trunks_<Name>. clothes: shirt/short colours (hex) per role tinting the default Epic garment; shoes: footwear kind per role (SKM_Flipflops|Sneakers_Ada for women, _Mateo for men, tools/ue58/gen_mh_shoes.py); shoe_colours: upper colours per kind, sole colour first.",
   "staff": [
     "Mateo",
     "Sunita"
@@ -50,16 +50,20 @@
   ],
   "beach": [
     "Ada_Swim",
-    "Aoi_Swim",
     "Asha_Swim",
     "Zuri_Swim",
+    "Celeste_Swim",
+    "Jelena_Swim",
+    "Tuya_Swim",
+    "Aoi_Swim",
     "Mateo_Swim",
     "Ada_Swim",
-    "Aoi_Swim",
+    "Celeste_Swim",
+    "Jelena_Swim",
+    "Tuya_Swim",
     "Asha_Swim",
-    "Zuri_Swim",
+    "Aoi_Swim",
     "Mateo_Swim",
-    "Tuya",
     "Omari",
     "Trey",
     "Jorge",
@@ -76,5 +80,115 @@
     "F5F5F0",
     "FF7A3D",
     "6A3FA0"
-  ]
+  ],
+  "clothes": {
+    "staff": {
+      "shirt": [
+        "1E7F86"
+      ],
+      "short": [
+        "C9B48A"
+      ]
+    },
+    "hotel": {
+      "shirt": [
+        "F4F2EC",
+        "BFD7EA",
+        "E8D9C0",
+        "2B3A55",
+        "DCE6D3"
+      ],
+      "short": [
+        "2B3A55",
+        "5C6066",
+        "D8CFC0",
+        "3A3330"
+      ]
+    },
+    "pousada": {
+      "shirt": [
+        "F2EFE6",
+        "3E6FA3",
+        "C9473F",
+        "2F7D5B",
+        "E3B23C",
+        "8A5FA8",
+        "D98C5F",
+        "27323F"
+      ],
+      "short": [
+        "2B3A55",
+        "6B6E73",
+        "C9B48A",
+        "3B4A3F",
+        "8C3B2E",
+        "D8CFC0"
+      ]
+    },
+    "village": {
+      "shirt": [
+        "F2EFE6",
+        "3E6FA3",
+        "C9473F",
+        "2F7D5B",
+        "E3B23C",
+        "8A5FA8",
+        "D98C5F",
+        "27323F"
+      ],
+      "short": [
+        "2B3A55",
+        "6B6E73",
+        "C9B48A",
+        "3B4A3F",
+        "8C3B2E",
+        "D8CFC0"
+      ]
+    },
+    "beach": {
+      "shirt": [
+        "F7F4EC",
+        "FF7A3D",
+        "1E9FB0",
+        "F2C230",
+        "E85D9F",
+        "4CAF7A"
+      ],
+      "short": [
+        "1E5AA8",
+        "C8102E",
+        "F2C230",
+        "1F8A5B",
+        "FF7A3D",
+        "151515"
+      ]
+    }
+  },
+  "shoes": {
+    "staff": "Sneakers",
+    "hotel": "Sneakers",
+    "village": "Sneakers",
+    "pousada": "Flipflops",
+    "beach": "Flipflops",
+    "swim": "Flipflops"
+  },
+  "shoe_colours": {
+    "Flipflops": [
+      "3A3632",
+      "1E5AA8",
+      "F2C230",
+      "C8102E",
+      "1F8A5B",
+      "151515",
+      "E85D9F"
+    ],
+    "Sneakers": [
+      "F2F0EA",
+      "F4F4F2",
+      "2B2B2E",
+      "3A5F8F",
+      "B23A3A",
+      "C9B48A"
+    ]
+  }
 }
