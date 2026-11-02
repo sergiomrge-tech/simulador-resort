@@ -104,6 +104,8 @@ Legenda: [x] feito e validado · [~] em andamento/parcial · [ ] pendente.
 - [x] "Continue" → salão de jogos (02/11): pebolim e 2 fliperamas modelados no Blender, partidas rápidas, hóspedes jogando à noite e renda das fichas; 18/18 testes; foto em `docs/ue58/graphics-reference/salao-jogos-20261102.jpg`.
 - [x] "Go" → pesca no píer e modo foto (02/11): pescaria com espécies e tamanhos, peixes para o capítulo do Seu Gregory, tecla P com álbum e foto do farol para o Padre Robson; capítulos 2–4 com contagem real; 19/19 testes; foto em `docs/ue58/graphics-reference/pesca-foto-20261102.jpg`.
 - [x] "Sim, festas" (02/11): calendário de eventos e festas portado da Godot, previsão e preparativos no celular, cenário das festas na praia (barracas, bandeirinhas, fogueira junina, DJ); 20/20 testes; foto em `docs/ue58/graphics-reference/festa-junina-20261102.jpg`.
+- [ ] "Fogueira low poly, é proibido assets low poly nesse jogo, coloque no checklist final para correção" (02/11): registrado no fim de `PENDENCIAS_100.md` (seção 13) e do `ROADMAP_STEAM.md`.
+- [x] "Sim, equipe" (02/11): piscineiro e garçom do restaurante novos, recepcionista de volta à página de equipe, descrições coerentes com as tarefas; 21/21 testes; balanceamento em seguida.
 - [x] Manter este checklist sempre que o usuário pedir algo (regra salva na memória).
 
 ## Regras permanentes já pedidas

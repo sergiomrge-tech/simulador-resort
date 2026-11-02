@@ -141,11 +141,13 @@ void UMareSimulation::RestaurantHour(int32 Hour)
   R->RemoveField(TEXT("event"));}
  else if(!Event->Values.Num() || Number(Event,TEXT("day"))<Number(State,TEXT("day"),1))R->RemoveField(TEXT("event"));
  // The hotel crew serves whoever waited too long, at a share of the price and without tip.
- const double CrewAfter=Number(RestaurantDefs(),TEXT("crew_minutes"),45),Share=Number(RestaurantDefs(),TEXT("crew_share"),.7);double Crew=0;
+ // The restaurant waiter takes over after 15 minutes at 90%; without him the hotel crew helps after 45 at 70%.
+ const bool bWaiter=HasStaff(TEXT("garcom_hotel"));
+ const double CrewAfter=bWaiter?15:Number(RestaurantDefs(),TEXT("crew_minutes"),45),Share=bWaiter?.9:Number(RestaurantDefs(),TEXT("crew_share"),.7);double Crew=0;
  for(const TCHAR* Key:{TEXT("tables"),TEXT("room")}){auto& Items=List(R,Key);
   for(int32 I=Items.Num()-1;I>=0;--I){const auto O=Items[I]->AsObject();if(Now-Number(O,TEXT("since"))<CrewAfter)continue;
    FString Dish=String(O,TEXT("dish"));if(Dish.IsEmpty())Dish=RandomDish(this);Crew+=FMath::RoundToDouble(MenuPrice(Dish)*Share);Items.RemoveAt(I);}}
- if(Crew>0)Book(Crew,TEXT("Restaurante (equipe do hotel)"));
+ if(Crew>0)Book(Crew,bWaiter?TEXT("Restaurante (garçom)"):TEXT("Restaurante (equipe do hotel)"));
  if(!IsRestaurantOpen())return;
  // New diners at about half of the free tables, and room service from the suites.
  const TArray<TSharedPtr<FJsonValue>>* Tables=nullptr;

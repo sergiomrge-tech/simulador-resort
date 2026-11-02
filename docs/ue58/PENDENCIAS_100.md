@@ -99,8 +99,10 @@ Pronto e testado (02/11):
   Dados em `Content/Data/business_games.json` (`pebolim`, `fliperama`, `game_room`), teste em `MareAlta.Gameplay.BusinessCounter`.
 - [x] P1 Recepção do hotel com a fila de hóspedes visível no saguão (check-in vai ao elevador, check-out de manhã sai pela
   porta; teste `MareAlta.Gameplay.HotelReceptionLine`, foto no PIE 02/11).
-- [ ] P1 Equipe: contratação, turnos e salários de recepcionista, camareira, barman, guia e garçom do
-  restaurante coerentes com as tarefas novas.
+- [x] P1 Equipe coerente com as tarefas novas (02/11): página de equipe com atendente, recepcionista, camareira,
+  bartender, guia e os novos piscineiro (peneira e toalhas a cada hora) e garçom do restaurante (atende mesas e serviço de
+  quarto após 15 min a 90%); descrições reescritas; teste `MareAlta.Gameplay.NewStaffRoles`. Turnos por horário ainda não
+  existem (todos trabalham no horário do lugar).
 - [ ] P2 Pedidos especiais e clientes VIP/influenciador no quiosque (eventos cômicos da tarefa #4).
 
 ## 4. Progressão, economia e conteúdo
@@ -200,3 +202,11 @@ Fazer depois de todo o resto, quando os textos estiverem estáveis.
 - [ ] Ilha circular ao fundo, no mar, destino do passeio de barco: bastante árvores e vegetação (nada de low poly),
   praia em volta e uma trilha passando pelo meio.
 - [ ] O passeio de barco sai do píer, vai até a ilha (desembarque e trilha) e volta; paradas do passeio guiado na ilha.
+
+## 13. Correção de assets low poly (pedido do Sergio em 02/11, para o final)
+Regra do projeto: nenhum asset low poly no jogo.
+- [ ] **Fogueira da festa junina**: a lenha (`festa_campfire_logs`, vinda da Godot) são poucos troncos lisos e a chama
+  ficou com cara de cone. Refazer com toras de verdade (casca com relevo, pontas cortadas e queimadas, brasas e cinzas
+  na base, pedras em volta) e um fogo convincente (chamas em camadas com movimento, faíscas e fumaça em partículas).
+- [ ] Revisar os outros modelos trazidos da versão Godot para as festas (cabine do DJ, faixa) e qualquer outro prop com
+  poucas faces que aparecer na varredura visual final.

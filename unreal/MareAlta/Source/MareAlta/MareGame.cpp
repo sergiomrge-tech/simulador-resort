@@ -504,7 +504,7 @@ private:
  void StaffPage()
  {
   auto S=Sim();Title(TEXT("Equipe"),TEXT("salários pagos quando você dorme"));auto Roles=UMareSimulation::Object(S->Definitions,TEXT("staff"));auto G=Grid();int32 I=0;
-  for(const TCHAR* Role:{TEXT("atendente"),TEXT("bartender"),TEXT("camareira"),TEXT("guia")}){auto Def=UMareSimulation::Object(Roles,Role);const FString R=Role;
+  for(const TCHAR* Role:{TEXT("atendente"),TEXT("recepcionista"),TEXT("camareira"),TEXT("bartender"),TEXT("guia"),TEXT("piscineiro"),TEXT("garcom_hotel")}){auto Def=UMareSimulation::Object(Roles,Role);const FString R=Role;
    auto Card=TagBody(FString::Printf(TEXT("R$ %.0f por dia"),UMareSimulation::Number(Def,TEXT("wage"))),UMareSimulation::String(Def,TEXT("name")));
    Card->AddSlot().AutoHeight().Padding(0,0,0,6)[MareNotebook::BodyText(R==TEXT("atendente")?TEXT("Anota, retira os produtos, entrega e recolhe a louça do quiosque."):UMareSimulation::String(Def,TEXT("blurb")),11,MareNotebook::Faded)];
    const FString Req=UMareSimulation::String(Def,TEXT("req"));bool bOwned=Req.IsEmpty();if(!bOwned)UMareSimulation::Object(S->State,TEXT("unlocked"))->TryGetBoolField(Req,bOwned);

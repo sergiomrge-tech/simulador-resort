@@ -761,3 +761,26 @@ bool FMareDayEventsTest::RunTest(const FString& Parameters)
  IFileManager::Get().DeleteDirectory(*Sim->SaveDirectory,false,true);
  Sim->RemoveFromRoot();Instance->RemoveFromRoot();return true;
 }
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FMareNewStaffTest,"MareAlta.Gameplay.NewStaffRoles",EAutomationTestFlags::EditorContext|EAutomationTestFlags::EngineFilter)
+bool FMareNewStaffTest::RunTest(const FString& Parameters)
+{
+ auto Instance=NewObject<UGameInstance>();Instance->AddToRoot();
+ auto Sim=NewObject<UMareSimulation>(Instance);Sim->AddToRoot();
+ Sim->SaveDirectory=FPaths::ProjectSavedDir()/TEXT("Automation/NewStaff")/FGuid::NewGuid().ToString(EGuidFormats::Digits);
+ auto Load=[&](const FString& Name,TSharedPtr<FJsonObject>& Result){FString Text;FFileHelper::LoadFileToString(Text,*(FPaths::ProjectContentDir()/TEXT("Data")/Name));return FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Text),Result);};
+ if(!TestTrue(TEXT("Definitions"),Load(TEXT("definitions.json"),Sim->Definitions)) || !TestTrue(TEXT("Default save"),Load(TEXT("default_save.json"),Sim->State))){Sim->RemoveFromRoot();Instance->RemoveFromRoot();return false;}
+ Sim->State->SetNumberField(TEXT("money"),5000);Sim->State->SetStringField(TEXT("weather"),TEXT("sun"));
+ TestFalse(TEXT("Pool attendant needs the pool"),Sim->HireStaff(TEXT("piscineiro")));
+ for(const TCHAR* Id:{TEXT("pool"),TEXT("grand_hotel")})Sim->Object(Sim->State,TEXT("unlocked"))->SetBoolField(Id,true);
+ TestTrue(TEXT("Hire pool attendant"),Sim->HireStaff(TEXT("piscineiro")));TestTrue(TEXT("Hire restaurant waiter"),Sim->HireStaff(TEXT("garcom_hotel")));
+ // The attendant keeps the pool clean through an open day.
+ Sim->Pool()->SetArrayField(TEXT("towels"),{MakeShared<FJsonValueNumber>(1)});
+ for(int32 Hour=11;Hour<=16;++Hour)Sim->PoolHour(Hour);
+ TestTrue(TEXT("Pool stays clean"),Sim->Number(Sim->Pool(),TEXT("dirt"))<20);TestEqual(TEXT("Towels collected"),Sim->PoolTowels(),0);
+ // The waiter serves a waiting table after 15 minutes at 90%.
+ Sim->State->SetNumberField(TEXT("minutes"),12*60+5);Sim->SeatDiners(0);Sim->State->SetNumberField(TEXT("minutes"),12*60+30);
+ const double Before=Sim->Money();Sim->RestaurantHour(13);TestTrue(TEXT("Waiter served"),Sim->Money()>Before && !Sim->TableOrder(0).IsValid());
+ IFileManager::Get().DeleteDirectory(*Sim->SaveDirectory,false,true);
+ Sim->RemoveFromRoot();Instance->RemoveFromRoot();return true;
+}

@@ -274,6 +274,11 @@ def photo_take():
 
 
 def run(action, arg=''):
+    if action == 'phone':
+        world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()
+        pc = unreal.GameplayStatics.get_player_controller(world, 0)
+        pc.open_phone(int(arg))
+        return 'open'
     if action == 'festival':
         return import_models('Festival', '/Game/Custom/Festival')
     if action == 'festival1':

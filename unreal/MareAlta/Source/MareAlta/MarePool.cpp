@@ -81,6 +81,8 @@ void UMareSimulation::PoolHour(int32 Hour)
    for(int32 I=0;I<Loungers->Num();++I)if(!Towels.ContainsByPredicate([I](const TSharedPtr<FJsonValue>& V){return int32(V->AsNumber())==I;}))Free.Add(I);
    if(Free.Num())Towels.Add(MakeShared<FJsonValueNumber>(Free[FMath::RandRange(0,Free.Num()-1)]));}
   P->SetNumberField(TEXT("popsicles"),FMath::Min(Number(PoolDefs(),TEXT("max_popsicles"),6),Number(P,TEXT("popsicles"))+FMath::RandRange(0,2)));}
+ // The pool attendant nets most of the leaves and clears the towels every hour.
+ if(HasStaff(TEXT("piscineiro"))){P->SetNumberField(TEXT("dirt"),FMath::Max(0.,Number(P,TEXT("dirt"))-30));P->SetArrayField(TEXT("towels"),{});}
  // Closing hour: the day's bathers rate the pool by how clean it is (feeds the resort stars).
  if(Started==int32((*Open)[1]->AsNumber())-1){
   TArray<TSharedPtr<FJsonValue>> Ratings;const TArray<TSharedPtr<FJsonValue>>* Existing=nullptr;if(State->TryGetArrayField(TEXT("ratings"),Existing))Ratings=*Existing;

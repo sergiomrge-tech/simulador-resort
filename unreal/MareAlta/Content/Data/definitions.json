@@ -663,7 +663,7 @@
 			"wage": 30
 		},
 		"bartender": {
-			"blurb": "Os preços do bar sobem 15%. Salário no fim do dia.",
+			"blurb": "Serve sozinho os drinks do cardápio do Bar do Coqueiro (85% do preço) e o bar rende 15% a mais por hora. Receitas novas continuam com você.",
 			"hire": 260,
 			"name": "Bartender",
 			"req": "bar",
@@ -678,7 +678,7 @@
 			"wage": 32
 		},
 		"camareira": {
-			"blurb": "Limpa um item de bangalô a cada 20 min. Salário no fim do dia.",
+			"blurb": "Limpa um item de bangalô sujo a cada 20 minutos (cama, toalhas ou lixo).",
 			"hire": 220,
 			"name": "Camareira",
 			"req": "pousada",
@@ -700,8 +700,15 @@
 			"req": "",
 			"wage": 38
 		},
+		"garcom_hotel": {
+			"blurb": "Atende as mesas do restaurante do hotel e entrega o serviço de quarto quando você não está (90% do preço, sem gorjeta). Sem ele, a equipe do hotel só atende depois de 45 minutos, a 70%.",
+			"hire": 300,
+			"name": "Garçom do restaurante",
+			"req": "grand_hotel",
+			"wage": 48
+		},
 		"guia": {
-			"blurb": "Conduz os passeios turísticos nos horários marcados. Salário no fim do dia.",
+			"blurb": "Vende os bilhetes no píer e leva os passeios que você não guiar (nota média). Sem guia, passeio sem você é cancelado.",
 			"hire": 280,
 			"name": "Guia de passeios",
 			"req": "passeios",
@@ -715,8 +722,15 @@
 			"req": "",
 			"wage": 28
 		},
+		"piscineiro": {
+			"blurb": "Peneira as folhas da piscina e recolhe as toalhas das espreguiçadeiras a cada hora.",
+			"hire": 200,
+			"name": "Piscineiro",
+			"req": "pool",
+			"wage": 30
+		},
 		"recepcionista": {
-			"blurb": "Faz o check-in dos hóspedes da pousada pela oferta deles, sem negociar. Salário no fim do dia.",
+			"blurb": "Faz o check-in dos hóspedes da pousada pela oferta deles, sem negociar.",
 			"hire": 240,
 			"name": "Recepcionista",
 			"req": "pousada",

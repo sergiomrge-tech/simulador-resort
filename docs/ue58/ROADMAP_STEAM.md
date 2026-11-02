@@ -144,3 +144,7 @@ Legenda de prioridade:
 ## Final — ilha do passeio de barco (pedido do Sergio, 02/11)
 - [ ] Ilha circular ao fundo no mar, com muitas árvores e vegetação e uma trilha no meio, como destino do passeio de barco
   (detalhes em `PENDENCIAS_100.md`, seção 12).
+
+## Final — correção de low poly (pedido do Sergio, 02/11)
+- [ ] Refazer a fogueira da festa junina (lenha e chamas) sem low poly e revisar os demais props vindos da Godot
+  (detalhes em `PENDENCIAS_100.md`, seção 13).
