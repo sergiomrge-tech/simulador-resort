@@ -101,6 +101,12 @@ def run(action, arg=''):
         return clear_gallery()
     if action == 'import':
         return import_pack(arg or 'wabi')
+    if action == 'decor':
+        return decor()
+    if action == 'clearrooms':
+        return clear_rooms(arg == 'apply')
+    if action == 'probe':
+        return probe(arg)
     if action == 'inspect':
         return inspect(arg or 'wabi')
     raise ValueError(action)
@@ -259,3 +265,95 @@ def prune(keep=KEEP):
     drop = sorted({p.split('.')[0] for p in unreal.EditorAssetLibrary.list_assets(folder, recursive=True)} - keep_pkgs)
     Path('D:/CodexTemp/claude-mcp/fab_drop.json').write_text(json.dumps(drop), encoding='utf-8')
     return {'kept': len(keep_pkgs), 'drop': len(drop)}
+
+
+def probe(arg):
+    """Actors and instances inside a world rectangle 'x0,x1,y0,y1' (placement checks)."""
+    x0, x1, y0, y1 = [float(v) for v in arg.split(',')]
+    out = []
+    for a in unreal.get_editor_subsystem(unreal.EditorActorSubsystem).get_all_level_actors():
+        p = a.get_actor_location()
+        if x0 < p.x < x1 and y0 < p.y < y1:
+            origin, ext = a.get_actor_bounds(True)
+            out.append([a.get_actor_label(), [round(p.x), round(p.y), round(p.z)], [round(ext.x), round(ext.y), round(ext.z)]])
+        for c in a.get_components_by_class(unreal.InstancedStaticMeshComponent):
+            if not c.static_mesh:
+                continue
+            for i in range(c.get_instance_count()):
+                t = c.get_instance_transform(i, True)
+                q = t.translation
+                if x0 < q.x < x1 and y0 < q.y < y1 and t.scale3d.x > .01:
+                    out.append([a.get_actor_label() + '/' + c.static_mesh.get_name(), [round(q.x), round(q.y), round(q.z)]])
+    return out[:120]
+
+
+# Bungalow interiors, in Blender room metres (x right, y to the back wall; tools/ue58/gen_rooms.py):
+# reading chair under the right window, a low plant in the right-front corner, a stump side table.
+BUNGALOW_DECOR = [
+    [('fab:17', 1.82, -.45, (-1, 0)), ('fab:151', 1.86, -1.42, (-1, 0)), ('fab:240', 1.98, .22, (-1, 0))],
+    [('fab:79', 1.82, -.45, (-1, 0)), ('fab:147', 1.82, -1.4, (-1, 0)), ('fab:247', 1.95, .25, (-1, 0))],
+    [('fab:127', 1.82, -.45, (-1, 0)), ('fab:146', 1.8, -1.42, (-1, 0)), ('fab:240', 1.98, .22, (-1, 0))],
+]
+# Hotel restaurant pavilion (world cm): low potted plants along the front edge between the columns.
+RESTAURANT_DECOR = [('fab:148', -1330, 3790, 0), ('fab:150', -1330, 4620, 0), ('fab:147', -1330, 4060, 0), ('fab:151', -1330, 4470, 0)]
+
+
+def _floor(world, x, y, top):
+    hit = unreal.SystemLibrary.line_trace_single(world, unreal.Vector(x, y, top), unreal.Vector(x, y, -500), unreal.TraceTypeQuery.TRACE_TYPE_QUERY1, True, [], unreal.DrawDebugTrace.NONE, True)
+    return hit.to_tuple()[4].z if hit else None
+
+
+def decor():
+    """Place the remaining Wabi Sabi pieces in the pousada bungalows and the hotel restaurant."""
+    import math, mare_beach
+    if unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world():
+        raise RuntimeError('Stop PIE first')
+    actors = unreal.get_editor_subsystem(unreal.EditorActorSubsystem)
+    world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_editor_world()
+    for a in actors.get_all_level_actors():
+        if 'MareFabDecor' in [str(t) for t in a.tags]:
+            actors.destroy_actor(a)
+    rooms = {round(a.get_actor_location().x): a for a in actors.get_all_level_actors() if 'MareBungalow' in [str(t) for t in a.tags]}
+    out = []
+    for i, (bx, by, region) in enumerate(mare_beach.BUNGALOWS):
+        room = rooms.get(bx)
+        floor = room.get_actor_location().z + 49 if room else None
+        for slug, lx, ly, face in BUNGALOW_DECOR[i]:
+            # Bungalow yaw 180 and the Blender->UE Y flip: room (lx, ly) m -> world (bx - lx, by + ly).
+            yaw = math.degrees(math.atan2(-face[1], -face[0]))
+            actor, h = place(actors, slug, bx - lx * 100, by + ly * 100, floor, yaw)
+            actor.set_actor_label(f'Bangalô {i + 1} · {slug}')
+            actor.tags = [unreal.Name('MareGenerated'), unreal.Name(region), unreal.Name('MareFabDecor')]
+            actor.set_folder_path('Interiors/Bungalows')
+            out.append([slug, i + 1, round(h)])
+    for slug, x, y, yaw in RESTAURANT_DECOR:
+        z = _floor(world, x, y, 300)
+        actor, h = place(actors, slug, x, y, z, yaw)
+        actor.set_actor_label('Hotel restaurante · ' + slug)
+        actor.tags = [unreal.Name('MareGenerated'), unreal.Name('Region_grand_hotel'), unreal.Name('MareFabDecor')]
+        actor.set_folder_path('Hotel/Restaurant')
+        out.append([slug, 'restaurant', round(z), round(h)])
+    unreal.get_editor_subsystem(unreal.LevelEditorSubsystem).save_current_level()
+    return out
+
+
+def clear_rooms(apply=False):
+    """Instances (trees exported with generic names such as @MeshInstance3D@1068) standing inside a bungalow room or deck."""
+    import mare_beach
+    hits = []
+    for a in unreal.get_editor_subsystem(unreal.EditorActorSubsystem).get_all_level_actors():
+        for c in a.get_components_by_class(unreal.InstancedStaticMeshComponent):
+            name = c.static_mesh.get_name().lower() if c.static_mesh else ''
+            if not name or a.get_actor_label().startswith('PCG') or any(k in name for k in ('grass', 'flower', 'fern', 'clover')):
+                continue
+            for i in range(c.get_instance_count()):
+                tr = c.get_instance_transform(i, True)
+                p = tr.translation
+                if tr.scale3d.x > .01 and any(abs(p.x - bx) < 300 and by - 400 < p.y < by + 260 for bx, by, _ in mare_beach.BUNGALOWS):
+                    hits.append([a.get_actor_label(), name, [round(p.x), round(p.y), round(p.z)]])
+                    if apply:
+                        tr.scale3d = unreal.Vector(.001, .001, .001)
+                        c.update_instance_transform(i, tr, True, True, True)
+    if apply:
+        unreal.get_editor_subsystem(unreal.LevelEditorSubsystem).save_current_level()
+    return hits

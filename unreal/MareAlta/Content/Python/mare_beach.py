@@ -244,6 +244,9 @@ def place_bungalows():
                     tr.scale3d = unreal.Vector(.001, .001, .001)
                     c.update_instance_transform(i, tr, True, True, True)
                     removed += 1
+    # Trees exported under generic names (@MeshInstance3D@...) escape the name filter above.
+    import mare_fab
+    removed += len(mare_fab.clear_rooms(True))
     unreal.get_editor_subsystem(unreal.LevelEditorSubsystem).save_current_level()
     return {'bungalows': report, 'vegetation_removed': removed}
 
