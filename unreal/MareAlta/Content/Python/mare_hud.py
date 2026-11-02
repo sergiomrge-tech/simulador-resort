@@ -53,6 +53,8 @@ def run(action, arg=''):
         return import_models('RoomMess', '/Game/Custom/RoomMess')
     if action == 'pool':
         return import_models('GameRoom', '/Game/Custom/GameRoom')
+    if action == 'boats':
+        return import_models('Boats', '/Game/Custom/Boats')
     if action == 'desk':
         return import_models('Reception', '/Game/Custom/Reception')
     raise ValueError(action)

@@ -103,6 +103,8 @@ def run(action, arg=''):
         return import_pack(arg or 'wabi')
     if action == 'decor':
         return decor()
+    if action == 'boats':
+        return replace_boats(arg)
     if action == 'clearbox':
         return clear_box(arg.replace('!', ''), arg.endswith('!'))
     if action == 'clearrooms':
@@ -360,6 +362,47 @@ def clear_box(arg, apply=False):
     if apply and hits:
         unreal.get_editor_subsystem(unreal.LevelEditorSubsystem).save_current_level()
     return hits
+
+
+OLD_BOATS = {'World_1371': 'mare_jangada', 'World_1372': 'mare_bote', 'World_1374': 'mare_bote', 'World_1375': 'mare_bote',
+             'World_2214': 'mare_bote', 'World_1373': None}
+
+
+def replace_boats(arg=''):
+    """Beach jangadas/botes from the Godot export -> detailed bpy models (tools/ue58/gen_boats.py): every old
+    instance is shrunk and a new actor takes its transform (yaw offset from arg, default 0). Masts go with them."""
+    yaw = float(arg or 0)
+    sub = unreal.get_editor_subsystem(unreal.EditorActorSubsystem)
+    for a in sub.get_all_level_actors():
+        if a.actor_has_tag('MareBoat'):
+            sub.destroy_actor(a)
+    placed = []
+    for a in sub.get_all_level_actors():
+        for c in a.get_components_by_class(unreal.InstancedStaticMeshComponent):
+            name = c.static_mesh.get_name() if c.static_mesh else ''
+            if name not in OLD_BOATS:
+                continue
+            for i in range(c.get_instance_count()):
+                tr = c.get_instance_transform(i, True)
+                if tr.scale3d.x < .01:
+                    tr.scale3d = unreal.Vector(1, 1, 1)      # rerun: shrunk earlier, still the source transform
+                slug = OLD_BOATS[name]
+                if slug:
+                    mesh = unreal.load_asset(f'/Game/Custom/Boats/{slug}/{slug}')
+                    rot = tr.rotation.rotator()
+                    # Rest on the sand: the model origin is the waterline, the keel/logs hang below it.
+                    world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_editor_world()
+                    at = tr.translation
+                    ground = _floor(world, at.x, at.y, at.z + 300) if '_floor' in globals() else at.z
+                    lift = {'mare_jangada': 6, 'mare_bote': 66}[slug]
+                    actor = sub.spawn_actor_from_object(mesh, unreal.Vector(at.x, at.y, (ground if ground is not None else at.z) + lift), unreal.Rotator(roll=0, pitch=0, yaw=rot.yaw + yaw))
+                    actor.tags = [unreal.Name('MareBoat'), unreal.Name('MareGenerated')]
+                    actor.set_folder_path('Beach/Boats')
+                    placed.append([slug, round(tr.translation.x), round(tr.translation.y), round(rot.yaw)])
+                tr.scale3d = unreal.Vector(.001, .001, .001)
+                c.update_instance_transform(i, tr, True, True, True)
+    unreal.get_editor_subsystem(unreal.LevelEditorSubsystem).save_current_level()
+    return placed
 
 
 def clear_rooms(apply=False):

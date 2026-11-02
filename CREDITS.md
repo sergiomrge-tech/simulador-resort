@@ -565,3 +565,4 @@ Modelados com bpy, próprios do projeto:
 - `tools/ue58/gen_mh_swimwear.py`: biquíni e sunga ajustados ao corpo de cada MetaHuman, com os pesos do esqueleto dele.
 - `tools/ue58/gen_pool_table.py`: mesa de sinuca de 7 pés com medidas reais, 16 bolas numeradas (texturas geradas pelo script com Pillow e Arial do sistema só para os números) e taco.
 - `tools/ue58/gen_hud_icons.py`: ícones do HUD (estrela, cama, pessoa).
+- `tools/ue58/gen_boats.py`: jangada nordestina e bote de pesca de tábuas (texturas CC0 Poly Haven: bark_brown_02, rough_linen, oak_wood_planks, distressed_painted_planks).

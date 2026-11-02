@@ -79,7 +79,7 @@ Legenda: [x] feito e validado · [~] em andamento/parcial · [ ] pendente.
 - [x] "Mudo para médio ou deixo alto?" (02/11): médio para execução; avisar para voltar ao alto em sistemas novos (bar de drinks).
 - [x] "Existe alguma forma de ser mais rápido?" (02/11): a espera do editor cortava a resposta em 50 caracteres e esperava 20 min a cada reinício (corrigido; editor pronto em ~15 s); primeira leva de 4–5 banhistas; trabalho offline em paralelo.
 - [x] "O jogo é para PC" (02/11): plataforma PC/Steam registrada no GDD; celular é só o aparelho de gestão dentro do jogo.
-- [ ] "Ajuste esses barcos, está muito simples" (02/11): barcos da praia (veleiros pequenos de vela amarela e afins) com modelo detalhado.
+- [x] "Ajuste esses barcos, está muito simples" (02/11): 3 jangadas nordestinas (troncos com casca, amarras, banco, mastro, vela de lona com remendos e varetas, remo de leme, samburá) e 4 botes de tábuas sobrepostas (cavernas, bancos, toletes, remos, pintura azul com faixa vermelha) modelados em bpy (`tools/ue58/gen_boats.py`, texturas CC0 Poly Haven) e colocados na areia no lugar dos antigos (`mare_fab.replace_boats`). Antes/depois: `docs/ue58/graphics-reference/barcos-20261102.jpg`.
 - [x] "Os biquínis estão errados" / "A amarração no ombro da parte de cima" / "Parte de baixo está pegando coxa, precisa subir" (02/11): alças refeitas (sobem do bojo pelo ombro ao lado do pescoço e descem às costas até a faixa), parte de baixo termina na virilha (frente e trás) com fundo estreito, material M_MH_Swim religado (estava com a grade padrão: cinza). Aoi é homem → sunga. Antes/depois: `docs/ue58/graphics-reference/biquini-sunga-20261102.jpg`.
 - [x] Manter este checklist sempre que o usuário pedir algo (regra salva na memória).
 
