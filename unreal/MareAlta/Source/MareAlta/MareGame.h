@@ -62,6 +62,9 @@ public:
  virtual void EndPlay(const EEndPlayReason::Type Reason) override;
  UPROPERTY(BlueprintReadOnly,Category="Maré Alta") bool bPhoneOpen=false;
  /** Main menu over the paused world at start-up; the session (intro) only starts after a choice. */
+ /** Business counter task (three timing rounds) over the paused world; the result pays through PlayBusiness. */
+ void StartBusinessGame(const FString& Biz);
+ void CloseBusinessGame();
  void OpenMainMenu();
  bool IsMainMenuOpen()const{return MainMenuWidget.IsValid();}
  /** Continue/Load: the slot already behind the menu just resumes, another slot reloads the level. */
@@ -78,6 +81,7 @@ private:
  TSharedPtr<SMarePhone> PhoneWidget;
  TSharedPtr<SWidget> PauseWidget;
  TSharedPtr<SWidget> MainMenuWidget;
+ TSharedPtr<SWidget> GameWidget;
  /** Slot whose state the current world was built from, and whether that state came from a file. */
  int32 WorldSlot=1;
  bool bWorldFromFile=false;

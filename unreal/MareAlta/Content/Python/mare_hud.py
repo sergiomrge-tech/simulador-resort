@@ -101,7 +101,56 @@ def bar_qa(arg):
     return {'target': bool(target), 'phone': pc.get_editor_property('phone_open')}
 
 
+def biz_bounds():
+    """World bounds of the actors tagged Biz_<id> (the business buildings), per business."""
+    out = {}
+    for a in unreal.get_editor_subsystem(unreal.EditorActorSubsystem).get_all_level_actors():
+        for t in a.tags:
+            t = str(t)
+            if t.startswith('Region_Biz_'):
+                o, e = a.get_actor_bounds(True)
+                if e.x > 2000 or e.y > 2000:
+                    continue
+                b = out.setdefault(t[11:], [1e9, 1e9, 1e9, -1e9, -1e9, -1e9, 0])
+                b[0] = min(b[0], o.x - e.x); b[1] = min(b[1], o.y - e.y); b[2] = min(b[2], o.z - e.z)
+                b[3] = max(b[3], o.x + e.x); b[4] = max(b[4], o.y + e.y); b[5] = max(b[5], o.z + e.z); b[6] += 1
+    return {k: [round(v) for v in b] for k, b in out.items()}
+
+
+def biz_qa(arg):
+    """PIE: 'buy:<id>' buys a business, 'stand:<id>' puts the player at its counter, 'use:<id>' starts the counter
+    task, 'shot' takes a screenshot with the UI, 'people' lists persons near the counters."""
+    import json
+    world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()
+    pc = unreal.GameplayStatics.get_player_controller(world, 0)
+    hero = unreal.GameplayStatics.get_player_pawn(world, 0)
+    sim = pc.get_simulation()
+    what, _, biz = arg.partition(':')
+    if what == 'buy':
+        return sim.buy_business(biz)
+    if what == 'shot':
+        unreal.SystemLibrary.execute_console_command(world, 'Shot showui')
+        return 'shot'
+    target = next((a for a in unreal.GameplayStatics.get_all_actors_of_class(world, unreal.MareServiceTarget)
+                   if 'biz:' + biz in [str(t) for t in a.tags]), None)
+    if not target:
+        return 'no counter'
+    if what == 'stand':
+        fwd = target.get_actor_forward_vector()
+        at = target.get_actor_location() + fwd * 180
+        hero.set_actor_location(unreal.Vector(at.x, at.y, target.get_actor_location().z), False, True)
+        pc.set_control_rotation(unreal.MathLibrary.find_look_at_rotation(hero.get_actor_location() + unreal.Vector(0, 0, 64), target.get_actor_location()))
+        return [round(at.x), round(at.y)]
+    if what == 'use':
+        target.use(pc)
+        return 'used'
+
+
 def run(action, arg=''):
+    if action == 'bizqa':
+        return biz_qa(arg)
+    if action == 'biz':
+        return biz_bounds()
     if action == 'bar':
         return bar_qa(arg)
     if action == 'sfx':

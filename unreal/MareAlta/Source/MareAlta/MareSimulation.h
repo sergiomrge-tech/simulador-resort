@@ -218,6 +218,14 @@ public:
   *  filled by StaysNight for the hotel, cleared at 13:00); removed from the list. Null when nobody is left. */
  TSharedPtr<FJsonObject> TakeDeparture(const FString& Place);
  TSharedPtr<FJsonObject> Stays();
+ // --- Village businesses at the counter (MareBusiness.cpp, Content/Data/business_games.json) ---
+ TSharedPtr<FJsonObject> BusinessGames() const;
+ /** Inside the business's opening hours (definitions.json businesses.<id>.open). */
+ bool IsBusinessOpen(const FString& Id) const;
+ /** Owned, open and nobody served at this counter during the current hour. */
+ bool CanPlayBusiness(const FString& Id,FString& Reason) const;
+ /** Result of the three-round counter task: books max(hourly rate, base) × rewards[Hits] and fame per hit. */
+ UFUNCTION(BlueprintCallable,Category="Maré Alta|Business") double PlayBusiness(const FString& Id,int32 Hits);
  // --- Bar do Coqueiro (gameplay plan M8; MareBar.cpp, Content/Data/bar.json) ---
  // State "bar": stock {ingredient: n}, known [recipe ids], orders [{id, name, want (recipe id or "surpresa"), hint, since
  // (day*1440+minutes)}], next, served.

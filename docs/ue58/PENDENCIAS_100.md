@@ -58,12 +58,11 @@ Pronto e testado (02/11):
   descobrir dá fama; gorjeta pela rapidez; reposição de ingredientes; o bartender serve sozinho o que está no cardápio.
   Dados em `Content/Data/bar.json`, lógica em `MareBar.cpp`, mundo em `MareBarWorld.cpp`, teste `MareAlta.Gameplay.BarDrinks`.
   Falta: animação do bartender preparando e copo no balcão.
-- [ ] P1 **Negócios da vila**, uma tarefa curta cada:
-  - pranchas e caiaques;
-  - food truck do pastel;
-  - sorveteria;
-  - lojinha de souvenires;
-  - escolinha de surfe.
+- [x] P1 **Negócios da vila**, uma tarefa curta cada (02/11): balcão com E em cada negócio comprado e um cliente esperando
+  quando há atendimento na hora; minijogo de 3 rodadas da Godot portado (pranchas, food truck, sorveteria, souvenires, surfe),
+  pagamento e fama pelos acertos, uma vez por hora dentro do horário. `MareBusiness.cpp`, `MareBusinessWorld.cpp`,
+  `Content/Data/business_games.json`, teste `MareAlta.Gameplay.BusinessCounter`. Falta foto do cliente na nova posição ao
+  lado do balcão e conferir os balcões do food truck, souvenires, aluguel e surfe no jogo.
 - [ ] P1 **Piscina**: limpar com a peneira (afeta estrelas), espreguiçadeiras, toalhas, picolé.
 - [ ] P1 **Passeios**: vender bilhetes no píer, guiar barco ou trilha do farol com paradas de foto, nota do passeio.
 - [ ] P1 **Restaurante do hotel**: atender as mesas, serviço de quarto, eventos (casamento, festa).

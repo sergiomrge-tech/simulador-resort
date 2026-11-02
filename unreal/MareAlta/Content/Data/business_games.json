@@ -1,0 +1,112 @@
+{
+ "_doc": "Business counters (gameplay plan: one short hands-on task per village business, port of the Godot minigame). counter = E target [x,y,z,yaw] in world cm (Godot biz_world.gd counter point, converted Godot(x,y,z) m -> UE(x*100, z*100)); guest = where the waiting customer stands, beside the counter front (so the player can step in), facing the counter. steps = the three timing rounds. reward multipliers by hits 0..3 of max(hourly rate, base hour).",
+ "rewards": [
+  0.3,
+  0.8,
+  1.4,
+  2.2
+ ],
+ "fame_per_hit": 2,
+ "businesses": {
+  "sorveteria": {
+   "title": "Montar a casquinha",
+   "steps": [
+    "Bola de baunilha na casquinha!",
+    "Agora a de morango!",
+    "Calda de chocolate por cima!"
+   ],
+   "counter": [
+    4785,
+    -1767,
+    110,
+    67
+   ],
+   "guest": [
+    4706,
+    -1646,
+    0,
+    247
+   ]
+  },
+  "aluguel": {
+   "title": "Encerar a prancha",
+   "steps": [
+    "Passe a parafina na prancha!",
+    "Aperte o colete do cliente!",
+    "Empurre o caiaque na água!"
+   ],
+   "counter": [
+    6730,
+    -1880,
+    110,
+    90
+   ],
+   "guest": [
+    6610,
+    -1800,
+    0,
+    270
+   ]
+  },
+  "surfe": {
+   "title": "Aula na areia",
+   "steps": [
+    "Remada! (aluno deitado na prancha)",
+    "Hora de levantar!",
+    "Equilíbrio na onda!"
+   ],
+   "counter": [
+    -4572,
+    -1963,
+    110,
+    79
+   ],
+   "guest": [
+    -4675,
+    -1862,
+    0,
+    259
+   ]
+  },
+  "food_truck": {
+   "title": "Fritar o pastel",
+   "steps": [
+    "Massa na chapa!",
+    "Recheio de camarão!",
+    "Tire da fritura no ponto!"
+   ],
+   "counter": [
+    2620,
+    3275,
+    110,
+    90
+   ],
+   "guest": [
+    2500,
+    3355,
+    0,
+    270
+   ]
+  },
+  "souvenir": {
+   "title": "Embrulhar o presente",
+   "steps": [
+    "Escolha a lembrança!",
+    "Papel de presente!",
+    "Fita e laço!"
+   ],
+   "counter": [
+    8150,
+    3880,
+    110,
+    -180
+   ],
+   "guest": [
+    8070,
+    3760,
+    0,
+    0
+   ]
+  }
+ }
+}

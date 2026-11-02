@@ -561,3 +561,29 @@ bool FMareBarDrinksTest::RunTest(const FString& Parameters)
  IFileManager::Get().DeleteDirectory(*Sim->SaveDirectory,false,true);
  Sim->RemoveFromRoot();Instance->RemoveFromRoot();return true;
 }
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FMareBusinessShiftTest,"MareAlta.Gameplay.BusinessCounter",EAutomationTestFlags::EditorContext|EAutomationTestFlags::EngineFilter)
+bool FMareBusinessShiftTest::RunTest(const FString& Parameters)
+{
+ auto Instance=NewObject<UGameInstance>();Instance->AddToRoot();
+ auto Sim=NewObject<UMareSimulation>(Instance);Sim->AddToRoot();
+ Sim->SaveDirectory=FPaths::ProjectSavedDir()/TEXT("Automation/BusinessCounter")/FGuid::NewGuid().ToString(EGuidFormats::Digits);
+ auto Load=[&](const FString& Name,TSharedPtr<FJsonObject>& Result){FString Text;FFileHelper::LoadFileToString(Text,*(FPaths::ProjectContentDir()/TEXT("Data")/Name));return FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Text),Result);};
+ if(!TestTrue(TEXT("Definitions"),Load(TEXT("definitions.json"),Sim->Definitions)) || !TestTrue(TEXT("Default save"),Load(TEXT("default_save.json"),Sim->State))){Sim->RemoveFromRoot();Instance->RemoveFromRoot();return false;}
+ Sim->State->SetNumberField(TEXT("money"),5000);Sim->State->SetNumberField(TEXT("minutes"),12*60);
+ // Every business in the counter data exists in the definitions and has three steps.
+ for(const auto& Pair:Sim->Object(Sim->BusinessGames(),TEXT("businesses"))->Values){const FString Id(Pair.Key.ToView());
+  TestTrue(TEXT("Counter business defined: ")+Id,Sim->Object(Sim->Definitions,TEXT("businesses"))->HasField(Id));
+  const TArray<TSharedPtr<FJsonValue>>* Steps=nullptr;TestTrue(TEXT("Three steps: ")+Id,Pair.Value->AsObject()->TryGetArrayField(TEXT("steps"),Steps) && Steps->Num()==3);}
+ FString Reason;TestFalse(TEXT("Not owned: no counter task"),Sim->CanPlayBusiness(TEXT("sorveteria"),Reason));
+ Sim->Object(Sim->Object(Sim->Object(Sim->State,TEXT("prog")),TEXT("biz")),TEXT("sorveteria"))->SetNumberField(TEXT("lvl"),1);
+ TestTrue(TEXT("Owned and open: task available"),Sim->CanPlayBusiness(TEXT("sorveteria"),Reason));
+ double Before=Sim->Money();const double Perfect=Sim->PlayBusiness(TEXT("sorveteria"),3);
+ TestTrue(TEXT("Perfect task pays"),Perfect>0);TestEqual(TEXT("Booked"),Sim->Money(),Before+Perfect);
+ TestFalse(TEXT("Once per hour"),Sim->CanPlayBusiness(TEXT("sorveteria"),Reason));TestEqual(TEXT("Second try pays nothing"),Sim->PlayBusiness(TEXT("sorveteria"),3),0.);
+ Sim->State->SetNumberField(TEXT("minutes"),13*60);
+ const double Miss=Sim->PlayBusiness(TEXT("sorveteria"),0);TestTrue(TEXT("Next hour available, fewer hits pay less"),Miss>0 && Miss<Perfect);
+ Sim->State->SetNumberField(TEXT("minutes"),22*60);TestFalse(TEXT("Closed at night"),Sim->CanPlayBusiness(TEXT("sorveteria"),Reason));
+ IFileManager::Get().DeleteDirectory(*Sim->SaveDirectory,false,true);
+ Sim->RemoveFromRoot();Instance->RemoveFromRoot();return true;
+}

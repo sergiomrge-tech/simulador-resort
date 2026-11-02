@@ -711,6 +711,71 @@ void AMareCharacter::Tick(float DeltaSeconds)
 
 #define LOCTEXT_NAMESPACE "MareMenu"
 /** Main menu: new game, continue, three load slots, options, credits, quit. */
+/** Business counter task (port of the Godot minigame): three rounds of "stop the cursor in the green band",
+ *  the band shrinks and the cursor speeds up each round. E, Space, Enter, click or A; Esc or B gives up. */
+class SMareTimingGame : public SCompoundWidget
+{
+public:
+ SLATE_BEGIN_ARGS(SMareTimingGame){} SLATE_ARGUMENT(TWeakObjectPtr<AMareController>,Owner) SLATE_ARGUMENT(FString,Biz) SLATE_END_ARGS()
+ void Construct(const FArguments& Args)
+ {
+  using namespace MareNotebook;Owner=Args._Owner;Biz=Args._Biz;NewRound();
+  auto S=Owner.IsValid()?Owner->GetSimulation():nullptr;const auto Def=S?UMareSimulation::Object(UMareSimulation::Object(S->BusinessGames(),TEXT("businesses")),Biz):MakeShared<FJsonObject>();
+  const TArray<TSharedPtr<FJsonValue>>* List=nullptr;if(Def->TryGetArrayField(TEXT("steps"),List))for(const auto& V:*List)Steps.Add(V->AsString());
+  const FString Title=UMareSimulation::String(Def,TEXT("title"));
+  ChildSlot.HAlign(HAlign_Center).VAlign(VAlign_Bottom).Padding(0,0,0,70)[SNew(SBorder).BorderImage(FCoreStyle::Get().GetBrush("WhiteBrush")).BorderBackgroundColor(Paper).Padding(FMargin(26,16))
+   [SNew(SBox).WidthOverride(BarWidth+52)[SNew(SVerticalBox)
+    +SVerticalBox::Slot().AutoHeight()[HandText(Title,30,Brown)]
+    +SVerticalBox::Slot().AutoHeight().Padding(0,4)[SNew(STextBlock).Font(Hand(22)).ColorAndOpacity(Ink).Text_Lambda([this](){
+     return FText::FromString(Done>=0?Result:Steps.IsValidIndex(Round)?Steps[Round]:FString());})]
+    +SVerticalBox::Slot().AutoHeight().Padding(0,8)[SNew(SBox).WidthOverride(BarWidth).HeightOverride(46)[SNew(SOverlay)
+     +SOverlay::Slot()[SNew(SBorder).BorderImage(FCoreStyle::Get().GetBrush("WhiteBrush")).BorderBackgroundColor(Kraft)]
+     +SOverlay::Slot()[SNew(SBox).HAlign(HAlign_Left).Padding_Lambda([this](){return FMargin((Zone-ZoneW/2)*BarWidth,0,0,0);})
+      [SNew(SBox).WidthOverride_Lambda([this](){return FOptionalSize(ZoneW*BarWidth);})[SNew(SBorder).BorderImage(FCoreStyle::Get().GetBrush("WhiteBrush")).BorderBackgroundColor(Green)]]]
+     +SOverlay::Slot()[SNew(SBox).HAlign(HAlign_Left).Padding_Lambda([this](){return FMargin(FMath::Max(0.f,Cursor()*BarWidth-4),0,0,0);})
+      [SNew(SBox).WidthOverride(8)[SNew(SBorder).BorderImage(FCoreStyle::Get().GetBrush("WhiteBrush")).BorderBackgroundColor(Ink)]]]]]
+    +SVerticalBox::Slot().AutoHeight()[SNew(STextBlock).Font(Hand(24)).ColorAndOpacity(Green).Text_Lambda([this](){
+     FString Dots;for(int32 I=0;I<3;++I)Dots+=I<Marks.Num()?(Marks[I]?TEXT("O "):TEXT("X ")):TEXT("- ");return FText::FromString(Dots);})]
+    +SVerticalBox::Slot().AutoHeight()[HandText(TEXT("E, Espaço, clique ou A quando o cursor estiver no verde · Esc ou B desiste"),15,Faded)]]]];
+ }
+ virtual bool SupportsKeyboardFocus()const override{return true;}
+ virtual FReply OnKeyDown(const FGeometry&,const FKeyEvent& Event) override
+ {
+  const FKey K=Event.GetKey();
+  if(K==EKeys::Escape || K==EKeys::Gamepad_FaceButton_Right){Finish(true);return FReply::Handled();}
+  if(K==EKeys::E || K==EKeys::SpaceBar || K==EKeys::Enter || K==EKeys::Gamepad_FaceButton_Bottom || K==EKeys::Gamepad_FaceButton_Left){Press();return FReply::Handled();}
+  return FReply::Unhandled();
+ }
+ virtual FReply OnMouseButtonDown(const FGeometry&,const FPointerEvent&) override{Press();return FReply::Handled();}
+ virtual void Tick(const FGeometry& Geometry,const double Time,const float Delta) override
+ {
+  SCompoundWidget::Tick(Geometry,Time,Delta);
+  if(Done>=0){if((Done-=Delta)<=0)Close();return;}
+  if(Pause>0){if((Pause-=Delta)<=0)NewRound();return;}
+  T+=Delta*Speed;
+ }
+private:
+ static constexpr float BarWidth=560;
+ TWeakObjectPtr<AMareController> Owner;FString Biz,Result;TArray<FString> Steps;TArray<bool> Marks;
+ int32 Round=0;float T=0,Speed=.8f,Zone=.5f,ZoneW=.22f,Pause=0,Done=-1;
+ float Cursor()const{return .5f-.5f*FMath::Cos(T*PI);}
+ void NewRound(){Zone=FMath::FRandRange(.22f,.78f);ZoneW=.22f*FMath::Pow(.75f,float(Round));Speed=.8f+.3f*Round;T=FMath::FRand()*2;}
+ void Press()
+ {
+  if(Done>=0 || Pause>0 || Round>2)return;
+  const bool bHit=FMath::Abs(Cursor()-Zone)<=ZoneW/2;Marks.Add(bHit);
+  if(Owner.IsValid())UMareAudioWorld::Action(Owner.Get(),bHit?TEXT("deal_accept"):TEXT("deal_decline"));
+  if(++Round>2){Finish(false);return;}Pause=.6f;
+ }
+ void Finish(bool bGaveUp)
+ {
+  auto S=Owner.IsValid()?Owner->GetSimulation():nullptr;int32 Hits=0;for(bool B:Marks)Hits+=B;
+  if(bGaveUp && Marks.Num()<3){Result=TEXT("Você saiu do balcão. O cliente espera.");Done=1.f;return;}
+  if(S){S->PlayBusiness(Biz,Hits);Result=S->LastMessage;if(Owner.IsValid())UMareAudioWorld::Action(Owner.Get(),TEXT("money_coins"));}
+  Done=1.8f;
+ }
+ void Close(){if(Owner.IsValid())Owner->CloseBusinessGame();}
+};
 class SMareMainMenu : public SCompoundWidget
 {
 public:
@@ -787,6 +852,20 @@ private:
   MareGamepad::FocusSoon(AsShared(),0);
  }
 };
+void AMareController::StartBusinessGame(const FString& Biz)
+{
+ auto S=GetSimulation();if(!GEngine || !GEngine->GameViewport || !S || GameWidget.IsValid())return;
+ FString Reason;if(!S->CanPlayBusiness(Biz,Reason)){S->LastMessage=Reason;return;}
+ ClosePhone();SetPause(true);
+ const TSharedRef<SMareTimingGame> Game=SNew(SMareTimingGame).Owner(this).Biz(Biz);GameWidget=Game;
+ GEngine->GameViewport->AddViewportWidgetContent(Game,40);bShowMouseCursor=true;
+ SetInputMode(FInputModeUIOnly().SetWidgetToFocus(Game));SetIgnoreMoveInput(true);SetIgnoreLookInput(true);
+}
+void AMareController::CloseBusinessGame()
+{
+ if(GameWidget.IsValid() && GEngine && GEngine->GameViewport)GEngine->GameViewport->RemoveViewportWidgetContent(GameWidget.ToSharedRef());
+ GameWidget.Reset();SetPause(false);bShowMouseCursor=false;SetInputMode(FInputModeGameOnly());ResetIgnoreMoveInput();ResetIgnoreLookInput();
+}
 void AMareController::OpenMainMenu()
 {
  auto S=GetSimulation();if(!GEngine || !GEngine->GameViewport || !S || MainMenuWidget.IsValid())return;
