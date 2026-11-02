@@ -67,7 +67,12 @@ Pronto e testado (02/11):
   espreguiçadeiras (E recolhe) e pedem picolé (E no cooler vende). Sujeira e toalhas reduzem a renda por hora e, no
   fechamento, viram nota dos banhistas (estrelas). `MarePool.cpp`, `MarePoolWorld.cpp`, `Content/Data/pool.json`, folhas em
   `tools/ue58/gen_pool_mess.py`, teste `MareAlta.Gameplay.PoolDayUse`.
-- [ ] P1 **Passeios**: vender bilhetes no píer, guiar barco ou trilha do farol com paradas de foto, nota do passeio.
+- [x] P1 **Passeios** (02/11): bilheteria na entrada do píer com fila de compradores nas 3 horas antes de cada saída
+  (snorkel 10h, barco 14h, trilha do farol 16h); o jogador vende os bilhetes (o guia vende sozinho); na hora da saída o
+  jogador guia: 3 paradas com uma escolha boa, uma aceitável e uma ruim, que viram nota (estrelas), gorjeta e fama; sem
+  jogador e sem guia o passeio é cancelado e os bilhetes devolvidos; passageiros esperam no píer e embarcam.
+  `MareTours.cpp`, `MareToursWorld.cpp`, `Content/Data/tours.json`, teste `MareAlta.Gameplay.ToursHandsOn`.
+  Falta: barco saindo do píer com os passageiros e as paradas mostradas em cena.
 - [ ] P1 **Restaurante do hotel**: atender as mesas, serviço de quarto, eventos (casamento, festa).
 - [ ] P1 **Salão de jogos**:
   - partida de sinuca jogada até o fim no jogo;

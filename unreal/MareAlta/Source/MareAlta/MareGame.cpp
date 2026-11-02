@@ -224,6 +224,9 @@ private:
  /** Bar station: ingredients in the shaker and the guest being served. */
  TArray<FString> Shaker;
  FString BarOrder;
+ /** Tours booth: the tour being guided and the choice made at each stop (0 good, 1 ok, 2 bad). */
+ FString GuideTourId;
+ TArray<int32> GuideChoices;
  UMareSimulation* Sim()const{return Owner.IsValid()?Owner->GetGameInstance()->GetSubsystem<UMareSimulation>():nullptr;}
  // ---- Where the page goes: exactly over the glass of the 3D phone, else a fixed sheet.
  // Viewport pixels -> units inside the DPI scaler: measured from this widget, so monitor DPI is included.
@@ -304,6 +307,42 @@ private:
    Stock->AddSlot(I%4,I/4)[MareNotebook::PriceTag(SNew(SVerticalBox)+SVerticalBox::Slot().AutoHeight()[MareNotebook::BodyText(UMareSimulation::String(Dish,TEXT("name")),12,MareNotebook::Ink,true)]
     +SVerticalBox::Slot().AutoHeight()[SNew(STextBlock).Font(MareNotebook::Hand(18)).ColorAndOpacity_Lambda([S,Id](){return FSlateColor(S->IsDishUnlocked(Id) && S->Available(Id)>0?MareNotebook::Green:MareNotebook::Red);})
      .Text_Lambda([S,Id](){if(!S->IsDishUnlocked(Id))return FText::FromString(TEXT("precisa de expansão"));const int32 N=S->Available(Id);return FText::FromString(N>0?FString::Printf(TEXT("%d prontos"),N):TEXT("acabou · repor"));})],TiltOf(I))];++I;}
+ }
+ /** Pier booth: today's tours with buyers to serve, and the guided tour (three stops) in the departure hour. */
+ void ToursPage()
+ {
+  auto S=Sim();using namespace MareNotebook;
+  if(!GuideTourId.IsEmpty()){
+   const auto Tour=S->TourDef(GuideTourId);const TArray<TSharedPtr<FJsonValue>>* Stops=nullptr;
+   UMareSimulation::Object(S->ToursDefs(),TEXT("stops"))->TryGetArrayField(GuideTourId,Stops);
+   Title(UMareSimulation::String(Tour,TEXT("name")),FString::Printf(TEXT("guiando · parada %d de 3"),FMath::Min(GuideChoices.Num()+1,3)));
+   if(!Tour || !Stops || !S->IsTourBoarding(GuideTourId)){GuideTourId.Reset();GuideChoices.Reset();Line(TEXT("O passeio não pode mais sair."),13,Red);return;}
+   const auto Stop=(*Stops)[GuideChoices.Num()]->AsObject();
+   Pencil(UMareSimulation::String(Stop,TEXT("text")));Line(TEXT("O que você faz?"),13,Faded);
+   // The three choices in a stable shuffled order, so the good one is not always first.
+   int32 Order[3]={0,1,2};const uint32 Seed=FCrc::StrCrc32(*GuideTourId)+GuideChoices.Num()*7;
+   for(int32 I=2;I>0;--I){const int32 J=int32((Seed>>(I*3))%uint32(I+1));Swap(Order[I],Order[J]);}
+   for(int32 K:Order){const TCHAR* Key=K==0?TEXT("good"):K==1?TEXT("ok"):TEXT("bad");
+    Body->AddSlot().AutoHeight().HAlign(HAlign_Left).Padding(0,3)[Button(UMareSimulation::String(Stop,Key),[this,S,K](){
+     GuideChoices.Add(K);
+     if(GuideChoices.Num()>=3){const double Rating=S->GuideTour(GuideTourId,GuideChoices);GuideTourId.Reset();GuideChoices.Reset();
+      UMareAudioWorld::Action(Owner.Get(),Rating>=4?TEXT("deal_accept"):TEXT("deal_decline"));if(Rating>0)UMareAudioWorld::Action(Owner.Get(),TEXT("money_coins"));}})];}
+   return;}
+  Title(TEXT("Passeios"),S->HasStaff(TEXT("guia"))?TEXT("o guia vende e leva quem você não levar"):TEXT("sem guia: venda e guie você mesmo"));
+  for(const FString& Id:S->TourIds()){const auto Tour=S->TourDef(Id);const FString Status=S->TourStatus(Id);
+   const int32 Queue=S->TourCount(TEXT("queue"),Id),Sold=S->TourCount(TEXT("sold"),Id),Seats=S->TourSeats(Tour);
+   FString Note;
+   if(Status==TEXT("guided"))Note=FString::Printf(TEXT("já saiu com você · nota %.1f"),UMareSimulation::Number(UMareSimulation::Object(UMareSimulation::Object(S->State,TEXT("tours")),TEXT("rating")),Id));
+   else if(Status==TEXT("guide"))Note=TEXT("já saiu com o guia");else if(Status==TEXT("cancelled"))Note=TEXT("cancelado hoje");else if(Status==TEXT("empty"))Note=TEXT("saiu vazio");
+   else Note=FString::Printf(TEXT("sai às %.0fh · R$ %.0f · %d de %d lugares vendidos"),UMareSimulation::Number(Tour,TEXT("hour")),S->TicketPrice(Id),Sold,Seats);
+   Heading(UMareSimulation::String(Tour,TEXT("name")),Note);
+   if(!Status.IsEmpty())continue;
+   auto Row=SNew(SHorizontalBox);
+   Row->AddSlot().AutoWidth().Padding(0,0,8,0)[Button(Queue>0?FString::Printf(TEXT("Vender %d bilhete(s)"),FMath::Min(Queue,Seats-Sold)):FString(TEXT("Ninguém na fila")),[this,S,Id](){
+    if(S->SellTickets(Id)>0)UMareAudioWorld::Action(Owner.Get(),TEXT("money_register"));},Queue>0 && Sold<Seats)];
+   if(S->IsTourBoarding(Id))Row->AddSlot().AutoWidth()[Button(TEXT("Guiar o passeio agora"),[this,Id](){GuideTourId=Id;GuideChoices.Reset();},Sold>0)];
+   Body->AddSlot().AutoHeight().Padding(0,2,0,6)[Row];}
+  Line(TEXT("Na hora da saída, guie você mesmo: cada parada bem conduzida dá gorjeta e fama. Sem você e sem guia, o passeio é cancelado e os bilhetes devolvidos."),12,Faded);
  }
  /** Bar do Coqueiro: guests' orders, the shaker and the ingredient shelf, the recipe book (MareBar.cpp). */
  void BarPage()
@@ -590,7 +629,7 @@ private:
   if(bPhone)for(int32 I=0;I<Titles.Num();++I){const bool bOn=I==Tab;
    Tabs->AddSlot().AutoWidth().VAlign(VAlign_Bottom).Padding(0,0,3,0)[SNew(SMarePadButton).ButtonStyle(&MareNotebook::Plain()).ContentPadding(FMargin(0)).OnClicked_Lambda([this,I](){if(Owner.IsValid())Owner->GetWorld()->GetSubsystem<UMareAudioWorld>()->PlayCue(TEXT("click"),.16f);Tab=I;Rebuild();return FReply::Handled();})
     [SNew(SBorder).BorderImage(&TabBrush(bOn?Paper:TabColor(I))).Padding(bOn?FMargin(11,4,11,3):FMargin(8,2,8,2))[SNew(STextBlock).Text(FText::FromString(Titles[I])).Font(MareNotebook::Hand(bOn?17:15)).ColorAndOpacity(Ink)]]];}
-  else Tabs->AddSlot().AutoWidth().VAlign(VAlign_Bottom)[SNew(SBorder).BorderImage(&TabBrush(Paper)).Padding(FMargin(16,6,16,5))[SNew(STextBlock).Text(FText::FromString(Station==TEXT("Fridge")?TEXT("Geladeira"):Station==TEXT("Reception") || Station==TEXT("ReceptionHotel")?TEXT("Recepção"):Station==TEXT("Bar")?TEXT("Bar"):TEXT("Porções prontas"))).Font(MareNotebook::Hand(19)).ColorAndOpacity(Ink)]];
+  else Tabs->AddSlot().AutoWidth().VAlign(VAlign_Bottom)[SNew(SBorder).BorderImage(&TabBrush(Paper)).Padding(FMargin(16,6,16,5))[SNew(STextBlock).Text(FText::FromString(Station==TEXT("Fridge")?TEXT("Geladeira"):Station==TEXT("Reception") || Station==TEXT("ReceptionHotel")?TEXT("Recepção"):Station==TEXT("Bar")?TEXT("Bar"):Station==TEXT("Tours")?TEXT("Píer"):TEXT("Porções prontas"))).Font(MareNotebook::Hand(19)).ColorAndOpacity(Ink)]];
   Tabs->AddSlot().FillWidth(1)[SNullWidget::NullWidget];
   Tabs->AddSlot().AutoWidth().VAlign(VAlign_Bottom)[SNew(SMarePadButton).ButtonStyle(&MareNotebook::Plain()).ContentPadding(FMargin(0)).OnClicked_Lambda([this](){if(Owner.IsValid())Owner->ClosePhone();return FReply::Handled();})
    [SNew(SBorder).BorderImage(&TabBrush(Hex(226,150,140))).Padding(FMargin(8,2,8,2))[SNew(STextBlock).Text(FText::FromString(TEXT("fechar"))).Font(MareNotebook::Hand(15)).ColorAndOpacity(Ink)]]];
@@ -610,6 +649,7 @@ private:
    .HeightOverride_Lambda([this](){return FOptionalSize(ScreenRect().Bottom);})[Screen]]];
   if(PrevFocus>=0)MareGamepad::FocusSoon(AsShared(),PrevFocus);
   if(Station==TEXT("Bar")){BarPage();return;}
+  if(Station==TEXT("Tours")){ToursPage();return;}
   if(Station==TEXT("Reception") || Station==TEXT("ReceptionHotel")){ReceptionPage(Station==TEXT("ReceptionHotel")?TEXT("hotel"):TEXT("pousada"));return;}
   if(!bPhone){StockPage(true);if(!S->Carry().IsEmpty())Body->AddSlot().AutoHeight().HAlign(HAlign_Left).Padding(0,6)[Button(TEXT("Devolver produto"),[S](){S->ReturnCarry();})];return;}
   switch(Tab){

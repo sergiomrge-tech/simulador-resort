@@ -103,6 +103,7 @@ void AMareServiceTarget::Use(APlayerController* Controller)
  if(Action==TEXT("PoolTowel")){if(Sim->CollectPoolTowel(DataIndex))UMareAudioWorld::Action(this,TEXT("cleaning_towels"));return;}
  if(Action==TEXT("PoolCooler")){if(Sim->SellPopsicles())UMareAudioWorld::Action(this,TEXT("money_coins"));return;}
  if(Action==TEXT("BusinessCounter")){for(const FName& Tag:Tags){const FString T=Tag.ToString();if(T.StartsWith(TEXT("biz:")))PC->StartBusinessGame(T.Mid(4));}return;}
+ if(Action==TEXT("TourBooth")){const FVector Bell=GetActorLocation();UMareAudioWorld::Action(this,TEXT("reception_bell"),&Bell);PC->OpenStation(TEXT("Tours"));return;}
  if(Action==TEXT("BarCounter")){PC->OpenStation(TEXT("Bar"));return;}
  if(Action==TEXT("HotelReception")){const FVector Bell=GetActorLocation();UMareAudioWorld::Action(this,TEXT("reception_bell"),&Bell);PC->OpenStation(TEXT("ReceptionHotel"));return;}
  if(Action==TEXT("Door")){

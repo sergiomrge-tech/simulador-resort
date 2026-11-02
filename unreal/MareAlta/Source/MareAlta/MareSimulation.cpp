@@ -694,11 +694,8 @@ void UMareSimulation::OperateHour(int32 Hour)
  for(const auto& Pair:Object(Defs,TEXT("hourly"))->Values){const FString Id(Pair.Key.ToView());auto Op=Pair.Value->AsObject();
   const TArray<TSharedPtr<FJsonValue>>* Open=nullptr;if(!Owns(State,String(Op,TEXT("unlock"))) || !Op->TryGetArrayField(TEXT("open"),Open) || Open->Num()!=2)continue;
   if(Started>=(*Open)[0]->AsNumber() && Started<(*Open)[1]->AsNumber())Add(Id,String(Op,TEXT("name")),HourlyIncome(Id)*FMath::FRandRange(.85,1.15));}
- const TArray<TSharedPtr<FJsonValue>>* Tours=nullptr;
- if(Owns(State,TEXT("passeios")) && HasStaff(String(Defs,TEXT("tour_guide"))) && Defs->TryGetArrayField(TEXT("tours"),Tours))for(const auto& V:*Tours){auto Tour=V->AsObject();
-  if(int32(Number(Tour,TEXT("hour")))!=Started)continue;const int32 Pax=TourPassengers(Tour);
-  Add(TEXT("passeios"),FString::Printf(TEXT("%s (%d pessoas)"),*String(Tour,TEXT("name")),Pax),Pax*Number(Tour,TEXT("price"))*PlaceIncomeFactor(TEXT("passeios"))-Number(Tour,TEXT("cost")));
-  AddFame(Pax/2);}
+ // Tours sell tickets at the pier and leave guided by the player or the guide (MareTours.cpp).
+ ToursHour(Hour);
  for(const auto& Pair:Object(Definitions,TEXT("businesses"))->Values){const FString Id(Pair.Key.ToView());if(!OwnsBusiness(Id))continue;
   const TArray<TSharedPtr<FJsonValue>>* Open=nullptr;if(!Pair.Value->AsObject()->TryGetArrayField(TEXT("open"),Open) || Open->Num()!=2)continue;
   if(Started>=(*Open)[0]->AsNumber() && Started<(*Open)[1]->AsNumber())Add(TEXT("biz_")+Id,String(Pair.Value->AsObject(),TEXT("name")),BusinessRate(Id)*FMath::FRandRange(.85,1.15));}

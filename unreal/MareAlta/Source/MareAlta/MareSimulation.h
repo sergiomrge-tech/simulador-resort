@@ -218,6 +218,27 @@ public:
   *  filled by StaysNight for the hotel, cleared at 13:00); removed from the list. Null when nobody is left. */
  TSharedPtr<FJsonObject> TakeDeparture(const FString& Place);
  TSharedPtr<FJsonObject> Stays();
+ // --- Tours, hands-on (MareTours.cpp, Content/Data/tours.json; the tours are customization.json operations.tours) ---
+ // State "tours" (reset each day): queue {tour: buyers at the booth}, sold {tour: tickets}, done {tour: guided|guide|cancelled|empty}, rating.
+ TSharedPtr<FJsonObject> ToursDefs() const;
+ TSharedPtr<FJsonObject> Tours();
+ TSharedPtr<FJsonObject> TourDef(const FString& Id) const;
+ TArray<FString> TourIds() const;
+ /** Today's count in "queue" or "sold" for a tour. */
+ int32 TourCount(const FString& Field,const FString& Id) const;
+ /** Today's outcome of a tour, empty while it has not left. */
+ FString TourStatus(const FString& Id) const;
+ /** Inside the departure hour and not left yet: the player can guide it. */
+ bool IsTourBoarding(const FString& Id) const;
+ double TicketPrice(const FString& Id) const;
+ /** Sells a ticket to everyone waiting at the booth for this tour (up to the free seats); returns how many. */
+ UFUNCTION(BlueprintCallable,Category="Maré Alta|Tours") int32 SellTickets(const FString& Id);
+ /** Guides the tour now: Choices per stop are 0 good, 1 acceptable, 2 bad. Books the tip minus the trip cost,
+  *  rates the tour (stars) and gives fame; returns the rating, 0 when it cannot leave. */
+ double GuideTour(const FString& Id,const TArray<int32>& Choices);
+ /** Hourly: buyers before each departure (the guide sells), and at the end of the departure hour the guide's run
+  *  or the cancellation with refund. */
+ void ToursHour(int32 Hour);
  // --- Pool day use, hands-on (MarePool.cpp, Content/Data/pool.json) ---
  // State "pool": dirt 0..100 (leaves in the water), towels [lounger indices], popsicles (guests asking).
  TSharedPtr<FJsonObject> PoolDefs() const;

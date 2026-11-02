@@ -1,0 +1,20 @@
+{
+ "_doc": "Tours, hands-on (gameplay plan: sell tickets at the pier, guide the tour, tour rating). The tours themselves (id, name, hour, price, cost, seats) stay in customization.json operations.tours; here are the guided stops and the pier places. Buyers come to the booth in the hours before a departure; the player sells (the guide sells by himself). In the departure hour the player can guide: three stops, each with a good, an acceptable and a bad choice (shown shuffled); rating = 2 + 1 per good + 0.5 per acceptable, tip = 10% of the tickets per good choice. Not guided by the end of that hour: the guide runs it (rating 3.5) or, without a guide, it is cancelled and refunded. World cm: booth = E target [x, y, z, yaw], queue = first buyer spot and the step between buyers, board = where boarding passengers walk.",
+ "booth": [7380, -1960, 110, 180],
+ "queue": [7200, -2260, 0, -85],
+ "board": {"snorkel": [7200, -4700, 0], "barco": [7200, -4700, 0], "farol": [10500, -3800, 0]},
+ "stops": {
+  "snorkel": [
+   {"text": "Primeira parada: o recife raso.", "good": "Explicar como nadar devagar, sem tocar no coral", "ok": "Contar quantos peixes cada um viu", "bad": "Mandar todo mundo pisar nas pedras para descansar"},
+   {"text": "Um cardume de sargentinhos aparece.", "good": "Mostrar as listras e deixar observarem em silêncio", "ok": "Jogar um pouco de pão na água", "bad": "Pedir para tentarem pegar um peixe"},
+   {"text": "Hora de voltar ao barco.", "good": "Contar todos os mergulhadores antes de partir", "ok": "Partir quando o barco estiver quase cheio", "bad": "Partir logo para não atrasar"}],
+  "barco": [
+   {"text": "Saindo do píer, o mar está um pouco agitado.", "good": "Distribuir coletes e mostrar onde segurar", "ok": "Pedir para todos ficarem sentados", "bad": "Acelerar para passar logo"},
+   {"text": "Golfinhos à vista!", "good": "Desligar o motor e deixar que passem", "ok": "Seguir os golfinhos de longe", "bad": "Ir para cima deles para a foto"},
+   {"text": "Parada na praia deserta.", "good": "Lembrar de levar o lixo de volta", "ok": "Dar dez minutos de banho de mar", "bad": "Deixar as latas na areia, a maré leva"}],
+  "farol": [
+   {"text": "Início da trilha, sol forte.", "good": "Lembrar de água e protetor solar", "ok": "Começar em ritmo rápido", "bad": "Sair sem esperar os atrasados"},
+   {"text": "Mirante no meio do caminho.", "good": "Contar a história do farol enquanto descansam", "ok": "Tirar a foto do grupo e seguir", "bad": "Pular o mirante para chegar antes"},
+   {"text": "Chegada ao farol.", "good": "Mostrar a lente e explicar como ela guiava os barcos", "ok": "Liberar para fotos", "bad": "Subir na grade para a melhor foto"}]
+ }
+}

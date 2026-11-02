@@ -146,7 +146,72 @@ def biz_qa(arg):
         return 'used'
 
 
+def find_actors(text):
+    """Level actors and ISM instances whose label or mesh name contains text: [label, [x, y, z]] (first 80)."""
+    out = []
+    for a in unreal.get_editor_subsystem(unreal.EditorActorSubsystem).get_all_level_actors():
+        label = a.get_actor_label()
+        if text.lower() in label.lower():
+            o, e = a.get_actor_bounds(False)
+            out.append([label[-50:], [round(o.x), round(o.y), round(o.z)], [round(e.x), round(e.y), round(e.z)]])
+        for c in a.get_components_by_class(unreal.InstancedStaticMeshComponent):
+            if c.static_mesh and text.lower() in c.static_mesh.get_name().lower():
+                for i in range(min(c.get_instance_count(), 20)):
+                    q = c.get_instance_transform(i, True).translation
+                    out.append([c.static_mesh.get_name(), [round(q.x), round(q.y), round(q.z)]])
+        if len(out) > 80:
+            break
+    return out[:80]
+
+
+def actor_instances(text):
+    """Instance positions of the ISM components of actors whose label contains text."""
+    out = []
+    for a in unreal.get_editor_subsystem(unreal.EditorActorSubsystem).get_all_level_actors():
+        if text.lower() not in a.get_actor_label().lower():
+            continue
+        for c in a.get_components_by_class(unreal.InstancedStaticMeshComponent):
+            for i in range(c.get_instance_count()):
+                q = c.get_instance_transform(i, True).translation
+                out.append([a.get_actor_label()[-20:], [round(q.x), round(q.y), round(q.z)]])
+        for c in a.get_components_by_class(unreal.StaticMeshComponent):
+            if not isinstance(c, unreal.InstancedStaticMeshComponent) and c.static_mesh:
+                q = c.get_world_location()
+                out.append([a.get_actor_label()[-20:] + '/' + c.static_mesh.get_name(), [round(q.x), round(q.y), round(q.z)]])
+    return out[:60]
+
+
+def target_qa(arg):
+    """PIE: 'stand:<Action>' puts the player 1.8 m in front of the first E target with that action, looking at it;
+    'use:<Action>' uses it; 'shot' takes a screenshot with the UI."""
+    world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()
+    pc = unreal.GameplayStatics.get_player_controller(world, 0)
+    hero = unreal.GameplayStatics.get_player_pawn(world, 0)
+    what, _, action = arg.partition(':')
+    if what == 'shot':
+        unreal.SystemLibrary.execute_console_command(world, 'Shot showui')
+        return 'shot'
+    target = next((a for a in unreal.GameplayStatics.get_all_actors_of_class(world, unreal.MareServiceTarget)
+                   if str(a.get_editor_property('action')) == action), None)
+    if not target:
+        return 'no target'
+    if what == 'stand':
+        at = target.get_actor_location() + target.get_actor_forward_vector() * 180
+        hero.set_actor_location(unreal.Vector(at.x, at.y, target.get_actor_location().z), False, True)
+        pc.set_control_rotation(unreal.MathLibrary.find_look_at_rotation(hero.get_actor_location() + unreal.Vector(0, 0, 64), target.get_actor_location()))
+        return [round(at.x), round(at.y)]
+    if what == 'use':
+        target.use(pc)
+        return 'used'
+
+
 def run(action, arg=''):
+    if action == 'target':
+        return target_qa(arg)
+    if action == 'inst':
+        return actor_instances(arg)
+    if action == 'find':
+        return find_actors(arg)
     if action == 'bizqa':
         return biz_qa(arg)
     if action == 'biz':

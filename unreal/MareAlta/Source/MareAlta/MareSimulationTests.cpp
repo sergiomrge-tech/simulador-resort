@@ -251,7 +251,8 @@ bool FMareExpansionOpsTest::RunTest(const FString& Parameters)
  TestTrue(TEXT("Hire guide"),Sim->HireStaff(TEXT("guia")));TestTrue(TEXT("Guide is hired"),Sim->HasStaff(TEXT("guia")));
  const int32 Seats=Sim->TourSeats(Sim->Object(Sim->State,TEXT("none")));TestTrue(TEXT("Boat upgrade"),Sim->BuyCustom(TEXT("passeios"),TEXT("barco"),5));
  TestEqual(TEXT("Bigger boat, more seats"),Sim->TourSeats(Sim->Object(Sim->State,TEXT("none"))),Seats+4);
- Sim->State->SetNumberField(TEXT("minutes"),840);Sim->AdvanceMinutes(60);
+ // With the guide, buyers of the 14h boat come from 11h on and he sells the tickets; the boat leaves at 14h.
+ Sim->State->SetNumberField(TEXT("minutes"),660);for(int32 I=0;I<4;++I)Sim->AdvanceMinutes(60);
  TestTrue(TEXT("Boat tour departs at 14h"),Sim->OpsToday(TEXT("passeios"))>0);
  // Businesses: bought once, earn in their hours.
  TestFalse(TEXT("Business needs fame"),Sim->BuyBusiness(TEXT("sorveteria")));
@@ -618,6 +619,45 @@ bool FMarePoolDayUseTest::RunTest(const FString& Parameters)
  Sim->Pool()->SetNumberField(TEXT("dirt"),100);Sim->State->SetArrayField(TEXT("ratings"),{});
  Sim->PoolHour(18);const TArray<TSharedPtr<FJsonValue>>* Ratings=nullptr;Sim->State->TryGetArrayField(TEXT("ratings"),Ratings);
  TestTrue(TEXT("Dirty pool rated low at closing"),Ratings && Ratings->Num()==1 && (*Ratings)[0]->AsNumber()<=3.5);
+ IFileManager::Get().DeleteDirectory(*Sim->SaveDirectory,false,true);
+ Sim->RemoveFromRoot();Instance->RemoveFromRoot();return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FMareToursHandsOnTest,"MareAlta.Gameplay.ToursHandsOn",EAutomationTestFlags::EditorContext|EAutomationTestFlags::EngineFilter)
+bool FMareToursHandsOnTest::RunTest(const FString& Parameters)
+{
+ auto Instance=NewObject<UGameInstance>();Instance->AddToRoot();
+ auto Sim=NewObject<UMareSimulation>(Instance);Sim->AddToRoot();
+ Sim->SaveDirectory=FPaths::ProjectSavedDir()/TEXT("Automation/ToursHandsOn")/FGuid::NewGuid().ToString(EGuidFormats::Digits);
+ auto Load=[&](const FString& Name,TSharedPtr<FJsonObject>& Result){FString Text;FFileHelper::LoadFileToString(Text,*(FPaths::ProjectContentDir()/TEXT("Data")/Name));return FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Text),Result);};
+ if(!TestTrue(TEXT("Definitions"),Load(TEXT("definitions.json"),Sim->Definitions)) || !TestTrue(TEXT("Default save"),Load(TEXT("default_save.json"),Sim->State))){Sim->RemoveFromRoot();Instance->RemoveFromRoot();return false;}
+ Sim->State->SetNumberField(TEXT("money"),1000);Sim->Object(Sim->State,TEXT("unlocked"))->SetBoolField(TEXT("passeios"),true);
+ // Every tour has three guided stops.
+ for(const FString& Id:Sim->TourIds()){const TArray<TSharedPtr<FJsonValue>>* Stops=nullptr;
+  TestTrue(TEXT("Three stops: ")+Id,Sim->Object(Sim->ToursDefs(),TEXT("stops"))->TryGetArrayField(Id,Stops) && Stops->Num()==3);}
+ // Buyers for the 14h boat arrive from 11h; the player sells at the booth.
+ Sim->State->SetNumberField(TEXT("minutes"),660);Sim->AdvanceMinutes(60);
+ TestTrue(TEXT("Buyers at the booth"),Sim->TourCount(TEXT("queue"),TEXT("barco"))>0);
+ double Before=Sim->Money();const double StartCash=Before;const int32 Sold=Sim->SellTickets(TEXT("barco"));
+ TestTrue(TEXT("Tickets sold"),Sold>0);TestEqual(TEXT("Tickets paid"),Sim->Money(),Before+Sold*Sim->TicketPrice(TEXT("barco")));
+ TestEqual(TEXT("Queue empty after selling"),Sim->TourCount(TEXT("queue"),TEXT("barco")),0);
+ TestEqual(TEXT("Cannot guide before departure"),Sim->GuideTour(TEXT("barco"),{0,0,0}),0.);
+ // Departure hour: a perfect guided tour rates 5 and tips.
+ Sim->State->SetNumberField(TEXT("minutes"),14*60+10);TestTrue(TEXT("Boarding at 14h"),Sim->IsTourBoarding(TEXT("barco")));
+ Before=Sim->Money();TestEqual(TEXT("Perfect rating"),Sim->GuideTour(TEXT("barco"),{0,0,0}),5.);
+ TestTrue(TEXT("Guided tour pays tip"),Sim->Money()>Before-Sim->Number(Sim->TourDef(TEXT("barco")),TEXT("cost")));
+ TestTrue(TEXT("Tour profitable overall"),Sim->Money()>StartCash);TestEqual(TEXT("Guided"),Sim->TourStatus(TEXT("barco")),FString(TEXT("guided")));
+ TestEqual(TEXT("Not twice"),Sim->GuideTour(TEXT("barco"),{0,0,0}),0.);
+ // Nobody guides the 16h trail without a guide: cancelled and refunded.
+ Sim->State->SetNumberField(TEXT("minutes"),780);for(int32 I=0;I<3;++I)Sim->AdvanceMinutes(60);
+ const int32 TrailSold=Sim->SellTickets(TEXT("farol"));Before=Sim->Money();
+ Sim->State->SetNumberField(TEXT("minutes"),16*60);Sim->AdvanceMinutes(60);
+ if(TrailSold>0){TestEqual(TEXT("Trail cancelled"),Sim->TourStatus(TEXT("farol")),FString(TEXT("cancelled")));
+  TestEqual(TEXT("Trail refunded"),Sim->Money(),Before-TrailSold*Sim->TicketPrice(TEXT("farol")));}
+ // A bad guide rates low.
+ Sim->State->SetNumberField(TEXT("day"),Sim->Number(Sim->State,TEXT("day"),1)+1);Sim->State->SetNumberField(TEXT("minutes"),9*60);
+ Sim->Tours();Sim->AdvanceMinutes(60);Sim->SellTickets(TEXT("snorkel"));Sim->State->SetNumberField(TEXT("minutes"),10*60+5);
+ if(Sim->TourCount(TEXT("sold"),TEXT("snorkel"))>0)TestEqual(TEXT("Careless guide rates 2"),Sim->GuideTour(TEXT("snorkel"),{2,2,2}),2.);
  IFileManager::Get().DeleteDirectory(*Sim->SaveDirectory,false,true);
  Sim->RemoveFromRoot();Instance->RemoveFromRoot();return true;
 }
