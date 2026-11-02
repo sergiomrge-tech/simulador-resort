@@ -138,7 +138,10 @@ bool AMarePerson::SetMetaHuman(const FString& Name)
  // Footwear fitted in Blender to a woman's or a man's MetaHuman foot (tools/ue58/gen_mh_shoes.py): nobody barefoot.
  if(Shoes){Shoes->DestroyComponent();Shoes=nullptr;}
  const TSharedPtr<FJsonObject>* ShoeKinds=nullptr;FString Kind;
- if(MetaHumanRoster()->TryGetObjectField(TEXT("shoes"),ShoeKinds) && (*ShoeKinds)->TryGetStringField(RoleKey,Kind)){
+ const TArray<TSharedPtr<FJsonValue>>* KindList=nullptr;
+ if(MetaHumanRoster()->TryGetObjectField(TEXT("shoes"),ShoeKinds) && (*ShoeKinds)->TryGetArrayField(RoleKey,KindList) && KindList->Num())
+  Kind=(*KindList)[int32(FCrc::StrCrc32(*(SaveId+TEXT("feet")))%uint32(KindList->Num()))]->AsString();
+ if(!Kind.IsEmpty()){
   const TCHAR* Foot=Body->GetSkeleton() && Body->GetSkeleton()->GetPathName().Contains(TEXT("/Female/"))?TEXT("Ada"):TEXT("Mateo");
   if(auto Pair=LoadObject<USkeletalMesh>(nullptr,*FString::Printf(TEXT("/Game/People/Swimwear/SKM_%s_%s.SKM_%s_%s"),*Kind,Foot,*Kind,Foot))){
    Shoes=NewObject<USkeletalMeshComponent>(this);AddInstanceComponent(Shoes);Shoes->SetupAttachment(GetMesh());
