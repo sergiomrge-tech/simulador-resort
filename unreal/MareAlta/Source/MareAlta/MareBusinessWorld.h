@@ -20,4 +20,8 @@ private:
  float Clock=0;
  UPROPERTY() TMap<FString,TObjectPtr<AMareServiceTarget>> Counters;
  UPROPERTY() TMap<FString,TObjectPtr<AMarePerson>> Waiting;
+ /** Game-room machines (foosball, arcades) and the guests playing them at night. */
+ UPROPERTY() TArray<TObjectPtr<class AStaticMeshActor>> Machines;
+ UPROPERTY() TArray<TObjectPtr<AMarePerson>> NightPlayers;
+ void SyncGameRoom(class UMareSimulation* S);
 };

@@ -1,5 +1,5 @@
 {
- "_doc": "Business counters (gameplay plan: one short hands-on task per village business, port of the Godot minigame). counter = E target [x,y,z,yaw] in world cm (Godot biz_world.gd counter point, converted Godot(x,y,z) m -> UE(x*100, z*100)); guest = where the waiting customer stands, beside the counter front (so the player can step in), facing the counter. steps = the three timing rounds. reward multipliers by hits 0..3 of max(hourly rate, base hour).",
+ "_doc": "Business counters (gameplay plan: one short hands-on task per village business, port of the Godot minigame). counter = E target [x,y,z,yaw] in world cm (Godot biz_world.gd counter point, converted Godot(x,y,z) m -> UE(x*100, z*100)); guest = where the waiting customer stands, beside the counter front (so the player can step in), facing the counter. steps = the three timing rounds. reward multipliers by hits 0..3 of max(hourly rate, base hour). Game-room machines (requires = expansion instead of an owned business, base = reward for 3/3 before multipliers, open = hours) use the same task.",
  "rewards": [
   0.3,
   0.8,
@@ -107,6 +107,92 @@
     0,
     0
    ]
+  },
+  "pebolim": {
+   "title": "Pebolim contra um hóspede",
+   "requires": "salao_jogos",
+   "open": [
+    10,
+    24
+   ],
+   "base": 30,
+   "name": "Pebolim",
+   "steps": [
+    "Defesa! Segure o goleiro na hora certa!",
+    "Passe para o meio-campo!",
+    "Chute ao gol!"
+   ],
+   "counter": [
+    -2050,
+    6395,
+    120,
+    -90
+   ],
+   "guest": [
+    -2050,
+    6540,
+    0,
+    -90
+   ]
+  },
+  "fliperama": {
+   "title": "Maré Attack (fliperama)",
+   "requires": "salao_jogos",
+   "open": [
+    10,
+    24
+   ],
+   "base": 14,
+   "name": "Fliperama",
+   "steps": [
+    "Desvie da primeira onda!",
+    "Pegue o coco dourado!",
+    "Chefão: o caranguejo gigante!"
+   ],
+   "counter": [
+    -1950,
+    6700,
+    120,
+    90
+   ],
+   "guest": [
+    -2100,
+    6690,
+    0,
+    90
+   ]
   }
+ },
+ "game_room": {
+  "_doc": "Machines placed in the Grand Hotel game room (world cm [x, y, z floor, yaw]) and the night tokens.",
+  "foosball": [
+   -2050,
+   6450,
+   45,
+   0
+  ],
+  "arcades": [
+   [
+    -1950,
+    6780,
+    45,
+    180
+   ],
+   [
+    -2100,
+    6780,
+    45,
+    180
+   ]
+  ],
+  "token_hours": [
+   18,
+   23
+  ],
+  "token_price": 5,
+  "night_players": [
+   2,
+   6
+  ]
  }
 }

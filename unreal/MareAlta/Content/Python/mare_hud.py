@@ -1,3 +1,4 @@
+import math
 """HUD assets for the gameplay plan (docs/ue58/GAMEPLAY_PLANO_2026-11-02.md).
 Run through the editor MCP: hotel_lobby action "hud_<name>" -> run(<name>, arg)."""
 from pathlib import Path
@@ -226,7 +227,39 @@ def trace_fan(arg):
     return {'cam': [round(loc.x), round(loc.y), round(loc.z), round(rot.yaw)], 'hits': out}
 
 
+def import_game_room_extras():
+    """Foosball and arcade (tools/ue58/gen_game_room_extras.py) only, each in a fresh folder of /Game/Custom/GameRoom."""
+    import mare_hotel_lobby
+    out = {}
+    for name in ('foosball_table', 'arcade_cabinet'):
+        glb = MODELS / 'GameRoom' / f'{name}.glb'
+        dest = f'/Game/Custom/GameRoom/{name}'
+        if unreal.EditorAssetLibrary.does_directory_exist(dest):
+            unreal.EditorAssetLibrary.delete_directory(dest)
+        out[name] = mare_hotel_lobby._import(glb, dest, name, False, search=False).get_path_name()
+    return out
+
+
+def rays(arg):
+    """Editor world: horizontal traces in 16 directions from "x,y,z": distance to the first hit and what it hit."""
+    world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_editor_world()
+    x, y, z = [float(v) for v in arg.split(',')]
+    o = unreal.Vector(x, y, z)
+    out = []
+    for k in range(16):
+        a = math.radians(k * 22.5)
+        e = o + unreal.Vector(math.cos(a), math.sin(a), 0) * 1500
+        hit = unreal.SystemLibrary.line_trace_single(world, o, e, unreal.TraceTypeQuery.TRACE_TYPE_QUERY1, False, [], unreal.DrawDebugTrace.NONE, True)
+        t = hit.to_tuple() if hit else None
+        out.append([k * 22.5, round(t[3]) if t and t[0] else None, (t[9].get_actor_label()[-25:] if t and t[0] and t[9] else '')])
+    return out
+
+
 def run(action, arg=''):
+    if action == 'rays':
+        return rays(arg)
+    if action == 'gameroomx':
+        return import_game_room_extras()
     if action == 'fan':
         return trace_fan(arg)
     if action == 'target':

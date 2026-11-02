@@ -79,11 +79,12 @@ Pronto e testado (02/11):
   (aniversário, casamento na praia, jantar de empresa) marcados para o dia seguinte. `MareRestaurant.cpp`,
   `MareRestaurantWorld.cpp`, `Content/Data/restaurant.json`, teste `MareAlta.Gameplay.HotelRestaurant`.
   Falta: pratos visíveis nas mesas e na bandeja, decoração do evento em cena.
-- [ ] P1 **Salão de jogos**:
-  - partida de sinuca jogada até o fim no jogo;
-  - pebolim;
-  - 1–2 fliperamas;
-  - hóspedes jogando à noite e renda das fichas.
+- [~] P1 **Salão de jogos** (02/11):
+  - [ ] partida de sinuca jogada até o fim no jogo (física e IA testadas; falta jogar uma partida inteira e conferir);
+  - [x] pebolim (modelo bpy `tools/ue58/gen_game_room_extras.py`) com partida rápida de 3 rodadas contra um hóspede;
+  - [x] 2 fliperamas "Maré Attack" com tela e letreiro acesos, partida rápida de 3 rodadas;
+  - [x] hóspedes jogando das 18h às 23h e renda das fichas (mais jogadores com o hotel cheio).
+  Dados em `Content/Data/business_games.json` (`pebolim`, `fliperama`, `game_room`), teste em `MareAlta.Gameplay.BusinessCounter`.
 - [x] P1 Recepção do hotel com a fila de hóspedes visível no saguão (check-in vai ao elevador, check-out de manhã sai pela
   porta; teste `MareAlta.Gameplay.HotelReceptionLine`, foto no PIE 02/11).
 - [ ] P1 Equipe: contratação, turnos e salários de recepcionista, camareira, barman, guia e garçom do

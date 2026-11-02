@@ -284,6 +284,8 @@ public:
  bool CanPlayBusiness(const FString& Id,FString& Reason) const;
  /** Result of the three-round counter task: books max(hourly rate, base) × rewards[Hits] and fame per hit. */
  UFUNCTION(BlueprintCallable,Category="Maré Alta|Business") double PlayBusiness(const FString& Id,int32 Hits);
+ /** Hourly: night tokens of the game room (business_games.json game_room), more players with the hotel full. */
+ void GameRoomHour(int32 Hour);
  // --- Bar do Coqueiro (gameplay plan M8; MareBar.cpp, Content/Data/bar.json) ---
  // State "bar": stock {ingredient: n}, known [recipe ids], orders [{id, name, want (recipe id or "surpresa"), hint, since
  // (day*1440+minutes)}], next, served.

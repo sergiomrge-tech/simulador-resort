@@ -574,6 +574,7 @@ bool FMareBusinessShiftTest::RunTest(const FString& Parameters)
  Sim->State->SetNumberField(TEXT("money"),5000);Sim->State->SetNumberField(TEXT("minutes"),12*60);
  // Every business in the counter data exists in the definitions and has three steps.
  for(const auto& Pair:Sim->Object(Sim->BusinessGames(),TEXT("businesses"))->Values){const FString Id(Pair.Key.ToView());
+  if(!Sim->String(Pair.Value->AsObject(),TEXT("requires")).IsEmpty())continue;   // game-room machines need the expansion, not a business
   TestTrue(TEXT("Counter business defined: ")+Id,Sim->Object(Sim->Definitions,TEXT("businesses"))->HasField(Id));
   const TArray<TSharedPtr<FJsonValue>>* Steps=nullptr;TestTrue(TEXT("Three steps: ")+Id,Pair.Value->AsObject()->TryGetArrayField(TEXT("steps"),Steps) && Steps->Num()==3);}
  FString Reason;TestFalse(TEXT("Not owned: no counter task"),Sim->CanPlayBusiness(TEXT("sorveteria"),Reason));
@@ -585,6 +586,13 @@ bool FMareBusinessShiftTest::RunTest(const FString& Parameters)
  Sim->State->SetNumberField(TEXT("minutes"),13*60);
  const double Miss=Sim->PlayBusiness(TEXT("sorveteria"),0);TestTrue(TEXT("Next hour available, fewer hits pay less"),Miss>0 && Miss<Perfect);
  Sim->State->SetNumberField(TEXT("minutes"),22*60);TestFalse(TEXT("Closed at night"),Sim->CanPlayBusiness(TEXT("sorveteria"),Reason));
+ // Game-room machines: need the game room; pay their own base; night tokens between the token hours.
+ TestFalse(TEXT("Foosball needs the game room"),Sim->CanPlayBusiness(TEXT("pebolim"),Reason));
+ Sim->Object(Sim->State,TEXT("unlocked"))->SetBoolField(TEXT("salao_jogos"),true);Sim->State->SetNumberField(TEXT("minutes"),20*60);
+ TestTrue(TEXT("Foosball open at night"),Sim->CanPlayBusiness(TEXT("pebolim"),Reason));
+ Before=Sim->Money();const double Won=Sim->PlayBusiness(TEXT("pebolim"),3);TestTrue(TEXT("Foosball win pays the base x 2.2"),FMath::IsNearlyEqual(Won,FMath::RoundToDouble(30*2.2)));
+ Before=Sim->Money();Sim->GameRoomHour(21);TestTrue(TEXT("Night tokens"),Sim->Money()>Before);
+ Before=Sim->Money();Sim->State->SetNumberField(TEXT("minutes"),12*60);Sim->GameRoomHour(13);TestEqual(TEXT("No tokens at noon"),Sim->Money(),Before);
  IFileManager::Get().DeleteDirectory(*Sim->SaveDirectory,false,true);
  Sim->RemoveFromRoot();Instance->RemoveFromRoot();return true;
 }
