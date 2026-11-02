@@ -1,5 +1,6 @@
 #include "MareIntro.h"
 #include "MareGame.h"
+#include "MareGamepad.h"
 #include "MareSimulation.h"
 #include "MarePlayerPresentation.h"
 #include "MareAudioWorld.h"
@@ -147,9 +148,11 @@ void AMareIntro::ReadLetter()
  LetterWidget=SNew(SBorder).BorderBackgroundColor(FLinearColor(0,0,0,.75)).HAlign(HAlign_Center).VAlign(VAlign_Center)[SNew(SBox).WidthOverride(570).MaxDesiredHeight(620)[SNew(SBorder).BorderImage(&Card).Padding(24)[SNew(SVerticalBox)
   +SVerticalBox::Slot().AutoHeight().Padding(0,0,0,12)[SNew(STextBlock).Text(FText::FromString(TEXT("Uma carta para você"))).Font(FCoreStyle::GetDefaultFontStyle("Bold",22)).ColorAndOpacity(FLinearColor(.18f,.15f,.1f))]
   +SVerticalBox::Slot().FillHeight(1)[SNew(SScrollBox)+SScrollBox::Slot()[Text]]
-  +SVerticalBox::Slot().AutoHeight().Padding(0,8,0,0)[SNew(STextBlock).Text(FText::FromString(TEXT("Role para ler toda a carta"))).Font(FCoreStyle::GetDefaultFontStyle("Regular",11)).ColorAndOpacity(FLinearColor(.25f,.22f,.18f))]
-  +SVerticalBox::Slot().AutoHeight().HAlign(HAlign_Left).Padding(0,16,0,0)[SNew(SButton).ContentPadding(FMargin(14,8)).OnClicked_Lambda([this](){CloseLetter();return FReply::Handled();})[SNew(STextBlock).Text(FText::FromString(TEXT("Guardar a carta")))]]]]];
- GEngine->GameViewport->AddViewportWidgetContent(LetterWidget.ToSharedRef(),40);PC->bShowMouseCursor=true;PC->SetInputMode(FInputModeGameAndUI());PC->SetIgnoreMoveInput(true);PC->SetIgnoreLookInput(true);
+  +SVerticalBox::Slot().AutoHeight().Padding(0,8,0,0)[SNew(STextBlock).Text(NSLOCTEXT("MareIntro","LetterScroll","Role para ler toda a carta (no controle: analógico direito)")).Font(FCoreStyle::GetDefaultFontStyle("Regular",11)).ColorAndOpacity(FLinearColor(.25f,.22f,.18f))]
+  +SVerticalBox::Slot().AutoHeight().HAlign(HAlign_Left).Padding(0,16,0,0)[SNew(SMarePadButton).ContentPadding(FMargin(14,8)).OnClicked_Lambda([this](){CloseLetter();return FReply::Handled();})[SNew(STextBlock).Text(FText::FromString(TEXT("Guardar a carta")))]]]]];
+ GEngine->GameViewport->AddViewportWidgetContent(LetterWidget.ToSharedRef(),40);
+ {const TWeakObjectPtr<AMareIntro> Weak(this);MareGamepad::PushMenu(LetterWidget.ToSharedRef(),[Weak](){if(Weak.IsValid())Weak->CloseLetter();});}
+ PC->bShowMouseCursor=true;PC->SetInputMode(FInputModeGameAndUI());PC->SetIgnoreMoveInput(true);PC->SetIgnoreLookInput(true);
 }
 void AMareIntro::CloseLetter()
 {

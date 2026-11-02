@@ -586,7 +586,12 @@ def main():
         places['biz_' + id] = business(id, name)
     places['home'] = HOME
     cat['places'] = places
-    cat['operations'] = OPERATIONS
+    # Operation blocks and fields added in the data by the game code (hotel_stays, pousada reception and guest
+    # profiles...) are kept; only the values this generator knows are rewritten.
+    ops = cat.get('operations', {})
+    for key, values in OPERATIONS.items():
+        ops[key] = {**ops.get(key, {}), **values}
+    cat['operations'] = ops
     DATA.write_text(json.dumps(cat, ensure_ascii=False, indent=1) + '\n', encoding='utf-8')
     total = sum(len(p['slots']) for p in places.values())
     print('places', len(places), 'slots', total, 'tiers', total * 5)

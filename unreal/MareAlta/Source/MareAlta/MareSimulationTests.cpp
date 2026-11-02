@@ -2,6 +2,7 @@
 #if WITH_DEV_AUTOMATION_TESTS
 #include "Misc/AutomationTest.h"
 #include "MareGameRoom.h"
+#include "MareStaysWorld.h"
 #include "Engine/GameInstance.h"
 #include "Misc/FileHelper.h"
 #include "Misc/Paths.h"
@@ -350,6 +351,69 @@ bool FMarePousadaStaysTest::RunTest(const FString& Parameters)
  TestEqual(TEXT("Hotel desk checked the VIP in"),Sim->FreeCleanRooms(TEXT("hotel")),31);
  for(int32 I=0;I<8;++I)Sim->StaysNight();
  TestEqual(TEXT("Housekeeping freed the suite"),Sim->FreeCleanRooms(TEXT("hotel")),32);
+ Sim->RemoveFromRoot();Instance->RemoveFromRoot();return true;
+}
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FMareHotelReceptionLineTest,"MareAlta.Gameplay.HotelReceptionLine",EAutomationTestFlags::EditorContext|EAutomationTestFlags::EngineFilter)
+bool FMareHotelReceptionLineTest::RunTest(const FString& Parameters)
+{
+ auto Instance=NewObject<UGameInstance>();Instance->AddToRoot();
+ auto Sim=NewObject<UMareSimulation>(Instance);Sim->AddToRoot();
+ Sim->SaveDirectory=FPaths::ProjectSavedDir()/TEXT("Automation/HotelReceptionLine")/FGuid::NewGuid().ToString(EGuidFormats::Digits);
+ auto Load=[&](const FString& Name,TSharedPtr<FJsonObject>& Result){FString Text;FFileHelper::LoadFileToString(Text,*(FPaths::ProjectContentDir()/TEXT("Data")/Name));return FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Text),Result);};
+ if(!TestTrue(TEXT("Definitions"),Load(TEXT("definitions.json"),Sim->Definitions)) || !TestTrue(TEXT("Default save"),Load(TEXT("default_save.json"),Sim->State))){Sim->RemoveFromRoot();Instance->RemoveFromRoot();return false;}
+ // Lobby layout (tools/ue58/hotel_lobby_shell.py, Content/Data/hotel_lobby.json): desk around (-1390,6470), furniture
+ // inside x -3570..-630, y 5840..6840, main door to the south (-Y) at x -2100, lifts on the north wall.
+ FMareStayLine Line;
+ if(!TestTrue(TEXT("Hotel reception line in the data"),UMareStaysWorld::LineFor(Sim,TEXT("hotel"),Line))){Sim->RemoveFromRoot();Instance->RemoveFromRoot();return false;}
+ TestTrue(TEXT("Line at the lobby desk"),FVector::Dist2D(Line.Desk,FVector(-1390,6470,0))<200);
+ TestTrue(TEXT("Line grows towards the entrance"),Line.Front.Y<-.99);
+ const FVector Staff[]={FVector(-1390,6565,0),FVector(-1390,6330,0)};   // receptionist and the chatting guest (MareVillageWorld)
+ for(int32 I=0;I<3;++I){const FVector Spot=Line.Spot(I);
+  TestTrue(FString::Printf(TEXT("Spot %d inside the lobby"),I),Spot.X>-3570 && Spot.X<-630 && Spot.Y>5840 && Spot.Y<6840);
+  TestTrue(FString::Printf(TEXT("Spot %d in front of the counter"),I),Spot.Y<Line.Desk.Y-100);
+  for(const FVector& Other:Staff)TestTrue(FString::Printf(TEXT("Spot %d clear of the ambient people"),I),FVector::Dist2D(Spot,Other)>80);}
+ TestTrue(TEXT("Exit outside the main door"),Line.Exit.Y<5600 && FMath::Abs(Line.Exit.X+2100)<150);
+ TestEqual(TEXT("Two elevator doors"),Line.Elevators.Num(),2);
+ for(const FVector& Lift:Line.Elevators)TestTrue(TEXT("Elevator behind the desk wall"),Lift.Y>6600 && Lift.X<-2400);
+ FMareStayLine Pousada;TestTrue(TEXT("Pousada line still in the data"),UMareStaysWorld::LineFor(Sim,TEXT("pousada"),Pousada));
+ TestEqual(TEXT("Pousada has no elevators"),Pousada.Elevators.Num(),0);
+ // Hotel closed: no VIP shows up at the lobby.
+ TestTrue(TEXT("No hotel arrival before the purchase"),Sim->AddArrival(TEXT("hotel")).IsEmpty());
+ TestEqual(TEXT("Empty hotel line"),UMareStaysWorld::QueueOf(Sim,TEXT("hotel")).Num(),0);
+ // Hotel open: a line of three, separate from the pousada one.
+ Sim->State->SetNumberField(TEXT("money"),1000);Sim->Object(Sim->State,TEXT("unlocked"))->SetBoolField(TEXT("pousada"),true);
+ Sim->Object(Sim->State,TEXT("unlocked"))->SetBoolField(TEXT("grand_hotel"),true);Sim->SyncRooms();
+ // Arrivals respect the opening hours (10:00-20:00): none at night or early morning.
+ for(int32 Hour:{0,6,9,20,23})Sim->StaysHour(Hour);
+ TestEqual(TEXT("No arrivals outside the reception hours"),UMareStaysWorld::QueueOf(Sim,TEXT("hotel")).Num(),0);
+ TArray<FString> Vips;for(int32 I=0;I<3;++I)Vips.Add(Sim->AddArrival(TEXT("hotel")));
+ TestFalse(TEXT("Third VIP in line"),Vips[2].IsEmpty());
+ TestTrue(TEXT("Hotel line holds three"),Sim->AddArrival(TEXT("hotel")).IsEmpty());
+ const auto HotelLine=UMareStaysWorld::QueueOf(Sim,TEXT("hotel"));TestEqual(TEXT("Hotel queue"),HotelLine.Num(),3);
+ TestEqual(TEXT("Queue order kept"),Sim->String(HotelLine[0],TEXT("id")),Vips[0]);
+ TestEqual(TEXT("Pousada line apart"),UMareStaysWorld::QueueOf(Sim,TEXT("pousada")).Num(),0);
+ const FString Backpacker=Sim->AddArrival(TEXT("pousada"));TestFalse(TEXT("Pousada still receives"),Backpacker.IsEmpty());
+ TestEqual(TEXT("Pousada guest not in the lobby"),UMareStaysWorld::QueueOf(Sim,TEXT("hotel")).Num(),3);
+ // Check-in: the first VIP leaves the line (walks to the elevators) and owns a suite.
+ const int32 Nights=Sim->Number(HotelLine[0],TEXT("nights"),1);
+ TestTrue(TEXT("Check-in at the hotel desk"),Sim->AcceptOffer(Vips[0]));
+ TestEqual(TEXT("Line moved up"),UMareStaysWorld::QueueOf(Sim,TEXT("hotel")).Num(),2);
+ TestEqual(TEXT("Suite taken"),Sim->FreeCleanRooms(TEXT("hotel")),31);
+ // Night: the reception line empties; the stay counts down and the check-out leaves through the lobby next morning.
+ bool bLeft=false;
+ for(int32 I=0;I<Nights;++I){Sim->StaysNight();
+  TestEqual(TEXT("Line empty at night"),UMareStaysWorld::QueueOf(Sim,TEXT("hotel")).Num(),0);
+  const TArray<TSharedPtr<FJsonValue>>* Out=nullptr;
+  if(Sim->Stays()->TryGetArrayField(TEXT("departures"),Out))for(const auto& V:*Out)bLeft|=Sim->String(V->AsObject(),TEXT("id"))==Vips[0];
+  TestEqual(TEXT("Still a guest before the last night"),bLeft,I==Nights-1);}
+ TestEqual(TEXT("Suite free after the check-out"),Sim->FreeCleanRooms(TEXT("hotel")),32);
+ TestFalse(TEXT("No pousada departures"),Sim->TakeDeparture(TEXT("pousada")).IsValid());
+ const auto Leaving=Sim->TakeDeparture(TEXT("hotel"));
+ TestTrue(TEXT("The VIP walks out"),Leaving.IsValid() && Sim->String(Leaving,TEXT("id"))==Vips[0] && Sim->String(Leaving,TEXT("place"))==TEXT("hotel"));
+ TestFalse(TEXT("Only once"),Sim->TakeDeparture(TEXT("hotel")).IsValid());
+ // Whoever is still upstairs at 13:00 has already gone.
+ Sim->Stays()->SetArrayField(TEXT("departures"),{MakeShared<FJsonValueObject>(Leaving)});Sim->StaysHour(13);
+ TestFalse(TEXT("Departures cleared after the morning"),Sim->TakeDeparture(TEXT("hotel")).IsValid());
  Sim->RemoveFromRoot();Instance->RemoveFromRoot();return true;
 }
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FMarePricesTest,"MareAlta.Gameplay.PricesAndFame",EAutomationTestFlags::EditorContext|EAutomationTestFlags::EngineFilter)

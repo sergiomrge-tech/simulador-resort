@@ -30,13 +30,19 @@ private:
  UPROPERTY() TObjectPtr<class UStaticMeshComponent> PhoneModel;
  float VerticalSwimInput=0.f;
  bool bSprint=false;
+ /** L3 on the gamepad: run until the player stops. */
+ bool bSprintToggle=false;
  FVector SafeLandLocation=FVector(3800,-1200,100);
  void SprintPressed(){bSprint=true;}
  void SprintReleased(){bSprint=false;}
+ void SprintToggle(){bSprintToggle=!bSprintToggle;}
  void Forward(float Value);
  void Right(float Value);
  void LookX(float Value);
  void LookY(float Value);
+ /** Right stick: a rate (per second), unlike the mouse deltas of LookX/LookY. */
+ void LookPadX(float Value);
+ void LookPadY(float Value);
  void Phone();
  void Interact();
 };

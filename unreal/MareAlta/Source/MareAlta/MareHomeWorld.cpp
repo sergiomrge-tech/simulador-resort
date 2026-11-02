@@ -1,5 +1,6 @@
 #include "MareHomeWorld.h"
 #include "MareGame.h"
+#include "MareGamepad.h"
 #include "Camera/PlayerCameraManager.h"
 #include "MarePlayerPresentation.h"
 #include "MareSimulation.h"
@@ -82,7 +83,7 @@ void UMareHomeWorld::Use(FName Action)
  if(Action==TEXT("HomeSink")){GetWorld()->GetSubsystem<UMareAudioWorld>()->PlayCue(TEXT("clean"),.24f);Sim->LastMessage=TEXT("Mãos limpas para um novo atendimento.");}
  if(Action==TEXT("HomeSofa")){
   if(bSeated){Stand();return;}Standing=Hero->GetActorTransform();bSeated=true;Hero->GetCharacterMovement()->DisableMovement();Hero->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-  Hero->SetActorLocation(FVector(4435,2325,120));Hero->SetActorRotation(FRotator(0,-90,0));if(auto PC=Cast<APlayerController>(Hero->GetController()))PC->SetControlRotation(FRotator(0,-90,0));Sim->LastMessage=TEXT("Descansando no sofá · E ou movimento para levantar");
+  Hero->SetActorLocation(FVector(4435,2325,120));Hero->SetActorRotation(FRotator(0,-90,0));if(auto PC=Cast<APlayerController>(Hero->GetController()))PC->SetControlRotation(FRotator(0,-90,0));Sim->LastMessage=FText::Format(NSLOCTEXT("MareHome","SofaRest","Descansando no sofá · {0} ou movimento para levantar"),FText::FromString(MareGamepad::ActionLabel(TEXT("Interact")))).ToString();
  }
  auto State=UMareSimulation::Object(Sim->State,TEXT("ue_home"));State->SetBoolField(TEXT("tv"),bTV);State->SetBoolField(TEXT("stereo"),bStereo);Sim->Save();
 }

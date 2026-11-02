@@ -23,7 +23,11 @@ struct MAREALTA_API FMareOptions
  float FieldOfView=90.f;
  // Controls.
  float MouseSensitivity=1.f;
+ /** Right-stick look speed (1 = about 140 degrees per second at full deflection); invert Y applies to both. */
+ float GamepadSensitivity=1.f;
  bool bInvertY=false;
+ /** Button names shown for the gamepad: 0 Xbox (A, B, X, Y), 1 PlayStation (Cruz, Círculo...). */
+ int32 PadGlyphs=0;
  TMap<FName,FKey> Keys;
  // Language (culture name).
  FString Culture=TEXT("pt-BR");

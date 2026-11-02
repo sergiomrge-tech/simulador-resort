@@ -52,6 +52,7 @@
 #include "Widgets/Images/SImage.h"
 #include "MareGameRoom.h"
 #include "MareOptions.h"
+#include "MareGamepad.h"
 #include "Engine/Texture2D.h"
 #include "Framework/Application/SlateApplication.h"
 
@@ -206,6 +207,9 @@ public:
  virtual FReply OnKeyDown(const FGeometry& Geometry,const FKeyEvent& Event)override
  {
   if(Event.GetKey()==EKeys::Escape && Owner.IsValid()){Owner->ClosePhone();return FReply::Handled();}
+  // LB/RB turn the notebook tabs (phone only: a station has a single page).
+  const bool bPrev=Event.GetKey()==EKeys::Gamepad_LeftShoulder,bNext=Event.GetKey()==EKeys::Gamepad_RightShoulder;
+  if((bPrev || bNext) && Station.IsNone()){Tab=(Tab+(bNext?1:6))%7;Rebuild();MareGamepad::FocusSoon(AsShared(),Tab,false);return FReply::Handled();}
   return SCompoundWidget::OnKeyDown(Geometry,Event);
  }
 private:
@@ -235,13 +239,13 @@ private:
  // ---- Building blocks of the page.
  TSharedRef<SWidget> Button(const FString& Label,TFunction<void()> Action,bool bEnabled=true)
  {
-  return SNew(SButton).ButtonStyle(&MareNotebook::InkButton()).IsEnabled(bEnabled).ContentPadding(FMargin(9,2)).OnClicked_Lambda([this,Action](){if(Owner.IsValid())Owner->GetWorld()->GetSubsystem<UMareAudioWorld>()->PlayCue(TEXT("click"),.16f);Action();Rebuild();return FReply::Handled();})
+  return SNew(SMarePadButton).ButtonStyle(&MareNotebook::InkButton()).IsEnabled(bEnabled).ContentPadding(FMargin(9,2)).OnClicked_Lambda([this,Action](){if(Owner.IsValid())Owner->GetWorld()->GetSubsystem<UMareAudioWorld>()->PlayCue(TEXT("click"),.16f);Action();Rebuild();return FReply::Handled();})
    [SNew(STextBlock).Text(FText::FromString(Label)).Font(MareNotebook::Hand(16)).ColorAndOpacity(MareNotebook::Tag)];
  }
  /** Underlined handwritten link ("espiar", "dispensar"). */
  TSharedRef<SWidget> Link(const FString& Label,TFunction<void()> Action)
  {
-  return SNew(SButton).ButtonStyle(&MareNotebook::Plain()).ContentPadding(FMargin(3,0)).OnClicked_Lambda([this,Action](){if(Owner.IsValid())Owner->GetWorld()->GetSubsystem<UMareAudioWorld>()->PlayCue(TEXT("click"),.16f);Action();Rebuild();return FReply::Handled();})
+  return SNew(SMarePadButton).ButtonStyle(&MareNotebook::Plain()).ContentPadding(FMargin(3,0)).OnClicked_Lambda([this,Action](){if(Owner.IsValid())Owner->GetWorld()->GetSubsystem<UMareAudioWorld>()->PlayCue(TEXT("click"),.16f);Action();Rebuild();return FReply::Handled();})
    [SNew(SVerticalBox)+SVerticalBox::Slot().AutoHeight()[MareNotebook::HandText(Label,16,MareNotebook::Brown)]+SVerticalBox::Slot().AutoHeight()[SNew(SBox).HeightOverride(1.5f)[SNew(SBorder).BorderImage(FCoreStyle::Get().GetBrush("WhiteBrush")).BorderBackgroundColor(MareNotebook::Brown)]]];
  }
  void Title(const FString& V,const FString& Note=FString())
@@ -450,9 +454,9 @@ private:
   List->AddSlot().AutoHeight()[MareNotebook::HandText(TEXT("Onde?"),16,MareNotebook::Pencil)];
   for(int32 G=0;G<GroupNames.Num();++G){List->AddSlot().AutoHeight().Padding(0,6,0,0)[MareNotebook::HandText(GroupNames[G],14,MareNotebook::Faded)];
    for(const FString& Id:GroupPlaces[G]){FString Name=UMareSimulation::String(S->PlaceDef(Id),TEXT("name"));Name.RemoveFromStart(TEXT("Grand Hotel · "));const bool bOn=Id==Place,bOpen=S->IsPlaceAvailable(Id);
-    List->AddSlot().AutoHeight()[SNew(SButton).ButtonStyle(&MareNotebook::Plain()).ContentPadding(FMargin(0)).OnClicked_Lambda([this,Id](){Place=Id;Rebuild();return FReply::Handled();})
+    List->AddSlot().AutoHeight()[SNew(SMarePadButton).ButtonStyle(&MareNotebook::Plain()).ContentPadding(FMargin(0)).OnClicked_Lambda([this,Id](){Place=Id;Rebuild();return FReply::Handled();})
      [SNew(SBorder).BorderImage(bOn?static_cast<const FSlateBrush*>(&MareNotebook::MarkerBrush()):FCoreStyle::Get().GetBrush("NoBrush")).Padding(FMargin(5,0))[MareNotebook::HandText((bOn?TEXT("» "):TEXT(""))+Name,17,bOpen?MareNotebook::Ink:MareNotebook::Pencil)]]];}}
-  return SNew(SScrollBox)+SScrollBox::Slot()[List];
+  return SNew(SScrollBox).ScrollWhenFocusChanges(EScrollWhenFocusChanges::AnimatedScroll)+SScrollBox::Slot()[List];
  }
  void CustomizePage()
  {
@@ -513,6 +517,7 @@ private:
  void Rebuild()
  {
   if(!Sim())return;auto S=Sim();using namespace MareNotebook;
+  const int32 PrevFocus=MareGamepad::FocusedIndex(AsShared());   // the same control keeps the gamepad focus after the rebuild
   static const TArray<FString> Titles={TEXT("Quiosque"),TEXT("Compras"),TEXT("Equipe"),TEXT("Finanças"),TEXT("Resort"),TEXT("Missões"),TEXT("Personalizar")};
   const bool bPhone=Station.IsNone();const bool bIndex=bPhone && Tab==6;
   SAssignNew(Body,SVerticalBox);
@@ -526,16 +531,16 @@ private:
   // Divider tabs: pastel paper, the open one is the white page itself; "fechar" sits at the end.
   auto Tabs=SNew(SHorizontalBox);
   if(bPhone)for(int32 I=0;I<Titles.Num();++I){const bool bOn=I==Tab;
-   Tabs->AddSlot().AutoWidth().VAlign(VAlign_Bottom).Padding(0,0,3,0)[SNew(SButton).ButtonStyle(&MareNotebook::Plain()).ContentPadding(FMargin(0)).OnClicked_Lambda([this,I](){if(Owner.IsValid())Owner->GetWorld()->GetSubsystem<UMareAudioWorld>()->PlayCue(TEXT("click"),.16f);Tab=I;Rebuild();return FReply::Handled();})
+   Tabs->AddSlot().AutoWidth().VAlign(VAlign_Bottom).Padding(0,0,3,0)[SNew(SMarePadButton).ButtonStyle(&MareNotebook::Plain()).ContentPadding(FMargin(0)).OnClicked_Lambda([this,I](){if(Owner.IsValid())Owner->GetWorld()->GetSubsystem<UMareAudioWorld>()->PlayCue(TEXT("click"),.16f);Tab=I;Rebuild();return FReply::Handled();})
     [SNew(SBorder).BorderImage(&TabBrush(bOn?Paper:TabColor(I))).Padding(bOn?FMargin(11,4,11,3):FMargin(8,2,8,2))[SNew(STextBlock).Text(FText::FromString(Titles[I])).Font(MareNotebook::Hand(bOn?17:15)).ColorAndOpacity(Ink)]]];}
   else Tabs->AddSlot().AutoWidth().VAlign(VAlign_Bottom)[SNew(SBorder).BorderImage(&TabBrush(Paper)).Padding(FMargin(16,6,16,5))[SNew(STextBlock).Text(FText::FromString(Station==TEXT("Fridge")?TEXT("Geladeira"):Station==TEXT("Reception") || Station==TEXT("ReceptionHotel")?TEXT("Recepção"):TEXT("Porções prontas"))).Font(MareNotebook::Hand(19)).ColorAndOpacity(Ink)]];
   Tabs->AddSlot().FillWidth(1)[SNullWidget::NullWidget];
-  Tabs->AddSlot().AutoWidth().VAlign(VAlign_Bottom)[SNew(SButton).ButtonStyle(&MareNotebook::Plain()).ContentPadding(FMargin(0)).OnClicked_Lambda([this](){if(Owner.IsValid())Owner->ClosePhone();return FReply::Handled();})
+  Tabs->AddSlot().AutoWidth().VAlign(VAlign_Bottom)[SNew(SMarePadButton).ButtonStyle(&MareNotebook::Plain()).ContentPadding(FMargin(0)).OnClicked_Lambda([this](){if(Owner.IsValid())Owner->ClosePhone();return FReply::Handled();})
    [SNew(SBorder).BorderImage(&TabBrush(Hex(226,150,140))).Padding(FMargin(8,2,8,2))[SNew(STextBlock).Text(FText::FromString(TEXT("fechar"))).Font(MareNotebook::Hand(15)).ColorAndOpacity(Ink)]]];
   // The page: lined paper behind, place index on the left of Personalizar, scrolling content, a sticky note for messages.
   auto Page=SNew(SHorizontalBox);
   if(bIndex)Page->AddSlot().AutoWidth()[SNew(SBox).WidthOverride(150).Padding(FMargin(14,8,8,6))[PlaceIndex()]];
-  Page->AddSlot().FillWidth(1).Padding(bIndex?FMargin(12,8,16,0):FMargin(24,8,18,0))[SNew(SScrollBox)+SScrollBox::Slot().Padding(0,0,0,10)[Body.ToSharedRef()]];
+  Page->AddSlot().FillWidth(1).Padding(bIndex?FMargin(12,8,16,0):FMargin(24,8,18,0))[SNew(SScrollBox).ScrollWhenFocusChanges(EScrollWhenFocusChanges::AnimatedScroll)+SScrollBox::Slot().Padding(0,0,0,10)[Body.ToSharedRef()]];
   auto Sheet=SNew(SOverlay)+SOverlay::Slot()[SNew(SPaperLines).MarginX(bIndex?150.f:12.f)]+SOverlay::Slot()[Page];
   auto Screen=SNew(SBorder).BorderImage(&Cover()).Padding(FMargin(16,5,16,0))[SNew(SVerticalBox)
    +SVerticalBox::Slot().AutoHeight().Padding(4,0,4,2)[Status]
@@ -546,6 +551,7 @@ private:
    .Padding_Lambda([this](){const FSlateRect R=ScreenRect();return FMargin(R.Left,R.Top,0,0);})
    .WidthOverride_Lambda([this](){return FOptionalSize(ScreenRect().Right);})
    .HeightOverride_Lambda([this](){return FOptionalSize(ScreenRect().Bottom);})[Screen]]];
+  if(PrevFocus>=0)MareGamepad::FocusSoon(AsShared(),PrevFocus);
   if(Station==TEXT("Reception") || Station==TEXT("ReceptionHotel")){ReceptionPage(Station==TEXT("ReceptionHotel")?TEXT("hotel"):TEXT("pousada"));return;}
   if(!bPhone){StockPage(true);if(!S->Carry().IsEmpty())Body->AddSlot().AutoHeight().HAlign(HAlign_Left).Padding(0,6)[Button(TEXT("Devolver produto"),[S](){S->ReturnCarry();})];return;}
   switch(Tab){
@@ -582,11 +588,20 @@ void AMareCharacter::SetupPlayerInputComponent(UInputComponent* Input)
  Input->BindAction(TEXT("Jump"),IE_Released,this,&ACharacter::StopJumping);
  Input->BindAxis(TEXT("SwimVertical"),this,&AMareCharacter::SwimVertical);
  Input->BindAction(TEXT("Sprint"),IE_Pressed,this,&AMareCharacter::SprintPressed);Input->BindAction(TEXT("Sprint"),IE_Released,this,&AMareCharacter::SprintReleased);
+ Input->BindAxis(TEXT("LookPadX"),this,&AMareCharacter::LookPadX);Input->BindAxis(TEXT("LookPadY"),this,&AMareCharacter::LookPadY);
+ Input->BindAction(TEXT("SprintToggle"),IE_Pressed,this,&AMareCharacter::SprintToggle);
 }
 void AMareCharacter::Forward(float Value){if(FMath::Abs(Value)>.1f)if(auto Home=GetWorld()->GetSubsystem<UMareHomeWorld>())Home->Stand();if(Controller){auto Rotation=Controller->GetControlRotation();if(!GetCharacterMovement()->IsSwimming())Rotation.Pitch=0;Rotation.Roll=0;AddMovementInput(Rotation.Vector(),Value);}}
 void AMareCharacter::Right(float Value){if(FMath::Abs(Value)>.1f)if(auto Home=GetWorld()->GetSubsystem<UMareHomeWorld>())Home->Stand();if(Controller)AddMovementInput(FRotationMatrix(FRotator(0,Controller->GetControlRotation().Yaw,0)).GetUnitAxis(EAxis::Y),Value);}
 void AMareCharacter::LookX(float Value){AddControllerYawInput(Value*FMareOptions::Get().MouseSensitivity);}
 void AMareCharacter::LookY(float Value){const auto& Options=FMareOptions::Get();AddControllerPitchInput(Value*Options.MouseSensitivity*(Options.bInvertY?-1.f:1.f));}
+// The stick value is already past the DeadZone of DefaultInput.ini: only the curve is applied here.
+void AMareCharacter::LookPadX(float Value){if(Value!=0.f)AddControllerYawInput(MareGamepad::Curve(Value,0.f)*MareGamepad::LookUnitsPerSecond*FMareOptions::Get().GamepadSensitivity*GetWorld()->GetDeltaSeconds());}
+void AMareCharacter::LookPadY(float Value)
+{
+ const auto& Options=FMareOptions::Get();
+ if(Value!=0.f)AddControllerPitchInput(MareGamepad::Curve(Value,0.f)*MareGamepad::LookUnitsPerSecond*.8f*Options.GamepadSensitivity*(Options.bInvertY?-1.f:1.f)*GetWorld()->GetDeltaSeconds());
+}
 void AMareCharacter::Phone(){if(auto PC=Cast<AMareController>(Controller))PC->TogglePhone();}
 void AMareCharacter::Interact()
 {
@@ -627,7 +642,8 @@ void AMareCharacter::Tick(float DeltaSeconds)
  const bool bSwimming=Movement->IsSwimming();const float Vertical=PC && PC->IsMoveInputIgnored()?0.f:VerticalSwimInput;
  // A comfortable home leaves the player rested: walking and running get faster.
  const UMareSimulation* HomeSim=GetGameInstance()?GetGameInstance()->GetSubsystem<UMareSimulation>():nullptr;
- Movement->MaxWalkSpeed=(bSprint?420:260)*(HomeSim?float(HomeSim->HomeSpeedFactor()):1.f);Movement->Buoyancy=Vertical<0?1.f:1.35f;
+ if(bSprintToggle && Movement->GetCurrentAcceleration().IsNearlyZero())bSprintToggle=false;   // L3 runs until the player stops
+ Movement->MaxWalkSpeed=(bSprint || bSprintToggle?420:260)*(HomeSim?float(HomeSim->HomeSpeedFactor()):1.f);Movement->Buoyancy=Vertical<0?1.f:1.35f;
  if(bSwimming && (Vertical<=0 || GetActorLocation().Z<-78))AddMovementInput(FVector::UpVector,Vertical);
  const bool bUnderwater=bSwimming && Eyes->GetComponentLocation().Z<-38;
  Eyes->PostProcessBlendWeight=FMath::FInterpTo(Eyes->PostProcessBlendWeight,bUnderwater?1.f:0.f,DeltaSeconds,5);
@@ -642,8 +658,11 @@ class SMareMainMenu : public SCompoundWidget
 public:
  SLATE_BEGIN_ARGS(SMareMainMenu){} SLATE_ARGUMENT(AMareController*,Controller) SLATE_END_ARGS()
  void Construct(const FArguments& Args){Controller=Args._Controller;Show(EPage::Main);}
+ /** Gamepad B: the previous page (the main page stays). */
+ void Back(){switch(Current){case EPage::Main:break;case EPage::Confirm:Show(EPage::New);break;default:Show(EPage::Main);}}
 private:
  enum class EPage:uint8{Main,Load,New,Confirm,Options,Credits};
+ EPage Current=EPage::Main;
  TWeakObjectPtr<AMareController> Controller;
  int32 PendingSlot=0;
  FText Error;
@@ -659,8 +678,9 @@ private:
  void Show(EPage Page)
  {
   auto S=Sim();if(!S)return;
+  Current=Page;
   auto Box=SNew(SVerticalBox);
-  auto Button=[&Box](const FText& Label,TFunction<void()> Callback,bool bEnabled){Box->AddSlot().AutoHeight().Padding(0,5)[SNew(SButton).IsEnabled(bEnabled).ButtonStyle(&MareUI::ActionButton).ContentPadding(FMargin(14,8)).OnClicked_Lambda([Callback](){Callback();return FReply::Handled();})[MareUI::Text(Label.ToString(),14,FLinearColor::White)]];};
+  auto Button=[&Box](const FText& Label,TFunction<void()> Callback,bool bEnabled){Box->AddSlot().AutoHeight().Padding(0,5)[SNew(SMarePadButton).IsEnabled(bEnabled).ButtonStyle(&MareUI::ActionButton).ContentPadding(FMargin(14,8)).OnClicked_Lambda([Callback](){Callback();return FReply::Handled();})[MareUI::Text(Label.ToString(),14,FLinearColor::White)]];};
   auto Back=[this,&Button](){Button(LOCTEXT("Back","Voltar"),[this](){Show(EPage::Main);},true);};
   Box->AddSlot().AutoHeight().Padding(0,0,0,4)[MareUI::Text(TEXT("Maré Alta Resort"),24)];
   switch(Page){
@@ -706,13 +726,16 @@ private:
    Back();break;
   }
   ChildSlot[SNew(SBorder).BorderBackgroundColor(FLinearColor(0,0,0,.55f)).HAlign(HAlign_Center).VAlign(VAlign_Center)[SNew(SBox).WidthOverride(Page==EPage::Options?540:440)[SNew(SBorder).BorderImage(&MareUI::Surface).Padding(22)[Box]]]];
+  MareGamepad::FocusSoon(AsShared(),0);
  }
 };
 void AMareController::OpenMainMenu()
 {
  auto S=GetSimulation();if(!GEngine || !GEngine->GameViewport || !S || MainMenuWidget.IsValid())return;
  WorldSlot=S->ActiveSlot;bWorldFromFile=S->SlotInfo(WorldSlot).bExists;
- SetPause(true);MainMenuWidget=SNew(SMareMainMenu).Controller(this);
+ SetPause(true);MareGamepad::Startup();
+ {const TSharedRef<SMareMainMenu> Menu=SNew(SMareMainMenu).Controller(this);MainMenuWidget=Menu;const TWeakPtr<SMareMainMenu> Weak=Menu;
+  MareGamepad::PushMenu(Menu,[Weak](){if(const auto Pinned=Weak.Pin())Pinned->Back();});}
  GEngine->GameViewport->AddViewportWidgetContent(MainMenuWidget.ToSharedRef(),50);bShowMouseCursor=true;
  SetInputMode(FInputModeUIOnly().SetWidgetToFocus(MainMenuWidget));SetIgnoreMoveInput(true);SetIgnoreLookInput(true);
 }
@@ -777,8 +800,12 @@ public:
  virtual bool SupportsKeyboardFocus()const override{return true;}
  virtual FReply OnKeyDown(const FGeometry& Geometry,const FKeyEvent& Event) override
  {
+  const FKey Pressed=Event.GetKey();
+  // LB/RB change the tab; a gamepad button while waiting for a key cancels it (the gamepad layout is fixed).
+  if(Listening.IsNone() && (Pressed==EKeys::Gamepad_LeftShoulder || Pressed==EKeys::Gamepad_RightShoulder)){
+   Tab=(Tab+(Pressed==EKeys::Gamepad_RightShoulder?1:4))%5;Rebuild();MareGamepad::FocusSoon(AsShared(),Tab,false);return FReply::Handled();}
   if(Listening.IsNone())return FReply::Unhandled();
-  const FKey Pressed=Event.GetKey();if(Pressed.IsGamepadKey())return FReply::Handled();
+  if(Pressed.IsGamepadKey()){Listening=NAME_None;return FReply::Handled();}
   if(Pressed!=EKeys::Escape)Pending.Bind(Listening,Pressed);
   Listening=NAME_None;return FReply::Handled();
  }
@@ -807,13 +834,13 @@ private:
  UMareAudioWorld* Audio()const{return Controller.IsValid()?Controller->GetWorld()->GetSubsystem<UMareAudioWorld>():nullptr;}
  TSharedRef<SWidget> Button(const FText& Label,TFunction<void()> Callback,bool bMain=true)
  {
-  return SNew(SButton).ButtonStyle(bMain?&MareUI::ActionButton:&Light()).ContentPadding(FMargin(12,6)).IsFocusable(false).OnClicked_Lambda([Callback](){Callback();return FReply::Handled();})
+  return SNew(SMarePadButton).ButtonStyle(bMain?&MareUI::ActionButton:&Light()).ContentPadding(FMargin(12,6)).IsFocusable(true).OnClicked_Lambda([Callback](){Callback();return FReply::Handled();})
    [MareUI::Text(Label.ToString(),13,bMain?FLinearColor::White:Ink())];
  }
  /** Label, "<" value ">"; Step receives -1 or +1. */
  TSharedRef<SWidget> Row(const FText& Label,TFunction<FText()> Value,TFunction<void(int32)> Step)
  {
-  auto Arrow=[Step](const TCHAR* Glyph,int32 Direction){return SNew(SButton).ButtonStyle(&MareUI::ActionButton).ContentPadding(FMargin(9,2)).IsFocusable(false)
+  auto Arrow=[Step](const TCHAR* Glyph,int32 Direction){return SNew(SMarePadButton).ButtonStyle(&MareUI::ActionButton).ContentPadding(FMargin(9,2)).IsFocusable(true)
    .OnClicked_Lambda([Step,Direction](){Step(Direction);return FReply::Handled();})[MareUI::Text(Glyph,13,FLinearColor::White)];};
   return SNew(SHorizontalBox)
    +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center)[SNew(SBox).WidthOverride(180)[MareUI::Text(Label.ToString(),12)]]
@@ -858,7 +885,7 @@ private:
   TWeakObjectPtr<UMareAudioWorld> Weak(Sound);
   for(int32 I=0;I<4;++I){const FName Bus=Buses[I];Page->AddSlot().AutoHeight().Padding(0,6)[SNew(SHorizontalBox)
    +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(0,0,12,0)[SNew(SBox).WidthOverride(130)[MareUI::Text(Labels[I].ToString(),12)]]
-   +SHorizontalBox::Slot().FillWidth(1).VAlign(VAlign_Center)[SNew(SSlider).IsFocusable(false).Value_Lambda([Weak,Bus](){return Weak.IsValid()?Weak->GetVolume(Bus):0.f;})
+   +SHorizontalBox::Slot().FillWidth(1).VAlign(VAlign_Center)[SNew(SSlider).IsFocusable(true).Value_Lambda([Weak,Bus](){return Weak.IsValid()?Weak->GetVolume(Bus):0.f;})
     .OnValueChanged_Lambda([Weak,Bus](float Value){if(Weak.IsValid())Weak->SetVolume(Bus,Value);})]
    +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(8,0,0,0)[SNew(SBox).WidthOverride(40)[SNew(STextBlock).ColorAndOpacity(Ink())
     .Text_Lambda([Weak,Bus](){return FText::FromString(FString::Printf(TEXT("%.0f%%"),Weak.IsValid()?Weak->GetVolume(Bus)*100.f:0.f));})]]];}
@@ -869,14 +896,32 @@ private:
   Add(Row(LOCTEXT("OptSensitivity","Sensibilidade do mouse"),[this](){return FText::FromString(FString::Printf(TEXT("%.1f"),Pending.MouseSensitivity));},
    [this](int32 Step){Pending.MouseSensitivity=FMath::Clamp(FMath::RoundToFloat((Pending.MouseSensitivity+.1f*Step)*10.f)/10.f,.2f,3.f);}));
   Add(Row(LOCTEXT("OptInvertY","Inverter eixo Y"),[this](){return OnOff(Pending.bInvertY);},[this](int32){Pending.bInvertY=!Pending.bInvertY;}));
+  Add(Row(LOCTEXT("OptPadSensitivity","Sensibilidade do controle"),[this](){return FText::FromString(FString::Printf(TEXT("%.1f"),Pending.GamepadSensitivity));},
+   [this](int32 Step){Pending.GamepadSensitivity=FMath::Clamp(FMath::RoundToFloat((Pending.GamepadSensitivity+.1f*Step)*10.f)/10.f,.2f,3.f);}));
+  Add(Row(LOCTEXT("OptPadGlyphs","Botões do controle"),[this](){return Pending.PadGlyphs==1?LOCTEXT("OptPadPlayStation","PlayStation"):LOCTEXT("OptPadXbox","Xbox");},
+   [this](int32){Pending.PadGlyphs=1-Pending.PadGlyphs;}));
   Page->AddSlot().AutoHeight().Padding(0,10,0,4)[MareUI::Text(LOCTEXT("OptKeysHint","Clique numa ação e aperte a nova tecla (Esc cancela). Se a tecla já estiver em uso, as duas ações trocam.").ToString(),11)];
   for(const auto& Action:FMareOptions::Actions()){const FName Id=Action.Id;
    Page->AddSlot().AutoHeight().Padding(0,2)[SNew(SHorizontalBox)
     +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center)[SNew(SBox).WidthOverride(180)[MareUI::Text(Action.Label.ToString(),12)]]
-    +SHorizontalBox::Slot().FillWidth(1)[SNew(SButton).ButtonStyle(&Light()).HAlign(HAlign_Center).ContentPadding(FMargin(8,4)).IsFocusable(false)
+    +SHorizontalBox::Slot().FillWidth(1)[SNew(SMarePadButton).ButtonStyle(&Light()).HAlign(HAlign_Center).ContentPadding(FMargin(8,4)).IsFocusable(true)
      .OnClicked_Lambda([this,Id](){Listening=Id;FSlateApplication::Get().SetKeyboardFocus(SharedThis(this),EFocusCause::SetDirectly);return FReply::Handled();})
      [SNew(STextBlock).Font(FCoreStyle::GetDefaultFontStyle("Bold",12)).ColorAndOpacity(Ink())
       .Text_Lambda([this,Id](){return Listening==Id?LOCTEXT("OptPressKey","aperte uma tecla..."):Pending.Key(Id).GetDisplayName();})]]];}
+  // Fixed gamepad layout, named in the chosen style.
+  const bool bPlayStation=Pending.PadGlyphs==1;
+  auto Pad=[bPlayStation](const FKey& Key){return FText::FromString(MareGamepad::PadLabel(Key,bPlayStation));};
+  FFormatNamedArguments Names;
+  Names.Add(TEXT("Jump"),Pad(EKeys::Gamepad_FaceButton_Bottom));Names.Add(TEXT("Dive"),Pad(EKeys::Gamepad_FaceButton_Right));
+  Names.Add(TEXT("Interact"),Pad(EKeys::Gamepad_FaceButton_Left));Names.Add(TEXT("Phone"),Pad(EKeys::Gamepad_FaceButton_Top));
+  Names.Add(TEXT("View"),Pad(EKeys::Gamepad_Special_Left));Names.Add(TEXT("Start"),Pad(EKeys::Gamepad_Special_Right));
+  Names.Add(TEXT("LT"),Pad(EKeys::Gamepad_LeftTrigger));Names.Add(TEXT("RT"),Pad(EKeys::Gamepad_RightTrigger));Names.Add(TEXT("L3"),Pad(EKeys::Gamepad_LeftThumbstick));
+  Names.Add(TEXT("LB"),Pad(EKeys::Gamepad_LeftShoulder));Names.Add(TEXT("RB"),Pad(EKeys::Gamepad_RightShoulder));
+  Page->AddSlot().AutoHeight().Padding(0,12,0,2)[MareUI::Text(LOCTEXT("OptPadTitle","Controle (Xbox / PlayStation)").ToString(),13)];
+  Page->AddSlot().AutoHeight()[MareUI::Text(FText::Format(LOCTEXT("OptPadMap",
+   "Analógico esquerdo: andar · analógico direito: olhar\n{Jump}: pular / subir nadando · {Dive}: mergulhar\n{Interact}: interagir · {Phone} ou {View}: celular · {Start}: pausa\n"
+   "{LT} (segurar) ou {L3} (alternar): correr\nMenus: direcional ou analógico escolhe, {Jump} confirma, {Dive} volta, {LB}/{RB} trocam as abas\n"
+   "Sinuca: analógico mira, segure {RT} para dar força e solte para tacar, {Dive} sai"),Names).ToString(),11)];
  }
  void LanguagePage(const TSharedRef<SVerticalBox>& Page)
  {
@@ -886,14 +931,15 @@ private:
  }
  void Rebuild()
  {
+  const int32 PrevFocus=MareGamepad::FocusedIndex(AsShared());
   auto Body=SNew(SVerticalBox);auto Tabs=SNew(SHorizontalBox);
   const FText Names[]={LOCTEXT("OptTabGraphics","Gráficos"),LOCTEXT("OptTabDisplay","Tela"),LOCTEXT("OptTabAudio","Áudio"),LOCTEXT("OptTabControls","Controles"),LOCTEXT("OptTabLanguage","Idioma")};
-  for(int32 I=0;I<5;++I)Tabs->AddSlot().FillWidth(1).Padding(I?3:0,0,0,0)[SNew(SButton).ButtonStyle(I==Tab?&MareUI::ActionButton:&Light()).HAlign(HAlign_Center).ContentPadding(FMargin(4,6)).IsFocusable(false)
+  for(int32 I=0;I<5;++I)Tabs->AddSlot().FillWidth(1).Padding(I?3:0,0,0,0)[SNew(SMarePadButton).ButtonStyle(I==Tab?&MareUI::ActionButton:&Light()).HAlign(HAlign_Center).ContentPadding(FMargin(4,6)).IsFocusable(true)
    .OnClicked_Lambda([this,I](){Tab=I;Listening=NAME_None;Rebuild();return FReply::Handled();})[SNew(STextBlock).Text(Names[I]).Font(FCoreStyle::GetDefaultFontStyle("Bold",12)).ColorAndOpacity(I==Tab?FLinearColor::White:Ink())]];
   Body->AddSlot().AutoHeight().Padding(0,0,0,10)[Tabs];
   auto Page=SNew(SVerticalBox);
   switch(Tab){case 0:GraphicsPage(Page);break;case 1:DisplayPage(Page);break;case 2:AudioPage(Page);break;case 3:ControlsPage(Page);break;default:LanguagePage(Page);}
-  Body->AddSlot().AutoHeight()[SNew(SBox).MaxDesiredHeight(380)[SNew(SScrollBox)+SScrollBox::Slot()[Page]]];
+  Body->AddSlot().AutoHeight()[SNew(SBox).MaxDesiredHeight(380)[SNew(SScrollBox).ScrollWhenFocusChanges(EScrollWhenFocusChanges::AnimatedScroll)+SScrollBox::Slot()[Page]]];
   // Apply / defaults, or the 10 s confirmation after a resolution change.
   Body->AddSlot().AutoHeight().Padding(0,12,0,0)[SNew(SBox).Visibility_Lambda([this](){return RevertAt>0?EVisibility::Collapsed:EVisibility::Visible;})[SNew(SHorizontalBox)
    +SHorizontalBox::Slot().AutoWidth().Padding(0,0,8,0)[Button(LOCTEXT("OptApply","Aplicar"),[this](){Apply();})]
@@ -906,6 +952,7 @@ private:
     +SHorizontalBox::Slot().AutoWidth()[Button(LOCTEXT("OptRevert","Reverter"),[this](){Revert();},false)]]]];
   Body->AddSlot().AutoHeight().Padding(0,8,0,0)[SNew(STextBlock).AutoWrapText(true).Font(FCoreStyle::GetDefaultFontStyle("Regular",11)).ColorAndOpacity(FLinearColor(.15f,.4f,.36f)).Text_Lambda([this](){return Status;})];
   ChildSlot[Body];
+  if(PrevFocus>=0)MareGamepad::FocusSoon(AsShared(),PrevFocus);
  }
  void Apply()
  {
@@ -946,6 +993,7 @@ TSharedRef<SWidget> AMareController::MakeOptionsPanel(){return SNew(SMareOptions
 void AMareController::SetupInputComponent()
 {
  Super::SetupInputComponent();InputComponent->BindAction(TEXT("Pause"),IE_Pressed,this,&AMareController::TogglePauseMenu).bExecuteWhenPaused=true;
+ MareGamepad::Startup();
  FMareOptions::Get().ApplyKeys(PlayerInput);
 }
 void AMareController::OnPossess(APawn* InPawn){Super::OnPossess(InPawn);FMareOptions::Get().ApplyToPlayer(this);}
@@ -968,7 +1016,7 @@ void AMareController::BuildPauseMenu(bool bOptions)
  if(!GEngine || !GEngine->GameViewport)return;
  if(PauseWidget.IsValid())GEngine->GameViewport->RemoveViewportWidgetContent(PauseWidget.ToSharedRef());
  auto Menu=SNew(SVerticalBox);
- auto Add=[&](const FString& Label,TFunction<void()> Callback){Menu->AddSlot().AutoHeight().Padding(0,5)[SNew(SButton).ButtonStyle(&MareUI::ActionButton).ContentPadding(FMargin(14,8)).OnClicked_Lambda([Callback](){Callback();return FReply::Handled();})[MareUI::Text(Label,14,FLinearColor::White)]];};
+ auto Add=[&](const FString& Label,TFunction<void()> Callback){Menu->AddSlot().AutoHeight().Padding(0,5)[SNew(SMarePadButton).ButtonStyle(&MareUI::ActionButton).ContentPadding(FMargin(14,8)).OnClicked_Lambda([Callback](){Callback();return FReply::Handled();})[MareUI::Text(Label,14,FLinearColor::White)]];};
  if(bOptions){
   Menu->AddSlot().AutoHeight().Padding(0,0,0,10)[MareUI::Text(LOCTEXT("OptionsTitle","Opções").ToString(),20)];
   Menu->AddSlot().AutoHeight()[MakeOptionsPanel()];
@@ -984,6 +1032,9 @@ void AMareController::BuildPauseMenu(bool bOptions)
  }
  PauseWidget=SNew(SBorder).BorderBackgroundColor(FLinearColor(0,0,0,.65f)).HAlign(HAlign_Center).VAlign(VAlign_Center)[SNew(SBox).WidthOverride(bOptions?540:340)[SNew(SBorder).BorderImage(&MareUI::Surface).Padding(20)[Menu]]];
  GEngine->GameViewport->AddViewportWidgetContent(PauseWidget.ToSharedRef(),30);
+ // Gamepad B: options -> pause page -> back to the game.
+ const TWeakObjectPtr<AMareController> Weak(this);
+ MareGamepad::PushMenu(PauseWidget.ToSharedRef(),[Weak,bOptions](){if(Weak.IsValid()){if(bOptions)Weak->BuildPauseMenu(false);else Weak->TogglePauseMenu();}});
 }
 void AMareController::TogglePhone(){if(MainMenuWidget.IsValid())return;if(auto Home=GetWorld()->GetSubsystem<UMareHomeWorld>())if(Home->IsSleeping())return;if(auto Village=GetWorld()->GetSubsystem<UMareVillageWorld>())if(Village->IsDialogueOpen())return;for(TActorIterator<AMareIntro> It(GetWorld());It;++It)if(It->IsArrival() || It->IsLetterOpen())return;if(PauseWidget.IsValid())return;if(bPhoneOpen)ClosePhone();else OpenPhone();}
 void AMareController::OpenPhone(int32 Tab)
@@ -992,6 +1043,7 @@ void AMareController::OpenPhone(int32 Tab)
  if(bPhoneOpen)ClosePhone();bPhoneOpen=true;
  if(auto Hero=Cast<AMareCharacter>(GetPawn()))Hero->SetPhoneVisible(true);
  SAssignNew(PhoneWidget,SMarePhone).Owner(this).Tab(Tab);GEngine->GameViewport->AddViewportWidgetContent(PhoneWidget.ToSharedRef(),20);
+ {const TWeakObjectPtr<AMareController> Weak(this);MareGamepad::PushMenu(PhoneWidget.ToSharedRef(),[Weak](){if(Weak.IsValid())Weak->ClosePhone();});}
  bShowMouseCursor=true;SetInputMode(FInputModeGameAndUI().SetWidgetToFocus(PhoneWidget).SetHideCursorDuringCapture(false));SetIgnoreMoveInput(true);SetIgnoreLookInput(true);
 }
 void AMareController::OpenStation(FName Station)
@@ -999,6 +1051,7 @@ void AMareController::OpenStation(FName Station)
  if(!GEngine || !GEngine->GameViewport)return;
  if(bPhoneOpen)ClosePhone();bPhoneOpen=true;
  SAssignNew(PhoneWidget,SMarePhone).Owner(this).Tab(0).Station(Station);GEngine->GameViewport->AddViewportWidgetContent(PhoneWidget.ToSharedRef(),20);
+ {const TWeakObjectPtr<AMareController> Weak(this);MareGamepad::PushMenu(PhoneWidget.ToSharedRef(),[Weak](){if(Weak.IsValid())Weak->ClosePhone();});}
  bShowMouseCursor=true;SetInputMode(FInputModeGameAndUI().SetWidgetToFocus(PhoneWidget).SetHideCursorDuringCapture(false));SetIgnoreMoveInput(true);SetIgnoreLookInput(true);
 }
 void AMareController::ClosePhone()
@@ -1014,14 +1067,15 @@ void AMareController::EndPlay(const EEndPlayReason::Type Reason){CloseMainMenu()
 struct FMareHudModel
 {
  FString Money,Day,Fame,Notice,Prompt,Carry,Hint,Stars,Rooms,Served;
- FString InteractKey=TEXT("E"),PhoneKey=TEXT("B"); // follow the remapped keys
+ FString InteractKey=TEXT("E"),PhoneKey=TEXT("B"),PauseKey=TEXT("Esc"); // remapped keys, or gamepad buttons after gamepad input
+ FString PadHint; // gamepad help over the open phone
  int32 StarsFlash=0; // 1 up (green), -1 down (red)
  TArray<TPair<FString,FString>> Tickets;
  TArray<TPair<FString,int32>> Note; // text, style: 0 heading, 1 main goal, 2 secondary, 3 guidance
  bool bPhone=false;
  FString Signature()const
  {
-  FString S=Money+Day+Fame+Notice+Prompt+Carry+Hint+Stars+Rooms+Served+InteractKey+PhoneKey+FString::FromInt(StarsFlash)+(bPhone?TEXT("P"):TEXT(""));
+  FString S=Money+Day+Fame+Notice+Prompt+Carry+Hint+Stars+Rooms+Served+InteractKey+PhoneKey+PauseKey+PadHint+FString::FromInt(StarsFlash)+(bPhone?TEXT("P"):TEXT(""));
   for(const auto& T:Tickets)S+=T.Key+T.Value;
   for(const auto& N:Note)S+=N.Key+FString::FromInt(N.Value);
   return S;
@@ -1075,11 +1129,12 @@ public:
   if(!M.Prompt.IsEmpty())Bottom->AddSlot().AutoHeight().HAlign(HAlign_Center)[SNew(SBorder).BorderImage(&Sign()).Padding(FMargin(16,8))[SNew(SHorizontalBox)
    +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(0,0,10,0)[Key(M.InteractKey)]
    +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center)[Txt(M.Prompt,15,Hex(90,58,30),true)]]];
+  if(!M.PadHint.IsEmpty())Bottom->AddSlot().AutoHeight().HAlign(HAlign_Center).Padding(0,6,0,0)[SNew(SBorder).BorderImage(&Toast()).Padding(FMargin(12,5))[Txt(M.PadHint,13,Hex(20,60,56),true)]];
   Root->AddSlot().VAlign(VAlign_Bottom).HAlign(HAlign_Center).Padding(0,0,0,58)[Bottom];
   if(!M.bPhone)Root->AddSlot().VAlign(VAlign_Bottom).HAlign(HAlign_Left).Padding(22,0,0,16)[SNew(SHorizontalBox)
    +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(0,0,6,0)[Key(M.PhoneKey)]
    +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(0,0,16,0)[Txt(TEXT("Celular"),12,FLinearColor::White,true)]
-   +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(0,0,6,0)[Key(TEXT("Esc"))]
+   +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(0,0,6,0)[Key(M.PauseKey)]
    +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(0,0,16,0)[Txt(TEXT("Pausa"),12,FLinearColor::White,true)]
    +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center)[Txt(M.Hint,12,FLinearColor::White,true)]];
   ChildSlot[SNew(SDPIScaler).DPIScale_Lambda([](){return MareTropical::Scale();})[Root]];
@@ -1101,8 +1156,12 @@ void AMareHUD::DrawHUD()
  if(PC && PC->IsMainMenuOpen())return;
  auto Dish=[&](const FString& Id){return UMareSimulation::String(UMareSimulation::Object(UMareSimulation::Object(S->Definitions,TEXT("dishes")),Id),TEXT("name"));};
  FMareHudModel M;M.bPhone=PC && PC->bPhoneOpen;
- auto KeyName=[](const TCHAR* Action){return FMareOptions::Get().Key(Action).GetDisplayName(false).ToString();};
- M.InteractKey=KeyName(TEXT("Interact"));M.PhoneKey=KeyName(TEXT("Phone"));
+ auto KeyName=[](const TCHAR* Action){return MareGamepad::ActionLabel(Action);};
+ M.InteractKey=KeyName(TEXT("Interact"));M.PhoneKey=KeyName(TEXT("Phone"));M.PauseKey=KeyName(TEXT("Pause"));
+ const bool bPad=MareGamepad::UsingGamepad();
+ if(M.bPhone && bPad){const bool bPlayStation=FMareOptions::Get().PadGlyphs==1;auto Pad=[bPlayStation](const FKey& Key){return FText::FromString(MareGamepad::PadLabel(Key,bPlayStation));};
+  M.PadHint=FText::Format(LOCTEXT("PadPhoneHint","{0}/{1} abas · {2} escolhe · {3} fecha"),Pad(EKeys::Gamepad_LeftShoulder),Pad(EKeys::Gamepad_RightShoulder),
+   Pad(EKeys::Gamepad_FaceButton_Bottom),Pad(EKeys::Gamepad_FaceButton_Right)).ToString();}
  const int32 Minutes=UMareSimulation::Number(S->State,TEXT("minutes"));
  M.Money=FString::Printf(TEXT("R$ %.0f"),S->Money());
  M.Day=FString::Printf(TEXT("Dia %.0f · %02d:%02d"),UMareSimulation::Number(S->State,TEXT("day"),1),Minutes/60,Minutes%60);
@@ -1123,7 +1182,7 @@ void AMareHUD::DrawHUD()
   if(IntroStage==1)M.Note.Add({TEXT("Entre na casa e leia a carta da avó Dilce"),3});
   bool bCreated=false;UMareSimulation::Object(S->State,TEXT("company"))->TryGetBoolField(TEXT("created"),bCreated);
   if(!bCreated && IntroStage>=2)M.Note.Add({TEXT("Comece aqui: ")+M.PhoneKey+TEXT(" · Celular → Quiosque → Criar empresa"),3});
-  else if(bCreated && !S->IsOpen())M.Note.Add({TEXT("Clique na placa FECHADO do balcão para abrir"),3});
+  else if(bCreated && !S->IsOpen())M.Note.Add({bPad?FText::Format(LOCTEXT("OpenSignPad","Mire na placa FECHADO do balcão e aperte {0} para abrir"),FText::FromString(M.InteractKey)).ToString():FString(TEXT("Clique na placa FECHADO do balcão para abrir")),3});
   const auto Campaign=UMareSimulation::Object(UMareSimulation::Object(S->State,TEXT("prog")),TEXT("campaign"));
   const TArray<TSharedPtr<FJsonValue>>* Missions=nullptr;const int32 Stage=UMareSimulation::Number(Campaign,TEXT("stage"));
   if(S->Definitions->TryGetArrayField(TEXT("campaign"),Missions) && Missions->IsValidIndex(Stage)){
@@ -1161,7 +1220,8 @@ void AMareHUD::DrawHUD()
   }
  }
  if(!S->Carry().IsEmpty())M.Carry=Dish(S->Carry());
- if(auto Hero=Cast<AMareCharacter>(GetOwningPawn()))if(Hero->GetCharacterMovement()->IsSwimming())M.Hint=FString::Printf(TEXT("Nadando · %s sobe · %s/%s mergulha"),*KeyName(TEXT("Jump")),*KeyName(TEXT("Dive")),*KeyName(TEXT("Sprint")));
+ if(auto Hero=Cast<AMareCharacter>(GetOwningPawn()))if(Hero->GetCharacterMovement()->IsSwimming())M.Hint=bPad?FText::Format(LOCTEXT("SwimPad","Nadando · {0} sobe · {1} mergulha"),FText::FromString(KeyName(TEXT("Jump"))),FText::FromString(KeyName(TEXT("Dive")))).ToString()
+  :FString::Printf(TEXT("Nadando · %s sobe · %s/%s mergulha"),*KeyName(TEXT("Jump")),*KeyName(TEXT("Dive")),*KeyName(TEXT("Sprint")));
  // The mission note would sit on top of the held phone.
  if(M.bPhone){M.Note.Empty();M.Tickets.Empty();}
  // Pool match: aim guide, power bar and score instead of the crosshair and the mission note.

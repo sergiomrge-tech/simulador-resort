@@ -132,6 +132,8 @@ void UMareSimulation::StaysNight()
  SyncRooms();auto Stay=Stays();auto& Rooms=List(Stay,TEXT("rooms"));const double Comfort=PlaceComfort(TEXT("pousada"));
  TArray<TSharedPtr<FJsonValue>> Ratings;const TArray<TSharedPtr<FJsonValue>>* Existing=nullptr;if(State->TryGetArrayField(TEXT("ratings"),Existing))Ratings=*Existing;
  int32 Occupied=0,Left=0;double Revenue=0;
+ // Hotel guests who check out tonight walk from the elevators out of the lobby next morning (UMareStaysWorld).
+ TArray<TSharedPtr<FJsonValue>> Departures;
  for(const auto& V:Rooms){auto R=V->AsObject();if(String(R,TEXT("state"))!=TEXT("occupied"))continue;
   ++Occupied;Revenue+=Number(R,TEXT("rate"));const int32 Nights=Number(R,TEXT("nights"),1)-1;R->SetNumberField(TEXT("nights"),Nights);
   if(Nights>0)continue;
@@ -139,20 +141,35 @@ void UMareSimulation::StaysNight()
   const bool bHotel=String(R,TEXT("place"))==TEXT("hotel");
   const double Rating=FMath::Clamp((bHotel?3.9+HotelCustomBonus()*4:3.3+.025*Comfort)+1.2*(Number(R,TEXT("mood"))-.5)+(R->HasField(TEXT("was_dirty"))?-1.2:.3),1.,5.);
   Ratings.Add(MakeShared<FJsonValueNumber>(Rating));AddFame(bHotel?2:1);++Left;
-  if(bHotel){R->SetStringField(TEXT("state"),TEXT("free"));R->RemoveField(TEXT("guest"));continue;}   // hotel housekeeping
+  if(bHotel){const auto G=Object(R,TEXT("guest"));
+   if(Departures.Num()<8 && !String(G,TEXT("id")).IsEmpty()){auto D=MakeShared<FJsonObject>();
+    for(const TCHAR* Key:{TEXT("id"),TEXT("name"),TEXT("profile")})D->SetStringField(Key,String(G,Key));
+    D->SetStringField(TEXT("place"),TEXT("hotel"));Departures.Add(MakeShared<FJsonValueObject>(D));}
+   R->SetStringField(TEXT("state"),TEXT("free"));R->RemoveField(TEXT("guest"));continue;}   // hotel housekeeping
   R->SetStringField(TEXT("state"),TEXT("dirty"));R->RemoveField(TEXT("was_dirty"));
   TArray<TSharedPtr<FJsonValue>> Tasks;for(const TCHAR* T:{TEXT("bed"),TEXT("towels"),TEXT("trash")})Tasks.Add(MakeShared<FJsonValueString>(T));
   R->SetArrayField(TEXT("tasks"),Tasks);}
  while(Ratings.Num()>40)Ratings.RemoveAt(0);State->SetArrayField(TEXT("ratings"),Ratings);
  // Guests still waiting at the reception give up at night.
  Stay->SetArrayField(TEXT("queue"),TArray<TSharedPtr<FJsonValue>>());
+ Stay->SetArrayField(TEXT("departures"),Departures);
  auto Last=MakeShared<FJsonObject>();Last->SetNumberField(TEXT("rooms"),Rooms.Num());Last->SetNumberField(TEXT("occupied"),Occupied);
  Last->SetNumberField(TEXT("rev"),Revenue);Last->SetNumberField(TEXT("checkouts"),Left);Child(State,TEXT("prog"))->SetObjectField(TEXT("pousada"),Last);
+}
+
+TSharedPtr<FJsonObject> UMareSimulation::TakeDeparture(const FString& Place)
+{
+ auto& Departures=List(Stays(),TEXT("departures"));
+ for(int32 I=0;I<Departures.Num();++I){const auto D=Departures[I]->AsObject();
+  if(D && String(D,TEXT("place"))==Place){Departures.RemoveAt(I);return D;}}
+ return nullptr;
 }
 
 void UMareSimulation::StaysHour(int32 Hour)
 {
  SyncRooms();
+ // Check-outs leave in the morning; whoever was not seen walking out by 13:00 is already gone.
+ if(Hour>=13)Stays()->SetArrayField(TEXT("departures"),TArray<TSharedPtr<FJsonValue>>());
  for(const TCHAR* Place:{TEXT("pousada"),TEXT("hotel")}){
   const FString P(Place);if(PlaceRooms(this,P)<=0)continue;auto Ops=StayOps(P);const bool bHotel=P==TEXT("hotel");
   // Arrivals 10:00-20:00; demand follows the occupancy models (fame, comfort, beauty, stars).

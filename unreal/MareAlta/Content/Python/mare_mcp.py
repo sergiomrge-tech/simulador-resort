@@ -705,6 +705,8 @@ class MareMigrationTools(unreal.ToolsetDefinition):
             if not sim.pickup(dish,False):return json.dumps({'error':'Pickup refused'})
         elif phase=='hire':sim.hire_attendant()
         elif phase=='tables':sim.buy_expansion('kiosk_tables')
+        elif phase.startswith('arrival'):
+            return json.dumps({'arrival':[sim.add_arrival(phase.split(':')[1] if ':' in phase else 'pousada') for _ in range(3)]})
         elif phase=='capture':
             unreal.SystemLibrary.execute_console_command(world,'r.HighResScreenshotDelay 32')
             unreal.SystemLibrary.execute_console_command(world,'HighResShot 1280x720 filename=D:/CodexTemp/ue58-service-runtime.png')

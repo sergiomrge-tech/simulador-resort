@@ -33,7 +33,7 @@ void UMareStaysWorld::Deinitialize()
  for(auto& Pair:Mess)if(IsValid(Pair.Value))Pair.Value->Destroy();
  for(auto& Pair:Guests)if(IsValid(Pair.Value))Pair.Value->Destroy();
  for(auto& Pair:Leaving)if(IsValid(Pair.Key))Pair.Key->Destroy();
- Tasks.Empty();Mess.Empty();Guests.Empty();Leaving.Empty();Super::Deinitialize();
+ Tasks.Empty();Mess.Empty();Guests.Empty();GuestPlace.Empty();Leaving.Empty();Super::Deinitialize();
 }
 
 void UMareStaysWorld::FindBungalows()
@@ -71,8 +71,18 @@ void UMareStaysWorld::Tick(float DeltaSeconds)
    Desk->Action=TEXT("PousadaReception");Desk->Label=TEXT("Recepção da pousada");Desk->Reach=260;Desk->OcclusionTolerance=60;}}
  if(Desk)Desk->SetActorHiddenInGame(!bPousada);
  if(DeskModel){DeskModel->SetActorHiddenInGame(!bPousada);DeskModel->SetActorEnableCollision(bPousada);}
- if(!bPousada)return;
- SyncTasks();SyncGuests();
+ if(bPousada)SyncTasks();
+ // Reception lines: the pousada counter (spawned above) and the Grand Hotel lobby desk (UMareVisualWorld spawns its
+ // E target; the line only needs the data point). Guests leaving any line walk away and are removed on arrival.
+ FMareStayLine Line;
+ if(Desk && LineFor(S,TEXT("pousada"),Line)){
+  // The pousada keeps its counter actor as reference; without an "exit" entry its guests go back down the path.
+  if(!S->StayOps(TEXT("pousada"))->HasField(TEXT("exit")))Line.Exit=Desk->GetActorLocation()+Desk->GetActorForwardVector()*900;
+  Line.Desk=Desk->GetActorLocation();Line.Front=Desk->GetActorForwardVector();SyncGuests(Line,bPousada);}
+ bool bHotel=false;UMareSimulation::Object(S->State,TEXT("unlocked"))->TryGetBoolField(TEXT("grand_hotel"),bHotel);
+ if(LineFor(S,TEXT("hotel"),Line)){SyncGuests(Line,bHotel);if(bHotel)SyncDepartures(Line);}
+ for(auto It=Leaving.CreateIterator();It;++It){AMarePerson* Person=It.Key();
+  if(!IsValid(Person) || Person->AtGoal() || GetWorld()->GetTimeSeconds()>It.Value()){if(IsValid(Person))Person->Destroy();It.RemoveCurrent();}}
 }
 
 void UMareStaysWorld::SyncTasks()
@@ -109,32 +119,104 @@ void UMareStaysWorld::UseTask(int32 Room,const FString& Task)
   SyncTasks();}
 }
 
-void UMareStaysWorld::SyncGuests()
+bool UMareStaysWorld::LineFor(const UMareSimulation* Simulation,const FString& Place,FMareStayLine& Out)
 {
- auto S=Sim(GetWorld());if(!Desk)return;
- const TArray<TSharedPtr<FJsonValue>>* Queue=nullptr;S->Stays()->TryGetArrayField(TEXT("queue"),Queue);
- TArray<TSharedPtr<FJsonObject>> Line;if(Queue)for(const auto& V:*Queue){const FString P=UMareSimulation::String(V->AsObject(),TEXT("place"));
-  if(P.IsEmpty() || P==TEXT("pousada"))Line.Add(V->AsObject());}
- // Guests who left the line walk away: to their bungalow after a check-in, otherwise back down the path.
- for(auto It=Guests.CreateIterator();It;++It){if(Line.ContainsByPredicate([&](const auto& G){return UMareSimulation::String(G,TEXT("id"))==It.Key();}))continue;
-  AMarePerson* Person=It.Value();It.RemoveCurrent();if(!IsValid(Person))continue;
-  FVector Goal=Desk->GetActorLocation()+Desk->GetActorForwardVector()*900;
-  const TArray<TSharedPtr<FJsonValue>>* Rooms=nullptr;
-  if(S->Stays()->TryGetArrayField(TEXT("rooms"),Rooms))for(int32 I=0;I<Rooms->Num();++I){const auto G=UMareSimulation::Object((*Rooms)[I]->AsObject(),TEXT("guest"));
-   if(UMareSimulation::String(G,TEXT("id"))==Person->SaveId.Mid(8)){RoomPoint(I,FVector(0,260,49),Goal);break;}}   // the bungalow deck
-  Person->GetCharacterMovement()->SetMovementMode(MOVE_Walking);Person->WalkTo(Goal);Leaving.Add(Person,GetWorld()->GetTimeSeconds()+45);}
- for(auto It=Leaving.CreateIterator();It;++It){AMarePerson* Person=It.Key();
-  if(!IsValid(Person) || Person->AtGoal() || GetWorld()->GetTimeSeconds()>It.Value()){if(IsValid(Person))Person->Destroy();It.RemoveCurrent();}}
- // The line forms in front of the desk, one metre apart, everyone facing the counter.
- const FVector Front=Desk->GetActorForwardVector();
- for(int32 I=0;I<Line.Num();++I){
-  const FString Id=UMareSimulation::String(Line[I],TEXT("id"));const FVector Spot=Desk->GetActorLocation()+Front*(110+I*100)+FVector(0,0,90);
-  auto& Person=Guests.FindOrAdd(Id);
-  if(!IsValid(Person)){FActorSpawnParameters Params;Params.SpawnCollisionHandlingOverride=ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-   Person=GetWorld()->SpawnActor<AMarePerson>(Spot,(-Front).Rotation(),Params);if(!Person)continue;
-   Person->SaveId=TEXT("pousada_")+Id;Person->PersonName=UMareSimulation::String(Line[I],TEXT("name"));
-   Person->SetAppearance(FCrc::StrCrc32(*Person->SaveId)%4);Person->bAmbient=true;Person->Tags.Add(TEXT("MarePousadaGuest"));
-   Person->GetCharacterMovement()->DisableMovement();}
-  else if(FVector::Dist2D(Person->GetActorLocation(),Spot)>30)Person->SetActorLocation(Spot);
+ if(!Simulation)return false;
+ const auto Ops=Simulation->StayOps(Place);const TArray<TSharedPtr<FJsonValue>>* At=nullptr;
+ if(!Ops.IsValid() || !Ops->TryGetArrayField(TEXT("reception"),At) || At->Num()!=4)return false;
+ auto Point=[](const TArray<TSharedPtr<FJsonValue>>& V){return FVector(V[0]->AsNumber(),V[1]->AsNumber(),V[2]->AsNumber());};
+ Out=FMareStayLine();Out.Place=Place;Out.Desk=Point(*At);Out.Front=FRotator(0,(*At)[3]->AsNumber(),0).Vector();
+ const TArray<TSharedPtr<FJsonValue>>* Exit=nullptr;
+ Out.Exit=Ops->TryGetArrayField(TEXT("exit"),Exit) && Exit->Num()==3?Point(*Exit):Out.Desk+Out.Front*900;
+ const TArray<TSharedPtr<FJsonValue>>* Lifts=nullptr;
+ if(Ops->TryGetArrayField(TEXT("elevators"),Lifts))for(const auto& V:*Lifts){const TArray<TSharedPtr<FJsonValue>>* P=nullptr;
+  if(V->TryGetArray(P) && P->Num()==3)Out.Elevators.Add(Point(*P));}
+ return true;
+}
+
+TArray<TSharedPtr<FJsonObject>> UMareStaysWorld::QueueOf(UMareSimulation* Simulation,const FString& Place)
+{
+ TArray<TSharedPtr<FJsonObject>> Line;const TArray<TSharedPtr<FJsonValue>>* Queue=nullptr;
+ if(Simulation && Simulation->Stays()->TryGetArrayField(TEXT("queue"),Queue))for(const auto& V:*Queue){const FString P=UMareSimulation::String(V->AsObject(),TEXT("place"));
+  if(P==Place || (P.IsEmpty() && Place==TEXT("pousada")))Line.Add(V->AsObject());}
+ return Line;
+}
+
+int32 UMareStaysWorld::LineCount(const FString& Place) const
+{
+ int32 Count=0;for(const auto& Pair:GuestPlace)Count+=Pair.Value==Place && IsValid(Guests.FindRef(Pair.Key));return Count;
+}
+
+FVector UMareStaysWorld::Ground(const FVector& At,const AActor* Ignore) const
+{
+ // Start only 1.5 m up: the hotel lobby ceiling is 4 m above its floor and must not be taken for the ground.
+ FCollisionQueryParams Params(SCENE_QUERY_STAT(MareStaysGround),false,Ignore);
+ for(const auto& Pair:Guests)if(IsValid(Pair.Value))Params.AddIgnoredActor(Pair.Value);
+ FHitResult Hit;
+ if(GetWorld()->LineTraceSingleByChannel(Hit,At+FVector(0,0,150),At-FVector(0,0,600),ECC_Visibility,Params))return Hit.ImpactPoint;
+ return At;
+}
+
+AMarePerson* UMareStaysWorld::SpawnGuest(const FString& Place,const FString& Id,const FString& Name,const FVector& Floor,const FRotator& Facing)
+{
+ FActorSpawnParameters Params;Params.SpawnCollisionHandlingOverride=ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+ auto Person=GetWorld()->SpawnActor<AMarePerson>(Floor+FVector(0,0,90),Facing,Params);if(!Person)return nullptr;
+ Person->SaveId=Place+TEXT("_")+Id;Person->PersonName=Name;
+ Person->SetAppearance(FCrc::StrCrc32(*Person->SaveId)%4);Person->bAmbient=true;
+ // The tag picks the MetaHuman cast (MarePerson: "hotel" / "pousada" rosters) before the first outfit tick.
+ Person->Tags.Add(Place==TEXT("hotel")?TEXT("MareHotelGuest"):TEXT("MarePousadaGuest"));
+ Person->GetCharacterMovement()->DisableMovement();return Person;
+}
+
+void UMareStaysWorld::Walk(AMarePerson* Person,const FVector& Goal,float Timeout)
+{
+ // WalkTo follows the navmesh, so guests go around the lobby furniture; without a path they vanish shortly.
+ Person->GetCharacterMovement()->SetMovementMode(MOVE_Walking);
+ const bool bPath=Person->WalkTo(Goal);Leaving.Add(Person,GetWorld()->GetTimeSeconds()+(bPath?Timeout:3.f));
+}
+
+void UMareStaysWorld::SyncGuests(const FMareStayLine& Line,bool bOpen)
+{
+ auto S=Sim(GetWorld());if(!S)return;
+ const TArray<TSharedPtr<FJsonObject>> Waiting=bOpen?QueueOf(S,Line.Place):TArray<TSharedPtr<FJsonObject>>();
+ const bool bHotel=Line.Place==TEXT("hotel");
+ // Guests who left the line walk away: after a check-in to their bungalow deck (pousada) or to the elevators (hotel),
+ // otherwise out (pousada path, hotel main door). A locked place loses its people at once.
+ for(auto It=Guests.CreateIterator();It;++It){const FString Id=It.Key();if(GuestPlace.FindRef(Id)!=Line.Place)continue;
+  if(Waiting.ContainsByPredicate([&](const TSharedPtr<FJsonObject>& G){return UMareSimulation::String(G,TEXT("id"))==Id;}))continue;
+  AMarePerson* Person=It.Value();It.RemoveCurrent();GuestPlace.Remove(Id);if(!IsValid(Person))continue;
+  if(!bOpen){Person->Destroy();continue;}
+  FVector Goal=Line.Exit;
+  const TArray<TSharedPtr<FJsonValue>>* Rooms=nullptr;int32 Bungalow=0;
+  if(S->Stays()->TryGetArrayField(TEXT("rooms"),Rooms))for(const auto& V:*Rooms){const auto R=V->AsObject();
+   const FString P=UMareSimulation::String(R,TEXT("place"));const bool bMine=P==Line.Place || (P.IsEmpty() && !bHotel);
+   if(bMine && UMareSimulation::String(UMareSimulation::Object(R,TEXT("guest")),TEXT("id"))==Id){
+    if(bHotel){if(Line.Elevators.Num())Goal=Line.Elevators[FCrc::StrCrc32(*Id)%uint32(Line.Elevators.Num())];}
+    else RoomPoint(Bungalow,FVector(0,260,49),Goal);   // the bungalow deck
+    break;}
+   Bungalow+=bMine;}
+  Walk(Person,Goal,bHotel?60.f:45.f);}
+ // The line forms in front of the desk, one metre apart, everyone facing the counter, feet on the traced floor.
+ const FRotator Facing=(-Line.Front).Rotation();
+ for(int32 I=0;I<Waiting.Num();++I){
+  const FString Id=UMareSimulation::String(Waiting[I],TEXT("id"));
+  TObjectPtr<AMarePerson>& Person=Guests.FindOrAdd(Id);GuestPlace.Add(Id,Line.Place);
+  if(!IsValid(Person)){Person=SpawnGuest(Line.Place,Id,UMareSimulation::String(Waiting[I],TEXT("name")),Ground(Line.Spot(I)),Facing);
+   if(!Person){Guests.Remove(Id);GuestPlace.Remove(Id);}continue;}
+  if(FVector::Dist2D(Person->GetActorLocation(),Line.Spot(I))>30){Person->SetActorLocation(Ground(Line.Spot(I),Person)+FVector(0,0,90));Person->SetActorRotation(Facing);}
  }
+}
+
+void UMareStaysWorld::SyncDepartures(const FMareStayLine& Line)
+{
+ // Check-outs walk out between 7:00 and 13:00, one every four seconds, from a lift door to the main door.
+ auto S=Sim(GetWorld());if(!S || Line.Elevators.IsEmpty())return;
+ const double Minutes=UMareSimulation::Number(S->State,TEXT("minutes"));
+ if(Minutes<7*60 || Minutes>=13*60 || GetWorld()->GetTimeSeconds()<NextDeparture)return;
+ const auto D=S->TakeDeparture(Line.Place);if(!D)return;
+ NextDeparture=GetWorld()->GetTimeSeconds()+4;
+ const FString Id=UMareSimulation::String(D,TEXT("id"));
+ const FVector From=Line.Elevators[FCrc::StrCrc32(*Id)%uint32(Line.Elevators.Num())];
+ if(auto Person=SpawnGuest(Line.Place,TEXT("out_")+Id,UMareSimulation::String(D,TEXT("name")),Ground(From),FRotator(0,(Line.Exit-From).Rotation().Yaw,0)))
+  Walk(Person,Line.Exit,60.f);
 }

@@ -197,7 +197,7 @@ public:
  /** Room list of the pousada matches PousadaRooms() (new rooms start clean). */
  void SyncRooms();
  /** A guest joins the reception queue (max 3); returns the guest id or empty. */
- FString AddArrival(const FString& Place=TEXT("pousada"));
+ UFUNCTION(BlueprintCallable,Category="Maré Alta|Stays") FString AddArrival(const FString& Place=TEXT("pousada"));
  /** Reference nightly rate and stay settings (customization.json operations.pousada / hotel_stays). */
  double StayRate(const FString& Place) const;
  TSharedPtr<FJsonObject> StayOps(const FString& Place) const;
@@ -214,6 +214,9 @@ public:
  void StaysNight();
  /** Hourly: arrivals during the day, the receptionist checks guests in at their offer, the maid cleans. */
  void StaysHour(int32 Hour);
+ /** Next guest of Place who checked out last night and still has to walk out of the lobby (state stays.departures,
+  *  filled by StaysNight for the hotel, cleared at 13:00); removed from the list. Null when nobody is left. */
+ TSharedPtr<FJsonObject> TakeDeparture(const FString& Place);
  TSharedPtr<FJsonObject> Stays();
  /** Bets and prizes from minigames (game room): books the amount with a label, like any other income or expense. */
  void SettleBet(double Amount,const FString& Label){Book(Amount,Label);}

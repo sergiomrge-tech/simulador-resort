@@ -3,6 +3,8 @@
 #include "MareServiceTarget.h"
 #include "MarePerson.h"
 #include "MareAudioWorld.h"
+#include "MareGamepad.h"
+#include "MareOptions.h"
 #include "Camera/CameraActor.h"
 #include "Engine/GameInstance.h"
 #include "Engine/StaticMesh.h"
@@ -190,7 +192,11 @@ bool UMareGameRoom::AimLine(FVector& From,FVector& To) const
 FString UMareGameRoom::Status() const
 {
  if(!bPlaying)return FString();
- return FString::Printf(TEXT("Sinuca · você %d × %d hóspede · %s"),Score[0],Score[1],bShotRunning?TEXT("bolas rolando"):Turn==0?TEXT("sua vez: mouse mira, segure e solte o clique"):TEXT("vez do hóspede"));
+ FString Yours=TEXT("sua vez: mouse mira, segure e solte o clique · Q sai");
+ if(MareGamepad::UsingGamepad()){const bool bPlayStation=FMareOptions::Get().PadGlyphs==1;
+  Yours=FText::Format(NSLOCTEXT("MareGameRoom","PoolPadTurn","sua vez: analógico mira, segure {0} e solte · {1} sai"),
+   FText::FromString(MareGamepad::PadLabel(EKeys::Gamepad_RightTrigger,bPlayStation)),FText::FromString(MareGamepad::PadLabel(EKeys::Gamepad_FaceButton_Right,bPlayStation))).ToString();}
+ return FString::Printf(TEXT("Sinuca · você %d × %d hóspede · %s"),Score[0],Score[1],bShotRunning?TEXT("bolas rolando"):Turn==0?*Yours:TEXT("vez do hóspede"));
 }
 
 void UMareGameRoom::UpdateProps(float DeltaSeconds)
@@ -220,7 +226,7 @@ void UMareGameRoom::Tick(float DeltaSeconds)
  if(!bOwned)return;
  if(bPlaying){
   auto PC=Player.Get();if(!PC){EndMatch(FString());return;}
-  if(PC->WasInputKeyJustPressed(EKeys::Q)){EndMatch(TEXT("Partida de sinuca encerrada."));return;}
+  if(PC->WasInputKeyJustPressed(EKeys::Q) || PC->WasInputKeyJustPressed(EKeys::Gamepad_FaceButton_Right)){EndMatch(TEXT("Partida de sinuca encerrada."));return;}
   if(bShotRunning){
    const bool bStill=!Step(DeltaSeconds);
    {const FVector At=Table.GetLocation()+FVector(0,0,80);
@@ -232,7 +238,10 @@ void UMareGameRoom::Tick(float DeltaSeconds)
     GuestDelay=1.2f;}}
   else if(Turn==0){
    float DX=0,DY=0;PC->GetInputMouseDelta(DX,DY);AimAngle+=DX*.004;
-   if(PC->IsInputKeyDown(EKeys::LeftMouseButton)){bCharging=true;Charge=FMath::Min(1.f,Charge+DeltaSeconds/1.2f);}
+   // Gamepad: either stick aims (squared curve for fine shots), RT held charges like the mouse button.
+   const float Stick=FMath::Clamp(PC->GetInputAnalogKeyState(EKeys::Gamepad_LeftX)+PC->GetInputAnalogKeyState(EKeys::Gamepad_RightX),-1.f,1.f);
+   AimAngle+=MareGamepad::Curve(Stick,0.f)*MareGamepad::AimRadiansPerSecond*DeltaSeconds;
+   if(PC->IsInputKeyDown(EKeys::LeftMouseButton) || PC->IsInputKeyDown(EKeys::Gamepad_RightTrigger) || PC->GetInputAnalogKeyState(EKeys::Gamepad_RightTriggerAxis)>.3f){bCharging=true;Charge=FMath::Min(1.f,Charge+DeltaSeconds/1.2f);}
    else if(bCharging){bCharging=false;const FVector At=Table.GetLocation()+FVector(0,0,80);UMareAudioWorld::Action(this,TEXT("pool_cue_hit"),&At,.4f+.6f*Charge);
     Shoot(AimAngle,.5+5.5*Charge);Charge=0;bShotRunning=true;}}
   else if((GuestDelay-=DeltaSeconds)<=0){double Angle=0,Speed=0;PlanGuestShot(Angle,Speed,FCrc::StrCrc32(*FString::Printf(TEXT("%d-%d"),Score[0],Score[1]))+GFrameNumber);

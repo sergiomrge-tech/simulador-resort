@@ -1,5 +1,6 @@
 #include "MareVillageWorld.h"
 #include "MareGame.h"
+#include "MareGamepad.h"
 #include "MarePerson.h"
 #include "MareSimulation.h"
 #include "MareServiceTarget.h"
@@ -134,7 +135,7 @@ void UMareVillageWorld::Speak(AMarePerson* Person,APlayerController* Controller)
  // The giver of the open chapter offers its current step in person.
  FString Story;auto Actions=SNew(SHorizontalBox);TWeakObjectPtr<AMarePerson> WeakPerson(Person);TWeakObjectPtr<APlayerController> WeakController(Controller);
  const FString Result=ActionResult;ActionResult.Empty();
- const auto AddAction=[&](const FString& Label,TFunction<void()> Callback){Actions->AddSlot().AutoWidth().Padding(0,0,8,0)[SNew(SButton).ContentPadding(FMargin(12,6)).OnClicked_Lambda([this,Sim,Callback,WeakPerson,WeakController](){
+ const auto AddAction=[&](const FString& Label,TFunction<void()> Callback){Actions->AddSlot().AutoWidth().Padding(0,0,8,0)[SNew(SMarePadButton).ContentPadding(FMargin(12,6)).OnClicked_Lambda([this,Sim,Callback,WeakPerson,WeakController](){
   Sim->LastMessage.Empty();Callback();const FString Message=Sim->LastMessage;CloseDialogue();ActionResult=Message;
   if(WeakPerson.IsValid() && WeakController.IsValid())Speak(WeakPerson.Get(),WeakController.Get());return FReply::Handled();})[SNew(STextBlock).Text(FText::FromString(Label))]];};
  const TArray<TSharedPtr<FJsonValue>>* Chapters=nullptr;
@@ -149,14 +150,18 @@ void UMareVillageWorld::Speak(AMarePerson* Person,APlayerController* Controller)
   else if(Have>=Goal)AddAction(Kind==TEXT("deliver")?FString::Printf(TEXT("Entregar %d do estoque"),Goal):Kind==TEXT("pay")?FString::Printf(TEXT("Doar R$ %d"),Goal):FString(TEXT("Concluir passo")),[Sim,Id](){Sim->AdvanceChapter(Id);});
   break;
  }
- Actions->AddSlot().AutoWidth()[SNew(SButton).ContentPadding(FMargin(12,6)).OnClicked_Lambda([this](){CloseDialogue();return FReply::Handled();})[SNew(STextBlock).Text(FText::FromString(TEXT("Até logo · E / Esc")))]];
+ Actions->AddSlot().AutoWidth()[SNew(SMarePadButton).ContentPadding(FMargin(12,6)).OnClicked_Lambda([this](){CloseDialogue();return FReply::Handled();})
+  [SNew(STextBlock).Text(MareGamepad::UsingGamepad()?FText::Format(NSLOCTEXT("MareVillage","ByePad","Até logo · {0}"),FText::FromString(MareGamepad::ActionLabel(TEXT("Dive"))))
+   :FText::Format(NSLOCTEXT("MareVillage","ByeKeys","Até logo · {0} / {1}"),FText::FromString(MareGamepad::ActionLabel(TEXT("Interact"))),FText::FromString(MareGamepad::ActionLabel(TEXT("Pause")))))]];
  Dialogue=SNew(SBorder).BorderBackgroundColor(FLinearColor(0,0,0,.25f)).HAlign(HAlign_Center).VAlign(VAlign_Bottom).Padding(20)
  [SNew(SBox).WidthOverride(580)[SNew(SBorder).BorderImage(&Card).Padding(18)[SNew(SVerticalBox)
   +SVerticalBox::Slot().AutoHeight()[SNew(STextBlock).Text(FText::FromString(Person->PersonName)).Font(FCoreStyle::GetDefaultFontStyle("Bold",19)).ColorAndOpacity(FLinearColor(.08f,.16f,.14f))]
   +SVerticalBox::Slot().AutoHeight().Padding(0,9)[SNew(STextBlock).Text(FText::FromString(Story.IsEmpty()?Greeting:Story)).WrapTextAt(544).Font(FCoreStyle::GetDefaultFontStyle("Regular",15)).ColorAndOpacity(FLinearColor(.12f,.13f,.12f))]
   +SVerticalBox::Slot().AutoHeight().Padding(0,0,0,6)[SNew(STextBlock).Text(FText::FromString(Result)).Visibility(Result.IsEmpty()?EVisibility::Collapsed:EVisibility::Visible).WrapTextAt(544).Font(FCoreStyle::GetDefaultFontStyle("Italic",12)).ColorAndOpacity(FLinearColor(.2f,.3f,.27f))]
   +SVerticalBox::Slot().AutoHeight().HAlign(HAlign_Left)[Actions]]]];
- GEngine->GameViewport->AddViewportWidgetContent(Dialogue.ToSharedRef(),35);Controller->bShowMouseCursor=true;Controller->SetInputMode(FInputModeGameAndUI());Controller->SetIgnoreMoveInput(true);Controller->SetIgnoreLookInput(true);
+ GEngine->GameViewport->AddViewportWidgetContent(Dialogue.ToSharedRef(),35);
+ {const TWeakObjectPtr<UMareVillageWorld> Weak(this);MareGamepad::PushMenu(Dialogue.ToSharedRef(),[Weak](){if(Weak.IsValid())Weak->CloseDialogue();});}
+ Controller->bShowMouseCursor=true;Controller->SetInputMode(FInputModeGameAndUI());Controller->SetIgnoreMoveInput(true);Controller->SetIgnoreLookInput(true);
  UMareSimulation::Object(UMareSimulation::Object(UMareSimulation::Object(Sim->State,TEXT("prog")),TEXT("experience")),TEXT("greeted"))->SetBoolField(Person->PersonName,true);Sim->Save();
 }
 void UMareVillageWorld::CloseDialogue()

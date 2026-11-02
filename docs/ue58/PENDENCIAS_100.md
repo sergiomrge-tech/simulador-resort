@@ -68,7 +68,8 @@ Pronto e testado (02/11):
   - pebolim;
   - 1–2 fliperamas;
   - hóspedes jogando à noite e renda das fichas.
-- [ ] P1 Recepção do hotel com a fila de hóspedes visível no saguão.
+- [x] P1 Recepção do hotel com a fila de hóspedes visível no saguão (check-in vai ao elevador, check-out de manhã sai pela
+  porta; teste `MareAlta.Gameplay.HotelReceptionLine`, foto no PIE 02/11).
 - [ ] P1 Equipe: contratação, turnos e salários de recepcionista, camareira, barman, guia e garçom do
   restaurante coerentes com as tarefas novas.
 - [ ] P2 Pedidos especiais e clientes VIP/influenciador no quiosque (eventos cômicos da tarefa #4).
@@ -91,7 +92,7 @@ Pronto e testado (02/11):
   - uniforme da equipe com cores do resort;
   - moradores.
 - [x] P0 Calçados: chinelo, sandália de tiras, tênis e sapato social com saltinho (02/11), sorteados por papel
-  (`metahumans.json` → `shoes`); sandália e sapato social ainda sem foto no PIE.
+  (`metahumans.json` → `shoes`); sapato social conferido no saguão do hotel.
 - [ ] P1 Mais banhistas: mulheres e homens de outras idades e tipos de corpo.
 - [ ] P1 Animações:
   - deitar na espreguiçadeira e na canga;
@@ -132,7 +133,13 @@ Pronto e testado (02/11):
   - gráficos detalhados, resolução, janela, VSync, FPS, upscaler, FOV;
   - mouse e controle, remapear teclas;
   - idioma.
-- [ ] P0 **Controle** (Xbox/PlayStation) em todo o jogo e nos menus. (Tradução: ver a seção 11, no final.)
+- [~] P0 **Controle** (Xbox/PlayStation) em todo o jogo e nos menus. (Tradução: ver a seção 11, no final.)
+  - Código feito em 02/11 (`MareGamepad.h/.cpp`, mapeamentos em `Config/DefaultInput.ini`), falta testar com controle de verdade no EXE.
+    Mapa fixo: analógico esquerdo anda, direito olha (sensibilidade própria + inverter Y); A pula/sobe nadando; **X interage**
+    (A ficou com o pulo para não pular ao falar/servir); Y ou View celular; Start pausa; LT segurar ou L3 alternar corre; B mergulha.
+    Menus: foco no 1º botão ao abrir com o controle, direcional/analógico navega, A confirma, B volta/fecha, LB/RB trocam abas,
+    analógico direito rola. Sinuca: analógico mira, segurar RT dá força, B sai. HUD mostra botão ou tecla conforme a última entrada;
+    opção "Botões do controle" Xbox/PlayStation. Testes: `MareAlta.Gamepad.MappingsAndLabels` e `MareAlta.Gamepad.MenuFocusAndBack`.
 - [ ] P1 Três propostas de HUD/celular mais comercial (pedido antigo, apresentar antes de escolher).
 - [ ] P1 Acessibilidade: tamanho do texto, legendas, daltonismo nos ícones de estrela e humor.
 - [ ] P2 Indicador no mapa ou bússola com os lugares (pousada, hotel, salão, negócios).

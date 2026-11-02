@@ -23,8 +23,8 @@ namespace MareOptionsData
  const TPair<const TCHAR*,int32 FMareOptions::*> Ints[]={{TEXT("preset"),&FMareOptions::Preset},{TEXT("shadows"),&FMareOptions::Shadows},
   {TEXT("global_illumination"),&FMareOptions::GlobalIllumination},{TEXT("reflections"),&FMareOptions::Reflections},{TEXT("post_process"),&FMareOptions::PostProcess},
   {TEXT("textures"),&FMareOptions::Textures},{TEXT("foliage"),&FMareOptions::Foliage},{TEXT("anti_aliasing"),&FMareOptions::AntiAliasing},
-  {TEXT("window_mode"),&FMareOptions::WindowMode},{TEXT("frame_limit"),&FMareOptions::FrameLimit}};
- const TPair<const TCHAR*,float FMareOptions::*> Floats[]={{TEXT("resolution_scale"),&FMareOptions::ResolutionScale},{TEXT("field_of_view"),&FMareOptions::FieldOfView},{TEXT("mouse_sensitivity"),&FMareOptions::MouseSensitivity}};
+  {TEXT("window_mode"),&FMareOptions::WindowMode},{TEXT("frame_limit"),&FMareOptions::FrameLimit},{TEXT("pad_glyphs"),&FMareOptions::PadGlyphs}};
+ const TPair<const TCHAR*,float FMareOptions::*> Floats[]={{TEXT("resolution_scale"),&FMareOptions::ResolutionScale},{TEXT("field_of_view"),&FMareOptions::FieldOfView},{TEXT("mouse_sensitivity"),&FMareOptions::MouseSensitivity},{TEXT("gamepad_sensitivity"),&FMareOptions::GamepadSensitivity}};
  const TPair<const TCHAR*,bool FMareOptions::*> Bools[]={{TEXT("vsync"),&FMareOptions::bVSync},{TEXT("invert_y"),&FMareOptions::bInvertY}};
  /** Legacy mappings (DefaultInput.ini) driven by each remappable action; axes carry their scale. */
  struct FBinding{FName Name;bool bAxis;float Scale;};
@@ -143,6 +143,8 @@ void FMareOptions::Sanitize()
  }
  FieldOfView=FMath::Clamp(FMath::RoundToFloat(FieldOfView),70.f,110.f);
  MouseSensitivity=FMath::Clamp(MouseSensitivity,.1f,5.f);
+ GamepadSensitivity=FMath::Clamp(GamepadSensitivity,.2f,3.f);
+ PadGlyphs=FMath::Clamp(PadGlyphs,0,1);
  if(!Cultures().Contains(Culture))Culture=TEXT("pt-BR");
  // Missing or invalid keys go back to their default; a duplicated key resets the whole map.
  TMap<FName,FKey> Clean;TSet<FKey> Used;bool bDuplicate=false;

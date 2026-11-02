@@ -90,7 +90,10 @@ Legenda: [x] feito e validado · [~] em andamento/parcial · [ ] pendente.
   - [x] efeitos sonoros CC0 de recepção, limpeza, sinuca, bar e dinheiro (42 WAVs, `tools/ue58/fetch_action_sfx.py`), importados em `/Game/Audio/Actions` e ligados: campainha ao usar a recepção, chaves/carimbo no check-in e na negociação, sons de cama/toalhas/lixo na limpeza, taco/bolas/tabela/caçapa na sinuca (bar entra com o Bar do Coqueiro); falta ouvir no jogo;
   - [x] calçados feitos no Blender sobre o pé dos MetaHumans (`tools/ue58/gen_mh_shoes.py`): chinelo, sandália de tiras, tênis e sapato social, par feminino e masculino, sola e cabedal com cores por pessoa; chinelo na praia/pousada, tênis na equipe/hotel/vila (conferido no PIE);
   - [x] roupa padrão da Epic pintada por papel (`metahumans.json` → `clothes`): uniforme verde-água/cáqui da equipe, social claro no hotel, cores variadas na praia e vila (conferido no PIE);
-  - [x] toalha da cama do bangalô 1,8× maior (falta foto no PIE).
+  - [x] toalha da cama do bangalô 1,8× maior (falta foto no PIE);
+  - [x] controle Xbox/PlayStation no jogo e em todos os menus (foco visível, B volta, dicas com o botão certo); testes `MareAlta.Gamepad.*` (falta jogar com controle de verdade);
+  - [x] fila de hóspedes visível na recepção do Grand Hotel, com check-in indo ao elevador e check-out saindo pela porta; conferida no PIE;
+  - 13/13 testes MareAlta.* passando.
 - [ ] "Coloque no checklist no final que precisamos traduzir para o inglês todo o jogo" / "Precisa traduzir em vários idiomas" (02/11): registrado como último passo em `docs/ue58/PENDENCIAS_100.md` (seção 11) e `ROADMAP_STEAM.md` (inglês + espanhol, chinês simplificado, russo, alemão, francês, japonês, coreano, português de Portugal).
 - [x] Manter este checklist sempre que o usuário pedir algo (regra salva na memória).
 
