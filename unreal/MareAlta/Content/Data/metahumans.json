@@ -1,5 +1,5 @@
 {
-  "_doc": "MetaHumans built in /Game/People/MetaHumans (mare_metahuman.py) chosen by AMarePerson per role from the save id. <Name>_Swim = whole-body build wearing /Game/People/Swimwear/SKM_Bikini|Trunks_<Name>. clothes: shirt/short colours (hex) per role tinting the default Epic garment; shoes: footwear kinds per role (one picked per person) (SKM_Flipflops|Sneakers|Sandals|Dress_Ada for women, _Mateo for men, tools/ue58/gen_mh_shoes.py); shoe_colours: upper colours per kind, sole colour first.",
+  "_doc": "MetaHumans built in /Game/People/MetaHumans (mare_metahuman.py) chosen by AMarePerson per role from the save id. <Name>_Swim = whole-body build wearing /Game/People/Swimwear/SKM_Bikini|Trunks_<Name>. clothes: shirt/short colours (hex) per role tinting the default Epic garment; shoes: footwear kinds per role (one picked per person) (SKM_Flipflops|Sneakers|Sandals|Dress_Ada for women, _Mateo for men, tools/ue58/gen_mh_shoes.py); shoe_colours: upper colours per kind, sole colour first. Zuri (bald Epic preset) is out of every roster until she gets hair.",
   "staff": [
     "Mateo",
     "Sunita"
@@ -34,7 +34,6 @@
     "Jelena",
     "Sunita",
     "Vivian",
-    "Zuri",
     "Grace",
     "Tuya",
     "Mateo",
@@ -51,7 +50,6 @@
   "beach": [
     "Ada_Swim",
     "Asha_Swim",
-    "Zuri_Swim",
     "Celeste_Swim",
     "Jelena_Swim",
     "Tuya_Swim",

@@ -18,7 +18,7 @@ namespace
   *  (the bed's towel is spread wider so it reads from the door). */
  struct FMessSpot{const TCHAR* Task;const TCHAR* Mesh;FVector Local;float Yaw;float Focus;const TCHAR* Label;float Scale=1.f;};
  const FMessSpot Spots[]={
-  {TEXT("bed"),TEXT("/Game/Custom/RoomMess/mess_towel/mess_towel.mess_towel"),FVector(10,-40,108),25,10,TEXT("Arrumar a cama"),1.8f},
+  {TEXT("bed"),TEXT("/Game/Custom/RoomMess/mess_towel/mess_towel.mess_towel"),FVector(10,-40,108),25,10,TEXT("Arrumar a cama"),2.8f},
   {TEXT("towels"),TEXT("/Game/Custom/RoomMess/mess_towel/mess_towel.mess_towel"),FVector(-95,70,49),-40,8,TEXT("Recolher as toalhas")},
   {TEXT("trash"),TEXT("/Game/Custom/RoomMess/mess_trash_bag/mess_trash_bag.mess_trash_bag"),FVector(120,115,49),0,20,TEXT("Tirar o lixo")}};
  UMareSimulation* Sim(const UWorld* World){return World && World->GetGameInstance()?World->GetGameInstance()->GetSubsystem<UMareSimulation>():nullptr;}

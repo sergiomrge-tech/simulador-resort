@@ -22,12 +22,12 @@ Marcar `[x]` só depois de testado no jogo, com foto ou teste automático.
 - [x] P0 **MetaHumans descalços**: chinelo e tênis feitos sobre o pé dos MetaHumans (`tools/ue58/gen_mh_shoes.py`), conferidos no PIE, 02/11.
 - [x] P0 **Roupa padrão da Epic** pintada por papel (`metahumans.json` → `clothes`), conferida no PIE, 02/11. Roupas de modelos
   variados (regata, vestido, camisa social) continuam na seção 5.
-- [~] P1 Toalha em cima da cama do bangalô sujo: ampliada 1,8× (falta foto no PIE).
+- [x] P1 Toalha em cima da cama do bangalô sujo: ampliada 2,8× (foto `toalha-negociacao-20261102.jpg`).
 - [ ] P1 Faixa de pele um pouco mais clara onde ficava a roupa íntima assada em algumas banhistas (ajustar o preenchimento).
-- [ ] P1 Zuri careca (preset da Epic): dar cabelo ou trocar de banhista.
+- [x] P1 Zuri careca (preset da Epic): retirada dos elencos (02/11) até ganhar cabelo.
 - [ ] P1 Vasos de pachira do saguão do hotel com colisão de copa enorme (bloqueia a mira). Corrigir a colisão
   quando o Sergio liberar esses arquivos, que têm mudanças dele.
-- [ ] P1 Painel da negociação: conferir no jogo o texto já corrigido (estava espremido).
+- [x] P1 Painel da negociação: detalhes numa linha própria e botões em duas fileiras, conferido no jogo (02/11).
 - [ ] P2 Bainha das pernas da sunga boxer levemente marcada; pequenos furos no cós.
 
 ## 2. Migração Godot → Unreal ainda incompleta
@@ -48,7 +48,7 @@ Marcar `[x]` só depois de testado no jogo, com foto ou teste automático.
   `tools/ue58/gen_festival.py`). `MareEvents.cpp`, `MareEventsWorld.cpp`, `Content/Data/events.json`, teste
   `MareAlta.Gameplay.DayEventsParties`. Falta: mar mais agitado na tempestade e na maré alta (o material do mar não tem
   parâmetro de ondas), pessoas dançando a quadrilha e música própria de cada festa.
-- [ ] P1 **Minijogo dos negócios** (3 rodadas da Godot), ainda não portado.
+- [x] P1 **Minijogo dos negócios** (3 rodadas da Godot): portado em 02/11 (balcão de cada negócio, seção 3).
 - [ ] P1 Corpo do jogador em primeira pessoa: pegar, carregar, portas e natação. Estava em validação em 29/10; re-testar.
 - [ ] P1 Abertura: ônibus detalhado, desembarque, caminhada até a casa e carta (provisórios em 29/10); re-testar.
 - [ ] P1 Casa: todas as interações da Godot (sofá, TV, som, chuveiro); a captura do chuveiro ficou pendente.
@@ -157,7 +157,7 @@ Pronto e testado (02/11):
 
 ## 7. Áudio
 - [ ] P1 Música por lugar e horário (quiosque, hotel, salão, noite).
-- [ ] P1 Efeitos de todas as ações novas:
+- [x] P1 Efeitos de todas as ações novas (02/11, 42 sons CC0 ligados: recepção, limpeza, sinuca, bar, dinheiro, negociação):
   - campainha da recepção, chaves, cama, lixo;
   - tacadas e bolas da sinuca;
   - liquidificador e coqueteleira do bar.
@@ -189,7 +189,8 @@ Pronto e testado (02/11):
 - [ ] P0 Sessões de 2 h sem crash (GPU page fault do hotel mitigado com `r.Lumen.AsyncCompute=0`; re-testar).
 - [x] P0 Saves: 3 slots, autosave ao dormir, migração do slot1 antigo, backup `.bak` (teste `MareAlta.Saves.Slots`, 02/11).
 - [ ] P1 Memória: build de pessoas e texturas 8K das banhistas (avaliar 4K), tamanho do pacote final.
-- [ ] P1 Testes automáticos cobrindo cada sistema novo (hoje 8 testes MareAlta.*) e QA de PIE com fotos por sistema.
+- [x] P1 Testes automáticos cobrindo cada sistema novo (23 testes MareAlta.* em 02/11) e QA de PIE com fotos por sistema
+  (`docs/ue58/graphics-reference/*-20261102.*`).
 
 ## 10. Lançamento
 Ver `ROADMAP_STEAM.md`: conta Steamworks e página, Steam Cloud, conquistas, build Shipping em PC limpo, demo,

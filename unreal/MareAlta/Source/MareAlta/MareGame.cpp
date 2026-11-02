@@ -460,21 +460,23 @@ private:
    const double Offer=UMareSimulation::Number(G,TEXT("offer")),Mood=UMareSimulation::Number(G,TEXT("mood"));
    double& Price=Ask.FindOrAdd(Id,Offer);if(Price<Offer)Price=Offer;
    const FString Humor=Mood>.7?TEXT("animado"):Mood>.35?TEXT("hesitante"):TEXT("irritado");
-   Heading(FString::Printf(TEXT("%s · %s"),*UMareSimulation::String(G,TEXT("name")),*UMareSimulation::String(G,TEXT("label"))),
-    FString::Printf(TEXT("%.0f noite(s) · humor: %s · rodada %.0f de 3"),UMareSimulation::Number(G,TEXT("nights")),*Humor,UMareSimulation::Number(G,TEXT("round"))+1));
+   // Name on its own line and the details below it: the narrow station page squeezed them side by side.
+   Heading(FString::Printf(TEXT("%s · %s"),*UMareSimulation::String(G,TEXT("name")),*UMareSimulation::String(G,TEXT("label"))));
+   Line(FString::Printf(TEXT("%.0f noite(s) · humor: %s · rodada %.0f de 3"),UMareSimulation::Number(G,TEXT("nights")),*Humor,UMareSimulation::Number(G,TEXT("round"))+1),12,Faded);
    Line(FString::Printf(TEXT("Oferece R$ %.0f por noite. Você pede R$ %.0f."),Offer,Price),14,Ink);
-   auto Row=SNew(SHorizontalBox);
+   auto Row=SNew(SHorizontalBox);auto Deal=SNew(SHorizontalBox);
    for(const int32 Step:{-10,-5,5,10})Row->AddSlot().AutoWidth().Padding(0,0,6,0)[Button(FString::Printf(TEXT("%+d%%"),Step),[this,Id,Step,Offer](){double& P=Ask.FindOrAdd(Id,Offer);P=FMath::Max(Offer,FMath::RoundToDouble(P*(1+Step/100.)));},true)];
-   Row->AddSlot().AutoWidth().Padding(10,0,6,0)[Button(FString::Printf(TEXT("Pedir R$ %.0f"),Price),[this,S,Id](){double Out=0;const double P=Ask.FindRef(Id);
+   Deal->AddSlot().AutoWidth().Padding(0,0,6,0)[Button(FString::Printf(TEXT("Pedir R$ %.0f"),Price),[this,S,Id](){double Out=0;const double P=Ask.FindRef(Id);
     switch(S->Haggle(Id,P,Out)){
      case UMareSimulation::EHaggle::Accepted:S->LastMessage=FString::Printf(TEXT("Fechado por R$ %.0f a noite. Chave entregue."),Out);Ask.Remove(Id);
       UMareAudioWorld::Action(Owner.Get(),TEXT("deal_accept"));UMareAudioWorld::Action(Owner.Get(),TEXT("reception_keys"));break;
      case UMareSimulation::EHaggle::Countered:S->LastMessage=FString::Printf(TEXT("Contraproposta: R$ %.0f por noite."),Out);Ask.Add(Id,Out);UMareAudioWorld::Action(Owner.Get(),TEXT("reception_checkin"),nullptr,.6f);break;
      case UMareSimulation::EHaggle::Left:Ask.Remove(Id);UMareAudioWorld::Action(Owner.Get(),TEXT("deal_decline"));break;
      default:S->LastMessage=TEXT("Sem quarto limpo livre.");}},Free>0)];
-   Row->AddSlot().AutoWidth()[Button(FString::Printf(TEXT("Aceitar R$ %.0f"),Offer),[this,S,Id,Offer](){if(S->AcceptOffer(Id)){S->LastMessage=FString::Printf(TEXT("Check-in por R$ %.0f a noite."),Offer);Ask.Remove(Id);
+   Deal->AddSlot().AutoWidth()[Button(FString::Printf(TEXT("Aceitar R$ %.0f"),Offer),[this,S,Id,Offer](){if(S->AcceptOffer(Id)){S->LastMessage=FString::Printf(TEXT("Check-in por R$ %.0f a noite."),Offer);Ask.Remove(Id);
     UMareAudioWorld::Action(Owner.Get(),TEXT("reception_checkin"));UMareAudioWorld::Action(Owner.Get(),TEXT("reception_keys"));}else S->LastMessage=TEXT("Sem quarto limpo livre.");},Free>0)];
-   Body->AddSlot().AutoHeight().Padding(0,2,0,8)[Row];
+   Body->AddSlot().AutoHeight().Padding(0,2,0,2)[Row];
+   Body->AddSlot().AutoHeight().Padding(0,2,0,8)[Deal];
   }
   if(bHotel)return;   // 32 suites: the hotel crew keeps them; only the pousada shows the room board
   Heading(TEXT("Quartos"));
