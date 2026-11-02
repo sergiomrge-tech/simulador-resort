@@ -1,0 +1,14 @@
+{
+ "_doc": "Pool day use, hands-on (gameplay plan): leaves fall into the water every open hour (scoop them with E, the net), guests leave used towels on the loungers (E collects) and ask for popsicles (E on the cooler sells them). A dirty pool or towels lying around lowers the hourly income and, at closing time, the guests' rating (stars). World cm: leaf_spots on the water (z = water_z), loungers = towel spots, cooler = [x, y, z, yaw].",
+ "dirt_per_hour": [6, 11],
+ "rain_extra": 6,
+ "scoop": 25,
+ "dirt_penalty": 0.5,
+ "towel_penalty": 0.03,
+ "water_z": -8,
+ "leaf_spots": [[-330, 210], [260, 520], [-90, 640], [420, 170]],
+ "loungers": [[-685, 120, 58], [-685, 380, 58], [-685, 640, 58], [685, 120, 58], [685, 380, 58], [685, 640, 58]],
+ "cooler": [300, -120, 0, 90],
+ "popsicle_price": 7,
+ "max_popsicles": 6
+}

@@ -63,7 +63,10 @@ Pronto e testado (02/11):
   pagamento e fama pelos acertos, uma vez por hora dentro do horário. `MareBusiness.cpp`, `MareBusinessWorld.cpp`,
   `Content/Data/business_games.json`, teste `MareAlta.Gameplay.BusinessCounter`. Falta foto do cliente na nova posição ao
   lado do balcão e conferir os balcões do food truck, souvenires, aluguel e surfe no jogo.
-- [ ] P1 **Piscina**: limpar com a peneira (afeta estrelas), espreguiçadeiras, toalhas, picolé.
+- [x] P1 **Piscina** (02/11): folhas caem na água a cada hora aberta (E com a peneira), banhistas deixam toalhas nas
+  espreguiçadeiras (E recolhe) e pedem picolé (E no cooler vende). Sujeira e toalhas reduzem a renda por hora e, no
+  fechamento, viram nota dos banhistas (estrelas). `MarePool.cpp`, `MarePoolWorld.cpp`, `Content/Data/pool.json`, folhas em
+  `tools/ue58/gen_pool_mess.py`, teste `MareAlta.Gameplay.PoolDayUse`.
 - [ ] P1 **Passeios**: vender bilhetes no píer, guiar barco ou trilha do farol com paradas de foto, nota do passeio.
 - [ ] P1 **Restaurante do hotel**: atender as mesas, serviço de quarto, eventos (casamento, festa).
 - [ ] P1 **Salão de jogos**:

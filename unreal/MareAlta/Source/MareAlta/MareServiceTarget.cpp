@@ -99,6 +99,9 @@ void AMareServiceTarget::Use(APlayerController* Controller)
  if(Action==TEXT("PoolTable")){GetWorld()->GetSubsystem<UMareGameRoom>()->StartMatch(PC,Sim->Money()>=100?20:0);return;}
  if(Action==TEXT("RoomTask")){for(const FName& Tag:Tags){const FString T=Tag.ToString();
    if(T.StartsWith(TEXT("task:")))GetWorld()->GetSubsystem<UMareStaysWorld>()->UseTask(DataIndex,T.Mid(5));}return;}
+ if(Action==TEXT("PoolLeaves")){if(Sim->ScoopPool())UMareAudioWorld::Action(this,TEXT("bar_pour"));return;}
+ if(Action==TEXT("PoolTowel")){if(Sim->CollectPoolTowel(DataIndex))UMareAudioWorld::Action(this,TEXT("cleaning_towels"));return;}
+ if(Action==TEXT("PoolCooler")){if(Sim->SellPopsicles())UMareAudioWorld::Action(this,TEXT("money_coins"));return;}
  if(Action==TEXT("BusinessCounter")){for(const FName& Tag:Tags){const FString T=Tag.ToString();if(T.StartsWith(TEXT("biz:")))PC->StartBusinessGame(T.Mid(4));}return;}
  if(Action==TEXT("BarCounter")){PC->OpenStation(TEXT("Bar"));return;}
  if(Action==TEXT("HotelReception")){const FVector Bell=GetActorLocation();UMareAudioWorld::Action(this,TEXT("reception_bell"),&Bell);PC->OpenStation(TEXT("ReceptionHotel"));return;}

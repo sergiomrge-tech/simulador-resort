@@ -583,3 +583,5 @@ Modelados com bpy, próprios do projeto:
 | OpenGameArt, "80 CC0 RPG SFX" | https://opengameart.org/content/80-cc0-rpg-sfx | CC0 | `item_stone_02/04`, `item_coins_03` (bola contra bola, taco, moedas) |
 
 Síntese original (numpy, no mesmo script, dedicada a CC0): duas campainhas de balcão (`reception_bell_2/3`), o sininho da caixa registradora (`money_register_1`, junto com Kenney), o liquidificador (`bar_blender_1/2`), uma coqueteleira (`bar_shaker_3`), o gelo no copo (`bar_ice_glass_3`), servir líquido (`bar_pour_1`; `bar_pour_2` mistura com a água do "100 CC0 SFX #2"), o plástico do saco de lixo (`cleaning_trash_2`) e a bola rolando na canaleta (`pool_pocket_1/2`, junto com os impactos Kenney).
+
+- Folhas boiando na piscina (`tools/ue58/gen_pool_mess.py`): modelo próprio feito em Blender (bpy), 02/11/2026.

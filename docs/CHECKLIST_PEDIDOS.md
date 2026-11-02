@@ -97,6 +97,7 @@ Legenda: [x] feito e validado · [~] em andamento/parcial · [ ] pendente.
 - [ ] "Coloque no checklist no final que precisamos traduzir para o inglês todo o jogo" / "Precisa traduzir em vários idiomas" (02/11): registrado como último passo em `docs/ue58/PENDENCIAS_100.md` (seção 11) e `ROADMAP_STEAM.md` (inglês + espanhol, chinês simplificado, russo, alemão, francês, japonês, coreano, português de Portugal).
 - [x] "Sim, comece o bar" (02/11): Bar do Coqueiro jogável (pedidos nas banquetas, coqueteleira com 13 ingredientes, 11 receitas a descobrir, reposição, bartender automático, sons de coqueteleira/liquidificador/gelo); 14/14 testes; fotos em `docs/ue58/graphics-reference/bar-coqueiro-20261102.jpg`.
 - [x] "Sim, negócios" (02/11): cada negócio da vila ganhou balcão com E, cliente esperando e o minijogo de 3 rodadas (encerar prancha, fritar pastel, montar casquinha, embrulhar presente, aula de surfe); pagamento e fama pelos acertos, uma vez por hora; 15/15 testes; foto da sorveteria no PIE.
+- [x] "Continue" → piscina (02/11): peneira nas folhas, toalhas nas espreguiçadeiras e venda de picolé no cooler; limpeza afeta renda e estrelas; 16/16 testes; foto em `docs/ue58/graphics-reference/piscina-20261102.jpg`.
 - [x] Manter este checklist sempre que o usuário pedir algo (regra salva na memória).
 
 ## Regras permanentes já pedidas

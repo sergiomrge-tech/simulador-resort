@@ -218,6 +218,20 @@ public:
   *  filled by StaysNight for the hotel, cleared at 13:00); removed from the list. Null when nobody is left. */
  TSharedPtr<FJsonObject> TakeDeparture(const FString& Place);
  TSharedPtr<FJsonObject> Stays();
+ // --- Pool day use, hands-on (MarePool.cpp, Content/Data/pool.json) ---
+ // State "pool": dirt 0..100 (leaves in the water), towels [lounger indices], popsicles (guests asking).
+ TSharedPtr<FJsonObject> PoolDefs() const;
+ TSharedPtr<FJsonObject> Pool();
+ int32 PoolTowels() const;
+ /** 0.3..1: leaves and towels lower it; multiplies the pool's hourly income and rates the pool at closing. */
+ double PoolCleanliness() const;
+ /** One sweep of the net: removes pool.json "scoop" of dirt. */
+ bool ScoopPool();
+ bool CollectPoolTowel(int32 Lounger);
+ /** Sells every popsicle asked for (price x pool decor factor). */
+ bool SellPopsicles();
+ /** Hourly while the pool is open: leaves fall, towels are left on loungers, popsicles are asked; closing rates it. */
+ void PoolHour(int32 Hour);
  // --- Village businesses at the counter (MareBusiness.cpp, Content/Data/business_games.json) ---
  TSharedPtr<FJsonObject> BusinessGames() const;
  /** Inside the business's opening hours (definitions.json businesses.<id>.open). */

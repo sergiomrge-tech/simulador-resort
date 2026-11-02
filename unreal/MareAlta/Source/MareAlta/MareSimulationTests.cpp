@@ -587,3 +587,37 @@ bool FMareBusinessShiftTest::RunTest(const FString& Parameters)
  IFileManager::Get().DeleteDirectory(*Sim->SaveDirectory,false,true);
  Sim->RemoveFromRoot();Instance->RemoveFromRoot();return true;
 }
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FMarePoolDayUseTest,"MareAlta.Gameplay.PoolDayUse",EAutomationTestFlags::EditorContext|EAutomationTestFlags::EngineFilter)
+bool FMarePoolDayUseTest::RunTest(const FString& Parameters)
+{
+ auto Instance=NewObject<UGameInstance>();Instance->AddToRoot();
+ auto Sim=NewObject<UMareSimulation>(Instance);Sim->AddToRoot();
+ Sim->SaveDirectory=FPaths::ProjectSavedDir()/TEXT("Automation/PoolDayUse")/FGuid::NewGuid().ToString(EGuidFormats::Digits);
+ auto Load=[&](const FString& Name,TSharedPtr<FJsonObject>& Result){FString Text;FFileHelper::LoadFileToString(Text,*(FPaths::ProjectContentDir()/TEXT("Data")/Name));return FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Text),Result);};
+ if(!TestTrue(TEXT("Definitions"),Load(TEXT("definitions.json"),Sim->Definitions)) || !TestTrue(TEXT("Default save"),Load(TEXT("default_save.json"),Sim->State))){Sim->RemoveFromRoot();Instance->RemoveFromRoot();return false;}
+ Sim->State->SetNumberField(TEXT("money"),1000);Sim->State->SetStringField(TEXT("weather"),TEXT("sun"));
+ Sim->PoolHour(11);TestEqual(TEXT("Nothing before the pool is bought"),Sim->Number(Sim->Pool(),TEXT("dirt")),0.);
+ Sim->Object(Sim->State,TEXT("unlocked"))->SetBoolField(TEXT("pool"),true);
+ const double CleanIncome=Sim->HourlyIncome(TEXT("pool"));TestEqual(TEXT("Clean pool"),Sim->PoolCleanliness(),1.);
+ for(int32 Hour=11;Hour<=15;++Hour)Sim->PoolHour(Hour);
+ TestTrue(TEXT("Leaves fall while open"),Sim->Number(Sim->Pool(),TEXT("dirt"))>=30);
+ TestTrue(TEXT("Dirty pool earns less"),Sim->HourlyIncome(TEXT("pool"))<CleanIncome);
+ while(Sim->Number(Sim->Pool(),TEXT("dirt"))>0)Sim->ScoopPool();
+ TestFalse(TEXT("Nothing left to scoop"),Sim->ScoopPool());
+ // Towels: put one on lounger 2 and collect it; a free lounger has nothing.
+ Sim->Pool()->SetArrayField(TEXT("towels"),{MakeShared<FJsonValueNumber>(2)});
+ TestTrue(TEXT("Towel lowers cleanliness"),Sim->PoolCleanliness()<1);
+ TestFalse(TEXT("No towel on lounger 0"),Sim->CollectPoolTowel(0));TestTrue(TEXT("Towel collected"),Sim->CollectPoolTowel(2));
+ TestEqual(TEXT("Clean again"),Sim->PoolCleanliness(),1.);
+ // Popsicles: sold at once for the price each.
+ Sim->Pool()->SetNumberField(TEXT("popsicles"),3);const double Before=Sim->Money();
+ TestTrue(TEXT("Popsicles sold"),Sim->SellPopsicles());TestTrue(TEXT("Paid for three"),Sim->Money()-Before>=3*Sim->Number(Sim->PoolDefs(),TEXT("popsicle_price")));
+ TestFalse(TEXT("Nobody asking now"),Sim->SellPopsicles());
+ // Closing hour rates the pool: a dirty one gets a low mark.
+ Sim->Pool()->SetNumberField(TEXT("dirt"),100);Sim->State->SetArrayField(TEXT("ratings"),{});
+ Sim->PoolHour(18);const TArray<TSharedPtr<FJsonValue>>* Ratings=nullptr;Sim->State->TryGetArrayField(TEXT("ratings"),Ratings);
+ TestTrue(TEXT("Dirty pool rated low at closing"),Ratings && Ratings->Num()==1 && (*Ratings)[0]->AsNumber()<=3.5);
+ IFileManager::Get().DeleteDirectory(*Sim->SaveDirectory,false,true);
+ Sim->RemoveFromRoot();Instance->RemoveFromRoot();return true;
+}

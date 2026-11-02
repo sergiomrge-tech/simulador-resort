@@ -157,6 +157,8 @@ def run(action, arg=''):
         return import_sfx()
     if action == 'icons':
         return import_icons()
+    if action == 'poolmess':
+        return import_models('PoolMess', '/Game/Custom/PoolMess')
     if action == 'mess':
         return import_models('RoomMess', '/Game/Custom/RoomMess')
     if action == 'pool':

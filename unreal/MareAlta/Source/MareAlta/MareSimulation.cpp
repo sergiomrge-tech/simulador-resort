@@ -670,7 +670,8 @@ double UMareSimulation::HourlyIncome(const FString& Id) const
  auto Op=Object(Object(Object(CustomDefs(),TEXT("operations")),TEXT("hourly")),Id);
  const FString Role=String(Op,TEXT("staff"));const double Staff=!Role.IsEmpty() && HasStaff(Role)?1+Number(Op,TEXT("staff_bonus")):1;
  const double Weather=String(State,TEXT("weather"))==TEXT("rain")?.6:1;
- return Number(Op,TEXT("guests"),2)*Number(Op,TEXT("spend"),10)*PlaceIncomeFactor(Id)*(1+.04*(FameLevel()-1))*Staff*Weather;
+ const double Clean=Id==TEXT("pool")?PoolCleanliness():1;   // leaves and towels at the pool cost customers
+ return Number(Op,TEXT("guests"),2)*Number(Op,TEXT("spend"),10)*PlaceIncomeFactor(Id)*(1+.04*(FameLevel()-1))*Staff*Weather*Clean;
 }
 double UMareSimulation::BusinessRate(const FString& Id) const
 {
@@ -688,7 +689,7 @@ void UMareSimulation::OperateHour(int32 Hour)
  auto Today=Child(Ops,TEXT("today"));const int32 Started=Hour-1;double Total=0;TArray<FString> Parts;
  auto Add=[&](const FString& Place,const FString& Label,double Amount){Amount=FMath::RoundToDouble(Amount);if(Amount<=0)return;
   Today->SetNumberField(Place,Number(Today,Place)+Amount);Total+=Amount;Parts.Add(FString::Printf(TEXT("%s R$ %.0f"),*Label,Amount));};
- StaysHour(Hour);BarHour(Hour);
+ StaysHour(Hour);BarHour(Hour);PoolHour(Hour);
  auto Defs=Object(CustomDefs(),TEXT("operations"));
  for(const auto& Pair:Object(Defs,TEXT("hourly"))->Values){const FString Id(Pair.Key.ToView());auto Op=Pair.Value->AsObject();
   const TArray<TSharedPtr<FJsonValue>>* Open=nullptr;if(!Owns(State,String(Op,TEXT("unlock"))) || !Op->TryGetArrayField(TEXT("open"),Open) || Open->Num()!=2)continue;
