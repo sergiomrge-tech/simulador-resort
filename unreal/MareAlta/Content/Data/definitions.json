@@ -794,5 +794,56 @@
 			"cost": 4,
 			"name": "Goma de tapioca"
 		}
+	},
+	"staff_rules": {
+		"_doc": "Staff refinement (MareStaff.cpp). shifts: hours [start, end) of the game day, wage share and fatigue gained per worked day. Every night everyone recovers recover points; a day off recovers rest more. At tired the worker's effect drops by tired_penalty; at absent the worker misses the next day (and recovers rest). xp_per_hour on duty; levels at xp_levels (level 1..5); each level adds level_bonus to the role's effect and raise to the wage. exempt: roles without shifts/fatigue (the kiosk attendant works with you all day). Day 1 is a Monday.",
+		"shifts": {
+			"integral": {
+				"name": "Integral",
+				"hours": [
+					0,
+					24
+				],
+				"wage": 1.0,
+				"fatigue": 9
+			},
+			"manha": {
+				"name": "Manhã (6h–14h)",
+				"hours": [
+					6,
+					14
+				],
+				"wage": 0.6,
+				"fatigue": 3
+			},
+			"tarde": {
+				"name": "Tarde e noite (14h–24h)",
+				"hours": [
+					14,
+					24
+				],
+				"wage": 0.65,
+				"fatigue": 3
+			}
+		},
+		"recover": 4,
+		"rest": 35,
+		"tired": 60,
+		"absent": 90,
+		"tired_penalty": 0.35,
+		"xp_per_hour": 1,
+		"xp_levels": [
+			0,
+			30,
+			80,
+			160,
+			280
+		],
+		"level_bonus": 0.06,
+		"raise": 0.08,
+		"max_team": 2,
+		"exempt": [
+			"atendente"
+		]
 	}
 }

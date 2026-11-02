@@ -830,3 +830,63 @@ bool FMareSeasonsEndTest::RunTest(const FString& Parameters)
  IFileManager::Get().DeleteDirectory(*Sim->SaveDirectory,false,true);
  Sim->RemoveFromRoot();Instance->RemoveFromRoot();return true;
 }
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FMareStaffShiftsTest,"MareAlta.Gameplay.StaffShiftsAndLevels",EAutomationTestFlags::EditorContext|EAutomationTestFlags::EngineFilter)
+bool FMareStaffShiftsTest::RunTest(const FString& Parameters)
+{
+ auto Instance=NewObject<UGameInstance>();Instance->AddToRoot();
+ auto Sim=NewObject<UMareSimulation>(Instance);Sim->AddToRoot();
+ Sim->SaveDirectory=FPaths::ProjectSavedDir()/TEXT("Automation/StaffShifts")/FGuid::NewGuid().ToString(EGuidFormats::Digits);
+ auto Load=[&](const FString& Name,TSharedPtr<FJsonObject>& Result){FString Text;FFileHelper::LoadFileToString(Text,*(FPaths::ProjectContentDir()/TEXT("Data")/Name));return FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Text),Result);};
+ if(!TestTrue(TEXT("Definitions"),Load(TEXT("definitions.json"),Sim->Definitions)) || !TestTrue(TEXT("Default save"),Load(TEXT("default_save.json"),Sim->State))){Sim->RemoveFromRoot();Instance->RemoveFromRoot();return false;}
+ Sim->State->SetNumberField(TEXT("money"),5000);Sim->State->SetNumberField(TEXT("day"),2);Sim->State->SetNumberField(TEXT("minutes"),600);
+ auto Hour=[&](double H){Sim->State->SetNumberField(TEXT("minutes"),H*60);};
+ // An old save: a hired role without a team works full time at the base wage.
+ Sim->Object(Sim->State,TEXT("staff"))->SetBoolField(TEXT("garcom_hotel"),true);
+ Hour(3);TestTrue(TEXT("Old save: on duty at any hour"),Sim->StaffOnDuty(TEXT("garcom_hotel")));
+ TestEqual(TEXT("Old save: base wage"),Sim->StaffWage(TEXT("garcom_hotel")),48.);
+ // Hire, then a second person: each covers half of the day and the wage follows the shift shares.
+ Sim->Object(Sim->State,TEXT("unlocked"))->SetBoolField(TEXT("bar"),true);
+ TestTrue(TEXT("Hire bartender"),Sim->HireStaff(TEXT("bartender")));TestEqual(TEXT("One person"),Sim->StaffTeam(TEXT("bartender")).Num(),1);
+ const double Before=Sim->Money();
+ TestTrue(TEXT("Hire a second bartender"),Sim->HireSecondStaff(TEXT("bartender")));
+ TestEqual(TEXT("Second hire paid"),Sim->Money(),Before-260);
+ TestFalse(TEXT("No third person"),Sim->HireSecondStaff(TEXT("bartender")));
+ const auto Team=Sim->StaffTeam(TEXT("bartender"));
+ TestTrue(TEXT("Morning and afternoon"),Team.Num()==2 && Sim->String(Team[0],TEXT("shift"))==TEXT("manha") && Sim->String(Team[1],TEXT("shift"))==TEXT("tarde"));
+ TestEqual(TEXT("Half-shift wages"),Sim->StaffWage(TEXT("bartender")),25.+27.);
+ Hour(10);TestTrue(TEXT("Morning on duty"),Sim->HasStaff(TEXT("bartender")));
+ Hour(22);TestTrue(TEXT("Evening on duty"),Sim->HasStaff(TEXT("bartender")));
+ Hour(4);TestFalse(TEXT("Nobody at 4h"),Sim->HasStaff(TEXT("bartender")));
+ TestTrue(TEXT("Hired flag kept"),Sim->Object(Sim->State,TEXT("staff"))->HasField(TEXT("bartender")));
+ // Days off: both on Monday (day 1, 8, 15...) leaves the bar without a bartender that day only.
+ Sim->CycleStaffDayOff(TEXT("bartender"),0);Sim->CycleStaffDayOff(TEXT("bartender"),1);
+ Hour(10);Sim->State->SetNumberField(TEXT("day"),8);TestFalse(TEXT("Monday off"),Sim->HasStaff(TEXT("bartender")));
+ Sim->State->SetNumberField(TEXT("day"),9);TestTrue(TEXT("Back on Tuesday"),Sim->HasStaff(TEXT("bartender")));
+ // Shift swap keeps the pair complementary.
+ TestTrue(TEXT("Cycle shift"),Sim->CycleStaffShift(TEXT("bartender"),0));
+ const auto Swapped=Sim->StaffTeam(TEXT("bartender"));
+ TestTrue(TEXT("Still complementary"),Sim->String(Swapped[0],TEXT("shift"))!=Sim->String(Swapped[1],TEXT("shift")) && Sim->String(Swapped[0],TEXT("shift"))!=TEXT("integral"));
+ TestTrue(TEXT("Back to one person"),Sim->DismissSecondStaff(TEXT("bartender")));
+ auto Solo=Sim->StaffTeam(TEXT("bartender"))[0];Solo->SetNumberField(TEXT("off"),-1);
+ TestEqual(TEXT("One full-time again"),Sim->String(Solo,TEXT("shift")),FString(TEXT("integral")));
+ // Experience: 30 worked hours make level 2, a better effect and a raise.
+ for(int32 I=0;I<30;++I)Sim->StaffHour(12);
+ TestEqual(TEXT("Level 2"),Sim->Number(Solo,TEXT("level")),2.);
+ TestTrue(TEXT("Better effect"),FMath::IsNearlyEqual(Sim->StaffSkill(TEXT("bartender")),1.06,1e-6));
+ TestEqual(TEXT("Raise"),Sim->StaffWage(TEXT("bartender")),45.);
+ // Fatigue without days off: tired (weaker), then exhausted and absent the next day.
+ int32 Absent=-1;bool bWasTired=false;
+ for(int32 Night=0;Night<30 && Absent<0;++Night){Sim->StaffNight();
+  if(Sim->Number(Solo,TEXT("fatigue"))>=60 && !bWasTired){bWasTired=true;TestTrue(TEXT("Tired works worse"),Sim->StaffSkill(TEXT("bartender"))<1.);}
+  if(Sim->Number(Solo,TEXT("absent_day"),-1)>0)Absent=Sim->Number(Solo,TEXT("absent_day"));
+  else Sim->State->SetNumberField(TEXT("day"),Sim->Number(Sim->State,TEXT("day"))+1);}
+ TestTrue(TEXT("Got tired"),bWasTired);TestTrue(TEXT("Missed a day"),Absent>0);
+ Sim->State->SetNumberField(TEXT("day"),Absent);TestFalse(TEXT("Absent that day"),Sim->HasStaff(TEXT("bartender")));
+ Sim->StaffNight();TestTrue(TEXT("Rested after the absence"),Sim->Number(Solo,TEXT("fatigue"))<60);
+ // The kiosk attendant has no shifts or fatigue.
+ TestTrue(TEXT("Hire attendant"),Sim->HireAttendant());Hour(3);TestTrue(TEXT("Attendant exempt"),Sim->StaffOnDuty(TEXT("atendente")));
+ TestFalse(TEXT("Attendant has no shifts"),Sim->CycleStaffShift(TEXT("atendente"),0));
+ IFileManager::Get().DeleteDirectory(*Sim->SaveDirectory,false,true);
+ Sim->RemoveFromRoot();Instance->RemoveFromRoot();return true;
+}

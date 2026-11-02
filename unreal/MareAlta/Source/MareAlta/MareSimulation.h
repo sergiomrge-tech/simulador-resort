@@ -183,6 +183,34 @@ public:
  /** Hires an expansion role (bartender, camareira, guia): needs its expansion; wage charged at night. */
  UFUNCTION(BlueprintCallable,Category="Maré Alta") bool HireStaff(const FString& Role);
  UFUNCTION(BlueprintCallable,Category="Maré Alta") bool DismissStaff(const FString& Role);
+ // --- Staff refinement (MareStaff.cpp, definitions.json staff_rules) ---
+ // State "staff_team": {role: [{shift, off, level, xp, fatigue, absent_day, hours_today}]} (one or two people per
+ // role). A role without a team behaves as before: one person, full time, level 1, never tired.
+ /** Hired and someone of the team on duty in the current (or currently operated) hour: shift, day off, absence. */
+ bool StaffOnDuty(const FString& Role) const;
+ /** The team of a role as stored, or one default worker when hired without a team yet (read only). */
+ TArray<TSharedPtr<FJsonObject>> StaffTeam(const FString& Role) const;
+ /** Effect multiplier of the role's best worker on duty: +level_bonus per level, less when tired (1 = level 1, rested). */
+ double StaffSkill(const FString& Role) const;
+ /** Daily wage of the whole team (shift share x level raises). */
+ double StaffWage(const FString& Role) const;
+ /** Shift ids in data order (integral, manha, tarde) and their labels. */
+ TArray<FString> StaffShifts() const;
+ FString ShiftName(const FString& Shift) const;
+ static FString WeekdayName(int32 Weekday);
+ /** Weekday of a game day, 0 = segunda (day 1 is a Monday). */
+ static int32 Weekday(int32 Day){return (FMath::Max(Day,1)-1)%7;}
+ /** Next shift for a worker (cycles the data order); a team of two keeps complementary half shifts. */
+ bool CycleStaffShift(const FString& Role,int32 Index);
+ /** Next day off for a worker: none, segunda .. domingo. */
+ bool CycleStaffDayOff(const FString& Role,int32 Index);
+ /** A second person for a half-shift role, on the other half; costs the hire price again. */
+ bool HireSecondStaff(const FString& Role);
+ bool DismissSecondStaff(const FString& Role);
+ /** Hour hook: experience for whoever worked the hour [Hour-1, Hour). */
+ void StaffHour(int32 Hour);
+ /** Night hook: fatigue and rest, absences for tomorrow, messages. */
+ void StaffNight();
  UFUNCTION(BlueprintPure,Category="Maré Alta") bool OwnsBusiness(const FString& Id) const;
  /** Buys a village business (definitions.businesses): needs its chapter and fame level. */
  UFUNCTION(BlueprintCallable,Category="Maré Alta") bool BuyBusiness(const FString& Id);
@@ -368,4 +396,7 @@ private:
  bool ReadSave(const FString& Path,TSharedPtr<FJsonObject>& Target) const;
  void WriteSlotIndex(int32 Slot) const;
  mutable TSharedPtr<FJsonObject> CustomCatalog;
+ /** Hour being operated by OperateHour (staff shifts are checked against it), -1 = the clock's hour. */
+ int32 DutyHour=-1;
+ TArray<TSharedPtr<FJsonValue>>& TeamList(const FString& Role);
 };

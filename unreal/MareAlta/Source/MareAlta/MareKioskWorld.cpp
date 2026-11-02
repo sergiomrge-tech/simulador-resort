@@ -152,7 +152,7 @@ void UMareKioskWorld::UpdateAttendant(float DeltaSeconds)
 {
  auto S=Sim();bool bHired=false;UMareSimulation::Object(S->State,TEXT("staff"))->TryGetBoolField(TEXT("atendente"),bHired);
  if(!bHired){if(IsValid(Attendant)){Attendant->Destroy();Attendant=nullptr;}return;}
- if(!IsValid(Attendant)){Attendant=GetWorld()->SpawnActor<AMarePerson>(FVector(3700,-1230,98),FRotator::ZeroRotator);Attendant->bEmployee=true;Attendant->Variant=3;Attendant->SetAppearance(3);Attendant->PersonName=TEXT("Atendente");}
+ if(!IsValid(Attendant)){Attendant=GetWorld()->SpawnActor<AMarePerson>(FVector(3700,-1230,98),FRotator::ZeroRotator);Attendant->bEmployee=true;Attendant->Variant=3;Attendant->SetAppearance(3);Attendant->PersonName=TEXT("Atendente");Attendant->StaffRole=TEXT("atendente");}
  StaffClock+=DeltaSeconds;if(StaffClock<1.5)return;StaffClock=0;
  for(auto P:Guests){if(!IsValid(P) || P->CounterIndex<0)continue;
   const FVector Goal=CounterStaffPoints[P->CounterIndex];

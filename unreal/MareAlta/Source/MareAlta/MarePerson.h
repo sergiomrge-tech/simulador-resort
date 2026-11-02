@@ -60,6 +60,11 @@ public:
  int32 TableIndex=-1;
  UPROPERTY(BlueprintReadOnly,Category="Maré Alta")
  bool bEmployee=false;
+ /** Staff role (definitions.json staff key): picks the MetaHuman and uniform from metahumans.json "staff_<role>"
+  *  (falls back to "staff"). */
+ FString StaffRole;
+ /** Pose held while standing still at work (UMareStaffWorld), e.g. Interact while cleaning; Walk while gliding. */
+ FString WorkPose;
  /** Village walkers/residents never participate in the kiosk order state machine. */
  bool bAmbient=false,bConversing=false;
  /** Ambient guest placed on a chair (hotel restaurant); keeps the sitting pose. */

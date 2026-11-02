@@ -236,13 +236,13 @@ bool UMareSimulation::HireAttendant()
  if(bHired) return Fail(TEXT("Seu atendente já cuida de todo o atendimento."));
  const double Cost=Number(Object(Object(Definitions,TEXT("staff")),TEXT("atendente")),TEXT("hire"));
  if(Money()<Cost) return Fail(TEXT("Saldo insuficiente."));
- Staff->SetBoolField(TEXT("atendente"),true); Book(-Cost,TEXT("Contratação do atendente"));return Save();
+ Staff->SetBoolField(TEXT("atendente"),true);Object(State,TEXT("staff_team"))->RemoveField(TEXT("atendente"));TeamList(TEXT("atendente")); Book(-Cost,TEXT("Contratação do atendente"));return Save();
 }
 bool UMareSimulation::DismissAttendant()
 {
  auto Staff=Object(State,TEXT("staff"));bool bHired=false;Staff->TryGetBoolField(TEXT("atendente"),bHired);
  if(!bHired)return Fail(TEXT("Não há atendente contratado."));
- ReturnCarry(true);Staff->SetBoolField(TEXT("atendente"),false);
+ ReturnCarry(true);Staff->SetBoolField(TEXT("atendente"),false);Object(State,TEXT("staff_team"))->RemoveField(TEXT("atendente"));
  LastMessage=TEXT("Atendente dispensado. Você volta a atender o quiosque sozinho.");return Save();
 }
 bool UMareSimulation::BuyExpansion(const FString& Id)
@@ -398,7 +398,7 @@ void UMareSimulation::Sleep()
    // Legacy kiosk roles were merged into the single attendant; never charge them again.
    if(!Pair.Value->TryGetBool(bHired) || !bHired || !Roles->HasField(Role))continue;
    bool bLegacyKiosk=false;Object(Roles,Role)->TryGetBoolField(TEXT("company"),bLegacyKiosk);if(bLegacyKiosk)continue;
-   const double Wage=Number(Object(Roles,Role),TEXT("wage"));Wages+=Wage;Book(-Wage,TEXT("Salário: ")+String(Object(Roles,Role),TEXT("name")));
+   const double Wage=StaffWage(Role);Wages+=Wage;Book(-Wage,TEXT("Salário: ")+String(Object(Roles,Role),TEXT("name")));
   }
   // Businesses pay their own clerk once per day, like the staff wages above.
   for(const auto& Pair:Object(Definitions,TEXT("businesses"))->Values)if(OwnsBusiness(FString(Pair.Key.ToView()))){
@@ -414,11 +414,13 @@ void UMareSimulation::Sleep()
  Summary->SetNumberField(TEXT("day"),Day);Summary->SetNumberField(TEXT("income"),In);Summary->SetNumberField(TEXT("expense"),Out);
  Summary->SetNumberField(TEXT("wages"),Wages);Summary->SetNumberField(TEXT("sales"),Number(State,TEXT("kiosk_n"))-Number(State,TEXT("ue_day_sales_start")));
  Summary->SetNumberField(TEXT("money"),Money());State->SetObjectField(TEXT("ue_last_day"),Summary);
+ StaffNight();   // fatigue, rest and absences (MareStaff.cpp); writes ue_last_day.staff_note
  State->SetNumberField(TEXT("day_in"),0);State->SetNumberField(TEXT("day_out"),0);State->SetNumberField(TEXT("ue_day_sales_start"),Number(State,TEXT("kiosk_n")));
  LastMessage=FString::Printf(TEXT("Dia %d encerrado · vendas R$ %.0f · despesas R$ %.0f · saldo do dia R$ %.0f."),Day,In,Out,In-Out);
  {const auto P=Object(Object(State,TEXT("prog")),TEXT("pousada"));const int32 Checkouts=Number(P,TEXT("checkouts"));
   if(Number(P,TEXT("rooms"))>0)LastMessage+=FString::Printf(TEXT(" Hospedagem: %d quarto(s) ocupado(s), %d check-out(s), nota média %.1f."),int32(Number(P,TEXT("occupied"))),Checkouts,Stars());}
  if(Money()<0)LastMessage+=TEXT(" Caixa negativo: venda mais antes de repor estoque.");
+ {const FString Note=String(Object(State,TEXT("ue_last_day")),TEXT("staff_note"));if(!Note.IsEmpty())LastMessage+=TEXT(" Equipe: ")+Note;}
  State->SetNumberField(TEXT("day"),Day+1);State->SetNumberField(TEXT("minutes"),480);StartDayEvent();
  State->SetObjectField(TEXT("ue_orders"),MakeShared<FJsonObject>());
  // End of day autosave in the active slot.
@@ -668,7 +670,7 @@ int32 UMareSimulation::TourPassengers(const TSharedPtr<FJsonObject>& Tour) const
 double UMareSimulation::HourlyIncome(const FString& Id) const
 {
  auto Op=Object(Object(Object(CustomDefs(),TEXT("operations")),TEXT("hourly")),Id);
- const FString Role=String(Op,TEXT("staff"));const double Staff=!Role.IsEmpty() && HasStaff(Role)?1+Number(Op,TEXT("staff_bonus")):1;
+ const FString Role=String(Op,TEXT("staff"));const double Staff=!Role.IsEmpty() && HasStaff(Role)?1+Number(Op,TEXT("staff_bonus"))*StaffSkill(Role):1;
  const double Weather=String(State,TEXT("weather"))==TEXT("rain")?.6:1;
  const double Clean=Id==TEXT("pool")?PoolCleanliness():1;   // leaves and towels at the pool cost customers
  return Number(Op,TEXT("guests"),2)*Number(Op,TEXT("spend"),10)*PlaceIncomeFactor(Id)*(1+.04*(FameLevel()-1))*Staff*Weather*Clean;
@@ -685,6 +687,8 @@ void UMareSimulation::OperateHour(int32 Hour)
  // The hour index guards against booking twice when tests or the day close move the clock back.
  const int32 Day=Number(State,TEXT("day"),1);auto Ops=Child(State,TEXT("ue_ops"));const int32 Index=Day*24+Hour;
  if(Number(Ops,TEXT("hour"),-1)>=Index)return;Ops->SetNumberField(TEXT("hour"),Index);
+ // Staff shifts are checked against the hour being operated, not the clock (Advance may cross several hours).
+ TGuardValue<int32> Duty(DutyHour,Hour-1);StaffHour(Hour);
  if(Number(Ops,TEXT("day"),-1)!=Day){Ops->SetNumberField(TEXT("day"),Day);Ops->SetObjectField(TEXT("today"),MakeShared<FJsonObject>());}
  auto Today=Child(Ops,TEXT("today"));const int32 Started=Hour-1;double Total=0;TArray<FString> Parts;
  auto Add=[&](const FString& Place,const FString& Label,double Amount){Amount=FMath::RoundToDouble(Amount);if(Amount<=0)return;
@@ -706,21 +710,23 @@ double UMareSimulation::OpsToday(const FString& Place) const
 {
  auto Ops=Object(State,TEXT("ue_ops"));return Number(Ops,TEXT("day"),-1)==Number(State,TEXT("day"),1)?Number(Object(Ops,TEXT("today")),Place):0;
 }
-bool UMareSimulation::HasStaff(const FString& Role) const{bool bHired=false;Object(State,TEXT("staff"))->TryGetBoolField(Role,bHired);return bHired;}
+bool UMareSimulation::HasStaff(const FString& Role) const{return StaffOnDuty(Role);}   // hired and on duty now (MareStaff.cpp)
 bool UMareSimulation::HireStaff(const FString& Role)
 {
  auto Def=Object(Object(Definitions,TEXT("staff")),Role);bool bLegacy=false;Def->TryGetBoolField(TEXT("company"),bLegacy);
  if(!Object(Definitions,TEXT("staff"))->HasField(Role) || bLegacy)return Fail(TEXT("Cargo desconhecido."));
- if(HasStaff(Role))return Fail(String(Def,TEXT("name"))+TEXT(" já foi contratado."));
+ bool bHired=false;Object(State,TEXT("staff"))->TryGetBoolField(Role,bHired);if(bHired)return Fail(String(Def,TEXT("name"))+TEXT(" já foi contratado."));
  const FString Req=String(Def,TEXT("req"));if(!Req.IsEmpty() && !Owns(State,Req))return Fail(TEXT("Compre antes a expansão ")+String(Object(Object(Definitions,TEXT("expansions")),Req),TEXT("name"))+TEXT("."));
  const double Cost=Number(Def,TEXT("hire"));if(Money()<Cost)return Fail(FString::Printf(TEXT("Saldo insuficiente: a contratação custa R$ %.0f."),Cost));
- Child(State,TEXT("staff"))->SetBoolField(Role,true);Book(-Cost,TEXT("Contratação: ")+String(Def,TEXT("name")));
+ Child(State,TEXT("staff"))->SetBoolField(Role,true);Child(State,TEXT("staff_team"))->RemoveField(Role);TeamList(Role);
+ Book(-Cost,TEXT("Contratação: ")+String(Def,TEXT("name")));
  LastMessage=String(Def,TEXT("name"))+TEXT(" contratado. Salário pago ao dormir.");return Save();
 }
 bool UMareSimulation::DismissStaff(const FString& Role)
 {
- if(Role==TEXT("atendente"))return DismissAttendant();if(!HasStaff(Role))return Fail(TEXT("Ninguém contratado neste cargo."));
- Child(State,TEXT("staff"))->SetBoolField(Role,false);LastMessage=String(Object(Object(Definitions,TEXT("staff")),Role),TEXT("name"))+TEXT(" dispensado.");return Save();
+ if(Role==TEXT("atendente"))return DismissAttendant();bool bHired=false;Object(State,TEXT("staff"))->TryGetBoolField(Role,bHired);
+ if(!bHired)return Fail(TEXT("Ninguém contratado neste cargo."));
+ Child(State,TEXT("staff"))->SetBoolField(Role,false);Child(State,TEXT("staff_team"))->RemoveField(Role);LastMessage=String(Object(Object(Definitions,TEXT("staff")),Role),TEXT("name"))+TEXT(" dispensado.");return Save();
 }
 bool UMareSimulation::OwnsBusiness(const FString& Id) const{return Number(Object(Object(Object(State,TEXT("prog")),TEXT("biz")),Id),TEXT("lvl"))>0;}
 bool UMareSimulation::CanBuyBusiness(const FString& Id,FString& Reason) const

@@ -1,4 +1,5 @@
 #include "MareGame.h"
+#include "MareStaffWorld.h"
 #include "UnrealClient.h"
 #include "Widgets/SCanvas.h"
 #include "MarePlayerPresentation.h"
@@ -509,10 +510,34 @@ private:
  {
   auto S=Sim();Title(TEXT("Equipe"),TEXT("salários pagos quando você dorme"));auto Roles=UMareSimulation::Object(S->Definitions,TEXT("staff"));auto G=Grid();int32 I=0;
   for(const TCHAR* Role:{TEXT("atendente"),TEXT("recepcionista"),TEXT("camareira"),TEXT("bartender"),TEXT("guia"),TEXT("piscineiro"),TEXT("garcom_hotel")}){auto Def=UMareSimulation::Object(Roles,Role);const FString R=Role;
-   auto Card=TagBody(FString::Printf(TEXT("R$ %.0f por dia"),UMareSimulation::Number(Def,TEXT("wage"))),UMareSimulation::String(Def,TEXT("name")));
+   bool bHired=false;UMareSimulation::Object(S->State,TEXT("staff"))->TryGetBoolField(R,bHired);
+   auto Card=TagBody(FString::Printf(TEXT("R$ %.0f por dia"),bHired?S->StaffWage(R):UMareSimulation::Number(Def,TEXT("wage"))),UMareSimulation::String(Def,TEXT("name")));
    Card->AddSlot().AutoHeight().Padding(0,0,0,6)[MareNotebook::BodyText(R==TEXT("atendente")?TEXT("Anota, retira os produtos, entrega e recolhe a louça do quiosque."):UMareSimulation::String(Def,TEXT("blurb")),11,MareNotebook::Faded)];
    const FString Req=UMareSimulation::String(Def,TEXT("req"));bool bOwned=Req.IsEmpty();if(!bOwned)UMareSimulation::Object(S->State,TEXT("unlocked"))->TryGetBoolField(Req,bOwned);
-   if(S->HasStaff(R))Card->AddSlot().AutoHeight()[SNew(SHorizontalBox)+SHorizontalBox::Slot().AutoWidth()[MareNotebook::Stamp(TEXT("CONTRATADO"),MareNotebook::Green)]+SHorizontalBox::Slot().FillWidth(1).HAlign(HAlign_Right)[Link(TEXT("dispensar"),[S,R](){S->DismissStaff(R);})]];
+   if(bHired){
+    Card->AddSlot().AutoHeight()[SNew(SHorizontalBox)+SHorizontalBox::Slot().AutoWidth()[MareNotebook::Stamp(TEXT("CONTRATADO"),MareNotebook::Green)]+SHorizontalBox::Slot().FillWidth(1).HAlign(HAlign_Right)[Link(TEXT("dispensar"),[S,R](){S->DismissStaff(R);})]];
+    // Each person of the team: level and fatigue, shift and day off (links cycle them), and what they are doing now.
+    const auto Team=S->StaffTeam(R);const auto Rules=UMareSimulation::Object(S->Definitions,TEXT("staff_rules"));
+    const bool bShifts=R!=TEXT("atendente");const int32 Day=UMareSimulation::Number(S->State,TEXT("day"),1);
+    auto World=Owner.IsValid()?Owner->GetWorld():nullptr;
+    for(int32 W=0;W<Team.Num();++W){const auto P=Team[W];
+     const double Fatigue=UMareSimulation::Number(P,TEXT("fatigue"));const bool bTired=Fatigue>=UMareSimulation::Number(Rules,TEXT("tired"),60);
+     FString Line=FString::Printf(TEXT("%sNível %d · %.0f h hoje"),Team.Num()>1?*FString::Printf(TEXT("%dª pessoa · "),W+1):TEXT(""),int32(UMareSimulation::Number(P,TEXT("level"),1)),UMareSimulation::Number(P,TEXT("hours_today")));
+     if(bShifts)Line+=FString::Printf(TEXT(" · cansaço %.0f%%%s"),Fatigue,bTired?TEXT(" (cansado)"):TEXT(""));
+     Card->AddSlot().AutoHeight().Padding(0,4,0,0)[MareNotebook::BodyText(Line,11,bTired?MareNotebook::Red:MareNotebook::Ink)];
+     if(bShifts)Card->AddSlot().AutoHeight()[SNew(SHorizontalBox)
+      +SHorizontalBox::Slot().AutoWidth().Padding(0,0,8,0)[Link(TEXT("turno: ")+S->ShiftName(UMareSimulation::String(P,TEXT("shift"))).ToLower(),[S,R,W](){S->CycleStaffShift(R,W);})]
+      +SHorizontalBox::Slot().AutoWidth()[Link(TEXT("folga: ")+UMareSimulation::WeekdayName(UMareSimulation::Number(P,TEXT("off"),-1)),[S,R,W](){S->CycleStaffDayOff(R,W);})]];
+     FString Now;
+     if(int32(UMareSimulation::Number(P,TEXT("absent_day"),-1))==Day)Now=TEXT("faltou hoje (exausto)");
+     else if(int32(UMareSimulation::Number(P,TEXT("off"),-1))==UMareSimulation::Weekday(Day))Now=TEXT("de folga hoje");
+     else if(!S->StaffOnDuty(R))Now=TEXT("fora do turno agora");
+     else if(R==TEXT("atendente"))Now=TEXT("atendendo o quiosque");
+     else if(R==TEXT("bartender"))Now=S->IsBarOpen()?TEXT("preparando drinks no bar"):TEXT("esperando o bar abrir");
+     else if(auto Staff=World?World->GetSubsystem<UMareStaffWorld>():nullptr)Now=Staff->Activity(R).ToLower();
+     if(!Now.IsEmpty())Card->AddSlot().AutoHeight()[MareNotebook::HandText(TEXT("agora: ")+Now,15,MareNotebook::Pencil)];}
+    if(bShifts && Team.Num()==1)Card->AddSlot().AutoHeight().HAlign(HAlign_Left).Padding(0,4,0,0)[Link(FString::Printf(TEXT("+ 2ª pessoa no outro turno · R$ %.0f"),UMareSimulation::Number(Def,TEXT("hire"))),[S,R](){S->HireSecondStaff(R);})];
+    else if(Team.Num()>1)Card->AddSlot().AutoHeight().HAlign(HAlign_Left).Padding(0,4,0,0)[Link(TEXT("dispensar a 2ª pessoa"),[S,R](){S->DismissSecondStaff(R);})];}
    else if(!bOwned)Card->AddSlot().AutoHeight()[MareNotebook::HandText(TEXT("precisa: ")+UMareSimulation::String(UMareSimulation::Object(UMareSimulation::Object(S->Definitions,TEXT("expansions")),Req),TEXT("name")),16,MareNotebook::Pencil)];
    else Card->AddSlot().AutoHeight().HAlign(HAlign_Left)[Button(FString::Printf(TEXT("Contratar · R$ %.0f"),UMareSimulation::Number(Def,TEXT("hire"))),[S,R](){if(R==TEXT("atendente"))S->HireAttendant();else S->HireStaff(R);})];
    G->AddSlot(I%2,I/2)[MareNotebook::PriceTag(Card,TiltOf(I))];++I;}

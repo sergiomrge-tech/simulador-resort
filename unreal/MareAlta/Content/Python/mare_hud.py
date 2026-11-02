@@ -273,7 +273,48 @@ def photo_take():
     return 'taken'
 
 
+def staff_qa(arg):
+    """PIE: 'hire' hires every staff role, 'list' gives each visible worker (MareStaff tag) with its place and look,
+    'look:<role>' puts the player 4 m from that worker looking at it (for a screenshot)."""
+    world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()
+    pc = unreal.GameplayStatics.get_player_controller(world, 0)
+    hero = unreal.GameplayStatics.get_player_pawn(world, 0)
+    sim = pc.get_simulation()
+    if arg == 'hire':
+        return {r: sim.hire_staff(r) for r in ('bartender', 'recepcionista', 'camareira', 'piscineiro', 'guia', 'garcom_hotel')}
+    workers = list(unreal.GameplayStatics.get_all_actors_with_tag(world, 'MareStaff'))
+    if arg == 'list':
+        return [[str(w.get_editor_property('save_id')), [round(v) for v in (w.get_actor_location().x, w.get_actor_location().y, w.get_actor_location().z)],
+                 str(w.get_editor_property('meta_human'))] for w in workers]
+    what, _, role = arg.partition(':')
+    if what == 'probe':
+        w = next((w for w in workers if str(w.get_editor_property('save_id')) == 'staff_' + role), None)
+        if not w:
+            return 'none'
+        out = {'hidden': w.is_hidden_ed(), 'meta': str(w.get_editor_property('meta_human'))}
+        for c in w.get_components_by_class(unreal.ChildActorComponent):
+            child = c.get_editor_property('child_actor')
+            out['child'] = str(child.get_class().get_name()) if child else None
+            if child:
+                out['parts'] = [[m.get_name(), str(m.get_editor_property('skeletal_mesh_asset').get_name()) if isinstance(m, unreal.SkeletalMeshComponent) and m.get_editor_property('skeletal_mesh_asset') else '', m.is_visible()]
+                                for m in child.get_components_by_class(unreal.MeshComponent)][:12]
+        return out
+    if what == 'look':
+        w = next((w for w in workers if str(w.get_editor_property('save_id')) == 'staff_' + role), None)
+        if not w:
+            return 'none'
+        at = w.get_actor_location()
+        fwd = w.get_actor_forward_vector()
+        eye = unreal.Vector(at.x + fwd.x * 380 + fwd.y * 120, at.y + fwd.y * 380 - fwd.x * 120, at.z + 30)
+        hero.set_actor_location(eye, False, True)
+        pc.set_control_rotation(unreal.MathLibrary.find_look_at_rotation(unreal.Vector(eye.x, eye.y, eye.z + 64), unreal.Vector(at.x, at.y, at.z + 40)))
+        return [round(at.x), round(at.y), round(at.z)]
+    raise ValueError(arg)
+
+
 def run(action, arg=''):
+    if action == 'staff':
+        return staff_qa(arg)
     if action == 'loops':
         world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()
         audio = next(o for o in unreal.ObjectIterator(unreal.MareAudioWorld) if o.get_outer() == world)

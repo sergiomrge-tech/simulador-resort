@@ -246,7 +246,8 @@ void AMarePerson::Tick(float DeltaSeconds)
  if(!bOutfitApplied && Elapsed>.05f && MetaHuman.IsEmpty() && CVarMareMetaHumans.GetValueOnGameThread()){
   FString Wanted=CVarMareMetaHuman.GetValueOnGameThread();
   if(Wanted.IsEmpty()){
-   const TCHAR* RoleKey=bEmployee?TEXT("staff"):Tags.Contains(TEXT("MareHotelGuest"))?TEXT("hotel"):Tags.Contains(TEXT("MarePousadaGuest"))?TEXT("pousada"):bAmbient?TEXT("village"):TEXT("beach");
+   FString RoleKey=bEmployee?TEXT("staff"):Tags.Contains(TEXT("MareHotelGuest"))?TEXT("hotel"):Tags.Contains(TEXT("MarePousadaGuest"))?TEXT("pousada"):bAmbient?TEXT("village"):TEXT("beach");
+   if(bEmployee && !StaffRole.IsEmpty() && MetaHumanRoster()->HasField(TEXT("staff_")+StaffRole))RoleKey=TEXT("staff_")+StaffRole;
    const TArray<TSharedPtr<FJsonValue>>* List=nullptr;
    if(MetaHumanRoster()->TryGetArrayField(RoleKey,List) && List->Num())
     Wanted=(*List)[int32(FCrc::StrCrc32(*(SaveId+PersonName))%uint32(List->Num()))]->AsString();
@@ -263,5 +264,5 @@ void AMarePerson::Tick(float DeltaSeconds)
    // painting the generated clothes with the body atlas works but looks like underwear.
    else Style=EOutfit::Beach;}
   ApplyOutfit(Style);}
- if(GetVelocity().SizeSquared2D()>25)PlayPose(TEXT("Walk"));else if(bAmbient)PlayPose(bSeated?TEXT("Sitting_Idle"):bConversing?TEXT("Idle_Talking"):TEXT("Idle"));else if(Stage!=EMarePersonStage::Eating)PlayPose(TEXT("Idle"));
+ if(GetVelocity().SizeSquared2D()>25)PlayPose(TEXT("Walk"));else if(!WorkPose.IsEmpty())PlayPose(WorkPose);else if(bAmbient)PlayPose(bSeated?TEXT("Sitting_Idle"):bConversing?TEXT("Idle_Talking"):TEXT("Idle"));else if(Stage!=EMarePersonStage::Eating)PlayPose(TEXT("Idle"));
 }

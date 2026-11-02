@@ -187,7 +187,7 @@ void UMareSimulation::StaysHour(int32 Hour)
  }
  // Maid (pousada): a few cleaning tasks per hour on dirty bungalows.
  auto Ops=StayOps(TEXT("pousada"));
- if(HasStaff(String(Ops,TEXT("maid")))){int32 Budget=Number(Ops,TEXT("maid_tasks_per_hour"),3);
+ if(HasStaff(String(Ops,TEXT("maid")))){int32 Budget=FMath::RoundToInt(Number(Ops,TEXT("maid_tasks_per_hour"),3)*StaffSkill(String(Ops,TEXT("maid"))));
   for(const auto& V:List(Stays(),TEXT("rooms"))){auto R=V->AsObject();
    while(Budget>0 && String(R,TEXT("state"))==TEXT("dirty")){const TArray<TSharedPtr<FJsonValue>>* Tasks=nullptr;
     if(!R->TryGetArrayField(TEXT("tasks"),Tasks) || Tasks->IsEmpty())break;

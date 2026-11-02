@@ -61,7 +61,7 @@ void UMareBarWorld::Tick(float DeltaSeconds)
  if(bBarman && !Barman){double Yaw=0;const FVector At=Point(Defs,TEXT("barman"),&Yaw);
   FActorSpawnParameters Params;Params.SpawnCollisionHandlingOverride=ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
   Barman=GetWorld()->SpawnActor<AMarePerson>(At+FVector(0,0,88),FRotator(0,Yaw,0),Params);
-  if(Barman){Barman->SaveId=TEXT("bar_bartender");Barman->PersonName=TEXT("Bartender");Barman->bEmployee=true;Barman->bAmbient=true;
+  if(Barman){Barman->SaveId=TEXT("bar_bartender");Barman->PersonName=TEXT("Bartender");Barman->bEmployee=true;Barman->StaffRole=TEXT("bartender");Barman->bAmbient=true;
    Barman->GetCharacterMovement()->DisableMovement();Barman->SetActorEnableCollision(false);}}
  else if(!bBarman && Barman){Barman->Destroy();Barman=nullptr;}
  // One guest per open order on a free stool; a guest whose order is gone stands up and walks off.

@@ -298,5 +298,5 @@ void AMarePreviewQA::Tick(float DeltaSeconds)
   Capture(TEXT("sleep-wake"));Check(TEXT("progression_day_close"),Sim->Save());break;}
  case 64:if(GetWorld()->WorldType!=EWorldType::PIE)GEngine->Exec(GetWorld(),TEXT("QUIT"));break;
  }
- Next=FPlatformTime::Seconds()+((Phase==27 || Phase==28)?.5:Phase==13?10:Phase==1?10:Phase==3?4:Phase==4?5:3);   // water entry settles slower with the MetaHuman crowd loaded
+ Next=FPlatformTime::Seconds()+((Phase==27 || Phase==28)?.5:Phase==13?10:Phase==1?10:Phase==3?4:Phase==4?5:Phase==22?6:3);   // water entry settles slower with the MetaHuman crowd loaded; the hotel reception target refreshes every 2 s of game time
 }
