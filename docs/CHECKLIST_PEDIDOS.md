@@ -87,10 +87,11 @@ Legenda: [x] feito e validado · [~] em andamento/parcial · [ ] pendente.
 - [~] "Vamos finalizar todas as pendências e depois seguir o checklist" (02/11), com até 3 trabalhos em paralelo:
   - [x] menu principal (Novo jogo, Continuar, Carregar, Opções, Créditos, Sair) e 3 slots com backup, autosave ao dormir e migração do save antigo; teste `MareAlta.Saves.Slots` (10/10 testes MareAlta.* passando; foto do menu no PIE);
   - [x] opções completas em 5 abas (gráficos, tela, áudio, controles com remapeamento, idioma); teste `MareAlta.Options.SaveAndReload`;
-  - [x] efeitos sonoros CC0 de recepção, limpeza, sinuca, bar e dinheiro (42 WAVs em `SourceArt/Audio/Actions`, `tools/ue58/fetch_action_sfx.py`); falta importar e ligar no jogo;
+  - [x] efeitos sonoros CC0 de recepção, limpeza, sinuca, bar e dinheiro (42 WAVs, `tools/ue58/fetch_action_sfx.py`), importados em `/Game/Audio/Actions` e ligados: campainha ao usar a recepção, chaves/carimbo no check-in e na negociação, sons de cama/toalhas/lixo na limpeza, taco/bolas/tabela/caçapa na sinuca (bar entra com o Bar do Coqueiro); falta ouvir no jogo;
   - [x] calçados feitos no Blender sobre o pé dos MetaHumans (`tools/ue58/gen_mh_shoes.py`): chinelo e tênis, par feminino e masculino, sola e cabedal com cores por pessoa; chinelo na praia/pousada, tênis na equipe/hotel/vila (conferido no PIE);
   - [x] roupa padrão da Epic pintada por papel (`metahumans.json` → `clothes`): uniforme verde-água/cáqui da equipe, social claro no hotel, cores variadas na praia e vila (conferido no PIE);
   - [x] toalha da cama do bangalô 1,8× maior (falta foto no PIE).
+- [ ] "Coloque no checklist no final que precisamos traduzir para o inglês todo o jogo" / "Precisa traduzir em vários idiomas" (02/11): registrado como último passo em `docs/ue58/PENDENCIAS_100.md` (seção 11) e `ROADMAP_STEAM.md` (inglês + espanhol, chinês simplificado, russo, alemão, francês, japonês, coreano, português de Portugal).
 - [x] Manter este checklist sempre que o usuário pedir algo (regra salva na memória).
 
 ## Regras permanentes já pedidas

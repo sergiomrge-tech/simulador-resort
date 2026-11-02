@@ -20,6 +20,9 @@ public:
  virtual TStatId GetStatId()const override;
  /** Playback uses the effects bus; positional cues use distance attenuation. */
  UAudioComponent* PlayCue(FName Name,float Gain=.35f,const FVector* Position=nullptr,bool bAmbient=false);
+ /** Action sound (Content/Data/audio.json "group"): one of its variations at the catalog volume times Scale. */
+ UAudioComponent* PlayAction(const FString& Group,const FVector* Position=nullptr,float Scale=1.f);
+ static void Action(const UObject* Context,const FString& Group,const FVector* Position=nullptr,float Scale=1.f);
  UFUNCTION(BlueprintCallable,Category="Audio") void SetVolume(FName Bus,float Value);
  UFUNCTION(BlueprintPure,Category="Audio") float GetVolume(FName Bus)const;
  /** Factory volume of a bus (Master, Music, Effects, Ambient), used by "Restaurar padrão". */
@@ -39,6 +42,8 @@ public:
  void SetHomeStereo(bool bEnabled,FVector Position);
 private:
  UPROPERTY() TMap<FName,TObjectPtr<USoundWave>> Sounds;
+ TMap<FString,TArray<FName>> Groups;
+ TMap<FString,float> GroupVolume;
  UPROPERTY() TMap<FName,TObjectPtr<UAudioComponent>> Loops;
  UPROPERTY() TMap<TObjectPtr<UAudioComponent>,float> Voices;
  UPROPERTY() TObjectPtr<USoundAttenuation> Attenuation;

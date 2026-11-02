@@ -46,7 +46,40 @@ def import_models(folder, dest):
     return out
 
 
+def import_sfx():
+    """Action sounds of SourceArt/Audio/Actions (tools/ue58/fetch_action_sfx.py) -> /Game/Audio/Actions, listed in
+    Content/Data/audio.json with their action group and volume (UMareAudioWorld::PlayAction)."""
+    import json
+    src = Path(unreal.Paths.project_dir()).resolve() / 'SourceArt/Audio/Actions'
+    manifest = json.loads((src / 'manifest.json').read_text(encoding='utf-8'))
+    actions = manifest.get('actions', manifest)
+    catalog_path = Path(unreal.Paths.project_content_dir()).resolve() / 'Data/audio.json'
+    catalog = [row for row in json.loads(catalog_path.read_text(encoding='utf-8')) if not row.get('group')]
+    done = 0
+    for group, info in actions.items():
+        for f in info['files']:
+            name = Path(f['file'] if isinstance(f, dict) else f).stem
+            task = unreal.AssetImportTask()
+            task.filename = str(src / f'{name}.wav')
+            task.destination_path = '/Game/Audio/Actions'
+            task.destination_name = name
+            task.automated = True
+            task.replace_existing = True
+            task.save = True
+            unreal.AssetToolsHelpers.get_asset_tools().import_asset_tasks([task])
+            wave = unreal.load_asset(f'/Game/Audio/Actions/{name}')
+            if not isinstance(wave, unreal.SoundWave):
+                raise RuntimeError(f'{name}: import gave {wave}')
+            catalog.append({'id': name, 'path': f'/Game/Audio/Actions/{name}.{name}', 'duration': wave.get_editor_property('duration'),
+                            'loop': False, 'group': group, 'volume': info['volume']})
+            done += 1
+    catalog_path.write_text(json.dumps(catalog, ensure_ascii=False, indent=1) + '\n', encoding='utf-8')
+    return {'imported': done, 'catalog': len(catalog)}
+
+
 def run(action, arg=''):
+    if action == 'sfx':
+        return import_sfx()
     if action == 'icons':
         return import_icons()
     if action == 'mess':

@@ -131,7 +131,7 @@ Pronto e testado (02/11):
   - gráficos detalhados, resolução, janela, VSync, FPS, upscaler, FOV;
   - mouse e controle, remapear teclas;
   - idioma.
-- [ ] P0 **Inglês** completo (todos os textos em tabela de localização) e **controle** em todo o jogo.
+- [ ] P0 **Controle** (Xbox/PlayStation) em todo o jogo e nos menus. (Tradução: ver a seção 11, no final.)
 - [ ] P1 Três propostas de HUD/celular mais comercial (pedido antigo, apresentar antes de escolher).
 - [ ] P1 Acessibilidade: tamanho do texto, legendas, daltonismo nos ícones de estrela e humor.
 - [ ] P2 Indicador no mapa ou bússola com os lugares (pousada, hotel, salão, negócios).
@@ -148,3 +148,13 @@ Pronto e testado (02/11):
 ## 10. Lançamento
 Ver `ROADMAP_STEAM.md`: conta Steamworks e página, Steam Cloud, conquistas, build Shipping em PC limpo, demo,
 Next Fest, playtest e beta, trailer, preço.
+
+## 11. Tradução (por último, pedido do Sergio em 02/11)
+Fazer depois de todo o resto, quando os textos estiverem estáveis.
+- [ ] Todos os textos do jogo em tabelas de localização da Unreal (LOCTEXT/StringTable), sem texto fixo no código;
+  inclui menus, celular, HUD, missões, cartas, placas 3D (TextRender) e nomes de produtos.
+- [ ] **Inglês** completo.
+- [ ] Vários idiomas (os que mais vendem na Steam): espanhol, chinês simplificado, russo, alemão, francês,
+  japonês, coreano e português de Portugal; fontes com suporte a CJK e cirílico.
+- [ ] Revisão por falante nativo de cada idioma e teste de layout (textos maiores em alemão/russo não podem cortar).
+- [ ] Página da Steam e conquistas nos mesmos idiomas.

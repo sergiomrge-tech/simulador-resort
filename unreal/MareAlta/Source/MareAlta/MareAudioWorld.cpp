@@ -80,7 +80,8 @@ void UMareAudioWorld::StartSoundscape(UMareSimulation* Sim)
  if(MasterMix)MasterMix->SetSubmixOutputVolume(this,GetVolume(TEXT("Master")));
  FString Text;TArray<TSharedPtr<FJsonValue>> Catalog;
  if(FFileHelper::LoadFileToString(Text,*(FPaths::ProjectContentDir()/TEXT("Data/audio.json"))))FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Text),Catalog);
- for(auto Item:Catalog){auto Row=Item->AsObject();const FString Name=UMareSimulation::String(Row,TEXT("id"));if(auto Wave=LoadObject<USoundWave>(nullptr,*UMareSimulation::String(Row,TEXT("path"))))Sounds.Add(FName(Name),Wave);}
+ for(auto Item:Catalog){auto Row=Item->AsObject();const FString Name=UMareSimulation::String(Row,TEXT("id"));if(auto Wave=LoadObject<USoundWave>(nullptr,*UMareSimulation::String(Row,TEXT("path")))){Sounds.Add(FName(Name),Wave);
+  const FString Group=UMareSimulation::String(Row,TEXT("group"));if(!Group.IsEmpty()){Groups.FindOrAdd(Group).Add(FName(Name));GroupVolume.Add(Group,UMareSimulation::Number(Row,TEXT("volume")));}}}
  TArray<FName> LoopNames=RadioStations();LoopNames.Remove(TEXT("off"));
  LoopNames.Append({TEXT("ocean_loop"),TEXT("wind_loop"),TEXT("rain_loop"),TEXT("crickets_loop"),TEXT("leaves_soft"),TEXT("underwater_loop")});
  for(FName Name:LoopNames){
@@ -90,6 +91,15 @@ void UMareAudioWorld::StartSoundscape(UMareSimulation* Sim)
  Attenuation->Attenuation.AttenuationShapeExtents=FVector(150);Attenuation->Attenuation.FalloffDistance=3200;
  LastCash=Sim->Money();LastCarry=Sim->Carry();LastOrders=UMareSimulation::Object(Sim->State,TEXT("ue_orders"))->Values.Num();bReady=true;
  UE_LOG(LogTemp,Display,TEXT("MARE_AUDIO_READY %d sounds"),Sounds.Num());
+}
+UAudioComponent* UMareAudioWorld::PlayAction(const FString& Group,const FVector* Position,float Scale)
+{
+ const TArray<FName>* Names=Groups.Find(Group);if(!Names || !Names->Num())return nullptr;
+ return PlayCue((*Names)[FMath::RandRange(0,Names->Num()-1)],GroupVolume.FindRef(Group)*Scale,Position);
+}
+void UMareAudioWorld::Action(const UObject* Context,const FString& Group,const FVector* Position,float Scale)
+{
+ if(UWorld* World=Context?Context->GetWorld():nullptr)if(auto Audio=World->GetSubsystem<UMareAudioWorld>())Audio->PlayAction(Group,Position,Scale);
 }
 UAudioComponent* UMareAudioWorld::PlayCue(FName Name,float Volume,const FVector* Position,bool bAmbient)
 {

@@ -94,12 +94,12 @@ void AMareServiceTarget::Use(APlayerController* Controller)
   if(auto Pawn=PC->GetPawn()){Pawn->SetActorLocation(TeleportTo,false,nullptr,ETeleportType::TeleportPhysics);PC->SetControlRotation(FRotator(0,TeleportYaw,0));}
   const FVector Spot=TeleportTo;GetWorld()->GetSubsystem<UMareAudioWorld>()->PlayCue(TEXT("door"),.3f,&Spot);
   Sim->LastMessage=DataIndex==1?TEXT("Suíte do Grand Hotel · 3º andar"):TEXT("Lobby do Grand Hotel");return;}
- if(Action==TEXT("PousadaReception")){PC->OpenStation(TEXT("Reception"));return;}
+ if(Action==TEXT("PousadaReception")){const FVector Bell=GetActorLocation();UMareAudioWorld::Action(this,TEXT("reception_bell"),&Bell);PC->OpenStation(TEXT("Reception"));return;}
  // Friendly match, or R$ 20 on the table once the cash allows it.
  if(Action==TEXT("PoolTable")){GetWorld()->GetSubsystem<UMareGameRoom>()->StartMatch(PC,Sim->Money()>=100?20:0);return;}
  if(Action==TEXT("RoomTask")){for(const FName& Tag:Tags){const FString T=Tag.ToString();
    if(T.StartsWith(TEXT("task:")))GetWorld()->GetSubsystem<UMareStaysWorld>()->UseTask(DataIndex,T.Mid(5));}return;}
- if(Action==TEXT("HotelReception")){PC->OpenStation(TEXT("ReceptionHotel"));return;}
+ if(Action==TEXT("HotelReception")){const FVector Bell=GetActorLocation();UMareAudioWorld::Action(this,TEXT("reception_bell"),&Bell);PC->OpenStation(TEXT("ReceptionHotel"));return;}
  if(Action==TEXT("Door")){
   if(bOpened && !CanClose(PC->GetPawn()->GetActorLocation())){Sim->LastMessage=TEXT("Afaste-se do arco da porta para fechar.");return;}
   bOpened=!bOpened;

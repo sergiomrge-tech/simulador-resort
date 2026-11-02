@@ -56,20 +56,20 @@ bool UMareGameRoom::Moving() const{for(const auto& B:Balls)if(!B.bIn && !B.V.IsN
 
 bool UMareGameRoom::Step(double Seconds)
 {
- const double Dt=1./240;
+ const double Dt=1./240;ClackSpeed=RailSpeed=0;Drops=0;
  for(double T=0;T<Seconds;T+=Dt){
   for(int32 I=0;I<16;++I){auto& B=Balls[I];if(B.bIn)continue;
    const double Speed=B.V.Size();if(Speed<StopSpeed){B.V=FVector2D::ZeroVector;continue;}
    // Rolling resistance plus a little drag on the cloth.
    const double NewSpeed=FMath::Max(0.,Speed-(RollingDecel+LinearDrag*Speed)*Dt);B.V*=NewSpeed/Speed;B.P+=B.V*Dt;
    // Pockets: the ball centre inside the mouth drops.
-   for(const auto& Pk:Pockets)if(FVector2D::Distance(B.P,Pk)<PocketR*.95){B.bIn=true;B.V=FVector2D::ZeroVector;PottedThisShot.Add(I);if(I==0)bScratch=true;break;}
+   for(const auto& Pk:Pockets)if(FVector2D::Distance(B.P,Pk)<PocketR*.95){B.bIn=true;B.V=FVector2D::ZeroVector;PottedThisShot.Add(I);++Drops;if(I==0)bScratch=true;break;}
    if(B.bIn)continue;
    // Cushions, open near the six pockets.
    const bool bNearCorner=FMath::Abs(B.P.X)>L/2-PocketR*1.6 && FMath::Abs(B.P.Y)>W/2-PocketR*1.6;
    const bool bNearMiddle=FMath::Abs(B.P.X)<PocketR*1.25;
-   if(!bNearCorner && FMath::Abs(B.P.X)>L/2-R){B.P.X=FMath::Sign(B.P.X)*(L/2-R);B.V.X*=-CushionBounce;}
-   if(!bNearCorner && !bNearMiddle && FMath::Abs(B.P.Y)>W/2-R){B.P.Y=FMath::Sign(B.P.Y)*(W/2-R);B.V.Y*=-CushionBounce;}
+   if(!bNearCorner && FMath::Abs(B.P.X)>L/2-R){B.P.X=FMath::Sign(B.P.X)*(L/2-R);RailSpeed=FMath::Max(RailSpeed,FMath::Abs(B.V.X));B.V.X*=-CushionBounce;}
+   if(!bNearCorner && !bNearMiddle && FMath::Abs(B.P.Y)>W/2-R){B.P.Y=FMath::Sign(B.P.Y)*(W/2-R);RailSpeed=FMath::Max(RailSpeed,FMath::Abs(B.V.Y));B.V.Y*=-CushionBounce;}
    // Never leave the table even through a pocket gap.
    B.P.X=FMath::Clamp(B.P.X,-L/2-.03,L/2+.03);B.P.Y=FMath::Clamp(B.P.Y,-W/2-.03,W/2+.03);
   }
@@ -78,7 +78,7 @@ bool UMareGameRoom::Step(double Seconds)
    FVector2D D=B.P-A.P;const double Dist=D.Size();if(Dist>=2*R || Dist<1e-9)continue;
    const FVector2D N=D/Dist;const double Overlap=2*R-Dist;A.P-=N*Overlap/2;B.P+=N*Overlap/2;
    const double Rel=FVector2D::DotProduct(A.V-B.V,N);if(Rel<=0)continue;
-   const double Impulse=Rel*(1+Restitution)/2;A.V-=N*Impulse;B.V+=N*Impulse;}
+   const double Impulse=Rel*(1+Restitution)/2;ClackSpeed=FMath::Max(ClackSpeed,Rel);A.V-=N*Impulse;B.V+=N*Impulse;}
   if(!Moving())return false;
  }
  return Moving();
@@ -222,16 +222,22 @@ void UMareGameRoom::Tick(float DeltaSeconds)
   auto PC=Player.Get();if(!PC){EndMatch(FString());return;}
   if(PC->WasInputKeyJustPressed(EKeys::Q)){EndMatch(TEXT("Partida de sinuca encerrada."));return;}
   if(bShotRunning){
-   if(!Step(DeltaSeconds)){bShotRunning=false;ResolveShot();
+   const bool bStill=!Step(DeltaSeconds);
+   {const FVector At=Table.GetLocation()+FVector(0,0,80);
+    if(ClackSpeed>.05)UMareAudioWorld::Action(this,TEXT("pool_ball_clack"),&At,FMath::Clamp(float(ClackSpeed)/3.f,.25f,1.f));
+    if(RailSpeed>.15)UMareAudioWorld::Action(this,TEXT("pool_rail_bounce"),&At,FMath::Clamp(float(RailSpeed)/3.f,.3f,1.f));
+    if(Drops)UMareAudioWorld::Action(this,TEXT("pool_pocket"),&At);}
+   if(bStill){bShotRunning=false;ResolveShot();
     if(Winner>=0){EndMatch(Winner==0?TEXT("Você venceu a partida de sinuca!"):TEXT("O hóspede venceu a partida de sinuca."));return;}
     GuestDelay=1.2f;}}
   else if(Turn==0){
    float DX=0,DY=0;PC->GetInputMouseDelta(DX,DY);AimAngle+=DX*.004;
    if(PC->IsInputKeyDown(EKeys::LeftMouseButton)){bCharging=true;Charge=FMath::Min(1.f,Charge+DeltaSeconds/1.2f);}
-   else if(bCharging){bCharging=false;Shoot(AimAngle,.5+5.5*Charge);Charge=0;bShotRunning=true;
-    if(auto Audio=GetWorld()->GetSubsystem<UMareAudioWorld>())Audio->PlayCue(TEXT("click"),.3f);}}
+   else if(bCharging){bCharging=false;const FVector At=Table.GetLocation()+FVector(0,0,80);UMareAudioWorld::Action(this,TEXT("pool_cue_hit"),&At,.4f+.6f*Charge);
+    Shoot(AimAngle,.5+5.5*Charge);Charge=0;bShotRunning=true;}}
   else if((GuestDelay-=DeltaSeconds)<=0){double Angle=0,Speed=0;PlanGuestShot(Angle,Speed,FCrc::StrCrc32(*FString::Printf(TEXT("%d-%d"),Score[0],Score[1]))+GFrameNumber);
-   AimAngle=Angle;Shoot(Angle,Speed);bShotRunning=true;}
+   AimAngle=Angle;{const FVector At=Table.GetLocation()+FVector(0,0,80);UMareAudioWorld::Action(this,TEXT("pool_cue_hit"),&At,FMath::Clamp(float(Speed)/6.f,.4f,1.f));}
+   Shoot(Angle,Speed);bShotRunning=true;}
  }
  UpdateProps(DeltaSeconds);
 }

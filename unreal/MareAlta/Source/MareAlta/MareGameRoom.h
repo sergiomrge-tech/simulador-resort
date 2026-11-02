@@ -48,6 +48,8 @@ public:
  /** Guest AI: best pocketable ball (ghost-ball aim) with a small error; falls back to a safe tap. */
  void PlanGuestShot(double& Angle,double& Speed,uint32 Seed) const;
  TArray<int32> PottedThisShot;
+ /** Sound events of the last Step (strongest ball-ball and cushion impact speeds, balls dropped). */
+ double ClackSpeed=0,RailSpeed=0;int32 Drops=0;
 private:
  bool PathClear(const FVector2D& A,const FVector2D& B,int32 IgnoreA,int32 IgnoreB) const;
  FVector World(const FVector2D& P,double Lift=0) const;

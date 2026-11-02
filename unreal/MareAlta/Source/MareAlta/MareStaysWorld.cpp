@@ -104,7 +104,7 @@ void UMareStaysWorld::UseTask(int32 Room,const FString& Task)
 {
  auto S=Sim(GetWorld());if(!S)return;
  if(S->CleanRoom(FString::Printf(TEXT("pousada_%d"),Room),Task)){
-  if(auto Audio=GetWorld()->GetSubsystem<UMareAudioWorld>())Audio->PlayCue(TEXT("clean"),.3f);
+  UMareAudioWorld::Action(this,Task==TEXT("bed")?TEXT("cleaning_bed"):Task==TEXT("towels")?TEXT("cleaning_towels"):TEXT("cleaning_trash"));
   S->LastMessage=FString::Printf(TEXT("Bangalô %d: %s."),Room+1,Task==TEXT("bed")?TEXT("cama arrumada"):Task==TEXT("towels")?TEXT("toalhas recolhidas"):TEXT("lixo retirado"));
   SyncTasks();}
 }

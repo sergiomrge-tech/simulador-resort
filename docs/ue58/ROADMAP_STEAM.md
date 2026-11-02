@@ -50,8 +50,7 @@ Legenda de prioridade:
   - volumes (geral, música, efeitos, ambiente);
   - sensibilidade do mouse, inverter Y e remapear teclas.
 - [ ] **Controle** (Xbox/PlayStation) em todo o jogo e nos menus; selo "Steam Deck" opcional.
-- [ ] **Idiomas:** PT-BR e **inglês** completos (hoje só PT). Todos os textos via tabela de localização, sem
-  textos fixos no código.
+- [ ] **Idiomas:** feito por último (ver o fim desta lista).
 
 ---
 
@@ -134,3 +133,10 @@ Legenda de prioridade:
 5. Balanceamento e tutorial jogando do zero; desempenho no EXE.
 6. Integração Steam (Cloud, conquistas), build Shipping, PC limpo.
 7. Demo, Next Fest, playtest e beta; trailer e lançamento do Acesso Antecipado.
+
+---
+
+## Último passo — tradução (pedido do Sergio, 02/11)
+- [ ] Traduzir o jogo inteiro para o **inglês** e para **vários idiomas** (espanhol, chinês simplificado, russo,
+  alemão, francês, japonês, coreano, português de Portugal), com tabelas de localização, fontes CJK/cirílico,
+  revisão nativa, teste de layout e página da Steam/conquistas traduzidas. Detalhes em `PENDENCIAS_100.md`, seção 11.

@@ -323,11 +323,13 @@ private:
    for(const int32 Step:{-10,-5,5,10})Row->AddSlot().AutoWidth().Padding(0,0,6,0)[Button(FString::Printf(TEXT("%+d%%"),Step),[this,Id,Step,Offer](){double& P=Ask.FindOrAdd(Id,Offer);P=FMath::Max(Offer,FMath::RoundToDouble(P*(1+Step/100.)));},true)];
    Row->AddSlot().AutoWidth().Padding(10,0,6,0)[Button(FString::Printf(TEXT("Pedir R$ %.0f"),Price),[this,S,Id](){double Out=0;const double P=Ask.FindRef(Id);
     switch(S->Haggle(Id,P,Out)){
-     case UMareSimulation::EHaggle::Accepted:S->LastMessage=FString::Printf(TEXT("Fechado por R$ %.0f a noite. Chave entregue."),Out);Ask.Remove(Id);break;
-     case UMareSimulation::EHaggle::Countered:S->LastMessage=FString::Printf(TEXT("Contraproposta: R$ %.0f por noite."),Out);Ask.Add(Id,Out);break;
-     case UMareSimulation::EHaggle::Left:Ask.Remove(Id);break;
+     case UMareSimulation::EHaggle::Accepted:S->LastMessage=FString::Printf(TEXT("Fechado por R$ %.0f a noite. Chave entregue."),Out);Ask.Remove(Id);
+      UMareAudioWorld::Action(Owner.Get(),TEXT("deal_accept"));UMareAudioWorld::Action(Owner.Get(),TEXT("reception_keys"));break;
+     case UMareSimulation::EHaggle::Countered:S->LastMessage=FString::Printf(TEXT("Contraproposta: R$ %.0f por noite."),Out);Ask.Add(Id,Out);UMareAudioWorld::Action(Owner.Get(),TEXT("reception_checkin"),nullptr,.6f);break;
+     case UMareSimulation::EHaggle::Left:Ask.Remove(Id);UMareAudioWorld::Action(Owner.Get(),TEXT("deal_decline"));break;
      default:S->LastMessage=TEXT("Sem quarto limpo livre.");}},Free>0)];
-   Row->AddSlot().AutoWidth()[Button(FString::Printf(TEXT("Aceitar R$ %.0f"),Offer),[this,S,Id,Offer](){if(S->AcceptOffer(Id)){S->LastMessage=FString::Printf(TEXT("Check-in por R$ %.0f a noite."),Offer);Ask.Remove(Id);}else S->LastMessage=TEXT("Sem quarto limpo livre.");},Free>0)];
+   Row->AddSlot().AutoWidth()[Button(FString::Printf(TEXT("Aceitar R$ %.0f"),Offer),[this,S,Id,Offer](){if(S->AcceptOffer(Id)){S->LastMessage=FString::Printf(TEXT("Check-in por R$ %.0f a noite."),Offer);Ask.Remove(Id);
+    UMareAudioWorld::Action(Owner.Get(),TEXT("reception_checkin"));UMareAudioWorld::Action(Owner.Get(),TEXT("reception_keys"));}else S->LastMessage=TEXT("Sem quarto limpo livre.");},Free>0)];
    Body->AddSlot().AutoHeight().Padding(0,2,0,8)[Row];
   }
   if(bHotel)return;   // 32 suites: the hotel crew keeps them; only the pousada shows the room board
