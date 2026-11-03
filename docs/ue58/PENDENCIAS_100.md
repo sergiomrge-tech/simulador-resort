@@ -346,8 +346,15 @@ Pronto e testado (02/11):
   realistas: o Sergio decidiu tirar gatos e cachorros do jogo (03/11); o latido de cachorro do som ambiente da vila
   também saiu (código, catálogo `audio.json` e áudio).
 
-- [ ] P1 Mar verde-cristalino (pedido do Sergio, 03/11, foto de referência: água rasa turquesa-esverdeada e transparente,
+- [x] P1 Mar verde-cristalino (pedido do Sergio, 03/11, foto de referência: água rasa turquesa-esverdeada e transparente,
   fundo de areia visível com cáusticas, azul mais profundo só ao longe).
+  Feito 03/11: cor verde-turquesa no raso, turquesa no meio e azul ao longe; transparência que cresce suave com a
+  distância da praia (sem a linha dura onde o terreno acabava); absorção que favorece o verde; sem pontos/faixas brancas
+  (espuma de crista só na tempestade); espuma da beira ondulada (não quadriculada); fundo de areia da praia estendido
+  mar adentro (`mare_water.ensure_seabed`: rampa até -9 m e fundo plano) com cáusticas; ondas maiores e marola
+  ("parecia lago"), com três escalas de ondulação e ondas mais calmas junto à costa e ao píer (a água subia no deque).
+  Corais e peixes do recife levados 85 m mar adentro, apoiados no fundo de -9 m (`mare_water.move_reef`, só as peças
+  World_0537..0600; o píer fica). Fotos `sea_before.jpg` → `sea_after6.jpg`.
 - [ ] P1 Sombras (pedido do Sergio, 03/11: "nada tem sombra, fica muito artificial"): móveis, pessoas e objetos sem
   sombra no saguão do hotel (e conferir no resto do jogo, de dia e de noite).
 - [ ] P1 Poltronas do saguão do hotel (pedido do Sergio, 03/11, foto circulada): corrigir posição/orientação/apoio.

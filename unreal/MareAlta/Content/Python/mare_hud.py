@@ -1393,6 +1393,18 @@ def run(action, arg=''):
                 a.modify()
             out[p] = bool(a) and unreal.EditorAssetLibrary.save_loaded_asset(a, False)
         return out
+    if action == 'movereef':
+        import importlib, mare_water
+        importlib.reload(mare_water)
+        return mare_water.move_reef(float(arg.split(',')[0]) if arg else -8500.0, arg.endswith('dry'))
+    if action == 'seabed':
+        import importlib, mare_water
+        importlib.reload(mare_water)
+        return mare_water.ensure_seabed()
+    if action == 'seawater':
+        import importlib, mare_materials
+        importlib.reload(mare_materials)
+        return mare_materials.build_water().get_path_name()
     if action == 'underwaterfog':
         import importlib, mare_materials
         importlib.reload(mare_materials)

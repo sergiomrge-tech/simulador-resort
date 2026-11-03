@@ -168,7 +168,7 @@ Legenda: [x] feito e validado · [~] em andamento/parcial · [ ] pendente.
   da fila" (03/11): PENDENCIAS seção 15 (última).
 - [x] "Na sinuca e nos outros jogos não aparecem braços nem mãos, só taco/raquete, mesa e bolas" (03/11): corpo do
   jogador inteiro oculto durante as partidas (sinuca e tênis de mesa), raquetes sem mãos.
-- [ ] "Mar verde-cristalino como na foto" (03/11): depois do tênis de mesa (PENDENCIAS seção 6).
+- [x] "Mar verde-cristalino como na foto; tirar os pontos brancos; areia também no fundo; mar mais agitado, parecia lago; corais bem longe da praia; mais ondulações" (03/11).
 - [ ] "Corrigir as poltronas; nada tem sombra, fica artificial" (03/11): PENDENCIAS seção 6.
 - [ ] "As telas das interfaces não podem ter rolagem; tudo cabendo sem subir/descer" (03/11): PENDENCIAS seção 8.
 - [ ] "Chão do hotel da mesma cor das paredes: pisos como na referência (vinílico amadeirado)" (03/11): PENDENCIAS seção 6.
