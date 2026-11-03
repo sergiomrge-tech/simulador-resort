@@ -70,7 +70,7 @@ Nada de mecânica nova até esta seção fechar. Cada passada roda uma auditoria
   SRMF mantinha rugosidade/especular de tecido (255/127 contra ~160/160 da pele). `mh_skin_underwear.py` agora preenche
   também o SRMF; 7 corpos de banho reimportados; foto `docs/ue58/graphics-reference/pele-banhistas-20261102.jpg`.
 - [x] P1 Zuri careca (preset da Epic): retirada dos elencos (02/11) até ganhar cabelo.
-- [ ] P1 Vasos de pachira do saguão do hotel com colisão de copa enorme (bloqueia a mira). Corrigir a colisão (03/11: Sergio autorizou mexer nos arquivos do saguão)
+- [x] P1 Vasos de pachira do saguão do hotel com colisão de copa enorme (bloqueia a mira). Corrigir a colisão (03/11: Sergio autorizou mexer nos arquivos do saguão) Feito 03/11: caixa só no tronco (60×60×110 cm, `mare_hud trunkbox`); raio a 87 cm bate no tronco, a 217 cm atravessa a copa.
   quando o Sergio liberar esses arquivos, que têm mudanças dele.
 - [x] P1 Painel da negociação: detalhes numa linha própria e botões em duas fileiras, conferido no jogo (02/11).
 - [x] P2 Bainha da sunga boxer marcada e furos no cós (02/11): a sunga agora é uma peça única copiada da pele entre o

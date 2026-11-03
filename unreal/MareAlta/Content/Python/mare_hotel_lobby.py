@@ -142,6 +142,10 @@ def _lib_mesh(slug):
         body.set_editor_property('collision_trace_flag', unreal.CollisionTraceFlag.CTF_USE_SIMPLE_AS_COMPLEX)
     unreal.get_editor_subsystem(unreal.StaticMeshEditorSubsystem).add_simple_collisions_with_notification(mesh, unreal.ScriptCollisionShapeType.BOX, False)
     unreal.EditorAssetLibrary.save_loaded_asset(mesh, False)
+    if slug == 'pachira_aquatica_01':
+        # The whole-bounds box spanned the crown and blocked the aim across the lobby: trunk and pot only.
+        import mare_hud
+        mare_hud.run('trunkbox', mesh.get_path_name() + '|30|110')
     return mesh
 
 

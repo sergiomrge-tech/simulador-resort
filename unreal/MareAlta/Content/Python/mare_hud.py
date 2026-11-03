@@ -1306,6 +1306,52 @@ def run(action, arg=''):
         if where != 'pie':
             unreal.get_editor_subsystem(unreal.LevelEditorSubsystem).save_current_level()
         return n
+    if action == 'trunkbox':
+        # "mesh path|half_xy|height": replace a plant's whole-canopy box with a box around the trunk/pot only
+        # (pivot = trunk base), so the crown never blocks the aim or the player's way above the pot
+        p, half, height = arg.split('|')
+        m = unreal.load_asset(p)
+        body = m.get_editor_property('body_setup')
+        try:
+            geom = body.get_editor_property('agg_geom')
+        except Exception as e:
+            return 'no agg_geom: ' + str(e)
+        box = unreal.KBoxElem()
+        box.set_editor_property('center', unreal.Vector(0, 0, float(height) / 2))
+        box.set_editor_property('x', float(half) * 2)
+        box.set_editor_property('y', float(half) * 2)
+        box.set_editor_property('z', float(height))
+        geom.set_editor_property('box_elems', [box])
+        geom.set_editor_property('sphyl_elems', [])
+        geom.set_editor_property('convex_elems', [])
+        geom.set_editor_property('sphere_elems', [])
+        body.set_editor_property('agg_geom', geom)
+        body.set_editor_property('collision_trace_flag', unreal.CollisionTraceFlag.CTF_USE_SIMPLE_AS_COMPLEX)
+        m.set_editor_property('body_setup', body)
+        m.post_edit_change() if hasattr(m, 'post_edit_change') else None
+        unreal.EditorAssetLibrary.save_loaded_asset(m, False)
+        b = m.get_editor_property('body_setup').get_editor_property('agg_geom').get_editor_property('box_elems')
+        return [[e.get_editor_property('x'), e.get_editor_property('y'), e.get_editor_property('z'), str(e.get_editor_property('center'))] for e in b]
+    if action == 'leafcollision':
+        # "mesh path|mesh path|...[|apply]": collision of foliage meshes (simple shapes, trace flag); with a last
+        # "apply", leaves get no collision at all (simple removed, simple-as-complex) so canopies never block aim
+        parts = arg.split('|')
+        apply = parts[-1] == 'apply'
+        out = {}
+        for p in [x for x in parts if x != 'apply']:
+            m = unreal.load_asset(p)
+            sl = unreal.EditorStaticMeshLibrary
+            row = {'simple': sl.get_simple_collision_count(m), 'convex': sl.get_convex_collision_count(m),
+                   'flag': str(m.get_editor_property('body_setup').get_editor_property('collision_trace_flag'))}
+            if apply:
+                sl.remove_collisions(m)
+                body = m.get_editor_property('body_setup')
+                body.set_editor_property('collision_trace_flag', unreal.CollisionTraceFlag.CTF_USE_SIMPLE_AS_COMPLEX)
+                m.set_editor_property('body_setup', body)
+                unreal.EditorAssetLibrary.save_loaded_asset(m, False)
+                row['after'] = [sl.get_simple_collision_count(m), sl.get_convex_collision_count(m), str(m.get_editor_property('body_setup').get_editor_property('collision_trace_flag'))]
+            out[p.split('/')[-1]] = row
+        return out
     if action == 'saveassets':
         # "path|path": save loaded assets (edits made while PIE runs can stay only in memory)
         out = {}
