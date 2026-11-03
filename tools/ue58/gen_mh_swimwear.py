@@ -1,7 +1,7 @@
 """Small triangle bikini (or swim trunks) fitted to an exported MetaHuman body, skinned to its skeleton.
 
 Run with the isolated bpy 5.0.1 venv (Blender is not installed):
-  D:/CodexTemp/claude/bpy-env/Scripts/python.exe -I tools/ue58/gen_mh_swimwear.py -- <body.fbx> <out.fbx> bikini|trunks
+  D:/CodexTemp/claude/bpy-env/Scripts/python.exe -I tools/ue58/gen_mh_swimwear.py -- <body.fbx> <out.fbx> bikini|trunks|tank|boardshorts|coverup
 
 The body comes from mare_metahuman.export (UE FBX, metres in Blender, front = -Y, up = +Z). Every piece is a
 surface patch: a regular grid of guide points is ray cast onto the body (front pieces along +Y, back pieces
@@ -22,6 +22,7 @@ SRC, DST, KIND = args[0], args[1], (args[2] if len(args) > 2 else 'bikini')
 LIFT = .0032
 STEP = .0035
 BODY = None   # body skin (world space bmesh), set in main
+DOM_FACE = []  # dominant bone of every BODY face (ray hits report face indices)
 
 
 def load_body():
@@ -286,14 +287,286 @@ def trunks(bm_out, tree, m):
     drape(bm_out, tree, verts, -1.0, rounds=12)
 
 
+
+# ---------------------------------------------------------------- beachwear worn over the swimwear (02/11)
+ARM_WORDS = ('arm', 'hand', 'thumb', 'index_', 'middle_', 'ring_', 'pinky')
+DOM = []          # dominant deform bone of every body vertex (same order as BODY)
+
+
+def is_arm(name):
+    return any(w in name for w in ARM_WORDS)
+
+
+def face_bones(f):
+    return [DOM[v.index] for v in f.verts]
+
+
+def skin_piece(bm_out, tree, top, hem, keep, offset, rounds=8):
+    """Fabric copied from the body's skin between two horizontal cuts, keeping only the faces keep(face) accepts
+    (armholes and necklines follow the body's own topology), welded, subdivided once, its free edges smoothed,
+    lifted by offset(point) and draped. Returns the new garment vertices in bm_out."""
+    skin = BODY.copy()
+    skin.verts.ensure_lookup_table()
+    skin.faces.ensure_lookup_table()
+    bmesh.ops.delete(skin, geom=[f for f in skin.faces if not keep(f)], context='FACES')
+    for z, n in ((top, (0, 0, 1)), (hem, (0, 0, -1))):
+        geom = skin.verts[:] + skin.edges[:] + skin.faces[:]
+        bmesh.ops.bisect_plane(skin, geom=geom, plane_co=(0, 0, z), plane_no=n, clear_outer=True)
+    bmesh.ops.delete(skin, geom=[v for v in skin.verts if not v.link_faces], context='VERTS')
+    bmesh.ops.remove_doubles(skin, verts=skin.verts[:], dist=.0005)
+    # Small islands (finger tips, a stray face) are not part of the garment.
+    seen, islands = set(), []
+    for f in skin.faces:
+        if f in seen:
+            continue
+        stack, island = [f], []
+        seen.add(f)
+        while stack:
+            g = stack.pop()
+            island.append(g)
+            for e in g.edges:
+                for h in e.link_faces:
+                    if h not in seen:
+                        seen.add(h)
+                        stack.append(h)
+        islands.append(island)
+    big = max(len(i) for i in islands)
+    bmesh.ops.delete(skin, geom=[f for i in islands if len(i) < big * .2 for f in i], context='FACES')
+    bmesh.ops.delete(skin, geom=[v for v in skin.verts if not v.link_faces], context='VERTS')
+    bmesh.ops.subdivide_edges(skin, edges=skin.edges[:], cuts=1, use_grid_fill=True, smooth=1.0)
+    # Free edges: the straight cuts go back on their planes; armholes and necklines are evened out along the edge.
+    for _ in range(4):
+        moves = {}
+        for v in skin.verts:
+            if not v.is_boundary or min(abs(v.co.z - top), abs(v.co.z - hem)) < .012:
+                continue
+            ring = [e.other_vert(v) for e in v.link_edges if e.is_boundary]
+            if len(ring) == 2:
+                moves[v] = (ring[0].co + ring[1].co + v.co * 2) / 4
+        for v, c in moves.items():
+            v.co = c
+    for v in skin.verts:
+        if v.is_boundary and min(abs(v.co.z - top), abs(v.co.z - hem)) < .012:
+            v.co.z = top if abs(v.co.z - top) < abs(v.co.z - hem) else hem
+    for v in skin.verts:
+        q, n = tree.find_nearest(v.co)[:2]
+        v.co = q + n * offset(q)
+    mesh = bpy.data.meshes.new('piece_tmp')
+    skin.to_mesh(mesh)
+    skin.free()
+    first = len(bm_out.verts)
+    bm_out.from_mesh(mesh)
+    bpy.data.meshes.remove(mesh)
+    bm_out.verts.ensure_lookup_table()
+    verts = list(bm_out.verts[first:])
+    drape(bm_out, tree, verts, -1.0, rounds=rounds)
+    return verts
+
+
+def torso_keep(m, strap_x, scoop):
+    """Faces of the chest, belly and back plus shoulder straps (clavicle faces near the neck); arms and neck out,
+    with a scooped neckline (deeper in front)."""
+    neck = m['neck']
+
+    def keep(f):
+        bones = face_bones(f)
+        if any(is_arm(b) or 'neck' in b or 'head' in b for b in bones):
+            return False
+        c = f.calc_center_median()
+        if any('clavicle' in b for b in bones) and abs(c.x) > strap_x:
+            return False
+        front = 1.0 if c.y < -.02 else 0.0
+        if abs(c.x) < .065 and c.z > neck - .06 - scoop * front:   # the straps (|x| .065 .. strap_x) stay
+            return False
+        return True
+    return keep
+
+
+def tank(bm_out, tree, m):
+    """Tank top (regata) worn over the swimwear: chest to hips, wide straps, scooped neck, a little loose."""
+    cz = m['crotch'].z
+    skin_piece(bm_out, tree, m['neck'] - .01, cz + .11, torso_keep(m, .12, .07), lambda q: LIFT + .009, rounds=20)
+
+
+def boardshorts(bm_out, tree, m):
+    """Surf shorts (bermuda de surfe): waist to above the knee, the legs widening toward the hem like real board
+    shorts; replaces the trunks of the swim build."""
+    cz = m['crotch'].z
+    top, hem = cz + .15, cz - .27
+    skin_piece(bm_out, tree, top, hem, lambda f: not any(is_arm(b) for b in face_bones(f)),
+               lambda q: LIFT + .006 + .018 * min(1.0, max(0.0, (cz - q.z) / (cz - hem))))
+
+
+def hull_radius(tree, z, a, cx, cy):
+    """Outer silhouette of the body at height z in direction a (0 = front): a ray from outside inward, passing
+    through the arms and hands (they hang beside the hips in the A pose)."""
+    d = Vector((math.sin(a), -math.cos(a), 0))
+    o = Vector((cx, cy, z)) + d * 1.0
+    for _ in range(6):
+        hit = tree.ray_cast(o, -d)
+        if hit[0] is None:
+            return None
+        if not is_arm(DOM_FACE[hit[2]]):
+            return Vector((hit[0].x - cx, hit[0].y - cy, 0)).length
+        o = hit[0] - d * .002
+    return None
+
+
+def convex_radii(points, angles, cx, cy):
+    """Distance from (cx, cy) to the convex hull of the 2D points along each angle (0 = front): cloth spans the
+    gap between the legs straight, as fabric does, instead of dipping into it."""
+    pts = sorted(set((round(x, 5), round(y, 5)) for x, y in points))
+    if len(pts) < 3:
+        return None
+
+    def cross(o, a, b):
+        return (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0])
+    lower, upper = [], []
+    for q in pts:
+        while len(lower) >= 2 and cross(lower[-2], lower[-1], q) <= 0:
+            lower.pop()
+        lower.append(q)
+    for q in reversed(pts):
+        while len(upper) >= 2 and cross(upper[-2], upper[-1], q) <= 0:
+            upper.pop()
+        upper.append(q)
+    hull = lower[:-1] + upper[:-1]
+    out = []
+    for a in angles:
+        dx, dy = math.sin(a), -math.cos(a)
+        best = None
+        for i in range(len(hull)):
+            (x1, y1), (x2, y2) = hull[i - 1], hull[i]
+            ex, ey = x2 - x1, y2 - y1
+            den = dx * ey - dy * ex
+            if abs(den) < 1e-12:
+                continue
+            t = ((x1 - cx) * ey - (y1 - cy) * ex) / den
+            u = ((x1 - cx) * dy - (y1 - cy) * dx) / den
+            if t > 0 and -1e-6 <= u <= 1 + 1e-6 and (best is None or t > best):
+                best = t
+        out.append(best)
+    return out
+
+
+def convexify(verts, z_from, z_to, cx=0.0, cy=-.01):
+    """Bridge the body's creases (groin, navel, small of the back) in the lower part of a bodice: every vertex
+    between z_from (untouched) and z_to (fully on the outline) moves out toward the convex outline of its 1 cm
+    band, like cloth stretched across a hollow."""
+    bands = {}
+    for v in verts:
+        if v.is_valid and z_to <= v.co.z <= z_from:
+            bands.setdefault(int(v.co.z / .01), []).append(v)
+    for band in bands.values():
+        if len(band) < 6:
+            continue
+        angles = [math.atan2(v.co.x - cx, -(v.co.y - cy)) for v in band]
+        hull = convex_radii([(v.co.x, v.co.y) for v in band], angles, cx, cy)
+        if not hull:
+            continue
+        for v, a, h in zip(band, angles, hull):
+            if h is None:
+                continue
+            r = math.hypot(v.co.x - cx, v.co.y - cy)
+            t = min(1.0, max(0.0, (z_from - v.co.z) / (z_from - z_to)))
+            w = t * t * (3 - 2 * t)
+            if h > r:
+                r += (h - r) * w
+                v.co.x, v.co.y = cx + math.sin(a) * r, cy - math.cos(a) * r
+
+
+def coverup(bm_out, tree, m):
+    """Beach cover-up (saida de praia): a short dress over the bikini. The bodice is the tank's (straps, scooped
+    neck) down to the hips; the skirt is its own tube of regular rings that starts 2 cm above the bodice's edge and
+    covers it (a waist seam, as on a real dress). Each ring follows the convex outline of the hips and both legs,
+    never narrows and opens at most ~20 degrees, to mid-thigh."""
+    cz = m['crotch'].z
+    waist = cz + .10            # bodice edge: above the groin crease and the top of the buttocks
+    verts = skin_piece(bm_out, tree, m['neck'] - .01, waist, torso_keep(m, .11, .09), lambda q: LIFT + .007, rounds=20)
+    convexify(verts, cz + .27, waist + .02)
+    cx, cy, n = 0.0, -.01, 96
+    angles = [2 * math.pi * i / n for i in range(n)]
+    top, bottom = waist + .02, cz - .22
+    rows = int((top - bottom) / .012) + 1
+    table, last = [], None
+    for k in range(rows):
+        z = top - k * .012
+        hits = [hull_radius(tree, z, a, cx, cy) for a in angles]
+        pts = [(cx + math.sin(a) * r, cy - math.cos(a) * r) for a, r in zip(angles, hits) if r is not None]
+        hull = convex_radii(pts, angles, cx, cy) or hits
+        row = []
+        for i in range(n):
+            r = hull[i] if hull[i] is not None else (last[i] if last else .15)
+            r += LIFT + .0085
+            if last:
+                r = max(last[i] * .995, min(r, last[i] + .0045))
+            row.append(r)
+        table.append(row)
+        last = row
+    raw_first = list(table[0])
+    for _ in range(4):
+        table = [[(row[i - 1] + 2 * row[i] + row[(i + 1) % n]) / 4 for i in range(n)] for row in table]
+    for _ in range(2):
+        table = [[(table[max(k - 1, 0)][i] + 2 * table[k][i] + table[min(k + 1, len(table) - 1)][i]) / 4 for i in range(n)] for k in range(len(table))]
+    # The first ring tucks just inside the bodice (which covers it down to the waist) and the next four ease out.
+    first = [r - .003 for r in raw_first]
+    for k in range(min(5, len(table))):
+        e = k / 5
+        e = e * e * (3 - 2 * e)
+        table[k] = [first[i] + (table[k][i] - first[i]) * e for i in range(n)]
+    rings = [[bm_out.verts.new(Vector((cx + math.sin(a) * r, cy - math.cos(a) * r, top - k * .012))) for a, r in zip(angles, row)]
+             for k, row in enumerate(table)]
+    for ra, rb in zip(rings, rings[1:]):
+        for i in range(n):
+            bm_out.faces.new((ra[i], rb[i], rb[(i + 1) % n], ra[(i + 1) % n]))
+
+
+def smooth_skirt_weights(garment, below_z, rounds=12):
+    """Skirt below the crotch: weights averaged with the neighbours so the cloth spans both legs instead of tearing
+    between them when walking."""
+    me = garment.data
+    nbr = [[] for _ in me.vertices]
+    for e in me.edges:
+        a, b = e.vertices
+        nbr[a].append(b)
+        nbr[b].append(a)
+    idx = [v.index for v in me.vertices if v.co.z < below_z]
+    if not idx:
+        return
+    groups = {g.index: g for g in garment.vertex_groups}
+    w = [{g.group: g.weight for g in v.groups} for v in me.vertices]
+    for _ in range(rounds):
+        new = {}
+        for i in idx:
+            acc = {k: v * .5 for k, v in w[i].items()}
+            for j in nbr[i]:
+                for k, v in w[j].items():
+                    acc[k] = acc.get(k, 0) + v * .5 / max(1, len(nbr[i]))
+            tot = sum(acc.values()) or 1
+            new[i] = {k: v / tot for k, v in acc.items() if v / tot > .01}
+        for i, d in new.items():
+            w[i] = d
+    for i in idx:
+        for g in garment.vertex_groups:
+            g.remove([i])
+        for k, v in w[i].items():
+            groups[k].add([i], v, 'REPLACE')
+
+
 def main():
-    global BODY
+    global BODY, DOM, DOM_FACE
     body, arm, bm, tree = load_body()
     BODY = bm
+    names = {g.index: g.name for g in body.vertex_groups}
+    DOM = [names[max(v.groups, key=lambda x: x.weight).group] if v.groups else '' for v in body.data.vertices]
+    bm.faces.ensure_lookup_table()
+    DOM_FACE = [max((DOM[v.index] for v in f.verts), key=lambda b: sum(1 for v in f.verts if DOM[v.index] == b)) for f in bm.faces]
     m = measure(bm)
     out = bmesh.new()
-    (bikini if KIND == 'bikini' else trunks)(out, tree, m)
+    {'bikini': bikini, 'trunks': trunks, 'tank': tank, 'boardshorts': boardshorts, 'coverup': coverup}[KIND](out, tree, m)
     bmesh.ops.remove_doubles(out, verts=out.verts, dist=.0008)
+    # One consistent outward winding for pieces built separately (the cover-up's top and its skirt rings).
+    bmesh.ops.recalc_face_normals(out, faces=out.faces[:])
     mesh = bpy.data.meshes.new(f'SKM_{KIND}')
     out.to_mesh(mesh)
     garment = bpy.data.objects.new(f'SKM_{KIND}', mesh)
@@ -325,6 +598,8 @@ def main():
     garment.parent = body.parent
     garment.matrix_world = body.matrix_world.copy()
     bpy.ops.object.modifier_apply(modifier='Weights')
+    if KIND == 'coverup':
+        smooth_skirt_weights(garment, m['crotch'].z + .02)
     am = garment.modifiers.new('Armature', 'ARMATURE')
     am.object = arm
     print('MEASURE', {k: (list(v) if hasattr(v, 'x') else v) for k, v in m.items()}, 'VERTS', len(mesh.vertices))

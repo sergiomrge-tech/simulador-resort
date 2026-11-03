@@ -327,7 +327,31 @@ def staff_qa(arg):
     raise ValueError(arg)
 
 
+def person_qa(arg):
+    """PIE: 'list' = MetaHuman of every person; 'look:<MetaHuman>[:n]' = the player 2.2 m in front of the n-th such person."""
+    world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()
+    pc = unreal.GameplayStatics.get_player_controller(world, 0)
+    hero = unreal.GameplayStatics.get_player_pawn(world, 0)
+    people = list(unreal.GameplayStatics.get_all_actors_of_class(world, unreal.MarePerson))
+    if arg == 'list':
+        from collections import Counter
+        return dict(Counter(str(p.get_editor_property('meta_human')) for p in people))
+    _, name, *rest = arg.split(':')
+    match = [p for p in people if str(p.get_editor_property('meta_human')) == name]
+    if not match:
+        return 'none'
+    w = match[int(rest[0]) % len(match) if rest else 0]
+    at = w.get_actor_location()
+    fwd = w.get_actor_forward_vector()
+    eye = unreal.Vector(at.x + fwd.x * 220, at.y + fwd.y * 220, at.z + 10)
+    hero.set_actor_location(eye, False, True)
+    pc.set_control_rotation(unreal.MathLibrary.find_look_at_rotation(unreal.Vector(eye.x, eye.y, eye.z + 64), unreal.Vector(at.x, at.y, at.z + 10)))
+    return [round(at.x), round(at.y), round(at.z), len(match)]
+
+
 def run(action, arg=''):
+    if action == 'person':
+        return person_qa(arg)
     if action == 'cmd':
         # PIE console command(s), separated by ';' (QA: mare.PoolAutoPlay 1; mare.PoolQA).
         world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()

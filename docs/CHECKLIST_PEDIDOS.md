@@ -113,6 +113,11 @@ Legenda: [x] feito e validado · [~] em andamento/parcial · [ ] pendente.
 - [ ] "Coloquei no GitHub itens cômicos para acrescentar no jogo; coloque no checklist, mas para o final" (02/11): issue #4 e `docs/ue58/HUMOR_EVENTOS_COMICOS.md` (HUM-001..006, Seu Arnaldo, pescador) registrados em `PENDENCIAS_100.md`, seção 14.
 - [x] Bússola no HUD com os lugares do resort (02/11): foto `docs/ue58/graphics-reference/bussola-20261102.png`.
 - [x] "Pq está parando? Siga o checklist até terminar" (02/11): regra reforçada na memória; o trabalho segue item após item no mesmo turno.
+- [~] "Não é mais fácil procurar na web assets de roupas?" / "Abra pelo navegador" / "Aceita" (02/11): 11 roupas gratuitas do Fab baixadas (Chrome logado, licença aceita com autorização) direto no D: e instaladas; Mateo vestido e construído como prova (`docs/ue58/ROUPAS_FAB.md`). Falta vestir os demais papéis.
+- [x] "Sempre que precisar modelar algo, primeiro busque assets gratuitos na web, salve essa regra na memória global" (02/11): salvo no CLAUDE.md global e na memória.
+- [ ] "Procure biquínis também" (02/11): maiô Aeron (QuingKhaos) baixado; biquíni paramétrico gratuito ainda a procurar.
+- [ ] "Móveis para o hotel, comidas, bebidas, o que for necessário" (02/11): busca iniciada no Fab (frutas Quixel Megascans, coquetéis, pacotes de móveis); falta escolher (sem low poly), baixar e trocar no jogo.
+- [~] "Baixe sempre no drive D" / "mude o armazenamento do Chrome para D" (02/11): downloads feitos direto no D: pela API do Fab; a pasta padrão do Chrome não pôde ser trocada daqui (a extensão não abre chrome://settings) — fazer em Configurações > Downloads.
 - [x] Manter este checklist sempre que o usuário pedir algo (regra salva na memória).
 
 ## Regras permanentes já pedidas

@@ -156,11 +156,15 @@ Pronto e testado (02/11):
 
 ## 5. Pessoas
 - [x] 21 MetaHumans por papel; banhistas com biquíni e sunga; mãos corrigidas.
-- [ ] P0 Roupas reais e coloridas por papel:
-  - praia: camiseta regata, saída de praia, bermuda de surfe;
-  - social: camisa, vestido;
-  - uniforme da equipe com cores do resort;
-  - moradores.
+- [~] P0 Roupas reais e coloridas por papel (02/11): 11 roupas gratuitas do Fab baixadas e instaladas (bermuda,
+  camisetas, camiseta por dentro, cropped, chinelo, sapatilha, mocassim, vestido curto, maiô, casual masculino e
+  feminino; lista e processo em `docs/ue58/ROUPAS_FAB.md`); prova `MH_Mateo_Beach` vestido e construído pelo script
+  (foto `roupa-fab-mateo-20261102.jpg`). Falta:
+  - escolher e construir as roupas de cada papel (praia, hotel/social, uniformes, moradores), em lotes de até 5 builds;
+  - cores por papel nos materiais das peças; trocar o elenco de `metahumans.json` pelas variantes vestidas;
+  - biquínis (o maiô Aeron baixado; procurar biquíni paramétrico gratuito);
+  - regata, bermuda de surfe e saída de praia geradas no bpy (`gen_mh_swimwear.py` tank/boardshorts/coverup) ficam
+    como reserva, desligadas no jogo (não conferidas no Play).
 - [x] P0 Calçados: chinelo, sandália de tiras, tênis e sapato social com saltinho (02/11), sorteados por papel
   (`metahumans.json` → `shoes`); sapato social conferido no saguão do hotel.
 - [ ] P1 Mais banhistas: mulheres e homens de outras idades e tipos de corpo.

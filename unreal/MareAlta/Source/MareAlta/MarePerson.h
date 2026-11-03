@@ -23,6 +23,8 @@ public:
  UPROPERTY(BlueprintReadOnly,Category="Maré Alta") FString MetaHuman;
  UPROPERTY() TObjectPtr<class UChildActorComponent> MetaHumanBody;
  UPROPERTY() TObjectPtr<USkeletalMeshComponent> Swimwear;
+ /** Beachwear worn over the swimwear (tank top, board shorts, cover-up), metahumans.json "beachwear". */
+ UPROPERTY() TArray<TObjectPtr<USkeletalMeshComponent>> Overwear;
  UPROPERTY() TObjectPtr<USkeletalMeshComponent> Shoes;
  /** Roster role (staff, hotel, pousada, village, beach) picking clothes colours and footwear. */
  FString MetaRole;

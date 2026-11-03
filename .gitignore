@@ -62,3 +62,11 @@ unreal/**/SourceArt/World/
 **/__pycache__/
 unreal/**/*.pyc
 unreal/**/SourceArt/**/*.blend1
+
+# Fab outfits (MetaHuman parametric wardrobe, Fab Standard License; ~7 GB): re-download with the list in
+# docs/ue58/ROUPAS_FAB.md and install by the .mhpkg manifest (base path from dependentPackages).
+unreal/MareAlta/Content/Outfits/
+unreal/MareAlta/Content/OutFits/
+unreal/MareAlta/Content/MetaOutfits/
+unreal/MareAlta/Content/People/MetaHumans/*_Beach/
+unreal/MareAlta/Content/People/MetaHumans/MH_*_Beach.uasset

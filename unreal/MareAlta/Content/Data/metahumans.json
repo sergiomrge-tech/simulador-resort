@@ -1,5 +1,5 @@
 {
-  "_doc": "MetaHumans built in /Game/People/MetaHumans (mare_metahuman.py) chosen by AMarePerson per role from the save id. <Name>_Swim = whole-body build wearing /Game/People/Swimwear/SKM_Bikini|Trunks_<Name>. clothes: shirt/short colours (hex) per role tinting the default Epic garment; shoes: footwear kinds per role (one picked per person) (SKM_Flipflops|Sneakers|Sandals|Dress_Ada for women, _Mateo for men, tools/ue58/gen_mh_shoes.py); shoe_colours: upper colours per kind, sole colour first. Zuri (bald Epic preset) is out of every roster until she gets hair. staff_<role> (bartender, recepcionista, camareira, piscineiro, guia, garcom_hotel): MetaHuman and uniform of each staff role (AMarePerson::StaffRole); the kiosk attendant uses staff.",
+  "_doc": "MetaHumans built in /Game/People/MetaHumans (mare_metahuman.py) chosen by AMarePerson per role from the save id. <Name>_Swim = whole-body build wearing /Game/People/Swimwear/SKM_Bikini|Trunks_<Name>. clothes: shirt/short colours (hex) per role tinting the default Epic garment; shoes: footwear kinds per role (one picked per person) (SKM_Flipflops|Sneakers|Sandals|Dress_Ada for women, _Mateo for men, tools/ue58/gen_mh_shoes.py); shoe_colours: upper colours per kind, sole colour first. Zuri (bald Epic preset) is out of every roster until she gets hair. staff_<role> (bartender, recepcionista, camareira, piscineiro, guia, garcom_hotel): MetaHuman and uniform of each staff role (AMarePerson::StaffRole); the kiosk attendant uses staff. beachwear: per swim body, outfit options worn over the swimwear (tank, boardshorts, coverup; \"+\" joins pieces, \"\" = swimwear only; board shorts hide the trunks), colours from beachwear_colours.",
   "staff": [
     "Mateo",
     "Sunita"
@@ -306,5 +306,19 @@
       "1C1A18",
       "2B2B2E"
     ]
-  }
+  },
+  "beachwear_colours": [
+    "F2EFE6",
+    "E8735A",
+    "2BB3B1",
+    "F4C542",
+    "B39DDB",
+    "1F3A5F",
+    "7A8B3F",
+    "F08A24",
+    "E77FA5",
+    "7EC8E3",
+    "FFFFFF",
+    "C0392B"
+  ]
 }

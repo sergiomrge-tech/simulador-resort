@@ -118,6 +118,43 @@ def swim_variant(name):
     return f'{name}_Swim'
 
 
+def dress_variant(name, suffix, items):
+    """MH_<name>_<suffix>: the character wearing real Fab outfits (parametric wardrobe items, e.g.
+    /Game/Outfits/Shorts/WI_OA_Shorts) instead of the default Epic garment; every item goes in the Outfits slot
+    (several pieces: top, bottom, shoes). Build it with build('<name>_<suffix>')."""
+    variant = f'{FOLDER}/MH_{name}_{suffix}'
+    if not unreal.EditorAssetLibrary.does_asset_exist(variant):
+        unreal.EditorAssetLibrary.duplicate_asset(f'{FOLDER}/MH_{name}', variant)
+    character = unreal.load_asset(variant)
+    col = character.internal_collection
+    inst = col.default_instance
+    keys, out = [], {}
+    for path in items:
+        wi = unreal.load_asset(path)
+        if not isinstance(wi, unreal.MetaHumanWardrobeItem):
+            out[path] = 'not a wardrobe item'
+            continue
+        found = list(col.get_item_keys_for_wardrobe_item(wi)) if hasattr(col, 'get_item_keys_for_wardrobe_item') else []
+        key, slot = (found[0], 'Outfits') if found else (None, '')
+        for slot in ([] if key else ('Outfits', 'Top Garment', 'Bottom Garment')):
+            key = col.try_add_item_from_wardrobe_item(slot, wi)
+            if key:
+                break
+        out[path] = f'ok {slot}' if key else f'refused (principal {wi.get_editor_property("principal_asset") if hasattr(wi, "get_editor_property") else "?"})'
+        if key:
+            keys.append(key)
+    if keys:
+        inst.set_single_slot_selection('Outfits', keys[0])
+        for key in keys[1:]:
+            sel = unreal.MetaHumanPipelineSlotSelection()
+            sel.set_editor_property('slot_name', 'Outfits')
+            sel.set_editor_property('selected_item', key)
+            out[f'select {len(out)}'] = inst.try_add_slot_selection(sel)
+    unreal.EditorAssetLibrary.save_loaded_asset(character, False)
+    out['selection'] = str(inst.get_slot_selection_data())[:600]
+    return out
+
+
 def export(name, out_dir):
     """Body textures (TGA) and body skeletal mesh (FBX) of a built character for the Blender garment tools."""
     import os
@@ -278,6 +315,23 @@ def build(name, folder=None):
         sub.remove_object_to_edit(character)
     built = unreal.EditorAssetLibrary.list_assets(folder or f'{FOLDER}/{name}', True, False)
     return {'assets': len(built), 'sample': built[:40]}
+
+
+def wear(name, loc, kinds):
+    """Preview: extra garments (Tank, Boardshorts, Coverup...) of <name> at "x,y,z", next to an existing preview."""
+    sub = unreal.get_editor_subsystem(unreal.EditorActorSubsystem)
+    x, y, z = (float(v) for v in loc.split(','))
+    out = []
+    for kind in kinds.split(','):
+        path = f'{SWIM}/SKM_{kind}_{name}'
+        if not unreal.EditorAssetLibrary.does_asset_exist(path):
+            out.append(f'missing {path}')
+            continue
+        g = sub.spawn_actor_from_class(unreal.SkeletalMeshActor, unreal.Vector(x, y, z), unreal.Rotator(roll=0, pitch=0, yaw=0))
+        g.skeletal_mesh_component.set_skeletal_mesh_asset(unreal.load_asset(path))
+        g.tags = [unreal.Name('MareMHPreview')]
+        out.append(path)
+    return out
 
 
 def preview(name, loc, clip='', at=.5, keep=False):
@@ -496,6 +550,10 @@ def run(action, arg=''):
         # "Ada@D:/.../SKM_Bikini_Ada.fbx@bikini"
         name, fbx, kind = arg.split('@')
         return import_garment(name, fbx, kind)
+    if action == 'wear':
+        # "Ada@x,y,z@Tank,Boardshorts"
+        name, loc, kinds = arg.split('@')
+        return wear(name, loc, kinds)
     if action == 'noskin':
         name, _, folder = arg.partition('@')
         return replace_skin(name, folder or f'D:/CodexTemp/mh/{name}_Swim')
@@ -513,6 +571,24 @@ def run(action, arg=''):
             out[prop] = str(v)[:1500]
             if hasattr(v, '__class__') and not isinstance(v, (str, int, float)):
                 out[prop + '_fields'] = [f for f in dir(v) if not f.startswith('_') and not callable(getattr(v, f, None))][:80]
+        return out
+    if action == 'api':
+        # Method names of the collection, its default instance, a palette item key and a wardrobe item asset.
+        ch = unreal.load_asset(f'{FOLDER}/MH_{arg or "Ada"}')
+        col = ch.internal_collection
+        pub = lambda o: [m for m in dir(o) if not m.startswith('_')]
+        wi = unreal.load_asset('/Game/Outfits/Shorts/WI_OA_Shorts')
+        out = {'collection': pub(col), 'key': pub(unreal.MetaHumanPaletteItemKey()), 'wi': str(wi), 'wi_api': pub(wi) if wi else None,
+               'unreal': [n for n in dir(unreal) if 'Wardrobe' in n or 'Palette' in n or 'MetaHumanCollection' in n][:60]}
+        out['instance'] = pub(col.default_instance)
+        for doc in ('try_add_item_from_wardrobe_item',):
+            out[doc] = getattr(type(col), doc).__doc__[:500]
+        for doc in [m for m in pub(col.default_instance) if 'select' in m]:
+            out[doc] = getattr(type(col.default_instance), doc).__doc__[:300]
+        try:
+            out['items'] = [str(i) for i in col.get_items()][:8]
+        except Exception as e:
+            out['items'] = str(e)[:200]
         return out
     if action == 'coll':
         ch = unreal.load_asset(f'{FOLDER}/MH_{arg or "Lani"}')
@@ -548,6 +624,10 @@ def run(action, arg=''):
         return probe(arg or 'Lani')
     if action == 'buildinfo':
         return build_info()
+    if action == 'dress':
+        # "Mateo@Beach@/Game/Outfits/Shorts/WI_OA_Shorts,/Game/..."
+        name, suffix, items = arg.split('@')
+        return dress_variant(name, suffix, items.split(','))
     if action == 'build':
         return build(arg or 'Lani')
     if action == 'save':

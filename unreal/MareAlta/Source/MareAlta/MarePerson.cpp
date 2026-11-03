@@ -26,6 +26,7 @@
 #include "Serialization/JsonSerializer.h"
 
 static TAutoConsoleVariable<int32> CVarMareMetaHumans(TEXT("mare.MetaHumans"),1,TEXT("People wear the built MetaHumans of Content/Data/metahumans.json (0 = original rig people)."));
+static TAutoConsoleVariable<int32> CVarMareBeachwear(TEXT("mare.Beachwear"),-1,TEXT("QA: beachwear option index for new beach people (-1 = picked per person)."));
 static TAutoConsoleVariable<FString> CVarMareMetaHuman(TEXT("mare.MetaHuman"),TEXT(""),TEXT("QA: force this built MetaHuman on every new person (empty = roster choice)."));
 
 /** Content/Data/metahumans.json: built MetaHumans per role (staff, hotel, village, beach) and swimwear colours. */
@@ -112,6 +113,7 @@ bool AMarePerson::SetMetaHuman(const FString& Name)
   for(auto Part:Parts){Part->SetLeaderPoseComponent(GetMesh());Part->SetCollisionEnabled(ECollisionEnabled::NoCollision);}}
  // Swim builds (<Name>_Swim, whole body) wear the bikini/trunks made for that body (tools/ue58/gen_mh_swimwear.py).
  if(Swimwear){Swimwear->DestroyComponent();Swimwear=nullptr;}
+ for(auto Part:Overwear)if(IsValid(Part))Part->DestroyComponent();Overwear.Empty();
  if(Name.EndsWith(TEXT("_Swim"))){const FString Base=Name.LeftChop(5);USkeletalMesh* Garment=nullptr;
   for(const TCHAR* Kind:{TEXT("Bikini"),TEXT("Trunks")})
    if(!Garment)Garment=LoadObject<USkeletalMesh>(nullptr,*FString::Printf(TEXT("/Game/People/Swimwear/SKM_%s_%s.SKM_%s_%s"),Kind,*Base,Kind,*Base));
@@ -121,7 +123,25 @@ bool AMarePerson::SetMetaHuman(const FString& Name)
    const TArray<TSharedPtr<FJsonValue>>* Colours=nullptr;
    if(MetaHumanRoster()->TryGetArrayField(TEXT("swim_colours"),Colours) && Colours->Num()){
     const FColor C=FColor::FromHex((*Colours)[int32(FCrc::StrCrc32(*SaveId)%uint32(Colours->Num()))]->AsString());
-    for(int32 I=0;I<Swimwear->GetNumMaterials();++I)if(auto M=Swimwear->CreateDynamicMaterialInstance(I))M->SetVectorParameterValue(TEXT("Tint"),FLinearColor(C));}}}
+    for(int32 I=0;I<Swimwear->GetNumMaterials();++I)if(auto M=Swimwear->CreateDynamicMaterialInstance(I))M->SetVectorParameterValue(TEXT("Tint"),FLinearColor(C));}}
+  // Beachwear over the swimwear (tools/ue58/gen_mh_swimwear.py tank|boardshorts|coverup, fitted to this body): one of
+  // the person's options in metahumans.json "beachwear" ("" = swimwear only, "tank+boardshorts" = both), each piece in
+  // a colour of "beachwear_colours". Board shorts replace the trunks.
+  for(auto Part:Overwear)if(IsValid(Part))Part->DestroyComponent();Overwear.Empty();
+  const TSharedPtr<FJsonObject>* Wear=nullptr;const TArray<TSharedPtr<FJsonValue>>* Options=nullptr;
+  if(MetaHumanRoster()->TryGetObjectField(TEXT("beachwear"),Wear) && (*Wear)->TryGetArrayField(Base,Options) && Options->Num()){
+   const int32 Forced=CVarMareBeachwear.GetValueOnGameThread();
+   const int32 Pick=Forced>=0?Forced%Options->Num():int32(FCrc::StrCrc32(*(SaveId+TEXT("wear")))%uint32(Options->Num()));
+   TArray<FString> Kinds;(*Options)[Pick]->AsString().ParseIntoArray(Kinds,TEXT("+"));
+   const TArray<TSharedPtr<FJsonValue>>* Colours=nullptr;MetaHumanRoster()->TryGetArrayField(TEXT("beachwear_colours"),Colours);
+   for(const FString& Kind:Kinds){const FString Asset=Kind.Left(1).ToUpper()+Kind.Mid(1);
+    auto Piece=LoadObject<USkeletalMesh>(nullptr,*FString::Printf(TEXT("/Game/People/Swimwear/SKM_%s_%s.SKM_%s_%s"),*Asset,*Base,*Asset,*Base));if(!Piece)continue;
+    auto Part=NewObject<USkeletalMeshComponent>(this);AddInstanceComponent(Part);Part->SetupAttachment(GetMesh());Part->SetSkeletalMeshAsset(Piece);
+    Part->SetCollisionEnabled(ECollisionEnabled::NoCollision);Part->RegisterComponent();Part->SetLeaderPoseComponent(GetMesh());
+    if(Colours && Colours->Num()){const FColor C=FColor::FromHex((*Colours)[int32(FCrc::StrCrc32(*(SaveId+Kind))%uint32(Colours->Num()))]->AsString());
+     for(int32 I=0;I<Part->GetNumMaterials();++I)if(auto M=Part->CreateDynamicMaterialInstance(I))M->SetVectorParameterValue(TEXT("Tint"),FLinearColor(C));}
+    if(Kind==TEXT("boardshorts") && Swimwear && Swimwear->GetSkeletalMeshAsset() && Swimwear->GetSkeletalMeshAsset()->GetName().Contains(TEXT("Trunks")))Swimwear->SetVisibility(false);
+    Overwear.Add(Part);}}}
  const bool bSwim=Name.EndsWith(TEXT("_Swim"));const FString RoleKey=bSwim?TEXT("swim"):MetaRole.IsEmpty()?TEXT("village"):MetaRole;
  auto Pick=[this](const TArray<TSharedPtr<FJsonValue>>& List,const TCHAR* Salt,int32 First=0){
   return FLinearColor(FColor::FromHex(List[First+int32(FCrc::StrCrc32(*(SaveId+Salt))%uint32(List.Num()-First))]->AsString()));};
