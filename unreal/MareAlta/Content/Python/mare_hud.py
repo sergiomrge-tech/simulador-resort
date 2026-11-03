@@ -1361,6 +1361,10 @@ def run(action, arg=''):
                 a.modify()
             out[p] = bool(a) and unreal.EditorAssetLibrary.save_loaded_asset(a, False)
         return out
+    if action == 'underwaterfog':
+        import importlib, mare_materials
+        importlib.reload(mare_materials)
+        return mare_materials.build_underwater_fog()
     if action == 'grasstone':
         # "path|path": deeper textured green on grass materials (mare_materials.grass_tone)
         import importlib, mare_materials

@@ -837,3 +837,32 @@ def grass_tone(path):
         raise RuntimeError(str(errors))
     unreal.EditorAssetLibrary.save_loaded_asset(mat, False)
     return 'ok'
+
+
+def build_underwater_fog():
+    """Post-process for the diving camera (UMareGame Eyes, blend weight 1 under water). Real water, not a tint:
+    distance fog towards a water colour that is light looking up at the surface and deep blue-green looking down,
+    and red absorbed first with distance. The open sea past the reef fades into that colour instead of the old
+    flat blue void (03/11, PENDENCIAS "horizonte subaquático azul e vazio")."""
+    mat = material('M_UnderwaterFog')
+    mat.set_editor_property('material_domain', unreal.MaterialDomain.MD_POST_PROCESS)
+    mat.set_editor_property('blendable_location', unreal.BlendableLocation.BL_SCENE_COLOR_AFTER_TONEMAPPING)
+    scene = expression(mat, unreal.MaterialExpressionSceneTexture)
+    scene.set_editor_property('scene_texture_id', unreal.SceneTextureId.PPI_POST_PROCESS_INPUT0)
+    depth = expression(mat, unreal.MaterialExpressionSceneDepth)
+    cam = expression(mat, unreal.MaterialExpressionCameraVectorWS)
+    pos = expression(mat, unreal.MaterialExpressionCameraPositionWS)
+    node = custom(mat,
+        'float3 v = -normalize(C); float up = saturate(v.z*.5 + .5); '
+        'float deep = saturate(-P.z/900); '
+        'float3 water = lerp(float3(.015,.085,.11), float3(.09,.36,.40), pow(up, 1.6)) * lerp(1, .7, deep); '
+        'float f = 1 - exp(-D/2000); '
+        'float3 lit = S.rgb * lerp(float3(1,1,1), float3(.6,.86,.9), saturate(D/1400)); '
+        'return lerp(lit, water, saturate(f*.94));',
+        unreal.CustomMaterialOutputType.CMOT_FLOAT3, {'S': scene, 'D': depth, 'C': cam, 'P': pos})
+    MEL.connect_material_property(node, '', unreal.MaterialProperty.MP_EMISSIVE_COLOR)
+    errors = list(MEL.recompile_material(mat))
+    if errors:
+        raise RuntimeError(str(errors))
+    unreal.EditorAssetLibrary.save_loaded_asset(mat, False)
+    return mat.get_path_name()

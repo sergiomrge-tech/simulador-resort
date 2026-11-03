@@ -101,8 +101,15 @@ Nada de mecânica nova até esta seção fechar. Cada passada roda uma auditoria
 - [x] P1 Abertura: ônibus detalhado, desembarque (pode pular), caminhada até a casa, porta e carta re-testados pela
   QA `-MareIntroQA` (11/11 em 02/11, save limpo).
 - [x] P1 Casa: sofá, TV, som, chuveiro e cama conferidos pela QA completa com capturas (02/11, `home-*.png`).
-- [ ] P2 Fauna marinha ainda com aparência cartoon; horizonte subaquático azul e vazio. (Animais da vila: gatos e
-  cachorros saíram do jogo a pedido do Sergio, 03/11.)
+- [ ] P2 [adiado-usuario] (03/11: "deixa o fundo do mar para depois") Horizonte subaquático azul e vazio. Material
+  `M_UnderwaterFog` pronto (`mare_materials.build_underwater_fog`), falta ligar como blendable na câmera Eyes e conferir. (Animais da vila:
+  gatos e cachorros saíram do jogo a pedido do Sergio, 03/11.)
+- [ ] P2 Peixes do recife com cara de desenho (malhas corpo+cauda do Godot) [bloqueado-usuario]: os melhores gratuitos
+  são escaneamentos CC0 da ffishAsia no Sketchfab, que exige login. 03/11: o acesso ao Chrome foi negado duas vezes
+  (o Sergio pode estar usando o PC). Basta entrar no Sketchfab no Chrome (Google/Epic) uma vez; os downloads seguem
+  por script. Candidatos (CC0): peixe-anjo listrado a5c0bb6877184e698c1992e5ce1a69d0, budião dac672386dd741af8485fcab811b9db4,
+  garoupa afefbdad11ae4f5da06c6943f7bbf573, vermelho d253b4e2651644e0aadc7a17b955c051, bodião 30a07294d36c4539b23f398e522dd910,
+  xaréu (cardume) cad0abfc668e4e3486e930491ac0d840. Os CC0 do Smithsonian (baiacu, peixe-cofre) são espécimes secos de museu.
 - [ ] P2 Interior dos quartos do hotel além da suíte visitável (a torre é casca com fachada).
 
 ## 3. Gameplay: cada lugar com algo para fazer
@@ -323,9 +330,11 @@ Pronto e testado (02/11):
   - campainha da recepção, chaves, cama, lixo;
   - tacadas e bolas da sinuca;
   - liquidificador e coqueteleira do bar.
-- [ ] P1 Rádio com músicas havaianas de ukulele ORIGINAIS (pedido do Sergio, 03/11): compor/gerar com ferramenta gratuita
-  (sem copiar músicas existentes, ex.: "Over the Rainbow" tem direitos), várias faixas leves + uma música-tema do jogo.
-- [ ] P1 Ambiente de fundo suave e relaxante (03/11): vento, mar/ondas, pássaros e gaivotas em volume baixo, sem poluição sonora.
+- [~] P1 Rádio com músicas havaianas de ukulele ORIGINAIS (pedido do Sergio, 03/11): compor/gerar com ferramenta gratuita
+  (sem copiar músicas existentes, ex.: "Over the Rainbow" tem direitos), várias faixas leves + uma música-tema do jogo. 03/11: feitas "Aloha FM" (120 s, ukulele/steel/ipu,
+  `gen_radio_music.havaiana`) e o tema (73 s), padrão no rádio; faltam mais 2–3 faixas havaianas.
+- [x] P1 Ambiente de fundo suave e relaxante (03/11): vento, mar/ondas, pássaros e gaivotas em volume baixo, sem poluição sonora.
+  Feito 03/11: pássaros a cada 10–22 s (0,16) e gaivotas a cada 28–55 s (0,13) sobre vento e mar (`MareAudioWorld`).
 - [ ] P1 Mixagem final e volumes por categoria (já existem: geral, música, efeitos, ambiente).
 - [ ] P2 Vozes curtas (murmúrios) sem diálogo falado, respeitando a regra de áudio suave.
 

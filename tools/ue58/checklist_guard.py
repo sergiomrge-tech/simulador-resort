@@ -1,6 +1,7 @@
 """Stop hook: keeps the work going while docs/ue58/PENDENCIAS_100.md has open items.
 
-Open = lines "- [ ]" or "- [~]" without the tag [bloqueado-usuario] (items only Sergio can unblock).
+Open = lines "- [ ]" or "- [~]" without the tag [bloqueado-usuario] (items only Sergio can unblock) or
+[adiado-usuario] (items Sergio asked to leave for later).
 When none are left, it asks for the full-game simulation and its new checklist
 (docs/ue58/CHECKLIST_SIMULACAO.md); once that file exists it lets the session stop.
 Escape hatch: create D:/CodexTemp/claude/PARAR_CHECKLIST. While a long background job runs, a marker
@@ -36,7 +37,7 @@ def main():
         for line in path.read_text(encoding='utf-8-sig').splitlines():
             if section is not None and line.startswith('## '):
                 inside = line.startswith('## ' + section)
-            if inside and re.match(r'\s*- \[( |~)\]', line) and '[bloqueado-usuario]' not in line:
+            if inside and re.match(r'\s*- \[( |~)\]', line) and '[bloqueado-usuario]' not in line and '[adiado-usuario]' not in line:
                 out.append(re.sub(r'\s+', ' ', line.strip())[:160])
         return out
 
