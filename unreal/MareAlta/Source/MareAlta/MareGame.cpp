@@ -1372,6 +1372,8 @@ static FAutoConsoleCommandWithWorldAndArgs MareQACommand(TEXT("mare.QA"),TEXT("Q
   if(Verb==TEXT("money")){S->State->SetNumberField(TEXT("money"),FCString::Atod(*Arg));bOk=S->Save();}
   else if(Verb==TEXT("buy"))bOk=S->BuyExpansion(Arg);
   else if(Verb==TEXT("biz"))bOk=S->BuyBusiness(Arg);
+  else if(Verb==TEXT("vip")){   // the first open kiosk order becomes a VIP ("mare.QA vip <title index>")
+   for(const auto& Pair:UMareSimulation::Object(S->State,TEXT("ue_orders"))->Values){bOk=S->MakeVip(FString(Pair.Key.ToView()),FCString::Atoi(*Arg),0);break;}}
   else if(Verb==TEXT("fame")){for(int32 I=0;I<600 && S->FameLevel()<FCString::Atoi(*Arg);++I)S->AddFame(50);bOk=S->FameLevel()>=FCString::Atoi(*Arg) && S->Save();}
   else if(Verb==TEXT("dump")){   // what a reload must keep: owned places, chapters, businesses, company, fame
    auto Out=MakeShared<FJsonObject>();Out->SetObjectField(TEXT("unlocked"),UMareSimulation::Object(S->State,TEXT("unlocked")));
@@ -1508,7 +1510,7 @@ public:
    auto Row=SNew(SHorizontalBox);
    for(int32 I=0;I<M.Tickets.Num();++I)Row->AddSlot().AutoWidth().Padding(7,0)[SNew(SBox).WidthOverride(150).RenderTransform(Tilt(I%2?1.6f:-1.6f)).RenderTransformPivot(FVector2D(.5f,.5f))[SNew(SBorder).BorderImage(&Ticket()).Padding(0)[SNew(SVerticalBox)
     +SVerticalBox::Slot().AutoHeight()[SNew(SBox).HeightOverride(5)[SNew(SBorder).BorderImage(&TicketStrip())]]
-    +SVerticalBox::Slot().AutoHeight().Padding(10,6,10,0)[Txt(M.Tickets[I].Key,13,Accent,true)]
+    +SVerticalBox::Slot().AutoHeight().Padding(10,6,10,0)[Txt(M.Tickets[I].Key,13,Accent,true,130)]
     +SVerticalBox::Slot().AutoHeight().Padding(10,2,10,9)[Txt(M.Tickets[I].Value,12,Ink,false,130)]]]];
    Root->AddSlot().VAlign(VAlign_Top).HAlign(HAlign_Center).Padding(0,62,0,0)[Row];
   }
@@ -1652,7 +1654,11 @@ void AMareHUD::DrawHUD()
    double High=0,Low=9;const TArray<TSharedPtr<FJsonValue>>* All=nullptr;
    if(Order->TryGetArrayField(TEXT("items"),All) || Order->TryGetArrayField(TEXT("remaining"),All))for(const auto& Item:*All){const double R=S->PriceRatio(Item->AsString());High=FMath::Max(High,R);Low=FMath::Min(Low,R);}
    const TCHAR* Feel=High>1.25?TEXT(" · achou caro"):Low<.85?TEXT(" · que barato!"):TEXT("");
-   M.Tickets.Add({FString::Printf(TEXT("#%d %s%s"),Number,*UMareSimulation::String(Order,TEXT("name")),Feel),Text});
+   // A famous customer: title on the ticket and the special request under the items.
+   bool bVip=false;Order->TryGetBoolField(TEXT("vip"),bVip);
+   if(bVip)Text+=TEXT("\n\"")+UMareSimulation::String(Order,TEXT("request"))+TEXT("\"");
+   M.Tickets.Add({bVip?FString::Printf(TEXT("#%d VIP · %s%s"),Number,*UMareSimulation::String(Order,TEXT("vip_title")),Feel)
+    :FString::Printf(TEXT("#%d %s%s"),Number,*UMareSimulation::String(Order,TEXT("name")),Feel),Text});
   }
  }
  if(!S->Carry().IsEmpty())M.Carry=Dish(S->Carry());

@@ -148,7 +148,7 @@ Pronto e testado (02/11):
   (aniversário, casamento na praia, jantar de empresa) marcados para o dia seguinte. `MareRestaurant.cpp`,
   `MareRestaurantWorld.cpp`, `Content/Data/restaurant.json`, teste `MareAlta.Gameplay.HotelRestaurant`.
   Falta: pratos visíveis nas mesas e na bandeja, decoração do evento em cena.
-- [~] P1 **Salão de jogos** (02/11):
+- [x] P1 **Salão de jogos** (02/11):
   - [x] partida de sinuca jogada até o fim (02/11): no Play com `mare.PoolAutoPlay 1` + `mare.PoolQA` (hóspede venceu 4×3 em
     11 tacadas, placar e câmera conferidos, foto `sinuca-partida-20261102.jpg`) e teste `MareAlta.Gameplay.PoolFullMatch`
     (40 partidas completas com a física real: todas terminam, média 6,3 tacadas, bolas sempre na mesa, os dois lados vencem);
@@ -156,6 +156,14 @@ Pronto e testado (02/11):
   - [x] 2 fliperamas "Maré Attack" com tela e letreiro acesos, partida rápida de 3 rodadas;
   - [x] hóspedes jogando das 18h às 23h e renda das fichas (mais jogadores com o hotel cheio).
   Dados em `Content/Data/business_games.json` (`pebolim`, `fliperama`, `game_room`), teste em `MareAlta.Gameplay.BusinessCounter`.
+- [ ] P1 **Tênis de mesa** no salão de jogos com gameplay completo (pedido do Sergio, 03/11): mesa e raquetes reais
+  (asset gratuito antes de modelar), bola com física de quique e efeito, saque e regras (11 pontos, troca de saque a cada
+  2, vantagem de 2), adversário hóspede com níveis, placar e câmera; controle por mouse e por controle; teste automático
+  de partidas completas como na sinuca.
+- [ ] P1 **Sinuca como jogo completo** (pedido do Sergio, 03/11): modos amistoso (contra hóspede, sem aposta),
+  partida com aposta pequena e **campeonato** (chave de 4–8 jogadores da vila/hotel, rodadas por dia, troféu e prêmio);
+  regras completas de bola 8 (faltas, bola na mão, encaçapar a 8 cedo perde, tacada de saída), escolha de adversário,
+  histórico de vitórias; teste de campeonato inteiro.
 - [x] P1 Recepção do hotel com a fila de hóspedes visível no saguão (check-in vai ao elevador, check-out de manhã sai pela
   porta; teste `MareAlta.Gameplay.HotelReceptionLine`, foto no PIE 02/11).
 - [x] P1 Equipe coerente com as tarefas novas (02/11): página de equipe com atendente, recepcionista, camareira,
@@ -176,17 +184,16 @@ Pronto e testado (02/11):
     (turno integral sem folga cansa, rende menos e chega a faltar um dia);
   - [x] página de equipe com nível, horas do dia, cansaço, turno e folga de cada pessoa e o que está fazendo agora;
   - [x] o que cada um fez e rendeu no dia (entregas, drinks, bilhetes, mesas, check-ins, tarefas e R$) na página de equipe;
-  - [ ] humor além do cansaço (fica para os eventos cômicos da seção 14, atendente iniciante);
+  - [x] humor além do cansaço: feito como HUM-006 (atendente iniciante atrapalhado, some com o nível);
   - teste `MareAlta.Gameplay.StaffShiftsAndLevels` (24/24 MareAlta.* passando); foto
     `docs/ue58/graphics-reference/equipe-20261102.jpg`.
-- [ ] P2 Pedidos especiais e clientes VIP/influenciador no quiosque (eventos cômicos da tarefa #4).
+- [x] P2 Pedidos especiais e clientes VIP/influenciador no quiosque (eventos cômicos da tarefa #4). Feito 03/11:
+  a partir da fama 2, 7% dos pedidos são de um VIP (`definitions.json` → `kiosk_vip`: título neutro em gênero e um
+  pedido especial na comanda), gorjeta extra de 80% do preço por item e +6 de fama ao servir tudo; o influenciador
+  segue como HUM-002. Teste em `MareAlta.Simulation.*`, `mare.QA vip`, foto da comanda e gorjeta VIP no caixa.
 
 ## 4. Progressão, economia e conteúdo
-- [~] P1 **Balanceamento** jogando do zero até o Grand Hotel (02/11: primeira passada por modelo em
-  `docs/ue58/BALANCEAMENTO.md` e `tools/ue58/balance_model.py`; falta o playtest cronometrado para trocar as hipóteses):
-  - desbloqueio novo a cada 10–20 min;
-  - preços das expansões, salários, diárias e renda do salão.
-- [ ] P1 Duração do Acesso Antecipado: 6–10 h de conteúdo com objetivo sempre visível.
+- Balanceamento e duração foram para a seção 15, no fim da fila (pedido do Sergio, 03/11).
 - [x] P1 **Tutorial** (02/11): dica na primeira vez de cada sistema (21 dicas em `Content/Data/tutorial.json`: celular,
   placa, balcão, geladeira, recepções, limpeza, bar, negócios, passeios, pesca, piscina, restaurante, sinuca, foto, cama),
   num cartão no canto inferior esquerdo, uma vez por save; e "Próxima meta" sempre visível na nota de missões (próxima
@@ -425,3 +432,14 @@ atendimento, economia ou saves; um evento por vez, com cooldown e seed testável
 - [x] HUM-006 Atendente iniciante atrapalhado (quase derruba bandeja), diminui com treinamento; sem perder pedido/dinheiro. (03/11, conferido por captura)
 - [ ] Critérios de aceite da especificação: 100 ciclos sem travar NPC/fila, sem cobrança/estoque duplicados no reload,
   fotos e clipe do EXE.
+
+## 15. Balanceamento e diversão (no fim da fila, pedido do Sergio em 03/11)
+Objetivo: o jogo ser divertido e não cansativo nem maçante, com várias atividades acontecendo ao mesmo tempo (quiosque,
+negócios, hóspedes, salão, passeios, eventos) e o jogador sempre escolhendo o que fazer.
+- [~] P1 **Balanceamento** financeiro e econômico de tudo, jogando do zero até o Grand Hotel (02/11: primeira passada por modelo em
+  `docs/ue58/BALANCEAMENTO.md` e `tools/ue58/balance_model.py`; falta o playtest cronometrado para trocar as hipóteses):
+  - desbloqueio novo a cada 10–20 min;
+  - preços das expansões, salários, diárias e renda do salão.
+- [ ] P1 Duração do Acesso Antecipado: 6–10 h de conteúdo com objetivo sempre visível.
+- [ ] P1 Ritmo: nunca mais de 1–2 min sem algo a fazer; tarefas paralelas que se sobrepõem (pedido no quiosque enquanto
+  o bar chama, hóspede na recepção, evento cômico), sem fila de espera longa nem tarefa repetitiva demais.

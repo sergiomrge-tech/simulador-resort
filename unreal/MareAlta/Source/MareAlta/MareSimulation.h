@@ -54,6 +54,10 @@ public:
  bool Deliver(const FString& OrderId, const FString& Dish,bool bStaff=false);
  UFUNCTION(BlueprintCallable,Category="Maré Alta")
  FString AddOrder(const FString& Customer, const TArray<FString>& Dishes);
+ /** Famous customer (definitions kiosk_vip): from min_fame, odds per new order; the ticket shows the title and a special
+  *  request, each served item pays an extra tip and the full order adds fame. MakeVip forces it (tests, QA). */
+ bool RollVip(const FString& OrderId);
+ bool MakeVip(const FString& OrderId,int32 Title,int32 Request);
  UFUNCTION(BlueprintCallable,Category="Maré Alta")
  bool HireAttendant();
  /** Lets the attendant go: carried product returns to stock, no refund, no wage from the next night. */

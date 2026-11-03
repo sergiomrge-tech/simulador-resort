@@ -84,6 +84,14 @@ bool FMareEconomyTest::RunTest(const FString& Parameters)
  Sim->State->SetNumberField(TEXT("money"),0);const int32 Fish=Sim->Available(TEXT("porcao_peixe"));
  TestFalse(TEXT("Atomic restock refuses insufficient cash"),Sim->Restock(TEXT("porcao_peixe"),48));
  TestEqual(TEXT("No partial replenishment"),Sim->Available(TEXT("porcao_peixe")),Fish);
+ {// VIP: extra tip on each item, fame once the whole order is served, ticket fields saved with the order.
+  const FString Vip=Sim->AddOrder(TEXT("Teste"),{TEXT("suco")});TestTrue(TEXT("VIP order"),Sim->MakeVip(Vip,0,1));
+  auto Order=UMareSimulation::Object(UMareSimulation::Object(Sim->State,TEXT("ue_orders")),Vip);
+  TestFalse(TEXT("VIP title and request"),UMareSimulation::String(Order,TEXT("vip_title")).IsEmpty() || UMareSimulation::String(Order,TEXT("request")).IsEmpty());
+  const double VipCash=Sim->Money();const double Xp=UMareSimulation::Number(UMareSimulation::Object(Sim->State,TEXT("prog")),TEXT("fame_xp"));
+  UMareSimulation::Object(Sim->State,TEXT("company"))->SetStringField(TEXT("carry"),TEXT("suco"));TestTrue(TEXT("VIP served"),Sim->Deliver(Vip,TEXT("suco")));
+  TestTrue(TEXT("VIP pays more than the price"),Sim->Money()-VipCash>=Sim->SalePrice(TEXT("suco"))*1.5);
+  TestTrue(TEXT("VIP adds fame"),UMareSimulation::Number(UMareSimulation::Object(Sim->State,TEXT("prog")),TEXT("fame_xp"))-Xp>=8);}
  Sim->State->SetNumberField(TEXT("money"),150);
  TestFalse(TEXT("Starting cash cannot hire"),Sim->HireAttendant());TestTrue(TEXT("Hire refusal names the cost"),Sim->LastMessage.Contains(TEXT("R$ 240")));
  Sim->State->SetNumberField(TEXT("money"),1000);

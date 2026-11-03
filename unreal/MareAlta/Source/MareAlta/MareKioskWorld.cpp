@@ -61,6 +61,7 @@ bool UMareKioskWorld::Serve(AMarePerson* Person,bool bStaff)
    for(const auto& Id:Menu){R-=S->DishDemand(Id);if(R<=0)return Id;}return Menu.Last();};
   Person->Plan={PickDish()};if(FMath::RandRange(0,3)==0)Person->Plan.Add(PickDish());
   Person->OrderId=S->AddOrder(Person->PersonName,Person->Plan);if(Person->OrderId.IsEmpty())return false;
+  S->RollVip(Person->OrderId);
   Person->Stage=EMarePersonStage::Products;Person->Elapsed=0;return true;
  }
  if(Person->Stage!=EMarePersonStage::Products)return false;

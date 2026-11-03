@@ -136,7 +136,10 @@ def visible(rounds=2):
             limb = max(limbs(seq[i], seq[j]) for i in range(3) for j in range(i + 1, 3))
             if moved > 15 and limb < 1.5:
                 glide.append([x[2], x[3]])
-            if moved < 2 and limb < 0.05:
+            # Off-screen MetaHuman bodies skip their pose update on purpose (OnlyTickPoseWhenRendered): only a body the
+            # camera is drawing counts as frozen (the hotel terrace guests were flagged while the camera was in the village).
+            seen = any(len(r) > 2 and r[2] for r in x[5])
+            if moved < 2 and limb < 0.05 and seen:
                 frozen.append([x[2], x[3]])
     return {'actors': total, 'gliding': glide, 'frozen': frozen, 'pass': not glide and not frozen and total > 0}
 

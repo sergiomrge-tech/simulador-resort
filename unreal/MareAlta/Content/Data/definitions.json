@@ -845,5 +845,42 @@
 		"exempt": [
 			"atendente"
 		]
+	},
+	"kiosk_vip": {
+		"_doc": "Famous customers at the kiosk (PENDENCIAS 3, pedidos especiais e VIP): from fame level min_fame, each new kiosk order is a VIP with chance odds. The ticket shows the title and a special request; the VIP pays tip x the sale price as an extra tip on each item and, when the whole order is served, adds fame.",
+		"min_fame": 2,
+		"odds": 0.07,
+		"tip": 0.8,
+		"fame": 6,
+		"titles": [
+			"Estrela da TV",
+			"Atleta da seleção",
+			"Chef de TV",
+			"Celebridade",
+			"Lenda do surfe",
+			"Artista de novela"
+		],
+		"titles_en": [
+			"TV star",
+			"National team athlete",
+			"TV chef",
+			"Celebrity",
+			"Surfing legend",
+			"Soap opera star"
+		],
+		"requests": [
+			"capricha, por favor",
+			"é para uma foto, viu?",
+			"pode trazer na mesa da frente?",
+			"sem pressa, mas com carinho",
+			"o mesmo que pedi no ano passado"
+		],
+		"requests_en": [
+			"make it special, please",
+			"it's for a photo, okay?",
+			"can you bring it to the front table?",
+			"no rush, but make it special",
+			"the same as last year"
+		]
 	}
 }

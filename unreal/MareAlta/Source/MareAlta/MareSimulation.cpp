@@ -204,6 +204,22 @@ FString UMareSimulation::AddOrder(const FString& Customer,const TArray<FString>&
  for(const auto& Dish:Dishes){if(!IsDishUnlocked(Dish)) return TEXT("");Items.Add(MakeShared<FJsonValueString>(Dish));}
  Order->SetArrayField(TEXT("remaining"),Items);Order->SetArrayField(TEXT("items"),Items); Orders->SetObjectField(Id,Order); Save(); return Id;
 }
+bool UMareSimulation::RollVip(const FString& OrderId)
+{
+ auto Vip=Object(Definitions,TEXT("kiosk_vip"));if(FameLevel()<Number(Vip,TEXT("min_fame"),2) || FMath::FRand()>=Number(Vip,TEXT("odds"),0))return false;
+ const TArray<TSharedPtr<FJsonValue>>* Titles=nullptr;const TArray<TSharedPtr<FJsonValue>>* Requests=nullptr;
+ if(!Vip->TryGetArrayField(TEXT("titles"),Titles) || !Vip->TryGetArrayField(TEXT("requests"),Requests) || Titles->IsEmpty() || Requests->IsEmpty())return false;
+ return MakeVip(OrderId,FMath::RandRange(0,Titles->Num()-1),FMath::RandRange(0,Requests->Num()-1));
+}
+bool UMareSimulation::MakeVip(const FString& OrderId,int32 Title,int32 Request)
+{
+ auto Orders=Object(State,TEXT("ue_orders"));if(!Orders->HasField(OrderId))return false;auto Vip=Object(Definitions,TEXT("kiosk_vip"));
+ const TArray<TSharedPtr<FJsonValue>>* Titles=nullptr;const TArray<TSharedPtr<FJsonValue>>* Requests=nullptr;
+ if(!Vip->TryGetArrayField(TEXT("titles"),Titles) || !Vip->TryGetArrayField(TEXT("requests"),Requests) || !Titles->IsValidIndex(Title) || !Requests->IsValidIndex(Request))return false;
+ auto Order=Object(Orders,OrderId);Order->SetBoolField(TEXT("vip"),true);Order->SetStringField(TEXT("vip_title"),(*Titles)[Title]->AsString());
+ Order->SetStringField(TEXT("request"),(*Requests)[Request]->AsString());
+ LastMessage=TEXT("Cliente VIP no balcão: ")+(*Titles)[Title]->AsString()+TEXT("!");return Save();
+}
 bool UMareSimulation::Deliver(const FString& OrderId,const FString& Dish,bool bStaff)
 {
  auto Orders=Object(State,TEXT("ue_orders")); if(Carry(bStaff)!=Dish || !Orders->HasField(OrderId)) return false;
@@ -227,6 +243,11 @@ bool UMareSimulation::Deliver(const FString& OrderId,const FString& Dish,bool bS
   const auto Step=Value->AsObject()->GetArrayField(TEXT("steps"))[ChapterStep(Chapter)]->AsObject();const FString Kind=String(Step,TEXT("kind"));
   if(Kind==TEXT("serve") || (Kind==TEXT("sell") && String(Step,TEXT("item"))==Dish))Progress->SetNumberField(Chapter+TEXT("_")+Kind,Number(Progress,Chapter+TEXT("_")+Kind)+1);
  }
+ // A famous customer pays an extra tip per item and spreads the word once the whole order is served.
+ bool bVip=false;Order->TryGetBoolField(TEXT("vip"),bVip);
+ if(bVip){auto Vip=Object(Definitions,TEXT("kiosk_vip"));const double Extra=FMath::RoundToDouble(Price*Number(Vip,TEXT("tip"),.8)*100)/100;
+  if(Extra>=.01){Book(Extra,TEXT("Gorjeta VIP"));State->SetNumberField(TEXT("kiosk"),Number(State,TEXT("kiosk"))+Extra);}
+  if(Items.IsEmpty()){AddFame(int32(Number(Vip,TEXT("fame"),6)));LastMessage=String(Order,TEXT("vip_title"))+TEXT(" adorou o atendimento e postou sobre o quiosque!");}}
  if(Items.IsEmpty()) Orders->RemoveField(OrderId);
  return Save();
 }

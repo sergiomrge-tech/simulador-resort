@@ -157,8 +157,15 @@ Legenda: [x] feito e validado · [~] em andamento/parcial · [ ] pendente.
 - [x] "Correção geral antes de novas mecânicas; simulação do jogo inteiro; checklist de erros" (03/11): seção 0 do
   `PENDENCIAS_100.md` + `tools/ue58/qa/simulate_game.py` → `docs/ue58/CHECKLIST_SIMULACAO.md`; hook de parada que
   mantém o trabalho nessa ordem.
-- [ ] "Músicas havaianas de ukulele originais na rádio + música-tema; ambiente suave (vento, mar, pássaros, gaivotas)"
+- [x] "Músicas havaianas de ukulele originais na rádio + música-tema; ambiente suave (vento, mar, pássaros, gaivotas)"
   (03/11): no `PENDENCIAS_100.md` (seção de áudio), depois da correção geral.
+- [x] "Janelas opacas no hotel; textura e acabamento fino nas paredes; grama mais realista, verde mais escuro com
+  textura" (03/11): vidro próprio do hotel, reboco fino, grama recolorida (commit 5f10bf6f).
+- [x] "Deixa o fundo do mar para depois" (03/11): item marcado [adiado-usuario].
+- [ ] "Tênis de mesa no salão com gameplay completo" (03/11): PENDENCIAS seção 3.
+- [ ] "Sinuca como jogo completo: campeonato, amistoso e tudo" (03/11): PENDENCIAS seção 3.
+- [ ] "Balanceamento financeiro/econômico de tudo, divertido e não cansativo, várias atividades ao mesmo tempo; no fim
+  da fila" (03/11): PENDENCIAS seção 15 (última).
 - [x] Manter este checklist sempre que o usuário pedir algo (regra salva na memória).
 
 ## Regras permanentes já pedidas
