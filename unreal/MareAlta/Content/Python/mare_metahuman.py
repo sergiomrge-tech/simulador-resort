@@ -446,6 +446,160 @@ def retarget_clips(name='Lani'):
     return paths
 
 
+MOCAP = '/Game/People/AnimSource/Mocap'
+
+
+def import_mocap(folder='D:/CodexTemp/fab/anim'):
+    """Free Fab mocap clips (Animation Shopee, FBX on Mixamo-style rigs with a body mesh). The rigs differ a little
+    (some have extra thumb bones), so every clip gets its own mesh and skeleton: one pass imports the mesh (no
+    animation) into <clip>/Mesh, a second pass imports only the animation onto that skeleton into <clip>/Anim (one
+    pass gave the mesh and the clip the same name and one replaced the other). Returns {clip: [mesh, anim]}."""
+    import os
+    if unreal.EditorAssetLibrary.does_directory_exist(MOCAP):
+        unreal.EditorAssetLibrary.delete_directory(MOCAP)
+    out = {}
+
+    def run(fbx, dest, skeleton=None):
+        p = unreal.InterchangeGenericAssetsPipeline()
+        p.material_pipeline.set_editor_property('import_materials', False)
+        p.mesh_pipeline.set_editor_property('create_physics_asset', False)
+        props = p.common_skeletal_meshes_and_animations_properties
+        if skeleton:
+            props.set_editor_property('skeleton', skeleton)
+            props.set_editor_property('import_only_animations', True)
+            # Mocap lengths that are not whole frames at 30 fps (12.596 s) are refused unless snapped.
+            p.animation_pipeline.set_editor_property('frame_alignment', unreal.InterchangeFrameAlignment.SNAP_TO_CLOSEST)
+        else:
+            p.animation_pipeline.set_editor_property('import_animations', False)
+        stack = unreal.InterchangePipelineStackOverride()
+        stack.set_editor_property('override_pipelines', [unreal.SoftObjectPath(p.get_path_name())])
+        task = unreal.AssetImportTask()
+        task.filename = fbx
+        task.destination_path = dest
+        task.automated = True
+        task.replace_existing = True
+        task.save = True
+        task.options = stack
+        unreal.AssetToolsHelpers.get_asset_tools().import_asset_tasks([task])
+        return [unreal.load_asset(str(x)) for x in task.imported_object_paths]
+
+    for f in sorted(x for x in os.listdir(folder) if x.lower().endswith('.fbx')):
+        clip = os.path.splitext(f)[0]
+        try:
+            mesh = next(a for a in run(f'{folder}/{f}', f'{MOCAP}/{clip}/Mesh') if isinstance(a, unreal.SkeletalMesh))
+            anim = next((a for a in run(f'{folder}/{f}', f'{MOCAP}/{clip}/Anim', mesh.skeleton) if isinstance(a, unreal.AnimSequence)), None)
+            out[clip] = [mesh.get_path_name(), anim.get_path_name() if anim else None]
+        except Exception as e:
+            out[clip] = f'error {str(e)[:160]}'
+    return out
+
+
+def ground_mocap(clips=('LieDown', 'SitDrink', 'SitTalk', 'TalkGesture', 'Dance', 'DanceHip', 'Cheer')):
+    """Retargeted mocap carries the capture stage offset in the root (tens of metres): move every root key so the
+    pelvis starts over the origin and the lowest body point during the clip touches the floor (z = 0)."""
+    out = {}
+    probe = ('foot_l', 'foot_r', 'ball_l', 'ball_r', 'hand_l', 'hand_r', 'pelvis', 'head', 'spine_03', 'calf_l', 'calf_r')
+    for clip in clips:
+        anim = unreal.load_asset(f'{ANIMS}/MH_{clip}')
+        if not anim:
+            continue
+        frames = unreal.AnimationLibrary.get_num_frames(anim)
+        length = unreal.AnimationLibrary.get_sequence_length(anim)
+        opts = unreal.AnimPoseEvaluationOptions()
+        low, first = 1e9, None
+        for f in range(0, frames + 1, max(1, frames // 60)):
+            pose = unreal.AnimPoseExtensions.get_anim_pose_at_time(anim, length * f / max(frames, 1), opts)
+            for bone in probe:
+                t = unreal.AnimPoseExtensions.get_bone_pose(pose, bone, unreal.AnimPoseSpaces.WORLD).translation
+                low = min(low, t.z)
+            if first is None:
+                first = unreal.AnimPoseExtensions.get_bone_pose(pose, 'pelvis', unreal.AnimPoseSpaces.WORLD).translation
+        offset = unreal.Vector(first.x, first.y, low - 3.0)      # bones sit ~3 cm inside the skin surface
+        pos, rot, scl = [], [], []
+        for f in range(frames + 1):
+            t = unreal.AnimationLibrary.get_bone_pose_for_frame(anim, 'root', f, False)
+            pos.append(t.translation - offset)
+            rot.append(t.rotation)
+            scl.append(t.scale3d)
+        ctrl = anim.get_editor_property('controller')
+        ctrl.open_bracket('Mare ground mocap', False)
+        ctrl.set_bone_track_keys('root', pos, rot, scl, False)
+        ctrl.close_bracket(False)
+        unreal.EditorAssetLibrary.save_loaded_asset(anim, False)
+        out[clip] = [round(offset.x), round(offset.y), round(offset.z)]
+    return out
+
+
+def rescale_mocap_root(clips=('LieDown', 'SitDrink', 'SitTalk', 'TalkGesture', 'Dance', 'DanceHip', 'Cheer'), factor=.01):
+    """The mocap rig moves its hips in metres while the pose is in centimetres: after retargeting, the root travels
+    100x too far (a talking man walked 68 m). Scale the root motion relative to the first frame and set the height so
+    the lowest body point over the clip sits on the floor."""
+    out = {}
+    probe = ('foot_l', 'foot_r', 'ball_l', 'ball_r', 'hand_l', 'hand_r', 'pelvis', 'head', 'spine_03', 'calf_l', 'calf_r')
+    for clip in clips:
+        anim = unreal.load_asset(f'{ANIMS}/MH_{clip}')
+        if not anim:
+            continue
+        frames = unreal.AnimationLibrary.get_num_frames(anim)
+        length = unreal.AnimationLibrary.get_sequence_length(anim)
+        roots = [unreal.AnimationLibrary.get_bone_pose_for_frame(anim, 'root', f, False) for f in range(frames + 1)]
+        r0 = roots[0].translation
+        moved = [(t.translation - r0) * factor for t in roots]
+        opts = unreal.AnimPoseEvaluationOptions()
+        lowest = 1e9
+        for f in range(0, frames + 1, max(1, frames // 80)):
+            pose = unreal.AnimPoseExtensions.get_anim_pose_at_time(anim, length * f / max(frames, 1), opts)
+            low = min(unreal.AnimPoseExtensions.get_bone_pose(pose, b, unreal.AnimPoseSpaces.WORLD).translation.z for b in probe)
+            lowest = min(lowest, low - roots[f].translation.z + moved[f].z)
+        base = 3.0 - lowest
+        pos = [unreal.Vector(m.x, m.y, m.z + base) for m in moved]
+        ctrl = anim.get_editor_property('controller')
+        ctrl.open_bracket('Mare mocap root scale', False)
+        ctrl.set_bone_track_keys('root', pos, [t.rotation for t in roots], [t.scale3d for t in roots], False)
+        ctrl.close_bracket(False)
+        unreal.EditorAssetLibrary.save_loaded_asset(anim, False)
+        span = max(abs(m.x) + abs(m.y) for m in moved)
+        out[clip] = {'base': round(base), 'max_travel_cm': round(span)}
+    return out
+
+
+def retarget_mocap(name='Lani'):
+    """Per clip: IK rig on its own mocap mesh, retargeter to the MetaHuman body rig, and /Game/People/Animations/MH_<clip>."""
+    registry = unreal.AssetRegistryHelpers.get_asset_registry()
+    tgt_mesh = unreal.load_asset(f'{FOLDER}/{name}/MH_{name}/Body/SKM_MH_{name}_BodyMesh')
+    tgt = unreal.load_asset(f'{RETARGET}/IK_MH_Body')
+    S, T = unreal.RetargetSourceOrTarget.SOURCE, unreal.RetargetSourceOrTarget.TARGET
+    out = {}
+    folders = sorted({'/'.join(str(a.package_path).split('/')[:6]) for a in registry.get_assets_by_path(MOCAP, True)})
+    for folder in folders:
+        clip = folder.split('/')[-1]
+        items = registry.get_assets_by_path(folder, True)
+        meshes = [a.get_asset() for a in items if str(a.asset_class_path.asset_name) == 'SkeletalMesh']
+        anims = [a for a in items if str(a.asset_class_path.asset_name) == 'AnimSequence']
+        if not meshes or not anims:
+            continue
+        src, _ = _ik_rig(f'IK_Mocap_{clip}', meshes[0])
+        rtg = _new_asset(f'RTG_Mocap_{clip}', unreal.IKRetargeter, unreal.IKRetargetFactory())
+        ctrl = unreal.IKRetargeterController.get_controller(rtg)
+        ctrl.set_ik_rig(S, src)
+        ctrl.set_ik_rig(T, tgt)
+        ctrl.set_preview_mesh(S, meshes[0])
+        ctrl.set_preview_mesh(T, tgt_mesh)
+        ctrl.add_default_ops()
+        ctrl.assign_ik_rig_to_all_ops(S, src)
+        ctrl.assign_ik_rig_to_all_ops(T, tgt)
+        ctrl.auto_map_chains(unreal.AutoMapChainType.FUZZY, True)
+        ctrl.create_retarget_pose('MareAligned', T)
+        ctrl.auto_align_all_bones(T)
+        for asset in (src, rtg):
+            unreal.EditorAssetLibrary.save_loaded_asset(asset, False)
+        res = unreal.IKRetargetBatchOperation.duplicate_and_retarget(anims, meshes[0], tgt_mesh, rtg, '', f'MH_{clip}_', '', '', ANIMS, False, False, True)
+        for a in res:
+            unreal.EditorAssetLibrary.save_asset(str(a.package_name), False)
+        out[clip] = [str(a.package_name) for a in res]
+    return out
+
+
 HAND_PREFIXES = ('hand_', 'thumb_', 'index_', 'middle_', 'ring_', 'pinky_')
 
 
@@ -663,6 +817,63 @@ def run(action, arg=''):
         if not arg.startswith('/Game/Custom/Fab') and arg != '/Game/Custom/Festival/festa_campfire_scan':
             return 'refused: only /Game/Custom/Fab* folders'
         return unreal.EditorAssetLibrary.delete_directory(arg)
+    if action == 'pipeprops':
+        ap = unreal.InterchangeGenericAssetsPipeline().animation_pipeline
+        fa = ap.get_editor_property('frame_alignment')
+        return {'frame_alignment': str(fa), 'type': type(fa).__name__, 'members': [m for m in dir(type(fa)) if m.isupper()][:20],
+                'sample_rate': str(ap.get_editor_property('custom_bone_animation_sample_rate'))}
+    if action == 'mvanims':
+        # Game names for the retargeted mocap clips (AMarePerson loads /Game/People/Animations/MH_<Clip>).
+        names = {'lying_on_the_floor': 'LieDown', 'sits_on_stool_drinks': 'SitDrink', 'conversation_while_sit': 'SitTalk',
+                 'serious_conversation': 'TalkGesture', 'dancing': 'Dance', 'shaking_hip': 'DanceHip', 'celebrating_victory': 'Cheer'}
+        out = {}
+        for src, dst in names.items():
+            a, b = f'{ANIMS}/{src}', f'{ANIMS}/MH_{dst}'
+            if unreal.EditorAssetLibrary.does_asset_exist(b):
+                unreal.EditorAssetLibrary.delete_asset(b)
+            out[dst] = unreal.EditorAssetLibrary.rename_asset(a, b) if unreal.EditorAssetLibrary.does_asset_exist(a) else 'missing'
+        return out
+    if action == 'animprobe':
+        # Pelvis/root/head positions (component space) at a time fraction of each clip: retarget sanity check.
+        out = {}
+        for clip in (arg or 'Idle,LieDown,Dance').split(','):
+            anim = unreal.load_asset(f'{ANIMS}/MH_{clip}')
+            if not anim:
+                out[clip] = 'missing'
+                continue
+            length = unreal.AnimationLibrary.get_sequence_length(anim)
+            opts = unreal.AnimPoseEvaluationOptions()
+            pose = unreal.AnimPoseExtensions.get_anim_pose_at_time(anim, length * .4, opts)
+            row = {'len': round(length, 2)}
+            for bone in ('root', 'pelvis', 'head'):
+                t = unreal.AnimPoseExtensions.get_bone_pose(pose, bone, unreal.AnimPoseSpaces.WORLD)
+                row[bone] = [round(t.translation.x), round(t.translation.y), round(t.translation.z)]
+            out[clip] = row
+        return out
+    if action == 'rootmocap':
+        return rescale_mocap_root()
+    if action == 'inplacemocap':
+        # Loops stay in place: no horizontal root travel (the pelvis keeps its own sway relative to the root).
+        out = {}
+        for clip in ('LieDown', 'SitDrink', 'SitTalk', 'TalkGesture', 'Dance', 'DanceHip', 'Cheer'):
+            anim = unreal.load_asset(f'{ANIMS}/MH_{clip}')
+            frames = unreal.AnimationLibrary.get_num_frames(anim)
+            roots = [unreal.AnimationLibrary.get_bone_pose_for_frame(anim, 'root', f, False) for f in range(frames + 1)]
+            ctrl = anim.get_editor_property('controller')
+            ctrl.open_bracket('Mare mocap in place', False)
+            ctrl.set_bone_track_keys('root', [unreal.Vector(0, 0, t.translation.z) for t in roots], [t.rotation for t in roots], [t.scale3d for t in roots], False)
+            ctrl.close_bracket(False)
+            unreal.EditorAssetLibrary.save_loaded_asset(anim, False)
+            out[clip] = frames
+        return out
+    if action == 'groundmocap':
+        return ground_mocap()
+    if action == 'ls':
+        return [str(x) for x in unreal.EditorAssetLibrary.list_assets(arg, True, False)][:80]
+    if action == 'mocap':
+        return import_mocap(arg or 'D:/CodexTemp/fab/anim')
+    if action == 'remocap':
+        return retarget_mocap(arg or 'Lani')
     if action == 'show':
         # Preview static meshes side by side: "x,y,z@/Game/a/a,/Game/b/b" (tagged as previews, removed by mh_clear).
         loc, paths = arg.split('@')

@@ -166,7 +166,12 @@ Pronto e testado (02/11):
 - [x] P0 Calçados: chinelo, sandália de tiras, tênis e sapato social com saltinho (02/11), sorteados por papel
   (`metahumans.json` → `shoes`); sapato social conferido no saguão do hotel.
 - [ ] P1 Mais banhistas: mulheres e homens de outras idades e tipos de corpo.
-- [ ] P1 Animações:
+- [ ] P1 Animações (03/11, em andamento): 7 clipes gratuitos de captura do Fab (Animation Shopee: deitado, sentado
+  bebendo, conversa sentado, conversa em pé, dança, rebolado, comemoração) importados (`mare_metahuman.import_mocap`,
+  dois passes e `frame_alignment` SNAP_TO_CLOSEST) e redirecionados para a MetaHuman (`retarget_mocap`); a raiz vinha com
+  o deslocamento do estúdio ×100 (corrigido em `rescale_mocap_root`/`inplacemocap`), mas as poses ainda saem erradas
+  (braços em T, tronco inclinado: alinhamento das cadeias/pose de referência do redirecionador). Ainda NÃO usados no
+  jogo; foto `mocap-redirecionado-wip-20261103.jpg`. Arquivos em `D:/CodexTemp/fab/anim`.
   - deitar na espreguiçadeira e na canga;
   - nadar no mar e na piscina;
   - comer e beber sentado (já existe);

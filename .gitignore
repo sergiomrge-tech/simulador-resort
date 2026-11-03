@@ -70,3 +70,14 @@ unreal/MareAlta/Content/OutFits/
 unreal/MareAlta/Content/MetaOutfits/
 unreal/MareAlta/Content/People/MetaHumans/*_Beach/
 unreal/MareAlta/Content/People/MetaHumans/MH_*_Beach.uasset
+# Work in progress: free Fab mocap clips and their retarget (poses not right yet; re-create with mare_metahuman.import_mocap)
+unreal/MareAlta/Content/People/AnimSource/
+unreal/MareAlta/Content/People/Animations/MH_LieDown.uasset
+unreal/MareAlta/Content/People/Animations/MH_SitDrink.uasset
+unreal/MareAlta/Content/People/Animations/MH_SitTalk.uasset
+unreal/MareAlta/Content/People/Animations/MH_TalkGesture.uasset
+unreal/MareAlta/Content/People/Animations/MH_Dance.uasset
+unreal/MareAlta/Content/People/Animations/MH_DanceHip.uasset
+unreal/MareAlta/Content/People/Animations/MH_Cheer.uasset
+unreal/MareAlta/Content/People/Retarget/IK_Mocap_*
+unreal/MareAlta/Content/People/Retarget/RTG_Mocap_*
