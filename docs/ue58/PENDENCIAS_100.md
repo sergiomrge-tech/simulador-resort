@@ -140,7 +140,14 @@ Pronto e testado (02/11):
   placa, balcão, geladeira, recepções, limpeza, bar, negócios, passeios, pesca, piscina, restaurante, sinuca, foto, cama),
   num cartão no canto inferior esquerdo, uma vez por save; e "Próxima meta" sempre visível na nota de missões (próxima
   expansão e quanto falta). Teste `MareAlta.Gameplay.TutorialTips`. As dicas podem ser desligadas nas opções.
-- [ ] P1 Campanha e missões secundárias auditadas (contadores, recompensas únicas, ligação com capítulos e expansões).
+- [x] P1 Campanha e missões secundárias auditadas (02/11, teste `MareAlta.Gameplay.CampaignAudit`: as 10 missões
+  principais, os 4 capítulos e as 4 secundárias jogados pelas ações reais, com ordem, recompensa exata e paga uma vez).
+  Quatro defeitos corrigidos:
+  - "Um dia com os pescadores" nunca completava (lia um contador que ninguém incrementava): conta pelo diário de pesca;
+  - as missões de foto liam `chapter_photo` e a câmera grava `chp`: nunca completavam;
+  - "As cores do entardecer" pedia a foto `por_do_sol`, que não existia: novo tema "Pôr do sol" pela direção do sol baixo
+    no fim da tarde (foto `docs/ue58/graphics-reference/foto-por-do-sol-20261102.png`);
+  - o Grand Hotel podia ser comprado sem a história do carnaval e sem fama 8: travado na simulação e no celular.
 - [x] P2 Temporadas (02/11): ciclo de 56 dias (alta temporada de verão, outono, inverno chuvoso, primavera) que muda o
   movimento e a chance de chuva; aparece na agenda do celular. Variedade de tipos de cliente por temporada ainda não.
 - [x] P2 Tela de fim do conteúdo do Acesso Antecipado (02/11): quando tudo está comprado e as histórias da vila concluídas,

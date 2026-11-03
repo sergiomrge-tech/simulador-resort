@@ -266,6 +266,19 @@ def photo_qa(arg):
     return 'placed'
 
 
+def photo_sun():
+    """PIE: turns the player's view to the sun (MareSun light) and takes a photo; returns the sim's message."""
+    world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()
+    pc = unreal.GameplayStatics.get_player_controller(world, 0)
+    sun = next(iter(unreal.GameplayStatics.get_all_actors_with_tag(world, 'MareSun')), None)
+    if not sun:
+        return 'no sun'
+    f = sun.get_actor_forward_vector()
+    to_sun = unreal.Vector(-f.x, -f.y, -f.z)
+    pc.set_control_rotation(unreal.MathLibrary.make_rot_from_x(to_sun))
+    return [round(to_sun.x, 3), round(to_sun.y, 3), round(to_sun.z, 3)]
+
+
 def photo_take():
     world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()
     pc = unreal.GameplayStatics.get_player_controller(world, 0)
@@ -341,6 +354,8 @@ def run(action, arg=''):
         if unreal.EditorAssetLibrary.does_directory_exist(dest):
             unreal.EditorAssetLibrary.delete_directory(dest)
         return mare_hotel_lobby._import(glb, dest, arg, False, search=False).get_path_name()
+    if action == 'sunphoto':
+        return photo_sun()
     if action == 'photo':
         return photo_qa(arg) if arg else photo_take()
     if action == 'rays':

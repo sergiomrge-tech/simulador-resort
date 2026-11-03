@@ -199,6 +199,8 @@ void AMarePreviewQA::Tick(float DeltaSeconds)
  case 20:Check(TEXT("radio_can_turn_off"),Audio->LoopLevel(TEXT("music_bossa"))<.001f && Audio->LoopLevel(TEXT("music_relax"))<.001f && Audio->LoopLevel(TEXT("reggae_praia"))<.001f);{TSet<FName> Seen;const FName Start=Audio->GetRadioStation();for(int32 I=0;I<UMareAudioWorld::RadioStations().Num();++I){Audio->NextRadioStation();Seen.Add(Audio->GetRadioStation());}Check(TEXT("radio_cycles_all_stations"),Seen.Num()==UMareAudioWorld::RadioStations().Num() && Audio->GetRadioStation()==Start && Audio->LoadedSounds()>=48);}Audio->SetRadioStation(InitialRadio);Audio->SetVolume(TEXT("Master"),InitialMaster);Check(TEXT("audio_settings_restored"),FMath::IsNearlyEqual(Audio->GetVolume(TEXT("Master")),InitialMaster));Capture(TEXT("expansion-pool-locked"));break;
  case 21:{
   Sim->State->SetNumberField(TEXT("money"),100000);bool bPurchased=true;
+  // The Grand Hotel also needs the carnaval story and fame 8: the QA plays those through state.
+  UMareSimulation::Object(UMareSimulation::Object(Sim->State,TEXT("prog")),TEXT("ch"))->SetNumberField(TEXT("carnaval"),3);Sim->AddFame(100000);
   for(const FString Id:{TEXT("kiosk_tables"),TEXT("drinks"),TEXT("grill"),TEXT("bar"),TEXT("pousada"),TEXT("pool"),TEXT("passeios"),TEXT("grand_hotel")}){
    bool bOwned=false;UMareSimulation::Object(Sim->State,TEXT("unlocked"))->TryGetBoolField(Id,bOwned);
    if(!bOwned)bPurchased&=Sim->BuyExpansion(Id);

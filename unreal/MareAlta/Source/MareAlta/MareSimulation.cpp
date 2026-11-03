@@ -251,6 +251,10 @@ bool UMareSimulation::BuyExpansion(const FString& Id)
  auto Unlocked=Object(State,TEXT("unlocked")); bool bOwned=false;Unlocked->TryGetBoolField(Id,bOwned);if(bOwned)return Fail(TEXT("Esta expansão já foi comprada."));
  auto Expansion=Object(Expansions,Id); const TArray<TSharedPtr<FJsonValue>>* Required=nullptr;
  if(Expansion->TryGetArrayField(TEXT("req"),Required)) for(const auto& Req:*Required){bool bHas=false;Unlocked->TryGetBoolField(Req->AsString(),bHas);if(!bHas)return Fail(TEXT("Compre as expansões anteriores."));}
+ // Story and fame gates from the data (the Grand Hotel needs the carnaval chapter and fame level 8, as in the Godot game).
+ const FString Chapter=String(Expansion,TEXT("chapter"));
+ if(!Chapter.IsEmpty() && !IsChapterDone(Chapter))return Fail(TEXT("Conclua antes a história \"")+String(ChapterDefinition(Chapter),TEXT("title"))+TEXT("\" em Histórias da vila."));
+ const int32 Fame=Number(Expansion,TEXT("fame"));if(Fame>0 && FameLevel()<Fame)return Fail(FString::Printf(TEXT("Precisa de mais fama (nível %d)."),Fame));
  const double Cost=Number(Expansion,TEXT("cost")); if(Money()<Cost) return Fail(TEXT("Saldo insuficiente."));
  Unlocked->SetBoolField(Id,true);Book(-Cost,TEXT("Expansão: ")+Id);
  if(auto World=GetWorld())if(auto Visual=World->GetSubsystem<UMareVisualWorld>())Visual->RefreshExpansions();
@@ -261,12 +265,16 @@ int32 UMareSimulation::MissionAmount(const TSharedPtr<FJsonObject>& Mission) con
  const FString Kind=String(Mission,TEXT("kind")),Item=String(Mission,TEXT("item"));
  auto Company=Object(State,TEXT("company")); auto Prog=Object(State,TEXT("prog")); auto Campaign=Object(Prog,TEXT("campaign"));
  if(Kind==TEXT("sales")) return Number(State,TEXT("kiosk_n"));
- if(Kind==TEXT("icecream") || Kind==TEXT("fish")) return Number(Campaign,Kind);
+ if(Kind==TEXT("icecream")) return Number(Campaign,Kind);
+ // Fish: every catch is logged per species in prog.fish (MareLeisure.cpp CatchFish); best_<id> keys are sizes.
+ if(Kind==TEXT("fish")){int32 Caught=0;for(const auto& Pair:Object(Prog,TEXT("fish"))->Values)if(!FString(Pair.Key.ToView()).StartsWith(TEXT("best_")))Caught+=int32(Pair.Value->AsNumber());
+  return FMath::Max(Caught,int32(Number(Campaign,Kind)));}
  bool bValue=false;
  if(Kind==TEXT("company")) Company->TryGetBoolField(TEXT("created"),bValue);
  if(Kind==TEXT("open")) {Company->TryGetBoolField(TEXT("kiosk_open"),bValue);bValue|=Number(State,TEXT("kiosk_n"))>0;}
  if(Kind==TEXT("staff")) Object(State,TEXT("staff"))->TryGetBoolField(TEXT("atendente"),bValue);
- if(Kind==TEXT("photo")) Object(Prog,TEXT("chapter_photo"))->TryGetBoolField(Item,bValue);
+ // Photos flag prog.chp (RecordPhoto); chapter_photo is the old name, still read for older saves.
+ if(Kind==TEXT("photo")){Object(Prog,TEXT("chp"))->TryGetBoolField(Item,bValue);if(!bValue)Object(Prog,TEXT("chapter_photo"))->TryGetBoolField(Item,bValue);}
  if(Kind==TEXT("expansion"))Object(State,TEXT("unlocked"))->TryGetBoolField(Item,bValue);
  if(Kind==TEXT("chapter"))bValue=IsChapterDone(Item);
  return bValue?1:0;

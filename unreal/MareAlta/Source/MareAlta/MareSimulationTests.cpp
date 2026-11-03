@@ -917,3 +917,70 @@ bool FMarePoolFullMatchTest::RunTest(const FString& Parameters)
  TestTrue(TEXT("Both sides win sometimes"),Wins[0]>0 && Wins[1]>0);TestTrue(TEXT("Matches are not endless"),TotalShots/double(Matches)<80);
  Room->RemoveFromRoot();return true;
 }
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FMareCampaignAuditTest,"MareAlta.Gameplay.CampaignAudit",EAutomationTestFlags::EditorContext|EAutomationTestFlags::EngineFilter)
+bool FMareCampaignAuditTest::RunTest(const FString& Parameters)
+{
+ // The whole main campaign and every side mission, played through the real actions: counters move with the action,
+ // missions are claimed in order and only once, rewards are paid exactly, chapters gate businesses and the Grand Hotel.
+ auto Instance=NewObject<UGameInstance>();Instance->AddToRoot();
+ auto Sim=NewObject<UMareSimulation>(Instance);Sim->AddToRoot();
+ Sim->SaveDirectory=FPaths::ProjectSavedDir()/TEXT("Automation/CampaignAudit")/FGuid::NewGuid().ToString(EGuidFormats::Digits);
+ auto Load=[&](const FString& Name,TSharedPtr<FJsonObject>& Result){FString Text;FFileHelper::LoadFileToString(Text,*(FPaths::ProjectContentDir()/TEXT("Data")/Name));return FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Text),Result);};
+ if(!TestTrue(TEXT("Definitions"),Load(TEXT("definitions.json"),Sim->Definitions)) || !TestTrue(TEXT("Default save"),Load(TEXT("default_save.json"),Sim->State))){Sim->RemoveFromRoot();Instance->RemoveFromRoot();return false;}
+ Sim->State->SetNumberField(TEXT("money"),200000);Sim->State->SetStringField(TEXT("weather"),TEXT("sun"));Sim->State->SetNumberField(TEXT("minutes"),600);
+ auto Sell=[&](const FString& Dish,int32 Count){int32 Sold=0;
+  for(int32 I=0;I<Count;++I){if(Sim->Available(Dish)<1)Sim->Restock(Dish,10);const FString Id=Sim->AddOrder(TEXT("Teste"),{Dish});
+   if(Sim->Pickup(Dish) && Sim->Deliver(Id,Dish))++Sold;}
+  return Sold;};
+ auto Stage=[&](){return int32(Sim->Number(Sim->Object(Sim->Object(Sim->State,TEXT("prog")),TEXT("campaign")),TEXT("stage")));};
+ TMap<FString,double> Rewards;for(const TCHAR* Key:{TEXT("campaign"),TEXT("side_missions")})for(const auto& V:Sim->Definitions->GetArrayField(Key))
+  Rewards.Add(Sim->String(V->AsObject(),TEXT("id")),Sim->Number(V->AsObject(),TEXT("reward")));
+ auto Claim=[&](const FString& Id,bool bSide=false){const double Before=Sim->Money();const bool bOk=Sim->ClaimMission(Id,bSide);
+  TestTrue(TEXT("Claim ")+Id,bOk);TestEqual(TEXT("Reward ")+Id,Sim->Money()-Before,Rewards.FindRef(Id));
+  const double After=Sim->Money();TestFalse(TEXT("Claim once ")+Id,Sim->ClaimMission(Id,bSide));TestEqual(TEXT("No second reward ")+Id,Sim->Money(),After);};
+ auto Advance=[&](const FString& Chapter,int32 Steps){for(int32 I=0;I<Steps;++I)TestTrue(FString::Printf(TEXT("%s step %d"),*Chapter,Sim->ChapterStep(Chapter)+1),Sim->AdvanceChapter(Chapter));};
+ auto Stock=[&](const FString& Item,double Qty){auto S=Sim->Object(Sim->State,TEXT("stock"));S->SetNumberField(Item,Sim->Number(S,Item)+Qty);};
+
+ // 1-2. Company and opening; claims are refused before the goal and out of order.
+ TestFalse(TEXT("Out of order"),Sim->ClaimMission(TEXT("portas")));TestFalse(TEXT("Goal first"),Sim->ClaimMission(TEXT("chegada")));
+ TestTrue(TEXT("Create company"),Sim->CreateCompany(TEXT("Quiosque Teste")));Claim(TEXT("chegada"));
+ TestTrue(TEXT("Open"),Sim->SetOpen(true));Claim(TEXT("portas"));
+ // 3. Eight kiosk sales.
+ TestEqual(TEXT("Eight sales"),Sell(TEXT("coco_gelado"),8),8);Claim(TEXT("primeiros"));
+ // 4-5. Tables and the attendant.
+ TestTrue(TEXT("Tables"),Sim->BuyExpansion(TEXT("kiosk_tables")));Claim(TEXT("mesas"));
+ TestTrue(TEXT("Attendant"),Sim->HireAttendant());Claim(TEXT("equipe"));
+ // 6. Seu Gregory's pier chapter: 4 fish caught at the pier, 15 customers served during the step, R$ 150.
+ TestFalse(TEXT("Chapter before its step"),Sim->AdvanceChapter(TEXT("pier")));
+ for(int32 I=0;I<4;++I)Sim->CatchFish();Advance(TEXT("pier"),1);
+ Sell(TEXT("coco_gelado"),15);Advance(TEXT("pier"),2);TestTrue(TEXT("Pier chapter done"),Sim->IsChapterDone(TEXT("pier")));
+ Claim(TEXT("comunidade"));
+ // 7-9. Bar, pousada, pool.
+ for(const TCHAR* Id:{TEXT("drinks"),TEXT("grill"),TEXT("bar")})TestTrue(FString(TEXT("Buy "))+Id,Sim->BuyExpansion(Id));Claim(TEXT("encontro"));
+ TestTrue(TEXT("Pousada"),Sim->BuyExpansion(TEXT("pousada")));Claim(TEXT("hospedar"));
+ TestTrue(TEXT("Pool"),Sim->BuyExpansion(TEXT("pool")));Claim(TEXT("verao"));
+ TestTrue(TEXT("Tours"),Sim->BuyExpansion(TEXT("passeios")));
+ // 10. The Grand Hotel waits for the carnaval story and fame 8.
+ TestFalse(TEXT("Hotel needs the story"),Sim->BuyExpansion(TEXT("grand_hotel")));
+ // prainha: fame 3, photo of the lighthouse, 6 coconuts.
+ Sim->AddFame(400);Advance(TEXT("prainha"),1);Sim->RecordPhoto({TEXT("farol")},TEXT("teste.png"));Advance(TEXT("prainha"),1);Stock(TEXT("coco"),6);Advance(TEXT("prainha"),1);
+ // sabores: two drinks discovered, 10 petiscos sold during the step, R$ 250.
+ {auto Disc=Sim->Object(Sim->Object(Sim->State,TEXT("prog")),TEXT("disc"));Disc->SetBoolField(TEXT("batida"),true);Disc->SetBoolField(TEXT("caipirinha"),true);}
+ Advance(TEXT("sabores"),1);TestEqual(TEXT("Petiscos"),Sell(TEXT("petiscos"),10),10);Advance(TEXT("sabores"),2);
+ // carnaval: fame 5, two businesses (the surf school needs prainha, the snack truck needs sabores), R$ 400.
+ TestFalse(TEXT("Souvenir shop waits for the carnaval story"),Sim->BuyBusiness(TEXT("souvenir")));
+ Sim->AddFame(3000);Advance(TEXT("carnaval"),1);
+ TestTrue(TEXT("Sorveteria"),Sim->BuyBusiness(TEXT("sorveteria")));TestTrue(TEXT("Aluguel"),Sim->BuyBusiness(TEXT("aluguel")));Advance(TEXT("carnaval"),2);
+ if(Sim->FameLevel()<8)TestFalse(TEXT("Hotel needs fame 8"),Sim->BuyExpansion(TEXT("grand_hotel")));
+ Sim->AddFame(100000);TestTrue(TEXT("Grand Hotel"),Sim->BuyExpansion(TEXT("grand_hotel")));Claim(TEXT("marealta"));
+ TestEqual(TEXT("Campaign finished"),Stage(),Sim->Definitions->GetArrayField(TEXT("campaign")).Num());
+ // Side missions: 5 fish, 12 ice creams, lighthouse and sunset photos.
+ Sim->CatchFish();TestTrue(TEXT("Fish counted from the fishing log"),Sim->ClaimMission(TEXT("pescador"),true));
+ TestEqual(TEXT("Ice creams"),Sell(TEXT("sorvete_morango"),12),12);Claim(TEXT("gelados"),true);
+ Claim(TEXT("faroleiro"),true);
+ TestFalse(TEXT("Sunset needs its photo"),Sim->ClaimMission(TEXT("entardecer"),true));
+ Sim->RecordPhoto({TEXT("por_do_sol")},TEXT("teste.png"));Claim(TEXT("entardecer"),true);
+ IFileManager::Get().DeleteDirectory(*Sim->SaveDirectory,false,true);
+ Sim->RemoveFromRoot();Instance->RemoveFromRoot();return true;
+}

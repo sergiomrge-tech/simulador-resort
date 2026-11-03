@@ -576,6 +576,8 @@ private:
    auto Card=TagBody(FString::Printf(TEXT("R$ %.0f"),UMareSimulation::Number(Row,TEXT("cost"))),UMareSimulation::String(Row,TEXT("name")));
    Card->AddSlot().AutoHeight().Padding(0,0,0,6)[MareNotebook::BodyText(UMareSimulation::String(Row,TEXT("blurb")),10.5f,MareNotebook::Faded)];
    TArray<FString> Missing;const TArray<TSharedPtr<FJsonValue>>* Req=nullptr;if(Row->TryGetArrayField(TEXT("req"),Req))for(const auto& V:*Req){bool bHas=false;UMareSimulation::Object(S->State,TEXT("unlocked"))->TryGetBoolField(V->AsString(),bHas);if(!bHas)Missing.Add(UMareSimulation::String(UMareSimulation::Object(Expansions,V->AsString()),TEXT("name")));}
+   {const FString Chapter=UMareSimulation::String(Row,TEXT("chapter"));if(!Chapter.IsEmpty() && !S->IsChapterDone(Chapter))Missing.Add(TEXT("história \"")+UMareSimulation::String(S->ChapterDefinition(Chapter),TEXT("title"))+TEXT("\""));
+    const int32 Fame=UMareSimulation::Number(Row,TEXT("fame"));if(Fame>0 && S->FameLevel()<Fame)Missing.Add(FString::Printf(TEXT("fama nível %d"),Fame));}
    if(bOwned)Card->AddSlot().AutoHeight()[MareNotebook::Stamp(TEXT("COMPRADA"),MareNotebook::Green)];
    else if(Missing.Num())Card->AddSlot().AutoHeight()[MareNotebook::HandText(TEXT("antes: ")+FString::Join(Missing,TEXT(", ")),15,MareNotebook::Pencil)];
    else Card->AddSlot().AutoHeight().HAlign(HAlign_Left)[Button(FString::Printf(TEXT("Comprar · R$ %.0f"),UMareSimulation::Number(Row,TEXT("cost"))),[S,Id](){S->BuyExpansion(Id);})];
@@ -1082,6 +1084,15 @@ void AMareController::TakePhoto()
  const float HalfFov=FMath::DegreesToRadians(PlayerCameraManager->GetFOVAngle()*.45f);
  TArray<FString> Subjects;const TArray<TSharedPtr<FJsonValue>>* List=nullptr;
  if(S->LeisureDefs()->TryGetArrayField(TEXT("photo_subjects"),List))for(const auto& V:*List){const auto Sub=V->AsObject();const TArray<TSharedPtr<FJsonValue>>* At=nullptr;
+  // Sky subjects (the sunset): the low sun inside the frame, at the given hours (direction from the MareSun light).
+  bool bSun=false;Sub->TryGetBoolField(TEXT("sun"),bSun);
+  if(bSun){const TArray<TSharedPtr<FJsonValue>>* Hours=nullptr;const double Hour=UMareSimulation::Number(S->State,TEXT("minutes"))/60;
+   if(Sub->TryGetArrayField(TEXT("hours"),Hours) && Hours->Num()==2 && (Hour<(*Hours)[0]->AsNumber() || Hour>(*Hours)[1]->AsNumber()))continue;
+   AActor* SunLight=nullptr;for(TActorIterator<AActor> It(GetWorld());It;++It)if(It->ActorHasTag(TEXT("MareSun"))){SunLight=*It;break;}
+   if(!SunLight)continue;const FVector ToSun=-SunLight->GetActorForwardVector();
+   if(FMath::RadiansToDegrees(FMath::Asin(ToSun.Z))>UMareSimulation::Number(Sub,TEXT("max_elevation"),18) ||
+      FMath::RadiansToDegrees(FMath::Acos(FVector::DotProduct(ToSun,Forward)))>UMareSimulation::Number(Sub,TEXT("angle"),30))continue;
+   Subjects.Add(UMareSimulation::String(Sub,TEXT("id")));continue;}
   if(!Sub->TryGetArrayField(TEXT("at"),At) || At->Num()!=3)continue;const FVector Point((*At)[0]->AsNumber(),(*At)[1]->AsNumber(),(*At)[2]->AsNumber());
   const FVector To=Point-Eye;if(To.Size()>UMareSimulation::Number(Sub,TEXT("max"),5000) || FMath::Acos(FVector::DotProduct(To.GetSafeNormal(),Forward))>HalfFov)continue;
   FHitResult Hit;FCollisionQueryParams Query;Query.AddIgnoredActor(GetPawn());
