@@ -142,7 +142,10 @@ Legenda: [x] feito e validado · [~] em andamento/parcial · [ ] pendente.
 - [x] "Tire os gatos e cachorros do jogo" (03/11): não havia modelos no mapa da UE; o latido de cachorro do som
   ambiente da vila foi removido (código, `audio.json`, `dog.uasset`/`dog.wav`, crédito). Os modelos antigos da versão
   Godot continuam só no projeto Godot.
-- [ ] "Areia tipo Copacabana, volumosa e mais clara; pegadas na areia" (03/11): em andamento.
+- [x] "Areia tipo Copacabana, volumosa e mais clara; pegadas na areia" (03/11, "gostei da areia"): areia seca com as
+  texturas Poly Haven aerial_sand (praia pisoteada, 15 m) + dense_sand (grão fino), bege bem claro e cavidades
+  sombreadas pela AO; o jogador deixa pegadas na areia (alternando pés na direção do passo, até 240, somem em 3 min;
+  `UMareVisualWorld::UpdateFootprints`, `M_SandFootprint`; QA `mare.WalkTest 1`). Conferido no editor e no PIE.
 - [x] Manter este checklist sempre que o usuário pedir algo (regra salva na memória).
 
 ## Regras permanentes já pedidas

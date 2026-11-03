@@ -965,6 +965,58 @@ def run(action, arg=''):
     if action == 'deleteassets':
         # "path,path": remove assets that nothing uses any more (e.g. the dog bark, 03/11)
         return {p: unreal.EditorAssetLibrary.delete_asset(p) for p in arg.split(',')}
+    if action == 'foottest':
+        # editor: two loose footprints side by side (sand material / wet material) to compare; 'clear' removes them
+        actors = unreal.get_editor_subsystem(unreal.EditorActorSubsystem)
+        for a in actors.get_all_level_actors():
+            if 'MareFootTest' in [str(t) for t in a.tags]:
+                actors.destroy_actor(a)
+        if arg == 'clear':
+            return 'cleared'
+        mesh = unreal.load_asset('/Game/Custom/Beach/beach_footprint/beach_footprint1')
+        out = []
+        for dx, mat in ((0, '/Game/World/Materials/M_SandFootprint'), (60, '/Game/Custom/Beach/beach_footprint/beach_footprint')):
+            a = actors.spawn_actor_from_object(mesh, unreal.Vector(2600 + dx, -2400, 2), unreal.Rotator())
+            a.static_mesh_component.set_material(0, unreal.load_asset(mat))
+            a.tags = [unreal.Name('MareFootTest')]
+            out.append(mat)
+        return out
+    if action == 'footinfo':
+        world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()
+        for a in unreal.GameplayStatics.get_all_actors_of_class(world, unreal.Actor):
+            for c in a.get_components_by_class(unreal.InstancedStaticMeshComponent):
+                if c.get_name() == 'Footprints':
+                    if arg:
+                        c.set_material(0, unreal.load_asset(arg))
+                    o, e, r = unreal.SystemLibrary.get_component_bounds(c)
+                    m = c.get_material(0)
+                    return {'mat': m.get_path_name() if m else None, 'mesh': c.static_mesh.get_path_name() if c.static_mesh else None,
+                            'visible': c.is_visible(), 'hidden_game': c.get_editor_property('hidden_in_game'), 'bounds': [str(o), str(e)],
+                            'custom': c.get_editor_property('num_custom_data_floats'), 'count': c.get_instance_count()}
+        return None
+    if action == 'footprints':
+        # PIE: how many sand footprints the player left (UMareVisualWorld) and the pawn position
+        world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()
+        n = 0
+        comps = []
+        for a in unreal.GameplayStatics.get_all_actors_of_class(world, unreal.Actor):
+            for c in a.get_components_by_class(unreal.InstancedStaticMeshComponent):
+                if c.get_name() == 'Footprints':
+                    n += c.get_instance_count()
+                    comps.append(c.get_owner().get_name())
+                    comps += [str([round(v) for v in (c.get_instance_transform(i, True).translation.x, c.get_instance_transform(i, True).translation.y, c.get_instance_transform(i, True).translation.z)]) for i in range(0, c.get_instance_count(), max(1, c.get_instance_count() // 5))]
+        pawn = unreal.GameplayStatics.get_player_pawn(world, 0)
+        if arg.startswith('walk,'):
+            # "walk,x,y,yaw": stand the player on the ground there, walking mode, facing yaw (then mare.WalkTest 1)
+            _, x, y, yaw = arg.split(',')
+            move = pawn.get_component_by_class(unreal.CharacterMovementComponent)
+            pawn.set_actor_location(unreal.Vector(float(x), float(y), 200), False, True)
+            move.set_movement_mode(unreal.MovementMode.MOVE_WALKING)
+            pawn.set_actor_rotation(unreal.Rotator(roll=0, pitch=0, yaw=float(yaw)), True)
+            unreal.GameplayStatics.get_player_controller(world, 0).set_control_rotation(unreal.Rotator(roll=0, pitch=-10, yaw=float(yaw)))
+        p = pawn.get_actor_location() if pawn else None
+        mv = pawn.get_component_by_class(unreal.CharacterMovementComponent) if pawn else None
+        return {'mode': str(mv.movement_mode) if mv else None, 'vel': round(pawn.get_velocity().length()) if pawn else 0, 'maxwalk': mv.max_walk_speed if mv else 0, 'footprints': n, 'components': comps, 'walktest': unreal.SystemLibrary.get_console_variable_int_value('mare.WalkTest'), 'pawn': [round(p.x), round(p.y), round(p.z)] if p else None}
     if action == 'whereis':
         # PIE: location of the static-mesh actors using a mesh (QA of moving props: passing boats)
         world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()
@@ -1149,6 +1201,10 @@ def run(action, arg=''):
             unreal.EditorAssetLibrary.delete_directory(dest)
         mesh = mare_hotel_lobby._import(Path(f'D:/Assets/Mare/{slug}/{slug}.glb'), dest, slug, True, search=False)
         return {'mesh': mesh.get_path_name(), 'tris': mesh.get_num_triangles(0), '_usage': mare_custom.fix_usage()['fixed']}
+    if action == 'sand':
+        import importlib, mare_materials
+        importlib.reload(mare_materials)
+        return [mare_materials.build_ground().get_path_name(), mare_materials.build_sand_footprint().get_path_name()]
     if action == 'weather':
         import importlib, mare_materials
         importlib.reload(mare_materials)

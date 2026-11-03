@@ -61,9 +61,24 @@ def build_ground():
         node=expression(mat,unreal.MaterialExpressionTextureSample,texture=texture('coast_sand_01'+('_nor' if normal else '_diff'),normal),sampler_type=unreal.MaterialSamplerType.SAMPLERTYPE_NORMAL if normal else unreal.MaterialSamplerType.SAMPLERTYPE_COLOR)
         connect(uv_b,'',node,'UVs')
         inputs['SandB'+('Normal' if normal else '')]=node
+    # Copacabana-style dry sand (03/11, Sergio: "areia tipo Copacabana, volumosa e mais clara"): Poly Haven
+    # aerial_sand (trampled beach, 15 m per tile; a second rotated sampling hides the repeat) for the volume, its AO
+    # darkening the hollows, and dense_sand (1.8 m) for the fine grain up close.
+    uv_t=custom(mat,'return Position.xy/1500.0;',unreal.CustomMaterialOutputType.CMOT_FLOAT2,{'Position':pos})
+    uv_t2=custom(mat,'return float2(Position.x*.6-Position.y*.8,Position.x*.8+Position.y*.6)/1150.0+.37;',unreal.CustomMaterialOutputType.CMOT_FLOAT2,{'Position':pos})
+    uv_f=custom(mat,'return Position.xy/180.0;',unreal.CustomMaterialOutputType.CMOT_FLOAT2,{'Position':pos})
+    for key,name,uvn in [('Tr','aerial_sand',uv_t),('Tr2','aerial_sand',uv_t2),('Fine','dense_sand',uv_f)]:
+        for kind in ('diff','nor','ao'):
+            tex=texture(f'{name}_{kind}',kind=='nor')
+            if kind=='ao':
+                tex.set_editor_property('srgb',False);unreal.EditorAssetLibrary.save_loaded_asset(tex)
+            node=expression(mat,unreal.MaterialExpressionTextureSample,texture=tex,sampler_type=unreal.MaterialSamplerType.SAMPLERTYPE_NORMAL if kind=='nor' else unreal.MaterialSamplerType.SAMPLERTYPE_LINEAR_COLOR if kind=='ao' else unreal.MaterialSamplerType.SAMPLERTYPE_COLOR)
+            connect(uvn,'',node,'UVs')
+            inputs[key+{'diff':'','nor':'Normal','ao':'AO'}[kind]]=node
     blend='float edge=sin(Position.x*.0017)*90+sin(Position.x*.0041)*35; float wet=1-smoothstep(-3400,-2400,Position.y+edge); float inland=smoothstep(-1200,-500,Position.y+edge*.6); '
-    color=custom(mat,blend+'float l=dot(Grass.rgb,float3(.2126,.7152,.0722)); float macro=.94+.06*sin(Position.x*.0013)*sin(Position.y*.0011); float detail=clamp(l*2.4,.65,1.25); float3 turf=lerp(Grass.rgb,float3(.10,.24,.045)*detail,.78)*macro; float mixb=.5+.35*sin(Position.x*.00031+sin(Position.y*.00047)*2.1)*sin(Position.y*.00027); float3 sand=lerp(Sand.rgb,SandB.rgb,mixb); float sl=dot(sand,float3(.2126,.7152,.0722)); float3 pale=lerp(sand,float3(sl,sl,sl),.45)*float3(1.85,1.8,1.68); float3 dry=min(pale+float3(.08,.075,.065),float3(.90,.88,.82)); float wl=dot(Wet.rgb,float3(.2126,.7152,.0722)); float3 damp=min(lerp(Wet.rgb,float3(wl,wl,wl),.3)*float3(1.35,1.3,1.2),float3(.66,.61,.53)); return lerp(lerp(dry,damp,wet),turf,inland);',unreal.CustomMaterialOutputType.CMOT_FLOAT3,{k:v for k,v in inputs.items() if 'Normal' not in k})
-    normal=custom(mat,blend+'float mixb=.5+.35*sin(Position.x*.00031+sin(Position.y*.00047)*2.1)*sin(Position.y*.00027); float3 sn=normalize(lerp(SandNormal.xyz,SandBNormal.xyz,mixb)); return normalize(lerp(lerp(sn,WetNormal.xyz,wet),GrassNormal.xyz,inland));',unreal.CustomMaterialOutputType.CMOT_FLOAT3,{k:v for k,v in inputs.items() if k=='Position' or 'Normal' in k})
+    color=custom(mat,blend+'float l=dot(Grass.rgb,float3(.2126,.7152,.0722)); float macro=.94+.06*sin(Position.x*.0013)*sin(Position.y*.0011); float detail=clamp(l*2.4,.65,1.25); float3 turf=lerp(Grass.rgb,float3(.10,.24,.045)*detail,.78)*macro; float mixb=.5+.35*sin(Position.x*.00031+sin(Position.y*.00047)*2.1)*sin(Position.y*.00027); float3 sand=lerp(Sand.rgb,SandB.rgb,mixb); float sl=dot(sand,float3(.2126,.7152,.0722)); float mt=.5+.4*sin(Position.x*.00021+sin(Position.y*.00033)*1.7); float lt=dot(lerp(Tr.rgb,Tr2.rgb,mt),float3(.2126,.7152,.0722)); float lf=dot(Fine.rgb,float3(.2126,.7152,.0722)); float ao=lerp(TrAO.r,Tr2AO.r,mt)*lerp(.82,1.0,FineAO.r); float shade=clamp(lt/.42,.78,1.12)*clamp(lf/.45,.9,1.08); float3 dry=float3(.95,.88,.74)*shade*lerp(.58,1.0,ao); float wl=dot(Wet.rgb,float3(.2126,.7152,.0722)); float3 damp=min(lerp(Wet.rgb,float3(wl,wl,wl),.3)*float3(1.35,1.3,1.2),float3(.66,.61,.53)); return lerp(lerp(dry,damp,wet),turf,inland);',unreal.CustomMaterialOutputType.CMOT_FLOAT3,{k:v for k,v in inputs.items() if 'Normal' not in k})
+    for key in ('TrAO','Tr2AO','FineAO'):MEL.connect_material_expressions(inputs[key],'R',color,key)
+    normal=custom(mat,blend+'float mixb=.5+.35*sin(Position.x*.00031+sin(Position.y*.00047)*2.1)*sin(Position.y*.00027); float mt=.5+.4*sin(Position.x*.00021+sin(Position.y*.00033)*1.7); float3 tn=lerp(TrNormal.xyz,Tr2Normal.xyz,mt); float3 sn=normalize(float3(tn.xy*1.7+FineNormal.xy*.6,tn.z)); return normalize(lerp(lerp(sn,WetNormal.xyz,wet),GrassNormal.xyz,inland));',unreal.CustomMaterialOutputType.CMOT_FLOAT3,{k:v for k,v in inputs.items() if k=='Position' or 'Normal' in k})
     rough=custom(mat,blend+'return lerp(lerp(.9,.45,wet),.96,inland);',unreal.CustomMaterialOutputType.CMOT_FLOAT1,{'Position':pos})
     for node,prop in [(color,unreal.MaterialProperty.MP_BASE_COLOR),(normal,unreal.MaterialProperty.MP_NORMAL),(rough,unreal.MaterialProperty.MP_ROUGHNESS)]:MEL.connect_material_property(node,'',prop)
     errors=list(MEL.recompile_material(mat))
@@ -373,6 +388,32 @@ def build_puddle():
     MEL.connect_material_property(expression(mat, unreal.MaterialExpressionConstant3Vector, constant=unreal.LinearColor(.018, .02, .022, 1)), '', unreal.MaterialProperty.MP_BASE_COLOR)
     MEL.connect_material_property(expression(mat, unreal.MaterialExpressionConstant, r=.03), '', unreal.MaterialProperty.MP_ROUGHNESS)
     MEL.connect_material_property(expression(mat, unreal.MaterialExpressionConstant, r=.6), '', unreal.MaterialProperty.MP_SPECULAR)
+    errors = list(MEL.recompile_material(mat))
+    if errors: raise RuntimeError(str(errors))
+    unreal.EditorAssetLibrary.save_loaded_asset(mat)
+    return mat
+
+
+def build_sand_footprint():
+    """M_SandFootprint: the imprints the player leaves in the sand (UMareVisualWorld footprints). The foot mask of
+    tools/ue58/gen_footprints.py as a soft shaded dent: a little darker than dry sand, with its normal map, fading
+    out with PerInstanceCustomData 0 (age 0..1)."""
+    folder = '/Game/Custom/Beach/beach_footprint'
+    mask = unreal.load_asset(f'{folder}/beach_footprint_color')
+    dent = unreal.load_asset(f'{folder}/beach_footprint_normal')
+    mat = material('M_SandFootprint')
+    mat.set_editor_property('blend_mode', unreal.BlendMode.BLEND_TRANSLUCENT)
+    mat.set_editor_property('translucency_lighting_mode', unreal.TranslucencyLightingMode.TLM_SURFACE)
+    mat.set_editor_property('used_with_instanced_static_meshes', True)
+    a = expression(mat, unreal.MaterialExpressionTextureSample, texture=mask)
+    n = expression(mat, unreal.MaterialExpressionTextureSample, texture=dent, sampler_type=unreal.MaterialSamplerType.SAMPLERTYPE_NORMAL)
+    age = expression(mat, unreal.MaterialExpressionPerInstanceCustomData, data_index=0)
+    opacity = custom(mat, 'float a=saturate(Age); return saturate(M*1.4)*.9*(1-a*a*a);', unreal.CustomMaterialOutputType.CMOT_FLOAT1, {'M': a, 'Age': age})
+    MEL.connect_material_expressions(a, 'A', opacity, 'M')
+    MEL.connect_material_property(expression(mat, unreal.MaterialExpressionConstant3Vector, constant=unreal.LinearColor(.33, .28, .21, 1)), '', unreal.MaterialProperty.MP_BASE_COLOR)
+    MEL.connect_material_property(n, 'RGB', unreal.MaterialProperty.MP_NORMAL)
+    MEL.connect_material_property(expression(mat, unreal.MaterialExpressionConstant, r=.95), '', unreal.MaterialProperty.MP_ROUGHNESS)
+    MEL.connect_material_property(opacity, '', unreal.MaterialProperty.MP_OPACITY)
     errors = list(MEL.recompile_material(mat))
     if errors: raise RuntimeError(str(errors))
     unreal.EditorAssetLibrary.save_loaded_asset(mat)

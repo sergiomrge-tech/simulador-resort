@@ -18,6 +18,9 @@
 #include "Components/SkyLightComponent.h"
 #include "Engine/SkyLight.h"
 #include "Engine/StaticMeshActor.h"
+#include "GameFramework/Character.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "Components/SkyAtmosphereComponent.h"
 #include "Components/VolumetricCloudComponent.h"
 #include "Materials/MaterialInstanceDynamic.h"
@@ -26,6 +29,7 @@
 #include "Camera/PlayerCameraManager.h"
 #include "HAL/IConsoleManager.h"
 
+static TAutoConsoleVariable<int32> CVarMareWalkTest(TEXT("mare.WalkTest"),0,TEXT("QA: the player walks straight ahead (footprint capture)."));
 static TAutoConsoleVariable<int32> CVarMareWeather(TEXT("mare.Weather"),0,TEXT("QA weather override: 0 = today's weather, 1 = clear, 2 = rain, 3 = storm, 4 = rough sea without rain."));
 
 TStatId UMareVisualWorld::GetStatId()const{RETURN_QUICK_DECLARE_CYCLE_STAT(UMareVisualWorld,STATGROUP_Tickables);}
@@ -82,6 +86,10 @@ void UMareVisualWorld::RefreshExpansions()
 void UMareVisualWorld::Tick(float DeltaSeconds)
 {
  if(!GetWorld()->IsGameWorld() || !Cast<AMareGameMode>(GetWorld()->GetAuthGameMode()))return;
+ // Every frame: the weather easing, the rain curtains following the camera and the footprints; the rest of the
+ // scene (sun, lamps, signs) refreshes every 2 s below.
+ if(auto WeatherSim=GetWorld()->GetGameInstance()->GetSubsystem<UMareSimulation>())UpdateWeather(DeltaSeconds,WeatherSim);
+ UpdateFootprints();
  Clock-=DeltaSeconds;if(Clock>0)return;Clock=2.f;
  RefreshExpansions();
  if(!Sun){for(TActorIterator<ALight> It(GetWorld());It;++It){if(It->ActorHasTag(TEXT("MareSun")))Sun=*It;if(It->ActorHasTag(TEXT("MareMoon")))Moon=*It;if(It->ActorHasTag(TEXT("MarePractical")))Practical.AddUnique(*It);}
@@ -133,7 +141,6 @@ void UMareVisualWorld::Tick(float DeltaSeconds)
  // Overcast: denser fog with the rain (greys the horizon and the sky), a little darker exposure.
  if(Fog)Fog->GetComponent()->SetFogDensity(FMath::Lerp(.00065f,.0042f,RainNow));
  if(Exposure){Exposure->Settings.bOverride_AutoExposureBias=true;Exposure->Settings.AutoExposureBias=-.3f*RainNow;}
- UpdateWeather(DeltaSeconds,Sim);
  auto Dishes=UMareSimulation::Object(Sim->Definitions,TEXT("dishes"));
  auto Price=[&](const FString& Id){return UMareSimulation::String(UMareSimulation::Object(Dishes,Id),TEXT("name"))+FString::Printf(TEXT("   R$ %.0f"),Sim->SalePrice(Id));};
  for(auto Sign:Signs){if(!IsValid(Sign))continue;FString Text;
@@ -186,4 +193,51 @@ void UMareVisualWorld::UpdateWeather(float DeltaSeconds,UMareSimulation* Sim)
  FHitResult Roof;FCollisionQueryParams Q(TEXT("MareRainRoof"),false);if(APawn* Pawn=UGameplayStatics::GetPlayerPawn(GetWorld(),0))Q.AddIgnoredActor(Pawn);
  const bool bCovered=GetWorld()->LineTraceSingleByChannel(Roof,Eye,Eye+FVector(0,0,2500),ECC_Visibility,Q);
  for(auto A:RainCurtains)if(IsValid(A)){A->SetActorLocation(FVector(Eye.X,Eye.Y,Eye.Z+250));A->SetActorHiddenInGame(RainNow<.02f || bCovered);}
+}
+
+int32 UMareVisualWorld::FootprintCount()const{return Footprints?Footprints->GetInstanceCount():0;}
+void UMareVisualWorld::UpdateFootprints()
+{
+ static const int32 MaxPrints=240;static const float Life=180.f;
+ UWorld* World=GetWorld();if(!World || !World->IsGameWorld())return;
+ if(!Footprints){
+  UStaticMesh* Mesh=LoadObject<UStaticMesh>(nullptr,TEXT("/Game/Custom/Beach/beach_footprint/beach_footprint1.beach_footprint1"));
+  UMaterialInterface* Mat=LoadObject<UMaterialInterface>(nullptr,TEXT("/Game/World/Materials/M_SandFootprint.M_SandFootprint"));
+  if(!Mesh || !Mat)return;
+  FActorSpawnParameters P;P.SpawnCollisionHandlingOverride=ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+  FootprintActor=World->SpawnActor<AActor>(FVector::ZeroVector,FRotator::ZeroRotator,P);if(!FootprintActor)return;
+  Footprints=NewObject<UInstancedStaticMeshComponent>(FootprintActor,TEXT("Footprints"));FootprintActor->SetRootComponent(Footprints);
+  Footprints->SetMobility(EComponentMobility::Movable);Footprints->SetStaticMesh(Mesh);Footprints->SetMaterial(0,Mat);
+  Footprints->SetCollisionEnabled(ECollisionEnabled::NoCollision);Footprints->SetCastShadow(false);Footprints->NumCustomDataFloats=1;
+  Footprints->RegisterComponent();}
+ const float Now=World->GetTimeSeconds();
+ // Fade: custom data 0 = age (0 fresh .. 1 gone).
+ for(int32 I=0;I<FootprintBorn.Num();++I)Footprints->SetCustomDataValue(I,0,FMath::Clamp((Now-FootprintBorn[I])/Life,0.f,1.f),false);
+ if(FootprintBorn.Num())Footprints->MarkRenderStateDirty();
+ ACharacter* Hero=Cast<ACharacter>(UGameplayStatics::GetPlayerPawn(World,0));if(!Hero)return;
+ UCharacterMovementComponent* Move=Hero->GetCharacterMovement();if(!Move || !Move->IsMovingOnGround())return;
+ // QA walk: the hero zeroes outside input, so push it along its facing (swept) and step that way.
+ FVector Velocity=Hero->GetVelocity();Velocity.Z=0;
+ if(CVarMareWalkTest.GetValueOnGameThread()){
+  // step along the facing and set the capsule on the floor below (a swept move stalls on the sand ripples)
+  const float Half=Hero->GetCapsuleComponent()->GetScaledCapsuleHalfHeight();const FVector Next=Hero->GetActorLocation()+Hero->GetActorForwardVector()*200.f*FMath::Min(World->GetDeltaSeconds(),.1f);
+  FHitResult Floor;FCollisionQueryParams FQ(TEXT("MareWalkTest"),false,Hero);
+  if(World->LineTraceSingleByChannel(Floor,Next+FVector(0,0,Half),Next-FVector(0,0,Half*3),ECC_Visibility,FQ))Hero->SetActorLocation(Floor.ImpactPoint+FVector(0,0,Half+2.f));
+  Velocity=Hero->GetActorForwardVector()*200.f;}
+ if(Velocity.Size()<60.f)return;
+ const FVector Feet=Hero->GetActorLocation()-FVector(0,0,Hero->GetCapsuleComponent()->GetScaledCapsuleHalfHeight());
+ if(FVector::Dist2D(Feet,LastStep)<72.f)return;
+ LastStep=Feet;bLeftFoot=!bLeftFoot;
+ const FVector Dir=Velocity.GetSafeNormal();const FVector Right(-Dir.Y,Dir.X,0);const float Side=bLeftFoot?-1.f:1.f;
+ const FVector At=Feet+Right*Side*11.f;
+ FHitResult Hit;FCollisionQueryParams Q(TEXT("MareFootprint"),true,Hero);
+ if(!World->LineTraceSingleByChannel(Hit,At+FVector(0,0,60),At-FVector(0,0,90),ECC_Visibility,Q) || !Hit.GetComponent())return;
+ // Sand only: the coast ground material on the beach side of the lawn (grass starts around y -1050).
+ UMaterialInterface* Under=Hit.GetComponent()->GetMaterial(0);
+ if(!Under || !Under->GetName().Contains(TEXT("CoastGround")) || Hit.ImpactPoint.Y>-1050.f)return;
+ const FTransform T(FRotationMatrix::MakeFromZX(Hit.ImpactNormal,Dir).Rotator(),Hit.ImpactPoint+Hit.ImpactNormal*.6f,FVector(1,Side,1));   // the mesh is a right foot
+ if(Footprints->GetInstanceCount()<MaxPrints){NextFootprint=Footprints->AddInstance(T,true);FootprintBorn.Add(Now);}
+ else{Footprints->UpdateInstanceTransform(NextFootprint,T,true,true,true);FootprintBorn[NextFootprint]=Now;}
+ Footprints->SetCustomDataValue(NextFootprint,0,0.f,true);
+ NextFootprint=(NextFootprint+1)%MaxPrints;
 }

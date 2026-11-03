@@ -49,6 +49,17 @@ private:
  UPROPERTY() TObjectPtr<class USkyAtmosphereComponent> Atmosphere;
  bool bSkyLooked=false;
  void UpdateWeather(float DeltaSeconds,class UMareSimulation* Sim);
+ /** Footprints the player leaves on the beach sand: a ring of instanced imprints (M_SandFootprint), alternating
+  *  feet along the walking direction, fading out over three minutes. */
+ UPROPERTY() TObjectPtr<AActor> FootprintActor;
+ UPROPERTY() TObjectPtr<class UInstancedStaticMeshComponent> Footprints;
+ TArray<float> FootprintBorn;
+ FVector LastStep=FVector(1e9);
+ int32 NextFootprint=0;
+ bool bLeftFoot=false;
+ void UpdateFootprints();
+public:
+ int32 FootprintCount()const;
 public:
  int32 LampCount()const{return Lamps.Num();}
 };
