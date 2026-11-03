@@ -99,3 +99,72 @@ namespace MareNotebook
  /** Main action: ink button with the handwriting label. */
  inline TSharedRef<STextBlock> InkLabel(const FString& V,float Size=17){return SNew(STextBlock).Text(FText::FromString(V)).Font(Hand(Size)).ColorAndOpacity(Tag);}
 }
+
+#include "Widgets/SCompoundWidget.h"
+#include "Widgets/SBoxPanel.h"
+#include "Widgets/Input/SButton.h"
+#include "Widgets/Layout/SDPIScaler.h"
+/** A page that never scrolls (03/11, Sergio: "as interfaces não podem ter rolagem; tudo cabendo na tela"). The content
+ *  keeps the full width (text wraps as usual); if it is a little too tall it is scaled down (to 85%), and if it is much
+ *  taller its rows (the slots of Rows) are split into whole leaves of the notebook with "‹ folha 1 de 3 ›" below, the
+ *  first row (the title) on every leaf. The leaf shown is remembered by Name across rebuilds. Content is clipped to the
+ *  page, never drawn outside it. Without Rows (one block of text), only scaling, down to MinScale. */
+class SMareFit : public SCompoundWidget
+{
+public:
+ SLATE_BEGIN_ARGS(SMareFit):_MinScale(.62f),_Name(TEXT("page")){} SLATE_DEFAULT_SLOT(FArguments,Content) SLATE_ARGUMENT(float,MinScale)
+  SLATE_ARGUMENT(FString,Name) SLATE_ARGUMENT(TSharedPtr<SVerticalBox>,Rows) SLATE_END_ARGS()
+ inline void Construct(const FArguments& Args)
+ {
+  MinScale=Args._MinScale;Name=Args._Name;Content=Args._Content.Widget;Rows=Args._Rows;
+  SetClipping(EWidgetClipping::ClipToBounds);
+  ChildSlot[SNew(SVerticalBox)
+   +SVerticalBox::Slot().FillHeight(1).VAlign(VAlign_Top)[SNew(SDPIScaler).DPIScale_Lambda([this](){return Scale;})
+    [SNew(SBox).WidthOverride_Lambda([this](){return Width>1?FOptionalSize(Width/Scale):FOptionalSize();})[Content.ToSharedRef()]]]
+   +SVerticalBox::Slot().AutoHeight().HAlign(HAlign_Center).Padding(0,2,0,0)[SNew(SHorizontalBox).Visibility_Lambda([this](){return Leaves>1?EVisibility::Visible:EVisibility::Collapsed;})
+    +SHorizontalBox::Slot().AutoWidth()[SNew(SButton).ButtonStyle(&MareNotebook::TagButton()).ContentPadding(FMargin(10,0)).IsEnabled_Lambda([this](){return Leaf()>0;})
+     .OnClicked_Lambda([this](){Leaf()=FMath::Max(0,Leaf()-1);return FReply::Handled();})[SNew(STextBlock).Text(FText::FromString(TEXT("‹ folha anterior"))).Font(MareNotebook::Hand(15)).ColorAndOpacity(MareNotebook::Ink)]]
+    +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(10,0)[SNew(STextBlock).Font(MareNotebook::Hand(15)).ColorAndOpacity(MareNotebook::Faded)
+     .Text_Lambda([this](){return FText::FromString(FString::Printf(TEXT("folha %d de %d"),Leaf()+1,FMath::Max(Leaves,1)));})]
+    +SHorizontalBox::Slot().AutoWidth()[SNew(SButton).ButtonStyle(&MareNotebook::TagButton()).ContentPadding(FMargin(10,0)).IsEnabled_Lambda([this](){return Leaf()<Leaves-1;})
+     .OnClicked_Lambda([this](){Leaf()=FMath::Min(Leaves-1,Leaf()+1);return FReply::Handled();})[SNew(STextBlock).Text(FText::FromString(TEXT("próxima folha ›"))).Font(MareNotebook::Hand(15)).ColorAndOpacity(MareNotebook::Ink)]]]];
+ }
+ inline virtual void Tick(const FGeometry& Geometry,const double,const float) override
+ {
+  const FVector2D Size=Geometry.GetLocalSize();Width=Size.X;if(Size.Y<=1 || !Content.IsValid())return;
+  const float Pager=30.f;
+  if(Rows.IsValid()){
+   // Row heights are measured once, all rows shown; then the leaves are packed with whole rows.
+   FChildren* Kids=Rows->GetChildren();const int32 N=Kids->Num();
+   // Measure with every row shown, at the final width (text wrapping depends on it): wait for the width to settle.
+   if(Heights.Num()!=N || FMath::Abs(Width-MeasuredWidth)>2.f){Heights.SetNum(N);MeasuredWidth=Width;Settle=3;Scale=1;Leaves=1;
+    for(int32 I=0;I<N;++I)Kids->GetChildAt(I)->SetVisibility(EVisibility::Visible);return;}
+   if(Settle>0){if(--Settle==0){
+     // Slot paddings are not in the children's sizes: spread the column's own extra height over the rows.
+     float Sum=0;for(int32 I=0;I<N;++I){Heights[I]=Kids->GetChildAt(I)->GetDesiredSize().Y;Sum+=Heights[I];}
+     const float Extra=N?FMath::Max(0.f,Rows->GetDesiredSize().Y-Sum)/N:0.f;for(float& H:Heights)H+=Extra+1.f;
+     FString List;for(float H:Heights)List+=FString::Printf(TEXT(" %.0f"),H);
+     UE_LOG(LogTemp,Display,TEXT("MARE_UI_FIT %s rows=%d content=%.0f space=%.0f heights:%s"),*Name,N,Sum+Extra*N,Size.Y,*List);}
+    return;}
+   float Total=0;for(float H:Heights)Total+=H;
+   if(Total<=Size.Y){Scale=1;Leaves=1;}
+   else if(Total*.85f<=Size.Y){Scale=Size.Y/Total;Leaves=1;}
+   else{Scale=.92f;const float Cap=(Size.Y-Pager)/Scale-(N?Heights[0]:0);
+    Owner.Reset();int32 Page=0;float Used=0;
+    // A short row (a section heading) stays with the row under it.
+    for(int32 I=1;I<N;++I){const float Keep=Heights[I]<=56.f && I+1<N?Heights[I+1]:0.f;
+     if(Used>0 && Used+Heights[I]+Keep>Cap){++Page;Used=0;}Used+=Heights[I];Owner.Add(Page);}
+    Leaves=Page+1;}
+   const int32 Show=FMath::Clamp(Leaf(),0,FMath::Max(Leaves-1,0));Leaf()=Show;
+   for(int32 I=1;I<N;++I)Kids->GetChildAt(I)->SetVisibility(Leaves<=1 || (Owner.IsValidIndex(I-1) && Owner[I-1]==Show)?EVisibility::Visible:EVisibility::Collapsed);
+   return;}
+  const float Height=Content->GetDesiredSize().Y;if(Height<=1)return;
+  const float Want=FMath::Clamp(Size.Y/Height,MinScale,1.f);
+  Scale=FMath::Abs(Want-Scale)>.004f?FMath::Lerp(Scale,Want,.5f):Want;
+  if(Want<=MinScale && !bWarned){bWarned=true;UE_LOG(LogTemp,Warning,TEXT("MARE_UI_TOO_TALL %s needs %.2f"),*Name,Size.Y/Height);}
+ }
+private:
+ int32& Leaf(){static TMap<FString,int32> Remembered;return Remembered.FindOrAdd(Name);}
+ TSharedPtr<SWidget> Content;TSharedPtr<SVerticalBox> Rows;TArray<float> Heights;TArray<int32> Owner;
+ float Scale=1.f,MinScale=.62f,Width=0.f,MeasuredWidth=-10.f;int32 Leaves=1,Settle=0;FString Name;bool bWarned=false;
+};

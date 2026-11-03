@@ -408,8 +408,13 @@ Pronto e testado (02/11):
   os lugares liberados na direção do olhar (`Content/Data/map_markers.json`), mais perto primeiro, em duas linhas;
   foto `docs/ue58/graphics-reference/bussola-20261102.png`.
 
-- [ ] P0 Interfaces sem rolagem (pedido do Sergio, 03/11): todo painel/página do celular e das estações cabe inteiro
+- [x] P0 Interfaces sem rolagem (pedido do Sergio, 03/11): todo painel/página do celular e das estações cabe inteiro
   na tela, sem barra de rolagem nem subir/descer; conferir em 1280×720, 1920×1080 e janelas menores.
+  Feito 03/11: nenhuma SScrollBox na UI. `SMareFit` (MareNotebookStyle.h): reduz até 85% quando falta pouco e, quando
+  falta muito, divide a página em folhas inteiras do caderno ("‹ folha 1 de N ›", título em todas, título de seção
+  junto do bloco, folha lembrada entre recargas); conteúdo recortado na página. Grades de cartões em fileiras
+  separadas (`FRowGrid`) para virar a folha entre fileiras. Celular (7 abas), 8 estações, pausa, opções, créditos e
+  carta conferidos por foto (`ui_fit_1..3.jpg`); o log `MARE_UI_FIT` registra conteúdo × espaço de cada página.
 
 ## 9. Desempenho e estabilidade
 - [ ] P0 FPS medido no executável:
@@ -482,3 +487,10 @@ negócios, hóspedes, salão, passeios, eventos) e o jogador sempre escolhendo o
 - [ ] P1 Duração do Acesso Antecipado: 6–10 h de conteúdo com objetivo sempre visível.
 - [ ] P1 Ritmo: nunca mais de 1–2 min sem algo a fazer; tarefas paralelas que se sobrepõem (pedido no quiosque enquanto
   o bar chama, hóspede na recepção, evento cômico), sem fila de espera longa nem tarefa repetitiva demais.
+
+## 16. Ponto turístico no morro (no fim da fila, pedido do Sergio em 03/11)
+- [ ] P2 O morro careca ao fundo vira ponto turístico: no alto, uma estátua ORIGINAL de Jesus Cristo de braços abertos
+  (figura cristã livre; não copiar o desenho do Cristo Redentor do Rio, que tem direitos de imagem controlados),
+  com mirante; uma trilha subindo a montanha desde a vila (caminho de terra e degraus de pedra, vegetação, corrimão
+  de madeira nos trechos íngremes, bancos e placas), visitável a pé, com vista do resort lá de cima; algo bem legal
+  (ex.: pôr do sol no mirante, foto com a estátua, turistas subindo). Cobrir o morro careca com mata.

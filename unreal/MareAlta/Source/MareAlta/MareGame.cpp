@@ -211,7 +211,21 @@ private:
  void Line(const FString& V,float Size=12,const FLinearColor& C=MareNotebook::Ink){Body->AddSlot().AutoHeight().Padding(0,2)[MareNotebook::BodyText(V,Size,C)];}
  void Pencil(const FString& V){Body->AddSlot().AutoHeight().Padding(0,2)[MareNotebook::HandText(V,17,MareNotebook::Pencil)];}
  /** N price tags per row; each tag gets a small fixed tilt so the page looks hand-pinned. */
- TSharedRef<SUniformGridPanel> Grid(){auto G=SNew(SUniformGridPanel).SlotPadding(FMargin(4,2));Body->AddSlot().AutoHeight().Padding(0,4)[G];return G;}
+ /** A card grid laid out one line of cards per row of the page, so a page too tall for the phone turns leaves between
+  *  lines of cards (SMareFit) instead of cutting them; a filler keeps the first line's column widths on the others. */
+ struct FRowGrid
+ {
+  TSharedPtr<SVerticalBox> Body;TMap<int32,TSharedPtr<SUniformGridPanel>> Lines;int32 Columns=0;
+  SUniformGridPanel::FScopedWidgetSlotArguments AddSlot(int32 Column,int32 Row)
+  {
+   Columns=FMath::Max(Columns,Column+1);TSharedPtr<SUniformGridPanel>& Line=Lines.FindOrAdd(Row);
+   if(!Line.IsValid()){Line=SNew(SUniformGridPanel).SlotPadding(FMargin(4,2));
+    if(Row>0 && Columns>1)Line->AddSlot(Columns-1,0)[SNullWidget::NullWidget];
+    Body->AddSlot().AutoHeight().Padding(0,Row?0:4,0,Row?0:0)[Line.ToSharedRef()];}
+   return Line->AddSlot(Column,0);
+  }
+ };
+ TSharedRef<FRowGrid> Grid(){auto G=MakeShared<FRowGrid>();G->Body=Body;return G;}
  static float TiltOf(int32 I){static const float T[]={-1.2f,.8f,-.5f,1.f,-.8f,.6f};return T[I%6];}
  TSharedRef<SVerticalBox> TagBody(const FString& Top,const FString& Name)
  {
@@ -628,7 +642,7 @@ private:
    for(const FString& Id:GroupPlaces[G]){FString Name=UMareSimulation::String(S->PlaceDef(Id),TEXT("name"));Name.RemoveFromStart(TEXT("Grand Hotel · "));const bool bOn=Id==Place,bOpen=S->IsPlaceAvailable(Id);
     List->AddSlot().AutoHeight()[SNew(SMarePadButton).ButtonStyle(&MareNotebook::Plain()).ContentPadding(FMargin(0)).OnClicked_Lambda([this,Id](){Place=Id;Rebuild();return FReply::Handled();})
      [SNew(SBorder).BorderImage(bOn?static_cast<const FSlateBrush*>(&MareNotebook::MarkerBrush()):FCoreStyle::Get().GetBrush("NoBrush")).Padding(FMargin(5,0))[MareNotebook::HandText((bOn?TEXT("» "):TEXT(""))+Name,17,bOpen?MareNotebook::Ink:MareNotebook::Pencil)]]];}}
-  return SNew(SScrollBox).ScrollWhenFocusChanges(EScrollWhenFocusChanges::AnimatedScroll)+SScrollBox::Slot()[List];
+  return SNew(SMareFit).Name(TEXT("place index")).Rows(List)[List];
  }
  void CustomizePage()
  {
@@ -712,7 +726,7 @@ private:
   // The page: lined paper behind, place index on the left of Personalizar, scrolling content, a sticky note for messages.
   auto Page=SNew(SHorizontalBox);
   if(bIndex)Page->AddSlot().AutoWidth()[SNew(SBox).WidthOverride(150).Padding(FMargin(14,8,8,6))[PlaceIndex()]];
-  Page->AddSlot().FillWidth(1).Padding(bIndex?FMargin(12,8,16,0):FMargin(24,8,18,0))[SNew(SScrollBox).ScrollWhenFocusChanges(EScrollWhenFocusChanges::AnimatedScroll)+SScrollBox::Slot().Padding(0,0,0,10)[Body.ToSharedRef()]];
+  Page->AddSlot().FillWidth(1).Padding(bIndex?FMargin(12,8,16,0):FMargin(24,8,18,0))[SNew(SMareFit).Name(Station.IsNone()?FString::Printf(TEXT("phone tab %d"),Tab):Station.ToString()).Rows(Body)[SNew(SBox).Padding(FMargin(0,0,0,10))[Body.ToSharedRef()]]];
   auto Sheet=SNew(SOverlay)+SOverlay::Slot()[SNew(SPaperLines).MarginX(bIndex?150.f:12.f)]+SOverlay::Slot()[Page];
   auto Screen=SNew(SBorder).BorderImage(&Cover()).Padding(FMargin(16,5,16,0))[SNew(SVerticalBox)
    +SVerticalBox::Slot().AutoHeight().Padding(4,0,4,2)[Status]
@@ -1042,7 +1056,7 @@ private:
    Back();break;
   case EPage::Credits:
    Box->AddSlot().AutoHeight().Padding(0,0,0,8)[MareUI::Text(LOCTEXT("CreditsTitle","Créditos").ToString(),16)];
-   Box->AddSlot().AutoHeight().Padding(0,0,0,8)[SNew(SBox).MaxDesiredHeight(320)[SNew(SScrollBox)+SScrollBox::Slot()[MareUI::Text(LOCTEXT("CreditsText",
+   Box->AddSlot().AutoHeight().Padding(0,0,0,8)[SNew(SBox).HeightOverride(320)[SNew(SMareFit).Name(TEXT("credits"))[MareUI::Text(LOCTEXT("CreditsText",
     "Maré Alta Resort — criado por Sergio.\n\n"
     "Feito na Unreal Engine 5.8.\n\n"
     "Modelos, texturas e sons de terceiros: quase tudo CC0 (domínio público) — Poly Haven, Quaternius, Kenney, ambientCG e outros. "
@@ -1326,7 +1340,7 @@ private:
   Body->AddSlot().AutoHeight().Padding(0,0,0,10)[Tabs];
   auto Page=SNew(SVerticalBox);
   switch(Tab){case 0:GraphicsPage(Page);break;case 1:DisplayPage(Page);break;case 2:AudioPage(Page);break;case 3:ControlsPage(Page);break;default:LanguagePage(Page);}
-  Body->AddSlot().AutoHeight()[SNew(SBox).MaxDesiredHeight(380)[SNew(SScrollBox).ScrollWhenFocusChanges(EScrollWhenFocusChanges::AnimatedScroll)+SScrollBox::Slot()[Page]]];
+  Body->AddSlot().AutoHeight()[SNew(SBox).HeightOverride(380)[SNew(SMareFit).Name(TEXT("options")).Rows(Page)[Page]]];
   // Apply / defaults, or the 10 s confirmation after a resolution change.
   Body->AddSlot().AutoHeight().Padding(0,12,0,0)[SNew(SBox).Visibility_Lambda([this](){return RevertAt>0?EVisibility::Collapsed:EVisibility::Visible;})[SNew(SHorizontalBox)
    +SHorizontalBox::Slot().AutoWidth().Padding(0,0,8,0)[Button(LOCTEXT("OptApply","Aplicar"),[this](){Apply();})]

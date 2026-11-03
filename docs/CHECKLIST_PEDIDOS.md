@@ -170,8 +170,9 @@ Legenda: [x] feito e validado · [~] em andamento/parcial · [ ] pendente.
   jogador inteiro oculto durante as partidas (sinuca e tênis de mesa), raquetes sem mãos.
 - [x] "Mar verde-cristalino como na foto; tirar os pontos brancos; areia também no fundo; mar mais agitado, parecia lago; corais bem longe da praia; mais ondulações" (03/11).
 - [x] "Corrigir as poltronas; nada tem sombra, fica artificial" (03/11): poltronas viradas para as mesas; luzes com sombra.
-- [ ] "As telas das interfaces não podem ter rolagem; tudo cabendo sem subir/descer" (03/11): PENDENCIAS seção 8.
+- [x] "As telas das interfaces não podem ter rolagem; tudo cabendo sem subir/descer" (03/11): folhas do caderno em vez de rolar.
 - [x] "Chão do hotel da mesma cor das paredes: pisos como na referência (vinílico amadeirado)" (03/11): laminate_floor.
+- [ ] "Morro careca: estátua de Jesus de braços abertos + trilha subindo a montanha, ponto turístico, algo bem legal; no fim do checklist" (03/11): PENDENCIAS seção 16.
 - [x] Manter este checklist sempre que o usuário pedir algo (regra salva na memória).
 
 ## Regras permanentes já pedidas
