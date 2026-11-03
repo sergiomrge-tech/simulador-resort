@@ -346,9 +346,15 @@ Regra do projeto: nenhum asset low poly no jogo.
 Especificação completa em `docs/ue58/HUMOR_EVENTOS_COMICOS.md`
 ([issue #4](https://github.com/sergiomrge-tech/simulador-resort/issues/4)). Humor ocasional, sem pastelão, sem travar
 atendimento, economia ou saves; um evento por vez, com cooldown e seed testável; textos em PT-BR e EN.
-- [ ] Gestor leve de eventos cômicos (IDs `HUM-00x`, estados idle/active/resolved, cooldown, um por vez), dados em JSON.
-- [ ] HUM-005 Turista perdido pergunta onde fica a praia (olhando para ela); resposta curta, E/Esc fecha.
-- [ ] Diálogos recorrentes: **Seu Arnaldo** (reclamão carismático) e o **pescador** com histórias cada vez mais exageradas.
+- [x] Gestor leve de eventos cômicos (03/11): `UMareComicEvents` + `Content/Data/comic_events.json` — IDs `HUM-00x`, estados
+  idle/active/resolved, um por vez, intervalo próprio e global em minutos de jogo, sorteio com semente (`mare.ComicSeed`),
+  horário e chance por evento, intervalos e contagem de falas no save (`comic`). Um passante perto do jogador para, se
+  vira e chama; E abre a conversa (`UMareVillageWorld::Quip`, painel embaixo, E/Esc fecha); ignorado, termina sozinho.
+  Nada mexe em dinheiro, estoque ou pedidos. QA `mare.Comic <id>`; teste `MareAlta.Gameplay.ComicEvents`.
+- [x] HUM-005 Turista perdido pergunta onde fica a praia (03/11): só com o jogador do lado da praia; 3 perguntas, 2
+  respostas com reação; conferido no PIE (o turista para, chama e a conversa abre embaixo da tela).
+- [x] Diálogos recorrentes (03/11): Seu Arnaldo (HUM-007, 5 reclamações em sequência) e Seu Bené, pescador (HUM-008, o
+  peixe cresce a cada conversa: 2 kg → do tamanho da jangada), pelo mesmo gestor; textos PT-BR e EN nos dados.
 - [ ] HUM-002 Turista influenciador exigente (selfies, pede mesa com vista), sem atrasar a fila; bônus pequeno depois.
 - [ ] HUM-001 Gaivota rouba batata da mesa, turista reage; sem mexer em estoque/pagamento no começo.
 - [x] HUM-003 Cachorro foge com um chinelo: cancelado (03/11, o Sergio tirou gatos e cachorros do jogo).

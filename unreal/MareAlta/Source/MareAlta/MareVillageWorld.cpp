@@ -169,4 +169,37 @@ void UMareVillageWorld::CloseDialogue()
  if(auto Person=Speaker.Get())Person->bConversing=false;Speaker.Reset();
  if(auto PC=DialogController.Get()){PC->bShowMouseCursor=false;PC->SetInputMode(FInputModeGameOnly());PC->ResetIgnoreMoveInput();PC->ResetIgnoreLookInput();}DialogController.Reset();
 }
+void UMareVillageWorld::Quip(AMarePerson* Person,APlayerController* Controller,const FString& Name,const FString& Line,const TArray<FString>& Replies,
+ TFunction<FString(int32)> OnReply,TFunction<void()> OnClosed)
+{
+ if(!IsValid(Person) || !Controller || Dialogue.IsValid() || !GEngine || !GEngine->GameViewport){if(OnClosed)OnClosed();return;}
+ auto PC=Cast<AMareController>(Controller);if(!PC || PC->bPhoneOpen){if(OnClosed)OnClosed();return;}
+ Speaker=Person;DialogController=Controller;Person->bConversing=true;QuipClosed=OnClosed;
+ static const FSlateRoundedBoxBrush Card(FLinearColor(.95f,.94f,.88f),12.f);
+ auto Actions=SNew(SHorizontalBox);TWeakObjectPtr<AMarePerson> WeakPerson(Person);TWeakObjectPtr<APlayerController> WeakController(Controller);
+ for(int32 I=0;I<Replies.Num();++I)
+  Actions->AddSlot().AutoWidth().Padding(0,0,8,0)[SNew(SMarePadButton).ContentPadding(FMargin(12,6)).OnClicked_Lambda([this,I,Name,OnReply,WeakPerson,WeakController](){
+   // The reaction page keeps the same "closed" callback: take it before closing the question page.
+   auto Closed=MoveTemp(QuipClosed);QuipClosed=nullptr;const FString Reaction=OnReply?OnReply(I):FString();CloseDialogue();
+   if(WeakPerson.IsValid() && WeakController.IsValid() && !Reaction.IsEmpty())Quip(WeakPerson.Get(),WeakController.Get(),Name,Reaction,{},nullptr,Closed);else if(Closed)Closed();
+   return FReply::Handled();})[SNew(STextBlock).Text(FText::FromString(Replies[I]))]];
+ Actions->AddSlot().AutoWidth()[SNew(SMarePadButton).ContentPadding(FMargin(12,6)).OnClicked_Lambda([this](){CloseDialogue();return FReply::Handled();})
+  [SNew(STextBlock).Text(MareGamepad::UsingGamepad()?FText::Format(NSLOCTEXT("MareVillage","ByePad","Até logo · {0}"),FText::FromString(MareGamepad::ActionLabel(TEXT("Dive"))))
+   :FText::Format(NSLOCTEXT("MareVillage","ByeKeys","Até logo · {0} / {1}"),FText::FromString(MareGamepad::ActionLabel(TEXT("Interact"))),FText::FromString(MareGamepad::ActionLabel(TEXT("Pause")))))]];
+ Dialogue=SNew(SBorder).BorderBackgroundColor(FLinearColor(0,0,0,.25f)).HAlign(HAlign_Center).VAlign(VAlign_Bottom).Padding(20)
+ [SNew(SBox).WidthOverride(580)[SNew(SBorder).BorderImage(&Card).Padding(18)[SNew(SVerticalBox)
+  +SVerticalBox::Slot().AutoHeight()[SNew(STextBlock).Text(FText::FromString(Name)).Font(FCoreStyle::GetDefaultFontStyle("Bold",19)).ColorAndOpacity(FLinearColor(.08f,.16f,.14f))]
+  +SVerticalBox::Slot().AutoHeight().Padding(0,9)[SNew(STextBlock).Text(FText::FromString(Line)).WrapTextAt(544).Font(FCoreStyle::GetDefaultFontStyle("Regular",15)).ColorAndOpacity(FLinearColor(.12f,.13f,.12f))]
+  +SVerticalBox::Slot().AutoHeight().HAlign(HAlign_Left)[Actions]]]];
+ GEngine->GameViewport->AddViewportWidgetContent(Dialogue.ToSharedRef(),35);
+ {const TWeakObjectPtr<UMareVillageWorld> Weak(this);MareGamepad::PushMenu(Dialogue.ToSharedRef(),[Weak](){if(Weak.IsValid())Weak->CloseDialogue();});}
+ Controller->bShowMouseCursor=true;Controller->SetInputMode(FInputModeGameAndUI());Controller->SetIgnoreMoveInput(true);Controller->SetIgnoreLookInput(true);
+}
+AMarePerson* UMareVillageWorld::HoldPedestrianNear(FVector At,float MinDist,float MaxDist,float Seconds)
+{
+ for(auto& W:Pedestrians){auto P=W.Person.Get();if(!P || P->bConversing || W.Wait>0)continue;const float D=FVector::Dist2D(P->GetActorLocation(),At);if(D<MinDist || D>MaxDist)continue;
+  if(auto AI=Cast<AAIController>(P->GetController()))AI->StopMovement();W.Wait=Seconds;P->bConversing=true;return P;}
+ return nullptr;
+}
+void UMareVillageWorld::ReleasePedestrian(AMarePerson* Person){for(auto& W:Pedestrians)if(W.Person.Get()==Person)W.Wait=FMath::Min(W.Wait,.5f);}
 void UMareVillageWorld::Deinitialize(){CloseDialogue();Residents.Empty();HotelGuests.Empty();Pedestrians.Empty();Super::Deinitialize();}

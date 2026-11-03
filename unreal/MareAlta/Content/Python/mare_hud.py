@@ -981,6 +981,18 @@ def run(action, arg=''):
             a.tags = [unreal.Name('MareFootTest')]
             out.append(mat)
         return out
+    if action == 'comic':
+        # PIE QA of the comic events: where the caller is; 'use' presses E on it (opens the exchange)
+        world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()
+        pc = unreal.GameplayStatics.get_player_controller(world, 0)
+        out = []
+        for t in unreal.GameplayStatics.get_all_actors_of_class(world, unreal.MareServiceTarget):
+            if str(t.get_editor_property('action')) == 'Comic':
+                p = t.get_actor_location()
+                out.append({'label': t.get_editor_property('label'), 'at': [round(p.x), round(p.y), round(p.z)]})
+                if arg == 'use':
+                    t.use(pc)
+        return out
     if action == 'footinfo':
         world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()
         for a in unreal.GameplayStatics.get_all_actors_of_class(world, unreal.Actor):

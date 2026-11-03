@@ -1,0 +1,110 @@
+{
+ "_doc": "Comic events (docs/ue58/HUMOR_EVENTOS_COMICOS.md), read by UMareComicEvents. One at a time; each has its own cooldown in game minutes and there is a global gap between any two. Every check_seconds the manager rolls 'odds' for each due event (hours = game hours it may happen). A pedestrian near the player (min..max cm) stops, faces the player and calls; E opens a short exchange: the line ('asks', in order when sequence is true, so the stories grow), the player's replies and the matching reactions. Ignored for wait_seconds, it ends by itself. max_y: only when the player is on the beach side (world y below it), facing the sea. Nothing touches money, stock or orders. _en fields are the English text for the localization pass.",
+ "check_seconds": 10,
+ "global_gap_minutes": 90,
+ "near_min": 250,
+ "near_max": 900,
+ "events": [
+  {
+   "id": "HUM-005",
+   "name": "Turista perdido",
+   "speaker": "Turista perdido",
+   "speaker_en": "Lost tourist",
+   "max_y": 600,
+   "hours": [8, 18],
+   "odds": 0.12,
+   "cooldown_minutes": 360,
+   "wait_seconds": 45,
+   "asks": [
+    "Com licença! Você sabe onde fica a praia? Me disseram que era por aqui.",
+    "Oi, moço! Esse mar todo aí... é a praia ou ainda falta andar?",
+    "Desculpa incomodar: qual é o caminho mais rápido pra areia? Estou procurando faz meia hora."
+   ],
+   "asks_en": [
+    "Excuse me! Do you know where the beach is? They told me it was around here.",
+    "Hi! All this sea here... is that the beach, or do I still have to walk?",
+    "Sorry to bother you: what's the quickest way to the sand? I've been looking for half an hour."
+   ],
+   "replies": ["Está bem atrás de você.", "Siga o barulho das ondas."],
+   "replies_en": ["It's right behind you.", "Follow the sound of the waves."],
+   "reactions": [
+    "Atrás de mim? ... Ah. AH. Aquele azul enorme. Eu achei que era o céu caindo no chão. Obrigado!",
+    "Que ideia boa! Eu estava seguindo o barulho do caminhão de sorvete. Valeu!"
+   ],
+   "reactions_en": [
+    "Behind me? ... Oh. OH. That huge blue thing. I thought it was the sky lying down. Thanks!",
+    "Great idea! I was following the ice-cream truck jingle. Thanks!"
+   ]
+  },
+  {
+   "id": "HUM-007",
+   "name": "Seu Arnaldo reclama",
+   "speaker": "Seu Arnaldo",
+   "speaker_en": "Mr. Arnaldo",
+   "hours": [9, 19],
+   "odds": 0.07,
+   "cooldown_minutes": 600,
+   "wait_seconds": 40,
+   "sequence": true,
+   "asks": [
+    "Essa água de coco está muito natural. Vocês não têm uma mais industrializada?",
+    "O sol hoje está forte demais. Na minha época o sol era mais educado.",
+    "Essa brisa do mar fica bagunçando meu cabelo. Dá pra desligar um pouquinho?",
+    "A areia daqui é fina demais, entra em tudo. Não tem uma areia mais... grossa?",
+    "O mar está fazendo barulho de novo. Ninguém fala nada pra ele?"
+   ],
+   "asks_en": [
+    "This coconut water is far too natural. Don't you have a more processed one?",
+    "The sun is too strong today. In my day the sun had better manners.",
+    "This sea breeze keeps messing up my hair. Could you turn it down a little?",
+    "The sand here is too fine, it gets everywhere. Don't you have a... chunkier sand?",
+    "The sea is making noise again. Doesn't anybody say anything to it?"
+   ],
+   "replies": ["Vou ver o que posso fazer, Seu Arnaldo.", "É o charme da praia!"],
+   "replies_en": ["I'll see what I can do, Mr. Arnaldo.", "That's the charm of the beach!"],
+   "reactions": [
+    "Hmpf. Pelo menos aqui alguém me escuta. Volto amanhã pra reclamar de novo.",
+    "Charme... sei. Mas tudo bem, ainda é o melhor quiosque da praia. Não conte pra ninguém que eu disse isso."
+   ],
+   "reactions_en": [
+    "Hmph. At least somebody listens to me here. I'll be back tomorrow to complain again.",
+    "Charm... sure. But fine, it's still the best kiosk on the beach. Don't tell anyone I said that."
+   ]
+  },
+  {
+   "id": "HUM-008",
+   "name": "Pescador e o peixe",
+   "speaker": "Seu Bené, pescador",
+   "speaker_en": "Bené the fisherman",
+   "hours": [6, 17],
+   "odds": 0.07,
+   "cooldown_minutes": 600,
+   "wait_seconds": 40,
+   "sequence": true,
+   "asks": [
+    "Ontem pesquei um robalo de uns dois quilos. Bonito que só ele!",
+    "Lembra do robalo? Pensei melhor: tinha uns cinco quilos. Quase me puxou do barco.",
+    "Aquele robalo... na verdade era uma garoupa de vinte quilos. Precisei de dois amigos pra segurar.",
+    "A garoupa, sabe? Eram trinta quilos e ela falava. Pediu pra eu soltar e eu soltei, por educação.",
+    "O peixe daquele dia? Era do tamanho da jangada. Hoje ele manda lembranças."
+   ],
+   "asks_en": [
+    "Yesterday I caught a two-kilo snook. A real beauty!",
+    "Remember the snook? Thinking it over, it was about five kilos. Nearly pulled me off the boat.",
+    "That snook... it was actually a twenty-kilo grouper. Took two friends to hold it.",
+    "The grouper, you know? Thirty kilos, and it talked. Asked me to let it go, so I did, out of politeness.",
+    "The fish from that day? As big as the jangada. It sends its regards today."
+   ],
+   "replies": ["Que pescaria, Seu Bené!", "Da última vez ele era menor..."],
+   "replies_en": ["What a catch, Bené!", "It was smaller last time..."],
+   "reactions": [
+    "Pois é! Um dia te levo no barco e você vê com os próprios olhos.",
+    "Menor? Impossível. Peixe de história só cresce, nunca diminui."
+   ],
+   "reactions_en": [
+    "Right? One day I'll take you on the boat and you'll see it with your own eyes.",
+    "Smaller? Impossible. Story fish only grow, they never shrink."
+   ]
+  }
+ ]
+}
