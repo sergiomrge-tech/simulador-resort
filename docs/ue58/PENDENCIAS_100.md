@@ -41,8 +41,12 @@ Nada de mecânica nova até esta seção fechar. Cada passada roda uma auditoria
   caminho de novo (12 s/24 s) e senta se estiver a <3 m. Execução: 10/10 clientes chegam, pedem, recebem, comem e saem;
   6 mesas sujas limpas; caixa sobe; salvar/recarregar sem pedido/mesa duplicados. QA amplo (MarePreviewQA) 104/104.
   HUM-006: o quiosque não sobrescreve mais a velocidade do atendente durante o tropeço (0 cm medido).
-- [ ] P0 Sistemas já feitos revisados no PIE: bar, piscina, pousada, hotel, negócios, passeios, festas, salão de jogos,
+- [x] P0 Sistemas já feitos revisados no PIE: bar, piscina, pousada, hotel, negócios, passeios, festas, salão de jogos,
   celular (todos os apps), clima, noite, mar, natação, áudio.
+  03/11: QA amplo 104/104 (natação, celular, pausa, noite, chuva, rádio, casa, vila, capítulos, sono, hotel, recife,
+  expansões, personalização); 27 testes (bar, piscina, pousada, hotel, negócios, passeios, festas, equipe); os 7 apps
+  do celular conferidos por captura; varredura dia/noite de todos os marcadores. Corrigidos: bússola com nomes
+  sobrepostos (largura medida da fonte) e letreiro do food truck espelhado sobre o teto (pintado nas laterais).
 - [x] P0 Interface: todas as telas no padrão caderno (03/11, pedido do Sergio): menu principal, pausa, opções, diálogos
   da vila/eventos e carta da avó convertidos (`MareNotebookStyle.h`); diálogo com respostas quebrando linha dentro da folha.
 - [ ] P0 Varredura visual final por área (montagem de capturas analisadas item a item) e desempenho no editor.

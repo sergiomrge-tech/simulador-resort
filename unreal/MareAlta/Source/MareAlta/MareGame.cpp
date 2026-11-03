@@ -1,5 +1,7 @@
 #include "MareGame.h"
 #include "MareNotebookStyle.h"
+#include "Fonts/FontMeasure.h"
+#include "Framework/Application/SlateApplication.h"
 #include "MareStaffWorld.h"
 #include "UnrealClient.h"
 #include "Widgets/SCanvas.h"
@@ -1563,7 +1565,9 @@ void AMareHUD::DrawHUD()
   Found.Sort([](const auto& A,const auto& B){return A.template Get<0>()<B.template Get<0>();});
   TArray<FVector2D> Used[2];
   for(const auto& F:Found){const FString& Name=F.template Get<1>();const int32 X=F.template Get<2>();
-   const float HalfWidth=(Name.Len()*6.3f+14.f)/560.f*50.f;   // estimated label width in % of the strip
+   // Label width measured with the font the strip draws it in ("| " + name, regular 11), in % of the 560-unit strip.
+   const float Px=FSlateApplication::IsInitialized()?FSlateApplication::Get().GetRenderer()->GetFontMeasureService()->Measure(TEXT("| ")+Name,FCoreStyle::GetDefaultFontStyle("Regular",11)).X:Name.Len()*8.5f;
+   const float HalfWidth=(Px+10.f)/560.f*50.f;
    for(int32 Row=0;Row<2;Row++){bool bFree=true;for(const FVector2D& U:Used[Row])if(FMath::Abs(U.X-X)<U.Y+HalfWidth){bFree=false;break;}
     if(bFree){Used[Row].Add(FVector2D(X,HalfWidth));M.Compass.Add({Name,X+1000*Row});break;}}}
  }

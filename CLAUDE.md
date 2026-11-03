@@ -421,3 +421,5 @@ log do PIE e fotos de referência comparadas com a rodada anterior). FAIL = não
 checagem permanente (teste ou item do portão). Interface: TODA tela usa `MareNotebookStyle.h` (papel pautado, margem,
 alfinete, Patrick Hand nos títulos e botões de tinta, Nunito no texto); nada de cartão creme liso nem fonte padrão.
 Fileiras de botões usam SWrapBox para não sair da folha.
+QA amplo (`-MarePreviewQA`, 104 checagens) sempre numa pasta de perfil NOVA (`-MareSaveRoot=D:/CodexTemp/claude-previewqa-<hora>`):
+ele salva o progresso (capítulos, dinheiro) e uma segunda rodada no mesmo perfil reprova checagens de capítulo.

@@ -13,6 +13,15 @@ def build():
         row=json.loads(json.dumps(rows[source_index]));row['transform']['basis'][0]=[-v for v in row['transform']['basis'][0]];row['transform']['basis'][2]=[-v for v in row['transform']['basis'][2]]
         row['transform']['position'][1]=height;row['transform']['position'][2]=z;row['text']=text;row['size']=size;row['pixel_size']=.01
         expanded.append((new_index,row))
+    # The food truck name floated over the middle of the roof as a double-sided label (mirrored from one side):
+    # painted on both sides of the box instead, each facing out (box measured with traces: x 2440-2820, y 2975-3195; the north side is the serving hatch with an awning).
+    for i,row in list(expanded):
+        if row['text']=='Food truck do Pastel':
+            expanded.remove((i,row))
+            for k,(y,z,size,flip) in enumerate(((31.97,.86,24,False),(29.73,2.25,44,True))):   # north (serving side): under the counter
+                side=json.loads(json.dumps(row));side['transform']['position']=[26.3,z,y];side['size']=size
+                if flip:side['transform']['basis'][0]=[-v for v in side['transform']['basis'][0]];side['transform']['basis'][2]=[-v for v in side['transform']['basis'][2]]
+                expanded.append((i if k==0 else 200,side))
     for i,row in expanded:
         data=row['transform'];bx,by,bz=data['basis'];p=data['position']
         cv=lambda v:unreal.Vector(v[0],v[2],v[1])
