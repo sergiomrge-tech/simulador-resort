@@ -32,7 +32,7 @@ void UMareRestaurantWorld::Tick(float DeltaSeconds)
  if(bHotel && !RoomService)RoomService=Place(Defs,TEXT("room_service"),TEXT("RoomService"),TEXT("Serviço de quarto · entregar no elevador"));
  if(Pass)Pass->SetActorHiddenInGame(!bHotel);if(RoomService)RoomService->SetActorHiddenInGame(!bHotel);
  // Tables: target label follows the order's stage; the three tables without decorative diners get a seated guest.
- static const TSet<int32> Decorated={0,3,4};   // MareVillageWorld seats ambient hotel guests at these tables
+ static const TSet<int32> Decorated={0,3,4};   // MareVillageWorld seats ambient hotel guests at these tables (seat 0, and 1 on 0/3)
  const TArray<TSharedPtr<FJsonValue>>* List=nullptr;if(!Defs->TryGetArrayField(TEXT("tables"),List))return;
  for(int32 I=0;I<List->Num();++I){const auto& V=(*List)[I]->AsArray();const FVector Table(V[0]->AsNumber(),V[1]->AsNumber(),V[2]->AsNumber());
   const auto Order=bHotel?S->TableOrder(I):nullptr;AMareServiceTarget* Target=Tables.FindRef(I);
@@ -45,8 +45,9 @@ void UMareRestaurantWorld::Tick(float DeltaSeconds)
   AMarePerson* Diner=Diners.FindRef(I);
   if(Order && !Decorated.Contains(I) && !IsValid(Diner)){
    FActorSpawnParameters Params;Params.SpawnCollisionHandlingOverride=ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-   // Same chair offset as the decorative diners (MareVillageWorld): one side of the table, seated capsule 105 cm up.
-   Diner=GetWorld()->SpawnActor<AMarePerson>(Table+FVector(-11,52,105),FRotator(0,-90,0),Params);
+   // On the table's first real chair (hotel_seats.json), like the decorative diners; old offset only as a fallback.
+   FVector Seat=Table+FVector(-11,52,39);float Yaw=-90;AMarePerson::HotelSeat(I,0,Seat,Yaw);
+   Diner=GetWorld()->SpawnActor<AMarePerson>(Seat+FVector(0,0,60),FRotator(0,Yaw,0),Params);if(Diner)Diner->SitOn(Seat,Yaw);
    if(Diner){Diner->SaveId=FString::Printf(TEXT("restaurant_%d_%s"),I,*UMareSimulation::String(Order,TEXT("name")));Diner->PersonName=UMareSimulation::String(Order,TEXT("name"));
     Diner->Tags.Add(TEXT("MareHotelGuest"));Diner->bAmbient=true;Diner->bSeated=true;Diner->SetAppearance(I%4);
     Diner->GetCharacterMovement()->DisableMovement();Diner->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);Diners.Add(I,Diner);}}

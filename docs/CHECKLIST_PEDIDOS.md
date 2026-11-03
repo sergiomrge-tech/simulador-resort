@@ -118,6 +118,21 @@ Legenda: [x] feito e validado · [~] em andamento/parcial · [ ] pendente.
 - [x] "Procure biquínis também" (02/11): não há biquíni gratuito para MetaHuman no Fab; maiô Aeron e top Marilla (QuingKhaos) baixados, 3 banhistas de maiô na praia; os biquínis ajustados a cada corpo continuam.
 - [~] "Móveis para o hotel, comidas, bebidas, o que for necessário" e "Tudo gratuito" (02/11): coco gelado, açaí e sorvetes do quiosque trocados por modelos gratuitos do Fab; banqueta e sofá de rattan na Personalização do bar e da pousada; fogueira junina escaneada com fogo Niagara. Megascans novos são pagos para jogo (só UEFN é grátis): ficaram de fora. Coquetéis (.blend), mesa de café, louça e campainha baixados, ainda sem uso.
 - [~] "Baixe sempre no drive D" / "mude o armazenamento do Chrome para D" (02/11): downloads feitos direto no D: pela API do Fab; a pasta padrão do Chrome não pôde ser trocada daqui (a extensão não abre chrome://settings) — fazer em Configurações > Downloads.
+- [x] "Toda torta" / "Bonecos todos tortos" / "Posição dos braços está errada" / "Braços errados" (03/11): o redirecionamento das capturas do Fab
+  torcia a bacia (captura olha para -Y, MetaHuman para +Y) e espelhava os braços (MetaHuman alinhada antes de virar a captura).
+  Refeito na ordem certa e conferido com números contra a captura (ombros/quadril/joelhos e cotovelos/mãos) e imagens de frente e lado.
+  A dança "Dance" (curva 50 cm à frente com braços pendurados) e a conversa em pé saíram; ficam rebolado e comemoração na festa e
+  conversa sentada (SitTalk).
+- [x] "Toda captura faça uma análise mais detalhada, salve essa regra" / "verificar cada detalhe para evitar retrabalho" / "Vc precisa
+  mudar as análises das capturas" (03/11): regra no CLAUDE.md global e na memória; método novo: auditoria numérica no motor
+  (`hud_seataudit`: bacia contra o assento real, pela geometria) + uma pessoa por linha em close, com análise escrita item a item.
+- [x] "Vários sentados na parte de trás da cadeira" / "Vários sentados no ar" (03/11): hóspedes do restaurante do hotel estavam 63-109 cm
+  acima do piso, fora das cadeiras; agora usam as cadeiras reais (`Data/hotel_seats.json`, medidas das malhas) e todo sentado alinha a
+  bacia no assento (`AMarePerson::SitOn`/`AlignToSeatBelow`, também no bar). Auditoria: 12/12 ok (10-14 cm acima do assento, ≤2 cm do centro).
+  Copos plásticos flutuando ao lado das mesas do hotel colocados sobre os tampos.
+- [ ] "Pessoa dentro da mesa" (03/11): funcionária atravessando o balcão no restaurante do Grand Hotel e captura com a câmera dentro da parede.
+- [ ] "Depois que arrumar a dança verificar TODAS as capturas com mais detalhes e faça as correções" (03/11): em andamento — varredura de
+  objetos flutuando (593 candidatos para triagem), pessoas atravessando móveis, câmeras de QA.
 - [x] Manter este checklist sempre que o usuário pedir algo (regra salva na memória).
 
 ## Regras permanentes já pedidas

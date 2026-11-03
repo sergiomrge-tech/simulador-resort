@@ -73,9 +73,23 @@ public:
  float BadgeMaleAhead=13.f,BadgeFemaleAhead=15.f;
  void AttachBadge();
  /** Village walkers/residents never participate in the kiosk order state machine. */
- bool bAmbient=false,bConversing=false;
+ UPROPERTY(BlueprintReadOnly,Category="Maré Alta") bool bAmbient=false;
+ bool bConversing=false;
  /** Ambient guest placed on a chair (hotel restaurant); keeps the sitting pose. */
- bool bSeated=false;
+ UPROPERTY(BlueprintReadOnly,Category="Maré Alta") bool bSeated=false;
+ /** Where the pelvis must end up when seated (world cm: seat centre, ~11 cm above the seat top). Body sizes differ,
+  *  so after the sitting clip runs the actor is shifted until the animated pelvis lands there (and again after a
+  *  MetaHuman swap). Zero = no seat point (the actor transform is trusted as is). */
+ FVector SeatPelvis=FVector::ZeroVector;
+ float SeatAlignIn=-1;
+ /** Seat i of restaurant table t from Content/Data/hotel_seats.json (mare_hud.chair_seats, the real chairs):
+  *  seat top and the yaw facing the table. */
+ static bool HotelSeat(int32 Table,int32 Index,FVector& SeatTop,float& Yaw);
+ /** Places a seated person on a seat: rough actor transform now, exact pelvis alignment once the clip plays. */
+ void SitOn(const FVector& SeatTop,float Yaw);
+ /** Already placed on a seat (kiosk table points): find the seat top straight below the sitting pelvis (trace) and
+  *  align on it, so taller and shorter bodies all sit on the stool instead of above or inside it. */
+ void AlignToSeatBelow();
  /** Clothing style, applied on the first tick once role flags are set (employees keep the uniform). */
  enum class EOutfit:uint8{Auto,Uniform,Casual,Beach,Swim,Social};
  EOutfit Outfit=EOutfit::Auto;

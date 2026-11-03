@@ -27,6 +27,7 @@
 
 static TAutoConsoleVariable<int32> CVarMareMetaHumans(TEXT("mare.MetaHumans"),1,TEXT("People wear the built MetaHumans of Content/Data/metahumans.json (0 = original rig people)."));
 static TAutoConsoleVariable<int32> CVarMareBeachwear(TEXT("mare.Beachwear"),-1,TEXT("QA: beachwear option index for new beach people (-1 = picked per person)."));
+static TAutoConsoleVariable<int32> CVarMareMocap(TEXT("mare.Mocap"),1,TEXT("Use the free Fab mocap clips (seated/standing talk, party dances); 0 = base clips only."));
 static TAutoConsoleVariable<FString> CVarMareMetaHuman(TEXT("mare.MetaHuman"),TEXT(""),TEXT("QA: force this built MetaHuman on every new person (empty = roster choice)."));
 
 /** Content/Data/metahumans.json: built MetaHumans per role (staff, hotel, village, beach) and swimwear colours. */
@@ -36,6 +37,39 @@ static TSharedPtr<FJsonObject> MetaHumanRoster()
  if(!Roster.IsValid()){FString Text;FFileHelper::LoadFileToString(Text,*(FPaths::ProjectContentDir()/TEXT("Data/metahumans.json")));
   FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Text),Roster);if(!Roster.IsValid())Roster=MakeShared<FJsonObject>();}
  return Roster;
+}
+
+bool AMarePerson::HotelSeat(int32 Table,int32 Index,FVector& SeatTop,float& Yaw)
+{
+ static TSharedPtr<FJsonObject> Doc;
+ if(!Doc.IsValid()){FString Text;FFileHelper::LoadFileToString(Text,*(FPaths::ProjectContentDir()/TEXT("Data/hotel_seats.json")));
+  FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Text),Doc);if(!Doc.IsValid())Doc=MakeShared<FJsonObject>();}
+ const TArray<TSharedPtr<FJsonValue>>* Seats=nullptr;if(!Doc->TryGetArrayField(TEXT("seats"),Seats))return false;
+ int32 Found=0;
+ for(const auto& V:*Seats){const auto O=V->AsObject();if(!O.IsValid() || int32(O->GetNumberField(TEXT("table")))!=Table)continue;
+  if(Found++!=Index)continue;
+  const auto& A=O->GetArrayField(TEXT("seat"));if(A.Num()!=4)return false;
+  SeatTop=FVector(A[0]->AsNumber(),A[1]->AsNumber(),A[2]->AsNumber());Yaw=A[3]->AsNumber();return true;}
+ return false;
+}
+
+void AMarePerson::SitOn(const FVector& SeatTop,float Yaw)
+{
+ // The pelvis bone rides ~11 cm above the seat surface (kiosk diners measure 8-17 with mare_hud.seat_audit), centred
+ // on the seat. Rough start: Sitting_Idle has the pelvis 30 cm behind the root and ~50 cm above it, capsule half 88.
+ const FVector Forward=FRotator(0,Yaw,0).Vector();
+ SeatPelvis=SeatTop+FVector(0,0,11);
+ SetActorLocationAndRotation(SeatPelvis+Forward*30+FVector(0,0,-50+88),FRotator(0,Yaw,0));
+ SeatAlignIn=.6f;
+}
+
+void AMarePerson::AlignToSeatBelow()
+{
+ // Sitting_Idle: pelvis 30 cm behind the root, ~50 cm above it.
+ const FVector Pelvis=GetActorLocation()-GetActorForwardVector()*30+FVector(0,0,-88+50);
+ FHitResult Hit;FCollisionQueryParams Q(TEXT("MareSeat"),true,this);
+ if(GetWorld()->LineTraceSingleByChannel(Hit,Pelvis+FVector(0,0,40),Pelvis-FVector(0,0,80),ECC_Visibility,Q)){
+  SeatPelvis=FVector(Pelvis.X,Pelvis.Y,Hit.ImpactPoint.Z+11);SeatAlignIn=.6f;}
 }
 
 TSharedPtr<FJsonObject> AMarePerson::AssetCatalog()
@@ -80,6 +114,7 @@ bool AMarePerson::SetAppearance(int32 AppearanceVariant)
  // Reapplying a look must not stack hair or leave the new anim instance without a clip.
  for(auto Part:HairMeshes)if(IsValid(Part))Part->DestroyComponent();HairMeshes.Empty();
  Clips.Empty();Playing.Reset();bOutfitApplied=false;   // a new mesh brings its default materials back
+ if(!SeatPelvis.IsZero())SeatAlignIn=.6f;
  GetMesh()->SetSkeletalMeshAsset(MeshAsset);GetMesh()->SetAnimInstanceClass(UMareServiceAnimInstance::StaticClass());
  for(const FString& Name:{TEXT("Idle"),TEXT("Idle_Talking"),TEXT("Walk"),TEXT("Sitting_Idle"),TEXT("Interact")}){
   const FString Path=UMareSimulation::String(UMareSimulation::Object(Row,TEXT("animations")),Key+Name);
@@ -112,10 +147,15 @@ bool AMarePerson::SetMetaHuman(const FString& Name)
  if(!Body || !Look)return false;
  for(auto Part:HairMeshes)if(IsValid(Part))Part->DestroyComponent();HairMeshes.Empty();
  Clips.Empty();Playing.Reset();bOutfitApplied=true;MetaHuman=Name;
+ if(!SeatPelvis.IsZero())SeatAlignIn=.6f;   // another body: the pelvis moves, align again
  // The rig mesh becomes the MetaHuman body skeleton and keeps driving the pose (clips retargeted from UAL
  // by mare_metahuman.retarget_clips); it stays hidden while the blueprint's body, face, clothes and grooms follow it.
  GetMesh()->SetSkeletalMeshAsset(Body);GetMesh()->SetAnimInstanceClass(UMareServiceAnimInstance::StaticClass());
- for(const FString& Clip:{TEXT("Idle"),TEXT("Idle_Talking"),TEXT("Walk"),TEXT("Sitting_Idle"),TEXT("Interact")})
+ // The last three are free Fab mocap clips (mare_metahuman.import_mocap; local only, like the outfits; mare.Mocap 0
+ // turns them off); missing ones fall back to the base clips.
+ TArray<FString> Wanted={TEXT("Idle"),TEXT("Idle_Talking"),TEXT("Walk"),TEXT("Sitting_Idle"),TEXT("Interact")};
+ if(CVarMareMocap.GetValueOnGameThread())Wanted.Append({TEXT("SitTalk"),TEXT("DanceHip"),TEXT("Cheer")});
+ for(const FString& Clip:Wanted)
   if(auto Anim=LoadObject<UAnimSequence>(nullptr,*FString::Printf(TEXT("/Game/People/Animations/MH_%s.MH_%s"),*Clip,*Clip)))Clips.Add(Clip,Anim);
  GetMesh()->SetVisibility(false,false);
  if(MetaHumanBody)MetaHumanBody->DestroyComponent();
@@ -198,7 +238,12 @@ bool AMarePerson::SetMetaHuman(const FString& Name)
 void AMarePerson::PlayPose(const FString& Name,bool bLoop)
 {
  if(Playing==Name || !Clips.Contains(Name))return;Playing=Name;
- if(auto Instance=Cast<UMareServiceAnimInstance>(GetMesh()->GetAnimInstance())){Instance->SetAnimationAsset(Clips[Name],bLoop);Instance->SetPlaying(true);}
+ // Variety: half of the guests (fixed per person) talk with their hands while seated. Staff and anyone riding
+ // something (the bus driver) keep the calm base clip.
+ FString Clip=Name;
+ const bool bVaried=!bEmployee && !GetAttachParentActor() && FCrc::StrCrc32(*(SaveId+PersonName))%2;
+ if(bVaried && Name==TEXT("Sitting_Idle") && Clips.Contains(TEXT("SitTalk")))Clip=TEXT("SitTalk");
+ if(auto Instance=Cast<UMareServiceAnimInstance>(GetMesh()->GetAnimInstance())){Instance->SetAnimationAsset(Clips[Clip],bLoop);Instance->SetPlaying(true);}
 }
 bool AMarePerson::WalkTo(const FVector& Goal)
 {
@@ -280,6 +325,10 @@ void AMarePerson::ApplyOutfit(EOutfit Style)
 void AMarePerson::Tick(float DeltaSeconds)
 {
  Super::Tick(DeltaSeconds);Elapsed+=DeltaSeconds;
+ if(SeatAlignIn>0 && (SeatAlignIn-=DeltaSeconds)<=0 && Playing==TEXT("Sitting_Idle") && GetMesh()->GetBoneIndex(TEXT("pelvis"))!=INDEX_NONE){
+  // Shift the whole actor so the animated pelvis sits on the seat point (heights and proportions differ per body).
+  AddActorWorldOffset(SeatPelvis-GetMesh()->GetSocketLocation(TEXT("pelvis")));}
+ else if(SeatAlignIn<=0 && !SeatPelvis.IsZero() && !Playing.IsEmpty() && Playing!=TEXT("Sitting_Idle"))SeatPelvis=FVector::ZeroVector;   // stood up
  // Choose the outfit once the spawner has set the role: staff in uniform, hotel staff and diners in
  // social clothes, beach-goers in beach or swimwear, villagers casual.
  // MetaHumans replace the rig people once the role is known: a stable pick (save id) from the role's roster;

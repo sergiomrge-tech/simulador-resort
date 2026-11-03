@@ -40,7 +40,12 @@ AMarePerson* UMareBarWorld::Seat(const FString& Order,const FString& Name,int32 
  auto Person=GetWorld()->SpawnActor<AMarePerson>(At,Facing,Params);if(!Person)return nullptr;
  Person->SaveId=TEXT("bar_")+Order;Person->PersonName=Name;Person->SetAppearance(FCrc::StrCrc32(*Person->SaveId)%4);
  Person->bAmbient=true;Person->bSeated=true;Person->GetCharacterMovement()->DisableMovement();
- Person->SetActorEnableCollision(false);return Person;
+ Person->SetActorEnableCollision(false);
+ // The real stool top (trace; bar.json "seat" is only the fallback) and the pelvis aligned on it per body: with the
+ // fixed height the shorter and taller patrons sat inside the stool or up to 20 cm above it (mare_hud.seat_audit).
+ FVector Top(S[0]->AsNumber(),S[1]->AsNumber(),SeatTop);FHitResult Hit;FCollisionQueryParams Q(TEXT("MareStool"),true,Person);
+ if(GetWorld()->LineTraceSingleByChannel(Hit,Top+FVector(0,0,60),Top-FVector(0,0,100),ECC_Visibility,Q))Top.Z=Hit.ImpactPoint.Z;
+ Person->SitOn(Top,Facing.Yaw);return Person;
 }
 
 void UMareBarWorld::Tick(float DeltaSeconds)

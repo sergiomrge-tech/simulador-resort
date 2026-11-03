@@ -139,6 +139,50 @@ def fix():
     return {'moved': len(moved), 'sample': moved[:12]}
 
 
+def place(spec):
+    """Move prop instances onto a surface: "name|x0|y0|z0|x|y|z_surface;..." (world cm). The instance is the one of
+    that prop name whose pivot is within 5 cm of (x0, y0, z0) - names repeat across actors, so never by index. It keeps
+    its rotation; its mesh base lands on z_surface. Level instance and Content/Data/world.json both change."""
+    from mare_world_builder import transform
+    data = json.loads((DATA / 'world.json').read_text(encoding='utf-8-sig'))
+    moved = []
+    for item in spec.split(';'):
+        name, x0, y0, z0, x, y, z = item.split('|')
+        at = unreal.Vector(float(x0), float(y0), float(z0))
+        x, y, z = float(x), float(y), float(z)
+        hits = []
+        for a in unreal.get_editor_subsystem(unreal.EditorActorSubsystem).get_all_level_actors():
+            if a.get_actor_label() != 'Maré · ' + name:
+                continue
+            for c in a.get_components_by_class(unreal.InstancedStaticMeshComponent):
+                for i in range(c.get_instance_count()):
+                    if (c.get_instance_transform(i, True).translation - at).length() < 5:
+                        hits.append((c, i))
+        if len(hits) != 1:
+            moved.append({'name': name, 'at': [x0, y0, z0], 'error': f'{len(hits)} instances match'})
+            continue
+        c, index = hits[0]
+        t = c.get_instance_transform(index, True)
+        lo = _bottom(c.static_mesh, t)[0]
+        old = unreal.Vector(t.translation.x, t.translation.y, t.translation.z)
+        new = unreal.Vector(x, y, old.z + (z - lo))
+        t.translation = new
+        c.update_instance_transform(index, t, True, True, True)
+        for row in data['instances']:
+            if row['name'] != name:
+                continue
+            rt = transform(row['transform'])
+            if rt is not None and (rt.translation - old).length() < 1.0:
+                pos = row['transform']['position']      # Godot metres: UE (x, y, z) cm = (p0, p2, p1) * 100
+                pos[0], pos[2], pos[1] = new.x / 100, new.y / 100, pos[1] + (new.z - old.z) / 100
+                break
+        moved.append({'name': name, 'from': [round(old.x), round(old.y), round(old.z)], 'to': [round(new.x), round(new.y), round(new.z)]})
+    if any('error' not in m for m in moved):
+        (DATA / 'world.json').write_text(json.dumps(data, ensure_ascii=False, indent='	'), encoding='utf-8')
+        unreal.get_editor_subsystem(unreal.LevelEditorSubsystem).save_current_level()
+    return moved
+
+
 def debug(name):
     from mare_world_builder import transform
     data = json.loads((DATA / 'world.json').read_text(encoding='utf-8-sig'))
@@ -364,6 +408,8 @@ def palm_material(names):
 
 
 def run(action, arg=''):
+    if action == 'place':
+        return place(arg)
     if action == 'palmmat':
         return palm_material(arg.split())
     if action == 'stacked':

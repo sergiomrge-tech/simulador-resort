@@ -1,4 +1,4 @@
-# Pendências para o jogo ficar 100%
+﻿# Pendências para o jogo ficar 100%
 
 02/11/2026. Lista única de tudo que falta para o Maré Alta Resort ficar completo, por área, com prioridade.
 O lado Steam/lançamento (conta, página, integração, demo) está em `ROADMAP_STEAM.md`; aqui está o **jogo**.
@@ -166,17 +166,31 @@ Pronto e testado (02/11):
 - [x] P0 Calçados: chinelo, sandália de tiras, tênis e sapato social com saltinho (02/11), sorteados por papel
   (`metahumans.json` → `shoes`); sapato social conferido no saguão do hotel.
 - [ ] P1 Mais banhistas: mulheres e homens de outras idades e tipos de corpo.
-- [ ] P1 Animações (03/11, em andamento): 7 clipes gratuitos de captura do Fab (Animation Shopee: deitado, sentado
-  bebendo, conversa sentado, conversa em pé, dança, rebolado, comemoração) importados (`mare_metahuman.import_mocap`,
-  dois passes e `frame_alignment` SNAP_TO_CLOSEST) e redirecionados para a MetaHuman (`retarget_mocap`); a raiz vinha com
-  o deslocamento do estúdio ×100 (corrigido em `rescale_mocap_root`/`inplacemocap`), mas as poses ainda saem erradas
-  (braços em T, tronco inclinado: alinhamento das cadeias/pose de referência do redirecionador). Ainda NÃO usados no
-  jogo; foto `mocap-redirecionado-wip-20261103.jpg`. Arquivos em `D:/CodexTemp/fab/anim`.
+- [ ] P1 Animações (03/11): 7 clipes gratuitos de captura do Fab (Animation Shopee) importados
+  (`mare_metahuman.import_mocap`, dois passes, `frame_alignment` SNAP_TO_CLOSEST) e redirecionados (`retarget_mocap`, só
+  FK). Causa dos bonecos tortos: o esqueleto da captura olha para -Y e a MetaHuman para +Y; o redirecionador exige os
+  dois virados para o mesmo lado. A pose de origem gira o Hips 180° ANTES de alinhar a MetaHuman (alinhada à pose T sem
+  girar, os braços horizontais saíam espelhados). Conferido com números contra a captura original (`mh_twist`: ombros,
+  quadril e joelhos; `mh_arms`: cotovelos e mãos, diferença ≤ 0,03) e imagens de frente e de lado a 30% e 70%.
+  Depois: raiz ×100 (`rescale_mocap_root`/`inplacemocap`) e direção +Y com a pelve sentada 30 cm atrás da raiz
+  (`orient_mocap`). EM USO: metade dos fregueses sentados conversa gesticulando (`SitTalk`); na festa do dia, morador ou
+  passante parado a até 9 m rebola (`DanceHip`) ou comemora (`Cheer`), `UMareEventsWorld::UpdateDancers`; QA
+  `mare.Event junina`, CVar `mare.Mocap 0` desliga. Fora: `Dance` (a captura se curva 50 cm à frente com os braços
+  pendurados; o Sergio apontou "braços errados"), `TalkGesture` (curva o tronco ~35°, parece reverência), `SitDrink` (banqueta, senta 9 cm mais alto) e `LieDown` (fica para a canga). Clipes locais, fora do git
+  como as roupas do Fab (`D:/CodexTemp/fab/anim`); sem eles o jogo usa os clipes base.
   - deitar na espreguiçadeira e na canga;
   - nadar no mar e na piscina;
   - comer e beber sentado (já existe);
-  - conversar com gestos;
+  - conversar com gestos sentado (feito, `SitTalk`; em pé ainda falta clipe bom); dançar nas festas (feito);
   - limpar e atender (equipe).
+- [x] P0 Sentados no ar/no encosto (03/11): hóspedes do restaurante do hotel em cadeiras reais (`Data/hotel_seats.json`, gerado por
+  `mare_hud.chair_seats` a partir dos vértices das cadeiras) e alinhamento da bacia no assento por corpo (`AMarePerson::SitOn`,
+  `AlignToSeatBelow`; restaurante, bar e quiosque). Teste no PIE: `hud_seataudit` (12/12 ok). Copos flutuando no restaurante
+  corrigidos com `float_audit place` (pivô + nome, nunca índice: nomes se repetem entre atores).
+- [ ] P1 Objetos flutuando no mapa: `float_audit scan` acha 593 candidatos (muitos legítimos: peixes, vasos pendurados, varais);
+  triagem e correção pendentes.
+- [ ] P0 Funcionária do restaurante do Grand Hotel atravessando o balcão/mesa (apontado pelo Sergio na captura das cores
+  por função, 03/11); e capturas de QA com a câmera dentro de paredes (tint_Celeste): conferir posição de cada pessoa.
 - [ ] P1 Rosto: expressões faciais simples (sorriso ao receber, irritado na negociação).
 - [ ] P2 Crianças e famílias (se houver presets/assets adequados).
 

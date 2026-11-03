@@ -155,7 +155,7 @@ void UMareKioskWorld::ResumeGuest(AMarePerson* P)
   if(P->Stage==EMarePersonStage::Approaching)P->WalkTo(CounterPoints[P->CounterIndex]);
  }else if(P->Stage==EMarePersonStage::ToTable)FinishCounter(P);
  else if(P->Stage==EMarePersonStage::Eating){
-  if(P->TableIndex>=0){P->GetCharacterMovement()->DisableMovement();P->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);P->SetActorLocation(TablePoints[P->TableIndex]);P->SetActorRotation(FRotator(0,TableYaw[P->TableIndex],0));P->PlayPose(TEXT("Sitting_Idle"));}
+  if(P->TableIndex>=0){P->GetCharacterMovement()->DisableMovement();P->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);P->SetActorLocation(TablePoints[P->TableIndex]);P->SetActorRotation(FRotator(0,TableYaw[P->TableIndex],0));P->PlayPose(TEXT("Sitting_Idle"));P->AlignToSeatBelow();}
   else P->PlayPose(TEXT("Idle"));
  }else if(P->Stage==EMarePersonStage::Leaving)P->WalkTo(P->Destination);
 }

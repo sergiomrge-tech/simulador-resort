@@ -99,16 +99,15 @@ void UMareVillageWorld::UpdateHotelGuests()
   {FVector(-1560,5760,133),90,3,true,false,TEXT("Hóspede")},{FVector(-1560,5880,133),-90,2,true,false,TEXT("Hóspede")},{FVector(-2600,6690,133),90,1,false,false,TEXT("Hóspede")},
   {FVector(-1290,3000,236),0,1,true,false,TEXT("Hóspede")},{FVector(-1180,3000,236),180,0,true,false,TEXT("Hóspede")},
   {FVector(-2660,4520,208),90,3,true,false,TEXT("Hóspede")},{FVector(-2530,4510,208),110,2,true,false,TEXT("Hóspede")},{FVector(-2600,4760,208),-90,0,false,false,TEXT("Barman")}};
- // Restaurant chairs: each outdoor_table_chair_set has one chair on each side of the table (local +Y / -Y);
- // the second column of tables is turned 0.4 rad in Godot (-22.9° yaw here).
- // Seated capsule centre sits as high above the floor as the kiosk diners (seat point + 88).
- const float RestaurantSeat=105;
- const struct{FVector Table;float Yaw;bool bBoth;int32 Look;}Tables[]={{FVector(-1200,3860,155),0,true,0},{FVector(-920,4200,155),-22.9f,true,2},{FVector(-1200,4540,155),0,false,1}};
- for(const auto& T:Tables){const FRotator R(0,T.Yaw,0);
-  Spots.Add({T.Table+R.RotateVector(FVector(-11,52,RestaurantSeat)),T.Yaw-90,T.Look,true,true,TEXT("Hóspede")});
-  if(T.bBoth)Spots.Add({T.Table+R.RotateVector(FVector(7,-46,RestaurantSeat)),T.Yaw+90,(T.Look+3)%4,true,true,TEXT("Hóspede")});}
+ // Restaurant diners sit on the real chairs (Content/Data/hotel_seats.json, measured from the chair meshes by
+ // mare_hud.chair_seats): the old fixed offsets from the table left them in the air or on the backrest. For seats
+ // At is the seat top; AMarePerson::SitOn then aligns the animated pelvis on it.
+ const struct{int32 Table;bool bBoth;int32 Look;}Tables[]={{0,true,0},{3,true,2},{4,false,1}};   // restaurant.json indices
+ for(const auto& T:Tables)for(int32 Side=0;Side<(T.bBoth?2:1);++Side){FVector Seat;float Yaw;
+  if(AMarePerson::HotelSeat(T.Table,Side,Seat,Yaw))Spots.Add({Seat,Yaw,Side?(T.Look+3)%4:T.Look,true,true,TEXT("Hóspede")});}
  for(const auto& S:Spots){FActorSpawnParameters Params;Params.SpawnCollisionHandlingOverride=ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-  auto P=GetWorld()->SpawnActor<AMarePerson>(S.At,FRotator(0,S.Yaw,0),Params);if(!P)continue;
+  auto P=GetWorld()->SpawnActor<AMarePerson>(S.At+FVector(0,0,S.bSeat?60:0),FRotator(0,S.Yaw,0),Params);if(!P)continue;
+  if(S.bSeat)P->SitOn(S.At,S.Yaw);
   if(!P->SetAppearance(S.Look)){P->Destroy();continue;}
   P->PersonName=S.Name;P->bAmbient=true;P->bConversing=S.bTalk;P->bSeated=S.bSeat;P->GetCharacterMovement()->DisableMovement();
   if(S.bSeat)P->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);else P->GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Pawn,ECR_Block);

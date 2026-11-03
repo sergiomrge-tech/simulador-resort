@@ -141,7 +141,7 @@ void UMareKioskWorld::UpdateCustomer(AMarePerson* P)
  else if((P->Stage==EMarePersonStage::Order || P->Stage==EMarePersonStage::Products) && P->Elapsed>120*S->KioskPatienceFactor())Leave(P);
  else if(P->Stage==EMarePersonStage::ToTable && (P->AtGoal() || P->Elapsed>35)){
   if(!P->AtGoal()){Leave(P);return;}
-  if(P->TableIndex!=INDEX_NONE){if(auto AI=Cast<AAIController>(P->GetController()))AI->StopMovement();P->GetCharacterMovement()->DisableMovement();P->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);P->SetActorLocation(TablePoints[P->TableIndex]);P->SetActorRotation(FRotator(0,TableYaw[P->TableIndex],0));P->PlayPose(TEXT("Sitting_Idle"));}
+  if(P->TableIndex!=INDEX_NONE){if(auto AI=Cast<AAIController>(P->GetController()))AI->StopMovement();P->GetCharacterMovement()->DisableMovement();P->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);P->SetActorLocation(TablePoints[P->TableIndex]);P->SetActorRotation(FRotator(0,TableYaw[P->TableIndex],0));P->PlayPose(TEXT("Sitting_Idle"));P->AlignToSeatBelow();}
   else P->PlayPose(TEXT("Idle"));
   P->Stage=EMarePersonStage::Eating;P->Elapsed=0;
  }

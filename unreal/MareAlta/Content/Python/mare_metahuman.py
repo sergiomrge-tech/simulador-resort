@@ -364,9 +364,12 @@ def preview(name, loc, clip='', at=.5, keep=False):
                 c.set_visibility(False)
     elif clip:
         anim = unreal.load_asset(f'{ANIMS}/MH_{clip}')
-        for c in actor.get_components_by_class(unreal.SkeletalMeshComponent):
-            if c.get_name() == 'Body':
-                c.override_animation_data(anim, True, False, anim.get_play_length() * at, 1.0)
+        comps = actor.get_components_by_class(unreal.SkeletalMeshComponent)
+        body = next(c for c in comps if c.get_name() == 'Body')
+        body.override_animation_data(anim, True, False, anim.get_play_length() * at, 1.0)
+        for c in comps:
+            if c is not body:     # face and clothes follow the body (otherwise the head floats in the rest pose)
+                c.set_leader_pose_component(body, True)
     comps = [f'{c.get_name()}:{c.get_class().get_name()}' for c in actor.get_components_by_class(unreal.SceneComponent)]
     return {'actor': actor.get_path_name(), 'components': comps}
 
@@ -563,7 +566,41 @@ def rescale_mocap_root(clips=('LieDown', 'SitDrink', 'SitTalk', 'TalkGesture', '
     return out
 
 
-def retarget_mocap(name='Lani'):
+def orient_mocap(clips=('LieDown', 'SitDrink', 'SitTalk', 'TalkGesture', 'Dance', 'DanceHip', 'Cheer'), seated=('SitDrink', 'SitTalk')):
+    """Every capture faced its own way: turn each clip's root so the body faces +Y like the game clips, and seat the
+    sitting clips like Sitting_Idle (pelvis 30 cm behind the root, so AMarePerson's seat placement fits).
+    Facing = perpendicular to the hip line (thigh_l -> thigh_r) averaged over the clip (knees/feet move with crossed
+    legs and gestures). Check with mh_twist: shoulders, hips and knees must agree, as in the capture."""
+    import math
+    opts = unreal.AnimPoseEvaluationOptions()
+    out = {}
+    for clip in clips:
+        anim = unreal.load_asset(f'{ANIMS}/MH_{clip}')
+        frames = unreal.AnimationLibrary.get_num_frames(anim)
+        length = unreal.AnimationLibrary.get_sequence_length(anim)
+        fx = fy = 0.0
+        for k in range(1, 10):
+            pose = unreal.AnimPoseExtensions.get_anim_pose_at_time(anim, length * k / 10, opts)
+            g = lambda b: unreal.AnimPoseExtensions.get_bone_pose(pose, b, unreal.AnimPoseSpaces.WORLD).translation
+            r = g('thigh_r') - g('thigh_l')
+            fx += r.y          # forward = hip line x up: facing +Y has the right hip at -X
+            fy -= r.x
+        yaw = math.degrees(math.atan2(1, 0) - math.atan2(fy, fx))       # rotate the forward vector onto +Y
+        turn = unreal.Rotator(roll=0, pitch=0, yaw=yaw).quaternion()
+        roots = [unreal.AnimationLibrary.get_bone_pose_for_frame(anim, 'root', f, False) for f in range(frames + 1)]
+        back = -30.0 if clip in seated else 0.0
+        pos = [unreal.Vector(0, back, t.translation.z) for t in roots]
+        rot = [turn * t.rotation for t in roots]
+        ctrl = anim.get_editor_property('controller')
+        ctrl.open_bracket('Mare mocap facing', False)
+        ctrl.set_bone_track_keys('root', pos, rot, [t.scale3d for t in roots], False)
+        ctrl.close_bracket(False)
+        unreal.EditorAssetLibrary.save_loaded_asset(anim, False)
+        out[clip] = round(yaw)
+    return out
+
+
+def retarget_mocap(name='Lani', version='3'):
     """Per clip: IK rig on its own mocap mesh, retargeter to the MetaHuman body rig, and /Game/People/Animations/MH_<clip>."""
     registry = unreal.AssetRegistryHelpers.get_asset_registry()
     tgt_mesh = unreal.load_asset(f'{FOLDER}/{name}/MH_{name}/Body/SKM_MH_{name}_BodyMesh')
@@ -578,8 +615,13 @@ def retarget_mocap(name='Lani'):
         anims = [a for a in items if str(a.asset_class_path.asset_name) == 'AnimSequence']
         if not meshes or not anims:
             continue
-        src, _ = _ik_rig(f'IK_Mocap_{clip}', meshes[0])
-        rtg = _new_asset(f'RTG_Mocap_{clip}', unreal.IKRetargeter, unreal.IKRetargetFactory())
+        # Versioned names: retargeters used in this editor session stay loaded and refuse deletion; remove old
+        # versions with the editor closed (Content/People/Retarget/*_Mocap*).
+        old = f'{RETARGET}/RTG_Mocap{version}_{clip}'   # the retargeter references the IK rig: delete it first
+        if unreal.EditorAssetLibrary.does_asset_exist(old):
+            unreal.EditorAssetLibrary.delete_asset(old)
+        src, _ = _ik_rig(f'IK_Mocap{version}_{clip}', meshes[0])
+        rtg = _new_asset(f'RTG_Mocap{version}_{clip}', unreal.IKRetargeter, unreal.IKRetargetFactory())
         ctrl = unreal.IKRetargeterController.get_controller(rtg)
         ctrl.set_ik_rig(S, src)
         ctrl.set_ik_rig(T, tgt)
@@ -589,8 +631,19 @@ def retarget_mocap(name='Lani'):
         ctrl.assign_ik_rig_to_all_ops(S, src)
         ctrl.assign_ik_rig_to_all_ops(T, tgt)
         ctrl.auto_map_chains(unreal.AutoMapChainType.FUZZY, True)
+        # The capture rigs face -Y and the MetaHuman faces +Y (mh_reffacing): the retargeter needs both facing the same
+        # way, otherwise the pelvis and the FK chains disagree by 180 degrees and the body comes out twisted. Turn the
+        # source BEFORE aligning the target to it: aligned to the unturned T-pose, the arms (horizontal) pointed the
+        # other way and every hand came out mirrored (mh_arms), while the vertical legs and spine looked right.
+        ctrl.create_retarget_pose('MareFacing', S)
+        ctrl.set_rotation_offset_for_retarget_pose_bone('Hips', unreal.Rotator(roll=0, pitch=0, yaw=180).quaternion(), S)
         ctrl.create_retarget_pose('MareAligned', T)
         ctrl.auto_align_all_bones(T)
+        # The mocap hips translation is in metres (x100): IK goals built from it bend the legs and torso. Rotations
+        # only (FK chains) carry the captured pose exactly; the root is rescaled afterwards (rescale_mocap_root).
+        for i in range(ctrl.get_num_retarget_ops()):
+            if 'IK' in str(ctrl.get_op_name(i)) and 'FK' not in str(ctrl.get_op_name(i)):
+                ctrl.set_retarget_op_enabled(i, False)
         for asset in (src, rtg):
             unreal.EditorAssetLibrary.save_loaded_asset(asset, False)
         res = unreal.IKRetargetBatchOperation.duplicate_and_retarget(anims, meshes[0], tgt_mesh, rtg, '', f'MH_{clip}_', '', '', ANIMS, False, False, True)
@@ -829,6 +882,9 @@ def run(action, arg=''):
         out = {}
         for src, dst in names.items():
             a, b = f'{ANIMS}/{src}', f'{ANIMS}/MH_{dst}'
+            if not unreal.EditorAssetLibrary.does_asset_exist(a):
+                out[dst] = 'missing'
+                continue
             if unreal.EditorAssetLibrary.does_asset_exist(b):
                 unreal.EditorAssetLibrary.delete_asset(b)
             out[dst] = unreal.EditorAssetLibrary.rename_asset(a, b) if unreal.EditorAssetLibrary.does_asset_exist(a) else 'missing'
@@ -866,14 +922,153 @@ def run(action, arg=''):
             unreal.EditorAssetLibrary.save_loaded_asset(anim, False)
             out[clip] = frames
         return out
+    if action == 'lean':
+        # "anim_path@hips@head@shoulder_l@shoulder_r": torso lean (head minus hips, cm) and shoulder line height
+        # difference at 0.2/0.5/0.8 of the clip, to compare a source capture with its retarget.
+        path, hips, head, sl, sr = arg.split('@')
+        anim = unreal.load_asset(path)
+        length = unreal.AnimationLibrary.get_sequence_length(anim)
+        rows = []
+        for f in (.2, .5, .8):
+            pose = unreal.AnimPoseExtensions.get_anim_pose_at_time(anim, length * f, unreal.AnimPoseEvaluationOptions())
+            g = lambda b: unreal.AnimPoseExtensions.get_bone_pose(pose, b, unreal.AnimPoseSpaces.WORLD).translation
+            d = g(head) - g(hips)
+            rows.append({'lean': [round(d.x), round(d.y), round(d.z)], 'shoulders_dz': round(g(sl).z - g(sr).z)})
+        return rows
+    if action == 'bodyframe':
+        # "anim@hips@head@thigh_l@thigh_r@knee_l@knee_r": in the body's own frame (forward = hip line x up), how far
+        # the head leans forward and the knees sit forward of the hips; a retarget that mirrors front/back flips signs.
+        path, hips, head, tl, tr, kl, kr = arg.split('@')
+        anim = unreal.load_asset(path)
+        length = unreal.AnimationLibrary.get_sequence_length(anim)
+        rows = []
+        for f in (.2, .5, .8):
+            pose = unreal.AnimPoseExtensions.get_anim_pose_at_time(anim, length * f, unreal.AnimPoseEvaluationOptions())
+            g = lambda b: unreal.AnimPoseExtensions.get_bone_pose(pose, b, unreal.AnimPoseSpaces.WORLD).translation
+            r = g(tr) - g(tl)
+            fx, fy = r.y, -r.x
+            n = max((fx * fx + fy * fy) ** .5, 1e-3)
+            fwd = lambda v: round((v.x * fx + v.y * fy) / n)
+            rows.append({'head_fwd': fwd(g(head) - g(hips)), 'knee_l_fwd': fwd(g(kl) - g(hips)), 'knee_r_fwd': fwd(g(kr) - g(hips))})
+        return rows
+    if action == 'twist':
+        # "anim@hips@shoulder_l@shoulder_r@thigh_l@thigh_r@knee_l@knee_r": world yaw (deg) of the shoulder-line forward,
+        # the hip-line forward and the hips->knees direction at mid clip; all three agree on an untwisted body.
+        import math
+        path, hips, sl, sr, tl, tr, kl, kr = arg.split('@')
+        anim = unreal.load_asset(path)
+        length = unreal.AnimationLibrary.get_sequence_length(anim)
+        pose = unreal.AnimPoseExtensions.get_anim_pose_at_time(anim, length * .5, unreal.AnimPoseEvaluationOptions())
+        g = lambda b: unreal.AnimPoseExtensions.get_bone_pose(pose, b, unreal.AnimPoseSpaces.WORLD).translation
+        yaw_of_line = lambda l, r: round(math.degrees(math.atan2(-(g(r) - g(l)).x, (g(r) - g(l)).y)))
+        k = (g(kl) + g(kr)) * .5 - g(hips)
+        return {'shoulders': yaw_of_line(sl, sr), 'hips': yaw_of_line(tl, tr), 'knees': round(math.degrees(math.atan2(k.y, k.x)))}
+    if action == 'reffacing':
+        # "skeleton@thigh_l@thigh_r@foot_l@toe_l@head": reference pose facing two ways - hip line (assumes a left-handed
+        # body) and foot->toe (anatomy). Disagreement by 180 means the rig is mirrored front/back.
+        import math
+        path, tl, tr, fl, tt, hd = arg.split('@')
+        asset = unreal.load_asset(path)
+        skel = asset if isinstance(asset, unreal.Skeleton) else asset.get_editor_property('skeleton')
+        ref = unreal.AnimPoseExtensions.get_reference_pose(skel)
+        g = lambda b: unreal.AnimPoseExtensions.get_bone_pose(ref, b, unreal.AnimPoseSpaces.WORLD).translation
+        r = g(tr) - g(tl)
+        f = g(tt) - g(fl)
+        return {'hips': round(math.degrees(math.atan2(-r.x, r.y))), 'toes': round(math.degrees(math.atan2(f.y, f.x))),
+                'thigh_l': [round(v) for v in (g(tl).x, g(tl).y, g(tl).z)], 'head': [round(v) for v in (g(hd).x, g(hd).y, g(hd).z)]}
+    if action == 'arms':
+        # "anim@thigh_l@thigh_r@shoulder_l@elbow_l@hand_l@shoulder_r@elbow_r@hand_r": elbows and hands relative to their
+        # shoulder in the body frame [forward, left, up], as a fraction of the arm length, at 0.2/0.5/0.8 of the clip:
+        # compares a capture with its retarget regardless of body size.
+        path, tl, tr, sl, el, hl, sr, er, hr = arg.split('@')
+        anim = unreal.load_asset(path)
+        length = unreal.AnimationLibrary.get_sequence_length(anim)
+        rows = []
+        for f in (.2, .5, .8):
+            pose = unreal.AnimPoseExtensions.get_anim_pose_at_time(anim, length * f, unreal.AnimPoseEvaluationOptions())
+            g = lambda b: unreal.AnimPoseExtensions.get_bone_pose(pose, b, unreal.AnimPoseSpaces.WORLD).translation
+            r = g(tr) - g(tl)
+            n = max((r.x * r.x + r.y * r.y) ** .5, 1e-3)
+            fx, fy = r.y / n, -r.x / n            # forward
+            lx, ly = -r.x / n, -r.y / n           # left
+            row = {}
+            for side, (s0, e, h) in (('L', (sl, el, hl)), ('R', (sr, er, hr))):
+                arm = (g(e) - g(s0)).length() + (g(h) - g(e)).length()
+                rel = lambda b: [round((g(b) - g(s0)).x * fx + (g(b) - g(s0)).y * fy, 1) / arm,
+                                 round((g(b) - g(s0)).x * lx + (g(b) - g(s0)).y * ly, 1) / arm, (g(b) - g(s0)).z / arm]
+                row[side] = {'elbow': [round(v, 2) for v in rel(e)], 'hand': [round(v, 2) for v in rel(h)]}
+            rows.append(row)
+        return rows
+    if action == 'bones':
+        anim = unreal.load_asset(arg)
+        ref = unreal.AnimPoseExtensions.get_reference_pose(anim.get_editor_property('skeleton'))
+        return [str(b) for b in unreal.AnimPoseExtensions.get_bone_names(ref)][:40]
+    if action == 'orientmocap':
+        return orient_mocap()
     if action == 'groundmocap':
         return ground_mocap()
+    if action == 'rtgprobe':
+        # Chains of a mocap IK rig, the retargeter's chain mapping and the IK rigs' retarget roots.
+        clip = arg or 'dancing'
+        src = unreal.load_asset(f'{RETARGET}/IK_Mocap_{clip}')
+        tgt = unreal.load_asset(f'{RETARGET}/IK_MH_Body')
+        rtg = unreal.load_asset(f'{RETARGET}/RTG_Mocap_{clip}')
+        out = {}
+        for tag, rig in (('src', src), ('tgt', tgt)):
+            c = unreal.IKRigController.get_controller(rig)
+            out[tag + '_root'] = str(c.get_retarget_root())
+            out[tag + '_chains'] = [[str(ch.get_editor_property('chain_name')), str(ch.get_editor_property('start_bone').get_editor_property('bone_name')), str(ch.get_editor_property('end_bone').get_editor_property('bone_name'))] for ch in c.get_retarget_chains()]
+        rc = unreal.IKRetargeterController.get_controller(rtg)
+        try:
+            out['mapping'] = {str(t): str(rc.get_source_chain(t)) for t in [ch[0] for ch in out['tgt_chains']]}
+        except Exception as e:
+            out['mapping'] = str(e)[:200]
+        out['rc_methods'] = [m for m in dir(rc) if not m.startswith('_')][:120]
+        return out
+    if action == 'meshsize':
+        m = unreal.load_asset(arg)
+        b = m.get_bounds()
+        return [round(b.box_extent.x * 2, 2), round(b.box_extent.y * 2, 2), round(b.box_extent.z * 2, 2)]
+    if action == 'rtgops':
+        rc = unreal.IKRetargeterController.get_controller(unreal.load_asset(f'{RETARGET}/RTG_Mocap_{arg or "dancing"}'))
+        return [[i, str(rc.get_op_name(i)), rc.get_retarget_op_enabled(i)] for i in range(rc.get_num_retarget_ops())]
+    if action == 'animcurve':
+        # Pelvis and head height every 10% of each clip (does it sit down, stand up, lie down within the clip?).
+        out = {}
+        for clip in (arg or 'SitDrink,SitTalk,TalkGesture,LieDown,Dance,DanceHip,Cheer').split(','):
+            anim = unreal.load_asset(f'{ANIMS}/MH_{clip}')
+            length = unreal.AnimationLibrary.get_sequence_length(anim)
+            opts = unreal.AnimPoseEvaluationOptions()
+            row = []
+            for k in range(11):
+                pose = unreal.AnimPoseExtensions.get_anim_pose_at_time(anim, length * k / 10, opts)
+                pz = unreal.AnimPoseExtensions.get_bone_pose(pose, 'pelvis', unreal.AnimPoseSpaces.WORLD).translation.z
+                hz = unreal.AnimPoseExtensions.get_bone_pose(pose, 'head', unreal.AnimPoseSpaces.WORLD).translation.z
+                row.append(f'{round(pz)}/{round(hz)}')
+            out[clip] = [round(length, 1)] + row
+        return out
+    if action == 'facing':
+        # Knees and toes relative to the pelvis (which way the clip faces) at 60% of each clip.
+        out = {}
+        for clip in (arg or 'Sitting_Idle,SitTalk,SitDrink,Idle,TalkGesture').split(','):
+            anim = unreal.load_asset(f'{ANIMS}/MH_{clip}')
+            length = unreal.AnimationLibrary.get_sequence_length(anim)
+            pose = unreal.AnimPoseExtensions.get_anim_pose_at_time(anim, length * .6, unreal.AnimPoseEvaluationOptions())
+            g = lambda b: unreal.AnimPoseExtensions.get_bone_pose(pose, b, unreal.AnimPoseSpaces.WORLD).translation
+            pv, root = g('pelvis'), g('root')
+            out[clip] = {'pelvis_from_root': [round(pv.x - root.x), round(pv.y - root.y), round(pv.z - root.z)],
+                         'pelvis': [round(pv.x), round(pv.y), round(pv.z)],
+                         'knee_l': [round(g('calf_l').x - pv.x), round(g('calf_l').y - pv.y)],
+                         'knee_r': [round(g('calf_r').x - pv.x), round(g('calf_r').y - pv.y)],
+                         'head': [round(g('head').x - pv.x), round(g('head').y - pv.y), round(g('head').z - pv.z)],
+                         'toe_l': [round(g('ball_l').x - pv.x), round(g('ball_l').y - pv.y)]}
+        return out
     if action == 'ls':
         return [str(x) for x in unreal.EditorAssetLibrary.list_assets(arg, True, False)][:80]
     if action == 'mocap':
         return import_mocap(arg or 'D:/CodexTemp/fab/anim')
     if action == 'remocap':
-        return retarget_mocap(arg or 'Lani')
+        return retarget_mocap('Lani', arg or '3')
     if action == 'show':
         # Preview static meshes side by side: "x,y,z@/Game/a/a,/Game/b/b" (tagged as previews, removed by mh_clear).
         loc, paths = arg.split('@')
