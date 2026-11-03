@@ -2,6 +2,7 @@
 #if WITH_DEV_AUTOMATION_TESTS
 #include "Misc/AutomationTest.h"
 #include "MareGameRoom.h"
+#include "MareTableTennis.h"
 #include "MareStaysWorld.h"
 #include "Engine/GameInstance.h"
 #include "Misc/FileHelper.h"
@@ -972,6 +973,37 @@ bool FMarePoolCupTest::RunTest(const FString& Parameters)
  TestTrue(TEXT("Join again"),Sim->PoolCupJoin());Sim->PoolCupResult(false);
  TestFalse(TEXT("Elimination ends the cup"),Sim->PoolCupActive());
  Sim->RemoveFromRoot();Instance->RemoveFromRoot();return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FMareTableTennisTest,"MareAlta.Gameplay.TableTennisMatch",EAutomationTestFlags::EditorContext|EAutomationTestFlags::EngineFilter)
+bool FMareTableTennisTest::RunTest(const FString& Parameters)
+{
+ // The ball model and the rules: a normal return clears the net and lands on the far half; a serve bounces on both
+ // halves; whole best-of-3 matches between two shot AIs end with a legal score and real rallies.
+ auto TT=NewObject<UMareTableTennis>();TT->AddToRoot();namespace T=MareTT;
+ TT->NewMatch(0);TT->Ball=FVector(-T::L/2-.3,0,.15);TT->bInPlay=true;TT->bServing=false;TT->Hit(0,T::L/4,.2,6.8,.4);
+ for(int32 I=0;I<240 && TT->BounceSide<0 && TT->bInPlay;++I)TT->Step(1./60);
+ TestEqual(TEXT("Return lands on the far half"),TT->BounceSide,1);TestFalse(TEXT("Return clears the net"),TT->bNetTouch);
+ TT->NewMatch(0);TT->Serve(0,.3,11);for(int32 I=0;I<240 && TT->bServing && TT->bInPlay;++I)TT->Step(1./60);
+ TestTrue(TEXT("Serve is legal (own half, then far half)"),!TT->bServing && TT->bInPlay && TT->BounceSide==1);
+ int32 Wins[2]={0,0},Points=0,Shots=0;bool bEnded=true,bScores=true;
+ for(int32 M=0;M<16;++M){TT->NewMatch(M%2);TT->Skill[0]=TT->Skill[1]=.09;int32 Guard=0;
+  while(TT->MatchWinner<0 && ++Guard<150000){
+   if(!TT->bInPlay){TT->Serve(TT->Server,FMath::FRandRange(-.6,.6),M*977+Guard);if(!TT->bInPlay)TT->ReadyServe();continue;}
+   for(int32 Side=0;Side<2;++Side){const double Sg=Side==0?-1.:1.;
+    if(Sg*TT->Vel.X>0){const double Want=TT->PredictY(Side);TT->PaddleY[Side]+=FMath::Clamp(Want-TT->PaddleY[Side],-2.4/60,2.4/60);}}
+   const int32 Before=TT->Points[0]+TT->Points[1]+10*(TT->Games[0]+TT->Games[1]);
+   TT->Step(1./60);const int32 Win=TT->HitWindow();if(Win>=0)TT->AIReturn(Win,M*131+Guard);
+   if(TT->Points[0]+TT->Points[1]+10*(TT->Games[0]+TT->Games[1])!=Before)++Points;}
+  Shots+=TT->Rallies;
+  if(TT->MatchWinner<0){bEnded=false;AddError(FString::Printf(TEXT("Match %d did not end: games %d-%d points %d-%d, inplay %d serving %d ball %s vel %s hitter %d bounces %d/%d side %d window %d"),M,TT->Games[0],TT->Games[1],TT->Points[0],TT->Points[1],
+   TT->bInPlay,TT->bServing,*TT->Ball.ToString(),*TT->Vel.ToString(),TT->LastHitter,TT->ServeBounces,TT->BouncesSinceHit,TT->BounceSide,TT->HitWindow()));continue;}
+  const int32 W=TT->MatchWinner;++Wins[W];
+  bScores&=TT->Games[W]==2 && TT->Games[1-W]<=1 && TT->Points[W]>=11 && TT->Points[W]-TT->Points[1-W]>=2;}
+ AddInfo(FString::Printf(TEXT("Table tennis: 16 matches, wins %d/%d, %.2f shots per point"),Wins[0],Wins[1],Shots/double(FMath::Max(Points,1))));
+ TestTrue(TEXT("Every match ends"),bEnded);TestTrue(TEXT("Legal final scores"),bScores);TestTrue(TEXT("Both sides win sometimes"),Wins[0]>0 && Wins[1]>0);
+ const double PerPoint=Shots/double(FMath::Max(Points,1));TestTrue(TEXT("Real rallies, not endless (3 to 9 shots per point)"),PerPoint>3 && PerPoint<9);
+ TT->RemoveFromRoot();return true;
 }
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FMareCampaignAuditTest,"MareAlta.Gameplay.CampaignAudit",EAutomationTestFlags::EditorContext|EAutomationTestFlags::EngineFilter)

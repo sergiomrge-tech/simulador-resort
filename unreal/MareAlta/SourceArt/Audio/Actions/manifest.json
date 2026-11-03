@@ -842,6 +842,98 @@
           ]
         }
       ]
+    },
+    "tt_paddle": {
+      "description": "Tênis de mesa: bola na raquete.",
+      "volume": 0.09,
+      "ue_folder": "/Game/Audio/Actions",
+      "files": [
+        {
+          "file": "tt_paddle_1.wav",
+          "seconds": 0.1,
+          "peak_dbfs": -3.0,
+          "loudness_db": -15.3,
+          "lead_ms": 0.0,
+          "sources": [
+            {
+              "synth": "tt_paddle_0",
+              "license": "CC0 (original numpy synthesis, tools/ue58/fetch_action_sfx.py)"
+            }
+          ]
+        },
+        {
+          "file": "tt_paddle_2.wav",
+          "seconds": 0.1,
+          "peak_dbfs": -3.0,
+          "loudness_db": -15.6,
+          "lead_ms": 0.1,
+          "sources": [
+            {
+              "synth": "tt_paddle_1",
+              "license": "CC0 (original numpy synthesis, tools/ue58/fetch_action_sfx.py)"
+            }
+          ]
+        },
+        {
+          "file": "tt_paddle_3.wav",
+          "seconds": 0.099,
+          "peak_dbfs": -3.0,
+          "loudness_db": -15.1,
+          "lead_ms": 0.0,
+          "sources": [
+            {
+              "synth": "tt_paddle_2",
+              "license": "CC0 (original numpy synthesis, tools/ue58/fetch_action_sfx.py)"
+            }
+          ]
+        }
+      ]
+    },
+    "tt_bounce": {
+      "description": "Tênis de mesa: bola quicando na mesa.",
+      "volume": 0.1,
+      "ue_folder": "/Game/Audio/Actions",
+      "files": [
+        {
+          "file": "tt_bounce_1.wav",
+          "seconds": 0.082,
+          "peak_dbfs": -3.0,
+          "loudness_db": -18.7,
+          "lead_ms": 0.0,
+          "sources": [
+            {
+              "synth": "tt_bounce_0",
+              "license": "CC0 (original numpy synthesis, tools/ue58/fetch_action_sfx.py)"
+            }
+          ]
+        },
+        {
+          "file": "tt_bounce_2.wav",
+          "seconds": 0.082,
+          "peak_dbfs": -3.0,
+          "loudness_db": -18.4,
+          "lead_ms": 0.1,
+          "sources": [
+            {
+              "synth": "tt_bounce_1",
+              "license": "CC0 (original numpy synthesis, tools/ue58/fetch_action_sfx.py)"
+            }
+          ]
+        },
+        {
+          "file": "tt_bounce_3.wav",
+          "seconds": 0.081,
+          "peak_dbfs": -3.0,
+          "loudness_db": -18.9,
+          "lead_ms": 0.1,
+          "sources": [
+            {
+              "synth": "tt_bounce_2",
+              "license": "CC0 (original numpy synthesis, tools/ue58/fetch_action_sfx.py)"
+            }
+          ]
+        }
+      ]
     }
   }
 }

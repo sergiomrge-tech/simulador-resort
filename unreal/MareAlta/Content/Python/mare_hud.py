@@ -371,11 +371,12 @@ def trace_fan(arg):
     return {'cam': [round(loc.x), round(loc.y), round(loc.z), round(rot.yaw)], 'hits': out}
 
 
-def import_game_room_extras():
-    """Foosball and arcade (tools/ue58/gen_game_room_extras.py) only, each in a fresh folder of /Game/Custom/GameRoom."""
+def import_game_room_extras(names=None):
+    """Foosball and arcade (tools/ue58/gen_game_room_extras.py), or the given names (table tennis set,
+    tools/ue58/gen_table_tennis.py), each in a fresh folder of /Game/Custom/GameRoom."""
     import mare_hotel_lobby
     out = {}
-    for name in ('foosball_table', 'arcade_cabinet'):
+    for name in names or ('foosball_table', 'arcade_cabinet'):
         glb = MODELS / 'GameRoom' / f'{name}.glb'
         dest = f'/Game/Custom/GameRoom/{name}'
         if unreal.EditorAssetLibrary.does_directory_exist(dest):
@@ -1517,7 +1518,7 @@ def run(action, arg=''):
     if action == 'rays':
         return rays(arg)
     if action == 'gameroomx':
-        return import_game_room_extras()
+        return import_game_room_extras(arg.split(',') if arg else None)
     if action == 'fan':
         return trace_fan(arg)
     if action == 'target':

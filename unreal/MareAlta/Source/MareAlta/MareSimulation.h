@@ -308,6 +308,8 @@ public:
  FString PoolLevel(const FString& Name) const;
  TSharedPtr<FJsonObject> Billiards();
  void PoolRecord(bool bWon);
+ /** Played/won counters of a game of the game room ("table_tennis") in the save. */
+ void RecordGame(const FString& Key,bool bWon);
  bool PoolCupActive() const;
  TArray<FString> PoolCupAlive() const;
  FString PoolCupRoundName() const;

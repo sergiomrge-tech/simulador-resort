@@ -282,6 +282,30 @@
   "loop": true
  },
  {
+  "id": "radio_havaiana",
+  "path": "/Game/Audio/radio_havaiana.radio_havaiana",
+  "duration": 120.0,
+  "loop": true
+ },
+ {
+  "id": "radio_havaiana_lua",
+  "path": "/Game/Audio/radio_havaiana_lua.radio_havaiana_lua",
+  "duration": 106.7,
+  "loop": true
+ },
+ {
+  "id": "radio_havaiana_onda",
+  "path": "/Game/Audio/radio_havaiana_onda.radio_havaiana_onda",
+  "duration": 92.3,
+  "loop": true
+ },
+ {
+  "id": "music_tema",
+  "path": "/Game/Audio/music_tema.music_tema",
+  "duration": 73.0,
+  "loop": true
+ },
+ {
   "id": "reception_bell_1",
   "path": "/Game/Audio/Actions/reception_bell_1.reception_bell_1",
   "duration": 1.1208125352859497,
@@ -618,27 +642,51 @@
   "volume": 0.03
  },
  {
-  "id": "radio_havaiana",
-  "path": "/Game/Audio/radio_havaiana.radio_havaiana",
-  "duration": 120.0,
-  "loop": true
+  "id": "tt_paddle_1",
+  "path": "/Game/Audio/Actions/tt_paddle_1.tt_paddle_1",
+  "duration": 0.09983333200216293,
+  "loop": false,
+  "group": "tt_paddle",
+  "volume": 0.09
  },
  {
-  "id": "radio_havaiana_lua",
-  "path": "/Game/Audio/radio_havaiana_lua.radio_havaiana_lua",
-  "duration": 106.7,
-  "loop": true
+  "id": "tt_paddle_2",
+  "path": "/Game/Audio/Actions/tt_paddle_2.tt_paddle_2",
+  "duration": 0.1002083346247673,
+  "loop": false,
+  "group": "tt_paddle",
+  "volume": 0.09
  },
  {
-  "id": "radio_havaiana_onda",
-  "path": "/Game/Audio/radio_havaiana_onda.radio_havaiana_onda",
-  "duration": 92.3,
-  "loop": true
+  "id": "tt_paddle_3",
+  "path": "/Game/Audio/Actions/tt_paddle_3.tt_paddle_3",
+  "duration": 0.09866666793823242,
+  "loop": false,
+  "group": "tt_paddle",
+  "volume": 0.09
  },
  {
-  "id": "music_tema",
-  "path": "/Game/Audio/music_tema.music_tema",
-  "duration": 73.0,
-  "loop": true
+  "id": "tt_bounce_1",
+  "path": "/Game/Audio/Actions/tt_bounce_1.tt_bounce_1",
+  "duration": 0.08160416781902313,
+  "loop": false,
+  "group": "tt_bounce",
+  "volume": 0.1
+ },
+ {
+  "id": "tt_bounce_2",
+  "path": "/Game/Audio/Actions/tt_bounce_2.tt_bounce_2",
+  "duration": 0.08156249672174454,
+  "loop": false,
+  "group": "tt_bounce",
+  "volume": 0.1
+ },
+ {
+  "id": "tt_bounce_3",
+  "path": "/Game/Audio/Actions/tt_bounce_3.tt_bounce_3",
+  "duration": 0.08120833337306976,
+  "loop": false,
+  "group": "tt_bounce",
+  "volume": 0.1
  }
 ]

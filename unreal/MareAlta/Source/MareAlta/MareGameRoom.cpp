@@ -230,7 +230,9 @@ void UMareGameRoom::StartMatch(APlayerController* Controller,double InStake,cons
  Camera=GetWorld()->SpawnActor<ACameraActor>(World(FVector2D(-L/2-.6,0),.9),FRotator(-45,Table.Rotator().Yaw,0));
  Controller->SetViewTargetWithBlend(Camera,.5f);Controller->SetIgnoreMoveInput(true);Controller->SetIgnoreLookInput(true);
  // The player stands at the table: hide the body so it never sits between the match camera and the cloth.
- if(auto Pawn=Controller->GetPawn())Pawn->SetActorHiddenInGame(true);
+ // Only the table, the balls and the cue/bats on screen (Sergio, 03/11): no arms or hands of the player at all.
+ if(auto Pawn=Controller->GetPawn()){Pawn->SetActorHiddenInGame(true);TArray<UPrimitiveComponent*> Parts;Pawn->GetComponents(Parts);HiddenParts.Reset();
+  for(auto C:Parts)if(C->IsVisible()){HiddenParts.Add(C);C->SetVisibility(false);}}
  if(Cue)Cue->SetActorHiddenInGame(false);
  if(auto S=Sim(GetWorld()))S->LastMessage=Stake>0?FString::Printf(TEXT("Sinuca bola 8 valendo R$ %.0f: lisas ou listradas, a 8 por último."),Stake):TEXT("Sinuca bola 8: lisas ou listradas, a 8 por último. Mouse mira, segure o clique para a força, Q sai.");
 }
@@ -239,7 +241,7 @@ void UMareGameRoom::EndMatch(const FString& Message)
 {
  if(!bPlaying)return;bPlaying=false;
  UE_LOG(LogTemp,Display,TEXT("MARE_POOL match end winner=%d score=%d-%d shots=%d"),Winner,Score[0],Score[1],Shots);
- if(auto PC=Player.Get()){PC->SetViewTargetWithBlend(PC->GetPawn(),.5f);PC->ResetIgnoreMoveInput();PC->ResetIgnoreLookInput();if(auto Pawn=PC->GetPawn())Pawn->SetActorHiddenInGame(false);}
+ if(auto PC=Player.Get()){PC->SetViewTargetWithBlend(PC->GetPawn(),.5f);PC->ResetIgnoreMoveInput();PC->ResetIgnoreLookInput();if(auto Pawn=PC->GetPawn()){Pawn->SetActorHiddenInGame(false);for(auto& C:HiddenParts)if(C.IsValid())C->SetVisibility(true);HiddenParts.Reset();}}
  if(IsValid(Guest))Guest->Destroy();Guest=nullptr;if(IsValid(Camera))Camera->Destroy();Camera=nullptr;if(Cue)Cue->SetActorHiddenInGame(true);
  if(auto S=Sim(GetWorld())){
   // Quitting a bet or a cup round counts as a loss (W.O.); a friendly match left halfway is just not recorded.

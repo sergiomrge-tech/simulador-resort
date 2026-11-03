@@ -3,6 +3,7 @@
 #include "Subsystems/WorldSubsystem.h"
 #include "MareGameRoom.generated.h"
 class AStaticMeshActor;
+class UPrimitiveComponent;
 class ACameraActor;
 class AMareServiceTarget;
 class AMarePerson;
@@ -82,6 +83,7 @@ private:
  bool bPlaying=false,bShotRunning=false,bCharging=false,bPlacing=false;
  FString Opponent=TEXT("Hóspede");
  bool bCup=false;
+ TArray<TWeakObjectPtr<UPrimitiveComponent>> HiddenParts;   // player body parts hidden during the match
  float Charge=0.f,GuestDelay=0.f;
  double AimAngle=0,Stake=0;
  bool bScratch=false;

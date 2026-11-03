@@ -156,10 +156,17 @@ Pronto e testado (02/11):
   - [x] 2 fliperamas "Maré Attack" com tela e letreiro acesos, partida rápida de 3 rodadas;
   - [x] hóspedes jogando das 18h às 23h e renda das fichas (mais jogadores com o hotel cheio).
   Dados em `Content/Data/business_games.json` (`pebolim`, `fliperama`, `game_room`), teste em `MareAlta.Gameplay.BusinessCounter`.
-- [ ] P1 **Tênis de mesa** no salão de jogos com gameplay completo (pedido do Sergio, 03/11): mesa e raquetes reais
+- [x] P1 **Tênis de mesa** no salão de jogos com gameplay completo (pedido do Sergio, 03/11): mesa e raquetes reais
   (asset gratuito antes de modelar), bola com física de quique e efeito, saque e regras (11 pontos, troca de saque a cada
   2, vantagem de 2), adversário hóspede com níveis, placar e câmera; controle por mouse e por controle; teste automático
   de partidas completas como na sinuca.
+  Feito 03/11: mesa oficial, rede com malha, raquetes e bola modeladas no bpy (`tools/ue58/gen_table_tennis.py`, sem
+  download gratuito sem login); `UMareTableTennis`: bola 3D com gravidade, arrasto, topspin, quique e rede; regras
+  oficiais (saque nos dois lados, let, um quique por lado, 11 com vantagem de 2, saque a cada 2 pontos, melhor de 3);
+  mouse/analógico move a raquete, a batida e o movimento dão a direção, clique segurado corta; adversários da sala
+  com nível (reação, velocidade, erros); página da mesa (amistoso e apostas), sons sintetizados (raquete e quique),
+  sem braços nem mãos; quem passa perto da câmera sai de cena. Teste `TableTennisMatch` (16 partidas, cerca de 8
+  rebatidas por ponto, placares legais) e partidas completas no jogo (2×0, 11×8).
 - [x] P1 **Sinuca como jogo completo** (pedido do Sergio, 03/11): modos amistoso (contra hóspede, sem aposta),
   partida com aposta pequena e **campeonato** (chave de 4–8 jogadores da vila/hotel, rodadas por dia, troféu e prêmio);
   regras completas de bola 8 (faltas, bola na mão, encaçapar a 8 cedo perde, tacada de saída), escolha de adversário,
@@ -339,6 +346,14 @@ Pronto e testado (02/11):
   realistas: o Sergio decidiu tirar gatos e cachorros do jogo (03/11); o latido de cachorro do som ambiente da vila
   também saiu (código, catálogo `audio.json` e áudio).
 
+- [ ] P1 Mar verde-cristalino (pedido do Sergio, 03/11, foto de referência: água rasa turquesa-esverdeada e transparente,
+  fundo de areia visível com cáusticas, azul mais profundo só ao longe).
+- [ ] P1 Sombras (pedido do Sergio, 03/11: "nada tem sombra, fica muito artificial"): móveis, pessoas e objetos sem
+  sombra no saguão do hotel (e conferir no resto do jogo, de dia e de noite).
+- [ ] P1 Poltronas do saguão do hotel (pedido do Sergio, 03/11, foto circulada): corrigir posição/orientação/apoio.
+- [ ] P1 Piso do saguão/salão do hotel da mesma cor das paredes (pedido do Sergio, 03/11): trocar por piso vinílico
+  amadeirado em réguas, como na foto de referência (madeira clara mel, réguas longas com veio).
+
 ## 7. Áudio
 - [x] P1 Música por lugar e horário (02/11): zonas em `Content/Data/audio_zones.json` (saguão do hotel bossa, restaurante relax,
   salão de jogos à noite pop, bar reggae, piscina calipso), rádio portátil abaixa dentro das zonas; níveis medidos no PIE.
@@ -377,6 +392,9 @@ Pronto e testado (02/11):
 - [x] P2 Indicador no mapa ou bússola com os lugares (pousada, hotel, salão, negócios): faixa sob a placa com N/S/L/O e
   os lugares liberados na direção do olhar (`Content/Data/map_markers.json`), mais perto primeiro, em duas linhas;
   foto `docs/ue58/graphics-reference/bussola-20261102.png`.
+
+- [ ] P0 Interfaces sem rolagem (pedido do Sergio, 03/11): todo painel/página do celular e das estações cabe inteiro
+  na tela, sem barra de rolagem nem subir/descer; conferir em 1280×720, 1920×1080 e janelas menores.
 
 ## 9. Desempenho e estabilidade
 - [ ] P0 FPS medido no executável:

@@ -100,6 +100,7 @@ void AMareServiceTarget::Use(APlayerController* Controller)
  if(Action==TEXT("PousadaReception")){const FVector Bell=GetActorLocation();UMareAudioWorld::Action(this,TEXT("reception_bell"),&Bell);PC->OpenStation(TEXT("Reception"));return;}
  // The table page: opponents, friendly or betting match, the Campeonato da Maré and the record (MareGame.cpp PoolPage).
  if(Action==TEXT("PoolTable")){PC->OpenStation(TEXT("PoolTable"));return;}
+ if(Action==TEXT("TableTennis")){PC->OpenStation(TEXT("TableTennis"));return;}
  if(Action==TEXT("RoomTask")){for(const FName& Tag:Tags){const FString T=Tag.ToString();
    if(T.StartsWith(TEXT("task:")))GetWorld()->GetSubsystem<UMareStaysWorld>()->UseTask(DataIndex,T.Mid(5));}return;}
  if(Action==TEXT("PoolLeaves")){if(Sim->ScoopPool())UMareAudioWorld::Action(this,TEXT("bar_pour"));return;}

@@ -191,6 +191,17 @@ def synth_counter_bell(f0=2380.0, decay=1.1, strike=1.0):
     return y + click
 
 
+def synth_tt_pok(f0=1350.0, decay=.011, body=.006, bright=1.0):
+    """Table tennis 'pok': a hollow celluloid ball on a rubber bat or the table top. Two damped partials (the ball's
+    shell), a short low thump (bat/table) and a tiny band-passed click at the contact."""
+    t = t_axis(.12)
+    y = np.sin(2 * np.pi * f0 * t) * np.exp(-t / decay)
+    y += .45 * bright * np.sin(2 * np.pi * f0 * 2.17 * t + 1.1) * np.exp(-t / (decay * .6))
+    y += .5 * np.sin(2 * np.pi * 260 * t) * np.exp(-t / body)
+    y += _filt(RNG.normal(0, 1, len(t)), "bandpass", [2500, 9000]) * np.exp(-t / .0012) * .4 * bright
+    return y
+
+
 def synth_blender(sec=1.8):
     """Short blender pulse: motor whine with spin-up/down, blade-and-ice rattle, glass jar body."""
     t = t_axis(sec)
@@ -460,6 +471,11 @@ def build():
         (finish(raw("kenney_interface", "question_004.ogg"), lowpass=5000), [src("kenney_interface", "question_004.ogg")]),
         (finish(raw("kenney_interface", "question_002.ogg"), lowpass=5000), [src("kenney_interface", "question_002.ogg")]),
     ]
+    # Table tennis: original synthesis (no CC0 recording of a ping-pong ball was in the packs).
+    A["tt_paddle"] = [(finish(synth_tt_pok(f0, .011, .007, b), lowpass=11000), [f"synth:tt_paddle_{k}"])
+                      for k, (f0, b) in enumerate(((1320.0, 1.0), (1410.0, .9), (1270.0, 1.1)))]
+    A["tt_bounce"] = [(finish(synth_tt_pok(f0, .007, .004, b), lowpass=12000), [f"synth:tt_bounce_{k}"])
+                      for k, (f0, b) in enumerate(((2050.0, .8), (2180.0, .7), (1980.0, .9)))]
     return A
 
 
@@ -468,7 +484,7 @@ def build():
 # -30..-45 dB effective (bell .2 -> -32, click .16 -> -44, kiosk_cash .3 -> -45, door .27 -> -34),
 # so new actions aim at -36 dB (interface -41, sustained machine/liquid -39). Soft, never strident.
 TARGET_DB = {"default": -36.0, "deal_accept": -41.0, "deal_decline": -42.0, "bar_blender": -40.0,
-             "bar_pour": -39.0, "bar_shaker": -38.0, "reception_bell": -37.0, "pool_ball_clack": -37.0}
+             "bar_pour": -39.0, "bar_shaker": -38.0, "reception_bell": -37.0, "pool_ball_clack": -37.0, "tt_paddle": -36.0, "tt_bounce": -39.0}
 MAX_TRIM_DB = 8.0  # within an action, louder variants are trimmed toward the softest one (at most this much)
 
 
@@ -488,6 +504,8 @@ DESCRIPTION = {
     "cleaning_trash": "Fechar e largar o saco de lixo.",
     "pool_cue_hit": "Tacada: ponta do taco na bola branca.",
     "pool_ball_clack": "Bola contra bola.",
+    "tt_paddle": "Tênis de mesa: bola na raquete.",
+    "tt_bounce": "Tênis de mesa: bola quicando na mesa.",
     "pool_pocket": "Bola entrando na caçapa e rolando na canaleta.",
     "pool_rail_bounce": "Bola batendo na tabela.",
     "bar_blender": "Liquidificador curto (pulso com gelo).",

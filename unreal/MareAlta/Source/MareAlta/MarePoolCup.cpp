@@ -62,6 +62,11 @@ void UMareSimulation::PoolRecord(bool bWon)
  auto B=Billiards();B->SetNumberField(TEXT("played"),Number(B,TEXT("played"))+1);if(bWon)B->SetNumberField(TEXT("won"),Number(B,TEXT("won"))+1);Save();
 }
 
+void UMareSimulation::RecordGame(const FString& Key,bool bWon)
+{
+ auto B=Child(State,Key);B->SetNumberField(TEXT("played"),Number(B,TEXT("played"))+1);if(bWon)B->SetNumberField(TEXT("won"),Number(B,TEXT("won"))+1);Save();
+}
+
 bool UMareSimulation::PoolCupActive() const
 {
  bool bActive=false;Object(Object(State,TEXT("billiards")),TEXT("cup"))->TryGetBoolField(TEXT("active"),bActive);return bActive;

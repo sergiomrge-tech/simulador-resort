@@ -60,5 +60,12 @@
   "prize": 600,
   "runner_up": 150,
   "fame": 10
- }
+ },
+ "tt_table": [
+  -1600,
+  6150,
+  45,
+  90
+ ],
+ "_doc_tt": "Table tennis table (UMareTableTennis): world cm [x, y, floor z, yaw]; the length runs along the yaw direction, the player's end at the -x side."
 }

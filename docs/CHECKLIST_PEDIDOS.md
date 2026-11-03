@@ -162,10 +162,16 @@ Legenda: [x] feito e validado · [~] em andamento/parcial · [ ] pendente.
 - [x] "Janelas opacas no hotel; textura e acabamento fino nas paredes; grama mais realista, verde mais escuro com
   textura" (03/11): vidro próprio do hotel, reboco fino, grama recolorida (commit 5f10bf6f).
 - [x] "Deixa o fundo do mar para depois" (03/11): item marcado [adiado-usuario].
-- [ ] "Tênis de mesa no salão com gameplay completo" (03/11): PENDENCIAS seção 3.
+- [x] "Tênis de mesa no salão com gameplay completo" (03/11): mesa modelada, regras oficiais, adversários, apostas.
 - [x] "Sinuca como jogo completo: campeonato, amistoso e tudo" (03/11): bola 8, amistoso, aposta, Campeonato da Maré.
 - [ ] "Balanceamento financeiro/econômico de tudo, divertido e não cansativo, várias atividades ao mesmo tempo; no fim
   da fila" (03/11): PENDENCIAS seção 15 (última).
+- [x] "Na sinuca e nos outros jogos não aparecem braços nem mãos, só taco/raquete, mesa e bolas" (03/11): corpo do
+  jogador inteiro oculto durante as partidas (sinuca e tênis de mesa), raquetes sem mãos.
+- [ ] "Mar verde-cristalino como na foto" (03/11): depois do tênis de mesa (PENDENCIAS seção 6).
+- [ ] "Corrigir as poltronas; nada tem sombra, fica artificial" (03/11): PENDENCIAS seção 6.
+- [ ] "As telas das interfaces não podem ter rolagem; tudo cabendo sem subir/descer" (03/11): PENDENCIAS seção 8.
+- [ ] "Chão do hotel da mesma cor das paredes: pisos como na referência (vinílico amadeirado)" (03/11): PENDENCIAS seção 6.
 - [x] Manter este checklist sempre que o usuário pedir algo (regra salva na memória).
 
 ## Regras permanentes já pedidas
