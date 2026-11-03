@@ -926,13 +926,15 @@ def run(action, arg=''):
         out['_footprint'] = footprint_material()
         out['_usage'] = mare_custom.fix_usage()['fixed']
         return out
-    if action == 'walkway':
-        # tools/ue58/gen_beach_walkway.py board for the kiosk walkway (float_audit swapfit ...:same places it)
+    if action == 'importmare':
+        # "slug|/Game/Custom/<Folder>": a bpy model from D:/Assets/Mare/<slug>/<slug>.glb (gen_beach_walkway.py,
+        # gen_tree_planter.py...) into its own fresh folder; float_audit swapfit ...:same puts it in the level.
         import mare_hotel_lobby, mare_custom
-        dest = '/Game/Custom/Beach/beach_walk_board'
+        slug, folder = (arg.split('|') + ['/Game/Custom/Beach'])[:2]
+        dest = f'{folder}/{slug}'
         if unreal.EditorAssetLibrary.does_directory_exist(dest):
             unreal.EditorAssetLibrary.delete_directory(dest)
-        mesh = mare_hotel_lobby._import(Path('D:/Assets/Mare/beach_walk_board/beach_walk_board.glb'), dest, 'beach_walk_board', True, search=False)
+        mesh = mare_hotel_lobby._import(Path(f'D:/Assets/Mare/{slug}/{slug}.glb'), dest, slug, True, search=False)
         return {'mesh': mesh.get_path_name(), 'tris': mesh.get_num_triangles(0), '_usage': mare_custom.fix_usage()['fixed']}
     if action == 'footprintmat':
         if arg == 'reimport':

@@ -229,7 +229,8 @@ Pronto e testado (02/11):
     translúcida (`gen_footprints.py`, inclinada pela normal da areia), 8 placas lisas do caminho do quiosque → tábuas
     (`gen_beach_walkway.py`), jangada de cilindros da praia oeste → `mare_jangada` (`mare_fab._replace_west_raft`).
     Conferido no editor e no PIE. Aceitos: vigas roliças dos telhados dos bangalôs, calhas, postes da grade.
-    Falta: tronco reto da árvore grande em (7500, 3915), restante da lista `docs/ue58/qa/primitivas-20261103.txt`;
+    Canteiro da praça (cilindro bege de 4,6 m) → meio-fio de pedra e terra (`gen_tree_planter.py`).
+    Falta: restante da lista `docs/ue58/qa/primitivas-20261103.txt`;
   - texturas;
   - folhagem muito clara à noite;
   - ondas, espuma e respingos.
