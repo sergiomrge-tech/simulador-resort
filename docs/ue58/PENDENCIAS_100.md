@@ -191,7 +191,8 @@ Pronto e testado (02/11):
   sobre vasos, varais, vasos pendurados, azulejos). Corrigidos e conferidos por imagem: copos ao lado das mesas do hotel,
   tigela no ar junto ao quiosque, bola de praia meio enterrada. Conferidos e legítimos: conchas = mensageiro dos ventos no
   beiral dos bangalôs; sofá, colunas de varanda e caixotes = móveis sem colisão (o raio desce até o piso, falso positivo);
-  Cube_0xx = interiores das casas. Pendente: a cabine `biz_booth` do hotel (câmera não achou ângulo: venezianas sem colisão).
+  Cube_0xx = interiores das casas. Cabine `biz_booth` do hotel conferida no PIE pelos 4 lados (frente ao sul com a placa
+  "BAR DA PISCINA" e o atendente de frente para os clientes; o lado norte é o fundo).
   Ferramentas: `float_audit place|surface|near|bbox`, `hud_freecam` (escolhe a câmera pela linha de visão livre).
 - [x] P1 Bicicletas da vila low poly (03/11): a malha exportada da Godot tinha 3.179 triângulos. Trocadas pela "Vintage Bicycle
   3D Model" (Fab, Patrick Goud, CC-BY 4.0) em 5 cores (`prep_fab_food.py bike_<cor>`: quadro repintado, pneu azul da marca
@@ -203,12 +204,17 @@ Pronto e testado (02/11):
   grava RGBA; `hud_foliagealpha` reimporta as 15 texturas (gramas, pervinca, rooibos, azedinha, samambaia, 5 arbustos,
   folhas de 5 árvores) e deixa os materiais em máscara. Conferido por imagem (boia e lâminas limpas).
   Falta: plantas em vaso do saguão do hotel (arquivos do Sergio em edição; RGBA já pronto em D:/Assets/PolyHaven),
-  antúrio e calathea (fora de /Game/Nature), e faixas de grama de 5,6 m que invadem a beira da calçada.
+  antúrio e calathea (fora de /Game/Nature). Faixas de grama sobre a calçada (03/11): os glTF `grass_medium_01/02` trazem
+  17/5 variações enfileiradas (5,6 m / 1,3 m) numa malha só; `mare_lawn.populate` agora testa a fileira inteira (pontas e
+  meio) contra calçada, rua, rotas e lote antes de aceitar (grass_medium_01 aberto 72.613 → 16.598; 02 72.966 → 41.785).
+  Conferido: borda da piscina, calçadas da vila, muro do hotel e gramado aberto. Pedra do PCG `World_0495` (rock_07
+  exportada da Godot com material roxo listrado) trocada pelo import nativo.
 - [x] P0 "Pessoa dentro da mesa" (03/11): era a recepcionista da pousada dentro da ponta do balcão (a recepção tinha yaw 0, mas
   o tampo corre em X e a frente é +Y). `customization.json` reception yaw 90 + `reception_mesh_yaw` -90 (modelo igual) e
   `staff_world.json` behind 55: ela fica entre o tampo e o quadro de chaves, e os hóspedes fazem fila na frente. Auditoria
   `hud_standaudit` (pelve dentro de móvel) sem ocorrências; conferido de frente, lado e diagonal.
-- [ ] P2 Capturas de QA com a câmera dentro de paredes (tint_Celeste, conchas, biz_booth): checar a câmera antes de capturar.
+- [x] P2 Capturas de QA com a câmera dentro de paredes (tint_Celeste, conchas, biz_booth): `hud_freecam` escolhe a câmera pela
+  linha de visão livre; capturas em lote no PIE com `lot_pie.py` (vários ângulos por alvo, imagem inválida = refazer).
 - [ ] P1 Rosto: expressões faciais simples (sorriso ao receber, irritado na negociação).
 - [ ] P2 Crianças e famílias (se houver presets/assets adequados).
 

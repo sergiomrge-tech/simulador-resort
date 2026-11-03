@@ -133,6 +133,30 @@ def populate(seed=20261102):
             return None
         return h[0], h[1], lot
 
+    # Poly Haven grass_medium_01/02 glTFs hold their 17/5 clump variants side by side, so one instance is a row
+    # 5.6 m (1.3 m) long along local X: test the whole row, not just its pivot, or it runs over curbs and streets.
+    row_x = {}
+
+    def strip_ok(slug, centre, x, y, yaw, scale):
+        import math
+        if slug not in row_x:
+            b = _mesh(slug).get_bounds()
+            row_x[slug] = (b.origin.x - b.box_extent.x, b.origin.x + b.box_extent.x)
+        lo, hi = row_x[slug]
+        c, s_ = math.cos(math.radians(yaw)), math.sin(math.radians(yaw))
+        n = max(2, int((hi - lo) * scale / 60))
+        for i in range(n + 1):
+            d = (lo + (hi - lo) * i / n) * scale
+            px, py = x + c * d, y + s_ * d
+            if abs(d) < 1:
+                continue
+            if not _clear(px, py, blocks) or near_route(px, py, 130):
+                return False
+            k = surface(px, py)
+            if not k or k[2] != centre[2] or abs(k[0].z - centre[0].z) > 25:
+                return False
+        return True
+
     rng = random.Random(seed)
     rows = {}   # (lot, kind) -> [(x, y, z, yaw, scale)]
     x0, x1, y0, y1 = REGION
@@ -175,9 +199,11 @@ def populate(seed=20261102):
                     k = surface(kx, ky)
                     if k:
                         pts.append((k, kx, ky))
-            for k, _, _ in pts:
+            for k, kx, ky in pts:
                 slug, (a, b) = mare_mountains._pick(rng, GRASS)
-                rows.setdefault((k[2], slug), []).append((k[0].x, k[0].y, k[0].z - 3, rng.uniform(-180, 180), rng.uniform(a, b) * (1.35 if far else 1)))
+                yaw, sc = rng.uniform(-180, 180), rng.uniform(a, b) * (1.35 if far else 1)
+                if strip_ok(slug, k, kx, ky, yaw, sc):
+                    rows.setdefault((k[2], slug), []).append((k[0].x, k[0].y, k[0].z - 3, yaw, sc))
     roots, summary = {}, {}
     for (lot, kind), items in sorted(rows.items()):
         root = roots.get(lot)
