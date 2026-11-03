@@ -57,7 +57,7 @@ Nada de mecânica nova até esta seção fechar. Cada passada roda uma auditoria
   capítulos, negócios até o Grand Hotel), registrando cada erro em `docs/ue58/CHECKLIST_SIMULACAO.md`.
   03/11: `tools/ue58/qa/simulate_game.py` (perfil novo, 30 etapas, 0 erros de log, 0 deslizando); achados em
   `docs/ue58/CHECKLIST_SIMULACAO.md`.
-- [ ] P0 Corrigir TODOS os itens de `CHECKLIST_SIMULACAO.md` (com prova) antes de qualquer mecânica nova.
+- [x] P0 Corrigir TODOS os itens de `CHECKLIST_SIMULACAO.md` (com prova) antes de qualquer mecânica nova (03/11, commit 5f10bf6f).
 
 ## 1. Defeitos conhecidos (corrigir primeiro)
 - [x] P0 **Biquíni novo (top faixa e parte de baixo até a virilha)** importado e conferido nas 6 banhistas
