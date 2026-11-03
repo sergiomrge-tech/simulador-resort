@@ -187,8 +187,12 @@ Pronto e testado (02/11):
   `mare_hud.chair_seats` a partir dos vértices das cadeiras) e alinhamento da bacia no assento por corpo (`AMarePerson::SitOn`,
   `AlignToSeatBelow`; restaurante, bar e quiosque). Teste no PIE: `hud_seataudit` (12/12 ok). Copos flutuando no restaurante
   corrigidos com `float_audit place` (pivô + nome, nunca índice: nomes se repetem entre atores).
-- [ ] P1 Objetos flutuando no mapa: `float_audit scan` acha 593 candidatos (muitos legítimos: peixes, vasos pendurados, varais);
-  triagem e correção pendentes.
+- [ ] P1 Objetos flutuando no mapa: `float_audit scan` acha 593 candidatos; 418 são tipos legítimos (peixes, folhas sobre vasos,
+  varais, vasos pendurados, azulejos). Corrigidos e conferidos por imagem: tigela de madeira no ar ao lado do quiosque (agora no
+  balcão), bola de praia meio enterrada no gramado. Falta: conchas a ~2 m (-1525,-1199), sofá (4435,2337), Cube_005/007/011/018,
+  biz_booth do hotel; refazer ângulos (câmera caiu dentro de paredes). Bola de praia tem 1 m de diâmetro (grande demais).
+- [ ] P1 Bicicletas da vila com rodas low poly (~10 lados) — regra "nada de low poly": trocar por modelo gratuito detalhado.
+- [ ] P1 Gramado com fragmentos pretos triangulares espalhados (confete escuro) perto do lote da piscina: investigar a vegetação baixa.
 - [ ] P0 Funcionária do restaurante do Grand Hotel atravessando o balcão/mesa (apontado pelo Sergio na captura das cores
   por função, 03/11); e capturas de QA com a câmera dentro de paredes (tint_Celeste): conferir posição de cada pessoa.
 - [ ] P1 Rosto: expressões faciais simples (sorriso ao receber, irritado na negociação).

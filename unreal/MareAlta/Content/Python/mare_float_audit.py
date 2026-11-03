@@ -408,6 +408,20 @@ def palm_material(names):
 
 
 def run(action, arg=''):
+    if action == 'surface':
+        # "x,y[,ztop]": first surface hit going down from ztop (default 1500), editor world.
+        v = [float(t) for t in arg.split(',')]
+        world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_editor_world()
+        top = v[2] if len(v) > 2 else 1500
+        hit = unreal.SystemLibrary.line_trace_single(world, unreal.Vector(v[0], v[1], top), unreal.Vector(v[0], v[1], -2000),
+                                                    unreal.TraceTypeQuery.TRACE_TYPE_QUERY1, True, [], unreal.DrawDebugTrace.NONE, True)
+        if not hit:
+            return None
+        t = hit.to_tuple()
+        return {'z': round(t[5].z, 1), 'actor': t[9].get_actor_label() if t[9] else ''}
+    if action == 'near':
+        x, y, r = (float(t) for t in arg.split(','))
+        return near(x, y, r)
     if action == 'place':
         return place(arg)
     if action == 'palmmat':
