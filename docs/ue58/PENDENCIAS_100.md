@@ -230,7 +230,10 @@ Pronto e testado (02/11):
     (`gen_beach_walkway.py`), jangada de cilindros da praia oeste → `mare_jangada` (`mare_fab._replace_west_raft`).
     Conferido no editor e no PIE. Aceitos: vigas roliças dos telhados dos bangalôs, calhas, postes da grade.
     Canteiro da praça (cilindro bege de 4,6 m) → meio-fio de pedra e terra (`gen_tree_planter.py`).
-    Falta: restante da lista `docs/ue58/qa/primitivas-20261103.txt`;
+    Carrinho de bagagem da pousada (placa rosa + varetas + malas-caixa) → carrinho de latão (`gen_luggage_cart.py`) e
+    malas Vintage Suitcase (Poly Haven CC0, `prep_luggage.py`). Resto da lista conferido por foto: calhas, colunas
+    roliças, mastros, postes e a lanterna do farol são arquitetura (aceitos); discos do pináculo não ficam visíveis.
+    O mato que aparece na varanda da pousada no editor é o gramado do lote (some no jogo com a pousada construída).
   - texturas;
   - folhagem muito clara à noite;
   - ondas, espuma e respingos.

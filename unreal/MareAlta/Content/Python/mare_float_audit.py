@@ -326,11 +326,34 @@ def _row(t):
             'position': [t.translation.x / 100, t.translation.z / 100, t.translation.y / 100]}
 
 
+def _hide_mesh(name, rows):
+    from mare_world_builder import transform
+    n = 0
+    for a in unreal.get_editor_subsystem(unreal.EditorActorSubsystem).get_all_level_actors():
+        for c in a.get_components_by_class(unreal.InstancedStaticMeshComponent):
+            if not c.static_mesh or c.static_mesh.get_name() != name:
+                continue
+            for i in range(c.get_instance_count()):
+                t = c.get_instance_transform(i, True)
+                old_at = unreal.Vector(t.translation.x, t.translation.y, t.translation.z)
+                t.scale3d = unreal.Vector(.001, .001, .001)
+                c.update_instance_transform(i, t, True, True, True)
+                for row in rows:
+                    rt = transform(row['transform'])
+                    if rt is not None and (rt.translation - old_at).length() < 1.0:
+                        row['transform'] = _row(t)
+                        break
+                n += 1
+    return n
+
+
 def swapfit(spec):
     """Replace a code-made primitive prop by a real model, refitted per instance: "World_NNNN=/Game/path:mode[:sink];..."
     mode fit  - uniform scale to the old footprint, old yaw kept (rocks; Nanite meshes);
          log  - the new mesh's long axis along the old one, same length (driftwood for the cylinder logs);
          same - the old rotation at scale 1 (new model built in the old mesh's frame);
+         hide - (path ignored) shrink a part that the replacement model already includes;
+         keep - as same, without re-seating on the surface (stacked pieces such as luggage on a cart);
          foot - real size, old yaw, tilted to the sand normal, every other instance mirrored (left/right).
     Each instance then rests on what is below it (traced ignoring its own actor), sunk by `sink` cm. Level
     instances, Content/Data/world.json rows and imported_meshes.json (old mesh -> new path) all change."""
@@ -347,6 +370,9 @@ def swapfit(spec):
         old_name, rest = item.split('=')
         path, mode, *sink = rest.split(':')
         sink = float(sink[0]) if sink else 0.0
+        if mode == 'hide':   # part absorbed by a replacement model: shrink it (epsilon keeps bounds/culling sane)
+            report[old_name] = _hide_mesh(old_name, rows_by_mesh.get(old_name, []))
+            continue
         new = unreal.load_asset(path)
         ne = new.get_bounds().box_extent
         long_axis = max(range(3), key=lambda k: (ne.x, ne.y, ne.z)[k])
@@ -375,7 +401,7 @@ def swapfit(spec):
                         rot = unreal.Rotator(roll=rnd.uniform(-180, 180) if long_axis == 0 else 0,
                                              pitch=rnd.uniform(-180, 180) if long_axis == 1 else 0, yaw=yaw)
                         scale = unreal.Vector(k, k, k)
-                    elif mode == 'same':   # new mesh built in the old one's frame
+                    elif mode in ('same', 'keep'):   # new mesh built in the old one's frame
                         rot = t.rotation.rotator()
                         scale = unreal.Vector(1, 1, 1)
                     elif mode == 'fit':
@@ -389,6 +415,8 @@ def swapfit(spec):
                     nt = unreal.Transform(old_at, rot, scale)
                     hit = unreal.SystemLibrary.line_trace_single(world, old_at + unreal.Vector(0, 0, 200), old_at - unreal.Vector(0, 0, 300),
                                                                 unreal.TraceTypeQuery.TRACE_TYPE_QUERY1, True, [a], unreal.DrawDebugTrace.NONE, True)
+                    if mode == 'keep':     # stacked or held pieces: the old pivot already sits right
+                        hit = None
                     if hit and mode == 'foot':
                         # a flat imprint must follow the sand slope, or its upper half sinks into the beach
                         n = hit.to_tuple()[7]
