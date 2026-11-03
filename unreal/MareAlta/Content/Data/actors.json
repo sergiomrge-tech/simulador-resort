@@ -120,7 +120,7 @@
   },
   "Dish_acai": {
     "static_meshes": [
-      "/Game/Actors/Combined/Dish_acai/Dish_acai.Dish_acai"
+      "/Game/Custom/FabFood/fab_acai/fab_acai.fab_acai"
     ],
     "skeletal_meshes": [],
     "animations": {}
@@ -148,7 +148,7 @@
   },
   "Dish_coco_gelado": {
     "static_meshes": [
-      "/Game/Actors/Combined/Dish_coco_gelado/Dish_coco_gelado.Dish_coco_gelado"
+      "/Game/Custom/FabFood/fab_coco_gelado/fab_coco_gelado.fab_coco_gelado"
     ],
     "skeletal_meshes": [],
     "animations": {}
@@ -183,14 +183,14 @@
   },
   "Dish_sorvete_chocolate": {
     "static_meshes": [
-      "/Game/Actors/Combined/Dish_sorvete_chocolate/Dish_sorvete_chocolate.Dish_sorvete_chocolate"
+      "/Game/Custom/FabFood/fab_sorvete_chocolate/fab_sorvete_chocolate.fab_sorvete_chocolate"
     ],
     "skeletal_meshes": [],
     "animations": {}
   },
   "Dish_sorvete_morango": {
     "static_meshes": [
-      "/Game/Actors/Combined/Dish_sorvete_morango/Dish_sorvete_morango.Dish_sorvete_morango"
+      "/Game/Custom/FabFood/fab_sorvete_morango/fab_sorvete_morango.fab_sorvete_morango"
     ],
     "skeletal_meshes": [],
     "animations": {}

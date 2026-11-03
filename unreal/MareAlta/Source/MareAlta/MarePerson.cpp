@@ -92,6 +92,17 @@ bool AMarePerson::SetAppearance(int32 AppearanceVariant)
  }
  PlayPose(TEXT("Idle"));return true;
 }
+/** Which roster colour a clothing material takes: the default Epic garment ("shirt"/"short") or a Fab outfit piece
+ *  built into the MetaHuman (Clothing/MI_WI_*: tops and dresses = "shirt", bottoms = "short"); shoes and complete
+ *  designer outfits keep their own colours (nullptr). */
+static const TCHAR* FabGarmentPart(const FString& Path)
+{
+ if(Path.Contains(TEXT("DefaultGarment")))return Path.Contains(TEXT("_Short"))?TEXT("short"):TEXT("shirt");
+ if(!Path.Contains(TEXT("/Clothing/MI_WI_")))return nullptr;
+ for(const TCHAR* Word:{TEXT("_shs_"),TEXT("Flipflops"),TEXT("Flats"),TEXT("Loafers"),TEXT("Casual_")})if(Path.Contains(Word))return nullptr;
+ if(Path.Contains(TEXT("_btm"))|| Path.Contains(TEXT("Shorts")))return TEXT("short");
+ return TEXT("shirt");
+}
 bool AMarePerson::SetMetaHuman(const FString& Name)
 {
  const FString Root=FString::Printf(TEXT("/Game/People/MetaHumans/%s/MH_%s/"),*Name,*Name);
@@ -150,13 +161,19 @@ bool AMarePerson::SetMetaHuman(const FString& Name)
  if(!bSwim && MetaHumanRoster()->TryGetObjectField(TEXT("clothes"),Clothes) && (*Clothes)->TryGetObjectField(RoleKey,Palette))
   if(AActor* Child=MetaHumanBody->GetChildActor()){TArray<UMeshComponent*> Garments;Child->GetComponents(Garments);
    for(UMeshComponent* Garment:Garments)for(int32 I=0;I<Garment->GetNumMaterials();++I){const UMaterialInterface* Mat=Garment->GetMaterial(I);
-    if(!Mat || !Mat->GetPathName().Contains(TEXT("DefaultGarment")))continue;
-    const TCHAR* Part=Mat->GetPathName().Contains(TEXT("_Short"))?TEXT("short"):TEXT("shirt");const TArray<TSharedPtr<FJsonValue>>* List=nullptr;
+    if(!Mat)continue;const TCHAR* Part=FabGarmentPart(Mat->GetPathName());if(!Part)continue;const TArray<TSharedPtr<FJsonValue>>* List=nullptr;
     if(!(*Palette)->TryGetArrayField(Part,List) || !List->Num())continue;
     if(auto M=Garment->CreateDynamicMaterialInstance(I)){const FLinearColor C=Pick(*List,Part);
      for(const TCHAR* P:{TEXT("diffuse_color_1"),TEXT("diffuse_color_2"),TEXT("B_diffuse_color_1")})M->SetVectorParameterValue(P,C);}}}
  // Footwear fitted in Blender to a woman's or a man's MetaHuman foot (tools/ue58/gen_mh_shoes.py): nobody barefoot.
+ // Builds dressed with Fab outfits (Content/Data/outfits_fab.json) bring their own shoes: no generated pair then.
  if(Shoes){Shoes->DestroyComponent();Shoes=nullptr;}
+ bool bOutfitShoes=false;
+ if(AActor* Child=MetaHumanBody?MetaHumanBody->GetChildActor():nullptr){TArray<UMeshComponent*> Parts;Child->GetComponents(Parts);
+  for(UMeshComponent* Part:Parts)for(int32 I=0;I<Part->GetNumMaterials();++I)if(const UMaterialInterface* Mat=Part->GetMaterial(I)){
+   const FString Path=Mat->GetPathName();
+   for(const TCHAR* Word:{TEXT("_shs_"),TEXT("Flipflops"),TEXT("Flats"),TEXT("Loafers"),TEXT("Sneaker"),TEXT("Shoe"),TEXT("Casual_")})if(Path.Contains(Word))bOutfitShoes=true;}}
+ if(bOutfitShoes){PlayPose(TEXT("Idle"));return true;}
  const TSharedPtr<FJsonObject>* ShoeKinds=nullptr;FString Kind;
  const TArray<TSharedPtr<FJsonValue>>* KindList=nullptr;
  if(MetaHumanRoster()->TryGetObjectField(TEXT("shoes"),ShoeKinds) && (*ShoeKinds)->TryGetArrayField(RoleKey,KindList) && KindList->Num())

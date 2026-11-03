@@ -122,8 +122,9 @@ def dress_variant(name, suffix, items):
     """MH_<name>_<suffix>: the character wearing real Fab outfits (parametric wardrobe items, e.g.
     /Game/Outfits/Shorts/WI_OA_Shorts) instead of the default Epic garment; every item goes in the Outfits slot
     (several pieces: top, bottom, shoes). Build it with build('<name>_<suffix>')."""
-    variant = f'{FOLDER}/MH_{name}_{suffix}'
-    if not unreal.EditorAssetLibrary.does_asset_exist(variant):
+    # An empty suffix dresses the character itself (its normal build then wears the outfit).
+    variant = f'{FOLDER}/MH_{name}_{suffix}' if suffix else f'{FOLDER}/MH_{name}'
+    if suffix and not unreal.EditorAssetLibrary.does_asset_exist(variant):
         unreal.EditorAssetLibrary.duplicate_asset(f'{FOLDER}/MH_{name}', variant)
     character = unreal.load_asset(variant)
     col = character.internal_collection
@@ -624,6 +625,59 @@ def run(action, arg=''):
         return probe(arg or 'Lani')
     if action == 'buildinfo':
         return build_info()
+    if action == 'outfitmats':
+        # Materials of a built character's outfit meshes and their vector/scalar parameters (runtime tint names).
+        out = {}
+        for path in unreal.EditorAssetLibrary.list_assets(f'{FOLDER}/{arg}', True, False):
+            if '/Clothing/' not in path:
+                continue
+            a = unreal.load_asset(path)
+            if not isinstance(a, unreal.SkeletalMesh):
+                continue
+            for i, m in enumerate(a.get_editor_property('materials')):
+                mi = m.get_editor_property('material_interface')
+                if not mi:
+                    continue
+                vec = [str(n) for n in unreal.MaterialEditingLibrary.get_vector_parameter_names(mi)]
+                out[f'{a.get_name()}[{i}] {mi.get_path_name()}'] = vec[:20]
+        return out
+    if action == 'texcap':
+        # Fab outfit textures ship at 4K: cap them (default 1024) so a crowd of dressed people fits in video memory.
+        size = int(arg or 1024)
+        out = {'capped': 0, 'kept': 0}
+        for root in ('/Game/Outfits', '/Game/OutFits', '/Game/MetaOutfits'):
+            for path in unreal.EditorAssetLibrary.list_assets(root, True, False):
+                data = unreal.EditorAssetLibrary.find_asset_data(path)
+                if str(data.asset_class_path.asset_name) != 'Texture2D':
+                    continue
+                tex = unreal.load_asset(path)
+                if tex.get_editor_property('max_texture_size') == size:
+                    out['kept'] += 1
+                    continue
+                tex.set_editor_property('max_texture_size', size)
+                unreal.EditorAssetLibrary.save_loaded_asset(tex, False)
+                out['capped'] += 1
+        return out
+    if action == 'rmfab':
+        # Remove one folder of models imported from Fab (re-import with new materials needs a clean folder).
+        if not arg.startswith('/Game/Custom/Fab') and arg != '/Game/Custom/Festival/festa_campfire_scan':
+            return 'refused: only /Game/Custom/Fab* folders'
+        return unreal.EditorAssetLibrary.delete_directory(arg)
+    if action == 'show':
+        # Preview static meshes side by side: "x,y,z@/Game/a/a,/Game/b/b" (tagged as previews, removed by mh_clear).
+        loc, paths = arg.split('@')
+        x, y, z = (float(v) for v in loc.split(','))
+        sub = unreal.get_editor_subsystem(unreal.EditorActorSubsystem)
+        out = []
+        for i, path in enumerate(paths.split(',')):
+            mesh = unreal.load_asset(path)
+            if not mesh:
+                out.append(f'missing {path}')
+                continue
+            a = sub.spawn_actor_from_object(mesh, unreal.Vector(x + i * 40, y, z), unreal.Rotator(roll=0, pitch=0, yaw=0))
+            a.tags = [unreal.Name('MareMHPreview')]
+            out.append(path)
+        return out
     if action == 'dress':
         # "Mateo@Beach@/Game/Outfits/Shorts/WI_OA_Shorts,/Game/..."
         name, suffix, items = arg.split('@')

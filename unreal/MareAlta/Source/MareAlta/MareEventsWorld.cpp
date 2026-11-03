@@ -7,6 +7,9 @@
 #include "Engine/PointLight.h"
 #include "Components/PointLightComponent.h"
 #include "Components/StaticMeshComponent.h"
+#include "NiagaraComponent.h"
+#include "NiagaraFunctionLibrary.h"
+#include "NiagaraSystem.h"
 
 TStatId UMareEventsWorld::GetStatId() const{RETURN_QUICK_DECLARE_CYCLE_STAT(UMareEventsWorld,STATGROUP_Tickables);}
 
@@ -14,6 +17,7 @@ void UMareEventsWorld::Clear()
 {
  for(auto& P:Props)if(IsValid(P))P->Destroy();Props.Empty();
  if(IsValid(Fire))Fire->Destroy();Fire=nullptr;
+ if(IsValid(Flames))Flames->DestroyComponent();Flames=nullptr;
 }
 
 void UMareEventsWorld::Deinitialize(){Clear();Super::Deinitialize();}
@@ -39,7 +43,15 @@ void UMareEventsWorld::Tick(float DeltaSeconds)
  const bool bDeco=Want.EndsWith(TEXT("+deco"));
  if(Event==TEXT("quermesse")){Put(TEXT("festa_stall"),-3,0,90);Put(TEXT("festa_stall"),0,2,0);Put(TEXT("festa_stall"),3,0,-90);
   Put(TEXT("festa_bunting"),-1.5,-1.5,0);Put(TEXT("festa_bunting"),1.5,-1.5,0);}
- else if(Event==TEXT("junina")){Put(TEXT("festa_campfire_logs"),0,0,0,0,2.4f);Put(TEXT("festa_fire"),0,0,0,5,1.5f);Put(TEXT("festa_stall"),0,4,0);   // a real junina bonfire, ~1.5 m of flame
+ else if(Event==TEXT("junina")){
+  // Bonfire: the scanned Quixel campfire (logs, ashes, stones; tools/ue58/prep_fab_food.py campfire) with simulated
+  // flames and smoke (Niagara Fluids template); the old generated logs and mesh flame remain only as a fallback.
+  static UStaticMesh* Scan=LoadObject<UStaticMesh>(nullptr,TEXT("/Game/Custom/Festival/festa_campfire_scan/festa_campfire_scan.festa_campfire_scan"));
+  static UNiagaraSystem* FireFx=LoadObject<UNiagaraSystem>(nullptr,TEXT("/NiagaraFluids/Templates/Gas/2D/Systems/Grid2D_Gas_SmokeFire.Grid2D_Gas_SmokeFire"));
+  if(Scan)Put(TEXT("festa_campfire_scan"),0,0,0,0,2.0f);else Put(TEXT("festa_campfire_logs"),0,0,0,0,2.4f);
+  if(FireFx)Flames=UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(),FireFx,Ground(Centre)+FVector(0,0,10),FRotator::ZeroRotator,FVector(1.1f),false,true);
+  else Put(TEXT("festa_fire"),0,0,0,5,1.5f);
+  Put(TEXT("festa_stall"),0,4,0);
   Put(TEXT("festa_bunting"),-3.5,0,90);Put(TEXT("festa_bunting"),3.5,0,90);
   Fire=GetWorld()->SpawnActor<APointLight>(Ground(Centre)+FVector(0,0,120),FRotator::ZeroRotator);
   if(Fire){Fire->PointLightComponent->SetLightColor(FLinearColor(1,.55,.2));Fire->PointLightComponent->SetAttenuationRadius(1400);Fire->PointLightComponent->SetMobility(EComponentMobility::Movable);}}

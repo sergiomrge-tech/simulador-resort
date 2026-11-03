@@ -663,17 +663,6 @@
        ]
       },
       {
-       "name": "Banqueta industrial",
-       "desc": "Assento de madeira, pés de ferro.",
-       "parts": [
-        {
-         "model": "metal_stool_02",
-         "w": 42,
-         "h": 78
-        }
-       ]
-      },
-      {
        "name": "Banqueta de madeira torneada",
        "desc": "Madeira maciça torneada, acabamento de bar de hotel.",
        "parts": [
@@ -681,6 +670,17 @@
          "model": "wooden_stool_02",
          "w": 42,
          "h": 78
+        }
+       ]
+      },
+      {
+       "name": "Banqueta de rattan",
+       "desc": "Rattan trançado à mão e pés de ferro: bar de resort.",
+       "parts": [
+        {
+         "model": "fab_rattan_bar_stool",
+         "w": 43,
+         "h": 87
         }
        ]
       }
@@ -1713,13 +1713,13 @@
        ]
       },
       {
-       "name": "Sofá de veludo",
-       "desc": "Veludo e pés de madeira torneada.",
+       "name": "Sofá de rattan",
+       "desc": "Rattan natural com almofadas de linho: cara de pousada de praia.",
        "parts": [
         {
-         "model": "sofa_03",
-         "w": 200,
-         "h": 82
+         "model": "fab_rattan_sofa",
+         "w": 194,
+         "h": 80
         }
        ]
       }

@@ -115,8 +115,8 @@ Legenda: [x] feito e validado · [~] em andamento/parcial · [ ] pendente.
 - [x] "Pq está parando? Siga o checklist até terminar" (02/11): regra reforçada na memória; o trabalho segue item após item no mesmo turno.
 - [~] "Não é mais fácil procurar na web assets de roupas?" / "Abra pelo navegador" / "Aceita" (02/11): 11 roupas gratuitas do Fab baixadas (Chrome logado, licença aceita com autorização) direto no D: e instaladas; Mateo vestido e construído como prova (`docs/ue58/ROUPAS_FAB.md`). Falta vestir os demais papéis.
 - [x] "Sempre que precisar modelar algo, primeiro busque assets gratuitos na web, salve essa regra na memória global" (02/11): salvo no CLAUDE.md global e na memória.
-- [ ] "Procure biquínis também" (02/11): maiô Aeron (QuingKhaos) baixado; biquíni paramétrico gratuito ainda a procurar.
-- [ ] "Móveis para o hotel, comidas, bebidas, o que for necessário" (02/11): busca iniciada no Fab (frutas Quixel Megascans, coquetéis, pacotes de móveis); falta escolher (sem low poly), baixar e trocar no jogo.
+- [x] "Procure biquínis também" (02/11): não há biquíni gratuito para MetaHuman no Fab; maiô Aeron e top Marilla (QuingKhaos) baixados, 3 banhistas de maiô na praia; os biquínis ajustados a cada corpo continuam.
+- [~] "Móveis para o hotel, comidas, bebidas, o que for necessário" e "Tudo gratuito" (02/11): coco gelado, açaí e sorvetes do quiosque trocados por modelos gratuitos do Fab; banqueta e sofá de rattan na Personalização do bar e da pousada; fogueira junina escaneada com fogo Niagara. Megascans novos são pagos para jogo (só UEFN é grátis): ficaram de fora. Coquetéis (.blend), mesa de café, louça e campainha baixados, ainda sem uso.
 - [~] "Baixe sempre no drive D" / "mude o armazenamento do Chrome para D" (02/11): downloads feitos direto no D: pela API do Fab; a pasta padrão do Chrome não pôde ser trocada daqui (a extensão não abre chrome://settings) — fazer em Configurações > Downloads.
 - [x] Manter este checklist sempre que o usuário pedir algo (regra salva na memória).
 

@@ -23,5 +23,7 @@ private:
  FString Shown;
  UPROPERTY() TArray<TObjectPtr<AStaticMeshActor>> Props;
  UPROPERTY() TObjectPtr<APointLight> Fire;
+ /** Simulated flames of the junina bonfire (Niagara Fluids smoke-fire template). */
+ UPROPERTY() TObjectPtr<class UNiagaraComponent> Flames;
  void Clear();
 };

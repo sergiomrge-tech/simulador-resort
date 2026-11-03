@@ -16,6 +16,7 @@ autorização dele no chat). Ficam fora do git por tamanho e licença (`.gitigno
 | Vestido curto (Customizable Mini Dress_01) | Mukilartz | 8a2c223f… | oa_minidress01_variant.mhpkg (94 MB) | /Game/OutFits/MiniDress01 |
 | Maiô (The Aeron Swimsuit) | QuingKhaos | da1bb5d0… | khaosmdf379_ue57.mhpkg (819 MB) | /Game/Outfits/KhaosMDF379 |
 | Casual masculino (camisa, bermuda, tênis) | Wizark Studios | c556fd02-6daa-46a8-b8d9-9994a781905e | oa_casual_m_outfit.mhpkg (273 MB) | /Game/MetaOutfits/Casual_M_Outfit |
+| Top (The Marilla Top) | QuingKhaos | dc6a2e50… | khaosmdf322_ue57.mhpkg (2,2 GB) | /Game/Outfits/KhaosMDF322 |
 | Casual feminino | Wizark Studios | 575d159d-f0ad-44e1-982c-bf36274f97a7 | oa_casual_f_outfit.mhpkg (313 MB) | /Game/MetaOutfits/Casual_F_Outfit |
 
 Pacotes guardados em `D:\CodexTemp\fab`.
@@ -36,3 +37,27 @@ duplica `MH_<nome>` em `MH_<nome>_<sufixo>`, adiciona as peças ao slot `Outfits
 `build('<nome>_<sufixo>')` constrói. Prova: `MH_Mateo_Beach` com camiseta, bermuda e chinelo
 (`docs/ue58/graphics-reference/roupa-fab-mateo-20261102.jpg`). Builds de MetaHuman: no máximo 5 por sessão do
 editor (memória).
+
+## Pratos do quiosque (modelos gratuitos do Fab, 02/11)
+Baixados em `D:/CodexTemp/fab/props` e preparados por `tools/ue58/prep_fab_food.py` (redução de polígonos, escala
+real, texturas de até 1024 em potência de 2, nomes únicos `fab_<prato>_`):
+
+| Prato | Modelo de origem | Autor |
+|---|---|---|
+| coco gelado | Realistic Coconut (coco verde) | LucasMaia |
+| sorvete de morango / chocolate | ice cream in marble bowl (bolas recoloridas) | HQ3DMOD |
+| açaí | Realistic Wooden Bowl and Spoon + creme de açaí modelado | Kollapse3D |
+| (fogueira junina) | Campfire, Quixel Megascans (já estava na biblioteca) | Quixel |
+
+Megascans novos não são gratuitos para jogo (só a licença UEFN é grátis; "Personal" custa ~R$ 10,82 por item):
+ficaram de fora pela regra "tudo gratuito". Efeito de fogo "Perfect Fire VFX" (Vefects, grátis) só baixa pelo
+Epic Games Launcher (atalho quebrado nesta máquina).
+
+## Móveis (Personalização)
+| Peça | Autor | Onde entra |
+|---|---|---|
+| Rattan Bar Stool (banqueta de rattan) | Fab, gratuito | bar → banquetas, nível 5 |
+| Woven Rattan Sofa (sofá de rattan com almofadas) | Fab, gratuito | pousada → banco, nível 5 |
+
+Também baixados e ainda sem uso: Cafe Table and Stools (mesa alta de bar), Cafe Tableware (porta-guardanapo e talheres),
+Desk Bell (sem textura). Fora: "Realtime Archviz AssetPack - Bistro" (só pelo Launcher) e "Reception Desk" (sem textura).

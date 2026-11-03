@@ -156,15 +156,13 @@ Pronto e testado (02/11):
 
 ## 5. Pessoas
 - [x] 21 MetaHumans por papel; banhistas com biquíni e sunga; mãos corrigidas.
-- [~] P0 Roupas reais e coloridas por papel (02/11): 11 roupas gratuitas do Fab baixadas e instaladas (bermuda,
-  camisetas, camiseta por dentro, cropped, chinelo, sapatilha, mocassim, vestido curto, maiô, casual masculino e
-  feminino; lista e processo em `docs/ue58/ROUPAS_FAB.md`); prova `MH_Mateo_Beach` vestido e construído pelo script
-  (foto `roupa-fab-mateo-20261102.jpg`). Falta:
-  - escolher e construir as roupas de cada papel (praia, hotel/social, uniformes, moradores), em lotes de até 5 builds;
-  - cores por papel nos materiais das peças; trocar o elenco de `metahumans.json` pelas variantes vestidas;
-  - biquínis (o maiô Aeron baixado; procurar biquíni paramétrico gratuito);
-  - regata, bermuda de surfe e saída de praia geradas no bpy (`gen_mh_swimwear.py` tank/boardshorts/coverup) ficam
-    como reserva, desligadas no jogo (não conferidas no Play).
+- [x] P0 Roupas reais e coloridas por papel (02/11): as 20 MetaHumans reconstruídas com roupas gratuitas do Fab
+  (camiseta, camiseta por dentro, cropped, bermuda, vestido curto, conjuntos casuais, chinelo, sapatilha, mocassim;
+  plano em `Content/Data/outfits_fab.json`, script `tools/ue58/dress_metahumans.py`, lotes de 5 builds por sessão).
+  As peças `_top`/`_btm` recebem as cores de cada papel (`metahumans.json` → `clothes`), os sapatos do Fab substituem
+  os gerados; 3 banhistas de maiô Aeron (`<Nome>_Swim_Aeron`). Texturas das roupas limitadas a 1024 (estouro de memória
+  de vídeo com 4K). Lista e processo em `docs/ue58/ROUPAS_FAB.md`; QA 104/104, testes 26/26. Pendente: tingir também
+  vestido e conjuntos casuais (hoje mantêm as cores originais); conferir de perto cada papel no Play.
 - [x] P0 Calçados: chinelo, sandália de tiras, tênis e sapato social com saltinho (02/11), sorteados por papel
   (`metahumans.json` → `shoes`); sapato social conferido no saguão do hotel.
 - [ ] P1 Mais banhistas: mulheres e homens de outras idades e tipos de corpo.
@@ -254,7 +252,9 @@ Fazer depois de todo o resto, quando os textos estiverem estáveis.
 
 ## 13. Correção de assets low poly (pedido do Sergio em 02/11, para o final)
 Regra do projeto: nenhum asset low poly no jogo.
-- [ ] **Fogueira da festa junina**: a lenha (`festa_campfire_logs`, vinda da Godot) são poucos troncos lisos e a chama
+- [x] **Fogueira da festa junina** (02/11): lenha escaneada (Quixel "Campfire", da biblioteca do usuário) e fogo com
+  fumaça simulados (Niagara Fluids `Grid2D_Gas_SmokeFire`, plugin da Epic ativado); foto `fogueira-junina-20261102.jpg`.
+  Antes: a lenha (`festa_campfire_logs`, vinda da Godot) eram poucos troncos lisos e a chama
   ficou com cara de cone. Refazer com toras de verdade (casca com relevo, pontas cortadas e queimadas, brasas e cinzas
   na base, pedras em volta) e um fogo convincente (chamas em camadas com movimento, faíscas e fumaça em partículas).
 - [ ] Revisar os outros modelos trazidos da versão Godot para as festas (cabine do DJ, faixa) e qualquer outro prop com

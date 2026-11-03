@@ -412,6 +412,12 @@ def run(action, arg=''):
         return import_models('GameRoom', '/Game/Custom/GameRoom')
     if action == 'boats':
         return import_models('Boats', '/Game/Custom/Boats')
+    if action == 'fabfood':
+        return import_models('FabFood', '/Game/Custom/FabFood')
+    if action == 'fabfurniture':
+        return import_models('FabFurniture', '/Game/Custom/FabFurniture')
+    if action == 'fabfestival':
+        return import_models('FabFestival', '/Game/Custom/Festival')
     if action == 'staffmodels':
         return import_models('Staff', '/Game/Custom/Staff')
     if action == 'desk':
