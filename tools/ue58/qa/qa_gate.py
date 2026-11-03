@@ -6,7 +6,9 @@ What it checks, with data (PASS only if all hard checks pass):
   3. natural movement  - PIE gait audit by day and by night: nobody moving while feet/hands stay put;
   4. clean log         - no Error / Ensure / missing usage flag / default material lines during the PIE run
                          (patterns in baseline.json "log_allow" are known and accepted);
-  5. reference shots   - fixed cameras captured and compared with the previous run: big differences are listed
+  5. untracked assets  - no new .uasset/.umap outside git (a material the level used was left out once, 03/11);
+                         folders in baseline.json "untracked_allow" are the user's own pending files;
+  6. reference shots   - fixed cameras captured and compared with the previous run: big differences are listed
                          for review (not a failure: people and clouds move), with a contact sheet.
 
 Usage: python tools/ue58/qa/qa_gate.py [--no-shots] [--accept]
@@ -167,6 +169,16 @@ def shots(stamp):
     return {'folder': str(folder), 'review': review}
 
 
+def untracked(base):
+    import subprocess
+    out = subprocess.run(['git', 'status', '--porcelain', '--untracked-files=all', '--', 'unreal/MareAlta/Content'],
+                         cwd=str(HERE.parents[2]), capture_output=True, text=True, encoding='utf-8').stdout
+    allow = base.get('untracked_allow', [])
+    files = [l[3:].strip('"') for l in out.splitlines() if l.startswith('??') and l.rstrip('"').endswith(('.uasset', '.umap'))]
+    files = [f for f in files if not any(f.startswith(a) for a in allow)]
+    return {'files': files, 'pass': not files}
+
+
 def main():
     accept, with_shots = '--accept' in sys.argv, '--no-shots' not in sys.argv
     base = json.loads(BASELINE.read_text(encoding='utf-8')) if BASELINE.exists() else {}
@@ -189,7 +201,8 @@ def main():
     report['gait'] = {'day': day, 'night': night, 'pass': not day['gliding'] and not night['gliding'] and day['moving'] > 0}
     report['log'] = log_since(offset, base.get('log_allow', []))
     pie(False)
-    report['pass'] = all(report[k]['pass'] for k in ('tests', 'floating', 'gait', 'log'))
+    report['untracked'] = untracked(base)
+    report['pass'] = all(report[k]['pass'] for k in ('tests', 'floating', 'gait', 'log', 'untracked'))
     OUT.mkdir(parents=True, exist_ok=True)
     (OUT / 'report.json').write_text(json.dumps(report, indent=1, ensure_ascii=False), encoding='utf-8')
     if accept:
@@ -202,6 +215,7 @@ def main():
     print(' log    ', report['log']['count'], 'bad lines')
     for l in report['log']['unique'][:12]:
         print('   ', l)
+    print(' git    ', len(report['untracked']['files']), 'untracked assets', report['untracked']['files'][:8])
     if with_shots:
         print(' shots  ', report['shots']['folder'], 'review:', report['shots']['review'])
 

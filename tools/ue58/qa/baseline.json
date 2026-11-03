@@ -1,3 +1,9 @@
 {
- "floating": 585
+ "floating": 585,
+ "untracked_allow": [
+  "unreal/MareAlta/Content/Actors/dish_fish_portion/",
+  "unreal/MareAlta/Content/Actors/dish_fries/",
+  "unreal/MareAlta/Content/Actors/player_home_door/",
+  "unreal/MareAlta/Content/People/Swimwear/"
+ ]
 }
