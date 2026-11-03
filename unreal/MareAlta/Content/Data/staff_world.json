@@ -9,7 +9,7 @@
    ],
    "route": "reception",
    "place": "pousada",
-   "behind": 85,
+   "behind": 55,
    "pose": "Idle",
    "seconds": 30,
    "label": "Atendendo na recepção"

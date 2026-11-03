@@ -515,6 +515,49 @@ def chair_seats(arg=''):
     return finish(seats)
 
 
+def stand_audit(arg=''):
+    """PIE: people standing (not seated) whose body is inside furniture. Furniture = static meshes 40-110 cm tall
+    with a footprint under 4 m (tables, counters, chairs, stools); the pelvis inside a mesh's oriented box (shrunk by
+    5 cm) with the mesh top above the feet = walking through it. Returns the offenders with the mesh and position."""
+    world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()
+    boxes = []
+    for a in unreal.GameplayStatics.get_all_actors_of_class(world, unreal.Actor):
+        if isinstance(a, unreal.MarePerson):
+            continue
+        for comp in a.get_components_by_class(unreal.StaticMeshComponent):
+            mesh = comp.static_mesh
+            if not mesh or not comp.is_visible():
+                continue
+            bb = mesh.get_bounding_box()
+            ts = ([comp.get_instance_transform(i, True) for i in range(comp.get_instance_count())]
+                  if isinstance(comp, unreal.InstancedStaticMeshComponent) else [comp.get_world_transform()])
+            for t in ts:
+                size = (bb.max - bb.min) * t.scale3d
+                if 40 < abs(size.z) < 110 and abs(size.x) < 400 and abs(size.y) < 400 and max(abs(size.x), abs(size.y)) > 30:
+                    boxes.append((mesh.get_name(), a.get_actor_label(), t, bb))
+    out = []
+    for p in unreal.GameplayStatics.get_all_actors_of_class(world, unreal.MarePerson):
+        if p.get_editor_property('seated') or str(p.get_editor_property('stage')).find('EATING') >= 0:
+            continue
+        rig = p.get_component_by_class(unreal.SkeletalMeshComponent)
+        for bone in ('pelvis', 'spine_03'):
+            q = rig.get_socket_location(bone)
+            hit = None
+            for name, label, t, bb in boxes:
+                l = t.inverse_transform_location(q)
+                sc = t.scale3d
+                if (bb.min.x * abs(sc.x) + 5 < l.x * abs(sc.x) < bb.max.x * abs(sc.x) - 5 and
+                        bb.min.y * abs(sc.y) + 5 < l.y * abs(sc.y) < bb.max.y * abs(sc.y) - 5 and
+                        bb.min.z <= l.z <= bb.max.z + 15):
+                    hit = (name, label)
+                    break
+            if hit:
+                out.append({'name': p.get_editor_property('person_name'), 'employee': p.get_editor_property('employee'),
+                            'bone': bone, 'at': [round(q.x), round(q.y), round(q.z)], 'inside': hit[0], 'actor': hit[1]})
+                break
+    return out
+
+
 def run(action, arg=''):
     if action == 'badges':
         # PIE: every staff badge with its owner, role and where it sits relative to the owner's chest (spine_05),
@@ -569,6 +612,36 @@ def run(action, arg=''):
                         out.append([round(d), mesh.get_name(), [round(v) for v in (t.translation.x, t.translation.y, t.translation.z)], round(t.rotation.rotator().yaw),
                                     [round(abs(v)) for v in (size.x, size.y, size.z)], round(bb.min.z * t.scale3d.z + t.translation.z), round(bb.max.z * t.scale3d.z + t.translation.z)])
         return sorted(out)[:40]
+    if action == 'tops':
+        # "mesh_name,x,y,r,zmin,zmax": upward faces of the placed mesh of that name nearest (x, y) within r, between
+        # zmin and zmax (world), as world x/y ranges per 5 cm slice: where a counter or table top really is.
+        name, x, y, r, zmin, zmax = arg.split(',')
+        world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world() or             unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_editor_world()
+        found = None
+        for a in unreal.GameplayStatics.get_all_actors_of_class(world, unreal.Actor):
+            for comp in a.get_components_by_class(unreal.StaticMeshComponent):
+                if comp.static_mesh and comp.static_mesh.get_name() == name:
+                    ts = ([comp.get_instance_transform(i, True) for i in range(comp.get_instance_count())]
+                          if isinstance(comp, unreal.InstancedStaticMeshComponent) else [comp.get_world_transform()])
+                    for t in ts:
+                        d = ((t.translation.x - float(x)) ** 2 + (t.translation.y - float(y)) ** 2) ** .5
+                        if d < float(r) and (found is None or d < found[0]):
+                            found = (d, comp.static_mesh, t)
+        if not found:
+            return 'not found'
+        _, mesh, t = found
+        slices = {}
+        for sec in range(mesh.get_num_sections(0)):
+            v, tri, nrm = unreal.ProceduralMeshLibrary.get_section_from_static_mesh(mesh, 0, sec)[:3]
+            for q, n in zip(v, nrm):
+                w = t.transform_location(q)
+                if n.z > .85 and float(zmin) <= w.z <= float(zmax):
+                    k = round(w.z / 5) * 5
+                    lo, hi = slices.get(k, ([1e9, 1e9], [-1e9, -1e9]))
+                    slices[k] = ([min(lo[0], w.x), min(lo[1], w.y)], [max(hi[0], w.x), max(hi[1], w.y)])
+        return {k: [[round(c) for c in v[0]], [round(c) for c in v[1]]] for k, v in sorted(slices.items())}
+    if action == 'standaudit':
+        return stand_audit(arg)
     if action == 'seataudit':
         return seat_audit(arg)
     if action == 'chairseats':

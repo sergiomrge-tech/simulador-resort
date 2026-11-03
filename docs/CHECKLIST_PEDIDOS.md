@@ -130,7 +130,7 @@ Legenda: [x] feito e validado · [~] em andamento/parcial · [ ] pendente.
   acima do piso, fora das cadeiras; agora usam as cadeiras reais (`Data/hotel_seats.json`, medidas das malhas) e todo sentado alinha a
   bacia no assento (`AMarePerson::SitOn`/`AlignToSeatBelow`, também no bar). Auditoria: 12/12 ok (10-14 cm acima do assento, ≤2 cm do centro).
   Copos plásticos flutuando ao lado das mesas do hotel colocados sobre os tampos.
-- [ ] "Pessoa dentro da mesa" (03/11): funcionária atravessando o balcão no restaurante do Grand Hotel e captura com a câmera dentro da parede.
+- [x] "Pessoa dentro da mesa" (03/11): recepcionista da pousada estava dentro da ponta do balcão (frente do balcão errada nos dados); agora atrás do tampo e hóspedes na frente.
 - [ ] "Depois que arrumar a dança verificar TODAS as capturas com mais detalhes e faça as correções" (03/11): em andamento — varredura de
   objetos flutuando (593 candidatos para triagem), pessoas atravessando móveis, câmeras de QA.
 - [x] Manter este checklist sempre que o usuário pedir algo (regra salva na memória).

@@ -193,8 +193,11 @@ Pronto e testado (02/11):
   biz_booth do hotel; refazer ângulos (câmera caiu dentro de paredes). Bola de praia tem 1 m de diâmetro (grande demais).
 - [ ] P1 Bicicletas da vila com rodas low poly (~10 lados) — regra "nada de low poly": trocar por modelo gratuito detalhado.
 - [ ] P1 Gramado com fragmentos pretos triangulares espalhados (confete escuro) perto do lote da piscina: investigar a vegetação baixa.
-- [ ] P0 Funcionária do restaurante do Grand Hotel atravessando o balcão/mesa (apontado pelo Sergio na captura das cores
-  por função, 03/11); e capturas de QA com a câmera dentro de paredes (tint_Celeste): conferir posição de cada pessoa.
+- [x] P0 "Pessoa dentro da mesa" (03/11): era a recepcionista da pousada dentro da ponta do balcão (a recepção tinha yaw 0, mas
+  o tampo corre em X e a frente é +Y). `customization.json` reception yaw 90 + `reception_mesh_yaw` -90 (modelo igual) e
+  `staff_world.json` behind 55: ela fica entre o tampo e o quadro de chaves, e os hóspedes fazem fila na frente. Auditoria
+  `hud_standaudit` (pelve dentro de móvel) sem ocorrências; conferido de frente, lado e diagonal.
+- [ ] P2 Capturas de QA com a câmera dentro de paredes (tint_Celeste, conchas, biz_booth): checar a câmera antes de capturar.
 - [ ] P1 Rosto: expressões faciais simples (sorriso ao receber, irritado na negociação).
 - [ ] P2 Crianças e famílias (se houver presets/assets adequados).
 

@@ -4994,9 +4994,9 @@
     -1080,
     1080,
     200,
-    0
+    90
    ],
-   "reception_mesh_yaw": 0
+   "reception_mesh_yaw": -90
   },
   "tours": [
    {
