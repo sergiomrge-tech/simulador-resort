@@ -1103,6 +1103,37 @@ def run(action, arg=''):
             out.append([p.get_name()[-16:], p.get_editor_property('person_name'), [round(l.x), round(l.y), round(l.z)], feet,
                         p.get_editor_property('meta_human'), bool(p.get_editor_property('seated'))])
         return out
+    if action == 'allpeople':
+        # PIE: every actor with a visible skeletal mesh (people, animals, any rig), not only MarePerson: per visible
+        # skeletal component, head/hands/feet relative to the actor. Two calls a second apart find who glides (moved,
+        # limbs still) and who is frozen (standing, no idle motion at all) on the mesh the player actually sees.
+        world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()
+        out = []
+        for a in unreal.GameplayStatics.get_all_actors_of_class(world, unreal.Actor):
+            comps = [c for c in a.get_components_by_class(unreal.SkeletalMeshComponent) if c.is_visible() and c.get_editor_property('skeletal_mesh_asset' if hasattr(c, 'skeletal_mesh_asset') else 'skinned_asset')]
+            if not comps or a.is_hidden_ed() if hasattr(a, 'is_hidden_ed') else False:
+                continue
+            if a.get_editor_property('hidden'):
+                continue
+            t = a.get_actor_transform()
+            rows = []
+            for c in comps:
+                names = [str(n) for n in c.get_all_socket_names()] if hasattr(c, 'get_all_socket_names') else []
+                pts = []
+                for bone in ('head', 'hand_l', 'hand_r', 'foot_l', 'foot_r'):
+                    if bone in names or c.get_bone_index(bone) >= 0:
+                        q = t.inverse_transform_location(c.get_socket_location(bone))
+                        pts += [round(q.x, 2), round(q.y, 2), round(q.z, 2)]
+                if pts:
+                    rendered = c.was_recently_rendered(0.2) if hasattr(c, 'was_recently_rendered') else None
+                    rows.append([c.get_name()[:24], pts, rendered, str(c.get_editor_property('visibility_based_anim_tick_option')).split('.')[-1][:28]])
+            if not rows:
+                continue
+            l = a.get_actor_location()
+            name = a.get_editor_property('person_name') if isinstance(a, unreal.MarePerson) else a.get_actor_label()
+            seated = bool(a.get_editor_property('seated')) if isinstance(a, unreal.MarePerson) else None
+            out.append([a.get_name()[-20:], a.get_class().get_name(), str(name)[:30], [round(l.x), round(l.y), round(l.z)], seated, rows])
+        return out
     if action == 'partinfo':
         # PIE: mesh parts whose origin is at "x,y" (within 5 cm): component class, materials, custom data per instance
         x, y = (float(v) for v in arg.split(','))

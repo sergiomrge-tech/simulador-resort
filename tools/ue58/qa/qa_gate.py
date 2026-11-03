@@ -3,7 +3,8 @@
 What it checks, with data (PASS only if all hard checks pass):
   1. automation tests  - every MareAlta.* test succeeds;
   2. floating props    - float_audit scan: no more floating instances than the accepted baseline;
-  3. natural movement  - PIE gait audit by day and by night: nobody moving while feet/hands stay put;
+  3. natural movement  - PIE gait audit by day and by night: nobody moving while feet/hands stay put; also on every
+                         visible skeletal mesh (MetaHuman bodies): no glider, nobody frozen without idle motion;
   4. clean log         - no Error / Ensure / missing usage flag / default material lines during the PIE run
                          (patterns in baseline.json "log_allow" are known and accepted);
   5. untracked assets  - no new .uasset/.umap outside git (a material the level used was left out once, 03/11);
@@ -113,6 +114,33 @@ def gait(rounds=2):
     return {'moving': len(moving), 'gliding': gliding}
 
 
+def visible(rounds=2):
+    """The mesh the player sees (MetaHuman body follows the hidden rig by leader pose): three samples 0.35 s apart
+    (1.2 s apart aliased with the walk cycle and showed false gliders). Gliding = moved, limbs still; frozen =
+    standing with no idle motion at all."""
+    glide, frozen, total = [], [], 0
+    for _ in range(rounds):
+        samples = []
+        for _ in range(3):
+            got = hud('allpeople')
+            samples.append({x[0]: x for x in got} if isinstance(got, list) else {})
+            time.sleep(0.35)
+        total = max(total, len(samples[-1]))
+        for key, x in samples[-1].items():
+            seq = [s.get(key) for s in samples]
+            if not all(seq):
+                continue
+            def limbs(a, b):
+                return max((max(abs(u - v) for u, v in zip(r[1], s[1])) for r, s in zip(a[5], b[5]) if len(r[1]) == len(s[1])), default=0)
+            moved = ((x[3][0] - seq[0][3][0]) ** 2 + (x[3][1] - seq[0][3][1]) ** 2) ** .5
+            limb = max(limbs(seq[i], seq[j]) for i in range(3) for j in range(i + 1, 3))
+            if moved > 15 and limb < 1.5:
+                glide.append([x[2], x[3]])
+            if moved < 2 and limb < 0.05:
+                frozen.append([x[2], x[3]])
+    return {'actors': total, 'gliding': glide, 'frozen': frozen, 'pass': not glide and not frozen and total > 0}
+
+
 def log_since(offset, allow):
     text = LOG.read_bytes()[offset:].decode('utf-8', 'ignore')
     bad = re.compile(r'(Error:|: Error |Ensure condition failed|missing usage flag|Default Material will be used|REAL_MISSING|Fatal)')
@@ -193,6 +221,7 @@ def main():
     hud('cmd', 'mare.Weather 1')
     time.sleep(20)
     day = gait()
+    report['visible'] = visible()
     if with_shots:
         report['shots'] = shots(stamp)
     coast('clock', '1250')
@@ -202,7 +231,7 @@ def main():
     report['log'] = log_since(offset, base.get('log_allow', []))
     pie(False)
     report['untracked'] = untracked(base)
-    report['pass'] = all(report[k]['pass'] for k in ('tests', 'floating', 'gait', 'log', 'untracked'))
+    report['pass'] = all(report[k]['pass'] for k in ('tests', 'floating', 'gait', 'visible', 'log', 'untracked'))
     OUT.mkdir(parents=True, exist_ok=True)
     (OUT / 'report.json').write_text(json.dumps(report, indent=1, ensure_ascii=False), encoding='utf-8')
     if accept:
@@ -212,6 +241,8 @@ def main():
     print(' tests  ', report['tests']['total'], 'run,', len(report['tests']['failed']), 'failed', [f['name'] for f in report['tests']['failed']])
     print(' float  ', report['floating']['floating'], '(baseline', report['floating']['baseline'], ')')
     print(' gait   day', day['moving'], 'moving', len(day['gliding']), 'gliding | night', night['moving'], 'moving', len(night['gliding']), 'gliding')
+    v = report['visible']
+    print(' visible', v['actors'], 'rigs seen |', len(v['gliding']), 'gliding', len(v['frozen']), 'frozen', (v['gliding'] + v['frozen'])[:6])
     print(' log    ', report['log']['count'], 'bad lines')
     for l in report['log']['unique'][:12]:
         print('   ', l)

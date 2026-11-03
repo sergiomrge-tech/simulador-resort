@@ -217,9 +217,12 @@ Pronto e testado (02/11):
 - [x] P0 Calçados: chinelo, sandália de tiras, tênis e sapato social com saltinho (02/11), sorteados por papel
   (`metahumans.json` → `shoes`); sapato social conferido no saguão do hotel.
 - [ ] P1 Mais banhistas: mulheres e homens de outras idades e tipos de corpo. (03/11: login Epic pelo botão Google no Chrome, conta do Sergio já logada, autorizado)
-- [ ] P0 Verificar TODOS os personagens da ilha (vila, praia, hotel, quiosque, equipe, eventos; MetaHumans e os demais)
+- [x] P0 Verificar TODOS os personagens da ilha (vila, praia, hotel, quiosque, equipe, eventos; MetaHumans e os demais)
   com movimentação natural: quem anda mexe pernas e braços, ninguém desliza parado nem congela (03/11, pedido do Sergio:
   banhista MetaHuman do guarda-sol deslizou sem animar; causa: esqueleto oculto com OnlyTickPoseWhenRendered).
+  Feito 03/11: auditoria no corpo VISÍVEL de todo ator com esqueleto (`mare_hud allpeople`, 42 MetaHumans + jogador),
+  três amostras a 0,35 s (a 1,2 s coincidia com o ciclo do passo e dava falsos "deslizando"): 7 rodadas dia/noite com
+  0 deslizando e 0 congelados. Virou checagem permanente do QA gate ("visible").
 - [ ] P1 Animações (03/11): 7 clipes gratuitos de captura do Fab (Animation Shopee) importados
   (`mare_metahuman.import_mocap`, dois passes, `frame_alignment` SNAP_TO_CLOSEST) e redirecionados (`retarget_mocap`, só
   FK). Causa dos bonecos tortos: o esqueleto da captura olha para -Y e a MetaHuman para +Y; o redirecionador exige os
