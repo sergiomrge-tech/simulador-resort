@@ -624,6 +624,18 @@
   "loop": true
  },
  {
+  "id": "radio_havaiana_lua",
+  "path": "/Game/Audio/radio_havaiana_lua.radio_havaiana_lua",
+  "duration": 106.7,
+  "loop": true
+ },
+ {
+  "id": "radio_havaiana_onda",
+  "path": "/Game/Audio/radio_havaiana_onda.radio_havaiana_onda",
+  "duration": 92.3,
+  "loop": true
+ },
+ {
   "id": "music_tema",
   "path": "/Game/Audio/music_tema.music_tema",
   "duration": 73.0,

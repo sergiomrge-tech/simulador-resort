@@ -25,6 +25,16 @@
    "seconds": 73.0,
    "peak": 0.397,
    "rms": 0.09
+  },
+  "radio_havaiana_lua": {
+   "seconds": 106.7,
+   "peak": 0.588,
+   "rms": 0.09
+  },
+  "radio_havaiana_onda": {
+   "seconds": 92.3,
+   "peak": 0.32,
+   "rms": 0.09
   }
  }
 }

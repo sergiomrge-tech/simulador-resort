@@ -19,12 +19,14 @@ TStatId UMareAudioWorld::GetStatId()const{RETURN_QUICK_DECLARE_CYCLE_STAT(UMareA
 const TArray<FName>& UMareAudioWorld::RadioStations()
 {
  // Aloha FM (original Hawaiian ukulele, asked by Sergio on 03/11) opens the dial; the Mare Alta theme has its own station.
- static const TArray<FName> Stations={TEXT("radio_havaiana"),TEXT("music_tema"),TEXT("reggae_praia"),TEXT("radio_reggae_roots"),TEXT("radio_calypso"),TEXT("radio_beach_pop"),TEXT("music_bossa"),TEXT("music_relax"),TEXT("off")};
+ static const TArray<FName> Stations={TEXT("radio_havaiana"),TEXT("radio_havaiana_onda"),TEXT("radio_havaiana_lua"),TEXT("music_tema"),TEXT("reggae_praia"),TEXT("radio_reggae_roots"),TEXT("radio_calypso"),TEXT("radio_beach_pop"),TEXT("music_bossa"),TEXT("music_relax"),TEXT("off")};
  return Stations;
 }
 FString UMareAudioWorld::RadioName(FName Station)
 {
  if(Station==TEXT("radio_havaiana"))return TEXT("Aloha FM · havaiana");
+ if(Station==TEXT("radio_havaiana_onda"))return TEXT("Aloha FM · onda alegre");
+ if(Station==TEXT("radio_havaiana_lua"))return TEXT("Aloha FM · luar");
  if(Station==TEXT("music_tema"))return TEXT("Tema Maré Alta");
  if(Station==TEXT("reggae_praia"))return TEXT("Reggae da Praia");
  if(Station==TEXT("radio_reggae_roots"))return TEXT("Reggae Roots");

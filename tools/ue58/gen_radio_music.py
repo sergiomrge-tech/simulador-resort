@@ -368,13 +368,94 @@ def tema():
     return tr.master(.24)
 
 
+def havaiana_lua():
+    """Aloha FM, moonlight: slack-key style fingerpicking (72 BPM, F major), alternating thumb bass, a quiet lap steel
+    answering phrases and the ipu only on the downbeat. Original composition."""
+    form = [('intro', ['F', 'F', 'Bb', 'F'], 4), ('a', ['F', 'F', 'Bb', 'F', 'C7', 'C7', 'F', 'F'], 8),
+            ('b', ['Bb', 'Bb', 'F', 'Dm', 'G7', 'G7', 'C7', 'C7'], 8), ('a', ['F', 'F', 'Bb', 'F', 'C7', 'C7', 'F', 'F'], 8),
+            ('outro', ['Bb', 'C7', 'F', 'F'], 4)]
+    bars = sum(c for _, _, c in form)
+    tr = Track(72, bars, 1961)
+    b = tr.beat
+    a_tune = [(0, 2, 72), (2, 1, 69), (3, 1, 70), (4, 4, 72), (8, 1.5, 74), (9.5, .5, 72), (10, 2, 70), (12, 4, 69),
+              (16, 2, 67), (18, 1, 69), (19, 1, 70), (20, 3, 72), (23, 1, 67), (24, 2, 69), (26, 2, 67), (28, 4, 65)]
+    b_tune = [(0, 3, 74), (3, 1, 72), (4, 4, 70), (8, 2, 69), (10, 2, 72), (12, 4, 74), (16, 2, 71), (18, 1, 74), (19, 1, 71),
+              (20, 4, 67), (24, 2, 70), (26, 2, 72), (28, 4, 76)]
+    tunes = {'a': a_tune, 'b': b_tune}
+    section_start, prev_name, prev_note = 0, None, None
+    for bar, name, chord in tr.section_bars(form):
+        notes, root = chord_notes(chord, 4)
+        t0 = bar * 4 * b
+        if name != prev_name:
+            section_start, prev_name = bar, name
+            for when, dur, note in tunes.get(name, []):
+                glide = prev_note if prev_note is not None and abs(prev_note - note) <= 3 else None
+                tr.add(tr.steel(note, dur * b + .3, glide, .16, 4.6), section_start * 4 * b + when * b, .07, .25)
+                prev_note = note
+        # Slack key: thumb alternates root and fifth on the beats, fingers pick the chord between them.
+        for i in range(4):
+            tr.add(tr.pluck(root - 12 + (0 if i % 2 == 0 else 7), .9, .35, .9965), t0 + i * b, .07, -.15)
+            tr.add(tr.pluck(notes[(i + 1) % 3] + 12, .6, .5, .9958), t0 + (i + .5) * b, .045, .2)
+            if i in (1, 3):
+                tr.add(tr.pluck(notes[2] + 12, .5, .55, .9955), t0 + (i + .75) * b, .03, .3)
+        tr.add(tr.bass(root - 24, 3.2 * b, .1), t0, .2)
+        tr.add(tr.ipu(True), t0, .11)
+    return tr.master(.3)
+
+
+def havaiana_onda():
+    """Aloha FM, sunny wave: a brighter hapa-haole shuffle (104 BPM, D major) for the afternoon, ukulele chop strums,
+    lap steel lead with slides, walking bass and ipu with shaker. Original composition."""
+    form = [('intro', ['D', 'B7', 'E7', 'A7'], 4), ('a', ['D', 'D', 'G', 'D', 'E7', 'A7', 'D', 'A7'], 8),
+            ('b', ['G', 'G', 'D', 'B7', 'E7', 'E7', 'A7', 'A7'], 8), ('a', ['D', 'D', 'G', 'D', 'E7', 'A7', 'D', 'A7'], 8),
+            ('solo', ['D', 'B7', 'E7', 'A7', 'D', 'B7', 'E7', 'A7'], 8), ('outro', ['G', 'A7', 'D', 'D'], 4)]
+    bars = sum(c for _, _, c in form)
+    tr = Track(104, bars, 1972)
+    b = tr.beat
+    swing = .62
+    a_tune = [(0, .5, 74), (.5, .5, 76), (1, 1, 78), (2, 2, 81), (4, 1, 78), (5, 1, 76), (6, 2, 74), (8, 1, 79), (9, 1, 78),
+              (10, 2, 76), (12, 2, 74), (14, 2, 71), (16, 1, 76), (17, 1, 78), (18, 2, 80), (20, 1, 81), (21, 1, 79),
+              (22, 2, 76), (24, 1.5, 78), (25.5, .5, 76), (26, 2, 74), (28, 4, 73)]
+    b_tune = [(0, 2, 79), (2, 1, 81), (3, 1, 79), (4, 2, 78), (6, 2, 74), (8, 1, 78), (9, 1, 81), (10, 2, 83), (12, 4, 78),
+              (16, 2, 80), (18, 1, 83), (19, 1, 80), (20, 4, 76), (24, 2, 79), (26, 2, 76), (28, 4, 73)]
+    solo_tune = [(0, 1, 81), (1, 1, 78), (2, 1, 74), (3, 1, 78), (4, 2, 82), (6, 2, 78), (8, 1, 80), (9, 1, 83), (10, 2, 80),
+                 (12, 2, 79), (14, 2, 76), (16, 1, 81), (17, 1, 78), (18, 2, 74), (20, 2, 75), (22, 2, 78), (24, 2, 76),
+                 (26, 2, 79), (28, 4, 81)]
+    tunes = {'a': a_tune, 'b': b_tune, 'solo': solo_tune}
+    section_start, prev_name, prev_note = 0, None, None
+    for bar, name, chord in tr.section_bars(form):
+        notes, root = chord_notes(chord, 4)
+        t0 = bar * 4 * b
+        if name != prev_name:
+            section_start, prev_name = bar, name
+            for when, dur, note in tunes.get(name, []):
+                glide = prev_note if prev_note is not None and abs(prev_note - note) <= 4 else None
+                tr.add(tr.steel(note, dur * b + .2, glide, .11, 5.6), section_start * 4 * b + when * b, .08 if name != 'solo' else .092, .18)
+                prev_note = note
+        # Chop strums on the offbeats, a full down strum on 1 and 3.
+        for when, up, g in ((0, 0, .07), (swing, 1, .045), (1 + swing, 1, .05), (2, 0, .065), (2 + swing, 1, .045), (3 + swing, 1, .05)):
+            order = notes[::-1] if up else notes
+            for k, n in enumerate(order[:3] + [order[0] + 12]):
+                tr.add(tr.pluck(n + 12, .4 if up else .55, .6, .9935), t0 + when * b + k * .008, g, -.28 + k * .15)
+        # Walking bass: root, third, fifth, sixth.
+        for i, step in enumerate((0, 4, 7, 9)):
+            tr.add(tr.bass(root - 24 + step, .9 * b, .13), t0 + i * b, .24)
+        tr.add(tr.ipu(True), t0, .17)
+        tr.add(tr.ipu(False), t0 + (1 + swing) * b, .08, -.2)
+        tr.add(tr.ipu(True), t0 + 2 * b, .12)
+        for i in range(4):
+            tr.add(tr.drum('shaker'), t0 + (i + swing) * b, .03, .45)
+    return tr.master(.22)
+
+
 def main():
     OUT.mkdir(parents=True, exist_ok=True)
     report = {}
     import sys
     pick = set(sys.argv[1:])
     for name, fn in (('radio_reggae_roots', reggae), ('radio_calypso', calypso), ('radio_beach_pop', beach_pop),
-                     ('radio_havaiana', havaiana), ('music_tema', tema)):
+                     ('radio_havaiana', havaiana), ('radio_havaiana_lua', havaiana_lua),
+                     ('radio_havaiana_onda', havaiana_onda), ('music_tema', tema)):
         if pick and name not in pick:
             continue
         data = fn()

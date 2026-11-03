@@ -333,9 +333,10 @@ Pronto e testado (02/11):
   - campainha da recepção, chaves, cama, lixo;
   - tacadas e bolas da sinuca;
   - liquidificador e coqueteleira do bar.
-- [~] P1 Rádio com músicas havaianas de ukulele ORIGINAIS (pedido do Sergio, 03/11): compor/gerar com ferramenta gratuita
+- [x] P1 Rádio com músicas havaianas de ukulele ORIGINAIS (pedido do Sergio, 03/11): compor/gerar com ferramenta gratuita
   (sem copiar músicas existentes, ex.: "Over the Rainbow" tem direitos), várias faixas leves + uma música-tema do jogo. 03/11: feitas "Aloha FM" (120 s, ukulele/steel/ipu,
-  `gen_radio_music.havaiana`) e o tema (73 s), padrão no rádio; faltam mais 2–3 faixas havaianas.
+  `gen_radio_music.havaiana`) e o tema (73 s), padrão no rádio; depois "Aloha FM · onda alegre" (104 BPM, ré maior) e
+  "Aloha FM · luar" (slack key, 72 BPM, fá maior). Cada estação toca sozinha no mesmo nível (0,066, `mare_hud radio/loops`).
 - [x] P1 Ambiente de fundo suave e relaxante (03/11): vento, mar/ondas, pássaros e gaivotas em volume baixo, sem poluição sonora.
   Feito 03/11: pássaros a cada 10–22 s (0,16) e gaivotas a cada 28–55 s (0,13) sobre vento e mar (`MareAudioWorld`).
 - [ ] P1 Mixagem final e volumes por categoria (já existem: geral, música, efeitos, ambiente).
@@ -348,8 +349,9 @@ Pronto e testado (02/11):
   - gráficos detalhados, resolução, janela, VSync, FPS, upscaler, FOV;
   - mouse e controle, remapear teclas;
   - idioma.
-- [~] P0 **Controle** (Xbox/PlayStation) em todo o jogo e nos menus. (Tradução: ver a seção 11, no final.)
+- [~] P0 **Controle** (Xbox/PlayStation) em todo o jogo e nos menus. [bloqueado-usuario] (Tradução: ver a seção 11, no final.)
   - Código feito em 02/11 (`MareGamepad.h/.cpp`, mapeamentos em `Config/DefaultInput.ini`), falta testar com controle de verdade no EXE.
+    [bloqueado-usuario] (precisa do Sergio jogando com um controle físico no executável; os testes automáticos passam).
     Mapa fixo: analógico esquerdo anda, direito olha (sensibilidade própria + inverter Y); A pula/sobe nadando; **X interage**
     (A ficou com o pulo para não pular ao falar/servir); Y ou View celular; Start pausa; LT segurar ou L3 alternar corre; B mergulha.
     Menus: foco no 1º botão ao abrir com o controle, direcional/analógico navega, A confirma, B volta/fecha, LB/RB trocam abas,

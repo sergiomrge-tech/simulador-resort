@@ -19,7 +19,7 @@ def import_radio():
     return {'sounds':len(report),'radio':['reggae_praia','music_bossa','music_relax']}
 def build():
     report=[]
-    loops={'reggae_praia','radio_reggae_roots','radio_calypso','radio_beach_pop','radio_havaiana','music_tema','music_bossa','music_relax','ocean_loop','wind_loop','rain_loop','crickets_loop','leaves_soft','underwater_loop'}
+    loops={'reggae_praia','radio_reggae_roots','radio_calypso','radio_beach_pop','radio_havaiana','radio_havaiana_lua','radio_havaiana_onda','music_tema','music_bossa','music_relax','ocean_loop','wind_loop','rain_loop','crickets_loop','leaves_soft','underwater_loop'}
     for source in sorted((ROOT/'SourceArt/Audio').glob('*.wav')):
         path='/Game/Audio/'+source.stem
         wave=unreal.load_asset(path)
