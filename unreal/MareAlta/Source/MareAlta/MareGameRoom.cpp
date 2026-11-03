@@ -13,6 +13,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/PlayerController.h"
 #include "InputCoreTypes.h"
+#include "HAL/IConsoleManager.h"
 #include "Misc/FileHelper.h"
 #include "Misc/Paths.h"
 #include "Serialization/JsonSerializer.h"
@@ -25,6 +26,11 @@ namespace
   {-MarePool::L/2,MarePool::W/2},{0,MarePool::W/2+.01},{MarePool::L/2,MarePool::W/2}};
  UMareSimulation* Sim(const UWorld* World){return World && World->GetGameInstance()?World->GetGameInstance()->GetSubsystem<UMareSimulation>():nullptr;}
 }
+
+static TAutoConsoleVariable<int32> CVarPoolAutoPlay(TEXT("mare.PoolAutoPlay"),0,TEXT("QA: the shot AI also plays the player's turns at the pool table."));
+// QA: "mare.PoolQA" starts a friendly match for the first player at the pool table (with mare.PoolAutoPlay 1 it plays itself).
+static FAutoConsoleCommandWithWorld PoolQACommand(TEXT("mare.PoolQA"),TEXT("Starts a pool match for player 0 (QA)."),
+ FConsoleCommandWithWorldDelegate::CreateLambda([](UWorld* World){if(auto Room=World?World->GetSubsystem<UMareGameRoom>():nullptr)Room->StartMatch(World->GetFirstPlayerController(),0);}));
 
 TStatId UMareGameRoom::GetStatId() const{RETURN_QUICK_DECLARE_CYCLE_STAT(UMareGameRoom,STATGROUP_Tickables);}
 
@@ -114,7 +120,7 @@ bool UMareGameRoom::PathClear(const FVector2D& A,const FVector2D& B,int32 Ignore
 void UMareGameRoom::PlanGuestShot(double& Angle,double& Speed,uint32 Seed) const
 {
  FRandomStream Rng(Seed);const FVector2D CueP=Balls[0].P;double Best=-1;Angle=0;Speed=2;
- for(int32 I=1;I<16;++I){if(Balls[I].bIn || (I==8 && Score[1]<3))continue;
+ for(int32 I=1;I<16;++I){if(Balls[I].bIn || (I==8 && Score[Turn]<3))continue;   // plans for whoever's turn it is
   for(const auto& Pk:Pockets){
    const FVector2D ToPocket=(Pk-Balls[I].P).GetSafeNormal();const FVector2D Ghost=Balls[I].P-ToPocket*2*R;
    const FVector2D ToGhost=(Ghost-CueP);const double Cut=FVector2D::DotProduct(ToGhost.GetSafeNormal(),ToPocket);
@@ -153,7 +159,7 @@ void UMareGameRoom::SpawnProps()
 
 void UMareGameRoom::StartMatch(APlayerController* Controller,double InStake)
 {
- if(bPlaying || !Controller)return;Player=Controller;Stake=InStake;Rack();bPlaying=true;bShotRunning=false;Charge=0;AimAngle=0;
+ if(bPlaying || !Controller)return;Player=Controller;Stake=InStake;Rack();bPlaying=true;Shots=0;bShotRunning=false;Charge=0;AimAngle=0;
  // The guest opponent stands at the foot of the table.
  FActorSpawnParameters Params;Params.SpawnCollisionHandlingOverride=ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
  Guest=GetWorld()->SpawnActor<AMarePerson>(Table.TransformPosition(FVector(L*50+70,40,90)),Table.Rotator()+FRotator(0,180,0),Params);
@@ -169,6 +175,7 @@ void UMareGameRoom::StartMatch(APlayerController* Controller,double InStake)
 void UMareGameRoom::EndMatch(const FString& Message)
 {
  if(!bPlaying)return;bPlaying=false;
+ UE_LOG(LogTemp,Display,TEXT("MARE_POOL match end winner=%d score=%d-%d shots=%d"),Winner,Score[0],Score[1],Shots);
  if(auto PC=Player.Get()){PC->SetViewTargetWithBlend(PC->GetPawn(),.5f);PC->ResetIgnoreMoveInput();PC->ResetIgnoreLookInput();if(auto Pawn=PC->GetPawn())Pawn->SetActorHiddenInGame(false);}
  if(IsValid(Guest))Guest->Destroy();Guest=nullptr;if(IsValid(Camera))Camera->Destroy();Camera=nullptr;if(Cue)Cue->SetActorHiddenInGame(true);
  if(auto S=Sim(GetWorld())){
@@ -236,6 +243,9 @@ void UMareGameRoom::Tick(float DeltaSeconds)
    if(bStill){bShotRunning=false;ResolveShot();
     if(Winner>=0){EndMatch(Winner==0?TEXT("Você venceu a partida de sinuca!"):TEXT("O hóspede venceu a partida de sinuca."));return;}
     GuestDelay=1.2f;}}
+  else if(Turn==0 && CVarPoolAutoPlay.GetValueOnGameThread()){
+   // QA: the AI plays the player's turns too, so a whole match runs to the end on its own.
+   if((GuestDelay-=DeltaSeconds)<=0){double Angle=0,Speed=0;PlanGuestShot(Angle,Speed,GFrameNumber*7919);AimAngle=Angle;Shoot(Angle,Speed);bShotRunning=true;++Shots;}}
   else if(Turn==0){
    float DX=0,DY=0;PC->GetInputMouseDelta(DX,DY);AimAngle+=DX*.004;
    // Gamepad: either stick aims (squared curve for fine shots), RT held charges like the mouse button.
@@ -243,10 +253,10 @@ void UMareGameRoom::Tick(float DeltaSeconds)
    AimAngle+=MareGamepad::Curve(Stick,0.f)*MareGamepad::AimRadiansPerSecond*DeltaSeconds;
    if(PC->IsInputKeyDown(EKeys::LeftMouseButton) || PC->IsInputKeyDown(EKeys::Gamepad_RightTrigger) || PC->GetInputAnalogKeyState(EKeys::Gamepad_RightTriggerAxis)>.3f){bCharging=true;Charge=FMath::Min(1.f,Charge+DeltaSeconds/1.2f);}
    else if(bCharging){bCharging=false;const FVector At=Table.GetLocation()+FVector(0,0,80);UMareAudioWorld::Action(this,TEXT("pool_cue_hit"),&At,.4f+.6f*Charge);
-    Shoot(AimAngle,.5+5.5*Charge);Charge=0;bShotRunning=true;}}
+    Shoot(AimAngle,.5+5.5*Charge);Charge=0;bShotRunning=true;++Shots;}}
   else if((GuestDelay-=DeltaSeconds)<=0){double Angle=0,Speed=0;PlanGuestShot(Angle,Speed,FCrc::StrCrc32(*FString::Printf(TEXT("%d-%d"),Score[0],Score[1]))+GFrameNumber);
    AimAngle=Angle;{const FVector At=Table.GetLocation()+FVector(0,0,80);UMareAudioWorld::Action(this,TEXT("pool_cue_hit"),&At,FMath::Clamp(float(Speed)/6.f,.4f,1.f));}
-   Shoot(Angle,Speed);bShotRunning=true;}
+   Shoot(Angle,Speed);bShotRunning=true;++Shots;}
  }
  UpdateProps(DeltaSeconds);
 }

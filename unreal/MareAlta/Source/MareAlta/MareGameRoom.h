@@ -45,7 +45,8 @@ public:
  bool Moving() const;
  /** After the balls stop: score, fouls, turn and winner. */
  void ResolveShot();
- /** Guest AI: best pocketable ball (ghost-ball aim) with a small error; falls back to a safe tap. */
+ /** Shot AI for the side to play (the guest, or the player under mare.PoolAutoPlay): best pocketable ball (ghost-ball
+  *  aim) with a small error; falls back to a safe tap. */
  void PlanGuestShot(double& Angle,double& Speed,uint32 Seed) const;
  TArray<int32> PottedThisShot;
  /** Sound events of the last Step (strongest ball-ball and cushion impact speeds, balls dropped). */
@@ -59,6 +60,7 @@ private:
  float Charge=0.f,GuestDelay=0.f;
  double AimAngle=0,Stake=0;
  bool bScratch=false;
+ int32 Shots=0;
  FTransform Table=FTransform::Identity;
  TWeakObjectPtr<APlayerController> Player;
  UPROPERTY() TObjectPtr<AStaticMeshActor> TableActor;

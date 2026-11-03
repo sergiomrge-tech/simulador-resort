@@ -98,7 +98,9 @@ Pronto e testado (02/11):
   `MareRestaurantWorld.cpp`, `Content/Data/restaurant.json`, teste `MareAlta.Gameplay.HotelRestaurant`.
   Falta: pratos visíveis nas mesas e na bandeja, decoração do evento em cena.
 - [~] P1 **Salão de jogos** (02/11):
-  - [ ] partida de sinuca jogada até o fim no jogo (física e IA testadas; falta jogar uma partida inteira e conferir);
+  - [x] partida de sinuca jogada até o fim (02/11): no Play com `mare.PoolAutoPlay 1` + `mare.PoolQA` (hóspede venceu 4×3 em
+    11 tacadas, placar e câmera conferidos, foto `sinuca-partida-20261102.jpg`) e teste `MareAlta.Gameplay.PoolFullMatch`
+    (40 partidas completas com a física real: todas terminam, média 6,3 tacadas, bolas sempre na mesa, os dois lados vencem);
   - [x] pebolim (modelo bpy `tools/ue58/gen_game_room_extras.py`) com partida rápida de 3 rodadas contra um hóspede;
   - [x] 2 fliperamas "Maré Attack" com tela e letreiro acesos, partida rápida de 3 rodadas;
   - [x] hóspedes jogando das 18h às 23h e renda das fichas (mais jogadores com o hotel cheio).

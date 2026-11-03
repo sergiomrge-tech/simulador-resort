@@ -315,6 +315,12 @@ def staff_qa(arg):
 
 
 def run(action, arg=''):
+    if action == 'cmd':
+        # PIE console command(s), separated by ';' (QA: mare.PoolAutoPlay 1; mare.PoolQA).
+        world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()
+        for c in arg.split(';'):
+            unreal.SystemLibrary.execute_console_command(world, c.strip())
+        return 'ok'
     if action == 'staff':
         return staff_qa(arg)
     if action == 'loops':

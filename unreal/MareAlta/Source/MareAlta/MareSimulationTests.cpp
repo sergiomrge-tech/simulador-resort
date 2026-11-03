@@ -894,3 +894,26 @@ bool FMareStaffShiftsTest::RunTest(const FString& Parameters)
  IFileManager::Get().DeleteDirectory(*Sim->SaveDirectory,false,true);
  Sim->RemoveFromRoot();Instance->RemoveFromRoot();return true;
 }
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FMarePoolFullMatchTest,"MareAlta.Gameplay.PoolFullMatch",EAutomationTestFlags::EditorContext|EAutomationTestFlags::EngineFilter)
+bool FMarePoolFullMatchTest::RunTest(const FString& Parameters)
+{
+ // Whole matches with the real physics and rules, both sides played by the shot AI: every match must end with a
+ // winner in a reasonable number of shots, the balls never leave the table, and both sides can win.
+ auto Room=NewObject<UMareGameRoom>();Room->AddToRoot();namespace R=MarePool;
+ int32 Wins[2]={0,0},MaxShots=0,TotalShots=0;bool bInside=true,bEnded=true;const int32 Matches=40;
+ for(int32 M=0;M<Matches;++M){Room->Rack();int32 Shots=0;
+  while(Room->Winner<0 && Shots<300){double Angle=0,Speed=0;Room->PlanGuestShot(Angle,Speed,uint32(M*1000+Shots));
+   // Players break hard; later shots use the AI's speed.
+   Room->Shoot(Shots==0?FMath::DegreesToRadians(FMath::FRandRange(-1.5,1.5)):Angle,Shots==0?5.5:Speed);++Shots;
+   double T=0;while(Room->Step(1./30) && T<40)T+=1./30;
+   for(const auto& B:Room->Balls)if(!B.bIn)bInside&=FMath::Abs(B.P.X)<=R::L/2+.031 && FMath::Abs(B.P.Y)<=R::W/2+.031;
+   Room->ResolveShot();}
+  if(Room->Winner<0){bEnded=false;AddError(FString::Printf(TEXT("Match %d did not end after %d shots (%d-%d)"),M,Shots,Room->Score[0],Room->Score[1]));}
+  else ++Wins[Room->Winner];
+  MaxShots=FMath::Max(MaxShots,Shots);TotalShots+=Shots;}
+ AddInfo(FString::Printf(TEXT("Pool: %d matches, wins %d/%d, average %.1f shots, longest %d"),Matches,Wins[0],Wins[1],TotalShots/double(Matches),MaxShots));
+ TestTrue(TEXT("Every match ends"),bEnded);TestTrue(TEXT("Balls stay on the table"),bInside);
+ TestTrue(TEXT("Both sides win sometimes"),Wins[0]>0 && Wins[1]>0);TestTrue(TEXT("Matches are not endless"),TotalShots/double(Matches)<80);
+ Room->RemoveFromRoot();return true;
+}
