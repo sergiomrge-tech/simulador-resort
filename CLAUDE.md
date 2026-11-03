@@ -406,3 +406,11 @@ Interchange reaproveita materiais/texturas por NOME no projeto inteiro: modelos 
 
 PC travou por falta de memória (log do Windows: "arquivo de paginação é muito pequeno"): build em lote de MetaHumans no editor + textura 8K em numpy float32 + render Cycles ao mesmo tempo esgotaram 32 GB + paginação. Build de MetaHuman: lotes de no máximo 5, salvando cada um (`save_directory`) e reiniciando o editor entre lotes; nada pesado em paralelo. Build com roupa apaga a pele sob a roupa (corpo com buracos): banhistas usam variante `<nome>_Swim` sem Outfits e com show_top_underwear desligado via `commit_skin_settings` (skin_settings é somente leitura no Python); a calcinha cinza é assada em T_Body_BC e sai com `tools/ue58/mh_skin_underwear.py`. Rig facial e texturas exigem login Epic no navegador (o editor não guarda a credencial: pedir tudo num só login com `mh_cloudall`). O venv bpy chegou a ficar sem `numpy/__init__.py` e `_bpy_types.py`: reinstalar `numpy==1.26.4` e `bpy==5.0.1` com uv.
 
+## UE5.8 — MetaHuman deslizando (03/11)
+
+O esqueleto que anima o MetaHuman (GetMesh) fica oculto e o corpo visível o segue por leader pose. Com
+`VisibilityBasedAnimTickOption=OnlyTickPoseWhenRendered` (otimização dos pedestres da vila) o esqueleto oculto nunca
+conta como renderizado: a pose congela e o boneco desliza sem mexer pernas nem braços (11 de 14 pedestres). Rig oculto
+de MetaHuman usa sempre `AlwaysTickPoseAndRefreshBones`. Conferir com a auditoria de marcha (duas amostras: posição
+mudou e pés/mãos em relação ao corpo não mudaram = deslizando), não só pela pose escolhida.
+

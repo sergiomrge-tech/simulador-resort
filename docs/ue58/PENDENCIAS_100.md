@@ -16,6 +16,25 @@ Prioridade:
 
 Marcar `[x]` só depois de testado no jogo, com foto ou teste automático.
 
+## 0. Correção geral antes de novas mecânicas (pedido do Sergio, 03/11)
+Nada de mecânica nova até esta seção fechar. Cada passada roda uma auditoria com dados, corrige o que achar e anexa a prova.
+- [x] P0 Movimentação natural: auditoria de marcha (`gait_audit.py`: quem anda mexe pés e mãos) em todos os personagens,
+  dia/noite, vila/praia/hotel/quiosque/equipe; 0 deslizando. (Causa achada: esqueleto oculto do MetaHuman com
+  `OnlyTickPoseWhenRendered`, 11 de 14 pedestres deslizando.) Corrigido (`AMarePerson::SetMetaHuman` força
+  `AlwaysTickPoseAndRefreshBones`; a vila só otimiza quem não é MetaHuman). Prova 03/11: 6 rodadas, dia, noite e quiosque
+  aberto, 11–14 pessoas andando por rodada (moradores, garçom, guia, camareira, piscineiro, cliente), 0 deslizando.
+- [ ] P0 Eventos cômicos já feitos (HUM-001/002/004/005/006/007/008) conferidos por captura e estabilizados.
+- [ ] P0 Log limpo: PIE de vários minutos sem `Error`/`Ensure`/avisos de material/`missing`; testes automáticos 100%.
+- [ ] P0 Pessoas: postura sentada/em pé/andando, roupas sem atravessar, cabelos, calçados; ninguém dentro de móvel.
+- [ ] P0 Objetos: flutuando, primitivos, low poly e colisões (auditorias `float_audit`/`primitives`/`lowpoly`) sem novidades.
+- [ ] P0 Ciclo do quiosque completo no PIE (abrir, pedido, entrega, pagamento, limpeza, fechar, dormir, salvar/carregar).
+- [ ] P0 Sistemas já feitos revisados no PIE: bar, piscina, pousada, hotel, negócios, passeios, festas, salão de jogos,
+  celular (todos os apps), clima, noite, mar, natação, áudio.
+- [ ] P0 Varredura visual final por área (montagem de capturas analisadas item a item) e desempenho no editor.
+- [ ] P0 Simulação do jogo inteiro depois das auditorias acima: perfil novo, avançando todas as etapas (dias, expansões,
+  capítulos, negócios até o Grand Hotel), registrando cada erro em `docs/ue58/CHECKLIST_SIMULACAO.md`.
+- [ ] P0 Corrigir TODOS os itens de `CHECKLIST_SIMULACAO.md` (com prova) antes de qualquer mecânica nova.
+
 ## 1. Defeitos conhecidos (corrigir primeiro)
 - [x] P0 **Biquíni novo (top faixa e parte de baixo até a virilha)** importado e conferido nas 6 banhistas
   (Ada, Asha, Zuri, Celeste, Jelena, Tuya), 02/11.
@@ -27,7 +46,7 @@ Marcar `[x]` só depois de testado no jogo, com foto ou teste automático.
   SRMF mantinha rugosidade/especular de tecido (255/127 contra ~160/160 da pele). `mh_skin_underwear.py` agora preenche
   também o SRMF; 7 corpos de banho reimportados; foto `docs/ue58/graphics-reference/pele-banhistas-20261102.jpg`.
 - [x] P1 Zuri careca (preset da Epic): retirada dos elencos (02/11) até ganhar cabelo.
-- [ ] P1 Vasos de pachira do saguão do hotel com colisão de copa enorme (bloqueia a mira). Corrigir a colisão
+- [ ] P1 Vasos de pachira do saguão do hotel com colisão de copa enorme (bloqueia a mira). Corrigir a colisão (03/11: Sergio autorizou mexer nos arquivos do saguão)
   quando o Sergio liberar esses arquivos, que têm mudanças dele.
 - [x] P1 Painel da negociação: detalhes numa linha própria e botões em duas fileiras, conferido no jogo (02/11).
 - [x] P2 Bainha da sunga boxer marcada e furos no cós (02/11): a sunga agora é uma peça única copiada da pele entre o
@@ -166,7 +185,10 @@ Pronto e testado (02/11):
   recebem a cor do papel (03/11, foto `roupas-cores-festa-20261103.jpg`).
 - [x] P0 Calçados: chinelo, sandália de tiras, tênis e sapato social com saltinho (02/11), sorteados por papel
   (`metahumans.json` → `shoes`); sapato social conferido no saguão do hotel.
-- [ ] P1 Mais banhistas: mulheres e homens de outras idades e tipos de corpo.
+- [ ] P1 Mais banhistas: mulheres e homens de outras idades e tipos de corpo. (03/11: login Epic pelo botão Google no Chrome, conta do Sergio já logada, autorizado)
+- [ ] P0 Verificar TODOS os personagens da ilha (vila, praia, hotel, quiosque, equipe, eventos; MetaHumans e os demais)
+  com movimentação natural: quem anda mexe pernas e braços, ninguém desliza parado nem congela (03/11, pedido do Sergio:
+  banhista MetaHuman do guarda-sol deslizou sem animar; causa: esqueleto oculto com OnlyTickPoseWhenRendered).
 - [ ] P1 Animações (03/11): 7 clipes gratuitos de captura do Fab (Animation Shopee) importados
   (`mare_metahuman.import_mocap`, dois passes, `frame_alignment` SNAP_TO_CLOSEST) e redirecionados (`retarget_mocap`, só
   FK). Causa dos bonecos tortos: o esqueleto da captura olha para -Y e a MetaHuman para +Y; o redirecionador exige os
@@ -323,8 +345,8 @@ Fazer depois de todo o resto, quando os textos estiverem estáveis.
 - [ ] **Inglês** completo.
 - [ ] Vários idiomas (os que mais vendem na Steam): espanhol, chinês simplificado, russo, alemão, francês,
   japonês, coreano e português de Portugal; fontes com suporte a CJK e cirílico.
-- [ ] Revisão por falante nativo de cada idioma e teste de layout (textos maiores em alemão/russo não podem cortar).
-- [ ] Página da Steam e conquistas nos mesmos idiomas.
+- [ ] Revisão por falante nativo de cada idioma e teste de layout (textos maiores em alemão/russo não podem cortar). [bloqueado-usuario] (precisa de revisores nativos; o teste de layout fica junto da tradução)
+- [ ] Página da Steam e conquistas nos mesmos idiomas. [bloqueado-usuario] (precisa da conta Steamworks do Sergio)
 
 ## 12. Ilha do passeio de barco (pedido do Sergio em 02/11, para o final)
 - [ ] Ilha circular ao fundo, no mar, destino do passeio de barco: bastante árvores e vegetação (nada de low poly),

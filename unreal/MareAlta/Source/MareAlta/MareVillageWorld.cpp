@@ -35,7 +35,8 @@ AMarePerson* UMareVillageWorld::SpawnPerson(FVector Position,int32 Variant,const
  Person->PersonName=Name;Person->bAmbient=true;Person->GetCharacterMovement()->MaxWalkSpeed=105+Variant*7;
  Person->GetCapsuleComponent()->SetCapsuleRadius(34);
  Person->GetCharacterMovement()->AvoidanceConsiderationRadius=300;Person->GetCharacterMovement()->SetAvoidanceEnabled(true);
- Person->GetMesh()->VisibilityBasedAnimTickOption=EVisibilityBasedAnimTickOption::OnlyTickPoseWhenRendered;
+ // Off-screen people skip their pose; not a MetaHuman, whose hidden rig drives the visible body (AMarePerson::SetMetaHuman).
+ if(Person->MetaHuman.IsEmpty())Person->GetMesh()->VisibilityBasedAnimTickOption=EVisibilityBasedAnimTickOption::OnlyTickPoseWhenRendered;
  Person->Tags.Add(TEXT("MareVillagePerson"));return Person;
 }
 void UMareVillageWorld::Setup()

@@ -158,6 +158,9 @@ bool AMarePerson::SetMetaHuman(const FString& Name)
  for(const FString& Clip:Wanted)
   if(auto Anim=LoadObject<UAnimSequence>(nullptr,*FString::Printf(TEXT("/Game/People/Animations/MH_%s.MH_%s"),*Clip,*Clip)))Clips.Add(Clip,Anim);
  GetMesh()->SetVisibility(false,false);
+ // The hidden rig is never rendered itself: it must tick and refresh its bones always, or the visible body that
+ // follows it freezes and the person glides along without moving legs or arms.
+ GetMesh()->VisibilityBasedAnimTickOption=EVisibilityBasedAnimTickOption::AlwaysTickPoseAndRefreshBones;
  if(MetaHumanBody)MetaHumanBody->DestroyComponent();
  MetaHumanBody=NewObject<UChildActorComponent>(this);AddInstanceComponent(MetaHumanBody);
  MetaHumanBody->SetupAttachment(GetMesh());MetaHumanBody->SetChildActorClass(Look);MetaHumanBody->RegisterComponent();
