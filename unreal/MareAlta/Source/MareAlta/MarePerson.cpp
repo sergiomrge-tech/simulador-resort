@@ -98,10 +98,11 @@ bool AMarePerson::SetAppearance(int32 AppearanceVariant)
 static const TCHAR* FabGarmentPart(const FString& Path)
 {
  if(Path.Contains(TEXT("DefaultGarment")))return Path.Contains(TEXT("_Short"))?TEXT("short"):TEXT("shirt");
- if(!Path.Contains(TEXT("/Clothing/MI_WI_")))return nullptr;
- for(const TCHAR* Word:{TEXT("_shs_"),TEXT("Flipflops"),TEXT("Flats"),TEXT("Loafers"),TEXT("Casual_")})if(Path.Contains(Word))return nullptr;
- if(Path.Contains(TEXT("_btm"))|| Path.Contains(TEXT("Shorts")))return TEXT("short");
- return TEXT("shirt");
+ const bool bOutfit=Path.Contains(TEXT("/Clothing/MI_WI_"))|| Path.Contains(TEXT("/MetaOutfits/"))|| Path.Contains(TEXT("_Casual_"));
+ if(!bOutfit)return nullptr;
+ for(const TCHAR* Word:{TEXT("_shs_"),TEXT("Flipflops"),TEXT("Flats"),TEXT("Loafers"),TEXT("Slipper"),TEXT("Shoe"),TEXT("Sneaker")})if(Path.Contains(Word))return nullptr;
+ if(Path.Contains(TEXT("_btm"))|| Path.Contains(TEXT("Shorts"))|| Path.Contains(TEXT("Pant")))return TEXT("short");
+ return TEXT("shirt");   // tops, t-shirts, dresses, casual shirts, swimsuits
 }
 bool AMarePerson::SetMetaHuman(const FString& Name)
 {
@@ -164,7 +165,10 @@ bool AMarePerson::SetMetaHuman(const FString& Name)
     if(!Mat)continue;const TCHAR* Part=FabGarmentPart(Mat->GetPathName());if(!Part)continue;const TArray<TSharedPtr<FJsonValue>>* List=nullptr;
     if(!(*Palette)->TryGetArrayField(Part,List) || !List->Num())continue;
     if(auto M=Garment->CreateDynamicMaterialInstance(I)){const FLinearColor C=Pick(*List,Part);
-     for(const TCHAR* P:{TEXT("diffuse_color_1"),TEXT("diffuse_color_2"),TEXT("B_diffuse_color_1")})M->SetVectorParameterValue(P,C);}}}
+     // Parameter names differ per outfit: Epic garments (diffuse_color_*), the mini dress (Color1/2, sleeves) and the
+     // casual sets (Color_Base); unknown names are ignored by the material.
+     for(const TCHAR* P:{TEXT("diffuse_color_1"),TEXT("diffuse_color_2"),TEXT("B_diffuse_color_1"),TEXT("Color1"),TEXT("Color2"),
+      TEXT("Color1Sleeve"),TEXT("Color2Sleeve"),TEXT("Color_Base")})M->SetVectorParameterValue(P,C);}}}
  // Footwear fitted in Blender to a woman's or a man's MetaHuman foot (tools/ue58/gen_mh_shoes.py): nobody barefoot.
  // Builds dressed with Fab outfits (Content/Data/outfits_fab.json) bring their own shoes: no generated pair then.
  if(Shoes){Shoes->DestroyComponent();Shoes=nullptr;}
@@ -172,7 +176,7 @@ bool AMarePerson::SetMetaHuman(const FString& Name)
  if(AActor* Child=MetaHumanBody?MetaHumanBody->GetChildActor():nullptr){TArray<UMeshComponent*> Parts;Child->GetComponents(Parts);
   for(UMeshComponent* Part:Parts)for(int32 I=0;I<Part->GetNumMaterials();++I)if(const UMaterialInterface* Mat=Part->GetMaterial(I)){
    const FString Path=Mat->GetPathName();
-   for(const TCHAR* Word:{TEXT("_shs_"),TEXT("Flipflops"),TEXT("Flats"),TEXT("Loafers"),TEXT("Sneaker"),TEXT("Shoe"),TEXT("Casual_")})if(Path.Contains(Word))bOutfitShoes=true;}}
+   for(const TCHAR* Word:{TEXT("_shs_"),TEXT("Flipflops"),TEXT("Flats"),TEXT("Loafers"),TEXT("Sneaker"),TEXT("Shoe"),TEXT("Slipper"),TEXT("Casual_")})if(Path.Contains(Word))bOutfitShoes=true;}}
  if(bOutfitShoes){PlayPose(TEXT("Idle"));return true;}
  const TSharedPtr<FJsonObject>* ShoeKinds=nullptr;FString Kind;
  const TArray<TSharedPtr<FJsonValue>>* KindList=nullptr;

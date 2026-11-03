@@ -37,7 +37,10 @@ void UMareEventsWorld::Tick(float DeltaSeconds)
  auto Ground=[this](FVector At){FHitResult Hit;if(GetWorld()->LineTraceSingleByChannel(Hit,At+FVector(0,0,600),At-FVector(0,0,800),ECC_Visibility))At.Z=Hit.ImpactPoint.Z;return At;};
  // Local layout in metres around the centre (x east, y north), yaw in degrees.
  auto Put=[&](const TCHAR* Name,float X,float Y,float Yaw,float Lift=0,float Scale=1){
-  if(auto Mesh=LoadObject<UStaticMesh>(nullptr,*FString::Printf(TEXT("/Game/Custom/Festival/%s/%s.%s"),Name,Name,Name))){
+  // A model from Fab (<name>_fab, tools/ue58/prep_fab_food.py) replaces the generated one when it exists.
+  auto Load=[](const FString& N){return LoadObject<UStaticMesh>(nullptr,*FString::Printf(TEXT("/Game/Custom/Festival/%s/%s.%s"),*N,*N,*N));};
+  UStaticMesh* Found=Load(FString(Name)+TEXT("_fab"));if(!Found)Found=Load(Name);
+  if(auto Mesh=Found){
    auto A=GetWorld()->SpawnActor<AStaticMeshActor>(Ground(Centre+FVector(X*100,Y*100,0))+FVector(0,0,Lift),FRotator(0,Yaw,0));
    A->SetMobility(EComponentMobility::Movable);A->SetActorScale3D(FVector(Scale));A->GetStaticMeshComponent()->SetStaticMesh(Mesh);A->GetStaticMeshComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);Props.Add(A);}};
  const bool bDeco=Want.EndsWith(TEXT("+deco"));

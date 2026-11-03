@@ -161,8 +161,8 @@ Pronto e testado (02/11):
   plano em `Content/Data/outfits_fab.json`, script `tools/ue58/dress_metahumans.py`, lotes de 5 builds por sessão).
   As peças `_top`/`_btm` recebem as cores de cada papel (`metahumans.json` → `clothes`), os sapatos do Fab substituem
   os gerados; 3 banhistas de maiô Aeron (`<Nome>_Swim_Aeron`). Texturas das roupas limitadas a 1024 (estouro de memória
-  de vídeo com 4K). Lista e processo em `docs/ue58/ROUPAS_FAB.md`; QA 104/104, testes 26/26. Pendente: tingir também
-  vestido e conjuntos casuais (hoje mantêm as cores originais); conferir de perto cada papel no Play.
+  de vídeo com 4K). Lista e processo em `docs/ue58/ROUPAS_FAB.md`; QA 104/104, testes 26/26. Vestido e conjuntos casuais também
+  recebem a cor do papel (03/11, foto `roupas-cores-festa-20261103.jpg`).
 - [x] P0 Calçados: chinelo, sandália de tiras, tênis e sapato social com saltinho (02/11), sorteados por papel
   (`metahumans.json` → `shoes`); sapato social conferido no saguão do hotel.
 - [ ] P1 Mais banhistas: mulheres e homens de outras idades e tipos de corpo.
@@ -257,8 +257,9 @@ Regra do projeto: nenhum asset low poly no jogo.
   Antes: a lenha (`festa_campfire_logs`, vinda da Godot) eram poucos troncos lisos e a chama
   ficou com cara de cone. Refazer com toras de verdade (casca com relevo, pontas cortadas e queimadas, brasas e cinzas
   na base, pedras em volta) e um fogo convincente (chamas em camadas com movimento, faíscas e fumaça em partículas).
-- [ ] Revisar os outros modelos trazidos da versão Godot para as festas (cabine do DJ, faixa) e qualquer outro prop com
-  poucas faces que aparecer na varredura visual final.
+- [~] Revisar os outros modelos trazidos da versão Godot para as festas: barraca trocada pela barraca listrada do Fab
+  (`festa_stall_fab`, 03/11); cabine do DJ, faixa e bandeirinhas sem substituto gratuito adequado no Fab (refazer ou
+  procurar de novo); e qualquer outro prop com poucas faces que aparecer na varredura visual final.
 
 ## 14. Eventos cômicos e personagens memoráveis (pedido do Sergio em 31/10, issue #4; para o final)
 Especificação completa em `docs/ue58/HUMOR_EVENTOS_COMICOS.md`

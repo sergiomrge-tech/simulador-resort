@@ -192,6 +192,28 @@ def furniture(src, name, height, tris):
     print('WROTE', name, sum(len(p.vertices) - 2 for p in o.data.polygons), 'tris', tuple(round(v, 3) for v in bounds()[1] - bounds()[0]))
 
 
+def stall():
+    """Party stall (quermesse/junina): the Fab "Japanese Market Stall" (striped awning, bamboo walls) without its
+    concrete ground slab, decimated; replaces the generated festa_stall."""
+    reset()
+    bpy.ops.import_scene.gltf(filepath='D:/CodexTemp/fab/festa/japanese_market_stall.glb')
+    for o in list(meshes()):
+        lo = [o.matrix_world @ Vector(c) for c in o.bound_box]
+        dz = max(p.z for p in lo) - min(p.z for p in lo)
+        dx = max(p.x for p in lo) - min(p.x for p in lo)
+        if dz < .03 and dx > 3:          # the flat slab under the stall
+            bpy.data.objects.remove(o, do_unlink=True)
+    o = join_all('festa_stall_fab')
+    decimate(o, 80000)
+    lo, hi = bounds()
+    o.location -= Vector(((lo.x + hi.x) / 2, (lo.y + hi.y) / 2, lo.z))
+    bpy.ops.object.transform_apply(location=True)
+    unique('festa_stall_fab', 1024)
+    os.makedirs(OUT, exist_ok=True)
+    bpy.ops.export_scene.gltf(filepath=f'{OUT}/festa_stall_fab.glb', export_format='GLB', export_apply=True)
+    print('WROTE stall', sum(len(p.vertices) - 2 for p in o.data.polygons), 'tris', tuple(round(v, 3) for v in bounds()[1] - bounds()[0]))
+
+
 def acai():
     reset()
     bpy.ops.import_scene.gltf(filepath=f'{SRC}/wooden_bowl.glb')
@@ -228,7 +250,7 @@ if __name__ == '__main__':
     only = sys.argv[sys.argv.index('--') + 1:] if '--' in sys.argv else []
     if only:
         for job in only:
-            {'coco': coco, 'acai': acai, 'campfire': campfire,
+            {'coco': coco, 'acai': acai, 'campfire': campfire, 'stall': stall,
              'stool': lambda: furniture('rattan_bar_stool.glb', 'fab_rattan_bar_stool', .874, 45000),
              'sofa': lambda: furniture('woven_rattan_sofa.glb', 'fab_rattan_sofa', .80, 60000), 'morango': lambda: sorvete('morango', (.95, .45, .55)), 'chocolate': lambda: sorvete('chocolate', (.42, .24, .14))}[job]()
         raise SystemExit
