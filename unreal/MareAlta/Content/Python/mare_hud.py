@@ -47,6 +47,37 @@ def import_models(folder, dest):
     return out
 
 
+def footprint_material():
+    """The glTF importer's BLEND material leaves the alpha input unwired (Interchange: "AlphaMode invalid for
+    MF_Default_Body"); rebuild it by hand: translucent, colour + opacity from the RGBA mask, normal map of the dent."""
+    mel = unreal.MaterialEditingLibrary
+    folder = '/Game/Custom/Beach/beach_footprint'
+    m = unreal.load_asset(f'{folder}/beach_footprint.beach_footprint')
+    for e in list(mel.get_material_expressions(m)) if hasattr(mel, 'get_material_expressions') else []:
+        mel.delete_material_expression(m, e)
+    m.set_editor_property('blend_mode', unreal.BlendMode.BLEND_TRANSLUCENT)
+    m.set_editor_property('translucency_lighting_mode', unreal.TranslucencyLightingMode.TLM_SURFACE)
+    m.set_editor_property('used_with_instanced_static_meshes', True)
+    col = mel.create_material_expression(m, unreal.MaterialExpressionTextureSample, -400, 0)
+    col.texture = unreal.load_asset(f'{folder}/beach_footprint_color')
+    nor = mel.create_material_expression(m, unreal.MaterialExpressionTextureSample, -400, 300)
+    tex = unreal.load_asset(f'{folder}/beach_footprint_normal')
+    tex.set_editor_property('compression_settings', unreal.TextureCompressionSettings.TC_NORMALMAP)
+    tex.set_editor_property('srgb', False)
+    unreal.EditorAssetLibrary.save_loaded_asset(tex, False)
+    nor.texture = tex
+    nor.set_editor_property('sampler_type', unreal.MaterialSamplerType.SAMPLERTYPE_NORMAL)
+    rough = mel.create_material_expression(m, unreal.MaterialExpressionConstant, -200, 200)
+    rough.set_editor_property('r', .95)
+    mel.connect_material_property(col, 'RGB', unreal.MaterialProperty.MP_BASE_COLOR)
+    mel.connect_material_property(col, 'A', unreal.MaterialProperty.MP_OPACITY)
+    mel.connect_material_property(nor, 'RGB', unreal.MaterialProperty.MP_NORMAL)
+    mel.connect_material_property(rough, '', unreal.MaterialProperty.MP_ROUGHNESS)
+    errors = mel.recompile_material(m)
+    unreal.EditorAssetLibrary.save_loaded_asset(m, False)
+    return {'errors': [str(e) for e in errors] if errors else []}
+
+
 def import_sfx():
     """Action sounds of SourceArt/Audio/Actions (tools/ue58/fetch_action_sfx.py) -> /Game/Audio/Actions, listed in
     Content/Data/audio.json with their action group and volume (UMareAudioWorld::PlayAction)."""
@@ -839,6 +870,81 @@ def run(action, arg=''):
         (data / 'imported_meshes.json').write_text(json.dumps(mapping, ensure_ascii=False, indent=2) + chr(10), encoding='utf-8')
         unreal.get_editor_subsystem(unreal.LevelEditorSubsystem).save_current_level()
         return {'imported': out, 'swapped': swapped}
+    if action == 'beachball':
+        # tools/ue58/gen_beach_ball.py (smooth, same 1 m frame and centre pivot) replaces World_0137 (392 triangles);
+        # each ball then rests on what is below it (traced ignoring the ball itself), level and world.json alike.
+        import json
+        from mare_world_builder import transform
+        out = import_models('Props', '/Game/Custom/Props') if arg != 'swap' else {}
+        new_path = '/Game/Custom/Props/beach_ball_hd/beach_ball_hd.beach_ball_hd'
+        mesh = unreal.load_asset(new_path)
+        data = Path(unreal.Paths.project_content_dir()) / 'Data'
+        world = json.loads((data / 'world.json').read_text(encoding='utf-8-sig'))
+        mapping = json.loads((data / 'imported_meshes.json').read_text(encoding='utf-8-sig'))
+        mapping['World_0137'] = new_path
+        ed = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_editor_world()
+        moved = []
+        for a in unreal.get_editor_subsystem(unreal.EditorActorSubsystem).get_all_level_actors():
+            if a.get_actor_label() != 'Maré · beach_ball':
+                continue
+            for c in a.get_components_by_class(unreal.InstancedStaticMeshComponent):
+                c.set_static_mesh(mesh)
+                for i in range(c.get_instance_count()):
+                    t = c.get_instance_transform(i, True)
+                    old = unreal.Vector(t.translation.x, t.translation.y, t.translation.z)
+                    hit = unreal.SystemLibrary.line_trace_single(ed, old + unreal.Vector(0, 0, 150), old - unreal.Vector(0, 0, 300),
+                                                                unreal.TraceTypeQuery.TRACE_TYPE_QUERY1, True, [a],
+                                                                unreal.DrawDebugTrace.NONE, True)
+                    if not hit:
+                        moved.append({'at': [round(old.x), round(old.y)], 'error': 'no floor'})
+                        continue
+                    floor = hit.to_tuple()[5].z
+                    radius = (mesh.get_bounds().box_extent.z) * t.scale3d.z
+                    t.translation = unreal.Vector(old.x, old.y, floor + radius - .3)    # vinyl flattens a little
+                    c.update_instance_transform(i, t, True, True, True)
+                    for row in world['instances']:
+                        rt = transform(row['transform']) if row['name'] == 'beach_ball' else None
+                        if rt is not None and (rt.translation - old).length() < 1.0:
+                            row['transform']['position'][1] += (t.translation.z - old.z) / 100
+                    moved.append({'at': [round(old.x), round(old.y)], 'floor': round(floor, 1),
+                                  'on': hit.to_tuple()[9].get_actor_label() if hit.to_tuple()[9] else '',
+                                  'diameter': round(radius * 2), 'z': round(t.translation.z, 1)})
+        (data / 'world.json').write_text(json.dumps(world, ensure_ascii=False, indent='\t'), encoding='utf-8')
+        (data / 'imported_meshes.json').write_text(json.dumps(mapping, ensure_ascii=False, indent=2) + chr(10), encoding='utf-8')
+        unreal.get_editor_subsystem(unreal.LevelEditorSubsystem).save_current_level()
+        return {'imported': out, 'moved': moved}
+    if action == 'beachprops':
+        # Real models for the code-made beach primitives (float_audit swapfit places them): the wet-sand footprint
+        # (tools/ue58/gen_footprints.py) and Poly Haven rocks (CC0, fetch_polyhaven.py) for the Quaternius pebbles.
+        import mare_hotel_lobby, mare_custom
+        out = import_models('Beach', '/Game/Custom/Beach')
+        for slug in ('rock_07', 'rock_09'):
+            dest = f'/Game/Custom/Beach/{slug}'
+            if unreal.EditorAssetLibrary.does_directory_exist(dest):
+                unreal.EditorAssetLibrary.delete_directory(dest)
+            out[slug] = mare_hotel_lobby._import(Path(f'D:/Assets/PolyHaven/{slug}/{slug}_2k.gltf'), dest, slug, True, search=False).get_path_name()
+        out['_footprint'] = footprint_material()
+        out['_usage'] = mare_custom.fix_usage()['fixed']
+        return out
+    if action == 'walkway':
+        # tools/ue58/gen_beach_walkway.py board for the kiosk walkway (float_audit swapfit ...:same places it)
+        import mare_hotel_lobby, mare_custom
+        dest = '/Game/Custom/Beach/beach_walk_board'
+        if unreal.EditorAssetLibrary.does_directory_exist(dest):
+            unreal.EditorAssetLibrary.delete_directory(dest)
+        mesh = mare_hotel_lobby._import(Path('D:/Assets/Mare/beach_walk_board/beach_walk_board.glb'), dest, 'beach_walk_board', True, search=False)
+        return {'mesh': mesh.get_path_name(), 'tris': mesh.get_num_triangles(0), '_usage': mare_custom.fix_usage()['fixed']}
+    if action == 'footprintmat':
+        if arg == 'reimport':
+            # new PNGs from gen_footprints.py over the same texture assets (the level keeps its references)
+            for name in ('beach_footprint_color', 'beach_footprint_normal'):
+                task = unreal.AssetImportTask()
+                task.filename = str(MODELS / 'Beach' / f'{name}.png')
+                task.destination_path = '/Game/Custom/Beach/beach_footprint'
+                task.destination_name = name
+                task.automated = task.replace_existing = task.save = True
+                unreal.AssetToolsHelpers.get_asset_tools().import_asset_tasks([task])
+        return footprint_material()
     if action == 'freecam':
         # "label,x,y,z[;...]": a camera spec "label,cx,cy,cz,pitch,yaw" per target that sees it without a wall in
         # between: 16 directions at three elevations, the clearest line of sight (trace from the target outwards),

@@ -140,14 +140,16 @@ def fix():
 
 
 def place(spec):
-    """Move prop instances onto a surface: "name|x0|y0|z0|x|y|z_surface;..." (world cm). The instance is the one of
-    that prop name whose pivot is within 5 cm of (x0, y0, z0) - names repeat across actors, so never by index. It keeps
-    its rotation; its mesh base lands on z_surface. Level instance and Content/Data/world.json both change."""
+    """Move prop instances onto a surface: "name|x0|y0|z0|x|y|z_surface[|scale];..." (world cm). The instance is the one
+    of that prop name whose pivot is within 5 cm of (x0, y0, z0) - names repeat across actors, so never by index. It keeps
+    its rotation (an optional factor rescales it); its mesh base lands on z_surface. Level instance and
+    Content/Data/world.json both change."""
     from mare_world_builder import transform
     data = json.loads((DATA / 'world.json').read_text(encoding='utf-8-sig'))
     moved = []
     for item in spec.split(';'):
-        name, x0, y0, z0, x, y, z = item.split('|')
+        name, x0, y0, z0, x, y, z, *factor = item.split('|')
+        factor = float(factor[0]) if factor else 1.0
         at = unreal.Vector(float(x0), float(y0), float(z0))
         x, y, z = float(x), float(y), float(z)
         hits = []
@@ -163,6 +165,7 @@ def place(spec):
             continue
         c, index = hits[0]
         t = c.get_instance_transform(index, True)
+        t.scale3d = t.scale3d * factor
         lo = _bottom(c.static_mesh, t)[0]
         old = unreal.Vector(t.translation.x, t.translation.y, t.translation.z)
         new = unreal.Vector(x, y, old.z + (z - lo))
@@ -175,6 +178,7 @@ def place(spec):
             if rt is not None and (rt.translation - old).length() < 1.0:
                 pos = row['transform']['position']      # Godot metres: UE (x, y, z) cm = (p0, p2, p1) * 100
                 pos[0], pos[2], pos[1] = new.x / 100, new.y / 100, pos[1] + (new.z - old.z) / 100
+                row['transform']['basis'] = [[v * factor for v in r] for r in row['transform']['basis']]
                 break
         moved.append({'name': name, 'from': [round(old.x), round(old.y), round(old.z)], 'to': [round(new.x), round(new.y), round(new.z)]})
     if any('error' not in m for m in moved):
@@ -239,6 +243,173 @@ def near(x, y, r):
                     out.append({'actor': a.get_actor_label(), 'mesh': m.get_name(), 'at': [round(p.x), round(p.y), round(p.z)],
                                 'tris': m.get_num_triangles(0), 'size': [round(b.box_extent.x * 2), round(b.box_extent.y * 2), round(b.box_extent.z * 2)]})
     return out
+
+
+def lowpoly(limit=600):
+    """Meshes with few triangles for their size, per mesh: triangles, world size of the biggest instance (cm),
+    instance count, actors and one location. Boxes (12 triangles) are walls/floors and stay out. Report in
+    D:/CodexTemp/float-audit/lowpoly.json, biggest first, for triage by capture."""
+    rows = {}
+    for a in unreal.get_editor_subsystem(unreal.EditorActorSubsystem).get_all_level_actors():
+        for c in a.get_components_by_class(unreal.InstancedStaticMeshComponent):
+            m = c.static_mesh
+            if not m or c.get_instance_count() == 0:
+                continue
+            tris = m.get_num_triangles(0)
+            if tris <= 12 or tris > limit:
+                continue
+            e = m.get_bounds().box_extent
+            r = rows.setdefault(m.get_name(), {'mesh': m.get_name(), 'path': m.get_path_name(), 'tris': tris, 'size': 0, 'count': 0, 'actors': set(), 'at': None})
+            for i in range(c.get_instance_count()):
+                t = c.get_instance_transform(i, True)
+                s = t.scale3d
+                size = 2 * max(e.x * abs(s.x), e.y * abs(s.y), e.z * abs(s.z))
+                r['count'] += 1
+                if size > r['size']:
+                    r['size'], p = size, t.translation
+                    r['at'] = [round(p.x), round(p.y), round(p.z)]
+            r['actors'].add(a.get_actor_label())
+    out = sorted(rows.values(), key=lambda r: -r['size'])
+    for r in out:
+        r['size'] = round(r['size'])
+        r['actors'] = sorted(r['actors'])[:4]
+    OUT.mkdir(parents=True, exist_ok=True)
+    (OUT / 'lowpoly.json').write_text(json.dumps(out, ensure_ascii=False, indent=1), encoding='utf-8')
+    return {'meshes': len(out), 'file': str(OUT / 'lowpoly.json')}
+
+
+def primitives():
+    """Shape of every mesh in lowpoly.json, from its vertices normalised to the bounds: 'sphere' (constant distance
+    from the centre) or 'cylinder_<axis>' (constant distance from an axis, caps aside). Code-made spheres and
+    cylinders are banned as props (CLAUDE.md); walls and floors are boxes and stay out. -> primitives.json."""
+    import statistics
+    rows = json.loads((OUT / 'lowpoly.json').read_text(encoding='utf-8'))
+    out = []
+    for r in rows:
+        m = unreal.load_asset(r['path'])
+        if not m:
+            r['shape'] = 'no asset'
+            out.append(r)
+            continue
+        b = m.get_bounds()
+        o, e = b.origin, b.box_extent
+        if min(e.x, e.y, e.z) < .01:
+            continue
+        verts = unreal.ProceduralMeshLibrary.get_section_from_static_mesh(m, 0, 0)[0]
+        pts = [((v.x - o.x) / e.x, (v.y - o.y) / e.y, (v.z - o.z) / e.z) for v in verts]
+        if len(pts) < 8:
+            continue
+        shape = ''
+        d3 = [(x * x + y * y + z * z) ** .5 for x, y, z in pts]
+        if statistics.pstdev(d3) < .04 and .93 < statistics.mean(d3) < 1.03:     # rounded-box corners sit at ~1.7
+            shape = 'sphere'
+        else:
+            for axis, (i, j) in (('x', (1, 2)), ('y', (0, 2)), ('z', (0, 1))):
+                rad = [(p[i] ** 2 + p[j] ** 2) ** .5 for p in pts]
+                rim = [q for q in rad if q > .5]
+                if len(rim) > .7 * len(rad) and statistics.pstdev(rim) < .03 and .95 < statistics.mean(rim) < 1.03:
+                    shape = 'cylinder_' + axis
+                    break
+        if shape:
+            r['shape'] = shape
+            out.append(r)
+    (OUT / 'primitives.json').write_text(json.dumps(out, ensure_ascii=False, indent=1), encoding='utf-8')
+    return {'primitives': len(out)}
+
+
+def _row(t):
+    """UE transform -> world.json row (inverse of mare_world_builder.transform): Godot basis rows and metres."""
+    X = t.rotation.rotate_vector(unreal.Vector(1, 0, 0)) * t.scale3d.x
+    Y = t.rotation.rotate_vector(unreal.Vector(0, 1, 0)) * t.scale3d.y
+    Z = t.rotation.rotate_vector(unreal.Vector(0, 0, 1)) * t.scale3d.z
+    return {'basis': [[X.x, X.z, X.y], [Z.x, Z.z, Z.y], [Y.x, Y.z, Y.y]],
+            'position': [t.translation.x / 100, t.translation.z / 100, t.translation.y / 100]}
+
+
+def swapfit(spec):
+    """Replace a code-made primitive prop by a real model, refitted per instance: "World_NNNN=/Game/path:mode[:sink];..."
+    mode fit  - uniform scale to the old footprint, old yaw kept (rocks; Nanite meshes);
+         log  - the new mesh's long axis along the old one, same length (driftwood for the cylinder logs);
+         same - the old rotation at scale 1 (new model built in the old mesh's frame);
+         foot - real size, old yaw, tilted to the sand normal, every other instance mirrored (left/right).
+    Each instance then rests on what is below it (traced ignoring its own actor), sunk by `sink` cm. Level
+    instances, Content/Data/world.json rows and imported_meshes.json (old mesh -> new path) all change."""
+    import math, random
+    from mare_world_builder import transform
+    data = json.loads((DATA / 'world.json').read_text(encoding='utf-8-sig'))
+    mapping = json.loads((DATA / 'imported_meshes.json').read_text(encoding='utf-8-sig'))
+    world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_editor_world()
+    rows_by_mesh = {}
+    for row in data['instances']:
+        rows_by_mesh.setdefault(f"World_{row['mesh_index']:04d}", []).append(row)
+    report = {}
+    for item in spec.split(';'):
+        old_name, rest = item.split('=')
+        path, mode, *sink = rest.split(':')
+        sink = float(sink[0]) if sink else 0.0
+        new = unreal.load_asset(path)
+        ne = new.get_bounds().box_extent
+        long_axis = max(range(3), key=lambda k: (ne.x, ne.y, ne.z)[k])
+        done = 0
+        rnd = random.Random(old_name)
+        old_mesh = unreal.load_asset(mapping.get(old_name, ''))
+        labels = {'Maré · ' + r['name'] for r in rows_by_mesh.get(old_name, [])}
+        for a in unreal.get_editor_subsystem(unreal.EditorActorSubsystem).get_all_level_actors():
+            for c in a.get_components_by_class(unreal.InstancedStaticMeshComponent):
+                # by mesh, or (a rerun after a partial swap) by the actor label exported from Godot
+                if not c.static_mesh or not (c.static_mesh.get_name() == old_name or
+                                             (c.static_mesh == new and a.get_actor_label() in labels and old_mesh)):
+                    continue
+                oe = (old_mesh or c.static_mesh).get_bounds().box_extent
+                olds = [c.get_instance_transform(i, True) for i in range(c.get_instance_count())]
+                c.set_static_mesh(new)
+                for i, t in enumerate(olds):
+                    old_at = unreal.Vector(t.translation.x, t.translation.y, t.translation.z)
+                    sc = t.scale3d
+                    if mode == 'log':
+                        ax = max(range(3), key=lambda k: (oe.x * abs(sc.x), oe.y * abs(sc.y), oe.z * abs(sc.z))[k])
+                        length = 2 * (oe.x * abs(sc.x), oe.y * abs(sc.y), oe.z * abs(sc.z))[ax]
+                        d = t.rotation.rotate_vector([unreal.Vector(1, 0, 0), unreal.Vector(0, 1, 0), unreal.Vector(0, 0, 1)][ax])
+                        k = length / (2 * (ne.x, ne.y, ne.z)[long_axis])
+                        yaw = math.degrees(math.atan2(d.y, d.x)) - (90 if long_axis == 1 else 0)
+                        rot = unreal.Rotator(roll=rnd.uniform(-180, 180) if long_axis == 0 else 0,
+                                             pitch=rnd.uniform(-180, 180) if long_axis == 1 else 0, yaw=yaw)
+                        scale = unreal.Vector(k, k, k)
+                    elif mode == 'same':   # new mesh built in the old one's frame
+                        rot = t.rotation.rotator()
+                        scale = unreal.Vector(1, 1, 1)
+                    elif mode == 'fit':
+                        footprint = 2 * max(oe.x * abs(sc.x), oe.y * abs(sc.y))
+                        k = footprint / (2 * max(ne.x, ne.y))
+                        rot = unreal.Rotator(roll=0, pitch=0, yaw=t.rotation.rotator().yaw + rnd.uniform(-30, 30))
+                        scale = unreal.Vector(k, k, k)
+                    else:   # foot: the Godot trail always walks +X (a mirrored instance reads back as yaw+180, so not t)
+                        rot = unreal.Rotator(roll=0, pitch=0, yaw=rnd.uniform(-8, 8))
+                        scale = unreal.Vector(1, -1 if i % 2 else 1, 1)
+                    nt = unreal.Transform(old_at, rot, scale)
+                    hit = unreal.SystemLibrary.line_trace_single(world, old_at + unreal.Vector(0, 0, 200), old_at - unreal.Vector(0, 0, 300),
+                                                                unreal.TraceTypeQuery.TRACE_TYPE_QUERY1, True, [a], unreal.DrawDebugTrace.NONE, True)
+                    if hit and mode == 'foot':
+                        # a flat imprint must follow the sand slope, or its upper half sinks into the beach
+                        n = hit.to_tuple()[7]
+                        fwd = rot.get_forward_vector()
+                        nt = unreal.Transform(old_at, unreal.MathLibrary.make_rot_from_zx(n, fwd), scale)
+                    if hit:
+                        lo = _bottom(new, nt)[0]
+                        nt.translation = unreal.Vector(old_at.x, old_at.y, old_at.z + hit.to_tuple()[5].z - lo - sink)
+                    c.update_instance_transform(i, nt, True, True, True)
+                    for row in rows_by_mesh.get(old_name, []):
+                        rt = transform(row['transform'])
+                        if rt is not None and (rt.translation - old_at).length() < 1.0:
+                            row['transform'] = _row(nt)
+                            break
+                    done += 1
+        mapping[old_name] = path
+        report[old_name] = done
+    (DATA / 'world.json').write_text(json.dumps(data, ensure_ascii=False, indent='	'), encoding='utf-8')
+    (DATA / 'imported_meshes.json').write_text(json.dumps(mapping, ensure_ascii=False, indent=2) + chr(10), encoding='utf-8')
+    unreal.get_editor_subsystem(unreal.LevelEditorSubsystem).save_current_level()
+    return report
 
 
 def reimport_props(names):
@@ -408,6 +579,24 @@ def palm_material(names):
 
 
 def run(action, arg=''):
+    if action == 'nanite':
+        # "path,path|1": Nanite on (1) or off (0) for static meshes
+        paths, on = arg.split('|')
+        out = {}
+        for path in paths.split(','):
+            m = unreal.load_asset(path)
+            st = m.get_editor_property('nanite_settings')
+            st.set_editor_property('enabled', on == '1')
+            m.set_editor_property('nanite_settings', st)
+            unreal.EditorAssetLibrary.save_loaded_asset(m, False)
+            out[m.get_name()] = on
+        return out
+    if action == 'swapfit':
+        return swapfit(arg)
+    if action == 'primitives':
+        return primitives()
+    if action == 'lowpoly':
+        return lowpoly(int(arg or 600))
     if action == 'bbox':
         out = {}
         for path in arg.split(','):

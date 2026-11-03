@@ -215,7 +215,15 @@ Pronto e testado (02/11):
 ## 6. Mundo e arte
 - [x] Barcos detalhados (jangadas e botes), palmeiras, janelas, piscinas, mata dos morros.
 - [ ] P1 Varredura visual final de todo o mapa:
-  - objetos flutuando ou low poly;
+  - objetos flutuando ou low poly; (03/11) auditoria por forma: `float_audit lowpoly` (malhas com poucos triângulos
+    para o tamanho) + `primitives` (esfera/cilindro pelos vértices; caixas arredondadas de 252 triângulos ficam de fora)
+    e `swapfit` (troca por modelo real, reencaixada por instância, salva em `world.json`/`imported_meshes.json`).
+    Trocados: bola de praia (392 tri → `gen_beach_ball.py`, 9 mil), 9 "troncos" cilindro → Dead Tree Trunk, 46 seixos
+    Quaternius + 425 pedrinhas de 318 tri → Rock 07/09 (Poly Haven, Nanite), 60 "pegadas" disco → pegada de pé
+    translúcida (`gen_footprints.py`, inclinada pela normal da areia), 8 placas lisas do caminho do quiosque → tábuas
+    (`gen_beach_walkway.py`), jangada de cilindros da praia oeste → `mare_jangada` (`mare_fab._replace_west_raft`).
+    Conferido no editor e no PIE. Aceitos: vigas roliças dos telhados dos bangalôs, calhas, postes da grade.
+    Falta: tronco reto da árvore grande em (7500, 3915), restante da lista `docs/ue58/qa/primitivas-20261103.txt`;
   - texturas;
   - folhagem muito clara à noite;
   - ondas, espuma e respingos.

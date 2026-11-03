@@ -401,8 +401,47 @@ def replace_boats(arg=''):
                     placed.append([slug, round(tr.translation.x), round(tr.translation.y), round(rot.yaw)])
                 tr.scale3d = unreal.Vector(.001, .001, .001)
                 c.update_instance_transform(i, tr, True, True, True)
+    placed += _replace_west_raft(sub)
     unreal.get_editor_subsystem(unreal.LevelEditorSubsystem).save_current_level()
     return placed
+
+
+# A code-built raft on the west beach (Godot x -9): six cylinder logs with pointed ends, a flat triangle sail and
+# its mast, one exported mesh each. It becomes one detailed jangada at the logs' centre, along their axis.
+WEST_RAFT_LOGS = ['World_0487', 'World_0488', 'World_0489', 'World_0490', 'World_0491', 'World_0492']
+WEST_RAFT_PARTS = WEST_RAFT_LOGS + ['World_0493', 'World_0494']
+
+
+def _replace_west_raft(sub):
+    import math
+    logs, parts = [], []
+    for a in sub.get_all_level_actors():
+        for c in a.get_components_by_class(unreal.InstancedStaticMeshComponent):
+            name = c.static_mesh.get_name() if c.static_mesh else ''
+            if name in WEST_RAFT_PARTS:
+                for i in range(c.get_instance_count()):
+                    tr = c.get_instance_transform(i, True)
+                    if tr.scale3d.x < .01:
+                        tr.scale3d = unreal.Vector(1, 1, 1)
+                    parts.append((c, i, tr))
+                    if name in WEST_RAFT_LOGS:
+                        logs.append(tr)
+    if not logs:
+        return []
+    centre = unreal.Vector(sum(t.translation.x for t in logs) / len(logs), sum(t.translation.y for t in logs) / len(logs), 0)
+    axis = logs[0].rotation.rotate_vector(unreal.Vector(0, 0, 1))      # the Godot cylinders run along their local Z
+    yaw = math.degrees(math.atan2(axis.y, axis.x)) - 90                  # mare_jangada is long along its local Y
+    for c, i, tr in parts:
+        tr.scale3d = unreal.Vector(.001, .001, .001)
+        c.update_instance_transform(i, tr, True, True, True)
+    world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_editor_world()
+    ground = _floor(world, centre.x, centre.y, 300)
+    mesh = unreal.load_asset('/Game/Custom/Boats/mare_jangada/mare_jangada')
+    actor = sub.spawn_actor_from_object(mesh, unreal.Vector(centre.x, centre.y, (ground if ground is not None else -30) + 6),
+                                        unreal.Rotator(roll=0, pitch=0, yaw=yaw))
+    actor.tags = [unreal.Name('MareBoat'), unreal.Name('MareGenerated')]
+    actor.set_folder_path('Beach/Boats')
+    return [['mare_jangada (west raft)', round(centre.x), round(centre.y), round(yaw)]]
 
 
 def clear_rooms(apply=False):

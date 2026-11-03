@@ -132,7 +132,8 @@ Legenda: [x] feito e validado · [~] em andamento/parcial · [ ] pendente.
   Copos plásticos flutuando ao lado das mesas do hotel colocados sobre os tampos.
 - [x] "Pessoa dentro da mesa" (03/11): recepcionista da pousada estava dentro da ponta do balcão (frente do balcão errada nos dados); agora atrás do tampo e hóspedes na frente.
 - [ ] "Depois que arrumar a dança verificar TODAS as capturas com mais detalhes e faça as correções" (03/11): em andamento — varredura de
-  objetos flutuando (593 candidatos para triagem), pessoas atravessando móveis, câmeras de QA.
+  objetos flutuando (593 candidatos para triagem), pessoas atravessando móveis, câmeras de QA. Feitos: flutuantes, gramado
+  sem confete preto, bicicletas, praia sem primitivas (bola, troncos, pedras, pegadas, tábuas, jangada oeste).
 - [x] Manter este checklist sempre que o usuário pedir algo (regra salva na memória).
 
 ## Regras permanentes já pedidas
