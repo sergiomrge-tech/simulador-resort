@@ -192,7 +192,12 @@ Pronto e testado (02/11):
   balcão), bola de praia meio enterrada no gramado. Falta: conchas a ~2 m (-1525,-1199), sofá (4435,2337), Cube_005/007/011/018,
   biz_booth do hotel; refazer ângulos (câmera caiu dentro de paredes). Bola de praia tem 1 m de diâmetro (grande demais).
 - [ ] P1 Bicicletas da vila com rodas low poly (~10 lados) — regra "nada de low poly": trocar por modelo gratuito detalhado.
-- [ ] P1 Gramado com fragmentos pretos triangulares espalhados (confete escuro) perto do lote da piscina: investigar a vegetação baixa.
+- [x] P1 Gramado com "confete preto" (03/11): as texturas de cor da vegetação Poly Haven vieram em JPG sem alfa, então cada
+  lâmina/folha era um cartão inteiro com fundo preto. `tools/ue58/fix_foliage_alpha.py` baixa o mapa Alpha/Opacity (CC0) e
+  grava RGBA; `hud_foliagealpha` reimporta as 15 texturas (gramas, pervinca, rooibos, azedinha, samambaia, 5 arbustos,
+  folhas de 5 árvores) e deixa os materiais em máscara. Conferido por imagem (boia e lâminas limpas).
+  Falta: plantas em vaso do saguão do hotel (arquivos do Sergio em edição; RGBA já pronto em D:/Assets/PolyHaven),
+  antúrio e calathea (fora de /Game/Nature), e faixas de grama de 5,6 m que invadem a beira da calçada.
 - [x] P0 "Pessoa dentro da mesa" (03/11): era a recepcionista da pousada dentro da ponta do balcão (a recepção tinha yaw 0, mas
   o tampo corre em X e a frente é +Y). `customization.json` reception yaw 90 + `reception_mesh_yaw` -90 (modelo igual) e
   `staff_world.json` behind 55: ela fica entre o tampo e o quadro de chaves, e os hóspedes fazem fila na frente. Auditoria

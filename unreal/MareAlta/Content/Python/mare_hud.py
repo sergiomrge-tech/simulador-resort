@@ -612,6 +612,98 @@ def run(action, arg=''):
                         out.append([round(d), mesh.get_name(), [round(v) for v in (t.translation.x, t.translation.y, t.translation.z)], round(t.rotation.rotator().yaw),
                                     [round(abs(v)) for v in (size.x, size.y, size.z)], round(bb.min.z * t.scale3d.z + t.translation.z), round(bb.max.z * t.scale3d.z + t.translation.z)])
         return sorted(out)[:40]
+    if action == 'foliagealpha':
+        # Reimport the foliage base colours with their alpha (tools/ue58/fix_foliage_alpha.py writes <image>_rgba.png
+        # next to the Poly Haven originals) over the texture assets of the same name under /Game/Nature, then make
+        # every material using them Masked with the base colour alpha as opacity mask.
+        import glob
+        lib = unreal.MaterialEditingLibrary
+        pngs = {Path(f).name[:-len('_rgba.png')]: f for f in glob.glob('D:/Assets/PolyHaven/*/textures/*_rgba.png')}
+        out = []
+        for path in unreal.EditorAssetLibrary.list_assets('/Game/Nature', True, False):
+            name = path.split('/')[-1].split('.')[0]
+            if name not in pngs or str(unreal.EditorAssetLibrary.find_asset_data(path).asset_class_path.asset_name) != 'Texture2D':
+                continue
+            folder = '/'.join(path.split('/')[:-1])
+            task = unreal.AssetImportTask()
+            task.set_editor_property('filename', pngs[name])
+            task.set_editor_property('destination_path', folder)
+            task.set_editor_property('destination_name', name)
+            task.set_editor_property('replace_existing', True)
+            task.set_editor_property('automated', True)
+            task.set_editor_property('save', True)
+            unreal.AssetToolsHelpers.get_asset_tools().import_asset_tasks([task])
+            tex = unreal.load_asset(path.split('.')[0])
+            row = {'texture': name, 'size': [tex.blueprint_get_size_x(), tex.blueprint_get_size_y()], 'materials': []}
+            for ref in unreal.EditorAssetLibrary.find_package_referencers_for_asset(path.split('.')[0], False):
+                m = unreal.load_asset(ref)
+                if not isinstance(m, unreal.Material):
+                    continue
+                if m.get_editor_property('blend_mode') != unreal.BlendMode.BLEND_MASKED:
+                    node = lib.get_material_property_input_node(m, unreal.MaterialProperty.MP_OPACITY)
+                    if node:
+                        lib.connect_material_property(node, lib.get_material_property_input_node_output_name(m, unreal.MaterialProperty.MP_OPACITY),
+                                                      unreal.MaterialProperty.MP_OPACITY_MASK)
+                    m.set_editor_property('blend_mode', unreal.BlendMode.BLEND_MASKED)
+                has_mask = lib.get_material_property_input_node(m, unreal.MaterialProperty.MP_OPACITY_MASK) is not None
+                m.set_editor_property('opacity_mask_clip_value', .33)
+                errors = lib.recompile_material(m)
+                unreal.EditorAssetLibrary.save_loaded_asset(m, False)
+                row['materials'].append({'mat': m.get_name(), 'mask_input': has_mask, 'errors': len(errors or [])})
+            out.append(row)
+        return out
+    if action == 'translucent':
+        # "folder[,fix]": materials under the folder with translucent blend. With ",fix": foliage cut-outs become
+        # Masked (Lumen leaves translucent leaves unlit and badly sorted: black shards in the lawn), the node feeding
+        # Opacity also feeds Opacity Mask, recompiled and saved.
+        parts = arg.split(',')
+        out = []
+        for path in unreal.EditorAssetLibrary.list_assets(parts[0], True, False):
+            if not path.endswith(path.split('/')[-1].split('.')[0]) and '.' in path.split('/')[-1]:
+                pass
+            data = unreal.EditorAssetLibrary.find_asset_data(path)
+            if str(data.asset_class_path.asset_name) != 'Material':
+                continue
+            m = unreal.load_asset(path)
+            if m.get_editor_property('blend_mode') != unreal.BlendMode.BLEND_TRANSLUCENT:
+                continue
+            row = {'mat': m.get_path_name()}
+            if len(parts) > 1 and parts[1] == 'fix':
+                lib = unreal.MaterialEditingLibrary
+                node = lib.get_material_property_input_node(m, unreal.MaterialProperty.MP_OPACITY)
+                if node:
+                    out_name = lib.get_material_property_input_node_output_name(m, unreal.MaterialProperty.MP_OPACITY)
+                    lib.connect_material_property(node, out_name, unreal.MaterialProperty.MP_OPACITY_MASK)
+                m.set_editor_property('blend_mode', unreal.BlendMode.BLEND_MASKED)
+                m.set_editor_property('opacity_mask_clip_value', .33)
+                lib.recompile_material(m)
+                unreal.EditorAssetLibrary.save_loaded_asset(m, False)
+                row['fixed'] = bool(node)
+            out.append(row)
+        return out
+    if action == 'meshmats':
+        # "mesh_name": materials of the placed mesh with that name (any world), their parents, blend mode and textures.
+        world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world() or             unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_editor_world()
+        for a in unreal.GameplayStatics.get_all_actors_of_class(world, unreal.Actor):
+            for comp in a.get_components_by_class(unreal.StaticMeshComponent):
+                mesh = comp.static_mesh
+                if not mesh or mesh.get_name() != arg:
+                    continue
+                out = {'mesh': mesh.get_path_name(), 'actor': a.get_actor_label(), 'slots': []}
+                for i in range(comp.get_num_materials()):
+                    m = comp.get_material(i)
+                    row = {'mat': m.get_path_name() if m else None}
+                    if isinstance(m, unreal.MaterialInstance):
+                        row['parent'] = m.get_editor_property('parent').get_path_name()
+                        row['textures'] = [f"{t.get_editor_property('parameter_info').name}={t.get_editor_property('parameter_value').get_name() if t.get_editor_property('parameter_value') else None}"
+                                           for t in m.get_editor_property('texture_parameter_values')]
+                    base = m.get_base_material() if m else None
+                    if base:
+                        row['blend'] = str(base.get_editor_property('blend_mode'))
+                        row['two_sided'] = base.get_editor_property('two_sided')
+                    out['slots'].append(row)
+                return out
+        return 'not found'
     if action == 'tops':
         # "mesh_name,x,y,r,zmin,zmax": upward faces of the placed mesh of that name nearest (x, y) within r, between
         # zmin and zmax (world), as world x/y ranges per 5 cm slice: where a counter or table top really is.
