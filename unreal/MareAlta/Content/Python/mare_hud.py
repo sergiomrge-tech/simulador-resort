@@ -78,6 +78,62 @@ def footprint_material():
     return {'errors': [str(e) for e in errors] if errors else []}
 
 
+# Paved surfaces that collect water (exported village streets and the square); sidewalks (World_0674) drain.
+PUDDLE_SURFACES = ('World_0673', 'World_0675', 'World_1175', 'World_1418', 'World_1420', 'World_1415', 'World_1417',
+                   'World_2023', 'World_2024', 'World_0676', 'World_1881')
+
+
+def place_puddles(count=70, seed=31):
+    """Rain puddles (M_Puddle on the engine plane, one HISM) on the village streets and the square: random points
+    whose first hit is one of PUDDLE_SURFACES, 1.2-2.6 m wide, 3 m apart. The material shows them only while it
+    rains (MPC Rain), so the actor stays in the level. Rebuilt from scratch on each run."""
+    import random
+    from editor_toolset.toolsets.actor import ActorTools
+    if unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world():
+        raise RuntimeError('Stop PIE first')
+    actors = unreal.get_editor_subsystem(unreal.EditorActorSubsystem)
+    for a in actors.get_all_level_actors():
+        if 'MarePuddles' in [str(t) for t in a.tags]:
+            actors.destroy_actor(a)
+    world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_editor_world()
+    rnd = random.Random(seed)
+    points = []
+    tries = 0
+    while len(points) < count and tries < 20000:
+        tries += 1
+        x, y = rnd.uniform(-500, 10800), rnd.uniform(1500, 7200)
+        hit = unreal.SystemLibrary.line_trace_single(world, unreal.Vector(x, y, 1500), unreal.Vector(x, y, -300),
+                                                     unreal.TraceTypeQuery.TRACE_TYPE_QUERY1, True, [], unreal.DrawDebugTrace.NONE, True)
+        if not hit:
+            continue
+        t = hit.to_tuple()
+        comp = t[10]
+        name = comp.static_mesh.get_name() if isinstance(comp, unreal.StaticMeshComponent) and comp.static_mesh else ''
+        if name not in PUDDLE_SURFACES or t[7].z < .97:
+            continue
+        if any((x - px) ** 2 + (y - py) ** 2 < 300 ** 2 for px, py, _ in points):
+            continue
+        points.append((x, y, t[5].z))
+    root = actors.spawn_actor_from_class(unreal.Actor, unreal.Vector())
+    root.set_actor_label('Mare · Poças de chuva')
+    root.tags = [unreal.Name('MareGenerated'), unreal.Name('MarePuddles')]
+    root.set_folder_path('Weather')
+    comp = ActorTools.add_component(root, unreal.HierarchicalInstancedStaticMeshComponent.static_class(), 'HISM_Puddles')
+    comp.set_static_mesh(unreal.load_asset('/Engine/BasicShapes/Plane'))
+    comp.set_material(0, unreal.load_asset('/Game/World/Materials/M_Puddle'))
+    comp.set_collision_enabled(unreal.CollisionEnabled.NO_COLLISION)
+    comp.set_editor_property('cast_shadow', False)
+    comp.set_mobility(unreal.ComponentMobility.STATIC)
+    transforms = []
+    for x, y, z in points:
+        s = rnd.uniform(1.2, 2.6)
+        transforms.append(unreal.Transform(unreal.Vector(x, y, z + .4), unreal.Rotator(yaw=rnd.uniform(-180, 180)),
+                                           unreal.Vector(s, s * rnd.uniform(.7, 1.0), 1)))
+    comp.add_instances(transforms, False, True)
+    unreal.get_editor_subsystem(unreal.LevelEditorSubsystem).save_current_level()
+    return {'puddles': len(points), 'tries': tries}
+
+
 def pousada_floor():
     """Pousada reception floor (World_0009, a teal paint with green blotches): Poly Haven patterned_terracotta_tiling
     (CC0, 2.15 m per tile of the scan), world-aligned so the tiles keep their size whatever the mesh UVs are."""
@@ -830,6 +886,93 @@ def run(action, arg=''):
         return party_qa(arg)
     if action == 'person':
         return person_qa(arg)
+    if action == 'mpcdefault':
+        # "Name=value": the MPC default (what the editor viewport shows), for QA of the weather materials
+        name, value = arg.split('=')
+        mpc = unreal.load_asset('/Game/World/Materials/MPC_MareTime')
+        params = list(mpc.get_editor_property('scalar_parameters'))
+        for p in params:
+            if str(p.get_editor_property('parameter_name')) == name:
+                p.set_editor_property('default_value', float(value))
+        mpc.set_editor_property('scalar_parameters', params)
+        return 'ok'
+    if action == 'palmlods':
+        # Wind on the palms (M_PalmFab_PBR WPO) is ignored by Nanite here: plain meshes with automatic LODs
+        # (100/50/25/12 %), and the sway stops beyond 80 m where it cannot be seen.
+        import json as _j
+        palms = _j.loads((Path(unreal.Paths.project_content_dir()) / 'Data/foliage_visual.json').read_text(encoding='utf-8'))['palms']
+        editor = unreal.get_editor_subsystem(unreal.StaticMeshEditorSubsystem)
+        out = {}
+        for path in palms:
+            m = unreal.load_asset(path)
+            st = m.get_editor_property('nanite_settings')
+            st.set_editor_property('enabled', False)
+            editor.set_nanite_settings(m, st, True)
+            opts = unreal.StaticMeshReductionOptions()
+            opts.set_editor_property('auto_compute_lod_screen_size', False)
+            settings = []
+            for pct, screen in ((1.0, 1.0), (.5, .45), (.25, .2), (.12, .08)):
+                r = unreal.StaticMeshReductionSettings()
+                r.set_editor_property('percent_triangles', pct)
+                r.set_editor_property('screen_size', screen)
+                settings.append(r)
+            opts.set_editor_property('reduction_settings', settings)
+            editor.set_lods(m, opts)
+            unreal.EditorAssetLibrary.save_loaded_asset(m, False)
+            out[m.get_name()] = [m.get_num_triangles(i) for i in range(m.get_num_lods())]
+        for a in unreal.get_editor_subsystem(unreal.EditorActorSubsystem).get_all_level_actors():
+            for c in a.get_components_by_class(unreal.InstancedStaticMeshComponent):
+                if c.static_mesh and c.static_mesh.get_path_name() in palms:
+                    c.set_editor_property('evaluate_world_position_offset', True)
+                    c.set_editor_property('world_position_offset_disable_distance', 8000)
+        unreal.get_editor_subsystem(unreal.LevelEditorSubsystem).save_current_level()
+        return out
+    if action == 'palmwpo':
+        # palm instance components: WPO evaluation flags (wind needs them); arg 'fix' turns them on
+        import json as _j
+        palms = set(_j.loads((Path(unreal.Paths.project_content_dir()) / 'Data/foliage_visual.json').read_text(encoding='utf-8'))['palms'])
+        out = []
+        for a in unreal.get_editor_subsystem(unreal.EditorActorSubsystem).get_all_level_actors():
+            for c in a.get_components_by_class(unreal.InstancedStaticMeshComponent):
+                if c.static_mesh and c.static_mesh.get_path_name() in palms:
+                    row = [a.get_actor_label(), c.static_mesh.get_name(), c.get_material(0).get_path_name() if c.get_material(0) else None, c.static_mesh.get_editor_property('nanite_settings').enabled, c.get_editor_property('evaluate_world_position_offset'),
+                           c.get_editor_property('world_position_offset_disable_distance')]
+                    if arg == 'fix':
+                        c.set_editor_property('evaluate_world_position_offset', True)
+                        c.set_editor_property('world_position_offset_disable_distance', 0)
+                    out.append(row)
+        if arg == 'fix':
+            unreal.get_editor_subsystem(unreal.LevelEditorSubsystem).save_current_level()
+        return out[:20]
+    if action == 'skyinfo':
+        world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_editor_world()
+        out = {}
+        for a in unreal.GameplayStatics.get_all_actors_of_class(world, unreal.VolumetricCloud):
+            comp = a.get_component_by_class(unreal.VolumetricCloudComponent)
+            m = comp.get_editor_property('material')
+            out['cloud'] = m.get_path_name() if m else None
+            if isinstance(m, unreal.MaterialInstance):
+                out['scalars'] = [[str(v.parameter_info.name), v.parameter_value] for v in m.get_editor_property('scalar_parameter_values')]
+                base = m
+                while isinstance(base, unreal.MaterialInstance):
+                    base = base.get_editor_property('parent')
+                out['base'] = base.get_path_name()
+                out['params'] = {str(n): unreal.MaterialEditingLibrary.get_material_default_scalar_parameter_value(base, n) for n in unreal.MaterialEditingLibrary.get_scalar_parameter_names(base)}
+        for a in unreal.GameplayStatics.get_all_actors_of_class(world, unreal.SkyAtmosphere):
+            comp = a.get_component_by_class(unreal.SkyAtmosphereComponent)
+            out['atmo'] = {k: str(comp.get_editor_property(k)) for k in ('rayleigh_scattering_scale', 'mie_scattering_scale', 'mie_absorption_scale')}
+        return out
+    if action == 'mpc':
+        # PIE: current MPC_MareTime values, the mare.Weather CVar and the rain curtain actors
+        world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()
+        mpc = unreal.load_asset('/Game/World/Materials/MPC_MareTime')
+        out = {n: unreal.MaterialLibrary.get_scalar_parameter_value(world, mpc, n) for n in ('Night', 'Rain', 'Wind', 'Storm')}
+        out['cvar'] = unreal.SystemLibrary.get_console_variable_int_value('mare.Weather')
+        out['time'] = unreal.GameplayStatics.get_time_seconds(world)
+        out['paused'] = unreal.GameplayStatics.is_game_paused(world)
+        out['curtains'] = [[a.get_actor_label(), str(a.get_actor_location()), a.is_hidden_ed(), a.is_temporarily_hidden_in_editor()] for a in unreal.GameplayStatics.get_all_actors_with_tag(world, 'MareRain')]
+        out['hidden_game'] = [a.get_editor_property('hidden') for a in unreal.GameplayStatics.get_all_actors_with_tag(world, 'MareRain')]
+        return out
     if action == 'cmd':
         # PIE console command(s), separated by ';' (QA: mare.PoolAutoPlay 1; mare.PoolQA).
         world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()
@@ -993,6 +1136,12 @@ def run(action, arg=''):
             unreal.EditorAssetLibrary.delete_directory(dest)
         mesh = mare_hotel_lobby._import(Path(f'D:/Assets/Mare/{slug}/{slug}.glb'), dest, slug, True, search=False)
         return {'mesh': mesh.get_path_name(), 'tris': mesh.get_num_triangles(0), '_usage': mare_custom.fix_usage()['fixed']}
+    if action == 'weather':
+        import importlib, mare_materials
+        importlib.reload(mare_materials)
+        return mare_materials.build_weather()
+    if action == 'puddles':
+        return place_puddles(int(arg or 70))
     if action == 'pousadafloor':
         return pousada_floor()
     if action == 'footprintmat':

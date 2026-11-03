@@ -249,7 +249,18 @@ Pronto e testado (02/11):
   flutuava 19 cm da parede e cobria a janela leste), carrinho de bagagem e malas. Restaurante do hotel é um pavilhão
   aberto (já mobiliado) e os negócios da vila são barracas externas (sorveteria, pranchas, surfe, pastel, souvenires):
   não têm interior. Conferido no PIE de vários ângulos.
-- [ ] P2 Clima: chuva com poças, vento nas palmeiras, tempestade com mar bravo.
+- [x] P2 Clima: chuva com poças, vento nas palmeiras, tempestade com mar bravo (03/11). `MPC_MareTime` ganhou Rain, Wind e
+  Storm, escritos por `UMareVisualWorld::UpdateWeather` a partir do clima do dia (chuva; tempestade; maré alta = mar bravo
+  sem chuva), com transição de ~4 s; QA `mare.Weather 1|2|3|4` (limpo, chuva, tempestade, mar bravo). Chuva: duas cortinas
+  de gotas em volta da câmera (`M_RainCurtain`, textura desenhada por `tools/ue58/gen_weather_textures.py`), escondidas sob
+  teto; céu fechado (nuvens volumétricas e atmosfera), sol apagado e luz do céu difusa; luzes internas mais fortes.
+  Poças: 70 espelhos d'água nas ruas e na praça (`hud_puddles`, `M_Puddle`), crescem com a chuva e somem no seco.
+  Vento: `M_PalmFab_PBR` balança tronco e folhas com o Wind. O Nanite ignorava o WPO aqui (medido: diferença entre
+  quadros 0,8 com Nanite, 9 sem); as 4 malhas de palmeira ficaram sem Nanite com LODs automáticos 11k/5,6k/2,8k/1,4k
+  e o vento para além de 80 m. Mar bravo: `M_CoastalWater_PBR` com ondas 2,4x, ondas curtas, carneirinhos e mar mais escuro.
+  Mar do dia a dia mais agitado (pedido do Sergio 03/11): ondulação ao largo ~35 cm e arrebentação ±10 cm em volta do
+  nível antigo (só subir alagava a quadra de vôlei). Recepção da pousada com duas luzes quentes. Conferido no PIE
+  (limpo × tempestade à mesma hora; palmeiras por diferença entre quadros).
 - [ ] P2 Detalhes de vida: pássaros, gaivotas, cachorros e gatos animados, barcos passando.
 
 ## 7. Áudio

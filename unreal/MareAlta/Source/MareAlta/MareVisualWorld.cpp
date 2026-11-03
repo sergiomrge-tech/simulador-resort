@@ -17,6 +17,16 @@
 #include "Components/InstancedStaticMeshComponent.h"
 #include "Components/SkyLightComponent.h"
 #include "Engine/SkyLight.h"
+#include "Engine/StaticMeshActor.h"
+#include "Components/SkyAtmosphereComponent.h"
+#include "Components/VolumetricCloudComponent.h"
+#include "Materials/MaterialInstanceDynamic.h"
+#include "Components/StaticMeshComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "Camera/PlayerCameraManager.h"
+#include "HAL/IConsoleManager.h"
+
+static TAutoConsoleVariable<int32> CVarMareWeather(TEXT("mare.Weather"),0,TEXT("QA weather override: 0 = today's weather, 1 = clear, 2 = rain, 3 = storm, 4 = rough sea without rain."));
 
 TStatId UMareVisualWorld::GetStatId()const{RETURN_QUICK_DECLARE_CYCLE_STAT(UMareVisualWorld,STATGROUP_Tickables);}
 void UMareVisualWorld::BuildLamps()
@@ -98,14 +108,16 @@ void UMareVisualWorld::Tick(float DeltaSeconds)
  auto Sim=GetWorld()->GetGameInstance()->GetSubsystem<UMareSimulation>();if(!Sim)return;
  const float Hour=UMareSimulation::Number(Sim->State,TEXT("minutes"))/60.f;
  const float Solar=FMath::Sin((Hour-6.f)/12.f*PI);const float Day=FMath::SmoothStep(-.04f,.18f,Solar);
- const bool Rain=UMareSimulation::String(Sim->State,TEXT("weather"))==TEXT("rain");
+ const int32 ForcedWeather=CVarMareWeather.GetValueOnGameThread();
+ const bool Rain=ForcedWeather==2 || ForcedWeather==3 || ((ForcedWeather==0) && UMareSimulation::String(Sim->State,TEXT("weather"))==TEXT("rain"));
  // Night: the eye must not adapt up to daylight brightness (that washed the scene out white); keep a
  // narrow dark EV100 window so moonlight reads blue-dim and lamps/windows carry the image.
  for(auto Volume:Interiors)if(Volume){auto& S=Volume->Settings;S.bOverride_AutoExposureMinBrightness=S.bOverride_AutoExposureMaxBrightness=true;
   S.AutoExposureMinBrightness=FMath::Lerp(3.5f,5.f,Day);S.AutoExposureMaxBrightness=FMath::Lerp(4.5f,9.f,Day);}
  if(Exposure){Exposure->Settings.bOverride_AutoExposureMinBrightness=true;Exposure->Settings.bOverride_AutoExposureMaxBrightness=true;Exposure->Settings.AutoExposureMinBrightness=FMath::Lerp(-1.9f,5.f,Day);Exposure->Settings.AutoExposureMaxBrightness=FMath::Lerp(-.9f,14.f,Day);}
- if(Sky)Sky->GetLightComponent()->SetIntensity(FMath::Lerp(.035f,1.f,Day));
- if(Sun){Sun->SetActorRotation(FRotator(-Solar*58.f,-65.f+(Hour-12.f)*12.f,0));Sun->GetLightComponent()->SetIntensity(FMath::Max(0.f,Solar)*65000.f*(Rain?.2f:1.f));
+ // Overcast light: the sun fades out with the rain (no hard shadows) and the diffuse sky light doubles.
+ if(Sky)Sky->GetLightComponent()->SetIntensity(FMath::Lerp(.035f,1.f,Day)*(1.f+2.5f*RainNow));
+ if(Sun){Sun->SetActorRotation(FRotator(-Solar*58.f,-65.f+(Hour-12.f)*12.f,0));Sun->GetLightComponent()->SetIntensity(FMath::Max(0.f,Solar)*65000.f*(1.f-.998f*RainNow));
   Sun->GetLightComponent()->SetLightColor(FLinearColor(1.f,FMath::Lerp(.95f,.99f,Day),FMath::Lerp(.88f,.975f,Day)),false);}
  if(Moon){Moon->GetLightComponent()->SetIntensity((1-Day)*.45f);Moon->GetLightComponent()->SetLightColor(FLinearColor(.62f,.72f,1.f),false);}
  // Lamps switch on at dusk and only where the area is built (region actors hidden until bought).
@@ -115,8 +127,13 @@ void UMareVisualWorld::Tick(float DeltaSeconds)
  // Facade windows glow at night through MPC_MareTime.Night (M_WindowPane_PBR).
  if(!TimeCollection)TimeCollection=LoadObject<UMaterialParameterCollection>(nullptr,TEXT("/Game/World/Materials/MPC_MareTime.MPC_MareTime"));
  if(TimeCollection)UKismetMaterialLibrary::SetScalarParameterValue(this,TimeCollection,TEXT("Night"),FMath::Clamp(1.f-Day,0.f,1.f)*(Rain?.8f:1.f));
- for(auto Light:Practical)if(IsValid(Light))Light->GetLightComponent()->SetIntensity(Light->ActorHasTag(TEXT("MareHomeLight"))?FMath::Lerp(1000.f,180.f,Day):Light->ActorHasTag(TEXT("MareBounce"))?FMath::Lerp(400.f,6500.f,Day):FMath::Lerp(2200.f,10000.f,Day));
- if(Fog)Fog->GetComponent()->SetFogDensity(Rain?.0018f:.00065f);
+ // A grey storm day needs the interior lights up (no sun through the windows).
+ const float Overcast=1.f+1.6f*RainNow;
+ for(auto Light:Practical)if(IsValid(Light))Light->GetLightComponent()->SetIntensity(Overcast*(Light->ActorHasTag(TEXT("MareHomeLight"))?FMath::Lerp(1000.f,180.f,Day):Light->ActorHasTag(TEXT("MareBounce"))?FMath::Lerp(400.f,6500.f,Day):FMath::Lerp(2200.f,10000.f,Day)));
+ // Overcast: denser fog with the rain (greys the horizon and the sky), a little darker exposure.
+ if(Fog)Fog->GetComponent()->SetFogDensity(FMath::Lerp(.00065f,.0042f,RainNow));
+ if(Exposure){Exposure->Settings.bOverride_AutoExposureBias=true;Exposure->Settings.AutoExposureBias=-.3f*RainNow;}
+ UpdateWeather(DeltaSeconds,Sim);
  auto Dishes=UMareSimulation::Object(Sim->Definitions,TEXT("dishes"));
  auto Price=[&](const FString& Id){return UMareSimulation::String(UMareSimulation::Object(Dishes,Id),TEXT("name"))+FString::Printf(TEXT("   R$ %.0f"),Sim->SalePrice(Id));};
  for(auto Sign:Signs){if(!IsValid(Sign))continue;FString Text;
@@ -127,4 +144,46 @@ void UMareVisualWorld::Tick(float DeltaSeconds)
   for(FName Tag:Sign->Tags)if(Tag.ToString().StartsWith(TEXT("MareStock_"))){FString Id=Tag.ToString().RightChop(10);Text=UMareSimulation::String(UMareSimulation::Object(Dishes,Id),TEXT("name"))+FString::Printf(TEXT("<br>%d prontos"),Sim->Available(Id));}
   if(!Text.IsEmpty() && Sign->GetTextRender()->Text.ToString()!=Text)Sign->GetTextRender()->SetText(FText::FromString(Text));
  }
+}
+
+void UMareVisualWorld::UpdateWeather(float DeltaSeconds,UMareSimulation* Sim)
+{
+ // Today's weather: rain from the save; storm = the "tempestade" event; rough sea (maré alta) also lifts the waves.
+ bool bRain=UMareSimulation::String(Sim->State,TEXT("weather"))==TEXT("rain");
+ bool bStorm=UMareSimulation::String(Sim->State,TEXT("day_event"))==TEXT("tempestade");
+ bool bRough=Sim->IsSeaRough();
+ switch(CVarMareWeather.GetValueOnGameThread()){case 1:bRain=bStorm=bRough=false;break;case 2:bRain=true;bStorm=bRough=false;break;
+  case 3:bRain=bStorm=bRough=true;break;case 4:bRain=bStorm=false;bRough=true;break;default:break;}
+ // About 4 s to settle; a QA override applies at once (PIE in the background ticks a few times a second).
+ const float Ease=CVarMareWeather.GetValueOnGameThread()!=0?1.f:1.f-FMath::Exp(-DeltaSeconds*.25f);
+ RainNow=FMath::Lerp(RainNow,bRain?(bStorm?1.f:.7f):0.f,Ease);
+ WindNow=FMath::Lerp(WindNow,bStorm?1.f:bRain?.5f:.2f,Ease);
+ StormNow=FMath::Lerp(StormNow,bStorm?1.f:bRough?.45f:0.f,Ease);
+ if(TimeCollection){UKismetMaterialLibrary::SetScalarParameterValue(this,TimeCollection,TEXT("Rain"),RainNow);
+  UKismetMaterialLibrary::SetScalarParameterValue(this,TimeCollection,TEXT("Wind"),WindNow);
+  UKismetMaterialLibrary::SetScalarParameterValue(this,TimeCollection,TEXT("Storm"),StormNow);}
+ // Overcast: thicker, fuller clouds (engine m_SimpleVolumetricCloud parameters) and a greyer, hazier atmosphere.
+ if(!bSkyLooked){bSkyLooked=true;
+  for(TActorIterator<AActor> It(GetWorld());It;++It){
+   if(auto Cloud=It->FindComponentByClass<UVolumetricCloudComponent>())if(UMaterialInterface* CloudBase=Cloud->Material.LoadSynchronous()){CloudMaterial=UMaterialInstanceDynamic::Create(CloudBase,this);Cloud->SetMaterial(CloudMaterial);}
+   if(auto SkyAtmo=It->FindComponentByClass<USkyAtmosphereComponent>())Atmosphere=SkyAtmo;}}
+ if(CloudMaterial){CloudMaterial->SetScalarParameterValue(TEXT("Cloud_GlobalCoverage"),FMath::Lerp(-.2f,.35f,RainNow));
+  CloudMaterial->SetScalarParameterValue(TEXT("Cloud_GlobalDensity"),FMath::Lerp(.008f,.02f,RainNow));
+  CloudMaterial->SetScalarParameterValue(TEXT("StormClouds"),StormNow);}
+ if(Atmosphere){Atmosphere->SetRayleighScatteringScale(FMath::Lerp(.0331f,.024f,RainNow));Atmosphere->SetMieScatteringScale(FMath::Lerp(.004f,.05f,RainNow));}
+ // Rain curtains: two open cylinders (3.5 m and 9 m) centred on the camera, hidden under a roof.
+ if(RainCurtains.IsEmpty()){
+  UStaticMesh* Cylinder=LoadObject<UStaticMesh>(nullptr,TEXT("/Engine/BasicShapes/Cylinder.Cylinder"));
+  UMaterialInterface* Mat=LoadObject<UMaterialInterface>(nullptr,TEXT("/Game/World/Materials/M_RainCurtain.M_RainCurtain"));
+  if(!Cylinder || !Mat)return;
+  for(float Radius:{350.f,900.f}){FActorSpawnParameters P;P.SpawnCollisionHandlingOverride=ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+   auto A=GetWorld()->SpawnActor<AStaticMeshActor>(FVector::ZeroVector,FRotator::ZeroRotator,P);if(!A)continue;
+   A->SetMobility(EComponentMobility::Movable);auto M=A->GetStaticMeshComponent();M->SetStaticMesh(Cylinder);M->SetMaterial(0,Mat);
+   M->SetCollisionEnabled(ECollisionEnabled::NoCollision);M->SetCastShadow(false);M->bVisibleInReflectionCaptures=false;
+   A->SetActorScale3D(FVector(Radius/50.f,Radius/50.f,16.f));A->SetActorHiddenInGame(true);A->Tags.Add(TEXT("MareRain"));RainCurtains.Add(A);}}
+ APlayerCameraManager* Cam=UGameplayStatics::GetPlayerCameraManager(GetWorld(),0);if(!Cam)return;
+ const FVector Eye=Cam->GetCameraLocation();
+ FHitResult Roof;FCollisionQueryParams Q(TEXT("MareRainRoof"),false);if(APawn* Pawn=UGameplayStatics::GetPlayerPawn(GetWorld(),0))Q.AddIgnoredActor(Pawn);
+ const bool bCovered=GetWorld()->LineTraceSingleByChannel(Roof,Eye,Eye+FVector(0,0,2500),ECC_Visibility,Q);
+ for(auto A:RainCurtains)if(IsValid(A)){A->SetActorLocation(FVector(Eye.X,Eye.Y,Eye.Z+250));A->SetActorHiddenInGame(RainNow<.02f || bCovered);}
 }

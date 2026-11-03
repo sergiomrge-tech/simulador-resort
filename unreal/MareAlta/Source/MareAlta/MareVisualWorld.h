@@ -41,6 +41,14 @@ private:
  TArray<FLamp> Lamps;
  UPROPERTY() TObjectPtr<AActor> LampHolder;
  void BuildLamps();
+ /** Weather eased towards today's state (MPC_MareTime Rain/Wind/Storm) and the rain curtains around the camera. */
+ float RainNow=0,WindNow=.2f,StormNow=0;
+ UPROPERTY() TArray<TObjectPtr<class AStaticMeshActor>> RainCurtains;
+ /** Overcast sky: the volumetric cloud material (dynamic copy) and the atmosphere follow the rain/storm. */
+ UPROPERTY() TObjectPtr<class UMaterialInstanceDynamic> CloudMaterial;
+ UPROPERTY() TObjectPtr<class USkyAtmosphereComponent> Atmosphere;
+ bool bSkyLooked=false;
+ void UpdateWeather(float DeltaSeconds,class UMareSimulation* Sim);
 public:
  int32 LampCount()const{return Lamps.Num();}
 };

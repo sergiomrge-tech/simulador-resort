@@ -607,6 +607,12 @@ def palm_material(names):
 
 
 def run(action, arg=''):
+    if action == 'recompile':
+        out = {}
+        for path in arg.split(','):
+            m = unreal.load_asset(path)
+            out[m.get_name()] = [str(e) for e in unreal.MaterialEditingLibrary.recompile_material(m)]
+        return out
     if action == 'settransform':
         # "name|x0|y0|z0|x|y|z|yaw": move and turn one exported instance (matched by name + pivot within 5 cm),
         # scale kept; level and world.json. For pieces that must change wall (rotation, unlike place).
@@ -682,7 +688,14 @@ def run(action, arg=''):
         if not hit:
             return None
         t = hit.to_tuple()
-        return {'z': round(t[5].z, 1), 'actor': t[9].get_actor_label() if t[9] else ''}
+        comp = t[10]
+        mat = ''
+        if comp and isinstance(comp, unreal.PrimitiveComponent):
+            mi = comp.get_material(0)
+            mat = mi.get_name() if mi else ''
+            if isinstance(comp, unreal.StaticMeshComponent) and comp.static_mesh:
+                mat += ' / ' + comp.static_mesh.get_name()
+        return {'z': round(t[5].z, 1), 'actor': t[9].get_actor_label() if t[9] else '', 'mat': mat}
     if action == 'near':
         x, y, r = (float(t) for t in arg.split(','))
         return near(x, y, r)

@@ -134,6 +134,8 @@ Legenda: [x] feito e validado · [~] em andamento/parcial · [ ] pendente.
 - [ ] "Depois que arrumar a dança verificar TODAS as capturas com mais detalhes e faça as correções" (03/11): em andamento — varredura de
   objetos flutuando (593 candidatos para triagem), pessoas atravessando móveis, câmeras de QA. Feitos: flutuantes, gramado
   sem confete preto, bicicletas, praia sem primitivas (bola, troncos, pedras, pegadas, tábuas, jangada oeste).
+- [x] "O mar precisa de mais ondas, está muito calmo" (03/11): ondulação ao largo dobrada (~35 cm, três trens de ondas),
+  arrebentação maior com espuma, superfície mais marcada; na tempestade, mar bravo com carneirinhos. Conferido no PIE.
 - [x] Manter este checklist sempre que o usuário pedir algo (regra salva na memória).
 
 ## Regras permanentes já pedidas

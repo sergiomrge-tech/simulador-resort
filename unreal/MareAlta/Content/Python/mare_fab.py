@@ -387,6 +387,20 @@ def pousada_decor(arg=''):
         actor.tags = [unreal.Name('MareGenerated'), unreal.Name('Region_pousada'), unreal.Name('MarePousadaDecor')]
         actor.set_folder_path('Interiors/Pousada')
         out.append([slug, x, y, yaw, round(base)])
+    # Warm lamps: the chandelier and one over the counter (UMareVisualWorld drives MareHomeLight: dim by day,
+    # brighter at night and on grey rainy days).
+    for x, y, z in ((0, 1760, 250), (0, 1400, 290)):
+        light = actors.spawn_actor_from_class(unreal.PointLight, unreal.Vector(x, y, z))
+        c = light.point_light_component
+        c.set_intensity(1000.0)
+        c.set_light_color(unreal.LinearColor(1.0, .82, .62, 1.0))
+        c.set_attenuation_radius(750.0)
+        c.set_editor_property('cast_shadows', False)
+        light.set_actor_label('Pousada recepção · luz')
+        light.tags = [unreal.Name('MareGenerated'), unreal.Name('Region_pousada'), unreal.Name('MarePousadaDecor'),
+                      unreal.Name('MarePractical'), unreal.Name('MareHomeLight')]
+        light.set_folder_path('Interiors/Pousada')
+        out.append(['light', x, y, z])
     unreal.get_editor_subsystem(unreal.LevelEditorSubsystem).save_current_level()
     return out
 

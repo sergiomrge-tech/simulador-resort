@@ -79,7 +79,10 @@ def build_water():
     mat.set_editor_property('automatically_set_usage_in_editor',False)
     pos=expression(mat,unreal.MaterialExpressionWorldPosition)
     time=expression(mat,unreal.MaterialExpressionTime)
-    wpo=custom(mat,'float a=Position.x*.003+Position.y*.0017-Time*.55; float b=Position.y*.004-Position.x*.0012-Time*.38; float shore=smoothstep(-6500,-4300,Position.y)*(1-smoothstep(-3000,-2300,Position.y)); float swell=sin(Position.y*.009+sin(Position.x*.0025)*.7-Time*.8); float2 outside=max(float2(abs(Position.x-4000)-16000,-9500-Position.y),0); float fade=1-smoothstep(1500,6000,length(outside))*.85; float offshoreWaves=smoothstep(-2300,-4800,Position.y); return float3(0,0,(sin(a)*9+sin(b)*5)*fade*offshoreWaves+shore*(swell*.5+.5)*14);',unreal.CustomMaterialOutputType.CMOT_FLOAT3,{'Position':pos,'Time':time})
+    storm=_mpc(mat,'Storm')
+    # Baseline swell ~35 cm offshore / 26 cm at the shore (03/11: 'o mar precisa de mais ondas'); Storm (rough-sea
+    # days) scales it 2.4x, adds a short choppy wave and whitecaps.
+    wpo=custom(mat,'float a=Position.x*.003+Position.y*.0017-Time*(.55+Storm*.35); float b=Position.y*.004-Position.x*.0012-Time*(.38+Storm*.3); float c=Position.x*.011+Position.y*.007-Time*1.9; float shore=smoothstep(-6500,-4300,Position.y)*(1-smoothstep(-3000,-2300,Position.y)); float swell=sin(Position.y*.009+sin(Position.x*.0025)*.7-Time*(.8+Storm*.4)); float2 outside=max(float2(abs(Position.x-4000)-16000,-9500-Position.y),0); float fade=1-smoothstep(1500,6000,length(outside))*.85; float offshoreWaves=smoothstep(-2300,-4800,Position.y); float d=Position.x*.0069-Position.y*.0052-Time*1.15; float h=(sin(a)*17+sin(b)*11+sin(d)*6)*(1+Storm*1.4)+sin(c)*(2+Storm*8); return float3(0,0,h*fade*offshoreWaves+shore*(swell*10*(1+Storm*.8)+5+Storm*5));',unreal.CustomMaterialOutputType.CMOT_FLOAT3,{'Position':pos,'Time':time,'Storm':storm})
     uv1=custom(mat,'return Position.xy*.0015 + Time*float2(.017,.011);',unreal.CustomMaterialOutputType.CMOT_FLOAT2,{'Position':pos,'Time':time})
     uv2=custom(mat,'return float2(Position.x-Position.y*.37,Position.y+Position.x*.29)*.0021 + Time*float2(-.013,.008);',unreal.CustomMaterialOutputType.CMOT_FLOAT2,{'Position':pos,'Time':time})
     water_normal=unreal.load_asset('/Engine/Functions/Engine_MaterialFunctions02/ExampleContent/Textures/water_n')
@@ -87,8 +90,8 @@ def build_water():
     for uv in (uv1,uv2):
         node=expression(mat,unreal.MaterialExpressionTextureSample,texture=water_normal,sampler_type=unreal.MaterialSamplerType.SAMPLERTYPE_NORMAL)
         connect(uv,'',node,'UVs');samples.append(node)
-    normal=custom(mat,'return normalize(float3((A.xy+B.xy)*.22,max(.72,A.z*B.z)));',unreal.CustomMaterialOutputType.CMOT_FLOAT3,{'A':samples[0],'B':samples[1]})
-    color=custom(mat,'float offshore=1-smoothstep(-17000,-4000,Position.y); float near=1-smoothstep(-9000,-4200,Position.y); float3 sea=lerp(lerp(float3(.02,.16,.15),float3(.012,.07,.085),near),float3(.006,.03,.055),offshore); float shore=smoothstep(-6500,-4300,Position.y)*(1-smoothstep(-3000,-2300,Position.y)); float phase=Position.y*.009+sin(Position.x*.0025)*.7-Time*.8; float crest=smoothstep(.80,.985,sin(phase)); float n1=sin(Position.x*.0023+sin(Position.y*.004)*.8+Time*.1)*.5+.5; float n2=sin(Position.x*.0061-Time*.17+sin(Position.x*.0013)*2.0)*.5+.5; float breaks=smoothstep(.3,.75,n1)*(.55+.45*smoothstep(.2,.8,n2)); return lerp(sea,float3(.84,.89,.88),shore*crest*breaks*.55);',unreal.CustomMaterialOutputType.CMOT_FLOAT3,{'Position':pos,'Time':time})
+    normal=custom(mat,'return normalize(float3((A.xy+B.xy)*(.32+Storm*.3),max(.55,A.z*B.z)));',unreal.CustomMaterialOutputType.CMOT_FLOAT3,{'A':samples[0],'B':samples[1],'Storm':storm})
+    color=custom(mat,'float offshore=1-smoothstep(-17000,-4000,Position.y); float near=1-smoothstep(-9000,-4200,Position.y); float3 sea=lerp(lerp(float3(.02,.16,.15),float3(.012,.07,.085),near),float3(.006,.03,.055),offshore); float shore=smoothstep(-6500,-4300,Position.y)*(1-smoothstep(-3000,-2300,Position.y)); float phase=Position.y*.009+sin(Position.x*.0025)*.7-Time*.8; float crest=smoothstep(.80,.985,sin(phase)); float n1=sin(Position.x*.0023+sin(Position.y*.004)*.8+Time*.1)*.5+.5; float n2=sin(Position.x*.0061-Time*.17+sin(Position.x*.0013)*2.0)*.5+.5; float breaks=smoothstep(.3,.75,n1)*(.55+.45*smoothstep(.2,.8,n2)); sea=lerp(sea,float3(.035,.06,.065),Storm*.6); float crest2=smoothstep(.74-Storm*.2,.985,sin(phase)); float caps=Storm*smoothstep(.86,.99,sin(Position.x*.0031+Position.y*.0019-Time*.9)*sin(Position.y*.0043-Time*.6))*(1-shore); float crest1=smoothstep(.74,.985,sin(phase)); float whitecap=smoothstep(.93,.995,sin(Position.x*.003+Position.y*.0017-Time*.55)*.5+sin(Position.y*.004-Position.x*.0012-Time*.38)*.5)*(1-shore)*.35; return lerp(sea,float3(.84,.89,.88),saturate(shore*lerp(crest1,crest2,Storm)*breaks*(.6+Storm*.3)+caps*.7+whitecap));',unreal.CustomMaterialOutputType.CMOT_FLOAT3,{'Position':pos,'Time':time,'Storm':storm})
     rough=expression(mat,unreal.MaterialExpressionConstant,r=.18)
     specular=expression(mat,unreal.MaterialExpressionConstant,r=.25)
     MEL.connect_material_property(specular,'',unreal.MaterialProperty.MP_SPECULAR)
@@ -189,15 +192,27 @@ def build_suite_daylight():
 
 
 def time_collection():
-    """MPC_MareTime: scalar Night (0 day .. 1 night) written by UMareVisualWorld every tick."""
+    """MPC_MareTime, written by UMareVisualWorld every tick: Night (0 day .. 1 night) and the weather, eased:
+    Rain (0..1, curtain and puddles), Wind (0 calm .. 1 storm, palms) and Storm (0..1, rough sea)."""
     path='/Game/World/Materials/MPC_MareTime'
     mpc=unreal.load_asset(path)
     if not mpc:
         mpc=unreal.AssetToolsHelpers.get_asset_tools().create_asset('MPC_MareTime','/Game/World/Materials',unreal.MaterialParameterCollection,unreal.MaterialParameterCollectionFactoryNew())
-        p=unreal.CollectionScalarParameter();p.set_editor_property('parameter_name','Night');p.set_editor_property('default_value',0.0)
-        mpc.set_editor_property('scalar_parameters',[p])
+    params=list(mpc.get_editor_property('scalar_parameters'))
+    names=[str(p.get_editor_property('parameter_name')) for p in params]
+    added=False
+    for name,default in (('Night',0.0),('Rain',0.0),('Wind',.2),('Storm',0.0)):
+        if name not in names:
+            p=unreal.CollectionScalarParameter();p.set_editor_property('parameter_name',name);p.set_editor_property('default_value',default)
+            params.append(p);added=True
+    if added:
+        mpc.set_editor_property('scalar_parameters',params)
         unreal.EditorAssetLibrary.save_loaded_asset(mpc)
     return mpc
+
+
+def _mpc(mat,name):
+    return expression(mat,unreal.MaterialExpressionCollectionParameter,collection=time_collection(),parameter_name=name)
 
 
 def build_window_pane():
@@ -274,10 +289,93 @@ def build_palm_fab():
     MEL.connect_material_property(normal, 'RGB', unreal.MaterialProperty.MP_NORMAL)
     MEL.connect_material_property(sss, '', unreal.MaterialProperty.MP_SUBSURFACE_COLOR)
     MEL.connect_material_property(expression(mat, unreal.MaterialExpressionConstant, r=.7), '', unreal.MaterialProperty.MP_ROUGHNESS)
+    # Wind (MPC Wind, 0 calm .. 1 storm): the trunk bends more with height and leans downwind, fronds flutter
+    # with their distance from the trunk axis. ObjectPositionWS is the instance base (palms are instanced).
+    pos = expression(mat, unreal.MaterialExpressionWorldPosition)
+    origin = expression(mat, unreal.MaterialExpressionObjectPositionWS)
+    time = expression(mat, unreal.MaterialExpressionTime)
+    wind = custom(mat, 'float h=saturate((P.z-O.z)/750); float bend=h*h; float ph=T*(.55+W*.9)+O.x*.003+O.y*.002; float2 dir=normalize(float2(1,.35)); float sway=(sin(ph)*.65+sin(ph*2.3+1.7)*.25)*(5+W*26)*bend+W*W*22*bend; float r=saturate((length(P.xy-O.xy)-70)/320)*h; float flutter=sin(T*(2.6+W*5)+P.x*.05+P.y*.04)*(1.2+W*7)*r; return float3(dir*(sway+flutter*.4),flutter);', unreal.CustomMaterialOutputType.CMOT_FLOAT3, {'P': pos, 'O': origin, 'T': time, 'W': _mpc(mat, 'Wind')})
+    MEL.connect_material_property(wind, '', unreal.MaterialProperty.MP_WORLD_POSITION_OFFSET)
+    mat.set_editor_property('max_world_position_offset_displacement', 70.0)
     errors = list(MEL.recompile_material(mat))
     if errors: raise RuntimeError(str(errors))
     unreal.EditorAssetLibrary.save_loaded_asset(mat)
     return mat
+
+
+def build_rain():
+    """M_RainCurtain: two layers of falling streaks (T_RainStreaks, drawn by tools/ue58/gen_weather_textures.py) on
+    an open cylinder that UMareVisualWorld keeps around the player while it rains outdoors. Unlit translucent,
+    faded at the top/bottom and where it meets geometry; Rain scales the opacity, darker at night."""
+    tex = _custom_texture('T_RainStreaks.png')
+    mat = material('M_RainCurtain')
+    mat.set_editor_property('blend_mode', unreal.BlendMode.BLEND_TRANSLUCENT)
+    mat.set_editor_property('shading_model', unreal.MaterialShadingModel.MSM_UNLIT)
+    mat.set_editor_property('two_sided', True)
+    uv = expression(mat, unreal.MaterialExpressionTextureCoordinate)
+    time = expression(mat, unreal.MaterialExpressionTime)
+    samples = []
+    for tiling, speed in (((5, 2.2), 1.5), ((9, 4), 2.3)):
+        u = custom(mat, f'return UV*float2({tiling[0]},{tiling[1]})+float2(T*.03,-T*{speed});', unreal.CustomMaterialOutputType.CMOT_FLOAT2, {'UV': uv, 'T': time})
+        node = expression(mat, unreal.MaterialExpressionTextureSample, texture=tex)
+        connect(u, '', node, 'UVs')
+        samples.append(node)
+    fade = expression(mat, unreal.MaterialExpressionDepthFade, fade_distance_default=120.0)
+    rain = _mpc(mat, 'Rain')
+    alpha = custom(mat, 'float v=UV.y; float ends=smoothstep(0,.15,v)*smoothstep(1,.8,v); return saturate(A*.8+B*.55)*ends*Rain*.55*Fade;', unreal.CustomMaterialOutputType.CMOT_FLOAT1, {'UV': uv, 'Rain': rain, 'Fade': fade, 'A': samples[0], 'B': samples[1]})
+    MEL.connect_material_expressions(samples[0], 'A', alpha, 'A')
+    MEL.connect_material_expressions(samples[1], 'A', alpha, 'B')
+    color = custom(mat, 'return float3(.62,.68,.74)*lerp(1.0,.12,Night);', unreal.CustomMaterialOutputType.CMOT_FLOAT3, {'Night': _mpc(mat, 'Night')})
+    MEL.connect_material_property(color, '', unreal.MaterialProperty.MP_EMISSIVE_COLOR)
+    MEL.connect_material_property(alpha, '', unreal.MaterialProperty.MP_OPACITY)
+    errors = list(MEL.recompile_material(mat))
+    if errors: raise RuntimeError(str(errors))
+    unreal.EditorAssetLibrary.save_loaded_asset(mat)
+    return mat
+
+
+def build_puddle():
+    """M_Puddle: rain puddles on streets and the square (mare_hud puddles). One of four shapes of T_PuddleMask
+    per instance; they grow from the middle as Rain rises (opacity mask = shape * Rain) and vanish when dry.
+    Dark, almost mirror water with rain ripples."""
+    tex = _custom_texture('T_PuddleMask.png')
+    mat = material('M_Puddle')
+    mat.set_editor_property('blend_mode', unreal.BlendMode.BLEND_MASKED)
+    mat.set_editor_property('opacity_mask_clip_value', .5)
+    mat.set_editor_property('used_with_instanced_static_meshes', True)
+    uv = expression(mat, unreal.MaterialExpressionTextureCoordinate)
+    rnd = expression(mat, unreal.MaterialExpressionPerInstanceRandom)
+    cell = custom(mat, 'float k=floor(R*3.999); return UV*.5+float2(fmod(k,2),floor(k/2))*.5;', unreal.CustomMaterialOutputType.CMOT_FLOAT2, {'UV': uv, 'R': rnd})
+    shape = expression(mat, unreal.MaterialExpressionTextureSample, texture=tex)
+    connect(cell, '', shape, 'UVs')
+    rain = _mpc(mat, 'Rain')
+    mask = custom(mat, 'return A*smoothstep(.05,.9,Rain)*1.6;', unreal.CustomMaterialOutputType.CMOT_FLOAT1, {'Rain': rain, 'A': shape})
+    MEL.connect_material_expressions(shape, 'A', mask, 'A')
+    pos = expression(mat, unreal.MaterialExpressionWorldPosition)
+    time = expression(mat, unreal.MaterialExpressionTime)
+    water_normal = unreal.load_asset('/Engine/Functions/Engine_MaterialFunctions02/ExampleContent/Textures/water_n')
+    ripples = []
+    for code in ('return Position.xy*.012 + Time*float2(.05,.03);', 'return Position.yx*.017 - Time*float2(.04,.06);'):
+        u = custom(mat, code, unreal.CustomMaterialOutputType.CMOT_FLOAT2, {'Position': pos, 'Time': time})
+        node = expression(mat, unreal.MaterialExpressionTextureSample, texture=water_normal, sampler_type=unreal.MaterialSamplerType.SAMPLERTYPE_NORMAL)
+        connect(u, '', node, 'UVs')
+        ripples.append(node)
+    normal = custom(mat, 'return normalize(float3((A.xy+B.xy)*(.04+Rain*.08),1));', unreal.CustomMaterialOutputType.CMOT_FLOAT3, {'A': ripples[0], 'B': ripples[1], 'Rain': rain})
+    MEL.connect_material_property(mask, '', unreal.MaterialProperty.MP_OPACITY_MASK)
+    MEL.connect_material_property(normal, '', unreal.MaterialProperty.MP_NORMAL)
+    MEL.connect_material_property(expression(mat, unreal.MaterialExpressionConstant3Vector, constant=unreal.LinearColor(.018, .02, .022, 1)), '', unreal.MaterialProperty.MP_BASE_COLOR)
+    MEL.connect_material_property(expression(mat, unreal.MaterialExpressionConstant, r=.03), '', unreal.MaterialProperty.MP_ROUGHNESS)
+    MEL.connect_material_property(expression(mat, unreal.MaterialExpressionConstant, r=.6), '', unreal.MaterialProperty.MP_SPECULAR)
+    errors = list(MEL.recompile_material(mat))
+    if errors: raise RuntimeError(str(errors))
+    unreal.EditorAssetLibrary.save_loaded_asset(mat)
+    return mat
+
+
+def build_weather():
+    """MPC weather params + rough sea + palm wind + rain curtain + puddles (03/11/2026)."""
+    time_collection()
+    return {m.get_name(): m.get_path_name() for m in (build_water(), build_palm_fab(), build_rain(), build_puddle())}
 
 
 def build_hp_tree():
