@@ -63,6 +63,31 @@ void AMarePerson::SitOn(const FVector& SeatTop,float Yaw)
  SeatAlignIn=.6f;
 }
 
+void AMarePerson::LieOn(const FVector& TowelCentre,float AxisYaw)
+{
+ // Face up on the towel (03/11, Sergio: "deitadas de barriga para cima"): the calm standing idle laid on its back,
+ // the actor's forward (the face) pointing at the sky and its up axis (feet to head) along the towel.
+ LieCentre=TowelCentre;LieYaw=AxisYaw;bLying=true;LieAlignIn=.8f;
+ GetCharacterMovement()->DisableMovement();GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+ SetActorLocationAndRotation(TowelCentre+FVector(0,0,12),FRotationMatrix::MakeFromXZ(FVector::UpVector,FRotator(0,AxisYaw,0).Vector()).Rotator());
+}
+
+void AMarePerson::UpdateLying(float DeltaSeconds)
+{
+ // The standing idles stand with one foot 37 cm behind the other, which laid down sinks a heel into the sand. The
+ // first 0.17 s of the Cheer capture stands square with the hands on the chest: played slowly back and forth it is a
+ // person resting on the back with the hands on the belly, breathing. Without the mocap clips, the idle.
+ if(!Clips.Contains(TEXT("Cheer")))PlayPose(TEXT("Idle"));
+ else{PlayPose(TEXT("Cheer"),false);
+  if(auto Instance=Cast<UMareServiceAnimInstance>(GetMesh()->GetAnimInstance())){Instance->SetPlaying(false);
+   Instance->SetPosition(.085f+.085f*FMath::Sin(Elapsed*.9f+FCrc::StrCrc32(*SaveId)%7),false);}}
+ if(LieAlignIn>0 && (LieAlignIn-=DeltaSeconds)<=0 && GetMesh()->GetBoneIndex(TEXT("head"))!=INDEX_NONE){
+  // Centre the body (head to mid-feet) on the towel and rest the pelvis 11 cm above it (the back of the hips on the cloth).
+  const FVector Mid=(GetMesh()->GetSocketLocation(TEXT("foot_l"))+GetMesh()->GetSocketLocation(TEXT("foot_r")))/2;
+  const FVector Centre=(GetMesh()->GetSocketLocation(TEXT("head"))+Mid)/2;
+  AddActorWorldOffset(FVector(LieCentre.X-Centre.X,LieCentre.Y-Centre.Y,LieCentre.Z+11-GetMesh()->GetSocketLocation(TEXT("pelvis")).Z));}
+}
+
 void AMarePerson::AlignToSeatBelow()
 {
  // Sitting_Idle: pelvis 30 cm behind the root, ~50 cm above it.
@@ -347,10 +372,13 @@ void AMarePerson::Tick(float DeltaSeconds)
  if(!bOutfitApplied && Elapsed>.05f && MetaHuman.IsEmpty() && CVarMareMetaHumans.GetValueOnGameThread()){
   FString Wanted=CVarMareMetaHuman.GetValueOnGameThread();
   if(Wanted.IsEmpty()){
-   FString RoleKey=bEmployee?TEXT("staff"):Tags.Contains(TEXT("MareHotelGuest"))?TEXT("hotel"):Tags.Contains(TEXT("MarePousadaGuest"))?TEXT("pousada"):bAmbient?TEXT("village"):TEXT("beach");
+   FString RoleKey=bEmployee?TEXT("staff"):Tags.Contains(TEXT("MareBather"))?TEXT("beach"):Tags.Contains(TEXT("MareHotelGuest"))?TEXT("hotel"):Tags.Contains(TEXT("MarePousadaGuest"))?TEXT("pousada"):bAmbient?TEXT("village"):TEXT("beach");
    if(bEmployee && !StaffRole.IsEmpty() && MetaHumanRoster()->HasField(TEXT("staff_")+StaffRole))RoleKey=TEXT("staff_")+StaffRole;
-   const TArray<TSharedPtr<FJsonValue>>* List=nullptr;
-   if(MetaHumanRoster()->TryGetArrayField(RoleKey,List) && List->Num())
+   const TArray<TSharedPtr<FJsonValue>>* List=nullptr;TArray<TSharedPtr<FJsonValue>> Swimmers;
+   // Sunbathers lie on their towels in swimwear: only the whole-body swim builds of the beach roster.
+   if(Tags.Contains(TEXT("MareBather")) && MetaHumanRoster()->TryGetArrayField(RoleKey,List)){
+    for(const auto& V:*List)if(V->AsString().Contains(TEXT("_Swim")))Swimmers.Add(V);if(Swimmers.Num())List=&Swimmers;}
+   if((List || MetaHumanRoster()->TryGetArrayField(RoleKey,List)) && List->Num())
     Wanted=(*List)[int32(FCrc::StrCrc32(*(SaveId+PersonName))%uint32(List->Num()))]->AsString();
    MetaRole=RoleKey;
   }
@@ -366,7 +394,8 @@ void AMarePerson::Tick(float DeltaSeconds)
    else Style=EOutfit::Beach;}
   ApplyOutfit(Style);}
  if(bEmployee && !StaffRole.IsEmpty() && !Badge && !MetaHuman.IsEmpty() && Elapsed>.6f)AttachBadge();
- if(GetVelocity().SizeSquared2D()>25)PlayPose(TEXT("Walk"));else if(!WorkPose.IsEmpty())PlayPose(WorkPose);else if(bAmbient)PlayPose(bSeated?TEXT("Sitting_Idle"):bConversing?TEXT("Idle_Talking"):TEXT("Idle"));else if(Stage!=EMarePersonStage::Eating)PlayPose(TEXT("Idle"));
+ if(bLying)UpdateLying(DeltaSeconds);
+ else if(GetVelocity().SizeSquared2D()>25)PlayPose(TEXT("Walk"));else if(!WorkPose.IsEmpty())PlayPose(WorkPose);else if(bAmbient)PlayPose(bSeated?TEXT("Sitting_Idle"):bConversing?TEXT("Idle_Talking"):TEXT("Idle"));else if(Stage!=EMarePersonStage::Eating)PlayPose(TEXT("Idle"));
 }
 void AMarePerson::AttachBadge()
 {

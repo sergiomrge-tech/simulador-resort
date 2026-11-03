@@ -40,7 +40,7 @@ void UMareEventsWorld::UpdateDancers()
   if(!P || FVector::Dist2D(P->GetActorLocation(),PartyCentre)>1100 || P->bSeated){if(P)P->WorkPose.Reset();Dancers.RemoveAt(I);}}
  for(TActorIterator<AMarePerson> It(GetWorld());It;++It){AMarePerson* P=*It;
   // Only villagers and walkers (bAmbient): kiosk customers waiting in line or at a table keep their own poses.
-  if(!P->bAmbient || P->bEmployee || P->bSeated || !P->WorkPose.IsEmpty())continue;
+  if(!P->bAmbient || P->bEmployee || P->bSeated || P->bLying || !P->WorkPose.IsEmpty())continue;
   if(FVector::Dist2D(P->GetActorLocation(),PartyCentre)>900)continue;
   // MH_Dance stays out: the capture bends 50 cm forward with the arms hanging, which reads as broken in the game.
   static const TCHAR* Dance[]={TEXT("DanceHip"),TEXT("Cheer"),TEXT("DanceHip")};

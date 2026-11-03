@@ -1104,6 +1104,25 @@ def run(action, arg=''):
             out.append([p.get_name()[-16:], p.get_editor_property('person_name'), [round(l.x), round(l.y), round(l.z)], feet,
                         p.get_editor_property('meta_human'), bool(p.get_editor_property('seated'))])
         return out
+    if action == 'bathers':
+        # PIE: sunbathers (tag MareBather): clip, play time and the world head/pelvis/feet of the driving rig.
+        world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()
+        out = []
+        for a in unreal.GameplayStatics.get_all_actors_with_tag(world, 'MareBather'):
+            m = a.get_component_by_class(unreal.SkeletalMeshComponent)
+            inst = m.get_anim_instance()
+            row = {'at': [round(v) for v in (a.get_actor_location().x, a.get_actor_location().y, a.get_actor_location().z)],
+                   'yaw': round(a.get_actor_rotation().yaw), 'mesh': m.get_name(), 'asset': None}
+            try:
+                row['asset'] = inst.get_current_asset().get_name() if inst and inst.get_current_asset() else None
+                row['time'] = round(inst.get_current_time(), 2)
+            except Exception as e:
+                row['err'] = str(e)[:80]
+            for bone in ('pelvis', 'head', 'foot_l', 'foot_r'):
+                q = m.get_socket_location(bone)
+                row[bone] = [round(q.x), round(q.y), round(q.z)]
+            out.append(row)
+        return out
     if action == 'allpeople':
         # PIE: every actor with a visible skeletal mesh (people, animals, any rig), not only MarePerson: per visible
         # skeletal component, head/hands/feet relative to the actor. Two calls a second apart find who glides (moved,

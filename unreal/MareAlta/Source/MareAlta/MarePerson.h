@@ -97,6 +97,11 @@ public:
  /** Already placed on a seat (kiosk table points): find the seat top straight below the sitting pelvis (trace) and
   *  align on it, so taller and shorter bodies all sit on the stool instead of above or inside it. */
  void AlignToSeatBelow();
+ /** Sunbather lying face up on a beach towel (03/11, "deitar na canga, de barriga para cima"): the start of the
+  *  Cheer capture (standing square, hands on the chest) laid on its back along the towel axis (AxisYaw, head first); once the pose plays the body is centred on the towel,
+  *  pelvis 11 cm above it. (The Fab LieDown capture lies curled on its side, rejected for the beach.) */
+ void LieOn(const FVector& TowelCentre,float AxisYaw);
+ bool bLying=false;
  /** Clothing style, applied on the first tick once role flags are set (employees keep the uniform). */
  enum class EOutfit:uint8{Auto,Uniform,Casual,Beach,Swim,Social};
  EOutfit Outfit=EOutfit::Auto;
@@ -115,4 +120,6 @@ public:
 private:
  FString Playing;
  FTransform ReferenceBoneTransform(FName Bone)const;
+ FVector LieCentre=FVector::ZeroVector;float LieYaw=0,LieAlignIn=0;
+ void UpdateLying(float DeltaSeconds);
 };

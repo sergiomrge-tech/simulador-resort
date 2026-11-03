@@ -255,7 +255,14 @@ Pronto e testado (02/11):
   `mare.Event junina`, CVar `mare.Mocap 0` desliga. Fora: `Dance` (a captura se curva 50 cm à frente com os braços
   pendurados; o Sergio apontou "braços errados"), `TalkGesture` (curva o tronco ~35°, parece reverência), `SitDrink` (banqueta, senta 9 cm mais alto) e `LieDown` (fica para a canga). Clipes locais, fora do git
   como as roupas do Fab (`D:/CodexTemp/fab/anim`); sem eles o jogo usa os clipes base.
-  - deitar na espreguiçadeira e na canga;
+  - deitar na canga: FEITO 03/11 (`sunbathers.json`, `UMareVillageWorld::UpdateSunbathers`, `AMarePerson::LieOn`): 5
+    banhistas MetaHuman de maiô/sunga deitados de barriga para cima nas toalhas dos guarda-sóis das 9h às 17h sem chuva,
+    mãos no peito e respiração lenta (início do clipe `Cheer`, os idles em pé têm um pé 37 cm atrás e afundavam um
+    calcanhar; o `LieDown` deita de lado encolhido e foi recusado pelo Sergio); chegam e saem só com o jogador a mais de
+    25 m. Junto: toalhas e lonas dos guarda-sóis com tecido (`M_BeachFabric`: felpa waffle, barra e listras brancas nas
+    pontas; lona com trama de denim e 8 gomos costurados), pedra tirada de cima de uma toalha e o tronco que estava em
+    cima da lona de um guarda-sol descido para a areia. Prova `docs/ue58/graphics-reference/banhistas-canga-20261103.jpg`.
+  - deitar na espreguiçadeira (falta: as espreguiçadeiras têm encosto inclinado, precisa de pose reclinada);
   - nadar no mar e na piscina;
   - comer e beber sentado (já existe);
   - conversar com gestos sentado (feito, `SitTalk`; em pé ainda falta clipe bom); dançar nas festas (feito);

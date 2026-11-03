@@ -603,3 +603,5 @@ Síntese original (numpy, no mesmo script, dedicada a CC0): duas campainhas de b
 
 - Tênis de mesa (mesa, rede, raquetes e bola): modelados neste projeto em `tools/ue58/gen_table_tennis.py` (CC0, original); sons `tt_paddle`/`tt_bounce` sintetizados em `tools/ue58/fetch_action_sfx.py` (CC0, original).
 - Piso do Grand Hotel: Poly Haven `laminate_floor` (CC0), https://polyhaven.com/a/laminate_floor
+
+Toalhas e lonas dos guarda-sóis da praia (`M_BeachFabric`, 03/11): normais CC0 do Poly Haven `waffle_pique_cotton` (felpa) e `denim_fabric` (trama da lona), já listados acima.

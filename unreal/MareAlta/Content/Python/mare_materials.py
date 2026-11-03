@@ -902,3 +902,123 @@ def wood_floor(path):
         raise RuntimeError(str(errors))
     unreal.EditorAssetLibrary.save_loaded_asset(mat, False)
     return 'ok'
+
+
+BEACH_CANOPIES = ['/Game/World/Models/World_2029/World_2029/StaticMeshes/World_2029', '/Game/World/Models/World_2030/World_2030/StaticMeshes/World_2030',
+                  '/Game/World/Models/World_2035/World_2035/StaticMeshes/World_2035', '/Game/World/Models/World_2036/World_2036/StaticMeshes/World_2036',
+                  '/Game/World/Models/World_2040/World_2040', '/Game/World/Models/World_2041/World_2041', '/Game/World/Models/World_2045/World_2045',
+                  '/Game/World/Models/World_2050/World_2050']
+BEACH_TOWELS = ['/Game/World/Models/World_2031/World_2031/StaticMeshes/World_2031', '/Game/World/Models/World_2032/World_2032/StaticMeshes/World_2032',
+                '/Game/World/Models/World_2037/World_2037/StaticMeshes/World_2037', '/Game/World/Models/World_2038/World_2038/StaticMeshes/World_2038',
+                '/Game/World/Models/World_2042/World_2042', '/Game/World/Models/World_2043/World_2043', '/Game/World/Models/World_2047/World_2047',
+                '/Game/World/Models/World_2051/World_2051']
+
+
+def _flat_colour(mat):
+    """Base colour of an imported flat material: the glTF factor of a material instance, or the constant wired to a
+    material's base colour; None when it is textured (left alone)."""
+    if isinstance(mat, unreal.MaterialInstanceConstant):
+        for p in mat.get_editor_property('texture_parameter_values'):
+            if p.parameter_value and 'color' in str(p.parameter_info.name).lower():
+                return None
+        for p in mat.get_editor_property('vector_parameter_values'):
+            name = str(p.parameter_info.name).lower()
+            if 'color' in name or 'colour' in name:
+                return p.parameter_value
+        return None
+    node = MEL.get_material_property_input_node(mat, unreal.MaterialProperty.MP_BASE_COLOR)
+    if isinstance(node, unreal.MaterialExpressionMaterialFunctionCall):
+        # Re-made materials pass the colour through a function: its first constant colour input.
+        node = next((n for n in MEL.get_inputs_for_material_expression(mat, node) if isinstance(n, unreal.MaterialExpressionConstant3Vector)), None)
+    if isinstance(node, unreal.MaterialExpressionConstant3Vector):
+        return node.get_editor_property('constant')
+    if isinstance(node, unreal.MaterialExpressionVectorParameter):
+        return node.get_editor_property('default_value')
+    return None
+
+
+def beach_fabric_master():
+    """M_BeachFabric (03/11, Sergio: "guarda-sol e as toalhas no chão não têm texturas"): the beach towels and umbrella
+    canopies were flat colours. Keeps each piece's colour (Tint) and adds the cloth: Kind 0 = terry towel (CC0 waffle
+    piqué cotton normal, 12 cm tile, soft matte, hemmed with white end bands), Kind 1 = umbrella canvas (CC0 Poly Haven
+    denim weave normal, 9 cm tile; the painting-canvas maps showed stains and frame edges as tiles), light sheen, 8 sewn panels. Projected in world space by the face's dominant axis (the generated meshes have no usable UVs)
+    plus a faint large-scale tone variation so a towel is not one flat colour."""
+    mat = material('M_BeachFabric')
+    mat.set_editor_property('two_sided', True)
+    mat.set_editor_property('used_with_instanced_static_meshes', True)
+    mat.set_editor_property('used_with_nanite', True)
+    tint = expression(mat, unreal.MaterialExpressionVectorParameter, parameter_name='Tint', default_value=unreal.LinearColor(.8, .8, .8, 1))
+    kind = expression(mat, unreal.MaterialExpressionScalarParameter, parameter_name='Kind', default_value=0.)
+    pos = expression(mat, unreal.MaterialExpressionWorldPosition)
+    nrm = expression(mat, unreal.MaterialExpressionVertexNormalWS)
+    uv = custom(mat, 'float3 a=abs(N); float2 p=a.z>.6?P.xy:(a.x>a.y?P.yz:P.xz); return p/lerp(12.0,9.0,K);',
+                unreal.CustomMaterialOutputType.CMOT_FLOAT2, {'P': pos, 'N': nrm, 'K': kind})
+    terry = expression(mat, unreal.MaterialExpressionTextureSample, texture=unreal.load_asset('/Game/Custom/mare_suite_m5/mare_suite_waffle_pique_cotton_nor_1k'),
+                       sampler_type=unreal.MaterialSamplerType.SAMPLERTYPE_NORMAL)
+    canvas_n = expression(mat, unreal.MaterialExpressionTextureSample, texture=unreal.load_asset('/Game/Custom/Textures/denim_fabric_nor_1k'),
+                          sampler_type=unreal.MaterialSamplerType.SAMPLERTYPE_NORMAL)
+    for node in (terry, canvas_n):
+        connect(uv, '', node, 'UVs')
+    # Towel (mesh space: 95 x 194 cm, long side along local Y): hemmed edges and white bands near both ends with a
+    # thin stripe of a deeper shade between them. Canopy: 8 sewn panels around the pole, seams a shade darker and each
+    # panel catching the light slightly differently.
+    loc = expression(mat, unreal.MaterialExpressionLocalPosition)
+    color = custom(mat, 'float n=sin(P.x*.013+sin(P.y*.017)*2.0)*.5+.5; float3 c=T.rgb*lerp(.9,1.04,n); '
+                   'float y=abs(L.y), x=abs(L.x); float pile=1.0-saturate(length(Tn.xy)*2.2); '
+                   'float band=(step(60.0,y)*step(y,67.0))+(step(73.0,y)*step(y,77.0)); float deep=step(68.5,y)*step(y,71.5); '
+                   'float hem=step(43.5,x)+step(92.0,y); '
+                   'float3 towel=lerp(c,float3(.86,.85,.80),saturate(band)); towel=lerp(towel,c*.62,deep); towel*=lerp(.72,1.06,pile)*(1.0-.14*saturate(hem)); '
+                   'float weave=1.0-saturate(length(Cn.xy)*1.8); float a=atan2(L.y,L.x); float seam=smoothstep(.94,1.0,cos(a*8.0)); '
+                   'float panel=.93+.07*step(0.0,sin(a*8.0)); float3 canvas=c*lerp(.86,1.03,weave)*panel*(1.0-.3*seam); '
+                   'return lerp(towel,canvas,K);',
+                   unreal.CustomMaterialOutputType.CMOT_FLOAT3, {'P': pos, 'L': loc, 'T': tint, 'Cn': canvas_n, 'Tn': terry, 'K': kind})
+    normal = custom(mat, 'float3 t=float3(A.xy*2.2,A.z); float3 c=float3(B.xy*.9,B.z); return normalize(lerp(t,c,K));',
+                    unreal.CustomMaterialOutputType.CMOT_FLOAT3, {'A': terry, 'B': canvas_n, 'K': kind})
+    rough = custom(mat, 'return lerp(.92,.7,K);', unreal.CustomMaterialOutputType.CMOT_FLOAT1, {'K': kind})
+    MEL.connect_material_property(color, '', unreal.MaterialProperty.MP_BASE_COLOR)
+    MEL.connect_material_property(normal, '', unreal.MaterialProperty.MP_NORMAL)
+    MEL.connect_material_property(rough, '', unreal.MaterialProperty.MP_ROUGHNESS)
+    errors = list(MEL.recompile_material(mat))
+    if errors:
+        raise RuntimeError(str(errors))
+    unreal.EditorAssetLibrary.save_loaded_asset(mat, False)
+    return mat
+
+
+def beach_fabrics(dry=False):
+    """Each towel/canopy slot gets an instance of M_BeachFabric with the colour it had (MI_BeachFabric_<mesh>_<slot>);
+    the original flat material is kept as the instance's source colour, so running it again is harmless."""
+    master = None if dry else beach_fabric_master()
+    tools = unreal.AssetToolsHelpers.get_asset_tools()
+    out = []
+    for kind, paths in ((0, BEACH_TOWELS), (1, BEACH_CANOPIES)):
+        for path in paths:
+            mesh = unreal.load_asset(path)
+            if not mesh:
+                out.append([path, 'missing'])
+                continue
+            b = mesh.get_bounding_box()
+            slots = list(mesh.static_materials)
+            for j, slot in enumerate(slots):
+                old = slot.material_interface
+                if old and old.get_name().startswith('MI_BeachFabric'):
+                    out.append([mesh.get_name(), j, 'done'])
+                    continue
+                c = _flat_colour(old) if old else None
+                out.append([mesh.get_name(), j, old.get_name() if old else None, [round(v, 3) for v in (c.r, c.g, c.b)] if c else None,
+                            [round(b.max.x - b.min.x), round(b.max.y - b.min.y), round(b.max.z - b.min.z)]])
+                if dry or not c:
+                    continue
+                name = f'MI_BeachFabric_{mesh.get_name()}_{j}'
+                mi = unreal.load_asset(f'/Game/World/Materials/BeachFabric/{name}') or tools.create_asset(
+                    name, '/Game/World/Materials/BeachFabric', unreal.MaterialInstanceConstant, unreal.MaterialInstanceConstantFactoryNew())
+                MEL.set_material_instance_parent(mi, master)
+                MEL.set_material_instance_vector_parameter_value(mi, 'Tint', unreal.LinearColor(c.r, c.g, c.b, 1))
+                MEL.set_material_instance_scalar_parameter_value(mi, 'Kind', float(kind))
+                unreal.EditorAssetLibrary.save_loaded_asset(mi, False)
+                slot.material_interface = mi
+                slots[j] = slot
+            if not dry:
+                mesh.set_editor_property('static_materials', slots)
+                unreal.EditorAssetLibrary.save_loaded_asset(mesh, False)
+    return out

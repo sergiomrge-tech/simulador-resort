@@ -440,6 +440,98 @@ def run(action, arg=''):
         return pie(arg)
     if action == 'quit':
         return save_and_quit()
+    if action == 'matnodes':
+        m = unreal.load_asset(arg)
+        mel = unreal.MaterialEditingLibrary
+        node = mel.get_material_property_input_node(m, unreal.MaterialProperty.MP_BASE_COLOR)
+        out = {'base': node.get_class().get_name() if node else None}
+        if node:
+            for prop in ('code', 'constant', 'default_value', 'parameter_name', 'r'):
+                try:
+                    out[prop] = str(node.get_editor_property(prop))[:300]
+                except Exception:
+                    pass
+            out['inputs'] = [[n.get_class().get_name(), str(n.get_editor_property('constant')) if isinstance(n, unreal.MaterialExpressionConstant3Vector) else ''] for n in mel.get_inputs_for_material_expression(m, node) if n]
+        return out
+    if action == 'beachfabric':
+        import importlib, mare_materials
+        importlib.reload(mare_materials)
+        return mare_materials.beach_fabrics(arg == 'dry')
+    if action == 'meshmats':
+        # Materials of World_<n> static meshes (slots) and the base colour source of each: "World_2029,World_2031".
+        out = {}
+        for name in arg.split(','):
+            m = unreal.load_asset(f'/Game/World/Models/{name}/{name}') or unreal.load_asset(f'/Game/World/Models/{name}/{name}/StaticMeshes/{name}')
+            if not m:
+                out[name] = 'missing'
+                continue
+            out[name] = [[s.material_interface.get_path_name() if s.material_interface else None,
+                          s.material_interface.get_class().get_name() if s.material_interface else None] for s in m.static_materials]
+        return out
+    if action == 'moveactor':
+        # Move a level actor (label ends with A) to x,y,z keeping its rotation: "A|x,y,z".
+        label, to = arg.split('|')
+        x, y, z = (float(v) for v in to.split(','))
+        for a in unreal.get_editor_subsystem(unreal.EditorActorSubsystem).get_all_level_actors():
+            if a.get_actor_label().endswith(label):
+                a.set_actor_location(unreal.Vector(x, y, z), False, False)
+                unreal.get_editor_subsystem(unreal.LevelEditorSubsystem).save_current_level()
+                return [a.get_actor_label(), x, y, z]
+        return 'not found'
+    if action == 'moveinst':
+        # Move one placement of a mesh (actor label contains A, mesh M, near x,y) to X,Y keeping its height: "A|M|x,y|X,Y".
+        label, mesh, near, to = arg.split('|')
+        nx, ny = (float(v) for v in near.split(','))
+        tx, ty = (float(v) for v in to.split(','))
+        for a in unreal.get_editor_subsystem(unreal.EditorActorSubsystem).get_all_level_actors():
+            if label not in a.get_actor_label():
+                continue
+            for c in a.get_components_by_class(unreal.InstancedStaticMeshComponent):
+                if not c.static_mesh or c.static_mesh.get_name() != mesh:
+                    continue
+                for i in range(c.get_instance_count()):
+                    tr = c.get_instance_transform(i, True)
+                    if abs(tr.translation.x - nx) < 30 and abs(tr.translation.y - ny) < 30:
+                        tr.translation = unreal.Vector(tx, ty, tr.translation.z)
+                        c.update_instance_transform(i, tr, True, True, True)
+                        unreal.get_editor_subsystem(unreal.LevelEditorSubsystem).save_current_level()
+                        return [a.get_actor_label(), i, [tx, ty, tr.translation.z]]
+        return 'not found'
+    if action == 'meshat':
+        # World positions (cm) and yaw of every placement of a static mesh by name, visible ones only.
+        out = []
+        for a in unreal.get_editor_subsystem(unreal.EditorActorSubsystem).get_all_level_actors():
+            for c in a.get_components_by_class(unreal.StaticMeshComponent):
+                if not c.static_mesh or c.static_mesh.get_name() != arg or not c.is_visible():
+                    continue
+                xs = [c.get_instance_transform(i, True) for i in range(c.get_instance_count())] if isinstance(c, unreal.InstancedStaticMeshComponent) else [c.get_world_transform()]
+                for tr in xs:
+                    if tr.scale3d.z > .01:
+                        out.append([round(tr.translation.x), round(tr.translation.y), round(tr.translation.z), round(tr.rotation.rotator().yaw)])
+        return out
+    if action == 'meshbounds':
+        out = {}
+        for name in arg.split(','):
+            m = unreal.load_asset(f'/Game/World/Models/{name}/{name}')
+            if m:
+                b = m.get_bounding_box()
+                out[name] = [[round(b.min.x), round(b.min.y), round(b.min.z)], [round(b.max.x), round(b.max.y), round(b.max.z)]]
+        return out
+    if action == 'gameprobe':
+        # Debug, PIE: static mesh placements whose pivot lies within r cm of a world point (x,y,z,r).
+        x, y, z, rad = (float(v) for v in arg.split(','))
+        world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()
+        out = []
+        for a in unreal.GameplayStatics.get_all_actors_of_class(world, unreal.Actor):
+            for c in a.get_components_by_class(unreal.StaticMeshComponent):
+                if not c.static_mesh or not c.is_visible():
+                    continue
+                xs = [(i, c.get_instance_transform(i, True)) for i in range(c.get_instance_count())] if isinstance(c, unreal.InstancedStaticMeshComponent) else [(-1, c.get_world_transform())]
+                for i, tr in xs:
+                    o = tr.translation
+                    if (o.x - x) ** 2 + (o.y - y) ** 2 + (o.z - z) ** 2 < rad * rad:
+                        out.append([a.get_actor_label(), c.static_mesh.get_name(), i, [round(o.x), round(o.y), round(o.z)], round(tr.rotation.rotator().yaw), [round(v, 2) for v in (tr.scale3d.x, tr.scale3d.y, tr.scale3d.z)]])
+        return out[:80]
     if action == 'probe':
         # Debug: hotel tower mesh components (x=0) or meshes whose instance bounds contain a world point (x,y,z cm).
         x, y, z = (float(v) for v in arg.split(','))

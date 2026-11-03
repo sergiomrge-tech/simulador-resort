@@ -17,6 +17,7 @@
 #include "AIController.h"
 #include "Kismet/GameplayStatics.h"
 #include "Misc/ConfigCacheIni.h"
+#include "HAL/IConsoleManager.h"
 #include "Misc/FileHelper.h"
 #include "Misc/Paths.h"
 #include "Serialization/JsonSerializer.h"
@@ -116,11 +117,45 @@ void UMareVillageWorld::UpdateHotelGuests()
   if(S.bSeat)P->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);else P->GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Pawn,ECR_Block);
   P->Tags.Add(TEXT("MareHotelGuest"));HotelGuests.Add(P);}
 }
+int32 UMareVillageWorld::SunbatherCount()const{int32 N=0;for(const auto& P:Sunbathers)N+=IsValid(P.Get());return N;}
+void UMareVillageWorld::UpdateSunbathers()
+{
+ static TSharedPtr<FJsonObject> Defs;
+ if(!Defs.IsValid()){FString Text;FFileHelper::LoadFileToString(Text,*(FPaths::ProjectContentDir()/TEXT("Data/sunbathers.json")));
+  if(!FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Text),Defs) || !Defs.IsValid())Defs=MakeShared<FJsonObject>();}
+ auto Sim=GetWorld()->GetGameInstance()->GetSubsystem<UMareSimulation>();if(!Sim)return;
+ const double Hour=UMareSimulation::Number(Sim->State,TEXT("minutes"))/60.;
+ const TArray<TSharedPtr<FJsonValue>>* Hours=nullptr;const TArray<TSharedPtr<FJsonValue>>* Towels=nullptr;
+ if(!Defs->TryGetArrayField(TEXT("hours"),Hours) || Hours->Num()!=2 || !Defs->TryGetArrayField(TEXT("towels"),Towels))return;
+ // Same weather rule as the sky (UMareVisualWorld): the QA override first, then today's weather.
+ const auto Weather=IConsoleManager::Get().FindConsoleVariable(TEXT("mare.Weather"));const int32 Forced=Weather?Weather->GetInt():0;
+ const bool bRain=Forced==2 || Forced==3 || (Forced==0 && UMareSimulation::String(Sim->State,TEXT("weather"))==TEXT("rain"));
+ const double Start=(*Hours)[0]->AsNumber(),End=(*Hours)[1]->AsNumber();
+ const bool bOut=!bRain && Hour>=Start && Hour<End;
+ // Nobody pops in or out in front of the player: after the first seconds of the session (still the loading fade),
+ // arrivals and departures wait until the towel is 25 m away; an hour outside the window they leave regardless.
+ auto Hero=UGameplayStatics::GetPlayerPawn(this,0);const bool bLoading=GetWorld()->GetTimeSeconds()<10;
+ const int32 Count=FMath::Min(int32(UMareSimulation::Number(Defs,TEXT("count"),5)),Towels->Num());
+ Sunbathers.SetNum(Count);
+ for(int32 I=0;I<Count;++I){const auto& V=(*Towels)[I]->AsArray();if(V.Num()!=4)continue;
+  const FVector Centre(V[0]->AsNumber(),V[1]->AsNumber(),V[2]->AsNumber());
+  const bool bFar=bLoading || !Hero || FVector::Dist2D(Hero->GetActorLocation(),Centre)>2500;
+  AMarePerson* Present=Sunbathers[I];
+  if(!bOut){if(IsValid(Present) && (bFar || Hour>=End+1 || Hour<Start-1)){Present->Destroy();Sunbathers[I]=nullptr;}continue;}
+  if(IsValid(Present) || !bFar)continue;
+  // Long side of the towel = its local Y; the head goes inland (+Y, away from the sea).
+  FVector Axis=FRotator(0,V[3]->AsNumber()+90,0).Vector();if(Axis.Y<0)Axis=-Axis;
+  FActorSpawnParameters Params;Params.SpawnCollisionHandlingOverride=ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+  auto P=GetWorld()->SpawnActor<AMarePerson>(Centre+FVector(0,0,90),Axis.Rotation(),Params);if(!P)continue;
+  if(!P->SetAppearance(I%4)){P->Destroy();continue;}
+  P->SaveId=FString::Printf(TEXT("bather%d"),I);P->PersonName=TEXT("Banhista");P->bAmbient=true;P->Tags.Add(TEXT("MareBather"));P->LieOn(Centre,Axis.Rotation().Yaw);
+  Sunbathers[I]=P;}
+}
 void UMareVillageWorld::Tick(float Dt)
 {
  if(!GetWorld()->IsGameWorld() || !Cast<AMareGameMode>(GetWorld()->GetAuthGameMode()) || UGameplayStatics::IsGamePaused(this))return;
  Clock-=Dt;if(Clock>0)return;Clock=.25f;if(!bReady){Setup();if(!bReady)return;}
- UpdateWalkers(.25f);UpdateHotelGuests();
+ UpdateWalkers(.25f);UpdateHotelGuests();UpdateSunbathers();
 }
 void UMareVillageWorld::Speak(AMarePerson* Person,APlayerController* Controller)
 {
@@ -203,4 +238,4 @@ AMarePerson* UMareVillageWorld::HoldPedestrianNear(FVector At,float MinDist,floa
  return nullptr;
 }
 void UMareVillageWorld::ReleasePedestrian(AMarePerson* Person){for(auto& W:Pedestrians)if(W.Person.Get()==Person)W.Wait=FMath::Min(W.Wait,.5f);}
-void UMareVillageWorld::Deinitialize(){CloseDialogue();Residents.Empty();HotelGuests.Empty();Pedestrians.Empty();Super::Deinitialize();}
+void UMareVillageWorld::Deinitialize(){CloseDialogue();Residents.Empty();HotelGuests.Empty();Sunbathers.Empty();Pedestrians.Empty();Super::Deinitialize();}

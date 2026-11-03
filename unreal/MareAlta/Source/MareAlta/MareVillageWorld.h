@@ -28,6 +28,7 @@ public:
  int32 ResidentCount()const{return Residents.Num();}
  int32 PedestrianCount()const{return Pedestrians.Num();}
  int32 HotelGuestCount()const{return HotelGuests.Num();}
+ int32 SunbatherCount()const;
 private:
  struct FWalker{TWeakObjectPtr<AMarePerson> Person;int32 Route=0,Point=0,Direction=1,BlockedAttempts=0;float Wait=0,Stuck=0;FVector Previous;};
  TArray<TArray<FVector>> Routes;
@@ -36,6 +37,9 @@ private:
  /** Receptionist, lobby guests, restaurant diners, gym and pool-bar regulars of the Grand Hotel, present only once it is owned. */
  UPROPERTY() TArray<TObjectPtr<AMarePerson>> HotelGuests;
  void UpdateHotelGuests();
+ /** Sunbathers lying on the beach towels by day when it is dry (Content/Data/sunbathers.json). */
+ UPROPERTY() TArray<TObjectPtr<AMarePerson>> Sunbathers;
+ void UpdateSunbathers();
  TWeakObjectPtr<AMarePerson> Speaker;
  TWeakObjectPtr<APlayerController> DialogController;
  TSharedPtr<SWidget> Dialogue;

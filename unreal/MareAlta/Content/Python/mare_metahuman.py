@@ -893,15 +893,16 @@ def run(action, arg=''):
         # Pelvis/root/head positions (component space) at a time fraction of each clip: retarget sanity check.
         out = {}
         for clip in (arg or 'Idle,LieDown,Dance').split(','):
-            anim = unreal.load_asset(f'{ANIMS}/MH_{clip}')
+            anim = unreal.load_asset(f'{ANIMS}/MH_{clip.split("@")[0]}')
             if not anim:
                 out[clip] = 'missing'
                 continue
             length = unreal.AnimationLibrary.get_sequence_length(anim)
             opts = unreal.AnimPoseEvaluationOptions()
-            pose = unreal.AnimPoseExtensions.get_anim_pose_at_time(anim, length * .4, opts)
+            frac = float(clip.split('@')[1]) if '@' in clip else .4
+            pose = unreal.AnimPoseExtensions.get_anim_pose_at_time(anim, length * frac, opts)
             row = {'len': round(length, 2)}
-            for bone in ('root', 'pelvis', 'head'):
+            for bone in ('root', 'pelvis', 'head', 'foot_l', 'foot_r', 'hand_l', 'hand_r'):
                 t = unreal.AnimPoseExtensions.get_bone_pose(pose, bone, unreal.AnimPoseSpaces.WORLD)
                 row[bone] = [round(t.translation.x), round(t.translation.y), round(t.translation.z)]
             out[clip] = row
