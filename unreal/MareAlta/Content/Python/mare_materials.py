@@ -874,3 +874,31 @@ def build_underwater_fog():
         raise RuntimeError(str(errors))
     unreal.EditorAssetLibrary.save_loaded_asset(mat, False)
     return mat.get_path_name()
+
+
+def wood_floor(path):
+    """Honey wood vinyl planks on the hotel floor (03/11, Sergio: "chão da mesma cor das paredes, coloque pisos como na
+    referência"): CC0 Poly Haven laminate_floor, world-aligned from above (2 m per tile) so it needs no UVs, with its
+    normal and roughness (a satin varnish). Replaces the flat colour of the imported floor material, in place."""
+    mel = unreal.MaterialEditingLibrary
+    mat = unreal.load_asset(path)
+    diff = texture('laminate_floor_diff')
+    nor = texture('laminate_floor_nor', True)
+    rough = texture('laminate_floor_rough')
+    rough.set_editor_property('srgb', False)
+    unreal.EditorAssetLibrary.save_loaded_asset(rough)
+    pos = expression(mat, unreal.MaterialExpressionWorldPosition)
+    uv = custom(mat, 'return P.xy/200.0;', unreal.CustomMaterialOutputType.CMOT_FLOAT2, {'P': pos})
+    nodes = {}
+    for key, tex, kind in (('c', diff, unreal.MaterialSamplerType.SAMPLERTYPE_COLOR), ('n', nor, unreal.MaterialSamplerType.SAMPLERTYPE_NORMAL),
+                           ('r', rough, unreal.MaterialSamplerType.SAMPLERTYPE_LINEAR_COLOR)):
+        nodes[key] = expression(mat, unreal.MaterialExpressionTextureSample, texture=tex, sampler_type=kind)
+        connect(uv, '', nodes[key], 'UVs')
+    MEL.connect_material_property(custom(mat, 'return C.rgb*.92;', unreal.CustomMaterialOutputType.CMOT_FLOAT3, {'C': nodes['c']}), '', unreal.MaterialProperty.MP_BASE_COLOR)
+    MEL.connect_material_property(nodes['n'], 'RGB', unreal.MaterialProperty.MP_NORMAL)
+    MEL.connect_material_property(custom(mat, 'return R.r*.55+.18;', unreal.CustomMaterialOutputType.CMOT_FLOAT1, {'R': nodes['r']}), '', unreal.MaterialProperty.MP_ROUGHNESS)
+    errors = list(mel.recompile_material(mat))
+    if errors:
+        raise RuntimeError(str(errors))
+    unreal.EditorAssetLibrary.save_loaded_asset(mat, False)
+    return 'ok'

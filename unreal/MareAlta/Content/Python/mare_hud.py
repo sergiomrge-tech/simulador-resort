@@ -1393,6 +1393,32 @@ def run(action, arg=''):
                 a.modify()
             out[p] = bool(a) and unreal.EditorAssetLibrary.save_loaded_asset(a, False)
         return out
+    if action == 'faceactors':
+        # Editor level: "mesh|tx,ty|front_offset" turns every actor of that static mesh to face the point (tx, ty);
+        # without the target it only reports location and yaw. Saves the level when it turns something.
+        import math as _m
+        parts = arg.split('|')
+        world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_editor_world()
+        out = []
+        for a in unreal.GameplayStatics.get_all_actors_of_class(world, unreal.StaticMeshActor):
+            m = a.static_mesh_component.static_mesh
+            if not m or m.get_name() != parts[0]:
+                continue
+            l = a.get_actor_location()
+            row = [a.get_actor_label(), round(l.x), round(l.y), round(l.z), round(a.get_actor_rotation().yaw, 1)]
+            if len(parts) > 2 and abs(l.z) < 300:
+                tx, ty = (float(v) for v in parts[1].split(','))
+                yaw = _m.degrees(_m.atan2(ty - l.y, tx - l.x)) + float(parts[2])
+                a.set_actor_rotation(unreal.Rotator(roll=0, pitch=0, yaw=yaw), False)
+                row.append(round(yaw, 1))
+            out.append(row)
+        if len(parts) > 2:
+            unreal.get_editor_subsystem(unreal.LevelEditorSubsystem).save_current_level()
+        return out
+    if action == 'woodfloor':
+        import importlib, mare_materials
+        importlib.reload(mare_materials)
+        return {p: mare_materials.wood_floor(p) for p in arg.split('|')}
     if action == 'lightshadows':
         # Editor level: interior and practical point lights cast shadows (with a short contact shadow); saves the level
         world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_editor_world()

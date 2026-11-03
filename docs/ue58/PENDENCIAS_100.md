@@ -361,9 +361,13 @@ Pronto e testado (02/11):
   lanternas maiores (`MareVisualWorld`, raio ≥ 8 m) projetam sombra, com sombra de contato curta; os geradores
   (`mare_hotel_lobby`, `mare_beach`) já criam as luzes assim. Foto `shadows_night.jpg` (saguão, salão, vila, quiosque).
   Medir o custo no executável junto com o item de FPS (seção 9).
-- [ ] P1 Poltronas do saguão do hotel (pedido do Sergio, 03/11, foto circulada): corrigir posição/orientação/apoio.
-- [ ] P1 Piso do saguão/salão do hotel da mesma cor das paredes (pedido do Sergio, 03/11): trocar por piso vinílico
+- [x] P1 Poltronas do saguão do hotel (pedido do Sergio, 03/11, foto circulada): corrigir posição/orientação/apoio.
+  Feito 03/11: a frente desses modelos é +Y e o gerador supunha outra; as poltronas clássicas e as lounge viradas
+  para as suas mesas de centro (`mare_hud faceactors`), foto `armchairs2.jpg`.
+- [x] P1 Piso do saguão/salão do hotel da mesma cor das paredes (pedido do Sergio, 03/11): trocar por piso vinílico
   amadeirado em réguas, como na foto de referência (madeira clara mel, réguas longas com veio).
+  Feito 03/11: Poly Haven `laminate_floor` (CC0) alinhado ao mundo (2 m por placa), relevo e brilho acetinado
+  (`mare_materials.wood_floor` no material do piso da torre), foto `floor_day.jpg`.
 
 ## 7. Áudio
 - [x] P1 Música por lugar e horário (02/11): zonas em `Content/Data/audio_zones.json` (saguão do hotel bossa, restaurante relax,

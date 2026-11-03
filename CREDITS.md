@@ -602,3 +602,4 @@ Síntese original (numpy, no mesmo script, dedicada a CC0): duas campainhas de b
 - Areia da praia (03/11/2026): texturas **Aerial Sand** de Rob Tuytel e **Dense Sand** de Dimitrios Savva (Poly Haven, CC0, https://polyhaven.com/a/aerial_sand e /dense_sand).
 
 - Tênis de mesa (mesa, rede, raquetes e bola): modelados neste projeto em `tools/ue58/gen_table_tennis.py` (CC0, original); sons `tt_paddle`/`tt_bounce` sintetizados em `tools/ue58/fetch_action_sfx.py` (CC0, original).
+- Piso do Grand Hotel: Poly Haven `laminate_floor` (CC0), https://polyhaven.com/a/laminate_floor
