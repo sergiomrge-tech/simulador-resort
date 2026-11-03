@@ -139,8 +139,17 @@ void UMareKioskWorld::UpdateCustomer(AMarePerson* P)
    P->SetActorRotation(FRotator(0,(CounterStaffPoints[P->CounterIndex]-P->GetActorLocation()).Rotation().Yaw,0));
  }
  else if((P->Stage==EMarePersonStage::Order || P->Stage==EMarePersonStage::Products) && P->Elapsed>120*S->KioskPatienceFactor())Leave(P);
+ else if(P->Stage==EMarePersonStage::ToTable && P->TableIndex!=INDEX_NONE && !P->AtGoal() && P->Elapsed<35 && P->GetVelocity().SizeSquared2D()<100
+  && (FMath::IsNearlyEqual(P->Elapsed,12.f,.6f) || FMath::IsNearlyEqual(P->Elapsed,24.f,.6f))){
+  // Stuck behind a chair or another guest: ask for the path again, the goal nudged a little around the approach.
+  P->WalkTo(TableApproaches[P->TableIndex]+FVector(FMath::FRandRange(-40.f,40.f),FMath::FRandRange(-40.f,40.f),0));P->Elapsed+=1.2f;}
  else if(P->Stage==EMarePersonStage::ToTable && (P->AtGoal() || P->Elapsed>35)){
-  if(!P->AtGoal()){Leave(P);return;}
+  // Close enough after the retries: take the seat (the guest is placed on it either way); far away: give up.
+  const bool bNear=P->TableIndex!=INDEX_NONE && FVector::Dist2D(P->GetActorLocation(),TableApproaches[P->TableIndex])<300.f;
+  if(!P->AtGoal() && !bNear){
+   UE_LOG(LogTemp,Warning,TEXT("Maré kiosk: %s gave up reaching table %d: at %s, goal %s, %.0f cm away, velocity %.0f"),*P->PersonName,P->TableIndex,
+    *P->GetActorLocation().ToString(),*P->Destination.ToString(),FVector::Dist2D(P->GetActorLocation(),P->Destination),P->GetVelocity().Size2D());
+   Leave(P);return;}
   if(P->TableIndex!=INDEX_NONE){if(auto AI=Cast<AAIController>(P->GetController()))AI->StopMovement();P->GetCharacterMovement()->DisableMovement();P->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);P->SetActorLocation(TablePoints[P->TableIndex]);P->SetActorRotation(FRotator(0,TableYaw[P->TableIndex],0));P->PlayPose(TEXT("Sitting_Idle"));P->AlignToSeatBelow();}
   else P->PlayPose(TEXT("Idle"));
   P->Stage=EMarePersonStage::Eating;P->Elapsed=0;
@@ -190,7 +199,8 @@ void UMareKioskWorld::Tick(float DeltaSeconds)
  RecoverOrders();
  // Decor comfort + beauty bring customers more often (KioskArrivalFactor, 1 .. ~3.4).
  if(S->IsOpen()){Arrival-=DeltaSeconds;if(Arrival<=0){SpawnCustomer();Arrival=FMath::FRandRange(18.f,30.f)/float(S->KioskArrivalFactor());}}
- if(IsValid(Attendant))Attendant->GetCharacterMovement()->MaxWalkSpeed=125.f*float(S->KioskServiceSpeed());
+ // Not while busy with something else (a comic event stops him for a moment: HUM-006).
+ if(IsValid(Attendant) && !Attendant->bConversing)Attendant->GetCharacterMovement()->MaxWalkSpeed=125.f*float(S->KioskServiceSpeed());
  for(auto P:Guests){
   if(!S->IsOpen() && P->OrderId.IsEmpty() && (P->Stage==EMarePersonStage::Approaching || P->Stage==EMarePersonStage::Order))Leave(P);
   UpdateCustomer(P);

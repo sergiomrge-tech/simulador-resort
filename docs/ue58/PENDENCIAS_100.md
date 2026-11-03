@@ -29,12 +29,18 @@ Nada de mecânica nova até esta seção fechar. Cada passada roda uma auditoria
   (tropeço e bandeja), turista perdido, Seu Arnaldo e pescador; capturas analisadas; teste ComicEvents ok.
 - [x] P0 Log limpo: PIE de vários minutos sem `Error`/`Ensure`/avisos de material/`missing`; testes automáticos 100%.
   03/11: portão `tools/ue58/qa/qa_gate.py` PASS: 27/27 testes, 0 linhas de erro no PIE (dia e noite).
-- [ ] P0 Pessoas: postura sentada/em pé/andando, roupas sem atravessar, cabelos, calçados; ninguém dentro de móvel.
+- [x] P0 Pessoas: postura sentada/em pé/andando, roupas sem atravessar, cabelos, calçados; ninguém dentro de móvel.
+  03/11: auditoria de assento (12/12 ok, pelve 13-14 cm, 2 cm do centro) e em pé (0 dentro de móvel) em 4 rodadas;
+  close-ups de sentados (balcão, terraço do hotel) e andando conferidos.
 - [x] P0 Objetos: flutuando, primitivos, low poly e colisões (auditorias `float_audit`/`primitives`/`lowpoly`) sem novidades.
   03/11: 585 marcações conferidas por amostragem: peixes do recife, folhas de vaso, luzes da piscina, azulejos, varal,
   vasos pendurados, livros na estante, mensageiro de conchas, caixotes fechados = falsos positivos. Linha de base
   congelada no portão (não pode aumentar).
-- [ ] P0 Ciclo do quiosque completo no PIE (abrir, pedido, entrega, pagamento, limpeza, fechar, dormir, salvar/carregar).
+- [x] P0 Ciclo do quiosque completo no PIE (abrir, pedido, entrega, pagamento, limpeza, fechar, dormir, salvar/carregar).
+  03/11: achado e corrigido: cliente preso atrás da cadeira desistia da mesa e ia embora com a comida; agora tenta o
+  caminho de novo (12 s/24 s) e senta se estiver a <3 m. Execução: 10/10 clientes chegam, pedem, recebem, comem e saem;
+  6 mesas sujas limpas; caixa sobe; salvar/recarregar sem pedido/mesa duplicados. QA amplo (MarePreviewQA) 104/104.
+  HUM-006: o quiosque não sobrescreve mais a velocidade do atendente durante o tropeço (0 cm medido).
 - [ ] P0 Sistemas já feitos revisados no PIE: bar, piscina, pousada, hotel, negócios, passeios, festas, salão de jogos,
   celular (todos os apps), clima, noite, mar, natação, áudio.
 - [x] P0 Interface: todas as telas no padrão caderno (03/11, pedido do Sergio): menu principal, pausa, opções, diálogos

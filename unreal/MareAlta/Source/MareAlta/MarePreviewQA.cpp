@@ -137,7 +137,10 @@ void AMarePreviewQA::Tick(float DeltaSeconds)
    }
   }
   Check(TEXT("runtime_actor_catalog"),Count>60 && Missing==0);
-  Check(TEXT("audio_catalog"),Audio->LoadedSounds()==90);   // 48 ambience/UI sounds + 42 action sounds (fetch_action_sfx.py)
+  // Every row of audio.json loads (the list changes: the dog bark left on 03/11), and none is missing.
+  {FString AudioText;TArray<TSharedPtr<FJsonValue>> Rows;
+   if(FFileHelper::LoadFileToString(AudioText,*(FPaths::ProjectContentDir()/TEXT("Data/audio.json"))))FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(AudioText),Rows);
+   Check(TEXT("audio_catalog"),Rows.Num()>60 && Audio->LoadedSounds()==Rows.Num());}
   Check(TEXT("master_submix_routed"),Audio->HasMasterMix());
   if(auto Device=GetWorld()->GetAudioDevice()){UE_LOG(LogTemp,Display,TEXT("MARE_QA_AUDIO_DEVICE muted=%d primary=%f app=%f"),Device->IsAudioDeviceMuted(),Device->GetPrimaryVolume(),FApp::GetVolumeMultiplier());Device->SetDeviceMuted(false);Device->SetTransientPrimaryVolume(1.f);}
   FApp::SetVolumeMultiplier(1.f);

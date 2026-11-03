@@ -394,7 +394,7 @@ bool UMareComicEvents::StartClumsy(const TSharedPtr<FJsonObject>& Def,bool bForc
  if(UMareSimulation::Object(Sim->State,TEXT("staff_team"))->TryGetArrayField(Role,Team) && Team->Num())Level=UMareSimulation::Number((*Team)[0]->AsObject(),TEXT("level"),1);
  if(!bForced && Rng.FRand()>(6.0-FMath::Clamp(Level,1.0,5.0))/5.0)return false;
  Clumsy=Target;ClumsyTime=0;ClumsySpeed=Target->GetCharacterMovement()->MaxWalkSpeed;ClumsyMesh=Target->GetMesh()->GetRelativeRotation();
- Target->GetCharacterMovement()->MaxWalkSpeed=0;ClumsyTray.Reset();
+ Target->GetCharacterMovement()->MaxWalkSpeed=0;Target->GetCharacterMovement()->StopMovementImmediately();Target->bConversing=true;ClumsyTray.Reset();
  for(auto Part:Target->CarriedMeshes)if(IsValid(Part))ClumsyTray.Add({Part,Part->GetRelativeTransform()});
  const TArray<FString> Asks=DefStrings(Def,TEXT("asks"));const FString Id=UMareSimulation::String(Def,TEXT("id"));auto Comic=UMareSimulation::Object(Sim->State,TEXT("comic"));
  SpeakerName=UMareSimulation::String(Def,TEXT("speaker"));Line=Asks.IsValidIndex(0)?Asks[LineIndex(Comic,Id,Asks.Num(),false,Rng.RandHelper(1000))]:FString();
@@ -422,7 +422,7 @@ void UMareComicEvents::UpdateClumsy(float DeltaSeconds)
 
 void UMareComicEvents::RestoreClumsy()
 {
- if(AMarePerson* P=Clumsy.Get()){P->GetMesh()->SetRelativeRotation(ClumsyMesh);if(ClumsySpeed>0)P->GetCharacterMovement()->MaxWalkSpeed=ClumsySpeed;
+ if(AMarePerson* P=Clumsy.Get()){P->bConversing=false;P->GetMesh()->SetRelativeRotation(ClumsyMesh);if(ClumsySpeed>0)P->GetCharacterMovement()->MaxWalkSpeed=ClumsySpeed;
   for(const auto& Part:ClumsyTray)if(USceneComponent* C=Part.Key.Get())C->SetRelativeTransform(Part.Value);}
  Clumsy.Reset();ClumsyTray.Reset();
 }

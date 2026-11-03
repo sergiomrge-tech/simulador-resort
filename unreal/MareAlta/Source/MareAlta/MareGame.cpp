@@ -1348,6 +1348,15 @@ struct FMareUIQA
    if(Intro)Intro->ReadLetter();}
  }
 };
+// QA (test profiles only): buys N of every stock item, so the kiosk cycle can be exercised from a drained save.
+static FAutoConsoleCommandWithWorldAndArgs MareRestockCommand(TEXT("mare.Restock"),TEXT("QA: buys N of every stock item (QA save profile only)."),
+ FConsoleCommandWithWorldAndArgsDelegate::CreateLambda([](const TArray<FString>& Args,UWorld* World){
+  FString Profile;FParse::Value(FCommandLine::Get(),TEXT("MareSaveRoot="),Profile);Profile.ReplaceInline(TEXT("\\"),TEXT("/"));
+  auto PC=World?Cast<AMareController>(UGameplayStatics::GetPlayerController(World,0)):nullptr;auto S=PC?PC->GetSimulation():nullptr;
+  if(!S || !Profile.StartsWith(TEXT("D:/CodexTemp/")))return;const int32 N=Args.Num()?FCString::Atoi(*Args[0]):20;
+  TArray<FString> Items;for(const auto& Pair:UMareSimulation::Object(S->State,TEXT("stock"))->Values)Items.Add(FString(Pair.Key.ToView()));
+  for(const FString& Item:Items)S->BuySupply(Item,N);
+  UE_LOG(LogTemp,Display,TEXT("mare.Restock %d x %d items"),N,Items.Num());}));
 static FAutoConsoleCommandWithWorldAndArgs MareShowUICommand(TEXT("mare.ShowUI"),TEXT("QA: opens a panel (pause, options, menu, letter) for UI screenshots."),
  FConsoleCommandWithWorldAndArgsDelegate::CreateLambda([](const TArray<FString>& Args,UWorld* World){if(Args.Num())FMareUIQA::Show(World,Args[0]);}));
 void AMareController::BuildPauseMenu(bool bOptions)
