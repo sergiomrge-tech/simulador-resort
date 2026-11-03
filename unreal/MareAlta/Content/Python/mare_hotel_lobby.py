@@ -314,6 +314,57 @@ def hotel_window_glass():
     return changed
 
 
+def hotel_room_windows():
+    """The tower's rooms seen from outside (03/11, PENDENCIAS "interior dos quartos"): the shell has no rooms, so the
+    balcony doors suggest them. One glass slot holds the doors, the balcony railings and the lobby front, told apart in
+    mesh space (SourceArt/Models/HotelTower_Glass.gltf: doors at local Y 570, railings at 750, lobby below Z 450;
+    rooms every 4 m along X, doors 2.45 m wide from X -1558, floors every 3.4 m from Z 510). Each room gets a hash:
+    by day a curtain drawn to one or both sides shows faintly through the dark glass; at night about 45% of the rooms
+    are lit warm, dimmer through the curtain. Railings and lobby keep the dark reflective hotel glass."""
+    from mare_materials import material, expression, custom, MEL, _mpc
+    mat = material('M_HotelRoomWindow')
+    mat.set_editor_property('blend_mode', unreal.BlendMode.BLEND_TRANSLUCENT)
+    mat.set_editor_property('two_sided', True)
+    mat.set_editor_property('used_with_instanced_static_meshes', True)
+    mat.set_editor_property('translucency_lighting_mode', unreal.TranslucencyLightingMode.TLM_SURFACE_PER_PIXEL_LIGHTING)
+    pos = expression(mat, unreal.MaterialExpressionLocalPosition)
+    night = _mpc(mat, 'Night')
+    room = ('float door=step(abs(L.y),660.0)*step(480.0,L.z); float fl=floor((L.z-510.0)/340.0); float rx=(L.x+1558.0)/400.0; '
+            'float rm=floor(rx); float fx=saturate(frac(rx)*400.0/245.0); float fz=saturate((L.z-510.0-fl*340.0)/235.0); '
+            'float h=frac(sin(fl*127.1+rm*311.7+7.3)*43758.5453); float h2=frac(sin(fl*269.5+rm*183.3+1.1)*43758.5453); float h3=frac(h*7.71+h2); '
+            'float left=step(.3,h2)*smoothstep(.12+.22*h3,.08+.22*h3,fx); float right=smoothstep(.80-.25*h2,.84-.25*h2,fx); '
+            'float curtain=saturate(left+right+(h2<.12?1.0:0.0)); float folds=.82+.18*sin(fx*70.0+h*6.0); ')
+    color = custom(mat, room + 'float3 drape=lerp(float3(.42,.38,.31),float3(.30,.34,.36),h3)*folds*(1.0-.85*N); '
+                   'return lerp(float3(.035,.05,.055),lerp(float3(.035,.05,.055),drape,curtain*.6),door);',
+                   unreal.CustomMaterialOutputType.CMOT_FLOAT3, {'L': pos, 'N': night})
+    glow = custom(mat, room + 'float lit=step(.55,h)*smoothstep(.5,.9,N)*door; float lamp=.7+.3*smoothstep(.0,.7,fz); '
+                  'return float3(1.0,.52,.22)*lit*lamp*lerp(1.3,.55,curtain);',
+                  unreal.CustomMaterialOutputType.CMOT_FLOAT3, {'L': pos, 'N': night})
+    fresnel = expression(mat, unreal.MaterialExpressionFresnel, exponent=4., base_reflect_fraction=.08)
+    opacity = custom(mat, room + 'return lerp(.72+F*.26,.84+F*.14,door);', unreal.CustomMaterialOutputType.CMOT_FLOAT1, {'L': pos, 'F': fresnel})
+    metal = custom(mat, room + 'return lerp(.9,.55,door);', unreal.CustomMaterialOutputType.CMOT_FLOAT1, {'L': pos})
+    MEL.connect_material_property(color, '', unreal.MaterialProperty.MP_BASE_COLOR)
+    MEL.connect_material_property(glow, '', unreal.MaterialProperty.MP_EMISSIVE_COLOR)
+    MEL.connect_material_property(expression(mat, unreal.MaterialExpressionConstant, r=.04), '', unreal.MaterialProperty.MP_ROUGHNESS)
+    MEL.connect_material_property(expression(mat, unreal.MaterialExpressionConstant, r=1.0), '', unreal.MaterialProperty.MP_SPECULAR)
+    MEL.connect_material_property(metal, '', unreal.MaterialProperty.MP_METALLIC)
+    MEL.connect_material_property(opacity, '', unreal.MaterialProperty.MP_OPACITY)
+    errors = list(MEL.recompile_material(mat))
+    if errors:
+        raise RuntimeError(str(errors))
+    unreal.EditorAssetLibrary.save_loaded_asset(mat, False)
+    changed = []
+    for a in unreal.get_editor_subsystem(unreal.EditorActorSubsystem).get_all_level_actors():
+        for c in a.get_components_by_class(unreal.StaticMeshComponent):
+            if not c.static_mesh or 'HotelTower_Glass' not in c.static_mesh.get_name():
+                continue
+            for j in range(c.get_num_materials()):
+                c.set_material(j, mat)
+                changed.append([a.get_actor_label(), j])
+    unreal.get_editor_subsystem(unreal.LevelEditorSubsystem).save_current_level()
+    return changed
+
+
 def neutral_glass():
     """Override only the glass slots of the hotel glass proxy with the clear neutral glass."""
     glass = unreal.load_asset('/Game/World/Materials/M_ClearWindowGlass')
@@ -389,6 +440,52 @@ def run(action, arg=''):
         return pie(arg)
     if action == 'quit':
         return save_and_quit()
+    if action == 'probe':
+        # Debug: hotel tower mesh components (x=0) or meshes whose instance bounds contain a world point (x,y,z cm).
+        x, y, z = (float(v) for v in arg.split(','))
+        out = []
+        for a in unreal.get_editor_subsystem(unreal.EditorActorSubsystem).get_all_level_actors():
+            for c in a.get_components_by_class(unreal.StaticMeshComponent):
+                if not c.static_mesh:
+                    continue
+                name = c.static_mesh.get_name()
+                if x == 0 and 'HotelTower' not in name and name != 'World_2365':
+                    continue
+                b = c.static_mesh.get_bounds()
+                xs = [c.get_instance_transform(i, True) for i in range(c.get_instance_count())] if isinstance(c, unreal.InstancedStaticMeshComponent) else [c.get_world_transform()]
+                for tr in xs:
+                    o = tr.transform_location(b.origin)
+                    r = b.sphere_radius * max(tr.scale3d.x, tr.scale3d.y, tr.scale3d.z)
+                    if x == 0 or (o.x - x) ** 2 + (o.y - y) ** 2 + (o.z - z) ** 2 < r * r:
+                        out.append([a.get_actor_label(), c.get_name(), name, c.is_visible(), [round(o.x), round(o.y), round(o.z)], round(r)])
+        return out[:60]
+    if action == 'towermats':
+        out = []
+        for a in unreal.get_editor_subsystem(unreal.EditorActorSubsystem).get_all_level_actors():
+            if 'hotel_tower' not in a.get_actor_label():
+                continue
+            for c in a.get_components_by_class(unreal.StaticMeshComponent):
+                if not c.static_mesh:
+                    continue
+                b = c.static_mesh.get_bounds()
+                tr = c.get_world_transform()
+                out.append([c.get_name(), [round(v) for v in (b.origin.x, b.origin.y, b.origin.z)], [round(v) for v in (tr.translation.x, tr.translation.y, tr.translation.z)],
+                            [round(v, 2) for v in (tr.rotation.rotator().yaw, tr.scale3d.x, tr.scale3d.y, tr.scale3d.z)], [round(v) for v in (b.box_extent.x, b.box_extent.y, b.box_extent.z)],
+                            [m.get_name() if m else None for m in c.get_materials()]])
+        return out
+    if action == 'restoreclear':
+        # The hidden full-tower collider keeps the clear glass on its glass slot (index 3).
+        glass = unreal.load_asset('/Game/World/Materials/M_ClearWindowGlass')
+        out = []
+        for a in unreal.get_editor_subsystem(unreal.EditorActorSubsystem).get_all_level_actors():
+            for c in a.get_components_by_class(unreal.StaticMeshComponent):
+                if c.static_mesh and c.static_mesh.get_name() == 'World_2365' and c.get_material(3) and c.get_material(3).get_name() == 'WorldGridMaterial':
+                    c.set_material(3, glass)
+                    out.append(a.get_actor_label())
+        unreal.get_editor_subsystem(unreal.LevelEditorSubsystem).save_current_level()
+        return out
+    if action == 'roomwindows':
+        return hotel_room_windows()
     if action == 'hotelglass':
         return hotel_window_glass()
     if action == 'neutralglass':

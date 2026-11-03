@@ -114,33 +114,44 @@ def gait(rounds=2):
     return {'moving': len(moving), 'gliding': gliding}
 
 
+def _limbs(a, b):
+    """Largest change of any tracked bone coordinate (cm) between two allpeople rows of the same person."""
+    return max((max(abs(u - v) for u, v in zip(r[1], s[1])) for r, s in zip(a[5], b[5]) if len(r[1]) == len(s[1])), default=0)
+
+
 def visible(rounds=2):
     """The mesh the player sees (MetaHuman body follows the hidden rig by leader pose): three samples 0.35 s apart
     (1.2 s apart aliased with the walk cycle and showed false gliders). Gliding = moved, limbs still; frozen =
     standing with no idle motion at all."""
     glide, frozen, total = [], [], 0
-    for _ in range(rounds):
+    first = {}
+    for k in range(rounds):
         samples = []
         for _ in range(3):
             got = hud('allpeople')
             samples.append({x[0]: x for x in got} if isinstance(got, list) else {})
             time.sleep(0.35)
         total = max(total, len(samples[-1]))
+        for key, x in samples[0].items():
+            first.setdefault(key, x)
         for key, x in samples[-1].items():
             seq = [s.get(key) for s in samples]
             if not all(seq):
                 continue
-            def limbs(a, b):
-                return max((max(abs(u - v) for u, v in zip(r[1], s[1])) for r, s in zip(a[5], b[5]) if len(r[1]) == len(s[1])), default=0)
             moved = ((x[3][0] - seq[0][3][0]) ** 2 + (x[3][1] - seq[0][3][1]) ** 2) ** .5
-            limb = max(limbs(seq[i], seq[j]) for i in range(3) for j in range(i + 1, 3))
+            limb = max(_limbs(seq[i], seq[j]) for i in range(3) for j in range(i + 1, 3))
             if moved > 15 and limb < 1.5:
                 glide.append([x[2], x[3]])
-            # Off-screen MetaHuman bodies skip their pose update on purpose (OnlyTickPoseWhenRendered): only a body the
-            # camera is drawing counts as frozen (the hotel terrace guests were flagged while the camera was in the village).
-            seen = any(len(r) > 2 and r[2] for r in x[5])
-            if moved < 2 and limb < 0.05 and seen:
-                frozen.append([x[2], x[3]])
+            # Frozen is judged over the whole check (both rounds, ~3 s), not 0.7 s: the calm Sitting_Idle only breathes
+            # (head ~0.06 cm/s, 03/11), which a 0.7 s window took for a frozen pose. Off-screen MetaHuman bodies skip
+            # their pose update on purpose (OnlyTickPoseWhenRendered): only a body the camera is drawing counts.
+            if k == rounds - 1 and key in first:
+                seen = any(len(r) > 2 and r[2] for r in x[5])
+                drift = ((x[3][0] - first[key][3][0]) ** 2 + (x[3][1] - first[key][3][1]) ** 2) ** .5
+                if drift < 2 and _limbs(first[key], x) < 0.05 and seen:
+                    frozen.append([x[2], x[3]])
+        if k < rounds - 1:
+            time.sleep(1.5)
     return {'actors': total, 'gliding': glide, 'frozen': frozen, 'pass': not glide and not frozen and total > 0}
 
 

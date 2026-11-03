@@ -110,7 +110,7 @@ Nada de mecânica nova até esta seção fechar. Cada passada roda uma auditoria
   por script. Candidatos (CC0): peixe-anjo listrado a5c0bb6877184e698c1992e5ce1a69d0, budião dac672386dd741af8485fcab811b9db4,
   garoupa afefbdad11ae4f5da06c6943f7bbf573, vermelho d253b4e2651644e0aadc7a17b955c051, bodião 30a07294d36c4539b23f398e522dd910,
   xaréu (cardume) cad0abfc668e4e3486e930491ac0d840. Os CC0 do Smithsonian (baiacu, peixe-cofre) são espécimes secos de museu.
-- [ ] P2 Interior dos quartos do hotel além da suíte visitável (a torre é casca com fachada).
+- [x] P2 Interior dos quartos do hotel além da suíte visitável (a torre é casca com fachada). 03/11: as portas de varanda dos 32 quartos ganharam vida pelo vidro (`M_HotelRoomWindow`, `mare_hotel_lobby.hotel_room_windows`): de dia, cortinas puxadas para um ou os dois lados aparecem pelo vidro escuro; à noite ~45% dos quartos acendem com luz quente, mais fraca atrás da cortina, sorteio fixo por quarto. Guarda-corpos e lobby continuam com o vidro do hotel (separados no espaço da malha). Prova: `docs/ue58/graphics-reference/hotel-quartos-noite-20261103.jpg`, `hotel-quartos-dia-20261103.jpg`.
 
 ## 3. Gameplay: cada lugar com algo para fazer
 Pronto e testado (02/11):
