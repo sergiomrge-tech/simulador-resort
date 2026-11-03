@@ -332,6 +332,14 @@ void AMarePerson::Tick(float DeltaSeconds)
   // Shift the whole actor so the animated pelvis sits on the seat point (heights and proportions differ per body).
   AddActorWorldOffset(SeatPelvis-GetMesh()->GetSocketLocation(TEXT("pelvis")));}
  else if(SeatAlignIn<=0 && !SeatPelvis.IsZero() && !Playing.IsEmpty() && Playing!=TEXT("Sitting_Idle"))SeatPelvis=FVector::ZeroVector;   // stood up
+ if(SeatPelvis.IsZero())bTableAhead=false;
+ else if(SeatAlignIn<=0 && !SeatPelvis.Equals(TableSeat,1.f)){
+  // Once per seat: walk a vertical probe forward from the pelvis; the first surface 8-45 cm above the pelvis is the
+  // table (or counter) top, and that distance is its near edge. The chair itself is below the pelvis and ignored.
+  TableSeat=SeatPelvis;bTableAhead=false;const FVector Forward=GetActorForwardVector();FCollisionQueryParams Q(TEXT("MareTable"),true,this);
+  for(float Ahead=15;Ahead<=75 && !bTableAhead;Ahead+=5){FHitResult Hit;const FVector At=SeatPelvis+Forward*Ahead;
+   if(GetWorld()->LineTraceSingleByChannel(Hit,At+FVector(0,0,60),At-FVector(0,0,5),ECC_Visibility,Q)){const float Rise=Hit.ImpactPoint.Z-SeatPelvis.Z;
+    if(Rise>8 && Rise<45){bTableAhead=true;TableTopZ=Hit.ImpactPoint.Z;TableEdge=Ahead;}}}}
  // Choose the outfit once the spawner has set the role: staff in uniform, hotel staff and diners in
  // social clothes, beach-goers in beach or swimwear, villagers casual.
  // MetaHumans replace the rig people once the role is known: a stable pick (save id) from the role's roster;

@@ -474,7 +474,7 @@ Texturas PBR dos acabamentos (balcão, guarda-sóis, letreiro; Poly Haven, CC0),
 
 ### Rádio praiano — 01/11/2026
 
-Reggae Roots, Calipso Caribe e Praia Pop (ukulele): composições e síntese originais deste projeto, dedicadas a CC0, geradas por `tools/ue58/gen_radio_music.py` (cordas Karplus-Strong, steel pan modal, percussão sintetizada; sem vozes nem samples de terceiros). WAVs em `unreal/MareAlta/SourceArt/Audio/radio_*.wav`.
+Reggae Roots, Calipso Caribe, Praia Pop (ukulele), Aloha FM (havaiana: ukulele, guitarra havaiana de slide, ipu) e o Tema Maré Alta: composições e síntese originais deste projeto, dedicadas a CC0, geradas por `tools/ue58/gen_radio_music.py` (cordas Karplus-Strong, steel pan modal, percussão sintetizada; sem vozes nem samples de terceiros). WAVs em `unreal/MareAlta/SourceArt/Audio/radio_*.wav`.
 
 ### Personalização do resort inteiro (UE5.8) — 01/11/2026
 

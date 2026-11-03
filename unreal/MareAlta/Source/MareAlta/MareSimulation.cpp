@@ -235,7 +235,7 @@ bool UMareSimulation::HireAttendant()
  auto Staff=Object(State,TEXT("staff")); bool bHired=false;Staff->TryGetBoolField(TEXT("atendente"),bHired);
  if(bHired) return Fail(TEXT("Seu atendente já cuida de todo o atendimento."));
  const double Cost=Number(Object(Object(Definitions,TEXT("staff")),TEXT("atendente")),TEXT("hire"));
- if(Money()<Cost) return Fail(TEXT("Saldo insuficiente."));
+ if(Money()<Cost) return Fail(FString::Printf(TEXT("Saldo insuficiente: o atendente custa R$ %.0f. Atenda sozinho e volte depois."),Cost));
  Staff->SetBoolField(TEXT("atendente"),true);Object(State,TEXT("staff_team"))->RemoveField(TEXT("atendente"));TeamList(TEXT("atendente")); Book(-Cost,TEXT("Contratação do atendente"));return Save();
 }
 bool UMareSimulation::DismissAttendant()
@@ -255,7 +255,7 @@ bool UMareSimulation::BuyExpansion(const FString& Id)
  const FString Chapter=String(Expansion,TEXT("chapter"));
  if(!Chapter.IsEmpty() && !IsChapterDone(Chapter))return Fail(TEXT("Conclua antes a história \"")+String(ChapterDefinition(Chapter),TEXT("title"))+TEXT("\" em Histórias da vila."));
  const int32 Fame=Number(Expansion,TEXT("fame"));if(Fame>0 && FameLevel()<Fame)return Fail(FString::Printf(TEXT("Precisa de mais fama (nível %d)."),Fame));
- const double Cost=Number(Expansion,TEXT("cost")); if(Money()<Cost) return Fail(TEXT("Saldo insuficiente."));
+ const double Cost=Number(Expansion,TEXT("cost")); if(Money()<Cost) return Fail(FString::Printf(TEXT("Saldo insuficiente: %s custa R$ %.0f."),*String(Expansion,TEXT("name")),Cost));
  Unlocked->SetBoolField(Id,true);Book(-Cost,TEXT("Expansão: ")+Id);
  if(auto World=GetWorld())if(auto Visual=World->GetSubsystem<UMareVisualWorld>())Visual->RefreshExpansions();
  LastMessage=TEXT("Expansão desbloqueada: ")+String(Expansion,TEXT("name"));return Save();

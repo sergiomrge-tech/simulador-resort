@@ -51,7 +51,7 @@ private:
  UPROPERTY() TObjectPtr<UAudioComponent> HomeStereo;
  bool bHomeStereo=false;
  TMap<FName,float> Volumes;
- FName RadioStation=TEXT("reggae_praia");
+ FName RadioStation=TEXT("radio_havaiana");
  TMap<FName,double> LastCue;
  float BirdClock=3,GullClock=8,StepClock=0,ThunderClock=12,IndoorClock=0;
  bool bReady=false,bUnderwater=false,bIndoors=false,bWasPhone=false,bWasSwimming=false;

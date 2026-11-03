@@ -27,6 +27,19 @@ void UMareBarWorld::Deinitialize()
  Guests.Empty();Leaving.Empty();Super::Deinitialize();
 }
 
+bool UMareBarWorld::StoolTop(int32 Stool,FVector& Top,float& Yaw,AActor* Ignore)const
+{
+ // The real stool top under the seat point (bar.json "seat" height is only the fallback); false when nothing is hit.
+ auto Defs=Sim(GetWorld())->BarDefs();const TArray<TSharedPtr<FJsonValue>>* List=nullptr;
+ if(!Defs->TryGetArrayField(TEXT("stools"),List) || !List->IsValidIndex(Stool))return false;
+ const auto& S=(*List)[Stool]->AsArray();Yaw=S[2]->AsNumber();
+ const TArray<TSharedPtr<FJsonValue>>* SeatFit=nullptr;double SeatTop=82;
+ if(Defs->TryGetArrayField(TEXT("seat"),SeatFit) && SeatFit->Num()==2)SeatTop=(*SeatFit)[0]->AsNumber();
+ Top=FVector(S[0]->AsNumber(),S[1]->AsNumber(),SeatTop);FHitResult Hit;FCollisionQueryParams Q(TEXT("MareStool"),true,Ignore);
+ if(!GetWorld()->LineTraceSingleByChannel(Hit,Top+FVector(0,0,60),Top-FVector(0,0,100),ECC_Visibility,Q))return false;
+ Top.Z=Hit.ImpactPoint.Z;return true;
+}
+
 AMarePerson* UMareBarWorld::Seat(const FString& Order,const FString& Name,int32 Stool)
 {
  auto Defs=Sim(GetWorld())->BarDefs();const TArray<TSharedPtr<FJsonValue>>* List=nullptr;
@@ -43,9 +56,8 @@ AMarePerson* UMareBarWorld::Seat(const FString& Order,const FString& Name,int32 
  Person->SetActorEnableCollision(false);
  // The real stool top (trace; bar.json "seat" is only the fallback) and the pelvis aligned on it per body: with the
  // fixed height the shorter and taller patrons sat inside the stool or up to 20 cm above it (mare_hud.seat_audit).
- FVector Top(S[0]->AsNumber(),S[1]->AsNumber(),SeatTop);FHitResult Hit;FCollisionQueryParams Q(TEXT("MareStool"),true,Person);
- if(GetWorld()->LineTraceSingleByChannel(Hit,Top+FVector(0,0,60),Top-FVector(0,0,100),ECC_Visibility,Q))Top.Z=Hit.ImpactPoint.Z;
- Person->SitOn(Top,Facing.Yaw);return Person;
+ FVector Top;float Yaw=Facing.Yaw;if(!StoolTop(Stool,Top,Yaw,Person))Untraced.Add(Order);
+ Person->SitOn(Top,Yaw);return Person;
 }
 
 void UMareBarWorld::Tick(float DeltaSeconds)
@@ -75,6 +87,9 @@ void UMareBarWorld::Tick(float DeltaSeconds)
   for(const auto& V:*Orders)Open.Add(UMareSimulation::String(V->AsObject(),TEXT("id")));
  const int32 Served=int32(UMareSimulation::Number(UMareSimulation::Object(S->State,TEXT("bar")),TEXT("served")));
  const bool bJustServed=LastServed>=0 && Served>LastServed;LastServed=Served;
+ for(auto It=Untraced.CreateIterator();It;++It){AMarePerson* Person=Guests.FindRef(*It);const int32 Stool=StoolOf(*It);FVector Top;float Yaw=0;
+  if(!IsValid(Person) || Stool==INDEX_NONE){It.RemoveCurrent();continue;}
+  if(StoolTop(Stool,Top,Yaw,Person)){Person->SitOn(Top,Yaw);It.RemoveCurrent();}}
  for(auto It=Guests.CreateIterator();It;++It){if(Open.Contains(It->Key))continue;AMarePerson* Person=It->Value;
   if(IsValid(Person)){
    if(bJustServed){const FString Last=UMareSimulation::String(UMareSimulation::Object(S->State,TEXT("bar")),TEXT("last"));

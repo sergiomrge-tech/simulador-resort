@@ -1,6 +1,17 @@
 """Restore exported Label3D signs as native, correctly oriented TextRender actors."""
 import unreal,json
 from pathlib import Path
+def text_material():
+    """One-sided copy of the engine's opaque text material: the default renders both faces, so a sign seen from
+    behind showed its text mirrored. Signs readable from both sides get a second text facing the other way."""
+    path='/Game/World/Materials/M_TextOneSided'
+    mat=unreal.load_asset(path)
+    if not mat:
+        mat=unreal.EditorAssetLibrary.duplicate_asset('/Engine/EngineMaterials/DefaultTextMaterialOpaque',path)
+    mat.set_editor_property('two_sided',False)
+    unreal.MaterialEditingLibrary.recompile_material(mat)
+    unreal.EditorAssetLibrary.save_loaded_asset(mat,False)
+    return mat
 def build():
     root=Path(unreal.Paths.project_dir()).resolve()
     rows=json.loads((root/'Content/Data/world.json').read_text(encoding='utf-8-sig'))['texts']
@@ -22,6 +33,14 @@ def build():
                 side=json.loads(json.dumps(row));side['transform']['position']=[26.3,z,y];side['size']=size
                 if flip:side['transform']['basis'][0]=[-v for v in side['transform']['basis'][0]];side['transform']['basis'][2]=[-v for v in side['transform']['basis'][2]]
                 expanded.append((i if k==0 else 200,side))
+    # Business signs float on their own (no wall behind): a second, back-to-back text so both sides read right.
+    for i,row in list(expanded):
+        if row.get('region','').startswith('Biz_') and row['text']!='Food truck do Pastel':
+            back=json.loads(json.dumps(row));b=back['transform']['basis']
+            back['transform']['position']=[back['transform']['position'][k]-b[2][k]*.02 for k in range(3)]
+            b[0]=[-v for v in b[0]];b[2]=[-v for v in b[2]]
+            expanded.append((300+i,back))
+    material=text_material()
     for i,row in expanded:
         data=row['transform'];bx,by,bz=data['basis'];p=data['position']
         cv=lambda v:unreal.Vector(v[0],v[2],v[1])
@@ -30,6 +49,7 @@ def build():
         actor.set_actor_label('Letreiro · '+row['text'].split('\n')[0]);actor.tags=['MareGenerated','MareText','Region_'+row.get('region','')]
         comp=actor.get_component_by_class(unreal.TextRenderComponent)
         comp.set_text(row['text'].replace('\n','<br>'))
+        comp.set_text_material(material)
         comp.set_world_size(row['size']*row['pixel_size']*100)
         comp.set_horizontal_alignment(unreal.HorizTextAligment.EHTA_CENTER)
         comp.set_vertical_alignment(unreal.VerticalTextAligment.EVRTA_TEXT_CENTER)

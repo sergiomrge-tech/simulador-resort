@@ -15,6 +15,16 @@
    "seconds": 110.0,
    "peak": 0.406,
    "rms": 0.09
+  },
+  "radio_havaiana": {
+   "seconds": 120.0,
+   "peak": 0.47,
+   "rms": 0.09
+  },
+  "music_tema": {
+   "seconds": 73.0,
+   "peak": 0.397,
+   "rms": 0.09
   }
  }
 }

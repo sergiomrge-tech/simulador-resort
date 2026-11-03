@@ -84,6 +84,11 @@ public:
   *  MetaHuman swap). Zero = no seat point (the actor transform is trusted as is). */
  FVector SeatPelvis=FVector::ZeroVector;
  float SeatAlignIn=-1;
+ /** A table or counter in front of the seat (found by tracing ahead of the pelvis once seated): the arms rest on its
+  *  top instead of the sitting clip's pose, which put forearms through the tabletop (mare_hud armaudit). */
+ bool bTableAhead=false;
+ float TableTopZ=0,TableEdge=0;
+ FVector TableSeat=FVector::ZeroVector;
  /** Seat i of restaurant table t from Content/Data/hotel_seats.json (mare_hud.chair_seats, the real chairs):
   *  seat top and the yaw facing the table. */
  static bool HotelSeat(int32 Table,int32 Index,FVector& SeatTop,float& Yaw);

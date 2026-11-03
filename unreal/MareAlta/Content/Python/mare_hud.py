@@ -1132,6 +1132,240 @@ def run(action, arg=''):
                 l = p.get_actor_location()
                 return [p.get_name(), [round(l.x), round(l.y), round(l.z)], ok]
         return None
+    if action == 'frametime':
+        # PIE: world delta seconds sampled "n" times (ms); the editor caps/throttles unfocused, so this is an indicator
+        import time as _t
+        world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()
+        out = []
+        for _ in range(int(arg or 20)):
+            out.append(round(unreal.GameplayStatics.get_world_delta_seconds(world) * 1000, 1))
+            _t.sleep(0.05)
+        return out
+    if action == 'importmusic':
+        # import looping music tracks from SourceArt/Audio ("radio_havaiana,music_tema")
+        import importlib, mare_audio
+        importlib.reload(mare_audio)
+        return mare_audio.import_tracks(arg.split(','))
+    if action == 'instances_of':
+        # PIE: every instance/actor of a mesh name: position and material names (first 60)
+        world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()
+        out = []
+        for c in unreal.GameplayStatics.get_all_actors_of_class(world, unreal.Actor):
+            for comp in c.get_components_by_class(unreal.StaticMeshComponent):
+                name, _, box = arg.partition('|')
+                if not comp.static_mesh or (name and comp.static_mesh.get_name() != name):
+                    continue
+                ts = ([comp.get_instance_transform(i, True) for i in range(comp.get_instance_count())]
+                      if isinstance(comp, unreal.InstancedStaticMeshComponent) else [comp.get_world_transform()])
+                mats = [m.get_name() if m else None for m in comp.get_materials()]
+                for t in ts:
+                    if box:
+                        x0, y0, x1, y1 = (float(v) for v in box.split(','))
+                        if not (x0 <= t.translation.x <= x1 and y0 <= t.translation.y <= y1):
+                            continue
+                    out.append([round(t.translation.x), round(t.translation.y), round(t.translation.z), mats, comp.static_mesh.get_name()])
+                    if len(out) >= 60:
+                        return out
+        return out[:60]
+    if action == 'meshes_in':
+        # PIE: mesh names inside "x0,y0,x1,y1" with instance count, first position and scaled height (cm)
+        x0, y0, x1, y1 = (float(v) for v in arg.split(','))
+        world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()
+        out = {}
+        for c in unreal.GameplayStatics.get_all_actors_of_class(world, unreal.Actor):
+            for comp in c.get_components_by_class(unreal.StaticMeshComponent):
+                m = comp.static_mesh
+                if not m:
+                    continue
+                h = m.get_bounding_box().max.z - m.get_bounding_box().min.z
+                ts = ([comp.get_instance_transform(i, True) for i in range(comp.get_instance_count())]
+                      if isinstance(comp, unreal.InstancedStaticMeshComponent) else [comp.get_world_transform()])
+                for t in ts:
+                    if x0 <= t.translation.x <= x1 and y0 <= t.translation.y <= y1:
+                        e = out.setdefault(m.get_name(), [0, [round(t.translation.x), round(t.translation.y), round(t.translation.z)], round(h * t.scale3d.z), [x.get_name() if x else None for x in comp.get_materials()][:3]])
+                        e[0] += 1
+        return out
+    if action == 'traceview':
+        # PIE: what a ray from "x,y,z,pitch,yaw" hits first (actor label, mesh, material, distance)
+        import math
+        x, y, z, pitch, yaw = (float(v) for v in arg.split(','))
+        world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()
+        d = unreal.Vector(math.cos(math.radians(pitch)) * math.cos(math.radians(yaw)), math.cos(math.radians(pitch)) * math.sin(math.radians(yaw)), math.sin(math.radians(pitch)))
+        start = unreal.Vector(x, y, z)
+        hit = unreal.SystemLibrary.line_trace_single(world, start, start + d * 20000, unreal.TraceTypeQuery.TRACE_TYPE_QUERY1, True, [], unreal.DrawDebugTrace.NONE, True)
+        if not hit:
+            return None
+        t = hit.to_tuple()
+        comp = t[10]
+        mesh = comp.static_mesh.get_name() if isinstance(comp, unreal.StaticMeshComponent) and comp.static_mesh else str(comp.get_class().get_name())
+        mat = comp.get_material(0).get_name() if comp and comp.get_material(0) else None
+        return [t[9].get_actor_label() if t[9] else None, mesh, mat, round(t[3]), [round(t[4].x), round(t[4].y), round(t[4].z)]]
+    if action == 'tintmat':
+        # "material path|r,g,b": multiply the base colour of an imported material by a tint (a Multiply node between
+        # whatever feeds Base Color and the output); re-running replaces the tint value instead of stacking nodes.
+        path, _, rgb = arg.partition('|')
+        r, g, b = (float(v) for v in rgb.split(','))
+        mat = unreal.load_asset(path)
+        mel = unreal.MaterialEditingLibrary
+        src = mel.get_material_property_input_node(mat, unreal.MaterialProperty.MP_BASE_COLOR)
+        if isinstance(src, unreal.MaterialExpressionMultiply) and src.get_editor_property('desc') == 'MareTint':
+            for e in mel.get_material_expressions(mat) if hasattr(mel, 'get_material_expressions') else []:
+                if isinstance(e, unreal.MaterialExpressionConstant3Vector) and e.get_editor_property('desc') == 'MareTint':
+                    e.set_editor_property('constant', unreal.LinearColor(r, g, b, 1))
+        else:
+            out_name = mel.get_material_property_input_node_output_name(mat, unreal.MaterialProperty.MP_BASE_COLOR) if hasattr(mel, 'get_material_property_input_node_output_name') else ''
+            mul = mel.create_material_expression(mat, unreal.MaterialExpressionMultiply, -400, 0)
+            mul.set_editor_property('desc', 'MareTint')
+            tint = mel.create_material_expression(mat, unreal.MaterialExpressionConstant3Vector, -650, 120)
+            tint.set_editor_property('constant', unreal.LinearColor(r, g, b, 1))
+            tint.set_editor_property('desc', 'MareTint')
+            mel.connect_material_expressions(src, out_name or 'BaseColor', mul, 'A')
+            mel.connect_material_expressions(tint, '', mul, 'B')
+            mel.connect_material_property(mul, '', unreal.MaterialProperty.MP_BASE_COLOR)
+        errors = list(mel.recompile_material(mat))
+        unreal.EditorAssetLibrary.save_loaded_asset(mat, False)
+        return {'errors': errors, 'source': src.get_class().get_name() if src else None}
+    if action == 'armaudit':
+        # PIE: seated people whose forearms/hands are inside a table. A table = static mesh 60-82 cm tall (chairs with a back are taller) with a top
+        # 40-250 cm wide; a bone inside its oriented box (top 2 cm under the surface) is an arm through the table.
+        world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()
+        people = [p for p in unreal.GameplayStatics.get_all_actors_of_class(world, unreal.MarePerson) if p.get_editor_property('seated')]
+        tables = []
+        for c in unreal.GameplayStatics.get_all_actors_of_class(world, unreal.Actor):
+            if isinstance(c, unreal.MarePerson):
+                continue
+            for comp in c.get_components_by_class(unreal.StaticMeshComponent):
+                m = comp.static_mesh
+                if not m or not comp.is_visible():
+                    continue
+                bb = m.get_bounding_box()
+                ts = ([comp.get_instance_transform(i, True) for i in range(comp.get_instance_count())]
+                      if isinstance(comp, unreal.InstancedStaticMeshComponent) else [comp.get_world_transform()])
+                for t in ts:
+                    size = (bb.max - bb.min) * t.scale3d
+                    if 60 <= abs(size.z) <= 82 and 55 <= min(abs(size.x), abs(size.y)) and max(abs(size.x), abs(size.y)) <= 250 and 'chair' not in m.get_name().lower():
+                        if any((t.translation - p.get_actor_location()).length() < 250 for p in people):
+                            tables.append((m.get_name(), t, bb))
+        out = []
+        for p in people:
+            rig = p.get_editor_property('mesh')
+            hits = []
+            for bone in ('lowerarm_l', 'lowerarm_r', 'hand_l', 'hand_r'):
+                w = rig.get_socket_location(bone)
+                for name, t, bb in tables:
+                    q = t.inverse_transform_location(w)
+                    if bb.min.x < q.x < bb.max.x and bb.min.y < q.y < bb.max.y and bb.min.z < q.z < bb.max.z - 2 / max(t.scale3d.z, .01):
+                        hits.append([bone, name, round((bb.max.z - q.z) * t.scale3d.z)])
+            if hits:
+                l = p.get_actor_location()
+                out.append([p.get_editor_property('person_name'), [round(l.x), round(l.y), round(l.z)], hits])
+        return {'seated': len(people), 'tables_near': len(tables), 'arms_in_tables': out}
+    if action == 'hidemesh':
+        # PIE only (isolation for visual debugging): "name,0|1" hides/shows every component using that mesh
+        name, _, show = arg.partition(',')
+        world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()
+        n = 0
+        for c in unreal.GameplayStatics.get_all_actors_of_class(world, unreal.Actor):
+            for comp in c.get_components_by_class(unreal.StaticMeshComponent):
+                if comp.static_mesh and comp.static_mesh.get_name() == name:
+                    comp.set_visibility(show == '1', False)
+                    n += 1
+        return n
+    if action == 'matcheck':
+        # a material's Nanite override and usage flags, and a mesh's Nanite state ("material path|mesh path")
+        mpath, _, meshpath = arg.partition('|')
+        m = unreal.load_asset(mpath)
+        out = {'class': m.get_class().get_name()}
+        for prop in ('nanite_override_material', 'blend_mode', 'shading_model', 'two_sided', 'used_with_nanite'):
+            try:
+                v = m.get_editor_property(prop)
+                out[prop] = v.get_path_name() if hasattr(v, 'get_path_name') else str(v)
+            except Exception as e:
+                out[prop] = 'n/a'
+        if meshpath:
+            mesh = unreal.load_asset(meshpath)
+            ns = mesh.get_editor_property('nanite_settings')
+            out['mesh_nanite'] = ns.get_editor_property('enabled')
+            out['slots'] = [str(sm.material_interface.get_path_name()) if sm.material_interface else None for sm in mesh.get_editor_property('static_materials')]
+        return out
+    if action == 'grasscull':
+        # "start,end,pie|editor": cull distances (cm) of the inland PCG grass HISMs; in the editor world it saves the level
+        s, e, where = arg.split(',')
+        ues = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem)
+        world = ues.get_game_world() if where == 'pie' else ues.get_editor_world()
+        n = 0
+        for a in unreal.GameplayStatics.get_all_actors_of_class(world, unreal.Actor):
+            if 'MareGrassPCG' not in [str(t) for t in a.tags]:
+                continue
+            for c in a.get_components_by_class(unreal.InstancedStaticMeshComponent):
+                c.set_editor_property('instance_start_cull_distance', int(s))
+                c.set_editor_property('instance_end_cull_distance', int(e))
+                if where == 'pie':
+                    c.set_cull_distances(int(s), int(e))
+                n += 1
+        if where != 'pie':
+            unreal.get_editor_subsystem(unreal.LevelEditorSubsystem).save_current_level()
+        return n
+    if action == 'saveassets':
+        # "path|path": save loaded assets (edits made while PIE runs can stay only in memory)
+        out = {}
+        for p in arg.split('|'):
+            a = unreal.load_asset(p)
+            if a:
+                a.modify()
+            out[p] = bool(a) and unreal.EditorAssetLibrary.save_loaded_asset(a, False)
+        return out
+    if action == 'grasstone':
+        # "path|path": deeper textured green on grass materials (mare_materials.grass_tone)
+        import importlib, mare_materials
+        importlib.reload(mare_materials)
+        return {p: mare_materials.grass_tone(p) for p in arg.split('|')}
+    if action == 'grasshue':
+        # "path|path": natural green recolour of imported grass materials (mare_materials.grass_hue)
+        import importlib, mare_materials
+        importlib.reload(mare_materials)
+        return {p: mare_materials.grass_hue(p) for p in arg.split('|')}
+    if action == 'plaster':
+        # "path|path": fine plaster finish on facade materials (mare_materials.plaster_finish)
+        import importlib, mare_materials
+        importlib.reload(mare_materials)
+        return {p: mare_materials.plaster_finish(p) for p in arg.split('|')}
+    if action == 'matparams':
+        # materials of a World_/Graphics mesh name found in PIE or by asset path: class, parent, vector/scalar/texture params
+        out = {}
+        for path in arg.split('|'):
+            m = unreal.load_asset(path)
+            if not m:
+                out[path] = None
+                continue
+            row = {'class': m.get_class().get_name()}
+            if isinstance(m, unreal.MaterialInstanceConstant):
+                row['parent'] = m.get_editor_property('parent').get_path_name()
+                row['vectors'] = {str(v.parameter_info.name): [round(v.parameter_value.r, 3), round(v.parameter_value.g, 3), round(v.parameter_value.b, 3)] for v in m.get_editor_property('vector_parameter_values')}
+                row['scalars'] = {str(v.parameter_info.name): v.parameter_value for v in m.get_editor_property('scalar_parameter_values')}
+                row['textures'] = {str(v.parameter_info.name): v.parameter_value.get_path_name() if v.parameter_value else None for v in m.get_editor_property('texture_parameter_values')}
+            if isinstance(m, unreal.Material):
+                node = unreal.MaterialEditingLibrary.get_material_property_input_node(m, unreal.MaterialProperty.MP_BASE_COLOR)
+                row['base'] = node.get_class().get_name() if node else None
+                for prop in ('constant', 'default_value', 'texture'):
+                    try:
+                        v = node.get_editor_property(prop)
+                        row['base_' + prop] = [round(v.r, 3), round(v.g, 3), round(v.b, 3)] if hasattr(v, 'r') else (v.get_path_name() if v else None)
+                    except Exception:
+                        pass
+                row['used_by'] = len(unreal.EditorAssetLibrary.find_package_referencers_for_asset(path.split('.')[0], False))
+            out[path] = row
+        return out
+    if action == 'meshmat':
+        # "Target|Source[|slot]": World_ mesh Target takes Source's slot-0 material in that slot (saved asset)
+        import json as _json
+        parts = arg.split('|')
+        mapping = _json.loads((Path(unreal.Paths.project_content_dir()) / 'Data' / 'imported_meshes.json').read_text(encoding='utf-8-sig'))
+        target, source = unreal.load_asset(mapping[parts[0]]), unreal.load_asset(mapping[parts[1]])
+        mat = source.get_material(0)
+        target.set_material(int(parts[2]) if len(parts) > 2 else 0, mat)
+        unreal.EditorAssetLibrary.save_loaded_asset(target, False)
+        return [target.get_path_name(), mat.get_path_name()]
     if action == 'meshbounds':
         # size of a static mesh asset (cm): origin and extent of its bounds
         b = unreal.load_asset(arg).get_bounds()
@@ -1165,6 +1399,13 @@ def run(action, arg=''):
         return 'ok'
     if action == 'staff':
         return staff_qa(arg)
+    if action == 'radio':
+        # PIE: tune the radio ("radio_havaiana") and report the loop levels a moment later
+        import time as _t
+        world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()
+        audio = next(o for o in unreal.ObjectIterator(unreal.MareAudioWorld) if o.get_outer() == world)
+        audio.set_radio_station(arg)
+        return 'tuned ' + arg
     if action == 'loops':
         world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()
         audio = next(o for o in unreal.ObjectIterator(unreal.MareAudioWorld) if o.get_outer() == world)

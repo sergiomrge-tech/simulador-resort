@@ -26,6 +26,9 @@ private:
  UPROPERTY() TObjectPtr<AMarePerson> Barman;
  UPROPERTY() TMap<FString,TObjectPtr<AMarePerson>> Guests;
  TMap<FString,int32> Stools;
+ /** Guests seated before their stool had collision (right after buying the bar): placed again once the trace finds it. */
+ TSet<FString> Untraced;
+ bool StoolTop(int32 Stool,FVector& Top,float& Yaw,AActor* Ignore)const;
  /** Guests walking away with the time they are removed. */
  UPROPERTY() TMap<TObjectPtr<AMarePerson>,double> Leaving;
  AMarePerson* Seat(const FString& Order,const FString& Name,int32 Stool);

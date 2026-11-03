@@ -42,7 +42,14 @@ struct FServiceProxy : FAnimSingleNodeInstanceProxy
    const FName Socket=Hand==0?TEXT("hand_r"):TEXT("hand_l");
    const bool bHolding=Person->CarriedMeshes.ContainsByPredicate([&](auto Part){return IsValid(Part) && Part->GetAttachSocketName()==Socket;});
    const bool bSelfie=Hand==0 && IsValid(Person->SelfiePhone);
-   Strength[Hand]=FMath::FInterpTo(Strength[Hand],bHolding || bSelfie?1.f:0.f,DeltaSeconds,bSelfie?5.f:10.f);
+   // Seated at a table with this hand free: forearm and hand rest on the top, a little past the near edge.
+   const bool bRest=!bHolding && !bSelfie && Person->bTableAhead && !Person->SeatPelvis.IsZero();
+   Strength[Hand]=FMath::FInterpTo(Strength[Hand],bHolding || bSelfie?1.f:bRest?.95f:0.f,DeltaSeconds,bSelfie || bRest?5.f:10.f);
+   if(bRest){const float S=Hand==0?1.f:-1.f;const FVector F=Person->GetActorForwardVector(),R=Person->GetActorRightVector();
+    const FVector Base(Person->SeatPelvis.X,Person->SeatPelvis.Y,Person->TableTopZ);
+    Targets[Hand]=ToComponent.TransformPosition(Base+F*(Person->TableEdge+14)+R*S*17+FVector(0,0,3));
+    Elbows[Hand]=ToComponent.TransformPosition(Base+F*(Person->TableEdge-6)+R*S*36+FVector(0,0,-2));
+    continue;}
    const float Side=Hand==0?1.f:-1.f;
    FVector Grip=Person->GetActorLocation()+Person->GetActorForwardVector()*32+Person->GetActorRightVector()*Side*18+FVector(0,0,22);
    if(bSelfie){   // arm half stretched, the phone a little above the eyes and to the right

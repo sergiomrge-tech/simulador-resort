@@ -423,3 +423,13 @@ alfinete, Patrick Hand nos títulos e botões de tinta, Nunito no texto); nada d
 Fileiras de botões usam SWrapBox para não sair da folha.
 QA amplo (`-MarePreviewQA`, 104 checagens) sempre numa pasta de perfil NOVA (`-MareSaveRoot=D:/CodexTemp/claude-previewqa-<hora>`):
 ele salva o progresso (capítulos, dinheiro) e uma segunda rodada no mesmo perfil reprova checagens de capítulo.
+
+## UE5.8 — salvar assets e acabamento (03/11)
+
+`save_loaded_asset` chamado com o PIE rodando pode devolver sucesso e não gravar em disco: o material editado
+aparece certo na sessão e volta ao antigo ao reabrir o editor (aconteceu com o vermelho de teste das árvores, os
+materiais da torre do hotel, a grama e a cumeeira do bar). Editar assets com o PIE parado, ou depois chamar
+`mare_hud saveassets` com o PIE parado, e conferir com `git status` que o .uasset mudou. Antes de mudar cor de
+material importado, provar que a mudança chega ao render (tingir de vermelho e fotografar). Vidro claro na frente de
+quartos vazios parece parede: o hotel usa `M_HotelWindowGlass` (escuro e refletivo). Material importado do glTF tem
+cor numa chamada de função: encadear nós depois dela (`plaster_finish`, `grass_hue`, `grass_tone`).

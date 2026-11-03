@@ -84,6 +84,8 @@ bool FMareEconomyTest::RunTest(const FString& Parameters)
  Sim->State->SetNumberField(TEXT("money"),0);const int32 Fish=Sim->Available(TEXT("porcao_peixe"));
  TestFalse(TEXT("Atomic restock refuses insufficient cash"),Sim->Restock(TEXT("porcao_peixe"),48));
  TestEqual(TEXT("No partial replenishment"),Sim->Available(TEXT("porcao_peixe")),Fish);
+ Sim->State->SetNumberField(TEXT("money"),150);
+ TestFalse(TEXT("Starting cash cannot hire"),Sim->HireAttendant());TestTrue(TEXT("Hire refusal names the cost"),Sim->LastMessage.Contains(TEXT("R$ 240")));
  Sim->State->SetNumberField(TEXT("money"),1000);
  TestTrue(TEXT("Single attendant hire"),Sim->HireAttendant());TestFalse(TEXT("No duplicate attendant"),Sim->HireAttendant());
  TestTrue(TEXT("Dismiss attendant"),Sim->DismissAttendant());TestFalse(TEXT("Cannot dismiss twice"),Sim->DismissAttendant());TestTrue(TEXT("Rehire attendant"),Sim->HireAttendant());

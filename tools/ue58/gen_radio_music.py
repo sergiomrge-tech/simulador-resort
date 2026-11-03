@@ -2,7 +2,8 @@
 
 Three ~2-minute stations with verse/chorus/bridge sections so the radio does not feel like a
 short loop: roots reggae (one drop, skank, organ bubble, melodica), Caribbean calypso (steel
-pan, congas, shaker) and beach pop (plucked ukulele, cajon, soft lead). Every sound is
+pan, congas, shaker) and beach pop (plucked ukulele, cajon, soft lead), the Hawaiian
+station Aloha FM (ukulele, lap steel slides, ipu) and the Mare Alta theme. Every sound is
 synthesised here (Karplus-Strong strings, modal steel pan, noise/sine drums).
 
   python tools/ue58/gen_radio_music.py   -> unreal/MareAlta/SourceArt/Audio/radio_*.wav
@@ -95,6 +96,28 @@ class Track:
         sig = np.sin(ph) + .33 * np.sin(3 * ph) + .14 * np.sin(5 * ph) + .02 * self.rng.normal(0, 1, len(t))
         env = (1 - np.exp(-t * 25)) * np.clip((dur - t) * 12, 0, 1)
         return sig * env
+
+    def steel(self, midi, dur, slide_from=None, slide=0.14, vibrato=5.2):
+        """Hawaiian lap steel: glides from the previous note, slow vibrato after the attack, warm partials."""
+        t = np.arange(int(SR * dur)) / SR
+        target = hz(midi)
+        f = np.full(len(t), target)
+        if slide_from is not None:
+            start = hz(slide_from)
+            k = np.clip(t / slide, 0, 1)
+            f = start * (target / start) ** (k * k * (3 - 2 * k))
+        f = f * (1 + .0045 * np.sin(2 * np.pi * vibrato * t) * np.clip((t - .22) * 2.5, 0, 1))
+        ph = 2 * np.pi * np.cumsum(f) / SR
+        sig = np.sin(ph) + .45 * np.sin(2 * ph) + .22 * np.sin(3 * ph) + .08 * np.sin(4 * ph) + .03 * np.sin(5 * ph)
+        env = (1 - np.exp(-t * 180)) * np.exp(-t * .9) * np.clip((dur - t) * 14, 0, 1)
+        return sig * env
+
+    def ipu(self, low=True):
+        """Hawaiian gourd drum: a soft low thump (palm) or a higher slap."""
+        t = np.arange(int(SR * .5)) / SR
+        f = 78 if low else 160
+        body = np.sin(2 * np.pi * f * t * (1 + .25 * np.exp(-t * 30))) * np.exp(-t * (9 if low else 18))
+        return body + .12 * self.rng.normal(0, 1, len(t)) * np.exp(-t * 80)
 
     def bass(self, midi, dur, tone=0.15):
         f, t = hz(midi), np.arange(int(SR * dur)) / SR
@@ -254,16 +277,115 @@ def beach_pop():
     return tr.master(.22)
 
 
+def havaiana():
+    """Aloha FM: a slow Hawaiian sway (80 BPM) on the island vamp II7-V7-I, ukulele strums and picked arpeggios,
+    a lap steel singing the melody with slides, upright-style bass and the ipu. Original composition."""
+    vamp = ['A7', 'D7', 'G', 'G']
+    form = [('intro', vamp, 4), ('verse', ['G', 'G', 'C', 'G', 'D7', 'D7', 'G', 'G'], 8),
+            ('bridge', ['C', 'C', 'G', 'G', 'A7', 'A7', 'D7', 'D7'], 8), ('verse', ['G', 'G', 'C', 'G', 'D7', 'D7', 'G', 'G'], 8),
+            ('solo', ['C', 'C', 'G', 'Em', 'A7', 'D7', 'G', 'G'], 8), ('outro', vamp, 4)]
+    bars = sum(c for _, _, c in form)
+    tr = Track(80, bars, 1959)
+    b = tr.beat
+    swing = .58   # the "and" comes late: a lazy island lilt
+    # Melody per section: (beat in the 8-bar phrase, length in beats, MIDI note); close notes slide.
+    verse_tune = [(0, 1.5, 71), (1.5, .5, 74), (2, 2, 76), (4, 1, 74), (5, 1, 72), (6, 2, 71), (8, 1.5, 72), (9.5, .5, 71), (10, 2, 69),
+                  (12, 1, 67), (13, 1, 69), (14, 2, 71), (16, 1.5, 69), (17.5, .5, 71), (18, 2, 74), (20, 2, 72), (22, 2, 69),
+                  (24, 3, 67), (27, 1, 71), (28, 4, 67)]
+    bridge_tune = [(0, 2, 76), (2, 1, 79), (3, 1, 76), (4, 3, 74), (8, 1.5, 71), (9.5, .5, 74), (10, 2, 71), (12, 3, 67),
+                   (16, 2, 73), (18, 1, 76), (19, 1, 73), (20, 2, 69), (24, 2, 72), (26, 1, 74), (27, 1, 72), (28, 4, 66)]
+    solo_tune = [(0, 1, 76), (1, .5, 79), (1.5, .5, 76), (2, 2, 74), (4, 2, 72), (6, 2, 76), (8, 3, 74), (11, 1, 71),
+                 (12, 2, 76), (14, 2, 71), (16, 1.5, 73), (17.5, .5, 76), (18, 2, 79), (20, 2, 78), (22, 2, 74),
+                 (24, 2, 71), (26, 2, 74), (28, 4, 79)]
+    tunes = {'verse': verse_tune, 'bridge': bridge_tune, 'solo': solo_tune}
+    section_start, prev_name, prev_note = 0, None, None
+    for bar, name, chord in tr.section_bars(form):
+        notes, root = chord_notes(chord, 4)
+        t0 = bar * 4 * b
+        if name != prev_name:
+            section_start, prev_name = bar, name
+            for when, dur, note in tunes.get(name, []):
+                glide = prev_note if prev_note is not None and abs(prev_note - note) <= 5 else None
+                tr.add(tr.steel(note, dur * b + .25, glide), section_start * 4 * b + when * b, .085 if name != 'solo' else .095, .2)
+                prev_note = note
+        # Ukulele: strums in the vamp and the solo, a gentle picked arpeggio in verses and bridge.
+        if name in ('intro', 'outro', 'solo'):
+            for when, up in ((0, 0), (1, 0), (1 + swing, 1), (2 + swing, 1), (3, 0), (3 + swing, 1)):
+                order = notes[::-1] if up else notes
+                for k, n in enumerate(order[:3] + [order[0] + 12]):
+                    tr.add(tr.pluck(n + 12, .55, .5, .9945), t0 + when * b + k * .011, .05 if up else .066, -.3 + k * .14)
+        else:
+            pattern = [notes[0] + 12, notes[1] + 12, notes[2] + 12, notes[1] + 24]
+            for i in range(8):
+                when = i // 2 + (swing if i % 2 else 0)
+                tr.add(tr.pluck(pattern[i % 4], .7, .45, .9955), t0 + when * b, .06, -.35 + (i % 4) * .2)
+        # Bass on 1 and 3 (root, fifth); the ipu on 1, the late "and" of 2, and 3.
+        if name != 'intro':
+            tr.add(tr.bass(root - 24, 1.6 * b, .12), t0, .3)
+            tr.add(tr.bass(root - 24 + 7, 1.6 * b, .12), t0 + 2 * b, .25)
+        tr.add(tr.ipu(True), t0, .2)
+        tr.add(tr.ipu(False), t0 + (1 + swing) * b, .09, -.2)
+        tr.add(tr.ipu(True), t0 + 2 * b, .14)
+        for i in range(4):
+            tr.add(tr.drum('shaker'), t0 + (i + swing) * b, .028, .45)
+    return tr.master(.26)
+
+
+def tema():
+    """Mare Alta theme (92 BPM, C major): ukulele, lap steel melody and a soft bass. Original motif."""
+    form = [('a', ['C', 'Am', 'F', 'G7'], 8), ('b', ['F', 'C', 'Dm', 'G7'], 8), ('a2', ['C', 'Am', 'F', 'G7'], 8), ('end', ['F', 'G7', 'C', 'C'], 4)]
+    bars = sum(c for _, _, c in form)
+    tr = Track(92, bars, 2026)
+    b = tr.beat
+    a_tune = [(0, .5, 67), (.5, .5, 69), (1, 1, 72), (2, 2, 76), (4, 1, 74), (5, 1, 72), (6, 2, 69), (8, 1, 69), (9, 1, 72),
+              (10, 2, 77), (12, 1, 76), (13, .5, 74), (13.5, .5, 72), (14, 2, 74), (16, 1, 72), (17, 1, 74), (18, 2, 76),
+              (20, 1, 79), (21, 1, 76), (22, 2, 72), (24, 1.5, 77), (25.5, .5, 76), (26, 2, 74), (28, 4, 79)]
+    b_tune = [(0, 2, 81), (2, 1, 79), (3, 1, 77), (4, 3, 76), (7, 1, 72), (8, 2, 74), (10, 1, 76), (11, 1, 77), (12, 4, 74),
+              (16, 2, 77), (18, 1, 76), (19, 1, 74), (20, 3, 72), (23, 1, 69), (24, 2, 71), (26, 2, 74), (28, 4, 79)]
+    end_tune = [(0, 2, 77), (2, 2, 74), (4, 2, 76), (6, 2, 74), (8, 8, 72)]
+    tunes = {'a': a_tune, 'b': b_tune, 'a2': a_tune, 'end': end_tune}
+    section_start, prev_name, prev_note = 0, None, None
+    for bar, name, chord in tr.section_bars(form):
+        notes, root = chord_notes(chord, 4)
+        t0 = bar * 4 * b
+        if name != prev_name:
+            section_start, prev_name = bar, name
+            for when, dur, note in tunes[name]:
+                glide = prev_note if prev_note is not None and abs(prev_note - note) <= 4 else None
+                tr.add(tr.steel(note, dur * b + .2, glide, .1), section_start * 4 * b + when * b, .09, .15)
+                prev_note = note
+        for when, up in ((0, 0), (1, 0), (1.5, 1), (2.5, 1), (3, 0), (3.5, 1)):
+            order = notes[::-1] if up else notes
+            for k, n in enumerate(order[:3] + [order[0] + 12]):
+                tr.add(tr.pluck(n + 12, .5, .55, .994), t0 + when * b + k * .009, .05 if up else .068, -.25 + k * .15)
+        tr.add(tr.bass(root - 24, 1.7 * b, .1), t0, .27)
+        tr.add(tr.bass(root - 24 + 7, 1.7 * b, .1), t0 + 2 * b, .22)
+        tr.add(tr.ipu(True), t0, .16)
+        tr.add(tr.drum('rim'), t0 + b, .05, .2)
+        tr.add(tr.drum('rim'), t0 + 3 * b, .05, .2)
+        for i in range(8):
+            tr.add(tr.drum('shaker'), t0 + i * b / 2, .025, .45)
+    return tr.master(.24)
+
+
 def main():
     OUT.mkdir(parents=True, exist_ok=True)
     report = {}
-    for name, fn in (('radio_reggae_roots', reggae), ('radio_calypso', calypso), ('radio_beach_pop', beach_pop)):
+    import sys
+    pick = set(sys.argv[1:])
+    for name, fn in (('radio_reggae_roots', reggae), ('radio_calypso', calypso), ('radio_beach_pop', beach_pop),
+                     ('radio_havaiana', havaiana), ('music_tema', tema)):
+        if pick and name not in pick:
+            continue
         data = fn()
         write(OUT / (name + '.wav'), data)
         report[name] = {'seconds': round(len(data) / SR, 1), 'peak': round(float(np.abs(data).max()), 3),
                         'rms': round(float(np.sqrt(np.mean(data ** 2))), 4)}
         print(name, report[name], flush=True)
-    (OUT / 'radio_music.json').write_text(json.dumps({'license': 'CC0 (original, synthesised by tools/ue58/gen_radio_music.py)', 'tracks': report}, indent=1), encoding='utf-8')
+    index = OUT / 'radio_music.json'
+    tracks = json.loads(index.read_text(encoding='utf-8')).get('tracks', {}) if index.exists() else {}
+    tracks.update(report)
+    index.write_text(json.dumps({'license': 'CC0 (original, synthesised by tools/ue58/gen_radio_music.py)', 'tracks': tracks}, indent=1), encoding='utf-8')
 
 
 if __name__ == '__main__':

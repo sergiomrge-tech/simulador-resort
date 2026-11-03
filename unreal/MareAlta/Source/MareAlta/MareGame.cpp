@@ -1344,6 +1344,9 @@ struct FMareUIQA
   auto PC=World?Cast<AMareController>(UGameplayStatics::GetPlayerController(World,0)):nullptr;if(!PC)return;
   if(What==TEXT("pause") || What==TEXT("options")){if(!PC->PauseWidget.IsValid())PC->TogglePauseMenu();PC->BuildPauseMenu(What==TEXT("options"));}
   else if(What==TEXT("menu"))PC->OpenMainMenu();
+  else if(What==TEXT("close")){   // like E: ends the bus arrival, closes the letter, the pause menu
+   for(TActorIterator<AMareIntro> It(World);It;++It){if(It->IsLetterOpen())It->CloseLetter();else if(It->IsArrival())It->FinishArrival();}
+   if(PC->PauseWidget.IsValid())PC->TogglePauseMenu();}
   else if(What==TEXT("letter")){AMareIntro* Intro=nullptr;for(TActorIterator<AMareIntro> It(World);It;++It){Intro=*It;break;}
    // Old QA saves have no intro stage and the intro actor removes itself: mark the letter as read (it stays readable).
    if(!Intro){if(auto Sim=PC->GetSimulation())if(!Sim->State->HasField(TEXT("ue_intro_stage")))Sim->State->SetNumberField(TEXT("ue_intro_stage"),2);Intro=World->SpawnActor<AMareIntro>();}
@@ -1359,6 +1362,36 @@ static FAutoConsoleCommandWithWorldAndArgs MareRestockCommand(TEXT("mare.Restock
   TArray<FString> Items;for(const auto& Pair:UMareSimulation::Object(S->State,TEXT("stock"))->Values)Items.Add(FString(Pair.Key.ToView()));
   for(const FString& Item:Items)S->BuySupply(Item,N);
   UE_LOG(LogTemp,Display,TEXT("mare.Restock %d x %d items"),N,Items.Num());}));
+// QA (test profiles only) for the full-game simulation: "mare.QA money <n> | buy <expansion> | biz <id> | step <chapter>".
+// "step" meets the current chapter step's requirement (stock, counters, fame, photo, recipes, businesses) and advances it.
+static FAutoConsoleCommandWithWorldAndArgs MareQACommand(TEXT("mare.QA"),TEXT("QA: money <n> | buy <expansion> | biz <id> | step <chapter> | fame <level> | dump <name> (QA save profile only)."),
+ FConsoleCommandWithWorldAndArgsDelegate::CreateLambda([](const TArray<FString>& Args,UWorld* World){
+  FString Profile;FParse::Value(FCommandLine::Get(),TEXT("MareSaveRoot="),Profile);Profile.ReplaceInline(TEXT("\\"),TEXT("/"));
+  auto PC=World?Cast<AMareController>(UGameplayStatics::GetPlayerController(World,0)):nullptr;auto S=PC?PC->GetSimulation():nullptr;
+  if(!S || Args.Num()<2 || !Profile.StartsWith(TEXT("D:/CodexTemp/")))return;const FString Verb=Args[0],Arg=Args[1];bool bOk=false;
+  if(Verb==TEXT("money")){S->State->SetNumberField(TEXT("money"),FCString::Atod(*Arg));bOk=S->Save();}
+  else if(Verb==TEXT("buy"))bOk=S->BuyExpansion(Arg);
+  else if(Verb==TEXT("biz"))bOk=S->BuyBusiness(Arg);
+  else if(Verb==TEXT("fame")){for(int32 I=0;I<600 && S->FameLevel()<FCString::Atoi(*Arg);++I)S->AddFame(50);bOk=S->FameLevel()>=FCString::Atoi(*Arg) && S->Save();}
+  else if(Verb==TEXT("dump")){   // what a reload must keep: owned places, chapters, businesses, company, fame
+   auto Out=MakeShared<FJsonObject>();Out->SetObjectField(TEXT("unlocked"),UMareSimulation::Object(S->State,TEXT("unlocked")));
+   auto Prog=UMareSimulation::Object(S->State,TEXT("prog"));Out->SetObjectField(TEXT("chapters"),UMareSimulation::Object(Prog,TEXT("ch")));
+   Out->SetObjectField(TEXT("biz"),UMareSimulation::Object(Prog,TEXT("biz")));Out->SetObjectField(TEXT("company"),UMareSimulation::Object(S->State,TEXT("company")));
+   Out->SetNumberField(TEXT("fame_level"),S->FameLevel());FString Text;FJsonSerializer::Serialize(Out,TJsonWriterFactory<>::Create(&Text));
+   bOk=FFileHelper::SaveStringToFile(Text,*(Profile/(Arg+TEXT(".json"))));}
+  else if(Verb==TEXT("step") && S->IsChapterOpen(Arg) && !S->IsChapterDone(Arg)){
+   auto Chapter=S->ChapterDefinition(Arg);const auto Step=Chapter->GetArrayField(TEXT("steps"))[S->ChapterStep(Arg)]->AsObject();
+   const FString Kind=UMareSimulation::String(Step,TEXT("kind")),Item=UMareSimulation::String(Step,TEXT("item"));const int32 Qty=FMath::Max(1,int32(UMareSimulation::Number(Step,TEXT("qty"),1)));
+   auto Prog=UMareSimulation::Object(S->State,TEXT("prog"));
+   if(Kind==TEXT("deliver")){auto Stock=UMareSimulation::Object(S->State,TEXT("stock"));Stock->SetNumberField(Item,UMareSimulation::Number(Stock,Item)+Qty);}
+   else if(Kind==TEXT("serve") || Kind==TEXT("sell"))UMareSimulation::Object(Prog,TEXT("ch"))->SetNumberField(Arg+TEXT("_")+Kind,Qty);
+   else if(Kind==TEXT("pay"))S->State->SetNumberField(TEXT("money"),S->Money()+Qty);
+   else if(Kind==TEXT("fame"))for(int32 I=0;I<400 && S->FameLevel()<Qty;++I)S->AddFame(50);
+   else if(Kind==TEXT("photo"))UMareSimulation::Object(Prog,TEXT("chp"))->SetBoolField(Item,true);
+   else if(Kind==TEXT("recipes")){int32 N=0;for(const auto& Pair:UMareSimulation::Object(S->Definitions,TEXT("dishes"))->Values)if(N++<Qty)UMareSimulation::Object(Prog,TEXT("disc"))->SetBoolField(FString(Pair.Key.ToView()),true);}
+   else if(Kind==TEXT("biz"))for(const FString Biz:{TEXT("sorveteria"),TEXT("aluguel"),TEXT("food_truck"),TEXT("souvenir"),TEXT("surfe")})S->BuyBusiness(Biz);
+   bOk=S->AdvanceChapter(Arg);}
+  UE_LOG(LogTemp,Display,TEXT("mare.QA %s %s -> %s (%s)"),*Verb,*Arg,bOk?TEXT("ok"):TEXT("refused"),*S->LastMessage);}));
 static FAutoConsoleCommandWithWorldAndArgs MareShowUICommand(TEXT("mare.ShowUI"),TEXT("QA: opens a panel (pause, options, menu, letter) for UI screenshots."),
  FConsoleCommandWithWorldAndArgsDelegate::CreateLambda([](const TArray<FString>& Args,UWorld* World){if(Args.Num())FMareUIQA::Show(World,Args[0]);}));
 void AMareController::BuildPauseMenu(bool bOptions)

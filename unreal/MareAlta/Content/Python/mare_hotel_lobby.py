@@ -277,6 +277,38 @@ def glass_info():
     return out
 
 
+def hotel_window_glass():
+    """Hotel tower windows: the clear kiosk glass showed the empty, evenly lit beige rooms behind it, so from outside
+    every balcony door read as a solid wall. Real hotel glazing seen by day is darker and reflective: a grey-green
+    tint, mostly opaque face-on and a mirror at grazing angles. Own material, the kiosk and house keep the clear one."""
+    from mare_materials import material, expression, custom, MEL
+    mat = material('M_HotelWindowGlass')
+    mat.set_editor_property('blend_mode', unreal.BlendMode.BLEND_TRANSLUCENT)
+    mat.set_editor_property('two_sided', True)
+    mat.set_editor_property('used_with_instanced_static_meshes', True)
+    mat.set_editor_property('translucency_lighting_mode', unreal.TranslucencyLightingMode.TLM_SURFACE_PER_PIXEL_LIGHTING)
+    MEL.connect_material_property(expression(mat, unreal.MaterialExpressionConstant3Vector, constant=unreal.LinearColor(.035, .05, .055, 1)), '', unreal.MaterialProperty.MP_BASE_COLOR)
+    MEL.connect_material_property(expression(mat, unreal.MaterialExpressionConstant, r=.04), '', unreal.MaterialProperty.MP_ROUGHNESS)
+    MEL.connect_material_property(expression(mat, unreal.MaterialExpressionConstant, r=1.0), '', unreal.MaterialProperty.MP_SPECULAR)
+    MEL.connect_material_property(expression(mat, unreal.MaterialExpressionConstant, r=.9), '', unreal.MaterialProperty.MP_METALLIC)
+    fresnel = expression(mat, unreal.MaterialExpressionFresnel, exponent=4., base_reflect_fraction=.08)
+    MEL.connect_material_property(custom(mat, 'return .72 + F*.26;', unreal.CustomMaterialOutputType.CMOT_FLOAT1, {'F': fresnel}), '', unreal.MaterialProperty.MP_OPACITY)
+    errors = list(MEL.recompile_material(mat))
+    if errors:
+        raise RuntimeError(str(errors))
+    unreal.EditorAssetLibrary.save_loaded_asset(mat, False)
+    changed = []
+    for a in unreal.get_editor_subsystem(unreal.EditorActorSubsystem).get_all_level_actors():
+        for c in a.get_components_by_class(unreal.StaticMeshComponent):
+            if not c.static_mesh or 'HotelTower_Glass' not in c.static_mesh.get_name():
+                continue
+            for j in range(c.get_num_materials()):
+                c.set_material(j, mat)
+                changed.append([a.get_actor_label(), j])
+    unreal.get_editor_subsystem(unreal.LevelEditorSubsystem).save_current_level()
+    return changed
+
+
 def neutral_glass():
     """Override only the glass slots of the hotel glass proxy with the clear neutral glass."""
     glass = unreal.load_asset('/Game/World/Materials/M_ClearWindowGlass')
@@ -352,6 +384,8 @@ def run(action, arg=''):
         return pie(arg)
     if action == 'quit':
         return save_and_quit()
+    if action == 'hotelglass':
+        return hotel_window_glass()
     if action == 'neutralglass':
         return neutral_glass()
     if action == 'glass':

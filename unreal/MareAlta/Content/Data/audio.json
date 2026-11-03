@@ -616,5 +616,17 @@
   "loop": false,
   "group": "deal_decline",
   "volume": 0.03
+ },
+ {
+  "id": "radio_havaiana",
+  "path": "/Game/Audio/radio_havaiana.radio_havaiana",
+  "duration": 120.0,
+  "loop": true
+ },
+ {
+  "id": "music_tema",
+  "path": "/Game/Audio/music_tema.music_tema",
+  "duration": 73.0,
+  "loop": true
  }
 ]

@@ -307,7 +307,9 @@ def build_palm_fab():
     normal = expression(mat, unreal.MaterialExpressionTextureSample, texture=normal_tex, sampler_type=unreal.MaterialSamplerType.SAMPLERTYPE_NORMAL)
     # leaf transmission fades at night (the fronds glowed bright green against the night sky)
     sss = custom(mat, 'return Base.rgb * float3(.55,.75,.35) * (1 - .75*Night);', unreal.CustomMaterialOutputType.CMOT_FLOAT3, {'Base': color, 'Night': _mpc(mat, 'Night')})
-    MEL.connect_material_property(color, 'RGB', unreal.MaterialProperty.MP_BASE_COLOR)
+    # A bit deeper green, and little sky reflection: the light leaf texture read almost white in the shade.
+    MEL.connect_material_property(custom(leaf, 'return Base.rgb * float3(.74,.8,.66);', unreal.CustomMaterialOutputType.CMOT_FLOAT3, {'Base': color}), '', unreal.MaterialProperty.MP_BASE_COLOR)
+    MEL.connect_material_property(expression(leaf, unreal.MaterialExpressionConstant, r=.15), '', unreal.MaterialProperty.MP_SPECULAR)
     MEL.connect_material_property(color, 'A', unreal.MaterialProperty.MP_OPACITY_MASK)
     MEL.connect_material_property(normal, 'RGB', unreal.MaterialProperty.MP_NORMAL)
     MEL.connect_material_property(sss, '', unreal.MaterialProperty.MP_SUBSURFACE_COLOR)
@@ -441,18 +443,28 @@ def build_hp_tree():
         m.set_editor_property('used_with_nanite', True)
         m.set_editor_property('used_with_instanced_static_meshes', True)
     color = expression(leaf, unreal.MaterialExpressionTextureSample, texture=leaf_tex, sampler_type=unreal.MaterialSamplerType.SAMPLERTYPE_COLOR)
-    MEL.connect_material_property(color, 'RGB', unreal.MaterialProperty.MP_BASE_COLOR)
+    # The texture is a pale spring green that read as frosted next to the tropical bush: deeper and more saturated.
+    MEL.connect_material_property(custom(leaf, 'float l=dot(Base.rgb,float3(.2126,.7152,.0722)); return max(lerp(l.xxx,Base.rgb,1.4),0) * float3(.55,.66,.42);', unreal.CustomMaterialOutputType.CMOT_FLOAT3, {'Base': color}), '', unreal.MaterialProperty.MP_BASE_COLOR)
     MEL.connect_material_property(color, 'A', unreal.MaterialProperty.MP_OPACITY_MASK)
-    MEL.connect_material_property(custom(leaf, 'return Base.rgb * float3(.6,.8,.4);', unreal.CustomMaterialOutputType.CMOT_FLOAT3, {'Base': color}), '', unreal.MaterialProperty.MP_SUBSURFACE_COLOR)
+    # Light through the leaves: a third of the old (.6,.8,.4) and fading at night. At full strength the shaded crowns
+    # under the big jacaranda glowed almost white against the sun behind them (03/11 simulation, CHECKLIST_SIMULACAO).
+    night = _mpc(leaf, 'Night')
+    MEL.connect_material_property(custom(leaf, 'return Base.rgb * float3(.2,.27,.12) * (1 - .75 * N);', unreal.CustomMaterialOutputType.CMOT_FLOAT3, {'Base': color, 'N': night}), '', unreal.MaterialProperty.MP_SUBSURFACE_COLOR)
     MEL.connect_material_property(expression(leaf, unreal.MaterialExpressionConstant, r=.65), '', unreal.MaterialProperty.MP_ROUGHNESS)
+    # Sky light reaches under the big jacaranda crown almost unoccluded (masked foliage barely blocks Lumen's sky
+    # light): shaded leaves and bark washed out pale. A material AO darkens only that indirect light, not the sun.
+    for m in (leaf,):
+        MEL.connect_material_property(expression(m, unreal.MaterialExpressionConstant, r=.45), '', unreal.MaterialProperty.MP_AMBIENT_OCCLUSION)
     bark = material('M_HPTreeTrunk_PBR')
     bark.set_editor_property('used_with_nanite', True)
     bark.set_editor_property('used_with_instanced_static_meshes', True)
     c = expression(bark, unreal.MaterialExpressionTextureSample, texture=bark_tex, sampler_type=unreal.MaterialSamplerType.SAMPLERTYPE_COLOR)
     n = expression(bark, unreal.MaterialExpressionTextureSample, texture=bark_nrm, sampler_type=unreal.MaterialSamplerType.SAMPLERTYPE_NORMAL)
-    MEL.connect_material_property(c, 'RGB', unreal.MaterialProperty.MP_BASE_COLOR)
+    # Near-white bark looked like a birch in snow: a warm grey-brown keeps the texture's grain.
+    MEL.connect_material_property(custom(bark, 'return Base.rgb * float3(.52,.46,.38);', unreal.CustomMaterialOutputType.CMOT_FLOAT3, {'Base': c}), '', unreal.MaterialProperty.MP_BASE_COLOR)
     MEL.connect_material_property(n, 'RGB', unreal.MaterialProperty.MP_NORMAL)
     MEL.connect_material_property(expression(bark, unreal.MaterialExpressionConstant, r=.85), '', unreal.MaterialProperty.MP_ROUGHNESS)
+    MEL.connect_material_property(expression(bark, unreal.MaterialExpressionConstant, r=.5), '', unreal.MaterialProperty.MP_AMBIENT_OCCLUSION)
     for m in (leaf, bark):
         errors = list(MEL.recompile_material(m))
         if errors: raise RuntimeError(str(errors))
@@ -695,3 +707,133 @@ def build_custom_materials():
     out['M_Custom_Slide_4'] = _custom_pbr('M_Custom_Slide_4', 'rough_linen', 200, glass % 'float3(.93,.38,.30)', rough_const=.18)
     out['M_Custom_Slide_5'] = _custom_pbr('M_Custom_Slide_5', 'rough_linen', 200, 'return float3(.85,.85,.9);', emissive_code='float h=frac(T*.05+P.z*.002); float3 c=saturate(abs(frac(h+float3(0,.333,.667))*6-3)-1); return c*N*N*12.0;', rough_const=.18)
     return out
+
+
+PLASTER_NOR = '/Game/Custom/mare_suite_m5/mare_suite_painted_plaster_wall_nor_1k'
+PLASTER_STONE_NOR = '/Game/Custom/mare_suite_m5/mare_suite_plaster_stone_wall_01_nor_1k'
+
+
+def plaster_finish(path):
+    """Fine painted-plaster finish on an imported flat-colour facade material (Grand Hotel tower, 03/11: the walls
+    were one flat beige). World-aligned so it needs no UVs and the grain keeps the same size on every wall: the
+    painted-plaster normal (fine trowel marks) over the stone-plaster normal (broad undulation), a faint large-scale
+    tone variation and a little grime in the first half metre above the ground. The original colour is kept."""
+    mel = unreal.MaterialEditingLibrary
+    mat = unreal.load_asset(path)
+    src = mel.get_material_property_input_node(mat, unreal.MaterialProperty.MP_BASE_COLOR)
+    if isinstance(src, unreal.MaterialExpressionCustom) and src.get_editor_property('desc') == 'MarePlaster':
+        return 'already'
+    out_name = mel.get_material_property_input_node_output_name(mat, unreal.MaterialProperty.MP_BASE_COLOR)
+    if isinstance(src, unreal.MaterialExpressionMultiply) and src.get_editor_property('desc') == 'MareTint':
+        for e in mel.get_material_expressions(mat) if hasattr(mel, 'get_material_expressions') else []:
+            if isinstance(e, unreal.MaterialExpressionConstant3Vector) and e.get_editor_property('desc') == 'MareTint':
+                e.set_editor_property('constant', unreal.LinearColor(1, 1, 1, 1))
+    fine = expression(mat, unreal.MaterialExpressionTextureObject, texture=unreal.load_asset(PLASTER_NOR))
+    broad = expression(mat, unreal.MaterialExpressionTextureObject, texture=unreal.load_asset(PLASTER_STONE_NOR))
+    wpos = expression(mat, unreal.MaterialExpressionWorldPosition)
+    wnrm = expression(mat, unreal.MaterialExpressionVertexNormalWS)
+    uv_code = ('float3 a=abs(N); float2 uv = a.z>max(a.x,a.y) ? P.xy : (a.x>a.y ? P.yz : P.xz); ')
+    color = mel.create_material_expression(mat, unreal.MaterialExpressionCustom, -300, 0)
+    color.set_editor_property('desc', 'MarePlaster')
+    color.set_editor_property('output_type', unreal.CustomMaterialOutputType.CMOT_FLOAT3)
+    color.set_editor_property('code', uv_code +
+        'float3 h = Texture2DSample(Tex, TexSampler, uv/180).rgb; '
+        'float n = sin(uv.x*.0021+sin(uv.y*.0017)*2.3)*sin(uv.y*.0013+uv.x*.0007); '
+        'float tone = 1 + .035*n + (h.r-.5)*.05; '
+        'float grime = lerp(.82, 1, saturate(P.z/60)); '
+        'return Base.rgb * tone * grime;')
+    ins = []
+    for n in ('Base', 'P', 'N', 'Tex'):
+        v = unreal.CustomInput(); v.set_editor_property('input_name', n); ins.append(v)
+    color.set_editor_property('inputs', ins)
+    mel.connect_material_expressions(src, out_name or '', color, 'Base')
+    mel.connect_material_expressions(wpos, '', color, 'P')
+    mel.connect_material_expressions(wnrm, '', color, 'N')
+    mel.connect_material_expressions(broad, '', color, 'Tex')
+    mel.connect_material_property(color, '', unreal.MaterialProperty.MP_BASE_COLOR)
+    normal = mel.create_material_expression(mat, unreal.MaterialExpressionCustom, -300, 300)
+    normal.set_editor_property('output_type', unreal.CustomMaterialOutputType.CMOT_FLOAT3)
+    normal.set_editor_property('code', uv_code +
+        'float3 f = Texture2DSample(Fine, FineSampler, uv/90).rgb*2-1; '
+        'float3 b = Texture2DSample(Broad, BroadSampler, uv/320).rgb*2-1; '
+        'float3 n = float3(f.xy*.55 + b.xy*.35, 1); return normalize(n);')
+    ins = []
+    for n in ('P', 'N', 'Fine', 'Broad'):
+        v = unreal.CustomInput(); v.set_editor_property('input_name', n); ins.append(v)
+    normal.set_editor_property('inputs', ins)
+    for n, s in (('P', wpos), ('N', wnrm), ('Fine', fine), ('Broad', broad)):
+        mel.connect_material_expressions(s, '', normal, n)
+    mel.connect_material_property(normal, '', unreal.MaterialProperty.MP_NORMAL)
+    errors = list(mel.recompile_material(mat))
+    if errors:
+        raise RuntimeError(str(errors))
+    unreal.EditorAssetLibrary.save_loaded_asset(mat, False)
+    return 'ok'
+
+
+def grass_hue(path):
+    """Poly Haven grass_medium clumps read as dark, dry wisps next to the inland PCG turf (03/11, "gramas mais
+    realistas"): route their atlas through the same natural green the PCG grass uses (mare_grass.grass_material),
+    keeping the texture's light/dark blades as variation. In place, once (desc MareGrassHue)."""
+    mel = unreal.MaterialEditingLibrary
+    mat = unreal.load_asset(path)
+    src = mel.get_material_property_input_node(mat, unreal.MaterialProperty.MP_BASE_COLOR)
+    if isinstance(src, unreal.MaterialExpressionCustom) and src.get_editor_property('desc') == 'MareGrassHue':
+        return 'already'
+    out_name = mel.get_material_property_input_node_output_name(mat, unreal.MaterialProperty.MP_BASE_COLOR)
+    if isinstance(src, unreal.MaterialExpressionMultiply) and src.get_editor_property('desc') == 'MareTint':
+        for e in mel.get_material_expressions(mat) if hasattr(mel, 'get_material_expressions') else []:
+            if isinstance(e, unreal.MaterialExpressionConstant3Vector) and e.get_editor_property('desc') == 'MareTint':
+                e.set_editor_property('constant', unreal.LinearColor(1, 1, 1, 1))
+    node = mel.create_material_expression(mat, unreal.MaterialExpressionCustom, -300, 0)
+    node.set_editor_property('desc', 'MareGrassHue')
+    node.set_editor_property('output_type', unreal.CustomMaterialOutputType.CMOT_FLOAT3)
+    node.set_editor_property('code', 'float l=dot(Base.rgb,float3(.2126,.7152,.0722)); '
+                                     'return float3(.06,.21,.028)*clamp(l*3,.7,1.55);')
+    v = unreal.CustomInput(); v.set_editor_property('input_name', 'Base')
+    node.set_editor_property('inputs', [v])
+    mel.connect_material_expressions(src, out_name or '', node, 'Base')
+    mel.connect_material_property(node, '', unreal.MaterialProperty.MP_BASE_COLOR)
+    errors = list(mel.recompile_material(mat))
+    if errors:
+        raise RuntimeError(str(errors))
+    unreal.EditorAssetLibrary.save_loaded_asset(mat, False)
+    return 'ok'
+
+
+GRASS_TONE = ('float v = saturate((Prev.g/.2 - .65)/.85); '
+              'float3 c = lerp(float3(.026,.08,.015), float3(.072,.16,.032), v); '
+              'float m = .5 + .5*sin(P.x*.0009 + sin(P.y*.0013)*2.0)*sin(P.y*.0011 + P.x*.0004); '
+              'float d = .5 + .5*sin(P.x*.0071 + sin(P.y*.0053)*1.7)*sin(P.y*.0067); '
+              'c *= lerp(.82, 1.08, m) * lerp(.9, 1.05, d); '
+              'return lerp(c, c*float3(1.25,1.02,.7), (1-m)*.35);')
+
+
+def grass_tone(path):
+    """Deeper, textured green for the lawn grass (03/11: the PCG turf read as a flat, artificial light green).
+    Chained after the existing recolour node (its output still carries the blade brightness in .g), so the
+    atlas variation stays: darker blade bases, lighter tips, broad patches a little drier or lusher across
+    the ground and a finer mottling. Once per material (desc MareGrassTone)."""
+    mel = unreal.MaterialEditingLibrary
+    mat = unreal.load_asset(path)
+    src = mel.get_material_property_input_node(mat, unreal.MaterialProperty.MP_BASE_COLOR)
+    if isinstance(src, unreal.MaterialExpressionCustom) and src.get_editor_property('desc') == 'MareGrassTone':
+        src.set_editor_property('code', GRASS_TONE)
+    else:
+        out_name = mel.get_material_property_input_node_output_name(mat, unreal.MaterialProperty.MP_BASE_COLOR)
+        node = mel.create_material_expression(mat, unreal.MaterialExpressionCustom, -150, 0)
+        node.set_editor_property('desc', 'MareGrassTone')
+        node.set_editor_property('output_type', unreal.CustomMaterialOutputType.CMOT_FLOAT3)
+        node.set_editor_property('code', GRASS_TONE)
+        ins = []
+        for n in ('Prev', 'P'):
+            v = unreal.CustomInput(); v.set_editor_property('input_name', n); ins.append(v)
+        node.set_editor_property('inputs', ins)
+        mel.connect_material_expressions(src, out_name or '', node, 'Prev')
+        mel.connect_material_expressions(mel.create_material_expression(mat, unreal.MaterialExpressionWorldPosition, -400, 200), '', node, 'P')
+        mel.connect_material_property(node, '', unreal.MaterialProperty.MP_BASE_COLOR)
+    errors = list(mel.recompile_material(mat))
+    if errors:
+        raise RuntimeError(str(errors))
+    unreal.EditorAssetLibrary.save_loaded_asset(mat, False)
+    return 'ok'

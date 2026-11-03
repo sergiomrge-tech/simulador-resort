@@ -49,9 +49,14 @@ Nada de mecânica nova até esta seção fechar. Cada passada roda uma auditoria
   sobrepostos (largura medida da fonte) e letreiro do food truck espelhado sobre o teto (pintado nas laterais).
 - [x] P0 Interface: todas as telas no padrão caderno (03/11, pedido do Sergio): menu principal, pausa, opções, diálogos
   da vila/eventos e carta da avó convertidos (`MareNotebookStyle.h`); diálogo com respostas quebrando linha dentro da folha.
-- [ ] P0 Varredura visual final por área (montagem de capturas analisadas item a item) e desempenho no editor.
-- [ ] P0 Simulação do jogo inteiro depois das auditorias acima: perfil novo, avançando todas as etapas (dias, expansões,
+- [x] P0 Varredura visual final por área (montagem de capturas analisadas item a item) e desempenho no editor.
+  03/11: fotos de referência fixas no portão + varredura de todos os marcadores de dia e de noite analisadas; noite clara
+  nas primeiras fotos = adaptação de exposição após teleporte (estabiliza em ~10 s, medido); mosaico de orca na
+  piscina é intencional. Editor PIE ~35-38 FPS em todas as áreas (indicador; FPS real no executável, item próprio).
+- [x] P0 Simulação do jogo inteiro depois das auditorias acima: perfil novo, avançando todas as etapas (dias, expansões,
   capítulos, negócios até o Grand Hotel), registrando cada erro em `docs/ue58/CHECKLIST_SIMULACAO.md`.
+  03/11: `tools/ue58/qa/simulate_game.py` (perfil novo, 30 etapas, 0 erros de log, 0 deslizando); achados em
+  `docs/ue58/CHECKLIST_SIMULACAO.md`.
 - [ ] P0 Corrigir TODOS os itens de `CHECKLIST_SIMULACAO.md` (com prova) antes de qualquer mecânica nova.
 
 ## 1. Defeitos conhecidos (corrigir primeiro)

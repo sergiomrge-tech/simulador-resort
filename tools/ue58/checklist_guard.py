@@ -3,7 +3,8 @@
 Open = lines "- [ ]" or "- [~]" without the tag [bloqueado-usuario] (items only Sergio can unblock).
 When none are left, it asks for the full-game simulation and its new checklist
 (docs/ue58/CHECKLIST_SIMULACAO.md); once that file exists it lets the session stop.
-Escape hatch: create D:/CodexTemp/claude/PARAR_CHECKLIST. Only acts in the MareAltaUE58 checkout.
+Escape hatch: create D:/CodexTemp/claude/PARAR_CHECKLIST. While a long background job runs, a marker
+D:/CodexTemp/claude/AGUARDANDO younger than 45 min lets the session pause until the job wakes it. Only acts in the MareAltaUE58 checkout.
 """
 import json
 import re
@@ -14,6 +15,8 @@ ROOT = Path(r'D:\Projetos\MareAltaUE58')
 PENDING = ROOT / 'docs' / 'ue58' / 'PENDENCIAS_100.md'
 SIMULATION = ROOT / 'docs' / 'ue58' / 'CHECKLIST_SIMULACAO.md'
 ESCAPE = Path(r'D:\CodexTemp\claude\PARAR_CHECKLIST')
+# Waiting on a long background job (build, full simulation) that will wake the session: a fresh marker lets it pause.
+WAITING = Path(r'D:\CodexTemp\claude\AGUARDANDO')
 
 
 def main():
@@ -23,6 +26,9 @@ def main():
         data = {}
     cwd = str(data.get('cwd', '')).replace('\\', '/').lower()
     if 'mareAltaue58'.lower() not in cwd or ESCAPE.exists() or not PENDING.exists():
+        return
+    import time
+    if WAITING.exists() and time.time() - WAITING.stat().st_mtime < 45 * 60:
         return
     def open_lines(path, section=None):
         """Open items of a checklist; with section, only those under that '## <section>' heading."""

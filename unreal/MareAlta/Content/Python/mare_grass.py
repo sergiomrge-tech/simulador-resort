@@ -138,8 +138,9 @@ def build():
         descriptor.set_editor_property('affect_distance_field_lighting', False)
         descriptor.set_editor_property('affect_dynamic_indirect_lighting', False)
         descriptor.set_editor_property('component_class', unreal.HierarchicalInstancedStaticMeshComponent.static_class())
-        descriptor.set_editor_property('instance_start_cull_distance', 1800)
-        descriptor.set_editor_property('instance_end_cull_distance', 3000)
+        # 18-30 m left a hard edge where the lush turf stopped and only sparse tufts went on (03/11).
+        descriptor.set_editor_property('instance_start_cull_distance', 2800)
+        descriptor.set_editor_property('instance_end_cull_distance', 4200)
         entry.set_editor_property('descriptor', descriptor)
         selector.set_editor_property('mesh_entries', [entry])
         graph.add_edge(node,'Out',spawn,'In')

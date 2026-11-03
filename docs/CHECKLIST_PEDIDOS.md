@@ -1,4 +1,4 @@
-# Checklist de pedidos do usuário
+﻿# Checklist de pedidos do usuário
 
 Toda solicitação do usuário entra aqui no momento em que é feita e só é marcada quando estiver
 implementada **e** validada (compilação, testes pelo MCP, captura real). Mais recente no topo.
@@ -146,6 +146,19 @@ Legenda: [x] feito e validado · [~] em andamento/parcial · [ ] pendente.
   texturas Poly Haven aerial_sand (praia pisoteada, 15 m) + dense_sand (grão fino), bege bem claro e cavidades
   sombreadas pela AO; o jogador deixa pegadas na areia (alternando pés na direção do passo, até 240, somem em 3 min;
   `UMareVisualWorld::UpdateFootprints`, `M_SandFootprint`; QA `mare.WalkTest 1`). Conferido no editor e no PIE.
+- [x] "Boneco MetaHuman andando sem mexer pernas e braços, flutuando" (03/11): esqueleto oculto do MetaHuman com
+  `OnlyTickPoseWhenRendered` congelava a pose (11 de 14 pedestres). Corrigido; auditoria de marcha 0 deslizando, dia e noite.
+- [x] "Verificar todos os personagens da ilha com movimentação natural" (03/11): auditoria de marcha no portão de
+  qualidade, a cada commit.
+- [x] "Interface antiga — usar o modelo caderno em tudo" (03/11): menu principal, pausa, opções, diálogos e a carta
+  convertidos para o caderno (`MareNotebookStyle.h`).
+- [x] "Prestar mais atenção para não errar tanto" (03/11): portão de qualidade antes de todo commit
+  (`tools/ue58/qa/qa_gate.py`: testes, flutuação, marcha, log, fotos de referência) e QA amplo em perfil novo.
+- [x] "Correção geral antes de novas mecânicas; simulação do jogo inteiro; checklist de erros" (03/11): seção 0 do
+  `PENDENCIAS_100.md` + `tools/ue58/qa/simulate_game.py` → `docs/ue58/CHECKLIST_SIMULACAO.md`; hook de parada que
+  mantém o trabalho nessa ordem.
+- [ ] "Músicas havaianas de ukulele originais na rádio + música-tema; ambiente suave (vento, mar, pássaros, gaivotas)"
+  (03/11): no `PENDENCIAS_100.md` (seção de áudio), depois da correção geral.
 - [x] Manter este checklist sempre que o usuário pedir algo (regra salva na memória).
 
 ## Regras permanentes já pedidas

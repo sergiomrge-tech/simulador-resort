@@ -19,7 +19,7 @@ def import_radio():
     return {'sounds':len(report),'radio':['reggae_praia','music_bossa','music_relax']}
 def build():
     report=[]
-    loops={'reggae_praia','radio_reggae_roots','radio_calypso','radio_beach_pop','music_bossa','music_relax','ocean_loop','wind_loop','rain_loop','crickets_loop','leaves_soft','underwater_loop'}
+    loops={'reggae_praia','radio_reggae_roots','radio_calypso','radio_beach_pop','radio_havaiana','music_tema','music_bossa','music_relax','ocean_loop','wind_loop','rain_loop','crickets_loop','leaves_soft','underwater_loop'}
     for source in sorted((ROOT/'SourceArt/Audio').glob('*.wav')):
         path='/Game/Audio/'+source.stem
         wave=unreal.load_asset(path)
@@ -33,3 +33,17 @@ def build():
         report.append({'id':source.stem,'path':wave.get_path_name(),'duration':wave.get_editor_property('duration'),'loop':source.stem in loops})
     (ROOT/'Content/Data/audio.json').write_text(json.dumps(report,indent=2),encoding='utf-8')
     return {'sounds':len(report),'duration':sum(s['duration'] for s in report)}
+
+def import_tracks(names):
+    """Import (or reimport) looping music tracks from SourceArt/Audio by name; audio.json already lists them."""
+    out={}
+    for name in names:
+        path='/Game/Audio/'+name
+        task=unreal.AssetImportTask();task.filename=str(ROOT/'SourceArt/Audio'/(name+'.wav'));task.destination_path='/Game/Audio'
+        task.destination_name=name;task.automated=True;task.save=True;task.replace_existing=True
+        unreal.AssetToolsHelpers.get_asset_tools().import_asset_tasks([task]);wave=unreal.load_asset(path)
+        if not isinstance(wave,unreal.SoundWave):raise RuntimeError('Music import failed: '+name)
+        wave.set_editor_property('looping',True);wave.set_editor_property('virtualization_mode',unreal.VirtualizationMode.PLAY_WHEN_SILENT)
+        unreal.EditorAssetLibrary.save_loaded_asset(wave,False)
+        out[name]=round(wave.get_editor_property('duration'),1)
+    return out
