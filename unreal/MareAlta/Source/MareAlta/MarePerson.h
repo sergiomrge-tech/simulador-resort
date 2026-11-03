@@ -65,6 +65,11 @@ public:
  FString StaffRole;
  /** Pose held while standing still at work (UMareStaffWorld), e.g. Interact while cleaning; Walk while gliding. */
  FString WorkPose;
+ /** Name badge on the uniform's left chest (staff with a role), following the spine. */
+ UPROPERTY() TObjectPtr<UStaticMeshComponent> Badge;
+ /** Distance from spine_05 to the shirt surface in front (cm), per body. */
+ float BadgeMaleAhead=13.f,BadgeFemaleAhead=15.f;
+ void AttachBadge();
  /** Village walkers/residents never participate in the kiosk order state machine. */
  bool bAmbient=false,bConversing=false;
  /** Ambient guest placed on a chair (hotel restaurant); keeps the sitting pose. */

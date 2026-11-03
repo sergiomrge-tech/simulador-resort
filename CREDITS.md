@@ -587,3 +587,4 @@ Síntese original (numpy, no mesmo script, dedicada a CC0): duas campainhas de b
 - Folhas boiando na piscina (`tools/ue58/gen_pool_mess.py`): modelo próprio feito em Blender (bpy), 02/11/2026.
 - Pebolim e fliperama do salão de jogos (`tools/ue58/gen_game_room_extras.py`): modelos próprios em Blender (bpy), texturas desenhadas por código, 02/11/2026.
 - Festas (`tools/ue58/gen_festival.py`): bandeirinhas, barraca de quermesse e chamas da fogueira feitas em Blender (bpy); cabine do DJ, lenha da fogueira e faixa vêm dos modelos próprios da versão Godot (`tools/gen_code_props.py`, `tools/gen_food.py`), 02/11/2026.
+- Crachá dos funcionários (`/Game/Custom/Staff/mare_staff_badge`): modelo autoral gerado por script bpy (`tools/ue58/gen_staff_badge.py`), 02/11/2026.

@@ -170,3 +170,18 @@ void UMareSimulation::StaffNight()
  if(Notes.Num())Child(State,TEXT("ue_last_day"))->SetStringField(TEXT("staff_note"),FString::Join(Notes,TEXT("; "))+TEXT("."));
  else Child(State,TEXT("ue_last_day"))->RemoveField(TEXT("staff_note"));
 }
+
+void UMareSimulation::StaffDid(const FString& Role,int32 Tasks,double Money)
+{
+ if(Role.IsEmpty() || (Tasks<=0 && Money<=0))return;
+ auto Done=Child(State,TEXT("staff_done"));const int32 Day=Number(State,TEXT("day"),1);
+ if(Number(Done,TEXT("day"),-1)!=Day){Done->SetNumberField(TEXT("day"),Day);Done->SetObjectField(TEXT("roles"),MakeShared<FJsonObject>());}
+ auto R=Child(Child(Done,TEXT("roles")),Role);
+ R->SetNumberField(TEXT("tasks"),Number(R,TEXT("tasks"))+Tasks);R->SetNumberField(TEXT("money"),Number(R,TEXT("money"))+Money);
+}
+
+TPair<int32,double> UMareSimulation::StaffDoneToday(const FString& Role) const
+{
+ const auto Done=Object(State,TEXT("staff_done"));if(Number(Done,TEXT("day"),-1)!=Number(State,TEXT("day"),1))return {0,0.};
+ const auto R=Object(Object(Done,TEXT("roles")),Role);return {int32(Number(R,TEXT("tasks"))),Number(R,TEXT("money"))};
+}

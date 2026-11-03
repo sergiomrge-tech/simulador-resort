@@ -146,7 +146,7 @@ void UMareSimulation::RestaurantHour(int32 Hour)
  const double CrewAfter=bWaiter?15:Number(RestaurantDefs(),TEXT("crew_minutes"),45),Share=bWaiter?.9:Number(RestaurantDefs(),TEXT("crew_share"),.7);double Crew=0;
  for(const TCHAR* Key:{TEXT("tables"),TEXT("room")}){auto& Items=List(R,Key);
   for(int32 I=Items.Num()-1;I>=0;--I){const auto O=Items[I]->AsObject();if(Now-Number(O,TEXT("since"))<CrewAfter)continue;
-   FString Dish=String(O,TEXT("dish"));if(Dish.IsEmpty())Dish=RandomDish(this);Crew+=FMath::RoundToDouble(MenuPrice(Dish)*Share);Items.RemoveAt(I);}}
+   FString Dish=String(O,TEXT("dish"));if(Dish.IsEmpty())Dish=RandomDish(this);Crew+=FMath::RoundToDouble(MenuPrice(Dish)*Share);Items.RemoveAt(I);if(bWaiter)StaffDid(TEXT("garcom_hotel"),1,FMath::RoundToDouble(MenuPrice(Dish)*Share));}}
  if(Crew>0)Book(Crew,bWaiter?TEXT("Restaurante (garçom)"):TEXT("Restaurante (equipe do hotel)"));
  if(!IsRestaurantOpen())return;
  // New diners at about half of the free tables, and room service from the suites.

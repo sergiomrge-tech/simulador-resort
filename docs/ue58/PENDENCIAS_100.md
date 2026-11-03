@@ -109,19 +109,21 @@ Pronto e testado (02/11):
   bartender, guia e os novos piscineiro (peneira e toalhas a cada hora) e garçom do restaurante (atende mesas e serviço de
   quarto após 15 min a 90%); descrições reescritas; teste `MareAlta.Gameplay.NewStaffRoles`. Turnos por horário ainda não
   existem (todos trabalham no horário do lugar).
-- [~] P1 **Refinamento dos funcionários** (pedido do Sergio em 02/11; lote principal feito em 02/11):
+- [x] P1 **Refinamento dos funcionários** (pedido do Sergio em 02/11; feito em 02/11):
   - [x] cada funcionário visível no lugar onde trabalha, andando entre as paradas e com pose de trabalho: recepcionista
     atrás do balcão da pousada, camareira de bangalô em bangalô, piscineiro pelo deck da piscina (folhas e toalhas), guia
     no quiosque de passeios e na fila, garçom entre a cozinha e as mesas levando pratos; bartender e atendente já
     existiam (`UMareStaffWorld`, rotas em `Content/Data/staff_world.json`);
   - [x] MetaHuman e uniforme próprios de cada cargo (`metahumans.json` → `staff_<cargo>`: camisa, bermuda e calçado);
-  - [ ] crachá no uniforme (modelo pequeno preso ao peito);
+  - [x] crachá no uniforme (`tools/ue58/gen_staff_badge.py`, preso ao peito esquerdo pelo osso spine_05; foto
+    `docs/ue58/graphics-reference/cracha-20261102.jpg`);
   - [x] turnos (integral, manhã 6h–14h, tarde e noite 14h–24h), dia de folga e até 2 pessoas por cargo, cada uma num
     turno; o efeito do cargo só vale com alguém de serviço (`definitions.json` → `staff_rules`, `MareStaff.cpp`);
   - [x] nível e experiência (horas trabalhadas; cada nível melhora o efeito e sobe o salário, com aviso), cansaço
     (turno integral sem folga cansa, rende menos e chega a faltar um dia);
   - [x] página de equipe com nível, horas do dia, cansaço, turno e folga de cada pessoa e o que está fazendo agora;
-  - [ ] quanto cada um rendeu no dia (hoje mostra as horas trabalhadas); humor além do cansaço;
+  - [x] o que cada um fez e rendeu no dia (entregas, drinks, bilhetes, mesas, check-ins, tarefas e R$) na página de equipe;
+  - [ ] humor além do cansaço (fica para os eventos cômicos da seção 14, atendente iniciante);
   - teste `MareAlta.Gameplay.StaffShiftsAndLevels` (24/24 MareAlta.* passando); foto
     `docs/ue58/graphics-reference/equipe-20261102.jpg`.
 - [ ] P2 Pedidos especiais e clientes VIP/influenciador no quiosque (eventos cômicos da tarefa #4).

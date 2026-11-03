@@ -211,6 +211,10 @@ public:
  void StaffHour(int32 Hour);
  /** Night hook: fatigue and rest, absences for tomorrow, messages. */
  void StaffNight();
+ /** Counts what a role did today (tasks and money it brought in) for the staff page; reset on a new day. */
+ void StaffDid(const FString& Role,int32 Tasks,double Money=0);
+ /** Today's tasks and money of a role (zeros on another day). */
+ TPair<int32,double> StaffDoneToday(const FString& Role) const;
  UFUNCTION(BlueprintPure,Category="Maré Alta") bool OwnsBusiness(const FString& Id) const;
  /** Buys a village business (definitions.businesses): needs its chapter and fame level. */
  UFUNCTION(BlueprintCallable,Category="Maré Alta") bool BuyBusiness(const FString& Id);

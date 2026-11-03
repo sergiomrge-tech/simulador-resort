@@ -109,9 +109,10 @@ Legenda: [x] feito e validado · [~] em andamento/parcial · [ ] pendente.
 - [x] "Sim, tutorial" (02/11): dicas de primeira vez em todos os sistemas e próxima meta sempre visível; 22/22 testes; foto em `docs/ue58/graphics-reference/tutorial-dica-20261102.png`.
 - [x] "Sim, sigo" → temporadas e tela de fim do Acesso Antecipado (02/11); 23/23 testes; foto em `docs/ue58/graphics-reference/fim-acesso-antecipado-20261102.png`.
 - [x] "Sempre siga o checklist, não precisa ficar me perguntando a cada etapa" / "salve essa regra no global" (02/11): regra salva no CLAUDE.md global e na memória; trabalho segue item a item sem pedir confirmação.
-- [~] "Coloque no checklist o refinamento dos funcionários" (02/11): lote principal feito em 02/11 — funcionários visíveis trabalhando, MetaHuman e uniforme por cargo, turnos, folga, 2 por cargo, nível, cansaço e página de equipe; faltam crachá e rendimento diário por pessoa (`PENDENCIAS_100.md`, seção 3).
+- [x] "Coloque no checklist o refinamento dos funcionários" (02/11): feito — funcionários visíveis trabalhando, MetaHuman, uniforme e crachá por cargo, turnos, folga, 2 por cargo, nível, cansaço e página de equipe com o que cada um fez no dia (`PENDENCIAS_100.md`, seção 3).
 - [ ] "Coloquei no GitHub itens cômicos para acrescentar no jogo; coloque no checklist, mas para o final" (02/11): issue #4 e `docs/ue58/HUMOR_EVENTOS_COMICOS.md` (HUM-001..006, Seu Arnaldo, pescador) registrados em `PENDENCIAS_100.md`, seção 14.
 - [x] Bússola no HUD com os lugares do resort (02/11): foto `docs/ue58/graphics-reference/bussola-20261102.png`.
+- [x] "Pq está parando? Siga o checklist até terminar" (02/11): regra reforçada na memória; o trabalho segue item após item no mesmo turno.
 - [x] Manter este checklist sempre que o usuário pedir algo (regra salva na memória).
 
 ## Regras permanentes já pedidas

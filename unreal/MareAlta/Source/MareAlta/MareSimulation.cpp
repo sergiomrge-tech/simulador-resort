@@ -214,7 +214,7 @@ bool UMareSimulation::Deliver(const FString& OrderId,const FString& Dish,bool bS
  Items.RemoveAt(Index); Order->SetArrayField(TEXT("remaining"),Items);
  Object(State,TEXT("company"))->SetStringField(bStaff?TEXT("staff_carry"):TEXT("carry"),TEXT(""));
  // The player's price is charged; the comfort of the kiosk decor adds a tip, smaller when the price feels high.
- const double Price=SalePrice(Dish); Book(Price,TEXT("Venda: ")+Dish);
+ const double Price=SalePrice(Dish); Book(Price,TEXT("Venda: ")+Dish);if(bStaff)StaffDid(TEXT("atendente"),1,Price);
  const double Tip=FMath::RoundToDouble(Price*KioskTipRate()*FMath::Clamp(2-PriceRatio(Dish),0.,1.)*100)/100; if(Tip>=.01) Book(Tip,TEXT("Gorjeta"));
  State->SetNumberField(TEXT("kiosk_n"),Number(State,TEXT("kiosk_n"))+1); State->SetNumberField(TEXT("kiosk"),Number(State,TEXT("kiosk"))+Price+Tip);
  if(Dish.StartsWith(TEXT("sorvete_"))){auto Campaign=Object(Object(State,TEXT("prog")),TEXT("campaign"));Campaign->SetNumberField(TEXT("icecream"),Number(Campaign,TEXT("icecream"))+1);}

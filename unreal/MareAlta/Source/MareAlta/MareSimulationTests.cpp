@@ -884,6 +884,10 @@ bool FMareStaffShiftsTest::RunTest(const FString& Parameters)
  TestTrue(TEXT("Got tired"),bWasTired);TestTrue(TEXT("Missed a day"),Absent>0);
  Sim->State->SetNumberField(TEXT("day"),Absent);TestFalse(TEXT("Absent that day"),Sim->HasStaff(TEXT("bartender")));
  Sim->StaffNight();TestTrue(TEXT("Rested after the absence"),Sim->Number(Solo,TEXT("fatigue"))<60);
+ // What each role did today (staff page): counted per day.
+ Sim->StaffDid(TEXT("bartender"),2,30);TestEqual(TEXT("Tasks today"),Sim->StaffDoneToday(TEXT("bartender")).Key,2);
+ TestEqual(TEXT("Money today"),Sim->StaffDoneToday(TEXT("bartender")).Value,30.);
+ Sim->State->SetNumberField(TEXT("day"),Sim->Number(Sim->State,TEXT("day"))+1);TestEqual(TEXT("New day resets"),Sim->StaffDoneToday(TEXT("bartender")).Key,0);
  // The kiosk attendant has no shifts or fatigue.
  TestTrue(TEXT("Hire attendant"),Sim->HireAttendant());Hour(3);TestTrue(TEXT("Attendant exempt"),Sim->StaffOnDuty(TEXT("atendente")));
  TestFalse(TEXT("Attendant has no shifts"),Sim->CycleStaffShift(TEXT("atendente"),0));

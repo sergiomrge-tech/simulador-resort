@@ -160,6 +160,7 @@ void UMareSimulation::BarHour(int32 Hour)
    const auto Needs=Items(BarRecipe(Want),TEXT("needs"));bool bStock=true;for(const auto& N:Needs)bStock&=Number(Stock,N->AsString())>=1;if(!bStock)continue;
    for(const auto& N:Needs)Stock->SetNumberField(N->AsString(),Number(Stock,N->AsString())-1);
    Book(FMath::RoundToDouble(DrinkPrice(Want)*Number(BarDefs(),TEXT("bartender_share"),.85)),TEXT("Bar (bartender): ")+String(BarRecipe(Want),TEXT("name")));
+   StaffDid(TEXT("bartender"),1,FMath::RoundToDouble(DrinkPrice(Want)*Number(BarDefs(),TEXT("bartender_share"),.85)));
    B->SetNumberField(TEXT("served"),Number(B,TEXT("served"))+1);B->SetStringField(TEXT("last"),Want);Orders.RemoveAt(I);++Served;}}
  const int32 Arrivals=FMath::RandRange(1,2+FameLevel()/4);for(int32 I=0;I<Arrivals;++I)AddBarOrder();
 }

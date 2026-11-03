@@ -300,12 +300,14 @@ def staff_qa(arg):
                                 for m in child.get_components_by_class(unreal.MeshComponent)][:12]
         return out
     if what == 'look':
+        role, _, dist = role.partition(':')
+        dist = float(dist or 380)
         w = next((w for w in workers if str(w.get_editor_property('save_id')) == 'staff_' + role), None)
         if not w:
             return 'none'
         at = w.get_actor_location()
         fwd = w.get_actor_forward_vector()
-        eye = unreal.Vector(at.x + fwd.x * 380 + fwd.y * 120, at.y + fwd.y * 380 - fwd.x * 120, at.z + 30)
+        eye = unreal.Vector(at.x + fwd.x * dist + fwd.y * dist * .3, at.y + fwd.y * dist - fwd.x * dist * .3, at.z + 30 * dist / 380)
         hero.set_actor_location(eye, False, True)
         pc.set_control_rotation(unreal.MathLibrary.find_look_at_rotation(unreal.Vector(eye.x, eye.y, eye.z + 64), unreal.Vector(at.x, at.y, at.z + 40)))
         return [round(at.x), round(at.y), round(at.z)]
@@ -365,6 +367,8 @@ def run(action, arg=''):
         return import_models('GameRoom', '/Game/Custom/GameRoom')
     if action == 'boats':
         return import_models('Boats', '/Game/Custom/Boats')
+    if action == 'staffmodels':
+        return import_models('Staff', '/Game/Custom/Staff')
     if action == 'desk':
         return import_models('Reception', '/Game/Custom/Reception')
     raise ValueError(action)

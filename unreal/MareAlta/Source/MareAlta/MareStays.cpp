@@ -183,7 +183,7 @@ void UMareSimulation::StaysHour(int32 Hour)
    if(Stays()->TryGetArrayField(TEXT("queue"),Queue))for(const auto& V:*Queue){const auto G=V->AsObject();
     const FString GP=String(G,TEXT("place")).IsEmpty()?FString(TEXT("pousada")):String(G,TEXT("place"));
     if(GP!=P || (bHotel && Now-Number(G,TEXT("since"),Now)<120))continue;Ready.Add(String(G,TEXT("id")));}
-   for(const FString& Id:Ready)if(FreeCleanRooms(P)>0)AcceptOffer(Id);}
+   for(const FString& Id:Ready)if(FreeCleanRooms(P)>0 && AcceptOffer(Id) && !bHotel)StaffDid(String(Ops,TEXT("receptionist")),1);}
  }
  // Maid (pousada): a few cleaning tasks per hour on dirty bungalows.
  auto Ops=StayOps(TEXT("pousada"));
@@ -191,5 +191,5 @@ void UMareSimulation::StaysHour(int32 Hour)
   for(const auto& V:List(Stays(),TEXT("rooms"))){auto R=V->AsObject();
    while(Budget>0 && String(R,TEXT("state"))==TEXT("dirty")){const TArray<TSharedPtr<FJsonValue>>* Tasks=nullptr;
     if(!R->TryGetArrayField(TEXT("tasks"),Tasks) || Tasks->IsEmpty())break;
-    CleanRoom(String(R,TEXT("id")),(*Tasks)[0]->AsString());--Budget;}}}
+    CleanRoom(String(R,TEXT("id")),(*Tasks)[0]->AsString());--Budget;StaffDid(String(Ops,TEXT("maid")),1);}}}
 }

@@ -120,7 +120,8 @@ void UMareSimulation::ToursHour(int32 Hour)
   if(Started>=Departs-3 && Started<Departs){const int32 Wanted=TourPassengers(Tour);
    const int32 Room=TourSeats(Tour)-int32(Number(Sold,Id))-int32(Number(Queue,Id));
    Queue->SetNumberField(Id,Number(Queue,Id)+FMath::Clamp(FMath::CeilToInt(Wanted/3.)+FMath::RandRange(-1,1),0,FMath::Max(0,Room)));
-   if(bGuide && Number(Queue,Id)>0){const FString Before=LastMessage;SellTickets(Id);LastMessage=Before;}}
+   if(bGuide && Number(Queue,Id)>0){const FString Before=LastMessage;const int32 N=SellTickets(Id);LastMessage=Before;
+    if(N>0)StaffDid(String(Object(CustomDefs(),TEXT("operations")),TEXT("tour_guide")),N,N*TicketPrice(Id));}}
   // End of the departure hour: whoever was not guided by the player goes with the guide, or is refunded.
   if(Started==Departs){const int32 Pax=int32(Number(Sold,Id));Queue->SetNumberField(Id,0);
    if(Pax<=0){Done->SetStringField(Id,TEXT("empty"));continue;}

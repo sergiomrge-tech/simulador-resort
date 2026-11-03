@@ -264,5 +264,23 @@ void AMarePerson::Tick(float DeltaSeconds)
    // painting the generated clothes with the body atlas works but looks like underwear.
    else Style=EOutfit::Beach;}
   ApplyOutfit(Style);}
+ if(bEmployee && !StaffRole.IsEmpty() && !Badge && !MetaHuman.IsEmpty() && Elapsed>.6f)AttachBadge();
  if(GetVelocity().SizeSquared2D()>25)PlayPose(TEXT("Walk"));else if(!WorkPose.IsEmpty())PlayPose(WorkPose);else if(bAmbient)PlayPose(bSeated?TEXT("Sitting_Idle"):bConversing?TEXT("Idle_Talking"):TEXT("Idle"));else if(Stage!=EMarePersonStage::Eating)PlayPose(TEXT("Idle"));
 }
+void AMarePerson::AttachBadge()
+{
+ // Model: tools/ue58/gen_staff_badge.py (front +Y, origin at the back). Placed once in the actor's frame on the left
+ // chest, then kept relative to spine_05 so it follows breathing and walking.
+ static UStaticMesh* BadgeMesh=LoadObject<UStaticMesh>(nullptr,TEXT("/Game/Custom/Staff/mare_staff_badge/mare_staff_badge.mare_staff_badge"));
+ const FName Bone=TEXT("spine_05");
+ if(!BadgeMesh || !GetMesh()->GetSkeletalMeshAsset() || GetMesh()->GetBoneIndex(Bone)==INDEX_NONE){Badge=NewObject<UStaticMeshComponent>(this);return;}   // no retry every tick
+ const USkeleton* Skeleton=GetMesh()->GetSkeletalMeshAsset()->GetSkeleton();
+ const bool bFemale=Skeleton && Skeleton->GetPathName().Contains(TEXT("/Female/"));
+ Badge=NewObject<UStaticMeshComponent>(this);AddInstanceComponent(Badge);Badge->SetStaticMesh(BadgeMesh);
+ Badge->SetCollisionEnabled(ECollisionEnabled::NoCollision);Badge->SetCastShadow(false);
+ Badge->SetupAttachment(GetMesh(),Bone);Badge->RegisterComponent();
+ const FVector Chest=GetMesh()->GetSocketLocation(Bone);
+ const FVector At=Chest+GetActorForwardVector()*(bFemale?BadgeFemaleAhead:BadgeMaleAhead)-GetActorRightVector()*9.f+FVector(0,0,bFemale?-6.f:-3.f);
+ Badge->SetWorldLocationAndRotation(At,FRotator(0,GetActorRotation().Yaw-90,0));
+}
+

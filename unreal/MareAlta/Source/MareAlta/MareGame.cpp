@@ -536,6 +536,9 @@ private:
      else if(R==TEXT("bartender"))Now=S->IsBarOpen()?TEXT("preparando drinks no bar"):TEXT("esperando o bar abrir");
      else if(auto Staff=World?World->GetSubsystem<UMareStaffWorld>():nullptr)Now=Staff->Activity(R).ToLower();
      if(!Now.IsEmpty())Card->AddSlot().AutoHeight()[MareNotebook::HandText(TEXT("agora: ")+Now,15,MareNotebook::Pencil)];}
+    {const auto Done=S->StaffDoneToday(R);const TCHAR* Unit=R==TEXT("atendente")?TEXT("entregas"):R==TEXT("bartender")?TEXT("drinks"):R==TEXT("guia")?TEXT("bilhetes vendidos"):
+      R==TEXT("garcom_hotel")?TEXT("mesas servidas"):R==TEXT("recepcionista")?TEXT("check-ins"):TEXT("tarefas");
+     Card->AddSlot().AutoHeight().Padding(0,2,0,0)[MareNotebook::BodyText(Done.Value>0?FString::Printf(TEXT("Hoje: %d %s · R$ %.0f"),Done.Key,Unit,Done.Value):FString::Printf(TEXT("Hoje: %d %s"),Done.Key,Unit),11,MareNotebook::Green)];}
     if(bShifts && Team.Num()==1)Card->AddSlot().AutoHeight().HAlign(HAlign_Left).Padding(0,4,0,0)[Link(FString::Printf(TEXT("+ 2ª pessoa no outro turno · R$ %.0f"),UMareSimulation::Number(Def,TEXT("hire"))),[S,R](){S->HireSecondStaff(R);})];
     else if(Team.Num()>1)Card->AddSlot().AutoHeight().HAlign(HAlign_Left).Padding(0,4,0,0)[Link(TEXT("dispensar a 2ª pessoa"),[S,R](){S->DismissSecondStaff(R);})];}
    else if(!bOwned)Card->AddSlot().AutoHeight()[MareNotebook::HandText(TEXT("precisa: ")+UMareSimulation::String(UMareSimulation::Object(UMareSimulation::Object(S->Definitions,TEXT("expansions")),Req),TEXT("name")),16,MareNotebook::Pencil)];
