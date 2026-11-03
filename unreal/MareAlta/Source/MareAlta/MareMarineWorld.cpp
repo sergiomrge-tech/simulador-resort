@@ -18,6 +18,7 @@ bool UMareMarineWorld::IsSailVisible() const{return IsValid(Sail) && !Sail->IsHi
 bool UMareMarineWorld::IsCruiseVisible() const{return IsValid(Cruise) && !Cruise->IsHidden();}
 bool UMareMarineWorld::IsWhaleVisible() const{return IsValid(Whale) && !Whale->IsHidden();}
 bool UMareMarineWorld::IsRippleVisible() const{return IsValid(Ripple) && !Ripple->IsHidden();}
+bool UMareMarineWorld::IsPassingBoatVisible() const{return IsValid(PassingBoat) && !PassingBoat->IsHidden();}
 void UMareMarineWorld::SpawnModels()
 {
  bInitialized=true;FString Text;TSharedPtr<FJsonObject> Catalog;
@@ -35,6 +36,10 @@ void UMareMarineWorld::SpawnModels()
  if(SprayActor){Spray=NewObject<UInstancedStaticMeshComponent>(SprayActor);SprayActor->SetRootComponent(Spray);SprayActor->AddInstanceComponent(Spray);Spray->SetMobility(EComponentMobility::Movable);
   Spray->SetStaticMesh(LoadObject<UStaticMesh>(nullptr,TEXT("/Engine/BasicShapes/Sphere.Sphere")));Spray->SetCollisionEnabled(ECollisionEnabled::NoCollision);Spray->SetCastShadow(false);Spray->RegisterComponent();SprayActor->SetActorLocation(FVector(-600,-13900,-20));
   for(int32 I=0;I<40;++I)Spray->AddInstance(FTransform(FRotator::ZeroRotator,FVector::ZeroVector,FVector(.18f)));SprayActor->SetActorHiddenInGame(true);}
+ auto MakeBoat=[&](const TCHAR* Path){auto Mesh=LoadObject<UStaticMesh>(nullptr,Path);if(!Mesh)return (AStaticMeshActor*)nullptr;
+  auto Actor=GetWorld()->SpawnActor<AStaticMeshActor>(FVector::ZeroVector,FRotator::ZeroRotator,Params);if(!Actor)return (AStaticMeshActor*)nullptr;
+  auto Component=Actor->GetStaticMeshComponent();Component->SetMobility(EComponentMobility::Movable);Component->SetStaticMesh(Mesh);Component->SetCollisionEnabled(ECollisionEnabled::NoCollision);Actor->SetActorHiddenInGame(true);return Actor;};
+ PassingBoat=MakeBoat(TEXT("/Game/Custom/Boats/mare_bote/mare_bote.mare_bote"));PassingRaft=MakeBoat(TEXT("/Game/Custom/Boats/mare_jangada/mare_jangada.mare_jangada"));
  if(Sail)Sail->SetActorScale3D(FVector(1));if(Cruise)Cruise->SetActorScale3D(FVector(1.6));if(Whale)Whale->SetActorScale3D(FVector(1.4));
  UE_LOG(LogTemp,Display,TEXT("Maré marine assets: %s"),HasMarineModels()?TEXT("ready"):TEXT("incomplete"));
 }
@@ -63,4 +68,31 @@ void UMareMarineWorld::Tick(float DeltaSeconds)
  const bool Hit=Impact>=0 && Impact<.3f;
  if(Hit && !bPreviousImpact){if(auto Pawn=UGameplayStatics::GetPlayerPawn(World,0)){const float Distance=FVector::Dist2D(Pawn->GetActorLocation(),FVector(-600,-13900,0));const float Gain=.16f*FMath::Clamp(1.f-Distance/22000.f,0.f,1.f);if(auto Audio=World->GetSubsystem<UMareAudioWorld>())Audio->PlayCue(TEXT("whale_splash"),Gain,nullptr,true);}}
  bPreviousImpact=Hit;
+ UpdateLife(float(Time),Day);
+}
+
+void UMareMarineWorld::UpdateLife(float Time,bool bDay)
+{
+ // Boats along the coast: models float at their waterline (z = 0 in the model), the sea plane is at z -30; they
+ // pitch and roll with the swell. The models face local -Y: yaw 90 heads +X, -90 heads -X.
+ auto Pass=[&](AStaticMeshActor* Boat,float Y,float Speed,float Offset,float Yaw){if(!IsValid(Boat))return;Boat->SetActorHiddenInGame(!bDay);if(!bDay)return;
+  const float Span=26000.f;const float U=FMath::Fmod(Offset+Time*FMath::Abs(Speed),Span);
+  Boat->SetActorLocation(FVector(Speed>0?-9000.f+U:17000.f-U,Y,-30.f+12.f*FMath::Sin(Time*1.1f+Offset)));
+  Boat->SetActorRotation(FRotator(2.2f*FMath::Sin(Time*.9f+Offset),Yaw,3.5f*FMath::Sin(Time*.7f+Offset*.5f)));};
+ Pass(PassingBoat,-5200.f,320.f,0.f,90.f);
+ Pass(PassingRaft,-7500.f,-260.f,9000.f,-90.f);
+ // Seagulls: the exported gliding gulls circle around where they were placed, rising and dipping, banking into
+ // the turn. Their model faces local +Y (Blender front -Y), so the heading is the tangent minus 90 degrees.
+ if(!bGullsIndexed){bGullsIndexed=true;int32 N=0;
+  for(TObjectIterator<UInstancedStaticMeshComponent> It;It;++It){UInstancedStaticMeshComponent* C=*It;
+   if(C->GetWorld()!=GetWorld() || !C->GetStaticMesh() || C->GetStaticMesh()->GetName()!=TEXT("World_0536"))continue;
+   C->SetMobility(EComponentMobility::Movable);
+   for(int32 I=0;I<C->GetInstanceCount();++I){FTransform T;C->GetInstanceTransform(I,T,true);FGull G;G.Component=C;G.Index=I;G.Scale=T.GetScale3D();
+    G.Radius=600.f+(N%3)*250.f;G.Speed=(N%2?1.f:-1.f)*(.2f+.03f*(N%4));G.Phase=N*1.7f;G.Centre=T.GetLocation()-FVector(FMath::Cos(G.Phase),FMath::Sin(G.Phase),0)*G.Radius;Gulls.Add(G);++N;}}}
+ TSet<UInstancedStaticMeshComponent*> Dirty;
+ for(int32 K=0;K<Gulls.Num();++K){const FGull& G=Gulls[K];auto C=G.Component.Get();if(!C)continue;
+  const float A=G.Phase+Time*G.Speed;const FVector P=G.Centre+FVector(FMath::Cos(A)*G.Radius,FMath::Sin(A)*G.Radius,90.f*FMath::Sin(Time*.6f+K));
+  const FVector Dir=FVector(-FMath::Sin(A),FMath::Cos(A),0)*FMath::Sign(G.Speed);const float Heading=FMath::RadiansToDegrees(FMath::Atan2(Dir.Y,Dir.X))-90.f;
+  C->UpdateInstanceTransform(G.Index,FTransform(FRotator(0,Heading,-16.f*FMath::Sign(G.Speed)),P,G.Scale),true,false,true);Dirty.Add(C);}
+ for(auto C:Dirty)C->MarkRenderStateDirty();
 }

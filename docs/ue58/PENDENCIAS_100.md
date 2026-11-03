@@ -261,7 +261,12 @@ Pronto e testado (02/11):
   Mar do dia a dia mais agitado (pedido do Sergio 03/11): ondulação ao largo ~35 cm e arrebentação ±10 cm em volta do
   nível antigo (só subir alagava a quadra de vôlei). Recepção da pousada com duas luzes quentes. Conferido no PIE
   (limpo × tempestade à mesma hora; palmeiras por diferença entre quadros).
-- [ ] P2 Detalhes de vida: pássaros, gaivotas, cachorros e gatos animados, barcos passando.
+- [~] P2 Detalhes de vida: pássaros, gaivotas, cachorros e gatos animados, barcos passando (03/11). Feito: as 5 gaivotas
+  exportadas paradas no ar (World_0536) planam em círculos em volta de onde estavam, sobem e descem e inclinam nas curvas;
+  um bote de pesca (leste) e uma jangada a vela (oeste) passam ao longo da costa de dia, balançando nas ondas
+  (`UMareMarineWorld::UpdateLife`). Conferido no PIE por quadros e pela posição. Falta: cachorros e gatos animados
+  realistas — não há asset gratuito bom (Fab: pastor alemão low poly 2.272 tri; "Cat long haired" CC-BY com pelo em
+  cartões feios; os realistas são pagos). Precisa de decisão do Sergio (comprar um pacote ou modelar).
 
 ## 7. Áudio
 - [x] P1 Música por lugar e horário (02/11): zonas em `Content/Data/audio_zones.json` (saguão do hotel bossa, restaurante relax,

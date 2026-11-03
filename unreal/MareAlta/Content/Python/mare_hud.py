@@ -962,6 +962,16 @@ def run(action, arg=''):
             comp = a.get_component_by_class(unreal.SkyAtmosphereComponent)
             out['atmo'] = {k: str(comp.get_editor_property(k)) for k in ('rayleigh_scattering_scale', 'mie_scattering_scale', 'mie_absorption_scale')}
         return out
+    if action == 'whereis':
+        # PIE: location of the static-mesh actors using a mesh (QA of moving props: passing boats)
+        world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()
+        out = []
+        for a in unreal.GameplayStatics.get_all_actors_of_class(world, unreal.StaticMeshActor):
+            m = a.static_mesh_component.static_mesh
+            if m and m.get_name() in arg.split(','):
+                p = a.get_actor_location()
+                out.append([m.get_name(), round(p.x), round(p.y), round(p.z), a.is_hidden_ed() if False else a.get_editor_property('hidden')])
+        return out
     if action == 'mpc':
         # PIE: current MPC_MareTime values, the mare.Weather CVar and the rain curtain actors
         world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()
