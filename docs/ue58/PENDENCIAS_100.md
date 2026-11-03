@@ -58,7 +58,8 @@ Marcar `[x]` só depois de testado no jogo, com foto ou teste automático.
 - [x] P1 Abertura: ônibus detalhado, desembarque (pode pular), caminhada até a casa, porta e carta re-testados pela
   QA `-MareIntroQA` (11/11 em 02/11, save limpo).
 - [x] P1 Casa: sofá, TV, som, chuveiro e cama conferidos pela QA completa com capturas (02/11, `home-*.png`).
-- [ ] P2 Animais da vila e fauna marinha ainda com aparência cartoon; horizonte subaquático azul e vazio.
+- [ ] P2 Fauna marinha ainda com aparência cartoon; horizonte subaquático azul e vazio. (Animais da vila: gatos e
+  cachorros saíram do jogo a pedido do Sergio, 03/11.)
 - [ ] P2 Interior dos quartos do hotel além da suíte visitável (a torre é casca com fachada).
 
 ## 3. Gameplay: cada lugar com algo para fazer
@@ -220,7 +221,7 @@ Pronto e testado (02/11):
 
 ## 6. Mundo e arte
 - [x] Barcos detalhados (jangadas e botes), palmeiras, janelas, piscinas, mata dos morros.
-- [ ] P1 Varredura visual final de todo o mapa:
+- [x] P1 Varredura visual final de todo o mapa (03/11):
   - objetos flutuando ou low poly; (03/11) auditoria por forma: `float_audit lowpoly` (malhas com poucos triângulos
     para o tamanho) + `primitives` (esfera/cilindro pelos vértices; caixas arredondadas de 252 triângulos ficam de fora)
     e `swapfit` (troca por modelo real, reencaixada por instância, salva em `world.json`/`imported_meshes.json`).
@@ -234,9 +235,10 @@ Pronto e testado (02/11):
     malas Vintage Suitcase (Poly Haven CC0, `prep_luggage.py`). Resto da lista conferido por foto: calhas, colunas
     roliças, mastros, postes e a lanterna do farol são arquitetura (aceitos); discos do pináculo não ficam visíveis.
     O mato que aparece na varanda da pousada no editor é o gramado do lote (some no jogo com a pousada construída).
-  - texturas;
-  - folhagem muito clara à noite;
-  - ondas, espuma e respingos.
+  - texturas; (03/11) areia nova tipo Copacabana, piso de terracota na pousada, cortiça/postais desenhados.
+  - folhagem muito clara à noite; (03/11) feito: a transmissão de luz das folhas das palmeiras (`M_PalmFab_PBR`)
+    cai 75% com o Night; conferido às 22h (praia, palmeiras, quiosque, vila, praça, jardim, hotel, pousada).
+  - ondas, espuma e respingos. (03/11) feito: ondas maiores, espuma na beira d'água e mar bravo na tempestade.
 - [ ] P1 Personalização com 5 opções em tudo:
   - quiosque, expansões, hotel, piscina, tobogã;
   - casa (cama, sofá, armário, TV).
@@ -349,7 +351,7 @@ atendimento, economia ou saves; um evento por vez, com cooldown e seed testável
 - [ ] Diálogos recorrentes: **Seu Arnaldo** (reclamão carismático) e o **pescador** com histórias cada vez mais exageradas.
 - [ ] HUM-002 Turista influenciador exigente (selfies, pede mesa com vista), sem atrasar a fila; bônus pequeno depois.
 - [ ] HUM-001 Gaivota rouba batata da mesa, turista reage; sem mexer em estoque/pagamento no começo.
-- [ ] HUM-003 Cachorro foge com um chinelo; recolher é opcional.
+- [x] HUM-003 Cachorro foge com um chinelo: cancelado (03/11, o Sergio tirou gatos e cachorros do jogo).
 - [ ] HUM-004 Guarda-sol levado pelo vento; recolocar é opcional; física controlada.
 - [ ] HUM-006 Atendente iniciante atrapalhado (quase derruba bandeja), diminui com treinamento; sem perder pedido/dinheiro.
 - [ ] Critérios de aceite da especificação: 100 ciclos sem travar NPC/fila, sem cobrança/estoque duplicados no reload,
