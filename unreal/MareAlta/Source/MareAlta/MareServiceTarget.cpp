@@ -98,8 +98,8 @@ void AMareServiceTarget::Use(APlayerController* Controller)
   const FVector Spot=TeleportTo;GetWorld()->GetSubsystem<UMareAudioWorld>()->PlayCue(TEXT("door"),.3f,&Spot);
   Sim->LastMessage=DataIndex==1?TEXT("Suíte do Grand Hotel · 3º andar"):TEXT("Lobby do Grand Hotel");return;}
  if(Action==TEXT("PousadaReception")){const FVector Bell=GetActorLocation();UMareAudioWorld::Action(this,TEXT("reception_bell"),&Bell);PC->OpenStation(TEXT("Reception"));return;}
- // Friendly match, or R$ 20 on the table once the cash allows it.
- if(Action==TEXT("PoolTable")){GetWorld()->GetSubsystem<UMareGameRoom>()->StartMatch(PC,Sim->Money()>=100?20:0);return;}
+ // The table page: opponents, friendly or betting match, the Campeonato da Maré and the record (MareGame.cpp PoolPage).
+ if(Action==TEXT("PoolTable")){PC->OpenStation(TEXT("PoolTable"));return;}
  if(Action==TEXT("RoomTask")){for(const FName& Tag:Tags){const FString T=Tag.ToString();
    if(T.StartsWith(TEXT("task:")))GetWorld()->GetSubsystem<UMareStaysWorld>()->UseTask(DataIndex,T.Mid(5));}return;}
  if(Action==TEXT("PoolLeaves")){if(Sim->ScoopPool())UMareAudioWorld::Action(this,TEXT("bar_pour"));return;}

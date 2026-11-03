@@ -1491,6 +1491,11 @@ def run(action, arg=''):
         world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()
         audio = next(o for o in unreal.ObjectIterator(unreal.MareAudioWorld) if o.get_outer() == world)
         return {n: round(audio.loop_level(n), 3) for n in arg.split(',')}
+    if action == 'station':
+        world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()
+        pc = unreal.GameplayStatics.get_player_controller(world, 0)
+        pc.close_phone() if arg == 'close' else pc.open_station(arg)
+        return 'station ' + arg
     if action == 'phone':
         world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()
         pc = unreal.GameplayStatics.get_player_controller(world, 0)

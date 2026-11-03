@@ -328,6 +328,45 @@ private:
    Body->AddSlot().AutoHeight().Padding(0,2,0,6)[Row];}
   Line(TEXT("Na hora da saída, guie você mesmo: cada parada bem conduzida dá gorjeta e fama. Sem você e sem guia, o passeio é cancelado e os bilhetes devolvidos."),12,Faded);
  }
+ /** Pool table (03/11, "sinuca como jogo completo"): pick an opponent, play a friendly or a betting match of
+  *  eight-ball, or the Campeonato da Maré round of the day; bracket and record on the same page. */
+ FString PoolPick;
+ void PoolPage()
+ {
+  auto S=Sim();using namespace MareNotebook;auto Room=Owner.IsValid()?Owner->GetWorld()->GetSubsystem<UMareGameRoom>():nullptr;if(!Room)return;
+  const TArray<FString> Players=S->PoolPlayers();if(PoolPick.IsEmpty() && Players.Num())PoolPick=Players[FMath::Min(2,Players.Num()-1)];
+  auto B=UMareSimulation::Object(S->State,TEXT("billiards"));
+  {const int32 Played=UMareSimulation::Number(B,TEXT("played")),Won=UMareSimulation::Number(B,TEXT("won")),Cups=UMareSimulation::Number(B,TEXT("cups"));
+   Title(TEXT("Mesa de sinuca"),FString::Printf(TEXT("bola 8 · %d %s, %d %s, %d %s"),Played,Played==1?TEXT("partida"):TEXT("partidas"),Won,Won==1?TEXT("vitória"):TEXT("vitórias"),
+    Cups,Cups==1?TEXT("campeonato ganho"):TEXT("campeonatos ganhos")));}
+  auto Play=[this,Room](double Stake,const FString& Who,bool bCupRound){auto PC=Owner.Get();if(!PC)return;PC->ClosePhone();Room->StartMatch(PC,Stake,Who,bCupRound);};
+  Heading(TEXT("Adversário"),TEXT("escolha com quem jogar"));
+  auto Pick=SNew(SWrapBox).UseAllottedSize(true);
+  for(const FString& Who:Players)Pick->AddSlot().Padding(0,2,6,2)[Button((Who==PoolPick?TEXT("» "):TEXT(""))+Who+TEXT(" · ")+S->PoolLevel(Who),[this,Who](){PoolPick=Who;Rebuild();})];
+  Body->AddSlot().AutoHeight().Padding(0,2,0,6)[Pick];
+  auto Row=SNew(SWrapBox).UseAllottedSize(true);
+  Row->AddSlot().Padding(0,2,8,2)[Button(TEXT("Amistoso"),[Play,this](){Play(0,PoolPick,false);})];
+  const TArray<TSharedPtr<FJsonValue>>* Stakes=nullptr;
+  if(S->GameRoomDefs()->TryGetArrayField(TEXT("stakes"),Stakes))for(const auto& V:*Stakes){const double Bet=V->AsNumber();
+   Row->AddSlot().Padding(0,2,8,2)[Button(FString::Printf(TEXT("Valendo R$ %.0f"),Bet),[Play,this,Bet](){Play(Bet,PoolPick,false);},S->Money()>=Bet)];}
+  Body->AddSlot().AutoHeight().Padding(0,0,0,8)[Row];
+  const auto Cup=UMareSimulation::Object(S->GameRoomDefs(),TEXT("cup"));const FString CupName=UMareSimulation::String(Cup,TEXT("name"));
+  if(!S->PoolCupActive()){
+   Heading(CupName,FString::Printf(TEXT("8 jogadores, mata-mata, uma rodada por dia · prêmio R$ %.0f, vice R$ %.0f"),UMareSimulation::Number(Cup,TEXT("prize")),UMareSimulation::Number(Cup,TEXT("runner_up"))));
+   Body->AddSlot().AutoHeight().HAlign(HAlign_Left).Padding(0,2,0,6)[Button(FString::Printf(TEXT("Inscrever-se · R$ %.0f"),UMareSimulation::Number(Cup,TEXT("fee"))),[S](){S->PoolCupJoin();},S->Money()>=UMareSimulation::Number(Cup,TEXT("fee")))];}
+  else{const TArray<FString> Alive=S->PoolCupAlive();FString Why;const bool bReady=S->PoolCupReady(Why);
+   Heading(CupName,S->PoolCupRoundName());
+   FString Bracket;for(int32 I=0;I+1<Alive.Num();I+=2)Bracket+=(Bracket.IsEmpty()?TEXT(""):TEXT("\n"))+Alive[I]+TEXT(" × ")+Alive[I+1];
+   Pencil(Bracket);
+   if(bReady){const FString Rival=S->PoolCupOpponent();
+    Body->AddSlot().AutoHeight().HAlign(HAlign_Left).Padding(0,2,0,6)[Button(TEXT("Jogar a ")+S->PoolCupRoundName()+TEXT(" contra ")+Rival,[Play,Rival](){Play(0,Rival,true);})];}
+   else Line(Why,13,Faded);}
+  const TArray<TSharedPtr<FJsonValue>>* Log=nullptr;
+  if(UMareSimulation::Object(B,TEXT("cup"))->TryGetArrayField(TEXT("log"),Log) && Log->Num()){FString Last;
+   for(int32 I=FMath::Max(0,Log->Num()-4);I<Log->Num();++I)Last+=(Last.IsEmpty()?TEXT(""):TEXT("\n"))+(*Log)[I]->AsString();
+   Line(Last,12,Faded);}
+  Line(TEXT("Bola 8: depois da saída, quem encaçapar primeiro fica com lisas ou listradas. Acerte sempre uma bola sua primeiro; falta dá bola na mão ao adversário. A 8 só no fim."),12,Faded);
+ }
  /** Bar do Coqueiro: guests' orders, the shaker and the ingredient shelf, the recipe book (MareBar.cpp). */
  void BarPage()
  {
@@ -644,7 +683,7 @@ private:
   if(bPhone)for(int32 I=0;I<Titles.Num();++I){const bool bOn=I==Tab;
    Tabs->AddSlot().AutoWidth().VAlign(VAlign_Bottom).Padding(0,0,3,0)[SNew(SMarePadButton).ButtonStyle(&MareNotebook::Plain()).ContentPadding(FMargin(0)).OnClicked_Lambda([this,I](){if(Owner.IsValid())Owner->GetWorld()->GetSubsystem<UMareAudioWorld>()->PlayCue(TEXT("click"),.16f);Tab=I;Rebuild();return FReply::Handled();})
     [SNew(SBorder).BorderImage(&TabBrush(bOn?Paper:TabColor(I))).Padding(bOn?FMargin(11,4,11,3):FMargin(8,2,8,2))[SNew(STextBlock).Text(FText::FromString(Titles[I])).Font(MareNotebook::Hand(bOn?17:15)).ColorAndOpacity(Ink)]]];}
-  else Tabs->AddSlot().AutoWidth().VAlign(VAlign_Bottom)[SNew(SBorder).BorderImage(&TabBrush(Paper)).Padding(FMargin(16,6,16,5))[SNew(STextBlock).Text(FText::FromString(Station==TEXT("Fridge")?TEXT("Geladeira"):Station==TEXT("Reception") || Station==TEXT("ReceptionHotel")?TEXT("Recepção"):Station==TEXT("Bar")?TEXT("Bar"):Station==TEXT("Tours")?TEXT("Píer"):Station==TEXT("Restaurant")?TEXT("Cozinha"):TEXT("Porções prontas"))).Font(MareNotebook::Hand(19)).ColorAndOpacity(Ink)]];
+  else Tabs->AddSlot().AutoWidth().VAlign(VAlign_Bottom)[SNew(SBorder).BorderImage(&TabBrush(Paper)).Padding(FMargin(16,6,16,5))[SNew(STextBlock).Text(FText::FromString(Station==TEXT("Fridge")?TEXT("Geladeira"):Station==TEXT("Reception") || Station==TEXT("ReceptionHotel")?TEXT("Recepção"):Station==TEXT("Bar")?TEXT("Bar"):Station==TEXT("PoolTable")?TEXT("Sinuca"):Station==TEXT("Tours")?TEXT("Píer"):Station==TEXT("Restaurant")?TEXT("Cozinha"):TEXT("Porções prontas"))).Font(MareNotebook::Hand(19)).ColorAndOpacity(Ink)]];
   Tabs->AddSlot().FillWidth(1)[SNullWidget::NullWidget];
   Tabs->AddSlot().AutoWidth().VAlign(VAlign_Bottom)[SNew(SMarePadButton).ButtonStyle(&MareNotebook::Plain()).ContentPadding(FMargin(0)).OnClicked_Lambda([this](){if(Owner.IsValid())Owner->ClosePhone();return FReply::Handled();})
    [SNew(SBorder).BorderImage(&TabBrush(Hex(226,150,140))).Padding(FMargin(8,2,8,2))[SNew(STextBlock).Text(FText::FromString(TEXT("fechar"))).Font(MareNotebook::Hand(15)).ColorAndOpacity(Ink)]]];
@@ -665,6 +704,7 @@ private:
   if(PrevFocus>=0)MareGamepad::FocusSoon(AsShared(),PrevFocus);
   if(Station==TEXT("Bar")){BarPage();return;}
   if(Station==TEXT("Tours")){ToursPage();return;}
+  if(Station==TEXT("PoolTable")){PoolPage();return;}
   if(Station==TEXT("Restaurant")){RestaurantPage();return;}
   if(Station==TEXT("Reception") || Station==TEXT("ReceptionHotel")){ReceptionPage(Station==TEXT("ReceptionHotel")?TEXT("hotel"):TEXT("pousada"));return;}
   if(!bPhone){StockPage(true);if(!S->Carry().IsEmpty())Body->AddSlot().AutoHeight().HAlign(HAlign_Left).Padding(0,6)[Button(TEXT("Devolver produto"),[S](){S->ReturnCarry();})];return;}

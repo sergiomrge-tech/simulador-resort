@@ -300,6 +300,21 @@ public:
  void ToursHour(int32 Hour);
  // --- Pool day use, hands-on (MarePool.cpp, Content/Data/pool.json) ---
  // State "pool": dirt 0..100 (leaves in the water), towels [lounger indices], popsicles (guests asking).
+ /** Pool (sinuca) opponents, record and the Campeonato da Maré (MarePoolCup.cpp, data in game_room.json). */
+ static const FString PoolYou;
+ TSharedPtr<FJsonObject> GameRoomDefs() const;
+ TArray<FString> PoolPlayers() const;
+ TSharedPtr<FJsonObject> PoolPlayer(const FString& Name) const;
+ FString PoolLevel(const FString& Name) const;
+ TSharedPtr<FJsonObject> Billiards();
+ void PoolRecord(bool bWon);
+ bool PoolCupActive() const;
+ TArray<FString> PoolCupAlive() const;
+ FString PoolCupRoundName() const;
+ bool PoolCupJoin();
+ FString PoolCupOpponent() const;
+ bool PoolCupReady(FString& Why) const;
+ void PoolCupResult(bool bWon);
  TSharedPtr<FJsonObject> PoolDefs() const;
  TSharedPtr<FJsonObject> Pool();
  int32 PoolTowels() const;

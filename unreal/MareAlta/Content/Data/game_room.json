@@ -5,5 +5,60 @@
   6050,
   45,
   180
- ]
+ ],
+ "_doc_players": "Pool opponents (UMareGameRoom / MarePoolCup.cpp): skill = degrees of aim error of the shot AI (lower is better), appearance = MarePerson look index. stakes = bets offered at the table; cup = Campeonato da Maré (8 players single elimination, one round per game day, entry fee, prize and fame for the champion).",
+ "players": [
+  {
+   "name": "Hóspede novato",
+   "skill": 3.2,
+   "appearance": 1
+  },
+  {
+   "name": "Dona Roberta",
+   "skill": 2.6,
+   "appearance": 4
+  },
+  {
+   "name": "Seu Gregory",
+   "skill": 2.2,
+   "appearance": 2
+  },
+  {
+   "name": "Elisa",
+   "skill": 1.8,
+   "appearance": 5
+  },
+  {
+   "name": "Seu Bené",
+   "skill": 1.5,
+   "appearance": 3
+  },
+  {
+   "name": "Duda",
+   "skill": 1.3,
+   "appearance": 6
+  },
+  {
+   "name": "Vini",
+   "skill": 1.1,
+   "appearance": 7
+  },
+  {
+   "name": "Rafa Taco de Ouro",
+   "skill": 0.7,
+   "appearance": 8
+  }
+ ],
+ "stakes": [
+  20,
+  50,
+  100
+ ],
+ "cup": {
+  "name": "Campeonato da Maré",
+  "fee": 50,
+  "prize": 600,
+  "runner_up": 150,
+  "fame": 10
+ }
 }

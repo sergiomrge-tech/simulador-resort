@@ -160,10 +160,16 @@ Pronto e testado (02/11):
   (asset gratuito antes de modelar), bola com física de quique e efeito, saque e regras (11 pontos, troca de saque a cada
   2, vantagem de 2), adversário hóspede com níveis, placar e câmera; controle por mouse e por controle; teste automático
   de partidas completas como na sinuca.
-- [ ] P1 **Sinuca como jogo completo** (pedido do Sergio, 03/11): modos amistoso (contra hóspede, sem aposta),
+- [x] P1 **Sinuca como jogo completo** (pedido do Sergio, 03/11): modos amistoso (contra hóspede, sem aposta),
   partida com aposta pequena e **campeonato** (chave de 4–8 jogadores da vila/hotel, rodadas por dia, troféu e prêmio);
   regras completas de bola 8 (faltas, bola na mão, encaçapar a 8 cedo perde, tacada de saída), escolha de adversário,
   histórico de vitórias; teste de campeonato inteiro.
+  Feito 03/11: bola 8 com saída, mesa aberta, lisas/listradas, faltas (branca na caçapa, não tocar, bola errada primeiro)
+  com bola na mão (o jogador arrasta a branca com mouse/analógico), a 8 só no fim; 8 adversários com nível em
+  `game_room.json`; página da mesa no caderno com amistoso, valendo R$ 20/50/100, Campeonato da Maré (8 jogadores,
+  mata-mata, uma rodada por dia, inscrição R$ 50, prêmio R$ 600, vice R$ 150, fama e troféus) e histórico. Testes
+  `PoolFullMatch` (40 partidas, 17×23, média 19,8 tacadas, faltas e 8 antecipada) e `PoolCup` (campeonato inteiro);
+  no jogo, partidas completas 7×6 com fotos da página, do placar com grupos e da vez do jogador.
 - [x] P1 Recepção do hotel com a fila de hóspedes visível no saguão (check-in vai ao elevador, check-out de manhã sai pela
   porta; teste `MareAlta.Gameplay.HotelReceptionLine`, foto no PIE 02/11).
 - [x] P1 Equipe coerente com as tarefas novas (02/11): página de equipe com atendente, recepcionista, camareira,

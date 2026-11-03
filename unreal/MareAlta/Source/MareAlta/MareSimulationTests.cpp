@@ -457,18 +457,21 @@ bool FMarePoolPhysicsTest::RunTest(const FString& Parameters)
  TestTrue(TEXT("Every ball on the cloth"),bInside);
  // A straight shot pockets a ball sitting in front of the corner pocket; the shooter keeps the turn.
  Room->Rack();for(int32 I=1;I<16;++I)Room->Balls[I].bIn=true;
- Room->Balls[3].bIn=false;Room->Balls[3].P=FVector2D(R::L/2-.15,R::W/2-.15);
+ Room->bBreakShot=false;Room->Balls[3].bIn=false;Room->Balls[3].P=FVector2D(R::L/2-.15,R::W/2-.15);
  const FVector2D ToPocket=(FVector2D(R::L/2,R::W/2)-Room->Balls[3].P).GetSafeNormal();Room->Balls[0].P=Room->Balls[3].P-ToPocket*.5;
  Room->Shoot(FMath::Atan2(ToPocket.Y,ToPocket.X),2.5);
  while(Room->Step(1./30)){}
  TestTrue(TEXT("Ball 3 potted"),Room->Balls[3].bIn);Room->ResolveShot();
- TestEqual(TEXT("Player scored"),Room->Score[0],1);TestEqual(TEXT("Player keeps the turn"),Room->Turn,0);
- // The 8 before three balls loses; the cue ball in a pocket passes the turn and is respotted.
- Room->Rack();Room->PottedThisShot={8};Room->ResolveShot();TestEqual(TEXT("Early 8 loses"),Room->Winner,1);
- Room->Rack();Room->Balls[0].bIn=true;Room->PottedThisShot={0};Room->ResolveShot();TestEqual(TEXT("Scratch passes the turn"),Room->Turn,1);TestFalse(TEXT("Cue ball back"),Room->Balls[0].bIn);
- Room->Rack();Room->Score[0]=3;Room->PottedThisShot={5};Room->ResolveShot();TestEqual(TEXT("Fourth ball wins"),Room->Winner,0);
+ TestEqual(TEXT("Open table: the pot gives solids"),Room->Group[0],1);TestEqual(TEXT("Player keeps the turn"),Room->Turn,0);
+ // Eight-ball: the 8 before clearing loses; the cue ball in a pocket passes the turn with ball in hand; the 8 after
+ // the group is cleared wins.
+ Room->Rack();Room->bBreakShot=false;Room->Balls[8].bIn=true;Room->FirstHit=8;Room->PottedThisShot={8};Room->ResolveShot();TestEqual(TEXT("Early 8 loses"),Room->Winner,1);
+ Room->Rack();Room->bBreakShot=false;Room->Balls[0].bIn=true;Room->FirstHit=3;Room->PottedThisShot={0};Room->ResolveShot();
+ TestEqual(TEXT("Scratch passes the turn"),Room->Turn,1);TestFalse(TEXT("Cue ball back"),Room->Balls[0].bIn);TestTrue(TEXT("Ball in hand after a scratch"),Room->bBallInHand);
+ Room->Rack();Room->bBreakShot=false;Room->Group[0]=1;Room->Group[1]=2;for(int32 I=1;I<=8;++I)Room->Balls[I].bIn=true;
+ Room->FirstHit=8;Room->PottedThisShot={8};Room->ResolveShot();TestEqual(TEXT("The 8 after clearing wins"),Room->Winner,0);
  // The guest finds a clean pot when one exists.
- Room->Rack();for(int32 I=1;I<16;++I)Room->Balls[I].bIn=true;Room->Balls[2].bIn=false;Room->Balls[2].P=FVector2D(.6,.1);Room->Balls[0].P=FVector2D(-.2,.05);Room->Turn=1;
+ Room->Rack();for(int32 I=1;I<16;++I)Room->Balls[I].bIn=true;Room->Balls[2].bIn=false;Room->Balls[2].P=FVector2D(.6,.1);Room->Balls[0].P=FVector2D(-.2,.05);Room->Turn=1;Room->bBreakShot=false;
  double Angle=0,Speed=0;Room->PlanGuestShot(Angle,Speed,7);Room->Shoot(Angle,Speed);while(Room->Step(1./30)){}
  TestTrue(TEXT("Guest hits a ball"),Room->Balls[2].P!=FVector2D(.6,.1) || Room->Balls[2].bIn);
  Room->RemoveFromRoot();return true;
@@ -911,21 +914,64 @@ bool FMarePoolFullMatchTest::RunTest(const FString& Parameters)
  // Whole matches with the real physics and rules, both sides played by the shot AI: every match must end with a
  // winner in a reasonable number of shots, the balls never leave the table, and both sides can win.
  auto Room=NewObject<UMareGameRoom>();Room->AddToRoot();namespace R=MarePool;
- int32 Wins[2]={0,0},MaxShots=0,TotalShots=0;bool bInside=true,bEnded=true;const int32 Matches=40;
+ int32 Wins[2]={0,0},MaxShots=0,TotalShots=0;bool bInside=true,bEnded=true,bGroups=true;const int32 Matches=40;TSet<FString> Calls;
  for(int32 M=0;M<Matches;++M){Room->Rack();int32 Shots=0;
-  while(Room->Winner<0 && Shots<300){double Angle=0,Speed=0;Room->PlanGuestShot(Angle,Speed,uint32(M*1000+Shots));
-   // Players break hard; later shots use the AI's speed.
-   Room->Shoot(Shots==0?FMath::DegreesToRadians(FMath::FRandRange(-1.5,1.5)):Angle,Shots==0?5.5:Speed);++Shots;
+  while(Room->Winner<0 && Shots<300){if(Room->bBallInHand)Room->PlaceCueBallForAI();
+   double Angle=0,Speed=0;Room->PlanGuestShot(Angle,Speed,uint32(M*1000+Shots));Room->Shoot(Angle,Speed);++Shots;
    double T=0;while(Room->Step(1./30) && T<40)T+=1./30;
    for(const auto& B:Room->Balls)if(!B.bIn)bInside&=FMath::Abs(B.P.X)<=R::L/2+.031 && FMath::Abs(B.P.Y)<=R::W/2+.031;
    Room->ResolveShot();}
   if(Room->Winner<0){bEnded=false;AddError(FString::Printf(TEXT("Match %d did not end after %d shots (%d-%d)"),M,Shots,Room->Score[0],Room->Score[1]));}
-  else ++Wins[Room->Winner];
+  else{// Eight-ball: the winner either cleared the group and potted the 8, or the loser potted the 8 early / with a foul.
+   bGroups&=Room->Group[0]+Room->Group[1]==3 || Room->Group[0]+Room->Group[1]==0;Calls.Add(Room->LastCall);++Wins[Room->Winner];}
   MaxShots=FMath::Max(MaxShots,Shots);TotalShots+=Shots;}
  AddInfo(FString::Printf(TEXT("Pool: %d matches, wins %d/%d, average %.1f shots, longest %d"),Matches,Wins[0],Wins[1],TotalShots/double(Matches),MaxShots));
  TestTrue(TEXT("Every match ends"),bEnded);TestTrue(TEXT("Balls stay on the table"),bInside);
- TestTrue(TEXT("Both sides win sometimes"),Wins[0]>0 && Wins[1]>0);TestTrue(TEXT("Matches are not endless"),TotalShots/double(Matches)<80);
+ TestTrue(TEXT("Both sides win sometimes"),Wins[0]>0 && Wins[1]>0);TestTrue(TEXT("Matches are not endless"),TotalShots/double(Matches)<90);
+ TestTrue(TEXT("Groups are always one solids, one stripes"),bGroups);
+ AddInfo(TEXT("Endings: ")+FString::Join(Calls.Array(),TEXT(" | ")));
+ {// Rules on a hand-made table: wrong ball first is a foul with ball in hand; the 8 before clearing loses.
+  Room->Rack();Room->bBreakShot=false;Room->Group[0]=1;Room->Group[1]=2;Room->Turn=0;
+  for(int32 I=1;I<16;++I)Room->Balls[I].bIn=true;
+  Room->Balls[9].bIn=false;Room->Balls[9].P=FVector2D(.2,0);Room->Balls[3].bIn=false;Room->Balls[3].P=FVector2D(.6,.3);
+  Room->Balls[0]=UMareGameRoom::FBall();Room->Balls[0].P=FVector2D(-.3,0);
+  Room->Shoot(0,1.5);while(Room->Step(1./30)){}Room->ResolveShot();
+  TestTrue(TEXT("Hitting the opponent's ball first is a foul"),Room->Turn==1 && Room->bBallInHand);
+  Room->Rack();Room->bBreakShot=false;Room->Group[0]=1;Room->Group[1]=2;Room->Turn=0;
+  for(int32 I=1;I<16;++I)Room->Balls[I].bIn=true;
+  Room->Balls[8].bIn=false;Room->Balls[8].P=FVector2D(R::L/2-.1,R::W/2-.1);Room->Balls[2].bIn=false;Room->Balls[2].P=FVector2D(-.6,.3);
+  Room->Balls[0]=UMareGameRoom::FBall();Room->Balls[0].P=FVector2D(R::L/2-.4,R::W/2-.4);
+  Room->Shoot(UE_DOUBLE_PI/4,2.5);while(Room->Step(1./30)){}Room->ResolveShot();
+  TestEqual(TEXT("The 8 before your group is cleared loses"),Room->Winner,1);}
  Room->RemoveFromRoot();return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FMarePoolCupTest,"MareAlta.Gameplay.PoolCup",EAutomationTestFlags::EditorContext|EAutomationTestFlags::EngineFilter)
+bool FMarePoolCupTest::RunTest(const FString& Parameters)
+{
+ // Campeonato da Maré: fee, 8-player bracket with the player in it, one round per day, champion paid and counted;
+ // an elimination ends the cup; the record counts every match.
+ auto Instance=NewObject<UGameInstance>();Instance->AddToRoot();
+ auto Sim=NewObject<UMareSimulation>(Instance);Sim->AddToRoot();
+ Sim->SaveDirectory=FPaths::ProjectSavedDir()/TEXT("Automation/PoolCup")/FGuid::NewGuid().ToString(EGuidFormats::Digits);
+ auto Load=[&](const FString& Name,TSharedPtr<FJsonObject>& Result){FString Text;FFileHelper::LoadFileToString(Text,*(FPaths::ProjectContentDir()/TEXT("Data")/Name));return FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Text),Result);};
+ if(!Load(TEXT("definitions.json"),Sim->Definitions) || !Load(TEXT("default_save.json"),Sim->State)){Sim->RemoveFromRoot();Instance->RemoveFromRoot();return false;}
+ Sim->State->SetNumberField(TEXT("money"),1000);
+ TestTrue(TEXT("Join the cup"),Sim->PoolCupJoin());TestEqual(TEXT("Fee paid"),Sim->Money(),950.);
+ TestEqual(TEXT("Eight players"),Sim->PoolCupAlive().Num(),8);TestTrue(TEXT("Player in the bracket"),Sim->PoolCupAlive().Contains(UMareSimulation::PoolYou));
+ TestFalse(TEXT("Cannot join twice"),Sim->PoolCupJoin());
+ FString Why;
+ for(int32 Round=0;Round<3;++Round){
+  TestTrue(TEXT("Round ready"),Sim->PoolCupReady(Why));TestFalse(TEXT("Has an opponent"),Sim->PoolCupOpponent().IsEmpty());
+  Sim->PoolRecord(true);Sim->PoolCupResult(true);
+  if(Round<2){TestFalse(TEXT("One round per day"),Sim->PoolCupReady(Why));Sim->State->SetNumberField(TEXT("day"),UMareSimulation::Number(Sim->State,TEXT("day"),1)+1);}}
+ TestFalse(TEXT("Cup over after the final"),Sim->PoolCupActive());TestEqual(TEXT("Prize paid"),Sim->Money(),950.+600.);
+ auto B=UMareSimulation::Object(Sim->State,TEXT("billiards"));
+ TestEqual(TEXT("Cup counted"),UMareSimulation::Number(B,TEXT("cups")),1.);TestEqual(TEXT("Matches counted"),UMareSimulation::Number(B,TEXT("played")),3.);
+ Sim->State->SetNumberField(TEXT("day"),UMareSimulation::Number(Sim->State,TEXT("day"),1)+1);
+ TestTrue(TEXT("Join again"),Sim->PoolCupJoin());Sim->PoolCupResult(false);
+ TestFalse(TEXT("Elimination ends the cup"),Sim->PoolCupActive());
+ Sim->RemoveFromRoot();Instance->RemoveFromRoot();return true;
 }
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FMareCampaignAuditTest,"MareAlta.Gameplay.CampaignAudit",EAutomationTestFlags::EditorContext|EAutomationTestFlags::EngineFilter)

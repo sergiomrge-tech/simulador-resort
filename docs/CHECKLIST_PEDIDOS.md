@@ -163,7 +163,7 @@ Legenda: [x] feito e validado · [~] em andamento/parcial · [ ] pendente.
   textura" (03/11): vidro próprio do hotel, reboco fino, grama recolorida (commit 5f10bf6f).
 - [x] "Deixa o fundo do mar para depois" (03/11): item marcado [adiado-usuario].
 - [ ] "Tênis de mesa no salão com gameplay completo" (03/11): PENDENCIAS seção 3.
-- [ ] "Sinuca como jogo completo: campeonato, amistoso e tudo" (03/11): PENDENCIAS seção 3.
+- [x] "Sinuca como jogo completo: campeonato, amistoso e tudo" (03/11): bola 8, amistoso, aposta, Campeonato da Maré.
 - [ ] "Balanceamento financeiro/econômico de tudo, divertido e não cansativo, várias atividades ao mesmo tempo; no fim
   da fila" (03/11): PENDENCIAS seção 15 (última).
 - [x] Manter este checklist sempre que o usuário pedir algo (regra salva na memória).

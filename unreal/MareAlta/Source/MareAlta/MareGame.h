@@ -58,7 +58,7 @@ public:
  UFUNCTION(BlueprintCallable,Category="Maré Alta") void OpenPhone(int32 Tab=0);
  UFUNCTION(BlueprintCallable,Category="Maré Alta") void ClosePhone();
  UFUNCTION(BlueprintPure,Category="Maré Alta") UMareSimulation* GetSimulation()const;
- void OpenStation(FName Station);
+ UFUNCTION(BlueprintCallable,Category="Maré Alta") void OpenStation(FName Station);
  virtual void EndPlay(const EEndPlayReason::Type Reason) override;
  UPROPERTY(BlueprintReadOnly,Category="Maré Alta") bool bPhoneOpen=false;
  /** Main menu over the paused world at start-up; the session (intro) only starts after a choice. */
