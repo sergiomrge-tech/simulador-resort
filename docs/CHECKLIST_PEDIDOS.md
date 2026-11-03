@@ -136,6 +136,13 @@ Legenda: [x] feito e validado · [~] em andamento/parcial · [ ] pendente.
   sem confete preto, bicicletas, praia sem primitivas (bola, troncos, pedras, pegadas, tábuas, jangada oeste).
 - [x] "O mar precisa de mais ondas, está muito calmo" (03/11): ondulação ao largo dobrada (~35 cm, três trens de ondas),
   arrebentação maior com espuma, superfície mais marcada; na tempestade, mar bravo com carneirinhos. Conferido no PIE.
+- [x] "Seria interessante colocar espuma do mar na transição da água para areia" (03/11): faixa de espuma pela
+  profundidade da água (SceneDepthWithoutWater) na beira, quebrada por ruído, e linhas de espuma correndo no raso;
+  mais forte na tempestade. Conferido no PIE.
+- [x] "Tire os gatos e cachorros do jogo" (03/11): não havia modelos no mapa da UE; o latido de cachorro do som
+  ambiente da vila foi removido (código, `audio.json`, `dog.uasset`/`dog.wav`, crédito). Os modelos antigos da versão
+  Godot continuam só no projeto Godot.
+- [ ] "Areia tipo Copacabana, volumosa e mais clara; pegadas na areia" (03/11): em andamento.
 - [x] Manter este checklist sempre que o usuário pedir algo (regra salva na memória).
 
 ## Regras permanentes já pedidas

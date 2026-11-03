@@ -54,12 +54,6 @@
   "loop": true
  },
  {
-  "id": "dog",
-  "path": "/Game/Audio/dog.dog",
-  "duration": 2.0385940074920654,
-  "loop": false
- },
- {
   "id": "door",
   "path": "/Game/Audio/door.door",
   "duration": 0.41491666436195374,

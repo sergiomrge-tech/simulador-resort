@@ -8,7 +8,7 @@ ROOT=Path(__file__).resolve().parents[2]
 OUT=ROOT/'unreal/MareAlta/SourceArt/Audio'
 OUT.mkdir(parents=True,exist_ok=True)
 names=['reggae_praia','ocean_loop','wind_loop','rain_loop','crickets_loop','leaves_soft',
-       'bird1','bird2','seagull1','seagull2','dog','bell','door','glass','clean','click',
+       'bird1','bird2','seagull1','seagull2','bell','door','glass','clean','click',
        'coin','swoosh','kiosk_pickup','kiosk_fridge','kiosk_cash','thunder','whale_splash']
 names += [f'footstep_{surface}_{i:03}' for surface in ['wood','concrete','carpet'] for i in range(5)]
 report=[]

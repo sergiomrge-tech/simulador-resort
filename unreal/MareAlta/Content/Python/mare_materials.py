@@ -92,11 +92,18 @@ def build_water():
         connect(uv,'',node,'UVs');samples.append(node)
     normal=custom(mat,'return normalize(float3((A.xy+B.xy)*(.32+Storm*.3),max(.55,A.z*B.z)));',unreal.CustomMaterialOutputType.CMOT_FLOAT3,{'A':samples[0],'B':samples[1],'Storm':storm})
     color=custom(mat,'float offshore=1-smoothstep(-17000,-4000,Position.y); float near=1-smoothstep(-9000,-4200,Position.y); float3 sea=lerp(lerp(float3(.02,.16,.15),float3(.012,.07,.085),near),float3(.006,.03,.055),offshore); float shore=smoothstep(-6500,-4300,Position.y)*(1-smoothstep(-3000,-2300,Position.y)); float phase=Position.y*.009+sin(Position.x*.0025)*.7-Time*.8; float crest=smoothstep(.80,.985,sin(phase)); float n1=sin(Position.x*.0023+sin(Position.y*.004)*.8+Time*.1)*.5+.5; float n2=sin(Position.x*.0061-Time*.17+sin(Position.x*.0013)*2.0)*.5+.5; float breaks=smoothstep(.3,.75,n1)*(.55+.45*smoothstep(.2,.8,n2)); sea=lerp(sea,float3(.035,.06,.065),Storm*.6); float crest2=smoothstep(.74-Storm*.2,.985,sin(phase)); float caps=Storm*smoothstep(.86,.99,sin(Position.x*.0031+Position.y*.0019-Time*.9)*sin(Position.y*.0043-Time*.6))*(1-shore); float crest1=smoothstep(.74,.985,sin(phase)); float whitecap=smoothstep(.93,.995,sin(Position.x*.003+Position.y*.0017-Time*.55)*.5+sin(Position.y*.004-Position.x*.0012-Time*.38)*.5)*(1-shore)*.35; return lerp(sea,float3(.84,.89,.88),saturate(shore*lerp(crest1,crest2,Storm)*breaks*(.6+Storm*.3)+caps*.7+whitecap));',unreal.CustomMaterialOutputType.CMOT_FLOAT3,{'Position':pos,'Time':time,'Storm':storm})
-    rough=expression(mat,unreal.MaterialExpressionConstant,r=.18)
+    # Shore foam (03/11, Sergio: espuma na transição da água para a areia): water depth from the scene behind the
+    # water (SceneDepthWithoutWater) minus the surface depth; a solid white band where it is very shallow, broken up
+    # by noise, plus foam lines running in towards the beach in the shallows; stronger in a storm.
+    behind=expression(mat,unreal.MaterialExpressionSceneDepthWithoutWater)
+    surface=expression(mat,unreal.MaterialExpressionPixelDepth)
+    foam=custom(mat,'float d=max(Behind-Surface,0); float n=(A.x*.5+.5)*.55+(sin(Position.x*.031+Time*.9)*sin(Position.y*.043-Time*.7)*.5+.5)*.45; float edge=1-smoothstep(4,38+Storm*30,d+n*14); float wash=smoothstep(.62,.93,sin(d*.09-Time*2.1+n*4.0)*.5+.5)*(1-smoothstep(25,160+Storm*120,d)); return saturate(edge*(.55+.45*n)+wash*(.35+Storm*.3));',unreal.CustomMaterialOutputType.CMOT_FLOAT1,{'Behind':behind,'Surface':surface,'Position':pos,'Time':time,'Storm':storm,'A':samples[0]})
+    final=custom(mat,'return lerp(Sea,float3(.9,.93,.92),F);',unreal.CustomMaterialOutputType.CMOT_FLOAT3,{'Sea':color,'F':foam})
+    rough=custom(mat,'return lerp(.18,.75,F);',unreal.CustomMaterialOutputType.CMOT_FLOAT1,{'F':foam})
     specular=expression(mat,unreal.MaterialExpressionConstant,r=.25)
     MEL.connect_material_property(specular,'',unreal.MaterialProperty.MP_SPECULAR)
-    opacity=expression(mat,unreal.MaterialExpressionConstant,r=.5)
-    for node,prop in [(wpo,unreal.MaterialProperty.MP_WORLD_POSITION_OFFSET),(normal,unreal.MaterialProperty.MP_NORMAL),(color,unreal.MaterialProperty.MP_BASE_COLOR),(rough,unreal.MaterialProperty.MP_ROUGHNESS),(opacity,unreal.MaterialProperty.MP_OPACITY)]:MEL.connect_material_property(node,'',prop)
+    opacity=custom(mat,'return lerp(.5,1.0,F);',unreal.CustomMaterialOutputType.CMOT_FLOAT1,{'F':foam})
+    for node,prop in [(wpo,unreal.MaterialProperty.MP_WORLD_POSITION_OFFSET),(normal,unreal.MaterialProperty.MP_NORMAL),(final,unreal.MaterialProperty.MP_BASE_COLOR),(rough,unreal.MaterialProperty.MP_ROUGHNESS),(opacity,unreal.MaterialProperty.MP_OPACITY)]:MEL.connect_material_property(node,'',prop)
     output=expression(mat,unreal.MaterialExpressionSingleLayerWaterMaterialOutput)
     scattering=expression(mat,unreal.MaterialExpressionConstant3Vector,constant=unreal.LinearColor(.0012,.0058,.0062,1))
     absorption=expression(mat,unreal.MaterialExpressionConstant3Vector,constant=unreal.LinearColor(.026,.0055,.0042,1))

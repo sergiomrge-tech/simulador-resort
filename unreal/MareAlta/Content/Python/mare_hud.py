@@ -962,6 +962,9 @@ def run(action, arg=''):
             comp = a.get_component_by_class(unreal.SkyAtmosphereComponent)
             out['atmo'] = {k: str(comp.get_editor_property(k)) for k in ('rayleigh_scattering_scale', 'mie_scattering_scale', 'mie_absorption_scale')}
         return out
+    if action == 'deleteassets':
+        # "path,path": remove assets that nothing uses any more (e.g. the dog bark, 03/11)
+        return {p: unreal.EditorAssetLibrary.delete_asset(p) for p in arg.split(',')}
     if action == 'whereis':
         # PIE: location of the static-mesh actors using a mesh (QA of moving props: passing boats)
         world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()

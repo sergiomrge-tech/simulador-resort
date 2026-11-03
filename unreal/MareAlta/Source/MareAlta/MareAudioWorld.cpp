@@ -161,13 +161,12 @@ void UMareAudioWorld::UpdateEvents(float DeltaSeconds,UMareSimulation* Sim,FVect
  if(Sim->Money()>LastCash+.01)PlayCue(TEXT("kiosk_cash"),.3f);LastCash=Sim->Money();
  const int32 Orders=UMareSimulation::Object(Sim->State,TEXT("ue_orders"))->Values.Num();if(Orders>LastOrders)PlayCue(TEXT("glass"),.15f);LastOrders=Orders;
  if(PC && PC->bPhoneOpen!=bWasPhone){PlayCue(TEXT("swoosh"),.14f);bWasPhone=PC->bPhoneOpen;}
- GullClock-=DeltaSeconds;DogClock-=DeltaSeconds;BirdClock-=DeltaSeconds;ThunderClock-=DeltaSeconds;
+ GullClock-=DeltaSeconds;BirdClock-=DeltaSeconds;ThunderClock-=DeltaSeconds;
  if(!bRain && !bNight && BirdClock<=0){BirdClock=FMath::FRandRange(5.f,11.f);const FVector Trees[]={FVector(4200,1700,500),FVector(5300,3600,500),FVector(3300,-1000,500),FVector(900,-900,500),FVector(-1500,700,500),FVector(6900,3700,600),FVector(8300,1800,600)};
   FVector Nearest=Trees[0];for(auto Tree:Trees)if(FVector::Dist(Position,Tree)<FVector::Dist(Position,Nearest))Nearest=Tree;
   if(FVector::Dist(Position,Nearest)<3500)PlayCue(FMath::RandBool()?TEXT("bird1"):TEXT("bird2"),.22f,&Nearest,true);
  }
  if(GullClock<=0){GullClock=FMath::FRandRange(12.f,25.f);FVector Spot=Position+FVector(700,-1200,800);if(!bNight && !bRain && Position.Y<-500)PlayCue(FMath::RandBool()?TEXT("seagull1"):TEXT("seagull2"),.18f,&Spot,true);}
- if(DogClock<=0){DogClock=FMath::FRandRange(35.f,65.f);FVector Spot(7000,3000,70);if(!bRain)PlayCue(TEXT("dog"),.12f,&Spot,true);}
  if(ThunderClock<=0){ThunderClock=FMath::FRandRange(22.f,45.f);if(bRain && UMareSimulation::String(Sim->State,TEXT("day_event"))==TEXT("tempestade"))PlayCue(TEXT("thunder"),.25f,nullptr,true);}
  const int32 Hour=UMareSimulation::Number(Sim->State,TEXT("minutes"))/60;
  if(LastBell<0)LastBell=Hour;if(Hour!=LastBell){LastBell=Hour;FVector Church(7000,3000,700);if(Hour>=7 && Hour<=21)PlayCue(TEXT("bell"),.2f,&Church,true);}

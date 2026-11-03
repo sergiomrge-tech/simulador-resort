@@ -97,7 +97,6 @@ glTF 1k em `assets/models/` (normal/ARM reduzidos para 512) e glTF 2k em `assets
 | `crickets_loop.ogg` | https://opengameart.org/content/crickets-ambient-noise-loopable | CC0 |
 | `bird1.ogg`, `bird2.ogg` | https://opengameart.org/content/birdcricketfrog-and-mosquito-sounds | CC0 |
 | `bell.ogg`, `clean.ogg`, `click.ogg`, `coin.ogg`, `door.ogg`, `glass.ogg`, `step1/2.ogg`, `step_wood1/2.ogg`, `swoosh.ogg` — "100 CC0 SFX #2" | https://opengameart.org/content/100-cc0-sfx-2 | CC0 |
-| `dog.ogg` | https://opengameart.org/content/dog-barking-mono | CC0 |
 | `village_murmur.ogg` (filtrado) | https://opengameart.org/content/crowd-shoutingspeaking-ambience | CC0 |
 | `seagull1.ogg`, `seagull2.ogg` | https://opengameart.org/content/solo-seagull-sound-effects | CC0 |
 
