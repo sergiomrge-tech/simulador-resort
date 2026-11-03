@@ -191,7 +191,11 @@ Pronto e testado (02/11):
   varais, vasos pendurados, azulejos). Corrigidos e conferidos por imagem: tigela de madeira no ar ao lado do quiosque (agora no
   balcão), bola de praia meio enterrada no gramado. Falta: conchas a ~2 m (-1525,-1199), sofá (4435,2337), Cube_005/007/011/018,
   biz_booth do hotel; refazer ângulos (câmera caiu dentro de paredes). Bola de praia tem 1 m de diâmetro (grande demais).
-- [ ] P1 Bicicletas da vila com rodas low poly (~10 lados) — regra "nada de low poly": trocar por modelo gratuito detalhado.
+- [x] P1 Bicicletas da vila low poly (03/11): a malha exportada da Godot tinha 3.179 triângulos. Trocadas pela "Vintage Bicycle
+  3D Model" (Fab, Patrick Goud, CC-BY 4.0) em 5 cores (`prep_fab_food.py bike_<cor>`: quadro repintado, pneu azul da marca
+  em preto, 60 mil triângulos, mapas 2048) e `hud_fabbikes` (importa e troca as 11 instâncias + `imported_meshes.json`).
+  `hud_fitbikes` deixa em pé no chão (as antigas eram deitadas/encostadas com 10° de inclinação) e `hud_clearbikes` afasta
+  de postes, bancos, cadeiras e vasos (amostras a cada 5 cm na largura real do guidão e pedais). Conferido de lado e em diagonal.
 - [x] P1 Gramado com "confete preto" (03/11): as texturas de cor da vegetação Poly Haven vieram em JPG sem alfa, então cada
   lâmina/folha era um cartão inteiro com fundo preto. `tools/ue58/fix_foliage_alpha.py` baixa o mapa Alpha/Opacity (CC0) e
   grava RGBA; `hud_foliagealpha` reimporta as 15 texturas (gramas, pervinca, rooibos, azedinha, samambaia, 5 arbustos,

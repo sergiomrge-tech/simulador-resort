@@ -804,6 +804,195 @@ def run(action, arg=''):
         return import_models('Boats', '/Game/Custom/Boats')
     if action == 'fabfood':
         return import_models('FabFood', '/Game/Custom/FabFood')
+    if action == 'fabbikes':
+        # Fab bicycles (tools/ue58/prep_fab_food.py bike_<colour>) replace the generated bike_<colour> meshes: import,
+        # cap their maps at 2048, swap the mesh of the level's bike instances and point imported_meshes.json at the
+        # new meshes so a rebuild keeps them. The new bike is built in the old one's frame (length on Y, base z=0).
+        import json
+        out = import_models('FabBikes', '/Game/Custom/Bikes') if arg != 'swap' else {}
+        for path in unreal.EditorAssetLibrary.list_assets('/Game/Custom/Bikes', True, False):
+            if str(unreal.EditorAssetLibrary.find_asset_data(path).asset_class_path.asset_name) == 'Texture2D':
+                t = unreal.load_asset(path)
+                t.set_editor_property('max_texture_size', 2048)
+                unreal.EditorAssetLibrary.save_loaded_asset(t, False)
+        data = Path(unreal.Paths.project_content_dir()) / 'Data'
+        world = json.loads((data / 'world.json').read_text(encoding='utf-8-sig'))
+        mapping = json.loads((data / 'imported_meshes.json').read_text(encoding='utf-8-sig'))
+        index = {}
+        for r in world['instances']:
+            if r['name'].startswith('bike_') and r['name'] != 'gym_bike':
+                index[r['name']] = f"World_{r['mesh_index']:04d}"
+        swapped = []
+        for name, world_mesh in index.items():
+            colour = name.split('_', 1)[1]
+            new_path = f'/Game/Custom/Bikes/fab_bike_{colour}/fab_bike_{colour}.fab_bike_{colour}'
+            mesh = unreal.load_asset(new_path)
+            if not mesh:
+                swapped.append(f'{name}: missing {new_path}')
+                continue
+            mapping[world_mesh] = new_path
+            for a in unreal.get_editor_subsystem(unreal.EditorActorSubsystem).get_all_level_actors():
+                if a.get_actor_label() == 'Maré · ' + name:
+                    for c in a.get_components_by_class(unreal.InstancedStaticMeshComponent):
+                        c.set_static_mesh(mesh)
+                        swapped.append(f'{name}: {c.get_instance_count()} instances')
+        (data / 'imported_meshes.json').write_text(json.dumps(mapping, ensure_ascii=False, indent=2) + chr(10), encoding='utf-8')
+        unreal.get_editor_subsystem(unreal.LevelEditorSubsystem).save_current_level()
+        return {'imported': out, 'swapped': swapped}
+    if action == 'instances':
+        # "label prefix": every instance of the editor-world actors whose label starts with it: [label, x, y, z, yaw].
+        out = []
+        for a in unreal.get_editor_subsystem(unreal.EditorActorSubsystem).get_all_level_actors():
+            if a.get_actor_label().startswith(arg):
+                for c in a.get_components_by_class(unreal.InstancedStaticMeshComponent):
+                    for i in range(c.get_instance_count()):
+                        t = c.get_instance_transform(i, True)
+                        out.append([a.get_actor_label()[7:] + str(i), round(t.translation.x), round(t.translation.y), round(t.translation.z), round(t.rotation.rotator().yaw)])
+        return out
+    if action == 'clearbikes':
+        # After fitbikes: the old spots leaned the bikes against posts, chairs and benches. Ground = the lowest surface
+        # under the base (not a bench top); then the smallest shift (sideways first, then along the length) that keeps
+        # sample points of the bike (wheels and frame) out of every nearby prop box. Level and world.json both change.
+        import json
+        from mare_world_builder import transform
+        world_ = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_editor_world()
+        data = Path(unreal.Paths.project_content_dir()) / 'Data'
+        doc = json.loads((data / 'world.json').read_text(encoding='utf-8-sig'))
+        actors = unreal.get_editor_subsystem(unreal.EditorActorSubsystem).get_all_level_actors()
+        # 5 cm steps along the bike: a 9 cm post fitted between 12 cm samples and stayed inside the frame.
+        # Full width: handlebar +-27 cm at the front top, pedals +-16 cm at the crank.
+        samples = ([unreal.Vector(x, y, z) for x in (-9, 0, 9) for y in range(-84, 85, 5) for z in (8, 30, 55, 80, 100)] +
+                   [unreal.Vector(x, y, z) for x in range(-27, 28, 6) for y in range(-62, -34, 5) for z in (95, 105)] +
+                   [unreal.Vector(x, y, z) for x in (-16, -12, 12, 16) for y in range(-15, 16, 5) for z in (20, 32)])
+        out = []
+        for a in actors:
+            label = a.get_actor_label()
+            if not label.startswith('Maré · bike_'):
+                continue
+            name = label[7:]
+            for c in a.get_components_by_class(unreal.InstancedStaticMeshComponent):
+                for i in range(c.get_instance_count()):
+                    t = c.get_instance_transform(i, True)
+                    base = t.translation
+                    boxes = []
+                    for b_ in actors:
+                        if b_ == a or b_.get_actor_label().startswith(('PCG', 'Mare · Gramado', 'Maré · Ground')):
+                            continue
+                        for comp in b_.get_components_by_class(unreal.StaticMeshComponent):
+                            mesh = comp.static_mesh
+                            if not mesh or not comp.is_visible() or 'grass' in mesh.get_name().lower():
+                                continue
+                            bb = mesh.get_bounding_box()
+                            ts = ([comp.get_instance_transform(k, True) for k in range(comp.get_instance_count())]
+                                  if isinstance(comp, unreal.InstancedStaticMeshComponent) else [comp.get_world_transform()])
+                            for tt in ts:
+                                if (tt.translation - base).length() > 900:
+                                    continue
+                                pts = [tt.transform_location(unreal.Vector(x, y, z)) for x in (bb.min.x, bb.max.x)
+                                       for y in (bb.min.y, bb.max.y) for z in (bb.min.z, bb.max.z)]
+                                lo = unreal.Vector(min(q.x for q in pts), min(q.y for q in pts), min(q.z for q in pts))
+                                hi = unreal.Vector(max(q.x for q in pts), max(q.y for q in pts), max(q.z for q in pts))
+                                if hi.z - lo.z < 8 or (hi.x - lo.x > 400 and hi.y - lo.y > 400):
+                                    continue        # ground plates and whole buildings
+                                if hi.x < base.x - 300 or lo.x > base.x + 300 or hi.y < base.y - 300 or lo.y > base.y + 300:
+                                    continue
+                                boxes.append((lo, hi, mesh.get_name()))
+                    side = t.rotation.rotate_vector(unreal.Vector(1, 0, 0))
+                    along = t.rotation.rotate_vector(unreal.Vector(0, 1, 0))
+
+                    def ground(at):
+                        hits = unreal.SystemLibrary.line_trace_multi(world_, at + unreal.Vector(0, 0, 80), at - unreal.Vector(0, 0, 150),
+                                                                     unreal.TraceTypeQuery.TRACE_TYPE_QUERY1, True, [a], unreal.DrawDebugTrace.NONE, True) or []
+                        zs = [h.to_tuple()[5].z for h in hits]
+                        return min(zs) if zs else at.z
+
+                    def hit_by(tr):
+                        for q in samples:
+                            w = tr.transform_location(q)
+                            for lo, hi, n in boxes:
+                                if lo.x - 4 < w.x < hi.x + 4 and lo.y - 4 < w.y < hi.y + 4 and lo.z < w.z < hi.z:   # 4 cm clearance
+                                    return n
+                        return None
+                    best = None
+                    cands = sorted(((sd, ln) for sd in range(-90, 91, 10) for ln in (0, -20, 20, -40, 40)), key=lambda v: abs(v[0]) + 1.5 * abs(v[1]))
+                    for sd, ln in cands:
+                        at = base + side * sd + along * ln
+                        at.z = ground(at)
+                        tr = unreal.Transform(at, t.rotation.rotator(), unreal.Vector(1, 1, 1))
+                        blocker = hit_by(tr)
+                        if not blocker:
+                            best = (tr, sd, ln)
+                            break
+                    if not best:
+                        out.append(f'{name}[{i}] no free spot (blocked by {hit_by(t)})')
+                        continue
+                    tr, sd, ln = best
+                    first = hit_by(unreal.Transform(base, t.rotation.rotator(), unreal.Vector(1, 1, 1)))
+                    old = unreal.Vector(base.x, base.y, base.z)
+                    c.update_instance_transform(i, tr, True, True, True)
+                    for row in doc['instances']:
+                        if row['name'] == name:
+                            rt = transform(row['transform'])
+                            if rt is not None and (rt.translation - old).length() < 1.0:
+                                q = tr.translation
+                                row['transform']['position'] = [q.x / 100, q.z / 100, q.y / 100]
+                                break
+                    out.append(f'{name}[{i}] was touching {first}; moved side {sd} along {ln}, z {round(old.z)}->{round(tr.translation.z)}')
+        (data / 'world.json').write_text(json.dumps(doc, ensure_ascii=False, indent='	'), encoding='utf-8')
+        unreal.get_editor_subsystem(unreal.LevelEditorSubsystem).save_current_level()
+        return out
+    if action == 'fitbikes':
+        # Stand every Fab bike where the old generated one was: the old World_ mesh had its height on local X with an
+        # off-centre origin (bbox x -74..35, y -35..141) and leaned 10 degrees; the new one has length on Y, height
+        # on Z, origin at the base centre and a centre stand, so it stands upright on the ground below the old base,
+        # along the old length. world.json gets the same transform (inverse of mare_world_builder.transform).
+        import json
+        from mare_world_builder import transform
+        world_ = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_editor_world()
+        data = Path(unreal.Paths.project_content_dir()) / 'Data'
+        doc = json.loads((data / 'world.json').read_text(encoding='utf-8-sig'))
+        old_lo, old_hi = unreal.Vector(-74, -35, -32), unreal.Vector(35, 141, 32)
+        out = []
+        for a in unreal.get_editor_subsystem(unreal.EditorActorSubsystem).get_all_level_actors():
+            label = a.get_actor_label()
+            if not (label.startswith('Maré · bike_') and label != 'Maré · bike_gym'):
+                continue
+            name = label[7:]
+            for c in a.get_components_by_class(unreal.InstancedStaticMeshComponent):
+                for i in range(c.get_instance_count()):
+                    t = c.get_instance_transform(i, True)
+                    ux = t.rotation.rotate_vector(unreal.Vector(1, 0, 0))
+                    uy = t.rotation.rotate_vector(unreal.Vector(0, 1, 0))
+                    if abs(ux.z) < .5:
+                        out.append(f'{name}[{i}] skipped (already upright)')
+                        continue
+                    base_x = old_lo.x if ux.z > 0 else old_hi.x
+                    base = t.transform_location(unreal.Vector(base_x, (old_lo.y + old_hi.y) / 2, 0))
+                    hit = unreal.SystemLibrary.line_trace_single(world_, base + unreal.Vector(0, 0, 60), base - unreal.Vector(0, 0, 120),
+                                                                unreal.TraceTypeQuery.TRACE_TYPE_QUERY1, True, [a], unreal.DrawDebugTrace.NONE, True)
+                    if hit:
+                        base.z = hit.to_tuple()[5].z
+                    fwd = unreal.Vector(uy.x, uy.y, 0)
+                    fwd = fwd * (1.0 / max(fwd.length(), 1e-6))
+                    rot = unreal.MathLibrary.make_rot_from_yz(fwd, unreal.Vector(0, 0, 1))
+                    new = unreal.Transform(base, rot, unreal.Vector(1, 1, 1))
+                    old_loc = unreal.Vector(t.translation.x, t.translation.y, t.translation.z)
+                    c.update_instance_transform(i, new, True, True, True)
+                    q = rot.quaternion()
+                    X, Y, Z = (q.rotate_vector(v) for v in (unreal.Vector(1, 0, 0), unreal.Vector(0, 1, 0), unreal.Vector(0, 0, 1)))
+                    for row in doc['instances']:
+                        if row['name'] == name:
+                            rt = transform(row['transform'])
+                            if rt is not None and (rt.translation - old_loc).length() < 1.0:
+                                row['transform']['basis'] = [[X.x, X.z, X.y], [Z.x, Z.z, Z.y], [Y.x, Y.z, Y.y]]
+                                row['transform']['position'] = [base.x / 100, base.z / 100, base.y / 100]
+                                chk = transform(row['transform'])
+                                out.append(f'{name}[{i}] -> {[round(base.x), round(base.y), round(base.z)]} yaw {round(rot.yaw)} '
+                                           f'json ok {(chk.translation - base).length() < 1 and abs(chk.rotation.rotator().yaw - rot.yaw) % 360 < 1}')
+                                break
+        (data / 'world.json').write_text(json.dumps(doc, ensure_ascii=False, indent='	'), encoding='utf-8')
+        unreal.get_editor_subsystem(unreal.LevelEditorSubsystem).save_current_level()
+        return out
     if action == 'fabfurniture':
         return import_models('FabFurniture', '/Game/Custom/FabFurniture')
     if action == 'fabfestival':

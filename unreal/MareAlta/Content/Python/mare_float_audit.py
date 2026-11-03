@@ -408,6 +408,12 @@ def palm_material(names):
 
 
 def run(action, arg=''):
+    if action == 'bbox':
+        out = {}
+        for path in arg.split(','):
+            b = unreal.load_asset(path).get_bounding_box()
+            out[path.split('.')[-1]] = {'min': [round(b.min.x), round(b.min.y), round(b.min.z)], 'max': [round(b.max.x), round(b.max.y), round(b.max.z)]}
+        return out
     if action == 'surface':
         # "x,y[,ztop]": first surface hit going down from ztop (default 1500), editor world.
         v = [float(t) for t in arg.split(',')]

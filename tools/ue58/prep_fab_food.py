@@ -10,12 +10,13 @@ Every material and image gets a unique fab_<dish>_ prefix (Interchange reuses as
 resized to a power of two (max 1024). Run with the bpy venv:
   D:/CodexTemp/claude/bpy-env/Scripts/python.exe -I tools/ue58/prep_fab_food.py
 """
+import math
 import os
 import zipfile
 import bpy
 import bmesh
 import numpy as np
-from mathutils import Vector
+from mathutils import Matrix, Vector
 
 SRC = 'D:/CodexTemp/fab/props'
 OUT = 'D:/CodexTemp/fab/props/game'
@@ -214,6 +215,106 @@ def stall():
     print('WROTE stall', sum(len(p.vertices) - 2 for p in o.data.polygons), 'tris', tuple(round(v, 3) for v in bounds()[1] - bounds()[0]))
 
 
+BIKE_COLORS = {'red': (.78, .16, .14), 'blue': (.12, .38, .72), 'yellow': (.93, .72, .12), 'green': (.16, .52, .3),
+               'white': (.88, .88, .86)}
+
+
+def bike(colour):
+    """Village bicycle (replaces the generated bike_<colour>, whose wheels read as low poly): Fab "Vintage Bicycle 3D
+    Model" (Patrick Goud, "Swapfiets", CC-BY 4.0). Turned to the old bike's frame (length on Y, front -Y, base z=0,
+    1.70 m long) so the existing placements fit; frame repainted to the colour (hue 0-45/330-360 of the atlas keeps its
+    shading) and the brand's blue front tyre made black rubber like the rear one. Atlas 4096 -> 2048."""
+    reset()
+    bpy.ops.import_scene.gltf(filepath='D:/CodexTemp/fab/bike/x/source/s/scene.gltf')
+    # Sketchfab glTFs nest the meshes under scaled/rotated empties: bake those into the meshes before joining,
+    # otherwise the later rotate/scale/centre only touch the child and the export scatters the parts.
+    for m in meshes():
+        w = m.matrix_world.copy()
+        m.parent = None
+        m.matrix_world = w
+    for e in [x for x in bpy.data.objects if x.type != 'MESH']:
+        bpy.data.objects.remove(e, do_unlink=True)
+    o = join_all(f'fab_bike_{colour}')
+    # Turn, scale and centre the mesh data itself (object-level transform_apply did not take here); the object
+    # stays at the origin so world = mesh data.
+    o.data.transform(o.matrix_world)
+    o.matrix_world = Matrix.Identity(4)
+    o.data.transform(Matrix.Rotation(-math.pi / 2, 4, 'Z'))       # front +X -> -Y
+    o.data.update()
+    decimate(o, 60000)
+
+    def vbounds():   # from the vertices: bound_box stays stale after mesh.transform
+        co = np.array([v.co for v in o.data.vertices])
+        return Vector(co.min(0)), Vector(co.max(0))
+    lo, hi = vbounds()
+    o.data.transform(Matrix.Scale(1.70 / (hi.y - lo.y), 4))
+    lo, hi = vbounds()
+    o.data.transform(Matrix.Translation(-Vector(((lo.x + hi.x) / 2, (lo.y + hi.y) / 2, lo.z))))
+    o.data.update()
+    bpy.context.view_layer.update()
+    for m in bpy.data.materials:                   # the emissive map only lit grey patches (reflectors) in Lumen
+        bsdf = m.node_tree.nodes.get('Principled BSDF') if m.use_nodes else None
+        if bsdf:
+            for link in list(bsdf.inputs['Emission Color'].links):
+                m.node_tree.links.remove(link)
+            bsdf.inputs['Emission Strength'].default_value = 0
+    target = np.array(BIKE_COLORS[colour], dtype=np.float32)
+    for img in [i for i in bpy.data.images if 'basecolor' in i.name.lower()]:
+        if not img.has_data:
+            img.reload()
+        img.scale(2048, 2048)
+        px = np.array(img.pixels[:], dtype=np.float32).reshape(-1, 4)
+        rgb = px[:, :3]
+        mx, mn = rgb.max(1), rgb.min(1)
+        d = np.maximum(mx - mn, 1e-6)
+        r, g, b = rgb[:, 0], rgb[:, 1], rgb[:, 2]
+        hue = np.where(mx == r, ((g - b) / d) % 6, np.where(mx == g, (b - r) / d + 2, (r - g) / d + 4)) * 60
+        sat = (mx - mn) / np.maximum(mx, 1e-3)
+        lum = rgb @ np.array([.299, .587, .114], dtype=np.float32)
+        frame = (sat > .3) & (mx > .08) & ((hue < 45) | (hue > 330))
+        tyre = (sat > .3) & (hue > 180) & (hue < 260)
+        ref = float(lum[frame].mean()) if frame.any() else .3
+        rgb[frame] = np.clip(target[None, :] * (lum[frame] / ref)[:, None], 0, 1)
+        rgb[tyre] = (lum[tyre] * .35)[:, None] * np.array([1, 1, 1.05], dtype=np.float32)[None, :]
+        px[:, :3] = rgb
+        # A new image with the edited pixels, saved as PNG, replaces the original in every material: editing the
+        # original in place was lost when the helpers reloaded it from its file.
+        new = bpy.data.images.new(f'fab_bike_{colour}_base', 2048, 2048, alpha=True)
+        new.pixels[:] = px.ravel()
+        path = f'{OUT}/tex/fab_bike_{colour}_base.png'
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        new.filepath_raw = path
+        new.file_format = 'PNG'
+        new.save()
+        for m in bpy.data.materials:
+            if m.use_nodes:
+                for n in m.node_tree.nodes:
+                    if n.type == 'TEX_IMAGE' and n.image == img:
+                        n.image = new
+        print('BIKE', colour, 'frame px', int(frame.sum()), 'tyre px', int(tyre.sum()))
+    for img in [i for i in bpy.data.images if i.users == 0]:
+        bpy.data.images.remove(img)
+    for img in [i for i in bpy.data.images if i.size[0] > 2048]:   # the other maps at 2048 too, same new-image way
+        if not img.has_data:
+            img.reload()
+        img.scale(2048, 2048)
+        small = bpy.data.images.new(f'fab_bike_{colour}_{img.name.split(".")[0][-12:]}', 2048, 2048, alpha=True)
+        small.colorspace_settings.name = img.colorspace_settings.name
+        small.pixels[:] = img.pixels[:]
+        small.filepath_raw = f'{OUT}/tex/{small.name}.png'
+        small.file_format = 'PNG'
+        small.save()
+        for m in bpy.data.materials:
+            if m.use_nodes:
+                for n in m.node_tree.nodes:
+                    if n.type == 'TEX_IMAGE' and n.image == img:
+                        n.image = small
+    unique(f'fab_bike_{colour}', 2048)
+    os.makedirs(OUT, exist_ok=True)
+    bpy.ops.export_scene.gltf(filepath=f'{OUT}/fab_bike_{colour}.glb', export_format='GLB', export_apply=True)
+    print('WROTE bike', colour, sum(len(p.vertices) - 2 for p in o.data.polygons), 'tris', tuple(round(v, 3) for v in bounds()[1] - bounds()[0]))
+
+
 def acai():
     reset()
     bpy.ops.import_scene.gltf(filepath=f'{SRC}/wooden_bowl.glb')
@@ -252,6 +353,7 @@ if __name__ == '__main__':
         for job in only:
             {'coco': coco, 'acai': acai, 'campfire': campfire, 'stall': stall,
              'stool': lambda: furniture('rattan_bar_stool.glb', 'fab_rattan_bar_stool', .874, 45000),
+             **{f'bike_{c}': (lambda c=c: bike(c)) for c in BIKE_COLORS},
              'sofa': lambda: furniture('woven_rattan_sofa.glb', 'fab_rattan_sofa', .80, 60000), 'morango': lambda: sorvete('morango', (.95, .45, .55)), 'chocolate': lambda: sorvete('chocolate', (.42, .24, .14))}[job]()
         raise SystemExit
     coco()
