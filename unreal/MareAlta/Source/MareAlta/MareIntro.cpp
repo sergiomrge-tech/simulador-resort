@@ -1,6 +1,7 @@
 #include "MareIntro.h"
 #include "MareGame.h"
 #include "MareGamepad.h"
+#include "MareNotebookStyle.h"
 #include "MareSimulation.h"
 #include "MarePlayerPresentation.h"
 #include "MareAudioWorld.h"
@@ -142,14 +143,13 @@ void AMareIntro::ReadLetter()
 {
  if(LetterWidget.IsValid() || !GEngine || !GEngine->GameViewport)return;
  auto PC=Cast<AMareController>(UGameplayStatics::GetPlayerController(this,0));if(!PC || PC->bPhoneOpen || GetWorld()->IsPaused())return;
- static const FSlateRoundedBoxBrush Card(FLinearColor(.95f,.91f,.81f),12.f);
  const FString Letter=TEXT("Meu neto,\n\nSe você está lendo esta carta, chegou à nossa vila. Ainda me lembro de você pequeno, correndo pela areia enquanto eu abria o quiosque. Você dizia que o mar tinha cheiro de aventura. Eu respondia que também tinha cheiro de casa.\n\nNosso negócio começou com um balcão, alguns cocos e a vontade de acolher quem chegava. Nem todos os dias foram fáceis. Quando o vento virou, foram as pessoas da vila que nos ajudaram a continuar. Cada cadeira guarda uma conversa; cada freguês deixou um pedacinho de sua história conosco.\n\nHoje minhas mãos precisam descansar um pouco mais, mas o sonho da família ainda tem muito caminho pela frente. Quero passar o quiosque para você. Abra as portas, conheça nossos vizinhos e faça deste lugar também o seu lugar.\n\nSe puder, ajude o negócio a crescer. Mas lembre-se de que o que construímos de mais valioso nunca coube em uma caixa registradora: foi o carinho com que recebemos cada pessoa.\n\nNão tenha pressa. Mesmo de longe, vou torcer por você a cada nova maré.\n\nCom todo meu amor,\nVó Dilce");
- auto Text=SNew(STextBlock).Text(FText::FromString(Letter)).Font(FCoreStyle::GetDefaultFontStyle("Regular",16)).ColorAndOpacity(FLinearColor(.15f,.13f,.1f)).AutoWrapText(true);
- LetterWidget=SNew(SBorder).BorderBackgroundColor(FLinearColor(0,0,0,.75)).HAlign(HAlign_Center).VAlign(VAlign_Center)[SNew(SBox).WidthOverride(570).MaxDesiredHeight(620)[SNew(SBorder).BorderImage(&Card).Padding(24)[SNew(SVerticalBox)
-  +SVerticalBox::Slot().AutoHeight().Padding(0,0,0,12)[SNew(STextBlock).Text(FText::FromString(TEXT("Uma carta para você"))).Font(FCoreStyle::GetDefaultFontStyle("Bold",22)).ColorAndOpacity(FLinearColor(.18f,.15f,.1f))]
+ auto Text=SNew(STextBlock).Text(FText::FromString(Letter)).Font(MareNotebook::Hand(21)).ColorAndOpacity(MareNotebook::Ink).AutoWrapText(true);
+ LetterWidget=SNew(SBorder).BorderBackgroundColor(FLinearColor(0,0,0,.75)).HAlign(HAlign_Center).VAlign(VAlign_Center)[SNew(SBox).WidthOverride(600).MaxDesiredHeight(640)[MareNotebook::Page(SNew(SVerticalBox)
+  +SVerticalBox::Slot().AutoHeight().Padding(0,0,0,12)[SNew(STextBlock).Text(FText::FromString(TEXT("Uma carta para você"))).Font(MareNotebook::Hand(30)).ColorAndOpacity(MareNotebook::Brown)]
   +SVerticalBox::Slot().FillHeight(1)[SNew(SScrollBox)+SScrollBox::Slot()[Text]]
-  +SVerticalBox::Slot().AutoHeight().Padding(0,8,0,0)[SNew(STextBlock).Text(NSLOCTEXT("MareIntro","LetterScroll","Role para ler toda a carta (no controle: analógico direito)")).Font(FCoreStyle::GetDefaultFontStyle("Regular",11)).ColorAndOpacity(FLinearColor(.25f,.22f,.18f))]
-  +SVerticalBox::Slot().AutoHeight().HAlign(HAlign_Left).Padding(0,16,0,0)[SNew(SMarePadButton).ContentPadding(FMargin(14,8)).OnClicked_Lambda([this](){CloseLetter();return FReply::Handled();})[SNew(STextBlock).Text(FText::FromString(TEXT("Guardar a carta")))]]]]];
+  +SVerticalBox::Slot().AutoHeight().Padding(0,8,0,0)[SNew(STextBlock).Text(NSLOCTEXT("MareIntro","LetterScroll","Role para ler toda a carta (no controle: analógico direito)")).Font(MareNotebook::Hand(15)).ColorAndOpacity(MareNotebook::Faded)]
+  +SVerticalBox::Slot().AutoHeight().HAlign(HAlign_Left).Padding(0,16,0,0)[SNew(SMarePadButton).ButtonStyle(&MareNotebook::InkButton()).ContentPadding(FMargin(12,3)).OnClicked_Lambda([this](){CloseLetter();return FReply::Handled();})[MareNotebook::InkLabel(TEXT("Guardar a carta"),18)]])]];
  GEngine->GameViewport->AddViewportWidgetContent(LetterWidget.ToSharedRef(),40);
  {const TWeakObjectPtr<AMareIntro> Weak(this);MareGamepad::PushMenu(LetterWidget.ToSharedRef(),[Weak](){if(Weak.IsValid())Weak->CloseLetter();});}
  PC->bShowMouseCursor=true;PC->SetInputMode(FInputModeGameAndUI());PC->SetIgnoreMoveInput(true);PC->SetIgnoreLookInput(true);

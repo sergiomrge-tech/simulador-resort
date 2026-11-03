@@ -23,13 +23,22 @@ Nada de mecânica nova até esta seção fechar. Cada passada roda uma auditoria
   `OnlyTickPoseWhenRendered`, 11 de 14 pedestres deslizando.) Corrigido (`AMarePerson::SetMetaHuman` força
   `AlwaysTickPoseAndRefreshBones`; a vila só otimiza quem não é MetaHuman). Prova 03/11: 6 rodadas, dia, noite e quiosque
   aberto, 11–14 pessoas andando por rodada (moradores, garçom, guia, camareira, piscineiro, cliente), 0 deslizando.
-- [ ] P0 Eventos cômicos já feitos (HUM-001/002/004/005/006/007/008) conferidos por captura e estabilizados.
-- [ ] P0 Log limpo: PIE de vários minutos sem `Error`/`Ensure`/avisos de material/`missing`; testes automáticos 100%.
+- [x] P0 Eventos cômicos já feitos (HUM-001/002/004/005/006/007/008) conferidos por captura e estabilizados.
+  03/11: gaivota (tamanho real, só voa com caminho livre de telhado/guarda-sol, bico no prato), guarda-sol (cópia ISM
+  com as cores, deita na areia, banhista vai buscar, E recoloca), influencer (selfie com IK do braço), atendente
+  (tropeço e bandeja), turista perdido, Seu Arnaldo e pescador; capturas analisadas; teste ComicEvents ok.
+- [x] P0 Log limpo: PIE de vários minutos sem `Error`/`Ensure`/avisos de material/`missing`; testes automáticos 100%.
+  03/11: portão `tools/ue58/qa/qa_gate.py` PASS: 27/27 testes, 0 linhas de erro no PIE (dia e noite).
 - [ ] P0 Pessoas: postura sentada/em pé/andando, roupas sem atravessar, cabelos, calçados; ninguém dentro de móvel.
-- [ ] P0 Objetos: flutuando, primitivos, low poly e colisões (auditorias `float_audit`/`primitives`/`lowpoly`) sem novidades.
+- [x] P0 Objetos: flutuando, primitivos, low poly e colisões (auditorias `float_audit`/`primitives`/`lowpoly`) sem novidades.
+  03/11: 585 marcações conferidas por amostragem: peixes do recife, folhas de vaso, luzes da piscina, azulejos, varal,
+  vasos pendurados, livros na estante, mensageiro de conchas, caixotes fechados = falsos positivos. Linha de base
+  congelada no portão (não pode aumentar).
 - [ ] P0 Ciclo do quiosque completo no PIE (abrir, pedido, entrega, pagamento, limpeza, fechar, dormir, salvar/carregar).
 - [ ] P0 Sistemas já feitos revisados no PIE: bar, piscina, pousada, hotel, negócios, passeios, festas, salão de jogos,
   celular (todos os apps), clima, noite, mar, natação, áudio.
+- [x] P0 Interface: todas as telas no padrão caderno (03/11, pedido do Sergio): menu principal, pausa, opções, diálogos
+  da vila/eventos e carta da avó convertidos (`MareNotebookStyle.h`); diálogo com respostas quebrando linha dentro da folha.
 - [ ] P0 Varredura visual final por área (montagem de capturas analisadas item a item) e desempenho no editor.
 - [ ] P0 Simulação do jogo inteiro depois das auditorias acima: perfil novo, avançando todas as etapas (dias, expansões,
   capítulos, negócios até o Grand Hotel), registrando cada erro em `docs/ue58/CHECKLIST_SIMULACAO.md`.
@@ -299,6 +308,9 @@ Pronto e testado (02/11):
   - campainha da recepção, chaves, cama, lixo;
   - tacadas e bolas da sinuca;
   - liquidificador e coqueteleira do bar.
+- [ ] P1 Rádio com músicas havaianas de ukulele ORIGINAIS (pedido do Sergio, 03/11): compor/gerar com ferramenta gratuita
+  (sem copiar músicas existentes, ex.: "Over the Rainbow" tem direitos), várias faixas leves + uma música-tema do jogo.
+- [ ] P1 Ambiente de fundo suave e relaxante (03/11): vento, mar/ondas, pássaros e gaivotas em volume baixo, sem poluição sonora.
 - [ ] P1 Mixagem final e volumes por categoria (já existem: geral, música, efeitos, ambiente).
 - [ ] P2 Vozes curtas (murmúrios) sem diálogo falado, respeitando a regra de áudio suave.
 
@@ -377,10 +389,10 @@ atendimento, economia ou saves; um evento por vez, com cooldown e seed testável
   respostas com reação; conferido no PIE (o turista para, chama e a conversa abre embaixo da tela).
 - [x] Diálogos recorrentes (03/11): Seu Arnaldo (HUM-007, 5 reclamações em sequência) e Seu Bené, pescador (HUM-008, o
   peixe cresce a cada conversa: 2 kg → do tamanho da jangada), pelo mesmo gestor; textos PT-BR e EN nos dados.
-- [ ] HUM-002 Turista influenciador exigente (selfies, pede mesa com vista), sem atrasar a fila; bônus pequeno depois.
-- [ ] HUM-001 Gaivota rouba batata da mesa, turista reage; sem mexer em estoque/pagamento no começo.
+- [x] HUM-002 Turista influenciador exigente (selfies, pede mesa com vista), sem atrasar a fila; bônus pequeno depois. (03/11, conferido por captura)
+- [x] HUM-001 Gaivota rouba batata da mesa, turista reage; sem mexer em estoque/pagamento no começo. (03/11, conferido por captura)
 - [x] HUM-003 Cachorro foge com um chinelo: cancelado (03/11, o Sergio tirou gatos e cachorros do jogo).
-- [ ] HUM-004 Guarda-sol levado pelo vento; recolocar é opcional; física controlada.
-- [ ] HUM-006 Atendente iniciante atrapalhado (quase derruba bandeja), diminui com treinamento; sem perder pedido/dinheiro.
+- [x] HUM-004 Guarda-sol levado pelo vento; recolocar é opcional; física controlada. (03/11, conferido por captura)
+- [x] HUM-006 Atendente iniciante atrapalhado (quase derruba bandeja), diminui com treinamento; sem perder pedido/dinheiro. (03/11, conferido por captura)
 - [ ] Critérios de aceite da especificação: 100 ciclos sem travar NPC/fila, sem cobrança/estoque duplicados no reload,
   fotos e clipe do EXE.

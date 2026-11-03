@@ -18,7 +18,12 @@ bool FMareComicEventsTest::RunTest(const FString& Parameters)
   TestTrue(TEXT("Stable HUM id: ")+Id,Id.StartsWith(TEXT("HUM-")) && !Ids.Contains(Id));Ids.Add(Id);
   auto Count=[&](const TCHAR* F){const TArray<TSharedPtr<FJsonValue>>* L=nullptr;return E->TryGetArrayField(F,L)?L->Num():0;};
   TestTrue(Id+TEXT(" has lines"),Count(TEXT("asks"))>0);
-  TestTrue(Id+TEXT(" replies match reactions"),Count(TEXT("replies"))>0 && Count(TEXT("replies"))==Count(TEXT("reactions")));
+  // Talk events need answers; scene events (gull, umbrella, clumsy attendant) only show their line as a notice.
+  const FString Kind=UMareSimulation::String(E,TEXT("kind"));
+  TestTrue(Id+TEXT(" replies match reactions"),(Kind.IsEmpty()?Count(TEXT("replies"))>0:true) && Count(TEXT("replies"))==Count(TEXT("reactions")));
+  if(Kind==TEXT("umbrella"))TestFalse(Id+TEXT(" names the umbrella pole mesh"),UMareSimulation::String(E,TEXT("pole_mesh")).IsEmpty());
+  if(Kind==TEXT("clumsy"))TestFalse(Id+TEXT(" names the staff role"),UMareSimulation::String(E,TEXT("role")).IsEmpty());
+  if(Kind==TEXT("gull"))TestTrue(Id+TEXT(" lists the foods"),Count(TEXT("foods"))>0);
   TestEqual(Id+TEXT(" English lines"),Count(TEXT("asks_en")),Count(TEXT("asks")));
   TestEqual(Id+TEXT(" English replies"),Count(TEXT("replies_en")),Count(TEXT("replies")));
   TestEqual(Id+TEXT(" English reactions"),Count(TEXT("reactions_en")),Count(TEXT("reactions")));

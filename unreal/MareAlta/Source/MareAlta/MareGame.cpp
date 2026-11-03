@@ -1,4 +1,5 @@
 #include "MareGame.h"
+#include "MareNotebookStyle.h"
 #include "MareStaffWorld.h"
 #include "UnrealClient.h"
 #include "Widgets/SCanvas.h"
@@ -78,19 +79,17 @@ namespace MareUI
   if(!Current.IsEmpty())Draw();
  }
  static const FSlateRoundedBoxBrush Phone(FLinearColor(.035f,.055f,.05f),24.f);
- static const FSlateRoundedBoxBrush Surface(FLinearColor(.94f,.94f,.90f),18.f);
- static const FSlateRoundedBoxBrush Card(FLinearColor(.99f,.99f,.97f),10.f);
- static const FButtonStyle ActionButton=FButtonStyle()
-  .SetNormal(FSlateRoundedBoxBrush(FLinearColor(FColor(47,158,143)),8.f))
-  .SetHovered(FSlateRoundedBoxBrush(FLinearColor(FColor(62,178,163)),8.f))
-  .SetPressed(FSlateRoundedBoxBrush(FLinearColor(FColor(35,125,113)),8.f));
- TSharedRef<STextBlock> Text(const FString& Value,int32 Size=14,FLinearColor Color=FLinearColor(.08f,.12f,.11f))
+ // Menus, pause and options use the notebook (03/11): titles and labels on ink buttons in handwriting, the rest in Nunito.
+ static const FButtonStyle& ActionButton=MareNotebook::InkButton();
+ inline FSlateFontInfo FontFor(int32 Size,bool bHand){return bHand?MareNotebook::Hand(Size+3):MareNotebook::Body(Size);}
+ TSharedRef<STextBlock> Text(const FString& Value,int32 Size=14,FLinearColor Color=MareNotebook::Ink)
  {
-  return SNew(STextBlock).Text(FText::FromString(Value)).Font(FCoreStyle::GetDefaultFontStyle("Regular",Size)).ColorAndOpacity(Color).AutoWrapText(true);
+  const bool bOnInk=Color.Equals(FLinearColor::White),bTitle=Size>=16 && Color.Equals(MareNotebook::Ink);
+  return SNew(STextBlock).Text(FText::FromString(Value)).Font(FontFor(Size,bOnInk || bTitle)).ColorAndOpacity(bOnInk?MareNotebook::Tag:bTitle?MareNotebook::Brown:Color).AutoWrapText(true);
  }
  TSharedRef<STextBlock> LiveText(TFunction<FString()> Value,int32 Size=14)
  {
-  return SNew(STextBlock).Text_Lambda([Value](){return FText::FromString(Value());}).Font(FCoreStyle::GetDefaultFontStyle("Regular",Size)).ColorAndOpacity(FLinearColor(.08f,.12f,.11f)).AutoWrapText(true);
+  return SNew(STextBlock).Text_Lambda([Value](){return FText::FromString(Value());}).Font(MareNotebook::Body(Size)).ColorAndOpacity(MareNotebook::Ink).AutoWrapText(true);
  }
 }
 namespace MareTropical
@@ -135,69 +134,6 @@ namespace MareTropical
  TSharedRef<SWidget> Key(const FString& K){return SNew(SBorder).BorderImage(&KeyCap()).Padding(FMargin(7,2))[Txt(K,12,Hex(90,58,30),true)];}
  FSlateRenderTransform Tilt(float Degrees){return FSlateRenderTransform(FQuat2D(FMath::DegreesToRadians(Degrees)));}
 }
-/** "Caderno do Quiosque" (phone option 3, chosen by the user on 01/11): kraft cover, notebook divider tabs,
- *  lined paper, handwriting, price tags and an EM USO stamp. Fonts are OFL files in Content/UI/Fonts. */
-namespace MareNotebook
-{
- using MareTropical::Hex;
- const FLinearColor Kraft=Hex(227,207,166),Paper=Hex(255,251,240),Rule=Hex(222,233,240),Margin=Hex(233,166,160),Ink=Hex(46,32,20),
-  Brown=Hex(122,59,28),Faded=Hex(107,78,46),Pencil=Hex(128,104,76),Green=Hex(70,104,48),Red=Hex(178,58,40),Tag=Hex(255,243,201),
-  TagEdge=Hex(201,168,106),Marker=Hex(255,229,138);
- const FLinearColor& TabColor(int32 I){static const FLinearColor C[]={Hex(246,185,168),Hex(191,224,196),Hex(188,215,238),Hex(247,220,142),Hex(216,195,238),Hex(243,199,156),Hex(206,226,170)};return C[FMath::Clamp(I,0,6)];}
- FSlateFontInfo Font(const TCHAR* File,float Size,const char* Fallback)
- {
-  static TMap<FString,TSharedPtr<const FCompositeFont>> Cache;
-  if(!Cache.Contains(File)){const FString Path=FPaths::ProjectContentDir()/TEXT("UI/Fonts")/File;
-   TSharedPtr<const FCompositeFont> Loaded;if(FPaths::FileExists(Path))Loaded=MakeShared<FStandaloneCompositeFont>(NAME_None,Path,EFontHinting::Default,EFontLoadingPolicy::LazyLoad);Cache.Add(File,Loaded);}
-  const auto& Composite=Cache[File];return Composite.IsValid()?FSlateFontInfo(Composite,Size):FCoreStyle::GetDefaultFontStyle(Fallback,Size);
- }
- FSlateFontInfo Hand(float Size){return Font(TEXT("PatrickHand-Regular.ttf"),Size,"Regular");}
- FSlateFontInfo Body(float Size,bool bBold=false){return Font(bBold?TEXT("Nunito-ExtraBold.ttf"):TEXT("Nunito-SemiBold.ttf"),Size,bBold?"Bold":"Regular");}
- const FSlateRoundedBoxBrush& Cover(){static const FSlateRoundedBoxBrush B(Kraft,18.f);return B;}
- const FSlateRoundedBoxBrush& Sheet(){static const FSlateRoundedBoxBrush B(Paper,FVector4(0,12,0,0));return B;}
- const FSlateRoundedBoxBrush& TabBrush(const FLinearColor& C){static TMap<uint32,TSharedPtr<FSlateRoundedBoxBrush>> Cache;auto& B=Cache.FindOrAdd(C.ToFColor(false).ToPackedARGB());if(!B.IsValid())B=MakeShared<FSlateRoundedBoxBrush>(C,FVector4(10,10,0,0));return *B;}
- const FSlateRoundedBoxBrush& TagBrush(){static const FSlateRoundedBoxBrush B(Tag,FVector4(6,22,6,6),TagEdge,1.5f);return B;}
- const FSlateRoundedBoxBrush& TagShadow(){static const FSlateRoundedBoxBrush B(Hex(217,195,151),FVector4(6,22,6,6));return B;}
- const FSlateRoundedBoxBrush& Hole(){static const FSlateRoundedBoxBrush B(Kraft,5.f,Hex(168,134,84),1.5f);return B;}
- const FSlateRoundedBoxBrush& StampBrush(const FLinearColor& C){static TMap<uint32,TSharedPtr<FSlateRoundedBoxBrush>> Cache;auto& B=Cache.FindOrAdd(C.ToFColor(false).ToPackedARGB());if(!B.IsValid())B=MakeShared<FSlateRoundedBoxBrush>(FLinearColor::Transparent,6.f,C,2.5f);return *B;}
- const FSlateRoundedBoxBrush& MarkerBrush(){static const FSlateRoundedBoxBrush B(Marker,3.f);return B;}
- const FSlateRoundedBoxBrush& Note(){static const FSlateRoundedBoxBrush B(Hex(255,236,150),4.f,Hex(214,190,120),1.f);return B;}
- const FButtonStyle& InkButton(){static const FButtonStyle S=FButtonStyle().SetNormal(FSlateRoundedBoxBrush(Brown,5.f)).SetHovered(FSlateRoundedBoxBrush(Hex(146,76,40),5.f)).SetPressed(FSlateRoundedBoxBrush(Hex(92,42,18),5.f)).SetDisabled(FSlateRoundedBoxBrush(Hex(190,170,140),5.f));return S;}
- const FButtonStyle& Plain(){static const FButtonStyle S=FButtonStyle().SetNormal(FSlateNoResource()).SetHovered(FSlateRoundedBoxBrush(Hex(255,229,138,.55f),3.f)).SetPressed(FSlateRoundedBoxBrush(Marker,3.f));return S;}
- TSharedRef<STextBlock> HandText(const FString& V,float Size,const FLinearColor& C=Ink){return SNew(STextBlock).Text(FText::FromString(V)).Font(Hand(Size)).ColorAndOpacity(C).AutoWrapText(true);}
- TSharedRef<STextBlock> BodyText(const FString& V,float Size=12,const FLinearColor& C=Ink,bool bBold=false){return SNew(STextBlock).Text(FText::FromString(V)).Font(Body(Size,bBold)).ColorAndOpacity(C).AutoWrapText(true);}
- /** Rubber stamp (EM USO, CONTRATADO, SEU): red or green ink, slightly crooked. */
- TSharedRef<SWidget> Stamp(const FString& V,const FLinearColor& C=Red)
- {
-  return SNew(SBox).HAlign(HAlign_Left)[SNew(SBorder).BorderImage(&StampBrush(C)).Padding(FMargin(8,0)).RenderTransform(MareTropical::Tilt(-7)).RenderTransformPivot(FVector2D(.5f))[HandText(V,18,C)]];
- }
- /** Paper price tag with the string hole and a solid shadow; tilt in degrees. */
- TSharedRef<SWidget> PriceTag(TSharedRef<SWidget> Content,float Tilt=0,const FString& Tooltip=FString())
- {
-  return SNew(SBox).Padding(FMargin(2,4,6,8)).ToolTipText(Tooltip.IsEmpty()?FText::GetEmpty():FText::FromString(Tooltip))[SNew(SOverlay).RenderTransform(MareTropical::Tilt(Tilt)).RenderTransformPivot(FVector2D(.5f))
-   +SOverlay::Slot().Padding(FMargin(3,4,-3,-4))[SNew(SBorder).BorderImage(&TagShadow())]
-   +SOverlay::Slot()[SNew(SBorder).BorderImage(&TagBrush()).Padding(FMargin(12,14,10,10))[Content]]
-   +SOverlay::Slot().HAlign(HAlign_Right).VAlign(VAlign_Top).Padding(FMargin(0,7,10,0))[SNew(SBox).WidthOverride(10).HeightOverride(10)[SNew(SBorder).BorderImage(&Hole())]]];
- }
-}
-/** Lined notebook paper with the red margin; drawn behind the scrolling page. */
-class SPaperLines : public SLeafWidget
-{
-public:
- SLATE_BEGIN_ARGS(SPaperLines):_MarginX(0){} SLATE_ATTRIBUTE(float,MarginX) SLATE_END_ARGS()
- void Construct(const FArguments& Args){MarginX=Args._MarginX;}
- virtual FVector2D ComputeDesiredSize(float)const override{return FVector2D(10,10);}
- virtual int32 OnPaint(const FPaintArgs&,const FGeometry& Geometry,const FSlateRect&,FSlateWindowElementList& Out,int32 Layer,const FWidgetStyle&,bool)const override
- {
-  const FVector2f Size=FVector2f(Geometry.GetLocalSize());
-  FSlateDrawElement::MakeBox(Out,Layer,Geometry.ToPaintGeometry(),&MareNotebook::Sheet());
-  for(float Y=34;Y<Size.Y;Y+=28)FSlateDrawElement::MakeLines(Out,Layer+1,Geometry.ToPaintGeometry(),TArray<FVector2f>{FVector2f(0,Y),FVector2f(Size.X,Y)},ESlateDrawEffect::None,MareNotebook::Rule,true,1.f);
-  const float X=MarginX.Get();if(X>0)FSlateDrawElement::MakeLines(Out,Layer+1,Geometry.ToPaintGeometry(),TArray<FVector2f>{FVector2f(X,0),FVector2f(X,Size.Y)},ESlateDrawEffect::None,MareNotebook::Margin,true,2.f);
-  return Layer+1;
- }
-private:
- TAttribute<float> MarginX;
-};
 class SMarePhone : public SCompoundWidget
 {
 public:
@@ -1050,7 +986,7 @@ private:
     "Obrigado por jogar!").ToString(),12)]]];
    Back();break;
   }
-  ChildSlot[SNew(SBorder).BorderBackgroundColor(FLinearColor(0,0,0,.55f)).HAlign(HAlign_Center).VAlign(VAlign_Center)[SNew(SBox).WidthOverride(Page==EPage::Options?540:440)[SNew(SBorder).BorderImage(&MareUI::Surface).Padding(22)[Box]]]];
+  ChildSlot[SNew(SBorder).BorderBackgroundColor(FLinearColor(0,0,0,.55f)).HAlign(HAlign_Center).VAlign(VAlign_Center)[SNew(SBox).WidthOverride(Page==EPage::Options?540:440)[MareNotebook::Page(Box)]]];
   MareGamepad::FocusSoon(AsShared(),0);
  }
 };
@@ -1205,8 +1141,8 @@ private:
  double RevertAt=0;   // > 0 while a new resolution waits for confirmation
  TArray<FIntPoint> Resolutions;
  FText Status;
- static FLinearColor Ink(){return FLinearColor(.08f,.12f,.11f);}
- static const FButtonStyle& Light(){static const FButtonStyle S=FButtonStyle().SetNormal(FSlateRoundedBoxBrush(FLinearColor(.84f,.87f,.84f),8.f)).SetHovered(FSlateRoundedBoxBrush(FLinearColor(.76f,.82f,.79f),8.f)).SetPressed(FSlateRoundedBoxBrush(FLinearColor(.68f,.76f,.73f),8.f));return S;}
+ static FLinearColor Ink(){return MareNotebook::Ink;}
+ static const FButtonStyle& Light(){return MareNotebook::TagButton();}
  static FText Level(int32 Value)
  {
   static const FText Names[]={LOCTEXT("OptLow","Baixo"),LOCTEXT("OptMedium","Médio"),LOCTEXT("OptHigh","Alto"),LOCTEXT("OptEpic","Épico")};
@@ -1228,7 +1164,7 @@ private:
    +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center)[SNew(SBox).WidthOverride(180)[MareUI::Text(Label.ToString(),12)]]
    +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center)[Arrow(TEXT("<"),-1)]
    +SHorizontalBox::Slot().FillWidth(1).VAlign(VAlign_Center).HAlign(HAlign_Center).Padding(6,0)
-    [SNew(STextBlock).Text_Lambda([Value](){return Value();}).Font(FCoreStyle::GetDefaultFontStyle("Bold",12)).ColorAndOpacity(Ink())]
+    [SNew(STextBlock).Text_Lambda([Value](){return Value();}).Font(MareNotebook::Body(12,true)).ColorAndOpacity(Ink())]
    +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center)[Arrow(TEXT(">"),1)];
  }
  void GraphicsPage(const TSharedRef<SVerticalBox>& Page)
@@ -1292,7 +1228,7 @@ private:
     +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center)[SNew(SBox).WidthOverride(180)[MareUI::Text(Action.Label.ToString(),12)]]
     +SHorizontalBox::Slot().FillWidth(1)[SNew(SMarePadButton).ButtonStyle(&Light()).HAlign(HAlign_Center).ContentPadding(FMargin(8,4)).IsFocusable(true)
      .OnClicked_Lambda([this,Id](){Listening=Id;FSlateApplication::Get().SetKeyboardFocus(SharedThis(this),EFocusCause::SetDirectly);return FReply::Handled();})
-     [SNew(STextBlock).Font(FCoreStyle::GetDefaultFontStyle("Bold",12)).ColorAndOpacity(Ink())
+     [SNew(STextBlock).Font(MareNotebook::Body(12,true)).ColorAndOpacity(Ink())
       .Text_Lambda([this,Id](){return Listening==Id?LOCTEXT("OptPressKey","aperte uma tecla..."):Pending.Key(Id).GetDisplayName();})]]];}
   // Fixed gamepad layout, named in the chosen style.
   const bool bPlayStation=Pending.PadGlyphs==1;
@@ -1321,7 +1257,7 @@ private:
   auto Body=SNew(SVerticalBox);auto Tabs=SNew(SHorizontalBox);
   const FText Names[]={LOCTEXT("OptTabGraphics","Gráficos"),LOCTEXT("OptTabDisplay","Tela"),LOCTEXT("OptTabAudio","Áudio"),LOCTEXT("OptTabControls","Controles"),LOCTEXT("OptTabLanguage","Idioma")};
   for(int32 I=0;I<5;++I)Tabs->AddSlot().FillWidth(1).Padding(I?3:0,0,0,0)[SNew(SMarePadButton).ButtonStyle(I==Tab?&MareUI::ActionButton:&Light()).HAlign(HAlign_Center).ContentPadding(FMargin(4,6)).IsFocusable(true)
-   .OnClicked_Lambda([this,I](){Tab=I;Listening=NAME_None;Rebuild();return FReply::Handled();})[SNew(STextBlock).Text(Names[I]).Font(FCoreStyle::GetDefaultFontStyle("Bold",12)).ColorAndOpacity(I==Tab?FLinearColor::White:Ink())]];
+   .OnClicked_Lambda([this,I](){Tab=I;Listening=NAME_None;Rebuild();return FReply::Handled();})[SNew(STextBlock).Text(Names[I]).Font(MareNotebook::Hand(16)).ColorAndOpacity(I==Tab?MareNotebook::Tag:Ink())]];
   Body->AddSlot().AutoHeight().Padding(0,0,0,10)[Tabs];
   auto Page=SNew(SVerticalBox);
   switch(Tab){case 0:GraphicsPage(Page);break;case 1:DisplayPage(Page);break;case 2:AudioPage(Page);break;case 3:ControlsPage(Page);break;default:LanguagePage(Page);}
@@ -1331,12 +1267,12 @@ private:
    +SHorizontalBox::Slot().AutoWidth().Padding(0,0,8,0)[Button(LOCTEXT("OptApply","Aplicar"),[this](){Apply();})]
    +SHorizontalBox::Slot().AutoWidth()[Button(LOCTEXT("OptDefaults","Restaurar padrão"),[this](){RestoreDefaults();},false)]]];
   Body->AddSlot().AutoHeight().Padding(0,12,0,0)[SNew(SBox).Visibility_Lambda([this](){return RevertAt>0?EVisibility::Visible:EVisibility::Collapsed;})[SNew(SVerticalBox)
-   +SVerticalBox::Slot().AutoHeight().Padding(0,0,0,6)[SNew(STextBlock).AutoWrapText(true).Font(FCoreStyle::GetDefaultFontStyle("Bold",12)).ColorAndOpacity(Ink())
+   +SVerticalBox::Slot().AutoHeight().Padding(0,0,0,6)[SNew(STextBlock).AutoWrapText(true).Font(MareNotebook::Body(12,true)).ColorAndOpacity(Ink())
     .Text_Lambda([this](){return FText::Format(LOCTEXT("OptKeepVideo","Manter este modo de tela? Volta ao anterior em {0} s."),FMath::Max(0,FMath::CeilToInt(RevertAt-FPlatformTime::Seconds())));})]
    +SVerticalBox::Slot().AutoHeight()[SNew(SHorizontalBox)
     +SHorizontalBox::Slot().AutoWidth().Padding(0,0,8,0)[Button(LOCTEXT("OptKeep","Manter"),[this](){Confirm();})]
     +SHorizontalBox::Slot().AutoWidth()[Button(LOCTEXT("OptRevert","Reverter"),[this](){Revert();},false)]]]];
-  Body->AddSlot().AutoHeight().Padding(0,8,0,0)[SNew(STextBlock).AutoWrapText(true).Font(FCoreStyle::GetDefaultFontStyle("Regular",11)).ColorAndOpacity(FLinearColor(.15f,.4f,.36f)).Text_Lambda([this](){return Status;})];
+  Body->AddSlot().AutoHeight().Padding(0,8,0,0)[SNew(STextBlock).AutoWrapText(true).Font(MareNotebook::Hand(15)).ColorAndOpacity(MareNotebook::Green).Text_Lambda([this](){return Status;})];
   ChildSlot[Body];
   if(PrevFocus>=0)MareGamepad::FocusSoon(AsShared(),PrevFocus);
  }
@@ -1398,6 +1334,22 @@ void AMareController::TogglePauseMenu()
  SetPause(true);BuildPauseMenu(false);bShowMouseCursor=true;
  SetInputMode(FInputModeGameAndUI());SetIgnoreMoveInput(true);SetIgnoreLookInput(true);
 }
+// QA: opens a panel for the screenshot sweep of the UI ("mare.ShowUI pause|options|menu|letter").
+struct FMareUIQA
+{
+ static void Show(UWorld* World,const FString& What)
+ {
+  auto PC=World?Cast<AMareController>(UGameplayStatics::GetPlayerController(World,0)):nullptr;if(!PC)return;
+  if(What==TEXT("pause") || What==TEXT("options")){if(!PC->PauseWidget.IsValid())PC->TogglePauseMenu();PC->BuildPauseMenu(What==TEXT("options"));}
+  else if(What==TEXT("menu"))PC->OpenMainMenu();
+  else if(What==TEXT("letter")){AMareIntro* Intro=nullptr;for(TActorIterator<AMareIntro> It(World);It;++It){Intro=*It;break;}
+   // Old QA saves have no intro stage and the intro actor removes itself: mark the letter as read (it stays readable).
+   if(!Intro){if(auto Sim=PC->GetSimulation())if(!Sim->State->HasField(TEXT("ue_intro_stage")))Sim->State->SetNumberField(TEXT("ue_intro_stage"),2);Intro=World->SpawnActor<AMareIntro>();}
+   if(Intro)Intro->ReadLetter();}
+ }
+};
+static FAutoConsoleCommandWithWorldAndArgs MareShowUICommand(TEXT("mare.ShowUI"),TEXT("QA: opens a panel (pause, options, menu, letter) for UI screenshots."),
+ FConsoleCommandWithWorldAndArgsDelegate::CreateLambda([](const TArray<FString>& Args,UWorld* World){if(Args.Num())FMareUIQA::Show(World,Args[0]);}));
 void AMareController::BuildPauseMenu(bool bOptions)
 {
  if(!GEngine || !GEngine->GameViewport)return;
@@ -1417,7 +1369,7 @@ void AMareController::BuildPauseMenu(bool bOptions)
   Add(LOCTEXT("MainMenu","Voltar ao menu principal").ToString(),[this](){SetPause(false);ReturnToMainMenu();});
   Add(LOCTEXT("QuitDesktop","Sair para o desktop").ToString(),[this](){GetSimulation()->Save();UKismetSystemLibrary::QuitGame(this,this,EQuitPreference::Quit,false);});
  }
- PauseWidget=SNew(SBorder).BorderBackgroundColor(FLinearColor(0,0,0,.65f)).HAlign(HAlign_Center).VAlign(VAlign_Center)[SNew(SBox).WidthOverride(bOptions?540:340)[SNew(SBorder).BorderImage(&MareUI::Surface).Padding(20)[Menu]]];
+ PauseWidget=SNew(SBorder).BorderBackgroundColor(FLinearColor(0,0,0,.65f)).HAlign(HAlign_Center).VAlign(VAlign_Center)[SNew(SBox).WidthOverride(bOptions?540:340)[MareNotebook::Page(Menu)]];
  GEngine->GameViewport->AddViewportWidgetContent(PauseWidget.ToSharedRef(),30);
  // Gamepad B: options -> pause page -> back to the game.
  const TWeakObjectPtr<AMareController> Weak(this);

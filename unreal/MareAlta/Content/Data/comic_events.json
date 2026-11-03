@@ -1,17 +1,61 @@
 {
- "_doc": "Comic events (docs/ue58/HUMOR_EVENTOS_COMICOS.md), read by UMareComicEvents. One at a time; each has its own cooldown in game minutes and there is a global gap between any two. Every check_seconds the manager rolls 'odds' for each due event (hours = game hours it may happen). A pedestrian near the player (min..max cm) stops, faces the player and calls; E opens a short exchange: the line ('asks', in order when sequence is true, so the stories grow), the player's replies and the matching reactions. Ignored for wait_seconds, it ends by itself. max_y: only when the player is on the beach side (world y below it), facing the sea. Nothing touches money, stock or orders. _en fields are the English text for the localization pass.",
+ "_doc": "Comic events (docs/ue58/HUMOR_EVENTOS_COMICOS.md), read by UMareComicEvents. One at a time; each has its own cooldown in game minutes and there is a global gap between any two. Every check_seconds the manager rolls 'odds' for each due event (hours = game hours it may happen). A pedestrian near the player (min..max cm) stops, faces the player and calls; E opens a short exchange: the line ('asks', in order when sequence is true, so the stories grow), the player's replies and the matching reactions. Ignored for wait_seconds, it ends by itself. max_y: only when the player is on the beach side (world y below it), facing the sea. Nothing touches money, stock or orders. kind 'gull' (HUM-001): a seagull swoops on a customer eating one of 'foods', takes a bit and flies off; the customer's line shows as a notice. _en fields are the English text for the localization pass. kind \"umbrella\" (HUM-004): the wind knocks over the beach umbrella built on pole_mesh (its parts share the pole's XY) and rolls it 'distance' cm along the beach onto open sand; E puts it back, otherwise it is put back unseen. kind \"clumsy\" (HUM-006): the attendant ('role') almost drops what it carries; odds fall with the worker level. prop (talk events): a mesh in the caller's hand while calling (HUM-002's phone).",
  "check_seconds": 10,
  "global_gap_minutes": 90,
  "near_min": 250,
  "near_max": 900,
  "events": [
   {
+   "id": "HUM-001",
+   "name": "Gaivota ladra de batatas",
+   "kind": "gull",
+   "speaker": "Cliente",
+   "speaker_en": "Customer",
+   "foods": [
+    "batata_frita",
+    "petiscos",
+    "porcao_peixe"
+   ],
+   "hours": [
+    9,
+    18
+   ],
+   "odds": 0.1,
+   "cooldown_minutes": 480,
+   "wait_seconds": 8,
+   "asks": [
+    "Ei! A gaivota levou minha batata!",
+    "Aquela gaivota... levou um pedaço e nem pediu licença!",
+    "Volta aqui, sua ladra! Essa era a mais crocante!"
+   ],
+   "asks_en": [
+    "Hey! The seagull took my fries!",
+    "That seagull... grabbed a piece without even asking!",
+    "Come back here, you thief! That was the crunchiest one!"
+   ],
+   "replies": [
+    "Elas são rápidas mesmo."
+   ],
+   "replies_en": [
+    "They really are quick."
+   ],
+   "reactions": [
+    "Na próxima eu como mais rápido do que ela."
+   ],
+   "reactions_en": [
+    "Next time I'll eat faster than it does."
+   ]
+  },
+  {
    "id": "HUM-005",
    "name": "Turista perdido",
    "speaker": "Turista perdido",
    "speaker_en": "Lost tourist",
    "max_y": 600,
-   "hours": [8, 18],
+   "hours": [
+    8,
+    18
+   ],
    "odds": 0.12,
    "cooldown_minutes": 360,
    "wait_seconds": 45,
@@ -25,8 +69,14 @@
     "Hi! All this sea here... is that the beach, or do I still have to walk?",
     "Sorry to bother you: what's the quickest way to the sand? I've been looking for half an hour."
    ],
-   "replies": ["Está bem atrás de você.", "Siga o barulho das ondas."],
-   "replies_en": ["It's right behind you.", "Follow the sound of the waves."],
+   "replies": [
+    "Está bem atrás de você.",
+    "Siga o barulho das ondas."
+   ],
+   "replies_en": [
+    "It's right behind you.",
+    "Follow the sound of the waves."
+   ],
    "reactions": [
     "Atrás de mim? ... Ah. AH. Aquele azul enorme. Eu achei que era o céu caindo no chão. Obrigado!",
     "Que ideia boa! Eu estava seguindo o barulho do caminhão de sorvete. Valeu!"
@@ -41,7 +91,10 @@
    "name": "Seu Arnaldo reclama",
    "speaker": "Seu Arnaldo",
    "speaker_en": "Mr. Arnaldo",
-   "hours": [9, 19],
+   "hours": [
+    9,
+    19
+   ],
    "odds": 0.07,
    "cooldown_minutes": 600,
    "wait_seconds": 40,
@@ -60,8 +113,14 @@
     "The sand here is too fine, it gets everywhere. Don't you have a... chunkier sand?",
     "The sea is making noise again. Doesn't anybody say anything to it?"
    ],
-   "replies": ["Vou ver o que posso fazer, Seu Arnaldo.", "É o charme da praia!"],
-   "replies_en": ["I'll see what I can do, Mr. Arnaldo.", "That's the charm of the beach!"],
+   "replies": [
+    "Vou ver o que posso fazer, Seu Arnaldo.",
+    "É o charme da praia!"
+   ],
+   "replies_en": [
+    "I'll see what I can do, Mr. Arnaldo.",
+    "That's the charm of the beach!"
+   ],
    "reactions": [
     "Hmpf. Pelo menos aqui alguém me escuta. Volto amanhã pra reclamar de novo.",
     "Charme... sei. Mas tudo bem, ainda é o melhor quiosque da praia. Não conte pra ninguém que eu disse isso."
@@ -76,7 +135,10 @@
    "name": "Pescador e o peixe",
    "speaker": "Seu Bené, pescador",
    "speaker_en": "Bené the fisherman",
-   "hours": [6, 17],
+   "hours": [
+    6,
+    17
+   ],
    "odds": 0.07,
    "cooldown_minutes": 600,
    "wait_seconds": 40,
@@ -95,8 +157,14 @@
     "The grouper, you know? Thirty kilos, and it talked. Asked me to let it go, so I did, out of politeness.",
     "The fish from that day? As big as the jangada. It sends its regards today."
    ],
-   "replies": ["Que pescaria, Seu Bené!", "Da última vez ele era menor..."],
-   "replies_en": ["What a catch, Bené!", "It was smaller last time..."],
+   "replies": [
+    "Que pescaria, Seu Bené!",
+    "Da última vez ele era menor..."
+   ],
+   "replies_en": [
+    "What a catch, Bené!",
+    "It was smaller last time..."
+   ],
    "reactions": [
     "Pois é! Um dia te levo no barco e você vê com os próprios olhos.",
     "Menor? Impossível. Peixe de história só cresce, nunca diminui."
@@ -104,6 +172,113 @@
    "reactions_en": [
     "Right? One day I'll take you on the boat and you'll see it with your own eyes.",
     "Smaller? Impossible. Story fish only grow, they never shrink."
+   ]
+  },
+  {
+   "id": "HUM-002",
+   "name": "Influenciador exigente",
+   "speaker": "Influencer",
+   "speaker_en": "Influencer",
+   "max_y": 600,
+   "hours": [
+    9,
+    18
+   ],
+   "odds": 0.08,
+   "cooldown_minutes": 600,
+   "wait_seconds": 45,
+   "prop": {
+    "mesh": "/Game/Custom/realistic_smartphone/realistic_smartphone.realistic_smartphone",
+    "socket": "hand_r",
+    "selfie": true,
+    "location": [
+     2,
+     4,
+     -3
+    ],
+    "rotation": [
+     0,
+     0,
+     90
+    ],
+    "scale": 1
+   },
+   "asks": [
+    "Oi! Essa luz não está boa pro meu feed... Vocês têm uma mesa com vista pro mar?",
+    "Rapidinho: em qual ângulo o quiosque fica mais bonito? Meus seguidores são exigentes.",
+    "Qual mesa tem a melhor luz? Minha câmera só gosta de pôr do sol, e ainda é meio-dia."
+   ],
+   "asks_en": [
+    "Hi! This light isn't working for my feed... Do you have a table with a sea view?",
+    "Quick one: from which angle does the kiosk look best? My followers are picky.",
+    "Which table has the best light? My camera only likes sunsets, and it's barely noon."
+   ],
+   "replies": [
+    "As mesas da frente dão para o mar.",
+    "Aqui toda hora é hora dourada."
+   ],
+   "replies_en": [
+    "The front tables face the sea.",
+    "Here every hour is golden hour."
+   ],
+   "reactions": [
+    "Perfeito! Vou marcar o quiosque nos stories. #MaréAlta",
+    "Hora dourada... vou usar isso de legenda. Obrigado, você é um talento!"
+   ],
+   "reactions_en": [
+    "Perfect! I'll tag the kiosk in my stories. #MareAlta",
+    "Golden hour... I'm using that as a caption. Thanks, you're a natural!"
+   ]
+  },
+  {
+   "id": "HUM-004",
+   "name": "Guarda-sol levado pelo vento",
+   "kind": "umbrella",
+   "speaker": "Banhista",
+   "speaker_en": "Beachgoer",
+   "pole_mesh": "World_2028",
+   "distance": 650,
+   "max_y": 600,
+   "hours": [
+    9,
+    17
+   ],
+   "odds": 0.06,
+   "cooldown_minutes": 720,
+   "wait_seconds": 60,
+   "asks": [
+    "Ei! Volta aqui, guarda-sol!",
+    "Meu guarda-sol saiu passeando sozinho!",
+    "Alguém segura esse guarda-sol fujão!"
+   ],
+   "asks_en": [
+    "Hey! Come back here, umbrella!",
+    "My umbrella went for a walk on its own!",
+    "Somebody grab that runaway umbrella!"
+   ]
+  },
+  {
+   "id": "HUM-006",
+   "name": "Atendente atrapalhado",
+   "kind": "clumsy",
+   "role": "atendente",
+   "speaker": "Atendente",
+   "speaker_en": "Attendant",
+   "hours": [
+    8,
+    21
+   ],
+   "odds": 0.12,
+   "cooldown_minutes": 300,
+   "asks": [
+    "Opa, opa, opa... ufa! Tudo inteiro.",
+    "Quase! Essa bandeja tem vida própria.",
+    "Ninguém viu isso, né? Tá tudo certo aqui!"
+   ],
+   "asks_en": [
+    "Whoa, whoa, whoa... phew! All in one piece.",
+    "Close one! This tray has a mind of its own.",
+    "Nobody saw that, right? Everything's fine here!"
    ]
   }
  ]

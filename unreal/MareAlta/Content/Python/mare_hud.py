@@ -735,6 +735,28 @@ def run(action, arg=''):
                 out.append({'name': p.get_editor_property('person_name'), 'pos': [round(l.x), round(l.y), round(l.z)],
                             'yaw': round(p.get_actor_rotation().yaw), 'clip': clip})
         return out
+    if action == 'shapes':
+        # PIE: static meshes whose scaled size fits "minxy,maxxy,minz,maxz" inside the box "x0,y0,x1,y1": name -> [count, first position, size]
+        v = [float(t) for t in arg.split(',')]
+        world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()
+        out = {}
+        for c in unreal.GameplayStatics.get_all_actors_of_class(world, unreal.Actor):
+            for comp in c.get_components_by_class(unreal.StaticMeshComponent):
+                mesh = comp.static_mesh
+                if not mesh:
+                    continue
+                bb = mesh.get_bounding_box()
+                ts = ([comp.get_instance_transform(i, True) for i in range(comp.get_instance_count())]
+                      if isinstance(comp, unreal.InstancedStaticMeshComponent) else [comp.get_world_transform()])
+                for t in ts:
+                    p = t.translation
+                    if not (v[4] <= p.x <= v[6] and v[5] <= p.y <= v[7]):
+                        continue
+                    size = [abs(q) for q in ((bb.max - bb.min) * t.scale3d).to_tuple()]
+                    if v[0] <= size[0] <= v[1] and v[0] <= size[1] <= v[1] and v[2] <= size[2] <= v[3]:
+                        e = out.setdefault(mesh.get_name(), [0, [round(p.x), round(p.y), round(p.z)], [round(q) for q in size], c.get_class().get_name()])
+                        e[0] += 1
+        return out
     if action == 'near':
         # PIE: static meshes (actors and instances) within r cm of "x,y,z,r": name, distance, bounds height.
         x, y, z, r = (float(v) for v in arg.split(','))
@@ -981,6 +1003,27 @@ def run(action, arg=''):
             a.tags = [unreal.Name('MareFootTest')]
             out.append(mat)
         return out
+    if action == 'usetarget':
+        # PIE: press E on the first service target with this action (e.g. KioskSign opens the kiosk)
+        world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()
+        pc = unreal.GameplayStatics.get_player_controller(world, 0)
+        for t in unreal.GameplayStatics.get_all_actors_of_class(world, unreal.MareServiceTarget):
+            if str(t.get_editor_property('action')) == arg:
+                t.use(pc)
+                return 'used ' + arg
+        return 'none'
+    if action == 'people':
+        # PIE: people within "x,y,r": name, position, seated, what they hold (static mesh components)
+        x, y, r = [float(v) for v in arg.split(',')]
+        world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()
+        out = []
+        for a in unreal.GameplayStatics.get_all_actors_of_class(world, unreal.MarePerson):
+            p = a.get_actor_location()
+            if (p.x - x) ** 2 + (p.y - y) ** 2 > r * r:
+                continue
+            held = [c.static_mesh.get_name() for c in a.get_components_by_class(unreal.StaticMeshComponent) if c.static_mesh]
+            out.append([a.get_name()[-14:], round(p.x), round(p.y), round(p.z), a.get_editor_property('consumed'), held])
+        return out
     if action == 'comic':
         # PIE QA of the comic events: where the caller is; 'use' presses E on it (opens the exchange)
         world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()
@@ -1029,6 +1072,70 @@ def run(action, arg=''):
         p = pawn.get_actor_location() if pawn else None
         mv = pawn.get_component_by_class(unreal.CharacterMovementComponent) if pawn else None
         return {'mode': str(mv.movement_mode) if mv else None, 'vel': round(pawn.get_velocity().length()) if pawn else 0, 'maxwalk': mv.max_walk_speed if mv else 0, 'footprints': n, 'components': comps, 'walktest': unreal.SystemLibrary.get_console_variable_int_value('mare.WalkTest'), 'pawn': [round(p.x), round(p.y), round(p.z)] if p else None}
+    if action == 'gliders':
+        # PIE: people and their clip, position and velocity (QA of "walking without moving the legs": compare two calls)
+        world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()
+        out = []
+        for p in unreal.GameplayStatics.get_all_actors_of_class(world, unreal.MarePerson):
+            inst = p.get_component_by_class(unreal.SkeletalMeshComponent).get_anim_instance()
+            clip = ''
+            try:
+                clip = inst.get_current_asset().get_name()
+            except Exception:
+                pass
+            l, v = p.get_actor_location(), p.get_velocity()
+            out.append([p.get_name()[-16:], p.get_editor_property('person_name'), [round(l.x), round(l.y), round(l.z)], round((v.x ** 2 + v.y ** 2) ** .5), clip,
+                        bool(p.get_editor_property('ambient')), bool(p.get_editor_property('employee')), str(p.get_attach_parent_actor().get_name() if p.get_attach_parent_actor() else '')])
+        return out
+    if action == 'gait':
+        # PIE: every person's location and both feet relative to the actor, from the rig that drives the pose (QA of
+        # natural walking: call twice; a person that moved while the feet stayed put is gliding)
+        world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()
+        out = []
+        for p in unreal.GameplayStatics.get_all_actors_of_class(world, unreal.MarePerson):
+            rig = p.get_editor_property('mesh')
+            t = p.get_actor_transform()
+            feet = []
+            for bone in ('foot_l', 'foot_r', 'hand_l', 'hand_r'):
+                q = t.inverse_transform_location(rig.get_socket_location(bone))
+                feet += [round(q.x, 1), round(q.y, 1), round(q.z, 1)]
+            l = p.get_actor_location()
+            out.append([p.get_name()[-16:], p.get_editor_property('person_name'), [round(l.x), round(l.y), round(l.z)], feet,
+                        p.get_editor_property('meta_human'), bool(p.get_editor_property('seated'))])
+        return out
+    if action == 'partinfo':
+        # PIE: mesh parts whose origin is at "x,y" (within 5 cm): component class, materials, custom data per instance
+        x, y = (float(v) for v in arg.split(','))
+        world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()
+        out = []
+        for c in unreal.GameplayStatics.get_all_actors_of_class(world, unreal.Actor):
+            for comp in c.get_components_by_class(unreal.StaticMeshComponent):
+                if not comp.static_mesh:
+                    continue
+                ism = isinstance(comp, unreal.InstancedStaticMeshComponent)
+                ts = [comp.get_instance_transform(i, True) for i in range(comp.get_instance_count())] if ism else [comp.get_world_transform()]
+                for i, t in enumerate(ts):
+                    if abs(t.translation.x - x) < 5 and abs(t.translation.y - y) < 5:
+                        n = comp.get_editor_property('num_custom_data_floats') if ism else 0
+                        out.append([c.get_name(), comp.get_class().get_name(), comp.static_mesh.get_name(), i,
+                                    [m.get_path_name() if m else None for m in comp.get_materials()], n,
+                                    [round(v, 3) for v in comp.get_custom_primitive_data_float_array()] if hasattr(comp, 'get_custom_primitive_data_float_array') else None])
+        return out
+    if action == 'carrywalk':
+        # PIE QA: the person named "name,dish,x,y" holds the dish and walks to x,y (e.g. the kiosk attendant with a tray)
+        name, dish, x, y = arg.split(',')
+        world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()
+        for p in unreal.GameplayStatics.get_all_actors_of_class(world, unreal.MarePerson):
+            if p.get_editor_property('person_name') == name:
+                p.hold_product(dish)
+                ok = p.walk_to(unreal.Vector(float(x), float(y), p.get_actor_location().z))
+                l = p.get_actor_location()
+                return [p.get_name(), [round(l.x), round(l.y), round(l.z)], ok]
+        return None
+    if action == 'meshbounds':
+        # size of a static mesh asset (cm): origin and extent of its bounds
+        b = unreal.load_asset(arg).get_bounds()
+        return [[round(v, 1) for v in (b.origin.x, b.origin.y, b.origin.z)], [round(v, 1) for v in (b.box_extent.x, b.box_extent.y, b.box_extent.z)]]
     if action == 'whereis':
         # PIE: location of the static-mesh actors using a mesh (QA of moving props: passing boats)
         world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()

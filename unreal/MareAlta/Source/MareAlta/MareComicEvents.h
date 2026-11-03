@@ -44,6 +44,32 @@ private:
  TWeakObjectPtr<AMarePerson> Caller;
  UPROPERTY() TObjectPtr<AMareServiceTarget> CallTarget;
  bool bTalking=false;
+ /** HUM-001: the seagull swooping on a customer's food (Approach -> Hover -> Away, seconds since start). */
+ UPROPERTY() TObjectPtr<class AStaticMeshActor> Gull;
+ UPROPERTY() TObjectPtr<class UStaticMeshComponent> Bite;
+ TWeakObjectPtr<AMarePerson> Victim;
+ FVector GullFrom,GullAway;float GullTime=0;bool bBitten=false;
+ bool StartGull(const TSharedPtr<FJsonObject>& Def,bool bForced);
+ void UpdateGull(float DeltaSeconds);
+ /** Optional prop in the caller's hand while the event lasts (HUM-002: the influencer's phone, up for a selfie). */
+ UPROPERTY() TObjectPtr<class UStaticMeshComponent> Prop;
+ /** HUM-004: a beach umbrella the wind knocks over. Its parts (pole, disc, canopy: the meshes sharing the pole's XY)
+  *  step aside while a movable copy tumbles downwind and lies on the sand; E puts it back, or it is put back unseen. */
+ struct FUmbrellaPart{TWeakObjectPtr<class UStaticMeshComponent> Component;int32 Instance=-1;FTransform Original;uint8 Collision=0;};
+ TArray<FUmbrellaPart> UmbrellaParts;
+ UPROPERTY() TObjectPtr<AActor> Umbrella;
+ FTransform UmbrellaHome,UmbrellaFrom;FVector UmbrellaRest,UmbrellaWind;float UmbrellaTime=0;int32 UmbrellaPhase=0;
+ bool StartUmbrella(const TSharedPtr<FJsonObject>& Def,bool bForced);
+ void UpdateUmbrella(float DeltaSeconds);
+ void RestoreUmbrella();
+ /** HUM-006: the attendant almost drops the tray (a brief stop and wobble); nothing is lost, rarer at each level. */
+ TWeakObjectPtr<AMarePerson> Clumsy;float ClumsyTime=0,ClumsySpeed=0;FRotator ClumsyMesh;
+ TArray<TPair<TWeakObjectPtr<class USceneComponent>,FTransform>> ClumsyTray;
+ bool StartClumsy(const TSharedPtr<FJsonObject>& Def,bool bForced);
+ void UpdateClumsy(float DeltaSeconds);
+ void RestoreClumsy();
+ /** The event line as a HUD notice, "Speaker: line". */
+ void Notice()const;
  bool Load();
  TSharedPtr<FJsonObject> EventDef(const FString& Id)const;
  bool Start(const TSharedPtr<FJsonObject>& Def,bool bForced);

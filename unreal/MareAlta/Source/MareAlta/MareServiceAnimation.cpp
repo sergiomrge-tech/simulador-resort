@@ -41,9 +41,15 @@ struct FServiceProxy : FAnimSingleNodeInstanceProxy
   for(int32 Hand=0;Hand<2;++Hand){
    const FName Socket=Hand==0?TEXT("hand_r"):TEXT("hand_l");
    const bool bHolding=Person->CarriedMeshes.ContainsByPredicate([&](auto Part){return IsValid(Part) && Part->GetAttachSocketName()==Socket;});
-   Strength[Hand]=FMath::FInterpTo(Strength[Hand],bHolding?1.f:0.f,DeltaSeconds,10.f);
+   const bool bSelfie=Hand==0 && IsValid(Person->SelfiePhone);
+   Strength[Hand]=FMath::FInterpTo(Strength[Hand],bHolding || bSelfie?1.f:0.f,DeltaSeconds,bSelfie?5.f:10.f);
    const float Side=Hand==0?1.f:-1.f;
    FVector Grip=Person->GetActorLocation()+Person->GetActorForwardVector()*32+Person->GetActorRightVector()*Side*18+FVector(0,0,22);
+   if(bSelfie){   // arm half stretched, the phone a little above the eyes and to the right
+    Grip=Mesh->GetSocketLocation(TEXT("Head"))+Person->GetActorForwardVector()*40+Person->GetActorRightVector()*16+FVector(0,0,6);
+    Targets[Hand]=ToComponent.TransformPosition(Grip);
+    Elbows[Hand]=ToComponent.TransformPosition(Person->GetActorLocation()+Person->GetActorRightVector()*45+Person->GetActorForwardVector()*15+FVector(0,0,30));
+    continue;}
    if(bHolding && Hand==0){
     const bool bDrink=Person->CarriedMeshes.ContainsByPredicate([&](auto Part){return IsValid(Part) && Part->GetAttachSocketName()==Socket && IsVessel(Part);});
     if(bDrink){const FVector Mouth=Mesh->GetSocketLocation(TEXT("Head"))+Person->GetActorForwardVector()*12-FVector(0,0,23);
@@ -93,6 +99,11 @@ UMareCarryPresentation::UMareCarryPresentation(){PrimaryComponentTick.bCanEverTi
 void UMareCarryPresentation::TickComponent(float DeltaTime,ELevelTick TickType,FActorComponentTickFunction* ThisTickFunction)
 {
  Super::TickComponent(DeltaTime,TickType,ThisTickFunction);auto Person=Cast<AMarePerson>(GetOwner());if(!Person)return;
+ if(UStaticMeshComponent* Phone=Person->SelfiePhone){   // the model's screen normal is its Y axis, its long side Z
+  const FVector Hand=Person->GetMesh()->GetSocketLocation(TEXT("hand_r")),Head=Person->GetMesh()->GetSocketLocation(TEXT("Head"));
+  const FVector ToFace=(Head-Hand).GetSafeNormal();const FRotator Facing=FRotationMatrix::MakeFromYZ(ToFace,FVector::UpVector).Rotator();
+  const FVector Centre=Phone->GetStaticMesh()?Phone->GetStaticMesh()->GetBounds().Origin:FVector::ZeroVector;
+  Phone->SetWorldLocationAndRotation(Hand+ToFace*4.f-Facing.RotateVector(Centre),Facing);}
  for(auto Part:Person->CarriedMeshes){if(!IsValid(Part) || !Part->GetStaticMesh())continue;
   const auto Bounds=Part->GetStaticMesh()->GetBounds();const bool bVessel=MareServiceAnimation::IsVessel(Part);
   const float Side=Part->GetAttachSocketName()==TEXT("hand_r")?1.f:-1.f;

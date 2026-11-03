@@ -84,6 +84,7 @@ public:
  virtual void OnPossess(APawn* InPawn) override;
 private:
  void BuildPauseMenu(bool bOptions);
+ friend struct FMareUIQA;
  TSharedPtr<SMarePhone> PhoneWidget;
  TSharedPtr<SWidget> PauseWidget;
  TSharedPtr<SWidget> MainMenuWidget;

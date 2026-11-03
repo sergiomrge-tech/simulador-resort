@@ -38,6 +38,8 @@ public:
  void Interact(APlayerController* Player);
  UPROPERTY() TObjectPtr<AMareServiceTarget> Interaction;
  UPROPERTY() TArray<TObjectPtr<UStaticMeshComponent>> CarriedMeshes;
+ /** A phone held up in front of the face (selfie): the right arm reaches for it and it faces the head. */
+ UPROPERTY() TObjectPtr<UStaticMeshComponent> SelfiePhone;
  UPROPERTY() TArray<TObjectPtr<UStaticMeshComponent>> HairMeshes;
  UPROPERTY() TMap<FString,TObjectPtr<UAnimSequence>> Clips;
  UPROPERTY(BlueprintReadOnly,Category="Maré Alta")

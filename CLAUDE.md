@@ -414,3 +414,10 @@ conta como renderizado: a pose congela e o boneco desliza sem mexer pernas nem b
 de MetaHuman usa sempre `AlwaysTickPoseAndRefreshBones`. Conferir com a auditoria de marcha (duas amostras: posição
 mudou e pés/mãos em relação ao corpo não mudaram = deslizando), não só pela pose escolhida.
 
+## Processo contra retrabalho (03/11)
+
+Antes de todo commit: `python tools/ue58/qa/qa_gate.py` (testes, flutuação contra a linha de base, marcha dia/noite,
+log do PIE e fotos de referência comparadas com a rodada anterior). FAIL = não comita. Todo defeito corrigido vira
+checagem permanente (teste ou item do portão). Interface: TODA tela usa `MareNotebookStyle.h` (papel pautado, margem,
+alfinete, Patrick Hand nos títulos e botões de tinta, Nunito no texto); nada de cartão creme liso nem fonte padrão.
+Fileiras de botões usam SWrapBox para não sair da folha.
