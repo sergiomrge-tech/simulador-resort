@@ -319,7 +319,8 @@ def place_suite():
         c.set_intensity(1800.0)
         c.set_light_color(unreal.LinearColor(1.0, .86, .70, 1.0))
         c.set_attenuation_radius(750.0)
-        c.set_editor_property('cast_shadows', False)
+        c.set_editor_property('cast_shadows', True)
+        c.set_editor_property('contact_shadow_length', .08)   # 03/11, Sergio: "nada tem sombra, fica artificial"
         light.tags = tags
         light.set_folder_path('Hotel/Suite')
     unreal.get_editor_subsystem(unreal.LevelEditorSubsystem).save_current_level()
@@ -357,7 +358,8 @@ def interiors():
             c.set_intensity(1000.0 * power)
             c.set_light_color(unreal.LinearColor(1.0, .82, .62, 1.0))
             c.set_attenuation_radius(520.0)
-            c.set_editor_property('cast_shadows', False)
+            c.set_editor_property('cast_shadows', True)
+            c.set_editor_property('contact_shadow_length', .08)   # 03/11, Sergio: "nada tem sombra, fica artificial"
             light.tags = [unreal.Name('MarePractical'), unreal.Name('MareHomeLight'), unreal.Name(region), unreal.Name('MareInteriorPart')]
             light.set_folder_path('Interiors')
             lamps += 1

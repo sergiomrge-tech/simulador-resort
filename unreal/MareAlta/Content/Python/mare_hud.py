@@ -1393,6 +1393,18 @@ def run(action, arg=''):
                 a.modify()
             out[p] = bool(a) and unreal.EditorAssetLibrary.save_loaded_asset(a, False)
         return out
+    if action == 'lightshadows':
+        # Editor level: interior and practical point lights cast shadows (with a short contact shadow); saves the level
+        world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_editor_world()
+        n = 0
+        for a in unreal.GameplayStatics.get_all_actors_of_class(world, unreal.PointLight):
+            c = a.point_light_component
+            if not c.get_editor_property('cast_shadows'):
+                c.set_editor_property('cast_shadows', True)
+                c.set_editor_property('contact_shadow_length', .08)
+                n += 1
+        unreal.get_editor_subsystem(unreal.LevelEditorSubsystem).save_current_level()
+        return n
     if action == 'movereef':
         import importlib, mare_water
         importlib.reload(mare_water)

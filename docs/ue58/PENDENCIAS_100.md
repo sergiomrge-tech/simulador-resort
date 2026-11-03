@@ -355,8 +355,12 @@ Pronto e testado (02/11):
   ("parecia lago"), com três escalas de ondulação e ondas mais calmas junto à costa e ao píer (a água subia no deque).
   Corais e peixes do recife levados 85 m mar adentro, apoiados no fundo de -9 m (`mare_water.move_reef`, só as peças
   World_0537..0600; o píer fica). Fotos `sea_before.jpg` → `sea_after6.jpg`.
-- [ ] P1 Sombras (pedido do Sergio, 03/11: "nada tem sombra, fica muito artificial"): móveis, pessoas e objetos sem
+- [x] P1 Sombras (pedido do Sergio, 03/11: "nada tem sombra, fica muito artificial"): móveis, pessoas e objetos sem
   sombra no saguão do hotel (e conferir no resto do jogo, de dia e de noite).
+  Feito 03/11: as luzes de interior (saguão, suíte, bangalôs: 23 no nível, `mare_hud lightshadows`) e os postes e
+  lanternas maiores (`MareVisualWorld`, raio ≥ 8 m) projetam sombra, com sombra de contato curta; os geradores
+  (`mare_hotel_lobby`, `mare_beach`) já criam as luzes assim. Foto `shadows_night.jpg` (saguão, salão, vila, quiosque).
+  Medir o custo no executável junto com o item de FPS (seção 9).
 - [ ] P1 Poltronas do saguão do hotel (pedido do Sergio, 03/11, foto circulada): corrigir posição/orientação/apoio.
 - [ ] P1 Piso do saguão/salão do hotel da mesma cor das paredes (pedido do Sergio, 03/11): trocar por piso vinílico
   amadeirado em réguas, como na foto de referência (madeira clara mel, réguas longas com veio).

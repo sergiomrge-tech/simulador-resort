@@ -204,7 +204,8 @@ def furnish(front_offset=0.0):
             c.set_intensity(2500.0)
             c.set_light_color(unreal.LinearColor(1.0, 0.86, 0.68, 1.0))
             c.set_attenuation_radius(900.0)
-            c.set_editor_property('cast_shadows', False)
+            c.set_editor_property('cast_shadows', True)
+            c.set_editor_property('contact_shadow_length', .08)   # 03/11, Sergio: "nada tem sombra, fica artificial"
             light.tags = [unreal.Name('MareGenerated'), unreal.Name('Region_grand_hotel'), unreal.Name('MareHotelLobby')]
             light.set_folder_path('Hotel/Lobby')
             light.set_actor_label('Hotel lobby · luz')
