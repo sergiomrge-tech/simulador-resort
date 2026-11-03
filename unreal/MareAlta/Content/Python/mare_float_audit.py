@@ -607,6 +607,47 @@ def palm_material(names):
 
 
 def run(action, arg=''):
+    if action == 'settransform':
+        # "name|x0|y0|z0|x|y|z|yaw": move and turn one exported instance (matched by name + pivot within 5 cm),
+        # scale kept; level and world.json. For pieces that must change wall (rotation, unlike place).
+        from mare_world_builder import transform
+        name, x0, y0, z0, x, y, z, yaw = arg.split('|')
+        at = unreal.Vector(float(x0), float(y0), float(z0))
+        data = json.loads((DATA / 'world.json').read_text(encoding='utf-8-sig'))
+        for a in unreal.get_editor_subsystem(unreal.EditorActorSubsystem).get_all_level_actors():
+            if a.get_actor_label() != 'Maré · ' + name:
+                continue
+            for c in a.get_components_by_class(unreal.InstancedStaticMeshComponent):
+                for i in range(c.get_instance_count()):
+                    t = c.get_instance_transform(i, True)
+                    if (t.translation - at).length() >= 5:
+                        continue
+                    nt = unreal.Transform(unreal.Vector(float(x), float(y), float(z)), unreal.Rotator(roll=0, pitch=0, yaw=float(yaw)), t.scale3d)
+                    c.update_instance_transform(i, nt, True, True, True)
+                    for row in data['instances']:
+                        rt = transform(row['transform']) if row['name'] == name else None
+                        if rt is not None and (rt.translation - at).length() < 1.0:
+                            row['transform'] = _row(nt)
+                            break
+                    (DATA / 'world.json').write_text(json.dumps(data, ensure_ascii=False, indent='	'), encoding='utf-8')
+                    unreal.get_editor_subsystem(unreal.LevelEditorSubsystem).save_current_level()
+                    return {'moved': name, 'to': [x, y, z, yaw]}
+        return {'error': 'not found'}
+    if action == 'rays':
+        # "x,y,z": 16 horizontal traces (room layout: distance to the walls and what they hit) + floor/ceiling
+        import math
+        x, y, z = [float(v) for v in arg.split(',')]
+        world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_editor_world()
+        o = unreal.Vector(x, y, z)
+        out = {}
+        dirs = [(f'{k * 22.5:.0f}', unreal.Vector(math.cos(math.radians(k * 22.5)), math.sin(math.radians(k * 22.5)), 0)) for k in range(16)]
+        for name, d in dirs + [('down', unreal.Vector(0, 0, -1)), ('up', unreal.Vector(0, 0, 1))]:
+            hit = unreal.SystemLibrary.line_trace_single(world, o, o + d * 2000, unreal.TraceTypeQuery.TRACE_TYPE_QUERY1, True, [],
+                                                        unreal.DrawDebugTrace.NONE, True)
+            if hit:
+                t = hit.to_tuple()
+                out[name] = [round((t[5] - o).length()), t[9].get_actor_label() if t[9] else '', t[10].static_mesh.get_name() if t[10] and hasattr(t[10], 'static_mesh') and t[10].static_mesh else '']
+        return out
     if action == 'nanite':
         # "path,path|1": Nanite on (1) or off (0) for static meshes
         paths, on = arg.split('|')

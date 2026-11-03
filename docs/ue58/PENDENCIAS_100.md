@@ -240,7 +240,15 @@ Pronto e testado (02/11):
 - [ ] P1 Personalização com 5 opções em tudo:
   - quiosque, expansões, hotel, piscina, tobogã;
   - casa (cama, sofá, armário, TV).
-- [ ] P1 Interiores do restaurante, da recepção da pousada (o balcão rústico é externo) e dos negócios da vila.
+- [x] P1 Interiores do restaurante, da recepção da pousada (o balcão rústico é externo) e dos negócios da vila (03/11).
+  Recepção da pousada: piso de lajota de terracota com taquinhos (Poly Haven patterned_terracotta_tiling, UV pelo mundo,
+  `hud_pousadafloor`), área de estar com móveis rústicos pintados Poly Haven (sofá, mesinha, cadeiras, armário, mesa
+  redonda, lanterna, planta, quadros e lustre; `mare_fab.POUSADA_DECOR`, tag Region_pousada; modelos Poly Haven ficam
+  de frente para +Y local nesta importação), porta-chaves de verdade na parede oeste atrás do balcão
+  (`gen_key_rack.py`; a tábua antiga invadia a janela), mural de cortiça com postais (`gen_notice_board.py`; o antigo
+  flutuava 19 cm da parede e cobria a janela leste), carrinho de bagagem e malas. Restaurante do hotel é um pavilhão
+  aberto (já mobiliado) e os negócios da vila são barracas externas (sorveteria, pranchas, surfe, pastel, souvenires):
+  não têm interior. Conferido no PIE de vários ângulos.
 - [ ] P2 Clima: chuva com poças, vento nas palmeiras, tempestade com mar bravo.
 - [ ] P2 Detalhes de vida: pássaros, gaivotas, cachorros e gatos animados, barcos passando.
 

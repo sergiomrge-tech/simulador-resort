@@ -105,6 +105,8 @@ def run(action, arg=''):
         return decor()
     if action == 'boats':
         return replace_boats(arg)
+    if action == 'pousadadecor':
+        return pousada_decor(arg)
     if action == 'clearbox':
         return clear_box(arg.replace('!', ''), arg.endswith('!'))
     if action == 'clearrooms':
@@ -337,6 +339,54 @@ def decor():
         actor.tags = [unreal.Name('MareGenerated'), unreal.Name('Region_grand_hotel'), unreal.Name('MareFabDecor')]
         actor.set_folder_path('Hotel/Restaurant')
         out.append([slug, 'restaurant', round(z), round(h)])
+    unreal.get_editor_subsystem(unreal.LevelEditorSubsystem).save_current_level()
+    return out
+
+
+# Pousada reception (world cm; room x -487..487, y 1263..1937, floor z 14, ceiling 342). Guests on the north side
+# of the counter (y 1513-1587); the doorway at x 0 (north) and the side doors at y 1550-1650 stay clear.
+# (custom_assets slug, x, y, yaw, z or None for the floor)
+POUSADA_DECOR = [
+    # These Poly Haven imports face local +Y: yaw 180 faces south (the room), -90 faces +X, 90 faces -X.
+    ('painted_wooden_sofa', -280, 1890, 180, None),        # back to the north wall, under the window
+    ('small_wooden_table_01', -280, 1770, 0, None),
+    ('painted_wooden_chair_02', -280, 1672, 0, None),      # across the table, facing the sofa (cart at x -390)
+    ('painted_wooden_cabinet', 300, 1905, 180, None),
+    ('wooden_lantern_01', 255, 1905, 0, 132),              # on the cabinet
+    ('potted_plant_04', 340, 1905, 0, 132),
+    ('round_wooden_table_02', 330, 1745, 0, None),
+    ('painted_wooden_chair_01', 245, 1745, -90, None),     # facing the table
+    ('fancy_picture_frame_02', -486, 1820, -90, 190),      # west wall, facing the room
+    ('fancy_picture_frame_01', 486, 1800, 90, 190),        # east wall
+    ('lantern_chandelier_01', 0, 1760, 0, 341),            # hangs from the ceiling
+]
+
+
+def pousada_decor(arg=''):
+    """Furnish the pousada reception (POUSADA_DECOR, Poly Haven CC0 models already in /Game/Custom). Region tagged,
+    so it appears with the pousada. arg "slug=yaw,..." overrides yaws while checking orientation."""
+    import json
+    if unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world():
+        raise RuntimeError('Stop PIE first')
+    assets = json.loads((Path(unreal.Paths.project_dir()) / 'Content/Data/custom_assets.json').read_text(encoding='utf-8'))
+    override = dict(p.split('=') for p in arg.split(',') if '=' in p)
+    actors = unreal.get_editor_subsystem(unreal.EditorActorSubsystem)
+    for a in actors.get_all_level_actors():
+        if 'MarePousadaDecor' in [str(t) for t in a.tags]:
+            actors.destroy_actor(a)
+    out = []
+    for slug, x, y, yaw, z in POUSADA_DECOR:
+        yaw = float(override.get(slug, yaw))
+        m = unreal.load_asset(assets[slug])
+        b = m.get_bounds()
+        floor = 14 if z is None else z
+        base = floor - (b.origin.z - b.box_extent.z) if z is None else z
+        actor = actors.spawn_actor_from_class(unreal.StaticMeshActor, unreal.Vector(x, y, base), unreal.Rotator(roll=0, pitch=0, yaw=yaw))
+        actor.static_mesh_component.set_static_mesh(m)
+        actor.set_actor_label('Pousada recepção · ' + slug)
+        actor.tags = [unreal.Name('MareGenerated'), unreal.Name('Region_pousada'), unreal.Name('MarePousadaDecor')]
+        actor.set_folder_path('Interiors/Pousada')
+        out.append([slug, x, y, yaw, round(base)])
     unreal.get_editor_subsystem(unreal.LevelEditorSubsystem).save_current_level()
     return out
 

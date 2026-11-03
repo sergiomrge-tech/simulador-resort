@@ -78,6 +78,63 @@ def footprint_material():
     return {'errors': [str(e) for e in errors] if errors else []}
 
 
+def pousada_floor():
+    """Pousada reception floor (World_0009, a teal paint with green blotches): Poly Haven patterned_terracotta_tiling
+    (CC0, 2.15 m per tile of the scan), world-aligned so the tiles keep their size whatever the mesh UVs are."""
+    mel = unreal.MaterialEditingLibrary
+    folder = '/Game/Custom/Pousada/floor'
+    src = Path('D:/Assets/PolyHaven/patterned_terracotta_tiling')
+    tex = {}
+    for kind in ('diff', 'nor_gl', 'rough'):
+        task = unreal.AssetImportTask()
+        task.filename = str(src / f'patterned_terracotta_tiling_{kind}_2k.jpg')
+        task.destination_path = folder
+        task.destination_name = f'T_PousadaFloor_{kind}'
+        task.automated = task.replace_existing = task.save = True
+        unreal.AssetToolsHelpers.get_asset_tools().import_asset_tasks([task])
+        t = unreal.load_asset(f'{folder}/T_PousadaFloor_{kind}')
+        if kind != 'diff':
+            t.set_editor_property('srgb', False)
+        if kind == 'nor_gl':
+            t.set_editor_property('compression_settings', unreal.TextureCompressionSettings.TC_NORMALMAP)
+        unreal.EditorAssetLibrary.save_loaded_asset(t, False)
+        tex[kind] = t
+    path = f'{folder}/M_PousadaFloor'
+    m = unreal.load_asset(path) or unreal.AssetToolsHelpers.get_asset_tools().create_asset('M_PousadaFloor', folder, unreal.Material, unreal.MaterialFactoryNew())
+    for e in list(mel.get_material_expressions(m)):
+        mel.delete_material_expression(m, e)
+    m.set_editor_property('used_with_instanced_static_meshes', True)
+    m.set_editor_property('used_with_nanite', True)
+    wp = mel.create_material_expression(m, unreal.MaterialExpressionWorldPosition, -900, 0)
+    mask = mel.create_material_expression(m, unreal.MaterialExpressionComponentMask, -750, 0)
+    mask.set_editor_property('r', True)
+    mask.set_editor_property('g', True)
+    mask.set_editor_property('b', False)
+    mel.connect_material_expressions(wp, '', mask, '')
+    div = mel.create_material_expression(m, unreal.MaterialExpressionDivide, -600, 0)
+    div.set_editor_property('const_b', 215.0)
+    mel.connect_material_expressions(mask, '', div, 'A')
+    samples = {}
+    for i, (kind, t) in enumerate(tex.items()):
+        s = mel.create_material_expression(m, unreal.MaterialExpressionTextureSample, -400, i * 250)
+        s.texture = t
+        if kind == 'nor_gl':
+            s.set_editor_property('sampler_type', unreal.MaterialSamplerType.SAMPLERTYPE_NORMAL)
+        elif kind == 'rough':
+            s.set_editor_property('sampler_type', unreal.MaterialSamplerType.SAMPLERTYPE_LINEAR_COLOR)
+        mel.connect_material_expressions(div, '', s, 'UVs')
+        samples[kind] = s
+    mel.connect_material_property(samples['diff'], 'RGB', unreal.MaterialProperty.MP_BASE_COLOR)
+    mel.connect_material_property(samples['nor_gl'], 'RGB', unreal.MaterialProperty.MP_NORMAL)
+    mel.connect_material_property(samples['rough'], 'R', unreal.MaterialProperty.MP_ROUGHNESS)
+    errors = mel.recompile_material(m)
+    unreal.EditorAssetLibrary.save_loaded_asset(m, False)
+    mesh = unreal.load_asset('/Game/World/Models/World_0009/World_0009.World_0009')
+    mesh.set_material(0, m)
+    unreal.EditorAssetLibrary.save_loaded_asset(mesh, False)
+    return {'errors': [str(e) for e in errors] if errors else [], 'material': m.get_path_name()}
+
+
 def import_sfx():
     """Action sounds of SourceArt/Audio/Actions (tools/ue58/fetch_action_sfx.py) -> /Game/Audio/Actions, listed in
     Content/Data/audio.json with their action group and volume (UMareAudioWorld::PlayAction)."""
@@ -936,6 +993,8 @@ def run(action, arg=''):
             unreal.EditorAssetLibrary.delete_directory(dest)
         mesh = mare_hotel_lobby._import(Path(f'D:/Assets/Mare/{slug}/{slug}.glb'), dest, slug, True, search=False)
         return {'mesh': mesh.get_path_name(), 'tris': mesh.get_num_triangles(0), '_usage': mare_custom.fix_usage()['fixed']}
+    if action == 'pousadafloor':
+        return pousada_floor()
     if action == 'footprintmat':
         if arg == 'reimport':
             # new PNGs from gen_footprints.py over the same texture assets (the level keeps its references)
