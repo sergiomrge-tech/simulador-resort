@@ -839,6 +839,38 @@ def run(action, arg=''):
         (data / 'imported_meshes.json').write_text(json.dumps(mapping, ensure_ascii=False, indent=2) + chr(10), encoding='utf-8')
         unreal.get_editor_subsystem(unreal.LevelEditorSubsystem).save_current_level()
         return {'imported': out, 'swapped': swapped}
+    if action == 'freecam':
+        # "label,x,y,z[;...]": a camera spec "label,cx,cy,cz,pitch,yaw" per target that sees it without a wall in
+        # between: 16 directions at three elevations, the clearest line of sight (trace from the target outwards),
+        # 70-220 cm away. Avoids captures from inside walls, roofs and furniture.
+        import math
+        world_ = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world() or             unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_editor_world()
+        specs = []
+        for item in arg.split(';'):
+            label, x, y, z = item.split(',')
+            t = unreal.Vector(float(x), float(y), float(z))
+            best = None
+            for k in range(16):
+                a = k * math.pi / 8
+                for el in (.35, .6, .15):
+                    d = unreal.Vector(math.cos(a) * math.cos(el), math.sin(a) * math.cos(el), math.sin(el))
+                    start = t + d * 15
+                    end = t + d * 240
+                    hit = unreal.SystemLibrary.line_trace_single(world_, start, end, unreal.TraceTypeQuery.TRACE_TYPE_QUERY1, True, [],
+                                                                unreal.DrawDebugTrace.NONE, True)
+                    free = (hit.to_tuple()[5] - t).length() - 25 if hit else 220
+                    score = min(free, 220) - abs(el - .35) * 30
+                    if free >= 70 and (best is None or score > best[0]):
+                        best = (score, d, min(free, 220))
+            if not best:
+                specs.append(f'{label},none')
+                continue
+            _, d, dist = best
+            c = t + d * dist
+            yaw = math.degrees(math.atan2(-d.y, -d.x))
+            pitch = -math.degrees(math.asin(d.z))
+            specs.append(f'{label},{c.x:.0f},{c.y:.0f},{c.z:.0f},{pitch:.0f},{yaw:.0f}')
+        return specs
     if action == 'instances':
         # "label prefix": every instance of the editor-world actors whose label starts with it: [label, x, y, z, yaw].
         out = []

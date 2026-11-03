@@ -187,10 +187,12 @@ Pronto e testado (02/11):
   `mare_hud.chair_seats` a partir dos vértices das cadeiras) e alinhamento da bacia no assento por corpo (`AMarePerson::SitOn`,
   `AlignToSeatBelow`; restaurante, bar e quiosque). Teste no PIE: `hud_seataudit` (12/12 ok). Copos flutuando no restaurante
   corrigidos com `float_audit place` (pivô + nome, nunca índice: nomes se repetem entre atores).
-- [ ] P1 Objetos flutuando no mapa: `float_audit scan` acha 593 candidatos; 418 são tipos legítimos (peixes, folhas sobre vasos,
-  varais, vasos pendurados, azulejos). Corrigidos e conferidos por imagem: tigela de madeira no ar ao lado do quiosque (agora no
-  balcão), bola de praia meio enterrada no gramado. Falta: conchas a ~2 m (-1525,-1199), sofá (4435,2337), Cube_005/007/011/018,
-  biz_booth do hotel; refazer ângulos (câmera caiu dentro de paredes). Bola de praia tem 1 m de diâmetro (grande demais).
+- [x] P1 Objetos flutuando no mapa (03/11): `float_audit scan` acha 593 candidatos; 418 são tipos legítimos (peixes, folhas
+  sobre vasos, varais, vasos pendurados, azulejos). Corrigidos e conferidos por imagem: copos ao lado das mesas do hotel,
+  tigela no ar junto ao quiosque, bola de praia meio enterrada. Conferidos e legítimos: conchas = mensageiro dos ventos no
+  beiral dos bangalôs; sofá, colunas de varanda e caixotes = móveis sem colisão (o raio desce até o piso, falso positivo);
+  Cube_0xx = interiores das casas. Pendente: a cabine `biz_booth` do hotel (câmera não achou ângulo: venezianas sem colisão).
+  Ferramentas: `float_audit place|surface|near|bbox`, `hud_freecam` (escolhe a câmera pela linha de visão livre).
 - [x] P1 Bicicletas da vila low poly (03/11): a malha exportada da Godot tinha 3.179 triângulos. Trocadas pela "Vintage Bicycle
   3D Model" (Fab, Patrick Goud, CC-BY 4.0) em 5 cores (`prep_fab_food.py bike_<cor>`: quadro repintado, pneu azul da marca
   em preto, 60 mil triângulos, mapas 2048) e `hud_fabbikes` (importa e troca as 11 instâncias + `imported_meshes.json`).
