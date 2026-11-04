@@ -584,7 +584,7 @@ Fazer depois de todo o resto, quando os textos estiverem estáveis.
   que tem `Content/Localization/Mare/<cultura>.json`; fontes CJK/cirílico por `tools/ue58/i18n_fonts.py`; placas 3D com
   cirílico ou CJK mostram o texto original (a fonte das placas é só latina); bússola com as letras de cada idioma.
   Os 8 restantes ficaram no fim da fila (seção 17).
-- [ ] Nomes próprios (Seu Gregory, Dona Rita...) seguem em letras latinas no chinês/japonês/russo: decidir se transliterar.
+- [ ] [bloqueado-usuario] (decisão de gosto do Sergio) Nomes próprios (Seu Gregory, Dona Rita...) seguem em letras latinas no chinês/japonês/russo: decidir se transliterar.
 - [ ] Revisão por falante nativo de cada idioma e teste de layout (textos maiores em alemão/russo não podem cortar). [bloqueado-usuario] (precisa de revisores nativos; o teste de layout fica junto da tradução)
 - [ ] Página da Steam e conquistas nos mesmos idiomas. [bloqueado-usuario] (precisa da conta Steamworks do Sergio)
 
@@ -656,7 +656,7 @@ negócios, hóspedes, salão, passeios, eventos) e o jogador sempre escolhendo o
 
 ## 17. Traduções restantes (no fim da fila, pedido do Sergio em 04/11)
 Os 18 idiomas escolhidos são os do Supermarket Simulator, menos turco e lituano; 10 já estão prontos (seção 11).
-- [ ] Holandês (nl), português de Portugal (pt-PT), polonês (pl), tcheco (cs), húngaro (hu), romeno (ro), dinamarquês (da)
+- [ ] [adiado-usuario] (04/11: "pause as traduções, deixe para o final da fila") Holandês (nl), português de Portugal (pt-PT), polonês (pl), tcheco (cs), húngaro (hu), romeno (ro), dinamarquês (da)
   e finlandês (fi). Processo: criar `<idioma>.json` vazio, rodar `i18n_extract.py`, traduzir em lotes com
   `i18n_batch.py show/merge` sem rodar o extrator entre show e merge (os índices mudam quando o source.json ganha textos), `i18n_batch.py compose <idioma>`, `i18n_fonts.py`, captura com
   `-culture=<idioma> -MareLocAudit`. Todos usam letras latinas (fontes atuais já cobrem).
