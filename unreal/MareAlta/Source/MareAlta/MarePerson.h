@@ -118,6 +118,11 @@ public:
   *  root 32 cm under the water surface (Surface z: water at the shoulders), riding the sea waves when bSea (SeaHeight replicates the ocean material's
   *  vertex offset) and turning the head side to side slowly. */
  void TreadWater(const FVector& Surface,bool bInSea);
+ /** Work pose "Skim" (pool attendant): a pool skimmer net (tools/ue58/gen_pool_skimmer.py) held in both hands, swept
+  *  across the water in a slow arc; the hands follow the pole by IK (HandGoal/ElbowGoal, read by the service anim). */
+ UPROPERTY() TObjectPtr<UStaticMeshComponent> Tool;
+ bool bHandGoals=false;FVector HandGoal[2],ElbowGoal[2];   // [0] right hand, [1] left hand (world)
+ void UpdateTool(float DeltaSeconds);
  bool bTreading=false,bSeaSwim=false;FVector SwimAt=FVector::ZeroVector;
  /** Vertical offset of the sea surface at a point (cm) at world time Seconds, as M_Ocean's world position offset
   *  (mare_materials.build_water); Storm 0..1 is MPC_MareTime.Storm. */

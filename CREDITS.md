@@ -610,3 +610,5 @@ Vozes curtas sem palavras (`tools/ue58/fetch_murmurs.py`, 03/11), CC0 no OpenGam
 - cicifyre (https://cicifyre.itch.io/) — "Free Voice Clips Pack - Mature Female" e "- Bright Female": risadas, suspiro, resmungo, "ah/eh/uh" — https://opengameart.org/content/voice-clip-packs-for-visual-novels-and-rpgs
 - Happii Gamer Studio — "Shop Owner Voice": "hmm" masculino — https://opengameart.org/content/shop-owner-voice
 As versões masculinas das risadas, do resmungo, do suspiro e do "uh" são conversões feitas aqui com o vocoder WORLD (pyworld).
+
+Peneira de piscina do piscineiro (`tools/ue58/gen_pool_skimmer.py`, 03/11): modelada no bpy para o projeto (nenhum modelo CC0 encontrado).

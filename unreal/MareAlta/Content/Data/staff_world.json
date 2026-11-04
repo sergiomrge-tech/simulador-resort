@@ -1,5 +1,5 @@
 {
- "_doc": "Staff seen at work (UMareStaffWorld). Each role (definitions.json staff key) is on screen while hired and on duty (UMareSimulation::HasStaff), its expansion (requires) is bought and the game hour is inside hours. It walks its stops in order (navmesh, or a straight glide where the navmesh does not reach) and holds pose (Idle, Idle_Talking, Interact) for seconds at each; label is what the staff page shows it doing. carry = dish picked up when leaving that stop (Content/Data/actors.json Dish_<id>), drop = hands emptied there. route bungalows = the rented pousada bungalows (deck = point in bungalow space); route reception = behind customization.json operations.<place>.reception. World cm; z is a hint for the ground trace (raised floors).",
+ "_doc": "Staff seen at work (UMareStaffWorld). Each role (definitions.json staff key) is on screen while hired and on duty (UMareSimulation::HasStaff), its expansion (requires) is bought and the game hour is inside hours. It walks its stops in order (navmesh, or a straight glide where the navmesh does not reach) and holds pose (seconds 0 = a waypoint to walk around something (the pool attendant goes round the loungers: the strip between them and the water is too narrow for the navmesh, which then crossed the walkable pool surface); Idle, Idle_Talking, Interact, or Skim: the pool skimmer net swept over the water, AMarePerson::UpdateTool) for seconds at each; label is what the staff page shows it doing. carry = dish picked up when leaving that stop (Content/Data/actors.json Dish_<id>), drop = hands emptied there. route bungalows = the rented pousada bungalows (deck = point in bungalow space); route reception = behind customization.json operations.<place>.reception. World cm; z is a hint for the ground trace (raised floors).",
  "roles": {
   "recepcionista": {
    "requires": "pousada",
@@ -43,7 +43,7 @@
       30
      ],
      "yaw": 90,
-     "pose": "Interact",
+     "pose": "Skim",
      "seconds": 7,
      "label": "Peneirando as folhas da piscina"
     },
@@ -54,7 +54,7 @@
       30
      ],
      "yaw": 90,
-     "pose": "Interact",
+     "pose": "Skim",
      "seconds": 7,
      "label": "Peneirando as folhas da piscina"
     },
@@ -71,12 +71,56 @@
     },
     {
      "at": [
+      700,
+      -150,
+      30
+     ],
+     "yaw": 0,
+     "pose": "Idle",
+     "seconds": 0,
+     "label": "Indo para o outro lado da piscina"
+    },
+    {
+     "at": [
+      960,
+      -60,
+      30
+     ],
+     "yaw": 90,
+     "pose": "Idle",
+     "seconds": 0,
+     "label": "Indo para o outro lado da piscina"
+    },
+    {
+     "at": [
+      960,
+      860,
+      30
+     ],
+     "yaw": 90,
+     "pose": "Idle",
+     "seconds": 0,
+     "label": "Indo para o outro lado da piscina"
+    },
+    {
+     "at": [
+      700,
+      950,
+      30
+     ],
+     "yaw": 180,
+     "pose": "Idle",
+     "seconds": 0,
+     "label": "Indo para o outro lado da piscina"
+    },
+    {
+     "at": [
       420,
       860,
       30
      ],
      "yaw": -90,
-     "pose": "Interact",
+     "pose": "Skim",
      "seconds": 7,
      "label": "Peneirando as folhas da piscina"
     },
@@ -87,9 +131,53 @@
       30
      ],
      "yaw": -90,
-     "pose": "Interact",
+     "pose": "Skim",
      "seconds": 7,
      "label": "Peneirando as folhas da piscina"
+    },
+    {
+     "at": [
+      -700,
+      950,
+      30
+     ],
+     "yaw": 180,
+     "pose": "Idle",
+     "seconds": 0,
+     "label": "Voltando por trás das espreguiçadeiras"
+    },
+    {
+     "at": [
+      -960,
+      860,
+      30
+     ],
+     "yaw": -90,
+     "pose": "Idle",
+     "seconds": 0,
+     "label": "Voltando por trás das espreguiçadeiras"
+    },
+    {
+     "at": [
+      -960,
+      -60,
+      30
+     ],
+     "yaw": -90,
+     "pose": "Idle",
+     "seconds": 0,
+     "label": "Voltando por trás das espreguiçadeiras"
+    },
+    {
+     "at": [
+      -700,
+      -150,
+      30
+     ],
+     "yaw": 0,
+     "pose": "Idle",
+     "seconds": 0,
+     "label": "Voltando por trás das espreguiçadeiras"
     }
    ]
   },

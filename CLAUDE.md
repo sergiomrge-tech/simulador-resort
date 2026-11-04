@@ -443,3 +443,12 @@ Rosto com leader pose não avalia nada próprio (não pisca, não muda expressã
 (RigLogic) da malha do rosto converte em ossos. O build Medium simplifica as roupas do Fab (gola das camisetas em
 zigue-zague): o Sergio quer as pessoas em Medium, então só as roupas vêm de um build High em `_HiGarments/<nome>`
 (só a pasta Clothing é mantida, ~9 MB) e são trocadas no `SetMetaHuman`. Não subir o resto para High.
+
+## UE5.8 — navegação estática e água da piscina (03/11)
+
+A navegação do Coast é ESTÁTICA (salva no nível). Nunca salvar o nível logo após `RebuildNavigation`, e não
+contar que tirar a colisão de uma malha a remove da navegação: tirei a colisão da água da piscina, o navmesh continuou
+cobrindo a água e a equipe caiu e ficou andando no fundo, por baixo do deck. Desfeito com `git checkout` do nível.
+Para desviar de obstáculos, usar pontos de passagem por fora (o corredor de 65 cm entre a borda e as espreguiçadeiras
+não tem navegação; o caminho cortava pela água). O deslize da equipe precisa enxergar pisos WorldDynamic (o deck).
+

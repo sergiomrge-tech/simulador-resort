@@ -1194,6 +1194,58 @@ def run(action, arg=''):
                 row[bone] = [round(q.x), round(q.y), round(q.z)]
             out.append(row)
         return out
+    if action == 'hitinfo':
+        # PIE: what a vertical trace at "x,y,z" hits first: actor label, component, mesh, collision profile, navigation.
+        world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()
+        x, y, z = (float(v) for v in arg.split(','))
+        hit = unreal.SystemLibrary.line_trace_single(world, unreal.Vector(x, y, z), unreal.Vector(x, y, z - 600), unreal.TraceTypeQuery.TRACE_TYPE_QUERY1, False, [], unreal.DrawDebugTrace.NONE, True)
+        h = hit.to_tuple()
+        a, c = h[9], h[10]
+        info = {'z': round(h[4].z), 'actor': a.get_actor_label() if a else None, 'class': a.get_class().get_name() if a else None,
+                'component': c.get_name() if c else None}
+        if c:
+            info['profile'] = str(c.get_collision_profile_name())
+            info['affects_nav'] = c.get_editor_property('can_ever_affect_navigation')
+            if hasattr(c, 'static_mesh') and c.static_mesh:
+                info['mesh'] = c.static_mesh.get_path_name()
+            info['tags'] = [str(t) for t in a.tags] if a else []
+        return info
+    if action == 'toolat':
+        # PIE: the tool mesh each person holds (pool skimmer): world location/rotation, the actor and its hands.
+        world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()
+        out = []
+        for a in unreal.GameplayStatics.get_all_actors_of_class(world, unreal.MarePerson):
+            for c in a.get_components_by_class(unreal.StaticMeshComponent):
+                if c.static_mesh and 'skimmer' in c.static_mesh.get_name() and c.is_visible():
+                    l, r, al = c.get_world_location(), c.get_world_rotation(), a.get_actor_location()
+                    m = a.get_component_by_class(unreal.SkeletalMeshComponent)
+                    hands = [[round(v) for v in (m.get_socket_location(b).x, m.get_socket_location(b).y, m.get_socket_location(b).z)] for b in ('hand_r', 'hand_l')]
+                    out.append({'actor': [round(al.x), round(al.y), round(al.z)], 'tool': [round(l.x), round(l.y), round(l.z)], 'rot': [round(r.pitch), round(r.yaw), round(r.roll)], 'hands': hands})
+        return out
+    if action == 'hire':
+        # PIE: hire a staff role in the running game ("piscineiro").
+        world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()
+        sim = unreal.GameplayStatics.get_player_controller(world, 0).get_simulation()
+        return {'hired': sim.hire_staff(arg), 'message': str(sim.get_editor_property('last_message')) if hasattr(sim, 'last_message') else ''}
+    if action == 'staffat':
+        # PIE: where the staff people are and their work pose ("" = all).
+        world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()
+        out = []
+        for a in unreal.GameplayStatics.get_all_actors_of_class(world, unreal.MarePerson):
+            if a.get_editor_property('b_employee') if hasattr(a, 'b_employee') else False:
+                l = a.get_actor_location()
+                out.append([a.get_name(), [round(l.x), round(l.y), round(l.z)], round(a.get_actor_rotation().yaw)])
+        return out
+    if action == 'importmodel':
+        # "PoolStaff/pool_skimmer": SourceArt/Models/<folder>/<name>.glb -> a fresh /Game/Custom/<folder>/<name> (local materials).
+        import mare_hotel_lobby
+        folder, name = arg.split('/')
+        dest = f'/Game/Custom/{folder}/{name}'
+        if unreal.EditorAssetLibrary.does_directory_exist(dest):
+            unreal.EditorAssetLibrary.delete_directory(dest)
+        mesh = mare_hotel_lobby._import(MODELS / folder / f'{name}.glb', dest, name, False, search=False)
+        b = mesh.get_bounding_box()
+        return {'mesh': mesh.get_path_name(), 'min': [round(b.min.x), round(b.min.y), round(b.min.z)], 'max': [round(b.max.x), round(b.max.y), round(b.max.z)]}
     if action == 'importvoices':
         return import_voices()
     if action == 'allpeople':

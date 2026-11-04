@@ -277,7 +277,12 @@ Pronto e testado (02/11):
     não dá para boiar: duas pessoas em pé no fundo conversando com a água no peito. `sunbathers.json` → `swimmers`.
   - comer e beber sentado (já existe);
   - conversar com gestos sentado (feito, `SitTalk`; em pé ainda falta clipe bom); dançar nas festas (feito);
-  - limpar e atender (equipe).
+  - limpar e atender (equipe): piscineiro FEITO 03/11. Peneira de piscina modelada no bpy (`tools/ue58/gen_pool_skimmer.py`,
+    cabo telescópico, aro e rede de fios reais; nenhum CC0 encontrado) segura com as duas mãos por IK e varrida sobre a
+    água (pose `Skim`, `AMarePerson::UpdateTool`). Junto, defeito antigo: ele atravessava a piscina andando SOBRE a
+    água (a superfície tem colisão e entra na navegação estática; o corredor entre a borda e as espreguiçadeiras é
+    estreito demais): rota com pontos de passagem por fora das espreguiçadeiras. Falta: camareira e garçom com
+    gestos próprios (hoje `Interact`).
 - [x] P0 Sentados no ar/no encosto (03/11): hóspedes do restaurante do hotel em cadeiras reais (`Data/hotel_seats.json`, gerado por
   `mare_hud.chair_seats` a partir dos vértices das cadeiras) e alinhamento da bacia no assento por corpo (`AMarePerson::SitOn`,
   `AlignToSeatBelow`; restaurante, bar e quiosque). Teste no PIE: `hud_seataudit` (12/12 ok). Copos flutuando no restaurante

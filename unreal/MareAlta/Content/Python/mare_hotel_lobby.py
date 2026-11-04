@@ -468,6 +468,56 @@ def run(action, arg=''):
             out[name] = [[s.material_interface.get_path_name() if s.material_interface else None,
                           s.material_interface.get_class().get_name() if s.material_interface else None] for s in m.static_materials]
         return out
+    if action == 'collinfo':
+        # Collision setup of static meshes by name: trace flag, simple shapes (boxes/convex), profile on the level component.
+        out = {}
+        for name in arg.split(','):
+            m = unreal.load_asset(f'/Game/World/Models/{name}/{name}') or unreal.load_asset(f'/Game/World/Models/{name}/{name}/StaticMeshes/{name}')
+            if not m:
+                out[name] = 'missing'
+                continue
+            bs = m.get_editor_property('body_setup')
+            agg = bs.get_editor_property('agg_geom') if bs else None
+            sub = unreal.get_editor_subsystem(unreal.StaticMeshEditorSubsystem)
+            out[name] = {'trace': str(bs.get_editor_property('collision_trace_flag')).split('.')[-1] if bs else None,
+                         'simple': sub.get_simple_collision_count(m), 'convex': sub.get_convex_collision_count(m),
+                         'bounds': [round(v) for v in (m.get_bounding_box().min.z, m.get_bounding_box().max.z)]}
+        return out
+    if action == 'navbuild':
+        # Rebuild the navmesh and save the level only after the build has finished (saving during the async build
+        # stored a partial navmesh and everybody glided, 03/11). "start" kicks it off, "status" polls, "save" saves.
+        world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_editor_world()
+        nav = unreal.NavigationSystemV1.get_navigation_system(world)
+        if arg == 'start':
+            unreal.SystemLibrary.execute_console_command(world, 'RebuildNavigation')
+            return 'started'
+        building = unreal.NavigationSystemV1.is_navigation_being_built_or_locked(world)
+        if arg == 'save':
+            if building:
+                return 'still building'
+            unreal.get_editor_subsystem(unreal.LevelEditorSubsystem).save_current_level()
+            return 'saved'
+        if arg == 'navinfo':
+            out = []
+            for a in unreal.get_editor_subsystem(unreal.EditorActorSubsystem).get_all_level_actors():
+                if isinstance(a, unreal.RecastNavMesh):
+                    row = {'label': a.get_actor_label()}
+                    for prop in ('runtime_generation', 'agent_radius', 'agent_height', 'agent_max_step_height', 'cell_size', 'cell_height', 'tile_size_uu'):
+                        try:
+                            row[prop] = str(a.get_editor_property(prop))
+                        except Exception as e:
+                            row[prop] = 'n/a'
+                    out.append(row)
+            return out
+        if arg.startswith('project'):
+            # "project x,y,z;x,y,z": where each point lands on the navmesh (editor world, PIE stopped).
+            out = []
+            for pt in arg.split(' ', 1)[1].split(';'):
+                x, y, z = (float(v) for v in pt.split(','))
+                r = nav.project_point_to_navigation(world, unreal.Vector(x, y, z), None, None, unreal.Vector(80, 80, 300))
+                out.append([pt, [round(r.x), round(r.y), round(r.z)] if r else None])
+            return out
+        return {'building': building}
     if action == 'moveactor':
         # Move a level actor (label ends with A) to x,y,z keeping its rotation: "A|x,y,z".
         label, to = arg.split('|')

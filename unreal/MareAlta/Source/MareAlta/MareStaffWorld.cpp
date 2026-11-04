@@ -116,8 +116,11 @@ void UMareStaffWorld::Step(FWorker& W,float DeltaSeconds)
   else{const FVector Dir=FVector(To.X,To.Y,0).GetSafeNormal();
    Pos+=Dir*FMath::Min(Dist,GlideSpeed*DeltaSeconds);
    // Ground under the feet, traced from knee height: tracing from above the head climbed onto roofs and canopies.
-   FHitResult Hit;FCollisionObjectQueryParams Static(ECC_WorldStatic);
-   if(GetWorld()->LineTraceSingleByObjectType(Hit,Pos-FVector(0,0,40),Pos-FVector(0,0,400),Static))Pos.Z=FMath::FInterpTo(Pos.Z,Hit.ImpactPoint.Z+90,DeltaSeconds,6);
+   // Static and dynamic floors both count: the pool deck is a WorldDynamic mesh, and a static-only trace sank the
+   // pool attendant under it once the water surface stopped being walkable (03/11).
+   FHitResult Hit;FCollisionObjectQueryParams Floors;Floors.AddObjectTypesToQuery(ECC_WorldStatic);Floors.AddObjectTypesToQuery(ECC_WorldDynamic);
+   FCollisionQueryParams Self(TEXT("MareStaffGlide"),false,P);
+   if(GetWorld()->LineTraceSingleByObjectType(Hit,Pos-FVector(0,0,40),Pos-FVector(0,0,400),Floors,Self))Pos.Z=FMath::FInterpTo(Pos.Z,Hit.ImpactPoint.Z+90,DeltaSeconds,6);
    P->SetActorLocation(Pos);P->SetActorRotation(FMath::RInterpTo(P->GetActorRotation(),Dir.Rotation(),DeltaSeconds,6));}}
  else{
   bArrived=P->AtGoal();

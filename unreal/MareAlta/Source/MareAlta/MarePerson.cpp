@@ -94,6 +94,31 @@ float AMarePerson::SeaHeight(const FVector2D& P,float T,float Storm)
  return H*Fade*Offshore*Coast*Pier+Shore*(Swell*15*(1+Storm*.8f)+7+Storm*5)*Pier;
 }
 
+void AMarePerson::UpdateTool(float DeltaSeconds)
+{
+ const bool bSkim=WorkPose==TEXT("Skim") && GetVelocity().SizeSquared2D()<25;
+ if(!bSkim){bHandGoals=false;if(Tool)Tool->SetVisibility(false);return;}
+ if(!Tool){Tool=NewObject<UStaticMeshComponent>(this);AddInstanceComponent(Tool);Tool->SetupAttachment(GetRootComponent());
+  Tool->SetStaticMesh(LoadObject<UStaticMesh>(nullptr,TEXT("/Game/Custom/PoolStaff/pool_skimmer/pool_skimmer.pool_skimmer")));
+  Tool->SetCollisionEnabled(ECollisionEnabled::NoCollision);Tool->SetCastShadow(true);Tool->RegisterComponent();}
+ Tool->SetVisibility(true);
+ // The pole starts behind the right hip at belly height and dips forward until the net (2.68 m along it) meets the
+ // water found below it; it sweeps +-25 deg in 4.5 s, pushed out and pulled back a little on each pass.
+ const FVector F=GetActorForwardVector(),R=GetActorRightVector(),Up=FVector::UpVector;
+ const float Phase=Elapsed*2*PI/4.5f;const float Sweep=FMath::DegreesToRadians(25.f)*FMath::Sin(Phase);
+ const FVector Out=F.RotateAngleAxis(FMath::RadiansToDegrees(Sweep),Up);
+ const FVector Butt=GetActorLocation()-F*35+R*6+Up*25+Out*12*FMath::Sin(Phase*2);
+ float WaterZ=GetActorLocation().Z-126;FHitResult Hit;FCollisionQueryParams Q(TEXT("MareSkim"),false,this);
+ const FVector Probe=Butt+Out*230;
+ if(GetWorld()->LineTraceSingleByChannel(Hit,Probe+Up*100,Probe-Up*300,ECC_Visibility,Q))WaterZ=Hit.ImpactPoint.Z;
+ const float Pitch=FMath::Asin(FMath::Clamp((Butt.Z-(WaterZ+6))/268.f,.2f,.8f));
+ const FVector Dir=(Out*FMath::Cos(Pitch)-Up*FMath::Sin(Pitch)).GetSafeNormal();
+ Tool->SetWorldLocationAndRotation(Butt,FRotationMatrix::MakeFromXZ(Dir,Up).Rotator());
+ HandGoal[0]=Butt+Dir*22;HandGoal[1]=Butt+Dir*50;
+ ElbowGoal[0]=GetActorLocation()-F*10+R*35+Up*20;ElbowGoal[1]=GetActorLocation()+F*10-R*35+Up*15;
+ bHandGoals=true;
+}
+
 void AMarePerson::TreadWater(const FVector& Surface,bool bInSea)
 {
  bTreading=true;bSeaSwim=bInSea;SwimAt=Surface;
@@ -489,7 +514,8 @@ void AMarePerson::Tick(float DeltaSeconds)
   // The root 32 cm under the surface: the water reaches the shoulders, the head (bone ~12 cm up) stays out.
   SetActorLocationAndRotation(SwimAt+FVector(0,0,88-32+Wave),FRotator(0,GetActorRotation().Yaw+FMath::Sin(Elapsed*.35f+SwimAt.X*.01f)*6.f*DeltaSeconds,0));}
  else if(bLying)UpdateLying(DeltaSeconds);
- else if(GetVelocity().SizeSquared2D()>25)PlayPose(TEXT("Walk"));else if(!WorkPose.IsEmpty())PlayPose(WorkPose);else if(bAmbient)PlayPose(bSeated?TEXT("Sitting_Idle"):bConversing?TEXT("Idle_Talking"):TEXT("Idle"));else if(Stage!=EMarePersonStage::Eating)PlayPose(TEXT("Idle"));
+ else if(GetVelocity().SizeSquared2D()>25)PlayPose(TEXT("Walk"));else if(!WorkPose.IsEmpty())PlayPose(WorkPose==TEXT("Skim")?TEXT("Idle"):WorkPose);else if(bAmbient)PlayPose(bSeated?TEXT("Sitting_Idle"):bConversing?TEXT("Idle_Talking"):TEXT("Idle"));else if(Stage!=EMarePersonStage::Eating)PlayPose(TEXT("Idle"));
+ UpdateTool(DeltaSeconds);
 }
 void AMarePerson::AttachBadge()
 {

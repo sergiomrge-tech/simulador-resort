@@ -41,6 +41,10 @@ struct FServiceProxy : FAnimSingleNodeInstanceProxy
     Strength[Hand]=FMath::FInterpTo(Strength[Hand],Weight,DeltaSeconds,12.f);Targets[Hand]=Inverse.TransformPosition(Target);Elbows[Hand]=Inverse.TransformPosition(Elbow);}
   }return;}
   auto Mesh=Person->GetMesh();const auto ToComponent=Mesh->GetComponentTransform().Inverse();
+  if(Person->bHandGoals){   // a tool held in both hands (pool skimmer): the hands follow it
+   for(int32 Hand=0;Hand<2;++Hand){Strength[Hand]=FMath::FInterpTo(Strength[Hand],1.f,DeltaSeconds,6.f);
+    Targets[Hand]=ToComponent.TransformPosition(Person->HandGoal[Hand]);Elbows[Hand]=ToComponent.TransformPosition(Person->ElbowGoal[Hand]);}
+   return;}
   for(int32 Hand=0;Hand<2;++Hand){
    const FName Socket=Hand==0?TEXT("hand_r"):TEXT("hand_l");
    const bool bHolding=Person->CarriedMeshes.ContainsByPredicate([&](auto Part){return IsValid(Part) && Part->GetAttachSocketName()==Socket;});
