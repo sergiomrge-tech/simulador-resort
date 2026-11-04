@@ -138,7 +138,7 @@
 			"kind": "company",
 			"qty": 1,
 			"reward": 40,
-			"story": "Sua avó Dilce confiou a você o quiosque da família. Dê um nome a ele e continue essa história.",
+			"story": "Vovó Dilce foi morar com as amigas do bingo e deixou o quiosque da família com você, junto com um bilhete: \"Não deixa o coqueiro triste.\" Dê um nome ao quiosque no celular.",
 			"task": "Criar sua empresa no celular",
 			"title": "Uma nova maré"
 		},
@@ -147,7 +147,7 @@
 			"kind": "open",
 			"qty": 1,
 			"reward": 30,
-			"story": "O primeiro expediente começa com uma decisão sua: abrir o quiosque para a praia.",
+			"story": "Primeiro expediente! A placa vermelha do balcão está esperando há anos. Vire-a e veja a praia descobrir que o quiosque voltou.",
 			"task": "Abrir o quiosque pela placa vermelha",
 			"title": "Portas abertas"
 		},
@@ -156,7 +156,7 @@
 			"kind": "sales",
 			"qty": 8,
 			"reward": 100,
-			"story": "Conquiste os primeiros fregueses: anote, retire pronto e entregue no balcão.",
+			"story": "Os primeiros fregueses chegam desconfiados (\"isso aqui não era da Dona Dilce?\"). Anote, retire pronto e entregue no balcão até eles virarem fregueses fiéis.",
 			"task": "Vender 8 produtos no quiosque",
 			"title": "O sabor da primeira manhã"
 		},
@@ -166,7 +166,7 @@
 			"kind": "expansion",
 			"qty": 1,
 			"reward": 80,
-			"story": "Transforme uma parada rápida em um ponto de encontro da comunidade.",
+			"story": "O povo está tomando água de coco em pé, na areia, igual pinguim. Compre mesas e guarda-sóis e transforme a parada rápida em ponto de encontro.",
 			"task": "Comprar Mesas e guarda-sóis",
 			"title": "Um lugar para ficar"
 		},
@@ -175,9 +175,27 @@
 			"kind": "staff",
 			"qty": 1,
 			"reward": 80,
-			"story": "Uma pessoa de confiança pode cuidar de todo o atendimento enquanto você explora a vila.",
+			"story": "Você não pode atender, pescar, fotografar o farol e conversar com a vila inteira ao mesmo tempo. Contrate alguém de confiança para o balcão.",
 			"task": "Contratar o atendente único",
 			"title": "Uma parceria de verdade"
+		},
+		{
+			"id": "morro",
+			"kind": "elder",
+			"qty": 1,
+			"reward": 120,
+			"story": "Os pescadores juram que tem um velho gritando lá do alto do morro desde a semana passada. Suba a trilha atrás da vila e veja se ele precisa de ajuda. Ou de um pastel.",
+			"task": "Subir a trilha e conversar com o Seu Tibúrcio",
+			"title": "O velho do morro"
+		},
+		{
+			"id": "oferendas",
+			"kind": "offerings",
+			"qty": 3,
+			"reward": 200,
+			"story": "Seu Tibúrcio jura que o vulcão está de olho em você. O vulcão não confirmou, mas também não negou. Leve a oferenda do dia até o cesto dele.",
+			"task": "Levar 3 oferendas ao cesto do Seu Tibúrcio",
+			"title": "Três dias sem Onda"
 		},
 		{
 			"id": "comunidade",
@@ -185,7 +203,7 @@
 			"kind": "chapter",
 			"qty": 1,
 			"reward": 150,
-			"story": "Seu Gregory precisa de ajuda para o píer. Conclua os três passos da história dele.",
+			"story": "Seu Gregory diz que o píer está \"quase\" caindo. Os pescadores dizem que já caiu duas vezes. Ajude a terminar a história dele.",
 			"task": "Concluir O píer do Seu Gregory em Histórias da vila",
 			"title": "O quiosque e o mar"
 		},
@@ -195,7 +213,7 @@
 			"kind": "expansion",
 			"qty": 1,
 			"reward": 200,
-			"story": "A vila já conhece seu trabalho. Amplie o negócio com o Bar do Coqueiro.",
+			"story": "Turistas perguntam todo dia se tem drink. A resposta \"tem coco\" já não convence ninguém. Abra o Bar do Coqueiro.",
 			"task": "Comprar o Bar do Coqueiro",
 			"title": "O encontro dos viajantes"
 		},
@@ -205,7 +223,7 @@
 			"kind": "expansion",
 			"qty": 1,
 			"reward": 300,
-			"story": "Os visitantes querem conhecer a vila com calma. Receba-os na sua pousada.",
+			"story": "Os visitantes querem ficar mais um dia e estão dormindo na rede do Seu Gregory. Ele não gostou. Abra a pousada.",
 			"task": "Abrir a pousada",
 			"title": "Fique mais um dia"
 		},
@@ -215,9 +233,39 @@
 			"kind": "expansion",
 			"qty": 1,
 			"reward": 400,
-			"story": "Ofereça descanso aos hóspedes e dê mais um motivo para voltar.",
+			"story": "Os hóspedes descansam, mas pedem um lugar para boiar sem medo de siri. Construa a piscina.",
 			"task": "Construir a piscina",
 			"title": "Um verão inesquecível"
+		},
+		{
+			"id": "prainha_m",
+			"item": "prainha",
+			"kind": "chapter",
+			"qty": 1,
+			"reward": 200,
+			"story": "Padre Robson descobriu uma prainha escondida e quer que o mundo conheça. Mas só depois da missa. E do almoço.",
+			"task": "Concluir A prainha do Padre Robson em Histórias da vila",
+			"title": "A prainha secreta"
+		},
+		{
+			"id": "sabores_m",
+			"item": "sabores",
+			"kind": "chapter",
+			"qty": 1,
+			"reward": 200,
+			"story": "Dona Cecília garante que tem receitas que fariam o vulcão chorar de emoção. Ajude a colocá-las no cardápio.",
+			"task": "Concluir Os sabores da Dona Cecília em Histórias da vila",
+			"title": "Sabores da Dona Cecília"
+		},
+		{
+			"id": "carnaval_m",
+			"item": "carnaval",
+			"kind": "chapter",
+			"qty": 1,
+			"reward": 300,
+			"story": "A Prefeita Tuanny quer o maior carnaval de praia da região. O orçamento é pequeno, a empolgação é gigante.",
+			"task": "Concluir O carnaval da Prefeita Tuanny em Histórias da vila",
+			"title": "Carnaval na areia"
 		},
 		{
 			"id": "marealta",
@@ -225,9 +273,18 @@
 			"kind": "expansion",
 			"qty": 1,
 			"reward": 1000,
-			"story": "Do primeiro coco ao resort: faça da vila um destino sem perder sua identidade.",
+			"story": "Do primeiro coco ao resort: chegou a hora do Grand Hotel Maré Alta. Vovó Dilce mandou dizer que quer o quarto com vista. De graça.",
 			"task": "Construir o Grand Hotel Maré Alta",
 			"title": "A Maré Alta da vila"
+		},
+		{
+			"id": "festa",
+			"kind": "finale",
+			"qty": 1,
+			"reward": 1000,
+			"story": "A vila inteira quer comemorar o resort. Seu Tibúrcio prometeu descer o morro pela primeira vez em trinta anos, e o vulcão ficou sabendo. Esteja na praia depois das 20h.",
+			"task": "Ir à praia depois das 20h para a Festa da Maré Alta",
+			"title": "A Festa da Maré Alta"
 		}
 	],
 	"chapters": [
@@ -569,6 +626,43 @@
 			"stars": 4.4
 		}
 	},
+	"kiosk_vip": {
+		"_doc": "Famous customers at the kiosk (PENDENCIAS 3, pedidos especiais e VIP): from fame level min_fame, each new kiosk order is a VIP with chance odds. The ticket shows the title and a special request; the VIP pays tip x the sale price as an extra tip on each item and, when the whole order is served, adds fame.",
+		"fame": 6,
+		"min_fame": 2,
+		"odds": 0.07,
+		"requests": [
+			"capricha, por favor",
+			"é para uma foto, viu?",
+			"pode trazer na mesa da frente?",
+			"sem pressa, mas com carinho",
+			"o mesmo que pedi no ano passado"
+		],
+		"requests_en": [
+			"make it special, please",
+			"it's for a photo, okay?",
+			"can you bring it to the front table?",
+			"no rush, but make it special",
+			"the same as last year"
+		],
+		"tip": 0.8,
+		"titles": [
+			"Estrela da TV",
+			"Atleta da seleção",
+			"Chef de TV",
+			"Celebridade",
+			"Lenda do surfe",
+			"Artista de novela"
+		],
+		"titles_en": [
+			"TV star",
+			"National team athlete",
+			"TV chef",
+			"Celebrity",
+			"Surfing legend",
+			"Soap opera star"
+		]
+	},
 	"quests": {
 		"cocos_rita": {
 			"desc": "A barraca compra 4 cocos do seu estoque.",
@@ -737,6 +831,57 @@
 			"wage": 34
 		}
 	},
+	"staff_rules": {
+		"_doc": "Staff refinement (MareStaff.cpp). shifts: hours [start, end) of the game day, wage share and fatigue gained per worked day. Every night everyone recovers recover points; a day off recovers rest more. At tired the worker's effect drops by tired_penalty; at absent the worker misses the next day (and recovers rest). xp_per_hour on duty; levels at xp_levels (level 1..5); each level adds level_bonus to the role's effect and raise to the wage. exempt: roles without shifts/fatigue (the kiosk attendant works with you all day). Day 1 is a Monday.",
+		"absent": 90,
+		"exempt": [
+			"atendente"
+		],
+		"level_bonus": 0.06,
+		"max_team": 2,
+		"raise": 0.08,
+		"recover": 4,
+		"rest": 35,
+		"shifts": {
+			"integral": {
+				"fatigue": 9,
+				"hours": [
+					0,
+					24
+				],
+				"name": "Integral",
+				"wage": 1.0
+			},
+			"manha": {
+				"fatigue": 3,
+				"hours": [
+					6,
+					14
+				],
+				"name": "Manhã (6h–14h)",
+				"wage": 0.6
+			},
+			"tarde": {
+				"fatigue": 3,
+				"hours": [
+					14,
+					24
+				],
+				"name": "Tarde e noite (14h–24h)",
+				"wage": 0.65
+			}
+		},
+		"tired": 60,
+		"tired_penalty": 0.35,
+		"xp_levels": [
+			0,
+			30,
+			80,
+			160,
+			280
+		],
+		"xp_per_hour": 1
+	},
 	"supplies": {
 		"acai": {
 			"cost": 6,
@@ -794,93 +939,5 @@
 			"cost": 4,
 			"name": "Goma de tapioca"
 		}
-	},
-	"staff_rules": {
-		"_doc": "Staff refinement (MareStaff.cpp). shifts: hours [start, end) of the game day, wage share and fatigue gained per worked day. Every night everyone recovers recover points; a day off recovers rest more. At tired the worker's effect drops by tired_penalty; at absent the worker misses the next day (and recovers rest). xp_per_hour on duty; levels at xp_levels (level 1..5); each level adds level_bonus to the role's effect and raise to the wage. exempt: roles without shifts/fatigue (the kiosk attendant works with you all day). Day 1 is a Monday.",
-		"shifts": {
-			"integral": {
-				"name": "Integral",
-				"hours": [
-					0,
-					24
-				],
-				"wage": 1.0,
-				"fatigue": 9
-			},
-			"manha": {
-				"name": "Manhã (6h–14h)",
-				"hours": [
-					6,
-					14
-				],
-				"wage": 0.6,
-				"fatigue": 3
-			},
-			"tarde": {
-				"name": "Tarde e noite (14h–24h)",
-				"hours": [
-					14,
-					24
-				],
-				"wage": 0.65,
-				"fatigue": 3
-			}
-		},
-		"recover": 4,
-		"rest": 35,
-		"tired": 60,
-		"absent": 90,
-		"tired_penalty": 0.35,
-		"xp_per_hour": 1,
-		"xp_levels": [
-			0,
-			30,
-			80,
-			160,
-			280
-		],
-		"level_bonus": 0.06,
-		"raise": 0.08,
-		"max_team": 2,
-		"exempt": [
-			"atendente"
-		]
-	},
-	"kiosk_vip": {
-		"_doc": "Famous customers at the kiosk (PENDENCIAS 3, pedidos especiais e VIP): from fame level min_fame, each new kiosk order is a VIP with chance odds. The ticket shows the title and a special request; the VIP pays tip x the sale price as an extra tip on each item and, when the whole order is served, adds fame.",
-		"min_fame": 2,
-		"odds": 0.07,
-		"tip": 0.8,
-		"fame": 6,
-		"titles": [
-			"Estrela da TV",
-			"Atleta da seleção",
-			"Chef de TV",
-			"Celebridade",
-			"Lenda do surfe",
-			"Artista de novela"
-		],
-		"titles_en": [
-			"TV star",
-			"National team athlete",
-			"TV chef",
-			"Celebrity",
-			"Surfing legend",
-			"Soap opera star"
-		],
-		"requests": [
-			"capricha, por favor",
-			"é para uma foto, viu?",
-			"pode trazer na mesa da frente?",
-			"sem pressa, mas com carinho",
-			"o mesmo que pedi no ano passado"
-		],
-		"requests_en": [
-			"make it special, please",
-			"it's for a photo, okay?",
-			"can you bring it to the front table?",
-			"no rush, but make it special",
-			"the same as last year"
-		]
 	}
 }

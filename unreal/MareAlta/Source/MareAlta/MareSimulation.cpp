@@ -298,6 +298,10 @@ int32 UMareSimulation::MissionAmount(const TSharedPtr<FJsonObject>& Mission) con
  if(Kind==TEXT("photo")){Object(Prog,TEXT("chp"))->TryGetBoolField(Item,bValue);if(!bValue)Object(Prog,TEXT("chapter_photo"))->TryGetBoolField(Item,bValue);}
  if(Kind==TEXT("expansion"))Object(State,TEXT("unlocked"))->TryGetBoolField(Item,bValue);
  if(Kind==TEXT("chapter"))bValue=IsChapterDone(Item);
+ // Story beats of the summit (UMareSummitWorld): met Seu Tibúrcio, offerings left in his basket, the final party.
+ if(Kind==TEXT("elder"))Object(State,TEXT("summit"))->TryGetBoolField(TEXT("met"),bValue);
+ if(Kind==TEXT("offerings"))return Number(Object(State,TEXT("summit")),TEXT("count"));
+ if(Kind==TEXT("finale"))Campaign->TryGetBoolField(TEXT("finale"),bValue);
  return bValue?1:0;
 }
 TSharedPtr<FJsonObject> UMareSimulation::ChapterDefinition(const FString& Id) const

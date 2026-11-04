@@ -1040,6 +1040,11 @@ bool FMareCampaignAuditTest::RunTest(const FString& Parameters)
  // 4-5. Tables and the attendant.
  TestTrue(TEXT("Tables"),Sim->BuyExpansion(TEXT("kiosk_tables")));Claim(TEXT("mesas"));
  TestTrue(TEXT("Attendant"),Sim->HireAttendant());Claim(TEXT("equipe"));
+ // Act 2: Seu Tibúrcio on the summit (UMareSummitWorld writes State.summit): met, then three offerings.
+ TestFalse(TEXT("Elder before meeting"),Sim->ClaimMission(TEXT("morro")));
+ {auto Summit=MakeShared<FJsonObject>();Summit->SetBoolField(TEXT("met"),true);Sim->State->SetObjectField(TEXT("summit"),Summit);}Claim(TEXT("morro"));
+ Sim->Object(Sim->State,TEXT("summit"))->SetNumberField(TEXT("count"),2);TestFalse(TEXT("Two offerings are not three"),Sim->ClaimMission(TEXT("oferendas")));
+ Sim->Object(Sim->State,TEXT("summit"))->SetNumberField(TEXT("count"),3);Claim(TEXT("oferendas"));
  // 6. Seu Gregory's pier chapter: 4 fish caught at the pier, 15 customers served during the step, R$ 150.
  TestFalse(TEXT("Chapter before its step"),Sim->AdvanceChapter(TEXT("pier")));
  for(int32 I=0;I<4;++I)Sim->CatchFish();Advance(TEXT("pier"),1);
@@ -1054,15 +1059,21 @@ bool FMareCampaignAuditTest::RunTest(const FString& Parameters)
  TestFalse(TEXT("Hotel needs the story"),Sim->BuyExpansion(TEXT("grand_hotel")));
  // prainha: fame 3, photo of the lighthouse, 6 coconuts.
  Sim->AddFame(400);Advance(TEXT("prainha"),1);Sim->RecordPhoto({TEXT("farol")},TEXT("teste.png"));Advance(TEXT("prainha"),1);Stock(TEXT("coco"),6);Advance(TEXT("prainha"),1);
+ Claim(TEXT("prainha_m"));
  // sabores: two drinks discovered, 10 petiscos sold during the step, R$ 250.
  {auto Disc=Sim->Object(Sim->Object(Sim->State,TEXT("prog")),TEXT("disc"));Disc->SetBoolField(TEXT("batida"),true);Disc->SetBoolField(TEXT("caipirinha"),true);}
  Advance(TEXT("sabores"),1);TestEqual(TEXT("Petiscos"),Sell(TEXT("petiscos"),10),10);Advance(TEXT("sabores"),2);
+ Claim(TEXT("sabores_m"));
  // carnaval: fame 5, two businesses (the surf school needs prainha, the snack truck needs sabores), R$ 400.
  TestFalse(TEXT("Souvenir shop waits for the carnaval story"),Sim->BuyBusiness(TEXT("souvenir")));
  Sim->AddFame(3000);Advance(TEXT("carnaval"),1);
  TestTrue(TEXT("Sorveteria"),Sim->BuyBusiness(TEXT("sorveteria")));TestTrue(TEXT("Aluguel"),Sim->BuyBusiness(TEXT("aluguel")));Advance(TEXT("carnaval"),2);
+ Claim(TEXT("carnaval_m"));
  if(Sim->FameLevel()<8)TestFalse(TEXT("Hotel needs fame 8"),Sim->BuyExpansion(TEXT("grand_hotel")));
  Sim->AddFame(100000);TestTrue(TEXT("Grand Hotel"),Sim->BuyExpansion(TEXT("grand_hotel")));Claim(TEXT("marealta"));
+ // Finale: the beach party sets prog.campaign.finale (UMareSummitWorld::ShowCredits).
+ TestFalse(TEXT("Party before it happens"),Sim->ClaimMission(TEXT("festa")));
+ Sim->Object(Sim->Object(Sim->State,TEXT("prog")),TEXT("campaign"))->SetBoolField(TEXT("finale"),true);Claim(TEXT("festa"));
  TestEqual(TEXT("Campaign finished"),Stage(),Sim->Definitions->GetArrayField(TEXT("campaign")).Num());
  // Side missions: 5 fish, 12 ice creams, lighthouse and sunset photos.
  Sim->CatchFish();TestTrue(TEXT("Fish counted from the fishing log"),Sim->ClaimMission(TEXT("pescador"),true));

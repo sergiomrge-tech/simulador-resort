@@ -49,7 +49,15 @@ private:
  int32 SeenDay=-1,Reminded=-1,Hinted=-1;
  FString PrevWeather,MorningState;
  void Setup();
- void Offer(const FString& Gift);
+ void Offer(const FString& Gift,bool bCount=true);
+ /** Campaign finale "A Festa da Maré Alta": the night party on the beach, Seu Tibúrcio comes down, the volcano's
+  *  fireworks, then THE END with credits (prog.campaign.finale). */
+ UPROPERTY() TObjectPtr<AMarePerson> PartyElder;
+ TSharedPtr<SWidget> CreditsWidget;
+ bool bFinale=false;float FinaleTime=0;int32 FinaleLine=-1;
+ void UpdateFinale(float DeltaSeconds,class UMareSimulation* Sim,double Minutes);
+ void ShowCredits();
+ void CloseCredits();
  void StartOmen();
  void EndOmen();
  void StartWave();

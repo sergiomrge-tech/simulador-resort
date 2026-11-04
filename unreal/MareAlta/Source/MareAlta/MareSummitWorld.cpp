@@ -89,6 +89,8 @@ void UMareSummitWorld::Tick(float DeltaSeconds)
  // Morning snapshot: "restart the day" after a game over goes back to the state of this morning.
  if(Day!=SeenDay && !bWave){SeenDay=Day;FString Text;auto Writer=TJsonWriterFactory<>::Create(&Text);FJsonSerializer::Serialize(Sim->State.ToSharedRef(),Writer);MorningState=Text;}
  if(bWave){UpdateWave(DeltaSeconds);return;}
+ UpdateFinale(DeltaSeconds,Sim,Minutes);
+ if(bFinale){Summit->SetNumberField(TEXT("last_day"),Day);return;}   // the whole village brings tonight's offering
  const int32 Forced=CVarMareTsunamiNow.GetValueOnGameThread();
  if(Forced){CVarMareTsunamiNow->Set(0,ECVF_SetByCode);if(Forced==1)StartOmen();else{StartOmen();StartWave();}return;}
  // Before the first meeting the residents point the way (from day 2, once a day in the morning).
@@ -120,11 +122,12 @@ void UMareSummitWorld::EndOmen()
  bOmenOn=false;Sim->State->SetStringField(TEXT("weather"),PrevWeather.IsEmpty()?TEXT("sun"):PrevWeather);
 }
 
-void UMareSummitWorld::Offer(const FString& Gift)
+void UMareSummitWorld::Offer(const FString& Gift,bool bCount)
 {
  auto Sim=GetWorld()->GetGameInstance()->GetSubsystem<UMareSimulation>();
  auto Summit=SummitState(Sim);Summit->SetBoolField(TEXT("met"),true);
  Summit->SetNumberField(TEXT("last_day"),UMareSimulation::Number(Sim->State,TEXT("day"),1));
+ if(bCount)Summit->SetNumberField(TEXT("count"),UMareSimulation::Number(Summit,TEXT("count"))+1);
  if(!Gift.IsEmpty())ChildOf(Sim->State,TEXT("company"))->SetStringField(TEXT("carry"),FString());   // the product stays in the basket
  if(bOmenOn){EndOmen();Sim->LastMessage=TEXT("O mar foi se acalmando. Ufa! Seu Tibúrcio sorriu (acho).");}
  if(Elder)Elder->Express(TEXT("happy"),5.f);
@@ -150,7 +153,7 @@ void UMareSummitWorld::Talk(APlayerController* Controller)
     if(I==0)return TEXT("Cem. Contei com a régua do meu avô, que media tudo em palmos. Deu muitos palmos.");
     if(I==1)return TEXT("Qualquer coisa gostosa do seu quiosque: uma água de coco, um petisco... O vulcão é guloso, igual a mim. Traz aqui em cima, nas mãos, e deixa no cesto. Todo dia, antes das dez da noite.");
     return TEXT("Seríssimo. Em 1987 esqueceram uma vez e a Onda levou a praia, o bar e o meu bigode. O bigode nunca mais cresceu igual.");},
-   [Weak](){if(Weak.IsValid()){Weak->Offer(FString());
+   [Weak](){if(Weak.IsValid()){Weak->Offer(FString(),false);
     if(auto S=Weak->GetWorld()->GetGameInstance()->GetSubsystem<UMareSimulation>())S->LastMessage=TEXT("Hoje Seu Tibúrcio já deu um coco dele, por conta da casa. A partir de amanhã, a oferenda é com você: todo dia, antes das 22h.");}});
   return;
  }
@@ -274,9 +277,81 @@ void UMareSummitWorld::RestoreMorning(bool bRestart)
  if(bRestart)PC->ReloadActiveSlot();else PC->ReturnToMainMenu();
 }
 
+static TAutoConsoleVariable<int32> CVarMareFinaleNow(TEXT("mare.FinaleNow"),0,TEXT("QA: 1 starts the campaign finale party now."));
+
+void UMareSummitWorld::UpdateFinale(float DeltaSeconds,UMareSimulation* Sim,double Minutes)
+{
+ auto Campaign=ChildOf(ChildOf(Sim->State,TEXT("prog")),TEXT("campaign"));
+ bool bDone=false;Campaign->TryGetBoolField(TEXT("finale"),bDone);
+ if(!bFinale){
+  const TArray<TSharedPtr<FJsonValue>>* Missions=nullptr;FString Current;
+  if(Sim->Definitions->TryGetArrayField(TEXT("campaign"),Missions)){const int32 Stage=int32(UMareSimulation::Number(Campaign,TEXT("stage")));
+   if(Missions->IsValidIndex(Stage))Current=UMareSimulation::String((*Missions)[Stage]->AsObject(),TEXT("id"));}
+  auto Hero=UGameplayStatics::GetPlayerCharacter(this,0);
+  const bool bForced=CVarMareFinaleNow.GetValueOnGameThread()!=0;if(bForced)CVarMareFinaleNow->Set(0,ECVF_SetByCode);
+  const bool bTime=Current==TEXT("festa") && !bDone && Minutes>=20*60 && Minutes<23.5*60 && Hero && Hero->GetActorLocation().Y<2500.f && !bWave;
+  if(!bTime && !bForced)return;
+  bFinale=true;FinaleTime=0;FinaleLine=-1;EndOmen();
+  // The village comes down to the beach; Seu Tibúrcio too, for the first time in thirty years, right in front of the hero.
+  FActorSpawnParameters Params;Params.SpawnCollisionHandlingOverride=ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+  const FVector At=Hero?Hero->GetActorLocation()+Hero->GetActorForwardVector()*260.f:FVector(3700,-2400,120);
+  PartyElder=GetWorld()->SpawnActor<AMarePerson>(At,FRotator(0,Hero?Hero->GetActorRotation().Yaw+180.f:90.f,0),Params);
+  if(PartyElder){PartyElder->Tags.Add(TEXT("MareElder"));PartyElder->PersonName=ElderName;PartyElder->bAmbient=true;PartyElder->SaveId=TEXT("summit_elder");
+   if(!PartyElder->SetAppearance(1)){PartyElder->Destroy();PartyElder=nullptr;}else PartyElder->Express(TEXT("happy"),40.f);}
+  if(auto Erupt=IConsoleManager::Get().FindConsoleVariable(TEXT("mare.VolcanoErupt")))Erupt->Set(1,ECVF_SetByCode);   // the volcano's "fireworks"
+  UE_LOG(LogTemp,Display,TEXT("MARE_FINALE_START"));
+ }
+ FinaleTime+=DeltaSeconds;
+ static const TCHAR* Lines[]={
+  TEXT("A vila inteira desceu para a praia. E olha quem veio junto: Seu Tibúrcio, de chinelo novo!"),
+  TEXT("Seu Tibúrcio: \"Trinta anos sem descer esse morro. A trilha encolheu ou fui eu que cresci?\""),
+  TEXT("Prefeita Tuanny anuncia a Festa da Maré Alta. Seu Gregory chora. Diz que é cebola. Não tem cebola."),
+  TEXT("E o vulcão... está soltando fogos? Seu Tibúrcio: \"Ele adora festa. Quem não adora?\""),
+  TEXT("Vovó Dilce mandou um áudio de sete minutos. Resumo: está muito orgulhosa e quer o quarto com vista.")};
+ const int32 Line=FMath::Min(int32(FinaleTime/7.f),4);
+ if(Line!=FinaleLine && FinaleTime<35.f){FinaleLine=Line;Sim->LastMessage=Lines[Line];}
+ if(FinaleTime>=36.f && !CreditsWidget.IsValid() && !bDone)ShowCredits();
+}
+
+void UMareSummitWorld::ShowCredits()
+{
+ if(!GEngine || !GEngine->GameViewport)return;
+ auto Sim=GetWorld()->GetGameInstance()->GetSubsystem<UMareSimulation>();
+ ChildOf(ChildOf(Sim->State,TEXT("prog")),TEXT("campaign"))->SetBoolField(TEXT("finale"),true);Sim->Save();
+ auto PC=Cast<AMareController>(UGameplayStatics::GetPlayerController(this,0));
+ const TWeakObjectPtr<UMareSummitWorld> Weak(this);
+ auto Line=[](const FString& Text,int32 Size,FLinearColor Color){return SNew(STextBlock).Text(MareLoc::Text(Text)).Font(MareNotebook::Body(Size)).ColorAndOpacity(Color).Justification(ETextJustify::Center);};
+ const FLinearColor Cream(.95f,.92f,.84f),Soft(.8f,.78f,.72f);
+ CreditsWidget=SNew(SBorder).BorderImage(FCoreStyle::Get().GetBrush("WhiteBrush")).BorderBackgroundColor(FLinearColor(0,0,0,.82f)).HAlign(HAlign_Center).VAlign(VAlign_Center)
+  [SNew(SVerticalBox)
+   +SVerticalBox::Slot().AutoHeight().HAlign(HAlign_Center)[SNew(STextBlock).Text(LOCTEXT("TheEnd","FIM")).Font(MareNotebook::Hand(140)).ColorAndOpacity(FLinearColor(.98f,.78f,.35f))]
+   +SVerticalBox::Slot().AutoHeight().HAlign(HAlign_Center).Padding(0,0,0,26)[Line(TEXT("...ou quase. A maré continua, o quiosque também, e amanhã tem oferenda."),20,Cream)]
+   +SVerticalBox::Slot().AutoHeight().HAlign(HAlign_Center).Padding(0,2)[Line(TEXT("Maré Alta Resort"),26,Cream)]
+   +SVerticalBox::Slot().AutoHeight().HAlign(HAlign_Center).Padding(0,2)[Line(TEXT("Ideia, direção e muita paciência: Sergio"),17,Soft)]
+   +SVerticalBox::Slot().AutoHeight().HAlign(HAlign_Center).Padding(0,2)[Line(TEXT("Modelos e texturas: Poly Haven, Quaternius, Fab e colaboradores (veja CREDITS.md)"),17,Soft)]
+   +SVerticalBox::Slot().AutoHeight().HAlign(HAlign_Center).Padding(0,2)[Line(TEXT("Elenco: Vovó Dilce, Seu Gregory, Padre Robson, Dona Cecília, Prefeita Tuanny e Seu Tibúrcio"),17,Soft)]
+   +SVerticalBox::Slot().AutoHeight().HAlign(HAlign_Center).Padding(0,2,0,30)[Line(TEXT("E o vulcão, no papel de si mesmo."),17,Soft)]
+   +SVerticalBox::Slot().AutoHeight().HAlign(HAlign_Center)[SNew(SMarePadButton).ButtonStyle(&MareNotebook::InkButton()).ContentPadding(FMargin(18,6))
+    .OnClicked_Lambda([Weak](){if(Weak.IsValid())Weak->CloseCredits();return FReply::Handled();})
+    [SNew(STextBlock).Text(MareLoc::Text(TEXT("Continuar na praia"))).Font(MareNotebook::Hand(26)).ColorAndOpacity(Cream)]]];
+ GEngine->GameViewport->AddViewportWidgetContent(CreditsWidget.ToSharedRef(),80);
+ if(PC){PC->bShowMouseCursor=true;PC->SetInputMode(FInputModeUIOnly().SetWidgetToFocus(CreditsWidget));PC->SetIgnoreMoveInput(true);PC->SetIgnoreLookInput(true);}
+ UE_LOG(LogTemp,Display,TEXT("MARE_FINALE_CREDITS"));
+}
+
+void UMareSummitWorld::CloseCredits()
+{
+ if(GEngine && GEngine->GameViewport && CreditsWidget.IsValid())GEngine->GameViewport->RemoveViewportWidgetContent(CreditsWidget.ToSharedRef());CreditsWidget.Reset();
+ if(auto PC=Cast<AMareController>(UGameplayStatics::GetPlayerController(this,0))){PC->bShowMouseCursor=false;PC->SetInputMode(FInputModeGameOnly());PC->ResetIgnoreMoveInput();PC->ResetIgnoreLookInput();}
+ auto Sim=GetWorld()->GetGameInstance()->GetSubsystem<UMareSimulation>();
+ Sim->LastMessage=TEXT("Missão concluída: A Festa da Maré Alta. Resgate a recompensa no celular. E boa festa!");
+}
+
 void UMareSummitWorld::Deinitialize()
 {
  if(GEngine && GEngine->GameViewport && OverWidget.IsValid())GEngine->GameViewport->RemoveViewportWidgetContent(OverWidget.ToSharedRef());OverWidget.Reset();
+ if(GEngine && GEngine->GameViewport && CreditsWidget.IsValid())GEngine->GameViewport->RemoveViewportWidgetContent(CreditsWidget.ToSharedRef());CreditsWidget.Reset();
+ if(bFinale)if(auto Erupt=IConsoleManager::Get().FindConsoleVariable(TEXT("mare.VolcanoErupt")))Erupt->Set(-1,ECVF_SetByCode);
  if(Roar)Roar->Stop();Super::Deinitialize();
 }
 

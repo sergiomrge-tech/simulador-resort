@@ -689,8 +689,11 @@ Os 18 idiomas escolhidos são os do Supermarket Simulator, menos turco e lituano
   às 22h silêncio, mar liso e a onda de 100 m (`tools/ue58/gen_tsunami_wave.py`, `M_TsunamiWave`) sobe e avança;
   ao atingir o herói, tela preta + GAME OVER com "Recomeçar o dia" (foto da manhã) e "Menu principal"). Teste
   `MareAlta.Gameplay.SummitOffering`; QA `mare.ElderMet 1`, `mare.TsunamiNow 1|2`.
-- [ ] (liberado 04/11 para o Acesso Antecipado, depois do tsunami) **Campanha principal** com história completa até o
-  final e tudo pronto no jogo; tom de comédia, animado e calmo, clima de praia.
+- [x] (04/11) **Campanha principal** com história completa até o final e tudo pronto no jogo; tom de comédia, animado
+  e calmo, clima de praia. FEITO: 16 missões em 4 atos (`definitions.json` campaign; textos com humor), novas
+  `elder`/`offerings`/`finale`, final "A Festa da Maré Alta" (`UMareSummitWorld::UpdateFinale`: vila na praia às 20h,
+  Seu Tibúrcio desce o morro, o vulcão solta "fogos", tela FIM com créditos e "Continuar na praia"). Teste da campanha
+  inteira em MareSimulationTests; QA `mare.FinaleNow 1`.
 - [ ] (liberado 04/11 para o Acesso Antecipado) **Animação de abertura** em estilo desenho (Canva) e **animações nos eventos
   principais** da história.
 - [x] Noite mais escura (Sergio, 04/11): `mare.NightDarken` tira 1,3 stop da exposição à noite; conferir praia, vila, quiosque e erupção.
