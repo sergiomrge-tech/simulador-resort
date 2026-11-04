@@ -28,6 +28,12 @@
 #include "Kismet/GameplayStatics.h"
 #include "Camera/PlayerCameraManager.h"
 #include "HAL/IConsoleManager.h"
+#include "Components/LocalLightComponent.h"
+#include "UObject/UObjectIterator.h"
+
+static TAutoConsoleVariable<float> CVarMareBounceLightReach(TEXT("mare.BounceLightReach"),1.f,TEXT("Draw distance of the bounce (fill) lights, times mare.LightDrawDistance (04/11: x2.5 cost the beach 4 FPS)."));
+static TAutoConsoleVariable<float> CVarMareLightShadowMinRadius(TEXT("mare.LightShadowMinRadius"),1000.f,TEXT("Local lights with a smaller attenuation radius (cm) cast no shadow (04/11: 99 of 134 lights cast shadows; under 10 m off = kiosk 56 -> 61 FPS); 0 = keep the authored shadows."));
+static TAutoConsoleVariable<float> CVarMareLightDrawDistance(TEXT("mare.LightDrawDistance"),3000.f,TEXT("Local lights (interiors, bounce, lamps, shops) fade out beyond this distance from the camera (cm), with a 15 m fade (04/11 EXE: with all local lights off the beach went 46 -> 56 FPS and the kiosk 49 -> 63: about 150 lights of the whole map were drawn every frame, day included; 50 m gave beach 53, 30 m 59). 0 = never culled; set on lights that have no distance of their own."));
 
 static TAutoConsoleVariable<int32> CVarMareWalkTest(TEXT("mare.WalkTest"),0,TEXT("QA: the player walks straight ahead (footprint capture)."));
 static TAutoConsoleVariable<int32> CVarMareWeather(TEXT("mare.Weather"),0,TEXT("QA weather override: 0 = today's weather, 1 = clear, 2 = rain, 3 = storm, 4 = rough sea without rain."));
@@ -94,6 +100,7 @@ void UMareVisualWorld::Tick(float DeltaSeconds)
  UpdateFootprints();
  Clock-=DeltaSeconds;if(Clock>0)return;Clock=2.f;
  RefreshExpansions();
+ CullLocalLights();
  if(!Sun){for(TActorIterator<ALight> It(GetWorld());It;++It){if(It->ActorHasTag(TEXT("MareSun")))Sun=*It;if(It->ActorHasTag(TEXT("MareMoon")))Moon=*It;if(It->ActorHasTag(TEXT("MarePractical")))Practical.AddUnique(*It);}
   for(TActorIterator<AExponentialHeightFog> It(GetWorld());It;++It)Fog=*It;
   for(TActorIterator<APostProcessVolume> It(GetWorld());It;++It)if(It->bUnbound){Exposure=*It;break;}
@@ -242,4 +249,28 @@ void UMareVisualWorld::UpdateFootprints()
  else{Footprints->UpdateInstanceTransform(NextFootprint,T,true,true,true);FootprintBorn[NextFootprint]=Now;}
  Footprints->SetCustomDataValue(NextFootprint,0,0.f,true);
  NextFootprint=(NextFootprint+1)%MaxPrints;
+}
+
+void UMareVisualWorld::CullLocalLights()
+{
+ // Every local light of the world gets a draw distance (mare.LightDrawDistance; kiosk/house bounce lights x
+ // mare.BounceLightReach) unless its author gave it one, and lights smaller than mare.LightShadowMinRadius stop casting
+ // shadows (04/11: 99 of 134 lights were shadowed, each one redrawing its shadow pages). Lights spawned later
+ // (expansions, lamps, businesses) are picked up on the next 2 s refresh; a cvar change reapplies to all of them.
+ const float Reach=CVarMareLightDrawDistance.GetValueOnGameThread(),Bounce=CVarMareBounceLightReach.GetValueOnGameThread(),MinShadow=CVarMareLightShadowMinRadius.GetValueOnGameThread();
+ const FVector Key(Reach,Bounce,MinShadow);const bool bChanged=!Key.Equals(LightCullKey);LightCullKey=Key;
+ int32 Set=0,Shadowed=0;
+ for(TObjectIterator<ULocalLightComponent> It;It;++It){ULocalLightComponent* Light=*It;
+  if(Light->GetWorld()!=GetWorld())continue;
+  FLightCullState* State=LightCull.Find(Light);
+  if(!State){if(Light->MaxDrawDistance>0)continue;State=&LightCull.Add(Light,{Light->CastShadows!=0});}
+  else if(!bChanged)continue;
+  const AActor* Owner=Light->GetOwner();const bool bBounce=Owner && Owner->ActorHasTag(TEXT("MareBounce"));
+  const float D=Reach<=0?0.f:(bBounce?Reach*Bounce:Reach);
+  Light->MaxDrawDistance=D;Light->MaxDistanceFadeRange=FMath::Min(1500.f,D*.3f);
+  // A fill light needs no shadow; small lights (lanterns, interiors) keep at most a contact shadow.
+  const bool bShadow=State->bShadow && !bBounce && Light->AttenuationRadius>=MinShadow;
+  if(Light->CastShadows!=bShadow)Light->SetCastShadows(bShadow);
+  Shadowed+=bShadow;++Set;Light->MarkRenderStateDirty();}
+ if(Set)UE_LOG(LogTemp,Display,TEXT("MARE_LIGHT_CULL lights=%d shadowed=%d reach=%.0f bounce=x%.1f min_shadow_radius=%.0f"),Set,Shadowed,Reach,Bounce,MinShadow);
 }

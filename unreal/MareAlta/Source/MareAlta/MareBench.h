@@ -21,7 +21,7 @@ private:
  int32 Sector=-1;
  int32 Stage=0;
  double Next=0;
- TArray<float> Frames,Game,Render,Gpu;
+ TArray<float> Frames,Game,Render,Gpu,Presented;
  TArray<TSharedPtr<class FJsonValue>> Records;
  void Enter(class AMareController* PC);
  void Strip();

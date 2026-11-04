@@ -141,6 +141,10 @@ public:
  float Elapsed=0;
  float SeenCheck=0;
  bool bCastsShadow=true;
+ /** Hidden and not animating because the camera is beyond mare.PeopleDrawDistance (see SetDistanceHidden). */
+ bool bHiddenByDistance=false;
+ float OutOfView=0;
+ void SetDistanceHidden(bool bHide);
  UPROPERTY(BlueprintReadOnly,Category="Maré Alta")
  FVector Destination=FVector::ZeroVector;
  static class UStaticMesh* ProductMesh(const FString& Dish,bool bUsed=false);

@@ -1003,6 +1003,8 @@ class SMareMainMenu : public SCompoundWidget
 public:
  SLATE_BEGIN_ARGS(SMareMainMenu){} SLATE_ARGUMENT(AMareController*,Controller) SLATE_END_ARGS()
  void Construct(const FArguments& Args){Controller=Args._Controller;Show(EPage::Main);}
+ // OpenMainMenu focuses the menu (FInputModeUIOnly): a non-focusable widget logged an error in every PIE (04/11).
+ virtual bool SupportsKeyboardFocus()const override{return true;}
  /** Gamepad B: the previous page (the main page stays). */
  void Back(){switch(Current){case EPage::Main:break;case EPage::Confirm:Show(EPage::New);break;default:Show(EPage::Main);}}
 private:
@@ -1258,13 +1260,21 @@ private:
    [this](int32 Step){Pending.SetPreset(FMath::Clamp(Pending.Preset+Step,0,3));}));
   const TPair<FText,int32 FMareOptions::*> Groups[]={{LOCTEXT("OptShadows","Sombras"),&FMareOptions::Shadows},{LOCTEXT("OptGI","Iluminação global (Lumen)"),&FMareOptions::GlobalIllumination},
    {LOCTEXT("OptReflections","Reflexos"),&FMareOptions::Reflections},{LOCTEXT("OptPost","Pós-processamento"),&FMareOptions::PostProcess},{LOCTEXT("OptTextures","Texturas"),&FMareOptions::Textures},
-   {LOCTEXT("OptFoliage","Folhagem"),&FMareOptions::Foliage},{LOCTEXT("OptAA","Anti-serrilhado"),&FMareOptions::AntiAliasing}};
+   {LOCTEXT("OptFoliage","Folhagem"),&FMareOptions::Foliage},{LOCTEXT("OptAA","Anti-serrilhado"),&FMareOptions::AntiAliasing},
+   {LOCTEXT("OptViewDistance","Distância de visão"),&FMareOptions::ViewDistance},{LOCTEXT("OptModelDetail","Detalhe dos modelos"),&FMareOptions::ModelDetail},
+   {LOCTEXT("OptEffects","Efeitos"),&FMareOptions::Effects},{LOCTEXT("OptShading","Sombreamento"),&FMareOptions::Shading}};
   for(const auto& Group:Groups){int32 FMareOptions::*Field=Group.Value;
    Add(Row(Group.Key,[this,Field](){return Level(Pending.*Field);},[this,Field](int32 Step){Pending.*Field=FMath::Clamp(Pending.*Field+Step,0,3);}));}
+  Add(Row(LOCTEXT("OptCrowd","Pessoas nas cenas"),[this](){return Pending.Crowd==0?LOCTEXT("OptCrowdFew","Poucas"):Pending.Crowd==2?LOCTEXT("OptCrowdMany","Muitas"):LOCTEXT("OptCrowdNormal","Normal");},
+   [this](int32 Step){Pending.Crowd=FMath::Clamp(Pending.Crowd+Step,0,2);}));
   Add(Row(LOCTEXT("OptScale","Escala 3D"),[this](){return FText::FromString(FString::Printf(TEXT("%.0f%%"),Pending.ResolutionScale));},
    [this](int32 Step){Pending.ResolutionScale=FMath::Clamp(Pending.ResolutionScale+5.f*Step,50.f,100.f);}));
   Add(Row(LOCTEXT("OptUpscaler","Upscaler"),[this](){return FText::FromString(Pending.Upscaler);},[this](int32 Step){const TArray<FString> List=FMareOptions::Upscalers();
    const int32 Index=FMath::Max(0,List.IndexOfByKey(Pending.Upscaler));Pending.Upscaler=List[(Index+Step+List.Num())%List.Num()];}));
+  // NVIDIA DLSS Frame Generation: only offered on a card and driver that support it (RTX 40 and later).
+  if(FMareOptions::FrameGenerationSupported())
+   Add(Row(LOCTEXT("OptFrameGen","Geração de quadros (DLSS)"),[this](){return Pending.FrameGeneration==1?LOCTEXT("OptFrameGenOn","Ligada"):Pending.FrameGeneration==2?LOCTEXT("OptFrameGenAuto","Automática"):LOCTEXT("OptFrameGenOff","Desligada");},
+    [this](int32 Step){Pending.FrameGeneration=(Pending.FrameGeneration+Step+3)%3;}));
  }
  void DisplayPage(const TSharedRef<SVerticalBox>& Page)
  {
@@ -1426,6 +1436,8 @@ struct FMareUIQA
   auto PC=World?Cast<AMareController>(UGameplayStatics::GetPlayerController(World,0)):nullptr;if(!PC)return;
   if(What==TEXT("pause") || What==TEXT("options")){if(!PC->PauseWidget.IsValid())PC->TogglePauseMenu();PC->BuildPauseMenu(What==TEXT("options"));}
   else if(What==TEXT("menu"))PC->OpenMainMenu();
+  else if(What==TEXT("play")){   // QA gate in PIE: like Continue on the main menu (the paused menu kept the village from ever spawning)
+   if(PC->IsMainMenuOpen() && !PC->MenuLoadSlot(PC->WorldSlot))PC->MenuNewGame(PC->WorldSlot);}
   else if(What==TEXT("close")){   // like E: ends the bus arrival, closes the letter, the pause menu
    for(TActorIterator<AMareIntro> It(World);It;++It){if(It->IsLetterOpen())It->CloseLetter();else if(It->IsArrival())It->FinishArrival();}
    if(PC->PauseWidget.IsValid())PC->TogglePauseMenu();}

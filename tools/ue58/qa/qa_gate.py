@@ -71,6 +71,9 @@ def pie(on):
     if on and not running:
         call('EditorToolset.EditorAppToolset', 'StartPIE', {'options': {'bSimulate': False}})
         time.sleep(45)
+        # A new PIE opens the main menu, which pauses the game (no village, no walkers): continue past it.
+        hud('cmd', 'mare.ShowUI play')
+        time.sleep(15)
     if not on and running:
         call('EditorToolset.EditorAppToolset', 'StopPIE', {})
         time.sleep(6)
@@ -209,6 +212,8 @@ def shots(stamp):
         else:
             ImageDraw.Draw(img).text((8, 8), f'{name}  (primeira referencia)', fill='yellow')
         tiles.append(img)
+    if not tiles:   # no capture at all (listed in review): nothing to lay out
+        return review
     sheet = Image.new('RGB', (1280, 360 * ((len(tiles) + 1) // 2)))
     for i, t in enumerate(tiles):
         sheet.paste(t, ((i % 2) * 640, (i // 2) * 360))
@@ -256,20 +261,21 @@ def main():
     hud('cmd', 'mare.Weather 1')
     time.sleep(20)
     # The gait audit samples everyone, on screen or not: it checks the walk itself, so off-screen people animate here
-    # (mare.OffscreenPose 0); the visible-rig check below runs the game as shipped (off-screen poses held).
-    hud('cmd', 'mare.OffscreenPose 0')
+    # (mare.OffscreenPose 0, and nobody hidden by distance or by being out of view, mare.PeopleHideOffscreen /
+    # PeopleDrawDistance, 04/11); the visible-rig check below runs the game as shipped.
+    hud('cmd', 'mare.OffscreenPose 0'); hud('cmd', 'mare.PeopleHideOffscreen 0'); hud('cmd', 'mare.PeopleDrawDistance 0')
     time.sleep(2)
     day = gait()
-    hud('cmd', 'mare.OffscreenPose 1')
+    hud('cmd', 'mare.OffscreenPose 1'); hud('cmd', 'mare.PeopleHideOffscreen 1'); hud('cmd', 'mare.PeopleDrawDistance -1')
     time.sleep(2)
     report['visible'] = visible()
     if with_shots:
         report['shots'] = shots(stamp)
     coast('clock', '1250')
-    hud('cmd', 'mare.OffscreenPose 0')
+    hud('cmd', 'mare.OffscreenPose 0'); hud('cmd', 'mare.PeopleHideOffscreen 0'); hud('cmd', 'mare.PeopleDrawDistance 0')
     time.sleep(20)
     night = gait()
-    hud('cmd', 'mare.OffscreenPose 1')
+    hud('cmd', 'mare.OffscreenPose 1'); hud('cmd', 'mare.PeopleHideOffscreen 1'); hud('cmd', 'mare.PeopleDrawDistance -1')
     report['gait'] = {'day': day, 'night': night, 'pass': not day['gliding'] and not night['gliding'] and day['moving'] > 0}
     report['log'] = log_since(offset, base.get('log_allow', []))
     pie(False)

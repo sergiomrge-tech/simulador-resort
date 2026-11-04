@@ -479,7 +479,7 @@ Pronto e testado (02/11):
     render: as ~60 pessoas do mapa (6 na tela) desenhadas nas sombras do sol (3.400 draw calls). Agora pessoas a mais de
     30 m não projetam sombra (`mare.PeopleShadowDistance`) e quem ninguém vê mantém a pose (`mare.OffscreenPose`).
     Grooms não pesam (variante sem cabelo igual). Sem pessoas a praia faz 49 FPS: o resto é do cenário (abaixo).
-- [ ] [bloqueado-usuario] (sistema grande: aguarda o Sergio escolher a prioridade e subir o esforço do Opus, regra global) P1 Chegar a 60 FPS de dia na praia (RTX 4060 Ti, 1080p): o cenário sozinho gasta 20 ms de render com ~2.030 draw
+- [x] P1 Chegar a 60 FPS de dia na praia (RTX 4060 Ti, 1080p): o cenário sozinho gasta 20 ms de render com ~2.030 draw
   calls de sombra de malhas sem Nanite (achar quais: vegetação/instâncias) e as pessoas ainda ~8 ms (componentes
   registrados: oclusão, velocidades). Medir com `tools/ue58/bench_package.ps1 -Exec "cvar valor"` sem reempacotar.
   04/11, já testado e descartado: (1) ligar Nanite nas 70 malhas sem Nanite que fazem sombra (`hud_shadowcasters`): os
@@ -510,6 +510,34 @@ Pronto e testado (02/11):
   VRS/ContrastAdaptiveShading 3,9 ms, TSR 3,8, cabelo 2,7 (testados VRS off e TAA: FPS igual). Só baixar a resolução
   move o quadro (+4 FPS): o tempo real da placa deve passar dos 19 ms medidos. Próximo: exportar as filas
   GPU0-Compute0/GPU0-Copy0 e as bolhas da fila gráfica na linha do tempo.
+  04/11 (manhã, Sergio priorizou e subiu o esforço; meta: 60 FPS SEM DLSS, DLSS só como extra):
+  - Causa da espera: com `r.HZBOcclusion 1` o render passava ~10 ms por quadro em MapOcclusionResults → FlushRHIThread
+    (lê o resultado do quadro anterior), então render e placa se revezavam (render 21 + placa 19 ≈ quadro 31 ms) e a placa
+    ficava ~55% ocupada (nvidia-smi, 70 W de 160 W). Consultas por primitiva com 2 quadros de folga
+    (`r.HZBOcclusion 0`, `r.NumBufferedOcclusionQueries 2`): praia 29 → 33, quiosque 29 → 36, vila 40 → 46. 3 quadros: igual.
+  - Testes no executável (base nova): Lumen Lite da 5.8 (`sg.GlobalIlluminationQuality 1`, reflexos 1) placa 19 → 17,5 ms,
+    +0–4 FPS; VRS desligado PIOR (mantido); `r.ViewDistanceScale 0.6` praia 33 → 38; **sem pessoas praia 58, quiosque 55,
+    saguão 77, vila 76**: as ~60 MetaHumans (6 na tela) custam ~10 ms de render mesmo escondidas pela distância.
+  - Aplicado: oclusão por consulta (DefaultEngine.ini), Lumen Lite como padrão, menos pessoas de ambiente (pedestres 12 → 6,
+    banhistas 5 → 3, nadadores do mar 3 → 2, espreguiçadeiras 3 → 2, hotel 15 → 10), pessoas a mais de 50 m da câmera
+    escondidas e sem animar (`mare.PeopleDrawDistance`; as de ambiente também param de andar, clientes e equipe seguem),
+    menu gráfico com Distância de visão, Detalhe dos modelos (LOD), Efeitos, Sombreamento e Pessoas nas cenas, e o
+    DLSS 4.5 (Super Resolution + Geração de quadros, `tools/ue58/install_dlss.ps1`, plugins opcionais fora do git).
+  04/11 (tarde), mais cortes, todos medidos no executável:
+  - Luzes locais com distância (`mare.LightDrawDistance` 30 m; preenchimento `MareBounce` x1, sem sombra; sem sombra
+    abaixo de 10 m de raio, `mare.LightShadowMinRadius`): ~150 luzes do mapa eram desenhadas o dia todo, 99 com sombra.
+  - Física do cabelo das MetaHumans (solver Niagara) só no Efeitos Épico; pessoas fora do cone de visão (tela + 20°,
+    além de 6 m) escondidas e pausadas como as distantes (`mare.PeopleHideOffscreen`).
+  - Postes (World_0688, 193), lanternas (World_0683) e World_1391 com vidro fosco opaco que brilha à noite
+    (`M_LampGlassFrosted`, `mare_hud frostedglass`) e Nanite; Nanite também em barco, jangada, bola, 2 plantas e
+    World_0687. Sombras sem Nanite estimadas 1.693 → 839.
+  - **Resultado sem DLSS (duas rodadas): praia 67–69, quiosque 74, saguão 76–78, vila 87–89 FPS** (de 29/29/35/40).
+  - Testados e descartados: VRS desligado (pior), TSR/pós médios (igual), sombra das pessoas 15/10 m (igual),
+    `r.HairStrands.Enable 0` (derruba o executável), `r.NumBufferedOcclusionQueries 3` (igual a 2).
+- [ ] P1 DLSS 4.5 no executável: plugins carregam, DLSS e Geração de quadros aparecem no menu (RTX 40). Falta provar a
+  Geração de quadros: o plugin só gera quadros com a janela EM FOCO (StreamlineDLSSG.cpp, `FApp::HasFocus`) e o Windows
+  não deixa um script dar foco; o Sergio clica na janela durante `bench_package.ps1 -Focus -Exec "r.Streamline.DLSSG.Enable 1"`
+  (o resultado mostra "na tela" = quadros exibidos e `focus`). Testar também DLSS Super Resolution (`r.NGX.DLSS.Enable 1`).
 - [x] P0 Sessões de 2 h sem crash (GPU page fault do hotel mitigado com `r.Lumen.AsyncCompute=0`; re-testar).
   04/11: `tools/ue58/bench_package.ps1 -Soak 7200` (executável, tudo liberado): 120 min, 60 voltas pelos 4 setores dormindo
   entre elas (60 dias de jogo, saguão do hotel visitado 60 vezes), nenhum erro no log, FPS estável do início ao fim

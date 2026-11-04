@@ -491,3 +491,17 @@ aplicar outro material. `hud_naniteon` já sobe a cadeia de instâncias e tem `d
 edição em lote, conferir `Invalid material ... Nanite` no log e restaurar com `git checkout` o que não deu certo
 (o fechamento pelo MCP salva tudo o que estiver pendente, inclusive o mapa e materiais só recompilados).
 
+## Desempenho e DLSS no executável (04/11)
+
+Diagnóstico com dados: `bench_package.ps1` (FPS por setor), nvidia-smi (placa a 55% = gargalo na CPU) e Unreal Insights
+por thread e trecho (`ExportTimerCallees -threads="RenderThread*" -startTime -endTime`). `r.HZBOcclusion 1` fazia o render
+esperar ~10 ms por quadro (MapOcclusionResults); voltou a consulta por primitiva com 2 quadros de folga. O que pesava:
+luzes locais do mapa inteiro acesas e com sombra o dia todo, MetaHumans fora da tela, física do cabelo e malhas sem Nanite
+por causa de um slot de vidro translúcido. Plugin "Optional" no .uproject é descartado EM SILÊNCIO no jogo monolítico se
+algum módulo dele não compilou (DLSS tem Vulkan/D3D11): os plugins NVIDIA são obrigatórios e instalados por
+`tools/ue58/install_dlss.ps1`. As bibliotecas NVIDIA recusam consulta antes de PostEngineInit (e no cooker): consultar um
+tick depois. A Geração de quadros só gera quadros com a janela em foco. Variável gravada pelo jogo com ECVF_SetByCode
+ignora em silêncio comando de console posterior (o benchmark aplica os seus com SetByCode). Medições oscilam ±3 FPS:
+repetir antes de concluir. O MCP da 5.8 só sobe com `-ModelContextProtocolStartServer`; o PIE abre o menu principal
+pausado (a vila não nasce): o portão usa `mare.ShowUI play`.
+

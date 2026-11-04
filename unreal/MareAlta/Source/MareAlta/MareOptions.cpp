@@ -23,7 +23,9 @@ namespace MareOptionsData
  const TPair<const TCHAR*,int32 FMareOptions::*> Ints[]={{TEXT("preset"),&FMareOptions::Preset},{TEXT("shadows"),&FMareOptions::Shadows},
   {TEXT("global_illumination"),&FMareOptions::GlobalIllumination},{TEXT("reflections"),&FMareOptions::Reflections},{TEXT("post_process"),&FMareOptions::PostProcess},
   {TEXT("textures"),&FMareOptions::Textures},{TEXT("foliage"),&FMareOptions::Foliage},{TEXT("anti_aliasing"),&FMareOptions::AntiAliasing},
-  {TEXT("window_mode"),&FMareOptions::WindowMode},{TEXT("frame_limit"),&FMareOptions::FrameLimit},{TEXT("pad_glyphs"),&FMareOptions::PadGlyphs}};
+  {TEXT("window_mode"),&FMareOptions::WindowMode},{TEXT("frame_limit"),&FMareOptions::FrameLimit},{TEXT("pad_glyphs"),&FMareOptions::PadGlyphs},
+  {TEXT("frame_generation"),&FMareOptions::FrameGeneration},{TEXT("view_distance"),&FMareOptions::ViewDistance},{TEXT("effects"),&FMareOptions::Effects},
+  {TEXT("shading"),&FMareOptions::Shading},{TEXT("model_detail"),&FMareOptions::ModelDetail},{TEXT("crowd"),&FMareOptions::Crowd}};
  const TPair<const TCHAR*,float FMareOptions::*> Floats[]={{TEXT("resolution_scale"),&FMareOptions::ResolutionScale},{TEXT("field_of_view"),&FMareOptions::FieldOfView},{TEXT("mouse_sensitivity"),&FMareOptions::MouseSensitivity},{TEXT("gamepad_sensitivity"),&FMareOptions::GamepadSensitivity},{TEXT("text_scale"),&FMareOptions::TextScale}};
  const TPair<const TCHAR*,bool FMareOptions::*> Bools[]={{TEXT("vsync"),&FMareOptions::bVSync},{TEXT("invert_y"),&FMareOptions::bInvertY},{TEXT("tips"),&FMareOptions::bTips},{TEXT("color_safe"),&FMareOptions::bColorSafe}};
  /** Legacy mappings (DefaultInput.ini) driven by each remappable action; axes carry their scale. */
@@ -42,11 +44,32 @@ namespace MareOptionsData
  // Plugin upscalers are only offered when their console variables exist.
  const TCHAR* DLSSVar=TEXT("r.NGX.DLSS.Enable");
  const TCHAR* FSRVars[]={TEXT("r.FidelityFX.FSR4.Enabled"),TEXT("r.FidelityFX.FSR3.Enabled"),TEXT("r.FidelityFX.FSR.Enabled")};
+ const TCHAR* FrameGenVar=TEXT("r.Streamline.DLSSG.Enable");
  void SetVar(const TCHAR* Name,int32 Value){if(auto Var=IConsoleManager::Get().FindConsoleVariable(Name))if(Var->GetInt()!=Value)Var->Set(Value,ECVF_SetByCode);}
- void ApplyUpscaler(const FString& Wanted)
+ void SetFloat(const TCHAR* Name,float Value){if(auto Var=IConsoleManager::Get().FindConsoleVariable(Name))if(!FMath::IsNearlyEqual(Var->GetFloat(),Value))Var->Set(Value,ECVF_SetByCode);}
+ /** Calls a static UFUNCTION of an optional plugin's Blueprint library; Read gets the parameter block afterwards. */
+ bool CallLibrary(const TCHAR* ClassPath,const TCHAR* Function,TFunctionRef<void(UFunction*,uint8*)> Read)
+ {
+  UClass* Library=FindObject<UClass>(nullptr,ClassPath);UFunction* Func=Library?Library->FindFunctionByName(Function):nullptr;
+  if(!Func || Func->NumParms>2 || !Func->HasAnyFunctionFlags(FUNC_Static))return false;
+  TArray<uint8,TInlineAllocator<64>> Params;Params.SetNumZeroed(FMath::Max<int32>(Func->ParmsSize,1));
+  for(TFieldIterator<FProperty> It(Func);It && It->HasAnyPropertyFlags(CPF_Parm);++It)It->InitializeValue_InContainer(Params.GetData());
+  Library->GetDefaultObject()->ProcessEvent(Func,Params.GetData());Read(Func,Params.GetData());
+  for(TFieldIterator<FProperty> It(Func);It && It->HasAnyPropertyFlags(CPF_Parm);++It)It->DestroyValue_InContainer(Params.GetData());
+  return true;
+ }
+ bool CallBool(const TCHAR* ClassPath,const TCHAR* Function)
+ {
+  bool bResult=false;
+  CallLibrary(ClassPath,Function,[&bResult](UFunction* Func,uint8* Params){if(auto Ret=CastField<FBoolProperty>(Func->GetReturnProperty()))bResult=Ret->GetPropertyValue_InContainer(Params);});
+  return bResult;
+ }
+ void ApplyUpscaler(const FString& Wanted,int32 FrameGeneration)
  {
   const FString Use=FMareOptions::Upscalers().Contains(Wanted)?Wanted:FString(TEXT("TSR"));
   SetVar(DLSSVar,Use==TEXT("DLSS"));for(const TCHAR* Name:FSRVars)SetVar(Name,Use==TEXT("FSR"));
+  // Reflex comes on with it by itself (t.Streamline.Reflex.Auto).
+  SetVar(FrameGenVar,FMareOptions::FrameGenerationSupported()?FMath::Clamp(FrameGeneration,0,2):0);
  }
  FMareOptions& Live()
  {
@@ -73,9 +96,30 @@ FText FMareOptions::CultureName(const FString& Name){return FText::FromString(Na
 TArray<FString> FMareOptions::Upscalers()
 {
  TArray<FString> List={TEXT("TSR")};auto& Console=IConsoleManager::Get();
- if(Console.FindConsoleVariable(MareOptionsData::DLSSVar))List.Add(TEXT("DLSS"));
+ if(Console.FindConsoleVariable(MareOptionsData::DLSSVar) && DLSSSupported())List.Add(TEXT("DLSS"));
  for(const TCHAR* Name:MareOptionsData::FSRVars)if(Console.FindConsoleVariable(Name)){List.Add(TEXT("FSR"));break;}
  return List;
+}
+bool FMareOptions::bEngineReady=false;
+bool FMareOptions::DLSSSupported(){return bEngineReady && !IsRunningCommandlet() && MareOptionsData::CallBool(TEXT("/Script/DLSSBlueprint.DLSSLibrary"),TEXT("IsDLSSSupported"));}
+void FMareOptions::ApplyNvidia()
+{
+ FMareOptions& Options=MareOptionsData::Live();
+ // First run on an NVIDIA RTX card (no options file yet, not a QA run): DLSS upscaling and, on RTX 40+, frame generation in auto mode.
+ if(!IsQARun() && !FPaths::FileExists(DefaultPath())){if(DLSSSupported())Options.Upscaler=TEXT("DLSS");if(FrameGenerationSupported())Options.FrameGeneration=2;}
+ MareOptionsData::ApplyUpscaler(Options.Upscaler,Options.FrameGeneration);
+}
+bool FMareOptions::FrameGenerationSupported()
+{
+ return bEngineReady && !IsRunningCommandlet() && IConsoleManager::Get().FindConsoleVariable(MareOptionsData::FrameGenVar)
+  && MareOptionsData::CallBool(TEXT("/Script/StreamlineDLSSGBlueprint.StreamlineLibraryDLSSG"),TEXT("IsDLSSGSupported"));
+}
+float FMareOptions::PresentedFrameRate()
+{
+ float Rate=0.f;
+ MareOptionsData::CallLibrary(TEXT("/Script/StreamlineDLSSGBlueprint.StreamlineLibraryDLSSG"),TEXT("GetDLSSGFrameTiming"),[&Rate](UFunction* Func,uint8* Params){
+  if(auto Prop=CastField<FFloatProperty>(Func->FindPropertyByName(TEXT("FrameRateInHertz"))))Rate=Prop->GetPropertyValue_InContainer(Params);});
+ return Rate;
 }
 FMareOptions FMareOptions::Defaults()
 {
@@ -91,6 +135,7 @@ FMareOptions FMareOptions::FromEngine()
   Options.Preset=Overall>=0?Overall:Settings->GetViewDistanceQuality();
   Options.Shadows=Settings->GetShadowQuality();Options.GlobalIllumination=Settings->GetGlobalIlluminationQuality();Options.Reflections=Settings->GetReflectionQuality();
   Options.PostProcess=Settings->GetPostProcessingQuality();Options.Textures=Settings->GetTextureQuality();Options.Foliage=Settings->GetFoliageQuality();Options.AntiAliasing=Settings->GetAntiAliasingQuality();
+  Options.ViewDistance=Settings->GetViewDistanceQuality();Options.Effects=Settings->GetVisualEffectQuality();Options.Shading=Settings->GetShadingQuality();
   float Normalized,Value,Min,Max;Settings->GetResolutionScaleInformationEx(Normalized,Value,Min,Max);Options.ResolutionScale=Value;
   Options.Resolution=Settings->GetScreenResolution();Options.WindowMode=Settings->GetFullscreenMode();
   Options.bVSync=Settings->IsVSyncEnabled();Options.FrameLimit=FMath::RoundToInt(Settings->GetFrameRateLimit());
@@ -131,9 +176,11 @@ bool FMareOptions::SaveFile(const FString& Path)const
 }
 void FMareOptions::Sanitize()
 {
- for(int32* Level:{&Preset,&Shadows,&GlobalIllumination,&Reflections,&PostProcess,&Textures,&Foliage,&AntiAliasing})*Level=FMath::Clamp(*Level,0,3);
+ for(int32* Level:{&Preset,&Shadows,&GlobalIllumination,&Reflections,&PostProcess,&Textures,&Foliage,&AntiAliasing,&ViewDistance,&Effects,&Shading,&ModelDetail})*Level=FMath::Clamp(*Level,0,3);
+ Crowd=FMath::Clamp(Crowd,0,2);
  ResolutionScale=FMath::Clamp(FMath::RoundToFloat(ResolutionScale),25.f,100.f);
  if(Upscaler!=TEXT("TSR") && Upscaler!=TEXT("DLSS") && Upscaler!=TEXT("FSR"))Upscaler=TEXT("TSR");
+ FrameGeneration=FMath::Clamp(FrameGeneration,0,2);
  Resolution=FIntPoint(FMath::Clamp(Resolution.X,640,16384),FMath::Clamp(Resolution.Y,480,16384));
  WindowMode=FMath::Clamp(WindowMode,0,2);
  if(!FrameLimits().Contains(FrameLimit)){
@@ -165,10 +212,12 @@ bool FMareOptions::Equals(const FMareOptions& Other)const
 }
 bool FMareOptions::IsCustomPreset()const
 {
- for(int32 Level:{Shadows,GlobalIllumination,Reflections,PostProcess,Textures,Foliage,AntiAliasing})if(Level!=Preset)return true;
+ for(int32 Level:{Shadows,GlobalIllumination,Reflections,PostProcess,Textures,Foliage,AntiAliasing,ViewDistance,Effects,Shading,ModelDetail})if(Level!=Preset)return true;
  return false;
 }
-void FMareOptions::SetPreset(int32 Level){Preset=Shadows=GlobalIllumination=Reflections=PostProcess=Textures=Foliage=AntiAliasing=FMath::Clamp(Level,0,3);}
+void FMareOptions::SetPreset(int32 Level){Preset=Shadows=GlobalIllumination=Reflections=PostProcess=Textures=Foliage=AntiAliasing=ViewDistance=Effects=Shading=ModelDetail=FMath::Clamp(Level,0,3);}
+int32 FMareOptions::CrowdWalkers()const{static const int32 Walkers[]={3,6,12};return Walkers[FMath::Clamp(Crowd,0,2)];}
+float FMareOptions::CrowdDrawDistance()const{static const float Reach[]={3500.f,5000.f,8000.f};return Reach[FMath::Clamp(Crowd,0,2)];}
 FKey FMareOptions::Key(FName Action)const
 {
  if(const FKey* Found=Keys.Find(Action))return *Found;
@@ -200,10 +249,20 @@ void FMareOptions::ApplyGraphics()const
  Settings->SetOverallScalabilityLevel(Preset);
  Settings->SetShadowQuality(Shadows);Settings->SetGlobalIlluminationQuality(GlobalIllumination);Settings->SetReflectionQuality(Reflections);
  Settings->SetPostProcessingQuality(PostProcess);Settings->SetTextureQuality(Textures);Settings->SetFoliageQuality(Foliage);Settings->SetAntiAliasingQuality(AntiAliasing);
+ Settings->SetViewDistanceQuality(ViewDistance);Settings->SetVisualEffectQuality(Effects);Settings->SetShadingQuality(Shading);
  Settings->SetResolutionScaleValueEx(ResolutionScale);   // after the overall level, which also sets the 3D scale
  Settings->SetVSyncEnabled(bVSync);Settings->SetFrameRateLimit(float(FrameLimit));
  Settings->ApplyNonResolutionSettings();Settings->SaveSettings();
- MareOptionsData::ApplyUpscaler(Upscaler);KeepLumenSafe();
+ MareOptionsData::ApplyUpscaler(Upscaler,FrameGeneration);ApplyDetail();KeepLumenSafe();
+}
+void FMareOptions::ApplyDetail()const
+{
+ // Lower detail switches models to their simpler LODs closer to the camera.
+ static const float MeshScale[]={2.f,1.5f,1.f,.8f};static const int32 SkinBias[]={2,1,0,0};
+ MareOptionsData::SetFloat(TEXT("r.StaticMeshLODDistanceScale"),MeshScale[FMath::Clamp(ModelDetail,0,3)]);
+ MareOptionsData::SetVar(TEXT("r.SkeletalMeshLODBias"),SkinBias[FMath::Clamp(ModelDetail,0,3)]);
+ // MetaHuman hair physics (Niagara strand solver) only on Epic effects: 04/11 EXE, off = beach 59 -> 62, kiosk 56 -> 61 FPS.
+ MareOptionsData::SetVar(TEXT("r.HairStrands.Simulation"),Effects>=3?1:0);
 }
 bool FMareOptions::ApplyDisplay()const
 {
@@ -242,7 +301,7 @@ void FMareOptions::ApplyStartup()
  const FMareOptions& Options=Get();
  // The packaged game re-applies its saved graphics (the editor keeps its own viewport settings).
  if(!GIsEditor && !IsQARun() && FPaths::FileExists(DefaultPath()))Options.ApplyGraphics();
- else MareOptionsData::ApplyUpscaler(Options.Upscaler);
+ else{MareOptionsData::ApplyUpscaler(Options.Upscaler,Options.FrameGeneration);Options.ApplyDetail();}
  Options.ApplyCulture();KeepLumenSafe();
 }
 #undef LOCTEXT_NAMESPACE

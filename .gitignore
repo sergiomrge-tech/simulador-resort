@@ -82,3 +82,6 @@ unreal/MareAlta/Content/People/Animations/MH_DanceHip.uasset
 unreal/MareAlta/Content/People/Animations/MH_Cheer.uasset
 unreal/MareAlta/Content/People/Retarget/IK_Mocap*
 unreal/MareAlta/Content/People/Retarget/RTG_Mocap*
+
+# NVIDIA DLSS 4.5 plugins (tools/ue58/install_dlss.ps1; ~3.5 GB, NVIDIA RTX SDK EULA)
+unreal/MareAlta/Plugins/NVIDIA/

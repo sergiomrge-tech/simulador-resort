@@ -270,7 +270,7 @@ void AMarePreviewQA::Tick(float DeltaSeconds)
  case 52:Check(TEXT("home_shower_on"),GetWorld()->GetSubsystem<UMareHomeWorld>()->IsShowerOn());Capture(TEXT("home-shower"));GetWorld()->GetSubsystem<UMareHomeWorld>()->Use(TEXT("HomeShower"));break;
  case 53:{auto Home=GetWorld()->GetSubsystem<UMareHomeWorld>();Check(TEXT("home_appliances_cycle"),!Home->IsTVOn() && !Home->IsStereoOn() && !Home->IsShowerOn() && !Home->IsSeated() && Sim->Save());break;}
  case 54:{
-  auto Village=GetWorld()->GetSubsystem<UMareVillageWorld>();Check(TEXT("village_residents_present"),Village->ResidentCount()==5);Check(TEXT("village_pedestrian_budget"),Village->PedestrianCount()==12);
+  auto Village=GetWorld()->GetSubsystem<UMareVillageWorld>();Check(TEXT("village_residents_present"),Village->ResidentCount()==5);Check(TEXT("village_pedestrian_budget"),Village->PedestrianCount()==6);
   int32 Moving=0;bool Looks=true;for(TActorIterator<AMarePerson> It(GetWorld());It;++It){if(It->bAmbient && It->PersonName==TEXT("Morador") && It->GetVelocity().Size2D()>15)++Moving;
    if(It->PersonName==TEXT("Dona Roberta") || It->PersonName==TEXT("Dona Cecília"))Looks &= It->Variant==2;}
   Check(TEXT("village_walkers_active"),Moving>=5);Check(TEXT("village_resident_looks"),Looks);

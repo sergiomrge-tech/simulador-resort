@@ -2,6 +2,7 @@
 #include "MareGame.h"
 #include "MarePerson.h"
 #include "MareSimulation.h"
+#include "MareOptions.h"
 #include "EngineUtils.h"
 #include "Engine/Engine.h"
 #include "Engine/GameViewportClient.h"
@@ -13,6 +14,7 @@
 #include "Serialization/JsonSerializer.h"
 #include "UnrealClient.h"
 #include "RHI.h"
+#include "HAL/IConsoleManager.h"
 #include "GameFramework/GameModeBase.h"
 #include "Components/InstancedStaticMeshComponent.h"
 #include "UObject/UObjectIterator.h"
@@ -53,7 +55,7 @@ void AMareBench::Enter(AMareController* PC)
  const double Now=UMareSimulation::Number(Sim->State,TEXT("minutes"));
  if(S.Minutes>Now)Sim->AdvanceMinutes(S.Minutes-Now);
  Hero->SetActorLocation(S.At);PC->SetControlRotation(S.Look);
- Frames.Reset();Game.Reset();Render.Reset();Gpu.Reset();Stage=0;Next=FPlatformTime::Seconds()+8;
+ Frames.Reset();Game.Reset();Render.Reset();Gpu.Reset();Presented.Reset();Stage=0;Next=FPlatformTime::Seconds()+8;
 }
 
 void AMareBench::Tick(float DeltaSeconds)
@@ -66,7 +68,11 @@ void AMareBench::Tick(float DeltaSeconds)
   for(const TCHAR* C:{TEXT("t.MaxFPS 0"),TEXT("r.VSync 0")})GEngine->Exec(GetWorld(),C);
   // Experiments without a new package: -MareBenchExec="cvar value;cvar value" runs those console commands first.
   FString Extra;if(FParse::Value(FCommandLine::Get(),TEXT("MareBenchExec="),Extra,false)){TArray<FString> Commands;Extra.TrimQuotes().ParseIntoArray(Commands,TEXT(";"));
-   for(const FString& C:Commands)GEngine->Exec(GetWorld(),*C.TrimStartAndEnd());}
+   // A console variable is set with code priority, like the game's own options: a console-priority Exec is silently
+   // refused once FMareOptions set the variable (04/11: r.Streamline.DLSSG.Enable 1 never reached frame generation).
+   for(const FString& C:Commands){FString Name,Value;const FString Line=C.TrimStartAndEnd();
+    if(Line.Split(TEXT(" "),&Name,&Value))if(auto Var=IConsoleManager::Get().FindConsoleVariable(*Name)){Var->Set(*Value.TrimStartAndEnd(),ECVF_SetByCode);continue;}
+    GEngine->Exec(GetWorld(),*Line);}}
   // Everything a late game has: all expansions and the Grand Hotel (fame and the carnaval chapter played through state).
   auto Sim=PC->GetSimulation();Sim->State->SetNumberField(TEXT("money"),500000);
   UMareSimulation::Object(UMareSimulation::Object(Sim->State,TEXT("prog")),TEXT("ch"))->SetNumberField(TEXT("carnaval"),3);Sim->AddFame(100000);
@@ -85,6 +91,8 @@ void AMareBench::Tick(float DeltaSeconds)
  if(Stage==1){
   Frames.Add(FApp::GetDeltaTime()*1000.f);Game.Add(FPlatformTime::ToMilliseconds(GGameThreadTime));Render.Add(FPlatformTime::ToMilliseconds(GRenderThreadTime));
   Gpu.Add(FPlatformTime::ToMilliseconds(RHIGetGPUFrameCycles(0)));
+  // With DLSS frame generation the engine's frame time counts only rendered frames; Streamline reports what reached the screen.
+  Presented.Add(FMareOptions::PresentedFrameRate());
   if(FPlatformTime::Seconds()<Next)return;
   FCsvProfiler::Get()->EndCapture();
   FScreenshotRequest::RequestScreenshot(Root/(FString(TEXT("bench-"))+Sectors[Sector].Name+TEXT(".png")),true,false);
@@ -98,7 +106,9 @@ void AMareBench::Tick(float DeltaSeconds)
   auto Row=MakeShared<FJsonObject>();Row->SetStringField(TEXT("sector"),Sectors[Sector].Name);Row->SetNumberField(TEXT("frames"),Frames.Num());
   Row->SetNumberField(TEXT("avg_ms"),Frames.Num()?Sum/Frames.Num():0);Row->SetNumberField(TEXT("avg_fps"),Sum>0?1000.0*Frames.Num()/Sum:0);
   Row->SetNumberField(TEXT("p50_ms"),Pct(.5));Row->SetNumberField(TEXT("p95_ms"),Pct(.95));Row->SetNumberField(TEXT("p99_ms"),Pct(.99));Row->SetNumberField(TEXT("worst_ms"),Sorted.Num()?Sorted.Last():0);
-  Row->SetNumberField(TEXT("game_ms"),Avg(Game));Row->SetNumberField(TEXT("render_ms"),Avg(Render));Row->SetNumberField(TEXT("gpu_ms"),Avg(Gpu));
+  Row->SetNumberField(TEXT("game_ms"),Avg(Game));Row->SetNumberField(TEXT("render_ms"),Avg(Render));Row->SetNumberField(TEXT("gpu_ms"),Avg(Gpu));Row->SetNumberField(TEXT("presented_fps"),Avg(Presented));
+  if(auto FG=IConsoleManager::Get().FindConsoleVariable(TEXT("r.Streamline.DLSSG.Enable")))Row->SetNumberField(TEXT("frame_generation_cvar"),FG->GetInt());
+  Row->SetBoolField(TEXT("frame_generation_supported"),FMareOptions::FrameGenerationSupported());Row->SetBoolField(TEXT("focus"),FApp::HasFocus());
   Row->SetNumberField(TEXT("clock"),UMareSimulation::Number(PC->GetSimulation()->State,TEXT("minutes")));
   {FString Extra;FParse::Value(FCommandLine::Get(),TEXT("MareBenchExec="),Extra,false);Row->SetStringField(TEXT("exec"),Extra);
    FString NoShadow;FParse::Value(FCommandLine::Get(),TEXT("MareBenchNoShadow="),NoShadow);Row->SetStringField(TEXT("no_shadow"),NoShadow);}
@@ -154,7 +164,7 @@ void AMareBench::Sweep()
   else{const FSweepGroup& G=Groups[SweepIndex];Row->SetStringField(TEXT("hidden"),G.Mesh);Row->SetNumberField(TEXT("instances"),G.Instances);
    Row->SetNumberField(TEXT("sections"),G.Sections);Row->SetNumberField(TEXT("components"),G.Parts.Num());
    for(auto& P:G.Parts)if(P.IsValid())P->SetVisibility(true);}
-  Row->SetNumberField(TEXT("frame_ms"),Avg(Frames));Row->SetNumberField(TEXT("render_ms"),Avg(Render));Row->SetNumberField(TEXT("gpu_ms"),Avg(Gpu));Row->SetNumberField(TEXT("game_ms"),Avg(Game));
+  Row->SetNumberField(TEXT("frame_ms"),Avg(Frames));Row->SetNumberField(TEXT("render_ms"),Avg(Render));Row->SetNumberField(TEXT("gpu_ms"),Avg(Gpu));Row->SetNumberField(TEXT("presented_fps"),Avg(Presented));Row->SetNumberField(TEXT("game_ms"),Avg(Game));
   Records.Add(MakeShared<FJsonValueObject>(Row));
   if(++SweepIndex>=Groups.Num()){auto Report=MakeShared<FJsonObject>();Report->SetArrayField(TEXT("sweep"),Records);Report->SetBoolField(TEXT("finished"),true);
    FString Text;FJsonSerializer::Serialize(Report,TJsonWriterFactory<>::Create(&Text));FFileHelper::SaveStringToFile(Text,*(Root/TEXT("sweep.json")));

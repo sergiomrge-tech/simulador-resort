@@ -1,4 +1,5 @@
 #include "MareVillageWorld.h"
+#include "MareOptions.h"
 #include "MareNotebookStyle.h"
 #include "Widgets/Layout/SWrapBox.h"
 #include "MareGame.h"
@@ -65,9 +66,8 @@ void UMareVillageWorld::Setup()
 void UMareVillageWorld::UpdateWalkers(float Dt)
 {
  auto Hero=UGameplayStatics::GetPlayerPawn(this,0);if(!Hero)return;
- // Mixed/custom presets report overall quality -1; use the actual distance setting.
- const bool Low=UGameUserSettings::GetGameUserSettings()->GetViewDistanceQuality()<=1;int32 Budget=Low?5:12;
- GConfig->GetInt(TEXT("MareCrowd"),Low?TEXT("LowBudget"):TEXT("HighBudget"),Budget,GGameUserSettingsIni);Budget=FMath::Clamp(Budget,0,24);
+ // "Pessoas" graphics option: 3 / 6 / 12 walkers (04/11: halved from 12 for 60 FPS, every MetaHuman costs render-thread time).
+ const int32 Budget=FMareOptions::Get().CrowdWalkers();
  if(Pedestrians.Num()<Budget && Routes.Num()){
   const int32 Index=Pedestrians.Num(),Route=Index%Routes.Num();const auto& Points=Routes[Route];const int32 Start=(Index/Routes.Num())%Points.Num();
   if(auto Person=SpawnPerson(Points[Start],Index%4,TEXT("Morador"))){FWalker Walker;Walker.Person=Person;Walker.Route=Route;Walker.Point=FMath::Min(Start+1,Points.Num()-1);Walker.Previous=Person->GetActorLocation();
@@ -76,6 +76,7 @@ void UMareVillageWorld::UpdateWalkers(float Dt)
  for(int32 I=Pedestrians.Num()-1;I>=0;--I){auto& W=Pedestrians[I];auto P=W.Person.Get();if(!P){Pedestrians.RemoveAt(I);continue;}
   if(I>=Budget){P->Destroy();Pedestrians.RemoveAt(I);continue;}
   P->GetMesh()->SetComponentTickInterval(FVector::DistSquared(P->GetActorLocation(),Hero->GetActorLocation())>FMath::Square(3000.f)?.15f:0.f);
+  if(P->bHiddenByDistance){W.Stuck=0;continue;}   // out of the scene: paused where it is (AMarePerson::SetDistanceHidden)
   if(W.Wait>0){W.Wait-=Dt;P->bConversing=W.Wait>1;if(W.Wait<=0)P->WalkTo(Routes[W.Route][W.Point]);continue;}P->bConversing=false;
   const auto& Points=Routes[W.Route];
   if(P->AtGoal()){
@@ -100,13 +101,12 @@ void UMareVillageWorld::UpdateHotelGuests()
  // Terrace venues follow the Godot hotel_world.gd layout: restaurant floor 155, gym floor 148, pool bar 120.
  struct FSpot{FVector At;float Yaw;int32 Look;bool bTalk,bSeat;const TCHAR* Name;};
  TArray<FSpot> Spots={{FVector(-1390,6565,133),-90,2,true,false,TEXT("Recepcionista")},{FVector(-1390,6330,133),90,0,true,false,TEXT("Hóspede")},
-  {FVector(-1560,5760,133),90,3,true,false,TEXT("Hóspede")},{FVector(-1560,5880,133),-90,2,true,false,TEXT("Hóspede")},{FVector(-2600,6690,133),90,1,false,false,TEXT("Hóspede")},
-  {FVector(-1290,3000,236),0,1,true,false,TEXT("Hóspede")},{FVector(-1180,3000,236),180,0,true,false,TEXT("Hóspede")},
+  {FVector(-1560,5760,133),90,3,true,false,TEXT("Hóspede")},{FVector(-1560,5880,133),-90,2,true,false,TEXT("Hóspede")},
   {FVector(-2660,4520,208),90,3,true,false,TEXT("Hóspede")},{FVector(-2530,4510,208),110,2,true,false,TEXT("Hóspede")},{FVector(-2600,4760,208),-90,0,false,false,TEXT("Barman")}};
  // Restaurant diners sit on the real chairs (Content/Data/hotel_seats.json, measured from the chair meshes by
  // mare_hud.chair_seats): the old fixed offsets from the table left them in the air or on the backrest. For seats
  // At is the seat top; AMarePerson::SitOn then aligns the animated pelvis on it.
- const struct{int32 Table;bool bBoth;int32 Look;}Tables[]={{0,true,0},{3,true,2},{4,false,1}};   // restaurant.json indices
+ const struct{int32 Table;bool bBoth;int32 Look;}Tables[]={{0,true,0},{4,false,1}};   // 04/11: fewer people for FPS   // restaurant.json indices
  for(const auto& T:Tables)for(int32 Side=0;Side<(T.bBoth?2:1);++Side){FVector Seat;float Yaw;
   if(AMarePerson::HotelSeat(T.Table,Side,Seat,Yaw))Spots.Add({Seat,Yaw,Side?(T.Look+3)%4:T.Look,true,true,TEXT("Hóspede")});}
  for(const auto& S:Spots){FActorSpawnParameters Params;Params.SpawnCollisionHandlingOverride=ESpawnActorCollisionHandlingMethod::AlwaysSpawn;

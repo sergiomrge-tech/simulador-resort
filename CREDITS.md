@@ -111,6 +111,10 @@ Revisão sonora de 23/10/2026: bird1/bird2 são reutilizados com reprodução
 - Coqueiros, telhados, casas, igreja, quiosque e o restante da arquitetura são geometria procedural em GDScript (`scripts/`).
 
 ## Ferramentas
+- **NVIDIA DLSS 4.5 para Unreal Engine 5.8** (plugin v8.9.0: DLSS Super Resolution, DLSS Frame Generation via Streamline,
+  Reflex), baixado de https://developer.nvidia.com/rtx/dlss em 04/11/2026. Licença NVIDIA RTX SDK EULA (gratuita; permite
+  distribuir as DLLs com o jogo). Fora do git: instalar com `tools/ue58/install_dlss.ps1`. Marcas NVIDIA/DLSS dos
+  respectivos donos; o jogo só mostra as opções em placas compatíveis.
 - Godot Engine 4.5.1 (MIT) — https://godotengine.org
 
 ## v0.4 — material, fonte e ícones

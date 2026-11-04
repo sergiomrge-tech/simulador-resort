@@ -1119,7 +1119,95 @@ def small_props(arg):
     return {'components': seen, 'shadow_off': shadow_off, 'culled_40m': culled}
 
 
+def mesh_slots(paths):
+    """"path;path": material slots of static meshes: slot name, material, parents chain, blend mode, scalar/vector params."""
+    out = {}
+    for path in [p for p in paths.split(';') if p]:
+        mesh = unreal.EditorAssetLibrary.load_asset(path)
+        rows = []
+        for i, slot in enumerate(mesh.static_materials):
+            m = slot.material_interface
+            chain, cur = [], m
+            while cur is not None:
+                chain.append(cur.get_path_name())
+                cur = cur.get_editor_property('parent') if isinstance(cur, unreal.MaterialInstance) else None
+            params = {}
+            if isinstance(m, unreal.MaterialInstance):
+                for v in m.get_editor_property('scalar_parameter_values'):
+                    params[str(v.parameter_info.name)] = v.parameter_value
+                for v in m.get_editor_property('vector_parameter_values'):
+                    c = v.parameter_value; params[str(v.parameter_info.name)] = [round(c.r, 3), round(c.g, 3), round(c.b, 3), round(c.a, 3)]
+            rows.append({'slot': i, 'name': str(slot.material_slot_name), 'chain': chain, 'blend': _blend_of(m) if m else '', 'params': params})
+        out[path] = rows
+    return out
+
+
+FROSTED_GLASS_MESHES = ['/Game/World/Models/World_0688/World_0688/StaticMeshes/World_0688',
+                        '/Game/World/Models/World_0683/World_0683',
+                        '/Game/World/Models/World_1391/World_1391/StaticMeshes/World_1391']
+
+
+def frosted_glass(arg=''):
+    """'dry' / 'apply' (04/11, FPS): the street lamp posts (World_0688, 193), lanterns (World_0683) and World_1391 had a
+    see-through glass slot (MI_Default_Blend_DS, alpha 0.16), so the whole mesh could not use Nanite and every instance
+    was drawn by the CPU into each shadow page. Their glass becomes M_LampGlassFrosted: opaque frosted white that glows
+    warm at night (MPC_MareTime.Night, like the facade windows); then Nanite goes on. Returns what changed."""
+    import importlib, mare_materials as mm
+    importlib.reload(mm)
+    out = {'meshes': {}}
+    if arg != 'apply':
+        for path in FROSTED_GLASS_MESHES:
+            mesh = unreal.EditorAssetLibrary.load_asset(path)
+            out['meshes'][path] = [i for i, sl in enumerate(mesh.static_materials) if sl.material_interface and 'TRANSLUCENT' in _blend_of(sl.material_interface)]
+        return out
+    mat = mm.material('M_LampGlassFrosted')
+    mat.set_editor_property('used_with_instanced_static_meshes', True)
+    mat.set_editor_property('used_with_nanite', True)
+    night = mm.expression(mat, unreal.MaterialExpressionCollectionParameter, collection=mm.time_collection(), parameter_name='Night')
+    base = mm.expression(mat, unreal.MaterialExpressionConstant3Vector, constant=unreal.LinearColor(.86, .85, .80, 1))
+    glow = mm.custom(mat, 'return float3(1.0,.78,.50)*6.0*smoothstep(.35,.9,N);', unreal.CustomMaterialOutputType.CMOT_FLOAT3, {'N': night})
+    rough = mm.expression(mat, unreal.MaterialExpressionConstant, r=.35)
+    for node, prop in [(base, unreal.MaterialProperty.MP_BASE_COLOR), (glow, unreal.MaterialProperty.MP_EMISSIVE_COLOR), (rough, unreal.MaterialProperty.MP_ROUGHNESS)]:
+        mm.MEL.connect_material_property(node, '', prop)
+    errors = list(mm.MEL.recompile_material(mat))
+    if errors:
+        raise RuntimeError(str(errors))
+    if not unreal.EditorAssetLibrary.save_loaded_asset(mat, False):
+        raise RuntimeError('not saved: M_LampGlassFrosted')
+    for path in FROSTED_GLASS_MESHES:
+        mesh = unreal.EditorAssetLibrary.load_asset(path)
+        slots = list(mesh.static_materials)
+        changed = []
+        for i, sl in enumerate(slots):
+            if sl.material_interface and 'TRANSLUCENT' in _blend_of(sl.material_interface):
+                sl.material_interface = mat
+                slots[i] = sl
+                changed.append(i)
+        mesh.set_editor_property('static_materials', slots)
+        settings = mesh.get_editor_property('nanite_settings')
+        settings.set_editor_property('enabled', True)
+        mesh.set_editor_property('nanite_settings', settings)
+        if not unreal.EditorAssetLibrary.save_loaded_asset(mesh, False):
+            raise RuntimeError('not saved: ' + path)
+        out['meshes'][path] = changed
+    out['material'] = mat.get_path_name()
+    return out
+
+
 def run(action, arg=''):
+    if action == 'piestate':
+        # PIE: paused?, navigation data present?, how many people and how many hidden (QA diagnosis, 04/11).
+        world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()
+        if not world:
+            return json_module.dumps({'pie': False})
+        people = unreal.GameplayStatics.get_all_actors_of_class(world, unreal.MarePerson)
+        navs = unreal.GameplayStatics.get_all_actors_of_class(world, unreal.RecastNavMesh)
+        return json_module.dumps({'pie': True, 'paused': unreal.GameplayStatics.is_game_paused(world), 'navmesh': len(navs),
+                                  'people': len(people), 'hidden': sum(1 for p in people if p.get_editor_property('hidden'))})
+    if action == 'frostedglass':
+        return json_module.dumps(frosted_glass(arg))
+    if action == 'meshslots':
+        return json_module.dumps(mesh_slots(arg))
     if action == 'smallprops':
         return json_module.dumps(small_props(arg))
     if action == 'autolods':

@@ -1,4 +1,5 @@
 #include "MarePerson.h"
+#include "MareOptions.h"
 #include "Camera/PlayerCameraManager.h"
 #include "Misc/PackageName.h"
 #include "MareServiceAnimation.h"
@@ -45,6 +46,8 @@ static TAutoConsoleVariable<int32> CVarMareFaces(TEXT("mare.Faces"),1,TEXT("Meta
 static TAutoConsoleVariable<int32> CVarMareMocap(TEXT("mare.Mocap"),1,TEXT("Use the free Fab mocap clips (seated/standing talk, party dances); 0 = base clips only."));
 static TAutoConsoleVariable<int32> CVarMareOffscreenPose(TEXT("mare.OffscreenPose"),1,TEXT("People nobody sees (no part drawn, not even its shadow, for 0.6 s) keep their pose instead of animating: 1 = on (04/11, 61 people cost 15 ms of render thread with 6 on screen), 0 = always animate."));
 static TAutoConsoleVariable<float> CVarMarePeopleShadowDistance(TEXT("mare.PeopleShadowDistance"),3000.f,TEXT("People farther than this from the camera (cm) cast no shadow: 04/11 the beach drew 3400 shadow draw calls for 61 MetaHumans spread over the map, 6 on screen (0 = always cast)."));
+static TAutoConsoleVariable<float> CVarMarePeopleDrawDistance(TEXT("mare.PeopleDrawDistance"),-1.f,TEXT("People farther than this from the camera (cm) are hidden and stop animating; they keep walking and acting (04/11 EXE: the beach went 33 -> 58 FPS without the ~60 MetaHumans, of whom 6 were on screen: every hidden-yet-registered part still cost render-thread time). 0 = never; -1 (default) = the Pessoas nas cenas graphics option (35 / 50 / 80 m)."));
+static TAutoConsoleVariable<int32> CVarMarePeopleHideOffscreen(TEXT("mare.PeopleHideOffscreen"),1,TEXT("People outside the camera's view cone (screen + 20 degrees, beyond 6 m) for 0.5 s are hidden and paused like the far ones (1 = on)."));
 static TAutoConsoleVariable<FString> CVarMareMetaHuman(TEXT("mare.MetaHuman"),TEXT(""),TEXT("QA: force this built MetaHuman on every new person (empty = roster choice)."));
 
 /** Content/Data/metahumans.json: built MetaHumans per role (staff, hotel, village, beach) and swimwear colours. */
@@ -492,6 +495,20 @@ void AMarePerson::ApplyOutfit(EOutfit Style)
   Dye(6,Shorts[Rng.RandRange(0,4)]);Dye(5,Pick({{.85f,.85f,.82f},{.35f,.25f,.18f},{.10f,.10f,.12f}}));break;}
  }
 }
+void AMarePerson::SetDistanceHidden(bool bHide)
+{
+ // Someone else hid this person (the game room's opponent, a cutscene): leave it to them.
+ if(bHide && IsHidden())return;
+ bHiddenByDistance=bHide;SetActorHiddenInGame(bHide);
+ AActor* Child=MetaHumanBody?MetaHumanBody->GetChildActor():nullptr;if(Child)Child->SetActorHiddenInGame(bHide);
+ // Skinned parts (rig, body, face, clothes) and hair strands stop updating bones; movement and logic keep running.
+ TArray<USceneComponent*> Parts;GetComponents(Parts);if(Child){TArray<USceneComponent*> More;Child->GetComponents(More);Parts.Append(More);}
+ for(auto Part:Parts)if(Part->IsA<USkinnedMeshComponent>() || Part->GetClass()->GetName().Contains(TEXT("Groom")))Part->SetComponentTickEnabled(!bHide);
+ // Ambient people out of the scene also stop walking (Sergio, 04/11); customers and staff keep moving so the kiosk,
+ // hotel and tours keep working while the player is elsewhere.
+ if(bAmbient)GetCharacterMovement()->SetComponentTickEnabled(!bHide);
+}
+
 void AMarePerson::Tick(float DeltaSeconds)
 {
  Super::Tick(DeltaSeconds);Elapsed+=DeltaSeconds;
@@ -508,6 +525,18 @@ void AMarePerson::Tick(float DeltaSeconds)
   const bool bShadow=Reach<=0 || !Camera || FVector::DistSquared(Camera->GetCameraLocation(),GetActorLocation())<Reach*Reach;
   if(bShadow!=bCastsShadow){bCastsShadow=bShadow;for(auto Part:Parts)if(Part!=GetMesh() && Part->IsVisible())Part->SetCastShadow(bShadow);}
   GetMesh()->VisibilityBasedAnimTickOption=bSeen?EVisibilityBasedAnimTickOption::AlwaysTickPoseAndRefreshBones:EVisibilityBasedAnimTickOption::OnlyTickMontagesWhenNotRendered;}
+ // Every frame (cheap): far away (with 5 m of hysteresis so nobody flickers at the edge) or outside the view cone
+ // (the screen plus 20 degrees, so a person is back before the camera turns to them; nobody within 6 m) the person is
+ // not drawn at all. 04/11 EXE: people out of the frame still cost ~4 FPS on the beach and kiosk.
+ if(auto Cam=UGameplayStatics::GetPlayerCameraManager(this,0)){
+  const FVector To=GetActorLocation()-Cam->GetCameraLocation();const float D=To.Size();
+  float Draw=CVarMarePeopleDrawDistance.GetValueOnGameThread();if(Draw<0)Draw=FMareOptions::Get().CrowdDrawDistance();
+  const bool bFar=Draw>0 && D>(bHiddenByDistance?Draw-500.f:Draw);
+  const float HalfCone=FMath::DegreesToRadians(FMath::Min(Cam->GetFOVAngle()*.5f+20.f,89.f));
+  const bool bOut=CVarMarePeopleHideOffscreen.GetValueOnGameThread() && D>600.f && FVector::DotProduct(Cam->GetCameraRotation().Vector(),To/D)<FMath::Cos(HalfCone);
+  OutOfView=bOut?OutOfView+DeltaSeconds:0.f;
+  if(bFar || OutOfView>.5f){if(!bHiddenByDistance)SetDistanceHidden(true);}
+  else if(!bOut && bHiddenByDistance)SetDistanceHidden(false);}
  if(MoodLeft>0)MoodLeft-=DeltaSeconds;
  if(Elapsed>=NextBlink){BlinkAt=Elapsed;NextBlink=Elapsed+FMath::FRandRange(2.8f,6.f);}
  if(SeatAlignIn>0 && (SeatAlignIn-=DeltaSeconds)<=0 && Playing==TEXT("Sitting_Idle") && GetMesh()->GetBoneIndex(TEXT("pelvis"))!=INDEX_NONE){
