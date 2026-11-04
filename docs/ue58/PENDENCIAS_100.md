@@ -501,6 +501,15 @@ Pronto e testado (02/11):
   Plano: (1) LODs automáticos nas malhas sem Nanite mais desenhadas; (2) separar o vidro dos postes/lanternas numa malha
   própria para o corpo opaco ganhar Nanite; (3) distância de corte e sem sombra em objetos pequenos; (4) HZB ligado.
   Ferramentas: `tools/ue58/bench_package.ps1 -Exec/-NoShadow/-Fullscreen`, `-MareBenchSweep`, `hud_shadowcasters`.
+  04/11, dicas da pesquisa aplicadas (commit 0df7d273): LODs automáticos em 42 malhas sem Nanite (`hud_autolods`), HZB
+  ligado, 260 objetos <15 cm sem sombra e 608 <60 cm cortados além de 40 m (`hud_smallprops`). Executável na praia:
+  render 30,0 → 21,1 ms, GPU 20,7 → 19,1, jogo 15,8 → 13,7, mas o quadro continua ~30 ms. Unreal Insights
+  (`UnrealInsights.exe -OpenTraceFile=... -ExecOnAnalysisCompleteCmd="@=cmds.rsp" -AutoQuit -NoUI`, comandos
+  `TimingInsights.ExportTimerStatistics <csv> -threads="RenderThread 0"|GameThread|RHIThread|GPU0-Graphics0`):
+  as threads passam o quadro esperando umas às outras (jogo espera ~13 ms, render ~10, RHI ~23). GPU na fila gráfica:
+  VRS/ContrastAdaptiveShading 3,9 ms, TSR 3,8, cabelo 2,7 (testados VRS off e TAA: FPS igual). Só baixar a resolução
+  move o quadro (+4 FPS): o tempo real da placa deve passar dos 19 ms medidos. Próximo: exportar as filas
+  GPU0-Compute0/GPU0-Copy0 e as bolhas da fila gráfica na linha do tempo.
 - [x] P0 Sessões de 2 h sem crash (GPU page fault do hotel mitigado com `r.Lumen.AsyncCompute=0`; re-testar).
   04/11: `tools/ue58/bench_package.ps1 -Soak 7200` (executável, tudo liberado): 120 min, 60 voltas pelos 4 setores dormindo
   entre elas (60 dias de jogo, saguão do hotel visitado 60 vezes), nenhum erro no log, FPS estável do início ao fim
