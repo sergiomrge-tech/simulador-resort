@@ -87,8 +87,8 @@ void UMareEventsWorld::Tick(float DeltaSeconds)
   Put(TEXT("festa_bunting"),-3.5,0,90);Put(TEXT("festa_bunting"),3.5,0,90);
   Fire=GetWorld()->SpawnActor<APointLight>(Ground(Centre)+FVector(0,0,120),FRotator::ZeroRotator);
   if(Fire){Fire->PointLightComponent->SetLightColor(FLinearColor(1.f,.55f,.2f));Fire->PointLightComponent->SetAttenuationRadius(1400);Fire->PointLightComponent->SetMobility(EComponentMobility::Movable);}}
- else if(Event==TEXT("show_dj")){Put(TEXT("festa_dj_booth"),0,2,0);Put(TEXT("festa_bunting"),0,-1,0);}
- else if(Event==TEXT("carnaval")){Put(TEXT("festa_dj_booth"),0,2,0);Put(TEXT("festa_bunting"),-3,-1,0);Put(TEXT("festa_bunting"),3,-1,0);Put(TEXT("festa_stall"),-5,1,90);}
+ else if(Event==TEXT("show_dj")){Put(TEXT("festa_dj"),0,2,180);Put(TEXT("festa_bunting"),0,-1,0);}
+ else if(Event==TEXT("carnaval")){Put(TEXT("festa_dj"),0,2,180);Put(TEXT("festa_bunting"),-3,-1,0);Put(TEXT("festa_bunting"),3,-1,0);Put(TEXT("festa_stall"),-5,1,90);}
  // Paid decoration: the party banner at the entrance and an extra row of bunting.
  if(bDeco){Put(TEXT("festa_banner"),0,-8,0);Put(TEXT("festa_bunting"),0,-5.5f,0);}
 }

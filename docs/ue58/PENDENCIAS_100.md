@@ -555,12 +555,16 @@ Regra do projeto: nenhum asset low poly no jogo.
   Antes: a lenha (`festa_campfire_logs`, vinda da Godot) eram poucos troncos lisos e a chama
   ficou com cara de cone. Refazer com toras de verdade (casca com relevo, pontas cortadas e queimadas, brasas e cinzas
   na base, pedras em volta) e um fogo convincente (chamas em camadas com movimento, faíscas e fumaça em partículas).
-- [~] Revisar os outros modelos trazidos da versão Godot para as festas: barraca trocada pela barraca listrada do Fab
+- [x] Revisar os outros modelos trazidos da versão Godot para as festas: barraca trocada pela barraca listrada do Fab
   (`festa_stall_fab`, 03/11); cabine do DJ, faixa e bandeirinhas sem substituto gratuito adequado no Fab (refazer ou
   procurar de novo); e qualquer outro prop com poucas faces que aparecer na varredura visual final.
   04/11: faixa refeita (`festa_banner`, gen_festival.py banner + gen_banner_print.py): lona impressa "Festa na Praia"
   virada para a festa, verso liso, ilhoses e cordas de 12 mm amarradas nos bambus; a antiga era um pano em branco.
-  Bandeirinhas já eram do gen_festival. Falta a cabine do DJ (aceitável: treliça, caixas, refletores; caixas lisas).
+  Bandeirinhas já eram do gen_festival.
+  04/11: palco do DJ refeito (`festa_dj`, gen_festival.py dj): treliça com diagonais, 5 refletores em suporte U, caixas
+  em tripé com cone/corneta, bancada com estampa "Maré Alta DJ" e LED, toca-discos, mixer, notebook e cabos; virado para
+  a pista (giro 180° no MareEventsWorld: a frente da antiga ficava de costas para os dançarinos). Conferido no lugar
+  da festa (`D:/CodexTemp/qa/dj_scene2.jpg`).
 
 ## 14. Eventos cômicos e personagens memoráveis (pedido do Sergio em 31/10, issue #4; para o final)
 Especificação completa em `docs/ue58/HUMOR_EVENTOS_COMICOS.md`

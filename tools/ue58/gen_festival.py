@@ -4,6 +4,7 @@
 D:/CodexTemp/claude/bpy-env/Scripts/python.exe -I tools/ue58/gen_festival.py
 Output: unreal/MareAlta/SourceArt/Models/Festival/{festa_bunting,festa_stall}.glb (metres, base z=0, front = -Y).
 - festa_banner: printed canvas banner between bamboo poles (print from tools/ue58/gen_banner_print.py), 04/11.
+- festa_dj: DJ stage (truss, spotlights, speakers on tripods, printed desk, turntables, mixer, laptop), 04/11.
 The other party props (dj_booth, campfire_logs, flame and the old blank party_banner) are the Godot-era bpy models
 copied from assets/models/gen by this script."""
 import math
@@ -285,6 +286,150 @@ def banner():
     export(o, 'festa_banner')
 
 
+def lathe(bm, profile, centre, seg=28, mi=0):
+    """Surface of revolution of [(radius, y offset)] about an axis along Y at `centre` (faces -Y): cones, horns."""
+    cx, cy, cz = centre
+    rings = []
+    for r, d in profile:
+        rings.append([bm.verts.new((cx + r * math.cos(2 * math.pi * k / seg), cy + d, cz + r * math.sin(2 * math.pi * k / seg)))
+                      for k in range(seg)])
+    for i in range(len(rings) - 1):
+        for k in range(seg):
+            f = bm.faces.new((rings[i][k], rings[i][(k + 1) % seg], rings[i + 1][(k + 1) % seg], rings[i + 1][k]))
+            f.material_index = mi
+
+
+def disc(bm, centre, r, mi, seg=36):
+    """Flat horizontal disc (vinyl record) at `centre`."""
+    vs = [bm.verts.new((centre[0] + r * math.cos(2 * math.pi * k / seg), centre[1] + r * math.sin(2 * math.pi * k / seg), centre[2]))
+          for k in range(seg)]
+    bm.faces.new(vs).material_index = mi
+
+
+def dj():
+    """festa_dj (04/11): DJ stage replacing the Godot-era festa_dj_booth. 5 x 2.6 m deck; two aluminium truss towers
+    with alternating diagonals and a square top beam carrying five spotlights on yokes; two speakers on tripods (woofer
+    cone with surround and dust cap, horn tweeter, rubber grille frame); desk with a printed front
+    (gen_banner_print.py dj_panel), LED strip, two turntables with records and tonearms, a mixer with knobs, a laptop
+    and cables sagging on the deck. Front = -Y."""
+    bpy.ops.wm.read_factory_settings(use_empty=True)
+    img = bpy.data.images.load(str(OUT / 'festa_dj_print.png'))
+    img.name = 'festa_dj_print'
+    img.pack()
+    printed = bpy.data.materials.new('festa_dj_print')
+    printed.use_nodes = True
+    tex = printed.node_tree.nodes.new('ShaderNodeTexImage')
+    tex.image = img
+    bsdf = printed.node_tree.nodes['Principled BSDF']
+    printed.node_tree.links.new(tex.outputs['Color'], bsdf.inputs['Base Color'])
+    printed.node_tree.links.new(tex.outputs['Color'], bsdf.inputs['Emission Color'])
+    bsdf.inputs['Emission Strength'].default_value = .6
+    bsdf.inputs['Roughness'].default_value = .25
+
+    def glow(name, colour, strength=4.0):
+        m = mat(name, colour, .3)
+        b = m.node_tree.nodes['Principled BSDF']
+        b.inputs['Emission Color'].default_value = (*colour, 1)
+        b.inputs['Emission Strength'].default_value = strength
+        return m
+    mats = [mat('festa_dj_deck', (.09, .09, .1), .6), mat('festa_dj_alu', (.62, .64, .67), .3, 1.0),
+            mat('festa_dj_cabinet', (.05, .05, .055), .7), mat('festa_dj_cone', (.03, .03, .035), .85),
+            mat('festa_dj_rubber', (.02, .02, .02), .9), printed, glow('festa_dj_led', (.35, .85, .9), 6.0),
+            mat('festa_dj_platter', (.15, .15, .16), .35, 1.0), mat('festa_dj_vinyl', (.01, .01, .012), .3),
+            glow('festa_dj_lens_a', (.95, .45, .7)), glow('festa_dj_lens_b', (.4, .8, .95)), glow('festa_dj_lens_c', (.95, .8, .35)),
+            mat('festa_dj_laptop', (.55, .56, .58), .35, 1.0), glow('festa_dj_screen', (.25, .4, .6), 2.0)]
+    DECK, ALU, CAB, CONE, RUB, PRINT, LED, PLAT, VINYL, LA, LB, LC, LAP, SCR = range(14)
+    bm = bmesh.new()
+    uv_layer = bm.loops.layers.uv.new('UVMap')
+    W, D, top = 5.0, 2.6, .22
+    block(bm, (W, D, top), (0, 0, top / 2), DECK)
+    for x in (-W / 2 + .02, W / 2 - .02):
+        block(bm, (.04, D, .05), (x, 0, top + .025), ALU)
+    block(bm, (W, .04, .05), (0, -D / 2 + .02, top + .025), ALU)
+    # Truss towers: 0.3 m square, four chords, rungs every 0.4 m with alternating diagonals; square top beam.
+    H, s, ty = 3.25, .15, .85
+    for tx in (-2.25, 2.25):
+        corners = [(tx - s, ty - s), (tx + s, ty - s), (tx + s, ty + s), (tx - s, ty + s)]
+        for cx, cy in corners:
+            tube(bm, (cx, cy, top), (cx, cy, H), .025, 12, ALU)
+        z, k = top + .2, 0
+        while z < H - .1:
+            for i in range(4):
+                (ax, ay), (bx, by) = corners[i], corners[(i + 1) % 4]
+                tube(bm, (ax, ay, z), (bx, by, z), .012, 8, ALU)
+                if z + .4 < H:
+                    a, b = ((ax, ay), (bx, by)) if k % 2 else ((bx, by), (ax, ay))
+                    tube(bm, (a[0], a[1], z), (b[0], b[1], z + .4), .01, 8, ALU)
+            z += .4
+            k += 1
+        block(bm, (.5, .5, .02), (tx, ty, top + .01), ALU)
+    for dy in (-s, s):
+        for dz in (-s, s):
+            tube(bm, (-2.25, ty + dy, H - .15 + dz), (2.25, ty + dy, H - .15 + dz), .025, 12, ALU)
+    x = -2.1
+    while x < 2.05:
+        for dy in (-s, s):
+            tube(bm, (x, ty + dy, H - .3), (x + .4, ty + dy, H), .01, 8, ALU)
+        x += .4
+    # Five spotlights on yokes under the beam, aimed down at the dance floor in front.
+    for i, lx in enumerate((-1.6, -.8, 0, .8, 1.6)):
+        y0, z0 = ty - s, H - .5
+        for dx in (-.12, .12):
+            tube(bm, (lx + dx, y0, H - .3), (lx + dx, y0, z0), .012, 8, ALU)
+        tube(bm, (lx - .12, y0, H - .3), (lx + .12, y0, H - .3), .012, 8, ALU)
+        a = Vector((lx, y0, z0))
+        b = a + Vector((0, -.22, -.12))
+        tube(bm, a, b, .085, 20, CAB)
+        lathe(bm, [(.0, 0), (.072, 0)], (b.x, b.y - .002, b.z), seg=20, mi=LA + i % 3)
+    # Speakers on tripods beside the desk.
+    for sx in (-1.75, 1.75):
+        cz = 1.55
+        for ang in (0, 120, 240):
+            a = math.radians(ang)
+            tube(bm, (sx, .1, cz - .5), (sx + .45 * math.sin(a), .1 + .45 * math.cos(a), top), .015, 8, ALU)
+        tube(bm, (sx, .1, cz - .5), (sx, .1, cz - .38), .02, 10, ALU)
+        block(bm, (.5, .4, .78), (sx, .1, cz), CAB)
+        block(bm, (.52, .02, .8), (sx, -.105, cz), RUB)
+        lathe(bm, [(.19, -.111), (.2, -.118), (.17, -.112), (.06, -.07), (.045, -.075), (.0, -.09)], (sx, 0, cz - .12), mi=CONE)
+        lathe(bm, [(.08, -.112), (.06, -.13), (.012, -.07)], (sx, 0, cz + .24), seg=20, mi=CONE)
+    # Desk with the printed front (UV 0..1), LED strip, top, turntables, mixer and laptop.
+    dw, dd, dh = 2.0, .75, 1.0
+    block(bm, (dw, dd, dh), (0, .25, top + dh / 2), CAB)
+    pv = [bm.verts.new(q) for q in ((-dw / 2 + .05, -.131, top + .12), (dw / 2 - .05, -.131, top + .12),
+                                    (dw / 2 - .05, -.131, top + dh - .1), (-dw / 2 + .05, -.131, top + dh - .1))]
+    f = bm.faces.new((pv[3], pv[2], pv[1], pv[0]))
+    f.material_index = PRINT
+    uvs = {pv[0]: (0, 0), pv[1]: (1, 0), pv[2]: (1, 1), pv[3]: (0, 1)}   # v up: the print reads upright
+    for loop in f.loops:
+        loop[uv_layer].uv = uvs[loop.vert]
+    f.tag = True
+    block(bm, (dw - .1, .015, .025), (0, -.133, top + .07), LED)
+    block(bm, (dw + .1, dd + .1, .04), (0, .25, top + dh + .02), RUB)
+    for tx in (-.62, .62):
+        block(bm, (.48, .38, .08), (tx, .25, top + dh + .08), PLAT)
+        disc(bm, (tx, .25, top + dh + .121), .15, VINYL)
+        tube(bm, (tx + .18, .38, top + dh + .13), (tx + .05, .2, top + dh + .135), .006, 8, ALU)
+    block(bm, (.34, .36, .1), (0, .25, top + dh + .09), CAB)
+    for kx in (-.1, -.03, .03, .1):
+        for ky in (.18, .25, .32):
+            tube(bm, (kx, ky, top + dh + .14), (kx, ky, top + dh + .17), .012, 10, ALU)
+    block(bm, (.3, .3, .015), (0, .62, top + dh + .05), LAP)
+    block(bm, (.3, .015, .2), (0, .765, top + dh + .16), LAP)
+    block(bm, (.27, .002, .17), (0, .756, top + dh + .16), SCR)
+    for sx in (-1.75, 1.75):
+        a, b = Vector((sx * .55, .55, top + .01)), Vector((sx, .3, top + .01))
+        for k in range(8):
+            p0, p1 = a.lerp(b, k / 8), a.lerp(b, (k + 1) / 8)
+            tube(bm, p0 + Vector((0, .05 * math.sin(k), 0)), p1 + Vector((0, .05 * math.sin(k + 1), 0)), .008, 6, RUB)
+    for fc in bm.faces:
+        if not fc.tag:
+            for loop in fc.loops:
+                loop[uv_layer].uv = (loop.vert.co.x * .3, loop.vert.co.z * .3)
+    bmesh.ops.recalc_face_normals(bm, faces=[fc for fc in bm.faces if not fc.tag])
+    o = link(bm, 'festa_dj', mats, keep_uv=True)
+    export(o, 'festa_dj')
+
+
 def copy_godot_models():
     OUT.mkdir(parents=True, exist_ok=True)
     for name in ('dj_booth', 'campfire_logs', 'flame', 'party_banner'):
@@ -295,6 +440,6 @@ def copy_godot_models():
 if __name__ == '__main__':
     import sys
     only = sys.argv[sys.argv.index('--') + 1:] if '--' in sys.argv else []
-    for name, fn in (('bunting', bunting), ('stall', stall), ('fire', fire), ('banner', banner), ('copy', copy_godot_models)):
+    for name, fn in (('bunting', bunting), ('stall', stall), ('fire', fire), ('banner', banner), ('dj', dj), ('copy', copy_godot_models)):
         if not only or name in only:
             fn()
