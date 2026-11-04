@@ -671,15 +671,18 @@ Os 18 idiomas escolhidos são os do Supermarket Simulator, menos turco e lituano
   grande sem custo no processador (regra global: máximo de processamento na GPU).
 
 ## 19. Pedidos de 04/11 para depois do vulcão
-- [ ] Mar com mais ondas no dia a dia: piso de agitação `mare.SeaSwell` 0,25 aplicado em 04/11; conferir por captura e
+- [x] Mar com mais ondas no dia a dia (04/11: ondulação longa de ~1,7 m, ondas médias 1,7x, cristas tipo Gerstner, relevo no normal e espuma sem grade): piso de agitação `mare.SeaSwell` 0,25 aplicado em 04/11; conferir por captura e
   ajustar o material do mar se ainda parecer calmo. 04/11: ainda parece calmo de dia (o material só perturba a superfície);
   ondas de verdade pedem deslocamento (Gerstner) no mar. Com o mar bravo, longe da costa aparecem manchas ovais de espuma
   em grade regular (textura repetida): corrigir junto.
-- [ ] [bloqueado-usuario] (sistema grande + decisão do Sergio: qual é a tarefa diária) **Tsunami**: uma tarefa que o
+- [ ] (em andamento, esforço alto confirmado pelo Sergio 04/11) **Tsunami**: uma tarefa que o
   personagem precisa cumprir todo dia; se esquecer, começa chuva fortíssima, mar extremamente agitado e ao fundo sobe uma
   onda gigante até 100 m que devasta a ilha e encerra o jogo. Evento épico.
+  Decisão do Sergio (04/11): a tarefa é uma **oferenda** diária a um velho que mora numa casa toda de madeira no topo da
+  montanha e fica sentado num banco na frente da casa. Falta: modelo da casa (asset gratuito antes de modelar), trilha até
+  o topo, o velho sentado (MetaHuman), interação da oferenda e a sequência do tsunami.
 - [ ] [bloqueado-usuario] (sistema grande: subir o esforço do Opus) **Campanha principal** com história completa até o
   final e tudo pronto no jogo; tom de comédia, animado e calmo, clima de praia.
 - [ ] [bloqueado-usuario] (sistema grande) **Animação de abertura** em estilo desenho (Canva) e **animações nos eventos
   principais** da história.
-
+- [x] Noite mais escura (Sergio, 04/11): `mare.NightDarken` tira 1,3 stop da exposição à noite; conferir praia, vila, quiosque e erupção.

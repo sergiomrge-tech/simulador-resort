@@ -266,3 +266,13 @@ def vc_probe(_=''):
     if mesh:
         out['mesh_has_colors'] = str(unreal.get_editor_subsystem(unreal.StaticMeshEditorSubsystem).has_vertex_colors(mesh))
     return json.dumps(out)
+
+
+def ocean_probe(_=''):
+    out = []
+    for path in unreal.EditorAssetLibrary.list_assets('/Game/World/Ocean'):
+        m = unreal.load_asset(path)
+        if isinstance(m, unreal.StaticMesh):
+            out.append({'mesh': path, 'verts': m.get_num_vertices(0), 'tris': m.get_num_triangles(0),
+                        'bounds': str(m.get_bounds().box_extent)})
+    return json.dumps(out)

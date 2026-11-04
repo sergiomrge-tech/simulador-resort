@@ -526,3 +526,7 @@ MaterialExpressionObjectPositionWS é o CENTRO DOS LIMITES da malha, não o piv�
 Parâmetro novo de MaterialParameterCollection criado pelo Python fica com GUID zero ("invalid parameter"): reiniciar o
 editor. Emissivo forte ilumina a própria malha via Lumen: desligar affect_dynamic_indirect_lighting quando for longe.
 O parâmetro Storm do MPC também engrossa as nuvens (StormClouds): para mexer só no mar, separar os dois.
+Captura logo depois de pular o relógio do dia para a noite mostra luz velha (Lumen e exposição ainda do dia: vulcão
+branco, mar ciano) e o Sergio viu isso como defeito. Esperar ~25 s depois de `clock` antes de fotografar. Ondas grandes
+por WPO não mexem nas normais: somar a inclinação analítica das ondas ao normal, senão o relevo não pega luz. Espuma
+com produto de dois senos vira grade de ovais: distorcer as coordenadas e mascarar por manchas de baixa frequência.

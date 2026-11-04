@@ -34,6 +34,8 @@
 #include "UObject/UObjectIterator.h"
 #include "Misc/FileHelper.h"
 #include "Serialization/JsonSerializer.h"
+// 04/11 (Sergio: "precisa ficar mais escuro a noite"): extra stops taken off the night exposure.
+static TAutoConsoleVariable<float> CVarMareNightDarken(TEXT("mare.NightDarken"),1.3f,TEXT("Stops of exposure removed at night (0 = old night)"));
 
 static TAutoConsoleVariable<float> CVarMareBounceLightReach(TEXT("mare.BounceLightReach"),1.f,TEXT("Draw distance of the bounce (fill) lights, times mare.LightDrawDistance (04/11: x2.5 cost the beach 4 FPS)."));
 static TAutoConsoleVariable<float> CVarMareLightShadowMinRadius(TEXT("mare.LightShadowMinRadius"),1000.f,TEXT("Local lights with a smaller attenuation radius (cm) cast no shadow (04/11: 99 of 134 lights cast shadows; under 10 m off = kiosk 56 -> 61 FPS); 0 = keep the authored shadows."));
@@ -154,7 +156,7 @@ void UMareVisualWorld::Tick(float DeltaSeconds)
  for(auto Light:Practical)if(IsValid(Light))Light->GetLightComponent()->SetIntensity(Overcast*(Light->ActorHasTag(TEXT("MareHomeLight"))?FMath::Lerp(1000.f,180.f,Day):Light->ActorHasTag(TEXT("MareBounce"))?FMath::Lerp(400.f,6500.f,Day):FMath::Lerp(2200.f,10000.f,Day)));
  // Overcast: denser fog with the rain (greys the horizon and the sky), a little darker exposure.
  if(Fog)Fog->GetComponent()->SetFogDensity(FMath::Lerp(.00065f,.0042f,RainNow));
- if(Exposure){Exposure->Settings.bOverride_AutoExposureBias=true;Exposure->Settings.AutoExposureBias=-.3f*RainNow;}
+ if(Exposure){Exposure->Settings.bOverride_AutoExposureBias=true;Exposure->Settings.AutoExposureBias=-.3f*RainNow-CVarMareNightDarken.GetValueOnGameThread()*FMath::Clamp(1.f-Day,0.f,1.f);}
  auto Dishes=UMareSimulation::Object(Sim->Definitions,TEXT("dishes"));
  auto Price=[&](const FString& Id){return UMareSimulation::String(UMareSimulation::Object(Dishes,Id),TEXT("name"))+FString::Printf(TEXT("   R$ %.0f"),Sim->SalePrice(Id));};
  for(auto Sign:Signs){if(!IsValid(Sign))continue;FString Text;
