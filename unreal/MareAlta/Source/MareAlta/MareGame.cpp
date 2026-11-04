@@ -512,14 +512,14 @@ private:
    else Text=FString::Printf(TEXT("Bangalô %d · limpo e livre"),I+1);
    Line(Text,13,State==TEXT("dirty")?Red:State==TEXT("occupied")?Ink:Green);}
  }
- static const TArray<FString>& Products(){static const TArray<FString> P={TEXT("coco_gelado"),TEXT("suco"),TEXT("caipirinha"),TEXT("petiscos"),TEXT("sorvete_morango"),TEXT("sorvete_chocolate"),TEXT("batata_frita"),TEXT("porcao_peixe")};return P;}
+ TArray<FString> Products(){return Sim()?Sim()->KioskMenu():TArray<FString>();}
  /** Restock cards; at a station also the "take it ready" button for what that station keeps. */
  void StockPage(bool bPickup)
  {
   auto S=Sim();auto G=Grid();int32 I=0;const int32 Columns=bPickup?2:4;
   for(const auto& Id:Products()){
-   if(bPickup && Station==TEXT("Cupboard") && Id!=TEXT("batata_frita") && Id!=TEXT("porcao_peixe") && Id!=TEXT("petiscos"))continue;
-   if(bPickup && Station==TEXT("Fridge") && (Id==TEXT("batata_frita") || Id==TEXT("porcao_peixe") || Id==TEXT("petiscos")))continue;
+   if(bPickup && Station==TEXT("Cupboard") && !S->IsHotDish(Id))continue;
+   if(bPickup && Station==TEXT("Fridge") && S->IsHotDish(Id))continue;
    auto Dish=UMareSimulation::Object(UMareSimulation::Object(S->Definitions,TEXT("dishes")),Id);auto Card=TagBody(FString::Printf(TEXT("%d disponíveis"),S->Available(Id)),UMareSimulation::String(Dish,TEXT("name")));
    if(!S->CanSupplyDish(Id))Card->AddSlot().AutoHeight()[MareNotebook::HandText(TEXT("libere em Resort"),16,MareNotebook::Pencil)];
    else{if(bPickup)Card->AddSlot().AutoHeight().HAlign(HAlign_Left).Padding(0,0,0,4)[Button(TEXT("Pegar pronto"),[S,Id](){S->Pickup(Id);})];

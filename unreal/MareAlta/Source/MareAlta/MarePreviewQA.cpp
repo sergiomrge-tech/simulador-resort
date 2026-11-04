@@ -281,16 +281,16 @@ void AMarePreviewQA::Tick(float DeltaSeconds)
   Check(TEXT("village_dialogue_opens"),GetWorld()->GetSubsystem<UMareVillageWorld>()->IsDialogueOpen() && PC->IsMoveInputIgnored());Capture(TEXT("village-dialogue"));break;}
  case 56:PC->TogglePhone();Check(TEXT("village_dialogue_blocks_phone"),!PC->bPhoneOpen);PC->TogglePauseMenu();Capture(TEXT("village-day"));break;
  case 57:Check(TEXT("village_dialogue_cycle"),!GetWorld()->GetSubsystem<UMareVillageWorld>()->IsDialogueOpen() && !PC->IsMoveInputIgnored() && !UGameplayStatics::IsGamePaused(this) && Sim->Save());break;
- case 58:for(TActorIterator<AMareServiceTarget> It(GetWorld());It;++It)if(It->Action==TEXT("Resident") && It->Label.StartsWith(TEXT("Seu Gregory"))){
+ case 58:for(TActorIterator<AMareServiceTarget> It(GetWorld());It;++It)if(It->Action==TEXT("Resident") && It->Label.StartsWith(TEXT("Seu Severino"))){
   Hero->SetActorLocation(It->GetOwner()->GetActorLocation()+FVector(-200,0,0));Move->StopMovementImmediately();PC->SetControlRotation((It->GetActorLocation()-(Hero->GetActorLocation()+FVector(0,0,74))).Rotation());break;}break;
- case 59:{auto Target=AMareServiceTarget::FindFocused(PC);const bool bZe=Target && Target->Action==TEXT("Resident") && Target->Label.StartsWith(TEXT("Seu Gregory"));
+ case 59:{auto Target=AMareServiceTarget::FindFocused(PC);const bool bZe=Target && Target->Action==TEXT("Resident") && Target->Label.StartsWith(TEXT("Seu Severino"));
   Check(TEXT("chapter_giver_focus"),bZe);if(bZe)Target->Use(PC);
   Check(TEXT("chapter_dialogue_opens"),GetWorld()->GetSubsystem<UMareVillageWorld>()->IsDialogueOpen() && Sim->IsChapterOpen(TEXT("pier")) && Sim->ChapterStep(TEXT("pier"))==0);Capture(TEXT("chapter-ze"));break;}
  case 60:{GetWorld()->GetSubsystem<UMareVillageWorld>()->CloseDialogue();Sim->State->SetNumberField(TEXT("money"),1000);
   auto Stock=UMareSimulation::Object(Sim->State,TEXT("stock"));Stock->SetNumberField(TEXT("peixe"),0);const double Cash=Sim->Money();
   Check(TEXT("chapter_market_purchase_once"),Sim->BuySupply(TEXT("peixe"),4) && Sim->Money()==Cash-Sim->SupplyCost(TEXT("peixe"),4));
   Check(TEXT("chapter_deliver_consumes_once"),Sim->AdvanceChapter(TEXT("pier")) && UMareSimulation::Number(Stock,TEXT("peixe"))==0 && Sim->ChapterStep(TEXT("pier"))==1 && !Sim->AdvanceChapter(TEXT("pier")));
-  for(TActorIterator<AMareServiceTarget> It(GetWorld());It;++It)if(It->Action==TEXT("Resident") && It->Label.StartsWith(TEXT("Seu Gregory"))){It->Use(PC);break;}
+  for(TActorIterator<AMareServiceTarget> It(GetWorld());It;++It)if(It->Action==TEXT("Resident") && It->Label.StartsWith(TEXT("Seu Severino"))){It->Use(PC);break;}
   Capture(TEXT("chapter-ze-step2"));break;}
  case 61:{GetWorld()->GetSubsystem<UMareVillageWorld>()->CloseDialogue();bool bHired=false;UMareSimulation::Object(Sim->State,TEXT("staff"))->TryGetBoolField(TEXT("atendente"),bHired);if(!bHired)Sim->HireAttendant();
   SleepDay=UMareSimulation::Number(Sim->State,TEXT("day"),1);SleepCash=Sim->Money();

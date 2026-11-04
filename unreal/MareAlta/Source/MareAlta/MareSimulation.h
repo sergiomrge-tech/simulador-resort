@@ -101,6 +101,10 @@ public:
  /** Challenge (04/11, Sergio: "precisa ter desafio, um pouco difícil mas também divertido"): every kiosk customer rates
   *  the service (fast = 5, gave up = 1) in the same list as the pousada guests; the stars move the kiosk traffic. */
  void AddRating(double Stars);
+ /** The kiosk menu in order (definitions.json kiosk_menu: Brazilian beach food, 04/11). */
+ TArray<FString> KioskMenu() const;
+ /** Hot dishes come out of the cupboard/grill side, the rest out of the fridge. */
+ bool IsHotDish(const FString& Dish) const;
  /** Traffic from the stars: 1.0 at 3.5, 1.25 at 5, 0.7 at the bottom. */
  double WordOfMouth() const;
  /** 0.5 % a day of the owned expansions' price, charged at the day close. */

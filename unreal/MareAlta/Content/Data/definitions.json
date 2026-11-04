@@ -203,8 +203,8 @@
 			"kind": "chapter",
 			"qty": 1,
 			"reward": 150,
-			"story": "Seu Gregory diz que o píer está \"quase\" caindo. Os pescadores dizem que já caiu duas vezes. Ajude a terminar a história dele.",
-			"task": "Concluir O píer do Seu Gregory em Histórias da vila",
+			"story": "Seu Severino diz que o píer está \"quase\" caindo. Os pescadores dizem que já caiu duas vezes. Ajude a terminar a história dele.",
+			"task": "Concluir O píer do Seu Severino em Histórias da vila",
 			"title": "O quiosque e o mar"
 		},
 		{
@@ -223,7 +223,7 @@
 			"kind": "expansion",
 			"qty": 1,
 			"reward": 300,
-			"story": "Os visitantes querem ficar mais um dia e estão dormindo na rede do Seu Gregory. Ele não gostou. Abra a pousada.",
+			"story": "Os visitantes querem ficar mais um dia e estão dormindo na rede do Seu Severino. Ele não gostou. Abra a pousada.",
 			"task": "Abrir a pousada",
 			"title": "Fique mais um dia"
 		},
@@ -310,7 +310,7 @@
 			"kind": "fame",
 			"qty": 10,
 			"reward": 1200,
-			"story": "Seu Gregory já conta para os turistas que foi ele quem ensinou você a abrir coco. Fique famoso de verdade, antes que ele exagere mais.",
+			"story": "Seu Severino já conta para os turistas que foi ele quem ensinou você a abrir coco. Fique famoso de verdade, antes que ele exagere mais.",
 			"task": "Chegar à fama máxima (nível 10)",
 			"title": "Lenda da costa"
 		},
@@ -335,7 +335,7 @@
 	],
 	"chapters": [
 		{
-			"giver": "Seu Gregory",
+			"giver": "Seu Severino",
 			"id": "pier",
 			"reward": 200,
 			"steps": [
@@ -356,8 +356,8 @@
 					"text": "Doar R$ 150 para as tábuas novas"
 				}
 			],
-			"story": "O píer está caindo aos pedaços. Seu Gregory quer reformá-lo para os barcos e para alugar pranchas.",
-			"title": "O píer do Seu Gregory",
+			"story": "O píer está caindo aos pedaços. Seu Severino quer reformá-lo para os barcos e para alugar pranchas.",
+			"title": "O píer do Seu Severino",
 			"unlock": "Aluguel de pranchas e caiaques no píer"
 		},
 		{
@@ -450,6 +450,7 @@
 			}
 		},
 		"batata_frita": {
+			"hot": true,
 			"name": "Porção de batata frita",
 			"price": 16,
 			"uses": {
@@ -459,6 +460,7 @@
 		"batida": {
 			"name": "Batida de coco",
 			"price": 20,
+			"requires": "drinks",
 			"secret": true,
 			"uses": {
 				"cachaca": 1,
@@ -469,6 +471,7 @@
 		"caipirinha": {
 			"name": "Caipirinha",
 			"price": 22,
+			"requires": "drinks",
 			"uses": {
 				"cachaca": 1,
 				"frutas": 1,
@@ -481,6 +484,31 @@
 			"uses": {
 				"coco": 1,
 				"gelo": 1
+			}
+		},
+		"espetinho": {
+			"hot": true,
+			"name": "Espetinho de churrasco",
+			"price": 15,
+			"requires": "grill",
+			"uses": {
+				"carne": 1
+			}
+		},
+		"guarana": {
+			"name": "Guaraná gelado",
+			"price": 8,
+			"uses": {
+				"guarana": 1
+			}
+		},
+		"milho_verde": {
+			"hot": true,
+			"name": "Milho verde na manteiga",
+			"price": 10,
+			"requires": "grill",
+			"uses": {
+				"milho": 1
 			}
 		},
 		"moqueca": {
@@ -503,8 +531,10 @@
 			}
 		},
 		"petiscos": {
+			"hot": true,
 			"name": "Petiscos",
 			"price": 26,
+			"requires": "grill",
 			"uses": {
 				"frutas": 1,
 				"pao": 1,
@@ -512,10 +542,20 @@
 			}
 		},
 		"porcao_peixe": {
+			"hot": true,
 			"name": "Porção de peixe",
 			"price": 28,
 			"uses": {
 				"peixe_pronto": 1
+			}
+		},
+		"queijo_coalho": {
+			"hot": true,
+			"name": "Queijo coalho na brasa",
+			"price": 12,
+			"requires": "grill",
+			"uses": {
+				"queijo": 1
 			}
 		},
 		"sorvete_chocolate": {
@@ -672,6 +712,21 @@
 			"stars": 4.4
 		}
 	},
+	"kiosk_menu": [
+		"coco_gelado",
+		"guarana",
+		"suco",
+		"acai",
+		"caipirinha",
+		"milho_verde",
+		"espetinho",
+		"queijo_coalho",
+		"petiscos",
+		"porcao_peixe",
+		"batata_frita",
+		"sorvete_morango",
+		"sorvete_chocolate"
+	],
 	"kiosk_vip": {
 		"_doc": "Famous customers at the kiosk (PENDENCIAS 3, pedidos especiais e VIP): from fame level min_fame, each new kiosk order is a VIP with chance odds. The ticket shows the title and a special request; the VIP pays tip x the sale price as an extra tip on each item and, when the whole order is served, adds fame.",
 		"fame": 6,
@@ -742,13 +797,13 @@
 			"where": "Em frente à igreja"
 		},
 		"peixe_ze": {
-			"desc": "Seu Gregory quer 3 peixes para o almoço. Pesque no fim do píer e entregue.",
-			"giver": "Seu Gregory",
+			"desc": "Seu Severino quer 3 peixes para o almoço. Pesque no fim do píer e entregue.",
+			"giver": "Seu Severino",
 			"need": "peixe",
 			"qty": 3,
 			"req": "",
 			"reward": 75,
-			"title": "Peixe fresco do Seu Gregory",
+			"title": "Peixe fresco do Seu Severino",
 			"where": "Início do píer"
 		}
 	},
@@ -759,7 +814,7 @@
 			"kind": "fish",
 			"qty": 5,
 			"reward": 80,
-			"story": "Seu Gregory ensina que peixe bom pede paciência.",
+			"story": "Seu Severino ensina que peixe bom pede paciência.",
 			"task": "Pescar 5 peixes no píer",
 			"title": "Um dia com os pescadores"
 		},
@@ -945,6 +1000,10 @@
 			"cost": 9,
 			"name": "Camarão"
 		},
+		"carne": {
+			"cost": 5,
+			"name": "Carne para espetinho"
+		},
 		"coco": {
 			"cost": 3,
 			"name": "Coco"
@@ -956,6 +1015,14 @@
 		"gelo": {
 			"cost": 1,
 			"name": "Gelo"
+		},
+		"guarana": {
+			"cost": 3,
+			"name": "Guaraná em lata"
+		},
+		"milho": {
+			"cost": 2,
+			"name": "Milho verde"
 		},
 		"pao": {
 			"cost": 2,

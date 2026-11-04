@@ -733,7 +733,7 @@ bool FMareLeisureChaptersTest::RunTest(const FString& Parameters)
  Sim->SaveDirectory=FPaths::ProjectSavedDir()/TEXT("Automation/FishingPhoto")/FGuid::NewGuid().ToString(EGuidFormats::Digits);
  auto Load=[&](const FString& Name,TSharedPtr<FJsonObject>& Result){FString Text;FFileHelper::LoadFileToString(Text,*(FPaths::ProjectContentDir()/TEXT("Data")/Name));return FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Text),Result);};
  if(!TestTrue(TEXT("Definitions"),Load(TEXT("definitions.json"),Sim->Definitions)) || !TestTrue(TEXT("Default save"),Load(TEXT("default_save.json"),Sim->State))){Sim->RemoveFromRoot();Instance->RemoveFromRoot();return false;}
- // Fishing: each catch adds a 'peixe' to the stock (Seu Gregory's chapter delivers from there).
+ // Fishing: each catch adds a 'peixe' to the stock (Seu Severino's chapter delivers from there).
  const double Fish=Sim->Number(Sim->Object(Sim->State,TEXT("stock")),TEXT("peixe"));
  for(int32 I=0;I<4;++I)TestFalse(TEXT("Caught a fish"),Sim->CatchFish().IsEmpty());
  TestEqual(TEXT("Four fish in the stock"),Sim->Number(Sim->Object(Sim->State,TEXT("stock")),TEXT("peixe")),Fish+4);
@@ -1049,7 +1049,7 @@ bool FMareCampaignAuditTest::RunTest(const FString& Parameters)
  {auto Summit=MakeShared<FJsonObject>();Summit->SetBoolField(TEXT("met"),true);Sim->State->SetObjectField(TEXT("summit"),Summit);}Claim(TEXT("morro"));
  Sim->Object(Sim->State,TEXT("summit"))->SetNumberField(TEXT("count"),2);TestFalse(TEXT("Two offerings are not three"),Sim->ClaimMission(TEXT("oferendas")));
  Sim->Object(Sim->State,TEXT("summit"))->SetNumberField(TEXT("count"),3);Claim(TEXT("oferendas"));
- // 6. Seu Gregory's pier chapter: 4 fish caught at the pier, 15 customers served during the step, R$ 150.
+ // 6. Seu Severino's pier chapter: 4 fish caught at the pier, 15 customers served during the step, R$ 150.
  TestFalse(TEXT("Chapter before its step"),Sim->AdvanceChapter(TEXT("pier")));
  for(int32 I=0;I<4;++I)Sim->CatchFish();Advance(TEXT("pier"),1);
  Sell(TEXT("coco_gelado"),15);Advance(TEXT("pier"),2);TestTrue(TEXT("Pier chapter done"),Sim->IsChapterDone(TEXT("pier")));

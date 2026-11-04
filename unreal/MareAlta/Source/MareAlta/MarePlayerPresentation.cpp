@@ -141,7 +141,7 @@ void UMarePlayerPresentation::UpdateCarry()
  }
  if(HeldProduct && HeldProduct->GetStaticMesh()){
   const auto B=HeldProduct->GetStaticMesh()->GetBounds();const FRotator Rotation(0,Hero->GetActorRotation().Yaw,0);
-  const bool Vessel=HeldDish==TEXT("suco") || HeldDish==TEXT("coco_gelado") || HeldDish==TEXT("caipirinha") || HeldDish==TEXT("batida");
+  const bool Vessel=HeldDish==TEXT("suco") || HeldDish==TEXT("coco_gelado") || HeldDish==TEXT("caipirinha") || HeldDish==TEXT("batida") || HeldDish==TEXT("guarana");
   const FVector Grip(B.Origin.X,Vessel?B.BoxExtent.Y*.65f:0,Vessel?B.Origin.Z*.75f:B.Origin.Z-B.BoxExtent.Z);
   HeldProduct->SetWorldLocationAndRotation(ViewBody->GetSocketLocation(TEXT("hand_r"))-Rotation.RotateVector(Grip),Rotation);
  }

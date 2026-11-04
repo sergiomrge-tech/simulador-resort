@@ -49,7 +49,7 @@ void UMareToursWorld::Tick(float DeltaSeconds)
    BoothModel=GetWorld()->SpawnActor<AStaticMeshActor>(At,Yaw);BoothModel->SetMobility(EComponentMobility::Movable);BoothModel->GetStaticMeshComponent()->SetStaticMesh(Mesh);}
   Booth=GetWorld()->SpawnActor<AMareServiceTarget>(At+FVector(0,0,(*B)[2]->AsNumber()),Yaw);
   Booth->Action=TEXT("TourBooth");Booth->Label=TEXT("Bilheteria dos passeios");Booth->Reach=260;Booth->OcclusionTolerance=80;}
- // Fishing spot at the end of the pier, always there (Seu Gregory's chapter asks for fish).
+ // Fishing spot at the end of the pier, always there (Seu Severino's chapter asks for fish).
  const TArray<TSharedPtr<FJsonValue>>* F=nullptr;
  if(!Fishing && S->LeisureDefs()->TryGetArrayField(TEXT("fishing_spot"),F) && F->Num()==4){
   const FVector At=Ground(FVector((*F)[0]->AsNumber(),(*F)[1]->AsNumber(),0));

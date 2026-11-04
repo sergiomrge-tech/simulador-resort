@@ -305,7 +305,7 @@ void UMareSummitWorld::UpdateFinale(float DeltaSeconds,UMareSimulation* Sim,doub
  static const TCHAR* Lines[]={
   TEXT("A vila inteira desceu para a praia. E olha quem veio junto: Seu Tibúrcio, de chinelo novo!"),
   TEXT("Seu Tibúrcio: \"Trinta anos sem descer esse morro. A trilha encolheu ou fui eu que cresci?\""),
-  TEXT("Prefeita Tuanny anuncia a Festa da Maré Alta. Seu Gregory chora. Diz que é cebola. Não tem cebola."),
+  TEXT("Prefeita Tuanny anuncia a Festa da Maré Alta. Seu Severino chora. Diz que é cebola. Não tem cebola."),
   TEXT("E o vulcão... está soltando fogos? Seu Tibúrcio: \"Ele adora festa. Quem não adora?\""),
   TEXT("Vovó Dilce mandou um áudio de sete minutos. Resumo: está muito orgulhosa e quer o quarto com vista.")};
  const int32 Line=FMath::Min(int32(FinaleTime/7.f),4);
@@ -329,7 +329,7 @@ void UMareSummitWorld::ShowCredits()
    +SVerticalBox::Slot().AutoHeight().HAlign(HAlign_Center).Padding(0,2)[Line(TEXT("Maré Alta Resort"),26,Cream)]
    +SVerticalBox::Slot().AutoHeight().HAlign(HAlign_Center).Padding(0,2)[Line(TEXT("Ideia, direção e muita paciência: Sergio"),17,Soft)]
    +SVerticalBox::Slot().AutoHeight().HAlign(HAlign_Center).Padding(0,2)[Line(TEXT("Modelos e texturas: Poly Haven, Quaternius, Fab e colaboradores (veja CREDITS.md)"),17,Soft)]
-   +SVerticalBox::Slot().AutoHeight().HAlign(HAlign_Center).Padding(0,2)[Line(TEXT("Elenco: Vovó Dilce, Seu Gregory, Padre Robson, Dona Cecília, Prefeita Tuanny e Seu Tibúrcio"),17,Soft)]
+   +SVerticalBox::Slot().AutoHeight().HAlign(HAlign_Center).Padding(0,2)[Line(TEXT("Elenco: Vovó Dilce, Seu Severino, Padre Robson, Dona Cecília, Prefeita Tuanny e Seu Tibúrcio"),17,Soft)]
    +SVerticalBox::Slot().AutoHeight().HAlign(HAlign_Center).Padding(0,2,0,30)[Line(TEXT("E o vulcão, no papel de si mesmo."),17,Soft)]
    +SVerticalBox::Slot().AutoHeight().HAlign(HAlign_Center)[SNew(SMarePadButton).ButtonStyle(&MareNotebook::InkButton()).ContentPadding(FMargin(18,6))
     .OnClicked_Lambda([Weak](){if(Weak.IsValid())Weak->CloseCredits();return FReply::Handled();})

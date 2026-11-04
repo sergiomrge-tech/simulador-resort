@@ -299,5 +299,33 @@
     ],
     "skeletal_meshes": [],
     "animations": {}
+  },
+  "Dish_milho_verde": {
+    "static_meshes": [
+      "/Game/Custom/BrazilFood/Dish_milho_verde/Dish_milho_verde.Dish_milho_verde"
+    ],
+    "skeletal_meshes": [],
+    "animations": {}
+  },
+  "Dish_espetinho": {
+    "static_meshes": [
+      "/Game/Custom/BrazilFood/Dish_espetinho/Dish_espetinho.Dish_espetinho"
+    ],
+    "skeletal_meshes": [],
+    "animations": {}
+  },
+  "Dish_queijo_coalho": {
+    "static_meshes": [
+      "/Game/Custom/BrazilFood/Dish_queijo_coalho/Dish_queijo_coalho.Dish_queijo_coalho"
+    ],
+    "skeletal_meshes": [],
+    "animations": {}
+  },
+  "Dish_guarana": {
+    "static_meshes": [
+      "/Game/Custom/BrazilFood/Dish_guarana/Dish_guarana.Dish_guarana"
+    ],
+    "skeletal_meshes": [],
+    "animations": {}
   }
 }

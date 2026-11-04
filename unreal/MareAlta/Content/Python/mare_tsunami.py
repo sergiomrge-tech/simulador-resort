@@ -552,3 +552,30 @@ def talk_elder(arg=''):
             t.use(pc)
             return 'used ' + str(t.get_editor_property('label'))
     return 'no elder target'
+
+
+def brazil_food(arg=''):
+    """Import the Brazilian kiosk dishes (tools/ue58/gen_brazil_food.py) to /Game/Custom/BrazilFood/Dish_<id>."""
+    import mare_hotel_lobby as hl
+    from pathlib import Path
+    out = {}
+    for name in ('Dish_milho_verde', 'Dish_espetinho', 'Dish_queijo_coalho', 'Dish_guarana'):
+        src = Path(unreal.Paths.project_dir()) / f'SourceArt/Models/BrazilFood/{name}.glb'
+        mesh = hl._import(src, f'/Game/Custom/BrazilFood/{name}', name, False, search=False)
+        b = mesh.get_bounds()
+        out[name] = [round(b.box_extent.x * 2), round(b.box_extent.y * 2), round(b.box_extent.z * 2)]
+    return json.dumps(out)
+
+
+def hold_food(arg=''):
+    """QA in PIE: the people nearest to (x,y) hold the new dishes, one each. arg 'x,y'."""
+    x, y = [float(v) for v in (arg or '3700,-1230').split(',')]
+    world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()
+    people = sorted(unreal.GameplayStatics.get_all_actors_of_class(world, unreal.MarePerson),
+                    key=lambda p: (p.get_actor_location().x - x) ** 2 + (p.get_actor_location().y - y) ** 2)
+    out = []
+    for p, dish in zip(people, ('milho_verde', 'espetinho', 'queijo_coalho', 'guarana')):
+        p.hold_product(dish)
+        l = p.get_actor_location()
+        out.append([dish, p.get_editor_property('person_name'), round(l.x), round(l.y), round(l.z)])
+    return json.dumps(out, ensure_ascii=False)

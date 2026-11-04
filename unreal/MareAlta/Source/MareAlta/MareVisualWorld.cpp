@@ -164,7 +164,7 @@ void UMareVisualWorld::Tick(float DeltaSeconds)
   if(Sign->ActorHasTag(TEXT("MareCompanySign")))Text=UMareSimulation::String(UMareSimulation::Object(Sim->State,TEXT("company")),TEXT("name"));
   if(Sign->ActorHasTag(TEXT("MareStatusSign"))){bool Requested=false;UMareSimulation::Object(Sim->State,TEXT("company"))->TryGetBoolField(TEXT("kiosk_open"),Requested);Text=Sim->IsOpen()?TEXT("ABERTO"):Requested?TEXT("AGUARDE O HORÁRIO"):TEXT("FECHADO");Sign->GetTextRender()->SetTextRenderColor(Sim->IsOpen()?FColor(24,135,64):Requested?FColor(145,96,18):FColor(186,35,35));}
   if(Sign->ActorHasTag(TEXT("MarePromoSign")))Text=FString::Printf(TEXT("PROMOÇÕES<br>Coco gelado<br>R$ %.0f<br>Suco da fruta<br>R$ %.0f"),Sim->SalePrice(TEXT("coco_gelado")),Sim->SalePrice(TEXT("suco")));
-  if(Sign->ActorHasTag(TEXT("MareMenuSign")))for(FString Id:{TEXT("coco_gelado"),TEXT("suco"),TEXT("caipirinha"),TEXT("petiscos"),TEXT("sorvete_morango"),TEXT("sorvete_chocolate"),TEXT("batata_frita"),TEXT("porcao_peixe")})if(Sim->IsDishUnlocked(Id))Text+=Price(Id)+TEXT("<br>");
+  if(Sign->ActorHasTag(TEXT("MareMenuSign")))for(const FString& Id:Sim->KioskMenu())if(Sim->IsDishUnlocked(Id))Text+=Price(Id)+TEXT("<br>");
   for(FName Tag:Sign->Tags)if(Tag.ToString().StartsWith(TEXT("MareStock_"))){FString Id=Tag.ToString().RightChop(10);Text=UMareSimulation::String(UMareSimulation::Object(Dishes,Id),TEXT("name"))+FString::Printf(TEXT("<br>%d prontos"),Sim->Available(Id));}
   // Fixed signs saved in the level ("Casa", street names) keep their Portuguese text as the source for the translation.
   if(Text.IsEmpty())if(const FString* Source=SignSource.Find(Sign))Text=*Source;

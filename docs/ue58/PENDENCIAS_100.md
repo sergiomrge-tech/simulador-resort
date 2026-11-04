@@ -79,7 +79,7 @@ Nada de mecânica nova até esta seção fechar. Cada passada roda uma auditoria
 
 ## 2. Migração Godot → Unreal ainda incompleta
 - [x] P1 **Pesca no píer** e **modo foto (P)** com álbum (02/11): E na ponta do píer abre a pescaria (espera, "fisgou!",
-  janela curta para puxar; 5 espécies com tamanho, garoupa rara); cada peixe vai ao estoque (capítulo do Seu Gregory).
+  janela curta para puxar; 5 espécies com tamanho, garoupa rara); cada peixe vai ao estoque (capítulo do Seu Severino).
   P (ou direcional para baixo) tira a foto sem a interface, salva em `Saved/Album` e registra no álbum o que estava
   enquadrado (farol, píer, hotel, quiosque, bar, piscina): a foto do farol cumpre o passo do Padre Robson.
   `MareLeisure.cpp`, `Content/Data/leisure.json`, teste `MareAlta.Gameplay.FishingPhotoChapters`. Falta: vara de pesca na mão
@@ -584,7 +584,7 @@ Fazer depois de todo o resto, quando os textos estiverem estáveis.
   que tem `Content/Localization/Mare/<cultura>.json`; fontes CJK/cirílico por `tools/ue58/i18n_fonts.py`; placas 3D com
   cirílico ou CJK mostram o texto original (a fonte das placas é só latina); bússola com as letras de cada idioma.
   Os 8 restantes ficaram no fim da fila (seção 17).
-- [ ] [bloqueado-usuario] (decisão de gosto do Sergio) Nomes próprios (Seu Gregory, Dona Rita...) seguem em letras latinas no chinês/japonês/russo: decidir se transliterar.
+- [ ] [bloqueado-usuario] (decisão de gosto do Sergio) Nomes próprios (Seu Severino, Dona Rita...) seguem em letras latinas no chinês/japonês/russo: decidir se transliterar.
 - [ ] Revisão por falante nativo de cada idioma e teste de layout (textos maiores em alemão/russo não podem cortar). [bloqueado-usuario] (precisa de revisores nativos; o teste de layout fica junto da tradução)
 - [ ] Página da Steam e conquistas nos mesmos idiomas. [bloqueado-usuario] (precisa da conta Steamworks do Sergio)
 
@@ -712,3 +712,13 @@ Os 18 idiomas escolhidos são os do Supermarket Simulator, menos turco e lituano
 - [x] Noite mais escura (Sergio, 04/11): `mare.NightDarken` tira 1,3 stop da exposição à noite; conferir praia, vila, quiosque e erupção.
 - [x] Som de mata fechada ao longo da trilha do cume (Sergio, 04/11): `forest_loop` (OpenGameArt CC0) entra além dos fundos da vila (y>8400), mais baixo à noite e na chuva; medido 0,126 na trilha e no cume, 0 na vila e na praia.
 - [ ] Casa do herói com 1 andar (Sergio, 04/11): quarto em cima com varanda; no térreo sala, banheiro e cozinha. É uma EXPANSÃO PAGA (comprada no jogo; só acontece depois de pagar). Fazer depois do tsunami.
+- [x] Tema brasileiro em tudo (Sergio, 04/11): comidas dos quiosques brasileiras (açaí, milho, churrasco...): acrescentar
+  milho verde na manteiga, espetinho de churrasco, queijo coalho na brasa e guaraná gelado, com insumos, cardápio e
+  modelos 3D (asset gratuito antes de modelar). FEITO: cardápio do quiosque nos dados
+  (`kiosk_menu`: coco, guaraná, suco, açaí, caipirinha, milho verde, espetinho, queijo coalho, petiscos, porção de peixe,
+  batata, sorvetes); pratos quentes pedem a churrasqueira (`requires`/`hot` nos dados); modelos em
+  `gen_brazil_food.py` (nenhum gratuito comercial encontrado); guaraná conferido na mão de um morador no jogo.
+- [x] Nomes de todos os personagens brasileiros (Sergio, 04/11): "Seu Gregory" virou **Seu Severino** em dados, código e
+  traduções; a lista de fregueses do quiosque ganhou mais nomes brasileiros (Thiago, Wesley, Seu Raimundo, Jéssica,
+  Tia Socorro...). Os demais (Dona Cecília, Padre Robson, Prefeita Tuanny, Dona Roberta, Seu Zé, Dona Rita, fregueses do
+  bar, do restaurante e da pousada) já eram brasileiros.

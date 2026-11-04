@@ -625,3 +625,7 @@ Cume, casa do velho e trilha (04/11):
 - **Wooden House** de **Helindu.Art** (Fab, CC BY 4.0) — https://www.fab.com/listings/2a0dd0d8-933d-4b3b-be36-073149b0b3d6 (nomes de materiais/texturas trocados em `tools/ue58/prep_wood_house.py`).
 - Trilha gerada em `tools/ue58/plan_summit_trail.py` + `gen_summit_trail.py` com texturas Poly Haven CC0 `brown_mud_leaves_01` (terra, dessaturada) e `bark_brown_02` (degraus de tronco).
 - Som da mata (`forest_loop`): mistura de "Birds and Wind - Ambient" (Spring Spring, CC0, https://opengameart.org/content/birds-and-wind-ambient-birds-wind-and-synth) e "Forest Ambience" (TinyWorlds, CC0, https://opengameart.org/content/forest-ambience).
+
+Comida brasileira do quiosque (04/11): milho verde na manteiga, espetinho de churrasco, queijo coalho na brasa e lata
+de guaraná modelados neste projeto em `tools/ue58/gen_brazil_food.py` (original, CC0); não havia gratuitos para uso
+comercial (as espigas do Fab são estátua ou só licença pessoal paga para comércio).

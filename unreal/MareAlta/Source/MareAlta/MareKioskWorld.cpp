@@ -39,7 +39,8 @@ void UMareKioskWorld::SpawnCustomer()
  const FVector Start=CounterPoints[Counter]+FVector(FMath::RandBool()?650:-650,-180,0);
  auto Person=GetWorld()->SpawnActor<AMarePerson>(Start,FRotator::ZeroRotator);if(!Person)return;
  Person->Variant=FMath::RandRange(0,3);if(!Person->SetAppearance(Person->Variant)){Person->Destroy();return;}
- const TArray<FString> Names=Person->Variant==2?TArray<FString>{TEXT("Charbele"),TEXT("Yasmin"),TEXT("Ayla"),TEXT("Luiza")}:TArray<FString>{TEXT("João"),TEXT("Pedro"),TEXT("Rafael"),TEXT("Bruno")};
+ const TArray<FString> Names=Person->Variant==2?TArray<FString>{TEXT("Charbele"),TEXT("Yasmin"),TEXT("Ayla"),TEXT("Luiza"),TEXT("Ana Clara"),TEXT("Jéssica"),TEXT("Thaís"),TEXT("Dona Neide"),TEXT("Kelly"),TEXT("Raíssa"),TEXT("Fernanda"),TEXT("Tia Socorro")}
+  :TArray<FString>{TEXT("João"),TEXT("Pedro"),TEXT("Rafael"),TEXT("Bruno"),TEXT("Thiago"),TEXT("Wesley"),TEXT("Seu Raimundo"),TEXT("Juninho"),TEXT("Cleber"),TEXT("Marcão"),TEXT("Davi"),TEXT("Tio Zeca")};   // Brazilian names only (Sergio, 04/11)
  Person->PersonName=Names[FMath::RandRange(0,Names.Num()-1)];Person->CounterIndex=Counter;Person->TableIndex=Table;
  if(Table!=INDEX_NONE)ReservedTables.Add(Table);
  Guests.Add(Person);Person->WalkTo(CounterPoints[Counter]);
@@ -54,7 +55,7 @@ bool UMareKioskWorld::Serve(AMarePerson* Person,bool bStaff)
 {
  auto S=Sim();if(!S || !IsValid(Person))return false;
  if(Person->Stage==EMarePersonStage::Order){
-  TArray<FString> Menu={TEXT("coco_gelado"),TEXT("suco"),TEXT("caipirinha"),TEXT("petiscos"),TEXT("sorvete_morango"),TEXT("sorvete_chocolate"),TEXT("batata_frita"),TEXT("porcao_peixe")};
+  TArray<FString> Menu=S->KioskMenu();
   Menu.RemoveAll([S](const FString& Id){return !S->IsDishUnlocked(Id);});if(Menu.IsEmpty())return false;
   // Better recipes are ordered more often (weight 1 + 0.5 per recipe level above the first).
   auto PickDish=[S,&Menu](){double Total=0;for(const auto& Id:Menu)Total+=S->DishDemand(Id);double R=FMath::FRandRange(0.,Total);

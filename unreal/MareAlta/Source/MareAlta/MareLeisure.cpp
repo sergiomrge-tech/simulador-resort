@@ -1,5 +1,5 @@
 // Fishing at the pier and the photo album: the player's own leisure, feeding the village chapters
-// (Seu Gregory's fish, Padre Robson's lighthouse photo). Content/Data/leisure.json.
+// (Seu Severino's fish, Padre Robson's lighthouse photo). Content/Data/leisure.json.
 #include "MareSimulation.h"
 #include "MareOptions.h"
 #include "Dom/JsonValue.h"

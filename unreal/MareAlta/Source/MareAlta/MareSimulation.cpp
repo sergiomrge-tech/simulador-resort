@@ -136,10 +136,18 @@ bool UMareSimulation::IsOpen() const
  auto Sim=Object(Company,TEXT("sim")); const double Hour=Number(State,TEXT("minutes"),480)/60.;
  return bOpen && bCreated && Hour>=Number(Sim,TEXT("start"),8) && Hour<Number(Sim,TEXT("end"),18);
 }
+TArray<FString> UMareSimulation::KioskMenu() const
+{
+ TArray<FString> Menu;const TArray<TSharedPtr<FJsonValue>>* List=nullptr;
+ if(Definitions->TryGetArrayField(TEXT("kiosk_menu"),List))for(const auto& V:*List)if(Object(Definitions,TEXT("dishes"))->HasField(V->AsString()))Menu.Add(V->AsString());
+ if(Menu.IsEmpty())Menu={TEXT("coco_gelado"),TEXT("suco"),TEXT("caipirinha"),TEXT("petiscos"),TEXT("sorvete_morango"),TEXT("sorvete_chocolate"),TEXT("batata_frita"),TEXT("porcao_peixe")};
+ return Menu;
+}
+bool UMareSimulation::IsHotDish(const FString& Dish) const{bool bHot=false;Object(Object(Definitions,TEXT("dishes")),Dish)->TryGetBoolField(TEXT("hot"),bHot);return bHot;}
 bool UMareSimulation::IsDishUnlocked(const FString& Dish) const
 {
  if(!Object(Definitions,TEXT("dishes"))->HasField(Dish))return false;
- const FString Requirement=(Dish==TEXT("caipirinha") || Dish==TEXT("batida"))?TEXT("drinks"):Dish==TEXT("petiscos")?TEXT("grill"):TEXT("");
+ const FString Requirement=String(Object(Object(Definitions,TEXT("dishes")),Dish),TEXT("requires"));   // e.g. grill, drinks
  if(Requirement.IsEmpty())return true;
  bool bOwned=false;Object(State,TEXT("unlocked"))->TryGetBoolField(Requirement,bOwned);return bOwned;
 }

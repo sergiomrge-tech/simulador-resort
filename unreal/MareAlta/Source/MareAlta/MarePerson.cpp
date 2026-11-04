@@ -445,7 +445,7 @@ void AMarePerson::HoldProduct(const FString& Dish)
  Product->SetCollisionEnabled(ECollisionEnabled::NoCollision);Product->AttachToComponent(GetMesh(),FAttachmentTransformRules::SnapToTargetNotIncludingScale,Hand);
  Product->SetUsingAbsoluteRotation(true);
  Product->SetUsingAbsoluteScale(true);Product->SetWorldScale3D(FVector::OneVector);
- if(Dish==TEXT("suco") || Dish==TEXT("coco_gelado") || Dish==TEXT("caipirinha") || Dish==TEXT("batida"))Product->ComponentTags.Add(TEXT("MareVessel"));
+ if(Dish==TEXT("suco") || Dish==TEXT("coco_gelado") || Dish==TEXT("caipirinha") || Dish==TEXT("batida") || Dish==TEXT("guarana"))Product->ComponentTags.Add(TEXT("MareVessel"));
  Product->RegisterComponent();CarriedMeshes.Add(Product);
 }
 void AMarePerson::ClearProducts(){for(auto Part:CarriedMeshes)if(Part)Part->DestroyComponent();CarriedMeshes.Empty();}
