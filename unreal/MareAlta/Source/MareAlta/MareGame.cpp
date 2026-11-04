@@ -1179,6 +1179,11 @@ bool AMareController::MenuNewGame(int32 Slot)
  if(!S->NewGame(Slot))return false;
  ReloadWorld();return true;
 }
+bool AMareController::ReloadActiveSlot()
+{
+ auto S=GetSimulation();if(!S || !S->LoadSlot(S->ActiveSlot))return false;
+ ReloadWorld();return true;
+}
 void AMareController::ReturnToMainMenu()
 {
  auto S=GetSimulation();if(!S)return;

@@ -1,333 +1,345 @@
 {
-  "_doc": "MetaHumans built in /Game/People/MetaHumans (mare_metahuman.py) chosen by AMarePerson per role from the save id. <Name>_Swim = whole-body build wearing /Game/People/Swimwear/SKM_Bikini|Trunks_<Name>. clothes: shirt/short colours (hex) per role tinting the default Epic garment; shoes: footwear kinds per role (one picked per person) (SKM_Flipflops|Sneakers|Sandals|Dress_Ada for women, _Mateo for men, tools/ue58/gen_mh_shoes.py); shoe_colours: upper colours per kind, sole colour first. Zuri (bald Epic preset) is out of every roster until she gets hair. staff_<role> (bartender, recepcionista, camareira, piscineiro, guia, garcom_hotel): MetaHuman and uniform of each staff role (AMarePerson::StaffRole); the kiosk attendant uses staff., outfit options worn over the swimwear (tank, boardshorts, coverup; \"+\" joins pieces, \"\" = swimwear only; board shorts hide the trunks), colours from beachwear_colours. <Name>_Swim_Aeron = swim body wearing the Fab Aeron swimsuit (tinted like a beach top). Regular builds wear their Fab outfit (outfits_fab.json): _top/_btm pieces take the role colours, Fab shoes replace the generated ones. men: the male presets (AMarePerson::IsWoman; all MetaHuman bodies share one skeleton under Common/Female, so the sex comes from this list).",
+ "_doc": "MetaHumans built in /Game/People/MetaHumans (mare_metahuman.py) chosen by AMarePerson per role from the save id. <Name>_Swim = whole-body build wearing /Game/People/Swimwear/SKM_Bikini|Trunks_<Name>. clothes: shirt/short colours (hex) per role tinting the default Epic garment; shoes: footwear kinds per role (one picked per person) (SKM_Flipflops|Sneakers|Sandals|Dress_Ada for women, _Mateo for men, tools/ue58/gen_mh_shoes.py); shoe_colours: upper colours per kind, sole colour first. Zuri (bald Epic preset) is out of every roster until she gets hair. staff_<role> (bartender, recepcionista, camareira, piscineiro, guia, garcom_hotel): MetaHuman and uniform of each staff role (AMarePerson::StaffRole); the kiosk attendant uses staff., outfit options worn over the swimwear (tank, boardshorts, coverup; \"+\" joins pieces, \"\" = swimwear only; board shorts hide the trunks), colours from beachwear_colours. <Name>_Swim_Aeron = swim body wearing the Fab Aeron swimsuit (tinted like a beach top). Regular builds wear their Fab outfit (outfits_fab.json): _top/_btm pieces take the role colours, Fab shoes replace the generated ones. men: the male presets (AMarePerson::IsWoman; all MetaHuman bodies share one skeleton under Common/Female, so the sex comes from this list).",
+ "staff": [
+  "Mateo",
+  "Sunita"
+ ],
+ "staff_bartender": [
+  "Kelvin"
+ ],
+ "staff_recepcionista": [
+  "Vivian"
+ ],
+ "staff_camareira": [
+  "Grace"
+ ],
+ "staff_piscineiro": [
+  "Trey"
+ ],
+ "staff_guia": [
+  "Jorge"
+ ],
+ "staff_garcom_hotel": [
+  "Dominic"
+ ],
+ "hotel": [
+  "Celeste",
+  "Lorenzo",
+  "Vivian",
+  "Dominic",
+  "Grace",
+  "Isaiah",
+  "Jelena"
+ ],
+ "pousada": [
+  "Ada",
+  "Aoi",
+  "Celeste",
+  "Jelena",
+  "Vivian",
+  "Mateo",
+  "Lorenzo",
+  "Isaiah",
+  "Tuya",
+  "Omari"
+ ],
+ "village": [
+  "Lani",
+  "Ada",
+  "Aoi",
+  "Asha",
+  "Celeste",
+  "Jelena",
+  "Sunita",
+  "Vivian",
+  "Grace",
+  "Tuya",
+  "Mateo",
+  "Omari",
+  "Lorenzo",
+  "Trey",
+  "Isaiah",
+  "Jorge",
+  "Kelvin",
+  "Dominic",
+  "Etta"
+ ],
+ "men": [
+  "Dominic",
+  "Isaiah",
+  "Jorge",
+  "Kelvin",
+  "Lorenzo",
+  "Mateo",
+  "Omari",
+  "Trey",
+  "Walter"
+ ],
+ "beach": [
+  "Ada_Swim",
+  "Asha_Swim",
+  "Celeste_Swim",
+  "Jelena_Swim",
+  "Tuya_Swim",
+  "Aoi_Swim",
+  "Mateo_Swim",
+  "Ada_Swim",
+  "Celeste_Swim",
+  "Jelena_Swim",
+  "Tuya_Swim",
+  "Asha_Swim",
+  "Aoi_Swim",
+  "Mateo_Swim",
+  "Omari",
+  "Trey",
+  "Jorge",
+  "Kelvin",
+  "Lani",
+  "Celeste_Swim_Aeron",
+  "Jelena_Swim_Aeron",
+  "Asha_Swim_Aeron",
+  "Etta_Swim",
+  "Walter_Swim",
+  "Vivian_Swim",
+  "Dominic_Swim",
+  "Sunita_Swim"
+ ],
+ "swim_colours": [
+  "C8102E",
+  "1E5AA8",
+  "F2C230",
+  "151515",
+  "E85D9F",
+  "1F8A5B",
+  "F5F5F0",
+  "FF7A3D",
+  "6A3FA0"
+ ],
+ "clothes": {
+  "staff": {
+   "shirt": [
+    "1E7F86"
+   ],
+   "short": [
+    "C9B48A"
+   ]
+  },
+  "hotel": {
+   "shirt": [
+    "F4F2EC",
+    "BFD7EA",
+    "E8D9C0",
+    "2B3A55",
+    "DCE6D3"
+   ],
+   "short": [
+    "2B3A55",
+    "5C6066",
+    "D8CFC0",
+    "3A3330"
+   ]
+  },
+  "pousada": {
+   "shirt": [
+    "F2EFE6",
+    "3E6FA3",
+    "C9473F",
+    "2F7D5B",
+    "E3B23C",
+    "8A5FA8",
+    "D98C5F",
+    "27323F"
+   ],
+   "short": [
+    "2B3A55",
+    "6B6E73",
+    "C9B48A",
+    "3B4A3F",
+    "8C3B2E",
+    "D8CFC0"
+   ]
+  },
+  "village": {
+   "shirt": [
+    "F2EFE6",
+    "3E6FA3",
+    "C9473F",
+    "2F7D5B",
+    "E3B23C",
+    "8A5FA8",
+    "D98C5F",
+    "27323F"
+   ],
+   "short": [
+    "2B3A55",
+    "6B6E73",
+    "C9B48A",
+    "3B4A3F",
+    "8C3B2E",
+    "D8CFC0"
+   ]
+  },
+  "beach": {
+   "shirt": [
+    "F7F4EC",
+    "FF7A3D",
+    "1E9FB0",
+    "F2C230",
+    "E85D9F",
+    "4CAF7A"
+   ],
+   "short": [
+    "1E5AA8",
+    "C8102E",
+    "F2C230",
+    "1F8A5B",
+    "FF7A3D",
+    "151515"
+   ]
+  },
+  "staff_bartender": {
+   "shirt": [
+    "E0674F"
+   ],
+   "short": [
+    "1F1F22"
+   ]
+  },
+  "staff_recepcionista": {
+   "shirt": [
+    "F4F1EA"
+   ],
+   "short": [
+    "1E3C5A"
+   ]
+  },
+  "staff_camareira": {
+   "shirt": [
+    "8CC7BF"
+   ],
+   "short": [
+    "F2EFE6"
+   ]
+  },
+  "staff_piscineiro": {
+   "shirt": [
+    "F2C14E"
+   ],
+   "short": [
+    "1E7F86"
+   ]
+  },
+  "staff_guia": {
+   "shirt": [
+    "3E7C3A"
+   ],
+   "short": [
+    "C9B48A"
+   ]
+  },
+  "staff_garcom_hotel": {
+   "shirt": [
+    "FAFAF7"
+   ],
+   "short": [
+    "151515"
+   ]
+  }
+ },
+ "shoes": {
   "staff": [
-    "Mateo",
-    "Sunita"
-  ],
-  "staff_bartender": [
-    "Kelvin"
-  ],
-  "staff_recepcionista": [
-    "Vivian"
-  ],
-  "staff_camareira": [
-    "Grace"
-  ],
-  "staff_piscineiro": [
-    "Trey"
-  ],
-  "staff_guia": [
-    "Jorge"
-  ],
-  "staff_garcom_hotel": [
-    "Dominic"
+   "Sneakers"
   ],
   "hotel": [
-    "Celeste",
-    "Lorenzo",
-    "Vivian",
-    "Dominic",
-    "Grace",
-    "Isaiah",
-    "Jelena"
-  ],
-  "pousada": [
-    "Ada",
-    "Aoi",
-    "Celeste",
-    "Jelena",
-    "Vivian",
-    "Mateo",
-    "Lorenzo",
-    "Isaiah",
-    "Tuya",
-    "Omari"
+   "Dress",
+   "Dress",
+   "Sandals"
   ],
   "village": [
-    "Lani",
-    "Ada",
-    "Aoi",
-    "Asha",
-    "Celeste",
-    "Jelena",
-    "Sunita",
-    "Vivian",
-    "Grace",
-    "Tuya",
-    "Mateo",
-    "Omari",
-    "Lorenzo",
-    "Trey",
-    "Isaiah",
-    "Jorge",
-    "Kelvin",
-    "Dominic",
-    "Etta",
-    "Walter"
+   "Sneakers",
+   "Sandals",
+   "Flipflops"
   ],
-  "men": ["Dominic", "Isaiah", "Jorge", "Kelvin", "Lorenzo", "Mateo", "Omari", "Trey", "Walter"],
+  "pousada": [
+   "Sandals",
+   "Flipflops"
+  ],
   "beach": [
-    "Ada_Swim",
-    "Asha_Swim",
-    "Celeste_Swim",
-    "Jelena_Swim",
-    "Tuya_Swim",
-    "Aoi_Swim",
-    "Mateo_Swim",
-    "Ada_Swim",
-    "Celeste_Swim",
-    "Jelena_Swim",
-    "Tuya_Swim",
-    "Asha_Swim",
-    "Aoi_Swim",
-    "Mateo_Swim",
-    "Omari",
-    "Trey",
-    "Jorge",
-    "Kelvin",
-    "Lani",
-    "Celeste_Swim_Aeron",
-    "Jelena_Swim_Aeron",
-    "Asha_Swim_Aeron",
-    "Etta_Swim",
-    "Walter_Swim",
-    "Vivian_Swim",
-    "Dominic_Swim",
-    "Sunita_Swim"
+   "Flipflops",
+   "Sandals"
   ],
-  "swim_colours": [
-    "C8102E",
-    "1E5AA8",
-    "F2C230",
-    "151515",
-    "E85D9F",
-    "1F8A5B",
-    "F5F5F0",
-    "FF7A3D",
-    "6A3FA0"
+  "swim": [
+   "Flipflops"
   ],
-  "clothes": {
-    "staff": {
-      "shirt": [
-        "1E7F86"
-      ],
-      "short": [
-        "C9B48A"
-      ]
-    },
-    "hotel": {
-      "shirt": [
-        "F4F2EC",
-        "BFD7EA",
-        "E8D9C0",
-        "2B3A55",
-        "DCE6D3"
-      ],
-      "short": [
-        "2B3A55",
-        "5C6066",
-        "D8CFC0",
-        "3A3330"
-      ]
-    },
-    "pousada": {
-      "shirt": [
-        "F2EFE6",
-        "3E6FA3",
-        "C9473F",
-        "2F7D5B",
-        "E3B23C",
-        "8A5FA8",
-        "D98C5F",
-        "27323F"
-      ],
-      "short": [
-        "2B3A55",
-        "6B6E73",
-        "C9B48A",
-        "3B4A3F",
-        "8C3B2E",
-        "D8CFC0"
-      ]
-    },
-    "village": {
-      "shirt": [
-        "F2EFE6",
-        "3E6FA3",
-        "C9473F",
-        "2F7D5B",
-        "E3B23C",
-        "8A5FA8",
-        "D98C5F",
-        "27323F"
-      ],
-      "short": [
-        "2B3A55",
-        "6B6E73",
-        "C9B48A",
-        "3B4A3F",
-        "8C3B2E",
-        "D8CFC0"
-      ]
-    },
-    "beach": {
-      "shirt": [
-        "F7F4EC",
-        "FF7A3D",
-        "1E9FB0",
-        "F2C230",
-        "E85D9F",
-        "4CAF7A"
-      ],
-      "short": [
-        "1E5AA8",
-        "C8102E",
-        "F2C230",
-        "1F8A5B",
-        "FF7A3D",
-        "151515"
-      ]
-    },
-    "staff_bartender": {
-      "shirt": [
-        "E0674F"
-      ],
-      "short": [
-        "1F1F22"
-      ]
-    },
-    "staff_recepcionista": {
-      "shirt": [
-        "F4F1EA"
-      ],
-      "short": [
-        "1E3C5A"
-      ]
-    },
-    "staff_camareira": {
-      "shirt": [
-        "8CC7BF"
-      ],
-      "short": [
-        "F2EFE6"
-      ]
-    },
-    "staff_piscineiro": {
-      "shirt": [
-        "F2C14E"
-      ],
-      "short": [
-        "1E7F86"
-      ]
-    },
-    "staff_guia": {
-      "shirt": [
-        "3E7C3A"
-      ],
-      "short": [
-        "C9B48A"
-      ]
-    },
-    "staff_garcom_hotel": {
-      "shirt": [
-        "FAFAF7"
-      ],
-      "short": [
-        "151515"
-      ]
-    }
-  },
-  "shoes": {
-    "staff": [
-      "Sneakers"
-    ],
-    "hotel": [
-      "Dress",
-      "Dress",
-      "Sandals"
-    ],
-    "village": [
-      "Sneakers",
-      "Sandals",
-      "Flipflops"
-    ],
-    "pousada": [
-      "Sandals",
-      "Flipflops"
-    ],
-    "beach": [
-      "Flipflops",
-      "Sandals"
-    ],
-    "swim": [
-      "Flipflops"
-    ],
-    "staff_bartender": [
-      "Sneakers"
-    ],
-    "staff_recepcionista": [
-      "Dress"
-    ],
-    "staff_camareira": [
-      "Sneakers"
-    ],
-    "staff_piscineiro": [
-      "Flipflops"
-    ],
-    "staff_guia": [
-      "Sneakers"
-    ],
-    "staff_garcom_hotel": [
-      "Dress"
-    ]
-  },
-  "shoe_colours": {
-    "Flipflops": [
-      "3A3632",
-      "1E5AA8",
-      "F2C230",
-      "C8102E",
-      "1F8A5B",
-      "151515",
-      "E85D9F"
-    ],
-    "Sneakers": [
-      "F2F0EA",
-      "F4F4F2",
-      "2B2B2E",
-      "3A5F8F",
-      "B23A3A",
-      "C9B48A"
-    ],
-    "Sandals": [
-      "3B2A20",
-      "C9A27A",
-      "E8DCC4",
-      "B23A3A",
-      "1E5AA8",
-      "D98C5F",
-      "F2C230"
-    ],
-    "Dress": [
-      "1C1A18",
-      "3B2416",
-      "5A3E2B",
-      "1C1A18",
-      "2B2B2E"
-    ]
-  },
-  "beachwear_colours": [
-    "F2EFE6",
-    "E8735A",
-    "2BB3B1",
-    "F4C542",
-    "B39DDB",
-    "1F3A5F",
-    "7A8B3F",
-    "F08A24",
-    "E77FA5",
-    "7EC8E3",
-    "FFFFFF",
-    "C0392B"
+  "staff_bartender": [
+   "Sneakers"
+  ],
+  "staff_recepcionista": [
+   "Dress"
+  ],
+  "staff_camareira": [
+   "Sneakers"
+  ],
+  "staff_piscineiro": [
+   "Flipflops"
+  ],
+  "staff_guia": [
+   "Sneakers"
+  ],
+  "staff_garcom_hotel": [
+   "Dress"
   ]
+ },
+ "shoe_colours": {
+  "Flipflops": [
+   "3A3632",
+   "1E5AA8",
+   "F2C230",
+   "C8102E",
+   "1F8A5B",
+   "151515",
+   "E85D9F"
+  ],
+  "Sneakers": [
+   "F2F0EA",
+   "F4F4F2",
+   "2B2B2E",
+   "3A5F8F",
+   "B23A3A",
+   "C9B48A"
+  ],
+  "Sandals": [
+   "3B2A20",
+   "C9A27A",
+   "E8DCC4",
+   "B23A3A",
+   "1E5AA8",
+   "D98C5F",
+   "F2C230"
+  ],
+  "Dress": [
+   "1C1A18",
+   "3B2416",
+   "5A3E2B",
+   "1C1A18",
+   "2B2B2E"
+  ]
+ },
+ "beachwear_colours": [
+  "F2EFE6",
+  "E8735A",
+  "2BB3B1",
+  "F4C542",
+  "B39DDB",
+  "1F3A5F",
+  "7A8B3F",
+  "F08A24",
+  "E77FA5",
+  "7EC8E3",
+  "FFFFFF",
+  "C0392B"
+ ],
+ "elder": [
+  "Walter"
+ ]
 }

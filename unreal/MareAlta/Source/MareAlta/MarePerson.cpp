@@ -558,7 +558,7 @@ void AMarePerson::Tick(float DeltaSeconds)
  if(!bOutfitApplied && Elapsed>.05f && MetaHuman.IsEmpty() && CVarMareMetaHumans.GetValueOnGameThread()){
   FString Wanted=CVarMareMetaHuman.GetValueOnGameThread();
   if(Wanted.IsEmpty()){
-   FString RoleKey=bEmployee?TEXT("staff"):Tags.Contains(TEXT("MareBather"))?TEXT("beach"):Tags.Contains(TEXT("MareHotelGuest"))?TEXT("hotel"):Tags.Contains(TEXT("MarePousadaGuest"))?TEXT("pousada"):bAmbient?TEXT("village"):TEXT("beach");
+   FString RoleKey=Tags.Contains(TEXT("MareElder"))?TEXT("elder"):bEmployee?TEXT("staff"):Tags.Contains(TEXT("MareBather"))?TEXT("beach"):Tags.Contains(TEXT("MareHotelGuest"))?TEXT("hotel"):Tags.Contains(TEXT("MarePousadaGuest"))?TEXT("pousada"):bAmbient?TEXT("village"):TEXT("beach");
    if(bEmployee && !StaffRole.IsEmpty() && MetaHumanRoster()->HasField(TEXT("staff_")+StaffRole))RoleKey=TEXT("staff_")+StaffRole;
    const TArray<TSharedPtr<FJsonValue>>* List=nullptr;TArray<TSharedPtr<FJsonValue>> Swimmers;
    // Sunbathers lie on their towels in swimwear: only the whole-body swim builds of the beach roster.

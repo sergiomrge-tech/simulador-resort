@@ -1,4 +1,5 @@
 #include "MareServiceTarget.h"
+#include "MareSummitWorld.h"
 #include "MareComicEvents.h"
 #include "MareStaysWorld.h"
 #include "MareGameRoom.h"
@@ -86,6 +87,7 @@ void AMareServiceTarget::Use(APlayerController* Controller)
  if(Sim)Sim->ShowTip(Action.ToString());   // first-time tip of this kind of target (Content/Data/tutorial.json)
  if(Action==TEXT("IntroLetter")){if(auto Intro=Cast<AMareIntro>(GetOwner()))Intro->ReadLetter();return;}
  if(Action==TEXT("Resident")){GetWorld()->GetSubsystem<UMareVillageWorld>()->Speak(Cast<AMarePerson>(GetOwner()),Controller);return;}
+ if(Action==TEXT("Elder")){if(auto Summit=GetWorld()->GetSubsystem<UMareSummitWorld>())Summit->Talk(Controller);return;}
  if(Action==TEXT("Comic")){if(auto Comic=GetWorld()->GetSubsystem<UMareComicEvents>())Comic->Interact(Controller);return;}
  if(Action==TEXT("KioskSign")){bool Requested=false;UMareSimulation::Object(Sim->State,TEXT("company"))->TryGetBoolField(TEXT("kiosk_open"),Requested);Sim->SetOpen(!Requested);return;}
  if(Action==TEXT("Fridge") || Action==TEXT("Cupboard")){GetWorld()->GetSubsystem<UMareAudioWorld>()->PlayCue(TEXT("kiosk_fridge"),.3f);PC->OpenStation(Action);return;}

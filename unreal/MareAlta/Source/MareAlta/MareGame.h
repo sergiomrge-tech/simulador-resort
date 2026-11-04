@@ -79,6 +79,8 @@ public:
  bool MenuNewGame(int32 Slot);
  /** Saves and reloads the level with the main menu open again. */
  void ReturnToMainMenu();
+ /** Reloads the active slot from disk and rebuilds the world (tsunami game over: "restart the day"). */
+ bool ReloadActiveSlot();
  /** Full options (graphics, display, audio, controls, language) shared by the pause menu and the main menu. */
  TSharedRef<SWidget> MakeOptionsPanel();
  virtual void OnPossess(APawn* InPawn) override;

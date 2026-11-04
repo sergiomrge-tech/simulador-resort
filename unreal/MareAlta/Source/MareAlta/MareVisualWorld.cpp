@@ -1,4 +1,5 @@
 #include "MareVisualWorld.h"
+#include "MareSummitWorld.h"
 #include "MareMarineWorld.h"
 #include "MareLoc.h"
 #include "MareSimulation.h"
@@ -181,16 +182,24 @@ void UMareVisualWorld::UpdateWeather(float DeltaSeconds,UMareSimulation* Sim)
  bool bRough=Sim->IsSeaRough();
  switch(CVarMareWeather.GetValueOnGameThread()){case 1:bRain=bStorm=bRough=false;break;case 2:bRain=true;bStorm=bRough=false;break;
   case 3:bRain=bStorm=bRough=true;break;case 4:bRain=bStorm=false;bRough=true;break;default:break;}
+ // Tsunami omen (UMareSummitWorld): the whole storm, and a sea far rougher than any stormy day.
+ const float SummitOmen=GetWorld()->GetSubsystem<UMareSummitWorld>()?GetWorld()->GetSubsystem<UMareSummitWorld>()->OmenLevel():0.f;
+ if(SummitOmen>.05f)bRain=bStorm=bRough=true;
+ const bool bTsunami=GetWorld()->GetSubsystem<UMareSummitWorld>() && GetWorld()->GetSubsystem<UMareSummitWorld>()->IsWaveRunning();
+ if(bTsunami)bRain=bStorm=bRough=false;   // the silence before the end: no rain, the sea draws back flat
  // About 4 s to settle; a QA override applies at once (PIE in the background ticks a few times a second).
  const float Ease=CVarMareWeather.GetValueOnGameThread()!=0?1.f:1.f-FMath::Exp(-DeltaSeconds*.25f);
  RainNow=FMath::Lerp(RainNow,bRain?(bStorm?1.f:.7f):0.f,Ease);
+ if(SummitOmen>.05f)RainNow=FMath::Min(RainNow,.72f);   // the omen's rain must not hide the wave
  WindNow=FMath::Lerp(WindNow,bStorm?1.f:bRain?.5f:.2f,Ease);
  // Volcano eruption nights (Sergio, 04/11): the sea gets very rough while the lava glows.
  const float Erupt=GetWorld()->GetSubsystem<UMareMarineWorld>()?GetWorld()->GetSubsystem<UMareMarineWorld>()->VolcanoGlowValue():0.f;
  StormNow=FMath::Lerp(StormNow,bStorm?1.f:bRough?.45f:0.f,Ease);
  // Only the sea follows the eruption; the clouds (StormClouds) keep the weather, or the night sky filled with flakes.
  // A livelier everyday sea (Sergio, 04/11: "o mar está muito calmo"): a base swell under every weather.
- const float SeaStorm=FMath::Max(FMath::Max(StormNow,.85f*Erupt),CVarMareSeaSwell.GetValueOnGameThread());
+ float SeaStorm=FMath::Max(FMath::Max(FMath::Max(StormNow,.85f*Erupt),CVarMareSeaSwell.GetValueOnGameThread()),1.9f*SummitOmen);
+ // Tsunami: Storm below zero flattens M_CoastalWater's swell (its heights scale with 1+Storm*k) - the sea goes still.
+ TsunamiCalm=FMath::FInterpTo(TsunamiCalm,bTsunami?1.f:0.f,DeltaSeconds,.6f);SeaStorm=FMath::Lerp(SeaStorm,-.9f,TsunamiCalm);
  if(TimeCollection){UKismetMaterialLibrary::SetScalarParameterValue(this,TimeCollection,TEXT("Rain"),RainNow);
   UKismetMaterialLibrary::SetScalarParameterValue(this,TimeCollection,TEXT("Wind"),WindNow);
   UKismetMaterialLibrary::SetScalarParameterValue(this,TimeCollection,TEXT("Storm"),SeaStorm);}

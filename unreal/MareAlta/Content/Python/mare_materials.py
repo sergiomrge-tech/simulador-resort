@@ -359,7 +359,7 @@ def build_rain():
         samples.append(node)
     fade = expression(mat, unreal.MaterialExpressionDepthFade, fade_distance_default=120.0)
     rain = _mpc(mat, 'Rain')
-    alpha = custom(mat, 'float v=UV.y; float ends=smoothstep(0,.15,v)*smoothstep(1,.8,v); return saturate(A*.8+B*.55)*ends*Rain*.55*Fade;', unreal.CustomMaterialOutputType.CMOT_FLOAT1, {'UV': uv, 'Rain': rain, 'Fade': fade, 'A': samples[0], 'B': samples[1]})
+    alpha = custom(mat, 'float v=UV.y; float ends=smoothstep(0,.15,v)*smoothstep(1,.8,v); return saturate(A*.8+B*.55)*ends*Rain*.28*Fade;', unreal.CustomMaterialOutputType.CMOT_FLOAT1, {'UV': uv, 'Rain': rain, 'Fade': fade, 'A': samples[0], 'B': samples[1]})
     MEL.connect_material_expressions(samples[0], 'A', alpha, 'A')
     MEL.connect_material_expressions(samples[1], 'A', alpha, 'B')
     color = custom(mat, 'return float3(.62,.68,.74)*lerp(1.0,.12,Night);', unreal.CustomMaterialOutputType.CMOT_FLOAT3, {'Night': _mpc(mat, 'Night')})

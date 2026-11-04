@@ -646,8 +646,8 @@ negócios, hóspedes, salão, passeios, eventos) e o jogador sempre escolhendo o
   `docs/ue58/BALANCEAMENTO.md` e `tools/ue58/balance_model.py`; falta o playtest cronometrado para trocar as hipóteses):
   - desbloqueio novo a cada 10–20 min;
   - preços das expansões, salários, diárias e renda do salão.
-- [ ] [bloqueado-usuario] (sistema grande: aguarda o Sergio escolher a prioridade e subir o esforço do Opus, regra global) P1 Duração do Acesso Antecipado: 6–10 h de conteúdo com objetivo sempre visível.
-- [ ] [bloqueado-usuario] (sistema grande: aguarda o Sergio escolher a prioridade e subir o esforço do Opus, regra global) P1 Ritmo: nunca mais de 1–2 min sem algo a fazer; tarefas paralelas que se sobrepõem (pedido no quiosque enquanto
+- [ ] (04/11: Sergio "vamos finalizar para o acesso antecipado"; ordem: tsunami, campanha, duração/ritmo, abertura, traduções) P1 Duração do Acesso Antecipado: 6–10 h de conteúdo com objetivo sempre visível.
+- [ ] (liberado 04/11 para o Acesso Antecipado) P1 Ritmo: nunca mais de 1–2 min sem algo a fazer; tarefas paralelas que se sobrepõem (pedido no quiosque enquanto
   o bar chama, hóspede na recepção, evento cômico), sem fila de espera longa nem tarefa repetitiva demais.
 
 ## 16. Ponto turístico no morro (no fim da fila, pedido do Sergio em 03/11)
@@ -659,7 +659,7 @@ negócios, hóspedes, salão, passeios, eventos) e o jogador sempre escolhendo o
 
 ## 17. Traduções restantes (no fim da fila, pedido do Sergio em 04/11)
 Os 18 idiomas escolhidos são os do Supermarket Simulator, menos turco e lituano; 10 já estão prontos (seção 11).
-- [ ] [adiado-usuario] (04/11: "pause as traduções, deixe para o final da fila") Português de Portugal (pt-PT), polonês (pl), tcheco (cs), húngaro (hu), romeno (ro), dinamarquês (da)
+- [ ] (04/11: Sergio pediu terminar; fica depois da campanha, porque os textos novos também precisam de tradução) Português de Portugal (pt-PT), polonês (pl), tcheco (cs), húngaro (hu), romeno (ro), dinamarquês (da)
   e finlandês (fi). Processo: criar `<idioma>.json` vazio, rodar `i18n_extract.py`, traduzir em lotes com
   `i18n_batch.py show/merge` sem rodar o extrator entre show e merge (os índices mudam quando o source.json ganha textos), `i18n_batch.py compose <idioma>`, `i18n_fonts.py`, captura com
   `-culture=<idioma> -MareLocAudit`. Todos usam letras latinas (fontes atuais já cobrem).
@@ -675,7 +675,7 @@ Os 18 idiomas escolhidos são os do Supermarket Simulator, menos turco e lituano
   ajustar o material do mar se ainda parecer calmo. 04/11: ainda parece calmo de dia (o material só perturba a superfície);
   ondas de verdade pedem deslocamento (Gerstner) no mar. Com o mar bravo, longe da costa aparecem manchas ovais de espuma
   em grade regular (textura repetida): corrigir junto.
-- [ ] (em andamento, esforço alto confirmado pelo Sergio 04/11) **Tsunami**: uma tarefa que o
+- [x] (04/11) **Tsunami**: uma tarefa que o
   personagem precisa cumprir todo dia; se esquecer, começa chuva fortíssima, mar extremamente agitado e ao fundo sobe uma
   onda gigante até 100 m que devasta a ilha e encerra o jogo. Evento épico.
   Decisão do Sergio (04/11): a tarefa é uma **oferenda** diária a um velho que mora numa casa toda de madeira no topo da
@@ -684,9 +684,14 @@ Os 18 idiomas escolhidos são os do Supermarket Simulator, menos turco e lituano
   Decisões do Sergio (04/11): subida por **bondinho** (tipo Pão de Açúcar) saindo dos fundos da vila, trilha a pé opcional;
   NÃO mostrar o mapa devastado: quando a onda atinge o herói a tela escurece e aparece um GAME OVER grande.
   Casa: "Wooden House" (Helindu.Art, Fab, CC BY 4.0) em D:/Assets/Fab/wooden_house. Topo escolhido: x 4000, y 38750, z ~107 m.
-- [ ] [bloqueado-usuario] (sistema grande: subir o esforço do Opus) **Campanha principal** com história completa até o
+  FEITO 04/11: `UMareSummitWorld` (Seu Tibúrcio no banco do cume, conversa em Quip, oferenda = produto do quiosque
+  nas mãos ou um abraço enquanto não há quiosque; avisos 15h/18h; presságio 19h com chuva, mar 1,9x e relâmpagos;
+  às 22h silêncio, mar liso e a onda de 100 m (`tools/ue58/gen_tsunami_wave.py`, `M_TsunamiWave`) sobe e avança;
+  ao atingir o herói, tela preta + GAME OVER com "Recomeçar o dia" (foto da manhã) e "Menu principal"). Teste
+  `MareAlta.Gameplay.SummitOffering`; QA `mare.ElderMet 1`, `mare.TsunamiNow 1|2`.
+- [ ] (liberado 04/11 para o Acesso Antecipado, depois do tsunami) **Campanha principal** com história completa até o
   final e tudo pronto no jogo; tom de comédia, animado e calmo, clima de praia.
-- [ ] [bloqueado-usuario] (sistema grande) **Animação de abertura** em estilo desenho (Canva) e **animações nos eventos
+- [ ] (liberado 04/11 para o Acesso Antecipado) **Animação de abertura** em estilo desenho (Canva) e **animações nos eventos
   principais** da história.
 - [x] Noite mais escura (Sergio, 04/11): `mare.NightDarken` tira 1,3 stop da exposição à noite; conferir praia, vila, quiosque e erupção.
 - [x] Som de mata fechada ao longo da trilha do cume (Sergio, 04/11): `forest_loop` (OpenGameArt CC0) entra além dos fundos da vila (y>8400), mais baixo à noite e na chuva; medido 0,126 na trilha e no cume, 0 na vila e na praia.

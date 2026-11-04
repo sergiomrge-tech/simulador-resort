@@ -43,6 +43,7 @@ private:
  UPROPERTY() TObjectPtr<AActor> LampHolder;
  void BuildLamps();
  /** Weather eased towards today's state (MPC_MareTime Rain/Wind/Storm) and the rain curtains around the camera. */
+ float TsunamiCalm=0.f;
  float RainNow=0,WindNow=.2f,StormNow=0;
  UPROPERTY() TArray<TObjectPtr<class AStaticMeshActor>> RainCurtains;
  /** Overcast sky: the volumetric cloud material (dynamic copy) and the atmosphere follow the rain/storm. */

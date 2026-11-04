@@ -446,3 +446,109 @@ def import_sound(arg='forest_loop'):
     w.set_editor_property('looping', True)
     unreal.EditorAssetLibrary.save_loaded_asset(w, False)
     return f'{w.get_path_name()} {w.get_editor_property("duration")}'
+
+
+def summit_props(arg=''):
+    """The old man's bench in front of the house, facing the sea and the volcano, and the offering basket beside it
+    (Poly Haven CC0 painted_wooden_bench / wicker_basket_01). arg 'yaw=<deg>' turns the bench."""
+    import mare_hotel_lobby as hl
+    from pathlib import Path
+    lib = Path('D:/Assets/PolyHaven')
+    out = {}
+    yaw = float(arg.split('=')[1]) if arg.startswith('yaw=') else 0.0
+    for slug, label, xy, rot in (('painted_wooden_bench', 'Cume · banco do velho', (4000, 37900), yaw),
+                                 ('wicker_basket_01', 'Cume · cesto da oferenda', (3640, 37860), 20.0)):
+        mesh = next((m for m in (unreal.load_asset(p) for p in unreal.EditorAssetLibrary.list_assets(f'{FOLDER}/{slug}', recursive=True))
+                     if isinstance(m, unreal.StaticMesh)), None)   # the material shares the mesh's name
+        if not mesh:
+            info = json.loads((lib / slug / 'info.json').read_text(encoding='utf-8'))
+            mesh = hl._import(lib / slug / info['gltf'], f'{FOLDER}/{slug}', slug, False, search=False)
+        ignore = [a for a in unreal.get_editor_subsystem(unreal.EditorActorSubsystem).get_all_level_actors() if a.get_actor_label() == label]
+        hit = unreal.SystemLibrary.line_trace_single(_world(), unreal.Vector(xy[0], xy[1], 20000), unreal.Vector(xy[0], xy[1], 0),
+                                                     unreal.TraceTypeQuery.TRACE_TYPE_QUERY1, True, ignore, unreal.DrawDebugTrace.NONE, True)
+        z = hit.to_tuple()[4].z if hit else 10700
+        hl._complex_collision(mesh)   # the old man's seat is found by a trace, and the hero must not walk through it
+        a = _actor(label, (xy[0], xy[1], z), rot)
+        a.static_mesh_component.set_static_mesh(mesh)
+        a.tags = [unreal.Name('MareSummit')]
+        b = mesh.get_bounds()
+        out[label] = {'z': round(z), 'mesh_origin': [round(b.origin.x), round(b.origin.y), round(b.origin.z)],
+                      'mesh_extent': [round(b.box_extent.x), round(b.box_extent.y), round(b.box_extent.z)]}
+    unreal.EditorLevelLibrary.save_current_level()
+    return json.dumps(out, ensure_ascii=False)
+
+
+def wave_material():
+    """M_TsunamiWave: dark deep water at the feet, a lighter see-through teal high on the face (fake light through the
+    crest), foam on the lip (UV1.x) and foam streaks running down the face, scrolling ripples; a faint glow of its own
+    so the wall reads at night under the storm (it comes at 22h)."""
+    import mare_materials as mm
+    MEL = unreal.MaterialEditingLibrary
+    mat = mm.material('M_TsunamiWave')
+    mat.set_editor_property('two_sided', True)
+    uv0 = mm.expression(mat, unreal.MaterialExpressionTextureCoordinate, coordinate_index=0)
+    uv1 = mm.expression(mat, unreal.MaterialExpressionTextureCoordinate, coordinate_index=1)
+    time = mm.expression(mat, unreal.MaterialExpressionTime)
+    water_n = unreal.load_asset('/Engine/Functions/Engine_MaterialFunctions02/ExampleContent/Textures/water_n')
+    ruv = mm.custom(mat, 'return float2(UV.x*1.7+sin(UV.y*9.0)*.2, UV.y*6.0 - T*0.5);', unreal.CustomMaterialOutputType.CMOT_FLOAT2, {'UV': uv0, 'T': time})
+    tex = mm.expression(mat, unreal.MaterialExpressionTextureSample, texture=water_n, sampler_type=unreal.MaterialSamplerType.SAMPLERTYPE_NORMAL)
+    mm.connect(ruv, '', tex, 'UVs')
+    code = ('float v=UV.y; float lip=L.x; '
+            'float2 p=float2(UV.x*4.0, v*9.0 - T*.35); '
+            'float n=sin(p.x*3.1+sin(p.y*2.3)*1.7)*.5+.5; n=n*.6+.4*(sin(p.x*7.3-p.y*4.1+T)*.5+.5); '
+            'float patches=smoothstep(.62,.86,n)*smoothstep(.35,.55,v)*(1-smoothstep(.85,.97,v)); '
+            'float face=smoothstep(.2,.5,v)*(1-smoothstep(.72,.95,v)); '
+            'float3 deep=float3(.01,.05,.06); float3 lit=float3(.06,.36,.36); '
+            'float3 c=lerp(deep,lit,face*(.7+.3*n)); '
+            'float foam=saturate(lip*(.8+.2*n)+patches*.7+smoothstep(.92,1.0,v)*.9); '
+            'return lerp(c,float3(.9,.93,.93),foam);')
+    color = mm.custom(mat, code, unreal.CustomMaterialOutputType.CMOT_FLOAT3, {'UV': uv0, 'L': uv1, 'T': time})
+    glow = mm.custom(mat, 'return C*float3(.22,.30,.30);', unreal.CustomMaterialOutputType.CMOT_FLOAT3, {'C': color})
+    rough = mm.custom(mat, 'return lerp(.12,.7,saturate(L.x+smoothstep(.93,1,UV.y)));', unreal.CustomMaterialOutputType.CMOT_FLOAT1, {'L': uv1, 'UV': uv0})
+    normal = mm.custom(mat, 'return normalize(float3(N.xy*1.4,N.z));', unreal.CustomMaterialOutputType.CMOT_FLOAT3, {'N': tex})
+    for node, prop in ((color, unreal.MaterialProperty.MP_BASE_COLOR), (glow, unreal.MaterialProperty.MP_EMISSIVE_COLOR),
+                       (rough, unreal.MaterialProperty.MP_ROUGHNESS), (normal, unreal.MaterialProperty.MP_NORMAL)):
+        MEL.connect_material_property(node, '', prop)
+    errors = list(MEL.recompile_material(mat))
+    if errors:
+        raise RuntimeError(str(errors))
+    unreal.EditorAssetLibrary.save_loaded_asset(mat)
+    return mat
+
+
+def wave(arg=''):
+    """Import the tsunami wave mesh (tools/ue58/gen_tsunami_wave.py) to /Game/Summit/TsunamiWave with M_TsunamiWave."""
+    import mare_hotel_lobby as hl
+    from pathlib import Path
+    src = Path(unreal.Paths.project_dir()) / 'SourceArt/Models/Summit/TsunamiWave.glb'
+    mesh = next((m for m in (unreal.load_asset(p) for p in unreal.EditorAssetLibrary.list_assets(f'{FOLDER}/TsunamiWave', recursive=True))
+                 if isinstance(m, unreal.StaticMesh)), None) if unreal.EditorAssetLibrary.does_directory_exist(f'{FOLDER}/TsunamiWave') else None
+    if not mesh or arg == 'reimport':
+        mesh = hl._import(src, f'{FOLDER}/TsunamiWave', 'TsunamiWave', False, search=False)
+    mat = wave_material()
+    mesh.set_material(0, mat)
+    body = mesh.get_editor_property('body_setup')
+    if body:
+        body.set_editor_property('collision_trace_flag', unreal.CollisionTraceFlag.CTF_USE_SIMPLE_AS_COMPLEX)
+    unreal.EditorAssetLibrary.save_loaded_asset(mesh, False)
+    b = mesh.get_bounds()
+    return json.dumps({'mesh': mesh.get_path_name(), 'extent': [round(b.box_extent.x), round(b.box_extent.y), round(b.box_extent.z)]})
+
+
+def rain_material(arg=''):
+    """Rebuild M_RainCurtain (mare_materials.build_rain): Sergio 04/11 "diminua a intensidade da chuva"."""
+    import importlib
+    import mare_materials
+    importlib.reload(mare_materials)
+    return mare_materials.build_rain().get_path_name()
+
+
+def talk_elder(arg=''):
+    """QA in PIE: use Seu Tibúrcio's interaction as the player would (E). arg 'carry=<dish>' puts a product in hand."""
+    world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()
+    pc = unreal.GameplayStatics.get_player_controller(world, 0)
+    for t in unreal.GameplayStatics.get_all_actors_of_class(world, unreal.MareServiceTarget):
+        if str(t.get_editor_property('action')) == 'Elder':
+            t.use(pc)
+            return 'used ' + str(t.get_editor_property('label'))
+    return 'no elder target'

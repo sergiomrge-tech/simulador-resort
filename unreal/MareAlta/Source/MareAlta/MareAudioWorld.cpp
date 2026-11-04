@@ -1,4 +1,5 @@
 #include "MareAudioWorld.h"
+#include "MareSummitWorld.h"
 #include "MareGame.h"
 #include "MareSimulation.h"
 #include "Engine/GameInstance.h"
@@ -150,6 +151,8 @@ void UMareAudioWorld::UpdateLayers(float DeltaSeconds,UMareSimulation* Sim,FVect
   // (OpenGameArt CC0 birds + forest ambience), softer at night when the crickets take over, almost gone in the rain.
   if(Name==TEXT("forest_loop"))Target=Gain(true)*.24f*FMath::Clamp((Position.Y-8400.f)/1600.f,0.f,1.f)*(bNight?.35f:1.f)*(bRain?.25f:1.f)*(bIndoors?.2f:1.f);
   auto Component=Pair.Value;if(!IsValid(Component))continue;
+  // The silence before the tsunami (UMareSummitWorld): every ambience and the radio fall silent.
+  if(auto Summit=GetWorld()->GetSubsystem<UMareSummitWorld>())if(Summit->IsWaveRunning())Target=0;
   if(GetVolume(TEXT("Master"))==0)Target=0;
   Component->SetVolumeMultiplier(FMath::FInterpTo(Component->VolumeMultiplier,Target,DeltaSeconds,3));
   Component->SetLowPassFilterEnabled(bUnderwater);Component->SetLowPassFilterFrequency(bUnderwater?650:18000);
