@@ -2,6 +2,7 @@ import math
 """HUD assets for the gameplay plan (docs/ue58/GAMEPLAY_PLANO_2026-11-02.md).
 Run through the editor MCP: hotel_lobby action "hud_<name>" -> run(<name>, arg)."""
 from pathlib import Path
+import json as json_module
 import unreal
 
 ICONS = Path(unreal.Paths.project_dir()).resolve() / 'SourceArt/UI/Icons'
@@ -732,7 +733,125 @@ def stand_audit(arg=''):
     return out
 
 
+def big_textures(roots, minimum=4096):
+    """Every Texture2D of at least `minimum` px under the given content roots: size, LOD group, cap and bias."""
+    reg = unreal.AssetRegistryHelpers.get_asset_registry()
+    out = {}
+    for root in roots:
+        for a in reg.get_assets_by_path(root, recursive=True):
+            if str(a.asset_class_path.asset_name) != 'Texture2D':
+                continue
+            t = unreal.load_asset(str(a.package_name))
+            w, h = t.blueprint_get_size_x(), t.blueprint_get_size_y()
+            if max(w, h) >= minimum:
+                out[str(a.package_name)] = [w, h, str(t.get_editor_property('lod_group')).split('.')[-1],
+                                            t.get_editor_property('max_texture_size'), t.get_editor_property('lod_bias')]
+    return out
+
+
+def cook_reachable():
+    """Packages the cooker takes: the maps to cook and every package under DirectoriesToAlwaysCook (DefaultGame.ini),
+    plus everything they reference, hard or soft (the cooker follows both)."""
+    import re
+    ini = (Path(unreal.Paths.project_config_dir()) / 'DefaultGame.ini').read_text(encoding='utf-8')
+    reg = unreal.AssetRegistryHelpers.get_asset_registry()
+    queue = [m.split('.')[0] for m in re.findall(r'MapsToCook=\(FilePath="([^"]+)"', ini)]
+    for d in re.findall(r'DirectoriesToAlwaysCook=\(Path="([^"]+)"', ini):
+        queue += [str(a.package_name) for a in reg.get_assets_by_path(d, recursive=True)]
+    options = unreal.AssetRegistryDependencyOptions(include_soft_package_references=True, include_hard_package_references=True,
+                                                    include_searchable_names=False, include_soft_management_references=False,
+                                                    include_hard_management_references=False)
+    seen = set()
+    while queue:
+        p = queue.pop()
+        if p in seen or not p.startswith('/Game/'):
+            continue
+        seen.add(p)
+        queue += [str(d) for d in (reg.get_dependencies(p, options) or []) if str(d) not in seen]
+    return seen
+
+
+def cook_audit(spec):
+    """Runtime paths (spec["paths"]: object or package paths; spec["patterns"]: regexes of package paths built from the
+    C++ format strings) that exist in the project but would be left out of the cooked game."""
+    import re
+    reg = unreal.AssetRegistryHelpers.get_asset_registry()
+    cooked = cook_reachable()
+    every = {str(a.package_name) for a in reg.get_assets_by_path('/Game', recursive=True)}
+    missing, absent = set(), set()
+    for path in spec.get('paths', []):
+        pkg = path.split('.')[0].rstrip('/')
+        if pkg in cooked:
+            continue
+        inside = [p for p in every if p == pkg or p.startswith(pkg + '/')]
+        if not inside:
+            absent.add(pkg)
+        elif pkg in every:
+            missing.add(pkg)
+        elif not any(p in cooked for p in inside):
+            missing.add(pkg + '/')
+    for pattern in spec.get('patterns', []):
+        rx = re.compile(pattern + '$')
+        missing.update(p for p in every if rx.match(p) and p not in cooked)
+    by_dir = {}
+    for p in cooked:
+        key = '/'.join(p.split('/')[:4])
+        by_dir[key] = by_dir.get(key, 0) + 1
+    heavy = sorted(p for p in cooked if re.match(r'/Game/(People/MetaHumans/MH_[^/]+|Outfits/[^/]+/(OA|WI)_[^/]+)$', p))
+    return {'cooked': len(cooked), 'missing': sorted(missing), 'absent': sorted(absent), 'by_dir': by_dir, 'editor_assets': heavy}
+
+
+def cap_textures(spec):
+    """spec "folder=size;..." -> MaxTextureSize on every Texture2D larger than size in that folder (the source stays
+    intact; the cook and the editor stream at most that size). Saves the changed textures."""
+    reg = unreal.AssetRegistryHelpers.get_asset_registry()
+    done = {}
+    for part in [s for s in spec.split(';') if s]:
+        folder, size = part.split('=')
+        for a in reg.get_assets_by_path(folder, recursive=True):
+            if str(a.asset_class_path.asset_name) != 'Texture2D':
+                continue
+            tex = unreal.load_asset(str(a.package_name))
+            if max(tex.blueprint_get_size_x(), tex.blueprint_get_size_y()) > int(size) and tex.get_editor_property('max_texture_size') != int(size):
+                tex.set_editor_property('max_texture_size', int(size))
+                if not unreal.EditorAssetLibrary.save_loaded_asset(tex, False):
+                    raise RuntimeError('not saved: ' + str(a.package_name))
+                done[str(a.package_name)] = int(size)
+    return done
+
+
+def stage(spec):
+    """Temporary look at meshes in the editor level: "mesh_path@x,y,z,yaw,scale;..." spawns tagged actors (never saved);
+    an empty spec removes them."""
+    actors = unreal.get_editor_subsystem(unreal.EditorActorSubsystem)
+    for a in actors.get_all_level_actors():
+        if 'mare_stage' in [str(t) for t in a.tags]:
+            actors.destroy_actor(a)
+    placed = []
+    for part in [s for s in spec.split(';') if s]:
+        path, where = part.split('@')
+        x, y, z, yaw, scale = [float(v) for v in where.split(',')]
+        a = actors.spawn_actor_from_object(unreal.load_asset(path), unreal.Vector(x, y, z), unreal.Rotator(roll=0, pitch=0, yaw=yaw))
+        a.set_actor_scale3d(unreal.Vector(scale, scale, scale))
+        a.tags = [unreal.Name('mare_stage')]
+        box = a.get_actor_bounds(False)
+        placed.append([path.split('/')[-1], [round(box[1].x), round(box[1].y), round(box[1].z)]])
+    return placed
+
+
 def run(action, arg=''):
+    if action == 'stage':
+        return json_module.dumps(stage(arg))
+    if action == 'texcap':
+        # Memory (PENDENCIAS P1): "/Game/Custom/FabFood=1024;/Game/Custom/FabFurniture=2048".
+        return json_module.dumps(cap_textures(arg))
+    if action == 'cookaudit':
+        # Packaging audit: arg = path of a JSON file {"paths": [...], "patterns": [...]} (tools/ue58/qa/cook_audit.py).
+        return json_module.dumps(cook_audit(json_module.loads(Path(arg).read_text(encoding='utf-8'))))
+    if action == 'bigtex':
+        # Memory audit (PENDENCIAS P1): textures of 4K or more under the comma-separated roots ("/Game/People,...").
+        res = big_textures([r for r in (arg or '/Game').split(',') if r])
+        return json_module.dumps({'n': len(res), 'tex': res})
     if action == 'badges':
         # PIE: every staff badge with its owner, role and where it sits relative to the owner's chest (spine_05),
         # in the owner's frame [forward, left, up] cm: a badge belongs ~13-15 cm ahead, ~10 left of the spine.

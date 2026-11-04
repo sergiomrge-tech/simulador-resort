@@ -470,7 +470,16 @@ Pronto e testado (02/11):
   - MetaHumans: limite visível, LOD, grooms.
 - [ ] P0 Sessões de 2 h sem crash (GPU page fault do hotel mitigado com `r.Lumen.AsyncCompute=0`; re-testar).
 - [x] P0 Saves: 3 slots, autosave ao dormir, migração do slot1 antigo, backup `.bak` (teste `MareAlta.Saves.Slots`, 02/11).
-- [ ] P1 Memória: build de pessoas e texturas 8K das banhistas (avaliar 4K), tamanho do pacote final.
+- [~] P1 Memória: build de pessoas e texturas 8K das banhistas (avaliar 4K), tamanho do pacote final.
+  - 04/11: nenhuma textura das pessoas passa de 4K (build Medium; o 8K era só intermediário do maiô). Texturas 4K de
+    objetos pequenos limitadas por MaxTextureSize (fonte intacta): açaí/coco 1024, banqueta/sofá de vime, fogueira e
+    celular 2048; conferido de perto (`D:/CodexTemp/qa/texcap2.jpg`). Roupas Khaos 6K já em 1024.
+  - 04/11, erro grave evitado: o jogo carrega por caminho em texto (LoadClass/LoadObject e JSON) MetaHumans, roupas de
+    banho, animações, ícones e todo `/Game/Custom` (personalização, festas, sala de jogos): 303 pacotes ficariam FORA do
+    executável. `DirectoriesToAlwaysCook` ganhou essas pastas e só os 35 MetaHumans das listas. `tools/ue58/qa/cook_audit.py`
+    (no portão de QA) reprova qualquer caminho carregado por texto que não seja cozido; assets de edição pesados
+    (MH_*.uasset 117 MB, OA_* 170 MB) não entram.
+  - Falta: medir o tamanho do pacote no próximo build do executável (o último, 01/11, tinha 1,46 GB e era anterior aos MetaHumans).
 - [x] P1 Testes automáticos cobrindo cada sistema novo (23 testes MareAlta.* em 02/11) e QA de PIE com fotos por sistema
   (`docs/ue58/graphics-reference/*-20261102.*`).
 

@@ -221,6 +221,18 @@ def untracked(base):
     return {'files': files, 'pass': not files}
 
 
+def cooking():
+    """Everything the game loads by a text path is in the cooked build (cook_audit.py; 03/11 the MetaHumans were not)."""
+    import cook_audit
+    paths, patterns = cook_audit.collect()
+    cook_audit.OUT.parent.mkdir(parents=True, exist_ok=True)
+    cook_audit.OUT.write_text(json.dumps({'paths': paths, 'patterns': patterns}), encoding='utf-8')
+    res = hud('cookaudit', str(cook_audit.OUT))
+    res = json.loads(res) if isinstance(res, str) else res
+    return {'missing': res['missing'], 'absent': res['absent'], 'cooked': res['cooked'],
+            'pass': not res['missing'] and not res['absent']}
+
+
 def main():
     accept, with_shots = '--accept' in sys.argv, '--no-shots' not in sys.argv
     base = json.loads(BASELINE.read_text(encoding='utf-8')) if BASELINE.exists() else {}
@@ -229,6 +241,7 @@ def main():
     pie(False)
     report['tests'] = tests()
     report['floating'] = floating(base)
+    report['cook'] = cooking()
     offset = LOG.stat().st_size
     pie(True)
     coast('clock', '690')
@@ -245,7 +258,7 @@ def main():
     report['log'] = log_since(offset, base.get('log_allow', []))
     pie(False)
     report['untracked'] = untracked(base)
-    report['pass'] = all(report[k]['pass'] for k in ('tests', 'floating', 'gait', 'visible', 'log', 'untracked'))
+    report['pass'] = all(report[k]['pass'] for k in ('tests', 'floating', 'cook', 'gait', 'visible', 'log', 'untracked'))
     OUT.mkdir(parents=True, exist_ok=True)
     (OUT / 'report.json').write_text(json.dumps(report, indent=1, ensure_ascii=False), encoding='utf-8')
     if accept:
@@ -253,6 +266,8 @@ def main():
         BASELINE.write_text(json.dumps(base, indent=1, ensure_ascii=False) + '\n', encoding='utf-8')
     print('QA GATE', 'PASS' if report['pass'] else 'FAIL')
     print(' tests  ', report['tests']['total'], 'run,', len(report['tests']['failed']), 'failed', [f['name'] for f in report['tests']['failed']])
+    print(' cook   ', report['cook']['cooked'], 'packages,', len(report['cook']['missing']), 'loaded by path but not cooked',
+          (report['cook']['missing'] + report['cook']['absent'])[:6])
     print(' float  ', report['floating']['floating'], '(baseline', report['floating']['baseline'], ')')
     print(' gait   day', day['moving'], 'moving', len(day['gliding']), 'gliding | night', night['moving'], 'moving', len(night['gliding']), 'gliding')
     v = report['visible']

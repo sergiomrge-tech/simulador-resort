@@ -462,3 +462,12 @@ Não dá para ouvir o jogo daqui: a mixagem é feita medindo. `python tools/ue58
 padrão). Ao mexer em ganho no código, atualizar as tabelas do script junto, senão a medição mente (passos estavam com
 .15 no script e .18 no código). Sons novos: normalizar por loudness, não por pico (pico igual deixou risadas 9 dB
 diferentes). Dois clipes sorteados no mesmo PlayCue precisam do mesmo loudness, ou ganho por clipe.
+
+## Cozimento de conteúdo carregado por caminho (04/11)
+
+O cozinheiro só leva o mapa, suas referências e `DirectoriesToAlwaysCook`. Tudo que o C++ carrega com
+LoadObject/LoadClass por texto, ou que vem de caminho em `Content/Data/*.json`, fica fora do executável sem aviso
+(o editor carrega do disco e esconde o problema). Os MetaHumans e todo `/Game/Custom` estavam assim. Ao criar pasta
+ou asset carregado por caminho, acrescente a pasta em DefaultGame.ini; `tools/ue58/qa/cook_audit.py` (no portão)
+reprova o que faltar. MetaHumans: só as pastas das pessoas das listas, nunca `/Game/People/MetaHumans` inteiro.
+
