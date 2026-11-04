@@ -8,7 +8,7 @@ Sources (CC0 on OpenGameArt, "credit appreciated, not required"; listed in CREDI
 Only non-word sounds are kept (no spoken lines). The male versions of the female clips are made here with the WORLD
 vocoder (pyworld): pitch x0.58 and the spectral envelope warped by 0.84 (shorter vocal tract), so a laugh or a
 grumble keeps its timing and breath but sounds like a man. Everything is quiet and soft (the game's gentle audio
-rule): 120 Hz high-pass, a short fade in/out and a peak of -9 dBFS.
+rule): 120 Hz high-pass, a short fade in/out, all at -23 LUFS with a -6 dBFS peak ceiling.
 
 Downloads go to D:/CodexTemp/voices_dl (untrusted data: only unzipped in memory and decoded as audio).
 Output: unreal/MareAlta/SourceArt/Audio/Voices/<mood>_<f|m>_<n>.wav (48 kHz mono 16-bit) + manifest.json.
@@ -74,6 +74,7 @@ def to_male(x):
 
 
 def soften(x):
+    import pyloudnorm
     x = sosfiltfilt(butter(2, 120, 'highpass', fs=RATE, output='sos'), x)
     nz = np.flatnonzero(np.abs(x) > np.abs(x).max() * .02)
     x = x[max(0, nz[0] - 480):nz[-1] + 2400] if len(nz) else x
@@ -81,7 +82,13 @@ def soften(x):
     ramp = np.linspace(0, 1, fade)
     x[:fade] *= ramp
     x[-fade:] *= ramp[::-1]
-    return x / (np.abs(x).max() + 1e-9) * 10 ** (-9 / 20)
+    # Equal loudness, not equal peaks (03/11 mix audit: one laugh sat 9 dB under another): -23 LUFS, or the RMS of a
+    # clip too short for the meter, then a -6 dBFS peak ceiling.
+    if len(x) >= .4 * RATE:
+        x = pyloudnorm.normalize.loudness(x, pyloudnorm.Meter(RATE).integrated_loudness(x), -23.0)
+    else:
+        x = x * 10 ** ((-23 - 20 * np.log10(np.sqrt(np.mean(x ** 2)) + 1e-12)) / 20)
+    return x * min(1.0, 10 ** (-6 / 20) / (np.abs(x).max() + 1e-9))
 
 
 def main():

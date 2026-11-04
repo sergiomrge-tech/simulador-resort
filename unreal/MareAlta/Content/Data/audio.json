@@ -479,7 +479,7 @@
   "duration": 0.8700000047683716,
   "loop": false,
   "group": "pool_pocket",
-  "volume": 0.2
+  "volume": 0.32
  },
  {
   "id": "pool_pocket_2",
@@ -487,7 +487,7 @@
   "duration": 0.7400000095367432,
   "loop": false,
   "group": "pool_pocket",
-  "volume": 0.2
+  "volume": 0.32
  },
  {
   "id": "pool_rail_bounce_1",
@@ -511,7 +511,7 @@
   "duration": 1.7999999523162842,
   "loop": false,
   "group": "bar_blender",
-  "volume": 0.03
+  "volume": 0.045
  },
  {
   "id": "bar_blender_2",
@@ -519,7 +519,7 @@
   "duration": 1.2000000476837158,
   "loop": false,
   "group": "bar_blender",
-  "volume": 0.03
+  "volume": 0.045
  },
  {
   "id": "bar_shaker_1",
@@ -615,7 +615,7 @@
   "duration": 0.28985416889190674,
   "loop": false,
   "group": "deal_accept",
-  "volume": 0.04
+  "volume": 0.064
  },
  {
   "id": "deal_accept_2",
@@ -623,7 +623,7 @@
   "duration": 0.49041667580604553,
   "loop": false,
   "group": "deal_accept",
-  "volume": 0.04
+  "volume": 0.064
  },
  {
   "id": "deal_decline_1",
@@ -631,7 +631,7 @@
   "duration": 0.33247917890548706,
   "loop": false,
   "group": "deal_decline",
-  "volume": 0.03
+  "volume": 0.048
  },
  {
   "id": "deal_decline_2",
@@ -639,7 +639,7 @@
   "duration": 0.33252084255218506,
   "loop": false,
   "group": "deal_decline",
-  "volume": 0.03
+  "volume": 0.048
  },
  {
   "id": "tt_paddle_1",
@@ -647,7 +647,7 @@
   "duration": 0.09983333200216293,
   "loop": false,
   "group": "tt_paddle",
-  "volume": 0.09
+  "volume": 0.126
  },
  {
   "id": "tt_paddle_2",
@@ -655,7 +655,7 @@
   "duration": 0.1002083346247673,
   "loop": false,
   "group": "tt_paddle",
-  "volume": 0.09
+  "volume": 0.126
  },
  {
   "id": "tt_paddle_3",
@@ -663,7 +663,7 @@
   "duration": 0.09866666793823242,
   "loop": false,
   "group": "tt_paddle",
-  "volume": 0.09
+  "volume": 0.126
  },
  {
   "id": "tt_bounce_1",
@@ -671,7 +671,7 @@
   "duration": 0.08160416781902313,
   "loop": false,
   "group": "tt_bounce",
-  "volume": 0.1
+  "volume": 0.14
  },
  {
   "id": "tt_bounce_2",
@@ -679,7 +679,7 @@
   "duration": 0.08156249672174454,
   "loop": false,
   "group": "tt_bounce",
-  "volume": 0.1
+  "volume": 0.14
  },
  {
   "id": "tt_bounce_3",
@@ -687,7 +687,7 @@
   "duration": 0.08120833337306976,
   "loop": false,
   "group": "tt_bounce",
-  "volume": 0.1
+  "volume": 0.14
  },
  {
   "id": "annoyed_f_1",

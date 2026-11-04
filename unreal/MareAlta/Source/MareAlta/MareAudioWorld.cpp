@@ -137,12 +137,14 @@ void UMareAudioWorld::UpdateLayers(float DeltaSeconds,UMareSimulation* Sim,FVect
  const float Duck=ZoneTrack.IsNone()?1.f:FMath::Lerp(1.f,float(UMareSimulation::Number(Zones,TEXT("radio_duck"),.2)),FMath::Clamp(ZoneLevel/.15f,0.f,1.f));
  for(auto Pair:Loops){const FName Name=Pair.Key;float Target=0;
   if(Name==ZoneTrack)Target=(MasterMix?1.f:GetVolume(TEXT("Master")))*GetVolume(TEXT("Music"))*ZoneLevel*(bIndoors?.8f:1.f);
-  else if(Name==RadioStation && IsRadioStation(Name))Target=Duck*(MasterMix?1.f:GetVolume(TEXT("Master")))*GetVolume(TEXT("Music"))*(bNight?.22f:.32f)*(bIndoors?.65f:1.f)*(bHomeStereo && HomeStereo?FMath::Clamp(FVector::Dist(Position,HomeStereo->GetComponentLocation())/800.f,.12f,1.f):1.f);
+  // Per-station trim so every track plays at the same loudness (reggae_praia is mastered 3.6 dB softer).
+  else if(Name==RadioStation && IsRadioStation(Name))Target=(Name==TEXT("reggae_praia")?1.5f:1.f)*Duck*(MasterMix?1.f:GetVolume(TEXT("Master")))*GetVolume(TEXT("Music"))*(bNight?.22f:.32f)*(bIndoors?.65f:1.f)*(bHomeStereo && HomeStereo?FMath::Clamp(FVector::Dist(Position,HomeStereo->GetComponentLocation())/800.f,.12f,1.f):1.f);
   if(Name==TEXT("ocean_loop"))Target=Gain(true)*Beach*(bIndoors?.1f:.4f);
-  if(Name==TEXT("rain_loop"))Target=Gain(true)*(bRain?(bIndoors?.12f:.48f):0.f);
+  // Mix 03/11 (tools/ue58/measure_mix.py): the rain sat 18 dB over the sea and over the music; now ~3 dB above the sea.
+  if(Name==TEXT("rain_loop"))Target=Gain(true)*(bRain?(bIndoors?.025f:.08f):0.f);
   if(Name==TEXT("wind_loop"))Target=Gain(true)*(bRain?.16f:.055f)*(bIndoors?.15f:1.f);
   if(Name==TEXT("crickets_loop"))Target=Gain(true)*(bNight && !bRain?.22f:0.f)*(bIndoors?.25f:1.f);
-  if(Name==TEXT("leaves_soft"))Target=Gain(true)*(!bRain && Position.Y>-1100?.08f:0.f)*(bIndoors?.2f:1.f);
+  if(Name==TEXT("leaves_soft"))Target=Gain(true)*(!bRain && Position.Y>-1100?.2f:0.f)*(bIndoors?.2f:1.f);
   if(Name==TEXT("underwater_loop"))Target=Gain(true)*(bUnderwater?.28f:0.f);
   auto Component=Pair.Value;if(!IsValid(Component))continue;
   if(GetVolume(TEXT("Master"))==0)Target=0;
@@ -160,19 +162,21 @@ void UMareAudioWorld::UpdateEvents(float DeltaSeconds,UMareSimulation* Sim,FVect
  if(Hero->GetCharacterMovement()->IsMovingOnGround() && Hero->GetVelocity().Size2D()>45 && StepClock<=0){
   const bool Wood=(Position.X>3500 && Position.X<4150 && Position.Y>-1650 && Position.Y<-900);
   const FString Surface=Wood?TEXT("wood"):Position.Y>900?TEXT("concrete"):TEXT("carpet");
-  PlayCue(FName(FString::Printf(TEXT("footstep_%s_%03d"),*Surface,FMath::RandRange(0,4))),.18f);StepClock=Hero->GetVelocity().Size2D()>300?.3f:.46f;
+  // The concrete steps were recorded 8 dB softer than the carpet ones (measure_mix.py): even them out per surface.
+  const float Trim=Surface==TEXT("concrete")?2.f:Surface==TEXT("wood")?1.25f:1.f;
+  PlayCue(FName(FString::Printf(TEXT("footstep_%s_%03d"),*Surface,FMath::RandRange(0,4))),.18f*Trim);StepClock=Hero->GetVelocity().Size2D()>300?.3f:.46f;
  }
- if(Sim->Carry()!=LastCarry){if(!Sim->Carry().IsEmpty())PlayCue(TEXT("kiosk_pickup"),.4f);LastCarry=Sim->Carry();}
- if(Sim->Money()>LastCash+.01)PlayCue(TEXT("kiosk_cash"),.3f);LastCash=Sim->Money();
+ if(Sim->Carry()!=LastCarry){if(!Sim->Carry().IsEmpty())PlayCue(TEXT("kiosk_pickup"),.6f);LastCarry=Sim->Carry();}
+ if(Sim->Money()>LastCash+.01)PlayCue(TEXT("kiosk_cash"),.8f);LastCash=Sim->Money();
  const int32 Orders=UMareSimulation::Object(Sim->State,TEXT("ue_orders"))->Values.Num();if(Orders>LastOrders)PlayCue(TEXT("glass"),.15f);LastOrders=Orders;
  if(PC && PC->bPhoneOpen!=bWasPhone){PlayCue(TEXT("swoosh"),.14f);bWasPhone=PC->bPhoneOpen;}
  GullClock-=DeltaSeconds;BirdClock-=DeltaSeconds;ThunderClock-=DeltaSeconds;
  // A calm background (Sergio, 03/11: soft and relaxing, not crowded): birds and gulls now and then over the sea and wind.
  if(!bRain && !bNight && BirdClock<=0){BirdClock=FMath::FRandRange(10.f,22.f);const FVector Trees[]={FVector(4200,1700,500),FVector(5300,3600,500),FVector(3300,-1000,500),FVector(900,-900,500),FVector(-1500,700,500),FVector(6900,3700,600),FVector(8300,1800,600)};
   FVector Nearest=Trees[0];for(auto Tree:Trees)if(FVector::Dist(Position,Tree)<FVector::Dist(Position,Nearest))Nearest=Tree;
-  if(FVector::Dist(Position,Nearest)<3500)PlayCue(FMath::RandBool()?TEXT("bird1"):TEXT("bird2"),.16f,&Nearest,true);
+  if(FVector::Dist(Position,Nearest)<3500)PlayCue(FMath::RandBool()?TEXT("bird1"):TEXT("bird2"),.035f,&Nearest,true);   // the bird clips are ~25 dB hotter than the gulls'
  }
- if(GullClock<=0){GullClock=FMath::FRandRange(28.f,55.f);FVector Spot=Position+FVector(700,-1200,800);if(!bNight && !bRain && Position.Y<-500)PlayCue(FMath::RandBool()?TEXT("seagull1"):TEXT("seagull2"),.13f,&Spot,true);}
+ if(GullClock<=0){GullClock=FMath::FRandRange(28.f,55.f);FVector Spot=Position+FVector(700,-1200,800);if(!bNight && !bRain && Position.Y<-500){const bool bFirst=FMath::RandBool();PlayCue(bFirst?TEXT("seagull1"):TEXT("seagull2"),bFirst?.3f:.75f,&Spot,true);}}   // seagull2 is recorded 8 dB softer
  if(ThunderClock<=0){ThunderClock=FMath::FRandRange(22.f,45.f);if(bRain && UMareSimulation::String(Sim->State,TEXT("day_event"))==TEXT("tempestade"))PlayCue(TEXT("thunder"),.25f,nullptr,true);}
  const int32 Hour=UMareSimulation::Number(Sim->State,TEXT("minutes"))/60;
  if(LastBell<0)LastBell=Hour;if(Hour!=LastBell){LastBell=Hour;FVector Church(7000,3000,700);if(Hour>=7 && Hour<=21)PlayCue(TEXT("bell"),.2f,&Church,true);}

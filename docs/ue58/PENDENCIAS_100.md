@@ -421,7 +421,12 @@ Pronto e testado (02/11):
   "Aloha FM · luar" (slack key, 72 BPM, fá maior). Cada estação toca sozinha no mesmo nível (0,066, `mare_hud radio/loops`).
 - [x] P1 Ambiente de fundo suave e relaxante (03/11): vento, mar/ondas, pássaros e gaivotas em volume baixo, sem poluição sonora.
   Feito 03/11: pássaros a cada 10–22 s (0,16) e gaivotas a cada 28–55 s (0,13) sobre vento e mar (`MareAudioWorld`).
-- [ ] P1 Mixagem final e volumes por categoria (já existem: geral, música, efeitos, ambiente).
+- [x] P1 Mixagem final e volumes por categoria (já existem: geral, música, efeitos, ambiente).
+  - 03/11: `tools/ue58/measure_mix.py` mede cada som como o jogador ouve (LUFS do arquivo + ganho do código/catálogo + barramentos padrão)
+    e aponta o que foge mais de 6 dB da mediana da categoria. Corrigido: chuva 18 dB acima do mar (agora ~3 dB), folhas inaudíveis,
+    pássaros 25 dB acima das gaivotas, gaivota 2 gravada 8 dB mais baixa, passos de concreto 8 dB abaixo do carpete (ganho por
+    superfície), clique/caixa/retirada baixos, negociação/sinuca/pingue-pongue/liquidificador baixos no catálogo, reggae_praia 3,6 dB
+    abaixo das outras estações e vozes normalizadas por loudness (-23 LUFS) em vez de pico. Todas as categorias dentro de ±6 dB.
 - [x] P2 Vozes curtas (murmúrios) sem diálogo falado, respeitando a regra de áudio suave. 03/11: risadinha, resmungo,
   suspiro e "hmm" de pacotes CC0 do OpenGameArt (`tools/ue58/fetch_murmurs.py`, só sons sem palavras); as versões
   masculinas das femininas foram feitas com o vocoder WORLD (tom x0,58, formantes x0,84; F0 medido 110-159 Hz contra

@@ -455,3 +455,10 @@ Peças da personalização são HISM: materiais importados para elas precisam do
 aparecem quadriculados no jogo; `hud_importmodel` já marca). O material de paisagens da TV antiga calcula a imagem
 pelo tamanho da tela de tubo no mundo: telas novas usam `M_HomeTV_Flat` pelas UVs.
 
+## Mixagem por números (03/11)
+
+Não dá para ouvir o jogo daqui: a mixagem é feita medindo. `python tools/ue58/measure_mix.py` soma o loudness do arquivo
+(LUFS; RMS para clipes < 0,4 s) ao ganho real (PlayCue, alvo dos loops, volume do grupo no audio.json, barramentos
+padrão). Ao mexer em ganho no código, atualizar as tabelas do script junto, senão a medição mente (passos estavam com
+.15 no script e .18 no código). Sons novos: normalizar por loudness, não por pico (pico igual deixou risadas 9 dB
+diferentes). Dois clipes sorteados no mesmo PlayCue precisam do mesmo loudness, ou ganho por clipe.
