@@ -479,7 +479,7 @@ Pronto e testado (02/11):
     render: as ~60 pessoas do mapa (6 na tela) desenhadas nas sombras do sol (3.400 draw calls). Agora pessoas a mais de
     30 m não projetam sombra (`mare.PeopleShadowDistance`) e quem ninguém vê mantém a pose (`mare.OffscreenPose`).
     Grooms não pesam (variante sem cabelo igual). Sem pessoas a praia faz 49 FPS: o resto é do cenário (abaixo).
-- [ ] P1 Chegar a 60 FPS de dia na praia (RTX 4060 Ti, 1080p): o cenário sozinho gasta 20 ms de render com ~2.030 draw
+- [ ] [bloqueado-usuario] (sistema grande: aguarda o Sergio escolher a prioridade e subir o esforço do Opus, regra global) P1 Chegar a 60 FPS de dia na praia (RTX 4060 Ti, 1080p): o cenário sozinho gasta 20 ms de render com ~2.030 draw
   calls de sombra de malhas sem Nanite (achar quais: vegetação/instâncias) e as pessoas ainda ~8 ms (componentes
   registrados: oclusão, velocidades). Medir com `tools/ue58/bench_package.ps1 -Exec "cvar valor"` sem reempacotar.
   04/11, já testado e descartado: (1) ligar Nanite nas 70 malhas sem Nanite que fazem sombra (`hud_shadowcasters`): os
@@ -494,6 +494,13 @@ Pronto e testado (02/11):
   delas sozinha ~5 FPS). Morros com metade das árvores (pedido do Sergio, "tem muitas"): 10.153 → 5.360 árvores,
   15.175 → 8.971 arbustos, com clareiras. Jogo completo: GPU da praia 22,1 → 20,7 ms, p99 43 → 38 ms, FPS 32,7 → 33,3.
   O limite agora é a thread de render (CPU ~28–30 ms de dia), espalhada por todas as malhas do cenário exportado.
+  04/11, testes no executável (praia, jogo completo, ~33 FPS de base): HZB (r.HZBOcclusion 1) render 30 → 21 ms mas FPS
+  igual; resolução 50% só +4 FPS (GPU 20,7 → 17,7: custo da placa NÃO depende da resolução); qualidade Alta do Lumen
+  (perfil de 60 FPS da Epic) igual; sombras virtuais (LodBias 1,5, NonNaniteVSM 0, LastLevel 16) +0–2 FPS; tela cheia
+  igual. Diagnóstico: custo de GEOMETRIA (~1,6 M triângulos/quadro em malhas sem Nanite, exportadas com um único LOD).
+  Plano: (1) LODs automáticos nas malhas sem Nanite mais desenhadas; (2) separar o vidro dos postes/lanternas numa malha
+  própria para o corpo opaco ganhar Nanite; (3) distância de corte e sem sombra em objetos pequenos; (4) HZB ligado.
+  Ferramentas: `tools/ue58/bench_package.ps1 -Exec/-NoShadow/-Fullscreen`, `-MareBenchSweep`, `hud_shadowcasters`.
 - [x] P0 Sessões de 2 h sem crash (GPU page fault do hotel mitigado com `r.Lumen.AsyncCompute=0`; re-testar).
   04/11: `tools/ue58/bench_package.ps1 -Soak 7200` (executável, tudo liberado): 120 min, 60 voltas pelos 4 setores dormindo
   entre elas (60 dias de jogo, saguão do hotel visitado 60 vezes), nenhum erro no log, FPS estável do início ao fim
@@ -519,18 +526,18 @@ Next Fest, playtest e beta, trailer, preço.
 
 ## 11. Tradução (por último, pedido do Sergio em 02/11)
 Fazer depois de todo o resto, quando os textos estiverem estáveis.
-- [ ] Todos os textos do jogo em tabelas de localização da Unreal (LOCTEXT/StringTable), sem texto fixo no código;
+- [ ] [bloqueado-usuario] (sistema grande: aguarda o Sergio escolher a prioridade e subir o esforço do Opus, regra global) Todos os textos do jogo em tabelas de localização da Unreal (LOCTEXT/StringTable), sem texto fixo no código;
   inclui menus, celular, HUD, missões, cartas, placas 3D (TextRender) e nomes de produtos.
-- [ ] **Inglês** completo.
-- [ ] Vários idiomas (os que mais vendem na Steam): espanhol, chinês simplificado, russo, alemão, francês,
+- [ ] [bloqueado-usuario] (sistema grande: aguarda o Sergio escolher a prioridade e subir o esforço do Opus, regra global) **Inglês** completo.
+- [ ] [bloqueado-usuario] (sistema grande: aguarda o Sergio escolher a prioridade e subir o esforço do Opus, regra global) Vários idiomas (os que mais vendem na Steam): espanhol, chinês simplificado, russo, alemão, francês,
   japonês, coreano e português de Portugal; fontes com suporte a CJK e cirílico.
 - [ ] Revisão por falante nativo de cada idioma e teste de layout (textos maiores em alemão/russo não podem cortar). [bloqueado-usuario] (precisa de revisores nativos; o teste de layout fica junto da tradução)
 - [ ] Página da Steam e conquistas nos mesmos idiomas. [bloqueado-usuario] (precisa da conta Steamworks do Sergio)
 
 ## 12. Ilha do passeio de barco (pedido do Sergio em 02/11, para o final)
-- [ ] Ilha circular ao fundo, no mar, destino do passeio de barco: bastante árvores e vegetação (nada de low poly),
+- [ ] [bloqueado-usuario] (sistema grande: aguarda o Sergio escolher a prioridade e subir o esforço do Opus, regra global) Ilha circular ao fundo, no mar, destino do passeio de barco: bastante árvores e vegetação (nada de low poly),
   praia em volta e uma trilha passando pelo meio.
-- [ ] O passeio de barco sai do píer, vai até a ilha (desembarque e trilha) e volta; paradas do passeio guiado na ilha.
+- [ ] [bloqueado-usuario] (sistema grande: aguarda o Sergio escolher a prioridade e subir o esforço do Opus, regra global) O passeio de barco sai do píer, vai até a ilha (desembarque e trilha) e volta; paradas do passeio guiado na ilha.
 
 ## 13. Correção de assets low poly (pedido do Sergio em 02/11, para o final)
 Regra do projeto: nenhum asset low poly no jogo.
@@ -574,16 +581,16 @@ atendimento, economia ou saves; um evento por vez, com cooldown e seed testável
 ## 15. Balanceamento e diversão (no fim da fila, pedido do Sergio em 03/11)
 Objetivo: o jogo ser divertido e não cansativo nem maçante, com várias atividades acontecendo ao mesmo tempo (quiosque,
 negócios, hóspedes, salão, passeios, eventos) e o jogador sempre escolhendo o que fazer.
-- [~] P1 **Balanceamento** financeiro e econômico de tudo, jogando do zero até o Grand Hotel (02/11: primeira passada por modelo em
+- [~] [bloqueado-usuario] (precisa do playtest cronometrado do Sergio) P1 **Balanceamento** financeiro e econômico de tudo, jogando do zero até o Grand Hotel (02/11: primeira passada por modelo em
   `docs/ue58/BALANCEAMENTO.md` e `tools/ue58/balance_model.py`; falta o playtest cronometrado para trocar as hipóteses):
   - desbloqueio novo a cada 10–20 min;
   - preços das expansões, salários, diárias e renda do salão.
-- [ ] P1 Duração do Acesso Antecipado: 6–10 h de conteúdo com objetivo sempre visível.
-- [ ] P1 Ritmo: nunca mais de 1–2 min sem algo a fazer; tarefas paralelas que se sobrepõem (pedido no quiosque enquanto
+- [ ] [bloqueado-usuario] (sistema grande: aguarda o Sergio escolher a prioridade e subir o esforço do Opus, regra global) P1 Duração do Acesso Antecipado: 6–10 h de conteúdo com objetivo sempre visível.
+- [ ] [bloqueado-usuario] (sistema grande: aguarda o Sergio escolher a prioridade e subir o esforço do Opus, regra global) P1 Ritmo: nunca mais de 1–2 min sem algo a fazer; tarefas paralelas que se sobrepõem (pedido no quiosque enquanto
   o bar chama, hóspede na recepção, evento cômico), sem fila de espera longa nem tarefa repetitiva demais.
 
 ## 16. Ponto turístico no morro (no fim da fila, pedido do Sergio em 03/11)
-- [ ] P2 O morro careca ao fundo vira ponto turístico: no alto, uma estátua ORIGINAL de Jesus Cristo de braços abertos
+- [ ] [bloqueado-usuario] (sistema grande: aguarda o Sergio escolher a prioridade e subir o esforço do Opus, regra global) P2 O morro careca ao fundo vira ponto turístico: no alto, uma estátua ORIGINAL de Jesus Cristo de braços abertos
   (figura cristã livre; não copiar o desenho do Cristo Redentor do Rio, que tem direitos de imagem controlados),
   com mirante; uma trilha subindo a montanha desde a vila (caminho de terra e degraus de pedra, vegetação, corrimão
   de madeira nos trechos íngremes, bancos e placas), visitável a pé, com vista do resort lá de cima; algo bem legal

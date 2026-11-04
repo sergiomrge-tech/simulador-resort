@@ -4,6 +4,7 @@ param(
  [string]$Exec='',
  [int]$Soak=0,
  [string]$NoShadow='',
+ [switch]$Fullscreen,
  [int]$ResX=1920,
  [int]$ResY=1080
 )
@@ -16,7 +17,7 @@ $env:TMP=$env:TEMP
 foreach($variant in $Variants){
  $qa='D:/CodexTemp/ue58-bench-'+(Get-Date -Format 'yyyyMMdd-HHmmss')
  New-Item -ItemType Directory -Force $qa | Out-Null
- $args=@('-MareBench',"-MareSaveRoot=$qa","-UserDir=$qa/Unreal","-abslog=$qa/runtime.log",'-unattended','-nosplash','-windowed',"-ResX=$ResX","-ResY=$ResY")
+ $args=@('-MareBench',"-MareSaveRoot=$qa","-UserDir=$qa/Unreal","-abslog=$qa/runtime.log",'-unattended','-nosplash',$(if($Fullscreen){'-fullscreen'}else{'-windowed'}),"-ResX=$ResX","-ResY=$ResY")
  if($variant){$args+="-$variant"}
  if($Exec){$args+="-MareBenchExec=`"$Exec`""}
  if($Soak){$args+="-MareBenchSoak=$Soak"}
@@ -25,7 +26,7 @@ foreach($variant in $Variants){
  $start=Get-Date
  while(-not $p.HasExited){if(((Get-Date)-$start).TotalSeconds -gt (420+$Soak*1.2)){Stop-Process -Id $p.Id;throw "Timeout: $qa"};Start-Sleep 3;$p.Refresh()}
  if(-not (Test-Path "$qa/bench.json")){throw "Sem bench.json: $qa"}
- Write-Output "== $(if($variant){$variant}else{'completo'}) $Exec $(if($NoShadow){"sem sombra: $NoShadow"})  ($qa)"
+ Write-Output "== $(if($variant){$variant}else{'completo'}) $(if($Fullscreen){'[tela cheia]'}) $Exec $(if($NoShadow){"sem sombra: $NoShadow"})  ($qa)"
  (Get-Content "$qa/bench.json" -Raw | ConvertFrom-Json).sectors | ForEach-Object {
   "{0,-13} fps {1,5:N1}  p99 {2,5:N1} | jogo {3,5:N1} render {4,5:N1} gpu {5,5:N1} | pessoas {6}/{7}" -f $_.sector,$_.avg_fps,$_.p99_ms,$_.game_ms,$_.render_ms,$_.gpu_ms,$_.people_rendered,$_.people }
  $bad=@(Select-String -LiteralPath "$qa/runtime.log" -Pattern 'Failed to find object|Nanite static mesh|overflow|Error:|Fatal')
