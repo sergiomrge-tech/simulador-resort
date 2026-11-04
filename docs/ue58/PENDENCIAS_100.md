@@ -284,8 +284,8 @@ Pronto e testado (02/11):
     estreito demais): rota com pontos de passagem por fora das espreguiçadeiras. Camareira FEITO 03/11: varre o deck e
     a soleira de cada bangalô alugado com a vassoura de plástico do Poly Haven (CC0), cabeça no piso em golpes curtos e
     as duas mãos no cabo por IK (pose `Sweep`). O garçom do hotel já leva os pratos da cozinha às mesas nas mãos.
-- [ ] P2 Conversar gesticulando em pé com um clipe de captura melhor que o `Idle_Talking` (o `TalkGesture` do Fab foi recusado:
-  curva o tronco como reverência) [bloqueado-usuario] (outro clipe gratuito do Fab exige o login do Sergio no navegador).
+- [ ] P2 [bloqueado-usuario] Conversar gesticulando em pé com um clipe de captura melhor que o `Idle_Talking` (o `TalkGesture`
+  do Fab foi recusado: curva o tronco como reverência; outro clipe gratuito do Fab exige o login do Sergio no navegador).
 - [x] P0 Sentados no ar/no encosto (03/11): hóspedes do restaurante do hotel em cadeiras reais (`Data/hotel_seats.json`, gerado por
   `mare_hud.chair_seats` a partir dos vértices das cadeiras) e alinhamento da bacia no assento por corpo (`AMarePerson::SitOn`,
   `AlignToSeatBelow`; restaurante, bar e quiosque). Teste no PIE: `hud_seataudit` (12/12 ok). Copos flutuando no restaurante
@@ -324,7 +324,9 @@ Pronto e testado (02/11):
   sorri ao receber o pedido e ao fechar negócio na recepção, fica irritado com contraproposta ou ao desistir e faz
   "hmm" ao escolher (`AMarePerson::Express`). Ossos do rosto conferidos contra os do corpo (0,00 cm). Teste
   `MareAlta.People.FaceCurves`; QA `mare.Express smile|annoyed`; `mare.Faces 0` volta ao rosto parado.
-- [ ] P2 Crianças e famílias (se houver presets/assets adequados).
+- [ ] P2 [bloqueado-usuario] Crianças e famílias (se houver presets/assets adequados). 03/11: o MetaHuman Creator só tem corpos
+  adultos (sem preset infantil; os sliders de altura não chegam a proporção de criança) e os pacotes de crianças MetaHuman
+  são pagos (Athian Games, Fab); nenhum gratuito com esqueleto compatível sem login. Decisão do Sergio: comprar ou seguir sem.
 
 ## 6. Mundo e arte
 - [x] Barcos detalhados (jangadas e botes), palmeiras, janelas, piscinas, mata dos morros.
