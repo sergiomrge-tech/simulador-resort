@@ -4366,6 +4366,68 @@
      ]
     },
     {
+     "id": "tv",
+     "name": "TV",
+     "base_price": 120,
+     "comfort": 1,
+     "beauty": 2,
+     "anchor": "World_1163",
+     "hide": [
+      "World_1163",
+      "World_1164"
+     ],
+     "tiers": [
+      {
+       "name": "TV de tubo da vó",
+       "desc": "A televisão antiga da casa, ainda funcionando."
+      },
+      {
+       "name": "TV de tela plana 32\"",
+       "desc": "Compacta, com pezinhos de metal.",
+       "parts": [
+        {
+         "model": "mare_tv_flat32",
+         "w": 73,
+         "h": 50
+        }
+       ]
+      },
+      {
+       "name": "TV 43\" com pedestal",
+       "desc": "Tela fina e imagem nítida.",
+       "parts": [
+        {
+         "model": "mare_tv_flat43",
+         "w": 97,
+         "h": 64
+        }
+       ]
+      },
+      {
+       "name": "Smart TV 55\" com soundbar",
+       "desc": "Tela grande e som de cinema.",
+       "parts": [
+        {
+         "model": "mare_tv_smart55",
+         "w": 122,
+         "h": 79
+        }
+       ]
+      },
+      {
+       "name": "TV OLED 65\" com soundbar",
+       "desc": "Tela finíssima, cores vivas.",
+       "parts": [
+        {
+         "model": "mare_tv_oled65",
+         "w": 144,
+         "h": 88
+        }
+       ]
+      }
+     ]
+    },
+    {
      "id": "mesa_jantar",
      "name": "Mesa de jantar",
      "base_price": 60,

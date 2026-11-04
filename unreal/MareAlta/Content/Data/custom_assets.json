@@ -89,5 +89,9 @@
  "Ottoman_01": "/Game/Custom/Ottoman_01/Ottoman_01.Ottoman_01",
  "mare_hang_chain": "/Game/Custom/mare_hang_chain/mare_hang_chain.mare_hang_chain",
  "fab_rattan_bar_stool": "/Game/Custom/FabFurniture/fab_rattan_bar_stool/fab_rattan_bar_stool.fab_rattan_bar_stool",
- "fab_rattan_sofa": "/Game/Custom/FabFurniture/fab_rattan_sofa/fab_rattan_sofa.fab_rattan_sofa"
+ "fab_rattan_sofa": "/Game/Custom/FabFurniture/fab_rattan_sofa/fab_rattan_sofa.fab_rattan_sofa",
+ "mare_tv_flat32": "/Game/Custom/HomeTV/mare_tv_flat32/mare_tv_flat32.mare_tv_flat32",
+ "mare_tv_flat43": "/Game/Custom/HomeTV/mare_tv_flat43/mare_tv_flat43.mare_tv_flat43",
+ "mare_tv_smart55": "/Game/Custom/HomeTV/mare_tv_smart55/mare_tv_smart55.mare_tv_smart55",
+ "mare_tv_oled65": "/Game/Custom/HomeTV/mare_tv_oled65/mare_tv_oled65.mare_tv_oled65"
 }

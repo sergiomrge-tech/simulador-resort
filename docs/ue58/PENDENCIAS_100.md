@@ -348,9 +348,15 @@ Pronto e testado (02/11):
   - folhagem muito clara à noite; (03/11) feito: a transmissão de luz das folhas das palmeiras (`M_PalmFab_PBR`)
     cai 75% com o Night; conferido às 22h (praia, palmeiras, quiosque, vila, praça, jardim, hotel, pousada).
   - ondas, espuma e respingos. (03/11) feito: ondas maiores, espuma na beira d'água e mar bravo na tempestade.
-- [ ] P1 Personalização com 5 opções em tudo:
+- [x] P1 Personalização com 5 opções em tudo:
   - quiosque, expansões, hotel, piscina, tobogã;
   - casa (cama, sofá, armário, TV).
+  03/11: conferido em `customization.json`: todos os itens de quiosque, bar, piscina, pousada, passeios, hotel
+  (restaurante, piscina com tobogã, suítes, lazer), negócios e casa já tinham 5 opções (modelo, material ou serviço).
+  Faltava a TV da casa: item `tv` novo com a TV de tubo da vó e quatro TVs de tela plana modeladas no bpy
+  (`tools/ue58/gen_tv_sets.py`: 32" com pés, 43" e 55"/65" com pedestal, as duas maiores com soundbar). Ligadas,
+  mostram as paisagens da costa na tela inteira (`M_HomeTV_Flat`, pelas UVs da tela; `UMareHomeWorld::UpdateTV`).
+  QA `mare.HomeTV`. Prova `docs/ue58/graphics-reference/tv-casa-opcoes-20261103.jpg`.
 - [x] P1 Interiores do restaurante, da recepção da pousada (o balcão rústico é externo) e dos negócios da vila (03/11).
   Recepção da pousada: piso de lajota de terracota com taquinhos (Poly Haven patterned_terracotta_tiling, UV pelo mundo,
   `hud_pousadafloor`), área de estar com móveis rústicos pintados Poly Haven (sofá, mesinha, cadeiras, armário, mesa

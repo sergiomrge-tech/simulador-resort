@@ -451,4 +451,7 @@ contar que tirar a colisão de uma malha a remove da navegação: tirei a colis�
 cobrindo a água e a equipe caiu e ficou andando no fundo, por baixo do deck. Desfeito com `git checkout` do nível.
 Para desviar de obstáculos, usar pontos de passagem por fora (o corredor de 65 cm entre a borda e as espreguiçadeiras
 não tem navegação; o caminho cortava pela água). O deslize da equipe precisa enxergar pisos WorldDynamic (o deck).
+Peças da personalização são HISM: materiais importados para elas precisam do uso "instanced static meshes" (sem ele
+aparecem quadriculados no jogo; `hud_importmodel` já marca). O material de paisagens da TV antiga calcula a imagem
+pelo tamanho da tela de tubo no mundo: telas novas usam `M_HomeTV_Flat` pelas UVs.
 

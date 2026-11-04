@@ -33,6 +33,11 @@ private:
  bool bDayAdvanced=false;
  FTransform Standing;
  UPROPERTY() TObjectPtr<AStaticMeshActor> TVScreen;
+ /** Coast-landscape picture shown on the TV (the old CRT's screen actor, or the "mare_tv_screen" slot of a new set). */
+ UPROPERTY() TObjectPtr<UMaterialInstanceDynamic> TVPicture;
+ TWeakObjectPtr<UMeshComponent> LitSet;bool bLitShown=false;
+ /** Switches the picture of whichever TV the house has now (customization home/tv; tier 1 = the old CRT). */
+ void UpdateTV();
  UPROPERTY() TObjectPtr<UInstancedStaticMeshComponent> ShowerDrops;
  void Setup();
  AMareServiceTarget* Target(FName Action,const FString& Label,FVector Position,float Reach=170);

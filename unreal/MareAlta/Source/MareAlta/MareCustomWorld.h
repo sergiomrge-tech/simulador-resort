@@ -23,6 +23,8 @@ public:
  bool IsPreviewing()const{return bPreview;}
  /** QA: replacement instances currently shown for a slot, and whether its tier visual exists. */
  int32 PartInstances(const FString& Place,const FString& Slot)const;
+ /** The components built for a slot's current tier (empty for the original look). */
+ void SlotParts(const FString& Place,const FString& Slot,TArray<UMeshComponent*>& Out)const;
  bool HasVisual(const FString& Place,const FString& Slot,int32 Tier)const;
  /** QA/tools: preview every slot of a place at one tier (0 = back to the saved tiers). */
  UFUNCTION(BlueprintCallable,Category="Maré Alta") void PreviewPlace(const FString& Place,int32 Tier);

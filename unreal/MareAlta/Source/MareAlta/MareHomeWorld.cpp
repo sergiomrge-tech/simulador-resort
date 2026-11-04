@@ -18,6 +18,8 @@
 #include "Materials/MaterialInstanceDynamic.h"
 #include "Misc/FileHelper.h"
 #include "Misc/Paths.h"
+#include "MareCustomWorld.h"
+#include "HAL/IConsoleManager.h"
 #include "Serialization/JsonSerializer.h"
 
 TStatId UMareHomeWorld::GetStatId()const{RETURN_QUICK_DECLARE_CYCLE_STAT(UMareHomeWorld,STATGROUP_Tickables);}
@@ -48,7 +50,7 @@ void UMareHomeWorld::Setup()
    auto Screen=TVScreen->GetStaticMeshComponent();Screen->SetMobility(EComponentMobility::Movable);TVScreen->SetActorTransform(Transform);
    Screen->SetStaticMesh(Source->GetStaticMesh());Screen->SetCollisionEnabled(ECollisionEnabled::NoCollision);Screen->SetCastShadow(false);
    Screen->UpdateBounds();TVControl->SetActorLocation(Screen->Bounds.Origin+FVector(0,2,0));
-   if(auto Material=LoadObject<UMaterialInterface>(nullptr,TEXT("/Game/World/Materials/M_HomeTV_Coast.M_HomeTV_Coast")))Screen->SetMaterial(0,UMaterialInstanceDynamic::Create(Material,this));
+   if(auto Material=LoadObject<UMaterialInterface>(nullptr,TEXT("/Game/World/Materials/M_HomeTV_Coast.M_HomeTV_Coast"))){TVPicture=UMaterialInstanceDynamic::Create(Material,this);Screen->SetMaterial(0,TVPicture);}
    TVScreen->SetActorHiddenInGame(!bTV);
   }
  }
@@ -77,7 +79,7 @@ void UMareHomeWorld::Stand()
 void UMareHomeWorld::Use(FName Action)
 {
  auto Sim=GetWorld()->GetGameInstance()->GetSubsystem<UMareSimulation>();auto Hero=Cast<AMareCharacter>(UGameplayStatics::GetPlayerCharacter(this,0));if(!Sim || !Hero)return;
- if(Action==TEXT("HomeTV")){bTV=!bTV;if(TVScreen)TVScreen->SetActorHiddenInGame(!bTV);Sim->LastMessage=bTV?TEXT("TV ligada · paisagens da costa"):TEXT("TV desligada");}
+ if(Action==TEXT("HomeTV")){bTV=!bTV;UpdateTV();Sim->LastMessage=bTV?TEXT("TV ligada · paisagens da costa"):TEXT("TV desligada");}
  if(Action==TEXT("HomeStereo")){bStereo=!bStereo;Sim->LastMessage=bStereo?TEXT("Som da casa ligado"):TEXT("Som da casa desligado");}
  if(Action==TEXT("HomeShower")){bShower=!bShower;Sim->LastMessage=bShower?TEXT("Chuveiro aberto"):TEXT("Chuveiro fechado");}
  if(Action==TEXT("HomeSink")){GetWorld()->GetSubsystem<UMareAudioWorld>()->PlayCue(TEXT("clean"),.24f);Sim->LastMessage=TEXT("Mãos limpas para um novo atendimento.");}
@@ -87,12 +89,34 @@ void UMareHomeWorld::Use(FName Action)
  }
  auto State=UMareSimulation::Object(Sim->State,TEXT("ue_home"));State->SetBoolField(TEXT("tv"),bTV);State->SetBoolField(TEXT("stereo"),bStereo);Sim->Save();
 }
+// QA: "mare.HomeTV" switches the house TV like E on it (captures of every TV option lit).
+static FAutoConsoleCommandWithWorld GMareHomeTV(TEXT("mare.HomeTV"),TEXT("Switch the house TV on/off (QA)."),
+ FConsoleCommandWithWorldDelegate::CreateLambda([](UWorld* World){if(World)if(auto Home=World->GetSubsystem<UMareHomeWorld>())Home->Use(TEXT("HomeTV"));}));
+
+void UMareHomeWorld::UpdateTV()
+{
+ auto Sim=GetWorld()->GetGameInstance()->GetSubsystem<UMareSimulation>();if(!Sim)return;
+ // Whatever set is shown now (bought or previewed in the phone): its parts exist only for tiers 2..5.
+ TArray<UMeshComponent*> Sets;if(auto Custom=GetWorld()->GetSubsystem<UMareCustomWorld>())Custom->SlotParts(TEXT("home"),TEXT("tv"),Sets);
+ UMeshComponent* Set=Sets.Num()?Sets[0]:nullptr;
+ // The old CRT keeps its separate glass screen; a new set lights its own picture slot. Rebuilt parts (a tier change)
+ // come back with the mesh's dark screen, so the picture is reapplied whenever the set or the switch changes.
+ if(TVScreen)TVScreen->SetActorHiddenInGame(!bTV || Set!=nullptr);
+ if(Set==LitSet.Get() && bLitShown==bTV)return;
+ LitSet=Set;bLitShown=bTV;if(!Set)return;
+ for(int32 I=0;I<Set->GetNumMaterials();++I){const UStaticMeshComponent* Mesh=Cast<UStaticMeshComponent>(Set);
+  const UMaterialInterface* Default=Mesh && Mesh->GetStaticMesh()?Mesh->GetStaticMesh()->GetMaterial(I):nullptr;
+  if(Default && Default->GetName().Contains(TEXT("mare_tv_screen"))){
+   static UMaterialInterface* Flat=LoadObject<UMaterialInterface>(nullptr,TEXT("/Game/World/Materials/M_HomeTV_Flat.M_HomeTV_Flat"));
+   Set->SetMaterial(I,bTV && Flat?Flat:nullptr);}}
+}
 void UMareHomeWorld::Tick(float Dt)
 {
  if(!GetWorld()->IsGameWorld() || !Cast<AMareGameMode>(GetWorld()->GetAuthGameMode()))return;if(!bReady)Setup();
  if(UGameplayStatics::IsGamePaused(this))return;
  auto Hero=Cast<AMareCharacter>(UGameplayStatics::GetPlayerCharacter(this,0));if(!Hero)return;
  auto Audio=GetWorld()->GetSubsystem<UMareAudioWorld>();Audio->SetHomeStereo(bStereo,FVector(4475,2111,108));
+ UpdateTV();
  if(IsSleeping()){
   SleepTime+=Dt;auto PC=Cast<APlayerController>(Hero->GetController());
   if(SleepTime>=.75f && !bDayAdvanced){

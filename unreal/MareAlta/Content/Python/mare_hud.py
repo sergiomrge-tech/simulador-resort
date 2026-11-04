@@ -1247,6 +1247,13 @@ def run(action, arg=''):
         if not src.exists():   # a Poly Haven glTF kept with its .bin and textures: <folder>/<name>/<name>_1k.gltf
             src = next((MODELS / folder / name).glob('*.gltf'))
         mesh = mare_hotel_lobby._import(src, dest, name, False, search=False)
+        # Customization parts are HISMs: without the usage flag the materials render as the default checker.
+        for asset in unreal.EditorAssetLibrary.list_assets(dest, True, False):
+            obj = unreal.load_asset(asset.split('.')[0])
+            if isinstance(obj, unreal.Material) and not obj.get_editor_property('used_with_instanced_static_meshes'):
+                obj.set_editor_property('used_with_instanced_static_meshes', True)
+                unreal.MaterialEditingLibrary.recompile_material(obj)
+                unreal.EditorAssetLibrary.save_loaded_asset(obj, False)
         b = mesh.get_bounding_box()
         return {'mesh': mesh.get_path_name(), 'min': [round(b.min.x), round(b.min.y), round(b.min.z)], 'max': [round(b.max.x), round(b.max.y), round(b.max.z)]}
     if action == 'importvoices':

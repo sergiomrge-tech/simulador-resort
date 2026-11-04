@@ -31,6 +31,18 @@ def build():
     errors=list(MEL.recompile_material(mat))
     if errors:raise RuntimeError(str(errors))
     if not unreal.EditorAssetLibrary.save_loaded_asset(mat,False):raise RuntimeError('TV material was not saved; stop PIE')
+    # The flat-screen sets of the house customization (tools/ue58/gen_tv_sets.py) carry 0..1 picture UVs: same
+    # landscapes, read from TexCoord 0 instead of the old CRT's world-space size.
+    flat=material('M_HomeTV_Flat')
+    flat.set_editor_property('shading_model',unreal.MaterialShadingModel.MSM_UNLIT)
+    flat.set_editor_property('used_with_nanite',True)
+    flat.set_editor_property('used_with_instanced_static_meshes',True)
+    flat_uv=expression(flat,unreal.MaterialExpressionTextureCoordinate)
+    flat_time=expression(flat,unreal.MaterialExpressionTime)
+    MEL.connect_material_property(custom(flat,code,unreal.CustomMaterialOutputType.CMOT_FLOAT3,{'UV':flat_uv,'Time':flat_time}),'',unreal.MaterialProperty.MP_EMISSIVE_COLOR)
+    errors=list(MEL.recompile_material(flat))
+    if errors:raise RuntimeError(str(errors))
+    if not unreal.EditorAssetLibrary.save_loaded_asset(flat,False):raise RuntimeError('Flat TV material was not saved; stop PIE')
     spray=material('M_ShowerWater')
     spray.set_editor_property('blend_mode',unreal.BlendMode.BLEND_TRANSLUCENT)
     spray.set_editor_property('used_with_instanced_static_meshes',True)

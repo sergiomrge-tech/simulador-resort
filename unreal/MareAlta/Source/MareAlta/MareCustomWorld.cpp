@@ -121,6 +121,11 @@ void UMareCustomWorld::ApplyAll()
   if(PlacePair.Value->AsObject()->TryGetArrayField(TEXT("slots"),Defs))for(const auto& V:*Defs){const FString Slot=UMareSimulation::String(V->AsObject(),TEXT("id"));Apply(Place,Slot,S->CustomTier(Place,Slot));}}
 }
 
+void UMareCustomWorld::SlotParts(const FString& Place,const FString& Slot,TArray<UMeshComponent*>& Out)const
+{
+ if(const FSlotState* State=Slots.Find(Key(Place,Slot)))for(const auto& Part:State->Parts)if(Part.IsValid())Out.Add(Part.Get());
+}
+
 int32 UMareCustomWorld::PartInstances(const FString& Place,const FString& Slot)const
 {
  int32 Total=0;if(const FSlotState* State=Slots.Find(Key(Place,Slot)))for(const auto& Part:State->Parts)if(Part.IsValid())Total+=Part->GetInstanceCount();return Total;
