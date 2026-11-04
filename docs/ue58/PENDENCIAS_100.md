@@ -281,8 +281,9 @@ Pronto e testado (02/11):
     cabo telescópico, aro e rede de fios reais; nenhum CC0 encontrado) segura com as duas mãos por IK e varrida sobre a
     água (pose `Skim`, `AMarePerson::UpdateTool`). Junto, defeito antigo: ele atravessava a piscina andando SOBRE a
     água (a superfície tem colisão e entra na navegação estática; o corredor entre a borda e as espreguiçadeiras é
-    estreito demais): rota com pontos de passagem por fora das espreguiçadeiras. Falta: camareira e garçom com
-    gestos próprios (hoje `Interact`).
+    estreito demais): rota com pontos de passagem por fora das espreguiçadeiras. Camareira FEITO 03/11: varre o deck e
+    a soleira de cada bangalô alugado com a vassoura de plástico do Poly Haven (CC0), cabeça no piso em golpes curtos e
+    as duas mãos no cabo por IK (pose `Sweep`). O garçom do hotel já leva os pratos da cozinha às mesas nas mãos.
 - [x] P0 Sentados no ar/no encosto (03/11): hóspedes do restaurante do hotel em cadeiras reais (`Data/hotel_seats.json`, gerado por
   `mare_hud.chair_seats` a partir dos vértices das cadeiras) e alinhamento da bacia no assento por corpo (`AMarePerson::SitOn`,
   `AlignToSeatBelow`; restaurante, bar e quiosque). Teste no PIE: `hud_seataudit` (12/12 ok). Copos flutuando no restaurante

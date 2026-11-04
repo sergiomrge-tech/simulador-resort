@@ -612,3 +612,4 @@ Vozes curtas sem palavras (`tools/ue58/fetch_murmurs.py`, 03/11), CC0 no OpenGam
 As versões masculinas das risadas, do resmungo, do suspiro e do "uh" são conversões feitas aqui com o vocoder WORLD (pyworld).
 
 Peneira de piscina do piscineiro (`tools/ue58/gen_pool_skimmer.py`, 03/11): modelada no bpy para o projeto (nenhum modelo CC0 encontrado).
+- Plastic Broom (`plastic_broom`), Poly Haven, CC0 — https://polyhaven.com/a/plastic_broom (vassoura da camareira, 03/11)

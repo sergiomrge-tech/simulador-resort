@@ -1216,7 +1216,7 @@ def run(action, arg=''):
         out = []
         for a in unreal.GameplayStatics.get_all_actors_of_class(world, unreal.MarePerson):
             for c in a.get_components_by_class(unreal.StaticMeshComponent):
-                if c.static_mesh and 'skimmer' in c.static_mesh.get_name() and c.is_visible():
+                if c.static_mesh and ('skimmer' in c.static_mesh.get_name() or 'broom' in c.static_mesh.get_name()) and c.is_visible():
                     l, r, al = c.get_world_location(), c.get_world_rotation(), a.get_actor_location()
                     m = a.get_component_by_class(unreal.SkeletalMeshComponent)
                     hands = [[round(v) for v in (m.get_socket_location(b).x, m.get_socket_location(b).y, m.get_socket_location(b).z)] for b in ('hand_r', 'hand_l')]
@@ -1243,7 +1243,10 @@ def run(action, arg=''):
         dest = f'/Game/Custom/{folder}/{name}'
         if unreal.EditorAssetLibrary.does_directory_exist(dest):
             unreal.EditorAssetLibrary.delete_directory(dest)
-        mesh = mare_hotel_lobby._import(MODELS / folder / f'{name}.glb', dest, name, False, search=False)
+        src = MODELS / folder / f'{name}.glb'
+        if not src.exists():   # a Poly Haven glTF kept with its .bin and textures: <folder>/<name>/<name>_1k.gltf
+            src = next((MODELS / folder / name).glob('*.gltf'))
+        mesh = mare_hotel_lobby._import(src, dest, name, False, search=False)
         b = mesh.get_bounding_box()
         return {'mesh': mesh.get_path_name(), 'min': [round(b.min.x), round(b.min.y), round(b.min.z)], 'max': [round(b.max.x), round(b.max.y), round(b.max.z)]}
     if action == 'importvoices':

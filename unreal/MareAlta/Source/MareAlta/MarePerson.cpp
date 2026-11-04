@@ -96,12 +96,32 @@ float AMarePerson::SeaHeight(const FVector2D& P,float T,float Storm)
 
 void AMarePerson::UpdateTool(float DeltaSeconds)
 {
- const bool bSkim=WorkPose==TEXT("Skim") && GetVelocity().SizeSquared2D()<25;
- if(!bSkim){bHandGoals=false;if(Tool)Tool->SetVisibility(false);return;}
+ const bool bStill=GetVelocity().SizeSquared2D()<25;
+ const bool bSkim=WorkPose==TEXT("Skim") && bStill,bSweep=WorkPose==TEXT("Sweep") && bStill;
+ if(!bSkim && !bSweep){bHandGoals=false;if(Tool)Tool->SetVisibility(false);return;}
+ const TCHAR* Path=bSkim?TEXT("/Game/Custom/PoolStaff/pool_skimmer/pool_skimmer.pool_skimmer"):TEXT("/Game/Custom/Housekeeping/plastic_broom/plastic_broom1.plastic_broom1");
  if(!Tool){Tool=NewObject<UStaticMeshComponent>(this);AddInstanceComponent(Tool);Tool->SetupAttachment(GetRootComponent());
-  Tool->SetStaticMesh(LoadObject<UStaticMesh>(nullptr,TEXT("/Game/Custom/PoolStaff/pool_skimmer/pool_skimmer.pool_skimmer")));
   Tool->SetCollisionEnabled(ECollisionEnabled::NoCollision);Tool->SetCastShadow(true);Tool->RegisterComponent();}
+ if(!Tool->GetStaticMesh() || Tool->GetStaticMesh()->GetPathName()!=Path)Tool->SetStaticMesh(LoadObject<UStaticMesh>(nullptr,Path));
  Tool->SetVisibility(true);
+ if(bSweep){
+  // Housekeeper sweeping the bungalow deck with the Poly Haven plastic broom (CC0): the head brushes the floor in
+  // front of her in short strokes, the handle (from the head up to (0,-53,120) in the mesh, 131 cm) runs up to her
+  // chest; the right hand holds it lower, the left near the top.
+  const FVector F=GetActorForwardVector(),R=GetActorRightVector(),Up=FVector::UpVector;
+  const float Stroke=FMath::Sin(Elapsed*2*PI/1.6f);
+  FVector Head=GetActorLocation()+F*55+R*28*Stroke;FHitResult Hit;FCollisionQueryParams Q(TEXT("MareSweep"),false,this);
+  if(GetWorld()->LineTraceSingleByChannel(Hit,Head+Up*20,Head-Up*200,ECC_Visibility,Q))Head.Z=Hit.ImpactPoint.Z;else Head.Z-=88;
+  const FVector Grip=GetActorLocation()+F*12+R*6+Up*28;
+  const FVector Handle=(Grip-Head).GetSafeNormal();const FVector Local=FVector(0,-53,120).GetSafeNormal();
+  // Turn the mesh's handle axis onto the handle line, then roll it about that line so the head faces forward.
+  const FQuat Align=FQuat::FindBetweenNormals(Local,Handle);
+  const FVector Side=Align.RotateVector(FVector(1,0,0));const FVector Want=FVector::CrossProduct(Handle,F).GetSafeNormal();
+  const float Roll=FMath::Atan2(FVector::DotProduct(FVector::CrossProduct(Side,Want),Handle),FVector::DotProduct(Side,Want));
+  Tool->SetWorldLocationAndRotation(Head,(FQuat(Handle,Roll)*Align).Rotator());
+  HandGoal[0]=Head+Handle*88;HandGoal[1]=Head+Handle*122;
+  ElbowGoal[0]=GetActorLocation()+R*35-F*5+Up*5;ElbowGoal[1]=GetActorLocation()-R*30+F*10+Up*25;
+  bHandGoals=true;return;}
  // The pole starts behind the right hip at belly height and dips forward until the net (2.68 m along it) meets the
  // water found below it; it sweeps +-25 deg in 4.5 s, pushed out and pulled back a little on each pass.
  const FVector F=GetActorForwardVector(),R=GetActorRightVector(),Up=FVector::UpVector;
@@ -514,7 +534,7 @@ void AMarePerson::Tick(float DeltaSeconds)
   // The root 32 cm under the surface: the water reaches the shoulders, the head (bone ~12 cm up) stays out.
   SetActorLocationAndRotation(SwimAt+FVector(0,0,88-32+Wave),FRotator(0,GetActorRotation().Yaw+FMath::Sin(Elapsed*.35f+SwimAt.X*.01f)*6.f*DeltaSeconds,0));}
  else if(bLying)UpdateLying(DeltaSeconds);
- else if(GetVelocity().SizeSquared2D()>25)PlayPose(TEXT("Walk"));else if(!WorkPose.IsEmpty())PlayPose(WorkPose==TEXT("Skim")?TEXT("Idle"):WorkPose);else if(bAmbient)PlayPose(bSeated?TEXT("Sitting_Idle"):bConversing?TEXT("Idle_Talking"):TEXT("Idle"));else if(Stage!=EMarePersonStage::Eating)PlayPose(TEXT("Idle"));
+ else if(GetVelocity().SizeSquared2D()>25)PlayPose(TEXT("Walk"));else if(!WorkPose.IsEmpty())PlayPose(WorkPose==TEXT("Skim") || WorkPose==TEXT("Sweep")?TEXT("Idle"):WorkPose);else if(bAmbient)PlayPose(bSeated?TEXT("Sitting_Idle"):bConversing?TEXT("Idle_Talking"):TEXT("Idle"));else if(Stage!=EMarePersonStage::Eating)PlayPose(TEXT("Idle"));
  UpdateTool(DeltaSeconds);
 }
 void AMarePerson::AttachBadge()

@@ -118,8 +118,9 @@ public:
   *  root 32 cm under the water surface (Surface z: water at the shoulders), riding the sea waves when bSea (SeaHeight replicates the ocean material's
   *  vertex offset) and turning the head side to side slowly. */
  void TreadWater(const FVector& Surface,bool bInSea);
- /** Work pose "Skim" (pool attendant): a pool skimmer net (tools/ue58/gen_pool_skimmer.py) held in both hands, swept
-  *  across the water in a slow arc; the hands follow the pole by IK (HandGoal/ElbowGoal, read by the service anim). */
+ /** Work poses with a tool in both hands, the hands following it by IK (HandGoal/ElbowGoal, read by the service
+  *  anim): "Skim" (pool attendant) a pool skimmer net (tools/ue58/gen_pool_skimmer.py) swept across the water in a
+  *  slow arc; "Sweep" (housekeeper) the Poly Haven plastic broom brushing the floor in short strokes. */
  UPROPERTY() TObjectPtr<UStaticMeshComponent> Tool;
  bool bHandGoals=false;FVector HandGoal[2],ElbowGoal[2];   // [0] right hand, [1] left hand (world)
  void UpdateTool(float DeltaSeconds);

@@ -1,5 +1,5 @@
 {
- "_doc": "Staff seen at work (UMareStaffWorld). Each role (definitions.json staff key) is on screen while hired and on duty (UMareSimulation::HasStaff), its expansion (requires) is bought and the game hour is inside hours. It walks its stops in order (navmesh, or a straight glide where the navmesh does not reach) and holds pose (seconds 0 = a waypoint to walk around something (the pool attendant goes round the loungers: the strip between them and the water is too narrow for the navmesh, which then crossed the walkable pool surface); Idle, Idle_Talking, Interact, or Skim: the pool skimmer net swept over the water, AMarePerson::UpdateTool) for seconds at each; label is what the staff page shows it doing. carry = dish picked up when leaving that stop (Content/Data/actors.json Dish_<id>), drop = hands emptied there. route bungalows = the rented pousada bungalows (deck = point in bungalow space); route reception = behind customization.json operations.<place>.reception. World cm; z is a hint for the ground trace (raised floors).",
+ "_doc": "Staff seen at work (UMareStaffWorld). Each role (definitions.json staff key) is on screen while hired and on duty (UMareSimulation::HasStaff), its expansion (requires) is bought and the game hour is inside hours. It walks its stops in order (navmesh, or a straight glide where the navmesh does not reach) and holds pose (seconds 0 = a waypoint to walk around something (the pool attendant goes round the loungers: the strip between them and the water is too narrow for the navmesh, which then crossed the walkable pool surface); Idle, Idle_Talking, Interact, Skim: the pool skimmer net swept over the water, or Sweep: the broom on the floor, AMarePerson::UpdateTool) for seconds at each; label is what the staff page shows it doing. carry = dish picked up when leaving that stop (Content/Data/actors.json Dish_<id>), drop = hands emptied there. route bungalows = the rented pousada bungalows (deck = point in bungalow space); route reception = behind customization.json operations.<place>.reception. World cm; z is a hint for the ground trace (raised floors).",
  "roles": {
   "recepcionista": {
    "requires": "pousada",
@@ -26,7 +26,7 @@
     260,
     49
    ],
-   "pose": "Interact",
+   "pose": "Sweep",
    "seconds": 9
   },
   "piscineiro": {
