@@ -123,6 +123,7 @@ Revisão sonora de 23/10/2026: bird1/bird2 são reutilizados com reprodução
 |---|---|---|
 | `rattan` (Wicker002, 2K) em `assets/tex*/rattan_*` | https://ambientcg.com/a/Wicker002 | CC0 |
 | Fonte Nunito (`assets/fonts/Nunito.ttf`, texto da licença em `assets/fonts/OFL.txt`) | https://fonts.google.com/specimen/Nunito — Vernon Adams, Cyreal, Jacques Le Bailly | SIL Open Font License 1.1 |
+| Ilha vulcânica: texturas rock_face e burned_ground_01 (`SourceArt/Textures/Custom/*_2k.jpg`); relevo gerado em `tools/ue58/gen_volcano.py` | https://polyhaven.com — Poly Haven | CC0 1.0 |
 | Fontes das traduções, reduzidas aos caracteres do jogo (`unreal/MareAlta/Content/UI/Fonts/*-Mare.ttf`, `tools/ue58/i18n_fonts.py`): Noto Sans SC, Noto Sans JP, Noto Sans KR (chinês, japonês, coreano) | https://fonts.google.com/noto — Google | SIL Open Font License 1.1 |
 | Fonte Caveat (cirílico dos títulos manuscritos, `Caveat-Mare.ttf`) | https://fonts.google.com/specimen/Caveat — Impallari Type | SIL Open Font License 1.1 |
 | Ícones da interface (`assets/ui/icons/*.svg`) | https://game-icons.net — autores Delapouite e Lorc (lista em `assets/ui/icons/CREDITS.txt`) | CC BY 3.0 (atribuição obrigatória; fundo preto removido) |

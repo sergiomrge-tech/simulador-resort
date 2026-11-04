@@ -514,3 +514,15 @@ pausado (a vila não nasce): o portão usa `mare.ShowUI play`.
 Registrar polyglot uma vez por idioma faz o último substituir o anterior: juntar todos os idiomas num só
 `FPolyglotTextData` por chave. Textos novos: rodar `python tools/ue58/i18n_extract.py`, traduzir o `todo_<idioma>.json`
 e conferir no executável com `-culture=en -MareLocAudit` (`MARE_LOC_MISSING` só lista o que realmente falta).
+
+## Ilha vulcânica e lições de importação (04/11)
+
+O importador glTF da UE (Interchange) descartou as cores de vértice deste GLB (has_vertex_colors False, mesmo com
+COLOR_0): máscaras vão num segundo canal de UV (TexCoord 1); o glTF grava V invertido, então na UE ler 1 - V. O eixo Y
+do bpy chega espelhado na UE (Blender -Y = UE +Y). Malha ABERTA (terreno, disco) gerada no bmesh: recalc_face_normals
+pode virar as faces para baixo e a UE descarta as faces de costas (víamos o lado de dentro da cratera e tudo escuro);
+forçar normal média para cima. A prévia Workbench do bpy desenha os dois lados e esconde isso: conferir de cima no jogo.
+MaterialExpressionObjectPositionWS é o CENTRO DOS LIMITES da malha, não o pivô: para altura use ActorPositionWS.
+Parâmetro novo de MaterialParameterCollection criado pelo Python fica com GUID zero ("invalid parameter"): reiniciar o
+editor. Emissivo forte ilumina a própria malha via Lumen: desligar affect_dynamic_indirect_lighting quando for longe.
+O parâmetro Storm do MPC também engrossa as nuvens (StormClouds): para mexer só no mar, separar os dois.

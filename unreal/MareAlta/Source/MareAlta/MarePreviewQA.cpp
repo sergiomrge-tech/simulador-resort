@@ -179,9 +179,9 @@ void AMarePreviewQA::Tick(float DeltaSeconds)
  case 10:Check(TEXT("kiosk_open"),PC->GetSimulation()->IsOpen());Hero->SetActorLocation(FVector(3800,-1200,100));PC->SetControlRotation(FRotator(-6,-90,0));PC->TogglePhone();Capture(TEXT("kiosk-phone"));break;
  case 11:PC->ClosePhone();Check(TEXT("save_succeeds"),PC->GetSimulation()->Save());break;
  case 12:Sim->AdvanceMinutes(1320-UMareSimulation::Number(Sim->State,TEXT("minutes")));break;
- case 13:{auto Marine=GetWorld()->GetSubsystem<UMareMarineWorld>();Check(TEXT("night_cruise_only"),Marine && Marine->IsCruiseVisible() && !Marine->IsSailVisible());}Check(TEXT("night_crickets"),Audio->LoopLevel(TEXT("crickets_loop"))>.02f);Check(TEXT("night_lamps_built"),GetWorld()->GetSubsystem<UMareVisualWorld>()->LampCount()>=120);Capture(TEXT("kiosk-night"));Sim->State->SetStringField(TEXT("weather"),TEXT("rain"));break;
+ case 13:{auto Marine=GetWorld()->GetSubsystem<UMareMarineWorld>();Check(TEXT("night_no_ships"),Marine && !Marine->IsCruiseVisible() && !Marine->IsSailVisible());}Check(TEXT("night_crickets"),Audio->LoopLevel(TEXT("crickets_loop"))>.02f);Check(TEXT("night_lamps_built"),GetWorld()->GetSubsystem<UMareVisualWorld>()->LampCount()>=120);Capture(TEXT("kiosk-night"));Sim->State->SetStringField(TEXT("weather"),TEXT("rain"));break;
  case 14:Check(TEXT("rain_mix"),Audio->LoopLevel(TEXT("rain_loop"))>.02f && Audio->LoopLevel(TEXT("crickets_loop"))<.005f);Capture(TEXT("kiosk-rain"));Sim->State->SetStringField(TEXT("weather"),InitialWeather);Sim->AdvanceMinutes(720-UMareSimulation::Number(Sim->State,TEXT("minutes")));break;
- case 15:{auto Marine=GetWorld()->GetSubsystem<UMareMarineWorld>();Check(TEXT("day_sail_only"),Marine && Marine->IsSailVisible() && !Marine->IsCruiseVisible());Capture(TEXT("kiosk-day"));break;}
+ case 15:{auto Marine=GetWorld()->GetSubsystem<UMareMarineWorld>();Check(TEXT("day_no_ships"),Marine && !Marine->IsSailVisible() && !Marine->IsCruiseVisible());Capture(TEXT("kiosk-day"));break;}
  case 16:{Hero->SetActorLocation(FVector(4520,2120,100));PC->SetControlRotation(FRotator(-8,25,0));
   AMareServiceTarget* Door=nullptr;for(TActorIterator<AMareServiceTarget> It(GetWorld());It;++It)if(It->Action==TEXT("Door") && It->bAutoClose){Door=*It;break;}
   if(Door){const FBoxSphereBounds Bounds=Door->DoorMesh->Bounds;Check(TEXT("home_door_fits_frame"),Bounds.Origin.Z+Bounds.BoxExtent.Z>245.f && Bounds.Origin.Z+Bounds.BoxExtent.Z<247.5f && Bounds.Origin.X-Bounds.BoxExtent.X<4711.f);if(Door->IsOpen())Door->Use(PC);Door->Use(PC);}
@@ -242,10 +242,11 @@ void AMarePreviewQA::Tick(float DeltaSeconds)
   break;}
  case 25:Hero->SetActorLocation(FVector(3800,-2600,100));Move->StopMovementImmediately();PC->SetControlRotation(FRotator(-3,-90,0));break;
  case 26:Capture(TEXT("shore-waves"));break;
- case 27:{auto Marine=GetWorld()->GetSubsystem<UMareMarineWorld>();if(Marine && Marine->WhalePhase()>.8f && Marine->WhalePhase()<2.8f){Check(TEXT("whale_breaches"),Marine->IsWhaleVisible());Capture(TEXT("whale-breach"));}else --Phase;break;}
- case 28:{auto Marine=GetWorld()->GetSubsystem<UMareMarineWorld>();if(Marine && Marine->WhalePhase()>4.3f && Marine->WhalePhase()<5.8f){Check(TEXT("marine_splash"),Marine->IsRippleVisible() && !Marine->IsWhaleVisible());Capture(TEXT("whale-splash"));}else --Phase;break;}
+ // The whale was removed (Sergio, 04/11): it and its splash must stay absent (no phase wait, it no longer moves).
+ case 27:{auto Marine=GetWorld()->GetSubsystem<UMareMarineWorld>();Check(TEXT("no_whale"),Marine && !Marine->IsWhaleVisible());break;}
+ case 28:{auto Marine=GetWorld()->GetSubsystem<UMareMarineWorld>();Check(TEXT("no_whale_splash"),Marine && !Marine->IsRippleVisible());break;}
  case 29:Sim->AdvanceMinutes(1320-UMareSimulation::Number(Sim->State,TEXT("minutes")));break;
- case 30:{auto Marine=GetWorld()->GetSubsystem<UMareMarineWorld>();Check(TEXT("marine_night_visible"),Marine && Marine->IsCruiseVisible() && !Marine->IsSailVisible());Capture(TEXT("cruise-night"));break;}
+ case 30:{auto Marine=GetWorld()->GetSubsystem<UMareMarineWorld>();Check(TEXT("marine_night_no_cruise"),Marine && !Marine->IsCruiseVisible() && !Marine->IsSailVisible());Capture(TEXT("sea-night"));break;}
  case 31:Sim->State->SetStringField(TEXT("weather"),TEXT("sun"));Sim->AdvanceMinutes(720-UMareSimulation::Number(Sim->State,TEXT("minutes")));Hero->SetActorLocation(FVector(2800,-750,100));Move->SetMovementMode(MOVE_Flying);Move->StopMovementImmediately();PC->SetControlRotation(FRotator(-4,145,0));break;
  case 32:Capture(TEXT("grass-day"));break;
  case 33:Sim->State->SetStringField(TEXT("weather"),TEXT("rain"));break;

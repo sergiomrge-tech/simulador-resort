@@ -1289,6 +1289,14 @@ def split_glass(arg=''):
 
 
 def run(action, arg=''):
+    if action == 'module':
+        # Generic entry for editor scripts kept as their own module: arg "module.function|text" reloads the module and
+        # returns function(text) (e.g. "mare_volcano.build|"). Keeps one-off tools out of this file.
+        import importlib
+        target, _, text = arg.partition('|')
+        mod_name, _, func = target.rpartition('.')
+        mod = importlib.reload(importlib.import_module(mod_name))
+        return getattr(mod, func)(text)
     if action == 'glassslots':
         # After splitglass: the emptied see-through slots of each Nanite body get an opaque placeholder (no triangles use
         # it; a translucent material there logs 'Invalid material ... Nanite'). The glass mesh keeps the real material.

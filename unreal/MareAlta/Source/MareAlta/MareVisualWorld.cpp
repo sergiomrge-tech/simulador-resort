@@ -1,4 +1,5 @@
 #include "MareVisualWorld.h"
+#include "MareMarineWorld.h"
 #include "MareLoc.h"
 #include "MareSimulation.h"
 #include "MareGame.h"
@@ -169,6 +170,7 @@ void UMareVisualWorld::Tick(float DeltaSeconds)
  }
 }
 
+static TAutoConsoleVariable<float> CVarMareSeaSwell(TEXT("mare.SeaSwell"),.25f,TEXT("Everyday sea roughness floor (MPC_MareTime.Storm), 0..1."));
 void UMareVisualWorld::UpdateWeather(float DeltaSeconds,UMareSimulation* Sim)
 {
  // Today's weather: rain from the save; storm = the "tempestade" event; rough sea (maré alta) also lifts the waves.
@@ -181,10 +183,15 @@ void UMareVisualWorld::UpdateWeather(float DeltaSeconds,UMareSimulation* Sim)
  const float Ease=CVarMareWeather.GetValueOnGameThread()!=0?1.f:1.f-FMath::Exp(-DeltaSeconds*.25f);
  RainNow=FMath::Lerp(RainNow,bRain?(bStorm?1.f:.7f):0.f,Ease);
  WindNow=FMath::Lerp(WindNow,bStorm?1.f:bRain?.5f:.2f,Ease);
+ // Volcano eruption nights (Sergio, 04/11): the sea gets very rough while the lava glows.
+ const float Erupt=GetWorld()->GetSubsystem<UMareMarineWorld>()?GetWorld()->GetSubsystem<UMareMarineWorld>()->VolcanoGlowValue():0.f;
  StormNow=FMath::Lerp(StormNow,bStorm?1.f:bRough?.45f:0.f,Ease);
+ // Only the sea follows the eruption; the clouds (StormClouds) keep the weather, or the night sky filled with flakes.
+ // A livelier everyday sea (Sergio, 04/11: "o mar está muito calmo"): a base swell under every weather.
+ const float SeaStorm=FMath::Max(FMath::Max(StormNow,.85f*Erupt),CVarMareSeaSwell.GetValueOnGameThread());
  if(TimeCollection){UKismetMaterialLibrary::SetScalarParameterValue(this,TimeCollection,TEXT("Rain"),RainNow);
   UKismetMaterialLibrary::SetScalarParameterValue(this,TimeCollection,TEXT("Wind"),WindNow);
-  UKismetMaterialLibrary::SetScalarParameterValue(this,TimeCollection,TEXT("Storm"),StormNow);}
+  UKismetMaterialLibrary::SetScalarParameterValue(this,TimeCollection,TEXT("Storm"),SeaStorm);}
  // Overcast: thicker, fuller clouds (engine m_SimpleVolumetricCloud parameters) and a greyer, hazier atmosphere.
  if(!bSkyLooked){bSkyLooked=true;
   for(TActorIterator<AActor> It(GetWorld());It;++It){

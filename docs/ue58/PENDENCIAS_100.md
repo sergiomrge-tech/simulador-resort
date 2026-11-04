@@ -589,8 +589,11 @@ Fazer depois de todo o resto, quando os textos estiverem estáveis.
 - [ ] Página da Steam e conquistas nos mesmos idiomas. [bloqueado-usuario] (precisa da conta Steamworks do Sergio)
 
 ## 12. Ilha do passeio de barco (pedido do Sergio em 02/11; redefinido em 04/11)
-- [ ] 04/11, novo pedido: só uma **ilha vulcânica bem longe da praia**, rochosa, com cinzas saindo do vulcão. Procurar
-  asset gratuito de vulcão antes de modelar (regra global). Substitui a ilha com mata e trilha.
+- [x] **Ilha vulcânica** a 1,3 km da praia (04/11): estratovulcão como o Arenal gerado no bpy (`tools/ue58/gen_volcano.py`,
+  não há vulcão gratuito com licença livre), ravinas fundas, mata nas encostas baixas, topo de cinza, rocha fosca
+  (Poly Haven CC0). Fumaça em dias sorteados (`mare.VolcanoSmoke`), erupção em noites sorteadas (`mare.VolcanoErupt`):
+  lava vermelha escorrendo pelas ravinas da face da praia, chafariz de fagulhas e mar bem agitado. Editor:
+  `mare_hud module mare_volcano.build`. Cruzeiro, baleia e galeão saíram do jogo a pedido do Sergio.
 - [ ] [adiado-usuario] (o pedido de 04/11 pede só a ilha) O passeio de barco até a ilha, com desembarque e trilha.
 
 ## 13. Correção de assets low poly (pedido do Sergio em 02/11, para o final)
@@ -660,4 +663,23 @@ Os 18 idiomas escolhidos são os do Supermarket Simulator, menos turco e lituano
   e finlandês (fi). Processo: criar `<idioma>.json` vazio, rodar `i18n_extract.py`, traduzir em lotes com
   `i18n_batch.py show/merge` sem rodar o extrator entre show e merge (os índices mudam quando o source.json ganha textos), `i18n_batch.py compose <idioma>`, `i18n_fonts.py`, captura com
   `-culture=<idioma> -MareLocAudit`. Todos usam letras latinas (fontes atuais já cobrem).
+
+## 18. Multidão na placa de vídeo (na fila, pedido do Sergio em 04/11)
+- [ ] [adiado-usuario] (vale quando quisermos mais gente na praia) Pessoas distantes com animação gravada em textura e
+  desenhadas pela placa (técnica da Epic para multidões, plugin AnimToTexture). Medição de 04/11: sem nenhuma pessoa a
+  praia ganhava só ~4 FPS, então hoje não compensa; exige gerar as animações de várias MetaHumans. Permite multidão
+  grande sem custo no processador (regra global: máximo de processamento na GPU).
+
+## 19. Pedidos de 04/11 para depois do vulcão
+- [ ] Mar com mais ondas no dia a dia: piso de agitação `mare.SeaSwell` 0,25 aplicado em 04/11; conferir por captura e
+  ajustar o material do mar se ainda parecer calmo. 04/11: ainda parece calmo de dia (o material só perturba a superfície);
+  ondas de verdade pedem deslocamento (Gerstner) no mar. Com o mar bravo, longe da costa aparecem manchas ovais de espuma
+  em grade regular (textura repetida): corrigir junto.
+- [ ] [bloqueado-usuario] (sistema grande + decisão do Sergio: qual é a tarefa diária) **Tsunami**: uma tarefa que o
+  personagem precisa cumprir todo dia; se esquecer, começa chuva fortíssima, mar extremamente agitado e ao fundo sobe uma
+  onda gigante até 100 m que devasta a ilha e encerra o jogo. Evento épico.
+- [ ] [bloqueado-usuario] (sistema grande: subir o esforço do Opus) **Campanha principal** com história completa até o
+  final e tudo pronto no jogo; tom de comédia, animado e calmo, clima de praia.
+- [ ] [bloqueado-usuario] (sistema grande) **Animação de abertura** em estilo desenho (Canva) e **animações nos eventos
+  principais** da história.
 

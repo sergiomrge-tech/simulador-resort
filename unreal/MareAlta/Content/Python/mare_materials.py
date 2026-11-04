@@ -231,7 +231,8 @@ def time_collection():
     params=list(mpc.get_editor_property('scalar_parameters'))
     names=[str(p.get_editor_property('parameter_name')) for p in params]
     added=False
-    for name,default in (('Night',0.0),('Rain',0.0),('Wind',.2),('Storm',0.0)):
+    # Volcano: 0..1 eruption glow on the volcanic island (UMareMarineWorld, random nights).
+    for name,default in (('Night',0.0),('Rain',0.0),('Wind',.2),('Storm',0.0),('Volcano',0.0)):
         if name not in names:
             p=unreal.CollectionScalarParameter();p.set_editor_property('parameter_name',name);p.set_editor_property('default_value',default)
             params.append(p);added=True
