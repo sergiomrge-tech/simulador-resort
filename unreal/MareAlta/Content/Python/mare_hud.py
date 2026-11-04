@@ -887,6 +887,8 @@ def nanite_off(paths):
     renders without Nanite (UE warns 'Invalid material ... used on Nanite static mesh')."""
     done = []
     for path in [p for p in paths.split(';') if p]:
+        if '.' not in path:
+            path = f"{path}.{path.rsplit('/', 1)[-1]}"
         mesh = unreal.EditorAssetLibrary.load_asset(path)
         if not isinstance(mesh, unreal.StaticMesh):
             reg = unreal.AssetRegistryHelpers.get_asset_registry()
@@ -922,6 +924,15 @@ def shadow_casters(arg=''):
                                         'tris': unreal.EditorStaticMeshLibrary.get_number_verts(mesh, 0), 'wpo': False})
             row['instances'] += n
             row['components'] += 1
+            if 'blend' not in row:
+                modes = set()
+                for slot in mesh.static_materials:
+                    m = slot.material_interface
+                    base = m.get_base_material() if m else None
+                    if base:
+                        modes.add(str(base.get_editor_property('blend_mode')).split('.')[-1].split(':')[0].replace('BLEND_', ''))
+                row['blend'] = sorted(modes)
+                row['path'] = mesh.get_path_name().split('.')[0]
             for m in comp.get_materials():
                 base = m.get_base_material() if m else None
                 if base and unreal.MaterialEditingLibrary.get_material_property_input_node(base, unreal.MaterialProperty.MP_WORLD_POSITION_OFFSET):
@@ -931,7 +942,65 @@ def shadow_casters(arg=''):
             'draw_estimate': sum(r['instances'] * max(1, r['sections']) for r in out), 'top': out[:int(arg or 25)]}
 
 
+def _blend_of(m):
+    """Blend mode a material really renders with: a material instance can override its parent's (04/11: lamp glass
+    is an opaque parent made translucent by its instance, which the parent's blend mode did not show)."""
+    while m is not None and isinstance(m, unreal.MaterialInstance):
+        o = m.get_editor_property('base_property_overrides')
+        if o.get_editor_property('override_blend_mode'):
+            return str(o.get_editor_property('blend_mode')).upper()
+        m = m.get_editor_property('parent')
+    return str(m.get_editor_property('blend_mode')).upper() if m else ''
+
+
+def nanite_on(paths):
+    """Turn Nanite on for opaque static meshes ("path;path"), unless the mesh or ANY level component using it carries a
+    translucent material (Nanite does not draw those) or the mesh feeds water. Returns enabled / skipped with reason."""
+    world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_editor_world()
+    dry = paths.startswith('dry:')   # "dry:<paths>": report only, change nothing
+    wanted = {p.split('.')[0] for p in paths.replace('dry:', '', 1).split(';') if p}
+    overrides = {w: set() for w in wanted}
+    for actor in unreal.GameplayStatics.get_all_actors_of_class(world, unreal.Actor):
+        for comp in actor.get_components_by_class(unreal.StaticMeshComponent):
+            mesh = comp.get_editor_property('static_mesh')
+            key = mesh.get_path_name().split('.')[0] if mesh else None
+            if key in overrides:
+                for m in comp.get_materials():
+                    base = m.get_base_material() if m else None
+                    if base:
+                        overrides[key].add(_blend_of(m))
+                        if str(base.get_editor_property('shading_model')).upper().find('WATER') >= 0:
+                            overrides[key].add('WATER')
+    done, skipped = [], {}
+    for path in sorted(wanted):
+        mesh = unreal.EditorAssetLibrary.load_asset(path)
+        modes = set(overrides[path])
+        for slot in mesh.static_materials:
+            if slot.material_interface:
+                modes.add(_blend_of(slot.material_interface))
+        if path.startswith('/Engine/'):
+            skipped[path] = ['engine content: never edited']
+            continue
+        bad = [m for m in modes if 'TRANSLUCENT' in m or 'ADDITIVE' in m or 'MODULATE' in m or 'WATER' in m]
+        if bad:
+            skipped[path] = bad
+            continue
+        settings = mesh.get_editor_property('nanite_settings')
+        if dry:
+            done.append(path)
+            continue
+        if not settings.get_editor_property('enabled'):
+            settings.set_editor_property('enabled', True)
+            mesh.set_editor_property('nanite_settings', settings)
+            if not unreal.EditorAssetLibrary.save_loaded_asset(mesh, False):
+                raise RuntimeError('not saved: ' + path)
+            done.append(path)
+    return {'enabled': done, 'skipped': skipped}
+
+
 def run(action, arg=''):
+    if action == 'naniteon':
+        return json_module.dumps(nanite_on(arg))
     if action == 'shadowcasters':
         return json_module.dumps(shadow_casters(arg))
     if action == 'shadowlights':

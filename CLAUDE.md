@@ -482,3 +482,12 @@ Avisos que só aparecem no executável: vidro translúcido em malha Nanite (some
 LoadObject por tentativa (use `FPackageName::DoesPackageExist`), excesso de luzes por pixel nas sombras virtuais.
 Desligar `r.Shadow.Virtual.Enable` em tempo de execução derruba o executável empacotado.
 
+## Ligar Nanite em lote (04/11)
+
+Antes de ligar a Nanite numa malha, conferir o modo de mistura que o material REALMENTE usa: uma instância pode trocar
+o modo do pai (o vidro dos postes é um pai opaco tornado translúcido na instância) e componentes do nível podem
+aplicar outro material. `hud_naniteon` já sobe a cadeia de instâncias e tem `dry:` para simular. Malhas `/Engine/...`
+(Cube, Plane) nunca. Com o PIE aberto, `load_asset` devolve None e salvar falha: parar o PIE antes. Depois de qualquer
+edição em lote, conferir `Invalid material ... Nanite` no log e restaurar com `git checkout` o que não deu certo
+(o fechamento pelo MCP salva tudo o que estiver pendente, inclusive o mapa e materiais só recompilados).
+

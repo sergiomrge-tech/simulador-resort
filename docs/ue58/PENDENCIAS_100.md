@@ -482,6 +482,11 @@ Pronto e testado (02/11):
 - [ ] P1 Chegar a 60 FPS de dia na praia (RTX 4060 Ti, 1080p): o cenário sozinho gasta 20 ms de render com ~2.030 draw
   calls de sombra de malhas sem Nanite (achar quais: vegetação/instâncias) e as pessoas ainda ~8 ms (componentes
   registrados: oclusão, velocidades). Medir com `tools/ue58/bench_package.ps1 -Exec "cvar valor"` sem reempacotar.
+  04/11, já testado e descartado: (1) ligar Nanite nas 70 malhas sem Nanite que fazem sombra (`hud_shadowcasters`): os
+  maiores (postes World_0688/0683/1391, lanternas) têm vidro translúcido por instância de material, então só 4 pequenas
+  poderiam (`hud_naniteon dry:...`); (2) `r.Shadow.Virtual.Cache.StaticSeparate 0` (cache de sombra para Movable):
+  sem diferença; (3) cache de sombra das árvores com vento: sem diferença. Próximo passo: captura do Unreal Insights no
+  executável para ver o que a thread de render desenha a cada quadro.
 - [x] P0 Sessões de 2 h sem crash (GPU page fault do hotel mitigado com `r.Lumen.AsyncCompute=0`; re-testar).
   04/11: `tools/ue58/bench_package.ps1 -Soak 7200` (executável, tudo liberado): 120 min, 60 voltas pelos 4 setores dormindo
   entre elas (60 dias de jogo, saguão do hotel visitado 60 vezes), nenhum erro no log, FPS estável do início ao fim
