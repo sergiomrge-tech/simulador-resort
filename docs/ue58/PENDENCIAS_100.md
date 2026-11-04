@@ -490,6 +490,10 @@ Pronto e testado (02/11):
   04/11, eliminação por categoria (sem pessoas, praia 13h): sem grama, sem vegetação instanciada ou sem terreno nada muda
   (render ~19,5 ms); sem as malhas instanciadas render 20 → 15 ms e GPU 19 → 10 ms (48 → 67 FPS). O custo está nas
   instâncias do cenário exportado (casas, postes, móveis): falta descobrir quais (por região/malha) no Insights.
+  04/11, varredura por malha (`-MareBenchSweep`): só as jacarandás dos morros pesavam na GPU (−3,5 ms escondidas; a sombra
+  delas sozinha ~5 FPS). Morros com metade das árvores (pedido do Sergio, "tem muitas"): 10.153 → 5.360 árvores,
+  15.175 → 8.971 arbustos, com clareiras. Jogo completo: GPU da praia 22,1 → 20,7 ms, p99 43 → 38 ms, FPS 32,7 → 33,3.
+  O limite agora é a thread de render (CPU ~28–30 ms de dia), espalhada por todas as malhas do cenário exportado.
 - [x] P0 Sessões de 2 h sem crash (GPU page fault do hotel mitigado com `r.Lumen.AsyncCompute=0`; re-testar).
   04/11: `tools/ue58/bench_package.ps1 -Soak 7200` (executável, tudo liberado): 120 min, 60 voltas pelos 4 setores dormindo
   entre elas (60 dias de jogo, saguão do hotel visitado 60 vezes), nenhum erro no log, FPS estável do início ao fim

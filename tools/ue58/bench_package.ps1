@@ -3,6 +3,7 @@ param(
  [string[]]$Variants=@(''),
  [string]$Exec='',
  [int]$Soak=0,
+ [string]$NoShadow='',
  [int]$ResX=1920,
  [int]$ResY=1080
 )
@@ -19,11 +20,12 @@ foreach($variant in $Variants){
  if($variant){$args+="-$variant"}
  if($Exec){$args+="-MareBenchExec=`"$Exec`""}
  if($Soak){$args+="-MareBenchSoak=$Soak"}
+ if($NoShadow){$args+="-MareBenchNoShadow=$NoShadow"}
  $p=Start-Process -FilePath "$Package/MareAlta.exe" -WorkingDirectory $Package -ArgumentList $args -PassThru
  $start=Get-Date
  while(-not $p.HasExited){if(((Get-Date)-$start).TotalSeconds -gt (420+$Soak*1.2)){Stop-Process -Id $p.Id;throw "Timeout: $qa"};Start-Sleep 3;$p.Refresh()}
  if(-not (Test-Path "$qa/bench.json")){throw "Sem bench.json: $qa"}
- Write-Output "== $(if($variant){$variant}else{'completo'}) $Exec  ($qa)"
+ Write-Output "== $(if($variant){$variant}else{'completo'}) $Exec $(if($NoShadow){"sem sombra: $NoShadow"})  ($qa)"
  (Get-Content "$qa/bench.json" -Raw | ConvertFrom-Json).sectors | ForEach-Object {
   "{0,-13} fps {1,5:N1}  p99 {2,5:N1} | jogo {3,5:N1} render {4,5:N1} gpu {5,5:N1} | pessoas {6}/{7}" -f $_.sector,$_.avg_fps,$_.p99_ms,$_.game_ms,$_.render_ms,$_.gpu_ms,$_.people_rendered,$_.people }
  $bad=@(Select-String -LiteralPath "$qa/runtime.log" -Pattern 'Failed to find object|Nanite static mesh|overflow|Error:|Fatal')

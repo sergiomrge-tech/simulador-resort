@@ -8,27 +8,28 @@
  "min_z": 600,
  "seed": 20261101,
  "instances": {
-  "World_1206": 2038,
-  "World_0504": 3054,
-  "jacaranda_tree": 1002,
-  "World_0505": 3135,
-  "tree_small_02": 1924,
-  "shrub_01": 3743,
-  "shrub_03": 2516,
-  "shrub_04": 2552,
-  "shrub_02": 3732,
-  "fern_02": 2632,
-  "rock_face_01": 1912,
-  "rock_face_02": 2001,
-  "coast_rocks_01": 1892,
-  "coast_rocks_05": 1964,
-  "coast_rocks_02": 1878,
-  "coast_rocks_03": 960
+  "World_0504": 1462,
+  "World_0505": 1448,
+  "tree_small_02": 962,
+  "World_1206": 966,
+  "jacaranda_tree": 522,
+  "shrub_02": 2324,
+  "shrub_01": 2308,
+  "shrub_04": 1553,
+  "fern_02": 1552,
+  "shrub_03": 1534,
+  "coast_rocks_01": 1946,
+  "rock_face_01": 1863,
+  "coast_rocks_05": 2011,
+  "coast_rocks_02": 1890,
+  "rock_face_02": 1897,
+  "coast_rocks_03": 925
  },
- "total": 36935,
+ "total": 25163,
  "rejected": {
-  "miss": 47936,
-  "low": 9354,
-  "steep": 10474
+  "miss": 28567,
+  "low": 5472,
+  "steep": 6235,
+  "clearing": 901
  }
 }

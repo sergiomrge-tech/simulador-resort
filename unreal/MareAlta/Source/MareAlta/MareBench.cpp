@@ -13,6 +13,9 @@
 #include "Serialization/JsonSerializer.h"
 #include "UnrealClient.h"
 #include "RHI.h"
+#include "GameFramework/GameModeBase.h"
+#include "Components/InstancedStaticMeshComponent.h"
+#include "UObject/UObjectIterator.h"
 #include "ProfilingDebugging/CsvProfiler.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "RenderCore.h"
@@ -69,8 +72,12 @@ void AMareBench::Tick(float DeltaSeconds)
   UMareSimulation::Object(UMareSimulation::Object(Sim->State,TEXT("prog")),TEXT("ch"))->SetNumberField(TEXT("carnaval"),3);Sim->AddFame(100000);
   for(const TCHAR* Id:{TEXT("kiosk_tables"),TEXT("drinks"),TEXT("grill"),TEXT("bar"),TEXT("pousada"),TEXT("pool"),TEXT("passeios"),TEXT("grand_hotel")}){
    bool bOwned=false;UMareSimulation::Object(Sim->State,TEXT("unlocked"))->TryGetBoolField(Id,bOwned);if(!bOwned)Sim->BuyExpansion(Id);}
+  // -MareBenchNoShadow=<mesh name part>: those meshes stop casting shadows (cost split between their shadows and their pixels).
+  FString NoShadow;if(FParse::Value(FCommandLine::Get(),TEXT("MareBenchNoShadow="),NoShadow))
+   for(TObjectIterator<UStaticMeshComponent> It;It;++It)if(It->GetWorld()==GetWorld() && It->GetStaticMesh() && It->GetStaticMesh()->GetName().Contains(NoShadow))It->SetCastShadow(false);
   Hero->GetCharacterMovement()->SetMovementMode(MOVE_Flying);Started=FPlatformTime::Seconds();Sector=0;Enter(PC);return;
  }
+ if(FParse::Param(FCommandLine::Get(),TEXT("MareBenchSweep"))){Sweep();return;}
  if(Stage==0){if(FPlatformTime::Seconds()<Next)return;Stage=1;Next=FPlatformTime::Seconds()+20;
   // Per-scope timings of the same 20 s (CSV profiler: animation, skinning, shadows...), csv/<sector>.csv.
   FCsvProfiler::Get()->BeginCapture(-1,Root/TEXT("csv"),FString(Sectors[Sector].Name)+TEXT(".csv"));return;}
@@ -93,7 +100,8 @@ void AMareBench::Tick(float DeltaSeconds)
   Row->SetNumberField(TEXT("p50_ms"),Pct(.5));Row->SetNumberField(TEXT("p95_ms"),Pct(.95));Row->SetNumberField(TEXT("p99_ms"),Pct(.99));Row->SetNumberField(TEXT("worst_ms"),Sorted.Num()?Sorted.Last():0);
   Row->SetNumberField(TEXT("game_ms"),Avg(Game));Row->SetNumberField(TEXT("render_ms"),Avg(Render));Row->SetNumberField(TEXT("gpu_ms"),Avg(Gpu));
   Row->SetNumberField(TEXT("clock"),UMareSimulation::Number(PC->GetSimulation()->State,TEXT("minutes")));
-  {FString Extra;FParse::Value(FCommandLine::Get(),TEXT("MareBenchExec="),Extra,false);Row->SetStringField(TEXT("exec"),Extra);}
+  {FString Extra;FParse::Value(FCommandLine::Get(),TEXT("MareBenchExec="),Extra,false);Row->SetStringField(TEXT("exec"),Extra);
+   FString NoShadow;FParse::Value(FCommandLine::Get(),TEXT("MareBenchNoShadow="),NoShadow);Row->SetStringField(TEXT("no_shadow"),NoShadow);}
   Row->SetStringField(TEXT("variant"),FParse::Param(FCommandLine::Get(),TEXT("MareBenchNoPeople"))?TEXT("sem_pessoas"):FParse::Param(FCommandLine::Get(),TEXT("MareBenchNoGroom"))?TEXT("sem_cabelo"):TEXT("completo"));
   Row->SetNumberField(TEXT("people"),People);Row->SetNumberField(TEXT("people_rendered"),Seen);Row->SetNumberField(TEXT("viewport_x"),Size.X);Row->SetNumberField(TEXT("viewport_y"),Size.Y);
   Row->SetNumberField(TEXT("ram_mb"),double(FPlatformMemory::GetStats().UsedPhysical)/(1024.0*1024.0));
@@ -115,4 +123,42 @@ void AMareBench::Write(bool bFinished)
  auto Report=MakeShared<FJsonObject>();Report->SetArrayField(TEXT("sectors"),Records);Report->SetBoolField(TEXT("finished"),bFinished);
  Report->SetNumberField(TEXT("cycles"),Cycle+1);Report->SetNumberField(TEXT("elapsed_s"),FPlatformTime::Seconds()-Started);
  FString Text;FJsonSerializer::Serialize(Report,TJsonWriterFactory<>::Create(&Text));FFileHelper::SaveStringToFile(Text,*(Root/TEXT("bench.json")));
+}
+
+// -MareBenchSweep (60 FPS work): at the beach sector, the static/instanced meshes grouped by mesh; the 20 biggest groups
+// (instances x sections) are hidden one at a time, 2 s to settle and 4 s measured, then shown again. sweep.json lists
+// render/GPU/game ms per hidden group next to the baseline, so the costly meshes show up in one run.
+void AMareBench::Sweep()
+{
+ const double Now=FPlatformTime::Seconds();
+ if(SweepIndex==-2){
+  if(Now<Next)return;   // the sector's 8 s warm-up
+  GetWorld()->GetAuthGameMode()->SetActorTickEnabled(false);   // clock frozen: the same sun for every measurement
+  TMap<FString,int32> Index;
+  for(TObjectIterator<UStaticMeshComponent> It;It;++It){UStaticMeshComponent* C=*It;
+   if(C->GetWorld()!=GetWorld() || !C->IsVisible() || !C->GetStaticMesh() || C->GetOwner()==nullptr || C->GetOwner()->IsHidden())continue;
+   if(Cast<USkeletalMeshComponent>(C))continue;
+   const FString Mesh=C->GetStaticMesh()->GetName();int32* At=Index.Find(Mesh);
+   if(!At){At=&Index.Add(Mesh,Groups.Num());Groups.AddDefaulted();Groups.Last().Mesh=Mesh;Groups.Last().Sections=C->GetStaticMesh()->GetNumSections(0);}
+   FSweepGroup& G=Groups[*At];G.Parts.Add(C);auto ISM=Cast<UInstancedStaticMeshComponent>(C);G.Instances+=ISM?ISM->GetInstanceCount():1;}
+  Groups.Sort([](const FSweepGroup& A,const FSweepGroup& B){return A.Instances*FMath::Max(1,A.Sections)>B.Instances*FMath::Max(1,B.Sections);});
+  if(Groups.Num()>20)Groups.SetNum(20);
+  SweepIndex=-1;SweepStage=0;Next=Now+2;Frames.Reset();Render.Reset();Gpu.Reset();Game.Reset();return;}
+ if(SweepStage==0){if(Now<Next)return;SweepStage=1;Next=Now+4;Frames.Reset();Render.Reset();Gpu.Reset();Game.Reset();return;}
+ if(SweepStage==1){
+  Frames.Add(FApp::GetDeltaTime()*1000.f);Game.Add(FPlatformTime::ToMilliseconds(GGameThreadTime));Render.Add(FPlatformTime::ToMilliseconds(GRenderThreadTime));
+  Gpu.Add(FPlatformTime::ToMilliseconds(RHIGetGPUFrameCycles(0)));if(Now<Next)return;
+  auto Avg=[](const TArray<float>& A){double S=0;for(float V:A)S+=V;return A.Num()?S/A.Num():0.0;};
+  auto Row=MakeShared<FJsonObject>();
+  if(SweepIndex<0)Row->SetStringField(TEXT("hidden"),TEXT("(nada)"));
+  else{const FSweepGroup& G=Groups[SweepIndex];Row->SetStringField(TEXT("hidden"),G.Mesh);Row->SetNumberField(TEXT("instances"),G.Instances);
+   Row->SetNumberField(TEXT("sections"),G.Sections);Row->SetNumberField(TEXT("components"),G.Parts.Num());
+   for(auto& P:G.Parts)if(P.IsValid())P->SetVisibility(true);}
+  Row->SetNumberField(TEXT("frame_ms"),Avg(Frames));Row->SetNumberField(TEXT("render_ms"),Avg(Render));Row->SetNumberField(TEXT("gpu_ms"),Avg(Gpu));Row->SetNumberField(TEXT("game_ms"),Avg(Game));
+  Records.Add(MakeShared<FJsonValueObject>(Row));
+  if(++SweepIndex>=Groups.Num()){auto Report=MakeShared<FJsonObject>();Report->SetArrayField(TEXT("sweep"),Records);Report->SetBoolField(TEXT("finished"),true);
+   FString Text;FJsonSerializer::Serialize(Report,TJsonWriterFactory<>::Create(&Text));FFileHelper::SaveStringToFile(Text,*(Root/TEXT("sweep.json")));
+   GEngine->Exec(GetWorld(),TEXT("QUIT"));SweepStage=2;return;}
+  for(auto& P:Groups[SweepIndex].Parts)if(P.IsValid())P->SetVisibility(false);
+  SweepStage=0;Next=Now+2;return;}
 }

@@ -7,6 +7,8 @@
 // MareAlta.exe -MareBench -MareSaveRoot=D:/CodexTemp/<new folder> : everything unlocked, then for each sector
 // (beach with bathers at 13h, kiosk, hotel lobby, village at 21h) 8 s warm-up and 20 s of frame times;
 // writes bench.json (avg/median/p95/p99/worst ms, average fps, people rendered) plus one screenshot per sector and quits.
+struct FSweepGroup{FString Mesh;int32 Instances=0;int32 Sections=0;TArray<TWeakObjectPtr<class UStaticMeshComponent>> Parts;};
+
 UCLASS()
 class AMareBench : public AActor
 {
@@ -23,6 +25,10 @@ private:
  TArray<TSharedPtr<class FJsonValue>> Records;
  void Enter(class AMareController* PC);
  void Strip();
+ void Sweep();
+ TArray<FSweepGroup> Groups;
+ int32 SweepIndex=-2;
+ int32 SweepStage=0;
  void Write(bool bFinished);
  double Started=0;
  int32 Cycle=0;

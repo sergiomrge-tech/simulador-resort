@@ -998,7 +998,35 @@ def nanite_on(paths):
     return {'enabled': done, 'skipped': skipped}
 
 
+def ism_groups(name):
+    """Editor level: every component drawing the mesh whose name contains `name`: owner, instances, cull distances,
+    shadow, WPO disable distance, and the mesh's Nanite / material blend modes (performance audit)."""
+    world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_editor_world()
+    out, mesh_info = [], {}
+    for actor in unreal.GameplayStatics.get_all_actors_of_class(world, unreal.Actor):
+        for comp in actor.get_components_by_class(unreal.StaticMeshComponent):
+            mesh = comp.get_editor_property('static_mesh')
+            if not mesh or name not in mesh.get_name():
+                continue
+            ism = isinstance(comp, unreal.InstancedStaticMeshComponent)
+            out.append({'owner': actor.get_name(), 'tags': [str(t) for t in actor.tags][:3], 'class': comp.get_class().get_name(),
+                        'instances': comp.get_instance_count() if ism else 1,
+                        'cull': [comp.get_editor_property('instance_start_cull_distance'), comp.get_editor_property('instance_end_cull_distance')] if ism else comp.get_editor_property('ld_max_draw_distance'),
+                        'shadow': comp.get_editor_property('cast_shadow'), 'wpo_disable': comp.get_editor_property('world_position_offset_disable_distance')})
+            if mesh.get_name() not in mesh_info:
+                wpo = []
+                for s in mesh.static_materials:
+                    base = s.material_interface.get_base_material() if s.material_interface else None
+                    wpo.append(bool(base and unreal.MaterialEditingLibrary.get_material_property_input_node(base, unreal.MaterialProperty.MP_WORLD_POSITION_OFFSET)))
+                mesh_info[mesh.get_name()] = {'wpo': wpo, 'path': mesh.get_path_name(), 'nanite': mesh.get_editor_property('nanite_settings').get_editor_property('enabled'),
+                                              'verts_lod0': unreal.EditorStaticMeshLibrary.get_number_verts(mesh, 0), 'lods': mesh.get_num_lods(),
+                                              'blend': [_blend_of(s.material_interface) for s in mesh.static_materials if s.material_interface]}
+    return {'meshes': mesh_info, 'components': out}
+
+
 def run(action, arg=''):
+    if action == 'ismgroups':
+        return json_module.dumps(ism_groups(arg))
     if action == 'naniteon':
         return json_module.dumps(nanite_on(arg))
     if action == 'shadowcasters':

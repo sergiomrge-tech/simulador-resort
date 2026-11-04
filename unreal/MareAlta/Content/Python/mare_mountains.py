@@ -84,6 +84,23 @@ ROCKS = [('rock_face_01', 2, (4.0, 9.0)), ('rock_face_02', 2, (4.0, 9.0)), ('coa
          ('coast_rocks_02', 2, (2.5, 6.0)), ('coast_rocks_05', 2, (2.0, 5.0)), ('coast_rocks_03', 1, (6.0, 12.0))]
 UNDER = [('shrub_01', 3, (2.0, 3.0)), ('shrub_02', 3, (2.0, 3.0)), ('shrub_03', 2, (2.0, 2.8)), ('shrub_04', 2, (2.0, 2.8)), ('fern_02', 2, (2.0, 3.0))]
 MAX_SLOPE_NZ = 0.60
+# 04/11 (Sergio: "tem muitas", photo of the hill behind the kiosk as one dark speckled carpet; the trees' shadows also
+# cost ~5 FPS on the beach): trees every 5.6 m instead of 4.2, shrubs every 4.6 m instead of 3.6, and soft clearings
+# (CLEARING of the hill without trees, in patches ~30 m across) so the slope reads as woods and open ground.
+TREE_STEP, UNDER_STEP, CLEARING = 560, 460, .22
+
+
+def _clearing(x, y, seed):
+    """Smooth value noise in 0..1 with ~30 m cells: below CLEARING the spot is a clearing (no tree)."""
+    def rnd(i, j):
+        return random.Random(hash((i, j, seed)) & 0xffffffff).random()
+    cell = 3000.0
+    gx, gy = x / cell, y / cell
+    i, j = math.floor(gx), math.floor(gy)
+    fx, fy = gx - i, gy - j
+    sx, sy = fx * fx * (3 - 2 * fx), fy * fy * (3 - 2 * fy)
+    a, b, c, d = rnd(i, j), rnd(i + 1, j), rnd(i, j + 1), rnd(i + 1, j + 1)
+    return (a + (b - a) * sx) + ((c + (d - c) * sx) - (a + (b - a) * sx)) * sy
 
 
 def _mesh(slug):
@@ -128,7 +145,8 @@ def populate(seed=20261101):
     placements = {}
     rejected = {'miss': 0, 'low': 0, 'steep': 0}
     x0, x1, y0, y1 = REGION
-    for layer, table, step, jitter in (('tree', TREES, 420, 190), ('under', UNDER, 360, 150)):
+    rejected['clearing'] = 0
+    for layer, table, step, jitter in (('tree', TREES, TREE_STEP, 240), ('under', UNDER, UNDER_STEP, 190)):
         x = x0
         while x <= x1:
             y = y0
@@ -141,6 +159,8 @@ def populate(seed=20261101):
                     rejected['low'] += 1
                 elif h[1].z < MAX_SLOPE_NZ:
                     rejected['steep'] += 1
+                elif layer == 'tree' and _clearing(px, py, seed) < CLEARING:
+                    rejected['clearing'] += 1
                 else:
                     slug, (s0, s1) = _pick(rng, table)
                     s = rng.uniform(s0, s1)
