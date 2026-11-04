@@ -248,7 +248,7 @@ Pronto e testado (02/11):
   Feito 03/11: auditoria no corpo VISÍVEL de todo ator com esqueleto (`mare_hud allpeople`, 42 MetaHumans + jogador),
   três amostras a 0,35 s (a 1,2 s coincidia com o ciclo do passo e dava falsos "deslizando"): 7 rodadas dia/noite com
   0 deslizando e 0 congelados. Virou checagem permanente do QA gate ("visible").
-- [ ] P1 Animações (03/11): 7 clipes gratuitos de captura do Fab (Animation Shopee) importados
+- [x] P1 Animações (03/11): 7 clipes gratuitos de captura do Fab (Animation Shopee) importados
   (`mare_metahuman.import_mocap`, dois passes, `frame_alignment` SNAP_TO_CLOSEST) e redirecionados (`retarget_mocap`, só
   FK). Causa dos bonecos tortos: o esqueleto da captura olha para -Y e a MetaHuman para +Y; o redirecionador exige os
   dois virados para o mesmo lado. A pose de origem gira o Hips 180° ANTES de alinhar a MetaHuman (alinhada à pose T sem
@@ -276,7 +276,7 @@ Pronto e testado (02/11):
     (`AMarePerson::SeaHeight` replica o deslocamento de vértices do material do mar, com a tempestade); na piscina (1,32 m)
     não dá para boiar: duas pessoas em pé no fundo conversando com a água no peito. `sunbathers.json` → `swimmers`.
   - comer e beber sentado (já existe);
-  - conversar com gestos sentado (feito, `SitTalk`; em pé ainda falta clipe bom); dançar nas festas (feito);
+  - conversar com gestos sentado (feito, `SitTalk`); em pé usa o clipe base `Idle_Talking` (gestos leves); dançar nas festas (feito);
   - limpar e atender (equipe): piscineiro FEITO 03/11. Peneira de piscina modelada no bpy (`tools/ue58/gen_pool_skimmer.py`,
     cabo telescópico, aro e rede de fios reais; nenhum CC0 encontrado) segura com as duas mãos por IK e varrida sobre a
     água (pose `Skim`, `AMarePerson::UpdateTool`). Junto, defeito antigo: ele atravessava a piscina andando SOBRE a
@@ -284,6 +284,8 @@ Pronto e testado (02/11):
     estreito demais): rota com pontos de passagem por fora das espreguiçadeiras. Camareira FEITO 03/11: varre o deck e
     a soleira de cada bangalô alugado com a vassoura de plástico do Poly Haven (CC0), cabeça no piso em golpes curtos e
     as duas mãos no cabo por IK (pose `Sweep`). O garçom do hotel já leva os pratos da cozinha às mesas nas mãos.
+- [ ] P2 Conversar gesticulando em pé com um clipe de captura melhor que o `Idle_Talking` (o `TalkGesture` do Fab foi recusado:
+  curva o tronco como reverência) [bloqueado-usuario] (outro clipe gratuito do Fab exige o login do Sergio no navegador).
 - [x] P0 Sentados no ar/no encosto (03/11): hóspedes do restaurante do hotel em cadeiras reais (`Data/hotel_seats.json`, gerado por
   `mare_hud.chair_seats` a partir dos vértices das cadeiras) e alinhamento da bacia no assento por corpo (`AMarePerson::SitOn`,
   `AlignToSeatBelow`; restaurante, bar e quiosque). Teste no PIE: `hud_seataudit` (12/12 ok). Copos flutuando no restaurante
