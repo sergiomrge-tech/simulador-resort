@@ -25,9 +25,11 @@ struct FServiceProxy : FAnimSingleNodeInstanceProxy
  TArray<FTransform> LastLocals,BlendFrom;
  float BlendTime=.2f;bool bNewClip=false;
  bool bOpenSwimmingHands=false;
+ float Recline=0;
  virtual void PreUpdate(UAnimInstance* Instance,float DeltaSeconds) override
  {
   FAnimSingleNodeInstanceProxy::PreUpdate(Instance,DeltaSeconds);
+  if(auto Owner=Cast<AMarePerson>(Instance->GetOwningActor()))Recline=Owner->bLying?Owner->Recline:0.f;
   auto Single=Cast<UAnimSingleNodeInstance>(Instance);
   if(Single && Single->GetCurrentAsset()!=PreviousAsset.Get()){PreviousAsset=Single->GetCurrentAsset();BlendTime=0;bNewClip=true;}
   BlendTime+=DeltaSeconds;
@@ -78,6 +80,17 @@ struct FServiceProxy : FAnimSingleNodeInstanceProxy
    for(int32 I=0;I<Count;++I){auto& Local=Output.Pose[FCompactPoseBoneIndex(I)];const auto Target=Local;Local.Blend(BlendFrom[I],Target,Alpha);}
   }
   LastLocals.SetNumUninitialized(Count);for(int32 I=0;I<Count;++I)LastLocals[I]=Output.Pose[FCompactPoseBoneIndex(I)];
+  if(Recline>0){
+   // Lounger: bend the torso up at the waist (spine_01 flexes forward about the body's side axis, component X), the
+   // rotation expressed in the pelvis frame so everything above follows.
+   const auto& Bones=Output.Pose.GetBoneContainer();const auto& Ref=Bones.GetReferenceSkeleton();
+   const FCompactPoseBoneIndex Spine=Bones.GetCompactPoseIndexFromSkeletonIndex(Ref.FindBoneIndex(TEXT("spine_01")));
+   const FCompactPoseBoneIndex Pelvis=Bones.GetCompactPoseIndexFromSkeletonIndex(Ref.FindBoneIndex(TEXT("pelvis")));
+   if(Spine!=INDEX_NONE && Pelvis!=INDEX_NONE){FCSPose<FCompactPose> Pose;Pose.InitPose(Output.Pose);
+    const FQuat Parent=Pose.GetComponentSpaceTransform(Pelvis).GetRotation();
+    const FQuat Bend(FVector(1,0,0),FMath::DegreesToRadians(-Recline));
+    auto& Local=Output.Pose[Spine];Local.SetRotation((Parent.Inverse()*Bend*Parent*Local.GetRotation()).GetNormalized());}
+  }
   if(bOpenSwimmingHands){
    const auto& Bones=Output.Pose.GetBoneContainer();const auto& Ref=Bones.GetReferenceSkeleton();
    for(int32 I=0;I<Count;++I){const FCompactPoseBoneIndex Index(I);const int32 SkeletonIndex=Bones.GetSkeletonIndex(Index);

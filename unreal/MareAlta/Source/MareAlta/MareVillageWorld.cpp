@@ -135,20 +135,31 @@ void UMareVillageWorld::UpdateSunbathers()
  // Nobody pops in or out in front of the player: after the first seconds of the session (still the loading fade),
  // arrivals and departures wait until the towel is 25 m away; an hour outside the window they leave regardless.
  auto Hero=UGameplayStatics::GetPlayerPawn(this,0);const bool bLoading=GetWorld()->GetTimeSeconds()<10;
+ // Spots: beach towels (lying flat, head inland) and, with the pool day use bought, the pool loungers (torso up on
+ // the backrest, pelvis just in front of its hinge, head away from the pool).
+ struct FSpot{FVector Centre;float Yaw,Recline;};TArray<FSpot> Spots;
  const int32 Count=FMath::Min(int32(UMareSimulation::Number(Defs,TEXT("count"),5)),Towels->Num());
- Sunbathers.SetNum(Count);
  for(int32 I=0;I<Count;++I){const auto& V=(*Towels)[I]->AsArray();if(V.Num()!=4)continue;
-  const FVector Centre(V[0]->AsNumber(),V[1]->AsNumber(),V[2]->AsNumber());
-  const bool bFar=bLoading || !Hero || FVector::Dist2D(Hero->GetActorLocation(),Centre)>2500;
+  // Long side of the towel = its local Y; the head goes inland (+Y, away from the sea).
+  FVector Axis=FRotator(0,V[3]->AsNumber()+90,0).Vector();if(Axis.Y<0)Axis=-Axis;
+  Spots.Add({FVector(V[0]->AsNumber(),V[1]->AsNumber(),V[2]->AsNumber()),float(Axis.Rotation().Yaw),0.f});}
+ bool bPool=false;UMareSimulation::Object(Sim->State,TEXT("unlocked"))->TryGetBoolField(TEXT("pool"),bPool);
+ const TArray<TSharedPtr<FJsonValue>>* Loungers=nullptr;
+ if(bPool && Defs->TryGetArrayField(TEXT("loungers"),Loungers)){const float Bend=UMareSimulation::Number(Defs,TEXT("recline"),40);
+  const int32 Use=FMath::Min(int32(UMareSimulation::Number(Defs,TEXT("lounger_count"),3)),Loungers->Num());
+  for(int32 I=0;I<Use;++I){const auto& V=(*Loungers)[I]->AsArray();if(V.Num()==4)Spots.Add({FVector(V[0]->AsNumber(),V[1]->AsNumber(),V[2]->AsNumber()),float(V[3]->AsNumber()),Bend});}}
+ for(int32 I=Spots.Num();I<Sunbathers.Num();++I)if(IsValid(Sunbathers[I].Get()))Sunbathers[I]->Destroy();
+ Sunbathers.SetNum(Spots.Num());
+ for(int32 I=0;I<Spots.Num();++I){const FSpot& Spot=Spots[I];
+  const bool bFar=bLoading || !Hero || FVector::Dist2D(Hero->GetActorLocation(),Spot.Centre)>2500;
   AMarePerson* Present=Sunbathers[I];
   if(!bOut){if(IsValid(Present) && (bFar || Hour>=End+1 || Hour<Start-1)){Present->Destroy();Sunbathers[I]=nullptr;}continue;}
   if(IsValid(Present) || !bFar)continue;
-  // Long side of the towel = its local Y; the head goes inland (+Y, away from the sea).
-  FVector Axis=FRotator(0,V[3]->AsNumber()+90,0).Vector();if(Axis.Y<0)Axis=-Axis;
   FActorSpawnParameters Params;Params.SpawnCollisionHandlingOverride=ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-  auto P=GetWorld()->SpawnActor<AMarePerson>(Centre+FVector(0,0,90),Axis.Rotation(),Params);if(!P)continue;
+  auto P=GetWorld()->SpawnActor<AMarePerson>(Spot.Centre+FVector(0,0,90),FRotator(0,Spot.Yaw,0),Params);if(!P)continue;
   if(!P->SetAppearance(I%4)){P->Destroy();continue;}
-  P->SaveId=FString::Printf(TEXT("bather%d"),I);P->PersonName=TEXT("Banhista");P->bAmbient=true;P->Tags.Add(TEXT("MareBather"));P->LieOn(Centre,Axis.Rotation().Yaw);
+  P->SaveId=FString::Printf(TEXT("bather%d"),I);P->PersonName=TEXT("Banhista");P->bAmbient=true;P->Tags.Add(TEXT("MareBather"));
+  P->LieOn(Spot.Centre,Spot.Yaw,Spot.Recline);
   Sunbathers[I]=P;}
 }
 void UMareVillageWorld::Tick(float Dt)

@@ -109,8 +109,11 @@ public:
  /** Sunbather lying face up on a beach towel (03/11, "deitar na canga, de barriga para cima"): the start of the
   *  Cheer capture (standing square, hands on the chest) laid on its back along the towel axis (AxisYaw, head first); once the pose plays the body is centred on the towel,
   *  pelvis 11 cm above it. (The Fab LieDown capture lies curled on its side, rejected for the beach.) */
- void LieOn(const FVector& TowelCentre,float AxisYaw);
+ void LieOn(const FVector& TowelCentre,float AxisYaw,float InRecline=0.f);
  bool bLying=false;
+ /** Degrees the torso bends up at the hips while lying (a lounger backrest); 0 = flat on a towel. The pelvis is
+  *  then anchored at the given point (just in front of the backrest hinge) instead of centring the body. */
+ float Recline=0;
  /** Clothing style, applied on the first tick once role flags are set (employees keep the uniform). */
  enum class EOutfit:uint8{Auto,Uniform,Casual,Beach,Swim,Social};
  EOutfit Outfit=EOutfit::Auto;

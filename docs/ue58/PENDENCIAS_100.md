@@ -267,7 +267,10 @@ Pronto e testado (02/11):
     25 m. Junto: toalhas e lonas dos guarda-sóis com tecido (`M_BeachFabric`: felpa waffle, barra e listras brancas nas
     pontas; lona com trama de denim e 8 gomos costurados), pedra tirada de cima de uma toalha e o tronco que estava em
     cima da lona de um guarda-sol descido para a areia. Prova `docs/ue58/graphics-reference/banhistas-canga-20261103.jpg`.
-  - deitar na espreguiçadeira (falta: as espreguiçadeiras têm encosto inclinado, precisa de pose reclinada);
+  - deitar na espreguiçadeira: FEITO 03/11. Com a piscina comprada, 3 banhistas reclinados nas espreguiçadeiras: a mesma pose
+    de barriga para cima com o tronco dobrado 30° na cintura (`spine_01` no proxy de animação, `AMarePerson::Recline`),
+    pelve logo à frente da dobra do encosto (perfil medido: assento 58 cm, encosto 63→116 cm em 60 cm). Com 40° sobrava
+    um vão entre as costas e a almofada; com 30° as costas encostam. `sunbathers.json` → `loungers`/`recline`.
   - nadar no mar e na piscina;
   - comer e beber sentado (já existe);
   - conversar com gestos sentado (feito, `SitTalk`; em pé ainda falta clipe bom); dançar nas festas (feito);

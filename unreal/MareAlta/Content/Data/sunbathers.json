@@ -1,12 +1,80 @@
 {
-  "_doc": "Sunbathers lying on the beach towels by the umbrellas (UMareVillageWorld::UpdateSunbathers, AMarePerson::LieOn). Present during 'hours' (game hours, start inclusive, end exclusive) on dry days; at most 'count' of them, in the order of 'towels'. Each towel: world cm centre [x, y, z] of the towel mesh (Maré · towel actors, 96 x 194 cm, long side along local Y) and its yaw; the body lies along the towel, head inland (towards +Y).",
-  "hours": [9, 17],
+  "_doc": "Sunbathers lying on the beach towels by the umbrellas (UMareVillageWorld::UpdateSunbathers, AMarePerson::LieOn). Present during 'hours' (game hours, start inclusive, end exclusive) on dry days; at most 'count' of them, in the order of 'towels'. Each towel: world cm centre [x, y, z] of the towel mesh (Maré · towel actors, 96 x 194 cm, long side along local Y) and its yaw; the body lies along the towel, head inland (towards +Y). loungers (pool day use bought): [x, y, seat top z, head yaw] of the pelvis point just in front of each pool lounger backrest hinge (measured with mare_hotel_lobby profile: seat 58 cm, backrest 63 -> 116 cm over 60 cm, ~40 deg); lounger_count of them are used; recline = torso bend (deg) at the waist.",
+  "hours": [
+    9,
+    17
+  ],
   "count": 5,
   "towels": [
-    [5520, -2318, 2, 80],
-    [4645, -2132, 2, -115],
-    [462, -2597, -9, -59],
-    [9449, -2080, 2, -113],
-    [-3506, -2025, 2, -39]
-  ]
+    [
+      5520,
+      -2318,
+      2,
+      80
+    ],
+    [
+      4645,
+      -2132,
+      2,
+      -115
+    ],
+    [
+      462,
+      -2597,
+      -9,
+      -59
+    ],
+    [
+      9449,
+      -2080,
+      2,
+      -113
+    ],
+    [
+      -3506,
+      -2025,
+      2,
+      -39
+    ]
+  ],
+  "loungers": [
+    [
+      -768,
+      120,
+      58,
+      180
+    ],
+    [
+      768,
+      380,
+      58,
+      0
+    ],
+    [
+      -768,
+      640,
+      58,
+      180
+    ],
+    [
+      768,
+      120,
+      58,
+      0
+    ],
+    [
+      -768,
+      380,
+      58,
+      180
+    ],
+    [
+      768,
+      640,
+      58,
+      0
+    ]
+  ],
+  "lounger_count": 3,
+  "recline": 30
 }

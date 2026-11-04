@@ -66,8 +66,9 @@ void AMarePerson::SitOn(const FVector& SeatTop,float Yaw)
  SeatAlignIn=.6f;
 }
 
-void AMarePerson::LieOn(const FVector& TowelCentre,float AxisYaw)
+void AMarePerson::LieOn(const FVector& TowelCentre,float AxisYaw,float InRecline)
 {
+ Recline=InRecline;
  // Face up on the towel (03/11, Sergio: "deitadas de barriga para cima"): the calm standing idle laid on its back,
  // the actor's forward (the face) pointing at the sky and its up axis (feet to head) along the towel.
  LieCentre=TowelCentre;LieYaw=AxisYaw;bLying=true;LieAlignIn=.8f;
@@ -87,8 +88,10 @@ void AMarePerson::UpdateLying(float DeltaSeconds)
  if(LieAlignIn>0 && (LieAlignIn-=DeltaSeconds)<=0 && GetMesh()->GetBoneIndex(TEXT("head"))!=INDEX_NONE){
   // Centre the body (head to mid-feet) on the towel and rest the pelvis 11 cm above it (the back of the hips on the cloth).
   const FVector Mid=(GetMesh()->GetSocketLocation(TEXT("foot_l"))+GetMesh()->GetSocketLocation(TEXT("foot_r")))/2;
-  const FVector Centre=(GetMesh()->GetSocketLocation(TEXT("head"))+Mid)/2;
-  AddActorWorldOffset(FVector(LieCentre.X-Centre.X,LieCentre.Y-Centre.Y,LieCentre.Z+11-GetMesh()->GetSocketLocation(TEXT("pelvis")).Z));}
+  // On a lounger the pelvis goes to the given point (in front of the backrest hinge); on a towel the body is centred.
+  const FVector Pelvis=GetMesh()->GetSocketLocation(TEXT("pelvis"));
+  const FVector Centre=Recline>0?Pelvis:(GetMesh()->GetSocketLocation(TEXT("head"))+Mid)/2;
+  AddActorWorldOffset(FVector(LieCentre.X-Centre.X,LieCentre.Y-Centre.Y,LieCentre.Z+11-Pelvis.Z));}
 }
 
 // QA: "mare.Express smile|annoyed [seconds] [metres]" puts a mood on everyone near the player (face captures).
