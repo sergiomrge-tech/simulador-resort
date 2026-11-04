@@ -4,6 +4,7 @@
 #include "MareSimulation.h"
 #include "Engine/GameInstance.h"
 #include "MareKioskWorld.h"
+#include "MareAudioWorld.h"
 #include "AIController.h"
 #include "Navigation/PathFollowingComponent.h"
 #include "NavigationSystem.h"
@@ -13,6 +14,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/ChildActorComponent.h"
 #include "EngineUtils.h"
+#include "Kismet/GameplayStatics.h"
 #include "HAL/IConsoleManager.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/StaticMeshComponent.h"
@@ -27,6 +29,7 @@
 
 static TAutoConsoleVariable<int32> CVarMareMetaHumans(TEXT("mare.MetaHumans"),1,TEXT("People wear the built MetaHumans of Content/Data/metahumans.json (0 = original rig people)."));
 static TAutoConsoleVariable<int32> CVarMareBeachwear(TEXT("mare.Beachwear"),-1,TEXT("QA: beachwear option index for new beach people (-1 = picked per person)."));
+static TAutoConsoleVariable<int32> CVarMareFaces(TEXT("mare.Faces"),1,TEXT("MetaHuman faces blink and change expression (own face pose with rig curves); 0 = faces follow the body, neutral."));
 static TAutoConsoleVariable<int32> CVarMareMocap(TEXT("mare.Mocap"),1,TEXT("Use the free Fab mocap clips (seated/standing talk, party dances); 0 = base clips only."));
 static TAutoConsoleVariable<FString> CVarMareMetaHuman(TEXT("mare.MetaHuman"),TEXT(""),TEXT("QA: force this built MetaHuman on every new person (empty = roster choice)."));
 
@@ -86,6 +89,50 @@ void AMarePerson::UpdateLying(float DeltaSeconds)
   const FVector Mid=(GetMesh()->GetSocketLocation(TEXT("foot_l"))+GetMesh()->GetSocketLocation(TEXT("foot_r")))/2;
   const FVector Centre=(GetMesh()->GetSocketLocation(TEXT("head"))+Mid)/2;
   AddActorWorldOffset(FVector(LieCentre.X-Centre.X,LieCentre.Y-Centre.Y,LieCentre.Z+11-GetMesh()->GetSocketLocation(TEXT("pelvis")).Z));}
+}
+
+// QA: "mare.Express smile|annoyed [seconds] [metres]" puts a mood on everyone near the player (face captures).
+static FAutoConsoleCommandWithWorldAndArgs GMareExpress(TEXT("mare.Express"),TEXT("mare.Express <smile|annoyed> [seconds=6] [radius m=8]"),
+ FConsoleCommandWithWorldAndArgsDelegate::CreateLambda([](const TArray<FString>& Args,UWorld* World){
+  if(!World || Args.IsEmpty())return;APawn* Hero=UGameplayStatics::GetPlayerPawn(World,0);if(!Hero)return;
+  const float Seconds=Args.Num()>1?FCString::Atof(*Args[1]):6.f,Radius=(Args.Num()>2?FCString::Atof(*Args[2]):8.f)*100.f;int32 Count=0;
+  for(TActorIterator<AMarePerson> It(World);It;++It)if(FVector::Dist(It->GetActorLocation(),Hero->GetActorLocation())<Radius){It->Express(Args[0],Seconds);++Count;}
+  UE_LOG(LogTemp,Display,TEXT("MARE_EXPRESS %s people=%d"),*Args[0],Count);}));
+
+bool AMarePerson::IsWoman()const
+{
+ if(!MetaHuman.IsEmpty()){FString Base=MetaHuman;MetaHuman.Split(TEXT("_"),&Base,nullptr);
+  const TArray<TSharedPtr<FJsonValue>>* Men=nullptr;
+  if(MetaHumanRoster()->TryGetArrayField(TEXT("men"),Men))for(const auto& V:*Men)if(V->AsString()==Base)return false;
+  return true;}
+ const USkeletalMesh* Body=GetMesh()->GetSkeletalMeshAsset();
+ return Body && Body->GetSkeleton() && Body->GetSkeleton()->GetPathName().Contains(TEXT("/Female/"));
+}
+
+void AMarePerson::Express(const FString& InMood,float Seconds)
+{
+ Mood=InMood;MoodTotal=MoodLeft=FMath::Max(Seconds,.5f);
+ // A short wordless voice goes with the face (tools/ue58/fetch_murmurs.py: a little laugh, a grumble or a sigh,
+ // a "hmm"), soft and from the head; nothing is ever spoken.
+ const TCHAR* Kind=InMood==TEXT("smile")?TEXT("happy"):InMood==TEXT("annoyed")?TEXT("annoyed"):InMood==TEXT("hmm")?TEXT("hmm"):nullptr;
+ if(!Kind)return;
+ const bool bFemale=IsWoman();
+ const FVector Head=GetMesh()->GetBoneIndex(TEXT("head"))!=INDEX_NONE?GetMesh()->GetSocketLocation(TEXT("head")):GetActorLocation()+FVector(0,0,70);
+ UMareAudioWorld::Action(this,FString::Printf(TEXT("voice_%s_%s"),Kind,bFemale?TEXT("f"):TEXT("m")),&Head);
+}
+
+void AMarePerson::FaceCurves(TArray<TPair<FName,float>>& Out)const
+{
+ // Blink about every 3-6 s: 0.16 s closing and opening (BlinkAt/NextBlink advance in Tick).
+ const float Since=Elapsed-BlinkAt;const float Blink=Since<.16f?FMath::Sin(Since/.16f*PI):0.f;
+ if(Blink>0){Out.Add({TEXT("CTRL_expressions_eyeBlinkL"),Blink});Out.Add({TEXT("CTRL_expressions_eyeBlinkR"),Blink});}
+ if(MoodLeft<=0 || Mood.IsEmpty())return;
+ // Ease in over 0.4 s and out over the last 0.8 s.
+ const float Gone=MoodTotal-MoodLeft;const float W=FMath::Min(FMath::SmoothStep(0.f,.4f,Gone),FMath::SmoothStep(0.f,.8f,MoodLeft));
+ auto Both=[&Out,W](const TCHAR* Control,float Value){for(const TCHAR* Side:{TEXT("L"),TEXT("R")})Out.Add({FName(FString(TEXT("CTRL_expressions_"))+Control+Side),Value*W});};
+ if(Mood==TEXT("smile")){Both(TEXT("mouthCornerPull"),.75f);Both(TEXT("mouthCornerWiden"),.25f);Both(TEXT("eyeCheekRaise"),.45f);Both(TEXT("eyeSquintInner"),.2f);}
+ else if(Mood==TEXT("annoyed")){Both(TEXT("browDown"),.7f);Both(TEXT("browLateral"),.5f);Both(TEXT("mouthCornerDepress"),.45f);Both(TEXT("eyeSquintInner"),.35f);Both(TEXT("noseWrinkle"),.25f);}
+ else if(Mood==TEXT("hmm")){Both(TEXT("browRaiseIn"),.35f);Both(TEXT("eyeSquintInner"),.15f);Both(TEXT("mouthCornerDepress"),.12f);}
 }
 
 void AMarePerson::AlignToSeatBelow()
@@ -190,7 +237,16 @@ bool AMarePerson::SetMetaHuman(const FString& Name)
  MetaHumanBody=NewObject<UChildActorComponent>(this);AddInstanceComponent(MetaHumanBody);
  MetaHumanBody->SetupAttachment(GetMesh());MetaHumanBody->SetChildActorClass(Look);MetaHumanBody->RegisterComponent();
  if(AActor* Child=MetaHumanBody->GetChildActor()){TArray<USkeletalMeshComponent*> Parts;Child->GetComponents(Parts);
-  for(auto Part:Parts){Part->SetLeaderPoseComponent(GetMesh());Part->SetCollisionEnabled(ECollisionEnabled::NoCollision);}}
+  for(auto Part:Parts){Part->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+   // Garments at full detail (mare_metahuman.hi_garments): the Medium build decimates the Fab clothes into jagged
+   // necklines; the same garment from a High build is worn instead, the rest of the person stays Medium.
+   if(const USkeletalMesh* Worn=Part->GetSkeletalMeshAsset())if(Worn->GetName().StartsWith(TEXT("MH_")+Name+TEXT("_Outfits"))){
+    const FString Hi=FString::Printf(TEXT("/Game/People/MetaHumans/_HiGarments/%s/MH_%s/Clothing/%s.%s"),*Name,*Name,*Worn->GetName(),*Worn->GetName());
+    if(auto Detailed=LoadObject<USkeletalMesh>(nullptr,*Hi))Part->SetSkeletalMeshAsset(Detailed);}
+   // The face evaluates its own pose (copy of the body + blink/mood curves for RigLogic); the rest follow the body.
+   if(Part->GetFName()==TEXT("Face") && CVarMareFaces.GetValueOnGameThread()){Part->SetLeaderPoseComponent(nullptr);
+    Part->SetAnimInstanceClass(UMareFaceAnimInstance::StaticClass());Part->VisibilityBasedAnimTickOption=EVisibilityBasedAnimTickOption::OnlyTickPoseWhenRendered;}
+   else Part->SetLeaderPoseComponent(GetMesh());}}
  // Swim builds (<Name>_Swim, whole body) wear the bikini/trunks made for that body (tools/ue58/gen_mh_swimwear.py).
  if(Swimwear){Swimwear->DestroyComponent();Swimwear=nullptr;}
  for(auto Part:Overwear)if(IsValid(Part))Part->DestroyComponent();Overwear.Empty();
@@ -251,7 +307,7 @@ bool AMarePerson::SetMetaHuman(const FString& Name)
  if(MetaHumanRoster()->TryGetObjectField(TEXT("shoes"),ShoeKinds) && (*ShoeKinds)->TryGetArrayField(RoleKey,KindList) && KindList->Num())
   Kind=(*KindList)[int32(FCrc::StrCrc32(*(SaveId+TEXT("feet")))%uint32(KindList->Num()))]->AsString();
  if(!Kind.IsEmpty()){
-  const TCHAR* Foot=Body->GetSkeleton() && Body->GetSkeleton()->GetPathName().Contains(TEXT("/Female/"))?TEXT("Ada"):TEXT("Mateo");
+  const TCHAR* Foot=IsWoman()?TEXT("Ada"):TEXT("Mateo");
   if(auto Pair=LoadObject<USkeletalMesh>(nullptr,*FString::Printf(TEXT("/Game/People/Swimwear/SKM_%s_%s.SKM_%s_%s"),*Kind,Foot,*Kind,Foot))){
    Shoes=NewObject<USkeletalMeshComponent>(this);AddInstanceComponent(Shoes);Shoes->SetupAttachment(GetMesh());
    Shoes->SetSkeletalMeshAsset(Pair);Shoes->SetCollisionEnabled(ECollisionEnabled::NoCollision);Shoes->RegisterComponent();
@@ -353,6 +409,8 @@ void AMarePerson::ApplyOutfit(EOutfit Style)
 void AMarePerson::Tick(float DeltaSeconds)
 {
  Super::Tick(DeltaSeconds);Elapsed+=DeltaSeconds;
+ if(MoodLeft>0)MoodLeft-=DeltaSeconds;
+ if(Elapsed>=NextBlink){BlinkAt=Elapsed;NextBlink=Elapsed+FMath::FRandRange(2.8f,6.f);}
  if(SeatAlignIn>0 && (SeatAlignIn-=DeltaSeconds)<=0 && Playing==TEXT("Sitting_Idle") && GetMesh()->GetBoneIndex(TEXT("pelvis"))!=INDEX_NONE){
   // Shift the whole actor so the animated pelvis sits on the seat point (heights and proportions differ per body).
   AddActorWorldOffset(SeatPelvis-GetMesh()->GetSocketLocation(TEXT("pelvis")));}
@@ -404,8 +462,7 @@ void AMarePerson::AttachBadge()
  static UStaticMesh* BadgeMesh=LoadObject<UStaticMesh>(nullptr,TEXT("/Game/Custom/Staff/mare_staff_badge/mare_staff_badge.mare_staff_badge"));
  const FName Bone=TEXT("spine_05");
  if(!BadgeMesh || !GetMesh()->GetSkeletalMeshAsset() || GetMesh()->GetBoneIndex(Bone)==INDEX_NONE){Badge=NewObject<UStaticMeshComponent>(this);return;}   // no retry every tick
- const USkeleton* Skeleton=GetMesh()->GetSkeletalMeshAsset()->GetSkeleton();
- const bool bFemale=Skeleton && Skeleton->GetPathName().Contains(TEXT("/Female/"));
+ const bool bFemale=IsWoman();
  Badge=NewObject<UStaticMeshComponent>(this);AddInstanceComponent(Badge);Badge->SetStaticMesh(BadgeMesh);
  Badge->SetCollisionEnabled(ECollisionEnabled::NoCollision);Badge->SetCastShadow(false);
  Badge->SetupAttachment(GetMesh(),Bone);Badge->RegisterComponent();

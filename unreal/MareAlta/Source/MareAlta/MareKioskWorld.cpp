@@ -61,13 +61,13 @@ bool UMareKioskWorld::Serve(AMarePerson* Person,bool bStaff)
    for(const auto& Id:Menu){R-=S->DishDemand(Id);if(R<=0)return Id;}return Menu.Last();};
   Person->Plan={PickDish()};if(FMath::RandRange(0,3)==0)Person->Plan.Add(PickDish());
   Person->OrderId=S->AddOrder(Person->PersonName,Person->Plan);if(Person->OrderId.IsEmpty())return false;
-  S->RollVip(Person->OrderId);
+  S->RollVip(Person->OrderId);Person->Express(TEXT("hmm"),1.6f);   // choosing from the menu: a thinking "hmm"
   Person->Stage=EMarePersonStage::Products;Person->Elapsed=0;return true;
  }
  if(Person->Stage!=EMarePersonStage::Products)return false;
  const FString Dish=S->Carry(bStaff);if(Dish.IsEmpty())return false;
  if(!S->Deliver(Person->OrderId,Dish,bStaff))return false;
- Person->Delivered.Add(Dish);Person->HoldProduct(Dish);Person->Elapsed=0;
+ Person->Delivered.Add(Dish);Person->HoldProduct(Dish);Person->Elapsed=0;Person->Express(TEXT("smile"),4.f);   // served: a smile
  if(!UMareSimulation::Object(S->State,TEXT("ue_orders"))->HasField(Person->OrderId))FinishCounter(Person);
  return true;
 }

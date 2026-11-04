@@ -142,6 +142,11 @@ TArray<TSharedPtr<FJsonObject>> UMareStaysWorld::QueueOf(UMareSimulation* Simula
  return Line;
 }
 
+void UMareStaysWorld::GuestExpress(const FString& Id,const FString& Mood,float Seconds)
+{
+ if(AMarePerson* Person=Guests.FindRef(Id))Person->Express(Mood,Seconds);
+}
+
 int32 UMareStaysWorld::LineCount(const FString& Place) const
 {
  int32 Count=0;for(const auto& Pair:GuestPlace)Count+=Pair.Value==Place && IsValid(Guests.FindRef(Pair.Key));return Count;

@@ -688,5 +688,125 @@
   "loop": false,
   "group": "tt_bounce",
   "volume": 0.1
+ },
+ {
+  "id": "annoyed_f_1",
+  "path": "/Game/Audio/Voices/annoyed_f_1.annoyed_f_1",
+  "duration": 0.8438541889190674,
+  "loop": false,
+  "group": "voice_annoyed_f",
+  "volume": 0.14
+ },
+ {
+  "id": "annoyed_f_2",
+  "path": "/Game/Audio/Voices/annoyed_f_2.annoyed_f_2",
+  "duration": 0.7245625257492065,
+  "loop": false,
+  "group": "voice_annoyed_f",
+  "volume": 0.14
+ },
+ {
+  "id": "annoyed_f_3",
+  "path": "/Game/Audio/Voices/annoyed_f_3.annoyed_f_3",
+  "duration": 0.5411666631698608,
+  "loop": false,
+  "group": "voice_annoyed_f",
+  "volume": 0.14
+ },
+ {
+  "id": "annoyed_m_1",
+  "path": "/Game/Audio/Voices/annoyed_m_1.annoyed_m_1",
+  "duration": 0.847083330154419,
+  "loop": false,
+  "group": "voice_annoyed_m",
+  "volume": 0.14
+ },
+ {
+  "id": "annoyed_m_2",
+  "path": "/Game/Audio/Voices/annoyed_m_2.annoyed_m_2",
+  "duration": 0.6968125104904175,
+  "loop": false,
+  "group": "voice_annoyed_m",
+  "volume": 0.14
+ },
+ {
+  "id": "happy_f_1",
+  "path": "/Game/Audio/Voices/happy_f_1.happy_f_1",
+  "duration": 0.3374375104904175,
+  "loop": false,
+  "group": "voice_happy_f",
+  "volume": 0.14
+ },
+ {
+  "id": "happy_f_2",
+  "path": "/Game/Audio/Voices/happy_f_2.happy_f_2",
+  "duration": 0.9524166584014893,
+  "loop": false,
+  "group": "voice_happy_f",
+  "volume": 0.14
+ },
+ {
+  "id": "happy_f_3",
+  "path": "/Game/Audio/Voices/happy_f_3.happy_f_3",
+  "duration": 0.9301666617393494,
+  "loop": false,
+  "group": "voice_happy_f",
+  "volume": 0.14
+ },
+ {
+  "id": "happy_f_4",
+  "path": "/Game/Audio/Voices/happy_f_4.happy_f_4",
+  "duration": 0.609250009059906,
+  "loop": false,
+  "group": "voice_happy_f",
+  "volume": 0.14
+ },
+ {
+  "id": "happy_m_1",
+  "path": "/Game/Audio/Voices/happy_m_1.happy_m_1",
+  "duration": 0.3165625035762787,
+  "loop": false,
+  "group": "voice_happy_m",
+  "volume": 0.14
+ },
+ {
+  "id": "happy_m_2",
+  "path": "/Game/Audio/Voices/happy_m_2.happy_m_2",
+  "duration": 0.95333331823349,
+  "loop": false,
+  "group": "voice_happy_m",
+  "volume": 0.14
+ },
+ {
+  "id": "hmm_f_1",
+  "path": "/Game/Audio/Voices/hmm_f_1.hmm_f_1",
+  "duration": 0.28210416436195374,
+  "loop": false,
+  "group": "voice_hmm_f",
+  "volume": 0.14
+ },
+ {
+  "id": "hmm_f_2",
+  "path": "/Game/Audio/Voices/hmm_f_2.hmm_f_2",
+  "duration": 0.33662500977516174,
+  "loop": false,
+  "group": "voice_hmm_f",
+  "volume": 0.14
+ },
+ {
+  "id": "hmm_m_1",
+  "path": "/Game/Audio/Voices/hmm_m_1.hmm_m_1",
+  "duration": 0.2800833284854889,
+  "loop": false,
+  "group": "voice_hmm_m",
+  "volume": 0.14
+ },
+ {
+  "id": "hmm_m_2",
+  "path": "/Game/Audio/Voices/hmm_m_2.hmm_m_2",
+  "duration": 0.5313541889190674,
+  "loop": false,
+  "group": "voice_hmm_m",
+  "volume": 0.14
  }
 ]

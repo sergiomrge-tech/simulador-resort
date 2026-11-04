@@ -222,6 +222,35 @@ def import_sfx():
     return {'imported': done, 'catalog': len(catalog)}
 
 
+def import_voices():
+    """Short wordless voices of SourceArt/Audio/Voices (tools/ue58/fetch_murmurs.py) -> /Game/Audio/Voices, listed in
+    Content/Data/audio.json as groups voice_<mood>_<f|m> at a soft volume (AMarePerson::Express plays them)."""
+    import json
+    src = Path(unreal.Paths.project_dir()).resolve() / 'SourceArt/Audio/Voices'
+    manifest = json.loads((src / 'manifest.json').read_text(encoding='utf-8'))
+    catalog_path = Path(unreal.Paths.project_content_dir()).resolve() / 'Data/audio.json'
+    catalog = [row for row in json.loads(catalog_path.read_text(encoding='utf-8')) if not str(row.get('group', '')).startswith('voice_')]
+    done = 0
+    for name in sorted(manifest):
+        task = unreal.AssetImportTask()
+        task.filename = str(src / f'{name}.wav')
+        task.destination_path = '/Game/Audio/Voices'
+        task.destination_name = name
+        task.automated = True
+        task.replace_existing = True
+        task.save = True
+        unreal.AssetToolsHelpers.get_asset_tools().import_asset_tasks([task])
+        wave = unreal.load_asset(f'/Game/Audio/Voices/{name}')
+        if not isinstance(wave, unreal.SoundWave):
+            raise RuntimeError(f'{name}: import gave {wave}')
+        mood, sex, _ = name.split('_')
+        catalog.append({'id': name, 'path': f'/Game/Audio/Voices/{name}.{name}', 'duration': wave.get_editor_property('duration'),
+                        'loop': False, 'group': f'voice_{mood}_{sex}', 'volume': 0.14})
+        done += 1
+    catalog_path.write_text(json.dumps(catalog, ensure_ascii=False, indent=1) + '\n', encoding='utf-8')
+    return {'imported': done, 'catalog': len(catalog)}
+
+
 def bar_qa(arg):
     """PIE: 'orders' seats four guests at the bar, 'stand' puts the player inside the counter looking at the
     station, 'open' uses the station (bar page), 'close' closes it."""
@@ -1104,6 +1133,48 @@ def run(action, arg=''):
             out.append([p.get_name()[-16:], p.get_editor_property('person_name'), [round(l.x), round(l.y), round(l.z)], feet,
                         p.get_editor_property('meta_human'), bool(p.get_editor_property('seated'))])
         return out
+    if action == 'wearing':
+        # PIE: the skeletal meshes (and first material) each MetaHuman near a point wears: "x,y,radius".
+        x, y, rad = (float(v) for v in arg.split(','))
+        world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()
+        out = []
+        for a in unreal.GameplayStatics.get_all_actors_of_class(world, unreal.MarePerson):
+            l = a.get_actor_location()
+            if (l.x - x) ** 2 + (l.y - y) ** 2 > rad * rad:
+                continue
+            child = next((c.get_editor_property('child_actor') for c in a.get_components_by_class(unreal.ChildActorComponent) if c.get_editor_property('child_actor')), None)
+            parts = []
+            for owner in (a, child):
+                if not owner:
+                    continue
+                for c in owner.get_components_by_class(unreal.SkeletalMeshComponent):
+                    m = c.get_editor_property('skeletal_mesh_asset') if hasattr(c, 'skeletal_mesh_asset') else c.get_editor_property('skinned_asset')
+                    if m and c.is_visible():
+                        mat = c.get_material(0)
+                        parts.append([c.get_name()[:18], ('HI ' if '_HiGarments' in m.get_path_name() else '') + m.get_path_name().split('/')[-1][:48], mat.get_path_name().split('/')[-1][:40] if mat else None])
+            out.append({'who': child.get_name()[:22] if child else a.get_name(), 'at': [round(l.x), round(l.y)], 'parts': parts})
+        return out
+    if action == 'facebones':
+        # PIE: distance (cm) between the face mesh bones and the same bones of the body rig, per nearby MetaHuman.
+        world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()
+        hero = unreal.GameplayStatics.get_player_pawn(world, 0)
+        out = []
+        for a in unreal.GameplayStatics.get_all_actors_of_class(world, unreal.MarePerson):
+            if (a.get_actor_location() - hero.get_actor_location()).length() > float(arg or 800):
+                continue
+            body = a.get_component_by_class(unreal.SkeletalMeshComponent)
+            child = next((c.get_editor_property('child_actor') for c in a.get_components_by_class(unreal.ChildActorComponent) if c.get_editor_property('child_actor')), None)
+            if not child:
+                continue
+            face = next((c for c in child.get_components_by_class(unreal.SkeletalMeshComponent) if c.get_name() == 'Face'), None)
+            if not face:
+                continue
+            row = {'who': child.get_name()[:20], 'anim': face.get_anim_instance().get_class().get_name() if face.get_anim_instance() else None}
+            for bone in ('neck_01', 'neck_02', 'head', 'spine_05'):
+                if face.get_bone_index(bone) >= 0 and body.get_bone_index(bone) >= 0:
+                    row[bone] = round((face.get_socket_location(bone) - body.get_socket_location(bone)).length(), 2)
+            out.append(row)
+        return out
     if action == 'bathers':
         # PIE: sunbathers (tag MareBather): clip, play time and the world head/pelvis/feet of the driving rig.
         world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()
@@ -1123,6 +1194,8 @@ def run(action, arg=''):
                 row[bone] = [round(q.x), round(q.y), round(q.z)]
             out.append(row)
         return out
+    if action == 'importvoices':
+        return import_voices()
     if action == 'allpeople':
         # PIE: every actor with a visible skeletal mesh (people, animals, any rig), not only MarePerson: per visible
         # skeletal component, head/hands/feet relative to the actor. Two calls a second apart find who glides (moved,

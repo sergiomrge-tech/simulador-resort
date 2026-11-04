@@ -9,6 +9,7 @@
 #include "Engine/StaticMesh.h"
 #include "TwoBoneIK.h"
 #include "BonePose.h"
+#include "AnimNodes/AnimNode_CopyPoseFromMesh.h"
 
 namespace MareServiceAnimation
 {
@@ -101,6 +102,50 @@ struct FServiceProxy : FAnimSingleNodeInstanceProxy
  }
 };
 }
+namespace MareServiceAnimation
+{
+/** The face is a component of the MetaHuman blueprint, a child actor of the person. */
+AMarePerson* FaceOwner(const UAnimInstance* Instance)
+{
+ AActor* Actor=Instance->GetOwningActor();if(!Actor)return nullptr;
+ if(auto Person=Cast<AMarePerson>(Actor))return Person;
+ return Cast<AMarePerson>(Actor->GetParentActor());
+}
+struct FFaceProxy : FAnimInstanceProxy
+{
+ explicit FFaceProxy(UAnimInstance* Instance):FAnimInstanceProxy(Instance){}
+ FAnimNode_CopyPoseFromMesh Copy;
+ TArray<TPair<FName,float>> Curves;
+ virtual void Initialize(UAnimInstance* Instance) override
+ {
+  FAnimInstanceProxy::Initialize(Instance);
+  Copy.bUseAttachedParent=false;Copy.bCopyCurves=false;
+  if(auto Person=FaceOwner(Instance))Copy.SourceMeshComponent=Person->GetMesh();
+  FAnimationInitializeContext Context(this);Copy.Initialize_AnyThread(Context);
+ }
+ virtual void PreUpdate(UAnimInstance* Instance,float DeltaSeconds) override
+ {
+  FAnimInstanceProxy::PreUpdate(Instance,DeltaSeconds);
+  auto Person=FaceOwner(Instance);
+  if(Person && !Copy.SourceMeshComponent.IsValid())Copy.SourceMeshComponent=Person->GetMesh();
+  Copy.PreUpdate(Instance);
+  Curves.Reset();if(Person)Person->FaceCurves(Curves);
+ }
+ virtual void CacheBones() override
+ {
+  FAnimInstanceProxy::CacheBones();
+  FAnimationCacheBonesContext Context(this);Copy.CacheBones_AnyThread(Context);
+ }
+ virtual void UpdateAnimationNode(const FAnimationUpdateContext& Context) override{Copy.Update_AnyThread(Context);}
+ virtual bool Evaluate(FPoseContext& Output) override
+ {
+  Copy.Evaluate_AnyThread(Output);
+  for(const auto& Curve:Curves)Output.Curve.Set(Curve.Key,Curve.Value);
+  return true;
+ }
+};
+}
+FAnimInstanceProxy* UMareFaceAnimInstance::CreateAnimInstanceProxy(){return MakeUnique<MareServiceAnimation::FFaceProxy>(this).Release();}
 FAnimInstanceProxy* UMareServiceAnimInstance::CreateAnimInstanceProxy(){return MakeUnique<MareServiceAnimation::FServiceProxy>(this).Release();}
 UMareCarryPresentation::UMareCarryPresentation(){PrimaryComponentTick.bCanEverTick=true;PrimaryComponentTick.TickGroup=TG_PostPhysics;}
 void UMareCarryPresentation::TickComponent(float DeltaTime,ELevelTick TickType,FActorComponentTickFunction* ThisTickFunction)

@@ -236,7 +236,12 @@ Pronto e testado (02/11):
   recebem a cor do papel (03/11, foto `roupas-cores-festa-20261103.jpg`).
 - [x] P0 Calçados: chinelo, sandália de tiras, tênis e sapato social com saltinho (02/11), sorteados por papel
   (`metahumans.json` → `shoes`); sapato social conferido no saguão do hotel.
-- [ ] P1 Mais banhistas: mulheres e homens de outras idades e tipos de corpo. (03/11: login Epic pelo botão Google no Chrome, conta do Sergio já logada, autorizado)
+- [x] P1 Mais banhistas: mulheres e homens de outras idades e tipos de corpo. 03/11: sem precisar de login (rig e texturas já
+  baixados): Etta e Vivian (mais velhas), Walter (mais velho), Dominic e Sunita (outro porte) ganharam corpo de banho
+  (`mh_swimall`), pele sem a roupa íntima assada (`mh_skin_underwear.py`), biquíni/sunga ajustados ao corpo
+  (`gen_mh_swimwear.py`) e entraram no papel `beach` (fregueses do quiosque e banhistas deitados). Correção junto: o
+  sexo vinha do caminho do esqueleto, mas TODO corpo MetaHuman usa o mesmo esqueleto em Common/Female, então os homens
+  calçavam o chinelo/sandália do pé feminino; agora `metahumans.json` → `men` (`AMarePerson::IsWoman`).
 - [x] P0 Verificar TODOS os personagens da ilha (vila, praia, hotel, quiosque, equipe, eventos; MetaHumans e os demais)
   com movimentação natural: quem anda mexe pernas e braços, ninguém desliza parado nem congela (03/11, pedido do Sergio:
   banhista MetaHuman do guarda-sol deslizou sem animar; causa: esqueleto oculto com OnlyTickPoseWhenRendered).
@@ -299,7 +304,12 @@ Pronto e testado (02/11):
   `hud_standaudit` (pelve dentro de móvel) sem ocorrências; conferido de frente, lado e diagonal.
 - [x] P2 Capturas de QA com a câmera dentro de paredes (tint_Celeste, conchas, biz_booth): `hud_freecam` escolhe a câmera pela
   linha de visão livre; capturas em lote no PIE com `lot_pie.py` (vários ângulos por alvo, imagem inválida = refazer).
-- [ ] P1 Rosto: expressões faciais simples (sorriso ao receber, irritado na negociação).
+- [x] P1 Rosto: expressões faciais simples (sorriso ao receber, irritado na negociação). 03/11: o rosto deixou de seguir o
+  corpo por leader pose (que o deixava sem avaliação própria: nem piscava) e copia a pose do corpo com as curvas de
+  controle (`UMareFaceAnimInstance`, `CTRL_expressions_*`, RigLogic do `ABP_Face_PostProcess`): pisca a cada 3-6 s,
+  sorri ao receber o pedido e ao fechar negócio na recepção, fica irritado com contraproposta ou ao desistir e faz
+  "hmm" ao escolher (`AMarePerson::Express`). Ossos do rosto conferidos contra os do corpo (0,00 cm). Teste
+  `MareAlta.People.FaceCurves`; QA `mare.Express smile|annoyed`; `mare.Faces 0` volta ao rosto parado.
 - [ ] P2 Crianças e famílias (se houver presets/assets adequados).
 
 ## 6. Mundo e arte
@@ -390,7 +400,11 @@ Pronto e testado (02/11):
 - [x] P1 Ambiente de fundo suave e relaxante (03/11): vento, mar/ondas, pássaros e gaivotas em volume baixo, sem poluição sonora.
   Feito 03/11: pássaros a cada 10–22 s (0,16) e gaivotas a cada 28–55 s (0,13) sobre vento e mar (`MareAudioWorld`).
 - [ ] P1 Mixagem final e volumes por categoria (já existem: geral, música, efeitos, ambiente).
-- [ ] P2 Vozes curtas (murmúrios) sem diálogo falado, respeitando a regra de áudio suave.
+- [x] P2 Vozes curtas (murmúrios) sem diálogo falado, respeitando a regra de áudio suave. 03/11: risadinha, resmungo,
+  suspiro e "hmm" de pacotes CC0 do OpenGameArt (`tools/ue58/fetch_murmurs.py`, só sons sem palavras); as versões
+  masculinas das femininas foram feitas com o vocoder WORLD (tom x0,58, formantes x0,84; F0 medido 110-159 Hz contra
+  188-441 Hz das femininas). Volume 0,14, pico -9 dBFS, saem da cabeça de quem faz a expressão (grupos
+  `voice_<humor>_<f|m>`).
 
 ## 8. Interface e experiência
 - [x] P0 **Menu principal**: Novo jogo, Continuar, Carregar (3 slots), Opções, Créditos, Sair (02/11, foto no PIE;

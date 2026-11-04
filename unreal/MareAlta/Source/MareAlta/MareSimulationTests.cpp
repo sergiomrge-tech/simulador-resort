@@ -4,6 +4,7 @@
 #include "MareGameRoom.h"
 #include "MareTableTennis.h"
 #include "MareStaysWorld.h"
+#include "MarePerson.h"
 #include "Engine/GameInstance.h"
 #include "Misc/FileHelper.h"
 #include "Misc/Paths.h"
@@ -1071,4 +1072,89 @@ bool FMareCampaignAuditTest::RunTest(const FString& Parameters)
  Sim->RecordPhoto({TEXT("por_do_sol")},TEXT("teste.png"));Claim(TEXT("entardecer"),true);
  IFileManager::Get().DeleteDirectory(*Sim->SaveDirectory,false,true);
  Sim->RemoveFromRoot();Instance->RemoveFromRoot();return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FMareFaceCurvesTest,"MareAlta.People.FaceCurves",EAutomationTestFlags::EditorContext|EAutomationTestFlags::EngineFilter)
+bool FMareFaceCurvesTest::RunTest(const FString& Parameters)
+{
+ // The face rig curves of a person (UMareFaceAnimInstance reads them): a blink peaks mid-way through its 0.16 s, a
+ // smile pulls both mouth corners, annoyance lowers both brows, and nothing is left once the mood has faded.
+ AMarePerson* P=GetMutableDefault<AMarePerson>();
+ const FString OldMood=P->Mood;const float Old[5]={P->Elapsed,P->BlinkAt,P->MoodLeft,P->MoodTotal,P->NextBlink};
+ auto Value=[P](const TCHAR* Name){TArray<TPair<FName,float>> C;P->FaceCurves(C);for(const auto& V:C)if(V.Key==FName(Name))return V.Value;return 0.f;};
+ P->Elapsed=10.f;P->BlinkAt=10.f-.08f;P->Mood.Reset();P->MoodLeft=0;
+ TestTrue(TEXT("Blink closes both eyes mid-way"),Value(TEXT("CTRL_expressions_eyeBlinkL"))>.95f && Value(TEXT("CTRL_expressions_eyeBlinkR"))>.95f);
+ P->BlinkAt=0;
+ TestEqual(TEXT("Eyes open between blinks"),Value(TEXT("CTRL_expressions_eyeBlinkL")),0.f);
+ P->Mood=TEXT("smile");P->MoodTotal=4;P->MoodLeft=2;
+ TestTrue(TEXT("Smile pulls the mouth corners"),FMath::IsNearlyEqual(Value(TEXT("CTRL_expressions_mouthCornerPullL")),.75f,.01f) && Value(TEXT("CTRL_expressions_mouthCornerPullR"))>.7f);
+ TestEqual(TEXT("Smile does not lower the brows"),Value(TEXT("CTRL_expressions_browDownL")),0.f);
+ P->Mood=TEXT("annoyed");
+ TestTrue(TEXT("Annoyance lowers both brows"),Value(TEXT("CTRL_expressions_browDownL"))>.6f && Value(TEXT("CTRL_expressions_browDownR"))>.6f);
+ P->MoodLeft=.1f;
+ TestTrue(TEXT("The mood eases out at the end"),Value(TEXT("CTRL_expressions_browDownL"))<.2f);
+ P->MoodLeft=0;
+ TestEqual(TEXT("No mood after it ends"),Value(TEXT("CTRL_expressions_browDownL")),0.f);
+ P->Mood=OldMood;P->Elapsed=Old[0];P->BlinkAt=Old[1];P->MoodLeft=Old[2];P->MoodTotal=Old[3];P->NextBlink=Old[4];
+ return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FMareHundredCyclesTest,"MareAlta.Acceptance.HundredCycles",EAutomationTestFlags::EditorContext|EAutomationTestFlags::EngineFilter)
+bool FMareHundredCyclesTest::RunTest(const FString& Parameters)
+{
+ // Acceptance criterion (PENDENCIAS sec. 14): 100 kiosk cycles (order, pick-up, delivery) with a save and a reload in
+ // another session every 10 cycles: money rises by exactly the sale booked (price + decor tip), each pick-up takes exactly
+ // one unit, nothing is charged or delivered twice after a reload, and an order served halfway resumes where it was.
+ auto Instance=NewObject<UGameInstance>();Instance->AddToRoot();
+ const FString Dir=FPaths::ProjectSavedDir()/TEXT("Automation/HundredCycles")/FGuid::NewGuid().ToString(EGuidFormats::Digits);
+ auto ReadFile=[](const FString& Path){TSharedPtr<FJsonObject> Result;FString Text;FFileHelper::LoadFileToString(Text,*Path);FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Text),Result);return Result;};
+ auto Defs=ReadFile(FPaths::ProjectContentDir()/TEXT("Data/definitions.json"));
+ auto Sim=NewObject<UMareSimulation>(Instance);Sim->AddToRoot();Sim->SaveDirectory=Dir;Sim->Definitions=Defs;
+ Sim->State=ReadFile(FPaths::ProjectContentDir()/TEXT("Data/default_save.json"));
+ if(!TestTrue(TEXT("Data available"),Defs.IsValid() && Sim->State.IsValid())){Sim->RemoveFromRoot();Instance->RemoveFromRoot();return false;}
+ Sim->State->SetNumberField(TEXT("money"),100000);
+ TestTrue(TEXT("Company"),Sim->CreateCompany(TEXT("Aceite")));Sim->State->SetNumberField(TEXT("minutes"),600);TestTrue(TEXT("Open"),Sim->SetOpen(true));
+ const TArray<FString> Menu={TEXT("suco"),TEXT("coco_gelado")};
+ int32 Served=0,Reloads=0;bool bExact=true,bOnce=true,bResume=true;FRandomStream Rng(2026);
+ for(int32 Cycle=0;Cycle<100;++Cycle){
+  for(const auto& D:Menu)if(Sim->Available(D)<4)Sim->Restock(D,20);
+  TArray<FString> Plan={Menu[Rng.RandRange(0,1)]};if(Rng.FRand()<.3f)Plan.Add(Menu[Rng.RandRange(0,1)]);
+  const FString Id=Sim->AddOrder(FString::Printf(TEXT("Cliente %d"),Cycle),Plan);
+  if(!TestFalse(TEXT("Order accepted"),Id.IsEmpty()))break;
+  for(int32 I=0;I<Plan.Num();++I){
+   // Suco and coco gelado share the ice: count the picked product only (one pick-up takes one of it).
+   const double Cash=Sim->Money();const int32 Units=Sim->Available(Plan[I]);
+   if(!Sim->Pickup(Plan[I])){if(bExact)AddInfo(FString::Printf(TEXT("cycle %d: pickup %s refused (%s)"),Cycle,*Plan[I],*Sim->LastMessage));bExact=false;break;}
+   if(Sim->Available(Plan[I])!=Units-1 && bExact){AddInfo(FString::Printf(TEXT("cycle %d: %s stock %d -> %d"),Cycle,*Plan[I],Units,Sim->Available(Plan[I])));bExact=false;}
+   if(I==0 && Plan.Num()>1 && Cycle%10==9){
+    // Save with the product in hand and the order half served; another session loads it.
+    Sim->Save();auto Other=NewObject<UMareSimulation>(Instance);Other->AddToRoot();Other->SaveDirectory=Dir;Other->Definitions=Defs;
+    const bool bLoaded=Other->LoadSlot(1);++Reloads;
+    bResume&=bLoaded && Other->Carry()==Plan[0] && UMareSimulation::Object(Other->State,TEXT("ue_orders"))->HasField(Id) && Other->Money()==Cash && Other->Available(Plan[0])==Sim->Available(Plan[0]);
+    Sim->RemoveFromRoot();Sim=Other;}
+   const double Price=Sim->SalePrice(Plan[I]);const double Revenue=UMareSimulation::Number(Sim->State,TEXT("kiosk")),Sales=UMareSimulation::Number(Sim->State,TEXT("kiosk_n"));
+   if(!Sim->Deliver(Id,Plan[I])){if(bExact)AddInfo(FString::Printf(TEXT("cycle %d: deliver %s refused (%s)"),Cycle,*Plan[I],*Sim->LastMessage));bExact=false;break;}
+   // The sale pays the price plus the decor tip, booked once: the cash rises exactly as much as the kiosk revenue,
+   // never less than the price, and the sale counter by one.
+   const double Gain=Sim->Money()-Cash,Booked=UMareSimulation::Number(Sim->State,TEXT("kiosk"))-Revenue;
+   if((!FMath::IsNearlyEqual(Gain,Booked,.01) || Gain<Price-.01 || UMareSimulation::Number(Sim->State,TEXT("kiosk_n"))!=Sales+1) && bExact){
+    AddInfo(FString::Printf(TEXT("cycle %d item %d %s: cash +%.2f, revenue +%.2f, price %.2f"),Cycle,I,*Plan[I],Gain,Booked,Price));bExact=false;}
+   ++Served;
+  }
+  // The finished order is gone; delivering it again pays nothing.
+  const double After=Sim->Money();
+  bOnce&=!UMareSimulation::Object(Sim->State,TEXT("ue_orders"))->HasField(Id) && !Sim->Deliver(Id,Plan[0]) && Sim->Money()==After;
+  if(Cycle%10==4){
+   // A plain reload between orders keeps money, stock and the (empty) order list exactly.
+   Sim->Save();auto Other=NewObject<UMareSimulation>(Instance);Other->AddToRoot();Other->SaveDirectory=Dir;Other->Definitions=Defs;
+   const bool bLoaded=Other->LoadSlot(1);++Reloads;
+   bResume&=bLoaded && Other->Money()==Sim->Money() && Other->Available(TEXT("suco"))==Sim->Available(TEXT("suco"))
+    && Other->Available(TEXT("coco_gelado"))==Sim->Available(TEXT("coco_gelado")) && UMareSimulation::Object(Other->State,TEXT("ue_orders"))->Values.IsEmpty();
+   Sim->RemoveFromRoot();Sim=Other;}
+ }
+ TestTrue(TEXT("Money and stock change by exactly one sale each"),bExact);
+ TestTrue(TEXT("Nothing charged or delivered twice"),bOnce);
+ TestTrue(TEXT("Reloads keep the state and resume half-served orders"),bResume);
+ TestTrue(TEXT("At least 100 items served"),Served>=100);TestTrue(TEXT("Reloads exercised"),Reloads>=10);
+ Sim->RemoveFromRoot();Instance->RemoveFromRoot();IFileManager::Get().DeleteDirectory(*Dir,false,true);return true;
 }

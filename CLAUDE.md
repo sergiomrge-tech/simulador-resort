@@ -433,3 +433,13 @@ materiais da torre do hotel, a grama e a cumeeira do bar). Editar assets com o P
 material importado, provar que a mudança chega ao render (tingir de vermelho e fotografar). Vidro claro na frente de
 quartos vazios parece parede: o hotel usa `M_HotelWindowGlass` (escuro e refletivo). Material importado do glTF tem
 cor numa chamada de função: encadear nós depois dela (`plaster_finish`, `grass_hue`, `grass_tone`).
+
+## UE5.8 — rostos, sexo e roupas das MetaHumans (03/11)
+
+Todo corpo MetaHuman construído usa o MESMO esqueleto, guardado em Common/Female: o caminho do esqueleto não diz o
+sexo (os homens calçavam o chinelo do pé feminino). Sexo pela lista `men` de `metahumans.json` (`AMarePerson::IsWoman`).
+Rosto com leader pose não avalia nada próprio (não pisca, não muda expressão): ele copia a pose do corpo
+(`FAnimNode_CopyPoseFromMesh` num proxy próprio) e recebe as curvas `CTRL_expressions_*`; o `ABP_Face_PostProcess`
+(RigLogic) da malha do rosto converte em ossos. O build Medium simplifica as roupas do Fab (gola das camisetas em
+zigue-zague): o Sergio quer as pessoas em Medium, então só as roupas vêm de um build High em `_HiGarments/<nome>`
+(só a pasta Clothing é mantida, ~9 MB) e são trocadas no `SetMetaHuman`. Não subir o resto para High.

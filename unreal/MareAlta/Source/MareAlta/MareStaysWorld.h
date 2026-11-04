@@ -47,6 +47,8 @@ public:
  static TArray<TSharedPtr<FJsonObject>> QueueOf(UMareSimulation* Simulation,const FString& Place);
  /** People currently standing in Place's line (QA). */
  int32 LineCount(const FString& Place) const;
+ /** The guest of queue entry Id shows a mood on the face (AMarePerson::Express): a deal closed, a counter-offer. */
+ void GuestExpress(const FString& Id,const FString& Mood,float Seconds=4.f);
 private:
  void FindBungalows();
  void SyncTasks();

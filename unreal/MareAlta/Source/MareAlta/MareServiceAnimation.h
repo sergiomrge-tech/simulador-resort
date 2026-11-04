@@ -13,6 +13,19 @@ protected:
  virtual FAnimInstanceProxy* CreateAnimInstanceProxy() override;
 };
 
+/** MetaHuman face (03/11, PENDENCIAS "expressões faciais"): instead of following the body by leader pose, which
+ *  leaves the face without its own evaluation (no blinks, no expressions), the face copies the body pose and adds the
+ *  rig control curves (CTRL_expressions_*) of a blink every few seconds and of the person's current mood (smile,
+ *  annoyance; AMarePerson::Express). The face mesh's post-process blueprint (RigLogic) turns the curves into the facial
+ *  joints, as in Epic's own MetaHuman setup. */
+UCLASS(Transient)
+class MAREALTA_API UMareFaceAnimInstance : public UAnimInstance
+{
+ GENERATED_BODY()
+protected:
+ virtual FAnimInstanceProxy* CreateAnimInstanceProxy() override;
+};
+
 /** Update props after the current skeletal pose, with a measured grip and an upright vessel. */
 UCLASS()
 class MAREALTA_API UMareCarryPresentation : public UActorComponent

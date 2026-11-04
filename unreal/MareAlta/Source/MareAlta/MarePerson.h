@@ -33,6 +33,15 @@ public:
  bool AtGoal()const;
  UFUNCTION(BlueprintCallable,Category="Presentation") void HoldProduct(const FString& Dish);
  void ClearProducts();
+ /** Facial expression for a few seconds with a short wordless voice: "smile" (served, a deal closed), "hmm"
+  *  (choosing from the menu) or "annoyed" (a counter-offer, leaving the reception); it eases in and out. */
+ UFUNCTION(BlueprintCallable,Category="Presentation") void Express(const FString& Mood,float Seconds=4.f);
+ /** Face rig control curves for this frame (blinks + mood), read by UMareFaceAnimInstance on the game thread. */
+ void FaceCurves(TArray<TPair<FName,float>>& Out)const;
+ /** Woman or man: MetaHumans by their preset name (metahumans.json "men"; every MetaHuman body shares one skeleton
+  *  stored under Common/Female, so its path says nothing), the old rig people by their skeleton. */
+ bool IsWoman()const;
+ FString Mood;float MoodLeft=0,MoodTotal=1,NextBlink=0,BlinkAt=-10;
  /** Smooth drinking gesture during consumption; zero while walking or after disposal. */
  float DrinkGesture()const;
  void Interact(APlayerController* Player);

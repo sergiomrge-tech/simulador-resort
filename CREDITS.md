@@ -605,3 +605,8 @@ Síntese original (numpy, no mesmo script, dedicada a CC0): duas campainhas de b
 - Piso do Grand Hotel: Poly Haven `laminate_floor` (CC0), https://polyhaven.com/a/laminate_floor
 
 Toalhas e lonas dos guarda-sóis da praia (`M_BeachFabric`, 03/11): normais CC0 do Poly Haven `waffle_pique_cotton` (felpa) e `denim_fabric` (trama da lona), já listados acima.
+
+Vozes curtas sem palavras (`tools/ue58/fetch_murmurs.py`, 03/11), CC0 no OpenGameArt, crédito agradecido:
+- cicifyre (https://cicifyre.itch.io/) — "Free Voice Clips Pack - Mature Female" e "- Bright Female": risadas, suspiro, resmungo, "ah/eh/uh" — https://opengameart.org/content/voice-clip-packs-for-visual-novels-and-rpgs
+- Happii Gamer Studio — "Shop Owner Voice": "hmm" masculino — https://opengameart.org/content/shop-owner-voice
+As versões masculinas das risadas, do resmungo, do suspiro e do "uh" são conversões feitas aqui com o vocoder WORLD (pyworld).

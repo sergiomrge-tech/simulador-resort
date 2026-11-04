@@ -76,6 +76,31 @@ def cloud_all(names):
     return out
 
 
+HI_GARMENTS = f'{FOLDER}/_HiGarments'
+
+
+def hi_garments(name):
+    """Garments of <name> at full detail (03/11, Sergio: keep the people at Medium, only fix the finish): the Medium
+    build decimates the Fab garments and the T-shirt necklines come out as a jagged zigzag. A High build goes to
+    /Game/People/MetaHumans/_HiGarments/<name>; only its Clothing folder (garment meshes + their material instances,
+    textures in /Game/Outfits) is kept, the rest of that build is deleted. AMarePerson::SetMetaHuman wears these meshes
+    instead of the Medium ones; body, face, hair and textures stay Medium."""
+    root = f'{HI_GARMENTS}/{name}'
+    build(name, folder=root, quality='high')
+    unreal.EditorAssetLibrary.save_directory(root, True, True)
+    kept = []
+    # Grooms first: deleting the face before its groom bindings logs "binding couldn't be built" errors for this
+    # throwaway copy (harmless, but noise in the log).
+    paths = sorted(unreal.EditorAssetLibrary.list_assets(root, True, False), key=lambda p: '/Grooms/' not in p)
+    for path in paths:
+        if '/Clothing/' in path:
+            kept.append(path.split('.')[0].split('/')[-1])
+            continue
+        unreal.EditorAssetLibrary.delete_asset(path.split('.')[0])
+    unreal.SystemLibrary.collect_garbage()
+    return {'kept': kept}
+
+
 def build_all(names):
     """Build each ready character and save its folder; Control Rig link errors logged by the build raise
     in Python even when the assembly succeeds, so success is judged by the blueprint on disk."""
@@ -296,8 +321,9 @@ def build_info():
     return {'fields': fields, 'enums': enums}
 
 
-def build(name, folder=None):
-    """Optimized/Medium build of a rigged, textured character into /Game/People/MetaHumans/<name>."""
+def build(name, folder=None, quality='medium'):
+    """Optimized build of a rigged, textured character into /Game/People/MetaHumans/<name>, Medium quality (Sergio,
+    03/11: "deixe no médium"; "Name@high" for a one-off comparison)."""
     character = copy(name)
     sub = _subsystem()
     if not sub.try_add_object_to_edit(character):
@@ -307,7 +333,7 @@ def build(name, folder=None):
             raise RuntimeError('character cannot be built yet (rig/textures)')
         params = unreal.MetaHumanCharacterEditorBuildParameters()
         params.pipeline_type = unreal.MetaHumanDefaultPipelineType.OPTIMIZED
-        params.pipeline_quality = unreal.MetaHumanQualityLevel.MEDIUM
+        params.pipeline_quality = getattr(unreal.MetaHumanQualityLevel, quality.upper())
         params.absolute_build_path = folder or f'{FOLDER}/{name}'
         params.common_folder_path = f'{FOLDER}/Common'
         sub.build_meta_human(character, params)
@@ -769,6 +795,80 @@ def run(action, arg=''):
         # Delete a built folder so build_all assembles it again.
         unreal.EditorAssetLibrary.delete_directory(f'{FOLDER}/{arg}')
         return arg
+    if action == 'facecheck':
+        # Face mesh of a built MetaHuman: post-process anim blueprint and whether the expression curves exist.
+        name = arg or 'Ada'
+        found = unreal.EditorAssetLibrary.list_assets(f'{FOLDER}/{name}/MH_{name}/Face', True, False)
+        meshes = [a for a in found if '/SKM_' in a or 'FaceMesh' in a]
+        out = {'meshes': meshes[:6]}
+        for path in meshes[:2]:
+            m = unreal.load_asset(path.split('.')[0])
+            if not isinstance(m, unreal.SkeletalMesh):
+                continue
+            pp = m.get_editor_property('post_process_anim_blueprint')
+            names = [str(n) for n in unreal.AnimationLibrary.get_animation_curve_names(m.skeleton, unreal.RawCurveTrackTypes.RCT_FLOAT)] if False else []
+            skel = m.skeleton
+            curves = []
+            try:
+                curves = [str(c) for c in skel.get_editor_property('curve_meta_data_names')] if hasattr(skel, 'curve_meta_data_names') else []
+            except Exception as e:
+                curves = ['err ' + str(e)[:80]]
+            out[path] = {'post_process': pp.get_path_name() if pp else None, 'skeleton': skel.get_path_name(), 'n_curves': len(curves),
+                         'has': {c: any(c == x for x in curves) for c in ('CTRL_expressions_eyeBlinkL', 'CTRL_expressions_mouthCornerPullL', 'CTRL_expressions_browDownL', 'CTRL_expressions_browRaiseInL', 'CTRL_expressions_noseWrinkleL', 'CTRL_expressions_eyeSquintInnerL', 'CTRL_expressions_mouthCornerWidenL', 'CTRL_expressions_eyeCheekRaiseL', 'CTRL_expressions_mouthCornerDepressL', 'CTRL_expressions_browLateralL')},
+                         'sample': [c for c in curves if 'mouthCorner' in c][:8]}
+        return out
+    if action == 'garmentmats':
+        # Materials of a built garment mesh: blend mode, textures (size, LOD bias, max size) and triangle count per LOD.
+        m = unreal.load_asset(arg)
+        sub = unreal.get_editor_subsystem(unreal.SkeletalMeshEditorSubsystem)
+        n = sub.get_lod_count(m)
+        out = {'lods': n, 'verts': [sub.get_num_verts(m, i) for i in range(n)], 'mats': []}
+        for sm in m.materials:
+            mi = sm.material_interface
+            if not mi:
+                continue
+            base = mi.get_base_material()
+            row = {'mi': mi.get_path_name().split('/')[-1], 'base': base.get_path_name().split('/')[-1], 'blend': str(base.get_editor_property('blend_mode')).split('.')[-1], 'tex': []}
+            cur = mi
+            while isinstance(cur, unreal.MaterialInstanceConstant):
+                for pv in cur.get_editor_property('texture_parameter_values'):
+                    tex = pv.parameter_value
+                    if tex:
+                        row['tex'].append([str(pv.parameter_info.name), tex.get_name(), tex.blueprint_get_size_x(), tex.get_editor_property('max_texture_size'), tex.get_editor_property('lod_bias')])
+                cur = cur.get_editor_property('parent')
+            row['opacity_mask_clip'] = base.get_editor_property('opacity_mask_clip_value')
+            out['mats'].append(row)
+        return out
+    if action == 'buildparams':
+        # Fields of the build parameters and of the default pipeline of the Optimized type (per-part quality?).
+        params = unreal.MetaHumanCharacterEditorBuildParameters()
+        out = {'params': [f for f in dir(params) if not f.startswith('_')]}
+        out['quality'] = [q for q in dir(unreal.MetaHumanQualityLevel) if q.isupper()]
+        out['pipelines'] = [c for c in dir(unreal) if 'MetaHuman' in c and ('Pipeline' in c or 'Quality' in c)][:60]
+        return out
+    if action == 'skels':
+        # Skeleton path of each built body ("Mateo,Ada"): is the sex readable from it?
+        out = {}
+        for name in arg.split(','):
+            m = unreal.load_asset(f'{FOLDER}/{name}/MH_{name}/Body/SKM_MH_{name}_BodyMesh')
+            out[name] = m.skeleton.get_path_name() if m else 'missing'
+        return out
+    if action == 'ready':
+        # Can each project character be built now (rig + textures already fetched)? "Etta,Walter"
+        sub = _subsystem()
+        out = {}
+        for name in arg.split(','):
+            ch = unreal.load_asset(f'{FOLDER}/MH_{name}')
+            if not ch:
+                out[name] = 'missing'
+                continue
+            if sub.try_add_object_to_edit(ch):
+                try:
+                    out[name] = {'can_build': sub.can_build_meta_human(ch, True), 'high_res': ch.has_high_resolution_textures,
+                                 'swim_exists': unreal.EditorAssetLibrary.does_asset_exist(f'{FOLDER}/MH_{name}_Swim')}
+                finally:
+                    sub.remove_object_to_edit(ch)
+        return out
     if action == 'swimall':
         return build_all([swim_variant(n) for n in arg.split(',')])
     if action == 'skin':
@@ -1089,8 +1189,12 @@ def run(action, arg=''):
         # "Mateo@Beach@/Game/Outfits/Shorts/WI_OA_Shorts,/Game/..."
         name, suffix, items = arg.split('@')
         return dress_variant(name, suffix, items.split(','))
+    if action == 'higarment':
+        return hi_garments(arg)
     if action == 'build':
-        return build(arg or 'Lani')
+        # "Name" or "Name@high" (default medium)
+        name, _, quality = (arg or 'Lani').partition('@')
+        return build(name, quality=quality or 'medium')
     if action == 'save':
         # The build leaves its assets in memory; persist everything under the people folder.
         unreal.EditorAssetLibrary.save_directory(FOLDER, True, True)
