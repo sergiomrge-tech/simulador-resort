@@ -3,6 +3,7 @@
 #include "Internationalization/Internationalization.h"
 #include "Internationalization/PolyglotTextData.h"
 #include "Internationalization/TextLocalizationManager.h"
+#include "HAL/FileManager.h"
 #include "Misc/CommandLine.h"
 #include "Misc/FileHelper.h"
 #include "Misc/Parse.h"
@@ -37,10 +38,29 @@ namespace MareLocData
  FTable& Table(){static FTable T;return T;}
  TSet<FString> Registered;          // polyglot keys already registered (all languages loaded once)
 
+ /** Translation file of the current culture: "pt" (native), or the Content/Localization/Mare/<name>.json that matches the
+  * culture best ("zh-Hans-CN" -> zh-Hans, "de-AT" -> de, "pt-PT"). */
  FString CurrentLanguage()
  {
   const FString Name=FInternationalization::Get().GetCurrentCulture()->GetName();
-  return Name.StartsWith(TEXT("es"))?TEXT("es"):Name.StartsWith(TEXT("en"))?TEXT("en"):TEXT("pt");
+  if(Name.IsEmpty() || Name==TEXT("pt") || Name.StartsWith(TEXT("pt-BR")))return TEXT("pt");
+  static TMap<FString,FString> Resolved;
+  if(const FString* Hit=Resolved.Find(Name))return *Hit;
+  auto Exists=[](const FString& Key){return FPaths::FileExists(FPaths::ProjectContentDir()/TEXT("Localization/Mare")/(Key+TEXT(".json")));};
+  FString Key=TEXT("pt");
+  TArray<FString> Candidates={Name};
+  if(Name.StartsWith(TEXT("zh")))Candidates.Add(TEXT("zh-Hans"));
+  int32 Dash;if(Name.FindChar(TEXT('-'),Dash))Candidates.Add(Name.Left(Dash));
+  for(const FString& C:Candidates)if(C!=TEXT("source") && Exists(C)){Key=C;break;}
+  Resolved.Add(Name,Key);
+  return Key;
+ }
+ /** Languages with a translation file (for the polyglot LOCTEXT registration). */
+ TArray<FString> Languages()
+ {
+  TArray<FString> Files,Out;IFileManager::Get().FindFiles(Files,*(FPaths::ProjectContentDir()/TEXT("Localization/Mare/*.json")),true,false);
+  for(const FString& F:Files){const FString Base=FPaths::GetBaseFilename(F);if(Base!=TEXT("source") && !Base.StartsWith(TEXT("todo_")))Out.Add(Base);}
+  return Out;
  }
  TSharedPtr<FJsonObject> LoadFile(const FString& Language)
  {
@@ -99,7 +119,7 @@ namespace MareLocData
   const TSharedPtr<FJsonObject> Native=LoadFile(TEXT("source"));const TSharedPtr<FJsonObject>* Source=nullptr;
   if(!Native.IsValid() || !Native->TryGetObjectField(TEXT("loctext"),Source))return;
   TMap<FString,FPolyglotTextData> Data;
-  for(const TCHAR* Language:{TEXT("en"),TEXT("es")}){
+  for(const FString& Language:Languages()){
    const TSharedPtr<FJsonObject> Json=LoadFile(Language);const TSharedPtr<FJsonObject>* Loc=nullptr;
    if(!Json.IsValid() || !Json->TryGetObjectField(TEXT("loctext"),Loc))continue;
    for(const auto& Pair:(*Loc)->Values){const FString Id(Pair.Key.ToView());FString Translation;if(!Pair.Value->TryGetString(Translation) || Translation.IsEmpty())continue;
@@ -113,6 +133,25 @@ namespace MareLocData
 }
 
 FString MareLoc::Language(){return MareLocData::CurrentLanguage();}
+
+FString MareLoc::Cardinal(int32 Index)
+{
+ // North, east, south, west in each language's own compass letters.
+ static const TMap<FString,TArray<FString>> Letters={
+  {TEXT("pt"),{TEXT("N"),TEXT("L"),TEXT("S"),TEXT("O")}},{TEXT("pt-PT"),{TEXT("N"),TEXT("E"),TEXT("S"),TEXT("O")}},
+  {TEXT("en"),{TEXT("N"),TEXT("E"),TEXT("S"),TEXT("W")}},{TEXT("es"),{TEXT("N"),TEXT("E"),TEXT("S"),TEXT("O")}},
+  {TEXT("fr"),{TEXT("N"),TEXT("E"),TEXT("S"),TEXT("O")}},{TEXT("it"),{TEXT("N"),TEXT("E"),TEXT("S"),TEXT("O")}},
+  {TEXT("de"),{TEXT("N"),TEXT("O"),TEXT("S"),TEXT("W")}},{TEXT("nl"),{TEXT("N"),TEXT("O"),TEXT("Z"),TEXT("W")}},
+  {TEXT("ru"),{TEXT("С"),TEXT("В"),TEXT("Ю"),TEXT("З")}},{TEXT("pl"),{TEXT("N"),TEXT("E"),TEXT("S"),TEXT("W")}},
+  {TEXT("cs"),{TEXT("S"),TEXT("V"),TEXT("J"),TEXT("Z")}},{TEXT("hu"),{TEXT("É"),TEXT("K"),TEXT("D"),TEXT("Ny")}},
+  {TEXT("ro"),{TEXT("N"),TEXT("E"),TEXT("S"),TEXT("V")}},{TEXT("da"),{TEXT("N"),TEXT("Ø"),TEXT("S"),TEXT("V")}},
+  {TEXT("fi"),{TEXT("P"),TEXT("I"),TEXT("E"),TEXT("L")}},{TEXT("ja"),{TEXT("北"),TEXT("東"),TEXT("南"),TEXT("西")}},
+  {TEXT("ko"),{TEXT("북"),TEXT("동"),TEXT("남"),TEXT("서")}},{TEXT("zh-Hans"),{TEXT("北"),TEXT("东"),TEXT("南"),TEXT("西")}}};
+ const TArray<FString>* List=Letters.Find(Language());if(!List)List=Letters.Find(TEXT("en"));
+ return (*List)[FMath::Clamp(Index,0,3)];
+}
+
+bool MareLoc::LatinOnly(const FString& Text){for(TCHAR C:Text)if(C>0x024F && C!=0x2014 && C!=0x2022 && C!=0x00B7 && C!=0x2026 && C!=0x2605 && (C<0x2000 || C>0x206F))return false;return true;}
 
 void MareLoc::Reload()
 {

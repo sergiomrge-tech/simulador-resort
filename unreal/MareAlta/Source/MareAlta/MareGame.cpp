@@ -1586,9 +1586,9 @@ public:
   auto Root=SNew(SOverlay);
   // Compass strip under the plank: cardinal letters and the resort's places by direction (map_markers.json).
   if(M.Compass.Num()){auto Strip=SNew(SCanvas);const float Width=560;
-   for(const auto& C:M.Compass){const bool bCardinal=C.Key.Len()==1;
+   for(const auto& C:M.Compass){const bool bCardinal=C.Key.StartsWith(TEXT("\t"));
     Strip->AddSlot().Position(FVector2D(C.Value%1000/100.f*Width,bCardinal?0:16+15*(C.Value/1000))).Size(FVector2D(130,18)).HAlign(HAlign_Center).VAlign(VAlign_Top)
-     [Txt(bCardinal?C.Key:FString(TEXT("| "))+C.Key,bCardinal?14:11.5f,bCardinal?Hex(255,215,106):Paper,bCardinal)];}
+     [Txt(bCardinal?C.Key.Mid(1):FString(TEXT("| "))+C.Key,bCardinal?14:11.5f,bCardinal?Hex(255,215,106):Paper,bCardinal)];}
    Root->AddSlot().VAlign(VAlign_Top).HAlign(HAlign_Center).Padding(FMargin(0,46,0,0))[SNew(SBorder).BorderImage(FCoreStyle::Get().GetBrush("WhiteBrush")).BorderBackgroundColor(FLinearColor(0,0,0,.28f)).Padding(FMargin(4,2))
     [SNew(SBox).WidthOverride(Width).HeightOverride(48)[Strip]]];}
   // First-time tip card, bottom left above the key hints.
@@ -1690,7 +1690,8 @@ void AMareHUD::DrawHUD()
   auto Slot=[&](float Bearing){const float Delta=FRotator::NormalizeAxis(Bearing-Yaw);return FMath::Abs(Delta)>Half?-1:FMath::RoundToInt(50.f+50.f*Delta/Half);};
   auto Place=[&](const FString& Label,float Bearing){const int32 X=Slot(Bearing);if(X>=0)M.Compass.Add({Label,X});};
   // UE yaw: 0 = +X (east on this map), 90 = +Y (south): letters for the four directions.
-  Place(TEXT("L"),0);Place(TEXT("S"),90);Place(TEXT("O"),180);Place(TEXT("N"),-90);
+  // Cardinals in the current language (de: O = Ost, not the Portuguese Oeste); marked with a leading tab.
+  Place(TEXT("\t")+MareLoc::Cardinal(1),0);Place(TEXT("\t")+MareLoc::Cardinal(2),90);Place(TEXT("\t")+MareLoc::Cardinal(3),180);Place(TEXT("\t")+MareLoc::Cardinal(0),-90);
   const TArray<TSharedPtr<FJsonValue>>* List=nullptr;const double Near=UMareSimulation::Number(Markers,TEXT("near"),900);
   TArray<TTuple<double,FString,int32>> Found;   // distance, name, position
   if(Markers->TryGetArrayField(TEXT("markers"),List))for(const auto& V:*List){const auto Mk=V->AsObject();const TArray<TSharedPtr<FJsonValue>>* At=nullptr;

@@ -16,7 +16,9 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2] / 'unreal' / 'MareAlta'
 OUT = ROOT / 'Content' / 'Localization' / 'Mare'
-LANGS = ['en', 'es']
+# Every translation file next to source.json (a new language = an empty <culture>.json, e.g. 'fr.json': {}).
+LANGS = sorted(p.stem for p in (Path(__file__).resolve().parents[2] / 'unreal' / 'MareAlta' / 'Content' / 'Localization' / 'Mare').glob('*.json')
+               if p.stem != 'source' and not p.stem.startswith('todo_')) or ['en', 'es']
 LIT = re.compile(r'TEXT\("((?:[^"\\]|\\.)*)"\)')
 LOCTEXT = re.compile(r'\bLOCTEXT\(\s*"((?:[^"\\]|\\.)*)"\s*,\s*"((?:[^"\\]|\\.)*)"\s*\)')
 NSLOCTEXT = re.compile(r'\bNSLOCTEXT\(\s*"((?:[^"\\]|\\.)*)"\s*,\s*"((?:[^"\\]|\\.)*)"\s*,\s*"((?:[^"\\]|\\.)*)"\s*\)')

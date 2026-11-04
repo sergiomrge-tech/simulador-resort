@@ -29,7 +29,23 @@ namespace MareNotebook
  {
   static TMap<FString,TSharedPtr<const FCompositeFont>> Cache;
   if(!Cache.Contains(File)){const FString Path=FPaths::ProjectContentDir()/TEXT("UI/Fonts")/File;
-   TSharedPtr<const FCompositeFont> Loaded;if(FPaths::FileExists(Path))Loaded=MakeShared<FStandaloneCompositeFont>(NAME_None,Path,EFontHinting::Default,EFontLoadingPolicy::LazyLoad);Cache.Add(File,Loaded);}
+   TSharedPtr<const FCompositeFont> Loaded;if(FPaths::FileExists(Path)){
+    // Translations: Patrick Hand has no Cyrillic and neither font has CJK. Sub-fonts cut to the game's characters
+    // (tools/ue58/i18n_fonts.py): Caveat for handwritten Cyrillic, Noto Sans SC/JP/KR for Chinese, kana and hangul.
+    // Chinese is the generic Han font (language names show in every language); Japanese favours its own kanji.
+    TSharedRef<FStandaloneCompositeFont> Font=MakeShared<FStandaloneCompositeFont>(NAME_None,Path,EFontHinting::Default,EFontLoadingPolicy::LazyLoad);
+    auto Add=[&Font](const TCHAR* SubFile,std::initializer_list<TPair<int32,int32>> Ranges,const TCHAR* Cultures){
+     const FString SubPath=FPaths::ProjectContentDir()/TEXT("UI/Fonts")/SubFile;if(!FPaths::FileExists(SubPath))return;
+     FCompositeSubFont& Sub=Font->SubTypefaces.AddDefaulted_GetRef();Sub.Typeface.AppendFont(TEXT("Regular"),SubPath,EFontHinting::Default,EFontLoadingPolicy::LazyLoad);
+     for(const auto& R:Ranges)Sub.CharacterRanges.Add(FInt32Range(FInt32Range::BoundsType::Inclusive(R.Key),FInt32Range::BoundsType::Inclusive(R.Value)));
+     Sub.Cultures=Cultures;};
+    if(FCString::Stricmp(File,TEXT("PatrickHand-Regular.ttf"))==0)Add(TEXT("Caveat-Mare.ttf"),{{0x0400,0x052F}},TEXT(""));
+    Add(TEXT("NotoSansJP-Mare.ttf"),{{0x2E80,0x9FFF},{0xF900,0xFAFF},{0xFF00,0xFFEF}},TEXT("ja"));
+    Add(TEXT("NotoSansSC-Mare.ttf"),{{0x2E80,0x2FFF},{0x3000,0x303F},{0x3400,0x4DBF},{0x4E00,0x9FFF},{0xF900,0xFAFF},{0xFF00,0xFFEF}},TEXT(""));
+    Add(TEXT("NotoSansJP-Mare.ttf"),{{0x3040,0x30FF},{0x31F0,0x31FF}},TEXT(""));
+    Add(TEXT("NotoSansKR-Mare.ttf"),{{0x1100,0x11FF},{0x3130,0x318F},{0xAC00,0xD7AF}},TEXT(""));
+    Loaded=Font;}
+   Cache.Add(File,Loaded);}
   const auto& Composite=Cache[File];return Composite.IsValid()?FSlateFontInfo(Composite,Size):FCoreStyle::GetDefaultFontStyle(Fallback,Size);
  }
  inline FSlateFontInfo Hand(float Size){return Font(TEXT("PatrickHand-Regular.ttf"),Size,"Regular");}

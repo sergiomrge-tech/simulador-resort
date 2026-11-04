@@ -20,6 +20,7 @@ def load(lang):
 
 def main():
     cmd, lang = sys.argv[1], sys.argv[2]
+    sys.stdout.reconfigure(encoding='utf-8')
     src, tr = load(lang)
     if cmd == 'show':
         start, count = int(sys.argv[3]), int(sys.argv[4])
@@ -37,6 +38,25 @@ def main():
                 tr['strings'][st] = st; n += 1
         (OUT / f'{lang}.json').write_text(json.dumps(tr, ensure_ascii=False, indent=1), encoding='utf-8')
         print(f'{lang}: {n} identificadores mantidos')
+    elif cmd == 'compose':
+        # Fills what can be derived: internal identifiers kept as-is in English, and multi-line texts whose lines are
+        # all translated (signs, the grandmother's letter). Numbers/prices keep their text.
+        import re
+        en = json.loads((OUT / 'en.json').read_text(encoding='utf-8'))['strings']
+        nothing = lambda t: not re.search(r'[A-Za-zÀ-ú]{2,}', t.replace('R$', ''))
+        n = 0
+        for st in src['strings']:
+            if tr['strings'].get(st):
+                continue
+            if en.get(st) == st:   # identifiers, names and language names stay as written
+                tr['strings'][st] = st; n += 1
+            elif '\n' in st:
+                parts = [l if (not l.strip() or nothing(l)) else tr['strings'].get(l) for l in st.split('\n')]
+                if all(p is not None for p in parts):
+                    tr['strings'][st] = '\n'.join(parts); n += 1
+        (OUT / f'{lang}.json').write_text(json.dumps(tr, ensure_ascii=False, indent=1), encoding='utf-8')
+        left = [s for s in src['strings'] if not tr['strings'].get(s)] + [k for k in src['loctext'] if not tr['loctext'].get(k)]
+        print(f'{lang}: +{n} montados, faltam {len(left)}', left[:10])
     elif cmd == 'merge':
         batch = json.loads(Path(sys.argv[3]).read_text(encoding='utf-8'))
         n = 0

@@ -77,7 +77,7 @@ namespace MareOptionsData
   static FMareOptions Options=[](){
    if(FMareOptions::IsQARun())return FMareOptions::Defaults();
    FMareOptions Result=FMareOptions::FromEngine();Result.LoadFile(FMareOptions::DefaultPath());return Result;}();
-  // -culture=en / -culture=es on the command line (QA captures of the translations) wins over the saved choice.
+  // -culture=en / -culture=zh-Hans on the command line (QA captures of the translations) wins over the saved choice.
   static bool bCultureArg=[](){FString Arg;if(FParse::Value(FCommandLine::Get(),TEXT("culture="),Arg) && FMareOptions::Cultures().Contains(Arg))Options.Culture=Arg;return true;}();
   return Options;
  }
@@ -94,8 +94,31 @@ const TArray<FMareOptions::FAction>& FMareOptions::Actions()
  return List;
 }
 const TArray<int32>& FMareOptions::FrameLimits(){static const TArray<int32> List={30,60,120,144,0};return List;}
-const TArray<FString>& FMareOptions::Cultures(){static const TArray<FString> List={TEXT("pt-BR"),TEXT("en"),TEXT("es")};return List;}
-FText FMareOptions::CultureName(const FString& Name){return FText::AsCultureInvariant(Name==TEXT("en")?TEXT("English"):Name==TEXT("es")?TEXT("Español"):TEXT("Português (Brasil)"));}
+namespace MareOptionsData
+{
+ /** Every culture the game can offer, with its own name; one is listed only when Content/Localization/Mare/<culture>.json
+  * exists, so a new language is a new file (tools/ue58/i18n_extract.py). Order: Steam's most played languages. */
+ const TPair<const TCHAR*,const TCHAR*> KnownCultures[]={
+  {TEXT("pt-BR"),TEXT("Português (Brasil)")},{TEXT("en"),TEXT("English")},{TEXT("es"),TEXT("Español")},
+  {TEXT("zh-Hans"),TEXT("简体中文")},{TEXT("ru"),TEXT("Русский")},{TEXT("de"),TEXT("Deutsch")},{TEXT("fr"),TEXT("Français")},
+  {TEXT("ja"),TEXT("日本語")},{TEXT("ko"),TEXT("한국어")},{TEXT("it"),TEXT("Italiano")},{TEXT("pl"),TEXT("Polski")},
+  {TEXT("nl"),TEXT("Nederlands")},{TEXT("pt-PT"),TEXT("Português (Portugal)")},
+  {TEXT("cs"),TEXT("Čeština")},{TEXT("hu"),TEXT("Magyar")},{TEXT("ro"),TEXT("Română")},{TEXT("da"),TEXT("Dansk")},
+  {TEXT("fi"),TEXT("Suomi")}};
+}
+const TArray<FString>& FMareOptions::Cultures()
+{
+ static const TArray<FString> List=[](){TArray<FString> Out;
+  for(const auto& Pair:MareOptionsData::KnownCultures)
+   if(FCString::Strcmp(Pair.Key,TEXT("pt-BR"))==0 || FPaths::FileExists(FPaths::ProjectContentDir()/TEXT("Localization/Mare")/(FString(Pair.Key)+TEXT(".json"))))Out.Add(Pair.Key);
+  return Out;}();
+ return List;
+}
+FText FMareOptions::CultureName(const FString& Name)
+{
+ for(const auto& Pair:MareOptionsData::KnownCultures)if(Name==Pair.Key)return FText::AsCultureInvariant(Pair.Value);
+ return FText::AsCultureInvariant(Name);
+}
 TArray<FString> FMareOptions::Upscalers()
 {
  TArray<FString> List={TEXT("TSR")};auto& Console=IConsoleManager::Get();

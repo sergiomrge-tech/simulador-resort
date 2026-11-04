@@ -580,8 +580,13 @@ Fazer depois de todo o resto, quando os textos estiverem estáveis.
 - [x] **Inglês** completo (04/11): 111 LOCTEXT + 2.528 textos (~10,3 mil palavras), conferido no executável (menu, opções e HUD).
 - [x] **Espanhol** completo (04/11), mesmo volume. Troca de idioma em Opções → Idioma (pt-BR / English / Español);
   `-culture=en` na linha de comando para testes.
-- [ ] Outros idiomas (pesquisa Steam de 04/11: chinês simplificado, alemão, russo, japonês, francês, coreano, pt-PT);
-  chinês/japonês/coreano precisam de fonte CJK (ex.: Noto Sans SC) e russo de cirílico nas fontes do caderno.
+- [ ] **18 idiomas** escolhidos pelo Sergio em 04/11 (mesmos do Supermarket Simulator, menos turco e lituano): inglês,
+  português (Brasil e Portugal), espanhol, francês, italiano, alemão, holandês, russo, polonês, tcheco, húngaro, romeno,
+  dinamarquês, finlandês, japonês, coreano e chinês simplificado. Prontos e no jogo (04/11): pt-BR, en, es, zh-Hans, ru,
+  de, fr, it, ja. Faltam: ko, nl, pt-PT, pl, cs, hu, ro, da, fi. O menu lista sozinho cada idioma que tem
+  `Content/Localization/Mare/<cultura>.json`; fontes CJK/cirílico por `tools/ue58/i18n_fonts.py`; placas 3D com cirílico
+  ou CJK mostram o texto original (a fonte das placas é só latina); bússola com as letras de cada idioma.
+- [ ] Nomes próprios (Seu Gregory, Dona Rita...) seguem em letras latinas no chinês/japonês/russo: decidir se transliterar.
 - [ ] Revisão por falante nativo de cada idioma e teste de layout (textos maiores em alemão/russo não podem cortar). [bloqueado-usuario] (precisa de revisores nativos; o teste de layout fica junto da tradução)
 - [ ] Página da Steam e conquistas nos mesmos idiomas. [bloqueado-usuario] (precisa da conta Steamworks do Sergio)
 

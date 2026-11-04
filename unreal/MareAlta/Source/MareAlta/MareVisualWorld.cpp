@@ -164,7 +164,8 @@ void UMareVisualWorld::Tick(float DeltaSeconds)
   for(FName Tag:Sign->Tags)if(Tag.ToString().StartsWith(TEXT("MareStock_"))){FString Id=Tag.ToString().RightChop(10);Text=UMareSimulation::String(UMareSimulation::Object(Dishes,Id),TEXT("name"))+FString::Printf(TEXT("<br>%d prontos"),Sim->Available(Id));}
   // Fixed signs saved in the level ("Casa", street names) keep their Portuguese text as the source for the translation.
   if(Text.IsEmpty())if(const FString* Source=SignSource.Find(Sign))Text=*Source;
-  if(!Text.IsEmpty()){const FText Shown=MareLoc::Text(Text);if(!Sign->GetTextRender()->Text.EqualTo(Shown))Sign->GetTextRender()->SetText(Shown);}
+  // The sign font is Latin only: a Cyrillic or CJK translation would draw empty boxes, so those keep the Portuguese.
+  if(!Text.IsEmpty()){FText Shown=MareLoc::Text(Text);if(!MareLoc::LatinOnly(Shown.ToString()))Shown=FText::FromString(Text);if(!Sign->GetTextRender()->Text.EqualTo(Shown))Sign->GetTextRender()->SetText(Shown);}
  }
 }
 
