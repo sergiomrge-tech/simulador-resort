@@ -38,6 +38,7 @@
 #include "Widgets/Layout/SBorder.h"
 #include "Widgets/Layout/SBox.h"
 #include "Widgets/Layout/SScrollBox.h"
+#include "Containers/Ticker.h"
 #include "Widgets/Layout/SWrapBox.h"
 #include "Widgets/Layout/SUniformGridPanel.h"
 #include "Widgets/SLeafWidget.h"
@@ -1355,7 +1356,9 @@ private:
   Body->AddSlot().AutoHeight().Padding(0,0,0,10)[Tabs];
   auto Page=SNew(SVerticalBox);
   switch(Tab){case 0:GraphicsPage(Page);break;case 1:DisplayPage(Page);break;case 2:AudioPage(Page);break;case 3:ControlsPage(Page);break;default:LanguagePage(Page);}
-  Body->AddSlot().AutoHeight()[SNew(SBox).HeightOverride(380)[SNew(SMareFit).Name(TEXT("options")).Rows(Page)[Page]]];
+  // Scrolls (wheel or bar): 04/11 the graphics page grew to 17 rows and the notebook leaf packing (SMareFit) left the
+  // last six clipped below the box with no pager.
+  Body->AddSlot().AutoHeight()[SNew(SBox).HeightOverride(380)[SNew(SScrollBox).ScrollBarAlwaysVisible(true)+SScrollBox::Slot().Padding(0,0,8,0)[Page]]];
   // Apply / defaults, or the 10 s confirmation after a resolution change.
   Body->AddSlot().AutoHeight().Padding(0,12,0,0)[SNew(SBox).Visibility_Lambda([this](){return RevertAt>0?EVisibility::Collapsed:EVisibility::Visible;})[SNew(SHorizontalBox)
    +SHorizontalBox::Slot().AutoWidth().Padding(0,0,8,0)[Button(LOCTEXT("OptApply","Aplicar"),[this](){Apply();})]
@@ -1447,6 +1450,12 @@ struct FMareUIQA
    if(Intro)Intro->ReadLetter();}
  }
 };
+// QA: screenshot with the UI after N real seconds (works while paused, e.g. "mare.ShowUI options, mare.ShotLater 4":
+// a shot taken the same frame the menu opens comes before the notebook pages are laid out, 04/11).
+static FAutoConsoleCommand MareShotLaterCommand(TEXT("mare.ShotLater"),TEXT("QA: screenshot with the UI after N seconds (Saved/Screenshots)."),
+ FConsoleCommandWithArgsDelegate::CreateLambda([](const TArray<FString>& Args){
+  const float Delay=Args.Num()?FCString::Atof(*Args[0]):3.f;
+  FTSTicker::GetCoreTicker().AddTicker(FTickerDelegate::CreateLambda([](float){FScreenshotRequest::RequestScreenshot(true);return false;}),FMath::Max(Delay,.1f));}));
 // QA (test profiles only): buys N of every stock item, so the kiosk cycle can be exercised from a drained save.
 static FAutoConsoleCommandWithWorldAndArgs MareRestockCommand(TEXT("mare.Restock"),TEXT("QA: buys N of every stock item (QA save profile only)."),
  FConsoleCommandWithWorldAndArgsDelegate::CreateLambda([](const TArray<FString>& Args,UWorld* World){
