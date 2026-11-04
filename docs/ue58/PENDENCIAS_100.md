@@ -448,7 +448,12 @@ Pronto e testado (02/11):
     Menus: foco no 1º botão ao abrir com o controle, direcional/analógico navega, A confirma, B volta/fecha, LB/RB trocam abas,
     analógico direito rola. Sinuca: analógico mira, segurar RT dá força, B sai. HUD mostra botão ou tecla conforme a última entrada;
     opção "Botões do controle" Xbox/PlayStation. Testes: `MareAlta.Gamepad.MappingsAndLabels` e `MareAlta.Gamepad.MenuFocusAndBack`.
-- [ ] P1 Três propostas de HUD/celular mais comercial (pedido antigo, apresentar antes de escolher).
+- [ ] [bloqueado-usuario] P1 Três propostas de HUD/celular mais comercial (pedido antigo, apresentar antes de escolher).
+  04/11: apresentadas no quadro https://claude.ai/artifact/PD9RvV7TzpW83nhDvEqLRK sobre uma foto real da praia:
+  A) caderno de bordo (evolução do estilo atual: papel kraft, fita adesiva, post-it, celular = caderno de couro com
+  marcadores coloridos); B) cartão-postal tropical (pílulas grossas, cores vivas, missões com barra de progresso,
+  celular de verdade com apps); C) resort premium (vidro fosco, tipografia fina, celular com menu lateral).
+  Falta o Sergio escolher (ou misturar); a escolhida substitui o MareNotebookStyle em todas as telas.
 - [x] P1 Acessibilidade (02/11): tamanho da interface e do texto (85–150%, foto `interface-130-20261102.png`), dicas do
   tutorial liga/desliga, modo para daltonismo (+/- nas variações de estrelas). Não há falas, então legendas não se aplicam.
   Em janelas pequenas, 140–150% encosta nas bordas do celular.
