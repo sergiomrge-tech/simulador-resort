@@ -15,6 +15,8 @@
 #include "Components/ChildActorComponent.h"
 #include "EngineUtils.h"
 #include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetMaterialLibrary.h"
+#include "Materials/MaterialParameterCollection.h"
 #include "HAL/IConsoleManager.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/StaticMeshComponent.h"
@@ -74,6 +76,29 @@ void AMarePerson::LieOn(const FVector& TowelCentre,float AxisYaw,float InRecline
  LieCentre=TowelCentre;LieYaw=AxisYaw;bLying=true;LieAlignIn=.8f;
  GetCharacterMovement()->DisableMovement();GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
  SetActorLocationAndRotation(TowelCentre+FVector(0,0,12),FRotationMatrix::MakeFromXZ(FVector::UpVector,FRotator(0,AxisYaw,0).Vector()).Rotator());
+}
+
+float AMarePerson::SeaHeight(const FVector2D& P,float T,float Storm)
+{
+ auto Smooth=[](float A,float B,float X){const float U=FMath::Clamp((X-A)/(B-A),0.f,1.f);return U*U*(3-2*U);};
+ const float A=P.X*.003f+P.Y*.0017f-T*(.55f+Storm*.35f),B=P.Y*.004f-P.X*.0012f-T*(.38f+Storm*.3f),C=P.X*.011f+P.Y*.007f-T*1.9f;
+ const float Shore=Smooth(-6500,-4300,P.Y)*(1-Smooth(-3000,-2300,P.Y));
+ const float Swell=FMath::Sin(P.Y*.009f+FMath::Sin(P.X*.0025f)*.7f-T*(.8f+Storm*.4f));
+ const FVector2D Outside(FMath::Max(FMath::Abs(P.X-4000)-16000,0.f),FMath::Max(-9500-P.Y,0.f));
+ const float Fade=1-Smooth(1500,6000,Outside.Size())*.85f,Offshore=Smooth(-2300,-4800,P.Y);
+ const float D=P.X*.0069f-P.Y*.0052f-T*1.15f;
+ const float H=(FMath::Sin(A)*36+FMath::Sin(B)*24+FMath::Sin(D)*13)*(1+Storm*1.1f)+FMath::Sin(C)*(8+Storm*8)+FMath::Sin(P.X*.019f-P.Y*.013f-T*2.6f)*5;
+ const float Coast=FMath::Lerp(.38f,1.f,Smooth(-5200,-9000,P.Y));
+ const FVector2D Q(FMath::Max(FMath::Abs(P.X-6780)-450,0.f),FMath::Max(FMath::Abs(P.Y+4300)-1100,0.f));
+ const float Pier=FMath::Lerp(.2f,1.f,Smooth(0,900,Q.Size()));
+ return H*Fade*Offshore*Coast*Pier+Shore*(Swell*15*(1+Storm*.8f)+7+Storm*5)*Pier;
+}
+
+void AMarePerson::TreadWater(const FVector& Surface,bool bInSea)
+{
+ bTreading=true;bSeaSwim=bInSea;SwimAt=Surface;
+ GetCharacterMovement()->DisableMovement();GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+ SetActorLocation(Surface+FVector(0,0,88));
 }
 
 void AMarePerson::UpdateLying(float DeltaSeconds)
@@ -228,7 +253,7 @@ bool AMarePerson::SetMetaHuman(const FString& Name)
  GetMesh()->SetSkeletalMeshAsset(Body);GetMesh()->SetAnimInstanceClass(UMareServiceAnimInstance::StaticClass());
  // The last three are free Fab mocap clips (mare_metahuman.import_mocap; local only, like the outfits; mare.Mocap 0
  // turns them off); missing ones fall back to the base clips.
- TArray<FString> Wanted={TEXT("Idle"),TEXT("Idle_Talking"),TEXT("Walk"),TEXT("Sitting_Idle"),TEXT("Interact")};
+ TArray<FString> Wanted={TEXT("Idle"),TEXT("Idle_Talking"),TEXT("Walk"),TEXT("Sitting_Idle"),TEXT("Interact"),TEXT("Swim_Idle")};
  if(CVarMareMocap.GetValueOnGameThread())Wanted.Append({TEXT("SitTalk"),TEXT("DanceHip"),TEXT("Cheer")});
  for(const FString& Clip:Wanted)
   if(auto Anim=LoadObject<UAnimSequence>(nullptr,*FString::Printf(TEXT("/Game/People/Animations/MH_%s.MH_%s"),*Clip,*Clip)))Clips.Add(Clip,Anim);
@@ -455,7 +480,15 @@ void AMarePerson::Tick(float DeltaSeconds)
    else Style=EOutfit::Beach;}
   ApplyOutfit(Style);}
  if(bEmployee && !StaffRole.IsEmpty() && !Badge && !MetaHuman.IsEmpty() && Elapsed>.6f)AttachBadge();
- if(bLying)UpdateLying(DeltaSeconds);
+ if(bTreading){
+  // Root on the water surface (Swim_Idle keeps the head ~25 cm above it, feet ~1.05 m below), riding the waves at sea.
+  PlayPose(TEXT("Swim_Idle"));float Wave=0;
+  if(bSeaSwim){static UMaterialParameterCollection* Time=LoadObject<UMaterialParameterCollection>(nullptr,TEXT("/Game/World/Materials/MPC_MareTime.MPC_MareTime"));
+   const float Storm=Time?UKismetMaterialLibrary::GetScalarParameterValue(this,Time,TEXT("Storm")):0.f;
+   Wave=SeaHeight(FVector2D(SwimAt.X,SwimAt.Y),GetWorld()->GetTimeSeconds(),Storm);}
+  // The root 32 cm under the surface: the water reaches the shoulders, the head (bone ~12 cm up) stays out.
+  SetActorLocationAndRotation(SwimAt+FVector(0,0,88-32+Wave),FRotator(0,GetActorRotation().Yaw+FMath::Sin(Elapsed*.35f+SwimAt.X*.01f)*6.f*DeltaSeconds,0));}
+ else if(bLying)UpdateLying(DeltaSeconds);
  else if(GetVelocity().SizeSquared2D()>25)PlayPose(TEXT("Walk"));else if(!WorkPose.IsEmpty())PlayPose(WorkPose);else if(bAmbient)PlayPose(bSeated?TEXT("Sitting_Idle"):bConversing?TEXT("Idle_Talking"):TEXT("Idle"));else if(Stage!=EMarePersonStage::Eating)PlayPose(TEXT("Idle"));
 }
 void AMarePerson::AttachBadge()

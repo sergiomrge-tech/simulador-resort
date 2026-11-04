@@ -519,14 +519,17 @@ def run(action, arg=''):
         return out
     if action == 'profile':
         # PIE: heights hit by vertical traces along a line "x0,y0,x1,y1,step" (cm), top surface profile of furniture.
-        x0, y0, x1, y1, step = (float(v) for v in arg.split(','))
+        vals = [float(v) for v in arg.split(',')]
+        x0, y0, x1, y1, step = vals[:5]
+        z0 = vals[5] if len(vals) > 5 else 300.0
         world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()
         n = int(max(abs(x1 - x0), abs(y1 - y0)) / step) + 1
         out = []
         for i in range(n):
             f = i / max(n - 1, 1)
             x, y = x0 + (x1 - x0) * f, y0 + (y1 - y0) * f
-            hit = unreal.SystemLibrary.line_trace_single(world, unreal.Vector(x, y, 300), unreal.Vector(x, y, -50), unreal.TraceTypeQuery.TRACE_TYPE_QUERY1, False, [], unreal.DrawDebugTrace.NONE, True)
+            top = float(__import__('os').environ.get('MARE_PROFILE_TOP', '300')) if False else 300.0
+            hit = unreal.SystemLibrary.line_trace_single(world, unreal.Vector(x, y, z0), unreal.Vector(x, y, z0 - 600), unreal.TraceTypeQuery.TRACE_TYPE_QUERY1, False, [], unreal.DrawDebugTrace.NONE, True)
             if hit:
                 h = hit.to_tuple()
                 out.append([round(x), round(y), round(h[4].z), str(h[9].get_name())[:20] if h[9] else None])

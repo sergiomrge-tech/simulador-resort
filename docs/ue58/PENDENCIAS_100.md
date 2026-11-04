@@ -271,7 +271,10 @@ Pronto e testado (02/11):
     de barriga para cima com o tronco dobrado 30° na cintura (`spine_01` no proxy de animação, `AMarePerson::Recline`),
     pelve logo à frente da dobra do encosto (perfil medido: assento 58 cm, encosto 63→116 cm em 60 cm). Com 40° sobrava
     um vão entre as costas e a almofada; com 30° as costas encostam. `sunbathers.json` → `loungers`/`recline`.
-  - nadar no mar e na piscina;
+  - nadar no mar e na piscina: FEITO 03/11. `Swim_Idle` do UAL redirecionado para a MetaHuman (`mh_rtclip`): 3 banhistas
+    boiando no mar de frente para a praia (fundo ≥ 1,6 m, longe do píer), água nos ombros, subindo e descendo com a onda
+    (`AMarePerson::SeaHeight` replica o deslocamento de vértices do material do mar, com a tempestade); na piscina (1,32 m)
+    não dá para boiar: duas pessoas em pé no fundo conversando com a água no peito. `sunbathers.json` → `swimmers`.
   - comer e beber sentado (já existe);
   - conversar com gestos sentado (feito, `SitTalk`; em pé ainda falta clipe bom); dançar nas festas (feito);
   - limpar e atender (equipe).

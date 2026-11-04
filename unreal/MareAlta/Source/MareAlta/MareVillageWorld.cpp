@@ -137,7 +137,7 @@ void UMareVillageWorld::UpdateSunbathers()
  auto Hero=UGameplayStatics::GetPlayerPawn(this,0);const bool bLoading=GetWorld()->GetTimeSeconds()<10;
  // Spots: beach towels (lying flat, head inland) and, with the pool day use bought, the pool loungers (torso up on
  // the backrest, pelvis just in front of its hinge, head away from the pool).
- struct FSpot{FVector Centre;float Yaw,Recline;};TArray<FSpot> Spots;
+ struct FSpot{FVector Centre;float Yaw,Recline;int32 Water=0;};TArray<FSpot> Spots;   // Water: 0 lying, 1 pool, 2 sea
  const int32 Count=FMath::Min(int32(UMareSimulation::Number(Defs,TEXT("count"),5)),Towels->Num());
  for(int32 I=0;I<Count;++I){const auto& V=(*Towels)[I]->AsArray();if(V.Num()!=4)continue;
   // Long side of the towel = its local Y; the head goes inland (+Y, away from the sea).
@@ -148,6 +148,11 @@ void UMareVillageWorld::UpdateSunbathers()
  if(bPool && Defs->TryGetArrayField(TEXT("loungers"),Loungers)){const float Bend=UMareSimulation::Number(Defs,TEXT("recline"),40);
   const int32 Use=FMath::Min(int32(UMareSimulation::Number(Defs,TEXT("lounger_count"),3)),Loungers->Num());
   for(int32 I=0;I<Use;++I){const auto& V=(*Loungers)[I]->AsArray();if(V.Num()==4)Spots.Add({FVector(V[0]->AsNumber(),V[1]->AsNumber(),V[2]->AsNumber()),float(V[3]->AsNumber()),Bend});}}
+ // Swimmers treading water: in the sea off the beach, and in the pool once it is bought.
+ const TArray<TSharedPtr<FJsonValue>>* Swimmers=nullptr;
+ if(Defs->TryGetArrayField(TEXT("swimmers"),Swimmers))for(const auto& Value:*Swimmers){const auto& V=Value->AsArray();if(V.Num()!=5)continue;
+  const int32 Water=V[4]->AsString()==TEXT("pool")?1:2;if(Water==1 && !bPool)continue;
+  Spots.Add({FVector(V[0]->AsNumber(),V[1]->AsNumber(),V[2]->AsNumber()),float(V[3]->AsNumber()),0.f,Water});}
  for(int32 I=Spots.Num();I<Sunbathers.Num();++I)if(IsValid(Sunbathers[I].Get()))Sunbathers[I]->Destroy();
  Sunbathers.SetNum(Spots.Num());
  for(int32 I=0;I<Spots.Num();++I){const FSpot& Spot=Spots[I];
@@ -159,7 +164,10 @@ void UMareVillageWorld::UpdateSunbathers()
   auto P=GetWorld()->SpawnActor<AMarePerson>(Spot.Centre+FVector(0,0,90),FRotator(0,Spot.Yaw,0),Params);if(!P)continue;
   if(!P->SetAppearance(I%4)){P->Destroy();continue;}
   P->SaveId=FString::Printf(TEXT("bather%d"),I);P->PersonName=TEXT("Banhista");P->bAmbient=true;P->Tags.Add(TEXT("MareBather"));
-  P->LieOn(Spot.Centre,Spot.Yaw,Spot.Recline);
+  // The pool is 1.32 m deep: people stand on its floor chatting with the water at the chest; at sea they tread water.
+  if(Spot.Water==1){P->bConversing=true;P->GetCharacterMovement()->DisableMovement();P->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+   P->SetActorLocation(Spot.Centre+FVector(0,0,88));}
+  else if(Spot.Water==2)P->TreadWater(Spot.Centre,true);else P->LieOn(Spot.Centre,Spot.Yaw,Spot.Recline);
   Sunbathers[I]=P;}
 }
 void UMareVillageWorld::Tick(float Dt)

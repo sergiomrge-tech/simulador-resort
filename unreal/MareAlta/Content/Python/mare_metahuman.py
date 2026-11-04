@@ -459,14 +459,14 @@ def retarget_setup(name='Lani'):
 ANIMS = '/Game/People/Animations'
 
 
-def retarget_clips(name='Lani'):
+def retarget_clips(name='Lani', clips=None):
     """Retarget the UAL clips the people use onto the MetaHuman body skeleton (/Game/People/Animations/MH_<clip>)."""
     row = _catalog()['Human_0']
     src_mesh = unreal.load_asset(row['skeletal_meshes'][0])
     tgt_mesh = unreal.load_asset(f'{FOLDER}/{name}/MH_{name}/Body/SKM_MH_{name}_BodyMesh')
     rtg = unreal.load_asset(f'{RETARGET}/RTG_UAL_to_MH')
     registry = unreal.AssetRegistryHelpers.get_asset_registry()
-    assets = [registry.get_asset_by_object_path(row['animations'][f'Human_0{c}']) for c in CLIPS]
+    assets = [registry.get_asset_by_object_path(row['animations'][f'Human_0{c}']) for c in (clips or CLIPS)]
     out = unreal.IKRetargetBatchOperation.duplicate_and_retarget(
         assets, src_mesh, tgt_mesh, rtg, 'Human_0', 'MH_', '', '', ANIMS, False, False, True)
     paths = [str(a.package_name) for a in out]
@@ -769,6 +769,9 @@ def run(action, arg=''):
         return [o for o in out if arg != 'mh' or o['mh']]
     if action == 'rtsetup':
         return retarget_setup(arg or 'Lani')
+    if action == 'rtclip':
+        # Extra UAL clips onto the MetaHuman skeleton: "Swim_Idle,Crouch_Idle"
+        return retarget_clips('Lani', arg.split(','))
     if action == 'rtclips':
         return retarget_clips(arg or 'Lani')
     if action == 'fixhands':

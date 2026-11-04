@@ -114,6 +114,14 @@ public:
  /** Degrees the torso bends up at the hips while lying (a lounger backrest); 0 = flat on a towel. The pelvis is
   *  then anchored at the given point (just in front of the backrest hinge) instead of centring the body. */
  float Recline=0;
+ /** Treading water (03/11, PENDENCIAS "nadar no mar e na piscina"): the UAL Swim_Idle retargeted to the MetaHuman, the
+  *  root 32 cm under the water surface (Surface z: water at the shoulders), riding the sea waves when bSea (SeaHeight replicates the ocean material's
+  *  vertex offset) and turning the head side to side slowly. */
+ void TreadWater(const FVector& Surface,bool bInSea);
+ bool bTreading=false,bSeaSwim=false;FVector SwimAt=FVector::ZeroVector;
+ /** Vertical offset of the sea surface at a point (cm) at world time Seconds, as M_Ocean's world position offset
+  *  (mare_materials.build_water); Storm 0..1 is MPC_MareTime.Storm. */
+ static float SeaHeight(const FVector2D& P,float Seconds,float Storm);
  /** Clothing style, applied on the first tick once role flags are set (employees keep the uniform). */
  enum class EOutfit:uint8{Auto,Uniform,Casual,Beach,Swim,Social};
  EOutfit Outfit=EOutfit::Auto;
