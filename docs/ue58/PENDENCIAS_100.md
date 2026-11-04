@@ -487,6 +487,9 @@ Pronto e testado (02/11):
   poderiam (`hud_naniteon dry:...`); (2) `r.Shadow.Virtual.Cache.StaticSeparate 0` (cache de sombra para Movable):
   sem diferença; (3) cache de sombra das árvores com vento: sem diferença. Próximo passo: captura do Unreal Insights no
   executável para ver o que a thread de render desenha a cada quadro.
+  04/11, eliminação por categoria (sem pessoas, praia 13h): sem grama, sem vegetação instanciada ou sem terreno nada muda
+  (render ~19,5 ms); sem as malhas instanciadas render 20 → 15 ms e GPU 19 → 10 ms (48 → 67 FPS). O custo está nas
+  instâncias do cenário exportado (casas, postes, móveis): falta descobrir quais (por região/malha) no Insights.
 - [x] P0 Sessões de 2 h sem crash (GPU page fault do hotel mitigado com `r.Lumen.AsyncCompute=0`; re-testar).
   04/11: `tools/ue58/bench_package.ps1 -Soak 7200` (executável, tudo liberado): 120 min, 60 voltas pelos 4 setores dormindo
   entre elas (60 dias de jogo, saguão do hotel visitado 60 vezes), nenhum erro no log, FPS estável do início ao fim
@@ -557,11 +560,12 @@ atendimento, economia ou saves; um evento por vez, com cooldown e seed testável
 - [x] HUM-003 Cachorro foge com um chinelo: cancelado (03/11, o Sergio tirou gatos e cachorros do jogo).
 - [x] HUM-004 Guarda-sol levado pelo vento; recolocar é opcional; física controlada. (03/11, conferido por captura)
 - [x] HUM-006 Atendente iniciante atrapalhado (quase derruba bandeja), diminui com treinamento; sem perder pedido/dinheiro. (03/11, conferido por captura)
-- [~] Critérios de aceite da especificação: 100 ciclos sem travar NPC/fila, sem cobrança/estoque duplicados no reload,
+- [~] [adiado-usuario] Critérios de aceite da especificação: 100 ciclos sem travar NPC/fila, sem cobrança/estoque duplicados no reload,
   fotos e clipe do EXE. 03/11: a parte da economia virou teste permanente `MareAlta.Acceptance.HundredCycles` (100
   ciclos de pedido/retirada/entrega, salvar e recarregar em outra sessão a cada 10, pedido pela metade retomado): caixa
   sobe exatamente a venda registrada (preço + gorjeta da decoração), estoque cai 1 por retirada, nada cobrado nem
-  entregue duas vezes. Falta: 100 ciclos com NPCs e fila no mundo, e fotos/clipe do executável (só quando o Sergio pedir o EXE).
+  entregue duas vezes. Falta: 100 ciclos com NPCs e fila no mundo (04/11: o Sergio faz esse teste jogando; o script
+  automático foi removido a pedido dele), e fotos/clipe do executável (só quando o Sergio pedir o EXE).
 
 ## 15. Balanceamento e diversão (no fim da fila, pedido do Sergio em 03/11)
 Objetivo: o jogo ser divertido e não cansativo nem maçante, com várias atividades acontecendo ao mesmo tempo (quiosque,
