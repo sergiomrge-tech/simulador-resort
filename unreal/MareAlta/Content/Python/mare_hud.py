@@ -1024,7 +1024,106 @@ def ism_groups(name):
     return {'meshes': mesh_info, 'components': out}
 
 
+# LOD chain for exported meshes without Nanite (04/11, FPS: they had a single LOD, so a house 300 m away was drawn with all
+# its triangles; the GPU cost did not drop with resolution). Percent of triangles kept and the screen size for each LOD.
+AUTO_LODS = [(1.0, 1.0), (.5, .35), (.22, .15), (.08, .05)]
+
+
+def auto_lods(arg):
+    """'dry' / 'apply' [,minimum vertices]: give every static mesh of the editor level that is drawn without Nanite, has a
+    single LOD and at least `minimum` vertices (default 1500) an automatic LOD chain (AUTO_LODS), heaviest first by
+    instances x vertices. Skips /Engine content and the uncommitted Hotel/Lobby plants. Returns what it did."""
+    mode, _, minimum = arg.partition(',')
+    minimum = int(minimum or 1500)
+    world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_editor_world()
+    meshes = {}
+    for actor in unreal.GameplayStatics.get_all_actors_of_class(world, unreal.Actor):
+        for comp in actor.get_components_by_class(unreal.StaticMeshComponent):
+            mesh = comp.get_editor_property('static_mesh')
+            if not mesh or not comp.is_visible():
+                continue
+            path = mesh.get_path_name()
+            low = path.lower()
+            # Water surfaces animate their vertices (waves): reduced LODs would flatten them.
+            if path.startswith('/Engine/') or 'pachira' in low or 'potted_plant' in low or any(w in low for w in ('ocean', 'water', 'pool', 'sea')):
+                continue
+            if mesh.get_editor_property('nanite_settings').get_editor_property('enabled') or mesh.get_num_lods() > 1:
+                continue
+            n = comp.get_instance_count() if isinstance(comp, unreal.InstancedStaticMeshComponent) else 1
+            row = meshes.setdefault(path, {'mesh': mesh.get_name(), 'instances': 0,
+                                           'verts': unreal.EditorStaticMeshLibrary.get_number_verts(mesh, 0)})
+            row['instances'] += n
+    rows = sorted((r | {'path': k} for k, r in meshes.items() if r['verts'] >= minimum), key=lambda r: -r['instances'] * r['verts'])
+    done = []
+    if mode == 'apply':
+        for r in rows:
+            mesh = unreal.EditorAssetLibrary.load_asset(r['path'])
+            options = unreal.EditorScriptingMeshReductionOptions()
+            options.set_editor_property('auto_compute_lod_screen_size', False)
+            settings = []
+            for keep, screen in AUTO_LODS:
+                s = unreal.EditorScriptingMeshReductionSettings()
+                s.set_editor_property('percent_triangles', keep)
+                s.set_editor_property('screen_size', screen)
+                settings.append(s)
+            options.set_editor_property('reduction_settings', settings)
+            lods = unreal.EditorStaticMeshLibrary.set_lods(mesh, options)
+            if lods > 1 and unreal.EditorAssetLibrary.save_loaded_asset(mesh, False):
+                done.append(r['mesh'])
+    return {'candidates': len(rows), 'weight': sum(r['instances'] * r['verts'] for r in rows),
+            'top': [[r['mesh'], r['instances'], r['verts']] for r in rows[:25]], 'done': len(done)}
+
+
+def small_props(arg):
+    """'dry' / 'apply': static meshes of the editor level by size (largest dimension of one instance, cm). Under 15 cm
+    they stop casting shadows; under 60 cm they are culled beyond 40 m (instanced: end/start cull distance; single:
+    max draw distance). Water, terrain and anything already culled closer are left alone. Saves the level on apply."""
+    world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_editor_world()
+    shadow_off, culled, seen = 0, 0, 0
+    for actor in unreal.GameplayStatics.get_all_actors_of_class(world, unreal.Actor):
+        for comp in actor.get_components_by_class(unreal.StaticMeshComponent):
+            mesh = comp.get_editor_property('static_mesh')
+            if not mesh or not comp.is_visible():
+                continue
+            low = mesh.get_path_name().lower()
+            if low.startswith('/engine/') or any(w in low for w in ('ocean', 'water', 'pool', 'sea', 'ground', 'terrain')):
+                continue
+            ext = mesh.get_bounds().box_extent
+            scale = comp.get_world_scale()
+            size = 2 * max(ext.x * abs(scale.x), ext.y * abs(scale.y), ext.z * abs(scale.z))
+            if isinstance(comp, unreal.InstancedStaticMeshComponent) and comp.get_instance_count():
+                tr = comp.get_instance_transform(0, False)
+                s = tr.scale3d
+                size = 2 * max(ext.x * abs(s.x), ext.y * abs(s.y), ext.z * abs(s.z)) * max(abs(scale.x), abs(scale.y), abs(scale.z))
+            seen += 1
+            if size < 15 and comp.get_editor_property('cast_shadow'):
+                shadow_off += 1
+                if arg == 'apply':
+                    comp.set_editor_property('cast_shadow', False)
+            if size < 60:
+                if isinstance(comp, unreal.InstancedStaticMeshComponent):
+                    end = comp.get_editor_property('instance_end_cull_distance')
+                    if end == 0 or end > 4000:
+                        culled += 1
+                        if arg == 'apply':
+                            comp.set_editor_property('instance_start_cull_distance', 3000)
+                            comp.set_editor_property('instance_end_cull_distance', 4000)
+                else:
+                    d = comp.get_editor_property('ld_max_draw_distance')
+                    if d == 0 or d > 4000:
+                        culled += 1
+                        if arg == 'apply':
+                            comp.set_editor_property('ld_max_draw_distance', 4000)
+    if arg == 'apply':
+        unreal.get_editor_subsystem(unreal.LevelEditorSubsystem).save_current_level()
+    return {'components': seen, 'shadow_off': shadow_off, 'culled_40m': culled}
+
+
 def run(action, arg=''):
+    if action == 'smallprops':
+        return json_module.dumps(small_props(arg))
+    if action == 'autolods':
+        return json_module.dumps(auto_lods(arg))
     if action == 'ismgroups':
         return json_module.dumps(ism_groups(arg))
     if action == 'naniteon':
