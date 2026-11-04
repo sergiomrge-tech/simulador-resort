@@ -673,6 +673,9 @@ Os 18 idiomas escolhidos são os do Supermarket Simulator, menos turco e lituano
   `-culture=<idioma> -MareLocAudit`. Todos usam letras latinas (fontes atuais já cobrem).
 
 ## 18. Multidão na placa de vídeo (na fila, pedido do Sergio em 04/11)
+  04/11: **pt-PT FEITO** (`tools/ue58/i18n_pt_pt.py` adapta o texto brasileiro: vocabulário, gerúndio "a + infinitivo",
+  grafias abertas; 2.700/2.700). Os 10 idiomas anteriores também receberam todos os textos novos de hoje. Faltam pl, cs,
+  hu, ro, da, fi (cerca de 12 mil palavras cada).
 - [ ] [adiado-usuario] (vale quando quisermos mais gente na praia) Pessoas distantes com animação gravada em textura e
   desenhadas pela placa (técnica da Epic para multidões, plugin AnimToTexture). Medição de 04/11: sem nenhuma pessoa a
   praia ganhava só ~4 FPS, então hoje não compensa; exige gerar as animações de várias MetaHumans. Permite multidão
