@@ -650,8 +650,13 @@ negócios, hóspedes, salão, passeios, eventos) e o jogador sempre escolhendo o
   16 min), hotel com fama 9 e ato 5 (salão, 20 receitas, 40 personalizações, fama 10, 4.000 vendas) antes da festa;
   modelo `balance_model.py`: festa no dia 55, ~15 h (a personalização adianta alguns dias). Objetivo sempre visível no
   painel (tarefa + "R$ x / y · fama a/b"). Ver docs/ue58/BALANCEAMENTO.md (segunda passada).
-- [ ] (liberado 04/11 para o Acesso Antecipado; Sergio 04/11: "precisa ter desafio, um pouco difícil mas também divertido") P1 Ritmo e desafio: nunca mais de 1–2 min sem algo a fazer; tarefas paralelas que se sobrepõem (pedido no quiosque enquanto
+- [x] (liberado 04/11 para o Acesso Antecipado; Sergio 04/11: "precisa ter desafio, um pouco difícil mas também divertido") P1 Ritmo e desafio: nunca mais de 1–2 min sem algo a fazer; tarefas paralelas que se sobrepõem (pedido no quiosque enquanto
   o bar chama, hóspede na recepção, evento cômico), sem fila de espera longa nem tarefa repetitiva demais.
+  FEITO 04/11: cada cliente do quiosque dá estrelas pelo tempo de espera (5★ na hora, 2,5★ no limite) e quem desiste
+  vai embora bravo com 1★ e um aviso; as estrelas mexem no movimento (`WordOfMouth`: 0,7× a 1,25×); paciência de 80 s
+  (era 120); picos de almoço (12–14h) e pôr do sol (17–18h30) com 60% mais clientes; manutenção diária de 0,5% das
+  expansões (`DailyUpkeep`). Junto com a oferenda diária, os eventos cômicos e as missões, o dia tem tarefas que se
+  sobrepõem. Testes em MareSimulationTests (Customization, DayClose). Confirmar a dificuldade num playtest.
 
 ## 16. Ponto turístico no morro (no fim da fila, pedido do Sergio em 03/11)
 - [ ] [bloqueado-usuario] (sistema grande: aguarda o Sergio escolher a prioridade e subir o esforço do Opus, regra global) P2 O morro careca ao fundo vira ponto turístico: no alto, uma estátua ORIGINAL de Jesus Cristo de braços abertos

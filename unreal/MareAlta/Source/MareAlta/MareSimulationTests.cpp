@@ -165,11 +165,12 @@ bool FMareProgressionTest::RunTest(const FString& Parameters)
  TestFalse(TEXT("No hotel night before purchase"),Sim->Object(Sim->State,TEXT("prog"))->HasField(TEXT("hotel")) && Sim->Object(Sim->Object(Sim->State,TEXT("prog")),TEXT("hotel"))->HasField(TEXT("rooms")));
  Sim->Object(Sim->State,TEXT("unlocked"))->SetBoolField(TEXT("grand_hotel"),true);
  const double Occupancy=Sim->HotelOccupancy();TestTrue(TEXT("Occupancy clamped"),Occupancy>=.15 && Occupancy<=.98);
- const double BeforeNight=Sim->Money();const int32 DayBefore=Sim->Number(Sim->State,TEXT("day"));Sim->Sleep();
+ const double BeforeNight=Sim->Money();const double Upkeep=Sim->DailyUpkeep();const int32 DayBefore=Sim->Number(Sim->State,TEXT("day"));Sim->Sleep();
+ TestTrue(TEXT("Upkeep charged for the owned expansions (the hotel alone is R$ 150)"),Upkeep>=150);
  auto Hotel=Sim->Object(Sim->Object(Sim->State,TEXT("prog")),TEXT("hotel"));const int32 Rooms=Sim->Number(Hotel,TEXT("rooms"));
  // Suites are paid at the reception (MareStays); the night books the restaurant of real stays and the crew.
  TestEqual(TEXT("No guests checked in yet"),Rooms,0);
- TestEqual(TEXT("Hotel night booked once with wage"),Sim->Money(),double(BeforeNight+FMath::RoundToDouble(Rooms*1.7*35)-900.-Wage));
+ TestEqual(TEXT("Hotel night booked once with wage"),Sim->Money(),double(BeforeNight+FMath::RoundToDouble(Rooms*1.7*35)-900.-Wage-Upkeep));
  TestEqual(TEXT("Day advanced with hotel"),int32(Sim->Number(Sim->State,TEXT("day"))),DayBefore+1);
  Sim->RemoveFromRoot();Instance->RemoveFromRoot();return true;
 }
@@ -188,7 +189,10 @@ bool FMareCustomizationTest::RunTest(const FString& Parameters)
   const TArray<TSharedPtr<FJsonValue>>* Tiers=nullptr;TestTrue(TEXT("Slot has tiers"),V->AsObject()->TryGetArrayField(TEXT("tiers"),Tiers) && Tiers->Num()==5);++SlotCount;}
  TestTrue(TEXT("Kiosk has at least eight customizable objects"),SlotCount>=8);
  TestEqual(TEXT("Starting tier is Simples"),Sim->CustomTier(TEXT("kiosk"),TEXT("banquetas")),1);
- TestEqual(TEXT("Decor starts neutral"),Sim->KioskArrivalFactor()/Sim->EventDemand(),1.0);   // season and event demand apart
+ TestEqual(TEXT("Decor starts neutral"),Sim->KioskArrivalFactor()/(Sim->EventDemand()*Sim->WordOfMouth()),1.0);   // season, event demand and stars apart
+ // Stars move the traffic: a run of quick 5-star services brings more people, customers giving up bring fewer.
+ {const double Neutral=Sim->WordOfMouth();for(int32 I=0;I<40;++I)Sim->AddRating(5);TestTrue(TEXT("Five stars bring more customers"),Sim->WordOfMouth()>Neutral && Sim->WordOfMouth()<=1.25);
+  for(int32 I=0;I<40;++I)Sim->AddRating(1);TestEqual(TEXT("Angry customers cut the traffic"),Sim->WordOfMouth(),.7);Sim->State->RemoveField(TEXT("ratings"));}
  TestEqual(TEXT("Tier prices grow"),Sim->CustomPrice(TEXT("kiosk"),TEXT("banquetas"),2),75.0);
  TestTrue(TEXT("Higher tier costs more"),Sim->CustomPrice(TEXT("kiosk"),TEXT("banquetas"),5)>Sim->CustomPrice(TEXT("kiosk"),TEXT("banquetas"),4));
  Sim->State->SetNumberField(TEXT("money"),50);

@@ -98,6 +98,13 @@ public:
  void Sleep();
  UFUNCTION(BlueprintCallable,Category="Maré Alta")
  bool Save();
+ /** Challenge (04/11, Sergio: "precisa ter desafio, um pouco difícil mas também divertido"): every kiosk customer rates
+  *  the service (fast = 5, gave up = 1) in the same list as the pousada guests; the stars move the kiosk traffic. */
+ void AddRating(double Stars);
+ /** Traffic from the stars: 1.0 at 3.5, 1.25 at 5, 0.7 at the bottom. */
+ double WordOfMouth() const;
+ /** 0.5 % a day of the owned expansions' price, charged at the day close. */
+ double DailyUpkeep() const;
  // ---- Save slots: slot1..3.json in the save folder, slots.json keeps the last used one.
  static constexpr int32 SlotCount=3;
  /** Slot read and written by Save(); chosen by -MareSlot=N, else the last used slot (1 for legacy profiles). */

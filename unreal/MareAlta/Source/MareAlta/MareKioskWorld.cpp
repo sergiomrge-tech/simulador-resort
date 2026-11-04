@@ -73,6 +73,8 @@ bool UMareKioskWorld::Serve(AMarePerson* Person,bool bStaff)
 }
 void UMareKioskWorld::FinishCounter(AMarePerson* Person)
 {
+ // The order is complete: the faster it was, the better the stars (5 right away, 2.5 at the end of the patience).
+ if(auto S=Sim())S->AddRating(5.-2.5*FMath::Clamp(Person->Elapsed/(80.f*float(S->KioskPatienceFactor())),0.f,1.f));
  Person->CounterIndex=-1;if(Person->Interaction){Person->Interaction->Destroy();Person->Interaction=nullptr;}
  Person->Stage=EMarePersonStage::ToTable;Person->Elapsed=0;
  const FVector Goal=Person->TableIndex!=INDEX_NONE?TableApproaches[Person->TableIndex]:Person->GetActorLocation()+FVector(160,-170,0);
@@ -139,7 +141,9 @@ void UMareKioskWorld::UpdateCustomer(AMarePerson* P)
   if(CounterStaffPoints.IsValidIndex(P->CounterIndex))
    P->SetActorRotation(FRotator(0,(CounterStaffPoints[P->CounterIndex]-P->GetActorLocation()).Rotation().Yaw,0));
  }
- else if((P->Stage==EMarePersonStage::Order || P->Stage==EMarePersonStage::Products) && P->Elapsed>120*S->KioskPatienceFactor())Leave(P);
+ else if((P->Stage==EMarePersonStage::Order || P->Stage==EMarePersonStage::Products) && P->Elapsed>80*S->KioskPatienceFactor()){
+  // Gave up waiting: one star and a grumble (the stars move tomorrow's traffic, UMareSimulation::KioskArrivalFactor).
+  S->AddRating(1.);P->Express(TEXT("annoyed"),3.f);S->LastMessage=P->PersonName+TEXT(" cansou de esperar e foi embora resmungando. Uma estrela.");Leave(P);}
  else if(P->Stage==EMarePersonStage::ToTable && P->TableIndex!=INDEX_NONE && !P->AtGoal() && P->Elapsed<35 && P->GetVelocity().SizeSquared2D()<100
   && (FMath::IsNearlyEqual(P->Elapsed,12.f,.6f) || FMath::IsNearlyEqual(P->Elapsed,24.f,.6f))){
   // Stuck behind a chair or another guest: ask for the path again, the goal nudged a little around the approach.
@@ -199,7 +203,9 @@ void UMareKioskWorld::Tick(float DeltaSeconds)
  Guests.RemoveAll([](auto P){return !IsValid(P);});
  RecoverOrders();
  // Decor comfort + beauty bring customers more often (KioskArrivalFactor, 1 .. ~3.4).
- if(S->IsOpen()){Arrival-=DeltaSeconds;if(Arrival<=0){SpawnCustomer();Arrival=FMath::FRandRange(18.f,30.f)/float(S->KioskArrivalFactor());}}
+ // Rush hours: lunch (12-14h) and the sunset (17-18h30) bring 60 % more people at once.
+ const double Clock=UMareSimulation::Number(S->State,TEXT("minutes"))/60.;const float Rush=(Clock>=12 && Clock<14) || (Clock>=17 && Clock<18.5)?1.6f:1.f;
+ if(S->IsOpen()){Arrival-=DeltaSeconds;if(Arrival<=0){SpawnCustomer();Arrival=FMath::FRandRange(18.f,30.f)/(float(S->KioskArrivalFactor())*Rush);}}
  // Not while busy with something else (a comic event stops him for a moment: HUM-006).
  if(IsValid(Attendant) && !Attendant->bConversing)Attendant->GetCharacterMovement()->MaxWalkSpeed=125.f*float(S->KioskServiceSpeed());
  for(auto P:Guests){

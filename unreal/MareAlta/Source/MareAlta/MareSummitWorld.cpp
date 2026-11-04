@@ -130,7 +130,7 @@ void UMareSummitWorld::Offer(const FString& Gift,bool bCount)
  if(bCount)Summit->SetNumberField(TEXT("count"),UMareSimulation::Number(Summit,TEXT("count"))+1);
  if(!Gift.IsEmpty())ChildOf(Sim->State,TEXT("company"))->SetStringField(TEXT("carry"),FString());   // the product stays in the basket
  if(bOmenOn){EndOmen();Sim->LastMessage=TEXT("O mar foi se acalmando. Ufa! Seu Tibúrcio sorriu (acho).");}
- if(Elder)Elder->Express(TEXT("happy"),5.f);
+ if(Elder)Elder->Express(TEXT("smile"),5.f);
  Sim->Save();
 }
 
@@ -297,7 +297,7 @@ void UMareSummitWorld::UpdateFinale(float DeltaSeconds,UMareSimulation* Sim,doub
   const FVector At=Hero?Hero->GetActorLocation()+Hero->GetActorForwardVector()*260.f:FVector(3700,-2400,120);
   PartyElder=GetWorld()->SpawnActor<AMarePerson>(At,FRotator(0,Hero?Hero->GetActorRotation().Yaw+180.f:90.f,0),Params);
   if(PartyElder){PartyElder->Tags.Add(TEXT("MareElder"));PartyElder->PersonName=ElderName;PartyElder->bAmbient=true;PartyElder->SaveId=TEXT("summit_elder");
-   if(!PartyElder->SetAppearance(1)){PartyElder->Destroy();PartyElder=nullptr;}else PartyElder->Express(TEXT("happy"),40.f);}
+   if(!PartyElder->SetAppearance(1)){PartyElder->Destroy();PartyElder=nullptr;}else PartyElder->Express(TEXT("smile"),40.f);}
   if(auto Erupt=IConsoleManager::Get().FindConsoleVariable(TEXT("mare.VolcanoErupt")))Erupt->Set(1,ECVF_SetByCode);   // the volcano's "fireworks"
   UE_LOG(LogTemp,Display,TEXT("MARE_FINALE_START"));
  }

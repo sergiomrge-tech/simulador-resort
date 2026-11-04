@@ -78,7 +78,8 @@ def run(days):
             if biz_id in owned:
                 income += b['hour'] * (b['open'][1] - b['open'][0]) - b.get('wage', 0) + BUSINESS_TASKS_PER_DAY * b['hour'] * 1.4
         wages = sum(defs['staff'][r]['wage'] for r in ('atendente',) if day > 3)
-        money += income - wages
+        upkeep = .005 * sum(defs['expansions'][e]['cost'] for e in owned if e in defs['expansions'])   # 04/11 challenge
+        money += income - wages - upkeep
         xp += gain
         bought = []
         for exp_id in order:

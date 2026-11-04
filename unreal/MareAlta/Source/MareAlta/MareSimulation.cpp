@@ -378,6 +378,11 @@ double UMareSimulation::Stars() const
  const TArray<TSharedPtr<FJsonValue>>* Ratings=nullptr;if(!State->TryGetArrayField(TEXT("ratings"),Ratings) || Ratings->IsEmpty())return 3;
  double Sum=0;for(const auto& Value:*Ratings)Sum+=Value->AsNumber();return Sum/Ratings->Num();
 }
+void UMareSimulation::AddRating(double Value)
+{
+ TArray<TSharedPtr<FJsonValue>> Ratings;const TArray<TSharedPtr<FJsonValue>>* Existing=nullptr;if(State->TryGetArrayField(TEXT("ratings"),Existing))Ratings=*Existing;
+ Ratings.Add(MakeShared<FJsonValueNumber>(FMath::Clamp(Value,1.,5.)));while(Ratings.Num()>40)Ratings.RemoveAt(0);State->SetArrayField(TEXT("ratings"),Ratings);
+}
 double UMareSimulation::HotelOccupancy() const
 {
  // Season, parties and upgrade tree are not ported yet; their terms stay neutral.
@@ -443,6 +448,8 @@ void UMareSimulation::Sleep()
   for(const auto& Pair:Object(Definitions,TEXT("businesses"))->Values)if(OwnsBusiness(FString(Pair.Key.ToView()))){
    const double Wage=Number(Pair.Value->AsObject(),TEXT("wage"));Wages+=Wage;Book(-Wage,TEXT("Funcionário: ")+String(Pair.Value->AsObject(),TEXT("name")));}
   Hours->SetNumberField(TEXT("wage_day"),Day);
+  // Upkeep: 0.5 % a day of what the resort's expansions cost (the Grand Hotel alone is R$ 150): money needs some care.
+  const double Upkeep=DailyUpkeep();if(Upkeep>0){Wages+=Upkeep;Book(-Upkeep,TEXT("Manutenção do resort"));}
   // Hands-on stays replace the old sorted pousada occupancy (MareStays.cpp).
   StaysNight();
   HotelNight();
@@ -556,7 +563,19 @@ double UMareSimulation::PlaceComfort(const FString& Place) const{return SlotPoin
 double UMareSimulation::PlaceBeauty(const FString& Place) const{return SlotPoints(this,Place,TEXT("beauty"));}
 double UMareSimulation::CustomEffect(const FString& Key,double Fallback) const{return Number(Object(CustomDefs(),TEXT("effects")),Key,Fallback);}
 // Fame brings people to the beach (+4% per level, as in the Godot version); decor adds its own points.
-double UMareSimulation::KioskArrivalFactor() const{return (1+CustomEffect(TEXT("arrival_per_point"),.035)*(PlaceComfort(TEXT("kiosk"))+PlaceBeauty(TEXT("kiosk"))))*(1+.04*(FameLevel()-1))*EventDemand();}
+double UMareSimulation::WordOfMouth() const{return FMath::Clamp(1.+(Stars()-3.5)*.17,.7,1.25);}
+double UMareSimulation::DailyUpkeep() const
+{
+ double Upkeep=0;for(const auto& Pair:Object(Definitions,TEXT("expansions"))->Values){bool bOwned=false;Object(State,TEXT("unlocked"))->TryGetBoolField(FString(Pair.Key.ToView()),bOwned);
+  if(bOwned)Upkeep+=Number(Pair.Value->AsObject(),TEXT("cost"))*.005;}
+ return FMath::RoundToDouble(Upkeep);
+}
+double UMareSimulation::KioskArrivalFactor() const
+{
+ // Word of mouth: 3.5 stars keep the traffic, 5 stars bring a quarter more customers, 2 stars a quarter fewer.
+ const double Mouth=WordOfMouth();
+ return (1+CustomEffect(TEXT("arrival_per_point"),.035)*(PlaceComfort(TEXT("kiosk"))+PlaceBeauty(TEXT("kiosk"))))*(1+.04*(FameLevel()-1))*EventDemand()*Mouth;
+}
 double UMareSimulation::KioskTipRate() const{return CustomEffect(TEXT("tip_per_comfort"),.015)*PlaceComfort(TEXT("kiosk"));}
 double UMareSimulation::KioskPatienceFactor() const{return 1+CustomEffect(TEXT("patience_per_comfort"),.03)*PlaceComfort(TEXT("kiosk"));}
 double UMareSimulation::KioskServiceSpeed() const{return 1+CustomEffect(TEXT("speed_per_counter_tier"),.1)*(CustomTier(TEXT("kiosk"),TEXT("balcao"))-1);}
