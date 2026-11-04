@@ -620,3 +620,8 @@ As versões masculinas das risadas, do resmungo, do suspiro e do "uh" são conve
 
 Peneira de piscina do piscineiro (`tools/ue58/gen_pool_skimmer.py`, 03/11): modelada no bpy para o projeto (nenhum modelo CC0 encontrado).
 - Plastic Broom (`plastic_broom`), Poly Haven, CC0 — https://polyhaven.com/a/plastic_broom (vassoura da camareira, 03/11)
+
+Cume, casa do velho e trilha (04/11):
+- **Wooden House** de **Helindu.Art** (Fab, CC BY 4.0) — https://www.fab.com/listings/2a0dd0d8-933d-4b3b-be36-073149b0b3d6 (nomes de materiais/texturas trocados em `tools/ue58/prep_wood_house.py`).
+- Trilha gerada em `tools/ue58/plan_summit_trail.py` + `gen_summit_trail.py` com texturas Poly Haven CC0 `brown_mud_leaves_01` (terra, dessaturada) e `bark_brown_02` (degraus de tronco).
+- Som da mata (`forest_loop`): mistura de "Birds and Wind - Ambient" (Spring Spring, CC0, https://opengameart.org/content/birds-and-wind-ambient-birds-wind-and-synth) e "Forest Ambience" (TinyWorlds, CC0, https://opengameart.org/content/forest-ambience).

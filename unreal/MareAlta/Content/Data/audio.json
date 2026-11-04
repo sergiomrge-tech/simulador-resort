@@ -180,6 +180,12 @@
   "loop": true
  },
  {
+  "id": "forest_loop",
+  "path": "/Game/Audio/forest_loop.forest_loop",
+  "duration": 82.3,
+  "loop": true
+ },
+ {
   "id": "music_bossa",
   "path": "/Game/Audio/music_bossa.music_bossa",
   "duration": 96.0,

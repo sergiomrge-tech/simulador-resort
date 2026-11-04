@@ -23,7 +23,7 @@ MASTER, MUSIC, EFFECTS, AMBIENT = .85, .3, .75, .7
 CUES = {'swim_splash': .22, 'swim_stroke': .18, 'kiosk_pickup': .6, 'kiosk_cash': .8, 'glass': .15, 'swoosh': .14,
         'thunder': .25, 'bell': .2, 'click': .3, 'clean': .3, 'bus_engine': .2, 'bus_brake': .17, 'kiosk_fridge': .3,
         'door': .3, 'whale_splash': .3}
-LOOPS = {'ocean_loop': .4, 'rain_loop': .08, 'wind_loop': .055, 'crickets_loop': .22, 'leaves_soft': .2, 'underwater_loop': .28}
+LOOPS = {'ocean_loop': .4, 'rain_loop': .08, 'wind_loop': .055, 'crickets_loop': .22, 'leaves_soft': .2, 'underwater_loop': .28, 'forest_loop': .24}
 RADIO = .32
 STATION_TRIM = {'reggae_praia': 1.5}
 STEP = .18

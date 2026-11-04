@@ -681,8 +681,13 @@ Os 18 idiomas escolhidos são os do Supermarket Simulator, menos turco e lituano
   Decisão do Sergio (04/11): a tarefa é uma **oferenda** diária a um velho que mora numa casa toda de madeira no topo da
   montanha e fica sentado num banco na frente da casa. Falta: modelo da casa (asset gratuito antes de modelar), trilha até
   o topo, o velho sentado (MetaHuman), interação da oferenda e a sequência do tsunami.
+  Decisões do Sergio (04/11): subida por **bondinho** (tipo Pão de Açúcar) saindo dos fundos da vila, trilha a pé opcional;
+  NÃO mostrar o mapa devastado: quando a onda atinge o herói a tela escurece e aparece um GAME OVER grande.
+  Casa: "Wooden House" (Helindu.Art, Fab, CC BY 4.0) em D:/Assets/Fab/wooden_house. Topo escolhido: x 4000, y 38750, z ~107 m.
 - [ ] [bloqueado-usuario] (sistema grande: subir o esforço do Opus) **Campanha principal** com história completa até o
   final e tudo pronto no jogo; tom de comédia, animado e calmo, clima de praia.
 - [ ] [bloqueado-usuario] (sistema grande) **Animação de abertura** em estilo desenho (Canva) e **animações nos eventos
   principais** da história.
 - [x] Noite mais escura (Sergio, 04/11): `mare.NightDarken` tira 1,3 stop da exposição à noite; conferir praia, vila, quiosque e erupção.
+- [x] Som de mata fechada ao longo da trilha do cume (Sergio, 04/11): `forest_loop` (OpenGameArt CC0) entra além dos fundos da vila (y>8400), mais baixo à noite e na chuva; medido 0,126 na trilha e no cume, 0 na vila e na praia.
+- [ ] Casa do herói com 1 andar (Sergio, 04/11): quarto em cima com varanda; no térreo sala, banheiro e cozinha. É uma EXPANSÃO PAGA (comprada no jogo; só acontece depois de pagar). Fazer depois do tsunami.

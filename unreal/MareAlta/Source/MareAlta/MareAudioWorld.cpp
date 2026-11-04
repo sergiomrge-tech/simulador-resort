@@ -88,7 +88,7 @@ void UMareAudioWorld::StartSoundscape(UMareSimulation* Sim)
  for(auto Item:Catalog){auto Row=Item->AsObject();const FString Name=UMareSimulation::String(Row,TEXT("id"));if(auto Wave=LoadObject<USoundWave>(nullptr,*UMareSimulation::String(Row,TEXT("path")))){Sounds.Add(FName(Name),Wave);
   const FString Group=UMareSimulation::String(Row,TEXT("group"));if(!Group.IsEmpty()){Groups.FindOrAdd(Group).Add(FName(Name));GroupVolume.Add(Group,UMareSimulation::Number(Row,TEXT("volume")));}}}
  TArray<FName> LoopNames=RadioStations();LoopNames.Remove(TEXT("off"));
- LoopNames.Append({TEXT("ocean_loop"),TEXT("wind_loop"),TEXT("rain_loop"),TEXT("crickets_loop"),TEXT("leaves_soft"),TEXT("underwater_loop")});
+ LoopNames.Append({TEXT("ocean_loop"),TEXT("wind_loop"),TEXT("rain_loop"),TEXT("crickets_loop"),TEXT("leaves_soft"),TEXT("underwater_loop"),TEXT("forest_loop")});
  for(FName Name:LoopNames){
   if(auto Wave=Sounds.FindRef(Name)){auto Component=UGameplayStatics::SpawnSound2D(this,Wave,.001f,1,0,nullptr,false,false);if(Component){Component->SetUISound(false);Loops.Add(Name,Component);}}
  }
@@ -146,6 +146,9 @@ void UMareAudioWorld::UpdateLayers(float DeltaSeconds,UMareSimulation* Sim,FVect
   if(Name==TEXT("crickets_loop"))Target=Gain(true)*(bNight && !bRain?.22f:0.f)*(bIndoors?.25f:1.f);
   if(Name==TEXT("leaves_soft"))Target=Gain(true)*(!bRain && Position.Y>-1100?.2f:0.f)*(bIndoors?.2f:1.f);
   if(Name==TEXT("underwater_loop"))Target=Gain(true)*(bUnderwater?.28f:0.f);
+  // 04/11 (Sergio: "som de mata fechada na trilha"): the forest past the back of the village and on the summit trail
+  // (OpenGameArt CC0 birds + forest ambience), softer at night when the crickets take over, almost gone in the rain.
+  if(Name==TEXT("forest_loop"))Target=Gain(true)*.24f*FMath::Clamp((Position.Y-8400.f)/1600.f,0.f,1.f)*(bNight?.35f:1.f)*(bRain?.25f:1.f)*(bIndoors?.2f:1.f);
   auto Component=Pair.Value;if(!IsValid(Component))continue;
   if(GetVolume(TEXT("Master"))==0)Target=0;
   Component->SetVolumeMultiplier(FMath::FInterpTo(Component->VolumeMultiplier,Target,DeltaSeconds,3));
