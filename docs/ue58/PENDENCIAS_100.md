@@ -702,8 +702,13 @@ Os 18 idiomas escolhidos são os do Supermarket Simulator, menos turco e lituano
   `elder`/`offerings`/`finale`, final "A Festa da Maré Alta" (`UMareSummitWorld::UpdateFinale`: vila na praia às 20h,
   Seu Tibúrcio desce o morro, o vulcão solta "fogos", tela FIM com créditos e "Continuar na praia"). Teste da campanha
   inteira em MareSimulationTests; QA `mare.FinaleNow 1`.
-- [ ] (liberado 04/11 para o Acesso Antecipado) **Animação de abertura** em estilo desenho (Canva) e **animações nos eventos
+- [ ] [bloqueado-usuario] (cota de imagens do Canva esgotada em 04/11; renovar a cota ou o Sergio decidir) **Animação de abertura** em estilo desenho (Canva) e **animações nos eventos
   principais** da história.
+  04/11: 3 de 6 quadros gerados no Canva em aquarela infantil (mídias MAHZ_tdgrZI vovó e a chave, MAHZ_tPWSC4 o ônibus
+  chegando, MAHZ_vxA6mE o quiosque FECHADO com a gaivota). Os quadros 4 (Seu Tibúrcio gritando do morro), 5 (quiosque
+  lotado ao pôr do sol) e 6 (vila em festa, vulcão com fogos, espaço para o título) voltaram "quota_exceeded": a cota de
+  imagens do Canva do Sergio acabou. Falta também exportar em resolução cheia (design com uma imagem por página → PNG)
+  e montar a sequência no jogo (Ken Burns, legendas e música).
 - [x] Noite mais escura (Sergio, 04/11): `mare.NightDarken` tira 1,3 stop da exposição à noite; conferir praia, vila, quiosque e erupção.
 - [x] Som de mata fechada ao longo da trilha do cume (Sergio, 04/11): `forest_loop` (OpenGameArt CC0) entra além dos fundos da vila (y>8400), mais baixo à noite e na chuva; medido 0,126 na trilha e no cume, 0 na vila e na praia.
 - [ ] Casa do herói com 1 andar (Sergio, 04/11): quarto em cima com varanda; no térreo sala, banheiro e cozinha. É uma EXPANSÃO PAGA (comprada no jogo; só acontece depois de pagar). Fazer depois do tsunami.
