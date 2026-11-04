@@ -495,8 +495,11 @@ atendimento, economia ou saves; um evento por vez, com cooldown e seed testável
 - [x] HUM-003 Cachorro foge com um chinelo: cancelado (03/11, o Sergio tirou gatos e cachorros do jogo).
 - [x] HUM-004 Guarda-sol levado pelo vento; recolocar é opcional; física controlada. (03/11, conferido por captura)
 - [x] HUM-006 Atendente iniciante atrapalhado (quase derruba bandeja), diminui com treinamento; sem perder pedido/dinheiro. (03/11, conferido por captura)
-- [ ] Critérios de aceite da especificação: 100 ciclos sem travar NPC/fila, sem cobrança/estoque duplicados no reload,
-  fotos e clipe do EXE.
+- [~] Critérios de aceite da especificação: 100 ciclos sem travar NPC/fila, sem cobrança/estoque duplicados no reload,
+  fotos e clipe do EXE. 03/11: a parte da economia virou teste permanente `MareAlta.Acceptance.HundredCycles` (100
+  ciclos de pedido/retirada/entrega, salvar e recarregar em outra sessão a cada 10, pedido pela metade retomado): caixa
+  sobe exatamente a venda registrada (preço + gorjeta da decoração), estoque cai 1 por retirada, nada cobrado nem
+  entregue duas vezes. Falta: 100 ciclos com NPCs e fila no mundo, e fotos/clipe do executável (só quando o Sergio pedir o EXE).
 
 ## 15. Balanceamento e diversão (no fim da fila, pedido do Sergio em 03/11)
 Objetivo: o jogo ser divertido e não cansativo nem maçante, com várias atividades acontecendo ao mesmo tempo (quiosque,
