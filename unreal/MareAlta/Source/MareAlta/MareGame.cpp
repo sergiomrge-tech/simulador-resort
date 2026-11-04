@@ -13,6 +13,7 @@
 #include "MareGraphicsQA.h"
 #include "EngineUtils.h"
 #include "MarePreviewQA.h"
+#include "MareBench.h"
 #include "MareAudioWorld.h"
 #include "MareCustomWorld.h"
 #include "MareKioskWorld.h"
@@ -1771,11 +1772,11 @@ void AMareGameMode::BeginPlay()
  Super::BeginPlay();auto Sim=GetGameInstance()->GetSubsystem<UMareSimulation>();if(Sim)Sim->bHoldSaves=false;
  FMareOptions::ApplyStartup();
  const TCHAR* Cmd=FCommandLine::Get();
- const bool bQA=FParse::Param(Cmd,TEXT("MareGraphicsQA")) || FParse::Param(Cmd,TEXT("MareIntroQA")) || FParse::Param(Cmd,TEXT("MarePreviewQA")) || FParse::Param(Cmd,TEXT("MareSkipMenu")) || GIsAutomationTesting;
+ const bool bQA=FParse::Param(Cmd,TEXT("MareGraphicsQA")) || FParse::Param(Cmd,TEXT("MareIntroQA")) || FParse::Param(Cmd,TEXT("MarePreviewQA")) || FParse::Param(Cmd,TEXT("MareBench")) || FParse::Param(Cmd,TEXT("MareSkipMenu")) || GIsAutomationTesting;
  auto PC=Cast<AMareController>(GetWorld()->GetFirstPlayerController());
  if(Sim && !Sim->bMainMenuDone && !bQA && PC)PC->OpenMainMenu();
  if(!PC || !PC->IsMainMenuOpen()){if(Sim)Sim->bMainMenuDone=true;StartSession();}
- if(FParse::Param(FCommandLine::Get(),TEXT("MareGraphicsQA")))GetWorld()->SpawnActor<AMareGraphicsQA>();if(FParse::Param(FCommandLine::Get(),TEXT("MareIntroQA")))GetWorld()->SpawnActor<AMareIntroQA>();if(FParse::Param(FCommandLine::Get(),TEXT("MarePreviewQA")))GetWorld()->SpawnActor<AMarePreviewQA>();}
+ if(FParse::Param(FCommandLine::Get(),TEXT("MareGraphicsQA")))GetWorld()->SpawnActor<AMareGraphicsQA>();if(FParse::Param(FCommandLine::Get(),TEXT("MareIntroQA")))GetWorld()->SpawnActor<AMareIntroQA>();if(FParse::Param(FCommandLine::Get(),TEXT("MarePreviewQA")))GetWorld()->SpawnActor<AMarePreviewQA>();if(FParse::Param(FCommandLine::Get(),TEXT("MareBench")))GetWorld()->SpawnActor<AMareBench>();}
 
 void AMareGameMode::Tick(float DeltaSeconds)
 {

@@ -470,12 +470,21 @@ Pronto e testado (02/11):
   carta conferidos por foto (`ui_fit_1..3.jpg`); o log `MARE_UI_FIT` registra conteúdo × espaço de cada página.
 
 ## 9. Desempenho e estabilidade
-- [ ] P0 FPS medido no executável:
+- [x] P0 FPS medido no executável:
   - setores pesados: praia com pessoas, saguão do hotel, vila à noite;
   - MetaHumans: limite visível, LOD, grooms.
+  - 04/11: `MareAlta.exe -MareBench` (tools/ue58/bench_package.ps1) mede 20 s por setor (média, p50/p95/p99, jogo/render/GPU,
+    perfil CSV, foto). RTX 4060 Ti, 1920×1080, opções padrão, tudo liberado. Antes → depois das correções:
+    praia 13h 26 → 33 FPS; quiosque 15h 26 → 36; saguão do hotel 43 → 45; vila 21h 43 → 52. O gargalo era a thread de
+    render: as ~60 pessoas do mapa (6 na tela) desenhadas nas sombras do sol (3.400 draw calls). Agora pessoas a mais de
+    30 m não projetam sombra (`mare.PeopleShadowDistance`) e quem ninguém vê mantém a pose (`mare.OffscreenPose`).
+    Grooms não pesam (variante sem cabelo igual). Sem pessoas a praia faz 49 FPS: o resto é do cenário (abaixo).
+- [ ] P1 Chegar a 60 FPS de dia na praia (RTX 4060 Ti, 1080p): o cenário sozinho gasta 20 ms de render com ~2.030 draw
+  calls de sombra de malhas sem Nanite (achar quais: vegetação/instâncias) e as pessoas ainda ~8 ms (componentes
+  registrados: oclusão, velocidades). Medir com `tools/ue58/bench_package.ps1 -Exec "cvar valor"` sem reempacotar.
 - [ ] P0 Sessões de 2 h sem crash (GPU page fault do hotel mitigado com `r.Lumen.AsyncCompute=0`; re-testar).
 - [x] P0 Saves: 3 slots, autosave ao dormir, migração do slot1 antigo, backup `.bak` (teste `MareAlta.Saves.Slots`, 02/11).
-- [~] P1 Memória: build de pessoas e texturas 8K das banhistas (avaliar 4K), tamanho do pacote final.
+- [x] P1 Memória: build de pessoas e texturas 8K das banhistas (avaliar 4K), tamanho do pacote final.
   - 04/11: nenhuma textura das pessoas passa de 4K (build Medium; o 8K era só intermediário do maiô). Texturas 4K de
     objetos pequenos limitadas por MaxTextureSize (fonte intacta): açaí/coco 1024, banqueta/sofá de vime, fogueira e
     celular 2048; conferido de perto (`D:/CodexTemp/qa/texcap2.jpg`). Roupas Khaos 6K já em 1024.
@@ -484,7 +493,8 @@ Pronto e testado (02/11):
     executável. `DirectoriesToAlwaysCook` ganhou essas pastas e só os 35 MetaHumans das listas. `tools/ue58/qa/cook_audit.py`
     (no portão de QA) reprova qualquer caminho carregado por texto que não seja cozido; assets de edição pesados
     (MH_*.uasset 117 MB, OA_* 170 MB) não entram.
-  - Falta: medir o tamanho do pacote no próximo build do executável (o último, 01/11, tinha 1,46 GB e era anterior aos MetaHumans).
+  - 04/11: pacote final 6,1 GB (5,2 GB de conteúdo; 1,46 GB em 01/11, antes dos MetaHumans), 10.786 pacotes cozidos.
+    No executável: 4,1 GB de RAM e 4,6 GB de VRAM na praia (perfil CSV do -MareBench). Log do executável limpo.
 - [x] P1 Testes automáticos cobrindo cada sistema novo (23 testes MareAlta.* em 02/11) e QA de PIE com fotos por sistema
   (`docs/ue58/graphics-reference/*-20261102.*`).
 

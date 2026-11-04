@@ -471,3 +471,14 @@ LoadObject/LoadClass por texto, ou que vem de caminho em `Content/Data/*.json`, 
 ou asset carregado por caminho, acrescente a pasta em DefaultGame.ini; `tools/ue58/qa/cook_audit.py` (no portão)
 reprova o que faltar. MetaHumans: só as pastas das pessoas das listas, nunca `/Game/People/MetaHumans` inteiro.
 
+## Desempenho medido no executável (04/11)
+
+Medir, não supor: `tools/ue58/bench_package.ps1` (modo `-MareBench`) dá jogo/render/GPU por setor e um CSV com draw
+calls por passada; `-Variants MareBenchNoPeople|MareBenchNoGroom` separa custos e `-Exec "cvar valor"` testa sem
+reempacotar. O gargalo das pessoas não era animação nem cabelo: era cada MetaHuman, mesmo longe e fora da tela, sendo
+desenhado peça por peça nas sombras do sol. Pessoas a mais de 30 m não projetam sombra; quem ninguém vê mantém a pose
+(o portão mede deslize só em quem está sendo desenhado e roda a auditoria de marcha com `mare.OffscreenPose 0`).
+Avisos que só aparecem no executável: vidro translúcido em malha Nanite (some), `Failed to find object` de
+LoadObject por tentativa (use `FPackageName::DoesPackageExist`), excesso de luzes por pixel nas sombras virtuais.
+Desligar `r.Shadow.Virtual.Enable` em tempo de execução derruba o executável empacotado.
+

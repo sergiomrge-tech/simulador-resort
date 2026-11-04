@@ -140,7 +140,10 @@ def visible(rounds=2):
                 continue
             moved = ((x[3][0] - seq[0][3][0]) ** 2 + (x[3][1] - seq[0][3][1]) ** 2) ** .5
             limb = max(_limbs(seq[i], seq[j]) for i in range(3) for j in range(i + 1, 3))
-            if moved > 15 and limb < 1.5:
+            # 04/11: a person nobody sees holds the pose on purpose (mare.OffscreenPose): judge the walk only on
+            # bodies drawn in the first sample (the gait audit, with the pose forced on, still covers everyone).
+            drawn = any(len(r) > 2 and r[2] for r in seq[0][5])
+            if moved > 15 and limb < 1.5 and drawn:
                 glide.append([x[2], x[3]])
             # Frozen is judged over the whole check (both rounds, ~3 s), not 0.7 s: the calm Sitting_Idle only breathes
             # (head ~0.06 cm/s, 03/11), which a 0.7 s window took for a frozen pose. Off-screen MetaHuman bodies skip
@@ -156,9 +159,14 @@ def visible(rounds=2):
 
 
 def log_since(offset, allow):
-    text = LOG.read_bytes()[offset:].decode('utf-8', 'ignore')
-    bad = re.compile(r'(Error:|: Error |Ensure condition failed|missing usage flag|Default Material will be used|REAL_MISSING|Fatal)')
+    whole = LOG.read_bytes().decode('utf-8', 'ignore')
+    text = whole[len(whole.encode('utf-8', 'ignore')[:offset].decode('utf-8', 'ignore')):]
+    # 04/11, seen only in the packaged game: a text-path load of a missing asset, VSM light overflow.
+    bad = re.compile(r'(Error:|: Error |Ensure condition failed|missing usage flag|Default Material will be used|REAL_MISSING|Fatal'
+                     r'|Failed to find object|max lights overflow)')
     lines = [l.strip()[-220:] for l in text.splitlines() if bad.search(l) and not any(a in l for a in allow)]
+    # Logged when the mesh loads (editor start, before PIE): translucent glass on a Nanite mesh is not drawn.
+    lines += [l.strip()[-220:] for l in whole.splitlines() if 'used on Nanite static mesh' in l and not any(a in l for a in allow)]
     seen, unique = set(), []
     for l in lines:
         key = re.sub(r'^\[[^\]]*\]\[[^\]]*\]', '', l)
@@ -247,13 +255,21 @@ def main():
     coast('clock', '690')
     hud('cmd', 'mare.Weather 1')
     time.sleep(20)
+    # The gait audit samples everyone, on screen or not: it checks the walk itself, so off-screen people animate here
+    # (mare.OffscreenPose 0); the visible-rig check below runs the game as shipped (off-screen poses held).
+    hud('cmd', 'mare.OffscreenPose 0')
+    time.sleep(2)
     day = gait()
+    hud('cmd', 'mare.OffscreenPose 1')
+    time.sleep(2)
     report['visible'] = visible()
     if with_shots:
         report['shots'] = shots(stamp)
     coast('clock', '1250')
+    hud('cmd', 'mare.OffscreenPose 0')
     time.sleep(20)
     night = gait()
+    hud('cmd', 'mare.OffscreenPose 1')
     report['gait'] = {'day': day, 'night': night, 'pass': not day['gliding'] and not night['gliding'] and day['moving'] > 0}
     report['log'] = log_since(offset, base.get('log_allow', []))
     pie(False)

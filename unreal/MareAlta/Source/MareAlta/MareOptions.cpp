@@ -185,7 +185,7 @@ void FMareOptions::Bind(FName Action,FKey NewKey)
 bool FMareOptions::IsQARun()
 {
  const TCHAR* Cmd=FCommandLine::Get();
- return GIsAutomationTesting || FParse::Param(Cmd,TEXT("MareGraphicsQA")) || FParse::Param(Cmd,TEXT("MareIntroQA")) || FParse::Param(Cmd,TEXT("MarePreviewQA"));
+ return GIsAutomationTesting || FParse::Param(Cmd,TEXT("MareGraphicsQA")) || FParse::Param(Cmd,TEXT("MareIntroQA")) || FParse::Param(Cmd,TEXT("MarePreviewQA")) || FParse::Param(Cmd,TEXT("MareBench"));
 }
 const FMareOptions& FMareOptions::Get(){return MareOptionsData::Live();}
 void FMareOptions::Set(const FMareOptions& Options)

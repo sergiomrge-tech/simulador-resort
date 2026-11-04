@@ -839,7 +839,73 @@ def stage(spec):
     return placed
 
 
+def shadow_lights(spec):
+    """PIE: local lights (point/spot/rect) that are visible, lit and cast shadows and whose radius reaches the point
+    "x,y,z": the count is what Virtual Shadow Maps project per pixel there (VSM One Pass Projection limit)."""
+    world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()
+    if spec == 'overlap':
+        # Every lit, visible shadow-casting local light; for each, how many of them reach its position (worst spots).
+        lights = []
+        for cls in (unreal.PointLightComponent, unreal.SpotLightComponent, unreal.RectLightComponent):
+            for c in unreal.ObjectIterator(cls):
+                if c.get_world() == world and c.is_visible() and c.get_editor_property('intensity') > 0 and c.get_editor_property('cast_shadows'):
+                    owner = c.get_owner()
+                    lights.append((owner.get_name() if owner else '', c.get_name(), c.get_world_location(), c.get_editor_property('attenuation_radius')))
+        worst = []
+        for o, n, at, r in lights:
+            k = sum(1 for _, _, at2, r2 in lights if (at2 - at).length() <= r2)
+            worst.append({'owner': o, 'comp': n, 'at': [round(at.x), round(at.y), round(at.z)], 'radius': round(r), 'reached_by': k})
+        worst.sort(key=lambda w: -w['reached_by'])
+        owners = {}
+        for o, *_ in lights:
+            owners[o] = owners.get(o, 0) + 1
+        return {'shadow_lights': len(lights), 'worst': worst[:12], 'by_owner': sorted(owners.items(), key=lambda kv: -kv[1])[:12]}
+    x, y, z = [float(v) for v in spec.split(',')]
+    point = unreal.Vector(x, y, z)
+    out = []
+    for cls in (unreal.PointLightComponent, unreal.SpotLightComponent, unreal.RectLightComponent):
+        for c in unreal.ObjectIterator(cls):
+            if c.get_world() != world or not c.is_visible() or c.get_editor_property('intensity') <= 0:
+                continue
+            at = c.get_world_location()
+            r = c.get_editor_property('attenuation_radius')
+            d = (at - point).length()
+            if d <= r:
+                owner = c.get_owner()
+                out.append({'owner': owner.get_name() if owner else '', 'comp': c.get_name(), 'shadow': c.get_editor_property('cast_shadows'),
+                            'radius': round(r), 'dist': round(d), 'at': [round(at.x), round(at.y), round(at.z)]})
+    every = {}
+    for cls in (unreal.PointLightComponent, unreal.SpotLightComponent, unreal.RectLightComponent):
+        for c in unreal.ObjectIterator(cls):
+            key = 'pie' if c.get_world() == world else 'other'
+            every[key] = every.get(key, 0) + 1
+    return {'total': len(out), 'shadowed': sum(1 for o in out if o['shadow']), 'lights': out, 'world_lights': every}
+
+
+def nanite_off(paths):
+    """Static meshes whose glass/fringe is translucent: Nanite cannot draw translucent materials, so the whole mesh
+    renders without Nanite (UE warns 'Invalid material ... used on Nanite static mesh')."""
+    done = []
+    for path in [p for p in paths.split(';') if p]:
+        mesh = unreal.EditorAssetLibrary.load_asset(path)
+        if not isinstance(mesh, unreal.StaticMesh):
+            reg = unreal.AssetRegistryHelpers.get_asset_registry()
+            raise RuntimeError(f'{path}: {mesh} {[str(a.asset_class_path.asset_name) for a in reg.get_assets_by_package_name(path.split(".")[0])]}')
+        settings = mesh.get_editor_property('nanite_settings')
+        if settings.get_editor_property('enabled'):
+            settings.set_editor_property('enabled', False)
+            mesh.set_editor_property('nanite_settings', settings)
+            if not unreal.EditorAssetLibrary.save_loaded_asset(mesh, False):
+                raise RuntimeError('not saved: ' + path)
+            done.append(path)
+    return done
+
+
 def run(action, arg=''):
+    if action == 'shadowlights':
+        return json_module.dumps(shadow_lights(arg))
+    if action == 'naniteoff':
+        return json_module.dumps(nanite_off(arg))
     if action == 'stage':
         return json_module.dumps(stage(arg))
     if action == 'texcap':

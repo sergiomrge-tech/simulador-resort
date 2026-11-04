@@ -139,6 +139,8 @@ private:
 public:
  UPROPERTY(BlueprintReadOnly,Category="Maré Alta")
  float Elapsed=0;
+ float SeenCheck=0;
+ bool bCastsShadow=true;
  UPROPERTY(BlueprintReadOnly,Category="Maré Alta")
  FVector Destination=FVector::ZeroVector;
  static class UStaticMesh* ProductMesh(const FString& Dish,bool bUsed=false);

@@ -1,4 +1,6 @@
 #include "MarePerson.h"
+#include "Camera/PlayerCameraManager.h"
+#include "Misc/PackageName.h"
 #include "MareServiceAnimation.h"
 #include "MareServiceTarget.h"
 #include "MareSimulation.h"
@@ -29,10 +31,20 @@
 #include "Misc/Paths.h"
 #include "Serialization/JsonSerializer.h"
 
+// Garments made per body (tools/ue58/gen_mh_swimwear.py, gen_mh_shoes.py) are looked up by kind and name; only some
+// combinations exist, so check the package first: a failed LoadObject logs "Failed to find object" in the packaged game.
+static USkeletalMesh* SwimwearPiece(const FString& Kind,const FString& Base)
+{
+ const FString Package=FString::Printf(TEXT("/Game/People/Swimwear/SKM_%s_%s"),*Kind,*Base);
+ return FPackageName::DoesPackageExist(Package)?LoadObject<USkeletalMesh>(nullptr,*FString::Printf(TEXT("%s.SKM_%s_%s"),*Package,*Kind,*Base)):nullptr;
+}
+
 static TAutoConsoleVariable<int32> CVarMareMetaHumans(TEXT("mare.MetaHumans"),1,TEXT("People wear the built MetaHumans of Content/Data/metahumans.json (0 = original rig people)."));
 static TAutoConsoleVariable<int32> CVarMareBeachwear(TEXT("mare.Beachwear"),-1,TEXT("QA: beachwear option index for new beach people (-1 = picked per person)."));
 static TAutoConsoleVariable<int32> CVarMareFaces(TEXT("mare.Faces"),1,TEXT("MetaHuman faces blink and change expression (own face pose with rig curves); 0 = faces follow the body, neutral."));
 static TAutoConsoleVariable<int32> CVarMareMocap(TEXT("mare.Mocap"),1,TEXT("Use the free Fab mocap clips (seated/standing talk, party dances); 0 = base clips only."));
+static TAutoConsoleVariable<int32> CVarMareOffscreenPose(TEXT("mare.OffscreenPose"),1,TEXT("People nobody sees (no part drawn, not even its shadow, for 0.6 s) keep their pose instead of animating: 1 = on (04/11, 61 people cost 15 ms of render thread with 6 on screen), 0 = always animate."));
+static TAutoConsoleVariable<float> CVarMarePeopleShadowDistance(TEXT("mare.PeopleShadowDistance"),3000.f,TEXT("People farther than this from the camera (cm) cast no shadow: 04/11 the beach drew 3400 shadow draw calls for 61 MetaHumans spread over the map, 6 on screen (0 = always cast)."));
 static TAutoConsoleVariable<FString> CVarMareMetaHuman(TEXT("mare.MetaHuman"),TEXT(""),TEXT("QA: force this built MetaHuman on every new person (empty = roster choice)."));
 
 /** Content/Data/metahumans.json: built MetaHumans per role (staff, hotel, village, beach) and swimwear colours. */
@@ -307,6 +319,7 @@ bool AMarePerson::SetMetaHuman(const FString& Name)
  // follows it freezes and the person glides along without moving legs or arms.
  GetMesh()->VisibilityBasedAnimTickOption=EVisibilityBasedAnimTickOption::AlwaysTickPoseAndRefreshBones;
  if(MetaHumanBody)MetaHumanBody->DestroyComponent();
+ bCastsShadow=true;SeenCheck=0;   // new parts cast shadows: the next Tick check applies the distance rule to them
  MetaHumanBody=NewObject<UChildActorComponent>(this);AddInstanceComponent(MetaHumanBody);
  MetaHumanBody->SetupAttachment(GetMesh());MetaHumanBody->SetChildActorClass(Look);MetaHumanBody->RegisterComponent();
  if(AActor* Child=MetaHumanBody->GetChildActor()){TArray<USkeletalMeshComponent*> Parts;Child->GetComponents(Parts);
@@ -325,7 +338,7 @@ bool AMarePerson::SetMetaHuman(const FString& Name)
  for(auto Part:Overwear)if(IsValid(Part))Part->DestroyComponent();Overwear.Empty();
  if(Name.EndsWith(TEXT("_Swim"))){const FString Base=Name.LeftChop(5);USkeletalMesh* Garment=nullptr;
   for(const TCHAR* Kind:{TEXT("Bikini"),TEXT("Trunks")})
-   if(!Garment)Garment=LoadObject<USkeletalMesh>(nullptr,*FString::Printf(TEXT("/Game/People/Swimwear/SKM_%s_%s.SKM_%s_%s"),Kind,*Base,Kind,*Base));
+   if(!Garment)Garment=SwimwearPiece(Kind,Base);
   if(Garment){Swimwear=NewObject<USkeletalMeshComponent>(this);AddInstanceComponent(Swimwear);Swimwear->SetupAttachment(GetMesh());
    Swimwear->SetSkeletalMeshAsset(Garment);Swimwear->SetCollisionEnabled(ECollisionEnabled::NoCollision);Swimwear->RegisterComponent();
    Swimwear->SetLeaderPoseComponent(GetMesh());
@@ -344,7 +357,7 @@ bool AMarePerson::SetMetaHuman(const FString& Name)
    TArray<FString> Kinds;(*Options)[Pick]->AsString().ParseIntoArray(Kinds,TEXT("+"));
    const TArray<TSharedPtr<FJsonValue>>* Colours=nullptr;MetaHumanRoster()->TryGetArrayField(TEXT("beachwear_colours"),Colours);
    for(const FString& Kind:Kinds){const FString Asset=Kind.Left(1).ToUpper()+Kind.Mid(1);
-    auto Piece=LoadObject<USkeletalMesh>(nullptr,*FString::Printf(TEXT("/Game/People/Swimwear/SKM_%s_%s.SKM_%s_%s"),*Asset,*Base,*Asset,*Base));if(!Piece)continue;
+    auto Piece=SwimwearPiece(Asset,Base);if(!Piece)continue;
     auto Part=NewObject<USkeletalMeshComponent>(this);AddInstanceComponent(Part);Part->SetupAttachment(GetMesh());Part->SetSkeletalMeshAsset(Piece);
     Part->SetCollisionEnabled(ECollisionEnabled::NoCollision);Part->RegisterComponent();Part->SetLeaderPoseComponent(GetMesh());
     if(Colours && Colours->Num()){const FColor C=FColor::FromHex((*Colours)[int32(FCrc::StrCrc32(*(SaveId+Kind))%uint32(Colours->Num()))]->AsString());
@@ -381,7 +394,7 @@ bool AMarePerson::SetMetaHuman(const FString& Name)
   Kind=(*KindList)[int32(FCrc::StrCrc32(*(SaveId+TEXT("feet")))%uint32(KindList->Num()))]->AsString();
  if(!Kind.IsEmpty()){
   const TCHAR* Foot=IsWoman()?TEXT("Ada"):TEXT("Mateo");
-  if(auto Pair=LoadObject<USkeletalMesh>(nullptr,*FString::Printf(TEXT("/Game/People/Swimwear/SKM_%s_%s.SKM_%s_%s"),*Kind,Foot,*Kind,Foot))){
+  if(auto Pair=SwimwearPiece(Kind,Foot)){
    Shoes=NewObject<USkeletalMeshComponent>(this);AddInstanceComponent(Shoes);Shoes->SetupAttachment(GetMesh());
    Shoes->SetSkeletalMeshAsset(Pair);Shoes->SetCollisionEnabled(ECollisionEnabled::NoCollision);Shoes->RegisterComponent();
    Shoes->SetLeaderPoseComponent(GetMesh());
@@ -482,6 +495,19 @@ void AMarePerson::ApplyOutfit(EOutfit Style)
 void AMarePerson::Tick(float DeltaSeconds)
 {
  Super::Tick(DeltaSeconds);Elapsed+=DeltaSeconds;
+ // The hidden rig must animate always while the person is seen (03/11: OnlyTickPoseWhenRendered on it froze everyone,
+ // since the rig itself is never drawn). Off screen it may stop: the parts that follow it then also stop sending bones
+ // to the GPU. Seen = any visible part drawn in the last 0.6 s, shadows included; checked a few times a second.
+ if((SeenCheck-=DeltaSeconds)<=0){SeenCheck=FMath::FRandRange(.25f,.35f);bool bSeen=!CVarMareOffscreenPose.GetValueOnGameThread();
+  TArray<UPrimitiveComponent*> Parts;GetComponents(Parts);
+  if(MetaHumanBody && MetaHumanBody->GetChildActor()){TArray<UPrimitiveComponent*> Body;MetaHumanBody->GetChildActor()->GetComponents(Body);Parts.Append(Body);}
+  for(auto Part:Parts)if(!bSeen && Part!=GetMesh() && Part->IsVisible() && Part->WasRecentlyRendered(.6f))bSeen=true;
+  // Far away a person's shadow is a few pixels, yet every part (body, clothes, hair cards) is drawn into the sun's
+  // shadow pages each frame: beyond mare.PeopleShadowDistance the parts stop casting (switched only on a change).
+  const float Reach=CVarMarePeopleShadowDistance.GetValueOnGameThread();auto Camera=UGameplayStatics::GetPlayerCameraManager(this,0);
+  const bool bShadow=Reach<=0 || !Camera || FVector::DistSquared(Camera->GetCameraLocation(),GetActorLocation())<Reach*Reach;
+  if(bShadow!=bCastsShadow){bCastsShadow=bShadow;for(auto Part:Parts)if(Part!=GetMesh() && Part->IsVisible())Part->SetCastShadow(bShadow);}
+  GetMesh()->VisibilityBasedAnimTickOption=bSeen?EVisibilityBasedAnimTickOption::AlwaysTickPoseAndRefreshBones:EVisibilityBasedAnimTickOption::OnlyTickMontagesWhenNotRendered;}
  if(MoodLeft>0)MoodLeft-=DeltaSeconds;
  if(Elapsed>=NextBlink){BlinkAt=Elapsed;NextBlink=Elapsed+FMath::FRandRange(2.8f,6.f);}
  if(SeatAlignIn>0 && (SeatAlignIn-=DeltaSeconds)<=0 && Playing==TEXT("Sitting_Idle") && GetMesh()->GetBoneIndex(TEXT("pelvis"))!=INDEX_NONE){

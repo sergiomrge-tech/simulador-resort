@@ -93,7 +93,7 @@ void UMareSimulation::Initialize(FSubsystemCollectionBase& Collection)
  ReadJson(FPaths::ProjectContentDir()/TEXT("Data/definitions.json"),Definitions);
  const bool bExistingSave=IFileManager::Get().FileExists(*SavePath()) || IFileManager::Get().FileExists(*(SavePath()+TEXT(".bak")));
  if(!ReadSave(SavePath(),State)) ReadJson(FPaths::ProjectContentDir()/TEXT("Data/default_save.json"),State);
- if(!bExistingSave && State.IsValid() && !FParse::Param(FCommandLine::Get(),TEXT("MarePreviewQA")) && !FParse::Param(FCommandLine::Get(),TEXT("MareGraphicsQA"))) State->SetNumberField(TEXT("ue_intro_stage"),0);
+ if(!bExistingSave && State.IsValid() && !FParse::Param(FCommandLine::Get(),TEXT("MarePreviewQA")) && !FParse::Param(FCommandLine::Get(),TEXT("MareGraphicsQA")) && !FParse::Param(FCommandLine::Get(),TEXT("MareBench"))) State->SetNumberField(TEXT("ue_intro_stage"),0);
  if(!State.IsValid()) State=MakeShared<FJsonObject>();
  if(!Definitions.IsValid()) Definitions=MakeShared<FJsonObject>();
 }
