@@ -1,4 +1,5 @@
 #include "MareVisualWorld.h"
+#include "MareLoc.h"
 #include "MareSimulation.h"
 #include "MareGame.h"
 #include "MareServiceTarget.h"
@@ -110,7 +111,7 @@ void UMareVisualWorld::Tick(float DeltaSeconds)
   for(TActorIterator<APostProcessVolume> It(GetWorld());It;++It)if(It->ActorHasTag(TEXT("MareInterior")))Interiors.Add(*It);
   for(TActorIterator<ASkyLight> It(GetWorld());It;++It){Sky=*It;break;}
   BuildLamps();
-  for(TActorIterator<ATextRenderActor> It(GetWorld());It;++It)if(It->ActorHasTag(TEXT("MareText"))){Signs.Add(*It);
+  for(TActorIterator<ATextRenderActor> It(GetWorld());It;++It)if(It->ActorHasTag(TEXT("MareText"))){Signs.Add(*It);SignSource.Add(*It,It->GetTextRender()->Text.ToString());
    if(It->ActorHasTag(TEXT("MareStatusSign"))){auto Target=GetWorld()->SpawnActor<AMareServiceTarget>(It->GetActorLocation(),FRotator::ZeroRotator);
     Target->Action=TEXT("KioskSign");Target->Label=TEXT("Placa do quiosque");Target->Reach=330;Target->OcclusionTolerance=100;Target->SetOwner(*It);}
   }
@@ -161,7 +162,9 @@ void UMareVisualWorld::Tick(float DeltaSeconds)
   if(Sign->ActorHasTag(TEXT("MarePromoSign")))Text=FString::Printf(TEXT("PROMOÇÕES<br>Coco gelado<br>R$ %.0f<br>Suco da fruta<br>R$ %.0f"),Sim->SalePrice(TEXT("coco_gelado")),Sim->SalePrice(TEXT("suco")));
   if(Sign->ActorHasTag(TEXT("MareMenuSign")))for(FString Id:{TEXT("coco_gelado"),TEXT("suco"),TEXT("caipirinha"),TEXT("petiscos"),TEXT("sorvete_morango"),TEXT("sorvete_chocolate"),TEXT("batata_frita"),TEXT("porcao_peixe")})if(Sim->IsDishUnlocked(Id))Text+=Price(Id)+TEXT("<br>");
   for(FName Tag:Sign->Tags)if(Tag.ToString().StartsWith(TEXT("MareStock_"))){FString Id=Tag.ToString().RightChop(10);Text=UMareSimulation::String(UMareSimulation::Object(Dishes,Id),TEXT("name"))+FString::Printf(TEXT("<br>%d prontos"),Sim->Available(Id));}
-  if(!Text.IsEmpty() && Sign->GetTextRender()->Text.ToString()!=Text)Sign->GetTextRender()->SetText(FText::FromString(Text));
+  // Fixed signs saved in the level ("Casa", street names) keep their Portuguese text as the source for the translation.
+  if(Text.IsEmpty())if(const FString* Source=SignSource.Find(Sign))Text=*Source;
+  if(!Text.IsEmpty()){const FText Shown=MareLoc::Text(Text);if(!Sign->GetTextRender()->Text.EqualTo(Shown))Sign->GetTextRender()->SetText(Shown);}
  }
 }
 

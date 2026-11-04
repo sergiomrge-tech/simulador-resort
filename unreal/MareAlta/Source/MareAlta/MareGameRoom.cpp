@@ -1,4 +1,5 @@
 #include "MareGameRoom.h"
+#include "MareLoc.h"
 #include "MareSimulation.h"
 #include "MareServiceTarget.h"
 #include "MarePerson.h"
@@ -272,9 +273,9 @@ FString UMareGameRoom::Status() const
  const bool bPad=MareGamepad::UsingGamepad();const bool bPlayStation=FMareOptions::Get().PadGlyphs==1;
  FString Yours=TEXT("sua vez: mouse mira, segure e solte o clique · Q sai");
  if(bPad)Yours=FText::Format(NSLOCTEXT("MareGameRoom","PoolPadTurn","sua vez: analógico mira, segure {0} e solte · {1} sai"),
-  FText::FromString(MareGamepad::PadLabel(EKeys::Gamepad_RightTrigger,bPlayStation)),FText::FromString(MareGamepad::PadLabel(EKeys::Gamepad_FaceButton_Right,bPlayStation))).ToString();
+  MareLoc::Text(MareGamepad::PadLabel(EKeys::Gamepad_RightTrigger,bPlayStation)),MareLoc::Text(MareGamepad::PadLabel(EKeys::Gamepad_FaceButton_Right,bPlayStation))).ToString();
  if(bPlacing)Yours=bPad?FText::Format(NSLOCTEXT("MareGameRoom","PoolPadPlace","bola na mão: analógico move a branca, {0} confirma"),
-  FText::FromString(MareGamepad::PadLabel(EKeys::Gamepad_RightTrigger,bPlayStation))).ToString():TEXT("bola na mão: mova o mouse para posicionar a branca e clique");
+  MareLoc::Text(MareGamepad::PadLabel(EKeys::Gamepad_RightTrigger,bPlayStation))).ToString():TEXT("bola na mão: mova o mouse para posicionar a branca e clique");
  auto Side=[this](int32 S){return Group[S]==1?TEXT(" (lisas)"):Group[S]==2?TEXT(" (listradas)"):TEXT("");};
  FString Line=FString::Printf(TEXT("Sinuca · você%s %d × %d %s%s · %s"),Side(0),Score[0],Score[1],*Opponent,Side(1),
   bShotRunning?TEXT("bolas rolando"):Turn==0?*Yours:*(TEXT("vez de ")+Opponent));

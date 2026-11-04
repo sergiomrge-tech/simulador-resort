@@ -505,3 +505,12 @@ ignora em silêncio comando de console posterior (o benchmark aplica os seus com
 repetir antes de concluir. O MCP da 5.8 só sobe com `-ModelContextProtocolStartServer`; o PIE abre o menu principal
 pausado (a vila não nasce): o portão usa `mare.ShowUI play`.
 
+
+## Tradução no executável (04/11)
+
+`TMap<FString,...>`/`TSet<FString>` da UE comparam SEM diferenciar maiúsculas: o identificador "options" sobrescreveu
+"Options" e "farol" sobrescreveu "Farol" (o inglês saiu em minúsculas). Dicionários de texto usam KeyFuncs sensíveis
+(`MareLoc.cpp`). `FString::StartsWith("")` devolve false: modelo que começa com `{0}` precisa testar parte vazia.
+Registrar polyglot uma vez por idioma faz o último substituir o anterior: juntar todos os idiomas num só
+`FPolyglotTextData` por chave. Textos novos: rodar `python tools/ue58/i18n_extract.py`, traduzir o `todo_<idioma>.json`
+e conferir no executável com `-culture=en -MareLocAudit` (`MARE_LOC_MISSING` só lista o que realmente falta).

@@ -213,7 +213,7 @@ def shots(stamp):
             ImageDraw.Draw(img).text((8, 8), f'{name}  (primeira referencia)', fill='yellow')
         tiles.append(img)
     if not tiles:   # no capture at all (listed in review): nothing to lay out
-        return review
+        return {'folder': str(folder), 'review': review}
     sheet = Image.new('RGB', (1280, 360 * ((len(tiles) + 1) // 2)))
     for i, t in enumerate(tiles):
         sheet.paste(t, ((i % 2) * 640, (i // 2) * 360))

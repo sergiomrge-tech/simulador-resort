@@ -1,4 +1,5 @@
 #include "MareOptions.h"
+#include "MareLoc.h"
 #include "Camera/CameraComponent.h"
 #include "CoreGlobals.h"
 #include "Engine/Engine.h"
@@ -76,6 +77,8 @@ namespace MareOptionsData
   static FMareOptions Options=[](){
    if(FMareOptions::IsQARun())return FMareOptions::Defaults();
    FMareOptions Result=FMareOptions::FromEngine();Result.LoadFile(FMareOptions::DefaultPath());return Result;}();
+  // -culture=en / -culture=es on the command line (QA captures of the translations) wins over the saved choice.
+  static bool bCultureArg=[](){FString Arg;if(FParse::Value(FCommandLine::Get(),TEXT("culture="),Arg) && FMareOptions::Cultures().Contains(Arg))Options.Culture=Arg;return true;}();
   return Options;
  }
 }
@@ -91,8 +94,8 @@ const TArray<FMareOptions::FAction>& FMareOptions::Actions()
  return List;
 }
 const TArray<int32>& FMareOptions::FrameLimits(){static const TArray<int32> List={30,60,120,144,0};return List;}
-const TArray<FString>& FMareOptions::Cultures(){static const TArray<FString> List={TEXT("pt-BR"),TEXT("en")};return List;}
-FText FMareOptions::CultureName(const FString& Name){return FText::FromString(Name==TEXT("en")?TEXT("English"):TEXT("Português (Brasil)"));}
+const TArray<FString>& FMareOptions::Cultures(){static const TArray<FString> List={TEXT("pt-BR"),TEXT("en"),TEXT("es")};return List;}
+FText FMareOptions::CultureName(const FString& Name){return FText::AsCultureInvariant(Name==TEXT("en")?TEXT("English"):Name==TEXT("es")?TEXT("Español"):TEXT("Português (Brasil)"));}
 TArray<FString> FMareOptions::Upscalers()
 {
  TArray<FString> List={TEXT("TSR")};auto& Console=IConsoleManager::Get();
@@ -279,6 +282,7 @@ void FMareOptions::ApplyCulture()const
  if(GIsEditor){UE_LOG(LogTemp,Log,TEXT("MareOptions: culture %s saved, applied only outside the editor."),*Culture);return;}
  if(FInternationalization::Get().GetCurrentCulture()->GetName()!=Culture)FInternationalization::Get().SetCurrentCulture(Culture);
  GConfig->SetString(TEXT("Internationalization"),TEXT("Culture"),*Culture,GGameUserSettingsIni);GConfig->Flush(false,GGameUserSettingsIni);
+ MareLoc::Reload();
 }
 void FMareOptions::ApplyKeys(UPlayerInput* Input)const
 {

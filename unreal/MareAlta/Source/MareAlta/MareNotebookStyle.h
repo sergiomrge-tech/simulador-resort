@@ -2,6 +2,7 @@
 // "Caderno do Quiosque": the UI style of the whole game (phone, menus, dialogues, letter). Moved out of
 // MareGame.cpp on 03/11 so every panel uses it; old flat cards (MareUI) were converted.
 #include "CoreMinimal.h"
+#include "MareLoc.h"
 #include "Brushes/SlateRoundedBoxBrush.h"
 #include "Fonts/CompositeFont.h"
 #include "Styling/SlateTypes.h"
@@ -44,8 +45,8 @@ namespace MareNotebook
  inline const FSlateRoundedBoxBrush& Note(){static const FSlateRoundedBoxBrush B(Hex(255,236,150),4.f,Hex(214,190,120),1.f);return B;}
  inline const FButtonStyle& InkButton(){static const FButtonStyle S=FButtonStyle().SetNormal(FSlateRoundedBoxBrush(Brown,5.f)).SetHovered(FSlateRoundedBoxBrush(Hex(146,76,40),5.f)).SetPressed(FSlateRoundedBoxBrush(Hex(92,42,18),5.f)).SetDisabled(FSlateRoundedBoxBrush(Hex(190,170,140),5.f));return S;}
  inline const FButtonStyle& Plain(){static const FButtonStyle S=FButtonStyle().SetNormal(FSlateNoResource()).SetHovered(FSlateRoundedBoxBrush(Hex(255,229,138,.55f),3.f)).SetPressed(FSlateRoundedBoxBrush(Marker,3.f));return S;}
- inline TSharedRef<STextBlock> HandText(const FString& V,float Size,const FLinearColor& C=Ink){return SNew(STextBlock).Text(FText::FromString(V)).Font(Hand(Size)).ColorAndOpacity(C).AutoWrapText(true);}
- inline TSharedRef<STextBlock> BodyText(const FString& V,float Size=12,const FLinearColor& C=Ink,bool bBold=false){return SNew(STextBlock).Text(FText::FromString(V)).Font(Body(Size,bBold)).ColorAndOpacity(C).AutoWrapText(true);}
+ inline TSharedRef<STextBlock> HandText(const FString& V,float Size,const FLinearColor& C=Ink){return SNew(STextBlock).Text(MareLoc::Text(V)).Font(Hand(Size)).ColorAndOpacity(C).AutoWrapText(true);}
+ inline TSharedRef<STextBlock> BodyText(const FString& V,float Size=12,const FLinearColor& C=Ink,bool bBold=false){return SNew(STextBlock).Text(MareLoc::Text(V)).Font(Body(Size,bBold)).ColorAndOpacity(C).AutoWrapText(true);}
  /** Rubber stamp (EM USO, CONTRATADO, SEU): red or green ink, slightly crooked. */
  inline TSharedRef<SWidget> Stamp(const FString& V,const FLinearColor& C=Red)
  {
@@ -54,7 +55,7 @@ namespace MareNotebook
  /** Paper price tag with the string hole and a solid shadow; tilt in degrees. */
  inline TSharedRef<SWidget> PriceTag(TSharedRef<SWidget> Content,float Tilt=0,const FString& Tooltip=FString())
  {
-  return SNew(SBox).Padding(FMargin(2,4,6,8)).ToolTipText(Tooltip.IsEmpty()?FText::GetEmpty():FText::FromString(Tooltip))[SNew(SOverlay).RenderTransform(MareNotebook::Tilt(Tilt)).RenderTransformPivot(FVector2D(.5f))
+  return SNew(SBox).Padding(FMargin(2,4,6,8)).ToolTipText(Tooltip.IsEmpty()?FText::GetEmpty():MareLoc::Text(Tooltip))[SNew(SOverlay).RenderTransform(MareNotebook::Tilt(Tilt)).RenderTransformPivot(FVector2D(.5f))
    +SOverlay::Slot().Padding(FMargin(3,4,-3,-4))[SNew(SBorder).BorderImage(&TagShadow())]
    +SOverlay::Slot()[SNew(SBorder).BorderImage(&TagBrush()).Padding(FMargin(12,14,10,10))[Content]]
    +SOverlay::Slot().HAlign(HAlign_Right).VAlign(VAlign_Top).Padding(FMargin(0,7,10,0))[SNew(SBox).WidthOverride(10).HeightOverride(10)[SNew(SBorder).BorderImage(&Hole())]]];
@@ -97,7 +98,7 @@ namespace MareNotebook
    +SOverlay::Slot().HAlign(HAlign_Center).VAlign(VAlign_Top).Padding(0,-7,0,0)[SNew(SBox).WidthOverride(16).HeightOverride(16)[SNew(SBorder).BorderImage(&PinBrush())]];
  }
  /** Main action: ink button with the handwriting label. */
- inline TSharedRef<STextBlock> InkLabel(const FString& V,float Size=17){return SNew(STextBlock).Text(FText::FromString(V)).Font(Hand(Size)).ColorAndOpacity(Tag);}
+ inline TSharedRef<STextBlock> InkLabel(const FString& V,float Size=17){return SNew(STextBlock).Text(MareLoc::Text(V)).Font(Hand(Size)).ColorAndOpacity(Tag);}
 }
 
 #include "Widgets/SCompoundWidget.h"
@@ -123,11 +124,11 @@ public:
     [SNew(SBox).WidthOverride_Lambda([this](){return Width>1?FOptionalSize(Width/Scale):FOptionalSize();})[Content.ToSharedRef()]]]
    +SVerticalBox::Slot().AutoHeight().HAlign(HAlign_Center).Padding(0,2,0,0)[SNew(SHorizontalBox).Visibility_Lambda([this](){return Leaves>1?EVisibility::Visible:EVisibility::Collapsed;})
     +SHorizontalBox::Slot().AutoWidth()[SNew(SButton).ButtonStyle(&MareNotebook::TagButton()).ContentPadding(FMargin(10,0)).IsEnabled_Lambda([this](){return Leaf()>0;})
-     .OnClicked_Lambda([this](){Leaf()=FMath::Max(0,Leaf()-1);return FReply::Handled();})[SNew(STextBlock).Text(FText::FromString(TEXT("‹ folha anterior"))).Font(MareNotebook::Hand(15)).ColorAndOpacity(MareNotebook::Ink)]]
+     .OnClicked_Lambda([this](){Leaf()=FMath::Max(0,Leaf()-1);return FReply::Handled();})[SNew(STextBlock).Text(MareLoc::Text(TEXT("‹ folha anterior"))).Font(MareNotebook::Hand(15)).ColorAndOpacity(MareNotebook::Ink)]]
     +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(10,0)[SNew(STextBlock).Font(MareNotebook::Hand(15)).ColorAndOpacity(MareNotebook::Faded)
-     .Text_Lambda([this](){return FText::FromString(FString::Printf(TEXT("folha %d de %d"),Leaf()+1,FMath::Max(Leaves,1)));})]
+     .Text_Lambda([this](){return MareLoc::Text(FString::Printf(TEXT("folha %d de %d"),Leaf()+1,FMath::Max(Leaves,1)));})]
     +SHorizontalBox::Slot().AutoWidth()[SNew(SButton).ButtonStyle(&MareNotebook::TagButton()).ContentPadding(FMargin(10,0)).IsEnabled_Lambda([this](){return Leaf()<Leaves-1;})
-     .OnClicked_Lambda([this](){Leaf()=FMath::Min(Leaves-1,Leaf()+1);return FReply::Handled();})[SNew(STextBlock).Text(FText::FromString(TEXT("próxima folha ›"))).Font(MareNotebook::Hand(15)).ColorAndOpacity(MareNotebook::Ink)]]]];
+     .OnClicked_Lambda([this](){Leaf()=FMath::Min(Leaves-1,Leaf()+1);return FReply::Handled();})[SNew(STextBlock).Text(MareLoc::Text(TEXT("próxima folha ›"))).Font(MareNotebook::Hand(15)).ColorAndOpacity(MareNotebook::Ink)]]]];
  }
  inline virtual void Tick(const FGeometry& Geometry,const double,const float) override
  {

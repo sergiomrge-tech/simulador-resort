@@ -1,4 +1,5 @@
 #include "MareGame.h"
+#include "MareLoc.h"
 #include "MareNotebookStyle.h"
 #include "Fonts/FontMeasure.h"
 #include "Framework/Application/SlateApplication.h"
@@ -73,7 +74,7 @@ namespace MareUI
  {
   TArray<FString> Words;Value.ParseIntoArrayWS(Words);FString Current;
   auto Draw=[&](){
-   FCanvasTextItem Item(FVector2D(22,Y),FText::FromString(Current),Font,Color);
+   FCanvasTextItem Item(FVector2D(22,Y),MareLoc::Text(Current),Font,Color);
    Item.EnableShadow(FLinearColor::Black);Canvas->DrawItem(Item);Y+=22;Current.Empty();
   };
   for(const auto& Word:Words){
@@ -91,11 +92,11 @@ namespace MareUI
  TSharedRef<STextBlock> Text(const FString& Value,int32 Size=14,FLinearColor Color=MareNotebook::Ink)
  {
   const bool bOnInk=Color.Equals(FLinearColor::White),bTitle=Size>=16 && Color.Equals(MareNotebook::Ink);
-  return SNew(STextBlock).Text(FText::FromString(Value)).Font(FontFor(Size,bOnInk || bTitle)).ColorAndOpacity(bOnInk?MareNotebook::Tag:bTitle?MareNotebook::Brown:Color).AutoWrapText(true);
+  return SNew(STextBlock).Text(MareLoc::Text(Value)).Font(FontFor(Size,bOnInk || bTitle)).ColorAndOpacity(bOnInk?MareNotebook::Tag:bTitle?MareNotebook::Brown:Color).AutoWrapText(true);
  }
  TSharedRef<STextBlock> LiveText(TFunction<FString()> Value,int32 Size=14)
  {
-  return SNew(STextBlock).Text_Lambda([Value](){return FText::FromString(Value());}).Font(MareNotebook::Body(Size)).ColorAndOpacity(MareNotebook::Ink).AutoWrapText(true);
+  return SNew(STextBlock).Text_Lambda([Value](){return MareLoc::Text(Value());}).Font(MareNotebook::Body(Size)).ColorAndOpacity(MareNotebook::Ink).AutoWrapText(true);
  }
 }
 namespace MareTropical
@@ -133,7 +134,7 @@ namespace MareTropical
  }
  TSharedRef<STextBlock> Txt(const FString& V,int32 Size,FLinearColor C,bool bBold=false,float Wrap=0)
  {
-  auto T=SNew(STextBlock).Text(FText::FromString(V)).Font(FCoreStyle::GetDefaultFontStyle(bBold?"Bold":"Regular",Size)).ColorAndOpacity(C);
+  auto T=SNew(STextBlock).Text(MareLoc::Text(V)).Font(FCoreStyle::GetDefaultFontStyle(bBold?"Bold":"Regular",Size)).ColorAndOpacity(C);
   if(Wrap>0)T->SetWrapTextAt(Wrap);
   return T;
  }
@@ -191,7 +192,7 @@ private:
  TSharedRef<SWidget> Button(const FString& Label,TFunction<void()> Action,bool bEnabled=true)
  {
   return SNew(SMarePadButton).ButtonStyle(&MareNotebook::InkButton()).IsEnabled(bEnabled).ContentPadding(FMargin(9,2)).OnClicked_Lambda([this,Action](){if(Owner.IsValid())Owner->GetWorld()->GetSubsystem<UMareAudioWorld>()->PlayCue(TEXT("click"),.3f);Action();Rebuild();return FReply::Handled();})
-   [SNew(STextBlock).Text(FText::FromString(Label)).Font(MareNotebook::Hand(16)).ColorAndOpacity(MareNotebook::Tag)];
+   [SNew(STextBlock).Text(MareLoc::Text(Label)).Font(MareNotebook::Hand(16)).ColorAndOpacity(MareNotebook::Tag)];
  }
  /** Underlined handwritten link ("espiar", "dispensar"). */
  TSharedRef<SWidget> Link(const FString& Label,TFunction<void()> Action)
@@ -201,13 +202,13 @@ private:
  }
  void Title(const FString& V,const FString& Note=FString())
  {
-  auto Row=SNew(SHorizontalBox)+SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Bottom).Padding(0,0,14,0)[SNew(STextBlock).Text(FText::FromString(V)).Font(MareNotebook::Hand(30)).ColorAndOpacity(MareNotebook::Ink)];
+  auto Row=SNew(SHorizontalBox)+SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Bottom).Padding(0,0,14,0)[SNew(STextBlock).Text(MareLoc::Text(V)).Font(MareNotebook::Hand(30)).ColorAndOpacity(MareNotebook::Ink)];
   if(!Note.IsEmpty())Row->AddSlot().FillWidth(1).VAlign(VAlign_Bottom).Padding(0,0,0,4)[MareNotebook::HandText(Note,17,MareNotebook::Green)];
   Body->AddSlot().AutoHeight().Padding(0,0,0,4)[Row];
  }
  void Heading(const FString& V,const FString& Note=FString())
  {
-  auto Row=SNew(SHorizontalBox)+SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Bottom).Padding(0,0,8,0)[SNew(STextBlock).Text(FText::FromString(V)).Font(MareNotebook::Hand(22)).ColorAndOpacity(MareNotebook::Brown)];
+  auto Row=SNew(SHorizontalBox)+SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Bottom).Padding(0,0,8,0)[SNew(STextBlock).Text(MareLoc::Text(V)).Font(MareNotebook::Hand(22)).ColorAndOpacity(MareNotebook::Brown)];
   if(!Note.IsEmpty())Row->AddSlot().FillWidth(1).VAlign(VAlign_Bottom).Padding(0,0,0,2)[MareNotebook::HandText(Note,16,MareNotebook::Pencil)];
   Body->AddSlot().AutoHeight().Padding(0,10,0,2)[Row];
  }
@@ -242,18 +243,18 @@ private:
   if(!bCreated){Title(TEXT("Seu quiosque"));
    if(UMareSimulation::Number(S->State,TEXT("ue_intro_stage"),2)<2){Pencil(TEXT("Primeiro, entre na casa e leia a carta que sua avó Dilce deixou para você."));return;}
    Pencil(TEXT("Dê um nome ao quiosque da família:"));
-   Body->AddSlot().AutoHeight().Padding(0,4)[SNew(SBox).WidthOverride(320)[SAssignNew(CompanyName,SEditableTextBox).Text(FText::FromString(TEXT("Maré Alta"))).Font(MareNotebook::Hand(20))]];
+   Body->AddSlot().AutoHeight().Padding(0,4)[SNew(SBox).WidthOverride(320)[SAssignNew(CompanyName,SEditableTextBox).Text(MareLoc::Text(TEXT("Maré Alta"))).Font(MareNotebook::Hand(20))]];
    Body->AddSlot().AutoHeight().HAlign(HAlign_Left).Padding(0,6)[Button(TEXT("Criar empresa"),[this,S](){S->CreateCompany(CompanyName->GetText().ToString());})];return;}
   bool bRequested=false;Company->TryGetBoolField(TEXT("kiosk_open"),bRequested);auto Hours=UMareSimulation::Object(Company,TEXT("sim"));
   Title(UMareSimulation::String(Company,TEXT("name")).IsEmpty()?FString(TEXT("Quiosque")):UMareSimulation::String(Company,TEXT("name")),
    S->IsOpen()?TEXT("aberto · recebendo clientes"):bRequested?TEXT("abertura ativada · aguardando o horário"):TEXT("fechado · use a placa do balcão"));
   auto G=Grid();bool bHired=false;UMareSimulation::Object(S->State,TEXT("staff"))->TryGetBoolField(TEXT("atendente"),bHired);
   G->AddSlot(0,0)[MareNotebook::PriceTag(SNew(SVerticalBox)+SVerticalBox::Slot().AutoHeight()[MareNotebook::HandText(TEXT("Hoje"),15,MareNotebook::Faded)]
-   +SVerticalBox::Slot().AutoHeight()[SNew(STextBlock).Font(MareNotebook::Hand(19)).ColorAndOpacity(MareNotebook::Green).Text_Lambda([S](){return FText::FromString(FString::Printf(TEXT("entrou R$ %.0f"),UMareSimulation::Number(S->State,TEXT("day_in"))));})]
-   +SVerticalBox::Slot().AutoHeight()[SNew(STextBlock).Font(MareNotebook::Hand(19)).ColorAndOpacity(MareNotebook::Red).Text_Lambda([S](){return FText::FromString(FString::Printf(TEXT("saiu R$ %.0f"),UMareSimulation::Number(S->State,TEXT("day_out"))));})],TiltOf(0))];
+   +SVerticalBox::Slot().AutoHeight()[SNew(STextBlock).Font(MareNotebook::Hand(19)).ColorAndOpacity(MareNotebook::Green).Text_Lambda([S](){return MareLoc::Text(FString::Printf(TEXT("entrou R$ %.0f"),UMareSimulation::Number(S->State,TEXT("day_in"))));})]
+   +SVerticalBox::Slot().AutoHeight()[SNew(STextBlock).Font(MareNotebook::Hand(19)).ColorAndOpacity(MareNotebook::Red).Text_Lambda([S](){return MareLoc::Text(FString::Printf(TEXT("saiu R$ %.0f"),UMareSimulation::Number(S->State,TEXT("day_out"))));})],TiltOf(0))];
   G->AddSlot(1,0)[MareNotebook::PriceTag(SNew(SVerticalBox)+SVerticalBox::Slot().AutoHeight()[MareNotebook::HandText(TEXT("Atendimento"),15,MareNotebook::Faded)]
    +SVerticalBox::Slot().AutoHeight()[MareNotebook::BodyText(FString::Printf(TEXT("%.0fh às %.0fh"),UMareSimulation::Number(Hours,TEXT("start"),8),UMareSimulation::Number(Hours,TEXT("end"),18)),12.5f,MareNotebook::Ink,true)]
-   +SVerticalBox::Slot().AutoHeight()[SNew(STextBlock).Font(MareNotebook::Hand(17)).ColorAndOpacity(MareNotebook::Ink).Text_Lambda([S](){return FText::FromString(FString::Printf(TEXT("%d pedidos ativos"),UMareSimulation::Object(S->State,TEXT("ue_orders"))->Values.Num()));})]
+   +SVerticalBox::Slot().AutoHeight()[SNew(STextBlock).Font(MareNotebook::Hand(17)).ColorAndOpacity(MareNotebook::Ink).Text_Lambda([S](){return MareLoc::Text(FString::Printf(TEXT("%d pedidos ativos"),UMareSimulation::Object(S->State,TEXT("ue_orders"))->Values.Num()));})]
    +SVerticalBox::Slot().AutoHeight()[MareNotebook::HandText(bHired?TEXT("com atendente"):TEXT("você atende sozinho"),17,MareNotebook::Pencil)],TiltOf(1))];
   if(auto Audio=Owner->GetWorld()->GetSubsystem<UMareAudioWorld>())
    G->AddSlot(2,0)[MareNotebook::PriceTag(SNew(SVerticalBox)+SVerticalBox::Slot().AutoHeight()[MareNotebook::HandText(TEXT("Rádio"),15,MareNotebook::Faded)]
@@ -276,7 +277,7 @@ private:
   for(const auto& Id:Products()){auto Dish=UMareSimulation::Object(UMareSimulation::Object(S->Definitions,TEXT("dishes")),Id);
    Stock->AddSlot(I%4,I/4)[MareNotebook::PriceTag(SNew(SVerticalBox)+SVerticalBox::Slot().AutoHeight()[MareNotebook::BodyText(UMareSimulation::String(Dish,TEXT("name")),12,MareNotebook::Ink,true)]
     +SVerticalBox::Slot().AutoHeight()[SNew(STextBlock).Font(MareNotebook::Hand(18)).ColorAndOpacity_Lambda([S,Id](){return FSlateColor(S->IsDishUnlocked(Id) && S->Available(Id)>0?MareNotebook::Green:MareNotebook::Red);})
-     .Text_Lambda([S,Id](){if(!S->IsDishUnlocked(Id))return FText::FromString(TEXT("precisa de expansão"));const int32 N=S->Available(Id);return FText::FromString(N>0?FString::Printf(TEXT("%d prontos"),N):TEXT("acabou · repor"));})],TiltOf(I))];++I;}
+     .Text_Lambda([S,Id](){if(!S->IsDishUnlocked(Id))return MareLoc::Text(TEXT("precisa de expansão"));const int32 N=S->Available(Id);return MareLoc::Text(N>0?FString::Printf(TEXT("%d prontos"),N):TEXT("acabou · repor"));})],TiltOf(I))];++I;}
  }
  /** Grand Hotel restaurant: tables, kitchen, the tray, room service and the events book (MareRestaurant.cpp). */
  void RestaurantPage()
@@ -716,19 +717,19 @@ private:
   // Status line in pencil: day, clock, weather and cash.
   auto Status=SNew(SHorizontalBox)
    +SHorizontalBox::Slot().FillWidth(1)[SNew(STextBlock).Font(MareNotebook::Hand(16)).ColorAndOpacity(Faded).Text_Lambda([S](){const int32 M=UMareSimulation::Number(S->State,TEXT("minutes"));
-    return FText::FromString(FString::Printf(TEXT("Dia %.0f · %02d:%02d · %s"),UMareSimulation::Number(S->State,TEXT("day"),1),M/60,M%60,UMareSimulation::String(S->State,TEXT("weather"))==TEXT("rain")?TEXT("Chuva"):TEXT("Sol")));})]
+    return MareLoc::Text(FString::Printf(TEXT("Dia %.0f · %02d:%02d · %s"),UMareSimulation::Number(S->State,TEXT("day"),1),M/60,M%60,UMareSimulation::String(S->State,TEXT("weather"))==TEXT("rain")?TEXT("Chuva"):TEXT("Sol")));})]
    +SHorizontalBox::Slot().FillWidth(2).HAlign(HAlign_Center).Padding(8,0)[SNew(SBox).Visibility(S->LastMessage.IsEmpty()?EVisibility::Collapsed:EVisibility::Visible)[SNew(SBorder).BorderImage(&MarkerBrush()).Padding(FMargin(6,0))
-    [SNew(STextBlock).Text(FText::FromString(S->LastMessage)).Font(MareNotebook::Hand(15)).ColorAndOpacity(Ink).OverflowPolicy(ETextOverflowPolicy::Ellipsis).ToolTipText(FText::FromString(S->LastMessage))]]]
-   +SHorizontalBox::Slot().AutoWidth()[SNew(STextBlock).Font(MareNotebook::Hand(16)).ColorAndOpacity(Faded).Text_Lambda([S](){return FText::FromString(FString::Printf(TEXT("Caixa: R$ %.0f"),S->Money()));})];
+    [SNew(STextBlock).Text(MareLoc::Text(S->LastMessage)).Font(MareNotebook::Hand(15)).ColorAndOpacity(Ink).OverflowPolicy(ETextOverflowPolicy::Ellipsis).ToolTipText(MareLoc::Text(S->LastMessage))]]]
+   +SHorizontalBox::Slot().AutoWidth()[SNew(STextBlock).Font(MareNotebook::Hand(16)).ColorAndOpacity(Faded).Text_Lambda([S](){return MareLoc::Text(FString::Printf(TEXT("Caixa: R$ %.0f"),S->Money()));})];
   // Divider tabs: pastel paper, the open one is the white page itself; "fechar" sits at the end.
   auto Tabs=SNew(SHorizontalBox);
   if(bPhone)for(int32 I=0;I<Titles.Num();++I){const bool bOn=I==Tab;
    Tabs->AddSlot().AutoWidth().VAlign(VAlign_Bottom).Padding(0,0,3,0)[SNew(SMarePadButton).ButtonStyle(&MareNotebook::Plain()).ContentPadding(FMargin(0)).OnClicked_Lambda([this,I](){if(Owner.IsValid())Owner->GetWorld()->GetSubsystem<UMareAudioWorld>()->PlayCue(TEXT("click"),.3f);Tab=I;Rebuild();return FReply::Handled();})
-    [SNew(SBorder).BorderImage(&TabBrush(bOn?Paper:TabColor(I))).Padding(bOn?FMargin(11,4,11,3):FMargin(8,2,8,2))[SNew(STextBlock).Text(FText::FromString(Titles[I])).Font(MareNotebook::Hand(bOn?17:15)).ColorAndOpacity(Ink)]]];}
-  else Tabs->AddSlot().AutoWidth().VAlign(VAlign_Bottom)[SNew(SBorder).BorderImage(&TabBrush(Paper)).Padding(FMargin(16,6,16,5))[SNew(STextBlock).Text(FText::FromString(Station==TEXT("Fridge")?TEXT("Geladeira"):Station==TEXT("Reception") || Station==TEXT("ReceptionHotel")?TEXT("Recepção"):Station==TEXT("Bar")?TEXT("Bar"):Station==TEXT("PoolTable")?TEXT("Sinuca"):Station==TEXT("TableTennis")?TEXT("Tênis de mesa"):Station==TEXT("Tours")?TEXT("Píer"):Station==TEXT("Restaurant")?TEXT("Cozinha"):TEXT("Porções prontas"))).Font(MareNotebook::Hand(19)).ColorAndOpacity(Ink)]];
+    [SNew(SBorder).BorderImage(&TabBrush(bOn?Paper:TabColor(I))).Padding(bOn?FMargin(11,4,11,3):FMargin(8,2,8,2))[SNew(STextBlock).Text(MareLoc::Text(Titles[I])).Font(MareNotebook::Hand(bOn?17:15)).ColorAndOpacity(Ink)]]];}
+  else Tabs->AddSlot().AutoWidth().VAlign(VAlign_Bottom)[SNew(SBorder).BorderImage(&TabBrush(Paper)).Padding(FMargin(16,6,16,5))[SNew(STextBlock).Text(MareLoc::Text(Station==TEXT("Fridge")?TEXT("Geladeira"):Station==TEXT("Reception") || Station==TEXT("ReceptionHotel")?TEXT("Recepção"):Station==TEXT("Bar")?TEXT("Bar"):Station==TEXT("PoolTable")?TEXT("Sinuca"):Station==TEXT("TableTennis")?TEXT("Tênis de mesa"):Station==TEXT("Tours")?TEXT("Píer"):Station==TEXT("Restaurant")?TEXT("Cozinha"):TEXT("Porções prontas"))).Font(MareNotebook::Hand(19)).ColorAndOpacity(Ink)]];
   Tabs->AddSlot().FillWidth(1)[SNullWidget::NullWidget];
   Tabs->AddSlot().AutoWidth().VAlign(VAlign_Bottom)[SNew(SMarePadButton).ButtonStyle(&MareNotebook::Plain()).ContentPadding(FMargin(0)).OnClicked_Lambda([this](){if(Owner.IsValid())Owner->ClosePhone();return FReply::Handled();})
-   [SNew(SBorder).BorderImage(&TabBrush(Hex(226,150,140))).Padding(FMargin(8,2,8,2))[SNew(STextBlock).Text(FText::FromString(TEXT("fechar"))).Font(MareNotebook::Hand(15)).ColorAndOpacity(Ink)]]];
+   [SNew(SBorder).BorderImage(&TabBrush(Hex(226,150,140))).Padding(FMargin(8,2,8,2))[SNew(STextBlock).Text(MareLoc::Text(TEXT("fechar"))).Font(MareNotebook::Hand(15)).ColorAndOpacity(Ink)]]];
   // The page: lined paper behind, place index on the left of Personalizar, scrolling content, a sticky note for messages.
   auto Page=SNew(SHorizontalBox);
   if(bIndex)Page->AddSlot().AutoWidth()[SNew(SBox).WidthOverride(150).Padding(FMargin(14,8,8,6))[PlaceIndex()]];
@@ -866,7 +867,7 @@ public:
    [SNew(SBox).WidthOverride(BarWidth+52)[SNew(SVerticalBox)
     +SVerticalBox::Slot().AutoHeight()[HandText(Title,30,Brown)]
     +SVerticalBox::Slot().AutoHeight().Padding(0,4)[SNew(STextBlock).Font(Hand(22)).ColorAndOpacity(Ink).Text_Lambda([this](){
-     return FText::FromString(Done>=0?Result:Steps.IsValidIndex(Round)?Steps[Round]:FString());})]
+     return MareLoc::Text(Done>=0?Result:Steps.IsValidIndex(Round)?Steps[Round]:FString());})]
     +SVerticalBox::Slot().AutoHeight().Padding(0,8)[SNew(SBox).WidthOverride(BarWidth).HeightOverride(46)[SNew(SOverlay)
      +SOverlay::Slot()[SNew(SBorder).BorderImage(FCoreStyle::Get().GetBrush("WhiteBrush")).BorderBackgroundColor(Kraft)]
      +SOverlay::Slot()[SNew(SBox).HAlign(HAlign_Left).Padding_Lambda([this](){return FMargin((Zone-ZoneW/2)*BarWidth,0,0,0);})
@@ -874,7 +875,7 @@ public:
      +SOverlay::Slot()[SNew(SBox).HAlign(HAlign_Left).Padding_Lambda([this](){return FMargin(FMath::Max(0.f,Cursor()*BarWidth-4),0,0,0);})
       [SNew(SBox).WidthOverride(8)[SNew(SBorder).BorderImage(FCoreStyle::Get().GetBrush("WhiteBrush")).BorderBackgroundColor(Ink)]]]]]
     +SVerticalBox::Slot().AutoHeight()[SNew(STextBlock).Font(Hand(24)).ColorAndOpacity(Green).Text_Lambda([this](){
-     FString Dots;for(int32 I=0;I<3;++I)Dots+=I<Marks.Num()?(Marks[I]?TEXT("O "):TEXT("X ")):TEXT("- ");return FText::FromString(Dots);})]
+     FString Dots;for(int32 I=0;I<3;++I)Dots+=I<Marks.Num()?(Marks[I]?TEXT("O "):TEXT("X ")):TEXT("- ");return MareLoc::Text(Dots);})]
     +SVerticalBox::Slot().AutoHeight()[HandText(TEXT("E, Espaço, clique ou A quando o cursor estiver no verde · Esc ou B desiste"),15,Faded)]]]];
  }
  virtual bool SupportsKeyboardFocus()const override{return true;}
@@ -928,8 +929,8 @@ public:
    [SNew(SBox).WidthOverride(560)[SNew(SVerticalBox)
     +SVerticalBox::Slot().AutoHeight()[HandText(TEXT("Pescaria no píer"),30,Brown)]
     +SVerticalBox::Slot().AutoHeight().Padding(0,6)[SNew(STextBlock).Font(Hand(26)).ColorAndOpacity_Lambda([this](){return FSlateColor(bBite?MareNotebook::Red:MareNotebook::Ink);})
-     .Text_Lambda([this](){return FText::FromString(Status);})]
-    +SVerticalBox::Slot().AutoHeight()[SNew(STextBlock).Font(Hand(18)).ColorAndOpacity(Green).Text_Lambda([this](){return FText::FromString(FString::Printf(TEXT("Peixes hoje: %d"),Caught));})]
+     .Text_Lambda([this](){return MareLoc::Text(Status);})]
+    +SVerticalBox::Slot().AutoHeight()[SNew(STextBlock).Font(Hand(18)).ColorAndOpacity(Green).Text_Lambda([this](){return MareLoc::Text(FString::Printf(TEXT("Peixes hoje: %d"),Caught));})]
     +SVerticalBox::Slot().AutoHeight()[HandText(TEXT("Espere o peixe fisgar e aperte E, Espaço, clique ou A na hora · Esc ou B recolhe a linha"),15,Faded)]]]];
  }
  virtual bool SupportsKeyboardFocus()const override{return true;}
@@ -987,7 +988,7 @@ public:
     +SVerticalBox::Slot().AutoHeight().Padding(0,6)[HandText(Stats,18,Green)]
     +SVerticalBox::Slot().AutoHeight().HAlign(HAlign_Left).Padding(0,14,0,0)[SAssignNew(Continue,SMarePadButton).ButtonStyle(&InkButton()).ContentPadding(FMargin(14,4))
      .OnClicked_Lambda([this](){if(Owner.IsValid())Owner->CloseBusinessGame();return FReply::Handled();})
-     [SNew(STextBlock).Text(FText::FromString(TEXT("Continuar jogando"))).Font(Hand(20)).ColorAndOpacity(MareNotebook::Tag)]]]]];
+     [SNew(STextBlock).Text(MareLoc::Text(TEXT("Continuar jogando"))).Font(Hand(20)).ColorAndOpacity(MareNotebook::Tag)]]]]];
  }
  virtual bool SupportsKeyboardFocus()const override{return true;}
  virtual FReply OnKeyDown(const FGeometry&,const FKeyEvent& Event) override
@@ -1019,10 +1020,10 @@ private:
  {
   if(!Info.bExists)return FText::Format(LOCTEXT("SlotEmpty","Slot {0} · vazio"),Index);
   const FDateTime Local=Info.SavedAt+(FDateTime::Now()-FDateTime::UtcNow());
-  const FText Name=Info.Company.IsEmpty()?LOCTEXT("SlotNoCompany","sem empresa"):FText::FromString(Info.Company);
-  return FText::Format(LOCTEXT("SlotFull","Slot {0} · Dia {1} · R$ {2}\n{3} · salvo em {4}"),Index,Info.Day,FText::FromString(FString::Printf(TEXT("%.0f"),Info.Money)),Name,FText::FromString(Local.ToString(TEXT("%d/%m/%Y %H:%M"))));
+  const FText Name=Info.Company.IsEmpty()?LOCTEXT("SlotNoCompany","sem empresa"):MareLoc::Text(Info.Company);
+  return FText::Format(LOCTEXT("SlotFull","Slot {0} · Dia {1} · R$ {2}\n{3} · salvo em {4}"),Index,Info.Day,MareLoc::Text(FString::Printf(TEXT("%.0f"),Info.Money)),Name,MareLoc::Text(Local.ToString(TEXT("%d/%m/%Y %H:%M"))));
  }
- void Fail(){Error=Sim()?FText::FromString(Sim()->LastMessage):FText::GetEmpty();Show(EPage::Main);}
+ void Fail(){Error=Sim()?MareLoc::Text(Sim()->LastMessage):FText::GetEmpty();Show(EPage::Main);}
  void Show(EPage Page)
  {
   auto S=Sim();if(!S)return;
@@ -1268,9 +1269,9 @@ private:
    Add(Row(Group.Key,[this,Field](){return Level(Pending.*Field);},[this,Field](int32 Step){Pending.*Field=FMath::Clamp(Pending.*Field+Step,0,3);}));}
   Add(Row(LOCTEXT("OptCrowd","Pessoas nas cenas"),[this](){return Pending.Crowd==0?LOCTEXT("OptCrowdFew","Poucas"):Pending.Crowd==2?LOCTEXT("OptCrowdMany","Muitas"):LOCTEXT("OptCrowdNormal","Normal");},
    [this](int32 Step){Pending.Crowd=FMath::Clamp(Pending.Crowd+Step,0,2);}));
-  Add(Row(LOCTEXT("OptScale","Escala 3D"),[this](){return FText::FromString(FString::Printf(TEXT("%.0f%%"),Pending.ResolutionScale));},
+  Add(Row(LOCTEXT("OptScale","Escala 3D"),[this](){return MareLoc::Text(FString::Printf(TEXT("%.0f%%"),Pending.ResolutionScale));},
    [this](int32 Step){Pending.ResolutionScale=FMath::Clamp(Pending.ResolutionScale+5.f*Step,50.f,100.f);}));
-  Add(Row(LOCTEXT("OptUpscaler","Upscaler"),[this](){return FText::FromString(Pending.Upscaler);},[this](int32 Step){const TArray<FString> List=FMareOptions::Upscalers();
+  Add(Row(LOCTEXT("OptUpscaler","Upscaler"),[this](){return MareLoc::Text(Pending.Upscaler);},[this](int32 Step){const TArray<FString> List=FMareOptions::Upscalers();
    const int32 Index=FMath::Max(0,List.IndexOfByKey(Pending.Upscaler));Pending.Upscaler=List[(Index+Step+List.Num())%List.Num()];}));
   // NVIDIA DLSS Frame Generation: only offered on a card and driver that support it (RTX 40 and later).
   if(FMareOptions::FrameGenerationSupported())
@@ -1280,16 +1281,16 @@ private:
  void DisplayPage(const TSharedRef<SVerticalBox>& Page)
  {
   auto Add=[&Page](TSharedRef<SWidget> Widget){Page->AddSlot().AutoHeight().Padding(0,3)[Widget];};
-  Add(Row(LOCTEXT("OptResolution","Resolução"),[this](){return Pending.WindowMode==1?LOCTEXT("OptDesktopRes","igual à área de trabalho"):FText::FromString(FString::Printf(TEXT("%d x %d"),Pending.Resolution.X,Pending.Resolution.Y));},
+  Add(Row(LOCTEXT("OptResolution","Resolução"),[this](){return Pending.WindowMode==1?LOCTEXT("OptDesktopRes","igual à área de trabalho"):MareLoc::Text(FString::Printf(TEXT("%d x %d"),Pending.Resolution.X,Pending.Resolution.Y));},
    [this](int32 Step){if(Pending.WindowMode==1)return;const int32 Index=Resolutions.IndexOfByKey(Pending.Resolution);Pending.Resolution=Resolutions[FMath::Clamp(Index<0?0:Index+Step,0,Resolutions.Num()-1)];}));
   Add(Row(LOCTEXT("OptWindow","Modo de exibição"),[this](){return Pending.WindowMode==0?LOCTEXT("OptFullscreen","Tela cheia"):Pending.WindowMode==1?LOCTEXT("OptBorderless","Tela cheia sem bordas"):LOCTEXT("OptWindowed","Janela");},
    [this](int32 Step){Pending.WindowMode=(Pending.WindowMode+Step+3)%3;}));
   Add(Row(LOCTEXT("OptVSync","VSync"),[this](){return OnOff(Pending.bVSync);},[this](int32){Pending.bVSync=!Pending.bVSync;}));
   Add(Row(LOCTEXT("OptFPS","Limite de FPS"),[this](){return Pending.FrameLimit>0?FText::AsNumber(Pending.FrameLimit):LOCTEXT("OptUnlimited","Ilimitado");},
    [this](int32 Step){const auto& List=FMareOptions::FrameLimits();const int32 Index=FMath::Max(0,List.IndexOfByKey(Pending.FrameLimit));Pending.FrameLimit=List[(Index+Step+List.Num())%List.Num()];}));
-  Add(Row(LOCTEXT("OptFOV","Campo de visão"),[this](){return FText::FromString(FString::Printf(TEXT("%.0f°"),Pending.FieldOfView));},
+  Add(Row(LOCTEXT("OptFOV","Campo de visão"),[this](){return MareLoc::Text(FString::Printf(TEXT("%.0f°"),Pending.FieldOfView));},
    [this](int32 Step){Pending.FieldOfView=FMath::Clamp(Pending.FieldOfView+5.f*Step,70.f,110.f);}));
-  Add(Row(LOCTEXT("OptTextScale","Tamanho da interface e do texto"),[this](){return FText::FromString(FString::Printf(TEXT("%.0f%%"),Pending.TextScale*100.f));},
+  Add(Row(LOCTEXT("OptTextScale","Tamanho da interface e do texto"),[this](){return MareLoc::Text(FString::Printf(TEXT("%.0f%%"),Pending.TextScale*100.f));},
    [this](int32 Step){Pending.TextScale=FMath::Clamp(FMath::RoundToFloat((Pending.TextScale+.05f*Step)*20.f)/20.f,.85f,1.5f);}));
   Add(Row(LOCTEXT("OptTips","Dicas do tutorial"),[this](){return OnOff(Pending.bTips);},[this](int32){Pending.bTips=!Pending.bTips;}));
   Add(Row(LOCTEXT("OptColorSafe","Modo para daltonismo (+/- nas variações)"),[this](){return OnOff(Pending.bColorSafe);},[this](int32){Pending.bColorSafe=!Pending.bColorSafe;}));
@@ -1305,15 +1306,15 @@ private:
    +SHorizontalBox::Slot().FillWidth(1).VAlign(VAlign_Center)[SNew(SSlider).IsFocusable(true).Value_Lambda([Weak,Bus](){return Weak.IsValid()?Weak->GetVolume(Bus):0.f;})
     .OnValueChanged_Lambda([Weak,Bus](float Value){if(Weak.IsValid())Weak->SetVolume(Bus,Value);})]
    +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(8,0,0,0)[SNew(SBox).WidthOverride(40)[SNew(STextBlock).ColorAndOpacity(Ink())
-    .Text_Lambda([Weak,Bus](){return FText::FromString(FString::Printf(TEXT("%.0f%%"),Weak.IsValid()?Weak->GetVolume(Bus)*100.f:0.f));})]]];}
+    .Text_Lambda([Weak,Bus](){return MareLoc::Text(FString::Printf(TEXT("%.0f%%"),Weak.IsValid()?Weak->GetVolume(Bus)*100.f:0.f));})]]];}
  }
  void ControlsPage(const TSharedRef<SVerticalBox>& Page)
  {
   auto Add=[&Page](TSharedRef<SWidget> Widget){Page->AddSlot().AutoHeight().Padding(0,3)[Widget];};
-  Add(Row(LOCTEXT("OptSensitivity","Sensibilidade do mouse"),[this](){return FText::FromString(FString::Printf(TEXT("%.1f"),Pending.MouseSensitivity));},
+  Add(Row(LOCTEXT("OptSensitivity","Sensibilidade do mouse"),[this](){return MareLoc::Text(FString::Printf(TEXT("%.1f"),Pending.MouseSensitivity));},
    [this](int32 Step){Pending.MouseSensitivity=FMath::Clamp(FMath::RoundToFloat((Pending.MouseSensitivity+.1f*Step)*10.f)/10.f,.2f,3.f);}));
   Add(Row(LOCTEXT("OptInvertY","Inverter eixo Y"),[this](){return OnOff(Pending.bInvertY);},[this](int32){Pending.bInvertY=!Pending.bInvertY;}));
-  Add(Row(LOCTEXT("OptPadSensitivity","Sensibilidade do controle"),[this](){return FText::FromString(FString::Printf(TEXT("%.1f"),Pending.GamepadSensitivity));},
+  Add(Row(LOCTEXT("OptPadSensitivity","Sensibilidade do controle"),[this](){return MareLoc::Text(FString::Printf(TEXT("%.1f"),Pending.GamepadSensitivity));},
    [this](int32 Step){Pending.GamepadSensitivity=FMath::Clamp(FMath::RoundToFloat((Pending.GamepadSensitivity+.1f*Step)*10.f)/10.f,.2f,3.f);}));
   Add(Row(LOCTEXT("OptPadGlyphs","Botões do controle"),[this](){return Pending.PadGlyphs==1?LOCTEXT("OptPadPlayStation","PlayStation"):LOCTEXT("OptPadXbox","Xbox");},
    [this](int32){Pending.PadGlyphs=1-Pending.PadGlyphs;}));
@@ -1327,7 +1328,7 @@ private:
       .Text_Lambda([this,Id](){return Listening==Id?LOCTEXT("OptPressKey","aperte uma tecla..."):Pending.Key(Id).GetDisplayName();})]]];}
   // Fixed gamepad layout, named in the chosen style.
   const bool bPlayStation=Pending.PadGlyphs==1;
-  auto Pad=[bPlayStation](const FKey& Key){return FText::FromString(MareGamepad::PadLabel(Key,bPlayStation));};
+  auto Pad=[bPlayStation](const FKey& Key){return MareLoc::Text(MareGamepad::PadLabel(Key,bPlayStation));};
   FFormatNamedArguments Names;
   Names.Add(TEXT("Jump"),Pad(EKeys::Gamepad_FaceButton_Bottom));Names.Add(TEXT("Dive"),Pad(EKeys::Gamepad_FaceButton_Right));
   Names.Add(TEXT("Interact"),Pad(EKeys::Gamepad_FaceButton_Left));Names.Add(TEXT("Phone"),Pad(EKeys::Gamepad_FaceButton_Top));
@@ -1663,7 +1664,7 @@ void AMareHUD::DrawHUD()
  auto KeyName=[](const TCHAR* Action){return MareGamepad::ActionLabel(Action);};
  M.InteractKey=KeyName(TEXT("Interact"));M.PhoneKey=KeyName(TEXT("Phone"));M.PauseKey=KeyName(TEXT("Pause"));
  const bool bPad=MareGamepad::UsingGamepad();
- if(M.bPhone && bPad){const bool bPlayStation=FMareOptions::Get().PadGlyphs==1;auto Pad=[bPlayStation](const FKey& Key){return FText::FromString(MareGamepad::PadLabel(Key,bPlayStation));};
+ if(M.bPhone && bPad){const bool bPlayStation=FMareOptions::Get().PadGlyphs==1;auto Pad=[bPlayStation](const FKey& Key){return MareLoc::Text(MareGamepad::PadLabel(Key,bPlayStation));};
   M.PadHint=FText::Format(LOCTEXT("PadPhoneHint","{0}/{1} abas · {2} escolhe · {3} fecha"),Pad(EKeys::Gamepad_LeftShoulder),Pad(EKeys::Gamepad_RightShoulder),
    Pad(EKeys::Gamepad_FaceButton_Bottom),Pad(EKeys::Gamepad_FaceButton_Right)).ToString();}
  const int32 Minutes=UMareSimulation::Number(S->State,TEXT("minutes"));
@@ -1720,7 +1721,7 @@ void AMareHUD::DrawHUD()
   if(IntroStage==1)M.Note.Add({TEXT("Entre na casa e leia a carta da avó Dilce"),3});
   bool bCreated=false;UMareSimulation::Object(S->State,TEXT("company"))->TryGetBoolField(TEXT("created"),bCreated);
   if(!bCreated && IntroStage>=2)M.Note.Add({TEXT("Comece aqui: ")+M.PhoneKey+TEXT(" · Celular → Quiosque → Criar empresa"),3});
-  else if(bCreated && !S->IsOpen())M.Note.Add({bPad?FText::Format(LOCTEXT("OpenSignPad","Mire na placa FECHADO do balcão e aperte {0} para abrir"),FText::FromString(M.InteractKey)).ToString():FString(TEXT("Clique na placa FECHADO do balcão para abrir")),3});
+  else if(bCreated && !S->IsOpen())M.Note.Add({bPad?FText::Format(LOCTEXT("OpenSignPad","Mire na placa FECHADO do balcão e aperte {0} para abrir"),MareLoc::Text(M.InteractKey)).ToString():FString(TEXT("Clique na placa FECHADO do balcão para abrir")),3});
   const auto Campaign=UMareSimulation::Object(UMareSimulation::Object(S->State,TEXT("prog")),TEXT("campaign"));
   const TArray<TSharedPtr<FJsonValue>>* Missions=nullptr;const int32 Stage=UMareSimulation::Number(Campaign,TEXT("stage"));
   if(S->Definitions->TryGetArrayField(TEXT("campaign"),Missions) && Missions->IsValidIndex(Stage)){
@@ -1765,7 +1766,7 @@ void AMareHUD::DrawHUD()
   }
  }
  if(!S->Carry().IsEmpty())M.Carry=Dish(S->Carry());
- if(auto Hero=Cast<AMareCharacter>(GetOwningPawn()))if(Hero->GetCharacterMovement()->IsSwimming())M.Hint=bPad?FText::Format(LOCTEXT("SwimPad","Nadando · {0} sobe · {1} mergulha"),FText::FromString(KeyName(TEXT("Jump"))),FText::FromString(KeyName(TEXT("Dive")))).ToString()
+ if(auto Hero=Cast<AMareCharacter>(GetOwningPawn()))if(Hero->GetCharacterMovement()->IsSwimming())M.Hint=bPad?FText::Format(LOCTEXT("SwimPad","Nadando · {0} sobe · {1} mergulha"),MareLoc::Text(KeyName(TEXT("Jump"))),MareLoc::Text(KeyName(TEXT("Dive")))).ToString()
   :FString::Printf(TEXT("Nadando · %s sobe · %s/%s mergulha"),*KeyName(TEXT("Jump")),*KeyName(TEXT("Dive")),*KeyName(TEXT("Sprint")));
  // The mission note would sit on top of the held phone.
  if(M.bPhone){M.Note.Empty();M.Tickets.Empty();}

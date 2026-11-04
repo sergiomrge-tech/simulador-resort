@@ -1,4 +1,5 @@
 #include "MareVillageWorld.h"
+#include "MareLoc.h"
 #include "MareOptions.h"
 #include "MareNotebookStyle.h"
 #include "Widgets/Layout/SWrapBox.h"
@@ -206,13 +207,13 @@ void UMareVillageWorld::Speak(AMarePerson* Person,APlayerController* Controller)
   break;
  }
  Actions->AddSlot().Padding(0,0,0,6)[SNew(SMarePadButton).ButtonStyle(&MareNotebook::InkButton()).ContentPadding(FMargin(10,2)).OnClicked_Lambda([this](){CloseDialogue();return FReply::Handled();})
-  [SNew(STextBlock).Font(MareNotebook::Hand(16)).ColorAndOpacity(MareNotebook::Tag).Text(MareGamepad::UsingGamepad()?FText::Format(NSLOCTEXT("MareVillage","ByePad","Até logo · {0}"),FText::FromString(MareGamepad::ActionLabel(TEXT("Dive"))))
-   :FText::Format(NSLOCTEXT("MareVillage","ByeKeys","Até logo · {0} / {1}"),FText::FromString(MareGamepad::ActionLabel(TEXT("Interact"))),FText::FromString(MareGamepad::ActionLabel(TEXT("Pause")))))]];
+  [SNew(STextBlock).Font(MareNotebook::Hand(16)).ColorAndOpacity(MareNotebook::Tag).Text(MareGamepad::UsingGamepad()?FText::Format(NSLOCTEXT("MareVillage","ByePad","Até logo · {0}"),MareLoc::Text(MareGamepad::ActionLabel(TEXT("Dive"))))
+   :FText::Format(NSLOCTEXT("MareVillage","ByeKeys","Até logo · {0} / {1}"),MareLoc::Text(MareGamepad::ActionLabel(TEXT("Interact"))),MareLoc::Text(MareGamepad::ActionLabel(TEXT("Pause")))))]];
  Dialogue=SNew(SBorder).BorderBackgroundColor(FLinearColor(0,0,0,.25f)).HAlign(HAlign_Center).VAlign(VAlign_Bottom).Padding(20)
  [SNew(SBox).WidthOverride(620)[MareNotebook::Page(SNew(SVerticalBox)
-  +SVerticalBox::Slot().AutoHeight()[SNew(STextBlock).Text(FText::FromString(Person->PersonName)).Font(MareNotebook::Hand(26)).ColorAndOpacity(MareNotebook::Brown)]
-  +SVerticalBox::Slot().AutoHeight().Padding(0,9)[SNew(STextBlock).Text(FText::FromString(Story.IsEmpty()?Greeting:Story)).WrapTextAt(530).Font(MareNotebook::Body(14)).ColorAndOpacity(MareNotebook::Ink)]
-  +SVerticalBox::Slot().AutoHeight().Padding(0,0,0,6)[SNew(STextBlock).Text(FText::FromString(Result)).Visibility(Result.IsEmpty()?EVisibility::Collapsed:EVisibility::Visible).WrapTextAt(530).Font(MareNotebook::Hand(17)).ColorAndOpacity(MareNotebook::Green)]
+  +SVerticalBox::Slot().AutoHeight()[SNew(STextBlock).Text(MareLoc::Text(Person->PersonName)).Font(MareNotebook::Hand(26)).ColorAndOpacity(MareNotebook::Brown)]
+  +SVerticalBox::Slot().AutoHeight().Padding(0,9)[SNew(STextBlock).Text(MareLoc::Text(Story.IsEmpty()?Greeting:Story)).WrapTextAt(530).Font(MareNotebook::Body(14)).ColorAndOpacity(MareNotebook::Ink)]
+  +SVerticalBox::Slot().AutoHeight().Padding(0,0,0,6)[SNew(STextBlock).Text(MareLoc::Text(Result)).Visibility(Result.IsEmpty()?EVisibility::Collapsed:EVisibility::Visible).WrapTextAt(530).Font(MareNotebook::Hand(17)).ColorAndOpacity(MareNotebook::Green)]
   +SVerticalBox::Slot().AutoHeight().Padding(0,6,0,0)[Actions])]];
  GEngine->GameViewport->AddViewportWidgetContent(Dialogue.ToSharedRef(),35);
  {const TWeakObjectPtr<UMareVillageWorld> Weak(this);MareGamepad::PushMenu(Dialogue.ToSharedRef(),[Weak](){if(Weak.IsValid())Weak->CloseDialogue();});}
@@ -239,12 +240,12 @@ void UMareVillageWorld::Quip(AMarePerson* Person,APlayerController* Controller,c
    if(WeakPerson.IsValid() && WeakController.IsValid() && !Reaction.IsEmpty())Quip(WeakPerson.Get(),WeakController.Get(),Name,Reaction,{},nullptr,Closed);else if(Closed)Closed();
    return FReply::Handled();})[MareNotebook::InkLabel(Replies[I],16)]];
  Actions->AddSlot().Padding(0,0,0,6)[SNew(SMarePadButton).ButtonStyle(&MareNotebook::InkButton()).ContentPadding(FMargin(10,2)).OnClicked_Lambda([this](){CloseDialogue();return FReply::Handled();})
-  [SNew(STextBlock).Font(MareNotebook::Hand(16)).ColorAndOpacity(MareNotebook::Tag).Text(MareGamepad::UsingGamepad()?FText::Format(NSLOCTEXT("MareVillage","ByePad","Até logo · {0}"),FText::FromString(MareGamepad::ActionLabel(TEXT("Dive"))))
-   :FText::Format(NSLOCTEXT("MareVillage","ByeKeys","Até logo · {0} / {1}"),FText::FromString(MareGamepad::ActionLabel(TEXT("Interact"))),FText::FromString(MareGamepad::ActionLabel(TEXT("Pause")))))]];
+  [SNew(STextBlock).Font(MareNotebook::Hand(16)).ColorAndOpacity(MareNotebook::Tag).Text(MareGamepad::UsingGamepad()?FText::Format(NSLOCTEXT("MareVillage","ByePad","Até logo · {0}"),MareLoc::Text(MareGamepad::ActionLabel(TEXT("Dive"))))
+   :FText::Format(NSLOCTEXT("MareVillage","ByeKeys","Até logo · {0} / {1}"),MareLoc::Text(MareGamepad::ActionLabel(TEXT("Interact"))),MareLoc::Text(MareGamepad::ActionLabel(TEXT("Pause")))))]];
  Dialogue=SNew(SBorder).BorderBackgroundColor(FLinearColor(0,0,0,.25f)).HAlign(HAlign_Center).VAlign(VAlign_Bottom).Padding(20)
  [SNew(SBox).WidthOverride(620)[MareNotebook::Page(SNew(SVerticalBox)
-  +SVerticalBox::Slot().AutoHeight()[SNew(STextBlock).Text(FText::FromString(Name)).Font(MareNotebook::Hand(26)).ColorAndOpacity(MareNotebook::Brown)]
-  +SVerticalBox::Slot().AutoHeight().Padding(0,9)[SNew(STextBlock).Text(FText::FromString(Line)).WrapTextAt(530).Font(MareNotebook::Body(14)).ColorAndOpacity(MareNotebook::Ink)]
+  +SVerticalBox::Slot().AutoHeight()[SNew(STextBlock).Text(MareLoc::Text(Name)).Font(MareNotebook::Hand(26)).ColorAndOpacity(MareNotebook::Brown)]
+  +SVerticalBox::Slot().AutoHeight().Padding(0,9)[SNew(STextBlock).Text(MareLoc::Text(Line)).WrapTextAt(530).Font(MareNotebook::Body(14)).ColorAndOpacity(MareNotebook::Ink)]
   +SVerticalBox::Slot().AutoHeight().Padding(0,6,0,0)[Actions])]];
  GEngine->GameViewport->AddViewportWidgetContent(Dialogue.ToSharedRef(),35);
  {const TWeakObjectPtr<UMareVillageWorld> Weak(this);MareGamepad::PushMenu(Dialogue.ToSharedRef(),[Weak](){if(Weak.IsValid())Weak->CloseDialogue();});}

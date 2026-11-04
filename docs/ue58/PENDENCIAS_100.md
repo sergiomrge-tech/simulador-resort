@@ -572,11 +572,16 @@ Next Fest, playtest e beta, trailer, preço.
 
 ## 11. Tradução (por último, pedido do Sergio em 02/11)
 Fazer depois de todo o resto, quando os textos estiverem estáveis.
-- [ ] [bloqueado-usuario] (sistema grande: aguarda o Sergio escolher a prioridade e subir o esforço do Opus, regra global) Todos os textos do jogo em tabelas de localização da Unreal (LOCTEXT/StringTable), sem texto fixo no código;
-  inclui menus, celular, HUD, missões, cartas, placas 3D (TextRender) e nomes de produtos.
-- [ ] [bloqueado-usuario] (sistema grande: aguarda o Sergio escolher a prioridade e subir o esforço do Opus, regra global) **Inglês** completo.
-- [ ] [bloqueado-usuario] (sistema grande: aguarda o Sergio escolher a prioridade e subir o esforço do Opus, regra global) Vários idiomas (os que mais vendem na Steam): espanhol, chinês simplificado, russo, alemão, francês,
-  japonês, coreano e português de Portugal; fontes com suporte a CJK e cirílico.
+- [x] Camada de tradução `MareLoc` (04/11): LOCTEXT registrado como polyglot (pt-BR nativo, en, es) e dicionário de textos
+  montados pelo código (`MareLoc::Text/Tr`, modelos `{n}` e divisão por separadores do HUD). Todos os `FText::FromString`
+  passam por ela; placas 3D (TextRender) fixas e dinâmicas também. Textos em `Content/Localization/Mare/*.json`, gerados por
+  `tools/ue58/i18n_extract.py` (código + Data/*.json) e traduzidos em lotes (`i18n_batch.py`). Auditoria: `-MareLocAudit`
+  registra `MARE_LOC_MISSING` no log.
+- [x] **Inglês** completo (04/11): 111 LOCTEXT + 2.528 textos (~10,3 mil palavras), conferido no executável (menu, opções e HUD).
+- [x] **Espanhol** completo (04/11), mesmo volume. Troca de idioma em Opções → Idioma (pt-BR / English / Español);
+  `-culture=en` na linha de comando para testes.
+- [ ] Outros idiomas (pesquisa Steam de 04/11: chinês simplificado, alemão, russo, japonês, francês, coreano, pt-PT);
+  chinês/japonês/coreano precisam de fonte CJK (ex.: Noto Sans SC) e russo de cirílico nas fontes do caderno.
 - [ ] Revisão por falante nativo de cada idioma e teste de layout (textos maiores em alemão/russo não podem cortar). [bloqueado-usuario] (precisa de revisores nativos; o teste de layout fica junto da tradução)
 - [ ] Página da Steam e conquistas nos mesmos idiomas. [bloqueado-usuario] (precisa da conta Steamworks do Sergio)
 

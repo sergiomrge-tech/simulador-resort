@@ -30,6 +30,7 @@ private:
  UPROPERTY() TObjectPtr<AExponentialHeightFog> Fog;
  UPROPERTY() TArray<TObjectPtr<ALight>> Practical;
  UPROPERTY() TArray<TObjectPtr<ATextRenderActor>> Signs;
+ UPROPERTY() TMap<TObjectPtr<ATextRenderActor>,FString> SignSource;
  /** Interaction point on the Grand Hotel reception desk, hidden until the hotel is bought. */
  UPROPERTY() TObjectPtr<class AMareServiceTarget> Reception;
  /** Grand Hotel elevators: the two lobby doors go up to the suite, the suite door comes back down. */
