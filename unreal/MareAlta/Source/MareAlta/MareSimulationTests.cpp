@@ -1071,6 +1071,15 @@ bool FMareCampaignAuditTest::RunTest(const FString& Parameters)
  Claim(TEXT("carnaval_m"));
  if(Sim->FameLevel()<8)TestFalse(TEXT("Hotel needs fame 8"),Sim->BuyExpansion(TEXT("grand_hotel")));
  Sim->AddFame(100000);TestTrue(TEXT("Grand Hotel"),Sim->BuyExpansion(TEXT("grand_hotel")));Claim(TEXT("marealta"));
+ // Act 5: the game room, recipes, customization, fame 10 and 3,400 kiosk sales.
+ TestTrue(TEXT("Game room"),Sim->BuyExpansion(TEXT("salao_jogos")));Claim(TEXT("salao"));
+ TestFalse(TEXT("Recipes first"),Sim->ClaimMission(TEXT("chef")));
+ {auto Recipes=MakeShared<FJsonObject>();int32 Given=0;for(const auto& Pair:Sim->Object(Sim->Definitions,TEXT("dishes"))->Values){if(Given>=20)break;Recipes->SetNumberField(FString(Pair.Key.ToView()),FMath::Min(5,1+20-Given));Given+=FMath::Min(4,20-Given);}
+  Sim->State->SetObjectField(TEXT("recipes"),Recipes);}Claim(TEXT("chef"));
+ {auto Custom=MakeShared<FJsonObject>();auto Place=MakeShared<FJsonObject>();for(int32 I=0;I<10;++I){auto Row=MakeShared<FJsonObject>();Row->SetNumberField(TEXT("tier"),5);Place->SetObjectField(FString::Printf(TEXT("s%d"),I),Row);}
+  Custom->SetObjectField(TEXT("kiosk"),Place);Sim->State->SetObjectField(TEXT("custom"),Custom);}Claim(TEXT("postal"));
+ Claim(TEXT("lenda"));
+ TestFalse(TEXT("Sales first"),Sim->ClaimMission(TEXT("fregueses")));Sim->State->SetNumberField(TEXT("kiosk_n"),4000);Claim(TEXT("fregueses"));
  // Finale: the beach party sets prog.campaign.finale (UMareSummitWorld::ShowCredits).
  TestFalse(TEXT("Party before it happens"),Sim->ClaimMission(TEXT("festa")));
  Sim->Object(Sim->Object(Sim->State,TEXT("prog")),TEXT("campaign"))->SetBoolField(TEXT("finale"),true);Claim(TEXT("festa"));

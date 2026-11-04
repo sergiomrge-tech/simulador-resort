@@ -1732,7 +1732,16 @@ void AMareHUD::DrawHUD()
   const TArray<TSharedPtr<FJsonValue>>* Missions=nullptr;const int32 Stage=UMareSimulation::Number(Campaign,TEXT("stage"));
   if(S->Definitions->TryGetArrayField(TEXT("campaign"),Missions) && Missions->IsValidIndex(Stage)){
    const auto Mission=(*Missions)[Stage]->AsObject();const int32 Goal=UMareSimulation::Number(Mission,TEXT("qty"));const int32 Progress=FMath::Min(S->MissionAmount(Mission),Goal);
+   // Objective always visible (Acesso Antecipado, 04/11): the title, what to do now and, for a purchase, how far the money
+   // and the fame are from it (the Grand Hotel is a long save: "R$ 12.400 / 30.000 · fama 7/9").
+   FString Extra;
+   if(Progress<Goal && UMareSimulation::String(Mission,TEXT("kind"))==TEXT("expansion")){
+    auto Exp=UMareSimulation::Object(UMareSimulation::Object(S->Definitions,TEXT("expansions")),UMareSimulation::String(Mission,TEXT("item")));
+    const double Cost=UMareSimulation::Number(Exp,TEXT("cost"));const int32 Fame=UMareSimulation::Number(Exp,TEXT("fame"));
+    if(Cost>0)Extra=FString::Printf(TEXT(" · R$ %.0f / %.0f"),FMath::Min(S->Money(),Cost),Cost);
+    if(Fame>0)Extra+=FString::Printf(TEXT(" · fama %d/%d"),FMath::Min(S->FameLevel(),Fame),Fame);}
    M.Note.Add({UMareSimulation::String(Mission,TEXT("title"))+FString::Printf(TEXT(" — %d/%d"),Progress,Goal)+(Progress>=Goal?TEXT(" · concluir no celular"):TEXT("")),1});
+   if(Progress<Goal)M.Note.Add({UMareSimulation::String(Mission,TEXT("task"))+Extra,2});
   }
   if(S->Definitions->TryGetArrayField(TEXT("side_missions"),Missions)){
    const TArray<TSharedPtr<FJsonValue>>* Done=nullptr;Campaign->TryGetArrayField(TEXT("side_done"),Done);int32 Shown=0;
@@ -1809,7 +1818,7 @@ void AMareGameMode::BeginPlay()
 void AMareGameMode::Tick(float DeltaSeconds)
 {
  Super::Tick(DeltaSeconds);auto Sim=GetGameInstance()->GetSubsystem<UMareSimulation>();if(!Sim)return;
- Sim->AdvanceMinutes(DeltaSeconds*2.0);SaveClock+=DeltaSeconds;if(SaveClock>=30){Sim->Save();SaveClock=0;}
+ Sim->AdvanceMinutes(DeltaSeconds*1.0);   // 1 game minute per real second: a day 08-24h lasts 16 min (balance_model.py, 04/11)SaveClock+=DeltaSeconds;if(SaveClock>=30){Sim->Save();SaveClock=0;}
 }
 
 UMareSimulation* AMareController::GetSimulation()const{return GetGameInstance()->GetSubsystem<UMareSimulation>();}

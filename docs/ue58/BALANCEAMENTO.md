@@ -53,3 +53,19 @@ A renda diária sobe de cerca de R$ 600 no dia 1 para R$ 4.400 no dia 10 e R$ 6.
    contratação pesar, subir os salários 1,5× ou fazer o salário crescer com a fama.
 5. Eventos: festa com decoração rende 1,7×. Se o playtest mostrar que o jogador compra decoração sempre, subir a
    decoração de R$ 120 para R$ 200–250.
+
+## Segunda passada — Acesso Antecipado (04/11/2026, Sergio: "campanha precisa ser 12 h mínimo")
+
+- **Relógio:** voltou a 1 minuto do jogo por segundo real (estava 2×, herdado do primeiro checkpoint). Um dia das
+  8h às 24h dura 16 minutos reais, a escala que este modelo sempre pressupôs, e a subida diária ao Seu Tibúrcio
+  (~3 min) cabe no dia.
+- **Grand Hotel:** fama 9 (era 8) + capítulo do carnaval.
+- **Ato 5 "Maré Alta de verdade"** entre o hotel e a festa final: salão de jogos, 20 níveis de receita, 40 melhorias de
+  personalização, fama 10 e 4.000 vendas no quiosque. O dinheiro sobra a partir do dia ~22; quem dita o ritmo são
+  as vendas (jogo de verdade, não espera) e a fama.
+- **Resultado do modelo:** hotel no dia 21, festa no dia 55, cerca de **15 h**. A personalização aumenta a chegada de
+  clientes (o modelo não conta), então a festa deve vir alguns dias antes, ainda acima de 12 h. Confirmar com
+  playtest cronometrado e, se ficar abaixo, subir a meta de vendas.
+- **Ritmo/objetivo visível:** o painel de missões mostra a tarefa da missão atual e, nas compras, quanto falta
+  ("R$ 12.400 / 30.000 · fama 7/9"). Tarefas que se sobrepõem no dia: quiosque, oferenda diária no cume, bar,
+  hóspedes, eventos cômicos, capítulos e minijogos.

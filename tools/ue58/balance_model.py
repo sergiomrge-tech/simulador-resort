@@ -33,7 +33,10 @@ POUSADA_NIGHTS_PER_ROOM = .45
 TOURS_GUIDED = 2                   # of 3 a day, about 5 passengers each
 BUSINESS_TASKS_PER_DAY = 3         # counter tasks per owned business, 2/3 hits on average
 RESTAURANT_DISHES_PER_DAY = 14
-DAY_MINUTES_REAL = 16              # 08:00 to 24:00 at 1 game minute per second
+DAY_MINUTES_REAL = 16              # 08:00 to 24:00 at 1 game minute per second (MareGame clock, 04/11)
+# Story time on top of the economy (04/11 campaign): the daily walk to Seu Tibúrcio's basket and back (421 m trail plus
+# the village, about 3 real minutes) from the day he is met (day 2), and ~25 min of chapters, minigames and the party.
+OFFERING_MIN_PER_DAY, STORY_MINUTES = 3.0, 25
 
 
 def fame_level(xp):
@@ -82,6 +85,8 @@ def run(days):
             e = defs['expansions'].get(exp_id)
             if not e or exp_id in owned or any(r not in owned for r in e.get('req', [])):
                 continue
+            if fame_level(xp) < (e.get('fame') or 0):   # the Grand Hotel waits for fame 9 (04/11)
+                continue
             if money >= e['cost']:
                 money -= e['cost']
                 owned.add(exp_id)
@@ -99,5 +104,23 @@ def run(days):
 if __name__ == '__main__':
     days = int(sys.argv[1]) if len(sys.argv) > 1 else 40
     print('dia | renda do dia | caixa | fama | comprou')
+    hotel = None
+    sales, sales_day, fame10 = 0.0, None, None
+    expansions = 0
     for day, income, money, level, bought in run(days):
+        expansions += len([b for b in bought if b in defs['expansions']])
+        sales += kiosk_day(level, expansions * 3)[1] / 2
+        if sales_day is None and sales >= 4000:
+            sales_day = day
+        if fame10 is None and level >= 10:
+            fame10 = day
         print(f'{day:3d} | R$ {income:7d} | R$ {money:8d} | {level:2d} | {", ".join(bought)}  (~{day * DAY_MINUTES_REAL / 60:.1f} h)')
+        if 'grand_hotel' in bought:
+            hotel = day
+    if hotel:
+        # Act 5 gates the party: fame 10 and 3,400 kiosk sales (money for the game room, recipes and customization
+        # piles up long before).
+        end = max(hotel, sales_day or days, fame10 or days) + 1
+        minutes = end * DAY_MINUTES_REAL + max(0, end - 1) * OFFERING_MIN_PER_DAY * 0 + STORY_MINUTES
+        print(f'campanha: hotel no dia {hotel}, festa no dia {end}; ~{minutes / 60:.1f} h de jogo '
+              f'(a oferenda diária cabe dentro dos 16 min do dia; capítulos/minijogos/festa ~{STORY_MINUTES} min)')

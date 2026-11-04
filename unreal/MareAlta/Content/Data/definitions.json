@@ -278,6 +278,52 @@
 			"title": "A Maré Alta da vila"
 		},
 		{
+			"id": "salao",
+			"item": "salao_jogos",
+			"kind": "expansion",
+			"qty": 1,
+			"reward": 500,
+			"story": "Os hóspedes do hotel jogam dominó no corredor e já quebraram dois vasos. Dê a eles um salão de jogos de verdade.",
+			"task": "Comprar o salão de jogos",
+			"title": "O salão da vila"
+		},
+		{
+			"id": "chef",
+			"kind": "recipes",
+			"qty": 20,
+			"reward": 800,
+			"story": "Um crítico de comida vem aí. Dizem que ele já fez um chef chorar só olhando para um pastel. Capriche nas receitas.",
+			"task": "Melhorar receitas do quiosque 20 vezes (celular → Receitas)",
+			"title": "Cardápio de chef"
+		},
+		{
+			"id": "postal",
+			"kind": "custom",
+			"qty": 40,
+			"reward": 1000,
+			"story": "Uma revista de viagem quer o resort na capa. O fotógrafo avisou que só fotografa \"coisa bonita\". Personalize a vila.",
+			"task": "Fazer 40 melhorias de personalização",
+			"title": "Cartão-postal"
+		},
+		{
+			"id": "lenda",
+			"kind": "fame",
+			"qty": 10,
+			"reward": 1200,
+			"story": "Seu Gregory já conta para os turistas que foi ele quem ensinou você a abrir coco. Fique famoso de verdade, antes que ele exagere mais.",
+			"task": "Chegar à fama máxima (nível 10)",
+			"title": "Lenda da costa"
+		},
+		{
+			"id": "fregueses",
+			"kind": "sales",
+			"qty": 4000,
+			"reward": 1500,
+			"story": "A Prefeita Tuanny prometeu a festa quando o quiosque vendesse mais que a padaria da capital. A padaria vende 4.000. Ela foi lá conferir. Duas vezes.",
+			"task": "Chegar a 4.000 vendas no quiosque",
+			"title": "Quatro mil fregueses"
+		},
+		{
 			"id": "festa",
 			"kind": "finale",
 			"qty": 1,
@@ -543,7 +589,7 @@
 			"blurb": "A fase final: hotel de 5 andares com 32 suítes, restaurante com buffet, academia, spa, piscina com tobogã e bar da piscina.",
 			"chapter": "carnaval",
 			"cost": 30000,
-			"fame": 8,
+			"fame": 9,
 			"icon": "bangalo",
 			"name": "Grand Hotel Maré Alta 5★",
 			"req": [

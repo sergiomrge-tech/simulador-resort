@@ -646,8 +646,11 @@ negócios, hóspedes, salão, passeios, eventos) e o jogador sempre escolhendo o
   `docs/ue58/BALANCEAMENTO.md` e `tools/ue58/balance_model.py`; falta o playtest cronometrado para trocar as hipóteses):
   - desbloqueio novo a cada 10–20 min;
   - preços das expansões, salários, diárias e renda do salão.
-- [ ] (04/11: Sergio "vamos finalizar para o acesso antecipado"; ordem: tsunami, campanha, duração/ritmo, abertura, traduções) P1 Duração do Acesso Antecipado: 6–10 h de conteúdo com objetivo sempre visível.
-- [ ] (liberado 04/11 para o Acesso Antecipado) P1 Ritmo: nunca mais de 1–2 min sem algo a fazer; tarefas paralelas que se sobrepõem (pedido no quiosque enquanto
+- [x] (04/11) P1 Duração do Acesso Antecipado: Sergio pediu campanha de **12 h no mínimo**. Relógio voltou a 1 min/s (dia de
+  16 min), hotel com fama 9 e ato 5 (salão, 20 receitas, 40 personalizações, fama 10, 4.000 vendas) antes da festa;
+  modelo `balance_model.py`: festa no dia 55, ~15 h (a personalização adianta alguns dias). Objetivo sempre visível no
+  painel (tarefa + "R$ x / y · fama a/b"). Ver docs/ue58/BALANCEAMENTO.md (segunda passada).
+- [ ] (liberado 04/11 para o Acesso Antecipado; Sergio 04/11: "precisa ter desafio, um pouco difícil mas também divertido") P1 Ritmo e desafio: nunca mais de 1–2 min sem algo a fazer; tarefas paralelas que se sobrepõem (pedido no quiosque enquanto
   o bar chama, hóspede na recepção, evento cômico), sem fila de espera longa nem tarefa repetitiva demais.
 
 ## 16. Ponto turístico no morro (no fim da fila, pedido do Sergio em 03/11)

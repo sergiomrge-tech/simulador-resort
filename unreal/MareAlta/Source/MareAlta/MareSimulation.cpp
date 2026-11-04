@@ -302,6 +302,12 @@ int32 UMareSimulation::MissionAmount(const TSharedPtr<FJsonObject>& Mission) con
  if(Kind==TEXT("elder"))Object(State,TEXT("summit"))->TryGetBoolField(TEXT("met"),bValue);
  if(Kind==TEXT("offerings"))return Number(Object(State,TEXT("summit")),TEXT("count"));
  if(Kind==TEXT("finale"))Campaign->TryGetBoolField(TEXT("finale"),bValue);
+ // Act 5 (04/11, "campanha 12 h no mínimo"): fame level, recipe levels gained, customization upgrades made.
+ if(Kind==TEXT("fame"))return FameLevel();
+ if(Kind==TEXT("recipes")){int32 Levels=0;for(const auto& Pair:Object(Definitions,TEXT("dishes"))->Values)Levels+=RecipeLevel(FString(Pair.Key.ToView()))-1;return Levels;}
+ if(Kind==TEXT("custom")){int32 Upgrades=0;for(const auto& Place:Object(State,TEXT("custom"))->Values){const TSharedPtr<FJsonObject>* Slots=nullptr;
+  if(Place.Value->TryGetObject(Slots))for(const auto& Slot:(*Slots)->Values){const TSharedPtr<FJsonObject>* Row=nullptr;
+   if(Slot.Value->TryGetObject(Row))Upgrades+=FMath::Max(0,int32(Number(*Row,TEXT("tier"),1))-1);}}return Upgrades;}
  return bValue?1:0;
 }
 TSharedPtr<FJsonObject> UMareSimulation::ChapterDefinition(const FString& Id) const
