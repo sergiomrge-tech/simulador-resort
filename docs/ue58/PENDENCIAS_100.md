@@ -580,7 +580,7 @@ Fazer depois de todo o resto, quando os textos estiverem estáveis.
 - [x] **Inglês** completo (04/11): 111 LOCTEXT + 2.528 textos (~10,3 mil palavras), conferido no executável (menu, opções e HUD).
 - [x] **Espanhol** completo (04/11), mesmo volume. Troca de idioma em Opções → Idioma (pt-BR / English / Español);
   `-culture=en` na linha de comando para testes.
-- [x] Idiomas prontos e no jogo (04/11): pt-BR, en, es, zh-Hans, ru, de, fr, it, ja, ko. O menu lista sozinho cada idioma
+- [x] Idiomas prontos e no jogo (04/11): pt-BR, en, es, zh-Hans, ru, de, fr, it, ja, ko, nl. O menu lista sozinho cada idioma
   que tem `Content/Localization/Mare/<cultura>.json`; fontes CJK/cirílico por `tools/ue58/i18n_fonts.py`; placas 3D com
   cirílico ou CJK mostram o texto original (a fonte das placas é só latina); bússola com as letras de cada idioma.
   Os 8 restantes ficaram no fim da fila (seção 17).
@@ -588,10 +588,10 @@ Fazer depois de todo o resto, quando os textos estiverem estáveis.
 - [ ] Revisão por falante nativo de cada idioma e teste de layout (textos maiores em alemão/russo não podem cortar). [bloqueado-usuario] (precisa de revisores nativos; o teste de layout fica junto da tradução)
 - [ ] Página da Steam e conquistas nos mesmos idiomas. [bloqueado-usuario] (precisa da conta Steamworks do Sergio)
 
-## 12. Ilha do passeio de barco (pedido do Sergio em 02/11, para o final)
-- [ ] [bloqueado-usuario] (sistema grande: aguarda o Sergio escolher a prioridade e subir o esforço do Opus, regra global) Ilha circular ao fundo, no mar, destino do passeio de barco: bastante árvores e vegetação (nada de low poly),
-  praia em volta e uma trilha passando pelo meio.
-- [ ] [bloqueado-usuario] (sistema grande: aguarda o Sergio escolher a prioridade e subir o esforço do Opus, regra global) O passeio de barco sai do píer, vai até a ilha (desembarque e trilha) e volta; paradas do passeio guiado na ilha.
+## 12. Ilha do passeio de barco (pedido do Sergio em 02/11; redefinido em 04/11)
+- [ ] 04/11, novo pedido: só uma **ilha vulcânica bem longe da praia**, rochosa, com cinzas saindo do vulcão. Procurar
+  asset gratuito de vulcão antes de modelar (regra global). Substitui a ilha com mata e trilha.
+- [ ] [adiado-usuario] (o pedido de 04/11 pede só a ilha) O passeio de barco até a ilha, com desembarque e trilha.
 
 ## 13. Correção de assets low poly (pedido do Sergio em 02/11, para o final)
 Regra do projeto: nenhum asset low poly no jogo.
@@ -656,7 +656,7 @@ negócios, hóspedes, salão, passeios, eventos) e o jogador sempre escolhendo o
 
 ## 17. Traduções restantes (no fim da fila, pedido do Sergio em 04/11)
 Os 18 idiomas escolhidos são os do Supermarket Simulator, menos turco e lituano; 10 já estão prontos (seção 11).
-- [ ] [adiado-usuario] (04/11: "pause as traduções, deixe para o final da fila") Holandês (nl), português de Portugal (pt-PT), polonês (pl), tcheco (cs), húngaro (hu), romeno (ro), dinamarquês (da)
+- [ ] [adiado-usuario] (04/11: "pause as traduções, deixe para o final da fila") Português de Portugal (pt-PT), polonês (pl), tcheco (cs), húngaro (hu), romeno (ro), dinamarquês (da)
   e finlandês (fi). Processo: criar `<idioma>.json` vazio, rodar `i18n_extract.py`, traduzir em lotes com
   `i18n_batch.py show/merge` sem rodar o extrator entre show e merge (os índices mudam quando o source.json ganha textos), `i18n_batch.py compose <idioma>`, `i18n_fonts.py`, captura com
   `-culture=<idioma> -MareLocAudit`. Todos usam letras latinas (fontes atuais já cobrem).
