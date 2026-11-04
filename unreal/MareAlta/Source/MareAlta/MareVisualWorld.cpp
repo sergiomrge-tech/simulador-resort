@@ -30,6 +30,8 @@
 #include "HAL/IConsoleManager.h"
 #include "Components/LocalLightComponent.h"
 #include "UObject/UObjectIterator.h"
+#include "Misc/FileHelper.h"
+#include "Serialization/JsonSerializer.h"
 
 static TAutoConsoleVariable<float> CVarMareBounceLightReach(TEXT("mare.BounceLightReach"),1.f,TEXT("Draw distance of the bounce (fill) lights, times mare.LightDrawDistance (04/11: x2.5 cost the beach 4 FPS)."));
 static TAutoConsoleVariable<float> CVarMareLightShadowMinRadius(TEXT("mare.LightShadowMinRadius"),1000.f,TEXT("Local lights with a smaller attenuation radius (cm) cast no shadow (04/11: 99 of 134 lights cast shadows; under 10 m off = kiosk 56 -> 61 FPS); 0 = keep the authored shadows."));
@@ -100,6 +102,7 @@ void UMareVisualWorld::Tick(float DeltaSeconds)
  UpdateFootprints();
  Clock-=DeltaSeconds;if(Clock>0)return;Clock=2.f;
  RefreshExpansions();
+ AddGlassCompanions();
  CullLocalLights();
  if(!Sun){for(TActorIterator<ALight> It(GetWorld());It;++It){if(It->ActorHasTag(TEXT("MareSun")))Sun=*It;if(It->ActorHasTag(TEXT("MareMoon")))Moon=*It;if(It->ActorHasTag(TEXT("MarePractical")))Practical.AddUnique(*It);}
   for(TActorIterator<AExponentialHeightFog> It(GetWorld());It;++It)Fog=*It;
@@ -274,3 +277,39 @@ void UMareVisualWorld::CullLocalLights()
   Shadowed+=bShadow;++Set;Light->MarkRenderStateDirty();}
  if(Set)UE_LOG(LogTemp,Display,TEXT("MARE_LIGHT_CULL lights=%d shadowed=%d reach=%.0f bounce=x%.1f min_shadow_radius=%.0f"),Set,Shadowed,Reach,Bounce,MinShadow);
 }
+
+void UMareVisualWorld::AddGlassCompanions()
+{
+ // Content/Data/glass_split.json (mare_hud splitglass, 04/11): meshes whose see-through triangles moved to a separate
+ // non-Nanite <mesh>_Glass so the opaque body could use Nanite (GPU-first rule). Every component drawing a body gets
+ // the glass on top, same instances and transforms; the body's own translucent overrides go to the glass.
+ if(bGlassDone)return;bGlassDone=true;
+ FString Text;TSharedPtr<FJsonObject> Map;
+ if(!FFileHelper::LoadFileToString(Text,*(FPaths::ProjectContentDir()/TEXT("Data/glass_split.json"))) || !FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Text),Map) || !Map.IsValid())return;
+ TMap<UStaticMesh*,UStaticMesh*> Glass;
+ for(const auto& Pair:Map->Values){const FString Key(Pair.Key.ToView());if(Key.StartsWith(TEXT("_")))continue;FString GlassPath;if(!Pair.Value->TryGetString(GlassPath))continue;
+  UStaticMesh* Body=FindObject<UStaticMesh>(nullptr,*Key);if(!Body)Body=LoadObject<UStaticMesh>(nullptr,*Key);
+  UStaticMesh* G=LoadObject<UStaticMesh>(nullptr,*GlassPath);if(Body && G)Glass.Add(Body,G);}
+ if(Glass.IsEmpty())return;
+ TArray<UStaticMeshComponent*> Sources;
+ for(TObjectIterator<UStaticMeshComponent> It;It;++It)if(It->GetWorld()==GetWorld() && It->GetStaticMesh() && Glass.Contains(It->GetStaticMesh()) && !It->ComponentHasTag(TEXT("MareGlass")))Sources.Add(*It);
+ int32 Made=0;
+ for(UStaticMeshComponent* Src:Sources){AActor* Owner=Src->GetOwner();if(!Owner)continue;UStaticMesh* G=Glass[Src->GetStaticMesh()];
+  UStaticMeshComponent* Comp=NewObject<UStaticMeshComponent>(Owner,Src->GetClass());Comp->ComponentTags.Add(TEXT("MareGlass"));
+  Comp->SetMobility(Src->Mobility);Comp->SetupAttachment(Src);Comp->SetStaticMesh(G);Comp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+  Comp->SetCastShadow(Src->CastShadow);Comp->SetVisibility(Src->IsVisible());Comp->SetHiddenInGame(Src->bHiddenInGame);
+  Comp->LDMaxDrawDistance=Src->LDMaxDrawDistance;
+  // Translucent overrides of the body move to the glass (where those triangles now are); the body falls back to its
+  // opaque placeholder slot, which has no triangles.
+  for(int32 I=0;I<Src->OverrideMaterials.Num();++I)if(UMaterialInterface* M=Src->OverrideMaterials[I]){Comp->SetMaterial(I,M);
+   if(IsTranslucentBlendMode(M->GetBlendMode()))Src->SetMaterial(I,nullptr);}
+  if(auto SrcISM=Cast<UInstancedStaticMeshComponent>(Src)){auto ISM=CastChecked<UInstancedStaticMeshComponent>(Comp);
+   ISM->InstanceStartCullDistance=SrcISM->InstanceStartCullDistance;ISM->InstanceEndCullDistance=SrcISM->InstanceEndCullDistance;
+   Comp->RegisterComponent();
+   TArray<FTransform> Instances;for(int32 I=0;I<SrcISM->GetInstanceCount();++I){FTransform T;SrcISM->GetInstanceTransform(I,T,false);Instances.Add(T);}
+   ISM->AddInstances(Instances,false,false);}
+  else Comp->RegisterComponent();
+  Owner->AddInstanceComponent(Comp);++Made;}
+ UE_LOG(LogTemp,Display,TEXT("MARE_GLASS_SPLIT meshes=%d components=%d"),Glass.Num(),Made);
+}
+

@@ -1194,7 +1194,130 @@ def frosted_glass(arg=''):
     return out
 
 
+GLASS_DIR = '/Game/Custom/GlassSplit'
+
+
+def _translucent_slots(mesh, overrides):
+    bad = set()
+    for i, sl in enumerate(mesh.static_materials):
+        modes = {_blend_of(sl.material_interface)} if sl.material_interface else set()
+        modes |= overrides.get(i, set())
+        if any(('TRANSLUCENT' in m or 'ADDITIVE' in m or 'MODULATE' in m) for m in modes):
+            bad.add(i)
+    return bad
+
+
+def split_glass(arg=''):
+    """'dry' / 'apply' [,max meshes]: non-Nanite static meshes of the editor level whose only obstacle to Nanite is a
+    see-through slot (windows, bikes, bungalow...). The translucent triangles go to <mesh>_Glass in /Game/Custom/GlassSplit
+    (same material slots, no Nanite); the original keeps the opaque triangles and turns Nanite on. The level is not edited:
+    UMareVisualWorld adds the glass on top of every component that draws the mesh (Content/Data/glass_split.json).
+    Skips meshes made only of glass, water, /Engine and the user's pending Hotel/Lobby plants."""
+    mode, _, limit = arg.partition(',')
+    limit = int(limit or 999)
+    world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_editor_world()
+    meshes = {}
+    for actor in unreal.GameplayStatics.get_all_actors_of_class(world, unreal.Actor):
+        for comp in actor.get_components_by_class(unreal.StaticMeshComponent):
+            mesh = comp.get_editor_property('static_mesh')
+            if not mesh or mesh.get_editor_property('nanite_settings').get_editor_property('enabled'):
+                continue
+            path = mesh.get_path_name().split('.')[0]
+            low = path.lower()
+            if path.startswith('/Engine/') or 'pachira' in low or 'potted_plant' in low or any(w in low for w in ('ocean', 'water', 'pool', 'sea', 'glasssplit')):
+                continue
+            row = meshes.setdefault(path, {'mesh': mesh, 'inst': 0, 'over': {}})
+            row['inst'] += comp.get_instance_count() if isinstance(comp, unreal.InstancedStaticMeshComponent) else 1
+            for i, m in enumerate(comp.get_materials()):
+                if m and i < len(mesh.static_materials) and m != mesh.static_materials[i].material_interface:
+                    row['over'].setdefault(i, set()).add(_blend_of(m))
+    plan = []
+    for path, row in meshes.items():
+        mesh = row['mesh']
+        bad = _translucent_slots(mesh, row['over'])
+        n = len(mesh.static_materials)
+        if not bad or len(bad) >= n:
+            continue
+        plan.append({'path': path, 'instances': row['inst'], 'glass_slots': sorted(bad), 'slots': n})
+    plan.sort(key=lambda r: -r['instances'])
+    plan = plan[:limit]
+    if mode != 'apply':
+        return {'candidates': len(plan), 'plan': plan}
+    GS = unreal.GeometryScript_AssetUtils
+    SEL = unreal.GeometryScript_MeshSelection
+    EDIT = unreal.GeometryScript_MeshEdits
+    tools = unreal.AssetToolsHelpers.get_asset_tools()
+    mapping, done, errors = {}, [], {}
+    data = Path(unreal.Paths.project_content_dir()) / 'Data' / 'glass_split.json'
+    if data.exists():
+        mapping = json_module.loads(data.read_text(encoding='utf-8'))
+    for r in plan:
+        try:
+            mesh = unreal.EditorAssetLibrary.load_asset(r['path'])
+            name = r['path'].rsplit('/', 1)[-1] + '_Glass'
+            glass_path = GLASS_DIR + '/' + name
+            if unreal.EditorAssetLibrary.does_asset_exist(glass_path):
+                unreal.EditorAssetLibrary.delete_asset(glass_path)
+            glass = unreal.EditorAssetLibrary.duplicate_asset(r['path'], glass_path)
+            opts = unreal.GeometryScriptCopyMeshFromAssetOptions()
+            lod = unreal.GeometryScriptMeshReadLOD()
+            def keep(target, slots_to_delete):
+                dyn = unreal.DynamicMesh()
+                dyn, outcome = GS.copy_mesh_from_static_mesh(target, dyn, opts, lod)
+                for sid in slots_to_delete:
+                    dyn, sel = SEL.select_mesh_elements_by_material_id(dyn, sid)
+                    dyn, deleted = EDIT.delete_selected_triangles_from_mesh(dyn, sel)
+                wopts = unreal.GeometryScriptCopyMeshToAssetOptions()
+                wopts.set_editor_property('enable_recompute_normals', False)
+                wopts.set_editor_property('enable_recompute_tangents', False)
+                wopts.set_editor_property('replace_materials', False)
+                GS.copy_mesh_to_static_mesh(dyn, target, wopts, unreal.GeometryScriptMeshWriteLOD())
+            opaque = [i for i in range(r['slots']) if i not in r['glass_slots']]
+            keep(glass, opaque)
+            keep(mesh, r['glass_slots'])
+            gs = glass.get_editor_property('nanite_settings'); gs.set_editor_property('enabled', False); glass.set_editor_property('nanite_settings', gs)
+            ns = mesh.get_editor_property('nanite_settings'); ns.set_editor_property('enabled', True); mesh.set_editor_property('nanite_settings', ns)
+            glass.set_editor_property('lod_groups', glass.get_editor_property('lod_groups')) if False else None
+            if not (unreal.EditorAssetLibrary.save_loaded_asset(glass, False) and unreal.EditorAssetLibrary.save_loaded_asset(mesh, False)):
+                raise RuntimeError('not saved')
+            mapping[mesh.get_path_name()] = glass.get_path_name()
+            done.append(r['path'].rsplit('/', 1)[-1])
+        except Exception as e:
+            errors[r['path']] = str(e)[:300]
+    data.write_text(json_module.dumps({'_doc': 'Static meshes whose see-through triangles were moved to a separate non-Nanite mesh (mare_hud splitglass, 04/11, GPU-first rule): UMareVisualWorld adds the glass mesh on top of every component drawing the source mesh.', **{k: v for k, v in mapping.items() if k != '_doc'}}, indent=1, ensure_ascii=False), encoding='utf-8')
+    return {'done': done, 'errors': errors}
+
+
 def run(action, arg=''):
+    if action == 'glassslots':
+        # After splitglass: the emptied see-through slots of each Nanite body get an opaque placeholder (no triangles use
+        # it; a translucent material there logs 'Invalid material ... Nanite'). The glass mesh keeps the real material.
+        placeholder = unreal.EditorAssetLibrary.load_asset('/InterchangeAssets/gltf/MaterialInstances/MI_Default_Opaque_DS')
+        data = Path(unreal.Paths.project_content_dir()) / 'Data' / 'glass_split.json'
+        mapping = json_module.loads(data.read_text(encoding='utf-8'))
+        fixed = []
+        for body_path in [k for k in mapping if not k.startswith('_')]:
+            mesh = unreal.EditorAssetLibrary.load_asset(body_path.split('.')[0])
+            slots = list(mesh.static_materials)
+            changed = False
+            for i, sl in enumerate(slots):
+                if sl.material_interface and 'TRANSLUCENT' in _blend_of(sl.material_interface):
+                    sl.material_interface = placeholder; slots[i] = sl; changed = True
+            if changed:
+                mesh.set_editor_property('static_materials', slots)
+                unreal.EditorAssetLibrary.save_loaded_asset(mesh, False)
+                fixed.append(mesh.get_name())
+        return json_module.dumps(fixed)
+    if action == 'apis':
+        # Editor Python: names in the unreal module containing every ';'-separated word (API discovery).
+        words = [w.lower() for w in arg.split(';') if w]
+        names = [n for n in dir(unreal) if all(w in n.lower() for w in words)]
+        names = [n for n in names if n.lower() == arg.lower()] or names
+        if len(names) == 1:
+            return json_module.dumps({names[0]: [m for m in dir(getattr(unreal, names[0])) if not m.startswith('_')]})
+        return json_module.dumps(names)
+    if action == 'splitglass':
+        return json_module.dumps(split_glass(arg))
     if action == 'piestate':
         # PIE: paused?, navigation data present?, how many people and how many hidden (QA diagnosis, 04/11).
         world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()

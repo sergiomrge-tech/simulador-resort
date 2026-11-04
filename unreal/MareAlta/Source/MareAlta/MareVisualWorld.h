@@ -64,6 +64,9 @@ public:
  int32 LampCount()const{return Lamps.Num();}
  /** Gives every local light of the world a draw distance (mare.LightDrawDistance) unless it has one. */
  void CullLocalLights();
+ /** Adds the see-through part of split meshes on top of their Nanite bodies (Content/Data/glass_split.json). */
+ void AddGlassCompanions();
+ bool bGlassDone=false;
  struct FLightCullState{bool bShadow=true;};
  TMap<TWeakObjectPtr<class ULocalLightComponent>,FLightCullState> LightCull;
  FVector LightCullKey=FVector(-1);

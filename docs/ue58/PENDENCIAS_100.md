@@ -534,6 +534,13 @@ Pronto e testado (02/11):
   - **Resultado sem DLSS (duas rodadas): praia 67–69, quiosque 74, saguão 76–78, vila 87–89 FPS** (de 29/29/35/40).
   - Testados e descartados: VRS desligado (pior), TSR/pós médios (igual), sombra das pessoas 15/10 m (igual),
     `r.HairStrands.Enable 0` (derruba o executável), `r.NumBufferedOcclusionQueries 3` (igual a 2).
+  - 04/11 (noite), regra do Sergio "máximo de processamento na GPU": usar a folga da placa para qualidade custou mais do
+    que sobrava (resolução 100% praia 60, GI/reflexos Alto 61, sombras/AA Épico 63, tudo junto 43–52): mantidos os padrões.
+    Separar o vidro de 27 malhas para o corpo usar Nanite (`mare_hud splitglass`/`glassslots`, Geometry Script, vidro por
+    cima em tempo de execução via `Content/Data/glass_split.json`) deu praia 64–66 e quiosque 70–71, PIOR que 67–69/74:
+    eram só 77 cópias e o vidro virou 39 componentes novos. Desfeito; a ferramenta fica para malhas com muitas cópias.
+    Próximo passo de GPU, se valer: multidão distante em animação gravada em textura (AnimToTexture) ou Animation
+    Sharing; sem pessoas a praia ganhava ~4 FPS, então o ganho máximo é pequeno para o tamanho do trabalho.
 - [x] P1 DLSS 4.5 no executável: plugins carregam, DLSS e Geração de quadros aparecem no menu (RTX 40). DLSS Super
   Resolution provado no executável (04/11, `bench_package.ps1 -Exec "r.NGX.DLSS.Enable 1"`: recurso NGX DLSS-SR criado,
   praia 71, quiosque 73, saguão 76, vila 87 FPS).
