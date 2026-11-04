@@ -3,8 +3,9 @@
 - festa_stall: quermesse stall with a wooden frame, striped canvas roof with scalloped valance, counter and sign board.
 D:/CodexTemp/claude/bpy-env/Scripts/python.exe -I tools/ue58/gen_festival.py
 Output: unreal/MareAlta/SourceArt/Models/Festival/{festa_bunting,festa_stall}.glb (metres, base z=0, front = -Y).
-The other party props (dj_booth, campfire_logs, flame, party_banner) are the Godot-era bpy models copied from
-assets/models/gen by this script."""
+- festa_banner: printed canvas banner between bamboo poles (print from tools/ue58/gen_banner_print.py), 04/11.
+The other party props (dj_booth, campfire_logs, flame and the old blank party_banner) are the Godot-era bpy models
+copied from assets/models/gen by this script."""
 import math
 import shutil
 from pathlib import Path
@@ -27,7 +28,7 @@ def mat(name, colour, rough=.6, metal=0.0):
     return m
 
 
-def link(bm, name, mats, smooth=True):
+def link(bm, name, mats, smooth=True, keep_uv=False):
     me = bpy.data.meshes.new(name)
     bm.to_mesh(me)
     o = bpy.data.objects.new(name, me)
@@ -38,10 +39,11 @@ def link(bm, name, mats, smooth=True):
         p.use_smooth = smooth
     bpy.context.view_layer.objects.active = o
     o.select_set(True)
-    bpy.ops.object.mode_set(mode='EDIT')
-    bpy.ops.mesh.select_all(action='SELECT')
-    bpy.ops.uv.cube_project(cube_size=.5)
-    bpy.ops.object.mode_set(mode='OBJECT')
+    if not keep_uv:   # keep_uv: UVs already laid out in the bmesh (a printed face)
+        bpy.ops.object.mode_set(mode='EDIT')
+        bpy.ops.mesh.select_all(action='SELECT')
+        bpy.ops.uv.cube_project(cube_size=.5)
+        bpy.ops.object.mode_set(mode='OBJECT')
     o.select_set(False)
     return o
 
@@ -200,6 +202,89 @@ def fire():
     export(objs[0], 'festa_fire')
 
 
+def banner():
+    """festa_banner: printed canvas banner (3.6 x 0.9 m, tools/ue58/gen_banner_print.py) between two bamboo poles,
+    hemmed, with brass grommets and ropes tied round the poles; the back is plain canvas (the print reads only from
+    the front). Replaces the Godot-era blank banner (party_banner)."""
+    bpy.ops.wm.read_factory_settings(use_empty=True)
+    span, w, h, mid = 4.3, 3.6, .9, 2.35
+    print_img = bpy.data.images.load(str(OUT / 'festa_banner_print.png'))
+    print_img.name = 'festa_banner_print'
+    print_img.pack()
+    printed = bpy.data.materials.new('festa_banner_print')
+    printed.use_nodes = True
+    nodes = printed.node_tree.nodes
+    tex = nodes.new('ShaderNodeTexImage')
+    tex.image = print_img
+    bsdf = nodes['Principled BSDF']
+    printed.node_tree.links.new(tex.outputs['Color'], bsdf.inputs['Base Color'])
+    bsdf.inputs['Roughness'].default_value = .85
+    mats = [mat('festa_banner_bamboo', (.55, .45, .22), .7), printed, mat('festa_banner_canvas', (.86, .8, .66), .9),
+            mat('festa_banner_rope', (.78, .72, .58), .85), mat('festa_banner_brass', (.72, .55, .25), .35, 1.0)]
+    bm = bmesh.new()
+    uv_layer = bm.loops.layers.uv.new('UVMap')
+    for x in (-span / 2, span / 2):
+        tube(bm, (x, 0, 0), (x, 0, mid + h / 2 + .45), .05, 16, 0)
+        for k in range(1, 7):
+            z = k * (mid + h / 2 + .45) / 7
+            tube(bm, (x, 0, z - .02), (x, 0, z + .02), .057, 16, 0)
+    # Cloth: a gentle sag and wind ripple; front grid printed (UV 0..1), the back 3 mm behind in plain canvas.
+    nx, nz = 48, 12
+
+    def cloth_point(i, j, back):
+        u, v = i / nx, j / nz
+        x = -w / 2 + w * u
+        z = mid - h / 2 + h * v - .06 * 4 * u * (1 - u) * (1 - .4 * v)
+        y = .035 * math.sin(u * math.pi * 3 + v * .8) * 4 * u * (1 - u) + (.003 if back else 0)
+        return Vector((x, y, z))
+    for back, mi in ((False, 1), (True, 2)):
+        grid = [[bm.verts.new(cloth_point(i, j, back)) for j in range(nz + 1)] for i in range(nx + 1)]
+        for i in range(nx):
+            for j in range(nz):
+                quad = [grid[i][j], grid[i + 1][j], grid[i + 1][j + 1], grid[i][j + 1]]
+                uvs = [(i / nx, j / nz), ((i + 1) / nx, j / nz), ((i + 1) / nx, (j + 1) / nz), (i / nx, (j + 1) / nz)]
+                f = bm.faces.new(quad if back else quad[::-1])
+                f.material_index = mi
+                # UV written with the face: each loop gets the UV of its own vertex.
+                lookup = dict(zip(quad, uvs))
+                for loop in f.loops:
+                    loop[uv_layer].uv = lookup[loop.vert]
+                f.tag = True
+    # Hems (rolled canvas along the top and bottom edges) and the side seams.
+    for j, r in ((0, .012), (nz, .012)):
+        for i in range(nx):
+            tube(bm, cloth_point(i, j, False) + Vector((0, .0015, 0)), cloth_point(i + 1, j, False) + Vector((0, .0015, 0)), r, 8, 2)
+    for i in (0, nx):
+        for j in range(nz):
+            tube(bm, cloth_point(i, j, False) + Vector((0, .0015, 0)), cloth_point(i, j + 1, False) + Vector((0, .0015, 0)), .01, 8, 2)
+    # Brass grommets at the four corners and a rope from each to its pole, wrapped twice round the bamboo.
+    for i, j in ((0, 0), (0, nz), (nx, 0), (nx, nz)):
+        c = cloth_point(i, j, False) + Vector((.05 if i == 0 else -.05, .0015, .05 if j == 0 else -.05))
+        ring = bmesh.ops.create_circle(bm, cap_ends=False, radius=.018, segments=16)['verts']
+        for v in ring:
+            v.co = Vector((c.x + v.co.x, c.y, c.z + v.co.y))
+        thick = bmesh.ops.extrude_edge_only(bm, edges=list({e for v in ring for e in v.link_edges}))['geom']
+        for v in [g for g in thick if isinstance(g, bmesh.types.BMVert)]:
+            v.co.y += .006
+        for f in {f for v in ring for f in v.link_faces}:
+            f.material_index = 4
+        pole_x = -span / 2 if i == 0 else span / 2
+        tie = Vector((pole_x + (.055 if i == 0 else -.055), 0, c.z + (.03 if j == 0 else -.03)))
+        tube(bm, c, tie, .012, 8, 3)   # ropes at least 12 mm radius (project rule: thin cords vanish)
+        for k in range(2):
+            z = tie.z + (k - .5) * .026
+            for s in range(12):
+                a0, a1 = 2 * math.pi * s / 12, 2 * math.pi * (s + 1) / 12
+                tube(bm, (pole_x + .064 * math.cos(a0), .064 * math.sin(a0), z), (pole_x + .064 * math.cos(a1), .064 * math.sin(a1), z), .012, 6, 3)
+    for f in bm.faces:
+        if not f.tag:   # poles, hems, ropes: a simple planar map for the solid colours
+            for loop in f.loops:
+                loop[uv_layer].uv = (loop.vert.co.x * .3, loop.vert.co.z * .3)
+    bmesh.ops.recalc_face_normals(bm, faces=[f for f in bm.faces if not f.tag])
+    o = link(bm, 'festa_banner', mats, keep_uv=True)
+    export(o, 'festa_banner')
+
+
 def copy_godot_models():
     OUT.mkdir(parents=True, exist_ok=True)
     for name in ('dj_booth', 'campfire_logs', 'flame', 'party_banner'):
@@ -210,6 +295,6 @@ def copy_godot_models():
 if __name__ == '__main__':
     import sys
     only = sys.argv[sys.argv.index('--') + 1:] if '--' in sys.argv else []
-    for name, fn in (('bunting', bunting), ('stall', stall), ('fire', fire), ('copy', copy_godot_models)):
+    for name, fn in (('bunting', bunting), ('stall', stall), ('fire', fire), ('banner', banner), ('copy', copy_godot_models)):
         if not only or name in only:
             fn()

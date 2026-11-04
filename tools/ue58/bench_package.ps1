@@ -2,11 +2,13 @@ param(
  [string]$Package='D:/Builds/MareAltaUE58_Pessoas_2026-11-04/Windows',
  [string[]]$Variants=@(''),
  [string]$Exec='',
+ [int]$Soak=0,
  [int]$ResX=1920,
  [int]$ResY=1080
 )
 # Frame-time benchmark of the packaged game (PENDENCIAS P0 "FPS medido no executável"): runs MareAlta.exe -MareBench
 # once per variant ('' = full game, 'MareBenchNoPeople', 'MareBenchNoGroom') and prints one row per sector.
+# -Soak 7200 = 2-hour session (PENDENCIAS P0): the sectors repeat, sleeping to the next day between rounds.
 $ErrorActionPreference='Stop'
 $env:TEMP='D:/CodexTemp/ue58-temp'
 $env:TMP=$env:TEMP
@@ -16,9 +18,10 @@ foreach($variant in $Variants){
  $args=@('-MareBench',"-MareSaveRoot=$qa","-UserDir=$qa/Unreal","-abslog=$qa/runtime.log",'-unattended','-nosplash','-windowed',"-ResX=$ResX","-ResY=$ResY")
  if($variant){$args+="-$variant"}
  if($Exec){$args+="-MareBenchExec=`"$Exec`""}
+ if($Soak){$args+="-MareBenchSoak=$Soak"}
  $p=Start-Process -FilePath "$Package/MareAlta.exe" -WorkingDirectory $Package -ArgumentList $args -PassThru
  $start=Get-Date
- while(-not $p.HasExited){if(((Get-Date)-$start).TotalSeconds -gt 420){Stop-Process -Id $p.Id;throw "Timeout: $qa"};Start-Sleep 3;$p.Refresh()}
+ while(-not $p.HasExited){if(((Get-Date)-$start).TotalSeconds -gt (420+$Soak*1.2)){Stop-Process -Id $p.Id;throw "Timeout: $qa"};Start-Sleep 3;$p.Refresh()}
  if(-not (Test-Path "$qa/bench.json")){throw "Sem bench.json: $qa"}
  Write-Output "== $(if($variant){$variant}else{'completo'}) $Exec  ($qa)"
  (Get-Content "$qa/bench.json" -Raw | ConvertFrom-Json).sectors | ForEach-Object {

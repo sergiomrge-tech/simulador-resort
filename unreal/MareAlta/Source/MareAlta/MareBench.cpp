@@ -69,7 +69,7 @@ void AMareBench::Tick(float DeltaSeconds)
   UMareSimulation::Object(UMareSimulation::Object(Sim->State,TEXT("prog")),TEXT("ch"))->SetNumberField(TEXT("carnaval"),3);Sim->AddFame(100000);
   for(const TCHAR* Id:{TEXT("kiosk_tables"),TEXT("drinks"),TEXT("grill"),TEXT("bar"),TEXT("pousada"),TEXT("pool"),TEXT("passeios"),TEXT("grand_hotel")}){
    bool bOwned=false;UMareSimulation::Object(Sim->State,TEXT("unlocked"))->TryGetBoolField(Id,bOwned);if(!bOwned)Sim->BuyExpansion(Id);}
-  Hero->GetCharacterMovement()->SetMovementMode(MOVE_Flying);Sector=0;Enter(PC);return;
+  Hero->GetCharacterMovement()->SetMovementMode(MOVE_Flying);Started=FPlatformTime::Seconds();Sector=0;Enter(PC);return;
  }
  if(Stage==0){if(FPlatformTime::Seconds()<Next)return;Stage=1;Next=FPlatformTime::Seconds()+20;
   // Per-scope timings of the same 20 s (CSV profiler: animation, skinning, shadows...), csv/<sector>.csv.
@@ -96,11 +96,23 @@ void AMareBench::Tick(float DeltaSeconds)
   {FString Extra;FParse::Value(FCommandLine::Get(),TEXT("MareBenchExec="),Extra,false);Row->SetStringField(TEXT("exec"),Extra);}
   Row->SetStringField(TEXT("variant"),FParse::Param(FCommandLine::Get(),TEXT("MareBenchNoPeople"))?TEXT("sem_pessoas"):FParse::Param(FCommandLine::Get(),TEXT("MareBenchNoGroom"))?TEXT("sem_cabelo"):TEXT("completo"));
   Row->SetNumberField(TEXT("people"),People);Row->SetNumberField(TEXT("people_rendered"),Seen);Row->SetNumberField(TEXT("viewport_x"),Size.X);Row->SetNumberField(TEXT("viewport_y"),Size.Y);
-  Records.Add(MakeShared<FJsonValueObject>(Row));Stage=2;Next=FPlatformTime::Seconds()+2;return;
+  Row->SetNumberField(TEXT("ram_mb"),double(FPlatformMemory::GetStats().UsedPhysical)/(1024.0*1024.0));
+  Row->SetNumberField(TEXT("elapsed_s"),FPlatformTime::Seconds()-Started);Row->SetNumberField(TEXT("cycle"),Cycle);
+  Records.Add(MakeShared<FJsonValueObject>(Row));Stage=2;Next=FPlatformTime::Seconds()+2;
+  Write(false);return;
  }
  if(FPlatformTime::Seconds()<Next)return;
  if(++Sector<int32(UE_ARRAY_COUNT(Sectors))){Enter(PC);return;}
- auto Report=MakeShared<FJsonObject>();Report->SetArrayField(TEXT("sectors"),Records);Report->SetBoolField(TEXT("finished"),true);
+ // Soak (PENDENCIAS P0 "sessões de 2 h"): -MareBenchSoak=<seconds> sleeps to the next morning and runs the sectors
+ // again until that long has passed; bench.json is rewritten after every sector, so a crash still leaves the record.
+ double Soak=0;FParse::Value(FCommandLine::Get(),TEXT("MareBenchSoak="),Soak);
+ if(FPlatformTime::Seconds()-Started<Soak){PC->GetSimulation()->Sleep();++Cycle;Sector=0;Enter(PC);return;}
+ Write(true);GEngine->Exec(GetWorld(),TEXT("QUIT"));
+}
+
+void AMareBench::Write(bool bFinished)
+{
+ auto Report=MakeShared<FJsonObject>();Report->SetArrayField(TEXT("sectors"),Records);Report->SetBoolField(TEXT("finished"),bFinished);
+ Report->SetNumberField(TEXT("cycles"),Cycle+1);Report->SetNumberField(TEXT("elapsed_s"),FPlatformTime::Seconds()-Started);
  FString Text;FJsonSerializer::Serialize(Report,TJsonWriterFactory<>::Create(&Text));FFileHelper::SaveStringToFile(Text,*(Root/TEXT("bench.json")));
- GEngine->Exec(GetWorld(),TEXT("QUIT"));
 }

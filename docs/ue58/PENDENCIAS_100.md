@@ -482,7 +482,10 @@ Pronto e testado (02/11):
 - [ ] P1 Chegar a 60 FPS de dia na praia (RTX 4060 Ti, 1080p): o cenário sozinho gasta 20 ms de render com ~2.030 draw
   calls de sombra de malhas sem Nanite (achar quais: vegetação/instâncias) e as pessoas ainda ~8 ms (componentes
   registrados: oclusão, velocidades). Medir com `tools/ue58/bench_package.ps1 -Exec "cvar valor"` sem reempacotar.
-- [ ] P0 Sessões de 2 h sem crash (GPU page fault do hotel mitigado com `r.Lumen.AsyncCompute=0`; re-testar).
+- [x] P0 Sessões de 2 h sem crash (GPU page fault do hotel mitigado com `r.Lumen.AsyncCompute=0`; re-testar).
+  04/11: `tools/ue58/bench_package.ps1 -Soak 7200` (executável, tudo liberado): 120 min, 60 voltas pelos 4 setores dormindo
+  entre elas (60 dias de jogo, saguão do hotel visitado 60 vezes), nenhum erro no log, FPS estável do início ao fim
+  (praia 35, quiosque 35, saguão 42, vila 49), RAM 4,0 GB no início e 3,4 GB no fim.
 - [x] P0 Saves: 3 slots, autosave ao dormir, migração do slot1 antigo, backup `.bak` (teste `MareAlta.Saves.Slots`, 02/11).
 - [x] P1 Memória: build de pessoas e texturas 8K das banhistas (avaliar 4K), tamanho do pacote final.
   - 04/11: nenhuma textura das pessoas passa de 4K (build Medium; o 8K era só intermediário do maiô). Texturas 4K de
@@ -527,6 +530,9 @@ Regra do projeto: nenhum asset low poly no jogo.
 - [~] Revisar os outros modelos trazidos da versão Godot para as festas: barraca trocada pela barraca listrada do Fab
   (`festa_stall_fab`, 03/11); cabine do DJ, faixa e bandeirinhas sem substituto gratuito adequado no Fab (refazer ou
   procurar de novo); e qualquer outro prop com poucas faces que aparecer na varredura visual final.
+  04/11: faixa refeita (`festa_banner`, gen_festival.py banner + gen_banner_print.py): lona impressa "Festa na Praia"
+  virada para a festa, verso liso, ilhoses e cordas de 12 mm amarradas nos bambus; a antiga era um pano em branco.
+  Bandeirinhas já eram do gen_festival. Falta a cabine do DJ (aceitável: treliça, caixas, refletores; caixas lisas).
 
 ## 14. Eventos cômicos e personagens memoráveis (pedido do Sergio em 31/10, issue #4; para o final)
 Especificação completa em `docs/ue58/HUMOR_EVENTOS_COMICOS.md`

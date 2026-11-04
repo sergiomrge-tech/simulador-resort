@@ -901,7 +901,39 @@ def nanite_off(paths):
     return done
 
 
+def shadow_casters(arg=''):
+    """Editor level: static meshes that are drawn into the sun's shadow maps without Nanite (each instance and each
+    material section is its own shadow draw, and wind (WPO) re-draws them every frame). Grouped by mesh: instances,
+    sections, triangles of LOD0, whether a material has World Position Offset. Sorted by instances x sections."""
+    world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_editor_world()
+    rows = {}
+    for actor in unreal.GameplayStatics.get_all_actors_of_class(world, unreal.Actor):
+        if actor.is_hidden_ed():
+            continue
+        for comp in actor.get_components_by_class(unreal.StaticMeshComponent):
+            mesh = comp.get_editor_property('static_mesh')
+            if not mesh or not comp.is_visible() or not comp.get_editor_property('cast_shadow'):
+                continue
+            if mesh.get_editor_property('nanite_settings').get_editor_property('enabled'):
+                continue
+            n = comp.get_instance_count() if isinstance(comp, unreal.InstancedStaticMeshComponent) else 1
+            key = mesh.get_path_name()
+            row = rows.setdefault(key, {'mesh': mesh.get_name(), 'instances': 0, 'components': 0, 'sections': mesh.get_num_sections(0),
+                                        'tris': unreal.EditorStaticMeshLibrary.get_number_verts(mesh, 0), 'wpo': False})
+            row['instances'] += n
+            row['components'] += 1
+            for m in comp.get_materials():
+                base = m.get_base_material() if m else None
+                if base and unreal.MaterialEditingLibrary.get_material_property_input_node(base, unreal.MaterialProperty.MP_WORLD_POSITION_OFFSET):
+                    row['wpo'] = True
+    out = sorted(rows.values(), key=lambda r: -r['instances'] * max(1, r['sections']))
+    return {'meshes': len(out), 'instances': sum(r['instances'] for r in out),
+            'draw_estimate': sum(r['instances'] * max(1, r['sections']) for r in out), 'top': out[:int(arg or 25)]}
+
+
 def run(action, arg=''):
+    if action == 'shadowcasters':
+        return json_module.dumps(shadow_casters(arg))
     if action == 'shadowlights':
         return json_module.dumps(shadow_lights(arg))
     if action == 'naniteoff':

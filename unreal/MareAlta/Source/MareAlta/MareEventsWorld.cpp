@@ -90,5 +90,5 @@ void UMareEventsWorld::Tick(float DeltaSeconds)
  else if(Event==TEXT("show_dj")){Put(TEXT("festa_dj_booth"),0,2,0);Put(TEXT("festa_bunting"),0,-1,0);}
  else if(Event==TEXT("carnaval")){Put(TEXT("festa_dj_booth"),0,2,0);Put(TEXT("festa_bunting"),-3,-1,0);Put(TEXT("festa_bunting"),3,-1,0);Put(TEXT("festa_stall"),-5,1,90);}
  // Paid decoration: the party banner at the entrance and an extra row of bunting.
- if(bDeco){Put(TEXT("festa_party_banner"),0,-8,0);Put(TEXT("festa_bunting"),0,-5.5f,0);}
+ if(bDeco){Put(TEXT("festa_banner"),0,-8,0);Put(TEXT("festa_bunting"),0,-5.5f,0);}
 }

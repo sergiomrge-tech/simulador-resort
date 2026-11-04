@@ -23,4 +23,7 @@ private:
  TArray<TSharedPtr<class FJsonValue>> Records;
  void Enter(class AMareController* PC);
  void Strip();
+ void Write(bool bFinished);
+ double Started=0;
+ int32 Cycle=0;
 };
