@@ -534,8 +534,10 @@ Pronto e testado (02/11):
   - **Resultado sem DLSS (duas rodadas): praia 67–69, quiosque 74, saguão 76–78, vila 87–89 FPS** (de 29/29/35/40).
   - Testados e descartados: VRS desligado (pior), TSR/pós médios (igual), sombra das pessoas 15/10 m (igual),
     `r.HairStrands.Enable 0` (derruba o executável), `r.NumBufferedOcclusionQueries 3` (igual a 2).
-- [ ] P1 DLSS 4.5 no executável: plugins carregam, DLSS e Geração de quadros aparecem no menu (RTX 40). Falta provar a
-  Geração de quadros: o plugin só gera quadros com a janela EM FOCO (StreamlineDLSSG.cpp, `FApp::HasFocus`) e o Windows
+- [x] P1 DLSS 4.5 no executável: plugins carregam, DLSS e Geração de quadros aparecem no menu (RTX 40). DLSS Super
+  Resolution provado no executável (04/11, `bench_package.ps1 -Exec "r.NGX.DLSS.Enable 1"`: recurso NGX DLSS-SR criado,
+  praia 71, quiosque 73, saguão 76, vila 87 FPS).
+- [ ] [bloqueado-usuario] (precisa do Sergio clicar na janela do jogo durante o teste) P1 Provar a Geração de quadros: o plugin só gera quadros com a janela EM FOCO (StreamlineDLSSG.cpp, `FApp::HasFocus`) e o Windows
   não deixa um script dar foco; o Sergio clica na janela durante `bench_package.ps1 -Focus -Exec "r.Streamline.DLSSG.Enable 1"`
   (o resultado mostra "na tela" = quadros exibidos e `focus`). Testar também DLSS Super Resolution (`r.NGX.DLSS.Enable 1`).
 - [x] P0 Sessões de 2 h sem crash (GPU page fault do hotel mitigado com `r.Lumen.AsyncCompute=0`; re-testar).
