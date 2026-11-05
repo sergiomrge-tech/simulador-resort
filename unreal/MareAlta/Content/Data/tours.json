@@ -300,5 +300,197 @@
   },
   "centre": 430,
   "freeboard": 22
+ },
+ "_doc_snorkel": "Guided snorkel (CHECKLIST_EXPANSOES 2.3, MareSnorkelWorld.cpp): the tour boat anchors by the offshore reef (~9 m deep, MareReefWorld) (anchor x,y,heading; model origin at the transom, 'centre' cm ahead is the middle of the hull) and the group (one swimmer per ticket, at most 6) jumps in at the ladder and swims after the player (follow_speed, spacing). Species: aim at a fish school or coral kind within look_range and press E to present it (new species add species_bonus); touching coral (the hero within coral_margin of a coral's bounds) costs coral_penalty, at most once per coral_cooldown s. After lost_after species (or lost_seconds) one swimmer drifts lost_distance away and must be fetched (within fetch_radius). Back at the ladder (count_radius) the group is counted: everyone present ends the tour; a swimmer still lost after crew_fetch_seconds is fetched by the crew (worse choice). Choices per stop (stops.snorkel): 0 good, 1 ok, 2 bad - coral touches (0 / 1 / more), species presented (good_species / ok_species / fewer) and the count (all fetched / crew fetched). World cm.",
+ "snorkel_tour": {
+  "tour": "snorkel",
+  "mesh": "TourBoat_lancha",
+  "anchor": [
+   3700,
+   -12500,
+   0
+  ],
+  "centre": 430,
+  "freeboard": 22,
+  "sea_z": -30,
+  "ladder": [
+   4150,
+   -12660
+  ],
+  "hero_start": [
+   4150,
+   -12820,
+   -80
+  ],
+  "hero_return": [
+   7200,
+   -4700,
+   120
+  ],
+  "follow_speed": 175,
+  "spacing": 120,
+  "look_range": 1000,
+  "species_bonus": 0.12,
+  "coral_penalty": 0.25,
+  "coral_margin": 22,
+  "coral_cooldown": 4,
+  "lost_after": 2,
+  "lost_seconds": 70,
+  "lost_distance": 1150,
+  "lost_drift": 55,
+  "fetch_radius": 320,
+  "count_radius": 520,
+  "crew_fetch_seconds": 45,
+  "good_species": 5,
+  "ok_species": 2,
+  "good_coral": 0,
+  "ok_coral": 1,
+  "species": [
+   {
+    "id": "clown",
+    "name": "peixe-palhaço",
+    "fish": "World_0544",
+    "fact": "laranja com faixas brancas, vive escondido perto do coral"
+   },
+   {
+    "id": "surgeon",
+    "name": "cirurgião-azul",
+    "fish": "World_0546",
+    "fact": "azul com rabo amarelo, come algas o dia todo"
+   },
+   {
+    "id": "sergeant",
+    "name": "sargentinho",
+    "fish": "World_0555",
+    "fact": "amarelo com listras pretas, nada em cardume",
+    "stop": 1
+   },
+   {
+    "id": "sardine",
+    "name": "sardinhas",
+    "fish": "World_0564",
+    "fact": "cardume prateado que muda de direção junto"
+   },
+   {
+    "id": "shark",
+    "name": "tubarão-galha-preta",
+    "reef": "Sea_shark",
+    "fact": "tubarão de recife tímido: patrulha o coral e foge de quem chega perto"
+   },
+   {
+    "id": "brain",
+    "name": "coral-cérebro",
+    "coral": [
+     "World_0538",
+     "World_0541",
+     "World_0549",
+     "World_0561",
+     "World_0563",
+     "World_0566",
+     "World_0577",
+     "World_0578",
+     "World_0600"
+    ],
+    "fact": "cresce menos de um centímetro por ano: não se toca"
+   },
+   {
+    "id": "fan",
+    "name": "leque-do-mar",
+    "coral": [
+     "World_0550",
+     "World_0552",
+     "World_0559",
+     "World_0560",
+     "World_0568",
+     "World_0570",
+     "World_0574",
+     "World_0596",
+     "World_0599"
+    ],
+    "fact": "filtra a água e balança com a corrente"
+   },
+   {
+    "id": "table",
+    "name": "coral-mesa",
+    "coral": [
+     "World_0551",
+     "World_0553",
+     "World_0558",
+     "World_0567",
+     "World_0569",
+     "World_0571",
+     "World_0573",
+     "World_0579",
+     "World_0581",
+     "World_0592",
+     "World_0594"
+    ],
+    "fact": "abriga peixes pequenos embaixo da 'mesa'"
+   },
+   {
+    "id": "branch",
+    "name": "coral-galhado",
+    "coral": [
+     "World_0537",
+     "World_0539",
+     "World_0540",
+     "World_0542",
+     "World_0543",
+     "World_0548",
+     "World_0554",
+     "World_0557",
+     "World_0562",
+     "World_0572",
+     "World_0575",
+     "World_0576",
+     "World_0580",
+     "World_0582",
+     "World_0583",
+     "World_0584",
+     "World_0585",
+     "World_0586",
+     "World_0587",
+     "World_0588",
+     "World_0589",
+     "World_0590",
+     "World_0591",
+     "World_0593",
+     "World_0595",
+     "World_0597",
+     "World_0598"
+    ],
+    "fact": "quebra fácil: um toque de nadadeira estraga anos"
+   },
+   {
+    "id": "anemone",
+    "name": "anêmona",
+    "reef": "Sea_anemone",
+    "fact": "os tentáculos queimam peixinhos, mas o peixe-palhaço mora nela"
+   },
+   {
+    "id": "urchin",
+    "name": "ouriço-do-mar",
+    "reef": "Sea_urchin",
+    "fact": "espinhos longos: nunca pise nem encoste"
+   },
+   {
+    "id": "starfish",
+    "name": "estrela-do-mar",
+    "reef": "Sea_starfish",
+    "fact": "se perde um braço, cresce outro no lugar"
+   }
+  ],
+  "lines": {
+   "start": "Mergulhe (Ctrl), mire uma espécie e aperte E para mostrar ao grupo.",
+   "present": "Olhem! Que lindo!",
+   "seen": "Esse a gente já viu!",
+   "coral": "Ei, cuidado com o coral!",
+   "lost": "Ei! Cadê o grupo?",
+   "found": "Ufa, valeu por me buscar!",
+   "count": "Volte à escada do barco para contar o grupo.",
+   "missing": "Contagem: {0} de {1}. Falta gente: vá buscar!",
+   "crew": "O marinheiro buscou o turista perdido.",
+   "done": "Todo mundo a bordo!"
+  }
  }
 }

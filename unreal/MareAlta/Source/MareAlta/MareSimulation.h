@@ -322,6 +322,9 @@ public:
  /** Guides the tour now: Choices per stop are 0 good, 1 acceptable, 2 bad. Books the tip minus the trip cost,
   *  rates the tour (stars) and gives fame; returns the rating, 0 when it cannot leave. */
  double GuideTour(const FString& Id,const TArray<int32>& Choices,double Bonus=0);
+ /** Guided snorkel (MareSnorkelWorld, tours.json snorkel_tour): the three stop choices (coral touched, species
+  *  presented, the group counted) and the bonus of what happened in the water. */
+ void SnorkelScore(int32 CoralTouches,int32 Species,bool bCrewFetched,TArray<int32>& Choices,double& Bonus)const;
  /** Hourly: buyers before each departure (the guide sells), and at the end of the departure hour the guide's run
   *  or the cancellation with refund. */
  void ToursHour(int32 Hour);

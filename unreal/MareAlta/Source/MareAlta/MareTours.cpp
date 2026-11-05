@@ -207,6 +207,15 @@ double UMareSimulation::GuideTour(const FString& Id,const TArray<int32>& Choices
  LastMessage=FString::Printf(TEXT("%s: nota %.1f, gorjeta R$ %.0f."),*String(Tour,TEXT("name")),Rating,Tip);Save();return Rating;
 }
 
+void UMareSimulation::SnorkelScore(int32 CoralTouches,int32 Species,bool bCrewFetched,TArray<int32>& Choices,double& Bonus)const
+{
+ const auto D=Object(ToursDefs(),TEXT("snorkel_tour"));Choices.Reset();
+ Choices.Add(CoralTouches<=int32(Number(D,TEXT("good_coral"),0))?0:CoralTouches<=int32(Number(D,TEXT("ok_coral"),1))?1:2);
+ Choices.Add(Species>=int32(Number(D,TEXT("good_species"),5))?0:Species>=int32(Number(D,TEXT("ok_species"),2))?1:2);
+ Choices.Add(bCrewFetched?2:0);
+ Bonus=FMath::Clamp(Species*Number(D,TEXT("species_bonus"),.12)-CoralTouches*Number(D,TEXT("coral_penalty"),.25),-1.,1.);
+}
+
 void UMareSimulation::ToursHour(int32 Hour)
 {
  bool bOwned=false;Object(State,TEXT("unlocked"))->TryGetBoolField(TEXT("passeios"),bOwned);if(!bOwned)return;

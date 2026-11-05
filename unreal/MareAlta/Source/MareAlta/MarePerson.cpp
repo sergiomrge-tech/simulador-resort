@@ -109,7 +109,9 @@ float AMarePerson::SeaHeight(const FVector2D& P,float T,float Storm)
  const float Coast=FMath::Lerp(.55f,1.f,Smooth(-5200,-9000,P.Y));
  const FVector2D Q(FMath::Max(FMath::Abs(P.X-6780)-450,0.f),FMath::Max(FMath::Abs(P.Y+4300)-1100,0.f));
  const float Pier=FMath::Lerp(.2f,1.f,Smooth(0,900,Q.Size()));
- return H*Fade*Offshore*Coast*Pier+Shore*(Swell*15*(1+Storm*.8f)+7+Storm*5)*Pier;
+ // The sheltered snorkel reef (05/11): the swell drops to 8% around it.
+ const FVector2D Rq(P.X-4200,(P.Y+13100)*1.8f);const float Calm=FMath::Lerp(.08f,1.f,Smooth(2200,5200,Rq.Size()));
+ return H*Fade*Offshore*Coast*Pier*Calm+Shore*(Swell*15*(1+Storm*.8f)+7+Storm*5)*Pier;
 }
 
 void AMarePerson::UpdateTool(float DeltaSeconds)

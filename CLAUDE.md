@@ -543,3 +543,15 @@ parado ~1 s, guardar a transformação relativa e reaplicar a cada quadro com `E
 o cabelo groom fica para trás, flutuando). O passeio pilotado é ignorado pelo `ToursHour` (`tours.active`). A captura
 `coast pie qa_x!` usa uma câmera própria posicionada pelo último comando: para a visão do jogador use `shot showui`.
 Origem dos modelos do bpy com frente -Y fica na popa/traseira: medir distâncias do centro do casco.
+
+## UE5.8 — snorkel e fundo do recife (05/11)
+
+O recife da UE NÃO está onde o world.json do Godot diz: corais e cardumes ficam ao largo (y ≈ −13 300, z ≈ −900), e
+só sobraram alguns peixes no raso. Medir a posição real no PIE (`mare_snorkel.layout`), nunca converter as coordenadas
+do Godot. Em mar aberto as ondas do material passam de ±2 m, mas a água do nado é plana: quem nada longe da costa fica
+com a cabeça dentro das cristas. No recife o swell cai para 8% (zona calma no WPO, no declive e em `SeaHeight`, os três
+juntos). `AMareCharacter::Tick` refaz a `Buoyancy` a cada quadro: para segurar o herói numa foto, reposicione-o a cada
+tick (`hold:`/`watch:` do `ReefQA`). O save restaura a posição do herói alguns segundos depois do PIE: um passeio
+iniciado logo em seguida perde o herói (o primeiro `start` do QA às vezes acaba sozinho). Os turistas nadam ATRÁS do
+guia: para fotografá-los, congele (`freeze:`) e vire a câmera. O cache estático de `ToursDefs`/`ReefDefs` só relê o
+JSON ao reiniciar o editor.

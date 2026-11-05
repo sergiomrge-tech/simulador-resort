@@ -236,6 +236,8 @@ void AMarePreviewQA::Tick(float DeltaSeconds)
   Hero->SetActorLocation(FVector(3800,-1200,100));Move->SetMovementMode(MOVE_Walking);PC->SetControlRotation(FRotator(-6,-90,0));
   Check(TEXT("expansion_profile_restored"),Sim->Save());
   {auto Reef=GetWorld()->GetSubsystem<UMareReefWorld>();Check(TEXT("reef_pairs_present"),Reef && Reef->FishCount()==97);Check(TEXT("reef_below_wave_surface"),Reef && Reef->AllFishUnderwater());
+   // Seafloor around the reef (reef.json): rocks, algae and sea life on the sand, and the circling sharks.
+   Check(TEXT("reef_seafloor_dressed"),Reef && Reef->SeafloorCount()>150 && Reef->SharkCount()>=3);
    if(Reef){Before=Reef->SamplePosition();Move->SetMovementMode(MOVE_Flying);Hero->SetActorLocation(Before+FVector(0,130,-64));Move->StopMovementImmediately();PC->SetControlRotation((Before-(Hero->GetActorLocation()+FVector(0,0,64))).Rotation());}}
   break;
  case 24:{auto Reef=GetWorld()->GetSubsystem<UMareReefWorld>();Capture(TEXT("reef-underwater"));Check(TEXT("reef_motion"),Reef && FVector::Distance(Before,Reef->SamplePosition())>1.f && Reef->AllFishUnderwater());

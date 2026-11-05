@@ -287,7 +287,10 @@ void UMareBoatTourWorld::Finish()
 
 void UMareBoatTourWorld::Tick(float DeltaSeconds)
 {
- if(!IsActive() || !GetWorld() || !GetWorld()->IsGameWorld() || GetWorld()->IsPaused())return;
+ if(!GetWorld() || !GetWorld()->IsGameWorld() || GetWorld()->IsPaused())return;
+ // A save made at sea comes back with the tour marked active but no boat: clear it.
+ if(!IsActive()){if(auto S=SimOf(GetWorld())){auto T=UMareSimulation::Object(S->State,TEXT("tours"));
+   if(!UMareSimulation::String(T,TEXT("active")).IsEmpty() && UMareSimulation::String(T,TEXT("active"))==UMareSimulation::String(Defs(),TEXT("tour")))T->RemoveField(TEXT("active"));}return;}
  Time+=DeltaSeconds;
  // The pilot never swims: a wave crest over the helm must not switch the character to swimming.
  if(auto Hero=PC.IsValid()?Cast<ACharacter>(PC->GetPawn()):nullptr)if(Hero->GetCharacterMovement()->MovementMode!=MOVE_None)Hero->GetCharacterMovement()->DisableMovement();

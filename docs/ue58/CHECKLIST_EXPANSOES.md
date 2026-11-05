@@ -134,9 +134,33 @@ Decisões (05/11/2026):
 
 ### 2.3 Snorkel guiado
 
-- [ ] O grupo nada seguindo o jogador (usar a natação existente).
-- [ ] Mostrar peixes e coral: olhar para a espécie e apertar E "apresenta" ao grupo. Cada espécie nova vale nota, e encostar no coral tira nota.
-- [ ] Contagem do grupo antes de voltar; turista perdido tem que ser buscado.
+- [x] O grupo nada seguindo o jogador (usar a natação existente).
+- [x] Mostrar peixes e coral: olhar para a espécie e apertar E "apresenta" ao grupo. Cada espécie nova vale nota, e encostar no coral tira nota.
+- [x] Contagem do grupo antes de voltar; turista perdido tem que ser buscado.
+
+Decisões (05/11/2026):
+- **Onde:** o recife da UE fica ao largo (y ≈ −13 300, a ~9 m de fundo), não no raso perto do píer como no Godot. A lancha ancora junto dele (`tours.json` "snorkel_tour"), e na bilheteria aparece "Guiar o mergulho agora" na hora da saída. O herói pula na água, e o grupo (um nadador por bilhete, até 6) sai pela escada.
+- **Mar calmo no recife:** em mar aberto as ondas chegavam a ±2 m e passavam por cima da cabeça de quem nada (a água do nado é plana). Em volta do recife o swell cai para 8%, como num lugar abrigado, no material do mar e em `AMarePerson::SeaHeight`, os dois juntos.
+- **Grupo:** turistas MetaHuman em roupa de banho, boiando (`TreadWater`) com máscara e snorkel (`TourBoat_snorkel`, modelado em `gen_tour_boat.py`). Eles nadam em duplas atrás do guia, sem entrar no casco nem em água rasa.
+- **Espécies (12):**
+  - peixes do recife: palhaço, cirurgião-azul, sargentinho (segunda parada) e sardinhas;
+  - corais: cérebro, leque-do-mar, mesa e galhado;
+  - vida do fundo: tubarão-galha-preta, anêmona, ouriço e estrela-do-mar.
+
+  Para apresentar, é preciso mergulhar (Ctrl), mirar e apertar E (alvo com o prompt de sempre). Cada espécie nova dá +0,12 de nota.
+- **Coral:** encostar o corpo nele dá −0,25 (no máximo uma vez a cada 4 s) e um turista reclama.
+- **Turista perdido:** depois de 2 espécies, ou de 70 s, um turista se afasta 11,5 m. O HUD mostra a distância e a direção, e ele aparece num balão. Basta nadar até ele. Na escada é feita a contagem ("Contagem: 4 de 5"). Se o turista continuar perdido 45 s, o marinheiro vai buscá-lo e a escolha fica ruim.
+- **Nota:** `SnorkelScore` calcula as três escolhas (coral, espécies e contagem) e o bônus, e o resultado vai para `GuideTour`.
+- **Pedido do Sergio no meio do item: rochas, algas, vida marinha e tubarões no fundo** (`Content/Data/reef.json`, `MareReefWorld::Dress`):
+  - rochas Poly Haven (CC0) que já estavam no projeto;
+  - algas, ervas marinhas, esponjas, anêmonas, ouriços, estrelas e tubarões, modelados em `tools/ue58/gen_seafloor.py`. Não havia gratuito comercial com qualidade: o tubarão CC0 da Quaternius é low poly;
+  - tudo em HISM, uma por malha, com corte a 65 m, e só onde a esfera chega à areia, sem coral embaixo;
+  - as algas e o rabo do tubarão balançam no material (WPO, na GPU);
+  - três tubarões rodeiam os aglomerados e se afastam de quem chega perto.
+- **Prova:**
+  - teste `TourBooth` (escolhas e nota do snorkel);
+  - check `reef_seafloor_dressed` no `MarePreviewQA`;
+  - fotos `docs/ue58/graphics-reference/tours_snorkel.jpg` e `reef_seafloor.jpg`.
 
 ### 2.4 Trilha do farol (421 m, já existe)
 

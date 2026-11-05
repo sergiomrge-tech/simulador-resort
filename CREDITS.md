@@ -641,3 +641,10 @@ comercial (as espigas do Fab são estátua ou só licença pessoal paga para com
 |---|---|---|
 | Lancha de passeio, boias de rota e de parada, golfinho — `tools/ue58/gen_tour_boat.py` (bpy) | próprio do projeto | — |
 | Colete salva-vidas (`life_vest` do projeto Godot, `tools/gen_code_props.py`), renomeado para a UE | próprio do projeto | — |
+| Máscara de snorkel — `tools/ue58/gen_tour_boat.py` (`snorkel`, bpy) | próprio do projeto | — |
+
+### Fundo do recife (05/11/2026)
+| Item | Fonte | Licença |
+|---|---|---|
+| Tubarão-galha-preta, algas (kelp), erva marinha, anêmona, ouriço, estrela-do-mar, esponjas — `tools/ue58/gen_seafloor.py` (bpy). Busca feita antes: só havia tubarão CC0 low poly (Quaternius Lowpoly Animated Fish) e algas pagas ou sem licença clara | próprio do projeto | — |
+| Rochas do fundo: `boulder_01`, `rock_07`, `rock_09`, `coast_rocks_03`, `coast_rocks_05` (já usadas na costa) | https://polyhaven.com — Poly Haven | CC0 1.0 |

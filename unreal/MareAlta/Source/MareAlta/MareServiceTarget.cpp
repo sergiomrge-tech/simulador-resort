@@ -1,5 +1,6 @@
 #include "MareServiceTarget.h"
 #include "MareBoatTourWorld.h"
+#include "MareSnorkelWorld.h"
 #include "MareSummitWorld.h"
 #include "MareComicEvents.h"
 #include "MareStaysWorld.h"
@@ -122,6 +123,7 @@ void AMareServiceTarget::Use(APlayerController* Controller)
     UMareAudioWorld::Action(this,T.Mid(4)==TEXT("gelo")?TEXT("bar_ice_glass"):TEXT("bar_pour"),&Spot,.7f);}}return;}
  if(Action==TEXT("BarGlass")){PC->UseBarGlass();return;}
  if(Action==TEXT("TourVest")){if(auto Tour=GetWorld()->GetSubsystem<UMareBoatTourWorld>())Tour->GiveVest(DataIndex);return;}
+ if(Action==TEXT("TourSpecies")){if(auto Tour=GetWorld()->GetSubsystem<UMareSnorkelWorld>())Tour->Present(DataIndex);return;}
  if(Action==TEXT("TourStory")){if(auto Tour=GetWorld()->GetSubsystem<UMareBoatTourWorld>())Tour->TellStory();return;}
  if(Action==TEXT("HotelReception")){const FVector Bell=GetActorLocation();UMareAudioWorld::Action(this,TEXT("reception_bell"),&Bell);PC->OpenStation(TEXT("ReceptionHotel"));return;}
  if(Action==TEXT("Door")){

@@ -5,6 +5,8 @@ boats; Kenney/Quaternius watercraft are low poly), so they are modelled here:
   TourBoat_buoy     channel buoy (red/white striped float, cage, top mark)
   TourBoat_stop     stop buoy (yellow float, flag) where the boat halts for a tour stop
   TourBoat_dolphin  bottlenose dolphin (lofted body, beak, melon, dorsal fin, flippers, flukes, counter-shaded skin)
+  TourBoat_snorkel  snorkel mask for the guided snorkel (2.3): silicone skirt, coloured rim, tinted lens, nose pocket,
+                    head strap and a J tube on the left with mouthpiece; origin at the eyes, lens toward +Y
 Metres, Blender Z up, waterline at z=0, bow toward +Y (arrives as UE -Y). Unique TourBoat_* material/image names.
 Prints the passenger seat and helm positions (Blender metres) for tours.json.
 Output D:/CodexTemp/tourboat/<name>.glb.
@@ -296,7 +298,90 @@ def dolphin():
     finish(P, keep_base=False)
 
 
-ALL = {'lancha': lancha, 'buoy': buoy, 'stop': stop, 'dolphin': dolphin}
+def snorkel():
+    """Snorkel mask worn by the snorkel group: origin between the eyes, front (lens) toward +Y, metres."""
+    reset()
+    P = 'TourBoat_snorkel'
+    m_skirt = mat(f'{P}_Skirt', None, (.05, .05, .06), .55)
+    m_rim = mat(f'{P}_Rim', None, (.05, .42, .78), .35)
+    m_lens = mat(f'{P}_Lens', None, (.06, .16, .2), .04, .6)
+    m_tube = mat(f'{P}_Tube', None, (.98, .78, .1), .4)
+
+    def sup(a, rx, rz, n=3.2):
+        c, s_ = math.cos(a), math.sin(a)
+        return rx * math.copysign(abs(c) ** (2 / n), c), rz * math.copysign(abs(s_) ** (2 / n), s_)
+
+    def loop_ring(rings, m, name, seg=48, close_ends=False):
+        bm = bmesh.new()
+        vs = []
+        for rx, rz, y, dz in rings:
+            row = []
+            for k in range(seg):
+                x, z = sup(TAU * k / seg, rx, rz)
+                row.append(bm.verts.new((x, y, z + dz)))
+            vs.append(row)
+        for j in range(len(vs) - 1):
+            for k in range(seg):
+                bm.faces.new((vs[j][k], vs[j][(k + 1) % seg], vs[j + 1][(k + 1) % seg], vs[j + 1][k]))
+        if close_ends:
+            bm.faces.new(vs[-1])
+        bm.normal_update()
+        return obj(bm, name, m)
+
+    # Skirt: soft silicone from the face (y=-.012) out to the rim; outside and inside skins.
+    loop_ring([(.088, .058, -.012, -.004), (.091, .060, .004, -.004), (.086, .055, .02, -.002), (.08, .05, .028, 0),
+               (.072, .042, .022, 0), (.074, .044, -.004, -.004), (.08, .05, -.014, -.004), (.088, .058, -.012, -.004)], m_skirt, 'skirt')
+    # Rim (frame) and the lens set inside it.
+    loop_ring([(.081, .051, .022, 0), (.083, .053, .03, 0), (.08, .05, .042, 0), (.07, .04, .044, 0), (.068, .038, .034, 0),
+               (.074, .044, .026, 0), (.081, .051, .022, 0)], m_rim, 'rim')
+    loop_ring([(.07, .04, .036, 0), (.069, .039, .038, 0)], m_lens, 'lens', close_ends=True)
+    # Nose pocket under the lens.
+    G.lathe([(0, 0), (.022, 0), (.02, .022), (.012, .036), (0, .04)], m_skirt, 20, 'nose').location = (0, .004, -.044)
+    bpy.data.objects['nose'].rotation_euler = (math.radians(-80), 0, 0)
+    # Strap round the back of the head (head centre ~9 cm behind the eyes), buckles at the sides.
+    bm = bmesh.new()
+    seg = 40
+    path = [(.093, 0.0), (.097, -.03)]
+    for k in range(seg + 1):
+        a = math.radians(15) - math.radians(210) * k / seg
+        path.append((.1 * math.cos(a), -.09 + .1 * math.sin(a)))
+    path += [(-.097, -.03), (-.093, 0.0)]
+    rows = [[bm.verts.new((x, y, -.012 + h)) for h in (0, .024)] for x, y in path]
+    for k in range(len(rows) - 1):
+        bm.faces.new((rows[k][0], rows[k + 1][0], rows[k + 1][1], rows[k][1]))
+    st = obj(bm, 'strap', m_skirt)
+    md = st.modifiers.new('s', 'SOLIDIFY')
+    md.thickness = .004
+    for sx in (-1, 1):
+        G.rbox((.008, .022, .03), (sx * .093, .0, -.004), m_rim, bevel=.003, name='buckle')
+    # J tube on the left: mouthpiece under the nose, down-and-round, then up along the side of the head.
+    pts = [(-.005, .03, -.078), (-.04, .02, -.092), (-.08, .0, -.085), (-.098, -.02, -.05), (-.104, -.035, .03),
+           (-.106, -.045, .12), (-.1, -.05, .2), (-.085, -.05, .25)]
+    cu = bpy.data.curves.new('tube', 'CURVE')
+    cu.dimensions = '3D'
+    sp = cu.splines.new('NURBS')
+    sp.points.add(len(pts) - 1)
+    for i, pnt in enumerate(pts):
+        sp.points[i].co = (*pnt, 1)
+    sp.use_endpoint_u = True
+    sp.order_u = 3
+    cu.bevel_depth = .0105
+    cu.bevel_resolution = 4
+    cu.resolution_u = 10
+    co = bpy.data.objects.new('tube', cu)
+    bpy.context.collection.objects.link(co)
+    co.data.materials.append(m_tube)
+    bpy.context.view_layer.objects.active = co
+    co.select_set(True)
+    bpy.ops.object.convert(target='MESH')
+    G.lathe([(0, 0), (.016, 0), (.016, .03), (.012, .04), (0, .042)], m_tube, 20, 'top').location = (-.085, -.05, .245)
+    G.lathe([(0, 0), (.014, 0), (.017, .02), (0, .022)], m_skirt, 18, 'mouth').location = (-.005, .03, -.09)
+    # Tube clip on the strap.
+    G.rbox((.012, .02, .018), (-.1, -.03, -.006), m_skirt, bevel=.003, name='clip')
+    finish(P, keep_base=False)
+
+
+ALL = {'lancha': lancha, 'buoy': buoy, 'stop': stop, 'dolphin': dolphin, 'snorkel': snorkel}
 if __name__ == '__main__':
     for n in sys.argv[1:] or list(ALL):
         ALL[n]()

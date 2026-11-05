@@ -940,6 +940,18 @@ bool FMareTourBoothTest::RunTest(const FString& Parameters)
  TestEqual(TEXT("Seasick passengers lower the rating"),Sim->GuideTour(Boat,{0,0,0},-.6),4.4);
  Sim->State->SetNumberField(TEXT("day"),Sim->Number(Sim->State,TEXT("day"),1)+1);Sim->Tours();Sim->Object(Sim->Tours(),TEXT("sold"))->SetNumberField(Boat,4);
  TestEqual(TEXT("Dolphins raise the rating"),Sim->GuideTour(Boat,{0,1,0},.5),5.);
+ // Guided snorkel (2.3): coral touched, species presented and the group count decide the three stops; each new species
+ // adds to the bonus and each coral touch takes from it.
+ {const FString Snorkel=TEXT("snorkel");TArray<int32> C;double B=0;
+  Sim->SnorkelScore(0,6,false,C,B);TestTrue(TEXT("Careful snorkel, many species, everyone counted: all good"),C==TArray<int32>({0,0,0}));TestTrue(TEXT("Species bonus"),B>.5);
+  Sim->SnorkelScore(1,3,false,C,B);TestTrue(TEXT("One coral touch and three species: ok, ok, good"),C==TArray<int32>({1,1,0}));
+  Sim->SnorkelScore(3,1,true,C,B);TestTrue(TEXT("Coral trampled, one species, crew fetched the lost one: all bad"),C==TArray<int32>({2,2,2}));TestTrue(TEXT("Coral lowers the bonus"),B<0);
+  Sim->State->SetNumberField(TEXT("day"),Sim->Number(Sim->State,TEXT("day"),1)+1);Sim->Tours();
+  Sim->Object(Sim->Tours(),TEXT("sold"))->SetNumberField(Snorkel,4);Sim->State->SetNumberField(TEXT("minutes"),10*60+5);
+  TestEqual(TEXT("A bad snorkel rates low"),Sim->GuideTour(Snorkel,C,B),2+B);
+  Sim->State->SetNumberField(TEXT("day"),Sim->Number(Sim->State,TEXT("day"),1)+1);Sim->Tours();
+  Sim->Object(Sim->Tours(),TEXT("sold"))->SetNumberField(Snorkel,4);Sim->State->SetNumberField(TEXT("minutes"),10*60+5);
+  Sim->SnorkelScore(0,8,false,C,B);TestEqual(TEXT("A careful snorkel rates top"),Sim->GuideTour(Snorkel,C,B),5.);}
  IFileManager::Get().DeleteDirectory(*Sim->SaveDirectory,false,true);
  Sim->RemoveFromRoot();Instance->RemoveFromRoot();return true;
 }
