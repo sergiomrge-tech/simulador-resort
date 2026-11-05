@@ -58,9 +58,16 @@ bool UMareSimulation::CollectPoolTowel(int32 Lounger)
 bool UMareSimulation::SellPopsicles()
 {
  auto P=Pool();const int32 Want=int32(Number(P,TEXT("popsicles")));if(Want<=0)return Fail(TEXT("Ninguém pediu picolé agora."));
- const double Paid=FMath::RoundToDouble(Want*Number(PoolDefs(),TEXT("popsicle_price"),7)*FMath::Max(1.,PlaceIncomeFactor(TEXT("pool"))));
- P->SetNumberField(TEXT("popsicles"),0);Book(Paid,FString::Printf(TEXT("Piscina: %d picolé(s)"),Want));AddFame(1);
- LastMessage=FString::Printf(TEXT("%d picolé(s) vendido(s): R$ %.0f."),Want,Paid);return Save();
+ // With the ice cream shop the cooler holds its homemade popsicles (pricier, but only what it made: 3.1); without it,
+ // the cooler sells bought ones as before.
+ const bool bHomemade=OwnsBusiness(TEXT("sorveteria"));const int32 Stock=int32(Number(P,TEXT("popsicle_stock")));
+ const int32 Sold=bHomemade?FMath::Min(Want,Stock):Want;
+ if(Sold<=0)return Fail(TEXT("O cooler está sem picolé: a sorveteria repõe a cada hora aberta."));
+ const double Paid=FMath::RoundToDouble(Sold*Number(PoolDefs(),TEXT("popsicle_price"),7)*FMath::Max(1.,PlaceIncomeFactor(TEXT("pool")))*(bHomemade?Number(IceDefs(),TEXT("homemade_mult"),1.4):1.));
+ P->SetNumberField(TEXT("popsicles"),Want-Sold);if(bHomemade)P->SetNumberField(TEXT("popsicle_stock"),Stock-Sold);
+ Book(Paid,FString::Printf(TEXT("Piscina: %d picolé(s)%s"),Sold,bHomemade?TEXT(" caseiros"):TEXT("")));AddFame(1);
+ LastMessage=FString::Printf(TEXT("%d picolé(s) %svendido(s): R$ %.0f."),Sold,bHomemade?TEXT("caseiro(s) "):TEXT(""),Paid)
+  +(Want>Sold?FString::Printf(TEXT(" Faltou picolé para %d: o cooler esvaziou."),Want-Sold):FString());return Save();
 }
 
 void UMareSimulation::PoolHour(int32 Hour)

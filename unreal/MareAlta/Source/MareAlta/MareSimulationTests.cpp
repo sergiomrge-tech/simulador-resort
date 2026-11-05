@@ -802,15 +802,16 @@ bool FMareBusinessShiftTest::RunTest(const FString& Parameters)
   if(!Sim->String(Pair.Value->AsObject(),TEXT("requires")).IsEmpty())continue;   // game-room machines need the expansion, not a business
   TestTrue(TEXT("Counter business defined: ")+Id,Sim->Object(Sim->Definitions,TEXT("businesses"))->HasField(Id));
   const TArray<TSharedPtr<FJsonValue>>* Steps=nullptr;TestTrue(TEXT("Three steps: ")+Id,Pair.Value->AsObject()->TryGetArrayField(TEXT("steps"),Steps) && Steps->Num()==3);}
- FString Reason;TestFalse(TEXT("Not owned: no counter task"),Sim->CanPlayBusiness(TEXT("sorveteria"),Reason));
- Sim->Object(Sim->Object(Sim->Object(Sim->State,TEXT("prog")),TEXT("biz")),TEXT("sorveteria"))->SetNumberField(TEXT("lvl"),1);
- TestTrue(TEXT("Owned and open: task available"),Sim->CanPlayBusiness(TEXT("sorveteria"),Reason));
- double Before=Sim->Money();const double Perfect=Sim->PlayBusiness(TEXT("sorveteria"),3);
+ // The hourly counter task (the ice cream shop has its queue instead, 3.1: MareAlta.Gameplay.IceCream).
+ FString Reason;TestFalse(TEXT("Not owned: no counter task"),Sim->CanPlayBusiness(TEXT("aluguel"),Reason));
+ Sim->Object(Sim->Object(Sim->Object(Sim->State,TEXT("prog")),TEXT("biz")),TEXT("aluguel"))->SetNumberField(TEXT("lvl"),1);
+ TestTrue(TEXT("Owned and open: task available"),Sim->CanPlayBusiness(TEXT("aluguel"),Reason));
+ double Before=Sim->Money();const double Perfect=Sim->PlayBusiness(TEXT("aluguel"),3);
  TestTrue(TEXT("Perfect task pays"),Perfect>0);TestEqual(TEXT("Booked"),Sim->Money(),Before+Perfect);
- TestFalse(TEXT("Once per hour"),Sim->CanPlayBusiness(TEXT("sorveteria"),Reason));TestEqual(TEXT("Second try pays nothing"),Sim->PlayBusiness(TEXT("sorveteria"),3),0.);
+ TestFalse(TEXT("Once per hour"),Sim->CanPlayBusiness(TEXT("aluguel"),Reason));TestEqual(TEXT("Second try pays nothing"),Sim->PlayBusiness(TEXT("aluguel"),3),0.);
  Sim->State->SetNumberField(TEXT("minutes"),13*60);
- const double Miss=Sim->PlayBusiness(TEXT("sorveteria"),0);TestTrue(TEXT("Next hour available, fewer hits pay less"),Miss>0 && Miss<Perfect);
- Sim->State->SetNumberField(TEXT("minutes"),22*60);TestFalse(TEXT("Closed at night"),Sim->CanPlayBusiness(TEXT("sorveteria"),Reason));
+ const double Miss=Sim->PlayBusiness(TEXT("aluguel"),0);TestTrue(TEXT("Next hour available, fewer hits pay less"),Miss>0 && Miss<Perfect);
+ Sim->State->SetNumberField(TEXT("minutes"),22*60);TestFalse(TEXT("Closed at night"),Sim->CanPlayBusiness(TEXT("aluguel"),Reason));
  // Game-room machines: need the game room; pay their own base; night tokens between the token hours.
  TestFalse(TEXT("Foosball needs the game room"),Sim->CanPlayBusiness(TEXT("pebolim"),Reason));
  Sim->Object(Sim->State,TEXT("unlocked"))->SetBoolField(TEXT("salao_jogos"),true);Sim->State->SetNumberField(TEXT("minutes"),20*60);
@@ -984,6 +985,57 @@ bool FMareTourBoothTest::RunTest(const FString& Parameters)
   TestFalse(TEXT("Raft locked"),Sim->TourIds().Contains(TEXT("jangada")));
   Sim->Object(Sim->Object(Sim->Object(Sim->State,TEXT("custom")),TEXT("passeios")),TEXT("roteiro"))->SetNumberField(TEXT("tier"),3);
   TestTrue(TEXT("Raft unlocked"),Sim->TourIds().Contains(TEXT("jangada")));}
+ IFileManager::Get().DeleteDirectory(*Sim->SaveDirectory,false,true);
+ Sim->RemoveFromRoot();Instance->RemoveFromRoot();return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FMareIceCreamTest,"MareAlta.Gameplay.IceCream",EAutomationTestFlags::EditorContext|EAutomationTestFlags::EngineFilter)
+bool FMareIceCreamTest::RunTest(const FString& Parameters)
+{
+ // CHECKLIST_EXPANSOES 3.1: queue at the counter (hot day x2), the cone built from memory scored on flavours, scoop
+ // size and topping, patience, and homemade popsicles for the pool cooler.
+ auto Instance=NewObject<UGameInstance>();Instance->AddToRoot();
+ auto Sim=NewObject<UMareSimulation>(Instance);Sim->AddToRoot();
+ Sim->SaveDirectory=FPaths::ProjectSavedDir()/TEXT("Automation/IceCream")/FGuid::NewGuid().ToString(EGuidFormats::Digits);
+ auto Load=[&](const FString& Name,TSharedPtr<FJsonObject>& Result){FString Text;FFileHelper::LoadFileToString(Text,*(FPaths::ProjectContentDir()/TEXT("Data")/Name));return FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Text),Result);};
+ if(!TestTrue(TEXT("Definitions"),Load(TEXT("definitions.json"),Sim->Definitions)) || !TestTrue(TEXT("Default save"),Load(TEXT("default_save.json"),Sim->State))){Sim->RemoveFromRoot();Instance->RemoveFromRoot();return false;}
+ Sim->State->SetNumberField(TEXT("money"),2000);Sim->State->SetNumberField(TEXT("minutes"),14*60+10);Sim->State->SetStringField(TEXT("day_event"),TEXT(""));
+ auto Biz=Sim->Object(Sim->Object(Sim->Object(Sim->State,TEXT("prog")),TEXT("biz")),TEXT("sorveteria"));Biz->SetNumberField(TEXT("lvl"),1);
+ FString Reason;TestFalse(TEXT("Nobody in line yet"),Sim->CanPlayBusiness(TEXT("sorveteria"),Reason));
+ Sim->IceCreamHour(15);const int32 Calm=Sim->IceQueue().Num();TestTrue(TEXT("Customers arrive"),Calm>=1);
+ TestTrue(TEXT("A customer in line can be served"),Sim->CanPlayBusiness(TEXT("sorveteria"),Reason));
+ Biz->SetArrayField(TEXT("queue"),{});Sim->State->SetStringField(TEXT("day_event"),TEXT("calor"));Sim->IceCreamHour(15);
+ TestTrue(TEXT("Hot day: twice the customers"),Sim->IceQueue().Num()>=2);Sim->State->SetStringField(TEXT("day_event"),TEXT(""));
+ TestFalse(TEXT("Order line"),Sim->IceOrderLine(Sim->IceQueue()[0]).IsEmpty());
+ // The right cone: every flavour, the right size, the right topping.
+ auto Build=[&](const TSharedPtr<FJsonObject>& O,TArray<FString>& F,TArray<float>& Sz,float Size){F.Reset();Sz.Reset();const TArray<TSharedPtr<FJsonValue>>* L=nullptr;
+  if(O->TryGetArrayField(TEXT("flavors"),L))for(const auto& V:*L){F.Add(V->AsString());Sz.Add(Size);}};
+ TArray<FString> F;TArray<float> Sz;const int32 Before=Sim->IceQueue().Num();
+ auto O=Sim->IceQueue()[0];Build(O,F,Sz,.85f);double Cash=Sim->Money();
+ const auto Good=Sim->ServeIceCream(F,Sz,Sim->String(O,TEXT("topping")));
+ TestEqual(TEXT("Perfect cone: 3/3"),Good.Hits,3);TestTrue(TEXT("Paid with the tip"),Sim->Money()-Cash>=Good.Paid-1e-6 && Good.Paid>0);
+ TestEqual(TEXT("Served customer leaves the line"),Sim->IceQueue().Num(),Before-1);
+ // A wrong cone: another flavour, small scoops, no topping asked for.
+ Sim->AddIceCustomer();Sim->AddIceCustomer();O=Sim->IceQueue()[0];Build(O,F,Sz,.3f);F[0]=F[0]==TEXT("coco")?TEXT("acai"):TEXT("coco");
+ const FString WrongTop=Sim->String(O,TEXT("topping"))==TEXT("granulado")?TEXT("caramelo"):TEXT("granulado");
+ const auto Bad=Sim->ServeIceCream(F,Sz,WrongTop);
+ TestTrue(TEXT("Wrong flavour, small scoops, wrong topping: 0 or 1 hit"),Bad.Hits<=1 || (F.Num()>1 && Bad.Hits<=1));TestTrue(TEXT("Pays less"),Bad.Paid<Good.Paid+20);
+ TestTrue(TEXT("Message tells what went wrong"),Sim->LastMessage.Contains(TEXT("pequena")));
+ // Too big a scoop is a miss too.
+ O=Sim->IceQueue()[0];Build(O,F,Sz,1.25f);TestTrue(TEXT("Too big: sizes miss"),Sim->ServeIceCream(F,Sz,Sim->String(O,TEXT("topping"))).Hits==2);
+ // Patience: whoever waited too long gives up.
+ Sim->AddIceCustomer();Sim->IceQueue().Last()->SetNumberField(TEXT("since"),0);const int32 Waiting=Sim->IceQueue().Num();Sim->IceCreamHour(16);
+ TestTrue(TEXT("The one who waited all day gave up"),!Sim->IceQueue().ContainsByPredicate([](const TSharedPtr<FJsonObject>& Q){return UMareSimulation::Number(Q,TEXT("since"))==0;}));
+ TestTrue(TEXT("Queue capped"),Sim->IceQueue().Num()<=int32(Sim->Number(Sim->IceDefs(),TEXT("queue_max"),6)) && Waiting>=1);
+ // Homemade popsicles: the shop fills the pool cooler; the cooler sells only what it holds.
+ auto Pool=Sim->Pool();Pool->SetNumberField(TEXT("popsicle_stock"),0);Sim->IceCreamHour(17);
+ const int32 Stock=int32(Sim->Number(Pool,TEXT("popsicle_stock")));TestTrue(TEXT("Cooler filled by the shop"),Stock>0);
+ Pool->SetNumberField(TEXT("popsicles"),Stock+2);Cash=Sim->Money();TestTrue(TEXT("Homemade popsicles sold"),Sim->SellPopsicles());
+ TestEqual(TEXT("Cooler empty"),Sim->Number(Pool,TEXT("popsicle_stock")),0.);TestTrue(TEXT("Short of popsicles told"),Sim->LastMessage.Contains(TEXT("Faltou")));
+ TestTrue(TEXT("Homemade price"),Sim->Money()-Cash>=Stock*Sim->Number(Sim->PoolDefs(),TEXT("popsicle_price"),7)*1.39);
+ TestFalse(TEXT("Nothing left to sell"),Sim->SellPopsicles());
+ // Closing: the line goes home.
+ Sim->AddIceCustomer();Sim->State->SetNumberField(TEXT("minutes"),19*60+5);Sim->IceCreamHour(20);TestEqual(TEXT("Closed: empty line"),Sim->IceQueue().Num(),0);
  IFileManager::Get().DeleteDirectory(*Sim->SaveDirectory,false,true);
  Sim->RemoveFromRoot();Instance->RemoveFromRoot();return true;
 }

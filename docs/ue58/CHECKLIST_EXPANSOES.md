@@ -216,10 +216,22 @@ Decisões (05/11/2026):
 
 ### 3.1 Sorveteria — montar a casquinha
 
-- [ ] O cliente pede uma combinação ("2 bolas: coco + açaí, calda de chocolate"), mostrada por 3 s.
-- [ ] O jogador monta de memória com os sabores no freezer; a bola cresce enquanto ele segura o botão (pequena, certa ou derramando).
-- [ ] Picolé compartilhado com a piscina: a sorveteria abastece o cooler.
-- [ ] Dia de calor: o dobro de clientes, com uma fila que cresce.
+- [x] O cliente pede uma combinação ("2 bolas: coco + açaí, calda de chocolate"), mostrada por 3 s.
+- [x] O jogador monta de memória com os sabores no freezer; a bola cresce enquanto ele segura o botão (pequena, certa ou derramando).
+- [x] Picolé compartilhado com a piscina: a sorveteria abastece o cooler.
+- [x] Dia de calor: o dobro de clientes, com uma fila que cresce.
+
+Decisões (05/11/2026):
+- **Fila:** os clientes chegam a cada hora aberta (1–2; o dobro no Dia de calor; 40% na chuva), até 6 na fila. Quem espera mais de 45 min desiste, e ao fechar todos vão embora. No balcão, o primeiro da fila fica de frente e até 3 esperam atrás.
+- **Minijogo** (`SMareIceCreamGame`, dados em `business_games.json` "sorveteria.icecream"):
+  - o pedido aparece por 3 s em vermelho ("Davi pede: 3 bolas: chocolate + açaí + limão · calda de caramelo") e some;
+  - segurar um pote do freezer faz a bola crescer: clique, teclas 1 a 6, ou A no pote escolhido com as setas;
+  - soltar na faixa verde do medidor deixa a bola no tamanho certo (0,7–1,0); abaixo é pequena, acima é grande demais;
+  - a cobertura escorre sobre a bola de cima; há os botões "Desfazer bola" e "Entregar".
+  - A nota de 0 a 3 vem de três acertos: sabores, tamanho de todas as bolas e cobertura. O pagamento é por bola + cobertura × [0,3; 0,7; 1,0; 1,25], com gorjeta de R$ 5 no perfeito. A mensagem diz o que errou ("bola pequena, cobertura errada"). Atende um cliente atrás do outro enquanto houver fila.
+- **Picolé da piscina:** com a sorveteria, o cooler vende picolé caseiro, que ela produz a cada hora aberta (4 por hora, até 12, R$ 2 de custo cada), 40% mais caro que o comprado. O cooler mostra quantos tem e vende só o que tem; quando acaba, avisa "Faltou picolé para N". Sem a sorveteria, nada muda.
+- Os outros negócios continuam com o minijogo antigo até os seus itens (3.2–3.5).
+- **Prova:** teste `MareAlta.Gameplay.IceCream` (fila, calor ×2, casquinha perfeita, errada e grande demais, paciência, picolé caseiro e falta no cooler, fechamento) + `docs/ue58/graphics-reference/business_icecream.jpg`.
 
 ### 3.2 Food truck do pastel — montar e fritar
 

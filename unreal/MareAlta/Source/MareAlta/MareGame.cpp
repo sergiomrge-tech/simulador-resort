@@ -1012,6 +1012,158 @@ private:
  }
  void Close(){if(Owner.IsValid())Owner->CloseBusinessGame();}
 };
+/** Ice cream shop (CHECKLIST_EXPANSOES 3.1, MareIceCream.cpp): the order shows for 3 s, then the cone is built from
+ *  memory. Hold a tub (click, keys 1-6, or A on the selected tub) and the scoop grows; release in the green for the
+ *  right size. Then the topping and "Entregar". One customer after another while the queue lasts. */
+class SMareIceCreamGame : public SCompoundWidget
+{
+public:
+ SLATE_BEGIN_ARGS(SMareIceCreamGame){} SLATE_ARGUMENT(TWeakObjectPtr<AMareController>,Owner) SLATE_END_ARGS()
+ void Construct(const FArguments& Args)
+ {
+  using namespace MareNotebook;Owner=Args._Owner;auto S=Sim();if(!S)return;const auto D=S->IceDefs();
+  const TArray<TSharedPtr<FJsonValue>>* L=nullptr;
+  if(D->TryGetArrayField(TEXT("flavors"),L))for(const auto& V:*L)Flavors.Add({UMareSimulation::String(V->AsObject(),TEXT("id")),UMareSimulation::String(V->AsObject(),TEXT("name")),Color(V->AsObject())});
+  if(D->TryGetArrayField(TEXT("toppings"),L))for(const auto& V:*L)Toppings.Add({UMareSimulation::String(V->AsObject(),TEXT("id")),UMareSimulation::String(V->AsObject(),TEXT("name")),Color(V->AsObject())});
+  const TArray<TSharedPtr<FJsonValue>>* R=nullptr;if(D->TryGetArrayField(TEXT("right"),R) && R->Num()==2){RightLo=(*R)[0]->AsNumber();RightHi=(*R)[1]->AsNumber();}
+  GrowTime=UMareSimulation::Number(D,TEXT("grow_seconds"),1.6);ShowTime=UMareSimulation::Number(D,TEXT("show_seconds"),3);
+  auto Tubs=SNew(SHorizontalBox);
+  for(int32 I=0;I<Flavors.Num();++I)Tubs->AddSlot().AutoWidth().Padding(4,0)[SNew(SButton).ButtonStyle(&Plain()).ContentPadding(0)
+   .OnPressed_Lambda([this,I](){Begin(I);}).OnReleased_Lambda([this](){Commit();})
+   [SNew(SVerticalBox)
+    +SVerticalBox::Slot().AutoHeight()[SNew(SBox).WidthOverride(96).HeightOverride(54)[SNew(SBorder).BorderImage(&Tub()).BorderBackgroundColor_Lambda([this,I](){
+      return FSlateColor(Selected==I?Flavors[I].Color:Flavors[I].Color*.92f);}).Padding(0)[SNew(SBorder).BorderImage(&Rim()).BorderBackgroundColor(FLinearColor(1,1,1,0))
+      .Visibility_Lambda([this,I](){return Selected==I?EVisibility::HitTestInvisible:EVisibility::Collapsed;})]]]
+    +SVerticalBox::Slot().AutoHeight().HAlign(HAlign_Center)[BodyText(FString::Printf(TEXT("%d · %s"),I+1,*Flavors[I].Name),12,Ink)]]];
+  auto Tops=SNew(SHorizontalBox);
+  for(int32 I=0;I<Toppings.Num();++I)Tops->AddSlot().AutoWidth().Padding(3,0)[SNew(SButton).ButtonStyle(&TagButton()).ContentPadding(FMargin(8,3))
+   .OnClicked_Lambda([this,I](){if(Phase==EPhase::Build){Topping=I;Status=TEXT("Cobertura: ")+Toppings[I].Name+TEXT(". Aperte Entregar.");}return FReply::Handled();})
+   [SNew(STextBlock).Font(Body(12,true)).ColorAndOpacity_Lambda([this,I](){return FSlateColor(Topping==I?Red:Ink);}).Text(MareLoc::Text(Toppings[I].Name))]];
+  // The cone: three scoop places over a waffle cone drawn as narrowing strips.
+  auto Cone=SNew(SVerticalBox);
+  for(int32 K=2;K>=0;--K)Cone->AddSlot().AutoHeight().HAlign(HAlign_Center).Padding(0,-14,0,0)[SNew(SBox).WidthOverride_Lambda([this,K](){return FOptionalSize(ScoopPx(K));})
+   .HeightOverride_Lambda([this,K](){return FOptionalSize(ScoopPx(K)*.82f);})[SNew(SBorder).BorderImage(&Ball()).BorderBackgroundColor_Lambda([this,K](){return FSlateColor(ScoopColor(K));})
+    .Visibility_Lambda([this,K](){return ScoopPx(K)>1?EVisibility::Visible:EVisibility::Hidden;}).Padding(0).VAlign(VAlign_Top)
+    // The topping drips over the top scoop.
+    [SNew(SBox).HeightOverride_Lambda([this,K](){return FOptionalSize(ScoopPx(K)*.38f);})[SNew(SBorder).BorderImage(&Ball()).Padding(0).BorderBackgroundColor_Lambda([this,K](){
+      return FSlateColor(K==TopScoop() && Topping>=0 && Toppings[Topping].Id!=TEXT("nenhuma")?Toppings[Topping].Color:FLinearColor(1,1,1,0));})]]]];
+  for(int32 J=0;J<6;++J)Cone->AddSlot().AutoHeight().HAlign(HAlign_Center)[SNew(SBox).WidthOverride(70-J*11).HeightOverride(14)
+   [SNew(SBorder).BorderImage(FCoreStyle::Get().GetBrush("WhiteBrush")).BorderBackgroundColor(J%2?Hex(196,140,74):Hex(214,160,90))]];
+  ChildSlot.HAlign(HAlign_Center).VAlign(VAlign_Bottom).Padding(0,0,0,50)[SNew(SBorder).BorderImage(FCoreStyle::Get().GetBrush("WhiteBrush")).BorderBackgroundColor(Paper).Padding(FMargin(26,14))
+   [SNew(SBox).WidthOverride(780)[SNew(SVerticalBox)
+    +SVerticalBox::Slot().AutoHeight()[SNew(SHorizontalBox)
+     +SHorizontalBox::Slot().FillWidth(1)[HandText(TEXT("Gelato da Maré · montar a casquinha"),28,Brown)]
+     +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center)[SNew(STextBlock).Font(Hand(18)).ColorAndOpacity(Faded).Text_Lambda([this](){
+      auto S=Sim();return MareLoc::Text(S?FString::Printf(TEXT("na fila: %d"),S->IceQueue().Num()):FString());})]]
+    +SVerticalBox::Slot().AutoHeight().Padding(0,2)[SNew(STextBlock).Font(Hand(22)).ColorAndOpacity_Lambda([this](){return FSlateColor(Phase==EPhase::Show?Red:Ink);})
+     .AutoWrapText(true).Text_Lambda([this](){return MareLoc::Text(Status);})]
+    +SVerticalBox::Slot().AutoHeight().Padding(0,6)[SNew(SHorizontalBox)
+     +SHorizontalBox::Slot().AutoWidth().Padding(0,0,24,0)[SNew(SBox).WidthOverride(150).HeightOverride(200).VAlign(VAlign_Bottom)[Cone]]
+     +SHorizontalBox::Slot().FillWidth(1).VAlign(VAlign_Center)[SNew(SVerticalBox)
+      +SVerticalBox::Slot().AutoHeight()[HandText(TEXT("Freezer"),18,Faded)]
+      +SVerticalBox::Slot().AutoHeight().Padding(0,2,0,8)[Tubs]
+      // Size gauge: the scoop growing, the right size in green.
+      +SVerticalBox::Slot().AutoHeight()[SNew(SBox).WidthOverride(GaugeW).HeightOverride(22)[SNew(SOverlay)
+       +SOverlay::Slot()[SNew(SBorder).BorderImage(FCoreStyle::Get().GetBrush("WhiteBrush")).BorderBackgroundColor(Kraft)]
+       +SOverlay::Slot()[SNew(SBox).HAlign(HAlign_Left).Padding(FMargin(RightLo/MaxSize*GaugeW,0,0,0))[SNew(SBox).WidthOverride((RightHi-RightLo)/MaxSize*GaugeW)
+        [SNew(SBorder).BorderImage(FCoreStyle::Get().GetBrush("WhiteBrush")).BorderBackgroundColor(Green)]]]
+       +SOverlay::Slot().HAlign(HAlign_Left)[SNew(SBox).WidthOverride_Lambda([this](){return FOptionalSize(FMath::Min(Growing,MaxSize)/MaxSize*GaugeW);})
+        [SNew(SBorder).BorderImage(FCoreStyle::Get().GetBrush("WhiteBrush")).BorderBackgroundColor(FLinearColor(Ink.R,Ink.G,Ink.B,.5f))]]]]
+      +SVerticalBox::Slot().AutoHeight().Padding(0,2)[HandText(TEXT("pequena · certa (verde) · grande"),14,Faded)]
+      +SVerticalBox::Slot().AutoHeight().Padding(0,6,0,2)[HandText(TEXT("Cobertura"),18,Faded)]
+      +SVerticalBox::Slot().AutoHeight()[Tops]
+      +SVerticalBox::Slot().AutoHeight().Padding(0,10,0,0)[SNew(SHorizontalBox)
+       +SHorizontalBox::Slot().AutoWidth().Padding(0,0,10,0)[SNew(SButton).ButtonStyle(&InkButton()).ContentPadding(FMargin(14,5)).OnClicked_Lambda([this](){Undo();return FReply::Handled();})[InkLabel(TEXT("Desfazer bola"),17)]]
+       +SHorizontalBox::Slot().AutoWidth()[SNew(SButton).ButtonStyle(&InkButton()).ContentPadding(FMargin(14,5)).OnClicked_Lambda([this](){Deliver();return FReply::Handled();})[InkLabel(TEXT("Entregar"),17)]]]]]
+    +SVerticalBox::Slot().AutoHeight().Padding(0,4,0,0)[HandText(TEXT("Segure o sabor (clique, 1 a 6 ou A) e solte no verde · setas escolhem o pote · Enter entrega · Esc ou B sai"),14,Faded)]]]];
+  NextCustomer();
+ }
+ virtual bool SupportsKeyboardFocus()const override{return true;}
+ virtual FReply OnKeyDown(const FGeometry&,const FKeyEvent& Event) override
+ {
+  const FKey K=Event.GetKey();if(Event.IsRepeat())return FReply::Handled();
+  if(K==EKeys::Escape || K==EKeys::Gamepad_FaceButton_Right){Close();return FReply::Handled();}
+  static const FKey Digits[]={EKeys::One,EKeys::Two,EKeys::Three,EKeys::Four,EKeys::Five,EKeys::Six};
+  for(int32 I=0;I<6;++I)if(K==Digits[I] && I<Flavors.Num()){Selected=I;Begin(I);return FReply::Handled();}
+  if(K==EKeys::Left || K==EKeys::Gamepad_DPad_Left){Selected=(Selected+Flavors.Num()-1)%FMath::Max(1,Flavors.Num());return FReply::Handled();}
+  if(K==EKeys::Right || K==EKeys::Gamepad_DPad_Right){Selected=(Selected+1)%FMath::Max(1,Flavors.Num());return FReply::Handled();}
+  if(K==EKeys::Up || K==EKeys::Gamepad_DPad_Up){Topping=(Topping+1)%FMath::Max(1,Toppings.Num());return FReply::Handled();}
+  if(K==EKeys::SpaceBar || K==EKeys::Gamepad_FaceButton_Bottom){Begin(Selected);return FReply::Handled();}
+  if(K==EKeys::Enter || K==EKeys::Gamepad_FaceButton_Top){Deliver();return FReply::Handled();}
+  if(K==EKeys::BackSpace || K==EKeys::Gamepad_FaceButton_Left){Undo();return FReply::Handled();}
+  return FReply::Unhandled();
+ }
+ virtual FReply OnKeyUp(const FGeometry&,const FKeyEvent& Event) override
+ {
+  const FKey K=Event.GetKey();
+  if(K==EKeys::SpaceBar || K==EKeys::Gamepad_FaceButton_Bottom || K==EKeys::One || K==EKeys::Two || K==EKeys::Three || K==EKeys::Four || K==EKeys::Five || K==EKeys::Six){Commit();return FReply::Handled();}
+  return FReply::Unhandled();
+ }
+ virtual void Tick(const FGeometry& Geometry,const double Time,const float Delta) override
+ {
+  SCompoundWidget::Tick(Geometry,Time,Delta);
+  if(Phase==EPhase::Show){if((Timer-=Delta)<=0){Phase=EPhase::Build;Status=TEXT("Agora de memória: monte a casquinha que foi pedida.");}return;}
+  if(Phase==EPhase::Result){if((Timer-=Delta)<=0)NextCustomer();return;}
+  if(Holding>=0)Growing=FMath::Min(MaxSize,Growing+Delta/GrowTime);
+ }
+ /** QA: builds the current order (bPerfect) or a wrong one and delivers it. */
+ FString QABuild(bool bPerfect)
+ {
+  auto S=Sim();if(!S || S->IceQueue().IsEmpty())return TEXT("empty");const auto O=S->IceQueue()[0];Phase=EPhase::Build;Scoops.Reset();Sizes.Reset();
+  const TArray<TSharedPtr<FJsonValue>>* F=nullptr;if(O->TryGetArrayField(TEXT("flavors"),F))for(const auto& V:*F){Scoops.Add(V->AsString());Sizes.Add(bPerfect?(RightLo+RightHi)*.5f:RightLo*.6f);}
+  for(int32 I=0;I<Toppings.Num();++I)if(Toppings[I].Id==UMareSimulation::String(O,TEXT("topping")))Topping=I;
+  return TEXT("ok");
+ }
+ void QADeliver(){Deliver();}
+ void QAHold(int32 Flavor,float Seconds){Phase=EPhase::Build;Begin(Flavor);Growing=FMath::Min(MaxSize,Seconds/GrowTime);}
+ void QARelease(){Commit();}
+ void QAShowNow(){Phase=EPhase::Show;Timer=ShowTime;}
+private:
+ enum class EPhase{Show,Build,Result};
+ struct FItem{FString Id,Name;FLinearColor Color;};
+ static constexpr float GaugeW=520,MaxSize=1.3f;
+ TWeakObjectPtr<AMareController> Owner;TArray<FItem> Flavors,Toppings;TArray<FString> Scoops;TArray<float> Sizes;FString Status;
+ EPhase Phase=EPhase::Show;float Timer=0,Growing=0,RightLo=.7f,RightHi=1,GrowTime=1.6f,ShowTime=3;int32 Holding=-1,Selected=0,Topping=-1;
+ UMareSimulation* Sim()const{return Owner.IsValid()?Owner->GetSimulation():nullptr;}
+ static FLinearColor Color(const TSharedPtr<FJsonObject>& O){const TArray<TSharedPtr<FJsonValue>>* C=nullptr;
+  return O->TryGetArrayField(TEXT("color"),C) && C->Num()==3?FLinearColor(FColor(uint8((*C)[0]->AsNumber()*255),uint8((*C)[1]->AsNumber()*255),uint8((*C)[2]->AsNumber()*255))):FLinearColor::White;}
+ static const FSlateRoundedBoxBrush& Ball(){static const FSlateRoundedBoxBrush B(FLinearColor::White,60.f);return B;}
+ static const FSlateRoundedBoxBrush& Tub(){static const FSlateRoundedBoxBrush B(FLinearColor::White,8.f,MareNotebook::Hex(150,150,160),2.f);return B;}
+ static const FSlateRoundedBoxBrush& Rim(){static const FSlateRoundedBoxBrush B(FLinearColor(1,1,1,0),8.f,MareNotebook::Red,3.f);return B;}
+ int32 TopScoop()const{return Scoops.Num()-1+(Holding>=0?1:0);}
+ float ScoopPx(int32 K)const{const float S=K<Sizes.Num()?Sizes[K]:(K==Sizes.Num() && Holding>=0?Growing:0.f);return S>0?36+56*S:0.f;}
+ FLinearColor ScoopColor(int32 K)const{const FString Id=K<Scoops.Num()?Scoops[K]:(Holding>=0 && Flavors.IsValidIndex(Holding)?Flavors[Holding].Id:FString());
+  for(const auto& F:Flavors)if(F.Id==Id)return F.Color;return FLinearColor::White;}
+ void NextCustomer()
+ {
+  auto S=Sim();Scoops.Reset();Sizes.Reset();Topping=-1;Holding=-1;Growing=0;
+  if(!S || S->IceQueue().IsEmpty()){Close();return;}
+  // The order, once, for a few seconds: then it is up to memory.
+  const auto O=S->IceQueue()[0];Status=UMareSimulation::String(O,TEXT("name"))+TEXT(" pede: ")+S->IceOrderLine(O);Phase=EPhase::Show;Timer=ShowTime;
+ }
+ void Begin(int32 Flavor)
+ {
+  if(Phase!=EPhase::Build || Holding>=0 || Scoops.Num()>=3 || !Flavors.IsValidIndex(Flavor))return;Holding=Flavor;Selected=Flavor;Growing=0;
+  if(Owner.IsValid())UMareAudioWorld::Action(Owner.Get(),TEXT("bar_ice_glass"),nullptr,.35f);
+ }
+ void Commit()
+ {
+  if(Holding<0)return;const float Size=Growing;Scoops.Add(Flavors[Holding].Id);Sizes.Add(Size);Holding=-1;Growing=0;
+  Status=FString::Printf(TEXT("Bola de %s %s. %d de 3 bolas."),*Flavors.FindByPredicate([this](const FItem& F){return F.Id==Scoops.Last();})->Name,
+   Size<RightLo?TEXT("pequena"):Size>RightHi?TEXT("grande demais"):TEXT("no tamanho certo"),Scoops.Num());
+ }
+ void Undo(){if(Phase==EPhase::Build && Scoops.Num() && Holding<0){Scoops.Pop();Sizes.Pop();Status=TEXT("Bola desfeita.");}}
+ void Deliver()
+ {
+  auto S=Sim();if(!S || Phase!=EPhase::Build || Holding>=0)return;
+  if(Scoops.IsEmpty()){Status=TEXT("Ponha pelo menos uma bola na casquinha.");return;}
+  const auto R=S->ServeIceCream(Scoops,Sizes,Topping>=0?Toppings[Topping].Id:TEXT("nenhuma"));Status=S->LastMessage;Phase=EPhase::Result;Timer=2.2f;
+  if(Owner.IsValid())UMareAudioWorld::Action(Owner.Get(),R.Hits==3?TEXT("money_coins"):R.Hits>0?TEXT("deal_accept"):TEXT("deal_decline"));
+ }
+ void Close(){if(Owner.IsValid())Owner->CloseBusinessGame();}
+};
+
+static TWeakPtr<SMareIceCreamGame> GIceGame;
 /** Fishing at the pier: the line goes in, a random wait, then "Fisgou!" and a short window to strike
  *  (E, Space, Enter, click or A). Esc or B reels in. Several casts in a row; each catch goes to the stock. */
 class SMareFishingGame : public SCompoundWidget
@@ -1277,6 +1429,10 @@ void AMareController::StartBusinessGame(const FString& Biz)
  auto S=GetSimulation();if(!GEngine || !GEngine->GameViewport || !S || GameWidget.IsValid())return;
  FString Reason;if(!S->CanPlayBusiness(Biz,Reason)){S->LastMessage=Reason;return;}
  ClosePhone();SetPause(true);
+ // The ice cream shop has its own hands-on task (3.1): the cone built from memory, customer after customer.
+ if(Biz==TEXT("sorveteria")){const TSharedRef<SMareIceCreamGame> Ice=SNew(SMareIceCreamGame).Owner(this);GameWidget=Ice;GIceGame=Ice;
+  GEngine->GameViewport->AddViewportWidgetContent(Ice,40);bShowMouseCursor=true;
+  SetInputMode(FInputModeUIOnly().SetWidgetToFocus(Ice));SetIgnoreMoveInput(true);SetIgnoreLookInput(true);return;}
  const TSharedRef<SMareTimingGame> Game=SNew(SMareTimingGame).Owner(this).Biz(Biz);GameWidget=Game;
  GEngine->GameViewport->AddViewportWidgetContent(Game,40);bShowMouseCursor=true;
  SetInputMode(FInputModeUIOnly().SetWidgetToFocus(Game));SetIgnoreMoveInput(true);SetIgnoreLookInput(true);
@@ -1301,6 +1457,21 @@ void AMareController::StartBarPrep(const FString& Step)
  const TSharedRef<SMareBarPrepGame> Game=SNew(SMareBarPrepGame).Owner(this).Step(Step);GameWidget=Game;
  GEngine->GameViewport->AddViewportWidgetContent(Game,40);bShowMouseCursor=true;
  SetInputMode(FInputModeUIOnly().SetWidgetToFocus(Game));SetIgnoreMoveInput(true);SetIgnoreLookInput(true);
+}
+FString AMareController::IceCreamQA(const FString& Cmd)
+{
+ auto S=GetSimulation();if(!S)return TEXT("none");
+ if(Cmd==TEXT("own")){UMareSimulation::Object(UMareSimulation::Object(UMareSimulation::Object(S->State,TEXT("prog")),TEXT("biz")),TEXT("sorveteria"))->SetNumberField(TEXT("lvl"),1);
+  S->State->SetNumberField(TEXT("minutes"),14*60+10);return TEXT("ok");}
+ if(Cmd.StartsWith(TEXT("customers:"))){for(int32 I=0;I<FCString::Atoi(*Cmd.Mid(10));++I)S->AddIceCustomer();return FString::Printf(TEXT("queue=%d"),S->IceQueue().Num());}
+ if(Cmd==TEXT("open")){StartBusinessGame(TEXT("sorveteria"));return GIceGame.IsValid()?TEXT("open"):S->LastMessage;}
+ auto Game=GIceGame.Pin();if(!Game.IsValid())return TEXT("no game");
+ if(Cmd==TEXT("perfect") || Cmd==TEXT("wrong")){Game->QABuild(Cmd==TEXT("perfect"));Game->QADeliver();return S->LastMessage;}
+ if(Cmd.StartsWith(TEXT("hold:"))){TArray<FString> P;Cmd.Mid(5).ParseIntoArray(P,TEXT(","));if(P.Num()==2)Game->QAHold(FCString::Atoi(*P[0]),FCString::Atof(*P[1]));return TEXT("ok");}
+ if(Cmd==TEXT("release")){Game->QARelease();return TEXT("ok");}
+ if(Cmd==TEXT("show")){Game->QAShowNow();return TEXT("ok");}
+ if(Cmd==TEXT("close")){CloseBusinessGame();return TEXT("ok");}
+ return FString::Printf(TEXT("queue=%d"),S->IceQueue().Num());
 }
 FString AMareController::ReefQA(const FString& Cmd){auto Reef=GetWorld()->GetSubsystem<UMareReefWorld>();return Reef?Reef->QA(Cmd):TEXT("none");}
 FString AMareController::TrailQA(const FString& Cmd)

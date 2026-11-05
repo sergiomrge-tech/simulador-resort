@@ -59,5 +59,7 @@ void UMarePoolWorld::Tick(float DeltaSeconds)
   Cooler=GetWorld()->SpawnActor<AMareServiceTarget>(At,Yaw);Cooler->Action=TEXT("PoolCooler");Cooler->FocusOffset=FVector(0,0,45);Cooler->Reach=240;Cooler->OcclusionTolerance=80;}
  if(Cooler){const int32 Want=int32(UMareSimulation::Number(P,TEXT("popsicles")));
   Cooler->Label=Want>0?FString::Printf(TEXT("Vender picolés (%d pedidos)"),Want):TEXT("Cooler de picolés · ninguém pediu");
+  // Homemade by the ice cream shop (3.1): the label tells what is left inside.
+  if(S->OwnsBusiness(TEXT("sorveteria")))Cooler->Label+=FString::Printf(TEXT(" · %d caseiro(s) no cooler"),int32(UMareSimulation::Number(P,TEXT("popsicle_stock"))));
   Cooler->SetActorHiddenInGame(!bOwned);if(CoolerModel){CoolerModel->SetActorHiddenInGame(!bOwned);CoolerModel->SetActorEnableCollision(bOwned);}}
 }

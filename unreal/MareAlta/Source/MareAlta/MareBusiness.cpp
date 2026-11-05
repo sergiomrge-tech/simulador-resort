@@ -29,6 +29,8 @@ bool UMareSimulation::CanPlayBusiness(const FString& Id,FString& Reason) const
  else if(!OwnsBusiness(Id)){Reason=TEXT("O negócio ainda não é seu.");return false;}
  if(!IsBusinessOpen(Id)){const TArray<TSharedPtr<FJsonValue>>* Open=nullptr;(Requires.IsEmpty()?Object(Object(Definitions,TEXT("businesses")),Id):Game)->TryGetArrayField(TEXT("open"),Open);
   Reason=Open && Open->Num()==2?FString::Printf(TEXT("Fechado agora (abre das %.0fh às %.0fh)."),(*Open)[0]->AsNumber(),(*Open)[1]->AsNumber()):TEXT("Fechado agora.");return false;}
+ // The ice cream shop works by its queue (3.1): one cone per customer in line, not one task per hour.
+ if(Id==TEXT("sorveteria")){if(IceQueue().IsEmpty()){Reason=TEXT("Ninguém na fila da sorveteria agora.");return false;}return true;}
  const int32 Hour=int32(Number(State,TEXT("day"),1))*24+FMath::FloorToInt(Number(State,TEXT("minutes"))/60);
  if(Number(Object(Object(Object(State,TEXT("prog")),TEXT("biz")),Id),TEXT("games_hour"),-1)>=Hour){Reason=TEXT("Cliente atendido. O próximo chega na próxima hora.");return false;}
  return true;

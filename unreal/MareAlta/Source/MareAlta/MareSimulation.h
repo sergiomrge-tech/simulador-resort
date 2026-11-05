@@ -5,6 +5,8 @@
 #include "MareSimulation.generated.h"
 
 /** Summary of one save slot for the main menu (read straight from slotN.json). */
+/** One cone handed over at the ice cream shop (MareIceCream.cpp): hits 0..3 (flavours, scoop sizes, topping). */
+struct FMareIceResult{int32 Hits=0;double Paid=0;bool bServed=false;};
 struct FMareSlotInfo
 {
  bool bExists=false;
@@ -333,6 +335,14 @@ public:
  TArray<TSharedPtr<FJsonObject>> TourResults() const;
  /** Extra people expected at a tour today thanks to yesterday's rating (negative after a bad one). */
  int32 TourBuzz(const FString& Id) const;
+ /** Ice cream shop (CHECKLIST_EXPANSOES 3.1): the queue at the counter, the order line, the hourly arrivals (hot day x2)
+  *  and homemade popsicles for the pool, and the cone handed over (flavours, sizes 0..1.3, topping id). */
+ TSharedPtr<FJsonObject> IceDefs() const;
+ TArray<TSharedPtr<FJsonObject>> IceQueue() const;
+ FString IceOrderLine(const TSharedPtr<FJsonObject>& Order) const;
+ void AddIceCustomer();
+ void IceCreamHour(int32 Hour);
+ FMareIceResult ServeIceCream(const TArray<FString>& Flavors,const TArray<float>& Sizes,const FString& Topping);
  void TrailScore(int32 Watered,int32 Group,int32 Photos,int32 Viewpoints,bool bSunset,int32 Stories,int32 Complaints,TArray<int32>& Choices,double& Bonus)const;
  /** Hourly: buyers before each departure (the guide sells), and at the end of the departure hour the guide's run
   *  or the cancellation with refund. */

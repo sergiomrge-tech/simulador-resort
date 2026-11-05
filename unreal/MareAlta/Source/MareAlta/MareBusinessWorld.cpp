@@ -15,6 +15,7 @@ void UMareBusinessWorld::Deinitialize()
 {
  for(auto& Pair:Counters)if(IsValid(Pair.Value))Pair.Value->Destroy();
  for(auto& Pair:Waiting)if(IsValid(Pair.Value))Pair.Value->Destroy();
+ for(auto& P:IceLine)if(IsValid(P))P->Destroy();IceLine.Empty();
  for(auto& M:Machines)if(IsValid(M))M->Destroy();for(auto& P:NightPlayers)if(IsValid(P))P->Destroy();
  Counters.Empty();Waiting.Empty();Machines.Empty();NightPlayers.Empty();Super::Deinitialize();
 }
@@ -51,6 +52,14 @@ void UMareBusinessWorld::Tick(float DeltaSeconds)
     Guest->SaveId=FString::Printf(TEXT("biz_%s_%d"),*Id,Hour);Guest->PersonName=TEXT("Cliente");Guest->SetAppearance(FCrc::StrCrc32(*Guest->SaveId)%4);
     Guest->bAmbient=true;Guest->GetCharacterMovement()->DisableMovement();Waiting.Add(Id,Guest);}}
   else if(!bDue && IsValid(Guest)){Guest->Destroy();Waiting.Remove(Id);}
+  // The ice cream queue: the rest of the line stands behind the first customer, one step apart.
+  if(Id==TEXT("sorveteria")){const int32 Want=bDue?FMath::Clamp(S->IceQueue().Num()-1,0,3):0;
+   while(IceLine.Num()>Want){if(IsValid(IceLine.Last()))IceLine.Last()->Destroy();IceLine.Pop();}
+   for(int32 I=IceLine.Num();I<Want;++I){const FRotator Face(0,(*G)[3]->AsNumber(),0);
+    const FVector At=Ground(FVector((*G)[0]->AsNumber(),(*G)[1]->AsNumber(),0)-Face.Vector()*(95.f*(I+1))+FVector(0,0,0))+FVector(0,0,90);
+    FActorSpawnParameters Params;Params.SpawnCollisionHandlingOverride=ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+    if(auto P=GetWorld()->SpawnActor<AMarePerson>(At,Face,Params)){P->SaveId=FString::Printf(TEXT("ice_line_%d_%d"),I,int32(UMareSimulation::Number(S->State,TEXT("day"),1)));
+     P->PersonName=TEXT("Cliente");P->SetAppearance(FCrc::StrCrc32(*P->SaveId)%4);P->bAmbient=true;P->GetCharacterMovement()->DisableMovement();IceLine.Add(P);}}}
  }
 }
 
