@@ -573,8 +573,11 @@ bool FMareBarDrinksTest::RunTest(const FString& Parameters)
  TestEqual(TEXT("Lime kept when the mix is refused"),Sim->Number(Sim->Object(Sim->Bar(),TEXT("stock")),TEXT("limao")),10.);
  Sim->Object(Sim->Bar(),TEXT("stock"))->SetNumberField(TEXT("cachaca"),10);
  // Hourly: the bartender serves known drinks; the waiting guest was a caipirinha.
- Sim->Object(Sim->State,TEXT("staff"))->SetBoolField(TEXT("bartender"),true);Before=Sim->Money();
- Sim->BarHour(11);TestTrue(TEXT("Bartender served and was paid"),Sim->Money()>Before);
+ // (an experienced one: a level-1 bartender botches 15% of the drinks, which made this check fail at random)
+ Sim->Object(Sim->State,TEXT("staff"))->SetBoolField(TEXT("bartender"),true);Sim->BarmanLevel();
+ {const TArray<TSharedPtr<FJsonValue>>* Team=nullptr;if(Sim->Object(Sim->State,TEXT("staff_team"))->TryGetArrayField(TEXT("bartender"),Team))for(const auto& V:*Team)V->AsObject()->SetNumberField(TEXT("level"),5);}
+ TestEqual(TEXT("Experienced bartender"),Sim->BarmanLevel(),5);
+ Before=Sim->Money();Sim->BarHour(11);TestTrue(TEXT("Bartender served and was paid"),Sim->Money()>Before);
  // Impatient guests leave; nobody stays after closing.
  Sim->Object(Sim->State,TEXT("staff"))->SetBoolField(TEXT("bartender"),false);
  Sim->State->SetNumberField(TEXT("minutes"),1400);Sim->BarHour(23);TestEqual(TEXT("Bar empty after closing"),Orders(),0);
@@ -960,7 +963,27 @@ bool FMareTourBoothTest::RunTest(const FString& Parameters)
   Sim->TrailScore(0,4,0,2,false,0,9,C,B);TestTrue(TEXT("No water, no photos: bad, bad, ok"),C==TArray<int32>({2,2,1}));TestEqual(TEXT("Bonus floor"),B,-1.,1e-6);
   Sim->State->SetNumberField(TEXT("day"),Sim->Number(Sim->State,TEXT("day"),1)+1);Sim->Tours();
   Sim->Object(Sim->Tours(),TEXT("sold"))->SetNumberField(Trail,4);Sim->State->SetNumberField(TEXT("minutes"),16*60+5);
-  Sim->TrailScore(4,4,2,2,true,0,0,C,B);TestEqual(TEXT("A trail at sunset rates top"),Sim->GuideTour(Trail,C,B),5.);}
+  Sim->TrailScore(4,4,2,2,true,0,0,C,B);TestEqual(TEXT("A trail at sunset rates top"),Sim->GuideTour(Trail,C,B),5.);
+  // Results (2.5): the tour that left is written down with stars, tip and reviews; tomorrow more people come.
+  const auto Results=Sim->TourResults();TestTrue(TEXT("Result recorded"),Results.Num()>0 && Sim->String(Results[0],TEXT("id"))==Trail);
+  const TArray<TSharedPtr<FJsonValue>>* Rv=nullptr;TestTrue(TEXT("Written reviews"),Results.Num() && Results[0]->TryGetArrayField(TEXT("reviews"),Rv) && Rv->Num()>=2);
+  TestTrue(TEXT("Sunset highlight first"),Rv && Rv->Num() && Sim->String((*Rv)[0]->AsObject(),TEXT("text")).Contains(TEXT("pôr do sol")));
+  const int32 PaxBefore=Sim->TourPassengers(Sim->TourDef(Trail));
+  Sim->State->SetNumberField(TEXT("day"),Sim->Number(Sim->State,TEXT("day"),1)+1);Sim->Tours();
+  TestEqual(TEXT("Word of mouth: +2 tomorrow"),Sim->TourBuzz(Trail),2);TestTrue(TEXT("More passengers tomorrow"),Sim->TourPassengers(Sim->TourDef(Trail))>=FMath::Min(PaxBefore+1,Sim->TourSeats(Sim->TourDef(Trail))));
+  // The photographer (Personalizar "fotos" tier 3) sells prints after the tour.
+  Sim->Object(Sim->Object(Sim->Object(Sim->State,TEXT("custom")),TEXT("passeios")),TEXT("fotos"))->SetNumberField(TEXT("tier"),3);
+  Sim->Object(Sim->Tours(),TEXT("sold"))->SetNumberField(Trail,5);Sim->State->SetNumberField(TEXT("minutes"),16*60+5);
+  const double Cash=Sim->Money();Sim->GuideTour(Trail,{0,0,0},.5);TestTrue(TEXT("Photos sold"),Sim->Number(Sim->TourResults()[0],TEXT("photos"))>0);
+  TestTrue(TEXT("Photo money booked"),Sim->Money()>Cash);
+  // A playable tour still underway after its departure hour ends normally (the trail reaches the lighthouse at sunset).
+  Sim->State->SetNumberField(TEXT("day"),Sim->Number(Sim->State,TEXT("day"),1)+1);Sim->Tours();Sim->Object(Sim->Tours(),TEXT("sold"))->SetNumberField(Trail,3);
+  Sim->State->SetNumberField(TEXT("minutes"),17*60+40);TestEqual(TEXT("Too late without a tour underway"),Sim->GuideTour(Trail,{0,0,0},0),0.);
+  Sim->Tours()->SetStringField(TEXT("active"),Trail);TestTrue(TEXT("Underway tour rated after its hour"),Sim->GuideTour(Trail,{0,0,0},0)>0);
+  // The sunset raft only exists with the "Pôr do sol no mar" route.
+  TestFalse(TEXT("Raft locked"),Sim->TourIds().Contains(TEXT("jangada")));
+  Sim->Object(Sim->Object(Sim->Object(Sim->State,TEXT("custom")),TEXT("passeios")),TEXT("roteiro"))->SetNumberField(TEXT("tier"),3);
+  TestTrue(TEXT("Raft unlocked"),Sim->TourIds().Contains(TEXT("jangada")));}
  IFileManager::Get().DeleteDirectory(*Sim->SaveDirectory,false,true);
  Sim->RemoveFromRoot();Instance->RemoveFromRoot();return true;
 }

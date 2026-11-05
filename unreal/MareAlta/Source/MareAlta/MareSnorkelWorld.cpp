@@ -89,7 +89,9 @@ bool UMareSnorkelWorld::Start(APlayerController* Controller)
  for(TActorIterator<AActor> It(GetWorld());It;++It){TArray<UStaticMeshComponent*> Parts;It->GetComponents(Parts);
   for(auto C:Parts)if(C && C->GetStaticMesh())if(const int32* K=CoralKind.Find(C->GetStaticMesh()->GetName())){SpeciesCorals[*K].Add(C);Corals.Add(C);}}
  for(int32 I=0;I<List.Num();++I){auto T=GetWorld()->SpawnActor<AMareServiceTarget>(FVector(0,0,-100000),FRotator::ZeroRotator);if(!T)continue;
-  T->Action=TEXT("TourSpecies");T->DataIndex=I;T->Reach=UMareSimulation::Number(D,TEXT("look_range"),900);T->OcclusionTolerance=70;
+  // Better diving gear (Personalizar "mergulho") sees farther under water.
+  T->Action=TEXT("TourSpecies");T->DataIndex=I;T->Reach=UMareSimulation::Number(D,TEXT("look_range"),900)
+   +UMareSimulation::Number(UMareSimulation::Object(S->ToursDefs(),TEXT("upgrades")),TEXT("look_range_per_tier"),120)*(S->CustomTier(TEXT("passeios"),TEXT("mergulho"))-1);T->OcclusionTolerance=70;
   T->Label=TEXT("Apresentar: ")+UMareSimulation::String(List[I]->AsObject(),TEXT("name"));Targets.Add(T);}
  // The group jumps in at the ladder, one swimmer per ticket.
  const FVector Start=Vec(D,TEXT("hero_start")),Ladder=Vec(D,TEXT("ladder"));const int32 N=FMath::Min(Sold,6);

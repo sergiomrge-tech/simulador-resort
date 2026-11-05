@@ -444,7 +444,9 @@ private:
  TArray<FString> TabTitles()const
  {
   TArray<FString> T={TEXT("Quiosque"),TEXT("Compras"),TEXT("Equipe"),TEXT("Finanças"),TEXT("Resort"),TEXT("Missões"),TEXT("Personalizar")};
-  bool bBar=false;if(auto S=Sim())UMareSimulation::Object(S->State,TEXT("unlocked"))->TryGetBoolField(TEXT("bar"),bBar);if(bBar)T.Add(TEXT("Drinks"));return T;
+  bool bBar=false,bTours=false;if(auto S=Sim()){UMareSimulation::Object(S->State,TEXT("unlocked"))->TryGetBoolField(TEXT("bar"),bBar);
+   UMareSimulation::Object(S->State,TEXT("unlocked"))->TryGetBoolField(TEXT("passeios"),bTours);}
+  if(bBar)T.Add(TEXT("Drinks"));if(bTours)T.Add(TEXT("Passeios"));return T;
  }
  /** Recipe book of the Bar do Coqueiro (CHECKLIST_EXPANSOES 1.3): known drinks with ingredients, price and prep steps;
   *  unknown ones as "???" with the hint; the secret house drink; the "Mestre dos drinks" achievement. */
@@ -466,6 +468,34 @@ private:
     Heading(UMareSimulation::String(R,TEXT("name"))+(bSecret?TEXT(" · receita secreta"):TEXT("")),FString::Printf(TEXT("R$ %.0f"),S->DrinkPrice(Id)));
     Line(FString::Join(Parts,TEXT(" + "))+TEXT("  ·  ")+FString::Join(Steps,TEXT(", ")),12,Ink);}
    else Line(FString(bSecret?TEXT("??? (receita secreta)"):TEXT("???"))+TEXT(" · dica: ")+UMareSimulation::String(R,TEXT("hint")),12.5f,Faded);}
+ }
+ /** Tour results (CHECKLIST_EXPANSOES 2.5): each tour that left with stars, tip, photos sold and the written reviews,
+  *  word of mouth for today, and what the Personalizar upgrades do on the tours. */
+ void TourResultsPage()
+ {
+  auto S=Sim();using namespace MareNotebook;const auto Results=S->TourResults();
+  Title(TEXT("Passeios"),Results.Num()?FString::Printf(TEXT("%d passeio(s) avaliado(s)"),Results.Num()):FString(TEXT("nenhum passeio avaliado ainda")));
+  for(const FString& Id:S->TourIds()){const int32 B=S->TourBuzz(Id);if(B==0)continue;
+   const FString Name=UMareSimulation::String(S->TourDef(Id),TEXT("name"));
+   Line(B>0?FString::Printf(TEXT("Boca a boca: +%d pessoa(s) hoje no %s (nota boa ontem)."),B,*Name):FString::Printf(TEXT("Boca a boca: %d pessoa(s) a menos hoje no %s (nota ruim ontem)."),-B,*Name),12,B>0?Green:Red);}
+  if(Results.IsEmpty())Line(TEXT("Guie um passeio na hora da saída (ou contrate um guia): a nota, a gorjeta e o que os turistas escreveram aparecem aqui."),12,Faded);
+  int32 Shown=0;for(const auto& R:Results){if(++Shown>5)break;bool bGuide=false;R->TryGetBoolField(TEXT("guide"),bGuide);
+   const double Rating=UMareSimulation::Number(R,TEXT("rating"));
+   Heading(UMareSimulation::String(R,TEXT("name"))+(bGuide?TEXT(" · com o guia"):TEXT(" · guiado por você")),FString::Printf(TEXT("dia %.0f · nota %.1f de 5"),UMareSimulation::Number(R,TEXT("day")),Rating).Replace(TEXT("."),TEXT(",")));
+   FString Money=FString::Printf(TEXT("%.0f pessoa(s) · gorjeta R$ %.0f"),UMareSimulation::Number(R,TEXT("pax")),UMareSimulation::Number(R,TEXT("tip")));
+   if(UMareSimulation::Number(R,TEXT("prints"))>0)Money+=FString::Printf(TEXT(" · %.0f foto(s) vendidas: R$ %.0f"),UMareSimulation::Number(R,TEXT("prints")),UMareSimulation::Number(R,TEXT("photos")));
+   Line(Money,12,Ink);
+   const TArray<TSharedPtr<FJsonValue>>* Reviews=nullptr;
+   if(R->TryGetArrayField(TEXT("reviews"),Reviews))for(const auto& V:*Reviews){const auto Rv=V->AsObject();const int32 Stars=int32(UMareSimulation::Number(Rv,TEXT("stars"),3));
+    Line(FString::Printf(TEXT("\"%s\" (%s, %d de 5)"),*UMareSimulation::String(Rv,TEXT("text")),*UMareSimulation::String(Rv,TEXT("who")),Stars),12.5f,Stars>=4?Green:Stars<=2?Red:Faded);}}
+  Heading(TEXT("Melhorias dos passeios"),TEXT("em Personalizar · Passeios"));
+  auto Tier=[S](const FString& Slot){const auto Def=S->CustomSlot(TEXT("passeios"),Slot);const int32 T=S->CustomTier(TEXT("passeios"),Slot);const TArray<TSharedPtr<FJsonValue>>* Tiers=nullptr;
+   return Def && Def->TryGetArrayField(TEXT("tiers"),Tiers) && Tiers->IsValidIndex(T-1)?UMareSimulation::String((*Tiers)[T-1]->AsObject(),TEXT("name")):FString();};
+  Line(TEXT("Barco: ")+Tier(TEXT("barco"))+TEXT(" (no passeio de barco: mais rápido e o turista enjoa menos)"),12,Ink);
+  Line(TEXT("Mergulho: ")+Tier(TEXT("mergulho"))+TEXT(" (no snorkel: enxerga mais longe e cada espécie vale mais)"),12,Ink);
+  Line(TEXT("Fotos: ")+Tier(TEXT("fotos"))+TEXT(" (o fotógrafo vende fotos depois de cada passeio; mais com nota alta)"),12,Ink);
+  Line(TEXT("Roteiros: ")+Tier(TEXT("roteiro"))+TEXT(" (no nível \"Pôr do sol no mar\" abre o passeio de jangada no fim da tarde)"),12,Ink);
+  Line(TEXT("O guia contratado faz o passeio sozinho com nota 3, sem gorjeta. Indo junto, a nota, a gorjeta e a fama sobem."),12,Faded);
  }
  /** Bar do Coqueiro: guests' orders, the shaker and the ingredient shelf, the recipe book (MareBar.cpp). */
  void BarPage()
@@ -825,7 +855,7 @@ private:
    case 4:ResortPage();break;
    case 5:MissionsPage();break;
    case 6:CustomizePage();break;
-   default:DrinksPage();
+   default:if(Titles[Tab]==TEXT("Passeios"))TourResultsPage();else DrinksPage();
   }
  }
 };

@@ -27,6 +27,11 @@
    7750,
    -2500,
    100
+  ],
+  "jangada": [
+   7200,
+   -4700,
+   0
   ]
  },
  "stops": {
@@ -88,6 +93,26 @@
     "good": "Mostrar a lente e explicar como ela guiava os barcos",
     "ok": "Liberar para fotos",
     "bad": "Subir na grade para a melhor foto"
+   }
+  ],
+  "jangada": [
+   {
+    "text": "A jangada sai do píer com a vela aberta.",
+    "good": "Explicar como o jangadeiro lê o vento",
+    "ok": "Deixar todos tirarem selfies",
+    "bad": "Balançar a jangada para animar"
+   },
+   {
+    "text": "A ilha vulcânica aparece ao longe, soltando fumaça.",
+    "good": "Contar a lenda da ilha e mostrar a fumaça de longe",
+    "ok": "Apontar a ilha e seguir",
+    "bad": "Prometer chegar perto da cratera"
+   },
+   {
+    "text": "O sol encosta no mar.",
+    "good": "Recolher a vela e ficar em silêncio no pôr do sol",
+    "ok": "Servir a água de coco e voltar",
+    "bad": "Voltar correndo antes do sol sumir"
    }
   ]
  },
@@ -572,5 +597,117 @@
    -3880,
    120
   ]
+ },
+ "_doc_results": "Tour results (CHECKLIST_EXPANSOES 2.5, MareTours.cpp GuideTour/ToursHour): every tour that leaves (with the player or the guide) writes a result to the save ('tour_results', last 12): stars, tip, photos sold and up to three written reviews - one per stop, from reviews.<tour>[stop][choice] (0 good, 1 ok, 2 bad), signed by the groups that went - plus a highlight line when the playable trip's bonus was high or low (highlight.<tour>). The phone's Passeios app shows them. 'buzz': a rating of good or more brings extra people to the same tour tomorrow (bad fewer). The guide alone rates guide_rating (+ the extras' average) and earns no tip. Photographer: the Personalizar 'fotos' slot (tier 2+) sells photos after each tour, photo_price[tier-1] each, to photo_share of the passengers at a 5-star rating (fewer with a lower one). Upgrades in the playable tours: boat tier +boat_speed_per_tier speed and +seasick_seconds_per_tier; diving gear tier +look_range_per_tier and +species_bonus_per_tier.",
+ "guide_rating": 3.0,
+ "buzz": {
+  "good": 4.0,
+  "great": 4.5,
+  "bad": 2.5,
+  "good_people": 1,
+  "great_people": 2,
+  "bad_people": -1
+ },
+ "photo_price": [
+  0,
+  15,
+  25,
+  40,
+  60
+ ],
+ "photo_share": 0.6,
+ "upgrades": {
+  "boat_speed_per_tier": 0.07,
+  "seasick_seconds_per_tier": 1.5,
+  "look_range_per_tier": 120,
+  "species_bonus_per_tier": 0.02
+ },
+ "reviews": {
+  "snorkel": [
+   [
+    "Aprendemos a nadar sem tocar no coral!",
+    "Bom, mas ninguém explicou muita coisa.",
+    "Pisaram no coral. Que vergonha..."
+   ],
+   [
+    "Vimos tubarão, sargentinho e um monte de peixe!",
+    "Vimos alguns peixes.",
+    "Quase não mostraram nada."
+   ],
+   [
+    "O guia contou todo mundo antes de voltar. Seguro!",
+    "Voltamos meio na pressa.",
+    "Esqueceram um de nós na água!"
+   ]
+  ],
+  "barco": [
+   [
+    "Coletes para todos antes de sair. Nota 10.",
+    "Os coletes demoraram.",
+    "Ficamos sem colete!"
+   ],
+   [
+    "Os golfinhos pularam do lado do barco!",
+    "Golfinhos de longe, mas valeu.",
+    "Ele acelerou e espantou os golfinhos."
+   ],
+   [
+    "A história da praia deserta foi linda.",
+    "Passamos pela praia deserta.",
+    "Nem falaram da praia deserta."
+   ]
+  ],
+  "farol": [
+   [
+    "Água e protetor para todos. Cuidadoso!",
+    "Faltou água para alguns.",
+    "Saímos sem água no sol forte."
+   ],
+   [
+    "Fotos lindas nos mirantes!",
+    "Uma foto só, no corre.",
+    "Pulamos os mirantes."
+   ],
+   [
+    "O pôr do sol no farol foi inesquecível.",
+    "Chegamos fora da hora do pôr do sol.",
+    "Perdemos o pôr do sol."
+   ]
+  ],
+  "jangada": [
+   [
+    "O jangadeiro explicou o vento, que lindo!",
+    "Muitas selfies, pouca história.",
+    "Balançaram tanto que fiquei enjoado."
+   ],
+   [
+    "A lenda da ilha vulcânica arrepiou!",
+    "Vimos a ilha de longe.",
+    "Prometeram ir à cratera e nada..."
+   ],
+   [
+    "Silêncio total no pôr do sol. Perfeito.",
+    "Coco gelado e volta tranquila.",
+    "Voltamos antes do sol se pôr."
+   ]
+  ]
+ },
+ "highlight": {
+  "snorkel": {
+   "good": "Mergulho perfeito, cheio de espécies!",
+   "bad": "Tocaram demais no coral."
+  },
+  "barco": {
+   "good": "Golfinhos pertinho do barco!",
+   "bad": "Metade do barco passou mal com a velocidade."
+  },
+  "farol": {
+   "good": "Chegamos bem na hora do pôr do sol!",
+   "bad": "O guia andou rápido demais, ficamos para trás."
+  },
+  "jangada": {
+   "good": "O melhor pôr do sol da viagem.",
+   "bad": "Passeio corrido."
+  }
  }
 }

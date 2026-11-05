@@ -43,7 +43,9 @@ TSharedPtr<FJsonObject> UMareSimulation::TourDef(const FString& Id) const
 TArray<FString> UMareSimulation::TourIds() const
 {
  TArray<FString> Ids;const TArray<TSharedPtr<FJsonValue>>* List=nullptr;
- if(Object(CustomDefs(),TEXT("operations"))->TryGetArrayField(TEXT("tours"),List))for(const auto& V:*List)Ids.Add(String(V->AsObject(),TEXT("id")));
+ if(Object(CustomDefs(),TEXT("operations"))->TryGetArrayField(TEXT("tours"),List))for(const auto& V:*List){const auto Req=Object(V->AsObject(),TEXT("requires"));
+   if(Req->Values.Num() && CustomTier(String(Req,TEXT("place")),String(Req,TEXT("slot")))<int32(Number(Req,TEXT("tier"),1)))continue;
+   Ids.Add(String(V->AsObject(),TEXT("id")));}
  return Ids;
 }
 
@@ -153,6 +155,7 @@ int32 UMareSimulation::SellTourGroup(const FString& Id,const TArray<FString>& Ex
   else{ExtraRating-=Number(ToursDefs(),TEXT("pushy_rating"),.15);Refused.Add(String(X,TEXT("name")).ToLower());}}
  auto Ex=Child(T,TEXT("extra_rating"));Ex->SetNumberField(Id,Number(Ex,Id)+ExtraRating);
  auto Gs=Child(T,TEXT("groups_sold"));Gs->SetNumberField(Id,Number(Gs,Id)+1);
+ ListOf(Child(T,TEXT("sold_names")),Id).Add(MakeShared<FJsonValueString>(Name));
  Book(Paid,FString::Printf(TEXT("%s: %d bilhete(s)"),*String(Tour,TEXT("name")),N));AddToday(State,Paid);
  LastMessage=FString::Printf(TEXT("%s: %d bilhete(s), R$ %.0f."),*Name,N,Paid);
  if(Bought.Num())LastMessage+=TEXT(" Levaram ")+FString::Join(Bought,TEXT(", "))+TEXT(".");
@@ -191,10 +194,60 @@ static void RateTour(UMareSimulation* Sim,double Rating)
  Ratings.Add(MakeShared<FJsonValueNumber>(Rating));while(Ratings.Num()>40)Ratings.RemoveAt(0);Sim->State->SetArrayField(TEXT("ratings"),Ratings);
 }
 
+int32 UMareSimulation::TourBuzz(const FString& Id) const
+{
+ const auto B=Object(Object(State,TEXT("tour_buzz")),Id);
+ return int32(Number(B,TEXT("day")))==int32(Number(State,TEXT("day"),1))?int32(Number(B,TEXT("extra"))):0;
+}
+
+TArray<TSharedPtr<FJsonObject>> UMareSimulation::TourResults() const
+{
+ TArray<TSharedPtr<FJsonObject>> Out;const TArray<TSharedPtr<FJsonValue>>* List=nullptr;
+ if(State->TryGetArrayField(TEXT("tour_results"),List))for(const auto& V:*List)Out.Add(V->AsObject());
+ return Out;
+}
+
+double UMareSimulation::RecordTourResult(const FString& Id,double Rating,double Tip,const TArray<int32>& Choices,double Bonus,bool bGuide,int32 Pax)
+{
+ const auto D=ToursDefs();const auto Tour=TourDef(Id);const FString TourName=String(Tour,TEXT("name"));auto T=Tours();
+ // The photographer (Personalizar "fotos", tier 2+) sells prints to part of the group: more after a good tour.
+ double Photos=0;int32 Prints=0;const int32 Tier=CustomTier(TEXT("passeios"),TEXT("fotos"));const TArray<TSharedPtr<FJsonValue>>* Prices=nullptr;
+ if(Tier>1 && D->TryGetArrayField(TEXT("photo_price"),Prices) && Prices->IsValidIndex(Tier-1)){
+  Prints=FMath::RoundToInt(Pax*Number(D,TEXT("photo_share"),.6)*FMath::Clamp(Rating/5.,0.,1.));Photos=Prints*(*Prices)[Tier-1]->AsNumber();
+  if(Photos>0){Book(Photos,TourName+FString::Printf(TEXT(": %d foto(s) vendidas pelo fotógrafo"),Prints));AddToday(State,Photos);}}
+ // Written reviews: one per stop from the choice made, signed by the groups that went; the trip's highlight first.
+ TArray<FString> Who;const TArray<TSharedPtr<FJsonValue>>* Names=nullptr;
+ if(Object(T,TEXT("sold_names"))->TryGetArrayField(Id,Names))for(const auto& V:*Names)Who.Add(V->AsString());
+ if(Who.IsEmpty())Who.Add(TEXT("Turista"));
+ TArray<TSharedPtr<FJsonValue>> Reviews;int32 Signer=0;
+ auto Review=[&](const FString& Text,double Stars){if(Text.IsEmpty())return;auto R=MakeShared<FJsonObject>();R->SetStringField(TEXT("who"),Who[Signer++%Who.Num()]);
+  R->SetStringField(TEXT("text"),Text);R->SetNumberField(TEXT("stars"),FMath::Clamp(FMath::RoundToDouble(Stars),1.,5.));Reviews.Add(MakeShared<FJsonValueObject>(R));};
+ const auto High=Object(Object(D,TEXT("highlight")),Id);
+ if(Bonus>=.3)Review(String(High,TEXT("good")),5);else if(Bonus<=-.2)Review(String(High,TEXT("bad")),Rating-1);
+ const TArray<TSharedPtr<FJsonValue>>* Stops=nullptr;
+ if(Object(D,TEXT("reviews"))->TryGetArrayField(Id,Stops))for(int32 I=0;I<Stops->Num() && I<Choices.Num() && Reviews.Num()<3;++I){const auto& Opts=(*Stops)[I]->AsArray();
+  if(Opts.IsValidIndex(Choices[I]))Review(Opts[Choices[I]]->AsString(),Rating+(Choices[I]==0?.5:Choices[I]==2?-1.5:-.5));}
+ auto Result=MakeShared<FJsonObject>();Result->SetStringField(TEXT("id"),Id);Result->SetStringField(TEXT("name"),TourName);
+ Result->SetNumberField(TEXT("day"),Number(State,TEXT("day"),1));Result->SetNumberField(TEXT("rating"),Rating);Result->SetNumberField(TEXT("tip"),Tip);
+ Result->SetNumberField(TEXT("photos"),Photos);Result->SetNumberField(TEXT("prints"),Prints);Result->SetBoolField(TEXT("guide"),bGuide);Result->SetNumberField(TEXT("pax"),Pax);
+ Result->SetArrayField(TEXT("reviews"),Reviews);
+ TArray<TSharedPtr<FJsonValue>> All;All.Add(MakeShared<FJsonValueObject>(Result));const TArray<TSharedPtr<FJsonValue>>* Old=nullptr;
+ if(State->TryGetArrayField(TEXT("tour_results"),Old))for(const auto& V:*Old)if(All.Num()<12)All.Add(V);
+ State->SetArrayField(TEXT("tour_results"),All);
+ // Word of mouth: a good tour brings people to the same tour tomorrow, a bad one keeps some away.
+ const auto Buzz=Object(D,TEXT("buzz"));
+ const int32 Extra=Rating>=Number(Buzz,TEXT("great"),4.5)?int32(Number(Buzz,TEXT("great_people"),2)):Rating>=Number(Buzz,TEXT("good"),4)?int32(Number(Buzz,TEXT("good_people"),1))
+  :Rating<Number(Buzz,TEXT("bad"),2.5)?int32(Number(Buzz,TEXT("bad_people"),-1)):0;
+ auto Tb=Child(Child(State,TEXT("tour_buzz")),Id);Tb->SetNumberField(TEXT("day"),Number(State,TEXT("day"),1)+1);Tb->SetNumberField(TEXT("extra"),Extra);
+ return Photos;
+}
+
 double UMareSimulation::GuideTour(const FString& Id,const TArray<int32>& Choices,double Bonus)
 {
  const auto Tour=TourDef(Id);
- if(!Tour || !IsTourBoarding(Id)){Fail(TEXT("Só dá para guiar na hora da saída."));return 0;}
+ // A playable tour that left in its hour (tours.active) ends when it ends: the trail reaches the lighthouse at sunset.
+ const bool bUnderway=String(Object(State,TEXT("tours")),TEXT("active"))==Id && TourStatus(Id).IsEmpty();
+ if(!Tour || (!IsTourBoarding(Id) && !bUnderway)){Fail(TEXT("Só dá para guiar na hora da saída."));return 0;}
  auto T=Tours();const int32 Pax=int32(Number(Object(T,TEXT("sold")),Id));if(Pax<=0){Fail(TEXT("Nenhum bilhete vendido para este passeio."));return 0;}
  int32 Good=0,Ok=0;for(int32 C:Choices){Good+=C==0;Ok+=C==1;}
  const double Groups=FMath::Max(1.,Number(Object(T,TEXT("groups_sold")),Id));
@@ -204,7 +257,9 @@ double UMareSimulation::GuideTour(const FString& Id,const TArray<int32>& Choices
  Book(Tip-Cost,FString::Printf(TEXT("%s guiado por você (gorjeta R$ %.0f, custo R$ %.0f)"),*String(Tour,TEXT("name")),Tip,Cost));AddToday(State,Tip-Cost);
  Child(T,TEXT("done"))->SetStringField(Id,TEXT("guided"));Child(T,TEXT("rating"))->SetNumberField(Id,Rating);
  RateTour(this,Rating);AddFame(Pax/2+Good*2);
- LastMessage=FString::Printf(TEXT("%s: nota %.1f, gorjeta R$ %.0f."),*String(Tour,TEXT("name")),Rating,Tip);Save();return Rating;
+ const double Photos=RecordTourResult(Id,Rating,Tip,Choices,Bonus,false,Pax);
+ LastMessage=FString::Printf(TEXT("%s: nota %s, gorjeta R$ %.0f."),*String(Tour,TEXT("name")),*FString::Printf(TEXT("%.1f"),Rating).Replace(TEXT("."),TEXT(",")),Tip)+(Photos>0?FString::Printf(TEXT(" Fotos: R$ %.0f."),Photos):FString())
+  +TEXT(" Avaliações no celular (Passeios).");Save();return Rating;
 }
 
 void UMareSimulation::SnorkelScore(int32 CoralTouches,int32 Species,bool bCrewFetched,TArray<int32>& Choices,double& Bonus)const
@@ -213,7 +268,8 @@ void UMareSimulation::SnorkelScore(int32 CoralTouches,int32 Species,bool bCrewFe
  Choices.Add(CoralTouches<=int32(Number(D,TEXT("good_coral"),0))?0:CoralTouches<=int32(Number(D,TEXT("ok_coral"),1))?1:2);
  Choices.Add(Species>=int32(Number(D,TEXT("good_species"),5))?0:Species>=int32(Number(D,TEXT("ok_species"),2))?1:2);
  Choices.Add(bCrewFetched?2:0);
- Bonus=FMath::Clamp(Species*Number(D,TEXT("species_bonus"),.12)-CoralTouches*Number(D,TEXT("coral_penalty"),.25),-1.,1.);
+ const double Gear=Number(Object(ToursDefs(),TEXT("upgrades")),TEXT("species_bonus_per_tier"),.02)*(CustomTier(TEXT("passeios"),TEXT("mergulho"))-1);
+ Bonus=FMath::Clamp(Species*(Number(D,TEXT("species_bonus"),.12)+Gear)-CoralTouches*Number(D,TEXT("coral_penalty"),.25),-1.,1.);
 }
 
 void UMareSimulation::TrailScore(int32 Watered,int32 Group,int32 Photos,int32 Viewpoints,bool bSunset,int32 Stories,int32 Complaints,TArray<int32>& Choices,double& Bonus)const
@@ -263,7 +319,9 @@ void UMareSimulation::ToursHour(int32 Hour)
   if(Started==Departs){const int32 Pax=int32(Number(Sold,Id));Queue->SetNumberField(Id,0);Child(T,TEXT("groups"))->SetArrayField(Id,TArray<TSharedPtr<FJsonValue>>());
    if(Pax<=0){Done->SetStringField(Id,TEXT("empty"));continue;}
    if(bGuide){Book(-Number(Tour,TEXT("cost")),String(Tour,TEXT("name"))+TEXT(": custo da saída"));AddToday(State,-Number(Tour,TEXT("cost")));
-    Done->SetStringField(Id,TEXT("guide"));RateTour(this,FMath::Clamp(3.5+Number(Object(T,TEXT("extra_rating")),Id)/FMath::Max(1.,Number(Object(T,TEXT("groups_sold")),Id)),1.,5.));AddFame(Pax/2);}
+    const double GuideRating=FMath::Clamp(Number(ToursDefs(),TEXT("guide_rating"),3)+Number(Object(T,TEXT("extra_rating")),Id)/FMath::Max(1.,Number(Object(T,TEXT("groups_sold")),Id)),1.,5.);
+    Done->SetStringField(Id,TEXT("guide"));RateTour(this,GuideRating);Child(T,TEXT("rating"))->SetNumberField(Id,GuideRating);AddFame(Pax/2);
+    RecordTourResult(Id,GuideRating,0,{1,1,1},0,true,Pax);}
    else{const double Refund=Pax*TicketPrice(Id);Book(-Refund,String(Tour,TEXT("name"))+TEXT(": cancelado, bilhetes devolvidos"));AddToday(State,-Refund);
     Done->SetStringField(Id,TEXT("cancelled"));LastMessage=String(Tour,TEXT("name"))+TEXT(" cancelado: ninguém guiou. Contrate um guia ou vá ao píer na hora.");}}
  }

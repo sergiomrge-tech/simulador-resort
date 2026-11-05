@@ -178,7 +178,9 @@ void UMareBoatTourWorld::UpdateBoat(float Dt)
   Steer=(Controller->IsInputKeyDown(EKeys::D) || Controller->IsInputKeyDown(EKeys::Right)?1.f:0.f)-(Controller->IsInputKeyDown(EKeys::A) || Controller->IsInputKeyDown(EKeys::Left)?1.f:0.f)
    +Controller->GetInputAnalogKeyState(EKeys::Gamepad_LeftX);}
  Thr=FMath::Clamp(Thr,-1.f,1.f);Steer=FMath::Clamp(Steer,-1.f,1.f);Throttle=Thr;
- const float Max=UMareSimulation::Number(D,TEXT("max_speed"),950),Rev=UMareSimulation::Number(D,TEXT("reverse_speed"),250),Acc=UMareSimulation::Number(D,TEXT("accel"),260);
+ // A better boat (Personalizar "barco") is faster and steadier.
+ const auto Up=UMareSimulation::Object(SimOf(GetWorld())->ToursDefs(),TEXT("upgrades"));const int32 BoatTier=SimOf(GetWorld())->CustomTier(TEXT("passeios"),TEXT("barco"))-1;
+ const float Max=UMareSimulation::Number(D,TEXT("max_speed"),950)*(1+UMareSimulation::Number(Up,TEXT("boat_speed_per_tier"),.07)*BoatTier),Rev=UMareSimulation::Number(D,TEXT("reverse_speed"),250),Acc=UMareSimulation::Number(D,TEXT("accel"),260);
  const float Target=Thr>=0?Thr*Max:Thr*Rev;
  Speed+=FMath::Clamp(Target-Speed,-Acc*1.6f*Dt,Acc*Dt);
  Heading+=Steer*UMareSimulation::Number(D,TEXT("turn"),42)*Dt*FMath::Clamp(FMath::Abs(Speed)/300.f,.25f,1.f)*(Speed<-5?-1.f:1.f);
@@ -212,7 +214,7 @@ void UMareBoatTourWorld::UpdateBoat(float Dt)
   UKismetMaterialLibrary::SetScalarParameterValue(this,TimeMPC,TEXT("BoatH"),FMath::Min(BowDeck,SternDeck)-UMareSimulation::Number(D,TEXT("sea_z"),-30)-30);}
  // Full speed for too long makes a passenger seasick.
  if(SpeedFrac>UMareSimulation::Number(D,TEXT("seasick_speed"),.85)){RoughTime+=Dt*Swell;
-  if(RoughTime>=UMareSimulation::Number(D,TEXT("seasick_seconds"),6) && Sick<Passengers.Num()){RoughTime=0;
+  if(RoughTime>=UMareSimulation::Number(D,TEXT("seasick_seconds"),6)+UMareSimulation::Number(Up,TEXT("seasick_seconds_per_tier"),1.5)*BoatTier && Sick<Passengers.Num()){RoughTime=0;
    const double Penalty=UMareSimulation::Number(D,TEXT("seasick_rating"),.3);if(Bonus>-1+Penalty-1e-6)Bonus-=Penalty;
    Say(Sick,UMareSimulation::String(UMareSimulation::Object(D,TEXT("lines")),TEXT("seasick")),6);++Sick;
    if(S)S->LastMessage=TEXT("Um turista ficou enjoado: devagar com o acelerador!");}}

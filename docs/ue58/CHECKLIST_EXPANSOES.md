@@ -187,9 +187,26 @@ Decisões (05/11/2026):
 
 ### 2.5 Resultado e evolução
 
-- [ ] Tela final com estrelas, gorjetas e avaliações escritas no app do celular. Uma nota alta aumenta a fila de amanhã.
-- [ ] Melhorias: lancha, equipamento de snorkel novo, fotógrafo que vende fotos e passeio novo (pôr do sol na jangada ou ilha vulcânica, só olhando de longe).
-- [ ] O guia contratado faz o passeio sozinho com nota média 3; ir junto rende mais.
+- [x] Tela final com estrelas, gorjetas e avaliações escritas no app do celular. Uma nota alta aumenta a fila de amanhã.
+- [x] Melhorias: lancha, equipamento de snorkel novo, fotógrafo que vende fotos e passeio novo (pôr do sol na jangada ou ilha vulcânica, só olhando de longe).
+- [x] O guia contratado faz o passeio sozinho com nota média 3; ir junto rende mais.
+
+Decisões (05/11/2026):
+- **Resultado:** cada passeio que sai, com o jogador ou com o guia, grava um resultado no save (`tour_results`, os 12 mais recentes). O resultado traz:
+  - nota, gorjeta, pessoas e fotos vendidas;
+  - até 3 avaliações escritas, uma por parada (`tours.json` "reviews", conforme a escolha), assinadas pelos grupos que compraram;
+  - um destaque no topo quando o bônus da viagem foi alto ou baixo (golfinhos, pôr do sol, espécies; enjoo, coral, gente para trás).
+
+  O celular ganhou a aba **Passeios** (aparece com a expansão). Ao terminar, a mensagem aponta para ela. Usei texto em vez de "★", porque as fontes não têm o símbolo.
+- **Fila de amanhã:** nota ≥ 4,5 traz +2 pessoas no mesmo passeio amanhã, ≥ 4 traz +1, e < 2,5 tira 1 (`buzz`, somado em `TourPassengers`).
+- **Melhorias:** usei os itens que já existiam em Personalizar · Passeios e liguei cada um ao passeio jogável:
+  - Barco: +7% de velocidade e +1,5 s antes do enjoo por nível;
+  - Mergulho: o alvo do snorkel alcança +1,2 m e cada espécie vale +0,02 por nível;
+  - Fotos (fotógrafo): no nível 2 ou mais, vende fotos a até 60% do grupo, mais com nota alta, de R$ 15 a R$ 60 cada;
+  - Roteiros: no nível "Pôr do sol no mar" abre o passeio novo **Pôr do sol na jangada** (17h, R$ 55), guiado por diálogo, com a ilha vulcânica vista de longe.
+- **Guia sozinho:** nota 3 (mais a média dos extras), sem gorjeta. Com o jogador, vem a gorjeta de cada parada boa e mais fama.
+- **Correção encontrada:** o `GuideTour` recusava a nota depois da hora de saída, e a trilha chega ao farol às 17h15 ou mais. Um passeio jogável em andamento (`tours.active`) agora termina normalmente fora da hora.
+- **Prova:** teste `TourBooth` (resultado e avaliações, +2 amanhã, fotos vendidas, jangada travada e liberada, passeio em andamento avaliado depois da hora) + `docs/ue58/graphics-reference/tours_results.png`.
 
 ## 3. Negócios da vila
 

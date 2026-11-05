@@ -731,7 +731,8 @@ int32 UMareSimulation::TourPassengers(const TSharedPtr<FJsonObject>& Tour) const
 {
  const double Guests=Number(Object(Object(State,TEXT("prog")),TEXT("pousada")),TEXT("occupied"));
  const double Pax=1+Stars()*1.2+Guests*1.5+.3*(FameLevel()-1)+.08*(PlaceComfort(TEXT("passeios"))+PlaceBeauty(TEXT("passeios")));
- return FMath::Clamp(FMath::RoundToInt(Pax*(String(State,TEXT("weather"))==TEXT("rain")?.6:1.)),1,TourSeats(Tour));
+ // Word of mouth (2.5): yesterday's rating of this tour brings more (or fewer) people today.
+ return FMath::Clamp(FMath::RoundToInt(Pax*(String(State,TEXT("weather"))==TEXT("rain")?.6:1.))+TourBuzz(String(Tour,TEXT("id"))),1,TourSeats(Tour));
 }
 double UMareSimulation::HourlyIncome(const FString& Id) const
 {

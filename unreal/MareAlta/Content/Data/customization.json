@@ -5084,6 +5084,19 @@
     "price": 35,
     "cost": 10,
     "seats": 5
+   },
+   {
+    "id": "jangada",
+    "name": "Pôr do sol na jangada",
+    "hour": 17,
+    "price": 55,
+    "cost": 20,
+    "seats": 6,
+    "requires": {
+     "place": "passeios",
+     "slot": "roteiro",
+     "tier": 3
+    }
    }
   ],
   "tour_guide": "guia",

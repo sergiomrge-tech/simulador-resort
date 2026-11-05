@@ -209,3 +209,12 @@ def walktest(arg='8600,-3500,100'):
             out.append([str(p.get_editor_property('save_id')), c.get_name() if c else None, p.walk_to(unreal.Vector(*v)),
                         str(p.character_movement.movement_mode), p.character_movement.max_walk_speed])
     return json.dumps(out)
+
+
+def phone(arg='8'):
+    pc = unreal.GameplayStatics.get_player_controller(_game_world(), 0)
+    if arg == 'close':
+        pc.close_phone()
+    else:
+        pc.open_phone(int(arg))
+    return 'ok'

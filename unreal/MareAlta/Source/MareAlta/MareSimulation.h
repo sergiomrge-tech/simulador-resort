@@ -327,6 +327,12 @@ public:
  void SnorkelScore(int32 CoralTouches,int32 Species,bool bCrewFetched,TArray<int32>& Choices,double& Bonus)const;
  /** Lighthouse trail on foot (MareTrailWorld, tours.json trail_tour): the three stop choices (water handed out, photos at
   *  the viewpoints, the sunset at the lighthouse) and the bonus (sunset, stories told, complaints of walkers left behind). */
+ /** Result of a tour that left (2.5): stars, tip, photos sold by the photographer and written reviews, kept in the save
+  *  ("tour_results", newest first) for the phone's Passeios app; also sets tomorrow's buzz. Returns the photo income. */
+ double RecordTourResult(const FString& Id,double Rating,double Tip,const TArray<int32>& Choices,double Bonus,bool bGuide,int32 Pax);
+ TArray<TSharedPtr<FJsonObject>> TourResults() const;
+ /** Extra people expected at a tour today thanks to yesterday's rating (negative after a bad one). */
+ int32 TourBuzz(const FString& Id) const;
  void TrailScore(int32 Watered,int32 Group,int32 Photos,int32 Viewpoints,bool bSunset,int32 Stories,int32 Complaints,TArray<int32>& Choices,double& Bonus)const;
  /** Hourly: buyers before each departure (the guide sells), and at the end of the departure hour the guide's run
   *  or the cancellation with refund. */

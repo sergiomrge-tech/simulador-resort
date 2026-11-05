@@ -563,3 +563,11 @@ projetar o ponto de nascimento na navmesh. Se o lugar atrás do herói não tive
 andar até o próprio herói. O lado "de trás" de quem segue vem do caminho percorrido, não da câmera: com a câmera,
 virar para olhar o grupo o fazia passar para a frente e encostar no rosto do jogador. O relógio corre 1 min de jogo
 por segundo e o sol se põe às 18h (medido em `mare_snorkel.sun`).
+
+## UE5.8 — resultado dos passeios (05/11)
+
+`GuideTour` só aceitava a nota na hora de saída (`IsTourBoarding`), mas a trilha chega ao farol às 17h15 ou mais, e os
+passeios jogáveis longos também passavam da hora. A nota era recusada sem que nenhum teste percebesse, porque os
+testes chamam `GuideTour` às 16h05. Passeio em andamento (`tours.active`) agora termina fora da hora. Testar o fim de
+um passeio jogável no horário em que ele termina de verdade, não no da saída. Teste com sorteio (o bartender de nível
+1 erra 15%) falha ao acaso: fixar o nível ou a semente no teste.
