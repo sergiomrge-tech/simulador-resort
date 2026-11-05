@@ -308,6 +308,11 @@ def _model_texture(file, folder, normal=False):
     return tex
 
 
+def palm_fab(arg=''):
+    """hud module entry: rebuild M_PalmFab_PBR (PIE stopped)."""
+    return build_palm_fab().get_path_name()
+
+
 def build_palm_fab():
     """Fab "Coconut Tree" (CC BY 4.0): one atlas for trunk, fronds and nuts; fronds cut out by the
     alpha channel, lit from both sides like foliage."""
@@ -323,10 +328,13 @@ def build_palm_fab():
     color = expression(mat, unreal.MaterialExpressionTextureSample, texture=color_tex, sampler_type=unreal.MaterialSamplerType.SAMPLERTYPE_COLOR)
     normal = expression(mat, unreal.MaterialExpressionTextureSample, texture=normal_tex, sampler_type=unreal.MaterialSamplerType.SAMPLERTYPE_NORMAL)
     # leaf transmission fades at night (the fronds glowed bright green against the night sky)
-    sss = custom(mat, 'return Base.rgb * float3(.55,.75,.35) * (1 - .75*Night);', unreal.CustomMaterialOutputType.CMOT_FLOAT3, {'Base': color, 'Night': _mpc(mat, 'Night')})
-    # A bit deeper green, and little sky reflection: the light leaf texture read almost white in the shade.
-    MEL.connect_material_property(custom(leaf, 'return Base.rgb * float3(.74,.8,.66);', unreal.CustomMaterialOutputType.CMOT_FLOAT3, {'Base': color}), '', unreal.MaterialProperty.MP_BASE_COLOR)
-    MEL.connect_material_property(expression(leaf, unreal.MaterialExpressionConstant, r=.15), '', unreal.MaterialProperty.MP_SPECULAR)
+    # 05/11 (Sergio: 'tronco e folhas muito claras das palmeiras'): the earlier darkening never applied (it was wired to
+    # an undefined node, the function stopped there). Deeper, more saturated green on the fronds and a darker trunk
+    # (the brownish/grey texels of the shared atlas), little sky reflection, and much less light through the leaves:
+    # backlit by a low sun the fronds glowed almost white.
+    sss = custom(mat, 'return Base.rgb * float3(.22,.32,.12) * (1 - .75*Night);', unreal.CustomMaterialOutputType.CMOT_FLOAT3, {'Base': color, 'Night': _mpc(mat, 'Night')})
+    MEL.connect_material_property(custom(mat, 'float3 c=Base.rgb; float green=saturate((c.g-max(c.r,c.b))*6); float3 leafc=c*float3(.5,.6,.42); float3 trunk=c*float3(.56,.52,.48); return lerp(trunk,leafc,green);', unreal.CustomMaterialOutputType.CMOT_FLOAT3, {'Base': color}), '', unreal.MaterialProperty.MP_BASE_COLOR)
+    MEL.connect_material_property(expression(mat, unreal.MaterialExpressionConstant, r=.12), '', unreal.MaterialProperty.MP_SPECULAR)
     MEL.connect_material_property(color, 'A', unreal.MaterialProperty.MP_OPACITY_MASK)
     MEL.connect_material_property(normal, 'RGB', unreal.MaterialProperty.MP_NORMAL)
     MEL.connect_material_property(sss, '', unreal.MaterialProperty.MP_SUBSURFACE_COLOR)
