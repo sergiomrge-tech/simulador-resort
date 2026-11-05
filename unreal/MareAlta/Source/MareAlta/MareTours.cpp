@@ -191,14 +191,15 @@ static void RateTour(UMareSimulation* Sim,double Rating)
  Ratings.Add(MakeShared<FJsonValueNumber>(Rating));while(Ratings.Num()>40)Ratings.RemoveAt(0);Sim->State->SetArrayField(TEXT("ratings"),Ratings);
 }
 
-double UMareSimulation::GuideTour(const FString& Id,const TArray<int32>& Choices)
+double UMareSimulation::GuideTour(const FString& Id,const TArray<int32>& Choices,double Bonus)
 {
  const auto Tour=TourDef(Id);
  if(!Tour || !IsTourBoarding(Id)){Fail(TEXT("Só dá para guiar na hora da saída."));return 0;}
  auto T=Tours();const int32 Pax=int32(Number(Object(T,TEXT("sold")),Id));if(Pax<=0){Fail(TEXT("Nenhum bilhete vendido para este passeio."));return 0;}
  int32 Good=0,Ok=0;for(int32 C:Choices){Good+=C==0;Ok+=C==1;}
  const double Groups=FMath::Max(1.,Number(Object(T,TEXT("groups_sold")),Id));
- const double Rating=FMath::Clamp(2+Good+.5*Ok+Number(Object(T,TEXT("extra_rating")),Id)/Groups,1.,5.);
+ // Bonus: what happened on a playable tour (dolphins seen, passengers seasick; MareBoatTourWorld).
+ const double Rating=FMath::Clamp(2+Good+.5*Ok+Number(Object(T,TEXT("extra_rating")),Id)/Groups+Bonus,1.,5.);
  const double Tip=FMath::RoundToDouble(Pax*TicketPrice(Id)*.1*Good);const double Cost=Number(Tour,TEXT("cost"));
  Book(Tip-Cost,FString::Printf(TEXT("%s guiado por você (gorjeta R$ %.0f, custo R$ %.0f)"),*String(Tour,TEXT("name")),Tip,Cost));AddToday(State,Tip-Cost);
  Child(T,TEXT("done"))->SetStringField(Id,TEXT("guided"));Child(T,TEXT("rating"))->SetNumberField(Id,Rating);
@@ -212,6 +213,8 @@ void UMareSimulation::ToursHour(int32 Hour)
  auto T=Tours();auto Queue=Child(T,TEXT("queue"));auto Sold=Child(T,TEXT("sold"));auto Done=Child(T,TEXT("done"));
  const int32 Started=Hour-1;const bool bGuide=HasStaff(String(Object(CustomDefs(),TEXT("operations")),TEXT("tour_guide")));
  for(const FString& Id:TourIds()){const auto Tour=TourDef(Id);if(!String(Done,Id).IsEmpty() && String(Done,Id)!=TEXT("storm"))continue;
+  // Out at sea with the player (playable boat tour): it ends at the pier, not with the clock.
+  if(String(T,TEXT("active"))==Id)continue;
   const int32 Departs=int32(Number(Tour,TEXT("hour")));
   // High tide or a storm keeps the boats in: sea tours are called off for the day (the lighthouse trail still goes).
   if(String(Done,Id)==TEXT("storm")){if(Started>=Departs){RefundTour(Id);}continue;}

@@ -635,3 +635,9 @@ comercial (as espigas do Fab são estátua ou só licença pessoal paga para com
 |---|---|---|
 | Limão (caixote, copo e queda no copo): `food_lime_01` | https://polyhaven.com/a/food_lime_01 — Poly Haven | CC0 1.0 |
 | Bancada de preparo, garrafas com rótulo (cachaça, vodca, rum, água com gás), caixotes de morango e maracujá, abacaxi na tábua, leite de coco, leite condensado, hortelã, açucareiro, balde de gelo, coqueteleira, socador, liquidificador, copo de trabalho e camadas (gelo, fruta, líquido, espuma) — modelados em `tools/ue58/gen_bar_prep.py` (bpy) | próprio do projeto | — |
+
+### Passeio de barco jogável (05/11/2026)
+| Item | Fonte | Licença |
+|---|---|---|
+| Lancha de passeio, boias de rota e de parada, golfinho — `tools/ue58/gen_tour_boat.py` (bpy) | próprio do projeto | — |
+| Colete salva-vidas (`life_vest` do projeto Godot, `tools/gen_code_props.py`), renomeado para a UE | próprio do projeto | — |

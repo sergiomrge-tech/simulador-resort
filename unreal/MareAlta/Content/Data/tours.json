@@ -129,5 +129,176 @@
  },
  "refund_rating": 3.0,
  "reschedule_rating": 4.0,
- "reschedule_keep": 0.7
+ "reschedule_keep": 0.7,
+ "_doc_boat": "Playable boat tour (CHECKLIST_EXPANSOES 2.2, MareBoatTourWorld.cpp): the player pilots the tour boat (W/S throttle, A/D steer, gamepad left stick) from spawn through the route: buoys to pass (within buoy_radius) and three stops (stop: index into stops.barco) where the boat must slow under stop_speed inside stop_radius. Stop actions: vests (E on each passenger), dolphins (engine off and look at them; speeding toward them is the bad choice) and story (aim at look and press E). Leaving a stop unfinished gives the 'ok' or 'bad' choice. Dolphins come with dolphin_chance and add dolphin_bonus; full speed for seasick_seconds makes a passenger seasick (-seasick_rating, at most -1). Back at the dock (within dock_radius, slow) the tour is rated like a guided one. World cm; seats/helm in boat-local cm (bow -Y).",
+ "boat_tour": {
+  "tour": "barco",
+  "mesh": "TourBoat_lancha",
+  "spawn": [
+   7200,
+   -5900,
+   -90
+  ],
+  "dock": [
+   7200,
+   -5900
+  ],
+  "dock_radius": 900,
+  "hero_return": [
+   7200,
+   -4700,
+   120
+  ],
+  "max_speed": 950,
+  "reverse_speed": 250,
+  "accel": 260,
+  "turn": 42,
+  "sea_z": -30,
+  "buoy_radius": 800,
+  "stop_radius": 900,
+  "stop_speed": 140,
+  "route": [
+   {
+    "buoy": [
+     7300,
+     -7600
+    ]
+   },
+   {
+    "stop": 0,
+    "at": [
+     7500,
+     -9200
+    ]
+   },
+   {
+    "buoy": [
+     6000,
+     -11200
+    ]
+   },
+   {
+    "buoy": [
+     3800,
+     -12600
+    ]
+   },
+   {
+    "stop": 1,
+    "at": [
+     2000,
+     -13200
+    ],
+    "look": [
+     1500,
+     -13700,
+     -30
+    ]
+   },
+   {
+    "buoy": [
+     -1500,
+     -11500
+    ]
+   },
+   {
+    "buoy": [
+     -4500,
+     -9500
+    ]
+   },
+   {
+    "stop": 2,
+    "at": [
+     -7500,
+     -7600
+    ],
+    "look": [
+     -10200,
+     -3300,
+     0
+    ]
+   },
+   {
+    "buoy": [
+     -3000,
+     -7000
+    ]
+   },
+   {
+    "buoy": [
+     2500,
+     -6800
+    ]
+   }
+  ],
+  "seats": [
+   [
+    80,
+    -175,
+    60
+   ],
+   [
+    80,
+    -265,
+    60
+   ],
+   [
+    80,
+    -355,
+    60
+   ],
+   [
+    80,
+    -445,
+    60
+   ],
+   [
+    -80,
+    -175,
+    60
+   ],
+   [
+    -80,
+    -265,
+    60
+   ],
+   [
+    -80,
+    -355,
+    60
+   ],
+   [
+    -80,
+    -445,
+    60
+   ]
+  ],
+  "helm": [
+   45,
+   -30,
+   100
+  ],
+  "dolphin_chance": 0.75,
+  "dolphin_bonus": 0.5,
+  "dolphin_count": 3,
+  "seasick_speed": 0.85,
+  "seasick_seconds": 6,
+  "seasick_rating": 0.3,
+  "dolphin_watch_seconds": 4,
+  "dolphin_look_deg": 35,
+  "lines": {
+   "vests": "Distribua os coletes: mire cada turista e aperte E.",
+   "dolphins": "Golfinhos! Pare o motor (S) e mostre a eles.",
+   "story": "Mire a praia deserta e aperte E para contar a história.",
+   "no_dolphins": "Hoje os golfinhos não vieram... sigam para a próxima parada.",
+   "seasick": "Ai... meu estômago...",
+   "cheer": "Olha lá!!",
+   "vest_thanks": "Valeu pelo colete!",
+   "return": "Volte ao píer para encerrar o passeio.",
+   "shallow": "Raso! Cuidado com o casco."
+  },
+  "centre": 430,
+  "freeboard": 22
+ }
 }

@@ -321,7 +321,7 @@ public:
  UFUNCTION(BlueprintCallable,Category="Maré Alta|Tours") int32 SellTickets(const FString& Id);
  /** Guides the tour now: Choices per stop are 0 good, 1 acceptable, 2 bad. Books the tip minus the trip cost,
   *  rates the tour (stars) and gives fame; returns the rating, 0 when it cannot leave. */
- double GuideTour(const FString& Id,const TArray<int32>& Choices);
+ double GuideTour(const FString& Id,const TArray<int32>& Choices,double Bonus=0);
  /** Hourly: buyers before each departure (the guide sells), and at the end of the departure hour the guide's run
   *  or the cancellation with refund. */
  void ToursHour(int32 Hour);

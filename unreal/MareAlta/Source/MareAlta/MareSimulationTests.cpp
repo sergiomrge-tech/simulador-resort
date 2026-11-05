@@ -934,6 +934,12 @@ bool FMareTourBoothTest::RunTest(const FString& Parameters)
  Before=Sim->Money();TestTrue(TEXT("Reschedule"),Sim->RescheduleTour(Boat));TestTrue(TEXT("Part refunded at most"),Sim->Money()>=Before-4*Price && Sim->Money()<=Before);
  Sim->State->SetNumberField(TEXT("day"),Sim->Number(Sim->State,TEXT("day"),1)+1);Sim->State->SetStringField(TEXT("day_event"),TEXT(""));Sim->Tours();Sim->ToursHour(12);
  TestTrue(TEXT("Rescheduled seats already sold tomorrow"),Sim->TourCount(TEXT("sold"),Boat)>=3);
+ // Playable boat tour (2.2): the trip's bonus (dolphins +, seasick -) moves the guided rating.
+ Sim->State->SetNumberField(TEXT("day"),Sim->Number(Sim->State,TEXT("day"),1)+1);Sim->State->SetStringField(TEXT("day_event"),TEXT(""));Sim->Tours();
+ Sim->Object(Sim->Tours(),TEXT("sold"))->SetNumberField(Boat,4);Sim->State->SetNumberField(TEXT("minutes"),14*60+5);
+ TestEqual(TEXT("Seasick passengers lower the rating"),Sim->GuideTour(Boat,{0,0,0},-.6),4.4);
+ Sim->State->SetNumberField(TEXT("day"),Sim->Number(Sim->State,TEXT("day"),1)+1);Sim->Tours();Sim->Object(Sim->Tours(),TEXT("sold"))->SetNumberField(Boat,4);
+ TestEqual(TEXT("Dolphins raise the rating"),Sim->GuideTour(Boat,{0,1,0},.5),5.);
  IFileManager::Get().DeleteDirectory(*Sim->SaveDirectory,false,true);
  Sim->RemoveFromRoot();Instance->RemoveFromRoot();return true;
 }

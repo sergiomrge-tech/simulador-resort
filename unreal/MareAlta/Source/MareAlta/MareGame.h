@@ -68,6 +68,8 @@ public:
  void StartFishing();
  /** Bar work glass (E): pour the ingredient in hand, else run the next prep step's mini-action, else serve. */
  UFUNCTION(BlueprintCallable,Category="Maré Alta") void UseBarGlass();
+ /** QA of the playable boat tour: "start" (forces the boarding hour and tickets), else MareBoatTourWorld::QA. */
+ UFUNCTION(BlueprintCallable,Category="Maré Alta") FString BoatTourQA(const FString& Cmd);
  /** Bar prep mini-action over the running world: "socar" (taps on the beat), "bater" (hold and let go in the
   *  green), "liquidificar" (pulses in the zone). The score goes to UMareSimulation::BarPrepStep. */
  UFUNCTION(BlueprintCallable,Category="Maré Alta") void StartBarPrep(const FString& Step);

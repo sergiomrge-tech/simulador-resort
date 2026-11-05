@@ -77,6 +77,8 @@ void UMareToursWorld::Tick(float DeltaSeconds)
  int32 Slot=0;
  for(const FString& Id:S->TourIds()){auto& List=Passengers.FindOrAdd(Id);List.RemoveAll([](const TWeakObjectPtr<AMarePerson>& P){return !P.IsValid();});
   const FString Status=S->TourStatus(Id);
+  // Aboard the playable boat tour: the waiting passengers are on the boat now.
+  if(UMareSimulation::String(UMareSimulation::Object(S->State,TEXT("tours")),TEXT("active"))==Id){for(auto& P:List)if(P.IsValid())P->Destroy();List.Empty();continue;}
   if(!Status.IsEmpty()){
    FVector Goal=First+FVector(0,600,0);const TArray<TSharedPtr<FJsonValue>>* To=nullptr;
    if((Status==TEXT("guided") || Status==TEXT("guide")) && UMareSimulation::Object(Defs,TEXT("board"))->TryGetArrayField(Id,To) && To->Num()==3)

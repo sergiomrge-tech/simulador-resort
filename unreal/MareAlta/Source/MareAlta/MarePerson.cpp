@@ -95,15 +95,18 @@ void AMarePerson::LieOn(const FVector& TowelCentre,float AxisYaw,float InRecline
 
 float AMarePerson::SeaHeight(const FVector2D& P,float T,float Storm)
 {
+ // The vertical offset of the ocean material's WPO (mare_materials.build_water, 04/11: long ~85 cm swell, mid waves
+ // 60/40/22, fade out to ~300 m). Keep in sync with that formula: swimmers and the tour boat ride on it.
  auto Smooth=[](float A,float B,float X){const float U=FMath::Clamp((X-A)/(B-A),0.f,1.f);return U*U*(3-2*U);};
  const float A=P.X*.003f+P.Y*.0017f-T*(.55f+Storm*.35f),B=P.Y*.004f-P.X*.0012f-T*(.38f+Storm*.3f),C=P.X*.011f+P.Y*.007f-T*1.9f;
  const float Shore=Smooth(-6500,-4300,P.Y)*(1-Smooth(-3000,-2300,P.Y));
  const float Swell=FMath::Sin(P.Y*.009f+FMath::Sin(P.X*.0025f)*.7f-T*(.8f+Storm*.4f));
- const FVector2D Outside(FMath::Max(FMath::Abs(P.X-4000)-16000,0.f),FMath::Max(-9500-P.Y,0.f));
- const float Fade=1-Smooth(1500,6000,Outside.Size())*.85f,Offshore=Smooth(-2300,-4800,P.Y);
+ const FVector2D Outside(FMath::Max(FMath::Abs(P.X-4000)-40000,0.f),FMath::Max(-30000-P.Y,0.f));
+ const float Fade=1-Smooth(4000,20000,Outside.Size())*.6f,Offshore=Smooth(-2300,-4800,P.Y);
  const float D=P.X*.0069f-P.Y*.0052f-T*1.15f;
- const float H=(FMath::Sin(A)*36+FMath::Sin(B)*24+FMath::Sin(D)*13)*(1+Storm*1.1f)+FMath::Sin(C)*(8+Storm*8)+FMath::Sin(P.X*.019f-P.Y*.013f-T*2.6f)*5;
- const float Coast=FMath::Lerp(.38f,1.f,Smooth(-5200,-9000,P.Y));
+ const float Sw=P.Y*.00105f+P.X*.00028f-T*.42f;const float Swell2=(FMath::Sin(Sw)*.75f+.25f*FMath::Sin(Sw*2+1.1f))*85;
+ const float H=Swell2*(1+Storm*.7f)+(FMath::Sin(A)*60+FMath::Sin(B)*40+FMath::Sin(D)*22)*(1+Storm*1.1f)+FMath::Sin(C)*(12+Storm*10)+FMath::Sin(P.X*.019f-P.Y*.013f-T*2.6f)*6;
+ const float Coast=FMath::Lerp(.55f,1.f,Smooth(-5200,-9000,P.Y));
  const FVector2D Q(FMath::Max(FMath::Abs(P.X-6780)-450,0.f),FMath::Max(FMath::Abs(P.Y+4300)-1100,0.f));
  const float Pier=FMath::Lerp(.2f,1.f,Smooth(0,900,Q.Size()));
  return H*Fade*Offshore*Coast*Pier+Shore*(Swell*15*(1+Storm*.8f)+7+Storm*5)*Pier;

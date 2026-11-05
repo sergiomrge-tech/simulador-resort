@@ -8,6 +8,7 @@
 #include "Widgets/SCanvas.h"
 #include "MareBarWorld.h"
 #include "MareToursWorld.h"
+#include "MareBoatTourWorld.h"
 #include "MarePlayerPresentation.h"
 #include "MareHomeWorld.h"
 #include "MareVillageWorld.h"
@@ -362,7 +363,10 @@ private:
    Row->AddSlot().AutoWidth().Padding(0,0,8,0)[Button(Groups.Num()?FString::Printf(TEXT("Vender para %s"),*UMareSimulation::String(Groups[0],TEXT("name"))):Queue>0?FString::Printf(TEXT("Vender %d bilhete(s)"),FMath::Min(Queue,Seats-Sold)):FString(TEXT("Ninguém na fila")),[this,S,Id](){
     const int32 N=S->TourGroups(Id).Num()?S->SellTourGroup(Id,OfferExtras.Array()):S->SellTickets(Id);OfferExtras.Reset();
     if(N>0)UMareAudioWorld::Action(Owner.Get(),TEXT("money_register"));},Queue>0)];
-   if(S->IsTourBoarding(Id))Row->AddSlot().AutoWidth()[Button(TEXT("Guiar o passeio agora"),[this,Id](){GuideTourId=Id;GuideChoices.Reset();},Sold>0)];
+   const bool bPiloted=Id==UMareSimulation::String(UMareSimulation::Object(S->ToursDefs(),TEXT("boat_tour")),TEXT("tour"));
+   if(S->IsTourBoarding(Id) && bPiloted)Row->AddSlot().AutoWidth()[Button(TEXT("Pilotar o passeio agora"),[this](){
+    if(Owner.IsValid())if(auto Tour=Owner->GetWorld()->GetSubsystem<UMareBoatTourWorld>()){AMareController* C=Owner.Get();C->ClosePhone();Tour->Start(C);}},Sold>0)];
+   else if(S->IsTourBoarding(Id))Row->AddSlot().AutoWidth()[Button(TEXT("Guiar o passeio agora"),[this,Id](){GuideTourId=Id;GuideChoices.Reset();},Sold>0)];
    Body->AddSlot().AutoHeight().Padding(0,2,0,6)[Row];}
   Line(TEXT("Ofereça os extras que o grupo quer (criança pede colete, quem chega com fome quer lanche, primeira vez quer foto): rende mais e sobe a nota. Insistir no que não querem baixa a nota."),12,Faded);
   Line(TEXT("Na hora da saída, guie você mesmo: cada parada bem conduzida dá gorjeta e fama. Sem você e sem guia, o passeio é cancelado e os bilhetes devolvidos."),12,Faded);
@@ -1259,6 +1263,17 @@ void AMareController::StartBarPrep(const FString& Step)
  GEngine->GameViewport->AddViewportWidgetContent(Game,40);bShowMouseCursor=true;
  SetInputMode(FInputModeUIOnly().SetWidgetToFocus(Game));SetIgnoreMoveInput(true);SetIgnoreLookInput(true);
 }
+FString AMareController::BoatTourQA(const FString& Cmd)
+{
+ auto S=GetSimulation();auto Tour=GetWorld()->GetSubsystem<UMareBoatTourWorld>();if(!S || !Tour)return TEXT("none");
+ if(Cmd==TEXT("start")){const FString Id=UMareSimulation::String(UMareSimulation::Object(S->ToursDefs(),TEXT("boat_tour")),TEXT("tour"));
+  const auto Def=S->TourDef(Id);if(!Def)return TEXT("no tour");
+  S->State->SetNumberField(TEXT("minutes"),UMareSimulation::Number(Def,TEXT("hour"))*60+5);
+  UMareSimulation::Object(S->Tours(),TEXT("done"))->RemoveField(Id);
+  auto Sold=UMareSimulation::Object(S->Tours(),TEXT("sold"));if(UMareSimulation::Number(Sold,Id)<6)Sold->SetNumberField(Id,6);
+  ClosePhone();return Tour->Start(this)?TEXT("started"):S->LastMessage;}
+ return Tour->QA(Cmd);
+}
 void AMareController::UseBarGlass()
 {
  auto S=GetSimulation();if(!S)return;
@@ -1873,6 +1888,7 @@ void AMareHUD::DrawHUD()
   if(bShow)if(auto BarWorld=GetWorld()->GetSubsystem<UMareBarWorld>()){
    const FVector Eye=PC->PlayerCameraManager->GetCameraLocation();const FVector Fwd=PC->PlayerCameraManager->GetCameraRotation().Vector();
    TArray<TPair<FVector,FString>> All=BarWorld->Bubbles();if(auto ToursWorld=GetWorld()->GetSubsystem<UMareToursWorld>())All.Append(ToursWorld->Bubbles());
+   if(auto BoatTour=GetWorld()->GetSubsystem<UMareBoatTourWorld>())All.Append(BoatTour->Bubbles());
    for(const auto& G:All){const FVector D=G.Key-Eye;const float Dist=D.Size();if(Dist>1400 || FVector::DotProduct(D,Fwd)<=0)continue;
     FHitResult Hit;FCollisionQueryParams Q(TEXT("MareBubble"),false,GetOwningPawn());
     if(GetWorld()->LineTraceSingleByChannel(Hit,Eye,G.Key,ECC_Visibility,Q) && Hit.Distance<Dist-60)continue;
@@ -1999,6 +2015,7 @@ void AMareHUD::DrawHUD()
  if(!S->Carry().IsEmpty())M.Carry=Dish(S->Carry());
  if(auto Hero=Cast<AMareCharacter>(GetOwningPawn()))if(Hero->GetCharacterMovement()->IsSwimming())M.Hint=bPad?FText::Format(LOCTEXT("SwimPad","Nadando · {0} sobe · {1} mergulha"),MareLoc::Text(KeyName(TEXT("Jump"))),MareLoc::Text(KeyName(TEXT("Dive")))).ToString()
   :FString::Printf(TEXT("Nadando · %s sobe · %s/%s mergulha"),*KeyName(TEXT("Jump")),*KeyName(TEXT("Dive")),*KeyName(TEXT("Sprint")));
+ if(auto BoatTour=GetWorld()->GetSubsystem<UMareBoatTourWorld>())if(BoatTour->IsActive())M.Hint=BoatTour->Status();
  // The mission note would sit on top of the held phone.
  if(M.bPhone){M.Note.Empty();M.Tickets.Empty();}
  // Table tennis match: the score line instead of the crosshair and the mission note.

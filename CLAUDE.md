@@ -531,3 +531,15 @@ Captura logo depois de pular o relógio do dia para a noite mostra luz velha (Lu
 branco, mar ciano) e o Sergio viu isso como defeito. Esperar ~25 s depois de `clock` antes de fotografar. Ondas grandes
 por WPO não mexem nas normais: somar a inclinação analítica das ondas ao normal, senão o relevo não pega luz. Espuma
 com produto de dois senos vira grade de ovais: distorcer as coordenadas e mascarar por manchas de baixa frequência.
+
+## UE5.8 — passeio de barco jogável (05/11)
+
+`AMarePerson::SeaHeight` replica o WPO do mar (`mare_materials.build_water`) e tinha ficado na fórmula antiga (sem o
+swell de 85 cm): mudar a fórmula do mar exige mudar as duas juntas. Barco andando no mar: amostrar SeaHeight na proa,
+popa e bordos (altura, caturro e balanço); a água aparecia dentro do casco mesmo assim, então o material do mar achata a
+superfície numa elipse sob a lancha (MPC `Boat*`, nível abaixo do ponto MAIS BAIXO do convés, que muda ao caturrar).
+Pessoas sentadas presas a algo que se move: o `SitOn` alinha a bacia uma vez contra um ponto do MUNDO; esperar o barco
+parado ~1 s, guardar a transformação relativa e reaplicar a cada quadro com `ETeleportType::TeleportPhysics` (sem isso
+o cabelo groom fica para trás, flutuando). O passeio pilotado é ignorado pelo `ToursHour` (`tours.active`). A captura
+`coast pie qa_x!` usa uma câmera própria posicionada pelo último comando: para a visão do jogador use `shot showui`.
+Origem dos modelos do bpy com frente -Y fica na popa/traseira: medir distâncias do centro do casco.

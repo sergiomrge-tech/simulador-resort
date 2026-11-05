@@ -114,10 +114,23 @@ Decisões (04/11/2026):
 
 ### 2.2 Passeio de barco (jogável)
 
-- [ ] O jogador pilota um barco simples (acelera e vira) por boias até 3 pontos de parada; turistas sentados no barco.
-- [ ] Em cada parada, a escolha atual vira **ação**: distribuir coletes (E em cada turista), apontar a câmera para a atração e contar a história.
-- [ ] Chance de ver a **baleia** ou os golfinhos, que já existem no jogo: o turista vibra e a nota sobe.
-- [ ] Ondas fortes balançam o barco; acelerar demais deixa turista enjoado (reação cômica, nota menor).
+- [x] O jogador pilota um barco simples (acelera e vira) por boias até 3 pontos de parada; turistas sentados no barco.
+- [x] Em cada parada, a escolha atual vira **ação**: distribuir coletes (E em cada turista), apontar a câmera para a atração e contar a história.
+- [x] Chance de ver a **baleia** ou os golfinhos, que já existem no jogo: o turista vibra e a nota sobe.
+- [x] Ondas fortes balançam o barco; acelerar demais deixa turista enjoado (reação cômica, nota menor).
+
+Decisões (05/11/2026):
+- **Lancha de passeio:** 8 m, modelada em `tools/ue58/gen_tour_boat.py`, sem gratuita comercial que sirva. Tem bancos para 8, toldo, console baixo para o piloto enxergar e motor de popa. No mesmo gerador estão as boias de rota (vermelha e branca), as de parada (amarela com bandeira) e o golfinho. O colete é o `life_vest` do projeto, renomeado (`tourboat_vest_rename.py`).
+- **Pilotagem:** na hora da saída, a bilheteria mostra "Pilotar o passeio agora". W/S acelera, A/D vira, e o analógico esquerdo também funciona. O herói fica no leme sem andar nem nadar, e os passageiros vão presos ao barco. Raso, areia e píer param o barco ("Raso! Cuidado com o casco").
+- **Rota** (`tours.json` "boat_tour"): coletes na saída do píer, golfinhos ao sudoeste, praia deserta a oeste (x ≈ −10 000) e volta ao píer. A baleia saiu do jogo em 04/11 por decisão do Sergio, então ficam só os golfinhos, que aparecem com 75% de chance, saltam ao redor do ponto e valem +0,5.
+- **Escolhas:** cada parada vale boa, ok ou ruim, como no passeio por diálogo. Todos os coletes = boa; metade = ok. Golfinhos com o motor parado e olhando para eles por 4 s = boa; acelerar para cima deles = ruim. Mirar a praia e apertar E = boa.
+- **Enjoo:** acelerar acima de 85% por 6 s deixa um passageiro enjoado ("Ai... meu estômago..."), com −0,3 cada, no máximo −1.
+- **Nota:** usa `GuideTour(..., Bonus)`.
+- **Mar:** o barco e as boias seguem a superfície real do mar. `AMarePerson::SeaHeight` estava na fórmula antiga, sem o swell de 85 cm, e foi atualizada, o que vale também para os nadadores. Para não aparecer água dentro do casco, o material do mar achata a superfície sob a lancha (MPC `BoatX/BoatY/BoatYaw/BoatH/BoatOn`).
+- **Correções encontradas no caminho:**
+  - o `ToursHour` encerrava o passeio pilotado ao fim da hora de saída; agora o passeio a bordo (`tours.active`) só termina no píer;
+  - o ajuste de assento das pessoas brigava com o barco em movimento; agora os passageiros são reposicionados rigidamente a cada quadro, e o cabelo é teletransportado junto com a física.
+- **Prova:** testes `TourBooth` (nota com bônus e penalidade) e `ToursHandsOn` + `docs/ue58/graphics-reference/tours_boat_playable.jpg`.
 
 ### 2.3 Snorkel guiado
 
