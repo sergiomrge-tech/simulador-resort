@@ -419,11 +419,12 @@ private:
   auto IngredientName=[&Defs](const FString& Id){const TArray<TSharedPtr<FJsonValue>>* L=nullptr;if(Defs->TryGetArrayField(TEXT("ingredients"),L))
    for(const auto& V:*L)if(UMareSimulation::String(V->AsObject(),TEXT("id"))==Id)return UMareSimulation::String(V->AsObject(),TEXT("name"));return Id;};
   int32 Known=0,Total=0;const TArray<TSharedPtr<FJsonValue>>* Recipes=nullptr;Defs->TryGetArrayField(TEXT("recipes"),Recipes);
-  if(Recipes)for(const auto& V:*Recipes){++Total;Known+=S->IsRecipeKnown(UMareSimulation::String(V->AsObject(),TEXT("id")));}
+  if(Recipes)for(const auto& V:*Recipes){if(!S->IsBarItemAvailable(V->AsObject()))continue;++Total;Known+=S->IsRecipeKnown(UMareSimulation::String(V->AsObject(),TEXT("id")));}
   Title(TEXT("Caderno de drinks"),FString::Printf(TEXT("%d de %d receitas"),Known,Total));
   Line(S->HasBarAchievement()?TEXT("Conquista: Mestre dos drinks! Todas as receitas descobertas."):TEXT("Misture no copo da bancada para descobrir receitas novas (cada uma dá fama)."),12,S->HasBarAchievement()?Green:Faded);
   const auto Lines=UMareSimulation::Object(Defs,TEXT("prep_lines"));
   if(Recipes)for(const auto& V:*Recipes){const auto R=V->AsObject();const FString Id=UMareSimulation::String(R,TEXT("id"));bool bSecret=false;R->TryGetBoolField(TEXT("secret"),bSecret);
+   if(!S->IsBarItemAvailable(R))continue;
    if(S->IsRecipeKnown(Id)){TArray<FString> Parts,Mix;const TArray<TSharedPtr<FJsonValue>>* Needs=nullptr;
     if(R->TryGetArrayField(TEXT("needs"),Needs))for(const auto& N:*Needs){Parts.Add(IngredientName(N->AsString()));Mix.Add(N->AsString());}
     TArray<FString> Steps;for(const FString& St:S->BarPrepSteps(Mix))Steps.Add(UMareSimulation::String(Lines,St));
@@ -471,6 +472,16 @@ private:
   Line(FString::Join(Shelf,TEXT(" · ")),12,Ink);
   const double Cost=S->BarRestockCost();
   Body->AddSlot().AutoHeight().HAlign(HAlign_Left).Padding(0,6)[Button(Cost>0?FString::Printf(TEXT("Repor ingredientes · R$ %.0f"),Cost):FString(TEXT("Estoque cheio")),[S](){S->RestockBar();},Cost>0 && S->Money()>=Cost)];
+  Heading(TEXT("Melhorias do bar"),TEXT("5 níveis cada"));
+  for(const auto& Pair:UMareSimulation::Object(Defs,TEXT("upgrades"))->Values){const FString Id(Pair.Key.ToView());const auto U=Pair.Value->AsObject();
+   const int32 Level=S->BarUpgrade(Id);const double UCost=S->BarUpgradeCost(Id);
+   auto Row=SNew(SHorizontalBox)+SHorizontalBox::Slot().FillWidth(1).VAlign(VAlign_Center)
+    [BodyText(FString::Printf(TEXT("%s · nível %d/5 · %s"),*UMareSimulation::String(U,TEXT("name")),Level,*UMareSimulation::String(U,TEXT("desc"))),12,Level?Ink:Faded)]
+    +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(8,0,0,0)
+    [Button(UCost>0?FString::Printf(TEXT("Melhorar · R$ %.0f"),UCost):FString(TEXT("Máximo")),[this,S,Id](){if(S->BuyBarUpgrade(Id))UMareAudioWorld::Action(Owner.Get(),TEXT("money_coins"));},UCost>0 && S->Money()>=UCost)];
+   Body->AddSlot().AutoHeight().Padding(0,2)[Row];}
+  if(S->HasStaff(TEXT("bartender"))){TArray<FString> Book;for(const FString& R:S->BarmanKnows())if(auto RR=S->BarRecipe(R))Book.Add(UMareSimulation::String(RR,TEXT("name")));
+   Line(FString::Printf(TEXT("Bartender nível %d sabe: %s"),S->BarmanLevel(),*FString::Join(Book,TEXT(", "))),12,Faded);}
   int32 Known=0,Total=0;const TArray<TSharedPtr<FJsonValue>>* Recipes=nullptr;Defs->TryGetArrayField(TEXT("recipes"),Recipes);
   if(Recipes)for(const auto& V:*Recipes){++Total;Known+=S->IsRecipeKnown(UMareSimulation::String(V->AsObject(),TEXT("id")));}
   Heading(TEXT("Receitas"),FString::Printf(TEXT("%d de %d descobertas · cada descoberta dá fama"),Known,Total));
@@ -1055,8 +1066,10 @@ private:
  static bool IsAction(const FKey& K){return K==EKeys::E || K==EKeys::SpaceBar || K==EKeys::Enter || K==EKeys::Gamepad_FaceButton_Bottom || K==EKeys::Gamepad_FaceButton_Left;}
  int32 Needed()const{return Step==TEXT("socar")?4:Step==TEXT("liquidificar")?3:1;}
  // Shake: green .72-.93 of the bar; blender zone moves a little after each pulse; muddle flashes the middle on the beat.
- float ZoneLo()const{return Step==TEXT("bater")?.72f:Step==TEXT("liquidificar")?.55f-.12f*Marks.Num():.44f;}
- float ZoneHi()const{return Step==TEXT("bater")?.93f:Step==TEXT("liquidificar")?.72f-.12f*Marks.Num():.56f;}
+ float Blender()const{auto S=Owner.IsValid()?Owner->GetSimulation():nullptr;
+  return S?S->BarUpgrade(TEXT("liquidificador"))*float(UMareSimulation::Number(UMareSimulation::Object(UMareSimulation::Object(S->BarDefs(),TEXT("upgrades")),TEXT("liquidificador")),TEXT("blend_zone"),.03)):0.f;}
+ float ZoneLo()const{return Step==TEXT("bater")?.72f:Step==TEXT("liquidificar")?.55f-.12f*Marks.Num()-Blender():.44f;}
+ float ZoneHi()const{return Step==TEXT("bater")?.93f:Step==TEXT("liquidificar")?.72f-.12f*Marks.Num()+Blender():.56f;}
  float Pointer()const{return Step==TEXT("liquidificar")?.5f-.5f*FMath::Cos(T*PI*(.9f+.25f*Marks.Num())):FMath::Fmod(T/Beat+.5f,1.f);}
  float ToBeat()const{const float Phase=FMath::Fmod(T,Beat);return FMath::Min(Phase,Beat-Phase);}
  float BeatGlow()const{return FMath::Clamp(1-ToBeat()/(Window*1.5f),0.f,1.f);}

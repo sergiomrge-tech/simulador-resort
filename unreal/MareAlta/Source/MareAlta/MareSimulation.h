@@ -428,7 +428,7 @@ public:
  /** Serves the finished glass to the order: price and speed tip like ServeBar, ±prep_tip by the steps' scores. */
  FBarResult ServeGlass(const FString& Order);
  /** ServeBar with the ingredients already taken from the stock (the glass) and an optional prep score (-1 = none). */
- FBarResult ServeMix(const FString& Order,const TArray<FString>& Ingredients,bool bUseStock,double PrepScore);
+ FBarResult ServeMix(const FString& Order,const TArray<FString>& Ingredients,bool bUseStock,double PrepScore,double Bonus=1);
  /** Buys every ingredient up to bar.json restock_qty; false without enough money. */
  UFUNCTION(BlueprintCallable,Category="Maré Alta|Bar") bool RestockBar();
  double BarRestockCost() const;
@@ -446,6 +446,20 @@ public:
  bool IsBarSecretOpen(const FString& Recipe) const;
  /** Every recipe known: the "Mestre dos drinks" achievement (prog.achievements.mestre_drinks). */
  bool HasBarAchievement() const;
+ // --- Bar upgrades and bartender (CHECKLIST_EXPANSOES 1.4) ---
+ /** Level 0..5 of a bar upgrade (bar.json "upgrades": liquidificador, freezer, banquetas, neon, chopeira). */
+ int32 BarUpgrade(const FString& Id) const;
+ /** Price of the next level, 0 when maxed or unknown. */
+ double BarUpgradeCost(const FString& Id) const;
+ UFUNCTION(BlueprintCallable,Category="Maré Alta|Bar") bool BuyBarUpgrade(const FString& Id);
+ /** An ingredient or recipe needing an upgrade (the chope needs the chopeira) is available. */
+ bool IsBarItemAvailable(const TSharedPtr<FJsonObject>& Item) const;
+ /** Guests the counter seats now (stools, banquetas upgrade, rush). */
+ int32 BarSeats() const;
+ /** Recipes the bartender can make (starting menu + one learned every barman_learn_days). */
+ TArray<FString> BarmanKnows() const;
+ /** Bartender's staff level (1..5), 0 when none is hired. */
+ int32 BarmanLevel();
  /** Regular guests: name -> their usual drink. */
  TMap<FString,FString> BarRegulars() const;
  /** Bets and prizes from minigames (game room): books the amount with a label, like any other income or expense. */

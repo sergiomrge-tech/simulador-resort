@@ -40,6 +40,8 @@ private:
  UPROPERTY() TArray<TObjectPtr<AStaticMeshActor>> PrepProps;
  UPROPERTY() TMap<FString,TObjectPtr<AMareServiceTarget>> Shelf;
  UPROPERTY() TObjectPtr<AMareServiceTarget> GlassTarget;
+ /** Upgrade models (neon, chopeira, freezer) shown from level 1 (bar.json "upgrade_props"). */
+ UPROPERTY() TMap<FString,TObjectPtr<AStaticMeshActor>> UpgradeProps;
  UPROPERTY() TObjectPtr<AStaticMeshActor> GlassActor;
  UPROPERTY() TObjectPtr<UStaticMeshComponent> LayerIce;
  UPROPERTY() TObjectPtr<UStaticMeshComponent> LayerFruit;

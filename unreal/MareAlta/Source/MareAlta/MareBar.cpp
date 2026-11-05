@@ -78,14 +78,15 @@ bool UMareSimulation::IsBarOpen() const
 double UMareSimulation::DrinkPrice(const FString& Recipe) const
 {
  auto R=BarRecipe(Recipe);if(!R)return 0;
- return FMath::RoundToDouble(Number(R,TEXT("price"))*FMath::Max(1.,PlaceIncomeFactor(TEXT("bar")))*(1+.03*(FameLevel()-1)));
+ const double Tap=Recipe==TEXT("chope")?1+BarUpgrade(TEXT("chopeira"))*Number(Object(Object(BarDefs(),TEXT("upgrades")),TEXT("chopeira")),TEXT("chope_price"),.1):1;
+ return FMath::RoundToDouble(Number(R,TEXT("price"))*Tap*FMath::Max(1.,PlaceIncomeFactor(TEXT("bar")))*(1+.03*(FameLevel()-1)));
 }
 
 FString UMareSimulation::AddBarOrder(const FString& Want)
 {
  if(!IsBarOpen())return FString();
  auto B=Bar();auto& Orders=List(B,TEXT("orders"));
- if(Orders.Num()>=Number(BarDefs(),IsBarRush()?TEXT("max_orders_rush"):TEXT("max_orders"),4))return FString();
+ if(Orders.Num()>=BarSeats())return FString();
  FString Drink=Want;FString Hint;FString Guest;bool bUsual=false;
  const int32 Next0=int32(Number(B,TEXT("next")));
  if(Drink.IsEmpty() && FMath::FRand()<Number(BarDefs(),TEXT("regular_chance"),.3)){
@@ -101,7 +102,7 @@ FString UMareSimulation::AddBarOrder(const FString& Want)
   if(!bOpen && !bSeated){bVip=true;Guest=String(BarDefs(),TEXT("vip_name"));Drink=TEXT("surpresa");}}
  if(Drink.IsEmpty()){
   TArray<FString> Known,Unknown;for(const auto& V:Items(BarDefs(),TEXT("recipes"))){const FString Id=String(V->AsObject(),TEXT("id"));
-   if(!IsBarSecretOpen(Id))continue;(IsRecipeKnown(Id)?Known:Unknown).Add(Id);}
+   if(!IsBarSecretOpen(Id) || !IsBarItemAvailable(V->AsObject()))continue;(IsRecipeKnown(Id)?Known:Unknown).Add(Id);}
   const float Roll=FMath::FRand();
   // Most guests order from the menu; some leave it to the bartender; some ask for a drink you do not know yet.
   if(Roll<.2f)Drink=TEXT("surpresa");
@@ -125,7 +126,9 @@ FString UMareSimulation::AddBarOrder(const FString& Want)
 double UMareSimulation::BarRestockCost() const
 {
  double Cost=0;const double Qty=Number(BarDefs(),TEXT("restock_qty"),10);auto Stock=Object(Object(State,TEXT("bar")),TEXT("stock"));
- for(const auto& V:Items(BarDefs(),TEXT("ingredients"))){auto I=V->AsObject();Cost+=FMath::Max(0.,Qty-Number(Stock,String(I,TEXT("id"))))*Number(I,TEXT("cost"));}
+ for(const auto& V:Items(BarDefs(),TEXT("ingredients"))){auto I=V->AsObject();if(!IsBarItemAvailable(I))continue;const FString Id=String(I,TEXT("id"));
+  const double Want=Qty+(Id==TEXT("gelo")?BarUpgrade(TEXT("freezer"))*Number(Object(Object(BarDefs(),TEXT("upgrades")),TEXT("freezer")),TEXT("ice_stock"),4):0);
+  Cost+=FMath::Max(0.,Want-Number(Stock,Id))*Number(I,TEXT("cost"));}
  return FMath::RoundToDouble(Cost);
 }
 
@@ -135,7 +138,9 @@ bool UMareSimulation::RestockBar()
  if(Cost<=0)return Fail(TEXT("O estoque do bar já está cheio."));
  if(Money()<Cost)return Fail(FString::Printf(TEXT("Repor o bar custa R$ %.0f."),Cost));
  const double Qty=Number(BarDefs(),TEXT("restock_qty"),10);
- for(const auto& V:Items(BarDefs(),TEXT("ingredients"))){const FString Id=String(V->AsObject(),TEXT("id"));Stock->SetNumberField(Id,FMath::Max(Qty,Number(Stock,Id)));}
+ for(const auto& V:Items(BarDefs(),TEXT("ingredients"))){const FString Id=String(V->AsObject(),TEXT("id"));if(!IsBarItemAvailable(V->AsObject()))continue;
+  const double Want=Qty+(Id==TEXT("gelo")?BarUpgrade(TEXT("freezer"))*Number(Object(Object(BarDefs(),TEXT("upgrades")),TEXT("freezer")),TEXT("ice_stock"),4):0);
+  Stock->SetNumberField(Id,FMath::Max(Want,Number(Stock,Id)));}
  Book(-Cost,TEXT("Bar: ingredientes"));LastMessage=FString::Printf(TEXT("Bar reabastecido por R$ %.0f."),Cost);return Save();
 }
 
@@ -144,7 +149,7 @@ UMareSimulation::FBarResult UMareSimulation::ServeBar(const FString& OrderId,con
  return ServeMix(OrderId,Ingredients,true,-1);
 }
 
-UMareSimulation::FBarResult UMareSimulation::ServeMix(const FString& OrderId,const TArray<FString>& Ingredients,bool bUseStock,double PrepScore)
+UMareSimulation::FBarResult UMareSimulation::ServeMix(const FString& OrderId,const TArray<FString>& Ingredients,bool bUseStock,double PrepScore,double Bonus)
 {
  FBarResult Out;auto B=Bar();auto& Orders=List(B,TEXT("orders"));auto Stock=Child(B,TEXT("stock"));
  int32 Index=INDEX_NONE;for(int32 I=0;I<Orders.Num();++I)if(String(Orders[I]->AsObject(),TEXT("id"))==OrderId)Index=I;
@@ -167,7 +172,7 @@ UMareSimulation::FBarResult UMareSimulation::ServeMix(const FString& OrderId,con
  const double Waited=Number(State,TEXT("day"),1)*1440+Number(State,TEXT("minutes"))-Number(Order,TEXT("since"));
  // A careful prep (the mini-actions' average score) moves the price up to ±prep_tip.
  const double Prep=PrepScore<0?1.:1+Number(BarDefs(),TEXT("prep_tip"),.1)*(2*FMath::Clamp(PrepScore,0.,1.)-1);
- double Extra=1;
+ double Extra=Bonus;
  if(Want==TEXT("surpresa")){Out.Stars=SurpriseStars(Out.Recipe,String(Order,TEXT("taste")));
   const auto Prices=Items(BarDefs(),TEXT("stars_price"));if(Prices.IsValidIndex(Out.Stars-1))Extra=Prices[Out.Stars-1]->AsNumber();}
  bool bUsualOrder=false;Order->TryGetBoolField(TEXT("usual"),bUsualOrder);
@@ -216,6 +221,7 @@ bool UMareSimulation::BarPick(const FString& Ingredient)
  if(String(B,TEXT("hand"))==Ingredient){B->RemoveField(TEXT("hand"));LastMessage=TEXT("Devolvido à bancada.");return true;}
  bool bKnown=false;for(const auto& V:Items(BarDefs(),TEXT("ingredients")))bKnown|=String(V->AsObject(),TEXT("id"))==Ingredient;
  if(!bKnown)return Fail(TEXT("Isso não é ingrediente."));
+ for(const auto& V:Items(BarDefs(),TEXT("ingredients")))if(String(V->AsObject(),TEXT("id"))==Ingredient && !IsBarItemAvailable(V->AsObject()))return Fail(TEXT("Compre a melhoria primeiro."));
  if(Number(Object(B,TEXT("stock")),Ingredient)<1)return Fail(TEXT("Acabou: reponha o bar no balcão."));
  B->SetStringField(TEXT("hand"),Ingredient);LastMessage=FString();return true;
 }
@@ -234,7 +240,10 @@ bool UMareSimulation::BarPour()
 
 TArray<FString> UMareSimulation::BarPrepSteps(const TArray<FString>& Mix) const
 {
- TArray<FString> Steps;if(Mix.IsEmpty())return Steps;auto Defs=BarDefs();bool bMuddle=false,bBlend=false;
+ TArray<FString> Steps;if(Mix.IsEmpty())return Steps;auto Defs=BarDefs();bool bMuddle=false,bBlend=false,bPourOnly=true;
+ for(const auto& V:Items(Defs,TEXT("ingredients"))){const auto I=V->AsObject();if(!Mix.Contains(String(I,TEXT("id"))))continue;
+  bool bPour=false;I->TryGetBoolField(TEXT("pour_only"),bPour);bPourOnly&=bPour;}
+ if(bPourOnly)return Steps;
  for(const FString& I:Mix){bMuddle|=InList(Defs,TEXT("muddle"),I);bBlend|=InList(Defs,TEXT("blend"),I);}
  if(bMuddle)Steps.Add(TEXT("socar"));Steps.Add(bBlend?TEXT("liquidificar"):TEXT("bater"));return Steps;
 }
@@ -283,7 +292,9 @@ UMareSimulation::FBarResult UMareSimulation::ServeGlass(const FString& Order)
  if(!Next.IsEmpty()){Fail(FString::Printf(TEXT("Falta %s antes de servir."),*Next));return Out;}
  if(Order.IsEmpty()){Fail(TEXT("Ninguém esperando no balcão."));return Out;}
  double Score=0;int32 N=0;for(const auto& Pair:Object(Bar(),TEXT("prep"))->Values){Score+=Pair.Value->AsNumber();++N;}
- Out=ServeMix(Order,Glass,false,N?Score/N:1);
+ // A blended drink with a better blender earns more.
+ const double Blend=Object(Bar(),TEXT("prep"))->HasField(TEXT("liquidificar"))?1+BarUpgrade(TEXT("liquidificador"))*Number(Object(Object(BarDefs(),TEXT("upgrades")),TEXT("liquidificador")),TEXT("blend_tip"),.03):1;
+ Out=ServeMix(Order,Glass,false,N?Score/N:1,Blend);
  // Served or tasted, the glass is empty again unless the guest was already gone (then it stays for the next one).
  if(Out.bServed || !Out.Recipe.IsEmpty() || LastMessage.Contains(TEXT("careta"))){auto B=Bar();
   B->SetArrayField(TEXT("glass"),TArray<TSharedPtr<FJsonValue>>());B->RemoveField(TEXT("prep"));B->RemoveField(TEXT("serving"));Save();}
@@ -316,6 +327,54 @@ bool UMareSimulation::IsBarRush() const
  return TodayEvent()==TEXT("lua") && Hour>=Number(BarDefs(),TEXT("full_moon_from"),19);
 }
 
+int32 UMareSimulation::BarUpgrade(const FString& Id) const
+{
+ return FMath::Clamp(int32(Number(Object(Object(State,TEXT("bar")),TEXT("upgrades")),Id)),0,5);
+}
+
+double UMareSimulation::BarUpgradeCost(const FString& Id) const
+{
+ const auto Prices=Items(Object(Object(BarDefs(),TEXT("upgrades")),Id),TEXT("prices"));const int32 L=BarUpgrade(Id);
+ return Prices.IsValidIndex(L)?Prices[L]->AsNumber():0;
+}
+
+bool UMareSimulation::BuyBarUpgrade(const FString& Id)
+{
+ if(!Object(BarDefs(),TEXT("upgrades"))->HasField(Id))return Fail(TEXT("Melhoria desconhecida."));
+ const double Cost=BarUpgradeCost(Id);if(Cost<=0)return Fail(TEXT("Essa melhoria já está no máximo."));
+ if(Money()<Cost)return Fail(FString::Printf(TEXT("Saldo insuficiente: a melhoria custa R$ %.0f."),Cost));
+ const FString Name=String(Object(Object(BarDefs(),TEXT("upgrades")),Id),TEXT("name"));
+ Child(Bar(),TEXT("upgrades"))->SetNumberField(Id,BarUpgrade(Id)+1);Book(-Cost,TEXT("Bar: ")+Name);
+ LastMessage=FString::Printf(TEXT("%s agora no nível %d."),*Name,BarUpgrade(Id));return Save();
+}
+
+bool UMareSimulation::IsBarItemAvailable(const TSharedPtr<FJsonObject>& Item) const
+{
+ const FString Req=Item.IsValid()?String(Item,TEXT("requires")):FString();return Req.IsEmpty() || BarUpgrade(Req)>0;
+}
+
+int32 UMareSimulation::BarSeats() const
+{
+ const int32 Stools=Items(BarDefs(),TEXT("stools")).Num();const auto Seats=Items(Object(Object(BarDefs(),TEXT("upgrades")),TEXT("banquetas")),TEXT("seats"));
+ int32 Extra=0;for(int32 I=0;I<BarUpgrade(TEXT("banquetas")) && I<Seats.Num();++I)Extra=FMath::Max(Extra,int32(Seats[I]->AsNumber()));
+ const int32 Base=int32(Number(BarDefs(),IsBarRush()?TEXT("max_orders_rush"):TEXT("max_orders"),4));
+ return FMath::Min(Stools>0?Stools:Base,FMath::Max(Base,int32(Number(BarDefs(),TEXT("max_orders"),4))+Extra));
+}
+
+TArray<FString> UMareSimulation::BarmanKnows() const
+{
+ TArray<FString> Out;for(const auto& V:Items(BarDefs(),TEXT("recipes"))){bool bStart=false;V->AsObject()->TryGetBoolField(TEXT("known"),bStart);
+  if(bStart && IsBarItemAvailable(V->AsObject()))Out.Add(String(V->AsObject(),TEXT("id")));}
+ for(const auto& V:Items(Object(State,TEXT("bar")),TEXT("barman_known")))Out.AddUnique(V->AsString());
+ return Out;
+}
+
+int32 UMareSimulation::BarmanLevel()
+{
+ if(!HasStaff(TEXT("bartender")))return 0;int32 Level=1;
+ for(const auto& V:TeamList(TEXT("bartender")))Level=FMath::Max(Level,int32(Number(V->AsObject(),TEXT("level"),1)));return Level;
+}
+
 bool UMareSimulation::IsBarSecretOpen(const FString& Recipe) const
 {
  auto R=BarRecipe(Recipe);bool bSecret=false;if(R)R->TryGetBoolField(TEXT("secret"),bSecret);if(!bSecret)return true;
@@ -338,18 +397,39 @@ void UMareSimulation::BarHour(int32 Hour)
 {
  bool bOwned=false;Object(State,TEXT("unlocked"))->TryGetBoolField(TEXT("bar"),bOwned);if(!bOwned)return;
  auto B=Bar();auto& Orders=List(B,TEXT("orders"));auto Stock=Child(B,TEXT("stock"));
- const double Now=Number(State,TEXT("day"),1)*1440+Number(State,TEXT("minutes"));const double Patience=Number(BarDefs(),TEXT("patience_hours"),2)*60;
+ const double Now=Number(State,TEXT("day"),1)*1440+Number(State,TEXT("minutes"));
+ const double Patience=Number(BarDefs(),TEXT("patience_hours"),2)*60*(1+BarUpgrade(TEXT("banquetas"))*Number(Object(Object(BarDefs(),TEXT("upgrades")),TEXT("banquetas")),TEXT("patience"),.15));
  Orders.RemoveAll([&](const TSharedPtr<FJsonValue>& V){return Now-Number(V->AsObject(),TEXT("since"))>Patience || !IsBarOpen();});
  if(!IsBarOpen())return;
+ // Ice melts while the bar is open, much faster on a hot day; the freezer slows it.
+ {const double Melt=Number(BarDefs(),TEXT("melt_per_hour"),.5)*(TodayEvent()==TEXT("calor")?Number(BarDefs(),TEXT("melt_hot"),4):1)
+   *FMath::Max(0.,1-BarUpgrade(TEXT("freezer"))*Number(Object(Object(BarDefs(),TEXT("upgrades")),TEXT("freezer")),TEXT("melt_cut"),.18));
+  Stock->SetNumberField(TEXT("gelo"),FMath::Max(0.,Number(Stock,TEXT("gelo"))-Melt));}
+ // The bartender learns one of the player's recipes every few days.
+ if(HasStaff(TEXT("bartender"))){const int32 Day=int32(Number(State,TEXT("day"),1));
+  if(!B->HasField(TEXT("barman_day")))B->SetNumberField(TEXT("barman_day"),Day);
+  if(Day-Number(B,TEXT("barman_day"))>=Number(BarDefs(),TEXT("barman_learn_days"),2)){B->SetNumberField(TEXT("barman_day"),Day);
+   const TArray<FString> Knows=BarmanKnows();
+   for(const auto& V:Items(BarDefs(),TEXT("recipes"))){const FString Id=String(V->AsObject(),TEXT("id"));
+    if(IsRecipeKnown(Id) && !Knows.Contains(Id) && IsBarItemAvailable(V->AsObject())){List(B,TEXT("barman_known")).Add(MakeShared<FJsonValueString>(Id));
+     LastMessage=TEXT("O bartender aprendeu: ")+String(V->AsObject(),TEXT("name"))+TEXT(".");break;}}}}
  // The bartender serves what is on the menu (a surprise becomes a known drink) at a share of the price, no tip.
  if(HasStaff(TEXT("bartender"))){int32 Served=0;
   for(int32 I=Orders.Num()-1;I>=0 && Served<3;--I){const auto O=Orders[I]->AsObject();FString Want=String(O,TEXT("want"));
-   if(Want==TEXT("surpresa"))Want=TEXT("caipirinha");if(!IsRecipeKnown(Want))continue;
+   const TArray<FString> Knows=BarmanKnows();if(Want==TEXT("surpresa") && Knows.Num())Want=Knows[FMath::RandRange(0,Knows.Num()-1)];if(!Knows.Contains(Want))continue;
    const auto Needs=Items(BarRecipe(Want),TEXT("needs"));bool bStock=true;for(const auto& N:Needs)bStock&=Number(Stock,N->AsString())>=1;if(!bStock)continue;
    for(const auto& N:Needs)Stock->SetNumberField(N->AsString(),Number(Stock,N->AsString())-1);
+   // A green bartender botches a drink now and then: ingredients gone, the guest leaves without paying.
+   const auto Errors=Items(BarDefs(),TEXT("barman_error"));const int32 Lvl=BarmanLevel();
+   if(Errors.IsValidIndex(Lvl-1) && FMath::FRand()<Errors[Lvl-1]->AsNumber()){
+    LastMessage=FString::Printf(TEXT("O bartender errou a mão no %s: %s foi embora sem pagar."),*String(BarRecipe(Want),TEXT("name")),*String(O,TEXT("name")));
+    B->SetNumberField(TEXT("barman_errors"),Number(B,TEXT("barman_errors"))+1);Orders.RemoveAt(I);++Served;continue;}
    Book(FMath::RoundToDouble(DrinkPrice(Want)*Number(BarDefs(),TEXT("bartender_share"),.85)),TEXT("Bar (bartender): ")+String(BarRecipe(Want),TEXT("name")));
    StaffDid(TEXT("bartender"),1,FMath::RoundToDouble(DrinkPrice(Want)*Number(BarDefs(),TEXT("bartender_share"),.85)));
    B->SetNumberField(TEXT("served"),Number(B,TEXT("served"))+1);B->SetStringField(TEXT("last"),Want);Orders.RemoveAt(I);++Served;}}
- const int32 Arrivals=FMath::RandRange(1,2+FameLevel()/4)*(IsBarRush()?int32(Number(BarDefs(),TEXT("rush_mult"),2)):1);
+ int32 Arrivals=FMath::RandRange(1,2+FameLevel()/4)*(IsBarRush()?int32(Number(BarDefs(),TEXT("rush_mult"),2)):1);
+ {const auto Neon=Object(Object(BarDefs(),TEXT("upgrades")),TEXT("neon"));
+  if(Hour>=Number(Neon,TEXT("night_from"),18)){const double More=Arrivals*BarUpgrade(TEXT("neon"))*Number(Neon,TEXT("night_bonus"),.15);
+   Arrivals+=int32(More)+(FMath::FRand()<FMath::Frac(More)?1:0);}}
  for(int32 I=0;I<Arrivals;++I)AddBarOrder();
 }

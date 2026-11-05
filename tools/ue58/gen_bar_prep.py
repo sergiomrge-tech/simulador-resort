@@ -780,6 +780,125 @@ ALL = {'bench': bench, 'cachaca': lambda: bottle('cachaca'), 'vodka': lambda: bo
        'layer_ice': layer_ice, 'layer_fruit': layer_fruit, 'layer_foam': layer_foam,
        **{f'hand_{i}': (lambda i=i: hand_item(i)) for i in INGREDIENTS}}
 
+
+# ---------------------------------------------------------------- upgrades (CHECKLIST_EXPANSOES 1.4)
+def neon():
+    """Neon sign 'Bar do Coqueiro' for the back panel: dark backing board, the script in glowing tubes and a tube
+    border; front -Y, base at z=0 (mounted on the panel face)."""
+    reset()
+    P = 'BarPrep_neon'
+    board = mat(f'{P}_Board', wood_img(P + 'board', (.16, .1, .07), 128, 64), rough=.7)
+    glow = mat(f'{P}_Glow', None, (1, .45, .75), .3)
+    b = glow.node_tree.nodes['Principled BSDF']
+    b.inputs['Emission Color'].default_value = (1, .35, .7, 1)
+    b.inputs['Emission Strength'].default_value = 6.0
+    glow2 = mat(f'{P}_GlowCyan', None, (.4, 1, .95), .3)
+    b2 = glow2.node_tree.nodes['Principled BSDF']
+    b2.inputs['Emission Color'].default_value = (.3, 1, .9, 1)
+    b2.inputs['Emission Strength'].default_value = 6.0
+    W, H = 1.2, .26
+    rbox((W, .025, H), (0, .0125, H / 2), board, .008, 'board', uvscale=.5)
+    bpy.ops.object.text_add(location=(0, 0, 0))
+    t = bpy.context.object
+    t.data.body = 'Bar do Coqueiro'
+    t.data.align_x = 'CENTER'
+    t.data.align_y = 'CENTER'
+    t.data.size = .085
+    t.data.extrude = .004
+    t.data.bevel_depth = .004
+    t.rotation_euler = (math.pi / 2, 0, 0)
+    t.location = (0, -.006, H / 2 + .005)
+    bpy.ops.object.convert(target='MESH')
+    t.data.materials.clear()
+    t.data.materials.append(glow)
+    # Tube border with rounded corners.
+    c = bpy.data.curves.new('frame', 'CURVE')
+    c.dimensions = '3D'
+    sp = c.splines.new('POLY')
+    pts = []
+    r, w, h = .025, W / 2 - .03, H / 2 - .025
+    for cx, cz, a0 in ((w - r, h - r, 0), (-w + r, h - r, 90), (-w + r, -h + r, 180), (w - r, -h + r, 270)):
+        for k in range(5):
+            a = math.radians(a0 + 22.5 * k)
+            pts.append((cx + r * math.cos(a), -.008, H / 2 + cz + r * math.sin(a)))
+    sp.points.add(len(pts) - 1)
+    for p_, co in zip(sp.points, pts):
+        p_.co = (*co, 1)
+    sp.use_cyclic_u = True
+    c.bevel_depth = .004
+    fo = bpy.data.objects.new('frame', c)
+    bpy.context.collection.objects.link(fo)
+    fo.data.materials.append(glow2)
+    bpy.context.view_layer.objects.active = fo
+    fo.select_set(True)
+    bpy.ops.object.convert(target='MESH')
+    # Small standoffs holding it.
+    steel = mat(f'{P}_Steel', None, (.7, .7, .72), .3, .9)
+    for sx in (-1, 1):
+        for sz in (-1, 1):
+            o = lathe([(0, 0), (.006, 0), (.006, .02), (0, .02)], steel, 10, 'stand')
+            place(o, (sx * (W / 2 - .05), .045, H / 2 + sz * (H / 2 - .04)), (math.pi / 2, 0, 0))
+    finish(P)
+
+
+def chopeira():
+    """Beer tap tower on a drip tray: chrome T column, two taps with black handles; front -Y, base at z=0."""
+    reset()
+    P = 'BarPrep_chopeira'
+    chrome = mat(f'{P}_Chrome', None, (.85, .86, .88), .12, 1.0)
+    black = mat(f'{P}_Handle', None, (.05, .05, .05), .4)
+    tray = mat(f'{P}_Tray', None, (.25, .25, .27), .3, .9)
+    label = mat(f'{P}_Label', label_img(P, (.95, .78, .15), (.75, .1, .08), (.15, .08, .05), 128, 64, 1), .5)
+    rbox((.32, .16, .015), (0, -.04, .0075), tray, .004, 'tray')
+    for i in range(9):
+        rbox((.3, .006, .004), (0, -.11 + i * .017, .016), chrome, .001, 'grid')
+    lathe([(0, 0), (.04, 0), (.04, .01), (.022, .02), (.02, .3), (0, .3)], chrome, 24, 'column')
+    for sx in (-1, 1):
+        arm = lathe([(0, 0), (.016, 0), (.016, .12), (0, .12)], chrome, 16, 'arm')
+        place(arm, (0, 0, .29), (0, sx * math.pi / 2, 0))
+        sp = lathe([(0, 0), (.01, 0), (.008, .05), (.004, .06), (0, .06)], chrome, 12, 'spout')
+        place(sp, (sx * .11, -.01, .29), (math.pi, 0, 0))
+        hd = lathe([(0, 0), (.009, 0), (.012, .08), (.011, .1), (0, .102)], black, 12, 'handle')
+        place(hd, (sx * .11, -.02, .3), (-.25, 0, 0))
+        lb = rbox((.03, .004, .04), (sx * .11, -.032, .36), label, .002, 'badge', (-.25, 0, 0))
+    finish(P)
+
+
+def freezer():
+    """Low chest freezer for under the prep bench: white rounded body, lid with handle, vent strip and a blue stripe."""
+    reset()
+    P = 'BarPrep_freezer'
+    white = mat(f'{P}_Body', None, (.93, .94, .95), .35)
+    grey = mat(f'{P}_Trim', None, (.35, .37, .4), .5)
+    blue = mat(f'{P}_Stripe', None, (.12, .38, .75), .4)
+    L, D, H = 1.0, .36, .46
+    rbox((L, D, H - .04), (0, 0, (H - .04) / 2), white, .03, 'body', uvscale=.5)
+    rbox((L + .01, D + .01, .045), (0, 0, H - .022), white, .018, 'lid')
+    rbox((.3, .025, .025), (0, -D / 2 - .012, H - .045), grey, .008, 'handle')
+    rbox((L - .06, .004, .03), (0, -D / 2 - .001, .3), blue, .002, 'stripe')
+    for i in range(10):
+        rbox((.05, .004, .008), (L / 2 - .12 - i * .02, -D / 2 - .001, .08), grey, .001, 'vent')
+    for sx in (-1, 1):
+        for sy in (-1, 1):
+            lathe([(0, 0), (.015, 0), (.015, .012), (0, .012)], grey, 10, 'foot').location = (sx * (L / 2 - .05), sy * (D / 2 - .05), -.012)
+    finish(P)
+
+
+ALL.update({'neon': neon, 'chopeira': chopeira, 'freezer': freezer, 'hand_chope': lambda: hand_chope()})
+
+
+def hand_chope():
+    """A glass of draught beer (falls into the glass, and the drink in the guest's hand)."""
+    reset()
+    P = 'BarPrep_hand_chope'
+    gl = mat(f'{P}_Glass', None, (.9, .93, .95), .05, 0)
+    beer = mat(f'{P}_Beer', None, (.95, .68, .12), .1)
+    foam = mat(f'{P}_Foam', None, (.98, .96, .9), .7)
+    lathe([(0, 0), (.03, 0), (.036, .14), (.033, .14), (.027, .006), (0, .006)], gl, 28, 'glass')
+    lathe([(0, .006), (.027, .006), (.0335, .115), (0, .115)], beer, 28, 'beer')
+    lathe([(0, .115), (.0335, .115), (.0345, .13), (.02, .136), (0, .137)], foam, 28, 'foam')
+    finish(P)
+
 if __name__ == '__main__':
     for n in sys.argv[1:] or list(ALL):
         ALL[n]()

@@ -75,9 +75,22 @@ Decisões (04/11/2026):
 
 ### 1.4 Evolução
 
-- [ ] Melhorias (5 níveis, padrão de personalização): liquidificador, freezer de gelo, banquetas extras, letreiro neon e chopeira.
-- [ ] Gelo acaba e derrete mais rápido no "Dia de calor".
-- [ ] Barman com nível: só faz as receitas que ele já aprendeu, erra às vezes no nível 1 e aprende com o tempo de casa.
+- [x] Melhorias (5 níveis, padrão de personalização): liquidificador, freezer de gelo, banquetas extras, letreiro neon e chopeira.
+- [x] Gelo acaba e derrete mais rápido no "Dia de calor".
+- [x] Barman com nível: só faz as receitas que ele já aprendeu, erra às vezes no nível 1 e aprende com o tempo de casa.
+
+Decisões (04/11/2026):
+- As melhorias ficam em `bar.json` (`upgrades`), com 5 níveis e preço por nível, compradas na página do balcão ("Melhorias do bar"). Do nível 1 em diante aparecem os modelos: neon no painel, chopeira no balcão lateral e freezer na prateleira de baixo da bancada (`gen_bar_prep.py`). Efeitos:
+  - **liquidificador:** zona do pulso +3% por nível e +3% no preço do batido;
+  - **freezer:** +4 gelos na reposição e −18% de derretimento por nível;
+  - **banquetas:** +1/+2 lugares, limitados pelas 6 banquetas, e +15% de paciência por nível;
+  - **neon:** +15% de chegadas por nível a partir das 18h;
+  - **chopeira:** libera o chope e +10% no preço por nível.
+- **Chope:** é ingrediente só de torneira (`pour_only`): E na chopeira põe no copo, sem mini-ação, e serve na hora.
+- **Gelo:** derrete 0,5 por hora com o bar aberto, ×4 no dia de "calor".
+- **Barman:** sabe o cardápio inicial e aprende uma receita que o jogador já descobriu a cada 2 dias. A chance de errar vai de 15% no nível 1 a 0% no nível 5; quando erra, o cliente vai embora sem pagar.
+- **Correção encontrada:** os materiais importados estavam sem a flag Nanite e virariam o material padrão no executável; `mare_bar_prep.fix_usage` corrigiu os 106. O neon ganhou material emissivo próprio (`M_BarNeonPink/Cyan`). Os modelos vindos do Blender olham para +Y na UE, e os giros estão anotados no `bar.json`.
+- **Prova:** teste `MareAlta.Gameplay.BarUpgrades` + `docs/ue58/graphics-reference/bar_upgrades.jpg`.
 
 ## 2. Passeios (snorkel, barco, trilha do farol)
 

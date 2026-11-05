@@ -621,6 +621,9 @@ bool FMareBarPrepTest::RunTest(const FString& Parameters)
  // The house drink is secret: mixing it does nothing until a VIP tells it (MareAlta.Gameplay.BarGuests); open it here.
  TestTrue(TEXT("Secret recipe closed"),Sim->MixRecipe({TEXT("rum"),TEXT("maracuja"),TEXT("coco"),TEXT("hortela"),TEXT("gelo")}).IsEmpty());
  Sim->Object(Sim->Bar(),TEXT("secrets"))->SetBoolField(TEXT("coqueiro"),true);
+ TestFalse(TEXT("No chope without the chopeira"),Sim->BarPick(TEXT("chope")));
+ Sim->Object(Sim->Bar(),TEXT("upgrades"))->SetNumberField(TEXT("chopeira"),1);
+ TestEqual(TEXT("Chope needs no prep"),Sim->BarPrepSteps({TEXT("chope")}).Num(),0);
  // Every recipe, in its order and reversed, served to a guest who asked for it.
  const TArray<TSharedPtr<FJsonValue>>* Recipes=nullptr;Sim->BarDefs()->TryGetArrayField(TEXT("recipes"),Recipes);
  int32 Made=0;
@@ -720,6 +723,64 @@ bool FMareBarGuestsTest::RunTest(const FString& Parameters)
  Sim->Bar()->SetArrayField(TEXT("orders"),TArray<TSharedPtr<FJsonValue>>());int32 Seated=0;
  for(int32 I=0;I<10;++I)Seated+=!Sim->AddBarOrder(TEXT("caipirinha")).IsEmpty();
  TestEqual(TEXT("Rush fills more stools"),Seated,int32(Sim->Number(Sim->BarDefs(),TEXT("max_orders_rush"),6)));
+ IFileManager::Get().DeleteDirectory(*Sim->SaveDirectory,false,true);
+ Sim->RemoveFromRoot();Instance->RemoveFromRoot();return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FMareBarUpgradesTest,"MareAlta.Gameplay.BarUpgrades",EAutomationTestFlags::EditorContext|EAutomationTestFlags::EngineFilter)
+bool FMareBarUpgradesTest::RunTest(const FString& Parameters)
+{
+ // CHECKLIST_EXPANSOES 1.4: five-level upgrades (blender, freezer, banquetas, neon, chopeira), ice melting faster on a
+ // hot day, and a bartender who only makes what he learned and botches drinks at a low level.
+ auto Instance=NewObject<UGameInstance>();Instance->AddToRoot();
+ auto Sim=NewObject<UMareSimulation>(Instance);Sim->AddToRoot();
+ Sim->SaveDirectory=FPaths::ProjectSavedDir()/TEXT("Automation/BarUpgrades")/FGuid::NewGuid().ToString(EGuidFormats::Digits);
+ auto Load=[&](const FString& Name,TSharedPtr<FJsonObject>& Result){FString Text;FFileHelper::LoadFileToString(Text,*(FPaths::ProjectContentDir()/TEXT("Data")/Name));return FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Text),Result);};
+ if(!TestTrue(TEXT("Definitions"),Load(TEXT("definitions.json"),Sim->Definitions)) || !TestTrue(TEXT("Default save"),Load(TEXT("default_save.json"),Sim->State))){Sim->RemoveFromRoot();Instance->RemoveFromRoot();return false;}
+ Sim->State->SetNumberField(TEXT("money"),50000);Sim->State->SetNumberField(TEXT("minutes"),600);
+ Sim->Object(Sim->State,TEXT("unlocked"))->SetBoolField(TEXT("bar"),true);
+ auto Stock=[&](const FString& I){return Sim->Number(Sim->Object(Sim->Bar(),TEXT("stock")),I);};
+ // Buying: the price of each level, five levels at most.
+ const double Cost=Sim->BarUpgradeCost(TEXT("freezer"));double Before=Sim->Money();
+ TestTrue(TEXT("Freezer bought"),Sim->BuyBarUpgrade(TEXT("freezer")));TestEqual(TEXT("Freezer charged"),Sim->Money(),Before-Cost);
+ TestEqual(TEXT("Freezer level 1"),Sim->BarUpgrade(TEXT("freezer")),1);
+ for(int32 I=0;I<6;++I)Sim->BuyBarUpgrade(TEXT("banquetas"));TestEqual(TEXT("Five levels at most"),Sim->BarUpgrade(TEXT("banquetas")),5);
+ TestEqual(TEXT("Maxed costs nothing"),Sim->BarUpgradeCost(TEXT("banquetas")),0.);
+ TestFalse(TEXT("Unknown upgrade"),Sim->BuyBarUpgrade(TEXT("helicoptero")));
+ // Banquetas: more guests at once (never more than the stools).
+ TestTrue(TEXT("More seats"),Sim->BarSeats()>int32(Sim->Number(Sim->BarDefs(),TEXT("max_orders"),4)));
+ TestTrue(TEXT("Seats capped by the stools"),Sim->BarSeats()<=Sim->BarDefs()->GetArrayField(TEXT("stools")).Num());
+ // Freezer: more ice on restock; ice melts, much faster on a hot day, slower with the freezer.
+ Sim->RestockBar();TestTrue(TEXT("Freezer holds more ice"),Stock(TEXT("gelo"))>Sim->Number(Sim->BarDefs(),TEXT("restock_qty"),10));
+ const double Ice=Stock(TEXT("gelo"));Sim->BarHour(10);const double Normal=Ice-Stock(TEXT("gelo"));TestTrue(TEXT("Ice melts"),Normal>0);
+ Sim->State->SetStringField(TEXT("day_event"),TEXT("calor"));const double Ice2=Stock(TEXT("gelo"));Sim->BarHour(11);
+ TestTrue(TEXT("Hot day melts faster"),Ice2-Stock(TEXT("gelo"))>Normal*2);Sim->State->SetStringField(TEXT("day_event"),TEXT(""));
+ Sim->Bar()->SetArrayField(TEXT("orders"),TArray<TSharedPtr<FJsonValue>>());
+ // Chopeira: the chope only once bought, pour only, dearer per level.
+ TestFalse(TEXT("No chope at first"),Sim->BarPick(TEXT("chope")));
+ TestTrue(TEXT("Chopeira bought"),Sim->BuyBarUpgrade(TEXT("chopeira")));Sim->RestockBar();
+ const double Chope1=Sim->DrinkPrice(TEXT("chope"));Sim->BuyBarUpgrade(TEXT("chopeira"));TestTrue(TEXT("Chope dearer with the level"),Sim->DrinkPrice(TEXT("chope"))>Chope1);
+ const FString C=Sim->AddBarOrder(TEXT("chope"));Sim->SetBarServing(C);
+ TestTrue(TEXT("Pour the chope"),Sim->BarPick(TEXT("chope")) && Sim->BarPour());TestTrue(TEXT("Chope ready at once"),Sim->BarNextStep().IsEmpty());
+ Before=Sim->Money();TestTrue(TEXT("Chope served"),Sim->ServeGlass(C).bServed && Sim->Money()>Before);
+ // Blender: the blended drink pays more with a better blender.
+ auto Batida=[&](){Sim->RestockBar();const FString O=Sim->AddBarOrder(TEXT("batida_coco"));Sim->SetBarServing(O);
+  for(const FString& I:{TEXT("cachaca"),TEXT("coco"),TEXT("leite_condensado"),TEXT("gelo")}){Sim->BarPick(I);Sim->BarPour();}
+  Sim->BarPrepStep(TEXT("liquidificar"),1);const double M=Sim->Money();Sim->ServeGlass(O);return Sim->Money()-M;};
+ Sim->Object(Sim->Bar(),TEXT("known"));const double Plain=Batida();
+ for(int32 I=0;I<5;++I)Sim->BuyBarUpgrade(TEXT("liquidificador"));const double Strong=Batida();
+ TestTrue(TEXT("Better blender pays more"),Strong>Plain);
+ // Bartender: knows the starting menu only, learns the player's recipes over the days, botches drinks at level 1.
+ Sim->Object(Sim->State,TEXT("staff"))->SetBoolField(TEXT("bartender"),true);
+ TestTrue(TEXT("Bartender knows the menu"),Sim->BarmanKnows().Contains(TEXT("caipirinha")));
+ TestFalse(TEXT("Bartender does not know a discovered drink yet"),Sim->BarmanKnows().Contains(TEXT("batida_coco")));
+ Sim->Bar()->SetNumberField(TEXT("barman_day"),Sim->Number(Sim->State,TEXT("day"),1)-5);Sim->BarHour(12);
+ TestTrue(TEXT("Bartender learned the batida"),Sim->BarmanKnows().Contains(TEXT("batida_coco")));
+ auto Errors=Sim->BarDefs()->GetArrayField(TEXT("barman_error"));auto Saved=Errors;Errors[0]=MakeShared<FJsonValueNumber>(1.);Sim->BarDefs()->SetArrayField(TEXT("barman_error"),Errors);
+ Sim->Bar()->SetArrayField(TEXT("orders"),TArray<TSharedPtr<FJsonValue>>());Sim->RestockBar();Sim->AddBarOrder(TEXT("caipirinha"));
+ const double Errs=Sim->Number(Sim->Bar(),TEXT("barman_errors"));Before=Sim->Money();Sim->BarHour(13);
+ TestTrue(TEXT("Green bartender botches a drink"),Sim->Number(Sim->Bar(),TEXT("barman_errors"))>Errs);
+ Sim->BarDefs()->SetArrayField(TEXT("barman_error"),Saved);
  IFileManager::Get().DeleteDirectory(*Sim->SaveDirectory,false,true);
  Sim->RemoveFromRoot();Instance->RemoveFromRoot();return true;
 }

@@ -253,3 +253,88 @@ def phone(arg='7'):
     pc = unreal.GameplayStatics.get_player_controller(_game_world(), 0)
     pc.open_phone(int(arg))
     return 'ok'
+
+
+def upgrades(arg='neon,chopeira,freezer'):
+    """PIE: buy one level of each upgrade listed."""
+    sim = unreal.GameplayStatics.get_player_controller(_game_world(), 0).get_simulation()
+    return json.dumps([[u, sim.buy_bar_upgrade(u)] for u in arg.split(',') if u])
+
+
+def hero_parts(arg=''):
+    """PIE: the hero's skeletal mesh components, whether the owner sees them and the arm bones' hidden state."""
+    pawn = unreal.GameplayStatics.get_player_controller(_game_world(), 0).get_controlled_pawn()
+    out = []
+    for c in pawn.get_components_by_class(unreal.SkeletalMeshComponent):
+        m = c.get_editor_property('skeletal_mesh_asset') if hasattr(c, 'skeletal_mesh_asset') else None
+        try:
+            m = c.get_skinned_asset()
+        except Exception:
+            pass
+        out.append([c.get_name(), m.get_name() if m else None, c.is_visible(), c.get_editor_property('only_owner_see'), c.get_editor_property('owner_no_see'),
+                    c.is_bone_hidden_by_name('upperarm_r'), str(c.get_attach_parent().get_name()) if c.get_attach_parent() else None,
+                    str(c.get_editor_property('leader_pose_component').get_name()) if c.get_editor_property('leader_pose_component') else None])
+    return json.dumps(out)
+
+
+def fix_usage(arg=''):
+    """Every opaque material under /Game/Custom/BarPrep gets the Nanite (and ISM) usage flags; PIE must be stopped."""
+    if _game_world():
+        raise RuntimeError('Stop PIE first')
+    fixed = []
+    for p in unreal.EditorAssetLibrary.list_assets('/Game/Custom/BarPrep', recursive=True):
+        a = unreal.load_asset(p)
+        if not isinstance(a, unreal.Material):
+            continue
+        if a.get_editor_property('blend_mode') != unreal.BlendMode.BLEND_OPAQUE:
+            continue
+        changed = False
+        for flag in ('used_with_nanite', 'used_with_instanced_static_meshes'):
+            if not a.get_editor_property(flag):
+                a.set_editor_property(flag, True)
+                changed = True
+        if changed:
+            unreal.MaterialEditingLibrary.recompile_material(a)
+            unreal.EditorAssetLibrary.save_loaded_asset(a, False)
+            fixed.append(a.get_name())
+    return json.dumps(fixed)
+
+
+def neon_material(arg=''):
+    """M_BarNeonPink / M_BarNeonCyan: emissive tubes for the neon sign (Interchange drops the glTF emission); assigned
+    to the sign's Glow slots. PIE must be stopped."""
+    lib = unreal.MaterialEditingLibrary
+    out = {}
+    made = {}
+    for name, col in (('M_BarNeonPink', (1, .25, .65)), ('M_BarNeonCyan', (.25, 1, .9))):
+        m = unreal.load_asset(f'/Game/Custom/BarPrep/{name}')
+        if not m:
+            m = unreal.AssetToolsHelpers.get_asset_tools().create_asset(name, '/Game/Custom/BarPrep', unreal.Material, unreal.MaterialFactoryNew())
+        lib.delete_all_material_expressions(m)
+        c = lib.create_material_expression(m, unreal.MaterialExpressionVectorParameter, -600, 0)
+        c.set_editor_property('parameter_name', 'Color')
+        c.set_editor_property('default_value', unreal.LinearColor(*col, 1))
+        k = lib.create_material_expression(m, unreal.MaterialExpressionScalarParameter, -600, 200)
+        k.set_editor_property('parameter_name', 'Strength')
+        k.set_editor_property('default_value', 18)
+        mul = lib.create_material_expression(m, unreal.MaterialExpressionMultiply, -300, 100)
+        lib.connect_material_expressions(c, '', mul, 'A')
+        lib.connect_material_expressions(k, '', mul, 'B')
+        lib.connect_material_property(c, '', unreal.MaterialProperty.MP_BASE_COLOR)
+        lib.connect_material_property(mul, '', unreal.MaterialProperty.MP_EMISSIVE_COLOR)
+        m.set_editor_property('used_with_nanite', True)
+        out[name] = [str(e) for e in lib.recompile_material(m) or []]
+        unreal.EditorAssetLibrary.save_loaded_asset(m, False)
+        made[name] = m
+    mesh = unreal.load_asset('/Game/Custom/BarPrep/BarPrep_neon/BarPrep_neon')
+    slots = mesh.get_editor_property('static_materials')
+    for i, sm in enumerate(slots):
+        n = sm.get_editor_property('material_interface').get_name()
+        if n.endswith('GlowCyan'):
+            mesh.set_material(i, made['M_BarNeonCyan'])
+            out['slot%d' % i] = 'cyan'
+        elif n.endswith('Glow'):
+            mesh.set_material(i, made['M_BarNeonPink'])
+            out['slot%d' % i] = 'pink'
+    unreal.EditorAssetLibrary.save_loaded_asset(mesh, False)
+    return json.dumps(out)

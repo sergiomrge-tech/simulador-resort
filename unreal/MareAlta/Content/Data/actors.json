@@ -327,5 +327,12 @@
     ],
     "skeletal_meshes": [],
     "animations": {}
+  },
+  "Dish_chope": {
+    "static_meshes": [
+      "/Game/Custom/BarPrep/BarPrep_hand_chope/BarPrep_hand_chope.BarPrep_hand_chope"
+    ],
+    "skeletal_meshes": [],
+    "animations": {}
   }
 }

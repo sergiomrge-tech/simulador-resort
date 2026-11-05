@@ -29,6 +29,7 @@ void UMareBarWorld::Deinitialize()
  for(auto& Pair:Leaving)if(IsValid(Pair.Key))Pair.Key->Destroy();
  for(auto& Prop:PrepProps)if(IsValid(Prop))Prop->Destroy();
  for(auto& Pair:Shelf)if(IsValid(Pair.Value))Pair.Value->Destroy();
+ for(auto& Pair:UpgradeProps)if(IsValid(Pair.Value))Pair.Value->Destroy();
  if(IsValid(GlassTarget))GlassTarget->Destroy();if(IsValid(GlassActor))GlassActor->Destroy();if(IsValid(Falling))Falling->Destroy();
  Guests.Empty();Leaving.Empty();PrepProps.Empty();Shelf.Empty();Super::Deinitialize();
 }
@@ -94,17 +95,21 @@ void UMareBarWorld::BuildPrep(const TSharedPtr<FJsonObject>& Defs)
  const double Top=(*Bench)[2]->AsNumber();
  // The bench model's top is 95 cm over its base; it blocks like the counter (complex collision).
  if(auto B=SpawnProp(GetWorld(),PrepMesh(TEXT("bench")),FVector((*Bench)[0]->AsNumber(),(*Bench)[1]->AsNumber(),Top-95),(*Bench)[3]->AsNumber(),true))PrepProps.Add(B);
- TMap<FString,FString> Names;const TArray<TSharedPtr<FJsonValue>>* List=nullptr;
- if(Defs->TryGetArrayField(TEXT("ingredients"),List))for(const auto& V:*List)
-  Names.Add(UMareSimulation::String(V->AsObject(),TEXT("id")),UMareSimulation::String(V->AsObject(),TEXT("name")));
+ TMap<FString,FString> Names;TSet<FString> Tapped;const TArray<TSharedPtr<FJsonValue>>* List=nullptr;
+ if(Defs->TryGetArrayField(TEXT("ingredients"),List))for(const auto& V:*List){const FString Id=UMareSimulation::String(V->AsObject(),TEXT("id"));
+  Names.Add(Id,UMareSimulation::String(V->AsObject(),TEXT("name")));if(!UMareSimulation::String(V->AsObject(),TEXT("requires")).IsEmpty())Tapped.Add(Id);}
+ // Upgrade models, hidden until the level is bought.
+ for(const auto& Pair:UMareSimulation::Object(Defs,TEXT("upgrade_props"))->Values){const FString Id(Pair.Key.ToView());const auto& P=Pair.Value->AsArray();if(P.Num()<4)continue;
+  if(auto Prop=SpawnProp(GetWorld(),PrepMesh(Id),FVector(P[0]->AsNumber(),P[1]->AsNumber(),P[2]->AsNumber()),P[3]->AsNumber(),Id==TEXT("freezer"))){Prop->SetActorHiddenInGame(true);UpgradeProps.Add(Id,Prop);}}
  for(const auto& Pair:UMareSimulation::Object(Defs,TEXT("shelf"))->Values){
   const FString Id(Pair.Key.ToView());const auto& P=Pair.Value->AsArray();if(P.Num()<3)continue;
-  const FVector At(P[0]->AsNumber(),P[1]->AsNumber(),Top);
-  auto Prop=SpawnProp(GetWorld(),PrepMesh(Id),At,P[2]->AsNumber(),false);if(!Prop)continue;PrepProps.Add(Prop);
+  const FVector At(P[0]->AsNumber(),P[1]->AsNumber(),P.Num()>3?P[3]->AsNumber():Top);
+  // A tapped ingredient (the chope) has its upgrade model instead of a shelf prop; its target is the tap.
+  FVector Focus=At+FVector(0,0,30);
+  if(!Tapped.Contains(Id)){auto Prop=SpawnProp(GetWorld(),PrepMesh(Id),At,P[2]->AsNumber(),false);if(!Prop)continue;PrepProps.Add(Prop);Focus=Prop->GetComponentsBoundingBox().GetCenter();}
   if(!Names.Contains(Id))continue;
   // One E target per ingredient, at the middle of the visible prop.
-  const FBox Box=Prop->GetComponentsBoundingBox();
-  auto Target=GetWorld()->SpawnActor<AMareServiceTarget>(Box.GetCenter(),FRotator::ZeroRotator);if(!Target)continue;
+  auto Target=GetWorld()->SpawnActor<AMareServiceTarget>(Focus,FRotator::ZeroRotator);if(!Target)continue;
   Target->Action=TEXT("BarIngredient");Target->Label=Names[Id];Target->Reach=220;Target->OcclusionTolerance=35;
   Target->Tags.Add(FName(*(TEXT("ing:")+Id)));Shelf.Add(Id,Target);}
  const TArray<TSharedPtr<FJsonValue>>* G=nullptr;if(!Defs->TryGetArrayField(TEXT("glass"),G) || G->Num()<2)return;
@@ -147,7 +152,10 @@ void UMareBarWorld::UpdatePrep(UMareSimulation* S,bool bOwned,float DeltaSeconds
   if(A>=1){Falling->Destroy();Falling=nullptr;}}
  if(bOwned && PrepProps.IsEmpty())BuildPrep(S->BarDefs());
  for(auto& Prop:PrepProps)if(IsValid(Prop))Prop->SetActorHiddenInGame(!bOwned);
- for(auto& Pair:Shelf)if(IsValid(Pair.Value))Pair.Value->SetActorHiddenInGame(!bOwned);
+ for(auto& Pair:UpgradeProps)if(IsValid(Pair.Value))Pair.Value->SetActorHiddenInGame(!bOwned || S->BarUpgrade(Pair.Key)<1);
+ {TMap<FString,bool> Avail;const TArray<TSharedPtr<FJsonValue>>* L=nullptr;
+  if(S->BarDefs()->TryGetArrayField(TEXT("ingredients"),L))for(const auto& V:*L)Avail.Add(UMareSimulation::String(V->AsObject(),TEXT("id")),S->IsBarItemAvailable(V->AsObject()));
+  for(auto& Pair:Shelf)if(IsValid(Pair.Value))Pair.Value->SetActorHiddenInGame(!bOwned || !Avail.FindRef(Pair.Key));}
  if(GlassActor)GlassActor->SetActorHiddenInGame(!bOwned);
  if(GlassTarget)GlassTarget->SetActorHiddenInGame(!bOwned);
  if(!bOwned || !GlassActor)return;

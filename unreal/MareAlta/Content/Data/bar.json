@@ -200,6 +200,19 @@
     0.95,
     1
    ]
+  },
+  {
+   "id": "chope",
+   "name": "Chope",
+   "cost": 2.0,
+   "layer": "liquid",
+   "color": [
+    0.95,
+    0.68,
+    0.12
+   ],
+   "requires": "chopeira",
+   "pour_only": true
   }
  ],
  "recipes": [
@@ -402,6 +415,22 @@
     "azedo": 0.5
    },
    "secret": true
+  },
+  {
+   "id": "chope",
+   "name": "Chope gelado",
+   "needs": [
+    "chope"
+   ],
+   "price": 12,
+   "mesh": "chope",
+   "known": true,
+   "requires": "chopeira",
+   "taste": {
+    "doce": 0.2,
+    "forte": 0.5,
+    "azedo": 0.1
+   }
   }
  ],
  "_doc_prep": "Physical prep (CHECKLIST_EXPANSOES 1.1, MareBar.cpp/MareBarWorld.cpp): the player picks an ingredient from the prep bench (E), it shows in the hand, E on the work glass drops it in (stock used then). Every ingredient has a layer in the glass (ice, fruit, spirit/liquid) and a colour for the drink. Steps before serving: 'socar' when the glass holds a muddle ingredient, then 'liquidificar' when it holds a creamy one, else 'bater'. Each step is a mini-action scored 0..1; the average moves the price by prep_tip (±10%). 'Jogar fora' loses what was in the glass; the guest reacts. Places in world cm: bench [x,y,z top,yaw]; shelf {id or tool: [x,y,yaw]} on the bench top; glass [x,y,scale] (a big caipirinha glass, 1.5x a highball, so its layers read from the counter).",
@@ -503,6 +532,12 @@
    1490,
    -1188,
    0
+  ],
+  "chope": [
+   1420,
+   -1100,
+   0,
+   127
   ]
  },
  "glass": [
@@ -549,5 +584,108 @@
  "vip_fame": 4,
  "vip_chance": 0.12,
  "vip_name": "Comodoro Vasco",
- "achievement_fame": 10
+ "achievement_fame": 10,
+ "_doc_upgrades": "Upgrades (CHECKLIST_EXPANSOES 1.4), 5 levels each, bought at the bar counter (prices per level). liquidificador: wider blender zone (blend_zone per level) and blend_tip on blended drinks; freezer: ice_stock more ice on restock and melt_cut less melting per level (ice melts melt_per_hour, x melt_hot on a 'calor' day); banquetas: seats more guests (capped by the stools) and patience; neon: night_bonus more arrivals from night_from; chopeira: unlocks the 'chope' tap (pour only, no prep) and chope_price per level. upgrade_props: [x, y, z, yaw] world cm of the model shown from level 1. Bartender: knows the starting menu and learns one of the player's recipes every barman_learn_days; barman_error by staff level (1..5) is the chance of botching a drink (guest leaves, ingredients lost). Models face Blender -Y, which arrives as UE +Y: yaw 90 turns that front toward -X, 180 toward -Y.",
+ "upgrades": {
+  "liquidificador": {
+   "name": "Liquidificador",
+   "desc": "Motor forte: o pulso certo fica mais fácil e o batido rende mais gorjeta.",
+   "prices": [
+    180,
+    350,
+    650,
+    1100,
+    1800
+   ],
+   "blend_zone": 0.03,
+   "blend_tip": 0.03
+  },
+  "freezer": {
+   "name": "Freezer de gelo",
+   "desc": "Mais gelo guardado e derretendo bem mais devagar no calor.",
+   "prices": [
+    200,
+    380,
+    700,
+    1200,
+    1900
+   ],
+   "ice_stock": 4,
+   "melt_cut": 0.18
+  },
+  "banquetas": {
+   "name": "Banquetas extras",
+   "desc": "Mais gente sentada no balcão ao mesmo tempo, e esperando com mais paciência.",
+   "prices": [
+    150,
+    300,
+    550,
+    950,
+    1500
+   ],
+   "seats": [
+    1,
+    2,
+    2,
+    2,
+    2
+   ],
+   "patience": 0.15
+  },
+  "neon": {
+   "name": "Letreiro neon",
+   "desc": "O bar brilha à noite: mais clientes a partir das 18h.",
+   "prices": [
+    220,
+    420,
+    750,
+    1250,
+    2000
+   ],
+   "night_from": 18,
+   "night_bonus": 0.15
+  },
+  "chopeira": {
+   "name": "Chopeira",
+   "desc": "Chope gelado na torneira: rápido, sem preparo. Cada nível vende mais caro.",
+   "prices": [
+    400,
+    600,
+    900,
+    1400,
+    2100
+   ],
+   "chope_price": 0.1
+  }
+ },
+ "upgrade_props": {
+  "neon": [
+   1504,
+   -1300,
+   122,
+   90
+  ],
+  "chopeira": [
+   1420,
+   -1100,
+   127,
+   180
+  ],
+  "freezer": [
+   1485,
+   -1362,
+   44.5,
+   90
+  ]
+ },
+ "melt_per_hour": 0.5,
+ "melt_hot": 4,
+ "barman_learn_days": 2,
+ "barman_error": [
+  0.15,
+  0.08,
+  0.04,
+  0.02,
+  0.0
+ ]
 }
