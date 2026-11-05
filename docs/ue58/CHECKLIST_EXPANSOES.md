@@ -63,9 +63,15 @@ Decisões (04/11/2026):
 
 ### 1.3 Caderno de receitas (app do celular)
 
-- [ ] Receitas conhecidas com ingredientes. As desconhecidas aparecem como "???" com uma dica.
-- [ ] Receita secreta "Drink do Coqueiro" só por missão ou cliente VIP.
-- [ ] Conquista: descobrir todas.
+- [x] Receitas conhecidas com ingredientes. As desconhecidas aparecem como "???" com uma dica.
+- [x] Receita secreta "Drink do Coqueiro" só por missão ou cliente VIP.
+- [x] Conquista: descobrir todas.
+
+Decisões (04/11/2026):
+- Aba nova "Drinks" no celular, só depois de comprar o bar (8 abas cabem na tela; LB/RB percorrem todas). Para as conhecidas: nome, preço, ingredientes e passos do preparo; para as desconhecidas: "???" com a dica.
+- O "Drink do Coqueiro" é `secret`: misturar não faz nada até um VIP contar. O VIP ("Comodoro Vasco") aparece a partir da fama 4, com 12% de chance por chegada e um por vez. Pede surpresa no balão "VIP · ... conto um segredo" e, bem servido, cochicha a receita, que entra no caderno. Saves que já tinham descoberto o drink continuam com ele.
+- A conquista "Mestre dos drinks" fica em `prog.achievements.mestre_drinks` e vale +10 de fama. Ligar à conquista da Steam na seção 7.
+- Prova: `BarGuests` (VIP, segredo, conquista) + `BarPrep` (segredo fechado) + `docs/ue58/graphics-reference/bar_recipe_book.jpg`.
 
 ### 1.4 Evolução
 

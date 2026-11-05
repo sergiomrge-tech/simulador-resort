@@ -395,12 +395,13 @@
    ],
    "price": 32,
    "mesh": "coco_gelado",
-   "hint": "o drink da casa: rum, coco e mais três coisas",
+   "hint": "segredo da casa: só um VIP conhece",
    "taste": {
     "doce": 0.8,
     "forte": 0.8,
     "azedo": 0.5
-   }
+   },
+   "secret": true
   }
  ],
  "_doc_prep": "Physical prep (CHECKLIST_EXPANSOES 1.1, MareBar.cpp/MareBarWorld.cpp): the player picks an ingredient from the prep bench (E), it shows in the hand, E on the work glass drops it in (stock used then). Every ingredient has a layer in the glass (ice, fruit, spirit/liquid) and a colour for the drink. Steps before serving: 'socar' when the glass holds a muddle ingredient, then 'liquidificar' when it holds a creamy one, else 'bater'. Each step is a mini-action scored 0..1; the average moves the price by prep_tip (±10%). 'Jogar fora' loses what was in the glass; the guest reacts. Places in world cm: bench [x,y,z top,yaw]; shelf {id or tool: [x,y,yaw]} on the bench top; glass [x,y,scale] (a big caipirinha glass, 1.5x a highball, so its layers read from the counter).",
@@ -543,5 +544,10 @@
  "regular_chance": 0.3,
  "max_regulars": 8,
  "regular_fame": 1,
- "regular_tip": 0.15
+ "regular_tip": 0.15,
+ "_doc_book": "Recipe book (CHECKLIST_EXPANSOES 1.3, phone tab 'Drinks'): known recipes with ingredients, price and prep steps; unknown ones as '???' with the hint. A secret recipe cannot be mixed until a VIP guest (vip: fame level vip_fame, chance vip_chance per arrival, name vip_name) is served right and tells it. Knowing every recipe is the achievement 'mestre_drinks' (achievement_fame).",
+ "vip_fame": 4,
+ "vip_chance": 0.12,
+ "vip_name": "Comodoro Vasco",
+ "achievement_fame": 10
 }

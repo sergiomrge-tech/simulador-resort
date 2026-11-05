@@ -442,6 +442,10 @@ public:
  int32 SurpriseStars(const FString& Recipe,const FString& Taste) const;
  /** Happy hour now, or a full-moon night: more guests and more stools taken. */
  bool IsBarRush() const;
+ /** The house drink (secret recipe) was told by a VIP and can be mixed. */
+ bool IsBarSecretOpen(const FString& Recipe) const;
+ /** Every recipe known: the "Mestre dos drinks" achievement (prog.achievements.mestre_drinks). */
+ bool HasBarAchievement() const;
  /** Regular guests: name -> their usual drink. */
  TMap<FString,FString> BarRegulars() const;
  /** Bets and prizes from minigames (game room): books the amount with a label, like any other income or expense. */

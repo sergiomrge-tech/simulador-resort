@@ -156,7 +156,7 @@ public:
   if(Event.GetKey()==EKeys::Escape && Owner.IsValid()){Owner->ClosePhone();return FReply::Handled();}
   // LB/RB turn the notebook tabs (phone only: a station has a single page).
   const bool bPrev=Event.GetKey()==EKeys::Gamepad_LeftShoulder,bNext=Event.GetKey()==EKeys::Gamepad_RightShoulder;
-  if((bPrev || bNext) && Station.IsNone()){Tab=(Tab+(bNext?1:6))%7;Rebuild();MareGamepad::FocusSoon(AsShared(),Tab,false);return FReply::Handled();}
+  if((bPrev || bNext) && Station.IsNone()){const int32 N=TabTitles().Num();Tab=(Tab+(bNext?1:N-1))%N;Rebuild();MareGamepad::FocusSoon(AsShared(),Tab,false);return FReply::Handled();}
   return SCompoundWidget::OnKeyDown(Geometry,Event);
  }
 private:
@@ -404,6 +404,32 @@ private:
    Row->AddSlot().Padding(0,2,8,2)[Button(FString::Printf(TEXT("Valendo R$ %.0f"),Bet),[Play,this,Bet](){Play(Bet,PoolPick);},S->Money()>=Bet)];}
   Body->AddSlot().AutoHeight().Padding(0,0,0,8)[Row];
   Line(TEXT("O saque quica primeiro do seu lado e depois do outro; rede no saque repete o ponto. Na troca de bola, devolva depois de um quique. Mova a raquete até a bola: o ponto onde ela bate e o movimento do mouse dão a direção; segurando o clique você corta, mais forte e mais arriscado."),12,Faded);
+ }
+ /** Phone tabs; "Drinks" (the bar's recipe book) only once the bar is bought. */
+ TArray<FString> TabTitles()const
+ {
+  TArray<FString> T={TEXT("Quiosque"),TEXT("Compras"),TEXT("Equipe"),TEXT("Finanças"),TEXT("Resort"),TEXT("Missões"),TEXT("Personalizar")};
+  bool bBar=false;if(auto S=Sim())UMareSimulation::Object(S->State,TEXT("unlocked"))->TryGetBoolField(TEXT("bar"),bBar);if(bBar)T.Add(TEXT("Drinks"));return T;
+ }
+ /** Recipe book of the Bar do Coqueiro (CHECKLIST_EXPANSOES 1.3): known drinks with ingredients, price and prep steps;
+  *  unknown ones as "???" with the hint; the secret house drink; the "Mestre dos drinks" achievement. */
+ void DrinksPage()
+ {
+  auto S=Sim();using namespace MareNotebook;auto Defs=S->BarDefs();
+  auto IngredientName=[&Defs](const FString& Id){const TArray<TSharedPtr<FJsonValue>>* L=nullptr;if(Defs->TryGetArrayField(TEXT("ingredients"),L))
+   for(const auto& V:*L)if(UMareSimulation::String(V->AsObject(),TEXT("id"))==Id)return UMareSimulation::String(V->AsObject(),TEXT("name"));return Id;};
+  int32 Known=0,Total=0;const TArray<TSharedPtr<FJsonValue>>* Recipes=nullptr;Defs->TryGetArrayField(TEXT("recipes"),Recipes);
+  if(Recipes)for(const auto& V:*Recipes){++Total;Known+=S->IsRecipeKnown(UMareSimulation::String(V->AsObject(),TEXT("id")));}
+  Title(TEXT("Caderno de drinks"),FString::Printf(TEXT("%d de %d receitas"),Known,Total));
+  Line(S->HasBarAchievement()?TEXT("Conquista: Mestre dos drinks! Todas as receitas descobertas."):TEXT("Misture no copo da bancada para descobrir receitas novas (cada uma dá fama)."),12,S->HasBarAchievement()?Green:Faded);
+  const auto Lines=UMareSimulation::Object(Defs,TEXT("prep_lines"));
+  if(Recipes)for(const auto& V:*Recipes){const auto R=V->AsObject();const FString Id=UMareSimulation::String(R,TEXT("id"));bool bSecret=false;R->TryGetBoolField(TEXT("secret"),bSecret);
+   if(S->IsRecipeKnown(Id)){TArray<FString> Parts,Mix;const TArray<TSharedPtr<FJsonValue>>* Needs=nullptr;
+    if(R->TryGetArrayField(TEXT("needs"),Needs))for(const auto& N:*Needs){Parts.Add(IngredientName(N->AsString()));Mix.Add(N->AsString());}
+    TArray<FString> Steps;for(const FString& St:S->BarPrepSteps(Mix))Steps.Add(UMareSimulation::String(Lines,St));
+    Heading(UMareSimulation::String(R,TEXT("name"))+(bSecret?TEXT(" · receita secreta"):TEXT("")),FString::Printf(TEXT("R$ %.0f"),S->DrinkPrice(Id)));
+    Line(FString::Join(Parts,TEXT(" + "))+TEXT("  ·  ")+FString::Join(Steps,TEXT(", ")),12,Ink);}
+   else Line(FString(bSecret?TEXT("??? (receita secreta)"):TEXT("???"))+TEXT(" · dica: ")+UMareSimulation::String(R,TEXT("hint")),12.5f,Faded);}
  }
  /** Bar do Coqueiro: guests' orders, the shaker and the ingredient shelf, the recipe book (MareBar.cpp). */
  void BarPage()
@@ -704,7 +730,7 @@ private:
  {
   if(!Sim())return;auto S=Sim();using namespace MareNotebook;
   const int32 PrevFocus=MareGamepad::FocusedIndex(AsShared());   // the same control keeps the gamepad focus after the rebuild
-  static const TArray<FString> Titles={TEXT("Quiosque"),TEXT("Compras"),TEXT("Equipe"),TEXT("Finanças"),TEXT("Resort"),TEXT("Missões"),TEXT("Personalizar")};
+  const TArray<FString> Titles=TabTitles();if(!Titles.IsValidIndex(Tab))Tab=0;
   const bool bPhone=Station.IsNone();const bool bIndex=bPhone && Tab==6;
   SAssignNew(Body,SVerticalBox);
   // Status line in pencil: day, clock, weather and cash.
@@ -752,7 +778,8 @@ private:
    case 3:FinancePage();break;
    case 4:ResortPage();break;
    case 5:MissionsPage();break;
-   default:CustomizePage();
+   case 6:CustomizePage();break;
+   default:DrinksPage();
   }
  }
 };

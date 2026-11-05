@@ -246,3 +246,10 @@ def cam(arg=''):
     c.camera_component.set_editor_property('field_of_view', 50)
     pc.set_view_target_with_blend(c)
     return 'cam'
+
+
+def phone(arg='7'):
+    """PIE: open the phone on a tab (7 = Drinks once the bar is bought)."""
+    pc = unreal.GameplayStatics.get_player_controller(_game_world(), 0)
+    pc.open_phone(int(arg))
+    return 'ok'

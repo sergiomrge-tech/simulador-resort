@@ -618,6 +618,9 @@ bool FMareBarPrepTest::RunTest(const FString& Parameters)
  TestEqual(TEXT("Batida: blender"),FString::Join(Sim->BarPrepSteps({TEXT("cachaca"),TEXT("coco"),TEXT("leite_condensado"),TEXT("gelo")}),TEXT(",")),FString(TEXT("liquidificar")));
  TestEqual(TEXT("Mojito: muddle then shake"),FString::Join(Sim->BarPrepSteps({TEXT("rum"),TEXT("limao"),TEXT("hortela"),TEXT("acucar"),TEXT("agua_gas")}),TEXT(",")),FString(TEXT("socar,bater")));
  TestFalse(TEXT("Steps in order only"),Sim->BarPrepStep(TEXT("bater"),1));
+ // The house drink is secret: mixing it does nothing until a VIP tells it (MareAlta.Gameplay.BarGuests); open it here.
+ TestTrue(TEXT("Secret recipe closed"),Sim->MixRecipe({TEXT("rum"),TEXT("maracuja"),TEXT("coco"),TEXT("hortela"),TEXT("gelo")}).IsEmpty());
+ Sim->Object(Sim->Bar(),TEXT("secrets"))->SetBoolField(TEXT("coqueiro"),true);
  // Every recipe, in its order and reversed, served to a guest who asked for it.
  const TArray<TSharedPtr<FJsonValue>>* Recipes=nullptr;Sim->BarDefs()->TryGetArrayField(TEXT("recipes"),Recipes);
  int32 Made=0;
@@ -690,6 +693,24 @@ bool FMareBarGuestsTest::RunTest(const FString& Parameters)
  TestEqual(TEXT("Usual bubble"),Sim->BarBubble(O),FString(TEXT("O de sempre!")));
  Sim->RestockBar();const double Fame=Sim->Number(Sim->Object(Sim->State,TEXT("prog")),TEXT("fame_xp"));R=Serve(D,Usual.IsEmpty()?FString(TEXT("caipirinha")):Usual);
  TestTrue(TEXT("Usual served"),R.bServed && R.bUsual);TestTrue(TEXT("Usual gives extra fame"),Sim->Number(Sim->Object(Sim->State,TEXT("prog")),TEXT("fame_xp"))>=Fame+2);
+ // (regulars stay away while the VIP is tested: a regular's return would take that arrival)
+ Sim->BarDefs()->SetNumberField(TEXT("regular_chance"),0);
+ // A VIP tells the secret house drink to whoever serves them well; knowing every recipe is the achievement.
+ TestFalse(TEXT("Secret closed at first"),Sim->IsBarSecretOpen(TEXT("coqueiro")));
+ Sim->Object(Sim->State,TEXT("prog"))->SetNumberField(TEXT("fame_xp"),100000);
+ const double Vip=Sim->Number(Sim->BarDefs(),TEXT("vip_chance"),.12);Sim->BarDefs()->SetNumberField(TEXT("vip_chance"),1);
+ const FString V=Sim->AddBarOrder();bool bVip=false;if(auto VO=OrderOf(V))VO->TryGetBoolField(TEXT("vip"),bVip);
+ Sim->BarDefs()->SetNumberField(TEXT("vip_chance"),Vip);
+ TestTrue(TEXT("VIP at the counter"),bVip);TestTrue(TEXT("VIP bubble"),Sim->BarBubble(OrderOf(V)).StartsWith(TEXT("VIP")));
+ Sim->RestockBar();R=Serve(V,TEXT("caipirinha"));
+ TestTrue(TEXT("VIP served opens the secret"),R.bServed && Sim->IsBarSecretOpen(TEXT("coqueiro")) && Sim->IsRecipeKnown(TEXT("coqueiro")));
+ TestEqual(TEXT("Secret mixable"),Sim->MixRecipe({TEXT("rum"),TEXT("maracuja"),TEXT("coco"),TEXT("hortela"),TEXT("gelo")}),FString(TEXT("coqueiro")));
+ TestFalse(TEXT("No achievement yet"),Sim->HasBarAchievement());
+ for(const auto& RV:Sim->BarDefs()->GetArrayField(TEXT("recipes"))){const FString Id=Sim->String(RV->AsObject(),TEXT("id"));
+  if(Sim->IsRecipeKnown(Id) || Id==TEXT("mojito"))continue;
+  auto Known=Sim->Bar()->GetArrayField(TEXT("known"));Known.Add(MakeShared<FJsonValueString>(Id));Sim->Bar()->SetArrayField(TEXT("known"),Known);}
+ const FString M=Sim->AddBarOrder(TEXT("mojito"));Sim->RestockBar();R=Serve(M,TEXT("mojito"));
+ TestTrue(TEXT("Last recipe gives the achievement"),R.bServed && Sim->HasBarAchievement());
  Sim->BarDefs()->SetNumberField(TEXT("regular_chance"),Chance);
  // Rush: happy hour and full-moon nights; more stools taken.
  TestFalse(TEXT("No rush at 10h"),Sim->IsBarRush());
