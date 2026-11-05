@@ -892,6 +892,52 @@ bool FMareToursHandsOnTest::RunTest(const FString& Parameters)
  Sim->RemoveFromRoot();Instance->RemoveFromRoot();return true;
 }
 
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FMareTourBoothTest,"MareAlta.Gameplay.TourBooth",EAutomationTestFlags::EditorContext|EAutomationTestFlags::EngineFilter)
+bool FMareTourBoothTest::RunTest(const FString& Parameters)
+{
+ // CHECKLIST_EXPANSOES 2.1: groups with a bubble, extras that please or annoy, seats and waiting list, rough-sea choice.
+ auto Instance=NewObject<UGameInstance>();Instance->AddToRoot();
+ auto Sim=NewObject<UMareSimulation>(Instance);Sim->AddToRoot();
+ Sim->SaveDirectory=FPaths::ProjectSavedDir()/TEXT("Automation/TourBooth")/FGuid::NewGuid().ToString(EGuidFormats::Digits);
+ auto Load=[&](const FString& Name,TSharedPtr<FJsonObject>& Result){FString Text;FFileHelper::LoadFileToString(Text,*(FPaths::ProjectContentDir()/TEXT("Data")/Name));return FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Text),Result);};
+ if(!TestTrue(TEXT("Definitions"),Load(TEXT("definitions.json"),Sim->Definitions)) || !TestTrue(TEXT("Default save"),Load(TEXT("default_save.json"),Sim->State))){Sim->RemoveFromRoot();Instance->RemoveFromRoot();return false;}
+ Sim->State->SetNumberField(TEXT("money"),2000);Sim->Object(Sim->State,TEXT("unlocked"))->SetBoolField(TEXT("passeios"),true);
+ Sim->State->SetNumberField(TEXT("minutes"),11*60);
+ const FString Boat=TEXT("barco");const double Price=Sim->TicketPrice(Boat);
+ // A family with a kid, hungry: colete and lanche are wanted.
+ Sim->AddTourGroup(Boat,2,1,TEXT("hungry"));const auto G=Sim->TourGroups(Boat);
+ TestEqual(TEXT("Group in line"),G.Num(),1);TestTrue(TEXT("Bubble line"),Sim->TourGroupLine(G[0]).Contains(TEXT("2 adultos e 1 criança")) && Sim->TourGroupLine(G[0]).Contains(TEXT("fome")));
+ double Before=Sim->Money();TestEqual(TEXT("Three board"),Sim->SellTourGroup(Boat,{TEXT("colete"),TEXT("lanche")}),3);
+ const auto X=Sim->Object(Sim->ToursDefs(),TEXT("extras"));
+ TestEqual(TEXT("Tickets and wanted extras paid"),Sim->Money()-Before,3*Price+3*Sim->Number(Sim->Object(X,TEXT("colete")),TEXT("price"))+3*Sim->Number(Sim->Object(X,TEXT("lanche")),TEXT("price")));
+ const double Pleased=Sim->Number(Sim->Object(Sim->Tours(),TEXT("extra_rating")),Boat);TestTrue(TEXT("Wanted extras raise the rating"),Pleased>0);
+ // Pushing an extra nobody wants: refused, rating down.
+ Sim->AddTourGroup(Boat,2,0,TEXT("calm"));Before=Sim->Money();Sim->SellTourGroup(Boat,{TEXT("foto")});
+ TestEqual(TEXT("Unwanted extra not paid"),Sim->Money()-Before,2*Price);
+ TestTrue(TEXT("Pushy seller loses rating"),Sim->Number(Sim->Object(Sim->Tours(),TEXT("extra_rating")),Boat)<Pleased);
+ // Seats: a group that does not fit goes to the waiting list and comes first tomorrow.
+ const int32 Seats=Sim->TourSeats(Sim->TourDef(Boat));Sim->Object(Sim->Tours(),TEXT("sold"))->SetNumberField(Boat,Seats-1);
+ Sim->AddTourGroup(Boat,3,0,TEXT(""));TestEqual(TEXT("Full: nobody boards"),Sim->SellTourGroup(Boat,{}),0);TestEqual(TEXT("Waiting list"),Sim->TourWaitlist(Boat),1);
+ Sim->State->SetNumberField(TEXT("day"),Sim->Number(Sim->State,TEXT("day"),1)+1);Sim->State->SetNumberField(TEXT("minutes"),11*60);
+ Sim->Tours();Sim->ToursHour(12);
+ TestTrue(TEXT("Waiting group first in line tomorrow"),Sim->TourGroups(Boat).Num()>=1 && Sim->Number(Sim->TourGroups(Boat)[0],TEXT("adults"))==3);
+ TestEqual(TEXT("Waiting list emptied"),Sim->TourWaitlist(Boat),0);
+ // Rough sea with tickets sold: the player chooses; refund gives the money back.
+ Sim->SellTourGroup(Boat,{});const int32 Pax=Sim->TourCount(TEXT("sold"),Boat);TestTrue(TEXT("Sold before the storm"),Pax>0);
+ Sim->State->SetStringField(TEXT("day_event"),TEXT("tempestade"));Sim->ToursHour(13);
+ TestTrue(TEXT("Storm waits for a choice"),Sim->IsTourStormPending(Boat));
+ Before=Sim->Money();TestTrue(TEXT("Refund"),Sim->RefundTour(Boat));TestEqual(TEXT("Refunded"),Sim->Money(),Before-Pax*Price);
+ TestEqual(TEXT("Cancelled after refund"),Sim->TourStatus(Boat),FString(TEXT("cancelled")));
+ // Next day, rough again: reschedule keeps most seats for tomorrow, already paid.
+ Sim->State->SetNumberField(TEXT("day"),Sim->Number(Sim->State,TEXT("day"),1)+1);Sim->State->SetStringField(TEXT("day_event"),TEXT(""));Sim->Tours();
+ Sim->AddTourGroup(Boat,4,0,TEXT(""));Sim->SellTourGroup(Boat,{});Sim->State->SetStringField(TEXT("day_event"),TEXT("tempestade"));Sim->ToursHour(13);
+ Before=Sim->Money();TestTrue(TEXT("Reschedule"),Sim->RescheduleTour(Boat));TestTrue(TEXT("Part refunded at most"),Sim->Money()>=Before-4*Price && Sim->Money()<=Before);
+ Sim->State->SetNumberField(TEXT("day"),Sim->Number(Sim->State,TEXT("day"),1)+1);Sim->State->SetStringField(TEXT("day_event"),TEXT(""));Sim->Tours();Sim->ToursHour(12);
+ TestTrue(TEXT("Rescheduled seats already sold tomorrow"),Sim->TourCount(TEXT("sold"),Boat)>=3);
+ IFileManager::Get().DeleteDirectory(*Sim->SaveDirectory,false,true);
+ Sim->RemoveFromRoot();Instance->RemoveFromRoot();return true;
+}
+
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FMareRestaurantTest,"MareAlta.Gameplay.HotelRestaurant",EAutomationTestFlags::EditorContext|EAutomationTestFlags::EngineFilter)
 bool FMareRestaurantTest::RunTest(const FString& Parameters)
 {

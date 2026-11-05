@@ -338,3 +338,10 @@ def neon_material(arg=''):
             out['slot%d' % i] = 'pink'
     unreal.EditorAssetLibrary.save_loaded_asset(mesh, False)
     return json.dumps(out)
+
+
+def station(arg='Tours'):
+    """PIE: open a station page (Bar, Tours, ...)."""
+    pc = unreal.GameplayStatics.get_player_controller(_game_world(), 0)
+    pc.open_station(arg)
+    return 'ok'

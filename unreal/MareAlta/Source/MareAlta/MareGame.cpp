@@ -7,6 +7,7 @@
 #include "UnrealClient.h"
 #include "Widgets/SCanvas.h"
 #include "MareBarWorld.h"
+#include "MareToursWorld.h"
 #include "MarePlayerPresentation.h"
 #include "MareHomeWorld.h"
 #include "MareVillageWorld.h"
@@ -171,6 +172,8 @@ private:
  /** Tours booth: the tour being guided and the choice made at each stop (0 good, 1 ok, 2 bad). */
  FString GuideTourId;
  TArray<int32> GuideChoices;
+ /** Booth: the extras the player is about to offer the first group (colete, foto, lanche). */
+ TSet<FString> OfferExtras;
  UMareSimulation* Sim()const{return Owner.IsValid()?Owner->GetGameInstance()->GetSubsystem<UMareSimulation>():nullptr;}
  // ---- Where the page goes: exactly over the glass of the 3D phone, else a fixed sheet.
  // Viewport pixels -> units inside the DPI scaler: measured from this widget, so monitor DPI is included.
@@ -335,14 +338,33 @@ private:
    FString Note;
    if(Status==TEXT("guided"))Note=FString::Printf(TEXT("já saiu com você · nota %.1f"),UMareSimulation::Number(UMareSimulation::Object(UMareSimulation::Object(S->State,TEXT("tours")),TEXT("rating")),Id));
    else if(Status==TEXT("guide"))Note=TEXT("já saiu com o guia");else if(Status==TEXT("cancelled"))Note=TEXT("cancelado hoje");else if(Status==TEXT("empty"))Note=TEXT("saiu vazio");
+   else if(Status==TEXT("rescheduled"))Note=TEXT("remarcado para amanhã");
+   else if(Status==TEXT("storm"))Note=TEXT("mar bravo: decida antes da saída");
    else Note=FString::Printf(TEXT("sai às %.0fh · R$ %.0f · %d de %d lugares vendidos"),UMareSimulation::Number(Tour,TEXT("hour")),S->TicketPrice(Id),Sold,Seats);
    Heading(UMareSimulation::String(Tour,TEXT("name")),Note);
+   // Rough sea with tickets sold: refund or reschedule (it changes the rating).
+   if(Status==TEXT("storm")){auto Storm=SNew(SHorizontalBox);
+    Storm->AddSlot().AutoWidth().Padding(0,0,8,0)[Button(TEXT("Devolver o dinheiro"),[this,S,Id](){if(S->RefundTour(Id))UMareAudioWorld::Action(Owner.Get(),TEXT("money_coins"));})];
+    Storm->AddSlot().AutoWidth()[Button(TEXT("Remarcar para amanhã"),[this,S,Id](){if(S->RescheduleTour(Id))UMareAudioWorld::Action(Owner.Get(),TEXT("deal_accept"));})];
+    Body->AddSlot().AutoHeight().Padding(0,2,0,6)[Storm];continue;}
    if(!Status.IsEmpty())continue;
+   // Seats as boxes: sold, free; and the waiting list.
+   {Line(FString::Printf(TEXT("Lugares: %d de %d ocupados · %d livres"),Sold,Seats,FMath::Max(0,Seats-Sold))+(S->TourWaitlist(Id)?FString::Printf(TEXT(" · lista de espera: %d grupo(s)"),S->TourWaitlist(Id)):FString()),12,Ink);}
+   const auto Groups=S->TourGroups(Id);
+   if(Groups.Num()){Line(FString::Printf(TEXT("Na fila: %s (%s)"),*UMareSimulation::String(Groups[0],TEXT("name")),*S->TourGroupLine(Groups[0]))
+     +(Groups.Num()>1?FString::Printf(TEXT(" · mais %d grupo(s)"),Groups.Num()-1):FString()),12.5f,Ink);
+    auto Extras=SNew(SHorizontalBox);
+    Extras->AddSlot().AutoWidth().VAlign(VAlign_Center).Padding(0,0,6,0)[BodyText(TEXT("Oferecer:"),12,Faded)];
+    for(const auto& Pair:UMareSimulation::Object(S->ToursDefs(),TEXT("extras"))->Values){const FString E(Pair.Key.ToView());const bool bOn=OfferExtras.Contains(E);
+     Extras->AddSlot().AutoWidth().Padding(0,2,6,2)[Button((bOn?TEXT("» "):TEXT(""))+UMareSimulation::String(Pair.Value->AsObject(),TEXT("short")),[this,E](){if(OfferExtras.Contains(E))OfferExtras.Remove(E);else OfferExtras.Add(E);})];}
+    Body->AddSlot().AutoHeight()[Extras];}
    auto Row=SNew(SHorizontalBox);
-   Row->AddSlot().AutoWidth().Padding(0,0,8,0)[Button(Queue>0?FString::Printf(TEXT("Vender %d bilhete(s)"),FMath::Min(Queue,Seats-Sold)):FString(TEXT("Ninguém na fila")),[this,S,Id](){
-    if(S->SellTickets(Id)>0)UMareAudioWorld::Action(Owner.Get(),TEXT("money_register"));},Queue>0 && Sold<Seats)];
+   Row->AddSlot().AutoWidth().Padding(0,0,8,0)[Button(Groups.Num()?FString::Printf(TEXT("Vender para %s"),*UMareSimulation::String(Groups[0],TEXT("name"))):Queue>0?FString::Printf(TEXT("Vender %d bilhete(s)"),FMath::Min(Queue,Seats-Sold)):FString(TEXT("Ninguém na fila")),[this,S,Id](){
+    const int32 N=S->TourGroups(Id).Num()?S->SellTourGroup(Id,OfferExtras.Array()):S->SellTickets(Id);OfferExtras.Reset();
+    if(N>0)UMareAudioWorld::Action(Owner.Get(),TEXT("money_register"));},Queue>0)];
    if(S->IsTourBoarding(Id))Row->AddSlot().AutoWidth()[Button(TEXT("Guiar o passeio agora"),[this,Id](){GuideTourId=Id;GuideChoices.Reset();},Sold>0)];
    Body->AddSlot().AutoHeight().Padding(0,2,0,6)[Row];}
+  Line(TEXT("Ofereça os extras que o grupo quer (criança pede colete, quem chega com fome quer lanche, primeira vez quer foto): rende mais e sobe a nota. Insistir no que não querem baixa a nota."),12,Faded);
   Line(TEXT("Na hora da saída, guie você mesmo: cada parada bem conduzida dá gorjeta e fama. Sem você e sem guia, o passeio é cancelado e os bilhetes devolvidos."),12,Faded);
  }
  /** Pool table (03/11, "sinuca como jogo completo"): pick an opponent, play a friendly or a betting match of
@@ -1850,7 +1872,8 @@ void AMareHUD::DrawHUD()
   const bool bShow=PC && !PC->IsMainMenuOpen() && !PC->bPhoneOpen && !GetWorld()->IsPaused() && PC->PlayerCameraManager;
   if(bShow)if(auto BarWorld=GetWorld()->GetSubsystem<UMareBarWorld>()){
    const FVector Eye=PC->PlayerCameraManager->GetCameraLocation();const FVector Fwd=PC->PlayerCameraManager->GetCameraRotation().Vector();
-   for(const auto& G:BarWorld->Bubbles()){const FVector D=G.Key-Eye;const float Dist=D.Size();if(Dist>1400 || FVector::DotProduct(D,Fwd)<=0)continue;
+   TArray<TPair<FVector,FString>> All=BarWorld->Bubbles();if(auto ToursWorld=GetWorld()->GetSubsystem<UMareToursWorld>())All.Append(ToursWorld->Bubbles());
+   for(const auto& G:All){const FVector D=G.Key-Eye;const float Dist=D.Size();if(Dist>1400 || FVector::DotProduct(D,Fwd)<=0)continue;
     FHitResult Hit;FCollisionQueryParams Q(TEXT("MareBubble"),false,GetOwningPawn());
     if(GetWorld()->LineTraceSingleByChannel(Hit,Eye,G.Key,ECC_Visibility,Q) && Hit.Distance<Dist-60)continue;
     FVector2D Pixel;if(!PC->ProjectWorldLocationToScreen(G.Key,Pixel))continue;

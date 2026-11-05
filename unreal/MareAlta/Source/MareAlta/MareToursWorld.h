@@ -15,6 +15,8 @@ class MAREALTA_API UMareToursWorld : public UTickableWorldSubsystem
  GENERATED_BODY()
 public:
  virtual void Tick(float DeltaSeconds) override;
+ /** Over the head of each group's figure in the booth line: who they are and what they want (2.1). */
+ TArray<TPair<FVector,FString>> Bubbles()const;
  virtual TStatId GetStatId() const override;
  virtual void Deinitialize() override;
 private:

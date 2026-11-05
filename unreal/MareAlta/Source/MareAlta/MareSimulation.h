@@ -186,6 +186,22 @@ public:
  /** Books one night of the pousada (rooms x rate x occupancy, plus tips); stores prog.pousada. */
  void PousadaNight();
  int32 TourSeats(const TSharedPtr<FJsonObject>& Tour) const;
+ // --- Ticket booth (CHECKLIST_EXPANSOES 2.1): groups in line, extras, waiting list, rough-sea choice ---
+ /** Groups waiting at the booth for a tour: {id, name, adults, kids, trait}. */
+ TArray<TSharedPtr<FJsonObject>> TourGroups(const FString& Id) const;
+ /** "2 adultos e 1 criança · chegamos com fome" (the group's bubble). */
+ FString TourGroupLine(const TSharedPtr<FJsonObject>& Group) const;
+ /** A group joins the line (QA/tests: the hourly arrivals use it too). */
+ void AddTourGroup(const FString& Id,int32 Adults,int32 Kids,const FString& Trait);
+ /** Sells to the first group in line, offering these extras (colete, foto, lanche); a group that does not fit goes to
+  *  the waiting list. Returns the people who boarded (0 when waitlisted or nobody waits). */
+ UFUNCTION(BlueprintCallable,Category="Maré Alta|Tours") int32 SellTourGroup(const FString& Id,const TArray<FString>& Extras);
+ /** Groups on the waiting list (they come first tomorrow). */
+ int32 TourWaitlist(const FString& Id) const;
+ /** Rough sea with tickets sold: waiting for the player's choice. */
+ bool IsTourStormPending(const FString& Id) const;
+ UFUNCTION(BlueprintCallable,Category="Maré Alta|Tours") bool RefundTour(const FString& Id);
+ UFUNCTION(BlueprintCallable,Category="Maré Alta|Tours") bool RescheduleTour(const FString& Id);
  int32 TourPassengers(const TSharedPtr<FJsonObject>& Tour) const;
  /** Expected income of an hourly operation (bar, pool) or business for one open hour, before chance. */
  double HourlyIncome(const FString& Id) const;

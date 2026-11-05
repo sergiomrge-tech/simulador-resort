@@ -100,9 +100,17 @@ Decisões (04/11/2026):
 
 ### 2.1 Bilheteria
 
-- [ ] Turistas na fila com pedido no balão ("2 adultos e 1 criança"). O jogador vende e oferece extras: colete, foto do passeio e lanche (+renda, +nota).
-- [ ] Lotação visível (assentos do barco) e lista de espera.
-- [ ] Mar bravo: escolher entre devolver o dinheiro ou remarcar para amanhã (afeta a nota).
+- [x] Turistas na fila com pedido no balão ("2 adultos e 1 criança"). O jogador vende e oferece extras: colete, foto do passeio e lanche (+renda, +nota).
+- [x] Lotação visível (assentos do barco) e lista de espera.
+- [x] Mar bravo: escolher entre devolver o dinheiro ou remarcar para amanhã (afeta a nota).
+
+Decisões (04/11/2026):
+- A fila virou uma lista de grupos (`tours.groups`): adultos, crianças e um traço ("chegamos com fome", "é nossa primeira vez!", "queremos sossego"). Cada grupo tem uma figura no píer com balão, e a página da bilheteria mostra o primeiro da fila.
+- **Extras** (`tours.json` "extras"): o colete agrada quando há criança, o lanche quem chegou com fome e a foto quem vem pela primeira vez. O extra desejado é pago (por pessoa ou por grupo) e soma nota; oferecer o que não querem é recusado e tira 0,15 ("insistiu demais"). A média dos extras entra na nota do passeio, guiado pelo jogador ou pelo guia. O guia vende sem oferecer extras.
+- **Lugares:** "x de y ocupados · z livres". O grupo que não cabe vai para a lista de espera e volta primeiro na fila do dia seguinte.
+- **Mar bravo com bilhete vendido:** o passeio fica pendente até o jogador escolher. Devolver vale nota 3; remarcar vale nota 4, e 70% das pessoas mantêm a reserva paga para amanhã. Sem decisão até o fim da hora de saída, o dinheiro é devolvido.
+- **Correção encontrada:** os grupos de um passeio que já saiu ficavam na fila e nos balões; agora são limpos.
+- **Prova:** teste `MareAlta.Gameplay.TourBooth` (e `ToursHandsOn` segue passando) + `docs/ue58/graphics-reference/tours_booth.jpg`.
 
 ### 2.2 Passeio de barco (jogável)
 

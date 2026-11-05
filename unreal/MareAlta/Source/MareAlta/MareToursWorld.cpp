@@ -33,6 +33,14 @@ AMarePerson* UMareToursWorld::Spawn(const FVector& At,float Yaw,const FString& I
  Person->GetCharacterMovement()->DisableMovement();return Person;
 }
 
+TArray<TPair<FVector,FString>> UMareToursWorld::Bubbles()const
+{
+ TArray<TPair<FVector,FString>> Out;auto S=GetWorld() && GetWorld()->GetGameInstance()?GetWorld()->GetGameInstance()->GetSubsystem<UMareSimulation>():nullptr;if(!S)return Out;
+ int32 I=0;for(const FString& Id:S->TourIds())for(const auto& G:S->TourGroups(Id)){if(!Buyers.IsValidIndex(I) || !IsValid(Buyers[I]))return Out;
+  Out.Add({Buyers[I]->GetActorLocation()+FVector(0,0,92),UMareSimulation::String(G,TEXT("name"))+TEXT(": ")+S->TourGroupLine(G)+TEXT(" · ")+UMareSimulation::String(S->TourDef(Id),TEXT("name"))});++I;}
+ return Out;
+}
+
 void UMareToursWorld::Tick(float DeltaSeconds)
 {
  if(!GetWorld() || !GetWorld()->IsGameWorld() || !GetWorld()->GetGameInstance())return;
@@ -58,8 +66,8 @@ void UMareToursWorld::Tick(float DeltaSeconds)
  if(Booth)Booth->SetActorHiddenInGame(!bOwned);
  if(BoothModel){BoothModel->SetActorHiddenInGame(!bOwned);BoothModel->SetActorEnableCollision(bOwned);}
  if(!bOwned)return;
- // Buyers in line: everyone waiting for any of today's tours, up to six figures.
- int32 Waiting=0;for(const FString& Id:S->TourIds())Waiting+=S->TourCount(TEXT("queue"),Id);Waiting=FMath::Min(Waiting,6);
+ // Buyers in line: one figure per group waiting (or per person for an old count-only line), up to six.
+ int32 Waiting=0;for(const FString& Id:S->TourIds()){if(!S->TourStatus(Id).IsEmpty())continue;const int32 G=S->TourGroups(Id).Num();Waiting+=G?G:S->TourCount(TEXT("queue"),Id);}Waiting=FMath::Min(Waiting,6);
  const TArray<TSharedPtr<FJsonValue>>* Q=nullptr;FVector First(7200,-2260,0);double Step=-85;
  if(Defs->TryGetArrayField(TEXT("queue"),Q) && Q->Num()==4){First=FVector((*Q)[0]->AsNumber(),(*Q)[1]->AsNumber(),0);Step=(*Q)[3]->AsNumber();}
  while(Buyers.Num()>Waiting){AMarePerson* P=Buyers.Pop();if(IsValid(P))P->Destroy();}
