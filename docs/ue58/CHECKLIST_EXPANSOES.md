@@ -164,9 +164,26 @@ Decisões (05/11/2026):
 
 ### 2.4 Trilha do farol (421 m, já existe)
 
-- [ ] O grupo segue o jogador. Se ele andar rápido demais, alguém fica para trás e reclama.
-- [ ] Paradas de foto nos mirantes (ligar ao modo foto). Água e protetor solar no início.
-- [ ] Pôr do sol no farol com bônus de nota se chegar na hora.
+- [x] O grupo segue o jogador. Se ele andar rápido demais, alguém fica para trás e reclama.
+- [x] Paradas de foto nos mirantes (ligar ao modo foto). Água e protetor solar no início.
+- [x] Pôr do sol no farol com bônus de nota se chegar na hora.
+
+Decisões (05/11/2026):
+- **Trajeto real:** o farol da UE fica num promontório de pedra a leste da praia, e o caminho a pé pela navegação tem cerca de 60 m (não 421 m). A trilha (`tours.json` "trail_tour") passa por:
+  - largada na areia ao lado do píer;
+  - Mirante da praia, com vista da baía;
+  - Mirante das pedras;
+  - fila nas pedras de frente para o oeste, ao lado do farol.
+
+  Na bilheteria aparece "Guiar a trilha agora" na hora da saída (16h).
+- **Grupo a pé:** um turista por bilhete (até 5), a 240 cm/s; o herói anda a 260 e corre a 420. Eles vão em duplas atrás do guia. "Atrás" é de onde o guia veio, e não para onde a câmera olha: virar para ver o grupo não o puxa para a frente. Quem fica a mais de 10 m reclama ("Ei, mais devagar!"), com −0,15, no máximo uma vez a cada 25 s.
+- **Largada:** E em cada turista entrega água e protetor solar. A garrafa vai para a mão dele; o herói não usa as mãos.
+- **Mirantes:**
+  - P (modo foto) tira a foto do grupo, se o grupo estiver lá. Fotos nos dois = boa; em um = ok.
+  - E na placa conta a história do farol: o relógio avança 12 min e a nota sobe 0,15. Isso também serve para chegar na hora do pôr do sol.
+- **Pôr do sol:** o sol fica a 0° às 18h, e o relógio corre 1 min de jogo por segundo. A janela vai das 17h15 às 17h55. Quem chega cedo espera, e a cada 15 min alguém reclama. Na janela, o grupo comemora e assiste por 12 min, com +0,5. Quem chega tarde perde o pôr do sol. Depois o grupo fica um pouco e volta andando para a praia.
+- **Nota:** `TrailScore` calcula as escolhas (água, fotos e pôr do sol) e o bônus, e o resultado vai para `GuideTour`.
+- **Prova:** teste `TourBooth` (escolhas e nota da trilha) + `docs/ue58/graphics-reference/tours_trail.jpg` (grupo subindo as pedras; grupo de frente para o pôr do sol com as garrafas).
 
 ### 2.5 Resultado e evolução
 

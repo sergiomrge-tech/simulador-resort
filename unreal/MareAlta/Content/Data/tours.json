@@ -24,9 +24,9 @@
    0
   ],
   "farol": [
-   10500,
-   -3800,
-   0
+   7750,
+   -2500,
+   100
   ]
  },
  "stops": {
@@ -492,5 +492,85 @@
    "crew": "O marinheiro buscou o turista perdido.",
    "done": "Todo mundo a bordo!"
   }
+ },
+ "_doc_trail": "Lighthouse trail on foot (CHECKLIST_EXPANSOES 2.4, MareTrailWorld.cpp): the group (one walker per ticket, at most 5) gathers at start and walks after the player at 'speed' cm/s (the player walks 260, sprints 420), 'spacing' apart. At the start E on each walker hands water and sunscreen. A walker more than lag_distance behind complains (-complaint_rating, once per lag_cooldown s each). Mirantes (viewpoints, within 'radius'): P takes the group photo; E tells the lighthouse story while they rest (the clock jumps story_minutes, +story_bonus). At the lighthouse the group is gathered: inside the 'sunset' hours window they watch the sunset (+sunset_bonus, sunset_watch_minutes then the tour ends); early, they wait and grow impatient (a complaint every patience_minutes); late, it is missed. Choices per stop (stops.farol): water given (all / half / fewer), photos at the mirantes (all / some / none), sunset (seen / missed). Game clock: 1 minute per real second; sun at 0 deg at 18h. World cm.",
+ "trail_tour": {
+  "tour": "farol",
+  "start": [
+   7750,
+   -2500,
+   100
+  ],
+  "start_radius": 1500,
+  "mirantes": [
+   {
+    "name": "Mirante da praia",
+    "at": [
+     8740,
+     -3629,
+     30
+    ],
+    "look": [
+     5500,
+     -3600,
+     200
+    ]
+   },
+   {
+    "name": "Mirante das pedras",
+    "at": [
+     9960,
+     -3930,
+     90
+    ],
+    "look": [
+     6500,
+     -6000,
+     100
+    ]
+   }
+  ],
+  "lighthouse": [
+   10430,
+   -3860,
+   150
+  ],
+  "radius": 450,
+  "gather_radius": 900,
+  "speed": 240,
+  "spacing": 130,
+  "lag_distance": 1000,
+  "lag_cooldown": 25,
+  "complaint_rating": 0.15,
+  "sunset": [
+   17.25,
+   17.95
+  ],
+  "patience_minutes": 15,
+  "sunset_watch_minutes": 12,
+  "story_minutes": 12,
+  "story_bonus": 0.15,
+  "sunset_bonus": 0.5,
+  "bottle": "/Game/Custom/BarPrep/BarPrep_agua_gas/BarPrep_agua_gas.BarPrep_agua_gas",
+  "lines": {
+   "start": "Entregue água e protetor a cada um (E) e siga para o primeiro mirante.",
+   "thanks": "Valeu pela água!",
+   "lag": "Ei, mais devagar!",
+   "photo": "Que vista! Tira outra!",
+   "mirante": "Mirante: foto do grupo (P) ou conte a história do farol (E na placa).",
+   "story": "Você contou a história do farol enquanto o grupo descansava.",
+   "early": "Ainda está cedo para o pôr do sol...",
+   "sunset": "Olhem o pôr do sol!!",
+   "late": "Perdemos o pôr do sol...",
+   "go_lighthouse": "Siga para o farol: o pôr do sol é entre 17h15 e 17h55.",
+   "done": "Que fim de tarde! Obrigado, guia!"
+  },
+  "linger_seconds": 20,
+  "follow_radius": 350,
+  "sunset_view": [
+   10150,
+   -3880,
+   120
+  ]
  }
 }

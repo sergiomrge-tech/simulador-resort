@@ -555,3 +555,11 @@ tick (`hold:`/`watch:` do `ReefQA`). O save restaura a posição do herói algun
 iniciado logo em seguida perde o herói (o primeiro `start` do QA às vezes acaba sozinho). Os turistas nadam ATRÁS do
 guia: para fotografá-los, congele (`freeze:`) e vire a câmera. O cache estático de `ToursDefs`/`ReefDefs` só relê o
 JSON ao reiniciar o editor.
+
+## UE5.8 — trilha do farol (05/11)
+
+Turistas que nascem no deck do píer ou num barco ficam fora da navegação e nunca andam (WalkTo devolve false):
+projetar o ponto de nascimento na navmesh. Se o lugar atrás do herói não tiver chão navegável (água, pedra), mandar
+andar até o próprio herói. O lado "de trás" de quem segue vem do caminho percorrido, não da câmera: com a câmera,
+virar para olhar o grupo o fazia passar para a frente e encostar no rosto do jogador. O relógio corre 1 min de jogo
+por segundo e o sol se põe às 18h (medido em `mare_snorkel.sun`).

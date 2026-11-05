@@ -10,6 +10,7 @@
 #include "MareToursWorld.h"
 #include "MareBoatTourWorld.h"
 #include "MareSnorkelWorld.h"
+#include "MareTrailWorld.h"
 #include "MareReefWorld.h"
 #include "MarePlayerPresentation.h"
 #include "MareHomeWorld.h"
@@ -367,7 +368,10 @@ private:
     if(N>0)UMareAudioWorld::Action(Owner.Get(),TEXT("money_register"));},Queue>0)];
    const bool bPiloted=Id==UMareSimulation::String(UMareSimulation::Object(S->ToursDefs(),TEXT("boat_tour")),TEXT("tour"));
    const bool bSnorkel=Id==UMareSimulation::String(UMareSimulation::Object(S->ToursDefs(),TEXT("snorkel_tour")),TEXT("tour"));
-   if(S->IsTourBoarding(Id) && bSnorkel)Row->AddSlot().AutoWidth()[Button(TEXT("Guiar o mergulho agora"),[this](){
+   const bool bTrail=Id==UMareSimulation::String(UMareSimulation::Object(S->ToursDefs(),TEXT("trail_tour")),TEXT("tour"));
+   if(S->IsTourBoarding(Id) && bTrail)Row->AddSlot().AutoWidth()[Button(TEXT("Guiar a trilha agora"),[this](){
+    if(Owner.IsValid())if(auto Tour=Owner->GetWorld()->GetSubsystem<UMareTrailWorld>()){AMareController* C=Owner.Get();C->ClosePhone();Tour->Start(C);}},Sold>0)];
+   else if(S->IsTourBoarding(Id) && bSnorkel)Row->AddSlot().AutoWidth()[Button(TEXT("Guiar o mergulho agora"),[this](){
     if(Owner.IsValid())if(auto Tour=Owner->GetWorld()->GetSubsystem<UMareSnorkelWorld>()){AMareController* C=Owner.Get();C->ClosePhone();Tour->Start(C);}},Sold>0)];
    else if(S->IsTourBoarding(Id) && bPiloted)Row->AddSlot().AutoWidth()[Button(TEXT("Pilotar o passeio agora"),[this](){
     if(Owner.IsValid())if(auto Tour=Owner->GetWorld()->GetSubsystem<UMareBoatTourWorld>()){AMareController* C=Owner.Get();C->ClosePhone();Tour->Start(C);}},Sold>0)];
@@ -1269,6 +1273,17 @@ void AMareController::StartBarPrep(const FString& Step)
  SetInputMode(FInputModeUIOnly().SetWidgetToFocus(Game));SetIgnoreMoveInput(true);SetIgnoreLookInput(true);
 }
 FString AMareController::ReefQA(const FString& Cmd){auto Reef=GetWorld()->GetSubsystem<UMareReefWorld>();return Reef?Reef->QA(Cmd):TEXT("none");}
+FString AMareController::TrailQA(const FString& Cmd)
+{
+ auto S=GetSimulation();auto Tour=GetWorld()->GetSubsystem<UMareTrailWorld>();if(!S || !Tour)return TEXT("none");
+ if(Cmd==TEXT("start")){const FString Id=UMareSimulation::String(UMareSimulation::Object(S->ToursDefs(),TEXT("trail_tour")),TEXT("tour"));
+  const auto Def=S->TourDef(Id);if(!Def)return TEXT("no tour");
+  S->State->SetNumberField(TEXT("minutes"),UMareSimulation::Number(Def,TEXT("hour"))*60+5);
+  UMareSimulation::Object(S->Tours(),TEXT("done"))->RemoveField(Id);
+  auto Sold=UMareSimulation::Object(S->Tours(),TEXT("sold"));if(UMareSimulation::Number(Sold,Id)<4)Sold->SetNumberField(Id,4);
+  ClosePhone();return Tour->Start(this)?TEXT("started"):S->LastMessage;}
+ return Tour->QA(Cmd);
+}
 FString AMareController::SnorkelQA(const FString& Cmd)
 {
  auto S=GetSimulation();auto Tour=GetWorld()->GetSubsystem<UMareSnorkelWorld>();if(!S || !Tour)return TEXT("none");
@@ -1328,6 +1343,8 @@ void AMareController::TakePhoto()
   Subjects.Add(UMareSimulation::String(Sub,TEXT("id")));}
  const FString File=FPaths::ProjectSavedDir()/TEXT("Album")/FString::Printf(TEXT("foto_dia%02d_%04.0f_%d.png"),int32(UMareSimulation::Number(S->State,TEXT("day"),1)),UMareSimulation::Number(S->State,TEXT("minutes")),int32(GFrameNumber%100000));
  FScreenshotRequest::RequestScreenshot(File,false,false);
+ // The lighthouse trail: a photo at a viewpoint is the group photo of that stop.
+ if(auto Trail=GetWorld()->GetSubsystem<UMareTrailWorld>())Trail->OnPhoto();
  S->RecordPhoto(Subjects,File);UMareAudioWorld::Action(this,TEXT("reception_checkin"),nullptr,.7f);S->ShowTip(TEXT("photo"));
 }
 void AMareController::ShowEndOfContent()
@@ -1907,6 +1924,7 @@ void AMareHUD::DrawHUD()
    TArray<TPair<FVector,FString>> All=BarWorld->Bubbles();if(auto ToursWorld=GetWorld()->GetSubsystem<UMareToursWorld>())All.Append(ToursWorld->Bubbles());
    if(auto BoatTour=GetWorld()->GetSubsystem<UMareBoatTourWorld>())All.Append(BoatTour->Bubbles());
    if(auto Snorkel=GetWorld()->GetSubsystem<UMareSnorkelWorld>())All.Append(Snorkel->Bubbles());
+   if(auto Trail=GetWorld()->GetSubsystem<UMareTrailWorld>())All.Append(Trail->Bubbles());
    for(const auto& G:All){const FVector D=G.Key-Eye;const float Dist=D.Size();if(Dist>1400 || FVector::DotProduct(D,Fwd)<=0)continue;
     FHitResult Hit;FCollisionQueryParams Q(TEXT("MareBubble"),false,GetOwningPawn());
     if(GetWorld()->LineTraceSingleByChannel(Hit,Eye,G.Key,ECC_Visibility,Q) && Hit.Distance<Dist-60)continue;
@@ -2035,6 +2053,7 @@ void AMareHUD::DrawHUD()
   :FString::Printf(TEXT("Nadando · %s sobe · %s/%s mergulha"),*KeyName(TEXT("Jump")),*KeyName(TEXT("Dive")),*KeyName(TEXT("Sprint")));
  if(auto BoatTour=GetWorld()->GetSubsystem<UMareBoatTourWorld>())if(BoatTour->IsActive())M.Hint=BoatTour->Status();
  if(auto Snorkel=GetWorld()->GetSubsystem<UMareSnorkelWorld>())if(Snorkel->IsActive())M.Hint=Snorkel->Status();
+ if(auto Trail=GetWorld()->GetSubsystem<UMareTrailWorld>())if(Trail->IsActive())M.Hint=Trail->Status();
  // The mission note would sit on top of the held phone.
  if(M.bPhone){M.Note.Empty();M.Tickets.Empty();}
  // Table tennis match: the score line instead of the crosshair and the mission note.

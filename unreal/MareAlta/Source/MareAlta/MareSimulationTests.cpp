@@ -952,6 +952,15 @@ bool FMareTourBoothTest::RunTest(const FString& Parameters)
   Sim->State->SetNumberField(TEXT("day"),Sim->Number(Sim->State,TEXT("day"),1)+1);Sim->Tours();
   Sim->Object(Sim->Tours(),TEXT("sold"))->SetNumberField(Snorkel,4);Sim->State->SetNumberField(TEXT("minutes"),10*60+5);
   Sim->SnorkelScore(0,8,false,C,B);TestEqual(TEXT("A careful snorkel rates top"),Sim->GuideTour(Snorkel,C,B),5.);}
+ // Lighthouse trail (2.4): water and sunscreen, photos at the viewpoints and the sunset decide the stops; walkers left
+ // behind complain and cost rating, the sunset and a story add to it.
+ {const FString Trail=TEXT("farol");TArray<int32> C;double B=0;
+  Sim->TrailScore(4,4,2,2,true,1,0,C,B);TestTrue(TEXT("Water for all, both photos, sunset: all good"),C==TArray<int32>({0,0,0}));TestEqual(TEXT("Sunset and story bonus"),B,.65,1e-6);
+  Sim->TrailScore(2,4,1,2,false,0,2,C,B);TestTrue(TEXT("Half watered, one photo, sunset missed: ok, ok, ok"),C==TArray<int32>({1,1,1}));TestTrue(TEXT("Complaints lower the bonus"),B<0);
+  Sim->TrailScore(0,4,0,2,false,0,9,C,B);TestTrue(TEXT("No water, no photos: bad, bad, ok"),C==TArray<int32>({2,2,1}));TestEqual(TEXT("Bonus floor"),B,-1.,1e-6);
+  Sim->State->SetNumberField(TEXT("day"),Sim->Number(Sim->State,TEXT("day"),1)+1);Sim->Tours();
+  Sim->Object(Sim->Tours(),TEXT("sold"))->SetNumberField(Trail,4);Sim->State->SetNumberField(TEXT("minutes"),16*60+5);
+  Sim->TrailScore(4,4,2,2,true,0,0,C,B);TestEqual(TEXT("A trail at sunset rates top"),Sim->GuideTour(Trail,C,B),5.);}
  IFileManager::Get().DeleteDirectory(*Sim->SaveDirectory,false,true);
  Sim->RemoveFromRoot();Instance->RemoveFromRoot();return true;
 }

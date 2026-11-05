@@ -138,3 +138,74 @@ def looks(arg=''):
             comps.append([c.get_name(), m.get_name() if m else None, c.is_visible(), round(c.get_world_location().z)])
         out.append([sid, p.is_hidden_ed(), comps[:8]])
     return json.dumps(out)
+
+
+def trail(arg='7200,-4700,100,10800,-4000,900'):
+    """Editor (PIE stopped): navmesh path between two points: length (m) and the points (m)."""
+    v = [float(x) for x in arg.split(',')]
+    world = _editor_world()
+    p = unreal.NavigationSystemV1.find_path_to_location_synchronously(world, unreal.Vector(*v[:3]), unreal.Vector(*v[3:6]))
+    if not p:
+        return 'no path'
+    pts = [[round(q.x), round(q.y), round(q.z)] for q in p.path_points]
+    import math
+    L = sum(math.dist(pts[i], pts[i + 1]) for i in range(len(pts) - 1)) / 100
+    return json.dumps({'len_m': round(L), 'partial': p.is_partial(), 'n': len(pts), 'pts': pts})
+
+
+def find_mesh(arg='mare_lighthouse'):
+    world = _game_world() or _editor_world()
+    out = []
+    for a in unreal.GameplayStatics.get_all_actors_of_class(world, unreal.Actor):
+        for c in a.get_components_by_class(unreal.StaticMeshComponent):
+            m = c.static_mesh
+            if m and arg.lower() in m.get_name().lower():
+                if isinstance(c, unreal.InstancedStaticMeshComponent):
+                    for i in range(min(c.get_instance_count(), 5)):
+                        t = c.get_instance_transform(i, True).translation
+                        out.append([a.get_actor_label(), m.get_name(), round(t.x), round(t.y), round(t.z)])
+                else:
+                    t = c.get_world_location()
+                    out.append([a.get_actor_label(), m.get_name(), round(t.x), round(t.y), round(t.z)])
+    return json.dumps(out[:20])
+
+
+def sun(arg=''):
+    """PIE: sun elevation (deg) now, from the MareSun light."""
+    import math
+    world = _game_world()
+    for a in unreal.GameplayStatics.get_all_actors_of_class(world, unreal.Actor):
+        if a.actor_has_tag('MareSun'):
+            f = a.get_actor_forward_vector()
+            return json.dumps([round(math.degrees(math.asin(-f.z)), 1), round(math.degrees(math.atan2(-f.y, -f.x)))])
+    return 'no sun'
+
+
+def trailqa(arg=''):
+    pc = unreal.GameplayStatics.get_player_controller(_game_world(), 0)
+    return json.dumps([[c, pc.trail_qa(c)] for c in arg.split(';') if c])
+
+
+def trailwho(arg=''):
+    world = _game_world()
+    out = []
+    for p in unreal.GameplayStatics.get_all_actors_of_class(world, unreal.MarePerson):
+        sid = str(p.get_editor_property('save_id'))
+        if sid.startswith('trail_'):
+            l = p.get_actor_location()
+            out.append([sid, round(l.x), round(l.y), round(l.z), round(p.get_velocity().length())])
+    l = unreal.GameplayStatics.get_player_controller(world, 0).get_controlled_pawn().get_actor_location()
+    out.append(['hero', round(l.x), round(l.y), round(l.z)])
+    return json.dumps(out)
+
+
+def walktest(arg='8600,-3500,100'):
+    world = _game_world()
+    v = [float(x) for x in arg.split(',')]
+    out = []
+    for p in unreal.GameplayStatics.get_all_actors_of_class(world, unreal.MarePerson):
+        if str(p.get_editor_property('save_id')).startswith('trail_'):
+            c = p.get_controller()
+            out.append([str(p.get_editor_property('save_id')), c.get_name() if c else None, p.walk_to(unreal.Vector(*v)),
+                        str(p.character_movement.movement_mode), p.character_movement.max_walk_speed])
+    return json.dumps(out)
