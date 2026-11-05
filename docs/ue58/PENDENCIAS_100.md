@@ -667,7 +667,7 @@ negócios, hóspedes, salão, passeios, eventos) e o jogador sempre escolhendo o
 
 ## 17. Traduções restantes (no fim da fila, pedido do Sergio em 04/11)
 Os 18 idiomas escolhidos são os do Supermarket Simulator, menos turco e lituano; 10 já estão prontos (seção 11).
-- [ ] (04/11: Sergio pediu terminar; fica depois da campanha, porque os textos novos também precisam de tradução) Português de Portugal (pt-PT), polonês (pl), tcheco (cs), húngaro (hu), romeno (ro), dinamarquês (da)
+- [ ] [adiado-usuario] (04/11, Sergio: "não é para terminar todas as traduções agora"; pt-PT e pl concluídos em 04/11, faltam cs, hu, ro, da, fi e os textos novos das expansões nas outras línguas) Português de Portugal (pt-PT), polonês (pl), tcheco (cs), húngaro (hu), romeno (ro), dinamarquês (da)
   e finlandês (fi). Processo: criar `<idioma>.json` vazio, rodar `i18n_extract.py`, traduzir em lotes com
   `i18n_batch.py show/merge` sem rodar o extrator entre show e merge (os índices mudam quando o source.json ganha textos), `i18n_batch.py compose <idioma>`, `i18n_fonts.py`, captura com
   `-culture=<idioma> -MareLocAudit`. Todos usam letras latinas (fontes atuais já cobrem).
@@ -714,7 +714,7 @@ Os 18 idiomas escolhidos são os do Supermarket Simulator, menos turco e lituano
   e montar a sequência no jogo (Ken Burns, legendas e música).
 - [x] Noite mais escura (Sergio, 04/11): `mare.NightDarken` tira 1,3 stop da exposição à noite; conferir praia, vila, quiosque e erupção.
 - [x] Som de mata fechada ao longo da trilha do cume (Sergio, 04/11): `forest_loop` (OpenGameArt CC0) entra além dos fundos da vila (y>8400), mais baixo à noite e na chuva; medido 0,126 na trilha e no cume, 0 na vila e na praia.
-- [ ] Casa do herói com 1 andar (Sergio, 04/11): quarto em cima com varanda; no térreo sala, banheiro e cozinha. É uma EXPANSÃO PAGA (comprada no jogo; só acontece depois de pagar). Fazer depois do tsunami.
+- [ ] [adiado-usuario] (04/11, Sergio: seguir agora docs/ue58/CHECKLIST_EXPANSOES.md na ordem; a casa vem depois) Casa do herói com 1 andar (Sergio, 04/11): quarto em cima com varanda; no térreo sala, banheiro e cozinha. É uma EXPANSÃO PAGA (comprada no jogo; só acontece depois de pagar). Fazer depois do tsunami.
 - [x] Tema brasileiro em tudo (Sergio, 04/11): comidas dos quiosques brasileiras (açaí, milho, churrasco...): acrescentar
   milho verde na manteiga, espetinho de churrasco, queijo coalho na brasa e guaraná gelado, com insumos, cardápio e
   modelos 3D (asset gratuito antes de modelar). FEITO: cardápio do quiosque nos dados
