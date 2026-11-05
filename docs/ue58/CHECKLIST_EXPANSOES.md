@@ -49,10 +49,17 @@ Decisões (04/11/2026):
 
 ### 1.2 Clientes e pedidos
 
-- [ ] Banqueta com o cliente pedindo em balão: nome do drink, "surpresa" ou dica ("algo doce, com coco").
-- [ ] Perfil de gosto por cliente (doce/forte/azedo). A "surpresa" ganha nota de 1 a 3 estrelas pelo perfil.
-- [ ] **Happy hour** das 17h às 19h, com mais clientes e trilha mais animada. No dia de "Lua cheia", o bar lota à noite.
-- [ ] Cliente fiel que volta e pede "o de sempre".
+- [x] Banqueta com o cliente pedindo em balão: nome do drink, "surpresa" ou dica ("algo doce, com coco").
+- [x] Perfil de gosto por cliente (doce/forte/azedo). A "surpresa" ganha nota de 1 a 3 estrelas pelo perfil.
+- [x] **Happy hour** das 17h às 19h, com mais clientes e trilha mais animada. No dia de "Lua cheia", o bar lota à noite.
+- [x] Cliente fiel que volta e pede "o de sempre".
+
+Decisões (04/11/2026):
+- Balões em Slate no estilo do caderno (`SMareBubbles`), projetados 58 cm acima do cliente sentado; somem com celular, pausa, menu, a mais de 14 m ou atrás de parede. O texto vem de `MareSimulation::BarBubble` e é o mesmo da página do balcão.
+- Cada receita tem `taste` {doce, forte, azedo} de 0 a 1 em `bar.json`; estrelas = 1 + arredondar(2 × nota do gosto); o preço da surpresa varia ×0,9 / ×1 / ×1,15 (`stars_price`).
+- Rush (`IsBarRush`): happy hour [17, 19) e noite de lua cheia (evento `lua` a partir das 19h). Chegadas ×2 e até 6 banquetas (`max_orders_rush`). Trilha: zona `bar_happy` (Aloha FM · onda alegre) em `audio_zones.json`.
+- Fiel: quem recebe o drink certo em até 20 min vira freguês (até 8, `bar.regulars`) e volta com 30% de chance pedindo "o de sempre", que é o drink daquela vez. A página do balcão lista os fiéis e o que bebem; acertar dá +15% e +1 de fama.
+- Prova: teste `MareAlta.Gameplay.BarGuests` + `docs/ue58/graphics-reference/bar_guests_bubbles.jpg`.
 
 ### 1.3 Caderno de receitas (app do celular)
 

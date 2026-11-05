@@ -113,6 +113,8 @@ public:
 private:
  /** "Maré Tropical" overlay (wood plank, order tickets, mission note, prompt); rebuilt only on change. */
  TSharedPtr<class SMareHud> Overlay;
+ /** Speech bubbles over the bar guests (their order). */
+ TSharedPtr<class SMareBubbles> Bubbles;
  /** Short-lived notice for messages produced outside the phone (sleep, chapters, fame). */
  FString Notice;
  double NoticeUntil=0;

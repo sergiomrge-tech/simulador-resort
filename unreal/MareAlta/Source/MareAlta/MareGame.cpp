@@ -6,6 +6,7 @@
 #include "MareStaffWorld.h"
 #include "UnrealClient.h"
 #include "Widgets/SCanvas.h"
+#include "MareBarWorld.h"
 #include "MarePlayerPresentation.h"
 #include "MareHomeWorld.h"
 #include "MareVillageWorld.h"
@@ -419,13 +420,15 @@ private:
   if(!Orders || Orders->IsEmpty())Line(TEXT("Ninguém no balcão agora."),13,Faded);
   else for(const auto& V:*Orders){const auto O=V->AsObject();const FString Id=UMareSimulation::String(O,TEXT("id")),Want=UMareSimulation::String(O,TEXT("want"));
    const double Waited=UMareSimulation::Number(S->State,TEXT("day"),1)*1440+UMareSimulation::Number(S->State,TEXT("minutes"))-UMareSimulation::Number(O,TEXT("since"));
-   FString What;if(Want==TEXT("surpresa"))What=TEXT("me surpreenda (qualquer drink)");
-   else if(S->IsRecipeKnown(Want))What=UMareSimulation::String(S->BarRecipe(Want),TEXT("name"));
-   else What=TEXT("um drink que você não conhece: ")+UMareSimulation::String(O,TEXT("hint"));
+   const FString What=S->BarBubble(O);
    auto Row=SNew(SHorizontalBox)+SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(0,0,8,0)
     [Button(Serving==Id?TEXT("atendendo"):TEXT("atender"),[S,Id](){S->SetBarServing(Id);},true)]
     +SHorizontalBox::Slot().FillWidth(1).VAlign(VAlign_Center)[BodyText(FString::Printf(TEXT("%s · %s · espera %.0f min"),*UMareSimulation::String(O,TEXT("name")),*What,Waited),12.5f,Serving==Id?Ink:Faded,Serving==Id)];
    Body->AddSlot().AutoHeight().Padding(0,2)[Row];}
+  // Regulars and their usual (the player has to remember who drinks what).
+  {TArray<FString> Regs;for(const auto& Pair:S->BarRegulars())if(auto R=S->BarRecipe(Pair.Value))Regs.Add(Pair.Key+TEXT(": ")+UMareSimulation::String(R,TEXT("name")));
+   if(Regs.Num()){Heading(TEXT("Fregueses fiéis"),TEXT("pedem \"o de sempre\""));Line(FString::Join(Regs,TEXT(" · ")),12,Ink);}}
+  if(S->IsBarRush())Line(TEXT("Bar lotado: happy hour ou noite de lua cheia!"),13,Green);
   // Physical prep: the bench at the back holds the ingredients; E on the work glass pours, mixes and serves.
   TArray<FString> Names;for(const FString& I:S->BarGlass())Names.Add(IngredientName(I));
   const FString Next=S->BarNextStep();const auto Lines=UMareSimulation::Object(Defs,TEXT("prep_lines"));
@@ -1686,6 +1689,37 @@ struct FMareHudModel
   return S;
  }
 };
+/** Speech bubbles over the bar guests (CHECKLIST_EXPANSOES 1.2): handwritten paper notes projected over each head. The
+ *  texts rebuild the canvas only when they change; positions (viewport pixels, converted with this widget's own
+ *  geometry, which includes the DPI) are read every frame. */
+class SMareBubbles : public SCompoundWidget
+{
+public:
+ SLATE_BEGIN_ARGS(SMareBubbles){} SLATE_END_ARGS()
+ void Construct(const FArguments&){ChildSlot[SAssignNew(Canvas,SCanvas)];SetVisibility(EVisibility::HitTestInvisible);}
+ struct FBubble{FString Text;FVector2D Pixel;float Alpha=1;};
+ static const FSlateRoundedBoxBrush& BubbleBrush(){static const FSlateRoundedBoxBrush B(MareNotebook::Paper,10.f,MareNotebook::Pencil,1.5f);return B;}
+ void Set(const TArray<FBubble>& In)
+ {
+  FString Sig;for(const auto& B:In)Sig+=B.Text+TEXT("|");Bubbles=In;if(Sig==Last)return;Last=Sig;
+  using namespace MareNotebook;Canvas->ClearChildren();
+  for(int32 I=0;I<In.Num();++I){
+   Canvas->AddSlot().Position_Lambda([this,I](){return Bubbles.IsValidIndex(I)?Bubbles[I].Pixel*Units:FVector2D(-999);})
+    .Size(FVector2D(260,80)).HAlign(HAlign_Center).VAlign(VAlign_Bottom)
+    [SNew(SBox).HAlign(HAlign_Center).VAlign(VAlign_Bottom)[SNew(SVerticalBox)
+     +SVerticalBox::Slot().AutoHeight()[SNew(SBorder).BorderImage(&BubbleBrush()).Padding(FMargin(10,4))
+      .ColorAndOpacity_Lambda([this,I](){return FLinearColor(1,1,1,Bubbles.IsValidIndex(I)?Bubbles[I].Alpha:0);})
+      .BorderBackgroundColor_Lambda([this,I](){return FSlateColor(FLinearColor(1,1,1,Bubbles.IsValidIndex(I)?Bubbles[I].Alpha:0));})
+      [SNew(STextBlock).Text(MareLoc::Text(In[I].Text)).Font(Hand(17)).ColorAndOpacity(Ink).AutoWrapText(true).WrapTextAt(230)]]]];}
+ }
+ virtual void Tick(const FGeometry& Geometry,const double Time,const float Delta)override
+ {
+  SCompoundWidget::Tick(Geometry,Time,Delta);FVector2D View(0);if(GEngine && GEngine->GameViewport)GEngine->GameViewport->GetViewportSize(View);
+  if(View.X>0)Units=Geometry.GetLocalSize().X/View.X;
+ }
+private:
+ TSharedPtr<SCanvas> Canvas;TArray<FBubble> Bubbles;FString Last;float Units=1;
+};
 class SMareHud : public SCompoundWidget
 {
 public:
@@ -1762,7 +1796,8 @@ private:
 void AMareHUD::EndPlay(const EEndPlayReason::Type Reason)
 {
  if(Overlay.IsValid() && GEngine && GEngine->GameViewport)GEngine->GameViewport->RemoveViewportWidgetContent(Overlay.ToSharedRef());
- Overlay.Reset();Super::EndPlay(Reason);
+ if(Bubbles.IsValid() && GEngine && GEngine->GameViewport)GEngine->GameViewport->RemoveViewportWidgetContent(Bubbles.ToSharedRef());
+ Overlay.Reset();Bubbles.Reset();Super::EndPlay(Reason);
 }
 void AMareHUD::DrawHUD()
 {
@@ -1770,6 +1805,17 @@ void AMareHUD::DrawHUD()
  if(!Overlay.IsValid() && GEngine && GEngine->GameViewport){SAssignNew(Overlay,SMareHud);GEngine->GameViewport->AddViewportWidgetContent(Overlay.ToSharedRef(),10);}
  const auto PC=Cast<AMareController>(GetOwningPlayerController());
  if(Overlay.IsValid())Overlay->SetVisibility(PC && PC->IsMainMenuOpen()?EVisibility::Collapsed:EVisibility::Visible);
+ if(!Bubbles.IsValid() && GEngine && GEngine->GameViewport){SAssignNew(Bubbles,SMareBubbles);GEngine->GameViewport->AddViewportWidgetContent(Bubbles.ToSharedRef(),9);}
+ if(Bubbles.IsValid()){TArray<SMareBubbles::FBubble> List;
+  const bool bShow=PC && !PC->IsMainMenuOpen() && !PC->bPhoneOpen && !GetWorld()->IsPaused() && PC->PlayerCameraManager;
+  if(bShow)if(auto BarWorld=GetWorld()->GetSubsystem<UMareBarWorld>()){
+   const FVector Eye=PC->PlayerCameraManager->GetCameraLocation();const FVector Fwd=PC->PlayerCameraManager->GetCameraRotation().Vector();
+   for(const auto& G:BarWorld->Bubbles()){const FVector D=G.Key-Eye;const float Dist=D.Size();if(Dist>1400 || FVector::DotProduct(D,Fwd)<=0)continue;
+    FHitResult Hit;FCollisionQueryParams Q(TEXT("MareBubble"),false,GetOwningPawn());
+    if(GetWorld()->LineTraceSingleByChannel(Hit,Eye,G.Key,ECC_Visibility,Q) && Hit.Distance<Dist-60)continue;
+    FVector2D Pixel;if(!PC->ProjectWorldLocationToScreen(G.Key,Pixel))continue;
+    List.Add({G.Value,Pixel,FMath::Clamp((1400-Dist)/300.f,0.f,1.f)});}}
+  Bubbles->Set(List);}
  if(PC && PC->IsMainMenuOpen())return;
  auto Dish=[&](const FString& Id){return UMareSimulation::String(UMareSimulation::Object(UMareSimulation::Object(S->Definitions,TEXT("dishes")),Id),TEXT("name"));};
  FMareHudModel M;M.bPhone=PC && PC->bPhoneOpen;

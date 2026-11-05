@@ -401,7 +401,7 @@ public:
  bool IsBarOpen() const;
  /** A guest sits at the bar and orders Want (empty = picks one); returns the order id, empty when closed or full. */
  UFUNCTION(BlueprintCallable,Category="Maré Alta|Bar") FString AddBarOrder(const FString& Want=TEXT(""));
- struct FBarResult{bool bServed=false;bool bDiscovered=false;FString Recipe;double Paid=0;};
+ struct FBarResult{bool bServed=false;bool bDiscovered=false;FString Recipe;double Paid=0;int32 Stars=0;bool bUsual=false;};
  /** Shakes the ingredients (always used up) for an order: the drink asked for (or any recipe for a "surpresa") pays
   *  price plus a tip for speed; an unknown recipe is discovered (fame) even when it is not what was ordered. */
  FBarResult ServeBar(const FString& Order,const TArray<FString>& Ingredients);
@@ -436,6 +436,14 @@ public:
  double DrinkPrice(const FString& Recipe) const;
  /** Hourly: impatient guests leave, the bartender serves known drinks from the stock, new guests arrive. */
  void BarHour(int32 Hour);
+ /** What the guest says in the bubble: the drink's name, "O de sempre!", a surprise with their taste, or the hint. */
+ FString BarBubble(const TSharedPtr<FJsonObject>& Order) const;
+ /** 1-3 stars a guest of this taste gives a recipe served as a surprise (bar.json recipe "taste"). */
+ int32 SurpriseStars(const FString& Recipe,const FString& Taste) const;
+ /** Happy hour now, or a full-moon night: more guests and more stools taken. */
+ bool IsBarRush() const;
+ /** Regular guests: name -> their usual drink. */
+ TMap<FString,FString> BarRegulars() const;
  /** Bets and prizes from minigames (game room): books the amount with a label, like any other income or expense. */
  void SettleBet(double Amount,const FString& Label){Book(Amount,Label);}
  int32 FreeCleanRooms(const FString& Place=TEXT("pousada")) const;

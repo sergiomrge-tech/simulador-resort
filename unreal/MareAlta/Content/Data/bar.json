@@ -214,7 +214,12 @@
    ],
    "price": 18,
    "mesh": "caipirinha",
-   "known": true
+   "known": true,
+   "taste": {
+    "doce": 0.4,
+    "forte": 0.7,
+    "azedo": 0.8
+   }
   },
   {
    "id": "limonada",
@@ -227,7 +232,12 @@
    ],
    "price": 10,
    "mesh": "suco",
-   "known": true
+   "known": true,
+   "taste": {
+    "doce": 0.6,
+    "forte": 0,
+    "azedo": 0.8
+   }
   },
   {
    "id": "caipiroska",
@@ -240,7 +250,12 @@
    ],
    "price": 20,
    "mesh": "caipirinha",
-   "hint": "a caipirinha de vodca"
+   "hint": "a caipirinha de vodca",
+   "taste": {
+    "doce": 0.4,
+    "forte": 0.8,
+    "azedo": 0.8
+   }
   },
   {
    "id": "caipi_morango",
@@ -253,7 +268,12 @@
    ],
    "price": 22,
    "mesh": "caipirinha",
-   "hint": "cachaça com uma fruta vermelha"
+   "hint": "cachaça com uma fruta vermelha",
+   "taste": {
+    "doce": 0.8,
+    "forte": 0.6,
+    "azedo": 0.4
+   }
   },
   {
    "id": "caipi_maracuja",
@@ -266,7 +286,12 @@
    ],
    "price": 22,
    "mesh": "caipirinha",
-   "hint": "cachaça com a fruta da paixão"
+   "hint": "cachaça com a fruta da paixão",
+   "taste": {
+    "doce": 0.6,
+    "forte": 0.6,
+    "azedo": 0.9
+   }
   },
   {
    "id": "batida_coco",
@@ -279,7 +304,12 @@
    ],
    "price": 22,
    "mesh": "batida",
-   "hint": "cremosa, com coco e cachaça"
+   "hint": "cremosa, com coco e cachaça",
+   "taste": {
+    "doce": 1,
+    "forte": 0.5,
+    "azedo": 0
+   }
   },
   {
    "id": "batida_maracuja",
@@ -292,7 +322,12 @@
    ],
    "price": 22,
    "mesh": "batida",
-   "hint": "cremosa e azedinha, de cachaça"
+   "hint": "cremosa e azedinha, de cachaça",
+   "taste": {
+    "doce": 0.8,
+    "forte": 0.5,
+    "azedo": 0.6
+   }
   },
   {
    "id": "pina_colada",
@@ -305,7 +340,12 @@
    ],
    "price": 26,
    "mesh": "batida",
-   "hint": "rum, abacaxi e coco"
+   "hint": "rum, abacaxi e coco",
+   "taste": {
+    "doce": 0.9,
+    "forte": 0.6,
+    "azedo": 0.1
+   }
   },
   {
    "id": "mojito",
@@ -319,7 +359,12 @@
    ],
    "price": 26,
    "mesh": "suco",
-   "hint": "rum com hortelã e borbulhas"
+   "hint": "rum com hortelã e borbulhas",
+   "taste": {
+    "doce": 0.5,
+    "forte": 0.6,
+    "azedo": 0.6
+   }
   },
   {
    "id": "abacaxi_hortela",
@@ -331,7 +376,12 @@
    ],
    "price": 12,
    "mesh": "suco",
-   "hint": "sem álcool, abacaxi e uma erva"
+   "hint": "sem álcool, abacaxi e uma erva",
+   "taste": {
+    "doce": 0.7,
+    "forte": 0,
+    "azedo": 0.4
+   }
   },
   {
    "id": "coqueiro",
@@ -345,7 +395,12 @@
    ],
    "price": 32,
    "mesh": "coco_gelado",
-   "hint": "o drink da casa: rum, coco e mais três coisas"
+   "hint": "o drink da casa: rum, coco e mais três coisas",
+   "taste": {
+    "doce": 0.8,
+    "forte": 0.8,
+    "azedo": 0.5
+   }
   }
  ],
  "_doc_prep": "Physical prep (CHECKLIST_EXPANSOES 1.1, MareBar.cpp/MareBarWorld.cpp): the player picks an ingredient from the prep bench (E), it shows in the hand, E on the work glass drops it in (stock used then). Every ingredient has a layer in the glass (ice, fruit, spirit/liquid) and a colour for the drink. Steps before serving: 'socar' when the glass holds a muddle ingredient, then 'liquidificar' when it holds a creamy one, else 'bater'. Each step is a mini-action scored 0..1; the average moves the price by prep_tip (±10%). 'Jogar fora' loses what was in the glass; the guest reacts. Places in world cm: bench [x,y,z top,yaw]; shelf {id or tool: [x,y,yaw]} on the bench top; glass [x,y,scale] (a big caipirinha glass, 1.5x a highball, so its layers read from the counter).",
@@ -465,5 +520,28 @@
   "socar": "Socar no ritmo",
   "bater": "Bater na coqueteleira",
   "liquidificar": "Bater no liquidificador"
- }
+ },
+ "_doc_guests": "Guests and orders (CHECKLIST_EXPANSOES 1.2): each guest has a taste (tastes) shown in the bubble for a 'surpresa'; a surprise earns 1-3 stars from the recipe's taste score for it (stars_price). Happy hour (happy_hour) and full-moon nights (event 'lua' after full_moon_from) multiply arrivals and allow max_orders_rush guests. A guest served the right drink within regular_wait minutes becomes a regular (max_regulars) and comes back with regular_chance asking for 'o de sempre' (the drink served then): right gives regular_fame and a bigger tip.",
+ "tastes": {
+  "doce": "algo docinho",
+  "forte": "algo forte",
+  "azedo": "algo azedinho"
+ },
+ "stars_price": [
+  0.9,
+  1.0,
+  1.15
+ ],
+ "happy_hour": [
+  17,
+  19
+ ],
+ "rush_mult": 2,
+ "full_moon_from": 19,
+ "max_orders_rush": 6,
+ "regular_wait": 20,
+ "regular_chance": 0.3,
+ "max_regulars": 8,
+ "regular_fame": 1,
+ "regular_tip": 0.15
 }

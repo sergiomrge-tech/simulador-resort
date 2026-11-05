@@ -84,8 +84,15 @@ double UMareSimulation::DrinkPrice(const FString& Recipe) const
 FString UMareSimulation::AddBarOrder(const FString& Want)
 {
  if(!IsBarOpen())return FString();
- auto B=Bar();auto& Orders=List(B,TEXT("orders"));if(Orders.Num()>=Number(BarDefs(),TEXT("max_orders"),4))return FString();
- FString Drink=Want;FString Hint;
+ auto B=Bar();auto& Orders=List(B,TEXT("orders"));
+ if(Orders.Num()>=Number(BarDefs(),IsBarRush()?TEXT("max_orders_rush"):TEXT("max_orders"),4))return FString();
+ FString Drink=Want;FString Hint;FString Guest;bool bUsual=false;
+ const int32 Next0=int32(Number(B,TEXT("next")));
+ if(Drink.IsEmpty() && FMath::FRand()<Number(BarDefs(),TEXT("regular_chance"),.3)){
+  // A regular not already at the counter comes back for "o de sempre".
+  TSet<FString> Seated;for(const auto& V:Items(B,TEXT("orders")))Seated.Add(String(V->AsObject(),TEXT("name")));
+  TArray<FString> Free;for(const auto& Pair:BarRegulars())if(!Seated.Contains(Pair.Key) && BarRecipe(Pair.Value))Free.Add(Pair.Key);
+  if(Free.Num()){Guest=Free[FMath::RandRange(0,Free.Num()-1)];Drink=BarRegulars()[Guest];bUsual=true;}}
  if(Drink.IsEmpty()){
   TArray<FString> Known,Unknown;for(const auto& V:Items(BarDefs(),TEXT("recipes"))){const FString Id=String(V->AsObject(),TEXT("id"));(IsRecipeKnown(Id)?Known:Unknown).Add(Id);}
   const float Roll=FMath::FRand();
@@ -97,7 +104,11 @@ FString UMareSimulation::AddBarOrder(const FString& Want)
  if(auto R=BarRecipe(Drink))if(!IsRecipeKnown(Drink))Hint=String(R,TEXT("hint"));
  const int32 Next=Number(B,TEXT("next"));B->SetNumberField(TEXT("next"),Next+1);
  auto O=MakeShared<FJsonObject>();const FString Id=FString::Printf(TEXT("b%d"),Next);
- O->SetStringField(TEXT("id"),Id);O->SetStringField(TEXT("name"),BarNames[(Next*7+3)%UE_ARRAY_COUNT(BarNames)]);
+ O->SetStringField(TEXT("id"),Id);O->SetStringField(TEXT("name"),Guest.IsEmpty()?FString(BarNames[(Next*7+3)%UE_ARRAY_COUNT(BarNames)]):Guest);
+ // Taste profile (doce/forte/azedo) shown with a surprise and used to rate it.
+ {TArray<FString> Tastes;for(const auto& Pair:Object(BarDefs(),TEXT("tastes"))->Values)Tastes.Add(FString(Pair.Key.ToView()));
+  if(Tastes.Num())O->SetStringField(TEXT("taste"),Tastes[(Next0*5+1)%Tastes.Num()]);}
+ if(bUsual)O->SetBoolField(TEXT("usual"),true);
  O->SetStringField(TEXT("want"),Drink);if(!Hint.IsEmpty())O->SetStringField(TEXT("hint"),Hint);
  O->SetNumberField(TEXT("since"),Number(State,TEXT("day"),1)*1440+Number(State,TEXT("minutes")));
  Orders.Add(MakeShared<FJsonValueObject>(O));return Id;
@@ -148,10 +159,20 @@ UMareSimulation::FBarResult UMareSimulation::ServeMix(const FString& OrderId,con
  const double Waited=Number(State,TEXT("day"),1)*1440+Number(State,TEXT("minutes"))-Number(Order,TEXT("since"));
  // A careful prep (the mini-actions' average score) moves the price up to ±prep_tip.
  const double Prep=PrepScore<0?1.:1+Number(BarDefs(),TEXT("prep_tip"),.1)*(2*FMath::Clamp(PrepScore,0.,1.)-1);
- Out.Paid=FMath::RoundToDouble(DrinkPrice(Out.Recipe)*(1+.15*FMath::Clamp(1-Waited/30.,0.,1.))*Prep);Out.bServed=true;
+ double Extra=1;
+ if(Want==TEXT("surpresa")){Out.Stars=SurpriseStars(Out.Recipe,String(Order,TEXT("taste")));
+  const auto Prices=Items(BarDefs(),TEXT("stars_price"));if(Prices.IsValidIndex(Out.Stars-1))Extra=Prices[Out.Stars-1]->AsNumber();}
+ bool bUsualOrder=false;Order->TryGetBoolField(TEXT("usual"),bUsualOrder);
+ if(bUsualOrder){Out.bUsual=true;Extra*=1+Number(BarDefs(),TEXT("regular_tip"),.15);AddFame(int32(Number(BarDefs(),TEXT("regular_fame"),1)));}
+ Out.Paid=FMath::RoundToDouble(DrinkPrice(Out.Recipe)*(1+.15*FMath::Clamp(1-Waited/30.,0.,1.))*Prep*Extra);Out.bServed=true;
+ // Served right and fast: the guest becomes a regular and will ask for "o de sempre" (this drink).
+ if(Waited<=Number(BarDefs(),TEXT("regular_wait"),20)){auto Regs=Child(B,TEXT("regulars"));
+  if(!Regs->HasField(Guest) && Regs->Values.Num()<Number(BarDefs(),TEXT("max_regulars"),8))Regs->SetStringField(Guest,Out.Recipe);}
  Book(Out.Paid,TEXT("Bar: ")+Name);AddFame(1);
  B->SetNumberField(TEXT("served"),Number(B,TEXT("served"))+1);B->SetStringField(TEXT("last"),Out.Recipe);Orders.RemoveAt(Index);
  LastMessage=(Out.bDiscovered?FString::Printf(TEXT("Receita nova descoberta: %s! "),*Name):FString())+FString::Printf(TEXT("%s adorou o drink: R$ %.0f."),*Guest,Out.Paid);
+ if(Out.Stars>0)LastMessage+=FString::Printf(TEXT(" Surpresa: %s"),*FString::ChrN(Out.Stars,TEXT('★')));
+ if(Out.bUsual)LastMessage+=TEXT(" \"Isso! O de sempre.\"");
  Save();return Out;
 }
 
@@ -251,6 +272,34 @@ UMareSimulation::FBarResult UMareSimulation::ServeGlass(const FString& Order)
  return Out;
 }
 
+FString UMareSimulation::BarBubble(const TSharedPtr<FJsonObject>& Order) const
+{
+ bool bUsual=false;Order->TryGetBoolField(TEXT("usual"),bUsual);if(bUsual)return TEXT("O de sempre!");
+ const FString Want=String(Order,TEXT("want"));
+ if(Want==TEXT("surpresa")){const FString Word=String(Object(BarDefs(),TEXT("tastes")),String(Order,TEXT("taste")));
+  return Word.IsEmpty()?FString(TEXT("Me surpreenda!")):TEXT("Me surpreenda: ")+Word+TEXT("!");}
+ if(IsRecipeKnown(Want))return String(BarRecipe(Want),TEXT("name"))+TEXT(", por favor!");
+ const FString Hint=String(Order,TEXT("hint"));return Hint.IsEmpty()?FString(TEXT("Hmm... o que tem de bom?")):TEXT("Quero ")+Hint+TEXT("...");
+}
+
+int32 UMareSimulation::SurpriseStars(const FString& Recipe,const FString& Taste) const
+{
+ auto R=BarRecipe(Recipe);if(!R)return 1;const double Score=Number(Object(R,TEXT("taste")),Taste,.5);
+ return FMath::Clamp(1+int32(FMath::RoundToDouble(2*Score)),1,3);
+}
+
+bool UMareSimulation::IsBarRush() const
+{
+ const double Hour=Number(State,TEXT("minutes"))/60;const TArray<TSharedPtr<FJsonValue>>* Happy=nullptr;
+ if(BarDefs()->TryGetArrayField(TEXT("happy_hour"),Happy) && Happy->Num()==2 && Hour>=(*Happy)[0]->AsNumber() && Hour<(*Happy)[1]->AsNumber())return true;
+ return TodayEvent()==TEXT("lua") && Hour>=Number(BarDefs(),TEXT("full_moon_from"),19);
+}
+
+TMap<FString,FString> UMareSimulation::BarRegulars() const
+{
+ TMap<FString,FString> Out;for(const auto& Pair:Object(Object(State,TEXT("bar")),TEXT("regulars"))->Values)Out.Add(FString(Pair.Key.ToView()),Pair.Value->AsString());return Out;
+}
+
 void UMareSimulation::BarHour(int32 Hour)
 {
  bool bOwned=false;Object(State,TEXT("unlocked"))->TryGetBoolField(TEXT("bar"),bOwned);if(!bOwned)return;
@@ -267,5 +316,6 @@ void UMareSimulation::BarHour(int32 Hour)
    Book(FMath::RoundToDouble(DrinkPrice(Want)*Number(BarDefs(),TEXT("bartender_share"),.85)),TEXT("Bar (bartender): ")+String(BarRecipe(Want),TEXT("name")));
    StaffDid(TEXT("bartender"),1,FMath::RoundToDouble(DrinkPrice(Want)*Number(BarDefs(),TEXT("bartender_share"),.85)));
    B->SetNumberField(TEXT("served"),Number(B,TEXT("served"))+1);B->SetStringField(TEXT("last"),Want);Orders.RemoveAt(I);++Served;}}
- const int32 Arrivals=FMath::RandRange(1,2+FameLevel()/4);for(int32 I=0;I<Arrivals;++I)AddBarOrder();
+ const int32 Arrivals=FMath::RandRange(1,2+FameLevel()/4)*(IsBarRush()?int32(Number(BarDefs(),TEXT("rush_mult"),2)):1);
+ for(int32 I=0;I<Arrivals;++I)AddBarOrder();
 }

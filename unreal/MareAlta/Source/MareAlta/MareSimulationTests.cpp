@@ -650,6 +650,59 @@ bool FMareBarPrepTest::RunTest(const FString& Parameters)
  Sim->RemoveFromRoot();Instance->RemoveFromRoot();return true;
 }
 
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FMareBarGuestsTest,"MareAlta.Gameplay.BarGuests",EAutomationTestFlags::EditorContext|EAutomationTestFlags::EngineFilter)
+bool FMareBarGuestsTest::RunTest(const FString& Parameters)
+{
+ // CHECKLIST_EXPANSOES 1.2: bubbles, taste profiles rating a surprise, happy hour / full moon, regulars and "o de sempre".
+ auto Instance=NewObject<UGameInstance>();Instance->AddToRoot();
+ auto Sim=NewObject<UMareSimulation>(Instance);Sim->AddToRoot();
+ Sim->SaveDirectory=FPaths::ProjectSavedDir()/TEXT("Automation/BarGuests")/FGuid::NewGuid().ToString(EGuidFormats::Digits);
+ auto Load=[&](const FString& Name,TSharedPtr<FJsonObject>& Result){FString Text;FFileHelper::LoadFileToString(Text,*(FPaths::ProjectContentDir()/TEXT("Data")/Name));return FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Text),Result);};
+ if(!TestTrue(TEXT("Definitions"),Load(TEXT("definitions.json"),Sim->Definitions)) || !TestTrue(TEXT("Default save"),Load(TEXT("default_save.json"),Sim->State))){Sim->RemoveFromRoot();Instance->RemoveFromRoot();return false;}
+ Sim->State->SetNumberField(TEXT("money"),5000);Sim->State->SetNumberField(TEXT("minutes"),600);
+ Sim->Object(Sim->State,TEXT("unlocked"))->SetBoolField(TEXT("bar"),true);
+ const double Chance=Sim->Number(Sim->BarDefs(),TEXT("regular_chance"),.3);Sim->BarDefs()->SetNumberField(TEXT("regular_chance"),0);
+ auto OrderOf=[&](const FString& Id){for(const auto& V:Sim->Bar()->GetArrayField(TEXT("orders")))if(Sim->String(V->AsObject(),TEXT("id"))==Id)return V->AsObject();return TSharedPtr<FJsonObject>();};
+ auto Serve=[&](const FString& Order,const FString& Recipe){TArray<FString> Mix;
+  for(const auto& N:Sim->BarRecipe(Recipe)->GetArrayField(TEXT("needs")))Mix.Add(N->AsString());return Sim->ServeBar(Order,Mix);};
+ // Every guest has a taste; the bubble says what they want.
+ const FString A=Sim->AddBarOrder(TEXT("caipirinha"));TestFalse(TEXT("Taste profile"),Sim->String(OrderOf(A),TEXT("taste")).IsEmpty());
+ TestTrue(TEXT("Bubble names a known drink"),Sim->BarBubble(OrderOf(A)).Contains(TEXT("Caipirinha")));
+ const FString H=Sim->AddBarOrder(TEXT("mojito"));TestTrue(TEXT("Bubble gives the hint of an unknown drink"),Sim->BarBubble(OrderOf(H)).Contains(TEXT("hortelã")));
+ const FString B=Sim->AddBarOrder(TEXT("surpresa"));OrderOf(B)->SetStringField(TEXT("taste"),TEXT("doce"));
+ TestTrue(TEXT("Surprise bubble with the taste"),Sim->BarBubble(OrderOf(B)).Contains(TEXT("docinho")));
+ // Surprise rated by taste: a sweet guest loves a batida de coco (3) and not a limonada... (1 for a strong one).
+ TestEqual(TEXT("Sweet guest, batida de coco"),Sim->SurpriseStars(TEXT("batida_coco"),TEXT("doce")),3);
+ TestEqual(TEXT("Strong guest, limonada"),Sim->SurpriseStars(TEXT("limonada"),TEXT("forte")),1);
+ Sim->RestockBar();double Before=Sim->Money();auto R=Serve(B,TEXT("batida_coco"));
+ TestTrue(TEXT("Surprise served with 3 stars"),R.bServed && R.Stars==3);const double Three=Sim->Money()-Before;
+ const FString C=Sim->AddBarOrder(TEXT("surpresa"));OrderOf(C)->SetStringField(TEXT("taste"),TEXT("forte"));
+ Sim->RestockBar();Before=Sim->Money();R=Serve(C,TEXT("batida_coco"));TestTrue(TEXT("Surprise to the wrong taste: fewer stars"),R.bServed && R.Stars==2);
+ TestTrue(TEXT("Three stars pay more than two"),Three>Sim->Money()-Before);
+ // Served right and fast: a regular, who comes back for "o de sempre".
+ Sim->RestockBar();R=Serve(A,TEXT("caipirinha"));TestTrue(TEXT("Caipirinha served"),R.bServed);
+ TMap<FString,FString> Regs=Sim->BarRegulars();TestTrue(TEXT("Regulars remembered"),Regs.Num()>=1);
+ FString Regular;for(const auto& Pair:Regs)if(Pair.Value==TEXT("caipirinha"))Regular=Pair.Key;TestFalse(TEXT("The caipirinha guest is a regular"),Regular.IsEmpty());
+ Sim->BarDefs()->SetNumberField(TEXT("regular_chance"),1);
+ const FString D=Sim->AddBarOrder();auto O=OrderOf(D);bool bUsual=false;if(O)O->TryGetBoolField(TEXT("usual"),bUsual);
+ const FString Usual=O?Sim->BarRegulars().FindRef(Sim->String(O,TEXT("name"))):FString();
+ TestTrue(TEXT("A regular comes back for the usual"),bUsual && !Usual.IsEmpty() && Sim->String(O,TEXT("want"))==Usual);
+ TestEqual(TEXT("Usual bubble"),Sim->BarBubble(O),FString(TEXT("O de sempre!")));
+ Sim->RestockBar();const double Fame=Sim->Number(Sim->Object(Sim->State,TEXT("prog")),TEXT("fame_xp"));R=Serve(D,Usual.IsEmpty()?FString(TEXT("caipirinha")):Usual);
+ TestTrue(TEXT("Usual served"),R.bServed && R.bUsual);TestTrue(TEXT("Usual gives extra fame"),Sim->Number(Sim->Object(Sim->State,TEXT("prog")),TEXT("fame_xp"))>=Fame+2);
+ Sim->BarDefs()->SetNumberField(TEXT("regular_chance"),Chance);
+ // Rush: happy hour and full-moon nights; more stools taken.
+ TestFalse(TEXT("No rush at 10h"),Sim->IsBarRush());
+ Sim->State->SetNumberField(TEXT("minutes"),17*60+10);TestTrue(TEXT("Happy hour"),Sim->IsBarRush());
+ Sim->State->SetNumberField(TEXT("minutes"),20*60);TestFalse(TEXT("No rush at 20h on a normal day"),Sim->IsBarRush());
+ Sim->State->SetStringField(TEXT("day_event"),TEXT("lua"));TestTrue(TEXT("Full moon night"),Sim->IsBarRush());
+ Sim->Bar()->SetArrayField(TEXT("orders"),TArray<TSharedPtr<FJsonValue>>());int32 Seated=0;
+ for(int32 I=0;I<10;++I)Seated+=!Sim->AddBarOrder(TEXT("caipirinha")).IsEmpty();
+ TestEqual(TEXT("Rush fills more stools"),Seated,int32(Sim->Number(Sim->BarDefs(),TEXT("max_orders_rush"),6)));
+ IFileManager::Get().DeleteDirectory(*Sim->SaveDirectory,false,true);
+ Sim->RemoveFromRoot();Instance->RemoveFromRoot();return true;
+}
+
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FMareBusinessShiftTest,"MareAlta.Gameplay.BusinessCounter",EAutomationTestFlags::EditorContext|EAutomationTestFlags::EngineFilter)
 bool FMareBusinessShiftTest::RunTest(const FString& Parameters)
 {

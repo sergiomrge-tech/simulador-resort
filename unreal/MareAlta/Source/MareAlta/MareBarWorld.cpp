@@ -121,6 +121,17 @@ void UMareBarWorld::BuildPrep(const TSharedPtr<FJsonObject>& Defs)
  if(GlassTarget){GlassTarget->Action=TEXT("BarGlass");GlassTarget->Label=TEXT("Copo de preparo");GlassTarget->Reach=220;GlassTarget->OcclusionTolerance=35;}
 }
 
+TArray<TPair<FVector,FString>> UMareBarWorld::Bubbles()const
+{
+ TArray<TPair<FVector,FString>> Out;auto S=Sim(GetWorld());if(!S)return Out;const TArray<TSharedPtr<FJsonValue>>* Orders=nullptr;
+ if(!UMareSimulation::Object(S->State,TEXT("bar"))->TryGetArrayField(TEXT("orders"),Orders))return Out;
+ for(const auto& V:*Orders){const auto O=V->AsObject();const AMarePerson* Person=Guests.FindRef(UMareSimulation::String(O,TEXT("id"))).Get();
+  if(!IsValid(Person) || !Person->bSeated)continue;
+  // Seated: the bubble floats just over the head (measured in the bar capture: +95 cm floated a metre above it).
+  Out.Add({Person->GetActorLocation()+FVector(0,0,58),S->BarBubble(O)});}
+ return Out;
+}
+
 bool UMareBarWorld::PrepSpot(const FString& Id,FVector& At)const
 {
  const AMareServiceTarget* T=Id==TEXT("glass")?GlassTarget.Get():Shelf.FindRef(Id).Get();if(!T)return false;

@@ -56,6 +56,8 @@ private:
  void BuildPrep(const TSharedPtr<FJsonObject>& Defs);
  void UpdatePrep(class UMareSimulation* S,bool bOwned,float DeltaSeconds);
 public:
+ /** Over each seated guest's head: where the bubble goes and what they ask for (MareSimulation::BarBubble). */
+ TArray<TPair<FVector,FString>> Bubbles()const;
  /** QA: world position of a shelf item's E target, or of the glass ("glass"); false when not built. */
  bool PrepSpot(const FString& Id,FVector& At)const;
 };
