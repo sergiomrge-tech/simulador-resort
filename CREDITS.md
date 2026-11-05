@@ -629,3 +629,9 @@ Cume, casa do velho e trilha (04/11):
 Comida brasileira do quiosque (04/11): milho verde na manteiga, espetinho de churrasco, queijo coalho na brasa e lata
 de guaraná modelados neste projeto em `tools/ue58/gen_brazil_food.py` (original, CC0); não havia gratuitos para uso
 comercial (as espigas do Fab são estátua ou só licença pessoal paga para comércio).
+
+### Bar do Coqueiro — preparo físico (04/11/2026)
+| Item | Fonte | Licença |
+|---|---|---|
+| Limão (caixote, copo e queda no copo): `food_lime_01` | https://polyhaven.com/a/food_lime_01 — Poly Haven | CC0 1.0 |
+| Bancada de preparo, garrafas com rótulo (cachaça, vodca, rum, água com gás), caixotes de morango e maracujá, abacaxi na tábua, leite de coco, leite condensado, hortelã, açucareiro, balde de gelo, coqueteleira, socador, liquidificador, copo de trabalho e camadas (gelo, fruta, líquido, espuma) — modelados em `tools/ue58/gen_bar_prep.py` (bpy) | próprio do projeto | — |

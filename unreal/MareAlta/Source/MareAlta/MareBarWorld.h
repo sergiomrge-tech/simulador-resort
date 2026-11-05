@@ -4,6 +4,9 @@
 #include "MareBarWorld.generated.h"
 class AMareServiceTarget;
 class AMarePerson;
+class AStaticMeshActor;
+class UStaticMeshComponent;
+class UMaterialInstanceDynamic;
 
 /** Bar do Coqueiro in the world (gameplay plan M8): the E target inside the counter that opens the bar station,
  *  one guest per open order sitting on a stool facing the counter, and the bartender behind it once hired.
@@ -32,4 +35,27 @@ private:
  /** Guests walking away with the time they are removed. */
  UPROPERTY() TMap<TObjectPtr<AMarePerson>,double> Leaving;
  AMarePerson* Seat(const FString& Order,const FString& Name,int32 Stool);
+ // ---- Physical prep (CHECKLIST_EXPANSOES 1.1): the prep bench against the back panel with the ingredients and
+ // tools (bar.json "bench"/"shelf"), one E target per ingredient, and the work glass whose layers show its contents.
+ UPROPERTY() TArray<TObjectPtr<AStaticMeshActor>> PrepProps;
+ UPROPERTY() TMap<FString,TObjectPtr<AMareServiceTarget>> Shelf;
+ UPROPERTY() TObjectPtr<AMareServiceTarget> GlassTarget;
+ UPROPERTY() TObjectPtr<AStaticMeshActor> GlassActor;
+ UPROPERTY() TObjectPtr<UStaticMeshComponent> LayerIce;
+ UPROPERTY() TObjectPtr<UStaticMeshComponent> LayerFruit;
+ UPROPERTY() TObjectPtr<UStaticMeshComponent> LayerLiquid;
+ UPROPERTY() TObjectPtr<UStaticMeshComponent> LayerFoam;
+ UPROPERTY() TObjectPtr<UMaterialInstanceDynamic> LiquidTint;
+ UPROPERTY() TObjectPtr<UMaterialInstanceDynamic> FruitTint;
+ FString GlassShown;
+ /** The ingredient just put in drops from above the glass into it (then disappears). */
+ UPROPERTY() TObjectPtr<AStaticMeshActor> Falling;
+ float FallTime=-1;
+ FVector FallFrom=FVector::ZeroVector;
+ int32 GlassCount=0;
+ void BuildPrep(const TSharedPtr<FJsonObject>& Defs);
+ void UpdatePrep(class UMareSimulation* S,bool bOwned,float DeltaSeconds);
+public:
+ /** QA: world position of a shelf item's E target, or of the glass ("glass"); false when not built. */
+ bool PrepSpot(const FString& Id,FVector& At)const;
 };

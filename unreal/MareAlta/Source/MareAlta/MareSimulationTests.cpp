@@ -1,4 +1,5 @@
 #include "MareSimulation.h"
+#include "Algo/Reverse.h"
 #if WITH_DEV_AUTOMATION_TESTS
 #include "Misc/AutomationTest.h"
 #include "MareGameRoom.h"
@@ -578,6 +579,73 @@ bool FMareBarDrinksTest::RunTest(const FString& Parameters)
  Sim->Object(Sim->State,TEXT("staff"))->SetBoolField(TEXT("bartender"),false);
  Sim->State->SetNumberField(TEXT("minutes"),1400);Sim->BarHour(23);TestEqual(TEXT("Bar empty after closing"),Orders(),0);
  TestTrue(TEXT("No orders while closed"),Sim->AddBarOrder().IsEmpty());
+ IFileManager::Get().DeleteDirectory(*Sim->SaveDirectory,false,true);
+ Sim->RemoveFromRoot();Instance->RemoveFromRoot();return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FMareBarPrepTest,"MareAlta.Gameplay.BarPrep",EAutomationTestFlags::EditorContext|EAutomationTestFlags::EngineFilter)
+bool FMareBarPrepTest::RunTest(const FString& Parameters)
+{
+ // CHECKLIST_EXPANSOES 1.1: every recipe made by hand (pick, pour, mini-actions, serve) is the right drink in any
+ // order; a wrong mix never charges the guest; throwing away loses the ingredients; a careful prep pays more.
+ auto Instance=NewObject<UGameInstance>();Instance->AddToRoot();
+ auto Sim=NewObject<UMareSimulation>(Instance);Sim->AddToRoot();
+ Sim->SaveDirectory=FPaths::ProjectSavedDir()/TEXT("Automation/BarPrep")/FGuid::NewGuid().ToString(EGuidFormats::Digits);
+ auto Load=[&](const FString& Name,TSharedPtr<FJsonObject>& Result){FString Text;FFileHelper::LoadFileToString(Text,*(FPaths::ProjectContentDir()/TEXT("Data")/Name));return FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Text),Result);};
+ if(!TestTrue(TEXT("Definitions"),Load(TEXT("definitions.json"),Sim->Definitions)) || !TestTrue(TEXT("Default save"),Load(TEXT("default_save.json"),Sim->State))){Sim->RemoveFromRoot();Instance->RemoveFromRoot();return false;}
+ Sim->State->SetNumberField(TEXT("money"),5000);Sim->State->SetNumberField(TEXT("minutes"),600);
+ Sim->Object(Sim->State,TEXT("unlocked"))->SetBoolField(TEXT("bar"),true);
+ // The bar world reads bar.stock before anything calls Bar(): the starting shelf must still be filled.
+ Sim->Object(Sim->Object(Sim->State,TEXT("bar")),TEXT("stock"));
+ auto Stock=[&](const FString& I){return Sim->Number(Sim->Object(Sim->Bar(),TEXT("stock")),I);};
+ TestTrue(TEXT("Starting shelf filled after an early read"),Stock(TEXT("gelo"))>0);
+ auto Make=[&](const TArray<FString>& Mix,double Score){
+  for(const FString& I:Mix){if(!Sim->BarPick(I) || Sim->BarHand()!=I || !Sim->BarPour())return false;}
+  for(int32 Guard=0;Guard<4 && !Sim->BarNextStep().IsEmpty();++Guard)if(!Sim->BarPrepStep(Sim->BarNextStep(),Score))return false;
+  return Sim->BarNextStep().IsEmpty();};
+ TestTrue(TEXT("Empty hand cannot pour"),!Sim->BarPour());
+ // Pick, put back, pick again; pouring uses the stock at once.
+ const double Ice=Stock(TEXT("gelo"));
+ TestTrue(TEXT("Pick ice"),Sim->BarPick(TEXT("gelo")) && Sim->BarHand()==TEXT("gelo"));
+ TestTrue(TEXT("Same item puts it back"),Sim->BarPick(TEXT("gelo")) && Sim->BarHand().IsEmpty());
+ Sim->BarPick(TEXT("gelo"));TestTrue(TEXT("Pour"),Sim->BarPour());TestEqual(TEXT("Stock used on pouring"),Stock(TEXT("gelo")),Ice-1);
+ Sim->BarPick(TEXT("gelo"));TestFalse(TEXT("No doubles in the glass"),Sim->BarPour());Sim->BarPick(TEXT("gelo"));
+ TestEqual(TEXT("Ice only needs shaking"),Sim->BarNextStep(),FString(TEXT("bater")));
+ const double Lost=Sim->BarDiscard();TestTrue(TEXT("Throwing away costs the ingredients"),Lost>0 && Sim->BarGlass().IsEmpty());
+ TestEqual(TEXT("Thrown ice not refunded"),Stock(TEXT("gelo")),Ice-1);
+ // Steps per kind of drink.
+ TestEqual(TEXT("Caipirinha: muddle then shake"),FString::Join(Sim->BarPrepSteps({TEXT("cachaca"),TEXT("limao"),TEXT("acucar"),TEXT("gelo")}),TEXT(",")),FString(TEXT("socar,bater")));
+ TestEqual(TEXT("Batida: blender"),FString::Join(Sim->BarPrepSteps({TEXT("cachaca"),TEXT("coco"),TEXT("leite_condensado"),TEXT("gelo")}),TEXT(",")),FString(TEXT("liquidificar")));
+ TestEqual(TEXT("Mojito: muddle then shake"),FString::Join(Sim->BarPrepSteps({TEXT("rum"),TEXT("limao"),TEXT("hortela"),TEXT("acucar"),TEXT("agua_gas")}),TEXT(",")),FString(TEXT("socar,bater")));
+ TestFalse(TEXT("Steps in order only"),Sim->BarPrepStep(TEXT("bater"),1));
+ // Every recipe, in its order and reversed, served to a guest who asked for it.
+ const TArray<TSharedPtr<FJsonValue>>* Recipes=nullptr;Sim->BarDefs()->TryGetArrayField(TEXT("recipes"),Recipes);
+ int32 Made=0;
+ for(int32 Pass=0;Pass<2;++Pass)for(const auto& V:*Recipes){const auto R=V->AsObject();const FString Id=Sim->String(R,TEXT("id"));
+  TArray<FString> Mix;for(const auto& N:R->GetArrayField(TEXT("needs")))Mix.Add(N->AsString());if(Pass)Algo::Reverse(Mix);
+  Sim->RestockBar();const FString Order=Sim->AddBarOrder(Id);if(!TestFalse(TEXT("Guest for ")+Id,Order.IsEmpty()))continue;
+  Sim->SetBarServing(Order);
+  TestTrue(TEXT("Made by hand: ")+Id,Make(Mix,1));
+  const double Before=Sim->Money();const auto Out=Sim->ServeGlass(Order);
+  TestTrue(TEXT("Served: ")+Id,Out.bServed && Out.Recipe==Id);TestTrue(TEXT("Paid: ")+Id,Sim->Money()>Before);
+  TestTrue(TEXT("Glass empty after serving: ")+Id,Sim->BarGlass().IsEmpty());Made+=Out.bServed;}
+ TestEqual(TEXT("Every recipe both ways"),Made,2*Recipes->Num());
+ // A wrong mix: the guest makes a face and pays nothing; a near miss (another recipe) does not pay either.
+ Sim->RestockBar();FString Order=Sim->AddBarOrder(TEXT("caipirinha"));Sim->SetBarServing(Order);
+ TestTrue(TEXT("Nonsense mixed"),Make({TEXT("leite_condensado"),TEXT("agua_gas")},1));
+ double Before=Sim->Money();auto Out=Sim->ServeGlass(Order);
+ TestTrue(TEXT("Nonsense is no drink"),!Out.bServed && Out.Recipe.IsEmpty());TestEqual(TEXT("Nonsense not charged"),Sim->Money(),Before);
+ TestTrue(TEXT("Made a caipiroska"),Make({TEXT("vodka"),TEXT("limao"),TEXT("acucar"),TEXT("gelo")},1));
+ Out=Sim->ServeGlass(Order);TestTrue(TEXT("Other recipe not served"),!Out.bServed && Out.Recipe==TEXT("caipiroska"));TestEqual(TEXT("Other recipe not charged"),Sim->Money(),Before);
+ // Not ready: serving before the steps is refused and keeps the glass.
+ Sim->BarPick(TEXT("cachaca"));Sim->BarPour();TestFalse(TEXT("Steps first"),Sim->ServeGlass(Order).bServed);TestEqual(TEXT("Glass kept"),Sim->BarGlass().Num(),1);Sim->BarDiscard();
+ // Careful prep pays more than a clumsy one (same wait).
+ TestTrue(TEXT("Perfect caipirinha"),Make({TEXT("cachaca"),TEXT("limao"),TEXT("acucar"),TEXT("gelo")},1));
+ Before=Sim->Money();Sim->ServeGlass(Order);const double Good=Sim->Money()-Before;
+ Order=Sim->AddBarOrder(TEXT("caipirinha"));Sim->SetBarServing(Order);
+ TestTrue(TEXT("Clumsy caipirinha"),Make({TEXT("cachaca"),TEXT("limao"),TEXT("acucar"),TEXT("gelo")},0));
+ Before=Sim->Money();Sim->ServeGlass(Order);const double Bad=Sim->Money()-Before;
+ TestTrue(TEXT("Careful prep pays more"),Good>Bad && Bad>0);
  IFileManager::Get().DeleteDirectory(*Sim->SaveDirectory,false,true);
  Sim->RemoveFromRoot();Instance->RemoveFromRoot();return true;
 }

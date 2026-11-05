@@ -36,6 +36,8 @@ void UMarePlayerPresentation::BeginPlay()
  ViewBody->VisibilityBasedAnimTickOption=EVisibilityBasedAnimTickOption::AlwaysTickPoseAndRefreshBones;
  ViewBody->RegisterComponent();ViewBody->SetAnimInstanceClass(UMareServiceAnimInstance::StaticClass());
  ViewBody->HideBoneByName(TEXT("Head"),EPhysBodyOp::PBO_None);ViewBody->HideBoneByName(TEXT("neck_01"),EPhysBodyOp::PBO_None);
+ // No hands or arms in first person (Sergio, 04/11): carried products still follow the hand_r socket.
+ for(const TCHAR* Arm:{TEXT("upperarm_l"),TEXT("upperarm_r")})ViewBody->HideBoneByName(Arm,EPhysBodyOp::PBO_None);
  for(const FString Name:{TEXT("Idle"),TEXT("Walk"),TEXT("Interact"),TEXT("Swim_Idle"),TEXT("Sitting_Idle")}){
   const FString Path=UMareSimulation::String(UMareSimulation::Object(Row,TEXT("animations")),TEXT("Human_0")+Name);
   if(auto Clip=LoadObject<UAnimSequence>(nullptr,*Path))Clips.Add(Name,Clip);
@@ -120,6 +122,7 @@ void UMarePlayerPresentation::UpdateAnimation()
  // Changing the single-node animation can reinitialize bone visibility.
  ViewBody->HideBoneByName(TEXT("neck_01"),EPhysBodyOp::PBO_None);
  ViewBody->HideBoneByName(TEXT("Head"),EPhysBodyOp::PBO_None);
+ for(const TCHAR* Arm:{TEXT("upperarm_l"),TEXT("upperarm_r")})ViewBody->HideBoneByName(Arm,EPhysBodyOp::PBO_None);
  for(const FName Bone:{FName(TEXT("thigh_l")),FName(TEXT("thigh_r"))}){
   if(bSwimming)ViewBody->HideBoneByName(Bone,EPhysBodyOp::PBO_None);else ViewBody->UnHideBoneByName(Bone);
  }

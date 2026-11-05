@@ -142,7 +142,7 @@ FString MareLoc::Cardinal(int32 Index)
   {TEXT("en"),{TEXT("N"),TEXT("E"),TEXT("S"),TEXT("W")}},{TEXT("es"),{TEXT("N"),TEXT("E"),TEXT("S"),TEXT("O")}},
   {TEXT("fr"),{TEXT("N"),TEXT("E"),TEXT("S"),TEXT("O")}},{TEXT("it"),{TEXT("N"),TEXT("E"),TEXT("S"),TEXT("O")}},
   {TEXT("de"),{TEXT("N"),TEXT("O"),TEXT("S"),TEXT("W")}},{TEXT("nl"),{TEXT("N"),TEXT("O"),TEXT("Z"),TEXT("W")}},
-  {TEXT("ru"),{TEXT("С"),TEXT("В"),TEXT("Ю"),TEXT("З")}},{TEXT("pl"),{TEXT("N"),TEXT("E"),TEXT("S"),TEXT("W")}},
+  {TEXT("ru"),{TEXT("С"),TEXT("В"),TEXT("Ю"),TEXT("З")}},{TEXT("pl"),{TEXT("N"),TEXT("W"),TEXT("S"),TEXT("Z")}},
   {TEXT("cs"),{TEXT("S"),TEXT("V"),TEXT("J"),TEXT("Z")}},{TEXT("hu"),{TEXT("É"),TEXT("K"),TEXT("D"),TEXT("Ny")}},
   {TEXT("ro"),{TEXT("N"),TEXT("E"),TEXT("S"),TEXT("V")}},{TEXT("da"),{TEXT("N"),TEXT("Ø"),TEXT("S"),TEXT("V")}},
   {TEXT("fi"),{TEXT("P"),TEXT("I"),TEXT("E"),TEXT("L")}},{TEXT("ja"),{TEXT("北"),TEXT("東"),TEXT("南"),TEXT("西")}},

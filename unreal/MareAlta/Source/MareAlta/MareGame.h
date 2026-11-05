@@ -66,6 +66,11 @@ public:
  void StartBusinessGame(const FString& Biz);
  /** Fishing at the pier (cast, wait, strike) over the running world. */
  void StartFishing();
+ /** Bar work glass (E): pour the ingredient in hand, else run the next prep step's mini-action, else serve. */
+ UFUNCTION(BlueprintCallable,Category="Maré Alta") void UseBarGlass();
+ /** Bar prep mini-action over the running world: "socar" (taps on the beat), "bater" (hold and let go in the
+  *  green), "liquidificar" (pulses in the zone). The score goes to UMareSimulation::BarPrepStep. */
+ UFUNCTION(BlueprintCallable,Category="Maré Alta") void StartBarPrep(const FString& Step);
  /** Early Access end screen (once per save, when everything is bought and the village stories are done). */
  UFUNCTION(BlueprintCallable,Category="Maré Alta") void ShowEndOfContent();
  /** Photo mode (P / D-pad down): screenshot to Saved/Album and the subjects in frame to the album. */

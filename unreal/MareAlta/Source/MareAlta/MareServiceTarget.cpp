@@ -115,6 +115,11 @@ void AMareServiceTarget::Use(APlayerController* Controller)
  if(Action==TEXT("RoomService")){if(Sim->DeliverRoomService()>0)UMareAudioWorld::Action(this,TEXT("money_coins"));return;}
  if(Action==TEXT("Fishing")){PC->StartFishing();return;}
  if(Action==TEXT("BarCounter")){PC->OpenStation(TEXT("Bar"));return;}
+ if(Action==TEXT("BarIngredient")){for(const FName& Tag:Tags){const FString T=Tag.ToString();
+   // No hands (Sergio, 04/11): E on the shelf item drops it straight into the work glass.
+   if(T.StartsWith(TEXT("ing:")) && Sim->BarPick(T.Mid(4)) && Sim->BarPour()){const FVector Spot=GetActorLocation();
+    UMareAudioWorld::Action(this,T.Mid(4)==TEXT("gelo")?TEXT("bar_ice_glass"):TEXT("bar_pour"),&Spot,.7f);}}return;}
+ if(Action==TEXT("BarGlass")){PC->UseBarGlass();return;}
  if(Action==TEXT("HotelReception")){const FVector Bell=GetActorLocation();UMareAudioWorld::Action(this,TEXT("reception_bell"),&Bell);PC->OpenStation(TEXT("ReceptionHotel"));return;}
  if(Action==TEXT("Door")){
   if(bOpened && !CanClose(PC->GetPawn()->GetActorLocation())){Sim->LastMessage=TEXT("Afaste-se do arco da porta para fechar.");return;}

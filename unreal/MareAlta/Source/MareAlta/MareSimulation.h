@@ -405,8 +405,32 @@ public:
  /** Shakes the ingredients (always used up) for an order: the drink asked for (or any recipe for a "surpresa") pays
   *  price plus a tip for speed; an unknown recipe is discovered (fame) even when it is not what was ordered. */
  FBarResult ServeBar(const FString& Order,const TArray<FString>& Ingredients);
+ // --- Physical prep (CHECKLIST_EXPANSOES 1.1): bar.hand (ingredient in the hand), bar.glass [ingredients in the work
+ // glass, stock already used], bar.prep {step: score 0..1}, bar.serving (order the glass goes to).
+ /** Ingredient in the player's hand at the bar, or empty. */
+ FString BarHand() const;
+ /** E on a shelf item: takes it in the hand (the same item again puts it back). False when out of stock. */
+ UFUNCTION(BlueprintCallable,Category="Maré Alta|Bar") bool BarPick(const FString& Ingredient);
+ /** E on the glass with an ingredient in hand: it goes in, the stock is used; adding resets the prep steps. */
+ UFUNCTION(BlueprintCallable,Category="Maré Alta|Bar") bool BarPour();
+ TArray<FString> BarGlass() const;
+ /** Steps this mix needs, in order: "socar" (muddle fruit/mint), then "liquidificar" (creamy) or "bater". */
+ TArray<FString> BarPrepSteps(const TArray<FString>& Mix) const;
+ /** Next step still to do for the glass, empty when ready to serve (or empty glass). */
+ FString BarNextStep() const;
+ /** Records a mini-action's score (0..1) for the glass's next step; false when the step is not the next one. */
+ UFUNCTION(BlueprintCallable,Category="Maré Alta|Bar") bool BarPrepStep(const FString& Step,double Score);
+ /** Throws the glass away: its ingredients are lost (returns their cost), the waiting guest reacts. */
+ UFUNCTION(BlueprintCallable,Category="Maré Alta|Bar") double BarDiscard();
+ /** Order the glass goes to (chosen at the station), else the one waiting longest; empty with nobody waiting. */
+ FString BarServing();
+ UFUNCTION(BlueprintCallable,Category="Maré Alta|Bar") void SetBarServing(const FString& Order);
+ /** Serves the finished glass to the order: price and speed tip like ServeBar, ±prep_tip by the steps' scores. */
+ FBarResult ServeGlass(const FString& Order);
+ /** ServeBar with the ingredients already taken from the stock (the glass) and an optional prep score (-1 = none). */
+ FBarResult ServeMix(const FString& Order,const TArray<FString>& Ingredients,bool bUseStock,double PrepScore);
  /** Buys every ingredient up to bar.json restock_qty; false without enough money. */
- bool RestockBar();
+ UFUNCTION(BlueprintCallable,Category="Maré Alta|Bar") bool RestockBar();
  double BarRestockCost() const;
  /** Menu price of a drink: recipe price × bar decor factor × fame. */
  double DrinkPrice(const FString& Recipe) const;

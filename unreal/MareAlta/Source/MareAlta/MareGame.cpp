@@ -167,9 +167,6 @@ private:
  FString Place=TEXT("kiosk");
  /** Reception: the nightly price the player is about to ask each waiting guest (starts at the guest's offer). */
  TMap<FString,double> Ask;
- /** Bar station: ingredients in the shaker and the guest being served. */
- TArray<FString> Shaker;
- FString BarOrder;
  /** Tours booth: the tour being guided and the choice made at each stop (0 good, 1 ok, 2 bad). */
  FString GuideTourId;
  TArray<int32> GuideChoices;
@@ -418,38 +415,31 @@ private:
    :FString::Printf(TEXT("fechado · abre das %.0fh às %.0fh"),Open && Open->Num()==2?(*Open)[0]->AsNumber():10.,Open && Open->Num()==2?(*Open)[1]->AsNumber():23.));
   const TArray<TSharedPtr<FJsonValue>>* Orders=nullptr;B->TryGetArrayField(TEXT("orders"),Orders);
   Heading(TEXT("Pedidos no balcão"),S->HasStaff(TEXT("bartender"))?TEXT("o bartender serve o que está no cardápio"):TEXT("escolha quem vai atender"));
-  bool bPickedOpen=false;
+  const FString Serving=S->BarServing();
   if(!Orders || Orders->IsEmpty())Line(TEXT("Ninguém no balcão agora."),13,Faded);
   else for(const auto& V:*Orders){const auto O=V->AsObject();const FString Id=UMareSimulation::String(O,TEXT("id")),Want=UMareSimulation::String(O,TEXT("want"));
-   if(BarOrder.IsEmpty())BarOrder=Id;bPickedOpen|=BarOrder==Id;
    const double Waited=UMareSimulation::Number(S->State,TEXT("day"),1)*1440+UMareSimulation::Number(S->State,TEXT("minutes"))-UMareSimulation::Number(O,TEXT("since"));
    FString What;if(Want==TEXT("surpresa"))What=TEXT("me surpreenda (qualquer drink)");
    else if(S->IsRecipeKnown(Want))What=UMareSimulation::String(S->BarRecipe(Want),TEXT("name"));
    else What=TEXT("um drink que você não conhece: ")+UMareSimulation::String(O,TEXT("hint"));
    auto Row=SNew(SHorizontalBox)+SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(0,0,8,0)
-    [Button(BarOrder==Id?TEXT("atendendo"):TEXT("atender"),[this,Id](){BarOrder=Id;},true)]
-    +SHorizontalBox::Slot().FillWidth(1).VAlign(VAlign_Center)[BodyText(FString::Printf(TEXT("%s · %s · espera %.0f min"),*UMareSimulation::String(O,TEXT("name")),*What,Waited),12.5f,BarOrder==Id?Ink:Faded,BarOrder==Id)];
+    [Button(Serving==Id?TEXT("atendendo"):TEXT("atender"),[S,Id](){S->SetBarServing(Id);},true)]
+    +SHorizontalBox::Slot().FillWidth(1).VAlign(VAlign_Center)[BodyText(FString::Printf(TEXT("%s · %s · espera %.0f min"),*UMareSimulation::String(O,TEXT("name")),*What,Waited),12.5f,Serving==Id?Ink:Faded,Serving==Id)];
    Body->AddSlot().AutoHeight().Padding(0,2)[Row];}
-  if(!bPickedOpen)BarOrder.Reset();
-  TArray<FString> Names;for(const FString& I:Shaker)Names.Add(IngredientName(I));
-  Heading(TEXT("Coqueteleira"),Shaker.IsEmpty()?TEXT("vazia"):FString::Join(Names,TEXT(" + ")));
-  auto Actions=SNew(SHorizontalBox);
-  Actions->AddSlot().AutoWidth().Padding(0,0,8,0)[Button(TEXT("Esvaziar"),[this](){Shaker.Reset();},!Shaker.IsEmpty())];
-  Actions->AddSlot().AutoWidth()[Button(TEXT("Bater e servir"),[this,S](){
-   const bool bCreamy=Shaker.Contains(TEXT("leite_condensado")) || Shaker.Contains(TEXT("coco")) || Shaker.Contains(TEXT("abacaxi"));
-   const auto Result=S->ServeBar(BarOrder,Shaker);
-   if(!Result.Recipe.IsEmpty() || Result.bServed){UMareAudioWorld::Action(Owner.Get(),bCreamy?TEXT("bar_blender"):TEXT("bar_shaker"));UMareAudioWorld::Action(Owner.Get(),TEXT("bar_pour"));}
-   if(Result.bServed){UMareAudioWorld::Action(Owner.Get(),TEXT("money_coins"));BarOrder.Reset();}
-   if(Result.bDiscovered)UMareAudioWorld::Action(Owner.Get(),TEXT("deal_accept"));
-   Shaker.Reset();},!Shaker.IsEmpty() && !BarOrder.IsEmpty())];
-  Body->AddSlot().AutoHeight().Padding(0,4)[Actions];
-  auto Stock=UMareSimulation::Object(B,TEXT("stock"));const int32 MaxMix=int32(UMareSimulation::Number(Defs,TEXT("max_mix"),5));
-  Heading(TEXT("Ingredientes"),FString::Printf(TEXT("até %d na coqueteleira"),MaxMix));
-  auto G=Grid();int32 I=0;const TArray<TSharedPtr<FJsonValue>>* List=nullptr;
+  // Physical prep: the bench at the back holds the ingredients; E on the work glass pours, mixes and serves.
+  TArray<FString> Names;for(const FString& I:S->BarGlass())Names.Add(IngredientName(I));
+  const FString Next=S->BarNextStep();const auto Lines=UMareSimulation::Object(Defs,TEXT("prep_lines"));
+  Heading(TEXT("Copo de preparo"),Names.IsEmpty()?TEXT("vazio"):FString::Join(Names,TEXT(" + ")));
+  Line(Names.IsEmpty()?TEXT("Pegue os ingredientes na bancada do fundo (E) e coloque no copo (E). Depois use o copo para socar, bater e servir.")
+   :!Next.IsEmpty()?TEXT("Falta: ")+UMareSimulation::String(Lines,Next)+TEXT(" (E no copo)"):TEXT("Pronto! E no copo serve o cliente que você está atendendo."),12,Faded);
+  Body->AddSlot().AutoHeight().HAlign(HAlign_Left).Padding(0,4)[Button(TEXT("Jogar fora"),[this,S](){
+   if(S->BarDiscard()>0)UMareAudioWorld::Action(Owner.Get(),TEXT("cleaning_trash"),nullptr,.6f);},!Names.IsEmpty())];
+  auto Stock=UMareSimulation::Object(B,TEXT("stock"));
+  TArray<FString> Shelf;const TArray<TSharedPtr<FJsonValue>>* List=nullptr;
   if(Defs->TryGetArrayField(TEXT("ingredients"),List))for(const auto& V:*List){const FString Id=UMareSimulation::String(V->AsObject(),TEXT("id"));
-   const int32 Have=int32(UMareSimulation::Number(Stock,Id));
-   G->AddSlot(I%3,I/3)[Button(FString::Printf(TEXT("%s (%d)"),*UMareSimulation::String(V->AsObject(),TEXT("name")),Have),[this,Id](){
-    Shaker.Add(Id);if(Id==TEXT("gelo"))UMareAudioWorld::Action(Owner.Get(),TEXT("bar_ice_glass"));},Have>0 && !Shaker.Contains(Id) && Shaker.Num()<MaxMix)];++I;}
+   Shelf.Add(FString::Printf(TEXT("%s %d"),*UMareSimulation::String(V->AsObject(),TEXT("name")),int32(UMareSimulation::Number(Stock,Id))));}
+  Heading(TEXT("Bancada"),FString::Printf(TEXT("até %d no copo"),int32(UMareSimulation::Number(Defs,TEXT("max_mix"),5))));
+  Line(FString::Join(Shelf,TEXT(" · ")),12,Ink);
   const double Cost=S->BarRestockCost();
   Body->AddSlot().AutoHeight().HAlign(HAlign_Left).Padding(0,6)[Button(Cost>0?FString::Printf(TEXT("Repor ingredientes · R$ %.0f"),Cost):FString(TEXT("Estoque cheio")),[S](){S->RestockBar();},Cost>0 && S->Money()>=Cost)];
   int32 Known=0,Total=0;const TArray<TSharedPtr<FJsonValue>>* Recipes=nullptr;Defs->TryGetArrayField(TEXT("recipes"),Recipes);
@@ -969,6 +959,102 @@ private:
   Timer=2.2f;bRecast=true;
  }
 };
+/** Bar prep mini-actions (CHECKLIST_EXPANSOES 1.1). "socar": a pulse comes round four times, tap E on each beat.
+ *  "bater": hold E, the shake bar fills; let go inside the green (past it the drink spills). "liquidificar": the
+ *  blender speed swings, pulse E three times while it is in the zone. Esc or B gives up (the glass stays as it is). */
+class SMareBarPrepGame : public SCompoundWidget
+{
+public:
+ SLATE_BEGIN_ARGS(SMareBarPrepGame){} SLATE_ARGUMENT(TWeakObjectPtr<AMareController>,Owner) SLATE_ARGUMENT(FString,Step) SLATE_END_ARGS()
+ void Construct(const FArguments& Args)
+ {
+  using namespace MareNotebook;Owner=Args._Owner;Step=Args._Step;
+  auto S=Owner.IsValid()?Owner->GetSimulation():nullptr;
+  const FString Title=S?UMareSimulation::String(UMareSimulation::Object(S->BarDefs(),TEXT("prep_lines")),Step):Step;
+  const FString Help=Step==TEXT("socar")?TEXT("Aperte E, Espaço, clique ou A quando o círculo acender · 4 batidas")
+   :Step==TEXT("bater")?TEXT("Segure E, Espaço, clique ou A para bater e solte no verde · passou, derramou")
+   :TEXT("Aperte E, Espaço, clique ou A quando o ponteiro estiver no verde · 3 pulsos");
+  ChildSlot.HAlign(HAlign_Center).VAlign(VAlign_Bottom).Padding(0,0,0,70)[SNew(SBorder).BorderImage(FCoreStyle::Get().GetBrush("WhiteBrush")).BorderBackgroundColor(Paper).Padding(FMargin(26,16))
+   [SNew(SBox).WidthOverride(BarWidth+52)[SNew(SVerticalBox)
+    +SVerticalBox::Slot().AutoHeight()[HandText(Title.IsEmpty()?Step:Title,30,Brown)]
+    +SVerticalBox::Slot().AutoHeight().Padding(0,4)[SNew(STextBlock).Font(Hand(22)).ColorAndOpacity(Ink).Text_Lambda([this](){return MareLoc::Text(Status);})]
+    +SVerticalBox::Slot().AutoHeight().Padding(0,8)[SNew(SBox).WidthOverride(BarWidth).HeightOverride(46)[SNew(SOverlay)
+     +SOverlay::Slot()[SNew(SBorder).BorderImage(FCoreStyle::Get().GetBrush("WhiteBrush")).BorderBackgroundColor(Kraft)]
+     // Green zone (shake target / blender zone) or the beat flash (muddle).
+     +SOverlay::Slot()[SNew(SBox).HAlign(HAlign_Left).Padding_Lambda([this](){return FMargin(ZoneLo()*BarWidth,0,0,0);})
+      [SNew(SBox).WidthOverride_Lambda([this](){return FOptionalSize((ZoneHi()-ZoneLo())*BarWidth);})
+       [SNew(SBorder).BorderImage(FCoreStyle::Get().GetBrush("WhiteBrush")).BorderBackgroundColor_Lambda([this](){
+        return FSlateColor(Step==TEXT("socar")?FLinearColor::LerpUsingHSV(MareNotebook::Kraft,MareNotebook::Green,BeatGlow()):MareNotebook::Green);})]]]
+     // Fill (shake) or pointer (blender, muddle).
+     +SOverlay::Slot()[SNew(SBox).HAlign(HAlign_Left).Padding_Lambda([this](){return FMargin(Step==TEXT("bater")?0.f:FMath::Max(0.f,Pointer()*BarWidth-4),0,0,0);})
+      [SNew(SBox).WidthOverride_Lambda([this](){return FOptionalSize(Step==TEXT("bater")?FMath::Min(1.f,Fill)*BarWidth:8.f);})
+       [SNew(SBorder).BorderImage(FCoreStyle::Get().GetBrush("WhiteBrush")).BorderBackgroundColor_Lambda([this](){
+        return FSlateColor(Step==TEXT("bater")?FLinearColor(MareNotebook::Ink.R,MareNotebook::Ink.G,MareNotebook::Ink.B,.55f):MareNotebook::Ink);})]]]]]
+    +SVerticalBox::Slot().AutoHeight()[SNew(STextBlock).Font(Hand(24)).ColorAndOpacity(Green).Text_Lambda([this](){
+     FString Dots;for(int32 I=0;I<Needed();++I)Dots+=I<Marks.Num()?(Marks[I]?TEXT("O "):TEXT("X ")):TEXT("- ");return MareLoc::Text(Dots);})]
+    +SVerticalBox::Slot().AutoHeight()[HandText(Help+TEXT(" · Esc ou B desiste"),15,Faded)]]]];
+  Status=Step==TEXT("bater")?TEXT("Segure para bater..."):TEXT("Atenção ao ritmo...");
+  if(Step==TEXT("liquidificar") && Owner.IsValid())UMareAudioWorld::Action(Owner.Get(),TEXT("bar_blender"),nullptr,.6f);
+ }
+ virtual bool SupportsKeyboardFocus()const override{return true;}
+ virtual FReply OnKeyDown(const FGeometry&,const FKeyEvent& Event) override
+ {
+  const FKey K=Event.GetKey();
+  if(K==EKeys::Escape || K==EKeys::Gamepad_FaceButton_Right){Close();return FReply::Handled();}
+  if(IsAction(K)){if(!Event.IsRepeat())Press();return FReply::Handled();}
+  return FReply::Unhandled();
+ }
+ virtual FReply OnKeyUp(const FGeometry&,const FKeyEvent& Event) override{if(IsAction(Event.GetKey())){Release();return FReply::Handled();}return FReply::Unhandled();}
+ virtual FReply OnMouseButtonDown(const FGeometry&,const FPointerEvent&) override{Press();return FReply::Handled();}
+ virtual FReply OnMouseButtonUp(const FGeometry&,const FPointerEvent&) override{Release();return FReply::Handled();}
+ virtual void Tick(const FGeometry& Geometry,const double Time,const float Delta) override
+ {
+  SCompoundWidget::Tick(Geometry,Time,Delta);
+  if(Done>=0){if((Done-=Delta)<=0)Close();return;}
+  T+=Delta;
+  if(Step==TEXT("bater") && bHolding){Fill+=Delta/1.8f;
+   if((ShakeSound-=Delta)<=0 && Owner.IsValid()){UMareAudioWorld::Action(Owner.Get(),TEXT("bar_shaker"),nullptr,.7f);ShakeSound=.55f;}
+   if(Fill>1.f){bHolding=false;Score(.15,TEXT("Derramou! Bateu demais..."));}}
+  // Muddle: a beat missed entirely counts as a miss.
+  if(Step==TEXT("socar") && Marks.Num()<Needed() && T>Beat*(Marks.Num()+1)+Window){Marks.Add(false);if(Marks.Num()>=Needed())Finish();}
+ }
+private:
+ static constexpr float BarWidth=560,Beat=.75f,Window=.16f;
+ TWeakObjectPtr<AMareController> Owner;FString Step,Status;TArray<bool> Marks;
+ float T=0,Fill=0,Done=-1,ShakeSound=0;bool bHolding=false;
+ static bool IsAction(const FKey& K){return K==EKeys::E || K==EKeys::SpaceBar || K==EKeys::Enter || K==EKeys::Gamepad_FaceButton_Bottom || K==EKeys::Gamepad_FaceButton_Left;}
+ int32 Needed()const{return Step==TEXT("socar")?4:Step==TEXT("liquidificar")?3:1;}
+ // Shake: green .72-.93 of the bar; blender zone moves a little after each pulse; muddle flashes the middle on the beat.
+ float ZoneLo()const{return Step==TEXT("bater")?.72f:Step==TEXT("liquidificar")?.55f-.12f*Marks.Num():.44f;}
+ float ZoneHi()const{return Step==TEXT("bater")?.93f:Step==TEXT("liquidificar")?.72f-.12f*Marks.Num():.56f;}
+ float Pointer()const{return Step==TEXT("liquidificar")?.5f-.5f*FMath::Cos(T*PI*(.9f+.25f*Marks.Num())):FMath::Fmod(T/Beat+.5f,1.f);}
+ float ToBeat()const{const float Phase=FMath::Fmod(T,Beat);return FMath::Min(Phase,Beat-Phase);}
+ float BeatGlow()const{return FMath::Clamp(1-ToBeat()/(Window*1.5f),0.f,1.f);}
+ void Press()
+ {
+  if(Done>=0)return;
+  if(Step==TEXT("bater")){bHolding=true;return;}
+  if(Marks.Num()>=Needed())return;
+  bool bHit=false;
+  if(Step==TEXT("socar")){bHit=ToBeat()<=Window && T>Beat*.5f;if(Owner.IsValid())UMareAudioWorld::Action(Owner.Get(),TEXT("bar_ice_glass"),nullptr,bHit?.5f:.25f);}
+  else{const float P=Pointer();bHit=P>=ZoneLo() && P<=ZoneHi();if(Owner.IsValid())UMareAudioWorld::Action(Owner.Get(),TEXT("bar_blender"),nullptr,.5f);}
+  Marks.Add(bHit);Status=bHit?TEXT("Isso!"):TEXT("Quase...");
+  if(Marks.Num()>=Needed())Finish();
+ }
+ void Release()
+ {
+  if(Step!=TEXT("bater") || !bHolding || Done>=0)return;bHolding=false;
+  if(Fill>=.72f && Fill<=.93f){Marks.Add(true);Score(1,TEXT("No ponto! Gelado e bem batido."));}
+  else{Marks.Add(false);Score(FMath::Clamp(Fill/.72f,0.f,1.f)*.6f,TEXT("Bateu pouco... ficou meio aguado."));}
+ }
+ void Finish(){int32 Hits=0;for(bool B:Marks)Hits+=B;Score(double(Hits)/Needed(),Hits==Needed()?TEXT("Perfeito!"):Hits>0?TEXT("Deu para o gasto."):TEXT("Saiu meio desajeitado..."));}
+ void Score(double Value,const FString& Line)
+ {
+  auto S=Owner.IsValid()?Owner->GetSimulation():nullptr;if(S)S->BarPrepStep(Step,Value);
+  Status=Line;if(Owner.IsValid())UMareAudioWorld::Action(Owner.Get(),Value>=.7?TEXT("deal_accept"):TEXT("deal_decline"));Done=1.2f;
+ }
+ void Close(){if(Owner.IsValid())Owner->CloseBusinessGame();}
+};
 /** Early Access end screen (events.json "end_of_content"): thanks, the save's numbers, and "keep playing". */
 class SMareEndScreen : public SCompoundWidget
 {
@@ -1099,6 +1185,27 @@ void AMareController::StartFishing()
  const TSharedRef<SMareFishingGame> Game=SNew(SMareFishingGame).Owner(this);GameWidget=Game;
  GEngine->GameViewport->AddViewportWidgetContent(Game,40);bShowMouseCursor=true;
  SetInputMode(FInputModeUIOnly().SetWidgetToFocus(Game));SetIgnoreMoveInput(true);SetIgnoreLookInput(true);
+}
+void AMareController::StartBarPrep(const FString& Step)
+{
+ if(!GEngine || !GEngine->GameViewport || GameWidget.IsValid() || Step.IsEmpty())return;
+ ClosePhone();
+ const TSharedRef<SMareBarPrepGame> Game=SNew(SMareBarPrepGame).Owner(this).Step(Step);GameWidget=Game;
+ GEngine->GameViewport->AddViewportWidgetContent(Game,40);bShowMouseCursor=true;
+ SetInputMode(FInputModeUIOnly().SetWidgetToFocus(Game));SetIgnoreMoveInput(true);SetIgnoreLookInput(true);
+}
+void AMareController::UseBarGlass()
+{
+ auto S=GetSimulation();if(!S)return;
+ if(!S->BarHand().IsEmpty()){const FString Hand=S->BarHand();
+  if(S->BarPour())UMareAudioWorld::Action(this,Hand==TEXT("gelo")?TEXT("bar_ice_glass"):TEXT("bar_pour"),nullptr,.8f);return;}
+ const FString Next=S->BarNextStep();
+ if(!Next.IsEmpty()){StartBarPrep(Next);return;}
+ if(S->BarGlass().IsEmpty()){S->LastMessage=TEXT("Pegue os ingredientes na bancada e coloque no copo.");return;}
+ const auto Result=S->ServeGlass(S->BarServing());
+ if(Result.bServed)UMareAudioWorld::Action(this,TEXT("money_coins"));
+ if(Result.bDiscovered)UMareAudioWorld::Action(this,TEXT("deal_accept"));
+ if(!Result.bServed && !Result.Recipe.IsEmpty())UMareAudioWorld::Action(this,TEXT("deal_decline"));
 }
 void AMareController::TakePhoto()
 {

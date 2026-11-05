@@ -61,67 +61,145 @@
   {
    "id": "cachaca",
    "name": "Cachaça",
-   "cost": 2.5
+   "cost": 2.5,
+   "layer": "liquid",
+   "color": [
+    0.93,
+    0.86,
+    0.62
+   ]
   },
   {
    "id": "vodka",
    "name": "Vodca",
-   "cost": 3
+   "cost": 3,
+   "layer": "liquid",
+   "color": [
+    0.92,
+    0.95,
+    0.97
+   ]
   },
   {
    "id": "rum",
    "name": "Rum",
-   "cost": 3
+   "cost": 3,
+   "layer": "liquid",
+   "color": [
+    0.62,
+    0.36,
+    0.14
+   ]
   },
   {
    "id": "limao",
    "name": "Limão",
-   "cost": 0.8
+   "cost": 0.8,
+   "layer": "fruit",
+   "color": [
+    0.55,
+    0.8,
+    0.25
+   ]
   },
   {
    "id": "maracuja",
    "name": "Maracujá",
-   "cost": 1.2
+   "cost": 1.2,
+   "layer": "fruit",
+   "color": [
+    0.98,
+    0.78,
+    0.15
+   ]
   },
   {
    "id": "morango",
    "name": "Morango",
-   "cost": 1.5
+   "cost": 1.5,
+   "layer": "fruit",
+   "color": [
+    0.85,
+    0.12,
+    0.15
+   ]
   },
   {
    "id": "abacaxi",
    "name": "Abacaxi",
-   "cost": 1.2
+   "cost": 1.2,
+   "layer": "fruit",
+   "color": [
+    0.98,
+    0.85,
+    0.3
+   ]
   },
   {
    "id": "coco",
    "name": "Leite de coco",
-   "cost": 1.4
+   "cost": 1.4,
+   "layer": "liquid",
+   "color": [
+    0.97,
+    0.95,
+    0.9
+   ]
   },
   {
    "id": "leite_condensado",
    "name": "Leite condensado",
-   "cost": 1.3
+   "cost": 1.3,
+   "layer": "liquid",
+   "color": [
+    0.98,
+    0.93,
+    0.8
+   ]
   },
   {
    "id": "hortela",
    "name": "Hortelã",
-   "cost": 0.6
+   "cost": 0.6,
+   "layer": "fruit",
+   "color": [
+    0.2,
+    0.55,
+    0.2
+   ]
   },
   {
    "id": "acucar",
    "name": "Açúcar",
-   "cost": 0.2
+   "cost": 0.2,
+   "layer": "sugar",
+   "color": [
+    0.97,
+    0.96,
+    0.92
+   ]
   },
   {
    "id": "agua_gas",
    "name": "Água com gás",
-   "cost": 0.7
+   "cost": 0.7,
+   "layer": "liquid",
+   "color": [
+    0.85,
+    0.93,
+    0.97
+   ]
   },
   {
    "id": "gelo",
    "name": "Gelo",
-   "cost": 0.2
+   "cost": 0.2,
+   "layer": "ice",
+   "color": [
+    0.9,
+    0.95,
+    1
+   ]
   }
  ],
  "recipes": [
@@ -269,5 +347,123 @@
    "mesh": "coco_gelado",
    "hint": "o drink da casa: rum, coco e mais três coisas"
   }
- ]
+ ],
+ "_doc_prep": "Physical prep (CHECKLIST_EXPANSOES 1.1, MareBar.cpp/MareBarWorld.cpp): the player picks an ingredient from the prep bench (E), it shows in the hand, E on the work glass drops it in (stock used then). Every ingredient has a layer in the glass (ice, fruit, spirit/liquid) and a colour for the drink. Steps before serving: 'socar' when the glass holds a muddle ingredient, then 'liquidificar' when it holds a creamy one, else 'bater'. Each step is a mini-action scored 0..1; the average moves the price by prep_tip (±10%). 'Jogar fora' loses what was in the glass; the guest reacts. Places in world cm: bench [x,y,z top,yaw]; shelf {id or tool: [x,y,yaw]} on the bench top; glass [x,y,scale] (a big caipirinha glass, 1.5x a highball, so its layers read from the counter).",
+ "prep_tip": 0.1,
+ "muddle": [
+  "limao",
+  "morango",
+  "maracuja",
+  "hortela"
+ ],
+ "blend": [
+  "coco",
+  "leite_condensado",
+  "abacaxi"
+ ],
+ "bench": [
+  1485,
+  -1300,
+  105,
+  -90
+ ],
+ "shelf": {
+  "gelo": [
+   1465,
+   -1414,
+   -90
+  ],
+  "limao": [
+   1465,
+   -1387,
+   -90
+  ],
+  "maracuja": [
+   1465,
+   -1356,
+   -90
+  ],
+  "morango": [
+   1465,
+   -1327,
+   -90
+  ],
+  "abacaxi": [
+   1465,
+   -1266,
+   -90
+  ],
+  "blender": [
+   1465,
+   -1236,
+   -90
+  ],
+  "shaker": [
+   1465,
+   -1219,
+   -90
+  ],
+  "muddler": [
+   1465,
+   -1196,
+   -90
+  ],
+  "cachaca": [
+   1490,
+   -1418,
+   0
+  ],
+  "vodka": [
+   1490,
+   -1406,
+   0
+  ],
+  "rum": [
+   1490,
+   -1392,
+   0
+  ],
+  "agua_gas": [
+   1490,
+   -1379,
+   0
+  ],
+  "coco": [
+   1490,
+   -1368,
+   0
+  ],
+  "leite_condensado": [
+   1490,
+   -1228,
+   0
+  ],
+  "acucar": [
+   1490,
+   -1208,
+   -90
+  ],
+  "hortela": [
+   1490,
+   -1188,
+   0
+  ]
+ },
+ "glass": [
+  1478,
+  -1300,
+  1.5
+ ],
+ "discard_reactions": [
+  "Isso aí vai pro mar, né? Coitado do peixe.",
+  "Eu vi! Eu vi tudo! Não vou contar pra ninguém... talvez.",
+  "Joga fora mesmo, que essa cor tava suspeita.",
+  "Se quiser eu bebo esse aí de graça. Não? Tá bom.",
+  "Meu avô dizia: errar é humano, desperdiçar cachaça é crime."
+ ],
+ "prep_lines": {
+  "socar": "Socar no ritmo",
+  "bater": "Bater na coqueteleira",
+  "liquidificar": "Bater no liquidificador"
+ }
 }

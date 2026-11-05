@@ -38,9 +38,10 @@ TSharedPtr<FJsonObject> UMareSimulation::Bar()
 {
  auto B=Child(State,TEXT("bar"));
  // First visit: the starting menu and half a restock of every ingredient (the bar comes with its shelf filled).
- if(!B->HasField(TEXT("stock"))){auto Stock=Child(B,TEXT("stock"));const int32 Half=int32(Number(BarDefs(),TEXT("restock_qty"),10))/2;
+ // An empty {} counts as never filled: Object() creates fields on read (the bar world reads the stock every frame).
+ if(!B->HasField(TEXT("stock")) || Object(B,TEXT("stock"))->Values.IsEmpty()){auto Stock=Child(B,TEXT("stock"));const int32 Half=int32(Number(BarDefs(),TEXT("restock_qty"),10))/2;
   for(const auto& V:Items(BarDefs(),TEXT("ingredients")))Stock->SetNumberField(String(V->AsObject(),TEXT("id")),Half);}
- if(!B->HasField(TEXT("known"))){auto& Known=List(B,TEXT("known"));
+ if(!B->HasField(TEXT("known")) || Items(B,TEXT("known")).IsEmpty()){auto& Known=List(B,TEXT("known"));
   for(const auto& V:Items(BarDefs(),TEXT("recipes"))){bool bKnown=false;V->AsObject()->TryGetBoolField(TEXT("known"),bKnown);
    if(bKnown)Known.Add(MakeShared<FJsonValueString>(String(V->AsObject(),TEXT("id"))));}}
  return B;
@@ -121,12 +122,18 @@ bool UMareSimulation::RestockBar()
 
 UMareSimulation::FBarResult UMareSimulation::ServeBar(const FString& OrderId,const TArray<FString>& Ingredients)
 {
+ return ServeMix(OrderId,Ingredients,true,-1);
+}
+
+UMareSimulation::FBarResult UMareSimulation::ServeMix(const FString& OrderId,const TArray<FString>& Ingredients,bool bUseStock,double PrepScore)
+{
  FBarResult Out;auto B=Bar();auto& Orders=List(B,TEXT("orders"));auto Stock=Child(B,TEXT("stock"));
  int32 Index=INDEX_NONE;for(int32 I=0;I<Orders.Num();++I)if(String(Orders[I]->AsObject(),TEXT("id"))==OrderId)Index=I;
  if(Index==INDEX_NONE){Fail(TEXT("Esse cliente já foi embora."));return Out;}
  if(Ingredients.IsEmpty()){Fail(TEXT("A coqueteleira está vazia."));return Out;}
- for(const FString& I:Ingredients)if(Number(Stock,I)<1){Fail(TEXT("Acabou um ingrediente: reponha o bar."));return Out;}
- for(const FString& I:Ingredients)Stock->SetNumberField(I,Number(Stock,I)-1);
+ if(bUseStock){
+  for(const FString& I:Ingredients)if(Number(Stock,I)<1){Fail(TEXT("Acabou um ingrediente: reponha o bar."));return Out;}
+  for(const FString& I:Ingredients)Stock->SetNumberField(I,Number(Stock,I)-1);}
  const auto Order=Orders[Index]->AsObject();const FString Want=String(Order,TEXT("want")),Guest=String(Order,TEXT("name"));
  Out.Recipe=MixRecipe(Ingredients);
  if(Out.Recipe.IsEmpty()){LastMessage=FString::Printf(TEXT("%s provou e fez careta: essa mistura não é drink nenhum."),*Guest);Save();return Out;}
@@ -139,11 +146,109 @@ UMareSimulation::FBarResult UMareSimulation::ServeBar(const FString& OrderId,con
   Save();return Out;}
  // Served: price plus a tip that shrinks with the wait (up to 15% within half an hour).
  const double Waited=Number(State,TEXT("day"),1)*1440+Number(State,TEXT("minutes"))-Number(Order,TEXT("since"));
- Out.Paid=FMath::RoundToDouble(DrinkPrice(Out.Recipe)*(1+.15*FMath::Clamp(1-Waited/30.,0.,1.)));Out.bServed=true;
+ // A careful prep (the mini-actions' average score) moves the price up to ±prep_tip.
+ const double Prep=PrepScore<0?1.:1+Number(BarDefs(),TEXT("prep_tip"),.1)*(2*FMath::Clamp(PrepScore,0.,1.)-1);
+ Out.Paid=FMath::RoundToDouble(DrinkPrice(Out.Recipe)*(1+.15*FMath::Clamp(1-Waited/30.,0.,1.))*Prep);Out.bServed=true;
  Book(Out.Paid,TEXT("Bar: ")+Name);AddFame(1);
  B->SetNumberField(TEXT("served"),Number(B,TEXT("served"))+1);B->SetStringField(TEXT("last"),Out.Recipe);Orders.RemoveAt(Index);
  LastMessage=(Out.bDiscovered?FString::Printf(TEXT("Receita nova descoberta: %s! "),*Name):FString())+FString::Printf(TEXT("%s adorou o drink: R$ %.0f."),*Guest,Out.Paid);
  Save();return Out;
+}
+
+// ---- Physical prep (CHECKLIST_EXPANSOES 1.1) -------------------------------------------------------------------------
+namespace
+{
+ bool InList(const TSharedPtr<FJsonObject>& Defs,const FString& Key,const FString& Id)
+ {
+  for(const auto& V:Items(Defs,Key))if(V->AsString()==Id)return true;return false;
+ }
+}
+
+FString UMareSimulation::BarHand() const{return String(Object(State,TEXT("bar")),TEXT("hand"));}
+
+TArray<FString> UMareSimulation::BarGlass() const
+{
+ TArray<FString> Out;for(const auto& V:Items(Object(State,TEXT("bar")),TEXT("glass")))Out.Add(V->AsString());return Out;
+}
+
+bool UMareSimulation::BarPick(const FString& Ingredient)
+{
+ auto B=Bar();
+ if(String(B,TEXT("hand"))==Ingredient){B->RemoveField(TEXT("hand"));LastMessage=TEXT("Devolvido à bancada.");return true;}
+ bool bKnown=false;for(const auto& V:Items(BarDefs(),TEXT("ingredients")))bKnown|=String(V->AsObject(),TEXT("id"))==Ingredient;
+ if(!bKnown)return Fail(TEXT("Isso não é ingrediente."));
+ if(Number(Object(B,TEXT("stock")),Ingredient)<1)return Fail(TEXT("Acabou: reponha o bar no balcão."));
+ B->SetStringField(TEXT("hand"),Ingredient);LastMessage=FString();return true;
+}
+
+bool UMareSimulation::BarPour()
+{
+ auto B=Bar();const FString Hand=String(B,TEXT("hand"));if(Hand.IsEmpty())return Fail(TEXT("Pegue um ingrediente na bancada."));
+ auto& Glass=List(B,TEXT("glass"));auto Stock=Child(B,TEXT("stock"));
+ for(const auto& V:Glass)if(V->AsString()==Hand)return Fail(TEXT("Isso já está no copo."));
+ if(Glass.Num()>=Number(BarDefs(),TEXT("max_mix"),5))return Fail(TEXT("O copo está cheio."));
+ if(Number(Stock,Hand)<1){B->RemoveField(TEXT("hand"));return Fail(TEXT("Acabou: reponha o bar no balcão."));}
+ Stock->SetNumberField(Hand,Number(Stock,Hand)-1);Glass.Add(MakeShared<FJsonValueString>(Hand));
+ // Anything added after shaking has to be mixed again.
+ B->RemoveField(TEXT("hand"));B->RemoveField(TEXT("prep"));LastMessage=FString();return Save();
+}
+
+TArray<FString> UMareSimulation::BarPrepSteps(const TArray<FString>& Mix) const
+{
+ TArray<FString> Steps;if(Mix.IsEmpty())return Steps;auto Defs=BarDefs();bool bMuddle=false,bBlend=false;
+ for(const FString& I:Mix){bMuddle|=InList(Defs,TEXT("muddle"),I);bBlend|=InList(Defs,TEXT("blend"),I);}
+ if(bMuddle)Steps.Add(TEXT("socar"));Steps.Add(bBlend?TEXT("liquidificar"):TEXT("bater"));return Steps;
+}
+
+FString UMareSimulation::BarNextStep() const
+{
+ auto Prep=Object(Object(State,TEXT("bar")),TEXT("prep"));
+ for(const FString& S:BarPrepSteps(BarGlass()))if(!Prep->HasField(S))return S;return FString();
+}
+
+bool UMareSimulation::BarPrepStep(const FString& Step,double Score)
+{
+ if(Step.IsEmpty() || BarNextStep()!=Step)return false;
+ Child(Bar(),TEXT("prep"))->SetNumberField(Step,FMath::Clamp(Score,0.,1.));return Save();
+}
+
+double UMareSimulation::BarDiscard()
+{
+ auto B=Bar();double Lost=0;const TArray<FString> Glass=BarGlass();if(Glass.IsEmpty())return 0;
+ for(const auto& V:Items(BarDefs(),TEXT("ingredients")))if(Glass.Contains(String(V->AsObject(),TEXT("id"))))Lost+=Number(V->AsObject(),TEXT("cost"));
+ B->SetArrayField(TEXT("glass"),TArray<TSharedPtr<FJsonValue>>());B->RemoveField(TEXT("prep"));
+ // The guest at the counter has an opinion about it.
+ const auto Lines=Items(BarDefs(),TEXT("discard_reactions"));FString Guest;const FString Serving=BarServing();
+ for(const auto& V:Items(B,TEXT("orders")))if(String(V->AsObject(),TEXT("id"))==Serving)Guest=String(V->AsObject(),TEXT("name"));
+ const int32 Pick=int32(Number(B,TEXT("discarded")))%FMath::Max(1,Lines.Num());B->SetNumberField(TEXT("discarded"),Number(B,TEXT("discarded"))+1);
+ LastMessage=FString::Printf(TEXT("Copo jogado fora: R$ %.2f perdidos."),Lost);
+ if(!Guest.IsEmpty() && Lines.IsValidIndex(Pick))LastMessage+=FString::Printf(TEXT(" %s: \"%s\""),*Guest,*Lines[Pick]->AsString());
+ Save();return Lost;
+}
+
+FString UMareSimulation::BarServing()
+{
+ auto B=Bar();const FString Chosen=String(B,TEXT("serving"));FString Oldest;double Since=TNumericLimits<double>::Max();
+ for(const auto& V:Items(B,TEXT("orders"))){const auto O=V->AsObject();if(String(O,TEXT("id"))==Chosen)return Chosen;
+  if(Number(O,TEXT("since"))<Since){Since=Number(O,TEXT("since"));Oldest=String(O,TEXT("id"));}}
+ return Oldest;
+}
+
+void UMareSimulation::SetBarServing(const FString& Order){Bar()->SetStringField(TEXT("serving"),Order);}
+
+UMareSimulation::FBarResult UMareSimulation::ServeGlass(const FString& Order)
+{
+ FBarResult Out;const TArray<FString> Glass=BarGlass();
+ if(Glass.IsEmpty()){Fail(TEXT("O copo está vazio."));return Out;}
+ const FString Next=BarNextStep();
+ if(!Next.IsEmpty()){Fail(FString::Printf(TEXT("Falta %s antes de servir."),*Next));return Out;}
+ if(Order.IsEmpty()){Fail(TEXT("Ninguém esperando no balcão."));return Out;}
+ double Score=0;int32 N=0;for(const auto& Pair:Object(Bar(),TEXT("prep"))->Values){Score+=Pair.Value->AsNumber();++N;}
+ Out=ServeMix(Order,Glass,false,N?Score/N:1);
+ // Served or tasted, the glass is empty again unless the guest was already gone (then it stays for the next one).
+ if(Out.bServed || !Out.Recipe.IsEmpty() || LastMessage.Contains(TEXT("careta"))){auto B=Bar();
+  B->SetArrayField(TEXT("glass"),TArray<TSharedPtr<FJsonValue>>());B->RemoveField(TEXT("prep"));B->RemoveField(TEXT("serving"));Save();}
+ return Out;
 }
 
 void UMareSimulation::BarHour(int32 Hour)

@@ -31,11 +31,21 @@ O que falta é **profundidade e variedade**. Hoje quase tudo é "aperte E" + bar
 
 ### 1.1 Preparo físico (prioridade)
 
-- [ ] Prateleira de garrafas e caixas de frutas no balcão. Mirar e apertar E pega o ingrediente, que aparece na mão e cai no copo com som.
-- [ ] O copo na bancada mostra as camadas: gelo, fruta, cachaça e espuma, cada uma visível.
-- [ ] Passos com mini-ação: **socar** (amassador, toques no ritmo), **bater** na coqueteleira (segurar até a barra encher, sem passar) e **liquidificar** (batidas).
-- [ ] Ingrediente errado: botão "jogar fora" perde o custo e toca uma reação engraçada do cliente.
-- [ ] Teste: cada receita feita passo a passo dá o drink certo; uma ordem diferente dá o mesmo drink; errar não cobra o cliente.
+- [x] Prateleira de garrafas e caixas de frutas no balcão. Mirar e apertar E pega o ingrediente, que aparece na mão e cai no copo com som.
+- [x] O copo na bancada mostra as camadas: gelo, fruta, cachaça e espuma, cada uma visível.
+- [x] Passos com mini-ação: **socar** (amassador, toques no ritmo), **bater** na coqueteleira (segurar até a barra encher, sem passar) e **liquidificar** (batidas).
+- [x] Ingrediente errado: botão "jogar fora" perde o custo e toca uma reação engraçada do cliente.
+- [x] Teste: cada receita feita passo a passo dá o drink certo; uma ordem diferente dá o mesmo drink; errar não cobra o cliente.
+
+Decisões (04/11/2026):
+- **Sem mãos** (Sergio): o herói não mostra mãos nem braços em todo o jogo. No bar, E no ingrediente o joga direto no copo, num arco da prateleira até o copo, com som; nada aparece "na mão".
+- Bancada de preparo `BarPrep_bench` encostada no painel de fundo (face em x = 1510), com 13 ingredientes e as 3 ferramentas; todos modelados em `tools/ue58/gen_bar_prep.py`, exceto o limão do Poly Haven. Posições em `bar.json` (`bench`, `shelf`, `glass`).
+- Copo de trabalho 1,5× um copo alto, para as camadas serem legíveis do balcão. Líquido translúcido (`M_BarDrink`, cor média dos líquidos; liquidificado mistura a fruta) e fruta opaca (`M_BarFruit`). A espuma aparece depois de bater ou liquidificar.
+- Passos por mistura: "socar" quando há limão, morango, maracujá ou hortelã; depois "liquidificar" quando há coco, leite condensado ou abacaxi, senão "bater". A nota média das mini-ações muda o preço em ±10% (`prep_tip`).
+- O estoque sai ao pôr no copo. Errar (mistura sem receita ou outra receita) não cobra o cliente e esvazia o copo. "Jogar fora" fica na página do balcão, com reação do cliente que está sendo atendido (`discard_reactions`).
+- O cliente a atender é escolhido na página do balcão (`bar.serving`); sem escolha, vai o que espera há mais tempo.
+- Correção encontrada: `Object()` cria o campo ao ler, então um bar recém-comprado podia começar com a prateleira vazia; `Bar()` trata `{}` como não inicializado (teste `BarPrep`).
+- Prova: `MareAlta.Gameplay.BarPrep` + fotos em `docs/ue58/graphics-reference/bar_prep_*.jpg`.
 
 ### 1.2 Clientes e pedidos
 

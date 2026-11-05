@@ -5,6 +5,9 @@
 #include "Engine/GameInstance.h"
 #include "Engine/World.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Engine/StaticMeshActor.h"
+#include "Components/StaticMeshComponent.h"
+#include "Materials/MaterialInstanceDynamic.h"
 
 namespace
 {
@@ -24,7 +27,10 @@ void UMareBarWorld::Deinitialize()
  if(IsValid(Station))Station->Destroy();if(IsValid(Barman))Barman->Destroy();
  for(auto& Pair:Guests)if(IsValid(Pair.Value))Pair.Value->Destroy();
  for(auto& Pair:Leaving)if(IsValid(Pair.Key))Pair.Key->Destroy();
- Guests.Empty();Leaving.Empty();Super::Deinitialize();
+ for(auto& Prop:PrepProps)if(IsValid(Prop))Prop->Destroy();
+ for(auto& Pair:Shelf)if(IsValid(Pair.Value))Pair.Value->Destroy();
+ if(IsValid(GlassTarget))GlassTarget->Destroy();if(IsValid(GlassActor))GlassActor->Destroy();if(IsValid(Falling))Falling->Destroy();
+ Guests.Empty();Leaving.Empty();PrepProps.Empty();Shelf.Empty();Super::Deinitialize();
 }
 
 bool UMareBarWorld::StoolTop(int32 Stool,FVector& Top,float& Yaw,AActor* Ignore)const
@@ -60,12 +66,132 @@ AMarePerson* UMareBarWorld::Seat(const FString& Order,const FString& Name,int32 
  Person->SitOn(Top,Yaw);return Person;
 }
 
+namespace
+{
+ UStaticMesh* PrepMesh(const FString& Name)
+ {
+  const FString N=TEXT("BarPrep_")+Name;
+  return LoadObject<UStaticMesh>(nullptr,*FString::Printf(TEXT("/Game/Custom/BarPrep/%s/%s.%s"),*N,*N,*N));
+ }
+ AStaticMeshActor* SpawnProp(UWorld* World,UStaticMesh* Mesh,const FVector& At,float Yaw,bool bCollide)
+ {
+  if(!Mesh)return nullptr;FActorSpawnParameters Params;Params.SpawnCollisionHandlingOverride=ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+  auto Actor=World->SpawnActor<AStaticMeshActor>(At,FRotator(0,Yaw,0),Params);if(!Actor)return nullptr;
+  Actor->GetStaticMeshComponent()->SetMobility(EComponentMobility::Movable);Actor->GetStaticMeshComponent()->SetStaticMesh(Mesh);
+  if(!bCollide)Actor->GetStaticMeshComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+  return Actor;
+ }
+ FLinearColor JsonColor(const TSharedPtr<FJsonObject>& O)
+ {
+  const TArray<TSharedPtr<FJsonValue>>* C=nullptr;if(!O->TryGetArrayField(TEXT("color"),C) || C->Num()<3)return FLinearColor::White;
+  return FLinearColor((*C)[0]->AsNumber(),(*C)[1]->AsNumber(),(*C)[2]->AsNumber());
+ }
+}
+
+void UMareBarWorld::BuildPrep(const TSharedPtr<FJsonObject>& Defs)
+{
+ const TArray<TSharedPtr<FJsonValue>>* Bench=nullptr;if(!Defs->TryGetArrayField(TEXT("bench"),Bench) || Bench->Num()<4)return;
+ const double Top=(*Bench)[2]->AsNumber();
+ // The bench model's top is 95 cm over its base; it blocks like the counter (complex collision).
+ if(auto B=SpawnProp(GetWorld(),PrepMesh(TEXT("bench")),FVector((*Bench)[0]->AsNumber(),(*Bench)[1]->AsNumber(),Top-95),(*Bench)[3]->AsNumber(),true))PrepProps.Add(B);
+ TMap<FString,FString> Names;const TArray<TSharedPtr<FJsonValue>>* List=nullptr;
+ if(Defs->TryGetArrayField(TEXT("ingredients"),List))for(const auto& V:*List)
+  Names.Add(UMareSimulation::String(V->AsObject(),TEXT("id")),UMareSimulation::String(V->AsObject(),TEXT("name")));
+ for(const auto& Pair:UMareSimulation::Object(Defs,TEXT("shelf"))->Values){
+  const FString Id(Pair.Key.ToView());const auto& P=Pair.Value->AsArray();if(P.Num()<3)continue;
+  const FVector At(P[0]->AsNumber(),P[1]->AsNumber(),Top);
+  auto Prop=SpawnProp(GetWorld(),PrepMesh(Id),At,P[2]->AsNumber(),false);if(!Prop)continue;PrepProps.Add(Prop);
+  if(!Names.Contains(Id))continue;
+  // One E target per ingredient, at the middle of the visible prop.
+  const FBox Box=Prop->GetComponentsBoundingBox();
+  auto Target=GetWorld()->SpawnActor<AMareServiceTarget>(Box.GetCenter(),FRotator::ZeroRotator);if(!Target)continue;
+  Target->Action=TEXT("BarIngredient");Target->Label=Names[Id];Target->Reach=220;Target->OcclusionTolerance=35;
+  Target->Tags.Add(FName(*(TEXT("ing:")+Id)));Shelf.Add(Id,Target);}
+ const TArray<TSharedPtr<FJsonValue>>* G=nullptr;if(!Defs->TryGetArrayField(TEXT("glass"),G) || G->Num()<2)return;
+ const FVector At((*G)[0]->AsNumber(),(*G)[1]->AsNumber(),Top);
+ GlassActor=SpawnProp(GetWorld(),PrepMesh(TEXT("glass")),At,0,false);if(!GlassActor)return;
+ if(G->Num()>2)GlassActor->SetActorScale3D(FVector((*G)[2]->AsNumber()));
+ auto Layer=[this](const TCHAR* Name){auto C=NewObject<UStaticMeshComponent>(GlassActor);C->SetMobility(EComponentMobility::Movable);
+  C->SetStaticMesh(PrepMesh(Name));C->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+  C->SetupAttachment(GlassActor->GetRootComponent());C->RegisterComponent();C->SetVisibility(false);return C;};
+ LayerIce=Layer(TEXT("layer_ice"));LayerFruit=Layer(TEXT("layer_fruit"));LayerLiquid=Layer(TEXT("layer_liquid"));LayerFoam=Layer(TEXT("layer_foam"));
+ if(LayerLiquid->GetMaterial(0)){LiquidTint=UMaterialInstanceDynamic::Create(LayerLiquid->GetMaterial(0),this);LayerLiquid->SetMaterial(0,LiquidTint);}
+ if(LayerFruit->GetMaterial(0)){FruitTint=UMaterialInstanceDynamic::Create(LayerFruit->GetMaterial(0),this);LayerFruit->SetMaterial(0,FruitTint);}
+ GlassTarget=GetWorld()->SpawnActor<AMareServiceTarget>(At+FVector(0,0,12),FRotator::ZeroRotator);
+ if(GlassTarget){GlassTarget->Action=TEXT("BarGlass");GlassTarget->Label=TEXT("Copo de preparo");GlassTarget->Reach=220;GlassTarget->OcclusionTolerance=35;}
+}
+
+bool UMareBarWorld::PrepSpot(const FString& Id,FVector& At)const
+{
+ const AMareServiceTarget* T=Id==TEXT("glass")?GlassTarget.Get():Shelf.FindRef(Id).Get();if(!T)return false;
+ At=T->GetActorLocation();return true;
+}
+
+void UMareBarWorld::UpdatePrep(UMareSimulation* S,bool bOwned,float DeltaSeconds)
+{
+ if(Falling){FallTime+=DeltaSeconds;const float A=FMath::Clamp(FallTime/.45f,0.f,1.f);
+  // An arc from the shelf item over the glass and down into it.
+  const FVector End=GlassActor->GetActorLocation()+FVector(0,0,6);
+  Falling->SetActorLocation(FMath::Lerp(FallFrom,End,A)+FVector(0,0,28*FMath::Sin(PI*A)));
+  if(A>=1){Falling->Destroy();Falling=nullptr;}}
+ if(bOwned && PrepProps.IsEmpty())BuildPrep(S->BarDefs());
+ for(auto& Prop:PrepProps)if(IsValid(Prop))Prop->SetActorHiddenInGame(!bOwned);
+ for(auto& Pair:Shelf)if(IsValid(Pair.Value))Pair.Value->SetActorHiddenInGame(!bOwned);
+ if(GlassActor)GlassActor->SetActorHiddenInGame(!bOwned);
+ if(GlassTarget)GlassTarget->SetActorHiddenInGame(!bOwned);
+ if(!bOwned || !GlassActor)return;
+ S->Bar();   // fills the starting shelf before anything below reads (and so creates) bar.stock
+ const auto Defs=S->BarDefs();const FString Hand=S->BarHand();const TArray<FString> Glass=S->BarGlass();
+ if(Glass.Num()>GlassCount && !Falling){
+  const FString N=TEXT("BarPrep_hand_")+Glass.Last();
+  if(auto Mesh=LoadObject<UStaticMesh>(nullptr,*FString::Printf(TEXT("/Game/Custom/BarPrep/%s/%s.%s"),*N,*N,*N))){
+   const AMareServiceTarget* From=Shelf.FindRef(Glass.Last()).Get();
+   FallFrom=From?From->GetActorLocation():GlassActor->GetActorLocation()+FVector(0,0,30);
+   Falling=SpawnProp(GetWorld(),Mesh,FallFrom,FMath::FRandRange(0.f,360.f),false);
+   if(Falling){Falling->SetActorScale3D(FVector(.6f));Falling->SetActorRotation(FRotator(25,FMath::FRandRange(0.f,360.f),0));FallTime=0;}}}
+ GlassCount=Glass.Num();
+ auto BarState=UMareSimulation::Object(S->State,TEXT("bar"));auto Stock=UMareSimulation::Object(BarState,TEXT("stock"));
+ TMap<FString,TSharedPtr<FJsonObject>> Ing;const TArray<TSharedPtr<FJsonValue>>* List=nullptr;
+ if(Defs->TryGetArrayField(TEXT("ingredients"),List))for(const auto& V:*List)Ing.Add(UMareSimulation::String(V->AsObject(),TEXT("id")),V->AsObject());
+ for(auto& Pair:Shelf){if(!IsValid(Pair.Value) || !Ing.Contains(Pair.Key))continue;
+  const FString Name=UMareSimulation::String(Ing[Pair.Key],TEXT("name"));const int32 Left=int32(UMareSimulation::Number(Stock,Pair.Key));
+  Pair.Value->Label=Hand==Pair.Key?Name+TEXT(" · devolver"):Left>0?FString::Printf(TEXT("%s · pegar (%d)"),*Name,Left):Name+TEXT(" · acabou, reponha no balcão");}
+ // The glass prompt says what E does next.
+ const FString Next=S->BarNextStep();const auto Lines=UMareSimulation::Object(Defs,TEXT("prep_lines"));
+ if(GlassTarget){
+  if(!Hand.IsEmpty())GlassTarget->Label=TEXT("Copo · colocar ")+(Ing.Contains(Hand)?UMareSimulation::String(Ing[Hand],TEXT("name")):Hand);
+  else if(Glass.IsEmpty())GlassTarget->Label=TEXT("Copo de preparo · pegue os ingredientes na bancada");
+  else if(!Next.IsEmpty())GlassTarget->Label=TEXT("Copo · ")+UMareSimulation::String(Lines,Next);
+  else{FString Guest;const FString Serving=S->BarServing();const TArray<TSharedPtr<FJsonValue>>* Orders=nullptr;
+   if(BarState->TryGetArrayField(TEXT("orders"),Orders))
+    for(const auto& V:*Orders)if(UMareSimulation::String(V->AsObject(),TEXT("id"))==Serving)Guest=UMareSimulation::String(V->AsObject(),TEXT("name"));
+   GlassTarget->Label=Guest.IsEmpty()?FString(TEXT("Copo pronto · ninguém esperando")):TEXT("Copo pronto · servir ")+Guest;}}
+ // Layers: ice; muddled fruit tinted by the fruit; the liquid filled by how many liquids and tinted by the mix (a
+ // blended drink takes the fruit into it); the foam once shaken or blended.
+ auto Prep=UMareSimulation::Object(BarState,TEXT("prep"));TArray<FString> Done;
+ for(const auto& Pair:Prep->Values)Done.Add(FString(Pair.Key.ToView()));
+ const FString Shown=FString::Join(Glass,TEXT(","))+TEXT("|")+FString::Join(Done,TEXT(","));if(Shown==GlassShown)return;GlassShown=Shown;
+ const bool bBlended=Done.Contains(TEXT("liquidificar"));int32 Liquids=0,Fruits=0;bool bIce=false;
+ FLinearColor Liquid=FLinearColor::Black,Fruit=FLinearColor::Black;
+ for(const FString& I:Glass){if(!Ing.Contains(I))continue;const FString L=UMareSimulation::String(Ing[I],TEXT("layer"));const FLinearColor C=JsonColor(Ing[I]);
+  if(L==TEXT("ice"))bIce=true;
+  else if(L==TEXT("fruit")){Fruit+=C;++Fruits;if(bBlended){Liquid+=C;++Liquids;}}
+  else if(L==TEXT("liquid")){Liquid+=C;++Liquids;}}
+ LayerIce->SetVisibility(bIce);
+ LayerFruit->SetVisibility(Fruits>0 && !bBlended);if(FruitTint && Fruits)FruitTint->SetVectorParameterValue(TEXT("Tint"),Fruit/float(Fruits));
+ LayerLiquid->SetVisibility(Liquids>0);
+ if(Liquids){LayerLiquid->SetRelativeScale3D(FVector(1,1,FMath::Clamp(.3f+.22f*Liquids,.3f,1.f)));
+  if(LiquidTint)LiquidTint->SetVectorParameterValue(TEXT("Tint"),Liquid/float(Liquids));}
+ LayerFoam->SetVisibility(Done.Contains(TEXT("bater")) || bBlended);
+}
+
 void UMareBarWorld::Tick(float DeltaSeconds)
 {
  if(!GetWorld() || !GetWorld()->IsGameWorld())return;
- Clock-=DeltaSeconds;if(Clock>0)return;Clock=.5f;
  auto S=Sim(GetWorld());if(!S)return;
  bool bOwned=false;UMareSimulation::Object(S->State,TEXT("unlocked"))->TryGetBoolField(TEXT("bar"),bOwned);
+ UpdatePrep(S,bOwned,DeltaSeconds);
+ Clock-=DeltaSeconds;if(Clock>0)return;Clock=.5f;
  const auto Defs=S->BarDefs();
  if(!Station && bOwned){
   Station=GetWorld()->SpawnActor<AMareServiceTarget>(Point(Defs,TEXT("station")),FRotator::ZeroRotator);
