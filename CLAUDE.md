@@ -571,3 +571,12 @@ passeios jogáveis longos também passavam da hora. A nota era recusada sem que 
 testes chamam `GuideTour` às 16h05. Passeio em andamento (`tours.active`) agora termina fora da hora. Testar o fim de
 um passeio jogável no horário em que ele termina de verdade, não no da saída. Teste com sorteio (o bartender de nível
 1 erra 15%) falha ao acaso: fixar o nível ou a semente no teste.
+
+## UE5.8 — minijogos em Slate (05/11)
+
+`FSlateRoundedBoxBrush` com raio maior que metade da caixa não desenha nada (as marcas de 12×10 px com raio 40
+sumiram) ou vira um losango. Use um pincel por tamanho, com raio até a metade da caixa. Para uma barra que enche,
+o `HAlign_Left` vai no slot do `SOverlay`, não no `SBox`: sem isso a barra tem largura zero. No PIE com o editor em
+segundo plano, o tick do Slate quase não roda: o QA dos minijogos deve forçar a fase (QAHold/QAStep) em vez de
+esperar o timer. Fila de clientes atrás do balcão precisa conferir chão e parede: atrás do cliente do food truck
+ficava a fachada de um prédio.

@@ -814,5 +814,45 @@
   "loop": false,
   "group": "voice_hmm_m",
   "volume": 0.14
+ },
+ {
+  "id": "pastel_fry_1",
+  "path": "/Game/Audio/Actions/pastel_fry_1.pastel_fry_1",
+  "duration": 2.200000047683716,
+  "loop": false,
+  "group": "pastel_fry",
+  "volume": 0.05
+ },
+ {
+  "id": "pastel_fry_2",
+  "path": "/Game/Audio/Actions/pastel_fry_2.pastel_fry_2",
+  "duration": 2.0,
+  "loop": false,
+  "group": "pastel_fry",
+  "volume": 0.05
+ },
+ {
+  "id": "pastel_ready_1",
+  "path": "/Game/Audio/Actions/pastel_ready_1.pastel_ready_1",
+  "duration": 1.9199999570846558,
+  "loop": false,
+  "group": "pastel_ready",
+  "volume": 0.05
+ },
+ {
+  "id": "cana_crank_1",
+  "path": "/Game/Audio/Actions/cana_crank_1.cana_crank_1",
+  "duration": 0.75,
+  "loop": false,
+  "group": "cana_crank",
+  "volume": 0.06
+ },
+ {
+  "id": "cana_crank_2",
+  "path": "/Game/Audio/Actions/cana_crank_2.cana_crank_2",
+  "duration": 0.699999988079071,
+  "loop": false,
+  "group": "cana_crank",
+  "volume": 0.06
  }
 ]

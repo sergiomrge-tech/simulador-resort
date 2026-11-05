@@ -343,6 +343,14 @@ public:
  void AddIceCustomer();
  void IceCreamHour(int32 Hour);
  FMareIceResult ServeIceCream(const TArray<FString>& Flavors,const TArray<float>& Sizes,const FString& Topping);
+ /** Food truck (CHECKLIST_EXPANSOES 3.2): the pastel queue (party days x2), the order line, the hourly arrivals and the
+  *  pastel handed over (filling id, sealed before the oil, seconds in the oil, the juice pressed). */
+ TSharedPtr<FJsonObject> PastelDefs() const;
+ TArray<TSharedPtr<FJsonObject>> PastelQueue() const;
+ FString PastelOrderLine(const TSharedPtr<FJsonObject>& Order) const;
+ void AddPastelCustomer();
+ void PastelHour(int32 Hour);
+ FMareIceResult ServePastel(const FString& Filling,bool bSealed,double FrySeconds,bool bCana);
  void TrailScore(int32 Watered,int32 Group,int32 Photos,int32 Viewpoints,bool bSunset,int32 Stories,int32 Complaints,TArray<int32>& Choices,double& Bonus)const;
  /** Hourly: buyers before each departure (the guide sells), and at the end of the departure hour the guide's run
   *  or the cancellation with refund. */

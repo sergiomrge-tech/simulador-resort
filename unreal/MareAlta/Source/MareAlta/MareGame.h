@@ -76,6 +76,8 @@ public:
  UFUNCTION(BlueprintCallable,Category="Maré Alta") FString ReefQA(const FString& Cmd);
  /** QA of the ice cream shop: "own", "customers:n", "open", "perfect", "wrong", "hold:flavor,seconds", "release", "show", "close". */
  UFUNCTION(BlueprintCallable,Category="Maré Alta") FString IceCreamQA(const FString& Cmd);
+ /** QA of the food truck: "own", "customers:n", "open", "perfect", "wrong", "fill", "seal:f", "dip", "fry:s", "out", "crank:t", "deliver", "close". */
+ UFUNCTION(BlueprintCallable,Category="Maré Alta") FString PastelQA(const FString& Cmd);
  /** QA of the lighthouse trail: "start" (forces the departure hour and tickets), else MareTrailWorld::QA. */
  UFUNCTION(BlueprintCallable,Category="Maré Alta") FString TrailQA(const FString& Cmd);
  /** Bar prep mini-action over the running world: "socar" (taps on the beat), "bater" (hold and let go in the

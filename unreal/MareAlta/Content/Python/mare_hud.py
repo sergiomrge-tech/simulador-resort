@@ -2702,3 +2702,35 @@ def run(action, arg=''):
     if action == 'desk':
         return import_models('Reception', '/Game/Custom/Reception')
     raise ValueError(action)
+
+
+def import_sfx_only(arg=''):
+    """Imports only the listed actions of SourceArt/Audio/Actions/manifest.json ('a,b,c') to /Game/Audio/Actions and
+    adds (or replaces) their rows in Content/Data/audio.json, leaving every other row alone."""
+    import json
+    src = Path(unreal.Paths.project_dir()).resolve() / 'SourceArt/Audio/Actions'
+    actions = json.loads((src / 'manifest.json').read_text(encoding='utf-8'))['actions']
+    wanted = [a for a in arg.split(',') if a]
+    catalog_path = Path(unreal.Paths.project_content_dir()).resolve() / 'Data/audio.json'
+    catalog = [row for row in json.loads(catalog_path.read_text(encoding='utf-8')) if row.get('group') not in wanted]
+    volumes = {'pastel_fry': 0.05, 'pastel_ready': 0.05, 'cana_crank': 0.06}
+    done = 0
+    for group in wanted:
+        for f in actions[group]['files']:
+            name = Path(f['file']).stem
+            task = unreal.AssetImportTask()
+            task.filename = str(src / f'{name}.wav')
+            task.destination_path = '/Game/Audio/Actions'
+            task.destination_name = name
+            task.automated = True
+            task.replace_existing = True
+            task.save = True
+            unreal.AssetToolsHelpers.get_asset_tools().import_asset_tasks([task])
+            wave = unreal.load_asset(f'/Game/Audio/Actions/{name}')
+            if not isinstance(wave, unreal.SoundWave):
+                raise RuntimeError(f'{name}: import gave {wave}')
+            catalog.append({'id': name, 'path': f'/Game/Audio/Actions/{name}.{name}', 'duration': wave.get_editor_property('duration'),
+                            'loop': False, 'group': group, 'volume': volumes.get(group, 0.05)})
+            done += 1
+    catalog_path.write_text(json.dumps(catalog, ensure_ascii=False, indent=1) + '\n', encoding='utf-8')
+    return {'imported': done, 'catalog': len(catalog)}

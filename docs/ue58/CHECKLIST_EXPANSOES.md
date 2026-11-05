@@ -235,9 +235,20 @@ Decisões (05/11/2026):
 
 ### 3.2 Food truck do pastel — montar e fritar
 
-- [ ] Escolher o recheio pedido (carne, queijo, pizza, camarão), fechar a massa (arrastar para selar a borda) e mergulhar no óleo.
-- [ ] Fritura em tempo real: cru → dourado → queimado, com o ponto certo indicado pelo som e pela cor.
-- [ ] Caldo de cana na moenda como pedido extra (girar a manivela).
+- [x] Escolher o recheio pedido (carne, queijo, pizza, camarão), fechar a massa (arrastar para selar a borda) e mergulhar no óleo.
+- [x] Fritura em tempo real: cru → dourado → queimado, com o ponto certo indicado pelo som e pela cor.
+- [x] Caldo de cana na moenda como pedido extra (girar a manivela).
+
+Decisões (05/11/2026):
+- **Fila no food truck:** como a da sorveteria, 1–2 clientes por hora aberta, o dobro em dia de festa (quermesse, junina, show) e menos na chuva; até 6, e desistem depois de 40 min. A fila escolhe um lado livre: atrás do cliente ficava a fachada de um prédio, então ela vai pela calçada, conferindo chão e parede.
+- **Minijogo** (`SMarePastelGame`, dados em `business_games.json` "food_truck.pastel"):
+  1. recheio: carne, queijo, pizza ou camarão, que aparece na massa até fechar;
+  2. fechar a borda: arrastar o mouse sobre o pastel (ou alternar as setas); as marcas da borda aparecem;
+  3. fritar em tempo real: a massa vai de crua a dourada, escura e queimada pela cor e pelo medidor com a faixa verde. No ponto (5,5–8,5 s) toca um "ding", e o óleo chia a cada 2 s;
+  4. caldo de cana, quando pedido (metade dos pedidos): 4 voltas da manivela (girar o mouse ou alternar as setas), com o som da moenda a cada volta.
+- **Nota:** 3 acertos (recheio, borda fechada antes do óleo e ponto dourado). Borda aberta vaza; pastel queimado não é vendido; o caldo só é pago se foi espremido. A mensagem diz o que errou ("ficou cru, abriu no óleo, faltou o caldo de cana").
+- **Sons novos:** fritura, ding e moenda, sintetizados (`tools/ue58/gen_pastel_sfx.py`, CC0 próprio), porque os pacotes CC0 já usados não têm. Importados com `mare_hud.import_sfx_only`, que não mexe no resto do catálogo.
+- **Prova:** teste `MareAlta.Gameplay.Pastel` (fila, festa ×2, perfeito, sem caldo, cru e aberto, queimado sem pagamento, recheio errado, paciência, fechamento) + `docs/ue58/graphics-reference/business_pastel.jpg`.
 
 ### 3.3 Aluguel de pranchas e caiaques
 

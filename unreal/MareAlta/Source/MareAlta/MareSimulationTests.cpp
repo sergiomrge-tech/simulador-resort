@@ -1040,6 +1040,50 @@ bool FMareIceCreamTest::RunTest(const FString& Parameters)
  Sim->RemoveFromRoot();Instance->RemoveFromRoot();return true;
 }
 
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FMarePastelTest,"MareAlta.Gameplay.Pastel",EAutomationTestFlags::EditorContext|EAutomationTestFlags::EngineFilter)
+bool FMarePastelTest::RunTest(const FString& Parameters)
+{
+ // CHECKLIST_EXPANSOES 3.2: queue at the truck (party days x2), filling + seal + golden fry scored, burnt not sold,
+ // the sugar-cane juice paid only when pressed, patience and closing.
+ auto Instance=NewObject<UGameInstance>();Instance->AddToRoot();
+ auto Sim=NewObject<UMareSimulation>(Instance);Sim->AddToRoot();
+ Sim->SaveDirectory=FPaths::ProjectSavedDir()/TEXT("Automation/Pastel")/FGuid::NewGuid().ToString(EGuidFormats::Digits);
+ auto Load=[&](const FString& Name,TSharedPtr<FJsonObject>& Result){FString Text;FFileHelper::LoadFileToString(Text,*(FPaths::ProjectContentDir()/TEXT("Data")/Name));return FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Text),Result);};
+ if(!TestTrue(TEXT("Definitions"),Load(TEXT("definitions.json"),Sim->Definitions)) || !TestTrue(TEXT("Default save"),Load(TEXT("default_save.json"),Sim->State))){Sim->RemoveFromRoot();Instance->RemoveFromRoot();return false;}
+ Sim->State->SetNumberField(TEXT("money"),2000);Sim->State->SetNumberField(TEXT("minutes"),14*60+10);Sim->State->SetStringField(TEXT("day_event"),TEXT(""));
+ auto Biz=Sim->Object(Sim->Object(Sim->Object(Sim->State,TEXT("prog")),TEXT("biz")),TEXT("food_truck"));Biz->SetNumberField(TEXT("lvl"),1);
+ FString Reason;TestFalse(TEXT("Nobody at the truck yet"),Sim->CanPlayBusiness(TEXT("food_truck"),Reason));
+ Sim->PastelHour(15);TestTrue(TEXT("Customers arrive"),Sim->PastelQueue().Num()>=1);TestTrue(TEXT("Can serve"),Sim->CanPlayBusiness(TEXT("food_truck"),Reason));
+ Biz->SetArrayField(TEXT("queue"),{});Sim->State->SetStringField(TEXT("day_event"),TEXT("quermesse"));Sim->PastelHour(15);
+ TestTrue(TEXT("Party day: twice the customers"),Sim->PastelQueue().Num()>=2);Sim->State->SetStringField(TEXT("day_event"),TEXT(""));
+ TestTrue(TEXT("Order line"),Sim->PastelOrderLine(Sim->PastelQueue()[0]).StartsWith(TEXT("pastel de ")));
+ // Perfect: right filling, sealed, golden; the juice pressed when asked.
+ auto O=Sim->PastelQueue()[0];bool bCana=false;O->TryGetBoolField(TEXT("cana"),bCana);double Cash=Sim->Money();
+ const auto Good=Sim->ServePastel(Sim->String(O,TEXT("filling")),true,7,bCana);
+ TestEqual(TEXT("Perfect pastel: 3/3"),Good.Hits,3);TestTrue(TEXT("Paid"),Good.Paid>0 && Sim->Money()>Cash);
+ // Juice asked but not pressed: not paid, and said.
+ Sim->AddPastelCustomer();O=Sim->PastelQueue()[0];O->SetBoolField(TEXT("cana"),true);
+ const auto NoJuice=Sim->ServePastel(Sim->String(O,TEXT("filling")),true,7,false);
+ TestTrue(TEXT("Juice missing told"),Sim->LastMessage.Contains(TEXT("caldo de cana")));TestTrue(TEXT("Juice not paid"),NoJuice.Paid<Good.Paid+1e-6 || !bCana);
+ // Open in the oil and raw: few hits.
+ Sim->AddPastelCustomer();O=Sim->PastelQueue()[0];const auto Raw=Sim->ServePastel(Sim->String(O,TEXT("filling")),false,2,false);
+ TestEqual(TEXT("Open and raw: 1 hit"),Raw.Hits,1);TestTrue(TEXT("Raw and leaking told"),Sim->LastMessage.Contains(TEXT("cru")) && Sim->LastMessage.Contains(TEXT("abriu")));
+ // Burnt: not sold.
+ Sim->AddPastelCustomer();O=Sim->PastelQueue()[0];O->SetBoolField(TEXT("cana"),false);
+ const auto Burnt=Sim->ServePastel(Sim->String(O,TEXT("filling")),true,15,false);TestEqual(TEXT("Burnt pastel not paid"),Burnt.Paid,0.);
+ TestTrue(TEXT("Burnt told"),Sim->LastMessage.Contains(TEXT("queimou")));
+ // Wrong filling.
+ Sim->AddPastelCustomer();O=Sim->PastelQueue()[0];O->SetBoolField(TEXT("cana"),false);
+ const FString Other=Sim->String(O,TEXT("filling"))==TEXT("queijo")?TEXT("carne"):TEXT("queijo");
+ TestEqual(TEXT("Wrong filling: 2/3"),Sim->ServePastel(Other,true,7,false).Hits,2);
+ // Patience and closing.
+ Sim->AddPastelCustomer();Sim->PastelQueue().Last()->SetNumberField(TEXT("since"),0);Sim->PastelHour(16);
+ TestFalse(TEXT("Waited too long, gave up"),Sim->PastelQueue().ContainsByPredicate([](const TSharedPtr<FJsonObject>& Q){return UMareSimulation::Number(Q,TEXT("since"))==0;}));
+ Sim->AddPastelCustomer();Sim->State->SetNumberField(TEXT("minutes"),23*60+10);Sim->PastelHour(24);TestEqual(TEXT("Closed: empty line"),Sim->PastelQueue().Num(),0);
+ IFileManager::Get().DeleteDirectory(*Sim->SaveDirectory,false,true);
+ Sim->RemoveFromRoot();Instance->RemoveFromRoot();return true;
+}
+
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FMareRestaurantTest,"MareAlta.Gameplay.HotelRestaurant",EAutomationTestFlags::EditorContext|EAutomationTestFlags::EngineFilter)
 bool FMareRestaurantTest::RunTest(const FString& Parameters)
 {

@@ -224,7 +224,82 @@
     3355,
     0,
     270
-   ]
+   ],
+   "pastel": {
+    "_doc": "Food truck hands-on (CHECKLIST_EXPANSOES 3.2, MarePastel.cpp + SMarePastelGame): customers queue (arrivals per open hour, x party_mult on a party day, at most queue_max, patience_minutes). Each order is a pastel with a filling and, sometimes (cana_chance), a sugar-cane juice. The player picks the filling, seals the edge by dragging along it (seal_px of mouse travel, or left/right taps), dips it in the oil and takes it out: raw before golden_from s, golden until golden_to, then browning, burnt after burnt_s (a ding and the sizzle mark the golden point). The juice is pressed by turning the mill crank (crank_turns full turns: circles with the mouse or left/right taps). Hits: right filling, sealed before the oil (an open one leaks), golden; pay[hits] x filling price, plus the juice when pressed and tip_perfect at 3/3.",
+    "fillings": [
+     {
+      "id": "carne",
+      "name": "carne",
+      "price": 9,
+      "color": [
+       0.45,
+       0.25,
+       0.15
+      ]
+     },
+     {
+      "id": "queijo",
+      "name": "queijo",
+      "price": 8,
+      "color": [
+       0.98,
+       0.85,
+       0.45
+      ]
+     },
+     {
+      "id": "pizza",
+      "name": "pizza",
+      "price": 9,
+      "color": [
+       0.85,
+       0.3,
+       0.2
+      ]
+     },
+     {
+      "id": "camarao",
+      "name": "camarão",
+      "price": 12,
+      "color": [
+       0.98,
+       0.55,
+       0.42
+      ]
+     }
+    ],
+    "cana_price": 6,
+    "cana_chance": 0.5,
+    "seal_px": 1400,
+    "seal_taps": 14,
+    "crank_turns": 4,
+    "crank_taps": 16,
+    "golden_from": 5.5,
+    "golden_to": 8.5,
+    "burnt_s": 11.5,
+    "arrivals": [
+     1,
+     2
+    ],
+    "party_mult": 2,
+    "party_events": [
+     "quermesse",
+     "junina",
+     "show_dj"
+    ],
+    "rain_mult": 0.6,
+    "queue_max": 6,
+    "patience_minutes": 40,
+    "pay": [
+     0.3,
+     0.7,
+     1.0,
+     1.25
+    ],
+    "tip_perfect": 4,
+    "fame_per_hit": 1
+   }
   },
   "souvenir": {
    "title": "Embrulhar o presente",

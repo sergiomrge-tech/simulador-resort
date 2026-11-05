@@ -223,3 +223,8 @@ def phone(arg='8'):
 def ice(arg=''):
     pc = unreal.GameplayStatics.get_player_controller(_game_world(), 0)
     return json.dumps([[c, pc.ice_cream_qa(c)] for c in arg.split(';') if c])
+
+
+def pastel(arg=''):
+    pc = unreal.GameplayStatics.get_player_controller(_game_world(), 0)
+    return json.dumps([[c, pc.pastel_qa(c)] for c in arg.split(';') if c])

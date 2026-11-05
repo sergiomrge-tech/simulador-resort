@@ -15,7 +15,7 @@ void UMareBusinessWorld::Deinitialize()
 {
  for(auto& Pair:Counters)if(IsValid(Pair.Value))Pair.Value->Destroy();
  for(auto& Pair:Waiting)if(IsValid(Pair.Value))Pair.Value->Destroy();
- for(auto& P:IceLine)if(IsValid(P))P->Destroy();IceLine.Empty();
+ for(auto& P:IceLine)if(IsValid(P))P->Destroy();IceLine.Empty();for(auto& P:PastelLine)if(IsValid(P))P->Destroy();PastelLine.Empty();
  for(auto& M:Machines)if(IsValid(M))M->Destroy();for(auto& P:NightPlayers)if(IsValid(P))P->Destroy();
  Counters.Empty();Waiting.Empty();Machines.Empty();NightPlayers.Empty();Super::Deinitialize();
 }
@@ -53,13 +53,22 @@ void UMareBusinessWorld::Tick(float DeltaSeconds)
     Guest->bAmbient=true;Guest->GetCharacterMovement()->DisableMovement();Waiting.Add(Id,Guest);}}
   else if(!bDue && IsValid(Guest)){Guest->Destroy();Waiting.Remove(Id);}
   // The ice cream queue: the rest of the line stands behind the first customer, one step apart.
-  if(Id==TEXT("sorveteria")){const int32 Want=bDue?FMath::Clamp(S->IceQueue().Num()-1,0,3):0;
-   while(IceLine.Num()>Want){if(IsValid(IceLine.Last()))IceLine.Last()->Destroy();IceLine.Pop();}
-   for(int32 I=IceLine.Num();I<Want;++I){const FRotator Face(0,(*G)[3]->AsNumber(),0);
-    const FVector At=Ground(FVector((*G)[0]->AsNumber(),(*G)[1]->AsNumber(),0)-Face.Vector()*(95.f*(I+1))+FVector(0,0,0))+FVector(0,0,90);
+  if(Id==TEXT("sorveteria") || Id==TEXT("food_truck")){auto& Line=Id==TEXT("sorveteria")?IceLine:PastelLine;
+   const int32 Want=bDue?FMath::Clamp((Id==TEXT("sorveteria")?S->IceQueue().Num():S->PastelQueue().Num())-1,0,3):0;
+   while(Line.Num()>Want){if(IsValid(Line.Last()))Line.Last()->Destroy();Line.Pop();}
+   // The line goes behind the first customer, or to a side when a wall or a drop is there (the pastel truck stands
+   // with a facade right behind its customer): every place must be on the same ground and reachable at chest height.
+   const FRotator Face(0,(*G)[3]->AsNumber(),0);const FVector First=Ground(FVector((*G)[0]->AsNumber(),(*G)[1]->AsNumber(),0));
+   FVector Dir=-Face.Vector();
+   for(const FVector& Try:{-Face.Vector(),FRotationMatrix(Face).GetUnitAxis(EAxis::Y),-FRotationMatrix(Face).GetUnitAxis(EAxis::Y)}){bool bFree=true;
+    for(int32 K=1;K<=3 && bFree;++K){const FVector P=Ground(First+Try*95.f*K);FHitResult Hit;
+     bFree=FMath::Abs(P.Z-First.Z)<40 && !GetWorld()->SweepSingleByChannel(Hit,First+FVector(0,0,120),P+FVector(0,0,120),FQuat::Identity,ECC_Visibility,FCollisionShape::MakeSphere(25));}
+    if(bFree){Dir=Try;break;}}
+   for(int32 I=Line.Num();I<Want;++I){
+    const FVector At=Ground(First+Dir*(95.f*(I+1)))+FVector(0,0,90);
     FActorSpawnParameters Params;Params.SpawnCollisionHandlingOverride=ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-    if(auto P=GetWorld()->SpawnActor<AMarePerson>(At,Face,Params)){P->SaveId=FString::Printf(TEXT("ice_line_%d_%d"),I,int32(UMareSimulation::Number(S->State,TEXT("day"),1)));
-     P->PersonName=TEXT("Cliente");P->SetAppearance(FCrc::StrCrc32(*P->SaveId)%4);P->bAmbient=true;P->GetCharacterMovement()->DisableMovement();IceLine.Add(P);}}}
+    if(auto P=GetWorld()->SpawnActor<AMarePerson>(At,Face,Params)){P->SaveId=FString::Printf(TEXT("%s_line_%d_%d"),*Id,I,int32(UMareSimulation::Number(S->State,TEXT("day"),1)));
+     P->PersonName=TEXT("Cliente");P->SetAppearance(FCrc::StrCrc32(*P->SaveId)%4);P->bAmbient=true;P->GetCharacterMovement()->DisableMovement();Line.Add(P);}}}
  }
 }
 

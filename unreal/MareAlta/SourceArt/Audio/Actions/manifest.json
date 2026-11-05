@@ -1,939 +1,1002 @@
 {
-  "generator": "tools/ue58/fetch_action_sfx.py",
-  "format": "WAV PCM 16-bit, 48000 Hz, mono, peak -3 dBFS (variants of one action level-matched, so some peak lower)",
-  "note": "Not imported into Unreal yet. 'volume' is the suggested PlayCue volume (0-1), applied before the Effects/Master buses; pick one file at random per play.",
-  "actions": {
-    "reception_bell": {
-      "description": "Campainha de balcão da recepção (ding).",
-      "volume": 0.23,
-      "ue_folder": "/Game/Audio/Actions",
-      "files": [
-        {
-          "file": "reception_bell_1.wav",
-          "seconds": 1.121,
-          "peak_dbfs": -3.0,
-          "loudness_db": -25.0,
-          "lead_ms": 0.8,
-          "sources": [
-            {
-              "pack": "oga_100sfx",
-              "file": "bell_01.ogg",
-              "page": "https://opengameart.org/content/100-cc0-sfx",
-              "license": "CC0 (OpenGameArt, 100 CC0 SFX)"
-            }
-          ]
-        },
-        {
-          "file": "reception_bell_2.wav",
-          "seconds": 2.24,
-          "peak_dbfs": -8.45,
-          "loudness_db": -24.0,
-          "lead_ms": 0.0,
-          "sources": [
-            {
-              "synth": "counter_bell",
-              "license": "CC0 (original numpy synthesis, tools/ue58/fetch_action_sfx.py)"
-            }
-          ]
-        },
-        {
-          "file": "reception_bell_3.wav",
-          "seconds": 1.92,
-          "peak_dbfs": -10.99,
-          "loudness_db": -24.0,
-          "lead_ms": 0.1,
-          "sources": [
-            {
-              "synth": "counter_bell",
-              "license": "CC0 (original numpy synthesis, tools/ue58/fetch_action_sfx.py)"
-            }
-          ]
-        }
-      ]
+ "generator": "tools/ue58/fetch_action_sfx.py",
+ "format": "WAV PCM 16-bit, 48000 Hz, mono, peak -3 dBFS (variants of one action level-matched, so some peak lower)",
+ "note": "Not imported into Unreal yet. 'volume' is the suggested PlayCue volume (0-1), applied before the Effects/Master buses; pick one file at random per play.",
+ "actions": {
+  "reception_bell": {
+   "description": "Campainha de balcão da recepção (ding).",
+   "volume": 0.23,
+   "ue_folder": "/Game/Audio/Actions",
+   "files": [
+    {
+     "file": "reception_bell_1.wav",
+     "seconds": 1.121,
+     "peak_dbfs": -3.0,
+     "loudness_db": -25.0,
+     "lead_ms": 0.8,
+     "sources": [
+      {
+       "pack": "oga_100sfx",
+       "file": "bell_01.ogg",
+       "page": "https://opengameart.org/content/100-cc0-sfx",
+       "license": "CC0 (OpenGameArt, 100 CC0 SFX)"
+      }
+     ]
     },
-    "reception_keys": {
-      "description": "Chaves entregues/colocadas no balcão.",
-      "volume": 0.3,
-      "ue_folder": "/Game/Audio/Actions",
-      "files": [
-        {
-          "file": "reception_keys_1.wav",
-          "seconds": 0.439,
-          "peak_dbfs": -6.37,
-          "loudness_db": -25.2,
-          "lead_ms": 5.0,
-          "sources": [
-            {
-              "pack": "oga_metal_wood",
-              "file": "keys_03.ogg",
-              "page": "https://opengameart.org/content/100-cc0-metal-and-wood-sfx",
-              "license": "CC0 (OpenGameArt, 100 CC0 metal and wood SFX)"
-            }
-          ]
-        },
-        {
-          "file": "reception_keys_2.wav",
-          "seconds": 0.423,
-          "peak_dbfs": -7.05,
-          "loudness_db": -25.2,
-          "lead_ms": 5.0,
-          "sources": [
-            {
-              "pack": "oga_metal_wood",
-              "file": "keys_02.ogg",
-              "page": "https://opengameart.org/content/100-cc0-metal-and-wood-sfx",
-              "license": "CC0 (OpenGameArt, 100 CC0 metal and wood SFX)"
-            }
-          ]
-        },
-        {
-          "file": "reception_keys_3.wav",
-          "seconds": 0.315,
-          "peak_dbfs": -3.0,
-          "loudness_db": -26.2,
-          "lead_ms": 5.0,
-          "sources": [
-            {
-              "pack": "oga_metal_wood",
-              "file": "keys_01.ogg",
-              "page": "https://opengameart.org/content/100-cc0-metal-and-wood-sfx",
-              "license": "CC0 (OpenGameArt, 100 CC0 metal and wood SFX)"
-            }
-          ]
-        }
-      ]
+    {
+     "file": "reception_bell_2.wav",
+     "seconds": 2.24,
+     "peak_dbfs": -8.45,
+     "loudness_db": -24.0,
+     "lead_ms": 0.0,
+     "sources": [
+      {
+       "synth": "counter_bell",
+       "license": "CC0 (original numpy synthesis, tools/ue58/fetch_action_sfx.py)"
+      }
+     ]
     },
-    "reception_checkin": {
-      "description": "Check-in: papel e carimbo, carimbo sozinho, assinatura com caneta.",
-      "volume": 0.22,
-      "ue_folder": "/Game/Audio/Actions",
-      "files": [
-        {
-          "file": "reception_checkin_1.wav",
-          "seconds": 0.628,
-          "peak_dbfs": -3.0,
-          "loudness_db": -23.5,
-          "lead_ms": 4.7,
-          "sources": [
-            {
-              "pack": "oga_100sfx",
-              "file": "paper_02.ogg",
-              "page": "https://opengameart.org/content/100-cc0-sfx",
-              "license": "CC0 (OpenGameArt, 100 CC0 SFX)"
-            },
-            {
-              "pack": "kenney_rpg",
-              "file": "bookPlace1.ogg",
-              "page": "https://kenney.nl/assets/rpg-audio",
-              "license": "CC0 1.0 (Kenney, RPG Audio)"
-            }
-          ]
-        },
-        {
-          "file": "reception_checkin_2.wav",
-          "seconds": 0.226,
-          "peak_dbfs": -6.31,
-          "loudness_db": -22.5,
-          "lead_ms": 5.0,
-          "sources": [
-            {
-              "pack": "kenney_rpg",
-              "file": "bookPlace3.ogg",
-              "page": "https://kenney.nl/assets/rpg-audio",
-              "license": "CC0 1.0 (Kenney, RPG Audio)"
-            }
-          ]
-        },
-        {
-          "file": "reception_checkin_3.wav",
-          "seconds": 0.71,
-          "peak_dbfs": -6.42,
-          "loudness_db": -22.5,
-          "lead_ms": 0.3,
-          "sources": [
-            {
-              "pack": "kenney_interface",
-              "file": "scratch_004.ogg",
-              "page": "https://kenney.nl/assets/interface-sounds",
-              "license": "CC0 1.0 (Kenney, Interface Sounds)"
-            },
-            {
-              "pack": "kenney_interface",
-              "file": "scratch_005.ogg",
-              "page": "https://kenney.nl/assets/interface-sounds",
-              "license": "CC0 1.0 (Kenney, Interface Sounds)"
-            }
-          ]
-        }
-      ]
-    },
-    "cleaning_bed": {
-      "description": "Arrumar a cama (lençol/tecido).",
-      "volume": 0.23,
-      "ue_folder": "/Game/Audio/Actions",
-      "files": [
-        {
-          "file": "cleaning_bed_1.wav",
-          "seconds": 0.571,
-          "peak_dbfs": -3.0,
-          "loudness_db": -24.1,
-          "lead_ms": 5.0,
-          "sources": [
-            {
-              "pack": "kenney_rpg",
-              "file": "cloth1.ogg",
-              "page": "https://kenney.nl/assets/rpg-audio",
-              "license": "CC0 1.0 (Kenney, RPG Audio)"
-            }
-          ]
-        },
-        {
-          "file": "cleaning_bed_2.wav",
-          "seconds": 0.468,
-          "peak_dbfs": -4.64,
-          "loudness_db": -23.1,
-          "lead_ms": 5.0,
-          "sources": [
-            {
-              "pack": "kenney_rpg",
-              "file": "cloth3.ogg",
-              "page": "https://kenney.nl/assets/rpg-audio",
-              "license": "CC0 1.0 (Kenney, RPG Audio)"
-            }
-          ]
-        },
-        {
-          "file": "cleaning_bed_3.wav",
-          "seconds": 0.791,
-          "peak_dbfs": -3.0,
-          "loudness_db": -23.1,
-          "lead_ms": 7.8,
-          "sources": [
-            {
-              "pack": "kenney_rpg",
-              "file": "cloth2.ogg",
-              "page": "https://kenney.nl/assets/rpg-audio",
-              "license": "CC0 1.0 (Kenney, RPG Audio)"
-            },
-            {
-              "pack": "kenney_rpg",
-              "file": "cloth1.ogg",
-              "page": "https://kenney.nl/assets/rpg-audio",
-              "license": "CC0 1.0 (Kenney, RPG Audio)"
-            }
-          ]
-        }
-      ]
-    },
-    "cleaning_towels": {
-      "description": "Recolher toalhas e colocá-las no cesto.",
-      "volume": 0.17,
-      "ue_folder": "/Game/Audio/Actions",
-      "files": [
-        {
-          "file": "cleaning_towels_1.wav",
-          "seconds": 0.63,
-          "peak_dbfs": -3.19,
-          "loudness_db": -20.1,
-          "lead_ms": 5.3,
-          "sources": [
-            {
-              "pack": "kenney_rpg",
-              "file": "cloth2.ogg",
-              "page": "https://kenney.nl/assets/rpg-audio",
-              "license": "CC0 1.0 (Kenney, RPG Audio)"
-            },
-            {
-              "pack": "kenney_rpg",
-              "file": "dropLeather.ogg",
-              "page": "https://kenney.nl/assets/rpg-audio",
-              "license": "CC0 1.0 (Kenney, RPG Audio)"
-            }
-          ]
-        },
-        {
-          "file": "cleaning_towels_2.wav",
-          "seconds": 0.589,
-          "peak_dbfs": -3.0,
-          "loudness_db": -21.1,
-          "lead_ms": 2.0,
-          "sources": [
-            {
-              "pack": "kenney_rpg",
-              "file": "cloth4.ogg",
-              "page": "https://kenney.nl/assets/rpg-audio",
-              "license": "CC0 1.0 (Kenney, RPG Audio)"
-            },
-            {
-              "pack": "kenney_rpg",
-              "file": "dropLeather.ogg",
-              "page": "https://kenney.nl/assets/rpg-audio",
-              "license": "CC0 1.0 (Kenney, RPG Audio)"
-            }
-          ]
-        }
-      ]
-    },
-    "cleaning_trash": {
-      "description": "Fechar e largar o saco de lixo.",
-      "volume": 0.19,
-      "ue_folder": "/Game/Audio/Actions",
-      "files": [
-        {
-          "file": "cleaning_trash_1.wav",
-          "seconds": 0.709,
-          "peak_dbfs": -3.0,
-          "loudness_db": -22.0,
-          "lead_ms": 2.7,
-          "sources": [
-            {
-              "pack": "oga_100sfx",
-              "file": "paper_01.ogg",
-              "page": "https://opengameart.org/content/100-cc0-sfx",
-              "license": "CC0 (OpenGameArt, 100 CC0 SFX)"
-            },
-            {
-              "pack": "kenney_rpg",
-              "file": "dropLeather.ogg",
-              "page": "https://kenney.nl/assets/rpg-audio",
-              "license": "CC0 1.0 (Kenney, RPG Audio)"
-            }
-          ]
-        },
-        {
-          "file": "cleaning_trash_2.wav",
-          "seconds": 0.933,
-          "peak_dbfs": -3.0,
-          "loudness_db": -21.4,
-          "lead_ms": 1.4,
-          "sources": [
-            {
-              "synth": "trash_bag",
-              "license": "CC0 (original numpy synthesis, tools/ue58/fetch_action_sfx.py)"
-            },
-            {
-              "pack": "kenney_rpg",
-              "file": "dropLeather.ogg",
-              "page": "https://kenney.nl/assets/rpg-audio",
-              "license": "CC0 1.0 (Kenney, RPG Audio)"
-            }
-          ]
-        }
-      ]
-    },
-    "pool_cue_hit": {
-      "description": "Tacada: ponta do taco na bola branca.",
-      "volume": 0.19,
-      "ue_folder": "/Game/Audio/Actions",
-      "files": [
-        {
-          "file": "pool_cue_hit_1.wav",
-          "seconds": 0.167,
-          "peak_dbfs": -3.0,
-          "loudness_db": -21.8,
-          "lead_ms": 0.1,
-          "sources": [
-            {
-              "pack": "kenney_impact",
-              "file": "impactGeneric_light_001.ogg",
-              "page": "https://kenney.nl/assets/impact-sounds",
-              "license": "CC0 1.0 (Kenney, Impact Sounds)"
-            },
-            {
-              "pack": "oga_80rpg",
-              "file": "item_stone_02.ogg",
-              "page": "https://opengameart.org/content/80-cc0-rpg-sfx",
-              "license": "CC0 (OpenGameArt, 80 CC0 RPG SFX)"
-            }
-          ]
-        },
-        {
-          "file": "pool_cue_hit_2.wav",
-          "seconds": 0.246,
-          "peak_dbfs": -3.0,
-          "loudness_db": -21.8,
-          "lead_ms": 0.1,
-          "sources": [
-            {
-              "pack": "kenney_impact",
-              "file": "impactGeneric_light_003.ogg",
-              "page": "https://kenney.nl/assets/impact-sounds",
-              "license": "CC0 1.0 (Kenney, Impact Sounds)"
-            },
-            {
-              "pack": "oga_80rpg",
-              "file": "item_stone_04.ogg",
-              "page": "https://opengameart.org/content/80-cc0-rpg-sfx",
-              "license": "CC0 (OpenGameArt, 80 CC0 RPG SFX)"
-            }
-          ]
-        }
-      ]
-    },
-    "pool_ball_clack": {
-      "description": "Bola contra bola.",
-      "volume": 0.33,
-      "ue_folder": "/Game/Audio/Actions",
-      "files": [
-        {
-          "file": "pool_ball_clack_1.wav",
-          "seconds": 0.164,
-          "peak_dbfs": -3.0,
-          "loudness_db": -28.0,
-          "lead_ms": 5.0,
-          "sources": [
-            {
-              "pack": "oga_80rpg",
-              "file": "item_stone_02.ogg",
-              "page": "https://opengameart.org/content/80-cc0-rpg-sfx",
-              "license": "CC0 (OpenGameArt, 80 CC0 RPG SFX)"
-            }
-          ]
-        },
-        {
-          "file": "pool_ball_clack_2.wav",
-          "seconds": 0.264,
-          "peak_dbfs": -3.0,
-          "loudness_db": -27.1,
-          "lead_ms": 5.0,
-          "sources": [
-            {
-              "pack": "oga_80rpg",
-              "file": "item_stone_04.ogg",
-              "page": "https://opengameart.org/content/80-cc0-rpg-sfx",
-              "license": "CC0 (OpenGameArt, 80 CC0 RPG SFX)"
-            }
-          ]
-        },
-        {
-          "file": "pool_ball_clack_3.wav",
-          "seconds": 0.387,
-          "peak_dbfs": -3.45,
-          "loudness_db": -27.0,
-          "lead_ms": 5.0,
-          "sources": [
-            {
-              "pack": "oga_100sfx2",
-              "file": "sfx100v2_stones_02.ogg",
-              "page": "https://opengameart.org/content/100-cc0-sfx-2",
-              "license": "CC0 (OpenGameArt, 100 CC0 SFX #2)"
-            }
-          ]
-        }
-      ]
-    },
-    "pool_pocket": {
-      "description": "Bola entrando na caçapa e rolando na canaleta.",
-      "volume": 0.2,
-      "ue_folder": "/Game/Audio/Actions",
-      "files": [
-        {
-          "file": "pool_pocket_1.wav",
-          "seconds": 0.87,
-          "peak_dbfs": -3.0,
-          "loudness_db": -22.6,
-          "lead_ms": 0.1,
-          "sources": [
-            {
-              "pack": "kenney_impact",
-              "file": "impactWood_light_000.ogg",
-              "page": "https://kenney.nl/assets/impact-sounds",
-              "license": "CC0 1.0 (Kenney, Impact Sounds)"
-            },
-            {
-              "pack": "kenney_impact",
-              "file": "impactSoft_medium_001.ogg",
-              "page": "https://kenney.nl/assets/impact-sounds",
-              "license": "CC0 1.0 (Kenney, Impact Sounds)"
-            },
-            {
-              "synth": "ball_roll",
-              "license": "CC0 (original numpy synthesis, tools/ue58/fetch_action_sfx.py)"
-            }
-          ]
-        },
-        {
-          "file": "pool_pocket_2.wav",
-          "seconds": 0.74,
-          "peak_dbfs": -4.04,
-          "loudness_db": -21.6,
-          "lead_ms": 0.1,
-          "sources": [
-            {
-              "pack": "kenney_impact",
-              "file": "impactWood_light_002.ogg",
-              "page": "https://kenney.nl/assets/impact-sounds",
-              "license": "CC0 1.0 (Kenney, Impact Sounds)"
-            },
-            {
-              "pack": "kenney_impact",
-              "file": "impactSoft_medium_003.ogg",
-              "page": "https://kenney.nl/assets/impact-sounds",
-              "license": "CC0 1.0 (Kenney, Impact Sounds)"
-            },
-            {
-              "synth": "ball_roll",
-              "license": "CC0 (original numpy synthesis, tools/ue58/fetch_action_sfx.py)"
-            }
-          ]
-        }
-      ]
-    },
-    "pool_rail_bounce": {
-      "description": "Bola batendo na tabela.",
-      "volume": 0.12,
-      "ue_folder": "/Game/Audio/Actions",
-      "files": [
-        {
-          "file": "pool_rail_bounce_1.wav",
-          "seconds": 0.14,
-          "peak_dbfs": -3.0,
-          "loudness_db": -17.9,
-          "lead_ms": 0.2,
-          "sources": [
-            {
-              "pack": "kenney_impact",
-              "file": "impactSoft_medium_000.ogg",
-              "page": "https://kenney.nl/assets/impact-sounds",
-              "license": "CC0 1.0 (Kenney, Impact Sounds)"
-            },
-            {
-              "pack": "kenney_impact",
-              "file": "impactGeneric_light_002.ogg",
-              "page": "https://kenney.nl/assets/impact-sounds",
-              "license": "CC0 1.0 (Kenney, Impact Sounds)"
-            }
-          ]
-        },
-        {
-          "file": "pool_rail_bounce_2.wav",
-          "seconds": 0.14,
-          "peak_dbfs": -3.54,
-          "loudness_db": -16.9,
-          "lead_ms": 0.2,
-          "sources": [
-            {
-              "pack": "kenney_impact",
-              "file": "impactSoft_medium_002.ogg",
-              "page": "https://kenney.nl/assets/impact-sounds",
-              "license": "CC0 1.0 (Kenney, Impact Sounds)"
-            },
-            {
-              "pack": "kenney_impact",
-              "file": "impactGeneric_light_004.ogg",
-              "page": "https://kenney.nl/assets/impact-sounds",
-              "license": "CC0 1.0 (Kenney, Impact Sounds)"
-            }
-          ]
-        }
-      ]
-    },
-    "bar_blender": {
-      "description": "Liquidificador curto (pulso com gelo).",
-      "volume": 0.03,
-      "ue_folder": "/Game/Audio/Actions",
-      "files": [
-        {
-          "file": "bar_blender_1.wav",
-          "seconds": 1.8,
-          "peak_dbfs": -3.0,
-          "loudness_db": -9.5,
-          "lead_ms": 2.1,
-          "sources": [
-            {
-              "synth": "blender",
-              "license": "CC0 (original numpy synthesis, tools/ue58/fetch_action_sfx.py)"
-            }
-          ]
-        },
-        {
-          "file": "bar_blender_2.wav",
-          "seconds": 1.2,
-          "peak_dbfs": -3.0,
-          "loudness_db": -9.9,
-          "lead_ms": 2.2,
-          "sources": [
-            {
-              "synth": "blender",
-              "license": "CC0 (original numpy synthesis, tools/ue58/fetch_action_sfx.py)"
-            }
-          ]
-        }
-      ]
-    },
-    "bar_shaker": {
-      "description": "Coqueteleira com gelo.",
-      "volume": 0.45,
-      "ue_folder": "/Game/Audio/Actions",
-      "files": [
-        {
-          "file": "bar_shaker_1.wav",
-          "seconds": 1.486,
-          "peak_dbfs": -4.29,
-          "loudness_db": -30.8,
-          "lead_ms": 5.0,
-          "sources": [
-            {
-              "pack": "kenney_casino",
-              "file": "dice-shake-3.ogg",
-              "page": "https://kenney.nl/assets/casino-audio",
-              "license": "CC0 1.0 (Kenney, Casino Audio)"
-            }
-          ]
-        },
-        {
-          "file": "bar_shaker_2.wav",
-          "seconds": 1.356,
-          "peak_dbfs": -3.0,
-          "loudness_db": -31.8,
-          "lead_ms": 5.0,
-          "sources": [
-            {
-              "pack": "kenney_casino",
-              "file": "dice-shake-1.ogg",
-              "page": "https://kenney.nl/assets/casino-audio",
-              "license": "CC0 1.0 (Kenney, Casino Audio)"
-            }
-          ]
-        },
-        {
-          "file": "bar_shaker_3.wav",
-          "seconds": 1.462,
-          "peak_dbfs": -10.71,
-          "loudness_db": -30.8,
-          "lead_ms": 15.0,
-          "sources": [
-            {
-              "synth": "shaker",
-              "license": "CC0 (original numpy synthesis, tools/ue58/fetch_action_sfx.py)"
-            }
-          ]
-        }
-      ]
-    },
-    "bar_ice_glass": {
-      "description": "Gelo caindo no copo.",
-      "volume": 0.25,
-      "ue_folder": "/Game/Audio/Actions",
-      "files": [
-        {
-          "file": "bar_ice_glass_1.wav",
-          "seconds": 0.469,
-          "peak_dbfs": -8.02,
-          "loudness_db": -23.7,
-          "lead_ms": 2.9,
-          "sources": [
-            {
-              "pack": "oga_100sfx2",
-              "file": "sfx100v2_glass_05.ogg",
-              "page": "https://opengameart.org/content/100-cc0-sfx-2",
-              "license": "CC0 (OpenGameArt, 100 CC0 SFX #2)"
-            }
-          ]
-        },
-        {
-          "file": "bar_ice_glass_2.wav",
-          "seconds": 0.398,
-          "peak_dbfs": -7.31,
-          "loudness_db": -23.7,
-          "lead_ms": 5.0,
-          "sources": [
-            {
-              "pack": "oga_100sfx2",
-              "file": "sfx100v2_glass_02.ogg",
-              "page": "https://opengameart.org/content/100-cc0-sfx-2",
-              "license": "CC0 (OpenGameArt, 100 CC0 SFX #2)"
-            }
-          ]
-        },
-        {
-          "file": "bar_ice_glass_3.wav",
-          "seconds": 0.64,
-          "peak_dbfs": -3.0,
-          "loudness_db": -24.7,
-          "lead_ms": 0.2,
-          "sources": [
-            {
-              "synth": "ice_in_glass",
-              "license": "CC0 (original numpy synthesis, tools/ue58/fetch_action_sfx.py)"
-            }
-          ]
-        }
-      ]
-    },
-    "bar_pour": {
-      "description": "Servir líquido no copo.",
-      "volume": 0.07,
-      "ue_folder": "/Game/Audio/Actions",
-      "files": [
-        {
-          "file": "bar_pour_1.wav",
-          "seconds": 1.499,
-          "peak_dbfs": -3.0,
-          "loudness_db": -15.3,
-          "lead_ms": 15.0,
-          "sources": [
-            {
-              "synth": "pour",
-              "license": "CC0 (original numpy synthesis, tools/ue58/fetch_action_sfx.py)"
-            }
-          ]
-        },
-        {
-          "file": "bar_pour_2.wav",
-          "seconds": 1.3,
-          "peak_dbfs": -3.0,
-          "loudness_db": -16.3,
-          "lead_ms": 2.5,
-          "sources": [
-            {
-              "pack": "oga_100sfx2",
-              "file": "sfx100v2_loop_water_01.ogg",
-              "page": "https://opengameart.org/content/100-cc0-sfx-2",
-              "license": "CC0 (OpenGameArt, 100 CC0 SFX #2)"
-            },
-            {
-              "synth": "pour",
-              "license": "CC0 (original numpy synthesis, tools/ue58/fetch_action_sfx.py)"
-            }
-          ]
-        }
-      ]
-    },
-    "money_coins": {
-      "description": "Moedas ao receber pagamento.",
-      "volume": 0.45,
-      "ue_folder": "/Game/Audio/Actions",
-      "files": [
-        {
-          "file": "money_coins_1.wav",
-          "seconds": 0.746,
-          "peak_dbfs": -3.0,
-          "loudness_db": -29.6,
-          "lead_ms": 6.4,
-          "sources": [
-            {
-              "pack": "kenney_rpg",
-              "file": "handleCoins.ogg",
-              "page": "https://kenney.nl/assets/rpg-audio",
-              "license": "CC0 1.0 (Kenney, RPG Audio)"
-            }
-          ]
-        },
-        {
-          "file": "money_coins_2.wav",
-          "seconds": 0.48,
-          "peak_dbfs": -5.27,
-          "loudness_db": -28.6,
-          "lead_ms": 4.9,
-          "sources": [
-            {
-              "pack": "oga_80rpg",
-              "file": "item_coins_03.ogg",
-              "page": "https://opengameart.org/content/80-cc0-rpg-sfx",
-              "license": "CC0 (OpenGameArt, 80 CC0 RPG SFX)"
-            }
-          ]
-        }
-      ]
-    },
-    "money_register": {
-      "description": "Caixa registradora (sininho, gaveta, moedas).",
-      "volume": 0.2,
-      "ue_folder": "/Game/Audio/Actions",
-      "files": [
-        {
-          "file": "money_register_1.wav",
-          "seconds": 1.44,
-          "peak_dbfs": -3.0,
-          "loudness_db": -21.9,
-          "lead_ms": 0.1,
-          "sources": [
-            {
-              "synth": "register_bell",
-              "license": "CC0 (original numpy synthesis, tools/ue58/fetch_action_sfx.py)"
-            },
-            {
-              "pack": "kenney_rpg",
-              "file": "metalLatch.ogg",
-              "page": "https://kenney.nl/assets/rpg-audio",
-              "license": "CC0 1.0 (Kenney, RPG Audio)"
-            },
-            {
-              "pack": "kenney_rpg",
-              "file": "handleCoins.ogg",
-              "page": "https://kenney.nl/assets/rpg-audio",
-              "license": "CC0 1.0 (Kenney, RPG Audio)"
-            }
-          ]
-        }
-      ]
-    },
-    "deal_accept": {
-      "description": "Negociação aceita (interface suave, ascendente).",
-      "volume": 0.04,
-      "ue_folder": "/Game/Audio/Actions",
-      "files": [
-        {
-          "file": "deal_accept_1.wav",
-          "seconds": 0.29,
-          "peak_dbfs": -3.0,
-          "loudness_db": -13.1,
-          "lead_ms": 0.2,
-          "sources": [
-            {
-              "pack": "kenney_interface",
-              "file": "confirmation_001.ogg",
-              "page": "https://kenney.nl/assets/interface-sounds",
-              "license": "CC0 1.0 (Kenney, Interface Sounds)"
-            }
-          ]
-        },
-        {
-          "file": "deal_accept_2.wav",
-          "seconds": 0.49,
-          "peak_dbfs": -3.0,
-          "loudness_db": -13.6,
-          "lead_ms": 2.6,
-          "sources": [
-            {
-              "pack": "kenney_interface",
-              "file": "confirmation_004.ogg",
-              "page": "https://kenney.nl/assets/interface-sounds",
-              "license": "CC0 1.0 (Kenney, Interface Sounds)"
-            }
-          ]
-        }
-      ]
-    },
-    "deal_decline": {
-      "description": "Negociação recusada (interface suave, descendente).",
-      "volume": 0.03,
-      "ue_folder": "/Game/Audio/Actions",
-      "files": [
-        {
-          "file": "deal_decline_1.wav",
-          "seconds": 0.332,
-          "peak_dbfs": -3.0,
-          "loudness_db": -11.7,
-          "lead_ms": 1.4,
-          "sources": [
-            {
-              "pack": "kenney_interface",
-              "file": "question_004.ogg",
-              "page": "https://kenney.nl/assets/interface-sounds",
-              "license": "CC0 1.0 (Kenney, Interface Sounds)"
-            }
-          ]
-        },
-        {
-          "file": "deal_decline_2.wav",
-          "seconds": 0.333,
-          "peak_dbfs": -3.0,
-          "loudness_db": -11.7,
-          "lead_ms": 1.5,
-          "sources": [
-            {
-              "pack": "kenney_interface",
-              "file": "question_002.ogg",
-              "page": "https://kenney.nl/assets/interface-sounds",
-              "license": "CC0 1.0 (Kenney, Interface Sounds)"
-            }
-          ]
-        }
-      ]
-    },
-    "tt_paddle": {
-      "description": "Tênis de mesa: bola na raquete.",
-      "volume": 0.09,
-      "ue_folder": "/Game/Audio/Actions",
-      "files": [
-        {
-          "file": "tt_paddle_1.wav",
-          "seconds": 0.1,
-          "peak_dbfs": -3.0,
-          "loudness_db": -15.3,
-          "lead_ms": 0.0,
-          "sources": [
-            {
-              "synth": "tt_paddle_0",
-              "license": "CC0 (original numpy synthesis, tools/ue58/fetch_action_sfx.py)"
-            }
-          ]
-        },
-        {
-          "file": "tt_paddle_2.wav",
-          "seconds": 0.1,
-          "peak_dbfs": -3.0,
-          "loudness_db": -15.6,
-          "lead_ms": 0.1,
-          "sources": [
-            {
-              "synth": "tt_paddle_1",
-              "license": "CC0 (original numpy synthesis, tools/ue58/fetch_action_sfx.py)"
-            }
-          ]
-        },
-        {
-          "file": "tt_paddle_3.wav",
-          "seconds": 0.099,
-          "peak_dbfs": -3.0,
-          "loudness_db": -15.1,
-          "lead_ms": 0.0,
-          "sources": [
-            {
-              "synth": "tt_paddle_2",
-              "license": "CC0 (original numpy synthesis, tools/ue58/fetch_action_sfx.py)"
-            }
-          ]
-        }
-      ]
-    },
-    "tt_bounce": {
-      "description": "Tênis de mesa: bola quicando na mesa.",
-      "volume": 0.1,
-      "ue_folder": "/Game/Audio/Actions",
-      "files": [
-        {
-          "file": "tt_bounce_1.wav",
-          "seconds": 0.082,
-          "peak_dbfs": -3.0,
-          "loudness_db": -18.7,
-          "lead_ms": 0.0,
-          "sources": [
-            {
-              "synth": "tt_bounce_0",
-              "license": "CC0 (original numpy synthesis, tools/ue58/fetch_action_sfx.py)"
-            }
-          ]
-        },
-        {
-          "file": "tt_bounce_2.wav",
-          "seconds": 0.082,
-          "peak_dbfs": -3.0,
-          "loudness_db": -18.4,
-          "lead_ms": 0.1,
-          "sources": [
-            {
-              "synth": "tt_bounce_1",
-              "license": "CC0 (original numpy synthesis, tools/ue58/fetch_action_sfx.py)"
-            }
-          ]
-        },
-        {
-          "file": "tt_bounce_3.wav",
-          "seconds": 0.081,
-          "peak_dbfs": -3.0,
-          "loudness_db": -18.9,
-          "lead_ms": 0.1,
-          "sources": [
-            {
-              "synth": "tt_bounce_2",
-              "license": "CC0 (original numpy synthesis, tools/ue58/fetch_action_sfx.py)"
-            }
-          ]
-        }
-      ]
+    {
+     "file": "reception_bell_3.wav",
+     "seconds": 1.92,
+     "peak_dbfs": -10.99,
+     "loudness_db": -24.0,
+     "lead_ms": 0.1,
+     "sources": [
+      {
+       "synth": "counter_bell",
+       "license": "CC0 (original numpy synthesis, tools/ue58/fetch_action_sfx.py)"
+      }
+     ]
     }
+   ]
+  },
+  "reception_keys": {
+   "description": "Chaves entregues/colocadas no balcão.",
+   "volume": 0.3,
+   "ue_folder": "/Game/Audio/Actions",
+   "files": [
+    {
+     "file": "reception_keys_1.wav",
+     "seconds": 0.439,
+     "peak_dbfs": -6.37,
+     "loudness_db": -25.2,
+     "lead_ms": 5.0,
+     "sources": [
+      {
+       "pack": "oga_metal_wood",
+       "file": "keys_03.ogg",
+       "page": "https://opengameart.org/content/100-cc0-metal-and-wood-sfx",
+       "license": "CC0 (OpenGameArt, 100 CC0 metal and wood SFX)"
+      }
+     ]
+    },
+    {
+     "file": "reception_keys_2.wav",
+     "seconds": 0.423,
+     "peak_dbfs": -7.05,
+     "loudness_db": -25.2,
+     "lead_ms": 5.0,
+     "sources": [
+      {
+       "pack": "oga_metal_wood",
+       "file": "keys_02.ogg",
+       "page": "https://opengameart.org/content/100-cc0-metal-and-wood-sfx",
+       "license": "CC0 (OpenGameArt, 100 CC0 metal and wood SFX)"
+      }
+     ]
+    },
+    {
+     "file": "reception_keys_3.wav",
+     "seconds": 0.315,
+     "peak_dbfs": -3.0,
+     "loudness_db": -26.2,
+     "lead_ms": 5.0,
+     "sources": [
+      {
+       "pack": "oga_metal_wood",
+       "file": "keys_01.ogg",
+       "page": "https://opengameart.org/content/100-cc0-metal-and-wood-sfx",
+       "license": "CC0 (OpenGameArt, 100 CC0 metal and wood SFX)"
+      }
+     ]
+    }
+   ]
+  },
+  "reception_checkin": {
+   "description": "Check-in: papel e carimbo, carimbo sozinho, assinatura com caneta.",
+   "volume": 0.22,
+   "ue_folder": "/Game/Audio/Actions",
+   "files": [
+    {
+     "file": "reception_checkin_1.wav",
+     "seconds": 0.628,
+     "peak_dbfs": -3.0,
+     "loudness_db": -23.5,
+     "lead_ms": 4.7,
+     "sources": [
+      {
+       "pack": "oga_100sfx",
+       "file": "paper_02.ogg",
+       "page": "https://opengameart.org/content/100-cc0-sfx",
+       "license": "CC0 (OpenGameArt, 100 CC0 SFX)"
+      },
+      {
+       "pack": "kenney_rpg",
+       "file": "bookPlace1.ogg",
+       "page": "https://kenney.nl/assets/rpg-audio",
+       "license": "CC0 1.0 (Kenney, RPG Audio)"
+      }
+     ]
+    },
+    {
+     "file": "reception_checkin_2.wav",
+     "seconds": 0.226,
+     "peak_dbfs": -6.31,
+     "loudness_db": -22.5,
+     "lead_ms": 5.0,
+     "sources": [
+      {
+       "pack": "kenney_rpg",
+       "file": "bookPlace3.ogg",
+       "page": "https://kenney.nl/assets/rpg-audio",
+       "license": "CC0 1.0 (Kenney, RPG Audio)"
+      }
+     ]
+    },
+    {
+     "file": "reception_checkin_3.wav",
+     "seconds": 0.71,
+     "peak_dbfs": -6.42,
+     "loudness_db": -22.5,
+     "lead_ms": 0.3,
+     "sources": [
+      {
+       "pack": "kenney_interface",
+       "file": "scratch_004.ogg",
+       "page": "https://kenney.nl/assets/interface-sounds",
+       "license": "CC0 1.0 (Kenney, Interface Sounds)"
+      },
+      {
+       "pack": "kenney_interface",
+       "file": "scratch_005.ogg",
+       "page": "https://kenney.nl/assets/interface-sounds",
+       "license": "CC0 1.0 (Kenney, Interface Sounds)"
+      }
+     ]
+    }
+   ]
+  },
+  "cleaning_bed": {
+   "description": "Arrumar a cama (lençol/tecido).",
+   "volume": 0.23,
+   "ue_folder": "/Game/Audio/Actions",
+   "files": [
+    {
+     "file": "cleaning_bed_1.wav",
+     "seconds": 0.571,
+     "peak_dbfs": -3.0,
+     "loudness_db": -24.1,
+     "lead_ms": 5.0,
+     "sources": [
+      {
+       "pack": "kenney_rpg",
+       "file": "cloth1.ogg",
+       "page": "https://kenney.nl/assets/rpg-audio",
+       "license": "CC0 1.0 (Kenney, RPG Audio)"
+      }
+     ]
+    },
+    {
+     "file": "cleaning_bed_2.wav",
+     "seconds": 0.468,
+     "peak_dbfs": -4.64,
+     "loudness_db": -23.1,
+     "lead_ms": 5.0,
+     "sources": [
+      {
+       "pack": "kenney_rpg",
+       "file": "cloth3.ogg",
+       "page": "https://kenney.nl/assets/rpg-audio",
+       "license": "CC0 1.0 (Kenney, RPG Audio)"
+      }
+     ]
+    },
+    {
+     "file": "cleaning_bed_3.wav",
+     "seconds": 0.791,
+     "peak_dbfs": -3.0,
+     "loudness_db": -23.1,
+     "lead_ms": 7.8,
+     "sources": [
+      {
+       "pack": "kenney_rpg",
+       "file": "cloth2.ogg",
+       "page": "https://kenney.nl/assets/rpg-audio",
+       "license": "CC0 1.0 (Kenney, RPG Audio)"
+      },
+      {
+       "pack": "kenney_rpg",
+       "file": "cloth1.ogg",
+       "page": "https://kenney.nl/assets/rpg-audio",
+       "license": "CC0 1.0 (Kenney, RPG Audio)"
+      }
+     ]
+    }
+   ]
+  },
+  "cleaning_towels": {
+   "description": "Recolher toalhas e colocá-las no cesto.",
+   "volume": 0.17,
+   "ue_folder": "/Game/Audio/Actions",
+   "files": [
+    {
+     "file": "cleaning_towels_1.wav",
+     "seconds": 0.63,
+     "peak_dbfs": -3.19,
+     "loudness_db": -20.1,
+     "lead_ms": 5.3,
+     "sources": [
+      {
+       "pack": "kenney_rpg",
+       "file": "cloth2.ogg",
+       "page": "https://kenney.nl/assets/rpg-audio",
+       "license": "CC0 1.0 (Kenney, RPG Audio)"
+      },
+      {
+       "pack": "kenney_rpg",
+       "file": "dropLeather.ogg",
+       "page": "https://kenney.nl/assets/rpg-audio",
+       "license": "CC0 1.0 (Kenney, RPG Audio)"
+      }
+     ]
+    },
+    {
+     "file": "cleaning_towels_2.wav",
+     "seconds": 0.589,
+     "peak_dbfs": -3.0,
+     "loudness_db": -21.1,
+     "lead_ms": 2.0,
+     "sources": [
+      {
+       "pack": "kenney_rpg",
+       "file": "cloth4.ogg",
+       "page": "https://kenney.nl/assets/rpg-audio",
+       "license": "CC0 1.0 (Kenney, RPG Audio)"
+      },
+      {
+       "pack": "kenney_rpg",
+       "file": "dropLeather.ogg",
+       "page": "https://kenney.nl/assets/rpg-audio",
+       "license": "CC0 1.0 (Kenney, RPG Audio)"
+      }
+     ]
+    }
+   ]
+  },
+  "cleaning_trash": {
+   "description": "Fechar e largar o saco de lixo.",
+   "volume": 0.19,
+   "ue_folder": "/Game/Audio/Actions",
+   "files": [
+    {
+     "file": "cleaning_trash_1.wav",
+     "seconds": 0.709,
+     "peak_dbfs": -3.0,
+     "loudness_db": -22.0,
+     "lead_ms": 2.7,
+     "sources": [
+      {
+       "pack": "oga_100sfx",
+       "file": "paper_01.ogg",
+       "page": "https://opengameart.org/content/100-cc0-sfx",
+       "license": "CC0 (OpenGameArt, 100 CC0 SFX)"
+      },
+      {
+       "pack": "kenney_rpg",
+       "file": "dropLeather.ogg",
+       "page": "https://kenney.nl/assets/rpg-audio",
+       "license": "CC0 1.0 (Kenney, RPG Audio)"
+      }
+     ]
+    },
+    {
+     "file": "cleaning_trash_2.wav",
+     "seconds": 0.933,
+     "peak_dbfs": -3.0,
+     "loudness_db": -21.4,
+     "lead_ms": 1.4,
+     "sources": [
+      {
+       "synth": "trash_bag",
+       "license": "CC0 (original numpy synthesis, tools/ue58/fetch_action_sfx.py)"
+      },
+      {
+       "pack": "kenney_rpg",
+       "file": "dropLeather.ogg",
+       "page": "https://kenney.nl/assets/rpg-audio",
+       "license": "CC0 1.0 (Kenney, RPG Audio)"
+      }
+     ]
+    }
+   ]
+  },
+  "pool_cue_hit": {
+   "description": "Tacada: ponta do taco na bola branca.",
+   "volume": 0.19,
+   "ue_folder": "/Game/Audio/Actions",
+   "files": [
+    {
+     "file": "pool_cue_hit_1.wav",
+     "seconds": 0.167,
+     "peak_dbfs": -3.0,
+     "loudness_db": -21.8,
+     "lead_ms": 0.1,
+     "sources": [
+      {
+       "pack": "kenney_impact",
+       "file": "impactGeneric_light_001.ogg",
+       "page": "https://kenney.nl/assets/impact-sounds",
+       "license": "CC0 1.0 (Kenney, Impact Sounds)"
+      },
+      {
+       "pack": "oga_80rpg",
+       "file": "item_stone_02.ogg",
+       "page": "https://opengameart.org/content/80-cc0-rpg-sfx",
+       "license": "CC0 (OpenGameArt, 80 CC0 RPG SFX)"
+      }
+     ]
+    },
+    {
+     "file": "pool_cue_hit_2.wav",
+     "seconds": 0.246,
+     "peak_dbfs": -3.0,
+     "loudness_db": -21.8,
+     "lead_ms": 0.1,
+     "sources": [
+      {
+       "pack": "kenney_impact",
+       "file": "impactGeneric_light_003.ogg",
+       "page": "https://kenney.nl/assets/impact-sounds",
+       "license": "CC0 1.0 (Kenney, Impact Sounds)"
+      },
+      {
+       "pack": "oga_80rpg",
+       "file": "item_stone_04.ogg",
+       "page": "https://opengameart.org/content/80-cc0-rpg-sfx",
+       "license": "CC0 (OpenGameArt, 80 CC0 RPG SFX)"
+      }
+     ]
+    }
+   ]
+  },
+  "pool_ball_clack": {
+   "description": "Bola contra bola.",
+   "volume": 0.33,
+   "ue_folder": "/Game/Audio/Actions",
+   "files": [
+    {
+     "file": "pool_ball_clack_1.wav",
+     "seconds": 0.164,
+     "peak_dbfs": -3.0,
+     "loudness_db": -28.0,
+     "lead_ms": 5.0,
+     "sources": [
+      {
+       "pack": "oga_80rpg",
+       "file": "item_stone_02.ogg",
+       "page": "https://opengameart.org/content/80-cc0-rpg-sfx",
+       "license": "CC0 (OpenGameArt, 80 CC0 RPG SFX)"
+      }
+     ]
+    },
+    {
+     "file": "pool_ball_clack_2.wav",
+     "seconds": 0.264,
+     "peak_dbfs": -3.0,
+     "loudness_db": -27.1,
+     "lead_ms": 5.0,
+     "sources": [
+      {
+       "pack": "oga_80rpg",
+       "file": "item_stone_04.ogg",
+       "page": "https://opengameart.org/content/80-cc0-rpg-sfx",
+       "license": "CC0 (OpenGameArt, 80 CC0 RPG SFX)"
+      }
+     ]
+    },
+    {
+     "file": "pool_ball_clack_3.wav",
+     "seconds": 0.387,
+     "peak_dbfs": -3.45,
+     "loudness_db": -27.0,
+     "lead_ms": 5.0,
+     "sources": [
+      {
+       "pack": "oga_100sfx2",
+       "file": "sfx100v2_stones_02.ogg",
+       "page": "https://opengameart.org/content/100-cc0-sfx-2",
+       "license": "CC0 (OpenGameArt, 100 CC0 SFX #2)"
+      }
+     ]
+    }
+   ]
+  },
+  "pool_pocket": {
+   "description": "Bola entrando na caçapa e rolando na canaleta.",
+   "volume": 0.2,
+   "ue_folder": "/Game/Audio/Actions",
+   "files": [
+    {
+     "file": "pool_pocket_1.wav",
+     "seconds": 0.87,
+     "peak_dbfs": -3.0,
+     "loudness_db": -22.6,
+     "lead_ms": 0.1,
+     "sources": [
+      {
+       "pack": "kenney_impact",
+       "file": "impactWood_light_000.ogg",
+       "page": "https://kenney.nl/assets/impact-sounds",
+       "license": "CC0 1.0 (Kenney, Impact Sounds)"
+      },
+      {
+       "pack": "kenney_impact",
+       "file": "impactSoft_medium_001.ogg",
+       "page": "https://kenney.nl/assets/impact-sounds",
+       "license": "CC0 1.0 (Kenney, Impact Sounds)"
+      },
+      {
+       "synth": "ball_roll",
+       "license": "CC0 (original numpy synthesis, tools/ue58/fetch_action_sfx.py)"
+      }
+     ]
+    },
+    {
+     "file": "pool_pocket_2.wav",
+     "seconds": 0.74,
+     "peak_dbfs": -4.04,
+     "loudness_db": -21.6,
+     "lead_ms": 0.1,
+     "sources": [
+      {
+       "pack": "kenney_impact",
+       "file": "impactWood_light_002.ogg",
+       "page": "https://kenney.nl/assets/impact-sounds",
+       "license": "CC0 1.0 (Kenney, Impact Sounds)"
+      },
+      {
+       "pack": "kenney_impact",
+       "file": "impactSoft_medium_003.ogg",
+       "page": "https://kenney.nl/assets/impact-sounds",
+       "license": "CC0 1.0 (Kenney, Impact Sounds)"
+      },
+      {
+       "synth": "ball_roll",
+       "license": "CC0 (original numpy synthesis, tools/ue58/fetch_action_sfx.py)"
+      }
+     ]
+    }
+   ]
+  },
+  "pool_rail_bounce": {
+   "description": "Bola batendo na tabela.",
+   "volume": 0.12,
+   "ue_folder": "/Game/Audio/Actions",
+   "files": [
+    {
+     "file": "pool_rail_bounce_1.wav",
+     "seconds": 0.14,
+     "peak_dbfs": -3.0,
+     "loudness_db": -17.9,
+     "lead_ms": 0.2,
+     "sources": [
+      {
+       "pack": "kenney_impact",
+       "file": "impactSoft_medium_000.ogg",
+       "page": "https://kenney.nl/assets/impact-sounds",
+       "license": "CC0 1.0 (Kenney, Impact Sounds)"
+      },
+      {
+       "pack": "kenney_impact",
+       "file": "impactGeneric_light_002.ogg",
+       "page": "https://kenney.nl/assets/impact-sounds",
+       "license": "CC0 1.0 (Kenney, Impact Sounds)"
+      }
+     ]
+    },
+    {
+     "file": "pool_rail_bounce_2.wav",
+     "seconds": 0.14,
+     "peak_dbfs": -3.54,
+     "loudness_db": -16.9,
+     "lead_ms": 0.2,
+     "sources": [
+      {
+       "pack": "kenney_impact",
+       "file": "impactSoft_medium_002.ogg",
+       "page": "https://kenney.nl/assets/impact-sounds",
+       "license": "CC0 1.0 (Kenney, Impact Sounds)"
+      },
+      {
+       "pack": "kenney_impact",
+       "file": "impactGeneric_light_004.ogg",
+       "page": "https://kenney.nl/assets/impact-sounds",
+       "license": "CC0 1.0 (Kenney, Impact Sounds)"
+      }
+     ]
+    }
+   ]
+  },
+  "bar_blender": {
+   "description": "Liquidificador curto (pulso com gelo).",
+   "volume": 0.03,
+   "ue_folder": "/Game/Audio/Actions",
+   "files": [
+    {
+     "file": "bar_blender_1.wav",
+     "seconds": 1.8,
+     "peak_dbfs": -3.0,
+     "loudness_db": -9.5,
+     "lead_ms": 2.1,
+     "sources": [
+      {
+       "synth": "blender",
+       "license": "CC0 (original numpy synthesis, tools/ue58/fetch_action_sfx.py)"
+      }
+     ]
+    },
+    {
+     "file": "bar_blender_2.wav",
+     "seconds": 1.2,
+     "peak_dbfs": -3.0,
+     "loudness_db": -9.9,
+     "lead_ms": 2.2,
+     "sources": [
+      {
+       "synth": "blender",
+       "license": "CC0 (original numpy synthesis, tools/ue58/fetch_action_sfx.py)"
+      }
+     ]
+    }
+   ]
+  },
+  "bar_shaker": {
+   "description": "Coqueteleira com gelo.",
+   "volume": 0.45,
+   "ue_folder": "/Game/Audio/Actions",
+   "files": [
+    {
+     "file": "bar_shaker_1.wav",
+     "seconds": 1.486,
+     "peak_dbfs": -4.29,
+     "loudness_db": -30.8,
+     "lead_ms": 5.0,
+     "sources": [
+      {
+       "pack": "kenney_casino",
+       "file": "dice-shake-3.ogg",
+       "page": "https://kenney.nl/assets/casino-audio",
+       "license": "CC0 1.0 (Kenney, Casino Audio)"
+      }
+     ]
+    },
+    {
+     "file": "bar_shaker_2.wav",
+     "seconds": 1.356,
+     "peak_dbfs": -3.0,
+     "loudness_db": -31.8,
+     "lead_ms": 5.0,
+     "sources": [
+      {
+       "pack": "kenney_casino",
+       "file": "dice-shake-1.ogg",
+       "page": "https://kenney.nl/assets/casino-audio",
+       "license": "CC0 1.0 (Kenney, Casino Audio)"
+      }
+     ]
+    },
+    {
+     "file": "bar_shaker_3.wav",
+     "seconds": 1.462,
+     "peak_dbfs": -10.71,
+     "loudness_db": -30.8,
+     "lead_ms": 15.0,
+     "sources": [
+      {
+       "synth": "shaker",
+       "license": "CC0 (original numpy synthesis, tools/ue58/fetch_action_sfx.py)"
+      }
+     ]
+    }
+   ]
+  },
+  "bar_ice_glass": {
+   "description": "Gelo caindo no copo.",
+   "volume": 0.25,
+   "ue_folder": "/Game/Audio/Actions",
+   "files": [
+    {
+     "file": "bar_ice_glass_1.wav",
+     "seconds": 0.469,
+     "peak_dbfs": -8.02,
+     "loudness_db": -23.7,
+     "lead_ms": 2.9,
+     "sources": [
+      {
+       "pack": "oga_100sfx2",
+       "file": "sfx100v2_glass_05.ogg",
+       "page": "https://opengameart.org/content/100-cc0-sfx-2",
+       "license": "CC0 (OpenGameArt, 100 CC0 SFX #2)"
+      }
+     ]
+    },
+    {
+     "file": "bar_ice_glass_2.wav",
+     "seconds": 0.398,
+     "peak_dbfs": -7.31,
+     "loudness_db": -23.7,
+     "lead_ms": 5.0,
+     "sources": [
+      {
+       "pack": "oga_100sfx2",
+       "file": "sfx100v2_glass_02.ogg",
+       "page": "https://opengameart.org/content/100-cc0-sfx-2",
+       "license": "CC0 (OpenGameArt, 100 CC0 SFX #2)"
+      }
+     ]
+    },
+    {
+     "file": "bar_ice_glass_3.wav",
+     "seconds": 0.64,
+     "peak_dbfs": -3.0,
+     "loudness_db": -24.7,
+     "lead_ms": 0.2,
+     "sources": [
+      {
+       "synth": "ice_in_glass",
+       "license": "CC0 (original numpy synthesis, tools/ue58/fetch_action_sfx.py)"
+      }
+     ]
+    }
+   ]
+  },
+  "bar_pour": {
+   "description": "Servir líquido no copo.",
+   "volume": 0.07,
+   "ue_folder": "/Game/Audio/Actions",
+   "files": [
+    {
+     "file": "bar_pour_1.wav",
+     "seconds": 1.499,
+     "peak_dbfs": -3.0,
+     "loudness_db": -15.3,
+     "lead_ms": 15.0,
+     "sources": [
+      {
+       "synth": "pour",
+       "license": "CC0 (original numpy synthesis, tools/ue58/fetch_action_sfx.py)"
+      }
+     ]
+    },
+    {
+     "file": "bar_pour_2.wav",
+     "seconds": 1.3,
+     "peak_dbfs": -3.0,
+     "loudness_db": -16.3,
+     "lead_ms": 2.5,
+     "sources": [
+      {
+       "pack": "oga_100sfx2",
+       "file": "sfx100v2_loop_water_01.ogg",
+       "page": "https://opengameart.org/content/100-cc0-sfx-2",
+       "license": "CC0 (OpenGameArt, 100 CC0 SFX #2)"
+      },
+      {
+       "synth": "pour",
+       "license": "CC0 (original numpy synthesis, tools/ue58/fetch_action_sfx.py)"
+      }
+     ]
+    }
+   ]
+  },
+  "money_coins": {
+   "description": "Moedas ao receber pagamento.",
+   "volume": 0.45,
+   "ue_folder": "/Game/Audio/Actions",
+   "files": [
+    {
+     "file": "money_coins_1.wav",
+     "seconds": 0.746,
+     "peak_dbfs": -3.0,
+     "loudness_db": -29.6,
+     "lead_ms": 6.4,
+     "sources": [
+      {
+       "pack": "kenney_rpg",
+       "file": "handleCoins.ogg",
+       "page": "https://kenney.nl/assets/rpg-audio",
+       "license": "CC0 1.0 (Kenney, RPG Audio)"
+      }
+     ]
+    },
+    {
+     "file": "money_coins_2.wav",
+     "seconds": 0.48,
+     "peak_dbfs": -5.27,
+     "loudness_db": -28.6,
+     "lead_ms": 4.9,
+     "sources": [
+      {
+       "pack": "oga_80rpg",
+       "file": "item_coins_03.ogg",
+       "page": "https://opengameart.org/content/80-cc0-rpg-sfx",
+       "license": "CC0 (OpenGameArt, 80 CC0 RPG SFX)"
+      }
+     ]
+    }
+   ]
+  },
+  "money_register": {
+   "description": "Caixa registradora (sininho, gaveta, moedas).",
+   "volume": 0.2,
+   "ue_folder": "/Game/Audio/Actions",
+   "files": [
+    {
+     "file": "money_register_1.wav",
+     "seconds": 1.44,
+     "peak_dbfs": -3.0,
+     "loudness_db": -21.9,
+     "lead_ms": 0.1,
+     "sources": [
+      {
+       "synth": "register_bell",
+       "license": "CC0 (original numpy synthesis, tools/ue58/fetch_action_sfx.py)"
+      },
+      {
+       "pack": "kenney_rpg",
+       "file": "metalLatch.ogg",
+       "page": "https://kenney.nl/assets/rpg-audio",
+       "license": "CC0 1.0 (Kenney, RPG Audio)"
+      },
+      {
+       "pack": "kenney_rpg",
+       "file": "handleCoins.ogg",
+       "page": "https://kenney.nl/assets/rpg-audio",
+       "license": "CC0 1.0 (Kenney, RPG Audio)"
+      }
+     ]
+    }
+   ]
+  },
+  "deal_accept": {
+   "description": "Negociação aceita (interface suave, ascendente).",
+   "volume": 0.04,
+   "ue_folder": "/Game/Audio/Actions",
+   "files": [
+    {
+     "file": "deal_accept_1.wav",
+     "seconds": 0.29,
+     "peak_dbfs": -3.0,
+     "loudness_db": -13.1,
+     "lead_ms": 0.2,
+     "sources": [
+      {
+       "pack": "kenney_interface",
+       "file": "confirmation_001.ogg",
+       "page": "https://kenney.nl/assets/interface-sounds",
+       "license": "CC0 1.0 (Kenney, Interface Sounds)"
+      }
+     ]
+    },
+    {
+     "file": "deal_accept_2.wav",
+     "seconds": 0.49,
+     "peak_dbfs": -3.0,
+     "loudness_db": -13.6,
+     "lead_ms": 2.6,
+     "sources": [
+      {
+       "pack": "kenney_interface",
+       "file": "confirmation_004.ogg",
+       "page": "https://kenney.nl/assets/interface-sounds",
+       "license": "CC0 1.0 (Kenney, Interface Sounds)"
+      }
+     ]
+    }
+   ]
+  },
+  "deal_decline": {
+   "description": "Negociação recusada (interface suave, descendente).",
+   "volume": 0.03,
+   "ue_folder": "/Game/Audio/Actions",
+   "files": [
+    {
+     "file": "deal_decline_1.wav",
+     "seconds": 0.332,
+     "peak_dbfs": -3.0,
+     "loudness_db": -11.7,
+     "lead_ms": 1.4,
+     "sources": [
+      {
+       "pack": "kenney_interface",
+       "file": "question_004.ogg",
+       "page": "https://kenney.nl/assets/interface-sounds",
+       "license": "CC0 1.0 (Kenney, Interface Sounds)"
+      }
+     ]
+    },
+    {
+     "file": "deal_decline_2.wav",
+     "seconds": 0.333,
+     "peak_dbfs": -3.0,
+     "loudness_db": -11.7,
+     "lead_ms": 1.5,
+     "sources": [
+      {
+       "pack": "kenney_interface",
+       "file": "question_002.ogg",
+       "page": "https://kenney.nl/assets/interface-sounds",
+       "license": "CC0 1.0 (Kenney, Interface Sounds)"
+      }
+     ]
+    }
+   ]
+  },
+  "tt_paddle": {
+   "description": "Tênis de mesa: bola na raquete.",
+   "volume": 0.09,
+   "ue_folder": "/Game/Audio/Actions",
+   "files": [
+    {
+     "file": "tt_paddle_1.wav",
+     "seconds": 0.1,
+     "peak_dbfs": -3.0,
+     "loudness_db": -15.3,
+     "lead_ms": 0.0,
+     "sources": [
+      {
+       "synth": "tt_paddle_0",
+       "license": "CC0 (original numpy synthesis, tools/ue58/fetch_action_sfx.py)"
+      }
+     ]
+    },
+    {
+     "file": "tt_paddle_2.wav",
+     "seconds": 0.1,
+     "peak_dbfs": -3.0,
+     "loudness_db": -15.6,
+     "lead_ms": 0.1,
+     "sources": [
+      {
+       "synth": "tt_paddle_1",
+       "license": "CC0 (original numpy synthesis, tools/ue58/fetch_action_sfx.py)"
+      }
+     ]
+    },
+    {
+     "file": "tt_paddle_3.wav",
+     "seconds": 0.099,
+     "peak_dbfs": -3.0,
+     "loudness_db": -15.1,
+     "lead_ms": 0.0,
+     "sources": [
+      {
+       "synth": "tt_paddle_2",
+       "license": "CC0 (original numpy synthesis, tools/ue58/fetch_action_sfx.py)"
+      }
+     ]
+    }
+   ]
+  },
+  "tt_bounce": {
+   "description": "Tênis de mesa: bola quicando na mesa.",
+   "volume": 0.1,
+   "ue_folder": "/Game/Audio/Actions",
+   "files": [
+    {
+     "file": "tt_bounce_1.wav",
+     "seconds": 0.082,
+     "peak_dbfs": -3.0,
+     "loudness_db": -18.7,
+     "lead_ms": 0.0,
+     "sources": [
+      {
+       "synth": "tt_bounce_0",
+       "license": "CC0 (original numpy synthesis, tools/ue58/fetch_action_sfx.py)"
+      }
+     ]
+    },
+    {
+     "file": "tt_bounce_2.wav",
+     "seconds": 0.082,
+     "peak_dbfs": -3.0,
+     "loudness_db": -18.4,
+     "lead_ms": 0.1,
+     "sources": [
+      {
+       "synth": "tt_bounce_1",
+       "license": "CC0 (original numpy synthesis, tools/ue58/fetch_action_sfx.py)"
+      }
+     ]
+    },
+    {
+     "file": "tt_bounce_3.wav",
+     "seconds": 0.081,
+     "peak_dbfs": -3.0,
+     "loudness_db": -18.9,
+     "lead_ms": 0.1,
+     "sources": [
+      {
+       "synth": "tt_bounce_2",
+       "license": "CC0 (original numpy synthesis, tools/ue58/fetch_action_sfx.py)"
+      }
+     ]
+    }
+   ]
+  },
+  "pastel_fry": {
+   "description": "Óleo chiando com o pastel (síntese).",
+   "volume": 0.2,
+   "files": [
+    {
+     "file": "pastel_fry_1.wav",
+     "sources": [
+      {
+       "synth": "pastel_fry",
+       "license": "CC0 (original numpy synthesis, tools/ue58/fetch_action_sfx.py)"
+      }
+     ]
+    },
+    {
+     "file": "pastel_fry_2.wav",
+     "sources": [
+      {
+       "synth": "pastel_fry",
+       "license": "CC0 (original numpy synthesis, tools/ue58/fetch_action_sfx.py)"
+      }
+     ]
+    }
+   ]
+  },
+  "pastel_ready": {
+   "description": "Ding suave: pastel no ponto (síntese).",
+   "volume": 0.2,
+   "files": [
+    {
+     "file": "pastel_ready_1.wav",
+     "sources": [
+      {
+       "synth": "pastel_ready",
+       "license": "CC0 (original numpy synthesis, tools/ue58/fetch_action_sfx.py)"
+      }
+     ]
+    }
+   ]
+  },
+  "cana_crank": {
+   "description": "Volta da manivela da moenda de cana (síntese).",
+   "volume": 0.22,
+   "files": [
+    {
+     "file": "cana_crank_1.wav",
+     "sources": [
+      {
+       "synth": "cana_crank",
+       "license": "CC0 (original numpy synthesis, tools/ue58/fetch_action_sfx.py)"
+      }
+     ]
+    },
+    {
+     "file": "cana_crank_2.wav",
+     "sources": [
+      {
+       "synth": "cana_crank",
+       "license": "CC0 (original numpy synthesis, tools/ue58/fetch_action_sfx.py)"
+      }
+     ]
+    }
+   ]
   }
+ }
 }

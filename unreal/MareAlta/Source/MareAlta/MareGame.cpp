@@ -1164,6 +1164,190 @@ private:
 };
 
 static TWeakPtr<SMareIceCreamGame> GIceGame;
+/** Food truck (CHECKLIST_EXPANSOES 3.2, MarePastel.cpp): pick the filling, seal the edge by dragging along it (or
+ *  left/right taps), dip it in the oil and take it out golden (the colour and a ding tell the point), then press the
+ *  sugar-cane juice by turning the mill crank when it was asked for. One customer after another. */
+class SMarePastelGame : public SCompoundWidget
+{
+public:
+ SLATE_BEGIN_ARGS(SMarePastelGame){} SLATE_ARGUMENT(TWeakObjectPtr<AMareController>,Owner) SLATE_END_ARGS()
+ void Construct(const FArguments& Args)
+ {
+  using namespace MareNotebook;Owner=Args._Owner;auto S=Sim();if(!S)return;const auto D=S->PastelDefs();const TArray<TSharedPtr<FJsonValue>>* L=nullptr;
+  if(D->TryGetArrayField(TEXT("fillings"),L))for(const auto& V:*L)Fillings.Add({UMareSimulation::String(V->AsObject(),TEXT("id")),UMareSimulation::String(V->AsObject(),TEXT("name")),Color(V->AsObject())});
+  SealPx=UMareSimulation::Number(D,TEXT("seal_px"),1400);SealTaps=UMareSimulation::Number(D,TEXT("seal_taps"),14);Turns=UMareSimulation::Number(D,TEXT("crank_turns"),4);
+  CrankTaps=UMareSimulation::Number(D,TEXT("crank_taps"),16);GoldenFrom=UMareSimulation::Number(D,TEXT("golden_from"),5.5);GoldenTo=UMareSimulation::Number(D,TEXT("golden_to"),8.5);
+  BurntS=UMareSimulation::Number(D,TEXT("burnt_s"),11.5);
+  auto Fill=SNew(SHorizontalBox);
+  for(int32 I=0;I<Fillings.Num();++I)Fill->AddSlot().AutoWidth().Padding(3,0)[SNew(SButton).ButtonStyle(&TagButton()).ContentPadding(FMargin(10,4))
+   .OnClicked_Lambda([this,I](){Choose(I);return FReply::Handled();})
+   [SNew(STextBlock).Font(Body(13,true)).ColorAndOpacity_Lambda([this,I](){return FSlateColor(Filling==I?Red:Ink);}).Text(MareLoc::Text(Fillings[I].Name))]];
+  // The pastel: a half-moon of dough (raw, golden, browning, burnt), the filling showing until it is sealed, the
+  // crimped edge marks; behind it the oil while frying.
+  auto Crimps=SNew(SHorizontalBox);
+  for(int32 K=0;K<10;++K)Crimps->AddSlot().AutoWidth().Padding(2,0)[SNew(SBox).WidthOverride(12).HeightOverride(10)[SNew(SBorder).BorderImage(&Crimp()).Padding(0)
+   .BorderBackgroundColor_Lambda([this,K](){const FLinearColor C=DoughColor()*.55f;return FSlateColor(Seal>=(K+1)/10.f?FLinearColor(C.R,C.G,C.B,1):FLinearColor(1,1,1,0));})]];
+  ChildSlot.HAlign(HAlign_Center).VAlign(VAlign_Bottom).Padding(0,0,0,50)[SNew(SBorder).BorderImage(FCoreStyle::Get().GetBrush("WhiteBrush")).BorderBackgroundColor(Paper).Padding(FMargin(26,14))
+   [SNew(SBox).WidthOverride(780)[SNew(SVerticalBox)
+    +SVerticalBox::Slot().AutoHeight()[SNew(SHorizontalBox)
+     +SHorizontalBox::Slot().FillWidth(1)[HandText(TEXT("Food truck do Pastel"),28,Brown)]
+     +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center)[SNew(STextBlock).Font(Hand(18)).ColorAndOpacity(Faded).Text_Lambda([this](){
+      auto S=Sim();return MareLoc::Text(S?FString::Printf(TEXT("na fila: %d"),S->PastelQueue().Num()):FString());})]]
+    +SVerticalBox::Slot().AutoHeight()[SNew(STextBlock).Font(Hand(22)).ColorAndOpacity(Red).Text_Lambda([this](){return MareLoc::Text(Order);})]
+    +SVerticalBox::Slot().AutoHeight().Padding(0,2)[SNew(STextBlock).Font(Hand(20)).ColorAndOpacity(Ink).AutoWrapText(true).Text_Lambda([this](){return MareLoc::Text(Status);})]
+    +SVerticalBox::Slot().AutoHeight().Padding(0,6)[SNew(SHorizontalBox)
+     +SHorizontalBox::Slot().AutoWidth().Padding(0,0,22,0)[SNew(SBox).WidthOverride(240).HeightOverride(150)[SNew(SOverlay)
+      // Oil in the fryer, bubbling while the pastel is in it.
+      +SOverlay::Slot()[SNew(SBorder).BorderImage(&Pan()).Padding(0).BorderBackgroundColor_Lambda([this](){
+       return FSlateColor(Step==EStep::Fry?FLinearColor(.86f,.6f,.16f,.55f+.1f*FMath::Sin(Clock*14)):FLinearColor(.9f,.86f,.78f,.35f));})]
+      +SOverlay::Slot().HAlign(HAlign_Center).VAlign(VAlign_Center)[SNew(SBox).WidthOverride(190).HeightOverride(96).Visibility_Lambda([this](){return Filling>=0?EVisibility::Visible:EVisibility::Hidden;})
+       [SNew(SBorder).BorderImage(&HalfMoon()).Padding(0).BorderBackgroundColor_Lambda([this](){return FSlateColor(DoughColor());})
+        [SNew(SOverlay)
+         +SOverlay::Slot().HAlign(HAlign_Center).VAlign(VAlign_Center).Padding(0,10,0,0)[SNew(SBox).WidthOverride(120).HeightOverride(40)[SNew(SBorder).BorderImage(&Dot()).Padding(0)
+          .BorderBackgroundColor_Lambda([this](){return FSlateColor(Fillings.IsValidIndex(Filling)?FLinearColor(Fillings[Filling].Color.R,Fillings[Filling].Color.G,Fillings[Filling].Color.B,1-Seal):FLinearColor(1,1,1,0));})]]
+         +SOverlay::Slot().HAlign(HAlign_Center).VAlign(VAlign_Bottom).Padding(0,0,0,6)[Crimps]]]]]]
+     +SHorizontalBox::Slot().FillWidth(1).VAlign(VAlign_Top)[SNew(SVerticalBox)
+      +SVerticalBox::Slot().AutoHeight()[HandText(TEXT("1. Recheio"),18,Faded)]
+      +SVerticalBox::Slot().AutoHeight().Padding(0,2,0,6)[Fill]
+      +SVerticalBox::Slot().AutoHeight()[SNew(STextBlock).Font(Hand(18)).ColorAndOpacity(Faded).Text_Lambda([this](){
+       return MareLoc::Text(FString::Printf(TEXT("2. Fechar a borda: %.0f%%"),Seal*100));})]
+      +SVerticalBox::Slot().AutoHeight().Padding(0,2)[Gauge([this](){return Seal;},[](){return 1.f;},[](){return 1.f;})]
+      +SVerticalBox::Slot().AutoHeight().Padding(0,4,0,0)[SNew(STextBlock).Font(Hand(18)).ColorAndOpacity(Faded).Text_Lambda([this](){
+       return MareLoc::Text(Step==EStep::Fry?FString::Printf(TEXT("3. Fritando: %.1f s"),FryT):TEXT("3. Fritar"));})]
+      +SVerticalBox::Slot().AutoHeight().Padding(0,2)[Gauge([this](){return FryT/BurntS;},[this](){return GoldenFrom/BurntS;},[this](){return GoldenTo/BurntS;})]
+      +SVerticalBox::Slot().AutoHeight().Padding(0,4,0,0)[SNew(STextBlock).Font(Hand(18)).ColorAndOpacity_Lambda([this](){return FSlateColor(bWantsCana?Ink:Faded);}).Text_Lambda([this](){
+       return MareLoc::Text(bWantsCana?FString::Printf(TEXT("4. Caldo de cana: girar a manivela (%.1f de %.0f voltas)"),Crank,Turns):TEXT("4. Caldo de cana: não pedido"));})]
+      +SVerticalBox::Slot().AutoHeight().Padding(0,2)[SNew(SHorizontalBox)
+       +SHorizontalBox::Slot().AutoWidth().Padding(0,0,10,0)[SNew(SBox).WidthOverride(44).HeightOverride(44)[SNew(SOverlay)
+        +SOverlay::Slot()[SNew(SBorder).BorderImage(&Hub()).BorderBackgroundColor(Kraft)]
+        +SOverlay::Slot().HAlign(HAlign_Center).VAlign(VAlign_Center)[SNew(SBox).WidthOverride(36).HeightOverride(6)
+         .RenderTransform_Lambda([this](){return TransformCast<FSlateRenderTransform>(FQuat2D(Crank*2*PI));}).RenderTransformPivot(FVector2D(.5f,.5f))
+         [SNew(SBorder).BorderImage(FCoreStyle::Get().GetBrush("WhiteBrush")).BorderBackgroundColor(Brown)]]]]
+       +SHorizontalBox::Slot().FillWidth(1).VAlign(VAlign_Center)[Gauge([this](){return bWantsCana?Crank/FMath::Max(1.f,Turns):0.f;},[](){return 1.f;},[](){return 1.f;})]]
+      +SVerticalBox::Slot().AutoHeight().Padding(0,8,0,0)[SNew(SHorizontalBox)
+       +SHorizontalBox::Slot().AutoWidth().Padding(0,0,10,0)[SNew(SButton).ButtonStyle(&InkButton()).ContentPadding(FMargin(14,5)).OnClicked_Lambda([this](){Dip();return FReply::Handled();})[InkLabel(TEXT("Mergulhar no óleo"),17)]]
+       +SHorizontalBox::Slot().AutoWidth().Padding(0,0,10,0)[SNew(SButton).ButtonStyle(&InkButton()).ContentPadding(FMargin(14,5)).OnClicked_Lambda([this](){TakeOut();return FReply::Handled();})[InkLabel(TEXT("Tirar do óleo"),17)]]
+       +SHorizontalBox::Slot().AutoWidth()[SNew(SButton).ButtonStyle(&InkButton()).ContentPadding(FMargin(14,5)).OnClicked_Lambda([this](){Deliver();return FReply::Handled();})[InkLabel(TEXT("Entregar"),17)]]]]]
+    +SVerticalBox::Slot().AutoHeight().Padding(0,4,0,0)[HandText(TEXT("Arraste o mouse sobre o pastel para fechar a borda (ou setas esquerda e direita) · Espaço mergulha e tira · gire o mouse ou use as setas na manivela · Esc ou B sai"),14,Faded)]]]];
+  NextCustomer();
+ }
+ virtual bool SupportsKeyboardFocus()const override{return true;}
+ virtual FReply OnKeyDown(const FGeometry&,const FKeyEvent& Event) override
+ {
+  const FKey K=Event.GetKey();if(Event.IsRepeat())return FReply::Handled();
+  if(K==EKeys::Escape || K==EKeys::Gamepad_FaceButton_Right){Close();return FReply::Handled();}
+  static const FKey Digits[]={EKeys::One,EKeys::Two,EKeys::Three,EKeys::Four};
+  for(int32 I=0;I<4;++I)if(K==Digits[I]){Choose(I);return FReply::Handled();}
+  const bool bLeft=K==EKeys::Left || K==EKeys::Gamepad_DPad_Left,bRight=K==EKeys::Right || K==EKeys::Gamepad_DPad_Right;
+  if(bLeft || bRight){if(LastTap!=(bLeft?1:2)){LastTap=bLeft?1:2;Work(-1);}return FReply::Handled();}
+  if(K==EKeys::SpaceBar || K==EKeys::Gamepad_FaceButton_Bottom){if(Step==EStep::Fry)TakeOut();else Dip();return FReply::Handled();}
+  if(K==EKeys::Enter || K==EKeys::Gamepad_FaceButton_Top){Deliver();return FReply::Handled();}
+  return FReply::Unhandled();
+ }
+ virtual FReply OnMouseButtonDown(const FGeometry&,const FPointerEvent& Event) override
+ {
+  if(Event.GetEffectingButton()==EKeys::LeftMouseButton){bDragging=true;return FReply::Handled().CaptureMouse(SharedThis(this));}return FReply::Unhandled();
+ }
+ virtual FReply OnMouseButtonUp(const FGeometry&,const FPointerEvent& Event) override{bDragging=false;return FReply::Handled().ReleaseMouseCapture();}
+ virtual FReply OnMouseMove(const FGeometry&,const FPointerEvent& Event) override
+ {
+  if(bDragging)Work(FMath::Abs(Event.GetCursorDelta().X)+FMath::Abs(Event.GetCursorDelta().Y));return FReply::Handled();
+ }
+ virtual void Tick(const FGeometry& Geometry,const double Time,const float Delta) override
+ {
+  SCompoundWidget::Tick(Geometry,Time,Delta);Clock+=Delta;
+  if(Step==EStep::Result){if((Timer-=Delta)<=0)NextCustomer();return;}
+  if(Step==EStep::Fry){FryT+=Delta;SizzleClock-=Delta;
+   if(SizzleClock<=0){SizzleClock=1.9f;if(Owner.IsValid())UMareAudioWorld::Action(Owner.Get(),TEXT("pastel_fry"),nullptr,.6f);}
+   // The golden point: a soft ding, and the dough turns golden.
+   if(!bDinged && FryT>=GoldenFrom){bDinged=true;Status=TEXT("Dourado! Tire do óleo agora.");if(Owner.IsValid())UMareAudioWorld::Action(Owner.Get(),TEXT("pastel_ready"),nullptr,.7f);}
+   if(FryT>GoldenTo && FryT-Delta<=GoldenTo)Status=TEXT("Está escurecendo... tire logo!");
+   if(FryT>BurntS && FryT-Delta<=BurntS)Status=TEXT("Queimou!");}
+ }
+ // QA (AMareController::PastelQA).
+ FString QAPerfect(bool bRight)
+ {
+  auto S=Sim();if(!S || S->PastelQueue().IsEmpty())return TEXT("empty");const auto O=S->PastelQueue()[0];
+  for(int32 I=0;I<Fillings.Num();++I)if((Fillings[I].Id==UMareSimulation::String(O,TEXT("filling")))==bRight){Choose(I);break;}
+  Seal=bRight?1.f:.4f;Dip();FryT=bRight?7.f:12.f;TakeOut();if(bWantsCana && bRight)Crank=Turns;Deliver();return S->LastMessage;
+ }
+ void QAStep(const FString& What,float V)
+ {
+  if(What==TEXT("fill")){auto S=Sim();if(S && S->PastelQueue().Num())for(int32 I=0;I<Fillings.Num();++I)if(Fillings[I].Id==UMareSimulation::String(S->PastelQueue()[0],TEXT("filling")))Choose(I);}
+  else if(What==TEXT("seal"))Seal=FMath::Clamp(V,0.f,1.f);else if(What==TEXT("dip"))Dip();else if(What==TEXT("fry"))FryT=V;
+  else if(What==TEXT("out"))TakeOut();else if(What==TEXT("crank"))Crank=V;else if(What==TEXT("deliver"))Deliver();
+ }
+private:
+ enum class EStep{Fill,Seal,Fry,Cana,Ready,Result};
+ struct FItem{FString Id,Name;FLinearColor Color;};
+ TWeakObjectPtr<AMareController> Owner;TArray<FItem> Fillings;FString Order,Status;EStep Step=EStep::Fill;
+ int32 Filling=-1,LastTap=0;float Seal=0,FryT=0,Crank=0,Timer=0,Clock=0,SizzleClock=0,SealPx=1400,SealTaps=14,Turns=4,CrankTaps=16,GoldenFrom=5.5f,GoldenTo=8.5f,BurntS=11.5f;
+ bool bWantsCana=false,bDragging=false,bDinged=false,bFried=false;double FriedFor=0;
+ UMareSimulation* Sim()const{return Owner.IsValid()?Owner->GetSimulation():nullptr;}
+ static FLinearColor Color(const TSharedPtr<FJsonObject>& O){const TArray<TSharedPtr<FJsonValue>>* C=nullptr;
+  return O->TryGetArrayField(TEXT("color"),C) && C->Num()==3?FLinearColor(FColor(uint8((*C)[0]->AsNumber()*255),uint8((*C)[1]->AsNumber()*255),uint8((*C)[2]->AsNumber()*255))):FLinearColor::White;}
+ static const FSlateRoundedBoxBrush& HalfMoon(){static const FSlateRoundedBoxBrush B(FLinearColor::White,FVector4(95,95,10,10));return B;}
+ static const FSlateRoundedBoxBrush& Dot(){static const FSlateRoundedBoxBrush B(FLinearColor::White,20.f);return B;}
+ // A rounded box only draws when its radius fits the box: one brush per size.
+ static const FSlateRoundedBoxBrush& Crimp(){static const FSlateRoundedBoxBrush B(FLinearColor::White,4.f);return B;}
+ static const FSlateRoundedBoxBrush& Hub(){static const FSlateRoundedBoxBrush B(FLinearColor::White,21.f);return B;}
+ static const FSlateRoundedBoxBrush& Pan(){static const FSlateRoundedBoxBrush B(FLinearColor::White,16.f,MareNotebook::Hex(90,90,96),3.f);return B;}
+ FLinearColor DoughColor()const
+ {
+  // Raw pale dough -> golden -> brown -> burnt, by the time in the oil.
+  const float T=bFried||Step==EStep::Fry?FryT:0.f;const FLinearColor Raw(FColor(246,226,170)),Gold(FColor(232,165,62)),Brown(FColor(140,82,32)),Burnt(FColor(46,30,20));
+  if(T<GoldenFrom)return FLinearColor::LerpUsingHSV(Raw,Gold,T/GoldenFrom);if(T<GoldenTo)return Gold;
+  if(T<BurntS)return FLinearColor::LerpUsingHSV(Gold,Brown,(T-GoldenTo)/(BurntS-GoldenTo));return Burnt;
+ }
+ static TSharedRef<SWidget> Gauge(TFunction<float()> Value,TFunction<float()> Lo,TFunction<float()> Hi)
+ {
+  using namespace MareNotebook;const float W=440;
+  return SNew(SBox).WidthOverride(W).HeightOverride(16)[SNew(SOverlay)
+   +SOverlay::Slot()[SNew(SBorder).BorderImage(FCoreStyle::Get().GetBrush("WhiteBrush")).BorderBackgroundColor(Kraft)]
+   +SOverlay::Slot().HAlign(HAlign_Left)[SNew(SBox).Padding_Lambda([Lo,Hi,W](){return FMargin(Hi()-Lo()>.001f?Lo()*W:0,0,0,0);})
+    .WidthOverride_Lambda([Lo,Hi,W](){return FOptionalSize(Hi()-Lo()>.001f?Hi()*W:0.f);})
+    [SNew(SBorder).BorderImage(FCoreStyle::Get().GetBrush("WhiteBrush")).BorderBackgroundColor(Green)]]
+   +SOverlay::Slot().HAlign(HAlign_Left)[SNew(SBox).WidthOverride_Lambda([Value,W](){return FOptionalSize(FMath::Clamp(Value(),0.f,1.f)*W);})
+    [SNew(SBorder).BorderImage(FCoreStyle::Get().GetBrush("WhiteBrush")).BorderBackgroundColor(FLinearColor(Ink.R,Ink.G,Ink.B,.55f))]]];
+ }
+ void NextCustomer()
+ {
+  auto S=Sim();Filling=-1;Seal=FryT=Crank=0;bDinged=bFried=false;Step=EStep::Fill;LastTap=0;
+  if(!S || S->PastelQueue().IsEmpty()){Close();return;}
+  const auto O=S->PastelQueue()[0];bWantsCana=false;O->TryGetBoolField(TEXT("cana"),bWantsCana);
+  Order=UMareSimulation::String(O,TEXT("name"))+TEXT(" pede: ")+S->PastelOrderLine(O);Status=TEXT("Escolha o recheio.");
+ }
+ void Choose(int32 I){if(Step==EStep::Fill && Fillings.IsValidIndex(I)){Filling=I;Step=EStep::Seal;Status=TEXT("Recheio de ")+Fillings[I].Name+TEXT(". Agora arraste sobre o pastel para fechar a borda.");}}
+ void Work(float Px)
+ {
+  // Px<0: one keyboard tap; otherwise mouse travel in pixels.
+  if(Step==EStep::Seal && Seal<1){Seal=FMath::Min(1.f,Seal+(Px<0?1.f/SealTaps:Px/SealPx));if(Seal>=1)Status=TEXT("Borda fechada. Mergulhe no óleo.");}
+  else if(Step==EStep::Cana && Crank<Turns){const float Before=Crank;Crank=FMath::Min(Turns,Crank+(Px<0?Turns/CrankTaps:Px/600.f));
+   if(FMath::FloorToInt(Crank)>FMath::FloorToInt(Before) && Owner.IsValid())UMareAudioWorld::Action(Owner.Get(),TEXT("cana_crank"),nullptr,.6f);
+   if(Crank>=Turns){Step=EStep::Ready;Status=TEXT("Caldo de cana no copo. Entregue!");}}
+ }
+ void Dip()
+ {
+  if(Step!=EStep::Seal)return;Step=EStep::Fry;FryT=0;SizzleClock=0;bDinged=false;
+  Status=Seal>=1?TEXT("Fritando... espere o ponto dourado (e o ding)."):TEXT("A borda não estava fechada: o recheio está vazando!");
+ }
+ void TakeOut()
+ {
+  if(Step!=EStep::Fry)return;bFried=true;FriedFor=FryT;Step=bWantsCana?EStep::Cana:EStep::Ready;
+  Status=(FryT<GoldenFrom?TEXT("Saiu cru... "):FryT<=GoldenTo?TEXT("Dourado no ponto! "):FryT<=BurntS?TEXT("Passou um pouco do ponto. "):TEXT("Queimado... "))
+   +FString(bWantsCana?TEXT("Agora o caldo de cana: gire a manivela."):TEXT("Entregue."));
+ }
+ void Deliver()
+ {
+  auto S=Sim();if(!S || Step==EStep::Result || Step==EStep::Fill || Step==EStep::Fry || !bFried){if(Step==EStep::Seal)Status=TEXT("Frite o pastel antes de entregar.");return;}
+  const auto R=S->ServePastel(Fillings.IsValidIndex(Filling)?Fillings[Filling].Id:FString(),Seal>=1,FriedFor,bWantsCana && Crank>=Turns);
+  Status=S->LastMessage;Step=EStep::Result;Timer=2.4f;
+  if(Owner.IsValid())UMareAudioWorld::Action(Owner.Get(),R.Hits==3?TEXT("money_coins"):R.Hits>0?TEXT("deal_accept"):TEXT("deal_decline"));
+ }
+ void Close(){if(Owner.IsValid())Owner->CloseBusinessGame();}
+};
+
+static TWeakPtr<SMarePastelGame> GPastelGame;
 /** Fishing at the pier: the line goes in, a random wait, then "Fisgou!" and a short window to strike
  *  (E, Space, Enter, click or A). Esc or B reels in. Several casts in a row; each catch goes to the stock. */
 class SMareFishingGame : public SCompoundWidget
@@ -1430,6 +1614,10 @@ void AMareController::StartBusinessGame(const FString& Biz)
  FString Reason;if(!S->CanPlayBusiness(Biz,Reason)){S->LastMessage=Reason;return;}
  ClosePhone();SetPause(true);
  // The ice cream shop has its own hands-on task (3.1): the cone built from memory, customer after customer.
+ // The food truck too (3.2): fill, seal, fry and the sugar-cane juice.
+ if(Biz==TEXT("food_truck")){const TSharedRef<SMarePastelGame> Pastel=SNew(SMarePastelGame).Owner(this);GameWidget=Pastel;GPastelGame=Pastel;
+  GEngine->GameViewport->AddViewportWidgetContent(Pastel,40);bShowMouseCursor=true;
+  SetInputMode(FInputModeUIOnly().SetWidgetToFocus(Pastel));SetIgnoreMoveInput(true);SetIgnoreLookInput(true);return;}
  if(Biz==TEXT("sorveteria")){const TSharedRef<SMareIceCreamGame> Ice=SNew(SMareIceCreamGame).Owner(this);GameWidget=Ice;GIceGame=Ice;
   GEngine->GameViewport->AddViewportWidgetContent(Ice,40);bShowMouseCursor=true;
   SetInputMode(FInputModeUIOnly().SetWidgetToFocus(Ice));SetIgnoreMoveInput(true);SetIgnoreLookInput(true);return;}
@@ -1457,6 +1645,19 @@ void AMareController::StartBarPrep(const FString& Step)
  const TSharedRef<SMareBarPrepGame> Game=SNew(SMareBarPrepGame).Owner(this).Step(Step);GameWidget=Game;
  GEngine->GameViewport->AddViewportWidgetContent(Game,40);bShowMouseCursor=true;
  SetInputMode(FInputModeUIOnly().SetWidgetToFocus(Game));SetIgnoreMoveInput(true);SetIgnoreLookInput(true);
+}
+FString AMareController::PastelQA(const FString& Cmd)
+{
+ auto S=GetSimulation();if(!S)return TEXT("none");
+ if(Cmd==TEXT("own")){UMareSimulation::Object(UMareSimulation::Object(UMareSimulation::Object(S->State,TEXT("prog")),TEXT("biz")),TEXT("food_truck"))->SetNumberField(TEXT("lvl"),1);
+  S->State->SetNumberField(TEXT("minutes"),14*60+10);return TEXT("ok");}
+ if(Cmd.StartsWith(TEXT("customers:"))){for(int32 I=0;I<FCString::Atoi(*Cmd.Mid(10));++I)S->AddPastelCustomer();return FString::Printf(TEXT("queue=%d"),S->PastelQueue().Num());}
+ if(Cmd==TEXT("open")){StartBusinessGame(TEXT("food_truck"));return GPastelGame.IsValid()?TEXT("open"):S->LastMessage;}
+ auto Game=GPastelGame.Pin();if(!Game.IsValid())return TEXT("no game");
+ if(Cmd==TEXT("perfect") || Cmd==TEXT("wrong"))return Game->QAPerfect(Cmd==TEXT("perfect"));
+ if(Cmd.Contains(TEXT(":"))){FString A,B;Cmd.Split(TEXT(":"),&A,&B);Game->QAStep(A,FCString::Atof(*B));return TEXT("ok");}
+ if(Cmd==TEXT("close")){CloseBusinessGame();return TEXT("ok");}
+ Game->QAStep(Cmd,0);return FString::Printf(TEXT("queue=%d"),S->PastelQueue().Num());
 }
 FString AMareController::IceCreamQA(const FString& Cmd)
 {

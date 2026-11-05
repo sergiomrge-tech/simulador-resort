@@ -22,6 +22,7 @@ private:
  UPROPERTY() TMap<FString,TObjectPtr<AMarePerson>> Waiting;
  /** The ice cream queue behind the first customer (3.1): up to three more people in line. */
  UPROPERTY() TArray<TObjectPtr<AMarePerson>> IceLine;
+ UPROPERTY() TArray<TObjectPtr<AMarePerson>> PastelLine;
  /** Game-room machines (foosball, arcades) and the guests playing them at night. */
  UPROPERTY() TArray<TObjectPtr<class AStaticMeshActor>> Machines;
  UPROPERTY() TArray<TObjectPtr<AMarePerson>> NightPlayers;
