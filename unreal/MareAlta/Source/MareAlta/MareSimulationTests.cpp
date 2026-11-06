@@ -369,7 +369,89 @@ bool FMarePousadaStaysTest::RunTest(const FString& Parameters)
  Sim->State->SetNumberField(TEXT("minutes"),Sim->Number(Sim->State,TEXT("minutes"))+130);Sim->StaysHour(9);
  TestEqual(TEXT("Hotel desk checked the VIP in"),Sim->FreeCleanRooms(TEXT("hotel")),31);
  for(int32 I=0;I<8;++I)Sim->StaysNight();
+ // 5.1: the check-out leaves the room dirty until the housekeeping crew (8:00-18:00) cleans it.
+ TestEqual(TEXT("Checked-out hotel room dirty"),Sim->FreeCleanRooms(TEXT("hotel")),31);
+ for(int32 H=8;H<18;++H)Sim->StaysHour(H);
  TestEqual(TEXT("Housekeeping freed the suite"),Sim->FreeCleanRooms(TEXT("hotel")),32);
+ Sim->RemoveFromRoot();Instance->RemoveFromRoot();return true;
+}
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FMareHotelRoomsTest,"MareAlta.Gameplay.HotelRooms",EAutomationTestFlags::EditorContext|EAutomationTestFlags::EngineFilter)
+bool FMareHotelRoomsTest::RunTest(const FString& Parameters)
+{
+ // CHECKLIST 5.1: three kinds of room, check-out with the minibar bill, housekeeping by hand or by the crew, phone complaints.
+ auto Instance=NewObject<UGameInstance>();Instance->AddToRoot();
+ auto Sim=NewObject<UMareSimulation>(Instance);Sim->AddToRoot();
+ Sim->SaveDirectory=FPaths::ProjectSavedDir()/TEXT("Automation/HotelRooms")/FGuid::NewGuid().ToString(EGuidFormats::Digits);
+ auto Load=[&](const FString& Name,TSharedPtr<FJsonObject>& Result){FString Text;FFileHelper::LoadFileToString(Text,*(FPaths::ProjectContentDir()/TEXT("Data")/Name));return FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Text),Result);};
+ if(!TestTrue(TEXT("Definitions"),Load(TEXT("definitions.json"),Sim->Definitions)) || !TestTrue(TEXT("Default save"),Load(TEXT("default_save.json"),Sim->State))){Sim->RemoveFromRoot();Instance->RemoveFromRoot();return false;}
+ Sim->Object(Sim->State,TEXT("unlocked"))->SetBoolField(TEXT("grand_hotel"),true);Sim->SyncRooms();Sim->State->SetNumberField(TEXT("money"),5000);
+ // Kinds: the visitable 3rd floor first, 32 rooms in all.
+ TestEqual(TEXT("301 is the suite"),Sim->HotelRoomKind(0),FString(TEXT("suite")));TestEqual(TEXT("302 standard"),Sim->HotelRoomKind(1),FString(TEXT("standard")));
+ TestEqual(TEXT("303 luxury"),Sim->HotelRoomKind(2),FString(TEXT("luxo")));
+ {TMap<FString,int32> Count;for(int32 I=0;I<32;++I)Count.FindOrAdd(Sim->HotelRoomKind(I))++;
+  TestEqual(TEXT("2 suites"),Count.FindRef(TEXT("suite")),2);TestEqual(TEXT("10 luxury"),Count.FindRef(TEXT("luxo")),10);TestEqual(TEXT("20 standard"),Count.FindRef(TEXT("standard")),20);}
+ TestEqual(TEXT("Room number 301"),UMareSimulation::HotelRoomNumber(0),301);TestEqual(TEXT("Room number 401"),UMareSimulation::HotelRoomNumber(8),401);
+ TestEqual(TEXT("Room name"),Sim->HotelRoomName(2),FString(TEXT("Luxo 303")));
+ // Every visitable room has a spot for each task and each complaint kind (UMareStaysWorld places them in the world).
+ {const TArray<TSharedPtr<FJsonValue>>* Spots=nullptr;const TArray<TSharedPtr<FJsonValue>>* Visitable=nullptr;
+  TestTrue(TEXT("Spots in the data"),Sim->HotelRoomDefs()->TryGetArrayField(TEXT("spots"),Spots));Sim->HotelRoomDefs()->TryGetArrayField(TEXT("visitable"),Visitable);
+  if(Spots && Visitable && TestEqual(TEXT("One spot set per visitable room"),Spots->Num(),Visitable->Num()))for(int32 I=0;I<Spots->Num();++I){const auto O=(*Spots)[I]->AsObject();
+   for(const TCHAR* T:{TEXT("bed"),TEXT("towels"),TEXT("trash"),TEXT("minibar")})TestTrue(FString::Printf(TEXT("Room %d spot %s"),I,T),O->HasTypedField<EJson::Array>(T));
+   const TArray<TSharedPtr<FJsonValue>>* Kinds=nullptr;UMareSimulation::Object(Sim->HotelRoomDefs(),TEXT("complaints"))->TryGetArrayField(TEXT("kinds"),Kinds);
+   if(Kinds)for(const auto& K:*Kinds){const FString Id=UMareSimulation::String(K->AsObject(),TEXT("id"));
+    TestTrue(FString::Printf(TEXT("Room %d fix spot %s"),I,*Id),UMareSimulation::Object(O,TEXT("fix"))->HasTypedField<EJson::Array>(Id));}}}
+ // A guest asking for a luxury room gets one.
+ {const FString Id=Sim->AddArrival(TEXT("hotel"));const TArray<TSharedPtr<FJsonValue>>* Queue=nullptr;Sim->Stays()->TryGetArrayField(TEXT("queue"),Queue);
+  if(TestFalse(TEXT("Hotel guest arrived"),Id.IsEmpty()) && Queue){for(const auto& V:*Queue)if(UMareSimulation::String(V->AsObject(),TEXT("id"))==Id)V->AsObject()->SetStringField(TEXT("kind"),TEXT("luxo"));
+   TestTrue(TEXT("Luxury guest checked in"),Sim->AcceptOffer(Id));
+   bool bLux=false;for(int32 I=0;I<32;++I){auto R=Sim->HotelRoom(I);if(R && UMareSimulation::String(UMareSimulation::Object(R,TEXT("guest")),TEXT("id"))==Id)bLux=Sim->HotelRoomKind(I)==TEXT("luxo");}
+   TestTrue(TEXT("Room of the kind asked for"),bLux);}}
+ // Check-out of 302: dirty with bed, towels and trash; the minibar bill matches what was taken.
+ auto R=Sim->HotelRoom(1);if(!TestTrue(TEXT("Room 302 exists"),R.IsValid())){Sim->RemoveFromRoot();Instance->RemoveFromRoot();return false;}
+ R->SetStringField(TEXT("state"),TEXT("occupied"));R->SetNumberField(TEXT("nights"),1);R->SetNumberField(TEXT("mood"),.6);
+ {auto G=MakeShared<FJsonObject>();G->SetStringField(TEXT("id"),TEXT("t1"));G->SetStringField(TEXT("name"),TEXT("Ana"));R->SetObjectField(TEXT("guest"),G);}
+ const double BeforeOut=Sim->Money();const double Bill=Sim->HotelCheckOut(R);
+ TestEqual(TEXT("Dirty after check-out"),UMareSimulation::String(R,TEXT("state")),FString(TEXT("dirty")));
+ TestEqual(TEXT("Minibar bill booked"),Sim->Money(),BeforeOut+Bill);
+ {double Sum=0;const TArray<TSharedPtr<FJsonValue>>* Taken=nullptr;R->TryGetArrayField(TEXT("minibar_taken"),Taken);const TArray<TSharedPtr<FJsonValue>>* Items=nullptr;Sim->HotelRoomDefs()->TryGetArrayField(TEXT("minibar"),Items);
+  if(Taken && Items)for(const auto& T:*Taken)for(const auto& V:*Items)if(UMareSimulation::String(V->AsObject(),TEXT("id"))==T->AsString())Sum+=UMareSimulation::Number(V->AsObject(),TEXT("price"));
+  TestEqual(TEXT("Bill = prices of what was taken"),Bill,Sum);
+  const TArray<TSharedPtr<FJsonValue>>* Tasks=nullptr;R->TryGetArrayField(TEXT("tasks"),Tasks);
+  TestEqual(TEXT("Minibar task only if something was taken"),Tasks && Tasks->ContainsByPredicate([](const TSharedPtr<FJsonValue>& V){return V->AsString()==TEXT("minibar");}),Taken && Taken->Num()>0);}
+ // Force a known minibar: the espumante costs 30 to restock.
+ R->SetArrayField(TEXT("minibar_taken"),{MakeShared<FJsonValueString>(TEXT("espumante"))});
+ R->SetArrayField(TEXT("tasks"),{MakeShared<FJsonValueString>(TEXT("bed")),MakeShared<FJsonValueString>(TEXT("towels")),MakeShared<FJsonValueString>(TEXT("trash")),MakeShared<FJsonValueString>(TEXT("minibar"))});
+ TestEqual(TEXT("Restock cost"),Sim->HotelMinibarCost(R),30.);
+ TestFalse(TEXT("Unknown task"),Sim->CleanHotelRoom(1,TEXT("window"),true));
+ // The crew does not touch the visitable floor before 11:00.
+ Sim->State->SetNumberField(TEXT("minutes"),9*60);Sim->HotelRoomsHour(9);
+ TestEqual(TEXT("Crew leaves 302 for the player in the morning"),UMareSimulation::String(R,TEXT("state")),FString(TEXT("dirty")));
+ {const double M=Sim->Money();TestTrue(TEXT("Restock the minibar"),Sim->CleanHotelRoom(1,TEXT("minibar"),true));TestEqual(TEXT("Restock paid"),Sim->Money(),M-30);}
+ for(const TCHAR* T:{TEXT("bed"),TEXT("towels"),TEXT("trash")})TestTrue(FString(TEXT("By hand: "))+T,Sim->CleanHotelRoom(1,T,true));
+ TestEqual(TEXT("Room free"),UMareSimulation::String(R,TEXT("state")),FString(TEXT("free")));
+ TestTrue(TEXT("Done alone: polished"),R->HasField(TEXT("polished")));
+ // A non-visitable room is cleaned by the crew in the morning; the visitable one only after 11:00.
+ auto Far=Sim->HotelRoom(9);Far->SetStringField(TEXT("state"),TEXT("occupied"));Far->SetObjectField(TEXT("guest"),MakeShared<FJsonObject>());Sim->HotelCheckOut(Far);
+ R->SetStringField(TEXT("state"),TEXT("occupied"));Sim->HotelCheckOut(R);
+ Sim->HotelRoomsHour(9);TestEqual(TEXT("Crew cleaned room 402"),UMareSimulation::String(Far,TEXT("state")),FString(TEXT("free")));
+ TestEqual(TEXT("302 still dirty at 9:00"),UMareSimulation::String(R,TEXT("state")),FString(TEXT("dirty")));
+ Sim->HotelRoomsHour(12);TestEqual(TEXT("Crew reaches 302 after 11:00"),UMareSimulation::String(R,TEXT("state")),FString(TEXT("free")));
+ TestFalse(TEXT("Crew work is not polished"),R->HasField(TEXT("polished")));
+ // Complaints: one per room, solved by the technician (paid) or in person (free, fame), or expired (mood drops).
+ auto Lux=Sim->HotelRoom(2);Lux->SetStringField(TEXT("state"),TEXT("occupied"));Lux->SetNumberField(TEXT("mood"),.7);
+ TestTrue(TEXT("No complaint from a free room"),Sim->AddHotelComplaint(1,TEXT("ac")).IsEmpty());
+ const FString Ac=Sim->AddHotelComplaint(2,TEXT("ac"));TestFalse(TEXT("Complaint by phone"),Ac.IsEmpty());
+ TestTrue(TEXT("One open complaint per room"),Sim->AddHotelComplaint(2,TEXT("tv")).IsEmpty());
+ TestEqual(TEXT("90 minutes to solve"),Sim->ComplaintMinutesLeft(Sim->HotelComplaints()[0]),90.);
+ {const double M=Sim->Money();TestTrue(TEXT("Technician sent"),Sim->SolveHotelComplaint(Ac,false));TestEqual(TEXT("Technician paid"),Sim->Money(),M-80);}
+ const FString Tv=Sim->AddHotelComplaint(2,TEXT("tv"));const double Fame=Sim->Number(Sim->Object(Sim->State,TEXT("prog")),TEXT("fame_xp"));
+ TestTrue(TEXT("Solved in person"),Sim->SolveHotelComplaint(Tv,true));TestTrue(TEXT("In person gives fame"),Sim->Number(Sim->Object(Sim->State,TEXT("prog")),TEXT("fame_xp"))>Fame);
+ const FString Shower=Sim->AddHotelComplaint(2,TEXT("shower"));const double Mood=Sim->Number(Lux,TEXT("mood"));
+ Sim->State->SetNumberField(TEXT("minutes"),9*60+95);
+ TestEqual(TEXT("Expired after the deadline"),Sim->ExpireHotelComplaints(),1);
+ TestTrue(TEXT("Guest mood dropped"),Sim->Number(Lux,TEXT("mood"))<Mood);TestTrue(TEXT("Room marked complained"),Lux->HasField(TEXT("complained")));
+ TestEqual(TEXT("No complaints left"),Sim->HotelComplaints().Num(),0);
+ IFileManager::Get().DeleteDirectory(*Sim->SaveDirectory,false,true);
  Sim->RemoveFromRoot();Instance->RemoveFromRoot();return true;
 }
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FMareHotelReceptionLineTest,"MareAlta.Gameplay.HotelReceptionLine",EAutomationTestFlags::EditorContext|EAutomationTestFlags::EngineFilter)
@@ -425,7 +507,9 @@ bool FMareHotelReceptionLineTest::RunTest(const FString& Parameters)
   const TArray<TSharedPtr<FJsonValue>>* Out=nullptr;
   if(Sim->Stays()->TryGetArrayField(TEXT("departures"),Out))for(const auto& V:*Out)bLeft|=Sim->String(V->AsObject(),TEXT("id"))==Vips[0];
   TestEqual(TEXT("Still a guest before the last night"),bLeft,I==Nights-1);}
- TestEqual(TEXT("Suite free after the check-out"),Sim->FreeCleanRooms(TEXT("hotel")),32);
+ // 5.1: the room is dirty after the check-out until housekeeping is done; the guest still walks out next morning.
+ TestEqual(TEXT("Suite being cleaned after the check-out"),Sim->FreeCleanRooms(TEXT("hotel")),31);
+ TestEqual(TEXT("One hotel room dirty"),Sim->HotelRoomsIn(TEXT("dirty")),1);
  TestFalse(TEXT("No pousada departures"),Sim->TakeDeparture(TEXT("pousada")).IsValid());
  const auto Leaving=Sim->TakeDeparture(TEXT("hotel"));
  TestTrue(TEXT("The VIP walks out"),Leaving.IsValid() && Sim->String(Leaving,TEXT("id"))==Vips[0] && Sim->String(Leaving,TEXT("place"))==TEXT("hotel"));
@@ -1409,7 +1493,7 @@ bool FMareTutorialTest::RunTest(const FString& Parameters)
  for(const TCHAR* Key:{TEXT("Fridge"),TEXT("Cupboard"),TEXT("Customer"),TEXT("KioskSign"),TEXT("Clean"),TEXT("PousadaReception"),TEXT("RoomTask"),TEXT("HotelReception"),
   TEXT("BusinessCounter"),TEXT("TourBooth"),TEXT("TourVest"),TEXT("TourStory"),TEXT("TourSpecies"),TEXT("TrailWater"),TEXT("TrailStory"),TEXT("RentalTow"),
   TEXT("BarCounter"),TEXT("BarIngredient"),TEXT("BarGlass"),TEXT("Fishing"),TEXT("RestaurantTable"),TEXT("RestaurantPass"),TEXT("RoomService"),TEXT("Elevator"),
-  TEXT("PoolLeaves"),TEXT("PoolTowel"),TEXT("PoolCooler"),TEXT("PoolTable"),TEXT("TableTennis"),TEXT("Resident"),TEXT("Elder"),TEXT("Comic"),TEXT("Bed"),TEXT("phone"),TEXT("photo")})
+  TEXT("HotelTask"),TEXT("HotelFix"),TEXT("PoolLeaves"),TEXT("PoolTowel"),TEXT("PoolCooler"),TEXT("PoolTable"),TEXT("TableTennis"),TEXT("Resident"),TEXT("Elder"),TEXT("Comic"),TEXT("Bed"),TEXT("phone"),TEXT("photo")})
   if(FCString::Strcmp(Key,TEXT("BarCounter")))TestTrue(FString(TEXT("Tip exists: "))+Key,Sim->ShowTip(Key));
  for(const auto& Pair:UMareSimulation::Object(Sim->Definitions,TEXT("businesses"))->Values)TestTrue(TEXT("Business tip: ")+FString(Pair.Key.ToView()),Sim->ShowTip(TEXT("biz:")+FString(Pair.Key.ToView())));
  // Next goal: the cheapest expansion with its prerequisites owned.

@@ -445,10 +445,35 @@ coloque hóspedes que entrarem aproveitando a piscina e tobogã"):
 
 ### 5.1 Quartos (maior lacuna visual)
 
-- [ ] 3 tipos de quarto visitáveis (standard, luxo e suíte) com interior modelado. Um andar real basta, e os outros repetem o mesmo modelo.
-- [ ] Arrumação como na pousada: cama, toalhas, frigobar e lixo. A camareira automatiza.
-- [ ] Frigobar: repor e cobrar no check-out.
-- [ ] Reclamação pelo telefone do celular ("ar-condicionado quebrado", "barulho"), com tempo para resolver.
+- [x] 3 tipos de quarto visitáveis (standard, luxo e suíte) com interior modelado. Um andar real basta, e os outros repetem o mesmo modelo.
+- [x] Arrumação como na pousada: cama, toalhas, frigobar e lixo. A camareira automatiza.
+- [x] Frigobar: repor e cobrar no check-out.
+- [x] Reclamação pelo telefone do celular ("ar-condicionado quebrado", "barulho"), com tempo para resolver.
+  Decisões (06/11):
+  - **3º andar visitável:** a suíte 301 (que já existia) mais o corredor, o standard 302, o luxo 303 com banheiro e a
+    rouparia, a leste da suíte (`tools/ue58/gen_hotel_rooms.py` → `Content/Python/mare_hotel_rooms.py`, que importa,
+    mobilia com a biblioteca e cria o volume `MareInterior`). Do saguão, um elevador sobe à suíte e o outro ao corredor
+    dos quartos; os dois do 3º andar descem. Luminárias pelo `lighting.json` (luz só de lâmpada à noite).
+  - **32 quartos** (`hotel_rooms.json`): 2 suítes, 10 luxo e 20 standard, numerados por andar (301...). O hóspede pede
+    o tipo pelo perfil (lua de mel → suíte, família VIP/influenciador → luxo, executivo → standard) e paga a diária
+    × `rate_mult`. Os 3 primeiros são os visitáveis; os outros repetem o modelo e ficam com a equipe.
+  - **Check-out:** o quarto fica sujo com cama, toalhas, lixo e frigobar (só se o hóspede consumiu). A conta do
+    frigobar entra no check-out (preço de venda) e a reposição custa o preço de fornecedor. A equipe de arrumação
+    (8h–18h, 8 tarefas por hora) começa pelos quartos que ninguém vê e só chega ao 3º andar depois das 11h, para o
+    jogador arrumar à mão de manhã. Quarto arrumado só pelo jogador fica "caprichado": +0,3 na nota do próximo hóspede.
+  - **Reclamações** (8h–22h, no máximo 3 abertas): ar-condicionado, barulho, chuveiro, toalhas e TV, cada uma com prazo
+    (45–90 min). Pelo celular (aba Resort e recepção) manda o técnico, que cobra; nos quartos 301–303, resolver
+    pessoalmente (E no ponto do defeito) é de graça e dá fama. Prazo vencido baixa o humor do hóspede (avaliação pior).
+    A reclamação vence no prazo, no tick do mundo, e não na virada da hora.
+  - **Visual:** a roupa de cama das 5 camas virou pano (edredom e manta caindo pelos lados, travesseiros que afinam
+    na costura) em vez de caixas; a TV da suíte, que era uma caixa cinza, virou a `mare_tv_oled65` sobre o rack.
+  - Teste `MareAlta.Gameplay.HotelRooms` (tipos, numeração, pontos de cada tarefa e defeito, check-out e conta do
+    frigobar, arrumação à mão × equipe, reclamações resolvidas e vencidas); `PousadaStays` e `HotelReceptionLine`
+    atualizados (quarto sujo depois do check-out). QA: `mare.QA hotelroom <i>` e `mare.QA complaint <i>:<tipo>`.
+  - Fotos: `docs/ue58/graphics-reference/hotel_rooms_day.jpg`, `hotel_rooms_night.jpg` (22h, luz das luminárias) e
+    `hotel_room_task_phone.jpg` ("E Arrumar a cama · Standard 302" com o lençol bagunçado; telefone do hotel no celular).
+  - Pendências vistas nas fotos: as janelas dos quartos são painéis de luz do dia (sem vista do mar), como na suíte;
+    o lençol bagunçado é uma peça achatada (o mesmo da pousada).
 
 ### 5.2 VIPs e eventos
 

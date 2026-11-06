@@ -103,13 +103,16 @@ void AMareServiceTarget::Use(APlayerController* Controller)
   // Grand Hotel elevator between the lobby and the suite on the 3rd floor.
   if(auto Pawn=PC->GetPawn()){Pawn->SetActorLocation(TeleportTo,false,nullptr,ETeleportType::TeleportPhysics);PC->SetControlRotation(FRotator(0,TeleportYaw,0));}
   const FVector Spot=TeleportTo;GetWorld()->GetSubsystem<UMareAudioWorld>()->PlayCue(TEXT("door"),.3f,&Spot);
-  Sim->LastMessage=DataIndex==1?TEXT("Suíte do Grand Hotel · 3º andar"):TEXT("Lobby do Grand Hotel");return;}
+  Sim->LastMessage=DataIndex==1?TEXT("Suíte do Grand Hotel · 3º andar"):DataIndex==2?TEXT("Andar dos quartos 302 e 303 · 3º andar"):TEXT("Lobby do Grand Hotel");return;}
  if(Action==TEXT("PousadaReception")){const FVector Bell=GetActorLocation();UMareAudioWorld::Action(this,TEXT("reception_bell"),&Bell);PC->OpenStation(TEXT("Reception"));return;}
  // The table page: opponents, friendly or betting match, the Campeonato da Maré and the record (MareGame.cpp PoolPage).
  if(Action==TEXT("PoolTable")){PC->OpenStation(TEXT("PoolTable"));return;}
  if(Action==TEXT("TableTennis")){PC->OpenStation(TEXT("TableTennis"));return;}
  if(Action==TEXT("RoomTask")){for(const FName& Tag:Tags){const FString T=Tag.ToString();
    if(T.StartsWith(TEXT("task:")))GetWorld()->GetSubsystem<UMareStaysWorld>()->UseTask(DataIndex,T.Mid(5));}return;}
+ if(Action==TEXT("HotelTask") || Action==TEXT("HotelFix")){auto Stays=GetWorld()->GetSubsystem<UMareStaysWorld>();
+  for(const FName& Tag:Tags){const FString T=Tag.ToString();
+   if(T.StartsWith(TEXT("task:")))Stays->UseHotelTask(DataIndex,T.Mid(5));else if(T.StartsWith(TEXT("fix:")))Stays->UseHotelFix(T.Mid(4));}return;}
  if(Action==TEXT("PoolLeaves")){if(Sim->ScoopPool())UMareAudioWorld::Action(this,TEXT("bar_pour"));return;}
  if(Action==TEXT("PoolTowel")){if(Sim->CollectPoolTowel(DataIndex))UMareAudioWorld::Action(this,TEXT("cleaning_towels"));return;}
  if(Action==TEXT("PoolCooler")){if(Sim->SellPopsicles())UMareAudioWorld::Action(this,TEXT("money_coins"));return;}

@@ -29,6 +29,13 @@ CAMERAS = {   # pawn position (capsule centre) x,y,z, pitch, yaw
     'lobby': '-1250,6300,140,-6,180',
     'lobby_recepcao': '-2600,6150,140,-6,30',
     'suite': '-2800,6690,943,-10,-90',
+    # 5.1 guest floor (gen_hotel_rooms.py): corridor, standard 302, luxury 303 and its bathroom.
+    'corredor_quartos': '-1736,6800,943,-5,0',
+    'quarto_302': '-1416,5882,943,-12,111',
+    'quarto_302_entrada': '-1366,6442,943,-10,-100',
+    'quarto_303': '-1176,6002,943,-12,27',
+    'quarto_303_janela': '-606,5992,943,-10,166',
+    'banheiro_303': '-876,6602,943,-15,0',
     'pousada_recepcao': '200,1250,130,-10,120',
     'bangalo': '-1600,1470,140,-12,90',
 }

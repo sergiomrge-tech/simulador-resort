@@ -71,7 +71,10 @@ void UMareStaysWorld::Tick(float DeltaSeconds)
    Desk->Action=TEXT("PousadaReception");Desk->Label=TEXT("Recepção da pousada");Desk->Reach=260;Desk->OcclusionTolerance=60;}}
  if(Desk)Desk->SetActorHiddenInGame(!bPousada);
  if(DeskModel){DeskModel->SetActorHiddenInGame(!bPousada);DeskModel->SetActorEnableCollision(bPousada);}
- if(bPousada)SyncTasks();
+ bool bHotelOpen=false;UMareSimulation::Object(S->State,TEXT("unlocked"))->TryGetBoolField(TEXT("grand_hotel"),bHotelOpen);
+ // 5.1: a complaint ends at its deadline, not at the next hourly tick (the phone showed "0 min" for up to an hour).
+ if(bHotelOpen)S->ExpireHotelComplaints();
+ if(bPousada || bHotelOpen || Tasks.Num())SyncTasks(bPousada,bHotelOpen);
  // Reception lines: the pousada counter (spawned above) and the Grand Hotel lobby desk (UMareVisualWorld spawns its
  // E target; the line only needs the data point). Guests leaving any line walk away and are removed on arrival.
  FMareStayLine Line;
@@ -85,19 +88,30 @@ void UMareStaysWorld::Tick(float DeltaSeconds)
   if(!IsValid(Person) || Person->AtGoal() || GetWorld()->GetTimeSeconds()>It.Value()){if(IsValid(Person))Person->Destroy();It.RemoveCurrent();}}
 }
 
-void UMareStaysWorld::SyncTasks()
+void UMareStaysWorld::SyncTasks(bool bPousada,bool bHotel)
 {
- auto S=Sim(GetWorld());TSet<FString> Want;
+ auto S=Sim(GetWorld());if(!S)return;TSet<FString> Want;
  const TArray<TSharedPtr<FJsonValue>>* Rooms=nullptr;
- if(S->Stays()->TryGetArrayField(TEXT("rooms"),Rooms))for(int32 Room=0;Room<Rooms->Num();++Room){
+ if(bPousada && S->Stays()->TryGetArrayField(TEXT("rooms"),Rooms))for(int32 Room=0;Room<Rooms->Num();++Room){
   const auto R=(*Rooms)[Room]->AsObject();if(UMareSimulation::String(R,TEXT("state"))!=TEXT("dirty") || UMareSimulation::String(R,TEXT("place"))==TEXT("hotel"))continue;
   const TArray<TSharedPtr<FJsonValue>>* Left=nullptr;if(!R->TryGetArrayField(TEXT("tasks"),Left))continue;
   for(const auto& V:*Left)Want.Add(FString::Printf(TEXT("%d:%s"),Room,*V->AsString()));}
+ // 5.1: the visitable hotel floor (rooms 0..2: suite 301, standard 302, luxury 303) gets the same mess, the minibar to
+ // restock, and a spot to solve each open complaint in person; positions in hotel_rooms.json "spots".
+ const TArray<TSharedPtr<FJsonValue>>* HotelSpots=nullptr;
+ if(bHotel && S->HotelRoomDefs()->TryGetArrayField(TEXT("spots"),HotelSpots)){
+  for(int32 Room=0;Room<HotelSpots->Num();++Room){const auto R=S->HotelRoom(Room);
+   if(!R || UMareSimulation::String(R,TEXT("state"))!=TEXT("dirty"))continue;const TArray<TSharedPtr<FJsonValue>>* Left=nullptr;
+   if(R->TryGetArrayField(TEXT("tasks"),Left))for(const auto& V:*Left)Want.Add(FString::Printf(TEXT("h%d:%s"),Room,*V->AsString()));}
+  for(const auto& C:S->HotelComplaints()){const int32 Room=UMareSimulation::Number(C,TEXT("room"),-1);
+   if(HotelSpots->IsValidIndex(Room))Want.Add(FString::Printf(TEXT("c%d:%s"),Room,*UMareSimulation::String(C,TEXT("id"))));}}
  // Remove what was cleaned (by the player, the maid or a new day) and spawn what is newly dirty.
  for(auto It=Tasks.CreateIterator();It;++It)if(!Want.Contains(It.Key())){
   if(IsValid(It.Value()))It.Value()->Destroy();if(auto M=Mess.FindRef(It.Key()))M->Destroy();Mess.Remove(It.Key());It.RemoveCurrent();}
  for(const FString& Key:Want){if(Tasks.Contains(Key))continue;
-  FString RoomText,Task;Key.Split(TEXT(":"),&RoomText,&Task);const int32 Room=FCString::Atoi(*RoomText);
+  FString RoomText,Task;Key.Split(TEXT(":"),&RoomText,&Task);
+  if(RoomText.StartsWith(TEXT("h")) || RoomText.StartsWith(TEXT("c"))){if(HotelSpots)SpawnHotelTarget(Key,RoomText[0]==TEXT('c'),FCString::Atoi(*RoomText.Mid(1)),Task,*HotelSpots);continue;}
+  const int32 Room=FCString::Atoi(*RoomText);
   const FMessSpot* Spot=nullptr;for(const auto& Candidate:Spots)if(Task==Candidate.Task)Spot=&Candidate;
   FVector At;if(!Spot || !RoomPoint(Room,Spot->Local,At))continue;
   const FRotator Yaw(0,Bungalows[Room]->GetActorRotation().Yaw+Spot->Yaw,0);
@@ -108,6 +122,50 @@ void UMareStaysWorld::SyncTasks()
   Target->Action=TEXT("RoomTask");Target->Label=FString(Spot->Label)+TEXT(" · bangalô ")+FString::FromInt(Room+1);
   Target->DataIndex=Room;Target->Tags.Add(*(TEXT("task:")+Task));Target->FocusOffset=FVector(0,0,Spot->Focus);Target->Reach=220;Target->OcclusionTolerance=60;
   Tasks.Add(Key,Target);}
+}
+
+void UMareStaysWorld::SpawnHotelTarget(const FString& Key,bool bFix,int32 Room,const FString& What,const TArray<TSharedPtr<FJsonValue>>& HotelSpots)
+{
+ auto S=Sim(GetWorld());if(!S || !HotelSpots.IsValidIndex(Room))return;const auto RoomSpots=HotelSpots[Room]->AsObject();
+ FString Kind=What;TSharedPtr<FJsonObject> Complaint;
+ if(bFix){for(const auto& C:S->HotelComplaints())if(UMareSimulation::String(C,TEXT("id"))==What)Complaint=C;if(!Complaint)return;Kind=UMareSimulation::String(Complaint,TEXT("kind"));}
+ const TArray<TSharedPtr<FJsonValue>>* At=nullptr;
+ if(!(bFix?UMareSimulation::Object(RoomSpots,TEXT("fix")):RoomSpots)->TryGetArrayField(Kind,At) || At->Num()<3)return;
+ FVector Point((*At)[0]->AsNumber(),(*At)[1]->AsNumber(),(*At)[2]->AsNumber());const FRotator Yaw(0,At->Num()>3?(*At)[3]->AsNumber():0.,0);
+ const FMessSpot* MessSpot=nullptr;if(!bFix)for(const auto& Candidate:Spots)if(What==Candidate.Task)MessSpot=&Candidate;
+ if(MessSpot){
+  // The mess lies on whatever is below the spot (mattress, bathroom floor): traced, not guessed.
+  FHitResult Hit;FCollisionQueryParams Params(SCENE_QUERY_STAT(MareHotelMess),false);
+  if(GetWorld()->LineTraceSingleByChannel(Hit,Point+FVector(0,0,60),Point-FVector(0,0,200),ECC_Visibility,Params))Point.Z=Hit.ImpactPoint.Z;
+  if(auto Mesh=LoadObject<UStaticMesh>(nullptr,MessSpot->Mesh)){auto Prop=GetWorld()->SpawnActor<AStaticMeshActor>(Point,Yaw);Prop->SetMobility(EComponentMobility::Movable);
+   Prop->GetStaticMeshComponent()->SetStaticMesh(Mesh);Prop->SetActorScale3D(FVector(MessSpot->Scale,MessSpot->Scale,1.f));
+   Prop->GetStaticMeshComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);Mess.Add(Key,Prop);}}
+ auto Target=GetWorld()->SpawnActor<AMareServiceTarget>(Point,Yaw);
+ Target->DataIndex=Room;Target->Reach=240;Target->OcclusionTolerance=60;Target->FocusOffset=FVector(0,0,MessSpot?MessSpot->Focus:0.f);
+ if(bFix){Target->Action=TEXT("HotelFix");Target->Tags.Add(*(TEXT("fix:")+What));
+  Target->Label=UMareSimulation::String(S->ComplaintKind(Kind),TEXT("fix"))+TEXT(" · ")+S->HotelRoomName(Room);}
+ else{Target->Action=TEXT("HotelTask");Target->Tags.Add(*(TEXT("task:")+What));FString Label=S->HotelTaskLabel(What);
+  if(What==TEXT("minibar"))if(auto R=S->HotelRoom(Room)){const double Cost=S->HotelMinibarCost(R);if(Cost>0)Label+=FString::Printf(TEXT(" (R$ %.0f)"),Cost);}
+  Target->Label=Label+TEXT(" · ")+S->HotelRoomName(Room);}
+ Tasks.Add(Key,Target);
+}
+
+void UMareStaysWorld::UseHotelTask(int32 Room,const FString& Task)
+{
+ auto S=Sim(GetWorld());if(!S)return;
+ if(!S->CleanHotelRoom(Room,Task,true))return;
+ UMareAudioWorld::Action(this,Task==TEXT("bed")?TEXT("cleaning_bed"):Task==TEXT("towels")?TEXT("cleaning_towels"):Task==TEXT("minibar")?TEXT("kiosk_fridge"):TEXT("cleaning_trash"));
+ const auto R=S->HotelRoom(Room);bool bPolished=false;if(R)R->TryGetBoolField(TEXT("polished"),bPolished);
+ S->LastMessage=FString::Printf(TEXT("%s: %s."),*S->HotelRoomName(Room),*S->HotelTaskDone(Task))
+  +(R && UMareSimulation::String(R,TEXT("state"))==TEXT("free")?(bPolished?TEXT(" Quarto pronto e caprichado: o próximo hóspede vai notar."):TEXT(" Quarto pronto.")):TEXT(""));
+ SyncTasks(true,true);
+}
+
+void UMareStaysWorld::UseHotelFix(const FString& Complaint)
+{
+ auto S=Sim(GetWorld());if(!S)return;
+ if(S->SolveHotelComplaint(Complaint,true))UMareAudioWorld::Action(this,TEXT("deal_accept"));
+ SyncTasks(true,true);
 }
 
 void UMareStaysWorld::UseTask(int32 Room,const FString& Task)
