@@ -126,7 +126,7 @@ bool UMareSimulation::SetOpen(bool bOpen)
  if(bOpen && !bCreated) return Fail(TEXT("Crie sua empresa primeiro."));
  Company->SetBoolField(TEXT("kiosk_open"),bOpen);
  auto Hours=Object(Company,TEXT("sim"));
- LastMessage=bOpen?(IsOpen()?TEXT("Quiosque aberto. Recebendo clientes."):FString::Printf(TEXT("Abertura ativada. Atendimento das %.0fh às %.0fh."),Number(Hours,TEXT("start"),8),Number(Hours,TEXT("end"),18))):TEXT("Quiosque fechado.");
+ LastMessage=bOpen?(IsOpen()?TEXT("Quiosque aberto. Recebendo clientes."):FString::Printf(TEXT("Abertura ativada. Atendimento das %.0fh às %.0fh."),Number(Hours,TEXT("start"),8),KioskCloseHour())):TEXT("Quiosque fechado.");
  return Save();
 }
 bool UMareSimulation::IsOpen() const
@@ -134,7 +134,13 @@ bool UMareSimulation::IsOpen() const
  auto Company=Object(State,TEXT("company")); bool bOpen=false,bCreated=false;
  Company->TryGetBoolField(TEXT("kiosk_open"),bOpen); Company->TryGetBoolField(TEXT("created"),bCreated);
  auto Sim=Object(Company,TEXT("sim")); const double Hour=Number(State,TEXT("minutes"),480)/60.;
- return bOpen && bCreated && Hour>=Number(Sim,TEXT("start"),8) && Hour<Number(Sim,TEXT("end"),18);
+ return bOpen && bCreated && Hour>=Number(Sim,TEXT("start"),8) && Hour<KioskCloseHour();
+}
+double UMareSimulation::KioskCloseHour() const
+{
+ // The neon sign keeps the kiosk open until 21h, as its card says (it never changed the hours before, GPT report 06/11).
+ const double End=Number(Object(Object(State,TEXT("company")),TEXT("sim")),TEXT("end"),18);bool bNeon=false;Object(State,TEXT("unlocked"))->TryGetBoolField(TEXT("neon"),bNeon);
+ return bNeon?FMath::Max(End,21.):End;
 }
 TArray<FString> UMareSimulation::KioskMenu() const
 {

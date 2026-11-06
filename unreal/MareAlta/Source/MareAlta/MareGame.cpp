@@ -263,7 +263,7 @@ private:
    +SVerticalBox::Slot().AutoHeight()[SNew(STextBlock).Font(MareNotebook::Hand(19)).ColorAndOpacity(MareNotebook::Green).Text_Lambda([S](){return MareLoc::Text(FString::Printf(TEXT("entrou R$ %.0f"),UMareSimulation::Number(S->State,TEXT("day_in"))));})]
    +SVerticalBox::Slot().AutoHeight()[SNew(STextBlock).Font(MareNotebook::Hand(19)).ColorAndOpacity(MareNotebook::Red).Text_Lambda([S](){return MareLoc::Text(FString::Printf(TEXT("saiu R$ %.0f"),UMareSimulation::Number(S->State,TEXT("day_out"))));})],TiltOf(0))];
   G->AddSlot(1,0)[MareNotebook::PriceTag(SNew(SVerticalBox)+SVerticalBox::Slot().AutoHeight()[MareNotebook::HandText(TEXT("Atendimento"),15,MareNotebook::Faded)]
-   +SVerticalBox::Slot().AutoHeight()[MareNotebook::BodyText(FString::Printf(TEXT("%.0fh às %.0fh"),UMareSimulation::Number(Hours,TEXT("start"),8),UMareSimulation::Number(Hours,TEXT("end"),18)),12.5f,MareNotebook::Ink,true)]
+   +SVerticalBox::Slot().AutoHeight()[MareNotebook::BodyText(FString::Printf(TEXT("%.0fh às %.0fh"),UMareSimulation::Number(Hours,TEXT("start"),8),S->KioskCloseHour()),12.5f,MareNotebook::Ink,true)]
    +SVerticalBox::Slot().AutoHeight()[SNew(STextBlock).Font(MareNotebook::Hand(17)).ColorAndOpacity(MareNotebook::Ink).Text_Lambda([S](){return MareLoc::Text(FString::Printf(TEXT("%d pedidos ativos"),UMareSimulation::Object(S->State,TEXT("ue_orders"))->Values.Num()));})]
    +SVerticalBox::Slot().AutoHeight()[MareNotebook::HandText(bHired?TEXT("com atendente"):TEXT("você atende sozinho"),17,MareNotebook::Pencil)],TiltOf(1))];
   if(auto Audio=Owner->GetWorld()->GetSubsystem<UMareAudioWorld>())
@@ -295,6 +295,16 @@ private:
   auto S=Sim();using namespace MareNotebook;auto R=S->Restaurant();const double Now=S->RestaurantNow();
   Title(TEXT("Restaurante"),S->IsRestaurantOpen()?TEXT("em serviço"):TEXT("fechado"));
   Line(FString::Printf(TEXT("Almoço 12h–15h e jantar 19h–22h · %.0f pratos servidos"),UMareSimulation::Number(R,TEXT("served"))),12,Faded);
+  // 5.3: the stars of the critic's guide, the pier's fish in the kitchen and the last reviews.
+  {const int32 Stars=S->RestaurantStars();const auto C=UMareSimulation::Object(S->RestaurantDefs(),TEXT("critic"));FString Row;
+   for(int32 I=0;I<int32(UMareSimulation::Number(C,TEXT("max_stars"),3));++I)Row+=I<Stars?TEXT("*"):TEXT("-");
+   Line(FString::Printf(TEXT("%s: %s (%d de %.0f estrelas) · peixes do píer na cozinha: %.0f"),*UMareSimulation::String(C,TEXT("guide")),*Row,Stars,UMareSimulation::Number(C,TEXT("max_stars"),3),
+    UMareSimulation::Number(UMareSimulation::Object(S->State,TEXT("stock")),TEXT("peixe"))),12.5f,Stars?Green:Ink);
+   const TArray<TSharedPtr<FJsonValue>>* Reviews=nullptr;UMareSimulation::Object(UMareSimulation::Object(S->State,TEXT("prog")),TEXT("restaurant"))->TryGetArrayField(TEXT("reviews"),Reviews);
+   if(Reviews && Reviews->Num()){const auto Last=(*Reviews)[Reviews->Num()-1]->AsObject();
+    Line(FString::Printf(TEXT("Última crítica: dia %.0f, nota %.1f%s."),UMareSimulation::Number(Last,TEXT("day")),UMareSimulation::Number(Last,TEXT("score")),
+     UMareSimulation::Number(Last,TEXT("crew"))>0?TEXT(" (atendido pela equipe)"):TEXT("")),11.5f,Faded);}
+   Line(TEXT("Um crítico disfarçado aparece de vez em quando numa mesa: quem anota tudo num caderninho. Atenda rápido e com peixe fresco do píer."),11.5f,Faded);}
   auto DishName=[S](const FString& Id){return UMareSimulation::String(S->MenuDish(Id),TEXT("name"));};
   Heading(TEXT("Mesas"),TEXT("E na mesa anota o pedido e serve o prato"));
   const TArray<TSharedPtr<FJsonValue>>* Tables=nullptr;R->TryGetArrayField(TEXT("tables"),Tables);
@@ -2427,7 +2437,7 @@ static FAutoConsoleCommandWithWorldAndArgs MareQACommand(TEXT("mare.QA"),TEXT("Q
 static FAutoConsoleCommandWithWorldAndArgs MareArcadeCommand(TEXT("mare.Arcade"),TEXT("QA: start:0|1, play:seconds, end, state (game room arcades, 5.4)."),
  FConsoleCommandWithWorldAndArgsDelegate::CreateLambda([](const TArray<FString>& Args,UWorld* World){
   if(!World)return;if(auto Arc=World->GetSubsystem<UMareArcade>())UE_LOG(LogTemp,Display,TEXT("mare.Arcade %s -> %s"),*FString::Join(Args,TEXT(" ")),*Arc->QA(FString::Join(Args,TEXT(" "))));}));
-static FAutoConsoleCommandWithWorldAndArgs MareHotelEventCommand(TEXT("mare.HotelEvent"),TEXT("QA: offer[:kind], accept, today, decline, state, placeall[:extras], place:i, start (Grand Hotel events, 5.2)."),
+static FAutoConsoleCommandWithWorldAndArgs MareHotelEventCommand(TEXT("mare.HotelEvent"),TEXT("QA: offer[:kind], accept, today, decline, critic (5.3), state, placeall[:extras], place:i, start (Grand Hotel events, 5.2)."),
  FConsoleCommandWithWorldAndArgsDelegate::CreateLambda([](const TArray<FString>& Args,UWorld* World){
   if(!World || !World->GetGameInstance())return;auto S=World->GetGameInstance()->GetSubsystem<UMareSimulation>();auto W=World->GetSubsystem<UMareHotelEventsWorld>();if(!S || !W)return;
   const FString Cmd=FString::Join(Args,TEXT(" "));FString Verb,Arg;if(!Cmd.Split(TEXT(":"),&Verb,&Arg))Verb=Cmd;FString Out;
@@ -2435,6 +2445,7 @@ static FAutoConsoleCommandWithWorldAndArgs MareHotelEventCommand(TEXT("mare.Hote
   else if(Verb==TEXT("accept"))Out=S->AcceptHotelEvent()?S->LastMessage:FString(TEXT("refused"));
   else if(Verb==TEXT("decline"))Out=S->DeclineHotelEvent()?FString(TEXT("ok")):FString(TEXT("refused"));
   else if(Verb==TEXT("start")){const double Paid=S->StartHotelEvent();Out=FString::Printf(TEXT("paid=%.0f %s"),Paid,*S->LastMessage);}
+  else if(Verb==TEXT("critic"))Out=FString::Printf(TEXT("critic at table %d"),S->SeatCritic());   // 5.3
   else if(Verb==TEXT("today")){if(auto B=S->BookedHotelEvent()){B->SetNumberField(TEXT("day"),UMareSimulation::Number(S->State,TEXT("day"),1));S->Save();Out=TEXT("booked for today");}else Out=TEXT("nothing booked");}
   else Out=W->QA(Cmd);
   UE_LOG(LogTemp,Display,TEXT("mare.HotelEvent %s -> %s"),*Cmd,*Out);}));
@@ -2847,7 +2858,7 @@ void AMareGameMode::BeginPlay()
 void AMareGameMode::Tick(float DeltaSeconds)
 {
  Super::Tick(DeltaSeconds);auto Sim=GetGameInstance()->GetSubsystem<UMareSimulation>();if(!Sim)return;
- Sim->AdvanceMinutes(DeltaSeconds*1.0);   // 1 game minute per real second: a day 08-24h lasts 16 min (balance_model.py, 04/11)SaveClock+=DeltaSeconds;if(SaveClock>=30){Sim->Save();SaveClock=0;}
+ Sim->AdvanceMinutes(DeltaSeconds*1.0);SaveClock+=DeltaSeconds;if(SaveClock>=30){Sim->Save();SaveClock=0;}   // 1 game minute per real second: a day 08-24h lasts 16 min (balance_model.py, 04/11); autosave every 30 s (the comment used to swallow it, GPT report 06/11)
 }
 
 UMareSimulation* AMareController::GetSimulation()const{return GetGameInstance()->GetSubsystem<UMareSimulation>();}

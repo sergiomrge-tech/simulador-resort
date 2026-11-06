@@ -1402,10 +1402,38 @@ bool FMareRestaurantTest::RunTest(const FString& Parameters)
  Sim->SeatDiners(2);Sim->State->SetNumberField(TEXT("minutes"),13*60+30);Before=Sim->Money();Sim->RestaurantHour(14);
  TestTrue(TEXT("Crew served the long wait"),Sim->Money()>Before);
  // Event: paid now, earns tomorrow at the event hour.
- Before=Sim->Money();TestTrue(TEXT("Event booked"),Sim->BookEvent(TEXT("aniversario")));TestEqual(TEXT("Preparation paid"),Sim->Money(),Before-600.);
- TestFalse(TEXT("One event at a time"),Sim->BookEvent(TEXT("casamento")));
+ Before=Sim->Money();TestTrue(TEXT("Event booked"),Sim->BookEvent(TEXT("formatura")));TestEqual(TEXT("Preparation paid"),Sim->Money(),Before-600.);
+ TestFalse(TEXT("One event at a time"),Sim->BookEvent(TEXT("bodas")));
  Sim->State->SetNumberField(TEXT("day"),Sim->Number(Sim->State,TEXT("day"),1)+1);Sim->State->SetNumberField(TEXT("minutes"),21*60);Before=Sim->Money();
  Sim->RestaurantHour(21);TestTrue(TEXT("Event income"),Sim->Money()-Before>=1600);TestEqual(TEXT("Event done"),Sim->Object(Sim->Restaurant(),TEXT("event"))->Values.Num(),0);
+ // An event night slept through still pays (the crew runs it).
+ TestTrue(TEXT("Second event booked"),Sim->BookEvent(TEXT("bodas")));Sim->State->SetNumberField(TEXT("day"),Sim->Number(Sim->State,TEXT("day"),1)+2);
+ Sim->State->SetNumberField(TEXT("minutes"),9*60);Before=Sim->Money();Sim->RestaurantHour(9);TestTrue(TEXT("Slept-through event paid"),Sim->Money()-Before>=3200);
+ // 5.3: fish dishes take the pier's fish (fresh, dearer); without it the kitchen buys one.
+ Sim->State->SetNumberField(TEXT("minutes"),19*60+5);Sim->Restaurant()->SetArrayField(TEXT("tables"),{});
+ auto Order=[&](int32 Table,const FString& Dish){Sim->SeatDiners(Table);Sim->TableOrder(Table)->SetStringField(TEXT("dish"),Dish);};
+ Sim->Object(Sim->State,TEXT("stock"))->SetNumberField(TEXT("peixe"),1);
+ Order(0,TEXT("moqueca"));TestTrue(TEXT("Fresh fish taken"),Sim->TakeKitchenFish(Sim->TableOrder(0)).Contains(TEXT("fresco")));
+ TestEqual(TEXT("Fish left the stock"),Sim->Number(Sim->Object(Sim->State,TEXT("stock")),TEXT("peixe")),0.);
+ Before=Sim->Money();Order(1,TEXT("peixe_grelhado"));Sim->TakeKitchenFish(Sim->TableOrder(1));TestEqual(TEXT("Supplier fish paid"),Sim->Money(),Before-22.);
+ {bool bFresh=false;Sim->TableOrder(1)->TryGetBoolField(TEXT("fresh"),bFresh);TestFalse(TEXT("Supplier fish is not fresh"),bFresh);}
+ TestTrue(TEXT("Carne de sol on the menu"),Sim->MenuDish(TEXT("carne_de_sol")).IsValid());
+ // 5.3: the critic, served fast by the player, gives a star; the menu gets dearer.
+ Sim->Restaurant()->SetArrayField(TEXT("tables"),{});const double Moqueca=Sim->MenuPrice(TEXT("moqueca"));
+ const int32 Critic=Sim->SeatCritic();if(TestTrue(TEXT("Critic seated"),Critic>=0)){
+  TestEqual(TEXT("Only one critic"),Sim->SeatCritic(),-1);
+  Sim->Object(Sim->State,TEXT("stock"))->SetNumberField(TEXT("peixe"),3);
+  TestTrue(TEXT("Critic order"),Sim->UseTable(Critic));TestTrue(TEXT("The notebook gives him away"),Sim->LastMessage.Contains(TEXT("caderninho")));
+  Sim->TableOrder(Critic)->SetStringField(TEXT("dish"),TEXT("moqueca"));Sim->TableOrder(Critic)->SetBoolField(TEXT("fresh"),true);
+  Sim->State->SetNumberField(TEXT("minutes"),19*60+25);Sim->PickUpPass();TestTrue(TEXT("Critic served"),Sim->UseTable(Critic));
+  TestEqual(TEXT("First star"),Sim->RestaurantStars(),1);TestTrue(TEXT("Review in the message"),Sim->LastMessage.Contains(TEXT("crítico")));
+  TestTrue(TEXT("Star makes the menu dearer"),Sim->MenuPrice(TEXT("moqueca"))>Moqueca);}
+ // A critic left to the crew gives a poor review and no star.
+ Sim->Restaurant()->SetNumberField(TEXT("critic_day"),-1);const int32 Slow=Sim->SeatCritic();
+ if(TestTrue(TEXT("Second critic seated"),Slow>=0)){Sim->State->SetNumberField(TEXT("minutes"),20*60+30);Sim->RestaurantHour(21);
+  TestEqual(TEXT("No star from the crew"),Sim->RestaurantStars(),1);
+  const TArray<TSharedPtr<FJsonValue>>* Reviews=nullptr;Sim->Object(Sim->Object(Sim->State,TEXT("prog")),TEXT("restaurant"))->TryGetArrayField(TEXT("reviews"),Reviews);
+  TestEqual(TEXT("Two reviews"),Reviews?Reviews->Num():0,2);}
  IFileManager::Get().DeleteDirectory(*Sim->SaveDirectory,false,true);
  Sim->RemoveFromRoot();Instance->RemoveFromRoot();return true;
 }

@@ -99,6 +99,7 @@ UMareSimulation::EHaggle UMareSimulation::Haggle(const FString& Guest,double Pri
   const int32 Nights=Number(G,TEXT("nights"),1);
   Room->SetStringField(TEXT("state"),TEXT("occupied"));Room->SetObjectField(TEXT("guest"),G);Room->SetNumberField(TEXT("nights"),Nights);
   Room->SetNumberField(TEXT("rate"),Rate);Room->SetNumberField(TEXT("mood"),Mood);
+  Room->RemoveField(TEXT("vip_asked"));Room->RemoveField(TEXT("vip_done"));   // the VIP request is once per stay, not per room (GPT report 06/11)
   Book(Rate*Nights,FString::Printf(TEXT("%s: %s, %d diária(s) de R$ %.0f"),Place==TEXT("hotel")?TEXT("Grand Hotel"):TEXT("Pousada"),*String(G,TEXT("name")),Nights,Rate));
   Queue.RemoveAt(Index);OutOffer=Rate;return true;
  };

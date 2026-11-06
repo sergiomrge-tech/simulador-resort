@@ -34,6 +34,8 @@ public:
  UFUNCTION(BlueprintCallable,Category="Maré Alta")
  bool SetOpen(bool bOpen);
  UFUNCTION(BlueprintCallable,Category="Maré Alta")
+ /** Closing hour of the kiosk: company.sim.end, 21h with the neon sign. */
+ double KioskCloseHour() const;
  bool IsOpen() const;
  /** Expansion licences gate sale/pickup while keeping display props visible. */
  UFUNCTION(BlueprintPure,Category="Maré Alta")
@@ -341,6 +343,14 @@ public:
  bool BookEvent(const FString& Id);
  /** Hourly: event of the day, crew serving long waits, new diners and room service while open. */
  void RestaurantHour(int32 Hour);
+ /** 5.3: stars of the restaurant in the critic's guide (prog.restaurant.stars); each makes the menu dearer. */
+ int32 RestaurantStars() const;
+ /** 5.3: seats the disguised critic at a free table (RestaurantHour on his day, QA); returns the table or -1. */
+ int32 SeatCritic();
+ /** 5.3: the critic's review when his table is served (by the player, or by the crew after the long wait). */
+ void ReviewCritic(const TSharedPtr<FJsonObject>& Order,bool bByCrew);
+ /** 5.3: a fish dish of this order takes a fish of the pier from the stock ("fresh"), or the kitchen buys one; returns the note. */
+ FString TakeKitchenFish(const TSharedPtr<FJsonObject>& Order);
  // --- Tours, hands-on (MareTours.cpp, Content/Data/tours.json; the tours are customization.json operations.tours) ---
  // State "tours" (reset each day): queue {tour: buyers at the booth}, sold {tour: tickets}, done {tour: guided|guide|cancelled|empty}, rating.
  TSharedPtr<FJsonObject> ToursDefs() const;

@@ -72,7 +72,7 @@ void UMareSimulation::RentalHour(int32 Hour)
   O->SetBoolField(TEXT("dent"),FMath::FRand()<Number(D,TEXT("dent_chance"),.3));Returns.Add(Out[I]);Out.RemoveAt(I);}
  if(!bOpen)return;
  const TArray<TSharedPtr<FJsonValue>>* Range=nullptr;int32 Lo=1,Hi=2;if(D->TryGetArrayField(TEXT("arrivals"),Range) && Range->Num()==2){Lo=int32((*Range)[0]->AsNumber());Hi=int32((*Range)[1]->AsNumber());}
- double N=FMath::RandRange(Lo,Hi);if(TodayEvent()==TEXT("calor"))N*=Number(D,TEXT("hot_mult"),1.5);if(String(State,TEXT("weather"))==TEXT("rain"))N*=Number(D,TEXT("rain_mult"),.3);
+ double N=FMath::RandRange(Lo,Hi);if(TodayEvent()==TEXT("calor"))N*=Number(D,TEXT("hot_mult"),1.5);if(TodayEvent()==TEXT("mare"))N*=Number(D,TEXT("tide_mult"),1.4);if(String(State,TEXT("weather"))==TEXT("rain"))N*=Number(D,TEXT("rain_mult"),.3);
  const int32 Arrive=FMath::FloorToInt(N)+(FMath::FRand()<FMath::Frac(N)?1:0);for(int32 I=0;I<Arrive;++I)AddRentalCustomer();
  // A rented kayak sometimes drifts off and has to be fetched.
  const bool bKayakOut=Out.ContainsByPredicate([](const TSharedPtr<FJsonValue>& V){return UMareSimulation::String(V->AsObject(),TEXT("item"))==TEXT("caiaque");});

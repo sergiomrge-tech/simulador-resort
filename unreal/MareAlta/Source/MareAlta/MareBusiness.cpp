@@ -19,6 +19,8 @@ bool UMareSimulation::IsBusinessOpen(const FString& Id) const
  const TArray<TSharedPtr<FJsonValue>>* Open=nullptr;const double Hour=Number(State,TEXT("minutes"))/60;
  const auto Def=Object(Object(Definitions,TEXT("businesses")),Id);const auto Game=Object(Object(BusinessGames(),TEXT("businesses")),Id);
  if(!(Def->HasField(TEXT("open"))?Def:Game)->TryGetArrayField(TEXT("open"),Open) || Open->Num()!=2)return false;
+ // The rental closes in the storm, as its card says (it never did, GPT report 06/11); the high tide only brings surfers.
+ if(Id==TEXT("aluguel") && TodayEvent()==TEXT("tempestade"))return false;
  return Hour>=(*Open)[0]->AsNumber() && Hour<(*Open)[1]->AsNumber();
 }
 

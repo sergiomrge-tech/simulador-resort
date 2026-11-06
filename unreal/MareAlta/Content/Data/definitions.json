@@ -2,7 +2,7 @@
 	"art_direction": "realista estilizado, sem toon/contornos",
 	"businesses": {
 		"aluguel": {
-			"blurb": "Fecha com mar bravo. Rende mais com ondas boas (maré alta).",
+			"blurb": "Fecha na tempestade. Rende mais com as ondas da maré alta.",
 			"chapter": "pier",
 			"cost": 1400,
 			"fame": 3,

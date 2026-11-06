@@ -28,6 +28,12 @@ O que falta é **profundidade e variedade**. Hoje quase tudo é "aperte E" + bar
 "Minha prioridade é terminar para o acesso antecipado."; "mecânicas novas, novos sistemas, pode [ficar para depois]";
 "hotel, quartos, salão de jogos são importantes para o EA" (Sergio, 06/11/2026). Siga ESTA ordem:
 
+> **MUDANÇA (Sergio, 06/11/2026, noite): "Grand Hotel não é para ter no EA, só no jogo completo" e "EA inteiro ~2h".**
+> O Grand Hotel e tudo que depende dele (quartos, VIPs, eventos na praia, salão de jogos, restaurante e crítico) já está
+> feito e continua no código, mas fica TRANCADO no Acesso Antecipado ("chega no jogo completo"). O EA termina antes do
+> hotel: todas as outras expansões e os 4 capítulos, em ~2 h de jogo para o jogador médio (a simulação do GPT, PR #7,
+> mediu ~7 h até o hotel no ritmo de 06/11). Os itens 4 (balanceamento) e 5 (tela de fim) passam a medir esse EA curto.
+
 1. **6.2 Tutorial e objetivos** com o que já existe (`tutorial.json`): dica na primeira vez de cada sistema e objetivo
    atual/próximo desbloqueio sempre visíveis.
 2. **5. Grand Hotel e salão de jogos, COMPLETO** (exceção à regra de não criar mecânica nova):
@@ -506,8 +512,25 @@ coloque hóspedes que entrarem aproveitando a piscina e tobogã"):
 
 ### 5.3 Restaurante
 
-- [ ] Cardápio do hotel com pratos nordestinos (moqueca, bobó, carne de sol); ligar o peixe da pesca ao estoque.
-- [ ] Crítico gastronômico disfarçado de vez em quando: uma nota alta libera estrela no hotel.
+- [x] Cardápio do hotel com pratos nordestinos (moqueca, bobó, carne de sol); ligar o peixe da pesca ao estoque.
+- [x] Crítico gastronômico disfarçado de vez em quando: uma nota alta libera estrela no hotel.
+  Decisões (06/11, Claude):
+  - Cardápio ganhou carne de sol com macaxeira (R$ 58) e baião de dois com queijo coalho (R$ 46). Moqueca e peixe
+    grelhado usam peixe (`restaurant.json` → `menu[].fish`): ao anotar o pedido sai 1 peixe do estoque da pesca do píer
+    ("peixe fresco", prato +25% e +1 de fama); sem peixe pescado o fornecedor cobra R$ 22 (`fresh_fish`).
+  - Crítico do "Guia Sabores da Costa" (`restaurant.json` → `critic`): a partir do dia 3, a cada 3–5 dias, senta numa mesa
+    disfarçado de cliente comum; a pista é a mensagem ao anotar ("anotou algo num caderninho..."). Atendido pelo
+    jogador, a nota começa em 5 e perde 1 a cada 10 min de espera acima de 20 e 0,5 por peixe que não é fresco; atendido
+    pela equipe vale 2,5 (3 com o garçom). Nota 4,5 ou mais dá estrela ao restaurante (até 3; cada uma deixa o cardápio
+    12% mais caro e dá 15 de fama); 2,5 ou menos tira 6 de fama. A nota entra também na avaliação geral do resort.
+    O celular (Restaurante) mostra as estrelas, os peixes na cozinha e a última crítica. QA: `mare.HotelEvent critic`.
+  - Os antigos "casamento" e "aniversário" do restaurante viraram jantares (formatura e bodas de prata), porque os da
+    praia agora são os eventos com montagem (5.2); os três jantares rendem a mesma proporção do custo (o GPT apontou
+    que o casamento antigo rendia demais).
+  - Correções do relatório do GPT (PR #7) no mesmo lote: autosave a cada 30 s nunca rodava (o comentário engolia a
+    linha); pedido VIP valia por quarto e não por estadia; neon não estendia o quiosque até 21h (`KioskCloseHour`);
+    aluguel agora fecha na tempestade e rende 40% mais na maré alta (o texto dizia "fecha com mar bravo", mas a maré
+    alta também é mar bravo); evento do restaurante cuja noite foi dormida agora paga em vez de sumir.
 
 ### 5.4 Salão de jogos
 
