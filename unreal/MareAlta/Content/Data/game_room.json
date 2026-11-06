@@ -68,7 +68,16 @@
   "fee": 50,
   "prize": 600,
   "runner_up": 150,
-  "fame": 10
+  "fame": 10,
+  "every_days": 7,
+  "first_day": 1,
+  "signup_days": 2,
+  "spectators": [
+   6,
+   14
+  ],
+  "guest_final_hour": 22,
+  "_weekly": "Weekly (06/11, CHECKLIST 5.4): a new edition opens every every_days from first_day; sign-up on its first signup_days days; without the player the guests play the whole cup that night at guest_final_hour (champion posted); on cup nights spectators (extra guests) buy tokens."
  },
  "tt_table": [
   -1600,

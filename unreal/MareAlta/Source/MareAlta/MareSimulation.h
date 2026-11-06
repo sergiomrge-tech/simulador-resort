@@ -443,6 +443,12 @@ public:
  TArray<FString> PoolCupAlive() const;
  FString PoolCupRoundName() const;
  bool PoolCupJoin();
+ /** Weekly cup (5.4): sign-up open today for this week's edition? NextDay = the day the next sign-up opens. */
+ bool PoolCupSignupOpen(int32& NextDay) const;
+ /** The cup without the player: the guests play the whole bracket (returns the champion). */
+ FString PoolCupGuestsOnly();
+ /** A cup round was played today (spectators at the game room's token hours). */
+ bool PoolCupNight() const;
  FString PoolCupOpponent() const;
  bool PoolCupReady(FString& Why) const;
  void PoolCupResult(bool bWon);

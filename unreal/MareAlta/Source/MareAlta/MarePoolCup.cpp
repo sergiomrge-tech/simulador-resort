@@ -83,6 +83,7 @@ bool UMareSimulation::PoolCupJoin()
 {
  if(PoolCupActive())return Fail(TEXT("O campeonato já está em andamento."));
  const auto Cup=Object(GameRoomDefs(),TEXT("cup"));const double Fee=Number(Cup,TEXT("fee"),50);
+ int32 NextDay=0;if(!PoolCupSignupOpen(NextDay))return Fail(FString::Printf(TEXT("As inscrições do %s abrem uma vez por semana: a próxima é no dia %d."),*String(Cup,TEXT("name")),NextDay));
  if(Money()<Fee)return Fail(FString::Printf(TEXT("Saldo insuficiente: a inscrição custa R$ %.0f."),Fee));
  TArray<FString> Field=PoolPlayers();
  for(int32 I=Field.Num()-1;I>0;--I)Field.Swap(I,FMath::RandRange(0,I));
@@ -91,8 +92,49 @@ bool UMareSimulation::PoolCupJoin()
  Field.Insert(PoolYou,FMath::RandRange(0,Field.Num()));
  auto C=Child(Billiards(),TEXT("cup"));C->SetBoolField(TEXT("active"),true);SetStrings(C,TEXT("alive"),Field);
  C->SetNumberField(TEXT("played_day"),-1);SetStrings(C,TEXT("log"),{});
+ const int32 Every=FMath::Max(1,int32(Number(Cup,TEXT("every_days"),7))),First=int32(Number(Cup,TEXT("first_day"),1));
+ C->SetNumberField(TEXT("edition"),(int32(Number(State,TEXT("day"),1))-First)/Every);
  Book(-Fee,TEXT("Inscrição: ")+String(Cup,TEXT("name")));
  LastMessage=String(Cup,TEXT("name"))+TEXT(": inscrição feita! Uma rodada por dia, aqui na mesa.");return Save();
+}
+
+bool UMareSimulation::PoolCupSignupOpen(int32& NextDay) const
+{
+ // One edition a week: it opens on first_day + k*every_days and takes sign-ups for signup_days days; once the player
+ // played (or was out of) an edition, the next sign-up is next week's.
+ const auto Cup=Object(GameRoomDefs(),TEXT("cup"));const int32 Every=FMath::Max(1,int32(Number(Cup,TEXT("every_days"),7)));
+ const int32 First=int32(Number(Cup,TEXT("first_day"),1)),Window=FMath::Max(1,int32(Number(Cup,TEXT("signup_days"),2))),Day=int32(Number(State,TEXT("day"),1));
+ if(Day<First){NextDay=First;return false;}
+ const int32 Edition=(Day-First)/Every,Into=(Day-First)%Every;
+ const auto C=Object(Object(State,TEXT("billiards")),TEXT("cup"));
+ const bool bDone=C->HasField(TEXT("edition")) && int32(Number(C,TEXT("edition"),-1))==Edition;
+ const bool bGuests=int32(Number(C,TEXT("guests_edition"),-1))==Edition;
+ if(Into<Window && !bDone && !bGuests){NextDay=Day;return true;}
+ NextDay=First+(Edition+1)*Every;return false;
+}
+
+FString UMareSimulation::PoolCupGuestsOnly()
+{
+ const auto Cup=Object(GameRoomDefs(),TEXT("cup"));auto C=Child(Billiards(),TEXT("cup"));
+ const int32 Every=FMath::Max(1,int32(Number(Cup,TEXT("every_days"),7))),First=int32(Number(Cup,TEXT("first_day"),1));
+ TArray<FString> Field=PoolPlayers();for(int32 I=Field.Num()-1;I>0;--I)Field.Swap(I,FMath::RandRange(0,I));Field.SetNum(FMath::Min(Field.Num(),8));
+ TArray<FString> Log;
+ while(Field.Num()>1){const FString Round=Field.Num()>=8?TEXT("quartas de final"):Field.Num()>=4?TEXT("semifinal"):TEXT("final");TArray<FString> Next;
+  for(int32 I=0;I+1<Field.Num();I+=2){const double Ea=Number(PoolPlayer(Field[I]),TEXT("skill"),2),Eb=Number(PoolPlayer(Field[I+1]),TEXT("skill"),2);
+   const FString W=FMath::FRand()<1/(1+FMath::Exp((Ea-Eb)*1.6))?Field[I]:Field[I+1];Next.Add(W);Log.Add(Round+TEXT(": ")+Field[I]+TEXT(" × ")+Field[I+1]+TEXT(" → ")+W);}
+  if(Field.Num()%2)Next.Add(Field.Last());Field=Next;}
+ const FString Champion=Field.Num()?Field[0]:FString();
+ C->SetNumberField(TEXT("guests_edition"),(int32(Number(State,TEXT("day"),1))-First)/Every);C->SetNumberField(TEXT("guests_day"),Number(State,TEXT("day"),1));
+ SetStrings(C,TEXT("log"),Log);C->SetStringField(TEXT("last_champion"),Champion);
+ LastMessage=FString::Printf(TEXT("%s da semana no salão de jogos: %s foi campeão. As próximas inscrições abrem no dia %d."),*String(Cup,TEXT("name")),*Champion,
+  First+((int32(Number(State,TEXT("day"),1))-First)/Every+1)*Every);
+ Save();return Champion;
+}
+
+bool UMareSimulation::PoolCupNight() const
+{
+ const auto C=Object(Object(State,TEXT("billiards")),TEXT("cup"));const int32 Day=int32(Number(State,TEXT("day"),1));
+ return int32(Number(C,TEXT("played_day"),-1))==Day || int32(Number(C,TEXT("guests_day"),-1))==Day;
 }
 
 FString UMareSimulation::PoolCupOpponent() const
@@ -125,6 +167,7 @@ void UMareSimulation::PoolCupResult(bool bWon)
  SetStrings(C,TEXT("log"),Log);C->SetNumberField(TEXT("played_day"),Number(State,TEXT("day"),1));
  const FString Name=String(Cup,TEXT("name"));
  if(Next.Num()<=1){// Final played: the cup ends.
+  C->SetStringField(TEXT("last_champion"),bWon?PoolYou:(Next.Num()?Next[0]:FString()));
   C->SetBoolField(TEXT("active"),false);SetStrings(C,TEXT("alive"),Next);
   if(bWon){const double Prize=Number(Cup,TEXT("prize"),600);Book(Prize,TEXT("Prêmio: ")+Name);AddFame(int32(Number(Cup,TEXT("fame"),10)));
    auto B=Billiards();B->SetNumberField(TEXT("cups"),Number(B,TEXT("cups"))+1);
@@ -132,7 +175,7 @@ void UMareSimulation::PoolCupResult(bool bWon)
   else{const double Second=Number(Cup,TEXT("runner_up"),150);Book(Second,TEXT("Vice: ")+Name);
    LastMessage=FString::Printf(TEXT("Vice-campeão do %s: R$ %.0f. Campeão: %s."),*Name,Second,Next.Num()?*Next[0]:TEXT("?"));}}
  else{SetStrings(C,TEXT("alive"),Next);
-  if(!Next.Contains(PoolYou)){C->SetBoolField(TEXT("active"),false);LastMessage=TEXT("Eliminado do ")+Name+TEXT(" na ")+Round+TEXT(". Inscreva-se de novo quando quiser.");}
+  if(!Next.Contains(PoolYou)){C->SetBoolField(TEXT("active"),false);LastMessage=TEXT("Eliminado do ")+Name+TEXT(" na ")+Round+TEXT(". O próximo campeonato é na semana que vem.");}
   else LastMessage=TEXT("Você passou de fase! Próxima: ")+PoolCupRoundName()+TEXT(", amanhã.");}
  Save();
 }

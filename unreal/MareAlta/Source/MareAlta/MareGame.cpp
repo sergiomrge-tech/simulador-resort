@@ -409,7 +409,11 @@ private:
   const auto Cup=UMareSimulation::Object(S->GameRoomDefs(),TEXT("cup"));const FString CupName=UMareSimulation::String(Cup,TEXT("name"));
   if(!S->PoolCupActive()){
    Heading(CupName,FString::Printf(TEXT("8 jogadores, mata-mata, uma rodada por dia · prêmio R$ %.0f, vice R$ %.0f"),UMareSimulation::Number(Cup,TEXT("prize")),UMareSimulation::Number(Cup,TEXT("runner_up"))));
-   Body->AddSlot().AutoHeight().HAlign(HAlign_Left).Padding(0,2,0,6)[Button(FString::Printf(TEXT("Inscrever-se · R$ %.0f"),UMareSimulation::Number(Cup,TEXT("fee"))),[S](){S->PoolCupJoin();},S->Money()>=UMareSimulation::Number(Cup,TEXT("fee")))];}
+   int32 NextDay=0;
+   if(S->PoolCupSignupOpen(NextDay))Body->AddSlot().AutoHeight().HAlign(HAlign_Left).Padding(0,2,0,6)[Button(FString::Printf(TEXT("Inscrever-se · R$ %.0f"),UMareSimulation::Number(Cup,TEXT("fee"))),[S](){S->PoolCupJoin();},S->Money()>=UMareSimulation::Number(Cup,TEXT("fee")))];
+   else Line(FString::Printf(TEXT("Campeonato semanal: as próximas inscrições abrem no dia %d."),NextDay),13,Faded);
+   const FString Last=UMareSimulation::String(UMareSimulation::Object(UMareSimulation::Object(S->State,TEXT("billiards")),TEXT("cup")),TEXT("last_champion"));
+   if(!Last.IsEmpty())Line(TEXT("Último campeão: ")+Last,13,Faded);}
   else{const TArray<FString> Alive=S->PoolCupAlive();FString Why;const bool bReady=S->PoolCupReady(Why);
    Heading(CupName,S->PoolCupRoundName());
    FString Bracket;for(int32 I=0;I+1<Alive.Num();I+=2)Bracket+=(Bracket.IsEmpty()?TEXT(""):TEXT("\n"))+Alive[I]+TEXT(" × ")+Alive[I+1];

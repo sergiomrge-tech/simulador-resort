@@ -1687,8 +1687,19 @@ bool FMarePoolCupTest::RunTest(const FString& Parameters)
  auto B=UMareSimulation::Object(Sim->State,TEXT("billiards"));
  TestEqual(TEXT("Cup counted"),UMareSimulation::Number(B,TEXT("cups")),1.);TestEqual(TEXT("Matches counted"),UMareSimulation::Number(B,TEXT("played")),3.);
  Sim->State->SetNumberField(TEXT("day"),UMareSimulation::Number(Sim->State,TEXT("day"),1)+1);
+ // Weekly (5.4): no second sign-up the same week; the next edition opens 7 days later.
+ int32 NextDay=0;TestFalse(TEXT("Weekly: closed mid-week"),Sim->PoolCupJoin());TestFalse(TEXT("Weekly: sign-up closed"),Sim->PoolCupSignupOpen(NextDay));
+ TestEqual(TEXT("Weekly: next sign-up a week after the first"),NextDay,8);
+ Sim->State->SetNumberField(TEXT("day"),8);TestTrue(TEXT("Weekly: open again"),Sim->PoolCupSignupOpen(NextDay));
  TestTrue(TEXT("Join again"),Sim->PoolCupJoin());Sim->PoolCupResult(false);
  TestFalse(TEXT("Elimination ends the cup"),Sim->PoolCupActive());
+ // Without the player the guests play their own cup on the last sign-up night; cup nights draw spectators.
+ Sim->State->SetNumberField(TEXT("day"),16);Sim->State->SetNumberField(TEXT("minutes"),22*60);
+ UMareSimulation::Object(Sim->State,TEXT("unlocked"))->SetBoolField(TEXT("salao_jogos"),true);
+ Sim->GameRoomHour(22);
+ TestFalse(TEXT("Guests' cup: a champion"),UMareSimulation::String(UMareSimulation::Object(B,TEXT("cup")),TEXT("last_champion")).IsEmpty());
+ TestTrue(TEXT("Guests' cup: tonight is a cup night"),Sim->PoolCupNight());
+ TestFalse(TEXT("Guests' cup: sign-up closed until next week"),Sim->PoolCupSignupOpen(NextDay));TestEqual(TEXT("Guests' cup: next in a week"),NextDay,22);
  Sim->RemoveFromRoot();Instance->RemoveFromRoot();return true;
 }
 

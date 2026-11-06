@@ -571,7 +571,12 @@ coloque hóspedes que entrarem aproveitando a piscina e tobogã"):
   `tools/ue58/gen_arcade_art.py` (P_* do pinball; letreiro, título e lateral do 2º gabinete trocados). Teste
   `MareAlta.Gameplay.Arcade`; QA `mare.Arcade start:0|1, play:s, end, state`. Correção junto: os gabinetes do salão não
   nasciam (SpawnActor sem AlwaysSpawn recusava o lugar).
-- [ ] Torneio semanal (a estrutura de copa já existe), hóspedes jogando à noite e renda das fichas.
+- [x] Torneio semanal (a estrutura de copa já existe), hóspedes jogando à noite e renda das fichas.
+  Decisões (06/11, Claude): o Campeonato da Maré (sinuca, mata-mata de 8, uma rodada por dia) virou semanal: uma
+  edição abre a cada 7 dias (`game_room.json` → `cup.every_days`, `first_day`) e aceita inscrição nos 2 primeiros dias,
+  com aviso às 9h. Sem o jogador, os hóspedes disputam a edição inteira às 22h do último dia de inscrição e o campeão
+  sai no celular ("Último campeão"). Nas noites de campeonato vem plateia (6–14 a mais) comprando fichas no salão; os
+  hóspedes já jogavam pebolim e fliperama à noite (`GameRoomHour`, `token_hours`). Teste em `MareAlta.Gameplay.PoolCup`.
 
 ## 6. Sistemas que amarram tudo
 
