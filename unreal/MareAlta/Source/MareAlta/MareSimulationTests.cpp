@@ -1366,6 +1366,12 @@ bool FMareBusinessCommonTest::RunTest(const FString& Parameters)
   TestTrue(TEXT("Dearer"),Sim->IceOrderPrice(Sim->IceQueue()[0])>Price1);TestTrue(TEXT("Harder: the order shows for less time"),Sim->Number(Sim->IceDefs(),TEXT("show_seconds"))<ShowBase);
   TestEqual(TEXT("Base values untouched"),Sim->Number(Base,TEXT("show_seconds")),ShowBase);
   for(const FString& Id:Ids){Sim->BizState(Id)->SetNumberField(TEXT("lvl"),3);TestTrue(Id+TEXT(": level 3 dearer"),Sim->BizPriceMult(Id)>1.4);}
+  // The decoration of the business also reaches the queue sales (GPT report, 06/11), not only the staff income.
+  {const double Plain=Sim->IceOrderPrice(Sim->IceQueue()[0]);TestEqual(TEXT("No decoration: sale = level price"),Sim->BizSaleMult(TEXT("sorveteria")),Sim->BizPriceMult(TEXT("sorveteria")));
+   Sim->Object(Sim->Object(Sim->Object(Sim->State,TEXT("custom")),TEXT("biz_sorveteria")),TEXT("plantas"))->SetNumberField(TEXT("tier"),5);
+   TestTrue(TEXT("Decorated: the sale factor grows"),Sim->BizSaleMult(TEXT("sorveteria"))>Sim->BizPriceMult(TEXT("sorveteria")));
+   TestTrue(TEXT("Decorated: the cone costs more"),Sim->IceOrderPrice(Sim->IceQueue()[0])>Plain);
+   Sim->Object(Sim->Object(Sim->State,TEXT("custom")),TEXT("biz_sorveteria"))->RemoveField(TEXT("plantas"));}
   TestTrue(TEXT("Pastel level 3: tighter golden window"),Sim->Number(Sim->PastelDefs(),TEXT("golden_to"))-Sim->Number(Sim->PastelDefs(),TEXT("golden_from"))<2);
   TestTrue(TEXT("Rental level 3: more wax turns"),Sim->Number(Sim->RentalDefs(),TEXT("wax_turns"))>5);
   TestTrue(TEXT("Souvenir level 3: ribbon shown shorter"),Sim->Number(Sim->SouvenirDefs(),TEXT("memo_s"))<3);

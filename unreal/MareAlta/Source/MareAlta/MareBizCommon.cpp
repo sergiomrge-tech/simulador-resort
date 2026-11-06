@@ -50,6 +50,13 @@ double UMareSimulation::BizPriceMult(const FString& Id) const
  const auto Def=BizLevelDef(Id,BusinessLevel(Id));return Def.IsValid()?Number(Def,TEXT("price_mult"),1):1;
 }
 
+double UMareSimulation::BizSaleMult(const FString& Id) const
+{
+ // GPT report (06/11): the decoration bought for a business (PlaceIncomeFactor biz_<id>) only reached the staff income (BusinessRate), not the
+ // sales the player makes at the queue.
+ return BizPriceMult(Id)*FMath::Max(1.,PlaceIncomeFactor(TEXT("biz_")+Id));
+}
+
 bool UMareSimulation::CanUpgradeBusiness(const FString& Id,FString& Reason,double* Cost) const
 {
  if(!OwnsBusiness(Id)){Reason=TEXT("O negócio ainda não é seu.");return false;}

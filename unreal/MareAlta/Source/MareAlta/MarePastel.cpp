@@ -25,7 +25,7 @@ double UMareSimulation::PastelOrderPrice(const TSharedPtr<FJsonObject>& O) const
  // Pastel and, when asked, the sugar-cane juice: the full bill at the current level.
  const auto D=PastelDefs();double Price=0;const TArray<TSharedPtr<FJsonValue>>* F=nullptr;bool bCana=false;if(O.IsValid())O->TryGetBoolField(TEXT("cana"),bCana);
  if(D->TryGetArrayField(TEXT("fillings"),F))for(const auto& V:*F)if(String(V->AsObject(),TEXT("id"))==String(O,TEXT("filling")))Price=Number(V->AsObject(),TEXT("price"),9);
- return (Price+(bCana?Number(D,TEXT("cana_price"),6):0))*BizPriceMult(TEXT("food_truck"));
+ return (Price+(bCana?Number(D,TEXT("cana_price"),6):0))*BizSaleMult(TEXT("food_truck"));
 }
 
 TArray<TSharedPtr<FJsonObject>> UMareSimulation::PastelQueue() const
@@ -85,10 +85,10 @@ FMareIceResult UMareSimulation::ServePastel(const FString& Filling,bool bSealed,
  R.Hits=int32(bFilling)+int32(bSealed)+int32(bGolden);
  double Price=0;const TArray<TSharedPtr<FJsonValue>>* F=nullptr;
  if(D->TryGetArrayField(TEXT("fillings"),F))for(const auto& V:*F)if(String(V->AsObject(),TEXT("id"))==String(O,TEXT("filling")))Price=Number(V->AsObject(),TEXT("price"),9);
- Price*=BizPriceMult(TEXT("food_truck"));
+ Price*=BizSaleMult(TEXT("food_truck"));
  const TArray<TSharedPtr<FJsonValue>>* Pay=nullptr;const double Factor=D->TryGetArrayField(TEXT("pay"),Pay) && Pay->IsValidIndex(R.Hits)?(*Pay)[R.Hits]->AsNumber():.3+.3*R.Hits;
  // A burnt pastel is not sold at all; the juice is paid when it was asked for and pressed.
- const bool bBurnt=FrySeconds>Burnt;const double Juice=bWantsCana && bCana?FMath::RoundToDouble(Number(D,TEXT("cana_price"),6)*BizPriceMult(TEXT("food_truck"))):0;
+ const bool bBurnt=FrySeconds>Burnt;const double Juice=bWantsCana && bCana?FMath::RoundToDouble(Number(D,TEXT("cana_price"),6)*BizSaleMult(TEXT("food_truck"))):0;
  R.Paid=(bBurnt?0:FMath::RoundToDouble(Price*Factor))+Juice+(R.Hits==3 && (!bWantsCana || bCana)?Number(D,TEXT("tip_perfect"),4):0);
  const FString Who=String(O,TEXT("name"));if(R.Paid>0)Book(R.Paid,FString::Printf(TEXT("Food truck: pastel de %s (%d/3)"),*Who,R.Hits));
  AddFame(int32(Number(D,TEXT("fame_per_hit"),1))*R.Hits);Biz->SetNumberField(TEXT("games"),Number(Biz,TEXT("games"))+1);

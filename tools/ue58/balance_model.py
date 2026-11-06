@@ -26,6 +26,7 @@ HERE = Path(__file__).resolve().parent / 'balance'
 BASE_REVISION = 'fa49a68b5d8d33fdedde48fd096097f0aac0f267'
 TARGET_MINUTES_PER_DAY = 16
 TARGET_HOURS = (6, 10)
+DEMO_HOURS = (1.5, 2.5)   # demo grátis de ~2 h (Sergio, 06/11/2026): termina antes do Grand Hotel
 FILES = ('definitions', 'default_save', 'customization', 'bar', 'events', 'pool',
          'restaurant', 'tours', 'leisure', 'business_games', 'game_room', 'hotel_rooms', 'hotel_events', 'tutorial')
 SOURCES = ('MareSimulation', 'MareBusiness', 'MareBizCommon', 'MareHotelRooms',
@@ -426,6 +427,8 @@ class Model:
         for bid,level in sorted(self.biz.items()):
             if not level:continue
             definition=self.defs['businesses'][bid];d=self.bizdef(bid);mult=self.bizmult(bid)
+            # BizSaleMult (C++, 06/11): as vendas das filas também levam a decoração do negócio; o surfe usa BusinessRate, que já a inclui.
+            if bid!='surfe':mult*=max(1,self.factor('biz_'+bid))
             is_open=definition['open'][0]<=h<definition['open'][1]
             if bid=='aluguel' and self.event=='tempestade':is_open=False
             if bid=='souvenir':
@@ -758,6 +761,9 @@ class Model:
             else:self.biz[key[0]]=key[1]
         self.claim_campaign()
         if len(self.owned)==len(self.defs['expansions']) and all(self.done(c['id']) for c in self.defs['chapters']):self.stamp('tela_fim_ea')
+        # Demo: mesma condição de MareEvents (end_of_content), ignorando as expansões full_game, que a demo não vende.
+        demo=[k for k,v in self.defs['expansions'].items() if not v.get('full_game')]
+        if all(k in self.owned for k in demo) and all(self.done(c['id']) for c in self.defs['chapters']):self.stamp('fim_demo')
         all_custom=all((p,s['id'],t) in self.custom_owned for p,v in self.c['places'].items() for s in v['slots'] for t in range(2,6))
         all_recipes=all(self.recipes[k]==5 for k in self.defs['dishes'])
         if all_custom and all_recipes and all(self.biz[k]==3 for k in self.defs['businesses']) and all(self.barup[k]==len(v['prices']) for k,v in self.d['bar']['upgrades'].items()) and len(self.owned)==len(self.defs['expansions']):self.stamp('todas_compras')
@@ -868,6 +874,7 @@ def summarize(models, days):
     milestones=sorted({k for m in models for k in m.milestones if not k.startswith(('custom:','receita:','bar:'))})
     results={k:{'concluidos':sum(k in m.milestones for m in models), 'p10':quantile([m.milestones[k] for m in models if k in m.milestones],.1),'p50':quantile([m.milestones[k] for m in models if k in m.milestones],.5),'p90':quantile([m.milestones[k] for m in models if k in m.milestones],.9)} for k in milestones}
     targets={key:{'entre_6_e_10_h':sum(key in m.milestones and TARGET_HOURS[0]<=m.milestones[key]*TARGET_MINUTES_PER_DAY/60<=TARGET_HOURS[1] for m in models),'total':len(models)} for key in ['grand_hotel','tela_fim_ea']}
+    targets['fim_demo']={'entre_%g_e_%g_h'%DEMO_HOURS:sum('fim_demo' in m.milestones and DEMO_HOURS[0]<=m.milestones['fim_demo']*TARGET_MINUTES_PER_DAY/60<=DEMO_HOURS[1] for m in models),'total':len(models)}
     return {'meta_horas':list(TARGET_HOURS),'minutos_por_dia':TARGET_MINUTES_PER_DAY,'meta_atingida':targets,'sementes':len(models),'limite_dias':days,'marcos':results,'caixa_final_p50':quantile([m.money for m in models],.5),'censurados_compras':sum('todas_compras' not in m.milestones for m in models),'censurados_campanha':sum('campanha_completa' not in m.milestones for m in models)}
 
 
@@ -933,9 +940,9 @@ def main():
             summary[scenario][profile]=summarize(models,args.legacy_days or args.days)
             write_csv(args.out/f'{scenario}_{profile}_diario_seed0.csv',models[0].rows)
             # Uma linha por execução, incluindo limites sem marco em vez de fingir conclusão.
-            seed_rows=[{'semente':m.seed,**{k:m.milestones.get(k,'') for k in ['grand_hotel','salao_jogos','tela_fim_ea','campanha_completa','todas_compras']},'caixa_final':round(m.money,2)} for m in models]
+            seed_rows=[{'semente':m.seed,**{k:m.milestones.get(k,'') for k in ['fim_demo','grand_hotel','salao_jogos','tela_fim_ea','campanha_completa','todas_compras']},'caixa_final':round(m.money,2)} for m in models]
             write_csv(args.out/f'{scenario}_{profile}_sementes.csv',seed_rows)
-            print(scenario,profile,{k:v for k,v in summary[scenario][profile]['marcos'].items() if k in ['grand_hotel','tela_fim_ea','campanha_completa','todas_compras']})
+            print(scenario,profile,{k:v for k,v in summary[scenario][profile]['marcos'].items() if k in ['fim_demo','grand_hotel','tela_fim_ea','campanha_completa','todas_compras']})
     (args.out/'summary.json').write_text(json.dumps(summary,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
     paths=[DATA/f'{f}.json' for f in FILES]+[SOURCE/f'{f}.cpp' for f in SOURCES]
     manifest={str(p.relative_to(ROOT)):hashlib.sha256(p.read_bytes()).hexdigest() for p in paths}

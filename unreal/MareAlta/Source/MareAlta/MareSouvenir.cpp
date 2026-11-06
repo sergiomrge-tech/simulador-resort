@@ -21,8 +21,8 @@ namespace
 }
 
 TSharedPtr<FJsonObject> UMareSimulation::SouvenirDefs() const{return BizGameDefs(TEXT("souvenir"));}
-double UMareSimulation::WrapFee() const{return Number(SouvenirDefs(),TEXT("wrap_fee"),6)*BizPriceMult(TEXT("souvenir"));}
-double UMareSimulation::SouvenirPrice(const TSharedPtr<FJsonObject>& Craft) const{return FMath::RoundToDouble(Number(Craft,TEXT("price"),10)*BizPriceMult(TEXT("souvenir")));}
+double UMareSimulation::WrapFee() const{return Number(SouvenirDefs(),TEXT("wrap_fee"),6)*BizSaleMult(TEXT("souvenir"));}
+double UMareSimulation::SouvenirPrice(const TSharedPtr<FJsonObject>& Craft) const{return FMath::RoundToDouble(Number(Craft,TEXT("price"),10)*BizSaleMult(TEXT("souvenir")));}
 TSharedPtr<FJsonObject> UMareSimulation::SouvenirState() const{return Object(Object(Object(State,TEXT("prog")),TEXT("biz")),TEXT("souvenir"));}
 TArray<TSharedPtr<FJsonObject>> UMareSimulation::SouvenirQueue() const{return Objects(SouvenirState(),TEXT("queue"));}
 TArray<TSharedPtr<FJsonObject>> UMareSimulation::SouvenirCards() const{return Objects(SouvenirState(),TEXT("cards"));}
@@ -96,7 +96,7 @@ bool UMareSimulation::PlaceSouvenir(int32 Slot,const FString& Id)
 
 double UMareSimulation::SouvenirCardPrice(int32 Subjects) const
 {
- return FMath::RoundToDouble((Number(SouvenirDefs(),TEXT("card_price"),5)+Number(SouvenirDefs(),TEXT("subject_bonus"),2)*FMath::Clamp(Subjects,0,2))*BizPriceMult(TEXT("souvenir")));
+ return FMath::RoundToDouble((Number(SouvenirDefs(),TEXT("card_price"),5)+Number(SouvenirDefs(),TEXT("subject_bonus"),2)*FMath::Clamp(Subjects,0,2))*BizSaleMult(TEXT("souvenir")));
 }
 
 bool UMareSimulation::PrintPostcards(const FString& File,int32 Subjects)

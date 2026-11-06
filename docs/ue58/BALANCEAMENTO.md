@@ -1,3 +1,36 @@
+# Demo grátis de ~2 h — números aplicados (Claude, 06/11/2026)
+
+O primeiro lançamento é a demo (`definitions.json` → `"demo": true`). Ela termina quando o jogador tem todas as
+expansões que não são `full_game` e os 4 capítulos da vila (mesma condição da tela final, `MareEvents`). O modelo
+ganhou o marco **`fim_demo`** e a meta de **1,5–2,5 h** (`DEMO_HOURS`).
+
+Antes, no ritmo de 06/11, o fim da demo vinha no dia 13/10/8 (casual/médio/dedicado), ou seja, 3,5/2,7/2,1 h.
+O que segurava era o dinheiro para pousada, piscina e passeios (os capítulos acabavam no dia 8–9). Mudanças em
+`definitions.json`:
+
+| Expansão | Antes | Agora |
+|---|---|---|
+| Bar do Coqueiro | R$ 1.200 | R$ 900 |
+| Pousada | R$ 2.400 | R$ 1.400 |
+| Piscina | R$ 2.000 | R$ 1.100 |
+| Passeios | R$ 1.800 | R$ 1.000 |
+
+Também entrou a correção do relatório do GPT: a decoração dos negócios (`biz_<id>`) agora vale nas vendas das filas
+(`UMareSimulation::BizSaleMult` = nível × decoração), e o modelo faz o mesmo.
+
+Resultado (30 sementes, `tools/ue58/balance/demo/`), dia P10/P50/P90 do `fim_demo` e horas da mediana a 16 min/dia:
+
+| Perfil | Dias | Horas | Na meta 1,5–2,5 h |
+|---|---|---|---|
+| casual | 9 / 10 / 11 | 2,7 h | 6/30 |
+| médio | 7 / 8 / 9 | 2,1 h | 28/30 |
+| dedicado | 7 / 7 / 8 | 1,9 h | 30/30 |
+
+Atenção para o jogo completo: com as expansões mais baratas, o Grand Hotel do perfil médio caiu de ~6,7 h para
+~5,3 h (abaixo da meta de 6–10 h do Acesso Antecipado). Quando o jogo completo for balanceado, subir o custo do
+hotel (hoje R$ 30.000) ou a fama exigida; isso não mexe na demo. O modelo continua sendo uma estimativa: confirmar
+jogando a demo do zero e cronometrando.
+
 # Balanceamento — Pacote 2, meta de 6–10 horas até hotel e tela do EA
 
 Referência fixa: **fa49a68b5d8d33fdedde48fd096097f0aac0f267**, branch de origem `codex/ue58-migration`, 06/11/2026. Esta análise atualiza o pacote do PR #7. O PR #7 foi incorporado sem conflitos; o branch gpt/pacote-2 foi atualizado para esta base após três novos commits durante o trabalho. Os arquivos consultados correspondem aos blobs dessa referência; os hashes SHA-256 usados na execução estão em `tools/ue58/balance/pacote2/results/inputs_sha256.json`.

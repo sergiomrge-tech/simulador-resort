@@ -32,7 +32,7 @@ FString UMareSimulation::RentalItemName(const FString& Item) const
 
 double UMareSimulation::RentalPrice(const FString& Item,int32 Minutes) const
 {
- return FMath::RoundToDouble(Number(Object(Object(RentalDefs(),TEXT("items")),Item),TEXT("price30"),10)*FMath::Max(1,Minutes/30)*BizPriceMult(TEXT("aluguel")));
+ return FMath::RoundToDouble(Number(Object(Object(RentalDefs(),TEXT("items")),Item),TEXT("price30"),10)*FMath::Max(1,Minutes/30)*BizSaleMult(TEXT("aluguel")));
 }
 
 void UMareSimulation::AddRentalCustomer()

@@ -514,6 +514,8 @@ public:
  TSharedPtr<FJsonObject> BizGameDefs(const FString& Id) const;
  /** Price multiplier of the current level (1 at level 1). */
  double BizPriceMult(const FString& Id) const;
+ /** What a queue sale charges: the level multiplier times the decoration bonus of the business (customization biz_<id>, never below 1). */
+ double BizSaleMult(const FString& Id) const;
  bool CanUpgradeBusiness(const FString& Id,FString& Reason,double* Cost=nullptr) const;
  UFUNCTION(BlueprintCallable,Category="Maré Alta|Business") bool UpgradeBusiness(const FString& Id);
  /** Share of the price the clerk brings in when he serves alone (business_games.json clerk_share, 0.6). */

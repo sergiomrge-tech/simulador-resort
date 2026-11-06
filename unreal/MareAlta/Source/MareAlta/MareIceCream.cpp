@@ -23,7 +23,7 @@ TSharedPtr<FJsonObject> UMareSimulation::IceDefs() const
 double UMareSimulation::IceOrderPrice(const TSharedPtr<FJsonObject>& O) const
 {
  const auto D=IceDefs();const TArray<TSharedPtr<FJsonValue>>* F=nullptr;const int32 Scoops=O.IsValid() && O->TryGetArrayField(TEXT("flavors"),F)?F->Num():1;
- return (Scoops*Number(D,TEXT("price_per_scoop"),6)+(String(O,TEXT("topping"))!=TEXT("nenhuma")?Number(D,TEXT("topping_price"),2):0))*BizPriceMult(TEXT("sorveteria"));
+ return (Scoops*Number(D,TEXT("price_per_scoop"),6)+(String(O,TEXT("topping"))!=TEXT("nenhuma")?Number(D,TEXT("topping_price"),2):0))*BizSaleMult(TEXT("sorveteria"));
 }
 
 TArray<TSharedPtr<FJsonObject>> UMareSimulation::IceQueue() const

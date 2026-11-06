@@ -51,11 +51,12 @@ O que falta é **profundidade e variedade**. Hoje quase tudo é "aperte E" + bar
 > - Feito e no GitHub: 5.2 eventos com montagem, 5.3 restaurante/crítico/peixe, 6 bugs do relatório do GPT, demo
 >   (hotel trancado, campanha para no hotel, tela final da demo), PR #7 e #8 do GPT (balanço, textos da Steam,
 >   traduções, `tools/ue58/qa/data_lint.py`).
-> - Próximo: (1) traduções dos textos da demo (tarefa curta do GPT); (2) números da demo de ~2 h: o modelo do GPT
->   ainda mede o jogo com hotel (~6,7 h); falta o marco "fim_demo" e aplicar os valores; (3) defeito do relatório do
->   GPT ainda aberto: a decoração dos negócios (PlaceIncomeFactor biz_*) não entra nas vendas das filas (sorveteria,
->   food truck, aluguel, lojinha); plano: `BizSaleMult = BizPriceMult × PlaceIncomeFactor("biz_"+Id)` nas funções de
->   preço das filas, sem mexer em BusinessRate; (4) piscina: hóspedes nadando na piscina da pousada (o tobogã fica na
+> - Próximo: (1) traduções dos textos da demo: os 18 textos estão em `Localization/Mare/todo_<idioma>.json`, tarefa
+>   entregue ao GPT (pacote 3, junto com os textos da Steam para a demo e o `data_lint` no portão);
+>   (2) FEITO (06/11): números da demo, marco `fim_demo` no modelo, bar/pousada/piscina/passeios mais baratos, médio
+>   termina a demo em ~2,1 h (`BALANCEAMENTO.md`, topo); pendente para o jogo completo: o hotel ficou cedo (~5,3 h);
+>   (3) FEITO (06/11): a decoração dos negócios entra nas vendas das filas (`BizSaleMult`, teste em
+>   `MareAlta.Gameplay.BusinessCommon`); (4) piscina: hóspedes nadando na piscina da pousada (o tobogã fica na
 >   piscina do Grand Hotel, `customization.json` → `hotel_piscina`, ou seja, no jogo completo); (5) seção 7 técnica;
 >   (6) ilha.
 > - Ligar `data_lint.py` no `qa_gate.py` quando houver tempo.
@@ -745,3 +746,11 @@ Para cada item:
 
 Não me pergunte a cada passo: decida pelo bom senso e anote as decisões no checklist. Só pare para perguntar se algo for irreversível ou mudar o rumo do jogo. Responda sempre em português.
 ```
+
+## 9. Rádio do quiosque (pedido do Sergio, 06/11/2026 — no FIM da fila)
+
+- [ ] Rádio no quiosque onde o jogador troca as músicas (próxima / anterior / desligar). Quando o resort evoluir, a rádio
+  passa para o hotel. Músicas em estilo baiano (axé, samba-reggae, forró, ijexá, pagode baiano), buscadas na web,
+  gratuitas e SEM direitos autorais que impeçam lives/streams (licença CC0 ou "royalty-free / livre para streaming" que
+  permita uso comercial em jogo; conferir licença de cada faixa e registrar autor, link e licença em CREDITS.md).
+  A casa já tem rádio/som com músicas (`audio.json`: music_bossa, music_relax, reggae_praia): reaproveitar esse sistema.

@@ -609,7 +609,7 @@
 		"bar": {
 			"area": "bar",
 			"blurb": "Um bar de praia com barman. Banhistas sentam e pedem drinks sozinhos.",
-			"cost": 1200,
+			"cost": 900,
 			"icon": "bar",
 			"name": "Bar do Coqueiro",
 			"req": [
@@ -672,7 +672,7 @@
 		"passeios": {
 			"area": "",
 			"blurb": "Mergulho, barco e trilha ao farol. Com um guia contratado, os passeios rendem sozinhos.",
-			"cost": 1800,
+			"cost": 1000,
 			"icon": "banho",
 			"name": "Passeios turísticos",
 			"req": [
@@ -683,7 +683,7 @@
 		"pool": {
 			"area": "pool",
 			"blurb": "Piscina com espreguiçadeiras. Hóspedes ficam mais felizes (+★).",
-			"cost": 2000,
+			"cost": 1100,
 			"icon": "banho",
 			"name": "Piscina",
 			"req": [
@@ -695,7 +695,7 @@
 		"pousada": {
 			"area": "pousada",
 			"blurb": "Recepção e o primeiro bangalô. Hóspedes pagam diária e dão gorjeta.",
-			"cost": 2400,
+			"cost": 1400,
 			"icon": "bangalo",
 			"name": "Pousada: recepção + bangalô",
 			"req": [
