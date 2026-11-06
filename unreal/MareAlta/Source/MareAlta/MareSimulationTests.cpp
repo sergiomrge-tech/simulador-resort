@@ -4,6 +4,8 @@
 #include "Misc/AutomationTest.h"
 #include "MareGameRoom.h"
 #include "MareTableTennis.h"
+#include "MareFoosball.h"
+#include "Engine/StaticMesh.h"
 #include "MareStaysWorld.h"
 #include "MarePerson.h"
 #include "Engine/GameInstance.h"
@@ -1717,6 +1719,92 @@ bool FMareTableTennisTest::RunTest(const FString& Parameters)
  TestTrue(TEXT("Every match ends"),bEnded);TestTrue(TEXT("Legal final scores"),bScores);TestTrue(TEXT("Both sides win sometimes"),Wins[0]>0 && Wins[1]>0);
  const double PerPoint=Shots/double(FMath::Max(Points,1));TestTrue(TEXT("Real rallies, not endless (3 to 9 shots per point)"),PerPoint>3 && PerPoint<9);
  TT->RemoveFromRoot();return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FMareFoosballTest,"MareAlta.Gameplay.FoosballMatch",EAutomationTestFlags::EditorContext|EAutomationTestFlags::EngineFilter)
+bool FMareFoosballTest::RunTest(const FString& Parameters)
+{
+ // 5.4 foosball with real rods: the ball rolls into the goal mouth, bounces off the walls and the end wall beside the
+ // goal, a hanging man blocks it and a lifted one lets it pass, turning the rod kicks it, and AI-against-AI matches
+ // always end 5 to something with real play.
+ auto FB=NewObject<UMareFoosball>();FB->AddToRoot();namespace F=MareFB;
+ auto LiftAll=[FB](){for(int32 I=0;I<F::Rods;++I){FB->RodA[I]=1.5;FB->RodW[I]=0;FB->RodVY[I]=0;FB->RodY[I]=0;}};
+ auto Run=[FB](double Seconds){for(double T=0;T<Seconds && FB->bLive;T+=1./60)FB->Step(1./60);};
+ FB->NewMatch();LiftAll();FB->bLive=true;FB->Ball=FVector2D(.4,0);FB->Vel=FVector2D(3,0);Run(1);
+ TestEqual(TEXT("Rolling into the guest's goal scores for the player"),FB->Goals[0],1);
+ FB->NewMatch();LiftAll();FB->bLive=true;FB->Ball=FVector2D(.3,.2);FB->Vel=FVector2D(0,2);Run(.3);
+ TestTrue(TEXT("Side wall bounces the ball back"),FB->Vel.Y<0 && FMath::Abs(FB->Ball.Y)<=F::HY-F::R+1e-6);
+ FB->NewMatch();LiftAll();FB->bLive=true;FB->Ball=FVector2D(.45,.25);FB->Vel=FVector2D(3,0);Run(.4);
+ TestTrue(TEXT("End wall beside the goal: no goal, back into play"),FB->Goals[0]==0 && FB->Vel.X<0);
+ FB->NewMatch();LiftAll();FB->RodA[5]=0;FB->bLive=true;FB->Ball=FVector2D(.12,0);FB->Vel=FVector2D(2,0);Run(.4);
+ TestTrue(TEXT("A hanging man blocks the ball"),FB->Vel.X<0 && FB->Ball.X<F::RodX(5));
+ FB->NewMatch();LiftAll();FB->bLive=true;FB->Ball=FVector2D(.12,0);FB->Vel=FVector2D(2,0);FB->Step(.3);
+ TestTrue(TEXT("Lifted men let it pass"),FB->Ball.X>F::RodX(5)+.05 || FB->Goals[0]==1);
+ FB->NewMatch();LiftAll();FB->RodA[3]=0;FB->bLive=true;FB->Ball=FVector2D(F::RodX(3)+.04,0);FB->Vel=FVector2D::ZeroVector;
+ for(int32 I=0;I<6;++I){FB->TurnRod(3,FB->RodA[3]+30./60,1./60);FB->Step(1./60);}
+ TestTrue(TEXT("Turning the rod kicks the ball forward"),FB->Vel.X>1.5 && FB->LastTouch==0);
+ AddInfo(FString::Printf(TEXT("Kick speed %.2f m/s"),FB->Vel.X));
+ int32 Wins[2]={0,0},Touches=0,Serves=0,Goals=0,Restarts=0;double Time=0;bool bEnded=true;
+ for(int32 M=0;M<8;++M){FB->NewMatch();FB->Skill[0]=FB->Skill[1]=1.1;double T=0;
+  while(FB->Winner<0 && T<1200){if(!FB->bLive)FB->Serve(M*7919+int32(T*60));
+   FB->AI(0,1./60,M*131+int32(T*600));FB->AI(1,1./60,M*733+int32(T*600)+1);FB->Step(1./60);T+=1./60;}
+  if(FB->Winner<0){bEnded=false;AddError(FString::Printf(TEXT("Match %d did not end: %d-%d ball %s vel %s touches %d serves %d call '%s' rods %.3f/%.2f %.3f/%.2f"),M,FB->Goals[0],FB->Goals[1],*FB->Ball.ToString(),*FB->Vel.ToString(),
+   FB->Touches,FB->Serves,*FB->Call,FB->RodY[3],FB->RodA[3],FB->RodY[4],FB->RodA[4]));continue;}
+  ++Wins[FB->Winner];Touches+=FB->Touches;Serves+=FB->Serves;Time+=T;Goals+=FB->Goals[0]+FB->Goals[1];Restarts+=FB->Restarts;
+  TestEqual(TEXT("Winner has 5 goals"),FB->Goals[FB->Winner],UMareFoosball::WinGoals);}
+ AddInfo(FString::Printf(TEXT("Foosball: 8 matches, wins %d/%d, %.0f s each, %d touches, %d serves for %d goals, %d goalie restarts"),Wins[0],Wins[1],Time/8,Touches,Serves,Goals,Restarts));
+ TestTrue(TEXT("Every match ends"),bEnded);TestTrue(TEXT("Both sides win sometimes"),Wins[0]>0 && Wins[1]>0);
+ TestTrue(TEXT("Real play: the men touch the ball many times"),Touches>8*20);
+ TestTrue(TEXT("Few dead balls: serves are mostly after goals"),Serves<=Goals+8*2);
+ TestTrue(TEXT("A match lasts a few minutes, not seven"),Time/8<240);
+ // The heel tap: a ball stopped just behind a rod is played backward instead of dying there.
+ FB->NewMatch();LiftAll();for(int32 I=0;I<F::Rods;++I)FB->RodA[I]=0;FB->bLive=true;FB->Ball=FVector2D(F::RodX(3)-.04,0);FB->Vel=FVector2D::ZeroVector;
+ for(int32 I=0;I<60 && FB->Vel.X>-.3;++I){FB->AI(0,1./60,I);FB->Step(1./60);}
+ TestTrue(TEXT("Heel tap plays a ball stopped behind the rod"),FB->Vel.X<-.3);
+ // A ball dead beside the goalie, out of his reach, goes back to his feet.
+ FB->NewMatch();LiftAll();FB->bLive=true;FB->Ball=FVector2D(-.64,.22);FB->Vel=FVector2D::ZeroVector;Run(4);
+ TestTrue(TEXT("Goalie puts a dead ball near his goal back into play"),FB->bLive && FB->Restarts==1 && FMath::IsNearlyEqual(FB->Ball.X,F::RodX(0)+.045,.01));
+ // The player's hands (PlayerControl, what the mouse and the gamepad feed): forward slides the active rod away from the
+ // player, sideways turns its feet toward the guest's goal, a click kicks a ball in front of the men toward that goal
+ // and the right button lifts them over the ball.
+ {using FIn=UMareFoosball::FInput;
+  FB->NewMatch();for(int32 I=0;I<F::Rods;++I)FB->RodA[I]=0;FB->bLive=true;FB->Ball=FVector2D(F::RodX(3)+.08,0);FB->Vel=FVector2D::ZeroVector;
+  FIn Fwd;Fwd.DY=10;for(int32 I=0;I<10;++I){FB->PlayerControl(Fwd,1./60);FB->Step(1./60);}
+  TestTrue(FString::Printf(TEXT("Mouse forward slides the active 5-bar away from the player (active %d, y %.3f)"),FB->Active,FB->RodY[3]),FB->Active==3 && FB->RodY[3]>.02);
+  FIn Side;Side.DX=20;FB->PlayerControl(Side,1./60);FB->Step(1./60);
+  TestTrue(FString::Printf(TEXT("Mouse right turns the feet forward (%.2f rad)"),FB->RodA[3]),FB->RodA[3]>.2);
+  FIn Lift;Lift.bLift=true;for(int32 I=0;I<20;++I){FB->PlayerControl(Lift,1./60);FB->Step(1./60);}
+  TestTrue(FString::Printf(TEXT("Right button lifts the men (%.2f rad)"),FB->RodA[3]),FMath::Cos(FB->RodA[3])<F::Lift);
+  FB->NewMatch();LiftAll();FB->RodA[3]=0;FB->bLive=true;FB->Ball=FVector2D(F::RodX(3)+.04,0);FB->Vel=FVector2D::ZeroVector;
+  FIn Shot;Shot.bShot=true;FB->PlayerControl(Shot,1./60);FB->Step(1./60);
+  for(int32 I=0;I<40;++I){FB->PlayerControl(FIn(),1./60);FB->Step(1./60);}
+  TestTrue(FString::Printf(TEXT("A click kicks the ball toward the guest's goal (%.2f m/s)"),FB->Vel.X),(FB->Vel.X>1.5 || FB->Goals[0]==1) && FB->LastTouch==0);}
+ TestEqual(TEXT("Hits: 5x1 = 3"),UMareFoosball::Hits(5,1),3);TestEqual(TEXT("Hits: 5x4 = 2"),UMareFoosball::Hits(5,4),2);
+ TestEqual(TEXT("Hits: 3x5 = 1"),UMareFoosball::Hits(3,5),1);TestEqual(TEXT("Hits: 0x5 = 0"),UMareFoosball::Hits(0,5),0);
+ FB->RemoveFromRoot();
+ // World data (defects seen in the photos of 06/11): every mesh the table spawns resolves through custom_assets.json (the
+ // rods had hard-coded names without the importer's suffix and never appeared), and the guests waiting at the foosball
+ // and arcade counters stand clear of the cabinet and of the night players (they stood 15-20 cm inside each other).
+ auto Json=[](const TCHAR* Name){FString Text;TSharedPtr<FJsonObject> O;FFileHelper::LoadFileToString(Text,*(FPaths::ProjectContentDir()/TEXT("Data")/Name));
+  FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Text),O);return O.IsValid()?O:MakeShared<FJsonObject>();};
+ const auto Assets=Json(TEXT("custom_assets.json"));
+ TArray<FString> Slugs={TEXT("mare_foosball_body"),TEXT("mare_foosball_ball")};
+ for(const TCHAR* R:{TEXT("1_coral"),TEXT("2_coral"),TEXT("3_coral"),TEXT("5_coral"),TEXT("1_mar"),TEXT("2_mar"),TEXT("3_mar"),TEXT("5_mar")})Slugs.Add(FString(TEXT("mare_foosball_rod_"))+R);
+ for(const FString& Slug:Slugs){FString Path;TestTrue(FString::Printf(TEXT("%s loads"),*Slug),Assets->TryGetStringField(Slug,Path) && LoadObject<UStaticMesh>(nullptr,*Path)!=nullptr);}
+ const auto Games=Json(TEXT("business_games.json"));const auto Room=Games->GetObjectField(TEXT("game_room"));
+ auto Vec=[](const TSharedPtr<FJsonObject>& O,const TCHAR* F){const TArray<TSharedPtr<FJsonValue>>* A=nullptr;
+  return O.IsValid() && O->TryGetArrayField(F,A) && A->Num()==4?FTransform(FRotator(0,(*A)[3]->AsNumber(),0),FVector((*A)[0]->AsNumber(),(*A)[1]->AsNumber(),0)):FTransform::Identity;};
+ const FTransform Table=Vec(Room,TEXT("foosball"));TArray<FVector> Night;
+ for(const float Side:{-1.f,1.f})Night.Add(Table.TransformPosition(FVector(0,Side*70,0)));
+ const TArray<TSharedPtr<FJsonValue>>* Arcades=nullptr;
+ if(Room->TryGetArrayField(TEXT("arcades"),Arcades))for(const auto& V:*Arcades){const auto& A=V->AsArray();
+  Night.Add(FTransform(FRotator(0,A[3]->AsNumber(),0),FVector(A[0]->AsNumber(),A[1]->AsNumber(),0)).TransformPosition(FVector(0,75,0)));}
+ const auto Biz=Games->GetObjectField(TEXT("businesses"));
+ for(const TCHAR* Id:{TEXT("pebolim"),TEXT("fliperama")}){const FVector G=Vec(Biz->GetObjectField(Id),TEXT("guest")).GetLocation();
+  const FVector L=Table.InverseTransformPosition(G);
+  TestTrue(FString::Printf(TEXT("%s guest outside the foosball cabinet and its grips"),Id),FMath::Abs(L.X)>81+30 || FMath::Abs(L.Y)>62+30);
+  for(const FVector& N:Night)TestTrue(FString::Printf(TEXT("%s guest 60 cm or more from a night player (%.0f cm)"),Id,FVector::Dist2D(G,N)),FVector::Dist2D(G,N)>=60);}
+ return true;
 }
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FMareCampaignAuditTest,"MareAlta.Gameplay.CampaignAudit",EAutomationTestFlags::EditorContext|EAutomationTestFlags::EngineFilter)

@@ -531,7 +531,33 @@ coloque hóspedes que entrarem aproveitando a piscina e tobogã"):
     e em outra (perde). QA: `mare.PoolQA eight` deixa o jogador na 8.
   - Fotos: `docs/ue58/graphics-reference/pool_called_eight.jpg` (anel na caçapa cantada, placar, giz no cavalete) e
     `pool_board_idle.jpg`.
-- [ ] Pebolim com controle real (girar as barras), em vez da barra de tempo.
+- [x] Pebolim com controle real (girar as barras), em vez da barra de tempo.
+  Decisões (06/11):
+  - **Mesa própria modelada no bpy** (`tools/ue58/gen_foosball.py`): móvel de madeira, campo verde com marcações,
+    contadores de bolinhas, 8 barras separadas (1-2-3-5 de cada time, coral × azul-mar) com pivô no eixo e a bola.
+    `UMareFoosball` (`MareFoosball.cpp`) cria e move as peças; a mesa antiga (`foosball_table`) saiu do
+    `UMareBusinessWorld`.
+  - **Física 2D determinística** da bola (atrito de rolagem, tabelas, rampas dos cantos, boca do gol, traves) e os pés
+    dos bonecos como caixas que andam com o deslize e o giro da barra: girada mais de ~47° a barra deixa a bola passar.
+  - **Controle:** a barra ativa é a do jogador mais próxima atrás da bola (sublinhada em amarelo no HUD); mouse para
+    frente/trás desliza, para os lados gira (o chute sai com a velocidade do giro), clique = chute rápido, botão direito
+    levanta os bonecos; no controle, analógico esquerdo desliza, direito gira, RT chuta, LT levanta. As outras barras
+    do jogador acompanham a bola sozinhas. Quem fizer 5 gols vence; o resultado paga pelo `PlayBusiness("pebolim")`
+    (3 = venceu por 3+, 2 venceu, 1 perdeu por 1–2) e entra no recorde (`RecordGame("foosball")`).
+  - **Adversário** sorteado da lista da sinuca: a mira dele vira a velocidade das mãos. À noite, nas horas das fichas,
+    dois hóspedes jogam IA contra IA. Bola parada fora do alcance perto de um gol volta ao goleiro; no meio, nova saída.
+  - Defeitos vistos nas fotos e corrigidos: as barras não apareciam (nomes fixos sem o sufixo do importador → caminho
+    lido do `custom_assets.json`); o cliente da fila e os jogadores da noite ficavam 15–20 cm um dentro do outro e
+    dentro do móvel (novas posições em `business_games.json`); com a câmera baixa a bola sumia atrás da tabela do
+    jogador (câmera mais alta); a bola encolhia até sumir em um minuto (quaternião de giro sem normalizar).
+  - Teste `MareAlta.Gameplay.FoosballMatch`: gol, tabela, fundo ao lado do gol, boneco bloqueia e levantado deixa
+    passar, giro chuta, comandos do jogador (`PlayerControl`: frente desliza para longe, lado gira para o gol, clique
+    chuta, direito levanta), 8 partidas IA × IA terminam 5 a algo com jogo de verdade, toque de calcanhar, reposição do
+    goleiro, pagamento, malhas carregam pelo `custom_assets.json` e ninguém em pé dentro do móvel ou de outra pessoa.
+    QA: `mare.FBQA` (com `mare.FBAutoPlay 1` joga sozinho).
+  - Fotos: `docs/ue58/graphics-reference/foosball_table_day.jpg`, `foosball_night_guests.jpg`, `foosball_match.jpg`
+    e `foosball_match_shot.jpg`. Visto e aceito: os hóspedes da noite jogam com as mãos sobre a mesa, não nos cabos
+    (pose genérica de hóspede).
 - [ ] 2 fliperamas jogáveis em tela (por exemplo, "Corrida de Jangada" e "Pega-Siri"), com recorde salvo.
 - [ ] Torneio semanal (a estrutura de copa já existe), hóspedes jogando à noite e renda das fichas.
 

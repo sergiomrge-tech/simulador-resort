@@ -69,6 +69,7 @@
 #include "Widgets/Images/SImage.h"
 #include "MareGameRoom.h"
 #include "MareTableTennis.h"
+#include "MareFoosball.h"
 #include "MareStaysWorld.h"
 #include "MareOptions.h"
 #include "MareGamepad.h"
@@ -1798,6 +1799,9 @@ void AMareController::StartBusinessGame(const FString& Biz)
  // on a later visit.
  if(!S->ShowTip(TEXT("biz:")+Biz))S->ShowTip(TEXT("BusinessCounter"));
  FString Reason;if(!S->CanPlayBusiness(Biz,Reason)){S->LastMessage=Reason;return;}
+ // Foosball (5.4): a real match on the table, rods turned by the mouse; it pays through PlayBusiness when it ends.
+ if(Biz==TEXT("pebolim"))if(auto FB=GetWorld()->GetSubsystem<UMareFoosball>())if(FB->HasTable()){ClosePhone();
+  const TArray<FString> Names=S->PoolPlayers();FB->StartMatch(this,Names.Num()?Names[FMath::RandRange(0,Names.Num()-1)]:FString());return;}
  ClosePhone();SetPause(true);
  // The ice cream shop has its own hands-on task (3.1): the cone built from memory, customer after customer.
  // The food truck too (3.2): fill, seal, fry and the sugar-cane juice.
@@ -2754,6 +2758,10 @@ void AMareHUD::DrawHUD()
  if(M.bPhone){M.Note.Empty();M.Tickets.Empty();}
  // Table tennis match: the score line instead of the crosshair and the mission note.
  if(auto TT=GetWorld()->GetSubsystem<UMareTableTennis>())if(TT->IsPlaying()){M.Note.Empty();M.Tickets.Empty();M.Hint=TT->Status();Overlay->Refresh(M);return;}
+ // Foosball match: the score line, and the active rod underlined from its grip to the wall.
+ if(auto FB=GetWorld()->GetSubsystem<UMareFoosball>())if(FB->IsPlaying()){M.Note.Empty();M.Tickets.Empty();M.Compass.Empty();M.Hint=FB->Status();FVector From,To;FVector2D A,B;
+  if(FB->ActiveRodLine(From,To) && PC && PC->ProjectWorldLocationToScreen(From,A) && PC->ProjectWorldLocationToScreen(To,B))DrawLine(A.X,A.Y,B.X,B.Y,FLinearColor(1,.85f,.2f,.85f),4.f);
+  Overlay->Refresh(M);return;}
  // Pool match: aim guide, power bar and score instead of the crosshair and the mission note.
  if(auto Room=GetWorld()->GetSubsystem<UMareGameRoom>())if(Room->IsPlaying()){
   // The compass strip would run under the scoreboard (and means nothing at the table).

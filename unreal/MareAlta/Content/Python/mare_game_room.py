@@ -24,6 +24,9 @@ MARE = Path('D:/Assets/Mare')
 POLY = Path('D:/Assets/PolyHaven')
 OWN = ['mare_gameroom_wall', 'mare_gameroom_sign', 'mare_gameroom_sign_fichas', 'mare_billiard_lamp', 'mare_token_counter',
        'mare_cue_rack', 'mare_gameroom_rug']
+# Playable foosball (tools/ue58/gen_foosball.py): spawned and moved by UMareFoosball, not placed in the level.
+FOOSBALL = ['mare_foosball_body', 'mare_foosball_ball'] + [f'mare_foosball_rod_{n}_{t}' for n in (1, 2, 3, 5) for t in ('coral', 'mar')]
+OWN += FOOSBALL
 POLYHAVEN = ['dartboard', 'wall_clock', 'hanging_picture_frame_02', 'standing_chalkboard_01']
 SOLID = {'mare_token_counter', 'mare_cue_rack', 'standing_chalkboard_01'}   # the player bumps into these
 FLOOR, WALL = 45.0, 6890.0

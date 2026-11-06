@@ -699,3 +699,13 @@ O vidro glTF dos quadros do Poly Haven chega quase opaco e espelhado no Lumen e 
 translúcido próprio de 6% de opacidade. Alguns arquivos de planta do Poly Haven (`calathea_orbifolia_01`) são uma
 fileira de variantes soltas, sem vaso, de 2,5 m: no chão parecem mato saindo do piso. Confira os bounds de uma planta
 antes de usar. O portão ganhou a checagem `decor` para os três.
+
+## UE5.8 — pebolim com barras de verdade (06/11, 5.4)
+
+Malha importada pelo `mare_custom.py` ganha sufixo do importador no nome (`mare_foosball_rod_5_mar4`): nunca escreva o
+caminho do asset à mão no C++; leia do `Content/Data/custom_assets.json` pelo slug (as barras simplesmente não
+apareciam). Quaternião acumulado quadro a quadro (giro da bola) precisa de `Normalize()` a cada quadro: em um minuto a
+bola encolheu até sumir. Ponto de espera de cliente perto de um móvel jogável: confira a distância para o móvel e para
+as outras pessoas no próprio teste (eles ficavam 15–20 cm um dentro do outro). Entrada do jogador num minijogo fica numa
+função pura (`PlayerControl(FInput)`) para o teste exercitar o mapeamento mouse/controle sem PIE: mover o mouse pelo
+Computer use não chega como delta no PIE com o cursor capturado.

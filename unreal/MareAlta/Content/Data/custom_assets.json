@@ -105,5 +105,15 @@
  "dartboard": "/Game/Custom/GameRoom/dartboard/dartboard1.dartboard1",
  "wall_clock": "/Game/Custom/GameRoom/wall_clock/wall_clock1.wall_clock1",
  "hanging_picture_frame_02": "/Game/Custom/GameRoom/hanging_picture_frame_02/hanging_picture_frame_021.hanging_picture_frame_021",
- "standing_chalkboard_01": "/Game/Custom/GameRoom/standing_chalkboard_01/standing_chalkboard_01.standing_chalkboard_01"
+ "standing_chalkboard_01": "/Game/Custom/GameRoom/standing_chalkboard_01/standing_chalkboard_01.standing_chalkboard_01",
+ "mare_foosball_body": "/Game/Custom/GameRoom/mare_foosball_body/mare_foosball_body.mare_foosball_body",
+ "mare_foosball_ball": "/Game/Custom/GameRoom/mare_foosball_ball/mare_foosball_ball.mare_foosball_ball",
+ "mare_foosball_rod_1_coral": "/Game/Custom/GameRoom/mare_foosball_rod_1_coral/mare_foosball_rod_1_coral1.mare_foosball_rod_1_coral1",
+ "mare_foosball_rod_1_mar": "/Game/Custom/GameRoom/mare_foosball_rod_1_mar/mare_foosball_rod_1_mar1.mare_foosball_rod_1_mar1",
+ "mare_foosball_rod_2_coral": "/Game/Custom/GameRoom/mare_foosball_rod_2_coral/mare_foosball_rod_2_coral2.mare_foosball_rod_2_coral2",
+ "mare_foosball_rod_2_mar": "/Game/Custom/GameRoom/mare_foosball_rod_2_mar/mare_foosball_rod_2_mar2.mare_foosball_rod_2_mar2",
+ "mare_foosball_rod_3_coral": "/Game/Custom/GameRoom/mare_foosball_rod_3_coral/mare_foosball_rod_3_coral3.mare_foosball_rod_3_coral3",
+ "mare_foosball_rod_3_mar": "/Game/Custom/GameRoom/mare_foosball_rod_3_mar/mare_foosball_rod_3_mar3.mare_foosball_rod_3_mar3",
+ "mare_foosball_rod_5_coral": "/Game/Custom/GameRoom/mare_foosball_rod_5_coral/mare_foosball_rod_5_coral4.mare_foosball_rod_5_coral4",
+ "mare_foosball_rod_5_mar": "/Game/Custom/GameRoom/mare_foosball_rod_5_mar/mare_foosball_rod_5_mar4.mare_foosball_rod_5_mar4"
 }

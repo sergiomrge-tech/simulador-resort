@@ -84,7 +84,7 @@ void UMareBusinessWorld::SyncGameRoom(UMareSimulation* S)
  if(bOwned && Machines.IsEmpty()){
   auto Place=[this](const TCHAR* Path,const FTransform& T){if(auto Mesh=LoadObject<UStaticMesh>(nullptr,Path)){
    auto A=GetWorld()->SpawnActor<AStaticMeshActor>(T.GetLocation(),T.Rotator());A->SetMobility(EComponentMobility::Movable);A->GetStaticMeshComponent()->SetStaticMesh(Mesh);Machines.Add(A);}};
-  if(bFoosball)Place(TEXT("/Game/Custom/GameRoom/foosball_table/foosball_table.foosball_table"),Foosball);
+  // The foosball table itself is UMareFoosball's (cabinet, moving rods and ball).
   for(const FTransform& T:Arcades)Place(TEXT("/Game/Custom/GameRoom/arcade_cabinet/arcade_cabinet.arcade_cabinet"),T);}
  for(auto& M:Machines)if(IsValid(M)){M->SetActorHiddenInGame(!bOwned);M->SetActorEnableCollision(bOwned);}
  // Night: guests on both sides of the foosball and in front of each arcade during the token hours.
