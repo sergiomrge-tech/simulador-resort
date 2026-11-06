@@ -477,7 +477,13 @@ coloque hóspedes que entrarem aproveitando a piscina e tobogã"):
 
 ### 5.2 VIPs e eventos
 
-- [ ] Pedido especial de cada VIP (pétalas na cama, champanhe, quarto com vista). Acertar dá muita fama.
+- [x] Pedido especial de cada VIP (pétalas na cama, champanhe, quarto com vista). Acertar dá muita fama.
+  Decisões (06/11, Claude): o hóspede VIP (perfis família VIP, lua de mel e influenciador) faz um pedido especial uma vez
+  por estadia: pétalas de rosa na cama, champanhe gelado, travesseiro de pena de ganso ou café da manhã no quarto
+  (`hotel_rooms.json` → `complaints.kinds` com `vip`, e `complaints.vip`). Chega pelo telefone do celular com prazo
+  (75–120 min). Atender pessoalmente no quarto dá o dobro da fama (+10 a +12) e a gorjeta (R$ 100–150); pela equipe
+  custa R$ 60–150 e dá a fama simples; perder o prazo derruba o humor (−0,6) e tira 3 de fama. Usa o mesmo fluxo das
+  reclamações (quadro do hotel no celular, conserto em pessoa nos quartos visitáveis). Teste em `MareAlta.Gameplay.HotelRooms`.
 - [ ] Eventos com montagem: casamento na praia, aniversário, congresso. O jogador posiciona a decoração (cadeiras, arco, mesa de bolo) a partir de um modelo, e a nota depende do capricho e do horário.
 
 ### 5.3 Restaurante

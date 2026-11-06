@@ -455,6 +455,16 @@ bool FMareHotelRoomsTest::RunTest(const FString& Parameters)
  TestEqual(TEXT("Expired after the deadline"),Sim->ExpireHotelComplaints(),1);
  TestTrue(TEXT("Guest mood dropped"),Sim->Number(Lux,TEXT("mood"))<Mood);TestTrue(TEXT("Room marked complained"),Lux->HasField(TEXT("complained")));
  TestEqual(TEXT("No complaints left"),Sim->HotelComplaints().Num(),0);
+ // 5.2 VIP requests: a VIP guest asks once per stay; in person = fame x2 and the tip; missed = mood and fame lost.
+ {auto Room0=Sim->HotelRoom(0);Room0->SetStringField(TEXT("state"),TEXT("occupied"));Room0->RemoveField(TEXT("vip_asked"));
+  auto VipGuest=MakeShared<FJsonObject>();VipGuest->SetStringField(TEXT("profile"),TEXT("lua_de_mel"));VipGuest->SetStringField(TEXT("name"),TEXT("Casal Lima"));Room0->SetObjectField(TEXT("guest"),VipGuest);
+  const FString Req=Sim->AddHotelComplaint(0,TEXT("vip_petals"));TestFalse(TEXT("VIP request made"),Req.IsEmpty());
+  const double VipMoney=Sim->Money();
+  TestTrue(TEXT("VIP request solved in person"),Sim->SolveHotelComplaint(Req,true));TestEqual(TEXT("VIP tip"),Sim->Money(),VipMoney+120.);
+  TestTrue(TEXT("VIP marked done"),Room0->HasField(TEXT("vip_done")));
+  Room0->RemoveField(TEXT("vip_done"));const FString Req2=Sim->AddHotelComplaint(0,TEXT("vip_champagne"));const double VipMood=UMareSimulation::Number(Room0,TEXT("mood"),.5);
+  Sim->State->SetNumberField(TEXT("minutes"),UMareSimulation::Number(Sim->State,TEXT("minutes"))+200);
+  TestEqual(TEXT("VIP request missed"),Sim->ExpireHotelComplaints(),1);TestTrue(TEXT("VIP missed: mood down"),UMareSimulation::Number(Room0,TEXT("mood"))<VipMood);}
  IFileManager::Get().DeleteDirectory(*Sim->SaveDirectory,false,true);
  Sim->RemoveFromRoot();Instance->RemoveFromRoot();return true;
 }

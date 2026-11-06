@@ -157,7 +157,9 @@ FString UMareSimulation::AddHotelComplaint(int32 Index,const FString& Kind)
  auto C=MakeShared<FJsonObject>();C->SetStringField(TEXT("id"),FString::Printf(TEXT("c%d"),Serial));C->SetNumberField(TEXT("room"),Index);
  C->SetStringField(TEXT("kind"),Kind);C->SetNumberField(TEXT("since"),Now);C->SetNumberField(TEXT("due"),Now+Number(Def,TEXT("minutes"),60));
  Open.Add(MakeShared<FJsonValueObject>(C));
- LastMessage=FString::Printf(TEXT("Telefone: %s, %s (%.0f min para resolver)."),*HotelRoomName(Index),*String(Def,TEXT("label")),Number(Def,TEXT("minutes"),60));
+ bool bVip=false;Def->TryGetBoolField(TEXT("vip"),bVip);
+ LastMessage=bVip?FString::Printf(TEXT("Telefone: %s (%s) faz um %s! %.0f min para atender."),*HotelRoomName(Index),*String(Object(R,TEXT("guest")),TEXT("name")),*String(Def,TEXT("label")).ToLower(),Number(Def,TEXT("minutes"),60))
+  :FString::Printf(TEXT("Telefone: %s, %s (%.0f min para resolver)."),*HotelRoomName(Index),*String(Def,TEXT("label")),Number(Def,TEXT("minutes"),60));
  return String(C,TEXT("id"));
 }
 bool UMareSimulation::SolveHotelComplaint(const FString& Id,bool bInPerson)
@@ -169,8 +171,16 @@ bool UMareSimulation::SolveHotelComplaint(const FString& Id,bool bInPerson)
  if(!bInPerson){const double Cost=Number(Def,TEXT("cost"));if(Money()<Cost){LastMessage=TEXT("Sem caixa para mandar o técnico.");return false;}
   if(Cost>0)Book(-Cost,FString::Printf(TEXT("Grand Hotel: técnico no quarto %d"),HotelRoomNumber(Index)));}
  if(auto R=HotelRoom(Index))R->SetNumberField(TEXT("mood"),FMath::Clamp(Number(R,TEXT("mood"),.5)+Number(Object(HotelRoomDefs(),TEXT("complaints")),TEXT("solved_mood"),.08),0.,1.));
- if(bInPerson)AddFame(1);
+ bool bVip=false;Def->TryGetBoolField(TEXT("vip"),bVip);
  auto Prog=Child(Child(State,TEXT("prog")),TEXT("hotel_rooms"));Prog->SetNumberField(TEXT("solved"),Number(Prog,TEXT("solved"))+1);
+ if(bVip){const auto Vip=Object(Object(HotelRoomDefs(),TEXT("complaints")),TEXT("vip"));const int32 Fame=int32(Number(Def,TEXT("fame"),5))*(bInPerson?int32(Number(Vip,TEXT("in_person_fame_mult"),2)):1);
+  AddFame(Fame);const double Tip=bInPerson?Number(Def,TEXT("tip")):0;if(Tip>0)Book(Tip,FString::Printf(TEXT("Grand Hotel: gorjeta VIP do quarto %d"),HotelRoomNumber(Index)));
+  if(auto R=HotelRoom(Index))R->SetBoolField(TEXT("vip_done"),true);
+  Prog->SetNumberField(TEXT("vip_done"),Number(Prog,TEXT("vip_done"))+1);
+  LastMessage=bInPerson?FString::Printf(TEXT("%s: o hóspede VIP ficou encantado com você! +%d de fama e R$ %.0f de gorjeta."),*HotelRoomName(Index),Fame,Tip)
+   :FString::Printf(TEXT("%s: pedido VIP atendido pela equipe. +%d de fama."),*HotelRoomName(Index),Fame);
+  Open.RemoveAt(At);return true;}
+ if(bInPerson)AddFame(1);
  LastMessage=FString::Printf(TEXT("%s: %s resolvido%s."),*HotelRoomName(Index),*String(Def,TEXT("label")).ToLower(),bInPerson?TEXT(" por você"):TEXT(" pelo técnico"));
  Open.RemoveAt(At);return true;
 }
@@ -179,7 +189,10 @@ int32 UMareSimulation::ExpireHotelComplaints()
  auto& Open=List(Stays(),TEXT("complaints"));int32 Failed=0;const double Penalty=Number(Object(HotelRoomDefs(),TEXT("complaints")),TEXT("failed_mood"),.4);
  for(int32 I=Open.Num()-1;I>=0;--I){const auto C=Open[I]->AsObject();if(ComplaintMinutesLeft(C)>0)continue;
   const int32 Index=Number(C,TEXT("room"),-1);
-  if(auto R=HotelRoom(Index)){R->SetNumberField(TEXT("mood"),FMath::Clamp(Number(R,TEXT("mood"),.5)-Penalty,0.,1.));R->SetBoolField(TEXT("complained"),true);}
+  const auto Kind=ComplaintKind(String(C,TEXT("kind")));bool bVip=false;Kind->TryGetBoolField(TEXT("vip"),bVip);
+  const auto Vip=Object(Object(HotelRoomDefs(),TEXT("complaints")),TEXT("vip"));
+  if(auto R=HotelRoom(Index)){R->SetNumberField(TEXT("mood"),FMath::Clamp(Number(R,TEXT("mood"),.5)-(bVip?Number(Vip,TEXT("failed_mood"),.6):Penalty),0.,1.));R->SetBoolField(TEXT("complained"),true);}
+  if(bVip)AddFame(-int32(Number(Vip,TEXT("failed_fame"),3)));
   LastMessage=FString::Printf(TEXT("%s cansou de esperar: \"%s\" vai para a avaliação."),*HotelRoomName(Index),*String(ComplaintKind(String(C,TEXT("kind"))),TEXT("label")));
   auto Prog=Child(Child(State,TEXT("prog")),TEXT("hotel_rooms"));Prog->SetNumberField(TEXT("failed"),Number(Prog,TEXT("failed"))+1);
   Open.RemoveAt(I);++Failed;}
@@ -201,8 +214,18 @@ void UMareSimulation::HotelRoomsHour(int32 Hour)
     const FString Task=Tasks[0]->AsString();if(!CleanHotelRoom(I,Task,false)){break;}--Budget;}}}
  // New complaints by phone: one per hour at most, only from occupied rooms.
  const auto Rules=Object(Defs,TEXT("complaints"));
+ // 5.2: a VIP guest (familia_vip, lua_de_mel, influenciador) asks for something special once per stay.
+ {const auto Vip=Object(Rules,TEXT("vip"));TArray<TSharedPtr<FJsonObject>> VipKinds;
+  for(const auto& K:Array(Rules,TEXT("kinds"))){bool b=false;K->AsObject()->TryGetBoolField(TEXT("vip"),b);if(b)VipKinds.Add(K->AsObject());}
+  TArray<FString> Profiles;for(const auto& P:Array(Vip,TEXT("profiles")))Profiles.Add(P->AsString());
+  FRandomStream VRng(int32(Number(State,TEXT("day"),1))*24+Hour+4242);
+  if(Hour>=Number(Rules,TEXT("from"),8) && Hour<Number(Rules,TEXT("to"),22) && VipKinds.Num())
+   for(int32 I=0;I<32;++I){auto R=HotelRoom(I);if(!R || String(R,TEXT("state"))!=TEXT("occupied") || R->HasField(TEXT("vip_asked")))continue;
+    if(!Profiles.Contains(String(Object(R,TEXT("guest")),TEXT("profile"))) || VRng.FRand()>=Number(Vip,TEXT("chance_per_hour"),.35))continue;
+    if(!AddHotelComplaint(I,String(VipKinds[VRng.RandRange(0,VipKinds.Num()-1)],TEXT("id"))).IsEmpty()){R->SetBoolField(TEXT("vip_asked"),true);break;}}}
  if(Hour>=Number(Rules,TEXT("from"),8) && Hour<Number(Rules,TEXT("to"),22) && List(Stays(),TEXT("complaints")).Num()<Number(Rules,TEXT("max_open"),3)){
-  FRandomStream Rng(int32(Number(State,TEXT("day"),1))*24+Hour+31337);const auto& Kinds=Array(Rules,TEXT("kinds"));
+  FRandomStream Rng(int32(Number(State,TEXT("day"),1))*24+Hour+31337);TArray<TSharedPtr<FJsonValue>> Kinds;
+  for(const auto& K:Array(Rules,TEXT("kinds"))){bool b=false;K->AsObject()->TryGetBoolField(TEXT("vip"),b);if(!b)Kinds.Add(K);}
   for(int32 I=0;I<32 && Kinds.Num();++I){auto R=HotelRoom(I);if(!R || String(R,TEXT("state"))!=TEXT("occupied"))continue;
    if(Rng.FRand()<Number(Rules,TEXT("chance_per_room_hour"),.012)){
     if(!AddHotelComplaint(I,String(Kinds[Rng.RandRange(0,Kinds.Num()-1)]->AsObject(),TEXT("id"))).IsEmpty())break;}}}
