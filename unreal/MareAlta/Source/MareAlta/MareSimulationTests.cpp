@@ -276,7 +276,8 @@ bool FMareExpansionOpsTest::RunTest(const FString& Parameters)
  Sim->Object(Sim->State,TEXT("prog"))->SetNumberField(TEXT("fame_xp"),100000);
  Before=Sim->Money();TestTrue(TEXT("Buy ice cream shop"),Sim->BuyBusiness(TEXT("sorveteria")));
  TestEqual(TEXT("Business charged once"),Sim->Money(),Before-900.);TestFalse(TEXT("Not twice"),Sim->BuyBusiness(TEXT("sorveteria")));
- Sim->State->SetNumberField(TEXT("minutes"),900);Sim->AdvanceMinutes(60);
+ // 3.6: no flat rate any more; the clerk serves the line the hour after the customers arrive.
+ Sim->State->SetNumberField(TEXT("minutes"),900);Sim->State->SetStringField(TEXT("weather"),TEXT("sun"));Sim->AdvanceMinutes(120);
  TestTrue(TEXT("Business earns"),Sim->OpsToday(TEXT("biz_sorveteria"))>0);
  // Pousada: rooms from expansions, rate from room upgrades, night booked at sleep.
  TestEqual(TEXT("Bungalow plus two pool rooms"),Sim->PousadaRooms(),3);
@@ -1115,6 +1116,9 @@ bool FMareRentalTest::RunTest(const FString& Parameters)
  Sim->AddRentalCustomer();Sim->RentItem(false);Sim->State->SetNumberField(TEXT("minutes"),12*60+40);Sim->RentalHour(13);SetDent(false);
  TestEqual(TEXT("Clean board let go"),Sim->InspectReturn(false),2);TestEqual(TEXT("Nothing left to check"),Sim->InspectReturn(false),-1);
  // The kayak adrift: rescued for a reward.
+ // 06/11: the hour above can set a rented kayak adrift by chance (adrift_chance, FRand): the gate failed 1 run in 3.
+ // The random drift is not what is checked here: start from a calm sea.
+ Sim->Object(Sim->RentalState(),TEXT("adrift"))->SetBoolField(TEXT("active"),false);
  TestFalse(TEXT("No kayak adrift"),Sim->IsKayakAdrift());Sim->StartKayakAdrift();TestTrue(TEXT("Kayak adrift"),Sim->IsKayakAdrift());
  Cash=Sim->Money();TestTrue(TEXT("Rescue pays"),Sim->RescueKayak()>0 && Sim->Money()>Cash);TestFalse(TEXT("Back on the beach"),Sim->IsKayakAdrift());
  // Closing: whoever is out comes back, the line goes home.
@@ -1181,6 +1185,93 @@ bool FMareSouvenirTest::RunTest(const FString& Parameters)
  TestTrue(TEXT("Saved"),Sim->Save());FString Text;TArray<FString> Files;IFileManager::Get().FindFilesRecursive(Files,*Sim->SaveDirectory,TEXT("slot*.json"),true,false);
  if(Files.Num())FFileHelper::LoadFileToString(Text,*Files[0]);
  TestTrue(TEXT("Shelf in the save file"),Text.Contains(TEXT("mascara")) && Text.Contains(TEXT("foto_farol")));
+ IFileManager::Get().DeleteDirectory(*Sim->SaveDirectory,false,true);
+ Sim->RemoveFromRoot();Instance->RemoveFromRoot();return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FMareBusinessCommonTest,"MareAlta.Gameplay.BusinessCommon",EAutomationTestFlags::EditorContext|EAutomationTestFlags::EngineFilter)
+bool FMareBusinessCommonTest::RunTest(const FString& Parameters)
+{
+ // CHECKLIST_EXPANSOES 3.6, for every village business: a perfect, a middling and a wrong service pay what the data
+ // says and are kept in the save (daily report); the clerk serves alone at 60 % with no fame, without him the line gives
+ // up; level 2 costs money and fame, raises the prices and makes the task harder.
+ auto Instance=NewObject<UGameInstance>();Instance->AddToRoot();
+ auto Sim=NewObject<UMareSimulation>(Instance);Sim->AddToRoot();
+ Sim->SaveDirectory=FPaths::ProjectSavedDir()/TEXT("Automation/BusinessCommon")/FGuid::NewGuid().ToString(EGuidFormats::Digits);
+ auto Load=[&](const FString& Name,TSharedPtr<FJsonObject>& Result){FString Text;FFileHelper::LoadFileToString(Text,*(FPaths::ProjectContentDir()/TEXT("Data")/Name));return FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Text),Result);};
+ if(!TestTrue(TEXT("Definitions"),Load(TEXT("definitions.json"),Sim->Definitions)) || !TestTrue(TEXT("Default save"),Load(TEXT("default_save.json"),Sim->State))){Sim->RemoveFromRoot();Instance->RemoveFromRoot();return false;}
+ Sim->State->SetNumberField(TEXT("money"),20000);Sim->State->SetNumberField(TEXT("minutes"),14*60+10);Sim->State->SetStringField(TEXT("day_event"),TEXT(""));Sim->State->SetStringField(TEXT("weather"),TEXT("sun"));
+ const TArray<FString> Ids={TEXT("sorveteria"),TEXT("food_truck"),TEXT("aluguel"),TEXT("souvenir")};
+ for(const FString& Id:Ids)Sim->BizState(Id)->SetNumberField(TEXT("lvl"),1);
+ auto Pay=[&](const TSharedPtr<FJsonObject>& D,int32 Hits){return D->GetArrayField(TEXT("pay"))[Hits]->AsNumber();};
+ auto Fame=[&](){return Sim->Number(Sim->Object(Sim->State,TEXT("prog")),TEXT("fame_xp"));};
+ auto Paid=[&](TFunction<void()> Do){const double Cash=Sim->Money();Do();return Sim->Money()-Cash;};
+ // --- Ice cream: two coconut scoops with sprinkles.
+ auto IceOrder=[&](){Sim->BizState(TEXT("sorveteria"))->SetArrayField(TEXT("queue"),{});Sim->AddIceCustomer();auto O=Sim->IceQueue()[0];
+  O->SetArrayField(TEXT("flavors"),{MakeShared<FJsonValueString>(TEXT("coco")),MakeShared<FJsonValueString>(TEXT("coco"))});O->SetStringField(TEXT("topping"),TEXT("granulado"));return O;};
+ {const auto D=Sim->IceDefs();const double Price=2*Sim->Number(D,TEXT("price_per_scoop"))+Sim->Number(D,TEXT("topping_price"));
+  IceOrder();TestEqual(TEXT("Ice perfect pays price x pay[3] + tip"),Paid([&](){Sim->ServeIceCream({TEXT("coco"),TEXT("coco")},{.85f,.85f},TEXT("granulado"));}),FMath::RoundToDouble(Price*Pay(D,3))+Sim->Number(D,TEXT("tip_perfect")));
+  IceOrder();TestEqual(TEXT("Ice middling (scoops too big) pays x pay[2]"),Paid([&](){Sim->ServeIceCream({TEXT("coco"),TEXT("coco")},{1.25f,1.25f},TEXT("granulado"));}),FMath::RoundToDouble(Price*Pay(D,2)));
+  IceOrder();const double F0=Fame();TestEqual(TEXT("Ice wrong pays x pay[0]"),Paid([&](){Sim->ServeIceCream({TEXT("acai")},{.2f},TEXT("caramelo"));}),FMath::RoundToDouble(Price*Pay(D,0)));
+  TestEqual(TEXT("Ice wrong: no fame"),Fame(),F0);}
+ // --- Pastel: a cheese pastel, no juice.
+ auto PastelOrder=[&](){Sim->BizState(TEXT("food_truck"))->SetArrayField(TEXT("queue"),{});Sim->AddPastelCustomer();auto O=Sim->PastelQueue()[0];
+  O->SetStringField(TEXT("filling"),TEXT("queijo"));O->SetBoolField(TEXT("cana"),false);return O;};
+ {const auto D=Sim->PastelDefs();PastelOrder();const double Price=Sim->PastelOrderPrice(Sim->PastelQueue()[0]);TestTrue(TEXT("Cheese pastel has a price"),Price>0);
+  TestEqual(TEXT("Pastel perfect pays price x pay[3] + tip"),Paid([&](){Sim->ServePastel(TEXT("queijo"),true,7,false);}),FMath::RoundToDouble(Price*Pay(D,3))+Sim->Number(D,TEXT("tip_perfect")));
+  PastelOrder();TestEqual(TEXT("Pastel middling (opened in the oil, raw) pays x pay[1]"),Paid([&](){Sim->ServePastel(TEXT("queijo"),false,2,false);}),FMath::RoundToDouble(Price*Pay(D,1)));
+  PastelOrder();TestEqual(TEXT("Pastel wrong pays x pay[0]"),Paid([&](){Sim->ServePastel(TEXT("carne"),false,2,false);}),FMath::RoundToDouble(Price*Pay(D,0)));}
+ // --- Rental: a board for 60 min waxed (perfect), plain (middling), a clean board fined (wrong).
+ auto RentOrder=[&](){Sim->RentalState()->SetArrayField(TEXT("queue"),{});Sim->AddRentalCustomer();auto O=Sim->RentalQueue()[0];O->SetStringField(TEXT("item"),TEXT("prancha"));O->SetNumberField(TEXT("minutes"),60);};
+ {const double Price=Sim->RentalPrice(TEXT("prancha"),60);
+  RentOrder();TestEqual(TEXT("Rental perfect (waxed) pays price + wax tip"),Paid([&](){Sim->RentItem(true);}),Price+FMath::RoundToDouble(Price*Sim->Number(Sim->RentalDefs(),TEXT("wax_tip"))));
+  RentOrder();TestEqual(TEXT("Rental middling (plain) pays the price"),Paid([&](){Sim->RentItem(false);}),Price);
+  auto Back=MakeShared<FJsonObject>();Back->SetStringField(TEXT("name"),TEXT("Ana"));Back->SetStringField(TEXT("item"),TEXT("prancha"));Back->SetBoolField(TEXT("dent"),false);
+  Sim->RentalState()->SetArrayField(TEXT("returns"),{MakeShared<FJsonValueObject>(Back)});const double F0=Fame();
+  TestEqual(TEXT("Rental wrong (clean board fined) pays nothing"),Paid([&](){Sim->InspectReturn(true);}),0.);TestTrue(TEXT("and costs fame"),Fame()<=F0);}
+ // --- Souvenir: gift wrap in order with the asked ribbon, quick (perfect) / slow (middling) / all wrong.
+ {const auto D=Sim->SouvenirDefs();const TArray<FString> Right={TEXT("laterais"),TEXT("fundo"),TEXT("topo")},Wrong={TEXT("topo"),TEXT("fundo"),TEXT("laterais")};
+  auto Gift=[&](){Sim->SouvenirState()->SetArrayField(TEXT("queue"),{});Sim->AddSouvenirGift(TEXT("ima"));Sim->SouvenirQueue()[0]->SetStringField(TEXT("ribbon"),TEXT("azul"));};
+  Gift();TestEqual(TEXT("Wrap perfect pays fee x pay[3] + tip"),Paid([&](){Sim->WrapGift(Right,TEXT("azul"),5);}),FMath::RoundToDouble(Sim->WrapFee()*Pay(D,3))+Sim->Number(D,TEXT("tip_perfect")));
+  Gift();TestEqual(TEXT("Wrap middling (slow) pays x pay[2]"),Paid([&](){Sim->WrapGift(Right,TEXT("azul"),60);}),FMath::RoundToDouble(Sim->WrapFee()*Pay(D,2)));
+  Gift();TestEqual(TEXT("Wrap wrong pays x pay[0]"),Paid([&](){Sim->WrapGift(Wrong,TEXT("verde"),60);}),FMath::RoundToDouble(Sim->WrapFee()*Pay(D,0)));}
+ // Daily report: 3 services each, with the grades; the phone line says it; all of it is in the save file.
+ for(const FString& Id:Ids){const auto R=Sim->BizReport(Id);TestEqual(Id+TEXT(": 3 served by the player"),int32(Sim->Number(R,TEXT("you_n"))),3);
+  TestTrue(Id+TEXT(": report line"),Sim->BizReportLine(Id,false).Contains(TEXT("você atendeu 3")));}
+ TestEqual(TEXT("Ice: one perfect"),int32(Sim->Number(Sim->BizReport(TEXT("sorveteria")),TEXT("perfect"))),1);
+ TestEqual(TEXT("Ice: grades 3+2+0"),int32(Sim->Number(Sim->BizReport(TEXT("sorveteria")),TEXT("hits"))),5);
+ TestTrue(TEXT("Saved"),Sim->Save());
+ {TArray<FString> Files;IFileManager::Get().FindFilesRecursive(Files,*Sim->SaveDirectory,TEXT("slot*.json"),true,false);FString Text;if(Files.Num())FFileHelper::LoadFileToString(Text,*Files[0]);
+  TSharedPtr<FJsonObject> Saved;TestTrue(TEXT("Save file read"),FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Text),Saved) && Saved.IsValid());
+  for(const FString& Id:Ids){const auto R=Sim->Object(Sim->Object(Sim->Object(Sim->Object(Saved,TEXT("prog")),TEXT("biz")),Id),TEXT("report"));
+   TestEqual(Id+TEXT(": report saved"),int32(Sim->Number(R,TEXT("you_n"))),3);TestEqual(Id+TEXT(": money saved"),Sim->Number(R,TEXT("you_money")),Sim->Number(Sim->BizReport(Id),TEXT("you_money")));}
+  TestEqual(TEXT("Money saved"),Sim->Number(Saved,TEXT("money")),Sim->Money());}
+ // Next day: today's report becomes yesterday's.
+ Sim->State->SetNumberField(TEXT("day"),Sim->Number(Sim->State,TEXT("day"),1)+1);
+ TestTrue(TEXT("Yesterday kept"),Sim->BizReportLine(TEXT("sorveteria"),true).Contains(TEXT("você atendeu 3")));TestTrue(TEXT("Today empty"),Sim->BizReportLine(TEXT("sorveteria"),false).Contains(TEXT("nenhum")));
+ // Clerk: on by default, serves the line alone at 60 % of the full price, no fame.
+ Sim->Pool()->SetNumberField(TEXT("popsicle_stock"),99);   // the cooler full: no popsicle cost booked in the hour
+ {TestTrue(TEXT("Clerk hired by default"),Sim->HasBizClerk(TEXT("sorveteria")));const auto O=IceOrder();const double Price=Sim->IceOrderPrice(O);const double F0=Fame();
+  TestEqual(TEXT("Clerk serves at 60%"),Paid([&](){Sim->IceCreamHour(15);}),FMath::RoundToDouble(Price*.6));TestEqual(TEXT("Clerk: no fame"),Fame(),F0);
+  TestEqual(TEXT("Clerk in the report"),int32(Sim->Number(Sim->BizReport(TEXT("sorveteria")),TEXT("clerk_n"))),1);
+  TestTrue(TEXT("Dismissed"),Sim->SetBizClerk(TEXT("sorveteria"),false));TestFalse(TEXT("No clerk"),Sim->HasBizClerk(TEXT("sorveteria")));
+  IceOrder()->SetNumberField(TEXT("since"),0);Sim->State->SetStringField(TEXT("weather"),TEXT("rain"));Sim->BizState(TEXT("sorveteria"))->SetNumberField(TEXT("next_customer"),0);
+  const double Cash=Sim->Money();Sim->IceCreamHour(15);
+  TestTrue(TEXT("Without the clerk nobody is paid for the line"),Sim->Money()<=Cash);TestEqual(TEXT("The one who waited gave up"),int32(Sim->Number(Sim->BizReport(TEXT("sorveteria")),TEXT("lost"))),1);
+  Sim->State->SetStringField(TEXT("weather"),TEXT("sun"));Sim->SetBizClerk(TEXT("sorveteria"),true);}
+ // Level 2: needs fame and money; dearer and harder.
+ {FString Reason;Sim->Object(Sim->State,TEXT("prog"))->SetNumberField(TEXT("fame_xp"),0);TestFalse(TEXT("Level 2 needs fame"),Sim->CanUpgradeBusiness(TEXT("sorveteria"),Reason));
+  Sim->Object(Sim->State,TEXT("prog"))->SetNumberField(TEXT("fame_xp"),100000);const auto Base=Sim->IceDefs();const double ShowBase=Sim->Number(Base,TEXT("show_seconds"));
+  IceOrder();const double Price1=Sim->IceOrderPrice(Sim->IceQueue()[0]);const double Cost=Sim->Number(Sim->BizLevelDef(TEXT("sorveteria"),2),TEXT("cost"));
+  TestEqual(TEXT("Level 2 charged"),Paid([&](){TestTrue(TEXT("Upgraded"),Sim->UpgradeBusiness(TEXT("sorveteria")));}),-Cost);
+  TestEqual(TEXT("Level 2"),Sim->BusinessLevel(TEXT("sorveteria")),2);
+  TestTrue(TEXT("Dearer"),Sim->IceOrderPrice(Sim->IceQueue()[0])>Price1);TestTrue(TEXT("Harder: the order shows for less time"),Sim->Number(Sim->IceDefs(),TEXT("show_seconds"))<ShowBase);
+  TestEqual(TEXT("Base values untouched"),Sim->Number(Base,TEXT("show_seconds")),ShowBase);
+  for(const FString& Id:Ids){Sim->BizState(Id)->SetNumberField(TEXT("lvl"),3);TestTrue(Id+TEXT(": level 3 dearer"),Sim->BizPriceMult(Id)>1.4);}
+  TestTrue(TEXT("Pastel level 3: tighter golden window"),Sim->Number(Sim->PastelDefs(),TEXT("golden_to"))-Sim->Number(Sim->PastelDefs(),TEXT("golden_from"))<2);
+  TestTrue(TEXT("Rental level 3: more wax turns"),Sim->Number(Sim->RentalDefs(),TEXT("wax_turns"))>5);
+  TestTrue(TEXT("Souvenir level 3: ribbon shown shorter"),Sim->Number(Sim->SouvenirDefs(),TEXT("memo_s"))<3);
+  TestFalse(TEXT("No level 4"),Sim->CanUpgradeBusiness(TEXT("sorveteria"),Reason));}
  IFileManager::Get().DeleteDirectory(*Sim->SaveDirectory,false,true);
  Sim->RemoveFromRoot();Instance->RemoveFromRoot();return true;
 }

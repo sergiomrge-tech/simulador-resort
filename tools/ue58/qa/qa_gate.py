@@ -334,6 +334,8 @@ def main():
         BASELINE.write_text(json.dumps(base, indent=1, ensure_ascii=False) + '\n', encoding='utf-8')
     print('QA GATE', 'PASS' if report['pass'] else 'FAIL')
     print(' tests  ', report['tests']['total'], 'run,', len(report['tests']['failed']), 'failed', [f['name'] for f in report['tests']['failed']])
+    for f in report['tests']['failed']:
+        print('         ', f['name'], f['errors'][:2])
     print(' cook   ', report['cook']['cooked'], 'packages,', len(report['cook']['missing']), 'loaded by path but not cooked',
           (report['cook']['missing'] + report['cook']['absent'])[:6])
     print(' float  ', report['floating']['floating'], '(baseline', report['floating']['baseline'], ')')

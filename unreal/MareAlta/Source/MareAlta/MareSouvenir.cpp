@@ -20,7 +20,9 @@ namespace
  }
 }
 
-TSharedPtr<FJsonObject> UMareSimulation::SouvenirDefs() const{return Object(Object(Object(BusinessGames(),TEXT("businesses")),TEXT("souvenir")),TEXT("shop"));}
+TSharedPtr<FJsonObject> UMareSimulation::SouvenirDefs() const{return BizGameDefs(TEXT("souvenir"));}
+double UMareSimulation::WrapFee() const{return Number(SouvenirDefs(),TEXT("wrap_fee"),6)*BizPriceMult(TEXT("souvenir"));}
+double UMareSimulation::SouvenirPrice(const TSharedPtr<FJsonObject>& Craft) const{return FMath::RoundToDouble(Number(Craft,TEXT("price"),10)*BizPriceMult(TEXT("souvenir")));}
 TSharedPtr<FJsonObject> UMareSimulation::SouvenirState() const{return Object(Object(Object(State,TEXT("prog")),TEXT("biz")),TEXT("souvenir"));}
 TArray<TSharedPtr<FJsonObject>> UMareSimulation::SouvenirQueue() const{return Objects(SouvenirState(),TEXT("queue"));}
 TArray<TSharedPtr<FJsonObject>> UMareSimulation::SouvenirCards() const{return Objects(SouvenirState(),TEXT("cards"));}
@@ -94,7 +96,7 @@ bool UMareSimulation::PlaceSouvenir(int32 Slot,const FString& Id)
 
 double UMareSimulation::SouvenirCardPrice(int32 Subjects) const
 {
- return Number(SouvenirDefs(),TEXT("card_price"),5)+Number(SouvenirDefs(),TEXT("subject_bonus"),2)*FMath::Clamp(Subjects,0,2);
+ return FMath::RoundToDouble((Number(SouvenirDefs(),TEXT("card_price"),5)+Number(SouvenirDefs(),TEXT("subject_bonus"),2)*FMath::Clamp(Subjects,0,2))*BizPriceMult(TEXT("souvenir")));
 }
 
 bool UMareSimulation::PrintPostcards(const FString& File,int32 Subjects)
@@ -133,7 +135,12 @@ void UMareSimulation::SouvenirHour(int32 Hour)
 {
  if(!OwnsBusiness(TEXT("souvenir")))return;const auto D=SouvenirDefs();auto R=SouvenirState();const bool bOpen=IsBusinessOpen(TEXT("souvenir"));
  auto& Queue=Arr(R,TEXT("queue"));int32 Gone=0;
+ // The clerk (3.6) wraps the gifts the player left waiting: a plain wrap, clerk_share of the fee, no fame.
+ if(HasBizClerk(TEXT("souvenir")) && Queue.Num()){double Sum=0;const int32 N=Queue.Num();
+  for(int32 I=0;I<N;++I){const double Paid=FMath::RoundToDouble(WrapFee()*BizClerkShare());Sum+=Paid;BizServed(TEXT("souvenir"),true,Paid,0,0);}
+  Queue.Empty();if(Sum>0)Book(Sum,FString::Printf(TEXT("Lojinha: funcionário embrulhou %d presente(s)"),N));}
  for(int32 I=Queue.Num()-1;I>=0;--I)if(!bOpen || Now(State)-Number(Queue[I]->AsObject(),TEXT("since"))>Number(D,TEXT("patience_minutes"),45)){Queue.RemoveAt(I);++Gone;}
+ BizLost(TEXT("souvenir"),Gone);
  if(Gone && bOpen)LastMessage=FString::Printf(TEXT("Lojinha: %d turista(s) cansaram de esperar o embrulho."),Gone);
  if(!bOpen)return;
  // Tourists: more with fame, many more on carnaval; the shop is indoors (rain does not stop them).
@@ -146,7 +153,7 @@ void UMareSimulation::SouvenirHour(int32 Hour)
   // From the window inwards: each slot catches the eye with its own chance (the back shelf is hardly seen).
   for(int32 I=0;I<Shelf.Num() && I<Slots.Num();++I){const auto C=SouvenirCraft(String(Shelf[I],TEXT("item")));if(!C.IsValid() || Number(Shelf[I],TEXT("qty"))<1)continue;
    if(FMath::FRand()>=Number(D,TEXT("buy_chance"),.3)*Number(Slots[I],TEXT("mult"),1)*Number(C,TEXT("appeal"),1))continue;
-   Shelf[I]->SetNumberField(TEXT("qty"),Number(Shelf[I],TEXT("qty"))-1);Sales+=Number(C,TEXT("price"),10);++Pieces;
+   Shelf[I]->SetNumberField(TEXT("qty"),Number(Shelf[I],TEXT("qty"))-1);Sales+=SouvenirPrice(C);++Pieces;
    if(FMath::FRand()<Number(D,TEXT("gift_chance"),.45))AddSouvenirGift(String(C,TEXT("id")));
    break;}
   // A postcard on the way out (the dearer ones show the lighthouse, the whales...).
@@ -156,8 +163,7 @@ void UMareSimulation::SouvenirHour(int32 Hour)
  }
  for(auto& S:Shelf)if(Number(S,TEXT("qty"))<1){S->SetNumberField(TEXT("qty"),0);}
  R->SetNumberField(TEXT("sold_pieces"),Number(R,TEXT("sold_pieces"))+Pieces);R->SetNumberField(TEXT("sold_cards"),Number(R,TEXT("sold_cards"))+Cards);
- if(Sales>0){Book(Sales,FString::Printf(TEXT("Lojinha: %d lembrança(s) e %d cartão(ões)-postal(is)"),Pieces,Cards));
-  auto Today=Object(Object(State,TEXT("ue_ops")),TEXT("today"));Today->SetNumberField(TEXT("biz_souvenir"),Number(Today,TEXT("biz_souvenir"))+Sales);}
+ if(Sales>0){Book(Sales,FString::Printf(TEXT("Lojinha: %d lembrança(s) e %d cartão(ões)-postal(is)"),Pieces,Cards));BizShelfSale(TEXT("souvenir"),Sales);}
  int32 Empty=0;for(const auto& S:Shelf)Empty+=Number(S,TEXT("qty"))<1;
  if(Empty==Shelf.Num() && Browsers>0)LastMessage=TEXT("Lojinha: a prateleira está vazia! Compre artesanato e arrume a vitrine.");
 }
@@ -170,9 +176,10 @@ FMareIceResult UMareSimulation::WrapGift(const TArray<FString>& Folds,const FStr
  const bool bFolds=Folds==Order,bRibbon=Ribbon==String(O,TEXT("ribbon")),bFast=Seconds<=Number(D,TEXT("fast_s"),15);
  Out.Hits=int32(bFolds)+int32(bRibbon)+int32(bFast);
  const TArray<TSharedPtr<FJsonValue>>* Pay=nullptr;const double Factor=D->TryGetArrayField(TEXT("pay"),Pay) && Pay->IsValidIndex(Out.Hits)?(*Pay)[Out.Hits]->AsNumber():.33*Out.Hits;
- Out.Paid=FMath::RoundToDouble(Number(D,TEXT("wrap_fee"),6)*Factor)+(Out.Hits==3?Number(D,TEXT("tip_perfect"),5):0);
+ Out.Paid=FMath::RoundToDouble(WrapFee()*Factor)+(Out.Hits==3?Number(D,TEXT("tip_perfect"),5):0);
  const FString Who=String(O,TEXT("name"));if(Out.Paid>0)Book(Out.Paid,FString::Printf(TEXT("Lojinha: embrulho para %s (%d/3)"),*Who,Out.Hits));
  AddFame(int32(Number(D,TEXT("fame_per_hit"),1))*Out.Hits);R->SetNumberField(TEXT("games"),Number(R,TEXT("games"))+1);
+ BizServed(TEXT("souvenir"),false,Out.Paid,Out.Hits,int32(Number(D,TEXT("fame_per_hit"),1))*Out.Hits);
  Queue.RemoveAt(0);Out.bServed=true;
  TArray<FString> Notes;if(!bFolds)Notes.Add(TEXT("papel amassado (dobras fora de ordem)"));if(!bRibbon)Notes.Add(TEXT("fita da cor errada"));if(!bFast)Notes.Add(TEXT("demorou"));
  LastMessage=Notes.IsEmpty()?FString::Printf(TEXT("Que presente lindo! %s pagou R$ %.0f com gorjeta."),*Who,Out.Paid)

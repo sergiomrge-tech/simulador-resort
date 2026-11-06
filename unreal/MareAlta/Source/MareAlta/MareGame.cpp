@@ -699,12 +699,28 @@ private:
    else if(Missing.Num())Card->AddSlot().AutoHeight()[MareNotebook::HandText(TEXT("antes: ")+FString::Join(Missing,TEXT(", ")),15,MareNotebook::Pencil)];
    else Card->AddSlot().AutoHeight().HAlign(HAlign_Left)[Button(FString::Printf(TEXT("Comprar · R$ %.0f"),UMareSimulation::Number(Row,TEXT("cost"))),[S,Id](){S->BuyExpansion(Id);})];
    G->AddSlot(I%3,I/3)[MareNotebook::PriceTag(Card,TiltOf(I))];++I;}
-  Heading(TEXT("Negócios da vila"),TEXT("(rendem sozinhos e pagam um funcionário por dia)"));auto B=Grid();I=0;
+  Heading(TEXT("Negócios da vila"),FString::Printf(TEXT("(atender você mesmo rende 100%% e fama; o funcionário atende sozinho com %.0f%%)"),S->BizClerkShare()*100));auto B=Grid();I=0;
   for(const auto& Pair:UMareSimulation::Object(S->Definitions,TEXT("businesses"))->Values){const FString Id(Pair.Key.ToView());auto Def=Pair.Value->AsObject();
-   auto Card=TagBody(FString::Printf(TEXT("~R$ %.0f/h · funcionário R$ %.0f"),UMareSimulation::Number(Def,TEXT("hour")),UMareSimulation::Number(Def,TEXT("wage"))),UMareSimulation::String(Def,TEXT("name")));
+   const int32 Level=S->BusinessLevel(Id);const auto LevelDef=S->BizLevelDef(Id,Level);
+   auto Card=TagBody(Level>0?FString::Printf(TEXT("nível %d/3 · funcionário R$ %.0f/dia"),Level,UMareSimulation::Number(Def,TEXT("wage")))
+    :FString::Printf(TEXT("funcionário R$ %.0f/dia"),UMareSimulation::Number(Def,TEXT("wage"))),UMareSimulation::String(Def,TEXT("name"))+(LevelDef.IsValid()?TEXT(" · ")+UMareSimulation::String(LevelDef,TEXT("name")):FString()));
    Card->AddSlot().AutoHeight().Padding(0,0,0,6)[MareNotebook::BodyText(UMareSimulation::String(Def,TEXT("blurb")),10.5f,MareNotebook::Faded)];FString Reason;
-   if(S->OwnsBusiness(Id))Card->AddSlot().AutoHeight()[SNew(SHorizontalBox)+SHorizontalBox::Slot().AutoWidth()[MareNotebook::Stamp(TEXT("SEU"),MareNotebook::Green)]
-    +SHorizontalBox::Slot().FillWidth(1).HAlign(HAlign_Right).VAlign(VAlign_Center)[MareNotebook::HandText(FString::Printf(TEXT("hoje R$ %.0f"),S->OpsToday(TEXT("biz_")+Id)),16,MareNotebook::Green)]];
+   if(S->OwnsBusiness(Id)){
+    // 3.6: daily report, the next level and the clerk.
+    Card->AddSlot().AutoHeight()[SNew(SHorizontalBox)+SHorizontalBox::Slot().AutoWidth()[MareNotebook::Stamp(TEXT("SEU"),MareNotebook::Green)]
+     +SHorizontalBox::Slot().FillWidth(1)+SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center)[SNew(STextBlock).Text(MareLoc::Text(FString::Printf(TEXT("hoje R$ %.0f"),S->OpsToday(TEXT("biz_")+Id)))).Font(MareNotebook::Hand(16)).ColorAndOpacity(MareNotebook::Green)]];
+    Card->AddSlot().AutoHeight().Padding(0,4,0,0)[MareNotebook::BodyText(S->BizReportLine(Id,false),10.f,MareNotebook::Ink)];
+    Card->AddSlot().AutoHeight().Padding(0,2,0,4)[MareNotebook::BodyText(S->BizReportLine(Id,true),10.f,MareNotebook::Faded)];
+    double Cost=0;const auto Next=S->BizLevelDef(Id,Level+1);
+    if(Next.IsValid()){
+     // 06/11: the level name in the button was cut ("R$ 1..."): the button only says level and price, the name leads the blurb.
+     // The level's blurb (what gets harder) is the tooltip: in the card it made the row taller than the phone page.
+     {auto Line=MareNotebook::BodyText(FString::Printf(TEXT("Próximo: nível %d, %s"),Level+1,*UMareSimulation::String(Next,TEXT("name"))),10.f,MareNotebook::Faded);
+      Line->SetToolTipText(MareLoc::Text(UMareSimulation::String(Next,TEXT("blurb"))));Card->AddSlot().AutoHeight().Padding(0,2,0,0)[Line];}
+     if(S->CanUpgradeBusiness(Id,Reason,&Cost))Card->AddSlot().AutoHeight().HAlign(HAlign_Left).Padding(0,2)[Button(FString::Printf(TEXT("Melhorar · R$ %.0f"),Cost),[S,Id](){S->UpgradeBusiness(Id);})];
+     else Card->AddSlot().AutoHeight()[MareNotebook::HandText(Reason,14,MareNotebook::Pencil)];}
+    Card->AddSlot().AutoHeight().HAlign(HAlign_Left).Padding(0,4,0,0)[S->HasBizClerk(Id)?Link(TEXT("dispensar o funcionário"),[S,Id](){S->SetBizClerk(Id,false);})
+     :Button(FString::Printf(TEXT("Contratar funcionário · R$ %.0f/dia"),UMareSimulation::Number(Def,TEXT("wage"))),[S,Id](){S->SetBizClerk(Id,true);})];}
    else if(S->CanBuyBusiness(Id,Reason))Card->AddSlot().AutoHeight().HAlign(HAlign_Left)[Button(FString::Printf(TEXT("Comprar · R$ %.0f"),UMareSimulation::Number(Def,TEXT("cost"))),[S,Id](){S->BuyBusiness(Id);})];
    else Card->AddSlot().AutoHeight()[MareNotebook::HandText(Reason,15,MareNotebook::Pencil)];
    B->AddSlot(I%3,I/3)[MareNotebook::PriceTag(Card,TiltOf(I+1))];++I;}
@@ -1053,6 +1069,8 @@ public:
   if(D->TryGetArrayField(TEXT("toppings"),L))for(const auto& V:*L)Toppings.Add({UMareSimulation::String(V->AsObject(),TEXT("id")),UMareSimulation::String(V->AsObject(),TEXT("name")),Color(V->AsObject())});
   const TArray<TSharedPtr<FJsonValue>>* R=nullptr;if(D->TryGetArrayField(TEXT("right"),R) && R->Num()==2){RightLo=(*R)[0]->AsNumber();RightHi=(*R)[1]->AsNumber();}
   GrowTime=UMareSimulation::Number(D,TEXT("grow_seconds"),1.6);ShowTime=UMareSimulation::Number(D,TEXT("show_seconds"),3);
+  // Level 2-3 cones take up to 4 scoops (businesses.sorveteria.levels, 3.6).
+  {const TArray<TSharedPtr<FJsonValue>>* Sc=nullptr;if(D->TryGetArrayField(TEXT("scoops"),Sc) && Sc->Num()==2)MaxScoops=FMath::Clamp(int32((*Sc)[1]->AsNumber()),1,4);}
   auto Tubs=SNew(SHorizontalBox);
   for(int32 I=0;I<Flavors.Num();++I)Tubs->AddSlot().AutoWidth().Padding(4,0)[SNew(SButton).ButtonStyle(&Plain()).ContentPadding(0)
    .OnPressed_Lambda([this,I](){Begin(I);}).OnReleased_Lambda([this](){Commit();})
@@ -1067,7 +1085,7 @@ public:
    [SNew(STextBlock).Font(Body(12,true)).ColorAndOpacity_Lambda([this,I](){return FSlateColor(Topping==I?Red:Ink);}).Text(MareLoc::Text(Toppings[I].Name))]];
   // The cone: three scoop places over a waffle cone drawn as narrowing strips.
   auto Cone=SNew(SVerticalBox);
-  for(int32 K=2;K>=0;--K)Cone->AddSlot().AutoHeight().HAlign(HAlign_Center).Padding(0,-14,0,0)[SNew(SBox).WidthOverride_Lambda([this,K](){return FOptionalSize(ScoopPx(K));})
+  for(int32 K=MaxScoops-1;K>=0;--K)Cone->AddSlot().AutoHeight().HAlign(HAlign_Center).Padding(0,-14,0,0)[SNew(SBox).WidthOverride_Lambda([this,K](){return FOptionalSize(ScoopPx(K));})
    .HeightOverride_Lambda([this,K](){return FOptionalSize(ScoopPx(K)*.82f);})[SNew(SBorder).BorderImage(&Ball()).BorderBackgroundColor_Lambda([this,K](){return FSlateColor(ScoopColor(K));})
     .Visibility_Lambda([this,K](){return ScoopPx(K)>1?EVisibility::Visible:EVisibility::Hidden;}).Padding(0).VAlign(VAlign_Top)
     // The topping drips over the top scoop.
@@ -1149,7 +1167,7 @@ private:
  struct FItem{FString Id,Name;FLinearColor Color;};
  static constexpr float GaugeW=520,MaxSize=1.3f;
  TWeakObjectPtr<AMareController> Owner;TArray<FItem> Flavors,Toppings;TArray<FString> Scoops;TArray<float> Sizes;FString Status;
- EPhase Phase=EPhase::Show;float Timer=0,Growing=0,RightLo=.7f,RightHi=1,GrowTime=1.6f,ShowTime=3;int32 Holding=-1,Selected=0,Topping=-1;
+ EPhase Phase=EPhase::Show;float Timer=0,Growing=0,RightLo=.7f,RightHi=1,GrowTime=1.6f,ShowTime=3;int32 Holding=-1,Selected=0,Topping=-1,MaxScoops=3;
  UMareSimulation* Sim()const{return Owner.IsValid()?Owner->GetSimulation():nullptr;}
  static FLinearColor Color(const TSharedPtr<FJsonObject>& O){const TArray<TSharedPtr<FJsonValue>>* C=nullptr;
   return O->TryGetArrayField(TEXT("color"),C) && C->Num()==3?FLinearColor(FColor(uint8((*C)[0]->AsNumber()*255),uint8((*C)[1]->AsNumber()*255),uint8((*C)[2]->AsNumber()*255))):FLinearColor::White;}
@@ -1169,14 +1187,14 @@ private:
  }
  void Begin(int32 Flavor)
  {
-  if(Phase!=EPhase::Build || Holding>=0 || Scoops.Num()>=3 || !Flavors.IsValidIndex(Flavor))return;Holding=Flavor;Selected=Flavor;Growing=0;
+  if(Phase!=EPhase::Build || Holding>=0 || Scoops.Num()>=MaxScoops || !Flavors.IsValidIndex(Flavor))return;Holding=Flavor;Selected=Flavor;Growing=0;
   if(Owner.IsValid())UMareAudioWorld::Action(Owner.Get(),TEXT("bar_ice_glass"),nullptr,.35f);
  }
  void Commit()
  {
   if(Holding<0)return;const float Size=Growing;Scoops.Add(Flavors[Holding].Id);Sizes.Add(Size);Holding=-1;Growing=0;
-  Status=FString::Printf(TEXT("Bola de %s %s. %d de 3 bolas."),*Flavors.FindByPredicate([this](const FItem& F){return F.Id==Scoops.Last();})->Name,
-   Size<RightLo?TEXT("pequena"):Size>RightHi?TEXT("grande demais"):TEXT("no tamanho certo"),Scoops.Num());
+  Status=FString::Printf(TEXT("Bola de %s %s. %d de %d bolas."),*Flavors.FindByPredicate([this](const FItem& F){return F.Id==Scoops.Last();})->Name,
+   Size<RightLo?TEXT("pequena"):Size>RightHi?TEXT("grande demais"):TEXT("no tamanho certo"),Scoops.Num(),MaxScoops);
  }
  void Undo(){if(Phase==EPhase::Build && Scoops.Num() && Holding<0){Scoops.Pop();Sizes.Pop();Status=TEXT("Bola desfeita.");}}
  void Deliver()
@@ -2254,6 +2272,7 @@ struct FMareUIQA
   auto PC=World?Cast<AMareController>(UGameplayStatics::GetPlayerController(World,0)):nullptr;if(!PC)return;
   if(What==TEXT("pause") || What==TEXT("options")){if(!PC->PauseWidget.IsValid())PC->TogglePauseMenu();PC->BuildPauseMenu(What==TEXT("options"));}
   else if(What==TEXT("menu"))PC->OpenMainMenu();
+  else if(What.StartsWith(TEXT("phone")))PC->OpenPhone(FCString::Atoi(*What.RightChop(5)));   // "phone4" = Resort tab
   else if(What==TEXT("play")){   // QA gate in PIE: like Continue on the main menu (the paused menu kept the village from ever spawning)
    if(PC->IsMainMenuOpen() && !PC->MenuLoadSlot(PC->WorldSlot))PC->MenuNewGame(PC->WorldSlot);}
   else if(What==TEXT("close")){   // like E: ends the bus arrival, closes the letter, the pause menu

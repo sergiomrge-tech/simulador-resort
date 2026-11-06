@@ -230,7 +230,7 @@ private:
   ShelfBox->AddSlot().AutoHeight()[HandText(TEXT("Prateleira (clique para escolher o lugar)"),17,Faded)];
   for(int32 I=0;I<Slots.Num() && I<Shelf.Num();++I){
    const auto C=S->SouvenirCraft(UMareSimulation::String(Shelf[I],TEXT("item")));const int32 Qty=int32(UMareSimulation::Number(Shelf[I],TEXT("qty")));
-   const FString What=C.IsValid() && Qty>0?FString::Printf(TEXT("%s · %d peça(s) · R$ %.0f"),*UMareSimulation::String(C,TEXT("name")),Qty,UMareSimulation::Number(C,TEXT("price"))):FString(TEXT("vazio"));
+   const FString What=C.IsValid() && Qty>0?FString::Printf(TEXT("%s · %d peça(s) · R$ %.0f"),*UMareSimulation::String(C,TEXT("name")),Qty,S->SouvenirPrice(C)):FString(TEXT("vazio"));
    ShelfBox->AddSlot().AutoHeight().Padding(0,1)[SNew(SHorizontalBox)
     +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(0,0,6,0)[SNew(SBox).WidthOverride(14).HeightOverride(14)[SNew(SBorder).BorderImage(&Round4()).Padding(0)
      .BorderBackgroundColor(C.IsValid() && Qty>0?JsonColor(C):FLinearColor(0,0,0,.1f))]]
@@ -248,7 +248,7 @@ private:
    const int32 Left=S->SouvenirMakerLeft(Id),Back=S->SouvenirBackStock(Id);
    const FString Line=bLocked?FString::Printf(TEXT("%s · %s (termine a história na vila)"),*UMareSimulation::String(C,TEXT("name")),*UMareSimulation::String(C,TEXT("maker")))
     :FString::Printf(TEXT("%s · %s · paga R$ %.0f, vende R$ %.0f · hoje ainda: %d · nos fundos: %d"),*UMareSimulation::String(C,TEXT("name")),*UMareSimulation::String(C,TEXT("maker")),
-     UMareSimulation::Number(C,TEXT("cost")),UMareSimulation::Number(C,TEXT("price")),Left,Back);
+     UMareSimulation::Number(C,TEXT("cost")),S->SouvenirPrice(C),Left,Back);
    ShelfBox->AddSlot().AutoHeight().Padding(0,1)[SNew(SHorizontalBox)
     +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(0,0,6,0)[SNew(SBox).WidthOverride(14).HeightOverride(14)[SNew(SBorder).BorderImage(&Round4()).Padding(0).BorderBackgroundColor(JsonColor(C))]]
     +SHorizontalBox::Slot().FillWidth(1).VAlign(VAlign_Center)[SNew(STextBlock).Font(Hand(16)).ColorAndOpacity(bLocked?Faded:Ink).AutoWrapText(true).Text(MareLoc::Text(Line))]

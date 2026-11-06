@@ -159,19 +159,31 @@ public:
    if(Settle>0){if(--Settle==0){
      // Slot paddings are not in the children's sizes: spread the column's own extra height over the rows.
      float Sum=0;for(int32 I=0;I<N;++I){Heights[I]=Kids->GetChildAt(I)->GetDesiredSize().Y;Sum+=Heights[I];}
-     const float Extra=N?FMath::Max(0.f,Rows->GetDesiredSize().Y-Sum)/N:0.f;for(float& H:Heights)H+=Extra+1.f;
+     Extra=N?FMath::Max(0.f,Rows->GetDesiredSize().Y-Sum)/N:0.f;for(float& H:Heights)H+=Extra+1.f;
      FString List;for(float H:Heights)List+=FString::Printf(TEXT(" %.0f"),H);
      UE_LOG(LogTemp,Display,TEXT("MARE_UI_FIT %s rows=%d content=%.0f space=%.0f heights:%s"),*Name,N,Sum+Extra*N,Size.Y,*List);}
     return;}
+   // 06/11: wrapped text settles over several frames and cards grow in play (a report line fills in): a shown row that
+   // came out taller than measured updates its height, and the leaves are packed again with it.
+   for(int32 I=0;I<N;++I){const auto Kid=Kids->GetChildAt(I);if(Kid->GetVisibility()!=EVisibility::Visible)continue;
+    const float H=Kid->GetDesiredSize().Y+Extra+1.f;if(H>Heights[I]+3.f){Heights[I]=H;
+     UE_LOG(LogTemp,Display,TEXT("MARE_UI_FIT %s row %d grew to %.0f"),*Name,I,H);}}
    float Total=0;for(float H:Heights)Total+=H;
    if(Total<=Size.Y){Scale=1;Leaves=1;}
    else if(Total*.85f<=Size.Y){Scale=Size.Y/Total;Leaves=1;}
-   else{Scale=.92f;const float Cap=(Size.Y-Pager)/Scale-(N?Heights[0]:0);
-    Owner.Reset();int32 Page=0;float Used=0;
+   else{
+    // 06/11 (3.6): rows grow after they were measured (a business card's report line fills in during play) and a heading
+    // alone on a leaf left its cards on the next one, overflowing over the pager. Pack with an 8% margin, never leave a
+    // heading alone, and if a leaf still overflows scale the leaves down a little more (to 76%).
+    const float Cap=(Size.Y-Pager)/.92f-(N?Heights[0]:0);
+    Owner.Reset();LeafUsed.Reset();int32 Page=0;float Used=0;bool bOnlyHeadings=true;
     // A short row (a section heading) stays with the row under it.
-    for(int32 I=1;I<N;++I){const float Keep=Heights[I]<=56.f && I+1<N?Heights[I+1]:0.f;
-     if(Used>0 && Used+Heights[I]+Keep>Cap){++Page;Used=0;}Used+=Heights[I];Owner.Add(Page);}
-    Leaves=Page+1;}
+    for(int32 I=1;I<N;++I){const bool bHeading=Heights[I]<=56.f;const float Keep=bHeading && I+1<N?Heights[I+1]:0.f;
+     if(Used>0 && !bOnlyHeadings && Used+Heights[I]+Keep>Cap){LeafUsed.Add(Used);++Page;Used=0;bOnlyHeadings=true;}
+     Used+=Heights[I];bOnlyHeadings=bOnlyHeadings && bHeading;Owner.Add(Page);}
+    LeafUsed.Add(Used);Leaves=Page+1;
+    // Each leaf gets its own scale: 92%, less only for a leaf whose rows (plus 8% for growth) do not fit.
+    const int32 L=FMath::Clamp(Leaf(),0,Leaves-1);Scale=FMath::Clamp((Size.Y-Pager)/((N?Heights[0]:0)+LeafUsed[L]*1.08f),.72f,.92f);}
    const int32 Show=FMath::Clamp(Leaf(),0,FMath::Max(Leaves-1,0));Leaf()=Show;
    for(int32 I=1;I<N;++I)Kids->GetChildAt(I)->SetVisibility(Leaves<=1 || (Owner.IsValidIndex(I-1) && Owner[I-1]==Show)?EVisibility::Visible:EVisibility::Collapsed);
    return;}
@@ -182,6 +194,6 @@ public:
  }
 private:
  int32& Leaf(){static TMap<FString,int32> Remembered;return Remembered.FindOrAdd(Name);}
- TSharedPtr<SWidget> Content;TSharedPtr<SVerticalBox> Rows;TArray<float> Heights;TArray<int32> Owner;
- float Scale=1.f,MinScale=.62f,Width=0.f,MeasuredWidth=-10.f;int32 Leaves=1,Settle=0;FString Name;bool bWarned=false;
+ TSharedPtr<SWidget> Content;TSharedPtr<SVerticalBox> Rows;TArray<float> Heights,LeafUsed;TArray<int32> Owner;
+ float Scale=1.f,MinScale=.62f,Extra=0.f,Width=0.f,MeasuredWidth=-10.f;int32 Leaves=1,Settle=0;FString Name;bool bWarned=false;
 };

@@ -51,9 +51,10 @@ double UMareSimulation::PlayBusiness(const FString& Id,int32 Hits)
  const TArray<TSharedPtr<FJsonValue>>* Rewards=nullptr;Hits=FMath::Clamp(Hits,0,3);
  const double Factor=BusinessGames()->TryGetArrayField(TEXT("rewards"),Rewards) && Rewards->IsValidIndex(Hits)?(*Rewards)[Hits]->AsNumber():.3+.6*Hits;
  // Game-room machines pay their own base (a bet won against a guest, tokens of the players watching).
- const double Reward=FMath::RoundToDouble((bMachine?Number(Game,TEXT("base")):FMath::Max(BusinessRate(Id),Number(Def,TEXT("hour"))))*Factor);
+ const double Reward=FMath::RoundToDouble((bMachine?Number(Game,TEXT("base")):FMath::Max(BusinessRate(Id),Number(Def,TEXT("hour"))*BizPriceMult(Id)))*Factor);
  Book(Reward,FString::Printf(TEXT("%s: atendimento (%d/3)"),*String(Def,TEXT("name")),Hits));
  AddFame(int32(Number(BusinessGames(),TEXT("fame_per_hit"),2))*Hits);
+ if(!bMachine)BizServed(Id,false,Reward,Hits,int32(Number(BusinessGames(),TEXT("fame_per_hit"),2))*Hits);
  LastMessage=Hits==3?FString::Printf(TEXT("Perfeito! Cliente encantado: R$ %.0f."),Reward):Hits>0?FString::Printf(TEXT("Cliente atendido: R$ %.0f."),Reward)
   :FString::Printf(TEXT("Saiu meio torto... R$ %.0f."),Reward);
  Save();return Reward;

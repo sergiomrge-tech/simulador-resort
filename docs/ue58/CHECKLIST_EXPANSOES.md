@@ -23,6 +23,31 @@ O que falta é **profundidade e variedade**. Hoje quase tudo é "aperte E" + bar
 - Nada de low poly ou primitivas: props reais ou modelados no Blender.
 - Um item por vez, na ordem do documento. Marcar `[x]` neste arquivo só com teste e foto.
 
+## PRIORIDADE ATUAL — terminar para o Acesso Antecipado (Sergio, 06/11/2026)
+
+"Minha prioridade é terminar para o acesso antecipado."; "mecânicas novas, novos sistemas, pode [ficar para depois]";
+"hotel, quartos, salão de jogos são importantes para o EA" (Sergio, 06/11/2026). Siga ESTA ordem:
+
+1. **6.2 Tutorial e objetivos** com o que já existe (`tutorial.json`): dica na primeira vez de cada sistema e objetivo
+   atual/próximo desbloqueio sempre visíveis.
+2. **5. Grand Hotel e salão de jogos, COMPLETO** (exceção à regra de não criar mecânica nova):
+   5.1 quartos (3 tipos visitáveis com interior modelado, arrumação com camareira, frigobar no check-out, reclamações
+   pelo celular); 5.4 salão de jogos (decoração, sinuca completa com placar, pebolim com controle real, 2 fliperamas com
+   recorde, torneio semanal e renda das fichas); 5.2 VIPs e eventos; 5.3 restaurante e crítico gastronômico.
+3. **4. Piscina:** hóspedes aproveitando a piscina e o tobogã (vida/animação, sem gestão nova).
+4. **6.1 Balanceamento** do jogo completo: jogar do zero ao Grand Hotel e medir (1 desbloqueio a cada 10–20 min, 6–10 h
+   de jogo); ajustar números. Anotar em `docs/ue58/BALANCEAMENTO.md`.
+5. **6.5 Tela de fim do Acesso Antecipado.**
+6. **Seção 7, parte técnica (Claude Code):** 3 slots de save com salvamento automático e backup; menu e opções completos;
+   preset Baixo medido; build Shipping testado; integração Steam (conquistas, Cloud, Rich Presence); modo DEMO.
+7. **ILHA** (mapa em forma de ilha pequena, ver seção 0).
+
+**DEPOIS do Acesso Antecipado** (não fazer antes do lançamento): 3.6 (níveis dos negócios, funcionário com 60%, relatório
+diário), 6.1 horários de pico, 6.3 pesca e modo foto, 6.4 eventos do calendário e a revisão da lojinha (3.5). Quando os
+itens 1–7 acabarem, pare e avise o Sergio em vez de começar estes.
+
+Itens do Sergio na seção 7 (conta Steamworks, App ID, página, trailer, Next Fest) não são do agente.
+
 ## 0. Pendências abertas (05/11/2026) — resolver antes de seguir
 
 Pedidos do Sergio e conferências que ficaram para trás no lote de 05/11 (aluguel, fundo do mar, lâmpadas).
@@ -91,6 +116,7 @@ Pedidos do Sergio e conferências que ficaram para trás no lote de 05/11 (alugu
   janela se estiver minimizada e pede a foto 1 s depois. Os scripts de QA (`mare_hud`, `mare_beach`, `mare_hotel_lobby`,
   `mare_progression_probe`) trocaram `Shot showui` por `mare.Shot`. Checagem permanente: o portão minimiza o editor,
   pede `mare.Shot` e exige o arquivo (`ui_shot`). Portão PASS (40 testes).
+- [ ] LOJINHA (por último, depois da ilha): revisar a lojinha de souvenires (3.5), que já está pronta, e ajustar o que o Sergio pedir.
 - [ ] ILHA (pedido grande, entregue ao agente novo do Sergio): "morro no meio, praia em volta, uma ilha pequena,
   preservando a vila e todas as construções, o restante é vegetação e árvores". Mar, espuma e perfil do fundo
   (`reef.json` → `floor_fill`, `SeabedZ`) precisam virar radiais. Refazer a navegação estática com cuidado.
@@ -349,7 +375,9 @@ Não fazer. Os três itens abaixo saíram do plano; pule direto para 3.5.
 - ~~Aula na água: empurrar o aluno na onda na hora certa. Ele fica em pé ou leva caldo, com animação cômica.~~
 - ~~O jogador pode surfar sozinho (minijogo de equilíbrio na onda) e liberar "aula avançada".~~
 
-### 3.5 Lojinha de souvenires
+### 3.5 Lojinha de souvenires — FICA PARA O FIM (Sergio, 06/11/2026: "lojinha deixa por último")
+
+Já implementada (decisões abaixo). Não mexer agora: revisar e ajustar só no fim, depois da ilha (item final do checklist).
 
 - [x] Comprar artesanato dos moradores da vila (ligar aos capítulos da vila) e arrumar a prateleira: a posição na vitrine afeta a venda.
 - [x] Embrulhar o presente: dobrar o papel em 3 cliques na ordem certa e escolher a fita na cor pedida.
@@ -365,10 +393,22 @@ Decisões (06/11/2026):
 
 ### 3.6 Comum a todos
 
-- [ ] Nível 1 a 3 por negócio, cada um com a mecânica mais exigente e o preço maior.
-- [ ] Funcionário que automatiza com 60% da renda; fazer pessoalmente rende 100% + fama.
-- [ ] Relatório diário de cada negócio no app do celular.
-- [ ] Teste por negócio: acerto perfeito, médio e erro dão a recompensa esperada e são salvos.
+Feito em 06/11/2026 (estava quase pronto quando o Sergio o mandou para depois do lançamento; fechei com teste e portão em
+vez de jogar fora). Lógica em `MareBizCommon.cpp`, valores em `business_games.json` (`businesses.<id>.levels`, `clerk_share`).
+
+- [x] Nível 1 a 3 por negócio, cada um com a mecânica mais exigente e o preço maior. `levels[0]` é o nível 2 e `levels[1]`
+  o 3: custo, fama mínima, nome, `price_mult` (×1,3/×1,6; aluguel ×1,25/×1,5) e `set`, que sobrepõe valores da mecânica
+  (sorveteria: pedido aparece menos tempo e a bola certa fica mais estreita; pastel: janela do dourado menor; aluguel: mais
+  voltas de parafina; lojinha: a fita aparece menos tempo). Compra pelo celular (aba Resort, card do negócio).
+- [x] Funcionário que automatiza com 60% da renda; fazer pessoalmente rende 100% + fama. Saves antigos já pagavam salário
+  a todos: sem a marca, conta como contratado. Dispensado, a fila só anda quando o jogador atende e quem espera desiste.
+- [x] Relatório diário de cada negócio no app do celular: hoje e ontem (atendidos por você com nota média, perfeitos e fama;
+  funcionário; prateleira; desistências; total). Prova: `docs/ue58/graphics-reference/business_common_report.jpg`.
+  Defeitos achados na foto e corrigidos: o card crescia depois de medido e cobria o "folha x de y" (o `SMareFit` agora
+  remede as linhas visíveis, nunca deixa um título sozinho numa folha e reduz a escala só da folha que não cabe); o nome do
+  nível cortava o botão (o botão diz "Melhorar · R$ X" e o que muda fica na dica da linha "Próximo: nível 2, ...").
+- [x] Teste por negócio: `MareAlta.Gameplay.BusinessCommon` (perfeito, médio e erro em sorveteria, pastel, aluguel e
+  embrulho da lojinha, relatório, save, virada do dia, funcionário a 60% sem fama, nível 2 e 3).
 
 ## 4. Piscina e day use — EXCLUÍDA (Sergio, 06/11/2026: "excluir 4")
 

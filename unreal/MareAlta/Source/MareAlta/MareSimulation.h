@@ -433,6 +433,39 @@ public:
  UFUNCTION(BlueprintCallable,Category="Maré Alta|Business") double PlayBusiness(const FString& Id,int32 Hits);
  /** Hourly: night tokens of the game room (business_games.json game_room), more players with the hotel full. */
  void GameRoomHour(int32 Hour);
+ // --- Common to every village business (MareBizCommon.cpp, CHECKLIST_EXPANSOES 3.6) ---
+ /** Sub-object of business_games.json businesses.<id> with the hands-on values (icecream, pastel, rental, shop). */
+ static const TCHAR* BizGameKey(const FString& Id);
+ TSharedPtr<FJsonObject> BizState(const FString& Id) const;
+ /** 0 not owned, 1..3. */
+ int32 BusinessLevel(const FString& Id) const;
+ /** businesses.<id>.levels[Level-2] (cost, fame, name, blurb, price_mult, set), null for level 1. */
+ TSharedPtr<FJsonObject> BizLevelDef(const FString& Id,int32 Level) const;
+ /** The hands-on values at the current level: the base values with each level's "set" laid over. */
+ TSharedPtr<FJsonObject> BizGameDefs(const FString& Id) const;
+ /** Price multiplier of the current level (1 at level 1). */
+ double BizPriceMult(const FString& Id) const;
+ bool CanUpgradeBusiness(const FString& Id,FString& Reason,double* Cost=nullptr) const;
+ UFUNCTION(BlueprintCallable,Category="Maré Alta|Business") bool UpgradeBusiness(const FString& Id);
+ /** Share of the price the clerk brings in when he serves alone (business_games.json clerk_share, 0.6). */
+ double BizClerkShare() const;
+ /** The business's clerk is hired (paid daily, serves whoever the player does not); true for saves before 3.6. */
+ bool HasBizClerk(const FString& Id) const;
+ bool SetBizClerk(const FString& Id,bool bHire);
+ /** Today's report object of the business (rolled to report_prev on a new day). */
+ TSharedPtr<FJsonObject> BizReport(const FString& Id);
+ void BizBookToday(const FString& Id,double Amount);
+ /** One customer served: by the player (hits 0..3 and fame count) or by the clerk. */
+ void BizServed(const FString& Id,bool bClerk,double Paid,int32 Hits,int32 Fame);
+ void BizShelfSale(const FString& Id,double Paid);
+ void BizLost(const FString& Id,int32 People);
+ /** One line for the phone: who served, money, average grade, perfect ones, fame, lost customers. */
+ FString BizReportLine(const FString& Id,bool bYesterday) const;
+ /** Full price of an order at the current level (before the grade): what the clerk's share is taken from. */
+ double IceOrderPrice(const TSharedPtr<FJsonObject>& Order) const;
+ double PastelOrderPrice(const TSharedPtr<FJsonObject>& Order) const;
+ double WrapFee() const;
+ double SouvenirPrice(const TSharedPtr<FJsonObject>& Craft) const;
  // --- Tutorial (MareLeisure.cpp, Content/Data/tutorial.json) ---
  /** First-time tip for Key (target action, phone, photo...): once per save (prog.tips); sets PendingTip. */
  bool ShowTip(const FString& Key);

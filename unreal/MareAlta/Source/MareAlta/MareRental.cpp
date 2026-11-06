@@ -19,7 +19,7 @@ namespace
  }
 }
 
-TSharedPtr<FJsonObject> UMareSimulation::RentalDefs() const{return Object(Object(Object(BusinessGames(),TEXT("businesses")),TEXT("aluguel")),TEXT("rental"));}
+TSharedPtr<FJsonObject> UMareSimulation::RentalDefs() const{return BizGameDefs(TEXT("aluguel"));}
 TSharedPtr<FJsonObject> UMareSimulation::RentalState() const{return Object(Object(Object(State,TEXT("prog")),TEXT("biz")),TEXT("aluguel"));}
 TArray<TSharedPtr<FJsonObject>> UMareSimulation::RentalQueue() const{return Objects(RentalState(),TEXT("queue"));}
 TArray<TSharedPtr<FJsonObject>> UMareSimulation::RentalReturns() const{return Objects(RentalState(),TEXT("returns"));}
@@ -32,7 +32,7 @@ FString UMareSimulation::RentalItemName(const FString& Item) const
 
 double UMareSimulation::RentalPrice(const FString& Item,int32 Minutes) const
 {
- return FMath::RoundToDouble(Number(Object(Object(RentalDefs(),TEXT("items")),Item),TEXT("price30"),10)*FMath::Max(1,Minutes/30));
+ return FMath::RoundToDouble(Number(Object(Object(RentalDefs(),TEXT("items")),Item),TEXT("price30"),10)*FMath::Max(1,Minutes/30)*BizPriceMult(TEXT("aluguel")));
 }
 
 void UMareSimulation::AddRentalCustomer()
@@ -54,9 +54,20 @@ void UMareSimulation::RentalHour(int32 Hour)
 {
  if(!OwnsBusiness(TEXT("aluguel")))return;const auto D=RentalDefs();auto R=RentalState();const bool bOpen=IsBusinessOpen(TEXT("aluguel"));
  // Whoever waited too long leaves the line; at closing the line goes home.
- auto& Queue=Arr(R,TEXT("queue"));for(int32 I=Queue.Num()-1;I>=0;--I)if(!bOpen || Now(State)-Number(Queue[I]->AsObject(),TEXT("since"))>Number(D,TEXT("patience_minutes"),40))Queue.RemoveAt(I);
+ auto& Queue=Arr(R,TEXT("queue"));auto& Out=Arr(R,TEXT("rented"));auto& Returns=Arr(R,TEXT("returns"));
+ // The clerk (3.6) rents to whoever the player left in line (no wax, clerk_share of the price) and checks the returns
+ // (a dent pays clerk_share of the fine), without fame.
+ if(HasBizClerk(TEXT("aluguel")) && (Queue.Num() || Returns.Num())){double Sum=0;const int32 N=Queue.Num()+Returns.Num();
+  for(const auto& V:Queue){const auto O=V->AsObject();const FString Item=String(O,TEXT("item"));const int32 Minutes=int32(Number(O,TEXT("minutes"),30));
+   const double Paid=FMath::RoundToDouble(RentalPrice(Item,Minutes)*BizClerkShare());Sum+=Paid;BizServed(TEXT("aluguel"),true,Paid,0,0);
+   auto Rent=MakeShared<FJsonObject>();Rent->SetStringField(TEXT("name"),String(O,TEXT("name")));Rent->SetStringField(TEXT("item"),Item);
+   Rent->SetNumberField(TEXT("due"),Now(State)+Minutes);Rent->SetBoolField(TEXT("waxed"),false);Out.Add(MakeShared<FJsonValueObject>(Rent));}
+  for(const auto& V:Returns){bool bDent=false;V->AsObject()->TryGetBoolField(TEXT("dent"),bDent);
+   const double Paid=bDent?FMath::RoundToDouble(Number(D,TEXT("fine"),20)*BizClerkShare()):0;Sum+=Paid;BizServed(TEXT("aluguel"),true,Paid,0,0);}
+  Queue.Empty();Returns.Empty();if(Sum>0)Book(Sum,FString::Printf(TEXT("Aluguel: funcionário atendeu %d cliente(s)"),N));}
+ int32 Gone=0;for(int32 I=Queue.Num()-1;I>=0;--I)if(!bOpen || Now(State)-Number(Queue[I]->AsObject(),TEXT("since"))>Number(D,TEXT("patience_minutes"),40)){Queue.RemoveAt(I);++Gone;}
+ BizLost(TEXT("aluguel"),Gone);
  // Rentals that ran out come back to be checked (some with a dent); at closing everybody returns.
- auto& Out=Arr(R,TEXT("rented"));auto& Returns=Arr(R,TEXT("returns"));
  for(int32 I=Out.Num()-1;I>=0;--I){const auto O=Out[I]->AsObject();if(bOpen && Now(State)<Number(O,TEXT("due")))continue;
   O->SetBoolField(TEXT("dent"),FMath::FRand()<Number(D,TEXT("dent_chance"),.3));Returns.Add(Out[I]);Out.RemoveAt(I);}
  if(!bOpen)return;
@@ -74,6 +85,7 @@ bool UMareSimulation::RentItem(bool bWaxed)
  const auto O=Queue[0]->AsObject();const FString Item=String(O,TEXT("item"));const int32 Minutes=int32(Number(O,TEXT("minutes"),30));
  const double Price=RentalPrice(Item,Minutes),Tip=bWaxed?FMath::RoundToDouble(Price*Number(RentalDefs(),TEXT("wax_tip"),.3)):0;
  Book(Price+Tip,FString::Printf(TEXT("Aluguel: %s por %d min%s"),*RentalItemName(Item),Minutes,bWaxed?TEXT(" (encerada)"):TEXT("")));AddFame(bWaxed?2:1);
+ BizServed(TEXT("aluguel"),false,Price+Tip,bWaxed?3:2,bWaxed?2:1);
  auto Rent=MakeShared<FJsonObject>();Rent->SetStringField(TEXT("name"),String(O,TEXT("name")));Rent->SetStringField(TEXT("item"),Item);
  Rent->SetNumberField(TEXT("due"),Now(State)+Minutes);Rent->SetBoolField(TEXT("waxed"),bWaxed);Arr(R,TEXT("rented")).Add(MakeShared<FJsonValueObject>(Rent));
  Queue.RemoveAt(0);R->SetNumberField(TEXT("games"),Number(R,TEXT("games"))+1);
@@ -92,6 +104,7 @@ int32 UMareSimulation::InspectReturn(bool bFine)
  else if(!bDent && !bFine){AddFame(1);LastMessage=FString::Printf(TEXT("%s devolveu %s inteiro(a). Tudo certo!"),*Who,*What);Result=2;}
  else if(bDent){LastMessage=FString::Printf(TEXT("Deixou passar: %s voltou amassado(a) e ficou por isso mesmo."),*What);Result=1;}
  else{AddFame(-int32(Number(RentalDefs(),TEXT("unfair_fame"),2)));LastMessage=FString::Printf(TEXT("%s reclamou: multa sem amassado nenhum! A fama caiu."),*Who);Result=0;}
+ BizServed(TEXT("aluguel"),false,Result==3?Fine:0,Result,Result==2?1:Result==0?-int32(Number(RentalDefs(),TEXT("unfair_fame"),2)):0);
  Save();return Result;
 }
 

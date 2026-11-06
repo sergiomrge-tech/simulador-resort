@@ -17,7 +17,13 @@ namespace
 
 TSharedPtr<FJsonObject> UMareSimulation::IceDefs() const
 {
- return Object(Object(Object(BusinessGames(),TEXT("businesses")),TEXT("sorveteria")),TEXT("icecream"));
+ return BizGameDefs(TEXT("sorveteria"));
+}
+
+double UMareSimulation::IceOrderPrice(const TSharedPtr<FJsonObject>& O) const
+{
+ const auto D=IceDefs();const TArray<TSharedPtr<FJsonValue>>* F=nullptr;const int32 Scoops=O.IsValid() && O->TryGetArrayField(TEXT("flavors"),F)?F->Num():1;
+ return (Scoops*Number(D,TEXT("price_per_scoop"),6)+(String(O,TEXT("topping"))!=TEXT("nenhuma")?Number(D,TEXT("topping_price"),2):0))*BizPriceMult(TEXT("sorveteria"));
 }
 
 TArray<TSharedPtr<FJsonObject>> UMareSimulation::IceQueue() const
@@ -56,7 +62,12 @@ void UMareSimulation::IceCreamHour(int32 Hour)
  if(!OwnsBusiness(TEXT("sorveteria")))return;const auto D=IceDefs();auto Biz=Object(Object(Object(State,TEXT("prog")),TEXT("biz")),TEXT("sorveteria"));
  // Whoever waited too long gives up; nobody stays after closing.
  auto& Queue=Arr(Biz,TEXT("queue"));const double Patience=Number(D,TEXT("patience_minutes"),45);int32 Gone=0;
+ // The clerk (3.6) serves whoever the player left in line, at clerk_share of the price and no fame.
+ if(HasBizClerk(TEXT("sorveteria")) && Queue.Num()){double Sum=0;const int32 N=Queue.Num();
+  for(const auto& V:Queue){const double Paid=FMath::RoundToDouble(IceOrderPrice(V->AsObject())*BizClerkShare());Sum+=Paid;BizServed(TEXT("sorveteria"),true,Paid,0,0);}
+  Queue.Empty();if(Sum>0)Book(Sum,FString::Printf(TEXT("Sorveteria: funcionário atendeu %d cliente(s)"),N));}
  for(int32 I=Queue.Num()-1;I>=0;--I)if(!IsBusinessOpen(TEXT("sorveteria")) || Now(State)-Number(Queue[I]->AsObject(),TEXT("since"))>Patience){Queue.RemoveAt(I);++Gone;}
+ BizLost(TEXT("sorveteria"),Gone);
  if(Gone && IsBusinessOpen(TEXT("sorveteria")))LastMessage=FString::Printf(TEXT("Sorveteria: %d cliente(s) cansaram de esperar na fila."),Gone);
  if(!IsBusinessOpen(TEXT("sorveteria")))return;
  // New customers: a hot day doubles them, rain keeps most away.
@@ -80,10 +91,10 @@ FMareIceResult UMareSimulation::ServeIceCream(const TArray<FString>& Flavors,con
  const bool bSizes=Sizes.Num()==Want.Num() && Small+Big==0,bTopping=Topping==String(O,TEXT("topping"));
  R.Hits=int32(bFlavors)+int32(bSizes)+int32(bTopping);
  const TArray<TSharedPtr<FJsonValue>>* Pay=nullptr;const double Factor=D->TryGetArrayField(TEXT("pay"),Pay) && Pay->IsValidIndex(R.Hits)?(*Pay)[R.Hits]->AsNumber():.3+.3*R.Hits;
- const double Price=Want.Num()*Number(D,TEXT("price_per_scoop"),6)+(String(O,TEXT("topping"))!=TEXT("nenhuma")?Number(D,TEXT("topping_price"),2):0);
+ const double Price=IceOrderPrice(O);
  R.Paid=FMath::RoundToDouble(Price*Factor)+(R.Hits==3?Number(D,TEXT("tip_perfect"),5):0);
  const FString Who=String(O,TEXT("name"));Book(R.Paid,FString::Printf(TEXT("Sorveteria: casquinha de %s (%d/3)"),*Who,R.Hits));
- AddFame(int32(Number(D,TEXT("fame_per_hit"),1))*R.Hits);Biz->SetNumberField(TEXT("games"),Number(Biz,TEXT("games"))+1);
+ AddFame(int32(Number(D,TEXT("fame_per_hit"),1))*R.Hits);BizServed(TEXT("sorveteria"),false,R.Paid,R.Hits,int32(Number(D,TEXT("fame_per_hit"),1))*R.Hits);Biz->SetNumberField(TEXT("games"),Number(Biz,TEXT("games"))+1);
  Queue.RemoveAt(0);R.bServed=true;
  TArray<FString> Notes;if(!bFlavors)Notes.Add(TEXT("sabor trocado"));if(Small)Notes.Add(TEXT("bola pequena"));if(Big)Notes.Add(TEXT("bola grande demais"));
  if(Sizes.Num()!=Want.Num())Notes.Add(FString::Printf(TEXT("pediu %d bola(s)"),Want.Num()));if(!bTopping)Notes.Add(TEXT("cobertura errada"));

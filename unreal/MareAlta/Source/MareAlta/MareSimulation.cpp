@@ -453,7 +453,7 @@ void UMareSimulation::Sleep()
    const double Wage=StaffWage(Role);Wages+=Wage;Book(-Wage,TEXT("Salário: ")+String(Object(Roles,Role),TEXT("name")));
   }
   // Businesses pay their own clerk once per day, like the staff wages above.
-  for(const auto& Pair:Object(Definitions,TEXT("businesses"))->Values)if(OwnsBusiness(FString(Pair.Key.ToView()))){
+  for(const auto& Pair:Object(Definitions,TEXT("businesses"))->Values)if(HasBizClerk(FString(Pair.Key.ToView()))){
    const double Wage=Number(Pair.Value->AsObject(),TEXT("wage"));Wages+=Wage;Book(-Wage,TEXT("Funcionário: ")+String(Pair.Value->AsObject(),TEXT("name")));}
   Hours->SetNumberField(TEXT("wage_day"),Day);
   // Upkeep: 0.5 % a day of what the resort's expansions cost (the Grand Hotel alone is R$ 150): money needs some care.
@@ -747,7 +747,7 @@ double UMareSimulation::BusinessRate(const FString& Id) const
  auto Ops=Object(CustomDefs(),TEXT("operations"));auto Def=Object(Object(Definitions,TEXT("businesses")),Id);
  const bool bRainProof=Id==TEXT("food_truck") || Id==TEXT("souvenir");
  const double Weather=!bRainProof && String(State,TEXT("weather"))==TEXT("rain")?Number(Ops,TEXT("business_rain"),.4):1;
- return Number(Def,TEXT("hour"))*(1+Number(Ops,TEXT("business_fame"),.06)*(FameLevel()-1))*PlaceIncomeFactor(TEXT("biz_")+Id)*Weather;
+ return Number(Def,TEXT("hour"))*BizPriceMult(Id)*(1+Number(Ops,TEXT("business_fame"),.06)*(FameLevel()-1))*PlaceIncomeFactor(TEXT("biz_")+Id)*Weather;
 }
 void UMareSimulation::OperateHour(int32 Hour)
 {
@@ -768,9 +768,12 @@ void UMareSimulation::OperateHour(int32 Hour)
  // Tours sell tickets at the pier and leave guided by the player or the guide (MareTours.cpp).
  ToursHour(Hour);
  for(const auto& Pair:Object(Definitions,TEXT("businesses"))->Values){const FString Id(Pair.Key.ToView());if(!OwnsBusiness(Id))continue;
-  if(Id==TEXT("souvenir"))continue;   // the souvenir shop earns from its shelf (SouvenirHour, 3.5), not a flat hourly rate
+  // Businesses with a line earn per customer (served by the player or the clerk, 3.6); the others pay a flat rate
+  // per open hour only with the clerk hired, at his share.
+  if(BizGameKey(Id) || !HasBizClerk(Id))continue;
   const TArray<TSharedPtr<FJsonValue>>* Open=nullptr;if(!Pair.Value->AsObject()->TryGetArrayField(TEXT("open"),Open) || Open->Num()!=2)continue;
-  if(Started>=(*Open)[0]->AsNumber() && Started<(*Open)[1]->AsNumber())Add(TEXT("biz_")+Id,String(Pair.Value->AsObject(),TEXT("name")),BusinessRate(Id)*FMath::FRandRange(.85,1.15));}
+  if(Started>=(*Open)[0]->AsNumber() && Started<(*Open)[1]->AsNumber()){const double Paid=FMath::RoundToDouble(BusinessRate(Id)*BizClerkShare()*FMath::FRandRange(.85,1.15));
+   BizServed(Id,true,Paid,0,0);BizBookToday(Id,-Paid);Add(TEXT("biz_")+Id,String(Pair.Value->AsObject(),TEXT("name")),Paid);}}
  // One ledger line per hour keeps the statement readable; the phone shows the split per place.
  if(Total>0)Book(Total,FString::Printf(TEXT("Resort %02dh–%02dh: "),Started,Hour)+FString::Join(Parts,TEXT(" · ")));
 }
@@ -813,7 +816,7 @@ bool UMareSimulation::BuyBusiness(const FString& Id)
  auto Business=MakeShared<FJsonObject>();Business->SetNumberField(TEXT("lvl"),1);Child(Child(State,TEXT("prog")),TEXT("biz"))->SetObjectField(Id,Business);
  Book(-Cost,TEXT("Negócio: ")+String(Def,TEXT("name")));
  if(auto World=GetWorld())if(auto Visual=World->GetSubsystem<UMareVisualWorld>())Visual->RefreshExpansions();
- LastMessage=TEXT("Negócio comprado: ")+String(Def,TEXT("name"))+TEXT(". Ele rende sozinho no horário de funcionamento.");return Save();
+ LastMessage=TEXT("Negócio comprado: ")+String(Def,TEXT("name"))+FString::Printf(TEXT(". O funcionário atende sozinho com %.0f%% da renda; atendendo você mesmo rende 100%% e fama."),BizClerkShare()*100);return Save();
 }
 double UMareSimulation::HomeSpeedFactor() const{return 1+PlaceEffect(TEXT("home"),TEXT("speed_per_comfort"))*PlaceComfort(TEXT("home"));}
 FString UMareSimulation::PlaceSummary(const FString& Place) const

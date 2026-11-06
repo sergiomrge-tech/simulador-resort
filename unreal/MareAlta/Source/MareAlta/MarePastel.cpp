@@ -17,7 +17,15 @@ namespace
 
 TSharedPtr<FJsonObject> UMareSimulation::PastelDefs() const
 {
- return Object(Object(Object(BusinessGames(),TEXT("businesses")),TEXT("food_truck")),TEXT("pastel"));
+ return BizGameDefs(TEXT("food_truck"));
+}
+
+double UMareSimulation::PastelOrderPrice(const TSharedPtr<FJsonObject>& O) const
+{
+ // Pastel and, when asked, the sugar-cane juice: the full bill at the current level.
+ const auto D=PastelDefs();double Price=0;const TArray<TSharedPtr<FJsonValue>>* F=nullptr;bool bCana=false;if(O.IsValid())O->TryGetBoolField(TEXT("cana"),bCana);
+ if(D->TryGetArrayField(TEXT("fillings"),F))for(const auto& V:*F)if(String(V->AsObject(),TEXT("id"))==String(O,TEXT("filling")))Price=Number(V->AsObject(),TEXT("price"),9);
+ return (Price+(bCana?Number(D,TEXT("cana_price"),6):0))*BizPriceMult(TEXT("food_truck"));
 }
 
 TArray<TSharedPtr<FJsonObject>> UMareSimulation::PastelQueue() const
@@ -51,7 +59,12 @@ void UMareSimulation::PastelHour(int32 Hour)
 {
  if(!OwnsBusiness(TEXT("food_truck")))return;const auto D=PastelDefs();auto Biz=Object(Object(Object(State,TEXT("prog")),TEXT("biz")),TEXT("food_truck"));
  auto& Queue=Arr(Biz,TEXT("queue"));const bool bOpen=IsBusinessOpen(TEXT("food_truck"));int32 Gone=0;
+ // The clerk (3.6) fries for whoever the player left in line, at clerk_share of the bill and no fame.
+ if(HasBizClerk(TEXT("food_truck")) && Queue.Num()){double Sum=0;const int32 N=Queue.Num();
+  for(const auto& V:Queue){const double Paid=FMath::RoundToDouble(PastelOrderPrice(V->AsObject())*BizClerkShare());Sum+=Paid;BizServed(TEXT("food_truck"),true,Paid,0,0);}
+  Queue.Empty();if(Sum>0)Book(Sum,FString::Printf(TEXT("Food truck: funcionário atendeu %d cliente(s)"),N));}
  for(int32 I=Queue.Num()-1;I>=0;--I)if(!bOpen || Now(State)-Number(Queue[I]->AsObject(),TEXT("since"))>Number(D,TEXT("patience_minutes"),40)){Queue.RemoveAt(I);++Gone;}
+ BizLost(TEXT("food_truck"),Gone);
  if(Gone && bOpen)LastMessage=FString::Printf(TEXT("Food truck: %d cliente(s) cansaram de esperar o pastel."),Gone);
  if(!bOpen)return;
  // A party day (quermesse, festa junina, show) fills the street.
@@ -72,12 +85,14 @@ FMareIceResult UMareSimulation::ServePastel(const FString& Filling,bool bSealed,
  R.Hits=int32(bFilling)+int32(bSealed)+int32(bGolden);
  double Price=0;const TArray<TSharedPtr<FJsonValue>>* F=nullptr;
  if(D->TryGetArrayField(TEXT("fillings"),F))for(const auto& V:*F)if(String(V->AsObject(),TEXT("id"))==String(O,TEXT("filling")))Price=Number(V->AsObject(),TEXT("price"),9);
+ Price*=BizPriceMult(TEXT("food_truck"));
  const TArray<TSharedPtr<FJsonValue>>* Pay=nullptr;const double Factor=D->TryGetArrayField(TEXT("pay"),Pay) && Pay->IsValidIndex(R.Hits)?(*Pay)[R.Hits]->AsNumber():.3+.3*R.Hits;
  // A burnt pastel is not sold at all; the juice is paid when it was asked for and pressed.
- const bool bBurnt=FrySeconds>Burnt;const double Juice=bWantsCana && bCana?Number(D,TEXT("cana_price"),6):0;
+ const bool bBurnt=FrySeconds>Burnt;const double Juice=bWantsCana && bCana?FMath::RoundToDouble(Number(D,TEXT("cana_price"),6)*BizPriceMult(TEXT("food_truck"))):0;
  R.Paid=(bBurnt?0:FMath::RoundToDouble(Price*Factor))+Juice+(R.Hits==3 && (!bWantsCana || bCana)?Number(D,TEXT("tip_perfect"),4):0);
  const FString Who=String(O,TEXT("name"));if(R.Paid>0)Book(R.Paid,FString::Printf(TEXT("Food truck: pastel de %s (%d/3)"),*Who,R.Hits));
  AddFame(int32(Number(D,TEXT("fame_per_hit"),1))*R.Hits);Biz->SetNumberField(TEXT("games"),Number(Biz,TEXT("games"))+1);
+ BizServed(TEXT("food_truck"),false,R.Paid,R.Hits,int32(Number(D,TEXT("fame_per_hit"),1))*R.Hits);
  Queue.RemoveAt(0);R.bServed=true;
  TArray<FString> Notes;if(!bFilling)Notes.Add(TEXT("recheio errado"));if(!bSealed)Notes.Add(TEXT("abriu no óleo"));
  if(FrySeconds<From)Notes.Add(TEXT("ficou cru"));else if(bBurnt)Notes.Add(TEXT("queimou"));else if(!bGolden)Notes.Add(TEXT("passou do ponto"));

@@ -637,3 +637,13 @@ objeto preso em `TStrongObjectPtr`.
 roupa de banho: o motorista do ônibus dirigia de biquíni. Toda pessoa criada por código precisa de papel explícito.
 Para fotografar gente no PIE: mover o herói (o movimento dele fica desligado durante cenas) e `set_global_time_dilation`
 baixo para congelar a cena; `HighResShot 1` grava em `Saved/Screenshots/WindowsEditor` sem HUD.
+
+## UE5.8 — folhas do celular e teste com sorteio (06/11, 3.6)
+
+O `SMareFit` media a altura das linhas uma vez só, 3 quadros depois de abrir: texto com quebra ainda não tinha
+assentado e o card do negócio cresce no jogo (a linha do relatório se preenche). Medido 295, real 372: o card cobria o
+"folha x de y". Agora as linhas visíveis são remedidas a cada quadro (só crescem), um título nunca fica sozinho numa
+folha e só a folha que não cabe encolhe. Ao abrir uma tela paginada nova, conferir a última folha na foto.
+Teste que chama uma hora simulada herda os sorteios dela (`FRand`): o `Rental` reprovou 1 vez em 3 no portão porque a
+hora soltou um caiaque à deriva antes do `TestFalse`. Antes de afirmar um estado, zere o que o sorteio pode ter mudado.
+O portão agora imprime as 2 primeiras mensagens de cada teste reprovado.
