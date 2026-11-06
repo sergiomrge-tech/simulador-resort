@@ -74,7 +74,7 @@ void AMareBench::Tick(float DeltaSeconds)
     if(Line.Split(TEXT(" "),&Name,&Value))if(auto Var=IConsoleManager::Get().FindConsoleVariable(*Name)){Var->Set(*Value.TrimStartAndEnd(),ECVF_SetByCode);continue;}
     GEngine->Exec(GetWorld(),*Line);}}
   // Everything a late game has: all expansions and the Grand Hotel (fame and the carnaval chapter played through state).
-  auto Sim=PC->GetSimulation();Sim->State->SetNumberField(TEXT("money"),500000);
+  auto Sim=PC->GetSimulation();Sim->State->SetNumberField(TEXT("money"),500000);Sim->Definitions->SetBoolField(TEXT("demo"),false);   // the bench measures the full game
   UMareSimulation::Object(UMareSimulation::Object(Sim->State,TEXT("prog")),TEXT("ch"))->SetNumberField(TEXT("carnaval"),3);Sim->AddFame(100000);
   for(const TCHAR* Id:{TEXT("kiosk_tables"),TEXT("drinks"),TEXT("grill"),TEXT("bar"),TEXT("pousada"),TEXT("pool"),TEXT("passeios"),TEXT("grand_hotel")}){
    bool bOwned=false;UMareSimulation::Object(Sim->State,TEXT("unlocked"))->TryGetBoolField(Id,bOwned);if(!bOwned)Sim->BuyExpansion(Id);}

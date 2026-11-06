@@ -73,7 +73,7 @@ FString UMareSimulation::NextUnlockText() const
  // The cheapest expansion whose prerequisites are owned (as NextGoal), with what is still missing for it.
  auto Unlocked=Object(State,TEXT("unlocked"));TSharedPtr<FJsonObject> Best;double BestCost=0;
  for(const auto& Pair:Object(Definitions,TEXT("expansions"))->Values){const auto E=Pair.Value->AsObject();const FString Id(Pair.Key.ToView());
-  bool bOwned=false;Unlocked->TryGetBoolField(Id,bOwned);if(bOwned)continue;bool bReady=true;const TArray<TSharedPtr<FJsonValue>>* Req=nullptr;
+  bool bOwned=false;Unlocked->TryGetBoolField(Id,bOwned);if(bOwned || IsFullGameOnly(Id))continue;bool bReady=true;const TArray<TSharedPtr<FJsonValue>>* Req=nullptr;
   if(E->TryGetArrayField(TEXT("req"),Req))for(const auto& R:*Req){bool b=false;Unlocked->TryGetBoolField(R->AsString(),b);bReady&=b;}
   if(!bReady)continue;const double Price=Number(E,TEXT("cost"));if(!Best.IsValid() || Price<BestCost){Best=E;BestCost=Price;}}
  if(!Best.IsValid())return FString();
@@ -95,7 +95,7 @@ bool UMareSimulation::NextGoal(FString& Name,double& Cost) const
  // The cheapest expansion whose prerequisites are owned: the next thing worth saving for.
  auto Unlocked=Object(State,TEXT("unlocked"));Cost=0;Name.Reset();
  for(const auto& Pair:Object(Definitions,TEXT("expansions"))->Values){const auto E=Pair.Value->AsObject();const FString Id(Pair.Key.ToView());
-  bool bOwned=false;Unlocked->TryGetBoolField(Id,bOwned);if(bOwned)continue;bool bReady=true;const TArray<TSharedPtr<FJsonValue>>* Req=nullptr;
+  bool bOwned=false;Unlocked->TryGetBoolField(Id,bOwned);if(bOwned || IsFullGameOnly(Id))continue;bool bReady=true;const TArray<TSharedPtr<FJsonValue>>* Req=nullptr;
   if(E->TryGetArrayField(TEXT("req"),Req))for(const auto& R:*Req){bool b=false;Unlocked->TryGetBoolField(R->AsString(),b);bReady&=b;}
   if(!bReady)continue;const double Price=Number(E,TEXT("cost"));if(Name.IsEmpty() || Price<Cost){Name=String(E,TEXT("name"));Cost=Price;}}
  return !Name.IsEmpty();

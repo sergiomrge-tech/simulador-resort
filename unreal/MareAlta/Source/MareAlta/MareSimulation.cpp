@@ -284,6 +284,7 @@ bool UMareSimulation::BuyExpansion(const FString& Id)
 {
  auto Expansions=Object(Definitions,TEXT("expansions")); if(!Expansions->HasField(Id)) return false;
  auto Unlocked=Object(State,TEXT("unlocked")); bool bOwned=false;Unlocked->TryGetBoolField(Id,bOwned);if(bOwned)return Fail(TEXT("Esta expansão já foi comprada."));
+ if(IsFullGameOnly(Id))return Fail(String(Object(Expansions,Id),TEXT("name"))+TEXT(" chega no jogo completo."));
  auto Expansion=Object(Expansions,Id); const TArray<TSharedPtr<FJsonValue>>* Required=nullptr;
  if(Expansion->TryGetArrayField(TEXT("req"),Required)) for(const auto& Req:*Required){bool bHas=false;Unlocked->TryGetBoolField(Req->AsString(),bHas);if(!bHas)return Fail(TEXT("Compre as expansões anteriores."));}
  // Story and fame gates from the data (the Grand Hotel needs the carnaval chapter and fame level 8, as in the Godot game).
@@ -845,4 +846,22 @@ FString UMareSimulation::PlaceSummary(const FString& Place) const
   return Head+FString::Printf(TEXT(" · ~R$ %.0f por hora%s · hoje R$ %.0f"),BusinessRate(Id),*Hours,OpsToday(Place));}
  if(Place==TEXT("home"))return Head+FString::Printf(TEXT(" · você anda %.0f%% mais rápido · +%.0f de fama por noite"),(HomeSpeedFactor()-1)*100,FMath::FloorToDouble(Beauty*PlaceEffect(Place,TEXT("fame_per_beauty_night"))));
  return Head;
+}
+
+bool UMareSimulation::IsFullGameOnly(const FString& Id) const
+{
+ // Demo (Sergio, 06/11: a free 2 h demo instead of a paid Early Access): the Grand Hotel and what is built on it come with the full game. A save that already
+ // owns it keeps it.
+ bool bEA=false,bFull=false,bOwned=false;Definitions->TryGetBoolField(TEXT("demo"),bEA);
+ Object(Object(Definitions,TEXT("expansions")),Id)->TryGetBoolField(TEXT("full_game"),bFull);Object(State,TEXT("unlocked"))->TryGetBoolField(Id,bOwned);
+ return bEA && bFull && !bOwned;
+}
+
+bool UMareSimulation::IsCampaignAtFullGame() const
+{
+ // Demo: the campaign stops at the first mission that needs a full-game expansion (A Maré Alta da vila = the Grand Hotel).
+ const TArray<TSharedPtr<FJsonValue>>* Missions=nullptr;if(!Definitions->TryGetArrayField(TEXT("campaign"),Missions))return false;
+ const int32 Stage=int32(Number(Object(Object(State,TEXT("prog")),TEXT("campaign")),TEXT("stage")));if(!Missions->IsValidIndex(Stage))return false;
+ for(int32 I=0;I<=Stage;++I){const auto M=(*Missions)[I]->AsObject();if(String(M,TEXT("kind"))==TEXT("expansion") && IsFullGameOnly(String(M,TEXT("item"))))return true;}
+ return false;
 }

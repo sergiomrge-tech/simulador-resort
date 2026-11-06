@@ -54,7 +54,9 @@ bool UMareSimulation::IsEndOfContentDue() const
 {
  bool bShown=false;Object(State,TEXT("prog"))->TryGetBoolField(TEXT("ea_end_shown"),bShown);if(bShown)return false;
  auto Unlocked=Object(State,TEXT("unlocked"));
- for(const auto& Pair:Object(Definitions,TEXT("expansions"))->Values){bool b=false;Unlocked->TryGetBoolField(FString(Pair.Key.ToView()),b);if(!b)return false;}
+ // Demo: the full-game expansions (the Grand Hotel) do not count.
+ for(const auto& Pair:Object(Definitions,TEXT("expansions"))->Values){const FString Id(Pair.Key.ToView());if(IsFullGameOnly(Id))continue;
+  bool b=false;Unlocked->TryGetBoolField(Id,b);if(!b)return false;}
  const TArray<TSharedPtr<FJsonValue>>* Chapters=nullptr;
  if(Definitions->TryGetArrayField(TEXT("chapters"),Chapters))for(const auto& V:*Chapters)if(!IsChapterDone(String(V->AsObject(),TEXT("id"))))return false;
  return true;

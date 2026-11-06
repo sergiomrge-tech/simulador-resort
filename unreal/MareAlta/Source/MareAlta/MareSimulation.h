@@ -69,6 +69,10 @@ public:
  bool DismissAttendant();
  UFUNCTION(BlueprintCallable,Category="Maré Alta")
  bool BuyExpansion(const FString& Id);
+ /** Demo: an expansion marked full_game (definitions.json) that this save does not own yet; not for sale. */
+ bool IsFullGameOnly(const FString& Id) const;
+ /** Demo: the campaign reached a mission that needs a full-game expansion (it continues in the full game). */
+ bool IsCampaignAtFullGame() const;
  UFUNCTION(BlueprintCallable,Category="Maré Alta")
  bool ClaimMission(const FString& Id, bool bSide=false);
  int32 MissionAmount(const TSharedPtr<FJsonObject>& Mission) const;

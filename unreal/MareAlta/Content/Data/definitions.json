@@ -1,4 +1,6 @@
 {
+	"demo": true,
+	"_demo_doc": "Free 2 h demo build (Sergio, 06/11/2026: no paid Early Access, a demo instead): expansions with full_game stay locked (the Grand Hotel and everything on it come with the full game); the end screen counts only the rest. false = the full game.",
 	"art_direction": "realista estilizado, sem toon/contornos",
 	"businesses": {
 		"aluguel": {
@@ -625,6 +627,7 @@
 			"stars": 0.0
 		},
 		"grand_hotel": {
+			"full_game": true,
 			"area": "",
 			"blurb": "A fase final: hotel de 5 andares com 32 suítes, restaurante com buffet, academia, spa, piscina com tobogã e bar da piscina.",
 			"chapter": "carnaval",
@@ -701,6 +704,7 @@
 			"stars": 3.8
 		},
 		"salao_jogos": {
+			"full_game": true,
 			"area": "",
 			"blurb": "Salão de jogos do Grand Hotel: sinuca de verdade contra os hóspedes, fichas à noite e hóspedes mais satisfeitos.",
 			"cost": 6500,

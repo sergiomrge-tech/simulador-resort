@@ -33,6 +33,32 @@ O que falta é **profundidade e variedade**. Hoje quase tudo é "aperte E" + bar
 > feito e continua no código, mas fica TRANCADO no Acesso Antecipado ("chega no jogo completo"). O EA termina antes do
 > hotel: todas as outras expansões e os 4 capítulos, em ~2 h de jogo para o jogador médio (a simulação do GPT, PR #7,
 > mediu ~7 h até o hotel no ritmo de 06/11). Os itens 4 (balanceamento) e 5 (tela de fim) passam a medir esse EA curto.
+>
+> **MUDANÇA SEGUINTE (Sergio, 06/11/2026): no lugar do Acesso Antecipado pago, uma DEMO gratuita de ~2 h.** O build é a
+> demo (`definitions.json` → `"demo": true`): o Grand Hotel e o salão de jogos aparecem com o carimbo "JOGO COMPLETO" e
+> não são vendidos, a campanha para em "A Maré Alta da vila" ("a história continua no jogo completo") e a tela final é
+> "Obrigado por jogar a demo!", com o que vem no jogo completo e o botão "Lista de desejos na Steam" (aparece quando
+> `events.json` → `end_of_content.review_url` tiver o endereço da página). `"demo": false` = o jogo completo.
+> Ordem de lançamento: primeiro a DEMO de ~2 h (é com ela que o Sergio quer lançar); depois o Acesso Antecipado pago
+> com TUDO no jogo (Grand Hotel incluído, `"demo": false`). Onde a PRIORIDADE acima fala em "EA" para o conteúdo curto,
+> leia "demo".
+>
+> **REGRA (Sergio, 06/11/2026):** "Pode terminar o checklist. Depois que terminar o checklist, sem criar novas mecânicas
+> ou sistemas." Os itens da PRIORIDADE (piscina com hóspedes e tobogã, balanceamento da demo de 2 h, parte técnica da
+> seção 7, ilha) seguem; quando acabarem, só correção, acabamento e ajuste do que existe.
+>
+> **ONDE PAROU (06/11/2026, noite; limites do Claude e do GPT acabando):**
+> - Feito e no GitHub: 5.2 eventos com montagem, 5.3 restaurante/crítico/peixe, 6 bugs do relatório do GPT, demo
+>   (hotel trancado, campanha para no hotel, tela final da demo), PR #7 e #8 do GPT (balanço, textos da Steam,
+>   traduções, `tools/ue58/qa/data_lint.py`).
+> - Próximo: (1) traduções dos textos da demo (tarefa curta do GPT); (2) números da demo de ~2 h: o modelo do GPT
+>   ainda mede o jogo com hotel (~6,7 h); falta o marco "fim_demo" e aplicar os valores; (3) defeito do relatório do
+>   GPT ainda aberto: a decoração dos negócios (PlaceIncomeFactor biz_*) não entra nas vendas das filas (sorveteria,
+>   food truck, aluguel, lojinha); plano: `BizSaleMult = BizPriceMult × PlaceIncomeFactor("biz_"+Id)` nas funções de
+>   preço das filas, sem mexer em BusinessRate; (4) piscina: hóspedes nadando na piscina da pousada (o tobogã fica na
+>   piscina do Grand Hotel, `customization.json` → `hotel_piscina`, ou seja, no jogo completo); (5) seção 7 técnica;
+>   (6) ilha.
+> - Ligar `data_lint.py` no `qa_gate.py` quando houver tempo.
 
 1. **6.2 Tutorial e objetivos** com o que já existe (`tutorial.json`): dica na primeira vez de cada sistema e objetivo
    atual/próximo desbloqueio sempre visíveis.
@@ -665,7 +691,11 @@ Sem esta parte, as expansões ficam soltas. Cada atividade precisa alimentar din
 
 ### 6.5 Fim do Acesso Antecipado
 
-- [ ] Tela "obrigado por jogar" (a lógica `IsEndOfContentDue` já existe), com o que vem a seguir e um botão para avaliar na Steam. O jogo continua livre depois.
+- [x] Tela "obrigado por jogar" (a lógica `IsEndOfContentDue` já existe), com o que vem a seguir e um botão para avaliar na Steam. O jogo continua livre depois.
+  Decisões (06/11): virou a tela do fim da DEMO (ver PRIORIDADE ATUAL): aparece uma vez quando todas as expansões da
+  demo (sem o Grand Hotel e o salão) estão compradas e os 4 capítulos concluídos; mostra os números do save, a lista
+  "No jogo completo" (`events.json` → `end_of_content.next`) e "Continuar jogando"; o botão "Lista de desejos na Steam"
+  só aparece quando `review_url` tiver o endereço da página. Teste em `SeasonsAndEndOfContent`.
 
 ## 7. Steam (P0) — em paralelo
 

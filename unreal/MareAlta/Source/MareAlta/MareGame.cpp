@@ -72,6 +72,7 @@
 #include "MareFoosball.h"
 #include "MareArcade.h"
 #include "MareHotelEventsWorld.h"
+#include "HAL/PlatformProcess.h"
 #include "MareStaysWorld.h"
 #include "MareOptions.h"
 #include "MareGamepad.h"
@@ -765,6 +766,7 @@ private:
    {const FString Chapter=UMareSimulation::String(Row,TEXT("chapter"));if(!Chapter.IsEmpty() && !S->IsChapterDone(Chapter))Missing.Add(TEXT("história \"")+UMareSimulation::String(S->ChapterDefinition(Chapter),TEXT("title"))+TEXT("\""));
     const int32 Fame=UMareSimulation::Number(Row,TEXT("fame"));if(Fame>0 && S->FameLevel()<Fame)Missing.Add(FString::Printf(TEXT("fama nível %d"),Fame));}
    if(bOwned)Card->AddSlot().AutoHeight()[MareNotebook::Stamp(TEXT("COMPRADA"),MareNotebook::Green)];
+   else if(S->IsFullGameOnly(Id))Card->AddSlot().AutoHeight()[MareNotebook::Stamp(TEXT("JOGO COMPLETO"),MareNotebook::Pencil)];   // Demo (06/11)
    else if(Missing.Num())Card->AddSlot().AutoHeight()[MareNotebook::HandText(TEXT("antes: ")+FString::Join(Missing,TEXT(", ")),15,MareNotebook::Pencil)];
    else Card->AddSlot().AutoHeight().HAlign(HAlign_Left)[Button(FString::Printf(TEXT("Comprar · R$ %.0f"),UMareSimulation::Number(Row,TEXT("cost"))),[S,Id](){S->BuyExpansion(Id);})];
    G->AddSlot(I%3,I/3)[MareNotebook::PriceTag(Card,TiltOf(I))];++I;}
@@ -800,14 +802,14 @@ private:
   Title(TEXT("Missões"));
   for(bool bSide:{false,true}){const TArray<TSharedPtr<FJsonValue>>* Rows=nullptr;if(!S->Definitions->TryGetArrayField(bSide?TEXT("side_missions"):TEXT("campaign"),Rows))continue;
    Heading(bSide?TEXT("Pedidos da vila"):TEXT("Uma nova maré"));auto G=Grid();int32 Shown=0;
-   for(int32 I=0;I<Rows->Num();++I){if(!bSide && I!=Stage)continue;auto Q=(*Rows)[I]->AsObject();const FString Id=UMareSimulation::String(Q,TEXT("id"));
+   for(int32 I=0;I<Rows->Num();++I){if(!bSide && (I!=Stage || S->IsCampaignAtFullGame()))continue;auto Q=(*Rows)[I]->AsObject();const FString Id=UMareSimulation::String(Q,TEXT("id"));
     const TArray<TSharedPtr<FJsonValue>>* Done=nullptr;if(bSide && Campaign->TryGetArrayField(TEXT("side_done"),Done) && Done->ContainsByPredicate([&](const auto& V){return V->AsString()==Id;}))continue;
     const int32 Have=S->MissionAmount(Q),Need=UMareSimulation::Number(Q,TEXT("qty"),1);
     auto Card=TagBody(FString::Printf(TEXT("%d de %d"),FMath::Min(Have,Need),Need),UMareSimulation::String(Q,TEXT("title")));
     Card->AddSlot().AutoHeight().Padding(0,0,0,6)[MareNotebook::BodyText(UMareSimulation::String(Q,TEXT("task")),11,MareNotebook::Faded)];
     Card->AddSlot().AutoHeight().HAlign(HAlign_Left)[Button(FString::Printf(TEXT("Concluir · R$ %.0f"),UMareSimulation::Number(Q,TEXT("reward"))),[S,Id,bSide](){S->ClaimMission(Id,bSide);},Have>=Need)];
     G->AddSlot(Shown%3,Shown/3)[MareNotebook::PriceTag(Card,TiltOf(Shown))];++Shown;}
-   if(!Shown)Pencil(bSide?TEXT("Nenhum pedido aberto agora."):TEXT("Campanha concluída!"));
+   if(!Shown)Pencil(bSide?TEXT("Nenhum pedido aberto agora."):S->IsCampaignAtFullGame()?TEXT("Fim da demo: a história continua no jogo completo, com o Grand Hotel."):TEXT("Campanha concluída!"));
   }
   // Chapter steps are completed in person with the giver; the notebook only tracks them.
   Heading(TEXT("Histórias da vila"),TEXT("(converse com quem pediu para avançar)"));auto G=Grid();int32 Shown=0;const TArray<TSharedPtr<FJsonValue>>* Chapters=nullptr;
@@ -1723,7 +1725,7 @@ private:
  }
  void Close(){if(Owner.IsValid())Owner->CloseBusinessGame();}
 };
-/** Early Access end screen (events.json "end_of_content"): thanks, the save's numbers, and "keep playing". */
+/** Demo end screen (events.json "end_of_content"): thanks, the save's numbers, what the full game brings, "keep playing" and the Steam wishlist. */
 class SMareEndScreen : public SCompoundWidget
 {
 public:
@@ -1733,16 +1735,28 @@ public:
   using namespace MareNotebook;Owner=Args._Owner;auto S=Owner.IsValid()?Owner->GetSimulation():nullptr;if(!S){ChildSlot[SNullWidget::NullWidget];return;}
   const auto End=UMareSimulation::Object(S->EventDefs(),TEXT("end_of_content"));
   const TArray<TSharedPtr<FJsonValue>>* Album=nullptr;UMareSimulation::Object(S->State,TEXT("prog"))->TryGetArrayField(TEXT("album"),Album);
-  const FString Stats=FString::Printf(TEXT("%.0f dias · R$ %.0f em caixa · fama: %s · %.1f estrelas · %d drinks descobertos · %d fotos no álbum"),
-   UMareSimulation::Number(S->State,TEXT("day"),1),S->Money(),*S->FameName(),S->Stars(),S->BarDiscoveries(),Album?Album->Num():0);
+  const int32 Days=int32(UMareSimulation::Number(S->State,TEXT("day"),1));
+  const FString Stats=FString::Printf(TEXT("%d %s · R$ %.0f em caixa · fama: %s · %.1f estrelas · %d drinks descobertos · %d fotos no álbum"),
+   Days,Days==1?TEXT("dia"):TEXT("dias"),S->Money(),*S->FameName(),S->Stars(),S->BarDiscoveries(),Album?Album->Num():0);
+  // 6.5: what the full game brings (the Grand Hotel stays out of the demo, 06/11) and the Steam wishlist.
+  auto Next=SNew(SVerticalBox);const TArray<TSharedPtr<FJsonValue>>* Coming=nullptr;
+  if(End->TryGetArrayField(TEXT("next"),Coming) && Coming->Num()){Next->AddSlot().AutoHeight().Padding(0,8,0,2)[HandText(UMareSimulation::String(End,TEXT("next_title")),22,Brown)];
+   for(const auto& V:*Coming)Next->AddSlot().AutoHeight().Padding(10,1)[BodyText(TEXT("- ")+V->AsString(),12.5f,Ink)];}
+  const FString Review=UMareSimulation::String(End,TEXT("review_url"));
+  auto Buttons=SNew(SHorizontalBox)+SHorizontalBox::Slot().AutoWidth()[SAssignNew(Continue,SMarePadButton).ButtonStyle(&InkButton()).ContentPadding(FMargin(14,4))
+     .OnClicked_Lambda([this](){if(Owner.IsValid())Owner->CloseBusinessGame();return FReply::Handled();})
+     [SNew(STextBlock).Text(MareLoc::Text(TEXT("Continuar jogando"))).Font(Hand(20)).ColorAndOpacity(MareNotebook::Tag)]];
+  if(!Review.IsEmpty()){Next->AddSlot().AutoHeight().Padding(0,10,0,0)[BodyText(UMareSimulation::String(End,TEXT("review_text")),12.5f,Faded)];
+   Buttons->AddSlot().AutoWidth().Padding(12,0,0,0)[SNew(SMarePadButton).ButtonStyle(&InkButton()).ContentPadding(FMargin(14,4))
+     .OnClicked_Lambda([Review](){FPlatformProcess::LaunchURL(*Review,nullptr,nullptr);return FReply::Handled();})
+     [SNew(STextBlock).Text(MareLoc::Text(TEXT("Lista de desejos na Steam"))).Font(Hand(20)).ColorAndOpacity(MareNotebook::Tag)]];}
   ChildSlot.HAlign(HAlign_Center).VAlign(VAlign_Center)[SNew(SBorder).BorderImage(FCoreStyle::Get().GetBrush("WhiteBrush")).BorderBackgroundColor(Paper).Padding(FMargin(34,26))
    [SNew(SBox).WidthOverride(640)[SNew(SVerticalBox)
     +SVerticalBox::Slot().AutoHeight()[HandText(UMareSimulation::String(End,TEXT("title")),34,Brown)]
     +SVerticalBox::Slot().AutoHeight().Padding(0,10)[BodyText(UMareSimulation::String(End,TEXT("text")),14,Ink)]
     +SVerticalBox::Slot().AutoHeight().Padding(0,6)[HandText(Stats,18,Green)]
-    +SVerticalBox::Slot().AutoHeight().HAlign(HAlign_Left).Padding(0,14,0,0)[SAssignNew(Continue,SMarePadButton).ButtonStyle(&InkButton()).ContentPadding(FMargin(14,4))
-     .OnClicked_Lambda([this](){if(Owner.IsValid())Owner->CloseBusinessGame();return FReply::Handled();})
-     [SNew(STextBlock).Text(MareLoc::Text(TEXT("Continuar jogando"))).Font(Hand(20)).ColorAndOpacity(MareNotebook::Tag)]]]]];
+    +SVerticalBox::Slot().AutoHeight()[Next]
+    +SVerticalBox::Slot().AutoHeight().HAlign(HAlign_Left).Padding(0,14,0,0)[Buttons]]]];
  }
  virtual bool SupportsKeyboardFocus()const override{return true;}
  virtual FReply OnKeyDown(const FGeometry&,const FKeyEvent& Event) override
@@ -2402,7 +2416,9 @@ static FAutoConsoleCommandWithWorldAndArgs MareQACommand(TEXT("mare.QA"),TEXT("Q
   auto PC=World?Cast<AMareController>(UGameplayStatics::GetPlayerController(World,0)):nullptr;auto S=PC?PC->GetSimulation():nullptr;
   if(!S || Args.Num()<2 || !Profile.StartsWith(TEXT("D:/CodexTemp/")))return;const FString Verb=Args[0],Arg=Args[1];bool bOk=false;
   if(Verb==TEXT("money")){S->State->SetNumberField(TEXT("money"),FCString::Atod(*Arg));bOk=S->Save();}
-  else if(Verb==TEXT("buy"))bOk=S->BuyExpansion(Arg);
+  else if(Verb==TEXT("buy")){   // QA buys the full-game expansions too (the demo lock is for the player)
+   bool bEA=false;S->Definitions->TryGetBoolField(TEXT("demo"),bEA);S->Definitions->SetBoolField(TEXT("demo"),false);
+   bOk=S->BuyExpansion(Arg);S->Definitions->SetBoolField(TEXT("demo"),bEA);}
   else if(Verb==TEXT("biz"))bOk=S->BuyBusiness(Arg);
   else if(Verb==TEXT("vip")){   // the first open kiosk order becomes a VIP ("mare.QA vip <title index>")
    for(const auto& Pair:UMareSimulation::Object(S->State,TEXT("ue_orders"))->Values){bOk=S->MakeVip(FString(Pair.Key.ToView()),FCString::Atoi(*Arg),0);break;}}
@@ -2754,7 +2770,8 @@ void AMareHUD::DrawHUD()
   else if(bCreated && !S->IsOpen())M.Note.Add({bPad?FText::Format(LOCTEXT("OpenSignPad","Mire na placa FECHADO do balcão e aperte {0} para abrir"),MareLoc::Text(M.InteractKey)).ToString():FString(TEXT("Clique na placa FECHADO do balcão para abrir")),3});
   const auto Campaign=UMareSimulation::Object(UMareSimulation::Object(S->State,TEXT("prog")),TEXT("campaign"));
   const TArray<TSharedPtr<FJsonValue>>* Missions=nullptr;const int32 Stage=UMareSimulation::Number(Campaign,TEXT("stage"));
-  if(S->Definitions->TryGetArrayField(TEXT("campaign"),Missions) && Missions->IsValidIndex(Stage)){
+  if(S->IsCampaignAtFullGame())M.Note.Add({TEXT("Uma nova maré · a história continua no jogo completo"),2});   // Demo (06/11)
+  else if(S->Definitions->TryGetArrayField(TEXT("campaign"),Missions) && Missions->IsValidIndex(Stage)){
    const auto Mission=(*Missions)[Stage]->AsObject();const int32 Goal=UMareSimulation::Number(Mission,TEXT("qty"));const int32 Progress=FMath::Min(S->MissionAmount(Mission),Goal);
    // Objective always visible (Acesso Antecipado, 04/11): the title, what to do now and, for a purchase, how far the money
    // and the fame are from it (the Grand Hotel is a long save: "R$ 12.400 / 30.000 · fama 7/9").

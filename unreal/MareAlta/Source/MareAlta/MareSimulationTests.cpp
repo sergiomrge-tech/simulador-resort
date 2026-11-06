@@ -1527,6 +1527,7 @@ bool FMareTutorialTest::RunTest(const FString& Parameters)
  Sim->SaveDirectory=FPaths::ProjectSavedDir()/TEXT("Automation/Tutorial")/FGuid::NewGuid().ToString(EGuidFormats::Digits);
  auto Load=[&](const FString& Name,TSharedPtr<FJsonObject>& Result){FString Text;FFileHelper::LoadFileToString(Text,*(FPaths::ProjectContentDir()/TEXT("Data")/Name));return FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Text),Result);};
  if(!TestTrue(TEXT("Definitions"),Load(TEXT("definitions.json"),Sim->Definitions)) || !TestTrue(TEXT("Default save"),Load(TEXT("default_save.json"),Sim->State))){Sim->RemoveFromRoot();Instance->RemoveFromRoot();return false;}
+ Sim->Definitions->SetBoolField(TEXT("demo"),false);   // the fame-gated unlock line is the Grand Hotel's
  // Each tip once per save; unknown keys show nothing.
  TestTrue(TEXT("First bar visit shows the tip"),Sim->ShowTip(TEXT("BarCounter")));TestFalse(TEXT("Tip title set"),Sim->PendingTipTitle.IsEmpty());
  TestFalse(TEXT("Not twice"),Sim->ShowTip(TEXT("BarCounter")));TestFalse(TEXT("Unknown key"),Sim->ShowTip(TEXT("Nothing")));
@@ -1577,6 +1578,18 @@ bool FMareSeasonsEndTest::RunTest(const FString& Parameters)
  const TArray<TSharedPtr<FJsonValue>>* Chapters=nullptr;Sim->Definitions->TryGetArrayField(TEXT("chapters"),Chapters);
  for(const auto& V:*Chapters){const auto C=V->AsObject();Sim->Object(Sim->Object(Sim->State,TEXT("prog")),TEXT("ch"))->SetNumberField(Sim->String(C,TEXT("id")),C->GetArrayField(TEXT("steps")).Num());}
  TestTrue(TEXT("Everything done"),Sim->IsEndOfContentDue());Sim->MarkEndOfContentShown();TestFalse(TEXT("Shown once"),Sim->IsEndOfContentDue());
+ // Demo (06/11): the Grand Hotel and the game room are not for sale and the end screen does not wait for them.
+ {bool bEA=false;Sim->Definitions->TryGetBoolField(TEXT("demo"),bEA);TestTrue(TEXT("This build is the demo"),bEA);
+  auto Unlocked=Sim->Object(Sim->State,TEXT("unlocked"));Unlocked->RemoveField(TEXT("grand_hotel"));Unlocked->RemoveField(TEXT("salao_jogos"));
+  Sim->Object(Sim->State,TEXT("prog"))->RemoveField(TEXT("ea_end_shown"));Sim->State->SetNumberField(TEXT("money"),1e7);Sim->AddFame(100000);
+  TestTrue(TEXT("Hotel is full game"),Sim->IsFullGameOnly(TEXT("grand_hotel")));TestFalse(TEXT("Hotel not for sale"),Sim->BuyExpansion(TEXT("grand_hotel")));
+  TestTrue(TEXT("Says when it comes"),Sim->LastMessage.Contains(TEXT("jogo completo")));
+  TestTrue(TEXT("End of the demo without the hotel"),Sim->IsEndOfContentDue());
+  TestTrue(TEXT("No next unlock left"),Sim->NextUnlockText().IsEmpty());
+  Sim->Object(Sim->Object(Sim->State,TEXT("prog")),TEXT("campaign"))->SetNumberField(TEXT("stage"),3);TestFalse(TEXT("Early campaign goes on"),Sim->IsCampaignAtFullGame());
+  int32 Hotel=-1;const auto& Missions=Sim->Definitions->GetArrayField(TEXT("campaign"));for(int32 I=0;I<Missions.Num();++I)if(Sim->String(Missions[I]->AsObject(),TEXT("item"))==TEXT("grand_hotel"))Hotel=I;
+  Sim->Object(Sim->Object(Sim->State,TEXT("prog")),TEXT("campaign"))->SetNumberField(TEXT("stage"),Hotel);TestTrue(TEXT("Campaign waits for the full game"),Sim->IsCampaignAtFullGame());
+  Unlocked->SetBoolField(TEXT("grand_hotel"),true);TestFalse(TEXT("An old save keeps its hotel"),Sim->IsFullGameOnly(TEXT("grand_hotel")));}
  IFileManager::Get().DeleteDirectory(*Sim->SaveDirectory,false,true);
  Sim->RemoveFromRoot();Instance->RemoveFromRoot();return true;
 }
@@ -1868,6 +1881,7 @@ bool FMareCampaignAuditTest::RunTest(const FString& Parameters)
  Sim->SaveDirectory=FPaths::ProjectSavedDir()/TEXT("Automation/CampaignAudit")/FGuid::NewGuid().ToString(EGuidFormats::Digits);
  auto Load=[&](const FString& Name,TSharedPtr<FJsonObject>& Result){FString Text;FFileHelper::LoadFileToString(Text,*(FPaths::ProjectContentDir()/TEXT("Data")/Name));return FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Text),Result);};
  if(!TestTrue(TEXT("Definitions"),Load(TEXT("definitions.json"),Sim->Definitions)) || !TestTrue(TEXT("Default save"),Load(TEXT("default_save.json"),Sim->State))){Sim->RemoveFromRoot();Instance->RemoveFromRoot();return false;}
+ Sim->Definitions->SetBoolField(TEXT("demo"),false);   // the audit plays the full game, Grand Hotel included
  Sim->State->SetNumberField(TEXT("money"),200000);Sim->State->SetStringField(TEXT("weather"),TEXT("sun"));Sim->State->SetNumberField(TEXT("minutes"),600);
  auto Sell=[&](const FString& Dish,int32 Count){int32 Sold=0;
   for(int32 I=0;I<Count;++I){if(Sim->Available(Dish)<1)Sim->Restock(Dish,10);const FString Id=Sim->AddOrder(TEXT("Teste"),{Dish});
