@@ -1,0 +1,16 @@
+{
+  "arquivos_lidos": 47,
+  "referencias_modelos_verificadas": 796,
+  "packages_conhecidos": 2077,
+  "erros": 0,
+  "problemas": [],
+  "fontes_das_regras": {
+    "expansoes_capitulos_missoes": "MareSimulation.cpp:277,297,330,348,803",
+    "receitas_insumos": "MareSimulation.cpp:148,168; MareBar.cpp:43,353; MareBarWorld.cpp:241; MarePerson.cpp:247",
+    "personalizacao": "MareCustomWorld.cpp:19,34,92; MareSimulation.cpp:534,650",
+    "equipe": "MareStaff.cpp:59,92; MareStaffWorld.cpp:147; MareSimulation.cpp:737,787",
+    "horarios": "MareBusiness.cpp:17; MarePool.cpp:77; MareBar.cpp:70; MareTours.cpp:284; MareRestaurant.cpp:40,135; MareHotelEvents.cpp:110",
+    "sorteios": "MareEvents.cpp:19,68; MareHotelRooms.cpp:215; MareComicEvents.cpp:102; MareIceCream.cpp:69; MarePastel.cpp:67; MareRental.cpp:79; MareRestaurant.cpp:170,192; MareHotelEvents.cpp:32,92",
+    "modelos": "Content/Python/mare_fab.py::mesh (fab:N), mare_hotel_lobby.py::_lib_mesh; MareCustomWorld.cpp:19; MareBoatTourWorld.cpp:27; MareSnorkelWorld.cpp:81; MareReefWorld.cpp:111; MarePerson.cpp:247"
+  }
+}

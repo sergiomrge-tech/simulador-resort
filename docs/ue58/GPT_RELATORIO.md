@@ -188,3 +188,25 @@ Fixtures temporárias, com rede bloqueada, comprovaram importação sem conexão
 **Content/Data/events.json → /end_of_content/review_url está vazio.** Em MareGame.cpp:1749, a chamada e o botão de lista de desejos só aparecem com URL preenchida. Antes de distribuir, informar a URL real da página do jogo completo na Steam e testar o botão. Não foi inventada URL/app id; isso é pendência funcional de publicação, não erro estrutural do linter.
 
 Sem alterações em C++, .uasset, definitions.json, customization.json, JSON de economia, balance_model.py ou resultados de balanceamento. Sem compilação C++/Unreal, capturas ou publicação na Steam.
+
+
+## Pacote 4
+
+Base efceab9; branch gpt/pacote-4. Desenho em DIVIDA_DA_AVO.md, contrato novo debt.json, 29 textos completos em 12 idiomas (113 LOCTEXT + 3.951 strings por idioma), 36 conquistas pt-BR/en e dez presenças. Nada disso foi implementado em C++ ou publicado na Steam.
+
+### Ordem para o Claude
+
+1. Ler a pergunta de moeda no topo do desenho; usar R$ 1.000.000 até decisão. Implementar leitura de debt.json e migração única de prog.debt, preservando caixa/campos antigos e congelando o principal em centavos.
+2. Implementar pagamento livre transacional no cartão de Finanças: confirmar, debitar uma vez, persistir, recusar valores inválidos sem cobrança e respeitar teto demo de R$ 250.000. Não implementar juros, parcelas obrigatórias ou game over.
+3. Integrar carta na chegada/primeiro celular, lembrete semanal sem punição e cartões únicos 25/50/75%. Trocar apenas os três story propostos de campanha, mantendo metas/recompensas. Textos estão em debt.json e traduzidos.
+4. Integrar final ao quitar no jogo completo, créditos/continuidade; preservar o agradecimento independente da demo e revisar a antiga condição de fim do EA. Não exigir comprar todo o catálogo nem quitar para fazer a festa.
+5. Implementar a fila idempotente de conquistas e presença com as condições de conquistas.json/md. Cinco condições usam o contrato novo da dívida; as outras 31 usam campos existentes. App IDs, ícones e publicação ainda precisam de configuração/testes reais.
+6. Testar migração, limites/centavos, save falhando, pagamento duplo, salto de marcos, lembretes/load, demo/legado e final. Só depois avaliar os dois preços de nível 5 propostos; não aplicar automaticamente.
+
+### Resultado e limites
+
+540 trajetórias registradas (30 sementes por perfil/cenário): médio quita em **20,3 h**, campanha **20,5 h**; compras com dívida vão a **43,7 h** na economia atual ou **40,3 h** com as propostas. Baseline sem dívida reproduz **20,3/37,1 h**. Demo média **2,3 h**, sem quitação. São hipóteses de pagamentos voluntários, não duração garantida nem débito automático. Dados, tabelas, hashes e comandos estão no balanceamento/desenho.
+
+Guardas de source_features da base tinham hashes divergentes para dois C++ publicados; renovado somente o registro de leitura e corrigida a revisão antiga do modelo. Incoerência encontrada: a missão fregueses tem qty/texto de 7.000, mas título “Quatro mil fregueses”; só relatada. O índice histórico de assets do pacote 2 também não é reutilizável sem atualizar seus hashes de Data; a checagem desta tarefa usa metadados temporários atuais, sem editar esse histórico.
+
+47 JSON de Data passaram no linter (796 resoluções de modelos, zero erros), com índice temporário de metadados Git. Validação Python: testes da transação/modelo, conciliação de caixa/dívida, censura, hashes, demo, traduções e condições/ids das conquistas. Sem Unreal, C++, assets, aplicação dos preços ou edição dos JSON econômicos existentes. O novo debt.json ainda requer o consumidor; as mudanças de campanha estão somente propostas.
