@@ -364,20 +364,99 @@ def lounger_wicker():
     export(slug, 'Espreguiçadeira de vime')
 
 
+def pillow(name, size, loc, mat, rot=(0, 0, 0), loft=.85, uv=.5):
+    """Real pillow: the thickness falls to a thin seam at the edges and the sides curve in a little. A cushion() box keeps
+    its full thickness up to the edge and reads as a brick (5.1 photos, 06/11)."""
+    bm = bmesh.new()
+    bmesh.ops.create_cube(bm, size=1.0)
+    bmesh.ops.subdivide_edges(bm, edges=bm.edges[:], cuts=10, use_grid_fill=True)
+    for v in bm.verts:
+        x, y, z = v.co.x * 2, v.co.y * 2, v.co.z * 2
+        prof = max(0.0, (1 - x * x) * (1 - y * y)) ** .5
+        f = (1 - loft) + loft * prof
+        v.co.x = x * .5 * size[0] * (1 - .05 * (1 - y * y))
+        v.co.y = y * .5 * size[1] * (1 - .05 * (1 - x * x))
+        v.co.z = z * .5 * size[2] * f
+    from mathutils import Euler, Vector
+    m = Euler(rot).to_matrix()
+    for v in bm.verts:
+        v.co = m @ v.co + Vector(loc)
+    obj = mesh_obj(name, bm)
+    return finish(obj, mat, uv, subsurf=1)
+
+
+def cloth_over(name, W, y0, y1, top, hang, mat, foot=True, thick=.03, ripple=.006, uv=.5):
+    """Cloth lying on a mattress (duvet, sheet fold, throw): flat top with soft ripples that rolls over both long sides
+    (and the foot, at y0) and hangs down `hang` metres with loose folds. A slab of cushion() read as a box."""
+    r = .045                      # roll radius over the mattress edge
+    arc = r * math.pi / 2
+
+    def roll(d):
+        """Distance d past the edge -> (outward, down)."""
+        if d <= 0:
+            return d, 0.0
+        if d < arc:
+            a = d / r
+            return r * math.sin(a), r * (1 - math.cos(a))
+        return r + (d - arc) * .06, r + (d - arc)
+
+    nx, ny = 44, 36
+    span_x = W / 2 + hang
+    y_start = y0 - (hang if foot else 0)
+    bm = bmesh.new()
+    rows = []
+    for j in range(ny + 1):
+        v = y_start + (y1 - y_start) * j / ny
+        row = []
+        for i in range(nx + 1):
+            u = -span_x + 2 * span_x * i / nx
+            ox, dx = roll(abs(u) - W / 2)
+            x = math.copysign(W / 2 + ox, u) if abs(u) > W / 2 else u
+            oy, dy = roll(y0 - v) if foot else (0.0, 0.0)
+            y = y0 - oy if (foot and v < y0) else v
+            hanging = max(dx, dy)
+            # corners: the longer drop wins (a sum made a pointed tail under each foot corner)
+            z = top - hanging - .25 * min(dx, dy)
+            # ripples on top, loose vertical folds where it hangs
+            z += ripple * math.sin(u * 9.0 + v * 3.0) * math.sin(v * 7.0) * (1 - min(1, hanging / .05))
+            fold = .012 * min(1, hanging / .08)
+            if dx > 0:
+                x += math.copysign(fold * math.sin(v * 23.0), u)
+            if dy > 0:
+                y -= fold * math.sin(u * 23.0)
+            row.append(bm.verts.new((x, y, z)))
+        rows.append(row)
+    for j in range(ny):
+        for i in range(nx):
+            bm.faces.new((rows[j][i], rows[j][i + 1], rows[j + 1][i + 1], rows[j + 1][i]))
+    obj = mesh_obj(name, bm)
+    finish(obj, mat, uv)
+    sol = obj.modifiers.new('Solidify', 'SOLIDIFY')
+    sol.thickness = thick
+    sol.offset = 0
+    s = obj.modifiers.new('Subsurf', 'SUBSURF')
+    s.levels = s.render_levels = 1
+    return obj
+
+
 def bed_core(out, L, W, mattress_top, duvet, linen, frame_mat):
-    """Mattress, duvet with a folded edge and pillows; head of the bed at +Y."""
-    cushion('mattress', (W - .04, L - .04, .24), (0, 0, mattress_top - .12), linen, puff=.008)
-    cushion('duvet', (W + .02, L * .72, .05), (0, -L * .13, mattress_top + .02), duvet, puff=.02)
-    cushion('fold', (W + .02, .22, .06), (0, -L * .13 + L * .36 - .05, mattress_top + .06), linen, puff=.02)
+    """Mattress, duvet with a folded edge and pillows; head of the bed at +Y.
+    06/11 (5.1 photos: the bedding read as boxes): the duvet, the turned-down sheet and the throw are cloth rolling over
+    the mattress edges (cloth_over), the pillows thin to a seam at the edges (pillow)."""
+    mw = W - .04
+    cushion('mattress', (mw, L - .04, .24), (0, 0, mattress_top - .12), linen, puff=.008)
+    foot, head = -L / 2 + .02, -L / 2 + .02 + L * .74
+    cloth_over('duvet', mw, foot, head, mattress_top + .02, .2, duvet, thick=.04)
+    cloth_over('fold', mw + .09, head - .26, head + .02, mattress_top + .055, .12, linen, foot=False, thick=.025, ripple=.003)
     for i, x in enumerate([-W / 4, W / 4]):
-        cushion(f'pillow{i}', (W / 2 - .08, .4, .16), (x, L / 2 - .3, mattress_top + .09), linen, rot=(math.radians(-12), 0, 0), puff=.05)
+        pillow(f'pillow{i}', (W / 2 - .1, .46, .22), (x, L / 2 - .3, mattress_top + .1), linen, rot=(math.radians(-8), 0, 0), loft=.9)
     # Dressing: two terracotta accent cushions and a folded teal blanket across the foot.
     accent = material(f'Accent', 'rough_linen', (.78, .40, .28), rough=.85, out=out)
     blanket = material(f'Blanket', 'waffle_pique_cotton', (.16, .40, .42), rough=.9, out=out)
+    # Accent cushions stand leaning on the pillows (built lying flat, then tilted 72 degrees).
     for i, x in enumerate([-W / 5, W / 5]):
-        cushion(f'accent{i}', (.42, .14, .38), (x, L / 2 - .5, mattress_top + .2), accent, rot=(math.radians(-18), 0, 0), puff=.06)
-    cushion('throw', (W + .06, .5, .03), (0, -L / 2 + .35, mattress_top + .06), blanket, puff=.006)
-    cushion('throwfold', (W + .06, .14, .05), (0, -L / 2 + .12, mattress_top + .07), blanket, puff=.01)
+        pillow(f'accent{i}', (.42, .42, .15), (x, L / 2 - .55, mattress_top + .25), accent, rot=(math.radians(72), 0, 0), loft=.75)
+    cloth_over('throw', mw + .1, foot + .12, foot + .62, mattress_top + .075, .16, blanket, foot=False, thick=.02, ripple=.004)
 
 
 def daybed():

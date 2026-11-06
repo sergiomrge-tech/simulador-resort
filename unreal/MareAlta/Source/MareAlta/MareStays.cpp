@@ -66,13 +66,15 @@ FString UMareSimulation::AddArrival(const FString& Place)
  auto Stay=Stays();const int32 Serial=Number(Stay,TEXT("serial"));Stay->SetNumberField(TEXT("serial"),Serial+1);
  FRandomStream Rng(int32(Number(State,TEXT("day"),1))*977+Serial*131+7);
  const auto Profile=(*Profiles)[Rng.RandRange(0,Profiles->Num()-1)]->AsObject();
- const double Reference=StayRate(Place);
+ const FString Kind=Place==TEXT("hotel")?HotelProfileKind(String(Profile,TEXT("id"))):FString();
+ const double Reference=StayRate(Place)*(Kind.IsEmpty()?1.:Number(HotelKindDef(Kind),TEXT("rate_mult"),1));
  const double Limit=FMath::RoundToDouble(Reference*Rng.FRandRange(Number(Profile,TEXT("min"),.8),Number(Profile,TEXT("max"),1.1)));
  auto G=MakeShared<FJsonObject>();G->SetStringField(TEXT("id"),FString::Printf(TEXT("g%d"),Serial));
  G->SetStringField(TEXT("name"),GuestNames[Rng.RandRange(0,UE_ARRAY_COUNT(GuestNames)-1)]);
  G->SetStringField(TEXT("profile"),String(Profile,TEXT("id")));G->SetStringField(TEXT("label"),String(Profile,TEXT("label")));
  G->SetNumberField(TEXT("limit"),Limit);G->SetNumberField(TEXT("offer"),FMath::RoundToDouble(Limit*Rng.FRandRange(.75,.9)));
  G->SetNumberField(TEXT("round"),0);G->SetNumberField(TEXT("mood"),1);G->SetStringField(TEXT("place"),Place);
+ if(!Kind.IsEmpty())G->SetStringField(TEXT("kind"),Kind);
  G->SetNumberField(TEXT("since"),Number(State,TEXT("day"),1)*1440+Number(State,TEXT("minutes")));
  G->SetNumberField(TEXT("nights"),Rng.RandRange(int32(Number(Profile,TEXT("nights_min"),1)),int32(Number(Profile,TEXT("nights_max"),3))));
  Queue.Add(MakeShared<FJsonValueObject>(G));return String(G,TEXT("id"));
@@ -87,8 +89,10 @@ UMareSimulation::EHaggle UMareSimulation::Haggle(const FString& Guest,double Pri
  auto CheckIn=[&](double Rate){
   SyncRooms();auto& Rooms=List(Stays(),TEXT("rooms"));TSharedPtr<FJsonObject> Room;
   const FString Place=String(G,TEXT("place")).IsEmpty()?FString(TEXT("pousada")):String(G,TEXT("place"));
-  for(const auto& R:Rooms){const auto O=R->AsObject();const FString P=String(O,TEXT("place"));
-   if((P==Place || (P.IsEmpty() && Place==TEXT("pousada"))) && String(O,TEXT("state"))==TEXT("free")){Room=O;break;}}
+  const FString Kind=String(G,TEXT("kind"));
+  for(int32 Pass=Kind.IsEmpty()?1:0;Pass<2 && !Room;++Pass)for(const auto& R:Rooms){const auto O=R->AsObject();const FString P=String(O,TEXT("place"));
+   if((P==Place || (P.IsEmpty() && Place==TEXT("pousada"))) && String(O,TEXT("state"))==TEXT("free")
+    && (Pass==1 || HotelRoomKind(HotelRoomIndex(O))==Kind)){Room=O;break;}}
   if(!Room)return false;
   // Closing near the limit earns more but leaves the guest less happy (feeds the stay rating).
   const double Mood=FMath::Clamp(Number(G,TEXT("mood"))*(.55+.45*FMath::Clamp((Limit-Rate)/FMath::Max(1.,Limit*.25),0.,1.)),0.,1.);
@@ -139,13 +143,14 @@ void UMareSimulation::StaysNight()
   if(Nights>0)continue;
   // Check-out: comfort and decor, the check-in mood and a clean room decide the stars.
   const bool bHotel=String(R,TEXT("place"))==TEXT("hotel");
-  const double Rating=FMath::Clamp((bHotel?3.9+HotelCustomBonus()*4:3.3+.025*Comfort)+1.2*(Number(R,TEXT("mood"))-.5)+(R->HasField(TEXT("was_dirty"))?-1.2:.3),1.,5.);
+  const double Polished=R->HasField(TEXT("polished"))?Number(HotelRoomDefs(),TEXT("polished_bonus"),.3):0;
+  const double Rating=FMath::Clamp((bHotel?3.9+HotelCustomBonus()*4+Polished:3.3+.025*Comfort)+1.2*(Number(R,TEXT("mood"))-.5)+(R->HasField(TEXT("was_dirty"))?-1.2:.3),1.,5.);
   Ratings.Add(MakeShared<FJsonValueNumber>(Rating));AddFame(bHotel?2:1);++Left;
   if(bHotel){const auto G=Object(R,TEXT("guest"));
    if(Departures.Num()<8 && !String(G,TEXT("id")).IsEmpty()){auto D=MakeShared<FJsonObject>();
     for(const TCHAR* Key:{TEXT("id"),TEXT("name"),TEXT("profile")})D->SetStringField(Key,String(G,Key));
     D->SetStringField(TEXT("place"),TEXT("hotel"));Departures.Add(MakeShared<FJsonValueObject>(D));}
-   R->SetStringField(TEXT("state"),TEXT("free"));R->RemoveField(TEXT("guest"));continue;}   // hotel housekeeping
+   HotelCheckOut(R);continue;}   // 5.1: dirty until housekeeping (crew or player) is done
   R->SetStringField(TEXT("state"),TEXT("dirty"));R->RemoveField(TEXT("was_dirty"));
   TArray<TSharedPtr<FJsonValue>> Tasks;for(const TCHAR* T:{TEXT("bed"),TEXT("towels"),TEXT("trash")})Tasks.Add(MakeShared<FJsonValueString>(T));
   R->SetArrayField(TEXT("tasks"),Tasks);}
@@ -188,8 +193,9 @@ void UMareSimulation::StaysHour(int32 Hour)
  // Maid (pousada): a few cleaning tasks per hour on dirty bungalows.
  auto Ops=StayOps(TEXT("pousada"));
  if(HasStaff(String(Ops,TEXT("maid")))){int32 Budget=FMath::RoundToInt(Number(Ops,TEXT("maid_tasks_per_hour"),3)*StaffSkill(String(Ops,TEXT("maid"))));
-  for(const auto& V:List(Stays(),TEXT("rooms"))){auto R=V->AsObject();
+  for(const auto& V:List(Stays(),TEXT("rooms"))){auto R=V->AsObject();if(String(R,TEXT("place"))==TEXT("hotel"))continue;
    while(Budget>0 && String(R,TEXT("state"))==TEXT("dirty")){const TArray<TSharedPtr<FJsonValue>>* Tasks=nullptr;
     if(!R->TryGetArrayField(TEXT("tasks"),Tasks) || Tasks->IsEmpty())break;
     CleanRoom(String(R,TEXT("id")),(*Tasks)[0]->AsString());--Budget;StaffDid(String(Ops,TEXT("maid")),1);}}}
+ HotelRoomsHour(Hour);
 }

@@ -86,6 +86,12 @@ def fix_usage():
     return {'fixed': len(fixed), 'materials': sorted(set(fixed))[:40]}
 
 
+def cmd(text):
+    """One-argument entry for mare_hud 'module': "action:arg" (python mcp.py mod mare_custom.cmd "inplace:a,b")."""
+    action, _, arg = text.partition(':')
+    return run(action, arg)
+
+
 def run(action, arg=''):
     if action == 'fixusage':
         return fix_usage()
@@ -122,6 +128,19 @@ def run(action, arg=''):
     if action == 'reimport':
         # Replace an existing model in place (level references stay valid).
         return import_all(True, [arg])
+    if action == 'inplace':
+        # Re-import models over their CURRENT asset (folder from custom_assets.json, e.g. mare_bed_king_m4): level and
+        # HISM references stay valid, the folder's materials are kept, and nothing else is touched (no fix_usage pass).
+        import mare_hotel_lobby
+        assets = json.loads((DATA / 'custom_assets.json').read_text(encoding='utf-8'))
+        out = {}
+        for slug in arg.split(','):
+            folder = assets[slug].rsplit('/', 1)[0]
+            mesh = mare_hotel_lobby._import(_find(slug), folder, slug, True, False)
+            mare_hotel_lobby._complex_collision(mesh)
+            unreal.EditorAssetLibrary.save_loaded_asset(mesh, False)
+            out[slug] = {'path': mesh.get_path_name(), 'tris': mesh.get_num_triangles(0), 'materials': len(mesh.static_materials)}
+        return out
     if action == 'one':
         # Single props outside the catalogue (e.g. the hand-held phone 'realistic_smartphone').
         unreal.EditorAssetLibrary.delete_directory('/Game/Custom/' + arg)  # a failed import leaves an empty mesh behind

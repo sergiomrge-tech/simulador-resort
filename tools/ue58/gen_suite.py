@@ -135,8 +135,8 @@ def suite():
         box(f'wseam{k}', (.012, .63, 2.5), B(-5.4 + .6 * (k + 1) - .0, HD - .45, 1.3), metal, uv=.4)
     box('tvwall', (3.4, .12, 2.2), B(-.5, -1.2, 1.1), stone, uv=.9)
     box('tvconsole', (2.6, .45, .45), B(-.5, -.95, .3), teak, uv=.8)
-    box('tv', (1.65, .05, .95), B(-.5, -1.12, 1.5), metal, uv=.4)
-    box('tvscreen', (1.58, .01, .88), B(-.5, -1.09, 1.5), glass, uv=.4)
+    # 06/11 (5.1): the TV was a metal_plate box with a glass front and read as a grey patterned panel; the library
+    # mare_tv_oled65 now stands on the console (Content/Python/mare_hotel_rooms.py FURNITURE).
     box('cove', (2 * HW - .3, 2 * HD - .3, .06), B(0, 0, H - .05), plaster, uv=1.5)
     export(slug, 'Suíte do Grand Hotel')
 

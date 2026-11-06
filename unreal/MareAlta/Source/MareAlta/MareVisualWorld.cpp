@@ -179,9 +179,11 @@ void UMareVisualWorld::Tick(float DeltaSeconds)
   // Suite on the 3rd floor (tools/ue58/gen_suite.py, origin -2800,6342,851): arrival points face into the room.
   if(Elevators.IsEmpty()){auto Make=[this](FVector At,FVector To,float Yaw,int32 Index,const TCHAR* Label){auto T=GetWorld()->SpawnActor<AMareServiceTarget>(At,FRotator::ZeroRotator);
     T->Action=TEXT("Elevator");T->Label=Label;T->Reach=260;T->OcclusionTolerance=60;T->TeleportTo=To;T->TeleportYaw=Yaw;T->DataIndex=Index;Elevators.Add(T);};
-   Make(FVector(-2600,6862,195),FVector(-2800,6690,943),-90,1,TEXT("Elevador · subir para a suíte"));
-   Make(FVector(-2900,6862,195),FVector(-2800,6690,943),-90,1,TEXT("Elevador · subir para a suíte"));
-   Make(FVector(-2800,6895,1001),FVector(-2750,6640,137),-90,0,TEXT("Elevador · descer ao lobby"));}
+   Make(FVector(-2600,6862,195),FVector(-1736,6800,943),-90,2,TEXT("Elevador · subir aos quartos 302 e 303"));
+   Make(FVector(-2900,6862,195),FVector(-2800,6690,943),-90,1,TEXT("Elevador · subir para a suíte 301"));
+   Make(FVector(-2800,6895,1001),FVector(-2750,6640,137),-90,0,TEXT("Elevador · descer ao lobby"));
+   // 5.1: the guest floor corridor (tools/ue58/gen_hotel_rooms.py: elevator door at x -1736 on the north wall).
+   Make(FVector(-1736,6880,1001),FVector(-2600,6640,137),-90,0,TEXT("Elevador · descer ao lobby"));}
   for(auto T:Elevators)if(T)T->SetActorHiddenInGame(!bHotel);}
  auto Sim=GetWorld()->GetGameInstance()->GetSubsystem<UMareSimulation>();if(!Sim)return;
  const float Hour=UMareSimulation::Number(Sim->State,TEXT("minutes"))/60.f;

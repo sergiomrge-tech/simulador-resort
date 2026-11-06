@@ -283,6 +283,41 @@ public:
   *  filled by StaysNight for the hotel, cleared at 13:00); removed from the list. Null when nobody is left. */
  TSharedPtr<FJsonObject> TakeDeparture(const FString& Place);
  TSharedPtr<FJsonObject> Stays();
+ // --- Grand Hotel rooms (CHECKLIST 5.1, MareHotelRooms.cpp, Content/Data/hotel_rooms.json) ---
+ // Rooms "hotel_<i>" (i 0..31) in stays.rooms; complaints in stays.complaints [{id, room, kind, since, due}].
+ TSharedPtr<FJsonObject> HotelRoomDefs() const;
+ /** Kind of hotel room i: "suite", "luxo" or "standard"; 0..2 are the visitable 3rd floor (301 suite, 302 standard, 303 luxo). */
+ FString HotelRoomKind(int32 Index) const;
+ TSharedPtr<FJsonObject> HotelKindDef(const FString& Kind) const;
+ /** Door number of hotel room i (8 per floor from the 3rd floor: 301..308, 401...). */
+ static int32 HotelRoomNumber(int32 Index);
+ /** "Luxo 303". */
+ FString HotelRoomName(int32 Index) const;
+ TSharedPtr<FJsonObject> HotelRoom(int32 Index);
+ static int32 HotelRoomIndex(const TSharedPtr<FJsonObject>& Room);
+ int32 HotelRoomsIn(const FString& RoomState) const;
+ /** "Arrumar a cama" / "cama arrumada" for a housekeeping task (hotel_rooms.json task_labels / task_done). */
+ FString HotelTaskLabel(const FString& Task) const;
+ FString HotelTaskDone(const FString& Task) const;
+ /** Kind a guest profile asks for (hotel_rooms.json profile_kind). */
+ FString HotelProfileKind(const FString& Profile) const;
+ /** Check-out of a hotel room: minibar bill booked, room dirty with its tasks (bed, towels, trash, minibar). */
+ double HotelCheckOut(const TSharedPtr<FJsonObject>& Room);
+ /** Supply cost of restocking what the last guest took from the minibar. */
+ double HotelMinibarCost(const TSharedPtr<FJsonObject>& Room) const;
+ /** One housekeeping task of hotel room i; the minibar is paid when restocked. A room finished by hand is "polished". */
+ bool CleanHotelRoom(int32 Index,const FString& Task,bool bByHand);
+ TArray<TSharedPtr<FJsonObject>> HotelComplaints();
+ TSharedPtr<FJsonObject> ComplaintKind(const FString& Kind) const;
+ double ComplaintMinutesLeft(const TSharedPtr<FJsonObject>& Complaint) const;
+ /** A guest of hotel room i phones in a complaint (kind from hotel_rooms.json); returns its id or empty. */
+ FString AddHotelComplaint(int32 Index,const FString& Kind);
+ /** Solved in person (free, a little fame) or by the technician sent from the phone (costs money). */
+ bool SolveHotelComplaint(const FString& Id,bool bInPerson);
+ /** Complaints past their deadline: the guest's mood drops (worse review). Returns how many expired. */
+ int32 ExpireHotelComplaints();
+ /** Hourly: complaints expire, the housekeeping crew cleans, new complaints are phoned in. */
+ void HotelRoomsHour(int32 Hour);
  // --- Grand Hotel restaurant, hands-on (MareRestaurant.cpp, Content/Data/restaurant.json) ---
  // State "restaurant": tables [{table, name, stage order|cooking|tray, dish, since, ready}], room [{suite, dish, stage,
  // since, ready}], event {id, day}, served, next.

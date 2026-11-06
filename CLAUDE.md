@@ -654,3 +654,25 @@ A dica do negócio vinha depois do `CanPlayBusiness`: sem ninguém na fila a fun
 dica justamente na primeira visita. Dica de primeira vez vai ANTES de qualquer saída antecipada. Quem testa dica num
 perfil de save já usado vê a segunda dica (a primeira foi marcada como vista): use pasta de save nova.
 `tools/ue58/qa/qa_gate.py` não lê argumentos: `qa_gate.py --help` roda o portão inteiro e para o PIE. Não passe nada.
+
+## UE5.8 — quartos do Grand Hotel (06/11, 5.1)
+
+Roupa de cama feita de caixas (`cushion` com edredom de 5 cm e travesseiros de espessura cheia até a borda) parecia
+"tijolo" na foto. Agora o edredom, o lençol dobrado e a manta são pano que dobra na borda do colchão e cai pelos lados
+(`cloth_over`), e os travesseiros afinam até a costura (`pillow`), no `bed_core` compartilhado pelas 5 camas. Nos
+cantos, use a maior queda e não a soma (a soma fez uma ponta embaixo de cada canto). Prévia rápida de um GLB:
+`Saved/claude/glb_preview.py` (Eevee, 2 vistas). Reimportar um modelo da biblioteca no MESMO asset (pasta `_m4`/`_m5`
+do `custom_assets.json`) sem rodar o `fix_usage`: `mare_custom.run('inplace', 'slug,slug')`.
+A TV da suíte era uma caixa de `metal_plate` com frente de vidro e parecia um painel cinza estampado: TV de verdade da
+biblioteca (`mare_tv_oled65`) sobre o rack. Peça "eletrônica" feita de caixa no bpy é para trocar por modelo pronto.
+O venv do bpy (`D:\CodexTemp\claude\bpy-env`) perdeu os `.py` soltos de `bpy/5.0/scripts/modules` ("No module named
+_bpy_types"). Conserto: `uv pip install --python <venv>\Scripts\python.exe --reinstall --no-deps bpy==5.0.1` (o venv é
+do uv, não tem pip).
+Reclamação com prazo vencido só expirava na virada da hora e o celular mostrava "0 min" por até 1 hora: o
+`UMareStaysWorld::Tick` agora expira no prazo. Ao fotografar o QA, atrasar o relógio (`coast clock`) pula as viradas de
+hora até passar a hora antiga (guarda do `OperateHour`): não é defeito do jogo. A arrumação automática passa nos quartos
+visitáveis depois das 11h: fotos tiradas em sequência a partir das 10h saem com o quarto já limpo.
+QA: `mare.QA hotelroom <i>` (check-out agora) e `mare.QA complaint <i>:<tipo>` (este ocupa o quarto: rode depois do
+check-out e em outro quarto, senão desfaz a sujeira).
+Texto com crases dentro de here-string `@"..."@` do PowerShell perde as crases e vira caractere de controle (`` `b ``,
+`` `f ``, `` `n ``): para escrever Markdown no PC, grave um arquivo com `local_write_file` e anexe com Python.

@@ -38,6 +38,10 @@ public:
  virtual void Deinitialize() override;
  /** E on a mess target: DataIndex is the room, Label carries the task id after "task:". */
  void UseTask(int32 Room,const FString& Task);
+ /** 5.1: E on a task of a visitable Grand Hotel room (301 suite, 302, 303): cleaned by hand (counts for "polished"). */
+ void UseHotelTask(int32 Room,const FString& Task);
+ /** 5.1: E on the spot of an open complaint of a visitable room: solved in person (free, a little fame). */
+ void UseHotelFix(const FString& Complaint);
  /** World location of a bungalow-local point (cm), for QA and placement. */
  bool RoomPoint(int32 Room,const FVector& Local,FVector& Out) const;
  int32 TaskTargetCount() const{return Tasks.Num();}
@@ -51,11 +55,14 @@ public:
  void GuestExpress(const FString& Id,const FString& Mood,float Seconds=4.f);
 private:
  void FindBungalows();
- void SyncTasks();
+ /** Mess and E targets of dirty bungalows (pousada) and of the visitable hotel rooms with their complaints (hotel). */
+ void SyncTasks(bool bPousada=true,bool bHotel=false);
  /** Mirrors Place's queue as people in line; bOpen false (place locked) removes them at once. */
  void SyncGuests(const FMareStayLine& Line,bool bOpen);
  /** Morning check-outs of Place come down the elevators and walk out of the main door, one every few seconds. */
  void SyncDepartures(const FMareStayLine& Line);
+ /** One E target of the visitable hotel floor: a task's mess (bFix false, What = task) or a complaint (What = its id). */
+ void SpawnHotelTarget(const FString& Key,bool bFix,int32 Room,const FString& What,const TArray<TSharedPtr<class FJsonValue>>& HotelSpots);
  /** Floor under a point (traced from just above it, below the lobby ceiling), or the point itself. */
  FVector Ground(const FVector& At,const AActor* Ignore=nullptr) const;
  AMarePerson* SpawnGuest(const FString& Place,const FString& Id,const FString& Name,const FVector& Floor,const FRotator& Facing);

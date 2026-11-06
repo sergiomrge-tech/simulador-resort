@@ -564,7 +564,7 @@ private:
   auto S=Sim();using namespace MareNotebook;S->SyncRooms();const bool bHotel=Where==TEXT("hotel");
   const int32 Free=S->FreeCleanRooms(Where);
   Title(bHotel?TEXT("Recepção do Grand Hotel"):TEXT("Recepção da pousada"));
-  Line(FString::Printf(TEXT("%s livres: %d de %d · diária de referência R$ %.0f"),bHotel?TEXT("Suítes"):TEXT("Quartos limpos"),Free,bHotel?32:S->PousadaRooms(),S->StayRate(Where)),13,Faded);
+  Line(FString::Printf(TEXT("%s livres: %d de %d · diária de referência R$ %.0f"),bHotel?TEXT("Quartos limpos"):TEXT("Quartos limpos"),Free,bHotel?32:S->PousadaRooms(),S->StayRate(Where)),13,Faded);
   if(bHotel)Line(TEXT("Quem você não atender em 2 horas, a equipe do hotel recebe pela oferta do hóspede."),12,Faded);
   const TArray<TSharedPtr<FJsonValue>>* All=nullptr;S->Stays()->TryGetArrayField(TEXT("queue"),All);
   TArray<TSharedPtr<FJsonValue>> Mine;if(All)for(const auto& V:*All){const FString P=UMareSimulation::String(V->AsObject(),TEXT("place"));if(P==Where || (P.IsEmpty() && !bHotel))Mine.Add(V);}
@@ -597,7 +597,7 @@ private:
    Body->AddSlot().AutoHeight().Padding(0,2,0,2)[Row];
    Body->AddSlot().AutoHeight().Padding(0,2,0,8)[Deal];
   }
-  if(bHotel)return;   // 32 suites: the hotel crew keeps them; only the pousada shows the room board
+  if(bHotel){HotelBoard(true);return;}   // 5.1: room counts, the visitable 3rd floor and the phone complaints
   Heading(TEXT("Quartos"));
   const TArray<TSharedPtr<FJsonValue>>* Rooms=nullptr;S->Stays()->TryGetArrayField(TEXT("rooms"),Rooms);
   if(Rooms)for(int32 I=0;I<Rooms->Num();++I){const auto R=(*Rooms)[I]->AsObject();if(UMareSimulation::String(R,TEXT("place"))==TEXT("hotel"))continue;
@@ -608,6 +608,32 @@ private:
     Text=FString::Printf(TEXT("Bangalô %d · sujo: %s"),I+1,*FString::Join(Tasks,TEXT(", ")));}
    else Text=FString::Printf(TEXT("Bangalô %d · limpo e livre"),I+1);
    Line(Text,13,State==TEXT("dirty")?Red:State==TEXT("occupied")?Ink:Green);}
+ }
+ /** 5.1: the Grand Hotel rooms (how many free, taken and being cleaned; the visitable 3rd floor with what is left to do)
+  *  and the guests' complaints by phone, each with the technician button. bRooms false: only the complaints. */
+ void HotelBoard(bool bRooms)
+ {
+  auto S=Sim();using namespace MareNotebook;S->SyncRooms();
+  if(bRooms){
+   Heading(TEXT("Quartos do hotel"),FString::Printf(TEXT("%d livres · %d ocupados · %d em arrumação"),S->HotelRoomsIn(TEXT("free")),S->HotelRoomsIn(TEXT("occupied")),S->HotelRoomsIn(TEXT("dirty"))));
+   const TArray<TSharedPtr<FJsonValue>>* Visitable=nullptr;S->HotelRoomDefs()->TryGetArrayField(TEXT("visitable"),Visitable);
+   for(int32 I=0;Visitable && I<Visitable->Num();++I){const auto R=S->HotelRoom(I);if(!R)continue;const FString St=UMareSimulation::String(R,TEXT("state"));FString Text;
+    if(St==TEXT("occupied"))Text=FString::Printf(TEXT("%s · %s · mais %.0f noite(s)"),*S->HotelRoomName(I),*UMareSimulation::String(UMareSimulation::Object(R,TEXT("guest")),TEXT("name")),UMareSimulation::Number(R,TEXT("nights")));
+    else if(St==TEXT("dirty")){TArray<FString> Left;const TArray<TSharedPtr<FJsonValue>>* T=nullptr;
+     if(R->TryGetArrayField(TEXT("tasks"),T))for(const auto& V:*T)Left.Add(S->HotelTaskLabel(V->AsString()).ToLower());
+     Text=FString::Printf(TEXT("%s · falta: %s"),*S->HotelRoomName(I),*FString::Join(Left,TEXT(", ")));}
+    else Text=FString::Printf(TEXT("%s · limpo e livre"),*S->HotelRoomName(I));
+    Line(Text,12.5f,St==TEXT("dirty")?Red:St==TEXT("occupied")?Ink:Green);}
+   Line(TEXT("Os quartos 301, 302 e 303 ficam no 3º andar (elevador do saguão): arrumados só por você, o próximo hóspede dá nota melhor. A equipe de arrumação cuida dos outros e chega ao 3º andar depois das 11h."),11.5f,Faded);}
+  const auto Complaints=S->HotelComplaints();
+  Heading(TEXT("Telefone do hotel"),Complaints.Num()?FString::Printf(TEXT("%d reclamação(ões)"),Complaints.Num()):FString(TEXT("nenhuma reclamação")));
+  for(const auto& C:Complaints){const FString Id=UMareSimulation::String(C,TEXT("id"));const auto Def=S->ComplaintKind(UMareSimulation::String(C,TEXT("kind")));
+   const int32 Room=UMareSimulation::Number(C,TEXT("room"),-1);const double Cost=UMareSimulation::Number(Def,TEXT("cost"));const double Left=FMath::Max(0.,S->ComplaintMinutesLeft(C));
+   auto Row=SNew(SHorizontalBox)+SHorizontalBox::Slot().FillWidth(1).VAlign(VAlign_Center)[BodyText(FString::Printf(TEXT("%s · %s · %.0f min"),*S->HotelRoomName(Room),*UMareSimulation::String(Def,TEXT("label")),Left),12,Left<20?Red:Ink)]
+    +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(8,0,0,0)[Button(Cost>0?FString::Printf(TEXT("Mandar técnico · R$ %.0f"),Cost):FString(TEXT("Mandar a equipe")),
+     [this,S,Id](){if(S->SolveHotelComplaint(Id,false))UMareAudioWorld::Action(Owner.Get(),TEXT("deal_accept"));},S->Money()>=Cost)];
+   Body->AddSlot().AutoHeight().Padding(0,2)[Row];}
+  if(Complaints.Num())Line(TEXT("Nos quartos 301, 302 e 303, resolver pessoalmente (E no quarto) é de graça e dá fama."),11.5f,Faded);
  }
  TArray<FString> Products(){return Sim()?Sim()->KioskMenu():TArray<FString>();}
  /** Restock cards; at a station also the "take it ready" button for what that station keeps. */
@@ -684,6 +710,7 @@ private:
   Title(TEXT("Resort"),Today.Num()?TEXT("hoje: ")+FString::Join(Today,TEXT(" · ")):FString(TEXT("compre expansões para o resort crescer")));
   if(bHotel){auto Last=UMareSimulation::Object(UMareSimulation::Object(S->State,TEXT("prog")),TEXT("hotel"));
    Pencil(FString::Printf(TEXT("Grand Hotel 5 estrelas · ocupação prevista %.0f%% · nota %.1f · fama %s"),S->HotelOccupancy()*100,S->Stars(),*S->FameName())+(Last->HasField(TEXT("rooms"))?FString::Printf(TEXT(" · última noite %.0f suítes, R$ %.0f"),UMareSimulation::Number(Last,TEXT("rooms")),UMareSimulation::Number(Last,TEXT("rev"))):FString()));}
+  if(bHotel && S->HotelComplaints().Num())HotelBoard(false);   // 5.1: guests' complaints reach the phone anywhere
   auto Pousada=UMareSimulation::Object(UMareSimulation::Object(S->State,TEXT("prog")),TEXT("pousada"));
   if(S->PousadaRooms()>0 && Pousada->HasField(TEXT("rooms")))Pencil(FString::Printf(TEXT("Pousada, última noite: %.0f de %.0f quartos · R$ %.0f"),UMareSimulation::Number(Pousada,TEXT("occupied")),UMareSimulation::Number(Pousada,TEXT("rooms")),UMareSimulation::Number(Pousada,TEXT("rev"))));
   {const FString Next=S->NextUnlockText();if(!Next.IsEmpty())Pencil(Next);}   // 6.2: the next unlock and what it still needs
@@ -2323,7 +2350,7 @@ static FAutoConsoleCommandWithWorldAndArgs MareRestockCommand(TEXT("mare.Restock
   UE_LOG(LogTemp,Display,TEXT("mare.Restock %d x %d items"),N,Items.Num());}));
 // QA (test profiles only) for the full-game simulation: "mare.QA money <n> | buy <expansion> | biz <id> | step <chapter>".
 // "step" meets the current chapter step's requirement (stock, counters, fame, photo, recipes, businesses) and advances it.
-static FAutoConsoleCommandWithWorldAndArgs MareQACommand(TEXT("mare.QA"),TEXT("QA: money <n> | buy <expansion> | biz <id> | step <chapter> | fame <level> | dump <name> (QA save profile only)."),
+static FAutoConsoleCommandWithWorldAndArgs MareQACommand(TEXT("mare.QA"),TEXT("QA: money <n> | buy <expansion> | biz <id> | step <chapter> | fame <level> | dump <name> | hotelroom <i> | complaint <i>:<kind> (QA save profile only)."),
  FConsoleCommandWithWorldAndArgsDelegate::CreateLambda([](const TArray<FString>& Args,UWorld* World){
   FString Profile;FParse::Value(FCommandLine::Get(),TEXT("MareSaveRoot="),Profile);Profile.ReplaceInline(TEXT("\\"),TEXT("/"));
   auto PC=World?Cast<AMareController>(UGameplayStatics::GetPlayerController(World,0)):nullptr;auto S=PC?PC->GetSimulation():nullptr;
@@ -2334,6 +2361,14 @@ static FAutoConsoleCommandWithWorldAndArgs MareQACommand(TEXT("mare.QA"),TEXT("Q
   else if(Verb==TEXT("vip")){   // the first open kiosk order becomes a VIP ("mare.QA vip <title index>")
    for(const auto& Pair:UMareSimulation::Object(S->State,TEXT("ue_orders"))->Values){bOk=S->MakeVip(FString(Pair.Key.ToView()),FCString::Atoi(*Arg),0);break;}}
   else if(Verb==TEXT("fame")){for(int32 I=0;I<600 && S->FameLevel()<FCString::Atoi(*Arg);++I)S->AddFame(50);bOk=S->FameLevel()>=FCString::Atoi(*Arg) && S->Save();}
+  // 5.1: "mare.QA hotelroom <i>" checks hotel room i out now (dirty, minibar used; 0..2 = visitable 301..303);
+  // "mare.QA complaint <i>:<kind>" puts a guest in room i and has them phone in a complaint (hotel_rooms.json kinds).
+  else if(Verb==TEXT("hotelroom")){S->SyncRooms();if(auto R=S->HotelRoom(FCString::Atoi(*Arg))){R->SetStringField(TEXT("state"),TEXT("occupied"));
+    R->SetObjectField(TEXT("guest"),MakeShared<FJsonObject>());S->HotelCheckOut(R);bOk=true;}}
+  else if(Verb==TEXT("complaint")){FString Room,Kind;Arg.Split(TEXT(":"),&Room,&Kind);S->SyncRooms();const int32 I=FCString::Atoi(*Room);
+   if(auto R=S->HotelRoom(I)){if(UMareSimulation::String(R,TEXT("state"))!=TEXT("occupied")){R->SetStringField(TEXT("state"),TEXT("occupied"));R->SetNumberField(TEXT("nights"),2);
+     R->SetNumberField(TEXT("mood"),.7);auto G=MakeShared<FJsonObject>();G->SetStringField(TEXT("name"),TEXT("Hóspede"));R->SetObjectField(TEXT("guest"),G);}
+    bOk=!S->AddHotelComplaint(I,Kind).IsEmpty();}}
   else if(Verb==TEXT("dump")){   // what a reload must keep: owned places, chapters, businesses, company, fame
    auto Out=MakeShared<FJsonObject>();Out->SetObjectField(TEXT("unlocked"),UMareSimulation::Object(S->State,TEXT("unlocked")));
    auto Prog=UMareSimulation::Object(S->State,TEXT("prog"));Out->SetObjectField(TEXT("chapters"),UMareSimulation::Object(Prog,TEXT("ch")));
