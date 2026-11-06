@@ -61,8 +61,16 @@ Pedidos do Sergio e conferências que ficaram para trás no lote de 05/11 (alugu
   - **Tela de fim do Acesso Antecipado:** ela pausa o jogo, e as fotos noturnas saíam todas congeladas na porta da casa.
     `mare.ShowUI close` agora fecha essa tela.
   - Prova: portão PASS + `docs/ue58/graphics-reference/night_lights_fixtures.jpg`.
-- [ ] Conferir se o aviso vermelho "Cached lighting in Lumen ... clipped" sumiu no fundo de 100 m depois de travar
+- [x] Conferir se o aviso vermelho "Cached lighting in Lumen ... clipped" sumiu no fundo de 100 m depois de travar
   a exposição embaixo d'água.
+  Decisão (06/11): não tinha sumido. Medido com `ShowFlag.VisualizeHDR`: a 100 m o olho estava em EV100 10, mas a
+  pré-exposição ia a EV ~14,5, porque a engine soma a luminância do `SceneColorTint` na pré-exposição
+  (`PostProcessEyeAdaptation.cpp`), e a tinta do fundo tinha luminância 0,013. A faixa segura com
+  `r.EyeAdaptation.CachedLightingPreExposure` 4 é [-8, 12], então o cache do Lumen era cortado, e era esse corte que
+  escurecia o fundo. Agora `MareUnderwaterGrade` deixa na tinta só a cor, com a luminância da superfície, e o escuro vai
+  para o `ColorGain` da LUT, aplicado depois da exposição. O visual é o mesmo (fundo azul-marinho quase preto), sem o
+  aviso. Teste permanente: `MareAlta.Visual.UnderwaterGrade` (pré-exposição ≤ 12 em toda profundidade, fundo com ganho
+  < 0,03). Portão PASS (40 testes).
 - [ ] Foto de prova do motorista do ônibus sentado no intro (`HoldPose`).
 - [x] Barra horizontal atravessando a câmera dentro do quiosque com tudo liberado (vista 3700,-1600): identificar
   o objeto.

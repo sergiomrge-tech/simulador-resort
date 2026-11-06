@@ -8,6 +8,9 @@
 class SMarePhone;
 class UMareSimulation;
 class UCameraComponent;
+/** Under-water colour by eye height: Tint = hue at the surface luminance (SceneColorTint feeds the pre-exposure), Gain = darkness
+ *  for ColorGain.W (grading LUT, after the exposure). */
+void MareUnderwaterGrade(float EyeZ,FLinearColor& Tint,float& Gain);
 
 UCLASS()
 class MAREALTA_API AMareCharacter : public ACharacter

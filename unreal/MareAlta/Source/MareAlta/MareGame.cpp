@@ -933,6 +933,18 @@ bool AMareCharacter::PhoneScreenRect(FVector2D& Min,FVector2D& Max)const
   if(!PC->ProjectWorldLocationToScreen(PhoneModel->GetComponentTransform().TransformPosition(Local),Screen))return false;Min=FVector2D::Min(Min,Screen);Max=FVector2D::Max(Max,Screen);}
  return Max.X-Min.X>50 && Max.Y-Min.Y>30;
 }
+// 06/11 (CHECKLIST 0, red "Cached lighting in Lumen ... clipped" on the -100 m floor): the engine folds the luminance of
+// SceneColorTint into the pre-exposure (PostProcessEyeAdaptation.cpp), so the old deep tint (luminance 0.013) pushed the
+// exposure to EV ~15, past the safe range [-8, 12] of r.EyeAdaptation.CachedLightingPreExposure 4: Lumen's cached light was
+// clipped. The tint now carries only the hue, at the surface luminance; the darkness is the ColorGain of the grading LUT,
+// applied after the exposure. Test MareAlta.Visual.UnderwaterGrade.
+void MareUnderwaterGrade(float EyeZ,FLinearColor& Tint,float& Gain)
+{
+ const float Blue=FMath::SmoothStep(300.f,2500.f,-EyeZ),Black=FMath::SmoothStep(2500.f,9000.f,-EyeZ);
+ const FLinearColor Surface(.72f,.86f,.83f);
+ const FLinearColor Hue=FMath::Lerp(FMath::Lerp(Surface,FLinearColor(.16f,.3f,.48f),Blue),FLinearColor(.006f,.014f,.03f),Black);
+ Gain=FMath::Max(Hue.GetLuminance(),1e-4f)/Surface.GetLuminance();Tint=Hue*(1.f/Gain);
+}
 void AMareCharacter::SwimVertical(float Value){VerticalSwimInput=FMath::Clamp(Value,-1.f,1.f);}
 void AMareCharacter::Tick(float DeltaSeconds)
 {
@@ -949,8 +961,8 @@ void AMareCharacter::Tick(float DeltaSeconds)
  Eyes->PostProcessBlendWeight=FMath::FInterpTo(Eyes->PostProcessBlendWeight,bUnderwater?1.f:0.f,DeltaSeconds,5);
  // 05/11 (Sergio: "conforme vai afundando vai ficando escuro, como no oceano de verdade, sem luz"): the sunlight dies
  // with depth: green-blue near the surface, deep blue by ~25 m, almost black on the -100 m floor.
- {const float Z=float(Eyes->GetComponentLocation().Z);const float Blue=FMath::SmoothStep(300.f,2500.f,-Z),Black=FMath::SmoothStep(2500.f,9000.f,-Z);
-  Eyes->PostProcessSettings.SceneColorTint=FMath::Lerp(FMath::Lerp(FLinearColor(.72f,.86f,.83f),FLinearColor(.16f,.3f,.48f),Blue),FLinearColor(.006f,.014f,.03f),Black);}
+ {FLinearColor Tint;float Gain=1.f;MareUnderwaterGrade(float(Eyes->GetComponentLocation().Z),Tint,Gain);
+  Eyes->PostProcessSettings.SceneColorTint=Tint;Eyes->PostProcessSettings.bOverride_ColorGain=true;Eyes->PostProcessSettings.ColorGain=FVector4(1,1,1,Gain);}
  if(Movement->IsMovingOnGround() && !bSwimming && GetActorLocation().Z>-100)SafeLandLocation=GetActorLocation();
  // The sand planes offshore have no collision: the swimmer stops on the sea floor profile (reef.json floor_fill).
  if(bSwimming && GetActorLocation().Y<-5450){const float Floor=UMareReefWorld::SeabedZ(GetActorLocation().Y)+GetCapsuleComponent()->GetScaledCapsuleHalfHeight()+15.f;

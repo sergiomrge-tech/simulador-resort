@@ -609,3 +609,12 @@ fotos de QA com tudo liberado saíam congeladas; `mare.ShowUI close` fecha. Lume
 cache num cômodo visto pela primeira vez. Câmera de QA com o pawn em z 170 põe o olho a 2,44 m, dentro de placas e
 hastes penduradas: use a altura do herói (pawn z ~100). Rode o portão DEPOIS da última mudança no próprio portão: uma
 rodada PASS de antes de entrar uma checagem nova não vale.
+
+## UE5.8 — exposição embaixo d'água e Lumen (06/11)
+
+A luminância do `SceneColorTint` entra na pré-exposição (`PostProcessEyeAdaptation.cpp`): escurecer a cena com uma
+tinta de 0,013 levou a exposição para fora da faixa segura de `r.EyeAdaptation.CachedLightingPreExposure` ([-8, 12]
+com 4), e o Lumen cortava a luz em cache (aviso vermelho "Cached lighting ... clipped"). Para escurecer, use o
+`ColorGain` (LUT, depois da exposição) e deixe na tinta só a cor. Para medir a exposição de verdade, use
+`ShowFlag.VisualizeHDR 1` (EV100 da cena, mín./máx. e valor da pré-exposição), não a suposição pelos números do volume.
+Para achar o número de um aviso escondido atrás do HUD, varie o cvar e veja em que valor ele some.
