@@ -27,8 +27,12 @@ O que falta é **profundidade e variedade**. Hoje quase tudo é "aperte E" + bar
 
 Pedidos do Sergio e conferências que ficaram para trás no lote de 05/11 (aluguel, fundo do mar, lâmpadas).
 
-- [ ] Rodar `python tools/ue58/qa/qa_gate.py` sobre o lote de 05/11: ele foi commitado a pedido do Sergio sem o
+- [x] Rodar `python tools/ue58/qa/qa_gate.py` sobre o lote de 05/11: ele foi commitado a pedido do Sergio sem o
   portão, porque o editor derrubou a conexão MCP durante a última rodada de fotos.
+  Decisões (06/11): o portão achou 37 corais do recife flutuando: a plataforma do fundo descia 60 cm sob o recife
+  (perfil -900 → -960) e os corais ficam a -902. O perfil (`reef.json` → `floor_fill.profile`) ficou plano a -900 sob o
+  recife e os planos do fundo foram refeitos. Portão PASS (39 testes, 571 flutuando, log limpo); a linha de base de
+  flutuação baixou de 585 para 571, então qualquer coral que volte a flutuar reprova.
 - [ ] Fotografar à noite as luminárias com foco virado para baixo (`lighting.json` + pendentes do quiosque e ventilador
   da casa em `MareVisualWorld::BuildLamps`): casa, cozinha, banheiro, quiosque, lobby, suíte, pousada e bangalô.
   Pedido: "as lâmpadas precisam iluminar melhor", "lâmpada precisa estar virada para baixo".
