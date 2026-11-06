@@ -676,3 +676,26 @@ QA: `mare.QA hotelroom <i>` (check-out agora) e `mare.QA complaint <i>:<tipo>` (
 check-out e em outro quarto, senão desfaz a sujeira).
 Texto com crases dentro de here-string `@"..."@` do PowerShell perde as crases e vira caractere de controle (`` `b ``,
 `` `f ``, `` `n ``): para escrever Markdown no PC, grave um arquivo com `local_write_file` e anexe com Python.
+
+## UE5.8 — sinuca completa e placar (06/11, 5.4)
+
+`ACameraActor` nasce com `bConstrainAspectRatio` ligado (16:9): no viewport do PIE, que não é 16:9, a câmera da sinuca
+punha faixa preta embaixo e tudo que o HUD projeta (`ProjectWorldLocationToScreen`: linha de mira, anel da caçapa)
+caía 20–40 px fora das bolas, porque a projeção ignora as barras. Toda câmera de minijogo criada por código desliga
+isso (`SetConstraintAspectRatio(false)`); o portão confere (`cameras`). Quando algo do HUD fica "quase" no lugar,
+compare a posição real do ator com o desenho e procure faixa preta na foto, antes de mexer em números.
+`UTextRenderComponent` quebra linha com `<br>`, não com `\n`. Antes de escrever num modelo do Poly Haven, leia os
+vértices da seção (`ProceduralMeshLibrary.get_section_from_static_mesh`): a colisão é uma caixa e não diz onde está a
+face inclinada do cavalete. Para chegar ao salão num perfil novo: `mare.QA money`/`fame 10`, comprar as expansões na ordem e
+passar as 4 histórias da vila (pier, prainha, sabores, carnaval) com `mare.QA step` antes do Grand Hotel.
+
+## UE5.8 — decoração do salão de jogos (06/11, 5.4)
+
+Peça encostada numa parede que já tem detalhe (o trilho de madeira do saguão faz parte da malha da torre e sai 8 cm da
+parede) precisa ser mais funda que esse detalhe: a parede de destaque de 5 cm ficou com o trilho atravessando o reboco
+e o ripado. Antes de encostar algo numa parede, faça um traço de colisão em várias alturas para achar o que sai dela
+(`mare_game_room.check` faz isso com a peça em `QUERY_ONLY` temporário, porque a decoração não tem colisão).
+O vidro glTF dos quadros do Poly Haven chega quase opaco e espelhado no Lumen e esconde a pintura: use um material
+translúcido próprio de 6% de opacidade. Alguns arquivos de planta do Poly Haven (`calathea_orbifolia_01`) são uma
+fileira de variantes soltas, sem vaso, de 2,5 m: no chão parecem mato saindo do piso. Confira os bounds de uma planta
+antes de usar. O portão ganhou a checagem `decor` para os três.

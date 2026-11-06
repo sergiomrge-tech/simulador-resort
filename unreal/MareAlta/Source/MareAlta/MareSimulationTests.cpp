@@ -1638,6 +1638,25 @@ bool FMarePoolFullMatchTest::RunTest(const FString& Parameters)
   Room->Balls[0]=UMareGameRoom::FBall();Room->Balls[0].P=FVector2D(R::L/2-.4,R::W/2-.4);
   Room->Shoot(UE_DOUBLE_PI/4,2.5);while(Room->Step(1./30)){}Room->ResolveShot();
   TestEqual(TEXT("The 8 before your group is cleared loses"),Room->Winner,1);}
+ {// Complete rules (5.4): weak break, no cushion after the contact, the called 8.
+  Room->Rack();Room->Shoot(0,.9);while(Room->Step(1./30)){}
+  const int32 Rails=Room->RailBalls();const int32 Potted=Room->PottedThisShot.Num();Room->ResolveShot();
+  if(Potted==0 && Rails<4)TestTrue(TEXT("A soft break is a foul with ball in hand"),Room->Turn==1 && Room->bBallInHand && Room->LastCall.Contains(TEXT("saída fraca")));
+  else AddError(FString::Printf(TEXT("Soft break test setup: %d balls potted, %d at the cushion"),Potted,Rails));
+  Room->Rack();Room->Shoot(0,5.5);while(Room->Step(1./30)){}
+  TestTrue(TEXT("A hard break reaches 4 cushions or pots"),Room->RailBalls()>=4 || Room->PottedThisShot.Num()>0);
+  auto Lone=[&](int32 Ball,const FVector2D& At,const FVector2D& Cue){Room->Rack();Room->bBreakShot=false;Room->Group[0]=1;Room->Group[1]=2;Room->Turn=0;
+   for(int32 I=1;I<16;++I)Room->Balls[I].bIn=true;Room->Balls[10].bIn=false;Room->Balls[10].P=FVector2D(-.8,-.4);
+   Room->Balls[Ball].bIn=false;Room->Balls[Ball].P=At;Room->Balls[0]=UMareGameRoom::FBall();Room->Balls[0].P=Cue;};
+  Lone(3,FVector2D(.1,0),FVector2D(0,0));for(int32 I=4;I<=7;++I)Room->Balls[I].bIn=false,Room->Balls[I].P=FVector2D(-.7,-.35+I*.08);
+  Room->Shoot(0,.4);while(Room->Step(1./30)){}Room->ResolveShot();
+  TestTrue(TEXT("Touching a ball that never reaches a cushion is a foul"),Room->Turn==1 && Room->bBallInHand && Room->LastCall.Contains(TEXT("tabela")));
+  const FVector2D Corner(R::L/2,R::W/2),EightAt=Corner-FVector2D(.15,.15),CueAt=Corner-FVector2D(.5,.5);
+  Lone(8,EightAt,CueAt);TestTrue(TEXT("On the 8 after clearing"),Room->OnTheEight(0));TestEqual(TEXT("Aim calls the corner"),Room->AimPocket(UE_DOUBLE_PI/4),5);
+  Room->Shoot(UE_DOUBLE_PI/4,2.5);while(Room->Step(1./30)){}TestEqual(TEXT("The 8 drops in the corner"),Room->EightPocket,5);Room->ResolveShot();
+  TestEqual(TEXT("The 8 in the called pocket wins"),Room->Winner,0);
+  Lone(8,EightAt,CueAt);Room->CalledPocket=0;Room->bCallLocked=true;Room->Shoot(UE_DOUBLE_PI/4,2.5);while(Room->Step(1./30)){}Room->ResolveShot();
+  TestEqual(TEXT("The 8 in another pocket loses"),Room->Winner,1);TestTrue(TEXT("Referee says why"),Room->LastCall.Contains(TEXT("cantada")));}
  Room->RemoveFromRoot();return true;
 }
 

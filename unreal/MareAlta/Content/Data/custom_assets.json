@@ -94,5 +94,16 @@
  "mare_tv_flat43": "/Game/Custom/HomeTV/mare_tv_flat43/mare_tv_flat43.mare_tv_flat43",
  "mare_tv_smart55": "/Game/Custom/HomeTV/mare_tv_smart55/mare_tv_smart55.mare_tv_smart55",
  "mare_tv_oled65": "/Game/Custom/HomeTV/mare_tv_oled65/mare_tv_oled65.mare_tv_oled65",
- "mare_hotel_rooms": "/Game/Custom/HotelRooms/mare_hotel_rooms/mare_hotel_rooms.mare_hotel_rooms"
+ "mare_hotel_rooms": "/Game/Custom/HotelRooms/mare_hotel_rooms/mare_hotel_rooms.mare_hotel_rooms",
+ "mare_gameroom_wall": "/Game/Custom/GameRoom/mare_gameroom_wall/mare_gameroom_wall.mare_gameroom_wall",
+ "mare_gameroom_sign": "/Game/Custom/GameRoom/mare_gameroom_sign/mare_gameroom_sign.mare_gameroom_sign",
+ "mare_gameroom_sign_fichas": "/Game/Custom/GameRoom/mare_gameroom_sign_fichas/mare_gameroom_sign_fichas.mare_gameroom_sign_fichas",
+ "mare_billiard_lamp": "/Game/Custom/GameRoom/mare_billiard_lamp/mare_billiard_lamp.mare_billiard_lamp",
+ "mare_token_counter": "/Game/Custom/GameRoom/mare_token_counter/mare_token_counter.mare_token_counter",
+ "mare_cue_rack": "/Game/Custom/GameRoom/mare_cue_rack/mare_cue_rack.mare_cue_rack",
+ "mare_gameroom_rug": "/Game/Custom/GameRoom/mare_gameroom_rug/mare_gameroom_rug.mare_gameroom_rug",
+ "dartboard": "/Game/Custom/GameRoom/dartboard/dartboard1.dartboard1",
+ "wall_clock": "/Game/Custom/GameRoom/wall_clock/wall_clock1.wall_clock1",
+ "hanging_picture_frame_02": "/Game/Custom/GameRoom/hanging_picture_frame_02/hanging_picture_frame_021.hanging_picture_frame_021",
+ "standing_chalkboard_01": "/Game/Custom/GameRoom/standing_chalkboard_01/standing_chalkboard_01.standing_chalkboard_01"
 }

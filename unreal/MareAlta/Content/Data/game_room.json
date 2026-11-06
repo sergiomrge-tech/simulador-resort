@@ -6,6 +6,15 @@
   45,
   180
  ],
+ "_doc_scoreboard": "Chalk scoreboard written on the easel next to the table (UMareGameRoom::BoardLines): world cm [x, y, z of the text top, yaw, pitch (the A-frame face leans back), letter size cm].",
+ "scoreboard": [
+  -2426.9,
+  6216.4,
+  160,
+  0,
+  12,
+  6.5
+ ],
  "_doc_players": "Pool opponents (UMareGameRoom / MarePoolCup.cpp): skill = degrees of aim error of the shot AI (lower is better), appearance = MarePerson look index. stakes = bets offered at the table; cup = Campeonato da Maré (8 players single elimination, one round per game day, entry fee, prize and fame for the champion).",
  "players": [
   {

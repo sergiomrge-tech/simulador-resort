@@ -7,9 +7,12 @@
 #include "MareGamepad.h"
 #include "MareOptions.h"
 #include "Camera/CameraActor.h"
+#include "Camera/CameraComponent.h"
 #include "Engine/GameInstance.h"
 #include "Engine/StaticMesh.h"
 #include "Engine/StaticMeshActor.h"
+#include "Engine/TextRenderActor.h"
+#include "Components/TextRenderComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/ChildActorComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -30,9 +33,15 @@ namespace
 }
 
 static TAutoConsoleVariable<int32> CVarPoolAutoPlay(TEXT("mare.PoolAutoPlay"),0,TEXT("QA: the shot AI also plays the player's turns at the pool table."));
-// QA: "mare.PoolQA" starts a friendly match for the first player at the pool table (with mare.PoolAutoPlay 1 it plays itself).
-static FAutoConsoleCommandWithWorld PoolQACommand(TEXT("mare.PoolQA"),TEXT("Starts a pool match for player 0 (QA)."),
- FConsoleCommandWithWorldDelegate::CreateLambda([](UWorld* World){if(auto Room=World?World->GetSubsystem<UMareGameRoom>():nullptr)Room->StartMatch(World->GetFirstPlayerController(),0,TEXT("Seu Bené"));}));
+// QA: "mare.PoolQA" starts a friendly match for the first player at the pool table (with mare.PoolAutoPlay 1 it plays itself);
+// "mare.PoolQA eight" then clears the player's solids so the next shot is on the called 8.
+static FAutoConsoleCommandWithWorldAndArgs PoolQACommand(TEXT("mare.PoolQA"),TEXT("Starts a pool match for player 0 (QA); 'eight' leaves the player on the 8."),
+ FConsoleCommandWithWorldAndArgsDelegate::CreateLambda([](const TArray<FString>& Args,UWorld* World){auto Room=World?World->GetSubsystem<UMareGameRoom>():nullptr;if(!Room)return;
+  if(!Room->IsPlaying())Room->StartMatch(World->GetFirstPlayerController(),0,TEXT("Seu Bené"));
+  if(Args.Num() && Args[0]==TEXT("eight") && Room->IsPlaying()){Room->bBreakShot=false;Room->Group[0]=1;Room->Group[1]=2;Room->Turn=0;
+   for(int32 I=1;I<=7;++I)Room->Balls[I].bIn=true;for(int32 I=9;I<=12;++I)Room->Balls[I].bIn=true;
+   Room->Balls[8]=UMareGameRoom::FBall();Room->Balls[8].P=FVector2D(MarePool::L/2-.25,MarePool::W/2-.2);
+   Room->Balls[0]=UMareGameRoom::FBall();Room->Balls[0].P=FVector2D(.1,.05);Room->Score[0]=7;Room->Score[1]=4;Room->CalledPocket=-1;Room->bCallLocked=false;}}));
 
 TStatId UMareGameRoom::GetStatId() const{RETURN_QUICK_DECLARE_CYCLE_STAT(UMareGameRoom,STATGROUP_Tickables);}
 
@@ -40,7 +49,7 @@ void UMareGameRoom::Deinitialize()
 {
  if(bPlaying)EndMatch(FString());
  for(auto A:BallActors)if(IsValid(A))A->Destroy();
- for(AActor* A:TArray<AActor*>{TableActor,Cue,Camera,Target,Guest})if(IsValid(A))A->Destroy();
+ for(AActor* A:TArray<AActor*>{TableActor,Cue,Camera,Target,Guest,Board})if(IsValid(A))A->Destroy();
  Super::Deinitialize();
 }
 
@@ -55,6 +64,32 @@ void UMareGameRoom::Rack()
  Balls[0].P=FVector2D(-L/4,0);
  Score[0]=Score[1]=0;Turn=0;Winner=-1;PottedThisShot.Reset();bScratch=false;
  Group[0]=Group[1]=0;FirstHit=-1;bBreakShot=true;bBallInHand=false;LastCall.Reset();
+ RailMask=0;bRailAfterContact=false;CalledPocket=EightPocket=-1;bCallLocked=false;
+}
+
+int32 UMareGameRoom::AimPocket(double Angle) const
+{
+ const FVector2D Dir(FMath::Cos(Angle),FMath::Sin(Angle));const FVector2D E=Balls[8].P;FVector2D Travel=FVector2D::ZeroVector;
+ const double T=FVector2D::DotProduct(E-Balls[0].P,Dir),Miss=FVector2D::Distance(Balls[0].P+Dir*T,E);
+ if(T>0 && Miss<2*R){const FVector2D Contact=Balls[0].P+Dir*(T-FMath::Sqrt(FMath::Max(0.,4*R*R-Miss*Miss)));Travel=(E-Contact).GetSafeNormal();}
+ int32 Best=0;double BestValue=-1e9;
+ for(int32 K=0;K<6;++K){const FVector2D To=Pockets[K]-E;
+  const double Value=Travel.IsNearlyZero()?-To.Size():FVector2D::DotProduct(To.GetSafeNormal(),Travel);
+  if(Value>BestValue){BestValue=Value;Best=K;}}
+ return Best;
+}
+
+FString UMareGameRoom::PocketName(int32 Pocket)
+{
+ static const TCHAR* Names[6]={TEXT("canto de cá, à esquerda"),TEXT("meio, à esquerda"),TEXT("canto do fundo, à esquerda"),
+  TEXT("canto de cá, à direita"),TEXT("meio, à direita"),TEXT("canto do fundo, à direita")};
+ return Pocket>=0 && Pocket<6?Names[Pocket]:TEXT("-");
+}
+
+bool UMareGameRoom::CalledPocketWorld(FVector& Out) const
+{
+ if(!bPlaying || bShotRunning || CalledPocket<0 || !OnTheEight(Turn))return false;
+ Out=World(Pockets[CalledPocket],-R);return true;
 }
 
 int32 UMareGameRoom::Remaining(int32 InGroup) const{int32 N=0;for(int32 I=1;I<16;++I)if(!Balls[I].bIn && GroupOf(I)==InGroup)++N;return N;}
@@ -95,6 +130,9 @@ void UMareGameRoom::Shoot(double Angle,double Speed)
 {
  if(Balls[0].bIn)return;
  Balls[0].V=FVector2D(FMath::Cos(Angle),FMath::Sin(Angle))*FMath::Clamp(Speed,.2,6.);PottedThisShot.Reset();bScratch=false;FirstHit=-1;bBallInHand=false;
+ RailMask=0;bRailAfterContact=false;EightPocket=-1;
+ // The 8 is always called: the AI (and a player who did not pick a pocket) calls where the aim sends it.
+ if(OnTheEight(Turn) && (CalledPocket<0 || !bCallLocked))CalledPocket=AimPocket(Angle);
 }
 
 bool UMareGameRoom::Moving() const{for(const auto& B:Balls)if(!B.bIn && !B.V.IsNearlyZero(StopSpeed))return true;return false;}
@@ -108,13 +146,15 @@ bool UMareGameRoom::Step(double Seconds)
    // Rolling resistance plus a little drag on the cloth.
    const double NewSpeed=FMath::Max(0.,Speed-(RollingDecel+LinearDrag*Speed)*Dt);B.V*=NewSpeed/Speed;B.P+=B.V*Dt;
    // Pockets: the ball centre inside the mouth drops.
-   for(const auto& Pk:Pockets)if(FVector2D::Distance(B.P,Pk)<PocketR*.95){B.bIn=true;B.V=FVector2D::ZeroVector;PottedThisShot.Add(I);++Drops;if(I==0)bScratch=true;break;}
+   for(int32 K=0;K<6;++K)if(FVector2D::Distance(B.P,Pockets[K])<PocketR*.95){B.bIn=true;B.V=FVector2D::ZeroVector;PottedThisShot.Add(I);++Drops;if(I==0)bScratch=true;if(I==8)EightPocket=K;break;}
    if(B.bIn)continue;
    // Cushions, open near the six pockets.
    const bool bNearCorner=FMath::Abs(B.P.X)>L/2-PocketR*1.6 && FMath::Abs(B.P.Y)>W/2-PocketR*1.6;
    const bool bNearMiddle=FMath::Abs(B.P.X)<PocketR*1.25;
-   if(!bNearCorner && FMath::Abs(B.P.X)>L/2-R){B.P.X=FMath::Sign(B.P.X)*(L/2-R);RailSpeed=FMath::Max(RailSpeed,FMath::Abs(B.V.X));B.V.X*=-CushionBounce;}
-   if(!bNearCorner && !bNearMiddle && FMath::Abs(B.P.Y)>W/2-R){B.P.Y=FMath::Sign(B.P.Y)*(W/2-R);RailSpeed=FMath::Max(RailSpeed,FMath::Abs(B.V.Y));B.V.Y*=-CushionBounce;}
+   bool bRail=false;
+   if(!bNearCorner && FMath::Abs(B.P.X)>L/2-R){B.P.X=FMath::Sign(B.P.X)*(L/2-R);RailSpeed=FMath::Max(RailSpeed,FMath::Abs(B.V.X));B.V.X*=-CushionBounce;bRail=true;}
+   if(!bNearCorner && !bNearMiddle && FMath::Abs(B.P.Y)>W/2-R){B.P.Y=FMath::Sign(B.P.Y)*(W/2-R);RailSpeed=FMath::Max(RailSpeed,FMath::Abs(B.V.Y));B.V.Y*=-CushionBounce;bRail=true;}
+   if(bRail){RailMask|=uint16(1<<I);if(FirstHit>=0)bRailAfterContact=true;}
    // Never leave the table even through a pocket gap.
    B.P.X=FMath::Clamp(B.P.X,-L/2-.03,L/2+.03);B.P.Y=FMath::Clamp(B.P.Y,-W/2-.03,W/2+.03);
   }
@@ -137,17 +177,24 @@ void UMareGameRoom::ResolveShot()
  // Own group cleared before this shot (balls potted now still count as on the table for the 8 rule).
  auto LeftBefore=[&](int32 Side){if(Group[Side]==0)return 99;int32 N=Remaining(Group[Side]);for(int32 I:PottedThisShot)if(GroupOf(I)==Group[Side])++N;return N;};
  const bool bClearedBefore=Group[Me]!=0 && LeftBefore(Me)==0;
- if(FirstHit<0){bFoul=true;Why=TEXT("a branca não tocou em nenhuma bola");}
- else if(!bBreakShot){
-  const bool bRightFirst=Group[Me]==0?FirstHit!=8:bClearedBefore?FirstHit==8:GroupOf(FirstHit)==Group[Me];
-  if(!bRightFirst && !bFoul){bFoul=true;Why=TEXT("tocou primeiro na bola errada");}}
  TArray<int32> Potted;bool bEight=false;
  for(int32 I:PottedThisShot){if(I==8)bEight=true;else if(I!=0)Potted.Add(I);}
+ if(FirstHit<0 && !bFoul){bFoul=true;Why=TEXT("a branca não tocou em nenhuma bola");}
+ else if(bBreakShot){
+  // Legal break: a ball potted or at least 4 object balls driven to a cushion.
+  if(!bFoul && Potted.Num()==0 && !bEight && RailBalls()<4){bFoul=true;Why=TEXT("saída fraca, menos de 4 bolas na tabela");}}
+ else{
+  const bool bRightFirst=Group[Me]==0?FirstHit!=8:bClearedBefore?FirstHit==8:GroupOf(FirstHit)==Group[Me];
+  if(!bRightFirst && !bFoul){bFoul=true;Why=TEXT("tocou primeiro na bola errada");}
+  // After the contact some ball must drop or reach a cushion.
+  if(!bFoul && Potted.Num()==0 && !bEight && !bRailAfterContact){bFoul=true;Why=TEXT("nenhuma bola foi à tabela depois do toque");}}
  LastCall.Reset();
  if(bEight){
-  if(bBreakShot && !bFoul){SpotEight();bEight=false;LastCall=TEXT("A 8 caiu na saída e voltou para a mesa.");}
-  else{Winner=!bFoul && bClearedBefore?Me:Opp;
-   LastCall=Winner==Me?TEXT("Encaçapou a 8 no fim: vitória!"):bFoul?TEXT("A 8 caiu junto com uma falta: derrota."):TEXT("A 8 caiu antes da hora: derrota.");}}
+  if(bBreakShot){SpotEight();bEight=false;LastCall=TEXT("A 8 caiu na saída e voltou para a mesa.");}
+  else{const bool bWrongPocket=CalledPocket>=0 && EightPocket>=0 && CalledPocket!=EightPocket;
+   Winner=!bFoul && bClearedBefore && !bWrongPocket?Me:Opp;
+   LastCall=Winner==Me?TEXT("Encaçapou a 8 na caçapa cantada: vitória!"):bFoul?TEXT("A 8 caiu junto com uma falta: derrota."):
+    !bClearedBefore?TEXT("A 8 caiu antes da hora: derrota."):TEXT("A 8 caiu fora da caçapa cantada: derrota.");}}
  // The first legal pot after the break gives the groups.
  if(Winner<0 && !bFoul && !bBreakShot && Group[Me]==0 && Potted.Num()){Group[Me]=GroupOf(Potted[0]);Group[Opp]=3-Group[Me];
   LastCall=Group[Me]==1?TEXT("Lisas para quem encaçapou."):TEXT("Listradas para quem encaçapou.");}
@@ -157,7 +204,7 @@ void UMareGameRoom::ResolveShot()
   if(bFoul){Turn=Opp;bBallInHand=true;if(!PlaceCueBall(FVector2D(-L/4,0)))PlaceCueBallForAI();
    LastCall=FString(TEXT("Falta: "))+Why+TEXT(". Bola na mão para ")+(Opp==0?TEXT("você."):TEXT("o adversário."));}
   else if(!bOwnPot)Turn=Opp;}
- bBreakShot=false;PottedThisShot.Reset();bScratch=false;FirstHit=-1;
+ bBreakShot=false;PottedThisShot.Reset();bScratch=false;FirstHit=-1;CalledPocket=-1;bCallLocked=false;
 }
 
 bool UMareGameRoom::PathClear(const FVector2D& A,const FVector2D& B,int32 IgnoreA,int32 IgnoreB) const
@@ -217,11 +264,37 @@ void UMareGameRoom::SpawnProps()
  Cue=Spawn(TEXT("/Game/Custom/GameRoom/pool_cue/pool_cue.pool_cue"),Table);if(Cue)Cue->SetActorHiddenInGame(true);
  Target=GetWorld()->SpawnActor<AMareServiceTarget>(Table.TransformPosition(FVector(-L*50-25,0,ClothZ*100+10)),FRotator::ZeroRotator);
  Target->Action=TEXT("PoolTable");Target->Label=TEXT("Mesa de sinuca · jogar contra um hóspede");Target->Reach=260;Target->OcclusionTolerance=80;
+ // Chalk scoreboard: [x, y, z, yaw, pitch, size] on the easel board face.
+ const TArray<TSharedPtr<FJsonValue>>* BoardAt=nullptr;
+ if(Data->TryGetArrayField(TEXT("scoreboard"),BoardAt) && BoardAt->Num()>=6){auto N=[&](int32 I){return (*BoardAt)[I]->AsNumber();};
+  Board=GetWorld()->SpawnActor<ATextRenderActor>(FVector(N(0),N(1),N(2)),FRotator(N(4),N(3),0));
+  if(Board){auto T=Board->GetTextRender();T->SetHorizontalAlignment(EHTA_Center);T->SetVerticalAlignment(EVRTA_TextTop);
+   T->SetWorldSize(N(5));T->SetTextRenderColor(FColor(236,232,214));T->SetCollisionEnabled(ECollisionEnabled::NoCollision);T->SetCastShadow(false);}}
+ BoardText.Reset();UpdateBoard();
+}
+
+FString UMareGameRoom::BoardLines() const
+{
+ if(bPlaying){auto Side=[this](int32 S){return Group[S]==1?TEXT("lisas"):Group[S]==2?TEXT("listradas"):TEXT("");};
+  // One line per side (the opponent's names are long, the board is 77 cm wide) and the groups underneath.
+  // UTextRenderComponent breaks lines at <br>, not at \n.
+  return FString::Printf(TEXT("SINUCA<br>Você  %d<br>%s  %d<br>%s"),Score[0],*Opponent,Score[1],
+   Group[0]?*FString::Printf(TEXT("%s × %s"),Side(0),Side(1)):TEXT("mesa aberta"));}
+ double Played=0,Won=0;
+ if(auto S=Sim(GetWorld())){const auto B=UMareSimulation::Object(S->State,TEXT("billiards"));Played=UMareSimulation::Number(B,TEXT("played"));Won=UMareSimulation::Number(B,TEXT("won"));}
+ return FString::Printf(TEXT("SINUCA · BOLA 8<br>Vitórias  %.0f<br>Derrotas  %.0f"),Won,Played-Won);
+}
+
+void UMareGameRoom::UpdateBoard()
+{
+ if(!IsValid(Board))return;const FString Text=BoardLines();if(Text==BoardText)return;BoardText=Text;
+ Board->GetTextRender()->SetText(FText::FromString(Text));
 }
 
 void UMareGameRoom::StartMatch(APlayerController* Controller,double InStake,const FString& InOpponent,bool bInCup)
 {
- if(bPlaying || !Controller)return;Player=Controller;Stake=InStake;bCup=bInCup;
+ // No table yet (the room is not bought, or its props spawn on the next tick): nothing to play on.
+ if(bPlaying || !Controller || !TableActor)return;Player=Controller;Stake=InStake;bCup=bInCup;
  Opponent=InOpponent.IsEmpty()?FString(TEXT("Hóspede")):InOpponent;int32 Look=1;AimError[0]=AimError[1]=1.4;
  if(auto S=Sim(GetWorld())){const auto Row=S->PoolPlayer(Opponent);AimError[1]=UMareSimulation::Number(Row,TEXT("skill"),1.4);Look=int32(UMareSimulation::Number(Row,TEXT("appearance"),1));}Rack();bPlaying=true;Shots=0;bShotRunning=false;bPlacing=false;Charge=0;AimAngle=0;
  // The guest opponent stands at the foot of the table.
@@ -229,6 +302,9 @@ void UMareGameRoom::StartMatch(APlayerController* Controller,double InStake,cons
  Guest=GetWorld()->SpawnActor<AMarePerson>(Table.TransformPosition(FVector(L*50+70,40,90)),Table.Rotator()+FRotator(0,180,0),Params);
  if(Guest){Guest->SaveId=TEXT("pool_guest");Guest->PersonName=Opponent;Guest->SetAppearance(Look);Guest->bAmbient=true;Guest->Tags.Add(TEXT("MareHotelGuest"));Guest->GetCharacterMovement()->DisableMovement();}
  Camera=GetWorld()->SpawnActor<ACameraActor>(World(FVector2D(-L/2-.6,0),.9),FRotator(-45,Table.Rotator().Yaw,0));
+ // A camera actor letterboxes to 16:9 by default: black bars, and the HUD's projected aim line and called-pocket ring
+ // landed 20-40 px off the balls (the projection ignores the bars).
+ if(Camera)Camera->GetCameraComponent()->SetConstraintAspectRatio(false);
  Controller->SetViewTargetWithBlend(Camera,.5f);Controller->SetIgnoreMoveInput(true);Controller->SetIgnoreLookInput(true);
  // The player stands at the table: hide the body so it never sits between the match camera and the cloth.
  // Only the table, the balls and the cue/bats on screen (Sergio, 03/11): no arms or hands of the player at all.
@@ -279,6 +355,10 @@ FString UMareGameRoom::Status() const
  auto Side=[this](int32 S){return Group[S]==1?TEXT(" (lisas)"):Group[S]==2?TEXT(" (listradas)"):TEXT("");};
  FString Line=FString::Printf(TEXT("Sinuca · você%s %d × %d %s%s · %s"),Side(0),Score[0],Score[1],*Opponent,Side(1),
   bShotRunning?TEXT("bolas rolando"):Turn==0?*Yours:*(TEXT("vez de ")+Opponent));
+ if(!bShotRunning && OnTheEight(Turn) && CalledPocket>=0){
+  const FString Change=Turn!=0?FString():bPad?FString::Printf(TEXT(" (%s/%s troca)"),*MareGamepad::PadLabel(EKeys::Gamepad_LeftShoulder,bPlayStation),*MareGamepad::PadLabel(EKeys::Gamepad_RightShoulder,bPlayStation))
+   :FString(TEXT(" (rodinha do mouse troca)"));
+  Line+=TEXT("\nBola 8 cantada: caçapa do ")+PocketName(CalledPocket)+Change;}
  if(!LastCall.IsEmpty() && !bShotRunning)Line+=TEXT("\n")+LastCall;
  return Line;
 }
@@ -314,7 +394,8 @@ void UMareGameRoom::Tick(float DeltaSeconds)
  auto S=Sim(GetWorld());if(!S)return;
  bool bOwned=false;UMareSimulation::Object(S->State,TEXT("unlocked"))->TryGetBoolField(TEXT("salao_jogos"),bOwned);
  if(bOwned && !TableActor)SpawnProps();
- if(TableActor){TableActor->SetActorHiddenInGame(!bOwned);if(Target)Target->SetActorHiddenInGame(!bOwned);}
+ if(TableActor){TableActor->SetActorHiddenInGame(!bOwned);if(Target)Target->SetActorHiddenInGame(!bOwned);if(Board)Board->SetActorHiddenInGame(!bOwned);}
+ if(bOwned)UpdateBoard();
  if(!bOwned)return;
  if(bPlaying){
   auto PC=Player.Get();if(!PC){EndMatch(FString());return;}
@@ -344,6 +425,12 @@ void UMareGameRoom::Tick(float DeltaSeconds)
    // Gamepad: either stick aims (squared curve for fine shots), RT held charges like the mouse button.
    const float Stick=FMath::Clamp(PC->GetInputAnalogKeyState(EKeys::Gamepad_LeftX)+PC->GetInputAnalogKeyState(EKeys::Gamepad_RightX),-1.f,1.f);
    AimAngle+=MareGamepad::Curve(Stick,0.f)*MareGamepad::AimRadiansPerSecond*DeltaSeconds;
+   // On the 8: the called pocket follows the aim until the wheel or a shoulder button picks another one.
+   if(OnTheEight(0)){int32 Step=0;
+    if(PC->WasInputKeyJustPressed(EKeys::MouseScrollUp) || PC->WasInputKeyJustPressed(EKeys::Gamepad_RightShoulder))Step=1;
+    if(PC->WasInputKeyJustPressed(EKeys::MouseScrollDown) || PC->WasInputKeyJustPressed(EKeys::Gamepad_LeftShoulder))Step=5;
+    if(Step){CalledPocket=((CalledPocket<0?AimPocket(AimAngle):CalledPocket)+Step)%6;bCallLocked=true;}
+    else if(!bCallLocked)CalledPocket=AimPocket(AimAngle);}
    if(PC->IsInputKeyDown(EKeys::LeftMouseButton) || PC->IsInputKeyDown(EKeys::Gamepad_RightTrigger) || PC->GetInputAnalogKeyState(EKeys::Gamepad_RightTriggerAxis)>.3f){bCharging=true;Charge=FMath::Min(1.f,Charge+DeltaSeconds/1.2f);}
    else if(bCharging){bCharging=false;const FVector At=Table.GetLocation()+FVector(0,0,80);UMareAudioWorld::Action(this,TEXT("pool_cue_hit"),&At,.4f+.6f*Charge);
     Shoot(AimAngle,.5+5.5*Charge);Charge=0;bShotRunning=true;++Shots;}}

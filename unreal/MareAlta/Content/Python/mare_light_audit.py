@@ -232,11 +232,16 @@ def glow(arg=''):
     return json.dumps(out)
 
 def near(arg):
-    """Meshes (components and instances) within r cm of a point: 'x,y,z,r' (PIE world when running). Nearest first."""
-    x, y, z, r = [float(v) for v in arg.split(',')]
+    """Meshes (components and instances) within r cm of a point: 'x,y,z,r[,1]' (PIE world when running; a 5th value 1
+    skips hidden actors). Nearest first."""
+    vals = [float(v) for v in arg.split(',')]
+    x, y, z, r = vals[:4]
+    visible_only = len(vals) > 4 and vals[4] > 0
     p = unreal.Vector(x, y, z)
     out = []
     for a in unreal.GameplayStatics.get_all_actors_of_class(_world('pie'), unreal.Actor):
+        if visible_only and a.get_editor_property('hidden'):
+            continue
         for c in a.get_components_by_class(unreal.StaticMeshComponent):
             m = c.static_mesh
             if not m:

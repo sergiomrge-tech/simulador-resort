@@ -8,6 +8,7 @@ class ACameraActor;
 class AMareServiceTarget;
 class AMarePerson;
 class APlayerController;
+class ATextRenderActor;
 
 /** Pool table dimensions in metres (tools/ue58/gen_pool_table.py); outside the exported class (DLL interface rules). */
 namespace MarePool{inline constexpr double L=1.98,W=.99,R=.028575,PocketR=.062,ClothZ=.78;}
@@ -18,6 +19,9 @@ namespace MarePool{inline constexpr double L=1.98,W=.99,R=.028575,PocketR=.062,C
  *  the 8); a foul (cue ball potted, nothing hit, wrong ball first) gives the opponent the ball in hand; potting your own
  *  ball keeps the turn; the 8 wins only after your group is cleared and without a foul, otherwise it loses. The 8 potted
  *  on the break is spotted again.
+ *  Complete rules (06/11, checklist 5.4): a legal break pots a ball or drives at least 4 object balls to a cushion; after
+ *  the cue ball touches the first ball, some ball must be potted or reach a cushion; the 8 is called (the pocket follows
+ *  the aim and can be changed with the wheel/shoulders) and dropping it in another pocket loses.
  *  Physics is a deterministic 2D simulation in table space (metres, x along the length), substepped at 240 Hz,
  *  with the dimensions of tools/ue58/gen_pool_table.py. Unlocked by the expansion "salao_jogos". */
 UCLASS()
@@ -37,6 +41,11 @@ public:
  bool AimLine(FVector& From,FVector& To) const;
  float Power() const{return Charge;}
  FString Status() const;
+ const FString& OpponentName() const{return Opponent;}
+ /** Pocket called for the 8 in world space (only while the side to play is on the 8). */
+ bool CalledPocketWorld(FVector& Out) const;
+ /** Pocket names as seen from the head of the table ("canto do fundo, à direita"). */
+ static FString PocketName(int32 Pocket);
  // ---- Simulation (also used by automation tests without a world).
  struct FBall{FVector2D P=FVector2D::ZeroVector,V=FVector2D::ZeroVector;bool bIn=false;};
  FBall Balls[16];
@@ -49,6 +58,17 @@ public:
  bool bBallInHand=false;  // after a foul the side to play places the cue ball anywhere free
  double AimError[2]={1.4,1.4}; // degrees of aim error of each side's shot AI (opponent skill)
  FString LastCall;        // short referee line of the last shot ("Falta: branca na caçapa")
+ uint16 RailMask=0;       // balls that touched a cushion in the running shot (bit per ball)
+ bool bRailAfterContact=false; // some ball reached a cushion after the first contact
+ int32 CalledPocket=-1;   // pocket called for the 8 (0..5, Pockets order), -1 none yet
+ int32 EightPocket=-1;    // pocket the 8 dropped into in the running shot
+ bool bCallLocked=false;  // the player picked the pocket by hand (otherwise it follows the aim)
+ /** The side to play has cleared its group and shoots at the 8 (the pocket must be called). */
+ bool OnTheEight(int32 Side) const{return Group[Side]!=0 && Remaining(Group[Side])==0 && !Balls[8].bIn;}
+ /** Pocket the 8 heads for if the cue ball is shot along Angle (ghost-ball contact), or the nearest one. */
+ int32 AimPocket(double Angle) const;
+ /** Object balls that touched a cushion (break rule). */
+ int32 RailBalls() const{int32 N=0;for(int32 I=1;I<16;++I)if(RailMask&(1<<I))++N;return N;}
  void Rack();
  /** Cue ball shot: direction in radians (table space) and speed in m/s. */
  void Shoot(double Angle,double Speed);
@@ -96,4 +116,11 @@ private:
  UPROPERTY() TObjectPtr<ACameraActor> Camera;
  UPROPERTY() TObjectPtr<AMareServiceTarget> Target;
  UPROPERTY() TObjectPtr<AMarePerson> Guest;
+ /** Chalk scoreboard on the easel next to the table (game_room.json "scoreboard"): the running match or the record. */
+ UPROPERTY() TObjectPtr<ATextRenderActor> Board;
+ FString BoardText;
+ void UpdateBoard();
+public:
+ /** Text written on the chalk scoreboard now (tests and QA). */
+ FString BoardLines() const;
 };
