@@ -1,44 +1,49 @@
-# Página da loja — português do Brasil
+# Página da demo — português do Brasil
 
-Rascunho baseado no código da referência `8e817f7a0813e4af628d6d317af54d50b67dbeba`, de 06/11/2026. Conferir cada recurso no pacote destinado à Steam antes de publicar. Recursos futuros estão no questionário, separados desta descrição.
+Nome comercial: **Coconut Coast: Resort Simulator**. Maré Alta é o nome do resort dentro do jogo.
+
+Rascunho editorial conferido com definitions.json (demo: true), events.json e os bloqueios de campanha/expansão da referência 9e5b4adcadba60ec0c46ffa2e4767bcb6805db0a. Publicar os textos comerciais abaixo na página da demo, após conferir o pacote distribuído. A duração de cerca de 2 h é a meta informada para a progressão inicial; não foi medida em playtest neste trabalho. Não é um limite de tempo para jogar.
 
 ## Descrição curta
 
-Transforme um quiosque de praia em um resort cheio de vida! Atenda clientes, gerencie pelo celular, contrate sua equipe e expanda até o Grand Hotel. Entre drinks, passeios e partidas no salão de jogos, a vila sempre tem uma história para contar.
+Experimente grátis Coconut Coast: Resort Simulator! Assuma o quiosque da avó Dilce, atenda clientes, gerencie pelo celular e cresça com pousada, bar, piscina e passeios. Conheça a vila, suas histórias e seu humor. Gostou? Adicione o jogo completo à lista de desejos!
 
 ## Descrição longa
 
-### Um coco gelado. Um quiosque herdado. Um sonho à beira-mar.
+### Um coco gelado. Um quiosque herdado. Sua primeira maré.
 
-Vovó Dilce deixou o quiosque da família nas suas mãos. Agora é com você: dê um nome ao negócio, vire a placa para abrir e receba os primeiros fregueses. Em **Maré Alta Resort**, você vive a rotina da praia enquanto transforma um pequeno balcão em um destino turístico.
+O quiosque da avó Dilce está nas suas mãos. Abra a placa, receba os primeiros fregueses e comece a transformar o **Maré Alta** em um resort cheio de vida. A demo gratuita de **Coconut Coast: Resort Simulator** apresenta a rotina de gestão e as histórias de uma vila de praia brasileira.
 
-### Trabalhe com os pés na areia
+### Trabalhe no balcão, cuide do negócio pelo celular
 
-Anote pedidos, pegue os produtos prontos e entregue no balcão. Reponha o estoque, melhore suas receitas e cuide da decoração. Abra o celular de gestão para acompanhar finanças, contratar a equipe e escolher a próxima expansão. Seu atendente ajuda no quiosque enquanto você explora as outras atividades.
+Anote os pedidos, pegue os produtos prontos e entregue aos clientes. Reponha o estoque, melhore receitas e decoração e contrate ajuda. No celular de gestão, acompanhe compras, finanças, equipe e expansões sem deixar a praia.
 
-### Do primeiro bangalô ao Grand Hotel
-
-Abra a pousada, negocie diárias e deixe os quartos prontos para a próxima chegada. Expanda com piscina, Bar do Coqueiro e passeios turísticos até alcançar o Grand Hotel: 32 quartos de três categorias, com três interiores visitáveis. Cuide do frigobar, responda às reclamações e atenda pedidos especiais de VIPs. No restaurante, sirva as mesas, entregue o serviço de quarto e reserve eventos, incluindo casamento na praia.
-
-### Sempre cabe mais um passeio — ou uma partida
-
-Misture drinks e descubra receitas no bar. Guie passeios de barco, mergulho com snorkel e trilha ao farol. Experimente os negócios da vila: sorveteria, pastelaria, aluguel de pranchas e caiaques, loja de souvenires e escolinha de surfe, cada um com sua atividade.
-
-Ao cair da noite, visite o salão de jogos: dispute sinuca, pebolim e tênis de mesa, jogue **Corrida de Jangada** e **Pinball do Farol** e participe do Campeonato da Maré, com edições semanais no calendário do jogo.
-
-### A vila também faz parte do negócio
-
-Conheça moradores, cumpra capítulos e acompanhe festas e eventos do dia. Entre pedidos inesperados, confusões na praia e as histórias do Seu Tibúrcio, crescer também rende boas risadas.
-
-### Recursos
+### O que você encontra na demo
 
 - Simulação de gestão em primeira pessoa, para um jogador.
-- Quiosque com atendimento, estoque, receitas, decoração e equipe.
-- Gestão pelo celular: compras, finanças, equipe e expansões.
-- Pousada, piscina, bar e Grand Hotel com quartos, VIPs e restaurante.
-- Passeios de barco, mergulho e trilha ao farol.
-- Cinco negócios da vila com atividades próprias.
-- Salão com sinuca, pebolim, tênis de mesa e dois fliperamas jogáveis.
-- Campeonato semanal, capítulos da vila, festas e humor brasileiro.
+- Quiosque com atendimento, estoque, melhorias e um atendente para ajudar na rotina.
+- Expansões da primeira fase: pousada, Bar do Coqueiro, piscina e passeios.
+- Drinks para misturar e receitas para descobrir no bar.
+- Passeios de barco, mergulho com snorkel e trilha ao farol, com disponibilidade conforme as condições do dia e a progressão.
+- Negócios da vila: sorveteria, pastelaria, aluguel de pranchas e caiaques, loja de souvenires e escolinha de surfe.
+- Pesca no píer, fotografia, moradores, capítulos da vila, festas e acontecimentos com humor brasileiro.
 
-O jogo está em desenvolvimento. A apresentação e o balanceamento continuarão sendo refinados durante o Acesso Antecipado.
+### Cerca de duas horas para conhecer a costa
+
+A demo foi pensada para aproximadamente **2 horas de progressão inicial**, variando com seu ritmo. A campanha chega ao ponto em que a próxima expansão, o Grand Hotel, pertence ao jogo completo — a missão **“A Maré Alta da vila”** fica para essa continuação.
+
+A tela de agradecimento reúne os resultados do seu resort. Depois dela, você pode **continuar jogando a demo** e cuidar do que já construiu. Ela não é um teste que encerra o jogo ao completar duas horas.
+
+### O que fica no jogo completo
+
+Os recursos abaixo aparecem identificados como **JOGO COMPLETO** e não fazem parte da progressão de uma nova partida da demo:
+
+- **Grand Hotel 5 estrelas:** 32 quartos de três categorias, arrumação, frigobar, hóspedes VIP e pedidos especiais.
+- **Eventos montados na praia:** casamentos, aniversários e congressos, com preparação das peças antes da chegada dos convidados.
+- **Restaurante do hotel:** mesas, serviço de quarto, peixe do píer e um crítico gastronômico disfarçado.
+- **Salão de jogos:** sinuca, pebolim, tênis de mesa, os fliperamas Corrida de Jangada e Pinball do Farol e o Campeonato da Maré.
+- Continuação da campanha além do marco do Grand Hotel.
+
+### Gostou da sua primeira maré?
+
+**Adicione Coconut Coast: Resort Simulator à sua lista de desejos na Steam** para acompanhar as novidades do jogo completo. A história do Maré Alta continua por lá.

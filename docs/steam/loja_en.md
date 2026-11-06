@@ -1,44 +1,49 @@
-# Página da loja — inglês
+# Página da demo — inglês
 
-Rascunho equivalente a `loja_pt-BR.md`, referência `8e817f7a0813e4af628d6d317af54d50b67dbeba`. Notas editoriais em português; texto comercial abaixo em inglês.
+Nome comercial: **Coconut Coast: Resort Simulator**. Maré Alta é o resort dentro do jogo. Notas editoriais em português; texto comercial abaixo em inglês.
+
+Equivalente a loja_pt-BR.md, conferido com o modo demo da referência 9e5b4adcadba60ec0c46ffa2e4767bcb6805db0a. Cerca de 2 h é a meta de progressão informada, não medição desta tarefa nem limite de tempo. Conferir o pacote antes de publicar. Sem promessa de data, migração de saves ou recursos Steam não verificados.
 
 ## Descrição curta
 
-Turn a beach kiosk into a lively resort! Serve customers, manage from your phone, hire a team and expand to the Grand Hotel. Between cocktails, guided tours and game room matches, the village always has another story to tell.
+Try Coconut Coast: Resort Simulator for free! Take over Grandma Dilce's kiosk, serve customers and manage from your phone. Grow with a guesthouse, bar, pool and tours, and meet a village full of stories and Brazilian humour. Enjoyed your stay? Wishlist the full game!
 
 ## Descrição longa
 
-### One chilled coconut. An inherited kiosk. A seaside dream.
+### One chilled coconut. An inherited kiosk. Your first tide.
 
-Grandma Dilce has left the family kiosk in your hands. Name your business, flip the sign to open and welcome your first customers. In **Maré Alta Resort**, live the daily rhythm of the beach as you turn a small counter into a holiday destination.
+Grandma Dilce's kiosk is in your hands. Flip the sign, welcome your first customers and start turning **Maré Alta** into a lively resort. The free **Coconut Coast: Resort Simulator** demo introduces hands-on management and the stories of a Brazilian beach village.
 
-### Get hands-on by the sea
+### Work the counter, manage from your phone
 
-Take orders, pick up ready-to-serve products and deliver them at the counter. Restock supplies, improve recipes and decorate your business. Open your management phone to check finances, hire staff and choose your next expansion. Your kiosk attendant helps out while you explore other activities.
+Take orders, pick up ready-to-serve products and deliver them to your customers. Restock supplies, improve recipes and decoration, and hire help. Your management phone keeps purchases, finances, staff and expansions close at hand while you enjoy the coast.
 
-### From the first bungalow to the Grand Hotel
-
-Open the guesthouse, negotiate nightly rates and prepare rooms for the next arrivals. Add a pool, the Bar do Coqueiro and guided tours on your way to the Grand Hotel: 32 rooms across three categories, with three interiors you can visit. Restock minibars, respond to complaints and fulfil special VIP requests. Serve restaurant tables, deliver room service and book events, including beach weddings.
-
-### Make time for a tour — or a match
-
-Mix cocktails and discover recipes at the bar. Lead boat trips, snorkelling tours and walks to the lighthouse. Try the village businesses: an ice cream shop, a pastel food truck, board and kayak rentals, a souvenir shop and a surf school, each with its own activity.
-
-When evening comes, head to the game room. Play pool, foosball and table tennis, try **Corrida de Jangada** and **Pinball do Farol**, and enter the Campeonato da Maré, with weekly editions on the in-game calendar.
-
-### The village is part of the business
-
-Meet residents, complete story chapters and follow daily events and beach celebrations. Between unexpected requests, seaside mishaps and Seu Tibúrcio's stories, growing your resort comes with a sense of humour.
-
-### Features
+### What's in the demo
 
 - First-person management simulation for one player.
-- A kiosk with hands-on service, supplies, recipes, decoration and staff.
-- Phone-based management of purchases, finances, staff and expansions.
-- Guesthouse, pool, bar and Grand Hotel with rooms, VIPs and a restaurant.
-- Boat trips, snorkelling tours and lighthouse walks.
-- Five village businesses with their own activities.
-- Pool, foosball, table tennis and two playable arcade cabinets.
-- A weekly tournament, village story chapters, celebrations and Brazilian humour.
+- A kiosk with hands-on service, supplies, upgrades and an attendant to help with the daily routine.
+- Early expansions: a guesthouse, the Bar do Coqueiro, a pool and guided tours.
+- Cocktails to mix and recipes to discover at the bar.
+- Boat trips, snorkelling and a lighthouse trail, available as you progress and conditions allow.
+- Village businesses: an ice cream shop, a pastel food truck, board and kayak rentals, a souvenir shop and a surf school.
+- Pier fishing, photography, residents, village story chapters, celebrations and seaside mishaps with Brazilian humour.
 
-The game is in development. Presentation and balance will continue to be refined throughout Early Access.
+### Around two hours to get to know the coast
+
+The demo is designed for approximately **2 hours of initial progression**, depending on your pace. The campaign reaches the point where the next expansion, the Grand Hotel, belongs to the full game. The mission **“A Maré Alta da vila”** marks that continuation.
+
+A thank-you screen brings together your resort's results. Afterwards, you can **keep playing the demo** and running what you have built. The game does not shut down when two hours are up.
+
+### What's reserved for the full game
+
+The following features are marked **FULL GAME** and are outside the progression of a new demo playthrough:
+
+- **A 5-star Grand Hotel:** 32 rooms across three categories, housekeeping, minibars, VIP guests and special requests.
+- **Beach events you set up yourself:** weddings, birthdays and conferences, with pieces to place before the guests arrive.
+- **The hotel restaurant:** table service, room service, fish from the pier and a food critic in disguise.
+- **The game room:** pool, foosball, table tennis, the Corrida de Jangada and Pinball do Farol arcade games, and the Campeonato da Maré tournament.
+- The campaign continues beyond the Grand Hotel milestone.
+
+### Enjoyed your first tide?
+
+**Add Coconut Coast: Resort Simulator to your Steam wishlist** to follow news about the full game. Maré Alta's story continues there.

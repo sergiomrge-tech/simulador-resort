@@ -1,6 +1,7 @@
 """Quality gate run before every commit (Maré Alta, UE 5.8, editor open with the MCP server on 8000).
 
 What it checks, with data (PASS only if all hard checks pass):
+  0. JSON data         - data_lint.py checks the data before connecting to the editor; any error exits with code 1;
   1. automation tests  - every MareAlta.* test succeeds;
   2. floating props    - float_audit scan: no more floating instances than the accepted baseline;
      lights            - no room light shines at night without a lamp/fixture (mare_light_audit.bare_check);
@@ -32,7 +33,7 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parent))
 from mcp_client import UnrealClient  # noqa: E402
 
-c = UnrealClient()
+c = None  # Conectar somente depois da verificação estática dos JSON.
 LOG = Path(r'D:\Projetos\MareAltaUE58\unreal\MareAlta\Saved\Logs\MareAlta.log')
 OUT = Path(r'D:\CodexTemp\qa')
 SHOTS = Path(r'D:\CodexTemp\beach')
@@ -315,11 +316,36 @@ def ui_shot():
     return {'file': str(out), 'minimized': bool(hwnd), 'pass': out.exists()}
 
 
+def data_lint():
+    """Etapa local de leitura dos JSON; não importa nem chama APIs da Unreal."""
+    import subprocess
+    try:
+        run = subprocess.run([sys.executable, str(HERE / 'data_lint.py'), '--json'],
+                             cwd=str(HERE.parents[2]), capture_output=True, text=True, encoding='utf-8')
+        result = json.loads(run.stdout)
+        if not isinstance(result, dict) or not isinstance(result.get('problemas'), list) or 'erros' not in result:
+            raise ValueError('resposta incompleta do data_lint.py')
+        return dict(result, **{'returncode': run.returncode, 'pass': run.returncode == 0 and result['erros'] == 0})
+    except (OSError, ValueError) as exc:
+        return {'pass': False, 'erros': 1, 'problemas': [], 'error': str(exc)}
+
+
 def main():
+    global c
     accept, with_shots = '--accept' in sys.argv, '--no-shots' not in sys.argv
     base = json.loads(BASELINE.read_text(encoding='utf-8')) if BASELINE.exists() else {}
     stamp = time.strftime('%Y%m%d-%H%M%S')
-    report = {'stamp': stamp}
+    report = {'stamp': stamp, 'data': data_lint()}
+    if not report['data']['pass']:
+        report['pass'] = False
+        OUT.mkdir(parents=True, exist_ok=True)
+        (OUT / 'report.json').write_text(json.dumps(report, indent=1, ensure_ascii=False), encoding='utf-8')
+        print('QA GATE FAIL')
+        print(' data   ', report['data']['erros'], 'erro(s)', report['data'].get('error', ''))
+        for row in report['data']['problemas']:
+            print(f"  {row['arquivo']} → {row['campo']} → {row['problema']}")
+        raise SystemExit(1)
+    c = UnrealClient()
     pie(False)
     report['tests'] = tests()
     report['floating'] = floating(base)
@@ -354,13 +380,14 @@ def main():
     pie(False)
     report['untracked'] = untracked(base)
     report['driver'] = dict(DRIVER, **{'pass': bool(DRIVER.get('driver')) and not DRIVER.get('swim')})
-    report['pass'] = all(report[k]['pass'] for k in ('tests', 'floating', 'cook', 'lights', 'decor', 'cameras', 'gait', 'visible', 'log', 'untracked', 'driver', 'ui_shot'))
+    report['pass'] = all(report[k]['pass'] for k in ('data', 'tests', 'floating', 'cook', 'lights', 'decor', 'cameras', 'gait', 'visible', 'log', 'untracked', 'driver', 'ui_shot'))
     OUT.mkdir(parents=True, exist_ok=True)
     (OUT / 'report.json').write_text(json.dumps(report, indent=1, ensure_ascii=False), encoding='utf-8')
     if accept:
         base['floating'] = report['floating']['floating']
         BASELINE.write_text(json.dumps(base, indent=1, ensure_ascii=False) + '\n', encoding='utf-8')
     print('QA GATE', 'PASS' if report['pass'] else 'FAIL')
+    print(' data   ', report['data']['arquivos_lidos'], 'JSON,', report['data']['erros'], 'erro(s)')
     print(' tests  ', report['tests']['total'], 'run,', len(report['tests']['failed']), 'failed', [f['name'] for f in report['tests']['failed']])
     for f in report['tests']['failed']:
         print('         ', f['name'], f['errors'][:2])
