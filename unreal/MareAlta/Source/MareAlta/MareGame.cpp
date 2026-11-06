@@ -2219,6 +2219,9 @@ struct FMareUIQA
    if(PC->IsMainMenuOpen() && !PC->MenuLoadSlot(PC->WorldSlot))PC->MenuNewGame(PC->WorldSlot);}
   else if(What==TEXT("close")){   // like E: ends the bus arrival, closes the letter, the pause menu
    for(TActorIterator<AMareIntro> It(World);It;++It){if(It->IsLetterOpen())It->CloseLetter();else if(It->IsArrival())It->FinishArrival();}
+   // 06/11: the end-of-Early-Access screen (shows once everything is bought) pauses the game: every night photo of the
+   // light audit came out identical, frozen at the house door. Close it (and any open minigame) like "Continuar jogando".
+   if(PC->GameWidget.IsValid())PC->CloseBusinessGame();
    if(PC->PauseWidget.IsValid())PC->TogglePauseMenu();}
   else if(What==TEXT("letter")){AMareIntro* Intro=nullptr;for(TActorIterator<AMareIntro> It(World);It;++It){Intro=*It;break;}
    // Old QA saves have no intro stage and the intro actor removes itself: mark the letter as read (it stays readable).

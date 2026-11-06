@@ -195,20 +195,8 @@ def furnish(front_offset=0.0):
         actor.set_folder_path('Hotel/Lobby')
         tops[slug] = z + hi_z
         placed.append({'slug': slug, 'location': [world.x, world.y, z], 'yaw': yaw, 'height_cm': hi_z - lo_z})
-    # Warm interior lights (Lumen GI carries them through the hall).
-    for x in (-10.0, 0.0, 10.0):
-        for y in (-2.0, 3.0):
-            w = _to_world(x, y)
-            light = actors.spawn_actor_from_class(unreal.PointLight, unreal.Vector(w.x, w.y, 400))
-            c = light.point_light_component
-            c.set_intensity(2500.0)
-            c.set_light_color(unreal.LinearColor(1.0, 0.86, 0.68, 1.0))
-            c.set_attenuation_radius(900.0)
-            c.set_editor_property('cast_shadows', True)
-            c.set_editor_property('contact_shadow_length', .08)   # 03/11, Sergio: "nada tem sombra, fica artificial"
-            light.tags = [unreal.Name('MareGenerated'), unreal.Name('Region_grand_hotel'), unreal.Name('MareHotelLobby')]
-            light.set_folder_path('Hotel/Lobby')
-            light.set_actor_label('Hotel lobby · luz')
+    # No bare lights here (06/11, CHECKLIST 0: "luz só onde houver luminária"): the ten ceiling lamps of LAYOUT light the
+    # hall at night through MareVisualWorld::BuildLamps (kind modern_ceiling_lamp_011); by day the windows and Lumen do.
     unreal.get_editor_subsystem(unreal.LevelEditorSubsystem).save_current_level()
     layout = {'tower': [TOWER_ORIGIN.x, TOWER_ORIGIN.y], 'placed': placed}
     (DATA / 'hotel_lobby.json').write_text(json.dumps(layout, indent=1), encoding='utf-8')

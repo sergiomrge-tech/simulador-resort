@@ -11,9 +11,9 @@
    ],
    "yaw": 0,
    "light_up": 40,
-   "candela": 45,
+   "candela": 38,
    "radius": 750,
-   "kelvin": 3200
+   "kelvin": 4000
   },
   {
    "name": "Casa · banheiro",
@@ -25,9 +25,9 @@
    ],
    "yaw": 0,
    "light_up": 40,
-   "candela": 38,
+   "candela": 32,
    "radius": 650,
-   "kelvin": 3300
+   "kelvin": 4200
   },
   {
    "name": "Suíte · teto 1",
@@ -39,7 +39,7 @@
    ],
    "yaw": 0,
    "light_up": 40,
-   "candela": 90,
+   "candela": 140,
    "radius": 1000,
    "kelvin": 3200,
    "unlock": "grand_hotel"
@@ -54,7 +54,7 @@
    ],
    "yaw": 0,
    "light_up": 40,
-   "candela": 90,
+   "candela": 140,
    "radius": 1000,
    "kelvin": 3200,
    "unlock": "grand_hotel"
@@ -69,7 +69,7 @@
    ],
    "yaw": 0,
    "light_up": 40,
-   "candela": 90,
+   "candela": 140,
    "radius": 1000,
    "kelvin": 3200,
    "unlock": "grand_hotel"
@@ -84,7 +84,7 @@
    ],
    "yaw": 0,
    "light_up": 40,
-   "candela": 90,
+   "candela": 140,
    "radius": 1000,
    "kelvin": 3200,
    "unlock": "grand_hotel"
@@ -99,7 +99,7 @@
    ],
    "yaw": 0,
    "light_up": 40,
-   "candela": 90,
+   "candela": 140,
    "radius": 1000,
    "kelvin": 3200,
    "unlock": "grand_hotel"
@@ -114,7 +114,7 @@
    ],
    "yaw": 0,
    "light_up": 40,
-   "candela": 90,
+   "candela": 140,
    "radius": 1000,
    "kelvin": 3200,
    "unlock": "grand_hotel"

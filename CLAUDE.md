@@ -596,3 +596,16 @@ Herói com Buoyancy 1,35 embaixo d'água subia como boia (2,25 m/s): 1,03 abaixo
 Repositório recuperado como clone parcial (blob:none): `git status`/`reset` tentam baixar blobs e travam. Use
 `GIT_NO_LAZY_FETCH=1`; para refazer o índice, `git read-tree HEAD` (não `reset`).
 O comando `shot showui` às vezes não gera arquivo no PIE: usar `HighResShot 1` como alternativa.
+
+## UE5.8 — luz noturna dos imóveis (06/11)
+
+Cômodo sem volume `MareInterior` usa o olho da noite de fora (EV100 −1,9…−0,9, feito para o luar) e qualquer lâmpada
+fraca vira luz do dia: a casa ficava clara e laranja enquanto a suíte e o lobby (com volume, EV 4,4…5,2) ficavam pretos.
+Todo cômodo precisa de volume, e todos usam o mesmo olho noturno (`mare.InteriorNightEV`). Luz de imóvel só onde há
+luminária: luz solta leva a tag `MareBareLight` (preenchimento de dia, apaga à noite) e o portão reprova luz de cômodo
+sem luminária a até 160 cm (`mare_light_audit.bare_check`). O globo da luminária precisa de material emissivo ligado a
+`MPC_MareTime.Night` (`M_LampGlow_PBR`). A tela de fim do Acesso Antecipado pausa o jogo quando tudo está comprado:
+fotos de QA com tudo liberado saíam congeladas; `mare.ShowUI close` fecha. Lumen leva ~15 s para tirar a luz do dia do
+cache num cômodo visto pela primeira vez. Câmera de QA com o pawn em z 170 põe o olho a 2,44 m, dentro de placas e
+hastes penduradas: use a altura do herói (pawn z ~100). Rode o portão DEPOIS da última mudança no próprio portão: uma
+rodada PASS de antes de entrar uma checagem nova não vale.

@@ -33,19 +33,43 @@ Pedidos do Sergio e conferências que ficaram para trás no lote de 05/11 (alugu
   (perfil -900 → -960) e os corais ficam a -902. O perfil (`reef.json` → `floor_fill.profile`) ficou plano a -900 sob o
   recife e os planos do fundo foram refeitos. Portão PASS (39 testes, 571 flutuando, log limpo); a linha de base de
   flutuação baixou de 585 para 571, então qualquer coral que volte a flutuar reprova.
-- [ ] Fotografar à noite as luminárias com foco virado para baixo (`lighting.json` + pendentes do quiosque e ventilador
+- [x] Fotografar à noite as luminárias com foco virado para baixo (`lighting.json` + pendentes do quiosque e ventilador
   da casa em `MareVisualWorld::BuildLamps`): casa, cozinha, banheiro, quiosque, lobby, suíte, pousada e bangalô.
   Pedido: "as lâmpadas precisam iluminar melhor", "lâmpada precisa estar virada para baixo".
-- [ ] Casa à noite ainda clara e alaranjada: ajustar intensidade/temperatura das luzes da casa e a exposição de
+- [x] Casa à noite ainda clara e alaranjada: ajustar intensidade/temperatura das luzes da casa e a exposição de
   interiores (`Interiors` em `MareVisualWorld::Tick`).
-- [ ] Globo das luminárias não brilha quando a luz acende: material com emissivo ligado à noite (como `glow*`).
-- [ ] Lobby do Grand Hotel: 6 luzes de 2500 cd (`mare_hotel_lobby.py`) só têm luminária em parte dos pontos.
+- [x] Globo das luminárias não brilha quando a luz acende: material com emissivo ligado à noite (como `glow*`).
+- [x] Lobby do Grand Hotel: 6 luzes de 2500 cd (`mare_hotel_lobby.py`) só têm luminária em parte dos pontos.
   Regra: luz só onde houver luminária ("a iluminação dos imóveis precisa ser das lâmpadas").
+  Decisões (06/11):
+  - **Causa da casa clara:** ela não tinha volume `MareInterior` e usava o olho da noite de fora (EV100 −1,9…−0,9, feito
+    para o luar), que transformava as lâmpadas de 38 cd em luz do dia. Já a suíte, o lobby e os bangalôs, que tinham
+    volume (EV 4,4…5,2), ficavam quase pretos. Agora a casa tem o volume `Interior · casa` (`mare_light_audit.house_volume`)
+    e todos os cômodos usam o mesmo olho noturno, `mare.InteriorNightEV` = 2,6 (teto +0,8).
+  - Casa em branco neutro de LED: 4000–4200 K, cozinha 38 cd, banheiro 32 cd e ventilador 32 cd. O lampião de óleo
+    continua em 1900 K, porque é chama.
+  - **Lobby:** as 6 luzes soltas saíram do nível e do `mare_hotel_lobby.furnish`. As 10 luminárias de teto do lobby
+    acendem pelo `BuildLamps`: cada uma tem um foco de 250 cd para baixo e um ponto fraco no teto. O `BuildLamps` agora
+    também reconhece atores de malha simples, não só instâncias. A suíte foi para 140 cd.
+  - **Luzes sem luminária** levam a tag `MareBareLight` e só servem de preenchimento de dia, apagando à noite: o teto
+    dos 3 bangalôs (lá quem ilumina são os abajures) e o ponto da porta da recepção da pousada (`mare_light_audit.fix_level`).
+  - **Globos:** o `M_LampGlow_PBR` (emissivo com `MPC_MareTime.Night`) foi aplicado aos globos da luminária de teto
+    (casa e lobby), da lanterna do quiosque e do lampião (`mare_light_audit.glow`).
+  - **Checagem permanente:** o portão reprova luz de cômodo sem luminária a até 160 cm (`mare_light_audit.bare_check`).
+    O `tools/ue58/qa/night_lights.py` fotografa os 10 interiores às 22h com tudo liberado e espera 15 s por câmera:
+    com 7 s, cômodos vistos pela primeira vez saíam com a luz do dia ainda no cache do Lumen.
+  - **Tela de fim do Acesso Antecipado:** ela pausa o jogo, e as fotos noturnas saíam todas congeladas na porta da casa.
+    `mare.ShowUI close` agora fecha essa tela.
+  - Prova: portão PASS + `docs/ue58/graphics-reference/night_lights_fixtures.jpg`.
 - [ ] Conferir se o aviso vermelho "Cached lighting in Lumen ... clipped" sumiu no fundo de 100 m depois de travar
   a exposição embaixo d'água.
 - [ ] Foto de prova do motorista do ônibus sentado no intro (`HoldPose`).
-- [ ] Barra horizontal atravessando a câmera dentro do quiosque com tudo liberado (vista 3700,-1600): identificar
+- [x] Barra horizontal atravessando a câmera dentro do quiosque com tudo liberado (vista 3700,-1600): identificar
   o objeto.
+  Decisão (06/11): eram as hastes do neon "ABERTO" (`World_1296/1297`, `Region_neon`), a 4–57 cm da lente. Foram
+  achadas com `mare_light_audit.ray` e confirmadas escondendo os atores. Não é defeito do jogo: a câmera de QA estava
+  com o pawn em z 170, ou seja, olho a 2,44 m, atrás da placa. Na altura do olho do herói (pawn z 100, olho 1,74 m) a
+  vista é limpa. A câmera `quiosque_barra` do `night_lights.py` foi corrigida.
 - [ ] `shot showui` parou de gerar arquivo no PIE em algumas rodadas (só `HighResShot 1` funcionou): investigar.
 - [ ] ILHA (pedido grande, entregue ao agente novo do Sergio): "morro no meio, praia em volta, uma ilha pequena,
   preservando a vila e todas as construções, o restante é vegetação e árvores". Mar, espuma e perfil do fundo

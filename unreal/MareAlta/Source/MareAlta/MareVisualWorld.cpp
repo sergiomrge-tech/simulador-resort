@@ -42,6 +42,10 @@
 #include "Misc/FileHelper.h"
 #include "Serialization/JsonSerializer.h"
 // 04/11 (Sergio: "precisa ficar mais escuro a noite"): extra stops taken off the night exposure.
+// 06/11 (CHECKLIST 0, the house at night "clara e alaranjada demais" while the suite and lobby were black): the house had no
+// interior volume, so it took the outdoor night eye (EV100 -1.9..-0.9, made for moonlight), which blew 38 cd lamps up to
+// daylight; the interiors with a volume used EV 4.4..5.2 and were nearly black. One night eye for every room (house included).
+static TAutoConsoleVariable<float> CVarMareInteriorNightEV(TEXT("mare.InteriorNightEV"),2.6f,TEXT("Night EV100 floor of the eye inside the MareInterior volumes (the ceiling is +0.8); lower = brighter rooms."));
 static TAutoConsoleVariable<float> CVarMareNightDarken(TEXT("mare.NightDarken"),1.3f,TEXT("Stops of exposure removed at night (0 = old night)"));
 
 static TAutoConsoleVariable<float> CVarMareBounceLightReach(TEXT("mare.BounceLightReach"),1.f,TEXT("Draw distance of the bounce (fill) lights, times mare.LightDrawDistance (04/11: x2.5 cost the beach 4 FPS)."));
@@ -63,17 +67,22 @@ void UMareVisualWorld::BuildLamps()
   // of a room comes from its fixtures, with shadows. Kiosk lantern (was 12 cd, no shadow), the kiosk's rattan
   // pendants, the house's oil lamp on the nightstand.
   {TEXT("World_0199"),19,90,950,2500},{TEXT("World_1211"),-15,70,900,2600,true},{TEXT("World_1229"),-15,45,800,2600,true},{TEXT("World_0937"),12,22,520,1900},
-  // The house ceiling fan has the room's light under it.
-  {TEXT("World_0960"),-45,40,750,3200,true}};
+  // The house ceiling fan has the room's light under it. 06/11 (Sergio: the house at night was "clara e alaranjada
+  // demais"): neutral warm-white 4000 K like a home LED, a little dimmer.
+  {TEXT("World_0960"),-45,32,750,4000,true},
+  // 06/11 (CHECKLIST 0: "luz sem luminária" in the Grand Hotel lobby): the ten ceiling lamps of the lobby light it (the six
+  // bare 2500 cd lights of mare_hotel_lobby.py were removed). Plain static mesh actors, matched below like the instances.
+  {TEXT("modern_ceiling_lamp_011"),40,250,1100,3500,true}};
  LampHolder=GetWorld()->SpawnActor<AActor>();if(!LampHolder)return;
  LampHolder->SetRootComponent(NewObject<USceneComponent>(LampHolder,TEXT("LampRoot")));LampHolder->GetRootComponent()->RegisterComponent();
  // Fixtures added where a room had light but no lamp (Content/Data/lighting.json).
+ TSet<AActor*> Fixtures;
  {FString Text;TSharedPtr<FJsonObject> Defs;FFileHelper::LoadFileToString(Text,*(FPaths::ProjectContentDir()/TEXT("Data/lighting.json")));
   if(FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Text),Defs) && Defs.IsValid()){const TArray<TSharedPtr<FJsonValue>>* List=nullptr;
    if(Defs->TryGetArrayField(TEXT("fixtures"),List))for(const auto& V:*List){const auto F=V->AsObject();const TArray<TSharedPtr<FJsonValue>>* At=nullptr;
     auto Mesh=LoadObject<UStaticMesh>(nullptr,*F->GetStringField(TEXT("mesh")));if(!Mesh || !F->TryGetArrayField(TEXT("at"),At) || At->Num()!=3)continue;
     const FVector P((*At)[0]->AsNumber(),(*At)[1]->AsNumber(),(*At)[2]->AsNumber());FActorSpawnParameters SP;SP.SpawnCollisionHandlingOverride=ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-    auto Fix=GetWorld()->SpawnActor<AStaticMeshActor>(P,FRotator(0,F->GetNumberField(TEXT("yaw")),0),SP);if(!Fix)continue;
+    auto Fix=GetWorld()->SpawnActor<AStaticMeshActor>(P,FRotator(0,F->GetNumberField(TEXT("yaw")),0),SP);if(!Fix)continue;Fixtures.Add(Fix);
     Fix->GetStaticMeshComponent()->SetMobility(EComponentMobility::Movable);Fix->GetStaticMeshComponent()->SetStaticMesh(Mesh);Fix->GetStaticMeshComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
     // The bulb sits inside the shade: a shade casting shadows kept almost all of its own light in (the suite was dark).
     Fix->GetStaticMeshComponent()->SetCastShadow(false);
@@ -90,11 +99,12 @@ void UMareVisualWorld::BuildLamps()
     Glow->SetWorldLocation(Light->GetComponentLocation()+FVector(0,0,20));Glow->SetIntensityUnits(ELightUnits::Candelas);Glow->SetIntensity(0);
     Glow->SetAttenuationRadius(F->GetNumberField(TEXT("radius"))*.6f);Glow->SetUseTemperature(true);Glow->SetTemperature(F->GetNumberField(TEXT("kelvin")));
     Glow->SetCastShadows(false);Glow->SetVisibility(false);Lamps.Add({Glow,Fix,float(F->GetNumberField(TEXT("candela")))*.15f,Unlock});}}}
- for(TActorIterator<AActor> It(GetWorld());It;++It){if(*It==LampHolder)continue;
-  TArray<UInstancedStaticMeshComponent*> Parts;It->GetComponents(Parts);
+ for(TActorIterator<AActor> It(GetWorld());It;++It){if(*It==LampHolder || Fixtures.Contains(*It))continue;
+  TArray<UStaticMeshComponent*> Parts;It->GetComponents(Parts);
   for(auto Part:Parts){if(!Part->GetStaticMesh())continue;const FString Mesh=Part->GetStaticMesh()->GetName();
    const FKind* Kind=nullptr;for(const auto& K:Kinds)if(Mesh==K.Mesh)Kind=&K;if(!Kind)continue;
-   for(int32 I=0;I<Part->GetInstanceCount();++I){FTransform T;Part->GetInstanceTransform(I,T,true);
+   auto Instanced=Cast<UInstancedStaticMeshComponent>(Part);
+   for(int32 I=0;I<(Instanced?Instanced->GetInstanceCount():1);++I){FTransform T=Part->GetComponentTransform();if(Instanced)Instanced->GetInstanceTransform(I,T,true);
     UPointLightComponent* Light=Kind->bDown?NewObject<USpotLightComponent>(LampHolder):NewObject<UPointLightComponent>(LampHolder);
     Light->SetupAttachment(LampHolder->GetRootComponent());Light->RegisterComponent();
     if(auto Spot=Cast<USpotLightComponent>(Light)){Spot->SetInnerConeAngle(40.f);Spot->SetOuterConeAngle(70.f);Spot->SetWorldRotation(FRotator(-90,0,0));}
@@ -102,7 +112,12 @@ void UMareVisualWorld::BuildLamps()
     Light->SetAttenuationRadius(Kind->Radius);Light->SetUseTemperature(true);Light->SetTemperature(Kind->Kelvin);
     // Street lamps and lanterns cast shadows at night (03/11, Sergio: "nada tem sombra"); the small lamps only a contact shadow.
     Light->SetCastShadows(Kind->Radius>=500);Light->ContactShadowLength=.08f;
-    Light->SetSourceRadius(4);Light->SetVisibility(false);Lamps.Add({Light,*It,Kind->Candela});}
+    Light->SetSourceRadius(4);Light->SetVisibility(false);Lamps.Add({Light,*It,Kind->Candela});
+    // A hanging ceiling lamp also lights the ceiling around it a little (like the lighting.json fixtures).
+    if(Kind->bDown && Kind->Up>0){auto Glow=NewObject<UPointLightComponent>(LampHolder);Glow->SetupAttachment(LampHolder->GetRootComponent());Glow->RegisterComponent();
+     Glow->SetWorldLocation(Light->GetComponentLocation()+FVector(0,0,20));Glow->SetIntensityUnits(ELightUnits::Candelas);Glow->SetIntensity(0);
+     Glow->SetAttenuationRadius(Kind->Radius*.6f);Glow->SetUseTemperature(true);Glow->SetTemperature(Kind->Kelvin);Glow->SetCastShadows(false);Glow->SetVisibility(false);
+     Lamps.Add({Glow,*It,Kind->Candela*.15f});}}
   }
  }
 }
@@ -176,7 +191,8 @@ void UMareVisualWorld::Tick(float DeltaSeconds)
  // Night: the eye must not adapt up to daylight brightness (that washed the scene out white); keep a
  // narrow dark EV100 window so moonlight reads blue-dim and lamps/windows carry the image.
  for(auto Volume:Interiors)if(Volume){auto& S=Volume->Settings;S.bOverride_AutoExposureMinBrightness=S.bOverride_AutoExposureMaxBrightness=true;
-  S.AutoExposureMinBrightness=FMath::Lerp(4.4f,5.f,Day);S.AutoExposureMaxBrightness=FMath::Lerp(5.2f,9.f,Day);}
+  const float NightEV=CVarMareInteriorNightEV.GetValueOnGameThread();
+  S.AutoExposureMinBrightness=FMath::Lerp(NightEV,5.f,Day);S.AutoExposureMaxBrightness=FMath::Lerp(NightEV+.8f,9.f,Day);}
  if(Exposure){Exposure->Settings.bOverride_AutoExposureMinBrightness=true;Exposure->Settings.bOverride_AutoExposureMaxBrightness=true;Exposure->Settings.AutoExposureMinBrightness=FMath::Lerp(-1.9f,5.f,Day);Exposure->Settings.AutoExposureMaxBrightness=FMath::Lerp(-.9f,14.f,Day);}
  // Overcast light: the sun fades out with the rain (no hard shadows) and the diffuse sky light doubles.
  if(Sky)Sky->GetLightComponent()->SetIntensity(FMath::Lerp(.035f,1.f,Day)*(1.f+2.5f*RainNow));
@@ -203,7 +219,10 @@ void UMareVisualWorld::Tick(float DeltaSeconds)
  // 05/11 (Sergio: "com a lâmpada funcionando tira a luz das paredes"): rectangular panels have no fixture (the generated
  // room fills "luz Sala/Cozinha/Banheiro", the kiosk fill and the kiosk lantern panel): off at night, the lamps light the
  // rooms; by day a soft fill. Point lights at a fixture (MareHomeLight: the pousada lamps) stay modest.
+ // 06/11: point lights with no fixture at all (tag MareBareLight: the bungalow ceilings, the pousada reception door) are a
+ // day fill only, off at night (the bedside lamps and the chandelier light the rooms).
  for(auto Light:Practical)if(IsValid(Light)){const bool bPanel=Light->GetLightComponent()->IsA<URectLightComponent>() || Light->ActorHasTag(TEXT("MareVisualExtra"));
+  if(Light->ActorHasTag(TEXT("MareBareLight"))){Light->GetLightComponent()->SetIntensity(Overcast*FMath::Lerp(0.f,180.f,FMath::Square(Day)));continue;}
   Light->GetLightComponent()->SetIntensity(Overcast*(bPanel?FMath::Lerp(0.f,Light->ActorHasTag(TEXT("MareVisualExtra"))?600.f:2600.f,FMath::Square(Day))
   :Light->ActorHasTag(TEXT("MareHomeLight"))?FMath::Lerp(90.f,180.f,Day):Light->ActorHasTag(TEXT("MareBounce"))?FMath::Lerp(120.f,6500.f,Day):FMath::Lerp(350.f,2600.f,Day)));}
  // Overcast: denser fog with the rain (greys the horizon and the sky), a little darker exposure.

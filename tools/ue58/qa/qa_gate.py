@@ -3,6 +3,7 @@
 What it checks, with data (PASS only if all hard checks pass):
   1. automation tests  - every MareAlta.* test succeeds;
   2. floating props    - float_audit scan: no more floating instances than the accepted baseline;
+     lights            - no room light shines at night without a lamp/fixture (mare_light_audit.bare_check);
   3. natural movement  - PIE gait audit by day and by night: nobody moving while feet/hands stay put; also on every
                          visible skeletal mesh (MetaHuman bodies): no glider, nobody frozen without idle motion;
   4. clean log         - no Error / Ensure / missing usage flag / default material lines during the PIE run
@@ -246,6 +247,14 @@ def cooking():
             'pass': not res['missing'] and not res['absent']}
 
 
+def lights():
+    """No room light shines at night without a fixture (06/11: the Grand Hotel lobby had 6 bare 2500 cd lights, only 2 under
+    a lamp; the bungalow ceilings had a light and no lamp). mare_light_audit.bare_check on the editor level."""
+    res = ret(hud('module', 'mare_light_audit.bare_check|'))
+    res = json.loads(res) if isinstance(res, str) else res
+    return {'bare': res['bare'], 'pass': res['pass']}
+
+
 def main():
     accept, with_shots = '--accept' in sys.argv, '--no-shots' not in sys.argv
     base = json.loads(BASELINE.read_text(encoding='utf-8')) if BASELINE.exists() else {}
@@ -255,6 +264,7 @@ def main():
     report['tests'] = tests()
     report['floating'] = floating(base)
     report['cook'] = cooking()
+    report['lights'] = lights()
     offset = LOG.stat().st_size
     pie(True)
     coast('clock', '690')
@@ -280,7 +290,7 @@ def main():
     report['log'] = log_since(offset, base.get('log_allow', []))
     pie(False)
     report['untracked'] = untracked(base)
-    report['pass'] = all(report[k]['pass'] for k in ('tests', 'floating', 'cook', 'gait', 'visible', 'log', 'untracked'))
+    report['pass'] = all(report[k]['pass'] for k in ('tests', 'floating', 'cook', 'lights', 'gait', 'visible', 'log', 'untracked'))
     OUT.mkdir(parents=True, exist_ok=True)
     (OUT / 'report.json').write_text(json.dumps(report, indent=1, ensure_ascii=False), encoding='utf-8')
     if accept:
@@ -291,6 +301,7 @@ def main():
     print(' cook   ', report['cook']['cooked'], 'packages,', len(report['cook']['missing']), 'loaded by path but not cooked',
           (report['cook']['missing'] + report['cook']['absent'])[:6])
     print(' float  ', report['floating']['floating'], '(baseline', report['floating']['baseline'], ')')
+    print(' lights ', len(report['lights']['bare']), 'room lights without a fixture', report['lights']['bare'][:6])
     print(' gait   day', day['moving'], 'moving', len(day['gliding']), 'gliding | night', night['moving'], 'moving', len(night['gliding']), 'gliding')
     v = report['visible']
     print(' visible', v['actors'], 'rigs seen |', len(v['gliding']), 'gliding', len(v['frozen']), 'frozen', (v['gliding'] + v['frozen'])[:6])
