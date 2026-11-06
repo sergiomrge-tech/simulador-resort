@@ -203,14 +203,14 @@ bool FMareCustomizationTest::RunTest(const FString& Parameters)
  Sim->State->SetNumberField(TEXT("money"),50);
  TestFalse(TEXT("Cannot buy without money"),Sim->BuyCustom(TEXT("kiosk"),TEXT("banquetas"),2));
  TestEqual(TEXT("Refused purchase keeps tier"),Sim->CustomTier(TEXT("kiosk"),TEXT("banquetas")),1);
- Sim->State->SetNumberField(TEXT("money"),10000);
+ Sim->State->SetNumberField(TEXT("money"),50000);   // tier 5 prices grew for the full game (06/11)
  TestFalse(TEXT("Table decor needs the tables expansion"),Sim->BuyCustom(TEXT("kiosk"),TEXT("mesas"),2));
  TestTrue(TEXT("Buy stools tier 3"),Sim->BuyCustom(TEXT("kiosk"),TEXT("banquetas"),3));
- TestEqual(TEXT("Charged once"),Sim->Money(),10000-180.0);
+ TestEqual(TEXT("Charged once"),Sim->Money(),50000-180.0);
  TestEqual(TEXT("Tier selected"),Sim->CustomTier(TEXT("kiosk"),TEXT("banquetas")),3);
  TestTrue(TEXT("Back to Simples is free"),Sim->BuyCustom(TEXT("kiosk"),TEXT("banquetas"),1));
  TestTrue(TEXT("Re-using an owned tier is free"),Sim->BuyCustom(TEXT("kiosk"),TEXT("banquetas"),3));
- TestEqual(TEXT("No double charge"),Sim->Money(),10000-180.0);
+ TestEqual(TEXT("No double charge"),Sim->Money(),50000-180.0);
  TestEqual(TEXT("Comfort from stools"),Sim->PlaceComfort(TEXT("kiosk")),2.0);
  TestTrue(TEXT("Decor brings more customers"),Sim->KioskArrivalFactor()>1.0);
  TestTrue(TEXT("Counter tier speeds the attendant"),Sim->BuyCustom(TEXT("kiosk"),TEXT("balcao"),5) && FMath::IsNearlyEqual(Sim->KioskServiceSpeed(),1.4,1e-6));
@@ -253,7 +253,7 @@ bool FMareExpansionOpsTest::RunTest(const FString& Parameters)
    TestTrue(TEXT("Five tiers"),V->AsObject()->TryGetArrayField(TEXT("tiers"),Tiers) && Tiers->Num()==5);++Slots;}}
  TestTrue(TEXT("All resort places customizable"),Places>=15 && Slots>=70);
  TestFalse(TEXT("Bar decor waits for the bar"),Sim->IsPlaceAvailable(TEXT("bar")));
- Sim->State->SetNumberField(TEXT("money"),100000);Sim->State->SetStringField(TEXT("weather"),TEXT("sun"));
+ Sim->State->SetNumberField(TEXT("money"),500000);Sim->State->SetStringField(TEXT("weather"),TEXT("sun"));
  TestFalse(TEXT("Locked place refuses purchase"),Sim->BuyCustom(TEXT("bar"),TEXT("carta"),2));
  for(const TCHAR* Id:{TEXT("bar"),TEXT("pousada"),TEXT("pool"),TEXT("passeios")})Sim->Object(Sim->State,TEXT("unlocked"))->SetBoolField(Id,true);
  TestTrue(TEXT("Bar decor available"),Sim->IsPlaceAvailable(TEXT("bar")));
@@ -1950,7 +1950,7 @@ bool FMareCampaignAuditTest::RunTest(const FString& Parameters)
  {auto Custom=MakeShared<FJsonObject>();auto Place=MakeShared<FJsonObject>();for(int32 I=0;I<10;++I){auto Row=MakeShared<FJsonObject>();Row->SetNumberField(TEXT("tier"),5);Place->SetObjectField(FString::Printf(TEXT("s%d"),I),Row);}
   Custom->SetObjectField(TEXT("kiosk"),Place);Sim->State->SetObjectField(TEXT("custom"),Custom);}Claim(TEXT("postal"));
  Claim(TEXT("lenda"));
- TestFalse(TEXT("Sales first"),Sim->ClaimMission(TEXT("fregueses")));Sim->State->SetNumberField(TEXT("kiosk_n"),4000);Claim(TEXT("fregueses"));
+ TestFalse(TEXT("Sales first"),Sim->ClaimMission(TEXT("fregueses")));Sim->State->SetNumberField(TEXT("kiosk_n"),7000);Claim(TEXT("fregueses"));
  // Finale: the beach party sets prog.campaign.finale (UMareSummitWorld::ShowCredits).
  TestFalse(TEXT("Party before it happens"),Sim->ClaimMission(TEXT("festa")));
  Sim->Object(Sim->Object(Sim->State,TEXT("prog")),TEXT("campaign"))->SetBoolField(TEXT("finale"),true);Claim(TEXT("festa"));

@@ -1,3 +1,27 @@
+# Jogo completo com duração de ~20 h / ~40 h (Claude, 06/11/2026)
+
+Pedido do Sergio: duração parecida com a do Supermarket Simulator (21–23 h de história, 111 h no 100%), aceitando
+**~20 h de história principal e 30–40 h para o 100%** com o conteúdo de hoje, só mexendo em números. A demo
+continua em ~2 h (nada que ela usa mudou de preço; o `fim_demo` ficou igual).
+
+| O quê | Antes | Agora | Por quê |
+|---|---|---|---|
+| Grand Hotel (`definitions.json`) | R$ 30.000 | R$ 45.000 | hotel deixa de chegar cedo demais (5,3 h → 6,7 h) |
+| Missão "fregueses" | 4.000 vendas | 7.000 vendas | é ela que segura o fim da campanha; textos e as 12 traduções mudaram de 4.000 para 7.000 |
+| Decoração nível 4 / 5 (`customization.json` → `price_mult`) | ×14 / ×30 | ×50 / ×260 | o 100% era só 12 h porque o hotel rende R$ 40–60 mil/dia e os níveis finais custavam pouco |
+| Receitas nível 4 / 5 (`recipes.cost_mult`) | ×70 / ×150 | ×180 / ×900 | idem |
+
+Resultado (30 sementes, `tools/ue58/balance/jogo_completo/`), mediana a 16 min/dia:
+
+| Perfil | Fim da demo | Grand Hotel | Campanha (história) | Todas as compras (100%) |
+|---|---|---|---|---|
+| casual | 2,7 h | 8,1 h | 23,2 h | 40,3 h |
+| médio | 2,1 h | 6,7 h | 20,3 h | 37,1 h |
+| dedicado | 1,9 h | 6,1 h | 18,1 h | 32,5 h |
+
+Na trajetória do médio (semente 0) o maior intervalo sem nenhuma compra é de 3 dias: sempre há algo a comprar. As
+propostas antigas do pacote 2 (`balance/proposed.json`) ficaram obsoletas e foram zeradas.
+
 # Demo grátis de ~2 h — números aplicados (Claude, 06/11/2026)
 
 O primeiro lançamento é a demo (`definitions.json` → `"demo": true`). Ela termina quando o jogador tem todas as

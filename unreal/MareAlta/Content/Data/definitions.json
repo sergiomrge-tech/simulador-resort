@@ -319,10 +319,10 @@
 		{
 			"id": "fregueses",
 			"kind": "sales",
-			"qty": 4000,
+			"qty": 7000,
 			"reward": 1500,
-			"story": "A Prefeita Tuanny prometeu a festa quando o quiosque vendesse mais que a padaria da capital. A padaria vende 4.000. Ela foi lá conferir. Duas vezes.",
-			"task": "Chegar a 4.000 vendas no quiosque",
+			"story": "A Prefeita Tuanny prometeu a festa quando o quiosque vendesse mais que a padaria da capital. A padaria vende 7.000. Ela foi lá conferir. Duas vezes.",
+			"task": "Chegar a 7.000 vendas no quiosque",
 			"title": "Quatro mil fregueses"
 		},
 		{
@@ -631,7 +631,7 @@
 			"area": "",
 			"blurb": "A fase final: hotel de 5 andares com 32 suítes, restaurante com buffet, academia, spa, piscina com tobogã e bar da piscina.",
 			"chapter": "carnaval",
-			"cost": 30000,
+			"cost": 45000,
 			"fame": 9,
 			"icon": "bangalo",
 			"name": "Grand Hotel Maré Alta 5★",

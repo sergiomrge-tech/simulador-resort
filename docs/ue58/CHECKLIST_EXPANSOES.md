@@ -54,7 +54,7 @@ O que falta é **profundidade e variedade**. Hoje quase tudo é "aperte E" + bar
 > - Próximo: (1) traduções dos textos da demo: os 18 textos estão em `Localization/Mare/todo_<idioma>.json`, tarefa
 >   entregue ao GPT (pacote 3, junto com os textos da Steam para a demo e o `data_lint` no portão);
 >   (2) FEITO (06/11): números da demo, marco `fim_demo` no modelo, bar/pousada/piscina/passeios mais baratos, médio
->   termina a demo em ~2,1 h (`BALANCEAMENTO.md`, topo); pendente para o jogo completo: o hotel ficou cedo (~5,3 h);
+>   termina a demo em ~2,1 h (`BALANCEAMENTO.md`, topo); jogo completo rebalanceado (06/11): ~20 h de história e ~37 h para o 100% no perfil médio (hotel R$ 45 mil, 7.000 vendas, níveis 4–5 caros);
 >   (3) FEITO (06/11): a decoração dos negócios entra nas vendas das filas (`BizSaleMult`, teste em
 >   `MareAlta.Gameplay.BusinessCommon`); (4) piscina: hóspedes nadando na piscina da pousada (o tobogã fica na
 >   piscina do Grand Hotel, `customization.json` → `hotel_piscina`, ou seja, no jogo completo); (5) seção 7 técnica;
