@@ -3,28 +3,21 @@
     "file": "definitions.json",
     "pointer": "/expansions/grand_hotel/cost",
     "current": 30000,
-    "new": 24000,
-    "reason": "Reduzir a acumulação anterior ao hotel, preservando fama 9, carnaval e pré-requisitos."
+    "new": 28000,
+    "reason": "Reduzir levemente a espera financeira pelo hotel, preservando fama 9 e carnaval; testar a meta de 6–10 h até hotel e tela do EA."
   },
   {
-    "file": "definitions.json",
-    "pointer": "/campaign/19/qty",
-    "current": 4000,
-    "new": 3300,
-    "reason": "Reduzir a cauda de vendas após adquirir o conteúdo; calibrar nas escalas de 16 e 24 minutos."
-  },
-  {
-    "file": "restaurant.json",
-    "pointer": "/events/1/income",
-    "current": 5600,
-    "new": 3800,
-    "reason": "Reduzir o retorno automático do casamento: 5600 por 2200 supera amplamente os outros contratos."
+    "file": "hotel_events.json",
+    "pointer": "/extra_bonus",
+    "current": 0.1,
+    "new": 0.15,
+    "reason": "Valorizar a montagem opcional: cada extra passa a +15% do cachê/fama sobre a fração obrigatória; testar sem acelerar os contratos passivos."
   },
   {
     "file": "customization.json",
     "pointer": "/price_mult/4",
     "current": 30,
-    "new": 20,
-    "reason": "Diminuir a cauda de compras de nível 5, sem aumentar os bônus econômicos de decoração."
+    "new": 24,
+    "reason": "Suavizar o custo das melhorias finais sem mudar seus efeitos; conteúdo posterior à tela do EA permanece opcional."
   }
 ]

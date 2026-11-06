@@ -6,7 +6,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[3]
 HERE = Path(__file__).resolve().parent
-RESULTS = HERE / 'results'
+RESULTS = HERE / 'pacote2' / 'results'
 SUMMARY = json.loads((RESULTS/'summary.json').read_text(encoding='utf-8'))
 PROFILES = ('casual','medio','dedicado')
 
@@ -33,11 +33,11 @@ def summary_rows(scenario):
     return rows
 
 
-intro='''# Balanceamento do jogo completo — análise de texto e simulação
+intro='''# Balanceamento — Pacote 2, meta de 6–10 horas até hotel e tela do EA
 
-Referência fixa: **8e817f7a0813e4af628d6d317af54d50b67dbeba**, branch de origem `codex/ue58-migration`, 06/11/2026. Esta análise substitui as duas passadas antigas. Os arquivos consultados correspondem aos blobs dessa referência; os hashes SHA-256 usados na execução estão em `tools/ue58/balance/results/inputs_sha256.json`.
+Referência fixa: **fa49a68b5d8d33fdedde48fd096097f0aac0f267**, branch de origem `codex/ue58-migration`, 06/11/2026. Esta análise atualiza o pacote do PR #7. O PR #7 foi incorporado sem conflitos; o branch gpt/pacote-2 foi atualizado para esta base após três novos commits durante o trabalho. Os arquivos consultados correspondem aos blobs dessa referência; os hashes SHA-256 usados na execução estão em `tools/ue58/balance/pacote2/results/inputs_sha256.json`.
 
-**É um modelo agregado de economia, não um playtest nem a execução do C++ em Python.** O resultado estima a progressão de uma política de jogo explícita. Não comprova que uma pessoa real terminará em 12–20 horas. Navegação, animações e habilidade precisam ser medidas no executável antes de aplicar as propostas.
+**É um modelo agregado de economia, não um playtest nem a execução do C++ em Python.** O resultado estima a progressão de uma política de jogo explícita. Não comprova que uma pessoa real alcançará o hotel ou a tela de fim em 6–10 horas. Navegação, animações e habilidade precisam ser medidas no executável antes de aplicar as propostas.
 
 ## Reproduzir
 
@@ -46,8 +46,8 @@ Na raiz de um checkout com os dados do jogo:
 ```sh
 python tools/ue58/balance_model.py --self-test
 python tools/ue58/balance_model.py --days 240 --seeds 30
-python tools/ue58/balance_model.py --days 240 --seeds 10 --service-scale 1.25 --out tools/ue58/balance/sensitivity_lento
-python tools/ue58/balance_model.py --days 240 --seeds 10 --service-scale 0.8 --out tools/ue58/balance/sensitivity_rapido
+python tools/ue58/balance_model.py --days 240 --seeds 10 --service-scale 1.25 --out tools/ue58/balance/pacote2/sensitivity_lento
+python tools/ue58/balance_model.py --days 240 --seeds 10 --service-scale 0.8 --out tools/ue58/balance/pacote2/sensitivity_rapido
 python tools/ue58/balance/report.py
 ```
 
@@ -57,7 +57,7 @@ Saídas: `summary.json` (P10/mediana/P90 por marco e censuras), seis CSV diário
 
 ## Tempo real: diferença entre o pedido e o código
 
-`MareGame.cpp:2814` avança **1 minuto do jogo por segundo real**. Porém `MareSimulation.cpp:478` reinicia às **8h** e `AdvanceMinutes` limita o relógio a 24h. Assim, um dia completo jogado tem **960 segundos = 16 minutos reais**. O primeiro save começa às 6h30, uma diferença inicial de até 1,5 minuto que a aproximação diária não conta. Pausas e tempo com menus pausados também não estão no cálculo.
+`MareGame.cpp:2861` avança **1 minuto do jogo por segundo real**. Porém `MareSimulation.cpp::Sleep` reinicia às **8h** e `AdvanceMinutes` limita o relógio a 24h. Assim, um dia completo jogado tem **960 segundos = 16 minutos reais**. O primeiro save começa às 6h30, uma diferença inicial de até 1,5 minuto que a aproximação diária não conta. Pausas e tempo com menus pausados também não estão no cálculo.
 
 A coluna de 24 minutos atende à referência pedida para um ciclo de 24h. Ela é **uma conversão alternativa do número de dias**, sem aumentar a produção: as oito horas adicionais não são jogadas pelo código atual. Não tratar essa coluna como medição nem multiplicar a renda por 1,5. O trajeto diário ao morro (hipótese de 180 s) está dentro dos 16 minutos, sem somá-lo novamente ao total.
 
@@ -77,39 +77,47 @@ O marco de compras não inclui reposição infinita de estoque, apostas, contrat
 | Sistema | Fonte dos valores | Regra econômica observada e representação |
 |---|---|---|
 | Quiosque | `definitions.json`, `customization.json`; `MareKioskWorld.cpp:61`, `:209`, `MareSimulation.cpp:240`, `:589` | Intervalo aleatório 18–30 s dividido por conforto/beleza, fama, estação, evento e boca a boca; picos ×1,6. Pedido tem 1 produto e 25% de chance do segundo. Insumo é debitado uma vez; reposição para dez. Receitas afetam preço e peso no cardápio. Capacidade física é hipótese. |
-| Fama | `MareSimulation.cpp:374`, `:416` | Limiares extraídos do C++: 0, 100, 250, 450, 700, 1000, 1400, 1900, 2500, 3200. Venda dá 2 XP, mais receita alta e beleza; capítulos +80. Negativos são ignorados no código atual. |
+| Fama | `MareSimulation.cpp:374`, `:416` | Limiares extraídos do C++: 0, 100, 250, 450, 700, 1000, 1400, 1900, 2500, 3200. Venda dá 2 XP, mais receita alta e beleza; capítulos +80. Negativos descontam XP até o piso do nível atual; não há regressão de nível. O neon estende o quiosque até pelo menos 21h. |
 | Expansões e capítulos | `definitions.json`; `MareSimulation.cpp:277`, `:348`, `:807` | Respeita pré-requisitos, fama, capítulo, pagamentos, entregas e contagem de vendas durante o passo ativo. Compra de negócio não exige pousada. Recompensas não se repetem. |
 | Salários e manutenção | `definitions.json/staff_rules`; `MareStaff.cpp:92`, `:140`, `:153`; `MareSimulation.cpp:444`, `:583` | Um empregado por cargo não legado; integral, folga aos domingos (hipótese de escala), XP, reajustes, fadiga/ausências. Funcionário dos negócios é padrão na aquisição. Manutenção: 0,5% dos preços das expansões por dia; hotel tem mais R$ 900 fixos de equipe. |
 | Bar | `bar.json`, operações horárias; `MareBar.cpp:170`, `:390` | Receita por bebida + gorjeta/preparo manual; bartender ganha 85%, erra por nível e aprende uma receita a cada dois dias; ingredientes, gelo derretendo, cinco linhas de upgrades. Renda horária genérica do bar existe além dos drinks. Filas/paciência são agregadas. |
 | Piscina | `pool.json`; `MarePool.cpp:39`, `:68` | Folhas, toalhas, chuva, limpeza, avaliação e picolés; renda horária × limpeza, conforto, fama, clima e sorteio. Sorveteria produz picolés pagos; cooler tem limite. |
 | Pousada e hotel | `customization.json/operations`, `hotel_rooms.json`; `MareStays.cpp:53`, `:82`, `:125`, `:165` | Fila, perfil, limite/oferta, diárias antecipadas por todas as noites, capacidade, check-out, limpeza e ocupação por estado. Hotel tem 2 suítes, 10 luxo, 20 standard; fallback de quarto conforme o código. Receita não é a antiga hipótese de ocupação × diária × 30%. |
-| Frigobar e VIP | `hotel_rooms.json`; `MareHotelRooms.cpp:90`, `:150`, `:201` | Consumo sorteado no check-out, cobrança e reposição posterior; reclamações com prazo/custo, um pedido VIP por marca no quarto (bug: não é reiniciada por estadia), gorjeta/fama presencial nos três visitáveis. |
-| Restaurante e eventos | `restaurant.json`; `MareRestaurant.cpp:109`, `:125`; `MareSimulation.cpp:395` | Seis mesas, serviços, cozinha, room service, equipe a 70% ou garçom a 90%; reservas pagas no dia anterior, receita às 21h por usar `Started == event_hour`. Refeições noturnas genéricas do hotel são contabilizadas separadamente. |
+| Frigobar e VIP | `hotel_rooms.json`; `MareHotelRooms.cpp:90`, `:150`, `:201` | Consumo sorteado no check-out, cobrança e reposição posterior; reclamações com prazo/custo, um pedido VIP por estadia (a nova entrada limpa vip_asked/vip_done), gorjeta/fama presencial nos três visitáveis. |
+| Restaurante e eventos | `restaurant.json`; `MareRestaurant.cpp:109`, `:125`; `MareSimulation.cpp:395` | Seis mesas, serviços, cozinha, room service, equipe a 70% ou garçom a 90%; reservas pagas no dia anterior, receita às 21h por usar `Started == event_hour`. Reserva vencida ao dormir paga na chamada horária do dia seguinte. Refeições noturnas genéricas são fonte separada. Crítico: chance 0,4/h após dia devido, intervalo 3–5 dias, nota arredondada em meios pontos, até três estrelas (+12% cada). Peixe em estoque dá +25% no prato manual de mesa; sem estoque, custo R$ 22; equipe e room service não chamam TakeKitchenFish. |
 | Passeios | `tours.json`, `customization.json/operations/tours`; `MareTours.cpp:145`, `:245`, `:284` | Três janelas de procura em grupos, assentos, guia, mar bravo cancela passeios no mar, bilhetes, custo por saída, gorjeta, nota, fotos e boca a boca. Jangada depende de roteiro nível 3. Bilheteria e duração são agregadas por dia. |
 | Negócios | `business_games.json`; `MareBusiness.cpp`, `MareBizCommon.cpp`, `MareIceCream.cpp`, `MarePastel.cpp`, `MareRental.cpp`, `MareSouvenir.cpp` | Filas por cliente, funcionário a 60%, sabores/bolas, pastel e caldo, aluguel/devolução/multa/resgate, artesanato e postais com custo, surf por hora, níveis e multiplicadores reais. Não soma renda horária fictícia às quatro filas. |
 | Salão | `game_room.json`, `business_games.json`; `MareBusiness.cpp:63`, `MarePoolCup.cpp`, `MareArcade.cpp:208`, `MareGameRoom.cpp:324`, `MareFoosball.cpp`, `MareTableTennis.cpp` | Fichas por ocupação e espectadores, apostas, partidas, duas máquinas dividindo a recompensa do mesmo id por hora, torneio semanal de três rodadas com taxa e prêmios. Desempenho é sorteio por perfil, sem simular física. |
 | Lazer, tutorial e humor | `leisure.json`, `tutorial.json`; `MareLeisure.cpp`, `MareSummitWorld.cpp`, `MareComicEvents.cpp` | Pesca/foto fornecem itens/flags de história e fama; dicas são apresentação, não fonte de renda. Visitas narrativas são hipótese. Efeitos pontuais dos eventos cômicos não recebem renda inventada. |
-| Arquivos ausentes | Inventário do commit | Não existem `hotel_events.json` ou `MareHotelEvents.cpp`. Pedidos especiais ficam em `hotel_rooms.json`; contratos de eventos, em `restaurant.json`. Montagem física de casamento e crítico gastronômico seguem pendentes no checklist. |
-
-### Hipóteses dos três perfis
-
-Os valores abaixo não vieram de telemetria. Estão expostos em `profiles.json` para substituição após teste.
+| Montagem na praia | `hotel_events.json`; `MareHotelEvents.cpp:32–120` | Pedido às 9h nos dias pares, aceito para amanhã. Score = peças obrigatórias montadas / total; com score ≥ 0,5, cachê = round(fee × score × (1 + extra_bonus × extras)), fama pela mesma proporção. Abaixo da metade: sinal de 20% e perda de 4 XP. Sem custo de peças no código. |
 
 '''
 profiles=json.loads((HERE/'profiles.json').read_text())
+audit=json.loads((RESULTS/'source_features.json').read_text())
+intro += '\n## Estado dos sistemas solicitados para o Pacote 2\n\n'
+intro += 'A base recebeu três commits durante a tarefa e foi atualizada antes dos resultados finais. Todos os sistemas abaixo foram encontrados e suas fórmulas revisadas; não se reutilizaram os resultados da referência anterior.\n\n'
+intro += table(['Recurso solicitado','Presença constatada'],[[k,'presente e contemplado' if v else 'ausente nesta base'] for k,v in audit['novidades'].items()])
+intro += '\nO modelo registra hashes de Source e recusa execução se o snapshot divergir de source_features.json; novos commits exigem revisar as fórmulas antes de renovar o registro.\n\n'
+intro+='\n### Hipóteses dos três perfis\n\nValores sem telemetria, expostos em `profiles.json` para substituição após teste.\n\n'
 text=intro+table(['Perfil','Ações ativas/dia, incluindo morro','Sucesso por etapa','Atende tentativas do quiosque','Evento do hotel a cada','Guia passeio a cada','Chance de vitória'],[[p,f"{profiles[p]['active_seconds']} s",profiles[p]['success'],profiles[p]['kiosk_share'],f"{profiles[p]['event_every']} dias",f"{profiles[p]['tour_every']} dias",profiles[p]['win']] for p in PROFILES])
 text+='''
 O restante do dia é deslocamento, observação, espera ou atividades sem receita contada. A equipe atua em paralelo. O orçamento manual é único: quiosque, bar, recepção, minijogos, piscina, partidas e queixas disputam os mesmos segundos. Passeios e campeonato reservam tempo antes das tarefas opcionais. Tempo por ação é hipótese (8–35 s; passeio 120 s; partida de torneio 90 s). O atendente tem capacidade inicial de um produto a cada 11 s, afetada pelo balcão; há sensibilidade abaixo.
 
 Política de investimento: reserva de R$ 100/250/1.200 conforme estágio; cargos elegíveis, expansões na ordem dos dados, negócios baratos e melhorias de menor custo. Melhorias usam até 30% do caixa disponível antes do hotel e 65% depois, com uma etapa por slot por dia. Isso é uma política reproduzível, não a estratégia ótima. O jogador cobra preços de referência e não explora o limite de 200% do preço. Decoração comprada fica equipada no maior nível. Ações narrativas ocorrem ao iniciar/fechar o dia; progressão intradiária é aproximada.
 
-A recepção/limpeza de pousada, chegadas de bar e restaurante e tempos de expiração são discretizados por hora: a fila contínua e a navegação não são reproduzidas. No restaurante, o tempo manual vira participação com gorjeta média de 5%; nas mesas reais depende de `Waited`. A preparação do bar usa uma nota média por perfil; gostos, fregueses e tempo exato não são emulados. No passeio não se simulam individualmente todas as opções de extras, golfinhos, colisão no coral ou remarcações; a política cancela mar bravo e usa notas agregadas. A limpeza manual completa de quarto com bônus `polished` não é modelada: a equipe limpa, e o jogador pode resolver queixas nos visitáveis. A probabilidade de responder queixa resume atraso dentro da hora. Estoque do quiosque, bar, frigobar, artesanato, postais e picolés têm desembolsos próprios; **não se inventou CMV de pastel, casquinha ou pratos do restaurante, pois suas funções de venda não o cobram**.
+A recepção/limpeza de pousada, chegadas de bar e restaurante e tempos de expiração são discretizados por hora: a fila contínua e a navegação não são reproduzidas. No restaurante, a hipótese de espera é cook_minutes + 20 × (1 − sucesso do perfil), além de 14 s ativos por atendimento. Isso alimenta a gorjeta e a nota do crítico. A ordem horária agrega ações que no jogo ocorrem entre chamadas; não comprova os prazos de atendimento. O crítico também concorre pelo orçamento manual; não há estrela garantida. A preparação do bar usa uma nota média por perfil; gostos, fregueses e tempo exato não são emulados. No passeio não se simulam individualmente todas as opções de extras, golfinhos, colisão no coral ou remarcações; a política cancela mar bravo e usa notas agregadas. A limpeza manual completa de quarto com bônus `polished` não é modelada: a equipe limpa, e o jogador pode resolver queixas nos visitáveis. A probabilidade de responder queixa resume atraso dentro da hora. Estoque do quiosque, bar, frigobar, artesanato, postais e picolés têm desembolsos próprios; **não se inventou CMV de pastel ou casquinha**. O restaurante agora cobra peixe do fornecedor somente no pedido manual de mesa sem peixe em estoque, exatamente onde TakeKitchenFish é chamado. O modelo conserva a origem indiferenciada de stock.peixe, inclusive peixe comprado. Na montagem, 6 s por peça e até 2/8/10 peças por hora nos perfis casual/médio/dedicado são hipóteses; montar com E não tem chance de erro. Ofertas são aceitas com a probabilidade de engajamento do perfil. As peças prioritárias disputam o orçamento do dia antes das atividades opcionais; extras só depois das obrigatórias. Congressos às 10h deixam uma janela curta após acordar às 8h.
 
 ## Resultado atual: 30 sementes por perfil
 
 '''+table(['Perfil','Marco','Dia P10 / P50 / P90','P50 a 16 min/dia','P50 a 24 min/dia','Concluíram'],summary_rows('atual'))
+rows=[]
+for sc in ['atual','proposto']:
+    for p in PROFILES:
+        m=SUMMARY[sc][p]['meta_atingida']
+        rows.append([sc,p,f"{m['grand_hotel']['entre_6_e_10_h']}/{m['grand_hotel']['total']}",f"{m['tela_fim_ea']['entre_6_e_10_h']}/{m['tela_fim_ea']['total']}"])
+text+='\n### Sementes na meta de 6–10 h (16 min/dia)\n\n'+table(['Cenário','Perfil','Grand Hotel','Tela do EA'],rows)
 text+='''
-A meta de 12–20 horas é plausível para a **campanha do médio na escala efetiva de 16 minutos**, sob estas hipóteses. Já a tela de fim do EA chega antes e a conversão de 24 minutos alonga a campanha. Comprar o catálogo inteiro e concluir a campanha também podem ocorrer em ordem diferente. Não publicar uma duração na loja com base apenas nesta planilha de simulação.
+A meta deste pacote é **6–10 horas até Grand Hotel e tela do EA**, não até a última missão da campanha ou a compra de todas as melhorias. A coluna efetiva usa 16 minutos, confirmados no código. A duração de campanha aparece como informação complementar. Comprar o catálogo inteiro e concluir a campanha podem ocorrer em ordem diferente; não publicar uma duração na loja com base só neste modelo.
 
 ## Quando as expansões ficam disponíveis e são compradas
 
@@ -126,7 +134,7 @@ for scenario in ['atual','proposto']:
         rows.append(row)
     text+=f'### Cenário {scenario}\n\n'+table(['Expansão','Casual: disponível → comprada','Médio: disponível → comprada','Dedicado: disponível → comprada'],rows)+'\n'
 text+='## Capítulos, negócios e experiências observadas\n\n'
-keys=['capitulo:'+x['id'] for x in definitions['chapters']]+['negocio:'+x for x in definitions['businesses']]+['bar_secreto','passeio:jangada','vip_hotel_atendido','evento:aniversario','evento:casamento','evento:empresa','campeonato_inscrito','fliperamas_jogados']
+keys=['capitulo:'+x['id'] for x in definitions['chapters']]+['negocio:'+x for x in definitions['businesses']]+['bar_secreto','passeio:jangada','vip_hotel_atendido','evento:formatura','evento:bodas','evento:empresa','montagem:casamento','montagem:aniversario','montagem:congresso','critico_atendido','estrela_restaurante:1','estrela_restaurante:3','campeonato_inscrito','fliperamas_jogados']
 rows=[]
 for key in keys:
     row=[key]
@@ -163,7 +171,9 @@ for scenario in ['atual','proposto']:
     tails=[r for r in rs if int(r['dia'])>all_bought]
     text+=f"Maior intervalo sem compra antes de completar o catálogo: **{str(longest[0])+'–'+str(longest[-1]) if longest else 'nenhum'}** ({len(longest)} dias). Depois do catálogo, caixa passou de **R$ {num(rs[all_bought-1]['caixa'])}** para **R$ {num(rs[-1]['caixa'])}** no dia {rs[-1]['dia']}. Isso revela ausência de uso finito adicional do dinheiro; receita diária continua entrando.\n\n"
 text+='''
-- **Casamento domina os contratos:** no valor atual, custo 2.200, renda 5.600, saldo base 3.400 (154,5% do custo), contra 1.000 no aniversário e 1.500 no jantar de empresa. A decoração ainda multiplica toda a renda. Depois de experimentar os três, a política escolhe o melhor saldo. Não há minijogo de montagem limitando esse retorno.
+- **Contratos passivos foram moderados na base nova:** bodas custa 1.200 e paga 3.200 (saldo base 2.000), formatura 600 → 1.600 (saldo 1.000), empresa 900 → 2.400 (saldo 1.500). A decoração ainda multiplica a receita. Os eventos montados são separados: casamento paga até 5.600 com quatro extras no estado atual, mas só há oferta a cada dois dias e é preciso montar; não contar esse cachê como receita diária garantida.
+- **Peixe e crítico têm retorno condicionado:** pescado/estoque melhora pratos de mesa atendidos manualmente; a automação não recebe esse bônus e pode evitar o custo do peixe. Estrelas sobem o menu, não o cachê dos contratos. Um jogador focado em outras fontes pode deixar todos os críticos com a equipe e nunca ganhar estrela.
+- **Aluguel:** tempestade bloqueia novas chegadas, preservando devoluções; maré alta multiplica chegadas por 1,4 antes do limite da fila, sem aumentar RentalPrice. Isso favorece ter capacidade de atendimento em vez de contar um bônus no preço.
 - **Hotel acelera a economia:** o pagamento antecipado multiplica o efeito das primeiras chegadas; decoração aumenta a diária e as receitas. Não usar um modelo de ocupação passiva de 45% × 30% da receita: ele subestimava esse fluxo. O caixa pode crescer antes de a campanha de vendas terminar.
 - **Passeios e bar ficam competitivos com decoração:** as fórmulas multiplicam preço/renda, e o bar também tem receita genérica por hora. Verificar se o desejo de design é manter ambos os fluxos, sem excluir silenciosamente um deles do simulador.
 - **Negócios com fila não usam `definitions.businesses.<id>.hour` para precificar cada casquinha/pastel/aluguel/artesanato.** O retorno vem de seus próprios pedidos. A decoração de `biz_*` que só muda `BusinessRate` não se transfere automaticamente às vendas das quatro filas: tende a oferecer retorno monetário menor do que seu painel sugere. O surfe continua usando essa taxa.
@@ -178,7 +188,7 @@ Mesmo número de dias de operação; varia apenas a hipótese de segundos por pr
 '''
 rows=[]
 for folder,label in [('sensitivity_rapido','8,8 s/produto'),('results','11 s/produto'),('sensitivity_lento','13,75 s/produto')]:
-    path=HERE/folder/'summary.json'
+    path=RESULTS/'summary.json' if folder=='results' else HERE/'pacote2'/folder/'summary.json'
     if not path.exists():continue
     ss=json.loads(path.read_text())
     for sc in ['atual','proposto']:
@@ -189,12 +199,12 @@ A variação de habilidade e deslocamento pode ser maior que a variação entre 
 
 ## Tabelas dia a dia
 
-Valores em R$, arredondados nesta apresentação. **Q** quiosque; **VQ** VIP do quiosque; **B** drinks; **BH** bar por hora; **P** pousada; **H** diárias do hotel; **HN** refeições noturnas; **M** frigobar; **VH** VIP hotel; **R** restaurante; **E** contratos do hotel; **T** passeios; **F** fotos; **PL** piscina; **PI** picolés; **I** sorveteria; **PA** pastel; **AL** aluguel; **S** souvenir; **SU** surfe; **FI** fichas; **PE** pebolim; **AR** fliperama; **AP** partidas/apostas recebidas; **CP** campeonato; **RE** recompensas. Fonte ausente na célula = zero, não desconhecida.
+Valores em R$, arredondados nesta apresentação. **Q** quiosque; **VQ** VIP do quiosque; **B** drinks; **BH** bar por hora; **P** pousada; **H** diárias do hotel; **HN** refeições noturnas; **M** frigobar; **VH** VIP hotel; **R** restaurante; **E** jantares/contratos do restaurante; **EM** eventos montados na praia; **T** passeios; **F** fotos; **PL** piscina; **PI** picolés; **I** sorveteria; **PA** pastel; **AL** aluguel; **S** souvenir; **SU** surfe; **FI** fichas; **PE** pebolim; **AR** fliperama; **AP** partidas/apostas recebidas; **CP** campeonato; **RE** recompensas. Fonte ausente na célula = zero, não desconhecida.
 
 Salários incluem equipe contratada, funcionários dos negócios e R$ 900 da equipe fixa do hotel. Estoque reúne todos os desembolsos com prefixo `estoque_`. Outras despesas incluem manutenção, passeios, queixas, preparativos e taxas/perdas em partidas. Investimentos são as aquisições finitas. O CSV preserva cada categoria, centavos, caixa inicial, evento, chuva, ocupação, vendas acumuladas, todas as compras e as expansões que eram compráveis antes de gastar no fechamento. Como as células são arredondadas, a conciliação exata deve usar o CSV.
 
 '''
-codes={'quiosque':'Q','vip_quiosque':'VQ','bar_drinks':'B','bar_passivo':'BH','pousada':'P','hotel_diarias':'H','hotel_refeicoes_noturnas':'HN','frigobar':'M','vip_hotel':'VH','restaurante':'R','eventos_hotel':'E','passeios':'T','fotos_passeios':'F','pool_passivo':'PL','picoles':'PI','sorveteria':'I','food_truck':'PA','aluguel':'AL','souvenir':'S','surfe':'SU','fichas':'FI','pebolim':'PE','fliperama':'AR','sinuca_tenis':'AP','campeonato':'CP','recompensas':'RE'}
+codes={'quiosque':'Q','vip_quiosque':'VQ','bar_drinks':'B','bar_passivo':'BH','pousada':'P','hotel_diarias':'H','hotel_refeicoes_noturnas':'HN','frigobar':'M','vip_hotel':'VH','restaurante':'R','eventos_hotel':'E','montagem_hotel':'EM','passeios':'T','fotos_passeios':'F','pool_passivo':'PL','picoles':'PI','sorveteria':'I','food_truck':'PA','aluguel':'AL','souvenir':'S','surfe':'SU','fichas':'FI','pebolim':'PE','fliperama':'AR','sinuca_tenis':'AP','campeonato':'CP','recompensas':'RE'}
 for scenario in ['atual','proposto']:
     for p in PROFILES:
         rs=load_rows(scenario,p);rows=[]
@@ -207,11 +217,11 @@ for scenario in ['atual','proposto']:
             possible=r.get('expansoes_compraveis_antes_das_compras','')
             if possible:bought+='; podia: '+possible
             rows.append([r['dia'],revenue,num(wages),num(stock),num(other),num(invest),num(r['caixa']),f"{r['fama_nivel']} / {r['fama_xp']}",bought or '—'])
-        link='../../tools/ue58/balance/results/'+f'{scenario}_{p}_diario_seed0.csv'
+        link='../../tools/ue58/balance/pacote2/results/'+f'{scenario}_{p}_diario_seed0.csv'
         text+=f'### {scenario.capitalize()} — {p}, semente 0\n\n[CSV diário completo]({link}).\n\n'+table(['Dia','Renda por fonte','Salários','Estoque','Outras saídas','Investimento','Caixa final','Nível / XP','Compras / expansões compráveis'],rows)+'\n'
 text+='''## MUDANÇAS PROPOSTAS
 
-**Não aplicadas aos JSON do jogo.** São candidatos para teste no editor, com valor atual validado pelo simulador. Os quatro números abaixo foram alterados somente em memória e simulados juntos; o efeito individual de cada um não foi isolado. JSON Pointer usa índices de array começando em zero.
+**Não aplicadas aos JSON do jogo.** São candidatos para teste no editor, com valor atual validado pelo simulador. Os três números abaixo foram alterados somente em memória e simulados juntos; o efeito individual de cada um não foi isolado. JSON Pointer usa índices de array começando em zero.
 
 '''
 changes=json.loads((HERE/'proposed.json').read_text())
@@ -221,9 +231,9 @@ text+='''
 
 '''+table(['Perfil','Marco','Dia P10 / P50 / P90','P50 a 16 min/dia','P50 a 24 min/dia','Concluíram'],summary_rows('proposto'))
 text+='''
-As propostas aproximam a mediana do médio da janela desejada nas duas conversões, mas o P90 e a sensibilidade podem ultrapassar 20 horas na referência de 24 minutos. Não prometem duração fixa. A proposta de vendas é uma meta de campanha, não uma forma de criar mais conteúdo.
+O alvo é o tempo até o Grand Hotel e a tela do EA na escala real do código. A campanha continua com 4.000 vendas: este pacote não reduz sua meta para forçar uma duração menor. A conversão de 24 minutos é uma referência separada, não o tempo efetivamente simulado. As propostas não prometem duração fixa.
 
-O principal problema de fim do EA **não se resolve só por JSON**: a tela usa uma condição C++ diferente da campanha e pode aparecer cedo. Essa alteração fica exclusivamente recomendada em `GPT_RELATORIO.md`, assim como a correção das penalidades e do reinício dos pedidos VIP. Nenhuma dessas correções foi aplicada nem presumida no cenário proposto. Medir o build e decidir qual dos três marcos define o fim comercial deve vir antes de publicar a duração da campanha.
+A tela usa uma condição C++ diferente da campanha e pode aparecer antes das 4.000 vendas; a meta solicitada deste pacote usa explicitamente hotel e tela. As correções de fama, neon, aluguel, reserva ao dormir e reinício de VIP foram recebidas da outra IA na base e estão contempladas, sem edição de Source/Data neste PR. O perfil dedicado pode chegar antes das 6 h: a meta é o perfil médio, e aumentar o hotel para atrasar o dedicado prejudicaria o casual. Medir o build antes de publicar duração na loja.
 '''
 (ROOT/'docs/ue58/BALANCEAMENTO.md').write_text(text,encoding='utf-8')
 print('Gerado docs/ue58/BALANCEAMENTO.md a partir de resultados reproduzíveis')
