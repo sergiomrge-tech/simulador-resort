@@ -1405,10 +1405,28 @@ bool FMareTutorialTest::RunTest(const FString& Parameters)
  TestTrue(TEXT("First bar visit shows the tip"),Sim->ShowTip(TEXT("BarCounter")));TestFalse(TEXT("Tip title set"),Sim->PendingTipTitle.IsEmpty());
  TestFalse(TEXT("Not twice"),Sim->ShowTip(TEXT("BarCounter")));TestFalse(TEXT("Unknown key"),Sim->ShowTip(TEXT("Nothing")));
  // Every E target action used in the game has a tip.
- for(const TCHAR* Key:{TEXT("Fridge"),TEXT("Customer"),TEXT("PousadaReception"),TEXT("RoomTask"),TEXT("BusinessCounter"),TEXT("TourBooth"),TEXT("Fishing"),TEXT("RestaurantTable"),TEXT("PoolLeaves"),TEXT("phone"),TEXT("photo")})
-  TestTrue(FString(TEXT("Tip exists: "))+Key,Sim->ShowTip(Key));
+ // 6.2: every player-facing E target (AMareServiceTarget::Action) and every business counter has its own tip.
+ for(const TCHAR* Key:{TEXT("Fridge"),TEXT("Cupboard"),TEXT("Customer"),TEXT("KioskSign"),TEXT("Clean"),TEXT("PousadaReception"),TEXT("RoomTask"),TEXT("HotelReception"),
+  TEXT("BusinessCounter"),TEXT("TourBooth"),TEXT("TourVest"),TEXT("TourStory"),TEXT("TourSpecies"),TEXT("TrailWater"),TEXT("TrailStory"),TEXT("RentalTow"),
+  TEXT("BarCounter"),TEXT("BarIngredient"),TEXT("BarGlass"),TEXT("Fishing"),TEXT("RestaurantTable"),TEXT("RestaurantPass"),TEXT("RoomService"),TEXT("Elevator"),
+  TEXT("PoolLeaves"),TEXT("PoolTowel"),TEXT("PoolCooler"),TEXT("PoolTable"),TEXT("TableTennis"),TEXT("Resident"),TEXT("Elder"),TEXT("Comic"),TEXT("Bed"),TEXT("phone"),TEXT("photo")})
+  if(FCString::Strcmp(Key,TEXT("BarCounter")))TestTrue(FString(TEXT("Tip exists: "))+Key,Sim->ShowTip(Key));
+ for(const auto& Pair:UMareSimulation::Object(Sim->Definitions,TEXT("businesses"))->Values)TestTrue(TEXT("Business tip: ")+FString(Pair.Key.ToView()),Sim->ShowTip(TEXT("biz:")+FString(Pair.Key.ToView())));
  // Next goal: the cheapest expansion with its prerequisites owned.
  FString Goal;double Cost=0;TestTrue(TEXT("A goal at the start"),Sim->NextGoal(Goal,Cost));TestTrue(TEXT("Goal costs something"),Cost>0);
+ // 6.2: the next unlock says what is missing (money, fame, village story) and when it can be bought.
+ Sim->State->SetNumberField(TEXT("money"),0);
+ {const FString Line=Sim->NextUnlockText();TestTrue(TEXT("Next unlock named: ")+Line,Line.StartsWith(TEXT("Próximo desbloqueio: ")+Goal));TestTrue(TEXT("Money missing: ")+Line,Line.Contains(FString::Printf(TEXT("faltam R$ %.0f"),Cost)));}
+ Sim->State->SetNumberField(TEXT("money"),Cost);
+ {const FString Line=Sim->NextUnlockText();TestTrue(TEXT("Affordable: ")+Line,Line.Contains(TEXT("já dá para comprar")));}
+ // An expansion that also needs fame: owned prerequisites, enough money, fame 0.
+ {auto Unlocked=UMareSimulation::Object(Sim->State,TEXT("unlocked"));FString FameId;int32 Fame=0;
+  for(const auto& Pair:UMareSimulation::Object(Sim->Definitions,TEXT("expansions"))->Values){const int32 F=UMareSimulation::Number(Pair.Value->AsObject(),TEXT("fame"));if(F>0){FameId=FString(Pair.Key.ToView());Fame=F;break;}}
+  if(TestFalse(TEXT("Some expansion needs fame"),FameId.IsEmpty())){
+   for(const auto& Pair:UMareSimulation::Object(Sim->Definitions,TEXT("expansions"))->Values)if(FString(Pair.Key.ToView())!=FameId)Unlocked->SetBoolField(FString(Pair.Key.ToView()),true);
+   UMareSimulation::Object(Sim->State,TEXT("prog"))->SetNumberField(TEXT("fame_xp"),0);Sim->State->SetNumberField(TEXT("money"),1e7);
+   const FString Line=Sim->NextUnlockText();TestTrue(TEXT("Fame missing: ")+Line,Line.Contains(FString::Printf(TEXT("fama %d"),Fame)));
+   Unlocked->SetBoolField(FameId,true);TestTrue(TEXT("All bought: no line"),Sim->NextUnlockText().IsEmpty());}}
  IFileManager::Get().DeleteDirectory(*Sim->SaveDirectory,false,true);
  Sim->RemoveFromRoot();Instance->RemoveFromRoot();return true;
 }

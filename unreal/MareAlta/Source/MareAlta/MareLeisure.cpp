@@ -68,6 +68,28 @@ bool UMareSimulation::ShowTip(const FString& Key)
  Seen->SetBoolField(Key,true);PendingTipTitle=String(Tip,TEXT("title"));PendingTipText=String(Tip,TEXT("text"));return true;
 }
 
+FString UMareSimulation::NextUnlockText() const
+{
+ // The cheapest expansion whose prerequisites are owned (as NextGoal), with what is still missing for it.
+ auto Unlocked=Object(State,TEXT("unlocked"));TSharedPtr<FJsonObject> Best;double BestCost=0;
+ for(const auto& Pair:Object(Definitions,TEXT("expansions"))->Values){const auto E=Pair.Value->AsObject();const FString Id(Pair.Key.ToView());
+  bool bOwned=false;Unlocked->TryGetBoolField(Id,bOwned);if(bOwned)continue;bool bReady=true;const TArray<TSharedPtr<FJsonValue>>* Req=nullptr;
+  if(E->TryGetArrayField(TEXT("req"),Req))for(const auto& R:*Req){bool b=false;Unlocked->TryGetBoolField(R->AsString(),b);bReady&=b;}
+  if(!bReady)continue;const double Price=Number(E,TEXT("cost"));if(!Best.IsValid() || Price<BestCost){Best=E;BestCost=Price;}}
+ if(!Best.IsValid())return FString();
+ TArray<FString> Missing;
+ if(Money()<BestCost)Missing.Add(FString::Printf(TEXT("R$ %.0f"),FMath::CeilToDouble(BestCost-Money())));
+ const int32 Fame=int32(Number(Best,TEXT("fame")));if(Fame>0 && FameLevel()<Fame)Missing.Add(FString::Printf(TEXT("fama %d"),Fame));
+ FString Story;const FString Chapter=String(Best,TEXT("chapter"));
+ if(!Chapter.IsEmpty() && !IsChapterDone(Chapter))Story=TEXT("a história \"")+String(ChapterDefinition(Chapter),TEXT("title"))+TEXT("\"");
+ const FString Head=TEXT("Próximo desbloqueio: ")+String(Best,TEXT("name"));
+ if(Missing.IsEmpty() && Story.IsEmpty())return Head+TEXT(" · já dá para comprar no celular");
+ FString Line=Head+TEXT(" · ");
+ if(Missing.Num())Line+=TEXT("faltam ")+FString::Join(Missing,TEXT(" e "));
+ if(!Story.IsEmpty())Line+=(Missing.Num()?TEXT(" e "):TEXT(""))+FString(TEXT("conclua "))+Story;
+ return Line;
+}
+
 bool UMareSimulation::NextGoal(FString& Name,double& Cost) const
 {
  // The cheapest expansion whose prerequisites are owned: the next thing worth saving for.

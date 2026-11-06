@@ -480,8 +480,21 @@ Sem esta parte, as expansões ficam soltas. Cada atividade precisa alimentar din
 
 ### 6.2 Tutorial e objetivos
 
-- [ ] Dica na primeira vez de cada sistema (balcão, celular, bar, passeio, cada negócio, piscina, recepção, sinuca), usando o `tutorial.json` que já existe.
-- [ ] Objetivo atual sempre visível e o próximo desbloqueio mostrado no celular ("faltam R$ 1.200 e fama 4 para a piscina").
+- [x] Dica na primeira vez de cada sistema (balcão, celular, bar, passeio, cada negócio, piscina, recepção, sinuca), usando o `tutorial.json` que já existe.
+- [x] Objetivo atual sempre visível e o próximo desbloqueio mostrado no celular ("faltam R$ 1.200 e fama 4 para a piscina").
+  Decisões (06/11):
+  - `tutorial.json` ganhou dica para todo alvo de E que o jogador usa (bancada e copo do bar, mesa suja, confusão na
+    praia, moradores, Seu Tibúrcio, elevador, caiaque à deriva, pingue-pongue, coletes/história/espécies do passeio,
+    água e mirante da trilha) e uma por negócio (`biz:<id>`). O teste `MareAlta.Gameplay.TutorialTips` reprova se um
+    alvo ou negócio novo ficar sem dica.
+  - Balcão de negócio: na primeira vez a dica do próprio negócio (mesmo sem ninguém na fila); numa visita seguinte, a
+    dica geral do balcão (funcionário a 60%). Fica em `AMareController::StartBusinessGame`, que também abre pelo QA.
+  - `UMareSimulation::NextUnlockText`: a expansão mais barata com os requisitos comprados e tudo o que falta para ela
+    (dinheiro, nível de fama e a história da vila), ou "já dá para comprar no celular". Aparece no bloco de Missões do
+    HUD (substitui a antiga "Próxima meta", que só falava de dinheiro) e no topo da aba Resort do celular.
+  - Visto na foto: com a janela do editor estreita (viewport ~1040×940) o celular sai cortado à esquerda; em 16:9
+    está inteiro. Fica para a seção 7 (opções de resolução e proporções 4:3/5:4).
+  - Prova: `docs/ue58/graphics-reference/tutorial_next_unlock.jpg` (dica do balcão + Missões no HUD; aba Resort).
 
 ### 6.3 Pesca e modo foto
 
