@@ -6,6 +6,7 @@ class ALight;
 class AExponentialHeightFog;
 class ATextRenderActor;
 class APostProcessVolume;
+class FJsonObject;
 /** Natural daylight and practical interior light linked to the saved game clock. */
 UCLASS()
 class MAREALTA_API UMareVisualWorld : public UTickableWorldSubsystem
@@ -43,6 +44,10 @@ private:
  TArray<FLamp> Lamps;bool bLampsLogged=false;
  UPROPERTY() TObjectPtr<AActor> LampHolder;
  void BuildLamps();
+public:
+ /** lighting.json "unlock": comma list of expansion ids, "!id" = not bought yet; true when every term holds. */
+ static bool UnlockMatches(const TSharedPtr<FJsonObject>& Owned,const FString& Spec);
+private:
  /** Weather eased towards today's state (MPC_MareTime Rain/Wind/Storm) and the rain curtains around the camera. */
  float TsunamiCalm=0.f;
  float RainNow=0,WindNow=.2f,StormNow=0;

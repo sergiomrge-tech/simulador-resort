@@ -655,3 +655,13 @@ comercial (as espigas do Fab são estátua ou só licença pessoal paga para com
 | Caiaque do aluguel — `tools/ue58/gen_rental.py` (bpy), `SourceArt/Models/Rental/Rental_kayak.glb` | próprio do projeto | — |
 | Luminária de teto `modern_ceiling_lamp_01` (cozinha, banheiro, suíte do hotel) | https://polyhaven.com/a/modern_ceiling_lamp_01 — Poly Haven | CC0 1.0 |
 | Gerador do fundo do mar inteiro (rochas, corais, algas por profundidade): reaproveita os modelos acima e os corais do recife original (`reef.json` → `floor_fill`) | próprio do projeto | — |
+
+### Salão de jogos — decoração (06/11/2026)
+| Item | Fonte | Licença |
+|---|---|---|
+| Alvo de dardos `dartboard` | https://polyhaven.com/a/dartboard — Poly Haven | CC0 1.0 |
+| Relógio de parede `wall_clock` | https://polyhaven.com/a/wall_clock — Poly Haven | CC0 1.0 |
+| Quadro `hanging_picture_frame_02` (vidro trocado por um material próprio transparente) | https://polyhaven.com/a/hanging_picture_frame_02 — Poly Haven | CC0 1.0 |
+| Cavalete de giz `standing_chalkboard_01` | https://polyhaven.com/a/standing_chalkboard_01 — Poly Haven | CC0 1.0 |
+| Vaso `potted_plant_02` no lugar das duas calateias do saguão (já usado no saguão) | https://polyhaven.com/a/potted_plant_02 — Poly Haven | CC0 1.0 |
+| Parede ripada com reboco azul-petróleo, letreiros "SALÃO DE JOGOS" e "FICHAS", luminária da sinuca de 3 cúpulas, balcão de fichas, porta-tacos e tapete — `tools/ue58/gen_game_room_decor.py` (bpy; texturas `painted_plaster_wall`, `teak_veneer`, `velour_velvet`, `marble_01`, `metal_plate`, `poly_wool_herringbone` do Poly Haven, CC0). Busca feita antes: o Poly Haven não tem porta-tacos, luminária de sinuca nem balcão; a caixa registradora `CashRegister_01` (60 × 62 cm) não cabia no tampo de 61 cm | próprio do projeto | — |

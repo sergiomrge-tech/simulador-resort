@@ -487,7 +487,30 @@ coloque hóspedes que entrarem aproveitando a piscina e tobogã"):
 
 ### 5.4 Salão de jogos
 
-- [ ] Decoração: piso, parede com papel ou ripado, iluminação, quadros e balcão de fichas. Hoje está branco e vazio.
+- [x] Decoração: piso, parede com papel ou ripado, iluminação, quadros e balcão de fichas. Hoje está branco e vazio.
+  Decisões (06/11):
+  - O salão é o meio do saguão do térreo (x -2500..-1700, parede norte y 6890). Peças próprias em
+    `tools/ue58/gen_game_room_decor.py` (bpy) e Poly Haven CC0 (alvo de dardos, relógio, quadro, cavalete de giz),
+    importadas em `/Game/Custom/GameRoom` e postas por `Content/Python/mare_game_room.py` (`cmd('place')`, reexecutável,
+    tag `Region_salao_jogos`: só aparecem depois de comprar o salão; sem colisão nem efeito na navegação, menos balcão,
+    porta-tacos e cavalete).
+  - Parede de destaque de 7,8 × 3,6 m: reboco azul-petróleo, ripado de nogueira sobre feltro nas duas pontas, rodapé e
+    arremate com fita de LED quente; letreiros "SALÃO DE JOGOS" e "FICHAS" em letra-caixa iluminada; quadro, alvo de
+    dardos na altura oficial (1,73 m) e relógio. O piso de madeira do saguão ficou, com um tapete de lã em espinha de
+    peixe sob a sinuca.
+  - Iluminação: luminária de sinuca de 3 cúpulas verdes como luminária do `lighting.json` (acende ao anoitecer, só com
+    o salão comprado); a luminária de teto do saguão que ficava ali só aparece sem o salão (`unlock`
+    `"grand_hotel,!salao_jogos"`, o `!` é novo em `UMareVisualWorld::UnlockMatches`).
+  - Balcão de fichas de 1,3 m (frente ripada, tampo de quartzo, bandeja de fichas de latão) no lugar de uma poltrona do
+    saguão, perto dos elevadores; porta-tacos com 6 tacos e giz ao lado da mesa.
+  - Defeitos vistos nas primeiras fotos e corrigidos: o trilho de madeira do saguão (parte da malha da torre, 8 cm fora
+    da parede) atravessava a parede de 5 cm → parede com 10 cm; o vidro glTF do quadro chegava quase opaco e espelhado
+    e escondia a pintura → material próprio `M_GameRoomGlassClear`; as duas calateias do saguão eram uma fileira de
+    folhas soltas sem vaso (galhinhos saindo do piso) → vaso `potted_plant_02` (`mare_hotel_lobby.swap_plant`).
+    Checagem permanente no portão: `decor` (`mare_game_room.check`).
+  - Fotos: `docs/ue58/graphics-reference/game_room_day.jpg` e `game_room_night.jpg`.
+  - Visto e deixado para os itens seguintes: os 2 fliperamas são caixas laranja e azul com textura borrada (trocar
+    quando ficarem jogáveis); de longe, a luminária da sinuca cobre parte do letreiro.
 - [ ] Sinuca jogada até o fim, com regras completas e placar visível.
 - [ ] Pebolim com controle real (girar as barras), em vez da barra de tempo.
 - [ ] 2 fliperamas jogáveis em tela (por exemplo, "Corrida de Jangada" e "Pega-Siri"), com recorde salvo.

@@ -4,6 +4,7 @@ What it checks, with data (PASS only if all hard checks pass):
   1. automation tests  - every MareAlta.* test succeeds;
   2. floating props    - float_audit scan: no more floating instances than the accepted baseline;
      lights            - no room light shines at night without a lamp/fixture (mare_light_audit.bare_check);
+     decor             - game room decoration defects stay fixed (mare_game_room.check);
      driver            - the bus driver of the intro is seated and dressed, not in swimwear (mare_intro_audit.driver);
   3. natural movement  - PIE gait audit by day and by night: nobody moving while feet/hands stay put; also on every
                          visible skeletal mesh (MetaHuman bodies): no glider, nobody frozen without idle motion;
@@ -264,6 +265,14 @@ def lights():
     return {'bare': res['bare'], 'pass': res['pass']}
 
 
+def decor():
+    """Game room decoration defects seen in photos stay fixed (06/11: lobby chair rail across the accent wall, potless plant
+    leaves on the floor, opaque picture glass). mare_game_room.check on the editor level."""
+    res = ret(hud('module', 'mare_game_room.check|'))
+    res = json.loads(res) if isinstance(res, str) else res
+    return res if isinstance(res, dict) else {'error': str(res), 'pass': False}
+
+
 def ui_shot():
     """A screenshot with the UI is written even with the editor minimized (06/11: 'shot showui' wrote nothing then;
     mare.Shot restores the window first). Minimizes the editor, asks for one and waits for the file."""
@@ -299,6 +308,7 @@ def main():
     report['floating'] = floating(base)
     report['cook'] = cooking()
     report['lights'] = lights()
+    report['decor'] = decor()
     offset = LOG.stat().st_size
     pie(True)
     coast('clock', '690')
@@ -326,7 +336,7 @@ def main():
     pie(False)
     report['untracked'] = untracked(base)
     report['driver'] = dict(DRIVER, **{'pass': bool(DRIVER.get('driver')) and not DRIVER.get('swim')})
-    report['pass'] = all(report[k]['pass'] for k in ('tests', 'floating', 'cook', 'lights', 'gait', 'visible', 'log', 'untracked', 'driver', 'ui_shot'))
+    report['pass'] = all(report[k]['pass'] for k in ('tests', 'floating', 'cook', 'lights', 'decor', 'gait', 'visible', 'log', 'untracked', 'driver', 'ui_shot'))
     OUT.mkdir(parents=True, exist_ok=True)
     (OUT / 'report.json').write_text(json.dumps(report, indent=1, ensure_ascii=False), encoding='utf-8')
     if accept:
@@ -342,6 +352,7 @@ def main():
     print(' driver ', report['driver'].get('meshes'), 'swimwear' if report['driver'].get('swim') else '')
     print(' uishot ', 'ok' if report['ui_shot']['pass'] else 'NO FILE', '(editor minimized)' if report['ui_shot']['minimized'] else '')
     print(' lights ', len(report['lights']['bare']), 'room lights without a fixture', report['lights']['bare'][:6])
+    print(' decor  ', 'ok' if report['decor']['pass'] else report['decor'])
     print(' gait   day', day['moving'], 'moving', len(day['gliding']), 'gliding | night', night['moving'], 'moving', len(night['gliding']), 'gliding')
     v = report['visible']
     print(' visible', v['actors'], 'rigs seen |', len(v['gliding']), 'gliding', len(v['frozen']), 'frozen', (v['gliding'] + v['frozen'])[:6])

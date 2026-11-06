@@ -94,7 +94,6 @@ LAYOUT = [
     ('mid_century_lounge_chair', 9.2, -1.4, 'floor', (1, -0.3), 1.0),
     ('Ottoman_01', 11.0, -0.6, 'floor', (0, -1), 1.0),
     ('side_table_tall_01', -14.6, -2.5, 'floor', (1, 0), 1.0),
-    ('modern_arm_chair_01', 2.2, 3.6, 'floor', (0, -1), 1.0),
     ('modern_arm_chair_01', 11.5, 3.8, 'floor', (0, -1), 1.0),
     ('pachira_aquatica_01', -14.7, -4.6, 'floor', (1, 0), 1.0),
     ('pachira_aquatica_01', 14.7, -4.6, 'floor', (-1, 0), 1.0),
@@ -102,8 +101,10 @@ LAYOUT = [
     ('pachira_aquatica_01', 14.7, 5.2, 'floor', (-1, 0), 1.0),
     ('pachira_aquatica_01', -2.4, -4.6, 95.0, (0, -1), 1.0),
     ('pachira_aquatica_01', 2.4, -4.6, 95.0, (0, -1), 1.0),
-    ('calathea_orbifolia_01', -5.6, 5.4, 'floor', (0, -1), 1.0),
-    ('calathea_orbifolia_01', 9.6, 5.4, 'floor', (0, -1), 1.0),
+    # 06/11: these were calathea_orbifolia_01, but that Poly Haven file is a 2.5 m row of loose leaf variants with no
+    # pot: two sprigs "growing" out of the floor by the game room. Potted plants instead (swap_plant() for the level).
+    ('potted_plant_02', -5.6, 5.4, 'floor', (0, -1), 1.0),
+    ('potted_plant_02', 9.6, 5.4, 'floor', (0, -1), 1.0),
     ('potted_plant_01', -3.5, 1.2, 'floor', (0, -1), 1.0),
     ('potted_plant_01', 3.5, 1.2, 'floor', (0, -1), 1.0),
     ('potted_plant_02', 6.5, 5.3, 'floor', (0, -1), 1.0),
@@ -121,7 +122,40 @@ LAYOUT = [
     ('fab:242', 12.6, -4.3, 'floor', (-1, 0), 1.0),
     ('fab:84', -14.8, 1.2, 'floor', (1, 0), 1.0),
     ('fab:84', 14.8, -0.4, 'floor', (-1, 0), 1.0),
-] + [('modern_ceiling_lamp_01', x, y, 'ceiling', (0, -1), 1.0) for x in (-12.5, -7.0, 0.0, 7.0, 12.5) for y in (-2.5, 2.5)]
+] + [('modern_ceiling_lamp_01', x, y, 'ceiling', (0, -1), 1.0) for x in (-12.5, -7.0, 0.0, 7.0, 12.5) for y in (-2.5, 2.5)
+     if (x, y) != (0.0, -2.5)]
+# 06/11 (CHECKLIST 5.4): the game room (mare_game_room.py) took two spots of this layout: the armchair by the elevators
+# (2.2, 3.6) became the token counter (removed from LAYOUT above), and the ceiling lamp over the pool table (0, -2.5) is
+# a lighting.json fixture shown only while the game room is not bought (unlock "grand_hotel,!salao_jogos"); the billiard
+# lamp replaces it.
+
+
+def swap_plant(arg='calathea_orbifolia_01>potted_plant_02'):
+    """Swaps the mesh of the placed lobby actors of one slug for another library slug, on the floor, without re-placing
+    the whole lobby (PIE stopped); updates hotel_lobby.json. 'from>to'."""
+    src, dst = arg.split('>')
+    actors = unreal.get_editor_subsystem(unreal.EditorActorSubsystem)
+    mesh = _lib_mesh(dst)
+    b = mesh.get_bounds()
+    lo_z, hi_z = b.origin.z - b.box_extent.z, b.origin.z + b.box_extent.z
+    done = []
+    for a in actors.get_all_level_actors():
+        if a.get_actor_label() == 'Hotel lobby · ' + src:
+            p = a.get_actor_location()
+            a.static_mesh_component.set_static_mesh(mesh)
+            a.set_actor_scale3d(unreal.Vector(1, 1, 1))
+            a.set_actor_location(unreal.Vector(p.x, p.y, FLOOR - lo_z), False, False)
+            a.set_actor_label('Hotel lobby · ' + dst)
+            done.append([round(p.x), round(p.y)])
+    path = DATA / 'hotel_lobby.json'
+    lobby = json.loads(path.read_text(encoding='utf-8'))
+    for e in lobby['placed']:
+        if e['slug'] == src:
+            e.update(slug=dst, height_cm=hi_z - lo_z)
+            e['location'][2] = FLOOR - lo_z
+    path.write_text(json.dumps(lobby, indent=1), encoding='utf-8')
+    unreal.get_editor_subsystem(unreal.LevelEditorSubsystem).save_current_level()
+    return done
 
 
 def _to_world(x, y):

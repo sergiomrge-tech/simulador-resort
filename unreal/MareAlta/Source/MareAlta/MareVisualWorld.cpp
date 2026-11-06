@@ -56,6 +56,13 @@ static TAutoConsoleVariable<int32> CVarMareWalkTest(TEXT("mare.WalkTest"),0,TEXT
 static TAutoConsoleVariable<int32> CVarMareWeather(TEXT("mare.Weather"),0,TEXT("QA weather override: 0 = today's weather, 1 = clear, 2 = rain, 3 = storm, 4 = rough sea without rain."));
 
 TStatId UMareVisualWorld::GetStatId()const{RETURN_QUICK_DECLARE_CYCLE_STAT(UMareVisualWorld,STATGROUP_Tickables);}
+bool UMareVisualWorld::UnlockMatches(const TSharedPtr<FJsonObject>& Owned,const FString& Spec)
+{
+ TArray<FString> Terms;Spec.ParseIntoArray(Terms,TEXT(","));
+ for(FString Term:Terms){Term.TrimStartAndEndInline();const bool bNot=Term.StartsWith(TEXT("!"));if(bNot)Term.RightChopInline(1);
+  bool bOwned=false;if(Owned.IsValid())Owned->TryGetBoolField(Term,bOwned);if(bOwned==bNot)return false;}
+ return true;
+}
 void UMareVisualWorld::BuildLamps()
 {
  // Light sources exported from Godot (their glow materials were lost): mesh, glass centre above the
@@ -204,9 +211,10 @@ void UMareVisualWorld::Tick(float DeltaSeconds)
  // Lamps switch on at dusk and only where the area is built (region actors hidden until bought).
  // FMath::SmoothStep needs A<B (with .55,.05 the lamps were lit by day and off at night).
  const float Dark=1.f-FMath::SmoothStep(.05f,.55f,Day);
- // Fixtures of an expansion show once it is bought (lighting.json "unlock").
+ // Fixtures of an expansion show once it is bought (lighting.json "unlock"). 06/11 (5.4 game room): a comma list with
+ // "!" for "not bought yet" ("grand_hotel,!salao_jogos": the lobby ceiling lamp that the billiard lamp replaces).
  const auto Owned=UMareSimulation::Object(Sim->State,TEXT("unlocked"));
- for(const auto& Lamp:Lamps)if(!Lamp.Unlock.IsEmpty() && Lamp.Source.IsValid()){bool b=false;Owned->TryGetBoolField(Lamp.Unlock,b);if(Lamp.Source->IsHidden()==b)Lamp.Source->SetActorHiddenInGame(!b);}
+ for(const auto& Lamp:Lamps)if(!Lamp.Unlock.IsEmpty() && Lamp.Source.IsValid()){const bool b=UnlockMatches(Owned,Lamp.Unlock);if(Lamp.Source->IsHidden()==b)Lamp.Source->SetActorHiddenInGame(!b);}
  // Bare lights without a fixture (the suite's): a soft fill by day, off at night, the ceiling lamps take over.
  for(auto Bare:BareLights)if(IsValid(Bare))Bare->GetLightComponent()->SetIntensity(FMath::Lerp(0.f,700.f,FMath::Square(Day)));
  for(const auto& Lamp:Lamps)if(auto Light=Lamp.Light.Get()){const bool bOn=Dark>.01f && Lamp.Source.IsValid() && !Lamp.Source->IsHidden();
