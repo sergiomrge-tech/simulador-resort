@@ -82,10 +82,16 @@ void UMareBusinessWorld::SyncGameRoom(UMareSimulation* S)
  if(Room->TryGetArrayField(TEXT("foosball"),List) && List->Num()==4){Foosball=Read(*List);bFoosball=true;}
  if(Room->TryGetArrayField(TEXT("arcades"),List))for(const auto& V:*List)if(V->AsArray().Num()==4)Arcades.Add(Read(V->AsArray()));
  if(bOwned && Machines.IsEmpty()){
-  auto Place=[this](const TCHAR* Path,const FTransform& T){if(auto Mesh=LoadObject<UStaticMesh>(nullptr,Path)){
-   auto A=GetWorld()->SpawnActor<AStaticMeshActor>(T.GetLocation(),T.Rotator());A->SetMobility(EComponentMobility::Movable);A->GetStaticMeshComponent()->SetStaticMesh(Mesh);Machines.Add(A);}};
+  auto Place=[this](const TCHAR* Path,const FTransform& T){auto Mesh=LoadObject<UStaticMesh>(nullptr,Path);
+   FActorSpawnParameters P;P.SpawnCollisionHandlingOverride=ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+   auto A=Mesh?GetWorld()->SpawnActor<AStaticMeshActor>(T.GetLocation(),T.Rotator(),P):nullptr;
+   UE_LOG(LogTemp,Display,TEXT("MARE_GAMEROOM machine %s mesh=%d actor=%d"),Path,Mesh!=nullptr,A!=nullptr);
+   if(A){A->SetMobility(EComponentMobility::Movable);A->GetStaticMeshComponent()->SetStaticMesh(Mesh);Machines.Add(A);}};
   // The foosball table itself is UMareFoosball's (cabinet, moving rods and ball).
-  for(const FTransform& T:Arcades)Place(TEXT("/Game/Custom/GameRoom/arcade_cabinet/arcade_cabinet.arcade_cabinet"),T);}
+  // The two playable cabinets (5.4, tools/ue58/gen_arcade_cabinet.py): UMareArcade finds them by mesh and plays on their screens.
+  const TCHAR* Cabinets[]={TEXT("/Game/Custom/GameRoom/mare_arcade_jangada/mare_arcade_jangada.mare_arcade_jangada"),TEXT("/Game/Custom/GameRoom/mare_arcade_siri/mare_arcade_siri.mare_arcade_siri")};
+  for(int32 I=0;I<Arcades.Num();++I){Place(Cabinets[FMath::Min(I,1)],Arcades[I]);
+   if(Machines.Num())Machines.Last()->GetStaticMeshComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);}}
  for(auto& M:Machines)if(IsValid(M)){M->SetActorHiddenInGame(!bOwned);M->SetActorEnableCollision(bOwned);}
  // Night: guests on both sides of the foosball and in front of each arcade during the token hours.
  const TArray<TSharedPtr<FJsonValue>>* Hours=nullptr;const double Hour=UMareSimulation::Number(S->State,TEXT("minutes"))/60;

@@ -558,7 +558,19 @@ coloque hóspedes que entrarem aproveitando a piscina e tobogã"):
   - Fotos: `docs/ue58/graphics-reference/foosball_table_day.jpg`, `foosball_night_guests.jpg`, `foosball_match.jpg`
     e `foosball_match_shot.jpg`. Visto e aceito: os hóspedes da noite jogam com as mãos sobre a mesa, não nos cabos
     (pose genérica de hóspede).
-- [ ] 2 fliperamas jogáveis em tela (por exemplo, "Corrida de Jangada" e "Pega-Siri"), com recorde salvo.
+- [x] 2 fliperamas jogáveis em tela (por exemplo, "Corrida de Jangada" e "Pega-Siri"), com recorde salvo.
+  Decisões (06/11, Claude; Sergio: "fliperama de pinball e corrida"): "Corrida de Jangada" e "Pinball do Farol". Os dois
+  gabinetes (`tools/ue58/gen_arcade_cabinet.py`) ficam em `game_room.arcades` e o jogo é desenhado na tela do próprio
+  gabinete (render target no material `M_ArcadeScreen`, câmera de frente para a tela; `UMareArcade` em `MareArcade.cpp`).
+  Corrida de Jangada: A/D ou analógico rema rio acima, pedras e barcos tiram vida (3 vidas, 1,5 s de graça), peixe +10,
+  peixe dourado +50, o rio acelera. Pinball do Farol: Espaço lança a bola pela canaleta, A/D (Shift, LB/RB) batem os
+  flippers, 3 bumpers (+100, rebatem), 3 pistas no alto (+250, as três acesas +1000), 3 bolas; física 2D própria
+  (gravidade, paredes cromadas, superfície do flipper girando). A ficha paga o negócio ao fim da partida
+  (`PlayBusiness("fliperama")`, 0–3 pelos pontos de `fliperama.arcade.hits_at`); o recorde de cada máquina fica em
+  `prog.biz.fliperama.records` e batê-lo dá +2 de fama. Espaço na tela final joga de novo, Q sai. Arte em
+  `tools/ue58/gen_arcade_art.py` (P_* do pinball; letreiro, título e lateral do 2º gabinete trocados). Teste
+  `MareAlta.Gameplay.Arcade`; QA `mare.Arcade start:0|1, play:s, end, state`. Correção junto: os gabinetes do salão não
+  nasciam (SpawnActor sem AlwaysSpawn recusava o lugar).
 - [ ] Torneio semanal (a estrutura de copa já existe), hóspedes jogando à noite e renda das fichas.
 
 ## 6. Sistemas que amarram tudo

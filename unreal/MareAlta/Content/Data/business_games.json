@@ -786,7 +786,27 @@
     6620,
     0,
     90
-   ]
+   ],
+   "arcade": {
+    "_doc": "Playable cabinets of the game room (UMareArcade, MareArcade.cpp): points needed for each business hit (0-3, PlayBusiness 'fliperama' when a game ends) and the fame for beating a machine's record.",
+    "jangada": {
+     "name": "Corrida de Jangada",
+     "hits_at": [
+      250,
+      600,
+      1100
+     ]
+    },
+    "record_fame": 2,
+    "pinball": {
+     "name": "Pinball do Farol",
+     "hits_at": [
+      1500,
+      4000,
+      8000
+     ]
+    }
+   }
   }
  },
  "game_room": {

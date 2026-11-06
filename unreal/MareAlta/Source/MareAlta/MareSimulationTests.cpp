@@ -9,6 +9,8 @@
 #include "MareStaysWorld.h"
 #include "MarePerson.h"
 #include "Engine/GameInstance.h"
+#include "MareArcade.h"
+#include "Dom/JsonValue.h"
 #include "Misc/FileHelper.h"
 #include "Misc/Paths.h"
 #include "HAL/FileManager.h"
@@ -1977,4 +1979,51 @@ bool FMareHundredCyclesTest::RunTest(const FString& Parameters)
  TestTrue(TEXT("Reloads keep the state and resume half-served orders"),bResume);
  TestTrue(TEXT("At least 100 items served"),Served>=100);TestTrue(TEXT("Reloads exercised"),Reloads>=10);
  Sim->RemoveFromRoot();Instance->RemoveFromRoot();IFileManager::Get().DeleteDirectory(*Dir,false,true);return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FMareArcadeTest,"MareAlta.Gameplay.Arcade",EAutomationTestFlags::EditorContext|EAutomationTestFlags::EngineFilter)
+bool FMareArcadeTest::RunTest(const FString& Parameters)
+{
+ // CHECKLIST_EXPANSOES 5.4: the two playable arcades. Corrida de Jangada: a rock in the raft's path costs a life (once,
+ // with a moment of grace), a fish is netted, three hits end the game, the river speeds up. Pinball: launch, bumpers,
+ // bumpers kick and score, the flippers turn up, a ball between the flippers drains, the third drain ends the game.
+ FRandomStream R(7);
+ FMareJangada J;J.Reset();
+ FMareJangada::FThing Rock;Rock.Kind=0;Rock.W=26;Rock.H=24;Rock.X=J.X;Rock.Y=FMareJangada::RaftY-40;J.Things.Add(Rock);J.Spawn=99;
+ int32 Ev=0;for(int32 I=0;I<30;++I)Ev|=J.Step(1/30.f,0,R);
+ TestTrue(TEXT("jangada: hit by the rock"),(Ev&1)!=0);TestEqual(TEXT("jangada: one life lost"),J.Lives,2);
+ FMareJangada::FThing Fish;Fish.Kind=2;Fish.W=18;Fish.H=12;Fish.X=J.X;Fish.Y=FMareJangada::RaftY-30;J.Things.Add(Fish);
+ for(int32 I=0;I<30;++I)J.Step(1/30.f,0,R);TestEqual(TEXT("jangada: fish netted"),J.Fish,1);
+ const float Before=J.Speed;J.Spawn=99;J.Things.Reset();for(int32 I=0;I<300;++I)J.Step(1/30.f,0,R);
+ TestTrue(TEXT("jangada: the river speeds up"),J.Speed>Before);
+ for(int32 Hit=0;Hit<3 && !J.bOver;++Hit){J.Hurt=0;FMareJangada::FThing B=Rock;B.X=J.X;B.Y=FMareJangada::RaftY;J.Things.Add(B);J.Step(1/30.f,0,R);}
+ TestTrue(TEXT("jangada: game over after the third hit"),J.bOver);
+ TestTrue(TEXT("jangada: points count distance and fish"),J.Points()>=10);
+ const float SteerFrom=0;FMareJangada K;K.Reset();K.Spawn=99;for(int32 I=0;I<120;++I)K.Step(1/30.f,1,R);
+ TestTrue(TEXT("jangada: the raft stays on the river"),K.X<=MareArc::VW-FMareJangada::Bank-FMareJangada::RaftW*.5f+.01f && K.X>SteerFrom);
+ // Pinball do Farol: the launch sends the ball up the plunger lane, a bumper kicks it away and scores, a held flipper
+ // turns up, a ball between the flippers drains (one ball fewer), the third drain ends the game.
+ FMarePinball P;P.Reset();
+ TestTrue(TEXT("pinball: the ball waits in the lane"),P.bInLane);
+ P.Step(1/60.f,false,false,true);TestTrue(TEXT("pinball: launched up the lane"),P.Vel.Y<-300);
+ for(int32 I=0;I<30;++I)P.Step(1/60.f,false,false,false);TestTrue(TEXT("pinball: the ball leaves the lane"),P.Ball.Y<150);
+ P.Reset();P.Ball=FMarePinball::BumperPos(2)+FVector2D(0,-18);P.Vel=FVector2D(0,120);
+ Ev=0;for(int32 I=0;I<20;++I)Ev|=P.Step(1/60.f,false,false,false);
+ TestTrue(TEXT("pinball: bumper hit scores 100"),(Ev&1)!=0 && P.Score>=100);TestTrue(TEXT("pinball: kicked away"),P.Vel.Y<0 || P.Ball.Y<FMarePinball::BumperPos(2).Y);
+ P.Reset();P.Step(1/60.f,true,false,false);TestTrue(TEXT("pinball: left flipper turns up"),P.Flip[0]<FMarePinball::FlipRest);
+ for(int32 I=0;I<10;++I)P.Step(1/60.f,true,false,false);TestEqual(TEXT("pinball: up to its stop"),P.Flip[0],FMarePinball::FlipUp);
+ P.Reset();P.Ball=FVector2D(152,215);P.Vel=FVector2D(0,80);
+ for(int32 I=0;I<60 && P.Balls==3;++I)P.Step(1/60.f,false,false,false);
+ TestEqual(TEXT("pinball: drained between the flippers"),P.Balls,2);TestTrue(TEXT("pinball: next ball in the lane"),P.bInLane);
+ for(int32 Lost=0;Lost<2;++Lost){P.Ball=FVector2D(152,215);P.Vel=FVector2D(0,80);for(int32 I=0;I<60 && !P.bOver && P.Balls==2-Lost;++I)P.Step(1/60.f,false,false,false);}
+ TestTrue(TEXT("pinball: game over after the third ball"),P.bOver);
+ P.Reset();P.Ball=FVector2D(FMarePinball::LaneX(1),26);P.Vel=FVector2D(0,40);P.Step(1/60.f,false,false,false);
+ TestTrue(TEXT("pinball: rollover lane lit"),P.bLanes[1] && P.Score==250);
+ // Business hits from the points thresholds of business_games.json.
+ auto Defs=MakeShared<FJsonObject>();auto Jd=MakeShared<FJsonObject>();TArray<TSharedPtr<FJsonValue>> At;for(double V:{250.0,600.0,1100.0})At.Add(MakeShared<FJsonValueNumber>(V));
+ Jd->SetArrayField(TEXT("hits_at"),At);Defs->SetObjectField(TEXT("jangada"),Jd);
+ TestEqual(TEXT("hits: 0 below the first mark"),UMareArcade::HitsFor(0,100,Defs),0);
+ TestEqual(TEXT("hits: 2 between marks"),UMareArcade::HitsFor(0,700,Defs),2);
+ TestEqual(TEXT("hits: 3 at most"),UMareArcade::HitsFor(0,5000,Defs),3);
+ return true;
 }

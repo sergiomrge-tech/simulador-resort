@@ -666,3 +666,11 @@ comercial (as espigas do Fab são estátua ou só licença pessoal paga para com
 | Vaso `potted_plant_02` no lugar das duas calateias do saguão (já usado no saguão) | https://polyhaven.com/a/potted_plant_02 — Poly Haven | CC0 1.0 |
 | Parede ripada com reboco azul-petróleo, letreiros "SALÃO DE JOGOS" e "FICHAS", luminária da sinuca de 3 cúpulas, balcão de fichas, porta-tacos e tapete — `tools/ue58/gen_game_room_decor.py` (bpy; texturas `painted_plaster_wall`, `teak_veneer`, `velour_velvet`, `marble_01`, `metal_plate`, `poly_wool_herringbone` do Poly Haven, CC0). Busca feita antes: o Poly Haven não tem porta-tacos, luminária de sinuca nem balcão; a caixa registradora `CashRegister_01` (60 × 62 cm) não cabia no tampo de 61 cm | próprio do projeto | — |
 | Pebolim jogável (móvel, campo, contadores, 8 barras com bonecos e bola) — `tools/ue58/gen_foosball.py` (bpy; texturas `teak_veneer` e `metal_plate` do Poly Haven, CC0; estampa do campo desenhada no script). Busca feita antes: a mesa de pebolim pronta do projeto (`foosball_table`) é uma peça só, sem barras separadas para girar | próprio do projeto | — |
+
+### Fliperamas do salão de jogos (06/11/2026)
+| Item | Fonte | Licença |
+|---|---|---|
+| "Corrida de Jangada": água, areia, pedras e barcos do Kenney Pirate Pack, peixes do Kenney Fish Pack (`tools/ue58/gen_arcade_art.py`) | https://kenney.nl | CC0 |
+| "Pega-Siri": caranguejo "Crab" de malekith97 (siri dourado recolorido dele) | https://opengameart.org | CC0 |
+| Fonte Press Start 2P (letreiros dos fliperamas, `Content/UI/Fonts/PressStart2P-Regular.ttf`) | https://fonts.google.com/specimen/Press+Start+2P — CodeMan38 | SIL Open Font License 1.1 |
+| Gabinetes, jangada, buracos, água-viva e rede (`tools/ue58/gen_arcade_cabinet.py`, `gen_arcade_art.py`) | próprio do projeto | — |

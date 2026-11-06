@@ -27,8 +27,11 @@ OWN = ['mare_gameroom_wall', 'mare_gameroom_sign', 'mare_gameroom_sign_fichas', 
 # Playable foosball (tools/ue58/gen_foosball.py): spawned and moved by UMareFoosball, not placed in the level.
 FOOSBALL = ['mare_foosball_body', 'mare_foosball_ball'] + [f'mare_foosball_rod_{n}_{t}' for n in (1, 2, 3, 5) for t in ('coral', 'mar')]
 OWN += FOOSBALL
+# Playable arcades (tools/ue58/gen_arcade_cabinet.py): spawned by UMareArcade at game_room.arcades, screen drawn at run time.
+ARCADES = ['mare_arcade_jangada', 'mare_arcade_siri']
+OWN += ARCADES
 POLYHAVEN = ['dartboard', 'wall_clock', 'hanging_picture_frame_02', 'standing_chalkboard_01']
-SOLID = {'mare_token_counter', 'mare_cue_rack', 'standing_chalkboard_01'}   # the player bumps into these
+SOLID = {'mare_token_counter', 'mare_cue_rack', 'standing_chalkboard_01', 'mare_arcade_jangada', 'mare_arcade_siri'}   # the player bumps into these
 FLOOR, WALL = 45.0, 6890.0
 
 # (slug, x, y, z of the base, yaw). bpy models face UE -Y at yaw 0 (back at their origin); see gen_game_room_decor.py.

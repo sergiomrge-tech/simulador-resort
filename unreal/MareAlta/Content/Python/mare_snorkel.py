@@ -345,3 +345,12 @@ def hero(arg=''):
         p.character_movement.stop_movement_immediately()
     l, v = p.get_actor_location(), p.get_velocity()
     return json.dumps([round(l.z, 1), round(v.z, 1), str(p.character_movement.movement_mode).split('.')[-1], round(l.x), round(l.y)])
+
+
+def asset_class(arg='/Game/Custom/GameRoom/mare_arcade_jangada/mare_arcade_jangada'):
+    """Class and object path of the assets in a folder (or of one package)."""
+    reg = unreal.AssetRegistryHelpers.get_asset_registry()
+    out = []
+    for a in reg.get_assets_by_path(arg, False) or reg.get_assets_by_package_name(arg):
+        out.append([str(a.package_name), str(a.asset_name), str(a.asset_class_path.asset_name)])
+    return json.dumps(out[:40])

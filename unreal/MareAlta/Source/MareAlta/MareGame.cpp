@@ -70,6 +70,7 @@
 #include "MareGameRoom.h"
 #include "MareTableTennis.h"
 #include "MareFoosball.h"
+#include "MareArcade.h"
 #include "MareStaysWorld.h"
 #include "MareOptions.h"
 #include "MareGamepad.h"
@@ -1802,6 +1803,8 @@ void AMareController::StartBusinessGame(const FString& Biz)
  // Foosball (5.4): a real match on the table, rods turned by the mouse; it pays through PlayBusiness when it ends.
  if(Biz==TEXT("pebolim"))if(auto FB=GetWorld()->GetSubsystem<UMareFoosball>())if(FB->HasTable()){ClosePhone();
   const TArray<FString> Names=S->PoolPlayers();FB->StartMatch(this,Names.Num()?Names[FMath::RandRange(0,Names.Num()-1)]:FString());return;}
+ // Arcades (5.4): the game is played on the cabinet's own screen; the token pays through PlayBusiness when it ends.
+ if(Biz==TEXT("fliperama"))if(auto Arc=GetWorld()->GetSubsystem<UMareArcade>())if(Arc->Start(this)){ClosePhone();return;}
  ClosePhone();SetPause(true);
  // The ice cream shop has its own hands-on task (3.1): the cone built from memory, customer after customer.
  // The food truck too (3.2): fill, seal, fry and the sugar-cane juice.
@@ -2392,6 +2395,9 @@ static FAutoConsoleCommandWithWorldAndArgs MareQACommand(TEXT("mare.QA"),TEXT("Q
    else if(Kind==TEXT("biz"))for(const FString Biz:{TEXT("sorveteria"),TEXT("aluguel"),TEXT("food_truck"),TEXT("souvenir"),TEXT("surfe")})S->BuyBusiness(Biz);
    bOk=S->AdvanceChapter(Arg);}
   UE_LOG(LogTemp,Display,TEXT("mare.QA %s %s -> %s (%s)"),*Verb,*Arg,bOk?TEXT("ok"):TEXT("refused"),*S->LastMessage);}));
+static FAutoConsoleCommandWithWorldAndArgs MareArcadeCommand(TEXT("mare.Arcade"),TEXT("QA: start:0|1, play:seconds, end, state (game room arcades, 5.4)."),
+ FConsoleCommandWithWorldAndArgsDelegate::CreateLambda([](const TArray<FString>& Args,UWorld* World){
+  if(!World)return;if(auto Arc=World->GetSubsystem<UMareArcade>())UE_LOG(LogTemp,Display,TEXT("mare.Arcade %s -> %s"),*FString::Join(Args,TEXT(" ")),*Arc->QA(FString::Join(Args,TEXT(" "))));}));
 static FAutoConsoleCommandWithWorldAndArgs MareShowUICommand(TEXT("mare.ShowUI"),TEXT("QA: opens a panel (pause, options, menu, letter) for UI screenshots."),
  FConsoleCommandWithWorldAndArgsDelegate::CreateLambda([](const TArray<FString>& Args,UWorld* World){if(Args.Num())FMareUIQA::Show(World,Args[0]);}));
 void AMareController::BuildPauseMenu(bool bOptions)
@@ -2758,6 +2764,8 @@ void AMareHUD::DrawHUD()
  if(M.bPhone){M.Note.Empty();M.Tickets.Empty();}
  // Table tennis match: the score line instead of the crosshair and the mission note.
  if(auto TT=GetWorld()->GetSubsystem<UMareTableTennis>())if(TT->IsPlaying()){M.Note.Empty();M.Tickets.Empty();M.Hint=TT->Status();Overlay->Refresh(M);return;}
+ // Arcade game: the controls instead of the crosshair and the mission note.
+ if(auto Arc=GetWorld()->GetSubsystem<UMareArcade>())if(Arc->IsPlaying()){M.Note.Empty();M.Tickets.Empty();M.Compass.Empty();M.Hint=Arc->Status();Overlay->Refresh(M);return;}
  // Foosball match: the score line, and the active rod underlined from its grip to the wall.
  if(auto FB=GetWorld()->GetSubsystem<UMareFoosball>())if(FB->IsPlaying()){M.Note.Empty();M.Tickets.Empty();M.Compass.Empty();M.Hint=FB->Status();FVector From,To;FVector2D A,B;
   if(FB->ActiveRodLine(From,To) && PC && PC->ProjectWorldLocationToScreen(From,A) && PC->ProjectWorldLocationToScreen(To,B))DrawLine(A.X,A.Y,B.X,B.Y,FLinearColor(1,.85f,.2f,.85f),4.f);
