@@ -1,9 +1,9 @@
-"""Modelo econômico auditável do Maré Alta Resort (06/11/2026).
+"""Modelo econômico auditável do Maré Alta Resort — Pacote 2 (06/11/2026).
 
 Sem Unreal, dependências externas ou escrita em Content. Lê o snapshot do checkout.
 As fórmulas monetárias vêm dos JSON/C++; comportamento e tempos de operação são
 HIPÓTESES em balance/profiles.json. Não é uma reprodução da navegação/física UE.
-Uso: python tools/ue58/balance_model.py --seeds 30 --days 360 --out tools/ue58/balance/results
+Uso: python tools/ue58/balance_model.py --seeds 30 --days 360 --out tools/ue58/balance/pacote2/results
      python tools/ue58/balance_model.py --self-test
 """
 from __future__ import annotations
@@ -11,6 +11,7 @@ import argparse
 import copy
 import csv
 import hashlib
+import importlib.util
 import json
 import math
 import random
@@ -22,14 +23,17 @@ ROOT = Path(__file__).resolve().parents[2]
 DATA = ROOT / 'unreal/MareAlta/Content/Data'
 SOURCE = ROOT / 'unreal/MareAlta/Source/MareAlta'
 HERE = Path(__file__).resolve().parent / 'balance'
+BASE_REVISION = 'fa49a68b5d8d33fdedde48fd096097f0aac0f267'
+TARGET_MINUTES_PER_DAY = 16
+TARGET_HOURS = (6, 10)
 FILES = ('definitions', 'default_save', 'customization', 'bar', 'events', 'pool',
-         'restaurant', 'tours', 'leisure', 'business_games', 'game_room', 'hotel_rooms', 'tutorial')
+         'restaurant', 'tours', 'leisure', 'business_games', 'game_room', 'hotel_rooms', 'hotel_events', 'tutorial')
 SOURCES = ('MareSimulation', 'MareBusiness', 'MareBizCommon', 'MareHotelRooms',
            'MareStays', 'MarePoolCup', 'MareRental', 'MareArcade', 'MareIceCream',
            'MarePastel', 'MareSouvenir', 'MareBar', 'MarePool', 'MareTours',
            'MareRestaurant', 'MareStaff', 'MareEvents', 'MareLeisure', 'MareKioskWorld',
            'MareGame', 'MareSummitWorld', 'MareComicEvents', 'MareGameRoom',
-           'MareFoosball', 'MareTableTennis')
+           'MareFoosball', 'MareTableTennis', 'MareHotelEvents')
 FAME = ()
 PROFILES = json.loads((HERE / 'profiles.json').read_text(encoding='utf-8'))
 
@@ -43,8 +47,18 @@ def clamp(x, lo, hi):
     return max(lo, min(hi, x))
 
 
+def source_snapshot():
+    spec=importlib.util.spec_from_file_location('mare_source_audit',HERE/'source_audit.py')
+    module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
+    return module.audit()
+
+
 def read_data():
     global FAME
+    observed=source_snapshot()
+    reviewed=HERE/'source_features.json'
+    if reviewed.exists() and json.loads(reviewed.read_text())!=observed:
+        raise ValueError('Source divergiu do snapshot auditado: revisar as fórmulas e renovar source_features.json.')
     code = (SOURCE / 'MareSimulation.cpp').read_text(encoding='utf-8-sig')
     match = re.search(r'FameThresholds\[\]\s*=\s*\{([^}]+)', code)
     if not match:
@@ -100,6 +114,10 @@ class Model:
         self.pool_dirt, self.towels, self.popsicles, self.popsicle_stock = 0., 0, 0, 0
         self.restaurant_orders = []
         self.event_booking = None
+        self.beach_booking = None
+        self.restaurant_stars = 0
+        self.critic_next = data['restaurant']['critic']['from_day']
+        self.critic_day = -1
         self.cup_round, self.cup_edition = None, -1
         self.bar_records = set()
         self.barman_known = set()
@@ -120,8 +138,9 @@ class Model:
         self.ratings = (self.ratings + [clamp(x, 1, 5)])[-40:]
 
     def add_fame(self, x):
-        # MareSimulation::AddFame ignora Xp<=0, inclusive penalidades (bug registrado).
-        self.xp += max(0, int(x))
+        # A perda desconta XP, mas preserva o piso do nível já alcançado.
+        floor=FAME[min(self.fame-1,len(FAME)-1)] if self.fame>=2 else 0
+        self.xp=max(floor,self.xp+int(x)) if x<0 else self.xp+int(x)
 
     def book(self, amount, source, expense='operacao'):
         self.money += amount
@@ -203,7 +222,7 @@ class Model:
 
     def kiosk_hour(self, h):
         start, end = self.d['default_save']['company']['sim']['start'], self.d['default_save']['company']['sim']['end']
-        # Neon não altera sim.end no código atual: respeitar o horário efetivo, não o blurb.
+        if 'neon' in self.owned:end=max(end,21)
         if not start <= h-1 < end:
             return
         menu = [k for k in self.defs['kiosk_menu'] if not self.defs['dishes'][k].get('requires') or self.defs['dishes'][k]['requires'] in self.owned]
@@ -358,6 +377,7 @@ class Model:
                 price = rounded((q['offer']+q['limit'])/2) if manual else q['offer']
                 mood = .55+.45*clamp((q['limit']-price)/max(1,q['limit']*.25),0,1)
                 room.update(state='occupied',guest=q,nights=q['nights'],mood=mood)
+                room.pop('vip_asked',None);room.pop('vip_done',None)
                 self.book(price*q['nights'],'hotel_diarias' if hotel else 'pousada')
                 self.arrival_queue.remove(q)
             budget = self.d['hotel_rooms']['crew']['tasks_per_hour'] if hotel and self.d['hotel_rooms']['crew']['from'] <= h < self.d['hotel_rooms']['crew']['to'] else (rounded(op.get('maid_tasks_per_hour',3)*self.staff_skill('camareira')) if not hotel and self.on_duty('camareira',h) else 0)
@@ -407,7 +427,7 @@ class Model:
             if not level:continue
             definition=self.defs['businesses'][bid];d=self.bizdef(bid);mult=self.bizmult(bid)
             is_open=definition['open'][0]<=h<definition['open'][1]
-            # RentalHour nega chuva por multiplicador, mas não fecha por rough_sea (incoerência).
+            if bid=='aluguel' and self.event=='tempestade':is_open=False
             if bid=='souvenir':
                 self.shop_hour(h,d,is_open,mult);continue
             if bid=='surfe':
@@ -435,6 +455,7 @@ class Model:
             if not is_open:continue
             n=self.r.randint(*d['arrivals'])
             if self.rain:n*=d['rain_mult']
+            if bid=='aluguel' and self.event=='mare':n*=d['tide_mult']
             if self.event=='calor' and 'hot_mult' in d:n*=d['hot_mult']
             if self.event in d.get('party_events',[]):n*=d['party_mult']
             n=min(d['queue_max'],math.floor(n)+(self.r.random()<n%1))
@@ -550,21 +571,69 @@ class Model:
             buzz=self.d['tours']['buzz'];self.buzz[t['id']]=buzz['great_people'] if rating>=buzz['great'] else buzz['good_people'] if rating>=buzz['good'] else buzz['bad_people'] if rating<buzz['bad'] else 0
             self.stamp('passeio:'+t['id'])
 
+    def settle_restaurant_event(self,h):
+        d=self.d['restaurant']
+        if self.event_booking and (self.event_booking['day']<self.day or self.event_booking['day']==self.day and h-1==d['event_hour']):
+            e=self.event_booking['event'];self.book(rounded(e['income']*max(1,self.factor('hotel_restaurante'))),'eventos_hotel');self.add_fame(e['fame']);self.stamp('evento:'+e['id']);self.event_booking=None
+
     def restaurant_hour(self,h):
         if 'grand_hotel' not in self.owned:return
-        d=self.d['restaurant'];factor=max(1,self.factor('hotel_restaurante'))
+        d=self.d['restaurant'];c=d['critic'];f=d['fresh_fish']
+        self.settle_restaurant_event(h)
         for order in self.restaurant_orders:
+            # HIPÓTESE: 14 s ativos; cozinha/espera não consomem ações manuais.
+            # O garçom usa HasStaff no C++; a função automática é chamada por hora.
+            waiter='garcom_hotel' in self.staff
             manual=self.act(14)
-            share=(1+d['room_fee'] if order['room'] else 1.05) if manual else (.9 if self.on_duty('garcom_hotel',h) else d['crew_share'])
-            self.book(rounded(order['price']*factor*share),'restaurante')
-            if manual:self.add_fame(1)
+            dish=order['dish'];fresh=False
+            if manual and not order['room'] and dish.get('fish'):
+                if self.stock['peixe']>=1:self.stock['peixe']-=1;fresh=True
+                else:self.book(-f['buy_cost'],'','estoque_peixe_restaurante')
+            wait=d['cook_minutes']+20*(1-self.p['success'])  # atraso hipotético por perfil
+            share=(1+d['room_fee'] if order['room'] else (1+.15*clamp(1-wait/40,0,1))*(1+f['bonus'] if fresh else 1)) if manual else (.9 if waiter else d['crew_share'])
+            menu_price=rounded(dish['price']*max(1,self.factor('hotel_restaurante'))*(1+c['star_price']*self.restaurant_stars))
+            self.book(rounded(menu_price*share),'restaurante')
+            if manual:self.add_fame(1+(f['fame'] if fresh and not order['room'] else 0))
+            if order.get('critic'):
+                score=(5-max(0,(wait-20)/10)-(.5 if dish.get('fish') and not fresh else 0)) if manual else (c['waiter_score'] if waiter else c['crew_score'])
+                score=clamp(rounded(score*2)/2,1,5);self.rate(score)
+                if score>=c['star_score'] and self.restaurant_stars<c['max_stars']:
+                    self.restaurant_stars+=1;self.add_fame(c['star_fame']);self.stamp('estrela_restaurante:'+str(self.restaurant_stars))
+                elif score<=c['bad_score']:self.add_fame(-c['bad_fame'])
+                else:self.add_fame(c['good_fame'])
+                self.stamp('critico_atendido')
         self.restaurant_orders=[]
         if any(a<=h<b for a,b in d['services']):
             n=sum(self.r.random()<.5 for _ in d['tables'])
-            for _ in range(n):self.restaurant_orders.append({'price':self.r.choice(d['menu'])['price'],'room':False})
-            if self.r.random()<.7:self.restaurant_orders.append({'price':self.r.choice(d['menu'])['price'],'room':True})
-        if self.event_booking and self.event_booking['day']==self.day and h-1==d['event_hour']:
-            e=self.event_booking['event'];self.book(rounded(e['income']*factor),'eventos_hotel');self.add_fame(e['fame']);self.stamp('evento:'+e['id']);self.event_booking=None
+            critic=self.day>=self.critic_next and self.critic_day!=self.day and self.r.random()<c['chance_per_hour']
+            if critic:
+                self.critic_day=self.day;self.critic_next=self.day+self.r.randint(*c['every_days'])
+            for i in range(min(len(d['tables']),n+int(critic))):
+                self.restaurant_orders.append({'dish':self.r.choice(d['menu']),'room':False,'critic':critic and i==0})
+            if self.r.random()<.7:self.restaurant_orders.append({'dish':self.r.choice(d['menu']),'room':True})
+
+    def beach_events_hour(self,h):
+        if 'grand_hotel' not in self.owned:return
+        d=self.d['hotel_events']
+        if self.beach_booking and self.beach_booking['day']==self.day:
+            b=self.beach_booking;k=d['kinds'][b['kind']]
+            if d['setup_from']<=h<k['hour']:
+                # HIPÓTESE: 6 s por peça (trajeto curto + E); montar não é minijogo.
+                attempts={'casual':2,'medio':8,'dedicado':10}[self.profile]
+                for key in ('pieces','extras'):
+                    if key=='extras' and b['pieces']<len(k['pieces']):break
+                    while attempts and b[key]<len(k.get(key,[])) and self.act(6):
+                        b[key]+=1;attempts-=1
+            if h>=k['hour']:
+                score=b['pieces']/max(1,len(k['pieces']));bonus=d['extra_bonus']*b['extras']
+                if score>=d['min_score']:
+                    paid=rounded(k['fee']*score*(1+bonus));self.add_fame(rounded(k['fame']*score*(1+bonus)))
+                else:paid=rounded(k['fee']*.2);self.add_fame(-d['flop_fame'])
+                self.book(paid,'montagem_hotel');self.stamp('montagem:'+b['kind']);self.beach_booking=None
+        if h==d['offer_hour'] and self.day%max(1,d['offer_every_days'])==0 and not self.beach_booking:
+            # Oferta chega a cada dois dias; disposição para aceitar é hipótese do perfil.
+            if self.r.random()<self.p['success'] and self.act(3):
+                self.beach_booking={'kind':self.r.choice(sorted(d['kinds'])),'day':self.day+1,'pieces':0,'extras':0}
 
     def game_room_hour(self,h):
         if 'salao_jogos' not in self.owned:return
@@ -719,7 +788,7 @@ class Model:
                 self.book(sum(x['price'] for x in taken),'frigobar');room['refill']=sum(x['cost'] for x in taken)
                 if taken:room['tasks'].append('minibar')
                 self.complaints=[c for c in self.complaints if c['room'] is not room]
-                # vip_asked não é limpo no checkout atual: reproduzido, não corrigido.
+                # Marcadores são reiniciados no novo check-in, conforme MareStays.cpp.
         self.arrival_queue=[]
         if 'grand_hotel' in self.owned:
             hotel_occ=sum(x['place']=='hotel' and x['state']=='occupied' for x in self.rooms)
@@ -761,6 +830,7 @@ class Model:
             for h in range(9,25):
                 for role,w in self.staff.items():
                     if self.on_duty(role,h):w['xp']+=rules_xp(self.defs)
+                self.beach_events_hour(h)
                 self.kiosk_hour(h);self.lodging_hour(h);self.bar_hour(h);self.biz_hour(h);self.pool_hour(h);self.restaurant_hour(h);self.game_room_hour(h);self.hourly_passive(h)
             self.night();self.story()
             affordable=[k for k,e in self.defs['expansions'].items() if k not in self.owned and all(r in self.owned for r in e['req']) and self.fame>=e.get('fame',0) and (not e.get('chapter') or self.done(e['chapter'])) and self.money>=e['cost']]
@@ -797,7 +867,8 @@ def quantile(values,p):
 def summarize(models, days):
     milestones=sorted({k for m in models for k in m.milestones if not k.startswith(('custom:','receita:','bar:'))})
     results={k:{'concluidos':sum(k in m.milestones for m in models), 'p10':quantile([m.milestones[k] for m in models if k in m.milestones],.1),'p50':quantile([m.milestones[k] for m in models if k in m.milestones],.5),'p90':quantile([m.milestones[k] for m in models if k in m.milestones],.9)} for k in milestones}
-    return {'sementes':len(models),'limite_dias':days,'marcos':results,'caixa_final_p50':quantile([m.money for m in models],.5),'censurados_compras':sum('todas_compras' not in m.milestones for m in models),'censurados_campanha':sum('campanha_completa' not in m.milestones for m in models)}
+    targets={key:{'entre_6_e_10_h':sum(key in m.milestones and TARGET_HOURS[0]<=m.milestones[key]*TARGET_MINUTES_PER_DAY/60<=TARGET_HOURS[1] for m in models),'total':len(models)} for key in ['grand_hotel','tela_fim_ea']}
+    return {'meta_horas':list(TARGET_HOURS),'minutos_por_dia':TARGET_MINUTES_PER_DAY,'meta_atingida':targets,'sementes':len(models),'limite_dias':days,'marcos':results,'caixa_final_p50':quantile([m.money for m in models],.5),'censurados_compras':sum('todas_compras' not in m.milestones for m in models),'censurados_campanha':sum('campanha_completa' not in m.milestones for m in models)}
 
 
 def write_csv(path, rows):
@@ -812,7 +883,20 @@ def self_test(data):
     assert a.rows==b.rows, 'Mesma semente precisa reproduzir a trajetória'
     assert Model(data,'medio',18).run(8).rows!=a.rows, 'Sementes diferentes precisam afetar eventos'
     assert all(len(m['p10'].__str__())>0 for m in summarize([a],8)['marcos'].values())
-    x=Model(data,'medio',0);x.xp=100;x.add_fame(-3);assert x.xp==100
+    x=Model(data,'medio',0);x.xp=119;x.add_fame(-3);assert x.xp==116
+    x.add_fame(-999);assert x.xp==100
+    x.xp=3;x.add_fame(-9);assert x.xp==0
+    # Exemplos numéricos das regras novas, além da conciliação geral de caixa.
+    for pieces,extras,paid in [(6,0,500),(7,0,1250),(14,2,3000)]:
+        x=Model(data,'medio',0);x.owned.add('grand_hotel');x.day=3;x.budget=0
+        x.income=Counter();x.expenses=Counter();x.beach_booking={'kind':'congresso','day':3,'pieces':pieces,'extras':extras}
+        before=x.money;x.beach_events_hour(10);assert x.money-before==paid
+    x=Model(data,'medio',0);x.owned.add('grand_hotel');x.day=4;x.budget=0;x.income=Counter();x.expenses=Counter()
+    e=data['restaurant']['events'][0];x.event_booking={'day':3,'event':e};before=x.money
+    x.settle_restaurant_event(9);assert x.money-before==e['income'] and x.event_booking is None
+    x=Model(data,'medio',0);x.owned.add('grand_hotel');x.day=1;x.budget=600;x.income=Counter();x.expenses=Counter()
+    x.restaurant_orders=[{'dish':data['restaurant']['menu'][0],'room':False,'critic':True}];x.stock['peixe']=1
+    x.restaurant_hour(9);assert x.stock['peixe']==0 and x.restaurant_stars==1
     x.custom['hotel_restaurante','mesas']=2;assert x.factor('hotel_restaurante')==1.12
     changes=[{'file':'definitions.json','pointer':'/expansions/grand_hotel/cost','current':data['definitions']['expansions']['grand_hotel']['cost'],'new':1}]
     modified=overlay(data,changes);assert modified['definitions']['expansions']['grand_hotel']['cost']==1
@@ -828,7 +912,7 @@ def main():
     parser.add_argument('legacy_days',type=int,nargs='?')
     parser.add_argument('--days',type=int,default=360)
     parser.add_argument('--seeds',type=int,default=30)
-    parser.add_argument('--out',type=Path,default=HERE/'results')
+    parser.add_argument('--out',type=Path,default=HERE/'pacote2'/'results')
     parser.add_argument('--self-test',action='store_true')
     parser.add_argument('--service-scale',type=float,default=1,help='Sensibilidade: multiplicador do tempo por produto do atendente (hipótese)')
     args=parser.parse_args()
@@ -840,7 +924,8 @@ def main():
     args.out.mkdir(parents=True,exist_ok=True)
     changes=json.loads((HERE/'proposed.json').read_text(encoding='utf-8'))
     summary={}
-    (args.out/'configuracao.json').write_text(json.dumps({'dias':args.legacy_days or args.days,'sementes':list(range(args.seeds)),'perfis':PROFILES,'mudancas':changes,'service_scale':args.service_scale},ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+    (args.out/'source_features.json').write_text(json.dumps(source_snapshot(),ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+    (args.out/'configuracao.json').write_text(json.dumps({'base_revision':BASE_REVISION,'meta_horas':list(TARGET_HOURS),'minutos_por_dia':TARGET_MINUTES_PER_DAY,'dias':args.legacy_days or args.days,'sementes':list(range(args.seeds)),'perfis':PROFILES,'mudancas':changes,'service_scale':args.service_scale},ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
     for scenario,d in [('atual',data),('proposto',overlay(data,changes))]:
         summary[scenario]={}
         for profile in PROFILES:

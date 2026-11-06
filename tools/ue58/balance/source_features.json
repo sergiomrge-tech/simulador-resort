@@ -1,0 +1,32 @@
+{
+  "tipo": "inspeção textual; confirma presença, não correção funcional",
+  "novidades": {
+    "hotel_events": true,
+    "fama_negativa": true,
+    "neon_ate_21": true,
+    "aluguel_fecha_tempestade": true,
+    "aluguel_bonus_mare_alta": true,
+    "evento_restaurante_ao_dormir": true,
+    "critic": true,
+    "fresh_fish": true
+  },
+  "hotel_events_arquivos": {
+    "json": true,
+    "cpp": true
+  },
+  "fonte_sha256": {
+    "MareSimulation.cpp": "c332e34a31fb1d6c59e6ebddbdccfdd7eb01fa937132cfb764cb70682620e864",
+    "MareBusiness.cpp": "c02a7527aea339775acdd46fc4b5d8bd971e5475d36437dc641aa41ffd8bab6c",
+    "MareRental.cpp": "c6de1723402fd8a8d1d24b043f2b945e2811cfaeaf7f8188b724b3bb24f22cbf",
+    "MareRestaurant.cpp": "7dd051496a1534d8dd0860e5ae8e5d5b3adf0952e3d7c1b9b8df9a28ab636e5a",
+    "MareHotelRooms.cpp": "6bc6908612e3f09e6fa58c64bec8c7f6c6f28bd8db8093281b5cf69e4e77e8c4",
+    "MareHotelEvents.cpp": "441bd32cee430aeec424ca597dcd8c0ace96e2f0e75d12984bf726158c5fa3ff"
+  },
+  "relogio": {
+    "minutos_jogo_por_segundo": 1,
+    "inicio_dia": 8,
+    "fim_dia": 24,
+    "minutos_reais_dia": 16
+  },
+  "nota": "Sistemas presentes foram revistos. Fórmulas monetárias seguem C++; tempos de ações são hipóteses explícitas."
+}

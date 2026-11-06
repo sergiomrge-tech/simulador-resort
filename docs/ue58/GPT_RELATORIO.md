@@ -2,6 +2,8 @@
 
 06/11/2026. Repositório `sergiomrge-tech/simulador-resort`. Branch de trabalho **gpt/ea-pacote**, criada de **codex/ue58-migration**, referência **8e817f7a0813e4af628d6d317af54d50b67dbeba**. Os blobs de Source/Data lidos foram conferidos contra essa referência para evitar misturar trabalho concorrente.
 
+> Registro histórico do pacote 1 / PR #7. Os números e achados desta primeira parte pertencem à referência indicada acima. A situação atual está na seção **Pacote 2** ao final.
+
 ## Entregas
 
 - Ampliação de `tools/ue58/balance_model.py`: três perfis, sementes, economia por fonte, estoques, salários, manutenção, fama, capítulos, aquisições, quartos, VIPs, eventos, passeios, aluguel e salão de jogos.
@@ -52,3 +54,105 @@ Linhas relativas exclusivamente ao commit de referência. Os links apontam para 
 `balance_model.py --self-test`: reprodução por semente, variação entre sementes, conciliação de caixa, estoque não negativo, orçamento de ações, capacidade de quartos, fórmula de personalização, comportamento atual da penalidade e overlay isolado com rejeição de valor obsoleto. A execução das trajetórias também verifica caixa/estoque/orçamento/capacidade a cada dia.
 
 As descrições curtas de pt-BR, inglês e dos 12 idiomas foram verificadas com limite de 300 caracteres. As estatísticas e tabelas foram geradas dos arquivos de resultado. A validação adicional em `tools/ue58/balance/validate.py` confere configurações, CSV, resumo e traduções. A lista de arquivos do PR deve conter somente os caminhos autorizados pelo pedido.
+
+
+## Pacote 2
+
+### Base, incorporação e escopo
+
+O **PR #7 foi incorporado sem conflitos**, conforme autorizado. Criei `gpt/pacote-2` a partir da base e, quando chegaram três commits durante a tarefa, avancei o branch para **fa49a68b5d8d33fdedde48fd096097f0aac0f267** de `codex/ue58-migration`, antes de publicar qualquer alteração deste pacote. A análise final, os dados e os hashes correspondem a essa referência. Os novos arquivos e correções chegaram da outra IA; não são mudanças de Source/Data deste PR.
+
+Estão presentes e contemplados: montagem dos eventos do Grand Hotel; fama negativa com piso no nível já alcançado; neon até pelo menos 21h; aluguel fechado na tempestade e chegadas ×1,4 na maré alta; pagamento de reserva do restaurante cuja noite foi dormida; crítico gastronômico, estrelas e peixe fresco. O novo check-in também reinicia os marcadores VIP. As observações preliminares de ausência foram substituídas após a atualização da base.
+
+`balance/source_audit.py` e `source_features.json` registram presença e hashes das fontes inspecionadas. O modelo rejeita Source divergente desse registro até revisão das fórmulas; essa inspeção textual não equivale a compilar o jogo.
+
+### Traduções
+
+Executados `i18n_extract.py`, `i18n_pt_pt.py` e o extrator novamente após cada rodada. Foram preenchidas duas levas, de **69 e 100 entradas por idioma**; houve remoção de textos obsoletos pelo extrator. Isso inclui fliperamas, placares, campeonato de sinuca, pedidos VIP, montagem de casamento/aniversário/congresso, crítico, peixe e novos jantares. Identificadores técnicos e comandos de QA extraídos heuristicamente foram preservados; nomes de pessoas e pratos brasileiros também. pt-PT foi regenerado pelo script solicitado, preservando Antônio.
+
+| Idioma | LOCTEXT | Strings | Faltando | Marcadores divergentes |
+|---|---|---|---|---|
+| en | 113 | 3907 | 0 | 0 |
+| es | 113 | 3907 | 0 | 0 |
+| de | 113 | 3907 | 0 | 0 |
+| fr | 113 | 3907 | 0 | 0 |
+| zh-Hans | 113 | 3907 | 0 | 0 |
+| ja | 113 | 3907 | 0 | 0 |
+| ru | 113 | 3907 | 0 | 0 |
+| ko | 113 | 3907 | 0 | 0 |
+| it | 113 | 3907 | 0 | 0 |
+| pl | 113 | 3907 | 0 | 0 |
+| nl | 113 | 3907 | 0 | 0 |
+| pt-PT | 113 | 3907 | 0 | 0 |
+
+Marcadores `{0}`, `{1}` etc., `<br>` e `R$` foram verificados no corpus inteiro; os espaços das entradas novas foram preservados. Os textos anteriormente preenchidos dos 11 idiomas foram conservados. Os 12 `todo_*.json`, que já estavam versionados na base, foram apagados após a conferência final. Registro em `balance/pacote2/traducoes_verificacao.json`. Não houve revisão nativa ou teste de layout no editor.
+
+### Verificador de dados
+
+Novo `tools/ue58/qa/data_lint.py`, apenas biblioteca padrão. Lê recursivamente todos os JSON; apresenta `arquivo → JSON Pointer → problema`, saída **1** em falha, com `--json` e `--self-test`. Verifica sintaxe/chaves duplicadas, ids repetidos em listas, referências cruzadas de expansões/capítulos/pratos/insumos/equipe/receitas/slots, ciclos de pré-requisitos, valores monetários, chances/frações, intervalos, horários, modelos e dupla codificação. Não confunde renda horária de negócio com relógio nem coordenadas negativas com preço.
+
+As regras citam os consumidores reais em `RULE_SOURCES`, incluindo `MareHotelEvents.cpp` e `MareRestaurant.cpp`. Modelos são resolvidos por custom_assets, catálogos de importação, aliases, Dish_<id> e caminhos montados pelos carregadores. Slugs do lobby e `fab:N` foram conferidos nos scripts de importação, sem executá-los na Unreal.
+
+```sh
+python tools/ue58/qa/data_lint.py --self-test
+python tools/ue58/qa/data_lint.py
+# Reprodução da conferência na nuvem, sem baixar .uasset:
+python tools/ue58/qa/data_lint.py --asset-index tools/ue58/balance/package_index.json --json
+```
+
+O índice registra **281 packages** relevantes comprovados na árvore Git, revisão e hashes dos 46 JSON; rejeita snapshot obsoleto. Referências /Game precisam de sintaxe válida e arquivo, índice ou catálogo de importação. Presença no catálogo não comprova importação no PC nem carregamento, tipo, materiais ou conteúdo do binário.
+
+**Resultado final: PASS, saída 0; 46 JSON, 796 etapas de resolução de modelos, 0 erros.** Nenhum achado de dados na execução final; resultado integral em `balance/data_lint_results.json`. Nenhum JSON de Data foi corrigido.
+
+O self-test usa fixtures temporárias que reprovam JSON inválido/chaves duplicadas, id repetido, referência inexistente, dinheiro negativo, chance >1, faixa invertida, horário >24, modelo/path ausente e mojibake. Aceita português válido, coordenadas negativas, renda horária 32 e modelo registrado. Não foi ligado ao portão de qualidade, conforme pedido.
+
+### Balanceamento e meta de 6–10 horas
+
+Recalculados os três perfis com **30 sementes por cenário** (180 trajetórias), mais dois extremos de capacidade com dez sementes por perfil/cenário (120). Total **300 trajetórias**; resultados, configurações e hashes em `balance/pacote2/`. O histórico das execuções do pacote 1 foi preservado nos diretórios antigos.
+
+Montagem usa Score = peças obrigatórias montadas / total. Com pelo menos metade: cachê arredondado de fee × Score × (1 + extra_bonus × extras), fama proporcional; abaixo da metade, sinal de 20% e −4 XP, limitado pelo piso do nível. Ofertas às 9h dos dias pares, aceitas para amanhã. Não foi inventado custo de peças. A hipótese de montagem é 6 s por peça, com atenção de 2/8/10 peças por hora para casual/médio/dedicado, usando o orçamento único de ações; E não tem chance de falhar. Aceitar oferta é uma decisão probabilística de engajamento. A duração da festa visual não gera receita adicional.
+
+Crítico usa intervalos de 3–5 dias, chance horária 0,4, nota por espera e frescor, até três estrelas e preço +12% por estrela. Espera manual é uma hipótese por perfil; navegação real precisa ser medida. Peixe em estoque dá +25% e fama no prato manual de mesa; sem estoque cobra R$ 22. O modelo mantém a automação/room service sem essa chamada de consumo, como o código atual. Reserva vencida do restaurante pode ser liquidada na próxima chamada horária.
+
+Dia efetivamente jogável: **16 min**, de 8h a 24h, com 1 minuto do jogo/segundo real. A coluna de 24 min continua identificada como conversão alternativa; não aumenta a renda. Tela do EA, campanha e todas as compras são marcos distintos.
+
+| Cenário | Perfil | Hotel: dia / horas medianas | Tela do EA: dia / horas medianas | Hotel e tela entre 6–10 h |
+|---|---|---|---|---|
+| atual | casual | 30 / 8.0 h | 31 / 8.3 h | 30/30 e 30/30 |
+| atual | medio | 25 / 6.7 h | 26 / 6.9 h | 30/30 e 30/30 |
+| atual | dedicado | 22 / 5.9 h | 23 / 6.1 h | 9/30 e 22/30 |
+| proposto | casual | 27 / 7.2 h | 28 / 7.5 h | 30/30 e 30/30 |
+| proposto | medio | 24 / 6.4 h | 25 / 6.7 h | 29/30 e 30/30 |
+| proposto | dedicado | 20 / 5.3 h | 21 / 5.6 h | 2/30 e 9/30 |
+
+O perfil médio atinge a meta nas **30 sementes**, tanto atual como proposto. O dedicado pode chegar antes de 6 h. Trata-se de modelo agregado, não de duração comprovada em playtest. A política prioriza expansão e fontes de renda; obter todas as estrelas do restaurante não é condição de encerramento, e a equipe pode atender os críticos sem ganhar estrelas.
+
+A lista **MUDANÇAS PROPOSTAS** foi refeita: `definitions.json /expansions/grand_hotel/cost` 30.000 → 28.000; `hotel_events.json /extra_bonus` 0,10 → 0,15; `customization.json /price_mult/4` 30 → 24. Valores atuais conferidos e mudanças simuladas juntas só em memória. A redução antiga do casamento foi retirada porque a base já trocou os contratos por jantares moderados. A campanha continua com 4.000 vendas, sem redução artificial para cumprir a nova meta.
+
+### Bugs e incoerências novos — somente leitura
+
+Linhas da referência fa49a68. São recomendações, não correções deste PR.
+
+| Arquivo e linha | Problema observado | Como corrigir / verificar |
+|---|---|---|
+| `Source/MareAlta/MareRestaurant.cpp:184`, `MareSimulation.cpp:372`; `Content/Data/definitions.json:1031` | `TakeKitchenFish` considera todo `stock.peixe` fresco do píer, inclusive o comprado no mercadinho por R$ 7. Assim, comprar dá o mesmo bônus de pesca e evita o fornecedor de R$ 22. A mensagem de origem pode ser falsa. | Se a intenção for premiar pesca, separar a origem/estoque pescado e consumir esse saldo para o bônus. Se a intenção for qualquer peixe em estoque, ajustar a comunicação. Testar compra versus pesca com o mesmo prato. |
+| `Source/MareAlta/MareRestaurant.cpp:163–177`, `:180–187` | O atendimento automático escolhe/vende pratos com peixe sem chamar `TakeKitchenFish`; o room service também não chama essa função. Consumo/custo de peixe só acontece quando o jogador toma pedido de mesa. Isso pode fazer a automação evitar um custo cobrado no atendimento manual. | Centralizar o consumo por pedido com marcador de cobrança única; decidir explicitamente se room service tem custo e bônus de frescor. Testar manual, garçom, equipe e quarto com estoque 0/1, evitando cobrança dupla. |
+| `Source/MareAlta/MareRestaurant.cpp:148–153` | A reserva ainda anuncia 20h mas usa `Started=Hour-1`; o cachê entra no cruzamento de 21h. A correção de noite dormida resolve a perda de receita, não esse descompasso de horário. | Alinhar gatilho e mensagem; testar 19h59/20h/21h e primeiro avanço após dormir. |
+| `Source/MareAlta/MareSimulationTests.cpp:1212–1213`, `:1328–1329` | O teste antigo lê `State.fame_xp` em vez de `State.prog.fame_xp`, não usa o valor e só confere mensagem. O teste novo aceita `Fame() <= F0`, o que passa sem desconto. Agora existe piso de nível intencional, mas a perda acima do piso deveria ser comprovada. | Usar campo correto; iniciar XP acima do limiar; exigir delta exato e caso separado com truncamento no piso. Não exigir queda de nível, pois a regra nova a impede. |
+
+### Achados do pacote 1 revistos
+
+- Autosave: corrigido na base (`MareGame.cpp:2861`), instruções fora do comentário.
+- Fama negativa: corrigida na base (`MareSimulation.cpp:422`), com piso do nível atual por design.
+- VIP por estadia: corrigido na base (`MareStays.cpp:102`).
+- Neon e aluguel: corrigidos na base (`KioskCloseHour`, `IsBusinessOpen`, `RentalHour`); maré aumenta procura, não preço.
+- Noite dormida do contrato: corrigida na base; permanece a diferença de uma hora descrita acima.
+- Condição da tela do EA versus campanha, painel de personalização dos negócios e possível intenção de fluxos duplos continuam questões já registradas, não bugs novos deste pacote.
+
+### Verificação e limites
+
+- `balance_model.py --self-test`: PASS, inclusive perda de XP com piso, evento com 6/7/14 peças, extras, reserva vencida ao dormir e estrela com peixe fresco.
+- `data_lint.py --self-test`: PASS; 46 JSON reais com índice: PASS/0.
+- `balance/validate.py`: PASS para 18 séries diárias e 300 trajetórias, fontes/despesas/caixa, fama, capacidade, configurações, hashes e traduções.
+- Extrator final: 113/113 LOCTEXT e 3.907/3.907 strings nos 12 idiomas; `todo_*.json` removidos.
+- Sem editor, PC, compilação C++, QA gate, playtest visual, binários, screenshots ou publicação. Sem alterações em Source, Content/Data, Config ou .uasset. O novo PR fica aberto para revisão; somente o #7 recebeu merge autorizado.

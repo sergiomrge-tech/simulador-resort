@@ -16,10 +16,15 @@ changes=json.loads((HERE/'proposed.json').read_text())
 model.overlay(data,changes)
 count=0
 for folder in ['results','sensitivity_lento','sensitivity_rapido']:
-    path=HERE/folder
+    path=HERE/'pacote2'/folder
     summary=json.loads((path/'summary.json').read_text())
     conf=json.loads((path/'configuracao.json').read_text())
     assert conf['mudancas']==changes
+    assert conf['base_revision']==model.BASE_REVISION
+    assert conf['meta_horas']==[6,10]
+    observed=model.source_snapshot()
+    assert json.loads((path/'source_features.json').read_text())==observed
+    assert all(observed['novidades'].values())
     assert conf['sementes']==list(range(30 if folder=='results' else 10))
     for rel,digest in json.loads((path/'inputs_sha256.json').read_text()).items():
         assert hashlib.sha256((ROOT/rel).read_bytes()).hexdigest()==digest,rel
@@ -44,7 +49,7 @@ for folder in ['results','sensitivity_lento','sensitivity_rapido']:
                 assert abs(income-float(r['renda_total']))<.15
                 assert abs(expense-float(r['despesas_total']))<.15
                 assert abs(cash+float(r['renda_total'])-float(r['despesas_total'])-float(r['caixa']))<.04
-                assert float(r['fama_xp'])>=xp
+                assert float(r['fama_xp'])>=model.FAME[max(0,sum(xp>=x for x in model.FAME)-1)]
                 xp=float(r['fama_xp']);cash=float(r['caixa'])
                 assert int(r['fama_nivel'])==sum(xp>=x for x in model.FAME)
                 assert 0<=int(r['hotel_ocupados'])<=32
@@ -65,4 +70,19 @@ report=(ROOT/'docs/ue58/BALANCEAMENTO.md').read_text()
 assert '## MUDANÇAS PROPOSTAS' in report
 for sc in ['Atual','Proposto']:
     for p in model.PROFILES:assert f'### {sc} — {p}, semente 0' in report
+localization=ROOT/'unreal/MareAlta/Content/Localization/Mare'
+src=json.loads((localization/'source.json').read_text())
+from collections import Counter
+for lang in expected:
+    tr=json.loads((localization/(lang+'.json')).read_text())
+    assert set(tr['loctext'])==set(src['loctext'])
+    assert set(tr['strings'])==set(src['strings'])
+    for section,items in [('loctext',src['loctext'].items()),('strings',[(x,x) for x in src['strings']])]:
+        for key,source in items:
+            translated=tr[section][key]
+            assert translated,(lang,key)
+            assert Counter(re.findall(r'\{\d+\}|<br>',source))==Counter(re.findall(r'\{\d+\}|<br>',translated)),(lang,key)
+            assert source.count('R$')==translated.count('R$'),(lang,key)
+            if 'Antônio' in source:assert 'Antônio' in translated,(lang,key)
+assert not list(localization.glob('todo_*.json'))
 print(f'PASS: {count} séries diárias, 300 trajetórias nos resumos, caixa/fontes/despesas, fama, capacidade, hashes, configuração, propostas, 12 idiomas e {shorts} descrições curtas')
