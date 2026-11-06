@@ -647,3 +647,10 @@ folha e só a folha que não cabe encolhe. Ao abrir uma tela paginada nova, conf
 Teste que chama uma hora simulada herda os sorteios dela (`FRand`): o `Rental` reprovou 1 vez em 3 no portão porque a
 hora soltou um caiaque à deriva antes do `TestFalse`. Antes de afirmar um estado, zere o que o sorteio pode ter mudado.
 O portão agora imprime as 2 primeiras mensagens de cada teste reprovado.
+
+## UE5.8 — dica que nunca aparece e portão sem argumentos (06/11, 6.2)
+
+A dica do negócio vinha depois do `CanPlayBusiness`: sem ninguém na fila a função saía antes e o jogador nunca via a
+dica justamente na primeira visita. Dica de primeira vez vai ANTES de qualquer saída antecipada. Quem testa dica num
+perfil de save já usado vê a segunda dica (a primeira foi marcada como vista): use pasta de save nova.
+`tools/ue58/qa/qa_gate.py` não lê argumentos: `qa_gate.py --help` roda o portão inteiro e para o PIE. Não passe nada.

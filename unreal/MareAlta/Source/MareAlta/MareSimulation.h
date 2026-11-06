@@ -473,6 +473,9 @@ public:
  FString PendingTipTitle,PendingTipText;
  /** Cheapest expansion that can be bought next (prerequisites met) and its price; false when none is left. */
  bool NextGoal(FString& Name,double& Cost) const;
+ /** 6.2: the next unlock and everything still missing for it, e.g. "Próximo desbloqueio: Piscina · faltam R$ 1200 e fama 4"
+  *  (money, fame level, village story); "já dá para comprar no celular" when nothing is missing; empty when all is bought. */
+ FString NextUnlockText() const;
  // --- Day events and parties (MareEvents.cpp, Content/Data/events.json) ---
  // State: day_event (today), forecast + forecast_day (tomorrow), prep_day (paid preparations), weather.
  TSharedPtr<FJsonObject> EventDefs() const;

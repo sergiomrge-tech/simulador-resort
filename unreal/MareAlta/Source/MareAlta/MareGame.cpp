@@ -686,6 +686,7 @@ private:
    Pencil(FString::Printf(TEXT("Grand Hotel 5 estrelas · ocupação prevista %.0f%% · nota %.1f · fama %s"),S->HotelOccupancy()*100,S->Stars(),*S->FameName())+(Last->HasField(TEXT("rooms"))?FString::Printf(TEXT(" · última noite %.0f suítes, R$ %.0f"),UMareSimulation::Number(Last,TEXT("rooms")),UMareSimulation::Number(Last,TEXT("rev"))):FString()));}
   auto Pousada=UMareSimulation::Object(UMareSimulation::Object(S->State,TEXT("prog")),TEXT("pousada"));
   if(S->PousadaRooms()>0 && Pousada->HasField(TEXT("rooms")))Pencil(FString::Printf(TEXT("Pousada, última noite: %.0f de %.0f quartos · R$ %.0f"),UMareSimulation::Number(Pousada,TEXT("occupied")),UMareSimulation::Number(Pousada,TEXT("rooms")),UMareSimulation::Number(Pousada,TEXT("rev"))));
+  {const FString Next=S->NextUnlockText();if(!Next.IsEmpty())Pencil(Next);}   // 6.2: the next unlock and what it still needs
   Heading(TEXT("Expansões"),TEXT("(cada uma libera uma área nova)"));auto G=Grid();int32 I=0;auto Expansions=UMareSimulation::Object(S->Definitions,TEXT("expansions"));
   TArray<FString> Order;const TArray<TSharedPtr<FJsonValue>>* Listed=nullptr;if(S->Definitions->TryGetArrayField(TEXT("expansion_order"),Listed))for(const auto& V:*Listed)Order.Add(V->AsString());
   for(const auto& Pair:Expansions->Values)Order.AddUnique(FString(Pair.Key.ToView()));
@@ -1766,6 +1767,9 @@ private:
 void AMareController::StartBusinessGame(const FString& Biz)
 {
  auto S=GetSimulation();if(!GEngine || !GEngine->GameViewport || !S || GameWidget.IsValid())return;
+ // 6.2: this business's own tip the first time, even when nobody is waiting yet; the generic one (the clerk at 60 %)
+ // on a later visit.
+ if(!S->ShowTip(TEXT("biz:")+Biz))S->ShowTip(TEXT("BusinessCounter"));
  FString Reason;if(!S->CanPlayBusiness(Biz,Reason)){S->LastMessage=Reason;return;}
  ClosePhone();SetPause(true);
  // The ice cream shop has its own hands-on task (3.1): the cone built from memory, customer after customer.
@@ -2647,8 +2651,8 @@ void AMareHUD::DrawHUD()
    }
   }
   // The next thing to save for, always visible.
-  {FString Goal;double Cost=0;if(bCreated && S->NextGoal(Goal,Cost))M.Note.Add({Cost>S->Money()?FString::Printf(TEXT("Próxima meta: %s · faltam R$ %.0f"),*Goal,Cost-S->Money())
-   :FString::Printf(TEXT("Próxima meta: %s · já dá para comprar no celular"),*Goal),3});}
+  // 6.2: with the fame and the village story still missing, not only the money.
+  {const FString Next=bCreated?S->NextUnlockText():FString();if(!Next.IsEmpty())M.Note.Add({Next,3});}
   // Village story step currently open (talk to its giver to advance).
   const TArray<TSharedPtr<FJsonValue>>* Chapters=nullptr;
   if(S->Definitions->TryGetArrayField(TEXT("chapters"),Chapters))for(const auto& Value:*Chapters){

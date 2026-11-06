@@ -88,7 +88,8 @@ void AMareServiceTarget::Use(APlayerController* Controller)
  if(auto Presentation=PC->GetPawn()?PC->GetPawn()->FindComponentByClass<UMarePlayerPresentation>():nullptr)Presentation->ReachFor(GetActorTransform().TransformPosition(FocusOffset));
  auto Sim=PC->GetGameInstance()->GetSubsystem<UMareSimulation>();
  if(Action.ToString().StartsWith(TEXT("Home"))){GetWorld()->GetSubsystem<UMareHomeWorld>()->Use(Action);return;}
- if(Sim)Sim->ShowTip(Action.ToString());   // first-time tip of this kind of target (Content/Data/tutorial.json)
+ // First-time tip of this kind of target (Content/Data/tutorial.json). The business counter's tips (one per business, 6.2) are shown by AMareController::StartBusinessGame (it also opens from QA).
+ if(Sim && Action!=TEXT("BusinessCounter"))Sim->ShowTip(Action.ToString());
  if(Action==TEXT("IntroLetter")){if(auto Intro=Cast<AMareIntro>(GetOwner()))Intro->ReadLetter();return;}
  if(Action==TEXT("Resident")){GetWorld()->GetSubsystem<UMareVillageWorld>()->Speak(Cast<AMarePerson>(GetOwner()),Controller);return;}
  if(Action==TEXT("Elder")){if(auto Summit=GetWorld()->GetSubsystem<UMareSummitWorld>())Summit->Talk(Controller);return;}
