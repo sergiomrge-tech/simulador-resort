@@ -264,6 +264,31 @@ def lights():
     return {'bare': res['bare'], 'pass': res['pass']}
 
 
+def ui_shot():
+    """A screenshot with the UI is written even with the editor minimized (06/11: 'shot showui' wrote nothing then;
+    mare.Shot restores the window first). Minimizes the editor, asks for one and waits for the file."""
+    import ctypes
+    import subprocess
+    out = OUT / 'ui_shot.png'
+    if out.exists():
+        out.unlink()
+    pid = subprocess.run(['powershell', '-NoProfile', '-Command',
+                          '(Get-Process UnrealEditor | Where-Object { $_.MainWindowHandle -ne 0 } | Select-Object -First 1).MainWindowHandle'],
+                         capture_output=True, text=True).stdout.strip()
+    hwnd = int(pid) if pid.isdigit() else 0
+    if hwnd:
+        ctypes.windll.user32.ShowWindow(hwnd, 6)   # SW_MINIMIZE
+        time.sleep(2)
+    hud('cmd', 'mare.Shot ' + str(out).replace('\\', '/'))
+    for _ in range(15):
+        if out.exists():
+            break
+        time.sleep(1)
+    if hwnd:
+        ctypes.windll.user32.ShowWindow(hwnd, 9)   # SW_RESTORE
+    return {'file': str(out), 'minimized': bool(hwnd), 'pass': out.exists()}
+
+
 def main():
     accept, with_shots = '--accept' in sys.argv, '--no-shots' not in sys.argv
     base = json.loads(BASELINE.read_text(encoding='utf-8')) if BASELINE.exists() else {}
@@ -288,6 +313,7 @@ def main():
     hud('cmd', 'mare.OffscreenPose 1'); hud('cmd', 'mare.PeopleHideOffscreen 1'); hud('cmd', 'mare.PeopleDrawDistance -1')
     time.sleep(2)
     report['visible'] = visible()
+    report['ui_shot'] = ui_shot()
     if with_shots:
         report['shots'] = shots(stamp)
     coast('clock', '1250')
@@ -300,7 +326,7 @@ def main():
     pie(False)
     report['untracked'] = untracked(base)
     report['driver'] = dict(DRIVER, **{'pass': bool(DRIVER.get('driver')) and not DRIVER.get('swim')})
-    report['pass'] = all(report[k]['pass'] for k in ('tests', 'floating', 'cook', 'lights', 'gait', 'visible', 'log', 'untracked', 'driver'))
+    report['pass'] = all(report[k]['pass'] for k in ('tests', 'floating', 'cook', 'lights', 'gait', 'visible', 'log', 'untracked', 'driver', 'ui_shot'))
     OUT.mkdir(parents=True, exist_ok=True)
     (OUT / 'report.json').write_text(json.dumps(report, indent=1, ensure_ascii=False), encoding='utf-8')
     if accept:
@@ -312,6 +338,7 @@ def main():
           (report['cook']['missing'] + report['cook']['absent'])[:6])
     print(' float  ', report['floating']['floating'], '(baseline', report['floating']['baseline'], ')')
     print(' driver ', report['driver'].get('meshes'), 'swimwear' if report['driver'].get('swim') else '')
+    print(' uishot ', 'ok' if report['ui_shot']['pass'] else 'NO FILE', '(editor minimized)' if report['ui_shot']['minimized'] else '')
     print(' lights ', len(report['lights']['bare']), 'room lights without a fixture', report['lights']['bare'][:6])
     print(' gait   day', day['moving'], 'moving', len(day['gliding']), 'gliding | night', night['moving'], 'moving', len(night['gliding']), 'gliding')
     v = report['visible']

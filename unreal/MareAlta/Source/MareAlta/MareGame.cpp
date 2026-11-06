@@ -2243,10 +2243,25 @@ struct FMareUIQA
 };
 // QA: screenshot with the UI after N real seconds (works while paused, e.g. "mare.ShowUI options, mare.ShotLater 4":
 // a shot taken the same frame the menu opens comes before the notebook pages are laid out, 04/11).
+// 06/11: "shot showui" wrote no file while the editor window was minimized: a shot with the UI is Slate grabbing the
+// window's own back buffer, which is not drawn when minimized, and the request is dropped without a log line (HighResShot
+// reads the scene and still worked). Restore the window first and ask for the shot a moment later.
+static void MareShotWithUI(float Delay,const FString& File)
+{
+ if(FSlateApplication::IsInitialized() && GEngine && GEngine->GameViewport){
+  const TSharedPtr<SWindow> Window=GEngine->GameViewport->GetWindow();
+  if(Window.IsValid() && Window->IsWindowMinimized()){
+   Window->Restore();Delay=FMath::Max(Delay,1.f);
+   UE_LOG(LogTemp,Display,TEXT("mare.Shot: the window was minimized; restored it for the UI screenshot"));}
+ }
+ FTSTicker::GetCoreTicker().AddTicker(FTickerDelegate::CreateLambda([File](float){
+  FScreenshotRequest::RequestScreenshot(File,true,File.IsEmpty());return false;}),FMath::Max(Delay,.1f));
+}
 static FAutoConsoleCommand MareShotLaterCommand(TEXT("mare.ShotLater"),TEXT("QA: screenshot with the UI after N seconds (Saved/Screenshots)."),
- FConsoleCommandWithArgsDelegate::CreateLambda([](const TArray<FString>& Args){
-  const float Delay=Args.Num()?FCString::Atof(*Args[0]):3.f;
-  FTSTicker::GetCoreTicker().AddTicker(FTickerDelegate::CreateLambda([](float){FScreenshotRequest::RequestScreenshot(true);return false;}),FMath::Max(Delay,.1f));}));
+ FConsoleCommandWithArgsDelegate::CreateLambda([](const TArray<FString>& Args){MareShotWithUI(Args.Num()?FCString::Atof(*Args[0]):3.f,FString());}));
+// QA: screenshot with the UI that also works with the editor minimized ("mare.Shot [D:/path/file.png]"); use it instead of "shot showui".
+static FAutoConsoleCommand MareShotCommand(TEXT("mare.Shot"),TEXT("QA: screenshot with the UI, restoring a minimized editor window first (optional file path)."),
+ FConsoleCommandWithArgsDelegate::CreateLambda([](const TArray<FString>& Args){MareShotWithUI(.1f,Args.Num()?Args[0]:FString());}));
 // QA (test profiles only): buys N of every stock item, so the kiosk cycle can be exercised from a drained save.
 static FAutoConsoleCommandWithWorldAndArgs MareRestockCommand(TEXT("mare.Restock"),TEXT("QA: buys N of every stock item (QA save profile only)."),
  FConsoleCommandWithWorldAndArgsDelegate::CreateLambda([](const TArray<FString>& Args,UWorld* World){

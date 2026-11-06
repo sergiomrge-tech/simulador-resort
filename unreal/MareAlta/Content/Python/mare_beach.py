@@ -68,7 +68,7 @@ def pie_shot(arg):
     if name.endswith('^'):
         # Viewport shot (first-person body and HUD included) to Saved/Screenshots/WindowsEditor.
         move = hero.get_component_by_class(unreal.CharacterMovementComponent)
-        unreal.SystemLibrary.execute_console_command(world, 'Shot showui')
+        unreal.SystemLibrary.execute_console_command(world, 'mare.Shot')
         return {'shot': name[:-1], 'swimming': move.is_swimming(), 'z': hero.get_actor_location().z}
     if name.endswith('!'):
         unreal.SystemLibrary.execute_console_command(world, 'HighResShot 1280x720 filename=D:/CodexTemp/beach/pie-' + name[:-1] + '.png')

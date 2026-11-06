@@ -272,7 +272,7 @@ def bar_qa(arg):
     if arg == 'close':
         pc.close_phone()
     if arg == 'shot':
-        unreal.SystemLibrary.execute_console_command(world, 'Shot showui')
+        unreal.SystemLibrary.execute_console_command(world, 'mare.Shot')
     return {'target': bool(target), 'phone': pc.get_editor_property('phone_open')}
 
 
@@ -304,7 +304,7 @@ def biz_qa(arg):
     if what == 'buy':
         return sim.buy_business(biz)
     if what == 'shot':
-        unreal.SystemLibrary.execute_console_command(world, 'Shot showui')
+        unreal.SystemLibrary.execute_console_command(world, 'mare.Shot')
         return 'shot'
     target = next((a for a in unreal.GameplayStatics.get_all_actors_of_class(world, unreal.MareServiceTarget)
                    if 'biz:' + biz in [str(t) for t in a.tags]), None)
@@ -364,7 +364,7 @@ def target_qa(arg):
     hero = unreal.GameplayStatics.get_player_pawn(world, 0)
     what, _, action = arg.partition(':')
     if what == 'shot':
-        unreal.SystemLibrary.execute_console_command(world, 'Shot showui')
+        unreal.SystemLibrary.execute_console_command(world, 'mare.Shot')
         return 'shot'
     target = next((a for a in unreal.GameplayStatics.get_all_actors_of_class(world, unreal.MareServiceTarget)
                    if str(a.get_editor_property('action')) == action), None)

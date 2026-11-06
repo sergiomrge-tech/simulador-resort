@@ -84,7 +84,13 @@ Pedidos do Sergio e conferências que ficaram para trás no lote de 05/11 (alugu
   achadas com `mare_light_audit.ray` e confirmadas escondendo os atores. Não é defeito do jogo: a câmera de QA estava
   com o pawn em z 170, ou seja, olho a 2,44 m, atrás da placa. Na altura do olho do herói (pawn z 100, olho 1,74 m) a
   vista é limpa. A câmera `quiosque_barra` do `night_lights.py` foi corrigida.
-- [ ] `shot showui` parou de gerar arquivo no PIE em algumas rodadas (só `HighResShot 1` funcionou): investigar.
+- [x] `shot showui` parou de gerar arquivo no PIE em algumas rodadas (só `HighResShot 1` funcionou): investigar.
+  Decisão (06/11): reproduzido minimizando o editor. A foto com UI é o Slate copiando o back buffer da janela
+  (`FSlateApplication::TakeScreenshot`), que não é desenhado com a janela minimizada, e o pedido some sem aviso no log;
+  o `HighResShot` lê a cena e por isso funcionava. Novo comando `mare.Shot [arquivo]` (e o `mare.ShotLater`): restaura a
+  janela se estiver minimizada e pede a foto 1 s depois. Os scripts de QA (`mare_hud`, `mare_beach`, `mare_hotel_lobby`,
+  `mare_progression_probe`) trocaram `Shot showui` por `mare.Shot`. Checagem permanente: o portão minimiza o editor,
+  pede `mare.Shot` e exige o arquivo (`ui_shot`). Portão PASS (40 testes).
 - [ ] ILHA (pedido grande, entregue ao agente novo do Sergio): "morro no meio, praia em volta, uma ilha pequena,
   preservando a vila e todas as construções, o restante é vegetação e árvores". Mar, espuma e perfil do fundo
   (`reef.json` → `floor_fill`, `SeabedZ`) precisam virar radiais. Refazer a navegação estática com cuidado.

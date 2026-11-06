@@ -415,7 +415,7 @@ def pie(step):
             target.use(pc)
         out['phone_open'] = pc.get_editor_property('phone_open')
     elif step == 'shot':
-        unreal.SystemLibrary.execute_console_command(world, 'Shot showui')
+        unreal.SystemLibrary.execute_console_command(world, 'mare.Shot')
     elif step == 'close':
         pc.close_phone()
     loc = hero.get_actor_location()

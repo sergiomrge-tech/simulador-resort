@@ -75,7 +75,7 @@ def run(action, arg=''):
         result['capture'] = path
     elif action == 'capture-ui':
         # Includes Slate viewport widgets (dialogue, phone); saved under Saved/Screenshots.
-        unreal.SystemLibrary.execute_console_command(world, 'Shot showui')
+        unreal.SystemLibrary.execute_console_command(world, 'mare.Shot')
     elif action != 'state':
         raise ValueError(action)
     result.update({'money': sim.money(), 'phone_open': pc.get_editor_property('phone_open'), 'move_ignored': pc.is_move_input_ignored(),

@@ -595,7 +595,10 @@ Escuridão pela profundidade = `SceneColorTint` do Eyes + exposição travada em
 Herói com Buoyancy 1,35 embaixo d'água subia como boia (2,25 m/s): 1,03 abaixo de -110.
 Repositório recuperado como clone parcial (blob:none): `git status`/`reset` tentam baixar blobs e travam. Use
 `GIT_NO_LAZY_FETCH=1`; para refazer o índice, `git read-tree HEAD` (não `reset`).
-O comando `shot showui` às vezes não gera arquivo no PIE: usar `HighResShot 1` como alternativa.
+O comando `shot showui` não gera arquivo no PIE quando a janela do editor está MINIMIZADA (06/11): a foto com UI é o
+Slate copiando o back buffer da própria janela, que não é desenhado minimizado, e o pedido some sem linha no log
+(`HighResShot` lê a cena e funciona). Use `mare.Shot [arquivo]`, que restaura a janela antes; o portão confere isso
+(`ui_shot`, com o editor minimizado).
 
 ## UE5.8 — luz noturna dos imóveis (06/11)
 
