@@ -12,6 +12,7 @@
 #include "MareSnorkelWorld.h"
 #include "MareTrailWorld.h"
 #include "MareRentalWorld.h"
+#include "MareSouvenirGame.h"
 #include "MareReefWorld.h"
 #include "MarePlayerPresentation.h"
 #include "MareHomeWorld.h"
@@ -1755,6 +1756,10 @@ void AMareController::StartBusinessGame(const FString& Biz)
  if(Biz==TEXT("aluguel")){const TSharedRef<SMareRentalGame> Rent=SNew(SMareRentalGame).Owner(this);GameWidget=Rent;GRentalGame=Rent;
   GEngine->GameViewport->AddViewportWidgetContent(Rent,40);bShowMouseCursor=true;
   SetInputMode(FInputModeUIOnly().SetWidgetToFocus(Rent));SetIgnoreMoveInput(true);SetIgnoreLookInput(true);return;}
+ // The souvenir shop (3.5): gift wrap, shelf and makers, postcards from the album.
+ if(Biz==TEXT("souvenir")){const TSharedRef<SWidget> Shop=MareSouvenirGame::Make(this);GameWidget=Shop;
+  GEngine->GameViewport->AddViewportWidgetContent(Shop,40);bShowMouseCursor=true;
+  SetInputMode(FInputModeUIOnly().SetWidgetToFocus(Shop));SetIgnoreMoveInput(true);SetIgnoreLookInput(true);return;}
  if(Biz==TEXT("food_truck")){const TSharedRef<SMarePastelGame> Pastel=SNew(SMarePastelGame).Owner(this);GameWidget=Pastel;GPastelGame=Pastel;
   GEngine->GameViewport->AddViewportWidgetContent(Pastel,40);bShowMouseCursor=true;
   SetInputMode(FInputModeUIOnly().SetWidgetToFocus(Pastel));SetIgnoreMoveInput(true);SetIgnoreLookInput(true);return;}
@@ -1804,6 +1809,28 @@ FString AMareController::RentalQA(const FString& Cmd)
  if(Cmd==TEXT("right")){Game->QARight();return S->LastMessage;}
  if(Cmd==TEXT("close")){CloseBusinessGame();return TEXT("ok");}
  return TEXT("?");
+}
+FString AMareController::SouvenirQA(const FString& Cmd)
+{
+ auto S=GetSimulation();if(!S)return TEXT("none");FString A,B;if(!Cmd.Split(TEXT(":"),&A,&B))A=Cmd;
+ if(A==TEXT("own")){S->SouvenirState()->SetNumberField(TEXT("lvl"),1);S->State->SetNumberField(TEXT("minutes"),10*60+10);
+  // The makers sell once their village story is done: the souvenir shop itself comes after the last one.
+  for(const FString Id:{TEXT("pier"),TEXT("prainha"),TEXT("sabores"),TEXT("carnaval")})UMareSimulation::Object(UMareSimulation::Object(S->State,TEXT("prog")),TEXT("ch"))->SetNumberField(Id,3);
+  S->State->SetNumberField(TEXT("money"),FMath::Max(S->Money(),3000.));return TEXT("ok");}
+ if(A==TEXT("gift")){const auto Crafts=S->SouvenirShelf();for(int32 I=0;I<FCString::Atoi(*B);++I)S->AddSouvenirGift(UMareSimulation::String(Crafts[I%2],TEXT("item")));return FString::Printf(TEXT("queue=%d"),S->SouvenirQueue().Num());}
+ if(A==TEXT("open")){StartBusinessGame(TEXT("souvenir"));return MareSouvenirGame::IsOpen()?TEXT("open"):S->LastMessage;}
+ if(A==TEXT("buy")){S->BuySouvenirCraft(B);return S->LastMessage;}
+ if(A==TEXT("place")){FString Slot,Id;B.Split(TEXT(","),&Slot,&Id);S->PlaceSouvenir(FCString::Atoi(*Slot),Id);return S->LastMessage;}
+ if(A==TEXT("hour")){const double Before=S->Money();const int32 H=FMath::FloorToInt(UMareSimulation::Number(S->State,TEXT("minutes"))/60)+1;
+  for(int32 I=0;I<FMath::Max(1,FCString::Atoi(*B));++I)S->SouvenirHour(H);return FString::Printf(TEXT("sold=%.0f queue=%d"),S->Money()-Before,S->SouvenirQueue().Num());}
+ if(A==TEXT("photo")){TakePhoto();return S->LastMessage;}
+ if(A==TEXT("print")){const TArray<TSharedPtr<FJsonValue>>* Album=nullptr;UMareSimulation::Object(S->State,TEXT("prog"))->TryGetArrayField(TEXT("album"),Album);
+  if(!Album || Album->IsEmpty())return TEXT("no photo");const auto P=Album->Last()->AsObject();const TArray<TSharedPtr<FJsonValue>>* Subs=nullptr;P->TryGetArrayField(TEXT("subjects"),Subs);
+  S->PrintPostcards(UMareSimulation::String(P,TEXT("file")),Subs?Subs->Num():0);return S->LastMessage;}
+ if(A==TEXT("state")){FString Out;for(const auto& Sl:S->SouvenirShelf())Out+=FString::Printf(TEXT("%s=%.0f "),*UMareSimulation::String(Sl,TEXT("item")),UMareSimulation::Number(Sl,TEXT("qty")));
+  return Out+FString::Printf(TEXT("queue=%d cards=%d money=%.0f"),S->SouvenirQueue().Num(),S->SouvenirCards().Num(),S->Money());}
+ if(A==TEXT("close")){CloseBusinessGame();return TEXT("ok");}
+ return MareSouvenirGame::QA(Cmd);
 }
 FString AMareController::PastelQA(const FString& Cmd)
 {

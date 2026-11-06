@@ -33,6 +33,8 @@ bool UMareSimulation::CanPlayBusiness(const FString& Id,FString& Reason) const
  if(Id==TEXT("sorveteria")){if(IceQueue().IsEmpty()){Reason=TEXT("Ninguém na fila da sorveteria agora.");return false;}return true;}
  if(Id==TEXT("aluguel")){if(RentalQueue().IsEmpty() && RentalReturns().IsEmpty()){Reason=TEXT("Ninguém para alugar nem devolver agora.");return false;}return true;}
  if(Id==TEXT("food_truck")){if(PastelQueue().IsEmpty()){Reason=TEXT("Ninguém na fila do pastel agora.");return false;}return true;}
+ // The souvenir shop is always open to manage (shelf, makers, postcards); the gift line is served inside it (3.5).
+ if(Id==TEXT("souvenir"))return true;
  const int32 Hour=int32(Number(State,TEXT("day"),1))*24+FMath::FloorToInt(Number(State,TEXT("minutes"))/60);
  if(Number(Object(Object(Object(State,TEXT("prog")),TEXT("biz")),Id),TEXT("games_hour"),-1)>=Hour){Reason=TEXT("Cliente atendido. O próximo chega na próxima hora.");return false;}
  return true;

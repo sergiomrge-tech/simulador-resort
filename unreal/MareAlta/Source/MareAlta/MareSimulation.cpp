@@ -760,7 +760,7 @@ void UMareSimulation::OperateHour(int32 Hour)
  auto Today=Child(Ops,TEXT("today"));const int32 Started=Hour-1;double Total=0;TArray<FString> Parts;
  auto Add=[&](const FString& Place,const FString& Label,double Amount){Amount=FMath::RoundToDouble(Amount);if(Amount<=0)return;
   Today->SetNumberField(Place,Number(Today,Place)+Amount);Total+=Amount;Parts.Add(FString::Printf(TEXT("%s R$ %.0f"),*Label,Amount));};
- StaysHour(Hour);BarHour(Hour);IceCreamHour(Hour);PastelHour(Hour);RentalHour(Hour);PoolHour(Hour);RestaurantHour(Hour);GameRoomHour(Hour);
+ StaysHour(Hour);BarHour(Hour);IceCreamHour(Hour);PastelHour(Hour);RentalHour(Hour);SouvenirHour(Hour);PoolHour(Hour);RestaurantHour(Hour);GameRoomHour(Hour);
  auto Defs=Object(CustomDefs(),TEXT("operations"));
  for(const auto& Pair:Object(Defs,TEXT("hourly"))->Values){const FString Id(Pair.Key.ToView());auto Op=Pair.Value->AsObject();
   const TArray<TSharedPtr<FJsonValue>>* Open=nullptr;if(!Owns(State,String(Op,TEXT("unlock"))) || !Op->TryGetArrayField(TEXT("open"),Open) || Open->Num()!=2)continue;
@@ -768,6 +768,7 @@ void UMareSimulation::OperateHour(int32 Hour)
  // Tours sell tickets at the pier and leave guided by the player or the guide (MareTours.cpp).
  ToursHour(Hour);
  for(const auto& Pair:Object(Definitions,TEXT("businesses"))->Values){const FString Id(Pair.Key.ToView());if(!OwnsBusiness(Id))continue;
+  if(Id==TEXT("souvenir"))continue;   // the souvenir shop earns from its shelf (SouvenirHour, 3.5), not a flat hourly rate
   const TArray<TSharedPtr<FJsonValue>>* Open=nullptr;if(!Pair.Value->AsObject()->TryGetArrayField(TEXT("open"),Open) || Open->Num()!=2)continue;
   if(Started>=(*Open)[0]->AsNumber() && Started<(*Open)[1]->AsNumber())Add(TEXT("biz_")+Id,String(Pair.Value->AsObject(),TEXT("name")),BusinessRate(Id)*FMath::FRandRange(.85,1.15));}
  // One ledger line per hour keeps the statement readable; the phone shows the split per place.

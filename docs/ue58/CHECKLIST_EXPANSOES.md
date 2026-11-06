@@ -341,17 +341,27 @@ Decisões (05/11/2026):
   (modelo próprio `tools/ue58/gen_rental.py`) boia pelas ondas (`SeaHeight` na proa, popa e bordos) e vai para o largo.
   O jogador nada até ele, aperta E e o reboca a 2,2 m de corda até a areia (`MareRentalWorld.cpp`), ganhando R$ 30 e +3 de fama.
 
-### 3.4 Escolinha de surfe
+### 3.4 Escolinha de surfe — EXCLUÍDA (Sergio, 06/11/2026: "excluir escola de surfe")
 
-- [ ] Aula na areia: o aluno copia a pose que o jogador escolhe na ordem certa (remada, pop-up, base).
-- [ ] Aula na água: empurrar o aluno na onda na hora certa. Ele fica em pé ou leva caldo, com animação cômica.
-- [ ] O jogador pode surfar sozinho (minijogo de equilíbrio na onda) e liberar "aula avançada".
+Não fazer. Os três itens abaixo saíram do plano; pule direto para 3.5.
+
+- ~~Aula na areia: o aluno copia a pose que o jogador escolhe na ordem certa (remada, pop-up, base).~~
+- ~~Aula na água: empurrar o aluno na onda na hora certa. Ele fica em pé ou leva caldo, com animação cômica.~~
+- ~~O jogador pode surfar sozinho (minijogo de equilíbrio na onda) e liberar "aula avançada".~~
 
 ### 3.5 Lojinha de souvenires
 
-- [ ] Comprar artesanato dos moradores da vila (ligar aos capítulos da vila) e arrumar a prateleira: a posição na vitrine afeta a venda.
-- [ ] Embrulhar o presente: dobrar o papel em 3 cliques na ordem certa e escolher a fita na cor pedida.
-- [ ] Vender cartões-postais feitos com as fotos do modo foto do jogador.
+- [x] Comprar artesanato dos moradores da vila (ligar aos capítulos da vila) e arrumar a prateleira: a posição na vitrine afeta a venda.
+- [x] Embrulhar o presente: dobrar o papel em 3 cliques na ordem certa e escolher a fita na cor pedida.
+- [x] Vender cartões-postais feitos com as fotos do modo foto do jogador.
+
+Decisões (06/11/2026):
+- **Tela da lojinha** (`SMareSouvenirGame` em `MareSouvenirGame.cpp`, lógica em `MareSouvenir.cpp`, valores em `business_games.json` → `souvenir.shop`), com três páginas (Tab troca): Embrulhar presente, Prateleira e artesãos, Cartões-postais. O balcão abre sempre que a loja está aberta; o turista só espera no balcão quando alguém pediu embrulho.
+- **Artesãos:** Dona Rita (ímã de jangada e colar de conchas, desde o início), Seu Severino (jangadinha, capítulo do píer), Padre Robson (garrafinha de areia colorida, prainha), Dona Cecília (cocada caseira, sabores) e a prefeita Tuanny (máscara de carnaval, carnaval). Cada um faz poucas peças por dia (`daily`); compra em lotes de 4 para o estoque dos fundos.
+- **Prateleira:** 4 lugares, da vitrine ao fundo (×1,6, ×1,2, ×0,85, ×0,45). A cada hora aberta chegam 1–3 turistas (mais com fama, ×2 no carnaval); cada um olha da vitrine para dentro e compra com chance 30% × lugar × apelo da peça. A venda da prateleira substitui a renda fixa por hora da loja: prateleira vazia não vende nada. Começa com ímãs na vitrine e colares no balcão.
+- **Embrulho:** quem compra pede embrulho em 45% das vezes (fila de até 4, paciência 45 min). A cor da fita aparece por 3 s e some; os três botões de dobra mudam de lugar a cada cliente (a ordem certa é laterais, fundo, topo, escrita no bilhete). Nota: ordem das dobras + fita certa + até 15 s; paga R$ 6 × [0; 0,5; 0,8; 1] e R$ 5 de gorjeta no perfeito. Dobra fora de ordem amassa o papel (desenho mais escuro), e dá para pegar papel novo.
+- **Cartões-postais:** as 4 fotos mais novas do álbum aparecem em miniatura (o arquivo da própria foto); imprimir 5 custa R$ 7,50; preço R$ 5 + R$ 2 por atração na foto (até 2). Turistas compram com chance de 35% cada.
+- **Prova:** teste `MareAlta.Gameplay.Souvenir` (artesão travado pelo capítulo, peças do dia, prateleira e vitrine vendendo mais que o fundo, prateleira vazia, embrulho perfeito/amassado/demorado, cartões, fechamento e save) + `docs/ue58/graphics-reference/business_souvenir.jpg`. O teste genérico do balcão passou a usar a escolinha de surfe, que continua com a tarefa antiga.
 
 ### 3.6 Comum a todos
 
@@ -360,21 +370,29 @@ Decisões (05/11/2026):
 - [ ] Relatório diário de cada negócio no app do celular.
 - [ ] Teste por negócio: acerto perfeito, médio e erro dão a recompensa esperada e são salvos.
 
-## 4. Piscina e day use
+## 4. Piscina e day use — EXCLUÍDA (Sergio, 06/11/2026: "excluir 4")
+
+Os itens antigos (riscados abaixo) saíram do plano. No lugar deles fica UM item só (Sergio, 06/11/2026: "na piscina só
+coloque hóspedes que entrarem aproveitando a piscina e tobogã"):
+
+- [ ] **Hóspedes aproveitando a piscina e o tobogã:** hóspedes entram na água e nadam, boiam e conversam dentro da
+  piscina, e sobem a escada do tobogã e descem escorregando até cair na água. Animação de verdade (MetaHumans, sem
+  deslizar nem atravessar a borda, o deck ou outras pessoas), quantidade que aumenta nos dias de calor e de dia. Sem
+  minijogo nem gestão nova. Prova: fotos de perto de gente nadando e descendo o tobogã, e o qa_gate com PASS.
 
 **Hoje:** folhas caem toda hora e a peneira tira com E. Toalhas usadas ficam nas espreguiçadeiras e o picolé é vendido no cooler (`pool.json`). Sujeira e toalhas derrubam a renda e as estrelas.
 
 **Objetivo:** a piscina vira um lugar para cuidar e animar, não só limpar.
 
-- [ ] **Peneira de verdade:** a rede segue a câmera e as folhas boiam e se movem com o vento. É preciso passar a rede por cima delas, em vez de um único E.
-- [ ] **Química da água:** um kit de teste uma vez por dia (cor da amostra) e a escolha de cloro ou correção de pH. A água turva aos poucos, de forma visível.
-- [ ] **Espreguiçadeiras:** o hóspede "marca" o lugar com a toalha e sai (evento cômico). O jogador decide liberar ou não.
-- [ ] **Salva-vidas:** uma criança sem boia ou alguém passando mal. O jogador ou o salva-vidas contratado age a tempo.
-- [ ] **Aluguel de boias** (flamingo, rosquinha), com renda e devolução.
-- [ ] **Tobogã:** fila e um sinal para liberar a descida quando a saída está livre. Liberar cedo demais causa trombada cômica e reclamação.
-- [ ] **Festa na piscina** à noite (evento pago na véspera): luzes, DJ e drinks do bar com mais demanda.
-- [ ] Picolé abastecido pela sorveteria (ver 3.1). Sem estoque, o cliente reclama.
-- [ ] Melhorias: hidromassagem, bar molhado, guarda-sóis e cascata.
+- ~~**Peneira de verdade:** a rede segue a câmera e as folhas boiam e se movem com o vento. É preciso passar a rede por cima delas, em vez de um único E.~~
+- ~~**Química da água:** um kit de teste uma vez por dia (cor da amostra) e a escolha de cloro ou correção de pH. A água turva aos poucos, de forma visível.~~
+- ~~**Espreguiçadeiras:** o hóspede "marca" o lugar com a toalha e sai (evento cômico). O jogador decide liberar ou não.~~
+- ~~**Salva-vidas:** uma criança sem boia ou alguém passando mal. O jogador ou o salva-vidas contratado age a tempo.~~
+- ~~**Aluguel de boias** (flamingo, rosquinha), com renda e devolução.~~
+- ~~**Tobogã:** fila e um sinal para liberar a descida quando a saída está livre. Liberar cedo demais causa trombada cômica e reclamação.~~
+- ~~**Festa na piscina** à noite (evento pago na véspera): luzes, DJ e drinks do bar com mais demanda.~~
+- ~~Picolé abastecido pela sorveteria (ver 3.1). Sem estoque, o cliente reclama.~~
+- ~~Melhorias: hidromassagem, bar molhado, guarda-sóis e cascata.~~
 
 ## 5. Grand Hotel e salão de jogos
 

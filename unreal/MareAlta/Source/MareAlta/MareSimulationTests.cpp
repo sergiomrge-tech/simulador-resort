@@ -803,15 +803,16 @@ bool FMareBusinessShiftTest::RunTest(const FString& Parameters)
   TestTrue(TEXT("Counter business defined: ")+Id,Sim->Object(Sim->Definitions,TEXT("businesses"))->HasField(Id));
   const TArray<TSharedPtr<FJsonValue>>* Steps=nullptr;TestTrue(TEXT("Three steps: ")+Id,Pair.Value->AsObject()->TryGetArrayField(TEXT("steps"),Steps) && Steps->Num()==3);}
  // The hourly counter task (ice cream, pastel and rental have their own queues: 3.1-3.3).
- FString Reason;TestFalse(TEXT("Not owned: no counter task"),Sim->CanPlayBusiness(TEXT("souvenir"),Reason));
- Sim->Object(Sim->Object(Sim->Object(Sim->State,TEXT("prog")),TEXT("biz")),TEXT("souvenir"))->SetNumberField(TEXT("lvl"),1);
- TestTrue(TEXT("Owned and open: task available"),Sim->CanPlayBusiness(TEXT("souvenir"),Reason));
- double Before=Sim->Money();const double Perfect=Sim->PlayBusiness(TEXT("souvenir"),3);
+ // (the surf school keeps the generic task: its own lessons were dropped from the plan, 06/11)
+ FString Reason;TestFalse(TEXT("Not owned: no counter task"),Sim->CanPlayBusiness(TEXT("surfe"),Reason));
+ Sim->Object(Sim->Object(Sim->Object(Sim->State,TEXT("prog")),TEXT("biz")),TEXT("surfe"))->SetNumberField(TEXT("lvl"),1);
+ TestTrue(TEXT("Owned and open: task available"),Sim->CanPlayBusiness(TEXT("surfe"),Reason));
+ double Before=Sim->Money();const double Perfect=Sim->PlayBusiness(TEXT("surfe"),3);
  TestTrue(TEXT("Perfect task pays"),Perfect>0);TestEqual(TEXT("Booked"),Sim->Money(),Before+Perfect);
- TestFalse(TEXT("Once per hour"),Sim->CanPlayBusiness(TEXT("souvenir"),Reason));TestEqual(TEXT("Second try pays nothing"),Sim->PlayBusiness(TEXT("souvenir"),3),0.);
+ TestFalse(TEXT("Once per hour"),Sim->CanPlayBusiness(TEXT("surfe"),Reason));TestEqual(TEXT("Second try pays nothing"),Sim->PlayBusiness(TEXT("surfe"),3),0.);
  Sim->State->SetNumberField(TEXT("minutes"),13*60);
- const double Miss=Sim->PlayBusiness(TEXT("souvenir"),0);TestTrue(TEXT("Next hour available, fewer hits pay less"),Miss>0 && Miss<Perfect);
- Sim->State->SetNumberField(TEXT("minutes"),22*60);TestFalse(TEXT("Closed at night"),Sim->CanPlayBusiness(TEXT("souvenir"),Reason));
+ const double Miss=Sim->PlayBusiness(TEXT("surfe"),0);TestTrue(TEXT("Next hour available, fewer hits pay less"),Miss>0 && Miss<Perfect);
+ Sim->State->SetNumberField(TEXT("minutes"),22*60);TestFalse(TEXT("Closed at night"),Sim->CanPlayBusiness(TEXT("surfe"),Reason));
  // Game-room machines: need the game room; pay their own base; night tokens between the token hours.
  TestFalse(TEXT("Foosball needs the game room"),Sim->CanPlayBusiness(TEXT("pebolim"),Reason));
  Sim->Object(Sim->State,TEXT("unlocked"))->SetBoolField(TEXT("salao_jogos"),true);Sim->State->SetNumberField(TEXT("minutes"),20*60);
@@ -1119,6 +1120,67 @@ bool FMareRentalTest::RunTest(const FString& Parameters)
  // Closing: whoever is out comes back, the line goes home.
  Sim->AddRentalCustomer();Sim->RentItem(false);Sim->AddRentalCustomer();Sim->State->SetNumberField(TEXT("minutes"),17*60+5);Sim->RentalHour(18);
  TestEqual(TEXT("Closed: empty line"),Sim->RentalQueue().Num(),0);TestEqual(TEXT("Closed: everything back"),Sim->RentalOut().Num(),0);
+ IFileManager::Get().DeleteDirectory(*Sim->SaveDirectory,false,true);
+ Sim->RemoveFromRoot();Instance->RemoveFromRoot();return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FMareSouvenirTest,"MareAlta.Gameplay.Souvenir",EAutomationTestFlags::EditorContext|EAutomationTestFlags::EngineFilter)
+bool FMareSouvenirTest::RunTest(const FString& Parameters)
+{
+ // CHECKLIST_EXPANSOES 3.5: crafts from the makers (chapter, daily pieces), the shelf (window sells most), the gift wrap
+ // (folds in order, ribbon, speed), postcards from album photos, closing, saved.
+ auto Instance=NewObject<UGameInstance>();Instance->AddToRoot();
+ auto Sim=NewObject<UMareSimulation>(Instance);Sim->AddToRoot();
+ Sim->SaveDirectory=FPaths::ProjectSavedDir()/TEXT("Automation/Souvenir")/FGuid::NewGuid().ToString(EGuidFormats::Digits);
+ auto Load=[&](const FString& Name,TSharedPtr<FJsonObject>& Result){FString Text;FFileHelper::LoadFileToString(Text,*(FPaths::ProjectContentDir()/TEXT("Data")/Name));return FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Text),Result);};
+ if(!TestTrue(TEXT("Definitions"),Load(TEXT("definitions.json"),Sim->Definitions)) || !TestTrue(TEXT("Default save"),Load(TEXT("default_save.json"),Sim->State))){Sim->RemoveFromRoot();Instance->RemoveFromRoot();return false;}
+ Sim->State->SetNumberField(TEXT("money"),2000);Sim->State->SetNumberField(TEXT("minutes"),10*60+10);Sim->State->SetStringField(TEXT("day_event"),TEXT(""));
+ Sim->SouvenirState()->SetNumberField(TEXT("lvl"),1);FString Reason;
+ TestTrue(TEXT("Shop opens to manage"),Sim->CanPlayBusiness(TEXT("souvenir"),Reason));
+ TestEqual(TEXT("Starts with Dona Rita's magnets on the window"),Sim->String(Sim->SouvenirShelf()[0],TEXT("item")),FString(TEXT("ima")));
+ // Makers: Seu Severino carves only after the pier story; each maker has a few pieces a day.
+ TestFalse(TEXT("Jangada waits for the pier chapter"),Sim->BuySouvenirCraft(TEXT("jangada")));
+ Sim->Object(Sim->Object(Sim->State,TEXT("prog")),TEXT("ch"))->SetNumberField(TEXT("pier"),3);
+ double Cash=Sim->Money();TestTrue(TEXT("Bought jangadas"),Sim->BuySouvenirCraft(TEXT("jangada")));
+ const double JangadaCost=Sim->Number(Sim->SouvenirCraft(TEXT("jangada")),TEXT("cost"));const int32 Daily=int32(Sim->Number(Sim->SouvenirCraft(TEXT("jangada")),TEXT("daily")));
+ TestEqual(TEXT("Paid the maker"),Cash-Sim->Money(),JangadaCost*FMath::Min(Daily,4));TestEqual(TEXT("In the back room"),Sim->SouvenirBackStock(TEXT("jangada")),FMath::Min(Daily,4));
+ while(Sim->SouvenirMakerLeft(TEXT("jangada"))>0)Sim->BuySouvenirCraft(TEXT("jangada"));
+ TestFalse(TEXT("Sold out for today"),Sim->BuySouvenirCraft(TEXT("jangada")));
+ Sim->State->SetNumberField(TEXT("day"),Sim->Number(Sim->State,TEXT("day"),1)+1);TestEqual(TEXT("New pieces next day"),Sim->SouvenirMakerLeft(TEXT("jangada")),Daily);
+ // Shelf: placing moves the back-room stock; the window sells far more than the back shelf.
+ TestTrue(TEXT("Jangadas on the back shelf"),Sim->PlaceSouvenir(3,TEXT("jangada")));TestEqual(TEXT("Back room emptied"),Sim->SouvenirBackStock(TEXT("jangada")),0);
+ TestFalse(TEXT("Nothing to place"),Sim->PlaceSouvenir(2,TEXT("cocada")));
+ auto Fill=[&](int32 Slot,const FString& Id,int32 Qty){auto S=Sim->SouvenirShelf()[Slot];S->SetStringField(TEXT("item"),Id);S->SetNumberField(TEXT("qty"),Qty);};
+ Sim->SouvenirState()->SetObjectField(TEXT("back"),MakeShared<FJsonObject>());Sim->SouvenirState()->SetArrayField(TEXT("cards"),{});
+ int32 SoldWindow=0,SoldBack=0;FMath::RandInit(7);
+ for(int32 Round=0;Round<40;++Round){Fill(0,TEXT("colar"),99);Fill(1,TEXT(""),0);Fill(2,TEXT(""),0);Fill(3,TEXT(""),0);Sim->SouvenirHour(11);SoldWindow+=99-int32(Sim->Number(Sim->SouvenirShelf()[0],TEXT("qty")));
+  Fill(0,TEXT(""),0);Fill(3,TEXT("colar"),99);Sim->SouvenirHour(11);SoldBack+=99-int32(Sim->Number(Sim->SouvenirShelf()[3],TEXT("qty")));}
+ TestTrue(FString::Printf(TEXT("Window sells more than the back shelf (%d vs %d)"),SoldWindow,SoldBack),SoldWindow>SoldBack*2);
+ Fill(0,TEXT(""),0);Fill(3,TEXT(""),0);Sim->SouvenirState()->SetArrayField(TEXT("queue"),{});
+ Cash=Sim->Money();Sim->SouvenirHour(11);TestEqual(TEXT("Empty shelf sells nothing"),Sim->Money(),Cash);
+ // Gift wrap: right order + ribbon + quick = fee x 1.0 + tip; wrong order and ribbon pays less; slow loses the third hit.
+ TArray<FString> Right={TEXT("laterais"),TEXT("fundo"),TEXT("topo")},Wrong={TEXT("topo"),TEXT("laterais"),TEXT("fundo")};
+ Sim->AddSouvenirGift(TEXT("colar"));TestTrue(TEXT("Gift in line"),Sim->SouvenirQueue().Num()==1);const FString Asked=Sim->String(Sim->SouvenirQueue()[0],TEXT("ribbon"));
+ TestTrue(TEXT("Gift line names the ribbon"),Sim->SouvenirGiftLine(Sim->SouvenirQueue()[0]).Contains(TEXT("fita")));
+ Cash=Sim->Money();auto R=Sim->WrapGift(Right,Asked,8);const auto D=Sim->SouvenirDefs();
+ TestEqual(TEXT("Perfect wrap: 3 hits"),R.Hits,3);TestEqual(TEXT("Perfect wrap pays fee + tip"),Sim->Money()-Cash,Sim->Number(D,TEXT("wrap_fee"))+Sim->Number(D,TEXT("tip_perfect")));
+ Sim->AddSouvenirGift(TEXT("colar"));const FString Other=Sim->String(Sim->SouvenirQueue()[0],TEXT("ribbon"))==TEXT("azul")?TEXT("verde"):TEXT("azul");
+ Cash=Sim->Money();R=Sim->WrapGift(Wrong,Other,8);TestEqual(TEXT("Crumpled and wrong ribbon: 1 hit"),R.Hits,1);TestTrue(TEXT("Pays less"),Sim->Money()-Cash<Sim->Number(D,TEXT("wrap_fee")));
+ TestTrue(TEXT("Tells what went wrong"),Sim->LastMessage.Contains(TEXT("fita da cor errada")) && Sim->LastMessage.Contains(TEXT("amassado")));
+ Sim->AddSouvenirGift(TEXT("colar"));R=Sim->WrapGift(Right,Sim->String(Sim->SouvenirQueue()[0],TEXT("ribbon")),40);TestEqual(TEXT("Slow: 2 hits"),R.Hits,2);
+ TestEqual(TEXT("Nobody waiting"),Sim->WrapGift(Right,Asked,5).bServed,false);
+ // Postcards: printed from an album photo (dearer with subjects), sold to tourists.
+ Cash=Sim->Money();TestTrue(TEXT("Postcards printed"),Sim->PrintPostcards(TEXT("C:/album/foto_farol.png"),2));
+ TestEqual(TEXT("Print cost"),Cash-Sim->Money(),Sim->Number(D,TEXT("card_cost"))*Sim->Number(D,TEXT("card_batch")));
+ TestEqual(TEXT("Lighthouse + whale card price"),Sim->Number(Sim->SouvenirCards()[0],TEXT("price")),Sim->Number(D,TEXT("card_price"))+2*Sim->Number(D,TEXT("subject_bonus")));
+ int32 Before=int32(Sim->Number(Sim->SouvenirCards()[0],TEXT("qty")));for(int32 I=0;I<20 && Sim->SouvenirCards().Num() && Sim->Number(Sim->SouvenirCards()[0],TEXT("qty"))==Before;++I)Sim->SouvenirHour(12);
+ TestTrue(TEXT("Tourists buy postcards"),Sim->SouvenirCards().IsEmpty() || Sim->Number(Sim->SouvenirCards()[0],TEXT("qty"))<Before);
+ // Closing: the gift line goes home; the shelf and the back room are kept in the save.
+ Sim->AddSouvenirGift(TEXT("colar"));Fill(1,TEXT("mascara"),3);Sim->State->SetNumberField(TEXT("minutes"),20*60+5);Sim->SouvenirHour(21);
+ TestEqual(TEXT("Closed: empty line"),Sim->SouvenirQueue().Num(),0);
+ TestTrue(TEXT("Saved"),Sim->Save());FString Text;TArray<FString> Files;IFileManager::Get().FindFilesRecursive(Files,*Sim->SaveDirectory,TEXT("slot*.json"),true,false);
+ if(Files.Num())FFileHelper::LoadFileToString(Text,*Files[0]);
+ TestTrue(TEXT("Shelf in the save file"),Text.Contains(TEXT("mascara")) && Text.Contains(TEXT("foto_farol")));
  IFileManager::Get().DeleteDirectory(*Sim->SaveDirectory,false,true);
  Sim->RemoveFromRoot();Instance->RemoveFromRoot();return true;
 }

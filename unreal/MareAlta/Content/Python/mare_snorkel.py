@@ -253,6 +253,12 @@ def rental(arg=''):
     return json.dumps([[c, pc.rental_qa(c)] for c in arg.split(';') if c])
 
 
+def souvenir(arg=''):
+    """Souvenir shop QA (3.5): commands of AMareController::SouvenirQA separated by ';'."""
+    pc = unreal.GameplayStatics.get_player_controller(_game_world(), 0)
+    return json.dumps([[c, pc.souvenir_qa(c)] for c in arg.split(';') if c], ensure_ascii=False)
+
+
 def lights(arg='3800,-1200,1200'):
     """Local lights within r cm of x,y: class, label, tags, location, intensity, units, radius, shadows."""
     x, y, r = [float(v) for v in arg.split(',')]

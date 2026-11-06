@@ -43,7 +43,8 @@ void UMareBusinessWorld::Tick(float DeltaSeconds)
    Counters.Add(Id,Counter);}
   if(Counter)Counter->SetActorHiddenInGame(!bOwned);
   // A customer waits at the counter while this hour's task is available.
-  FString Reason;const bool bDue=bOwned && S->CanPlayBusiness(Id,Reason);AMarePerson* Guest=Waiting.FindRef(Id);
+  // The souvenir shop always opens for managing; a tourist waits at its counter only while someone wants a gift wrapped.
+  FString Reason;const bool bDue=bOwned && S->CanPlayBusiness(Id,Reason) && (Id!=TEXT("souvenir") || S->SouvenirQueue().Num()>0);AMarePerson* Guest=Waiting.FindRef(Id);
   if(bDue && !IsValid(Guest)){
    FActorSpawnParameters Params;Params.SpawnCollisionHandlingOverride=ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
    const FVector At=Ground(FVector((*G)[0]->AsNumber(),(*G)[1]->AsNumber(),0))+FVector(0,0,90);

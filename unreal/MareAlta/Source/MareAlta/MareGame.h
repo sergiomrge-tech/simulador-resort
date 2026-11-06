@@ -83,6 +83,8 @@ public:
  UFUNCTION(BlueprintCallable,Category="Maré Alta") FString PastelQA(const FString& Cmd);
  /** QA of the rental: "own", "customers:n", "return:dent|clean", "open", "wax:t", "left", "right", "adrift", "near", "tow", "home", "close". */
  UFUNCTION(BlueprintCallable,Category="Maré Alta") FString RentalQA(const FString& Cmd);
+ /** QA of the souvenir shop: "own", "gift:n", "open", "buy:id", "place:slot,id", "hour:n", "photo", "print", "state", "close"; else the open screen (MareSouvenirGame::QA). */
+ UFUNCTION(BlueprintCallable,Category="Maré Alta") FString SouvenirQA(const FString& Cmd);
  /** QA of the lighthouse trail: "start" (forces the departure hour and tickets), else MareTrailWorld::QA. */
  UFUNCTION(BlueprintCallable,Category="Maré Alta") FString TrailQA(const FString& Cmd);
  /** Bar prep mini-action over the running world: "socar" (taps on the beat), "bater" (hold and let go in the

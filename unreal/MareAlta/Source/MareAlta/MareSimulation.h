@@ -368,6 +368,26 @@ public:
  bool IsKayakAdrift() const;
  void StartKayakAdrift();
  double RescueKayak();
+ /** Souvenir shop (CHECKLIST_EXPANSOES 3.5, MareSouvenir.cpp): crafts from the village makers (daily pieces, chapter
+  *  done) into the back room, the shelf slots (the window sells most), tourists buying every open hour, the gift-wrap
+  *  line (folds in order, ribbon colour, speed) and postcards printed from the album photos. */
+ TSharedPtr<FJsonObject> SouvenirDefs() const;
+ TSharedPtr<FJsonObject> SouvenirState() const;
+ TSharedPtr<FJsonObject> SouvenirCraft(const FString& Id) const;
+ TArray<TSharedPtr<FJsonObject>> SouvenirShelf() const;
+ TArray<TSharedPtr<FJsonObject>> SouvenirQueue() const;
+ TArray<TSharedPtr<FJsonObject>> SouvenirCards() const;
+ int32 SouvenirBackStock(const FString& Id) const;
+ int32 SouvenirMakerLeft(const FString& Id) const;
+ bool BuySouvenirCraft(const FString& Id);
+ /** Moves this craft from the back room to the shelf slot (empty id clears the slot back to the back room). */
+ bool PlaceSouvenir(int32 Slot,const FString& Id);
+ double SouvenirCardPrice(int32 Subjects) const;
+ bool PrintPostcards(const FString& File,int32 Subjects);
+ void AddSouvenirGift(const FString& Item);
+ FString SouvenirGiftLine(const TSharedPtr<FJsonObject>& Order) const;
+ void SouvenirHour(int32 Hour);
+ FMareIceResult WrapGift(const TArray<FString>& Folds,const FString& Ribbon,double Seconds);
  void TrailScore(int32 Watered,int32 Group,int32 Photos,int32 Viewpoints,bool bSunset,int32 Stories,int32 Complaints,TArray<int32>& Choices,double& Bonus)const;
  /** Hourly: buyers before each departure (the guide sells), and at the end of the departure hour the guide's run
   *  or the cancellation with refund. */

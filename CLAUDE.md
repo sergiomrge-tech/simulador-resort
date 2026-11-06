@@ -622,6 +622,15 @@ com 4), e o Lumen cortava a luz em cache (aviso vermelho "Cached lighting ... cl
 `ShowFlag.VisualizeHDR 1` (EV100 da cena, mín./máx. e valor da pré-exposição), não a suposição pelos números do volume.
 Para achar o número de um aviso escondido atrás do HUD, varie o cvar e veja em que valor ele some.
 
+## UE5.8 — lojinha de souvenires (06/11)
+
+`Tag` dentro de um `SCompoundWidget` é o membro privado `SWidget::Tag`, não a cor `MareNotebook::Tag` (erro C2248):
+em widget novo escreva `MareNotebook::Tag`. Já estava anotado na memória e repeti; vale para todo arquivo Slate novo.
+Widget novo vai em arquivo próprio (`MareSouvenirGame.cpp`) com uma fábrica e um QA, para não engordar o MareGame.cpp.
+Tempos de minijogo (memória de 3 s, cronômetro) usam `FPlatformTime::Seconds()`, porque o Tick do Slate quase não roda
+com o editor em segundo plano. Miniatura de foto do álbum: `FImageUtils::ImportFileAsTexture2D` + `FSlateBrush` com o
+objeto preso em `TStrongObjectPtr`.
+
 ## UE5.8 — papel de quem nasce por código (06/11)
 
 `AMarePerson` sem papel (nem `bAmbient`, nem `bEmployee`, nem tag) cai na lista `beach` do `metahumans.json` e veste
