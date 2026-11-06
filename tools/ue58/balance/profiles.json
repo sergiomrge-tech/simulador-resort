@@ -1,0 +1,5 @@
+{
+  "casual": {"active_seconds": 360, "success": 0.50, "kiosk_share": 0.65, "attendant_seconds_per_item": 11, "manual_seconds_per_item": 12, "event_every": 7, "tour_every": 7, "cup_join": 0.25, "win": 0.35, "reception_share": 0.1, "complaint_response": 0.45},
+  "medio": {"active_seconds": 600, "success": 0.72, "kiosk_share": 0.80, "attendant_seconds_per_item": 11, "manual_seconds_per_item": 10, "event_every": 3, "tour_every": 3, "cup_join": 0.65, "win": 0.55, "reception_share": 0.35, "complaint_response": 0.8},
+  "dedicado": {"active_seconds": 840, "success": 0.90, "kiosk_share": 0.95, "attendant_seconds_per_item": 11, "manual_seconds_per_item": 8, "event_every": 1, "tour_every": 1, "cup_join": 0.95, "win": 0.75, "reception_share": 0.65, "complaint_response": 0.97}
+}
