@@ -78,6 +78,9 @@ bool AMareIntro::LoadBus()
  for(const auto& Item:Data->GetArrayField(TEXT("steps"))){const auto& A=Item->AsArray();ExitSteps.Add(FVector(A[0]->AsNumber(),A[1]->AsNumber(),A[2]->AsNumber()));}
  BusDriver=GetWorld()->SpawnActor<AMarePerson>(BusPoint(FVector(390,-53,150)),Bus->GetActorRotation());
  if(BusDriver){BusDriver->SetAppearance(2);BusDriver->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);BusDriver->GetCharacterMovement()->DisableMovement();
+  // 06/11 (CHECKLIST 0, photo of the seated driver): with no role he took the beach roster and drove the bus in a bikini.
+  // A seated villager (village roster, casual clothes); seated keeps the events from making him dance.
+  BusDriver->PersonName=TEXT("Motorista");BusDriver->bAmbient=true;BusDriver->bSeated=true;
   BusDriver->Stage=EMarePersonStage::Eating;BusDriver->bConsumed=true;BusDriver->HoldPose=TEXT("Sitting_Idle");BusDriver->PlayPose(TEXT("Sitting_Idle"));BusDriver->AttachToActor(Bus,FAttachmentTransformRules::KeepWorldTransform);}
  return ExitSteps.Num()>=5;
 }

@@ -71,7 +71,13 @@ Pedidos do Sergio e conferências que ficaram para trás no lote de 05/11 (alugu
   para o `ColorGain` da LUT, aplicado depois da exposição. O visual é o mesmo (fundo azul-marinho quase preto), sem o
   aviso. Teste permanente: `MareAlta.Visual.UnderwaterGrade` (pré-exposição ≤ 12 em toda profundidade, fundo com ganho
   < 0,03). Portão PASS (40 testes).
-- [ ] Foto de prova do motorista do ônibus sentado no intro (`HoldPose`).
+- [x] Foto de prova do motorista do ônibus sentado no intro (`HoldPose`).
+  Decisão (06/11): sentado estava certo (quadril no banco, coxas na horizontal, pernas para baixo), mas sem papel ele
+  caía na lista da praia e dirigia de biquíni. Agora é um morador sentado (`bAmbient` + `bSeated`, nome "Motorista"),
+  com roupa da lista `village`. O portão confere a roupa dele durante a chegada (`mare_intro_audit.driver`, reprova
+  roupa de banho). Prova: `docs/ue58/graphics-reference/intro_bus_driver_seated.jpg` (`HighResShot 1` funciona no
+  PIE e sai sem HUD). Observação: o painel do ônibus é uma caixa sem volante; fica para quando houver um volante
+  gratuito que sirva.
 - [x] Barra horizontal atravessando a câmera dentro do quiosque com tudo liberado (vista 3700,-1600): identificar
   o objeto.
   Decisão (06/11): eram as hastes do neon "ABERTO" (`World_1296/1297`, `Region_neon`), a 4–57 cm da lente. Foram

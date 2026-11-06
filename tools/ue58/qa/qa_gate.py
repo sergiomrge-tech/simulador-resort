@@ -4,6 +4,7 @@ What it checks, with data (PASS only if all hard checks pass):
   1. automation tests  - every MareAlta.* test succeeds;
   2. floating props    - float_audit scan: no more floating instances than the accepted baseline;
      lights            - no room light shines at night without a lamp/fixture (mare_light_audit.bare_check);
+     driver            - the bus driver of the intro is seated and dressed, not in swimwear (mare_intro_audit.driver);
   3. natural movement  - PIE gait audit by day and by night: nobody moving while feet/hands stay put; also on every
                          visible skeletal mesh (MetaHuman bodies): no glider, nobody frozen without idle motion;
   4. clean log         - no Error / Ensure / missing usage flag / default material lines during the PIE run
@@ -67,6 +68,9 @@ def coast(action, arg):
     return call('mare_mcp.MareMigrationTools', 'caribbean_coast', {'action': action, 'arg': arg})
 
 
+DRIVER = {}
+
+
 def pie(on):
     running = 'true' in call('EditorToolset.EditorAppToolset', 'IsPIERunning', {}).lower()
     if on and not running:
@@ -74,7 +78,12 @@ def pie(on):
         time.sleep(45)
         # A new PIE opens the main menu, which pauses the game (no village, no walkers): continue past it.
         hud('cmd', 'mare.ShowUI play')
-        time.sleep(15)
+        # 06/11 (CHECKLIST 0 A4): the fresh profile starts with the bus arrival; the driver must be a dressed villager
+        # (with no role he took the beach roster and drove in a bikini). Checked while the bus is still on screen.
+        time.sleep(3)
+        got = ret(hud('module', 'mare_intro_audit.driver|'))
+        DRIVER.update(json.loads(got) if isinstance(got, str) else got)
+        time.sleep(12)
     if not on and running:
         call('EditorToolset.EditorAppToolset', 'StopPIE', {})
         time.sleep(6)
@@ -290,7 +299,8 @@ def main():
     report['log'] = log_since(offset, base.get('log_allow', []))
     pie(False)
     report['untracked'] = untracked(base)
-    report['pass'] = all(report[k]['pass'] for k in ('tests', 'floating', 'cook', 'lights', 'gait', 'visible', 'log', 'untracked'))
+    report['driver'] = dict(DRIVER, **{'pass': bool(DRIVER.get('driver')) and not DRIVER.get('swim')})
+    report['pass'] = all(report[k]['pass'] for k in ('tests', 'floating', 'cook', 'lights', 'gait', 'visible', 'log', 'untracked', 'driver'))
     OUT.mkdir(parents=True, exist_ok=True)
     (OUT / 'report.json').write_text(json.dumps(report, indent=1, ensure_ascii=False), encoding='utf-8')
     if accept:
@@ -301,6 +311,7 @@ def main():
     print(' cook   ', report['cook']['cooked'], 'packages,', len(report['cook']['missing']), 'loaded by path but not cooked',
           (report['cook']['missing'] + report['cook']['absent'])[:6])
     print(' float  ', report['floating']['floating'], '(baseline', report['floating']['baseline'], ')')
+    print(' driver ', report['driver'].get('meshes'), 'swimwear' if report['driver'].get('swim') else '')
     print(' lights ', len(report['lights']['bare']), 'room lights without a fixture', report['lights']['bare'][:6])
     print(' gait   day', day['moving'], 'moving', len(day['gliding']), 'gliding | night', night['moving'], 'moving', len(night['gliding']), 'gliding')
     v = report['visible']

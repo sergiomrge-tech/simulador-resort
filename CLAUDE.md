@@ -618,3 +618,10 @@ com 4), e o Lumen cortava a luz em cache (aviso vermelho "Cached lighting ... cl
 `ColorGain` (LUT, depois da exposição) e deixe na tinta só a cor. Para medir a exposição de verdade, use
 `ShowFlag.VisualizeHDR 1` (EV100 da cena, mín./máx. e valor da pré-exposição), não a suposição pelos números do volume.
 Para achar o número de um aviso escondido atrás do HUD, varie o cvar e veja em que valor ele some.
+
+## UE5.8 — papel de quem nasce por código (06/11)
+
+`AMarePerson` sem papel (nem `bAmbient`, nem `bEmployee`, nem tag) cai na lista `beach` do `metahumans.json` e veste
+roupa de banho: o motorista do ônibus dirigia de biquíni. Toda pessoa criada por código precisa de papel explícito.
+Para fotografar gente no PIE: mover o herói (o movimento dele fica desligado durante cenas) e `set_global_time_dilation`
+baixo para congelar a cena; `HighResShot 1` grava em `Saved/Screenshots/WindowsEditor` sem HUD.
