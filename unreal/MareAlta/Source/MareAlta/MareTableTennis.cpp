@@ -6,6 +6,7 @@
 #include "MareGamepad.h"
 #include "MareOptions.h"
 #include "Camera/CameraActor.h"
+#include "Camera/CameraComponent.h"
 #include "Components/ChildActorComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Engine/GameInstance.h"
@@ -209,6 +210,7 @@ void UMareTableTennis::StartMatch(APlayerController* Controller,const FString& I
  if(Guest){Guest->SaveId=TEXT("tt_guest");Guest->PersonName=Opponent;Guest->SetAppearance(Look);Guest->bAmbient=true;Guest->Tags.Add(TEXT("MareHotelGuest"));Guest->GetCharacterMovement()->DisableMovement();}
  // High behind the player's end, looking down the table: the bat sits low in the frame and never hides the far half.
  Camera=GetWorld()->SpawnActor<ACameraActor>(World(FVector(-L/2-1.9,0,1.1)),(World(FVector(L/6,0,-.15))-World(FVector(-L/2-1.9,0,1.1))).Rotation());
+ if(Camera)Camera->GetCameraComponent()->SetConstraintAspectRatio(false);   // no 16:9 letterbox (see MareGameRoom.cpp)
  Controller->SetViewTargetWithBlend(Camera,.5f);Controller->SetIgnoreMoveInput(true);Controller->SetIgnoreLookInput(true);
  // Only the table, the balls and the cue/bats on screen (Sergio, 03/11): no arms or hands of the player at all.
  if(auto Pawn=Controller->GetPawn()){Pawn->SetActorHiddenInGame(true);TArray<UPrimitiveComponent*> Parts;Pawn->GetComponents(Parts);HiddenParts.Reset();

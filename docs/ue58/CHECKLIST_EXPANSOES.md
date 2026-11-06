@@ -511,7 +511,26 @@ coloque hóspedes que entrarem aproveitando a piscina e tobogã"):
   - Fotos: `docs/ue58/graphics-reference/game_room_day.jpg` e `game_room_night.jpg`.
   - Visto e deixado para os itens seguintes: os 2 fliperamas são caixas laranja e azul com textura borrada (trocar
     quando ficarem jogáveis); de longe, a luminária da sinuca cobre parte do letreiro.
-- [ ] Sinuca jogada até o fim, com regras completas e placar visível.
+- [x] Sinuca jogada até o fim, com regras completas e placar visível.
+  Decisões (06/11):
+  - **Regras completas de bola 8** (`UMareGameRoom::ResolveShot`), além das que já existiam (grupos, bola errada,
+    branca na caçapa, bola na mão, 8 antes da hora): saída legal (encaçapar ou levar ao menos 4 bolas à tabela, senão
+    falta "saída fraca"); depois do toque, alguma bola tem de cair ou bater na tabela ("nenhuma bola foi à tabela depois
+    do toque"); a 8 é **cantada**: a caçapa segue a mira (o anel amarelo mostra qual) e a rodinha do mouse ou LB/RB
+    trocam; a 8 em outra caçapa perde. A 8 que cai na saída volta à mesa mesmo com falta (antes perdia). A IA canta onde
+    mira (`Shoot` chama `AimPocket`).
+  - **Placar visível:** no HUD, um cartão no canto superior direito com as bolas de cada lado (lisas cheias, listradas
+    com aro branco, encaçapadas apagadas, a 8 aparece quando é a vez dela) e » em quem joga; a bússola some durante a
+    partida (ficava embaixo do cartão). No mundo, o placar escrito a giz no cavalete ao lado da mesa (`game_room.json`
+    → `scoreboard`, `UMareGameRoom::BoardLines`): a partida em andamento, ou vitórias e derrotas no hotel.
+  - Defeitos vistos nas fotos e corrigidos: a câmera da partida (e a do pingue-pongue) fazia letterbox 16:9 (faixa
+    preta e a linha de mira/anel do HUD 20–40 px fora das bolas) → `SetConstraintAspectRatio(false)`, checagem
+    permanente `cameras` no portão; `mare.PoolQA` com o salão não comprado abria a partida na mesa inexistente (câmera
+    no gramado) → `StartMatch` exige a mesa.
+  - Teste `MareAlta.Gameplay.PoolFullMatch` ganhou saída fraca × forte, falta sem tabela, 8 na caçapa cantada (vence)
+    e em outra (perde). QA: `mare.PoolQA eight` deixa o jogador na 8.
+  - Fotos: `docs/ue58/graphics-reference/pool_called_eight.jpg` (anel na caçapa cantada, placar, giz no cavalete) e
+    `pool_board_idle.jpg`.
 - [ ] Pebolim com controle real (girar as barras), em vez da barra de tempo.
 - [ ] 2 fliperamas jogáveis em tela (por exemplo, "Corrida de Jangada" e "Pega-Siri"), com recorde salvo.
 - [ ] Torneio semanal (a estrutura de copa já existe), hóspedes jogando à noite e renda das fichas.

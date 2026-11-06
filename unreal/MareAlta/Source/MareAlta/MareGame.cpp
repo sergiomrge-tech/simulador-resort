@@ -2455,9 +2455,12 @@ struct FMareHudModel
  TArray<TPair<FString,FString>> Tickets;
  TArray<TPair<FString,int32>> Note; // text, style: 0 heading, 1 main goal, 2 secondary, 3 guidance
  bool bPhone=false;
+ /** Pool scoreboard (5.4): balls still on the table (bit per ball, -1 no match), groups (you | opponent<<2), side to play. */
+ int32 PoolTable=-1,PoolGroups=0,PoolTurn=0;FString PoolOpp;
  FString Signature()const
  {
   FString S=Money+Day+Fame+Notice+Prompt+Carry+Hint+Stars+Rooms+Served+TipTitle+TipText+FString::FromInt(Compass.Num())+InteractKey+PhoneKey+PauseKey+PadHint+FString::FromInt(StarsFlash)+(bPhone?TEXT("P"):TEXT(""));
+  S+=FString::Printf(TEXT("|%d|%d|%d|"),PoolTable,PoolGroups,PoolTurn)+PoolOpp;
   for(const auto& T:Tickets)S+=T.Key+T.Value;
   for(const auto& C:Compass)S+=C.Key+FString::FromInt(C.Value);
   for(const auto& N:Note)S+=N.Key+FString::FromInt(N.Value);
@@ -2539,6 +2542,34 @@ public:
     +SVerticalBox::Slot().AutoHeight().Padding(10,2,10,9)[Txt(M.Tickets[I].Value,12,Ink,false,130)]]]];
    Root->AddSlot().VAlign(VAlign_Top).HAlign(HAlign_Center).Padding(0,62,0,0)[Row];
   }
+  // Pool scoreboard at the top centre: each side with its group's balls (potted ones faded) and the 8 once it is
+  // their target; » marks the side to play.
+  if(M.PoolTable>=0){
+   static const FSlateRoundedBoxBrush Disc(FLinearColor::White,13.f),Dot(FLinearColor::White,7.f),DotS(FLinearColor::White,6.f);
+   static const FLinearColor Colors[8]={Hex(20,20,20),Hex(242,190,30),Hex(30,70,170),Hex(200,40,35),Hex(105,50,140),Hex(235,110,25),Hex(25,120,60),Hex(120,30,35)};
+   // Stripes: the colour inside a thick white ring (a band clipped by the disc does not exist in Slate brushes).
+   static const TArray<FSlateRoundedBoxBrush> Ring=[]{TArray<FSlateRoundedBoxBrush> Out;for(const FLinearColor& C:Colors)Out.Emplace(C,13.f,FLinearColor(.96f,.95f,.9f),4.f);return Out;}();
+   auto Ball=[&](int32 N)->TSharedRef<SWidget>{const bool bStripe=N>8;const FLinearColor C=Colors[N%8];
+    auto Face=SNew(SOverlay)+SOverlay::Slot()[bStripe?SNew(SBorder).BorderImage(&Ring[N%8]):SNew(SBorder).BorderImage(&Disc).BorderBackgroundColor(C)];
+    const float DotSize=bStripe?12.f:14.f;
+    Face->AddSlot().HAlign(HAlign_Center).VAlign(VAlign_Center)[SNew(SBox).WidthOverride(DotSize).HeightOverride(DotSize)[SNew(SBorder).BorderImage(bStripe?&DotS:&Dot).BorderBackgroundColor(FLinearColor(.97f,.96f,.92f)).Padding(0)
+     .HAlign(HAlign_Center).VAlign(VAlign_Center)[Txt(FString::FromInt(N),8,Hex(20,20,20),true)]]];
+    return SNew(SBox).WidthOverride(26).HeightOverride(26).Padding(0).RenderOpacity(M.PoolTable&(1<<N)?1.f:.22f)[Face];};
+   const int32 Groups[2]={M.PoolGroups&3,(M.PoolGroups>>2)&3};const bool bOpen=Groups[0]==0;
+   auto List=SNew(SVerticalBox);
+   List->AddSlot().AutoHeight().HAlign(HAlign_Center).Padding(0,0,0,4)[Txt(bOpen?TEXT("Sinuca bola 8 · mesa aberta"):TEXT("Sinuca bola 8"),12.5f,Accent,true)];
+   for(int32 Row=0;Row<2;++Row){
+    // Open table: one row of solids and one of stripes; then one row per side with its own group.
+    const int32 Group=bOpen?Row+1:Groups[Row];const bool bMine=!bOpen && M.PoolTurn==Row;
+    const FString Name=bOpen?FString(Row==0?TEXT("Lisas"):TEXT("Listradas")):(Row==0?FString(TEXT("Você")):M.PoolOpp)+(Group==1?TEXT(" · lisas"):TEXT(" · listradas"));
+    auto Line=SNew(SHorizontalBox)+SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center)[SNew(SBox).WidthOverride(16)[Txt(bMine?TEXT("»"):TEXT(""),15,Accent,true)]]
+     +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(0,0,8,0)[SNew(SBox).WidthOverride(170)[Txt(Name,13,Ink,bMine)]];
+    int32 Left=0;for(int32 K=0;K<7;++K){const int32 N=Group==1?K+1:K+9;Left+=(M.PoolTable>>N)&1;Line->AddSlot().AutoWidth().Padding(2,0)[Ball(N)];}
+    Line->AddSlot().AutoWidth().Padding(8,0,0,0)[Left==0?Ball(8):SNew(SBox).WidthOverride(26)];
+    List->AddSlot().AutoHeight().Padding(0,2)[Line];}
+   if(bOpen)List->AddSlot().AutoHeight().HAlign(HAlign_Center).Padding(0,3,0,0)[Txt(M.PoolTurn==0?TEXT("Vez: você"):TEXT("Vez: ")+M.PoolOpp,12,Ink,true)];
+   // Top right, where the mission note sits outside a match (the notice card takes the top left).
+   Root->AddSlot().VAlign(VAlign_Top).HAlign(HAlign_Right).Padding(0,66,22,0)[SNew(SBorder).BorderImage(&Ticket()).Padding(FMargin(14,8))[List]];}
   // Mission note pinned on the right; the side-tab phone covers the centre-left instead.
   if(M.Note.Num()){
    auto List=SNew(SVerticalBox);
@@ -2725,8 +2756,14 @@ void AMareHUD::DrawHUD()
  if(auto TT=GetWorld()->GetSubsystem<UMareTableTennis>())if(TT->IsPlaying()){M.Note.Empty();M.Tickets.Empty();M.Hint=TT->Status();Overlay->Refresh(M);return;}
  // Pool match: aim guide, power bar and score instead of the crosshair and the mission note.
  if(auto Room=GetWorld()->GetSubsystem<UMareGameRoom>())if(Room->IsPlaying()){
-  M.Note.Empty();M.Tickets.Empty();M.Hint=Room->Status();FVector From,To;FVector2D A,B;
+  // The compass strip would run under the scoreboard (and means nothing at the table).
+  M.Note.Empty();M.Tickets.Empty();M.Compass.Empty();M.Hint=Room->Status();FVector From,To;FVector2D A,B;
   if(Room->AimLine(From,To) && PC && PC->ProjectWorldLocationToScreen(From,A) && PC->ProjectWorldLocationToScreen(To,B))DrawLine(A.X,A.Y,B.X,B.Y,FLinearColor(1,1,1,.7f),1.5f);
+  M.PoolTable=0;for(int32 I=0;I<16;++I)if(!Room->Balls[I].bIn)M.PoolTable|=1<<I;
+  M.PoolGroups=Room->Group[0]|(Room->Group[1]<<2);M.PoolTurn=Room->Turn;M.PoolOpp=Room->OpponentName();
+  // Called pocket for the 8: a yellow ring over the pocket mouth.
+  FVector Called;FVector2D P;if(PC && Room->CalledPocketWorld(Called) && PC->ProjectWorldLocationToScreen(Called,P)){const float Rad=16;
+   for(int32 K=0;K<16;++K){const float A0=K*UE_TWO_PI/16,A1=(K+1)*UE_TWO_PI/16;DrawLine(P.X+Rad*FMath::Cos(A0),P.Y+Rad*FMath::Sin(A0),P.X+Rad*FMath::Cos(A1),P.Y+Rad*FMath::Sin(A1),FLinearColor(1.f,.85f,.2f),2.5f);}}
   if(Room->Power()>0){const float X=Canvas->ClipX*.5f-120,Y=Canvas->ClipY-150;DrawRect(FLinearColor(0,0,0,.4f),X,Y,240,10);DrawRect(FLinearColor(1.f,.8f-.5f*Room->Power(),.3f),X,Y,240*Room->Power(),10);}
   Overlay->Refresh(M);return;}
  if(PC && !PC->bPhoneOpen && !GetWorld()->IsPaused()){

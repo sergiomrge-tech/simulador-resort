@@ -677,6 +677,18 @@ check-out e em outro quarto, senão desfaz a sujeira).
 Texto com crases dentro de here-string `@"..."@` do PowerShell perde as crases e vira caractere de controle (`` `b ``,
 `` `f ``, `` `n ``): para escrever Markdown no PC, grave um arquivo com `local_write_file` e anexe com Python.
 
+## UE5.8 — sinuca completa e placar (06/11, 5.4)
+
+`ACameraActor` nasce com `bConstrainAspectRatio` ligado (16:9): no viewport do PIE, que não é 16:9, a câmera da sinuca
+punha faixa preta embaixo e tudo que o HUD projeta (`ProjectWorldLocationToScreen`: linha de mira, anel da caçapa)
+caía 20–40 px fora das bolas, porque a projeção ignora as barras. Toda câmera de minijogo criada por código desliga
+isso (`SetConstraintAspectRatio(false)`); o portão confere (`cameras`). Quando algo do HUD fica "quase" no lugar,
+compare a posição real do ator com o desenho e procure faixa preta na foto, antes de mexer em números.
+`UTextRenderComponent` quebra linha com `<br>`, não com `\n`. Antes de escrever num modelo do Poly Haven, leia os
+vértices da seção (`ProceduralMeshLibrary.get_section_from_static_mesh`): a colisão é uma caixa e não diz onde está a
+face inclinada do cavalete. Para chegar ao salão num perfil novo: `mare.QA money`/`fame 10`, comprar as expansões na ordem e
+passar as 4 histórias da vila (pier, prainha, sabores, carnaval) com `mare.QA step` antes do Grand Hotel.
+
 ## UE5.8 — decoração do salão de jogos (06/11, 5.4)
 
 Peça encostada numa parede que já tem detalhe (o trilho de madeira do saguão faz parte da malha da torre e sai 8 cm da
