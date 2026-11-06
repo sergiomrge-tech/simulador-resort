@@ -156,3 +156,35 @@ Linhas da referência fa49a68. São recomendações, não correções deste PR.
 - `balance/validate.py`: PASS para 18 séries diárias e 300 trajetórias, fontes/despesas/caixa, fama, capacidade, configurações, hashes e traduções.
 - Extrator final: 113/113 LOCTEXT e 3.907/3.907 strings nos 12 idiomas; `todo_*.json` removidos.
 - Sem editor, PC, compilação C++, QA gate, playtest visual, binários, screenshots ou publicação. Sem alterações em Source, Content/Data, Config ou .uasset. O novo PR fica aberto para revisão; somente o #7 recebeu merge autorizado.
+
+
+## Pacote 3
+
+Base: **9e5b4adcadba60ec0c46ffa2e4767bcb6805db0a**, branch **gpt/pacote-3**.
+
+### Entregas
+
+- **18 traduções novas nos 12 idiomas**, mantendo as antigas. pt-PT pelo adaptador do projeto, aproveitando somente os valores faltantes. Extrator final: **113/113 LOCTEXT e strings 3922/3922 em todos os idiomas**, zero faltando. Conferidos {N}, <br>, R$, nomes, espaços e pontuação final das entradas novas, inclusive “ chega no jogo completo.”. Apagados os todo_*.json gerados.
+- Páginas pt-BR/en da demo de **Coconut Coast: Resort Simulator**, com descrições curtas de **266/267 caracteres**, descrições longas, conteúdo da demo versus jogo completo e lista de desejos. Maré Alta é o resort. Cerca de 2 h é a meta informada de progressão, sem medição nesta tarefa; pode continuar depois do resumo. Sem promessa de data.
+- Nova etapa **data** no qa_gate.py, antes da conexão MCP. Falha grava report.json com pass=false, lista arquivo/campo/problema e encerra com **1**, sem chamar a Unreal. Resposta inválida também reprova. A inicialização do cliente foi adiada; funções das outras etapas ficaram idênticas na comparação da AST.
+
+### Conferência
+
+Na raiz do checkout:
+
+```sh
+python tools/ue58/i18n_extract.py
+python tools/ue58/qa/data_lint.py --self-test
+python tools/ue58/qa/data_lint.py
+python -m py_compile tools/ue58/qa/qa_gate.py
+```
+
+O extrator deve imprimir 3922/3922 nesta referência; apague novamente os todo_*.json vazios que ele gerar. Testes Python: **PASS**. Os **46 JSON** passaram com **zero erros e 796 etapas de resolução de modelos**, usando índice temporário de metadados Git e hashes atuais, sem baixar assets; o índice histórico de balanceamento não foi alterado.
+
+Fixtures temporárias, com rede bloqueada, comprovaram importação sem conexão, aprovação de dados válidos e reprovação de preço negativo, JSON inválido e resposta inválida. O main saiu com 1 antes de criar o cliente ou chamar PIE. **Portão completo não executado**, pois exige Unreal; no editor, rodar **python tools/ue58/qa/qa_gate.py, sem argumentos**.
+
+### Pendência de dados — somente relatada
+
+**Content/Data/events.json → /end_of_content/review_url está vazio.** Em MareGame.cpp:1749, a chamada e o botão de lista de desejos só aparecem com URL preenchida. Antes de distribuir, informar a URL real da página do jogo completo na Steam e testar o botão. Não foi inventada URL/app id; isso é pendência funcional de publicação, não erro estrutural do linter.
+
+Sem alterações em C++, .uasset, definitions.json, customization.json, JSON de economia, balance_model.py ou resultados de balanceamento. Sem compilação C++/Unreal, capturas ou publicação na Steam.
