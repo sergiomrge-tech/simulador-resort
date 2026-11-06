@@ -102,11 +102,12 @@ float AMarePerson::SeaHeight(const FVector2D& P,float T,float Storm)
  const float Shore=Smooth(-6500,-4300,P.Y)*(1-Smooth(-3000,-2300,P.Y));
  const float Swell=FMath::Sin(P.Y*.009f+FMath::Sin(P.X*.0025f)*.7f-T*(.8f+Storm*.4f));
  const FVector2D Outside(FMath::Max(FMath::Abs(P.X-4000)-40000,0.f),FMath::Max(-30000-P.Y,0.f));
- const float Fade=1-Smooth(4000,20000,Outside.Size())*.6f,Offshore=Smooth(-2300,-4800,P.Y);
+ const float Fade=1-Smooth(4000,20000,Outside.Size())*.6f,Offshore=Smooth(-2600,-6500,P.Y);
  const float D=P.X*.0069f-P.Y*.0052f-T*1.15f;
  const float Sw=P.Y*.00105f+P.X*.00028f-T*.42f;const float Swell2=(FMath::Sin(Sw)*.75f+.25f*FMath::Sin(Sw*2+1.1f))*85;
  const float H=Swell2*(1+Storm*.7f)+(FMath::Sin(A)*60+FMath::Sin(B)*40+FMath::Sin(D)*22)*(1+Storm*1.1f)+FMath::Sin(C)*(12+Storm*10)+FMath::Sin(P.X*.019f-P.Y*.013f-T*2.6f)*6;
- const float Coast=FMath::Lerp(.55f,1.f,Smooth(-5200,-9000,P.Y));
+ // 05/11 (Sergio: 'ondas próximo da praia muito altas'): the swell builds up over ~40 m from the shore, not ~15 m.
+ const float Coast=FMath::Lerp(.35f,1.f,Smooth(-5500,-11000,P.Y));
  const FVector2D Q(FMath::Max(FMath::Abs(P.X-6780)-450,0.f),FMath::Max(FMath::Abs(P.Y+4300)-1100,0.f));
  const float Pier=FMath::Lerp(.2f,1.f,Smooth(0,900,Q.Size()));
  // The sheltered snorkel reef (05/11): the swell drops to 8% around it.
@@ -594,6 +595,7 @@ void AMarePerson::Tick(float DeltaSeconds)
   // The root 32 cm under the surface: the water reaches the shoulders, the head (bone ~12 cm up) stays out.
   SetActorLocationAndRotation(SwimAt+FVector(0,0,88-32+Wave),FRotator(0,GetActorRotation().Yaw+FMath::Sin(Elapsed*.35f+SwimAt.X*.01f)*6.f*DeltaSeconds,0));}
  else if(bLying)UpdateLying(DeltaSeconds);
+ else if(!HoldPose.IsEmpty())PlayPose(HoldPose);
  else if(GetVelocity().SizeSquared2D()>25)PlayPose(TEXT("Walk"));else if(!WorkPose.IsEmpty())PlayPose(WorkPose==TEXT("Skim") || WorkPose==TEXT("Sweep")?TEXT("Idle"):WorkPose);else if(bAmbient)PlayPose(bSeated?TEXT("Sitting_Idle"):bConversing?TEXT("Idle_Talking"):TEXT("Idle"));else if(Stage!=EMarePersonStage::Eating)PlayPose(TEXT("Idle"));
  UpdateTool(DeltaSeconds);
 }

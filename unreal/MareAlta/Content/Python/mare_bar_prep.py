@@ -345,3 +345,10 @@ def station(arg='Tours'):
     pc = unreal.GameplayStatics.get_player_controller(_game_world(), 0)
     pc.open_station(arg)
     return 'ok'
+
+
+def mesh_info(arg='/Game/Custom/Boats/mare_bote/mare_bote'):
+    m = unreal.load_asset(arg)
+    b = m.get_bounds()
+    mats = [s.get_editor_property('material_slot_name') for s in m.get_editor_property('static_materials')]
+    return json.dumps({'origin': [round(b.origin.x), round(b.origin.y), round(b.origin.z)], 'extent': [round(b.box_extent.x), round(b.box_extent.y), round(b.box_extent.z)], 'slots': [str(x) for x in mats], 'nanite': m.get_editor_property('nanite_settings').enabled})

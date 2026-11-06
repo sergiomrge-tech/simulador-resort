@@ -2,6 +2,7 @@
 #include "MareBoatTourWorld.h"
 #include "MareSnorkelWorld.h"
 #include "MareTrailWorld.h"
+#include "MareRentalWorld.h"
 #include "MareSummitWorld.h"
 #include "MareComicEvents.h"
 #include "MareStaysWorld.h"
@@ -124,6 +125,7 @@ void AMareServiceTarget::Use(APlayerController* Controller)
     UMareAudioWorld::Action(this,T.Mid(4)==TEXT("gelo")?TEXT("bar_ice_glass"):TEXT("bar_pour"),&Spot,.7f);}}return;}
  if(Action==TEXT("BarGlass")){PC->UseBarGlass();return;}
  if(Action==TEXT("TourVest")){if(auto Tour=GetWorld()->GetSubsystem<UMareBoatTourWorld>())Tour->GiveVest(DataIndex);return;}
+ if(Action==TEXT("RentalTow")){if(auto W=GetWorld()->GetSubsystem<UMareRentalWorld>())W->Tow();return;}
  if(Action==TEXT("TrailWater")){if(auto Tour=GetWorld()->GetSubsystem<UMareTrailWorld>())Tour->GiveWater(DataIndex);return;}
  if(Action==TEXT("TrailStory")){if(auto Tour=GetWorld()->GetSubsystem<UMareTrailWorld>())Tour->TellStory(DataIndex);return;}
  if(Action==TEXT("TourSpecies")){if(auto Tour=GetWorld()->GetSubsystem<UMareSnorkelWorld>())Tour->Present(DataIndex);return;}

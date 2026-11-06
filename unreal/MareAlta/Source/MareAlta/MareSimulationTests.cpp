@@ -802,16 +802,16 @@ bool FMareBusinessShiftTest::RunTest(const FString& Parameters)
   if(!Sim->String(Pair.Value->AsObject(),TEXT("requires")).IsEmpty())continue;   // game-room machines need the expansion, not a business
   TestTrue(TEXT("Counter business defined: ")+Id,Sim->Object(Sim->Definitions,TEXT("businesses"))->HasField(Id));
   const TArray<TSharedPtr<FJsonValue>>* Steps=nullptr;TestTrue(TEXT("Three steps: ")+Id,Pair.Value->AsObject()->TryGetArrayField(TEXT("steps"),Steps) && Steps->Num()==3);}
- // The hourly counter task (the ice cream shop has its queue instead, 3.1: MareAlta.Gameplay.IceCream).
- FString Reason;TestFalse(TEXT("Not owned: no counter task"),Sim->CanPlayBusiness(TEXT("aluguel"),Reason));
- Sim->Object(Sim->Object(Sim->Object(Sim->State,TEXT("prog")),TEXT("biz")),TEXT("aluguel"))->SetNumberField(TEXT("lvl"),1);
- TestTrue(TEXT("Owned and open: task available"),Sim->CanPlayBusiness(TEXT("aluguel"),Reason));
- double Before=Sim->Money();const double Perfect=Sim->PlayBusiness(TEXT("aluguel"),3);
+ // The hourly counter task (ice cream, pastel and rental have their own queues: 3.1-3.3).
+ FString Reason;TestFalse(TEXT("Not owned: no counter task"),Sim->CanPlayBusiness(TEXT("souvenir"),Reason));
+ Sim->Object(Sim->Object(Sim->Object(Sim->State,TEXT("prog")),TEXT("biz")),TEXT("souvenir"))->SetNumberField(TEXT("lvl"),1);
+ TestTrue(TEXT("Owned and open: task available"),Sim->CanPlayBusiness(TEXT("souvenir"),Reason));
+ double Before=Sim->Money();const double Perfect=Sim->PlayBusiness(TEXT("souvenir"),3);
  TestTrue(TEXT("Perfect task pays"),Perfect>0);TestEqual(TEXT("Booked"),Sim->Money(),Before+Perfect);
- TestFalse(TEXT("Once per hour"),Sim->CanPlayBusiness(TEXT("aluguel"),Reason));TestEqual(TEXT("Second try pays nothing"),Sim->PlayBusiness(TEXT("aluguel"),3),0.);
+ TestFalse(TEXT("Once per hour"),Sim->CanPlayBusiness(TEXT("souvenir"),Reason));TestEqual(TEXT("Second try pays nothing"),Sim->PlayBusiness(TEXT("souvenir"),3),0.);
  Sim->State->SetNumberField(TEXT("minutes"),13*60);
- const double Miss=Sim->PlayBusiness(TEXT("aluguel"),0);TestTrue(TEXT("Next hour available, fewer hits pay less"),Miss>0 && Miss<Perfect);
- Sim->State->SetNumberField(TEXT("minutes"),22*60);TestFalse(TEXT("Closed at night"),Sim->CanPlayBusiness(TEXT("aluguel"),Reason));
+ const double Miss=Sim->PlayBusiness(TEXT("souvenir"),0);TestTrue(TEXT("Next hour available, fewer hits pay less"),Miss>0 && Miss<Perfect);
+ Sim->State->SetNumberField(TEXT("minutes"),22*60);TestFalse(TEXT("Closed at night"),Sim->CanPlayBusiness(TEXT("souvenir"),Reason));
  // Game-room machines: need the game room; pay their own base; night tokens between the token hours.
  TestFalse(TEXT("Foosball needs the game room"),Sim->CanPlayBusiness(TEXT("pebolim"),Reason));
  Sim->Object(Sim->State,TEXT("unlocked"))->SetBoolField(TEXT("salao_jogos"),true);Sim->State->SetNumberField(TEXT("minutes"),20*60);
@@ -1080,6 +1080,45 @@ bool FMarePastelTest::RunTest(const FString& Parameters)
  Sim->AddPastelCustomer();Sim->PastelQueue().Last()->SetNumberField(TEXT("since"),0);Sim->PastelHour(16);
  TestFalse(TEXT("Waited too long, gave up"),Sim->PastelQueue().ContainsByPredicate([](const TSharedPtr<FJsonObject>& Q){return UMareSimulation::Number(Q,TEXT("since"))==0;}));
  Sim->AddPastelCustomer();Sim->State->SetNumberField(TEXT("minutes"),23*60+10);Sim->PastelHour(24);TestEqual(TEXT("Closed: empty line"),Sim->PastelQueue().Num(),0);
+ IFileManager::Get().DeleteDirectory(*Sim->SaveDirectory,false,true);
+ Sim->RemoveFromRoot();Instance->RemoveFromRoot();return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FMareRentalTest,"MareAlta.Gameplay.Rental",EAutomationTestFlags::EditorContext|EAutomationTestFlags::EngineFilter)
+bool FMareRentalTest::RunTest(const FString& Parameters)
+{
+ // CHECKLIST_EXPANSOES 3.3: rent for 30/60 min (wax tip), returns checked (dent fined, unfair fine costs fame), the kayak adrift.
+ auto Instance=NewObject<UGameInstance>();Instance->AddToRoot();
+ auto Sim=NewObject<UMareSimulation>(Instance);Sim->AddToRoot();
+ Sim->SaveDirectory=FPaths::ProjectSavedDir()/TEXT("Automation/Rental")/FGuid::NewGuid().ToString(EGuidFormats::Digits);
+ auto Load=[&](const FString& Name,TSharedPtr<FJsonObject>& Result){FString Text;FFileHelper::LoadFileToString(Text,*(FPaths::ProjectContentDir()/TEXT("Data")/Name));return FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Text),Result);};
+ if(!TestTrue(TEXT("Definitions"),Load(TEXT("definitions.json"),Sim->Definitions)) || !TestTrue(TEXT("Default save"),Load(TEXT("default_save.json"),Sim->State))){Sim->RemoveFromRoot();Instance->RemoveFromRoot();return false;}
+ Sim->State->SetNumberField(TEXT("money"),2000);Sim->State->SetNumberField(TEXT("minutes"),10*60+10);Sim->State->SetStringField(TEXT("day_event"),TEXT(""));
+ Sim->RentalState()->SetNumberField(TEXT("lvl"),1);FString Reason;
+ TestFalse(TEXT("Nobody yet"),Sim->CanPlayBusiness(TEXT("aluguel"),Reason));
+ Sim->RentalHour(11);TestTrue(TEXT("Customers arrive"),Sim->RentalQueue().Num()>=1);
+ // Rent waxed: price + tip; rent plain: price only.
+ Sim->RentalState()->SetArrayField(TEXT("queue"),{});Sim->AddRentalCustomer();auto O=Sim->RentalQueue()[0];O->SetStringField(TEXT("item"),TEXT("prancha"));O->SetNumberField(TEXT("minutes"),60);
+ double Cash=Sim->Money();TestTrue(TEXT("Rented waxed"),Sim->RentItem(true));const double Waxed=Sim->Money()-Cash;
+ Sim->AddRentalCustomer();O=Sim->RentalQueue()[0];O->SetStringField(TEXT("item"),TEXT("prancha"));O->SetNumberField(TEXT("minutes"),60);
+ Cash=Sim->Money();Sim->RentItem(false);const double Plain=Sim->Money()-Cash;
+ TestEqual(TEXT("60 min board price"),Plain,Sim->RentalPrice(TEXT("prancha"),60));TestTrue(TEXT("Wax adds a tip"),Waxed>Plain);
+ TestEqual(TEXT("Two out on the water"),Sim->RentalOut().Num(),2);
+ // Time runs out: they come back to be checked.
+ Sim->State->SetNumberField(TEXT("minutes"),11*60+20);Sim->RentalHour(12);TestEqual(TEXT("Both back"),Sim->RentalReturns().Num(),2);
+ TestTrue(TEXT("Returns can be checked"),Sim->CanPlayBusiness(TEXT("aluguel"),Reason));
+ auto SetDent=[&](bool b){Sim->RentalReturns()[0]->SetBoolField(TEXT("dent"),b);};
+ SetDent(true);Cash=Sim->Money();TestEqual(TEXT("Dent fined"),Sim->InspectReturn(true),3);TestEqual(TEXT("Fine paid"),Sim->Money()-Cash,Sim->Number(Sim->RentalDefs(),TEXT("fine"),20));
+ SetDent(false);const double Fame=Sim->Number(Sim->State,TEXT("fame_xp"));TestEqual(TEXT("Clean board fined: unfair"),Sim->InspectReturn(true),0);
+ TestTrue(TEXT("Unfair fine told"),Sim->LastMessage.Contains(TEXT("reclamou")));
+ Sim->AddRentalCustomer();Sim->RentItem(false);Sim->State->SetNumberField(TEXT("minutes"),12*60+40);Sim->RentalHour(13);SetDent(false);
+ TestEqual(TEXT("Clean board let go"),Sim->InspectReturn(false),2);TestEqual(TEXT("Nothing left to check"),Sim->InspectReturn(false),-1);
+ // The kayak adrift: rescued for a reward.
+ TestFalse(TEXT("No kayak adrift"),Sim->IsKayakAdrift());Sim->StartKayakAdrift();TestTrue(TEXT("Kayak adrift"),Sim->IsKayakAdrift());
+ Cash=Sim->Money();TestTrue(TEXT("Rescue pays"),Sim->RescueKayak()>0 && Sim->Money()>Cash);TestFalse(TEXT("Back on the beach"),Sim->IsKayakAdrift());
+ // Closing: whoever is out comes back, the line goes home.
+ Sim->AddRentalCustomer();Sim->RentItem(false);Sim->AddRentalCustomer();Sim->State->SetNumberField(TEXT("minutes"),17*60+5);Sim->RentalHour(18);
+ TestEqual(TEXT("Closed: empty line"),Sim->RentalQueue().Num(),0);TestEqual(TEXT("Closed: everything back"),Sim->RentalOut().Num(),0);
  IFileManager::Get().DeleteDirectory(*Sim->SaveDirectory,false,true);
  Sim->RemoveFromRoot();Instance->RemoveFromRoot();return true;
 }

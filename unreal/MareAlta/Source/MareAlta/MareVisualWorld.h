@@ -38,8 +38,9 @@ private:
  UPROPERTY() TObjectPtr<class UMaterialParameterCollection> TimeCollection;
  UPROPERTY() TObjectPtr<class ASkyLight> Sky;
  /** Night lamps: one shadowless point light per street-lamp globe, bulb, lantern and pool light. */
- struct FLamp{TWeakObjectPtr<class UPointLightComponent> Light;TWeakObjectPtr<AActor> Source;float Candela=0;};
- TArray<FLamp> Lamps;
+ struct FLamp{TWeakObjectPtr<class UPointLightComponent> Light;TWeakObjectPtr<AActor> Source;float Candela=0;FString Unlock;};
+ UPROPERTY() TArray<TObjectPtr<class APointLight>> BareLights;
+ TArray<FLamp> Lamps;bool bLampsLogged=false;
  UPROPERTY() TObjectPtr<AActor> LampHolder;
  void BuildLamps();
  /** Weather eased towards today's state (MPC_MareTime Rain/Wind/Storm) and the rain curtains around the camera. */

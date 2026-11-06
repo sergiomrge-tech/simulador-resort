@@ -648,3 +648,10 @@ comercial (as espigas do Fab são estátua ou só licença pessoal paga para com
 |---|---|---|
 | Tubarão-galha-preta, algas (kelp), erva marinha, anêmona, ouriço, estrela-do-mar, esponjas — `tools/ue58/gen_seafloor.py` (bpy). Busca feita antes: só havia tubarão CC0 low poly (Quaternius Lowpoly Animated Fish) e algas pagas ou sem licença clara | próprio do projeto | — |
 | Rochas do fundo: `boulder_01`, `rock_07`, `rock_09`, `coast_rocks_03`, `coast_rocks_05` (já usadas na costa) | https://polyhaven.com — Poly Haven | CC0 1.0 |
+
+### Aluguel, fundo do mar e luminárias (05/11/2026)
+| Item | Fonte | Licença |
+|---|---|---|
+| Caiaque do aluguel — `tools/ue58/gen_rental.py` (bpy), `SourceArt/Models/Rental/Rental_kayak.glb` | próprio do projeto | — |
+| Luminária de teto `modern_ceiling_lamp_01` (cozinha, banheiro, suíte do hotel) | https://polyhaven.com/a/modern_ceiling_lamp_01 — Poly Haven | CC0 1.0 |
+| Gerador do fundo do mar inteiro (rochas, corais, algas por profundidade): reaproveita os modelos acima e os corais do recife original (`reef.json` → `floor_fill`) | próprio do projeto | — |

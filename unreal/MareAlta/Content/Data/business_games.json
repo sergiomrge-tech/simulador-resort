@@ -184,7 +184,51 @@
     -1800,
     0,
     270
-   ]
+   ],
+   "rental": {
+    "_doc": "Board and kayak rental hands-on (CHECKLIST_EXPANSOES 3.3, MareRental.cpp + SMareRentalGame + MareRentalWorld): customers queue (arrivals per open hour, x hot_mult on a hot day, x rain_mult in the rain, queue_max, patience_minutes) asking for an item for 30 or 60 game minutes (price30 per half hour). Waxing (wax_turns full circles) before renting adds wax_tip x the price. When the time runs out (or at closing) the item comes back, with a dent at dent_chance: fining a dent pays 'fine', fining a clean one costs unfair_fame. While a kayak is out, adrift_chance per hour sets one adrift in the adrift_from/to area (drifting drift_speed cm/s offshore); towed to 'shore' (within shore_radius) it pays rescue_reward. World cm.",
+    "items": {
+     "prancha": {
+      "name": "uma prancha",
+      "price30": 10
+     },
+     "caiaque": {
+      "name": "um caiaque",
+      "price30": 14
+     }
+    },
+    "arrivals": [
+     1,
+     2
+    ],
+    "hot_mult": 1.5,
+    "rain_mult": 0.3,
+    "queue_max": 5,
+    "patience_minutes": 40,
+    "wax_turns": 5,
+    "wax_tip": 0.3,
+    "dent_chance": 0.3,
+    "fine": 20,
+    "unfair_fame": 2,
+    "adrift_chance": 0.25,
+    "adrift_from": [
+     5600,
+     -6000
+    ],
+    "adrift_to": [
+     6600,
+     -5000
+    ],
+    "drift_speed": 8,
+    "shore": [
+     6650,
+     -3400
+    ],
+    "shore_radius": 900,
+    "rescue_reward": 30,
+    "sea_z": -30,
+    "kayak_mesh": "/Game/Custom/Rental/Rental_kayak/Rental_kayak.Rental_kayak"
+   }
   },
   "surfe": {
    "title": "Aula na areia",

@@ -78,7 +78,7 @@ bool AMareIntro::LoadBus()
  for(const auto& Item:Data->GetArrayField(TEXT("steps"))){const auto& A=Item->AsArray();ExitSteps.Add(FVector(A[0]->AsNumber(),A[1]->AsNumber(),A[2]->AsNumber()));}
  BusDriver=GetWorld()->SpawnActor<AMarePerson>(BusPoint(FVector(390,-53,150)),Bus->GetActorRotation());
  if(BusDriver){BusDriver->SetAppearance(2);BusDriver->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);BusDriver->GetCharacterMovement()->DisableMovement();
-  BusDriver->Stage=EMarePersonStage::Eating;BusDriver->bConsumed=true;BusDriver->PlayPose(TEXT("Sitting_Idle"));BusDriver->AttachToActor(Bus,FAttachmentTransformRules::KeepWorldTransform);}
+  BusDriver->Stage=EMarePersonStage::Eating;BusDriver->bConsumed=true;BusDriver->HoldPose=TEXT("Sitting_Idle");BusDriver->PlayPose(TEXT("Sitting_Idle"));BusDriver->AttachToActor(Bus,FAttachmentTransformRules::KeepWorldTransform);}
  return ExitSteps.Num()>=5;
 }
 FVector AMareIntro::BusPoint(const FVector& Local)const{return Bus?Bus->GetActorTransform().TransformPosition(Local):StopPosition+FRotator(0,180,0).RotateVector(Local);}

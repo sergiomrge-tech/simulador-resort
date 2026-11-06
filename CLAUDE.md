@@ -580,3 +580,19 @@ o `HAlign_Left` vai no slot do `SOverlay`, não no `SBox`: sem isso a barra tem 
 segundo plano, o tick do Slate quase não roda: o QA dos minijogos deve forçar a fase (QAHold/QAStep) em vez de
 esperar o timer. Fila de clientes atrás do balcão precisa conferir chão e parede: atrás do cliente do food truck
 ficava a fachada de um prédio.
+
+## UE5.8 — lâmpadas, fundo do mar e git parcial (05/11)
+
+`FMath::SmoothStep(A,B,X)` exige A<B: com `SmoothStep(.55,.05,Day)` as lâmpadas acendiam de DIA e apagavam à noite
+(o teste da noite "via" as luzes desligadas e a casa clara vinha só da exposição automática compensando painéis fracos).
+Para inverter, use `1-SmoothStep(.05,.55,Day)`. Luz de cômodo vem da luminária: painéis retangulares (luz de parede) apagam à
+noite e de dia são só um preenchimento. Luminária nova vai em `Content/Data/lighting.json` (com `unlock` se for de
+expansão); a lâmpada fica dentro da cúpula, então a malha não projeta sombra (senão a própria cúpula prende a luz), e
+a luz é um foco virado para baixo com um ponto fraco para o teto. Os ícones de lâmpada no editor não aparecem no jogo.
+Fundo do mar: o perfil `reef.json` → `floor_fill.profile` é a fonte única (planos de areia de `ensure_seabed`,
+`UMareReefWorld::SeabedZ` para o gerador e o nado). Os planos não têm colisão: o herói é travado no `SeabedZ`.
+Escuridão pela profundidade = `SceneColorTint` do Eyes + exposição travada embaixo d'água (senão o olho "acende" o fundo).
+Herói com Buoyancy 1,35 embaixo d'água subia como boia (2,25 m/s): 1,03 abaixo de -110.
+Repositório recuperado como clone parcial (blob:none): `git status`/`reset` tentam baixar blobs e travam. Use
+`GIT_NO_LAZY_FETCH=1`; para refazer o índice, `git read-tree HEAD` (não `reset`).
+O comando `shot showui` às vezes não gera arquivo no PIE: usar `HighResShot 1` como alternativa.

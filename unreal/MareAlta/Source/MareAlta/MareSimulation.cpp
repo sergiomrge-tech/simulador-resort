@@ -760,7 +760,7 @@ void UMareSimulation::OperateHour(int32 Hour)
  auto Today=Child(Ops,TEXT("today"));const int32 Started=Hour-1;double Total=0;TArray<FString> Parts;
  auto Add=[&](const FString& Place,const FString& Label,double Amount){Amount=FMath::RoundToDouble(Amount);if(Amount<=0)return;
   Today->SetNumberField(Place,Number(Today,Place)+Amount);Total+=Amount;Parts.Add(FString::Printf(TEXT("%s R$ %.0f"),*Label,Amount));};
- StaysHour(Hour);BarHour(Hour);IceCreamHour(Hour);PastelHour(Hour);PoolHour(Hour);RestaurantHour(Hour);GameRoomHour(Hour);
+ StaysHour(Hour);BarHour(Hour);IceCreamHour(Hour);PastelHour(Hour);RentalHour(Hour);PoolHour(Hour);RestaurantHour(Hour);GameRoomHour(Hour);
  auto Defs=Object(CustomDefs(),TEXT("operations"));
  for(const auto& Pair:Object(Defs,TEXT("hourly"))->Values){const FString Id(Pair.Key.ToView());auto Op=Pair.Value->AsObject();
   const TArray<TSharedPtr<FJsonValue>>* Open=nullptr;if(!Owns(State,String(Op,TEXT("unlock"))) || !Op->TryGetArrayField(TEXT("open"),Open) || Open->Num()!=2)continue;

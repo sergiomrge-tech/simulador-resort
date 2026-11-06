@@ -132,6 +132,7 @@ void UMareReefWorld::Dress()
     C->AddInstance(FTransform(Rot,FVector(W.X,W.Y,Hit.ImpactPoint.Z-Sink*S),FVector(S)),true);++Placed;
     if(Clear>=35)Taken.Add(FVector(W.X,W.Y,Clear*S));break;}}
  }
+ FillFloor(R,Strip);
  // Sharks: plain instances (moved every frame, no tree rebuild), one per listed cluster.
  const auto SD=UMareSimulation::Object(D,TEXT("sharks"));
  if(auto Mesh=LoadObject<UStaticMesh>(nullptr,*UMareSimulation::String(SD,TEXT("mesh")))){SharkMesh=Make(Mesh,true,false);SharkMesh->SetCullDistances(0,int32(Cull*1.3f));
@@ -142,6 +143,60 @@ void UMareReefWorld::Dress()
    Sharks.Add(S);SharkMesh->AddInstance(FTransform(FVector(S.Centre.X+S.Radius,S.Centre.Y,S.Depth)),true);}}
  else ++Missing;
  UE_LOG(LogTemp,Display,TEXT("Maré reef: %d seafloor pieces, %d sharks, %d missing meshes"),Placed,Sharks.Num(),Missing);
+}
+
+float UMareReefWorld::SeabedZ(float Y,float* Slope)
+{
+ // Piecewise linear along y (the beach runs along x); beyond the last point the floor stays flat.
+ const TArray<TSharedPtr<FJsonValue>>* L=nullptr;TArray<FVector2D> Pts;
+ if(UMareSimulation::Object(ReefDefs(),TEXT("floor_fill"))->TryGetArrayField(TEXT("profile"),L))for(const auto& V:*L){const auto& A=V->AsArray();if(A.Num()>=2)Pts.Add(FVector2D(A[0]->AsNumber(),A[1]->AsNumber()));}
+ if(Slope)*Slope=0;if(Pts.IsEmpty())return -900;if(Y>=Pts[0].X)return Pts[0].Y;
+ for(int32 I=1;I<Pts.Num();++I)if(Y>=Pts[I].X){const float A=(Y-Pts[I-1].X)/(Pts[I].X-Pts[I-1].X);if(Slope)*Slope=(Pts[I].Y-Pts[I-1].Y)/(Pts[I].X-Pts[I-1].X);return FMath::Lerp(Pts[I-1].Y,Pts[I].Y,A);}
+ return Pts.Last().Y;
+}
+
+void UMareReefWorld::FillFloor(FRandomStream& R,const FBox2D& Reef)
+{
+ // 05/11 (Sergio: "faça um gerador com rochas, corais e algas marinhas, preencha todo fundo"): the whole sea floor,
+ // from the shallows in front of the beach down the slope to the deep floor, gets rocks, corals and algae by depth
+ // (reef.json floor_fill.kinds: density per 100 m2 inside a floor height range, patchy where 'patch' is set). Cell by
+ // cell over the area; the shallows (still the beach terrain) are found by a trace, the rest follows the profile.
+ // GPU: one HISM per kind built in one batch, culled by distance; no collision (swimming is unaffected).
+ const auto F=UMareSimulation::Object(ReefDefs(),TEXT("floor_fill"));UWorld* World=GetWorld();if(!World || !F->HasField(TEXT("kinds")))return;
+ const FVector2D XR=Pair(F,TEXT("x"),FVector2D(-19500,27500)),YR=Pair(F,TEXT("y"),FVector2D(-3300,-40000));
+ const float Cell=UMareSimulation::Number(F,TEXT("cell"),500),TerrainEnd=UMareSimulation::Number(F,TEXT("terrain_until"),-5450),ReefPad=UMareSimulation::Number(F,TEXT("reef_pad"),300);
+ const FBox2D Skip(Reef.Min-FVector2D(ReefPad),Reef.Max+FVector2D(ReefPad));
+ struct FKindRow{UHierarchicalInstancedStaticMeshComponent* C;float Dens,ZLo,ZHi,SLo,SHi,Sink,Tilt,Align,Patch,Cut,Seed;TArray<FTransform> Out;};
+ TArray<FKindRow> Kinds;const TArray<TSharedPtr<FJsonValue>>* List=nullptr;F->TryGetArrayField(TEXT("kinds"),List);
+ for(const auto& V:*List){const auto E=V->AsObject();auto Mesh=LoadObject<UStaticMesh>(nullptr,*UMareSimulation::String(E,TEXT("mesh")));
+  if(!Mesh){UE_LOG(LogTemp,Warning,TEXT("REEF_MISSING %s"),*UMareSimulation::String(E,TEXT("mesh")));continue;}
+  auto C=NewObject<UHierarchicalInstancedStaticMeshComponent>(Dressing);C->SetMobility(EComponentMobility::Movable);C->SetStaticMesh(Mesh);
+  C->SetCollisionEnabled(ECollisionEnabled::NoCollision);bool bShadow=false;E->TryGetBoolField(TEXT("shadow"),bShadow);C->SetCastShadow(bShadow);
+  const float Cull=UMareSimulation::Number(E,TEXT("cull"),6000);C->SetCullDistances(int32(Cull*.8f),int32(Cull));
+  C->SetupAttachment(Dressing->GetRootComponent());C->RegisterComponent();Dressing->AddInstanceComponent(C);Parts.Add(C);
+  const FVector2D Z=Pair(E,TEXT("depth"),FVector2D(-12000,-100)),S=Pair(E,TEXT("scale"),FVector2D(1,1));
+  Kinds.Add({C,float(UMareSimulation::Number(E,TEXT("per_100m2"),1)),float(Z.X),float(Z.Y),float(S.X),float(S.Y),float(UMareSimulation::Number(E,TEXT("sink"))),
+   float(UMareSimulation::Number(E,TEXT("tilt"))),float(UMareSimulation::Number(E,TEXT("align"),.5)),float(UMareSimulation::Number(E,TEXT("patch"))),
+   float(UMareSimulation::Number(E,TEXT("patch_cut"),.5)),float(R.FRandRange(0.f,1000.f)),{}});}
+ const float CellArea=Cell*Cell/1e6f;   // in units of 100 m2
+ for(float Y=YR.X;Y>YR.Y;Y-=Cell)for(float X=XR.X;X<XR.Y;X+=Cell){
+  for(auto& K:Kinds){
+   float N=K.Dens*CellArea;
+   if(K.Patch>0){const float Noise=.5f+.5f*FMath::PerlinNoise2D(FVector2D(X,Y)/K.Patch+FVector2D(K.Seed));N*=FMath::SmoothStep(K.Cut-.08f,K.Cut+.08f,Noise)*2.f;}
+   const int32 Count=FMath::FloorToInt(N)+(R.FRand()<FMath::Frac(N)?1:0);
+   for(int32 I=0;I<Count;++I){const FVector2D W(X+R.FRandRange(0.f,Cell),Y-R.FRandRange(0.f,Cell));if(Skip.IsInside(W))continue;
+    float Z,Slope=0;FVector Normal=FVector::UpVector;
+    if(W.Y>TerrainEnd){FHitResult Hit;FCollisionQueryParams Q(TEXT("MareFloorFill"),false);
+     if(!World->LineTraceSingleByChannel(Hit,FVector(W.X,W.Y,200),FVector(W.X,W.Y,-1500),ECC_WorldStatic,Q) || Hit.ImpactNormal.Z<.8f)continue;
+     Z=Hit.ImpactPoint.Z;Normal=Hit.ImpactNormal;}
+    else{Z=SeabedZ(W.Y,&Slope);Normal=FVector(0,-Slope,1).GetSafeNormal();}
+    if(Z<K.ZLo || Z>K.ZHi)continue;
+    const float Sc=R.FRandRange(K.SLo,K.SHi);
+    const FQuat Lean=FQuat::Slerp(FQuat::Identity,FQuat::FindBetweenNormals(FVector::UpVector,Normal),K.Align);
+    const FQuat Rot=Lean*FRotator(R.FRandRange(-K.Tilt,K.Tilt),R.FRandRange(0.f,360.f),R.FRandRange(-K.Tilt,K.Tilt)).Quaternion();
+    K.Out.Add(FTransform(Rot,FVector(W.X,W.Y,Z-K.Sink*Sc),FVector(Sc)));}}}
+ for(auto& K:Kinds){K.C->AddInstances(K.Out,false,true);FloorFilled+=K.Out.Num();}
+ UE_LOG(LogTemp,Display,TEXT("MARE_FLOOR_FILL instances=%d kinds=%d"),FloorFilled,Kinds.Num());
 }
 
 void UMareReefWorld::UpdateSharks(float Dt,const FVector& Swimmer)

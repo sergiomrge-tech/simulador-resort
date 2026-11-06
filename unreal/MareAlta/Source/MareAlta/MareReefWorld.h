@@ -40,11 +40,17 @@ public:
  TArray<FVector> InstancePositions(const FString& MeshName) const;
  int32 SeafloorCount() const;
  int32 SharkCount() const{return Sharks.Num();}
+ /** Sea floor height (cm) offshore of the modelled beach, from reef.json floor_fill.profile (the sand planes of
+  *  mare_water.ensure_seabed follow the same profile). */
+ static float SeabedZ(float Y,float* Slope=nullptr);
+ int32 FloorFillCount() const{return FloorFilled;}
  /** QA: "state" (instances per mesh), "sharks", "hold:x,y,z,pitch,yaw,seconds" (keeps the player there), "watch:i". */
  FString QA(const FString& Cmd);
 private:
  void IndexFish();
  void Dress();
+ void FillFloor(FRandomStream& R,const FBox2D& Reef);
+ int32 FloorFilled=0;
  void UpdateSharks(float Dt,const FVector& Swimmer);
  bool bIndexed=false;
  float Clock=0;

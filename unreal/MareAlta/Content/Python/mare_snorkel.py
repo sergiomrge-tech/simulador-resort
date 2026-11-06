@@ -228,3 +228,114 @@ def ice(arg=''):
 def pastel(arg=''):
     pc = unreal.GameplayStatics.get_player_controller(_game_world(), 0)
     return json.dumps([[c, pc.pastel_qa(c)] for c in arg.split(';') if c])
+
+
+def import_rental(arg=''):
+    """Imports tools/ue58/gen_rental.py models (SourceArt/Models/Rental) to /Game/Custom/Rental/<name> (PIE stopped)."""
+    import mare_hotel_lobby as hl
+    import mare_boat_tour as bt
+    from pathlib import Path
+    src = Path(unreal.Paths.project_dir()) / 'SourceArt/Models/Rental'
+    out = {}
+    for p in sorted(src.glob('*.glb')):
+        folder = f'/Game/Custom/Rental/{p.stem}'
+        if unreal.EditorAssetLibrary.does_directory_exist(folder):
+            unreal.EditorAssetLibrary.delete_directory(folder)
+        mesh = hl._import(p, folder, p.stem, True, search=False)
+        b = mesh.get_bounds()
+        out[p.stem] = [round(b.box_extent.x * 2), round(b.box_extent.y * 2), round(b.box_extent.z * 2)]
+    out['fixed'] = len(bt.fix_usage('/Game/Custom/Rental'))
+    return json.dumps(out)
+
+
+def rental(arg=''):
+    pc = unreal.GameplayStatics.get_player_controller(_game_world(), 0)
+    return json.dumps([[c, pc.rental_qa(c)] for c in arg.split(';') if c])
+
+
+def lights(arg='3800,-1200,1200'):
+    """Local lights within r cm of x,y: class, label, tags, location, intensity, units, radius, shadows."""
+    x, y, r = [float(v) for v in arg.split(',')]
+    world = _game_world() or _editor_world()
+    out = []
+    for a in unreal.GameplayStatics.get_all_actors_of_class(world, unreal.Actor):
+        for c in a.get_components_by_class(unreal.LocalLightComponent):
+            l = c.get_world_location()
+            if (l.x - x) ** 2 + (l.y - y) ** 2 > r * r:
+                continue
+            out.append([a.get_actor_label()[:30], c.get_class().get_name(), [str(t) for t in a.tags][:3], [round(l.x), round(l.y), round(l.z)],
+                        round(c.intensity, 1), str(c.get_editor_property('intensity_units')).split('.')[-1][:10], round(c.attenuation_radius), bool(c.cast_shadows), c.is_visible()])
+    return json.dumps(out)
+
+
+def meshes_near(arg='3800,-1200,600,180'):
+    """Static meshes within r cm of x,y and above z: label, mesh, location (instances one by one)."""
+    x, y, r, zmin = [float(v) for v in arg.split(',')]
+    world = _game_world() or _editor_world()
+    out = []
+    for a in unreal.GameplayStatics.get_all_actors_of_class(world, unreal.Actor):
+        for c in a.get_components_by_class(unreal.StaticMeshComponent):
+            m = c.static_mesh
+            if not m:
+                continue
+            pts = []
+            if isinstance(c, unreal.InstancedStaticMeshComponent):
+                for i in range(min(c.get_instance_count(), 400)):
+                    pts.append(c.get_instance_transform(i, True).translation)
+            else:
+                pts.append(c.get_world_location())
+            for l in pts:
+                if (l.x - x) ** 2 + (l.y - y) ** 2 <= r * r and l.z >= zmin:
+                    out.append([a.get_actor_label()[:28], m.get_name(), [round(l.x), round(l.y), round(l.z)]])
+    return json.dumps(out[:80])
+
+
+def import_lamp(arg=''):
+    """Poly Haven modern_ceiling_lamp_01 (CC0) -> /Game/Custom/Lighting/modern_ceiling_lamp_01 (PIE stopped)."""
+    import mare_hotel_lobby as hl
+    import mare_boat_tour as bt
+    from pathlib import Path
+    src = Path(unreal.Paths.project_dir()) / 'SourceArt/Models/Lighting/modern_ceiling_lamp_01/modern_ceiling_lamp_01_1k.gltf'
+    folder = '/Game/Custom/Lighting/modern_ceiling_lamp_01'
+    if unreal.EditorAssetLibrary.does_directory_exist(folder):
+        unreal.EditorAssetLibrary.delete_directory(folder)
+    mesh = hl._import(src, folder, 'modern_ceiling_lamp_01', True, search=False)
+    b = mesh.get_bounds()
+    return json.dumps([[round(b.origin.x), round(b.origin.y), round(b.origin.z)], [round(b.box_extent.x * 2), round(b.box_extent.y * 2), round(b.box_extent.z * 2)], bt.fix_usage('/Game/Custom/Lighting')])
+
+
+def ceiling(arg='4780,2310,150'):
+    x, y, z = [float(v) for v in arg.split(',')]
+    world = _game_world() or _editor_world()
+    hit = unreal.SystemLibrary.line_trace_single(world, unreal.Vector(x, y, z), unreal.Vector(x, y, z + 800), unreal.TraceTypeQuery.TRACE_TYPE_QUERY1, False, [], unreal.DrawDebugTrace.NONE, True)
+    t = hit.to_tuple()
+    return json.dumps([round(t[4].z), t[9].get_actor_label() if t[9] else None] if t[0] else None)
+
+
+def mesh_info(arg='World_0546'):
+    """Asset path, bounds size (cm) and material names of World_* meshes (comma separated names)."""
+    out = []
+    for n in arg.split(','):
+        hits = unreal.AssetRegistryHelpers.get_asset_registry().get_assets_by_package_name('/Game/World/Models/%s/%s' % (n, n))
+        if not hits:
+            hits = unreal.AssetRegistryHelpers.get_asset_registry().get_assets_by_package_name('/Game/World/Models/%s/%s/StaticMeshes/%s' % (n, n, n))
+        for h in hits:
+            m = h.get_asset()
+            if not isinstance(m, unreal.StaticMesh):
+                continue
+            b = m.get_bounding_box()
+            s = b.max - b.min
+            out.append([n, str(h.package_name), [round(s.x), round(s.y), round(s.z)], [str(mat.material_slot_name) for mat in m.static_materials][:3]])
+    return json.dumps(out)
+
+
+def hero(arg=''):
+    """'x,y,z' puts the hero there (stopped); empty: hero location, velocity and movement mode."""
+    world = _game_world()
+    p = unreal.GameplayStatics.get_player_pawn(world, 0)
+    if arg:
+        x, y, z = [float(v) for v in arg.split(',')]
+        p.set_actor_location(unreal.Vector(x, y, z), False, True)
+        p.character_movement.stop_movement_immediately()
+    l, v = p.get_actor_location(), p.get_velocity()
+    return json.dumps([round(l.z, 1), round(v.z, 1), str(p.character_movement.movement_mode).split('.')[-1], round(l.x), round(l.y)])

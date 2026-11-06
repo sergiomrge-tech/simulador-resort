@@ -27,7 +27,7 @@ def ensure_volume():
     return {'volume':water.get_path_name(),'surface_z_cm':origin.z+extent.z,'origin':str(origin),'extent':str(extent),'non_solid_oceans':oceans}
 
 
-def ensure_seabed():
+def ensure_seabed(arg=""):
     """Sand sea floor beyond the modelled beach (03/11, Sergio: "a areia da praia também fica no fundo do mar"): the
     terrain ends about 12 m out (y -5500, z -2 m) and the clear water showed nothing behind it. Two planes with the
     beach material (wet sand under water, caustics): a ramp down to -9 m at y -12000, then a flat floor to the
@@ -40,7 +40,16 @@ def ensure_seabed():
     ground=unreal.load_asset('/Game/World/Materials/M_CoastGround_PBR')
     made=[]
     # (label, y0, z0, y1, z1): the ramp starts 20 cm under the end of the terrain so there is no visible step.
-    for label,y0,z0,y1,z1 in (('rampa',-5450,-215,-12000,-900),('plano',-12000,-900,-60000,-900)):
+    # 05/11 (Sergio: "aumente a profundidade conforme se distancia da praia"): after the reef shelf (-9 m, the
+    # snorkel reef at y -13300) the floor keeps going down: a continental slope to -42 m and the deep floor beyond.
+    # 05/11 ("fundo precisa ser bem fundo, uns 100m"): the profile lives in reef.json floor_fill (MareReefWorld fills
+    # the floor with rocks, corals and algae on the same heights): the drop-off goes to -100 m.
+    import json as _json
+    from pathlib import Path as _Path
+    prof=_json.loads((_Path(unreal.Paths.project_content_dir())/'Data/reef.json').read_text(encoding='utf-8'))['floor_fill']['profile']
+    names=['rampa','recife','talude','fundo']+['fundo%d'%i for i in range(2,9)]
+    segments=[(names[i],prof[i][0],prof[i][1],prof[i+1][0],prof[i+1][1]) for i in range(len(prof)-1)]
+    for label,y0,z0,y1,z1 in segments:
         cy,cz=(y0+y1)/2,(z0+z1)/2
         length=math.hypot(y1-y0,z1-z0)
         pitch=math.degrees(math.atan2(z0-z1,y0-y1))

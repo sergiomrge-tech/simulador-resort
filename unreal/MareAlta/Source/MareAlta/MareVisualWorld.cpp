@@ -1,4 +1,10 @@
 #include "MareVisualWorld.h"
+#include "Components/RectLightComponent.h"
+#include "Components/SpotLightComponent.h"
+#include "Engine/PointLight.h"
+#include "Engine/StaticMesh.h"
+#include "Dom/JsonObject.h"
+#include "Misc/Paths.h"
 #include "MareSummitWorld.h"
 #include "MareMarineWorld.h"
 #include "MareLoc.h"
@@ -50,21 +56,52 @@ void UMareVisualWorld::BuildLamps()
 {
  // Light sources exported from Godot (their glow materials were lost): mesh, glass centre above the
  // pivot (cm), candela at full night, reach (cm), colour temperature (K).
- struct FKind{const TCHAR* Mesh;float Up,Candela,Radius,Kelvin;};
+ struct FKind{const TCHAR* Mesh;float Up,Candela,Radius,Kelvin;bool bDown=false;};
  static const FKind Kinds[]={{TEXT("World_1392"),40,150,1900,2900},{TEXT("World_2205"),40,150,1900,2900},{TEXT("World_0687"),9,32,800,2700},
-  {TEXT("World_0515"),9,32,800,2700},{TEXT("World_0199"),19,12,550,2200},{TEXT("World_0138"),2,30,700,9000}};
+  {TEXT("World_0515"),9,32,800,2700},{TEXT("World_0138"),2,30,700,9000},
+  // 05/11 (Sergio: "a luz precisa vir das lâmpadas", the kiosk and the house looked lit by the furniture): the light
+  // of a room comes from its fixtures, with shadows. Kiosk lantern (was 12 cd, no shadow), the kiosk's rattan
+  // pendants, the house's oil lamp on the nightstand.
+  {TEXT("World_0199"),19,90,950,2500},{TEXT("World_1211"),-15,70,900,2600,true},{TEXT("World_1229"),-15,45,800,2600,true},{TEXT("World_0937"),12,22,520,1900},
+  // The house ceiling fan has the room's light under it.
+  {TEXT("World_0960"),-45,40,750,3200,true}};
  LampHolder=GetWorld()->SpawnActor<AActor>();if(!LampHolder)return;
  LampHolder->SetRootComponent(NewObject<USceneComponent>(LampHolder,TEXT("LampRoot")));LampHolder->GetRootComponent()->RegisterComponent();
+ // Fixtures added where a room had light but no lamp (Content/Data/lighting.json).
+ {FString Text;TSharedPtr<FJsonObject> Defs;FFileHelper::LoadFileToString(Text,*(FPaths::ProjectContentDir()/TEXT("Data/lighting.json")));
+  if(FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Text),Defs) && Defs.IsValid()){const TArray<TSharedPtr<FJsonValue>>* List=nullptr;
+   if(Defs->TryGetArrayField(TEXT("fixtures"),List))for(const auto& V:*List){const auto F=V->AsObject();const TArray<TSharedPtr<FJsonValue>>* At=nullptr;
+    auto Mesh=LoadObject<UStaticMesh>(nullptr,*F->GetStringField(TEXT("mesh")));if(!Mesh || !F->TryGetArrayField(TEXT("at"),At) || At->Num()!=3)continue;
+    const FVector P((*At)[0]->AsNumber(),(*At)[1]->AsNumber(),(*At)[2]->AsNumber());FActorSpawnParameters SP;SP.SpawnCollisionHandlingOverride=ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+    auto Fix=GetWorld()->SpawnActor<AStaticMeshActor>(P,FRotator(0,F->GetNumberField(TEXT("yaw")),0),SP);if(!Fix)continue;
+    Fix->GetStaticMeshComponent()->SetMobility(EComponentMobility::Movable);Fix->GetStaticMeshComponent()->SetStaticMesh(Mesh);Fix->GetStaticMeshComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+    // The bulb sits inside the shade: a shade casting shadows kept almost all of its own light in (the suite was dark).
+    Fix->GetStaticMeshComponent()->SetCastShadow(false);
+    // 05/11 (Sergio: "a lâmpada precisa estar virada para baixo"): a ceiling lamp throws its light down (a spot under
+    // the shade); a faint point light keeps a little glow on the ceiling around it (added below at 15%).
+    auto Light=NewObject<USpotLightComponent>(LampHolder);Light->SetupAttachment(LampHolder->GetRootComponent());Light->RegisterComponent();
+    Light->SetInnerConeAngle(38.f);Light->SetOuterConeAngle(68.f);Light->SetWorldRotation(FRotator(-90,0,0));
+    Light->SetWorldLocation(P+FVector(0,0,F->GetNumberField(TEXT("light_up"))));Light->SetIntensityUnits(ELightUnits::Candelas);Light->SetIntensity(0);
+    Light->SetAttenuationRadius(F->GetNumberField(TEXT("radius")));Light->SetUseTemperature(true);Light->SetTemperature(F->GetNumberField(TEXT("kelvin")));
+    Light->SetCastShadows(true);Light->ContactShadowLength=.08f;Light->SetSourceRadius(6);Light->SetVisibility(false);
+    FString Unlock;F->TryGetStringField(TEXT("unlock"),Unlock);if(!Unlock.IsEmpty())Fix->SetActorHiddenInGame(true);
+    Lamps.Add({Light,Fix,float(F->GetNumberField(TEXT("candela"))),Unlock});
+    auto Glow=NewObject<UPointLightComponent>(LampHolder);Glow->SetupAttachment(LampHolder->GetRootComponent());Glow->RegisterComponent();
+    Glow->SetWorldLocation(Light->GetComponentLocation()+FVector(0,0,20));Glow->SetIntensityUnits(ELightUnits::Candelas);Glow->SetIntensity(0);
+    Glow->SetAttenuationRadius(F->GetNumberField(TEXT("radius"))*.6f);Glow->SetUseTemperature(true);Glow->SetTemperature(F->GetNumberField(TEXT("kelvin")));
+    Glow->SetCastShadows(false);Glow->SetVisibility(false);Lamps.Add({Glow,Fix,float(F->GetNumberField(TEXT("candela")))*.15f,Unlock});}}}
  for(TActorIterator<AActor> It(GetWorld());It;++It){if(*It==LampHolder)continue;
   TArray<UInstancedStaticMeshComponent*> Parts;It->GetComponents(Parts);
   for(auto Part:Parts){if(!Part->GetStaticMesh())continue;const FString Mesh=Part->GetStaticMesh()->GetName();
    const FKind* Kind=nullptr;for(const auto& K:Kinds)if(Mesh==K.Mesh)Kind=&K;if(!Kind)continue;
    for(int32 I=0;I<Part->GetInstanceCount();++I){FTransform T;Part->GetInstanceTransform(I,T,true);
-    auto Light=NewObject<UPointLightComponent>(LampHolder);Light->SetupAttachment(LampHolder->GetRootComponent());Light->RegisterComponent();
+    UPointLightComponent* Light=Kind->bDown?NewObject<USpotLightComponent>(LampHolder):NewObject<UPointLightComponent>(LampHolder);
+    Light->SetupAttachment(LampHolder->GetRootComponent());Light->RegisterComponent();
+    if(auto Spot=Cast<USpotLightComponent>(Light)){Spot->SetInnerConeAngle(40.f);Spot->SetOuterConeAngle(70.f);Spot->SetWorldRotation(FRotator(-90,0,0));}
     Light->SetWorldLocation(T.TransformPosition(FVector(0,0,Kind->Up)));Light->SetIntensityUnits(ELightUnits::Candelas);Light->SetIntensity(0);
     Light->SetAttenuationRadius(Kind->Radius);Light->SetUseTemperature(true);Light->SetTemperature(Kind->Kelvin);
     // Street lamps and lanterns cast shadows at night (03/11, Sergio: "nada tem sombra"); the small lamps only a contact shadow.
-    Light->SetCastShadows(Kind->Radius>=800);Light->ContactShadowLength=.08f;
+    Light->SetCastShadows(Kind->Radius>=500);Light->ContactShadowLength=.08f;
     Light->SetSourceRadius(4);Light->SetVisibility(false);Lamps.Add({Light,*It,Kind->Candela});}
   }
  }
@@ -109,7 +146,8 @@ void UMareVisualWorld::Tick(float DeltaSeconds)
  RefreshExpansions();
  AddGlassCompanions();
  CullLocalLights();
- if(!Sun){for(TActorIterator<ALight> It(GetWorld());It;++It){if(It->ActorHasTag(TEXT("MareSun")))Sun=*It;if(It->ActorHasTag(TEXT("MareMoon")))Moon=*It;if(It->ActorHasTag(TEXT("MarePractical")))Practical.AddUnique(*It);}
+ if(!Sun){for(TActorIterator<ALight> It(GetWorld());It;++It){if(It->ActorHasTag(TEXT("MareSun")))Sun=*It;if(It->ActorHasTag(TEXT("MareMoon")))Moon=*It;if(It->ActorHasTag(TEXT("MarePractical")))Practical.AddUnique(*It);
+   if(It->ActorHasTag(TEXT("MareSuitePart")))if(auto Bare=Cast<APointLight>(*It))BareLights.Add(Bare);}
   for(TActorIterator<AExponentialHeightFog> It(GetWorld());It;++It)Fog=*It;
   for(TActorIterator<APostProcessVolume> It(GetWorld());It;++It)if(It->bUnbound){Exposure=*It;break;}
   for(TActorIterator<APostProcessVolume> It(GetWorld());It;++It)if(It->ActorHasTag(TEXT("MareInterior")))Interiors.Add(*It);
@@ -138,7 +176,7 @@ void UMareVisualWorld::Tick(float DeltaSeconds)
  // Night: the eye must not adapt up to daylight brightness (that washed the scene out white); keep a
  // narrow dark EV100 window so moonlight reads blue-dim and lamps/windows carry the image.
  for(auto Volume:Interiors)if(Volume){auto& S=Volume->Settings;S.bOverride_AutoExposureMinBrightness=S.bOverride_AutoExposureMaxBrightness=true;
-  S.AutoExposureMinBrightness=FMath::Lerp(3.5f,5.f,Day);S.AutoExposureMaxBrightness=FMath::Lerp(4.5f,9.f,Day);}
+  S.AutoExposureMinBrightness=FMath::Lerp(4.4f,5.f,Day);S.AutoExposureMaxBrightness=FMath::Lerp(5.2f,9.f,Day);}
  if(Exposure){Exposure->Settings.bOverride_AutoExposureMinBrightness=true;Exposure->Settings.bOverride_AutoExposureMaxBrightness=true;Exposure->Settings.AutoExposureMinBrightness=FMath::Lerp(-1.9f,5.f,Day);Exposure->Settings.AutoExposureMaxBrightness=FMath::Lerp(-.9f,14.f,Day);}
  // Overcast light: the sun fades out with the rain (no hard shadows) and the diffuse sky light doubles.
  if(Sky)Sky->GetLightComponent()->SetIntensity(FMath::Lerp(.035f,1.f,Day)*(1.f+2.5f*RainNow));
@@ -146,15 +184,28 @@ void UMareVisualWorld::Tick(float DeltaSeconds)
   Sun->GetLightComponent()->SetLightColor(FLinearColor(1.f,FMath::Lerp(.95f,.99f,Day),FMath::Lerp(.88f,.975f,Day)),false);}
  if(Moon){Moon->GetLightComponent()->SetIntensity((1-Day)*.45f);Moon->GetLightComponent()->SetLightColor(FLinearColor(.62f,.72f,1.f),false);}
  // Lamps switch on at dusk and only where the area is built (region actors hidden until bought).
- const float Dark=FMath::SmoothStep(.55f,.05f,Day);
+ // FMath::SmoothStep needs A<B (with .55,.05 the lamps were lit by day and off at night).
+ const float Dark=1.f-FMath::SmoothStep(.05f,.55f,Day);
+ // Fixtures of an expansion show once it is bought (lighting.json "unlock").
+ const auto Owned=UMareSimulation::Object(Sim->State,TEXT("unlocked"));
+ for(const auto& Lamp:Lamps)if(!Lamp.Unlock.IsEmpty() && Lamp.Source.IsValid()){bool b=false;Owned->TryGetBoolField(Lamp.Unlock,b);if(Lamp.Source->IsHidden()==b)Lamp.Source->SetActorHiddenInGame(!b);}
+ // Bare lights without a fixture (the suite's): a soft fill by day, off at night, the ceiling lamps take over.
+ for(auto Bare:BareLights)if(IsValid(Bare))Bare->GetLightComponent()->SetIntensity(FMath::Lerp(0.f,700.f,FMath::Square(Day)));
  for(const auto& Lamp:Lamps)if(auto Light=Lamp.Light.Get()){const bool bOn=Dark>.01f && Lamp.Source.IsValid() && !Lamp.Source->IsHidden();
   Light->SetVisibility(bOn);Light->SetIntensity(bOn?Lamp.Candela*Dark:0.f);}
+ if(Dark>.5f && !bLampsLogged){bLampsLogged=true;int32 On=0,Hidden=0,Gone=0;for(const auto& Lamp:Lamps){if(!Lamp.Source.IsValid())++Gone;else if(Lamp.Source->IsHidden())++Hidden;else ++On;}
+  UE_LOG(LogTemp,Display,TEXT("MARE_LAMPS total=%d on=%d hidden_source=%d lost_source=%d"),Lamps.Num(),On,Hidden,Gone);}
  // Facade windows glow at night through MPC_MareTime.Night (M_WindowPane_PBR).
  if(!TimeCollection)TimeCollection=LoadObject<UMaterialParameterCollection>(nullptr,TEXT("/Game/World/Materials/MPC_MareTime.MPC_MareTime"));
  if(TimeCollection)UKismetMaterialLibrary::SetScalarParameterValue(this,TimeCollection,TEXT("Night"),FMath::Clamp(1.f-Day,0.f,1.f)*(Rain?.8f:1.f));
  // A grey storm day needs the interior lights up (no sun through the windows).
  const float Overcast=1.f+1.6f*RainNow;
- for(auto Light:Practical)if(IsValid(Light))Light->GetLightComponent()->SetIntensity(Overcast*(Light->ActorHasTag(TEXT("MareHomeLight"))?FMath::Lerp(1000.f,180.f,Day):Light->ActorHasTag(TEXT("MareBounce"))?FMath::Lerp(400.f,6500.f,Day):FMath::Lerp(2200.f,10000.f,Day)));
+ // 05/11 (Sergio: "com a lâmpada funcionando tira a luz das paredes"): rectangular panels have no fixture (the generated
+ // room fills "luz Sala/Cozinha/Banheiro", the kiosk fill and the kiosk lantern panel): off at night, the lamps light the
+ // rooms; by day a soft fill. Point lights at a fixture (MareHomeLight: the pousada lamps) stay modest.
+ for(auto Light:Practical)if(IsValid(Light)){const bool bPanel=Light->GetLightComponent()->IsA<URectLightComponent>() || Light->ActorHasTag(TEXT("MareVisualExtra"));
+  Light->GetLightComponent()->SetIntensity(Overcast*(bPanel?FMath::Lerp(0.f,Light->ActorHasTag(TEXT("MareVisualExtra"))?600.f:2600.f,FMath::Square(Day))
+  :Light->ActorHasTag(TEXT("MareHomeLight"))?FMath::Lerp(90.f,180.f,Day):Light->ActorHasTag(TEXT("MareBounce"))?FMath::Lerp(120.f,6500.f,Day):FMath::Lerp(350.f,2600.f,Day)));}
  // Overcast: denser fog with the rain (greys the horizon and the sky), a little darker exposure.
  if(Fog)Fog->GetComponent()->SetFogDensity(FMath::Lerp(.00065f,.0042f,RainNow));
  if(Exposure){Exposure->Settings.bOverride_AutoExposureBias=true;Exposure->Settings.AutoExposureBias=-.3f*RainNow-CVarMareNightDarken.GetValueOnGameThread()*FMath::Clamp(1.f-Day,0.f,1.f);}

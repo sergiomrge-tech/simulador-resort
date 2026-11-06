@@ -11,6 +11,7 @@
 #include "MareBoatTourWorld.h"
 #include "MareSnorkelWorld.h"
 #include "MareTrailWorld.h"
+#include "MareRentalWorld.h"
 #include "MareReefWorld.h"
 #include "MarePlayerPresentation.h"
 #include "MareHomeWorld.h"
@@ -870,6 +871,9 @@ AMareCharacter::AMareCharacter()
  PhoneModel=CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PhoneModel"));PhoneModel->SetupAttachment(Eyes);
  PhoneModel->SetCollisionEnabled(ECollisionEnabled::NoCollision);PhoneModel->SetCastShadow(false);PhoneModel->SetVisibility(false);
  Eyes->PostProcessSettings.bOverride_VignetteIntensity=true;Eyes->PostProcessSettings.VignetteIntensity=.28f;Eyes->PostProcessBlendWeight=0;
+ // Under water the eye must not adapt up to the dark of the deep (it washed the -100 m floor back to daylight).
+ Eyes->PostProcessSettings.bOverride_AutoExposureMinBrightness=Eyes->PostProcessSettings.bOverride_AutoExposureMaxBrightness=true;
+ Eyes->PostProcessSettings.AutoExposureMinBrightness=4.f;Eyes->PostProcessSettings.AutoExposureMaxBrightness=10.f;
  GetCharacterMovement()->MaxWalkSpeed=260;GetCharacterMovement()->JumpZVelocity=360;GetCharacterMovement()->MaxStepHeight=35;
  GetCharacterMovement()->GetNavAgentPropertiesRef().bCanSwim=true;
  GetCharacterMovement()->MaxSwimSpeed=210;GetCharacterMovement()->Buoyancy=1.35f;GetCharacterMovement()->BrakingDecelerationSwimming=180;
@@ -937,12 +941,21 @@ void AMareCharacter::Tick(float DeltaSeconds)
  // A comfortable home leaves the player rested: walking and running get faster.
  const UMareSimulation* HomeSim=GetGameInstance()?GetGameInstance()->GetSubsystem<UMareSimulation>():nullptr;
  if(bSprintToggle && Movement->GetCurrentAcceleration().IsNearlyZero())bSprintToggle=false;   // L3 runs until the player stops
- Movement->MaxWalkSpeed=(bSprint || bSprintToggle?420:260)*(HomeSim?float(HomeSim->HomeSpeedFactor()):1.f);Movement->Buoyancy=Vertical<0?1.f:1.35f;
+ Movement->MaxWalkSpeed=(bSprint || bSprintToggle?420:260)*(HomeSim?float(HomeSim->HomeSpeedFactor()):1.f);// 05/11 (Sergio: "o herói flutua na água (boia)": released 5 m down he shot up at 2.25 m/s): near the surface he
+ // rests on it; under water he is close to neutral and drifts up slowly (~20 cm/s); Space swims up faster.
+ Movement->Buoyancy=Vertical<0?1.f:Vertical>0 || GetActorLocation().Z>-110?1.35f:1.03f;
  if(bSwimming && (Vertical<=0 || GetActorLocation().Z<-78))AddMovementInput(FVector::UpVector,Vertical);
  const bool bUnderwater=bSwimming && Eyes->GetComponentLocation().Z<-38;
  Eyes->PostProcessBlendWeight=FMath::FInterpTo(Eyes->PostProcessBlendWeight,bUnderwater?1.f:0.f,DeltaSeconds,5);
+ // 05/11 (Sergio: "conforme vai afundando vai ficando escuro, como no oceano de verdade, sem luz"): the sunlight dies
+ // with depth: green-blue near the surface, deep blue by ~25 m, almost black on the -100 m floor.
+ {const float Z=float(Eyes->GetComponentLocation().Z);const float Blue=FMath::SmoothStep(300.f,2500.f,-Z),Black=FMath::SmoothStep(2500.f,9000.f,-Z);
+  Eyes->PostProcessSettings.SceneColorTint=FMath::Lerp(FMath::Lerp(FLinearColor(.72f,.86f,.83f),FLinearColor(.16f,.3f,.48f),Blue),FLinearColor(.006f,.014f,.03f),Black);}
  if(Movement->IsMovingOnGround() && !bSwimming && GetActorLocation().Z>-100)SafeLandLocation=GetActorLocation();
- if(GetActorLocation().Z<-5000){SetActorLocation(SafeLandLocation);Movement->StopMovementImmediately();VerticalSwimInput=0;}
+ // The sand planes offshore have no collision: the swimmer stops on the sea floor profile (reef.json floor_fill).
+ if(bSwimming && GetActorLocation().Y<-5450){const float Floor=UMareReefWorld::SeabedZ(GetActorLocation().Y)+GetCapsuleComponent()->GetScaledCapsuleHalfHeight()+15.f;
+  if(GetActorLocation().Z<Floor){SetActorLocation(FVector(GetActorLocation().X,GetActorLocation().Y,Floor));if(Movement->Velocity.Z<0)Movement->Velocity.Z=0;}}
+ if(GetActorLocation().Z<-12000){SetActorLocation(SafeLandLocation);Movement->StopMovementImmediately();VerticalSwimInput=0;}
 }
 
 #define LOCTEXT_NAMESPACE "MareMenu"
@@ -1348,6 +1361,117 @@ private:
 };
 
 static TWeakPtr<SMarePastelGame> GPastelGame;
+/** Board and kayak rental (CHECKLIST_EXPANSOES 3.3, MareRental.cpp): returned boards are checked first (a dent drawn
+ *  somewhere on the board: fine it or let it go), then the line: wax the board with circular strokes (mouse circles,
+ *  or the arrows in turn) for a tip, and rent it for the time the customer asked. */
+class SMareRentalGame : public SCompoundWidget
+{
+public:
+ SLATE_BEGIN_ARGS(SMareRentalGame){} SLATE_ARGUMENT(TWeakObjectPtr<AMareController>,Owner) SLATE_END_ARGS()
+ void Construct(const FArguments& Args)
+ {
+  using namespace MareNotebook;Owner=Args._Owner;auto S=Sim();if(!S)return;WaxTurns=UMareSimulation::Number(S->RentalDefs(),TEXT("wax_turns"),5);
+  ChildSlot.HAlign(HAlign_Center).VAlign(VAlign_Bottom).Padding(0,0,0,50)[SNew(SBorder).BorderImage(FCoreStyle::Get().GetBrush("WhiteBrush")).BorderBackgroundColor(Paper).Padding(FMargin(26,14))
+   [SNew(SBox).WidthOverride(780)[SNew(SVerticalBox)
+    +SVerticalBox::Slot().AutoHeight()[SNew(SHorizontalBox)
+     +SHorizontalBox::Slot().FillWidth(1)[HandText(TEXT("Aluguel de pranchas e caiaques"),28,Brown)]
+     +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center)[SNew(STextBlock).Font(Hand(18)).ColorAndOpacity(Faded).Text_Lambda([this](){
+      auto S=Sim();return MareLoc::Text(S?FString::Printf(TEXT("fila: %d · na água: %d · voltando: %d"),S->RentalQueue().Num(),S->RentalOut().Num(),S->RentalReturns().Num()):FString());})]]
+    +SVerticalBox::Slot().AutoHeight()[SNew(STextBlock).Font(Hand(22)).ColorAndOpacity(Red).AutoWrapText(true).Text_Lambda([this](){return MareLoc::Text(Header);})]
+    +SVerticalBox::Slot().AutoHeight().Padding(0,2)[SNew(STextBlock).Font(Hand(19)).ColorAndOpacity(Ink).AutoWrapText(true).Text_Lambda([this](){return MareLoc::Text(Status);})]
+    // The board (or kayak) seen from above: wax shine grows while waxing, the dent shows as a dark dimple.
+    +SVerticalBox::Slot().AutoHeight().HAlign(HAlign_Center).Padding(0,8)[SNew(SBox).WidthOverride(BoardW).HeightOverride(BoardH)[SNew(SOverlay)
+     +SOverlay::Slot()[SNew(SBorder).BorderImage(&Board()).Padding(0).BorderBackgroundColor_Lambda([this](){return FSlateColor(bKayak?FLinearColor(FColor(240,108,22)):FLinearColor(FColor(214,204,180)));})]
+     +SOverlay::Slot().HAlign(HAlign_Center)[SNew(SBox).WidthOverride(8)[SNew(SBorder).BorderImage(FCoreStyle::Get().GetBrush("WhiteBrush")).Padding(0)
+      .BorderBackgroundColor_Lambda([this](){return FSlateColor(bKayak?FLinearColor(0,0,0,0):FLinearColor(FColor(40,120,190)));})]]
+     +SOverlay::Slot()[SNew(SBorder).BorderImage(&Board()).Padding(0).BorderBackgroundColor_Lambda([this](){return FSlateColor(FLinearColor(1,.97f,.82f,Mode==EMode::Rent?.85f*FMath::Min(1.f,Wax/WaxTurns)*(.8f+.2f*FMath::Sin(Wax*9)):0.f));})]
+     +SOverlay::Slot().HAlign(HAlign_Left).VAlign(VAlign_Top)[SNew(SBox).Padding_Lambda([this](){return FMargin(DentAt.X*(BoardW-30),DentAt.Y*(BoardH-22),0,0);})
+      [SNew(SBox).WidthOverride(30).HeightOverride(22).Visibility_Lambda([this](){return Mode==EMode::Inspect && bDent?EVisibility::HitTestInvisible:EVisibility::Collapsed;})
+       [SNew(SBorder).BorderImage(&Dimple()).Padding(0).BorderBackgroundColor(FLinearColor(.25f,.2f,.16f,.55f))]]]]]
+    +SVerticalBox::Slot().AutoHeight().Padding(0,2)[SNew(SBox).WidthOverride(BoardW).HeightOverride(14).Visibility_Lambda([this](){return Mode==EMode::Rent?EVisibility::Visible:EVisibility::Collapsed;})
+     [SNew(SOverlay)+SOverlay::Slot()[SNew(SBorder).BorderImage(FCoreStyle::Get().GetBrush("WhiteBrush")).BorderBackgroundColor(Kraft)]
+      +SOverlay::Slot().HAlign(HAlign_Left)[SNew(SBox).WidthOverride_Lambda([this](){return FOptionalSize(FMath::Min(1.f,Wax/WaxTurns)*BoardW);})
+       [SNew(SBorder).BorderImage(FCoreStyle::Get().GetBrush("WhiteBrush")).BorderBackgroundColor(Green)]]]]
+    +SVerticalBox::Slot().AutoHeight().Padding(0,8,0,0)[SNew(SHorizontalBox)
+     +SHorizontalBox::Slot().AutoWidth().Padding(0,0,10,0)[SNew(SButton).ButtonStyle(&InkButton()).ContentPadding(FMargin(14,5)).OnClicked_Lambda([this](){Left();return FReply::Handled();})
+      [SNew(STextBlock).Font(Hand(17)).ColorAndOpacity(MareNotebook::Tag).Text_Lambda([this](){return MareLoc::Text(Mode==EMode::Inspect?TEXT("Tudo certo, sem multa"):TEXT("Alugar sem parafina"));})]]
+     +SHorizontalBox::Slot().AutoWidth()[SNew(SButton).ButtonStyle(&InkButton()).ContentPadding(FMargin(14,5)).OnClicked_Lambda([this](){Right();return FReply::Handled();})
+      [SNew(STextBlock).Font(Hand(17)).ColorAndOpacity(MareNotebook::Tag).Text_Lambda([this](){return MareLoc::Text(Mode==EMode::Inspect?TEXT("Cobrar multa (amassado)"):TEXT("Alugar"));})]]]
+    +SVerticalBox::Slot().AutoHeight().Padding(0,4,0,0)[HandText(TEXT("Confira a prancha que voltou: amassado é multa, multa sem amassado irrita. Antes de alugar, faça círculos com o mouse segurando o botão (ou as setas em sequência) para passar a parafina · Esc ou B sai"),14,Faded)]]]];
+  Next();
+ }
+ virtual bool SupportsKeyboardFocus()const override{return true;}
+ virtual FReply OnKeyDown(const FGeometry&,const FKeyEvent& Event) override
+ {
+  const FKey K=Event.GetKey();if(Event.IsRepeat())return FReply::Handled();
+  if(K==EKeys::Escape || K==EKeys::Gamepad_FaceButton_Right){Close();return FReply::Handled();}
+  // Arrows in turn (up, right, down, left) are a quarter circle each.
+  static const FKey Seq[]={EKeys::Up,EKeys::Right,EKeys::Down,EKeys::Left};static const FKey Pad[]={EKeys::Gamepad_DPad_Up,EKeys::Gamepad_DPad_Right,EKeys::Gamepad_DPad_Down,EKeys::Gamepad_DPad_Left};
+  for(int32 I=0;I<4;++I)if(K==Seq[I] || K==Pad[I]){if(I==(LastArrow+1)%4)AddWax(.25f);LastArrow=I;return FReply::Handled();}
+  if(K==EKeys::One)Left();else if(K==EKeys::Two || K==EKeys::Enter || K==EKeys::Gamepad_FaceButton_Bottom)Right();else return FReply::Unhandled();
+  return FReply::Handled();
+ }
+ virtual FReply OnMouseButtonDown(const FGeometry& G,const FPointerEvent& E) override
+ {
+  if(E.GetEffectingButton()!=EKeys::LeftMouseButton)return FReply::Unhandled();bWaxing=true;LastAngle=Angle(G,E);return FReply::Handled().CaptureMouse(SharedThis(this));
+ }
+ virtual FReply OnMouseButtonUp(const FGeometry&,const FPointerEvent&) override{bWaxing=false;return FReply::Handled().ReleaseMouseCapture();}
+ virtual FReply OnMouseMove(const FGeometry& G,const FPointerEvent& E) override
+ {
+  // Waxing is circles: the turned angle around the panel centre, either way round.
+  if(bWaxing && Mode==EMode::Rent){const float A=Angle(G,E);float D=FMath::FindDeltaAngleRadians(LastAngle,A);LastAngle=A;AddWax(FMath::Abs(D)/(2*PI));}
+  return FReply::Handled();
+ }
+ virtual void Tick(const FGeometry& Geometry,const double Time,const float Delta) override{SCompoundWidget::Tick(Geometry,Time,Delta);if(Pause>0 && (Pause-=Delta)<=0)Next();}
+ // QA (AMareController::RentalQA).
+ void QAWax(float Turns){Mode=EMode::Rent;AddWax(Turns);}
+ void QALeft(){Left();}
+ void QARight(){Right();}
+ bool QADent()const{return bDent;}
+ void QAShowDent(){Mode=EMode::Inspect;bDent=true;DentAt=FVector2D(.62f,.35f);}
+private:
+ enum class EMode{Inspect,Rent,Done};
+ static constexpr float BoardW=520,BoardH=110;
+ TWeakObjectPtr<AMareController> Owner;FString Header,Status;EMode Mode=EMode::Rent;bool bDent=false,bKayak=false,bWaxing=false;
+ FVector2D DentAt=FVector2D(.5f,.5f);float Wax=0,WaxTurns=5,LastAngle=0,Pause=0;int32 LastArrow=3;
+ UMareSimulation* Sim()const{return Owner.IsValid()?Owner->GetSimulation():nullptr;}
+ static const FSlateRoundedBoxBrush& Board(){static const FSlateRoundedBoxBrush B(FLinearColor::White,55.f);return B;}
+ static const FSlateRoundedBoxBrush& Dimple(){static const FSlateRoundedBoxBrush B(FLinearColor::White,11.f);return B;}
+ static float Angle(const FGeometry& G,const FPointerEvent& E){const FVector2D P=G.AbsoluteToLocal(E.GetScreenSpacePosition())-G.GetLocalSize()*.5f;return FMath::Atan2(P.Y,P.X);}
+ void AddWax(float Turns)
+ {
+  if(Mode!=EMode::Rent)return;const bool bWas=Wax>=WaxTurns;Wax=FMath::Min(WaxTurns,Wax+Turns);
+  if(!bWas && Wax>=WaxTurns){Status=TEXT("Parafina passada: a prancha brilha. Alugue!");if(Owner.IsValid())UMareAudioWorld::Action(Owner.Get(),TEXT("deal_accept"),nullptr,.4f);}
+  else if(Wax<WaxTurns)Status=FString::Printf(TEXT("Passando parafina... %.0f%%"),Wax/WaxTurns*100);
+ }
+ void Next()
+ {
+  auto S=Sim();Wax=0;Pause=0;LastArrow=3;if(!S){Close();return;}
+  // Returns first: the customer waits at the counter with the board.
+  if(S->RentalReturns().Num()){const auto O=S->RentalReturns()[0];Mode=EMode::Inspect;O->TryGetBoolField(TEXT("dent"),bDent);bKayak=UMareSimulation::String(O,TEXT("item"))==TEXT("caiaque");
+   const uint32 Seed=FCrc::StrCrc32(*UMareSimulation::String(O,TEXT("name")))+uint32(UMareSimulation::Number(O,TEXT("due")));
+   DentAt=FVector2D(.18f+.64f*float(Seed%97)/97.f,.2f+.6f*float((Seed/97)%89)/89.f);
+   Header=UMareSimulation::String(O,TEXT("name"))+TEXT(" devolveu ")+S->RentalItemName(UMareSimulation::String(O,TEXT("item")))+TEXT(".");Status=TEXT("Confira bem: tem algum amassado?");return;}
+  if(S->RentalQueue().Num()){const auto O=S->RentalQueue()[0];Mode=EMode::Rent;bDent=false;bKayak=UMareSimulation::String(O,TEXT("item"))==TEXT("caiaque");
+   Header=S->RentalRequestLine(O);Status=TEXT("Passe a parafina em círculos (gorjeta) ou alugue assim mesmo.");return;}
+  Close();
+ }
+ void Left()
+ {
+  auto S=Sim();if(!S || Pause>0)return;
+  if(Mode==EMode::Inspect){const int32 R=S->InspectReturn(false);Done(R>=2);}else if(Mode==EMode::Rent){S->RentItem(false);Done(true);}
+ }
+ void Right()
+ {
+  auto S=Sim();if(!S || Pause>0)return;
+  if(Mode==EMode::Inspect){const int32 R=S->InspectReturn(true);Done(R>=2);}else if(Mode==EMode::Rent){S->RentItem(Wax>=WaxTurns);Done(true);}
+ }
+ void Done(bool bGood){auto S=Sim();Status=S?S->LastMessage:FString();Mode=EMode::Done;Pause=2.2f;
+  if(Owner.IsValid())UMareAudioWorld::Action(Owner.Get(),bGood?TEXT("money_coins"):TEXT("deal_decline"),nullptr,.6f);}
+ void Close(){if(Owner.IsValid())Owner->CloseBusinessGame();}
+};
+
+static TWeakPtr<SMareRentalGame> GRentalGame;
 /** Fishing at the pier: the line goes in, a random wait, then "Fisgou!" and a short window to strike
  *  (E, Space, Enter, click or A). Esc or B reels in. Several casts in a row; each catch goes to the stock. */
 class SMareFishingGame : public SCompoundWidget
@@ -1615,6 +1739,10 @@ void AMareController::StartBusinessGame(const FString& Biz)
  ClosePhone();SetPause(true);
  // The ice cream shop has its own hands-on task (3.1): the cone built from memory, customer after customer.
  // The food truck too (3.2): fill, seal, fry and the sugar-cane juice.
+ // The rental (3.3): check returned boards, wax and rent.
+ if(Biz==TEXT("aluguel")){const TSharedRef<SMareRentalGame> Rent=SNew(SMareRentalGame).Owner(this);GameWidget=Rent;GRentalGame=Rent;
+  GEngine->GameViewport->AddViewportWidgetContent(Rent,40);bShowMouseCursor=true;
+  SetInputMode(FInputModeUIOnly().SetWidgetToFocus(Rent));SetIgnoreMoveInput(true);SetIgnoreLookInput(true);return;}
  if(Biz==TEXT("food_truck")){const TSharedRef<SMarePastelGame> Pastel=SNew(SMarePastelGame).Owner(this);GameWidget=Pastel;GPastelGame=Pastel;
   GEngine->GameViewport->AddViewportWidgetContent(Pastel,40);bShowMouseCursor=true;
   SetInputMode(FInputModeUIOnly().SetWidgetToFocus(Pastel));SetIgnoreMoveInput(true);SetIgnoreLookInput(true);return;}
@@ -1645,6 +1773,25 @@ void AMareController::StartBarPrep(const FString& Step)
  const TSharedRef<SMareBarPrepGame> Game=SNew(SMareBarPrepGame).Owner(this).Step(Step);GameWidget=Game;
  GEngine->GameViewport->AddViewportWidgetContent(Game,40);bShowMouseCursor=true;
  SetInputMode(FInputModeUIOnly().SetWidgetToFocus(Game));SetIgnoreMoveInput(true);SetIgnoreLookInput(true);
+}
+FString AMareController::RentalQA(const FString& Cmd)
+{
+ auto S=GetSimulation();auto W=GetWorld()->GetSubsystem<UMareRentalWorld>();if(!S || !W)return TEXT("none");
+ if(Cmd==TEXT("own")){UMareSimulation::Object(UMareSimulation::Object(UMareSimulation::Object(S->State,TEXT("prog")),TEXT("biz")),TEXT("aluguel"))->SetNumberField(TEXT("lvl"),1);
+  S->State->SetNumberField(TEXT("minutes"),10*60+10);return TEXT("ok");}
+ if(Cmd.StartsWith(TEXT("customers:"))){for(int32 I=0;I<FCString::Atoi(*Cmd.Mid(10));++I)S->AddRentalCustomer();return FString::Printf(TEXT("queue=%d"),S->RentalQueue().Num());}
+ if(Cmd==TEXT("return:dent") || Cmd==TEXT("return:clean")){auto O=MakeShared<FJsonObject>();O->SetStringField(TEXT("name"),TEXT("Duda"));O->SetStringField(TEXT("item"),TEXT("prancha"));
+  O->SetNumberField(TEXT("due"),1);O->SetBoolField(TEXT("dent"),Cmd==TEXT("return:dent"));auto R=S->RentalState();TArray<TSharedPtr<FJsonValue>> L;const TArray<TSharedPtr<FJsonValue>>* Old=nullptr;
+  if(R->TryGetArrayField(TEXT("returns"),Old))L=*Old;L.Insert(MakeShared<FJsonValueObject>(O),0);R->SetArrayField(TEXT("returns"),L);return TEXT("ok");}
+ if(Cmd==TEXT("open")){StartBusinessGame(TEXT("aluguel"));return GRentalGame.IsValid()?TEXT("open"):S->LastMessage;}
+ if(Cmd==TEXT("adrift")){S->StartKayakAdrift();return TEXT("ok");}
+ if(Cmd==TEXT("near") || Cmd==TEXT("tow") || Cmd==TEXT("home") || Cmd==TEXT("world"))return W->QA(Cmd);
+ auto Game=GRentalGame.Pin();if(!Game.IsValid())return FString::Printf(TEXT("queue=%d returns=%d out=%d adrift=%d"),S->RentalQueue().Num(),S->RentalReturns().Num(),S->RentalOut().Num(),S->IsKayakAdrift());
+ if(Cmd.StartsWith(TEXT("wax:"))){Game->QAWax(FCString::Atof(*Cmd.Mid(4)));return TEXT("ok");}
+ if(Cmd==TEXT("left")){Game->QALeft();return S->LastMessage;}
+ if(Cmd==TEXT("right")){Game->QARight();return S->LastMessage;}
+ if(Cmd==TEXT("close")){CloseBusinessGame();return TEXT("ok");}
+ return TEXT("?");
 }
 FString AMareController::PastelQA(const FString& Cmd)
 {
@@ -2455,6 +2602,7 @@ void AMareHUD::DrawHUD()
   :FString::Printf(TEXT("Nadando · %s sobe · %s/%s mergulha"),*KeyName(TEXT("Jump")),*KeyName(TEXT("Dive")),*KeyName(TEXT("Sprint")));
  if(auto BoatTour=GetWorld()->GetSubsystem<UMareBoatTourWorld>())if(BoatTour->IsActive())M.Hint=BoatTour->Status();
  if(auto Snorkel=GetWorld()->GetSubsystem<UMareSnorkelWorld>())if(Snorkel->IsActive())M.Hint=Snorkel->Status();
+ if(auto Rental=GetWorld()->GetSubsystem<UMareRentalWorld>())if(Rental->IsActive())M.Hint=Rental->Status();
  if(auto Trail=GetWorld()->GetSubsystem<UMareTrailWorld>())if(Trail->IsActive())M.Hint=Trail->Status();
  // The mission note would sit on top of the held phone.
  if(M.bPhone){M.Note.Empty();M.Tickets.Empty();}

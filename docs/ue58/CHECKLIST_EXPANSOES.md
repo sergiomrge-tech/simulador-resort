@@ -23,6 +23,34 @@ O que falta é **profundidade e variedade**. Hoje quase tudo é "aperte E" + bar
 - Nada de low poly ou primitivas: props reais ou modelados no Blender.
 - Um item por vez, na ordem do documento. Marcar `[x]` neste arquivo só com teste e foto.
 
+## 0. Pendências abertas (05/11/2026) — resolver antes de seguir
+
+Pedidos do Sergio e conferências que ficaram para trás no lote de 05/11 (aluguel, fundo do mar, lâmpadas).
+
+- [ ] Rodar `python tools/ue58/qa/qa_gate.py` sobre o lote de 05/11: ele foi commitado a pedido do Sergio sem o
+  portão, porque o editor derrubou a conexão MCP durante a última rodada de fotos.
+- [ ] Fotografar à noite as luminárias com foco virado para baixo (`lighting.json` + pendentes do quiosque e ventilador
+  da casa em `MareVisualWorld::BuildLamps`): casa, cozinha, banheiro, quiosque, lobby, suíte, pousada e bangalô.
+  Pedido: "as lâmpadas precisam iluminar melhor", "lâmpada precisa estar virada para baixo".
+- [ ] Casa à noite ainda clara e alaranjada: ajustar intensidade/temperatura das luzes da casa e a exposição de
+  interiores (`Interiors` em `MareVisualWorld::Tick`).
+- [ ] Globo das luminárias não brilha quando a luz acende: material com emissivo ligado à noite (como `glow*`).
+- [ ] Lobby do Grand Hotel: 6 luzes de 2500 cd (`mare_hotel_lobby.py`) só têm luminária em parte dos pontos.
+  Regra: luz só onde houver luminária ("a iluminação dos imóveis precisa ser das lâmpadas").
+- [ ] Conferir se o aviso vermelho "Cached lighting in Lumen ... clipped" sumiu no fundo de 100 m depois de travar
+  a exposição embaixo d'água.
+- [ ] Foto de prova do motorista do ônibus sentado no intro (`HoldPose`).
+- [ ] Barra horizontal atravessando a câmera dentro do quiosque com tudo liberado (vista 3700,-1600): identificar
+  o objeto.
+- [ ] `shot showui` parou de gerar arquivo no PIE em algumas rodadas (só `HighResShot 1` funcionou): investigar.
+- [ ] ILHA (pedido grande, entregue ao agente novo do Sergio): "morro no meio, praia em volta, uma ilha pequena,
+  preservando a vila e todas as construções, o restante é vegetação e árvores". Mar, espuma e perfil do fundo
+  (`reef.json` → `floor_fill`, `SeabedZ`) precisam virar radiais. Refazer a navegação estática com cuidado.
+  Planejar antes, com esforço alto.
+- [ ] Git: o repositório recuperado é um clone parcial (blob:none). Usar `GIT_NO_LAZY_FETCH=1` em
+  status/diff/add; um `git reset` travou baixando blobs. Se possível, completar o clone (`git fetch --refetch`
+  ou clonar de novo) para voltar ao normal.
+
 ## 1. Bar do Coqueiro
 
 **Hoje:** 13 ingredientes e 11 receitas (`bar.json`). O drink é o conjunto exato de ingredientes. Descobrir uma receita dá +6 de fama, e o barman atende sozinho com 85% da renda. Pedidos: receita conhecida, "surpresa" ou desconhecida com dica.
@@ -252,9 +280,18 @@ Decisões (05/11/2026):
 
 ### 3.3 Aluguel de pranchas e caiaques
 
-- [ ] Alugar com tempo (30/60 min de jogo). O cliente volta e o jogador confere a prancha: amassada cobra multa.
-- [ ] Encerar a prancha com movimentos circulares (mouse/analógico) antes de alugar: a cera aumenta a gorjeta.
-- [ ] Evento: caiaque à deriva no mar, que o jogador busca nadando ou de caiaque (física simples).
+- [x] Alugar com tempo (30/60 min de jogo). O cliente volta e o jogador confere a prancha: amassada cobra multa.
+  Decisões: fila própria do aluguel (`prog.biz.aluguel`, chegadas por hora, mais no dia de calor, menos na chuva,
+  paciência de 40 min); prancha R$ 10 e caiaque R$ 14 por 30 min. Na devolução, 30% voltam com amassado: multa certa
+  cobra R$ 20, multa injusta tira 2 de fama, deixar passar não cobra nada (`InspectReturn`). Valores em
+  `business_games.json` → `aluguel.rental`; lógica em `MareRental.cpp`; teste `MareAlta.Gameplay.Rental`.
+- [x] Encerar a prancha com movimentos circulares (mouse/analógico) antes de alugar: a cera aumenta a gorjeta.
+  Decisões: 5 voltas com o mouse (ou a sequência de setas no controle) na tela `SMareRentalGame`; prancha encerada dá
+  30% de gorjeta e +2 de fama.
+- [x] Evento: caiaque à deriva no mar, que o jogador busca nadando ou de caiaque (física simples).
+  Decisões: com um caiaque alugado, 25% de chance por hora de ele ficar à deriva em frente ao aluguel. O caiaque
+  (modelo próprio `tools/ue58/gen_rental.py`) boia pelas ondas (`SeaHeight` na proa, popa e bordos) e vai para o largo.
+  O jogador nada até ele, aperta E e o reboca a 2,2 m de corda até a areia (`MareRentalWorld.cpp`), ganhando R$ 30 e +3 de fama.
 
 ### 3.4 Escolinha de surfe
 

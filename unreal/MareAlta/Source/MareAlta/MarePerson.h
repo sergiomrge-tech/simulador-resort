@@ -103,6 +103,8 @@ public:
  static bool HotelSeat(int32 Table,int32 Index,FVector& SeatTop,float& Yaw);
  /** Places a seated person on a seat: rough actor transform now, exact pelvis alignment once the clip plays. */
  void SitOn(const FVector& SeatTop,float Yaw);
+ /** A pose kept whatever the person does (the bus driver riding the bus): survives the MetaHuman swap. */
+ FString HoldPose;
  /** Already placed on a seat (kiosk table points): find the seat top straight below the sitting pelvis (trace) and
   *  align on it, so taller and shorter bodies all sit on the stool instead of above or inside it. */
  void AlignToSeatBelow();

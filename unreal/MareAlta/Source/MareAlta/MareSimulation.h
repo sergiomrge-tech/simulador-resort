@@ -351,6 +351,23 @@ public:
  void AddPastelCustomer();
  void PastelHour(int32 Hour);
  FMareIceResult ServePastel(const FString& Filling,bool bSealed,double FrySeconds,bool bCana);
+ /** Board and kayak rental (CHECKLIST_EXPANSOES 3.3): line, rentals out, returns to check, the kayak adrift. */
+ TSharedPtr<FJsonObject> RentalDefs() const;
+ TSharedPtr<FJsonObject> RentalState() const;
+ TArray<TSharedPtr<FJsonObject>> RentalQueue() const;
+ TArray<TSharedPtr<FJsonObject>> RentalReturns() const;
+ TArray<TSharedPtr<FJsonObject>> RentalOut() const;
+ FString RentalItemName(const FString& Item) const;
+ double RentalPrice(const FString& Item,int32 Minutes) const;
+ FString RentalRequestLine(const TSharedPtr<FJsonObject>& Order) const;
+ void AddRentalCustomer();
+ void RentalHour(int32 Hour);
+ bool RentItem(bool bWaxed);
+ /** 3 dent fined, 2 clean let go, 1 dent let go, 0 clean board fined (-1 nothing to check). */
+ int32 InspectReturn(bool bFine);
+ bool IsKayakAdrift() const;
+ void StartKayakAdrift();
+ double RescueKayak();
  void TrailScore(int32 Watered,int32 Group,int32 Photos,int32 Viewpoints,bool bSunset,int32 Stories,int32 Complaints,TArray<int32>& Choices,double& Bonus)const;
  /** Hourly: buyers before each departure (the guide sells), and at the end of the departure hour the guide's run
   *  or the cancellation with refund. */
