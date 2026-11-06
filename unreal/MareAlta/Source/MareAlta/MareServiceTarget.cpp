@@ -7,6 +7,7 @@
 #include "MareComicEvents.h"
 #include "MareStaysWorld.h"
 #include "MareGameRoom.h"
+#include "MareHotelEventsWorld.h"
 #include "MarePlayerPresentation.h"
 #include "MareHomeWorld.h"
 #include "MareVillageWorld.h"
@@ -116,6 +117,7 @@ void AMareServiceTarget::Use(APlayerController* Controller)
  if(Action==TEXT("PoolLeaves")){if(Sim->ScoopPool())UMareAudioWorld::Action(this,TEXT("bar_pour"));return;}
  if(Action==TEXT("PoolTowel")){if(Sim->CollectPoolTowel(DataIndex))UMareAudioWorld::Action(this,TEXT("cleaning_towels"));return;}
  if(Action==TEXT("PoolCooler")){if(Sim->SellPopsicles())UMareAudioWorld::Action(this,TEXT("money_coins"));return;}
+ if(Action==TEXT("EventPiece")){GetWorld()->GetSubsystem<UMareHotelEventsWorld>()->Place(DataIndex);return;}
  if(Action==TEXT("BusinessCounter")){for(const FName& Tag:Tags){const FString T=Tag.ToString();if(T.StartsWith(TEXT("biz:")))PC->StartBusinessGame(T.Mid(4));}return;}
  if(Action==TEXT("TourBooth")){const FVector Bell=GetActorLocation();UMareAudioWorld::Action(this,TEXT("reception_bell"),&Bell);PC->OpenStation(TEXT("Tours"));return;}
  if(Action==TEXT("RestaurantTable")){if(Sim->UseTable(DataIndex))UMareAudioWorld::Action(this,TEXT("reception_checkin"));return;}

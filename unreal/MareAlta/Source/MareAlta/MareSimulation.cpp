@@ -415,7 +415,10 @@ void UMareSimulation::HotelNight()
 }
 void UMareSimulation::AddFame(int32 Xp)
 {
- if(Xp<=0)return;const int32 Before=FameLevel();auto Prog=Object(State,TEXT("prog"));Prog->SetNumberField(TEXT("fame_xp"),Number(Prog,TEXT("fame_xp"))+Xp);
+ // A loss (a flop, a missed VIP, an unfair fine) takes xp back, but never below the level already reached.
+ if(Xp<0){auto Prog=Object(State,TEXT("prog"));const double Now=Number(Prog,TEXT("fame_xp"));const int32 L=FameLevel();
+  const double Floor=L>=2?FameThresholds[FMath::Min(L-1,int32(UE_ARRAY_COUNT(FameThresholds))-1)]:0;Prog->SetNumberField(TEXT("fame_xp"),FMath::Max(Floor,Now+Xp));return;}
+ if(Xp==0)return;const int32 Before=FameLevel();auto Prog=Object(State,TEXT("prog"));Prog->SetNumberField(TEXT("fame_xp"),Number(Prog,TEXT("fame_xp"))+Xp);
  if(FameLevel()>Before)LastMessage=TEXT("Sua fama subiu: ")+FameName()+TEXT("!");
 }
 bool UMareSimulation::ClaimMission(const FString& Id,bool bSide)
@@ -760,7 +763,7 @@ void UMareSimulation::OperateHour(int32 Hour)
  auto Today=Child(Ops,TEXT("today"));const int32 Started=Hour-1;double Total=0;TArray<FString> Parts;
  auto Add=[&](const FString& Place,const FString& Label,double Amount){Amount=FMath::RoundToDouble(Amount);if(Amount<=0)return;
   Today->SetNumberField(Place,Number(Today,Place)+Amount);Total+=Amount;Parts.Add(FString::Printf(TEXT("%s R$ %.0f"),*Label,Amount));};
- StaysHour(Hour);BarHour(Hour);IceCreamHour(Hour);PastelHour(Hour);RentalHour(Hour);SouvenirHour(Hour);PoolHour(Hour);RestaurantHour(Hour);GameRoomHour(Hour);
+ StaysHour(Hour);BarHour(Hour);IceCreamHour(Hour);PastelHour(Hour);RentalHour(Hour);SouvenirHour(Hour);PoolHour(Hour);RestaurantHour(Hour);GameRoomHour(Hour);HotelEventsHour(Hour);
  auto Defs=Object(CustomDefs(),TEXT("operations"));
  for(const auto& Pair:Object(Defs,TEXT("hourly"))->Values){const FString Id(Pair.Key.ToView());auto Op=Pair.Value->AsObject();
   const TArray<TSharedPtr<FJsonValue>>* Open=nullptr;if(!Owns(State,String(Op,TEXT("unlock"))) || !Op->TryGetArrayField(TEXT("open"),Open) || Open->Num()!=2)continue;

@@ -484,7 +484,25 @@ coloque hóspedes que entrarem aproveitando a piscina e tobogã"):
   (75–120 min). Atender pessoalmente no quarto dá o dobro da fama (+10 a +12) e a gorjeta (R$ 100–150); pela equipe
   custa R$ 60–150 e dá a fama simples; perder o prazo derruba o humor (−0,6) e tira 3 de fama. Usa o mesmo fluxo das
   reclamações (quadro do hotel no celular, conserto em pessoa nos quartos visitáveis). Teste em `MareAlta.Gameplay.HotelRooms`.
-- [ ] Eventos com montagem: casamento na praia, aniversário, congresso. O jogador posiciona a decoração (cadeiras, arco, mesa de bolo) a partir de um modelo, e a nota depende do capricho e do horário.
+- [x] Eventos com montagem: casamento na praia, aniversário, congresso. O jogador posiciona a decoração (cadeiras, arco, mesa de bolo) a partir de um modelo, e a nota depende do capricho e do horário.
+  Decisões (06/11, Claude):
+  - A cada 2 dias, às 9h, chega um pedido de evento (casamento R$ 4.000, aniversário R$ 1.500, congresso R$ 2.500) na
+    aba Resort do celular e na recepção do hotel: Aceitar ou Recusar. Aceito, ele é no dia seguinte (casamento 17h,
+    aniversário 16h, congresso 10h). Dados em `Content/Data/hotel_events.json`; regras em `MareHotelEvents.cpp`.
+  - No dia, das 6h até a hora, a planta aparece na praia a leste do hotel, perto do farol (área livre de areia em
+    x 10600, y -1900): cada peça é um "fantasma" azul transparente (`M_EventGhost`) e E monta a peça de verdade
+    (`MareHotelEventsWorld.cpp`). Peças obrigatórias (arco, cadeiras, mesa do bolo, púlpito, tela, mesas) e de capricho
+    (vasos, lanternas): cada capricho soma 10% no cachê e na fama.
+  - Na hora, os convidados chegam e sentam nas cadeiras montadas, de frente para o arco, o púlpito ou a mesa; os noivos,
+    o aniversariante ou o palestrante ficam de pé na frente. O cachê é proporcional às peças montadas; com menos da
+    metade o evento é um fracasso: fica só o sinal (20%) e a fama cai (−4, sem perder o nível já alcançado). Quem dorme
+    e perde o dia também fracassa. Duas horas depois tudo é desmontado.
+  - "Horário": a nota depende de estar montado ANTES de os convidados chegarem; depois disso as peças que faltaram somem.
+  - Correção junto: `AddFame` ignorava valores negativos, então a fama perdida do VIP e da multa injusta do aluguel
+    nunca saía. Agora a perda tira xp sem baixar o nível alcançado.
+  - O guarda-sol levado pelo vento (HUM-004) não para mais dentro da área de um evento marcado.
+  - Modelos próprios em `tools/ue58/gen_event_decor.py`; teste `MareAlta.Gameplay.HotelEvents`; QA `mare.HotelEvent
+    offer:<tipo> | accept | today | placeall[:extras] | place:<i> | start | state`.
 
 ### 5.3 Restaurante
 

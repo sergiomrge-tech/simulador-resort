@@ -117,5 +117,10 @@
  "mare_foosball_rod_5_coral": "/Game/Custom/GameRoom/mare_foosball_rod_5_coral/mare_foosball_rod_5_coral4.mare_foosball_rod_5_coral4",
  "mare_foosball_rod_5_mar": "/Game/Custom/GameRoom/mare_foosball_rod_5_mar/mare_foosball_rod_5_mar4.mare_foosball_rod_5_mar4",
  "mare_arcade_jangada": "/Game/Custom/GameRoom/mare_arcade_jangada/mare_arcade_jangada.mare_arcade_jangada",
- "mare_arcade_siri": "/Game/Custom/GameRoom/mare_arcade_siri/mare_arcade_siri.mare_arcade_siri"
+ "mare_arcade_siri": "/Game/Custom/GameRoom/mare_arcade_siri/mare_arcade_siri.mare_arcade_siri",
+ "mare_event_arch": "/Game/Custom/mare_event_arch/mare_event_arch.mare_event_arch",
+ "mare_event_cake_table": "/Game/Custom/mare_event_cake_table/mare_event_cake_table.mare_event_cake_table",
+ "mare_event_lectern": "/Game/Custom/mare_event_lectern/mare_event_lectern.mare_event_lectern",
+ "mare_event_screen": "/Game/Custom/mare_event_screen/mare_event_screen.mare_event_screen",
+ "mare_event_gifts": "/Game/Custom/mare_event_gifts/mare_event_gifts.mare_event_gifts"
 }

@@ -1,0 +1,93 @@
+{
+ "_doc": "Grand Hotel events with set-up (CHECKLIST 5.2, MareHotelEvents.cpp / MareHotelEventsWorld.cpp). Every offer_every_days at offer_hour an offer reaches the phone (one at a time); accepted, it happens the next day at the kind's hour. On that day, from setup_from, the plan shows as ghost pieces on the event area of the beach; E on each ghost sets the real piece (pieces must, extras are the care: +extra_bonus each). At the hour the guests arrive and sit for show_hours (hosts: the couple, the birthday person or the speaker, standing); the fee is paid times the part of the pieces set (+ extras), fame too; less than min_score and the event is a flop (fame lost). Positions: local cm from area (x along the beach, y toward the land; the sea is at -y), yaw degrees; models from custom_assets.json.",
+ "area": [10600, -1900],
+ "offer_every_days": 2,
+ "offer_hour": 9,
+ "setup_from": 6,
+ "show_hours": 2,
+ "min_score": 0.5,
+ "extra_bonus": 0.1,
+ "flop_fame": 4,
+ "keep_clear": 900,
+ "kinds": {
+  "casamento": {
+   "name": "Casamento na praia",
+   "client": ["Noivos Juliana e Rafael", "Noivos Carla e Bento", "Noivos Lia e Davi", "Noivos Bia e Tomás"],
+   "fee": 4000, "fame": 12, "hour": 17, "guests": 12,
+   "hosts": [{"at": [-38, -285], "yaw": 90, "label": "Noiva"}, {"at": [38, -285], "yaw": 90, "label": "Noivo"}],
+   "pieces": [
+    {"model": "mare_event_arch", "at": [0, -320], "yaw": 0, "label": "Arco de flores"},
+    {"model": "painted_wooden_chair_01", "at": [-120, 0], "yaw": 180, "label": "Cadeira"},
+    {"model": "painted_wooden_chair_01", "at": [-200, 0], "yaw": 180, "label": "Cadeira"},
+    {"model": "painted_wooden_chair_01", "at": [-280, 0], "yaw": 180, "label": "Cadeira"},
+    {"model": "painted_wooden_chair_01", "at": [120, 0], "yaw": 180, "label": "Cadeira"},
+    {"model": "painted_wooden_chair_01", "at": [200, 0], "yaw": 180, "label": "Cadeira"},
+    {"model": "painted_wooden_chair_01", "at": [280, 0], "yaw": 180, "label": "Cadeira"},
+    {"model": "painted_wooden_chair_01", "at": [-120, 110], "yaw": 180, "label": "Cadeira"},
+    {"model": "painted_wooden_chair_01", "at": [-200, 110], "yaw": 180, "label": "Cadeira"},
+    {"model": "painted_wooden_chair_01", "at": [-280, 110], "yaw": 180, "label": "Cadeira"},
+    {"model": "painted_wooden_chair_01", "at": [120, 110], "yaw": 180, "label": "Cadeira"},
+    {"model": "painted_wooden_chair_01", "at": [200, 110], "yaw": 180, "label": "Cadeira"},
+    {"model": "painted_wooden_chair_01", "at": [280, 110], "yaw": 180, "label": "Cadeira"},
+    {"model": "mare_event_cake_table", "at": [440, -160], "yaw": 0, "label": "Mesa do bolo"}
+   ],
+   "extras": [
+    {"model": "potted_plant_02", "at": [-170, -330], "yaw": 0, "label": "Vaso de plantas"},
+    {"model": "potted_plant_02", "at": [170, -330], "yaw": 0, "label": "Vaso de plantas"},
+    {"model": "Lantern_01", "at": [-55, -60], "yaw": 0, "label": "Lanterna do corredor"},
+    {"model": "Lantern_01", "at": [55, -60], "yaw": 0, "label": "Lanterna do corredor"}
+   ]
+  },
+  "aniversario": {
+   "name": "Festa de aniversário",
+   "client": ["Aniversário de 15 anos da Malu", "Aniversário de 60 anos do Seu Zé", "Aniversário de 30 anos da Paula", "Aniversário de 8 anos do Pedrinho"],
+   "fee": 1500, "fame": 6, "hour": 16, "guests": 8, "chatty": true,
+   "hosts": [{"at": [-70, -110], "yaw": 90, "label": "Aniversariante"}],
+   "pieces": [
+    {"model": "mare_event_cake_table", "at": [0, -170], "yaw": 0, "label": "Mesa do bolo"},
+    {"model": "mare_event_gifts", "at": [110, -200], "yaw": 20, "label": "Presentes"},
+    {"model": "round_wooden_table_01", "at": [-220, 80], "yaw": 0, "label": "Mesa redonda"},
+    {"model": "round_wooden_table_01", "at": [220, 80], "yaw": 0, "label": "Mesa redonda"},
+    {"model": "painted_wooden_chair_01", "at": [-220, 5], "yaw": 180, "label": "Cadeira"},
+    {"model": "painted_wooden_chair_01", "at": [-220, 155], "yaw": 0, "label": "Cadeira"},
+    {"model": "painted_wooden_chair_01", "at": [-295, 80], "yaw": 90, "label": "Cadeira"},
+    {"model": "painted_wooden_chair_01", "at": [-145, 80], "yaw": -90, "label": "Cadeira"},
+    {"model": "painted_wooden_chair_01", "at": [220, 5], "yaw": 180, "label": "Cadeira"},
+    {"model": "painted_wooden_chair_01", "at": [220, 155], "yaw": 0, "label": "Cadeira"},
+    {"model": "painted_wooden_chair_01", "at": [145, 80], "yaw": 90, "label": "Cadeira"},
+    {"model": "painted_wooden_chair_01", "at": [295, 80], "yaw": -90, "label": "Cadeira"}
+   ],
+   "extras": [
+    {"model": "Lantern_01", "at": [-120, -170], "yaw": 0, "label": "Lanterna"},
+    {"model": "Lantern_01", "at": [120, -120], "yaw": 0, "label": "Lanterna"},
+    {"model": "potted_plant_02", "at": [-360, -40], "yaw": 0, "label": "Vaso de plantas"}
+   ]
+  },
+  "congresso": {
+   "name": "Congresso no hotel",
+   "client": ["Congresso de Turismo do Nordeste", "Encontro de Pescadores Artesanais", "Simpósio de Biologia Marinha", "Convenção de Agentes de Viagem"],
+   "fee": 2500, "fame": 8, "hour": 10, "guests": 12,
+   "hosts": [{"at": [-150, -350], "yaw": 90, "label": "Palestrante"}],
+   "pieces": [
+    {"model": "mare_event_lectern", "at": [-150, -300], "yaw": 0, "label": "Púlpito"},
+    {"model": "mare_event_screen", "at": [120, -360], "yaw": 0, "label": "Tela de projeção"},
+    {"model": "painted_wooden_chair_01", "at": [-240, 0], "yaw": 180, "label": "Cadeira"},
+    {"model": "painted_wooden_chair_01", "at": [-120, 0], "yaw": 180, "label": "Cadeira"},
+    {"model": "painted_wooden_chair_01", "at": [0, 0], "yaw": 180, "label": "Cadeira"},
+    {"model": "painted_wooden_chair_01", "at": [120, 0], "yaw": 180, "label": "Cadeira"},
+    {"model": "painted_wooden_chair_01", "at": [240, 0], "yaw": 180, "label": "Cadeira"},
+    {"model": "painted_wooden_chair_01", "at": [-240, 110], "yaw": 180, "label": "Cadeira"},
+    {"model": "painted_wooden_chair_01", "at": [-120, 110], "yaw": 180, "label": "Cadeira"},
+    {"model": "painted_wooden_chair_01", "at": [0, 110], "yaw": 180, "label": "Cadeira"},
+    {"model": "painted_wooden_chair_01", "at": [120, 110], "yaw": 180, "label": "Cadeira"},
+    {"model": "painted_wooden_chair_01", "at": [240, 110], "yaw": 180, "label": "Cadeira"},
+    {"model": "painted_wooden_chair_01", "at": [-180, 220], "yaw": 180, "label": "Cadeira"},
+    {"model": "painted_wooden_chair_01", "at": [180, 220], "yaw": 180, "label": "Cadeira"}
+   ],
+   "extras": [
+    {"model": "potted_plant_02", "at": [-300, -320], "yaw": 0, "label": "Vaso de plantas"},
+    {"model": "potted_plant_02", "at": [330, -320], "yaw": 0, "label": "Vaso de plantas"}
+   ]
+  }
+ }
+}

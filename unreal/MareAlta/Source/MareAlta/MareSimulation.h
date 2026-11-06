@@ -449,6 +449,20 @@ public:
  FString PoolCupGuestsOnly();
  /** A cup round was played today (spectators at the game room's token hours). */
  bool PoolCupNight() const;
+ /** Grand Hotel events with set-up (5.2, MareEvents.cpp, data hotel_events.json): offer -> booked for tomorrow ->
+  *  pieces set from the plan on the event day -> paid by how much was ready when the guests arrive. */
+ TSharedPtr<FJsonObject> HotelEventDefs() const;
+ TSharedPtr<FJsonObject> HotelEventState();
+ TSharedPtr<FJsonObject> HotelEventKind(const FString& Kind) const;
+ FString OfferHotelEvent(const FString& Force=FString());
+ bool AcceptHotelEvent();
+ bool DeclineHotelEvent();
+ TSharedPtr<FJsonObject> BookedHotelEvent() const;
+ bool HotelEventSetupOpen() const;
+ int32 HotelEventCount(bool bExtra,bool bPlacedOnly) const;
+ bool PlaceHotelEventPiece(bool bExtra,int32 Index);
+ double StartHotelEvent();
+ void HotelEventsHour(int32 Hour);
  FString PoolCupOpponent() const;
  bool PoolCupReady(FString& Why) const;
  void PoolCupResult(bool bWon);

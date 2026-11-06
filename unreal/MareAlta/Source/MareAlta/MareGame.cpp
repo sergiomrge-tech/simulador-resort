@@ -71,6 +71,7 @@
 #include "MareTableTennis.h"
 #include "MareFoosball.h"
 #include "MareArcade.h"
+#include "MareHotelEventsWorld.h"
 #include "MareStaysWorld.h"
 #include "MareOptions.h"
 #include "MareGamepad.h"
@@ -615,6 +616,28 @@ private:
    else Text=FString::Printf(TEXT("Bangalô %d · limpo e livre"),I+1);
    Line(Text,13,State==TEXT("dirty")?Red:State==TEXT("occupied")?Ink:Green);}
  }
+ /** 5.2: events on the beach (MareHotelEvents.cpp): the offer with Aceitar/Recusar, then the set-up progress. */
+ void HotelEventBoard()
+ {
+  auto S=Sim();using namespace MareNotebook;const auto E=UMareSimulation::Object(S->State,TEXT("hotel_events"));
+  const TSharedPtr<FJsonObject>* OfferP=nullptr;const auto B=S->BookedHotelEvent();
+  if(E->TryGetObjectField(TEXT("offer"),OfferP)){const auto O=*OfferP;const auto Def=S->HotelEventKind(UMareSimulation::String(O,TEXT("kind")));
+   Heading(TEXT("Pedido de evento"),UMareSimulation::String(Def,TEXT("name")));
+   Line(FString::Printf(TEXT("%s · amanhã às %.0fh · R$ %.0f · %d peças para montar na praia"),*UMareSimulation::String(O,TEXT("client")),UMareSimulation::Number(Def,TEXT("hour"),16),
+    UMareSimulation::Number(O,TEXT("fee")),Def->HasField(TEXT("pieces"))?Def->GetArrayField(TEXT("pieces")).Num():0),12.5f,Ink);
+   auto Row=SNew(SHorizontalBox)+SHorizontalBox::Slot().AutoWidth().Padding(0,0,8,0)[Button(TEXT("Aceitar"),[this,S](){if(S->AcceptHotelEvent())UMareAudioWorld::Action(Owner.Get(),TEXT("deal_accept"));})]
+    +SHorizontalBox::Slot().AutoWidth()[Button(TEXT("Recusar"),[S](){S->DeclineHotelEvent();})];
+   Body->AddSlot().AutoHeight().Padding(0,2,0,4)[Row];
+   Line(TEXT("Paga pelo que estiver montado quando os convidados chegarem; com menos da metade, fica só o sinal e a fama cai."),11.5f,Faded);}
+  else if(B){const auto Def=S->HotelEventKind(UMareSimulation::String(B,TEXT("kind")));const FString St=UMareSimulation::String(B,TEXT("state"));
+   const int32 Day=UMareSimulation::Number(S->State,TEXT("day"),1),EvDay=UMareSimulation::Number(B,TEXT("day"));
+   Heading(TEXT("Evento marcado"),FString::Printf(TEXT("%s · %s às %.0fh"),*UMareSimulation::String(Def,TEXT("name")),EvDay>Day?TEXT("amanhã"):TEXT("hoje"),UMareSimulation::Number(B,TEXT("hour"))));
+   if(St==TEXT("show"))Line(FString::Printf(TEXT("Os convidados chegaram · %s pagou R$ %.0f."),*UMareSimulation::String(B,TEXT("client")),UMareSimulation::Number(B,TEXT("paid"))),12.5f,Green);
+   else{const int32 Placed=S->HotelEventCount(false,true),All=S->HotelEventCount(false,false);
+    Line(FString::Printf(TEXT("Peças montadas: %d de %d · capricho: %d de %d"),Placed,All,S->HotelEventCount(true,true),S->HotelEventCount(true,false)),12.5f,Placed>=All?Green:Ink);
+    Line(EvDay>Day?FString::Printf(TEXT("Amanhã, a partir das %.0fh, a planta aparece na praia a leste do hotel, perto do farol: E em cada peça transparente para montar."),UMareSimulation::Number(S->HotelEventDefs(),TEXT("setup_from"),6))
+     :FString(TEXT("A planta está na praia a leste do hotel, perto do farol: E em cada peça transparente para montar antes dos convidados.")),11.5f,Faded);}}
+ }
  /** 5.1: the Grand Hotel rooms (how many free, taken and being cleaned; the visitable 3rd floor with what is left to do)
   *  and the guests' complaints by phone, each with the technician button. bRooms false: only the complaints. */
  void HotelBoard(bool bRooms)
@@ -631,6 +654,7 @@ private:
     else Text=FString::Printf(TEXT("%s · limpo e livre"),*S->HotelRoomName(I));
     Line(Text,12.5f,St==TEXT("dirty")?Red:St==TEXT("occupied")?Ink:Green);}
    Line(TEXT("Os quartos 301, 302 e 303 ficam no 3º andar (elevador do saguão): arrumados só por você, o próximo hóspede dá nota melhor. A equipe de arrumação cuida dos outros e chega ao 3º andar depois das 11h."),11.5f,Faded);}
+  if(bRooms)HotelEventBoard();
   const auto Complaints=S->HotelComplaints();
   Heading(TEXT("Telefone do hotel"),Complaints.Num()?FString::Printf(TEXT("%d reclamação(ões)"),Complaints.Num()):FString(TEXT("nenhuma reclamação")));
   for(const auto& C:Complaints){const FString Id=UMareSimulation::String(C,TEXT("id"));const auto Def=S->ComplaintKind(UMareSimulation::String(C,TEXT("kind")));
@@ -717,6 +741,7 @@ private:
   if(bHotel){auto Last=UMareSimulation::Object(UMareSimulation::Object(S->State,TEXT("prog")),TEXT("hotel"));
    Pencil(FString::Printf(TEXT("Grand Hotel 5 estrelas · ocupação prevista %.0f%% · nota %.1f · fama %s"),S->HotelOccupancy()*100,S->Stars(),*S->FameName())+(Last->HasField(TEXT("rooms"))?FString::Printf(TEXT(" · última noite %.0f suítes, R$ %.0f"),UMareSimulation::Number(Last,TEXT("rooms")),UMareSimulation::Number(Last,TEXT("rev"))):FString()));}
   if(bHotel && S->HotelComplaints().Num())HotelBoard(false);   // 5.1: guests' complaints reach the phone anywhere
+  if(bHotel && (UMareSimulation::Object(S->State,TEXT("hotel_events"))->HasField(TEXT("offer")) || S->BookedHotelEvent()))HotelEventBoard();   // 5.2: event offers and set-up anywhere
   auto Pousada=UMareSimulation::Object(UMareSimulation::Object(S->State,TEXT("prog")),TEXT("pousada"));
   if(S->PousadaRooms()>0 && Pousada->HasField(TEXT("rooms")))Pencil(FString::Printf(TEXT("Pousada, última noite: %.0f de %.0f quartos · R$ %.0f"),UMareSimulation::Number(Pousada,TEXT("occupied")),UMareSimulation::Number(Pousada,TEXT("rooms")),UMareSimulation::Number(Pousada,TEXT("rev"))));
   {const FString Next=S->NextUnlockText();if(!Next.IsEmpty())Pencil(Next);}   // 6.2: the next unlock and what it still needs
@@ -2402,6 +2427,17 @@ static FAutoConsoleCommandWithWorldAndArgs MareQACommand(TEXT("mare.QA"),TEXT("Q
 static FAutoConsoleCommandWithWorldAndArgs MareArcadeCommand(TEXT("mare.Arcade"),TEXT("QA: start:0|1, play:seconds, end, state (game room arcades, 5.4)."),
  FConsoleCommandWithWorldAndArgsDelegate::CreateLambda([](const TArray<FString>& Args,UWorld* World){
   if(!World)return;if(auto Arc=World->GetSubsystem<UMareArcade>())UE_LOG(LogTemp,Display,TEXT("mare.Arcade %s -> %s"),*FString::Join(Args,TEXT(" ")),*Arc->QA(FString::Join(Args,TEXT(" "))));}));
+static FAutoConsoleCommandWithWorldAndArgs MareHotelEventCommand(TEXT("mare.HotelEvent"),TEXT("QA: offer[:kind], accept, today, decline, state, placeall[:extras], place:i, start (Grand Hotel events, 5.2)."),
+ FConsoleCommandWithWorldAndArgsDelegate::CreateLambda([](const TArray<FString>& Args,UWorld* World){
+  if(!World || !World->GetGameInstance())return;auto S=World->GetGameInstance()->GetSubsystem<UMareSimulation>();auto W=World->GetSubsystem<UMareHotelEventsWorld>();if(!S || !W)return;
+  const FString Cmd=FString::Join(Args,TEXT(" "));FString Verb,Arg;if(!Cmd.Split(TEXT(":"),&Verb,&Arg))Verb=Cmd;FString Out;
+  if(Verb==TEXT("offer"))Out=S->OfferHotelEvent(Arg)+TEXT(" ")+S->LastMessage;
+  else if(Verb==TEXT("accept"))Out=S->AcceptHotelEvent()?S->LastMessage:FString(TEXT("refused"));
+  else if(Verb==TEXT("decline"))Out=S->DeclineHotelEvent()?FString(TEXT("ok")):FString(TEXT("refused"));
+  else if(Verb==TEXT("start")){const double Paid=S->StartHotelEvent();Out=FString::Printf(TEXT("paid=%.0f %s"),Paid,*S->LastMessage);}
+  else if(Verb==TEXT("today")){if(auto B=S->BookedHotelEvent()){B->SetNumberField(TEXT("day"),UMareSimulation::Number(S->State,TEXT("day"),1));S->Save();Out=TEXT("booked for today");}else Out=TEXT("nothing booked");}
+  else Out=W->QA(Cmd);
+  UE_LOG(LogTemp,Display,TEXT("mare.HotelEvent %s -> %s"),*Cmd,*Out);}));
 static FAutoConsoleCommandWithWorldAndArgs MareShowUICommand(TEXT("mare.ShowUI"),TEXT("QA: opens a panel (pause, options, menu, letter) for UI screenshots."),
  FConsoleCommandWithWorldAndArgsDelegate::CreateLambda([](const TArray<FString>& Args,UWorld* World){if(Args.Num())FMareUIQA::Show(World,Args[0]);}));
 void AMareController::BuildPauseMenu(bool bOptions)

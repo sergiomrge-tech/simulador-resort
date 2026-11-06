@@ -59,6 +59,7 @@ private:
  TArray<FUmbrellaPart> UmbrellaParts;
  UPROPERTY() TObjectPtr<AActor> Umbrella;
  FTransform UmbrellaHome,UmbrellaFrom;FVector UmbrellaRest,UmbrellaWind;float UmbrellaTime=0;int32 UmbrellaPhase=0;
+ bool InHotelEventArea(const FVector& At) const;
  bool StartUmbrella(const TSharedPtr<FJsonObject>& Def,bool bForced);
  void UpdateUmbrella(float DeltaSeconds);
  void RestoreUmbrella();

@@ -674,3 +674,10 @@ comercial (as espigas do Fab são estátua ou só licença pessoal paga para com
 | "Pega-Siri": caranguejo "Crab" de malekith97 (siri dourado recolorido dele) | https://opengameart.org | CC0 |
 | Fonte Press Start 2P (letreiros dos fliperamas, `Content/UI/Fonts/PressStart2P-Regular.ttf`) | https://fonts.google.com/specimen/Press+Start+2P — CodeMan38 | SIL Open Font License 1.1 |
 | Gabinetes, jangada, buracos, água-viva e rede (`tools/ue58/gen_arcade_cabinet.py`, `gen_arcade_art.py`) | próprio do projeto | — |
+
+### Eventos do Grand Hotel (5.2, 06/11)
+
+| Item | Fonte | Licença |
+|---|---|---|
+| Arco de casamento, mesa do bolo com bolo de três andares, púlpito, tela de projeção e presentes (`tools/ue58/gen_event_decor.py`, bpy) | próprio do projeto, com texturas Poly Haven `teak_veneer`, `rough_linen` e `waffle_pique_cotton` (já listadas acima) | CC0 |
+| Cadeiras, mesas redondas, vasos e lanternas da montagem | Poly Haven `painted_wooden_chair_01`, `round_wooden_table_01`, `potted_plant_02`, `Lantern_01` (já no projeto) | CC0 |

@@ -8,6 +8,7 @@
 #include "Engine/StaticMeshActor.h"
 #include "Components/StaticMeshComponent.h"
 #include "EngineUtils.h"
+#include "Engine/GameInstance.h"
 #include "Components/InstancedStaticMeshComponent.h"
 #include "Kismet/KismetMaterialLibrary.h"
 #include "Materials/MaterialParameterCollection.h"
@@ -267,6 +268,13 @@ static TArray<FString> DefStrings(const TSharedPtr<FJsonObject>& Def,const TCHAR
 
 // ---- HUM-004: beach umbrella blown over ------------------------------------------------------------------------
 
+bool UMareComicEvents::InHotelEventArea(const FVector& At) const
+{
+ auto GI=GetWorld()?GetWorld()->GetGameInstance():nullptr;auto S=GI?GI->GetSubsystem<UMareSimulation>():nullptr;if(!S || !S->BookedHotelEvent())return false;
+ const TArray<TSharedPtr<FJsonValue>>* Area=nullptr;if(!S->HotelEventDefs()->TryGetArrayField(TEXT("area"),Area) || Area->Num()!=2)return false;
+ return FVector2D::Distance(FVector2D(At),FVector2D((*Area)[0]->AsNumber(),(*Area)[1]->AsNumber()))<UMareSimulation::Number(S->HotelEventDefs(),TEXT("keep_clear"),900);
+}
+
 bool UMareComicEvents::StartUmbrella(const TSharedPtr<FJsonObject>& Def,bool bForced)
 {
  UWorld* World=GetWorld();APawn* Hero=UGameplayStatics::GetPlayerPawn(World,0);auto Sim=World->GetGameInstance()->GetSubsystem<UMareSimulation>();if(!Hero || !Sim)return false;
@@ -294,6 +302,8 @@ bool UMareComicEvents::StartUmbrella(const TSharedPtr<FJsonObject>& Def,bool bFo
    UMaterialInterface* Under=Floor.GetComponent()->GetMaterial(0);
    if(!Under || !Under->GetName().Contains(TEXT("CoastGround")) || Floor.ImpactPoint.Y>-1050.f || FMath::Abs(Floor.ImpactPoint.Z-Pole.Base.Z)>60.f)continue;
    Rest=Floor.ImpactPoint;
+   // Not into a Grand Hotel event being set up on the beach (its ghost pieces have no collision to stop it).
+   if(InHotelEventArea(Rest))continue;
    const FVector From=Pole.Base+Wind*170.f;
    if(World->SweepTestByChannel(From+FVector(0,0,125),Rest+FVector(0,0,125),FQuat::Identity,ECC_Visibility,FCollisionShape::MakeSphere(95.f),Query)
     || World->SweepTestByChannel(From+FVector(0,0,35),Rest+FVector(0,0,35),FQuat::Identity,ECC_Visibility,FCollisionShape::MakeSphere(30.f),Query))continue;

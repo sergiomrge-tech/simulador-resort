@@ -709,3 +709,15 @@ bola encolheu até sumir. Ponto de espera de cliente perto de um móvel jogável
 as outras pessoas no próprio teste (eles ficavam 15–20 cm um dentro do outro). Entrada do jogador num minijogo fica numa
 função pura (`PlayerControl(FInput)`) para o teste exercitar o mapeamento mouse/controle sem PIE: mover o mouse pelo
 Computer use não chega como delta no PIE com o cursor capturado.
+
+## UE5.8 — eventos do hotel e peças "fantasma" (06/11, 5.2)
+
+Antes de criar um arquivo novo, conferir se o nome já existe: gravei `MareEvents.cpp` por cima do arquivo dos eventos do
+dia (temporadas, tela de fim do EA) e tive de restaurá-lo do git; o novo foi para `MareHotelEvents.cpp`. Peça fantasma
+(material translúcido por cima de uma malha Nanite) não desenha: a Nanite só aceita opaco/mascarado e o log avisa
+"Invalid material ... used on Nanite". Use `SetForceDisableNanite(true)` enquanto for fantasma e também em peça montada
+cujo material próprio é vidro (a lanterna). Fantasma unlit com emissivo 0,9 saiu PRETO de dia (a exposição do sol
+engole emissivo baixo): use translúcido iluminado com cor-base clara e fresnel na opacidade. `AddFame` ignorava valor
+negativo: toda "a fama caiu" do jogo (VIP perdido, multa injusta do aluguel) não fazia nada; agora tira xp sem baixar o
+nível. `Printf(..., S->Fn(), *S->LastMessage)`: a ordem de avaliação dos argumentos não é garantida e o texto saiu
+lixo; chame a função antes. `coast clock N` recebe MINUTOS (540 = 9h), não horas.
