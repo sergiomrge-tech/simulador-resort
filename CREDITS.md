@@ -681,3 +681,16 @@ comercial (as espigas do Fab são estátua ou só licença pessoal paga para com
 |---|---|---|
 | Arco de casamento, mesa do bolo com bolo de três andares, púlpito, tela de projeção e presentes (`tools/ue58/gen_event_decor.py`, bpy) | próprio do projeto, com texturas Poly Haven `teak_veneer`, `rough_linen` e `waffle_pique_cotton` (já listadas acima) | CC0 |
 | Cadeiras, mesas redondas, vasos e lanternas da montagem | Poly Haven `painted_wooden_chair_01`, `round_wooden_table_01`, `potted_plant_02`, `Lantern_01` (já no projeto) | CC0 |
+
+
+## Rádio do quiosque — triagem de acervo externo (Pacote 8, 07/11/2026)
+
+**Importante:** os 12 itens a seguir são **candidatos para avaliação**, **não compõem o jogo publicado** e **não receberam homologação Content ID / streamer-safe**. O áudio não está versionado neste repositório. Não confundir uso permitido por licença CC0 com ausência garantida de reivindicações automáticas em plataformas. Consulte [RADIO_MUSICAS.md](docs/ue58/RADIO_MUSICAS.md) antes de qualquer importação no editor.
+
+- **Fonte/autor:** B. Tahir, acervo **Open Lo-Fi v1.0.0** — https://github.com/btahir/open-lofi . O autor informa geração com Suno v5 sob assinatura premium e oferece os tracks em CC0.
+- **Licença declarada:** CC0 1.0 Universal, https://github.com/btahir/open-lofi/blob/main/LICENSE e https://creativecommons.org/publicdomain/zero/1.0/ . O README declara expressamente uso em **“apps, videos, streams, games, podcasts”** e uso **“including commercial”**. A reivindicação de direitos sobre obras geradas por IA e a proteção contra Content ID continuam sujeitos a análise.
+- **Fonte de faixas e download:** https://github.com/btahir/open-lofi/blob/main/catalog.json e https://github.com/btahir/open-lofi/releases/download/v1.0.0/openlofi.zip . SHA-256 oficial do ZIP: `0040fb9c8bcc22e5f91d1dbf3fb02b6ceff97e249588369bddf9c1fb26950550`.
+- **Faixas candidatas (todas do mesmo autor/licença):** Café Da Tarde (*Cafe Da Tarde*), Cassette Pastel Nights, Savanna Slow Glow, Midnight Steam and Mango Skin, Dusk on Red Earth, End Scene Glow, Palm Breeze Nap, Hammock in the Shade, Block Party Slow Jam, Breezy Afternoon Terrace, Sunset Offbeat e Burnt Sunset Groove.
+- Essas faixas têm ambientação tropical/lo-fi, mas **não representam axé, forró, ijexá, samba-reggae ou pagode baiano autênticos**. Precisam de avaliação de gênero, prova de ausência de Content ID, duração e BPM medidos, aprovação formal e integração real no editor.
+
+Os seis registros `radio_*` pré-existentes de `unreal/MareAlta/Content/Data/audio.json` **não receberam nova atribuição de licença nesta etapa**; a origem e os termos dos arquivos de áudio efetivamente usados devem continuar documentados conforme suas fontes existentes.

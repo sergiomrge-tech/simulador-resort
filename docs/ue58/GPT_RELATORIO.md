@@ -854,3 +854,59 @@ python tools/ue58/qa/number_text_check.py --inventory > docs/ue58/PACOTE7_AUDITO
 O extrator cria todo_*.json vazios como intermediários; não versioná-los. O relatório de tamanho é estimativa estática,
 não captura da Unreal. O diff dos dados foi comparado estruturalmente: apenas os 62 campos textuais existentes e as
 11 entradas de dicas foram alterados/adicionados; listas e números preexistentes são idênticos à base.
+
+
+---
+
+# Pacote 8 — rádio, Steamworks, saves em 3 slots e preset Baixo
+
+**Data:** 07/11/2026. Branch \`gpt/pacote-8\`, baseada no merge do pacote 7 \`2e8aa8e4154c5eb1baf9c22effc225fc8418c623\`; alvo do PR: \`codex/ue58-migration\`. **Nenhum arquivo C++ nem .uasset alterado.** Escopo: fontes JSON, localização, scripts Python/SteamPipe, documentos e metadados do índice de assets.
+
+## 1. Rádio
+
+- [Rádio — 12 faixas e segurança de licenças](RADIO_MUSICAS.md), [manifesto de músicas](../../tools/ue58/radio_tracks.json), [script de download](../../tools/ue58/fetch_radio.py) e créditos em [CREDITS.md](../../CREDITS.md).
+- Fonte CC0 1.0 *Open Lo-Fi* do autor B. Tahir: autorização expressa para apps, games, vídeos e streams e uso comercial; release ZIP com SHA-256 publicado \`0040fb9c8bcc22e5f91d1dbf3fb02b6ceff97e249588369bddf9c1fb26950550\`. O script baixa **fora do repositório**, para \`D:/Assets/Audio/radio/\`, confere esse hash e registra SHA-256 individual de cada faixa. Não baixa quando executado sem \`--download\`.
+- **Limites de segurança:** o catálogo não garante ausência de Content ID, não é música baiana autêntica, e não disponibiliza MP3 individuais nem duração/BPM no catálogo. Assim, **nenhuma das 12 faixas externas está aprovada para inclusão comercial ou streamer mode**, mesmo sob licença CC0. Ausência de reivindicação não é provada. A pesquisa excluiu Kevin MacLeod por política explícita de Content ID; o caminho de menor risco é encomendar música original baiana sob contrato que também proíba cadastro em sistemas de claims.
+- \`audio.json\`: preservados os \`/Game/Audio\` originais, seis registros preexistentes \`radio_*\` marcados com \`group:\"radio\"\`; os 12 externos NÃO recebem path inexistente. \`radio_ui.json\`: rótulos de estação, música anterior/próxima, ligar e desligar; todas as 12 traduções incorporadas.
+- **Claude (apenas C++/editor):** conectar grupo \`radio\` no player com UI, controles, volume, estado salvo, modo streamer e importação de assets **apenas após liberação de direitos**, sem registrar músicas sem uasset.
+- **Sergio:** aprovar o repertório realmente baiano e a documentação de licença + ausência de Content ID. A autorização de jogos/streams não prova imunidade a claims.
+
+## 2. Steamworks
+
+- **13 VDFs de Rich Presence** em [rich_presence/](../steam/rich_presence/) com tokens de estados e 36 conquistas por idioma, traduzidos com as strings existentes; sistema ainda precisa conectar tokens ao cliente Steam.
+- [Tabela CSV de 36 conquistas × pt-BR e inglês](../steam/conquistas_upload_ptBR_en.csv), IDs/oculto/demo/jogo completo explícitos; **36 IDs**, **72 linhas de dados**. A demo elegível não implica conquista ativada automaticamente no AppID da demo.
+- [SteamCMD](../../tools/ue58/steamcmd/): quatro VDFs app_build/depot_build separados para demo ~2 h e jogo completo; só valores de AppID/DepotID marcados como \`PREENCHER_*\`. Caminhos previstos \`D:/Builds/MareAltaUE58_Demo/Windows\` e \`D:/Builds/MareAltaUE58_Completo/Windows\` devem ser conferidos contra saída real do BuildCookRun.
+- [Guia Steamworks para Sergio, na ordem](../steam/STEAMWORKS_PASSO_A_PASSO.md): IDs, localização, achievements, configuração da demo, empacotamento Unreal/SteamPipe, builds internos, QA e publicação manual.
+- **Claude (apenas C++/editor):** Steamworks SDK/Rich Presence, tela e gatilhos de conquistas, criar Shipping real/demo separadamente e validar executáveis.
+- **Sergio:** configurar Steamworks real, inserir IDs, localização, enviar builds e decidir publicação. Nenhum upload para Steam foi feito.
+
+## 3. Saves
+
+- [Auditoria Save/Load e Steam Cloud](SAVES_SLOTS.md) baseada nos \`MareSimulation.cpp/.h\` e \`MareKioskPersistence.cpp\` existentes. O jogo **já tem três slots**, \`slots.json\`, autosave e \`.bak\`; não inventamos trabalho inexistente.
+- [Validador Python](../../tools/ue58/qa/save_check.py) de estrutura de saves JSON e [fixtures](../../tools/ue58/qa/fixtures/): v7 atual, antigo v6 incompleto e JSON truncado. \`--self-test\` aprovado em **4/4** cenários; \`--fallback-bak\` verifica cópia sem alterar arquivo.
+- **Defeito a tratar pelo Claude em C++:** depois de ler um principal corrompido pelo \`.bak\` íntegro, \`WriteState\` pode copiar o **principal corrompido** sobre a cópia boa na próxima gravação. Validar antes de rotacionar backup e fazer teste de recuperação após duas gravações.
+- **Sergio:** configurar Steam Cloud após confirmar path real e testes cruzados/offline, sem apontar a nuvem para builds divergentes.
+
+## 4. Gráficos baixos
+
+- [Preset Baixo com variáveis, motivação e medição](PRESET_BAIXO.md). \`MareOptions\` atualmente tem \`SetPreset(0)\`, redução de crowd 6→3 e alcance 5000→3500 cm, LOD agressivo e simulação de cabelo já desligada se Effects<3. Proposta para desligar Lumen real e diminuir sombras, distância, densidade de NPC, vegetação, resolução/TSR.
+- Benchmarks anteriores **não são FPS na máquina mínima**: 1080p 80% ~10,29 ms frame médio/p95 ~14,26 ms; 1080p nativo ~12,56 ms/p95 ~16,20 ms, em cenário próprio.
+- Requisitos Steam **provisórios** (16 GB RAM/RTX 2060 ou RX 6600 mínimo candidato; 32 GB RAM/RTX 3060–4060 recomendado candidato). Sem divulgação como medido antes de testar hardware real.
+- **Claude (apenas C++/editor):** implementar preset completo, perfis LOD/MetaHuman distante e 3 rodadas do benchmark em máquinas distintas; registrar FPS real, 1% low, p95/p99, VRAM e qualidade visual.
+- **Sergio:** validar e publicar requisitos apenas após logs reais.
+
+## 5. Traduções e QA
+
+- [Workflow CI](../../.github/workflows/pacote8-validacao.yml) em GitHub Actions, compilação não necessária; executa \`python tools/ue58/i18n_extract.py\` completo, compara arquivos por \`git diff --exit-code\`, exige zero traduções vazias em 12 idiomas, depois \`save_check --self-test\`, \`achievements_check.py\` e \`data_lint.py\`.
+- CI executada em [GitHub Actions](https://github.com/sergiomrge-tech/simulador-resort/actions/runs/42384844041): **12 idiomas**, cada um com **4.061 strings + 113 LOCTEXT**, extração reproduzível, nenhuma vazia; **4/4** cenários de save e **36** conquistas validados.
+- \`data_lint\` nesse run: **50 JSON**, **796** referências de modelos, **12.012** packages reais da árvore Git consultados, **ZERO erros**, inclusive glossário e números; índice Git atualizado em \`tools/ue58/balance/package_index.json\` com hashes SHA-256 dos 50 JSON. A CI cria índice efêmero do snapshot para funcionar em checkout esparso, sem acessar conteúdo binário dos uassets. Não corresponde a validação de runtime Unreal.
+- Primeiro CI falhou por Python 3.11 incompatível com a sintaxe do lint existente; migrado para Python 3.12. Segundo falhou porque o índice de pacotes antigo estava obsoleto e três idiomas não preservavam literal \`Maré Alta\`; ambos corrigidos. **Não silenciaram** os erros do glossário.
+- Verificar depois do PR: \`python tools/ue58/i18n_extract.py\`; \`python tools/ue58/qa/build_package_index.py --output indice-qa.json\` (com Git); \`python tools/ue58/qa/data_lint.py --asset-index tools/ue58/balance/package_index.json --json\`; \`python tools/ue58/qa/save_check.py --self-test\`; \`python tools/ue58/qa/achievements_check.py\`; \`python tools/ue58/fetch_radio.py --list\`.
+- **Limites desta entrega:** nenhum executável/asset foi compilado, nenhum download de rádio foi comprovado no drive D: do Sergio, não houve verificação real de direitos Content ID ou de FPS mínimo, nenhum cadastro de Steamworks foi alterado. Esses limites **não** invalidam as validações estáticas aprovadas.
+
+**Próximo handoff:** Claude fica exclusivamente com C++/Unreal Editor indicados acima; Sergio com aprovações de música, Steamworks, requisitos após QA e publicação. O PR permanece para revisão, sem merge automático.
+
+
+## Complemento — música opcional nas configurações
+
+Solicitação de Sergio: **manter as músicas existentes** e oferecer um interruptor **“Desativar música”** em `Opções → Áudio`, sem afetar efeitos, vento, mar e sons da praia. `Content/Data/radio_ui.json` declara rótulo, texto de ajuda e comportamento. As 12 traduções serão atualizadas nesta mesma branch. O áudio existente já permite `Music=0`; a implementação da caixa/checkbox C++ em `MareGame.cpp::SMareOptions::AudioPage` e a restauração persistente do volume anterior ficam para Claude (sem editar C++ nesta entrega). A possibilidade de desativar música não supre a checagem de Content ID.

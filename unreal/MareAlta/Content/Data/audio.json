@@ -26,7 +26,7 @@
  {
   "id": "bus_engine",
   "path": "/Game/Audio/bus_engine.bus_engine",
-  "duration": 28.0,
+  "duration": 28,
   "loop": false
  },
  {
@@ -176,7 +176,7 @@
  {
   "id": "leaves_soft",
   "path": "/Game/Audio/leaves_soft.leaves_soft",
-  "duration": 4.0,
+  "duration": 4,
   "loop": true
  },
  {
@@ -188,38 +188,41 @@
  {
   "id": "music_bossa",
   "path": "/Game/Audio/music_bossa.music_bossa",
-  "duration": 96.0,
+  "duration": 96,
   "loop": true
  },
  {
   "id": "music_relax",
   "path": "/Game/Audio/music_relax.music_relax",
-  "duration": 30.0,
+  "duration": 30,
   "loop": true
  },
  {
   "id": "ocean_loop",
   "path": "/Game/Audio/ocean_loop.ocean_loop",
-  "duration": 24.0,
+  "duration": 24,
   "loop": true
  },
  {
   "id": "radio_beach_pop",
   "path": "/Game/Audio/radio_beach_pop.radio_beach_pop",
-  "duration": 110.0,
-  "loop": true
+  "duration": 110,
+  "loop": true,
+  "group": "radio"
  },
  {
   "id": "radio_calypso",
   "path": "/Game/Audio/radio_calypso.radio_calypso",
   "duration": 94.28571319580078,
-  "loop": true
+  "loop": true,
+  "group": "radio"
  },
  {
   "id": "radio_reggae_roots",
   "path": "/Game/Audio/radio_reggae_roots.radio_reggae_roots",
   "duration": 138.9473419189453,
-  "loop": true
+  "loop": true,
+  "group": "radio"
  },
  {
   "id": "rain_loop",
@@ -230,7 +233,7 @@
  {
   "id": "reggae_praia",
   "path": "/Game/Audio/reggae_praia.reggae_praia",
-  "duration": 48.0,
+  "duration": 48,
   "loop": true
  },
  {
@@ -266,19 +269,19 @@
  {
   "id": "thunder",
   "path": "/Game/Audio/thunder.thunder",
-  "duration": 5.0,
+  "duration": 5,
   "loop": false
  },
  {
   "id": "underwater_loop",
   "path": "/Game/Audio/underwater_loop.underwater_loop",
-  "duration": 8.0,
+  "duration": 8,
   "loop": true
  },
  {
   "id": "whale_splash",
   "path": "/Game/Audio/whale_splash.whale_splash",
-  "duration": 3.0,
+  "duration": 3,
   "loop": false
  },
  {
@@ -290,25 +293,28 @@
  {
   "id": "radio_havaiana",
   "path": "/Game/Audio/radio_havaiana.radio_havaiana",
-  "duration": 120.0,
-  "loop": true
+  "duration": 120,
+  "loop": true,
+  "group": "radio"
  },
  {
   "id": "radio_havaiana_lua",
   "path": "/Game/Audio/radio_havaiana_lua.radio_havaiana_lua",
   "duration": 106.7,
-  "loop": true
+  "loop": true,
+  "group": "radio"
  },
  {
   "id": "radio_havaiana_onda",
   "path": "/Game/Audio/radio_havaiana_onda.radio_havaiana_onda",
   "duration": 92.3,
-  "loop": true
+  "loop": true,
+  "group": "radio"
  },
  {
   "id": "music_tema",
   "path": "/Game/Audio/music_tema.music_tema",
-  "duration": 73.0,
+  "duration": 73,
   "loop": true
  },
  {
@@ -826,7 +832,7 @@
  {
   "id": "pastel_fry_2",
   "path": "/Game/Audio/Actions/pastel_fry_2.pastel_fry_2",
-  "duration": 2.0,
+  "duration": 2,
   "loop": false,
   "group": "pastel_fry",
   "volume": 0.05

@@ -1,0 +1,68 @@
+name: Pacote 8 - integridade de dados e traducoes
+
+on:
+  push:
+    branches:
+      - gpt/pacote-8
+  pull_request:
+    branches:
+      - codex/ue58-migration
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validar:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - name: Checkout fonte / dados (sem ativos Unreal binarios)
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            unreal/MareAlta/Source/MareAlta
+            unreal/MareAlta/Content/Data
+            unreal/MareAlta/Content/Localization/Mare
+            tools/ue58
+            docs/ue58
+            docs/steam
+            CREDITS.md
+          sparse-checkout-cone-mode: false
+      - name: Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Extrair i18n completo
+        run: python tools/ue58/i18n_extract.py
+      - name: Conferir que i18n nao criou lacunas
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          base=Path('unreal/MareAlta/Content/Localization/Mare')
+          source=json.loads((base/'source.json').read_text(encoding='utf-8'))
+          expected=set(source['strings'])
+          assert len(source['loctext'])==113, len(source['loctext'])
+          assert len(expected)>=4061, len(expected)
+          for path in sorted(base.glob('*.json')):
+              if path.stem in ('source',) or path.stem.startswith('todo_'):continue
+              d=json.loads(path.read_text(encoding='utf-8'))
+              assert set(d['strings'])==expected, (path.name,'divergencia de chaves')
+              assert all(d['strings'].values()), (path.name,'textos sem traducao')
+              assert set(d['loctext'])==set(source['loctext']), (path.name,'loctext incompleto')
+              assert all(d['loctext'].values()), (path.name,'loctext vazio')
+              print(path.name, len(d['strings']), len(d['loctext']), 'OK')
+          PY
+      - name: Garantir extracao i18n reproduzivel
+        run: |
+          git diff --exit-code -- unreal/MareAlta/Content/Localization/Mare/source.json unreal/MareAlta/Content/Localization/Mare/en.json unreal/MareAlta/Content/Localization/Mare/es.json unreal/MareAlta/Content/Localization/Mare/de.json unreal/MareAlta/Content/Localization/Mare/fr.json unreal/MareAlta/Content/Localization/Mare/zh-Hans.json unreal/MareAlta/Content/Localization/Mare/ja.json unreal/MareAlta/Content/Localization/Mare/ru.json unreal/MareAlta/Content/Localization/Mare/ko.json unreal/MareAlta/Content/Localization/Mare/it.json unreal/MareAlta/Content/Localization/Mare/pl.json unreal/MareAlta/Content/Localization/Mare/nl.json unreal/MareAlta/Content/Localization/Mare/pt-PT.json
+      - name: QA de saves
+        run: python tools/ue58/qa/save_check.py --self-test
+      - name: QA de conquistas
+        run: python tools/ue58/qa/achievements_check.py
+      - name: Gerar indice de packages do Git exato
+        run: python tools/ue58/qa/build_package_index.py --output "$RUNNER_TEMP/pacote8-packages.json" --log-chunks
+      - name: Data lint completo com indice fresco
+        run: python tools/ue58/qa/data_lint.py --asset-index "$RUNNER_TEMP/pacote8-packages.json" --json

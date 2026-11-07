@@ -1,0 +1,14 @@
+"DepotBuild"
+{
+  "DepotID" "PREENCHER_DEPOT_ID_COMPLETO"
+  "ContentRoot" "D:\\Builds\\MareAltaUE58_Completo\\Windows"
+  "FileMapping"
+  {
+    "LocalPath" "*"
+    "DepotPath" "."
+    "recursive" "1"
+  }
+  "FileExclusion" "*.pdb"
+  "FileExclusion" "*.log"
+  "FileExclusion" "*.tmp"
+}

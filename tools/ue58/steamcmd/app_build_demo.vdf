@@ -1,0 +1,11 @@
+"AppBuild"
+{
+  "AppID" "PREENCHER_APP_ID_DEMO"
+  "Desc" "Coconut Coast: Resort Simulator — demo Windows x64 — Pacote 8"
+  "BuildOutput" "D:\\SteamBuilds\\demo\\output"
+  "ContentRoot" "D:\\Builds\\MareAltaUE58_Demo\\Windows"
+  "Depots"
+  {
+    "PREENCHER_DEPOT_ID_DEMO" "depot_build_demo.vdf"
+  }
+}
