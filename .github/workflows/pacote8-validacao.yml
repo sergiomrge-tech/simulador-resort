@@ -32,7 +32,7 @@ jobs:
       - name: Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: "3.12"
       - name: Extrair i18n completo
         run: python tools/ue58/i18n_extract.py
       - name: Conferir que i18n nao criou lacunas
