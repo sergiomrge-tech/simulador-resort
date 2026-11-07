@@ -5,5 +5,15 @@
  "previous_label": "Música anterior",
  "next_label": "Próxima música",
  "off_label": "Desligar rádio",
- "on_label": "Ligar rádio"
+ "on_label": "Ligar rádio",
+ "music_toggle_label": "Desativar música",
+ "music_toggle_help": "Silencia as músicas do jogo, mas mantém os sons da praia e os efeitos sonoros.",
+ "_music_toggle_contract": {
+  "menu": "Opções > Áudio",
+  "default_checked": false,
+  "scope": "Música do jogo, rádio, música de zonas e estéreo da casa; manter efeitos e ambiente",
+  "persistent_storage": "GameUserSettings.ini [MareAudio]: MusicMuted e MusicLastNonZero",
+  "implementation": "SMareOptions::AudioPage, via UMareAudioWorld; preservar valor do Music para restaurar ao desmarcar",
+  "keep_existing_tracks": true
+ }
 }

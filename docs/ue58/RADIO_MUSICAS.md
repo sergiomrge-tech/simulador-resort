@@ -52,3 +52,14 @@ O script recusa salvar dentro do repositório, baixa o ZIP completo **apenas qua
 ## Contrato de dados e interface
 
 `unreal/MareAlta/Content/Data/audio.json` continua sendo **lista** de objetos `{id,path,duration,loop}`; seis registros `radio_*` existentes receberam apenas `group:"radio"`. **Não** acrescentar os 12 candidatos a essa lista antes da importação real de assets .uasset e liberação de direitos. `radio_ui.json` define rótulos `Rádio Maré Alta`, `Música anterior`, `Próxima música`, `Ligar rádio`, `Desligar rádio`, extraídos e traduzidos nos 12 idiomas. Claude implementa no C++: estação, próximo/anterior, desligamento, volume com persistência, modo streamer, e integração dos dados sem hardcode.
+
+
+## Opção de áudio solicitada: “Desativar música”
+
+**Preservar todas as músicas, estações e assets existentes.** No menu `Opções → Áudio`, incluir um interruptor ou checkbox **Desativar música**, inicialmente desligado (músicas ligadas). Os textos estão em `Content/Data/radio_ui.json`, com traduções nos 12 idiomas. O botão exige C++/editor e não é implementado diretamente neste PR.
+
+**Já existe a infraestrutura:** `MareGame.cpp::SMareOptions::AudioPage()` exibe os sliders `Master`, `Music`, `Effects`, `Ambient`; `UMareAudioWorld` persiste volumes em `GameUserSettings.ini [MareAudio]`. Ao aplicar `Music=0`, a rádio, música por zona e estéreo da casa ficam em silêncio, enquanto efeitos e sons ambientais continuam. Por isso, **não construir um segundo sistema de áudio**.
+
+**Claude (C++/editor):** adicionar o checkbox à aba Áudio no menu principal e no menu de pausa (ambos usam `MakeOptionsPanel()`); marcado: música efetiva zerada imediatamente, sem mutar `Effects`/`Ambient`; desmarcado: restaurar último volume musical positivo, não forçar 100%. Persistir estado `MusicMuted` e último volume `MusicLastNonZero` (ou solução equivalente) em `[MareAudio]`, com default de música ligada e volume predefinido de 0,30. Não sobrescrever o volume anterior com zero de modo irreversível. Se o usuário arrastar o slider Música acima de zero, reativar o áudio de maneira previsível; `Restaurar padrão` remove mute e restaura os níveis padrão.
+
+**QA:** mutar e reativar com rádio, música ambiental de zona e estéreo; confirmar som de mar, passos e efeitos intactos; testar novo jogo, mudança de slot, reinício do executável, troca de idioma, controle/teclado/mouse e ajuste pelo slider. Esta opção **não substitui liberação de licença nem garante ausência de Content ID quando a música estiver ligada**. As 12 candidatas CC0 externas continuam em triagem, sem serem incorporadas automaticamente.

@@ -905,3 +905,8 @@ não captura da Unreal. O diff dos dados foi comparado estruturalmente: apenas o
 - **Limites desta entrega:** nenhum executável/asset foi compilado, nenhum download de rádio foi comprovado no drive D: do Sergio, não houve verificação real de direitos Content ID ou de FPS mínimo, nenhum cadastro de Steamworks foi alterado. Esses limites **não** invalidam as validações estáticas aprovadas.
 
 **Próximo handoff:** Claude fica exclusivamente com C++/Unreal Editor indicados acima; Sergio com aprovações de música, Steamworks, requisitos após QA e publicação. O PR permanece para revisão, sem merge automático.
+
+
+## Complemento — música opcional nas configurações
+
+Solicitação de Sergio: **manter as músicas existentes** e oferecer um interruptor **“Desativar música”** em `Opções → Áudio`, sem afetar efeitos, vento, mar e sons da praia. `Content/Data/radio_ui.json` declara rótulo, texto de ajuda e comportamento. As 12 traduções serão atualizadas nesta mesma branch. O áudio existente já permite `Music=0`; a implementação da caixa/checkbox C++ em `MareGame.cpp::SMareOptions::AudioPage` e a restauração persistente do volume anterior ficam para Claude (sem editar C++ nesta entrega). A possibilidade de desativar música não supre a checagem de Content ID.
