@@ -35,7 +35,7 @@ void UMareHomeWorld::Setup()
  auto Sim=GetWorld()->GetGameInstance()->GetSubsystem<UMareSimulation>();if(!Sim)return;
  auto State=UMareSimulation::Object(Sim->State,TEXT("ue_home"));State->TryGetBoolField(TEXT("tv"),bTV);State->TryGetBoolField(TEXT("stereo"),bStereo);
  auto TVControl=Target(TEXT("HomeTV"),TEXT("TV · ligar/desligar"),FVector(4406,2119,121));
- Target(TEXT("HomeStereo"),TEXT("Som · ligar/desligar"),FVector(4475,2111,108));
+ SetupStereos(State);
  Target(TEXT("HomeSofa"),TEXT("Sofá · sentar e descansar"),FVector(4435,2342,65),220);
  Target(TEXT("HomeShower"),TEXT("Chuveiro · abrir/fechar água"),FVector(4919,1500,116));
  Target(TEXT("HomeSink"),TEXT("Pia · lavar as mãos"),FVector(4665,1638,95));
@@ -81,7 +81,15 @@ void UMareHomeWorld::Use(FName Action)
 {
  auto Sim=GetWorld()->GetGameInstance()->GetSubsystem<UMareSimulation>();auto Hero=Cast<AMareCharacter>(UGameplayStatics::GetPlayerCharacter(this,0));if(!Sim || !Hero)return;
  if(Action==TEXT("HomeTV")){bTV=!bTV;UpdateTV();Sim->LastMessage=bTV?TEXT("TV ligada · paisagens da costa"):TEXT("TV desligada");}
- if(Action==TEXT("HomeStereo")){bStereo=!bStereo;Sim->LastMessage=bStereo?TEXT("Som da casa ligado"):TEXT("Som da casa desligado");}
+ for(FStereoSet& Set:StereoSets)if(Action==Set.Action || (Action==TEXT("HomeStereoOff") && Set.Id==TEXT("home"))){
+  // Next track on this set; past the last one it switches off (E is the only button on a set).
+  TArray<FName> Tracks=UMareAudioWorld::RadioStations();Tracks.Remove(TEXT("off"));
+  if(Action==TEXT("HomeStereoOff"))Set.Track=NAME_None;
+  else if(Set.Track.IsNone())Set.Track=Tracks.Contains(Set.Default)?Set.Default:(Tracks.Num()?Tracks[0]:NAME_None);
+  else{const int32 I=Tracks.IndexOfByKey(Set.Track);Set.Track=Tracks.IsValidIndex(I+1)?Tracks[I+1]:NAME_None;}
+  Sim->LastMessage=Set.Track.IsNone()?TEXT("Rádio desligado"):TEXT("Tocando: ")+UMareAudioWorld::RadioName(Set.Track);
+  if(Set.Id==TEXT("home"))bStereo=!Set.Track.IsNone();
+  UMareSimulation::Object(Sim->State,TEXT("ue_home"))->SetStringField(TEXT("stereo_")+Set.Id,Set.Track.IsNone()?FString():Set.Track.ToString());}   // i18n:skip
  if(Action==TEXT("HomeShower")){bShower=!bShower;Sim->LastMessage=bShower?TEXT("Chuveiro aberto"):TEXT("Chuveiro fechado");}
  if(Action==TEXT("HomeSink")){GetWorld()->GetSubsystem<UMareAudioWorld>()->PlayCue(TEXT("clean"),.24f);Sim->LastMessage=TEXT("Mãos limpas para um novo atendimento.");}
  if(Action==TEXT("HomeSofa")){
@@ -116,7 +124,7 @@ void UMareHomeWorld::Tick(float Dt)
  if(!GetWorld()->IsGameWorld() || !Cast<AMareGameMode>(GetWorld()->GetAuthGameMode()))return;if(!bReady)Setup();
  if(UGameplayStatics::IsGamePaused(this))return;
  auto Hero=Cast<AMareCharacter>(UGameplayStatics::GetPlayerCharacter(this,0));if(!Hero)return;
- auto Audio=GetWorld()->GetSubsystem<UMareAudioWorld>();Audio->SetHomeStereo(bStereo,FVector(4475,2111,108));
+ UpdateStereos();
  UpdateTV();
  if(IsSleeping()){
   SleepTime+=Dt;auto PC=Cast<APlayerController>(Hero->GetController());
@@ -138,4 +146,38 @@ void UMareHomeWorld::Tick(float Dt)
  if(bSeated)if(auto P=Hero->FindComponentByClass<UMarePlayerPresentation>())if(auto Anim=Cast<UAnimSingleNodeInstance>(Hero->GetMesh()->GetAnimInstance()))if(Anim->GetCurrentAsset()==P->Clips.FindRef(TEXT("Sitting_Idle"))){
   const FVector Delta=FVector(4435,2325,56)-Hero->GetMesh()->GetSocketLocation(TEXT("pelvis"));Hero->AddActorWorldOffset(Delta*FMath::Min(1.f,Dt*8.f));
  }
+}
+
+void UMareHomeWorld::SetupStereos(const TSharedPtr<FJsonObject>& HomeState)
+{
+ FString Text;TSharedPtr<FJsonObject> Defs;FFileHelper::LoadFileToString(Text,*(FPaths::ProjectContentDir()/TEXT("Data/radio.json")));FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Text),Defs);   // i18n:skip
+ const TArray<TSharedPtr<FJsonValue>>* List=nullptr;if(!Defs.IsValid() || !Defs->TryGetArrayField(TEXT("stereos"),List))return;   // i18n:skip
+ for(const auto& V:*List){const auto D=V->AsObject();FStereoSet Set;
+  Set.Id=UMareSimulation::String(D,TEXT("id"));Set.Action=FName(UMareSimulation::String(D,TEXT("action")));Set.Unlock=UMareSimulation::String(D,TEXT("unlock"));   // i18n:skip
+  Set.Default=FName(UMareSimulation::String(D,TEXT("default")));D->TryGetBoolField(TEXT("boombox"),Set.bModel);Set.Yaw=UMareSimulation::Number(D,TEXT("yaw"));Set.Probe=UMareSimulation::Number(D,TEXT("probe"),220);   // i18n:skip
+  const TArray<TSharedPtr<FJsonValue>>* At=nullptr;if(D->TryGetArrayField(TEXT("at"),At) && At->Num()>=3)Set.At=FVector((*At)[0]->AsNumber(),(*At)[1]->AsNumber(),(*At)[2]->AsNumber());   // i18n:skip
+  // Saved track (empty = off); the house's old on/off switch meant its relaxing track.
+  FString Saved;if(HomeState->TryGetStringField(TEXT("stereo_")+Set.Id,Saved))Set.Track=Saved.IsEmpty()?NAME_None:FName(Saved);   // i18n:skip
+  else if(Set.Id==TEXT("home") && bStereo)Set.Track=Set.Default;
+  StereoSets.Add(Set);}
+}
+void UMareHomeWorld::UpdateStereos()
+{
+ auto Sim=GetWorld()->GetGameInstance()->GetSubsystem<UMareSimulation>();auto Audio=GetWorld()->GetSubsystem<UMareAudioWorld>();if(!Sim || !Audio)return;
+ static UStaticMesh* Boombox=LoadObject<UStaticMesh>(nullptr,TEXT("/Game/World/Models/World_1165/World_1165/StaticMeshes/World_1165.World_1165"));
+ for(FStereoSet& Set:StereoSets){
+  bool bOwned=Set.Unlock.IsEmpty();if(!bOwned)UMareSimulation::Object(Sim->State,TEXT("unlocked"))->TryGetBoolField(Set.Unlock,bOwned);
+  if(bOwned && !Set.bPlaced){Set.bPlaced=true;
+   // On the counter below (z 0 in radio.json): the first surface a trace finds from probe cm down (above the counter,
+   // under the roof: from 12 m it landed on the kiosk roof and the lobby ceiling).
+   if(Set.At.Z==0){FHitResult Hit;FCollisionQueryParams Params;Params.bTraceComplex=true;
+    if(GetWorld()->LineTraceSingleByChannel(Hit,FVector(Set.At.X,Set.At.Y,Set.Probe),FVector(Set.At.X,Set.At.Y,-200),ECC_Visibility,Params))Set.At.Z=Hit.ImpactPoint.Z;}
+   if(Set.bModel && Boombox){auto Model=GetWorld()->SpawnActor<AStaticMeshActor>(Set.At,FRotator(0,Set.Yaw,0));
+    if(Model){Model->SetMobility(EComponentMobility::Movable);Model->GetStaticMeshComponent()->SetStaticMesh(Boombox);Model->SetActorScale3D(FVector(.66f));
+     Model->GetStaticMeshComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);Set.Model=Model;}}
+   Set.Target=Target(Set.Action,FString(),Set.At+FVector(0,0,Set.bModel?20.f:0.f));}
+  if(Set.Model.IsValid())Set.Model->SetActorHiddenInGame(!bOwned);
+  if(Set.Target.IsValid()){Set.Target->SetActorHiddenInGame(!bOwned);Set.Target->SetActorEnableCollision(bOwned);
+   Set.Target->Label=Set.Track.IsNone()?FString(TEXT("Rádio · ligar")):TEXT("Rádio · ")+UMareAudioWorld::RadioName(Set.Track)+TEXT(" · próxima música");}
+  Audio->SetStereo(FName(Set.Id),bOwned?Set.Track:NAME_None,Set.At+FVector(0,0,15));}
 }

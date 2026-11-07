@@ -321,7 +321,8 @@ def data_lint():
     import subprocess
     try:
         run = subprocess.run([sys.executable, str(HERE / 'data_lint.py'), '--json'],
-                             cwd=str(HERE.parents[2]), capture_output=True, text=True, encoding='utf-8')
+                             cwd=str(HERE.parents[2]), capture_output=True, text=True, encoding='utf-8',
+                             env=dict(os.environ, PYTHONIOENCODING='utf-8', PYTHONUTF8='1'))   # Windows: the child printed in cp1252
         result = json.loads(run.stdout)
         if not isinstance(result, dict) or not isinstance(result.get('problemas'), list) or 'erros' not in result:
             raise ValueError('resposta incompleta do data_lint.py')
@@ -331,6 +332,10 @@ def data_lint():
 
 
 def main():
+    try:
+        sys.stdout.reconfigure(encoding='utf-8')   # Windows console: arrows/accents in the report
+    except Exception:
+        pass
     global c
     accept, with_shots = '--accept' in sys.argv, '--no-shots' not in sys.argv
     base = json.loads(BASELINE.read_text(encoding='utf-8')) if BASELINE.exists() else {}

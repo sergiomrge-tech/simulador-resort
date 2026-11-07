@@ -860,5 +860,89 @@
   "loop": false,
   "group": "cana_crank",
   "volume": 0.06
+ },
+ {
+  "id": "radio_cc0_01",
+  "path": "/Game/Audio/Radio/radio_cc0_01.radio_cc0_01",
+  "duration": 109,
+  "loop": true,
+  "group": "radio"
+ },
+ {
+  "id": "radio_cc0_02",
+  "path": "/Game/Audio/Radio/radio_cc0_02.radio_cc0_02",
+  "duration": 223,
+  "loop": true,
+  "group": "radio"
+ },
+ {
+  "id": "radio_cc0_03",
+  "path": "/Game/Audio/Radio/radio_cc0_03.radio_cc0_03",
+  "duration": 175,
+  "loop": true,
+  "group": "radio"
+ },
+ {
+  "id": "radio_cc0_04",
+  "path": "/Game/Audio/Radio/radio_cc0_04.radio_cc0_04",
+  "duration": 136,
+  "loop": true,
+  "group": "radio"
+ },
+ {
+  "id": "radio_cc0_05",
+  "path": "/Game/Audio/Radio/radio_cc0_05.radio_cc0_05",
+  "duration": 154,
+  "loop": true,
+  "group": "radio"
+ },
+ {
+  "id": "radio_cc0_06",
+  "path": "/Game/Audio/Radio/radio_cc0_06.radio_cc0_06",
+  "duration": 198,
+  "loop": true,
+  "group": "radio"
+ },
+ {
+  "id": "radio_cc0_07",
+  "path": "/Game/Audio/Radio/radio_cc0_07.radio_cc0_07",
+  "duration": 123,
+  "loop": true,
+  "group": "radio"
+ },
+ {
+  "id": "radio_cc0_08",
+  "path": "/Game/Audio/Radio/radio_cc0_08.radio_cc0_08",
+  "duration": 122,
+  "loop": true,
+  "group": "radio"
+ },
+ {
+  "id": "radio_cc0_09",
+  "path": "/Game/Audio/Radio/radio_cc0_09.radio_cc0_09",
+  "duration": 148,
+  "loop": true,
+  "group": "radio"
+ },
+ {
+  "id": "radio_cc0_10",
+  "path": "/Game/Audio/Radio/radio_cc0_10.radio_cc0_10",
+  "duration": 90,
+  "loop": true,
+  "group": "radio"
+ },
+ {
+  "id": "radio_cc0_11",
+  "path": "/Game/Audio/Radio/radio_cc0_11.radio_cc0_11",
+  "duration": 159,
+  "loop": true,
+  "group": "radio"
+ },
+ {
+  "id": "radio_cc0_12",
+  "path": "/Game/Audio/Radio/radio_cc0_12.radio_cc0_12",
+  "duration": 213,
+  "loop": true,
+  "group": "radio"
  }
 ]

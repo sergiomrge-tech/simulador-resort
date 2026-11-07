@@ -47,3 +47,18 @@ def import_tracks(names):
         unreal.EditorAssetLibrary.save_loaded_asset(wave,False)
         out[name]=round(wave.get_editor_property('duration'),1)
     return out
+
+def import_radio_cc0(folder='D:/Assets/Audio/radio/wav'):
+    """The CC0 radio tracks (tools/ue58/radio_prepare.py: loudness-matched WAVs, outside the repository) as looping
+    SoundWaves in /Game/Audio/Radio; audio.json and radio.json list them."""
+    out={}
+    for source in sorted(Path(folder).glob('*.wav')):
+        path='/Game/Audio/Radio/'+source.stem
+        task=unreal.AssetImportTask();task.filename=str(source);task.destination_path='/Game/Audio/Radio'
+        task.destination_name=source.stem;task.automated=True;task.save=True;task.replace_existing=True
+        unreal.AssetToolsHelpers.get_asset_tools().import_asset_tasks([task]);wave=unreal.load_asset(path)
+        if not isinstance(wave,unreal.SoundWave):raise RuntimeError('Radio import failed: '+source.stem)
+        wave.set_editor_property('looping',True);wave.set_editor_property('virtualization_mode',unreal.VirtualizationMode.PLAY_WHEN_SILENT)
+        unreal.EditorAssetLibrary.save_loaded_asset(wave,False)
+        out[source.stem]=round(wave.get_editor_property('duration'),1)
+    return out

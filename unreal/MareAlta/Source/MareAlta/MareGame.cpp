@@ -270,7 +270,10 @@ private:
   if(auto Audio=Owner->GetWorld()->GetSubsystem<UMareAudioWorld>())
    G->AddSlot(2,0)[MareNotebook::PriceTag(SNew(SVerticalBox)+SVerticalBox::Slot().AutoHeight()[MareNotebook::HandText(TEXT("Rádio"),15,MareNotebook::Faded)]
     +SVerticalBox::Slot().AutoHeight().Padding(0,0,0,6)[MareNotebook::BodyText(UMareAudioWorld::RadioName(Audio->GetRadioStation()),12.5f,MareNotebook::Ink,true)]
-    +SVerticalBox::Slot().AutoHeight().HAlign(HAlign_Left)[Button(TEXT("próxima"),[Audio](){Audio->NextRadioStation();})],TiltOf(2))];
+    +SVerticalBox::Slot().AutoHeight().HAlign(HAlign_Left)[SNew(SWrapBox).UseAllottedSize(true)
+     +SWrapBox::Slot().Padding(0,0,4,4)[Button(TEXT("anterior"),[Audio](){Audio->PrevRadioStation();})]
+     +SWrapBox::Slot().Padding(0,0,4,4)[Button(TEXT("próxima"),[Audio](){Audio->NextRadioStation();})]
+     +SWrapBox::Slot().Padding(0,0,4,4)[Button(TEXT("desligar"),[Audio](){Audio->SetRadioStation(TEXT("off"));})]],TiltOf(2))];
   if(!S->Carry().IsEmpty())Body->AddSlot().AutoHeight().HAlign(HAlign_Left).Padding(0,4)[Button(TEXT("Devolver o produto que está na mão"),[S](){S->ReturnCarry();})];
   // Agenda: today's event and tomorrow's forecast with the paid preparations (events.json).
   {const auto Today=S->EventDef(S->TodayEvent()),Next=S->EventDef(S->TomorrowEvent());

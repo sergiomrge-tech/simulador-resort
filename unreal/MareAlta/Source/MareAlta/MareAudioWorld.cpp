@@ -17,25 +17,34 @@
 #include "Serialization/JsonSerializer.h"
 
 TStatId UMareAudioWorld::GetStatId()const{RETURN_QUICK_DECLARE_CYCLE_STAT(UMareAudioWorld,STATGROUP_Tickables);}
+static TSharedPtr<FJsonObject> RadioDefs()
+{
+ static TSharedPtr<FJsonObject> Defs;
+ if(!Defs.IsValid()){FString Text;if(FFileHelper::LoadFileToString(Text,*(FPaths::ProjectContentDir()/TEXT("Data/radio.json"))))FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Text),Defs);   // i18n:skip
+  if(!Defs.IsValid())Defs=MakeShared<FJsonObject>();}
+ return Defs;
+}
 const TArray<FName>& UMareAudioWorld::RadioStations()
 {
- // Aloha FM (original Hawaiian ukulele, asked by Sergio on 03/11) opens the dial; the Mare Alta theme has its own station.
- static const TArray<FName> Stations={TEXT("radio_havaiana"),TEXT("radio_havaiana_onda"),TEXT("radio_havaiana_lua"),TEXT("music_tema"),TEXT("reggae_praia"),TEXT("radio_reggae_roots"),TEXT("radio_calypso"),TEXT("radio_beach_pop"),TEXT("music_bossa"),TEXT("music_relax"),TEXT("off")};
+ // The dial (Content/Data/radio.json): Aloha FM opens it, the CC0 Open Lo-Fi tracks follow, 'off' closes it.
+ static TArray<FName> Stations;
+ if(Stations.IsEmpty()){const TArray<TSharedPtr<FJsonValue>>* List=nullptr;
+  if(RadioDefs()->TryGetArrayField(TEXT("stations"),List))for(const auto& V:*List)Stations.Add(FName(UMareSimulation::String(V->AsObject(),TEXT("id"))));   // i18n:skip
+  if(Stations.IsEmpty())Stations={TEXT("radio_havaiana"),TEXT("music_relax"),TEXT("off")};}
  return Stations;
 }
+int32 UMareAudioWorld::AlwaysLoadedStations(){return int32(UMareSimulation::Number(RadioDefs(),TEXT("always_loaded"),10));}   // i18n:skip
 FString UMareAudioWorld::RadioName(FName Station)
 {
- if(Station==TEXT("radio_havaiana"))return TEXT("Aloha FM · havaiana");
- if(Station==TEXT("radio_havaiana_onda"))return TEXT("Aloha FM · onda alegre");
- if(Station==TEXT("radio_havaiana_lua"))return TEXT("Aloha FM · luar");
- if(Station==TEXT("music_tema"))return TEXT("Tema Maré Alta");
- if(Station==TEXT("reggae_praia"))return TEXT("Reggae da Praia");
- if(Station==TEXT("radio_reggae_roots"))return TEXT("Reggae Roots");
- if(Station==TEXT("radio_calypso"))return TEXT("Calipso Caribe");
- if(Station==TEXT("radio_beach_pop"))return TEXT("Praia Pop · ukulele");
- if(Station==TEXT("music_bossa"))return TEXT("Bossa praiana");
- if(Station==TEXT("music_relax"))return TEXT("Brisa instrumental");
+ const TArray<TSharedPtr<FJsonValue>>* List=nullptr;
+ if(RadioDefs()->TryGetArrayField(TEXT("stations"),List))for(const auto& V:*List)   // i18n:skip
+  if(FName(UMareSimulation::String(V->AsObject(),TEXT("id")))==Station)return UMareSimulation::String(V->AsObject(),TEXT("name"));   // i18n:skip
  return TEXT("Desligada");
+}
+void UMareAudioWorld::PrevRadioStation()
+{
+ const int32 Index=RadioStations().IndexOfByKey(RadioStation);
+ SetRadioStation(RadioStations()[(Index-1+RadioStations().Num())%RadioStations().Num()]);
 }
 void UMareAudioWorld::NextRadioStation()
 {
@@ -58,17 +67,24 @@ void UMareAudioWorld::SetRadioStation(FName Station)
  if(!RadioStations().Contains(Station))return;
  RadioStation=Station;GConfig->SetString(TEXT("MareAudio"),TEXT("Radio"),*Station.ToString(),GGameUserSettingsIni);GConfig->Flush(false,GGameUserSettingsIni);
 }
-float UMareAudioWorld::LoopLevel(FName Name)const{UAudioComponent* Component=Name==TEXT("home_stereo")?HomeStereo.Get():Loops.FindRef(Name).Get();return IsValid(Component)?Component->VolumeMultiplier:0.f;}
-void UMareAudioWorld::SetHomeStereo(bool bEnabled,FVector Position)
+float UMareAudioWorld::LoopLevel(FName Name)const
 {
- bHomeStereo=bEnabled;if(!bReady)return;
- if(bEnabled && !HomeStereo)if(auto Wave=Sounds.FindRef(TEXT("music_relax"))){
-  auto Local=NewObject<USoundAttenuation>(this);Local->Attenuation.bAttenuate=true;Local->Attenuation.bSpatialize=true;
-  Local->Attenuation.AttenuationShapeExtents=FVector(150);Local->Attenuation.FalloffDistance=650;
-  HomeStereo=UGameplayStatics::SpawnSoundAtLocation(this,Wave,Position,FRotator::ZeroRotator,.001f,1,0,Local,nullptr,false);
-  if(HomeStereo)HomeStereo->SetUISound(false);
- }
- if(HomeStereo){HomeStereo->SetWorldLocation(Position);HomeStereo->SetVolumeMultiplier(bEnabled && GetVolume(TEXT("Master"))>0?GetVolume(TEXT("Music"))*.24f*(MasterMix?1.f:GetVolume(TEXT("Master"))):0.f);}
+ const UAudioComponent* Component=Name==TEXT("home_stereo")?Stereos.FindRef(TEXT("home")).Get():Loops.FindRef(Name).Get();   // i18n:skip
+ return IsValid(Component)?Component->VolumeMultiplier:0.f;
+}
+void UMareAudioWorld::SetHomeStereo(bool bEnabled,FVector Position){SetStereo(TEXT("home"),bEnabled?FName(TEXT("music_relax")):NAME_None,Position);}
+void UMareAudioWorld::SetStereo(FName Id,FName Track,FVector Position)
+{
+ if(!bReady)return;
+ UAudioComponent* Set=Stereos.FindRef(Id).Get();
+ // Another track (or off): the old one stops; the new one starts on the set, heard within a few metres.
+ if(StereoTracks.FindRef(Id)!=Track){if(IsValid(Set))Set->Stop();Set=nullptr;Stereos.Remove(Id);StereoTracks.Add(Id,Track);
+  if(!Track.IsNone())if(auto Wave=Sounds.FindRef(Track)){
+   auto Local=NewObject<USoundAttenuation>(this);Local->Attenuation.bAttenuate=true;Local->Attenuation.bSpatialize=true;
+   Local->Attenuation.AttenuationShapeExtents=FVector(150);Local->Attenuation.FalloffDistance=650;
+   Set=UGameplayStatics::SpawnSoundAtLocation(this,Wave,Position,FRotator::ZeroRotator,.001f,1,0,Local,nullptr,false);
+   if(Set){Set->SetUISound(false);Stereos.Add(Id,Set);}}}
+ if(Set){Set->SetWorldLocation(Position);Set->SetVolumeMultiplier(!Track.IsNone() && GetVolume(TEXT("Master"))>0?GetVolume(TEXT("Music"))*.24f*(MasterMix?1.f:GetVolume(TEXT("Master"))):0.f);}
 }
 float UMareAudioWorld::Gain(bool bAmbient)const{return (MasterMix?1.f:GetVolume(TEXT("Master")))*GetVolume(TEXT("Effects"))*(bAmbient?GetVolume(TEXT("Ambient")):1.f);}
 void UMareAudioWorld::SetVolume(FName Bus,float Value)
@@ -76,7 +92,7 @@ void UMareAudioWorld::SetVolume(FName Bus,float Value)
  if(!Volumes.Contains(Bus))return;Value=FMath::Clamp(Value,0.f,1.f);Volumes[Bus]=Value;
  GConfig->SetFloat(TEXT("MareAudio"),*Bus.ToString(),Value,GGameUserSettingsIni);GConfig->Flush(false,GGameUserSettingsIni);
  if(Bus==TEXT("Master") && MasterMix)MasterMix->SetSubmixOutputVolume(this,Value);
- if(HomeStereo && (GetVolume(TEXT("Master"))==0 || GetVolume(TEXT("Music"))==0))HomeStereo->SetVolumeMultiplier(0);
+ for(auto Pair:Stereos)if(IsValid(Pair.Value) && (GetVolume(TEXT("Master"))==0 || GetVolume(TEXT("Music"))==0))Pair.Value->SetVolumeMultiplier(0);
  for(auto& Voice:Voices)if(IsValid(Voice.Key))Voice.Key->SetVolumeMultiplier(GetVolume(TEXT("Master"))==0?0:Voice.Value*Gain(Voice.Key->ComponentHasTag(TEXT("Ambient"))));
  for(auto Pair:Loops)if(IsValid(Pair.Value) && (GetVolume(TEXT("Master"))==0 || (IsRadioStation(Pair.Key)?GetVolume(TEXT("Music"))==0:GetVolume(TEXT("Effects"))*GetVolume(TEXT("Ambient"))==0)))Pair.Value->SetVolumeMultiplier(0);
 }
@@ -88,7 +104,8 @@ void UMareAudioWorld::StartSoundscape(UMareSimulation* Sim)
  if(FFileHelper::LoadFileToString(Text,*(FPaths::ProjectContentDir()/TEXT("Data/audio.json"))))FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Text),Catalog);
  for(auto Item:Catalog){auto Row=Item->AsObject();const FString Name=UMareSimulation::String(Row,TEXT("id"));if(auto Wave=LoadObject<USoundWave>(nullptr,*UMareSimulation::String(Row,TEXT("path")))){Sounds.Add(FName(Name),Wave);
   const FString Group=UMareSimulation::String(Row,TEXT("group"));if(!Group.IsEmpty()){Groups.FindOrAdd(Group).Add(FName(Name));GroupVolume.Add(Group,UMareSimulation::Number(Row,TEXT("volume")));}}}
- TArray<FName> LoopNames=RadioStations();LoopNames.Remove(TEXT("off"));
+ // The always-loaded stations play silently from the start (no gap when switching); the rest stream only while tuned.
+ TArray<FName> LoopNames;for(int32 I=0;I<RadioStations().Num() && I<AlwaysLoadedStations();++I)LoopNames.Add(RadioStations()[I]);LoopNames.Remove(TEXT("off"));
  LoopNames.Append({TEXT("ocean_loop"),TEXT("wind_loop"),TEXT("rain_loop"),TEXT("crickets_loop"),TEXT("leaves_soft"),TEXT("underwater_loop"),TEXT("forest_loop")});
  for(FName Name:LoopNames){
   if(auto Wave=Sounds.FindRef(Name)){auto Component=UGameplayStatics::SpawnSound2D(this,Wave,.001f,1,0,nullptr,false,false);if(Component){Component->SetUISound(false);Loops.Add(Name,Component);}}
@@ -136,10 +153,19 @@ void UMareAudioWorld::UpdateLayers(float DeltaSeconds,UMareSimulation* Sim,FVect
   if(Dist>=Radius)continue;
   ZoneTrack=FName(UMareSimulation::String(Z,TEXT("track")));ZoneLevel=float(UMareSimulation::Number(Z,TEXT("volume"),.25)*FMath::Clamp((Radius-Dist)/Fade,0.,1.));break;}
  const float Duck=ZoneTrack.IsNone()?1.f:FMath::Lerp(1.f,float(UMareSimulation::Number(Zones,TEXT("radio_duck"),.2)),FMath::Clamp(ZoneLevel/.15f,0.f,1.f));
+ // Near a radio set that is playing, the background radio steps back.
+ float StereoDuck=1.f;for(auto Pair:Stereos)if(IsValid(Pair.Value) && !StereoTracks.FindRef(Pair.Key).IsNone())StereoDuck=FMath::Min(StereoDuck,FMath::Clamp(FVector::Dist(Position,Pair.Value->GetComponentLocation())/800.f,.12f,1.f));
+ // A station past the always-loaded ones: start it when tuned, drop it once faded out after another is chosen.
+ if(IsRadioStation(RadioStation) && !Loops.Contains(RadioStation))if(auto Wave=Sounds.FindRef(RadioStation))
+  if(auto Component=UGameplayStatics::SpawnSound2D(this,Wave,.001f,1,0,nullptr,false,false)){Component->SetUISound(false);Loops.Add(RadioStation,Component);}
+ {TArray<FName> Drop;const int32 Kept=AlwaysLoadedStations();
+  for(auto Pair:Loops){const int32 Index=RadioStations().IndexOfByKey(Pair.Key);
+   if(Index>=Kept && Pair.Key!=RadioStation && IsValid(Pair.Value) && Pair.Value->VolumeMultiplier<=.002f){Pair.Value->Stop();Drop.Add(Pair.Key);}}
+  for(FName Name:Drop)Loops.Remove(Name);}
  for(auto Pair:Loops){const FName Name=Pair.Key;float Target=0;
   if(Name==ZoneTrack)Target=(MasterMix?1.f:GetVolume(TEXT("Master")))*GetVolume(TEXT("Music"))*ZoneLevel*(bIndoors?.8f:1.f);
   // Per-station trim so every track plays at the same loudness (reggae_praia is mastered 3.6 dB softer).
-  else if(Name==RadioStation && IsRadioStation(Name))Target=(Name==TEXT("reggae_praia")?1.5f:1.f)*Duck*(MasterMix?1.f:GetVolume(TEXT("Master")))*GetVolume(TEXT("Music"))*(bNight?.22f:.32f)*(bIndoors?.65f:1.f)*(bHomeStereo && HomeStereo?FMath::Clamp(FVector::Dist(Position,HomeStereo->GetComponentLocation())/800.f,.12f,1.f):1.f);
+  else if(Name==RadioStation && IsRadioStation(Name))Target=(Name==TEXT("reggae_praia")?1.5f:1.f)*Duck*(MasterMix?1.f:GetVolume(TEXT("Master")))*GetVolume(TEXT("Music"))*(bNight?.22f:.32f)*(bIndoors?.65f:1.f)*StereoDuck;
   if(Name==TEXT("ocean_loop"))Target=Gain(true)*Beach*(bIndoors?.1f:.4f);
   // Mix 03/11 (tools/ue58/measure_mix.py): the rain sat 18 dB over the sea and over the music; now ~3 dB above the sea.
   if(Name==TEXT("rain_loop"))Target=Gain(true)*(bRain?(bIndoors?.025f:.08f):0.f);
@@ -197,4 +223,4 @@ void UMareAudioWorld::Tick(float DeltaSeconds)
  UpdateLayers(DeltaSeconds,Sim,Hero->GetActorLocation(),Rain,Night);UpdateEvents(DeltaSeconds,Sim,Hero->GetActorLocation(),Rain,Night);
  for(auto It=Voices.CreateIterator();It;++It){if(!IsValid(It.Key()) || !It.Key()->IsPlaying())It.RemoveCurrent();else{It.Key()->SetVolumeMultiplier(GetVolume(TEXT("Master"))==0?0:It.Value()*Gain(It.Key()->ComponentHasTag(TEXT("Ambient"))));It.Key()->SetLowPassFilterEnabled(bUnderwater);It.Key()->SetLowPassFilterFrequency(bUnderwater?900:18000);if((Rain || Night) && It.Key()->ComponentHasTag(TEXT("Ambient")) && It.Key()->Sound && It.Key()->Sound->GetName().StartsWith(TEXT("bird")))It.Key()->Stop();}}
 }
-void UMareAudioWorld::Deinitialize(){if(HomeStereo)HomeStereo->Stop();for(auto Pair:Loops)if(IsValid(Pair.Value))Pair.Value->Stop();for(auto Pair:Voices)if(IsValid(Pair.Key))Pair.Key->Stop();Loops.Empty();Voices.Empty();Sounds.Empty();Super::Deinitialize();}
+void UMareAudioWorld::Deinitialize(){for(auto Pair:Stereos)if(IsValid(Pair.Value))Pair.Value->Stop();Stereos.Empty();for(auto Pair:Loops)if(IsValid(Pair.Value))Pair.Value->Stop();for(auto Pair:Voices)if(IsValid(Pair.Key))Pair.Key->Stop();Loops.Empty();Voices.Empty();Sounds.Empty();Super::Deinitialize();}

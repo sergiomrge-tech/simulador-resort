@@ -40,5 +40,12 @@ private:
  void UpdateTV();
  UPROPERTY() TObjectPtr<UInstancedStaticMeshComponent> ShowerDrops;
  void Setup();
+ /** Radio sets (Content/Data/radio.json stereos): the house's own boombox, one on the kiosk counter and one in the hotel.
+  *  E plays the next track there; after the last one the set switches off. */
+ struct FStereoSet{FString Id,Unlock;FName Action,Default,Track;FVector At=FVector::ZeroVector;float Yaw=0,Probe=220;bool bModel=false,bPlaced=false;
+  TWeakObjectPtr<AMareServiceTarget> Target;TWeakObjectPtr<AStaticMeshActor> Model;};
+ TArray<FStereoSet> StereoSets;
+ void SetupStereos(const TSharedPtr<FJsonObject>& HomeState);
+ void UpdateStereos();
  AMareServiceTarget* Target(FName Action,const FString& Label,FVector Position,float Reach=170);
 };

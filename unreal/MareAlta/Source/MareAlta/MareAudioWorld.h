@@ -38,6 +38,12 @@ public:
  static FString RadioName(FName Station);
  /** Cycle to the next station, ending with the radio switched off. */
  UFUNCTION(BlueprintCallable,Category="Audio") void NextRadioStation();
+ UFUNCTION(BlueprintCallable,Category="Audio") void PrevRadioStation();
+ /** A radio set in the world (Content/Data/radio.json stereos): plays Track there, spatialised; None = off. */
+ void SetStereo(FName Id,FName Track,FVector Position);
+ FName StereoTrack(FName Id)const{const FName* T=StereoTracks.Find(Id);return T?*T:NAME_None;}
+ /** radio.json stations past always_loaded stream only while tuned. */
+ static int32 AlwaysLoadedStations();
  /** Physical home stereo is spatial, uses Music volume and ducks the portable radio nearby. */
  void SetHomeStereo(bool bEnabled,FVector Position);
 private:
@@ -48,8 +54,8 @@ private:
  UPROPERTY() TMap<TObjectPtr<UAudioComponent>,float> Voices;
  UPROPERTY() TObjectPtr<USoundAttenuation> Attenuation;
  UPROPERTY() TObjectPtr<USoundSubmix> MasterMix;
- UPROPERTY() TObjectPtr<UAudioComponent> HomeStereo;
- bool bHomeStereo=false;
+ UPROPERTY() TMap<FName,TObjectPtr<UAudioComponent>> Stereos;
+ TMap<FName,FName> StereoTracks;
  TMap<FName,float> Volumes;
  FName RadioStation=TEXT("radio_havaiana");
  TMap<FName,double> LastCue;
