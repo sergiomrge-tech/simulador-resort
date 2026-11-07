@@ -1,3 +1,79 @@
+# Pacote 4 — o milhão de Dona Dilce (proposta, sem C++ implementado)
+
+Referência **efceab984ef6a1eb3dfc0cdd88ca9a7377586aaf**. A economia-base de ~20,3 h/37,1 h foi reproduzida antes da dívida. **R$ 1.000.000**, sem juros e sem parcela obrigatória; pagamentos livres. Contrato e desenho em [DIVIDA_DA_AVO.md](DIVIDA_DA_AVO.md). O arquivo debt.json é novo e ainda não tem consumidor C++: os resultados com dívida representam a proposta futura, não o jogo entregue.
+
+## 30 sementes por perfil: objetivo final e cauda de compras
+
+540 trajetórias registradas: três execuções × dois cenários × três perfis × 30 sementes. O jogo completo usa limite de 360 dias, a demo 120. A coluna atual abaixo significa **economia atual mais dívida proposta**; baseline é o jogo sem pagamentos. O proposto aplica somente em memória os dois JSON Pointers de nível 5. Todos os valores em horas usam 16 minutos jogáveis/dia, sem contar pausas.
+
+| Cenário | Perfil | Campanha P50 (h) | Dívida P50 (h) | Compras P50 (h) | Quitaram |
+|---|---|---|---|---|---|
+| Sem dívida (baseline) | casual | 23.2 | — | 40.3 | desligada |
+| Sem dívida (baseline) | medio | 20.3 | — | 37.1 | desligada |
+| Sem dívida (baseline) | dedicado | 18.1 | — | 32.5 | desligada |
+| Dívida / economia atual | casual | 23.6 | 22.7 | 47.5 | 30/30 |
+| Dívida / economia atual | medio | 20.5 | 20.3 | 43.7 | 30/30 |
+| Dívida / economia atual | dedicado | 18.4 | 17.9 | 38.4 | 30/30 |
+| Dívida / economia proposta | casual | 23.5 | 22.7 | 43.5 | 30/30 |
+| Dívida / economia proposta | medio | 20.5 | 20.3 | 40.3 | 30/30 |
+| Dívida / economia proposta | dedicado | 18.4 | 17.9 | 35.5 | 30/30 |
+
+“Compras” continua sendo o catálogo finito usado no relatório anterior, não todas as conquistas. A dívida compete pelo mesmo caixa: não é um objetivo resolvido por mero faturamento ou patrimônio. Sem os descontos de nível 5, ela alonga a cauda; não foi escondido esse custo.
+
+| Economia com dívida | Perfil | Quitação: dias P10/P50/P90 | Quitação: horas P10/P50/P90 |
+|---|---|---|---|
+| atual | casual | 83 / 85 / 87 | 22.1 / 22.7 / 23.2 |
+| atual | medio | 75 / 76 / 78.1 | 20.0 / 20.3 / 20.8 |
+| atual | dedicado | 66 / 67 / 68.1 | 17.6 / 17.9 / 18.2 |
+| proposto | casual | 83 / 85 / 87 | 22.1 / 22.7 / 23.2 |
+| proposto | medio | 75 / 76 / 78.1 | 20.0 / 20.3 / 20.8 |
+| proposto | dedicado | 66 / 67 / 68 | 17.6 / 17.9 / 18.1 |
+
+### Marcos da dívida — dias medianos (economia atual)
+
+| Perfil | Primeiro pagamento | 25% | 50% | 75% | 100% |
+|---|---|---|---|---|---|
+| casual | 1.0 | 48.0 | 61.0 | 73.0 | 85.0 |
+| medio | 1.0 | 42.0 | 54.0 | 65.0 | 76.0 |
+| dedicado | 1.0 | 37.0 | 47.0 | 57.5 | 67.0 |
+
+## Decisão econômica
+
+Hipótese de comportamento em debt_policy.json: pagamento voluntário ao fechar o dia, **2% do saldo operacional de caixa positivo antes do hotel e 50% depois**, mantendo a reserva operacional preexistente do modelo. Não automatizar essa fração no jogo. Perfis usam os mesmos percentuais, variando tempo ativo/habilidade e fontes de renda como antes. Quem preferir comprar tudo ou não pagar não recebe final por cronômetro; o tempo depende de suas escolhas. Os modos cauteloso/intensivo ficam disponíveis como hipóteses alternativas, sem alegar estatísticas de 30 sementes deles neste relatório.
+
+A quitação está perto da campanha de 7.000 vendas sem aumentar receitas, dar perdão ou prender o pagamento a uma missão. A festa não exige saldo zero. O baseline sem dívida confirma os números herdados; não se reduziu a meta de vendas para obter o resultado.
+
+## Demo: o objetivo é apresentado, não quitado
+
+mode demo bloqueia Grand Hotel/salão, preserva capítulos e termina nos marcos existentes. Total amortizável proposto: **R$ 250.000**; final completo indisponível. Nenhuma das 180 trajetórias demo quitou a dívida. Pagamentos já afetam levemente o ritmo de expansão; os preços da demo não foram editados.
+
+| Perfil | Fim demo: dias P10/P50/P90 | P50 (h) | Dia fim semente 0 | Pago nesse dia, semente 0 | Saldo nesse dia, semente 0 |
+|---|---|---|---|---|---|
+| casual | 9.9/10/11 | 2.7 | 10 | R$ 241.63 | R$ 999758.37 |
+| medio | 8/8.5/9.1 | 2.3 | 8 | R$ 287.41 | R$ 999712.59 |
+| dedicado | 7/7/8 | 1.9 | 7 | R$ 246.89 | R$ 999753.11 |
+
+O valor pago da tabela é a trajetória da semente 0 no dia exato de fim_demo; não é mediana nem total ao fim da janela adicional de jogo livre. Nenhuma compra de Grand Hotel ou salão foi feita nas trajetórias demo.
+
+## MUDANÇAS PROPOSTAS — NÃO APLICADAS AO JOGO
+
+Compensação parcial do novo desembolso de um milhão, somente no nível 5. Não mexe nos preços das expansões, receitas do hotel, pagamentos de eventos ou campanha. O milhão e as quatro etapas da dívida permanecem integrais. Aplicar preços somente junto da dívida implementada; isoladamente encurtam o catálogo. As mudanças são opcionais para teste; a quitação próxima de 20 h já funciona com a economia atual.
+
+| Arquivo | JSON Pointer | Atual | Proposto | Motivo |
+|---|---|---|---|---|
+| customization.json | /price_mult/4 | 260 | 220 | Compensar parte do custo do milhão na cauda de compras: manter o 100% próximo de 40 h sem reduzir a dívida nem preços de expansões. |
+| customization.json | /recipes/cost_mult/4 | 900 | 760 | Mesma compensação apenas no nível 5 de receitas; manter as 7.000 vendas e o ritmo de campanha. Proposta, não aplicada ao jogo. |
+
+## Auditoria e reprodução
+
+Comandos em DIVIDA_DA_AVO.md. Cada pasta em balance/pacote4 contém configuração, hashes, resumo, seis CSV diários da semente 0 e seis CSV das 30 sementes. CSV registra renda por fonte, custos, compras, caixa, dívida paga/saldo e lembretes. O código do modelo, profiles/debt_policy/proposed e os dados/C++ lidos entram no manifesto SHA-256.
+
+O registro source_features.json da base não correspondia a MareRental.cpp e MareHotelRooms.cpp publicados no GitHub; impedia a execução pela guarda de hashes. Foi renovado a partir da referência lida, sem editar C++ nem desligar a guarda. BASE_REVISION do modelo também estava antigo e foi atualizado. As fórmulas antigas foram preservadas; a parte nova modela o contrato proposto.
+
+Não houve playtest, navegação, física, temporização real de cenas nem implementação de salvamento C++. Testar capacidade de atendimento e priorização de pagamentos no build; mais sementes não corrigem uma política de jogador errada. Os relatórios abaixo são históricos e mantêm suas referências anteriores.
+
+---
+
 # Jogo completo com duração de ~20 h / ~40 h (Claude, 06/11/2026)
 
 Pedido do Sergio: duração parecida com a do Supermarket Simulator (21–23 h de história, 111 h no 100%), aceitando
@@ -698,3 +774,4 @@ Salários incluem equipe contratada, funcionários dos negócios e R$ 900 da equ
 O alvo é o tempo até o Grand Hotel e a tela do EA na escala real do código. A campanha continua com 4.000 vendas: este pacote não reduz sua meta para forçar uma duração menor. A conversão de 24 minutos é uma referência separada, não o tempo efetivamente simulado. As propostas não prometem duração fixa.
 
 A tela usa uma condição C++ diferente da campanha e pode aparecer antes das 4.000 vendas; a meta solicitada deste pacote usa explicitamente hotel e tela. As correções de fama, neon, aluguel, reserva ao dormir e reinício de VIP foram recebidas da outra IA na base e estão contempladas, sem edição de Source/Data neste PR. O perfil dedicado pode chegar antes das 6 h: a meta é o perfil médio, e aumentar o hotel para atrasar o dedicado prejudicaria o casual. Medir o build antes de publicar duração na loja.
+

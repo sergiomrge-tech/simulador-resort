@@ -1,0 +1,15 @@
+{
+  "_doc": "HIPÓTESES de um jogador pagando manualmente ao fechar o dia; não há débito automático no jogo. Fração do saldo operacional positivo antes das compras finitas. Reserva já usada pelo modelo (100/250/1200) é conservada; regra real permite usar todo o caixa. Comparar off/default/cauteloso/intensivo. Ajustar após playtest, sem mudar o milhão.",
+  "default": {
+    "before_hotel_share": 0.02,
+    "after_hotel_share": 0.5
+  },
+  "cauteloso": {
+    "before_hotel_share": 0.01,
+    "after_hotel_share": 0.3
+  },
+  "intensivo": {
+    "before_hotel_share": 0.05,
+    "after_hotel_share": 0.7
+  }
+}

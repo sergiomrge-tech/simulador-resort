@@ -1,9 +1,9 @@
-"""Modelo econômico auditável do Maré Alta Resort — Pacote 2 (06/11/2026).
+"""Modelo econômico auditável do Maré Alta Resort — Pacote 4: dívida proposta (06/11/2026).
 
 Sem Unreal, dependências externas ou escrita em Content. Lê o snapshot do checkout.
 As fórmulas monetárias vêm dos JSON/C++; comportamento e tempos de operação são
 HIPÓTESES em balance/profiles.json. Não é uma reprodução da navegação/física UE.
-Uso: python tools/ue58/balance_model.py --seeds 30 --days 360 --out tools/ue58/balance/pacote2/results
+Uso: python tools/ue58/balance_model.py --seeds 30 --days 360 --out tools/ue58/balance/pacote4/results
      python tools/ue58/balance_model.py --self-test
 """
 from __future__ import annotations
@@ -23,12 +23,12 @@ ROOT = Path(__file__).resolve().parents[2]
 DATA = ROOT / 'unreal/MareAlta/Content/Data'
 SOURCE = ROOT / 'unreal/MareAlta/Source/MareAlta'
 HERE = Path(__file__).resolve().parent / 'balance'
-BASE_REVISION = 'fa49a68b5d8d33fdedde48fd096097f0aac0f267'
+BASE_REVISION = 'efceab984ef6a1eb3dfc0cdd88ca9a7377586aaf'
 TARGET_MINUTES_PER_DAY = 16
 TARGET_HOURS = (6, 10)
 DEMO_HOURS = (1.5, 2.5)   # demo grátis de ~2 h (Sergio, 06/11/2026): termina antes do Grand Hotel
 FILES = ('definitions', 'default_save', 'customization', 'bar', 'events', 'pool',
-         'restaurant', 'tours', 'leisure', 'business_games', 'game_room', 'hotel_rooms', 'hotel_events', 'tutorial')
+         'restaurant', 'tours', 'leisure', 'business_games', 'game_room', 'hotel_rooms', 'hotel_events', 'tutorial', 'debt')
 SOURCES = ('MareSimulation', 'MareBusiness', 'MareBizCommon', 'MareHotelRooms',
            'MareStays', 'MarePoolCup', 'MareRental', 'MareArcade', 'MareIceCream',
            'MarePastel', 'MareSouvenir', 'MareBar', 'MarePool', 'MareTours',
@@ -86,7 +86,12 @@ def overlay(data, changes):
 
 
 class Model:
-    def __init__(self, data, profile, seed):
+    def __init__(self, data, profile, seed, debt_policy=None, demo=False):
+        self.debt_policy = debt_policy
+        self.demo = demo
+        self.debt_paid_cents = 0
+        self.debt_last_day = 1
+        self.debt_reminders = 0
         self.d = data
         self.defs = data['definitions']
         self.c = data['customization']
@@ -714,6 +719,34 @@ class Model:
         if self.stage<len(self.defs['campaign']) and self.defs['campaign'][self.stage]['kind']=='finale':self.stamp('festa_pronta')
         if self.stage==len(self.defs['campaign']):self.stamp('campanha_completa')
 
+    def pay_debt(self, cents):
+        # Contrato proposto: transação exata em centavos; não rebatiza patrimônio como pagamento.
+        if not isinstance(cents,int) or isinstance(cents,bool) or cents<=0:return 0
+        principal=int(self.d['debt']['principal']*100)
+        cap=int(self.d['debt']['demo_payment_cap']*100) if self.demo else principal
+        remaining=max(0,min(principal,cap)-self.debt_paid_cents)
+        cash=max(0,math.floor(self.money*100+1e-6))
+        if cents>min(remaining,cash):return 0  # recusa sem débito parcial escondido
+        self.book(-cents/100,'','divida');self.debt_paid_cents+=cents;self.debt_last_day=self.day
+        self.stamp('divida_primeiro_pagamento')
+        for m in self.d['debt']['milestones']:
+            if self.debt_paid_cents>=rounded(principal*m['fraction']):self.stamp('divida:'+m['id'])
+        if self.debt_paid_cents==principal:self.stamp('divida_quitada')
+        return cents
+
+    def debt_day(self):
+        if self.debt_policy is None:return
+        principal=int(self.d['debt']['principal']*100)
+        # A política resume pagamentos voluntários após custos operacionais e antes de investir.
+        surplus=max(0,sum(self.income.values())-sum(self.expenses.values()))
+        share=self.debt_policy['after_hotel_share' if 'grand_hotel' in self.owned else 'before_hotel_share']
+        available=max(0,math.floor((self.money-self.reserve)*100+1e-6))
+        cap=int(self.d['debt']['demo_payment_cap']*100) if self.demo else principal
+        cents=min(available,math.floor(surplus*share*100),max(0,cap-self.debt_paid_cents))
+        if cents:self.pay_debt(cents)
+        if self.debt_paid_cents<min(principal,cap) and self.day-self.debt_last_day>=self.d['debt']['reminder_every_days']:
+            if (self.day-self.debt_last_day)%self.d['debt']['reminder_every_days']==0:self.debt_reminders+=1
+
     def purchases(self):
         # HIPÓTESE: compra diária no fechamento, reserva para operação; não exige pousada para comprar negócio.
         for role,d in self.defs['staff'].items():
@@ -722,6 +755,7 @@ class Model:
                 self.staff[role]={'xp':0,'fatigue':0,'off':-1 if role=='atendente' else 6,'absent':-1}
         for eid in self.defs['expansion_order']:
             e=self.defs['expansions'][eid]
+            if self.demo and e.get('full_game'):continue
             if eid in self.owned or any(x not in self.owned for x in e['req']) or self.fame<e.get('fame',0) or e.get('chapter') and not self.done(e['chapter']):continue
             self.stamp('liberada:'+eid)
             if self.mark_buy(eid,e['cost']):self.owned.add(eid)
@@ -840,6 +874,7 @@ class Model:
                 self.kiosk_hour(h);self.lodging_hour(h);self.bar_hour(h);self.biz_hour(h);self.pool_hour(h);self.restaurant_hour(h);self.game_room_hour(h);self.hourly_passive(h)
             self.night();self.story()
             affordable=[k for k,e in self.defs['expansions'].items() if k not in self.owned and all(r in self.owned for r in e['req']) and self.fame>=e.get('fame',0) and (not e.get('chapter') or self.done(e['chapter'])) and self.money>=e['cost']]
+            self.debt_day()
             self.purchases()
             if 'grand_hotel' in self.owned and not self.event_booking and self.day%self.p['event_every']==0:
                 unseen=[e for e in self.d['restaurant']['events'] if 'evento:'+e['id'] not in self.milestones]
@@ -847,14 +882,14 @@ class Model:
                 if self.spend(event['cost'],'preparativos_hotel'):self.event_booking={'event':event,'day':self.day+1}
             prep=self.d['events']['events'].get(self.forecast,{}).get('prep')
             self.prepared=bool(prep and self.spend(self.d['events']['prep_cost'][prep],'preparativos_dia'))
-            row={'dia':self.day,'caixa_inicial':round(start,2),'renda_total':round(sum(self.income.values()),2),'despesas_total':round(sum(self.expenses.values()),2),'caixa':round(self.money,2),'fama_xp':self.xp,'fama_nivel':self.fame,'estrelas':round(self.stars,2),'vendas_acumuladas':self.sales,'evento':self.event,'chuva':self.rain,'compras':'; '.join(self.bought),'expansoes_compraveis_antes_das_compras':'; '.join(affordable),'proxima_missao':self.defs['campaign'][self.stage]['id'] if self.stage<len(self.defs['campaign']) else 'concluida','segundos_ativos':self.p['active_seconds']-self.budget,'hotel_ocupados':sum(x['place']=='hotel' and x['state']=='occupied' for x in self.rooms)}
+            row={'dia':self.day,'caixa_inicial':round(start,2),'renda_total':round(sum(self.income.values()),2),'despesas_total':round(sum(self.expenses.values()),2),'caixa':round(self.money,2),'fama_xp':self.xp,'fama_nivel':self.fame,'estrelas':round(self.stars,2),'vendas_acumuladas':self.sales,'evento':self.event,'chuva':self.rain,'compras':'; '.join(self.bought),'expansoes_compraveis_antes_das_compras':'; '.join(affordable),'proxima_missao':self.defs['campaign'][self.stage]['id'] if self.stage<len(self.defs['campaign']) else 'concluida','segundos_ativos':self.p['active_seconds']-self.budget,'divida_paga':self.debt_paid_cents/100,'divida_saldo':self.d['debt']['principal']-self.debt_paid_cents/100,'divida_lembretes':self.debt_reminders,'hotel_ocupados':sum(x['place']=='hotel' and x['state']=='occupied' for x in self.rooms)}
             row.update({'renda_'+k:round(v,2) for k,v in self.income.items()});row.update({'despesa_'+k:round(v,2) for k,v in self.expenses.items()})
             assert abs(row['caixa_inicial']+row['renda_total']-row['despesas_total']-row['caixa'])<.04
             assert all(v>=-1e-6 for v in self.stock.values())
             assert self.budget>=0
             assert sum(x['place']=='hotel' for x in self.rooms)<=32
             self.rows.append(row)
-            if 'todas_compras' in self.milestones and 'campanha_completa' in self.milestones:
+            if ('fim_demo' in self.milestones if self.demo else 'todas_compras' in self.milestones and 'campanha_completa' in self.milestones and (self.debt_policy is None or 'divida_quitada' in self.milestones)):
                 self.post_end_days+=1
                 if self.post_end_days>=7:break
         return self
@@ -875,7 +910,7 @@ def summarize(models, days):
     results={k:{'concluidos':sum(k in m.milestones for m in models), 'p10':quantile([m.milestones[k] for m in models if k in m.milestones],.1),'p50':quantile([m.milestones[k] for m in models if k in m.milestones],.5),'p90':quantile([m.milestones[k] for m in models if k in m.milestones],.9)} for k in milestones}
     targets={key:{'entre_6_e_10_h':sum(key in m.milestones and TARGET_HOURS[0]<=m.milestones[key]*TARGET_MINUTES_PER_DAY/60<=TARGET_HOURS[1] for m in models),'total':len(models)} for key in ['grand_hotel','tela_fim_ea']}
     targets['fim_demo']={'entre_%g_e_%g_h'%DEMO_HOURS:sum('fim_demo' in m.milestones and DEMO_HOURS[0]<=m.milestones['fim_demo']*TARGET_MINUTES_PER_DAY/60<=DEMO_HOURS[1] for m in models),'total':len(models)}
-    return {'meta_horas':list(TARGET_HOURS),'minutos_por_dia':TARGET_MINUTES_PER_DAY,'meta_atingida':targets,'sementes':len(models),'limite_dias':days,'marcos':results,'caixa_final_p50':quantile([m.money for m in models],.5),'censurados_compras':sum('todas_compras' not in m.milestones for m in models),'censurados_campanha':sum('campanha_completa' not in m.milestones for m in models)}
+    return {'meta_horas':list(TARGET_HOURS),'minutos_por_dia':TARGET_MINUTES_PER_DAY,'meta_atingida':targets,'sementes':len(models),'limite_dias':days,'marcos':results,'caixa_final_p50':quantile([m.money for m in models],.5),'censurados_compras':sum('todas_compras' not in m.milestones for m in models),'censurados_divida':sum(m.debt_policy is not None and not m.demo and 'divida_quitada' not in m.milestones for m in models),'censurados_campanha':sum('campanha_completa' not in m.milestones for m in models)}
 
 
 def write_csv(path, rows):
@@ -919,9 +954,11 @@ def main():
     parser.add_argument('legacy_days',type=int,nargs='?')
     parser.add_argument('--days',type=int,default=360)
     parser.add_argument('--seeds',type=int,default=30)
-    parser.add_argument('--out',type=Path,default=HERE/'pacote2'/'results')
+    parser.add_argument('--out',type=Path,default=HERE/'pacote4'/'results')
     parser.add_argument('--self-test',action='store_true')
     parser.add_argument('--service-scale',type=float,default=1,help='Sensibilidade: multiplicador do tempo por produto do atendente (hipótese)')
+    parser.add_argument('--debt-policy',choices=['off','default','cauteloso','intensivo'],default='default')
+    parser.add_argument('--mode',choices=['full','demo'],default='full')
     args=parser.parse_args()
     if args.service_scale<=0:parser.error('service-scale deve ser positivo')
     for p in PROFILES.values():p['attendant_seconds_per_item']*=args.service_scale
@@ -932,22 +969,23 @@ def main():
     changes=json.loads((HERE/'proposed.json').read_text(encoding='utf-8'))
     summary={}
     (args.out/'source_features.json').write_text(json.dumps(source_snapshot(),ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
-    (args.out/'configuracao.json').write_text(json.dumps({'base_revision':BASE_REVISION,'meta_horas':list(TARGET_HOURS),'minutos_por_dia':TARGET_MINUTES_PER_DAY,'dias':args.legacy_days or args.days,'sementes':list(range(args.seeds)),'perfis':PROFILES,'mudancas':changes,'service_scale':args.service_scale},ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+    (args.out/'configuracao.json').write_text(json.dumps({'base_revision':BASE_REVISION,'meta_horas':list(TARGET_HOURS),'minutos_por_dia':TARGET_MINUTES_PER_DAY,'dias':args.legacy_days or args.days,'sementes':list(range(args.seeds)),'perfis':PROFILES,'mudancas':changes,'service_scale':args.service_scale,'mode':args.mode,'debt_policy':args.debt_policy,'debt_policy_values':None if args.debt_policy=='off' else json.loads((HERE/'debt_policy.json').read_text())[args.debt_policy]},ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
     for scenario,d in [('atual',data),('proposto',overlay(data,changes))]:
         summary[scenario]={}
         for profile in PROFILES:
-            models=[Model(d,profile,seed).run(args.legacy_days or args.days) for seed in range(args.seeds)]
+            models=[Model(d,profile,seed,None if args.debt_policy=='off' else json.loads((HERE/'debt_policy.json').read_text())[args.debt_policy],args.mode=='demo').run(args.legacy_days or args.days) for seed in range(args.seeds)]
             summary[scenario][profile]=summarize(models,args.legacy_days or args.days)
             write_csv(args.out/f'{scenario}_{profile}_diario_seed0.csv',models[0].rows)
             # Uma linha por execução, incluindo limites sem marco em vez de fingir conclusão.
-            seed_rows=[{'semente':m.seed,**{k:m.milestones.get(k,'') for k in ['fim_demo','grand_hotel','salao_jogos','tela_fim_ea','campanha_completa','todas_compras']},'caixa_final':round(m.money,2)} for m in models]
+            seed_rows=[{'semente':m.seed,**{k:m.milestones.get(k,'') for k in ['fim_demo','grand_hotel','salao_jogos','tela_fim_ea','campanha_completa','divida_primeiro_pagamento','divida:quarter','divida:half','divida:three_quarters','divida_quitada','todas_compras']},'caixa_final':round(m.money,2),'divida_paga':m.debt_paid_cents/100} for m in models]
             write_csv(args.out/f'{scenario}_{profile}_sementes.csv',seed_rows)
-            print(scenario,profile,{k:v for k,v in summary[scenario][profile]['marcos'].items() if k in ['fim_demo','grand_hotel','tela_fim_ea','campanha_completa','todas_compras']})
+            print(scenario,profile,{k:v for k,v in summary[scenario][profile]['marcos'].items() if k in ['fim_demo','grand_hotel','tela_fim_ea','campanha_completa','divida_primeiro_pagamento','divida:quarter','divida:half','divida:three_quarters','divida_quitada','todas_compras']})
     (args.out/'summary.json').write_text(json.dumps(summary,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
-    paths=[DATA/f'{f}.json' for f in FILES]+[SOURCE/f'{f}.cpp' for f in SOURCES]
+    paths=[DATA/f'{f}.json' for f in FILES]+[SOURCE/f'{f}.cpp' for f in SOURCES]+[Path(__file__),HERE/'debt_policy.json',HERE/'profiles.json',HERE/'proposed.json']
     manifest={str(p.relative_to(ROOT)):hashlib.sha256(p.read_bytes()).hexdigest() for p in paths}
     (args.out/'inputs_sha256.json').write_text(json.dumps(manifest,indent=2)+'\n',encoding='utf-8')
 
 
 if __name__=='__main__':
     main()
+

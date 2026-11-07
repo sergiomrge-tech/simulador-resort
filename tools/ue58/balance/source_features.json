@@ -1,5 +1,5 @@
 {
-  "tipo": "inspeÁ„o textual; confirma presenÁa, n„o correÁ„o funcional",
+  "tipo": "inspe√ß√£o textual; confirma presen√ßa, n√£o corre√ß√£o funcional",
   "novidades": {
     "hotel_events": true,
     "fama_negativa": true,
@@ -17,9 +17,9 @@
   "fonte_sha256": {
     "MareSimulation.cpp": "be589788f6e54fdbac968a922ed8196b79e8c6e02c91c6d05997b8c3a2917ccc",
     "MareBusiness.cpp": "c02a7527aea339775acdd46fc4b5d8bd971e5475d36437dc641aa41ffd8bab6c",
-    "MareRental.cpp": "76ca93291f19733b5c7416d10888240a57363c3bb17b5117d99d2a266045094e",
+    "MareRental.cpp": "ea55acad607ecd6c3ec74f48b7fc4d10c6304f56933814705a06e995798dbb92",
     "MareRestaurant.cpp": "7dd051496a1534d8dd0860e5ae8e5d5b3adf0952e3d7c1b9b8df9a28ab636e5a",
-    "MareHotelRooms.cpp": "cc351abbb8b7dc246f97dd4269ba90d877fec29205f2da935ea27ed3b2dde756",
+    "MareHotelRooms.cpp": "6bc6908612e3f09e6fa58c64bec8c7f6c6f28bd8db8093281b5cf69e4e77e8c4",
     "MareHotelEvents.cpp": "441bd32cee430aeec424ca597dcd8c0ace96e2f0e75d12984bf726158c5fa3ff"
   },
   "relogio": {
@@ -28,5 +28,5 @@
     "fim_dia": 24,
     "minutos_reais_dia": 16
   },
-  "nota": "Sistemas presentes foram revistos. FÛrmulas monet·rias seguem C++; tempos de aÁıes s„o hipÛteses explÌcitas."
+  "nota": "Sistemas presentes foram revistos. F√≥rmulas monet√°rias seguem C++; tempos de a√ß√µes s√£o hip√≥teses expl√≠citas."
 }
