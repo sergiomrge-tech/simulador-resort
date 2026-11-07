@@ -1,0 +1,11 @@
+"AppBuild"
+{
+  "AppID" "PREENCHER_APP_ID_COMPLETO"
+  "Desc" "Coconut Coast: Resort Simulator — completo Windows x64 — Pacote 8"
+  "BuildOutput" "D:\\SteamBuilds\\completo\\output"
+  "ContentRoot" "D:\\Builds\\MareAltaUE58_Completo\\Windows"
+  "Depots"
+  {
+    "PREENCHER_DEPOT_ID_COMPLETO" "depot_build_completo.vdf"
+  }
+}
