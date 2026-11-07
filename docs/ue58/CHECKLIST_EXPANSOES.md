@@ -47,7 +47,18 @@ O que falta é **profundidade e variedade**. Hoje quase tudo é "aperte E" + bar
 > ou sistemas." Os itens da PRIORIDADE (piscina com hóspedes e tobogã, balanceamento da demo de 2 h, parte técnica da
 > seção 7, ilha) seguem; quando acabarem, só correção, acabamento e ajuste do que existe.
 >
-> **ONDE PAROU (06/11/2026, noite; limites do Claude e do GPT acabando):**
+> **ONDE PAROU (07/11/2026, manhã; limite semanal do Claude quase no fim):**
+> - Feito e no GitHub (07/11): números da demo (~2,1 h) e do jogo completo (~20 h de história, ~37 h no 100%); decoração
+>   dos negócios nas vendas das filas; dívida da avó decidida em R$ 1.000.000 (desenho, textos e conquistas do GPT,
+>   pacotes 4 e 5 juntados; o CÓDIGO da dívida ainda não existe: item 10); revisão segura do pt-BR e traduções curtas
+>   aplicadas; item 4 completo (banhistas na piscina da pousada e tobogã do Grand Hotel em uso, saída na água).
+> - Próximo: (1) item 10, código da dívida (`docs/ue58/DIVIDA_DA_AVO.md`, `debt.json`); (2) seção 7 técnica (3 slots de
+>   save, opções, preset Baixo, build Shipping, Steam); (3) as correções de sentido da `REVISAO_TEXTOS.md` (precisam de
+>   tradução nova) e os textos do C++ listados lá; (4) ilha.
+> - Não verificado: tobogã na velocidade normal do jogo (só testado com o editor em segundo plano, ~3 quadros/s) e a
+>   navegação estática perto do tobogã depois da troca do modelo.
+>
+> **ONDE PAROU antes (06/11/2026, noite):**
 > - Feito e no GitHub: 5.2 eventos com montagem, 5.3 restaurante/crítico/peixe, 6 bugs do relatório do GPT, demo
 >   (hotel trancado, campanha para no hotel, tela final da demo), PR #7 e #8 do GPT (balanço, textos da Steam,
 >   traduções, `tools/ue58/qa/data_lint.py`).
