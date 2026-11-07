@@ -157,3 +157,79 @@ Compensação parcial do novo desembolso de um milhão, somente no nível 5. Nã
 | customization.json | /price_mult/4 | 260 | 220 | Compensar parte do custo do milhão na cauda de compras: manter o 100% próximo de 40 h sem reduzir a dívida nem preços de expansões. |
 | customization.json | /recipes/cost_mult/4 | 900 | 760 | Mesma compensação apenas no nível 5 de receitas; manter as 7.000 vendas e o ritmo de campanha. Proposta, não aplicada ao jogo. |
 
+
+## Pacote 6 — roteiro de integração C++ (base 899e77a6)
+
+O contrato executável de referência está em `tools/ue58/balance/debt_contract.py`; os **20 vetores/45 ações** de
+`debt_vectors.json` são oráculos fixos em centavos. `test_debt_vectors.py` também confronta cada pagamento aceito ou
+recusado com `balance_model.Model.pay_debt`. Isto testa a proposta em Python, não o jogo nem falhas reais de disco.
+
+Pontos existentes a reaproveitar, lidos nesta base:
+
+| Integração | Ponto real |
+|---|---|
+| Débito e extrato | `MareSimulation.cpp:103` `UMareSimulation::Book` altera `money`, `day_out` e `ledger`; incluir todos no rollback |
+| Persistência e backup | `MareSimulation.cpp:493` `Save`, `:499` `WriteState`: `.tmp`, cópia `.bak` e move; usar retorno e não anunciar sucesso antecipado |
+| Empresa / migração | `MareSimulation.cpp:114` `CreateCompany`; no carregamento, inicializar somente se `prog.debt` estiver ausente |
+| Finanças | `MareGame.cpp:732` `SMarePhone::FinancePage`; inserir cartão antes de “Últimos lançamentos” |
+| Abertura / fechamento | `MareGame.cpp:2496` `AMareController::OpenPhone`, `:2514` `ClosePhone`; manter navegação e bloqueios atuais |
+| Carta existente | `MareIntro.cpp:146` `AMareIntro::ReadLetter`: carta afetiva já existe. Acrescentar a revelação da dívida no primeiro celular após criar empresa, sem substituir a carta inteira ou disparar duas cartas concorrentes |
+| Fim e retomada | `MareGame.cpp:2047` `AMareController::ShowEndOfContent`, widget `SMareEndScreen`; reaproveitar enquadramento/pausa/retomada, separando o reconhecimento da dívida de `ea_end_shown` |
+| Condição de fim atual | `MareEvents.cpp:53` `IsEndOfContentDue`, `:65` `MarkEndOfContentShown`; na demo manter a condição por expansões/capítulos; no completo não anunciar quitação só porque comprou tudo |
+| Créditos | `MareGame.cpp:1834` `SMareMainMenu`, caso `EPage::Credits`; reutilizar conteúdo/apresentação sem carregar outro save nem iniciar um novo jogo |
+
+### Pseudocódigo transacional
+
+```text
+EnsureDebt(day):
+  se State.prog.debt existe: validar tipos/faixas, preservar principal e campos desconhecidos; não recriar
+  senão: criar objeto com os campos da tabela do contrato; principal_cents = debt.json.principal * 100
+         created_day = last_payment_day = day; last_reminder_day = 0
+         paid_cents = 0; intro_seen = finale_seen = false; milestones_seen = []
+  salvar a migração uma vez; abrir/fechar Finanças nunca debita
+
+PayDebt(valor):
+  se transação já em andamento: rejeitar segundo clique
+  converter entrada monetária uma vez para centavos exatos, rejeitando NaN/Inf, bool e subcentavos
+  d = State.prog.debt
+  limite = demo ? min(principal_cents, demo_payment_cap * 100) : principal_cents
+  validar inteiro > 0 e <= caixa_em_centavos e <= principal_cents-paid_cents e <= limite-paid_cents
+  se inválido: mensagem phone.invalid/demo_limit; nenhuma alteração, nem cobrança parcial
+  bloquear botão; snapshot profundo dos campos mutáveis da transação (não uma shared pointer para o mesmo objeto)
+  Book(-valor_cents/100, texto localizado de phone.pay)
+  d.paid_cents += valor_cents; d.last_payment_day = day
+  se Save/WriteState falhar: restaurar money, day_out, ledger, prog.debt e demais efeitos capturados; destravar; erro
+  se sucesso: destravar; mostrar recibo; recalcular saldo e marcos pendentes
+  marcos = todos os limiares cruzados e ausentes de milestones_seen, em ordem
+  apresentar em um único cartão; ao reconhecer, adicionar IDs e salvar; se falhar, permitir reapresentação
+  avaliar conquistas e enfileirar desbloqueios idempotentes, inclusive offline
+  se modo completo e paid_cents == principal_cents e !finale_seen: agendar cena final
+
+Reminder(day):
+  se saldo zero ou demo no/acima do teto: não enviar
+  referência = max(created_day, last_payment_day, last_reminder_day)
+  se day - referência >= reminder_every_days:
+    enfileirar um recado; last_reminder_day = day; salvar
+  repetir a chamada ou carregar no mesmo dia não repete o recado; saltar dias envia só um
+```
+
+Na migração, `principal_cents` existente fica congelado mesmo se o JSON mudar. Em demo com pagamento legado acima do
+teto, manter o valor e bloquear apenas pagamentos futuros; `demo_payment_cap` não é saldo adicional por operação.
+Valores em centavos são o contrato; `State.money` e `Book` hoje usam reais double, portanto conferir a fronteira de
+conversão e tolerância de centavos, sem arredondar um pagamento inválido para um valor aceito.
+
+### Celular e final, sem novo sistema
+
+Em **Finanças**, cartão com `phone.title`, saldo derivado, total pago, principal original, progresso e botão `phone.pay`.
+O botão abre valor livre; a confirmação usa `phone.confirm` com valor e caixa remanescente. No teto demo mostrar
+`phone.demo_limit`, e em saldo zero mostrar `phone.settled`. Formatar **depois** de localizar a chave, com `{N}`;
+manter R$ e os nomes. A carta curta usa `intro.*`; o flag `intro_seen` só é reconhecido depois da apresentação.
+
+Final completo pendente: esperar não haver outro modal, fechar Finanças, usar a estrutura de `ShowEndOfContent` para
+mostrar `finale.title/text/grandma`, botões Créditos e Continuar. Marcar `finale_seen` ao apresentar/dispensar com sucesso
+e salvar; após falha de gravação, reapresentar é permitido e não dá dinheiro. Continuar fecha o modal e restaura
+controles/pausa, preservando o mesmo slot, empresa, inventário, expansões e caixa. Os créditos também voltam ao mesmo
+resort. Na demo, este final nunca dispara: continua valendo o agradecimento atual, sem exigir pagamento.
+
+O modelo econômico antigo conta lembretes em dias múltiplos do intervalo e não persiste `last_reminder_day`; não copiar
+essa simplificação para C++. Os vetores do contrato cobrem chamada repetida no mesmo dia e salto até o dia 30.

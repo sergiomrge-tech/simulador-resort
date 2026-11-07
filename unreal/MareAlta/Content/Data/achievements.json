@@ -1,0 +1,648 @@
+{
+ "_doc": "Contrato para consumidor C++ futuro; nenhuma integração Steam ativa. Condições genéricas: all AND recursivo; folha path JSON Pointer, aggregate opcional sum (valores numéricos do objeto) ou count (tamanho da lista); op >=, == ou contains. Ausência vale 0/false/lista vazia; rejeitar tipo incompatível, nunca comparar texto localizado. IDs, paths, valores de enum e nomes de campo NÃO são textos localizáveis. Fila de desbloqueios persistente e idempotente é responsabilidade do consumidor.",
+ "schema_version": 1,
+ "achievements": [
+  {
+   "id": "CC_DEBT_FIRST",
+   "name": "Um coco de cada vez",
+   "description": "Faça o primeiro pagamento da dívida.",
+   "condition": {
+    "path": "/prog/debt/paid_cents",
+    "op": ">=",
+    "value": 1
+   },
+   "demo": true,
+   "hidden": false,
+   "_field_status": "new_debt_field",
+   "_source": "debt.json + DIVIDA_DA_AVO.md (contrato novo)"
+  },
+  {
+   "id": "CC_DEBT_25",
+   "name": "Um quarto mais leve",
+   "description": "Pague R$ 250.000 da dívida.",
+   "condition": {
+    "path": "/prog/debt/paid_cents",
+    "op": ">=",
+    "value": 25000000
+   },
+   "demo": true,
+   "hidden": false,
+   "_field_status": "new_debt_field",
+   "_source": "debt.json + DIVIDA_DA_AVO.md (contrato novo)"
+  },
+  {
+   "id": "CC_DEBT_50",
+   "name": "Metade da maré",
+   "description": "Pague R$ 500.000 da dívida.",
+   "condition": {
+    "path": "/prog/debt/paid_cents",
+    "op": ">=",
+    "value": 50000000
+   },
+   "demo": false,
+   "hidden": false,
+   "_field_status": "new_debt_field",
+   "_source": "debt.json + DIVIDA_DA_AVO.md (contrato novo)"
+  },
+  {
+   "id": "CC_DEBT_75",
+   "name": "Dá para respirar",
+   "description": "Pague R$ 750.000 da dívida.",
+   "condition": {
+    "path": "/prog/debt/paid_cents",
+    "op": ">=",
+    "value": 75000000
+   },
+   "demo": false,
+   "hidden": false,
+   "_field_status": "new_debt_field",
+   "_source": "debt.json + DIVIDA_DA_AVO.md (contrato novo)"
+  },
+  {
+   "id": "CC_DEBT_FREE",
+   "name": "Livre do boleto",
+   "description": "Quite a dívida de R$ 1.000.000.",
+   "condition": {
+    "path": "/prog/debt/paid_cents",
+    "op": ">=",
+    "value": 100000000
+   },
+   "demo": false,
+   "hidden": false,
+   "_field_status": "new_debt_field",
+   "_source": "debt.json + DIVIDA_DA_AVO.md (contrato novo)"
+  },
+  {
+   "id": "CC_COMPANY",
+   "name": "Sua primeira maré",
+   "description": "Crie sua empresa.",
+   "condition": {
+    "path": "/company/created",
+    "op": "==",
+    "value": true
+   },
+   "demo": true,
+   "hidden": false,
+   "_field_status": "existing",
+   "_source": "MareSimulation.cpp::CreateCompany / MissionAmount"
+  },
+  {
+   "id": "CC_SALES_100",
+   "name": "Freguesia de casa",
+   "description": "Venda 100 produtos no quiosque.",
+   "condition": {
+    "path": "/kiosk_n",
+    "op": ">=",
+    "value": 100
+   },
+   "demo": true,
+   "hidden": false,
+   "_field_status": "existing",
+   "_source": "MareSimulation.cpp::MissionAmount(sales)"
+  },
+  {
+   "id": "CC_EXP_KIOSK_TABLES",
+   "name": "Um lugar para ficar",
+   "description": "Compre a expansão Mesas e guarda-sóis.",
+   "condition": {
+    "path": "/unlocked/kiosk_tables",
+    "op": "==",
+    "value": true
+   },
+   "demo": true,
+   "hidden": false,
+   "_field_status": "existing",
+   "_source": "MareSimulation.cpp::BuyExpansion"
+  },
+  {
+   "id": "CC_EXP_BAR",
+   "name": "Um brinde ao começo",
+   "description": "Compre a expansão Bar do Coqueiro.",
+   "condition": {
+    "path": "/unlocked/bar",
+    "op": "==",
+    "value": true
+   },
+   "demo": true,
+   "hidden": false,
+   "_field_status": "existing",
+   "_source": "MareSimulation.cpp::BuyExpansion"
+  },
+  {
+   "id": "CC_EXP_POUSADA",
+   "name": "Fique mais um dia",
+   "description": "Compre a expansão Pousada.",
+   "condition": {
+    "path": "/unlocked/pousada",
+    "op": "==",
+    "value": true
+   },
+   "demo": true,
+   "hidden": false,
+   "_field_status": "existing",
+   "_source": "MareSimulation.cpp::BuyExpansion"
+  },
+  {
+   "id": "CC_EXP_POOL",
+   "name": "Sem medo de siri",
+   "description": "Compre a expansão Piscina.",
+   "condition": {
+    "path": "/unlocked/pool",
+    "op": "==",
+    "value": true
+   },
+   "demo": true,
+   "hidden": false,
+   "_field_status": "existing",
+   "_source": "MareSimulation.cpp::BuyExpansion"
+  },
+  {
+   "id": "CC_EXP_PASSEIOS",
+   "name": "Além do balcão",
+   "description": "Compre a expansão Passeios.",
+   "condition": {
+    "path": "/unlocked/passeios",
+    "op": "==",
+    "value": true
+   },
+   "demo": true,
+   "hidden": false,
+   "_field_status": "existing",
+   "_source": "MareSimulation.cpp::BuyExpansion"
+  },
+  {
+   "id": "CC_EXP_GRAND_HOTEL",
+   "name": "Vista de um milhão",
+   "description": "Compre a expansão Grand Hotel.",
+   "condition": {
+    "path": "/unlocked/grand_hotel",
+    "op": "==",
+    "value": true
+   },
+   "demo": false,
+   "hidden": false,
+   "_field_status": "existing",
+   "_source": "MareSimulation.cpp::BuyExpansion"
+  },
+  {
+   "id": "CC_EXP_SALAO_JOGOS",
+   "name": "Só mais uma partida",
+   "description": "Compre a expansão Salão de jogos.",
+   "condition": {
+    "path": "/unlocked/salao_jogos",
+    "op": "==",
+    "value": true
+   },
+   "demo": false,
+   "hidden": false,
+   "_field_status": "existing",
+   "_source": "MareSimulation.cpp::BuyExpansion"
+  },
+  {
+   "id": "CC_CH_PIER",
+   "name": "O píer fica de pé",
+   "description": "Conclua o capítulo O píer do Seu Severino.",
+   "condition": {
+    "path": "/prog/ch/pier",
+    "op": ">=",
+    "value": 3
+   },
+   "demo": true,
+   "hidden": false,
+   "_field_status": "existing",
+   "_source": "MareSimulation.h:83 IsChapterDone; MareSimulation.cpp::AdvanceChapter"
+  },
+  {
+   "id": "CC_CH_PRAINHA",
+   "name": "Depois da missa",
+   "description": "Conclua o capítulo A prainha do Padre Robson.",
+   "condition": {
+    "path": "/prog/ch/prainha",
+    "op": ">=",
+    "value": 3
+   },
+   "demo": true,
+   "hidden": false,
+   "_field_status": "existing",
+   "_source": "MareSimulation.h:83 IsChapterDone; MareSimulation.cpp::AdvanceChapter"
+  },
+  {
+   "id": "CC_CH_SABORES",
+   "name": "Receita de família",
+   "description": "Conclua o capítulo Os sabores da Dona Cecília.",
+   "condition": {
+    "path": "/prog/ch/sabores",
+    "op": ">=",
+    "value": 3
+   },
+   "demo": true,
+   "hidden": false,
+   "_field_status": "existing",
+   "_source": "MareSimulation.h:83 IsChapterDone; MareSimulation.cpp::AdvanceChapter"
+  },
+  {
+   "id": "CC_CH_CARNAVAL",
+   "name": "A vila na rua",
+   "description": "Conclua o capítulo O carnaval da Prefeita Tuanny.",
+   "condition": {
+    "path": "/prog/ch/carnaval",
+    "op": ">=",
+    "value": 3
+   },
+   "demo": true,
+   "hidden": false,
+   "_field_status": "existing",
+   "_source": "MareSimulation.h:83 IsChapterDone; MareSimulation.cpp::AdvanceChapter"
+  },
+  {
+   "id": "CC_BAR_50",
+   "name": "Rodada da casa",
+   "description": "Sirva 50 drinks no bar.",
+   "condition": {
+    "path": "/bar/served",
+    "op": ">=",
+    "value": 50
+   },
+   "demo": true,
+   "hidden": false,
+   "_field_status": "existing",
+   "_source": "MareBar.cpp:191,429"
+  },
+  {
+   "id": "CC_BAR_MASTER",
+   "name": "Mestre dos drinks",
+   "description": "Descubra todas as receitas do bar.",
+   "condition": {
+    "path": "/prog/achievements/mestre_drinks",
+    "op": "==",
+    "value": true
+   },
+   "demo": true,
+   "hidden": false,
+   "_field_status": "existing",
+   "_source": "MareBar.cpp:196–198"
+  },
+  {
+   "id": "CC_BAR_SECRET",
+   "name": "Segredo do Coqueiro",
+   "description": "Conheça a receita coqueiro.",
+   "condition": {
+    "path": "/bar/known",
+    "op": "contains",
+    "value": "coqueiro"
+   },
+   "demo": true,
+   "hidden": true,
+   "_field_status": "existing",
+   "_source": "MareBar.cpp:184"
+  },
+  {
+   "id": "CC_TOUR_BARCO",
+   "name": "Mar à vista",
+   "description": "Guie o passeio barco com pelo menos um passageiro.",
+   "condition": {
+    "path": "/prog/steam_counters/guided_barco",
+    "op": ">=",
+    "value": 1
+   },
+   "demo": true,
+   "hidden": false,
+   "_field_status": "new_counter",
+   "_source": "MareTours.cpp:230–236,258 (lista de 12 resultados)"
+  },
+  {
+   "id": "CC_TOUR_SNORKEL",
+   "name": "Debaixo da maré",
+   "description": "Guie o passeio mergulho com pelo menos um passageiro.",
+   "condition": {
+    "path": "/prog/steam_counters/guided_snorkel",
+    "op": ">=",
+    "value": 1
+   },
+   "demo": true,
+   "hidden": false,
+   "_field_status": "new_counter",
+   "_source": "MareTours.cpp:230–236,258 (lista de 12 resultados)"
+  },
+  {
+   "id": "CC_TOUR_FAROL",
+   "name": "Luz no caminho",
+   "description": "Guie o passeio trilha ao farol com pelo menos um passageiro.",
+   "condition": {
+    "path": "/prog/steam_counters/guided_farol",
+    "op": ">=",
+    "value": 1
+   },
+   "demo": true,
+   "hidden": false,
+   "_field_status": "new_counter",
+   "_source": "MareTours.cpp:230–236,258 (lista de 12 resultados)"
+  },
+  {
+   "id": "CC_BIZ_ALL",
+   "name": "Vizinho empreendedor",
+   "description": "Tenha os cinco negócios da vila no nível 1 ou maior.",
+   "condition": {
+    "all": [
+     {
+      "path": "/prog/biz/sorveteria/lvl",
+      "op": ">=",
+      "value": 1
+     },
+     {
+      "path": "/prog/biz/food_truck/lvl",
+      "op": ">=",
+      "value": 1
+     },
+     {
+      "path": "/prog/biz/aluguel/lvl",
+      "op": ">=",
+      "value": 1
+     },
+     {
+      "path": "/prog/biz/souvenir/lvl",
+      "op": ">=",
+      "value": 1
+     },
+     {
+      "path": "/prog/biz/surfe/lvl",
+      "op": ">=",
+      "value": 1
+     }
+    ]
+   },
+   "demo": true,
+   "hidden": false,
+   "_field_status": "existing",
+   "_source": "MareBizCommon.cpp::BizState / BusinessLevel"
+  },
+  {
+   "id": "CC_BIZ_MAX",
+   "name": "A vila prospera",
+   "description": "Tenha os cinco negócios da vila no nível 3 ou maior.",
+   "condition": {
+    "all": [
+     {
+      "path": "/prog/biz/sorveteria/lvl",
+      "op": ">=",
+      "value": 3
+     },
+     {
+      "path": "/prog/biz/food_truck/lvl",
+      "op": ">=",
+      "value": 3
+     },
+     {
+      "path": "/prog/biz/aluguel/lvl",
+      "op": ">=",
+      "value": 3
+     },
+     {
+      "path": "/prog/biz/souvenir/lvl",
+      "op": ">=",
+      "value": 3
+     },
+     {
+      "path": "/prog/biz/surfe/lvl",
+      "op": ">=",
+      "value": 3
+     }
+    ]
+   },
+   "demo": true,
+   "hidden": false,
+   "_field_status": "existing",
+   "_source": "MareBizCommon.cpp::BizState / BusinessLevel"
+  },
+  {
+   "id": "CC_FISH_FIRST",
+   "name": "Foi fisgado",
+   "description": "Pesque seu primeiro peixe.",
+   "condition": {
+    "path": "/prog/fish",
+    "aggregate": "sum",
+    "op": ">=",
+    "value": 1
+   },
+   "demo": true,
+   "hidden": false,
+   "_field_status": "existing",
+   "_source": "MareLeisure.cpp::CatchFish; MareSimulation.cpp::MissionAmount(fish)"
+  },
+  {
+   "id": "CC_FISH_RARE",
+   "name": "História de pescador",
+   "description": "Pesque uma garoupa.",
+   "condition": {
+    "path": "/prog/fish/garoupa",
+    "op": ">=",
+    "value": 1
+   },
+   "demo": true,
+   "hidden": true,
+   "_field_status": "existing",
+   "_source": "MareLeisure.cpp::CatchFish"
+  },
+  {
+   "id": "CC_PHOTO_10",
+   "name": "Álbum de família",
+   "description": "Guarde 10 fotos no álbum.",
+   "condition": {
+    "path": "/prog/album",
+    "aggregate": "count",
+    "op": ">=",
+    "value": 10
+   },
+   "demo": true,
+   "hidden": false,
+   "_field_status": "existing",
+   "_source": "MareLeisure.cpp::RecordPhoto (máximo 200)"
+  },
+  {
+   "id": "CC_HOTEL_VIP",
+   "name": "Pedido atendido",
+   "description": "Conclua um pedido VIP do hotel.",
+   "condition": {
+    "path": "/prog/hotel_rooms/vip_done",
+    "op": ">=",
+    "value": 1
+   },
+   "demo": false,
+   "hidden": false,
+   "_field_status": "existing",
+   "_source": "MareHotelRooms.cpp:175–179"
+  },
+  {
+   "id": "CC_HOTEL_POLISH",
+   "name": "Capricho de família",
+   "description": "Arrume um quarto do hotel sem ajuda da equipe.",
+   "condition": {
+    "path": "/prog/steam_counters/hotel_polished",
+    "op": ">=",
+    "value": 1
+   },
+   "demo": false,
+   "hidden": false,
+   "_field_status": "new_counter",
+   "_source": "MareHotelRooms.cpp:126–131; HotelRoom usa stays.rooms"
+  },
+  {
+   "id": "CC_RESTAURANT_STARS",
+   "name": "Três estrelas no caderno",
+   "description": "Ganhe as três estrelas do crítico.",
+   "condition": {
+    "path": "/prog/restaurant/stars",
+    "op": ">=",
+    "value": 3
+   },
+   "demo": false,
+   "hidden": false,
+   "_field_status": "existing",
+   "_source": "MareRestaurant.cpp::RestaurantStars / ReviewCritic"
+  },
+  {
+   "id": "CC_BEACH_EVENT",
+   "name": "Tudo pronto na areia",
+   "description": "Realize um evento montado com ao menos metade das peças.",
+   "condition": {
+    "path": "/hotel_events/last/score",
+    "op": ">=",
+    "value": 0.5
+   },
+   "demo": false,
+   "hidden": false,
+   "_field_status": "existing",
+   "_source": "MareHotelEvents.cpp::StartHotelEvent / HotelEventsHour (last ao encerrar)"
+  },
+  {
+   "id": "CC_CUP",
+   "name": "Campeão da Maré",
+   "description": "Vença o Campeonato da Maré.",
+   "condition": {
+    "path": "/billiards/cups",
+    "op": ">=",
+    "value": 1
+   },
+   "demo": false,
+   "hidden": false,
+   "_field_status": "existing",
+   "_source": "MarePoolCup.cpp:169–173"
+  },
+  {
+   "id": "CC_ARCADE_JANGADA",
+   "name": "Contra a corrente",
+   "description": "Registre uma pontuação positiva em Corrida de Jangada.",
+   "condition": {
+    "path": "/prog/biz/fliperama/records/jangada",
+    "op": ">=",
+    "value": 1
+   },
+   "demo": false,
+   "hidden": false,
+   "_field_status": "existing",
+   "_source": "MareArcade.h:85 GameId; MareArcade.cpp:35,216"
+  },
+  {
+   "id": "CC_ARCADE_PINBALL",
+   "name": "Luz na máquina",
+   "description": "Registre uma pontuação positiva em Pinball do Farol.",
+   "condition": {
+    "path": "/prog/biz/fliperama/records/pinball",
+    "op": ">=",
+    "value": 1
+   },
+   "demo": false,
+   "hidden": false,
+   "_field_status": "existing",
+   "_source": "MareArcade.h:85 GameId; MareArcade.cpp:35,216"
+  }
+ ],
+ "rich_presence": [
+  {
+   "id": "resort",
+   "text": "Administrando o Maré Alta",
+   "_trigger": "fallback"
+  },
+  {
+   "id": "kiosk",
+   "text": "No quiosque",
+   "_trigger": "interação Customer/Fridge/Cupboard/KioskSign"
+  },
+  {
+   "id": "fishing",
+   "text": "Pescando",
+   "_trigger": "AMareController::StartFishing / fechar SMareFishingGame"
+  },
+  {
+   "id": "bar",
+   "text": "Preparando drinks",
+   "_trigger": "SMareBarPrepGame aberto / fechar"
+  },
+  {
+   "id": "boat",
+   "text": "Guiando um passeio de barco",
+   "_trigger": "UMareBoatTourWorld::Start / Finish"
+  },
+  {
+   "id": "snorkel",
+   "text": "Mergulhando",
+   "_trigger": "UMareSnorkelWorld::Start / Finish"
+  },
+  {
+   "id": "trail",
+   "text": "Na trilha do farol",
+   "_trigger": "UMareTrailWorld::Start / Finish"
+  },
+  {
+   "id": "games",
+   "text": "No salão de jogos",
+   "_trigger": "UMareGameRoom/UMareArcade::IsPlaying"
+  },
+  {
+   "id": "debt",
+   "text": "Cuidando da dívida de Dona Dilce",
+   "_trigger": "painel de dívida proposto aberto"
+  },
+  {
+   "id": "free",
+   "text": "Um resort sem dívida",
+   "_trigger": "fallback se prog.debt.paid_cents == principal_cents"
+  }
+ ],
+ "_new_counters": [
+  {
+   "path": "/prog/steam_counters/guided_barco",
+   "initial": 0,
+   "source": "MareTours.cpp:210–236 UMareSimulation::RecordTourResult",
+   "increment_when": "bGuide == true AND Pax >= 1 AND Id == barco",
+   "migration": "Reconstruir mínimo com tour_results válidos; lista limitada a 12, não inventar histórico anterior."
+  },
+  {
+   "path": "/prog/steam_counters/guided_snorkel",
+   "initial": 0,
+   "source": "MareTours.cpp:210–236 UMareSimulation::RecordTourResult",
+   "increment_when": "bGuide == true AND Pax >= 1 AND Id == snorkel",
+   "migration": "Reconstruir mínimo com tour_results válidos; lista limitada a 12, não inventar histórico anterior."
+  },
+  {
+   "path": "/prog/steam_counters/guided_farol",
+   "initial": 0,
+   "source": "MareTours.cpp:210–236 UMareSimulation::RecordTourResult",
+   "increment_when": "bGuide == true AND Pax >= 1 AND Id == farol",
+   "migration": "Reconstruir mínimo com tour_results válidos; lista limitada a 12, não inventar histórico anterior."
+  },
+  {
+   "path": "/prog/steam_counters/hotel_polished",
+   "initial": 0,
+   "source": "MareHotelRooms.cpp:118–131 UMareSimulation::CleanHotelRoom",
+   "increment_when": "Transição para clean com polished=true, bHelped=false e hand_tasks>0; uma vez por arrumação completa, nunca por tarefa.",
+   "migration": "Inicial mínimo 1 se algum stays.rooms com place=hotel e polished=true; demais saves começam em 0."
+  }
+ ],
+ "_new_debt_fields": [
+  {
+   "path": "/prog/debt/paid_cents",
+   "source": "debt.json + DIVIDA_DA_AVO.md; cinco conquistas, implementar PayDebt antes."
+  }
+ ]
+}

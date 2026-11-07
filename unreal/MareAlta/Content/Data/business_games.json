@@ -171,7 +171,7 @@
      "fame": 3,
      "name": "balcão de sabores especiais",
      "price_mult": 1.3,
-     "blurb": "Casquinhas de até 4 bolas, o pedido aparece por menos tempo e o tamanho certo da bola fica mais estreito.",
+     "blurb": "Casquinhas de até 4 bolas. O pedido aparece por menos tempo e a faixa de tamanho correto fica menor.",
      "set": {
       "scoops": [
        1,
@@ -189,7 +189,7 @@
      "fame": 5,
      "name": "gelateria artesanal",
      "price_mult": 1.6,
-     "blurb": "Pedidos de 2 a 4 bolas, vistos por 1,8 s, bola que cresce mais rápido e ponto certo bem justo.",
+     "blurb": "Pedidos de 2 a 4 bolas, visíveis por 1,8 s. A bola cresce mais rápido e a faixa correta é bem estreita.",
      "set": {
       "scoops": [
        2,

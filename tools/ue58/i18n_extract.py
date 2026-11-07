@@ -82,7 +82,7 @@ def scan_code():
                 continue
             for s in LIT.findall(line):
                 s = unescape(s)
-                if shown(s):
+                if shown(s) and s not in {'chat','climb','edge','float','fly','jump','ride'}:
                     strings.add(template(s) if PRINTF.search(s) else s)
     return loc, strings
 
@@ -107,6 +107,10 @@ def scan_data():
             continue
         try:
             doc = json.loads(Path(f).read_text(encoding='utf-8'))
+            if name == 'achievements.json':
+                # Contrato: somente os textos visíveis. Condições/ids/enums nunca viram traduções.
+                doc = {'achievements': [{'name': a['name'], 'description': a['description']} for a in doc['achievements']],
+                       'rich_presence': [p['text'] for p in doc['rich_presence']]}
             if name == 'world.json':   # only the painted texts and the residents' names are shown
                 doc = {'texts': doc.get('texts', []), 'residents': doc.get('residents', [])}
             walk(doc)

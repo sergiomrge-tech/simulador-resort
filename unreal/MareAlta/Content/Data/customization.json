@@ -2149,7 +2149,7 @@
        "desc": "Pressão forte."
       },
       {
-       "name": "Ducha com amenities",
+       "name": "Ducha com itens de higiene de cortesia",
        "desc": "Sabonetes e xampus da casa."
       },
       {
@@ -2997,7 +2997,7 @@
       },
       {
        "name": "Ducha de chuva",
-       "desc": "Cabeça larga e amenities."
+       "desc": "Ducha de cabeça larga e itens de higiene de cortesia."
       },
       {
        "name": "Banheira",
@@ -5004,7 +5004,7 @@
     "staff_bonus": 0.15
    },
    "pool": {
-    "name": "Piscina (day use)",
+    "name": "Piscina (entrada por dia)",
     "unlock": "pool",
     "open": [
      9,
