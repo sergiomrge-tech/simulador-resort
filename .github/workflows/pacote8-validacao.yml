@@ -62,5 +62,7 @@ jobs:
         run: python tools/ue58/qa/save_check.py --self-test
       - name: QA de conquistas
         run: python tools/ue58/qa/achievements_check.py
-      - name: Data lint completo com indice existente
-        run: python tools/ue58/qa/data_lint.py --asset-index tools/ue58/balance/package_index.json --json
+      - name: Gerar indice de packages do Git exato
+        run: python tools/ue58/qa/build_package_index.py --output "$RUNNER_TEMP/pacote8-packages.json" --log-chunks
+      - name: Data lint completo com indice fresco
+        run: python tools/ue58/qa/data_lint.py --asset-index "$RUNNER_TEMP/pacote8-packages.json" --json
