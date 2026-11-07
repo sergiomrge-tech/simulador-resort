@@ -161,7 +161,7 @@
 				"money": false,
 				"reward": 160.0,
 				"target": 4.2,
-				"text": "Terminar a semana com ★ %.1f ou mais"
+				"text": "Terminar a semana com avaliação de ★ %.1f ou mais"
 			},
 			{
 				"done": false,
@@ -170,7 +170,7 @@
 				"money": false,
 				"reward": 130.0,
 				"target": 1.0,
-				"text": "Receber %d cliente(s) VIP"
+				"text": "Receber %d clientes VIP"
 			},
 			{
 				"done": false,
@@ -179,7 +179,7 @@
 				"money": false,
 				"reward": 110.0,
 				"target": 8.0,
-				"text": "Vender %d petiscos ou pratos da cozinha"
+				"text": "Vender %d porções de petiscos ou pratos da cozinha"
 			}
 		],
 		"hotel": {

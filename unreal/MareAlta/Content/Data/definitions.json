@@ -36,7 +36,7 @@
 			"fame": 4,
 			"game": "Fritar o pastel",
 			"hour": 26,
-			"name": "Food truck do Pastel",
+			"name": "Food truck do pastel",
 			"open": [
 				11.0,
 				23.0
@@ -412,7 +412,7 @@
 			],
 			"story": "Dona Cecília quer resgatar as receitas da avó e levar comida boa até a rua principal.",
 			"title": "Sabores da vila",
-			"unlock": "Food truck do Pastel + dica da moqueca"
+			"unlock": "Food truck do pastel + dica da moqueca"
 		},
 		{
 			"giver": "Prefeita Tuanny",
@@ -435,7 +435,7 @@
 					"text": "Pagar R$ 400 da decoração"
 				}
 			],
-			"story": "A prefeita Tuanny sonha com um carnaval de praia que traga turistas de longe. Ele conta com você.",
+			"story": "A prefeita Tuanny sonha com um carnaval de praia que traga turistas de longe. Ela conta com você.",
 			"title": "O Carnaval da Maré",
 			"unlock": "Carnaval no fim de cada verão + Lojinha de souvenires"
 		}

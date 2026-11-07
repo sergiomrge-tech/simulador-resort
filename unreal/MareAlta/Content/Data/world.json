@@ -349134,7 +349134,7 @@
 			"pixel_size": 0.00400000018998981,
 			"region": "pool",
 			"size": 26,
-			"text": "PISCINA\nduche antes de entrar",
+			"text": "PISCINA\ntome uma ducha antes de entrar",
 			"transform": {
 				"basis": [
 					[
@@ -351714,7 +351714,7 @@
 			"pixel_size": 0.00499999988824129,
 			"region": "Biz_food_truck",
 			"size": 54,
-			"text": "Food truck do Pastel",
+			"text": "Food truck do pastel",
 			"transform": {
 				"basis": [
 					[

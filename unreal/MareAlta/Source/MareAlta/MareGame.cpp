@@ -1305,7 +1305,7 @@ public:
   ChildSlot.HAlign(HAlign_Center).VAlign(VAlign_Bottom).Padding(0,0,0,50)[SNew(SBorder).BorderImage(FCoreStyle::Get().GetBrush("WhiteBrush")).BorderBackgroundColor(Paper).Padding(FMargin(26,14))
    [SNew(SBox).WidthOverride(780)[SNew(SVerticalBox)
     +SVerticalBox::Slot().AutoHeight()[SNew(SHorizontalBox)
-     +SHorizontalBox::Slot().FillWidth(1)[HandText(TEXT("Food truck do Pastel"),28,Brown)]
+     +SHorizontalBox::Slot().FillWidth(1)[HandText(TEXT("Food truck do pastel"),28,Brown)]
      +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center)[SNew(STextBlock).Font(Hand(18)).ColorAndOpacity(Faded).Text_Lambda([this](){
       auto S=Sim();return MareLoc::Text(S?FString::Printf(TEXT("na fila: %d"),S->PastelQueue().Num()):FString());})]]
     +SVerticalBox::Slot().AutoHeight()[SNew(STextBlock).Font(Hand(22)).ColorAndOpacity(Red).Text_Lambda([this](){return MareLoc::Text(Order);})]

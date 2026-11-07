@@ -337,22 +337,22 @@
       },
       {
        "name": "Madeira natural",
-       "desc": "Tábuas envernizadas. Atendente +10% rápido.",
+       "desc": "Tábuas envernizadas. Atendente 10% mais rápido.",
        "material": "M_Custom_Counter_2"
       },
       {
        "name": "Madeira azul-turquesa",
-       "desc": "Cor da praia. Atendente +20% rápido.",
+       "desc": "Cor da praia. Atendente 20% mais rápido.",
        "material": "M_Custom_Counter_3"
       },
       {
        "name": "Azulejo português",
-       "desc": "Azulejos azuis pintados. Atendente +30% rápido.",
+       "desc": "Azulejos azuis pintados. Atendente 30% mais rápido.",
        "material": "M_Custom_Counter_4"
       },
       {
        "name": "Teca polida e latão",
-       "desc": "Acabamento de bar de luxo. Atendente +40% rápido.",
+       "desc": "Acabamento de bar de luxo. Atendente 40% mais rápido.",
        "material": "M_Custom_Counter_5"
       }
      ]
@@ -2535,7 +2535,7 @@
      "income": 0.1,
      "tiers": [
       {
-       "name": "Buffet de café da manhã",
+       "name": "Bufê de café da manhã",
        "desc": "Pães, frutas e café."
       },
       {
@@ -3200,7 +3200,7 @@
       },
       {
        "name": "Lounge executivo",
-       "desc": "Sala vip e transfer."
+       "desc": "Sala VIP e traslado."
       }
      ]
     }
@@ -3235,7 +3235,7 @@
        "desc": "Caiaques para dois."
       },
       {
-       "name": "Stand up paddle",
+       "name": "Stand-up paddle",
        "desc": "Pranchas de SUP e remos de carbono."
       },
       {
@@ -4074,7 +4074,7 @@
      "tiers": [
       {
        "name": "Cama de madeira entalhada",
-       "desc": "A cama que era do sua avó Dilce."
+       "desc": "A cama que era da sua avó Dilce."
       },
       {
        "name": "Cama de ferro",

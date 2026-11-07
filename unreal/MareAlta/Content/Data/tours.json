@@ -135,7 +135,7 @@
    "short": "foto"
   },
   "lanche": {
-   "name": "Lanche de bordo",
+   "name": "Lanche a bordo",
    "per": "person",
    "price": 9,
    "rating": 0.2,
@@ -660,7 +660,7 @@
   "farol": [
    [
     "Água e protetor para todos. Cuidadoso!",
-    "Faltou água para alguns.",
+    "Faltou água para algumas pessoas.",
     "Saímos sem água no sol forte."
    ],
    [
