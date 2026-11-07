@@ -1,6 +1,6 @@
 # Kit de imprensa — Coconut Coast: Resort Simulator
 
-Versão editorial: 07/11/2026. **Material para a demo; publicação depende da build validada.** O contrato da dívida já existe, mas o Claude ainda precisa integrá-lo ao jogo. Este kit não anuncia que pagamentos ou conquistas Steam já funcionam. Retirar esta nota interna antes de enviar à imprensa, depois do aceite técnico.
+Versão editorial: 07/11/2026. **Material para a demo; publicação depende da build validada.** O sistema da dívida ainda está em implementação. Este kit não anuncia que pagamentos ou conquistas Steam já funcionam. Retirar esta nota interna antes de enviar à imprensa, depois do aceite técnico.
 
 ## Ficha técnica
 
@@ -73,7 +73,7 @@ A carta traz carinho antes de trazer a conta. Dona Dilce está viva; não é uma
 
 **Preciso pagar um milhão na demo?** Não. A demo apresenta o objetivo; a quitação e o desfecho ficam no completo. O limite cumulativo planejado da demo é R$ 250.000.
 
-**Há juros, parcelas ou game over por dívida?** O desenho aprovado usa pagamentos livres, sem juros, parcela mínima ou multa. O sistema ainda depende da implementação do Claude antes da publicação deste material.
+**Há juros, parcelas ou game over por dívida?** O desenho aprovado usa pagamentos livres, sem juros, parcela mínima ou multa. O sistema ainda precisa ser implementado e testado antes da publicação deste material.
 
 **É multiplayer?** O escopo anunciado é para um jogador.
 

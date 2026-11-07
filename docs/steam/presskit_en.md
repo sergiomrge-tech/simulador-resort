@@ -1,6 +1,6 @@
 # Press kit — Coconut Coast: Resort Simulator
 
-Editorial version: 7 November 2026. **Draft for the demo; publication requires an approved build.** The debt data contract exists, but Claude still needs to implement it in the game. This kit does not certify working debt payments or Steam achievements. Remove this internal note only after technical sign-off, before sending the kit to the press.
+Editorial version: 7 November 2026. **Draft for the demo; publication requires an approved build.** The debt system is still being implemented. This kit does not certify working debt payments or Steam achievements. Remove this internal note only after technical sign-off, before sending the kit to the press.
 
 ## Factsheet
 
@@ -73,7 +73,7 @@ The letter brings the love before it brings the bill. Grandma Dilce is alive: th
 
 **Do I need to repay a million in the demo?** No. The demo introduces the goal. Full repayment and its ending belong to the full game. The planned demo payment cap is R$ 250,000 in total.
 
-**Is there interest or a debt-related game over?** The approved design has voluntary payments, no interest, minimum instalments or late fees. Claude must implement and test it before this material is published.
+**Is there interest or a debt-related game over?** The approved design has voluntary payments, no interest, minimum instalments or late fees. It must be implemented and tested before this material is published.
 
 **Is it multiplayer?** The announced scope is single-player.
 

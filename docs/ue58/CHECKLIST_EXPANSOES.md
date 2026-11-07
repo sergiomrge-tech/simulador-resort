@@ -47,6 +47,24 @@ O que falta é **profundidade e variedade**. Hoje quase tudo é "aperte E" + bar
 > ou sistemas." Os itens da PRIORIDADE (piscina com hóspedes e tobogã, balanceamento da demo de 2 h, parte técnica da
 > seção 7, ilha) seguem; quando acabarem, só correção, acabamento e ajuste do que existe.
 >
+> **CHECKPOINT (07/11/2026, tarde; limite do Claude volta às 21h):**
+> - Decisão do Sergio (07/11): os materiais públicos (loja, devlogs, kit de imprensa, créditos do jogo) podem dizer que há
+>   IA nas MÚSICAS (as 12 Open Lo-Fi do rádio, geradas com Suno) e na IMAGEM (orca do mosaico, IA do Canva), mas NUNCA citar
+>   Claude nem GPT. O kit de imprensa já foi limpo. Atenção: o repositório no GitHub é PÚBLICO (CLAUDE.md, AGENTS.md,
+>   GPT_RELATORIO.md e as mensagens de commit citam os dois); só deixar privado se o Sergio pedir.
+> - Feito e no GitHub (07/11, tarde): rádio com as 12 músicas, aparelhos na casa, quiosque e hotel, celular com
+>   anterior/próxima/desligar; pacotes 8 e 9 do GPT juntados (auditoria do C++, roteiro de teste da demo, licenças,
+>   créditos, Steam em 13 idiomas, devlogs). O "P0 do rádio" da auditoria é falso alarme (radio.json usa objetos).
+> - EM ANDAMENTO: código da dívida da avó (item 10). Contrato lido (`DIVIDA_DA_AVO.md` "Pacote 6 — roteiro" e
+>   "Pseudocódigo transacional", `debt.json`, vetores em `tools/ue58/balance/debt_vectors.json`). Pontos: `Book`
+>   (MareSimulation.cpp ~103), `Save`/`WriteState` (~493/499), `FinancePage` (MareGame.cpp ~735), `SMareEndScreen` (~1732) e
+>   `ShowEndOfContent` (~2050) para o final, carta no primeiro celular após criar a empresa. Plano: novo MareDebt.cpp com
+>   EnsureDebt/PayDebt (centavos, rollback se o save falhar, teto da demo 250 mil), marcos 25/50/75 na mensagem, lembrete
+>   semanal, cartão em Finanças com botões de valor e "o máximo que der", final só no jogo completo; teste com os vetores.
+> - Saves: o jogo JÁ tem slots (`SlotCount`, `LoadSlot`, `NewGame`): conferir antes de refazer a seção 7.
+> - Depois da dívida: textos do C++ e gatilhos das 9 dicas (pacotes 6/7), correções da auditoria do pacote 9, créditos
+>   (`credits.json`), opção "Desativar música", conquistas/Steam, preset Baixo, build Shipping.
+>
 > **ONDE PAROU (07/11/2026, manhã; limite semanal do Claude quase no fim):**
 > - Feito e no GitHub (07/11): números da demo (~2,1 h) e do jogo completo (~20 h de história, ~37 h no 100%); decoração
 >   dos negócios nas vendas das filas; dívida da avó decidida em R$ 1.000.000 (desenho, textos e conquistas do GPT,
