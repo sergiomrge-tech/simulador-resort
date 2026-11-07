@@ -149,3 +149,25 @@ A leitura estática foi estendida aos **69 arquivos `unreal/MareAlta/Source/Mare
 ```
 
 Conferir no linter `scoop > 0`. **Sem crash observado** e sem alteração C++ neste PR.
+
+## Traduções prontas da dica do rádio (após integração pelo Claude)
+
+Não adicionar ao `tutorial.json` nesta branch: a ação `HomeStereoKiosk` retorna em `MareServiceTarget.cpp:91` antes de chamar `ShowTip` na linha 93. Assim, a dica não tem gatilho funcional no código atual. **Primeiro ligar o gatilho em C++**, depois criar o registro no `tutorial.json`, extrair os textos com `i18n_extract.py` e preencher os doze idiomas usando **o texto pt-BR como chave**, preservando `E` como tecla. Não usar IDs internos como chaves de tradução.
+
+| Idioma | Título | Texto |
+|---|---|---|
+| pt-BR (fonte) | Rádio do quiosque | Use E no rádio para trocar a música. No celular, escolha anterior, próxima ou desligar. |
+| en | Kiosk radio | Press E at the radio to change tracks. On your phone, choose previous, next or off. |
+| es | Radio del quiosco | Pulsa E en la radio para cambiar de canción. En el móvil, elige anterior, siguiente o apagar. |
+| de | Kioskradio | Drücke E am Radio, um den Titel zu wechseln. Wähle auf dem Handy „Zurück“, „Weiter“ oder „Aus“. |
+| fr | Radio du kiosque | Appuyez sur E près de la radio pour changer de morceau. Sur le téléphone, choisissez précédent, suivant ou éteindre. |
+| zh-Hans | 小摊收音机 | 在收音机旁按 E 切换曲目。在手机上选择上一首、下一首或关闭。 |
+| ja | 売店のラジオ | ラジオの前で E を押すと曲が切り替わります。スマホでは前の曲、次の曲、オフを選べます。 |
+| ru | Радио в киоске | Нажмите E возле радио, чтобы сменить трек. На телефоне выберите предыдущий трек, следующий или выключение. |
+| ko | 매점 라디오 | 라디오 앞에서 E를 눌러 음악을 바꾸세요. 휴대폰에서 이전 곡, 다음 곡 또는 끄기를 선택할 수 있습니다. |
+| it | Radio del chiosco | Premi E vicino alla radio per cambiare brano. Sul telefono scegli precedente, successivo o spegni. |
+| pl | Radio w kiosku | Naciśnij E przy radiu, aby zmienić utwór. Na telefonie wybierz poprzedni, następny lub wyłącz. |
+| nl | Kioskradio | Druk op E bij de radio om van nummer te wisselen. Kies op je telefoon vorige, volgende of uit. |
+| pt-PT | Rádio do quiosque | Prime E junto ao rádio para mudar de música. No telemóvel, escolhe anterior, seguinte ou desligar. |
+
+**Validação para o Claude:** a dica deve aparecer somente na primeira interação com o rádio do quiosque (ou no primeiro rádio encontrado, se isso for o fluxo escolhido), não a cada troca de estação; fechar/reabrir o jogo não deve fazer a dica repetir. Conferir remapeamento da tecla E: se o jogo mostra a tecla real de interação, preferir token localizado do atalho em vez de texto fixo.

@@ -971,3 +971,12 @@ python tools/ue58/qa/marketing_shots.py --plan
 
 **Checklist de integridade antes do merge:** diff sem `Source/**`, `*.uasset`, `radio.json`, `audio.json`; 11 pares de páginas, 16 devlogs, 6 semanas de posts; `credits.json` JSON válido e 12 títulos localizados por seção; screenshots do editor somente se foram realmente produzidas.
 
+
+## Encerramento e validação verificada do Pacote 9
+
+- **Branch/PR:** `gpt/pacote-9` → `codex/ue58-migration`, [PR #15](https://github.com/sergiomrge-tech/simulador-resort/pull/15), **sem merge**.
+- **Build de verificação:** `5b5400cdeaa866193931699c7050e6fe96174851` — o GitHub Actions concluiu com **success** os dois jobs: **Pacote 8 - integridade de dados e traducoes** (extrator `i18n_extract.py`, catálogos, verificador de saves/conquistas, índice de assets e `data_lint.py` com saída sem erros) e **Pacote 9 - QA dos materiais de lancamento** (sintaxe Python, descrições curtas, créditos 12 idiomas e devlogs). Confirmação por consulta a execuções do commit, não por execução local.
+- **Dica de rádio:** as **12 traduções adicionais** (mais a fonte pt-BR, 13 versões totais) foram preparadas na [auditoria de código](AUDITORIA_CODIGO_PACOTE9.md#traduções-prontas-da-dica-do-rádio-após-integração-pelo-claude). Só inserir `tutorial.json` + catálogos após corrigir o gatilho `MareServiceTarget.cpp:91-93`; o pacote não altera os textos ativos do jogo sem consumidor.
+- **Permanecem externos:** compilação C++/PIE, cook/pacote Steam, capturas reais, conferência jurídica e teste manual Sergio. Nenhum deles está aprovado apenas pelo CI de dados.
+
+**ATENÇÃO:** o commit desta subseção atualizará o SHA após os checks anteriores. O workflow do PR será novamente acionado na cabeça mais recente; verificar conclusão do novo SHA antes do merge.
