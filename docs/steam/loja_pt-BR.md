@@ -4,15 +4,19 @@ Nome comercial: **Coconut Coast: Resort Simulator**. Maré Alta é o nome do res
 
 Rascunho editorial conferido com definitions.json (demo: true), events.json e os bloqueios de campanha/expansão da referência 9e5b4adcadba60ec0c46ffa2e4767bcb6805db0a. Publicar os textos comerciais abaixo na página da demo, após conferir o pacote distribuído. A duração de cerca de 2 h é a meta informada para a progressão inicial; não foi medida em playtest neste trabalho. Não é um limite de tempo para jogar.
 
+**Atualização do Pacote 5 (07/11/2026):** decisão confirmada de moeda **R$ 1.000.000**. A dívida ainda precisa de consumidor C++ e teste pelo Claude antes de publicar esta copy. A demo apresenta o objetivo e permite apenas o teto cumulativo planejado de R$ 250.000; a quitação fica no completo. Novos banhistas e o tobogã do Grand Hotel estão em implementação; não anunciá-los como recursos aprovados da demo.
+
 ## Descrição curta
 
-Experimente grátis Coconut Coast: Resort Simulator! Assuma o quiosque da avó Dilce, atenda clientes, gerencie pelo celular e cresça com pousada, bar, piscina e passeios. Conheça a vila, suas histórias e seu humor. Gostou? Adicione o jogo completo à lista de desejos!
+Sua avó deixou um quiosque de praia. E uma dívida de R$ 1.000.000. Atenda clientes, gerencie pelo celular e transforme o Maré Alta num resort. Conheça a vila e comece a reescrever a história da família na demo grátis de Coconut Coast: Resort Simulator.
 
 ## Descrição longa
 
 ### Um coco gelado. Um quiosque herdado. Sua primeira maré.
 
 O quiosque da avó Dilce está nas suas mãos. Abra a placa, receba os primeiros fregueses e comece a transformar o **Maré Alta** em um resort cheio de vida. A demo gratuita de **Coconut Coast: Resort Simulator** apresenta a rotina de gestão e as histórias de uma vila de praia brasileira.
+
+Dona Dilce foi morar com as amigas do bingo. Deixou o quiosque, uma carta carinhosa e **R$ 1.000.000 de dívida**. Você começa a cuidar do negócio e dos pagamentos na demo; **quitar a dívida e chegar ao desfecho são objetivos do jogo completo**, sem juros ou parcela obrigatória. O agradecimento da demo não exige pagar o milhão.
 
 ### Trabalhe no balcão, cuide do negócio pelo celular
 

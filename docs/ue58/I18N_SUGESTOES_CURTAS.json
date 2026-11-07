@@ -1,0 +1,414 @@
+{
+  "_doc": "Sugestões editoriais; não aplicar automaticamente. Chaves e traduções de origem ficam intactas. Validar contexto e UI antes de integrar.",
+  "source_sha256": "0b77e3166807bb560a436cf45275621248e487af4e7dd4236b204366512c3d14",
+  "languages": {
+    "de": [
+      {
+        "section": "strings",
+        "key": "Cem. Contei com a régua do meu avô, que media tudo em palmos. Deu muitos palmos.",
+        "current": "Hundert. Ich hab's mit dem Lineal meines Großvaters gemessen, der alles in Handspannen maß. Es kamen sehr viele Handspannen heraus.",
+        "suggestion": "Hundert. Opas Lineal maß in Handspannen. Das waren viele Handspannen."
+      },
+      {
+        "section": "strings",
+        "key": "Segure o sabor (clique, 1 a 6 ou A) e solte no verde · setas escolhem o pote · Enter entrega · Esc ou B sai",
+        "current": "Halte die Geschmackswahl gedrückt (Klick, 1 bis 6 oder A) und lass im grünen Bereich los · Pfeile wählen den Behälter · Enter liefert · Esc oder B beendet",
+        "suggestion": "Sorte halten (Klick, 1–6 oder A), im Grün loslassen · Pfeile: Becher · Enter: servieren · Esc/B: raus"
+      },
+      {
+        "section": "strings",
+        "key": "Seríssimo. Em 1987 esqueceram uma vez e a Onda levou a praia, o bar e o meu bigode. O bigode nunca mais cresceu igual.",
+        "current": "Todernst. 1987 haben sie es einmal vergessen, und die Welle hat den Strand, die Bar und meinen Schnurrbart mitgenommen. Der Schnurrbart ist nie wieder so gewachsen.",
+        "suggestion": "Todernst. 1987 vergaßen sie es: Die Welle nahm Strand, Bar und Schnurrbart mit. Der wuchs nie wieder gleich."
+      },
+      {
+        "section": "strings",
+        "key": "Ops, essa dobra fora de ordem amassou o papel. Pode seguir ou pegar papel novo.",
+        "current": "Hoppla, diese Falte in falscher Reihenfolge hat das Papier zerknittert. Du kannst weitermachen oder neues Papier nehmen.",
+        "suggestion": "Hoppla, falsch gefaltet: Papier zerknittert. Weiter oder neues Papier nehmen."
+      },
+      {
+        "section": "strings",
+        "key": "Um crítico de comida vem aí. Dizem que ele já fez um chef chorar só olhando para um pastel. Capriche nas receitas.",
+        "current": "Ein Gastrokritiker ist unterwegs. Angeblich hat er einen Koch zum Weinen gebracht, nur indem er einen Pastel angesehen hat. Gib dir Mühe mit den Rezepten.",
+        "suggestion": "Ein Gastrokritiker kommt. Ein Blick auf einen Pastel brachte einen Koch zum Weinen. Gib dir Mühe!"
+      },
+      {
+        "section": "strings",
+        "key": "Lembra do robalo? Pensei melhor: tinha uns cinco quilos. Quase me puxou do barco.",
+        "current": "Erinnerst du dich an den Wolfsbarsch? Ich habe nachgedacht: Er hatte so fünf Kilo. Hätte mich fast aus dem Boot gezogen.",
+        "suggestion": "Der Wolfsbarsch? Eher fünf Kilo. Hätte mich fast aus dem Boot gezogen."
+      },
+      {
+        "section": "strings",
+        "key": "Volta amanhã. E traz coco gelado, que o de ontem chegou morno. O vulcão reclamou. Eu também.",
+        "current": "Komm morgen wieder. Und bring eine eiskalte Kokosnuss mit, die von gestern kam lauwarm an. Der Vulkan hat sich beschwert. Ich auch.",
+        "suggestion": "Komm morgen mit kalter Kokosnuss. Gestern war sie lauwarm. Der Vulkan meckerte. Ich auch."
+      },
+      {
+        "section": "strings",
+        "key": "Compre peças dos artesãos e arrume a prateleira: a vitrine vende mais. Embrulhe na ordem certa com a fita pedida.",
+        "current": "Kaufe Stücke von Kunsthandwerkern und fülle das Regal: Die Auslage steigert den Verkauf. Verpacke in der richtigen Reihenfolge mit dem gewünschten Band.",
+        "suggestion": "Handwerk kaufen, Regal füllen: Die Auslage verkauft mehr. Richtig falten, gewünschtes Band wählen."
+      },
+      {
+        "section": "strings",
+        "key": "Solte aqui o ingrediente da mão. Com tudo no copo, faça o passo pedido (socar, bater ou liquidificar) e sirva.",
+        "current": "Lege die Zutat aus deiner Hand hier ab. Wenn alles im Glas ist, führe den verlangten Schritt aus (zerdrücken, schütteln oder mixen) und serviere.",
+        "suggestion": "Zutat hier ablegen. Alles im Glas? Wie verlangt zerdrücken, schütteln oder mixen, dann servieren."
+      },
+      {
+        "section": "strings",
+        "key": "A garoupa, sabe? Eram trinta quilos e ela falava. Pediu pra eu soltar e eu soltei, por educação.",
+        "current": "Der Zackenbarsch, weißt du? Dreißig Kilo, und er konnte sprechen. Er bat mich, ihn freizulassen, und ich tat es, aus Höflichkeit.",
+        "suggestion": "Der Zackenbarsch? Dreißig Kilo, konnte sprechen! Bat um Freiheit. Ich ließ ihn höflich frei."
+      },
+      {
+        "section": "strings",
+        "key": "Dormir fecha o dia: salários são pagos, o jogo é salvo e o celular mostra o resumo e a previsão de amanhã.",
+        "current": "Schlafen beendet den Tag: Löhne werden gezahlt, das Spiel wird gespeichert und das Handy zeigt die Übersicht und die Vorhersage für morgen.",
+        "suggestion": "Schlafen: Löhne zahlen, speichern. Am Handy: Tagesbilanz und Wetter für morgen."
+      },
+      {
+        "section": "strings",
+        "key": "Segure E, Espaço, clique ou A para bater e solte no verde · passou, derramou",
+        "current": "Halte E, Leertaste, Mausklick oder A zum Mixen und lass im grünen Bereich los · zu spät bedeutet verschüttet",
+        "suggestion": "E, Leertaste, Klick oder A halten, im Grün loslassen · zu spät: verschüttet"
+      },
+      {
+        "section": "strings",
+        "key": "Pinball do Farol: Espaço lança a bola, A e D (ou Shift esquerdo e direito) batem os flippers.",
+        "current": "Leuchtturm-Flipper: Die Leertaste startet die Kugel; A und D (oder linke und rechte Umschalttaste) bewegen die Flipperhebel.",
+        "suggestion": "Leuchtturm-Flipper: Leertaste startet; A/D oder linke/rechte Shift-Taste: Flipperhebel."
+      },
+      {
+        "section": "strings",
+        "key": "Vovó Dilce mandou um áudio de sete minutos. Resumo: está muito orgulhosa e quer o quarto com vista.",
+        "current": "Oma Dilce hat eine siebenminütige Sprachnachricht geschickt. Zusammenfassung: Sie ist sehr stolz und will das Zimmer mit Aussicht.",
+        "suggestion": "Oma Dilce schickte sieben Minuten Audio: sehr stolz, will ein Zimmer mit Aussicht."
+      },
+      {
+        "section": "strings",
+        "key": "Anote o pedido, pegue o prato pronto no passe da cozinha e sirva. Rapidez rende gorjeta.",
+        "current": "Nimm die Bestellung auf, hol das fertige Gericht an der Küchenausgabe und serviere es. Schnelligkeit bringt Trinkgeld.",
+        "suggestion": "Bestellung aufnehmen, fertiges Gericht an der Küchenausgabe holen, servieren. Schnell sein bringt Trinkgeld."
+      },
+      {
+        "section": "strings",
+        "key": "Meu avô dizia: errar é humano, desperdiçar cachaça é crime.",
+        "current": "Mein Opa sagte immer: Irren ist menschlich, cachaça zu verschwenden ist ein Verbrechen.",
+        "suggestion": "Opa sagte: Irren ist menschlich, Cachaça verschwenden ein Verbrechen."
+      },
+      {
+        "section": "strings",
+        "key": "Seu Tibúrcio: \"Trinta anos sem descer esse morro. A trilha encolheu ou fui eu que cresci?\"",
+        "current": "Seu Tibúrcio: „Dreißig Jahre nicht von diesem Berg heruntergekommen. Ist der Pfad geschrumpft oder bin ich gewachsen?“",
+        "suggestion": "Seu Tibúrcio: „30 Jahre nicht vom Berg runter. Ist der Pfad geschrumpft oder ich gewachsen?“"
+      },
+      {
+        "section": "strings",
+        "key": "Cuida de todo o quiosque: anota pedidos, entrega produtos prontos, recebe e recolhe a louça.",
+        "current": "Kümmert sich um den ganzen Kiosk: nimmt Bestellungen auf, gibt fertige Produkte aus, kassiert und räumt das Geschirr ab.",
+        "suggestion": "Betreut den Kiosk: Bestellungen, fertige Produkte, Zahlung und Geschirr."
+      },
+      {
+        "section": "strings",
+        "key": "(converse com quem pediu para avançar)",
+        "current": "(sprich mit der Person, die darum gebeten hat, um weiterzukommen)",
+        "suggestion": "(zum Fortfahren mit dem Auftraggeber reden)"
+      }
+    ],
+    "en": [
+      {
+        "section": "strings",
+        "key": "Cem. Contei com a régua do meu avô, que media tudo em palmos. Deu muitos palmos.",
+        "current": "A hundred. I measured with my grandpa's ruler, which measured everything in hand spans. It came to a lot of hand spans.",
+        "suggestion": "A hundred. Grandpa measured in hand spans. His ruler counted plenty of those."
+      },
+      {
+        "section": "strings",
+        "key": "Antes de subir, dê água e protetor a cada um. Quem sobe sem isso cansa e reclama.",
+        "current": "Before heading up, give everyone water and sunscreen. Anyone who goes without them gets tired and complains.",
+        "suggestion": "Give everyone water and sunscreen before climbing. Without them, they tire and complain."
+      }
+    ],
+    "fr": [
+      {
+        "section": "strings",
+        "key": "Escolha o recheio, arraste para fechar a borda e frite até dourar: olhe a cor e ouça o sinal. Caldo de cana na moenda.",
+        "current": "Choisissez la garniture, faites glisser pour fermer le bord et faites frire jusqu'à ce qu'il soit doré : regardez la couleur et écoutez le signal. Jus de canne à la presse.",
+        "suggestion": "Choisissez la farce, glissez pour sceller, puis faites dorer : couleur et son vous guident. Pressez la canne pour le jus."
+      },
+      {
+        "section": "strings",
+        "key": "Misture no copo da bancada para descobrir receitas novas (cada uma dá fama).",
+        "current": "Mélangez les ingrédients dans le verre au comptoir pour découvrir de nouvelles recettes (chacune donne de la renommée).",
+        "suggestion": "Mélangez au comptoir : chaque recette découverte rapporte de la renommée."
+      },
+      {
+        "section": "strings",
+        "key": "A planta está na praia a leste do hotel, perto do farol: E em cada peça transparente para montar antes dos convidados.",
+        "current": "Le plan se trouve sur la plage à l'est de l'hôtel, près du phare : appuyez sur E devant chaque élément transparent pour l'installer avant l'arrivée des invités.",
+        "suggestion": "Plage à l’est de l’hôtel, près du phare : E sur chaque pièce transparente. Montez tout avant les invités."
+      },
+      {
+        "section": "loctext",
+        "key": "MareMenu,ConfirmText",
+        "current": "Commencer une nouvelle partie sur l'emplacement {0} ? La progression actuelle de cet emplacement sera seulement gardée en sauvegarde (.bak).",
+        "suggestion": "Nouvelle partie, emplacement {0} ? La progression actuelle ne restera qu’en copie (.bak)."
+      },
+      {
+        "section": "strings",
+        "key": "Pegue um ingrediente por vez e leve ao copo. A ordem não importa, só a mistura certa.",
+        "current": "Prenez un ingrédient à la fois et mettez-le dans le verre. L'ordre n'a pas d'importance, seule la bonne combinaison compte.",
+        "suggestion": "Un ingrédient à la fois dans le verre. Seul le mélange compte, pas l’ordre."
+      },
+      {
+        "section": "strings",
+        "key": "Nos quartos 301, 302 e 303, resolver pessoalmente (E no quarto) é de graça e dá fama.",
+        "current": "Dans les chambres 301, 302 et 303, résoudre le problème vous-même (E dans la chambre) est gratuit et donne de la renommée.",
+        "suggestion": "Chambres 301–303 : réglez le problème sur place (E), gratuitement, avec gain de renommée."
+      },
+      {
+        "section": "strings",
+        "key": "O guia contratado faz o passeio sozinho com nota 3, sem gorjeta. Indo junto, a nota, a gorjeta e a fama sobem.",
+        "current": "Le guide engagé mène seul l'excursion avec une note de 3, sans pourboire. En l'accompagnant, vous augmentez la note, les pourboires et la renommée.",
+        "suggestion": "Guide seul : note 3, sans pourboire. Accompagnez-le pour gagner note, pourboire et renommée."
+      },
+      {
+        "section": "strings",
+        "key": "Negocie a diária dos hóspedes do hotel como na pousada. Quem você não atender em 2 horas, a equipe recebe pela oferta.",
+        "current": "Négociez le prix de la nuit des clients de l'hôtel comme à la pension. Ceux que vous ne servez pas en 2 heures, l'équipe les accueille à leur prix proposé.",
+        "suggestion": "Négociez les nuitées comme à la pension. Après 2 h sans réponse, l’équipe accepte l’offre du client."
+      },
+      {
+        "section": "strings",
+        "key": "Motor forte: o pulso certo fica mais fácil e o batido rende mais gorjeta.",
+        "current": "Moteur puissant : il est plus facile de trouver le bon rythme et les cocktails rapportent plus de pourboires.",
+        "suggestion": "Moteur puissant : rythme plus facile, cocktails plus généreux en pourboires."
+      },
+      {
+        "section": "strings",
+        "key": "As fotos do seu álbum (tecla P) viram cartões-postais: com o farol, a baleia ou o pôr do sol vendem mais caro.",
+        "current": "Les photos de votre album (touche P) deviennent des cartes postales : celles du phare, de la baleine ou du coucher de soleil se vendent plus cher.",
+        "suggestion": "Photos (P) en cartes postales : phare, baleine et coucher de soleil se vendent plus cher."
+      },
+      {
+        "section": "strings",
+        "key": "Cem. Contei com a régua do meu avô, que media tudo em palmos. Deu muitos palmos.",
+        "current": "Cent. Je les ai mesurés avec la règle de mon grand-père, qui mesurait tout en empans. Ça faisait beaucoup d'empans.",
+        "suggestion": "Cent. La règle de mon grand-père mesurait tout en empans. Beaucoup d’empans !"
+      },
+      {
+        "section": "strings",
+        "key": "Dormir fecha o dia: salários são pagos, o jogo é salvo e o celular mostra o resumo e a previsão de amanhã.",
+        "current": "Dormir clôt la journée : les salaires sont payés, la partie est sauvegardée et le téléphone affiche le résumé et les prévisions du lendemain.",
+        "suggestion": "Dormir : salaires payés, partie sauvée. Bilan et météo de demain sur le téléphone."
+      },
+      {
+        "section": "strings",
+        "key": "Uma revista de viagem quer o resort na capa. O fotógrafo avisou que só fotografa \"coisa bonita\". Personalize a vila.",
+        "current": "Un magazine de voyage veut le resort en couverture. Le photographe a prévenu qu'il ne photographie que les « belles choses ». Personnalisez le village.",
+        "suggestion": "Un magazine veut le resort en couverture. Le photographe ne prend que le « beau ». Décorez le village."
+      },
+      {
+        "section": "loctext",
+        "key": "MareMenu,OptKeysHint",
+        "current": "Cliquez sur une action puis appuyez sur la nouvelle touche (Échap annule). Si la touche est déjà utilisée, les deux actions sont échangées.",
+        "suggestion": "Cliquez sur l’action, puis appuyez sur la touche (Échap annule). Touche déjà prise ? Les actions s’échangent."
+      },
+      {
+        "section": "strings",
+        "key": "Os produtos já vêm prontos: pegue o que o cliente pediu. Quando acabar, reponha pelo celular ou aqui mesmo.",
+        "current": "Les produits arrivent déjà prêts : prenez ce que le client a commandé. Quand il n'y en a plus, réapprovisionnez sur le téléphone ou ici même.",
+        "suggestion": "Produits prêts : prenez la commande. À court ? Réapprovisionnez ici ou sur le téléphone."
+      },
+      {
+        "section": "strings",
+        "key": "{0}: os convidados chegaram e quase nada estava montado ({1} de {2}). Ficou só o sinal, R$ {3}, e a fama caiu.",
+        "current": "{0} : les invités sont arrivés et presque rien n'était installé ({1} sur {2}). Seul l'acompte de R$ {3} a été conservé, et la renommée a baissé.",
+        "suggestion": "{0} : invités arrivés, presque rien monté ({1}/{2}). Acompte seul : R$ {3}. Renommée en baisse."
+      },
+      {
+        "section": "strings",
+        "key": "O cooler está sem picolé: a sorveteria repõe a cada hora aberta.",
+        "current": "Plus de glaces à l'eau dans la glacière : le glacier la réapprovisionne chaque heure d'ouverture.",
+        "suggestion": "Plus de glaces dans la glacière ! Le glacier la remplit chaque heure d’ouverture."
+      },
+      {
+        "section": "strings",
+        "key": "Ops, essa dobra fora de ordem amassou o papel. Pode seguir ou pegar papel novo.",
+        "current": "Oups, ce pli fait dans le désordre a froissé le papier. Vous pouvez continuer ou prendre une nouvelle feuille.",
+        "suggestion": "Oups, mauvais pli : papier froissé. Continuez ou prenez une feuille neuve."
+      },
+      {
+        "section": "strings",
+        "key": "Dona Cecília quer resgatar as receitas da avó e levar comida boa até a rua principal.",
+        "current": "Dona Cecília veut retrouver les recettes de sa grand-mère et apporter de la bonne cuisine jusqu'à la rue principale.",
+        "suggestion": "Dona Cecília veut faire revivre les recettes de sa grand-mère dans la rue principale."
+      },
+      {
+        "section": "strings",
+        "key": "Menor? Impossível. Peixe de história só cresce, nunca diminui.",
+        "current": "Plus petit ? Impossible. Les poissons des histoires ne font que grandir, jamais rapetisser.",
+        "suggestion": "Plus petit ? Impossible ! Un poisson de légende ne fait que grandir."
+      },
+      {
+        "section": "strings",
+        "key": "Lojinha: a prateleira está vazia! Compre artesanato e arrume a vitrine.",
+        "current": "Boutique de souvenirs : l'étagère est vide ! Achetez des objets artisanaux et remplissez la vitrine.",
+        "suggestion": "Boutique : étagère vide ! Achetez de l’artisanat, remplissez la vitrine."
+      },
+      {
+        "section": "strings",
+        "key": "(no nível \"Pôr do sol no mar\" abre o passeio de jangada no fim da tarde)",
+        "current": "(au niveau « Coucher de soleil en mer », la sortie en jangada devient disponible en fin d'après-midi)",
+        "suggestion": "(niveau « Coucher de soleil en mer » : jangada en fin d’après-midi)"
+      },
+      {
+        "section": "strings",
+        "key": " (no nível \"Pôr do sol no mar\" abre o passeio de jangada no fim da tarde)",
+        "current": " (au niveau « Coucher de soleil en mer », la sortie en jangada devient disponible en fin d'après-midi)",
+        "suggestion": " (niveau « Coucher de soleil en mer » : jangada en fin d’après-midi)"
+      },
+      {
+        "section": "strings",
+        "key": "Antes de subir, dê água e protetor a cada um. Quem sobe sem isso cansa e reclama.",
+        "current": "Avant de monter, donnez de l'eau et de la crème solaire à chacun. Sans cela, ils se fatiguent et se plaignent.",
+        "suggestion": "Avant de monter : eau et crème solaire pour tous. Sans elles, fatigue et plaintes."
+      },
+      {
+        "section": "strings",
+        "key": "Chegamos bem na hora do pôr do sol!",
+        "current": "Nous sommes arrivés juste à temps pour le coucher du soleil !",
+        "suggestion": "Juste à temps pour le coucher du soleil !"
+      }
+    ],
+    "it": [
+      {
+        "section": "strings",
+        "key": "Ofereça os extras que o grupo quer (criança pede colete, quem chega com fome quer lanche, primeira vez quer foto): rende mais e sobe a nota. Insistir no que não querem baixa a nota.",
+        "current": "Offri gli extra che il gruppo desidera (i bambini chiedono il giubbotto salvagente, chi ha fame vuole uno spuntino, chi è alla prima esperienza vuole una foto): guadagni di più e il voto sale. Insistere su cose indesiderate abbassa il voto.",
+        "suggestion": "Offri gli extra richiesti: giubbotto ai bimbi, spuntino agli affamati, foto ai nuovi. Più incassi e voto migliore; insistere su altro lo abbassa."
+      },
+      {
+        "section": "strings",
+        "key": "Seríssimo. Em 1987 esqueceram uma vez e a Onda levou a praia, o bar e o meu bigode. O bigode nunca mais cresceu igual.",
+        "current": "Serissimo. Nel 1987 se ne sono dimenticati una volta e l'Onda si è portata via la spiaggia, il bar e i miei baffi. I baffi non sono più ricresciuti uguali.",
+        "suggestion": "Serissimo. Nel 1987 lo scordarono: l’Onda portò via spiaggia, bar e baffi. Non ricrebbero più uguali."
+      },
+      {
+        "section": "strings",
+        "key": "Mova o mouse para posicionar a raquete; o golpe sai sozinho quando a bola chega. Q sai da partida.",
+        "current": "Muovi il mouse per posizionare la racchetta; il colpo parte automaticamente quando arriva la palla. Premi Q per uscire dalla partita.",
+        "suggestion": "Muovi il mouse: la racchetta colpisce da sola quando arriva la palla. Q esce."
+      },
+      {
+        "section": "strings",
+        "key": "Cem. Contei com a régua do meu avô, que media tudo em palmos. Deu muitos palmos.",
+        "current": "Cento. Li ho misurati con il righello di mio nonno, che misurava tutto in spanne. Sono venute un sacco di spanne.",
+        "suggestion": "Cento. Il righello del nonno misurava a spanne. Tante spanne!"
+      },
+      {
+        "section": "strings",
+        "key": "Dormir fecha o dia: salários são pagos, o jogo é salvo e o celular mostra o resumo e a previsão de amanhã.",
+        "current": "Dormire chiude la giornata: si pagano gli stipendi, la partita viene salvata e il cellulare mostra il riepilogo e le previsioni di domani.",
+        "suggestion": "Dormire: stipendi pagati, partita salvata. Sul cellulare: riepilogo e meteo di domani."
+      },
+      {
+        "section": "strings",
+        "key": "O cooler está sem picolé: a sorveteria repõe a cada hora aberta.",
+        "current": "Il frigo portatile ha finito i ghiaccioli: la gelateria lo rifornisce a ogni ora di apertura.",
+        "suggestion": "Ghiaccioli finiti! La gelateria riempie il frigo a ogni ora di apertura."
+      },
+      {
+        "section": "strings",
+        "key": "Na rua principal. Funciona até tarde e bomba nas festas.",
+        "current": "Nella via principale. Resta aperto fino a tardi e va a gonfie vele durante le feste.",
+        "suggestion": "In via principale, aperto fino a tardi. Fa il pienone alle feste."
+      },
+      {
+        "section": "strings",
+        "key": "Balançaram tanto que fiquei enjoado.",
+        "current": "L’abbiamo fatta oscillare così tanto che mi è venuta la nausea.",
+        "suggestion": "Avete dondolato tanto da farmi venire la nausea."
+      },
+      {
+        "section": "strings",
+        "key": "Folhas na água espantam os banhistas e baixam as estrelas. O piscineiro limpa sozinho.",
+        "current": "Le foglie in acqua fanno scappare i bagnanti e abbassano le stelle. Il manutentore della piscina pulisce da solo.",
+        "suggestion": "Foglie in acqua: meno bagnanti e stelle. L’addetto alla piscina pulisce da solo."
+      },
+      {
+        "section": "strings",
+        "key": " Faltou picolé para {0}: o cooler esvaziou.",
+        "current": " Sono mancati i ghiaccioli per {0}: il frigo portatile si è svuotato.",
+        "suggestion": " Ghiaccioli finiti per {0}: frigo vuoto."
+      },
+      {
+        "section": "strings",
+        "key": "Misture no copo da bancada para descobrir receitas novas (cada uma dá fama).",
+        "current": "Mescola gli ingredienti nel bicchiere sul bancone per scoprire nuove ricette (ognuna aumenta la fama).",
+        "suggestion": "Mescola nel bicchiere al bancone: ogni ricetta scoperta dà fama."
+      }
+    ],
+    "nl": [
+      {
+        "section": "strings",
+        "key": "A planta está na praia a leste do hotel, perto do farol: E em cada peça transparente para montar antes dos convidados.",
+        "current": "De plattegrond ligt op het strand ten oosten van het hotel, bij de vuurtoren: druk op E bij elk doorzichtig onderdeel om het op te bouwen voordat de gasten aankomen.",
+        "suggestion": "Strand oostelijk van het hotel, bij de vuurtoren: E op elk doorzichtig deel. Bouw alles vóór de gasten komen."
+      },
+      {
+        "section": "strings",
+        "key": "Dormir fecha o dia: salários são pagos, o jogo é salvo e o celular mostra o resumo e a previsão de amanhã.",
+        "current": "Slapen sluit de dag af: lonen worden betaald, het spel wordt opgeslagen en de telefoon toont het overzicht en de voorspelling voor morgen.",
+        "suggestion": "Slapen: lonen betalen en opslaan. Op je telefoon: dagoverzicht en het weer voor morgen."
+      },
+      {
+        "section": "strings",
+        "key": "A lenda da ilha vulcânica arrepiou!",
+        "current": "De legende van het vulkanische eiland bezorgde ons kippenvel!",
+        "suggestion": "De vulkaanlegende gaf ons kippenvel!"
+      }
+    ],
+    "pl": [
+      {
+        "section": "strings",
+        "key": "O cooler está sem picolé: a sorveteria repõe a cada hora aberta.",
+        "current": "W lodówce turystycznej nie ma lodów na patyku: lodziarnia uzupełnia zapas co godzinę otwarcia.",
+        "suggestion": "Brak lodów na patyku! Lodziarnia napełnia lodówkę co godzinę otwarcia."
+      },
+      {
+        "section": "strings",
+        "key": "Segure E, Espaço, clique ou A para bater e solte no verde · passou, derramou",
+        "current": "Przytrzymaj E, Spację, kliknięcie lub A, aby wstrząsać, i puść na zielonym · za długo oznacza rozlanie",
+        "suggestion": "Trzymaj E, Spację, klik lub A; puść na zielonym · za długo: rozlanie"
+      }
+    ],
+    "ru": [
+      {
+        "section": "strings",
+        "key": "Segure E, Espaço, clique ou A para bater e solte no verde · passou, derramou",
+        "current": "Удерживайте E, пробел, щелчок или A для взбивания и отпустите в зелёной зоне · передержите — прольётся",
+        "suggestion": "Держите E, пробел, кнопку мыши или A; отпустите на зелёном · позже — прольёте"
+      }
+    ]
+  },
+  "width_only": {
+    "ko": [
+      {
+        "section": "strings",
+        "key": "E o vulcão... está soltando fogos? Seu Tibúrcio: \"Ele adora festa. Quem não adora?\"",
+        "current": "그런데 화산이... 불꽃놀이를 하고 있어? Seu Tibúrcio: \"저 녀석은 축제를 좋아해. 안 좋아하는 사람이 어디 있어?\"",
+        "suggestion": "화산이 불꽃놀이를? Seu Tibúrcio: \"축제를 좋아하거든. 누가 싫어하겠어?\""
+      },
+      {
+        "section": "strings",
+        "key": "{0} reclamou: multa sem amassado nenhum! A fama caiu.",
+        "current": "{0}이(가) 항의했습니다: 찌그러짐도 없는데 벌금을 받았어요! 명성이 떨어졌습니다.",
+        "suggestion": "{0}의 항의: 흠집도 없는데 벌금이라니! 명성이 하락했습니다."
+      }
+    ]
+  }
+}

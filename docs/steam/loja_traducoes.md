@@ -1,18 +1,24 @@
-# Traduções da página da loja
+# Traduções da página do jogo completo
 
-Referência: `8e817f7a0813e4af628d6d317af54d50b67dbeba` (06/11/2026). Textos comerciais em 12 idiomas; nomes próprios preservados. Revisão por falantes nativos e conferência no painel Steam ainda são necessárias. Não anunciam co-op, montagem personalizada de casamentos ou 32 interiores diferentes. Todas as descrições curtas têm até 300 caracteres Unicode.
+Pacote 5 — 07/11/2026, base `2bea4d2d`. Título comercial: **Coconut Coast: Resort Simulator**; Maré Alta é o resort. Doze versões com objetivo de quitar a dívida de R$ 1.000.000, sem converter a moeda ou prometer data. Cada descrição curta tem até 300 caracteres Unicode.
+
+Estes textos descrevem a continuação completa em desenvolvimento, planejada para Acesso Antecipado **depois** da demo gratuita. Para a página da demo usar loja_pt-BR.md/loja_en.md; não publicar a lista completa de recursos como se pertencessem à demo. A dívida ainda depende da implementação do Claude; só publicar depois de integrada e validada. Revisão por falantes nativos e conferência da versão distribuída continuam necessárias.
+
+Não prometem co-op, migração de save ou 32 interiores distintos. Novos comportamentos de banhistas e descidas do tobogã são trabalho em andamento e não viram promessa desta copy. As durações ~2 h de demo, ~20 h de história e ~37–40 h para 100% são metas editoriais, não garantias medidas.
 
 ## en — Inglês
 
 ### Descrição curta
 
-Turn a beach kiosk into a lively resort! Serve customers, manage from your phone, hire a team and expand to the Grand Hotel. Between cocktails, guided tours and game room matches, the village always has another story to tell.
+Grandma left you a beach kiosk—and R$ 1,000,000 in debt. Serve customers, manage from your phone and grow Maré Alta into a resort. Meet a Brazilian village full of stories and work towards paying off the family debt in Coconut Coast: Resort Simulator.
 
 ### Descrição longa
 
 #### A seaside dream starts with a kiosk
 
-Grandma Dilce has left you the family beach kiosk. Name your business, flip the sign to open and welcome your first customers. In **Maré Alta Resort**, turn a small counter into a holiday destination through hands-on service and management.
+Grandma Dilce has left you the family beach kiosk. Name your business, flip the sign to open and welcome your first customers. In **Coconut Coast: Resort Simulator**, turn a small counter into a holiday destination through hands-on service and management.
+
+Grandma Dilce has moved in with her bingo friends. Along with the kiosk came a letter and **R$ 1,000,000 in debt**. Grow the resort to pay it off in the full game, with voluntary payments and no interest or mandatory instalments. The free demo introduces the debt; full repayment and its ending belong to the full game.
 
 #### Run the business, live the beach
 
@@ -43,13 +49,15 @@ The game is in development. Presentation and balance will continue to be refined
 
 ### Descrição curta
 
-¡Convierte un quiosco de playa en un resort lleno de vida! Atiende clientes, gestiona desde el móvil, contrata personal y llega al Grand Hotel. Entre cócteles, excursiones y partidas, el pueblo siempre tiene otra historia que contar.
+Tu abuela te dejó un quiosco de playa y una deuda de R$ 1.000.000. Atiende clientes, gestiona desde el móvil y convierte Maré Alta en un resort. Conoce un pueblo brasileño lleno de historias y salda la deuda familiar en Coconut Coast: Resort Simulator.
 
 ### Descrição longa
 
 #### Un sueño junto al mar empieza en un quiosco
 
-La abuela Dilce te ha dejado el quiosco familiar. Ponle nombre al negocio, gira el cartel para abrir y recibe a tus primeros clientes. En **Maré Alta Resort**, transforma una pequeña barra en un destino turístico con atención directa y gestión.
+La abuela Dilce te ha dejado el quiosco familiar. Ponle nombre al negocio, gira el cartel para abrir y recibe a tus primeros clientes. En **Coconut Coast: Resort Simulator**, transforma una pequeña barra en un destino turístico con atención directa y gestión.
+
+La abuela Dilce se ha ido a vivir con sus amigas del bingo. Junto al quiosco dejó una carta y **R$ 1.000.000 de deuda**. Haz crecer el resort para saldarla en el juego completo, con pagos voluntarios, sin intereses ni cuotas obligatorias. La demo gratuita presenta la deuda; la liquidación y su desenlace quedan para el juego completo.
 
 #### Trabaja y disfruta de la playa
 
@@ -80,13 +88,15 @@ El juego sigue en desarrollo. La presentación y el equilibrio continuarán mejo
 
 ### Descrição curta
 
-Mach aus einem Strandkiosk ein lebendiges Resort! Bediene Gäste, verwalte per Handy, stelle Personal ein und baue bis zum Grand Hotel aus. Zwischen Cocktails, Ausflügen und Spielen hat das Dorf immer eine neue Geschichte zu erzählen.
+Oma hinterlässt dir einen Strandkiosk und R$ 1.000.000 Schulden. Bediene Gäste, verwalte alles per Handy und baue Maré Alta zum Resort aus. Lerne ein brasilianisches Dorf kennen und zahle die Familienschulden ab: Coconut Coast: Resort Simulator.
 
 ### Descrição longa
 
 #### Ein Traum am Meer beginnt am Kiosk
 
-Oma Dilce hat dir den Strandkiosk der Familie überlassen. Gib deinem Betrieb einen Namen, drehe das Schild auf „Geöffnet“ und begrüße die ersten Gäste. In **Maré Alta Resort** wird aus einer kleinen Theke durch persönlichen Einsatz und gutes Management ein Urlaubsziel.
+Oma Dilce hat dir den Strandkiosk der Familie überlassen. Gib deinem Betrieb einen Namen, drehe das Schild auf „Geöffnet“ und begrüße die ersten Gäste. In **Coconut Coast: Resort Simulator** wird aus einer kleinen Theke durch persönlichen Einsatz und gutes Management ein Urlaubsziel.
+
+Oma Dilce wohnt jetzt bei ihren Bingo-Freundinnen. Zum Kiosk gehören ein Brief und **R$ 1.000.000 Schulden**. Baue das Resort aus, um sie im vollständigen Spiel zurückzuzahlen: freiwillig, ohne Zinsen oder Pflichtraten. Die kostenlose Demo stellt die Schulden vor; die vollständige Tilgung und das Ende gehören zum vollständigen Spiel.
 
 #### Arbeiten und Strandalltag erleben
 
@@ -117,13 +127,15 @@ Das Spiel befindet sich in Entwicklung. Präsentation und Balance werden im Earl
 
 ### Descrição curta
 
-Transformez un kiosque de plage en un complexe animé ! Servez vos clients, gérez depuis votre téléphone, recrutez et développez-vous jusqu’au Grand Hotel. Entre cocktails, excursions et parties, le village a toujours une histoire à raconter.
+Mamie te laisse un kiosque de plage et R$ 1 000 000 de dettes. Sers les clients, gère depuis ton téléphone et transforme Maré Alta en resort. Découvre un village brésilien et rembourse la dette familiale dans Coconut Coast: Resort Simulator.
 
 ### Descrição longa
 
 #### Un rêve en bord de mer commence dans un kiosque
 
-Mamie Dilce vous a confié le kiosque familial. Nommez votre commerce, retournez la pancarte pour ouvrir et accueillez vos premiers clients. Dans **Maré Alta Resort**, faites d’un petit comptoir une destination de vacances grâce au service et à la gestion.
+Mamie Dilce vous a confié le kiosque familial. Nommez votre commerce, retournez la pancarte pour ouvrir et accueillez vos premiers clients. Dans **Coconut Coast: Resort Simulator**, faites d’un petit comptoir une destination de vacances grâce au service et à la gestion.
+
+Mamie Dilce est partie vivre avec ses amies du bingo. Avec le kiosque, elle t’a laissé une lettre et **R$ 1 000 000 de dettes**. Développe le resort pour les rembourser dans le jeu complet : paiements libres, sans intérêts ni mensualités imposées. La démo gratuite présente la dette ; son remboursement intégral et le dénouement sont réservés au jeu complet.
 
 #### Travaillez au rythme de la plage
 
@@ -154,13 +166,15 @@ Le jeu est en développement. Sa présentation et son équilibrage continueront 
 
 ### Descrição curta
 
-把海滩小摊发展成热闹的度假村！接待顾客，用手机管理生意，雇用员工，一步步扩建到 Grand Hotel。在调酒、带团出游和游戏厅对局之间，小镇总有新故事等你发现。
+奶奶把海滩小店交给了你，还有 R$ 1,000,000 的债务。在 Coconut Coast: Resort Simulator 中亲自接待顾客、用手机管理生意，将 Maré Alta 打造成度假村。认识巴西海滨小镇的居民，逐步偿清家族债务。
 
 ### Descrição longa
 
 #### 从海边小摊开始的梦想
 
-Dilce 奶奶把家里的海滩小摊交给了你。为生意起名，翻转营业招牌，迎接第一批顾客。在 **Maré Alta Resort** 中，亲自服务、用心经营，把一处小柜台变成游客的度假目的地。
+Dilce 奶奶把家里的海滩小摊交给了你。为生意起名，翻转营业招牌，迎接第一批顾客。在 **Coconut Coast: Resort Simulator** 中，亲自服务、用心经营，把一处小柜台变成游客的度假目的地。
+
+Dilce 奶奶搬去和宾果好友们同住了。除了小店，她还留下了一封信和 **R$ 1,000,000 的债务**。发展度假村，在完整游戏中偿清债务：自由付款，没有利息或强制分期。免费试玩版会介绍这笔债务；完全偿清债务和故事结局属于完整游戏。
 
 #### 体验海边的经营日常
 
@@ -191,13 +205,15 @@ Dilce 奶奶把家里的海滩小摊交给了你。为生意起名，翻转营�
 
 ### Descrição curta
 
-海辺の売店を、にぎやかなリゾートへ！接客、スマホでの経営、スタッフの雇用をこなし、Grand Hotel まで事業を広げよう。カクテル作りやツアー、ゲームルームでの対戦の合間には、村の新しい物語が待っています。
+祖母から託された海辺の売店。借金は R$ 1,000,000。Coconut Coast: Resort Simulator で接客し、スマホで経営しながら Maré Alta をリゾートへ育てよう。ブラジルの海辺の村で人々と出会い、家族の借金完済を目指そう。
 
 ### Descrição longa
 
 #### 海辺の夢は、小さな売店から
 
-Dilce おばあちゃんが家族の売店をあなたに託しました。店に名前をつけ、看板を営業中にして、最初のお客さんを迎えましょう。**Maré Alta Resort** では、自分で働き、経営しながら、小さなカウンターを観光地へ育てていきます。
+Dilce おばあちゃんが家族の売店をあなたに託しました。店に名前をつけ、看板を営業中にして、最初のお客さんを迎えましょう。**Coconut Coast: Resort Simulator** では、自分で働き、経営しながら、小さなカウンターを観光地へ育てていきます。
+
+Dilce おばあちゃんはビンゴ仲間と暮らすことに。売店とともに残したのは手紙、そして **R$ 1,000,000 の借金**。リゾートを成長させ、製品版で完済を目指そう。返済は任意で、利息も毎月の支払い義務もありません。無料体験版では借金の物語が始まり、完済とその結末は製品版で描かれます。
 
 #### ビーチの日常を経営しよう
 
@@ -228,13 +244,15 @@ Dilce おばあちゃんが家族の売店をあなたに託しました。店�
 
 ### Descrição curta
 
-Превратите пляжный киоск в оживлённый курорт! Обслуживайте гостей, управляйте с телефона, нанимайте персонал и расширяйтесь до Grand Hotel. Между коктейлями, экскурсиями и играми деревня всегда найдёт новую историю.
+Бабушка оставила вам пляжный киоск и долг R$ 1 000 000. Обслуживайте гостей, управляйте со смартфона и превратите Maré Alta в курорт. Познакомьтесь с бразильской деревней и погасите семейный долг в Coconut Coast: Resort Simulator.
 
 ### Descrição longa
 
 #### Мечта у моря начинается с киоска
 
-Бабушка Dilce оставила вам семейный пляжный киоск. Назовите своё дело, переверните табличку и встречайте первых покупателей. В **Maré Alta Resort** вы лично обслуживаете гостей и управляете бизнесом, превращая маленькую стойку в место отдыха.
+Бабушка Dilce оставила вам семейный пляжный киоск. Назовите своё дело, переверните табличку и встречайте первых покупателей. В **Coconut Coast: Resort Simulator** вы лично обслуживаете гостей и управляете бизнесом, превращая маленькую стойку в место отдыха.
+
+Бабушка Dilce переехала к подругам по бинго. Вместе с киоском она оставила письмо и **долг R$ 1 000 000**. Развивайте курорт, чтобы погасить его в полной игре: добровольные платежи, без процентов и обязательных взносов. Бесплатная демоверсия знакомит с долгом; полное погашение и развязка доступны в полной игре.
 
 #### Работайте в ритме пляжа
 
@@ -265,13 +283,15 @@ Dilce おばあちゃんが家族の売店をあなたに託しました。店�
 
 ### Descrição curta
 
-해변 매점을 활기찬 리조트로 키워 보세요! 손님을 응대하고 휴대폰으로 경영하며 직원을 고용해 Grand Hotel까지 확장하세요. 칵테일과 관광 투어, 게임룸 대전 사이에도 마을에는 새로운 이야기가 기다립니다.
+할머니가 해변 매점과 R$ 1,000,000의 빚을 남겼습니다. Coconut Coast: Resort Simulator에서 손님을 응대하고 휴대폰으로 사업을 관리하며 Maré Alta를 리조트로 키우세요. 브라질 해변 마을의 주민들을 만나고 가족의 빚을 갚아 나가세요.
 
 ### Descrição longa
 
 #### 바닷가의 꿈은 작은 매점에서 시작됩니다
 
-Dilce 할머니가 가족의 해변 매점을 당신에게 맡겼습니다. 가게 이름을 짓고 영업 표지판을 뒤집어 첫 손님을 맞이하세요. **Maré Alta Resort**에서는 직접 손님을 응대하고 사업을 경영하며 작은 카운터를 휴양지로 키워 나갑니다.
+Dilce 할머니가 가족의 해변 매점을 당신에게 맡겼습니다. 가게 이름을 짓고 영업 표지판을 뒤집어 첫 손님을 맞이하세요. **Coconut Coast: Resort Simulator**에서는 직접 손님을 응대하고 사업을 경영하며 작은 카운터를 휴양지로 키워 나갑니다.
+
+Dilce 할머니는 빙고 친구들과 살러 갔습니다. 매점과 함께 편지, 그리고 **R$ 1,000,000의 빚**을 남겼죠. 리조트를 키워 정식 게임에서 빚을 갚으세요. 납부는 자유이며 이자나 의무 분할 납부는 없습니다. 무료 체험판에서는 빚에 얽힌 이야기가 시작되고, 완납과 결말은 정식 게임에서 이어집니다.
 
 #### 해변의 일상을 경영하세요
 
@@ -302,13 +322,15 @@ Dilce 할머니가 가족의 해변 매점을 당신에게 맡겼습니다. 가�
 
 ### Descrição curta
 
-Trasforma un chiosco sulla spiaggia in un resort vivace! Servi i clienti, gestisci dal telefono, assumi personale e arriva al Grand Hotel. Tra cocktail, escursioni e partite, il villaggio ha sempre una nuova storia da raccontare.
+La nonna ti lascia un chiosco sulla spiaggia e R$ 1.000.000 di debiti. Servi i clienti, gestisci dal telefono e trasforma Maré Alta in un resort. Scopri un villaggio brasiliano e ripaga il debito di famiglia in Coconut Coast: Resort Simulator.
 
 ### Descrição longa
 
 #### Un sogno sul mare comincia da un chiosco
 
-Nonna Dilce ti ha affidato il chiosco di famiglia. Dai un nome all’attività, gira il cartello per aprire e accogli i primi clienti. In **Maré Alta Resort**, servizio diretto e gestione trasformano un piccolo bancone in una meta per le vacanze.
+Nonna Dilce ti ha affidato il chiosco di famiglia. Dai un nome all’attività, gira il cartello per aprire e accogli i primi clienti. In **Coconut Coast: Resort Simulator**, servizio diretto e gestione trasformano un piccolo bancone in una meta per le vacanze.
+
+Nonna Dilce è andata a vivere con le amiche del bingo. Insieme al chiosco ha lasciato una lettera e **R$ 1.000.000 di debiti**. Fai crescere il resort per ripagarli nel gioco completo: pagamenti liberi, senza interessi né rate obbligatorie. La demo gratuita presenta il debito; il saldo finale e la conclusione della storia sono riservati al gioco completo.
 
 #### Lavora al ritmo della spiaggia
 
@@ -339,13 +361,15 @@ Il gioco è in sviluppo. Presentazione e bilanciamento continueranno a migliorar
 
 ### Descrição curta
 
-Zmień plażowy kiosk w tętniący życiem kurort! Obsługuj klientów, zarządzaj przez telefon, zatrudniaj pracowników i rozbuduj biznes aż do Grand Hotel. Między koktajlami, wycieczkami i rozgrywkami wioska zawsze ma nową historię.
+Babcia zostawiła ci plażowy kiosk i dług R$ 1 000 000. Obsługuj gości, zarządzaj przez telefon i zmień Maré Alta w kurort. Poznaj mieszkańców brazylijskiej wioski i spłać rodzinny dług w Coconut Coast: Resort Simulator.
 
 ### Descrição longa
 
 #### Marzenie nad morzem zaczyna się od kiosku
 
-Babcia Dilce powierzyła ci rodzinny kiosk na plaży. Nazwij swój biznes, obróć tabliczkę i przywitaj pierwszych klientów. W **Maré Alta Resort** dzięki osobistej obsłudze i zarządzaniu zmienisz małą ladę w wakacyjny cel podróży.
+Babcia Dilce powierzyła ci rodzinny kiosk na plaży. Nazwij swój biznes, obróć tabliczkę i przywitaj pierwszych klientów. W **Coconut Coast: Resort Simulator** dzięki osobistej obsłudze i zarządzaniu zmienisz małą ladę w wakacyjny cel podróży.
+
+Babcia Dilce zamieszkała z koleżankami z bingo. Z kioskiem zostawiła list i **dług R$ 1 000 000**. Rozwijaj kurort, by spłacić go w pełnej grze: dobrowolnie, bez odsetek i obowiązkowych rat. Darmowe demo przedstawia dług; pełna spłata i zakończenie historii należą do pełnej gry.
 
 #### Pracuj w rytmie plaży
 
@@ -376,13 +400,15 @@ Gra jest w trakcie tworzenia. Oprawa i balans będą dalej dopracowywane we wcze
 
 ### Descrição curta
 
-Maak van een strandkiosk een levendig resort! Help klanten, beheer je zaak via je telefoon, neem personeel aan en groei tot het Grand Hotel. Tussen cocktails, excursies en spelletjes heeft het dorp altijd een nieuw verhaal.
+Oma laat je een strandkiosk én R$ 1.000.000 schuld na. Bedien gasten, beheer alles via je telefoon en bouw Maré Alta uit tot een resort. Ontmoet een Braziliaans dorp vol verhalen en los de familieschuld af in Coconut Coast: Resort Simulator.
 
 ### Descrição longa
 
 #### Een droom aan zee begint bij een kiosk
 
-Oma Dilce heeft de strandkiosk van de familie aan jou toevertrouwd. Geef je zaak een naam, draai het bordje om en verwelkom de eerste klanten. In **Maré Alta Resort** verander je een kleine toonbank met persoonlijke bediening en goed beheer in een vakantiebestemming.
+Oma Dilce heeft de strandkiosk van de familie aan jou toevertrouwd. Geef je zaak een naam, draai het bordje om en verwelkom de eerste klanten. In **Coconut Coast: Resort Simulator** verander je een kleine toonbank met persoonlijke bediening en goed beheer in een vakantiebestemming.
+
+Oma Dilce woont nu bij haar bingovriendinnen. Bij de kiosk horen een brief en **R$ 1.000.000 schuld**. Laat het resort groeien om die in het volledige spel af te lossen: vrijwillig, zonder rente of verplichte termijnen. De gratis demo introduceert de schuld; volledige aflossing en het slot van het verhaal horen bij het volledige spel.
 
 #### Werk op het ritme van het strand
 
@@ -413,13 +439,15 @@ De game is in ontwikkeling. Presentatie en balans worden tijdens vroegtijdige to
 
 ### Descrição curta
 
-Transforma um quiosque de praia num resort cheio de vida! Atende clientes, gere pelo telemóvel, contrata a tua equipa e expande até ao Grand Hotel. Entre cocktails, passeios e partidas no salão de jogos, a vila tem sempre mais uma história para contar.
+A avó deixou-te um quiosque de praia e uma dívida de R$ 1.000.000. Atende clientes, gere pelo telemóvel e transforma o Maré Alta num resort. Conhece uma vila brasileira cheia de histórias e paga a dívida da família em Coconut Coast: Resort Simulator.
 
 ### Descrição longa
 
 #### Um sonho à beira-mar começa num quiosque
 
-A avó Dilce deixou-te o quiosque da família. Dá um nome ao negócio, vira a placa para abrir e recebe os primeiros clientes. Em **Maré Alta Resort**, transforma um pequeno balcão num destino de férias através do atendimento e da gestão.
+A avó Dilce deixou-te o quiosque da família. Dá um nome ao negócio, vira a placa para abrir e recebe os primeiros clientes. Em **Coconut Coast: Resort Simulator**, transforma um pequeno balcão num destino de férias através do atendimento e da gestão.
+
+A avó Dilce foi viver com as amigas do bingo. Com o quiosque deixou uma carta e **R$ 1.000.000 de dívida**. Faz crescer o resort para a pagar no jogo completo: pagamentos livres, sem juros nem prestações obrigatórias. A demo gratuita apresenta a dívida; a quitação e o desfecho ficam para o jogo completo.
 
 #### Trabalha ao ritmo da praia
 

@@ -210,3 +210,48 @@ Base efceab9; branch gpt/pacote-4. Desenho em DIVIDA_DA_AVO.md, contrato novo de
 Guardas de source_features da base tinham hashes divergentes para dois C++ publicados; renovado somente o registro de leitura e corrigida a revisão antiga do modelo. Incoerência encontrada: a missão fregueses tem qty/texto de 7.000, mas título “Quatro mil fregueses”; só relatada. O índice histórico de assets do pacote 2 também não é reutilizável sem atualizar seus hashes de Data; a checagem desta tarefa usa metadados temporários atuais, sem editar esse histórico.
 
 47 JSON de Data passaram no linter (796 resoluções de modelos, zero erros), com índice temporário de metadados Git. Validação Python: testes da transação/modelo, conciliação de caixa/dívida, censura, hashes, demo, traduções e condições/ids das conquistas. Sem Unreal, C++, assets, aplicação dos preços ou edição dos JSON econômicos existentes. O novo debt.json ainda requer o consumidor; as mudanças de campanha estão somente propostas.
+
+
+## Pacote 5
+
+Base atualizada em 07/11/2026: **2bea4d2d016eb5920a4b317973fb711a1ea67db9**, incluindo pacote 4 e decisão definitiva de moeda **R$ 1.000.000**. Branch **gpt/pacote-5**; destino do PR **codex/ue58-migration**. A branch remota do pacote estava um commit atrás e foi avançada com fast-forward da base antes das alterações.
+
+### Entregas
+
+- [Revisão do português](REVISAO_TEXTOS.md): leitura das **4.064 entradas** (113 LOCTEXT + 3.951 strings), com **76 linhas de achados/decisões** e tabela individual dos **29 textos da dívida**. Aponta concordância, orientações antigas de caixa, “duche”, acentos, concatenações, nomenclatura e glossário. Não renomeia personagens diferentes só por terem nomes parecidos. Chaves pt-BR e traduções ficaram intactas; Claude aplica em migração coordenada.
+- **tools/ue58/i18n_length_audit.py**, somente biblioteca padrão e leitura dos catálogos. São **48.768 comparações**; o filtro exige >30% **e** >25 caracteres extras. **63 ocorrências**: de 19, en 2, fr 25, it 11, nl 3, pl 2, ru 1; es/ja/ko/pt-PT/zh-Hans 0. Cada idioma lista até 50 casos reais, sem preencher artificialmente. Zero traduções vazias ou marcadores divergentes na referência.
+- [Relatório de tamanho](REVISAO_TRADUCOES_TAMANHO.md), **I18N_TAMANHO.json** com métricas/hashes e **I18N_SUGESTOES_CURTAS.json** com 63 propostas menores nos respectivos idiomas, além de duas propostas de largura estimada em coreano. O gerador confere marcadores e espaços de fragmentos. Não equivale a medição da fonte ou teste de recorte na Unreal.
+- Kits pt-BR/en em **docs/steam/presskit_pt-BR.md** e **presskit_en.md**: ficha, descrições, história, recursos, demo/completo, FAQ e contatos a preencher. Gancho: a avó viva e a carta do milhão. A dívida continua sendo trabalho de integração, não um recurso declarado aprovado.
+- **docs/steam/trailer_roteiro.md**: 12 planos que totalizam **60 s**, texto pt-BR/en, música/ritmo e dez capturas com local, horário e critério de aceite. São roteiros; nenhuma imagem/vídeo foi fabricada ou apresentada como gameplay capturado.
+- **loja_pt-BR.md**, **loja_en.md** e as **12 versões de loja_traducoes.md** atualizadas com a dívida como objetivo do completo; nome comercial Coconut Coast: Resort Simulator, Maré Alta como resort, sem data. As 14 descrições curtas têm 122–252 caracteres, abaixo de 300.
+- **docs/steam/next_fest_plano.md**: cronograma relativo T−8 a T+2, posts/devlogs, metas internas de desejos, 24 objetivos de demo conforme conquistas.json, revisão da build, QA, idiomas, tela final e destino real da lista de desejos. Regras consultadas na documentação Steamworks; não foi feita inscrição ou publicação.
+
+### O que precisa do Claude
+
+1. Aplicar as sugestões de português **nos consumidores e nos 12 catálogos juntos**, mantendo as chaves antigas durante a migração; não executar uma troca isolada em source.json. Validar os formatos `{0}{1}` para não duplicar espaços ou produzir “60%a renda”. Preservar ids internos como `Album`/`Radio`.
+2. Integrar o contrato debt.json: carta, Finanças, transação atômica, marcos, teto cumulativo de R$ 250.000 na demo, final apenas no completo, avó viva, sem juros/parcela obrigatória. Não mudar a moeda já decidida nem aplicar os preços propostos automaticamente.
+3. Medir as sugestões de tradução **na UI real**, com fonte, resolução, escala e valores expandidos; atenção a diálogos longos e Hangul. Pedir revisão nativa dos textos comerciais/traduções antes da publicação.
+4. Concluir/validar banhistas (nadar, boiar, conversar, saltar) e uso do tobogã do Grand Hotel. Não usar esses comportamentos em trailer/galeria da demo antes de aprovados; Grand Hotel permanece completo.
+5. Executar build/instalação Steam e QA de percurso, save, áudio, portas, dormir, balcão, produtos apoiados e mar. Validar a tela final, o link do jogo completo e as condições dos 24 objetivos demo; nenhuma revisão editorial substitui esse teste.
+
+### O que precisa do Sergio
+
+1. Escolher a edição do Next Fest e confirmar elegibilidade/inscrição no painel. **Não lançar o jogo completo em EA antes/durante o festival escolhido.** Demo gratuita e jogo completo têm App IDs distintos a configurar/verificar.
+2. Fornecer a URL pública real do jogo completo e autorizar seu preenchimento em **Content/Data/events.json → /end_of_content/review_url**, ainda vazio na base. O botão hoje não aparece sem a URL; este pacote não a inventou nem alterou o arquivo.
+3. Preencher desenvolvedor/publicador, contato de imprensa, site/redes, App IDs, links de cápsulas e materiais. Aprovar música/licenças, copy, trailer e capturas reais antes de divulgar.
+4. Decidir a publicação de conquistas na demo, considerando a recomendação Steam de desativá-las. O contrato mantém 24 objetivos demo; nenhum foi removido. A escolha não autoriza presumir Cloud ou transferência de saves.
+5. Cronometrar playtests: ~2 h de demo, ~20 h de história e ~37–40 h para 100% são metas. O modelo do pacote 4 tem 43,7 h de compras na economia atual com dívida ou 40,3 h com propostas; não prometer 100% garantido em 40 h com base só na simulação.
+
+### Verificação e limites
+
+Comandos desta entrega:
+
+```sh
+python tools/ue58/i18n_length_audit.py --self-test
+python tools/ue58/i18n_length_audit.py --output docs/ue58/I18N_TAMANHO.json --suggestions docs/ue58/I18N_SUGESTOES_CURTAS.json --report docs/ue58/REVISAO_TRADUCOES_TAMANHO.md
+python -m py_compile tools/ue58/i18n_length_audit.py
+```
+
+Self-test aprovado: fronteiras estritas de 30%/25 caracteres, NFC, marcação, largura asiática, placeholders repetidos e printf, fixture multilíngue com entrada faltante/marcador perdido e prova de que os inputs não são escritos. Auditoria real aprovada: 12 idiomas completos, 63 sugestões menores com marcadores preservados. Conferidos também os 29 textos da dívida presentes no catálogo, os 24 IDs de conquista demo e a soma de 60 s do roteiro.
+
+Sem alterações em **unreal/MareAlta/Source**, **.uasset**, **debt.json**, catálogos de localização ou JSON de economia (definitions, customization, business_games, bar, pool, pool_swim, tours, restaurant, hotel_*, sunbathers). O trabalho foi feito em checkout separado para não incluir a piscina/MetaHumans em andamento no checkout principal. Sem compilação C++, Unreal Editor, teste de executável, nova medição de FPS, publicação Steam, inscrição Next Fest ou envio de imprensa neste pacote. O PR fica aberto para revisão; nenhum merge foi solicitado.

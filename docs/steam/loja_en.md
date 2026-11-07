@@ -4,15 +4,19 @@ Nome comercial: **Coconut Coast: Resort Simulator**. Maré Alta é o resort dent
 
 Equivalente a loja_pt-BR.md, conferido com o modo demo da referência 9e5b4adcadba60ec0c46ffa2e4767bcb6805db0a. Cerca de 2 h é a meta de progressão informada, não medição desta tarefa nem limite de tempo. Conferir o pacote antes de publicar. Sem promessa de data, migração de saves ou recursos Steam não verificados.
 
+**Atualização do Pacote 5 (07/11/2026):** decisão confirmada de moeda **R$ 1.000.000**. A dívida ainda precisa de consumidor C++ e teste pelo Claude antes de publicar esta copy. A demo apresenta o objetivo e permite apenas o teto cumulativo planejado de R$ 250.000; a quitação fica no completo. Novos banhistas e o tobogã do Grand Hotel estão em implementação; não anunciá-los como recursos aprovados da demo.
+
 ## Descrição curta
 
-Try Coconut Coast: Resort Simulator for free! Take over Grandma Dilce's kiosk, serve customers and manage from your phone. Grow with a guesthouse, bar, pool and tours, and meet a village full of stories and Brazilian humour. Enjoyed your stay? Wishlist the full game!
+Grandma left you a beach kiosk. And R$ 1,000,000 in debt. Serve customers, manage from your phone and grow Maré Alta into a resort. Meet the village and start a new chapter for your family in the free Coconut Coast: Resort Simulator demo.
 
 ## Descrição longa
 
 ### One chilled coconut. An inherited kiosk. Your first tide.
 
 Grandma Dilce's kiosk is in your hands. Flip the sign, welcome your first customers and start turning **Maré Alta** into a lively resort. The free **Coconut Coast: Resort Simulator** demo introduces hands-on management and the stories of a Brazilian beach village.
+
+Grandma Dilce has moved in with her bingo friends. Along with the kiosk came a letter and **R$ 1,000,000 in debt**. Grow the resort to pay it off in the full game, with voluntary payments and no interest or mandatory instalments. The free demo introduces the debt; full repayment and its ending belong to the full game.
 
 ### Work the counter, manage from your phone
 
