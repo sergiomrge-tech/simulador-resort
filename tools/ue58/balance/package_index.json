@@ -2338,8 +2338,8 @@
     "debt.json": "8baa15225ade3d89e22d7faea1a31e5d1c106a3ab88ca049d4610963c07ada55",
     "deduplication.json": "8257b2eace411960f994629d17fb51dccb2dce7583cc5e358640ca005b69e8f1",
     "default_save.json": "6b7b2f6c7c7bc96c2543527bedbc8c155e20906a267f5e8a15c181e2942dfa13",
-    "definitions.json": "a8c786c16af6344cfd36758d2deb026fd323eb74e20d0722c98b6c541d10c604",
-    "events.json": "23222b079f590df4ea91b42f4cacb3b8e608379d993178313ed755a75c4f77de",
+    "definitions.json": "fc83d587324ac166e609f83fba30beb61d096b599f9c3e4f39dc92f9d1f90c76",
+    "events.json": "734f1059c3eedb78e5fcb273af6da9df9e72c4ff29b458b370ae2881c6f679c7",
     "foliage_visual.json": "dac6c98b27fab2688c71ad71e8d26807d004fd6f07c3eaf76db7a2ea7c748e50",
     "game_room.json": "3ae0c2e20b51bd319a61a262c08b1ccfe93ad0fc40e8ee015799676cda8d6a9d",
     "grass_coverage.json": "58b65331e6dd79d01f6736471ca4e4f5e38f9f08a93f87eebdfa01e516aebb8d",
@@ -2370,9 +2370,9 @@
     "stacked_origin_removed.json": "1851439696c14a03fa0ad809852094f9d7780755d2b046d5f5f28f463e21ff0a",
     "staff_world.json": "a32881e845ba0a0d92813bf923ae772fc391a10075155ed5d350225eeef2a68d",
     "sunbathers.json": "ca0eb1e7205df10b1e2552bff7215feb22f783b83abea6a416b4b9ce01a809b2",
-    "tours.json": "b5fd6d3b718adbc200cd4f758f1868e846b93c59fb0048208ad04cd6016a95cd",
-    "tutorial.json": "8779d11a4b375e30807f38fae63a0e40eb33fb4cbbd2cd7dcad90c547d068495",
+    "tours.json": "9f8c8edcbee7a8eca8290aac894b88107cc0076f707665f650fec1f176c555da",
+    "tutorial.json": "2afd3aff6e28e21513cdd5d9d65fd814e81761c7cc57c4ae68314d937c05df92",
     "village_routes.json": "e018b1004e54c2eee83490b351db6fb360abc674724e9d81abe40f61346c25f2",
-    "world.json": "1b2b1a25fce34daf2772849c1c0a2d99a8ccffbbaf63ed2ee368a7b88cde2430"
+    "world.json": "cfd17dac7d2b74d82c605ffe20b47f3cac21e79e289ffe0776a19ae2b70b8b8f"
   }
 }

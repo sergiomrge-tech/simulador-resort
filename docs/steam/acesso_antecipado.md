@@ -1,65 +1,112 @@
-# Questionário do Acesso Antecipado
+# Questionário final do Acesso Antecipado — Pacote 7
 
-Rascunho para revisão do responsável pela publicação. Base do produto: commit `8e817f7a0813e4af628d6d317af54d50b67dbeba` (06/11/2026), `CHECKLIST_EXPANSOES.md`, seção **PRIORIDADE ATUAL**, e `ROADMAP_STEAM.md`. O checklist mais recente prevalece onde o roteiro antigo diz que sistemas já implementados ainda não existem.
+Uso: página do **jogo principal**, Coconut Coast: Resort Simulator; não aplicar à demo gratuita.
+Base `09dcc383` + Pacote 7. Conferir cada resposta com a build à venda. A dívida/final ainda requer integração C++
+nesta referência; a resposta de estado atual abaixo só deve ser publicada quando essa integração passar no runtime.
+As perguntas foram organizadas segundo a [documentação Steamworks](https://partner.steamgames.com/doc/store/earlyaccess),
+consultada em 07/11/2026. O texto distingue conteúdo entregue de intenção e não promete datas, recursos ou preços futuros.
 
-Perguntas conferidas na [documentação oficial Steamworks](https://partner.steamgames.com/doc/store/earlyaccess), consultada em 06/11/2026. As respostas descrevem o conteúdo disponível e planos sujeitos a revisão. A meta interna de 12–20 horas de campanha não é a duração do período de Acesso Antecipado.
+## O que muda ao sair da demo
 
-## Português do Brasil
+| Tema | Demo grátis | Jogo principal em Acesso Antecipado |
+|---|---|---|
+| Campanha | Avança até o bloqueio “A Maré Alta da vila” | Continua além desse ponto |
+| Grand Hotel e salão | Identificados como jogo completo; indisponíveis em partida nova | Incluídos na progressão do jogo principal |
+| Atividades do hotel | Fora da progressão da demo | Quartos, VIPs, restaurante, serviço de quarto, eventos e jogos |
+| Dívida | Apresentação da história; não é requisito para encerrar a demo | Objetivo de quitação e final próprio após integração |
+| Continuidade | Pode continuar o conteúdo liberado após o agradecimento | Resort continua após o desfecho |
+| Duração comercial | Cerca de 2 h de progressão inicial; sem cronômetro de encerramento | Nenhuma duração total garantida |
+| Desenvolvimento | Introdução gratuita | Produto pago em desenvolvimento; sem promessa de data para a versão final |
 
-### Por que Acesso Antecipado?
+A migração de saves entre App IDs/builds precisa de teste e não é prometida nesta página. Pagamentos opcionais com teto
+na demo fazem parte do contrato futuro debt.json; esta base ainda não expõe esse fluxo, por isso ele não é anunciado.
 
-Maré Alta Resort reúne atendimento, gestão e atividades de praia em uma mesma rotina. Queremos desenvolver essa experiência com quem vai jogá-la: descobrir quais atividades dão vontade de repetir, ajustar a evolução do quiosque ao hotel e melhorar a clareza das tarefas. O Acesso Antecipado permite que o retorno dos jogadores influencie as próximas prioridades enquanto o jogo continua em desenvolvimento.
+## Português do Brasil — campos do formulário
 
-### Por quanto tempo aproximadamente este jogo estará em Acesso Antecipado?
+### Por que lançar em Acesso Antecipado?
 
-Ainda não temos um intervalo de lançamento definido para a versão completa. Precisamos validar a progressão, o desempenho em diferentes computadores e as prioridades apontadas pelos primeiros jogadores antes de estabelecer uma previsão responsável. Atualizaremos esta resposta quando houver uma estimativa sustentada pelos testes e pelo andamento do desenvolvimento.
+Coconut Coast: Resort Simulator já reúne atendimento, gestão, atividades de praia e histórias da vila. Queremos
+refinar essa rotina com quem vai jogá-la: entender onde a progressão fica confusa, quais atividades merecem ajustes
+e como o resort se comporta em diferentes computadores. O retorno dos jogadores vai ajudar a priorizar correções
+e acabamento enquanto o jogo continua em desenvolvimento.
 
-### Como a versão completa será diferente da versão de Acesso Antecipado?
+### Qual a duração estimada dessa fase?
 
-Planejamos aprofundar o funcionamento dos negócios da vila, refinar o ritmo dos horários de pico e ampliar a variedade dos eventos do calendário. Também queremos aprimorar a pesca, o modo foto e a experiência da loja de souvenires. O roteiro inclui melhorias de apresentação, desempenho e interface. Essas prioridades podem mudar conforme os testes e as opiniões da comunidade; não há garantia de uma lista fixa de recursos ou de datas para cada item.
+Ainda não temos uma estimativa definida para encerrar o Acesso Antecipado. Vamos avaliar estabilidade, desempenho
+e progressão com os relatos da comunidade antes de estabelecer uma previsão. Quando houver uma estimativa
+sustentada pelos testes e pelo andamento do trabalho, atualizaremos esta resposta.
 
-### Qual é o estado atual da versão de Acesso Antecipado?
+### O que se pretende mudar na versão final?
 
-A versão em desenvolvimento já tem o atendimento e a gestão do quiosque, contratação de equipe, estoque, receitas e personalização; pousada, piscina, bar e passeios de barco, mergulho e trilha ao farol; cinco negócios na vila e capítulos com seus moradores. O Grand Hotel tem 32 quartos de três categorias, três interiores visitáveis, arrumação, frigobar, reclamações e pedidos especiais de VIPs. Há restaurante com serviço de quarto e reserva de eventos, além de salão com sinuca, pebolim, tênis de mesa, dois fliperamas e campeonato semanal. Festas do dia e situações de humor também fazem parte do jogo. O balanceamento e o acabamento continuam em revisão.
+Nossa prioridade é aprimorar o conteúdo que já existe: equilíbrio entre os negócios, clareza dos objetivos,
+variedade das situações, interface, apresentação, estabilidade e desempenho. As prioridades poderão mudar com o
+retorno da comunidade. Não estamos condicionando a compra a uma lista garantida de sistemas novos ou a uma data.
 
-### O preço do jogo será alterado após o fim do Acesso Antecipado?
+### Qual conteúdo está disponível na versão vendida?
 
-Ainda não definimos uma mudança de preço para a versão completa. O preço será avaliado de acordo com o conteúdo disponível e a evolução do projeto. Se houver alteração, ela será comunicada à comunidade com antecedência.
+O jogo principal inclui quiosque com produtos prontos e pagamento na entrega, gestão pelo celular, contratação,
+receitas e personalização. Há pousada, piscina, Bar do Coqueiro, passeios de barco, mergulho e trilha ao farol,
+pesca, fotografia, cinco negócios da vila e capítulos com seus moradores.
 
-### Como vocês planejam envolver a comunidade durante o desenvolvimento?
+A progressão inclui o Grand Hotel, com 32 quartos de três categorias e três interiores visitáveis, arrumação,
+frigobar, reclamações e pedidos VIP. O hotel tem restaurante com serviço de quarto e crítico gastronômico,
+eventos montados na praia e salão com sinuca, pebolim, tênis de mesa, dois fliperamas e Campeonato da Maré.
+A dívida de R$ 1.000.000 de Dona Dilce é o objetivo de quitação da história; depois do final, é possível continuar
+cuidando do resort. O jogo segue sujeito a ajustes e correções durante o Acesso Antecipado.
 
-Pretendemos usar as discussões da Comunidade Steam para receber relatos de problemas, sugestões e experiências com a progressão. Queremos que os jogadores indiquem atividades favoritas, dificuldades de entendimento e trechos em que a rotina fica repetitiva. As notícias de atualização explicarão as mudanças e as prioridades em análise, para que a comunidade acompanhe como seus comentários contribuem para o desenvolvimento.
+### Há mudança de preço prevista para a versão final?
 
-## Inglês
+Ainda não definimos uma mudança de preço. Vamos avaliar o conteúdo disponível e a evolução do projeto. Caso
+haja alteração, ela será comunicada com antecedência. Não há valor futuro anunciado neste momento.
 
-### Why Early Access?
+### Como os jogadores podem participar?
 
-Maré Alta Resort brings hands-on service, management and beach activities into one daily routine. We want to develop that experience with the people who will play it: learn which activities are worth returning to, tune the journey from kiosk to hotel and make objectives clearer. Early Access lets player feedback influence our next priorities while the game continues to develop.
+Usaremos as discussões da Comunidade Steam para reunir relatos de problemas, sugestões e experiências com a
+progressão. Conte qual atividade você mais gosta, em que momento faltou orientação e o que ficou repetitivo.
+Para problemas técnicos, informe a situação, as configurações do computador e, se possível, uma captura.
+As notícias de atualização explicarão as mudanças e as próximas prioridades.
 
-### Approximately how long will this game be in Early Access?
+## English — form fields
 
-We do not yet have a release window for the full version. We need to validate progression, performance across different computers and the priorities raised by early players before setting a responsible estimate. We will update this answer once testing and development progress support a meaningful timeframe.
+### Why release in Early Access?
 
-### How is the full version planned to differ from the Early Access version?
+Coconut Coast: Resort Simulator already brings together service, management, beach activities and village stories.
+We want to refine that routine with the people playing it: find where progression is unclear, which activities
+need adjustments and how the resort performs on different computers. Player feedback will help prioritise fixes
+and polish while the game remains in development.
 
-We plan to deepen the village businesses, refine the rhythm of busy hours and expand the variety of calendar events. We also want to improve fishing, photo mode and the souvenir shop experience. Our roadmap includes further work on presentation, performance and the interface. These priorities may change with testing and community feedback; a fixed feature list or individual delivery dates are not guaranteed.
+### What is the estimated length of this phase?
 
-### What is the current state of the Early Access version?
+We do not yet have a defined estimate for leaving Early Access. We will assess stability, performance and
+progression with community reports before setting a timeframe. We will update this answer when testing and
+development progress support a meaningful estimate.
 
-The version in development already includes kiosk service and management, staff hiring, supplies, recipes and customisation; a guesthouse, pool, bar, boat trips, snorkelling and lighthouse walks; five village businesses and story chapters with local residents. The Grand Hotel has 32 rooms across three categories, three visitable interiors, housekeeping, minibars, complaints and special VIP requests. There is a restaurant with room service and event bookings, plus a game room with pool, foosball, table tennis, two arcade games and a weekly tournament. Daily celebrations and humorous situations are also part of the game. Balance and presentation remain under revision.
+### What changes are intended for the final version?
 
-### Will the game be priced differently during and after Early Access?
+Our priority is to improve existing content: balance between businesses, clearer objectives, more varied situations,
+interface, presentation, stability and performance. Priorities may change with community feedback. The purchase
+does not depend on a guaranteed list of new systems or a promised release date.
 
-We have not yet decided on a price change for the full version. Pricing will be reviewed in light of the available content and the project's progress. Any change will be communicated to the community in advance.
+### What content is available in the version being sold?
 
-### How are you planning on involving the Community in your development process?
+The main game includes kiosk service with ready-made products and payment on delivery, phone management, hiring,
+recipes and customisation. There are an inn, pool, Bar do Coqueiro, boat tours, snorkelling, lighthouse walks,
+fishing, photography, five village businesses and chapters with local residents.
 
-We intend to use Steam Community discussions to collect bug reports, suggestions and experiences with progression. We want players to tell us which activities they enjoy, which instructions are unclear and where the daily routine becomes repetitive. Update announcements will explain changes and the priorities under consideration so the community can follow how its feedback contributes to development.
+Progression includes the Grand Hotel, with 32 rooms across three categories and three visitable interiors,
+housekeeping, minibars, complaints and VIP requests. The hotel has a restaurant with room service and a food critic,
+buildable beach events, and a game room with pool, foosball, table tennis, two arcade machines and Campeonato da Maré.
+Repaying Dona Dilce's R$ 1.000.000 debt is the story's final objective; after the ending, you can keep running the
+resort. Adjustments and fixes will continue during Early Access.
 
-## Conferências editoriais antes de publicar
+### Is a price change planned for the final version?
 
-- Prazo e política de preço não estão definidos no repositório: as respostas deixam isso explícito, sem inventar compromissos comerciais.
-- Não anunciar co-op, Workshop, conquistas, Cloud ou compatibilidade com Steam Deck como recursos atuais. O roteiro antigo os menciona, mas a leitura de texto não comprova entrega na Steam.
-- Níveis de negócios e atendimento automático a 60% já aparecem em `MareBizCommon.cpp`, apesar de o checklist listar o aprofundamento em 3.6 para depois do EA. Tratar a evolução como refinamento e não prometer um sistema inteiramente ausente.
-- A montagem física e avaliação de capricho de casamentos e o crítico gastronômico ainda não estão implementados nesta referência. A reserva de eventos do restaurante existe.
-- Estas respostas precisam ser conferidas com o pacote efetivamente colocado à venda. Não houve teste de editor ou executável neste trabalho.
+We have not decided on a price change. We will review the available content and the project's progress. Any
+change will be announced in advance. No future price is being announced at this time.
+
+### How can players take part?
+
+We will use Steam Community discussions to gather bug reports, suggestions and experiences with progression.
+Tell us which activity you enjoy most, where guidance was missing and what became repetitive. For technical issues,
+include the situation, your computer specifications and a screenshot if possible. Update announcements will explain
+changes and upcoming priorities.

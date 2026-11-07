@@ -402,6 +402,10 @@ def main():
         problems.extend(check())
         from achievements_check import check as check_achievements
         problems.extend(check_achievements())
+        from demo_walkthrough import check as check_demo
+        problems.extend(check_demo())
+        from number_text_check import check as check_numbers
+        problems.extend(check_numbers())
     result={'arquivos_lidos':len(linter.docs),'referencias_modelos_verificadas':linter.asset_checks,'packages_conhecidos':len(linter.packages),'erros':len(problems),'problemas':problems,'fontes_das_regras':RULE_SOURCES}
     if args.json:print(json.dumps(result,ensure_ascii=False,indent=2))
     else:

@@ -140,7 +140,7 @@
 			"kind": "company",
 			"qty": 1,
 			"reward": 40,
-			"story": "Vovó Dilce foi morar com as amigas do bingo e deixou o quiosque da família com você, junto com um bilhete: \"Não deixa o coqueiro triste.\" Dê um nome ao quiosque no celular.",
+			"story": "Dona Dilce foi morar com as amigas do bingo. Deixou o quiosque, muito carinho e uma dívida de R$ 1.000.000. Dê um nome ao negócio no celular: sua primeira maré começa aqui.",
 			"task": "Criar sua empresa no celular",
 			"title": "Uma nova maré"
 		},
@@ -275,7 +275,7 @@
 			"kind": "expansion",
 			"qty": 1,
 			"reward": 1000,
-			"story": "Do primeiro coco ao resort: chegou a hora do Grand Hotel Maré Alta. Vovó Dilce mandou dizer que quer o quarto com vista. De graça.",
+			"story": "Esta etapa pertence ao jogo completo. O Grand Hotel pode ajudar a quitar a dívida de Dona Dilce; ela já pediu um quarto com vista e desconto de família.",
 			"task": "Construir o Grand Hotel Maré Alta",
 			"title": "A Maré Alta da vila"
 		},
@@ -321,17 +321,17 @@
 			"kind": "sales",
 			"qty": 7000,
 			"reward": 1500,
-			"story": "A Prefeita Tuanny prometeu a festa quando o quiosque vendesse mais que a padaria da capital. A padaria vende 7.000. Ela foi lá conferir. Duas vezes.",
+			"story": "A prefeita Tuanny prometeu a festa quando o quiosque chegasse a 7.000 vendas. Dona Dilce já separou a roupa do bingo: diz que serve para festa também.",
 			"task": "Chegar a 7.000 vendas no quiosque",
-			"title": "Quatro mil fregueses"
+			"title": "Sete mil vendas"
 		},
 		{
 			"id": "festa",
 			"kind": "finale",
 			"qty": 1,
 			"reward": 1000,
-			"story": "A vila inteira quer comemorar o resort. Seu Tibúrcio prometeu descer o morro pela primeira vez em trinta anos, e o vulcão ficou sabendo. Esteja na praia depois das 20h.",
-			"task": "Ir à praia depois das 20h para a Festa da Maré Alta",
+			"story": "A vila quer comemorar o resort, mas festa não quita dívida. Dona Dilce manda carinho lá do bingo. Vá à praia entre 20h e 23h30 para celebrar; a conta continua sendo um coco de cada vez.",
+			"task": "Ir à praia entre 20h e 23h30 para a Festa da Maré Alta",
 			"title": "A Festa da Maré Alta"
 		}
 	],
@@ -350,7 +350,7 @@
 				{
 					"kind": "serve",
 					"qty": 15,
-					"text": "Atender 15 clientes (o povo precisa conhecer o quiosque)"
+					"text": "Entregar 15 produtos no quiosque durante esta etapa"
 				},
 				{
 					"kind": "pay",
@@ -402,7 +402,7 @@
 					"item": "petiscos",
 					"kind": "sell",
 					"qty": 10,
-					"text": "Vender 10 petiscos"
+					"text": "Vender 10 porções de petiscos durante esta etapa"
 				},
 				{
 					"kind": "pay",
@@ -437,7 +437,7 @@
 			],
 			"story": "A prefeita Tuanny sonha com um carnaval de praia que traga turistas de longe. Ela conta com você.",
 			"title": "O Carnaval da Maré",
-			"unlock": "Carnaval no fim de cada verão + Lojinha de souvenires"
+			"unlock": "Carnaval no calendário de festas + Lojinha de souvenires"
 		}
 	],
 	"dishes": {
@@ -629,7 +629,7 @@
 		"grand_hotel": {
 			"full_game": true,
 			"area": "",
-			"blurb": "A fase final: hotel de 5 andares com 32 suítes, restaurante com buffet, academia, spa, piscina com tobogã e bar da piscina.",
+			"blurb": "No jogo completo: Grand Hotel com 32 quartos, restaurante, academia, spa e piscina.",
 			"chapter": "carnaval",
 			"cost": 45000,
 			"fame": 9,
@@ -642,7 +642,7 @@
 			"stars": 4.3
 		},
 		"grill": {
-			"blurb": "Libera os petiscos de peixe (o prato mais caro).",
+			"blurb": "Libera petiscos e outros produtos da chapa no cardápio.",
 			"cost": 380,
 			"icon": "peixe",
 			"name": "Chapa de petiscos",
@@ -877,7 +877,7 @@
 			"wage": 32
 		},
 		"camareira": {
-			"blurb": "Limpa um item de bangalô sujo a cada 20 minutos (cama, toalhas ou lixo).",
+			"blurb": "Cuida da cama, das toalhas e do lixo dos bangalôs. A rapidez depende da equipe.",
 			"hire": 220,
 			"name": "Camareira",
 			"req": "pousada",

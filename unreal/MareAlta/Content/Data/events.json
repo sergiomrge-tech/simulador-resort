@@ -128,7 +128,7 @@
  "end_of_content": {
   "_doc": "Demo end screen: shown once when every expansion of the demo (not the full_game ones of definitions.json) is owned and every village chapter is done. next: what the full game brings; review_url: the Steam store page for the wishlist (the button shows only when it is set).",
   "title": "Obrigado por jogar a demo!",
-  "text": "Você transformou o quiosque da avó Dilce num resort de verdade: bar, pousada, piscina, passeios e os negócios da vila. A história do Maré Alta continua no jogo completo. Pode continuar jogando a demo: o resort segue aberto.",
+  "text": "O Maré Alta continua aberto na demo. O Grand Hotel e a quitação da dívida de Dona Dilce esperam no jogo completo. Obrigado por cuidar da nossa primeira maré!",
   "next_title": "No jogo completo",
   "next": ["Grand Hotel 5 estrelas com quartos para arrumar, hóspedes VIP e pedidos especiais", "Casamentos, aniversários e congressos montados na praia", "Restaurante com peixe do píer e um crítico gastronômico disfarçado", "Salão de jogos: sinuca, pebolim, pingue-pongue, fliperamas e o Campeonato da Maré"],
   "review_text": "Gostou? Adicione o jogo à sua lista de desejos na Steam para saber quando o jogo completo chegar.",
