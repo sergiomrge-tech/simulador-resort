@@ -28,7 +28,7 @@ def check():
         hashes[n]=hashlib.sha256(path.read_bytes()).hexdigest()
     for p in sorted(LOC.glob('*.json')):
         if p.stem=='source' or p.stem.startswith('todo_'):continue
-        d=json.loads(p.read_text())
+        d=json.loads(p.read_text(encoding='utf-8-sig'))
         for section in ['loctext','strings']:
             for key,text in d[section].items():
                 for char in set(text):

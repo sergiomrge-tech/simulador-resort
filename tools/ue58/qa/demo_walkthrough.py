@@ -29,8 +29,8 @@ def require(test,message):
 
 def load(root):
     base=Path(root)/'unreal/MareAlta/Content'
-    docs={p.stem:json.loads(p.read_text()) for p in (base/'Data').glob('*.json')}
-    loc={lang:json.loads((base/'Localization/Mare'/f'{lang}.json').read_text()) for lang in LANGS}
+    docs={p.stem:json.loads(p.read_text(encoding='utf-8-sig')) for p in (base/'Data').glob('*.json')}
+    loc={lang:json.loads((base/'Localization/Mare'/f'{lang}.json').read_text(encoding='utf-8-sig')) for lang in LANGS}
     return docs,loc
 
 

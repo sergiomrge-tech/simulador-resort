@@ -22,7 +22,7 @@ def nums(text):
 
 
 def check(docs=None):
-    d={p.stem:json.loads(p.read_text()) for p in DATA.glob('*.json')} if docs is None else docs;errors=[]
+    d={p.stem:json.loads(p.read_text(encoding='utf-8-sig')) for p in DATA.glob('*.json')} if docs is None else docs;errors=[]
     def error(file,ptr,msg):errors.append({'arquivo':file+'.json','campo':ptr,'problema':msg})
     def equal(file,ptr,text,expected):
         actual=nums(text)
@@ -92,7 +92,7 @@ def inventory():
         elif isinstance(x,list):
             for i,v in enumerate(x):index_data(v,file,path+'/'+str(i))
         elif isinstance(x,str):data_index[x].append(file+':'+path)
-    for p in DATA.glob('*.json'):index_data(json.loads(p.read_text()),p.name)
+    for p in DATA.glob('*.json'):index_data(json.loads(p.read_text(encoding='utf-8-sig')),p.name)
     for p in (ROOT/'unreal/MareAlta/Source/MareAlta').glob('*'):
         if p.suffix not in ['.cpp','.h'] or p.name.endswith('Tests.cpp') or any(x in p.stem for x in ['QA','Bench','MareLoc']):continue
         for n,line in enumerate(p.read_text().splitlines(),1):
@@ -111,8 +111,8 @@ def inventory():
         elif any(x in text.lower() for x in ['r$','vender','vendas','entregar 15','levar','pagar','doar','melhorar receitas','personaliza','fama máxima','ter 2','parafina','ponto dourado','fita','bolas','picolé','atendente','60%','85%','90%','nível','vaga','lugares','hora','21:00','18h','22h','20h','17h','5 estrelas','5★','estrelas','fotos','32 quartos','oferenda','pratos','6h','14h','24h','clientes','servir','ganhe','três dias']):kind='regra_mecânica';basis='Conferência contextual: missões/metas, atributos do mesmo JSON, business_games.levels.set, operações/customization, debt/achievements; constantes nativas em arquivo:linha.'
         else:kind='regra_nativa_ou_enum';basis='Regra de minijogo/numeração/tecla ou atributo contextual da UI; ver consumidor nativo. Sem associação artificial a um preço de outro JSON.'
         rows.append({'text':text,'classification':kind,'basis':basis,'data':datarefs,'cpp':sorted(set(coderefs))})
-    defs=json.loads((DATA/'definitions.json').read_text())
-    return {'base':'09dcc3837a91e3428c29b9fb8d91c38dc3c05ec9','scope':'Inventário de números/percentuais e números por extenso nos textos extraídos; não inclui metadados _doc, caminhos pulados nem promete provar o visual dos objetos. check() valida vínculos mecânicos explícitos. Classificações do inventário são triagem contextual, não validação automática de cada afirmação nativa.','facts':{'expansion_costs':{k:v['cost'] for k,v in defs['expansions'].items()},'last_sales_goal':next(m['qty'] for m in defs['campaign'] if m['id']=='fregueses'),'principal':json.loads((DATA/'debt.json').read_text())['principal'],'businesses':len(defs['businesses']),'hotel_room_kinds':len(json.loads((DATA/'hotel_rooms.json').read_text())['kinds'])},'entries':rows}
+    defs=json.loads((DATA/'definitions.json').read_text(encoding='utf-8-sig'))
+    return {'base':'09dcc3837a91e3428c29b9fb8d91c38dc3c05ec9','scope':'Inventário de números/percentuais e números por extenso nos textos extraídos; não inclui metadados _doc, caminhos pulados nem promete provar o visual dos objetos. check() valida vínculos mecânicos explícitos. Classificações do inventário são triagem contextual, não validação automática de cada afirmação nativa.','facts':{'expansion_costs':{k:v['cost'] for k,v in defs['expansions'].items()},'last_sales_goal':next(m['qty'] for m in defs['campaign'] if m['id']=='fregueses'),'principal':json.loads((DATA/'debt.json').read_text(encoding='utf-8-sig'))['principal'],'businesses':len(defs['businesses']),'hotel_room_kinds':len(json.loads((DATA/'hotel_rooms.json').read_text(encoding='utf-8-sig'))['kinds'])},'entries':rows}
 
 
 def main():
@@ -120,7 +120,7 @@ def main():
     p=argparse.ArgumentParser();p.add_argument('--inventory',action='store_true');p.add_argument('--self-test',action='store_true');a=p.parse_args()
     if a.inventory:print(json.dumps(inventory(),ensure_ascii=False,indent=1));return 0
     if a.self_test:
-        d={p.stem:json.loads(p.read_text()) for p in DATA.glob('*.json')};assert not check(d)
+        d={p.stem:json.loads(p.read_text(encoding='utf-8-sig')) for p in DATA.glob('*.json')};assert not check(d)
         for fn in [lambda x:x['definitions']['campaign'][2].update(qty=999),lambda x:x['business_games']['businesses']['aluguel']['levels'][0]['set'].update(wax_turns=99),lambda x:x['definitions']['dishes']['coco_gelado'].update(price=99),lambda x:x['business_games'].update(clerk_share=.1),lambda x:x['definitions']['campaign'][19].update(title='Quatro mil fregueses')]:
             changed=copy.deepcopy(d);fn(changed);assert check(changed)
         print('PASS: quantidade, título, voltas, preço impresso e percentual divergentes são reprovados');return 0

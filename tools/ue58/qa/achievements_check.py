@@ -30,7 +30,7 @@ def evaluate(c,state):
 def check():
     errors=[]
     def error(key,msg):errors.append({'arquivo':'achievements.json','campo':key,'problema':msg})
-    try:d=json.loads(PATH.read_text());original=json.loads((ROOT/'docs/steam/conquistas.json').read_text())
+    try:d=json.loads(PATH.read_text(encoding='utf-8-sig'));original=json.loads((ROOT/'docs/steam/conquistas.json').read_text(encoding='utf-8-sig'))
     except (OSError,ValueError) as e:return [{'arquivo':str(PATH),'campo':'/','problema':str(e)}]
     rows=d.get('achievements',[]);ids=[a['id'] for a in rows]
     if len(rows)!=36 or set(ids)!={a['id'] for a in original['achievements']} or len(set(ids))!=36:error('/achievements','as 36 ids editoriais devem permanecer únicas')

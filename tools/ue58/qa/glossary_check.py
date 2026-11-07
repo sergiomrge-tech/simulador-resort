@@ -13,11 +13,11 @@ LOCALE=ROOT/'unreal/MareAlta/Content/Localization/Mare'
 def check(glossary=GLOSSARY,locale=LOCALE):
     errors=[]
     def fail(file,key,msg):errors.append({'arquivo':file,'campo':key,'problema':msg})
-    try:g=json.loads(Path(glossary).read_text());source=json.loads((Path(locale)/'source.json').read_text())
+    try:g=json.loads(Path(glossary).read_text(encoding='utf-8-sig'));source=json.loads((Path(locale)/'source.json').read_text(encoding='utf-8-sig'))
     except (OSError,ValueError) as e:return [{'arquivo':str(glossary),'campo':'/','problema':str(e)}]
     for lang in g['languages']:
         p=Path(locale)/f'{lang}.json'
-        try:catalog=json.loads(p.read_text())
+        try:catalog=json.loads(p.read_text(encoding='utf-8-sig'))
         except (OSError,ValueError) as e:fail(p.name,'/',str(e));continue
         for section in ['strings','loctext']:
             src={k:k for k in source['strings']} if section=='strings' else source['loctext']
@@ -39,7 +39,7 @@ def main():
     p=argparse.ArgumentParser();p.add_argument('--json',action='store_true');p.add_argument('--self-test',action='store_true');a=p.parse_args()
     if a.self_test:
         with tempfile.TemporaryDirectory() as tmp:
-            root=Path(tmp);g=json.loads(GLOSSARY.read_text())
+            root=Path(tmp);g=json.loads(GLOSSARY.read_text(encoding='utf-8-sig'))
             (root/'g.json').write_text(json.dumps(g))
             source={'loctext':{},'strings':['Maré Alta R$ {0}<br>']}
             (root/'source.json').write_text(json.dumps(source))
