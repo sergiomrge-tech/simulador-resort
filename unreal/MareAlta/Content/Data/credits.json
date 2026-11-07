@@ -1,0 +1,262 @@
+{
+  "_doc": "Contrato proposto para a tela de créditos do menu e a conclusão da dívida. Os campos iniciados por _ são metadados editoriais; nenhum C++ consome credits.json nesta base. Não anunciar integração até implementar com o Claude. As 12 traduções são propostas; exibir com localização e compatibilidade com Steam.",
+  "_schema_version": 1,
+  "_status": "proposta_nao_integrada",
+  "_product": "Coconut Coast: Resort Simulator",
+  "_sections": [
+    {
+      "id": "creation",
+      "title_pt_BR": "Criação e desenvolvimento",
+      "entries": [
+        {
+          "name": "Sergio",
+          "role_pt_BR": "Criador e direção do jogo"
+        },
+        {
+          "name": "Colaboradores do projeto",
+          "role_pt_BR": "Desenvolvimento e implementação — identificar contribuições reais antes da publicação"
+        }
+      ]
+    },
+    {
+      "id": "engine",
+      "title_pt_BR": "Motor gráfico e tecnologia",
+      "entries": [
+        {
+          "name": "Epic Games, Inc.",
+          "role_pt_BR": "Unreal Engine 5.8",
+          "url": "https://www.unrealengine.com/eula/unreal",
+          "license": "Unreal Engine EULA",
+          "required_notices": [
+            "Coconut Coast: Resort Simulator uses Unreal® Engine. Unreal® is a trademark or registered trademark of Epic Games, Inc. in the United States of America and elsewhere.",
+            "Unreal® Engine, Copyright 1998 – 2026, Epic Games, Inc. All rights reserved."
+          ]
+        },
+        {
+          "name": "Epic Games",
+          "role_pt_BR": "MetaHuman (personagens)",
+          "url": "https://www.metahuman.com/license",
+          "license": "Unreal Engine EULA"
+        },
+        {
+          "name": "NVIDIA Corporation",
+          "role_pt_BR": "DLSS (somente se o plugin for distribuído)",
+          "url": "https://developer.nvidia.com/rtx/dlss",
+          "license": "NVIDIA RTX SDK EULA"
+        }
+      ]
+    },
+    {
+      "id": "art",
+      "title_pt_BR": "Modelos e texturas",
+      "entries": [
+        {
+          "name": "Poly Haven",
+          "role_pt_BR": "Texturas e modelos",
+          "url": "https://polyhaven.com/license",
+          "license": "CC0 1.0"
+        },
+        {
+          "name": "Quaternius",
+          "role_pt_BR": "Modelos e animações",
+          "url": "https://quaternius.com",
+          "license": "CC0 1.0"
+        },
+        {
+          "name": "Kenney",
+          "role_pt_BR": "Modelos, objetos e efeitos",
+          "url": "https://kenney.nl",
+          "license": "CC0 1.0"
+        },
+        {
+          "name": "ambientCG",
+          "role_pt_BR": "Texturas",
+          "url": "https://ambientcg.com",
+          "license": "CC0 1.0"
+        },
+        {
+          "name": "Criadores Fab",
+          "role_pt_BR": "Modelos, figurinos e objetos integrados",
+          "url": "https://www.fab.com/eula",
+          "license": "Fab Standard License / licença individual, verificar a fonte"
+        }
+      ]
+    },
+    {
+      "id": "music",
+      "title_pt_BR": "Música e efeitos sonoros",
+      "entries": [
+        {
+          "name": "Equipe do projeto",
+          "role_pt_BR": "Trilhas e efeitos originais sintetizados",
+          "license": "Produção própria — conferir cadeia de produção"
+        },
+        {
+          "name": "OpenGameArt — autores conforme CREDITS.md",
+          "role_pt_BR": "Bossa Town, mar, ambiente, aves e efeitos",
+          "url": "https://opengameart.org",
+          "license": "CC0 por item catalogado"
+        },
+        {
+          "name": "B. Tahir — Open Lo-Fi",
+          "role_pt_BR": "12 faixas candidatas do rádio (NÃO LIBERAR para build/stream antes da auditoria)",
+          "url": "https://github.com/btahir/open-lofi",
+          "license": "CC0 1.0 — Content ID não verificado",
+          "status": "hold"
+        }
+      ]
+    },
+    {
+      "id": "interface",
+      "title_pt_BR": "Interface, ícones e fontes",
+      "entries": [
+        {
+          "name": "Delapouite",
+          "role_pt_BR": "Ícones game-icons.net adaptados",
+          "url": "https://game-icons.net",
+          "license": "CC BY 3.0",
+          "attribution_required": true,
+          "changes": "Fundo preto removido; cores aplicadas ao jogo"
+        },
+        {
+          "name": "Lorc",
+          "role_pt_BR": "Ícones game-icons.net adaptados",
+          "url": "https://game-icons.net",
+          "license": "CC BY 3.0",
+          "attribution_required": true,
+          "changes": "Fundo preto removido; cores aplicadas ao jogo"
+        },
+        {
+          "name": "Nunito — Vernon Adams, Cyreal, Jacques Le Bailly",
+          "role_pt_BR": "Tipografia da interface",
+          "url": "https://fonts.google.com/specimen/Nunito",
+          "license": "SIL OFL 1.1"
+        },
+        {
+          "name": "Noto Sans JP / KR / SC — Google",
+          "role_pt_BR": "Fontes de localização",
+          "url": "https://fonts.google.com/noto",
+          "license": "SIL OFL 1.1"
+        },
+        {
+          "name": "Patrick Hand — Google Fonts",
+          "role_pt_BR": "Fonte manuscrita",
+          "url": "https://fonts.google.com/specimen/Patrick+Hand",
+          "license": "SIL OFL 1.1"
+        },
+        {
+          "name": "Caveat — Impallari Type",
+          "role_pt_BR": "Fonte manuscrita cirílica",
+          "url": "https://fonts.google.com/specimen/Caveat",
+          "license": "SIL OFL 1.1",
+          "status": "confirmar_arquivo_OFL_na_build"
+        }
+      ]
+    },
+    {
+      "id": "thanks",
+      "title_pt_BR": "Agradecimentos",
+      "entries": [
+        {
+          "name": "Comunidade de jogadores",
+          "role_pt_BR": "Feedback, testes e relatos — atribuir nomes apenas com autorização"
+        }
+      ]
+    }
+  ],
+  "_section_title_translations": {
+    "Criação e desenvolvimento": {
+      "en": "Creation and development",
+      "es": "Creación y desarrollo",
+      "de": "Kreation und Entwicklung",
+      "fr": "Création et développement",
+      "it": "Creazione e sviluppo",
+      "nl": "Creatie en ontwikkeling",
+      "pl": "Tworzenie i rozwój",
+      "pt-PT": "Criação e desenvolvimento",
+      "ru": "Создание и разработка",
+      "ja": "制作・開発",
+      "ko": "기획 및 개발",
+      "zh-Hans": "创作与开发"
+    },
+    "Motor gráfico e tecnologia": {
+      "en": "Engine and technology",
+      "es": "Motor gráfico y tecnología",
+      "de": "Engine und Technologie",
+      "fr": "Moteur et technologie",
+      "it": "Motore grafico e tecnologia",
+      "nl": "Engine en technologie",
+      "pl": "Silnik i technologia",
+      "pt-PT": "Motor gráfico e tecnologia",
+      "ru": "Движок и технологии",
+      "ja": "ゲームエンジン・技術",
+      "ko": "게임 엔진 및 기술",
+      "zh-Hans": "游戏引擎与技术"
+    },
+    "Modelos e texturas": {
+      "en": "Models and textures",
+      "es": "Modelos y texturas",
+      "de": "Modelle und Texturen",
+      "fr": "Modèles et textures",
+      "it": "Modelli e texture",
+      "nl": "Modellen en texturen",
+      "pl": "Modele i tekstury",
+      "pt-PT": "Modelos e texturas",
+      "ru": "Модели и текстуры",
+      "ja": "モデル・テクスチャ",
+      "ko": "모델 및 텍스처",
+      "zh-Hans": "模型与纹理"
+    },
+    "Música e efeitos sonoros": {
+      "en": "Music and sound effects",
+      "es": "Música y efectos de sonido",
+      "de": "Musik und Soundeffekte",
+      "fr": "Musique et effets sonores",
+      "it": "Musica ed effetti sonori",
+      "nl": "Muziek en geluidseffecten",
+      "pl": "Muzyka i efekty dźwiękowe",
+      "pt-PT": "Música e efeitos sonoros",
+      "ru": "Музыка и звуковые эффекты",
+      "ja": "音楽・効果音",
+      "ko": "음악 및 효과음",
+      "zh-Hans": "音乐与音效"
+    },
+    "Interface, ícones e fontes": {
+      "en": "Interface, icons and fonts",
+      "es": "Interfaz, iconos y fuentes",
+      "de": "Benutzeroberfläche, Symbole und Schriftarten",
+      "fr": "Interface, icônes et polices",
+      "it": "Interfaccia, icone e font",
+      "nl": "Interface, pictogrammen en lettertypen",
+      "pl": "Interfejs, ikony i czcionki",
+      "pt-PT": "Interface, ícones e tipos de letra",
+      "ru": "Интерфейс, значки и шрифты",
+      "ja": "UI・アイコン・フォント",
+      "ko": "UI, 아이콘 및 글꼴",
+      "zh-Hans": "界面、图标与字体"
+    },
+    "Agradecimentos": {
+      "en": "Special thanks",
+      "es": "Agradecimientos",
+      "de": "Danksagungen",
+      "fr": "Remerciements",
+      "it": "Ringraziamenti",
+      "nl": "Dankwoord",
+      "pl": "Podziękowania",
+      "pt-PT": "Agradecimentos",
+      "ru": "Благодарности",
+      "ja": "謝辞",
+      "ko": "감사의 말",
+      "zh-Hans": "特别鸣谢"
+    }
+  },
+  "_integration_requirements": [
+    "Conferir todas as linhas contra a build cozinhada e os arquivos de licença externos em D:/Assets",
+    "EULA Unreal: incluir as duas linhas literais em toda tela de créditos real",
+    "Game-icons CC BY 3.0: autores, licença, link e alterações obrigatórias",
+    "Nunca exibir colaboradores não identificados como autores comprovados",
+    "Não reutilizar conteúdo do grupo hold antes da aprovação formal",
+    "Ligar a tela final da dívida ao consumidor C++ somente após final integrado",
+    "Se qualquer texto se tornar player-facing em JSON sem prefixo _, extrair com i18n_extract.py e traduzir para os 12 catálogos"
+  ]
+}

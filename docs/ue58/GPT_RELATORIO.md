@@ -910,3 +910,73 @@ não captura da Unreal. O diff dos dados foi comparado estruturalmente: apenas o
 ## Complemento — música opcional nas configurações
 
 Solicitação de Sergio: **manter as músicas existentes** e oferecer um interruptor **“Desativar música”** em `Opções → Áudio`, sem afetar efeitos, vento, mar e sons da praia. `Content/Data/radio_ui.json` declara rótulo, texto de ajuda e comportamento. As 12 traduções serão atualizadas nesta mesma branch. O áudio existente já permite `Music=0`; a implementação da caixa/checkbox C++ em `MareGame.cpp::SMareOptions::AudioPage` e a restauração persistente do volume anterior ficam para Claude (sem editar C++ nesta entrega). A possibilidade de desativar música não supre a checagem de Content ID.
+
+
+---
+
+# Pacote 9 — auditoria, Steam multilíngue, créditos, captação e divulgação
+
+**07/11/2026 · branch `gpt/pacote-9` · origem `codex/ue58-migration` @ `0ba71c4cd15d23a5007edfb7f142f6dfa98f263f` · PR direcionado para essa base.** Nenhum C++/header, `.uasset`, `radio.json` ou `audio.json` foi alterado. O ramo não deve ser mesclado antes do gate técnico e jurídico.
+
+## Entregas efetivamente versionadas
+
+| Pedido | Status / arquivos | Validação / limite |
+|---|---|---|
+| 1. Auditoria C++ somente leitura | `docs/ue58/AUDITORIA_CODIGO_PACOTE9.md`: cenários concretos, gravidades P0/P1/P2, linhas e diffs/propostas, incluindo rádio, tela de créditos, dicas e natação | **69 arquivos .cpp** de `Source/MareAlta` lidos e varridos estaticamente; nenhuma compilação nem PIE |
+| 2. Teste manual da demo | `docs/ue58/TESTE_MANUAL_DEMO.md`: percurso aproximado de 2 h do save novo ao agradecimento, controle de caixa/fama/compra/capítulo e planilha de problemas/fotos | Percurso **não executado** por humano; gates definidos para Sergio |
+| 3. Acessibilidade | `docs/ue58/ACESSIBILIDADE.md`: texto, sons, daltonismo, controles, pausa, velocidade e modo sem pressa, com código, esforço e prioridade | Proposta sem C++; não publicar como recursos entregues |
+| 4. Steam em 13 idiomas | `docs/steam/loja_<locale>.md` **demo**, `docs/steam/loja_completo_<locale>.md` **jogo completo** para es/de/fr/it/nl/pl/pt-PT/ru/ja/ko/zh-Hans; pt-BR e en mantêm originais. `docs/steam/TAMANHOS_PACOTE9.md` | **22 descrições curtas novas <=300 caracteres Unicode**, tabela nominal; revisão humana nativa ainda necessária. Duas páginas distintas |
+| 5. Direitos e créditos | `docs/LICENCAS_TERCEIROS.md` lista autores, licenças e links; `Content/Data/credits.json` contém seis seções propostas, autor/papel/atribuição e títulos traduzidos em 12 idiomas | **Bloqueadores comerciais**: prova de assets locais Fab/info.json, Caveat OFL, Open Lo-Fi/stream, avisos Unreal/CC BY na UI |
+| 6. Capturas 1080p | `tools/ue58/qa/marketing_shots.py` e `docs/ue58/CAPTURAS_PACOTE9.md`; 10 capturas da demo, 12 planos do trailer, câmeras, preparação e nomes, uso de `qa_gate.py` e `pool_swim_qa.py` | **Roteiro/script entregues, 0 capturas reais obtidas**: requer Unreal Editor, MCP, save QA e revisão do Sergio |
+| 7. Dica do rádio | Texto pt-BR e local do gatilho em `AUDITORIA_CODIGO_PACOTE9.md` | **Não editado** `tutorial.json` porque `MareServiceTarget.cpp:91` retorna antes de `ShowTip` linha 93; C++ deve ser alterado primeiro |
+| 8. Devlogs / campanhas | `docs/steam/devlogs/01_heranca_` ... `08_radio_` em pt-BR e en (**16 arquivos**); `CALENDARIO_6_SEMANAS.md` com **30 posts × 2 idiomas**: Steam/X/Instagram/TikTok/Reddit | Preparado, **não publicado**; calendário relativo S-6 a S-1, sem datas prometidas |
+| 9. Relatório | Esta seção `Pacote 9` de `docs/ue58/GPT_RELATORIO.md` | Estado do PR/CI precisa ser confirmado após abertura |
+
+**Créditos e i18n:** os dados de `credits.json` são **proposta não integrada**, todos os campos editoriais têm prefixo `_`, logo o extrator atual de `i18n_extract.py` os ignora até existir consumidor C++. Quando Claude ativar os textos na UI, migrar para conteúdo player-facing com chave pt-BR, atualizar `source.json` e os 12 idiomas. A dica do rádio também depende de gatilho no C++, portanto não introduzir traduções órfãs agora.
+
+## Críticos para Claude — C++/editor (somente estas dependências)
+
+1. **P0 `MareAudioWorld.cpp:27-42`** — esquema de `radio.json` é array `[id,nome]`, mas o leitor C++ usa `AsObject`/campos `id`/`name`. Aplicar o diff do documento de auditoria, testar `Aloha FM → ... → off`, UI do celular e E nos três aparelhos; confirmar que as ondas importadas/permitidas realmente tocam.
+2. **P1 `MareServiceTarget.cpp:91-93` + `MareHomeWorld.cpp:80-92`** — ligar `ShowTip` à ação HomeStereoKiosk; após o gatilho, incluir a dica **“Rádio do quiosque” / “Use E no rádio para trocar a música. No celular, escolha anterior, próxima ou desligar.”** em `tutorial.json`. Traduzir pelas regras **chave = frase pt-BR**, inclusive 12 catálogos, extrair completamente.
+3. **P1 `MareGame.cpp:2224-2235`, `MareAudioWorld.cpp:54-98`** — integrar a opção de **Desativar música** que `radio_ui.json` já propõe, persistindo `MusicMuted` e `MusicLastNonZero`; manter ambiente/efeitos, inclusive em streams. Testar reinício/restauração.
+4. **P1 `MareGame.cpp:1837-1845` e tela final da dívida** — substituir créditos estáticos por consumer de `credits.json`, incluir duas linhas literais do Unreal EULA e atribuição CC BY; disponibilizar créditos completos ao público.
+5. **P2 `MarePoolSwimWorld.cpp:224,232,253,356`** — defensivas de `Jump_Start` nulo, `ride_seconds`/tempo mínimo, entrada do console; validar MetaHuman/piscina/tobogã em PIE/packaged, sem prometer tobogã da demo.
+6. **Editor (sem mudar catálogo protegido)** — varrer `/Game/Custom`, `/Game/Audio`, roupas/Fab, `info.json` em `D:/Assets`, licenças de fontes e cook; somente publicar faixas licenciadas/com liberação de stream confirmada. Fotos reais de 1920×1080 e testes de UI/CJK.
+
+**Notas de correções anteriores confirmadas estaticamente:** `MareGame.cpp:2881` agora chama `SaveClock+=DeltaSeconds` fora do comentário e executa o autosave de 30 s; `MareSimulation.cpp:424-429` agora aplica XP negativo com piso de nível; `MareStays.cpp:102` já remove `vip_asked/vip_done` por nova estadia. **Ainda não são provas de teste em runtime.** Não reabrir regressões resolvidas sem reprodução.
+
+## Para Sergio — teste e lançamento
+
+- Jogar **uma sessão do zero (~2 h)** conforme `TESTE_MANUAL_DEMO.md`, **sem comandos QA**, anotando duração verdadeira, cada compra/pagamento, fama, capítulo, carta, rádio, piscina, saldo após carregar, screenshot/defeito.
+- Não autorizar marketing com capturas não geradas/revisadas, música pendente de Content ID ou hotel/tobogã tratados como demo.
+- Fazer gate documental com a versão exata da build: `docs/LICENCAS_TERCEIROS.md`, contratos Fab/info.json, atribuição game-icons, licenças OFL/Caveat, EULA Unreal/MetaHuman/NVIDIA.
+- Depois das correções, testar PT-BR, EN, pelo menos um CJK, controle/teclado, texto 150%, música desligada e retorno do save; assinar checklist antes da Steam.
+
+## Como conferir tecnicamente
+
+```powershell
+# No clone atualizado de gpt/pacote-9; Python 3, arquivos com encoding='utf-8'
+python tools/ue58/i18n_extract.py
+python tools/ue58/qa/save_check.py --self-test
+python tools/ue58/qa/achievements_check.py
+python tools/ue58/qa/build_package_index.py --output .tmp-pacote9-index.json --log-chunks
+python tools/ue58/qa/data_lint.py --asset-index .tmp-pacote9-index.json --json
+python -m py_compile tools/ue58/qa/marketing_shots.py
+python tools/ue58/qa/marketing_shots.py --plan
+```
+
+**Gate do i18n:** `git diff --exit-code -- unreal/MareAlta/Content/Localization/Mare/` *excluindo* `todo_*.json` gerados; nenhum `todo_*.json` entra no commit; catálogo válido, placeholders `{N}` e `<br>`, nenhum texto vazio. O workflow já existente `.github/workflows/pacote8-validacao.yml` executa o extrator completo, comparação do `source.json`/12 traduções e `data_lint.py --asset-index ... --json` no PR para `codex/ue58-migration`.
+
+**Estado de validação nesta sessão:** inventário/manual/contratos/roteiros criados e versionados; **não foi possível executar editor Unreal no ambiente GitHub, nem alegar zero erros do data_lint antes do resultado do Actions**. CI/PR devem confirmar `i18n_extract.py` integral sem diff e `data_lint` com zero erros. Qualquer falha deve ser corrigida **sem alterar os caminhos proibidos** antes de merge.
+
+**Checklist de integridade antes do merge:** diff sem `Source/**`, `*.uasset`, `radio.json`, `audio.json`; 11 pares de páginas, 16 devlogs, 6 semanas de posts; `credits.json` JSON válido e 12 títulos localizados por seção; screenshots do editor somente se foram realmente produzidas.
+
+
+## Encerramento e validação verificada do Pacote 9
+
+- **Branch/PR:** `gpt/pacote-9` → `codex/ue58-migration`, [PR #15](https://github.com/sergiomrge-tech/simulador-resort/pull/15), **sem merge**.
+- **Build de verificação:** `5b5400cdeaa866193931699c7050e6fe96174851` — o GitHub Actions concluiu com **success** os dois jobs: **Pacote 8 - integridade de dados e traducoes** (extrator `i18n_extract.py`, catálogos, verificador de saves/conquistas, índice de assets e `data_lint.py` com saída sem erros) e **Pacote 9 - QA dos materiais de lancamento** (sintaxe Python, descrições curtas, créditos 12 idiomas e devlogs). Confirmação por consulta a execuções do commit, não por execução local.
+- **Dica de rádio:** as **12 traduções adicionais** (mais a fonte pt-BR, 13 versões totais) foram preparadas na [auditoria de código](AUDITORIA_CODIGO_PACOTE9.md#traduções-prontas-da-dica-do-rádio-após-integração-pelo-claude). Só inserir `tutorial.json` + catálogos após corrigir o gatilho `MareServiceTarget.cpp:91-93`; o pacote não altera os textos ativos do jogo sem consumidor.
+- **Permanecem externos:** compilação C++/PIE, cook/pacote Steam, capturas reais, conferência jurídica e teste manual Sergio. Nenhum deles está aprovado apenas pelo CI de dados.
+
+**ATENÇÃO:** o commit desta subseção atualizará o SHA após os checks anteriores. O workflow do PR será novamente acionado na cabeça mais recente; verificar conclusão do novo SHA antes do merge.
