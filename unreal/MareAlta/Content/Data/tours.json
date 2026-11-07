@@ -578,7 +578,7 @@
   "sunset_bonus": 0.5,
   "bottle": "/Game/Custom/BarPrep/BarPrep_agua_gas/BarPrep_agua_gas.BarPrep_agua_gas",
   "lines": {
-   "start": "Entregue água e protetor a cada um (E) e siga para o primeiro mirante.",
+   "start": "Entregue água e protetor solar a cada pessoa (E) e siga para o primeiro mirante.",
    "thanks": "Valeu pela água!",
    "lag": "Ei, mais devagar!",
    "photo": "Que vista! Tira outra!",

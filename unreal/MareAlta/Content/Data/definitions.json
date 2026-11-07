@@ -608,7 +608,7 @@
 	"expansions": {
 		"bar": {
 			"area": "bar",
-			"blurb": "Um bar de praia com barman. Banhistas sentam e pedem drinks sozinhos.",
+			"blurb": "Um bar de praia com bartender. Banhistas se sentam e pedem drinks.",
 			"cost": 900,
 			"icon": "bar",
 			"name": "Bar do Coqueiro",
@@ -770,7 +770,7 @@
 	},
 	"quests": {
 		"cocos_rita": {
-			"desc": "A barraca compra 4 cocos do seu estoque.",
+			"desc": "A Barraca da Dona Rita compra 4 cocos do seu estoque.",
 			"giver": "Dona Roberta",
 			"need": "coco",
 			"qty": 4,
@@ -855,7 +855,7 @@
 	"source_commit": "8d3be2d",
 	"staff": {
 		"atendente": {
-			"blurb": "Cuida de todo o quiosque: anota pedidos, entrega produtos prontos, recebe e recolhe a louça.",
+			"blurb": "Cuida de todo o quiosque: anota pedidos, entrega produtos prontos e recolhe a louça. O cliente paga ao receber.",
 			"hire": 240,
 			"name": "Atendente do quiosque",
 			"req": "",
@@ -869,7 +869,7 @@
 			"wage": 42
 		},
 		"caixa": {
-			"blurb": "Recebe automaticamente as contas dos pedidos entregues. Sem caixa, receba no terminal.",
+			"blurb": "O pagamento é recebido automaticamente a cada produto entregue.",
 			"company": true,
 			"hire": 220,
 			"name": "Operador de caixa",

@@ -255,3 +255,282 @@ python -m py_compile tools/ue58/i18n_length_audit.py
 Self-test aprovado: fronteiras estritas de 30%/25 caracteres, NFC, marcação, largura asiática, placeholders repetidos e printf, fixture multilíngue com entrada faltante/marcador perdido e prova de que os inputs não são escritos. Auditoria real aprovada: 12 idiomas completos, 63 sugestões menores com marcadores preservados. Conferidos também os 29 textos da dívida presentes no catálogo, os 24 IDs de conquista demo e a soma de 60 s do roteiro.
 
 Sem alterações em **unreal/MareAlta/Source**, **.uasset**, **debt.json**, catálogos de localização ou JSON de economia (definitions, customization, business_games, bar, pool, pool_swim, tours, restaurant, hotel_*, sunbathers). O trabalho foi feito em checkout separado para não incluir a piscina/MetaHumans em andamento no checkout principal. Sem compilação C++, Unreal Editor, teste de executável, nova medição de FPS, publicação Steam, inscrição Next Fest ou envio de imprensa neste pacote. O PR fica aberto para revisão; nenhum merge foi solicitado.
+
+
+# Pacote 6 — dados, localização e contratos para integração
+
+07/11/2026. Base conferida: `899e77a66ce718e19f48d9ae3f06049fdc77cd64`. Branch `gpt/pacote-6`, destino `codex/ue58-migration`.
+**Nenhum arquivo de `unreal/MareAlta/Source`, nenhum `.uasset` e nenhum save do jogador foram alterados.**
+Não se declara build, execução no editor, integração Steam ou implementação da dívida em C++.
+
+## Aplicado
+
+- 19 correções da revisão nos cinco JSON de dados: definições, tutorial, personalização, passeios e minijogos. O item 7 foi adaptado ao código: sujeira impede usar a mesa, sem afirmar penalidade direta de avaliação.
+- Cada frase nova tem tradução nova nos 12 idiomas. Chaves antigas só saem quando deixam de ter consumidor; “Passe da cozinha” continua no Source até a integração do Claude.
+- `GLOSSARIO.json`: 32 conceitos/nomes fixos, nos 12 idiomas, com flexões e contextos explícitos; `glossary_check.py` reprova divergências e entra no `data_lint.py`. Fama continua distinta de avaliação/estrelas. Nomes próprios são preservados, inclusive Bar do Coqueiro, Padre Robson e Seu Severino.
+- 20 vetores fixos da dívida / 45 ações, modelo Python persistente de referência, teste de paridade dos pagamentos com o modelo econômico e pseudocódigo em `DIVIDA_DA_AVO.md`.
+- `achievements.json`: 36 IDs preservados, nome/descrição pt-BR, flags editoriais, condições genéricas, proveniência e 10 textos de Rich Presence. São contratos de dados para o consumidor futuro.
+- 15 falas novas: cinco listas sorteadas de `comic_events.json` passam de 3 para 6 opções cada (gaivota, turista perdido, influenciador, guarda-sol e bandeja). `asks_en` acompanha as entradas inglesas; os 12 catálogos têm todas as variações.
+- Extrator limita `achievements.json` a nome/descrição/presença; condições, caminhos, comparações e IDs não viram texto. Os sete identificadores internos chat/climb/edge/float/fly/jump/ride também não entram como traduções.
+- Índice de packages atualizado com nomes comprovados da árvore Git da base, sem ler/escrever binários. Hashes vinculam o índice aos dados deste pacote; checkout textual usa esse índice automaticamente, checkout com assets usa os arquivos presentes.
+
+Catálogo final: **113/113 LOCTEXT + 4042/4042 strings em cada idioma**. Diferença de chaves: 112 novas e 19 removidas; nenhuma tradução vazia. Não há `todo_*.json` no commit.
+
+Mudanças de valor em chaves já existentes, decorrentes do glossário, nomes, separadores e correções de métricas herdadas: en: 34, es: 53, de: 33, fr: 64, zh-Hans: 136, ja: 138, ru: 55, ko: 82, it: 25, pl: 35, nl: 31, pt-PT: 0. São contagens de entradas alteradas, não número de falas novas.
+
+## Correções nos dados e prova da mecânica
+
+| Item | Dados | Texto aplicado / conferência |
+|---|---|---|
+| 5 | definitions.json | O pagamento é recebido automaticamente a cada produto entregue. — MareSimulation.cpp:237–248 Deliver/Book: pagamento por produto. |
+| 6 | definitions.json | Cuida de todo o quiosque: anota pedidos, entrega produtos prontos e recolhe a louça. O cliente paga ao receber. — MareKioskWorld.cpp:170–195: atendente único, entrega e louça; Deliver cobra. |
+| 7 | tutorial.json | Mesas sujas ficam indisponíveis para novos clientes. Limpe com E ou deixe a tarefa com o atendente. — MareKioskWorld.cpp:38 e :109–124: mesa suja indisponível; :78 calcula nota por espera, sem penalidade direta de sujeira. |
+| 10 | tutorial.json | A placa abre e fecha o quiosque. O atendimento segue o horário do negócio; dormir encerra o dia e o deixa fechado. — MareSimulation.cpp:124–144 SetOpen/IsOpen/KioskCloseHour; :451–453 Sleep fecha o negócio. |
+| 22 | tutorial.json | Batata, peixe e petiscos ficam aqui, prontos para servir. Quando acabar, reponha aqui ou pelo celular. — MareSimulation.cpp:179–195 Restock/RestockCost e MareGame.cpp painel de estação Fridge/Cupboard. |
+| 23 | tutorial.json | Anote o pedido, pegue o prato pronto no balcão de retirada da cozinha e sirva. Rapidez rende gorjeta. — MareRestaurant.cpp:75–104: pedidos, retirada pronta e entrega; MareRestaurantWorld.cpp:31 é a estação existente. |
+| 24 | tutorial.json | Balcão de retirada da cozinha — Só rótulo do tutorial; alvo físico nativo fica na tabela do Claude. |
+| 30 | tutorial.json | Antes de subir, dê água e protetor solar a cada pessoa. Sem isso, o grupo se cansa e reclama. — MareTrailWorld.cpp:82–116: água/protetor por participante antes da subida. |
+| 31 | tours.json | Entregue água e protetor solar a cada pessoa (E) e siga para o primeiro mirante. — Mesmo fluxo de MareTrailWorld, sem mudar E ou consequências. |
+| 37 | definitions.json | Um bar de praia com bartender. Banhistas se sentam e pedem drinks. — MareBar.cpp:82–114: gera pedidos dos clientes; não altera autonomia. |
+| 39 | customization.json | Ducha de cabeça larga e itens de higiene de cortesia. — Descrição do mesmo upgrade de ducha, sem novo efeito. |
+| 40 | customization.json | Ducha com itens de higiene de cortesia — Nome do mesmo upgrade, sem alterar id/preço. |
+| 42 | definitions.json | A Barraca da Dona Rita compra 4 cocos do seu estoque. — definitions.quests.cocos_rita; MareSimulation.cpp:369–380 entrega insumos à missão, qty preservado. |
+| 54 | tutorial.json | Espere o peixe morder a isca e aperte na hora certa. Os peixes vão para o estoque; Seu Severino precisa de alguns. — MareLeisure.cpp:22–31 CatchFish acrescenta peixe ao estoque; dicas do minijogo SMareFishingGame. |
+| 58 | business_games.json | Casquinhas de até 4 bolas. O pedido aparece por menos tempo e a faixa de tamanho correto fica menor. — business_games.sorveteria.levels[0].set e MareIceCream.cpp:46–54, :89: até 4 bolas e faixa right. |
+| 59 | business_games.json | Pedidos de 2 a 4 bolas, visíveis por 1,8 s. A bola cresce mais rápido e a faixa correta é bem estreita. — business_games.sorveteria.levels[1].set: show_seconds 1.8, scoops 2–4; leitura pelo minijogo. |
+| 65 | tutorial.json | Cada negócio tem sua tarefa. Quanto melhor o atendimento, mais o cliente paga. Sem você, o funcionário atende com 60% da receita. — MareBizCommon.cpp:82 BizClerkShare e business_games.clerk_share=.6; sem alterar a divisão. |
+| 66 | tutorial.json | Negocie a diária como na pousada. Após 2 horas sem atendimento, a equipe aceita a oferta do hóspede. — MareStays.cpp:186–192: após 120 minutos chama AcceptOffer quando há quarto limpo; :121–123 usa oferta. |
+| 69 | customization.json | Piscina (entrada por dia) — customization.operations.hourly.pool: nome da mesma receita de entrada, sem mudar cobrança. |
+
+Não refeitos os itens já aplicados pelo Claude: 1, 2, 3, 14–17, 29, 33, 34, 38, 41, 43–46. Os dados deles foram preservados.
+O glossário encontrou traduções herdadas do item 45 sem a palavra de avaliação: o texto localizado foi corrigido, sem
+reescrever o dado nem a condição. Corrigiu também nomes trocados por “Gregory” em traduções de Seu Severino.
+
+## Para o Claude — textos do C++
+
+A tabela abaixo não aplica alterações ao Source. Versão estruturada para copiar: [PACOTE6_TEXTOS_CPP.json](PACOTE6_TEXTOS_CPP.json).
+Os textos atuais de LOCTEXT continuam no source.json; ao aplicar, manter as chaves MareMenu,OptLanguageHint / OptKeysHint /
+OptDefaultsLoaded / OptKeepVideo / QuitDesktop. Para strings, migrar a chave portuguesa nos 12 mapas e rodar o extrator.
+O item 9 é o fragmento sem separador do item 8 e aponta ao mesmo literal; não inserir dois sufixos no resumo.
+
+| Item | Arquivo:linha (base) | Texto atual | Texto novo |
+|---|---|---|---|
+| 8 | unreal/MareAlta/Source/MareAlta/MareSimulation.cpp:842 |  · sem guia contratado os passeios não saem |  · sem guia contratado, você precisa guiar os passeios |
+| 9 | unreal/MareAlta/Source/MareAlta/MareSimulation.cpp:842 | sem guia contratado os passeios não saem | sem guia contratado, você precisa guiar os passeios |
+| 24 | unreal/MareAlta/Source/MareAlta/MareRestaurantWorld.cpp:31 | Passe da cozinha · pegar pratos prontos | Balcão de retirada da cozinha · pegar pratos prontos |
+| 63 | unreal/MareAlta/Source/MareAlta/MareSimulation.cpp:120 | Empresa criada. Abra o quiosque para receber clientes. | Empresa criada. Abra o quiosque pela placa do balcão para receber clientes. |
+| 67 | unreal/MareAlta/Source/MareAlta/MareGame.cpp:586 | Quem você não atender em 2 horas, a equipe do hotel recebe pela oferta do hóspede. | Após 2 horas sem atendimento, a equipe do hotel aceita a oferta do hóspede. |
+| 72 | unreal/MareAlta/Source/MareAlta/MareGame.cpp:2271 | A tradução para o inglês ainda está sendo feita: alguns textos podem continuar em português. | Se encontrar algum texto sem tradução, informe o idioma e a tela em que ele aparece. |
+| 73 | unreal/MareAlta/Source/MareAlta/MareGame.cpp:2244 | Clique numa ação e aperte a nova tecla (Esc cancela). Se a tecla já estiver em uso, as duas ações trocam. | Clique em uma ação e pressione a nova tecla (Esc cancela). Se a tecla já estiver em uso, as duas ações trocam de tecla. |
+| 74 | unreal/MareAlta/Source/MareAlta/MareGame.cpp:2332 | Valores padrão carregados (o áudio já mudou). Clique em Aplicar para usar o resto. | Padrões carregados; o áudio já mudou. Clique em Aplicar para confirmar as demais configurações. |
+| 75 | unreal/MareAlta/Source/MareAlta/MareGame.cpp:2292 | Manter este modo de tela? Volta ao anterior em {0} s. | Manter este modo de tela? O anterior volta em {0} s. |
+| 76 | unreal/MareAlta/Source/MareAlta/MareGame.cpp:2487 | Sair para o desktop | Sair para a área de trabalho |
+
+### As 12 traduções prontas para os textos nativos
+
+| Item | Idioma | Tradução nova |
+|---|---|---|
+| 8 | en |  · without a hired guide, you need to lead the tours |
+| 8 | es |  · sin un guía contratado, tienes que guiar los paseos |
+| 8 | de |  · ohne angestellten Guide musst du die Ausflüge selbst führen |
+| 8 | fr |  · sans guide embauché, vous devez guider les excursions |
+| 8 | zh-Hans |  · 没有雇用导游时，需要你亲自带团 |
+| 8 | ja |  · ガイドを雇っていなければ、自分でツアーを案内します |
+| 8 | ru |  · без нанятого гида экскурсии нужно проводить самому |
+| 8 | ko |  · 고용한 가이드가 없으면 직접 투어를 안내해야 합니다 |
+| 8 | it |  · senza una guida assunta, devi guidare tu le escursioni |
+| 8 | pl |  · bez zatrudnionego przewodnika musisz samodzielnie prowadzić wycieczki |
+| 8 | nl |  · zonder ingehuurde gids moet je zelf de tochten leiden |
+| 8 | pt-PT |  · sem guia contratado, tem de guiar os passeios |
+| 9 | en | without a hired guide, you need to lead the tours |
+| 9 | es | sin un guía contratado, tienes que guiar los paseos |
+| 9 | de | ohne angestellten Guide musst du die Ausflüge selbst führen |
+| 9 | fr | sans guide embauché, vous devez guider les excursions |
+| 9 | zh-Hans | 没有雇用导游时，需要你亲自带团 |
+| 9 | ja | ガイドを雇っていなければ、自分でツアーを案内します |
+| 9 | ru | без нанятого гида экскурсии нужно проводить самому |
+| 9 | ko | 고용한 가이드가 없으면 직접 투어를 안내해야 합니다 |
+| 9 | it | senza una guida assunta, devi guidare tu le escursioni |
+| 9 | pl | bez zatrudnionego przewodnika musisz samodzielnie prowadzić wycieczki |
+| 9 | nl | zonder ingehuurde gids moet je zelf de tochten leiden |
+| 9 | pt-PT | sem guia contratado, tem de guiar os passeios |
+| 24 | en | Kitchen pickup counter · collect ready dishes |
+| 24 | es | Mostrador de recogida de la cocina · recoger platos listos |
+| 24 | de | Abholtresen der Küche · fertige Gerichte abholen |
+| 24 | fr | Comptoir de retrait de la cuisine · récupérer les plats prêts |
+| 24 | zh-Hans | 厨房取餐台 · 领取做好的菜品 |
+| 24 | ja | 厨房の受け取りカウンター · 出来上がった料理を受け取る |
+| 24 | ru | Стойка выдачи кухни · забрать готовые блюда |
+| 24 | ko | 주방 픽업대 · 완성된 요리 가져가기 |
+| 24 | it | Banco di ritiro della cucina · ritira i piatti pronti |
+| 24 | pl | Lada odbioru w kuchni · odbierz gotowe dania |
+| 24 | nl | Afhaalbalie van de keuken · klaargemaakte gerechten ophalen |
+| 24 | pt-PT | Balcão de retirada da cozinha · levantar pratos prontos |
+| 63 | en | Company created. Open the kiosk using the counter sign to welcome customers. |
+| 63 | es | Empresa creada. Abre el quiosco con el cartel del mostrador para recibir clientes. |
+| 63 | de | Firma gegründet. Öffne den Kiosk über das Schild am Tresen, um Gäste zu empfangen. |
+| 63 | fr | Entreprise créée. Ouvrez le kiosque avec le panneau du comptoir pour accueillir les clients. |
+| 63 | zh-Hans | 公司已创建。使用柜台上的招牌开启小摊，迎接顾客。 |
+| 63 | ja | 会社を設立しました。カウンターの看板で売店を開けて、お客さんを迎えましょう。 |
+| 63 | ru | Компания создана. Откройте киоск с помощью вывески на прилавке, чтобы принимать клиентов. |
+| 63 | ko | 회사를 만들었습니다. 카운터 간판으로 가판대를 열어 손님을 받으세요. |
+| 63 | it | Impresa creata. Apri il chiosco con l'insegna sul banco per accogliere i clienti. |
+| 63 | pl | Firma utworzona. Otwórz kiosk szyldem na ladzie, aby przyjmować klientów. |
+| 63 | nl | Bedrijf opgericht. Open de kiosk met het bord op de toonbank om klanten te ontvangen. |
+| 63 | pt-PT | Empresa criada. Abra o quiosque pela placa do balcão para receber clientes. |
+| 67 | en | After 2 hours without service, the hotel staff accepts the guest's offer. |
+| 67 | es | Tras 2 horas sin atención, el equipo del hotel acepta la oferta del huésped. |
+| 67 | de | Nach 2 Stunden ohne Bedienung nimmt das Hotelpersonal das Angebot des Gastes an. |
+| 67 | fr | Après 2 heures sans accueil, l'équipe de l'hôtel accepte l'offre du client. |
+| 67 | zh-Hans | 若2小时无人接待，酒店员工会接受客人的报价。 |
+| 67 | ja | 2時間対応しないと、ホテルのスタッフが宿泊客の提示額を受け入れます。 |
+| 67 | ru | Через 2 часа без обслуживания персонал отеля принимает предложение гостя. |
+| 67 | ko | 2시간 동안 응대하지 않으면 호텔 직원이 투숙객의 제안을 수락합니다. |
+| 67 | it | Dopo 2 ore senza assistenza, il personale dell'hotel accetta l'offerta dell'ospite. |
+| 67 | pl | Po 2 godzinach bez obsługi personel hotelu przyjmuje ofertę gościa. |
+| 67 | nl | Na 2 uur zonder bediening accepteert het hotelpersoneel het bod van de gast. |
+| 67 | pt-PT | Após 2 horas sem atendimento, a equipe do hotel aceita a oferta do hóspede. |
+| 72 | en | If you find any untranslated text, report the language and the screen where it appears. |
+| 72 | es | Si encuentras texto sin traducir, indica el idioma y la pantalla donde aparece. |
+| 72 | de | Falls du unübersetzten Text findest, melde die Sprache und den Bildschirm, auf dem er erscheint. |
+| 72 | fr | Si vous trouvez du texte non traduit, indiquez la langue et l'écran où il apparaît. |
+| 72 | zh-Hans | 如果发现未翻译的文字，请报告语言及其所在界面。 |
+| 72 | ja | 未翻訳の文章を見つけた場合は、言語と表示された画面をお知らせください。 |
+| 72 | ru | Если найдёте непереведённый текст, укажите язык и экран, на котором он появился. |
+| 72 | ko | 번역되지 않은 문구를 발견하면 언어와 표시된 화면을 알려 주세요. |
+| 72 | it | Se trovi testo non tradotto, segnala la lingua e la schermata in cui appare. |
+| 72 | pl | Jeśli znajdziesz nieprzetłumaczony tekst, podaj język i ekran, na którym się pojawia. |
+| 72 | nl | Meld de taal en het scherm als je onvertaalde tekst tegenkomt. |
+| 72 | pt-PT | Se encontrar algum texto sem tradução, informe o idioma e a tela em que ele aparece. |
+| 73 | en | Click an action and press the new key (Esc cancels). If the key is already in use, the two actions swap keys. |
+| 73 | es | Haz clic en una acción y pulsa la nueva tecla (Esc cancela). Si ya está en uso, las dos acciones intercambian teclas. |
+| 73 | de | Klicke auf eine Aktion und drücke die neue Taste (Esc bricht ab). Ist sie bereits belegt, tauschen die beiden Aktionen ihre Tasten. |
+| 73 | fr | Cliquez sur une action et appuyez sur la nouvelle touche (Esc annule). Si elle est déjà utilisée, les deux actions échangent leurs touches. |
+| 73 | zh-Hans | 点击一个操作并按下新按键（Esc取消）。如果按键已被使用，两个操作会交换按键。 |
+| 73 | ja | 操作をクリックして新しいキーを押します（Escでキャンセル）。使用中のキーの場合は、2つの操作のキーが入れ替わります。 |
+| 73 | ru | Нажмите на действие и задайте новую клавишу (Esc — отмена). Если она уже занята, два действия обменяются клавишами. |
+| 73 | ko | 동작을 클릭하고 새 키를 누르세요(Esc로 취소). 이미 사용 중인 키라면 두 동작의 키가 서로 바뀝니다. |
+| 73 | it | Fai clic su un'azione e premi il nuovo tasto (Esc annulla). Se è già in uso, le due azioni si scambiano i tasti. |
+| 73 | pl | Kliknij działanie i naciśnij nowy klawisz (Esc anuluje). Jeśli jest już używany, oba działania zamienią się klawiszami. |
+| 73 | nl | Klik op een actie en druk op de nieuwe toets (Esc annuleert). Als de toets al in gebruik is, wisselen de twee acties van toets. |
+| 73 | pt-PT | Clique em uma ação e pressione a nova tecla (Esc cancela). Se a tecla já estiver em uso, as duas ações trocam de tecla. |
+| 74 | en | Defaults loaded; audio has already changed. Click Apply to confirm the other settings. |
+| 74 | es | Valores predeterminados cargados; el audio ya cambió. Haz clic en Aplicar para confirmar las demás opciones. |
+| 74 | de | Standardwerte geladen; der Ton wurde bereits geändert. Klicke auf Anwenden, um die übrigen Einstellungen zu bestätigen. |
+| 74 | fr | Valeurs par défaut chargées ; l'audio a déjà changé. Cliquez sur Appliquer pour confirmer les autres réglages. |
+| 74 | zh-Hans | 已加载默认设置；音频已更改。点击应用以确认其他设置。 |
+| 74 | ja | 初期設定を読み込みました。音声はすでに変更されています。適用をクリックして、その他の設定を確定してください。 |
+| 74 | ru | Стандартные значения загружены; звук уже изменился. Нажмите «Применить», чтобы подтвердить остальные настройки. |
+| 74 | ko | 기본값을 불러왔으며 오디오는 이미 변경되었습니다. 적용을 클릭해 나머지 설정을 확정하세요. |
+| 74 | it | Valori predefiniti caricati; l'audio è già cambiato. Fai clic su Applica per confermare le altre impostazioni. |
+| 74 | pl | Wczytano ustawienia domyślne; dźwięk już się zmienił. Kliknij Zastosuj, aby potwierdzić pozostałe ustawienia. |
+| 74 | nl | Standaardwaarden geladen; het geluid is al gewijzigd. Klik op Toepassen om de overige instellingen te bevestigen. |
+| 74 | pt-PT | Padrões carregados; o áudio já mudou. Clique em Aplicar para confirmar as demais configurações. |
+| 75 | en | Keep this display mode? The previous one returns in {0} s. |
+| 75 | es | ¿Mantener este modo de pantalla? El anterior volverá en {0} s. |
+| 75 | de | Diesen Anzeigemodus beibehalten? Der vorherige kehrt in {0} s zurück. |
+| 75 | fr | Conserver ce mode d'affichage ? Le précédent revient dans {0} s. |
+| 75 | zh-Hans | 保留此显示模式？{0}秒后恢复之前的模式。 |
+| 75 | ja | この画面モードを維持しますか？{0}秒後に元のモードに戻ります。 |
+| 75 | ru | Сохранить этот режим экрана? Предыдущий вернётся через {0} с. |
+| 75 | ko | 이 화면 모드를 유지할까요? {0}초 후 이전 모드로 돌아갑니다. |
+| 75 | it | Mantenere questa modalità video? La precedente torna fra {0} s. |
+| 75 | pl | Zachować ten tryb ekranu? Poprzedni wróci za {0} s. |
+| 75 | nl | Deze schermmodus behouden? De vorige keert terug over {0} s. |
+| 75 | pt-PT | Manter este modo de tela? O anterior volta em {0} s. |
+| 76 | en | Quit to desktop |
+| 76 | es | Salir al escritorio |
+| 76 | de | Zum Desktop beenden |
+| 76 | fr | Quitter vers le bureau |
+| 76 | zh-Hans | 退出到桌面 |
+| 76 | ja | デスクトップに戻る |
+| 76 | ru | Выйти на рабочий стол |
+| 76 | ko | 바탕 화면으로 나가기 |
+| 76 | it | Esci al desktop |
+| 76 | pl | Wyjdź na pulpit |
+| 76 | nl | Afsluiten naar bureaublad |
+| 76 | pt-PT | Sair para a área de trabalho |
+
+## Conquistas — integração sem casos especiais por ID
+
+O consumidor interpreta apenas `all` (AND recursivo) e folhas com `path`, `op`, `value`; `aggregate` opcional `sum` ou
+`count` lida com diário de pesca e álbum. Operações: `>=`, `==` e `contains`. Não usar nomes de conquista para escolher
+lógica nem traduzir paths, enum `coqueiro`, ids ou nomes de campo. A referência em `achievements_check.py` recusa bool
+como contador, strings em lugar de listas e ausências de dados. Não conceder conquistas em save vazio.
+
+**27 conquistas usam campos atuais; cinco aguardam `/prog/debt/paid_cents`; quatro aguardam contadores novos.** Os cinco
+negócios usam AND de cinco campos existentes `/prog/biz/<id>/lvl`. Contagem do álbum significa fotos presentes, conforme
+a especificação; a pesca soma as espécies registradas. As 36 flags demo/hidden e os textos pt-BR foram comparados com
+`docs/steam/conquistas.json` automaticamente.
+
+| Conquistas / campos | Proveniência confirmada |
+|---|---|
+| Empresa; vendas; oito expansões | MareSimulation.cpp:114, :249, :295 (`company.created`, `kiosk_n`, `unlocked.<id>`) |
+| Quatro capítulos | MareSimulation.cpp:348–366 AdvanceChapter; tamanho dos steps em definitions.json; `prog.ch.<id>` |
+| Bar 50; todas as receitas; receita secreta | MareBar.cpp:184, :191, :197, :429; `bar.served`, `prog.achievements.mestre_drinks`, `bar.known` |
+| Cinco negócios nível 1/3 | MareBizCommon.cpp:26–27, :75; `prog.biz.<id>.lvl` |
+| Pesca/garoupa e fotos | MareLeisure.cpp:22–28, :35–49; `prog.fish`, `prog.album` |
+| Pedido VIP; crítico; evento na praia | MareHotelRooms.cpp:175–179; MareRestaurant.cpp:190–216; MareHotelEvents.cpp:104, :120 |
+| Campeonato; dois fliperamas | MarePoolCup.cpp:173; MareArcade.cpp:35, :216; `billiards.cups`, `prog.biz.fliperama.records.<id>` |
+
+| Novo contador | Atualizar no ponto existente | Por que precisa |
+|---|---|---|
+| `/prog/steam_counters/guided_barco` | RecordTourResult, MareTours.cpp:210–236, bGuide e Pax>=1 e id barco | `tour_results` retém só 12 resultados |
+| `/prog/steam_counters/guided_snorkel` | Mesmo ponto, id snorkel | Evitar perder o fato histórico ao sair do histórico |
+| `/prog/steam_counters/guided_farol` | Mesmo ponto, id farol | Mesmo motivo |
+| `/prog/steam_counters/hotel_polished` | CleanHotelRoom, MareHotelRooms.cpp:118–131, ao concluir sem ajuda | `polished` some no checkout; incrementar uma vez por arrumação, nunca por tarefa |
+
+Inicial 0; saves antigos podem reconstruir um mínimo comprovado do histórico/quartos atuais, sem inventar o que já se
+perdeu. Campos e regras estão em `_new_counters`. Conquistas da dívida dependem da transação real, não de faturamento,
+`ea_end_shown`, patrimônio ou campanha. Criar fila persistente/offline e idempotente para Steam; o JSON sozinho não
+habilita conquistas. Rich Presence inclui textos prontos e pontos de entrada/saída propostos em `_trigger`; a seleção de
+atividade depende do contexto do runtime e não é dedutível só do save. Conta Steamworks/App ID exigem configuração real.
+
+## Variações: o que ficou preservado e por quê
+
+Conferência de sorteio: `MareComicEvents.cpp:129–132`, `:227–229`, `:336–338`, `:409–411` chama LineIndex com
+`bSequence=false` para as cinco listas ampliadas. `MareComicEventsTests.cpp:27–29` exige asks_en com o mesmo tamanho.
+Respostas e reações são pares por índice, não listas de sorteio independentes: preservadas.
+
+- `tours.json/reviews`: MareTours.cpp:228–229 indexa pelo resultado da escolha (bom/neutro/ruim), não sorteia. Acrescentar
+  três strings ali não produziria variação e poderia confundir a semântica. Preservado; para variar, o Claude teria de
+  mudar o consumidor C++, fora deste pacote.
+- `hotel_rooms.json`: reclamações são tipos de tarefa com id, custo e prazo; os textos são campos individuais dos tipos.
+  Não duplicar tipos para criar falas: isso alteraria probabilidades e tarefas.
+- `restaurant.json`: menu/mesas e avaliação do crítico têm resultado calculado; as falas relevantes vêm do C++.
+- `business_games.json/steps`: passos ordenados das rodadas, não falas sorteadas; alterar tamanho mudaria o minijogo.
+- `comic_events.json` HUM-007/HUM-008 têm sequence=true: reclamações/pescaria crescem em sequência; preservadas.
+- `bar.json/discard_reactions`: MareBar.cpp:271 usa contador módulo tamanho, não sorteio; preservado pela regra atual.
+- Moradores: falas e opções principais são nativas; HUMOR_EVENTOS_COMICOS.md é documentação, não lista consumida no jogo.
+
+## Só o que exige Claude / C++ / editor
+
+1. Aplicar os 10 registros de textos nativos (9 pontos de consumidor; item 9 é derivado do 8), com suas traduções acima.
+2. Implementar State.prog.debt, migração, PayDebt e lembretes idempotentes, carta, cartão Finanças, marcos e final/créditos;
+   o roteiro e as funções existentes estão em DIVIDA_DA_AVO.md. Não copiar a simplificação de lembretes do modelo econômico.
+3. Ler achievements.json, criar quatro contadores, avaliação genérica e fila Steam offline; Rich Presence e Steamworks.
+4. No editor/runtime, testar fluxo da demo e completo, dois cliques, falha de save, Unicode, quebra de linha e comprimento
+   dos textos nos 12 idiomas. Rodar qa_gate.py com Unreal e fotografar os painéis; estes testes não foram simulados como PASS.
+5. Aumentar diversidade de avaliações/diálogos indexados somente se mudar os consumidores nativos explicitamente.
+
+As sugestões de reescrita extra dos textos de debt.json na seção “Os 29 textos da dívida” da revisão não fazem parte dos
+itens numerados solicitados. Não alteradas: o contrato original de dívida continua intacto, com seus textos já traduzidos.
+Não se mexeu em taxas/preços/condições de progressão, nem se aplicaram os descontos econômicos opcionais do pacote 4.
+
+## Como conferir (sem Unreal)
+
+```sh
+python tools/ue58/i18n_extract.py
+python tools/ue58/qa/data_lint.py
+python tools/ue58/qa/data_lint.py --self-test
+python tools/ue58/qa/glossary_check.py --self-test
+python tools/ue58/qa/achievements_check.py
+python tools/ue58/balance/test_debt_vectors.py
+python tools/ue58/balance/test_debt.py
+python tools/ue58/balance_model.py --self-test
+```
+
+Resultado final observado: 12 idiomas completos, zero erros no lint/glossário/contrato de conquistas; 20 vetores/45 ações
+da dívida e testes econômicos passam. O índice de assets verifica caminhos e referências, não a carga/renderização.
+O extrator gera todo_*.json vazios como intermediários: não versionar esses arquivos. Para o runtime futuro, verificar
+exatamente as condições nos pontos de evento, salvar antes de notificar Steam e preservar campos desconhecidos do save.

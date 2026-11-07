@@ -26,12 +26,18 @@
    "asks": [
     "Ei! A gaivota levou minha batata!",
     "Aquela gaivota... levou um pedaço e nem pediu licença!",
-    "Volta aqui, sua ladra! Essa era a mais crocante!"
+    "Volta aqui, sua ladra! Essa era a mais crocante!",
+    "Essa gaivota entrou na fila pelo lado errado!",
+    "Minha batata ganhou asas. E eu continuo com fome!",
+    "Ela levou só uma. Está fazendo dieta de gaivota?"
    ],
    "asks_en": [
     "Hey! The seagull took my fries!",
     "That seagull... grabbed a piece without even asking!",
-    "Come back here, you thief! That was the crunchiest one!"
+    "Come back here, you thief! That was the crunchiest one!",
+    "That seagull joined the queue from the wrong end!",
+    "My fries grew wings. And I'm still hungry!",
+    "It only took one. Is it on a seagull diet?"
    ],
    "replies": [
     "Elas são rápidas mesmo."
@@ -62,12 +68,18 @@
    "asks": [
     "Com licença! Você sabe onde fica a praia? Me disseram que era por aqui.",
     "Oi, moço! Esse mar todo aí... é a praia ou ainda falta andar?",
-    "Desculpa incomodar: qual é o caminho mais rápido pra areia? Estou procurando faz meia hora."
+    "Desculpa incomodar: qual é o caminho mais rápido pra areia? Estou procurando faz meia hora.",
+    "Eu trouxe chinelo, toalha e nenhuma noção de direção. A praia é pra onde?",
+    "Se eu seguir reto chego na praia ou viro notícia?",
+    "Esse barulho de onda é uma pista, né? Cadê a praia?"
    ],
    "asks_en": [
     "Excuse me! Do you know where the beach is? They told me it was around here.",
     "Hi! All this sea here... is that the beach, or do I still have to walk?",
-    "Sorry to bother you: what's the quickest way to the sand? I've been looking for half an hour."
+    "Sorry to bother you: what's the quickest way to the sand? I've been looking for half an hour.",
+    "I brought flip-flops, a towel and no sense of direction. Which way is the beach?",
+    "If I keep going straight, do I reach the beach or make the news?",
+    "That wave sound is a clue, right? Where's the beach?"
    ],
    "replies": [
     "Está bem atrás de você.",
@@ -206,12 +218,18 @@
    "asks": [
     "Oi! Essa luz não está boa pro meu feed... Vocês têm uma mesa com vista pro mar?",
     "Rapidinho: em qual ângulo o quiosque fica mais bonito? Meus seguidores são exigentes.",
-    "Qual mesa tem a melhor luz? Minha câmera só gosta de pôr do sol, e ainda é meio-dia."
+    "Qual mesa tem a melhor luz? Minha câmera só gosta de pôr do sol, e ainda é meio-dia.",
+    "O coco ficou ótimo na foto. Eu saí com cara de segunda-feira. Qual mesa tem luz melhor?",
+    "Tem mesa onde a brisa faz penteado em vez de bagunça?",
+    "Meu celular já tirou férias. Falta eu sair bem na foto. Alguma dica de luz?"
    ],
    "asks_en": [
     "Hi! This light isn't working for my feed... Do you have a table with a sea view?",
     "Quick one: from which angle does the kiosk look best? My followers are picky.",
-    "Which table has the best light? My camera only likes sunsets, and it's barely noon."
+    "Which table has the best light? My camera only likes sunsets, and it's barely noon.",
+    "The coconut looks great in the photo. I look like Monday morning. Which table has better light?",
+    "Is there a table where the breeze styles my hair instead of messing it up?",
+    "My phone's already on holiday. I just need a good photo of me. Any lighting tips?"
    ],
    "replies": [
     "As mesas da frente dão para o mar.",
@@ -249,12 +267,18 @@
    "asks": [
     "Ei! Volta aqui, guarda-sol!",
     "Meu guarda-sol saiu passeando sozinho!",
-    "Alguém segura esse guarda-sol fujão!"
+    "Alguém segura esse guarda-sol fujão!",
+    "Esse guarda-sol pediu férias antes de mim!",
+    "Volta, guarda-sol! A sombra veio junto!",
+    "Alguém avisa que guarda-sol não é pipa!"
    ],
    "asks_en": [
     "Hey! Come back here, umbrella!",
     "My umbrella went for a walk on its own!",
-    "Somebody grab that runaway umbrella!"
+    "Somebody grab that runaway umbrella!",
+    "That umbrella booked a holiday before I did!",
+    "Come back, umbrella! You took the shade too!",
+    "Someone tell it umbrellas aren't kites!"
    ]
   },
   {
@@ -273,12 +297,18 @@
    "asks": [
     "Opa, opa, opa... ufa! Tudo inteiro.",
     "Quase! Essa bandeja tem vida própria.",
-    "Ninguém viu isso, né? Tá tudo certo aqui!"
+    "Ninguém viu isso, né? Tá tudo certo aqui!",
+    "A bandeja fez uma curva que não estava no caminho!",
+    "Ufa! Foi só um ensaio de desastre.",
+    "Treinei equilíbrio. A bandeja faltou à aula."
    ],
    "asks_en": [
     "Whoa, whoa, whoa... phew! All in one piece.",
     "Close one! This tray has a mind of its own.",
-    "Nobody saw that, right? Everything's fine here!"
+    "Nobody saw that, right? Everything's fine here!",
+    "The tray took a turn that wasn't on the route!",
+    "Phew! Just a disaster rehearsal.",
+    "I practised balancing. The tray skipped class."
    ]
   }
  ]

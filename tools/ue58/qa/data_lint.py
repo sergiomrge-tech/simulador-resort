@@ -390,7 +390,18 @@ def main():
     parser.add_argument('--self-test',action='store_true')
     args=parser.parse_args()
     if args.self_test:self_test();return 0
-    linter=Linter(args.data_dir,args.asset_index);problems=linter.run()
+    # Checkout textual: usar apenas índice de packages comprovados da árvore Git.
+    # Em checkout completo os .uasset presentes continuam sendo a fonte primária.
+    asset_index=args.asset_index
+    if asset_index is None and args.data_dir.resolve()==DEFAULT_DATA.resolve() and not any(args.data_dir.parent.rglob('*.uasset')):
+        candidate=ROOT/'tools/ue58/balance/package_index.json'
+        if candidate.exists():asset_index=candidate
+    linter=Linter(args.data_dir,asset_index);problems=linter.run()
+    if args.data_dir.resolve()==DEFAULT_DATA.resolve():
+        from glossary_check import check
+        problems.extend(check())
+        from achievements_check import check as check_achievements
+        problems.extend(check_achievements())
     result={'arquivos_lidos':len(linter.docs),'referencias_modelos_verificadas':linter.asset_checks,'packages_conhecidos':len(linter.packages),'erros':len(problems),'problemas':problems,'fontes_das_regras':RULE_SOURCES}
     if args.json:print(json.dumps(result,ensure_ascii=False,indent=2))
     else:
