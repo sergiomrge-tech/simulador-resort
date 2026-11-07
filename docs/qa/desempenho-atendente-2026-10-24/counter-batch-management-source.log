@@ -1,0 +1,63 @@
+Godot Engine v4.5.1.stable.official.f62fdbde1 - https://godotengine.org
+Vulkan 1.4.351 - Forward+ - Using Device #0: NVIDIA - NVIDIA GeForce RTX 4060 Ti
+
+vegetacao: capim=4021 arbustos=99 coqueiros+=46
+serra: copas perto=250 crista=101
+serra: tris encosta=16884
+[management] ok checklist obrigatório bloqueia abertura
+[management] ok conferência limpeza
+[management] ok conferência estoque
+[management] ok conferência equipe
+[management] ok checklist libera abertura real
+[management] ok encomenda paga sem adiantar estoque
+[management] ok save completo recarrega gestão e encomenda
+[management] ok pedido e checklist sobrevivem ao JSON
+[management] ok não entrega antes do horário
+[management] ok entrega exatamente uma vez
+[management] ok express cobra mais e entrega na hora
+[management] ok atacado respeita quantidade mínima
+[management] ok cotação alterada não cobra
+[management] ok candidato iniciante contrata pelo preço menor anunciado
+[management] ok salário usa o perfil contratado
+[management] ok diária da oferta corresponde ao salário inicial
+[management] ok jornada longa reduz satisfação e energia
+[management] ok retirada direta usa estoque sem preparo ou desgaste de lote
+[management] ok produto vai direto para a mão
+[management] ok produto pode voltar à geladeira
+[management] ok retirada de devolução não cobra estoque mesmo sem etapa de preparo
+[management] ok libera mãos antes da manutenção
+[management] ok manutenção cobra o orçamento
+[management] ok manutenção precisa terminar
+[management] ok recarrega manutenção em andamento
+[management] ok manutenção termina após recarga sem nova cobrança
+[management] ok retirada não exige etapa de preparo
+[management] ok inicia limpeza
+[management] ok limpeza restaura higiene
+[management] ok melhoria aumenta velocidade
+[management] ok higiene precária aumenta risco de perdas
+[management] ok prévia altera seleção sem cobrar nem mover o cenário
+[management] ok compra pela interface aplica a seleção exibida
+[management] ok layout move malha, assento e colisão
+[management] ok pintura muda no modelo real
+[management] ok cardápios expostos respondem à personalização
+[management] ok reaplicar estilo não cobra de novo
+[management] ok mudança de disposição exige quiosque fechado
+[management] ok uniforme aplicado ao funcionário real
+[management] ok almoço favorece refeições
+[management] ok manhã tem outro movimento e cardápio
+[management] ok chuva reduz chegada
+[management] ok chuva exclui mesas descobertas
+[management] ok seleção real de lugar usa mesa abrigada
+[management] ok fechamento exige louça recolhida
+[management] ok fechamento exige contas recebidas
+[management] ok guarda bebidas com freezer
+[management] ok conferência registra diferença sem criar dinheiro
+[management] ok não duplica fechamento no dia
+[management] ok identidade e fechamento persistem no save real
+[management] ok bebidas guardadas duram uma noite; comida vence
+[management] ok pode organizar o próximo fechamento
+[management] ok bebidas não são conservadas indefinidamente
+[management] ok quantidade e cotação não destroem formulário durante edição
+[management] ok novo estado tem roundtrip JSON
+MANAGEMENT_TEST PASS
+SHUTDOWN_COMPLETE code=0

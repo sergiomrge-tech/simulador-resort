@@ -1,0 +1,22 @@
+{
+ "_doc": "Compass under the money plank: the places of the resort shown by direction (world cm). A marker with requires appears only after that expansion is bought; biz = business id (shown once owned). Up to field_of_view degrees each side of the view; within near cm a place is not shown (you are there).",
+ "field_of_view": 75,
+ "near": 900,
+ "markers": [
+  {"id": "casa", "name": "Casa", "at": [4600, 2100]},
+  {"id": "quiosque", "name": "Quiosque", "at": [3800, -1200]},
+  {"id": "vila", "name": "Vila", "at": [7000, 3000]},
+  {"id": "pier", "name": "Píer", "at": [7200, -3200]},
+  {"id": "farol", "name": "Farol", "at": [10800, -4000]},
+  {"id": "bar", "name": "Bar", "at": [1300, -1300], "requires": "bar"},
+  {"id": "pousada", "name": "Pousada", "at": [-1080, 1080], "requires": "pousada"},
+  {"id": "piscina", "name": "Piscina", "at": [0, 400], "requires": "pool"},
+  {"id": "hotel", "name": "Grand Hotel", "at": [-1800, 6300], "requires": "grand_hotel"},
+  {"id": "restaurante", "name": "Restaurante", "at": [-1000, 4200], "requires": "grand_hotel"},
+  {"id": "sorveteria", "name": "Sorveteria", "at": [4785, -1767], "biz": "sorveteria"},
+  {"id": "aluguel", "name": "Pranchas", "at": [6730, -1880], "biz": "aluguel"},
+  {"id": "surfe", "name": "Surfe", "at": [-4572, -1963], "biz": "surfe"},
+  {"id": "food_truck", "name": "Pastel", "at": [2620, 3275], "biz": "food_truck"},
+  {"id": "souvenir", "name": "Souvenires", "at": [8280, 4050], "biz": "souvenir"}
+ ]
+}

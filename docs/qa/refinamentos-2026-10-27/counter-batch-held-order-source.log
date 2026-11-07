@@ -1,0 +1,30 @@
+Godot Engine v4.5.1.stable.official.f62fdbde1 - https://godotengine.org
+Vulkan 1.4.351 - Forward+ - Using Device #0: NVIDIA - NVIDIA GeForce RTX 4060 Ti
+
+vegetacao: capim=4010 arbustos=112 coqueiros+=46
+serra: copas perto=250 crista=101
+serra: tris encosta=16884
+[held-order] ok sorvete disponível na geladeira sem receita secreta: sorvete_morango
+[held-order] ok reposição usa cotação real e uma cobrança: sorvete_morango
+[held-order] ok retira pronto com um desconto: sorvete_morango
+[held-order] ok devolução não duplica unidades: sorvete_morango
+[held-order] ok consumo deixa pote vazio com colher: sorvete_morango
+[held-order] ok sorvete disponível na geladeira sem receita secreta: sorvete_chocolate
+[held-order] ok reposição usa cotação real e uma cobrança: sorvete_chocolate
+[held-order] ok retira pronto com um desconto: sorvete_chocolate
+[held-order] ok devolução não duplica unidades: sorvete_chocolate
+[held-order] ok consumo deixa pote vazio com colher: sorvete_chocolate
+[held-order] ok geladeira exibe sorvete_morango
+[held-order] ok geladeira exibe sorvete_chocolate
+[held-order] ok produtos seguem a mão em cada quadro durante giro/deslocamento: ["sorvete_morango"]
+[held-order] ok bandeja apoiada para pedido misto
+[held-order] ok remove transporte ao sentar/sair sem órfãos
+[held-order] ok produtos seguem a mão em cada quadro durante giro/deslocamento: ["suco"]
+[held-order] ok bandeja apoiada para pedido misto
+[held-order] ok remove transporte ao sentar/sair sem órfãos
+[held-order] ok produtos seguem a mão em cada quadro durante giro/deslocamento: ["coco_gelado", "sorvete_chocolate", "suco"]
+[held-order] ok bandeja apoiada para pedido misto
+[held-order] ok remove transporte ao sentar/sair sem órfãos
+[held-order] ok estoque de sorvete preservado ao salvar/carregar
+HELD_ORDER_TEST PASS
+SHUTDOWN_COMPLETE code=0

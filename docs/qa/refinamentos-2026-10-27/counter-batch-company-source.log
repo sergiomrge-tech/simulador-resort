@@ -1,0 +1,83 @@
+Godot Engine v4.5.1.stable.official.f62fdbde1 - https://godotengine.org
+Vulkan 1.4.351 - Forward+ - Using Device #0: NVIDIA - NVIDIA GeForce RTX 4060 Ti
+
+vegetacao: capim=4010 arbustos=112 coqueiros+=46
+serra: copas perto=250 crista=101
+serra: tris encosta=16884
+[company] ok novo jogo preserva atendimento original até criar empresa
+[company] ok limite de 24 caracteres
+[company] ok nome vazio recusado
+[company] ok fonte fora da lista recusada
+[company] ok criação com acentos e normalização
+[company] ok marca e operação ativadas
+[company] ok fechamento manual bloqueia novas chegadas
+[company] ok abertura manual permite clientes no horário
+[company] ok abertura respeita o início às 08:00
+[company] ok abertura respeita o encerramento do dia
+[company] ok save antigo começa fechado até abertura deliberada
+[company] ok estado fechado preservado na migração
+[company] ok nome máximo cabe na placa: praia
+[company] ok nome máximo cabe na placa: classica
+[company] ok nome máximo cabe na placa: elegante
+[company] ok preparo removido
+[company] ok retirada imediata sem preparo
+[company] ok estoque usado uma vez: frutas
+[company] ok estoque usado uma vez: gelo
+[company] ok não duplica retirada
+[company] ok entrega errada preserva item
+[company] ok entrega consome apenas item carregado
+[company] ok entrega paga automaticamente sem gastar ingredientes outra vez
+[company] ok pagamento da entrega não cria conta pendente
+[company] ok conta não pode ser recebida duas vezes
+[company] ok devolução preserva produto retirado
+[company] ok retirar devolução não cobra estoque outra vez
+[company] ok entrega direta libera mãos
+[company] ok garçom retira direto sem cozinheiro
+[company] ok reserva repetida não gasta estoque
+[company] ok garçom entrega sem alterar mãos do jogador
+[company] ok estoque zero bloqueia retirada sem valores negativos
+[company] ok save antigo converte preparo pago em produto pronto uma vez
+[company] ok migração não duplica produto ao recarregar
+[company] ok uma única vaga faz todo o atendimento
+[company] ok retirada para caixa contratado
+[company] ok produto entregue já está pago
+[company] ok receber no caixa liquida as contas uma vez
+[company] ok não desativa operação com louça pendente
+[company] ok limpeza idempotente
+[company] ok save mantém produtos e louça, liquidando conta antiga uma vez
+[company] ok save e recarga preservam quiosque fechado
+[company] ok migração v6 preserva dinheiro e atendimento original
+[company] ok cliente criado
+[company] ok fechar impede chegada sem expulsar cliente com pedido
+[company] ok placa de funcionamento muda ao fechar
+[company] ok placa de funcionamento muda ao abrir
+[company] ok entrega física permite ordem diferente do pedido
+[company] ok pedido parcial mantém apenas item pendente
+[company] ok não repete item já entregue
+[company] ok pedido completo libera cliente para sentar
+[company] ok cliente caminha para consumir após retirada completa
+[company] ok saída deixa louça para recolher
+[company] ok lugar sujo não é ocupado por novo cliente
+[company] ok limpeza libera assento
+[company] ok marca aplicada à placa real
+[company] ok geladeira, armário e cozinha presentes
+[company] ok equipamentos apoiados no piso interno do quiosque
+[company] ok deck visível com colisão de piso
+[company] ok retirada remota bloqueada
+[company] ok retirada disponível ao chegar à geladeira
+[company] ok placa orienta para o celular sem abrir ao esbarrar
+[company] ok celular abre a tela inicial da gestão
+[company] ok formulário limita o nome
+[company] ok formulário cabe na largura do celular
+[company] ok letra B do nome não fecha o celular
+[company] ok vendas e reposição não apagam rascunho ao escolher fonte
+[company] ok botão fecha sem apagar rascunho da placa
+[company] ok salvar o formulário atualiza a placa no mundo
+[company] ok garçom anota, retira e entrega no balcão pelo percurso real
+[company] ok garçom chegou ao cliente antes de entregar
+[company] ok o pedido termina pago, sem caminhada ao caixa
+[company] ok cliente caminha para consumir após retirada completa
+[company] ok auxiliar caminha e limpa a louça
+[company] ok folga suspende garçom
+COMPANY_TEST PASS
+SHUTDOWN_COMPLETE code=0

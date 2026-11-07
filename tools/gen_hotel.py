@@ -397,6 +397,11 @@ def gym_dumbbells():
     export("gym_dumbbells")
 
 
+# Length (m) of the straight run-out at the foot of the chute: 3 m in the Godot model; the UE build uses a longer one
+# (tools/ue58/gen_water_slide.py) so the exit ends over the water (Sergio, 07/11).
+SLIDE_RUN = 3.0
+
+
 def water_slide():
     """Tobogã: torre de 6,5 m em (0,0) e calha helicoidal (2 voltas, raio 3 m) que termina na borda da piscina em +X (Blender),
     a 0,35 m de altura. A piscina fica do lado +X; a saída da calha está em x≈6,6, y≈0."""
@@ -468,7 +473,7 @@ def water_slide():
             tt = (t - 0.9) / 0.1
             a = math.pi + 2 * math.pi * turns
             base = V((cx0 + R * math.cos(a), R * math.sin(a), 1.05))
-            p = base + V((tt * 3.0, 0, -0.7 * tt))
+            p = base + V((tt * SLIDE_RUN, 0, -0.7 * tt))
         path.append(p)
     for i, p in enumerate(path):
         tg = (path[min(i + 1, steps)] - path[max(i - 1, 0)]).normalized()

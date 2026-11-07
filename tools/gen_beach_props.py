@@ -223,38 +223,44 @@ def sunglasses():
     _fresh()
     parts = []
     for sx in (-0.045, 0.045):
-        bpy.ops.mesh.primitive_cylinder_add(vertices=32, radius=0.036, depth=0.008, location=(sx, 0, 0))
+        bpy.ops.mesh.primitive_cylinder_add(vertices=48, radius=0.031, depth=0.005, location=(sx, 0, 0))
         o = bpy.context.active_object
         o.rotation_euler.x = math.pi * 0.5
-        o.scale = (1.15, 1.0, 1.0)
+        o.scale = (1.18, 1.0, .82)
         bpy.ops.object.transform_apply(rotation=True, scale=True)
-        o.data.materials.append(mat("lente", (0.05, 0.05, 0.08), 0.15))
+        o.data.materials.append(mat("lente", (0.025, 0.036, 0.041), 0.32))
         parts.append(o)
-        bpy.ops.mesh.primitive_torus_add(major_radius=0.038, minor_radius=0.004, major_segments=32, minor_segments=8, location=(sx, 0, 0))
+        bpy.ops.mesh.primitive_torus_add(major_radius=0.033, minor_radius=0.0018, major_segments=48, minor_segments=10, location=(sx, 0, 0))
         t = bpy.context.active_object
         t.rotation_euler.x = math.pi * 0.5
-        t.scale = (1.15, 1.0, 1.0)
+        t.scale = (1.18, 1.0, .82)
         bpy.ops.object.transform_apply(rotation=True, scale=True)
-        t.data.materials.append(mat("aro", (0.95, 0.95, 0.95), 0.4))
+        t.data.materials.append(mat("aro", (0.075, 0.055, 0.04), 0.6))
         parts.append(t)
     bpy.ops.mesh.primitive_cylinder_add(vertices=8, radius=0.004, depth=0.03, location=(0, 0, 0.012))
     br = bpy.context.active_object
     br.rotation_euler.y = math.pi * 0.5
     bpy.ops.object.transform_apply(rotation=True)
-    br.data.materials.append(mat("aro2", (0.95, 0.95, 0.95), 0.4))
+    br.data.materials.append(mat("aro2", (0.075, 0.055, 0.04), 0.6))
     parts.append(br)
     for sx in (-0.085, 0.085):
         bpy.ops.mesh.primitive_cylinder_add(vertices=8, radius=0.0035, depth=0.11, location=(sx, 0.055, 0))
         a = bpy.context.active_object
         a.rotation_euler.x = math.pi * 0.5
         bpy.ops.object.transform_apply(rotation=True)
-        a.data.materials.append(mat("aro3", (0.95, 0.95, 0.95), 0.4))
+        a.data.materials.append(mat("aro3", (0.075, 0.055, 0.04), 0.6))
         parts.append(a)
     for o in parts:
         o.select_set(True)
     bpy.context.view_layer.objects.active = parts[0]
     bpy.ops.object.join()
     export("sunglasses")
+    source=os.path.join(ROOT,"art","blender","sunglasses.blend")
+    bpy.context.preferences.filepaths.save_version=0
+    bpy.ops.file.pack_all()
+    bpy.ops.wm.save_as_mainfile(filepath=source)
+    bpy.ops.wm.open_mainfile(filepath=source)
+    print('SUNGLASSES_BLEND_PORTABLE PASS')
 
 def _box(name, size, loc, m, bevel=0.012, rot=(0, 0, 0), sub=0):
     bpy.ops.mesh.primitive_cube_add(size=1, location=loc, rotation=rot)

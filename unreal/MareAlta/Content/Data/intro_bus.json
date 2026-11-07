@@ -1,0 +1,17 @@
+{
+  "path": "/Game/Intro/Bus/bus.bus",
+  "origin": [
+    -9.660736083984375,
+    124.44070243835449,
+    -158.62845611572266
+  ],
+  "extent": [
+    477.544921875,
+    105.95977973937988,
+    117.54882049560547
+  ],
+  "source": "https://opengameart.org/content/3d-bus",
+  "author": "ajanhallinta",
+  "license": "CC0",
+  "has_interior": false
+}

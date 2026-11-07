@@ -4,6 +4,8 @@ extends Node
 
 
 
+const StateWaiter = preload("res://tests/support/state_waiter.gd")
+
 var main
 var log_lines: = []
 var failed: = false
@@ -51,7 +53,7 @@ func career_test() -> void :
 	check( not w.areas.bar.visible and w.lots.bar.visible, "bar é um lote à venda")
 	check( not w.areas.pool.visible and w.lots.pool.visible, "piscina é um lote à venda")
 	check( not w.areas.kiosk_tables.visible and not w.areas.neon.visible, "quiosque começa simples")
-	check(Core.kiosk_menu() == ["coco_gelado", "suco"], "cardápio inicial: coco gelado e suco")
+	check(Core.kiosk_menu() == ["coco_gelado", "suco", "sorvete_morango", "sorvete_chocolate", "batata_frita", "porcao_peixe"], "cardápio inicial: coco gelado e suco")
 	check(Core.expansion_state("bar")[0] == "locked", "bar bloqueado no início")
 	check( not main.guests.bartender.visible, "barman ainda não existe")
 	check(Core.expansion_state("kiosk_tables")[0] == "money", "mesas exigem juntar dinheiro no 1º dia")
@@ -77,7 +79,7 @@ func career_test() -> void :
 	for id in ["bar", "pousada", "pool", "neon", "grill"]:
 		check(w.areas[id].visible and (not w.lots.has(id) or not w.lots[id].visible), "área %s visível" % id)
 	check(main.guests.bartender.visible, "barman no bar")
-	check(Core.kiosk_menu().size() == 4, "cardápio completo no quiosque")
+	check(Core.kiosk_menu().size() == 8, "cardápio completo no quiosque")
 	check(Core.rooms.size() == 2 and w.room_nodes.size() == 2, "dois bangalôs no mundo")
 	var visitor = main.guests.spawn_bar_visitor()
 	check(visitor != null and visitor.has_meta("visitor"), "banhista indo ao bar")
@@ -123,7 +125,7 @@ func vip_rush_test() -> void :
 		vc.position = approach + Vector3(0, 0, 0.25)
 		vc.go([approach])
 	var m0: = Core.money
-	var vip_arrived: bool = await wait_until(func(): return is_instance_valid(vc) and vc.state == "kwait", 25.0)
+	var vip_arrived: bool = await StateWaiter.until_state(get_tree(), weakref(vc), "kwait", 25.0)
 	if not check(vip_arrived, "VIP: chegou à mesa e fez pedido"):
 		return
 	check(v.kiosk_serve(), "VIP: pedido servido")
@@ -135,6 +137,8 @@ func vip_rush_test() -> void :
 		Core.stock[k] = 30   # o rush precisa de estoque para todos os pratos
 	Core.stock_changed.emit()
 	v.enabled = true
+	Core.set_kiosk_open(true)
+	check(Core.kiosk_accepting_customers(),"rush começa após abertura manual do quiosque")
 	v.rush_left = 4
 	v.rush_done = true
 	v.kiosk_spawn_in = 0.5
@@ -340,6 +344,121 @@ func v1_test() -> void :
 
 func run(m) -> void :
 	main = m
+	if main.args.has("home-test"):
+		var home_test = load("res://tests/home_regression.gd").new()
+		add_child(home_test)
+		await home_test.run(main)
+		return
+	if main.args.has("whale-test"):
+		var wildlife = load("res://tests/whale_regression.gd").new()
+		add_child(wildlife)
+		await wildlife.run(main)
+		return
+	if main.args.has("coastal-test"):
+		var coast = load("res://tests/coastal_regression.gd").new()
+		add_child(coast)
+		await coast.run(main)
+		return
+	if main.args.has("props-layout-test"):
+		var props_layout = load("res://tests/props_layout_regression.gd").new()
+		add_child(props_layout)
+		await props_layout.run(main)
+		return
+	if main.args.has("counter-test"):
+		var counter = load("res://tests/counter_regression.gd").new()
+		add_child(counter)
+		await counter.run(main)
+		return
+	if main.args.has("refinements-test"):
+		var refinement_test=load("res://tests/refinements_regression.gd").new()
+		add_child(refinement_test)
+		await refinement_test.run(main)
+		return
+	if main.args.has("revision26-test"):
+		var test=load("res://tests/revision26_regression.gd").new()
+		add_child(test)
+		await test.run(main)
+		return
+	if main.args.has("held-order-test"):
+		var test=load("res://tests/held_order_regression.gd").new()
+		add_child(test)
+		await test.run(main)
+		return
+	if main.args.has("optimization-test"):
+		var check_test=load("res://tests/optimization_regression.gd").new()
+		add_child(check_test)
+		await check_test.run(main)
+		return
+	if main.args.has("single-staff-test"):
+		var check_test=load("res://tests/single_staff_regression.gd").new()
+		add_child(check_test)
+		await check_test.run(main)
+		return
+	if main.args.has("perf-test"):
+		var benchmark=load("res://tests/performance_benchmark.gd").new()
+		add_child(benchmark)
+		await benchmark.run(main)
+		return
+	if main.args.has("tableware-test"):
+		var tableware=load("res://tests/tableware_regression.gd").new()
+		add_child(tableware)
+		await tableware.run(main)
+		return
+	if main.args.has("refinement-test"):
+		var refinement=load("res://tests/refinement_regression.gd").new()
+		add_child(refinement)
+		await refinement.run(main)
+		return
+	if main.args.has("birds-test"):
+		var birds=load("res://tests/birds_regression.gd").new()
+		add_child(birds)
+		await birds.run(main)
+		return
+	if main.args.has("counter-first-test"):
+		var counter_first=load("res://tests/counter_first_regression.gd").new()
+		add_child(counter_first)
+		await counter_first.run(main)
+		return
+	if main.args.has("terminal-test"):
+		var terminal=load("res://tests/terminal_regression.gd").new()
+		add_child(terminal)
+		await terminal.run(main)
+		return
+	if main.args.has("practical-test"):
+		var practical = load("res://tests/practical_regression.gd").new()
+		add_child(practical)
+		practical.run(main)
+		return
+	if main.args.has("management-test"):
+		var management_test = load("res://tests/management_regression.gd").new()
+		add_child(management_test)
+		await management_test.run(main)
+		return
+	if main.args.has("phone-layout-test"):
+		var phone_test = load("res://tests/phone_layout_regression.gd").new()
+		add_child(phone_test)
+		await phone_test.run(main)
+		return
+	if main.args.has("pier-test"):
+		var pier_test = load("res://tests/pier_regression.gd").new()
+		add_child(pier_test)
+		await pier_test.run(main)
+		return
+	if main.args.has("simulation-test"):
+		var simulation = load("res://tests/simulation_regression.gd").new()
+		add_child(simulation)
+		await simulation.run(main)
+		return
+	if main.args.has("company-test"):
+		var company_test = load("res://tests/company_regression.gd").new()
+		add_child(company_test)
+		await company_test.run(main)
+		return
+	if main.args.has("order-visual-test"):
+		var order_test = load("res://tests/order_visuals_regression.gd").new()
+		add_child(order_test)
+		order_test.run(main)
+		return
 	if main.args.has("kiosk-test"):
 		var regression = load("res://tests/kiosk_regression.gd").new()
 		add_child(regression)
@@ -348,7 +467,7 @@ func run(m) -> void :
 	var watchdog: = get_tree().create_timer(230.0)
 	watchdog.timeout.connect( func():
 		print("LOOP_TEST FAIL: watchdog timeout")
-		get_tree().quit(1))
+		Core.quit_game(1))
 	Quality.language = "pt"
 	Quality.apply_language()
 	main.allow_faint = false
@@ -431,13 +550,21 @@ func run(m) -> void :
 	main.village.enabled = false
 	main.village._on_slept(0)
 	var kc = main.village.spawn_customer()
-	check(kc != null, "cliente do quiosque criado")
-	check(kc != null and await wait_until( func(): return kc.state == "kwait", 30.0), "cliente esperando no balcão")
+	if not check(kc != null, "cliente do quiosque criado"):
+		Core.quit_game(1)
+		return
+	# A chegada pela praia é validada em kiosk_regression.gd.
+	var approach: Vector3 = kc.spot.get("approach", kc.spot.pos + Vector3(0, 0, 0.85))
+	kc.position = approach + Vector3(0, 0, 0.25)
+	kc.go([approach])
+	if not check(await StateWaiter.until_state(get_tree(), weakref(kc), "kwait", 30.0), "cliente esperando no balcão"):
+		Core.quit_game(1)
+		return
 	var km0: = Core.money
-	var kp: String = await aim(main.world.KIOSK_C + Vector3(0, 0.12, 0.4), 180.0, -32.0)
-	if check(kp.begins_with("Preparar"), "prompt do quiosque: '%s'" % kp):
+	var kp: String = await aim(main.world.kiosk_point(Vector3(0, 0.12, 0.4)), 0.0, -32.0)
+	if check(kp.begins_with("Pegar"), "prompt do quiosque: '%s'" % kp):
 		main.player.interact()
-		check(not main.village.prep.is_empty(), "preparo começou ao apertar E")
+		check(main.village.prep.is_empty(), "atendimento legado também não exige preparo")
 		var tries: = 0
 		while kc.state == "kwait" and tries < 8:
 			if main.village.prep.is_empty():
@@ -601,4 +728,4 @@ func run(m) -> void :
 	check(Core.rooms.size() == keep_n and Core.money == keep_money and bool(Core.staff.camareira), "save guardou bangalôs, dinheiro e equipe")
 	Core.delete_save()
 	print("LOOP_TEST %s  dinheiro=%d estrelas=%.2f bar=%d" % ["FAIL" if failed else "PASS", Core.money, Core.stars(), Core.bar_sales_total])
-	get_tree().quit(1 if failed else 0)
+	Core.quit_game(1 if failed else 0)

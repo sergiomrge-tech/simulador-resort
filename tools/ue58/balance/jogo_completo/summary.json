@@ -1,0 +1,3306 @@
+{
+  "atual": {
+    "casual": {
+      "meta_horas": [
+        6,
+        10
+      ],
+      "minutos_por_dia": 16,
+      "meta_atingida": {
+        "grand_hotel": {
+          "entre_6_e_10_h": 30,
+          "total": 30
+        },
+        "tela_fim_ea": {
+          "entre_6_e_10_h": 30,
+          "total": 30
+        },
+        "fim_demo": {
+          "entre_1.5_e_2.5_h": 6,
+          "total": 30
+        }
+      },
+      "sementes": 30,
+      "limite_dias": 300,
+      "marcos": {
+        "bar": {
+          "concluidos": 30,
+          "p10": 4.0,
+          "p50": 4.0,
+          "p90": 5.1
+        },
+        "bar_secreto": {
+          "concluidos": 30,
+          "p10": 5.0,
+          "p50": 7.0,
+          "p90": 25.1
+        },
+        "campanha_completa": {
+          "concluidos": 30,
+          "p10": 86.0,
+          "p50": 87.0,
+          "p90": 89.0
+        },
+        "campeonato_inscrito": {
+          "concluidos": 30,
+          "p10": 36.0,
+          "p50": 43.0,
+          "p90": 51.0
+        },
+        "capitulo:carnaval": {
+          "concluidos": 30,
+          "p10": 9.0,
+          "p50": 10.0,
+          "p90": 11.0
+        },
+        "capitulo:pier": {
+          "concluidos": 30,
+          "p10": 1.0,
+          "p50": 1.0,
+          "p90": 1.1
+        },
+        "capitulo:prainha": {
+          "concluidos": 30,
+          "p10": 2.9,
+          "p50": 3.0,
+          "p90": 3.1
+        },
+        "capitulo:sabores": {
+          "concluidos": 30,
+          "p10": 8.0,
+          "p50": 9.0,
+          "p90": 10.1
+        },
+        "critico_atendido": {
+          "concluidos": 30,
+          "p10": 29.9,
+          "p50": 31.5,
+          "p90": 33.1
+        },
+        "drinks": {
+          "concluidos": 30,
+          "p10": 2.0,
+          "p50": 2.0,
+          "p90": 2.1
+        },
+        "equipe:atendente": {
+          "concluidos": 30,
+          "p10": 1.0,
+          "p50": 1.0,
+          "p90": 1.1
+        },
+        "equipe:bartender": {
+          "concluidos": 30,
+          "p10": 5.0,
+          "p50": 5.0,
+          "p90": 6.1
+        },
+        "equipe:camareira": {
+          "concluidos": 30,
+          "p10": 7.0,
+          "p50": 7.0,
+          "p90": 9.0
+        },
+        "equipe:garcom_hotel": {
+          "concluidos": 30,
+          "p10": 29.8,
+          "p50": 31.5,
+          "p90": 33.1
+        },
+        "equipe:guia": {
+          "concluidos": 30,
+          "p10": 9.0,
+          "p50": 10.0,
+          "p90": 11.0
+        },
+        "equipe:piscineiro": {
+          "concluidos": 30,
+          "p10": 8.0,
+          "p50": 9.0,
+          "p90": 10.0
+        },
+        "equipe:recepcionista": {
+          "concluidos": 30,
+          "p10": 7.0,
+          "p50": 7.0,
+          "p90": 9.0
+        },
+        "evento:bodas": {
+          "concluidos": 30,
+          "p10": 35.3,
+          "p50": 36.0,
+          "p90": 36.0
+        },
+        "evento:empresa": {
+          "concluidos": 30,
+          "p10": 42.3,
+          "p50": 43.0,
+          "p90": 43.0
+        },
+        "evento:formatura": {
+          "concluidos": 30,
+          "p10": 49.3,
+          "p50": 50.0,
+          "p90": 50.0
+        },
+        "festa_pronta": {
+          "concluidos": 30,
+          "p10": 85.0,
+          "p50": 86.0,
+          "p90": 88.0
+        },
+        "fim_demo": {
+          "concluidos": 30,
+          "p10": 9.0,
+          "p50": 10.0,
+          "p90": 11.0
+        },
+        "grand_hotel": {
+          "concluidos": 30,
+          "p10": 28.8,
+          "p50": 30.5,
+          "p90": 32.1
+        },
+        "grill": {
+          "concluidos": 30,
+          "p10": 2.0,
+          "p50": 3.0,
+          "p90": 3.1
+        },
+        "kiosk_tables": {
+          "concluidos": 30,
+          "p10": 1.0,
+          "p50": 1.0,
+          "p90": 2.0
+        },
+        "liberada:bar": {
+          "concluidos": 30,
+          "p10": 2.0,
+          "p50": 3.0,
+          "p90": 3.1
+        },
+        "liberada:drinks": {
+          "concluidos": 30,
+          "p10": 1.0,
+          "p50": 1.0,
+          "p90": 1.0
+        },
+        "liberada:grand_hotel": {
+          "concluidos": 30,
+          "p10": 15.0,
+          "p50": 16.0,
+          "p90": 17.0
+        },
+        "liberada:grill": {
+          "concluidos": 30,
+          "p10": 1.0,
+          "p50": 1.0,
+          "p90": 2.0
+        },
+        "liberada:kiosk_tables": {
+          "concluidos": 30,
+          "p10": 1.0,
+          "p50": 1.0,
+          "p90": 1.0
+        },
+        "liberada:neon": {
+          "concluidos": 30,
+          "p10": 1.0,
+          "p50": 1.0,
+          "p90": 2.0
+        },
+        "liberada:passeios": {
+          "concluidos": 30,
+          "p10": 6.0,
+          "p50": 6.0,
+          "p90": 8.0
+        },
+        "liberada:pool": {
+          "concluidos": 30,
+          "p10": 6.0,
+          "p50": 6.0,
+          "p90": 8.0
+        },
+        "liberada:pousada": {
+          "concluidos": 30,
+          "p10": 4.0,
+          "p50": 4.0,
+          "p90": 5.1
+        },
+        "liberada:salao_jogos": {
+          "concluidos": 30,
+          "p10": 28.8,
+          "p50": 30.5,
+          "p90": 32.1
+        },
+        "missao:carnaval_m": {
+          "concluidos": 30,
+          "p10": 9.0,
+          "p50": 10.0,
+          "p90": 11.0
+        },
+        "missao:chef": {
+          "concluidos": 30,
+          "p10": 29.8,
+          "p50": 31.5,
+          "p90": 33.1
+        },
+        "missao:chegada": {
+          "concluidos": 30,
+          "p10": 1.0,
+          "p50": 1.0,
+          "p90": 1.0
+        },
+        "missao:comunidade": {
+          "concluidos": 30,
+          "p10": 4.0,
+          "p50": 4.0,
+          "p90": 4.0
+        },
+        "missao:encontro": {
+          "concluidos": 30,
+          "p10": 4.0,
+          "p50": 4.0,
+          "p90": 5.1
+        },
+        "missao:equipe": {
+          "concluidos": 30,
+          "p10": 1.0,
+          "p50": 1.0,
+          "p90": 2.0
+        },
+        "missao:festa": {
+          "concluidos": 30,
+          "p10": 86.0,
+          "p50": 87.0,
+          "p90": 89.0
+        },
+        "missao:fregueses": {
+          "concluidos": 30,
+          "p10": 85.0,
+          "p50": 86.0,
+          "p90": 88.0
+        },
+        "missao:hospedar": {
+          "concluidos": 30,
+          "p10": 6.0,
+          "p50": 6.0,
+          "p90": 8.0
+        },
+        "missao:lenda": {
+          "concluidos": 30,
+          "p10": 29.8,
+          "p50": 31.5,
+          "p90": 33.1
+        },
+        "missao:marealta": {
+          "concluidos": 30,
+          "p10": 28.8,
+          "p50": 30.5,
+          "p90": 32.1
+        },
+        "missao:mesas": {
+          "concluidos": 30,
+          "p10": 1.0,
+          "p50": 1.0,
+          "p90": 2.0
+        },
+        "missao:morro": {
+          "concluidos": 30,
+          "p10": 2.0,
+          "p50": 2.0,
+          "p90": 2.0
+        },
+        "missao:oferendas": {
+          "concluidos": 30,
+          "p10": 4.0,
+          "p50": 4.0,
+          "p90": 4.0
+        },
+        "missao:portas": {
+          "concluidos": 30,
+          "p10": 1.0,
+          "p50": 1.0,
+          "p90": 1.0
+        },
+        "missao:postal": {
+          "concluidos": 30,
+          "p10": 29.8,
+          "p50": 31.5,
+          "p90": 33.1
+        },
+        "missao:prainha_m": {
+          "concluidos": 30,
+          "p10": 7.0,
+          "p50": 8.0,
+          "p90": 9.0
+        },
+        "missao:primeiros": {
+          "concluidos": 30,
+          "p10": 1.0,
+          "p50": 1.0,
+          "p90": 1.1
+        },
+        "missao:sabores_m": {
+          "concluidos": 30,
+          "p10": 8.0,
+          "p50": 9.0,
+          "p90": 10.1
+        },
+        "missao:salao": {
+          "concluidos": 30,
+          "p10": 29.8,
+          "p50": 31.5,
+          "p90": 33.1
+        },
+        "missao:verao": {
+          "concluidos": 30,
+          "p10": 7.0,
+          "p50": 8.0,
+          "p90": 9.0
+        },
+        "montagem:aniversario": {
+          "concluidos": 30,
+          "p10": 33.0,
+          "p50": 40.0,
+          "p90": 53.2
+        },
+        "montagem:casamento": {
+          "concluidos": 30,
+          "p10": 33.0,
+          "p50": 37.0,
+          "p90": 55.0
+        },
+        "montagem:congresso": {
+          "concluidos": 30,
+          "p10": 32.8,
+          "p50": 41.0,
+          "p90": 51.6
+        },
+        "negocio:aluguel": {
+          "concluidos": 30,
+          "p10": 8.0,
+          "p50": 9.0,
+          "p90": 10.0
+        },
+        "negocio:food_truck": {
+          "concluidos": 30,
+          "p10": 10.0,
+          "p50": 11.0,
+          "p90": 12.0
+        },
+        "negocio:sorveteria": {
+          "concluidos": 30,
+          "p10": 5.0,
+          "p50": 5.0,
+          "p90": 8.0
+        },
+        "negocio:souvenir": {
+          "concluidos": 30,
+          "p10": 9.0,
+          "p50": 10.0,
+          "p90": 11.0
+        },
+        "negocio:surfe": {
+          "concluidos": 30,
+          "p10": 10.9,
+          "p50": 11.0,
+          "p90": 12.0
+        },
+        "negocio_nivel:aluguel:2": {
+          "concluidos": 30,
+          "p10": 24.0,
+          "p50": 25.0,
+          "p90": 26.0
+        },
+        "negocio_nivel:aluguel:3": {
+          "concluidos": 30,
+          "p10": 31.9,
+          "p50": 33.0,
+          "p90": 34.1
+        },
+        "negocio_nivel:food_truck:2": {
+          "concluidos": 30,
+          "p10": 26.0,
+          "p50": 26.0,
+          "p90": 28.0
+        },
+        "negocio_nivel:food_truck:3": {
+          "concluidos": 30,
+          "p10": 33.9,
+          "p50": 36.0,
+          "p90": 37.0
+        },
+        "negocio_nivel:sorveteria:2": {
+          "concluidos": 30,
+          "p10": 24.0,
+          "p50": 25.0,
+          "p90": 26.0
+        },
+        "negocio_nivel:sorveteria:3": {
+          "concluidos": 30,
+          "p10": 30.0,
+          "p50": 32.0,
+          "p90": 34.0
+        },
+        "negocio_nivel:souvenir:2": {
+          "concluidos": 30,
+          "p10": 26.0,
+          "p50": 26.5,
+          "p90": 28.0
+        },
+        "negocio_nivel:souvenir:3": {
+          "concluidos": 30,
+          "p10": 33.9,
+          "p50": 35.0,
+          "p90": 37.0
+        },
+        "negocio_nivel:surfe:2": {
+          "concluidos": 30,
+          "p10": 27.0,
+          "p50": 28.0,
+          "p90": 29.0
+        },
+        "negocio_nivel:surfe:3": {
+          "concluidos": 30,
+          "p10": 35.9,
+          "p50": 37.0,
+          "p90": 38.0
+        },
+        "neon": {
+          "concluidos": 30,
+          "p10": 1.0,
+          "p50": 2.0,
+          "p90": 3.0
+        },
+        "passeio:barco": {
+          "concluidos": 30,
+          "p10": 10.0,
+          "p50": 11.0,
+          "p90": 12.0
+        },
+        "passeio:farol": {
+          "concluidos": 30,
+          "p10": 10.0,
+          "p50": 11.0,
+          "p90": 12.0
+        },
+        "passeio:jangada": {
+          "concluidos": 30,
+          "p10": 24.0,
+          "p50": 25.0,
+          "p90": 26.0
+        },
+        "passeio:snorkel": {
+          "concluidos": 30,
+          "p10": 10.0,
+          "p50": 11.0,
+          "p90": 12.0
+        },
+        "passeios": {
+          "concluidos": 30,
+          "p10": 8.0,
+          "p50": 9.0,
+          "p90": 10.0
+        },
+        "pool": {
+          "concluidos": 30,
+          "p10": 7.0,
+          "p50": 8.0,
+          "p90": 9.0
+        },
+        "pousada": {
+          "concluidos": 30,
+          "p10": 6.0,
+          "p50": 6.0,
+          "p90": 8.0
+        },
+        "salao_jogos": {
+          "concluidos": 30,
+          "p10": 29.8,
+          "p50": 31.5,
+          "p90": 33.1
+        },
+        "tela_fim_ea": {
+          "concluidos": 30,
+          "p10": 29.8,
+          "p50": 31.5,
+          "p90": 33.1
+        },
+        "todas_compras": {
+          "concluidos": 30,
+          "p10": 148.9,
+          "p50": 151.0,
+          "p90": 152.0
+        },
+        "vip_hotel_atendido": {
+          "concluidos": 30,
+          "p10": 29.8,
+          "p50": 31.5,
+          "p90": 33.1
+        }
+      },
+      "caixa_final_p50": 504341.16,
+      "censurados_compras": 0,
+      "censurados_campanha": 0
+    },
+    "medio": {
+      "meta_horas": [
+        6,
+        10
+      ],
+      "minutos_por_dia": 16,
+      "meta_atingida": {
+        "grand_hotel": {
+          "entre_6_e_10_h": 30,
+          "total": 30
+        },
+        "tela_fim_ea": {
+          "entre_6_e_10_h": 30,
+          "total": 30
+        },
+        "fim_demo": {
+          "entre_1.5_e_2.5_h": 28,
+          "total": 30
+        }
+      },
+      "sementes": 30,
+      "limite_dias": 300,
+      "marcos": {
+        "bar": {
+          "concluidos": 30,
+          "p10": 3.0,
+          "p50": 4.0,
+          "p90": 4.0
+        },
+        "bar_secreto": {
+          "concluidos": 30,
+          "p10": 4.0,
+          "p50": 5.0,
+          "p90": 7.1
+        },
+        "campanha_completa": {
+          "concluidos": 30,
+          "p10": 75.0,
+          "p50": 76.0,
+          "p90": 77.1
+        },
+        "campeonato_inscrito": {
+          "concluidos": 30,
+          "p10": 29.0,
+          "p50": 29.5,
+          "p90": 36.0
+        },
+        "capitulo:carnaval": {
+          "concluidos": 30,
+          "p10": 7.0,
+          "p50": 8.0,
+          "p90": 9.0
+        },
+        "capitulo:pier": {
+          "concluidos": 30,
+          "p10": 1.0,
+          "p50": 1.0,
+          "p90": 1.1
+        },
+        "capitulo:prainha": {
+          "concluidos": 30,
+          "p10": 2.0,
+          "p50": 2.0,
+          "p90": 3.0
+        },
+        "capitulo:sabores": {
+          "concluidos": 30,
+          "p10": 6.0,
+          "p50": 7.0,
+          "p90": 8.1
+        },
+        "critico_atendido": {
+          "concluidos": 30,
+          "p10": 26.0,
+          "p50": 26.0,
+          "p90": 27.1
+        },
+        "drinks": {
+          "concluidos": 30,
+          "p10": 1.0,
+          "p50": 2.0,
+          "p90": 2.1
+        },
+        "equipe:atendente": {
+          "concluidos": 30,
+          "p10": 1.0,
+          "p50": 1.0,
+          "p90": 1.0
+        },
+        "equipe:bartender": {
+          "concluidos": 30,
+          "p10": 4.0,
+          "p50": 5.0,
+          "p90": 5.0
+        },
+        "equipe:camareira": {
+          "concluidos": 30,
+          "p10": 5.0,
+          "p50": 6.0,
+          "p90": 7.0
+        },
+        "equipe:garcom_hotel": {
+          "concluidos": 30,
+          "p10": 26.0,
+          "p50": 26.0,
+          "p90": 27.1
+        },
+        "equipe:guia": {
+          "concluidos": 30,
+          "p10": 7.0,
+          "p50": 8.0,
+          "p90": 9.0
+        },
+        "equipe:piscineiro": {
+          "concluidos": 30,
+          "p10": 6.0,
+          "p50": 7.0,
+          "p90": 8.0
+        },
+        "equipe:recepcionista": {
+          "concluidos": 30,
+          "p10": 5.0,
+          "p50": 6.0,
+          "p90": 7.0
+        },
+        "estrela_restaurante:1": {
+          "concluidos": 1,
+          "p10": 89.0,
+          "p50": 89.0,
+          "p90": 89.0
+        },
+        "evento:bodas": {
+          "concluidos": 30,
+          "p10": 28.0,
+          "p50": 28.0,
+          "p90": 28.0
+        },
+        "evento:empresa": {
+          "concluidos": 30,
+          "p10": 31.0,
+          "p50": 31.0,
+          "p90": 31.0
+        },
+        "evento:formatura": {
+          "concluidos": 30,
+          "p10": 34.0,
+          "p50": 34.0,
+          "p90": 34.0
+        },
+        "festa_pronta": {
+          "concluidos": 30,
+          "p10": 74.0,
+          "p50": 75.0,
+          "p90": 76.1
+        },
+        "fim_demo": {
+          "concluidos": 30,
+          "p10": 7.0,
+          "p50": 8.0,
+          "p90": 9.0
+        },
+        "grand_hotel": {
+          "concluidos": 30,
+          "p10": 25.0,
+          "p50": 25.0,
+          "p90": 26.1
+        },
+        "grill": {
+          "concluidos": 30,
+          "p10": 2.0,
+          "p50": 2.0,
+          "p90": 3.0
+        },
+        "kiosk_tables": {
+          "concluidos": 30,
+          "p10": 1.0,
+          "p50": 1.0,
+          "p90": 1.1
+        },
+        "liberada:bar": {
+          "concluidos": 30,
+          "p10": 2.0,
+          "p50": 2.0,
+          "p90": 3.0
+        },
+        "liberada:drinks": {
+          "concluidos": 30,
+          "p10": 1.0,
+          "p50": 1.0,
+          "p90": 1.0
+        },
+        "liberada:grand_hotel": {
+          "concluidos": 30,
+          "p10": 12.0,
+          "p50": 13.0,
+          "p90": 14.0
+        },
+        "liberada:grill": {
+          "concluidos": 30,
+          "p10": 1.0,
+          "p50": 1.0,
+          "p90": 1.1
+        },
+        "liberada:kiosk_tables": {
+          "concluidos": 30,
+          "p10": 1.0,
+          "p50": 1.0,
+          "p90": 1.0
+        },
+        "liberada:neon": {
+          "concluidos": 30,
+          "p10": 1.0,
+          "p50": 1.0,
+          "p90": 1.1
+        },
+        "liberada:passeios": {
+          "concluidos": 30,
+          "p10": 4.0,
+          "p50": 5.0,
+          "p90": 6.0
+        },
+        "liberada:pool": {
+          "concluidos": 30,
+          "p10": 4.0,
+          "p50": 5.0,
+          "p90": 6.0
+        },
+        "liberada:pousada": {
+          "concluidos": 30,
+          "p10": 3.0,
+          "p50": 4.0,
+          "p90": 4.0
+        },
+        "liberada:salao_jogos": {
+          "concluidos": 30,
+          "p10": 25.0,
+          "p50": 25.0,
+          "p90": 26.1
+        },
+        "missao:carnaval_m": {
+          "concluidos": 30,
+          "p10": 7.0,
+          "p50": 8.0,
+          "p90": 9.0
+        },
+        "missao:chef": {
+          "concluidos": 30,
+          "p10": 26.0,
+          "p50": 26.0,
+          "p90": 27.1
+        },
+        "missao:chegada": {
+          "concluidos": 30,
+          "p10": 1.0,
+          "p50": 1.0,
+          "p90": 1.0
+        },
+        "missao:comunidade": {
+          "concluidos": 30,
+          "p10": 4.0,
+          "p50": 4.0,
+          "p90": 4.0
+        },
+        "missao:encontro": {
+          "concluidos": 30,
+          "p10": 4.0,
+          "p50": 4.0,
+          "p90": 4.0
+        },
+        "missao:equipe": {
+          "concluidos": 30,
+          "p10": 1.0,
+          "p50": 1.0,
+          "p90": 1.1
+        },
+        "missao:festa": {
+          "concluidos": 30,
+          "p10": 75.0,
+          "p50": 76.0,
+          "p90": 77.1
+        },
+        "missao:fregueses": {
+          "concluidos": 30,
+          "p10": 74.0,
+          "p50": 75.0,
+          "p90": 76.1
+        },
+        "missao:hospedar": {
+          "concluidos": 30,
+          "p10": 4.0,
+          "p50": 5.0,
+          "p90": 6.0
+        },
+        "missao:lenda": {
+          "concluidos": 30,
+          "p10": 26.0,
+          "p50": 26.0,
+          "p90": 27.1
+        },
+        "missao:marealta": {
+          "concluidos": 30,
+          "p10": 25.0,
+          "p50": 25.0,
+          "p90": 26.1
+        },
+        "missao:mesas": {
+          "concluidos": 30,
+          "p10": 1.0,
+          "p50": 1.0,
+          "p90": 1.1
+        },
+        "missao:morro": {
+          "concluidos": 30,
+          "p10": 2.0,
+          "p50": 2.0,
+          "p90": 2.0
+        },
+        "missao:oferendas": {
+          "concluidos": 30,
+          "p10": 4.0,
+          "p50": 4.0,
+          "p90": 4.0
+        },
+        "missao:portas": {
+          "concluidos": 30,
+          "p10": 1.0,
+          "p50": 1.0,
+          "p90": 1.0
+        },
+        "missao:postal": {
+          "concluidos": 30,
+          "p10": 26.0,
+          "p50": 26.0,
+          "p90": 27.1
+        },
+        "missao:prainha_m": {
+          "concluidos": 30,
+          "p10": 5.0,
+          "p50": 6.0,
+          "p90": 7.0
+        },
+        "missao:primeiros": {
+          "concluidos": 30,
+          "p10": 1.0,
+          "p50": 1.0,
+          "p90": 1.0
+        },
+        "missao:sabores_m": {
+          "concluidos": 30,
+          "p10": 6.0,
+          "p50": 7.0,
+          "p90": 8.1
+        },
+        "missao:salao": {
+          "concluidos": 30,
+          "p10": 26.0,
+          "p50": 26.0,
+          "p90": 27.1
+        },
+        "missao:verao": {
+          "concluidos": 30,
+          "p10": 5.0,
+          "p50": 6.0,
+          "p90": 7.0
+        },
+        "montagem:aniversario": {
+          "concluidos": 30,
+          "p10": 28.8,
+          "p50": 33.0,
+          "p90": 45.6
+        },
+        "montagem:casamento": {
+          "concluidos": 30,
+          "p10": 28.8,
+          "p50": 33.0,
+          "p90": 45.0
+        },
+        "montagem:congresso": {
+          "concluidos": 30,
+          "p10": 27.0,
+          "p50": 31.0,
+          "p90": 43.2
+        },
+        "negocio:aluguel": {
+          "concluidos": 30,
+          "p10": 6.0,
+          "p50": 7.0,
+          "p90": 8.0
+        },
+        "negocio:food_truck": {
+          "concluidos": 30,
+          "p10": 8.0,
+          "p50": 9.0,
+          "p90": 9.0
+        },
+        "negocio:sorveteria": {
+          "concluidos": 30,
+          "p10": 4.0,
+          "p50": 6.0,
+          "p90": 7.0
+        },
+        "negocio:souvenir": {
+          "concluidos": 30,
+          "p10": 7.0,
+          "p50": 8.0,
+          "p90": 9.0
+        },
+        "negocio:surfe": {
+          "concluidos": 30,
+          "p10": 8.9,
+          "p50": 9.0,
+          "p90": 10.0
+        },
+        "negocio_nivel:aluguel:2": {
+          "concluidos": 30,
+          "p10": 21.9,
+          "p50": 23.0,
+          "p90": 23.0
+        },
+        "negocio_nivel:aluguel:3": {
+          "concluidos": 30,
+          "p10": 29.0,
+          "p50": 29.0,
+          "p90": 30.1
+        },
+        "negocio_nivel:food_truck:2": {
+          "concluidos": 30,
+          "p10": 23.0,
+          "p50": 24.0,
+          "p90": 25.0
+        },
+        "negocio_nivel:food_truck:3": {
+          "concluidos": 30,
+          "p10": 30.0,
+          "p50": 31.0,
+          "p90": 32.0
+        },
+        "negocio_nivel:sorveteria:2": {
+          "concluidos": 30,
+          "p10": 21.0,
+          "p50": 22.0,
+          "p90": 23.0
+        },
+        "negocio_nivel:sorveteria:3": {
+          "concluidos": 30,
+          "p10": 28.0,
+          "p50": 29.0,
+          "p90": 30.0
+        },
+        "negocio_nivel:souvenir:2": {
+          "concluidos": 30,
+          "p10": 23.0,
+          "p50": 24.0,
+          "p90": 25.0
+        },
+        "negocio_nivel:souvenir:3": {
+          "concluidos": 30,
+          "p10": 30.0,
+          "p50": 31.0,
+          "p90": 32.0
+        },
+        "negocio_nivel:surfe:2": {
+          "concluidos": 30,
+          "p10": 24.0,
+          "p50": 25.0,
+          "p90": 27.1
+        },
+        "negocio_nivel:surfe:3": {
+          "concluidos": 30,
+          "p10": 32.0,
+          "p50": 32.0,
+          "p90": 33.1
+        },
+        "neon": {
+          "concluidos": 30,
+          "p10": 1.0,
+          "p50": 2.0,
+          "p90": 2.0
+        },
+        "passeio:barco": {
+          "concluidos": 30,
+          "p10": 8.0,
+          "p50": 9.0,
+          "p90": 10.0
+        },
+        "passeio:farol": {
+          "concluidos": 30,
+          "p10": 8.0,
+          "p50": 9.0,
+          "p90": 10.0
+        },
+        "passeio:jangada": {
+          "concluidos": 30,
+          "p10": 22.0,
+          "p50": 22.0,
+          "p90": 23.0
+        },
+        "passeio:snorkel": {
+          "concluidos": 30,
+          "p10": 8.0,
+          "p50": 9.0,
+          "p90": 9.0
+        },
+        "passeios": {
+          "concluidos": 30,
+          "p10": 6.0,
+          "p50": 7.0,
+          "p90": 8.0
+        },
+        "pool": {
+          "concluidos": 30,
+          "p10": 5.0,
+          "p50": 6.0,
+          "p90": 7.0
+        },
+        "pousada": {
+          "concluidos": 30,
+          "p10": 4.0,
+          "p50": 5.0,
+          "p90": 6.0
+        },
+        "salao_jogos": {
+          "concluidos": 30,
+          "p10": 26.0,
+          "p50": 26.0,
+          "p90": 27.1
+        },
+        "tela_fim_ea": {
+          "concluidos": 30,
+          "p10": 26.0,
+          "p50": 26.0,
+          "p90": 27.1
+        },
+        "todas_compras": {
+          "concluidos": 30,
+          "p10": 138.0,
+          "p50": 139.0,
+          "p90": 141.0
+        },
+        "vip_hotel_atendido": {
+          "concluidos": 30,
+          "p10": 26.0,
+          "p50": 26.0,
+          "p90": 27.1
+        }
+      },
+      "caixa_final_p50": 535788.88,
+      "censurados_compras": 0,
+      "censurados_campanha": 0
+    },
+    "dedicado": {
+      "meta_horas": [
+        6,
+        10
+      ],
+      "minutos_por_dia": 16,
+      "meta_atingida": {
+        "grand_hotel": {
+          "entre_6_e_10_h": 25,
+          "total": 30
+        },
+        "tela_fim_ea": {
+          "entre_6_e_10_h": 30,
+          "total": 30
+        },
+        "fim_demo": {
+          "entre_1.5_e_2.5_h": 30,
+          "total": 30
+        }
+      },
+      "sementes": 30,
+      "limite_dias": 300,
+      "marcos": {
+        "bar": {
+          "concluidos": 30,
+          "p10": 3.0,
+          "p50": 3.0,
+          "p90": 4.0
+        },
+        "bar_secreto": {
+          "concluidos": 30,
+          "p10": 4.0,
+          "p50": 4.0,
+          "p90": 5.1
+        },
+        "campanha_completa": {
+          "concluidos": 30,
+          "p10": 67.0,
+          "p50": 68.0,
+          "p90": 68.1
+        },
+        "campeonato_inscrito": {
+          "concluidos": 30,
+          "p10": 29.0,
+          "p50": 29.0,
+          "p90": 29.0
+        },
+        "capitulo:carnaval": {
+          "concluidos": 30,
+          "p10": 7.0,
+          "p50": 7.0,
+          "p90": 8.0
+        },
+        "capitulo:pier": {
+          "concluidos": 30,
+          "p10": 1.0,
+          "p50": 1.0,
+          "p90": 1.1
+        },
+        "capitulo:prainha": {
+          "concluidos": 30,
+          "p10": 2.0,
+          "p50": 2.0,
+          "p90": 3.0
+        },
+        "capitulo:sabores": {
+          "concluidos": 30,
+          "p10": 5.0,
+          "p50": 6.0,
+          "p90": 7.1
+        },
+        "critico_atendido": {
+          "concluidos": 30,
+          "p10": 23.0,
+          "p50": 24.0,
+          "p90": 25.0
+        },
+        "drinks": {
+          "concluidos": 30,
+          "p10": 1.0,
+          "p50": 1.0,
+          "p90": 2.0
+        },
+        "equipe:atendente": {
+          "concluidos": 30,
+          "p10": 1.0,
+          "p50": 1.0,
+          "p90": 1.0
+        },
+        "equipe:bartender": {
+          "concluidos": 30,
+          "p10": 4.0,
+          "p50": 4.0,
+          "p90": 5.0
+        },
+        "equipe:camareira": {
+          "concluidos": 30,
+          "p10": 5.0,
+          "p50": 5.0,
+          "p90": 6.0
+        },
+        "equipe:garcom_hotel": {
+          "concluidos": 30,
+          "p10": 23.0,
+          "p50": 24.0,
+          "p90": 25.0
+        },
+        "equipe:guia": {
+          "concluidos": 30,
+          "p10": 6.0,
+          "p50": 6.5,
+          "p90": 7.0
+        },
+        "equipe:piscineiro": {
+          "concluidos": 30,
+          "p10": 6.0,
+          "p50": 6.0,
+          "p90": 7.0
+        },
+        "equipe:recepcionista": {
+          "concluidos": 30,
+          "p10": 5.0,
+          "p50": 5.0,
+          "p90": 6.0
+        },
+        "estrela_restaurante:1": {
+          "concluidos": 8,
+          "p10": 51.4,
+          "p50": 75.5,
+          "p90": 110.0
+        },
+        "estrela_restaurante:2": {
+          "concluidos": 1,
+          "p10": 124.0,
+          "p50": 124.0,
+          "p90": 124.0
+        },
+        "evento:bodas": {
+          "concluidos": 30,
+          "p10": 23.0,
+          "p50": 24.0,
+          "p90": 25.0
+        },
+        "evento:empresa": {
+          "concluidos": 30,
+          "p10": 24.0,
+          "p50": 25.0,
+          "p90": 26.0
+        },
+        "evento:formatura": {
+          "concluidos": 30,
+          "p10": 25.0,
+          "p50": 26.0,
+          "p90": 27.0
+        },
+        "festa_pronta": {
+          "concluidos": 30,
+          "p10": 66.0,
+          "p50": 67.0,
+          "p90": 67.1
+        },
+        "fim_demo": {
+          "concluidos": 30,
+          "p10": 7.0,
+          "p50": 7.0,
+          "p90": 8.0
+        },
+        "grand_hotel": {
+          "concluidos": 30,
+          "p10": 22.0,
+          "p50": 23.0,
+          "p90": 24.0
+        },
+        "grill": {
+          "concluidos": 30,
+          "p10": 2.0,
+          "p50": 2.0,
+          "p90": 3.0
+        },
+        "kiosk_tables": {
+          "concluidos": 30,
+          "p10": 1.0,
+          "p50": 1.0,
+          "p90": 1.1
+        },
+        "liberada:bar": {
+          "concluidos": 30,
+          "p10": 2.0,
+          "p50": 2.0,
+          "p90": 3.0
+        },
+        "liberada:drinks": {
+          "concluidos": 30,
+          "p10": 1.0,
+          "p50": 1.0,
+          "p90": 1.0
+        },
+        "liberada:grand_hotel": {
+          "concluidos": 30,
+          "p10": 10.0,
+          "p50": 11.0,
+          "p90": 11.0
+        },
+        "liberada:grill": {
+          "concluidos": 30,
+          "p10": 1.0,
+          "p50": 1.0,
+          "p90": 1.1
+        },
+        "liberada:kiosk_tables": {
+          "concluidos": 30,
+          "p10": 1.0,
+          "p50": 1.0,
+          "p90": 1.0
+        },
+        "liberada:neon": {
+          "concluidos": 30,
+          "p10": 1.0,
+          "p50": 1.0,
+          "p90": 1.1
+        },
+        "liberada:passeios": {
+          "concluidos": 30,
+          "p10": 4.0,
+          "p50": 4.0,
+          "p90": 5.0
+        },
+        "liberada:pool": {
+          "concluidos": 30,
+          "p10": 4.0,
+          "p50": 4.0,
+          "p90": 5.0
+        },
+        "liberada:pousada": {
+          "concluidos": 30,
+          "p10": 3.0,
+          "p50": 3.0,
+          "p90": 4.0
+        },
+        "liberada:salao_jogos": {
+          "concluidos": 30,
+          "p10": 22.0,
+          "p50": 23.0,
+          "p90": 24.0
+        },
+        "missao:carnaval_m": {
+          "concluidos": 30,
+          "p10": 7.0,
+          "p50": 7.0,
+          "p90": 8.0
+        },
+        "missao:chef": {
+          "concluidos": 30,
+          "p10": 23.0,
+          "p50": 24.0,
+          "p90": 25.0
+        },
+        "missao:chegada": {
+          "concluidos": 30,
+          "p10": 1.0,
+          "p50": 1.0,
+          "p90": 1.0
+        },
+        "missao:comunidade": {
+          "concluidos": 30,
+          "p10": 4.0,
+          "p50": 4.0,
+          "p90": 4.0
+        },
+        "missao:encontro": {
+          "concluidos": 30,
+          "p10": 4.0,
+          "p50": 4.0,
+          "p90": 4.0
+        },
+        "missao:equipe": {
+          "concluidos": 30,
+          "p10": 1.0,
+          "p50": 1.0,
+          "p90": 1.1
+        },
+        "missao:festa": {
+          "concluidos": 30,
+          "p10": 67.0,
+          "p50": 68.0,
+          "p90": 68.1
+        },
+        "missao:fregueses": {
+          "concluidos": 30,
+          "p10": 66.0,
+          "p50": 67.0,
+          "p90": 67.1
+        },
+        "missao:hospedar": {
+          "concluidos": 30,
+          "p10": 4.0,
+          "p50": 4.0,
+          "p90": 5.0
+        },
+        "missao:lenda": {
+          "concluidos": 30,
+          "p10": 23.0,
+          "p50": 24.0,
+          "p90": 25.0
+        },
+        "missao:marealta": {
+          "concluidos": 30,
+          "p10": 22.0,
+          "p50": 23.0,
+          "p90": 24.0
+        },
+        "missao:mesas": {
+          "concluidos": 30,
+          "p10": 1.0,
+          "p50": 1.0,
+          "p90": 1.1
+        },
+        "missao:morro": {
+          "concluidos": 30,
+          "p10": 2.0,
+          "p50": 2.0,
+          "p90": 2.0
+        },
+        "missao:oferendas": {
+          "concluidos": 30,
+          "p10": 4.0,
+          "p50": 4.0,
+          "p90": 4.0
+        },
+        "missao:portas": {
+          "concluidos": 30,
+          "p10": 1.0,
+          "p50": 1.0,
+          "p90": 1.0
+        },
+        "missao:postal": {
+          "concluidos": 30,
+          "p10": 23.0,
+          "p50": 24.0,
+          "p90": 25.0
+        },
+        "missao:prainha_m": {
+          "concluidos": 30,
+          "p10": 5.0,
+          "p50": 5.0,
+          "p90": 6.0
+        },
+        "missao:primeiros": {
+          "concluidos": 30,
+          "p10": 1.0,
+          "p50": 1.0,
+          "p90": 1.0
+        },
+        "missao:sabores_m": {
+          "concluidos": 30,
+          "p10": 5.0,
+          "p50": 6.0,
+          "p90": 7.1
+        },
+        "missao:salao": {
+          "concluidos": 30,
+          "p10": 23.0,
+          "p50": 24.0,
+          "p90": 25.0
+        },
+        "missao:verao": {
+          "concluidos": 30,
+          "p10": 5.0,
+          "p50": 5.0,
+          "p90": 6.0
+        },
+        "montagem:aniversario": {
+          "concluidos": 30,
+          "p10": 25.0,
+          "p50": 29.0,
+          "p90": 39.4
+        },
+        "montagem:casamento": {
+          "concluidos": 30,
+          "p10": 25.0,
+          "p50": 29.0,
+          "p90": 37.2
+        },
+        "montagem:congresso": {
+          "concluidos": 30,
+          "p10": 25.0,
+          "p50": 29.0,
+          "p90": 39.0
+        },
+        "negocio:aluguel": {
+          "concluidos": 30,
+          "p10": 6.0,
+          "p50": 6.0,
+          "p90": 7.0
+        },
+        "negocio:food_truck": {
+          "concluidos": 30,
+          "p10": 6.9,
+          "p50": 8.0,
+          "p90": 8.0
+        },
+        "negocio:sorveteria": {
+          "concluidos": 30,
+          "p10": 4.9,
+          "p50": 6.0,
+          "p90": 7.0
+        },
+        "negocio:souvenir": {
+          "concluidos": 30,
+          "p10": 7.0,
+          "p50": 7.0,
+          "p90": 8.0
+        },
+        "negocio:surfe": {
+          "concluidos": 30,
+          "p10": 8.0,
+          "p50": 8.0,
+          "p90": 9.0
+        },
+        "negocio_nivel:aluguel:2": {
+          "concluidos": 30,
+          "p10": 20.0,
+          "p50": 20.0,
+          "p90": 21.0
+        },
+        "negocio_nivel:aluguel:3": {
+          "concluidos": 30,
+          "p10": 26.0,
+          "p50": 27.0,
+          "p90": 27.0
+        },
+        "negocio_nivel:food_truck:2": {
+          "concluidos": 30,
+          "p10": 21.0,
+          "p50": 21.5,
+          "p90": 22.0
+        },
+        "negocio_nivel:food_truck:3": {
+          "concluidos": 30,
+          "p10": 27.0,
+          "p50": 28.0,
+          "p90": 29.0
+        },
+        "negocio_nivel:sorveteria:2": {
+          "concluidos": 30,
+          "p10": 19.0,
+          "p50": 20.0,
+          "p90": 20.1
+        },
+        "negocio_nivel:sorveteria:3": {
+          "concluidos": 30,
+          "p10": 25.9,
+          "p50": 26.0,
+          "p90": 27.0
+        },
+        "negocio_nivel:souvenir:2": {
+          "concluidos": 30,
+          "p10": 21.0,
+          "p50": 22.0,
+          "p90": 22.0
+        },
+        "negocio_nivel:souvenir:3": {
+          "concluidos": 30,
+          "p10": 27.0,
+          "p50": 28.0,
+          "p90": 29.0
+        },
+        "negocio_nivel:surfe:2": {
+          "concluidos": 30,
+          "p10": 22.0,
+          "p50": 25.0,
+          "p90": 25.0
+        },
+        "negocio_nivel:surfe:3": {
+          "concluidos": 30,
+          "p10": 29.0,
+          "p50": 29.0,
+          "p90": 30.0
+        },
+        "neon": {
+          "concluidos": 30,
+          "p10": 1.0,
+          "p50": 2.0,
+          "p90": 2.0
+        },
+        "passeio:barco": {
+          "concluidos": 30,
+          "p10": 8.0,
+          "p50": 8.0,
+          "p90": 9.0
+        },
+        "passeio:farol": {
+          "concluidos": 30,
+          "p10": 6.9,
+          "p50": 8.0,
+          "p90": 8.0
+        },
+        "passeio:jangada": {
+          "concluidos": 30,
+          "p10": 19.9,
+          "p50": 20.0,
+          "p90": 22.0
+        },
+        "passeio:snorkel": {
+          "concluidos": 30,
+          "p10": 6.0,
+          "p50": 7.0,
+          "p90": 8.0
+        },
+        "passeios": {
+          "concluidos": 30,
+          "p10": 5.0,
+          "p50": 5.5,
+          "p90": 6.0
+        },
+        "pool": {
+          "concluidos": 30,
+          "p10": 5.0,
+          "p50": 5.0,
+          "p90": 6.0
+        },
+        "pousada": {
+          "concluidos": 30,
+          "p10": 4.0,
+          "p50": 4.0,
+          "p90": 5.0
+        },
+        "salao_jogos": {
+          "concluidos": 30,
+          "p10": 23.0,
+          "p50": 24.0,
+          "p90": 25.0
+        },
+        "tela_fim_ea": {
+          "concluidos": 30,
+          "p10": 23.0,
+          "p50": 24.0,
+          "p90": 25.0
+        },
+        "todas_compras": {
+          "concluidos": 30,
+          "p10": 121.0,
+          "p50": 122.0,
+          "p90": 123.0
+        },
+        "vip_hotel_atendido": {
+          "concluidos": 30,
+          "p10": 23.0,
+          "p50": 24.0,
+          "p90": 25.0
+        }
+      },
+      "caixa_final_p50": 592696.03,
+      "censurados_compras": 0,
+      "censurados_campanha": 0
+    }
+  },
+  "proposto": {
+    "casual": {
+      "meta_horas": [
+        6,
+        10
+      ],
+      "minutos_por_dia": 16,
+      "meta_atingida": {
+        "grand_hotel": {
+          "entre_6_e_10_h": 30,
+          "total": 30
+        },
+        "tela_fim_ea": {
+          "entre_6_e_10_h": 30,
+          "total": 30
+        },
+        "fim_demo": {
+          "entre_1.5_e_2.5_h": 6,
+          "total": 30
+        }
+      },
+      "sementes": 30,
+      "limite_dias": 300,
+      "marcos": {
+        "bar": {
+          "concluidos": 30,
+          "p10": 4.0,
+          "p50": 4.0,
+          "p90": 5.1
+        },
+        "bar_secreto": {
+          "concluidos": 30,
+          "p10": 5.0,
+          "p50": 7.0,
+          "p90": 25.1
+        },
+        "campanha_completa": {
+          "concluidos": 30,
+          "p10": 86.0,
+          "p50": 87.0,
+          "p90": 89.0
+        },
+        "campeonato_inscrito": {
+          "concluidos": 30,
+          "p10": 36.0,
+          "p50": 43.0,
+          "p90": 51.0
+        },
+        "capitulo:carnaval": {
+          "concluidos": 30,
+          "p10": 9.0,
+          "p50": 10.0,
+          "p90": 11.0
+        },
+        "capitulo:pier": {
+          "concluidos": 30,
+          "p10": 1.0,
+          "p50": 1.0,
+          "p90": 1.1
+        },
+        "capitulo:prainha": {
+          "concluidos": 30,
+          "p10": 2.9,
+          "p50": 3.0,
+          "p90": 3.1
+        },
+        "capitulo:sabores": {
+          "concluidos": 30,
+          "p10": 8.0,
+          "p50": 9.0,
+          "p90": 10.1
+        },
+        "critico_atendido": {
+          "concluidos": 30,
+          "p10": 29.9,
+          "p50": 31.5,
+          "p90": 33.1
+        },
+        "drinks": {
+          "concluidos": 30,
+          "p10": 2.0,
+          "p50": 2.0,
+          "p90": 2.1
+        },
+        "equipe:atendente": {
+          "concluidos": 30,
+          "p10": 1.0,
+          "p50": 1.0,
+          "p90": 1.1
+        },
+        "equipe:bartender": {
+          "concluidos": 30,
+          "p10": 5.0,
+          "p50": 5.0,
+          "p90": 6.1
+        },
+        "equipe:camareira": {
+          "concluidos": 30,
+          "p10": 7.0,
+          "p50": 7.0,
+          "p90": 9.0
+        },
+        "equipe:garcom_hotel": {
+          "concluidos": 30,
+          "p10": 29.8,
+          "p50": 31.5,
+          "p90": 33.1
+        },
+        "equipe:guia": {
+          "concluidos": 30,
+          "p10": 9.0,
+          "p50": 10.0,
+          "p90": 11.0
+        },
+        "equipe:piscineiro": {
+          "concluidos": 30,
+          "p10": 8.0,
+          "p50": 9.0,
+          "p90": 10.0
+        },
+        "equipe:recepcionista": {
+          "concluidos": 30,
+          "p10": 7.0,
+          "p50": 7.0,
+          "p90": 9.0
+        },
+        "evento:bodas": {
+          "concluidos": 30,
+          "p10": 35.3,
+          "p50": 36.0,
+          "p90": 36.0
+        },
+        "evento:empresa": {
+          "concluidos": 30,
+          "p10": 42.3,
+          "p50": 43.0,
+          "p90": 43.0
+        },
+        "evento:formatura": {
+          "concluidos": 30,
+          "p10": 49.3,
+          "p50": 50.0,
+          "p90": 50.0
+        },
+        "festa_pronta": {
+          "concluidos": 30,
+          "p10": 85.0,
+          "p50": 86.0,
+          "p90": 88.0
+        },
+        "fim_demo": {
+          "concluidos": 30,
+          "p10": 9.0,
+          "p50": 10.0,
+          "p90": 11.0
+        },
+        "grand_hotel": {
+          "concluidos": 30,
+          "p10": 28.8,
+          "p50": 30.5,
+          "p90": 32.1
+        },
+        "grill": {
+          "concluidos": 30,
+          "p10": 2.0,
+          "p50": 3.0,
+          "p90": 3.1
+        },
+        "kiosk_tables": {
+          "concluidos": 30,
+          "p10": 1.0,
+          "p50": 1.0,
+          "p90": 2.0
+        },
+        "liberada:bar": {
+          "concluidos": 30,
+          "p10": 2.0,
+          "p50": 3.0,
+          "p90": 3.1
+        },
+        "liberada:drinks": {
+          "concluidos": 30,
+          "p10": 1.0,
+          "p50": 1.0,
+          "p90": 1.0
+        },
+        "liberada:grand_hotel": {
+          "concluidos": 30,
+          "p10": 15.0,
+          "p50": 16.0,
+          "p90": 17.0
+        },
+        "liberada:grill": {
+          "concluidos": 30,
+          "p10": 1.0,
+          "p50": 1.0,
+          "p90": 2.0
+        },
+        "liberada:kiosk_tables": {
+          "concluidos": 30,
+          "p10": 1.0,
+          "p50": 1.0,
+          "p90": 1.0
+        },
+        "liberada:neon": {
+          "concluidos": 30,
+          "p10": 1.0,
+          "p50": 1.0,
+          "p90": 2.0
+        },
+        "liberada:passeios": {
+          "concluidos": 30,
+          "p10": 6.0,
+          "p50": 6.0,
+          "p90": 8.0
+        },
+        "liberada:pool": {
+          "concluidos": 30,
+          "p10": 6.0,
+          "p50": 6.0,
+          "p90": 8.0
+        },
+        "liberada:pousada": {
+          "concluidos": 30,
+          "p10": 4.0,
+          "p50": 4.0,
+          "p90": 5.1
+        },
+        "liberada:salao_jogos": {
+          "concluidos": 30,
+          "p10": 28.8,
+          "p50": 30.5,
+          "p90": 32.1
+        },
+        "missao:carnaval_m": {
+          "concluidos": 30,
+          "p10": 9.0,
+          "p50": 10.0,
+          "p90": 11.0
+        },
+        "missao:chef": {
+          "concluidos": 30,
+          "p10": 29.8,
+          "p50": 31.5,
+          "p90": 33.1
+        },
+        "missao:chegada": {
+          "concluidos": 30,
+          "p10": 1.0,
+          "p50": 1.0,
+          "p90": 1.0
+        },
+        "missao:comunidade": {
+          "concluidos": 30,
+          "p10": 4.0,
+          "p50": 4.0,
+          "p90": 4.0
+        },
+        "missao:encontro": {
+          "concluidos": 30,
+          "p10": 4.0,
+          "p50": 4.0,
+          "p90": 5.1
+        },
+        "missao:equipe": {
+          "concluidos": 30,
+          "p10": 1.0,
+          "p50": 1.0,
+          "p90": 2.0
+        },
+        "missao:festa": {
+          "concluidos": 30,
+          "p10": 86.0,
+          "p50": 87.0,
+          "p90": 89.0
+        },
+        "missao:fregueses": {
+          "concluidos": 30,
+          "p10": 85.0,
+          "p50": 86.0,
+          "p90": 88.0
+        },
+        "missao:hospedar": {
+          "concluidos": 30,
+          "p10": 6.0,
+          "p50": 6.0,
+          "p90": 8.0
+        },
+        "missao:lenda": {
+          "concluidos": 30,
+          "p10": 29.8,
+          "p50": 31.5,
+          "p90": 33.1
+        },
+        "missao:marealta": {
+          "concluidos": 30,
+          "p10": 28.8,
+          "p50": 30.5,
+          "p90": 32.1
+        },
+        "missao:mesas": {
+          "concluidos": 30,
+          "p10": 1.0,
+          "p50": 1.0,
+          "p90": 2.0
+        },
+        "missao:morro": {
+          "concluidos": 30,
+          "p10": 2.0,
+          "p50": 2.0,
+          "p90": 2.0
+        },
+        "missao:oferendas": {
+          "concluidos": 30,
+          "p10": 4.0,
+          "p50": 4.0,
+          "p90": 4.0
+        },
+        "missao:portas": {
+          "concluidos": 30,
+          "p10": 1.0,
+          "p50": 1.0,
+          "p90": 1.0
+        },
+        "missao:postal": {
+          "concluidos": 30,
+          "p10": 29.8,
+          "p50": 31.5,
+          "p90": 33.1
+        },
+        "missao:prainha_m": {
+          "concluidos": 30,
+          "p10": 7.0,
+          "p50": 8.0,
+          "p90": 9.0
+        },
+        "missao:primeiros": {
+          "concluidos": 30,
+          "p10": 1.0,
+          "p50": 1.0,
+          "p90": 1.1
+        },
+        "missao:sabores_m": {
+          "concluidos": 30,
+          "p10": 8.0,
+          "p50": 9.0,
+          "p90": 10.1
+        },
+        "missao:salao": {
+          "concluidos": 30,
+          "p10": 29.8,
+          "p50": 31.5,
+          "p90": 33.1
+        },
+        "missao:verao": {
+          "concluidos": 30,
+          "p10": 7.0,
+          "p50": 8.0,
+          "p90": 9.0
+        },
+        "montagem:aniversario": {
+          "concluidos": 30,
+          "p10": 33.0,
+          "p50": 40.0,
+          "p90": 53.2
+        },
+        "montagem:casamento": {
+          "concluidos": 30,
+          "p10": 33.0,
+          "p50": 37.0,
+          "p90": 55.0
+        },
+        "montagem:congresso": {
+          "concluidos": 30,
+          "p10": 32.8,
+          "p50": 41.0,
+          "p90": 51.6
+        },
+        "negocio:aluguel": {
+          "concluidos": 30,
+          "p10": 8.0,
+          "p50": 9.0,
+          "p90": 10.0
+        },
+        "negocio:food_truck": {
+          "concluidos": 30,
+          "p10": 10.0,
+          "p50": 11.0,
+          "p90": 12.0
+        },
+        "negocio:sorveteria": {
+          "concluidos": 30,
+          "p10": 5.0,
+          "p50": 5.0,
+          "p90": 8.0
+        },
+        "negocio:souvenir": {
+          "concluidos": 30,
+          "p10": 9.0,
+          "p50": 10.0,
+          "p90": 11.0
+        },
+        "negocio:surfe": {
+          "concluidos": 30,
+          "p10": 10.9,
+          "p50": 11.0,
+          "p90": 12.0
+        },
+        "negocio_nivel:aluguel:2": {
+          "concluidos": 30,
+          "p10": 24.0,
+          "p50": 25.0,
+          "p90": 26.0
+        },
+        "negocio_nivel:aluguel:3": {
+          "concluidos": 30,
+          "p10": 31.9,
+          "p50": 33.0,
+          "p90": 34.1
+        },
+        "negocio_nivel:food_truck:2": {
+          "concluidos": 30,
+          "p10": 26.0,
+          "p50": 26.0,
+          "p90": 28.0
+        },
+        "negocio_nivel:food_truck:3": {
+          "concluidos": 30,
+          "p10": 33.9,
+          "p50": 36.0,
+          "p90": 37.0
+        },
+        "negocio_nivel:sorveteria:2": {
+          "concluidos": 30,
+          "p10": 24.0,
+          "p50": 25.0,
+          "p90": 26.0
+        },
+        "negocio_nivel:sorveteria:3": {
+          "concluidos": 30,
+          "p10": 30.0,
+          "p50": 32.0,
+          "p90": 34.0
+        },
+        "negocio_nivel:souvenir:2": {
+          "concluidos": 30,
+          "p10": 26.0,
+          "p50": 26.5,
+          "p90": 28.0
+        },
+        "negocio_nivel:souvenir:3": {
+          "concluidos": 30,
+          "p10": 33.9,
+          "p50": 35.0,
+          "p90": 37.0
+        },
+        "negocio_nivel:surfe:2": {
+          "concluidos": 30,
+          "p10": 27.0,
+          "p50": 28.0,
+          "p90": 29.0
+        },
+        "negocio_nivel:surfe:3": {
+          "concluidos": 30,
+          "p10": 35.9,
+          "p50": 37.0,
+          "p90": 38.0
+        },
+        "neon": {
+          "concluidos": 30,
+          "p10": 1.0,
+          "p50": 2.0,
+          "p90": 3.0
+        },
+        "passeio:barco": {
+          "concluidos": 30,
+          "p10": 10.0,
+          "p50": 11.0,
+          "p90": 12.0
+        },
+        "passeio:farol": {
+          "concluidos": 30,
+          "p10": 10.0,
+          "p50": 11.0,
+          "p90": 12.0
+        },
+        "passeio:jangada": {
+          "concluidos": 30,
+          "p10": 24.0,
+          "p50": 25.0,
+          "p90": 26.0
+        },
+        "passeio:snorkel": {
+          "concluidos": 30,
+          "p10": 10.0,
+          "p50": 11.0,
+          "p90": 12.0
+        },
+        "passeios": {
+          "concluidos": 30,
+          "p10": 8.0,
+          "p50": 9.0,
+          "p90": 10.0
+        },
+        "pool": {
+          "concluidos": 30,
+          "p10": 7.0,
+          "p50": 8.0,
+          "p90": 9.0
+        },
+        "pousada": {
+          "concluidos": 30,
+          "p10": 6.0,
+          "p50": 6.0,
+          "p90": 8.0
+        },
+        "salao_jogos": {
+          "concluidos": 30,
+          "p10": 29.8,
+          "p50": 31.5,
+          "p90": 33.1
+        },
+        "tela_fim_ea": {
+          "concluidos": 30,
+          "p10": 29.8,
+          "p50": 31.5,
+          "p90": 33.1
+        },
+        "todas_compras": {
+          "concluidos": 30,
+          "p10": 148.9,
+          "p50": 151.0,
+          "p90": 152.0
+        },
+        "vip_hotel_atendido": {
+          "concluidos": 30,
+          "p10": 29.8,
+          "p50": 31.5,
+          "p90": 33.1
+        }
+      },
+      "caixa_final_p50": 504341.16,
+      "censurados_compras": 0,
+      "censurados_campanha": 0
+    },
+    "medio": {
+      "meta_horas": [
+        6,
+        10
+      ],
+      "minutos_por_dia": 16,
+      "meta_atingida": {
+        "grand_hotel": {
+          "entre_6_e_10_h": 30,
+          "total": 30
+        },
+        "tela_fim_ea": {
+          "entre_6_e_10_h": 30,
+          "total": 30
+        },
+        "fim_demo": {
+          "entre_1.5_e_2.5_h": 28,
+          "total": 30
+        }
+      },
+      "sementes": 30,
+      "limite_dias": 300,
+      "marcos": {
+        "bar": {
+          "concluidos": 30,
+          "p10": 3.0,
+          "p50": 4.0,
+          "p90": 4.0
+        },
+        "bar_secreto": {
+          "concluidos": 30,
+          "p10": 4.0,
+          "p50": 5.0,
+          "p90": 7.1
+        },
+        "campanha_completa": {
+          "concluidos": 30,
+          "p10": 75.0,
+          "p50": 76.0,
+          "p90": 77.1
+        },
+        "campeonato_inscrito": {
+          "concluidos": 30,
+          "p10": 29.0,
+          "p50": 29.5,
+          "p90": 36.0
+        },
+        "capitulo:carnaval": {
+          "concluidos": 30,
+          "p10": 7.0,
+          "p50": 8.0,
+          "p90": 9.0
+        },
+        "capitulo:pier": {
+          "concluidos": 30,
+          "p10": 1.0,
+          "p50": 1.0,
+          "p90": 1.1
+        },
+        "capitulo:prainha": {
+          "concluidos": 30,
+          "p10": 2.0,
+          "p50": 2.0,
+          "p90": 3.0
+        },
+        "capitulo:sabores": {
+          "concluidos": 30,
+          "p10": 6.0,
+          "p50": 7.0,
+          "p90": 8.1
+        },
+        "critico_atendido": {
+          "concluidos": 30,
+          "p10": 26.0,
+          "p50": 26.0,
+          "p90": 27.1
+        },
+        "drinks": {
+          "concluidos": 30,
+          "p10": 1.0,
+          "p50": 2.0,
+          "p90": 2.1
+        },
+        "equipe:atendente": {
+          "concluidos": 30,
+          "p10": 1.0,
+          "p50": 1.0,
+          "p90": 1.0
+        },
+        "equipe:bartender": {
+          "concluidos": 30,
+          "p10": 4.0,
+          "p50": 5.0,
+          "p90": 5.0
+        },
+        "equipe:camareira": {
+          "concluidos": 30,
+          "p10": 5.0,
+          "p50": 6.0,
+          "p90": 7.0
+        },
+        "equipe:garcom_hotel": {
+          "concluidos": 30,
+          "p10": 26.0,
+          "p50": 26.0,
+          "p90": 27.1
+        },
+        "equipe:guia": {
+          "concluidos": 30,
+          "p10": 7.0,
+          "p50": 8.0,
+          "p90": 9.0
+        },
+        "equipe:piscineiro": {
+          "concluidos": 30,
+          "p10": 6.0,
+          "p50": 7.0,
+          "p90": 8.0
+        },
+        "equipe:recepcionista": {
+          "concluidos": 30,
+          "p10": 5.0,
+          "p50": 6.0,
+          "p90": 7.0
+        },
+        "estrela_restaurante:1": {
+          "concluidos": 1,
+          "p10": 89.0,
+          "p50": 89.0,
+          "p90": 89.0
+        },
+        "evento:bodas": {
+          "concluidos": 30,
+          "p10": 28.0,
+          "p50": 28.0,
+          "p90": 28.0
+        },
+        "evento:empresa": {
+          "concluidos": 30,
+          "p10": 31.0,
+          "p50": 31.0,
+          "p90": 31.0
+        },
+        "evento:formatura": {
+          "concluidos": 30,
+          "p10": 34.0,
+          "p50": 34.0,
+          "p90": 34.0
+        },
+        "festa_pronta": {
+          "concluidos": 30,
+          "p10": 74.0,
+          "p50": 75.0,
+          "p90": 76.1
+        },
+        "fim_demo": {
+          "concluidos": 30,
+          "p10": 7.0,
+          "p50": 8.0,
+          "p90": 9.0
+        },
+        "grand_hotel": {
+          "concluidos": 30,
+          "p10": 25.0,
+          "p50": 25.0,
+          "p90": 26.1
+        },
+        "grill": {
+          "concluidos": 30,
+          "p10": 2.0,
+          "p50": 2.0,
+          "p90": 3.0
+        },
+        "kiosk_tables": {
+          "concluidos": 30,
+          "p10": 1.0,
+          "p50": 1.0,
+          "p90": 1.1
+        },
+        "liberada:bar": {
+          "concluidos": 30,
+          "p10": 2.0,
+          "p50": 2.0,
+          "p90": 3.0
+        },
+        "liberada:drinks": {
+          "concluidos": 30,
+          "p10": 1.0,
+          "p50": 1.0,
+          "p90": 1.0
+        },
+        "liberada:grand_hotel": {
+          "concluidos": 30,
+          "p10": 12.0,
+          "p50": 13.0,
+          "p90": 14.0
+        },
+        "liberada:grill": {
+          "concluidos": 30,
+          "p10": 1.0,
+          "p50": 1.0,
+          "p90": 1.1
+        },
+        "liberada:kiosk_tables": {
+          "concluidos": 30,
+          "p10": 1.0,
+          "p50": 1.0,
+          "p90": 1.0
+        },
+        "liberada:neon": {
+          "concluidos": 30,
+          "p10": 1.0,
+          "p50": 1.0,
+          "p90": 1.1
+        },
+        "liberada:passeios": {
+          "concluidos": 30,
+          "p10": 4.0,
+          "p50": 5.0,
+          "p90": 6.0
+        },
+        "liberada:pool": {
+          "concluidos": 30,
+          "p10": 4.0,
+          "p50": 5.0,
+          "p90": 6.0
+        },
+        "liberada:pousada": {
+          "concluidos": 30,
+          "p10": 3.0,
+          "p50": 4.0,
+          "p90": 4.0
+        },
+        "liberada:salao_jogos": {
+          "concluidos": 30,
+          "p10": 25.0,
+          "p50": 25.0,
+          "p90": 26.1
+        },
+        "missao:carnaval_m": {
+          "concluidos": 30,
+          "p10": 7.0,
+          "p50": 8.0,
+          "p90": 9.0
+        },
+        "missao:chef": {
+          "concluidos": 30,
+          "p10": 26.0,
+          "p50": 26.0,
+          "p90": 27.1
+        },
+        "missao:chegada": {
+          "concluidos": 30,
+          "p10": 1.0,
+          "p50": 1.0,
+          "p90": 1.0
+        },
+        "missao:comunidade": {
+          "concluidos": 30,
+          "p10": 4.0,
+          "p50": 4.0,
+          "p90": 4.0
+        },
+        "missao:encontro": {
+          "concluidos": 30,
+          "p10": 4.0,
+          "p50": 4.0,
+          "p90": 4.0
+        },
+        "missao:equipe": {
+          "concluidos": 30,
+          "p10": 1.0,
+          "p50": 1.0,
+          "p90": 1.1
+        },
+        "missao:festa": {
+          "concluidos": 30,
+          "p10": 75.0,
+          "p50": 76.0,
+          "p90": 77.1
+        },
+        "missao:fregueses": {
+          "concluidos": 30,
+          "p10": 74.0,
+          "p50": 75.0,
+          "p90": 76.1
+        },
+        "missao:hospedar": {
+          "concluidos": 30,
+          "p10": 4.0,
+          "p50": 5.0,
+          "p90": 6.0
+        },
+        "missao:lenda": {
+          "concluidos": 30,
+          "p10": 26.0,
+          "p50": 26.0,
+          "p90": 27.1
+        },
+        "missao:marealta": {
+          "concluidos": 30,
+          "p10": 25.0,
+          "p50": 25.0,
+          "p90": 26.1
+        },
+        "missao:mesas": {
+          "concluidos": 30,
+          "p10": 1.0,
+          "p50": 1.0,
+          "p90": 1.1
+        },
+        "missao:morro": {
+          "concluidos": 30,
+          "p10": 2.0,
+          "p50": 2.0,
+          "p90": 2.0
+        },
+        "missao:oferendas": {
+          "concluidos": 30,
+          "p10": 4.0,
+          "p50": 4.0,
+          "p90": 4.0
+        },
+        "missao:portas": {
+          "concluidos": 30,
+          "p10": 1.0,
+          "p50": 1.0,
+          "p90": 1.0
+        },
+        "missao:postal": {
+          "concluidos": 30,
+          "p10": 26.0,
+          "p50": 26.0,
+          "p90": 27.1
+        },
+        "missao:prainha_m": {
+          "concluidos": 30,
+          "p10": 5.0,
+          "p50": 6.0,
+          "p90": 7.0
+        },
+        "missao:primeiros": {
+          "concluidos": 30,
+          "p10": 1.0,
+          "p50": 1.0,
+          "p90": 1.0
+        },
+        "missao:sabores_m": {
+          "concluidos": 30,
+          "p10": 6.0,
+          "p50": 7.0,
+          "p90": 8.1
+        },
+        "missao:salao": {
+          "concluidos": 30,
+          "p10": 26.0,
+          "p50": 26.0,
+          "p90": 27.1
+        },
+        "missao:verao": {
+          "concluidos": 30,
+          "p10": 5.0,
+          "p50": 6.0,
+          "p90": 7.0
+        },
+        "montagem:aniversario": {
+          "concluidos": 30,
+          "p10": 28.8,
+          "p50": 33.0,
+          "p90": 45.6
+        },
+        "montagem:casamento": {
+          "concluidos": 30,
+          "p10": 28.8,
+          "p50": 33.0,
+          "p90": 45.0
+        },
+        "montagem:congresso": {
+          "concluidos": 30,
+          "p10": 27.0,
+          "p50": 31.0,
+          "p90": 43.2
+        },
+        "negocio:aluguel": {
+          "concluidos": 30,
+          "p10": 6.0,
+          "p50": 7.0,
+          "p90": 8.0
+        },
+        "negocio:food_truck": {
+          "concluidos": 30,
+          "p10": 8.0,
+          "p50": 9.0,
+          "p90": 9.0
+        },
+        "negocio:sorveteria": {
+          "concluidos": 30,
+          "p10": 4.0,
+          "p50": 6.0,
+          "p90": 7.0
+        },
+        "negocio:souvenir": {
+          "concluidos": 30,
+          "p10": 7.0,
+          "p50": 8.0,
+          "p90": 9.0
+        },
+        "negocio:surfe": {
+          "concluidos": 30,
+          "p10": 8.9,
+          "p50": 9.0,
+          "p90": 10.0
+        },
+        "negocio_nivel:aluguel:2": {
+          "concluidos": 30,
+          "p10": 21.9,
+          "p50": 23.0,
+          "p90": 23.0
+        },
+        "negocio_nivel:aluguel:3": {
+          "concluidos": 30,
+          "p10": 29.0,
+          "p50": 29.0,
+          "p90": 30.1
+        },
+        "negocio_nivel:food_truck:2": {
+          "concluidos": 30,
+          "p10": 23.0,
+          "p50": 24.0,
+          "p90": 25.0
+        },
+        "negocio_nivel:food_truck:3": {
+          "concluidos": 30,
+          "p10": 30.0,
+          "p50": 31.0,
+          "p90": 32.0
+        },
+        "negocio_nivel:sorveteria:2": {
+          "concluidos": 30,
+          "p10": 21.0,
+          "p50": 22.0,
+          "p90": 23.0
+        },
+        "negocio_nivel:sorveteria:3": {
+          "concluidos": 30,
+          "p10": 28.0,
+          "p50": 29.0,
+          "p90": 30.0
+        },
+        "negocio_nivel:souvenir:2": {
+          "concluidos": 30,
+          "p10": 23.0,
+          "p50": 24.0,
+          "p90": 25.0
+        },
+        "negocio_nivel:souvenir:3": {
+          "concluidos": 30,
+          "p10": 30.0,
+          "p50": 31.0,
+          "p90": 32.0
+        },
+        "negocio_nivel:surfe:2": {
+          "concluidos": 30,
+          "p10": 24.0,
+          "p50": 25.0,
+          "p90": 27.1
+        },
+        "negocio_nivel:surfe:3": {
+          "concluidos": 30,
+          "p10": 32.0,
+          "p50": 32.0,
+          "p90": 33.1
+        },
+        "neon": {
+          "concluidos": 30,
+          "p10": 1.0,
+          "p50": 2.0,
+          "p90": 2.0
+        },
+        "passeio:barco": {
+          "concluidos": 30,
+          "p10": 8.0,
+          "p50": 9.0,
+          "p90": 10.0
+        },
+        "passeio:farol": {
+          "concluidos": 30,
+          "p10": 8.0,
+          "p50": 9.0,
+          "p90": 10.0
+        },
+        "passeio:jangada": {
+          "concluidos": 30,
+          "p10": 22.0,
+          "p50": 22.0,
+          "p90": 23.0
+        },
+        "passeio:snorkel": {
+          "concluidos": 30,
+          "p10": 8.0,
+          "p50": 9.0,
+          "p90": 9.0
+        },
+        "passeios": {
+          "concluidos": 30,
+          "p10": 6.0,
+          "p50": 7.0,
+          "p90": 8.0
+        },
+        "pool": {
+          "concluidos": 30,
+          "p10": 5.0,
+          "p50": 6.0,
+          "p90": 7.0
+        },
+        "pousada": {
+          "concluidos": 30,
+          "p10": 4.0,
+          "p50": 5.0,
+          "p90": 6.0
+        },
+        "salao_jogos": {
+          "concluidos": 30,
+          "p10": 26.0,
+          "p50": 26.0,
+          "p90": 27.1
+        },
+        "tela_fim_ea": {
+          "concluidos": 30,
+          "p10": 26.0,
+          "p50": 26.0,
+          "p90": 27.1
+        },
+        "todas_compras": {
+          "concluidos": 30,
+          "p10": 138.0,
+          "p50": 139.0,
+          "p90": 141.0
+        },
+        "vip_hotel_atendido": {
+          "concluidos": 30,
+          "p10": 26.0,
+          "p50": 26.0,
+          "p90": 27.1
+        }
+      },
+      "caixa_final_p50": 535788.88,
+      "censurados_compras": 0,
+      "censurados_campanha": 0
+    },
+    "dedicado": {
+      "meta_horas": [
+        6,
+        10
+      ],
+      "minutos_por_dia": 16,
+      "meta_atingida": {
+        "grand_hotel": {
+          "entre_6_e_10_h": 25,
+          "total": 30
+        },
+        "tela_fim_ea": {
+          "entre_6_e_10_h": 30,
+          "total": 30
+        },
+        "fim_demo": {
+          "entre_1.5_e_2.5_h": 30,
+          "total": 30
+        }
+      },
+      "sementes": 30,
+      "limite_dias": 300,
+      "marcos": {
+        "bar": {
+          "concluidos": 30,
+          "p10": 3.0,
+          "p50": 3.0,
+          "p90": 4.0
+        },
+        "bar_secreto": {
+          "concluidos": 30,
+          "p10": 4.0,
+          "p50": 4.0,
+          "p90": 5.1
+        },
+        "campanha_completa": {
+          "concluidos": 30,
+          "p10": 67.0,
+          "p50": 68.0,
+          "p90": 68.1
+        },
+        "campeonato_inscrito": {
+          "concluidos": 30,
+          "p10": 29.0,
+          "p50": 29.0,
+          "p90": 29.0
+        },
+        "capitulo:carnaval": {
+          "concluidos": 30,
+          "p10": 7.0,
+          "p50": 7.0,
+          "p90": 8.0
+        },
+        "capitulo:pier": {
+          "concluidos": 30,
+          "p10": 1.0,
+          "p50": 1.0,
+          "p90": 1.1
+        },
+        "capitulo:prainha": {
+          "concluidos": 30,
+          "p10": 2.0,
+          "p50": 2.0,
+          "p90": 3.0
+        },
+        "capitulo:sabores": {
+          "concluidos": 30,
+          "p10": 5.0,
+          "p50": 6.0,
+          "p90": 7.1
+        },
+        "critico_atendido": {
+          "concluidos": 30,
+          "p10": 23.0,
+          "p50": 24.0,
+          "p90": 25.0
+        },
+        "drinks": {
+          "concluidos": 30,
+          "p10": 1.0,
+          "p50": 1.0,
+          "p90": 2.0
+        },
+        "equipe:atendente": {
+          "concluidos": 30,
+          "p10": 1.0,
+          "p50": 1.0,
+          "p90": 1.0
+        },
+        "equipe:bartender": {
+          "concluidos": 30,
+          "p10": 4.0,
+          "p50": 4.0,
+          "p90": 5.0
+        },
+        "equipe:camareira": {
+          "concluidos": 30,
+          "p10": 5.0,
+          "p50": 5.0,
+          "p90": 6.0
+        },
+        "equipe:garcom_hotel": {
+          "concluidos": 30,
+          "p10": 23.0,
+          "p50": 24.0,
+          "p90": 25.0
+        },
+        "equipe:guia": {
+          "concluidos": 30,
+          "p10": 6.0,
+          "p50": 6.5,
+          "p90": 7.0
+        },
+        "equipe:piscineiro": {
+          "concluidos": 30,
+          "p10": 6.0,
+          "p50": 6.0,
+          "p90": 7.0
+        },
+        "equipe:recepcionista": {
+          "concluidos": 30,
+          "p10": 5.0,
+          "p50": 5.0,
+          "p90": 6.0
+        },
+        "estrela_restaurante:1": {
+          "concluidos": 8,
+          "p10": 51.4,
+          "p50": 75.5,
+          "p90": 110.0
+        },
+        "estrela_restaurante:2": {
+          "concluidos": 1,
+          "p10": 124.0,
+          "p50": 124.0,
+          "p90": 124.0
+        },
+        "evento:bodas": {
+          "concluidos": 30,
+          "p10": 23.0,
+          "p50": 24.0,
+          "p90": 25.0
+        },
+        "evento:empresa": {
+          "concluidos": 30,
+          "p10": 24.0,
+          "p50": 25.0,
+          "p90": 26.0
+        },
+        "evento:formatura": {
+          "concluidos": 30,
+          "p10": 25.0,
+          "p50": 26.0,
+          "p90": 27.0
+        },
+        "festa_pronta": {
+          "concluidos": 30,
+          "p10": 66.0,
+          "p50": 67.0,
+          "p90": 67.1
+        },
+        "fim_demo": {
+          "concluidos": 30,
+          "p10": 7.0,
+          "p50": 7.0,
+          "p90": 8.0
+        },
+        "grand_hotel": {
+          "concluidos": 30,
+          "p10": 22.0,
+          "p50": 23.0,
+          "p90": 24.0
+        },
+        "grill": {
+          "concluidos": 30,
+          "p10": 2.0,
+          "p50": 2.0,
+          "p90": 3.0
+        },
+        "kiosk_tables": {
+          "concluidos": 30,
+          "p10": 1.0,
+          "p50": 1.0,
+          "p90": 1.1
+        },
+        "liberada:bar": {
+          "concluidos": 30,
+          "p10": 2.0,
+          "p50": 2.0,
+          "p90": 3.0
+        },
+        "liberada:drinks": {
+          "concluidos": 30,
+          "p10": 1.0,
+          "p50": 1.0,
+          "p90": 1.0
+        },
+        "liberada:grand_hotel": {
+          "concluidos": 30,
+          "p10": 10.0,
+          "p50": 11.0,
+          "p90": 11.0
+        },
+        "liberada:grill": {
+          "concluidos": 30,
+          "p10": 1.0,
+          "p50": 1.0,
+          "p90": 1.1
+        },
+        "liberada:kiosk_tables": {
+          "concluidos": 30,
+          "p10": 1.0,
+          "p50": 1.0,
+          "p90": 1.0
+        },
+        "liberada:neon": {
+          "concluidos": 30,
+          "p10": 1.0,
+          "p50": 1.0,
+          "p90": 1.1
+        },
+        "liberada:passeios": {
+          "concluidos": 30,
+          "p10": 4.0,
+          "p50": 4.0,
+          "p90": 5.0
+        },
+        "liberada:pool": {
+          "concluidos": 30,
+          "p10": 4.0,
+          "p50": 4.0,
+          "p90": 5.0
+        },
+        "liberada:pousada": {
+          "concluidos": 30,
+          "p10": 3.0,
+          "p50": 3.0,
+          "p90": 4.0
+        },
+        "liberada:salao_jogos": {
+          "concluidos": 30,
+          "p10": 22.0,
+          "p50": 23.0,
+          "p90": 24.0
+        },
+        "missao:carnaval_m": {
+          "concluidos": 30,
+          "p10": 7.0,
+          "p50": 7.0,
+          "p90": 8.0
+        },
+        "missao:chef": {
+          "concluidos": 30,
+          "p10": 23.0,
+          "p50": 24.0,
+          "p90": 25.0
+        },
+        "missao:chegada": {
+          "concluidos": 30,
+          "p10": 1.0,
+          "p50": 1.0,
+          "p90": 1.0
+        },
+        "missao:comunidade": {
+          "concluidos": 30,
+          "p10": 4.0,
+          "p50": 4.0,
+          "p90": 4.0
+        },
+        "missao:encontro": {
+          "concluidos": 30,
+          "p10": 4.0,
+          "p50": 4.0,
+          "p90": 4.0
+        },
+        "missao:equipe": {
+          "concluidos": 30,
+          "p10": 1.0,
+          "p50": 1.0,
+          "p90": 1.1
+        },
+        "missao:festa": {
+          "concluidos": 30,
+          "p10": 67.0,
+          "p50": 68.0,
+          "p90": 68.1
+        },
+        "missao:fregueses": {
+          "concluidos": 30,
+          "p10": 66.0,
+          "p50": 67.0,
+          "p90": 67.1
+        },
+        "missao:hospedar": {
+          "concluidos": 30,
+          "p10": 4.0,
+          "p50": 4.0,
+          "p90": 5.0
+        },
+        "missao:lenda": {
+          "concluidos": 30,
+          "p10": 23.0,
+          "p50": 24.0,
+          "p90": 25.0
+        },
+        "missao:marealta": {
+          "concluidos": 30,
+          "p10": 22.0,
+          "p50": 23.0,
+          "p90": 24.0
+        },
+        "missao:mesas": {
+          "concluidos": 30,
+          "p10": 1.0,
+          "p50": 1.0,
+          "p90": 1.1
+        },
+        "missao:morro": {
+          "concluidos": 30,
+          "p10": 2.0,
+          "p50": 2.0,
+          "p90": 2.0
+        },
+        "missao:oferendas": {
+          "concluidos": 30,
+          "p10": 4.0,
+          "p50": 4.0,
+          "p90": 4.0
+        },
+        "missao:portas": {
+          "concluidos": 30,
+          "p10": 1.0,
+          "p50": 1.0,
+          "p90": 1.0
+        },
+        "missao:postal": {
+          "concluidos": 30,
+          "p10": 23.0,
+          "p50": 24.0,
+          "p90": 25.0
+        },
+        "missao:prainha_m": {
+          "concluidos": 30,
+          "p10": 5.0,
+          "p50": 5.0,
+          "p90": 6.0
+        },
+        "missao:primeiros": {
+          "concluidos": 30,
+          "p10": 1.0,
+          "p50": 1.0,
+          "p90": 1.0
+        },
+        "missao:sabores_m": {
+          "concluidos": 30,
+          "p10": 5.0,
+          "p50": 6.0,
+          "p90": 7.1
+        },
+        "missao:salao": {
+          "concluidos": 30,
+          "p10": 23.0,
+          "p50": 24.0,
+          "p90": 25.0
+        },
+        "missao:verao": {
+          "concluidos": 30,
+          "p10": 5.0,
+          "p50": 5.0,
+          "p90": 6.0
+        },
+        "montagem:aniversario": {
+          "concluidos": 30,
+          "p10": 25.0,
+          "p50": 29.0,
+          "p90": 39.4
+        },
+        "montagem:casamento": {
+          "concluidos": 30,
+          "p10": 25.0,
+          "p50": 29.0,
+          "p90": 37.2
+        },
+        "montagem:congresso": {
+          "concluidos": 30,
+          "p10": 25.0,
+          "p50": 29.0,
+          "p90": 39.0
+        },
+        "negocio:aluguel": {
+          "concluidos": 30,
+          "p10": 6.0,
+          "p50": 6.0,
+          "p90": 7.0
+        },
+        "negocio:food_truck": {
+          "concluidos": 30,
+          "p10": 6.9,
+          "p50": 8.0,
+          "p90": 8.0
+        },
+        "negocio:sorveteria": {
+          "concluidos": 30,
+          "p10": 4.9,
+          "p50": 6.0,
+          "p90": 7.0
+        },
+        "negocio:souvenir": {
+          "concluidos": 30,
+          "p10": 7.0,
+          "p50": 7.0,
+          "p90": 8.0
+        },
+        "negocio:surfe": {
+          "concluidos": 30,
+          "p10": 8.0,
+          "p50": 8.0,
+          "p90": 9.0
+        },
+        "negocio_nivel:aluguel:2": {
+          "concluidos": 30,
+          "p10": 20.0,
+          "p50": 20.0,
+          "p90": 21.0
+        },
+        "negocio_nivel:aluguel:3": {
+          "concluidos": 30,
+          "p10": 26.0,
+          "p50": 27.0,
+          "p90": 27.0
+        },
+        "negocio_nivel:food_truck:2": {
+          "concluidos": 30,
+          "p10": 21.0,
+          "p50": 21.5,
+          "p90": 22.0
+        },
+        "negocio_nivel:food_truck:3": {
+          "concluidos": 30,
+          "p10": 27.0,
+          "p50": 28.0,
+          "p90": 29.0
+        },
+        "negocio_nivel:sorveteria:2": {
+          "concluidos": 30,
+          "p10": 19.0,
+          "p50": 20.0,
+          "p90": 20.1
+        },
+        "negocio_nivel:sorveteria:3": {
+          "concluidos": 30,
+          "p10": 25.9,
+          "p50": 26.0,
+          "p90": 27.0
+        },
+        "negocio_nivel:souvenir:2": {
+          "concluidos": 30,
+          "p10": 21.0,
+          "p50": 22.0,
+          "p90": 22.0
+        },
+        "negocio_nivel:souvenir:3": {
+          "concluidos": 30,
+          "p10": 27.0,
+          "p50": 28.0,
+          "p90": 29.0
+        },
+        "negocio_nivel:surfe:2": {
+          "concluidos": 30,
+          "p10": 22.0,
+          "p50": 25.0,
+          "p90": 25.0
+        },
+        "negocio_nivel:surfe:3": {
+          "concluidos": 30,
+          "p10": 29.0,
+          "p50": 29.0,
+          "p90": 30.0
+        },
+        "neon": {
+          "concluidos": 30,
+          "p10": 1.0,
+          "p50": 2.0,
+          "p90": 2.0
+        },
+        "passeio:barco": {
+          "concluidos": 30,
+          "p10": 8.0,
+          "p50": 8.0,
+          "p90": 9.0
+        },
+        "passeio:farol": {
+          "concluidos": 30,
+          "p10": 6.9,
+          "p50": 8.0,
+          "p90": 8.0
+        },
+        "passeio:jangada": {
+          "concluidos": 30,
+          "p10": 19.9,
+          "p50": 20.0,
+          "p90": 22.0
+        },
+        "passeio:snorkel": {
+          "concluidos": 30,
+          "p10": 6.0,
+          "p50": 7.0,
+          "p90": 8.0
+        },
+        "passeios": {
+          "concluidos": 30,
+          "p10": 5.0,
+          "p50": 5.5,
+          "p90": 6.0
+        },
+        "pool": {
+          "concluidos": 30,
+          "p10": 5.0,
+          "p50": 5.0,
+          "p90": 6.0
+        },
+        "pousada": {
+          "concluidos": 30,
+          "p10": 4.0,
+          "p50": 4.0,
+          "p90": 5.0
+        },
+        "salao_jogos": {
+          "concluidos": 30,
+          "p10": 23.0,
+          "p50": 24.0,
+          "p90": 25.0
+        },
+        "tela_fim_ea": {
+          "concluidos": 30,
+          "p10": 23.0,
+          "p50": 24.0,
+          "p90": 25.0
+        },
+        "todas_compras": {
+          "concluidos": 30,
+          "p10": 121.0,
+          "p50": 122.0,
+          "p90": 123.0
+        },
+        "vip_hotel_atendido": {
+          "concluidos": 30,
+          "p10": 23.0,
+          "p50": 24.0,
+          "p90": 25.0
+        }
+      },
+      "caixa_final_p50": 592696.03,
+      "censurados_compras": 0,
+      "censurados_campanha": 0
+    }
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "result": "PASS",
+  "catalogs_immutable": true,
+  "comparisons": 48768,
+  "expansions": 63,
+  "proposals": 63,
+  "extra_width_proposals": 2,
+  "negative_fixtures": 3,
+  "store_shorts": 14,
+  "short_range": [
+    122,
+    252
+  ],
+  "trailer_seconds": 60,
+  "demo_achievements": 24,
+  "forbidden_diff": []
+}

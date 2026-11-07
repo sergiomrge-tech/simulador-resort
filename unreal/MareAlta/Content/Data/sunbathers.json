@@ -1,0 +1,96 @@
+{
+  "_doc": "Sunbathers lying on the beach towels by the umbrellas (UMareVillageWorld::UpdateSunbathers, AMarePerson::LieOn). Present during 'hours' (game hours, start inclusive, end exclusive) on dry days; at most 'count' of them, in the order of 'towels'. Each towel: world cm centre [x, y, z] of the towel mesh (Maré · towel actors, 96 x 194 cm, long side along local Y) and its yaw; the body lies along the towel, head inland (towards +Y). loungers (pool day use bought): [x, y, seat top z, head yaw] of the pelvis point just in front of each pool lounger backrest hinge (measured with mare_hotel_lobby profile: seat 58 cm, backrest 63 -> 116 cm over 60 cm, ~40 deg); lounger_count of them are used; recline = torso bend (deg) at the waist. swimmers: [x, y, z, yaw, \"pool\"|\"sea\"]: at sea z is the water surface and they tread water (AMarePerson::TreadWater); the pool is 1.32 m deep (surface -8, floor -140), so there z is the floor and two people stand chatting with the water at the chest; sea level -30 riding the waves (AMarePerson::SeaHeight), sea spots where the floor is at least 1.6 m deep and away from the pier; pool ones only with the pool day use bought. Pool swimmers moved to pool_swim.json (UMarePoolSwimWorld, 06/11): they swim, float and chat there; 'pool' entries here are no longer used.",
+  "hours": [
+    9,
+    17
+  ],
+  "count": 3,
+  "towels": [
+    [
+      5520,
+      -2318,
+      2,
+      80
+    ],
+    [
+      4645,
+      -2132,
+      2,
+      -115
+    ],
+    [
+      462,
+      -2597,
+      -9,
+      -59
+    ],
+    [
+      9449,
+      -2080,
+      2,
+      -113
+    ],
+    [
+      -3506,
+      -2025,
+      2,
+      -39
+    ]
+  ],
+  "loungers": [
+    [
+      -768,
+      120,
+      58,
+      180
+    ],
+    [
+      768,
+      380,
+      58,
+      0
+    ],
+    [
+      -768,
+      640,
+      58,
+      180
+    ],
+    [
+      768,
+      120,
+      58,
+      0
+    ],
+    [
+      -768,
+      380,
+      58,
+      180
+    ],
+    [
+      768,
+      640,
+      58,
+      0
+    ]
+  ],
+  "lounger_count": 2,
+  "recline": 30,
+  "swimmers": [
+    [
+      3600,
+      -5450,
+      -30,
+      90,
+      "sea"
+    ],
+    [
+      5300,
+      -5400,
+      -30,
+      110,
+      "sea"
+    ]
+  ]
+}

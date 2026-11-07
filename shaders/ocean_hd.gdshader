@@ -1,12 +1,12 @@
 shader_type spatial;
-render_mode blend_mix, cull_back, depth_draw_always, diffuse_toon, specular_toon;
+render_mode blend_mix, cull_back, depth_draw_always, diffuse_burley, specular_schlick_ggx;
 // Mar cartoon (v0.7): faixas de cor por profundidade (turquesa → azul → azul-marinho), espuma branca
 // recortada na arrebentação, linhas de onda subindo a praia e brilhos que piscam ao sol.
 uniform sampler2D depth_tex : hint_depth_texture, filter_linear_mipmap;
 uniform sampler2D screen_tex : hint_screen_texture, filter_linear_mipmap;   // v0.9.5: o que está embaixo d'água, absorvido pela profundidade
-uniform vec3 shallow : source_color = vec3(0.3, 0.95, 0.88);
-uniform vec3 mid : source_color = vec3(0.08, 0.72, 0.9);
-uniform vec3 deep : source_color = vec3(0.04, 0.4, 0.78);
+uniform vec3 shallow : source_color = vec3(0.28, 0.64, 0.57);
+uniform vec3 mid : source_color = vec3(0.10, 0.41, 0.49);
+uniform vec3 deep : source_color = vec3(0.045, 0.22, 0.32);
 uniform vec3 foam_col : source_color = vec3(1.0, 1.0, 1.0);
 uniform float shore_z = -32.5;
 uniform float night = 0.0;
@@ -55,8 +55,8 @@ void fragment(){
 	// profundidade "desenhada": mistura espessura real com a distância da praia, em 3 faixas
 	float depth_t = clamp(thick / 3.5 + shore_d / 55.0 + (n - 0.5) * 0.12, 0.0, 1.0);
 	vec3 col = shallow;
-	col = mix(col, mid, smoothstep(0.22, 0.26, depth_t));
-	col = mix(col, deep, smoothstep(0.6, 0.64, depth_t));
+	col = mix(col, mid, smoothstep(0.08, 0.55, depth_t));
+	col = mix(col, deep, smoothstep(0.42, 1.0, depth_t));
 	// v0.9.5: água transparente de verdade: o fundo, os corais e os peixes aparecem e vão sumindo no azul com a profundidade
 	vec2 ruv = SCREEN_UV + NORMAL.xz * 0.012 * clamp(thick, 0.0, 1.0);
 	vec3 below = texture(screen_tex, ruv).rgb * exp(-thick * vec3(0.55, 0.16, 0.1));
@@ -64,18 +64,18 @@ void fragment(){
 	col = mix(col, below * 0.85 + col * 0.25, clamp(vis, 0.0, 0.85));
 	// manchas claras ondulando (reflexo do céu estilizado)
 	float ripple = noise(wpos.xz * vec2(0.35, 0.9) + vec2(t * 0.3, t * 0.5));
-	col = mix(col, col * 1.18 + vec3(0.04), smoothstep(0.62, 0.66, ripple) * 0.6);
+	col = mix(col, col * 1.10 + vec3(0.015), smoothstep(0.35, 0.80, ripple) * 0.35);
 	// espuma: borda colada na areia + 3 linhas de onda chegando + cristas
 	float foam = 1.0 - smoothstep(0.08, 0.14, thick + (n - 0.5) * 0.12);
 	float scallop = noise(vec2(wpos.x * 0.18, t * 0.25));
 	for (int i = 0; i < 3; i++) {
 		float spd = 0.15 + float(i) * 0.05;
 		float phase = fract(shore_d * 0.18 - t * spd + float(i) * 0.33 + scallop * 0.2);
-		float line = step(0.02, phase) * (1.0 - step(0.075 - float(i) * 0.012, phase));
+		float line = smoothstep(0.0,0.025,phase) * (1.0-smoothstep(0.055,0.12-float(i)*0.012,phase));
 		float reach = 1.0 - smoothstep(4.0, 10.0, shore_d);
 		foam = max(foam, line * reach);
 	}
-	foam = max(foam, step(0.2, crest) * step(0.55, noise(wpos.xz * 1.2 + t)));
+	foam = max(foam, smoothstep(0.19,0.29,crest) * smoothstep(0.50,0.78,noise(wpos.xz*1.2+t)) * 0.55);
 	col = mix(col, foam_col, foam);
 	// brilhos do sol: pontinhos brancos que piscam
 	float sp = hash(floor(wpos.xz * 2.0) + floor(t * 2.0));

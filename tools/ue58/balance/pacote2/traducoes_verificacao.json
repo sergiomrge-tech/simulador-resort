@@ -1,0 +1,94 @@
+{
+  "base": "fa49a68b5d8d33fdedde48fd096097f0aac0f267",
+  "idiomas": {
+    "de": {
+      "loctext": 113,
+      "strings": 3907,
+      "faltando": 0,
+      "marcadores_divergentes": 0,
+      "bytes": 249517
+    },
+    "en": {
+      "loctext": 113,
+      "strings": 3907,
+      "faltando": 0,
+      "marcadores_divergentes": 0,
+      "bytes": 238185
+    },
+    "es": {
+      "loctext": 113,
+      "strings": 3907,
+      "faltando": 0,
+      "marcadores_divergentes": 0,
+      "bytes": 247538
+    },
+    "fr": {
+      "loctext": 113,
+      "strings": 3907,
+      "faltando": 0,
+      "marcadores_divergentes": 0,
+      "bytes": 253958
+    },
+    "it": {
+      "loctext": 113,
+      "strings": 3907,
+      "faltando": 0,
+      "marcadores_divergentes": 0,
+      "bytes": 249024
+    },
+    "ja": {
+      "loctext": 113,
+      "strings": 3907,
+      "faltando": 0,
+      "marcadores_divergentes": 0,
+      "bytes": 272023
+    },
+    "ko": {
+      "loctext": 113,
+      "strings": 3907,
+      "faltando": 0,
+      "marcadores_divergentes": 0,
+      "bytes": 257038
+    },
+    "nl": {
+      "loctext": 113,
+      "strings": 3907,
+      "faltando": 0,
+      "marcadores_divergentes": 0,
+      "bytes": 244811
+    },
+    "pl": {
+      "loctext": 113,
+      "strings": 3907,
+      "faltando": 0,
+      "marcadores_divergentes": 0,
+      "bytes": 247178
+    },
+    "pt-PT": {
+      "loctext": 113,
+      "strings": 3907,
+      "faltando": 0,
+      "marcadores_divergentes": 0,
+      "bytes": 242647
+    },
+    "ru": {
+      "loctext": 113,
+      "strings": 3907,
+      "faltando": 0,
+      "marcadores_divergentes": 0,
+      "bytes": 312342
+    },
+    "zh-Hans": {
+      "loctext": 113,
+      "strings": 3907,
+      "faltando": 0,
+      "marcadores_divergentes": 0,
+      "bytes": 234979
+    }
+  },
+  "rodadas_de_preenchimento": [
+    69,
+    100
+  ],
+  "nota": "Textos técnicos, comandos, alfabetos e nomes de pratos/proprios preservados conforme contexto."
+}

@@ -17,12 +17,16 @@ static func _coco_mesh() -> Mesh:
 		var inst: Node = ps.instantiate()
 		var mis: = inst.find_children("*", "MeshInstance3D", true, false)
 		if mis.is_empty():
+			inst.free()
 			return null
 		_coco_mesh_cache = (mis[0] as MeshInstance3D).mesh
 		var m0: Material = _coco_mesh_cache.surface_get_material(0)
 		_coco_mat_real = Toon.toonify(m0) if m0 else _coco_mat
 		if _coco_mat_real is BaseMaterial3D and m0 is BaseMaterial3D:
 			(_coco_mat_real as BaseMaterial3D).albedo_color = (m0 as BaseMaterial3D).albedo_color * Color(0.9, 1.0, 0.8)   # sem o clareamento do toon (virava laranja)
+		# O cache guarda Mesh/Material (RefCounted), não a instância temporária.
+		# Ela ficava órfã até a desmontagem do renderer, com RIDs ainda ativos.
+		inst.free()
 	return _coco_mesh_cache
 static var _leaflet_tex: Texture2D
 

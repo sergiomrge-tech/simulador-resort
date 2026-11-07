@@ -1,0 +1,357 @@
+[
+  {
+    "variant": "all-enabled",
+    "csv": "D:/CodexTemp/ue58-render-profile-20261029-073953/all-enabled.csv",
+    "viewport_x": 1920,
+    "viewport_y": 1080,
+    "screen_percentage": 100,
+    "pcg_instances": 60,
+    "grass_instances": 177454,
+    "metrics": {
+      "FrameTime": {
+        "mean": 11.591137065637065,
+        "p95": 14.9293,
+        "samples": 1036
+      },
+      "GPUTime": {
+        "mean": 10.646716698841699,
+        "p95": 11.7309,
+        "samples": 1036
+      },
+      "GameThreadTime": {
+        "mean": 3.9724060810810813,
+        "p95": 5.9411,
+        "samples": 1036
+      },
+      "RenderThreadTime": {
+        "mean": 11.617471235521235,
+        "p95": 14.848,
+        "samples": 1036
+      },
+      "RHIThreadTime": {
+        "mean": 2.754423938223938,
+        "p95": 4.2746,
+        "samples": 1036
+      },
+      "GPUMem/LocalUsedMB": {
+        "mean": 3158.082887258687,
+        "p95": 3158.0742,
+        "samples": 1036
+      },
+      "MemoryFreeMB": {
+        "mean": 17895.32596756757,
+        "p95": 17959.25,
+        "samples": 1036
+      },
+      "GPU/NaniteVisBuffer": {
+        "mean": 0.7489633204633205,
+        "p95": 0.9767,
+        "samples": 1036
+      },
+      "GPU/NaniteBasePass": {
+        "mean": 0.9768238416988417,
+        "p95": 1.2607,
+        "samples": 1036
+      },
+      "GPU/LumenSceneUpdate": {
+        "mean": 0.17162760617760617,
+        "p95": 0.4292,
+        "samples": 1036
+      },
+      "GPU/LumenScreenProbeGather": {
+        "mean": 1.5465391513982643,
+        "p95": 1.8843,
+        "samples": 1037
+      },
+      "GPU/LumenReflections": {
+        "mean": 0.1887177606177606,
+        "p95": 0.2109,
+        "samples": 1036
+      },
+      "GPU/ShadowDepths": {
+        "mean": 1.01391012536162,
+        "p95": 1.3146,
+        "samples": 1037
+      }
+    }
+  },
+  {
+    "variant": "without-pcg",
+    "csv": "D:/CodexTemp/ue58-render-profile-20261029-073953/without-pcg.csv",
+    "viewport_x": 1920,
+    "viewport_y": 1080,
+    "screen_percentage": 100,
+    "pcg_instances": 60,
+    "grass_instances": 177454,
+    "metrics": {
+      "FrameTime": {
+        "mean": 11.174475698324022,
+        "p95": 13.517,
+        "samples": 1074
+      },
+      "GPUTime": {
+        "mean": 10.490943575418994,
+        "p95": 11.4412,
+        "samples": 1074
+      },
+      "GameThreadTime": {
+        "mean": 3.6527052141527,
+        "p95": 5.5961,
+        "samples": 1074
+      },
+      "RenderThreadTime": {
+        "mean": 11.192774581005587,
+        "p95": 13.4013,
+        "samples": 1074
+      },
+      "RHIThreadTime": {
+        "mean": 2.58937104283054,
+        "p95": 3.8522,
+        "samples": 1074
+      },
+      "GPUMem/LocalUsedMB": {
+        "mean": 3030.3242,
+        "p95": 3030.3242,
+        "samples": 1074
+      },
+      "MemoryFreeMB": {
+        "mean": 17937.400943854747,
+        "p95": 17964.0664,
+        "samples": 1074
+      },
+      "GPU/NaniteVisBuffer": {
+        "mean": 0.7313569832402235,
+        "p95": 0.8993,
+        "samples": 1074
+      },
+      "GPU/NaniteBasePass": {
+        "mean": 0.9634404096834265,
+        "p95": 1.206,
+        "samples": 1074
+      },
+      "GPU/LumenSceneUpdate": {
+        "mean": 0.175025791433892,
+        "p95": 0.4014,
+        "samples": 1074
+      },
+      "GPU/LumenScreenProbeGather": {
+        "mean": 1.5256937616387336,
+        "p95": 1.8031,
+        "samples": 1074
+      },
+      "GPU/LumenReflections": {
+        "mean": 0.18573333333333333,
+        "p95": 0.2028,
+        "samples": 1074
+      },
+      "GPU/ShadowDepths": {
+        "mean": 0.9853012104283054,
+        "p95": 1.2143,
+        "samples": 1074
+      }
+    }
+  },
+  {
+    "variant": "nanite-off",
+    "csv": "D:/CodexTemp/ue58-render-profile-20261029-073953/nanite-off.csv",
+    "viewport_x": 1920,
+    "viewport_y": 1080,
+    "screen_percentage": 100,
+    "pcg_instances": 60,
+    "grass_instances": 177454,
+    "metrics": {
+      "FrameTime": {
+        "mean": 9.078979273827533,
+        "p95": 10.0641,
+        "samples": 1322
+      },
+      "GPUTime": {
+        "mean": 8.710983509833586,
+        "p95": 9.3969,
+        "samples": 1322
+      },
+      "GameThreadTime": {
+        "mean": 2.9010416792738276,
+        "p95": 3.9739,
+        "samples": 1322
+      },
+      "RenderThreadTime": {
+        "mean": 9.09298502269289,
+        "p95": 10.0732,
+        "samples": 1322
+      },
+      "RHIThreadTime": {
+        "mean": 2.0893189863842663,
+        "p95": 2.8461,
+        "samples": 1322
+      },
+      "GPUMem/LocalUsedMB": {
+        "mean": 2754.6992,
+        "p95": 2754.6992,
+        "samples": 1322
+      },
+      "MemoryFreeMB": {
+        "mean": 17889.68641580938,
+        "p95": 17897.7148,
+        "samples": 1322
+      },
+      "GPU/LumenSceneUpdate": {
+        "mean": 0.2174375945537065,
+        "p95": 0.811,
+        "samples": 1322
+      },
+      "GPU/LumenScreenProbeGather": {
+        "mean": 1.4363491679273828,
+        "p95": 1.6241,
+        "samples": 1322
+      },
+      "GPU/LumenReflections": {
+        "mean": 0.1887713313161876,
+        "p95": 0.2038,
+        "samples": 1322
+      },
+      "GPU/ShadowDepths": {
+        "mean": 0.33766490166414526,
+        "p95": 0.3432,
+        "samples": 1322
+      }
+    }
+  },
+  {
+    "variant": "lumen-off",
+    "csv": "D:/CodexTemp/ue58-render-profile-20261029-073953/lumen-off.csv",
+    "viewport_x": 1920,
+    "viewport_y": 1080,
+    "screen_percentage": 100,
+    "pcg_instances": 60,
+    "grass_instances": 177454,
+    "metrics": {
+      "FrameTime": {
+        "mean": 8.50907696669029,
+        "p95": 9.4851,
+        "samples": 1411
+      },
+      "GPUTime": {
+        "mean": 8.06613245924876,
+        "p95": 8.6362,
+        "samples": 1411
+      },
+      "GameThreadTime": {
+        "mean": 3.2662355067328135,
+        "p95": 4.2968,
+        "samples": 1411
+      },
+      "RenderThreadTime": {
+        "mean": 8.520415308291991,
+        "p95": 9.4667,
+        "samples": 1411
+      },
+      "RHIThreadTime": {
+        "mean": 2.101618143160879,
+        "p95": 2.7304,
+        "samples": 1411
+      },
+      "GPUMem/LocalUsedMB": {
+        "mean": 2849.5590450035434,
+        "p95": 2849.5625,
+        "samples": 1411
+      },
+      "MemoryFreeMB": {
+        "mean": 17905.825885400427,
+        "p95": 17944.793,
+        "samples": 1411
+      },
+      "GPU/NaniteVisBuffer": {
+        "mean": 0.7298955350815025,
+        "p95": 0.8948,
+        "samples": 1411
+      },
+      "GPU/NaniteBasePass": {
+        "mean": 0.9357518072289157,
+        "p95": 1.0919,
+        "samples": 1411
+      },
+      "GPU/ShadowDepths": {
+        "mean": 1.0713403968816442,
+        "p95": 1.2453,
+        "samples": 1411
+      }
+    }
+  },
+  {
+    "variant": "hotel-legacy",
+    "csv": "D:/CodexTemp/ue58-render-profile-20261029-073953/hotel-legacy.csv",
+    "viewport_x": 1920,
+    "viewport_y": 1080,
+    "screen_percentage": 100,
+    "pcg_instances": 60,
+    "grass_instances": 177454,
+    "metrics": {
+      "FrameTime": {
+        "mean": 10.618086648983201,
+        "p95": 11.5807,
+        "samples": 1131
+      },
+      "GPUTime": {
+        "mean": 10.119255702917773,
+        "p95": 10.7468,
+        "samples": 1131
+      },
+      "GameThreadTime": {
+        "mean": 3.3713401414677278,
+        "p95": 4.4102,
+        "samples": 1131
+      },
+      "RenderThreadTime": {
+        "mean": 10.634222281167109,
+        "p95": 11.6106,
+        "samples": 1131
+      },
+      "RHIThreadTime": {
+        "mean": 2.3627871794871793,
+        "p95": 3.2013,
+        "samples": 1131
+      },
+      "GPUMem/LocalUsedMB": {
+        "mean": 3166.0,
+        "p95": 3166.0,
+        "samples": 1131
+      },
+      "MemoryFreeMB": {
+        "mean": 17918.864708222813,
+        "p95": 17956.7461,
+        "samples": 1131
+      },
+      "GPU/NaniteVisBuffer": {
+        "mean": 0.5998068965517241,
+        "p95": 0.6635,
+        "samples": 1131
+      },
+      "GPU/NaniteBasePass": {
+        "mean": 0.7033745358090185,
+        "p95": 0.8627,
+        "samples": 1131
+      },
+      "GPU/LumenSceneUpdate": {
+        "mean": 0.16131980548187444,
+        "p95": 0.3872,
+        "samples": 1131
+      },
+      "GPU/LumenScreenProbeGather": {
+        "mean": 1.4920949602122016,
+        "p95": 1.6843,
+        "samples": 1131
+      },
+      "GPU/LumenReflections": {
+        "mean": 0.1797785145888594,
+        "p95": 0.1987,
+        "samples": 1131
+      },
+      "GPU/ShadowDepths": {
+        "mean": 0.9499455349248452,
+        "p95": 1.11,
+        "samples": 1131
+      }
+    }
+  }
+]

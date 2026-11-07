@@ -1,0 +1,2223 @@
+{
+ "base": "09dcc3837a91e3428c29b9fb8d91c38dc3c05ec9",
+ "scope": "Inventário de números/percentuais e números por extenso nos textos extraídos; não inclui metadados _doc, caminhos pulados nem promete provar o visual dos objetos. check() valida vínculos mecânicos explícitos. Classificações do inventário são triagem contextual, não validação automática de cada afirmação nativa.",
+ "facts": {
+  "expansion_costs": {
+   "bar": 900,
+   "drinks": 260,
+   "grand_hotel": 45000,
+   "grill": 380,
+   "kiosk_tables": 180,
+   "neon": 150,
+   "passeios": 1000,
+   "pool": 1100,
+   "pousada": 1400,
+   "salao_jogos": 6500
+  },
+  "last_sales_goal": 7000,
+  "principal": 1000000,
+  "businesses": 5,
+  "hotel_room_kinds": 3
+ },
+ "entries": [
+  {
+   "text": "\nBola 8 cantada: caçapa do ",
+   "classification": "regra_nativa_ou_enum",
+   "basis": "Regra de minijogo/numeração/tecla ou atributo contextual da UI; ver consumidor nativo. Sem associação artificial a um preço de outro JSON.",
+   "data": [],
+   "cpp": [
+    "MareGameRoom.cpp:361"
+   ]
+  },
+  {
+   "text": " (2º turno)",
+   "classification": "regra_nativa_ou_enum",
+   "basis": "Regra de minijogo/numeração/tecla ou atributo contextual da UI; ver consumidor nativo. Sem associação artificial a um preço de outro JSON.",
+   "data": [],
+   "cpp": [
+    "MareStaff.cpp:128"
+   ]
+  },
+  {
+   "text": " · bartender +15%",
+   "classification": "regra_nativa_ou_enum",
+   "basis": "Regra de minijogo/numeração/tecla ou atributo contextual da UI; ver consumidor nativo. Sem associação artificial a um preço de outro JSON.",
+   "data": [],
+   "cpp": [
+    "MareSimulation.cpp:837"
+   ]
+  },
+  {
+   "text": " · cansaço {0}%{1}",
+   "classification": "formato_dinâmico",
+   "basis": "Os argumentos vêm do estado/dados pelo consumidor referenciado. Denominadores literais de etapas/jogos seguem suas regras nativas.",
+   "data": [],
+   "cpp": [
+    "MareGame.cpp:710"
+   ]
+  },
+  {
+   "text": " · contrate um bartender (+15%)",
+   "classification": "regra_nativa_ou_enum",
+   "basis": "Regra de minijogo/numeração/tecla ou atributo contextual da UI; ver consumidor nativo. Sem associação artificial a um preço de outro JSON.",
+   "data": [],
+   "cpp": [
+    "MareSimulation.cpp:837"
+   ]
+  },
+  {
+   "text": " · contrate uma camareira (+10%)",
+   "classification": "regra_nativa_ou_enum",
+   "basis": "Regra de minijogo/numeração/tecla ou atributo contextual da UI; ver consumidor nativo. Sem associação artificial a um preço de outro JSON.",
+   "data": [],
+   "cpp": [
+    "MareSimulation.cpp:839"
+   ]
+  },
+  {
+   "text": " · movimento ×{0} · gorjeta {1}% · paciência ×{2}",
+   "classification": "formato_dinâmico",
+   "basis": "Os argumentos vêm do estado/dados pelo consumidor referenciado. Denominadores literais de etapas/jogos seguem suas regras nativas.",
+   "data": [],
+   "cpp": [
+    "MareSimulation.cpp:835"
+   ]
+  },
+  {
+   "text": " · ocupação do hotel {0}% · diária R$ {1} · decoração do hotel +{2}%",
+   "classification": "formato_dinâmico",
+   "basis": "Os argumentos vêm do estado/dados pelo consumidor referenciado. Denominadores literais de etapas/jogos seguem suas regras nativas.",
+   "data": [],
+   "cpp": [
+    "MareSimulation.cpp:843"
+   ]
+  },
+  {
+   "text": " · você anda {0}% mais rápido · +{1} de fama por noite",
+   "classification": "formato_dinâmico",
+   "basis": "Os argumentos vêm do estado/dados pelo consumidor referenciado. Denominadores literais de etapas/jogos seguem suas regras nativas.",
+   "data": [],
+   "cpp": [
+    "MareSimulation.cpp:847"
+   ]
+  },
+  {
+   "text": " · {0} quarto(s) · diária R$ {1} · ocupação prevista {2}%{3}",
+   "classification": "formato_dinâmico",
+   "basis": "Os argumentos vêm do estado/dados pelo consumidor referenciado. Denominadores literais de etapas/jogos seguem suas regras nativas.",
+   "data": [],
+   "cpp": [
+    "MareSimulation.cpp:839"
+   ]
+  },
+  {
+   "text": "(atender você mesmo rende 100% e fama; o funcionário atende sozinho com {0}%)",
+   "classification": "formato_dinâmico",
+   "basis": "Os argumentos vêm do estado/dados pelo consumidor referenciado. Denominadores literais de etapas/jogos seguem suas regras nativas.",
+   "data": [],
+   "cpp": [
+    "MareGame.cpp:773"
+   ]
+  },
+  {
+   "text": "+ 2ª pessoa no outro turno · R$ {0}",
+   "classification": "formato_dinâmico",
+   "basis": "Os argumentos vêm do estado/dados pelo consumidor referenciado. Denominadores literais de etapas/jogos seguem suas regras nativas.",
+   "data": [],
+   "cpp": [
+    "MareGame.cpp:726"
+   ]
+  },
+  {
+   "text": "+2 lugares no quiosque e clientes chegando mais rápido.",
+   "classification": "regra_mecânica",
+   "basis": "Conferência contextual: missões/metas, atributos do mesmo JSON, business_games.levels.set, operações/customization, debt/achievements; constantes nativas em arquivo:linha.",
+   "data": [
+    "definitions.json:/expansions/kiosk_tables/blurb"
+   ],
+   "cpp": []
+  },
+  {
+   "text": ". O funcionário atende sozinho com {0}{1}a renda; atendendo você mesmo rende 100% e fama.",
+   "classification": "formato_dinâmico",
+   "basis": "Os argumentos vêm do estado/dados pelo consumidor referenciado. Denominadores literais de etapas/jogos seguem suas regras nativas.",
+   "data": [],
+   "cpp": [
+    "MareSimulation.cpp:829"
+   ]
+  },
+  {
+   "text": "1. Embrulhar presente",
+   "classification": "regra_nativa_ou_enum",
+   "basis": "Regra de minijogo/numeração/tecla ou atributo contextual da UI; ver consumidor nativo. Sem associação artificial a um preço de outro JSON.",
+   "data": [],
+   "cpp": [
+    "MareSouvenirGame.cpp:58"
+   ]
+  },
+  {
+   "text": "1. Recheio",
+   "classification": "regra_nativa_ou_enum",
+   "basis": "Regra de minijogo/numeração/tecla ou atributo contextual da UI; ver consumidor nativo. Sem associação artificial a um preço de outro JSON.",
+   "data": [],
+   "cpp": [
+    "MareGame.cpp:1325"
+   ]
+  },
+  {
+   "text": "2. Fechar a borda: {0}%",
+   "classification": "formato_dinâmico",
+   "basis": "Os argumentos vêm do estado/dados pelo consumidor referenciado. Denominadores literais de etapas/jogos seguem suas regras nativas.",
+   "data": [],
+   "cpp": [
+    "MareGame.cpp:1328"
+   ]
+  },
+  {
+   "text": "2. Prateleira e artesãos",
+   "classification": "regra_nativa_ou_enum",
+   "basis": "Regra de minijogo/numeração/tecla ou atributo contextual da UI; ver consumidor nativo. Sem associação artificial a um preço de outro JSON.",
+   "data": [],
+   "cpp": [
+    "MareSouvenirGame.cpp:58"
+   ]
+  },
+  {
+   "text": "3. Cartões-postais",
+   "classification": "regra_nativa_ou_enum",
+   "basis": "Regra de minijogo/numeração/tecla ou atributo contextual da UI; ver consumidor nativo. Sem associação artificial a um preço de outro JSON.",
+   "data": [],
+   "cpp": [
+    "MareSouvenirGame.cpp:58"
+   ]
+  },
+  {
+   "text": "3. Fritando: {0} s",
+   "classification": "formato_dinâmico",
+   "basis": "Os argumentos vêm do estado/dados pelo consumidor referenciado. Denominadores literais de etapas/jogos seguem suas regras nativas.",
+   "data": [],
+   "cpp": [
+    "MareGame.cpp:1331"
+   ]
+  },
+  {
+   "text": "3. Fritar",
+   "classification": "regra_nativa_ou_enum",
+   "basis": "Regra de minijogo/numeração/tecla ou atributo contextual da UI; ver consumidor nativo. Sem associação artificial a um preço de outro JSON.",
+   "data": [],
+   "cpp": [
+    "MareGame.cpp:1331"
+   ]
+  },
+  {
+   "text": "4. Caldo de cana: girar a manivela ({0} de {1} voltas)",
+   "classification": "formato_dinâmico",
+   "basis": "Os argumentos vêm do estado/dados pelo consumidor referenciado. Denominadores literais de etapas/jogos seguem suas regras nativas.",
+   "data": [],
+   "cpp": [
+    "MareGame.cpp:1334"
+   ]
+  },
+  {
+   "text": "4. Caldo de cana: não pedido",
+   "classification": "regra_nativa_ou_enum",
+   "basis": "Regra de minijogo/numeração/tecla ou atributo contextual da UI; ver consumidor nativo. Sem associação artificial a um preço de outro JSON.",
+   "data": [],
+   "cpp": [
+    "MareGame.cpp:1334"
+   ]
+  },
+  {
+   "text": "5 níveis cada",
+   "classification": "regra_nativa_ou_enum",
+   "basis": "Regra de minijogo/numeração/tecla ou atributo contextual da UI; ver consumidor nativo. Sem associação artificial a um preço de outro JSON.",
+   "data": [],
+   "cpp": [
+    "MareGame.cpp:560"
+   ]
+  },
+  {
+   "text": "600 fios.",
+   "classification": "atributo_nome_identificador",
+   "basis": "Nome, numeração espacial, atributo do objeto/comida ou versão do motor; não é preço nem contador de progressão.",
+   "data": [
+    "customization.json:/places/hotel_suites/slots/1/tiers/2/desc"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "8 jogadores, mata-mata, uma rodada por dia · prêmio R$ {0}, vice R$ {1}",
+   "classification": "formato_dinâmico",
+   "basis": "Os argumentos vêm do estado/dados pelo consumidor referenciado. Denominadores literais de etapas/jogos seguem suas regras nativas.",
+   "data": [],
+   "cpp": [
+    "MareGame.cpp:423"
+   ]
+  },
+  {
+   "text": "A 8 caiu antes da hora: derrota.",
+   "classification": "regra_mecânica",
+   "basis": "Conferência contextual: missões/metas, atributos do mesmo JSON, business_games.levels.set, operações/customization, debt/achievements; constantes nativas em arquivo:linha.",
+   "data": [],
+   "cpp": [
+    "MareGameRoom.cpp:197"
+   ]
+  },
+  {
+   "text": "A 8 caiu fora da caçapa cantada: derrota.",
+   "classification": "regra_nativa_ou_enum",
+   "basis": "Regra de minijogo/numeração/tecla ou atributo contextual da UI; ver consumidor nativo. Sem associação artificial a um preço de outro JSON.",
+   "data": [],
+   "cpp": [
+    "MareGameRoom.cpp:197"
+   ]
+  },
+  {
+   "text": "A 8 caiu junto com uma falta: derrota.",
+   "classification": "regra_nativa_ou_enum",
+   "basis": "Regra de minijogo/numeração/tecla ou atributo contextual da UI; ver consumidor nativo. Sem associação artificial a um preço de outro JSON.",
+   "data": [],
+   "cpp": [
+    "MareGameRoom.cpp:196"
+   ]
+  },
+  {
+   "text": "A 8 caiu na saída e voltou para a mesa.",
+   "classification": "regra_nativa_ou_enum",
+   "basis": "Regra de minijogo/numeração/tecla ou atributo contextual da UI; ver consumidor nativo. Sem associação artificial a um preço de outro JSON.",
+   "data": [],
+   "cpp": [
+    "MareGameRoom.cpp:193"
+   ]
+  },
+  {
+   "text": "A Barraca da Dona Rita compra 4 cocos do seu estoque.",
+   "classification": "regra_nativa_ou_enum",
+   "basis": "Regra de minijogo/numeração/tecla ou atributo contextual da UI; ver consumidor nativo. Sem associação artificial a um preço de outro JSON.",
+   "data": [
+    "definitions.json:/quests/cocos_rita/desc"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "A cor da fita aparece por 2 s e o embrulho caprichado tem de sair em 12 s.",
+   "classification": "regra_mecânica",
+   "basis": "Conferência contextual: missões/metas, atributos do mesmo JSON, business_games.levels.set, operações/customization, debt/achievements; constantes nativas em arquivo:linha.",
+   "data": [
+    "business_games.json:/businesses/souvenir/levels/0/blurb"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "A garoupa, sabe? Eram trinta quilos e ela falava. Pediu pra eu soltar e eu soltei, por educação.",
+   "classification": "narrativo_hipérbole",
+   "basis": "Fala/humor ou elogio informal, sem regra numérica de economia. Não converter exageros em parâmetros.",
+   "data": [
+    "comic_events.json:/events/3/asks/3"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "A padaria quer 8 frutas para a geleia da casa.",
+   "classification": "regra_nativa_ou_enum",
+   "basis": "Regra de minijogo/numeração/tecla ou atributo contextual da UI; ver consumidor nativo. Sem associação artificial a um preço de outro JSON.",
+   "data": [
+    "definitions.json:/quests/frutas_lourdes/desc"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "A prefeita Tuanny prometeu a festa quando o quiosque chegasse a 7.000 vendas. Dona Dilce já separou a roupa do bingo: diz que serve para festa também.",
+   "classification": "regra_mecânica",
+   "basis": "Conferência contextual: missões/metas, atributos do mesmo JSON, business_games.levels.set, operações/customization, debt/achievements; constantes nativas em arquivo:linha.",
+   "data": [
+    "definitions.json:/campaign/19/story"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "A vila quer comemorar o resort, mas festa não quita dívida. Dona Dilce manda carinho lá do bingo. Vá à praia entre 20h e 23h30 para celebrar; a conta continua sendo um coco de cada vez.",
+   "classification": "contrato_dívida",
+   "basis": "debt.json principal=1000000, marcos .25/.5/.75 e demo_payment_cap=250000; conteúdo ainda aguarda integração nativa.",
+   "data": [
+    "definitions.json:/campaign/20/story"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Acabamento de bar de luxo. Atendente 40% mais rápido.",
+   "classification": "regra_mecânica",
+   "basis": "Conferência contextual: missões/metas, atributos do mesmo JSON, business_games.levels.set, operações/customization, debt/achievements; constantes nativas em arquivo:linha.",
+   "data": [
+    "customization.json:/places/kiosk/slots/4/tiers/4/desc"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Acompanhe o aluno na areia: acerte o tempo nas 3 rodadas.",
+   "classification": "regra_nativa_ou_enum",
+   "basis": "Regra de minijogo/numeração/tecla ou atributo contextual da UI; ver consumidor nativo. Sem associação artificial a um preço de outro JSON.",
+   "data": [
+    "tutorial.json:/tips/biz:surfe/text"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Algodão egípcio 600 fios e menu de travesseiros.",
+   "classification": "atributo_nome_identificador",
+   "basis": "Nome, numeração espacial, atributo do objeto/comida ou versão do motor; não é preço nem contador de progressão.",
+   "data": [
+    "customization.json:/places/pousada/slots/5/tiers/4/desc"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Almoço 12h–15h e jantar 19h–22h · {0} pratos servidos",
+   "classification": "formato_dinâmico",
+   "basis": "Os argumentos vêm do estado/dados pelo consumidor referenciado. Denominadores literais de etapas/jogos seguem suas regras nativas.",
+   "data": [],
+   "cpp": [
+    "MareGame.cpp:298"
+   ]
+  },
+  {
+   "text": "Andar dos quartos 302 e 303 · 3º andar",
+   "classification": "regra_nativa_ou_enum",
+   "basis": "Regra de minijogo/numeração/tecla ou atributo contextual da UI; ver consumidor nativo. Sem associação artificial a um preço de outro JSON.",
+   "data": [],
+   "cpp": [
+    "MareServiceTarget.cpp:107"
+   ]
+  },
+  {
+   "text": "Aniversário de 15 anos da Malu",
+   "classification": "atributo_nome_identificador",
+   "basis": "Nome, numeração espacial, atributo do objeto/comida ou versão do motor; não é preço nem contador de progressão.",
+   "data": [
+    "hotel_events.json:/kinds/aniversario/client/0"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Aniversário de 30 anos da Paula",
+   "classification": "atributo_nome_identificador",
+   "basis": "Nome, numeração espacial, atributo do objeto/comida ou versão do motor; não é preço nem contador de progressão.",
+   "data": [
+    "hotel_events.json:/kinds/aniversario/client/2"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Aniversário de 60 anos do Seu Zé",
+   "classification": "atributo_nome_identificador",
+   "basis": "Nome, numeração espacial, atributo do objeto/comida ou versão do motor; não é preço nem contador de progressão.",
+   "data": [
+    "hotel_events.json:/kinds/aniversario/client/1"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Aniversário de 8 anos do Pedrinho",
+   "classification": "atributo_nome_identificador",
+   "basis": "Nome, numeração espacial, atributo do objeto/comida ou versão do motor; não é preço nem contador de progressão.",
+   "data": [
+    "hotel_events.json:/kinds/aniversario/client/3"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Aperte E, Espaço, clique ou A quando o círculo acender · 4 batidas",
+   "classification": "regra_nativa_ou_enum",
+   "basis": "Regra de minijogo/numeração/tecla ou atributo contextual da UI; ver consumidor nativo. Sem associação artificial a um preço de outro JSON.",
+   "data": [],
+   "cpp": [
+    "MareGame.cpp:1642"
+   ]
+  },
+  {
+   "text": "Aperte E, Espaço, clique ou A quando o ponteiro estiver no verde · 3 pulsos",
+   "classification": "regra_nativa_ou_enum",
+   "basis": "Regra de minijogo/numeração/tecla ou atributo contextual da UI; ver consumidor nativo. Sem associação artificial a um preço de outro JSON.",
+   "data": [],
+   "cpp": [
+    "MareGame.cpp:1644"
+   ]
+  },
+  {
+   "text": "Após conhecê-lo, leve a oferenda diária ao cesto antes das 22h.",
+   "classification": "regra_mecânica",
+   "basis": "Conferência contextual: missões/metas, atributos do mesmo JSON, business_games.levels.set, operações/customization, debt/achievements; constantes nativas em arquivo:linha.",
+   "data": [
+    "tutorial.json:/tips/Elder/text"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Aquele robalo... na verdade era uma garoupa de vinte quilos. Precisei de dois amigos pra segurar.",
+   "classification": "narrativo_hipérbole",
+   "basis": "Fala/humor ou elogio informal, sem regra numérica de economia. Não converter exageros em parâmetros.",
+   "data": [
+    "comic_events.json:/events/3/asks/2"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Atenda para ganhar mais. O funcionário rende 60% da receita, sem fama.",
+   "classification": "regra_mecânica",
+   "basis": "Conferência contextual: missões/metas, atributos do mesmo JSON, business_games.levels.set, operações/customization, debt/achievements; constantes nativas em arquivo:linha.",
+   "data": [
+    "tutorial.json:/tips/BusinessCounter/text"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Atende as mesas do restaurante do hotel e entrega o serviço de quarto quando você não está (90% do preço, sem gorjeta). Sem ele, a equipe do hotel só atende depois de 45 minutos, a 70%.",
+   "classification": "regra_mecânica",
+   "basis": "Conferência contextual: missões/metas, atributos do mesmo JSON, business_games.levels.set, operações/customization, debt/achievements; constantes nativas em arquivo:linha.",
+   "data": [
+    "definitions.json:/staff/garcom_hotel/blurb"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Azulejos azuis pintados. Atendente 30% mais rápido.",
+   "classification": "regra_mecânica",
+   "basis": "Conferência contextual: missões/metas, atributos do mesmo JSON, business_games.levels.set, operações/customization, debt/achievements; constantes nativas em arquivo:linha.",
+   "data": [
+    "customization.json:/places/kiosk/slots/4/tiers/3/desc"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "BANGALÔ 1",
+   "classification": "atributo_nome_identificador",
+   "basis": "Nome, numeração espacial, atributo do objeto/comida ou versão do motor; não é preço nem contador de progressão.",
+   "data": [
+    "world.json:/texts/4/text"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "BANGALÔ 2",
+   "classification": "atributo_nome_identificador",
+   "basis": "Nome, numeração espacial, atributo do objeto/comida ou versão do motor; não é preço nem contador de progressão.",
+   "data": [
+    "world.json:/texts/7/text"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Baião de dois com queijo coalho",
+   "classification": "atributo_nome_identificador",
+   "basis": "Nome, numeração espacial, atributo do objeto/comida ou versão do motor; não é preço nem contador de progressão.",
+   "data": [
+    "restaurant.json:/menu/5/name"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Bangalô 1",
+   "classification": "atributo_nome_identificador",
+   "basis": "Nome, numeração espacial, atributo do objeto/comida ou versão do motor; não é preço nem contador de progressão.",
+   "data": [
+    "world.json:/texts/3/text"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Bangalô 2",
+   "classification": "atributo_nome_identificador",
+   "basis": "Nome, numeração espacial, atributo do objeto/comida ou versão do motor; não é preço nem contador de progressão.",
+   "data": [
+    "world.json:/texts/6/text"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Bloco na areia: o dobro de clientes.",
+   "classification": "regra_mecânica",
+   "basis": "Conferência contextual: missões/metas, atributos do mesmo JSON, business_games.levels.set, operações/customization, debt/achievements; constantes nativas em arquivo:linha.",
+   "data": [
+    "events.json:/events/carnaval/blurb"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Bola 8: depois da saída, quem encaçapar primeiro fica com lisas ou listradas. Acerte sempre uma bola sua primeiro; falta dá bola na mão ao adversário. A 8 só no fim.",
+   "classification": "regra_nativa_ou_enum",
+   "basis": "Regra de minijogo/numeração/tecla ou atributo contextual da UI; ver consumidor nativo. Sem associação artificial a um preço de outro JSON.",
+   "data": [],
+   "cpp": [
+    "MareGame.cpp:440"
+   ]
+  },
+  {
+   "text": "Caiaques para dois.",
+   "classification": "atributo_nome_identificador",
+   "basis": "Nome, numeração espacial, atributo do objeto/comida ou versão do motor; não é preço nem contador de progressão.",
+   "data": [
+    "customization.json:/places/biz_aluguel/slots/0/tiers/2/desc"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Casquinhas de até 4 bolas. O pedido aparece por menos tempo e a faixa de tamanho correto fica menor.",
+   "classification": "regra_mecânica",
+   "basis": "Conferência contextual: missões/metas, atributos do mesmo JSON, business_games.levels.set, operações/customization, debt/achievements; constantes nativas em arquivo:linha.",
+   "data": [
+    "business_games.json:/businesses/sorveteria/levels/0/blurb"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Cem metros?!",
+   "classification": "narrativo_hipérbole",
+   "basis": "Fala/humor ou elogio informal, sem regra numérica de economia. Não converter exageros em parâmetros.",
+   "data": [],
+   "cpp": [
+    "MareSummitWorld.cpp:151"
+   ]
+  },
+  {
+   "text": "Cem. Contei com a régua do meu avô, que media tudo em palmos. Deu muitos palmos.",
+   "classification": "narrativo_hipérbole",
+   "basis": "Fala/humor ou elogio informal, sem regra numérica de economia. Não converter exageros em parâmetros.",
+   "data": [],
+   "cpp": [
+    "MareSummitWorld.cpp:153"
+   ]
+  },
+  {
+   "text": "Chegar a 7.000 vendas no quiosque",
+   "classification": "regra_mecânica",
+   "basis": "Conferência contextual: missões/metas, atributos do mesmo JSON, business_games.levels.set, operações/customization, debt/achievements; constantes nativas em arquivo:linha.",
+   "data": [
+    "definitions.json:/campaign/19/task"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Chegar à fama máxima (nível 10)",
+   "classification": "regra_mecânica",
+   "basis": "Conferência contextual: missões/metas, atributos do mesmo JSON, business_games.levels.set, operações/customization, debt/achievements; constantes nativas em arquivo:linha.",
+   "data": [
+    "definitions.json:/campaign/18/task"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Clique numa ação e aperte a nova tecla (Esc cancela). Se a tecla já estiver em uso, as duas ações trocam.",
+   "classification": "regra_nativa_ou_enum",
+   "basis": "Regra de minijogo/numeração/tecla ou atributo contextual da UI; ver consumidor nativo. Sem associação artificial a um preço de outro JSON.",
+   "data": [],
+   "cpp": [
+    "MareGame.cpp:2244"
+   ]
+  },
+  {
+   "text": "Coco gelado   R$ 12\nCaipirinha   R$ 22\nPetiscos   R$ 26\nSuco da fruta   R$ 14",
+   "classification": "regra_mecânica",
+   "basis": "Conferência contextual: missões/metas, atributos do mesmo JSON, business_games.levels.set, operações/customization, debt/achievements; constantes nativas em arquivo:linha.",
+   "data": [
+    "world.json:/texts/10/text"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Coco gelado   R$ 12\nSuco da fruta   R$ 14\nCaipirinha   R$ 22\nPetiscos   R$ 26\nSorvete de morango   R$ 12\nSorvete de chocolate   R$ 14\nPorção de batata frita   R$ 16\nPorção de peixe   R$ 28",
+   "classification": "regra_mecânica",
+   "basis": "Conferência contextual: missões/metas, atributos do mesmo JSON, business_games.levels.set, operações/customization, debt/achievements; constantes nativas em arquivo:linha.",
+   "data": [
+    "world.json:/texts/35/text"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Coletes para todos antes de sair. Nota 10.",
+   "classification": "narrativo_hipérbole",
+   "basis": "Fala/humor ou elogio informal, sem regra numérica de economia. Não converter exageros em parâmetros.",
+   "data": [
+    "tours.json:/reviews/barco/0/0"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Cor da praia. Atendente 20% mais rápido.",
+   "classification": "regra_mecânica",
+   "basis": "Conferência contextual: missões/metas, atributos do mesmo JSON, business_games.levels.set, operações/customization, debt/achievements; constantes nativas em arquivo:linha.",
+   "data": [
+    "customization.json:/places/kiosk/slots/4/tiers/2/desc"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Daily offering / tsunami rule: 1 on, 0 off.",
+   "classification": "interno_console_debug",
+   "basis": "Não é promessa ao jogador; parâmetros de console/câmera/QA, lidos na linha indicada.",
+   "data": [],
+   "cpp": [
+    "MareSummitWorld.cpp:35"
+   ]
+  },
+  {
+   "text": "Dar dez minutos de banho de mar",
+   "classification": "narrativo_hipérbole",
+   "basis": "Fala/humor ou elogio informal, sem regra numérica de economia. Não converter exageros em parâmetros.",
+   "data": [
+    "tours.json:/stops/barco/2/ok"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Deck de sol e cabine (+4 vagas).",
+   "classification": "regra_mecânica",
+   "basis": "Conferência contextual: missões/metas, atributos do mesmo JSON, business_games.levels.set, operações/customization, debt/achievements; constantes nativas em arquivo:linha.",
+   "data": [
+    "customization.json:/places/passeios/slots/0/tiers/4/desc"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Descobrir 2 drinks novos no Bar do Coqueiro",
+   "classification": "regra_nativa_ou_enum",
+   "basis": "Regra de minijogo/numeração/tecla ou atributo contextual da UI; ver consumidor nativo. Sem associação artificial a um preço de outro JSON.",
+   "data": [
+    "definitions.json:/chapters/2/steps/0/text"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Doar R$ 150 para as tábuas novas",
+   "classification": "regra_mecânica",
+   "basis": "Conferência contextual: missões/metas, atributos do mesmo JSON, business_games.levels.set, operações/customization, debt/achievements; constantes nativas em arquivo:linha.",
+   "data": [
+    "definitions.json:/chapters/0/steps/2/text"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Dois quiques: não devolveu.",
+   "classification": "regra_nativa_ou_enum",
+   "basis": "Regra de minijogo/numeração/tecla ou atributo contextual da UI; ver consumidor nativo. Sem associação artificial a um preço de outro JSON.",
+   "data": [],
+   "cpp": [
+    "MareTableTennis.cpp:134"
+   ]
+  },
+  {
+   "text": "Dois vasinhos de suculenta.",
+   "classification": "atributo_nome_identificador",
+   "basis": "Nome, numeração espacial, atributo do objeto/comida ou versão do motor; não é preço nem contador de progressão.",
+   "data": [
+    "customization.json:/places/kiosk/slots/6/tiers/0/desc"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Dona Dilce foi morar com as amigas do bingo. Deixou o quiosque, muito carinho e uma dívida de R$ 1.000.000. A carta explica; o celular ajuda a pagar.",
+   "classification": "contrato_dívida",
+   "basis": "debt.json principal=1000000, marcos .25/.5/.75 e demo_payment_cap=250000; conteúdo ainda aguarda integração nativa.",
+   "data": [
+    "debt.json:/campaign_texts/chegada"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Dona Dilce foi morar com as amigas do bingo. Deixou o quiosque, muito carinho e uma dívida de R$ 1.000.000. Dê um nome ao negócio no celular: sua primeira maré começa aqui.",
+   "classification": "contrato_dívida",
+   "basis": "debt.json principal=1000000, marcos .25/.5/.75 e demo_payment_cap=250000; conteúdo ainda aguarda integração nativa.",
+   "data": [
+    "definitions.json:/campaign/0/story"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Dona Roberta quer apresentar os dois sabores aos visitantes.",
+   "classification": "regra_nativa_ou_enum",
+   "basis": "Regra de minijogo/numeração/tecla ou atributo contextual da UI; ver consumidor nativo. Sem associação artificial a um preço de outro JSON.",
+   "data": [
+    "definitions.json:/side_missions/1/story"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Draw distance of the bounce (fill) lights, times mare.LightDrawDistance (04/11: x2.5 cost the beach 4 FPS).",
+   "classification": "interno_console_debug",
+   "basis": "Não é promessa ao jogador; parâmetros de console/câmera/QA, lidos na linha indicada.",
+   "data": [],
+   "cpp": [
+    "MareVisualWorld.cpp:51"
+   ]
+  },
+  {
+   "text": "Elevador · subir aos quartos 302 e 303",
+   "classification": "regra_nativa_ou_enum",
+   "basis": "Regra de minijogo/numeração/tecla ou atributo contextual da UI; ver consumidor nativo. Sem associação artificial a um preço de outro JSON.",
+   "data": [],
+   "cpp": [
+    "MareVisualWorld.cpp:189"
+   ]
+  },
+  {
+   "text": "Elevador · subir para a suíte 301",
+   "classification": "regra_nativa_ou_enum",
+   "basis": "Regra de minijogo/numeração/tecla ou atributo contextual da UI; ver consumidor nativo. Sem associação artificial a um preço de outro JSON.",
+   "data": [],
+   "cpp": [
+    "MareVisualWorld.cpp:190"
+   ]
+  },
+  {
+   "text": "Encaçapou a 8 na caçapa cantada: vitória!",
+   "classification": "regra_nativa_ou_enum",
+   "basis": "Regra de minijogo/numeração/tecla ou atributo contextual da UI; ver consumidor nativo. Sem associação artificial a um preço de outro JSON.",
+   "data": [],
+   "cpp": [
+    "MareGameRoom.cpp:196"
+   ]
+  },
+  {
+   "text": "Entregar 15 produtos no quiosque durante esta etapa",
+   "classification": "regra_mecânica",
+   "basis": "Conferência contextual: missões/metas, atributos do mesmo JSON, business_games.levels.set, operações/customization, debt/achievements; constantes nativas em arquivo:linha.",
+   "data": [
+    "definitions.json:/chapters/0/steps/1/text"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Escala 3D",
+   "classification": "regra_nativa_ou_enum",
+   "basis": "Regra de minijogo/numeração/tecla ou atributo contextual da UI; ver consumidor nativo. Sem associação artificial a um preço de outro JSON.",
+   "data": [],
+   "cpp": [
+    "MareGame.cpp:2195"
+   ]
+  },
+  {
+   "text": "Everyday sea roughness floor (MPC_MareTime.Storm), 0..1.",
+   "classification": "interno_console_debug",
+   "basis": "Não é promessa ao jogador; parâmetros de console/câmera/QA, lidos na linha indicada.",
+   "data": [],
+   "cpp": [
+    "MareVisualWorld.cpp:256"
+   ]
+  },
+  {
+   "text": "Fazer 40 melhorias de personalização",
+   "classification": "regra_mecânica",
+   "basis": "Conferência contextual: missões/metas, atributos do mesmo JSON, business_games.levels.set, operações/customization, debt/achievements; constantes nativas em arquivo:linha.",
+   "data": [
+    "definitions.json:/campaign/17/task"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Finalmente alguém subiu! Faz três semanas que eu grito daqui de cima e só o eco responde. Escuta: aquele vulcão lá no mar é temperamental. Todo santo dia alguém precisa deixar uma oferenda neste cesto, senão ele se zanga e manda a Onda. A grande. A de cem metros.",
+   "classification": "narrativo_hipérbole",
+   "basis": "Fala/humor ou elogio informal, sem regra numérica de economia. Não converter exageros em parâmetros.",
+   "data": [],
+   "cpp": [
+    "MareSummitWorld.cpp:150"
+   ]
+  },
+  {
+   "text": "Fita mostrada por 1,5 s e embrulho caprichado em 9 s.",
+   "classification": "regra_mecânica",
+   "basis": "Conferência contextual: missões/metas, atributos do mesmo JSON, business_games.levels.set, operações/customization, debt/achievements; constantes nativas em arquivo:linha.",
+   "data": [
+    "business_games.json:/businesses/souvenir/levels/1/blurb"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Food truck: pastel de {0} ({1}/3)",
+   "classification": "formato_dinâmico",
+   "basis": "Os argumentos vêm do estado/dados pelo consumidor referenciado. Denominadores literais de etapas/jogos seguem suas regras nativas.",
+   "data": [],
+   "cpp": [
+    "MarePastel.cpp:93"
+   ]
+  },
+  {
+   "text": "Ganhe as três estrelas do crítico.",
+   "classification": "regra_mecânica",
+   "basis": "Conferência contextual: missões/metas, atributos do mesmo JSON, business_games.levels.set, operações/customization, debt/achievements; constantes nativas em arquivo:linha.",
+   "data": [
+    "achievements.json:/achievements/31/description"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Grand Hotel 5 estrelas com quartos para arrumar, hóspedes VIP e pedidos especiais",
+   "classification": "regra_mecânica",
+   "basis": "Conferência contextual: missões/metas, atributos do mesmo JSON, business_games.levels.set, operações/customization, debt/achievements; constantes nativas em arquivo:linha.",
+   "data": [
+    "events.json:/end_of_content/next/0"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Grand Hotel 5 estrelas · ocupação prevista {0}% · nota {1} · fama {2}",
+   "classification": "formato_dinâmico",
+   "basis": "Os argumentos vêm do estado/dados pelo consumidor referenciado. Denominadores literais de etapas/jogos seguem suas regras nativas.",
+   "data": [],
+   "cpp": [
+    "MareGame.cpp:753"
+   ]
+  },
+  {
+   "text": "Grand Hotel Maré Alta 5★",
+   "classification": "regra_mecânica",
+   "basis": "Conferência contextual: missões/metas, atributos do mesmo JSON, business_games.levels.set, operações/customization, debt/achievements; constantes nativas em arquivo:linha.",
+   "data": [
+    "definitions.json:/expansions/grand_hotel/name"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Guarde 10 fotos no álbum.",
+   "classification": "regra_mecânica",
+   "basis": "Conferência contextual: missões/metas, atributos do mesmo JSON, business_games.levels.set, operações/customization, debt/achievements; constantes nativas em arquivo:linha.",
+   "data": [
+    "achievements.json:/achievements/28/description"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Hoje Seu Tibúrcio já deu um coco dele, por conta da casa. A partir de amanhã, a oferenda é com você: todo dia, antes das 22h.",
+   "classification": "regra_mecânica",
+   "basis": "Conferência contextual: missões/metas, atributos do mesmo JSON, business_games.levels.set, operações/customization, debt/achievements; constantes nativas em arquivo:linha.",
+   "data": [],
+   "cpp": [
+    "MareSummitWorld.cpp:157"
+   ]
+  },
+  {
+   "text": "Hotel quartos · 302 banheiro",
+   "classification": "atributo_nome_identificador",
+   "basis": "Nome, numeração espacial, atributo do objeto/comida ou versão do motor; não é preço nem contador de progressão.",
+   "data": [
+    "lighting.json:/fixtures/14/name"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Hotel quartos · 302 quarto",
+   "classification": "atributo_nome_identificador",
+   "basis": "Nome, numeração espacial, atributo do objeto/comida ou versão do motor; não é preço nem contador de progressão.",
+   "data": [
+    "lighting.json:/fixtures/13/name"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Hotel quartos · 303 banheiro",
+   "classification": "atributo_nome_identificador",
+   "basis": "Nome, numeração espacial, atributo do objeto/comida ou versão do motor; não é preço nem contador de progressão.",
+   "data": [
+    "lighting.json:/fixtures/18/name"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Hotel quartos · 303 entrada",
+   "classification": "atributo_nome_identificador",
+   "basis": "Nome, numeração espacial, atributo do objeto/comida ou versão do motor; não é preço nem contador de progressão.",
+   "data": [
+    "lighting.json:/fixtures/17/name"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Hotel quartos · 303 quarto",
+   "classification": "atributo_nome_identificador",
+   "basis": "Nome, numeração espacial, atributo do objeto/comida ou versão do motor; não é preço nem contador de progressão.",
+   "data": [
+    "lighting.json:/fixtures/15/name"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Hotel quartos · 303 sala",
+   "classification": "atributo_nome_identificador",
+   "basis": "Nome, numeração espacial, atributo do objeto/comida ou versão do motor; não é preço nem contador de progressão.",
+   "data": [
+    "lighting.json:/fixtures/16/name"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Hotel quartos · corredor 1",
+   "classification": "atributo_nome_identificador",
+   "basis": "Nome, numeração espacial, atributo do objeto/comida ou versão do motor; não é preço nem contador de progressão.",
+   "data": [
+    "lighting.json:/fixtures/10/name"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Hotel quartos · corredor 2",
+   "classification": "atributo_nome_identificador",
+   "basis": "Nome, numeração espacial, atributo do objeto/comida ou versão do motor; não é preço nem contador de progressão.",
+   "data": [
+    "lighting.json:/fixtures/11/name"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Ir à praia entre 20h e 23h30 para a Festa da Maré Alta",
+   "classification": "regra_mecânica",
+   "basis": "Conferência contextual: missões/metas, atributos do mesmo JSON, business_games.levels.set, operações/customization, debt/achievements; constantes nativas em arquivo:linha.",
+   "data": [
+    "definitions.json:/campaign/20/task"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Lembra do robalo? Pensei melhor: tinha uns cinco quilos. Quase me puxou do barco.",
+   "classification": "narrativo_hipérbole",
+   "basis": "Fala/humor ou elogio informal, sem regra numérica de economia. Não converter exageros em parâmetros.",
+   "data": [
+    "comic_events.json:/events/3/asks/1"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Levar 3 oferendas ao cesto do Seu Tibúrcio",
+   "classification": "regra_mecânica",
+   "basis": "Conferência contextual: missões/metas, atributos do mesmo JSON, business_games.levels.set, operações/customization, debt/achievements; constantes nativas em arquivo:linha.",
+   "data": [
+    "definitions.json:/campaign/6/task"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Levar 4 peixes para o almoço dos pescadores",
+   "classification": "regra_mecânica",
+   "basis": "Conferência contextual: missões/metas, atributos do mesmo JSON, business_games.levels.set, operações/customization, debt/achievements; constantes nativas em arquivo:linha.",
+   "data": [
+    "definitions.json:/chapters/0/steps/0/text"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Levar 6 cocos para o mutirão",
+   "classification": "regra_mecânica",
+   "basis": "Conferência contextual: missões/metas, atributos do mesmo JSON, business_games.levels.set, operações/customization, debt/achievements; constantes nativas em arquivo:linha.",
+   "data": [
+    "definitions.json:/chapters/1/steps/2/text"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Local lights (interiors, bounce, lamps, shops) fade out beyond this distance from the camera (cm), with a 15 m fade (04/11 EXE: with all local lights off the beach went 46 -> 56 FPS and the kiosk 49 -> 63: about 150 lights of the whole map were drawn every frame, day included; 50 m gave beach 53, 30 m 59). 0 = never culled; set on lights that have no distance of their own.",
+   "classification": "interno_console_debug",
+   "basis": "Não é promessa ao jogador; parâmetros de console/câmera/QA, lidos na linha indicada.",
+   "data": [],
+   "cpp": [
+    "MareVisualWorld.cpp:53"
+   ]
+  },
+  {
+   "text": "Local lights with a smaller attenuation radius (cm) cast no shadow (04/11: 99 of 134 lights cast shadows; under 10 m off = kiosk 56 -> 61 FPS); 0 = keep the authored shadows.",
+   "classification": "interno_console_debug",
+   "basis": "Não é promessa ao jogador; parâmetros de console/câmera/QA, lidos na linha indicada.",
+   "data": [],
+   "cpp": [
+    "MareVisualWorld.cpp:52"
+   ]
+  },
+  {
+   "text": "Lojinha: embrulho para {0} ({1}/3)",
+   "classification": "formato_dinâmico",
+   "basis": "Os argumentos vêm do estado/dados pelo consumidor referenciado. Denominadores literais de etapas/jogos seguem suas regras nativas.",
+   "data": [],
+   "cpp": [
+    "MareSouvenir.cpp:180"
+   ]
+  },
+  {
+   "text": "Mais rápida e estável (+1 vaga).",
+   "classification": "regra_mecânica",
+   "basis": "Conferência contextual: missões/metas, atributos do mesmo JSON, business_games.levels.set, operações/customization, debt/achievements; constantes nativas em arquivo:linha.",
+   "data": [
+    "customization.json:/places/passeios/slots/0/tiers/1/desc"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Manhã (6h–14h)",
+   "classification": "regra_mecânica",
+   "basis": "Conferência contextual: missões/metas, atributos do mesmo JSON, business_games.levels.set, operações/customization, debt/achievements; constantes nativas em arquivo:linha.",
+   "data": [
+    "definitions.json:/staff_rules/shifts/manha/name"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Melhorar receitas do quiosque 20 vezes (celular → Receitas)",
+   "classification": "regra_mecânica",
+   "basis": "Conferência contextual: missões/metas, atributos do mesmo JSON, business_games.levels.set, operações/customization, debt/achievements; constantes nativas em arquivo:linha.",
+   "data": [
+    "definitions.json:/campaign/16/task"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "MetaHuman faces blink and change expression (own face pose with rig curves); 0 = faces follow the body, neutral.",
+   "classification": "interno_console_debug",
+   "basis": "Não é promessa ao jogador; parâmetros de console/câmera/QA, lidos na linha indicada.",
+   "data": [],
+   "cpp": [
+    "MarePerson.cpp:45"
+   ]
+  },
+  {
+   "text": "Metade da maré",
+   "classification": "contrato_dívida",
+   "basis": "debt.json principal=1000000, marcos .25/.5/.75 e demo_payment_cap=250000; conteúdo ainda aguarda integração nativa.",
+   "data": [
+    "achievements.json:/achievements/2/name",
+    "debt.json:/milestones/1/title"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Metade do barco passou mal com a velocidade.",
+   "classification": "narrativo_hipérbole",
+   "basis": "Fala/humor ou elogio informal, sem regra numérica de economia. Não converter exageros em parâmetros.",
+   "data": [
+    "tours.json:/highlight/barco/bad"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Meu bem, o quiosque é seu. A dívida também: R$ 1.000.000. Eu ia contar no almoço, mas o ônibus chegou primeiro.",
+   "classification": "contrato_dívida",
+   "basis": "debt.json principal=1000000, marcos .25/.5/.75 e demo_payment_cap=250000; conteúdo ainda aguarda integração nativa.",
+   "data": [
+    "debt.json:/intro/letter"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Negocie a diária. Após 2 horas, a equipe aceita a oferta se houver vaga limpa.",
+   "classification": "regra_mecânica",
+   "basis": "Conferência contextual: missões/metas, atributos do mesmo JSON, business_games.levels.set, operações/customization, debt/achievements; constantes nativas em arquivo:linha.",
+   "data": [
+    "tutorial.json:/tips/HotelReception/text"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Night EV100 floor of the eye inside the MareInterior volumes (the ceiling is +0.8); lower = brighter rooms.",
+   "classification": "interno_console_debug",
+   "basis": "Não é promessa ao jogador; parâmetros de console/câmera/QA, lidos na linha indicada.",
+   "data": [],
+   "cpp": [
+    "MareVisualWorld.cpp:48"
+   ]
+  },
+  {
+   "text": "Ninguém esperando agora. Hóspedes chegam entre 10h e 20h.",
+   "classification": "regra_mecânica",
+   "basis": "Conferência contextual: missões/metas, atributos do mesmo JSON, business_games.levels.set, operações/customization, debt/achievements; constantes nativas em arquivo:linha.",
+   "data": [],
+   "cpp": [
+    "MareGame.cpp:590"
+   ]
+  },
+  {
+   "text": "No jogo completo: Grand Hotel com 32 quartos, restaurante, academia, spa e piscina.",
+   "classification": "regra_mecânica",
+   "basis": "Conferência contextual: missões/metas, atributos do mesmo JSON, business_games.levels.set, operações/customization, debt/achievements; constantes nativas em arquivo:linha.",
+   "data": [
+    "definitions.json:/expansions/grand_hotel/blurb"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Nos quartos 301, 302 e 303, resolver pessoalmente (E no quarto) é de graça e dá fama.",
+   "classification": "regra_nativa_ou_enum",
+   "basis": "Regra de minijogo/numeração/tecla ou atributo contextual da UI; ver consumidor nativo. Sem associação artificial a um preço de outro JSON.",
+   "data": [],
+   "cpp": [
+    "MareGame.cpp:677"
+   ]
+  },
+  {
+   "text": "O bar brilha à noite: mais clientes a partir das 18h.",
+   "classification": "regra_mecânica",
+   "basis": "Conferência contextual: missões/metas, atributos do mesmo JSON, business_games.levels.set, operações/customization, debt/achievements; constantes nativas em arquivo:linha.",
+   "data": [
+    "bar.json:/upgrades/neon/desc"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "O guia contratado faz o passeio sozinho com nota 3, sem gorjeta. Indo junto, a nota, a gorjeta e a fama sobem.",
+   "classification": "regra_nativa_ou_enum",
+   "basis": "Regra de minijogo/numeração/tecla ou atributo contextual da UI; ver consumidor nativo. Sem associação artificial a um preço de outro JSON.",
+   "data": [],
+   "cpp": [
+    "MareGame.cpp:518"
+   ]
+  },
+  {
+   "text": "O quiosque fica aberto até 21:00, com luzes coloridas.",
+   "classification": "regra_mecânica",
+   "basis": "Conferência contextual: missões/metas, atributos do mesmo JSON, business_games.levels.set, operações/customization, debt/achievements; constantes nativas em arquivo:linha.",
+   "data": [
+    "definitions.json:/expansions/neon/blurb"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "O restaurante ganhou a {0}ª estrela (cardápio +{1}%)!",
+   "classification": "formato_dinâmico",
+   "basis": "Os argumentos vêm do estado/dados pelo consumidor referenciado. Denominadores literais de etapas/jogos seguem suas regras nativas.",
+   "data": [],
+   "cpp": [
+    "MareRestaurant.cpp:217"
+   ]
+  },
+  {
+   "text": "Ontem pesquei um robalo de uns dois quilos. Bonito que só ele!",
+   "classification": "narrativo_hipérbole",
+   "basis": "Fala/humor ou elogio informal, sem regra numérica de economia. Não converter exageros em parâmetros.",
+   "data": [
+    "comic_events.json:/events/3/asks/0"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Os hóspedes do hotel jogam dominó no corredor e já quebraram dois vasos. Dê a eles um salão de jogos de verdade.",
+   "classification": "atributo_nome_identificador",
+   "basis": "Nome, numeração espacial, atributo do objeto/comida ou versão do motor; não é preço nem contador de progressão.",
+   "data": [
+    "definitions.json:/campaign/15/story"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Os quartos 301, 302 e 303 ficam no 3º andar (elevador do saguão): arrumados só por você, o próximo hóspede dá nota melhor. A equipe de arrumação cuida dos outros e chega ao 3º andar depois das 11h.",
+   "classification": "regra_nativa_ou_enum",
+   "basis": "Regra de minijogo/numeração/tecla ou atributo contextual da UI; ver consumidor nativo. Sem associação artificial a um preço de outro JSON.",
+   "data": [],
+   "cpp": [
+    "MareGame.cpp:667"
+   ]
+  },
+  {
+   "text": "PROMOÇÕES\nCoco gelado\nR$ 12\nSuco da fruta\nR$ 14",
+   "classification": "regra_mecânica",
+   "basis": "Conferência contextual: missões/metas, atributos do mesmo JSON, business_games.levels.set, operações/customization, debt/achievements; constantes nativas em arquivo:linha.",
+   "data": [
+    "world.json:/texts/100/text",
+    "world.json:/texts/101/text"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Padre Robson precisa de 6 pães para a festa de São Pedro.",
+   "classification": "regra_nativa_ou_enum",
+   "basis": "Regra de minijogo/numeração/tecla ou atributo contextual da UI; ver consumidor nativo. Sem associação artificial a um preço de outro JSON.",
+   "data": [
+    "definitions.json:/quests/paes_padre/desc"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Paga pelo que estiver montado quando os convidados chegarem; com menos da metade, fica só o sinal e a fama cai.",
+   "classification": "regra_nativa_ou_enum",
+   "basis": "Regra de minijogo/numeração/tecla ou atributo contextual da UI; ver consumidor nativo. Sem associação artificial a um preço de outro JSON.",
+   "data": [],
+   "cpp": [
+    "MareGame.cpp:642"
+   ]
+  },
+  {
+   "text": "Pagar R$ 250 da reforma do food truck",
+   "classification": "regra_mecânica",
+   "basis": "Conferência contextual: missões/metas, atributos do mesmo JSON, business_games.levels.set, operações/customization, debt/achievements; constantes nativas em arquivo:linha.",
+   "data": [
+    "definitions.json:/chapters/2/steps/2/text"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Pagar R$ 400 da decoração",
+   "classification": "regra_mecânica",
+   "basis": "Conferência contextual: missões/metas, atributos do mesmo JSON, business_games.levels.set, operações/customization, debt/achievements; constantes nativas em arquivo:linha.",
+   "data": [
+    "definitions.json:/chapters/3/steps/2/text"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Pague R$ 250.000 da dívida.",
+   "classification": "contrato_dívida",
+   "basis": "debt.json principal=1000000, marcos .25/.5/.75 e demo_payment_cap=250000; conteúdo ainda aguarda integração nativa.",
+   "data": [
+    "achievements.json:/achievements/1/description"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Pague R$ 500.000 da dívida.",
+   "classification": "contrato_dívida",
+   "basis": "debt.json principal=1000000, marcos .25/.5/.75 e demo_payment_cap=250000; conteúdo ainda aguarda integração nativa.",
+   "data": [
+    "achievements.json:/achievements/2/description"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Pague R$ 750.000 da dívida.",
+   "classification": "contrato_dívida",
+   "basis": "debt.json principal=1000000, marcos .25/.5/.75 e demo_payment_cap=250000; conteúdo ainda aguarda integração nativa.",
+   "data": [
+    "achievements.json:/achievements/3/description"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Parada {0} de 3: chegue devagar na boia amarela",
+   "classification": "formato_dinâmico",
+   "basis": "Os argumentos vêm do estado/dados pelo consumidor referenciado. Denominadores literais de etapas/jogos seguem suas regras nativas.",
+   "data": [],
+   "cpp": [
+    "MareBoatTourWorld.cpp:324"
+   ]
+  },
+  {
+   "text": "Parafina com 7 voltas e mais pranchas voltando amassadas para conferir.",
+   "classification": "regra_mecânica",
+   "basis": "Conferência contextual: missões/metas, atributos do mesmo JSON, business_games.levels.set, operações/customization, debt/achievements; constantes nativas em arquivo:linha.",
+   "data": [
+    "business_games.json:/businesses/aluguel/levels/0/blurb"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Parafina com 9 voltas, mais amassados e caiaques que se soltam com mais frequência.",
+   "classification": "regra_mecânica",
+   "basis": "Conferência contextual: missões/metas, atributos do mesmo JSON, business_games.levels.set, operações/customization, debt/achievements; constantes nativas em arquivo:linha.",
+   "data": [
+    "business_games.json:/businesses/aluguel/levels/1/blurb"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Passando parafina... {0}%",
+   "classification": "formato_dinâmico",
+   "basis": "Os argumentos vêm do estado/dados pelo consumidor referenciado. Denominadores literais de etapas/jogos seguem suas regras nativas.",
+   "data": [],
+   "cpp": [
+    "MareGame.cpp:1547"
+   ]
+  },
+  {
+   "text": "Passo {0} de 3 · ",
+   "classification": "formato_dinâmico",
+   "basis": "Os argumentos vêm do estado/dados pelo consumidor referenciado. Denominadores literais de etapas/jogos seguem suas regras nativas.",
+   "data": [],
+   "cpp": [
+    "MareGame.cpp:820"
+   ]
+  },
+  {
+   "text": "Pedidos de 2 a 4 bolas, visíveis por 1,8 s. A bola cresce mais rápido e a faixa correta é bem estreita.",
+   "classification": "regra_mecânica",
+   "basis": "Conferência contextual: missões/metas, atributos do mesmo JSON, business_games.levels.set, operações/customization, debt/achievements; constantes nativas em arquivo:linha.",
+   "data": [
+    "business_games.json:/businesses/sorveteria/levels/1/blurb"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "People farther than this from the camera (cm) are hidden and stop animating; they keep walking and acting (04/11 EXE: the beach went 33 -> 58 FPS without the ~60 MetaHumans, of whom 6 were on screen: every hidden-yet-registered part still cost render-thread time). 0 = never; -1 (default) = the Pessoas nas cenas graphics option (35 / 50 / 80 m).",
+   "classification": "interno_console_debug",
+   "basis": "Não é promessa ao jogador; parâmetros de console/câmera/QA, lidos na linha indicada.",
+   "data": [],
+   "cpp": [
+    "MarePerson.cpp:49"
+   ]
+  },
+  {
+   "text": "People farther than this from the camera (cm) cast no shadow: 04/11 the beach drew 3400 shadow draw calls for 61 MetaHumans spread over the map, 6 on screen (0 = always cast).",
+   "classification": "interno_console_debug",
+   "basis": "Não é promessa ao jogador; parâmetros de console/câmera/QA, lidos na linha indicada.",
+   "data": [],
+   "cpp": [
+    "MarePerson.cpp:48"
+   ]
+  },
+  {
+   "text": "People nobody sees (no part drawn, not even its shadow, for 0.6 s) keep their pose instead of animating: 1 = on (04/11, 61 people cost 15 ms of render thread with 6 on screen), 0 = always animate.",
+   "classification": "interno_console_debug",
+   "basis": "Não é promessa ao jogador; parâmetros de console/câmera/QA, lidos na linha indicada.",
+   "data": [],
+   "cpp": [
+    "MarePerson.cpp:47"
+   ]
+  },
+  {
+   "text": "People outside the camera's view cone (screen + 20 degrees, beyond 6 m) for 0.5 s are hidden and paused like the far ones (1 = on).",
+   "classification": "interno_console_debug",
+   "basis": "Não é promessa ao jogador; parâmetros de console/câmera/QA, lidos na linha indicada.",
+   "data": [],
+   "cpp": [
+    "MarePerson.cpp:50"
+   ]
+  },
+  {
+   "text": "People wear the built MetaHumans of Content/Data/metahumans.json (0 = original rig people).",
+   "classification": "interno_console_debug",
+   "basis": "Não é promessa ao jogador; parâmetros de console/câmera/QA, lidos na linha indicada.",
+   "data": [],
+   "cpp": [
+    "MarePerson.cpp:43"
+   ]
+  },
+  {
+   "text": "Percal 200 fios",
+   "classification": "atributo_nome_identificador",
+   "basis": "Nome, numeração espacial, atributo do objeto/comida ou versão do motor; não é preço nem contador de progressão.",
+   "data": [
+    "customization.json:/places/hotel_suites/slots/1/tiers/0/name"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Percal 400 fios",
+   "classification": "atributo_nome_identificador",
+   "basis": "Nome, numeração espacial, atributo do objeto/comida ou versão do motor; não é preço nem contador de progressão.",
+   "data": [
+    "customization.json:/places/pousada/slots/5/tiers/3/name",
+    "customization.json:/places/hotel_suites/slots/1/tiers/1/name"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Pescar 5 peixes no píer",
+   "classification": "regra_nativa_ou_enum",
+   "basis": "Regra de minijogo/numeração/tecla ou atributo contextual da UI; ver consumidor nativo. Sem associação artificial a um preço de outro JSON.",
+   "data": [
+    "definitions.json:/side_missions/0/task"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Ponto dourado de 6,3 a 7,6 s, queima mais cedo, borda difícil e moenda com mais voltas.",
+   "classification": "regra_mecânica",
+   "basis": "Conferência contextual: missões/metas, atributos do mesmo JSON, business_games.levels.set, operações/customization, debt/achievements; constantes nativas em arquivo:linha.",
+   "data": [
+    "business_games.json:/businesses/food_truck/levels/1/blurb"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Ponto dourado mais curto (6 a 8 s), borda que pede mais passadas e mais pedidos de caldo de cana.",
+   "classification": "regra_mecânica",
+   "basis": "Conferência contextual: missões/metas, atributos do mesmo JSON, business_games.levels.set, operações/customization, debt/achievements; constantes nativas em arquivo:linha.",
+   "data": [
+    "business_games.json:/businesses/food_truck/levels/0/blurb"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "QA weather override: 0 = today's weather, 1 = clear, 2 = rain, 3 = storm, 4 = rough sea without rain.",
+   "classification": "interno_console_debug",
+   "basis": "Não é promessa ao jogador; parâmetros de console/câmera/QA, lidos na linha indicada.",
+   "data": [],
+   "cpp": [
+    "MareVisualWorld.cpp:56"
+   ]
+  },
+  {
+   "text": "QA: 1 marks Seu Tibúrcio as met (the rule becomes active).",
+   "classification": "interno_console_debug",
+   "basis": "Não é promessa ao jogador; parâmetros de console/câmera/QA, lidos na linha indicada.",
+   "data": [],
+   "cpp": [
+    "MareSummitWorld.cpp:37"
+   ]
+  },
+  {
+   "text": "QA: 1 starts the campaign finale party now.",
+   "classification": "interno_console_debug",
+   "basis": "Não é promessa ao jogador; parâmetros de console/câmera/QA, lidos na linha indicada.",
+   "data": [],
+   "cpp": [
+    "MareSummitWorld.cpp:280"
+   ]
+  },
+  {
+   "text": "QA: 1 starts the omen now, 2 starts the wave now (resets to 0).",
+   "classification": "interno_console_debug",
+   "basis": "Não é promessa ao jogador; parâmetros de console/câmera/QA, lidos na linha indicada.",
+   "data": [],
+   "cpp": [
+    "MareSummitWorld.cpp:36"
+   ]
+  },
+  {
+   "text": "QA: beachwear option index for new beach people (-1 = picked per person).",
+   "classification": "interno_console_debug",
+   "basis": "Não é promessa ao jogador; parâmetros de console/câmera/QA, lidos na linha indicada.",
+   "data": [],
+   "cpp": [
+    "MarePerson.cpp:44"
+   ]
+  },
+  {
+   "text": "QA: holds the HUM-001 seagull at this many seconds of its flight (-1 = normal).",
+   "classification": "interno_console_debug",
+   "basis": "Não é promessa ao jogador; parâmetros de console/câmera/QA, lidos na linha indicada.",
+   "data": [],
+   "cpp": [
+    "MareComicEvents.cpp:24"
+   ]
+  },
+  {
+   "text": "QA: offer[:kind], accept, today, decline, critic (5.3), state, placeall[:extras], place:i, start (Grand Hotel events, 5.2).",
+   "classification": "interno_console_debug",
+   "basis": "Não é promessa ao jogador; parâmetros de console/câmera/QA, lidos na linha indicada.",
+   "data": [],
+   "cpp": [
+    "MareGame.cpp:2456"
+   ]
+  },
+  {
+   "text": "QA: seed of the comic-event roll (0 = time).",
+   "classification": "interno_console_debug",
+   "basis": "Não é promessa ao jogador; parâmetros de console/câmera/QA, lidos na linha indicada.",
+   "data": [],
+   "cpp": [
+    "MareComicEvents.cpp:25"
+   ]
+  },
+  {
+   "text": "QA: start:0|1, play:seconds, end, state (game room arcades, 5.4).",
+   "classification": "interno_console_debug",
+   "basis": "Não é promessa ao jogador; parâmetros de console/câmera/QA, lidos na linha indicada.",
+   "data": [],
+   "cpp": [
+    "MareGame.cpp:2453"
+   ]
+  },
+  {
+   "text": "QA: starts a comic event now (comic_events.json id, e.g. HUM-005).",
+   "classification": "interno_console_debug",
+   "basis": "Não é promessa ao jogador; parâmetros de console/câmera/QA, lidos na linha indicada.",
+   "data": [],
+   "cpp": [
+    "MareComicEvents.cpp:26"
+   ]
+  },
+  {
+   "text": "Qualquer coisa gostosa do seu quiosque: uma água de coco, um petisco... O vulcão é guloso, igual a mim. Traz aqui em cima, nas mãos, e deixa no cesto. Todo dia, antes das dez da noite.",
+   "classification": "regra_nativa_ou_enum",
+   "basis": "Regra de minijogo/numeração/tecla ou atributo contextual da UI; ver consumidor nativo. Sem associação artificial a um preço de outro JSON.",
+   "data": [],
+   "cpp": [
+    "MareSummitWorld.cpp:154"
+   ]
+  },
+  {
+   "text": "Quatro vasos de folhagem.",
+   "classification": "atributo_nome_identificador",
+   "basis": "Nome, numeração espacial, atributo do objeto/comida ou versão do motor; não é preço nem contador de progressão.",
+   "data": [
+    "customization.json:/places/kiosk/slots/6/tiers/1/desc"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Quem você não atender em 2 horas, a equipe do hotel recebe pela oferta do hóspede.",
+   "classification": "regra_mecânica",
+   "basis": "Conferência contextual: missões/metas, atributos do mesmo JSON, business_games.levels.set, operações/customization, debt/achievements; constantes nativas em arquivo:linha.",
+   "data": [],
+   "cpp": [
+    "MareGame.cpp:586"
+   ]
+  },
+  {
+   "text": "Quite a dívida de R$ 1.000.000.",
+   "classification": "contrato_dívida",
+   "basis": "debt.json principal=1000000, marcos .25/.5/.75 e demo_payment_cap=250000; conteúdo ainda aguarda integração nativa.",
+   "data": [
+    "achievements.json:/achievements/4/description"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "R$ 1.000.000 pagos. Você cuidou do quiosque, da vila e de uma promessa de família. Agora o próximo sonho não vem com boleto.",
+   "classification": "contrato_dívida",
+   "basis": "debt.json principal=1000000, marcos .25/.5/.75 e demo_payment_cap=250000; conteúdo ainda aguarda integração nativa.",
+   "data": [
+    "debt.json:/finale/text"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "R$ 250.000 pagos! Dona Dilce diz que já consegue olhar o extrato com os dois olhos abertos.",
+   "classification": "contrato_dívida",
+   "basis": "debt.json principal=1000000, marcos .25/.5/.75 e demo_payment_cap=250000; conteúdo ainda aguarda integração nativa.",
+   "data": [
+    "debt.json:/milestones/0/text"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "R$ 500.000 pagos! O gerente trouxe um bolo pela metade. Dona Dilce ficou com a parte maior.",
+   "classification": "contrato_dívida",
+   "basis": "debt.json principal=1000000, marcos .25/.5/.75 e demo_payment_cap=250000; conteúdo ainda aguarda integração nativa.",
+   "data": [
+    "debt.json:/milestones/1/text"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "R$ 750.000 pagos! Dona Dilce já ensaia a dança da quitação. O banco pediu que seja longe do balcão.",
+   "classification": "contrato_dívida",
+   "basis": "debt.json principal=1000000, marcos .25/.5/.75 e demo_payment_cap=250000; conteúdo ainda aguarda integração nativa.",
+   "data": [
+    "debt.json:/milestones/2/text"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Realize um evento montado com ao menos metade das peças.",
+   "classification": "regra_nativa_ou_enum",
+   "basis": "Regra de minijogo/numeração/tecla ou atributo contextual da UI; ver consumidor nativo. Sem associação artificial a um preço de outro JSON.",
+   "data": [
+    "achievements.json:/achievements/32/description"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Rede de proa e banheiro (+3 vagas).",
+   "classification": "regra_mecânica",
+   "basis": "Conferência contextual: missões/metas, atributos do mesmo JSON, business_games.levels.set, operações/customization, debt/achievements; constantes nativas em arquivo:linha.",
+   "data": [
+    "customization.json:/places/passeios/slots/0/tiers/3/desc"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "SINUCA · BOLA 8<br>Vitórias  {0}<br>Derrotas  {1}",
+   "classification": "formato_dinâmico",
+   "basis": "Os argumentos vêm do estado/dados pelo consumidor referenciado. Denominadores literais de etapas/jogos seguem suas regras nativas.",
+   "data": [],
+   "cpp": [
+    "MareGameRoom.cpp:285"
+   ]
+  },
+  {
+   "text": "Segure o sabor (clique, 1 a 6 ou A) e solte no verde · setas escolhem o pote · Enter entrega · Esc ou B sai",
+   "classification": "regra_nativa_ou_enum",
+   "basis": "Regra de minijogo/numeração/tecla ou atributo contextual da UI; ver consumidor nativo. Sem associação artificial a um preço de outro JSON.",
+   "data": [],
+   "cpp": [
+    "MareGame.cpp:1193"
+   ]
+  },
+  {
+   "text": "Serve sozinho os drinks do cardápio do Bar do Coqueiro (85% do preço) e o bar rende 15% a mais por hora. Receitas novas continuam com você.",
+   "classification": "regra_mecânica",
+   "basis": "Conferência contextual: missões/metas, atributos do mesmo JSON, business_games.levels.set, operações/customization, debt/achievements; constantes nativas em arquivo:linha.",
+   "data": [
+    "definitions.json:/staff/bartender/blurb"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Seríssimo. Em 1987 esqueceram uma vez e a Onda levou a praia, o bar e o meu bigode. O bigode nunca mais cresceu igual.",
+   "classification": "narrativo_hipérbole",
+   "basis": "Fala/humor ou elogio informal, sem regra numérica de economia. Não converter exageros em parâmetros.",
+   "data": [],
+   "cpp": [
+    "MareSummitWorld.cpp:155"
+   ]
+  },
+  {
+   "text": "Sete mil vendas",
+   "classification": "regra_mecânica",
+   "basis": "Conferência contextual: missões/metas, atributos do mesmo JSON, business_games.levels.set, operações/customization, debt/achievements; constantes nativas em arquivo:linha.",
+   "data": [
+    "definitions.json:/campaign/19/title"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Sete tempos com frutos do mar.",
+   "classification": "atributo_nome_identificador",
+   "basis": "Nome, numeração espacial, atributo do objeto/comida ou versão do motor; não é preço nem contador de progressão.",
+   "data": [
+    "customization.json:/places/hotel_restaurante/slots/2/tiers/3/desc"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Seu Severino diz que o píer está \"quase\" caindo. Os pescadores dizem que já caiu duas vezes. Ajude a terminar a história dele.",
+   "classification": "regra_nativa_ou_enum",
+   "basis": "Regra de minijogo/numeração/tecla ou atributo contextual da UI; ver consumidor nativo. Sem associação artificial a um preço de outro JSON.",
+   "data": [
+    "definitions.json:/campaign/7/story"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Seu Severino quer 3 peixes para o almoço. Pesque no fim do píer e entregue.",
+   "classification": "regra_nativa_ou_enum",
+   "basis": "Regra de minijogo/numeração/tecla ou atributo contextual da UI; ver consumidor nativo. Sem associação artificial a um preço de outro JSON.",
+   "data": [
+    "definitions.json:/quests/peixe_ze/desc"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Seu Tibúrcio: \"Trinta anos sem descer esse morro. A trilha encolheu ou fui eu que cresci?\"",
+   "classification": "narrativo_hipérbole",
+   "basis": "Fala/humor ou elogio informal, sem regra numérica de economia. Não converter exageros em parâmetros.",
+   "data": [],
+   "cpp": [
+    "MareSummitWorld.cpp:307"
+   ]
+  },
+  {
+   "text": "Siga para o farol: o pôr do sol é entre 17h15 e 17h57.",
+   "classification": "regra_mecânica",
+   "basis": "Conferência contextual: missões/metas, atributos do mesmo JSON, business_games.levels.set, operações/customization, debt/achievements; constantes nativas em arquivo:linha.",
+   "data": [
+    "tours.json:/trail_tour/lines/go_lighthouse"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Sinuca bola 8",
+   "classification": "regra_nativa_ou_enum",
+   "basis": "Regra de minijogo/numeração/tecla ou atributo contextual da UI; ver consumidor nativo. Sem associação artificial a um preço de outro JSON.",
+   "data": [],
+   "cpp": [
+    "MareGame.cpp:2637"
+   ]
+  },
+  {
+   "text": "Sinuca bola 8 valendo R$ {0}: lisas ou listradas, a 8 por último.",
+   "classification": "formato_dinâmico",
+   "basis": "Os argumentos vêm do estado/dados pelo consumidor referenciado. Denominadores literais de etapas/jogos seguem suas regras nativas.",
+   "data": [],
+   "cpp": [
+    "MareGameRoom.cpp:314"
+   ]
+  },
+  {
+   "text": "Sinuca bola 8 · mesa aberta",
+   "classification": "regra_nativa_ou_enum",
+   "basis": "Regra de minijogo/numeração/tecla ou atributo contextual da UI; ver consumidor nativo. Sem associação artificial a um preço de outro JSON.",
+   "data": [],
+   "cpp": [
+    "MareGame.cpp:2637"
+   ]
+  },
+  {
+   "text": "Sinuca bola 8: lisas ou listradas, a 8 por último. Mouse mira, segure o clique para a força, Q sai.",
+   "classification": "regra_nativa_ou_enum",
+   "basis": "Regra de minijogo/numeração/tecla ou atributo contextual da UI; ver consumidor nativo. Sem associação artificial a um preço de outro JSON.",
+   "data": [],
+   "cpp": [
+    "MareGameRoom.cpp:314"
+   ]
+  },
+  {
+   "text": "Sirva 50 drinks no bar.",
+   "classification": "regra_nativa_ou_enum",
+   "basis": "Regra de minijogo/numeração/tecla ou atributo contextual da UI; ver consumidor nativo. Sem associação artificial a um preço de outro JSON.",
+   "data": [
+    "achievements.json:/achievements/18/description"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Smart TV 55\" com soundbar",
+   "classification": "atributo_nome_identificador",
+   "basis": "Nome, numeração espacial, atributo do objeto/comida ou versão do motor; não é preço nem contador de progressão.",
+   "data": [
+    "customization.json:/places/home/slots/5/tiers/3/name"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Sorveteria: casquinha de {0} ({1}/3)",
+   "classification": "formato_dinâmico",
+   "basis": "Os argumentos vêm do estado/dados pelo consumidor referenciado. Denominadores literais de etapas/jogos seguem suas regras nativas.",
+   "data": [],
+   "cpp": [
+    "MareIceCream.cpp:96"
+   ]
+  },
+  {
+   "text": "Starts a foosball match for player 0 (QA).",
+   "classification": "interno_console_debug",
+   "basis": "Não é promessa ao jogador; parâmetros de console/câmera/QA, lidos na linha indicada.",
+   "data": [],
+   "cpp": [
+    "MareFoosball.cpp:55"
+   ]
+  },
+  {
+   "text": "Starts a pool match for player 0 (QA); 'eight' leaves the player on the 8.",
+   "classification": "interno_console_debug",
+   "basis": "Não é promessa ao jogador; parâmetros de console/câmera/QA, lidos na linha indicada.",
+   "data": [],
+   "cpp": [
+    "MareGameRoom.cpp:38"
+   ]
+  },
+  {
+   "text": "Starts a table tennis match for player 0 (QA).",
+   "classification": "interno_console_debug",
+   "basis": "Não é promessa ao jogador; parâmetros de console/câmera/QA, lidos na linha indicada.",
+   "data": [],
+   "cpp": [
+    "MareTableTennis.cpp:35"
+   ]
+  },
+  {
+   "text": "Stops of exposure removed at night (0 = old night)",
+   "classification": "interno_console_debug",
+   "basis": "Não é promessa ao jogador; parâmetros de console/câmera/QA, lidos na linha indicada.",
+   "data": [],
+   "cpp": [
+    "MareVisualWorld.cpp:49"
+   ]
+  },
+  {
+   "text": "Suíte do Grand Hotel · 3º andar",
+   "classification": "regra_nativa_ou_enum",
+   "basis": "Regra de minijogo/numeração/tecla ou atributo contextual da UI; ver consumidor nativo. Sem associação artificial a um preço de outro JSON.",
+   "data": [],
+   "cpp": [
+    "MareServiceTarget.cpp:107"
+   ]
+  },
+  {
+   "text": "Suíte · teto 1",
+   "classification": "atributo_nome_identificador",
+   "basis": "Nome, numeração espacial, atributo do objeto/comida ou versão do motor; não é preço nem contador de progressão.",
+   "data": [
+    "lighting.json:/fixtures/4/name"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Suíte · teto 2",
+   "classification": "atributo_nome_identificador",
+   "basis": "Nome, numeração espacial, atributo do objeto/comida ou versão do motor; não é preço nem contador de progressão.",
+   "data": [
+    "lighting.json:/fixtures/5/name"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Suíte · teto 3",
+   "classification": "atributo_nome_identificador",
+   "basis": "Nome, numeração espacial, atributo do objeto/comida ou versão do motor; não é preço nem contador de progressão.",
+   "data": [
+    "lighting.json:/fixtures/6/name"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Suíte · teto 4",
+   "classification": "atributo_nome_identificador",
+   "basis": "Nome, numeração espacial, atributo do objeto/comida ou versão do motor; não é preço nem contador de progressão.",
+   "data": [
+    "lighting.json:/fixtures/7/name"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Suíte · teto 5",
+   "classification": "atributo_nome_identificador",
+   "basis": "Nome, numeração espacial, atributo do objeto/comida ou versão do motor; não é preço nem contador de progressão.",
+   "data": [
+    "lighting.json:/fixtures/8/name"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Suíte · teto 6",
+   "classification": "atributo_nome_identificador",
+   "basis": "Nome, numeração espacial, atributo do objeto/comida ou versão do motor; não é preço nem contador de progressão.",
+   "data": [
+    "lighting.json:/fixtures/9/name"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "TV 43\" com pedestal",
+   "classification": "atributo_nome_identificador",
+   "basis": "Nome, numeração espacial, atributo do objeto/comida ou versão do motor; não é preço nem contador de progressão.",
+   "data": [
+    "customization.json:/places/home/slots/5/tiers/2/name"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "TV OLED 65\" com soundbar",
+   "classification": "atributo_nome_identificador",
+   "basis": "Nome, numeração espacial, atributo do objeto/comida ou versão do motor; não é preço nem contador de progressão.",
+   "data": [
+    "customization.json:/places/home/slots/5/tiers/4/name"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "TV de tela plana 32\"",
+   "classification": "atributo_nome_identificador",
+   "basis": "Nome, numeração espacial, atributo do objeto/comida ou versão do motor; não é preço nem contador de progressão.",
+   "data": [
+    "customization.json:/places/home/slots/5/tiers/1/name"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Tarde e noite (14h–24h)",
+   "classification": "regra_mecânica",
+   "basis": "Conferência contextual: missões/metas, atributos do mesmo JSON, business_games.levels.set, operações/customization, debt/achievements; constantes nativas em arquivo:linha.",
+   "data": [
+    "definitions.json:/staff_rules/shifts/tarde/name"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Taça do chef com chocolate 70%",
+   "classification": "atributo_nome_identificador",
+   "basis": "Nome, numeração espacial, atributo do objeto/comida ou versão do motor; não é preço nem contador de progressão.",
+   "data": [
+    "customization.json:/recipes/notes/sorvete_chocolate/4"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Tenha os cinco negócios da vila no nível 1 ou maior.",
+   "classification": "regra_mecânica",
+   "basis": "Conferência contextual: missões/metas, atributos do mesmo JSON, business_games.levels.set, operações/customization, debt/achievements; constantes nativas em arquivo:linha.",
+   "data": [
+    "achievements.json:/achievements/24/description"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Tenha os cinco negócios da vila no nível 3 ou maior.",
+   "classification": "regra_mecânica",
+   "basis": "Conferência contextual: missões/metas, atributos do mesmo JSON, business_games.levels.set, operações/customization, debt/achievements; constantes nativas em arquivo:linha.",
+   "data": [
+    "achievements.json:/achievements/25/description"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Ter 2 negócios funcionando",
+   "classification": "regra_mecânica",
+   "basis": "Conferência contextual: missões/metas, atributos do mesmo JSON, business_games.levels.set, operações/customization, debt/achievements; constantes nativas em arquivo:linha.",
+   "data": [
+    "definitions.json:/chapters/3/steps/1/text"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Toldo e bancos acolchoados (+2 vagas).",
+   "classification": "regra_mecânica",
+   "basis": "Conferência contextual: missões/metas, atributos do mesmo JSON, business_games.levels.set, operações/customization, debt/achievements; constantes nativas em arquivo:linha.",
+   "data": [
+    "customization.json:/places/passeios/slots/0/tiers/2/desc"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Três dias sem Onda",
+   "classification": "regra_mecânica",
+   "basis": "Conferência contextual: missões/metas, atributos do mesmo JSON, business_games.levels.set, operações/customization, debt/achievements; constantes nativas em arquivo:linha.",
+   "data": [
+    "definitions.json:/campaign/6/title"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Três estrelas no caderno",
+   "classification": "regra_mecânica",
+   "basis": "Conferência contextual: missões/metas, atributos do mesmo JSON, business_games.levels.set, operações/customization, debt/achievements; constantes nativas em arquivo:linha.",
+   "data": [
+    "achievements.json:/achievements/31/name"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Três sabores",
+   "classification": "atributo_nome_identificador",
+   "basis": "Nome, numeração espacial, atributo do objeto/comida ou versão do motor; não é preço nem contador de progressão.",
+   "data": [
+    "customization.json:/places/biz_sorveteria/slots/0/tiers/0/name"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Tábuas envernizadas. Atendente 10% mais rápido.",
+   "classification": "regra_mecânica",
+   "basis": "Conferência contextual: missões/metas, atributos do mesmo JSON, business_games.levels.set, operações/customization, debt/achievements; constantes nativas em arquivo:linha.",
+   "data": [
+    "customization.json:/places/kiosk/slots/4/tiers/1/desc"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Tênis de mesa contra {0}: melhor de 3 games de 11. Mouse move a raquete, segure o clique para cortar, Q sai.",
+   "classification": "formato_dinâmico",
+   "basis": "Os argumentos vêm do estado/dados pelo consumidor referenciado. Denominadores literais de etapas/jogos seguem suas regras nativas.",
+   "data": [],
+   "cpp": [
+    "MareTableTennis.cpp:218"
+   ]
+  },
+  {
+   "text": "Unreal Engine 5.8.3",
+   "classification": "atributo_nome_identificador",
+   "basis": "Nome, numeração espacial, atributo do objeto/comida ou versão do motor; não é preço nem contador de progressão.",
+   "data": [
+    "definitions.json:/engine"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Use the free Fab mocap clips (seated/standing talk, party dances); 0 = base clips only.",
+   "classification": "interno_console_debug",
+   "basis": "Não é promessa ao jogador; parâmetros de console/câmera/QA, lidos na linha indicada.",
+   "data": [],
+   "cpp": [
+    "MarePerson.cpp:46"
+   ]
+  },
+  {
+   "text": "Venda 100 produtos no quiosque.",
+   "classification": "regra_nativa_ou_enum",
+   "basis": "Regra de minijogo/numeração/tecla ou atributo contextual da UI; ver consumidor nativo. Sem associação artificial a um preço de outro JSON.",
+   "data": [
+    "achievements.json:/achievements/6/description"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Vender 10 porções de petiscos durante esta etapa",
+   "classification": "regra_mecânica",
+   "basis": "Conferência contextual: missões/metas, atributos do mesmo JSON, business_games.levels.set, operações/customization, debt/achievements; constantes nativas em arquivo:linha.",
+   "data": [
+    "definitions.json:/chapters/2/steps/1/text"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Vender 12 sorvetes no quiosque",
+   "classification": "regra_mecânica",
+   "basis": "Conferência contextual: missões/metas, atributos do mesmo JSON, business_games.levels.set, operações/customization, debt/achievements; constantes nativas em arquivo:linha.",
+   "data": [
+    "definitions.json:/side_missions/1/task"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Vender 8 produtos no quiosque",
+   "classification": "regra_mecânica",
+   "basis": "Conferência contextual: missões/metas, atributos do mesmo JSON, business_games.levels.set, operações/customization, debt/achievements; constantes nativas em arquivo:linha.",
+   "data": [
+    "definitions.json:/campaign/2/task"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Vista de um milhão",
+   "classification": "contrato_dívida",
+   "basis": "debt.json principal=1000000, marcos .25/.5/.75 e demo_payment_cap=250000; conteúdo ainda aguarda integração nativa.",
+   "data": [
+    "achievements.json:/achievements/12/name"
+   ],
+   "cpp": []
+  },
+  {
+   "text": "Volcano ash plume: -1 = random days (about 35%), 0 = never, 1 = always (QA).",
+   "classification": "interno_console_debug",
+   "basis": "Não é promessa ao jogador; parâmetros de console/câmera/QA, lidos na linha indicada.",
+   "data": [],
+   "cpp": [
+    "MareMarineWorld.cpp:20"
+   ]
+  },
+  {
+   "text": "Volcano night eruption: -1 = random nights (about 20%), 0 = never, 1 = every night (QA).",
+   "classification": "interno_console_debug",
+   "basis": "Não é promessa ao jogador; parâmetros de console/câmera/QA, lidos na linha indicada.",
+   "data": [],
+   "cpp": [
+    "MareMarineWorld.cpp:23"
+   ]
+  },
+  {
+   "text": "Vovó Dilce mandou um áudio de sete minutos. Resumo: está muito orgulhosa e quer o quarto com vista.",
+   "classification": "narrativo_hipérbole",
+   "basis": "Fala/humor ou elogio informal, sem regra numérica de economia. Não converter exageros em parâmetros.",
+   "data": [],
+   "cpp": [
+    "MareSummitWorld.cpp:310"
+   ]
+  },
+  {
+   "text": "atendente +10% rápido",
+   "classification": "regra_mecânica",
+   "basis": "Conferência contextual: missões/metas, atributos do mesmo JSON, business_games.levels.set, operações/customization, debt/achievements; constantes nativas em arquivo:linha.",
+   "data": [],
+   "cpp": [
+    "MareGame.cpp:855"
+   ]
+  },
+  {
+   "text": "bola 8 · {0} {1}, {2} {3}, {4} {5}",
+   "classification": "formato_dinâmico",
+   "basis": "Os argumentos vêm do estado/dados pelo consumidor referenciado. Denominadores literais de etapas/jogos seguem suas regras nativas.",
+   "data": [],
+   "cpp": [
+    "MareGame.cpp:408"
+   ]
+  },
+  {
+   "text": "dia {0} · nota {1} de 5",
+   "classification": "formato_dinâmico",
+   "basis": "Os argumentos vêm do estado/dados pelo consumidor referenciado. Denominadores literais de etapas/jogos seguem suas regras nativas.",
+   "data": [],
+   "cpp": [
+    "MareGame.cpp:504"
+   ]
+  },
+  {
+   "text": "dispensar a 2ª pessoa",
+   "classification": "regra_nativa_ou_enum",
+   "basis": "Regra de minijogo/numeração/tecla ou atributo contextual da UI; ver consumidor nativo. Sem associação artificial a um preço de outro JSON.",
+   "data": [],
+   "cpp": [
+    "MareGame.cpp:727"
+   ]
+  },
+  {
+   "text": "guiando · parada {0} de 3",
+   "classification": "formato_dinâmico",
+   "basis": "Os argumentos vêm do estado/dados pelo consumidor referenciado. Denominadores literais de etapas/jogos seguem suas regras nativas.",
+   "data": [],
+   "cpp": [
+    "MareGame.cpp:342"
+   ]
+  },
+  {
+   "text": "melhor de 3 games de 11 · {0} {1}, {2} {3}",
+   "classification": "formato_dinâmico",
+   "basis": "Os argumentos vêm do estado/dados pelo consumidor referenciado. Denominadores literais de etapas/jogos seguem suas regras nativas.",
+   "data": [],
+   "cpp": [
+    "MareGame.cpp:449"
+   ]
+  },
+  {
+   "text": "nível {0}/3 · funcionário R$ {1}/dia",
+   "classification": "formato_dinâmico",
+   "basis": "Os argumentos vêm do estado/dados pelo consumidor referenciado. Denominadores literais de etapas/jogos seguem suas regras nativas.",
+   "data": [],
+   "cpp": [
+    "MareGame.cpp:776"
+   ]
+  },
+  {
+   "text": "renda +{0}%",
+   "classification": "formato_dinâmico",
+   "basis": "Os argumentos vêm do estado/dados pelo consumidor referenciado. Denominadores literais de etapas/jogos seguem suas regras nativas.",
+   "data": [],
+   "cpp": [
+    "MareGame.cpp:856"
+   ]
+  },
+  {
+   "text": "saída fraca, menos de 4 bolas na tabela",
+   "classification": "regra_mecânica",
+   "basis": "Conferência contextual: missões/metas, atributos do mesmo JSON, business_games.levels.set, operações/customization, debt/achievements; constantes nativas em arquivo:linha.",
+   "data": [],
+   "cpp": [
+    "MareGameRoom.cpp:185"
+   ]
+  },
+  {
+   "text": "start:0|1, play:seconds, end, state",
+   "classification": "interno_console_debug",
+   "basis": "Não é promessa ao jogador; parâmetros de console/câmera/QA, lidos na linha indicada.",
+   "data": [],
+   "cpp": [
+    "MareArcade.cpp:359"
+   ]
+  },
+  {
+   "text": "você atendeu {0} (R$ {1}, nota {2}/3, {3} perfeito(s), +{4} fama)",
+   "classification": "formato_dinâmico",
+   "basis": "Os argumentos vêm do estado/dados pelo consumidor referenciado. Denominadores literais de etapas/jogos seguem suas regras nativas.",
+   "data": [],
+   "cpp": [
+    "MareBizCommon.cpp:141"
+   ]
+  },
+  {
+   "text": "{0} noite(s) · humor: {1} · rodada {2} de 3",
+   "classification": "formato_dinâmico",
+   "basis": "Os argumentos vêm do estado/dados pelo consumidor referenciado. Denominadores literais de etapas/jogos seguem suas regras nativas.",
+   "data": [],
+   "cpp": [
+    "MareGame.cpp:599"
+   ]
+  },
+  {
+   "text": "{0} subiu para o nível {1}: trabalha melhor e o salário sobe {2}%.",
+   "classification": "formato_dinâmico",
+   "basis": "Os argumentos vêm do estado/dados pelo consumidor referenciado. Denominadores literais de etapas/jogos seguem suas regras nativas.",
+   "data": [],
+   "cpp": [
+    "MareStaff.cpp:151"
+   ]
+  },
+  {
+   "text": "{0} · nível {1}/5 · {2}",
+   "classification": "formato_dinâmico",
+   "basis": "Os argumentos vêm do estado/dados pelo consumidor referenciado. Denominadores literais de etapas/jogos seguem suas regras nativas.",
+   "data": [],
+   "cpp": [
+    "MareGame.cpp:564"
+   ]
+  },
+  {
+   "text": "{0} · passo {1}/3: ",
+   "classification": "formato_dinâmico",
+   "basis": "Os argumentos vêm do estado/dados pelo consumidor referenciado. Denominadores literais de etapas/jogos seguem suas regras nativas.",
+   "data": [],
+   "cpp": [
+    "MareVillageWorld.cpp:203"
+   ]
+  },
+  {
+   "text": "{0}: atendimento ({1}/3)",
+   "classification": "formato_dinâmico",
+   "basis": "Os argumentos vêm do estado/dados pelo consumidor referenciado. Denominadores literais de etapas/jogos seguem suas regras nativas.",
+   "data": [],
+   "cpp": [
+    "MareBusiness.cpp:57"
+   ]
+  }
+ ]
+}

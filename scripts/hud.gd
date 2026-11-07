@@ -37,6 +37,12 @@ var obj_text: = ""
 var _pad_used: = false
 var office: OfficeUI
 var phone: PhoneUI
+var orders_panel: PanelContainer
+var orders_text: Label
+var mission_text: Label
+var work_text: Label
+var _toast_last := ""
+var _toast_time := -10.0
 var compass: Control
 
 func _ready() -> void :
@@ -50,16 +56,16 @@ func _ready() -> void :
 
 	var top: = PanelContainer.new()
 	top.position = Vector2(18, 14)
-	var ts: = UiTheme.box(Color(0.03, 0.17, 0.2, 0.78), 20, Color(1, 0.9, 0.7, 0.35), 2, 8, 18)
+	var ts: = UiTheme.box(Color(0.03, 0.17, 0.2, 0.78), 20, Color(1, 0.9, 0.7, 0.25), 1, 5, 12)
 	top.add_theme_stylebox_override("panel", ts)
 	root.add_child(top)
 	var hb: = HBoxContainer.new()
-	hb.add_theme_constant_override("separation", 26)
+	hb.add_theme_constant_override("separation", 14)
 	top.add_child(hb)
 	hb.add_child(_hud_icon("caixa", Color(0.75, 1.0, 0.7)))
-	money_l = _label(hb, "R$ 300", 32, Color(0.75, 1.0, 0.7))
-	stars_l = _label(hb, "★ 3.0", 32, Color(1.0, 0.86, 0.35))
-	clock_l = _label(hb, "", 32, Color(1, 1, 1))
+	money_l = _label(hb, "R$ 300", 20, Color(0.75, 1.0, 0.7))
+	stars_l = _label(hb, "★ 3.0", 20, Color(1.0, 0.86, 0.35))
+	clock_l = _label(hb, "", 20, Color(1, 1, 1))
 	for l in [money_l, stars_l, clock_l]:
 		l.add_theme_font_override("font", UiTheme.bold())
 	clock_l.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
@@ -98,17 +104,17 @@ func _ready() -> void :
 	prompt_l.add_theme_font_override("font", UiTheme.bold())
 	prompt_l.add_theme_color_override("font_color", Color(1, 0.97, 0.9))
 	prompt_l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	prompt_l.add_theme_font_size_override("font_size", 21)
+	prompt_l.add_theme_font_size_override("font_size", 16)
 	prompt_l.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.9))
-	prompt_l.add_theme_constant_override("outline_size", 10)
+	prompt_l.add_theme_constant_override("outline_size", 3)
 	prompt_l.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	root.add_child(prompt_l)
 	_build_desk_card()
 
 	toasts = VBoxContainer.new()
 	toasts.set_anchors_preset(Control.PRESET_TOP_RIGHT)
-	toasts.position = Vector2(-500, 96)
-	toasts.size = Vector2(480, 300)
+	toasts.position = Vector2(-304, 245)
+	toasts.size = Vector2(286, 160)
 	toasts.add_theme_constant_override("separation", 8)
 	toasts.alignment = BoxContainer.ALIGNMENT_BEGIN
 	toasts.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -135,6 +141,7 @@ func _ready() -> void :
 	_build_shop()
 	_build_objective()
 	_build_compass()
+	_build_orders()
 	Core.day_closed.connect( func(s): office.show_day_summary(s))
 	touch = Quality.is_touch()
 	if not touch:
@@ -152,10 +159,10 @@ func _ready() -> void :
 		keys_l.grow_horizontal = Control.GROW_DIRECTION_BOTH
 		keys_l.add_theme_stylebox_override("normal", UiTheme.box(Color(0.03, 0.15, 0.18, 0.6), 20, Color(), 0, 0, 18))
 		keys_l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		keys_l.add_theme_font_size_override("font_size", 21)
+		keys_l.add_theme_font_size_override("font_size", 13)
 		keys_l.add_theme_color_override("font_color", Color(1, 1, 1, 0.85))
 		keys_l.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.8))
-		keys_l.add_theme_constant_override("outline_size", 6)
+		keys_l.add_theme_constant_override("outline_size", 2)
 		keys_l.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		root.add_child(keys_l)
 		_update_keys_hint()
@@ -182,7 +189,8 @@ func _style(c: Color, r: int) -> StyleBoxFlat:
 
 func _hug(l: Label, fs: int, top: float, pad: float) -> void :
 	var f: Font = l.get_theme_font("font")
-	var w: = f.get_string_size(l.text, HORIZONTAL_ALIGNMENT_LEFT, -1, fs).x + pad
+	var w: = minf(f.get_string_size(l.text, HORIZONTAL_ALIGNMENT_LEFT, -1, fs).x + pad, get_viewport().get_visible_rect().size.x - 32.0)
+	l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	l.offset_left = - w * 0.5
 	l.offset_right = w * 0.5
 	l.offset_top = top
@@ -193,7 +201,7 @@ func _hud_icon(id: String, c: Color) -> TextureRect:
 	t.texture = UiTheme.icon(id)
 	t.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	t.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	t.custom_minimum_size = Vector2(34, 34)
+	t.custom_minimum_size = Vector2(22, 22)
 	t.self_modulate = c
 	t.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	return t
@@ -244,7 +252,7 @@ func toggle_shop() -> void :
 	if shop.visible:
 		phone.close()
 	else:
-		phone.open(phone.app)
+		phone.open("")
 		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 		if _pad_used:
 			var buttons: = shop.find_children("*", "Button", true, false)
@@ -255,6 +263,10 @@ func toggle_shop() -> void :
 	get_tree().call_group("audio", "sfx", "click")
 
 func show_toast(text: String, kind: String) -> void :
+	var now := Time.get_ticks_msec() / 1000.0
+	if text == _toast_last and now - _toast_time < 6.0: return
+	_toast_last = text
+	_toast_time = now
 	var p: = PanelContainer.new()
 	var c: = Color(0.02, 0.2, 0.25, 0.8)
 	if kind == "money":
@@ -265,16 +277,16 @@ func show_toast(text: String, kind: String) -> void :
 		c = Color(0.05, 0.42, 0.45, 0.85)
 	p.add_theme_stylebox_override("panel", UiTheme.box(c, 16, Color(1, 1, 1, 0.25), 2, 6, 16))
 	p.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	var l: = _label(p, text, 23, Color.WHITE)
+	var l: = _label(p, text, 15, Color.WHITE)
 	l.add_theme_font_override("font", UiTheme.bold())
 	l.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
 	l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	l.custom_minimum_size = Vector2(440, 0)
+	l.custom_minimum_size = Vector2(250, 0)
 	toasts.add_child(p)
-	while toasts.get_child_count() > 5:
+	while toasts.get_child_count() > 2:
 		toasts.get_child(0).free()
 	var tw: = create_tween()
-	tw.tween_interval(4.5)
+	tw.tween_interval(3.0)
 	tw.tween_property(p, "modulate:a", 0.0, 0.6)
 	tw.tween_callback(p.queue_free)
 
@@ -339,23 +351,35 @@ func _process(delta: float) -> void :
 			ptxt = "[%s]  %s" % [Quality.key_name("interact"), ptxt]
 		if ptxt != prompt_l.text:
 			prompt_l.text = ptxt
-			_hug(prompt_l, 21, -122.0, 36.0)
+			_hug(prompt_l, 16, -76.0, 30.0)
 		prompt_l.visible = ptxt != ""
 	btn_interact.modulate = Color(1, 1, 1, 1.0 if f else 0.55)
 	_hint_t -= delta
 	if _hint_t <= 0.0:
 		_hint_t = 0.5
-		hint_l.text = _hint()
 		_update_objective()
+		_update_orders()
 	# com o celular aberto, some o que ficaria por baixo/por cima dele
 	var phone_open: bool = shop != null and shop.visible
-	hint_l.visible = not phone_open
+	hint_l.visible = false
+	obj_l.visible = false
+	mission_text.visible=not phone_open or get_viewport().get_visible_rect().size.x>=900
+	orders_panel.position.y=mission_text.position.y+mission_text.get_minimum_size().y+14
+	obj_draw.visible = not phone_open
+	orders_panel.visible = (not phone_open or get_viewport().get_visible_rect().size.x>=900) and orders_text.text != ""
+	orders_panel.z_index=2
+	work_text.visible = not phone_open and work_text.text != ""
+	prompt_l.visible = prompt_l.visible and not phone_open
+	if phone_open and desk_card: desk_card.visible = false
+	toasts.visible = not phone_open
+	toasts.position.y = 18.0
 	if keys_l:
 		keys_l.visible = not phone_open and not touch
 	crosshair.visible = not phone_open
 	crosshair.queue_redraw()
 	obj_draw.queue_redraw()
 	if compass:
+		compass.visible = not phone_open and player.global_position.distance_to(world.KIOSK_C) > 18.0
 		compass.queue_redraw()
 
 func _hint() -> String:
@@ -380,6 +404,9 @@ func _hint() -> String:
 
 
 func _input(e: InputEvent) -> void :
+	# Teclas do nome pertencem ao formulário, inclusive B (atalho do celular).
+	if shop != null and shop.visible and e is InputEventKey and get_viewport().gui_get_focus_owner() is LineEdit and not e.is_action("pause"):
+		return
 	if e is InputEventScreenTouch:
 		if e.pressed:
 			for tb in _touch_buttons:
@@ -418,6 +445,13 @@ func _input(e: InputEvent) -> void :
 		get_viewport().set_input_as_handled()
 	elif e is InputEventMouseButton and e.pressed and e.button_index == MOUSE_BUTTON_LEFT:
 		_pad_used = false
+		if not shop.visible and not get_tree().paused and Core.in_game and not _over_button(e.position):
+			player.refresh_focus()
+			var ops=get_parent().operations
+			if player.focus!=null and player.focus.has_meta("customer_ref"):
+				player.interact()
+				get_viewport().set_input_as_handled()
+				return
 		if not shop.visible and not (office and office.summary.visible) and not get_tree().paused and Core.in_game and Input.mouse_mode != Input.MOUSE_MODE_CAPTURED and not _over_button(e.position):
 			Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 	elif (e is InputEventKey or e is InputEventJoypadButton) and e.is_pressed() and not e.is_echo():
@@ -473,23 +507,21 @@ func _update_keys_hint() -> void :
 	if keys_l == null:
 		return
 	keys_l.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
-	var mv: = "%s%s%s%s" % [Quality.key_name("move_forward"), Quality.key_name("move_left"), Quality.key_name("move_back"), Quality.key_name("move_right")]
-	keys_l.text = tr("%s andar  ·  Mouse olhar  ·  %s interagir  ·  %s celular  ·  %s correr  ·  Esc menu  ·  F11 tela cheia") % [mv, Quality.key_name("interact"), Quality.key_name("shop"), Quality.key_name("sprint")]
-	keys_l.text += tr("  ·  P foto")
-	if keys_l.is_inside_tree():
-		_hug(keys_l, 21, -58.0, 44.0)
+	keys_l.text = "%s interagir   ·   %s celular   ·   Esc menu" % [Quality.key_name("interact"), Quality.key_name("shop")]
+	if keys_l.is_inside_tree(): _hug(keys_l, 13, -30.0, 24.0)
 
 
 func _build_objective() -> void :
 	obj_l = Label.new()
 	obj_l.set_anchors_preset(Control.PRESET_TOP_LEFT)
-	obj_l.position = Vector2(22, 84)
-	obj_l.size = Vector2(640, 40)
-	obj_l.add_theme_font_size_override("font_size", 26)
+	obj_l.position = Vector2(18, 63)
+	obj_l.size = Vector2(400, 40)
+	obj_l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	obj_l.add_theme_font_size_override("font_size", 16)
 	obj_l.add_theme_font_override("font", UiTheme.bold())
 	obj_l.add_theme_color_override("font_color", Color(1.0, 0.92, 0.55))
 	obj_l.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.85))
-	obj_l.add_theme_constant_override("outline_size", 8)
+	obj_l.add_theme_constant_override("outline_size", 3)
 	obj_l.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	obj_l.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
 	root.add_child(obj_l)
@@ -507,6 +539,35 @@ func objective() -> Array:
 	var home: Vector3 = world.bed.global_position if world.get("bed") else Vector3.INF
 	if Core.can_sleep() and home != Vector3.INF:
 		return [tr("Já é tarde: volte para casa e durma"), home, 2.5]
+	var terminal = get_parent().operations
+	if not Core.company.created and terminal != null:
+		return ["Criar seu quiosque · B no celular",Vector3.INF,2.0]
+	if Core.company_enabled() and village:
+		var ops = get_parent().operations
+		var carried: String = str(Core.company.carry)
+		for g in village.waiting_customers():
+			if carried != "" and carried in village._remaining(g):
+				return ["Entregar " + str(Economy.dish(carried).name), ops.service_approach(g), 2.0]
+		if carried == "" and village.waiting_customers().is_empty() and not village.customers_to_order().is_empty():
+			var unrecorded = village.customers_to_order()[0]
+			return ["Anotar pedido " + ops.order_number(unrecorded) + " · E no cliente", ops.service_approach(unrecorded), 2.0]
+		if not village.waiting_customers().is_empty() and carried == "":
+			var next = village._next_customer()
+			var id: String = str(village._remaining(next)[0])
+			var ready: bool = Core.company_available(id) > 0
+			var drink: bool = load("res://scripts/dish_presentation.gd").is_chilled(id)
+			var kind: String = "bebidas" if drink else "pratos"
+			var verb := "Retirar" if ready else "Repor estoque para"
+			return ["%s %s · %s" % [verb, Economy.dish(id).name, ops.order_number(next)], ops.stations[kind].global_position, 2.5]
+		if not Core.company.receivables.is_empty():
+			return ["Receber contas no celular", Vector3.INF, 2.5]
+		if not Core.company.dirty_seats.is_empty():
+			var seat: int = int(Core.company.dirty_seats[0])
+			if seat < world.kiosk_spots.size():
+				return ["Recolher louça e limpar", world.kiosk_spots[seat].approach, 2.5]
+		if not Core.company.kiosk_open:
+			return ["Abrir quiosque no celular",Vector3.INF,2.0]
+		if pp.distance_to(world.KIOSK_C) < 18.0: return ["", Vector3.INF, 0.0]
 	for r in Core.rooms:
 		if r.state == "dirty":
 			var bc: = Vector3(world.BUNG_X[r.id], 0.6, world.BUNG_Z)
@@ -519,7 +580,7 @@ func objective() -> Array:
 			return [tr("Turno no quiosque: clientes esperando"), kc, 4.0]
 	for id in Economy.EXPANSION_ORDER:
 		if Core.expansion_state(id)[0] == "ready":
-			return [tr("Dá para comprar: %s — abra o celular (%s)") % [tr(str(Economy.EXPANSIONS[id].name)), Quality.key_name("shop")], Vector3.INF, 0.0]
+			return [tr("Dá para comprar: %s — use o celular (%s)") % [tr(str(Economy.EXPANSIONS[id].name)), Quality.key_name("shop")], Vector3.INF, 0.0]
 	if village:
 		var kc: Vector3 = world.kiosk_counter.global_position
 		if Core.minutes < 8.0 * 60.0:
@@ -570,7 +631,7 @@ func _draw_objective() -> void :
 	var inside: = not behind and sp.x > margin and sp.x < vs.x - margin and sp.y > margin and sp.y < vs.y - margin
 	if inside:
 
-		var pts: = PackedVector2Array([sp + Vector2(0, -16), sp + Vector2(11, 0), sp + Vector2(0, 16), sp + Vector2(-11, 0)])
+		var pts: = PackedVector2Array([sp + Vector2(0, -9), sp + Vector2(6, 0), sp + Vector2(0, 9), sp + Vector2(-6, 0)])
 		obj_draw.draw_colored_polygon(pts, col)
 		obj_draw.draw_polyline(pts + PackedVector2Array([pts[0]]), Color(0, 0, 0, 0.6), 2.0)
 		obj_draw.draw_string(get_theme_default_font(), sp + Vector2(-30, 38), "%d m" % int(d), HORIZONTAL_ALIGNMENT_CENTER, 60, 20, Color.WHITE)
@@ -586,7 +647,7 @@ func _draw_objective() -> void :
 	var r: = minf(vs.x, vs.y) * 0.42
 	var p: = c + dir * r
 	var n: = Vector2( - dir.y, dir.x)
-	var tri: = PackedVector2Array([p + dir * 26, p - dir * 12 + n * 18, p - dir * 12 - n * 18])
+	var tri: = PackedVector2Array([p + dir * 11, p - dir * 6 + n * 8, p - dir * 6 - n * 8])
 	obj_draw.draw_colored_polygon(tri, col)
 	obj_draw.draw_polyline(tri + PackedVector2Array([tri[0]]), Color(0, 0, 0, 0.6), 2.0)
 
@@ -621,3 +682,51 @@ func _draw_compass() -> void :
 	compass.draw_line(Vector2(cx, y - 12), Vector2(cx, y + 12), Color(1, 0.85, 0.35), 2.0)
 	var wind: = tr("chuva") if Core.weather == "rain" else tr("sol")
 	compass.draw_string(get_theme_default_font(), Vector2(cx + 138, y + 4), wind, HORIZONTAL_ALIGNMENT_LEFT, -1, 16, Color(0.85, 0.95, 1))
+
+func _build_orders() -> void:
+	mission_text=_label(root,"",13,Color(1,.93,.68))
+	mission_text.position=Vector2(18,64)
+	mission_text.size=Vector2(285,100)
+	mission_text.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
+	mission_text.mouse_filter=Control.MOUSE_FILTER_IGNORE
+	mission_text.add_theme_color_override("font_outline_color",Color(0,.04,.04,.9))
+	mission_text.add_theme_constant_override("outline_size",2)
+	orders_panel = PanelContainer.new()
+	orders_panel.name = "KioskOrders"
+	orders_panel.set_anchors_preset(Control.PRESET_TOP_LEFT)
+	orders_panel.position = Vector2(18, 154)
+	orders_panel.custom_minimum_size = Vector2(270, 0)
+	orders_panel.add_theme_stylebox_override("panel", UiTheme.box(Color(0.025, 0.13, 0.15, 0.83), 12, Color(1, 1, 1, 0.12), 1, 9, 12))
+	orders_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	root.add_child(orders_panel)
+	orders_text = _label(orders_panel, "", 14, Color(1, 0.97, 0.88))
+	orders_text.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	orders_text.custom_minimum_size = Vector2(246, 0)
+	work_text = Label.new()
+	work_text.set_anchors_preset(Control.PRESET_CENTER_BOTTOM)
+	work_text.position = Vector2(-260, -114)
+	work_text.size = Vector2(520, 24)
+	work_text.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	work_text.add_theme_font_size_override("font_size", 16)
+	work_text.add_theme_color_override("font_color", Color(1, 0.97, 0.86))
+	work_text.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.8))
+	work_text.add_theme_constant_override("outline_size", 3)
+	root.add_child(work_text)
+	orders_panel.visible = false
+
+func _update_orders() -> void:
+	mission_text.text=Core.prog.Campaign.tracker(Core.prog)
+	orders_text.text = ""
+	work_text.text = ""
+	if not Core.company_enabled() or village == null: return
+	var ops = get_parent().operations
+	var waiting: Array = village.waiting_customers()
+	var lines: Array = []
+	for guest in waiting:
+		var items: Array = []
+		for id in village._remaining(guest):
+			items.append(str(Economy.dish(id).name))
+		lines.append("%s\n%s" % [guest.gname, " + ".join(items)])
+	if not lines.is_empty(): orders_text.text = "\n\n".join(lines)
+	if str(Core.company.carry) != "":
+		work_text.text = "Na mão: %s · E no cliente com o mesmo pedido" % Economy.dish(str(Core.company.carry)).name

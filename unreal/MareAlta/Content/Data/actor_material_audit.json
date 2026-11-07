@@ -1,0 +1,128 @@
+{
+  "catalog_meshes": 44,
+  "root_materials": 115,
+  "required_changes": [],
+  "fixed": true,
+  "skeletal_slots": {
+    "/Game/Actors/Combined/Human_0/Eyebrows.Eyebrows": [
+      {
+        "slot": "MI_Hair_1",
+        "material": "/Game/Actors/Combined/Human_0/MI_Hair_1.MI_Hair_1"
+      },
+      {
+        "slot": "Human_0_material_1",
+        "material": "/Game/Actors/Combined/Human_0/Human_0_material_1.Human_0_material_1"
+      },
+      {
+        "slot": "Human_0_material_2",
+        "material": "/Game/Actors/Combined/Human_0/Human_0_material_2.Human_0_material_2"
+      },
+      {
+        "slot": "Human_0_material_3",
+        "material": "/Game/Actors/Combined/Human_0/Human_0_material_3.Human_0_material_3"
+      },
+      {
+        "slot": "Human_0_material_4",
+        "material": "/Game/Actors/Combined/Human_0/Human_0_material_4.Human_0_material_4"
+      },
+      {
+        "slot": "Human_0_material_5",
+        "material": "/Game/Actors/Combined/Human_0/Human_0_material_5.Human_0_material_5"
+      },
+      {
+        "slot": "Human_0_material_6",
+        "material": "/Game/Actors/Combined/Human_0/Human_0_material_6.Human_0_material_6"
+      }
+    ],
+    "/Game/Actors/Combined/Human_1/Eyebrows.Eyebrows": [
+      {
+        "slot": "MI_Hair_1",
+        "material": "/Game/Actors/Combined/Human_1/MI_Hair_1.MI_Hair_1"
+      },
+      {
+        "slot": "Human_1_material_1",
+        "material": "/Game/Actors/Combined/Human_1/Human_1_material_1.Human_1_material_1"
+      },
+      {
+        "slot": "Human_1_material_2",
+        "material": "/Game/Actors/Combined/Human_1/Human_1_material_2.Human_1_material_2"
+      },
+      {
+        "slot": "Human_1_material_3",
+        "material": "/Game/Actors/Combined/Human_1/Human_1_material_3.Human_1_material_3"
+      },
+      {
+        "slot": "Human_1_material_4",
+        "material": "/Game/Actors/Combined/Human_1/Human_1_material_4.Human_1_material_4"
+      },
+      {
+        "slot": "Human_1_material_5",
+        "material": "/Game/Actors/Combined/Human_1/Human_1_material_5.Human_1_material_5"
+      },
+      {
+        "slot": "Human_1_material_6",
+        "material": "/Game/Actors/Combined/Human_1/Human_1_material_6.Human_1_material_6"
+      }
+    ],
+    "/Game/Actors/Combined/Human_2/Eyebrows.Eyebrows": [
+      {
+        "slot": "MI_Hair_2",
+        "material": "/Game/Actors/Combined/Human_2/MI_Hair_2.MI_Hair_2"
+      },
+      {
+        "slot": "Human_2_material_1",
+        "material": "/Game/Actors/Combined/Human_2/Human_2_material_1.Human_2_material_1"
+      },
+      {
+        "slot": "Human_2_material_2",
+        "material": "/Game/Actors/Combined/Human_2/Human_2_material_2.Human_2_material_2"
+      },
+      {
+        "slot": "Human_2_material_3",
+        "material": "/Game/Actors/Combined/Human_2/Human_2_material_3.Human_2_material_3"
+      },
+      {
+        "slot": "Human_2_material_4",
+        "material": "/Game/Actors/Combined/Human_2/Human_2_material_4.Human_2_material_4"
+      },
+      {
+        "slot": "Human_2_material_5",
+        "material": "/Game/Actors/Combined/Human_2/Human_2_material_5.Human_2_material_5"
+      },
+      {
+        "slot": "Human_2_material_6",
+        "material": "/Game/Actors/Combined/Human_2/Human_2_material_6.Human_2_material_6"
+      }
+    ],
+    "/Game/Actors/Combined/Human_3/Eyebrows.Eyebrows": [
+      {
+        "slot": "MI_Hair_1",
+        "material": "/Game/Actors/Combined/Human_3/MI_Hair_1.MI_Hair_1"
+      },
+      {
+        "slot": "Human_3_material_1",
+        "material": "/Game/Actors/Combined/Human_3/Human_3_material_1.Human_3_material_1"
+      },
+      {
+        "slot": "Human_3_material_2",
+        "material": "/Game/Actors/Combined/Human_3/Human_3_material_2.Human_3_material_2"
+      },
+      {
+        "slot": "Human_3_material_3",
+        "material": "/Game/Actors/Combined/Human_3/Human_3_material_3.Human_3_material_3"
+      },
+      {
+        "slot": "Human_3_material_4",
+        "material": "/Game/Actors/Combined/Human_3/Human_3_material_4.Human_3_material_4"
+      },
+      {
+        "slot": "Human_3_material_5",
+        "material": "/Game/Actors/Combined/Human_3/Human_3_material_5.Human_3_material_5"
+      },
+      {
+        "slot": "Human_3_material_6",
+        "material": "/Game/Actors/Combined/Human_3/Human_3_material_6.Human_3_material_6"
+      }
+    ]
+  }
+}

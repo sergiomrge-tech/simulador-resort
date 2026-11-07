@@ -1,14 +1,14 @@
 extends RefCounted
 class_name Ppl
 ## Pessoas (v0.7.3): corpo, rosto e cabelo vêm do pacote CC0 "Universal Base Characters" (Quaternius).
-## As roupas (camisa e bermuda) são geradas aqui a partir da própria malha do corpo, deslocada para fora,
-## então já nascem com o mesmo esqueleto e os mesmos pesos de pele. As animações vêm do guest.glb antigo
+## Roupas reais vêm do pacote modular CC0 Quaternius, adaptadas no Blender com seus pesos originais.
+## Calçados preservam a apresentação existente. As animações vêm do guest.glb antigo
 ## (mesmo esqueleto UAL de 65 ossos, mesmos nomes de osso).
 
 const DIR: = "res://assets/models/ubc/"
 const SHIRT_BONES: = ["spine_01", "spine_02", "spine_03", "clavicle_l", "clavicle_r", "upperarm_l", "upperarm_r"]
 const SHORTS_BONES: = ["pelvis", "thigh_l", "thigh_r"]
-const HAIR_MALE: = ["Hair_Buzzed", "Hair_SimpleParted", "Hair_SimpleParted", "Hair_Long", "Hair_Buzzed", ""]
+const HAIR_MALE: = ["Hair_Buzzed", "Hair_SimpleParted", "Hair_SimpleParted", "Hair_Long", "Hair_Buzzed"]
 const HAIR_FEMALE: = ["Hair_BuzzedFemale", "Hair_Long", "Hair_Buns", "Hair_SimpleParted", "Hair_Long", "Hair_Buns"]
 
 static var _scenes: = {}
@@ -30,9 +30,9 @@ static func build_body(female: bool) -> Node3D:
 	var old: Node = _anim_src.instantiate()
 	var ap: = old.find_child("AnimationPlayer", true, false)
 	if ap:
+		clear_runtime_owner(ap)
 		ap.get_parent().remove_child(ap)
 		root.add_child(ap)
-		ap.owner = null
 	old.queue_free()
 	return root
 
@@ -186,6 +186,13 @@ static func clothes(female: bool, mi: MeshInstance3D, skel: Skeleton3D) -> Dicti
 	_clothes[key] = out
 	return out
 
+## Nós enxertados em outro personagem não pertencem mais à cena importada.
+## Limpar antes de remover/reanexar também cobre eventuais filhos importados.
+static func clear_runtime_owner(node: Node) -> void:
+	node.owner = null
+	for child in node.get_children():
+		clear_runtime_owner(child)
+
 static func hair_mesh(style: String) -> MeshInstance3D:
 	if style == "":
 		return null
@@ -197,6 +204,7 @@ static func hair_mesh(style: String) -> MeshInstance3D:
 		root.queue_free()
 		return null
 	var mi: MeshInstance3D = found[0]
+	clear_runtime_owner(mi)
 	mi.get_parent().remove_child(mi)
 	root.queue_free()
 	return mi
@@ -220,6 +228,9 @@ static var _gray_hair: = {}
 ## Cabelo: a textura original é azulada; usa uma versão em tons de cinza (média 0,5) para a cor do cabelo sair exata.
 static func hair_copy(src: Material, tint: Color) -> Material:
 	var m: Material = toon_copy(src, tint)
+	if m is BaseMaterial3D:
+		m.diffuse_mode = BaseMaterial3D.DIFFUSE_BURLEY
+		m.roughness = 0.82
 	if m is BaseMaterial3D and (m as BaseMaterial3D).albedo_texture != null:
 		var bm: BaseMaterial3D = m as BaseMaterial3D
 		var tex: Texture2D = bm.albedo_texture
@@ -266,10 +277,69 @@ static func skin_material(female: bool, skin: Color) -> StandardMaterial3D:
 	var m: = StandardMaterial3D.new()
 	m.albedo_texture = load(path)
 	m.albedo_color = tint
-	m.diffuse_mode = BaseMaterial3D.DIFFUSE_TOON
-	m.specular_mode = BaseMaterial3D.SPECULAR_DISABLED
+	m.diffuse_mode = BaseMaterial3D.DIFFUSE_BURLEY
+	m.specular_mode = BaseMaterial3D.SPECULAR_SCHLICK_GGX
+	m.metallic_specular = 0.16
 	m.roughness = 0.8
 	m.rim_enabled = true
-	m.rim = 0.2
+	m.rim = 0.08
 	m.rim_tint = 0.6
 	return m
+
+## Real CC0 garments fitted offline in Blender; keep the imported Skin bind names.
+static var _outfits: Dictionary = {}
+static func outfit_parts(female: bool) -> Array:
+	var key := "female" if female else "male"
+	if not _outfits.has(key):
+		_outfits[key] = load("res://assets/models/clothing/outfit_" + key + ".glb")
+	var root: Node = (_outfits[key] as PackedScene).instantiate()
+	var parts: Array = []
+	for mi in root.find_children("*", "MeshInstance3D", true, false):
+		clear_runtime_owner(mi)
+		mi.get_parent().remove_child(mi)
+		if str(mi.name).begins_with("skin_"):
+			mi.free()
+		else:
+			parts.append(mi)
+	root.free()
+	return parts
+
+## Occlude body faces under real garments so animated skin cannot poke through fabric.
+static var _covered_bodies: Dictionary = {}
+static func covered_body(female: bool, mesh: ArrayMesh) -> ArrayMesh:
+	var key := "female" if female else "male"
+	if _covered_bodies.has(key): return _covered_bodies[key]
+	var result := ArrayMesh.new()
+	for surface in mesh.get_surface_count():
+		var arrays: Array = mesh.surface_get_arrays(surface)
+		var vertices: PackedVector3Array = arrays[Mesh.ARRAY_VERTEX]
+		var indices: PackedInt32Array = arrays[Mesh.ARRAY_INDEX]
+		var kept := PackedInt32Array()
+		for i in range(0, indices.size(), 3):
+			var p: Vector3 = (vertices[indices[i]] + vertices[indices[i + 1]] + vertices[indices[i + 2]]) / 3.0
+			var neck: bool = p.y > 1.48 and absf(p.x) < 0.075
+			var head: bool = p.y >= 1.54 and absf(p.x) < 0.18
+			var forearms: bool = absf(p.x) > 0.36 and p.y > 1.20
+			var lower_legs: bool = p.y > 0.13 and p.y < 0.61
+			if neck or head or forearms or lower_legs:
+				kept.append_array(indices.slice(i, i + 3))
+		arrays[Mesh.ARRAY_INDEX] = kept
+		for custom in range(Mesh.ARRAY_CUSTOM0, Mesh.ARRAY_CUSTOM3 + 1): arrays[custom] = null
+		var flags: int = Mesh.ARRAY_FLAG_USE_8_BONE_WEIGHTS if arrays[Mesh.ARRAY_BONES].size() == vertices.size() * 8 else 0
+		result.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays, [], {}, flags)
+		result.surface_set_material(surface, mesh.surface_get_material(surface))
+	_covered_bodies[key] = result
+	return result
+
+## The downloaded hairstyles are rigid meshes, not skinned meshes.
+static func attach_hair(part: MeshInstance3D, skel: Skeleton3D) -> void:
+	if part.skin != null:
+		skel.add_child(part)
+		part.skeleton = NodePath("..")
+		return
+	var head := skel.find_bone("Head")
+	var attachment := BoneAttachment3D.new()
+	attachment.bone_name = "Head"
+	skel.add_child(attachment)
+	part.transform = skel.get_bone_global_rest(head).affine_inverse() * part.transform
+	attachment.add_child(part)

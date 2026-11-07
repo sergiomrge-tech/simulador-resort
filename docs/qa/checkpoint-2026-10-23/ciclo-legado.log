@@ -1,0 +1,232 @@
+Godot Engine v4.5.1.stable.official.f62fdbde1 - https://godotengine.org
+Vulkan 1.4.351 - Forward+ - Using Device #0: NVIDIA - NVIDIA GeForce RTX 4060 Ti
+
+vegetacao: capim=4021 arbustos=99 coqueiros+=46
+serra: copas perto=250 crista=101
+serra: tris encosta=16884
+[loop] ok  - vila carregada (quiosque e cama)
+[loop] ok  - moradores na vila: 12
+[loop] ok  - novo jogo começa às 06:30
+[loop] ok  - herói acorda em casa
+[loop] ok  - novo jogo começa só com o quiosque
+[loop] ok  - dinheiro inicial R$ 150
+[loop] ok  - pousada é um lote à venda
+[loop] ok  - bar é um lote à venda
+[loop] ok  - piscina é um lote à venda
+[loop] ok  - quiosque começa simples
+[loop] ok  - cardápio inicial: coco gelado e suco
+[loop] ok  - bar bloqueado no início
+[loop] ok  - barman ainda não existe
+[loop] ok  - mesas exigem juntar dinheiro no 1º dia
+[loop] ok  - mesas já dá para comprar
+[loop] ok  - comprou mesas e guarda-sóis
+[loop] ok  - mesas apareceram no quiosque
+[loop] ok  - pousada recusada sem requisitos
+[loop] ok  - chapa exige nota mínima
+[loop] ok  - comprou drinks
+[loop] ok  - comprou neon
+[loop] ok  - comprou grill
+[loop] ok  - comprou bar
+[loop] ok  - comprou pousada
+[loop] ok  - piscina exige 2 bangalôs
+[loop] ok  - segundo bangalô construído
+[loop] ok  - comprou pool
+[loop] ok  - comprou passeios
+[loop] ok  - hotel 5★ exige fama e capítulo
+[loop] ok  - área bar visível
+[loop] ok  - área pousada visível
+[loop] ok  - área pool visível
+[loop] ok  - área neon visível
+[loop] ok  - área grill visível
+[loop] ok  - barman no bar
+[loop] ok  - cardápio completo no quiosque
+[loop] ok  - dois bangalôs no mundo
+[loop] ok  - banhista indo ao bar
+[loop] ok  - save guardou as expansões
+[loop] inicio: dinheiro=300 estrelas=3.00
+[loop] ok  - hóspede chegou à fila
+[loop] ok  - prompt do balcão: 'Fazer check-in de Lucas'
+[loop] ok  - bangalô 1 ocupado
+[loop] ok  - diária recebida: 136
+[loop] ok  - hóspede indo para o quarto
+[loop] ok  - hóspede fez check-out (atividades: ["Sitting_Idle_Loop"])
+[loop] ok  - vendas no bar: R$ 74
+[loop] ok  - bangalô 1 ficou sujo
+[loop] ok  - hóspedes atendidos = 1
+[loop] ok  - estrelas subiram: 3.00 -> 3.48
+[loop] ok  - prompt de limpeza 'cama': 'Arrumar a cama (Bangalô 1)'
+[loop] ok  - cama limpo
+[loop] ok  - prompt de limpeza 'toalhas': 'Recolher as toalhas (Bangalô 1)'
+[loop] ok  - toalhas limpo
+[loop] ok  - prompt de limpeza 'lixo': 'Jogar o lixo fora (Bangalô 1)'
+[loop] ok  - lixo limpo
+[loop] ok  - bangalô 1 pronto de novo
+[loop] ok  - cama arrumada visível
+[loop] ok  - dinheiro aumentou: 300 -> 530
+[loop] ok  - comprou rede
+[loop] ok  - rede instalada e visível
+[loop] ok  - preço da rede descontado
+[loop] ok  - sem quarto livre: 'Sem bangalô limpo para Lucas'
+[loop] ok  - save carregado
+[loop] ok  - save preservou dinheiro (380) e redes (1)
+[loop] ok  - cliente do quiosque criado
+[loop] ok  - cliente esperando no balcão
+LOOP_TEST FAIL: prompt do quiosque: ''
+LOOP_TEST FAIL: venda no quiosque: +R$ 0 (0 itens)
+LOOP_TEST FAIL: cliente atendido fica comendo/bebendo
+LOOP_TEST FAIL: contador de atendimentos do dia: 0
+[loop] ok  - meta diária: 24 clientes
+LOOP_TEST FAIL: combo após atendimento rápido: x0
+[loop] ok  - preço padrão do coco: 12
+[loop] ok  - preço ×1,5 do coco: 18
+[loop] ok  - preço alto reduz a demanda: 1.10 < 1.20
+[loop] ok  - preço baixo atrai mais clientes: 1.27
+[loop] ok  - gelo estraga à noite: 20 -> 15
+[loop] ok  - freezer reduz a perda: 20 -> 17
+[loop] ok  - eventos do dia sorteados: ["", "calor", "lua", "mare", "tempestade"]
+[loop] ok  - maré alta e tempestade sorteadas: ["", "calor", "lua", "mare", "tempestade"]
+[loop] ok  - preço do fornecedor oscila: 26 > 15
+[loop] ok  - assinou contrato de coco
+[loop] ok  - taxa do contrato cobrada
+[loop] ok  - contrato nunca paga mais que o normal
+[loop] ok  - contrato expira depois de 5 dias
+[loop] ok  - antes do dia 8 não tem festa
+[loop] ok  - calendário de festas
+[loop] ok  - decorou a festa do dia
+[loop] ok  - festa atrai clientes (1.20 < 1.68 < 2.04)
+[loop] ok  - tempestade espanta clientes
+[loop] ok  - tempestade esvazia a praia
+[loop] ok  - tempestade sem preparativos estraga estoque (13)
+[loop] ok  - tempestade traz chuva
+[loop] ok  - pagou os preparativos da tempestade
+[loop] ok  - custo dos preparativos
+[loop] ok  - preparativos protegem o estoque
+[loop] ok  - passeio de snorkel rendeu 200
+[loop] ok  - o mesmo passeio não roda duas vezes
+[loop] ok  - maré alta cancela o passeio de barco
+[loop] ok  - trilha ao farol acontece na maré alta
+[loop] ok  - venda dá fama
+[loop] ok  - comprou melhoria Mãos rápidas
+[loop] ok  - efeito da melhoria: 0.12
+[loop] ok  - fama sobe de nível: 5
+[loop] ok  - sorveteria disponível
+[loop] ok  - comprou a sorveteria
+[loop] ok  - sorveteria apareceu no mapa
+[loop] ok  - minijogo disponível ao meio-dia
+[loop] ok  - minijogo pagou e só volta na próxima hora
+[loop] ok  - descobriu a tapioca
+[loop] ok  - tapioca no cardápio
+[loop] ok  - prato desligado sai do cardápio
+[loop] ok  - atendente treinado subiu de nível
+[loop] ok  - atendente de folga não trabalha
+[loop] ok  - 3 metas da semana
+[loop] ok  - barreira da Prainha do Oeste removida
+[loop] ok  - hotel 5★ liberado: ["ready", ""]
+[loop] ok  - construiu o Grand Hotel 5★
+[loop] ok  - hotel apareceu no mapa
+[loop] ok  - hotel rendeu à noite: { "occ": 0.79, "rooms": 25, "rev": 5500, "dining": 1488, "staff": 900 }
+[loop] ok  - save v6 guardou a evolução
+[loop] ok  - cama antes das 20h: 'Sua cama (dá para dormir depois das 20:00)'
+[loop] ok  - prompt da cama: 'Dormir até amanhã (06:30)'
+[loop] ok  - dormiu: dia 1 -> 2
+[loop] ok  - acordou ~06:30 (06:30)
+[loop] ok  - acordou em casa
+[loop] ok  - save após dormir (dia 2.0, posição salva)
+[loop] ok  - cardápio tem margem
+[loop] ok  - fechamento: entradas R$ 14.350
+[loop] ok  - fechamento: saídas incluem a rede
+[loop] ok  - melhorou o clima do bangalô 1
+[loop] ok  - ventilador no nível 1
+[loop] ok  - diária subiu 163 → 185
+[loop] ok  - ventilador visível
+[loop] ok  - ar-condicionado ainda oculto
+[loop] ok  - vendeu coco gelado a R$ 12
+[loop] ok  - venda entrou no caixa
+[loop] ok  - coco acabou
+[loop] ok  - sem estoque não vende
+[loop] ok  - falta de estoque derruba a avaliação
+[loop] ok  - comprou fardo de coco
+[loop] ok  - estoque de coco = 6
+[loop] ok  - custo do fardo descontado
+[loop] ok  - entregou a encomenda da Dona Rita
+[loop] ok  - recompensa da missão
+[loop] ok  - pesca: peixe grande rende 3
+[loop] ok  - pesca: bota velha não rende nada
+[loop] ok  - entregou o peixe ao Seu Zé
+[loop] ok  - cocos caídos na praia: 4 montes
+[loop] ok  - juntou cocos caídos
+[loop] ok  - cocos caídos voltam no dia seguinte
+[loop] ok  - álbum sem repetidos: 2
+[loop] ok  - prêmio do álbum com 3 famosos
+[loop] ok  - VIP: cliente criado
+[loop] ok  - VIP: chegou à mesa e fez pedido
+[loop] ok  - VIP: pedido servido
+[loop] ok  - VIP: Kai Onda entrou no álbum
+[loop] ok  - VIP: pagou o pedido e a gorjeta (38)
+LOOP_TEST FAIL: rush: 0 clientes chegaram em 40s
+[loop] ok  - rush respeita as vagas do quiosque (0 de 8)
+[loop] rush: sem cliente esperando (k=0) estados=[] min=920 open=true
+LOOP_TEST FAIL: rush: atendeu 0 clientes seguidos (combo x0)
+[loop] ok  - quiosque fechado: ninguém fica parado (0 presos)
+[loop] ok  - evento calor aumenta a demanda: 1.63 -> 2.04
+[loop] ok  - contratou camareira
+[loop] ok  - camareira na equipe
+[loop] ok  - bangalô extra recusado sem dinheiro
+[loop] ok  - construiu o bangalô 3
+[loop] ok  - terceiro bangalô existe no mundo
+[loop] ok  - chuva ligada
+[loop] ok  - sol de volta
+[loop] ok  - livro-caixa tem melhoria
+[loop] ok  - save da progressão
+[loop] ok  - save guardou estoque e upgrade
+[loop] ok  - save guardou bangalôs, dinheiro e equipe
+LOOP_TEST FAIL  dinheiro=5230 estrelas=4.34 bar=74
+ERROR: Parameter "material" is null.
+   at: material_casts_shadows (servers/rendering/renderer_rd/storage_rd/material_storage.cpp:2371)
+ERROR: Parameter "material" is null.
+   at: material_is_animated (servers/rendering/renderer_rd/storage_rd/material_storage.cpp:2358)
+ERROR: Parameter "material" is null.
+   at: material_get_instance_shader_parameters (servers/rendering/renderer_rd/storage_rd/material_storage.cpp:2402)
+ERROR: Parameter "material" is null.
+   at: material_update_dependency (servers/rendering/renderer_rd/storage_rd/material_storage.cpp:2414)
+ERROR: Parameter "material" is null.
+   at: material_casts_shadows (servers/rendering/renderer_rd/storage_rd/material_storage.cpp:2371)
+ERROR: Parameter "material" is null.
+   at: material_is_animated (servers/rendering/renderer_rd/storage_rd/material_storage.cpp:2358)
+ERROR: Parameter "material" is null.
+   at: material_get_instance_shader_parameters (servers/rendering/renderer_rd/storage_rd/material_storage.cpp:2402)
+ERROR: Parameter "material" is null.
+   at: material_update_dependency (servers/rendering/renderer_rd/storage_rd/material_storage.cpp:2414)
+ERROR: Parameter "material" is null.
+   at: material_casts_shadows (servers/rendering/renderer_rd/storage_rd/material_storage.cpp:2371)
+ERROR: Parameter "material" is null.
+   at: material_is_animated (servers/rendering/renderer_rd/storage_rd/material_storage.cpp:2358)
+ERROR: Parameter "material" is null.
+   at: material_get_instance_shader_parameters (servers/rendering/renderer_rd/storage_rd/material_storage.cpp:2402)
+ERROR: Parameter "material" is null.
+   at: material_update_dependency (servers/rendering/renderer_rd/storage_rd/material_storage.cpp:2414)
+ERROR: Pages in use exist at exit in PagedAllocator: N33RendererSceneRenderImplementation22RenderForwardClustered32GeometryInstanceSurfaceDataCacheE
+   at: ~PagedAllocator (./core/templates/paged_allocator.h:169)
+ERROR: Pages in use exist at exit in PagedAllocator: N33RendererSceneRenderImplementation22RenderForwardClustered32GeometryInstanceForwardClusteredE
+   at: ~PagedAllocator (./core/templates/paged_allocator.h:169)
+ERROR: 1 shaders of type SceneForwardClusteredShaderRD were never freed
+   at: ~ShaderRD (servers/rendering/renderer_rd/shader_rd.cpp:1044)
+ERROR: 2 RID allocations of type 'N10RendererRD11MeshStorage4MeshE' were leaked at exit.
+ERROR: 1 RID allocations of type 'N10RendererRD15MaterialStorage8MaterialE' were leaked at exit.
+ERROR: 1 RID allocations of type 'N10RendererRD15MaterialStorage6ShaderE' were leaked at exit.
+ERROR: 1 RID allocations of type 'N10RendererRD14TextureStorage7TextureE' were leaked at exit.
+ERROR: 1 RID allocations of type 'N17RendererSceneCull8InstanceE' were leaked at exit.
+WARNING: 1 RID of type "UniformBuffer" was leaked.
+   at: _free_rids (servers/rendering/rendering_device.cpp:6979)
+WARNING: 6 RIDs of type "IndexArray" were leaked.
+   at: _free_rids (servers/rendering/rendering_device.cpp:6981)
+WARNING: 6 RIDs of type "IndexBuffer" were leaked.
+   at: _free_rids (servers/rendering/rendering_device.cpp:6981)
+WARNING: 3 RIDs of type "VertexBuffer" were leaked.
+   at: _free_rids (servers/rendering/rendering_device.cpp:6981)
+WARNING: 2 RIDs of type "Texture" were leaked.
+   at: finalize (servers/rendering/rendering_device.cpp:7191)
+WARNING: ObjectDB instances leaked at exit (run with --verbose for details).
+   at: cleanup (core/object/object.cpp:2514)
+ERROR: 4 resources still in use at exit (run with --verbose for details).
+   at: clear (core/io/resource.cpp:795)

@@ -4,6 +4,7 @@ extends Node3D
 
 var world: Node3D
 var guests: Node3D
+var operations: Node3D
 var village: Node3D
 var player: CharacterBody3D
 var hud: CanvasLayer
@@ -92,6 +93,11 @@ func _ready() -> void :
 	for a in OS.get_cmdline_user_args():
 		var kv: PackedStringArray = a.trim_prefix("--").split("=", true, 1)
 		args[kv[0]] = kv[1] if kv.size() > 1 else "1"
+	if args.has("perf-test"):
+		seed(414141)
+		if args.has("perf-original"):
+			Real.use_material_cache=false
+			preload("res://scripts/guest.gd").use_block_cache=false
 	Core.in_game = false
 	Core.proc_props = args.has("proc")
 	var testing: = args.has("shot") or args.has("loop-test") or args.has("tour")
@@ -125,7 +131,7 @@ func _ready() -> void :
 			Core.set_slot(int(args.savequit))
 			Core.save_game()
 			print("SAVEQUIT ", Core.SAVE_PATH)
-			get_tree().quit()
+			Core.quit_game()
 			return
 	audio = Node.new()
 	audio.set_script(load("res://scripts/audio.gd"))
@@ -168,6 +174,20 @@ func _ready() -> void :
 	hud.village = village
 	hud.process_mode = Node.PROCESS_MODE_ALWAYS
 	add_child(hud)
+	operations = Node3D.new()
+	operations.set_script(load("res://scripts/kiosk_operations.gd"))
+	operations.main = self
+	add_child(operations)
+	var refinements:=Node3D.new()
+	refinements.name="Refinements"
+	refinements.set_script(load("res://scripts/refinements.gd"))
+	add_child(refinements)
+	var coast := Node3D.new()
+	coast.set_script(load("res://scripts/coastal_life.gd"))
+	add_child(coast)
+	var wildlife := Node3D.new()
+	wildlife.set_script(load("res://scripts/whale_wildlife.gd"))
+	add_child(wildlife)
 	menus = CanvasLayer.new()
 	menus.set_script(load("res://scripts/menus.gd"))
 	add_child(menus)
@@ -247,6 +267,10 @@ func _on_start_load(slot: int) -> void :
 	if lp.has("x"):
 		player.global_position = Vector3(float(lp.x), float(lp.y) + 0.05, float(lp.z))
 		player.yaw = float(lp.get("yaw", 0.0))
+		# Rotate old interior saves with the kiosk, preserving the worker's position.
+		if str(lp.get("kiosk_facing","")) != "beach" and absf(player.position.x-world.KIOSK_C.x)<2.9 and absf(player.position.z-world.KIOSK_C.z)<3.1:
+			player.position = world.kiosk_authored(player.position)
+			player.yaw += PI
 		player.pitch = 0.0
 		player._apply_look()
 	else:
@@ -343,10 +367,6 @@ func _run_shot(n: String) -> void :
 		Core.tour_done.emit("barco", 4, 100)
 	if args.has("farol"):
 		Core.tour_done.emit("farol", 4, 100)
-	if args.has("primcheck"):
-		get_tree().create_timer(1.5).timeout.connect(func(): load("res://tests/prim_check.gd").run(world))
-	if args.has("floatcheck"):
-		get_tree().create_timer(1.5).timeout.connect(func(): load("res://tests/float_check.gd").run(world))
 	if args.has("lineup"):   # depuração: --lineup=x,z -> fila de 8 pessoas para conferir calçados/roupas, e duas sentadas num banco
 		var lv: = str(args.lineup).split(",")
 		var base: = Vector3(float(lv[0]), 0.0, float(lv[1]))
@@ -459,7 +479,11 @@ func _run_shot(n: String) -> void :
 			var walker = guests._make_guest()
 			walker.position = Vector3(-6.0, 0.0, 5.0)
 			walker.go([Vector3(80.0, 0.0, 2.0)])
-	await get_tree().create_timer(0.3).timeout
+	if args.has("orders-demo"):
+		_stage_kiosk_orders()
+	if args.has("company-demo"):
+		_stage_company_demo()
+	await get_tree().create_timer(0.5 if args.has("orders-demo") else 0.3).timeout
 	for i in 25:
 		await get_tree().process_frame
 	day.force_update()
@@ -506,12 +530,22 @@ func _run_shot(n: String) -> void :
 				break
 		for i in 2:
 			await get_tree().process_frame
+	# Capturas de revisão visual sem sobrepor objetivos/HUD ao cenário.
+	if args.has("clean-shot"):
+		hud.visible = false
+		for i in 2:
+			await get_tree().process_frame
+	# Termina a auditoria antes da captura e do encerramento automático.
+	if args.has("primcheck"):
+		load("res://tests/prim_check.gd").run(world)
+	if args.has("floatcheck"):
+		load("res://tests/float_check.gd").run(world)
 	var img: = get_viewport().get_texture().get_image()
 	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path("res://shots"))
 	var out: String = args.get("out", "res://shots/%s.png" % n)
 	img.save_png(out)
 	print("SHOT_SAVED ", out)
-	get_tree().quit()
+	Core.quit_game()
 
 func _eat_at_bar() -> void :
 	for g in guests.get_children():
@@ -735,3 +769,46 @@ func _demo_summary() -> Dictionary:
 			{"a": -320, "r": "Ventilador de teto · Bangalô 1", "c": "upgrade"}, 
 		], 
 	}
+
+## Captura de pedidos servidos pelo fluxo real (estoque, preparo/entrega e reserva).
+func _stage_kiosk_orders() -> void:
+	village.enabled = false
+	village._on_slept(0)
+	Core.paused = true
+	Core.staff["atendente"] = false
+	for ingredient in Economy.SUPPLIES:
+		Core.stock[ingredient] = 100
+	for id in Economy.DISHES:
+		Core.prog.discovered[id] = true
+	var orders: Array = [["coco_gelado", "suco", "caipirinha"], ["petiscos", "tapioca", "pastel"], ["acai", "batida", "moqueca"]]
+	for i in orders.size():
+		var customer = village.spawn_customer()
+		if customer == null:
+			continue
+		village._release_spot(customer)
+		customer.spot = world.kiosk_spots[[0, 2, 4][i]]
+		customer.spot.busy = true
+		customer.spot["owner"] = customer.get_instance_id()
+		customer.position = customer.spot.pos
+		customer._route.clear()
+		customer.set_meta("items", orders[i])
+		customer.set_meta("delivered", 0)
+		customer.set_meta("revenue", 0)
+		village._order(customer, true)
+		customer.timer = 10000.0
+		village.kiosk_serve()
+		customer.set_meta("eat", 10000.0)
+
+func _stage_company_demo() -> void:
+	_stage_kiosk_orders()
+	Core.configure_company("Quiosque do Sergio", "praia", "creme")
+	for id in Core.kiosk_menu():
+		if Core.prepare_company_dish(id):
+			Core.tick_company(100.0)
+	for role in ["atendente"]:
+		Core.staff[role] = true
+	operations._staff_tick()
+	for role in operations.actors:
+		operations.actors[role].go([])
+		operations.actors[role].set_process(false)
+	operations.sync_company()

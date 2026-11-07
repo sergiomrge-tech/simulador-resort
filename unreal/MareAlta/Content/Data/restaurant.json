@@ -1,0 +1,155 @@
+{
+ "_doc": "Grand Hotel restaurant, hands-on (gameplay plan: serve the tables, room service, events). During the services guests sit at the tables; E on a table takes the order, the kitchen cooks for cook_minutes, E at the kitchen pass picks up what is ready, E on the table serves it (price + tip for speed). Suites order room service, delivered with E at the lift. Whatever waits longer than crew_minutes is served by the hotel crew at crew_share. Events are booked a day ahead and happen at event_hour. World cm: tables = table centres, pass and room_service = E targets [x, y, z, yaw]. 5.3: dishes with fish use a fish from the stock (the pier fishing, 'peixe'): fresh fish adds fresh_fish.bonus to the price; with none the kitchen buys one (buy_cost). The disguised critic (critic) comes every every_days from from_day: a diner like the others whose order message gives him away (a little notebook). Served by the player, his score starts at 5 and loses 1 per 10 min over 20 of waiting and 0.5 for fish that is not fresh; served by the crew it is crew_score (waiter_score with the restaurant waiter). star_score or more gives a star (max_stars; each adds star_price to the menu and star_fame), bad_score or less costs bad_fame. The old wedding and birthday here became dinners: the beach ones are hotel_events.json.",
+ "services": [
+  [
+   12,
+   15
+  ],
+  [
+   19,
+   22
+  ]
+ ],
+ "cook_minutes": 20,
+ "crew_minutes": 45,
+ "crew_share": 0.7,
+ "room_fee": 0.15,
+ "event_hour": 20,
+ "tables": [
+  [
+   -1200,
+   3860,
+   155
+  ],
+  [
+   -920,
+   3860,
+   155
+  ],
+  [
+   -1200,
+   4200,
+   155
+  ],
+  [
+   -920,
+   4200,
+   155
+  ],
+  [
+   -1200,
+   4540,
+   155
+  ],
+  [
+   -920,
+   4540,
+   155
+  ]
+ ],
+ "pass": [
+  -620,
+  4030,
+  225,
+  180
+ ],
+ "room_service": [
+  -2750,
+  6700,
+  140,
+  90
+ ],
+ "menu": [
+  {
+   "id": "moqueca",
+   "name": "Moqueca de peixe",
+   "price": 68,
+   "fish": true
+  },
+  {
+   "id": "camarao_moranga",
+   "name": "Camarão na moranga",
+   "price": 82
+  },
+  {
+   "id": "peixe_grelhado",
+   "name": "Peixe grelhado com pirão",
+   "price": 64,
+   "fish": true
+  },
+  {
+   "id": "bobo",
+   "name": "Bobó de camarão",
+   "price": 74
+  },
+  {
+   "id": "carne_de_sol",
+   "name": "Carne de sol com macaxeira",
+   "price": 58
+  },
+  {
+   "id": "baiao",
+   "name": "Baião de dois com queijo coalho",
+   "price": 46
+  },
+  {
+   "id": "salada",
+   "name": "Salada tropical",
+   "price": 38
+  },
+  {
+   "id": "cartola",
+   "name": "Cartola (sobremesa)",
+   "price": 28
+  }
+ ],
+ "events": [
+  {
+   "id": "formatura",
+   "name": "Jantar de formatura",
+   "cost": 600,
+   "income": 1600,
+   "fame": 8,
+   "guests": 30
+  },
+  {
+   "id": "bodas",
+   "name": "Jantar de bodas de prata",
+   "cost": 1200,
+   "income": 3200,
+   "fame": 12,
+   "guests": 50
+  },
+  {
+   "id": "empresa",
+   "name": "Jantar de empresa",
+   "cost": 900,
+   "income": 2400,
+   "fame": 10,
+   "guests": 40
+  }
+ ],
+ "fresh_fish": {
+  "bonus": 0.25,
+  "buy_cost": 22,
+  "fame": 1
+ },
+ "critic": {
+  "from_day": 3,
+  "every_days": [
+   3,
+   5
+  ],
+  "chance_per_hour": 0.4,
+  "star_score": 4.5,
+  "max_stars": 3,
+  "star_price": 0.12,
+  "star_fame": 15,
+  "good_fame": 4,
+  "bad_score": 2.5,
+  "bad_fame": 6,
+  "crew_score": 2.5,
+  "waiter_score": 3,
+  "guide": "Guia Sabores da Costa"
+ }
+}

@@ -1,0 +1,675 @@
+{
+  "schema_version": 1,
+  "_doc": "Valores em centavos. NaN/Infinity são tokens de entrada inválida, não números JSON. expected são oráculos fixos revisáveis; nenhuma cobrança automática. Cada ação verifica os efeitos e a ausência de efeitos.",
+  "cases": [
+    {
+      "id": "centavo_e_tres_marcos",
+      "initial": {
+        "money_cents": 110000000
+      },
+      "created_day": 1,
+      "demo": false,
+      "actions": [
+        {
+          "pay": 1,
+          "day": 1,
+          "save_ok": true,
+          "expect": {
+            "ok": true,
+            "paid_cents": 1,
+            "balance_cents": 99999999,
+            "money_cents": 109999999,
+            "pending": [],
+            "finale": false
+          }
+        },
+        {
+          "pay": 24999999,
+          "day": 1,
+          "save_ok": true,
+          "expect": {
+            "ok": true,
+            "paid_cents": 25000000,
+            "balance_cents": 75000000,
+            "money_cents": 85000000,
+            "pending": [
+              "quarter"
+            ],
+            "finale": false
+          }
+        },
+        {
+          "pay": 75000000,
+          "day": 1,
+          "save_ok": true,
+          "expect": {
+            "ok": true,
+            "paid_cents": 100000000,
+            "balance_cents": 0,
+            "money_cents": 10000000,
+            "pending": [
+              "quarter",
+              "half",
+              "three_quarters"
+            ],
+            "finale": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "salto_0_a_100",
+      "initial": {
+        "money_cents": 110000000
+      },
+      "created_day": 1,
+      "demo": false,
+      "actions": [
+        {
+          "pay": 100000000,
+          "day": 1,
+          "save_ok": true,
+          "expect": {
+            "ok": true,
+            "paid_cents": 100000000,
+            "balance_cents": 0,
+            "money_cents": 10000000,
+            "pending": [
+              "quarter",
+              "half",
+              "three_quarters"
+            ],
+            "finale": true
+          }
+        },
+        {
+          "pay": 1,
+          "day": 1,
+          "save_ok": true,
+          "expect": {
+            "ok": false,
+            "paid_cents": 100000000,
+            "balance_cents": 0,
+            "money_cents": 10000000,
+            "pending": [
+              "quarter",
+              "half",
+              "three_quarters"
+            ],
+            "finale": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "demo_teto_cumulativo",
+      "initial": {
+        "money_cents": 110000000
+      },
+      "created_day": 1,
+      "demo": true,
+      "actions": [
+        {
+          "pay": 10000000,
+          "day": 1,
+          "save_ok": true,
+          "expect": {
+            "ok": true,
+            "paid_cents": 10000000,
+            "balance_cents": 90000000,
+            "money_cents": 100000000,
+            "pending": [],
+            "finale": false
+          }
+        },
+        {
+          "pay": 15000000,
+          "day": 1,
+          "save_ok": true,
+          "expect": {
+            "ok": true,
+            "paid_cents": 25000000,
+            "balance_cents": 75000000,
+            "money_cents": 85000000,
+            "pending": [
+              "quarter"
+            ],
+            "finale": false
+          }
+        },
+        {
+          "pay": 1,
+          "day": 1,
+          "save_ok": true,
+          "expect": {
+            "ok": false,
+            "paid_cents": 25000000,
+            "balance_cents": 75000000,
+            "money_cents": 85000000,
+            "pending": [
+              "quarter"
+            ],
+            "finale": false
+          }
+        },
+        {
+          "remind": 15,
+          "expect_reminder": false
+        }
+      ]
+    },
+    {
+      "id": "zero",
+      "initial": {
+        "money_cents": 110000000
+      },
+      "created_day": 1,
+      "demo": false,
+      "actions": [
+        {
+          "pay": 0,
+          "day": 1,
+          "save_ok": true,
+          "expect": {
+            "ok": false,
+            "paid_cents": 0,
+            "balance_cents": 100000000,
+            "money_cents": 110000000,
+            "pending": [],
+            "finale": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "negativo",
+      "initial": {
+        "money_cents": 110000000
+      },
+      "created_day": 1,
+      "demo": false,
+      "actions": [
+        {
+          "pay": -1,
+          "day": 1,
+          "save_ok": true,
+          "expect": {
+            "ok": false,
+            "paid_cents": 0,
+            "balance_cents": 100000000,
+            "money_cents": 110000000,
+            "pending": [],
+            "finale": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "fracao_centavo",
+      "initial": {
+        "money_cents": 110000000
+      },
+      "created_day": 1,
+      "demo": false,
+      "actions": [
+        {
+          "pay": 1.5,
+          "day": 1,
+          "save_ok": true,
+          "expect": {
+            "ok": false,
+            "paid_cents": 0,
+            "balance_cents": 100000000,
+            "money_cents": 110000000,
+            "pending": [],
+            "finale": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "booleano",
+      "initial": {
+        "money_cents": 110000000
+      },
+      "created_day": 1,
+      "demo": false,
+      "actions": [
+        {
+          "pay": true,
+          "day": 1,
+          "save_ok": true,
+          "expect": {
+            "ok": false,
+            "paid_cents": 0,
+            "balance_cents": 100000000,
+            "money_cents": 110000000,
+            "pending": [],
+            "finale": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "nulo",
+      "initial": {
+        "money_cents": 110000000
+      },
+      "created_day": 1,
+      "demo": false,
+      "actions": [
+        {
+          "pay": null,
+          "day": 1,
+          "save_ok": true,
+          "expect": {
+            "ok": false,
+            "paid_cents": 0,
+            "balance_cents": 100000000,
+            "money_cents": 110000000,
+            "pending": [],
+            "finale": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "texto",
+      "initial": {
+        "money_cents": 110000000
+      },
+      "created_day": 1,
+      "demo": false,
+      "actions": [
+        {
+          "pay": "100",
+          "day": 1,
+          "save_ok": true,
+          "expect": {
+            "ok": false,
+            "paid_cents": 0,
+            "balance_cents": 100000000,
+            "money_cents": 110000000,
+            "pending": [],
+            "finale": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "nan",
+      "initial": {
+        "money_cents": 110000000
+      },
+      "created_day": 1,
+      "demo": false,
+      "actions": [
+        {
+          "pay": "NaN",
+          "day": 1,
+          "save_ok": true,
+          "expect": {
+            "ok": false,
+            "paid_cents": 0,
+            "balance_cents": 100000000,
+            "money_cents": 110000000,
+            "pending": [],
+            "finale": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "infinito",
+      "initial": {
+        "money_cents": 110000000
+      },
+      "created_day": 1,
+      "demo": false,
+      "actions": [
+        {
+          "pay": "Infinity",
+          "day": 1,
+          "save_ok": true,
+          "expect": {
+            "ok": false,
+            "paid_cents": 0,
+            "balance_cents": 100000000,
+            "money_cents": 110000000,
+            "pending": [],
+            "finale": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "acima_saldo",
+      "initial": {
+        "money_cents": 110000000
+      },
+      "created_day": 1,
+      "demo": false,
+      "actions": [
+        {
+          "pay": 100000001,
+          "day": 1,
+          "save_ok": true,
+          "expect": {
+            "ok": false,
+            "paid_cents": 0,
+            "balance_cents": 100000000,
+            "money_cents": 110000000,
+            "pending": [],
+            "finale": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "acima_caixa",
+      "initial": {
+        "money_cents": 110000000
+      },
+      "created_day": 1,
+      "demo": false,
+      "actions": [
+        {
+          "pay": 110000001,
+          "day": 1,
+          "save_ok": true,
+          "expect": {
+            "ok": false,
+            "paid_cents": 0,
+            "balance_cents": 100000000,
+            "money_cents": 110000000,
+            "pending": [],
+            "finale": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "caixa_insuficiente",
+      "initial": {
+        "money_cents": 100
+      },
+      "created_day": 1,
+      "demo": false,
+      "actions": [
+        {
+          "pay": 101,
+          "day": 1,
+          "save_ok": true,
+          "expect": {
+            "ok": false,
+            "paid_cents": 0,
+            "balance_cents": 100000000,
+            "money_cents": 100,
+            "pending": [],
+            "finale": false
+          }
+        },
+        {
+          "pay": 100,
+          "day": 1,
+          "save_ok": true,
+          "expect": {
+            "ok": true,
+            "paid_cents": 100,
+            "balance_cents": 99999900,
+            "money_cents": 0,
+            "pending": [],
+            "finale": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "save_falha_sem_debito",
+      "initial": {
+        "money_cents": 110000000
+      },
+      "created_day": 1,
+      "demo": false,
+      "actions": [
+        {
+          "pay": 25000000,
+          "day": 1,
+          "save_ok": false,
+          "expect": {
+            "ok": false,
+            "paid_cents": 0,
+            "balance_cents": 100000000,
+            "money_cents": 110000000,
+            "pending": [],
+            "finale": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "lembretes_duplicata_salto_e_reset",
+      "initial": {
+        "money_cents": 110000000
+      },
+      "created_day": 1,
+      "demo": false,
+      "actions": [
+        {
+          "remind": 7,
+          "expect_reminder": false
+        },
+        {
+          "remind": 8,
+          "expect_reminder": true
+        },
+        {
+          "remind": 8,
+          "expect_reminder": false
+        },
+        {
+          "remind": 14,
+          "expect_reminder": false
+        },
+        {
+          "remind": 15,
+          "expect_reminder": true
+        },
+        {
+          "remind": 30,
+          "expect_reminder": true
+        },
+        {
+          "remind": 30,
+          "expect_reminder": false
+        },
+        {
+          "pay": 1,
+          "day": 31,
+          "save_ok": true,
+          "expect": {
+            "ok": true,
+            "paid_cents": 1,
+            "balance_cents": 99999999,
+            "money_cents": 109999999,
+            "pending": [],
+            "finale": false
+          }
+        },
+        {
+          "remind": 37,
+          "expect_reminder": false
+        },
+        {
+          "remind": 38,
+          "expect_reminder": true
+        },
+        {
+          "remind": 38,
+          "expect_reminder": false
+        }
+      ]
+    },
+    {
+      "id": "save_antigo_preserva_desconhecidos",
+      "initial": {
+        "money_cents": 110000000,
+        "prog": {
+          "custom_future": {
+            "keep": 42
+          }
+        },
+        "future": "preservar"
+      },
+      "created_day": 20,
+      "demo": false,
+      "actions": [
+        {
+          "migrate": true
+        },
+        {
+          "pay": 100,
+          "day": 20,
+          "save_ok": true,
+          "expect": {
+            "ok": true,
+            "paid_cents": 100,
+            "balance_cents": 99999900,
+            "money_cents": 109999900,
+            "pending": [],
+            "finale": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "legado_demo_acima_teto",
+      "initial": {
+        "money_cents": 110000000,
+        "prog": {
+          "debt": {
+            "version": 1,
+            "principal_cents": 100000000,
+            "paid_cents": 30000000,
+            "created_day": 1,
+            "last_payment_day": 2,
+            "last_reminder_day": 0,
+            "intro_seen": true,
+            "milestones_seen": [
+              "quarter"
+            ],
+            "finale_seen": false
+          }
+        }
+      },
+      "created_day": 20,
+      "demo": true,
+      "actions": [
+        {
+          "migrate": true
+        },
+        {
+          "pay": 1,
+          "day": 20,
+          "save_ok": true,
+          "expect": {
+            "ok": false,
+            "paid_cents": 30000000,
+            "balance_cents": 70000000,
+            "money_cents": 110000000,
+            "pending": [],
+            "finale": false
+          }
+        },
+        {
+          "remind": 30,
+          "expect_reminder": false
+        }
+      ]
+    },
+    {
+      "id": "principal_congelado_e_marcos_reconhecidos",
+      "initial": {
+        "money_cents": 110000000,
+        "prog": {
+          "debt": {
+            "version": 1,
+            "principal_cents": 100000000,
+            "paid_cents": 30000000,
+            "created_day": 1,
+            "last_payment_day": 2,
+            "last_reminder_day": 0,
+            "intro_seen": true,
+            "milestones_seen": [
+              "quarter"
+            ],
+            "finale_seen": false
+          }
+        }
+      },
+      "created_day": 20,
+      "demo": false,
+      "actions": [
+        {
+          "migrate": true
+        },
+        {
+          "pay": 20000000,
+          "day": 20,
+          "save_ok": true,
+          "expect": {
+            "ok": true,
+            "paid_cents": 50000000,
+            "balance_cents": 50000000,
+            "money_cents": 90000000,
+            "pending": [
+              "half"
+            ],
+            "finale": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "ack_marcos_e_final_idempotentes",
+      "initial": {
+        "money_cents": 110000000
+      },
+      "created_day": 1,
+      "demo": false,
+      "actions": [
+        {
+          "pay": 100000000,
+          "day": 1,
+          "save_ok": true,
+          "expect": {
+            "ok": true,
+            "paid_cents": 100000000,
+            "balance_cents": 0,
+            "money_cents": 10000000,
+            "pending": [
+              "quarter",
+              "half",
+              "three_quarters"
+            ],
+            "finale": true
+          }
+        },
+        {
+          "ack": true
+        },
+        {
+          "pending": [],
+          "finale": false
+        },
+        {
+          "ack": true
+        },
+        {
+          "pending": [],
+          "finale": false
+        }
+      ]
+    }
+  ]
+}

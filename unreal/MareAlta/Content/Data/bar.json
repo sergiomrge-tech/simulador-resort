@@ -1,0 +1,691 @@
+{
+ "_doc": "Bar do Coqueiro (gameplay plan M8, MareBar.cpp): ingredients bought by the bottle/box and mixed at the counter. A drink is the exact SET of its ingredients (order does not matter). Recipes with known=true are on the menu from the start; the others are discovered by mixing them (fame). Customers order known drinks, a 'surpresa' (any recipe, new ones count as discoveries) or ask for an unknown one with a hint. mesh = kiosk product shown in the guest's hand. Places in world cm: station = player's E target inside the U counter, barman = where the bartender stands, stools = [x, y, yaw facing the counter]. seat = [stool seat top cm, how far the root sits ahead of the stool toward the counter].",
+ "open": [
+  10,
+  23
+ ],
+ "max_orders": 4,
+ "patience_hours": 3,
+ "restock_qty": 10,
+ "max_mix": 5,
+ "bartender_share": 0.85,
+ "discovery_fame": 6,
+ "station": [
+  1180,
+  -1300,
+  112
+ ],
+ "barman": [
+  1330,
+  -1300,
+  0,
+  180
+ ],
+ "stools": [
+  [
+   1000,
+   -1390,
+   0
+  ],
+  [
+   1000,
+   -1210,
+   0
+  ],
+  [
+   1210,
+   -1600,
+   90
+  ],
+  [
+   1390,
+   -1600,
+   90
+  ],
+  [
+   1210,
+   -1000,
+   -90
+  ],
+  [
+   1390,
+   -1000,
+   -90
+  ]
+ ],
+ "seat": [
+  82,
+  30
+ ],
+ "ingredients": [
+  {
+   "id": "cachaca",
+   "name": "Cachaça",
+   "cost": 2.5,
+   "layer": "liquid",
+   "color": [
+    0.93,
+    0.86,
+    0.62
+   ]
+  },
+  {
+   "id": "vodka",
+   "name": "Vodca",
+   "cost": 3,
+   "layer": "liquid",
+   "color": [
+    0.92,
+    0.95,
+    0.97
+   ]
+  },
+  {
+   "id": "rum",
+   "name": "Rum",
+   "cost": 3,
+   "layer": "liquid",
+   "color": [
+    0.62,
+    0.36,
+    0.14
+   ]
+  },
+  {
+   "id": "limao",
+   "name": "Limão",
+   "cost": 0.8,
+   "layer": "fruit",
+   "color": [
+    0.55,
+    0.8,
+    0.25
+   ]
+  },
+  {
+   "id": "maracuja",
+   "name": "Maracujá",
+   "cost": 1.2,
+   "layer": "fruit",
+   "color": [
+    0.98,
+    0.78,
+    0.15
+   ]
+  },
+  {
+   "id": "morango",
+   "name": "Morango",
+   "cost": 1.5,
+   "layer": "fruit",
+   "color": [
+    0.85,
+    0.12,
+    0.15
+   ]
+  },
+  {
+   "id": "abacaxi",
+   "name": "Abacaxi",
+   "cost": 1.2,
+   "layer": "fruit",
+   "color": [
+    0.98,
+    0.85,
+    0.3
+   ]
+  },
+  {
+   "id": "coco",
+   "name": "Leite de coco",
+   "cost": 1.4,
+   "layer": "liquid",
+   "color": [
+    0.97,
+    0.95,
+    0.9
+   ]
+  },
+  {
+   "id": "leite_condensado",
+   "name": "Leite condensado",
+   "cost": 1.3,
+   "layer": "liquid",
+   "color": [
+    0.98,
+    0.93,
+    0.8
+   ]
+  },
+  {
+   "id": "hortela",
+   "name": "Hortelã",
+   "cost": 0.6,
+   "layer": "fruit",
+   "color": [
+    0.2,
+    0.55,
+    0.2
+   ]
+  },
+  {
+   "id": "acucar",
+   "name": "Açúcar",
+   "cost": 0.2,
+   "layer": "sugar",
+   "color": [
+    0.97,
+    0.96,
+    0.92
+   ]
+  },
+  {
+   "id": "agua_gas",
+   "name": "Água com gás",
+   "cost": 0.7,
+   "layer": "liquid",
+   "color": [
+    0.85,
+    0.93,
+    0.97
+   ]
+  },
+  {
+   "id": "gelo",
+   "name": "Gelo",
+   "cost": 0.2,
+   "layer": "ice",
+   "color": [
+    0.9,
+    0.95,
+    1
+   ]
+  },
+  {
+   "id": "chope",
+   "name": "Chope",
+   "cost": 2.0,
+   "layer": "liquid",
+   "color": [
+    0.95,
+    0.68,
+    0.12
+   ],
+   "requires": "chopeira",
+   "pour_only": true
+  }
+ ],
+ "recipes": [
+  {
+   "id": "caipirinha",
+   "name": "Caipirinha",
+   "needs": [
+    "cachaca",
+    "limao",
+    "acucar",
+    "gelo"
+   ],
+   "price": 18,
+   "mesh": "caipirinha",
+   "known": true,
+   "taste": {
+    "doce": 0.4,
+    "forte": 0.7,
+    "azedo": 0.8
+   }
+  },
+  {
+   "id": "limonada",
+   "name": "Limonada suíça",
+   "needs": [
+    "limao",
+    "acucar",
+    "agua_gas",
+    "gelo"
+   ],
+   "price": 10,
+   "mesh": "suco",
+   "known": true,
+   "taste": {
+    "doce": 0.6,
+    "forte": 0,
+    "azedo": 0.8
+   }
+  },
+  {
+   "id": "caipiroska",
+   "name": "Caipiroska",
+   "needs": [
+    "vodka",
+    "limao",
+    "acucar",
+    "gelo"
+   ],
+   "price": 20,
+   "mesh": "caipirinha",
+   "hint": "a caipirinha de vodca",
+   "taste": {
+    "doce": 0.4,
+    "forte": 0.8,
+    "azedo": 0.8
+   }
+  },
+  {
+   "id": "caipi_morango",
+   "name": "Caipirinha de morango",
+   "needs": [
+    "cachaca",
+    "morango",
+    "acucar",
+    "gelo"
+   ],
+   "price": 22,
+   "mesh": "caipirinha",
+   "hint": "cachaça com uma fruta vermelha",
+   "taste": {
+    "doce": 0.8,
+    "forte": 0.6,
+    "azedo": 0.4
+   }
+  },
+  {
+   "id": "caipi_maracuja",
+   "name": "Caipirinha de maracujá",
+   "needs": [
+    "cachaca",
+    "maracuja",
+    "acucar",
+    "gelo"
+   ],
+   "price": 22,
+   "mesh": "caipirinha",
+   "hint": "cachaça com a fruta da paixão",
+   "taste": {
+    "doce": 0.6,
+    "forte": 0.6,
+    "azedo": 0.9
+   }
+  },
+  {
+   "id": "batida_coco",
+   "name": "Batida de coco",
+   "needs": [
+    "cachaca",
+    "coco",
+    "leite_condensado",
+    "gelo"
+   ],
+   "price": 22,
+   "mesh": "batida",
+   "hint": "cremosa, com coco e cachaça",
+   "taste": {
+    "doce": 1,
+    "forte": 0.5,
+    "azedo": 0
+   }
+  },
+  {
+   "id": "batida_maracuja",
+   "name": "Batida de maracujá",
+   "needs": [
+    "cachaca",
+    "maracuja",
+    "leite_condensado",
+    "gelo"
+   ],
+   "price": 22,
+   "mesh": "batida",
+   "hint": "cremosa e azedinha, de cachaça",
+   "taste": {
+    "doce": 0.8,
+    "forte": 0.5,
+    "azedo": 0.6
+   }
+  },
+  {
+   "id": "pina_colada",
+   "name": "Piña colada",
+   "needs": [
+    "rum",
+    "abacaxi",
+    "coco",
+    "gelo"
+   ],
+   "price": 26,
+   "mesh": "batida",
+   "hint": "rum, abacaxi e coco",
+   "taste": {
+    "doce": 0.9,
+    "forte": 0.6,
+    "azedo": 0.1
+   }
+  },
+  {
+   "id": "mojito",
+   "name": "Mojito",
+   "needs": [
+    "rum",
+    "limao",
+    "hortela",
+    "acucar",
+    "agua_gas"
+   ],
+   "price": 26,
+   "mesh": "suco",
+   "hint": "rum com hortelã e borbulhas",
+   "taste": {
+    "doce": 0.5,
+    "forte": 0.6,
+    "azedo": 0.6
+   }
+  },
+  {
+   "id": "abacaxi_hortela",
+   "name": "Suco de abacaxi com hortelã",
+   "needs": [
+    "abacaxi",
+    "hortela",
+    "gelo"
+   ],
+   "price": 12,
+   "mesh": "suco",
+   "hint": "sem álcool, abacaxi e uma erva",
+   "taste": {
+    "doce": 0.7,
+    "forte": 0,
+    "azedo": 0.4
+   }
+  },
+  {
+   "id": "coqueiro",
+   "name": "Drink do Coqueiro",
+   "needs": [
+    "rum",
+    "maracuja",
+    "coco",
+    "hortela",
+    "gelo"
+   ],
+   "price": 32,
+   "mesh": "coco_gelado",
+   "hint": "segredo da casa: só um VIP conhece",
+   "taste": {
+    "doce": 0.8,
+    "forte": 0.8,
+    "azedo": 0.5
+   },
+   "secret": true
+  },
+  {
+   "id": "chope",
+   "name": "Chope gelado",
+   "needs": [
+    "chope"
+   ],
+   "price": 12,
+   "mesh": "chope",
+   "known": true,
+   "requires": "chopeira",
+   "taste": {
+    "doce": 0.2,
+    "forte": 0.5,
+    "azedo": 0.1
+   }
+  }
+ ],
+ "_doc_prep": "Physical prep (CHECKLIST_EXPANSOES 1.1, MareBar.cpp/MareBarWorld.cpp): the player picks an ingredient from the prep bench (E), it shows in the hand, E on the work glass drops it in (stock used then). Every ingredient has a layer in the glass (ice, fruit, spirit/liquid) and a colour for the drink. Steps before serving: 'socar' when the glass holds a muddle ingredient, then 'liquidificar' when it holds a creamy one, else 'bater'. Each step is a mini-action scored 0..1; the average moves the price by prep_tip (±10%). 'Jogar fora' loses what was in the glass; the guest reacts. Places in world cm: bench [x,y,z top,yaw]; shelf {id or tool: [x,y,yaw]} on the bench top; glass [x,y,scale] (a big caipirinha glass, 1.5x a highball, so its layers read from the counter).",
+ "prep_tip": 0.1,
+ "muddle": [
+  "limao",
+  "morango",
+  "maracuja",
+  "hortela"
+ ],
+ "blend": [
+  "coco",
+  "leite_condensado",
+  "abacaxi"
+ ],
+ "bench": [
+  1485,
+  -1300,
+  105,
+  -90
+ ],
+ "shelf": {
+  "gelo": [
+   1465,
+   -1414,
+   -90
+  ],
+  "limao": [
+   1465,
+   -1387,
+   -90
+  ],
+  "maracuja": [
+   1465,
+   -1356,
+   -90
+  ],
+  "morango": [
+   1465,
+   -1327,
+   -90
+  ],
+  "abacaxi": [
+   1465,
+   -1266,
+   -90
+  ],
+  "blender": [
+   1465,
+   -1236,
+   -90
+  ],
+  "shaker": [
+   1465,
+   -1219,
+   -90
+  ],
+  "muddler": [
+   1465,
+   -1196,
+   -90
+  ],
+  "cachaca": [
+   1490,
+   -1418,
+   0
+  ],
+  "vodka": [
+   1490,
+   -1406,
+   0
+  ],
+  "rum": [
+   1490,
+   -1392,
+   0
+  ],
+  "agua_gas": [
+   1490,
+   -1379,
+   0
+  ],
+  "coco": [
+   1490,
+   -1368,
+   0
+  ],
+  "leite_condensado": [
+   1490,
+   -1228,
+   0
+  ],
+  "acucar": [
+   1490,
+   -1208,
+   -90
+  ],
+  "hortela": [
+   1490,
+   -1188,
+   0
+  ],
+  "chope": [
+   1420,
+   -1100,
+   0,
+   127
+  ]
+ },
+ "glass": [
+  1478,
+  -1300,
+  1.5
+ ],
+ "discard_reactions": [
+  "Isso aí vai pro mar, né? Coitado do peixe.",
+  "Eu vi! Eu vi tudo! Não vou contar pra ninguém... talvez.",
+  "Joga fora mesmo, que essa cor tava suspeita.",
+  "Se quiser eu bebo esse aí de graça. Não? Tá bom.",
+  "Meu avô dizia: errar é humano, desperdiçar cachaça é crime."
+ ],
+ "prep_lines": {
+  "socar": "Socar no ritmo",
+  "bater": "Bater na coqueteleira",
+  "liquidificar": "Bater no liquidificador"
+ },
+ "_doc_guests": "Guests and orders (CHECKLIST_EXPANSOES 1.2): each guest has a taste (tastes) shown in the bubble for a 'surpresa'; a surprise earns 1-3 stars from the recipe's taste score for it (stars_price). Happy hour (happy_hour) and full-moon nights (event 'lua' after full_moon_from) multiply arrivals and allow max_orders_rush guests. A guest served the right drink within regular_wait minutes becomes a regular (max_regulars) and comes back with regular_chance asking for 'o de sempre' (the drink served then): right gives regular_fame and a bigger tip.",
+ "tastes": {
+  "doce": "algo docinho",
+  "forte": "algo forte",
+  "azedo": "algo azedinho"
+ },
+ "stars_price": [
+  0.9,
+  1.0,
+  1.15
+ ],
+ "happy_hour": [
+  17,
+  19
+ ],
+ "rush_mult": 2,
+ "full_moon_from": 19,
+ "max_orders_rush": 6,
+ "regular_wait": 20,
+ "regular_chance": 0.3,
+ "max_regulars": 8,
+ "regular_fame": 1,
+ "regular_tip": 0.15,
+ "_doc_book": "Recipe book (CHECKLIST_EXPANSOES 1.3, phone tab 'Drinks'): known recipes with ingredients, price and prep steps; unknown ones as '???' with the hint. A secret recipe cannot be mixed until a VIP guest (vip: fame level vip_fame, chance vip_chance per arrival, name vip_name) is served right and tells it. Knowing every recipe is the achievement 'mestre_drinks' (achievement_fame).",
+ "vip_fame": 4,
+ "vip_chance": 0.12,
+ "vip_name": "Comodoro Vasco",
+ "achievement_fame": 10,
+ "_doc_upgrades": "Upgrades (CHECKLIST_EXPANSOES 1.4), 5 levels each, bought at the bar counter (prices per level). liquidificador: wider blender zone (blend_zone per level) and blend_tip on blended drinks; freezer: ice_stock more ice on restock and melt_cut less melting per level (ice melts melt_per_hour, x melt_hot on a 'calor' day); banquetas: seats more guests (capped by the stools) and patience; neon: night_bonus more arrivals from night_from; chopeira: unlocks the 'chope' tap (pour only, no prep) and chope_price per level. upgrade_props: [x, y, z, yaw] world cm of the model shown from level 1. Bartender: knows the starting menu and learns one of the player's recipes every barman_learn_days; barman_error by staff level (1..5) is the chance of botching a drink (guest leaves, ingredients lost). Models face Blender -Y, which arrives as UE +Y: yaw 90 turns that front toward -X, 180 toward -Y.",
+ "upgrades": {
+  "liquidificador": {
+   "name": "Liquidificador",
+   "desc": "Motor forte: o pulso certo fica mais fácil e o batido rende mais gorjeta.",
+   "prices": [
+    180,
+    350,
+    650,
+    1100,
+    1800
+   ],
+   "blend_zone": 0.03,
+   "blend_tip": 0.03
+  },
+  "freezer": {
+   "name": "Freezer de gelo",
+   "desc": "Mais gelo guardado e derretendo bem mais devagar no calor.",
+   "prices": [
+    200,
+    380,
+    700,
+    1200,
+    1900
+   ],
+   "ice_stock": 4,
+   "melt_cut": 0.18
+  },
+  "banquetas": {
+   "name": "Banquetas extras",
+   "desc": "Mais gente sentada no balcão ao mesmo tempo, e esperando com mais paciência.",
+   "prices": [
+    150,
+    300,
+    550,
+    950,
+    1500
+   ],
+   "seats": [
+    1,
+    2,
+    2,
+    2,
+    2
+   ],
+   "patience": 0.15
+  },
+  "neon": {
+   "name": "Letreiro neon",
+   "desc": "O bar brilha à noite: mais clientes a partir das 18h.",
+   "prices": [
+    220,
+    420,
+    750,
+    1250,
+    2000
+   ],
+   "night_from": 18,
+   "night_bonus": 0.15
+  },
+  "chopeira": {
+   "name": "Chopeira",
+   "desc": "Chope gelado na torneira: rápido, sem preparo. Cada nível vende mais caro.",
+   "prices": [
+    400,
+    600,
+    900,
+    1400,
+    2100
+   ],
+   "chope_price": 0.1
+  }
+ },
+ "upgrade_props": {
+  "neon": [
+   1504,
+   -1300,
+   122,
+   90
+  ],
+  "chopeira": [
+   1420,
+   -1100,
+   127,
+   180
+  ],
+  "freezer": [
+   1485,
+   -1362,
+   44.5,
+   90
+  ]
+ },
+ "melt_per_hour": 0.5,
+ "melt_hot": 4,
+ "barman_learn_days": 2,
+ "barman_error": [
+  0.15,
+  0.08,
+  0.04,
+  0.02,
+  0.0
+ ]
+}

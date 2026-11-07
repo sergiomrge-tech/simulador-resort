@@ -1,0 +1,288 @@
+{
+ "_doc": "Light fixtures added where a room had light but no lamp (05/11, Sergio: 'a luz precisa vir das lâmpadas'; MareVisualWorld::BuildLamps). Each fixture spawns the mesh at 'at' (world cm, the mesh pivot) with yaw, and a warm point light 'light_up' cm above the pivot that turns on at dusk like the other lamps (candela at full night, reach in cm, colour temperature). The lamps already in the scene (lanterns, street lamps, the kiosk pendants, the house oil lamp and ceiling fan) are listed in BuildLamps by mesh. 'unlock' (optional): the fixture only shows once that expansion is bought (the Grand Hotel suite: ceiling 1151, so at = 1151 - 117; its six old bare lights, tag MareSuitePart, go off at night).",
+ "fixtures": [
+  {
+   "name": "Salão de jogos · luminária da sinuca",
+   "mesh": "/Game/Custom/GameRoom/mare_billiard_lamp/mare_billiard_lamp.mare_billiard_lamp",
+   "at": [
+    -2050,
+    6050,
+    462
+   ],
+   "yaw": 0,
+   "light_up": -222,
+   "candela": 260,
+   "radius": 800,
+   "kelvin": 3000,
+   "unlock": "salao_jogos"
+  },
+  {
+   "name": "Saguão · teto sobre a sinuca (só sem o salão de jogos)",
+   "mesh": "/Game/Hotel/Lobby/modern_ceiling_lamp_01/modern_ceiling_lamp_011.modern_ceiling_lamp_011",
+   "at": [
+    -2100,
+    6050,
+    332.74
+   ],
+   "yaw": -90,
+   "light_up": 40,
+   "candela": 250,
+   "radius": 1100,
+   "kelvin": 3500,
+   "unlock": "grand_hotel,!salao_jogos"
+  },
+  {
+   "name": "Casa · cozinha",
+   "mesh": "/Game/Custom/Lighting/modern_ceiling_lamp_01/modern_ceiling_lamp_011.modern_ceiling_lamp_011",
+   "at": [
+    4780,
+    2310,
+    202
+   ],
+   "yaw": 0,
+   "light_up": 40,
+   "candela": 38,
+   "radius": 750,
+   "kelvin": 4000
+  },
+  {
+   "name": "Casa · banheiro",
+   "mesh": "/Game/Custom/Lighting/modern_ceiling_lamp_01/modern_ceiling_lamp_011.modern_ceiling_lamp_011",
+   "at": [
+    4770,
+    1580,
+    184
+   ],
+   "yaw": 0,
+   "light_up": 40,
+   "candela": 32,
+   "radius": 650,
+   "kelvin": 4200
+  },
+  {
+   "name": "Suíte · teto 1",
+   "mesh": "/Game/Custom/Lighting/modern_ceiling_lamp_01/modern_ceiling_lamp_011.modern_ceiling_lamp_011",
+   "at": [
+    -3400,
+    6292,
+    1034
+   ],
+   "yaw": 0,
+   "light_up": 40,
+   "candela": 140,
+   "radius": 1000,
+   "kelvin": 3200,
+   "unlock": "grand_hotel"
+  },
+  {
+   "name": "Suíte · teto 2",
+   "mesh": "/Game/Custom/Lighting/modern_ceiling_lamp_01/modern_ceiling_lamp_011.modern_ceiling_lamp_011",
+   "at": [
+    -2850,
+    6402,
+    1034
+   ],
+   "yaw": 0,
+   "light_up": 40,
+   "candela": 140,
+   "radius": 1000,
+   "kelvin": 3200,
+   "unlock": "grand_hotel"
+  },
+  {
+   "name": "Suíte · teto 3",
+   "mesh": "/Game/Custom/Lighting/modern_ceiling_lamp_01/modern_ceiling_lamp_011.modern_ceiling_lamp_011",
+   "at": [
+    -2850,
+    5982,
+    1034
+   ],
+   "yaw": 0,
+   "light_up": 40,
+   "candela": 140,
+   "radius": 1000,
+   "kelvin": 3200,
+   "unlock": "grand_hotel"
+  },
+  {
+   "name": "Suíte · teto 4",
+   "mesh": "/Game/Custom/Lighting/modern_ceiling_lamp_01/modern_ceiling_lamp_011.modern_ceiling_lamp_011",
+   "at": [
+    -2230,
+    6622,
+    1034
+   ],
+   "yaw": 0,
+   "light_up": 40,
+   "candela": 140,
+   "radius": 1000,
+   "kelvin": 3200,
+   "unlock": "grand_hotel"
+  },
+  {
+   "name": "Suíte · teto 5",
+   "mesh": "/Game/Custom/Lighting/modern_ceiling_lamp_01/modern_ceiling_lamp_011.modern_ceiling_lamp_011",
+   "at": [
+    -3200,
+    6772,
+    1034
+   ],
+   "yaw": 0,
+   "light_up": 40,
+   "candela": 140,
+   "radius": 1000,
+   "kelvin": 3200,
+   "unlock": "grand_hotel"
+  },
+  {
+   "name": "Suíte · teto 6",
+   "mesh": "/Game/Custom/Lighting/modern_ceiling_lamp_01/modern_ceiling_lamp_011.modern_ceiling_lamp_011",
+   "at": [
+    -2600,
+    6722,
+    1034
+   ],
+   "yaw": 0,
+   "light_up": 40,
+   "candela": 140,
+   "radius": 1000,
+   "kelvin": 3200,
+   "unlock": "grand_hotel"
+  },
+  {
+   "name": "Hotel quartos · corredor 1",
+   "mesh": "/Game/Custom/Lighting/modern_ceiling_lamp_01/modern_ceiling_lamp_011.modern_ceiling_lamp_011",
+   "at": [
+    -1586,
+    6820,
+    1036
+   ],
+   "yaw": 0,
+   "light_up": 40,
+   "candela": 80,
+   "radius": 700,
+   "kelvin": 3200,
+   "unlock": "grand_hotel"
+  },
+  {
+   "name": "Hotel quartos · corredor 2",
+   "mesh": "/Game/Custom/Lighting/modern_ceiling_lamp_01/modern_ceiling_lamp_011.modern_ceiling_lamp_011",
+   "at": [
+    -936,
+    6820,
+    1036
+   ],
+   "yaw": 0,
+   "light_up": 40,
+   "candela": 80,
+   "radius": 700,
+   "kelvin": 3200,
+   "unlock": "grand_hotel"
+  },
+  {
+   "name": "Hotel quartos · rouparia",
+   "mesh": "/Game/Custom/Lighting/modern_ceiling_lamp_01/modern_ceiling_lamp_011.modern_ceiling_lamp_011",
+   "at": [
+    -1803,
+    6242,
+    1036
+   ],
+   "yaw": 0,
+   "light_up": 40,
+   "candela": 70,
+   "radius": 650,
+   "kelvin": 4000,
+   "unlock": "grand_hotel"
+  },
+  {
+   "name": "Hotel quartos · 302 quarto",
+   "mesh": "/Game/Custom/Lighting/modern_ceiling_lamp_01/modern_ceiling_lamp_011.modern_ceiling_lamp_011",
+   "at": [
+    -1466,
+    6082,
+    1036
+   ],
+   "yaw": 0,
+   "light_up": 40,
+   "candela": 110,
+   "radius": 800,
+   "kelvin": 3200,
+   "unlock": "grand_hotel"
+  },
+  {
+   "name": "Hotel quartos · 302 banheiro",
+   "mesh": "/Game/Custom/Lighting/modern_ceiling_lamp_01/modern_ceiling_lamp_011.modern_ceiling_lamp_011",
+   "at": [
+    -1564,
+    6600,
+    1036
+   ],
+   "yaw": 0,
+   "light_up": 40,
+   "candela": 70,
+   "radius": 550,
+   "kelvin": 4000,
+   "unlock": "grand_hotel"
+  },
+  {
+   "name": "Hotel quartos · 303 quarto",
+   "mesh": "/Game/Custom/Lighting/modern_ceiling_lamp_01/modern_ceiling_lamp_011.modern_ceiling_lamp_011",
+   "at": [
+    -706,
+    6082,
+    1036
+   ],
+   "yaw": 0,
+   "light_up": 40,
+   "candela": 110,
+   "radius": 800,
+   "kelvin": 3200,
+   "unlock": "grand_hotel"
+  },
+  {
+   "name": "Hotel quartos · 303 sala",
+   "mesh": "/Game/Custom/Lighting/modern_ceiling_lamp_01/modern_ceiling_lamp_011.modern_ceiling_lamp_011",
+   "at": [
+    -1046,
+    6002,
+    1036
+   ],
+   "yaw": 0,
+   "light_up": 40,
+   "candela": 100,
+   "radius": 750,
+   "kelvin": 3200,
+   "unlock": "grand_hotel"
+  },
+  {
+   "name": "Hotel quartos · 303 entrada",
+   "mesh": "/Game/Custom/Lighting/modern_ceiling_lamp_01/modern_ceiling_lamp_011.modern_ceiling_lamp_011",
+   "at": [
+    -1116,
+    6522,
+    1036
+   ],
+   "yaw": 0,
+   "light_up": 40,
+   "candela": 70,
+   "radius": 550,
+   "kelvin": 3200,
+   "unlock": "grand_hotel"
+  },
+  {
+   "name": "Hotel quartos · 303 banheiro",
+   "mesh": "/Game/Custom/Lighting/modern_ceiling_lamp_01/modern_ceiling_lamp_011.modern_ceiling_lamp_011",
+   "at": [
+    -715,
+    6550,
+    1036
+   ],
+   "yaw": 0,
+   "light_up": 40,
+   "candela": 70,
+   "radius": 600,
+   "kelvin": 4000,
+   "unlock": "grand_hotel"
+  }
+ ]
+}

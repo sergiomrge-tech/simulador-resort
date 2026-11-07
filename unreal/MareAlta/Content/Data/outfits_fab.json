@@ -1,0 +1,38 @@
+{
+ "_doc": "Fab outfit of every MetaHuman build (docs/ue58/ROUPAS_FAB.md): wardrobe items put in the Outfits slot by tools/ue58/dress_metahumans.py (mare_metahuman.dress_variant + build). Colours per role come from metahumans.json clothes (diffuse_color params of the _top / _btm materials).",
+ "items": {
+  "tee": "/Game/Outfits/OA_Crewneckt/WI_OA_Crewneckt",
+  "tee_pushed": "/Game/Outfits/OA_TshirtPushCufSlv/WI_OA_TshirtPushCufSlv",
+  "tee_tucked": "/Game/Outfits/OA_CrewnecktTk/WI_OA_CrewnecktTk",
+  "crop": "/Game/Outfits/OA_TCrop3QSlv/WI_OA_TCrop3QSlv",
+  "shorts": "/Game/Outfits/Shorts/WI_OA_Shorts",
+  "dress": "/Game/OutFits/MiniDress01/WI_MiniDress01",
+  "casual_m": "/Game/MetaOutfits/Casual_M_Outfit/WI_Casual_M_Outfit",
+  "casual_f": "/Game/MetaOutfits/Casual_F_Outfit/WI_Casual_F_Outfit",
+  "flipflops": "/Game/Outfits/Flipflops/WI_OA_Flipflops",
+  "flats": "/Game/Outfits/Flats/WI_OA_Flats",
+  "loafers": "/Game/Outfits/Loafers/WI_OA_Loafers"
+ },
+ "people": {
+  "Mateo": ["tee", "shorts", "flipflops"],
+  "Kelvin": ["tee", "shorts", "flipflops"],
+  "Trey": ["tee", "shorts", "flipflops"],
+  "Omari": ["tee", "shorts", "flipflops"],
+  "Aoi": ["tee", "shorts", "flipflops"],
+  "Dominic": ["tee_tucked", "shorts", "loafers"],
+  "Lorenzo": ["tee_tucked", "shorts", "loafers"],
+  "Jorge": ["casual_m"],
+  "Isaiah": ["casual_m"],
+  "Walter": ["tee_pushed", "shorts", "loafers"],
+  "Vivian": ["dress", "flats"],
+  "Celeste": ["dress", "flats"],
+  "Tuya": ["dress", "flipflops"],
+  "Jelena": ["crop", "shorts", "flipflops"],
+  "Asha": ["crop", "shorts", "flats"],
+  "Lani": ["crop", "shorts", "flipflops"],
+  "Sunita": ["tee", "shorts", "flats"],
+  "Grace": ["tee", "shorts", "flats"],
+  "Ada": ["casual_f"],
+  "Etta": ["casual_f"]
+ }
+}

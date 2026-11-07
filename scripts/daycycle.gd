@@ -39,8 +39,8 @@ func setup(parent: Node3D) -> void :
 	env = Environment.new()
 	env.background_mode = Environment.BG_SKY
 	env.sky = sky
-	env.ambient_light_source = Environment.AMBIENT_SOURCE_SKY
-	env.reflected_light_source = Environment.REFLECTION_SOURCE_SKY
+	env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
+	env.reflected_light_source = Environment.REFLECTION_SOURCE_DISABLED
 	env.tonemap_mode = Environment.TONE_MAPPER_FILMIC
 	env.tonemap_exposure = 1.0
 	env.tonemap_white = 6.0
@@ -53,7 +53,7 @@ func setup(parent: Node3D) -> void :
 	env.fog_density = 0.0016
 	env.fog_sky_affect = 0.25
 	env.adjustment_enabled = true
-	env.adjustment_saturation = 1.12
+	env.adjustment_saturation = 0.94
 	env.adjustment_contrast = 1.04
 	var we: = WorldEnvironment.new()
 	we.environment = env
@@ -62,8 +62,8 @@ func setup(parent: Node3D) -> void :
 	sun.shadow_enabled = true
 	sun.directional_shadow_mode = DirectionalLight3D.SHADOW_PARALLEL_2_SPLITS
 	sun.directional_shadow_max_distance = 45.0
-	sun.shadow_bias = 0.08
-	sun.shadow_normal_bias = 2.0
+	sun.shadow_bias = 0.025
+	sun.shadow_normal_bias = 0.35
 	sun.shadow_blur = 1.2
 	parent.add_child(sun)
 	moon = DirectionalLight3D.new()
@@ -112,13 +112,15 @@ func apply() -> void :
 	var yaw: = 90.0 - 180.0 * t
 	sun.rotation_degrees = Vector3( - maxf(elev, 4.0), yaw, 0)
 	sun.light_color = k[2]
-	sun.light_energy = k[3]
+	# Preserva a leitura dos materiais claros sem apagar a noite.
+	var daylight: float = clampf(k[3] / 0.6, 0.0, 1.0)
+	sun.light_energy = k[3] * lerpf(1.0, 0.68, daylight)
 	sun.visible = k[3] > 0.01
 	sky_mat.sky_top_color = k[0]
 	sky_mat.sky_horizon_color = k[1]
 	sky_mat.ground_horizon_color = k[1].darkened(0.1)
 	sky_mat.sun_angle_max = 20.0
-	env.ambient_light_energy = k[4]
+	env.ambient_light_energy = k[4] * lerpf(1.0, 0.76, daylight)
 	var night: = clampf(1.0 - k[3] / 0.6, 0.0, 1.0)
 	var golden: = _bell(h, 15.8, 18.6)
 	var dawn: = _bell(h, 5.1, 8.0)
@@ -139,27 +141,26 @@ func apply() -> void :
 	env.fog_light_color = fog_c
 	env.fog_density = 0.0048 if rain else lerpf(0.0011, 0.002, golden)
 	env.fog_aerial_perspective = 0.42
-	env.tonemap_mode = Environment.TONE_MAPPER_FILMIC
-	env.tonemap_white = 3.5
-	env.tonemap_exposure = (1.05 if not rain else 0.88) * lerpf(1.0, 1.05, golden)
+	# OpenGL não tem a mesma curva HDR: a correção vem da energia das luzes,
+	# sem a multiplicação de saturação que queimava verdes, areia e madeira.
+	var compatibility: bool = RenderingServer.get_current_rendering_method() == "gl_compatibility"
+	env.tonemap_mode = Environment.TONE_MAPPER_LINEAR if compatibility else Environment.TONE_MAPPER_FILMIC
+	env.tonemap_white = 6.0
+	env.tonemap_exposure = (1.0 if compatibility else 0.98) if not rain else 0.88
 	env.adjustment_enabled = true
-	env.adjustment_saturation = (0.95 if rain else lerpf(1.32, 1.4, golden))
-	if RenderingServer.get_current_rendering_method() == "gl_compatibility":
-		# v0.9.5: OpenGL sai desbotado (sem o mesmo tonemap): mais saturação e contraste
-		env.adjustment_saturation *= 1.25
-		env.adjustment_contrast = 1.12
-	env.adjustment_contrast = lerpf(1.06, 1.1, golden)
+	env.adjustment_saturation = 0.90 if rain else lerpf(0.94, 0.96, golden)
+	env.adjustment_contrast = lerpf(1.0, 1.02, golden)
 	env.adjustment_brightness = 0.94 if rain else 1.0
 	env.volumetric_fog_albedo = fog_c
 	env.volumetric_fog_density = 0.012 if rain else lerpf(0.004, 0.008, maxf(golden, night * 0.7))
 	env.volumetric_fog_emission = fog_c * (0.15 if rain else 0.05)
-	env.glow_intensity = 0.22 if rain else lerpf(0.45, 1.1, night)
-	env.glow_bloom = 0.08 if night > 0.4 else 0.05
+	env.glow_intensity = 0.22 if rain else lerpf(0.30, 0.58, night)
+	env.glow_bloom = 0.035 if night > 0.4 else 0.025
 	moon.light_energy = (0.15 if rain else 0.42) * night
-	moon.light_color = Color(0.65, 0.74, 1.0)
-	env.ambient_light_sky_contribution = 0.35 if rain else 0.45
-	# sombra cartoon: azulada/lilás em vez de cinza
-	env.ambient_light_color = Color(0.55, 0.58, 0.66) if rain else (Color(0.62, 0.68, 0.95).lerp(Color(1.0, 0.75, 0.7), golden * 0.4) if k[3] > 0.05 else Color(0.3, 0.32, 0.65))
+	moon.light_color = Color(0.82, 0.85, 0.90)
+	env.ambient_light_sky_contribution = 0.0
+	# Neutral fill preserves the actual albedo in shaded rooms and outdoors.
+	env.ambient_light_color = Color(.82,.83,.82) if rain else Color(.94,.93,.90).lerp(Color(.62,.64,.67),night)
 	if world:
 		world.set_night(night)
 		world.set_atmosphere(night, dawn, fog_c)

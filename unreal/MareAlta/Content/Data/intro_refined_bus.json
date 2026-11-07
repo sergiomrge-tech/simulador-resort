@@ -1,0 +1,99 @@
+{
+  "parts": {
+    "Bus_Cabin": {
+      "mesh": "/Game/Intro/Refined/Bus_Cabin/Bus_Cabin.Bus_Cabin",
+      "triangles": 40825
+    },
+    "Bus_Door": {
+      "mesh": "/Game/Intro/Refined/Bus_Door/Bus_Door.Bus_Door",
+      "triangles": 1440,
+      "position": [
+        398.4999895095825,
+        107.50000476837158,
+        20.000000298023224
+      ]
+    },
+    "wheelFL": {
+      "mesh": "/Game/Intro/Refined/wheelFL/wheelFL.wheelFL",
+      "triangles": 2766,
+      "position": [
+        254.91888523101807,
+        -87.23270297050476,
+        35.6295108795166
+      ]
+    },
+    "wheelFR": {
+      "mesh": "/Game/Intro/Refined/wheelFR/wheelFR.wheelFR",
+      "triangles": 2766,
+      "position": [
+        254.91888523101807,
+        86.9039535522461,
+        35.6295108795166
+      ]
+    },
+    "wheelLR": {
+      "mesh": "/Game/Intro/Refined/wheelLR/wheelLR.wheelLR",
+      "triangles": 2766,
+      "position": [
+        -229.92353439331055,
+        -87.23270297050476,
+        35.6295108795166
+      ]
+    },
+    "wheelRR": {
+      "mesh": "/Game/Intro/Refined/wheelRR/wheelRR.wheelRR",
+      "triangles": 2766,
+      "position": [
+        -229.92353439331055,
+        86.90396547317505,
+        35.6295108795166
+      ]
+    }
+  },
+  "letter_mesh": "/Game/Intro/Refined/Letter_Home/Letter_Home.Letter_Home",
+  "steps": [
+    [
+      355.0,
+      35.0,
+      56.00000000000001
+    ],
+    [
+      355.0,
+      68.0,
+      38.0
+    ],
+    [
+      355.0,
+      96.0,
+      20.0
+    ],
+    [
+      355.0,
+      130.0,
+      0
+    ],
+    [
+      355.0,
+      225.0,
+      0
+    ]
+  ],
+  "interior_camera": [
+    250.0,
+    0,
+    148.0
+  ],
+  "front_look": [
+    550.0,
+    0,
+    140.0
+  ],
+  "door_swing_yaw": -85,
+  "seats": 32,
+  "source": "CC0 ajanhallinta, original project edits; editable bus_refined.blend",
+  "axis_signs": [
+    1,
+    -1,
+    1
+  ]
+}

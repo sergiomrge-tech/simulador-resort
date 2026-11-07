@@ -1,0 +1,820 @@
+{
+  "_doc": "ESPECIFICAÇÃO EDITORIAL, não é arquivo de importação Steamworks nem conquistas já implementadas. Paths são JSON Pointers no State do save. Campo ausente vale false/0/lista vazia. Cinco conquistas da dívida dependem dos NOVOS campos propostos; as outras 31 usam dados existentes. Condições especiais têm semântica em conquistas.md. demo indica elegibilidade, não promessa de conquistar em 2 h. IDs nunca devem ser renumerados.",
+  "schema_version": 1,
+  "achievements": [
+    {
+      "id": "CC_DEBT_FIRST",
+      "name": {
+        "pt-BR": "Um coco de cada vez",
+        "en": "One Coconut at a Time"
+      },
+      "description": {
+        "pt-BR": "Faça o primeiro pagamento da dívida.",
+        "en": "Make your first debt payment."
+      },
+      "demo": true,
+      "hidden": false,
+      "condition": {
+        "path": "/prog/debt/paid_cents",
+        "op": ">=",
+        "value": 1
+      },
+      "field_status": "proposto neste pacote",
+      "source": "debt.json + DIVIDA_DA_AVO.md (contrato novo)"
+    },
+    {
+      "id": "CC_DEBT_25",
+      "name": {
+        "pt-BR": "Um quarto mais leve",
+        "en": "A Quarter Lighter"
+      },
+      "description": {
+        "pt-BR": "Pague R$ 250.000 da dívida.",
+        "en": "Pay R$ 250.000 of the debt."
+      },
+      "demo": true,
+      "hidden": false,
+      "condition": {
+        "path": "/prog/debt/paid_cents",
+        "op": ">=",
+        "value": 25000000
+      },
+      "field_status": "proposto neste pacote",
+      "source": "debt.json + DIVIDA_DA_AVO.md (contrato novo)"
+    },
+    {
+      "id": "CC_DEBT_50",
+      "name": {
+        "pt-BR": "Metade da maré",
+        "en": "Halfway Through the Tide"
+      },
+      "description": {
+        "pt-BR": "Pague R$ 500.000 da dívida.",
+        "en": "Pay R$ 500.000 of the debt."
+      },
+      "demo": false,
+      "hidden": false,
+      "condition": {
+        "path": "/prog/debt/paid_cents",
+        "op": ">=",
+        "value": 50000000
+      },
+      "field_status": "proposto neste pacote",
+      "source": "debt.json + DIVIDA_DA_AVO.md (contrato novo)"
+    },
+    {
+      "id": "CC_DEBT_75",
+      "name": {
+        "pt-BR": "Dá para respirar",
+        "en": "Room to Breathe"
+      },
+      "description": {
+        "pt-BR": "Pague R$ 750.000 da dívida.",
+        "en": "Pay R$ 750.000 of the debt."
+      },
+      "demo": false,
+      "hidden": false,
+      "condition": {
+        "path": "/prog/debt/paid_cents",
+        "op": ">=",
+        "value": 75000000
+      },
+      "field_status": "proposto neste pacote",
+      "source": "debt.json + DIVIDA_DA_AVO.md (contrato novo)"
+    },
+    {
+      "id": "CC_DEBT_FREE",
+      "name": {
+        "pt-BR": "Livre do boleto",
+        "en": "Debt-free"
+      },
+      "description": {
+        "pt-BR": "Quite a dívida de R$ 1.000.000.",
+        "en": "Pay off the R$ 1.000.000 debt."
+      },
+      "demo": false,
+      "hidden": false,
+      "condition": {
+        "path": "/prog/debt/paid_cents",
+        "op": ">=",
+        "value": 100000000
+      },
+      "field_status": "proposto neste pacote",
+      "source": "debt.json + DIVIDA_DA_AVO.md (contrato novo)"
+    },
+    {
+      "id": "CC_COMPANY",
+      "name": {
+        "pt-BR": "Sua primeira maré",
+        "en": "Your First Tide"
+      },
+      "description": {
+        "pt-BR": "Crie sua empresa.",
+        "en": "Create your company."
+      },
+      "demo": true,
+      "hidden": false,
+      "condition": {
+        "path": "/company/created",
+        "op": "==",
+        "value": true
+      },
+      "field_status": "existente na base",
+      "source": "MareSimulation.cpp::CreateCompany / MissionAmount"
+    },
+    {
+      "id": "CC_SALES_100",
+      "name": {
+        "pt-BR": "Freguesia de casa",
+        "en": "Regulars Welcome"
+      },
+      "description": {
+        "pt-BR": "Venda 100 produtos no quiosque.",
+        "en": "Sell 100 kiosk products."
+      },
+      "demo": true,
+      "hidden": false,
+      "condition": {
+        "path": "/kiosk_n",
+        "op": ">=",
+        "value": 100
+      },
+      "field_status": "existente na base",
+      "source": "MareSimulation.cpp::MissionAmount(sales)"
+    },
+    {
+      "id": "CC_EXP_KIOSK_TABLES",
+      "name": {
+        "pt-BR": "Um lugar para ficar",
+        "en": "A Place to Stay"
+      },
+      "description": {
+        "pt-BR": "Compre a expansão Mesas e guarda-sóis.",
+        "en": "Purchase the Tables and umbrellas expansion."
+      },
+      "demo": true,
+      "hidden": false,
+      "condition": {
+        "path": "/unlocked/kiosk_tables",
+        "op": "==",
+        "value": true
+      },
+      "field_status": "existente na base",
+      "source": "MareSimulation.cpp::BuyExpansion"
+    },
+    {
+      "id": "CC_EXP_BAR",
+      "name": {
+        "pt-BR": "Um brinde ao começo",
+        "en": "A Toast to Beginnings"
+      },
+      "description": {
+        "pt-BR": "Compre a expansão Bar do Coqueiro.",
+        "en": "Purchase the Bar do Coqueiro expansion."
+      },
+      "demo": true,
+      "hidden": false,
+      "condition": {
+        "path": "/unlocked/bar",
+        "op": "==",
+        "value": true
+      },
+      "field_status": "existente na base",
+      "source": "MareSimulation.cpp::BuyExpansion"
+    },
+    {
+      "id": "CC_EXP_POUSADA",
+      "name": {
+        "pt-BR": "Fique mais um dia",
+        "en": "Stay Another Day"
+      },
+      "description": {
+        "pt-BR": "Compre a expansão Pousada.",
+        "en": "Purchase the Guesthouse expansion."
+      },
+      "demo": true,
+      "hidden": false,
+      "condition": {
+        "path": "/unlocked/pousada",
+        "op": "==",
+        "value": true
+      },
+      "field_status": "existente na base",
+      "source": "MareSimulation.cpp::BuyExpansion"
+    },
+    {
+      "id": "CC_EXP_POOL",
+      "name": {
+        "pt-BR": "Sem medo de siri",
+        "en": "Crab-free Floating"
+      },
+      "description": {
+        "pt-BR": "Compre a expansão Piscina.",
+        "en": "Purchase the Pool expansion."
+      },
+      "demo": true,
+      "hidden": false,
+      "condition": {
+        "path": "/unlocked/pool",
+        "op": "==",
+        "value": true
+      },
+      "field_status": "existente na base",
+      "source": "MareSimulation.cpp::BuyExpansion"
+    },
+    {
+      "id": "CC_EXP_PASSEIOS",
+      "name": {
+        "pt-BR": "Além do balcão",
+        "en": "Beyond the Counter"
+      },
+      "description": {
+        "pt-BR": "Compre a expansão Passeios.",
+        "en": "Purchase the Tours expansion."
+      },
+      "demo": true,
+      "hidden": false,
+      "condition": {
+        "path": "/unlocked/passeios",
+        "op": "==",
+        "value": true
+      },
+      "field_status": "existente na base",
+      "source": "MareSimulation.cpp::BuyExpansion"
+    },
+    {
+      "id": "CC_EXP_GRAND_HOTEL",
+      "name": {
+        "pt-BR": "Vista de um milhão",
+        "en": "A Million-real View"
+      },
+      "description": {
+        "pt-BR": "Compre a expansão Grand Hotel.",
+        "en": "Purchase the Grand Hotel expansion."
+      },
+      "demo": false,
+      "hidden": false,
+      "condition": {
+        "path": "/unlocked/grand_hotel",
+        "op": "==",
+        "value": true
+      },
+      "field_status": "existente na base",
+      "source": "MareSimulation.cpp::BuyExpansion"
+    },
+    {
+      "id": "CC_EXP_SALAO_JOGOS",
+      "name": {
+        "pt-BR": "Só mais uma partida",
+        "en": "Just One More Game"
+      },
+      "description": {
+        "pt-BR": "Compre a expansão Salão de jogos.",
+        "en": "Purchase the Game room expansion."
+      },
+      "demo": false,
+      "hidden": false,
+      "condition": {
+        "path": "/unlocked/salao_jogos",
+        "op": "==",
+        "value": true
+      },
+      "field_status": "existente na base",
+      "source": "MareSimulation.cpp::BuyExpansion"
+    },
+    {
+      "id": "CC_CH_PIER",
+      "name": {
+        "pt-BR": "O píer fica de pé",
+        "en": "The Pier Stands"
+      },
+      "description": {
+        "pt-BR": "Conclua o capítulo O píer do Seu Severino.",
+        "en": "Complete the Seu Severino’s Pier chapter."
+      },
+      "demo": true,
+      "hidden": false,
+      "condition": {
+        "path": "/prog/ch/pier",
+        "op": ">=",
+        "value": 3
+      },
+      "field_status": "existente na base",
+      "source": "MareSimulation.h:83 IsChapterDone; MareSimulation.cpp::AdvanceChapter"
+    },
+    {
+      "id": "CC_CH_PRAINHA",
+      "name": {
+        "pt-BR": "Depois da missa",
+        "en": "After Mass"
+      },
+      "description": {
+        "pt-BR": "Conclua o capítulo A prainha do Padre Robson.",
+        "en": "Complete the Padre Robson’s Hidden Beach chapter."
+      },
+      "demo": true,
+      "hidden": false,
+      "condition": {
+        "path": "/prog/ch/prainha",
+        "op": ">=",
+        "value": 3
+      },
+      "field_status": "existente na base",
+      "source": "MareSimulation.h:83 IsChapterDone; MareSimulation.cpp::AdvanceChapter"
+    },
+    {
+      "id": "CC_CH_SABORES",
+      "name": {
+        "pt-BR": "Receita de família",
+        "en": "Family Recipe"
+      },
+      "description": {
+        "pt-BR": "Conclua o capítulo Os sabores da Dona Cecília.",
+        "en": "Complete the Dona Cecília’s Flavours chapter."
+      },
+      "demo": true,
+      "hidden": false,
+      "condition": {
+        "path": "/prog/ch/sabores",
+        "op": ">=",
+        "value": 3
+      },
+      "field_status": "existente na base",
+      "source": "MareSimulation.h:83 IsChapterDone; MareSimulation.cpp::AdvanceChapter"
+    },
+    {
+      "id": "CC_CH_CARNAVAL",
+      "name": {
+        "pt-BR": "A vila na rua",
+        "en": "The Village Celebrates"
+      },
+      "description": {
+        "pt-BR": "Conclua o capítulo O carnaval da Prefeita Tuanny.",
+        "en": "Complete the Prefeita Tuanny’s Carnival chapter."
+      },
+      "demo": true,
+      "hidden": false,
+      "condition": {
+        "path": "/prog/ch/carnaval",
+        "op": ">=",
+        "value": 3
+      },
+      "field_status": "existente na base",
+      "source": "MareSimulation.h:83 IsChapterDone; MareSimulation.cpp::AdvanceChapter"
+    },
+    {
+      "id": "CC_BAR_50",
+      "name": {
+        "pt-BR": "Rodada da casa",
+        "en": "A Round on the House"
+      },
+      "description": {
+        "pt-BR": "Sirva 50 drinks no bar.",
+        "en": "Serve 50 drinks at the bar."
+      },
+      "demo": true,
+      "hidden": false,
+      "condition": {
+        "path": "/bar/served",
+        "op": ">=",
+        "value": 50
+      },
+      "field_status": "existente na base",
+      "source": "MareBar.cpp:191,429"
+    },
+    {
+      "id": "CC_BAR_MASTER",
+      "name": {
+        "pt-BR": "Mestre dos drinks",
+        "en": "Cocktail Master"
+      },
+      "description": {
+        "pt-BR": "Descubra todas as receitas do bar.",
+        "en": "Discover every bar recipe."
+      },
+      "demo": true,
+      "hidden": false,
+      "condition": {
+        "path": "/prog/achievements/mestre_drinks",
+        "op": "==",
+        "value": true
+      },
+      "field_status": "existente na base",
+      "source": "MareBar.cpp:196–198"
+    },
+    {
+      "id": "CC_BAR_SECRET",
+      "name": {
+        "pt-BR": "Segredo do Coqueiro",
+        "en": "The Coconut Secret"
+      },
+      "description": {
+        "pt-BR": "Conheça a receita coqueiro.",
+        "en": "Learn the coqueiro recipe."
+      },
+      "demo": true,
+      "hidden": true,
+      "condition": {
+        "path": "/bar/known",
+        "op": "contains",
+        "value": "coqueiro"
+      },
+      "field_status": "existente na base",
+      "source": "MareBar.cpp:184"
+    },
+    {
+      "id": "CC_TOUR_BARCO",
+      "name": {
+        "pt-BR": "Mar à vista",
+        "en": "Out to Sea"
+      },
+      "description": {
+        "pt-BR": "Guie o passeio barco com pelo menos um passageiro.",
+        "en": "Lead the boat tour with at least one passenger."
+      },
+      "demo": true,
+      "hidden": false,
+      "condition": {
+        "path": "/tour_results",
+        "op": "any_tour",
+        "value": {
+          "id": "barco",
+          "guide": true,
+          "pax_min": 1
+        }
+      },
+      "field_status": "existente na base",
+      "source": "MareTours.cpp:230–236,258 (lista de 12 resultados)"
+    },
+    {
+      "id": "CC_TOUR_SNORKEL",
+      "name": {
+        "pt-BR": "Debaixo da maré",
+        "en": "Beneath the Tide"
+      },
+      "description": {
+        "pt-BR": "Guie o passeio mergulho com pelo menos um passageiro.",
+        "en": "Lead the snorkelling tour with at least one passenger."
+      },
+      "demo": true,
+      "hidden": false,
+      "condition": {
+        "path": "/tour_results",
+        "op": "any_tour",
+        "value": {
+          "id": "snorkel",
+          "guide": true,
+          "pax_min": 1
+        }
+      },
+      "field_status": "existente na base",
+      "source": "MareTours.cpp:230–236,258 (lista de 12 resultados)"
+    },
+    {
+      "id": "CC_TOUR_FAROL",
+      "name": {
+        "pt-BR": "Luz no caminho",
+        "en": "Light the Way"
+      },
+      "description": {
+        "pt-BR": "Guie o passeio trilha ao farol com pelo menos um passageiro.",
+        "en": "Lead the lighthouse trail tour with at least one passenger."
+      },
+      "demo": true,
+      "hidden": false,
+      "condition": {
+        "path": "/tour_results",
+        "op": "any_tour",
+        "value": {
+          "id": "farol",
+          "guide": true,
+          "pax_min": 1
+        }
+      },
+      "field_status": "existente na base",
+      "source": "MareTours.cpp:230–236,258 (lista de 12 resultados)"
+    },
+    {
+      "id": "CC_BIZ_ALL",
+      "name": {
+        "pt-BR": "Vizinho empreendedor",
+        "en": "Village Entrepreneur"
+      },
+      "description": {
+        "pt-BR": "Tenha os cinco negócios da vila no nível 1 ou maior.",
+        "en": "Own all five village businesses at level 1 or above."
+      },
+      "demo": true,
+      "hidden": false,
+      "condition": {
+        "path": "/prog/biz",
+        "op": "all_businesses",
+        "value": {
+          "ids": [
+            "sorveteria",
+            "food_truck",
+            "aluguel",
+            "souvenir",
+            "surfe"
+          ],
+          "field": "lvl",
+          "min": 1
+        }
+      },
+      "field_status": "existente na base",
+      "source": "MareBizCommon.cpp::BizState / BusinessLevel"
+    },
+    {
+      "id": "CC_BIZ_MAX",
+      "name": {
+        "pt-BR": "A vila prospera",
+        "en": "A Thriving Village"
+      },
+      "description": {
+        "pt-BR": "Tenha os cinco negócios da vila no nível 3 ou maior.",
+        "en": "Own all five village businesses at level 3 or above."
+      },
+      "demo": true,
+      "hidden": false,
+      "condition": {
+        "path": "/prog/biz",
+        "op": "all_businesses",
+        "value": {
+          "ids": [
+            "sorveteria",
+            "food_truck",
+            "aluguel",
+            "souvenir",
+            "surfe"
+          ],
+          "field": "lvl",
+          "min": 3
+        }
+      },
+      "field_status": "existente na base",
+      "source": "MareBizCommon.cpp::BizState / BusinessLevel"
+    },
+    {
+      "id": "CC_FISH_FIRST",
+      "name": {
+        "pt-BR": "Foi fisgado",
+        "en": "Hooked"
+      },
+      "description": {
+        "pt-BR": "Pesque seu primeiro peixe.",
+        "en": "Catch your first fish."
+      },
+      "demo": true,
+      "hidden": false,
+      "condition": {
+        "path": "/prog/fish",
+        "op": "sum_species",
+        "value": 1
+      },
+      "field_status": "existente na base",
+      "source": "MareLeisure.cpp::CatchFish; MareSimulation.cpp::MissionAmount(fish)"
+    },
+    {
+      "id": "CC_FISH_RARE",
+      "name": {
+        "pt-BR": "História de pescador",
+        "en": "A Fish Worth Bragging About"
+      },
+      "description": {
+        "pt-BR": "Pesque uma garoupa.",
+        "en": "Catch a garoupa."
+      },
+      "demo": true,
+      "hidden": true,
+      "condition": {
+        "path": "/prog/fish/garoupa",
+        "op": ">=",
+        "value": 1
+      },
+      "field_status": "existente na base",
+      "source": "MareLeisure.cpp::CatchFish"
+    },
+    {
+      "id": "CC_PHOTO_10",
+      "name": {
+        "pt-BR": "Álbum de família",
+        "en": "Family Album"
+      },
+      "description": {
+        "pt-BR": "Guarde 10 fotos no álbum.",
+        "en": "Keep 10 photos in the album."
+      },
+      "demo": true,
+      "hidden": false,
+      "condition": {
+        "path": "/prog/album",
+        "op": "length>=",
+        "value": 10
+      },
+      "field_status": "existente na base",
+      "source": "MareLeisure.cpp::RecordPhoto (máximo 200)"
+    },
+    {
+      "id": "CC_HOTEL_VIP",
+      "name": {
+        "pt-BR": "Pedido atendido",
+        "en": "Special Delivery"
+      },
+      "description": {
+        "pt-BR": "Conclua um pedido VIP do hotel.",
+        "en": "Fulfil a hotel VIP request."
+      },
+      "demo": false,
+      "hidden": false,
+      "condition": {
+        "path": "/prog/hotel_rooms/vip_done",
+        "op": ">=",
+        "value": 1
+      },
+      "field_status": "existente na base",
+      "source": "MareHotelRooms.cpp:175–179"
+    },
+    {
+      "id": "CC_HOTEL_POLISH",
+      "name": {
+        "pt-BR": "Capricho de família",
+        "en": "Family Standards"
+      },
+      "description": {
+        "pt-BR": "Arrume um quarto do hotel sem ajuda da equipe.",
+        "en": "Clean a hotel room without staff assistance."
+      },
+      "demo": false,
+      "hidden": false,
+      "condition": {
+        "path": "/stays/rooms",
+        "op": "any_hotel_polished",
+        "value": true
+      },
+      "field_status": "existente na base",
+      "source": "MareHotelRooms.cpp:126–131; HotelRoom usa stays.rooms"
+    },
+    {
+      "id": "CC_RESTAURANT_STARS",
+      "name": {
+        "pt-BR": "Três estrelas no caderno",
+        "en": "Three Stars in the Notebook"
+      },
+      "description": {
+        "pt-BR": "Ganhe as três estrelas do crítico.",
+        "en": "Earn all three critic stars."
+      },
+      "demo": false,
+      "hidden": false,
+      "condition": {
+        "path": "/prog/restaurant/stars",
+        "op": ">=",
+        "value": 3
+      },
+      "field_status": "existente na base",
+      "source": "MareRestaurant.cpp::RestaurantStars / ReviewCritic"
+    },
+    {
+      "id": "CC_BEACH_EVENT",
+      "name": {
+        "pt-BR": "Tudo pronto na areia",
+        "en": "Ready on the Sand"
+      },
+      "description": {
+        "pt-BR": "Realize um evento montado com ao menos metade das peças.",
+        "en": "Host a beach event with at least half its pieces placed."
+      },
+      "demo": false,
+      "hidden": false,
+      "condition": {
+        "path": "/hotel_events/last/score",
+        "op": ">=",
+        "value": 0.5
+      },
+      "field_status": "existente na base",
+      "source": "MareHotelEvents.cpp::StartHotelEvent / HotelEventsHour (last ao encerrar)"
+    },
+    {
+      "id": "CC_CUP",
+      "name": {
+        "pt-BR": "Campeão da Maré",
+        "en": "Tide Champion"
+      },
+      "description": {
+        "pt-BR": "Vença o Campeonato da Maré.",
+        "en": "Win the Campeonato da Maré."
+      },
+      "demo": false,
+      "hidden": false,
+      "condition": {
+        "path": "/billiards/cups",
+        "op": ">=",
+        "value": 1
+      },
+      "field_status": "existente na base",
+      "source": "MarePoolCup.cpp:169–173"
+    },
+    {
+      "id": "CC_ARCADE_JANGADA",
+      "name": {
+        "pt-BR": "Contra a corrente",
+        "en": "Against the Current"
+      },
+      "description": {
+        "pt-BR": "Registre uma pontuação positiva em Corrida de Jangada.",
+        "en": "Record a positive score in Corrida de Jangada."
+      },
+      "demo": false,
+      "hidden": false,
+      "condition": {
+        "path": "/prog/biz/fliperama/records/jangada",
+        "op": ">=",
+        "value": 1
+      },
+      "field_status": "existente na base",
+      "source": "MareArcade.h:85 GameId; MareArcade.cpp:35,216"
+    },
+    {
+      "id": "CC_ARCADE_PINBALL",
+      "name": {
+        "pt-BR": "Luz na máquina",
+        "en": "Light Up the Machine"
+      },
+      "description": {
+        "pt-BR": "Registre uma pontuação positiva em Pinball do Farol.",
+        "en": "Record a positive score in Pinball do Farol."
+      },
+      "demo": false,
+      "hidden": false,
+      "condition": {
+        "path": "/prog/biz/fliperama/records/pinball",
+        "op": ">=",
+        "value": 1
+      },
+      "field_status": "existente na base",
+      "source": "MareArcade.h:85 GameId; MareArcade.cpp:35,216"
+    }
+  ],
+  "rich_presence": [
+    {
+      "id": "resort",
+      "pt-BR": "Administrando o Maré Alta",
+      "en": "Managing Maré Alta",
+      "trigger_proposal": "fallback"
+    },
+    {
+      "id": "kiosk",
+      "pt-BR": "No quiosque",
+      "en": "At the kiosk",
+      "trigger_proposal": "interação Customer/Fridge/Cupboard/KioskSign"
+    },
+    {
+      "id": "fishing",
+      "pt-BR": "Pescando",
+      "en": "Fishing",
+      "trigger_proposal": "AMareController::StartFishing / fechar SMareFishingGame"
+    },
+    {
+      "id": "bar",
+      "pt-BR": "Preparando drinks",
+      "en": "Mixing drinks",
+      "trigger_proposal": "SMareBarPrepGame aberto / fechar"
+    },
+    {
+      "id": "boat",
+      "pt-BR": "Guiando um passeio de barco",
+      "en": "Leading a boat trip",
+      "trigger_proposal": "UMareBoatTourWorld::Start / Finish"
+    },
+    {
+      "id": "snorkel",
+      "pt-BR": "Mergulhando",
+      "en": "Snorkelling",
+      "trigger_proposal": "UMareSnorkelWorld::Start / Finish"
+    },
+    {
+      "id": "trail",
+      "pt-BR": "Na trilha do farol",
+      "en": "On the lighthouse trail",
+      "trigger_proposal": "UMareTrailWorld::Start / Finish"
+    },
+    {
+      "id": "games",
+      "pt-BR": "No salão de jogos",
+      "en": "In the game room",
+      "trigger_proposal": "UMareGameRoom/UMareArcade::IsPlaying"
+    },
+    {
+      "id": "debt",
+      "pt-BR": "Cuidando da dívida de Dona Dilce",
+      "en": "Taking care of Dona Dilce’s debt",
+      "trigger_proposal": "painel de dívida proposto aberto"
+    },
+    {
+      "id": "free",
+      "pt-BR": "Um resort sem dívida",
+      "en": "A debt-free resort",
+      "trigger_proposal": "fallback se prog.debt.paid_cents == principal_cents"
+    }
+  ]
+}

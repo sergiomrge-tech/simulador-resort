@@ -1,0 +1,713 @@
+{
+ "_doc": "Tours, hands-on (gameplay plan: sell tickets at the pier, guide the tour, tour rating). The tours themselves (id, name, hour, price, cost, seats) stay in customization.json operations.tours; here are the guided stops and the pier places. Buyers come to the booth in the hours before a departure; the player sells (the guide sells by himself). In the departure hour the player can guide: three stops, each with a good, an acceptable and a bad choice (shown shuffled); rating = 2 + 1 per good + 0.5 per acceptable, tip = 10% of the tickets per good choice. Not guided by the end of that hour: the guide runs it (rating 3.5) or, without a guide, it is cancelled and refunded. World cm: booth = E target [x, y, z, yaw], queue = first buyer spot and the step between buyers, board = where boarding passengers walk.",
+ "booth": [
+  7380,
+  -1960,
+  110,
+  180
+ ],
+ "queue": [
+  7200,
+  -2260,
+  0,
+  -85
+ ],
+ "board": {
+  "snorkel": [
+   7200,
+   -4700,
+   0
+  ],
+  "barco": [
+   7200,
+   -4700,
+   0
+  ],
+  "farol": [
+   7750,
+   -2500,
+   100
+  ],
+  "jangada": [
+   7200,
+   -4700,
+   0
+  ]
+ },
+ "stops": {
+  "snorkel": [
+   {
+    "text": "Primeira parada: o recife raso.",
+    "good": "Explicar como nadar devagar, sem tocar no coral",
+    "ok": "Contar quantos peixes cada um viu",
+    "bad": "Mandar todo mundo pisar nas pedras para descansar"
+   },
+   {
+    "text": "Um cardume de sargentinhos aparece.",
+    "good": "Mostrar as listras e deixar observarem em silêncio",
+    "ok": "Jogar um pouco de pão na água",
+    "bad": "Pedir para tentarem pegar um peixe"
+   },
+   {
+    "text": "Hora de voltar ao barco.",
+    "good": "Contar todos os mergulhadores antes de partir",
+    "ok": "Partir quando o barco estiver quase cheio",
+    "bad": "Partir logo para não atrasar"
+   }
+  ],
+  "barco": [
+   {
+    "text": "Saindo do píer, o mar está um pouco agitado.",
+    "good": "Distribuir coletes e mostrar onde segurar",
+    "ok": "Pedir para todos ficarem sentados",
+    "bad": "Acelerar para passar logo"
+   },
+   {
+    "text": "Golfinhos à vista!",
+    "good": "Desligar o motor e deixar que passem",
+    "ok": "Seguir os golfinhos de longe",
+    "bad": "Ir para cima deles para a foto"
+   },
+   {
+    "text": "Parada na praia deserta.",
+    "good": "Lembrar de levar o lixo de volta",
+    "ok": "Dar dez minutos de banho de mar",
+    "bad": "Deixar as latas na areia, a maré leva"
+   }
+  ],
+  "farol": [
+   {
+    "text": "Início da trilha, sol forte.",
+    "good": "Lembrar de água e protetor solar",
+    "ok": "Começar em ritmo rápido",
+    "bad": "Sair sem esperar os atrasados"
+   },
+   {
+    "text": "Mirante no meio do caminho.",
+    "good": "Contar a história do farol enquanto descansam",
+    "ok": "Tirar a foto do grupo e seguir",
+    "bad": "Pular o mirante para chegar antes"
+   },
+   {
+    "text": "Chegada ao farol.",
+    "good": "Mostrar a lente e explicar como ela guiava os barcos",
+    "ok": "Liberar para fotos",
+    "bad": "Subir na grade para a melhor foto"
+   }
+  ],
+  "jangada": [
+   {
+    "text": "A jangada sai do píer com a vela aberta.",
+    "good": "Explicar como o jangadeiro lê o vento",
+    "ok": "Deixar todos tirarem selfies",
+    "bad": "Balançar a jangada para animar"
+   },
+   {
+    "text": "A ilha vulcânica aparece ao longe, soltando fumaça.",
+    "good": "Contar a lenda da ilha e mostrar a fumaça de longe",
+    "ok": "Apontar a ilha e seguir",
+    "bad": "Prometer chegar perto da cratera"
+   },
+   {
+    "text": "O sol encosta no mar.",
+    "good": "Recolher a vela e ficar em silêncio no pôr do sol",
+    "ok": "Servir a água de coco e voltar",
+    "bad": "Voltar correndo antes do sol sumir"
+   }
+  ]
+ },
+ "_doc_booth": "Ticket booth (CHECKLIST_EXPANSOES 2.1): buyers come as groups (adults, kids, a trait: hungry, first time) shown in a bubble. The player sells to the first group and picks which extras to offer: a wanted extra is bought (price per person or per group) and adds rating; an unwanted one is refused and costs pushy rating. A group that does not fit goes to the waiting list and comes first tomorrow. Rough sea: with tickets sold the player chooses refund (refund_rating) or reschedule to tomorrow (reschedule_rating, reschedule_keep of the groups stay); undecided by the end of the departure hour it is refunded. Group sizes: adults 1..max_adults, kids 0..max_kids (kid_chance).",
+ "extras": {
+  "colete": {
+   "name": "Colete salva-vidas",
+   "per": "person",
+   "price": 6,
+   "rating": 0.3,
+   "wanted_by": "kids",
+   "short": "colete"
+  },
+  "foto": {
+   "name": "Foto do passeio",
+   "per": "group",
+   "price": 18,
+   "rating": 0.3,
+   "wanted_by": "first",
+   "short": "foto"
+  },
+  "lanche": {
+   "name": "Lanche a bordo",
+   "per": "person",
+   "price": 9,
+   "rating": 0.2,
+   "wanted_by": "hungry",
+   "short": "lanche"
+  }
+ },
+ "pushy_rating": 0.15,
+ "max_adults": 3,
+ "max_kids": 2,
+ "kid_chance": 0.4,
+ "traits": {
+  "hungry": "chegamos com fome",
+  "first": "é nossa primeira vez!",
+  "calm": "queremos sossego"
+ },
+ "refund_rating": 3.0,
+ "reschedule_rating": 4.0,
+ "reschedule_keep": 0.7,
+ "_doc_boat": "Playable boat tour (CHECKLIST_EXPANSOES 2.2, MareBoatTourWorld.cpp): the player pilots the tour boat (W/S throttle, A/D steer, gamepad left stick) from spawn through the route: buoys to pass (within buoy_radius) and three stops (stop: index into stops.barco) where the boat must slow under stop_speed inside stop_radius. Stop actions: vests (E on each passenger), dolphins (engine off and look at them; speeding toward them is the bad choice) and story (aim at look and press E). Leaving a stop unfinished gives the 'ok' or 'bad' choice. Dolphins come with dolphin_chance and add dolphin_bonus; full speed for seasick_seconds makes a passenger seasick (-seasick_rating, at most -1). Back at the dock (within dock_radius, slow) the tour is rated like a guided one. World cm; seats/helm in boat-local cm (bow -Y).",
+ "boat_tour": {
+  "tour": "barco",
+  "mesh": "TourBoat_lancha",
+  "spawn": [
+   7200,
+   -5900,
+   -90
+  ],
+  "dock": [
+   7200,
+   -5900
+  ],
+  "dock_radius": 900,
+  "hero_return": [
+   7200,
+   -4700,
+   120
+  ],
+  "max_speed": 950,
+  "reverse_speed": 250,
+  "accel": 260,
+  "turn": 42,
+  "sea_z": -30,
+  "buoy_radius": 800,
+  "stop_radius": 900,
+  "stop_speed": 140,
+  "route": [
+   {
+    "buoy": [
+     7300,
+     -7600
+    ]
+   },
+   {
+    "stop": 0,
+    "at": [
+     7500,
+     -9200
+    ]
+   },
+   {
+    "buoy": [
+     6000,
+     -11200
+    ]
+   },
+   {
+    "buoy": [
+     3800,
+     -12600
+    ]
+   },
+   {
+    "stop": 1,
+    "at": [
+     2000,
+     -13200
+    ],
+    "look": [
+     1500,
+     -13700,
+     -30
+    ]
+   },
+   {
+    "buoy": [
+     -1500,
+     -11500
+    ]
+   },
+   {
+    "buoy": [
+     -4500,
+     -9500
+    ]
+   },
+   {
+    "stop": 2,
+    "at": [
+     -7500,
+     -7600
+    ],
+    "look": [
+     -10200,
+     -3300,
+     0
+    ]
+   },
+   {
+    "buoy": [
+     -3000,
+     -7000
+    ]
+   },
+   {
+    "buoy": [
+     2500,
+     -6800
+    ]
+   }
+  ],
+  "seats": [
+   [
+    80,
+    -175,
+    60
+   ],
+   [
+    80,
+    -265,
+    60
+   ],
+   [
+    80,
+    -355,
+    60
+   ],
+   [
+    80,
+    -445,
+    60
+   ],
+   [
+    -80,
+    -175,
+    60
+   ],
+   [
+    -80,
+    -265,
+    60
+   ],
+   [
+    -80,
+    -355,
+    60
+   ],
+   [
+    -80,
+    -445,
+    60
+   ]
+  ],
+  "helm": [
+   45,
+   -30,
+   100
+  ],
+  "dolphin_chance": 0.75,
+  "dolphin_bonus": 0.5,
+  "dolphin_count": 3,
+  "seasick_speed": 0.85,
+  "seasick_seconds": 6,
+  "seasick_rating": 0.3,
+  "dolphin_watch_seconds": 4,
+  "dolphin_look_deg": 35,
+  "lines": {
+   "vests": "Distribua os coletes: mire cada turista e aperte E.",
+   "dolphins": "Golfinhos! Pare o motor (S) e mostre a eles.",
+   "story": "Mire a praia deserta e aperte E para contar a história.",
+   "no_dolphins": "Hoje os golfinhos não vieram... sigam para a próxima parada.",
+   "seasick": "Ai... meu estômago...",
+   "cheer": "Olha lá!!",
+   "vest_thanks": "Valeu pelo colete!",
+   "return": "Volte ao píer para encerrar o passeio.",
+   "shallow": "Raso! Cuidado com o casco."
+  },
+  "centre": 430,
+  "freeboard": 22
+ },
+ "_doc_snorkel": "Guided snorkel (CHECKLIST_EXPANSOES 2.3, MareSnorkelWorld.cpp): the tour boat anchors by the offshore reef (~9 m deep, MareReefWorld) (anchor x,y,heading; model origin at the transom, 'centre' cm ahead is the middle of the hull) and the group (one swimmer per ticket, at most 6) jumps in at the ladder and swims after the player (follow_speed, spacing). Species: aim at a fish school or coral kind within look_range and press E to present it (new species add species_bonus); touching coral (the hero within coral_margin of a coral's bounds) costs coral_penalty, at most once per coral_cooldown s. After lost_after species (or lost_seconds) one swimmer drifts lost_distance away and must be fetched (within fetch_radius). Back at the ladder (count_radius) the group is counted: everyone present ends the tour; a swimmer still lost after crew_fetch_seconds is fetched by the crew (worse choice). Choices per stop (stops.snorkel): 0 good, 1 ok, 2 bad - coral touches (0 / 1 / more), species presented (good_species / ok_species / fewer) and the count (all fetched / crew fetched). World cm.",
+ "snorkel_tour": {
+  "tour": "snorkel",
+  "mesh": "TourBoat_lancha",
+  "anchor": [
+   3700,
+   -12500,
+   0
+  ],
+  "centre": 430,
+  "freeboard": 22,
+  "sea_z": -30,
+  "ladder": [
+   4150,
+   -12660
+  ],
+  "hero_start": [
+   4150,
+   -12820,
+   -80
+  ],
+  "hero_return": [
+   7200,
+   -4700,
+   120
+  ],
+  "follow_speed": 175,
+  "spacing": 120,
+  "look_range": 1000,
+  "species_bonus": 0.12,
+  "coral_penalty": 0.25,
+  "coral_margin": 22,
+  "coral_cooldown": 4,
+  "lost_after": 2,
+  "lost_seconds": 70,
+  "lost_distance": 1150,
+  "lost_drift": 55,
+  "fetch_radius": 320,
+  "count_radius": 520,
+  "crew_fetch_seconds": 45,
+  "good_species": 5,
+  "ok_species": 2,
+  "good_coral": 0,
+  "ok_coral": 1,
+  "species": [
+   {
+    "id": "clown",
+    "name": "peixe-palhaço",
+    "fish": "World_0544",
+    "fact": "laranja com faixas brancas, vive escondido perto do coral"
+   },
+   {
+    "id": "surgeon",
+    "name": "cirurgião-azul",
+    "fish": "World_0546",
+    "fact": "azul com rabo amarelo, come algas o dia todo"
+   },
+   {
+    "id": "sergeant",
+    "name": "sargentinho",
+    "fish": "World_0555",
+    "fact": "amarelo com listras pretas, nada em cardume",
+    "stop": 1
+   },
+   {
+    "id": "sardine",
+    "name": "sardinhas",
+    "fish": "World_0564",
+    "fact": "cardume prateado que muda de direção junto"
+   },
+   {
+    "id": "shark",
+    "name": "tubarão-galha-preta",
+    "reef": "Sea_shark",
+    "fact": "tubarão de recife tímido: patrulha o coral e foge de quem chega perto"
+   },
+   {
+    "id": "brain",
+    "name": "coral-cérebro",
+    "coral": [
+     "World_0538",
+     "World_0541",
+     "World_0549",
+     "World_0561",
+     "World_0563",
+     "World_0566",
+     "World_0577",
+     "World_0578",
+     "World_0600"
+    ],
+    "fact": "cresce menos de um centímetro por ano: não se toca"
+   },
+   {
+    "id": "fan",
+    "name": "leque-do-mar",
+    "coral": [
+     "World_0550",
+     "World_0552",
+     "World_0559",
+     "World_0560",
+     "World_0568",
+     "World_0570",
+     "World_0574",
+     "World_0596",
+     "World_0599"
+    ],
+    "fact": "filtra a água e balança com a corrente"
+   },
+   {
+    "id": "table",
+    "name": "coral-mesa",
+    "coral": [
+     "World_0551",
+     "World_0553",
+     "World_0558",
+     "World_0567",
+     "World_0569",
+     "World_0571",
+     "World_0573",
+     "World_0579",
+     "World_0581",
+     "World_0592",
+     "World_0594"
+    ],
+    "fact": "abriga peixes pequenos embaixo da 'mesa'"
+   },
+   {
+    "id": "branch",
+    "name": "coral-galhado",
+    "coral": [
+     "World_0537",
+     "World_0539",
+     "World_0540",
+     "World_0542",
+     "World_0543",
+     "World_0548",
+     "World_0554",
+     "World_0557",
+     "World_0562",
+     "World_0572",
+     "World_0575",
+     "World_0576",
+     "World_0580",
+     "World_0582",
+     "World_0583",
+     "World_0584",
+     "World_0585",
+     "World_0586",
+     "World_0587",
+     "World_0588",
+     "World_0589",
+     "World_0590",
+     "World_0591",
+     "World_0593",
+     "World_0595",
+     "World_0597",
+     "World_0598"
+    ],
+    "fact": "quebra fácil: um toque de nadadeira estraga anos"
+   },
+   {
+    "id": "anemone",
+    "name": "anêmona",
+    "reef": "Sea_anemone",
+    "fact": "os tentáculos queimam peixinhos, mas o peixe-palhaço mora nela"
+   },
+   {
+    "id": "urchin",
+    "name": "ouriço-do-mar",
+    "reef": "Sea_urchin",
+    "fact": "espinhos longos: nunca pise nem encoste"
+   },
+   {
+    "id": "starfish",
+    "name": "estrela-do-mar",
+    "reef": "Sea_starfish",
+    "fact": "se perde um braço, cresce outro no lugar"
+   }
+  ],
+  "lines": {
+   "start": "Mergulhe (Ctrl), mire uma espécie e aperte E para mostrar ao grupo.",
+   "present": "Olhem! Que lindo!",
+   "seen": "Esse a gente já viu!",
+   "coral": "Ei, cuidado com o coral!",
+   "lost": "Ei! Cadê o grupo?",
+   "found": "Ufa, valeu por me buscar!",
+   "count": "Volte à escada do barco para contar o grupo.",
+   "missing": "Contagem: {0} de {1}. Falta gente: vá buscar!",
+   "crew": "O marinheiro buscou o turista perdido.",
+   "done": "Todo mundo a bordo!"
+  }
+ },
+ "_doc_trail": "Lighthouse trail on foot (CHECKLIST_EXPANSOES 2.4, MareTrailWorld.cpp): the group (one walker per ticket, at most 5) gathers at start and walks after the player at 'speed' cm/s (the player walks 260, sprints 420), 'spacing' apart. At the start E on each walker hands water and sunscreen. A walker more than lag_distance behind complains (-complaint_rating, once per lag_cooldown s each). Mirantes (viewpoints, within 'radius'): P takes the group photo; E tells the lighthouse story while they rest (the clock jumps story_minutes, +story_bonus). At the lighthouse the group is gathered: inside the 'sunset' hours window they watch the sunset (+sunset_bonus, sunset_watch_minutes then the tour ends); early, they wait and grow impatient (a complaint every patience_minutes); late, it is missed. Choices per stop (stops.farol): water given (all / half / fewer), photos at the mirantes (all / some / none), sunset (seen / missed). Game clock: 1 minute per real second; sun at 0 deg at 18h. World cm.",
+ "trail_tour": {
+  "tour": "farol",
+  "start": [
+   7750,
+   -2500,
+   100
+  ],
+  "start_radius": 1500,
+  "mirantes": [
+   {
+    "name": "Mirante da praia",
+    "at": [
+     8740,
+     -3629,
+     30
+    ],
+    "look": [
+     5500,
+     -3600,
+     200
+    ]
+   },
+   {
+    "name": "Mirante das pedras",
+    "at": [
+     9960,
+     -3930,
+     90
+    ],
+    "look": [
+     6500,
+     -6000,
+     100
+    ]
+   }
+  ],
+  "lighthouse": [
+   10430,
+   -3860,
+   150
+  ],
+  "radius": 450,
+  "gather_radius": 900,
+  "speed": 240,
+  "spacing": 130,
+  "lag_distance": 1000,
+  "lag_cooldown": 25,
+  "complaint_rating": 0.15,
+  "sunset": [
+   17.25,
+   17.95
+  ],
+  "patience_minutes": 15,
+  "sunset_watch_minutes": 12,
+  "story_minutes": 12,
+  "story_bonus": 0.15,
+  "sunset_bonus": 0.5,
+  "bottle": "/Game/Custom/BarPrep/BarPrep_agua_gas/BarPrep_agua_gas.BarPrep_agua_gas",
+  "lines": {
+   "start": "Entregue água e protetor solar a cada pessoa (E) e siga para o primeiro mirante.",
+   "thanks": "Valeu pela água!",
+   "lag": "Ei, mais devagar!",
+   "photo": "Que vista! Tira outra!",
+   "mirante": "Mirante: foto do grupo (P) ou conte a história do farol (E na placa).",
+   "story": "Você contou a história do farol enquanto o grupo descansava.",
+   "early": "Ainda está cedo para o pôr do sol...",
+   "sunset": "Olhem o pôr do sol!!",
+   "late": "Perdemos o pôr do sol...",
+   "go_lighthouse": "Siga para o farol: o pôr do sol é entre 17h15 e 17h57.",
+   "done": "Que fim de tarde! Obrigado, guia!"
+  },
+  "linger_seconds": 20,
+  "follow_radius": 350,
+  "sunset_view": [
+   10150,
+   -3880,
+   120
+  ]
+ },
+ "_doc_results": "Tour results (CHECKLIST_EXPANSOES 2.5, MareTours.cpp GuideTour/ToursHour): every tour that leaves (with the player or the guide) writes a result to the save ('tour_results', last 12): stars, tip, photos sold and up to three written reviews - one per stop, from reviews.<tour>[stop][choice] (0 good, 1 ok, 2 bad), signed by the groups that went - plus a highlight line when the playable trip's bonus was high or low (highlight.<tour>). The phone's Passeios app shows them. 'buzz': a rating of good or more brings extra people to the same tour tomorrow (bad fewer). The guide alone rates guide_rating (+ the extras' average) and earns no tip. Photographer: the Personalizar 'fotos' slot (tier 2+) sells photos after each tour, photo_price[tier-1] each, to photo_share of the passengers at a 5-star rating (fewer with a lower one). Upgrades in the playable tours: boat tier +boat_speed_per_tier speed and +seasick_seconds_per_tier; diving gear tier +look_range_per_tier and +species_bonus_per_tier.",
+ "guide_rating": 3.0,
+ "buzz": {
+  "good": 4.0,
+  "great": 4.5,
+  "bad": 2.5,
+  "good_people": 1,
+  "great_people": 2,
+  "bad_people": -1
+ },
+ "photo_price": [
+  0,
+  15,
+  25,
+  40,
+  60
+ ],
+ "photo_share": 0.6,
+ "upgrades": {
+  "boat_speed_per_tier": 0.07,
+  "seasick_seconds_per_tier": 1.5,
+  "look_range_per_tier": 120,
+  "species_bonus_per_tier": 0.02
+ },
+ "reviews": {
+  "snorkel": [
+   [
+    "Aprendemos a nadar sem tocar no coral!",
+    "Bom, mas ninguém explicou muita coisa.",
+    "Pisaram no coral. Que vergonha..."
+   ],
+   [
+    "Vimos tubarão, sargentinho e um monte de peixe!",
+    "Vimos alguns peixes.",
+    "Quase não mostraram nada."
+   ],
+   [
+    "O guia contou todo mundo antes de voltar. Seguro!",
+    "Voltamos meio na pressa.",
+    "Esqueceram um de nós na água!"
+   ]
+  ],
+  "barco": [
+   [
+    "Coletes para todos antes de sair. Nota 10.",
+    "Os coletes demoraram.",
+    "Ficamos sem colete!"
+   ],
+   [
+    "Os golfinhos pularam do lado do barco!",
+    "Golfinhos de longe, mas valeu.",
+    "Ele acelerou e espantou os golfinhos."
+   ],
+   [
+    "A história da praia deserta foi linda.",
+    "Passamos pela praia deserta.",
+    "Nem falaram da praia deserta."
+   ]
+  ],
+  "farol": [
+   [
+    "Água e protetor para todos. Cuidadoso!",
+    "Faltou água para algumas pessoas.",
+    "Saímos sem água no sol forte."
+   ],
+   [
+    "Fotos lindas nos mirantes!",
+    "Uma foto só, no corre.",
+    "Pulamos os mirantes."
+   ],
+   [
+    "O pôr do sol no farol foi inesquecível.",
+    "Chegamos fora da hora do pôr do sol.",
+    "Perdemos o pôr do sol."
+   ]
+  ],
+  "jangada": [
+   [
+    "O jangadeiro explicou o vento, que lindo!",
+    "Muitas selfies, pouca história.",
+    "Balançaram tanto que fiquei enjoado."
+   ],
+   [
+    "A lenda da ilha vulcânica arrepiou!",
+    "Vimos a ilha de longe.",
+    "Prometeram ir à cratera e nada..."
+   ],
+   [
+    "Silêncio total no pôr do sol. Perfeito.",
+    "Coco gelado e volta tranquila.",
+    "Voltamos antes do sol se pôr."
+   ]
+  ]
+ },
+ "highlight": {
+  "snorkel": {
+   "good": "Mergulho perfeito, cheio de espécies!",
+   "bad": "Tocaram demais no coral."
+  },
+  "barco": {
+   "good": "Golfinhos pertinho do barco!",
+   "bad": "Metade do barco passou mal com a velocidade."
+  },
+  "farol": {
+   "good": "Chegamos bem na hora do pôr do sol!",
+   "bad": "O guia andou rápido demais, ficamos para trás."
+  },
+  "jangada": {
+   "good": "O melhor pôr do sol da viagem.",
+   "bad": "Passeio corrido."
+  }
+ }
+}

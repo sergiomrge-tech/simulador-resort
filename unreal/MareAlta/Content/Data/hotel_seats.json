@@ -1,0 +1,125 @@
+{
+ "_doc": "Real chair seats of the hotel restaurant (mare_hud.chair_seats from the chair meshes in Coast): [x, y, seat top z, yaw facing the table] in world cm, by restaurant.json table index.",
+ "seats": [
+  {
+   "table": 0,
+   "mesh": "World_0334",
+   "seat": [
+    -1209.0,
+    3823.9,
+    194.1,
+    76.0
+   ]
+  },
+  {
+   "table": 0,
+   "mesh": "World_0332",
+   "seat": [
+    -1201.3,
+    3904.9,
+    194.1,
+    -88.4
+   ]
+  },
+  {
+   "table": 1,
+   "mesh": "World_0334",
+   "seat": [
+    -942.4,
+    3830.2,
+    194.1,
+    53.1
+   ]
+  },
+  {
+   "table": 1,
+   "mesh": "World_0332",
+   "seat": [
+    -903.7,
+    3901.8,
+    194.1,
+    -111.3
+   ]
+  },
+  {
+   "table": 2,
+   "mesh": "World_0334",
+   "seat": [
+    -1209.0,
+    4163.9,
+    194.1,
+    76.0
+   ]
+  },
+  {
+   "table": 2,
+   "mesh": "World_0332",
+   "seat": [
+    -1201.3,
+    4244.9,
+    194.1,
+    -88.4
+   ]
+  },
+  {
+   "table": 3,
+   "mesh": "World_0334",
+   "seat": [
+    -942.4,
+    4170.2,
+    194.1,
+    53.1
+   ]
+  },
+  {
+   "table": 3,
+   "mesh": "World_0332",
+   "seat": [
+    -903.7,
+    4241.8,
+    194.1,
+    -111.3
+   ]
+  },
+  {
+   "table": 4,
+   "mesh": "World_0334",
+   "seat": [
+    -1209.0,
+    4503.9,
+    194.1,
+    76.0
+   ]
+  },
+  {
+   "table": 4,
+   "mesh": "World_0332",
+   "seat": [
+    -1201.3,
+    4584.9,
+    194.1,
+    -88.4
+   ]
+  },
+  {
+   "table": 5,
+   "mesh": "World_0334",
+   "seat": [
+    -942.4,
+    4510.2,
+    194.1,
+    53.1
+   ]
+  },
+  {
+   "table": 5,
+   "mesh": "World_0332",
+   "seat": [
+    -903.7,
+    4581.8,
+    194.1,
+    -111.3
+   ]
+  }
+ ]
+}

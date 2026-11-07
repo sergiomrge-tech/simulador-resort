@@ -1,0 +1,49 @@
+{
+	"checks": [
+		{
+			"name": "new_save_arrival_active",
+			"pass": true
+		},
+		{
+			"name": "refined_bus_loaded",
+			"pass": true
+		},
+		{
+			"name": "arrival_can_be_skipped",
+			"pass": true
+		},
+		{
+			"name": "home_walk_segment_5",
+			"pass": true
+		},
+		{
+			"name": "arrival_home_door_focus",
+			"pass": true
+		},
+		{
+			"name": "home_walk_segment_8",
+			"pass": true
+		},
+		{
+			"name": "home_walk_segment_9",
+			"pass": true
+		},
+		{
+			"name": "letter_can_be_aimed",
+			"pass": true
+		},
+		{
+			"name": "letter_opens",
+			"pass": true
+		},
+		{
+			"name": "letter_closes_and_saves",
+			"pass": true
+		},
+		{
+			"name": "letter_can_be_read_again",
+			"pass": true
+		}
+	],
+	"finished": true
+}

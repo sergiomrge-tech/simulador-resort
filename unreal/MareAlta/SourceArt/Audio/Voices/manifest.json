@@ -1,0 +1,77 @@
+{
+  "happy_f_1": {
+    "source": "mature:small_single_laugh",
+    "converted": false,
+    "seconds": 0.34
+  },
+  "happy_m_1": {
+    "source": "mature:small_single_laugh",
+    "converted": true,
+    "seconds": 0.32
+  },
+  "happy_f_2": {
+    "source": "mature:laugh",
+    "converted": false,
+    "seconds": 0.95
+  },
+  "happy_m_2": {
+    "source": "mature:laugh",
+    "converted": true,
+    "seconds": 0.95
+  },
+  "happy_f_3": {
+    "source": "bright:01-laughter",
+    "converted": false,
+    "seconds": 0.93
+  },
+  "happy_f_4": {
+    "source": "bright:02-laughter",
+    "converted": false,
+    "seconds": 0.61
+  },
+  "annoyed_f_1": {
+    "source": "mature:annoyed_grumble",
+    "converted": false,
+    "seconds": 0.84
+  },
+  "annoyed_m_1": {
+    "source": "mature:annoyed_grumble",
+    "converted": true,
+    "seconds": 0.85
+  },
+  "annoyed_f_2": {
+    "source": "mature:sigh1",
+    "converted": false,
+    "seconds": 0.72
+  },
+  "annoyed_m_2": {
+    "source": "mature:sigh1",
+    "converted": true,
+    "seconds": 0.7
+  },
+  "annoyed_f_3": {
+    "source": "mature:sigh2",
+    "converted": false,
+    "seconds": 0.54
+  },
+  "hmm_f_1": {
+    "source": "mature:anime_uh",
+    "converted": false,
+    "seconds": 0.28
+  },
+  "hmm_m_1": {
+    "source": "mature:anime_uh",
+    "converted": true,
+    "seconds": 0.28
+  },
+  "hmm_f_2": {
+    "source": "mature:anime_eh",
+    "converted": false,
+    "seconds": 0.34
+  },
+  "hmm_m_2": {
+    "source": "shop:hmm",
+    "converted": false,
+    "seconds": 0.53
+  }
+}

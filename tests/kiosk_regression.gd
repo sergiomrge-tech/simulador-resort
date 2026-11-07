@@ -44,7 +44,7 @@ func run(main) -> void:
 	var waiting = v.spawn_customer()
 	check(waiting != null and waiting.state == "kqueue" and waiting.spot.is_empty(), "lotação cria espera fora das mesas")
 	var served = v.customers[0]
-	v._order(served)
+	v._order(served, true)
 	for ingredient in Core.stock:
 		Core.stock[ingredient] = 100
 	check(v.kiosk_serve() and served.state == "keat" and served.spot.busy, "consumo mantém assento reservado")
@@ -72,4 +72,4 @@ func run(main) -> void:
 			await get_tree().process_frame
 		get_viewport().get_texture().get_image().save_png(str(main.args.out))
 	print("KIOSK_TEST ", "FAIL" if failed else "PASS")
-	get_tree().quit(1 if failed else 0)
+	Core.quit_game(1 if failed else 0)

@@ -1,0 +1,86 @@
+{
+  "base_revision": "fa49a68b5d8d33fdedde48fd096097f0aac0f267",
+  "meta_horas": [
+    6,
+    10
+  ],
+  "minutos_por_dia": 16,
+  "dias": 240,
+  "sementes": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+  ],
+  "perfis": {
+    "casual": {
+      "active_seconds": 360,
+      "success": 0.5,
+      "kiosk_share": 0.65,
+      "attendant_seconds_per_item": 8.8,
+      "manual_seconds_per_item": 12,
+      "event_every": 7,
+      "tour_every": 7,
+      "cup_join": 0.25,
+      "win": 0.35,
+      "reception_share": 0.1,
+      "complaint_response": 0.45
+    },
+    "medio": {
+      "active_seconds": 600,
+      "success": 0.72,
+      "kiosk_share": 0.8,
+      "attendant_seconds_per_item": 8.8,
+      "manual_seconds_per_item": 10,
+      "event_every": 3,
+      "tour_every": 3,
+      "cup_join": 0.65,
+      "win": 0.55,
+      "reception_share": 0.35,
+      "complaint_response": 0.8
+    },
+    "dedicado": {
+      "active_seconds": 840,
+      "success": 0.9,
+      "kiosk_share": 0.95,
+      "attendant_seconds_per_item": 8.8,
+      "manual_seconds_per_item": 8,
+      "event_every": 1,
+      "tour_every": 1,
+      "cup_join": 0.95,
+      "win": 0.75,
+      "reception_share": 0.65,
+      "complaint_response": 0.97
+    }
+  },
+  "mudancas": [
+    {
+      "file": "definitions.json",
+      "pointer": "/expansions/grand_hotel/cost",
+      "current": 30000,
+      "new": 28000,
+      "reason": "Reduzir levemente a espera financeira pelo hotel, preservando fama 9 e carnaval; testar a meta de 6–10 h até hotel e tela do EA."
+    },
+    {
+      "file": "hotel_events.json",
+      "pointer": "/extra_bonus",
+      "current": 0.1,
+      "new": 0.15,
+      "reason": "Valorizar a montagem opcional: cada extra passa a +15% do cachê/fama sobre a fração obrigatória; testar sem acelerar os contratos passivos."
+    },
+    {
+      "file": "customization.json",
+      "pointer": "/price_mult/4",
+      "current": 30,
+      "new": 24,
+      "reason": "Suavizar o custo das melhorias finais sem mudar seus efeitos; conteúdo posterior à tela do EA permanece opcional."
+    }
+  ],
+  "service_scale": 0.8
+}

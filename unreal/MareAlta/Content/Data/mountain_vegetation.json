@@ -1,0 +1,35 @@
+{
+ "region": [
+  -34000,
+  42000,
+  -20000,
+  72000
+ ],
+ "min_z": 600,
+ "seed": 20261101,
+ "instances": {
+  "World_0504": 1462,
+  "World_0505": 1448,
+  "tree_small_02": 962,
+  "World_1206": 966,
+  "jacaranda_tree": 522,
+  "shrub_02": 2324,
+  "shrub_01": 2308,
+  "shrub_04": 1553,
+  "fern_02": 1552,
+  "shrub_03": 1534,
+  "coast_rocks_01": 1946,
+  "rock_face_01": 1863,
+  "coast_rocks_05": 2011,
+  "coast_rocks_02": 1890,
+  "rock_face_02": 1897,
+  "coast_rocks_03": 925
+ },
+ "total": 25163,
+ "rejected": {
+  "miss": 28567,
+  "low": 5472,
+  "steep": 6235,
+  "clearing": 901
+ }
+}

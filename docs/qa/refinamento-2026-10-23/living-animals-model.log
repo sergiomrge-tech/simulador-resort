@@ -1,0 +1,193 @@
+Info: No new files have been packed
+Info: Saved as "Cat_living.blend"
+INFO Draco mesh compression is available, use library at C:\Users\sergi\Documents\ChatGPT\resort 2\build\python\Lib\site-packages\bpy\4.5\scripts\addons_core\io_scene_gltf2\extern_draco.dll
+23:01:03 | INFO: Starting glTF 2.0 export
+23:01:03 | INFO: Extracting primitive: Sphere.001
+23:01:03 | INFO: Primitives created: 1
+23:01:03 | INFO: Extracting primitive: Sphere.005
+23:01:03 | INFO: Primitives created: 1
+23:01:03 | WARNING: Mesh Cylinder is not valid, and may be exported wrongly
+23:01:03 | INFO: Extracting primitive: Cylinder
+23:01:03 | INFO: Primitives created: 3
+23:01:03 | WARNING: There are more than 4 joint vertex influences.The 4 with highest weight will be used (and normalized).
+23:01:03 | INFO: Extracting primitive: Sphere.008
+23:01:03 | INFO: Primitives created: 1
+23:01:03 | INFO: Extracting primitive: Sphere.003
+23:01:03 | INFO: Primitives created: 1
+23:01:03 | INFO: Extracting primitive: Sphere.007
+23:01:03 | INFO: Primitives created: 1
+23:01:03 | INFO: Extracting primitive: Sphere
+23:01:03 | INFO: Primitives created: 1
+23:01:03 | INFO: Extracting primitive: Sphere.004
+23:01:03 | INFO: Primitives created: 1
+23:01:03 | INFO: Extracting primitive: Mouth crease
+23:01:03 | INFO: Primitives created: 1
+23:01:03 | INFO: Extracting primitive: Mouth crease.001
+23:01:03 | INFO: Primitives created: 1
+23:01:03 | INFO: Extracting primitive: Sphere.009
+23:01:03 | INFO: Primitives created: 1
+23:01:03 | INFO: Extracting primitive: Sphere.010
+23:01:03 | INFO: Primitives created: 1
+23:01:03 | INFO: Extracting primitive: Sphere.002
+23:01:03 | INFO: Primitives created: 1
+23:01:03 | INFO: Extracting primitive: Sphere.006
+23:01:03 | INFO: Primitives created: 1
+23:01:03 | INFO: Extracting primitive: Tapered whisker
+23:01:03 | INFO: Primitives created: 1
+23:01:03 | INFO: Extracting primitive: Tapered whisker.001
+23:01:03 | INFO: Primitives created: 1
+23:01:03 | INFO: Extracting primitive: Tapered whisker.002
+23:01:03 | INFO: Primitives created: 1
+23:01:03 | INFO: Extracting primitive: Tapered whisker.003
+23:01:03 | INFO: Primitives created: 1
+23:01:03 | INFO: Extracting primitive: Tapered whisker.004
+23:01:03 | INFO: Primitives created: 1
+23:01:03 | INFO: Extracting primitive: Tapered whisker.005
+23:01:03 | INFO: Primitives created: 1
+23:01:03 | WARNING: Baking animation because of unsupported constraints acting on the bone
+23:01:03 | WARNING: Baking animation because of unsupported constraints acting on the bone
+23:01:03 | WARNING: Baking animation because of unsupported constraints acting on the bone
+23:01:03 | WARNING: Baking animation because of unsupported constraints acting on the bone
+23:01:03 | WARNING: Baking animation because of unsupported constraints acting on the bone
+23:01:03 | WARNING: Baking animation because of unsupported constraints acting on the bone
+23:01:03 | WARNING: Baking animation because of unsupported constraints acting on the bone
+23:01:03 | WARNING: Baking animation because of unsupported constraints acting on the bone
+23:01:03 | WARNING: Baking animation because of unsupported constraints acting on the bone
+23:01:03 | WARNING: Baking animation because of unsupported constraints acting on the bone
+23:01:03 | WARNING: Baking animation because of unsupported constraints acting on the bone
+23:01:03 | WARNING: Baking animation because of unsupported constraints acting on the bone
+23:01:03 | WARNING: Baking animation because of unsupported constraints acting on the bone
+23:01:03 | WARNING: Baking animation because of unsupported constraints acting on the bone
+23:01:03 | WARNING: Baking animation because of unsupported constraints acting on the bone
+23:01:03 | WARNING: Baking animation because of unsupported constraints acting on the bone
+23:01:03 | WARNING: Baking animation because of unsupported constraints acting on the bone
+23:01:03 | WARNING: Baking animation because of unsupported constraints acting on the bone
+23:01:03 | WARNING: Baking animation because of unsupported constraints acting on the bone
+23:01:03 | WARNING: Baking animation because of unsupported constraints acting on the bone
+23:01:03 | WARNING: Baking animation because of unsupported constraints acting on the bone
+23:01:03 | WARNING: Baking animation because of unsupported constraints acting on the bone
+23:01:03 | WARNING: Baking animation because of unsupported constraints acting on the bone
+23:01:03 | WARNING: Baking animation because of unsupported constraints acting on the bone
+23:01:03 | WARNING: Baking animation because of unsupported constraints acting on the bone
+23:01:03 | WARNING: Baking animation because of unsupported constraints acting on the bone
+23:01:03 | WARNING: Baking animation because of unsupported constraints acting on the bone
+23:01:03 | WARNING: Baking animation because of unsupported constraints acting on the bone
+23:01:03 | WARNING: Baking animation because of unsupported constraints acting on the bone
+23:01:03 | WARNING: Baking animation because of unsupported constraints acting on the bone
+23:01:03 | WARNING: Baking animation because of unsupported constraints acting on the bone
+23:01:03 | WARNING: Baking animation because of unsupported constraints acting on the bone
+23:01:03 | WARNING: Baking animation because of unsupported constraints acting on the bone
+23:01:03 | WARNING: Baking animation because of unsupported constraints acting on the bone
+23:01:03 | WARNING: Baking animation because of unsupported constraints acting on the bone
+23:01:03 | WARNING: Baking animation because of unsupported constraints acting on the bone
+23:01:03 | WARNING: Baking animation because of unsupported constraints acting on the bone
+23:01:03 | WARNING: Baking animation because of unsupported constraints acting on the bone
+23:01:03 | WARNING: Baking animation because of unsupported constraints acting on the bone
+23:01:03 | WARNING: Baking animation because of unsupported constraints acting on the bone
+23:01:03 | WARNING: Baking animation because of unsupported constraints acting on the bone
+23:01:03 | WARNING: Baking animation because of unsupported constraints acting on the bone
+23:01:03 | WARNING: Baking animation because of unsupported constraints acting on the bone
+23:01:03 | WARNING: Baking animation because of unsupported constraints acting on the bone
+23:01:03 | WARNING: Baking animation because of unsupported constraints acting on the bone
+23:01:03 | WARNING: Baking animation because of unsupported constraints acting on the bone
+23:01:03 | WARNING: Baking animation because of unsupported constraints acting on the bone
+23:01:03 | WARNING: Baking animation because of unsupported constraints acting on the bone
+23:01:03 | INFO: Finished glTF 2.0 export in 0.33333778381347656 s
+
+LIVING_ANIMAL_PORTABLE PASS Cat ['Idle', 'Walking']
+Info: No new files have been packed
+Info: Saved as "Dog_living.blend"
+23:01:04 | INFO: Starting glTF 2.0 export
+23:01:04 | INFO: Extracting primitive: Sphere.001
+23:01:04 | INFO: Primitives created: 1
+23:01:04 | INFO: Extracting primitive: Sphere.005
+23:01:04 | INFO: Primitives created: 1
+23:01:04 | INFO: Extracting primitive: Sphere.008
+23:01:04 | INFO: Primitives created: 1
+23:01:04 | WARNING: Mesh Cylinder is not valid, and may be exported wrongly
+23:01:04 | INFO: Extracting primitive: Cylinder
+23:01:04 | INFO: Primitives created: 1
+23:01:04 | WARNING: There are more than 4 joint vertex influences.The 4 with highest weight will be used (and normalized).
+23:01:04 | INFO: Extracting primitive: Sphere.003
+23:01:04 | INFO: Primitives created: 1
+23:01:04 | INFO: Extracting primitive: Sphere.007
+23:01:04 | INFO: Primitives created: 1
+23:01:04 | INFO: Extracting primitive: Sphere
+23:01:04 | INFO: Primitives created: 1
+23:01:04 | INFO: Extracting primitive: Sphere.004
+23:01:04 | INFO: Primitives created: 1
+23:01:04 | INFO: Extracting primitive: Mouth crease
+23:01:04 | INFO: Primitives created: 1
+23:01:04 | INFO: Extracting primitive: Mouth crease.001
+23:01:04 | INFO: Primitives created: 1
+23:01:04 | INFO: Extracting primitive: Sphere.009
+23:01:04 | INFO: Primitives created: 1
+23:01:04 | INFO: Extracting primitive: Sphere.010
+23:01:04 | INFO: Primitives created: 1
+23:01:04 | INFO: Extracting primitive: Sphere.002
+23:01:04 | INFO: Primitives created: 1
+23:01:04 | INFO: Extracting primitive: Sphere.006
+23:01:04 | INFO: Primitives created: 1
+23:01:04 | WARNING: Baking animation because of unsupported constraints acting on the bone
+23:01:04 | WARNING: Baking animation because of unsupported constraints acting on the bone
+23:01:04 | WARNING: Baking animation because of unsupported constraints acting on the bone
+23:01:04 | WARNING: Baking animation because of unsupported constraints acting on the bone
+23:01:04 | WARNING: Baking animation because of unsupported constraints acting on the bone
+23:01:04 | WARNING: Baking animation because of unsupported constraints acting on the bone
+23:01:04 | WARNING: Baking animation because of unsupported constraints acting on the bone
+23:01:04 | WARNING: Baking animation because of unsupported constraints acting on the bone
+23:01:04 | WARNING: Baking animation because of unsupported constraints acting on the bone
+23:01:04 | WARNING: Baking animation because of unsupported constraints acting on the bone
+23:01:04 | WARNING: Baking animation because of unsupported constraints acting on the bone
+23:01:04 | WARNING: Baking animation because of unsupported constraints acting on the bone
+23:01:04 | WARNING: Baking animation because of unsupported constraints acting on the bone
+23:01:04 | WARNING: Baking animation because of unsupported constraints acting on the bone
+23:01:04 | WARNING: Baking animation because of unsupported constraints acting on the bone
+23:01:04 | WARNING: Baking animation because of unsupported constraints acting on the bone
+23:01:04 | WARNING: Baking animation because of unsupported constraints acting on the bone
+23:01:04 | WARNING: Baking animation because of unsupported constraints acting on the bone
+23:01:04 | WARNING: Baking animation because of unsupported constraints acting on the bone
+23:01:04 | WARNING: Baking animation because of unsupported constraints acting on the bone
+23:01:04 | WARNING: Baking animation because of unsupported constraints acting on the bone
+23:01:04 | WARNING: Baking animation because of unsupported constraints acting on the bone
+23:01:04 | WARNING: Baking animation because of unsupported constraints acting on the bone
+23:01:04 | WARNING: Baking animation because of unsupported constraints acting on the bone
+23:01:04 | WARNING: Baking animation because of unsupported constraints acting on the bone
+23:01:04 | WARNING: Baking animation because of unsupported constraints acting on the bone
+23:01:04 | WARNING: Baking animation because of unsupported constraints acting on the bone
+23:01:04 | WARNING: Baking animation because of unsupported constraints acting on the bone
+23:01:04 | WARNING: Baking animation because of unsupported constraints acting on the bone
+23:01:04 | WARNING: Baking animation because of unsupported constraints acting on the bone
+23:01:04 | WARNING: Baking animation because of unsupported constraints acting on the bone
+23:01:04 | WARNING: Baking animation because of unsupported constraints acting on the bone
+23:01:04 | WARNING: Baking animation because of unsupported constraints acting on the bone
+23:01:04 | WARNING: Baking animation because of unsupported constraints acting on the bone
+23:01:04 | WARNING: Baking animation because of unsupported constraints acting on the bone
+23:01:04 | WARNING: Baking animation because of unsupported constraints acting on the bone
+23:01:04 | WARNING: Baking animation because of unsupported constraints acting on the bone
+23:01:04 | WARNING: Baking animation because of unsupported constraints acting on the bone
+23:01:04 | WARNING: Baking animation because of unsupported constraints acting on the bone
+23:01:04 | WARNING: Baking animation because of unsupported constraints acting on the bone
+23:01:04 | WARNING: Baking animation because of unsupported constraints acting on the bone
+23:01:04 | WARNING: Baking animation because of unsupported constraints acting on the bone
+23:01:04 | WARNING: Baking animation because of unsupported constraints acting on the bone
+23:01:04 | WARNING: Baking animation because of unsupported constraints acting on the bone
+23:01:04 | WARNING: Baking animation because of unsupported constraints acting on the bone
+23:01:04 | WARNING: Baking animation because of unsupported constraints acting on the bone
+23:01:04 | WARNING: Baking animation because of unsupported constraints acting on the bone
+23:01:04 | WARNING: Baking animation because of unsupported constraints acting on the bone
+23:01:04 | INFO: Finished glTF 2.0 export in 0.31136560440063477 s
+
+LIVING_ANIMAL_PORTABLE PASS Dog ['Idle', 'Walking']
+Read blend: "C:\Users\sergi\Documents\ChatGPT\resort 2\art\vendor\animals\Animal Pack Vol.2 by @Quaternius\Blends\Cat.blend"
+Warning: region type 4 missing in space type "Info" (id: 7) - removing region
+Color management: display "sRGB / BT.709" used by scene not found, setting to default ("sRGB").
+Color management: scene view "sRGB EOTF" not found, setting default "Standard".
+Color management: sequencer colorspace "sRGB EOTF" not found, will use default instead.
+Read blend: "C:\Users\sergi\Documents\ChatGPT\resort 2\art\blender\cat_living.blend"
+Read blend: "C:\Users\sergi\Documents\ChatGPT\resort 2\art\vendor\animals\Animal Pack Vol.2 by @Quaternius\Blends\Dog.blend"
+Warning: region type 4 missing in space type "Info" (id: 7) - removing region
+Color management: display "sRGB / BT.709" used by scene not found, setting to default ("sRGB").
+Color management: scene view "sRGB EOTF" not found, setting default "Standard".
+Color management: sequencer colorspace "sRGB EOTF" not found, will use default instead.
+Read blend: "C:\Users\sergi\Documents\ChatGPT\resort 2\art\blender\dog_living.blend"

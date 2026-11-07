@@ -1,0 +1,41 @@
+{
+ "_doc": "Guests enjoying the pools (Sergio, 06/11/2026: 'hóspedes que entrarem aproveitando a piscina e tobogã'): UMarePoolSwimWorld. Each pool, once its expansion is owned (unlock), fills by day (hours) with up to count[0] swimmers (count[1] on hot days, none in the rain or at night). A swimmer jumps in from an entry point on the edge ([x, y, yaw] on the coping, facing the water), then swims between random points inside swim_rect (x0, y0, x1, y1, world cm: the root; the body reaches 90 cm ahead and 85 behind, so the rect keeps that far from walls and ladders), keeping spacing cm body to body (look_ahead cm ahead) and away from obstacles ([x, y, radius]: the decor floats and ball), floats on the back or treads water chatting with another swimmer. water_z is the surface; *_z are actor heights above the surface per pose (calibrated on the MetaHuman bodies). People appear and leave only out of the player's sight. slide (hotel pool, tobogã): share of the newcomers that climb the slide stair instead (tools/gen_hotel.py water_slide: origin = its instance, height = deck in m), walk up at climb_speed cm/s, sit sit_seconds at ride_start (0..1 along the chute: where it has left the deck, whose planks cover its mouth), ride the chute in ride_seconds lying back feet first (torso raised recline degrees, pelvis pelvis_up cm above the chute floor; yaw = the instance's turn; run = the straight run-out in m: 4.5 in the UE model mare_water_slide, tools/ue58/gen_water_slide.py, so it ends over the water) and fly off its end at exit_speed cm/s into the water.",
+ "hours": [9, 18],
+ "spacing": 80,
+ "look_ahead": 70,
+ "speed": [45, 70],
+ "turn_rate": 70,
+ "swim_z": 90,
+ "tread_z": 56,
+ "float_drop": 26,
+ "jump_time": 0.8,
+ "jump_height": 70,
+ "jump_in": 140,
+ "float_seconds": [18, 35],
+ "chat_seconds": [20, 40],
+ "chat_gap": 110,
+ "legs": [2, 4],
+ "pools": [
+  {
+   "id": "pousada",
+   "unlock": "pool",
+   "count": [4, 6],
+   "water_z": -8,
+   "edge_z": 13,
+   "swim_rect": [-480, 110, 480, 690],
+   "obstacles": [[-250, 260, 75], [280, 540, 75], [80, 660, 35]],
+   "entries": [[-300, -28, 90], [0, -28, 90], [300, -28, 90], [-300, 823, -90], [-150, 823, -90], [300, 823, -90]]
+  },
+  {
+   "id": "hotel",
+   "unlock": "grand_hotel",
+   "count": [5, 8],
+   "water_z": 105,
+   "edge_z": 122,
+   "swim_rect": [-3380, 3220, -1820, 3980],
+   "obstacles": [[-3150, 3600, 160]],
+   "entries": [[-3000, 3077, 90], [-2600, 3077, 90], [-2200, 3077, 90], [-3000, 4123, -90], [-2600, 4123, -90], [-2200, 4123, -90]],
+   "slide": {"origin": [-4050, 3600, 122], "yaw": 18.66, "height": 6.5, "run": 4.5, "share": 0.5, "climb_speed": 70, "sit_seconds": 1.5, "ride_start": 0.06, "ride_seconds": 6, "recline": 35, "pelvis_up": 12, "exit_speed": 450}
+  }
+ ]
+}

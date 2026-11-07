@@ -42,7 +42,7 @@ AMBIENTCG = {"Wicker002": "rattan"}
 # v0.8 (regra "nada de bolas e quadrados"): modelos reais do Poly Haven (CC0) para todos os objetos do jogo, só 1k para não pesar.
 MODELS_EXTRA = [
     "painted_wooden_chair_01", "wooden_bowl_01",
-    "boombox", "lambis_shell", "lifebuoy", "ocean_buoy", "wicker_basket_01", "wicker_basket_02", "trashbag", "planter_pot_clay",
+    "boombox", "television_02", "lambis_shell", "lifebuoy", "ocean_buoy", "wicker_basket_01", "wicker_basket_02", "trashbag", "planter_pot_clay",
     "potted_plant_01", "potted_plant_02", "potted_plant_04", "vintage_oil_lamp", "vintage_radio_transceiver", "sweet_potato",
     # frutas, pães e cozinha
     "food_apple_01", "bananas", "lemon", "food_lime_01", "food_lychee_01", "food_kiwi_01", "food_avocado_01",
@@ -86,7 +86,8 @@ KENNEY = {
         "flower_purpleB", "log_large", "stump_round", "campfire_logs", "campfire_stones", "tent_smallOpen", "lily_large", "mushroom_red"],
     "https://kenney.nl/media/pages/assets/food-kit/83086fa91c-1719418518/kenney_food-kit.zip": [
         "coconut", "coconut-half", "cocktail", "frappe", "glass", "fish", "fish-bones", "loaf", "loaf-round", "bread",
-        "pineapple", "watermelon", "orange", "bottle-oil", "ice-cream-cup", "cup", "cup-tea", "bowl"],
+        "pineapple", "watermelon", "orange", "bottle-oil", "ice-cream-cup", "cup", "cup-tea", "bowl",
+        "plate-dinner", "plate-deep", "utensil-spoon", "utensil-fork"],
     "https://kenney.nl/media/pages/assets/pirate-kit/e6d4bb1525-1771333093/kenney_pirate-kit.zip": [
         "boat-row-small", "boat-row-large", "palm-detailed-bend", "palm-detailed-straight", "palm-bend", "palm-straight",
         "flag", "flag-pennant", "tool-paddle", "barrel", "crate-bottles", "bottle", "bottle-large", "ship-small", "ship-medium"],
@@ -364,16 +365,13 @@ def universal_base_characters():
 
 def animals_gen():
     """Gato/cachorro (Quaternius Animal Pack Vol.2, CC0) e caranguejo ("methodical pixel", CC0) pelo OpenGameArt -> assets/models/gen/*.glb
-    (suavizados no Blender por tools/smooth_animals.py / convert_crab.py); toalha e castelo de areia saem de tools/gen_beach_props.py."""
+    (refinados com rig no Blender por tools/refine_living_animals.py / convert_crab.py); toalha e castelo de areia saem de tools/gen_beach_props.py."""
     import zipfile, io, tempfile
     gen = f"{A}/models/gen"
     os.makedirs(gen, exist_ok=True)
     tmp = tempfile.mkdtemp(prefix="animais_")
     if FORCE or not (os.path.exists(f"{gen}/cat.glb") and os.path.exists(f"{gen}/dog.glb")):
-        z = zipfile.ZipFile(io.BytesIO(get("https://opengameart.org/sites/default/files/Animal%20Pack%20Vol.2%20by%20%40Quaternius.zip")))
-        z.extractall(tmp)
-        blends = os.path.join(tmp, "Animal Pack Vol.2 by @Quaternius", "Blends")
-        subprocess.check_call([sys.executable, os.path.join(ROOT, "tools", "smooth_animals.py"), blends, gen, "Cat", "Dog"])
+        subprocess.check_call([sys.executable, os.path.join(ROOT, "tools", "refine_living_animals.py")])
     if FORCE or not os.path.exists(f"{gen}/crab.glb"):
         z = zipfile.ZipFile(io.BytesIO(get("https://opengameart.org/sites/default/files/crab_0.zip")))
         z.extractall(tmp)
@@ -387,6 +385,16 @@ def generated_props():
     Rodar após baixar texturas evita exportar GLBs sem materiais/texturas.
     """
     groups = [
+        ("gen_whale_and_sailship.py", ("humpback_whale", "pirate_sailship")),
+        ("import_closed_basket.py", ("wicker_basket_closed",)),
+        ("gen_coastal_traffic.py", ("coastal_yacht", "coastal_cruise")),
+        ("gen_counter_details.py", ("kiosk_counter_details",)),
+        ("import_counter_laptop.py", ("kiosk_laptop",)),
+        ("gen_home_door.py", ("player_home_door",)),
+        ("gen_kiosk_facade.py", ("kiosk_facade", "kiosk_neon_trim", "kiosk_roof", "kiosk_workbench", "kiosk_blender")),
+        ("gen_kiosk_service.py", ("service_fridge", "service_fridge_door", "service_food_cabinet", "service_register")),
+        ("gen_dishes.py", ("dish_petiscos", "dish_tapioca", "dish_pastel", "dish_acai", "dish_moqueca", "dish_batida")),
+        ("gen_used_drinks.py", ("used_glass_juice", "used_cocktail", "used_dish_batida", "table_plate", "table_bowl")),
         ("gen_beach_props.py", ("towel", "sandcastle", "lounger")),
         ("gen_code_props.py", ("tiki_torch", "win_shutters", "trellis_planter", "newsstand", "boat_mast")),
         ("gen_business.py", ("biz_gelato", "biz_canopy", "biz_food_truck", "biz_barrier")),
@@ -442,14 +450,38 @@ def kenney_smoke():
     im.save(dst)
     print("kenney smoke ok")
 
+def footstep_audio():
+    """Kenney Impact Sounds 1.0 (CC0): pisadas curtas, cinco variantes por piso."""
+    names = [f"footstep_{surface}_{i:03d}.ogg"
+             for surface in ("carpet", "concrete", "wood") for i in range(5)]
+    if not FORCE and all(os.path.exists(f"{A}/audio/{n}") for n in names):
+        return
+    import zipfile, io
+    url = "https://kenney.nl/media/pages/assets/impact-sounds/87b4ddecda-1677589768/kenney_impact-sounds.zip"
+    z = zipfile.ZipFile(io.BytesIO(get(url)))
+    os.makedirs(f"{A}/audio", exist_ok=True)
+    for name in names:
+        with open(f"{A}/audio/{name}", "wb") as f:
+            f.write(z.read("Audio/" + name))
+    with open(f"{A}/audio/KENNEY_IMPACT_LICENSE.txt", "wb") as f:
+        f.write(z.read("License.txt"))
+    print("kenney footsteps ok")
+
 def main():
     only = sys.argv[sys.argv.index("--only") + 1] if "--only" in sys.argv else ""
     with ThreadPoolExecutor(6) as ex:
         futs = []
+        if only in ("", "audio"):
+            if not all(os.path.isfile(os.path.join(A,"audio","kiosk_"+n+".wav")) for n in ("fridge","pickup","prepare","ready","cash")):
+                subprocess.check_call([sys.executable,os.path.join(ROOT,"tools","gen_kiosk_soft_audio.py")],cwd=ROOT)
+            futs.append(ex.submit(footstep_audio))
         if only in ("", "tex"):
             futs += [ex.submit(texture, s) for s in TEXTURES]
             futs += [ex.submit(ambientcg, k, v) for k, v in AMBIENTCG.items()]
         if only in ("", "models"):
+            if not os.path.isfile(os.path.join(A, "models", "clothing", "outfit_male.glb")) or not os.path.isfile(os.path.join(A, "models", "clothing", "outfit_female.glb")):
+                subprocess.check_call([sys.executable, os.path.join(ROOT, "tools", "fetch_compatible_outfits.py")], cwd=ROOT)
+                subprocess.check_call([sys.executable, os.path.join(ROOT, "tools", "gen_compatible_clothing.py")], cwd=ROOT)
             futs += [ex.submit(model, s, "1k", "models", True) for s in MODELS + MODELS_EXTRA]
             futs += [ex.submit(model, s, "2k", "models_hd") for s in MODELS + MODELS_EXTRA + MODELS_HD_ONLY]
             futs += [ex.submit(kenney, u, n) for u, n in KENNEY.items()]
