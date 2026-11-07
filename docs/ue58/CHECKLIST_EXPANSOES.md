@@ -448,7 +448,7 @@ vez de jogar fora). Lógica em `MareBizCommon.cpp`, valores em `business_games.j
 Os itens antigos (riscados abaixo) saíram do plano. No lugar deles fica UM item só (Sergio, 06/11/2026: "na piscina só
 coloque hóspedes que entrarem aproveitando a piscina e tobogã"):
 
-- [ ] **Hóspedes aproveitando a piscina e o tobogã:** hóspedes entram na água e nadam, boiam e conversam dentro da
+- [x] **Hóspedes aproveitando a piscina e o tobogã:** (07/11: `UMarePoolSwimWorld`, `pool_swim.json`; pousada: pulam da borda, nadam, boiam e conversam; Grand Hotel: também sobem a escada do tobogã, descem sentados e caem na água; QA `tools/ue58/qa/pool_swim_qa.py` e `slide_qa.py`) hóspedes entram na água e nadam, boiam e conversam dentro da
   piscina, e sobem a escada do tobogã e descem escorregando até cair na água. Animação de verdade (MetaHumans, sem
   deslizar nem atravessar a borda, o deck ou outras pessoas), quantidade que aumenta nos dias de calor e de dia. Sem
   minijogo nem gestão nova. Prova: fotos de perto de gente nadando e descendo o tobogã, e o qa_gate com PASS.

@@ -122,11 +122,69 @@ void UMarePoolSwimWorld::Place(FSwimmer& S,const TSharedPtr<FJsonObject>& P,cons
 {
  AMarePerson* Person=S.Person.Get();if(!Person)return;
  Person->HoldPose=Pose;
- Person->SetActorLocationAndRotation(FVector(S.Pos.X,S.Pos.Y,Num(P,TEXT("water_z"))+Z),FRotator(0,S.Yaw,0));
+ // Teleport the physics too (06/11, boat ride lesson): moving people fast leaves the groom hair behind, floating.
+ Person->SetActorLocationAndRotation(FVector(S.Pos.X,S.Pos.Y,Num(P,TEXT("water_z"))+Z),FRotator(0,S.Yaw,0),false,nullptr,ETeleportType::TeleportPhysics);
+}
+
+// The slide model (tools/gen_hotel.py water_slide) in Blender metres: tower at the origin, a straight stair on -Y up to
+// the deck at Ht, a U chute on a helix (radius R around x=cx0, turns) down to 1.05 m, then a straight 3 m run out over
+// the pool. Blender to world: x*100, -y*100 (the importer mirrors Y), z*100, from the instance origin (yaw 0).
+static FVector SlideWorld(const TSharedPtr<FJsonObject>& Slide,const FVector& B)
+{
+ const TArray<TSharedPtr<FJsonValue>>* O=nullptr;FVector Origin=FVector::ZeroVector;
+ if(Slide->TryGetArrayField(TEXT("origin"),O) && O->Num()>=3)Origin=FVector((*O)[0]->AsNumber(),(*O)[1]->AsNumber(),(*O)[2]->AsNumber());   // i18n:skip
+ // The instance is turned by yaw degrees about its origin (07/11: turned so the run-out ends over the water).
+ return Origin+FRotator(0,Num(Slide,TEXT("yaw"),0),0).RotateVector(FVector(B.X*100.f,-B.Y*100.f,B.Z*100.f));   // i18n:skip
+}
+TArray<FVector> UMarePoolSwimWorld::SlideClimb(const TSharedPtr<FJsonObject>& Slide)
+{
+ const float Ht=Num(Slide,TEXT("height"),6.5);   // i18n:skip
+ // Foot of the stair, first tread, top tread (the treads rise evenly), then to the deck corner over the chute: the chute
+ // starts under the deck planks, so the ride begins at ride_start, where it has left the deck.
+ return {SlideWorld(Slide,FVector(0,-7.45,0)),SlideWorld(Slide,FVector(0,-7.14,Ht/23.f)),SlideWorld(Slide,FVector(0,-1.2,Ht+.06f)),
+         SlideWorld(Slide,FVector(.75,-.8,Ht+.06f))};
+}
+FVector UMarePoolSwimWorld::SlideChute(const TSharedPtr<FJsonObject>& Slide,float T)
+{
+ const float Ht=Num(Slide,TEXT("height"),6.5),R=2.6f,Cx=3.2f,Turns=1.75f;T=FMath::Clamp(T,0.f,1.f);   // i18n:skip
+ FVector B;
+ if(T<.9f){const float U=T/.9f,A=PI+2*PI*Turns*U;B=FVector(Cx+R*FMath::Cos(A),R*FMath::Sin(A),Ht+.15f-(Ht-.9f)*U);}
+ else{const float U=(T-.9f)/.1f,A=PI+2*PI*Turns;B=FVector(Cx+R*FMath::Cos(A),R*FMath::Sin(A),1.05f)+FVector(U*3.f,0,-.7f*U);}
+ // The centre line of the U is 30 cm above its floor: ride on the floor.
+ return SlideWorld(Slide,B)-FVector(0,0,30);
+}
+
+void UMarePoolSwimWorld::Drive(AMarePerson* Person)
+{
+ TWeakObjectPtr<UMarePoolSwimWorld> Self(this);TWeakObjectPtr<AMarePerson> Who(Person);
+ Person->PreTick=[Self,Who](float DeltaSeconds){
+  if(!Self.IsValid() || !Who.IsValid())return;
+  for(int32 I=0;I<Self->Swimmers.Num();++I)if(Self->Swimmers[I].Person==Who){Self->Step(I,FMath::Min(DeltaSeconds,.1f));return;}};
+}
+
+bool UMarePoolSwimWorld::SpawnRider(int32 Pool,const TSharedPtr<FJsonObject>& P)
+{
+ const TSharedPtr<FJsonObject>* Slide=nullptr;if(!P->TryGetObjectField(TEXT("slide"),Slide))return false;   // i18n:skip
+ for(const auto& S:Swimmers)if(S.Person.IsValid() && S.Pool==Pool && (S.State==EState::Climb || S.State==EState::Ride || S.State==EState::Fly))return false;   // one at a time
+ const TArray<FVector> Climb=SlideClimb(*Slide);const FVector At=Climb[0];
+ if(Seen(At)){LastSpawnFail=TEXT("slide foot seen");return false;}   // i18n:skip
+ FActorSpawnParameters Params;Params.SpawnCollisionHandlingOverride=ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+ const float Yaw=(Climb[1]-Climb[0]).Rotation().Yaw;
+ AMarePerson* Person=GetWorld()->SpawnActor<AMarePerson>(At+FVector(0,0,88),FRotator(0,Yaw,0),Params);if(!Person)return false;
+ Person->SaveId=FString::Printf(TEXT("poolswim_%d"),++Serial);Person->PersonName=TEXT("Hóspede");Person->SetAppearance(FCrc::StrCrc32(*Person->SaveId)%4);
+ Person->bAmbient=true;Person->Tags.Add(TEXT("MareBather"));Person->Tags.Add(TEXT("MarePoolSwimmer"));
+ Person->GetCharacterMovement()->DisableMovement();Person->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+ Person->HoldPose=TEXT("Idle");Person->SetHairSimulation(false);   // rigid hair for the whole trip: simulated strands trailed behind
+ FSwimmer S;S.Person=Person;S.Pool=Pool;S.State=EState::Climb;S.Pos=At;S.Yaw=Yaw;S.Along=0;S.Timer=1.5f;   // dressing first
+ S.Speed=FMath::FRandRange(Pair(Defs(),TEXT("speed"),45,70).X,Pair(Defs(),TEXT("speed"),45,70).Y);
+ const FVector2D Legs=Pair(Defs(),TEXT("legs"),2,4);S.Legs=FMath::RandRange(int32(Legs.X),int32(Legs.Y));   // i18n:skip
+ Swimmers.Add(S);Drive(Person);return true;
 }
 
 bool UMarePoolSwimWorld::Spawn(int32 Pool,const TSharedPtr<FJsonObject>& P)
 {
+ const TSharedPtr<FJsonObject>* SlideDef=nullptr;
+ if(P->TryGetObjectField(TEXT("slide"),SlideDef) && FMath::FRand()<Num(*SlideDef,TEXT("share"),.5) && SpawnRider(Pool,P))return true;   // i18n:skip
  const TArray<TSharedPtr<FJsonValue>>* Entries=nullptr;if(!P->TryGetArrayField(TEXT("entries"),Entries) || !Entries->Num())return false;   // i18n:skip
  const int32 Pick=FMath::RandRange(0,Entries->Num()-1);const auto& E=(*Entries)[Pick]->AsArray();if(E.Num()<3)return false;
  const FVector At(E[0]->AsNumber(),E[1]->AsNumber(),Num(P,TEXT("edge_z")));
@@ -142,7 +200,7 @@ bool UMarePoolSwimWorld::Spawn(int32 Pool,const TSharedPtr<FJsonObject>& P)
  S.Timer=FMath::FRandRange(2.f,4.f);S.Total=0;   // a look at the water first (the MetaHuman also needs a moment to dress)
  S.Speed=FMath::FRandRange(Pair(Defs(),TEXT("speed"),45,70).X,Pair(Defs(),TEXT("speed"),45,70).Y);
  const FVector2D Legs=Pair(Defs(),TEXT("legs"),2,4);S.Legs=FMath::RandRange(int32(Legs.X),int32(Legs.Y));   // i18n:skip
- Swimmers.Add(S);return true;
+ Swimmers.Add(S);Drive(Person);return true;
 }
 
 void UMarePoolSwimWorld::Step(int32 I,float Dt)
@@ -155,7 +213,7 @@ void UMarePoolSwimWorld::Step(int32 I,float Dt)
  auto StartSwim=[&](){S.State=EState::Swim;S.Partner=-1;S.Target=RandomPoint(P,S.Pos);};
  switch(S.State){
  case EState::Edge:
-  Person->SetActorLocationAndRotation(S.Pos+FVector(0,0,88),FRotator(0,S.Yaw,0));
+  Person->SetActorLocationAndRotation(S.Pos+FVector(0,0,88),FRotator(0,S.Yaw,0),false,nullptr,ETeleportType::TeleportPhysics);
   if(S.Timer<=0 && Person->Clips.Contains(TEXT("Jump_Start"))){
    // Jump in where the water in front is free.
    const FVector Land=S.Pos+FRotator(0,S.Yaw,0).Vector()*Num(D,TEXT("jump_in"),140);
@@ -169,13 +227,45 @@ void UMarePoolSwimWorld::Step(int32 I,float Dt)
  case EState::Jump:{
   // Push-off (first part of Jump_Start in place), then a short arc into the water.
   const float Flight=Num(D,TEXT("jump_time"),.8);const float Gone=Flight-(S.Timer);
-  if(Gone<0){Person->SetActorLocationAndRotation(S.JumpFrom+FVector(0,0,88),FRotator(0,S.Yaw,0));break;}
+  if(Gone<0){Person->SetActorLocationAndRotation(S.JumpFrom+FVector(0,0,88),FRotator(0,S.Yaw,0),false,nullptr,ETeleportType::TeleportPhysics);break;}
   if(Person->HoldPose!=TEXT("Jump"))Person->HoldPose=TEXT("Jump");
   const float A=FMath::Clamp(Gone/Flight,0.f,1.f);
   const FVector From=S.JumpFrom+FVector(0,0,88),To=S.Target+FVector(0,0,SwimZ);
   S.Pos=FMath::Lerp(S.JumpFrom,S.Target,A);
-  Person->SetActorLocationAndRotation(FMath::Lerp(From,To,A)+FVector(0,0,Num(D,TEXT("jump_height"),70)*4*A*(1-A)),FRotator(0,S.Yaw,0));
+  Person->SetActorLocationAndRotation(FMath::Lerp(From,To,A)+FVector(0,0,Num(D,TEXT("jump_height"),70)*4*A*(1-A)),FRotator(0,S.Yaw,0),false,nullptr,ETeleportType::TeleportPhysics);
   if(A>=1){const FVector Splash=S.Target;UMareAudioWorld::Action(this,TEXT("swim_splash"),&Splash,.7f);StartSwim();}
+  break;}
+ case EState::Climb:{
+  // Up the stair and across the deck (Walk), then a moment sitting at the chute mouth.
+  const TSharedPtr<FJsonObject>* Slide=nullptr;if(!P->TryGetObjectField(TEXT("slide"),Slide)){StartSwim();break;}   // i18n:skip
+  const TArray<FVector> C=SlideClimb(*Slide);
+  if(S.Timer>0){Person->SetActorLocationAndRotation(S.Pos+FVector(0,0,88),FRotator(0,S.Yaw,0),false,nullptr,ETeleportType::TeleportPhysics);break;}
+  S.Along+=Num(*Slide,TEXT("climb_speed"),70)*Dt;float Left=S.Along;int32 Seg=0;   // i18n:skip
+  while(Seg<C.Num()-1 && Left>FVector::Dist(C[Seg],C[Seg+1])){Left-=FVector::Dist(C[Seg],C[Seg+1]);++Seg;}
+  if(Seg>=C.Num()-1){
+   // At the top: sit down facing down the chute, then go.
+   const float T0=Num(*Slide,TEXT("ride_start"),.06);const FVector Dir=SlideChute(*Slide,T0+.01f)-SlideChute(*Slide,T0);S.Yaw=Dir.Rotation().Yaw;   // i18n:skip
+   S.State=EState::Ride;S.Along=T0;S.Timer=Num(*Slide,TEXT("sit_seconds"),1.5);break;}   // i18n:skip
+  const FVector Dir=(C[Seg+1]-C[Seg]).GetSafeNormal();S.Pos=C[Seg]+Dir*Left;TurnTo(Dir.Rotation().Yaw,240);
+  Person->HoldPose=TEXT("Walk");Person->SetActorLocationAndRotation(S.Pos+FVector(0,0,88),FRotator(0,S.Yaw,0),false,nullptr,ETeleportType::TeleportPhysics);break;}
+ case EState::Ride:{
+  const TSharedPtr<FJsonObject>* Slide=nullptr;if(!P->TryGetObjectField(TEXT("slide"),Slide)){StartSwim();break;}   // i18n:skip
+  if(S.Timer<=0)S.Along+=Dt/Num(*Slide,TEXT("ride_seconds"),6);   // i18n:skip
+  const FVector At=SlideChute(*Slide,S.Along),Next=SlideChute(*Slide,FMath::Min(S.Along+.01f,1.f)),Dir=(Next-At).GetSafeNormal();
+  if(S.Along<.99f)S.Yaw=Dir.Rotation().Yaw;
+  // Lying back feet first, torso raised (recline), the pelvis pelvis_up above the chute floor.
+  S.Pos=At;Person->HoldPose.Reset();
+  Person->RideReclined(At+FVector(0,0,Num(*Slide,TEXT("pelvis_up"),12)),S.Yaw+180.f,Num(*Slide,TEXT("recline"),35));   // i18n:skip
+  if(S.Along>=1){S.Vel=Dir*Num(*Slide,TEXT("exit_speed"),450);S.State=EState::Fly;}   // i18n:skip
+  break;}
+ case EState::Fly:{
+  // Off the end of the chute into the water, a short ballistic arc.
+  // Still lying back, feet first, as off a real slide.
+  S.Vel.Z-=980.f*Dt;S.Pos+=S.Vel*Dt;
+  {const TSharedPtr<FJsonObject>* Slide=nullptr;P->TryGetObjectField(TEXT("slide"),Slide);   // i18n:skip
+   Person->RideReclined(S.Pos+FVector(0,0,Slide?Num(*Slide,TEXT("pelvis_up"),12):12.f),S.Yaw+180.f,Slide?Num(*Slide,TEXT("recline"),35):35.f);}   // i18n:skip
+  if(S.Pos.Z<=WaterZ){const FBox2D R=Rect(P);S.Pos=FVector(FMath::Clamp(S.Pos.X,R.Min.X,R.Max.X),FMath::Clamp(S.Pos.Y,R.Min.Y,R.Max.Y),WaterZ);
+   const FVector Splash=S.Pos;UMareAudioWorld::Action(this,TEXT("swim_splash"),&Splash,.9f);Person->bLying=false;Person->Recline=0;Person->SetActorRotation(FRotator(0,S.Yaw,0));Person->SetHairSimulation(true);StartSwim();}
   break;}
  case EState::Swim:{
   if(S.bLeaving && !Seen(S.Pos)){Person->Destroy();break;}
@@ -231,7 +321,8 @@ void UMarePoolSwimWorld::Tick(float DeltaSeconds)
 {
  UWorld* W=GetWorld();if(!W || !W->IsGameWorld() || !W->GetGameInstance())return;
  const float Dt=FMath::Min(DeltaSeconds,.1f);
- for(int32 I=0;I<Swimmers.Num();++I)if(Swimmers[I].Person.IsValid())Step(I,Dt);
+ // Each swimmer is stepped from its own tick (AMarePerson::PreTick, set by Drive), before its pose and hair update.
+ (void)Dt;
  // Drop the destroyed ones (partners point by index: fix them up).
  for(int32 I=Swimmers.Num()-1;I>=0;--I)if(!Swimmers[I].Person.IsValid()){Swimmers.RemoveAt(I);
   for(auto& S:Swimmers){if(S.Partner==I)S.Partner=-1;else if(S.Partner>I)--S.Partner;}}
@@ -249,7 +340,7 @@ void UMarePoolSwimWorld::Tick(float DeltaSeconds)
 
 FString UMarePoolSwimWorld::Dump()const
 {
- static const TCHAR* Names[]={TEXT("edge"),TEXT("jump"),TEXT("swim"),TEXT("float"),TEXT("chat")};
+ static const TCHAR* Names[]={TEXT("edge"),TEXT("jump"),TEXT("swim"),TEXT("float"),TEXT("chat"),TEXT("climb"),TEXT("ride"),TEXT("fly")};
  FString Out=FString::Printf(TEXT("want=%s fail=%s | "),*FString::JoinBy(LastWanted,TEXT(","),[](int32 V){return FString::FromInt(V);}),*LastSpawnFail);   // i18n:skip   // i18n:skip
  for(int32 I=0;I<Swimmers.Num();++I){const auto& S=Swimmers[I];if(!S.Person.IsValid())continue;const FVector L=S.Person->GetActorLocation();
   Out+=FString::Printf(TEXT("%d %s %s pos=(%.0f,%.0f,%.0f) yaw=%.0f partner=%d%s; "),I,*S.Person->MetaHuman,Names[uint8(S.State)],L.X,L.Y,L.Z,S.Yaw,S.Partner,S.bLeaving?TEXT(" leaving"):TEXT(""));}   // i18n:skip

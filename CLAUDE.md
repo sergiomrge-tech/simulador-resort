@@ -724,3 +724,16 @@ engole emissivo baixo): use translúcido iluminado com cor-base clara e fresnel 
 negativo: toda "a fama caiu" do jogo (VIP perdido, multa injusta do aluguel) não fazia nada; agora tira xp sem baixar o
 nível. `Printf(..., S->Fn(), *S->LastMessage)`: a ordem de avaliação dos argumentos não é garantida e o texto saiu
 lixo; chame a função antes. `coast clock N` recebe MINUTOS (540 = 9h), não horas.
+
+## UE5.8 — banhistas da piscina e tobogã (07/11)
+
+`ProceduralMeshLibrary.get_section_from_static_mesh` numa malha Nanite DERRUBA o editor (não há vértices na CPU): para
+saber a forma de um modelo nosso, ler o gerador (`tools/gen_*.py`) ou o GLB. Blender -> mundo da UE: x*100, -y*100, z*100
+a partir da instância. Com tudo da demo liberado aparece a tela "Obrigado por jogar a demo!", que PAUSA o jogo: todo QA
+que libera o hotel precisa de `mare.ShowUI close`, senão nenhum subsistema anda. Pessoa movida rápido por código (calha do
+tobogã) fica careca com o cabelo groom metros atrás, mesmo com `ETeleportType::TeleportPhysics` e `ResetSimulation`:
+a causa era mover a pessoa DEPOIS da pose e do cabelo daquele quadro (subsistema tickável roda depois dos atores): o cabelo ficava um quadro atrás. Quem é movido por um sistema do mundo deve ser movido no tick da própria pessoa (`AMarePerson::PreTick`); a física do cabelo fica desligada só durante a descida (`SetHairSimulation`). Pose de tobogã: deitado de costas, pés na frente, tronco erguido (`RideReclined`); a pose sentada de cadeira põe as canelas através da calha.
+O swim do UAL (`Swim_Fwd`) deixa o corpo deitado ~90 cm abaixo do ator: medir os ossos (cabeça/bacia) contra a água antes
+de calibrar alturas. Desvio entre nadadores: corpo é um segmento cabeça-pés (90 cm à frente, 85 atrás), não um ponto.
+O editor em segundo plano roda o PIE a ~3 quadros/s: QA que espera gente aparecer precisa de tempo ou do modo forçado.
+Texto interno em C++ (nomes de campo JSON, depuração) vira chave de tradução se não tiver `// i18n:skip` na linha.

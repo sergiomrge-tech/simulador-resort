@@ -147,6 +147,18 @@ public:
  bool bHiddenByDistance=false;
  float OutOfView=0;
  void SetDistanceHidden(bool bHide);
+ /** Restart the hair strands simulation (groom): after a jump in position the strands would trail metres behind. */
+ void ResetHair();
+ /** Hair strands physics on/off (groom SetEnableSimulation): off while riding something fast (the water slide), where
+  *  the simulated strands stayed metres behind and the head looked bald. */
+ void SetHairSimulation(bool bOn);
+ /** Riding a water slide lying back, feet first (07/11, Sergio: legs went through the chute with the chair pose): the
+  *  lying pose with the torso raised Recline degrees, head pointing HeadYaw, the pelvis placed on PelvisAt every frame. */
+ void RideReclined(const FVector& PelvisAt,float HeadYaw,float InRecline);
+ /** Moved by a world system (pool swimmers, slide riders): called at the start of this person's own tick, before the
+  *  pose and the hair are updated, so they all render at the same place (moved later in the frame, the hair strands
+  *  trailed one frame behind: 70 cm down the slide at 3 fps). */
+ TFunction<void(float)> PreTick;
  UPROPERTY(BlueprintReadOnly,Category="Maré Alta")
  FVector Destination=FVector::ZeroVector;
  static class UStaticMesh* ProductMesh(const FString& Dish,bool bUsed=false);

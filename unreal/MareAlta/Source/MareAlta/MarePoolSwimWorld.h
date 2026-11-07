@@ -17,12 +17,14 @@ public:
  virtual TStatId GetStatId() const override;
  virtual void Deinitialize() override;
  static TSharedPtr<FJsonObject> Defs();
- enum class EState:uint8{Edge,Jump,Swim,Float,Chat};
+ enum class EState:uint8{Edge,Jump,Swim,Float,Chat,Climb,Ride,Fly};
  struct FSwimmer
  {
   TWeakObjectPtr<AMarePerson> Person;int32 Pool=0;EState State=EState::Edge;
   FVector Pos=FVector::ZeroVector,Target=FVector::ZeroVector,JumpFrom=FVector::ZeroVector;
   float Yaw=0,Speed=60,Timer=0,Total=1;int32 Legs=0,Partner=-1;bool bLeaving=false;
+  /** Water slide: progress along the climb (cm) or the chute (0..1), and the flight velocity off its end. */
+  float Along=0;FVector Vel=FVector::ZeroVector;
  };
  TArray<FSwimmer> Swimmers;
  /** QA: force this many swimmers in the nearest pool now (-1 = back to the schedule). */
@@ -41,4 +43,11 @@ private:
  bool Clear(int32 Self,const FVector& At,float Yaw,bool bLong,float Gap,const TSharedPtr<FJsonObject>& P)const;
  void Place(FSwimmer& S,const TSharedPtr<FJsonObject>& P,const TCHAR* Pose,float Z);
  void Step(int32 I,float Dt);
+ /** Water slide (pool "slide"): the climb (stair foot -> top -> chute start, feet height) and the chute floor at
+  *  t 0..1, both in world cm from the generator's shape (tools/gen_hotel.py water_slide). */
+ static TArray<FVector> SlideClimb(const TSharedPtr<FJsonObject>& Slide);
+ static FVector SlideChute(const TSharedPtr<FJsonObject>& Slide,float T);
+ bool SpawnRider(int32 Pool,const TSharedPtr<FJsonObject>& P);
+ /** Hooks the swimmer's stepping into its own tick (AMarePerson::PreTick). */
+ void Drive(AMarePerson* Person);
 };

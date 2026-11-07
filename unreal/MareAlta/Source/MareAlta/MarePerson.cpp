@@ -503,6 +503,30 @@ void AMarePerson::ApplyOutfit(EOutfit Style)
   Dye(6,Shorts[Rng.RandRange(0,4)]);Dye(5,Pick({{.85f,.85f,.82f},{.35f,.25f,.18f},{.10f,.10f,.12f}}));break;}
  }
 }
+void AMarePerson::ResetHair()
+{
+ AActor* Child=MetaHumanBody?MetaHumanBody->GetChildActor():nullptr;if(!Child)return;
+ TArray<USceneComponent*> Parts;Child->GetComponents(Parts);
+ for(auto Part:Parts)if(Part->GetClass()->GetName().Contains(TEXT("Groom")))if(UFunction* Reset=Part->FindFunction(TEXT("ResetSimulation")))Part->ProcessEvent(Reset,nullptr);
+}
+void AMarePerson::RideReclined(const FVector& PelvisAt,float HeadYaw,float InRecline)
+{
+ if(!bLying){bLying=true;GetCharacterMovement()->DisableMovement();GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);}
+ Recline=InRecline;LieYaw=HeadYaw;LieCentre=PelvisAt;LieAlignIn=0;   // no towel alignment: placed here every frame
+ // Same frame as LieOn: the face up, head along HeadYaw; then the animated pelvis moved onto the point.
+ SetActorRotation(FRotationMatrix::MakeFromXZ(FVector::UpVector,FRotator(0,HeadYaw,0).Vector()).Rotator(),ETeleportType::TeleportPhysics);
+ if(GetMesh()->GetBoneIndex(TEXT("pelvis"))!=INDEX_NONE)
+  AddActorWorldOffset(PelvisAt-GetMesh()->GetSocketLocation(TEXT("pelvis")),false,nullptr,ETeleportType::TeleportPhysics);
+ else SetActorLocation(PelvisAt+FVector(0,0,12),false,nullptr,ETeleportType::TeleportPhysics);
+}
+
+void AMarePerson::SetHairSimulation(bool bOn)
+{
+ AActor* Child=MetaHumanBody?MetaHumanBody->GetChildActor():nullptr;if(!Child)return;
+ TArray<USceneComponent*> Parts;Child->GetComponents(Parts);
+ struct{bool bInEnableSimulation;} Params{bOn};
+ for(auto Part:Parts)if(Part->GetClass()->GetName().Contains(TEXT("Groom")))if(UFunction* Fn=Part->FindFunction(TEXT("SetEnableSimulation")))Part->ProcessEvent(Fn,&Params);
+}
 void AMarePerson::SetDistanceHidden(bool bHide)
 {
  // Someone else hid this person (the game room's opponent, a cutscene): leave it to them.
@@ -512,6 +536,9 @@ void AMarePerson::SetDistanceHidden(bool bHide)
  // Skinned parts (rig, body, face, clothes) and hair strands stop updating bones; movement and logic keep running.
  TArray<USceneComponent*> Parts;GetComponents(Parts);if(Child){TArray<USceneComponent*> More;Child->GetComponents(More);Parts.Append(More);}
  for(auto Part:Parts)if(Part->IsA<USkinnedMeshComponent>() || Part->GetClass()->GetName().Contains(TEXT("Groom")))Part->SetComponentTickEnabled(!bHide);
+ // Back in view: the hair strands kept simulating from where they stopped, so someone who moved meanwhile (a slide
+ // rider, a swimmer) showed up bald with the hair floating metres behind (07/11). Restart their simulation here.
+ if(!bHide)ResetHair();
  // Ambient people out of the scene also stop walking (Sergio, 04/11); customers and staff keep moving so the kiosk,
  // hotel and tours keep working while the player is elsewhere.
  if(bAmbient)GetCharacterMovement()->SetComponentTickEnabled(!bHide);
@@ -519,6 +546,7 @@ void AMarePerson::SetDistanceHidden(bool bHide)
 
 void AMarePerson::Tick(float DeltaSeconds)
 {
+ if(PreTick)PreTick(DeltaSeconds);
  Super::Tick(DeltaSeconds);Elapsed+=DeltaSeconds;
  // The hidden rig must animate always while the person is seen (03/11: OnlyTickPoseWhenRendered on it froze everyone,
  // since the rig itself is never drawn). Off screen it may stop: the parts that follow it then also stop sending bones
