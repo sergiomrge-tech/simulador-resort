@@ -1,0 +1,9 @@
+{
+ "_doc": "Fonte dos textos visíveis para a rádio do quiosque; ligação à interface depende do consumidor C++ (Claude). Chaves internas não localizadas.",
+ "id": "kiosk_radio",
+ "station": "Rádio Maré Alta",
+ "previous_label": "Música anterior",
+ "next_label": "Próxima música",
+ "off_label": "Desligar rádio",
+ "on_label": "Ligar rádio"
+}
