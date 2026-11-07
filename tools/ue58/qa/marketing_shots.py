@@ -152,11 +152,23 @@ def capture_scene(scene, folder, cameras, interactive):
     else:
         command('mare.ShowUI close')
     time.sleep(2)
-    # mare.Shot fotografa a viewport com UI, sem pressupor preview; fallback coast toma quadro sem HUD.
+    # A suíte da piscina possui um helper de captura real próprio: reutilizá-lo
+    # para o deck, mantendo o arquivo padronizado e validando 1920x1080.
     if out.exists():
         out.unlink()
-    command('mare.Shot ' + out.as_posix())
-    ok = wait_file(out)
+    ok = False
+    if sid == '06_piscina_demo' and camera and scene['ui'] == 'close':
+        parts = [float(x) for x in camera.split(',')]
+        if len(parts) == 5:
+            candidate = pool_swim_qa.shot('qa_' + sid, *parts, folder)
+            if candidate:
+                shutil.copy2(candidate, out)
+                candidate.unlink()
+                ok = wait_file(out, 2)
+    # mare.Shot inclui HUD e carta/telefone: nunca substituir essas telas por montagem.
+    if not ok:
+        command('mare.Shot ' + out.as_posix())
+        ok = wait_file(out)
     if not ok and camera and scene['ui'] == 'close':
         source = qa_gate.SHOTS / f'pie-qa_{sid}.png'
         if source.exists():

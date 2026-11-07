@@ -1,0 +1,63 @@
+name: Pacote 9 - QA dos materiais de lancamento
+
+on:
+  push:
+    branches:
+      - gpt/pacote-9
+  pull_request:
+    branches:
+      - codex/ue58-migration
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  qa_editorial:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout dos arquivos de marketing e QA
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            docs/steam
+            unreal/MareAlta/Content/Data/credits.json
+            tools/ue58/qa/marketing_shots.py
+          sparse-checkout-cone-mode: false
+      - name: Instalar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Compilar sintaxe do capturador (sem rodar editor)
+        run: python -m py_compile tools/ue58/qa/marketing_shots.py
+      - name: Conferir descricoes curtas e creditos
+        run: |
+          python - <<'PY'
+          import json, re
+          from pathlib import Path
+          locales = ('es', 'de', 'fr', 'it', 'nl', 'pl', 'pt-PT', 'ru', 'ja', 'ko', 'zh-Hans')
+          for lang in locales:
+              for kind, name in (('demo', f'loja_{lang}.md'), ('completo', f'loja_completo_{lang}.md')):
+                  path = Path('docs/steam') / name
+                  text = path.read_text(encoding='utf-8')
+                  match = re.search(r'^## (?:Descrição curta|短い説明|짧은 설명|简短描述)\s*\n\s*([^\n]+)', text, re.M)
+                  assert match, f'descrição curta ausente: {path}'
+                  short = match.group(1).strip()
+                  assert len(short) <= 300, (path, len(short))
+                  assert 'Coconut Coast: Resort Simulator' in text
+                  assert 'R$' in text
+                  print(kind, lang, len(short), 'OK')
+          credit = json.loads(Path('unreal/MareAlta/Content/Data/credits.json').read_text(encoding='utf-8'))
+          assert len(credit['_sections']) >= 6
+          tr = credit['_section_title_translations']
+          assert len(tr) == len(credit['_sections'])
+          for section in credit['_sections']:
+              assert set(tr[section['title_pt_BR']]) == {'en', *locales}
+          notices = credit['_sections'][1]['entries'][0]['required_notices']
+          assert len(notices) == 2 and 'uses Unreal' in notices[0]
+          logs = list(Path('docs/steam/devlogs').glob('0?_*.md'))
+          assert len(logs) == 16, len(logs)
+          assert Path('docs/steam/devlogs/CALENDARIO_6_SEMANAS.md').exists()
+          print('Créditos: 6 seções x 12 idiomas; devlogs: 16; calendário: OK')
+          PY
