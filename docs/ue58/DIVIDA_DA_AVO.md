@@ -1,6 +1,6 @@
 # A dívida de Dona Dilce — pacote para implementação
 
-**Pergunta aberta ao Sergio: a moeda definitiva será R$ ou US$?** Este pacote usa **R$ 1.000.000**, como solicitado. Não há conversão cambial nem bloqueio aguardando resposta. Se mudar, revisar textos, centavos e metas antes de publicar.
+**Moeda decidida pelo Sergio (07/11/2026): R$ 1.000.000** (o jogo inteiro usa reais).
 
 Base: efceab984ef6a1eb3dfc0cdd88ca9a7377586aaf. **Proposta, não implementada em C++.** [debt.json](../../unreal/MareAlta/Content/Data/debt.json) é um contrato novo; o jogo atual ainda não o lê. Os números de economia do jogo permanecem intactos.
 

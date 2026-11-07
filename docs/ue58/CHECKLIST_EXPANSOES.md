@@ -747,6 +747,12 @@ Para cada item:
 Não me pergunte a cada passo: decida pelo bom senso e anote as decisões no checklist. Só pare para perguntar se algo for irreversível ou mudar o rumo do jogo. Responda sempre em português.
 ```
 
+## 10. Dívida da avó — objetivo final (Sergio, 06–07/11/2026)
+
+- [ ] Implementar a dívida de **R$ 1.000.000** que Dona Dilce deixou junto com o quiosque, pelo desenho do GPT
+  (`docs/ue58/DIVIDA_DA_AVO.md`, `Content/Data/debt.json`, textos já traduzidos, conquistas em `docs/steam/conquistas.json`).
+  Moeda decidida: R$.
+
 ## 9. Rádio do quiosque (pedido do Sergio, 06/11/2026 — no FIM da fila)
 
 - [ ] Rádio no quiosque onde o jogador troca as músicas (próxima / anterior / desligar). Quando o resort evoluir, a rádio
