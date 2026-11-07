@@ -1,0 +1,1577 @@
+{
+  "schema_version": 1,
+  "source_sha256": "0b77e3166807bb560a436cf45275621248e487af4e7dd4236b204366512c3d14",
+  "method": "NFC, <br> = newline, other tags removed; placeholders retained; strict >30% AND >25 code points; rank extra chars desc, ratio desc, section, key. Width is heuristic, not rendered QA.",
+  "source_entries": 4064,
+  "source_loctext": 113,
+  "source_strings": 3951,
+  "languages": {
+    "de": {
+      "sha256": "5b70796d4be06de9caf8e08950124cd82c29f05f25daafaba89f844cf4b9af0c",
+      "checked": 4064,
+      "translated": 4064,
+      "expanded_count": 19,
+      "top": [
+        {
+          "section": "strings",
+          "key": "Cem. Contei com a régua do meu avô, que media tudo em palmos. Deu muitos palmos.",
+          "source": "Cem. Contei com a régua do meu avô, que media tudo em palmos. Deu muitos palmos.",
+          "translation": "Hundert. Ich hab's mit dem Lineal meines Großvaters gemessen, der alles in Handspannen maß. Es kamen sehr viele Handspannen heraus.",
+          "pt_chars": 80,
+          "translated_chars": 131,
+          "extra_chars": 51,
+          "ratio": 1.6375,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "strings",
+          "key": "Segure o sabor (clique, 1 a 6 ou A) e solte no verde · setas escolhem o pote · Enter entrega · Esc ou B sai",
+          "source": "Segure o sabor (clique, 1 a 6 ou A) e solte no verde · setas escolhem o pote · Enter entrega · Esc ou B sai",
+          "translation": "Halte die Geschmackswahl gedrückt (Klick, 1 bis 6 oder A) und lass im grünen Bereich los · Pfeile wählen den Behälter · Enter liefert · Esc oder B beendet",
+          "pt_chars": 107,
+          "translated_chars": 154,
+          "extra_chars": 47,
+          "ratio": 1.439252,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "strings",
+          "key": "Seríssimo. Em 1987 esqueceram uma vez e a Onda levou a praia, o bar e o meu bigode. O bigode nunca mais cresceu igual.",
+          "source": "Seríssimo. Em 1987 esqueceram uma vez e a Onda levou a praia, o bar e o meu bigode. O bigode nunca mais cresceu igual.",
+          "translation": "Todernst. 1987 haben sie es einmal vergessen, und die Welle hat den Strand, die Bar und meinen Schnurrbart mitgenommen. Der Schnurrbart ist nie wieder so gewachsen.",
+          "pt_chars": 118,
+          "translated_chars": 164,
+          "extra_chars": 46,
+          "ratio": 1.389831,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "strings",
+          "key": "Ops, essa dobra fora de ordem amassou o papel. Pode seguir ou pegar papel novo.",
+          "source": "Ops, essa dobra fora de ordem amassou o papel. Pode seguir ou pegar papel novo.",
+          "translation": "Hoppla, diese Falte in falscher Reihenfolge hat das Papier zerknittert. Du kannst weitermachen oder neues Papier nehmen.",
+          "pt_chars": 79,
+          "translated_chars": 120,
+          "extra_chars": 41,
+          "ratio": 1.518987,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "strings",
+          "key": "Um crítico de comida vem aí. Dizem que ele já fez um chef chorar só olhando para um pastel. Capriche nas receitas.",
+          "source": "Um crítico de comida vem aí. Dizem que ele já fez um chef chorar só olhando para um pastel. Capriche nas receitas.",
+          "translation": "Ein Gastrokritiker ist unterwegs. Angeblich hat er einen Koch zum Weinen gebracht, nur indem er einen Pastel angesehen hat. Gib dir Mühe mit den Rezepten.",
+          "pt_chars": 114,
+          "translated_chars": 154,
+          "extra_chars": 40,
+          "ratio": 1.350877,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "strings",
+          "key": "Lembra do robalo? Pensei melhor: tinha uns cinco quilos. Quase me puxou do barco.",
+          "source": "Lembra do robalo? Pensei melhor: tinha uns cinco quilos. Quase me puxou do barco.",
+          "translation": "Erinnerst du dich an den Wolfsbarsch? Ich habe nachgedacht: Er hatte so fünf Kilo. Hätte mich fast aus dem Boot gezogen.",
+          "pt_chars": 81,
+          "translated_chars": 120,
+          "extra_chars": 39,
+          "ratio": 1.481481,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "strings",
+          "key": "Volta amanhã. E traz coco gelado, que o de ontem chegou morno. O vulcão reclamou. Eu também.",
+          "source": "Volta amanhã. E traz coco gelado, que o de ontem chegou morno. O vulcão reclamou. Eu também.",
+          "translation": "Komm morgen wieder. Und bring eine eiskalte Kokosnuss mit, die von gestern kam lauwarm an. Der Vulkan hat sich beschwert. Ich auch.",
+          "pt_chars": 92,
+          "translated_chars": 131,
+          "extra_chars": 39,
+          "ratio": 1.423913,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "strings",
+          "key": "Compre peças dos artesãos e arrume a prateleira: a vitrine vende mais. Embrulhe na ordem certa com a fita pedida.",
+          "source": "Compre peças dos artesãos e arrume a prateleira: a vitrine vende mais. Embrulhe na ordem certa com a fita pedida.",
+          "translation": "Kaufe Stücke von Kunsthandwerkern und fülle das Regal: Die Auslage steigert den Verkauf. Verpacke in der richtigen Reihenfolge mit dem gewünschten Band.",
+          "pt_chars": 113,
+          "translated_chars": 152,
+          "extra_chars": 39,
+          "ratio": 1.345133,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "strings",
+          "key": "Solte aqui o ingrediente da mão. Com tudo no copo, faça o passo pedido (socar, bater ou liquidificar) e sirva.",
+          "source": "Solte aqui o ingrediente da mão. Com tudo no copo, faça o passo pedido (socar, bater ou liquidificar) e sirva.",
+          "translation": "Lege die Zutat aus deiner Hand hier ab. Wenn alles im Glas ist, führe den verlangten Schritt aus (zerdrücken, schütteln oder mixen) und serviere.",
+          "pt_chars": 110,
+          "translated_chars": 145,
+          "extra_chars": 35,
+          "ratio": 1.318182,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "strings",
+          "key": "A garoupa, sabe? Eram trinta quilos e ela falava. Pediu pra eu soltar e eu soltei, por educação.",
+          "source": "A garoupa, sabe? Eram trinta quilos e ela falava. Pediu pra eu soltar e eu soltei, por educação.",
+          "translation": "Der Zackenbarsch, weißt du? Dreißig Kilo, und er konnte sprechen. Er bat mich, ihn freizulassen, und ich tat es, aus Höflichkeit.",
+          "pt_chars": 96,
+          "translated_chars": 129,
+          "extra_chars": 33,
+          "ratio": 1.34375,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "strings",
+          "key": "Dormir fecha o dia: salários são pagos, o jogo é salvo e o celular mostra o resumo e a previsão de amanhã.",
+          "source": "Dormir fecha o dia: salários são pagos, o jogo é salvo e o celular mostra o resumo e a previsão de amanhã.",
+          "translation": "Schlafen beendet den Tag: Löhne werden gezahlt, das Spiel wird gespeichert und das Handy zeigt die Übersicht und die Vorhersage für morgen.",
+          "pt_chars": 106,
+          "translated_chars": 139,
+          "extra_chars": 33,
+          "ratio": 1.311321,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "strings",
+          "key": "Segure E, Espaço, clique ou A para bater e solte no verde · passou, derramou",
+          "source": "Segure E, Espaço, clique ou A para bater e solte no verde · passou, derramou",
+          "translation": "Halte E, Leertaste, Mausklick oder A zum Mixen und lass im grünen Bereich los · zu spät bedeutet verschüttet",
+          "pt_chars": 76,
+          "translated_chars": 108,
+          "extra_chars": 32,
+          "ratio": 1.421053,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "strings",
+          "key": "Pinball do Farol: Espaço lança a bola, A e D (ou Shift esquerdo e direito) batem os flippers.",
+          "source": "Pinball do Farol: Espaço lança a bola, A e D (ou Shift esquerdo e direito) batem os flippers.",
+          "translation": "Leuchtturm-Flipper: Die Leertaste startet die Kugel; A und D (oder linke und rechte Umschalttaste) bewegen die Flipperhebel.",
+          "pt_chars": 93,
+          "translated_chars": 124,
+          "extra_chars": 31,
+          "ratio": 1.333333,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "strings",
+          "key": "Vovó Dilce mandou um áudio de sete minutos. Resumo: está muito orgulhosa e quer o quarto com vista.",
+          "source": "Vovó Dilce mandou um áudio de sete minutos. Resumo: está muito orgulhosa e quer o quarto com vista.",
+          "translation": "Oma Dilce hat eine siebenminütige Sprachnachricht geschickt. Zusammenfassung: Sie ist sehr stolz und will das Zimmer mit Aussicht.",
+          "pt_chars": 99,
+          "translated_chars": 130,
+          "extra_chars": 31,
+          "ratio": 1.313131,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "strings",
+          "key": "Anote o pedido, pegue o prato pronto no passe da cozinha e sirva. Rapidez rende gorjeta.",
+          "source": "Anote o pedido, pegue o prato pronto no passe da cozinha e sirva. Rapidez rende gorjeta.",
+          "translation": "Nimm die Bestellung auf, hol das fertige Gericht an der Küchenausgabe und serviere es. Schnelligkeit bringt Trinkgeld.",
+          "pt_chars": 88,
+          "translated_chars": 118,
+          "extra_chars": 30,
+          "ratio": 1.340909,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "strings",
+          "key": "Meu avô dizia: errar é humano, desperdiçar cachaça é crime.",
+          "source": "Meu avô dizia: errar é humano, desperdiçar cachaça é crime.",
+          "translation": "Mein Opa sagte immer: Irren ist menschlich, cachaça zu verschwenden ist ein Verbrechen.",
+          "pt_chars": 59,
+          "translated_chars": 87,
+          "extra_chars": 28,
+          "ratio": 1.474576,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "strings",
+          "key": "Seu Tibúrcio: \"Trinta anos sem descer esse morro. A trilha encolheu ou fui eu que cresci?\"",
+          "source": "Seu Tibúrcio: \"Trinta anos sem descer esse morro. A trilha encolheu ou fui eu que cresci?\"",
+          "translation": "Seu Tibúrcio: „Dreißig Jahre nicht von diesem Berg heruntergekommen. Ist der Pfad geschrumpft oder bin ich gewachsen?“",
+          "pt_chars": 90,
+          "translated_chars": 118,
+          "extra_chars": 28,
+          "ratio": 1.311111,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "strings",
+          "key": "Cuida de todo o quiosque: anota pedidos, entrega produtos prontos, recebe e recolhe a louça.",
+          "source": "Cuida de todo o quiosque: anota pedidos, entrega produtos prontos, recebe e recolhe a louça.",
+          "translation": "Kümmert sich um den ganzen Kiosk: nimmt Bestellungen auf, gibt fertige Produkte aus, kassiert und räumt das Geschirr ab.",
+          "pt_chars": 92,
+          "translated_chars": 120,
+          "extra_chars": 28,
+          "ratio": 1.304348,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "strings",
+          "key": "(converse com quem pediu para avançar)",
+          "source": "(converse com quem pediu para avançar)",
+          "translation": "(sprich mit der Person, die darum gebeten hat, um weiterzukommen)",
+          "pt_chars": 38,
+          "translated_chars": 65,
+          "extra_chars": 27,
+          "ratio": 1.710526,
+          "risk": "texto curto: conferir botão/cartão no contexto"
+        }
+      ],
+      "all_expanded": [
+        {
+          "section": "strings",
+          "key": "Cem. Contei com a régua do meu avô, que media tudo em palmos. Deu muitos palmos.",
+          "source": "Cem. Contei com a régua do meu avô, que media tudo em palmos. Deu muitos palmos.",
+          "translation": "Hundert. Ich hab's mit dem Lineal meines Großvaters gemessen, der alles in Handspannen maß. Es kamen sehr viele Handspannen heraus.",
+          "pt_chars": 80,
+          "translated_chars": 131,
+          "extra_chars": 51,
+          "ratio": 1.6375,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "strings",
+          "key": "Segure o sabor (clique, 1 a 6 ou A) e solte no verde · setas escolhem o pote · Enter entrega · Esc ou B sai",
+          "source": "Segure o sabor (clique, 1 a 6 ou A) e solte no verde · setas escolhem o pote · Enter entrega · Esc ou B sai",
+          "translation": "Halte die Geschmackswahl gedrückt (Klick, 1 bis 6 oder A) und lass im grünen Bereich los · Pfeile wählen den Behälter · Enter liefert · Esc oder B beendet",
+          "pt_chars": 107,
+          "translated_chars": 154,
+          "extra_chars": 47,
+          "ratio": 1.439252,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "strings",
+          "key": "Seríssimo. Em 1987 esqueceram uma vez e a Onda levou a praia, o bar e o meu bigode. O bigode nunca mais cresceu igual.",
+          "source": "Seríssimo. Em 1987 esqueceram uma vez e a Onda levou a praia, o bar e o meu bigode. O bigode nunca mais cresceu igual.",
+          "translation": "Todernst. 1987 haben sie es einmal vergessen, und die Welle hat den Strand, die Bar und meinen Schnurrbart mitgenommen. Der Schnurrbart ist nie wieder so gewachsen.",
+          "pt_chars": 118,
+          "translated_chars": 164,
+          "extra_chars": 46,
+          "ratio": 1.389831,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "strings",
+          "key": "Ops, essa dobra fora de ordem amassou o papel. Pode seguir ou pegar papel novo.",
+          "source": "Ops, essa dobra fora de ordem amassou o papel. Pode seguir ou pegar papel novo.",
+          "translation": "Hoppla, diese Falte in falscher Reihenfolge hat das Papier zerknittert. Du kannst weitermachen oder neues Papier nehmen.",
+          "pt_chars": 79,
+          "translated_chars": 120,
+          "extra_chars": 41,
+          "ratio": 1.518987,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "strings",
+          "key": "Um crítico de comida vem aí. Dizem que ele já fez um chef chorar só olhando para um pastel. Capriche nas receitas.",
+          "source": "Um crítico de comida vem aí. Dizem que ele já fez um chef chorar só olhando para um pastel. Capriche nas receitas.",
+          "translation": "Ein Gastrokritiker ist unterwegs. Angeblich hat er einen Koch zum Weinen gebracht, nur indem er einen Pastel angesehen hat. Gib dir Mühe mit den Rezepten.",
+          "pt_chars": 114,
+          "translated_chars": 154,
+          "extra_chars": 40,
+          "ratio": 1.350877,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "strings",
+          "key": "Lembra do robalo? Pensei melhor: tinha uns cinco quilos. Quase me puxou do barco.",
+          "source": "Lembra do robalo? Pensei melhor: tinha uns cinco quilos. Quase me puxou do barco.",
+          "translation": "Erinnerst du dich an den Wolfsbarsch? Ich habe nachgedacht: Er hatte so fünf Kilo. Hätte mich fast aus dem Boot gezogen.",
+          "pt_chars": 81,
+          "translated_chars": 120,
+          "extra_chars": 39,
+          "ratio": 1.481481,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "strings",
+          "key": "Volta amanhã. E traz coco gelado, que o de ontem chegou morno. O vulcão reclamou. Eu também.",
+          "source": "Volta amanhã. E traz coco gelado, que o de ontem chegou morno. O vulcão reclamou. Eu também.",
+          "translation": "Komm morgen wieder. Und bring eine eiskalte Kokosnuss mit, die von gestern kam lauwarm an. Der Vulkan hat sich beschwert. Ich auch.",
+          "pt_chars": 92,
+          "translated_chars": 131,
+          "extra_chars": 39,
+          "ratio": 1.423913,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "strings",
+          "key": "Compre peças dos artesãos e arrume a prateleira: a vitrine vende mais. Embrulhe na ordem certa com a fita pedida.",
+          "source": "Compre peças dos artesãos e arrume a prateleira: a vitrine vende mais. Embrulhe na ordem certa com a fita pedida.",
+          "translation": "Kaufe Stücke von Kunsthandwerkern und fülle das Regal: Die Auslage steigert den Verkauf. Verpacke in der richtigen Reihenfolge mit dem gewünschten Band.",
+          "pt_chars": 113,
+          "translated_chars": 152,
+          "extra_chars": 39,
+          "ratio": 1.345133,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "strings",
+          "key": "Solte aqui o ingrediente da mão. Com tudo no copo, faça o passo pedido (socar, bater ou liquidificar) e sirva.",
+          "source": "Solte aqui o ingrediente da mão. Com tudo no copo, faça o passo pedido (socar, bater ou liquidificar) e sirva.",
+          "translation": "Lege die Zutat aus deiner Hand hier ab. Wenn alles im Glas ist, führe den verlangten Schritt aus (zerdrücken, schütteln oder mixen) und serviere.",
+          "pt_chars": 110,
+          "translated_chars": 145,
+          "extra_chars": 35,
+          "ratio": 1.318182,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "strings",
+          "key": "A garoupa, sabe? Eram trinta quilos e ela falava. Pediu pra eu soltar e eu soltei, por educação.",
+          "source": "A garoupa, sabe? Eram trinta quilos e ela falava. Pediu pra eu soltar e eu soltei, por educação.",
+          "translation": "Der Zackenbarsch, weißt du? Dreißig Kilo, und er konnte sprechen. Er bat mich, ihn freizulassen, und ich tat es, aus Höflichkeit.",
+          "pt_chars": 96,
+          "translated_chars": 129,
+          "extra_chars": 33,
+          "ratio": 1.34375,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "strings",
+          "key": "Dormir fecha o dia: salários são pagos, o jogo é salvo e o celular mostra o resumo e a previsão de amanhã.",
+          "source": "Dormir fecha o dia: salários são pagos, o jogo é salvo e o celular mostra o resumo e a previsão de amanhã.",
+          "translation": "Schlafen beendet den Tag: Löhne werden gezahlt, das Spiel wird gespeichert und das Handy zeigt die Übersicht und die Vorhersage für morgen.",
+          "pt_chars": 106,
+          "translated_chars": 139,
+          "extra_chars": 33,
+          "ratio": 1.311321,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "strings",
+          "key": "Segure E, Espaço, clique ou A para bater e solte no verde · passou, derramou",
+          "source": "Segure E, Espaço, clique ou A para bater e solte no verde · passou, derramou",
+          "translation": "Halte E, Leertaste, Mausklick oder A zum Mixen und lass im grünen Bereich los · zu spät bedeutet verschüttet",
+          "pt_chars": 76,
+          "translated_chars": 108,
+          "extra_chars": 32,
+          "ratio": 1.421053,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "strings",
+          "key": "Pinball do Farol: Espaço lança a bola, A e D (ou Shift esquerdo e direito) batem os flippers.",
+          "source": "Pinball do Farol: Espaço lança a bola, A e D (ou Shift esquerdo e direito) batem os flippers.",
+          "translation": "Leuchtturm-Flipper: Die Leertaste startet die Kugel; A und D (oder linke und rechte Umschalttaste) bewegen die Flipperhebel.",
+          "pt_chars": 93,
+          "translated_chars": 124,
+          "extra_chars": 31,
+          "ratio": 1.333333,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "strings",
+          "key": "Vovó Dilce mandou um áudio de sete minutos. Resumo: está muito orgulhosa e quer o quarto com vista.",
+          "source": "Vovó Dilce mandou um áudio de sete minutos. Resumo: está muito orgulhosa e quer o quarto com vista.",
+          "translation": "Oma Dilce hat eine siebenminütige Sprachnachricht geschickt. Zusammenfassung: Sie ist sehr stolz und will das Zimmer mit Aussicht.",
+          "pt_chars": 99,
+          "translated_chars": 130,
+          "extra_chars": 31,
+          "ratio": 1.313131,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "strings",
+          "key": "Anote o pedido, pegue o prato pronto no passe da cozinha e sirva. Rapidez rende gorjeta.",
+          "source": "Anote o pedido, pegue o prato pronto no passe da cozinha e sirva. Rapidez rende gorjeta.",
+          "translation": "Nimm die Bestellung auf, hol das fertige Gericht an der Küchenausgabe und serviere es. Schnelligkeit bringt Trinkgeld.",
+          "pt_chars": 88,
+          "translated_chars": 118,
+          "extra_chars": 30,
+          "ratio": 1.340909,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "strings",
+          "key": "Meu avô dizia: errar é humano, desperdiçar cachaça é crime.",
+          "source": "Meu avô dizia: errar é humano, desperdiçar cachaça é crime.",
+          "translation": "Mein Opa sagte immer: Irren ist menschlich, cachaça zu verschwenden ist ein Verbrechen.",
+          "pt_chars": 59,
+          "translated_chars": 87,
+          "extra_chars": 28,
+          "ratio": 1.474576,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "strings",
+          "key": "Seu Tibúrcio: \"Trinta anos sem descer esse morro. A trilha encolheu ou fui eu que cresci?\"",
+          "source": "Seu Tibúrcio: \"Trinta anos sem descer esse morro. A trilha encolheu ou fui eu que cresci?\"",
+          "translation": "Seu Tibúrcio: „Dreißig Jahre nicht von diesem Berg heruntergekommen. Ist der Pfad geschrumpft oder bin ich gewachsen?“",
+          "pt_chars": 90,
+          "translated_chars": 118,
+          "extra_chars": 28,
+          "ratio": 1.311111,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "strings",
+          "key": "Cuida de todo o quiosque: anota pedidos, entrega produtos prontos, recebe e recolhe a louça.",
+          "source": "Cuida de todo o quiosque: anota pedidos, entrega produtos prontos, recebe e recolhe a louça.",
+          "translation": "Kümmert sich um den ganzen Kiosk: nimmt Bestellungen auf, gibt fertige Produkte aus, kassiert und räumt das Geschirr ab.",
+          "pt_chars": 92,
+          "translated_chars": 120,
+          "extra_chars": 28,
+          "ratio": 1.304348,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "strings",
+          "key": "(converse com quem pediu para avançar)",
+          "source": "(converse com quem pediu para avançar)",
+          "translation": "(sprich mit der Person, die darum gebeten hat, um weiterzukommen)",
+          "pt_chars": 38,
+          "translated_chars": 65,
+          "extra_chars": 27,
+          "ratio": 1.710526,
+          "risk": "texto curto: conferir botão/cartão no contexto"
+        }
+      ],
+      "missing": [],
+      "placeholder_mismatches": [],
+      "width_only_count": 0,
+      "width_only_top": []
+    },
+    "en": {
+      "sha256": "4f5f0fe6a20ab686c7c9cd63bd1ae52b2998d47b12d643b509568e851abbb247",
+      "checked": 4064,
+      "translated": 4064,
+      "expanded_count": 2,
+      "top": [
+        {
+          "section": "strings",
+          "key": "Cem. Contei com a régua do meu avô, que media tudo em palmos. Deu muitos palmos.",
+          "source": "Cem. Contei com a régua do meu avô, que media tudo em palmos. Deu muitos palmos.",
+          "translation": "A hundred. I measured with my grandpa's ruler, which measured everything in hand spans. It came to a lot of hand spans.",
+          "pt_chars": 80,
+          "translated_chars": 119,
+          "extra_chars": 39,
+          "ratio": 1.4875,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "strings",
+          "key": "Antes de subir, dê água e protetor a cada um. Quem sobe sem isso cansa e reclama.",
+          "source": "Antes de subir, dê água e protetor a cada um. Quem sobe sem isso cansa e reclama.",
+          "translation": "Before heading up, give everyone water and sunscreen. Anyone who goes without them gets tired and complains.",
+          "pt_chars": 81,
+          "translated_chars": 108,
+          "extra_chars": 27,
+          "ratio": 1.333333,
+          "risk": "cartão/aviso: conferir largura no celular"
+        }
+      ],
+      "all_expanded": [
+        {
+          "section": "strings",
+          "key": "Cem. Contei com a régua do meu avô, que media tudo em palmos. Deu muitos palmos.",
+          "source": "Cem. Contei com a régua do meu avô, que media tudo em palmos. Deu muitos palmos.",
+          "translation": "A hundred. I measured with my grandpa's ruler, which measured everything in hand spans. It came to a lot of hand spans.",
+          "pt_chars": 80,
+          "translated_chars": 119,
+          "extra_chars": 39,
+          "ratio": 1.4875,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "strings",
+          "key": "Antes de subir, dê água e protetor a cada um. Quem sobe sem isso cansa e reclama.",
+          "source": "Antes de subir, dê água e protetor a cada um. Quem sobe sem isso cansa e reclama.",
+          "translation": "Before heading up, give everyone water and sunscreen. Anyone who goes without them gets tired and complains.",
+          "pt_chars": 81,
+          "translated_chars": 108,
+          "extra_chars": 27,
+          "ratio": 1.333333,
+          "risk": "cartão/aviso: conferir largura no celular"
+        }
+      ],
+      "missing": [],
+      "placeholder_mismatches": [],
+      "width_only_count": 0,
+      "width_only_top": []
+    },
+    "es": {
+      "sha256": "bdb95262eab3474bf2394a95b1061e835869a78a17011205c10d4b2b554eac18",
+      "checked": 4064,
+      "translated": 4064,
+      "expanded_count": 0,
+      "top": [],
+      "all_expanded": [],
+      "missing": [],
+      "placeholder_mismatches": [],
+      "width_only_count": 0,
+      "width_only_top": []
+    },
+    "fr": {
+      "sha256": "b8029e61a667f0e0a0d7853e5c29d1ca8347501e7e3ec48a7344d6a022effd35",
+      "checked": 4064,
+      "translated": 4064,
+      "expanded_count": 25,
+      "top": [
+        {
+          "section": "strings",
+          "key": "Escolha o recheio, arraste para fechar a borda e frite até dourar: olhe a cor e ouça o sinal. Caldo de cana na moenda.",
+          "source": "Escolha o recheio, arraste para fechar a borda e frite até dourar: olhe a cor e ouça o sinal. Caldo de cana na moenda.",
+          "translation": "Choisissez la garniture, faites glisser pour fermer le bord et faites frire jusqu'à ce qu'il soit doré : regardez la couleur et écoutez le signal. Jus de canne à la presse.",
+          "pt_chars": 118,
+          "translated_chars": 172,
+          "extra_chars": 54,
+          "ratio": 1.457627,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "strings",
+          "key": "Misture no copo da bancada para descobrir receitas novas (cada uma dá fama).",
+          "source": "Misture no copo da bancada para descobrir receitas novas (cada uma dá fama).",
+          "translation": "Mélangez les ingrédients dans le verre au comptoir pour découvrir de nouvelles recettes (chacune donne de la renommée).",
+          "pt_chars": 76,
+          "translated_chars": 119,
+          "extra_chars": 43,
+          "ratio": 1.565789,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "strings",
+          "key": "A planta está na praia a leste do hotel, perto do farol: E em cada peça transparente para montar antes dos convidados.",
+          "source": "A planta está na praia a leste do hotel, perto do farol: E em cada peça transparente para montar antes dos convidados.",
+          "translation": "Le plan se trouve sur la plage à l'est de l'hôtel, près du phare : appuyez sur E devant chaque élément transparent pour l'installer avant l'arrivée des invités.",
+          "pt_chars": 118,
+          "translated_chars": 160,
+          "extra_chars": 42,
+          "ratio": 1.355932,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "loctext",
+          "key": "MareMenu,ConfirmText",
+          "source": "Começar um novo jogo no slot {0}? O progresso atual desse slot fica guardado só como backup (.bak).",
+          "translation": "Commencer une nouvelle partie sur l'emplacement {0} ? La progression actuelle de cet emplacement sera seulement gardée en sauvegarde (.bak).",
+          "pt_chars": 99,
+          "translated_chars": 140,
+          "extra_chars": 41,
+          "ratio": 1.414141,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "strings",
+          "key": "Pegue um ingrediente por vez e leve ao copo. A ordem não importa, só a mistura certa.",
+          "source": "Pegue um ingrediente por vez e leve ao copo. A ordem não importa, só a mistura certa.",
+          "translation": "Prenez un ingrédient à la fois et mettez-le dans le verre. L'ordre n'a pas d'importance, seule la bonne combinaison compte.",
+          "pt_chars": 85,
+          "translated_chars": 123,
+          "extra_chars": 38,
+          "ratio": 1.447059,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "strings",
+          "key": "Nos quartos 301, 302 e 303, resolver pessoalmente (E no quarto) é de graça e dá fama.",
+          "source": "Nos quartos 301, 302 e 303, resolver pessoalmente (E no quarto) é de graça e dá fama.",
+          "translation": "Dans les chambres 301, 302 et 303, résoudre le problème vous-même (E dans la chambre) est gratuit et donne de la renommée.",
+          "pt_chars": 85,
+          "translated_chars": 122,
+          "extra_chars": 37,
+          "ratio": 1.435294,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "strings",
+          "key": "O guia contratado faz o passeio sozinho com nota 3, sem gorjeta. Indo junto, a nota, a gorjeta e a fama sobem.",
+          "source": "O guia contratado faz o passeio sozinho com nota 3, sem gorjeta. Indo junto, a nota, a gorjeta e a fama sobem.",
+          "translation": "Le guide engagé mène seul l'excursion avec une note de 3, sans pourboire. En l'accompagnant, vous augmentez la note, les pourboires et la renommée.",
+          "pt_chars": 110,
+          "translated_chars": 147,
+          "extra_chars": 37,
+          "ratio": 1.336364,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "strings",
+          "key": "Negocie a diária dos hóspedes do hotel como na pousada. Quem você não atender em 2 horas, a equipe recebe pela oferta.",
+          "source": "Negocie a diária dos hóspedes do hotel como na pousada. Quem você não atender em 2 horas, a equipe recebe pela oferta.",
+          "translation": "Négociez le prix de la nuit des clients de l'hôtel comme à la pension. Ceux que vous ne servez pas en 2 heures, l'équipe les accueille à leur prix proposé.",
+          "pt_chars": 118,
+          "translated_chars": 155,
+          "extra_chars": 37,
+          "ratio": 1.313559,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "strings",
+          "key": "Motor forte: o pulso certo fica mais fácil e o batido rende mais gorjeta.",
+          "source": "Motor forte: o pulso certo fica mais fácil e o batido rende mais gorjeta.",
+          "translation": "Moteur puissant : il est plus facile de trouver le bon rythme et les cocktails rapportent plus de pourboires.",
+          "pt_chars": 73,
+          "translated_chars": 109,
+          "extra_chars": 36,
+          "ratio": 1.493151,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "strings",
+          "key": "As fotos do seu álbum (tecla P) viram cartões-postais: com o farol, a baleia ou o pôr do sol vendem mais caro.",
+          "source": "As fotos do seu álbum (tecla P) viram cartões-postais: com o farol, a baleia ou o pôr do sol vendem mais caro.",
+          "translation": "Les photos de votre album (touche P) deviennent des cartes postales : celles du phare, de la baleine ou du coucher de soleil se vendent plus cher.",
+          "pt_chars": 110,
+          "translated_chars": 146,
+          "extra_chars": 36,
+          "ratio": 1.327273,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "strings",
+          "key": "Cem. Contei com a régua do meu avô, que media tudo em palmos. Deu muitos palmos.",
+          "source": "Cem. Contei com a régua do meu avô, que media tudo em palmos. Deu muitos palmos.",
+          "translation": "Cent. Je les ai mesurés avec la règle de mon grand-père, qui mesurait tout en empans. Ça faisait beaucoup d'empans.",
+          "pt_chars": 80,
+          "translated_chars": 115,
+          "extra_chars": 35,
+          "ratio": 1.4375,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "strings",
+          "key": "Dormir fecha o dia: salários são pagos, o jogo é salvo e o celular mostra o resumo e a previsão de amanhã.",
+          "source": "Dormir fecha o dia: salários são pagos, o jogo é salvo e o celular mostra o resumo e a previsão de amanhã.",
+          "translation": "Dormir clôt la journée : les salaires sont payés, la partie est sauvegardée et le téléphone affiche le résumé et les prévisions du lendemain.",
+          "pt_chars": 106,
+          "translated_chars": 141,
+          "extra_chars": 35,
+          "ratio": 1.330189,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "strings",
+          "key": "Uma revista de viagem quer o resort na capa. O fotógrafo avisou que só fotografa \"coisa bonita\". Personalize a vila.",
+          "source": "Uma revista de viagem quer o resort na capa. O fotógrafo avisou que só fotografa \"coisa bonita\". Personalize a vila.",
+          "translation": "Un magazine de voyage veut le resort en couverture. Le photographe a prévenu qu'il ne photographie que les « belles choses ». Personnalisez le village.",
+          "pt_chars": 116,
+          "translated_chars": 151,
+          "extra_chars": 35,
+          "ratio": 1.301724,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "loctext",
+          "key": "MareMenu,OptKeysHint",
+          "source": "Clique numa ação e aperte a nova tecla (Esc cancela). Se a tecla já estiver em uso, as duas ações trocam.",
+          "translation": "Cliquez sur une action puis appuyez sur la nouvelle touche (Échap annule). Si la touche est déjà utilisée, les deux actions sont échangées.",
+          "pt_chars": 105,
+          "translated_chars": 139,
+          "extra_chars": 34,
+          "ratio": 1.32381,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "strings",
+          "key": "Os produtos já vêm prontos: pegue o que o cliente pediu. Quando acabar, reponha pelo celular ou aqui mesmo.",
+          "source": "Os produtos já vêm prontos: pegue o que o cliente pediu. Quando acabar, reponha pelo celular ou aqui mesmo.",
+          "translation": "Les produits arrivent déjà prêts : prenez ce que le client a commandé. Quand il n'y en a plus, réapprovisionnez sur le téléphone ou ici même.",
+          "pt_chars": 107,
+          "translated_chars": 141,
+          "extra_chars": 34,
+          "ratio": 1.317757,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "strings",
+          "key": "{0}: os convidados chegaram e quase nada estava montado ({1} de {2}). Ficou só o sinal, R$ {3}, e a fama caiu.",
+          "source": "{0}: os convidados chegaram e quase nada estava montado ({1} de {2}). Ficou só o sinal, R$ {3}, e a fama caiu.",
+          "translation": "{0} : les invités sont arrivés et presque rien n'était installé ({1} sur {2}). Seul l'acompte de R$ {3} a été conservé, et la renommée a baissé.",
+          "pt_chars": 110,
+          "translated_chars": 144,
+          "extra_chars": 34,
+          "ratio": 1.309091,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "strings",
+          "key": "O cooler está sem picolé: a sorveteria repõe a cada hora aberta.",
+          "source": "O cooler está sem picolé: a sorveteria repõe a cada hora aberta.",
+          "translation": "Plus de glaces à l'eau dans la glacière : le glacier la réapprovisionne chaque heure d'ouverture.",
+          "pt_chars": 64,
+          "translated_chars": 97,
+          "extra_chars": 33,
+          "ratio": 1.515625,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "strings",
+          "key": "Ops, essa dobra fora de ordem amassou o papel. Pode seguir ou pegar papel novo.",
+          "source": "Ops, essa dobra fora de ordem amassou o papel. Pode seguir ou pegar papel novo.",
+          "translation": "Oups, ce pli fait dans le désordre a froissé le papier. Vous pouvez continuer ou prendre une nouvelle feuille.",
+          "pt_chars": 79,
+          "translated_chars": 110,
+          "extra_chars": 31,
+          "ratio": 1.392405,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "strings",
+          "key": "Dona Cecília quer resgatar as receitas da avó e levar comida boa até a rua principal.",
+          "source": "Dona Cecília quer resgatar as receitas da avó e levar comida boa até a rua principal.",
+          "translation": "Dona Cecília veut retrouver les recettes de sa grand-mère et apporter de la bonne cuisine jusqu'à la rue principale.",
+          "pt_chars": 85,
+          "translated_chars": 116,
+          "extra_chars": 31,
+          "ratio": 1.364706,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "strings",
+          "key": "Menor? Impossível. Peixe de história só cresce, nunca diminui.",
+          "source": "Menor? Impossível. Peixe de história só cresce, nunca diminui.",
+          "translation": "Plus petit ? Impossible. Les poissons des histoires ne font que grandir, jamais rapetisser.",
+          "pt_chars": 62,
+          "translated_chars": 91,
+          "extra_chars": 29,
+          "ratio": 1.467742,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "strings",
+          "key": "Lojinha: a prateleira está vazia! Compre artesanato e arrume a vitrine.",
+          "source": "Lojinha: a prateleira está vazia! Compre artesanato e arrume a vitrine.",
+          "translation": "Boutique de souvenirs : l'étagère est vide ! Achetez des objets artisanaux et remplissez la vitrine.",
+          "pt_chars": 71,
+          "translated_chars": 100,
+          "extra_chars": 29,
+          "ratio": 1.408451,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "strings",
+          "key": "(no nível \"Pôr do sol no mar\" abre o passeio de jangada no fim da tarde)",
+          "source": "(no nível \"Pôr do sol no mar\" abre o passeio de jangada no fim da tarde)",
+          "translation": "(au niveau « Coucher de soleil en mer », la sortie en jangada devient disponible en fin d'après-midi)",
+          "pt_chars": 72,
+          "translated_chars": 101,
+          "extra_chars": 29,
+          "ratio": 1.402778,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "strings",
+          "key": " (no nível \"Pôr do sol no mar\" abre o passeio de jangada no fim da tarde)",
+          "source": " (no nível \"Pôr do sol no mar\" abre o passeio de jangada no fim da tarde)",
+          "translation": " (au niveau « Coucher de soleil en mer », la sortie en jangada devient disponible en fin d'après-midi)",
+          "pt_chars": 73,
+          "translated_chars": 102,
+          "extra_chars": 29,
+          "ratio": 1.39726,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "strings",
+          "key": "Antes de subir, dê água e protetor a cada um. Quem sobe sem isso cansa e reclama.",
+          "source": "Antes de subir, dê água e protetor a cada um. Quem sobe sem isso cansa e reclama.",
+          "translation": "Avant de monter, donnez de l'eau et de la crème solaire à chacun. Sans cela, ils se fatiguent et se plaignent.",
+          "pt_chars": 81,
+          "translated_chars": 110,
+          "extra_chars": 29,
+          "ratio": 1.358025,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "strings",
+          "key": "Chegamos bem na hora do pôr do sol!",
+          "source": "Chegamos bem na hora do pôr do sol!",
+          "translation": "Nous sommes arrivés juste à temps pour le coucher du soleil !",
+          "pt_chars": 35,
+          "translated_chars": 61,
+          "extra_chars": 26,
+          "ratio": 1.742857,
+          "risk": "texto curto: conferir botão/cartão no contexto"
+        }
+      ],
+      "all_expanded": [
+        {
+          "section": "strings",
+          "key": "Escolha o recheio, arraste para fechar a borda e frite até dourar: olhe a cor e ouça o sinal. Caldo de cana na moenda.",
+          "source": "Escolha o recheio, arraste para fechar a borda e frite até dourar: olhe a cor e ouça o sinal. Caldo de cana na moenda.",
+          "translation": "Choisissez la garniture, faites glisser pour fermer le bord et faites frire jusqu'à ce qu'il soit doré : regardez la couleur et écoutez le signal. Jus de canne à la presse.",
+          "pt_chars": 118,
+          "translated_chars": 172,
+          "extra_chars": 54,
+          "ratio": 1.457627,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "strings",
+          "key": "Misture no copo da bancada para descobrir receitas novas (cada uma dá fama).",
+          "source": "Misture no copo da bancada para descobrir receitas novas (cada uma dá fama).",
+          "translation": "Mélangez les ingrédients dans le verre au comptoir pour découvrir de nouvelles recettes (chacune donne de la renommée).",
+          "pt_chars": 76,
+          "translated_chars": 119,
+          "extra_chars": 43,
+          "ratio": 1.565789,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "strings",
+          "key": "A planta está na praia a leste do hotel, perto do farol: E em cada peça transparente para montar antes dos convidados.",
+          "source": "A planta está na praia a leste do hotel, perto do farol: E em cada peça transparente para montar antes dos convidados.",
+          "translation": "Le plan se trouve sur la plage à l'est de l'hôtel, près du phare : appuyez sur E devant chaque élément transparent pour l'installer avant l'arrivée des invités.",
+          "pt_chars": 118,
+          "translated_chars": 160,
+          "extra_chars": 42,
+          "ratio": 1.355932,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "loctext",
+          "key": "MareMenu,ConfirmText",
+          "source": "Começar um novo jogo no slot {0}? O progresso atual desse slot fica guardado só como backup (.bak).",
+          "translation": "Commencer une nouvelle partie sur l'emplacement {0} ? La progression actuelle de cet emplacement sera seulement gardée en sauvegarde (.bak).",
+          "pt_chars": 99,
+          "translated_chars": 140,
+          "extra_chars": 41,
+          "ratio": 1.414141,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "strings",
+          "key": "Pegue um ingrediente por vez e leve ao copo. A ordem não importa, só a mistura certa.",
+          "source": "Pegue um ingrediente por vez e leve ao copo. A ordem não importa, só a mistura certa.",
+          "translation": "Prenez un ingrédient à la fois et mettez-le dans le verre. L'ordre n'a pas d'importance, seule la bonne combinaison compte.",
+          "pt_chars": 85,
+          "translated_chars": 123,
+          "extra_chars": 38,
+          "ratio": 1.447059,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "strings",
+          "key": "Nos quartos 301, 302 e 303, resolver pessoalmente (E no quarto) é de graça e dá fama.",
+          "source": "Nos quartos 301, 302 e 303, resolver pessoalmente (E no quarto) é de graça e dá fama.",
+          "translation": "Dans les chambres 301, 302 et 303, résoudre le problème vous-même (E dans la chambre) est gratuit et donne de la renommée.",
+          "pt_chars": 85,
+          "translated_chars": 122,
+          "extra_chars": 37,
+          "ratio": 1.435294,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "strings",
+          "key": "O guia contratado faz o passeio sozinho com nota 3, sem gorjeta. Indo junto, a nota, a gorjeta e a fama sobem.",
+          "source": "O guia contratado faz o passeio sozinho com nota 3, sem gorjeta. Indo junto, a nota, a gorjeta e a fama sobem.",
+          "translation": "Le guide engagé mène seul l'excursion avec une note de 3, sans pourboire. En l'accompagnant, vous augmentez la note, les pourboires et la renommée.",
+          "pt_chars": 110,
+          "translated_chars": 147,
+          "extra_chars": 37,
+          "ratio": 1.336364,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "strings",
+          "key": "Negocie a diária dos hóspedes do hotel como na pousada. Quem você não atender em 2 horas, a equipe recebe pela oferta.",
+          "source": "Negocie a diária dos hóspedes do hotel como na pousada. Quem você não atender em 2 horas, a equipe recebe pela oferta.",
+          "translation": "Négociez le prix de la nuit des clients de l'hôtel comme à la pension. Ceux que vous ne servez pas en 2 heures, l'équipe les accueille à leur prix proposé.",
+          "pt_chars": 118,
+          "translated_chars": 155,
+          "extra_chars": 37,
+          "ratio": 1.313559,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "strings",
+          "key": "Motor forte: o pulso certo fica mais fácil e o batido rende mais gorjeta.",
+          "source": "Motor forte: o pulso certo fica mais fácil e o batido rende mais gorjeta.",
+          "translation": "Moteur puissant : il est plus facile de trouver le bon rythme et les cocktails rapportent plus de pourboires.",
+          "pt_chars": 73,
+          "translated_chars": 109,
+          "extra_chars": 36,
+          "ratio": 1.493151,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "strings",
+          "key": "As fotos do seu álbum (tecla P) viram cartões-postais: com o farol, a baleia ou o pôr do sol vendem mais caro.",
+          "source": "As fotos do seu álbum (tecla P) viram cartões-postais: com o farol, a baleia ou o pôr do sol vendem mais caro.",
+          "translation": "Les photos de votre album (touche P) deviennent des cartes postales : celles du phare, de la baleine ou du coucher de soleil se vendent plus cher.",
+          "pt_chars": 110,
+          "translated_chars": 146,
+          "extra_chars": 36,
+          "ratio": 1.327273,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "strings",
+          "key": "Cem. Contei com a régua do meu avô, que media tudo em palmos. Deu muitos palmos.",
+          "source": "Cem. Contei com a régua do meu avô, que media tudo em palmos. Deu muitos palmos.",
+          "translation": "Cent. Je les ai mesurés avec la règle de mon grand-père, qui mesurait tout en empans. Ça faisait beaucoup d'empans.",
+          "pt_chars": 80,
+          "translated_chars": 115,
+          "extra_chars": 35,
+          "ratio": 1.4375,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "strings",
+          "key": "Dormir fecha o dia: salários são pagos, o jogo é salvo e o celular mostra o resumo e a previsão de amanhã.",
+          "source": "Dormir fecha o dia: salários são pagos, o jogo é salvo e o celular mostra o resumo e a previsão de amanhã.",
+          "translation": "Dormir clôt la journée : les salaires sont payés, la partie est sauvegardée et le téléphone affiche le résumé et les prévisions du lendemain.",
+          "pt_chars": 106,
+          "translated_chars": 141,
+          "extra_chars": 35,
+          "ratio": 1.330189,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "strings",
+          "key": "Uma revista de viagem quer o resort na capa. O fotógrafo avisou que só fotografa \"coisa bonita\". Personalize a vila.",
+          "source": "Uma revista de viagem quer o resort na capa. O fotógrafo avisou que só fotografa \"coisa bonita\". Personalize a vila.",
+          "translation": "Un magazine de voyage veut le resort en couverture. Le photographe a prévenu qu'il ne photographie que les « belles choses ». Personnalisez le village.",
+          "pt_chars": 116,
+          "translated_chars": 151,
+          "extra_chars": 35,
+          "ratio": 1.301724,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "loctext",
+          "key": "MareMenu,OptKeysHint",
+          "source": "Clique numa ação e aperte a nova tecla (Esc cancela). Se a tecla já estiver em uso, as duas ações trocam.",
+          "translation": "Cliquez sur une action puis appuyez sur la nouvelle touche (Échap annule). Si la touche est déjà utilisée, les deux actions sont échangées.",
+          "pt_chars": 105,
+          "translated_chars": 139,
+          "extra_chars": 34,
+          "ratio": 1.32381,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "strings",
+          "key": "Os produtos já vêm prontos: pegue o que o cliente pediu. Quando acabar, reponha pelo celular ou aqui mesmo.",
+          "source": "Os produtos já vêm prontos: pegue o que o cliente pediu. Quando acabar, reponha pelo celular ou aqui mesmo.",
+          "translation": "Les produits arrivent déjà prêts : prenez ce que le client a commandé. Quand il n'y en a plus, réapprovisionnez sur le téléphone ou ici même.",
+          "pt_chars": 107,
+          "translated_chars": 141,
+          "extra_chars": 34,
+          "ratio": 1.317757,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "strings",
+          "key": "{0}: os convidados chegaram e quase nada estava montado ({1} de {2}). Ficou só o sinal, R$ {3}, e a fama caiu.",
+          "source": "{0}: os convidados chegaram e quase nada estava montado ({1} de {2}). Ficou só o sinal, R$ {3}, e a fama caiu.",
+          "translation": "{0} : les invités sont arrivés et presque rien n'était installé ({1} sur {2}). Seul l'acompte de R$ {3} a été conservé, et la renommée a baissé.",
+          "pt_chars": 110,
+          "translated_chars": 144,
+          "extra_chars": 34,
+          "ratio": 1.309091,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "strings",
+          "key": "O cooler está sem picolé: a sorveteria repõe a cada hora aberta.",
+          "source": "O cooler está sem picolé: a sorveteria repõe a cada hora aberta.",
+          "translation": "Plus de glaces à l'eau dans la glacière : le glacier la réapprovisionne chaque heure d'ouverture.",
+          "pt_chars": 64,
+          "translated_chars": 97,
+          "extra_chars": 33,
+          "ratio": 1.515625,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "strings",
+          "key": "Ops, essa dobra fora de ordem amassou o papel. Pode seguir ou pegar papel novo.",
+          "source": "Ops, essa dobra fora de ordem amassou o papel. Pode seguir ou pegar papel novo.",
+          "translation": "Oups, ce pli fait dans le désordre a froissé le papier. Vous pouvez continuer ou prendre une nouvelle feuille.",
+          "pt_chars": 79,
+          "translated_chars": 110,
+          "extra_chars": 31,
+          "ratio": 1.392405,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "strings",
+          "key": "Dona Cecília quer resgatar as receitas da avó e levar comida boa até a rua principal.",
+          "source": "Dona Cecília quer resgatar as receitas da avó e levar comida boa até a rua principal.",
+          "translation": "Dona Cecília veut retrouver les recettes de sa grand-mère et apporter de la bonne cuisine jusqu'à la rue principale.",
+          "pt_chars": 85,
+          "translated_chars": 116,
+          "extra_chars": 31,
+          "ratio": 1.364706,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "strings",
+          "key": "Menor? Impossível. Peixe de história só cresce, nunca diminui.",
+          "source": "Menor? Impossível. Peixe de história só cresce, nunca diminui.",
+          "translation": "Plus petit ? Impossible. Les poissons des histoires ne font que grandir, jamais rapetisser.",
+          "pt_chars": 62,
+          "translated_chars": 91,
+          "extra_chars": 29,
+          "ratio": 1.467742,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "strings",
+          "key": "Lojinha: a prateleira está vazia! Compre artesanato e arrume a vitrine.",
+          "source": "Lojinha: a prateleira está vazia! Compre artesanato e arrume a vitrine.",
+          "translation": "Boutique de souvenirs : l'étagère est vide ! Achetez des objets artisanaux et remplissez la vitrine.",
+          "pt_chars": 71,
+          "translated_chars": 100,
+          "extra_chars": 29,
+          "ratio": 1.408451,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "strings",
+          "key": "(no nível \"Pôr do sol no mar\" abre o passeio de jangada no fim da tarde)",
+          "source": "(no nível \"Pôr do sol no mar\" abre o passeio de jangada no fim da tarde)",
+          "translation": "(au niveau « Coucher de soleil en mer », la sortie en jangada devient disponible en fin d'après-midi)",
+          "pt_chars": 72,
+          "translated_chars": 101,
+          "extra_chars": 29,
+          "ratio": 1.402778,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "strings",
+          "key": " (no nível \"Pôr do sol no mar\" abre o passeio de jangada no fim da tarde)",
+          "source": " (no nível \"Pôr do sol no mar\" abre o passeio de jangada no fim da tarde)",
+          "translation": " (au niveau « Coucher de soleil en mer », la sortie en jangada devient disponible en fin d'après-midi)",
+          "pt_chars": 73,
+          "translated_chars": 102,
+          "extra_chars": 29,
+          "ratio": 1.39726,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "strings",
+          "key": "Antes de subir, dê água e protetor a cada um. Quem sobe sem isso cansa e reclama.",
+          "source": "Antes de subir, dê água e protetor a cada um. Quem sobe sem isso cansa e reclama.",
+          "translation": "Avant de monter, donnez de l'eau et de la crème solaire à chacun. Sans cela, ils se fatiguent et se plaignent.",
+          "pt_chars": 81,
+          "translated_chars": 110,
+          "extra_chars": 29,
+          "ratio": 1.358025,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "strings",
+          "key": "Chegamos bem na hora do pôr do sol!",
+          "source": "Chegamos bem na hora do pôr do sol!",
+          "translation": "Nous sommes arrivés juste à temps pour le coucher du soleil !",
+          "pt_chars": 35,
+          "translated_chars": 61,
+          "extra_chars": 26,
+          "ratio": 1.742857,
+          "risk": "texto curto: conferir botão/cartão no contexto"
+        }
+      ],
+      "missing": [],
+      "placeholder_mismatches": [],
+      "width_only_count": 0,
+      "width_only_top": []
+    },
+    "it": {
+      "sha256": "f803e3c6581085df2454670d3e478d8fbf8dc114f4e95b91fb8393f8c9b6a0df",
+      "checked": 4064,
+      "translated": 4064,
+      "expanded_count": 11,
+      "top": [
+        {
+          "section": "strings",
+          "key": "Ofereça os extras que o grupo quer (criança pede colete, quem chega com fome quer lanche, primeira vez quer foto): rende mais e sobe a nota. Insistir no que não querem baixa a nota.",
+          "source": "Ofereça os extras que o grupo quer (criança pede colete, quem chega com fome quer lanche, primeira vez quer foto): rende mais e sobe a nota. Insistir no que não querem baixa a nota.",
+          "translation": "Offri gli extra che il gruppo desidera (i bambini chiedono il giubbotto salvagente, chi ha fame vuole uno spuntino, chi è alla prima esperienza vuole una foto): guadagni di più e il voto sale. Insistere su cose indesiderate abbassa il voto.",
+          "pt_chars": 181,
+          "translated_chars": 240,
+          "extra_chars": 59,
+          "ratio": 1.325967,
+          "risk": "cartão/diálogo: quebra e rolagem"
+        },
+        {
+          "section": "strings",
+          "key": "Seríssimo. Em 1987 esqueceram uma vez e a Onda levou a praia, o bar e o meu bigode. O bigode nunca mais cresceu igual.",
+          "source": "Seríssimo. Em 1987 esqueceram uma vez e a Onda levou a praia, o bar e o meu bigode. O bigode nunca mais cresceu igual.",
+          "translation": "Serissimo. Nel 1987 se ne sono dimenticati una volta e l'Onda si è portata via la spiaggia, il bar e i miei baffi. I baffi non sono più ricresciuti uguali.",
+          "pt_chars": 118,
+          "translated_chars": 155,
+          "extra_chars": 37,
+          "ratio": 1.313559,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "strings",
+          "key": "Mova o mouse para posicionar a raquete; o golpe sai sozinho quando a bola chega. Q sai da partida.",
+          "source": "Mova o mouse para posicionar a raquete; o golpe sai sozinho quando a bola chega. Q sai da partida.",
+          "translation": "Muovi il mouse per posizionare la racchetta; il colpo parte automaticamente quando arriva la palla. Premi Q per uscire dalla partita.",
+          "pt_chars": 98,
+          "translated_chars": 133,
+          "extra_chars": 35,
+          "ratio": 1.357143,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "strings",
+          "key": "Cem. Contei com a régua do meu avô, que media tudo em palmos. Deu muitos palmos.",
+          "source": "Cem. Contei com a régua do meu avô, que media tudo em palmos. Deu muitos palmos.",
+          "translation": "Cento. Li ho misurati con il righello di mio nonno, che misurava tutto in spanne. Sono venute un sacco di spanne.",
+          "pt_chars": 80,
+          "translated_chars": 113,
+          "extra_chars": 33,
+          "ratio": 1.4125,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "strings",
+          "key": "Dormir fecha o dia: salários são pagos, o jogo é salvo e o celular mostra o resumo e a previsão de amanhã.",
+          "source": "Dormir fecha o dia: salários são pagos, o jogo é salvo e o celular mostra o resumo e a previsão de amanhã.",
+          "translation": "Dormire chiude la giornata: si pagano gli stipendi, la partita viene salvata e il cellulare mostra il riepilogo e le previsioni di domani.",
+          "pt_chars": 106,
+          "translated_chars": 138,
+          "extra_chars": 32,
+          "ratio": 1.301887,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "strings",
+          "key": "O cooler está sem picolé: a sorveteria repõe a cada hora aberta.",
+          "source": "O cooler está sem picolé: a sorveteria repõe a cada hora aberta.",
+          "translation": "Il frigo portatile ha finito i ghiaccioli: la gelateria lo rifornisce a ogni ora di apertura.",
+          "pt_chars": 64,
+          "translated_chars": 93,
+          "extra_chars": 29,
+          "ratio": 1.453125,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "strings",
+          "key": "Na rua principal. Funciona até tarde e bomba nas festas.",
+          "source": "Na rua principal. Funciona até tarde e bomba nas festas.",
+          "translation": "Nella via principale. Resta aperto fino a tardi e va a gonfie vele durante le feste.",
+          "pt_chars": 56,
+          "translated_chars": 84,
+          "extra_chars": 28,
+          "ratio": 1.5,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "strings",
+          "key": "Balançaram tanto que fiquei enjoado.",
+          "source": "Balançaram tanto que fiquei enjoado.",
+          "translation": "L’abbiamo fatta oscillare così tanto che mi è venuta la nausea.",
+          "pt_chars": 36,
+          "translated_chars": 63,
+          "extra_chars": 27,
+          "ratio": 1.75,
+          "risk": "texto curto: conferir botão/cartão no contexto"
+        },
+        {
+          "section": "strings",
+          "key": "Folhas na água espantam os banhistas e baixam as estrelas. O piscineiro limpa sozinho.",
+          "source": "Folhas na água espantam os banhistas e baixam as estrelas. O piscineiro limpa sozinho.",
+          "translation": "Le foglie in acqua fanno scappare i bagnanti e abbassano le stelle. Il manutentore della piscina pulisce da solo.",
+          "pt_chars": 86,
+          "translated_chars": 113,
+          "extra_chars": 27,
+          "ratio": 1.313953,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "strings",
+          "key": " Faltou picolé para {0}: o cooler esvaziou.",
+          "source": " Faltou picolé para {0}: o cooler esvaziou.",
+          "translation": " Sono mancati i ghiaccioli per {0}: il frigo portatile si è svuotato.",
+          "pt_chars": 43,
+          "translated_chars": 69,
+          "extra_chars": 26,
+          "ratio": 1.604651,
+          "risk": "texto curto: conferir botão/cartão no contexto"
+        },
+        {
+          "section": "strings",
+          "key": "Misture no copo da bancada para descobrir receitas novas (cada uma dá fama).",
+          "source": "Misture no copo da bancada para descobrir receitas novas (cada uma dá fama).",
+          "translation": "Mescola gli ingredienti nel bicchiere sul bancone per scoprire nuove ricette (ognuna aumenta la fama).",
+          "pt_chars": 76,
+          "translated_chars": 102,
+          "extra_chars": 26,
+          "ratio": 1.342105,
+          "risk": "cartão/aviso: conferir largura no celular"
+        }
+      ],
+      "all_expanded": [
+        {
+          "section": "strings",
+          "key": "Ofereça os extras que o grupo quer (criança pede colete, quem chega com fome quer lanche, primeira vez quer foto): rende mais e sobe a nota. Insistir no que não querem baixa a nota.",
+          "source": "Ofereça os extras que o grupo quer (criança pede colete, quem chega com fome quer lanche, primeira vez quer foto): rende mais e sobe a nota. Insistir no que não querem baixa a nota.",
+          "translation": "Offri gli extra che il gruppo desidera (i bambini chiedono il giubbotto salvagente, chi ha fame vuole uno spuntino, chi è alla prima esperienza vuole una foto): guadagni di più e il voto sale. Insistere su cose indesiderate abbassa il voto.",
+          "pt_chars": 181,
+          "translated_chars": 240,
+          "extra_chars": 59,
+          "ratio": 1.325967,
+          "risk": "cartão/diálogo: quebra e rolagem"
+        },
+        {
+          "section": "strings",
+          "key": "Seríssimo. Em 1987 esqueceram uma vez e a Onda levou a praia, o bar e o meu bigode. O bigode nunca mais cresceu igual.",
+          "source": "Seríssimo. Em 1987 esqueceram uma vez e a Onda levou a praia, o bar e o meu bigode. O bigode nunca mais cresceu igual.",
+          "translation": "Serissimo. Nel 1987 se ne sono dimenticati una volta e l'Onda si è portata via la spiaggia, il bar e i miei baffi. I baffi non sono più ricresciuti uguali.",
+          "pt_chars": 118,
+          "translated_chars": 155,
+          "extra_chars": 37,
+          "ratio": 1.313559,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "strings",
+          "key": "Mova o mouse para posicionar a raquete; o golpe sai sozinho quando a bola chega. Q sai da partida.",
+          "source": "Mova o mouse para posicionar a raquete; o golpe sai sozinho quando a bola chega. Q sai da partida.",
+          "translation": "Muovi il mouse per posizionare la racchetta; il colpo parte automaticamente quando arriva la palla. Premi Q per uscire dalla partita.",
+          "pt_chars": 98,
+          "translated_chars": 133,
+          "extra_chars": 35,
+          "ratio": 1.357143,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "strings",
+          "key": "Cem. Contei com a régua do meu avô, que media tudo em palmos. Deu muitos palmos.",
+          "source": "Cem. Contei com a régua do meu avô, que media tudo em palmos. Deu muitos palmos.",
+          "translation": "Cento. Li ho misurati con il righello di mio nonno, che misurava tutto in spanne. Sono venute un sacco di spanne.",
+          "pt_chars": 80,
+          "translated_chars": 113,
+          "extra_chars": 33,
+          "ratio": 1.4125,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "strings",
+          "key": "Dormir fecha o dia: salários são pagos, o jogo é salvo e o celular mostra o resumo e a previsão de amanhã.",
+          "source": "Dormir fecha o dia: salários são pagos, o jogo é salvo e o celular mostra o resumo e a previsão de amanhã.",
+          "translation": "Dormire chiude la giornata: si pagano gli stipendi, la partita viene salvata e il cellulare mostra il riepilogo e le previsioni di domani.",
+          "pt_chars": 106,
+          "translated_chars": 138,
+          "extra_chars": 32,
+          "ratio": 1.301887,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "strings",
+          "key": "O cooler está sem picolé: a sorveteria repõe a cada hora aberta.",
+          "source": "O cooler está sem picolé: a sorveteria repõe a cada hora aberta.",
+          "translation": "Il frigo portatile ha finito i ghiaccioli: la gelateria lo rifornisce a ogni ora di apertura.",
+          "pt_chars": 64,
+          "translated_chars": 93,
+          "extra_chars": 29,
+          "ratio": 1.453125,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "strings",
+          "key": "Na rua principal. Funciona até tarde e bomba nas festas.",
+          "source": "Na rua principal. Funciona até tarde e bomba nas festas.",
+          "translation": "Nella via principale. Resta aperto fino a tardi e va a gonfie vele durante le feste.",
+          "pt_chars": 56,
+          "translated_chars": 84,
+          "extra_chars": 28,
+          "ratio": 1.5,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "strings",
+          "key": "Balançaram tanto que fiquei enjoado.",
+          "source": "Balançaram tanto que fiquei enjoado.",
+          "translation": "L’abbiamo fatta oscillare così tanto che mi è venuta la nausea.",
+          "pt_chars": 36,
+          "translated_chars": 63,
+          "extra_chars": 27,
+          "ratio": 1.75,
+          "risk": "texto curto: conferir botão/cartão no contexto"
+        },
+        {
+          "section": "strings",
+          "key": "Folhas na água espantam os banhistas e baixam as estrelas. O piscineiro limpa sozinho.",
+          "source": "Folhas na água espantam os banhistas e baixam as estrelas. O piscineiro limpa sozinho.",
+          "translation": "Le foglie in acqua fanno scappare i bagnanti e abbassano le stelle. Il manutentore della piscina pulisce da solo.",
+          "pt_chars": 86,
+          "translated_chars": 113,
+          "extra_chars": 27,
+          "ratio": 1.313953,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "strings",
+          "key": " Faltou picolé para {0}: o cooler esvaziou.",
+          "source": " Faltou picolé para {0}: o cooler esvaziou.",
+          "translation": " Sono mancati i ghiaccioli per {0}: il frigo portatile si è svuotato.",
+          "pt_chars": 43,
+          "translated_chars": 69,
+          "extra_chars": 26,
+          "ratio": 1.604651,
+          "risk": "texto curto: conferir botão/cartão no contexto"
+        },
+        {
+          "section": "strings",
+          "key": "Misture no copo da bancada para descobrir receitas novas (cada uma dá fama).",
+          "source": "Misture no copo da bancada para descobrir receitas novas (cada uma dá fama).",
+          "translation": "Mescola gli ingredienti nel bicchiere sul bancone per scoprire nuove ricette (ognuna aumenta la fama).",
+          "pt_chars": 76,
+          "translated_chars": 102,
+          "extra_chars": 26,
+          "ratio": 1.342105,
+          "risk": "cartão/aviso: conferir largura no celular"
+        }
+      ],
+      "missing": [],
+      "placeholder_mismatches": [],
+      "width_only_count": 0,
+      "width_only_top": []
+    },
+    "ja": {
+      "sha256": "ee7f53b91a751bd4fb50f054f29d739df8be142812abde207cb6c57cffdfea8d",
+      "checked": 4064,
+      "translated": 4064,
+      "expanded_count": 0,
+      "top": [],
+      "all_expanded": [],
+      "missing": [],
+      "placeholder_mismatches": [],
+      "width_only_count": 0,
+      "width_only_top": []
+    },
+    "ko": {
+      "sha256": "77142225dea746c041acd093367d30b6b456a53bce9f37ea994aa0e025b7ffe8",
+      "checked": 4064,
+      "translated": 4064,
+      "expanded_count": 0,
+      "top": [],
+      "all_expanded": [],
+      "missing": [],
+      "placeholder_mismatches": [],
+      "width_only_count": 2,
+      "width_only_top": [
+        {
+          "section": "strings",
+          "key": "E o vulcão... está soltando fogos? Seu Tibúrcio: \"Ele adora festa. Quem não adora?\"",
+          "source": "E o vulcão... está soltando fogos? Seu Tibúrcio: \"Ele adora festa. Quem não adora?\"",
+          "translation": "그런데 화산이... 불꽃놀이를 하고 있어? Seu Tibúrcio: \"저 녀석은 축제를 좋아해. 안 좋아하는 사람이 어디 있어?\"",
+          "pt_chars": 83,
+          "translated_chars": 72,
+          "extra_chars": -11,
+          "ratio": 0.86747,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "strings",
+          "key": "{0} reclamou: multa sem amassado nenhum! A fama caiu.",
+          "source": "{0} reclamou: multa sem amassado nenhum! A fama caiu.",
+          "translation": "{0}이(가) 항의했습니다: 찌그러짐도 없는데 벌금을 받았어요! 명성이 떨어졌습니다.",
+          "pt_chars": 53,
+          "translated_chars": 47,
+          "extra_chars": -6,
+          "ratio": 0.886792,
+          "risk": "cartão/aviso: conferir largura no celular"
+        }
+      ]
+    },
+    "nl": {
+      "sha256": "c027e9400eb369bb7d3d9bf234b4b5c72925b51cc6ae0a335d2b6b1740e81c00",
+      "checked": 4064,
+      "translated": 4064,
+      "expanded_count": 3,
+      "top": [
+        {
+          "section": "strings",
+          "key": "A planta está na praia a leste do hotel, perto do farol: E em cada peça transparente para montar antes dos convidados.",
+          "source": "A planta está na praia a leste do hotel, perto do farol: E em cada peça transparente para montar antes dos convidados.",
+          "translation": "De plattegrond ligt op het strand ten oosten van het hotel, bij de vuurtoren: druk op E bij elk doorzichtig onderdeel om het op te bouwen voordat de gasten aankomen.",
+          "pt_chars": 118,
+          "translated_chars": 165,
+          "extra_chars": 47,
+          "ratio": 1.398305,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "strings",
+          "key": "Dormir fecha o dia: salários são pagos, o jogo é salvo e o celular mostra o resumo e a previsão de amanhã.",
+          "source": "Dormir fecha o dia: salários são pagos, o jogo é salvo e o celular mostra o resumo e a previsão de amanhã.",
+          "translation": "Slapen sluit de dag af: lonen worden betaald, het spel wordt opgeslagen en de telefoon toont het overzicht en de voorspelling voor morgen.",
+          "pt_chars": 106,
+          "translated_chars": 138,
+          "extra_chars": 32,
+          "ratio": 1.301887,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "strings",
+          "key": "A lenda da ilha vulcânica arrepiou!",
+          "source": "A lenda da ilha vulcânica arrepiou!",
+          "translation": "De legende van het vulkanische eiland bezorgde ons kippenvel!",
+          "pt_chars": 35,
+          "translated_chars": 61,
+          "extra_chars": 26,
+          "ratio": 1.742857,
+          "risk": "texto curto: conferir botão/cartão no contexto"
+        }
+      ],
+      "all_expanded": [
+        {
+          "section": "strings",
+          "key": "A planta está na praia a leste do hotel, perto do farol: E em cada peça transparente para montar antes dos convidados.",
+          "source": "A planta está na praia a leste do hotel, perto do farol: E em cada peça transparente para montar antes dos convidados.",
+          "translation": "De plattegrond ligt op het strand ten oosten van het hotel, bij de vuurtoren: druk op E bij elk doorzichtig onderdeel om het op te bouwen voordat de gasten aankomen.",
+          "pt_chars": 118,
+          "translated_chars": 165,
+          "extra_chars": 47,
+          "ratio": 1.398305,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "strings",
+          "key": "Dormir fecha o dia: salários são pagos, o jogo é salvo e o celular mostra o resumo e a previsão de amanhã.",
+          "source": "Dormir fecha o dia: salários são pagos, o jogo é salvo e o celular mostra o resumo e a previsão de amanhã.",
+          "translation": "Slapen sluit de dag af: lonen worden betaald, het spel wordt opgeslagen en de telefoon toont het overzicht en de voorspelling voor morgen.",
+          "pt_chars": 106,
+          "translated_chars": 138,
+          "extra_chars": 32,
+          "ratio": 1.301887,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "strings",
+          "key": "A lenda da ilha vulcânica arrepiou!",
+          "source": "A lenda da ilha vulcânica arrepiou!",
+          "translation": "De legende van het vulkanische eiland bezorgde ons kippenvel!",
+          "pt_chars": 35,
+          "translated_chars": 61,
+          "extra_chars": 26,
+          "ratio": 1.742857,
+          "risk": "texto curto: conferir botão/cartão no contexto"
+        }
+      ],
+      "missing": [],
+      "placeholder_mismatches": [],
+      "width_only_count": 0,
+      "width_only_top": []
+    },
+    "pl": {
+      "sha256": "ba0a21b501989a463e5f62bd44d74716bf92182a43e7b5300bffc4c04a090d57",
+      "checked": 4064,
+      "translated": 4064,
+      "expanded_count": 2,
+      "top": [
+        {
+          "section": "strings",
+          "key": "O cooler está sem picolé: a sorveteria repõe a cada hora aberta.",
+          "source": "O cooler está sem picolé: a sorveteria repõe a cada hora aberta.",
+          "translation": "W lodówce turystycznej nie ma lodów na patyku: lodziarnia uzupełnia zapas co godzinę otwarcia.",
+          "pt_chars": 64,
+          "translated_chars": 94,
+          "extra_chars": 30,
+          "ratio": 1.46875,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "strings",
+          "key": "Segure E, Espaço, clique ou A para bater e solte no verde · passou, derramou",
+          "source": "Segure E, Espaço, clique ou A para bater e solte no verde · passou, derramou",
+          "translation": "Przytrzymaj E, Spację, kliknięcie lub A, aby wstrząsać, i puść na zielonym · za długo oznacza rozlanie",
+          "pt_chars": 76,
+          "translated_chars": 102,
+          "extra_chars": 26,
+          "ratio": 1.342105,
+          "risk": "cartão/aviso: conferir largura no celular"
+        }
+      ],
+      "all_expanded": [
+        {
+          "section": "strings",
+          "key": "O cooler está sem picolé: a sorveteria repõe a cada hora aberta.",
+          "source": "O cooler está sem picolé: a sorveteria repõe a cada hora aberta.",
+          "translation": "W lodówce turystycznej nie ma lodów na patyku: lodziarnia uzupełnia zapas co godzinę otwarcia.",
+          "pt_chars": 64,
+          "translated_chars": 94,
+          "extra_chars": 30,
+          "ratio": 1.46875,
+          "risk": "cartão/aviso: conferir largura no celular"
+        },
+        {
+          "section": "strings",
+          "key": "Segure E, Espaço, clique ou A para bater e solte no verde · passou, derramou",
+          "source": "Segure E, Espaço, clique ou A para bater e solte no verde · passou, derramou",
+          "translation": "Przytrzymaj E, Spację, kliknięcie lub A, aby wstrząsać, i puść na zielonym · za długo oznacza rozlanie",
+          "pt_chars": 76,
+          "translated_chars": 102,
+          "extra_chars": 26,
+          "ratio": 1.342105,
+          "risk": "cartão/aviso: conferir largura no celular"
+        }
+      ],
+      "missing": [],
+      "placeholder_mismatches": [],
+      "width_only_count": 0,
+      "width_only_top": []
+    },
+    "pt-PT": {
+      "sha256": "f8b10f1692619d36fc5aa951b64555e62fb4c3585a5aaa3a3430f27ed01abc99",
+      "checked": 4064,
+      "translated": 4064,
+      "expanded_count": 0,
+      "top": [],
+      "all_expanded": [],
+      "missing": [],
+      "placeholder_mismatches": [],
+      "width_only_count": 0,
+      "width_only_top": []
+    },
+    "ru": {
+      "sha256": "59a74d2a946e74c6ff5cfcae8ced93c3cf803322c814311eb90a2a9627a93849",
+      "checked": 4064,
+      "translated": 4064,
+      "expanded_count": 1,
+      "top": [
+        {
+          "section": "strings",
+          "key": "Segure E, Espaço, clique ou A para bater e solte no verde · passou, derramou",
+          "source": "Segure E, Espaço, clique ou A para bater e solte no verde · passou, derramou",
+          "translation": "Удерживайте E, пробел, щелчок или A для взбивания и отпустите в зелёной зоне · передержите — прольётся",
+          "pt_chars": 76,
+          "translated_chars": 102,
+          "extra_chars": 26,
+          "ratio": 1.342105,
+          "risk": "cartão/aviso: conferir largura no celular"
+        }
+      ],
+      "all_expanded": [
+        {
+          "section": "strings",
+          "key": "Segure E, Espaço, clique ou A para bater e solte no verde · passou, derramou",
+          "source": "Segure E, Espaço, clique ou A para bater e solte no verde · passou, derramou",
+          "translation": "Удерживайте E, пробел, щелчок или A для взбивания и отпустите в зелёной зоне · передержите — прольётся",
+          "pt_chars": 76,
+          "translated_chars": 102,
+          "extra_chars": 26,
+          "ratio": 1.342105,
+          "risk": "cartão/aviso: conferir largura no celular"
+        }
+      ],
+      "missing": [],
+      "placeholder_mismatches": [],
+      "width_only_count": 0,
+      "width_only_top": []
+    },
+    "zh-Hans": {
+      "sha256": "2e84d1d94d3c0586954dd9c2100ed80998b6d3ac8e6d5a9c70ed87ae2086e14e",
+      "checked": 4064,
+      "translated": 4064,
+      "expanded_count": 0,
+      "top": [],
+      "all_expanded": [],
+      "missing": [],
+      "placeholder_mismatches": [],
+      "width_only_count": 0,
+      "width_only_top": []
+    }
+  }
+}
