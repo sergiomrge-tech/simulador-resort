@@ -1,0 +1,4295 @@
+{
+ "_doc": "Estimativa estática de quebra a 370 px; DejaVu Sans 16px como aproximação conservadora de FCoreStyle Regular 12pt (~16px a 96 DPI). CJK usa avanço de 16px. Não é medição Slate nem garante fontes, DPI ou escala do usuário.",
+ "rows": [
+  {
+   "language": "pt-BR",
+   "key": "phone",
+   "characters": 74,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-BR",
+   "key": "KioskSign",
+   "characters": 56,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-BR",
+   "key": "Customer",
+   "characters": 64,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-BR",
+   "key": "Fridge",
+   "characters": 53,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-BR",
+   "key": "Cupboard",
+   "characters": 52,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-BR",
+   "key": "PousadaReception",
+   "characters": 60,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-BR",
+   "key": "RoomTask",
+   "characters": 67,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-BR",
+   "key": "HotelReception",
+   "characters": 78,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-BR",
+   "key": "BarCounter",
+   "characters": 63,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-BR",
+   "key": "BusinessCounter",
+   "characters": 70,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-BR",
+   "key": "TourBooth",
+   "characters": 73,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-BR",
+   "key": "Fishing",
+   "characters": 62,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-BR",
+   "key": "PoolLeaves",
+   "characters": 72,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-BR",
+   "key": "PoolTowel",
+   "characters": 61,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-BR",
+   "key": "PoolCooler",
+   "characters": 60,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-BR",
+   "key": "RestaurantTable",
+   "characters": 68,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-BR",
+   "key": "RestaurantPass",
+   "characters": 64,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-BR",
+   "key": "RoomService",
+   "characters": 72,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-BR",
+   "key": "PoolTable",
+   "characters": 54,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-BR",
+   "key": "photo",
+   "characters": 68,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-BR",
+   "key": "Bed",
+   "characters": 73,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-BR",
+   "key": "BarIngredient",
+   "characters": 66,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-BR",
+   "key": "BarGlass",
+   "characters": 57,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-BR",
+   "key": "Clean",
+   "characters": 65,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-BR",
+   "key": "Comic",
+   "characters": 76,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-BR",
+   "key": "Resident",
+   "characters": 65,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-BR",
+   "key": "Elder",
+   "characters": 63,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-BR",
+   "key": "Elevator",
+   "characters": 73,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-BR",
+   "key": "HotelTask",
+   "characters": 73,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-BR",
+   "key": "HotelFix",
+   "characters": 71,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-BR",
+   "key": "RentalTow",
+   "characters": 65,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-BR",
+   "key": "TableTennis",
+   "characters": 63,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-BR",
+   "key": "TourVest",
+   "characters": 56,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-BR",
+   "key": "TourStory",
+   "characters": 69,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-BR",
+   "key": "TourSpecies",
+   "characters": 52,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-BR",
+   "key": "TrailWater",
+   "characters": 54,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-BR",
+   "key": "TrailStory",
+   "characters": 51,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-BR",
+   "key": "biz:sorveteria",
+   "characters": 72,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-BR",
+   "key": "biz:food_truck",
+   "characters": 78,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-BR",
+   "key": "biz:aluguel",
+   "characters": 60,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-BR",
+   "key": "biz:souvenir",
+   "characters": 72,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-BR",
+   "key": "biz:pebolim",
+   "characters": 52,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-BR",
+   "key": "biz:fliperama",
+   "characters": 43,
+   "estimated_lines": 1
+  },
+  {
+   "language": "pt-BR",
+   "key": "biz:surfe",
+   "characters": 57,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-BR",
+   "key": "Door",
+   "characters": 65,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-BR",
+   "key": "IntroLetter",
+   "characters": 56,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-BR",
+   "key": "phone:stock",
+   "characters": 64,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-BR",
+   "key": "phone:staff",
+   "characters": 56,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-BR",
+   "key": "phone:finance",
+   "characters": 65,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-BR",
+   "key": "phone:expansions",
+   "characters": 52,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-BR",
+   "key": "phone:missions",
+   "characters": 61,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-BR",
+   "key": "phone:custom",
+   "characters": 54,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-BR",
+   "key": "phone:recipes",
+   "characters": 75,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-BR",
+   "key": "phone:events",
+   "characters": 59,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-BR",
+   "key": "phone:debt",
+   "characters": 66,
+   "estimated_lines": 2
+  },
+  {
+   "language": "en",
+   "key": "phone",
+   "characters": 72,
+   "estimated_lines": 2
+  },
+  {
+   "language": "en",
+   "key": "KioskSign",
+   "characters": 63,
+   "estimated_lines": 2
+  },
+  {
+   "language": "en",
+   "key": "Customer",
+   "characters": 69,
+   "estimated_lines": 2
+  },
+  {
+   "language": "en",
+   "key": "Fridge",
+   "characters": 59,
+   "estimated_lines": 2
+  },
+  {
+   "language": "en",
+   "key": "Cupboard",
+   "characters": 52,
+   "estimated_lines": 2
+  },
+  {
+   "language": "en",
+   "key": "PousadaReception",
+   "characters": 58,
+   "estimated_lines": 2
+  },
+  {
+   "language": "en",
+   "key": "RoomTask",
+   "characters": 63,
+   "estimated_lines": 2
+  },
+  {
+   "language": "en",
+   "key": "HotelReception",
+   "characters": 73,
+   "estimated_lines": 2
+  },
+  {
+   "language": "en",
+   "key": "BarCounter",
+   "characters": 65,
+   "estimated_lines": 2
+  },
+  {
+   "language": "en",
+   "key": "BusinessCounter",
+   "characters": 62,
+   "estimated_lines": 2
+  },
+  {
+   "language": "en",
+   "key": "TourBooth",
+   "characters": 64,
+   "estimated_lines": 2
+  },
+  {
+   "language": "en",
+   "key": "Fishing",
+   "characters": 60,
+   "estimated_lines": 2
+  },
+  {
+   "language": "en",
+   "key": "PoolLeaves",
+   "characters": 63,
+   "estimated_lines": 2
+  },
+  {
+   "language": "en",
+   "key": "PoolTowel",
+   "characters": 48,
+   "estimated_lines": 2
+  },
+  {
+   "language": "en",
+   "key": "PoolCooler",
+   "characters": 49,
+   "estimated_lines": 2
+  },
+  {
+   "language": "en",
+   "key": "RestaurantTable",
+   "characters": 61,
+   "estimated_lines": 2
+  },
+  {
+   "language": "en",
+   "key": "RestaurantPass",
+   "characters": 57,
+   "estimated_lines": 2
+  },
+  {
+   "language": "en",
+   "key": "RoomService",
+   "characters": 56,
+   "estimated_lines": 2
+  },
+  {
+   "language": "en",
+   "key": "PoolTable",
+   "characters": 61,
+   "estimated_lines": 2
+  },
+  {
+   "language": "en",
+   "key": "photo",
+   "characters": 77,
+   "estimated_lines": 2
+  },
+  {
+   "language": "en",
+   "key": "Bed",
+   "characters": 74,
+   "estimated_lines": 2
+  },
+  {
+   "language": "en",
+   "key": "BarIngredient",
+   "characters": 79,
+   "estimated_lines": 2
+  },
+  {
+   "language": "en",
+   "key": "BarGlass",
+   "characters": 67,
+   "estimated_lines": 2
+  },
+  {
+   "language": "en",
+   "key": "Clean",
+   "characters": 70,
+   "estimated_lines": 2
+  },
+  {
+   "language": "en",
+   "key": "Comic",
+   "characters": 71,
+   "estimated_lines": 2
+  },
+  {
+   "language": "en",
+   "key": "Resident",
+   "characters": 67,
+   "estimated_lines": 2
+  },
+  {
+   "language": "en",
+   "key": "Elder",
+   "characters": 69,
+   "estimated_lines": 2
+  },
+  {
+   "language": "en",
+   "key": "Elevator",
+   "characters": 68,
+   "estimated_lines": 2
+  },
+  {
+   "language": "en",
+   "key": "HotelTask",
+   "characters": 72,
+   "estimated_lines": 2
+  },
+  {
+   "language": "en",
+   "key": "HotelFix",
+   "characters": 68,
+   "estimated_lines": 2
+  },
+  {
+   "language": "en",
+   "key": "RentalTow",
+   "characters": 51,
+   "estimated_lines": 2
+  },
+  {
+   "language": "en",
+   "key": "TableTennis",
+   "characters": 52,
+   "estimated_lines": 2
+  },
+  {
+   "language": "en",
+   "key": "TourVest",
+   "characters": 52,
+   "estimated_lines": 2
+  },
+  {
+   "language": "en",
+   "key": "TourStory",
+   "characters": 60,
+   "estimated_lines": 2
+  },
+  {
+   "language": "en",
+   "key": "TourSpecies",
+   "characters": 52,
+   "estimated_lines": 2
+  },
+  {
+   "language": "en",
+   "key": "TrailWater",
+   "characters": 53,
+   "estimated_lines": 2
+  },
+  {
+   "language": "en",
+   "key": "TrailStory",
+   "characters": 58,
+   "estimated_lines": 2
+  },
+  {
+   "language": "en",
+   "key": "biz:sorveteria",
+   "characters": 74,
+   "estimated_lines": 2
+  },
+  {
+   "language": "en",
+   "key": "biz:food_truck",
+   "characters": 69,
+   "estimated_lines": 2
+  },
+  {
+   "language": "en",
+   "key": "biz:aluguel",
+   "characters": 55,
+   "estimated_lines": 2
+  },
+  {
+   "language": "en",
+   "key": "biz:souvenir",
+   "characters": 71,
+   "estimated_lines": 2
+  },
+  {
+   "language": "en",
+   "key": "biz:pebolim",
+   "characters": 51,
+   "estimated_lines": 2
+  },
+  {
+   "language": "en",
+   "key": "biz:fliperama",
+   "characters": 42,
+   "estimated_lines": 1
+  },
+  {
+   "language": "en",
+   "key": "biz:surfe",
+   "characters": 68,
+   "estimated_lines": 2
+  },
+  {
+   "language": "en",
+   "key": "Door",
+   "characters": 54,
+   "estimated_lines": 2
+  },
+  {
+   "language": "en",
+   "key": "IntroLetter",
+   "characters": 58,
+   "estimated_lines": 2
+  },
+  {
+   "language": "en",
+   "key": "phone:stock",
+   "characters": 52,
+   "estimated_lines": 2
+  },
+  {
+   "language": "en",
+   "key": "phone:staff",
+   "characters": 48,
+   "estimated_lines": 2
+  },
+  {
+   "language": "en",
+   "key": "phone:finance",
+   "characters": 64,
+   "estimated_lines": 2
+  },
+  {
+   "language": "en",
+   "key": "phone:expansions",
+   "characters": 55,
+   "estimated_lines": 2
+  },
+  {
+   "language": "en",
+   "key": "phone:missions",
+   "characters": 52,
+   "estimated_lines": 2
+  },
+  {
+   "language": "en",
+   "key": "phone:custom",
+   "characters": 52,
+   "estimated_lines": 2
+  },
+  {
+   "language": "en",
+   "key": "phone:recipes",
+   "characters": 58,
+   "estimated_lines": 2
+  },
+  {
+   "language": "en",
+   "key": "phone:events",
+   "characters": 63,
+   "estimated_lines": 2
+  },
+  {
+   "language": "en",
+   "key": "phone:debt",
+   "characters": 65,
+   "estimated_lines": 2
+  },
+  {
+   "language": "es",
+   "key": "phone",
+   "characters": 67,
+   "estimated_lines": 2
+  },
+  {
+   "language": "es",
+   "key": "KioskSign",
+   "characters": 59,
+   "estimated_lines": 2
+  },
+  {
+   "language": "es",
+   "key": "Customer",
+   "characters": 58,
+   "estimated_lines": 2
+  },
+  {
+   "language": "es",
+   "key": "Fridge",
+   "characters": 54,
+   "estimated_lines": 2
+  },
+  {
+   "language": "es",
+   "key": "Cupboard",
+   "characters": 52,
+   "estimated_lines": 2
+  },
+  {
+   "language": "es",
+   "key": "PousadaReception",
+   "characters": 67,
+   "estimated_lines": 2
+  },
+  {
+   "language": "es",
+   "key": "RoomTask",
+   "characters": 66,
+   "estimated_lines": 2
+  },
+  {
+   "language": "es",
+   "key": "HotelReception",
+   "characters": 75,
+   "estimated_lines": 2
+  },
+  {
+   "language": "es",
+   "key": "BarCounter",
+   "characters": 64,
+   "estimated_lines": 2
+  },
+  {
+   "language": "es",
+   "key": "BusinessCounter",
+   "characters": 68,
+   "estimated_lines": 2
+  },
+  {
+   "language": "es",
+   "key": "TourBooth",
+   "characters": 70,
+   "estimated_lines": 2
+  },
+  {
+   "language": "es",
+   "key": "Fishing",
+   "characters": 54,
+   "estimated_lines": 2
+  },
+  {
+   "language": "es",
+   "key": "PoolLeaves",
+   "characters": 70,
+   "estimated_lines": 2
+  },
+  {
+   "language": "es",
+   "key": "PoolTowel",
+   "characters": 64,
+   "estimated_lines": 2
+  },
+  {
+   "language": "es",
+   "key": "PoolCooler",
+   "characters": 45,
+   "estimated_lines": 1
+  },
+  {
+   "language": "es",
+   "key": "RestaurantTable",
+   "characters": 60,
+   "estimated_lines": 2
+  },
+  {
+   "language": "es",
+   "key": "RestaurantPass",
+   "characters": 71,
+   "estimated_lines": 2
+  },
+  {
+   "language": "es",
+   "key": "RoomService",
+   "characters": 78,
+   "estimated_lines": 2
+  },
+  {
+   "language": "es",
+   "key": "PoolTable",
+   "characters": 64,
+   "estimated_lines": 2
+  },
+  {
+   "language": "es",
+   "key": "photo",
+   "characters": 74,
+   "estimated_lines": 2
+  },
+  {
+   "language": "es",
+   "key": "Bed",
+   "characters": 75,
+   "estimated_lines": 2
+  },
+  {
+   "language": "es",
+   "key": "BarIngredient",
+   "characters": 65,
+   "estimated_lines": 2
+  },
+  {
+   "language": "es",
+   "key": "BarGlass",
+   "characters": 64,
+   "estimated_lines": 2
+  },
+  {
+   "language": "es",
+   "key": "Clean",
+   "characters": 67,
+   "estimated_lines": 2
+  },
+  {
+   "language": "es",
+   "key": "Comic",
+   "characters": 78,
+   "estimated_lines": 2
+  },
+  {
+   "language": "es",
+   "key": "Resident",
+   "characters": 61,
+   "estimated_lines": 2
+  },
+  {
+   "language": "es",
+   "key": "Elder",
+   "characters": 68,
+   "estimated_lines": 2
+  },
+  {
+   "language": "es",
+   "key": "Elevator",
+   "characters": 69,
+   "estimated_lines": 2
+  },
+  {
+   "language": "es",
+   "key": "HotelTask",
+   "characters": 69,
+   "estimated_lines": 2
+  },
+  {
+   "language": "es",
+   "key": "HotelFix",
+   "characters": 74,
+   "estimated_lines": 2
+  },
+  {
+   "language": "es",
+   "key": "RentalTow",
+   "characters": 51,
+   "estimated_lines": 2
+  },
+  {
+   "language": "es",
+   "key": "TableTennis",
+   "characters": 58,
+   "estimated_lines": 2
+  },
+  {
+   "language": "es",
+   "key": "TourVest",
+   "characters": 51,
+   "estimated_lines": 2
+  },
+  {
+   "language": "es",
+   "key": "TourStory",
+   "characters": 69,
+   "estimated_lines": 2
+  },
+  {
+   "language": "es",
+   "key": "TourSpecies",
+   "characters": 55,
+   "estimated_lines": 2
+  },
+  {
+   "language": "es",
+   "key": "TrailWater",
+   "characters": 56,
+   "estimated_lines": 2
+  },
+  {
+   "language": "es",
+   "key": "TrailStory",
+   "characters": 58,
+   "estimated_lines": 2
+  },
+  {
+   "language": "es",
+   "key": "biz:sorveteria",
+   "characters": 75,
+   "estimated_lines": 2
+  },
+  {
+   "language": "es",
+   "key": "biz:food_truck",
+   "characters": 65,
+   "estimated_lines": 2
+  },
+  {
+   "language": "es",
+   "key": "biz:aluguel",
+   "characters": 57,
+   "estimated_lines": 2
+  },
+  {
+   "language": "es",
+   "key": "biz:souvenir",
+   "characters": 80,
+   "estimated_lines": 2
+  },
+  {
+   "language": "es",
+   "key": "biz:pebolim",
+   "characters": 58,
+   "estimated_lines": 2
+  },
+  {
+   "language": "es",
+   "key": "biz:fliperama",
+   "characters": 48,
+   "estimated_lines": 2
+  },
+  {
+   "language": "es",
+   "key": "biz:surfe",
+   "characters": 61,
+   "estimated_lines": 2
+  },
+  {
+   "language": "es",
+   "key": "Door",
+   "characters": 56,
+   "estimated_lines": 2
+  },
+  {
+   "language": "es",
+   "key": "IntroLetter",
+   "characters": 51,
+   "estimated_lines": 2
+  },
+  {
+   "language": "es",
+   "key": "phone:stock",
+   "characters": 53,
+   "estimated_lines": 2
+  },
+  {
+   "language": "es",
+   "key": "phone:staff",
+   "characters": 47,
+   "estimated_lines": 1
+  },
+  {
+   "language": "es",
+   "key": "phone:finance",
+   "characters": 66,
+   "estimated_lines": 2
+  },
+  {
+   "language": "es",
+   "key": "phone:expansions",
+   "characters": 56,
+   "estimated_lines": 2
+  },
+  {
+   "language": "es",
+   "key": "phone:missions",
+   "characters": 58,
+   "estimated_lines": 2
+  },
+  {
+   "language": "es",
+   "key": "phone:custom",
+   "characters": 56,
+   "estimated_lines": 2
+  },
+  {
+   "language": "es",
+   "key": "phone:recipes",
+   "characters": 69,
+   "estimated_lines": 2
+  },
+  {
+   "language": "es",
+   "key": "phone:events",
+   "characters": 63,
+   "estimated_lines": 2
+  },
+  {
+   "language": "es",
+   "key": "phone:debt",
+   "characters": 67,
+   "estimated_lines": 2
+  },
+  {
+   "language": "de",
+   "key": "phone",
+   "characters": 71,
+   "estimated_lines": 2
+  },
+  {
+   "language": "de",
+   "key": "KioskSign",
+   "characters": 70,
+   "estimated_lines": 2
+  },
+  {
+   "language": "de",
+   "key": "Customer",
+   "characters": 78,
+   "estimated_lines": 2
+  },
+  {
+   "language": "de",
+   "key": "Fridge",
+   "characters": 56,
+   "estimated_lines": 2
+  },
+  {
+   "language": "de",
+   "key": "Cupboard",
+   "characters": 57,
+   "estimated_lines": 2
+  },
+  {
+   "language": "de",
+   "key": "PousadaReception",
+   "characters": 70,
+   "estimated_lines": 2
+  },
+  {
+   "language": "de",
+   "key": "RoomTask",
+   "characters": 64,
+   "estimated_lines": 2
+  },
+  {
+   "language": "de",
+   "key": "HotelReception",
+   "characters": 75,
+   "estimated_lines": 2
+  },
+  {
+   "language": "de",
+   "key": "BarCounter",
+   "characters": 72,
+   "estimated_lines": 2
+  },
+  {
+   "language": "de",
+   "key": "BusinessCounter",
+   "characters": 70,
+   "estimated_lines": 2
+  },
+  {
+   "language": "de",
+   "key": "TourBooth",
+   "characters": 68,
+   "estimated_lines": 2
+  },
+  {
+   "language": "de",
+   "key": "Fishing",
+   "characters": 73,
+   "estimated_lines": 2
+  },
+  {
+   "language": "de",
+   "key": "PoolLeaves",
+   "characters": 61,
+   "estimated_lines": 2
+  },
+  {
+   "language": "de",
+   "key": "PoolTowel",
+   "characters": 55,
+   "estimated_lines": 2
+  },
+  {
+   "language": "de",
+   "key": "PoolCooler",
+   "characters": 60,
+   "estimated_lines": 2
+  },
+  {
+   "language": "de",
+   "key": "RestaurantTable",
+   "characters": 81,
+   "estimated_lines": 2
+  },
+  {
+   "language": "de",
+   "key": "RestaurantPass",
+   "characters": 58,
+   "estimated_lines": 2
+  },
+  {
+   "language": "de",
+   "key": "RoomService",
+   "characters": 79,
+   "estimated_lines": 2
+  },
+  {
+   "language": "de",
+   "key": "PoolTable",
+   "characters": 66,
+   "estimated_lines": 2
+  },
+  {
+   "language": "de",
+   "key": "photo",
+   "characters": 68,
+   "estimated_lines": 2
+  },
+  {
+   "language": "de",
+   "key": "Bed",
+   "characters": 72,
+   "estimated_lines": 2
+  },
+  {
+   "language": "de",
+   "key": "BarIngredient",
+   "characters": 71,
+   "estimated_lines": 2
+  },
+  {
+   "language": "de",
+   "key": "BarGlass",
+   "characters": 72,
+   "estimated_lines": 2
+  },
+  {
+   "language": "de",
+   "key": "Clean",
+   "characters": 79,
+   "estimated_lines": 2
+  },
+  {
+   "language": "de",
+   "key": "Comic",
+   "characters": 76,
+   "estimated_lines": 2
+  },
+  {
+   "language": "de",
+   "key": "Resident",
+   "characters": 76,
+   "estimated_lines": 2
+  },
+  {
+   "language": "de",
+   "key": "Elder",
+   "characters": 65,
+   "estimated_lines": 2
+  },
+  {
+   "language": "de",
+   "key": "Elevator",
+   "characters": 70,
+   "estimated_lines": 2
+  },
+  {
+   "language": "de",
+   "key": "HotelTask",
+   "characters": 73,
+   "estimated_lines": 2
+  },
+  {
+   "language": "de",
+   "key": "HotelFix",
+   "characters": 73,
+   "estimated_lines": 2
+  },
+  {
+   "language": "de",
+   "key": "RentalTow",
+   "characters": 66,
+   "estimated_lines": 2
+  },
+  {
+   "language": "de",
+   "key": "TableTennis",
+   "characters": 62,
+   "estimated_lines": 2
+  },
+  {
+   "language": "de",
+   "key": "TourVest",
+   "characters": 53,
+   "estimated_lines": 2
+  },
+  {
+   "language": "de",
+   "key": "TourStory",
+   "characters": 62,
+   "estimated_lines": 2
+  },
+  {
+   "language": "de",
+   "key": "TourSpecies",
+   "characters": 51,
+   "estimated_lines": 2
+  },
+  {
+   "language": "de",
+   "key": "TrailWater",
+   "characters": 50,
+   "estimated_lines": 2
+  },
+  {
+   "language": "de",
+   "key": "TrailStory",
+   "characters": 56,
+   "estimated_lines": 2
+  },
+  {
+   "language": "de",
+   "key": "biz:sorveteria",
+   "characters": 73,
+   "estimated_lines": 2
+  },
+  {
+   "language": "de",
+   "key": "biz:food_truck",
+   "characters": 79,
+   "estimated_lines": 2
+  },
+  {
+   "language": "de",
+   "key": "biz:aluguel",
+   "characters": 73,
+   "estimated_lines": 2
+  },
+  {
+   "language": "de",
+   "key": "biz:souvenir",
+   "characters": 69,
+   "estimated_lines": 2
+  },
+  {
+   "language": "de",
+   "key": "biz:pebolim",
+   "characters": 53,
+   "estimated_lines": 2
+  },
+  {
+   "language": "de",
+   "key": "biz:fliperama",
+   "characters": 52,
+   "estimated_lines": 2
+  },
+  {
+   "language": "de",
+   "key": "biz:surfe",
+   "characters": 78,
+   "estimated_lines": 2
+  },
+  {
+   "language": "de",
+   "key": "Door",
+   "characters": 73,
+   "estimated_lines": 2
+  },
+  {
+   "language": "de",
+   "key": "IntroLetter",
+   "characters": 65,
+   "estimated_lines": 2
+  },
+  {
+   "language": "de",
+   "key": "phone:stock",
+   "characters": 50,
+   "estimated_lines": 2
+  },
+  {
+   "language": "de",
+   "key": "phone:staff",
+   "characters": 58,
+   "estimated_lines": 2
+  },
+  {
+   "language": "de",
+   "key": "phone:finance",
+   "characters": 69,
+   "estimated_lines": 2
+  },
+  {
+   "language": "de",
+   "key": "phone:expansions",
+   "characters": 57,
+   "estimated_lines": 2
+  },
+  {
+   "language": "de",
+   "key": "phone:missions",
+   "characters": 62,
+   "estimated_lines": 2
+  },
+  {
+   "language": "de",
+   "key": "phone:custom",
+   "characters": 61,
+   "estimated_lines": 2
+  },
+  {
+   "language": "de",
+   "key": "phone:recipes",
+   "characters": 55,
+   "estimated_lines": 2
+  },
+  {
+   "language": "de",
+   "key": "phone:events",
+   "characters": 59,
+   "estimated_lines": 2
+  },
+  {
+   "language": "de",
+   "key": "phone:debt",
+   "characters": 71,
+   "estimated_lines": 2
+  },
+  {
+   "language": "fr",
+   "key": "phone",
+   "characters": 78,
+   "estimated_lines": 2
+  },
+  {
+   "language": "fr",
+   "key": "KioskSign",
+   "characters": 61,
+   "estimated_lines": 2
+  },
+  {
+   "language": "fr",
+   "key": "Customer",
+   "characters": 67,
+   "estimated_lines": 2
+  },
+  {
+   "language": "fr",
+   "key": "Fridge",
+   "characters": 65,
+   "estimated_lines": 2
+  },
+  {
+   "language": "fr",
+   "key": "Cupboard",
+   "characters": 67,
+   "estimated_lines": 2
+  },
+  {
+   "language": "fr",
+   "key": "PousadaReception",
+   "characters": 73,
+   "estimated_lines": 2
+  },
+  {
+   "language": "fr",
+   "key": "RoomTask",
+   "characters": 63,
+   "estimated_lines": 2
+  },
+  {
+   "language": "fr",
+   "key": "HotelReception",
+   "characters": 78,
+   "estimated_lines": 2
+  },
+  {
+   "language": "fr",
+   "key": "BarCounter",
+   "characters": 68,
+   "estimated_lines": 2
+  },
+  {
+   "language": "fr",
+   "key": "BusinessCounter",
+   "characters": 76,
+   "estimated_lines": 2
+  },
+  {
+   "language": "fr",
+   "key": "TourBooth",
+   "characters": 77,
+   "estimated_lines": 2
+  },
+  {
+   "language": "fr",
+   "key": "Fishing",
+   "characters": 70,
+   "estimated_lines": 2
+  },
+  {
+   "language": "fr",
+   "key": "PoolLeaves",
+   "characters": 69,
+   "estimated_lines": 2
+  },
+  {
+   "language": "fr",
+   "key": "PoolTowel",
+   "characters": 69,
+   "estimated_lines": 2
+  },
+  {
+   "language": "fr",
+   "key": "PoolCooler",
+   "characters": 48,
+   "estimated_lines": 2
+  },
+  {
+   "language": "fr",
+   "key": "RestaurantTable",
+   "characters": 73,
+   "estimated_lines": 2
+  },
+  {
+   "language": "fr",
+   "key": "RestaurantPass",
+   "characters": 66,
+   "estimated_lines": 2
+  },
+  {
+   "language": "fr",
+   "key": "RoomService",
+   "characters": 75,
+   "estimated_lines": 2
+  },
+  {
+   "language": "fr",
+   "key": "PoolTable",
+   "characters": 73,
+   "estimated_lines": 2
+  },
+  {
+   "language": "fr",
+   "key": "photo",
+   "characters": 74,
+   "estimated_lines": 2
+  },
+  {
+   "language": "fr",
+   "key": "Bed",
+   "characters": 81,
+   "estimated_lines": 2
+  },
+  {
+   "language": "fr",
+   "key": "BarIngredient",
+   "characters": 65,
+   "estimated_lines": 2
+  },
+  {
+   "language": "fr",
+   "key": "BarGlass",
+   "characters": 74,
+   "estimated_lines": 2
+  },
+  {
+   "language": "fr",
+   "key": "Clean",
+   "characters": 78,
+   "estimated_lines": 2
+  },
+  {
+   "language": "fr",
+   "key": "Comic",
+   "characters": 76,
+   "estimated_lines": 2
+  },
+  {
+   "language": "fr",
+   "key": "Resident",
+   "characters": 70,
+   "estimated_lines": 2
+  },
+  {
+   "language": "fr",
+   "key": "Elder",
+   "characters": 72,
+   "estimated_lines": 2
+  },
+  {
+   "language": "fr",
+   "key": "Elevator",
+   "characters": 70,
+   "estimated_lines": 2
+  },
+  {
+   "language": "fr",
+   "key": "HotelTask",
+   "characters": 71,
+   "estimated_lines": 2
+  },
+  {
+   "language": "fr",
+   "key": "HotelFix",
+   "characters": 80,
+   "estimated_lines": 2
+  },
+  {
+   "language": "fr",
+   "key": "RentalTow",
+   "characters": 64,
+   "estimated_lines": 2
+  },
+  {
+   "language": "fr",
+   "key": "TableTennis",
+   "characters": 65,
+   "estimated_lines": 2
+  },
+  {
+   "language": "fr",
+   "key": "TourVest",
+   "characters": 51,
+   "estimated_lines": 2
+  },
+  {
+   "language": "fr",
+   "key": "TourStory",
+   "characters": 71,
+   "estimated_lines": 2
+  },
+  {
+   "language": "fr",
+   "key": "TourSpecies",
+   "characters": 60,
+   "estimated_lines": 2
+  },
+  {
+   "language": "fr",
+   "key": "TrailWater",
+   "characters": 53,
+   "estimated_lines": 2
+  },
+  {
+   "language": "fr",
+   "key": "TrailStory",
+   "characters": 63,
+   "estimated_lines": 2
+  },
+  {
+   "language": "fr",
+   "key": "biz:sorveteria",
+   "characters": 67,
+   "estimated_lines": 2
+  },
+  {
+   "language": "fr",
+   "key": "biz:food_truck",
+   "characters": 68,
+   "estimated_lines": 2
+  },
+  {
+   "language": "fr",
+   "key": "biz:aluguel",
+   "characters": 70,
+   "estimated_lines": 2
+  },
+  {
+   "language": "fr",
+   "key": "biz:souvenir",
+   "characters": 66,
+   "estimated_lines": 2
+  },
+  {
+   "language": "fr",
+   "key": "biz:pebolim",
+   "characters": 62,
+   "estimated_lines": 2
+  },
+  {
+   "language": "fr",
+   "key": "biz:fliperama",
+   "characters": 50,
+   "estimated_lines": 2
+  },
+  {
+   "language": "fr",
+   "key": "biz:surfe",
+   "characters": 75,
+   "estimated_lines": 2
+  },
+  {
+   "language": "fr",
+   "key": "Door",
+   "characters": 66,
+   "estimated_lines": 2
+  },
+  {
+   "language": "fr",
+   "key": "IntroLetter",
+   "characters": 62,
+   "estimated_lines": 2
+  },
+  {
+   "language": "fr",
+   "key": "phone:stock",
+   "characters": 62,
+   "estimated_lines": 2
+  },
+  {
+   "language": "fr",
+   "key": "phone:staff",
+   "characters": 64,
+   "estimated_lines": 2
+  },
+  {
+   "language": "fr",
+   "key": "phone:finance",
+   "characters": 69,
+   "estimated_lines": 2
+  },
+  {
+   "language": "fr",
+   "key": "phone:expansions",
+   "characters": 61,
+   "estimated_lines": 2
+  },
+  {
+   "language": "fr",
+   "key": "phone:missions",
+   "characters": 69,
+   "estimated_lines": 2
+  },
+  {
+   "language": "fr",
+   "key": "phone:custom",
+   "characters": 57,
+   "estimated_lines": 2
+  },
+  {
+   "language": "fr",
+   "key": "phone:recipes",
+   "characters": 59,
+   "estimated_lines": 2
+  },
+  {
+   "language": "fr",
+   "key": "phone:events",
+   "characters": 57,
+   "estimated_lines": 2
+  },
+  {
+   "language": "fr",
+   "key": "phone:debt",
+   "characters": 78,
+   "estimated_lines": 2
+  },
+  {
+   "language": "zh-Hans",
+   "key": "phone",
+   "characters": 25,
+   "estimated_lines": 2
+  },
+  {
+   "language": "zh-Hans",
+   "key": "KioskSign",
+   "characters": 18,
+   "estimated_lines": 1
+  },
+  {
+   "language": "zh-Hans",
+   "key": "Customer",
+   "characters": 22,
+   "estimated_lines": 1
+  },
+  {
+   "language": "zh-Hans",
+   "key": "Fridge",
+   "characters": 16,
+   "estimated_lines": 1
+  },
+  {
+   "language": "zh-Hans",
+   "key": "Cupboard",
+   "characters": 19,
+   "estimated_lines": 1
+  },
+  {
+   "language": "zh-Hans",
+   "key": "PousadaReception",
+   "characters": 21,
+   "estimated_lines": 1
+  },
+  {
+   "language": "zh-Hans",
+   "key": "RoomTask",
+   "characters": 22,
+   "estimated_lines": 1
+  },
+  {
+   "language": "zh-Hans",
+   "key": "HotelReception",
+   "characters": 27,
+   "estimated_lines": 2
+  },
+  {
+   "language": "zh-Hans",
+   "key": "BarCounter",
+   "characters": 19,
+   "estimated_lines": 1
+  },
+  {
+   "language": "zh-Hans",
+   "key": "BusinessCounter",
+   "characters": 28,
+   "estimated_lines": 2
+  },
+  {
+   "language": "zh-Hans",
+   "key": "TourBooth",
+   "characters": 26,
+   "estimated_lines": 2
+  },
+  {
+   "language": "zh-Hans",
+   "key": "Fishing",
+   "characters": 17,
+   "estimated_lines": 1
+  },
+  {
+   "language": "zh-Hans",
+   "key": "PoolLeaves",
+   "characters": 20,
+   "estimated_lines": 1
+  },
+  {
+   "language": "zh-Hans",
+   "key": "PoolTowel",
+   "characters": 15,
+   "estimated_lines": 1
+  },
+  {
+   "language": "zh-Hans",
+   "key": "PoolCooler",
+   "characters": 19,
+   "estimated_lines": 1
+  },
+  {
+   "language": "zh-Hans",
+   "key": "RestaurantTable",
+   "characters": 23,
+   "estimated_lines": 1
+  },
+  {
+   "language": "zh-Hans",
+   "key": "RestaurantPass",
+   "characters": 20,
+   "estimated_lines": 1
+  },
+  {
+   "language": "zh-Hans",
+   "key": "RoomService",
+   "characters": 17,
+   "estimated_lines": 1
+  },
+  {
+   "language": "zh-Hans",
+   "key": "PoolTable",
+   "characters": 21,
+   "estimated_lines": 1
+  },
+  {
+   "language": "zh-Hans",
+   "key": "photo",
+   "characters": 24,
+   "estimated_lines": 2
+  },
+  {
+   "language": "zh-Hans",
+   "key": "Bed",
+   "characters": 24,
+   "estimated_lines": 2
+  },
+  {
+   "language": "zh-Hans",
+   "key": "BarIngredient",
+   "characters": 20,
+   "estimated_lines": 1
+  },
+  {
+   "language": "zh-Hans",
+   "key": "BarGlass",
+   "characters": 17,
+   "estimated_lines": 1
+  },
+  {
+   "language": "zh-Hans",
+   "key": "Clean",
+   "characters": 24,
+   "estimated_lines": 2
+  },
+  {
+   "language": "zh-Hans",
+   "key": "Comic",
+   "characters": 23,
+   "estimated_lines": 1
+  },
+  {
+   "language": "zh-Hans",
+   "key": "Resident",
+   "characters": 22,
+   "estimated_lines": 1
+  },
+  {
+   "language": "zh-Hans",
+   "key": "Elder",
+   "characters": 20,
+   "estimated_lines": 1
+  },
+  {
+   "language": "zh-Hans",
+   "key": "Elevator",
+   "characters": 21,
+   "estimated_lines": 1
+  },
+  {
+   "language": "zh-Hans",
+   "key": "HotelTask",
+   "characters": 25,
+   "estimated_lines": 2
+  },
+  {
+   "language": "zh-Hans",
+   "key": "HotelFix",
+   "characters": 23,
+   "estimated_lines": 1
+  },
+  {
+   "language": "zh-Hans",
+   "key": "RentalTow",
+   "characters": 19,
+   "estimated_lines": 1
+  },
+  {
+   "language": "zh-Hans",
+   "key": "TableTennis",
+   "characters": 20,
+   "estimated_lines": 1
+  },
+  {
+   "language": "zh-Hans",
+   "key": "TourVest",
+   "characters": 14,
+   "estimated_lines": 1
+  },
+  {
+   "language": "zh-Hans",
+   "key": "TourStory",
+   "characters": 18,
+   "estimated_lines": 1
+  },
+  {
+   "language": "zh-Hans",
+   "key": "TourSpecies",
+   "characters": 15,
+   "estimated_lines": 1
+  },
+  {
+   "language": "zh-Hans",
+   "key": "TrailWater",
+   "characters": 14,
+   "estimated_lines": 1
+  },
+  {
+   "language": "zh-Hans",
+   "key": "TrailStory",
+   "characters": 15,
+   "estimated_lines": 1
+  },
+  {
+   "language": "zh-Hans",
+   "key": "biz:sorveteria",
+   "characters": 23,
+   "estimated_lines": 1
+  },
+  {
+   "language": "zh-Hans",
+   "key": "biz:food_truck",
+   "characters": 22,
+   "estimated_lines": 1
+  },
+  {
+   "language": "zh-Hans",
+   "key": "biz:aluguel",
+   "characters": 22,
+   "estimated_lines": 1
+  },
+  {
+   "language": "zh-Hans",
+   "key": "biz:souvenir",
+   "characters": 23,
+   "estimated_lines": 1
+  },
+  {
+   "language": "zh-Hans",
+   "key": "biz:pebolim",
+   "characters": 17,
+   "estimated_lines": 1
+  },
+  {
+   "language": "zh-Hans",
+   "key": "biz:fliperama",
+   "characters": 14,
+   "estimated_lines": 1
+  },
+  {
+   "language": "zh-Hans",
+   "key": "biz:surfe",
+   "characters": 22,
+   "estimated_lines": 1
+  },
+  {
+   "language": "zh-Hans",
+   "key": "Door",
+   "characters": 19,
+   "estimated_lines": 1
+  },
+  {
+   "language": "zh-Hans",
+   "key": "IntroLetter",
+   "characters": 24,
+   "estimated_lines": 1
+  },
+  {
+   "language": "zh-Hans",
+   "key": "phone:stock",
+   "characters": 14,
+   "estimated_lines": 1
+  },
+  {
+   "language": "zh-Hans",
+   "key": "phone:staff",
+   "characters": 15,
+   "estimated_lines": 1
+  },
+  {
+   "language": "zh-Hans",
+   "key": "phone:finance",
+   "characters": 19,
+   "estimated_lines": 1
+  },
+  {
+   "language": "zh-Hans",
+   "key": "phone:expansions",
+   "characters": 13,
+   "estimated_lines": 1
+  },
+  {
+   "language": "zh-Hans",
+   "key": "phone:missions",
+   "characters": 16,
+   "estimated_lines": 1
+  },
+  {
+   "language": "zh-Hans",
+   "key": "phone:custom",
+   "characters": 13,
+   "estimated_lines": 1
+  },
+  {
+   "language": "zh-Hans",
+   "key": "phone:recipes",
+   "characters": 21,
+   "estimated_lines": 1
+  },
+  {
+   "language": "zh-Hans",
+   "key": "phone:events",
+   "characters": 16,
+   "estimated_lines": 1
+  },
+  {
+   "language": "zh-Hans",
+   "key": "phone:debt",
+   "characters": 19,
+   "estimated_lines": 1
+  },
+  {
+   "language": "ja",
+   "key": "phone",
+   "characters": 32,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ja",
+   "key": "KioskSign",
+   "characters": 22,
+   "estimated_lines": 1
+  },
+  {
+   "language": "ja",
+   "key": "Customer",
+   "characters": 32,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ja",
+   "key": "Fridge",
+   "characters": 22,
+   "estimated_lines": 1
+  },
+  {
+   "language": "ja",
+   "key": "Cupboard",
+   "characters": 26,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ja",
+   "key": "PousadaReception",
+   "characters": 31,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ja",
+   "key": "RoomTask",
+   "characters": 36,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ja",
+   "key": "HotelReception",
+   "characters": 35,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ja",
+   "key": "BarCounter",
+   "characters": 26,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ja",
+   "key": "BusinessCounter",
+   "characters": 31,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ja",
+   "key": "TourBooth",
+   "characters": 34,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ja",
+   "key": "Fishing",
+   "characters": 32,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ja",
+   "key": "PoolLeaves",
+   "characters": 30,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ja",
+   "key": "PoolTowel",
+   "characters": 25,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ja",
+   "key": "PoolCooler",
+   "characters": 26,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ja",
+   "key": "RestaurantTable",
+   "characters": 32,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ja",
+   "key": "RestaurantPass",
+   "characters": 26,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ja",
+   "key": "RoomService",
+   "characters": 35,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ja",
+   "key": "PoolTable",
+   "characters": 30,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ja",
+   "key": "photo",
+   "characters": 35,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ja",
+   "key": "Bed",
+   "characters": 30,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ja",
+   "key": "BarIngredient",
+   "characters": 30,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ja",
+   "key": "BarGlass",
+   "characters": 27,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ja",
+   "key": "Clean",
+   "characters": 31,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ja",
+   "key": "Comic",
+   "characters": 29,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ja",
+   "key": "Resident",
+   "characters": 28,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ja",
+   "key": "Elder",
+   "characters": 27,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ja",
+   "key": "Elevator",
+   "characters": 28,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ja",
+   "key": "HotelTask",
+   "characters": 34,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ja",
+   "key": "HotelFix",
+   "characters": 31,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ja",
+   "key": "RentalTow",
+   "characters": 26,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ja",
+   "key": "TableTennis",
+   "characters": 32,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ja",
+   "key": "TourVest",
+   "characters": 23,
+   "estimated_lines": 1
+  },
+  {
+   "language": "ja",
+   "key": "TourStory",
+   "characters": 27,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ja",
+   "key": "TourSpecies",
+   "characters": 26,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ja",
+   "key": "TrailWater",
+   "characters": 22,
+   "estimated_lines": 1
+  },
+  {
+   "language": "ja",
+   "key": "TrailStory",
+   "characters": 22,
+   "estimated_lines": 1
+  },
+  {
+   "language": "ja",
+   "key": "biz:sorveteria",
+   "characters": 29,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ja",
+   "key": "biz:food_truck",
+   "characters": 35,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ja",
+   "key": "biz:aluguel",
+   "characters": 34,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ja",
+   "key": "biz:souvenir",
+   "characters": 27,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ja",
+   "key": "biz:pebolim",
+   "characters": 23,
+   "estimated_lines": 1
+  },
+  {
+   "language": "ja",
+   "key": "biz:fliperama",
+   "characters": 20,
+   "estimated_lines": 1
+  },
+  {
+   "language": "ja",
+   "key": "biz:surfe",
+   "characters": 32,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ja",
+   "key": "Door",
+   "characters": 26,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ja",
+   "key": "IntroLetter",
+   "characters": 32,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ja",
+   "key": "phone:stock",
+   "characters": 21,
+   "estimated_lines": 1
+  },
+  {
+   "language": "ja",
+   "key": "phone:staff",
+   "characters": 23,
+   "estimated_lines": 1
+  },
+  {
+   "language": "ja",
+   "key": "phone:finance",
+   "characters": 22,
+   "estimated_lines": 1
+  },
+  {
+   "language": "ja",
+   "key": "phone:expansions",
+   "characters": 19,
+   "estimated_lines": 1
+  },
+  {
+   "language": "ja",
+   "key": "phone:missions",
+   "characters": 26,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ja",
+   "key": "phone:custom",
+   "characters": 20,
+   "estimated_lines": 1
+  },
+  {
+   "language": "ja",
+   "key": "phone:recipes",
+   "characters": 28,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ja",
+   "key": "phone:events",
+   "characters": 21,
+   "estimated_lines": 1
+  },
+  {
+   "language": "ja",
+   "key": "phone:debt",
+   "characters": 29,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ru",
+   "key": "phone",
+   "characters": 66,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ru",
+   "key": "KioskSign",
+   "characters": 57,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ru",
+   "key": "Customer",
+   "characters": 65,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ru",
+   "key": "Fridge",
+   "characters": 61,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ru",
+   "key": "Cupboard",
+   "characters": 62,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ru",
+   "key": "PousadaReception",
+   "characters": 62,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ru",
+   "key": "RoomTask",
+   "characters": 60,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ru",
+   "key": "HotelReception",
+   "characters": 70,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ru",
+   "key": "BarCounter",
+   "characters": 66,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ru",
+   "key": "BusinessCounter",
+   "characters": 60,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ru",
+   "key": "TourBooth",
+   "characters": 72,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ru",
+   "key": "Fishing",
+   "characters": 55,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ru",
+   "key": "PoolLeaves",
+   "characters": 62,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ru",
+   "key": "PoolTowel",
+   "characters": 49,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ru",
+   "key": "PoolCooler",
+   "characters": 52,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ru",
+   "key": "RestaurantTable",
+   "characters": 68,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ru",
+   "key": "RestaurantPass",
+   "characters": 55,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ru",
+   "key": "RoomService",
+   "characters": 67,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ru",
+   "key": "PoolTable",
+   "characters": 62,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ru",
+   "key": "photo",
+   "characters": 51,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ru",
+   "key": "Bed",
+   "characters": 68,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ru",
+   "key": "BarIngredient",
+   "characters": 63,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ru",
+   "key": "BarGlass",
+   "characters": 59,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ru",
+   "key": "Clean",
+   "characters": 65,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ru",
+   "key": "Comic",
+   "characters": 71,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ru",
+   "key": "Resident",
+   "characters": 65,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ru",
+   "key": "Elder",
+   "characters": 59,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ru",
+   "key": "Elevator",
+   "characters": 61,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ru",
+   "key": "HotelTask",
+   "characters": 75,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ru",
+   "key": "HotelFix",
+   "characters": 70,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ru",
+   "key": "RentalTow",
+   "characters": 53,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ru",
+   "key": "TableTennis",
+   "characters": 56,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ru",
+   "key": "TourVest",
+   "characters": 46,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ru",
+   "key": "TourStory",
+   "characters": 65,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ru",
+   "key": "TourSpecies",
+   "characters": 56,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ru",
+   "key": "TrailWater",
+   "characters": 56,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ru",
+   "key": "TrailStory",
+   "characters": 57,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ru",
+   "key": "biz:sorveteria",
+   "characters": 67,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ru",
+   "key": "biz:food_truck",
+   "characters": 65,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ru",
+   "key": "biz:aluguel",
+   "characters": 74,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ru",
+   "key": "biz:souvenir",
+   "characters": 67,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ru",
+   "key": "biz:pebolim",
+   "characters": 48,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ru",
+   "key": "biz:fliperama",
+   "characters": 44,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ru",
+   "key": "biz:surfe",
+   "characters": 56,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ru",
+   "key": "Door",
+   "characters": 71,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ru",
+   "key": "IntroLetter",
+   "characters": 55,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ru",
+   "key": "phone:stock",
+   "characters": 55,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ru",
+   "key": "phone:staff",
+   "characters": 44,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ru",
+   "key": "phone:finance",
+   "characters": 48,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ru",
+   "key": "phone:expansions",
+   "characters": 50,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ru",
+   "key": "phone:missions",
+   "characters": 55,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ru",
+   "key": "phone:custom",
+   "characters": 48,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ru",
+   "key": "phone:recipes",
+   "characters": 52,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ru",
+   "key": "phone:events",
+   "characters": 50,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ru",
+   "key": "phone:debt",
+   "characters": 72,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ko",
+   "key": "phone",
+   "characters": 45,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ko",
+   "key": "KioskSign",
+   "characters": 36,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ko",
+   "key": "Customer",
+   "characters": 37,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ko",
+   "key": "Fridge",
+   "characters": 31,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ko",
+   "key": "Cupboard",
+   "characters": 34,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ko",
+   "key": "PousadaReception",
+   "characters": 38,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ko",
+   "key": "RoomTask",
+   "characters": 40,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ko",
+   "key": "HotelReception",
+   "characters": 45,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ko",
+   "key": "BarCounter",
+   "characters": 34,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ko",
+   "key": "BusinessCounter",
+   "characters": 43,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ko",
+   "key": "TourBooth",
+   "characters": 45,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ko",
+   "key": "Fishing",
+   "characters": 35,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ko",
+   "key": "PoolLeaves",
+   "characters": 35,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ko",
+   "key": "PoolTowel",
+   "characters": 23,
+   "estimated_lines": 1
+  },
+  {
+   "language": "ko",
+   "key": "PoolCooler",
+   "characters": 26,
+   "estimated_lines": 1
+  },
+  {
+   "language": "ko",
+   "key": "RestaurantTable",
+   "characters": 43,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ko",
+   "key": "RestaurantPass",
+   "characters": 29,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ko",
+   "key": "RoomService",
+   "characters": 35,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ko",
+   "key": "PoolTable",
+   "characters": 37,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ko",
+   "key": "photo",
+   "characters": 38,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ko",
+   "key": "Bed",
+   "characters": 44,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ko",
+   "key": "BarIngredient",
+   "characters": 35,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ko",
+   "key": "BarGlass",
+   "characters": 31,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ko",
+   "key": "Clean",
+   "characters": 37,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ko",
+   "key": "Comic",
+   "characters": 42,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ko",
+   "key": "Resident",
+   "characters": 31,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ko",
+   "key": "Elder",
+   "characters": 30,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ko",
+   "key": "Elevator",
+   "characters": 39,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ko",
+   "key": "HotelTask",
+   "characters": 43,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ko",
+   "key": "HotelFix",
+   "characters": 40,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ko",
+   "key": "RentalTow",
+   "characters": 35,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ko",
+   "key": "TableTennis",
+   "characters": 36,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ko",
+   "key": "TourVest",
+   "characters": 23,
+   "estimated_lines": 1
+  },
+  {
+   "language": "ko",
+   "key": "TourStory",
+   "characters": 33,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ko",
+   "key": "TourSpecies",
+   "characters": 29,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ko",
+   "key": "TrailWater",
+   "characters": 28,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ko",
+   "key": "TrailStory",
+   "characters": 26,
+   "estimated_lines": 1
+  },
+  {
+   "language": "ko",
+   "key": "biz:sorveteria",
+   "characters": 30,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ko",
+   "key": "biz:food_truck",
+   "characters": 45,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ko",
+   "key": "biz:aluguel",
+   "characters": 44,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ko",
+   "key": "biz:souvenir",
+   "characters": 38,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ko",
+   "key": "biz:pebolim",
+   "characters": 29,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ko",
+   "key": "biz:fliperama",
+   "characters": 20,
+   "estimated_lines": 1
+  },
+  {
+   "language": "ko",
+   "key": "biz:surfe",
+   "characters": 33,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ko",
+   "key": "Door",
+   "characters": 35,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ko",
+   "key": "IntroLetter",
+   "characters": 39,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ko",
+   "key": "phone:stock",
+   "characters": 29,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ko",
+   "key": "phone:staff",
+   "characters": 30,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ko",
+   "key": "phone:finance",
+   "characters": 33,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ko",
+   "key": "phone:expansions",
+   "characters": 21,
+   "estimated_lines": 1
+  },
+  {
+   "language": "ko",
+   "key": "phone:missions",
+   "characters": 30,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ko",
+   "key": "phone:custom",
+   "characters": 27,
+   "estimated_lines": 1
+  },
+  {
+   "language": "ko",
+   "key": "phone:recipes",
+   "characters": 38,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ko",
+   "key": "phone:events",
+   "characters": 28,
+   "estimated_lines": 2
+  },
+  {
+   "language": "ko",
+   "key": "phone:debt",
+   "characters": 34,
+   "estimated_lines": 2
+  },
+  {
+   "language": "it",
+   "key": "phone",
+   "characters": 73,
+   "estimated_lines": 2
+  },
+  {
+   "language": "it",
+   "key": "KioskSign",
+   "characters": 63,
+   "estimated_lines": 2
+  },
+  {
+   "language": "it",
+   "key": "Customer",
+   "characters": 64,
+   "estimated_lines": 2
+  },
+  {
+   "language": "it",
+   "key": "Fridge",
+   "characters": 57,
+   "estimated_lines": 2
+  },
+  {
+   "language": "it",
+   "key": "Cupboard",
+   "characters": 57,
+   "estimated_lines": 2
+  },
+  {
+   "language": "it",
+   "key": "PousadaReception",
+   "characters": 69,
+   "estimated_lines": 2
+  },
+  {
+   "language": "it",
+   "key": "RoomTask",
+   "characters": 68,
+   "estimated_lines": 2
+  },
+  {
+   "language": "it",
+   "key": "HotelReception",
+   "characters": 80,
+   "estimated_lines": 2
+  },
+  {
+   "language": "it",
+   "key": "BarCounter",
+   "characters": 69,
+   "estimated_lines": 2
+  },
+  {
+   "language": "it",
+   "key": "BusinessCounter",
+   "characters": 68,
+   "estimated_lines": 2
+  },
+  {
+   "language": "it",
+   "key": "TourBooth",
+   "characters": 75,
+   "estimated_lines": 2
+  },
+  {
+   "language": "it",
+   "key": "Fishing",
+   "characters": 63,
+   "estimated_lines": 2
+  },
+  {
+   "language": "it",
+   "key": "PoolLeaves",
+   "characters": 62,
+   "estimated_lines": 2
+  },
+  {
+   "language": "it",
+   "key": "PoolTowel",
+   "characters": 64,
+   "estimated_lines": 2
+  },
+  {
+   "language": "it",
+   "key": "PoolCooler",
+   "characters": 52,
+   "estimated_lines": 2
+  },
+  {
+   "language": "it",
+   "key": "RestaurantTable",
+   "characters": 74,
+   "estimated_lines": 2
+  },
+  {
+   "language": "it",
+   "key": "RestaurantPass",
+   "characters": 58,
+   "estimated_lines": 2
+  },
+  {
+   "language": "it",
+   "key": "RoomService",
+   "characters": 68,
+   "estimated_lines": 2
+  },
+  {
+   "language": "it",
+   "key": "PoolTable",
+   "characters": 60,
+   "estimated_lines": 2
+  },
+  {
+   "language": "it",
+   "key": "photo",
+   "characters": 71,
+   "estimated_lines": 2
+  },
+  {
+   "language": "it",
+   "key": "Bed",
+   "characters": 76,
+   "estimated_lines": 2
+  },
+  {
+   "language": "it",
+   "key": "BarIngredient",
+   "characters": 61,
+   "estimated_lines": 2
+  },
+  {
+   "language": "it",
+   "key": "BarGlass",
+   "characters": 73,
+   "estimated_lines": 2
+  },
+  {
+   "language": "it",
+   "key": "Clean",
+   "characters": 77,
+   "estimated_lines": 2
+  },
+  {
+   "language": "it",
+   "key": "Comic",
+   "characters": 82,
+   "estimated_lines": 2
+  },
+  {
+   "language": "it",
+   "key": "Resident",
+   "characters": 62,
+   "estimated_lines": 2
+  },
+  {
+   "language": "it",
+   "key": "Elder",
+   "characters": 76,
+   "estimated_lines": 2
+  },
+  {
+   "language": "it",
+   "key": "Elevator",
+   "characters": 64,
+   "estimated_lines": 2
+  },
+  {
+   "language": "it",
+   "key": "HotelTask",
+   "characters": 84,
+   "estimated_lines": 2
+  },
+  {
+   "language": "it",
+   "key": "HotelFix",
+   "characters": 69,
+   "estimated_lines": 2
+  },
+  {
+   "language": "it",
+   "key": "RentalTow",
+   "characters": 60,
+   "estimated_lines": 2
+  },
+  {
+   "language": "it",
+   "key": "TableTennis",
+   "characters": 58,
+   "estimated_lines": 2
+  },
+  {
+   "language": "it",
+   "key": "TourVest",
+   "characters": 52,
+   "estimated_lines": 2
+  },
+  {
+   "language": "it",
+   "key": "TourStory",
+   "characters": 69,
+   "estimated_lines": 2
+  },
+  {
+   "language": "it",
+   "key": "TourSpecies",
+   "characters": 55,
+   "estimated_lines": 2
+  },
+  {
+   "language": "it",
+   "key": "TrailWater",
+   "characters": 49,
+   "estimated_lines": 2
+  },
+  {
+   "language": "it",
+   "key": "TrailStory",
+   "characters": 55,
+   "estimated_lines": 2
+  },
+  {
+   "language": "it",
+   "key": "biz:sorveteria",
+   "characters": 77,
+   "estimated_lines": 2
+  },
+  {
+   "language": "it",
+   "key": "biz:food_truck",
+   "characters": 79,
+   "estimated_lines": 2
+  },
+  {
+   "language": "it",
+   "key": "biz:aluguel",
+   "characters": 70,
+   "estimated_lines": 2
+  },
+  {
+   "language": "it",
+   "key": "biz:souvenir",
+   "characters": 66,
+   "estimated_lines": 2
+  },
+  {
+   "language": "it",
+   "key": "biz:pebolim",
+   "characters": 56,
+   "estimated_lines": 2
+  },
+  {
+   "language": "it",
+   "key": "biz:fliperama",
+   "characters": 49,
+   "estimated_lines": 2
+  },
+  {
+   "language": "it",
+   "key": "biz:surfe",
+   "characters": 63,
+   "estimated_lines": 2
+  },
+  {
+   "language": "it",
+   "key": "Door",
+   "characters": 68,
+   "estimated_lines": 2
+  },
+  {
+   "language": "it",
+   "key": "IntroLetter",
+   "characters": 58,
+   "estimated_lines": 2
+  },
+  {
+   "language": "it",
+   "key": "phone:stock",
+   "characters": 62,
+   "estimated_lines": 2
+  },
+  {
+   "language": "it",
+   "key": "phone:staff",
+   "characters": 48,
+   "estimated_lines": 2
+  },
+  {
+   "language": "it",
+   "key": "phone:finance",
+   "characters": 63,
+   "estimated_lines": 2
+  },
+  {
+   "language": "it",
+   "key": "phone:expansions",
+   "characters": 55,
+   "estimated_lines": 2
+  },
+  {
+   "language": "it",
+   "key": "phone:missions",
+   "characters": 67,
+   "estimated_lines": 2
+  },
+  {
+   "language": "it",
+   "key": "phone:custom",
+   "characters": 64,
+   "estimated_lines": 2
+  },
+  {
+   "language": "it",
+   "key": "phone:recipes",
+   "characters": 63,
+   "estimated_lines": 2
+  },
+  {
+   "language": "it",
+   "key": "phone:events",
+   "characters": 51,
+   "estimated_lines": 2
+  },
+  {
+   "language": "it",
+   "key": "phone:debt",
+   "characters": 74,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pl",
+   "key": "phone",
+   "characters": 68,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pl",
+   "key": "KioskSign",
+   "characters": 58,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pl",
+   "key": "Customer",
+   "characters": 64,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pl",
+   "key": "Fridge",
+   "characters": 60,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pl",
+   "key": "Cupboard",
+   "characters": 59,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pl",
+   "key": "PousadaReception",
+   "characters": 64,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pl",
+   "key": "RoomTask",
+   "characters": 60,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pl",
+   "key": "HotelReception",
+   "characters": 80,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pl",
+   "key": "BarCounter",
+   "characters": 66,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pl",
+   "key": "BusinessCounter",
+   "characters": 69,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pl",
+   "key": "TourBooth",
+   "characters": 77,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pl",
+   "key": "Fishing",
+   "characters": 60,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pl",
+   "key": "PoolLeaves",
+   "characters": 60,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pl",
+   "key": "PoolTowel",
+   "characters": 50,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pl",
+   "key": "PoolCooler",
+   "characters": 45,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pl",
+   "key": "RestaurantTable",
+   "characters": 66,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pl",
+   "key": "RestaurantPass",
+   "characters": 52,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pl",
+   "key": "RoomService",
+   "characters": 67,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pl",
+   "key": "PoolTable",
+   "characters": 59,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pl",
+   "key": "photo",
+   "characters": 65,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pl",
+   "key": "Bed",
+   "characters": 74,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pl",
+   "key": "BarIngredient",
+   "characters": 70,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pl",
+   "key": "BarGlass",
+   "characters": 59,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pl",
+   "key": "Clean",
+   "characters": 70,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pl",
+   "key": "Comic",
+   "characters": 75,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pl",
+   "key": "Resident",
+   "characters": 61,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pl",
+   "key": "Elder",
+   "characters": 57,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pl",
+   "key": "Elevator",
+   "characters": 59,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pl",
+   "key": "HotelTask",
+   "characters": 70,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pl",
+   "key": "HotelFix",
+   "characters": 71,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pl",
+   "key": "RentalTow",
+   "characters": 45,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pl",
+   "key": "TableTennis",
+   "characters": 54,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pl",
+   "key": "TourVest",
+   "characters": 54,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pl",
+   "key": "TourStory",
+   "characters": 58,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pl",
+   "key": "TourSpecies",
+   "characters": 50,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pl",
+   "key": "TrailWater",
+   "characters": 56,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pl",
+   "key": "TrailStory",
+   "characters": 52,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pl",
+   "key": "biz:sorveteria",
+   "characters": 54,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pl",
+   "key": "biz:food_truck",
+   "characters": 75,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pl",
+   "key": "biz:aluguel",
+   "characters": 67,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pl",
+   "key": "biz:souvenir",
+   "characters": 69,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pl",
+   "key": "biz:pebolim",
+   "characters": 54,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pl",
+   "key": "biz:fliperama",
+   "characters": 39,
+   "estimated_lines": 1
+  },
+  {
+   "language": "pl",
+   "key": "biz:surfe",
+   "characters": 53,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pl",
+   "key": "Door",
+   "characters": 61,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pl",
+   "key": "IntroLetter",
+   "characters": 67,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pl",
+   "key": "phone:stock",
+   "characters": 54,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pl",
+   "key": "phone:staff",
+   "characters": 44,
+   "estimated_lines": 1
+  },
+  {
+   "language": "pl",
+   "key": "phone:finance",
+   "characters": 52,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pl",
+   "key": "phone:expansions",
+   "characters": 44,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pl",
+   "key": "phone:missions",
+   "characters": 50,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pl",
+   "key": "phone:custom",
+   "characters": 45,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pl",
+   "key": "phone:recipes",
+   "characters": 52,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pl",
+   "key": "phone:events",
+   "characters": 45,
+   "estimated_lines": 1
+  },
+  {
+   "language": "pl",
+   "key": "phone:debt",
+   "characters": 65,
+   "estimated_lines": 2
+  },
+  {
+   "language": "nl",
+   "key": "phone",
+   "characters": 78,
+   "estimated_lines": 2
+  },
+  {
+   "language": "nl",
+   "key": "KioskSign",
+   "characters": 65,
+   "estimated_lines": 2
+  },
+  {
+   "language": "nl",
+   "key": "Customer",
+   "characters": 72,
+   "estimated_lines": 2
+  },
+  {
+   "language": "nl",
+   "key": "Fridge",
+   "characters": 63,
+   "estimated_lines": 2
+  },
+  {
+   "language": "nl",
+   "key": "Cupboard",
+   "characters": 62,
+   "estimated_lines": 2
+  },
+  {
+   "language": "nl",
+   "key": "PousadaReception",
+   "characters": 70,
+   "estimated_lines": 2
+  },
+  {
+   "language": "nl",
+   "key": "RoomTask",
+   "characters": 62,
+   "estimated_lines": 2
+  },
+  {
+   "language": "nl",
+   "key": "HotelReception",
+   "characters": 79,
+   "estimated_lines": 2
+  },
+  {
+   "language": "nl",
+   "key": "BarCounter",
+   "characters": 71,
+   "estimated_lines": 2
+  },
+  {
+   "language": "nl",
+   "key": "BusinessCounter",
+   "characters": 69,
+   "estimated_lines": 2
+  },
+  {
+   "language": "nl",
+   "key": "TourBooth",
+   "characters": 64,
+   "estimated_lines": 2
+  },
+  {
+   "language": "nl",
+   "key": "Fishing",
+   "characters": 64,
+   "estimated_lines": 2
+  },
+  {
+   "language": "nl",
+   "key": "PoolLeaves",
+   "characters": 67,
+   "estimated_lines": 2
+  },
+  {
+   "language": "nl",
+   "key": "PoolTowel",
+   "characters": 64,
+   "estimated_lines": 2
+  },
+  {
+   "language": "nl",
+   "key": "PoolCooler",
+   "characters": 55,
+   "estimated_lines": 2
+  },
+  {
+   "language": "nl",
+   "key": "RestaurantTable",
+   "characters": 64,
+   "estimated_lines": 2
+  },
+  {
+   "language": "nl",
+   "key": "RestaurantPass",
+   "characters": 55,
+   "estimated_lines": 2
+  },
+  {
+   "language": "nl",
+   "key": "RoomService",
+   "characters": 79,
+   "estimated_lines": 2
+  },
+  {
+   "language": "nl",
+   "key": "PoolTable",
+   "characters": 74,
+   "estimated_lines": 2
+  },
+  {
+   "language": "nl",
+   "key": "photo",
+   "characters": 77,
+   "estimated_lines": 2
+  },
+  {
+   "language": "nl",
+   "key": "Bed",
+   "characters": 78,
+   "estimated_lines": 2
+  },
+  {
+   "language": "nl",
+   "key": "BarIngredient",
+   "characters": 82,
+   "estimated_lines": 2
+  },
+  {
+   "language": "nl",
+   "key": "BarGlass",
+   "characters": 70,
+   "estimated_lines": 2
+  },
+  {
+   "language": "nl",
+   "key": "Clean",
+   "characters": 76,
+   "estimated_lines": 2
+  },
+  {
+   "language": "nl",
+   "key": "Comic",
+   "characters": 79,
+   "estimated_lines": 2
+  },
+  {
+   "language": "nl",
+   "key": "Resident",
+   "characters": 60,
+   "estimated_lines": 2
+  },
+  {
+   "language": "nl",
+   "key": "Elder",
+   "characters": 68,
+   "estimated_lines": 2
+  },
+  {
+   "language": "nl",
+   "key": "Elevator",
+   "characters": 69,
+   "estimated_lines": 2
+  },
+  {
+   "language": "nl",
+   "key": "HotelTask",
+   "characters": 69,
+   "estimated_lines": 2
+  },
+  {
+   "language": "nl",
+   "key": "HotelFix",
+   "characters": 79,
+   "estimated_lines": 2
+  },
+  {
+   "language": "nl",
+   "key": "RentalTow",
+   "characters": 66,
+   "estimated_lines": 2
+  },
+  {
+   "language": "nl",
+   "key": "TableTennis",
+   "characters": 56,
+   "estimated_lines": 2
+  },
+  {
+   "language": "nl",
+   "key": "TourVest",
+   "characters": 56,
+   "estimated_lines": 2
+  },
+  {
+   "language": "nl",
+   "key": "TourStory",
+   "characters": 75,
+   "estimated_lines": 2
+  },
+  {
+   "language": "nl",
+   "key": "TourSpecies",
+   "characters": 55,
+   "estimated_lines": 2
+  },
+  {
+   "language": "nl",
+   "key": "TrailWater",
+   "characters": 52,
+   "estimated_lines": 2
+  },
+  {
+   "language": "nl",
+   "key": "TrailStory",
+   "characters": 52,
+   "estimated_lines": 2
+  },
+  {
+   "language": "nl",
+   "key": "biz:sorveteria",
+   "characters": 65,
+   "estimated_lines": 2
+  },
+  {
+   "language": "nl",
+   "key": "biz:food_truck",
+   "characters": 76,
+   "estimated_lines": 2
+  },
+  {
+   "language": "nl",
+   "key": "biz:aluguel",
+   "characters": 68,
+   "estimated_lines": 2
+  },
+  {
+   "language": "nl",
+   "key": "biz:souvenir",
+   "characters": 68,
+   "estimated_lines": 2
+  },
+  {
+   "language": "nl",
+   "key": "biz:pebolim",
+   "characters": 66,
+   "estimated_lines": 2
+  },
+  {
+   "language": "nl",
+   "key": "biz:fliperama",
+   "characters": 48,
+   "estimated_lines": 2
+  },
+  {
+   "language": "nl",
+   "key": "biz:surfe",
+   "characters": 78,
+   "estimated_lines": 2
+  },
+  {
+   "language": "nl",
+   "key": "Door",
+   "characters": 64,
+   "estimated_lines": 2
+  },
+  {
+   "language": "nl",
+   "key": "IntroLetter",
+   "characters": 74,
+   "estimated_lines": 2
+  },
+  {
+   "language": "nl",
+   "key": "phone:stock",
+   "characters": 59,
+   "estimated_lines": 2
+  },
+  {
+   "language": "nl",
+   "key": "phone:staff",
+   "characters": 59,
+   "estimated_lines": 2
+  },
+  {
+   "language": "nl",
+   "key": "phone:finance",
+   "characters": 65,
+   "estimated_lines": 2
+  },
+  {
+   "language": "nl",
+   "key": "phone:expansions",
+   "characters": 57,
+   "estimated_lines": 2
+  },
+  {
+   "language": "nl",
+   "key": "phone:missions",
+   "characters": 57,
+   "estimated_lines": 2
+  },
+  {
+   "language": "nl",
+   "key": "phone:custom",
+   "characters": 57,
+   "estimated_lines": 2
+  },
+  {
+   "language": "nl",
+   "key": "phone:recipes",
+   "characters": 60,
+   "estimated_lines": 2
+  },
+  {
+   "language": "nl",
+   "key": "phone:events",
+   "characters": 61,
+   "estimated_lines": 2
+  },
+  {
+   "language": "nl",
+   "key": "phone:debt",
+   "characters": 69,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-PT",
+   "key": "phone",
+   "characters": 76,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-PT",
+   "key": "KioskSign",
+   "characters": 56,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-PT",
+   "key": "Customer",
+   "characters": 64,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-PT",
+   "key": "Fridge",
+   "characters": 55,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-PT",
+   "key": "Cupboard",
+   "characters": 54,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-PT",
+   "key": "PousadaReception",
+   "characters": 60,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-PT",
+   "key": "RoomTask",
+   "characters": 67,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-PT",
+   "key": "HotelReception",
+   "characters": 78,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-PT",
+   "key": "BarCounter",
+   "characters": 63,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-PT",
+   "key": "BusinessCounter",
+   "characters": 70,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-PT",
+   "key": "TourBooth",
+   "characters": 73,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-PT",
+   "key": "Fishing",
+   "characters": 62,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-PT",
+   "key": "PoolLeaves",
+   "characters": 72,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-PT",
+   "key": "PoolTowel",
+   "characters": 61,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-PT",
+   "key": "PoolCooler",
+   "characters": 68,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-PT",
+   "key": "RestaurantTable",
+   "characters": 68,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-PT",
+   "key": "RestaurantPass",
+   "characters": 64,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-PT",
+   "key": "RoomService",
+   "characters": 72,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-PT",
+   "key": "PoolTable",
+   "characters": 54,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-PT",
+   "key": "photo",
+   "characters": 68,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-PT",
+   "key": "Bed",
+   "characters": 75,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-PT",
+   "key": "BarIngredient",
+   "characters": 66,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-PT",
+   "key": "BarGlass",
+   "characters": 57,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-PT",
+   "key": "Clean",
+   "characters": 65,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-PT",
+   "key": "Comic",
+   "characters": 76,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-PT",
+   "key": "Resident",
+   "characters": 65,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-PT",
+   "key": "Elder",
+   "characters": 63,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-PT",
+   "key": "Elevator",
+   "characters": 73,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-PT",
+   "key": "HotelTask",
+   "characters": 73,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-PT",
+   "key": "HotelFix",
+   "characters": 73,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-PT",
+   "key": "RentalTow",
+   "characters": 65,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-PT",
+   "key": "TableTennis",
+   "characters": 63,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-PT",
+   "key": "TourVest",
+   "characters": 56,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-PT",
+   "key": "TourStory",
+   "characters": 69,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-PT",
+   "key": "TourSpecies",
+   "characters": 52,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-PT",
+   "key": "TrailWater",
+   "characters": 54,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-PT",
+   "key": "TrailStory",
+   "characters": 51,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-PT",
+   "key": "biz:sorveteria",
+   "characters": 72,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-PT",
+   "key": "biz:food_truck",
+   "characters": 78,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-PT",
+   "key": "biz:aluguel",
+   "characters": 60,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-PT",
+   "key": "biz:souvenir",
+   "characters": 72,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-PT",
+   "key": "biz:pebolim",
+   "characters": 52,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-PT",
+   "key": "biz:fliperama",
+   "characters": 43,
+   "estimated_lines": 1
+  },
+  {
+   "language": "pt-PT",
+   "key": "biz:surfe",
+   "characters": 57,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-PT",
+   "key": "Door",
+   "characters": 65,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-PT",
+   "key": "IntroLetter",
+   "characters": 56,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-PT",
+   "key": "phone:stock",
+   "characters": 66,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-PT",
+   "key": "phone:staff",
+   "characters": 56,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-PT",
+   "key": "phone:finance",
+   "characters": 65,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-PT",
+   "key": "phone:expansions",
+   "characters": 52,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-PT",
+   "key": "phone:missions",
+   "characters": 61,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-PT",
+   "key": "phone:custom",
+   "characters": 54,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-PT",
+   "key": "phone:recipes",
+   "characters": 75,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-PT",
+   "key": "phone:events",
+   "characters": 59,
+   "estimated_lines": 2
+  },
+  {
+   "language": "pt-PT",
+   "key": "phone:debt",
+   "characters": 66,
+   "estimated_lines": 2
+  }
+ ]
+}

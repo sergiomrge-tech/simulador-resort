@@ -28,7 +28,7 @@ WORD = re.compile(r'[A-Za-zÀ-ú]{3,}')
 SKIP_PREFIX = ('/Game', '/Script', '/Engine', '/Niagara', '/Interchange', '/Mare', 'r.', 'mare.', 't.', 'sg.', 'fx.', 'MH_',
                'SKM_', 'MARE_', 'Data/', 'Localization/', 'Mare', 'BP_', 'M_', 'MI_', 'T_', 'S_', 'SM_', 'ABP_', 'Region_')
 # JSON keys whose string values are internal (ids, paths, kinds), never shown.
-JSON_SKIP_KEYS = {'model', 'hide', 'anchor', 'also', 'unlock', 'region', 'source', 'need', 'requires', 'expansion_order',
+JSON_SKIP_KEYS = {'slug', 'model', 'hide', 'anchor', 'also', 'unlock', 'region', 'source', 'need', 'requires', 'expansion_order',
                   'id', 'path', 'mesh', 'material', 'kind', 'type', 'anim', 'pose', 'icon', 'sound', 'cue', 'asset', 'look',
                   'metahuman', 'tag', 'tags', 'map', 'level', 'class', 'texture', 'image', 'file', 'voice', 'dish', 'role'}
 
@@ -107,6 +107,9 @@ def scan_data():
             continue
         try:
             doc = json.loads(Path(f).read_text(encoding='utf-8'))
+            if name == 'definitions.json':
+                # Chapter unlock is player-facing text (AdvanceChapter), unlike unlock IDs elsewhere.
+                doc = dict(doc, chapter_unlock_texts=[c.get('unlock','') for c in doc.get('chapters',[])])
             if name == 'achievements.json':
                 # Contrato: somente os textos visíveis. Condições/ids/enums nunca viram traduções.
                 doc = {'achievements': [{'name': a['name'], 'description': a['description']} for a in doc['achievements']],
@@ -114,6 +117,9 @@ def scan_data():
             if name == 'world.json':   # only the painted texts and the residents' names are shown
                 doc = {'texts': doc.get('texts', []), 'residents': doc.get('residents', [])}
             walk(doc)
+            if name == 'tutorial.json':
+                # Explicit UI fields must not be lost to identifier heuristics (e.g. Pingue-pongue).
+                strings.update(v for tip in doc.get('tips',{}).values() for k,v in tip.items() if k in ('title','text') and isinstance(v,str))
         except Exception:
             pass
     return strings

@@ -1,0 +1,412 @@
+{
+  "scope": "Alcançabilidade de dados; não executa C++ nem mede 2 h. Dinheiro vem de vendas repetíveis, recompensas e custos explícitos; sem gorjetas/fama extra como atalhos. Salário nas noites usa teto conservador dos níveis, não reprodução de relógio/XP.",
+  "campaign_claimed": [
+    "chegada",
+    "portas",
+    "primeiros",
+    "mesas",
+    "equipe",
+    "morro",
+    "oferendas",
+    "comunidade",
+    "encontro",
+    "hospedar",
+    "verao",
+    "prainha_m",
+    "sabores_m",
+    "carnaval_m"
+  ],
+  "gate": "marealta",
+  "expansions": [
+    "kiosk_tables",
+    "drinks",
+    "neon",
+    "grill",
+    "bar",
+    "pousada",
+    "pool",
+    "passeios"
+  ],
+  "chapters": {
+    "pier": 3,
+    "prainha": 3,
+    "sabores": 3,
+    "carnaval": 3
+  },
+  "sales": 619,
+  "fame": 7,
+  "cash": 4.6,
+  "trace": [
+    {
+      "action": "resgatar missão",
+      "id": "chegada",
+      "reward": 40,
+      "cash": 190.0
+    },
+    {
+      "action": "resgatar missão",
+      "id": "portas",
+      "reward": 30,
+      "cash": 220.0
+    },
+    {
+      "action": "vender produtos",
+      "dish": "coco_gelado",
+      "quantity": 8,
+      "unit_price": 12,
+      "unit_supplies": 4,
+      "cash": 284.0
+    },
+    {
+      "action": "resgatar missão",
+      "id": "primeiros",
+      "reward": 100,
+      "cash": 384.0
+    },
+    {
+      "action": "comprar expansão",
+      "id": "kiosk_tables",
+      "cost": 180,
+      "cash": 204.0
+    },
+    {
+      "action": "resgatar missão",
+      "id": "mesas",
+      "reward": 80,
+      "cash": 284.0
+    },
+    {
+      "action": "resgatar missão",
+      "id": "equipe",
+      "reward": 80,
+      "cash": 124.0
+    },
+    {
+      "action": "conhecer morador e oferta de cortesia",
+      "day": 1,
+      "counted": false,
+      "cash": 124.0
+    },
+    {
+      "action": "resgatar missão",
+      "id": "morro",
+      "reward": 120,
+      "cash": 244.0
+    },
+    {
+      "action": "entregar oferenda",
+      "day": 2,
+      "cash": 200.4
+    },
+    {
+      "action": "entregar oferenda",
+      "day": 3,
+      "cash": 156.8
+    },
+    {
+      "action": "entregar oferenda",
+      "day": 4,
+      "cash": 113.2
+    },
+    {
+      "action": "resgatar missão",
+      "id": "oferendas",
+      "reward": 200,
+      "cash": 313.2
+    },
+    {
+      "action": "concluir etapa",
+      "chapter": "pier",
+      "index": 0,
+      "kind": "deliver",
+      "quantity": 4,
+      "cash": 313.2
+    },
+    {
+      "action": "vender produtos",
+      "dish": "coco_gelado",
+      "quantity": 15,
+      "unit_price": 12,
+      "unit_supplies": 4,
+      "cash": 433.2
+    },
+    {
+      "action": "concluir etapa",
+      "chapter": "pier",
+      "index": 1,
+      "kind": "serve",
+      "quantity": 15,
+      "cash": 433.2
+    },
+    {
+      "action": "concluir etapa",
+      "chapter": "pier",
+      "index": 2,
+      "kind": "pay",
+      "quantity": 150,
+      "cash": 283.2
+    },
+    {
+      "action": "concluir capítulo",
+      "id": "pier",
+      "cash": 483.2
+    },
+    {
+      "action": "resgatar missão",
+      "id": "comunidade",
+      "reward": 150,
+      "cash": 633.2
+    },
+    {
+      "action": "comprar expansão",
+      "id": "drinks",
+      "cost": 260,
+      "cash": 373.2
+    },
+    {
+      "action": "comprar expansão",
+      "id": "neon",
+      "cost": 150,
+      "cash": 223.2
+    },
+    {
+      "action": "vender produtos",
+      "dish": "coco_gelado",
+      "quantity": 21,
+      "unit_price": 12,
+      "unit_supplies": 4,
+      "cash": 391.2
+    },
+    {
+      "action": "comprar expansão",
+      "id": "grill",
+      "cost": 380,
+      "cash": 11.2
+    },
+    {
+      "action": "vender produtos",
+      "dish": "coco_gelado",
+      "quantity": 112,
+      "unit_price": 12,
+      "unit_supplies": 4,
+      "cash": 907.2
+    },
+    {
+      "action": "comprar expansão",
+      "id": "bar",
+      "cost": 900,
+      "cash": 7.2
+    },
+    {
+      "action": "resgatar missão",
+      "id": "encontro",
+      "reward": 200,
+      "cash": 207.2
+    },
+    {
+      "action": "vender produtos",
+      "dish": "coco_gelado",
+      "quantity": 150,
+      "unit_price": 12,
+      "unit_supplies": 4,
+      "cash": 1407.2
+    },
+    {
+      "action": "comprar expansão",
+      "id": "pousada",
+      "cost": 1400,
+      "cash": 7.2
+    },
+    {
+      "action": "resgatar missão",
+      "id": "hospedar",
+      "reward": 300,
+      "cash": 307.2
+    },
+    {
+      "action": "vender produtos",
+      "dish": "coco_gelado",
+      "quantity": 100,
+      "unit_price": 12,
+      "unit_supplies": 4,
+      "cash": 1107.2
+    },
+    {
+      "action": "comprar expansão",
+      "id": "pool",
+      "cost": 1100,
+      "cash": 7.2
+    },
+    {
+      "action": "resgatar missão",
+      "id": "verao",
+      "reward": 400,
+      "cash": 407.2
+    },
+    {
+      "action": "concluir etapa",
+      "chapter": "prainha",
+      "index": 0,
+      "kind": "fame",
+      "quantity": 3,
+      "cash": 407.2
+    },
+    {
+      "action": "concluir etapa",
+      "chapter": "prainha",
+      "index": 1,
+      "kind": "photo",
+      "quantity": 1,
+      "cash": 407.2
+    },
+    {
+      "action": "concluir etapa",
+      "chapter": "prainha",
+      "index": 2,
+      "kind": "deliver",
+      "quantity": 6,
+      "cash": 389.2
+    },
+    {
+      "action": "concluir capítulo",
+      "id": "prainha",
+      "cash": 689.2
+    },
+    {
+      "action": "resgatar missão",
+      "id": "prainha_m",
+      "reward": 200,
+      "cash": 889.2
+    },
+    {
+      "action": "concluir etapa",
+      "chapter": "sabores",
+      "index": 0,
+      "kind": "recipes",
+      "quantity": 2,
+      "cash": 880.6
+    },
+    {
+      "action": "vender produtos",
+      "dish": "petiscos",
+      "quantity": 10,
+      "unit_price": 26,
+      "unit_supplies": 11,
+      "cash": 1030.6
+    },
+    {
+      "action": "concluir etapa",
+      "chapter": "sabores",
+      "index": 1,
+      "kind": "sell",
+      "quantity": 10,
+      "cash": 1030.6
+    },
+    {
+      "action": "concluir etapa",
+      "chapter": "sabores",
+      "index": 2,
+      "kind": "pay",
+      "quantity": 250,
+      "cash": 780.6
+    },
+    {
+      "action": "concluir capítulo",
+      "id": "sabores",
+      "cash": 1080.6
+    },
+    {
+      "action": "resgatar missão",
+      "id": "sabores_m",
+      "reward": 200,
+      "cash": 1280.6
+    },
+    {
+      "action": "concluir etapa",
+      "chapter": "carnaval",
+      "index": 0,
+      "kind": "fame",
+      "quantity": 5,
+      "cash": 1280.6
+    },
+    {
+      "action": "comprar negócio",
+      "id": "sorveteria",
+      "cost": 900,
+      "cash": 380.6
+    },
+    {
+      "action": "vender produtos",
+      "dish": "coco_gelado",
+      "quantity": 128,
+      "unit_price": 12,
+      "unit_supplies": 4,
+      "cash": 1404.6
+    },
+    {
+      "action": "comprar negócio",
+      "id": "aluguel",
+      "cost": 1400,
+      "cash": 4.6
+    },
+    {
+      "action": "concluir etapa",
+      "chapter": "carnaval",
+      "index": 1,
+      "kind": "biz",
+      "quantity": 2,
+      "cash": 4.6
+    },
+    {
+      "action": "vender produtos",
+      "dish": "coco_gelado",
+      "quantity": 50,
+      "unit_price": 12,
+      "unit_supplies": 4,
+      "cash": 404.6
+    },
+    {
+      "action": "concluir etapa",
+      "chapter": "carnaval",
+      "index": 2,
+      "kind": "pay",
+      "quantity": 400,
+      "cash": 4.6
+    },
+    {
+      "action": "concluir capítulo",
+      "id": "carnaval",
+      "cash": 504.6
+    },
+    {
+      "action": "resgatar missão",
+      "id": "carnaval_m",
+      "reward": 300,
+      "cash": 804.6
+    },
+    {
+      "action": "campanha trancada",
+      "id": "marealta",
+      "cash": 804.6
+    },
+    {
+      "action": "vender produtos",
+      "dish": "coco_gelado",
+      "quantity": 25,
+      "unit_price": 12,
+      "unit_supplies": 4,
+      "cash": 1004.6
+    },
+    {
+      "action": "comprar expansão",
+      "id": "passeios",
+      "cost": 1000,
+      "cash": 4.6
+    },
+    {
+      "action": "mostrar tela final",
+      "title": "Obrigado por jogar a demo!",
+      "cash": 4.6
+    }
+  ]
+}

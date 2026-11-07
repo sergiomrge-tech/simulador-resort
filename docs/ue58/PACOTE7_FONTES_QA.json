@@ -1,0 +1,14 @@
+{
+ "scope": "Cobertura dos intervalos CJK segundo MareNotebookStyle.h; não é renderização Slate ou prova de todas as fontes do motor.",
+ "font_sha256": {
+  "NotoSansSC": "d77669865baafa303aa5bd10303cb67d0688a22079c0c3aa6f3ba6a9042852ee",
+  "NotoSansJP": "2842ba5c1ff8b98c0bb1a0847051b9ce6c7275211a2996a8191583a760a41e98",
+  "NotoSansKR": "35d611400cae4a4bf3bc4331abea34ad5766ffc1d0770e68ce7608a6a37074c9"
+ },
+ "required_codepoints": {
+  "NotoSansSC": 1626,
+  "NotoSansJP": 1129,
+  "NotoSansKR": 880
+ },
+ "missing": []
+}

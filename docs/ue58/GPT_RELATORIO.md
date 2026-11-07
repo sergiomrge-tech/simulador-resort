@@ -534,3 +534,323 @@ Resultado final observado: 12 idiomas completos, zero erros no lint/glossário/c
 da dívida e testes econômicos passam. O índice de assets verifica caminhos e referências, não a carga/renderização.
 O extrator gera todo_*.json vazios como intermediários: não versionar esses arquivos. Para o runtime futuro, verificar
 exatamente as condições nos pontos de evento, salvar antes de notificar Steam e preservar campos desconhecidos do save.
+
+
+# Pacote 7 — tutorial, campanha, percurso da demo e Steam
+
+07/11/2026. Base remota conferida: `09dcc3837a91e3428c29b9fb8d91c38dc3c05ec9`, merge do Pacote 6. A árvore desse merge
+é idêntica à entrega anterior (`1a385f5c23553e0bafa11a3bebb37aad82fae7d0`). Branch `gpt/pacote-7`, destino
+`codex/ue58-migration`. **Não houve alteração em C++, .uasset, metas, recompensas, ordem ou números de economia.**
+Não houve execução da Unreal, build Shipping, publicação na Steam ou medição de duração em playtest.
+
+## Entrega e contagens
+
+- **62 campos textuais existentes corrigidos:** 42 em tutorial.json, 12 em definitions.json, seis em world.json,
+  um em tours.json e um em events.json. Campos numéricos, IDs, pré-requisitos, ordenação e recompensas preservados.
+- Todas as **44 dicas anteriores foram conferidas**: 42 reescritas; RoomService e biz:surfe mantidas por serem curtas
+  e corretas (a tradução polonesa de surfe foi encurtada). Duas dicas novas usam ações já existentes: Door e IntroLetter.
+- Nove dicas de gestão adicionais, prontas nos dados e nos idiomas, **ainda sem chamadas C++**: phone:stock, staff,
+  finance, expansions, missions, custom, recipes, events e debt. Não são anunciadas como fluxos ativos. Total: 55 dicas.
+- **113/113 LOCTEXT e 4.055/4.055 strings em cada um dos 12 idiomas**, sem vazias. 81 chaves novas e
+  68 removidas contra a base. Chaves antigas com consumidor nativo continuam existindo até ele ser migrado.
+- Extrator corrigido para os quatro textos de desbloqueio de capítulos e para títulos explícitos de tutorial com
+  hífen (Pingue-pongue). Slugs como fab:143 deixam de virar traduções. IDs, teclas e campos de save não são traduzidos.
+- `demo_walkthrough.py` e `number_text_check.py` ligados ao `data_lint.py`, além do glossário e conquistas do Pacote 6.
+- Materiais finais pt-BR/en: página da demo, página do jogo principal em Acesso Antecipado, FAQ do EA e patch notes 0.1.
+  Os cabeçalhos editoriais separam texto publicável e condições de integração; não há promessa de data/preço futuro.
+
+## Tutorial: o que a leitura do código mudou
+
+| Tema | Correção / evidência |
+|---|---|
+| Quiosque | Produto pronto, anotar com E, pagamento na entrega: MareSimulation.cpp:237–248; placa e dormir: :124–144, :451–453 |
+| Bar | E no ingrediente executa BarPick + BarPour, sem transporte manual: MareServiceTarget.cpp:129–132. Dicas BarCounter/BarIngredient/BarGlass atualizadas |
+| Coletes | Entrega ocorre na primeira parada. Sair sem todos os coletes gera resultado pior, mas é permitido: MareBoatTourWorld.cpp:256–257. Removido “ninguém sai sem colete” |
+| Mesa suja | Mesa indisponível até limpar, e atendente recolhe: MareKioskWorld.cpp:38, :120–126, :192–195 |
+| Piscina | Folhas/toalhas afetam limpeza e nota ao fechar; piscineiro contratado ajuda: MarePool.cpp:36–39, :90–99. Venda respeita estoque: :59–68 |
+| Pousada | Negociação e necessidade de quarto limpo: MareStays.cpp:83–118. Não foram inventadas diárias ou etapas novas |
+| Hotel | Recepção aceita oferta depois de 120 minutos se houver quarto limpo: MareStays.cpp:186–192. Arrumação/consumo do frigobar: MareHotelRooms.cpp:94–131 |
+| Oferenda | Cortesia no encontro não conta como entrega manual; levar ao cesto nos dias seguintes antes das 22h: MareSummitWorld.cpp:125–157 |
+| Gestão | Celular reúne o que já existe. Chamadas por seção ainda exigem C++ e estão discriminadas abaixo |
+| Dívida | Objetivo narrativo na abertura, no gancho e no final da demo. Não se prometeu botão de pagamento ativo nesta base; phone:debt aguarda PayDebt |
+
+O cartão de dica **não fica dentro da tela do celular** nesta base: MareGame.cpp:2596–2599 usa largura 400/wrap 370,
+fonte FCoreStyle Regular 12 (a chamada passa 12.5 a um parâmetro int32); :2760–2761 conta 14 segundos e o oculta enquanto
+bPhone estiver aberto. Encurtamos os textos para o espaço real encontrado. A estimativa estática, com margem de fonte,
+ficou em até duas linhas para **715 combinações (55 dicas × pt-BR e 12 traduções)**, registrada em
+[PACOTE7_TUTORIAL_QA.json](PACOTE7_TUTORIAL_QA.json). Usa DejaVu Sans 16px e avanço CJK de 16px como aproximação; não
+substitui o layout Slate, DPI, fontes de fallback ou a escala escolhida pelo jogador. A confirmação visual é do editor.
+
+## Fontes CJK reconstruídas sem editor
+
+Os recortes Noto Sans SC/JP/KR estavam atrás dos catálogos, inclusive em textos anteriores a este pacote. Foram
+reconstruídos a partir das fontes oficiais Google Fonts (peso 500), sem alterar .uasset ou C++ e preservando as
+atribuições já existentes em CREDITS.md. As três licenças SIL OFL foram incluídas em Content/UI/Fonts/OFL-NotoSans*.txt.
+`i18n_fonts.py` ganhou --source-dir e --families para funcionar fora do caminho fixo do Windows, preservando o padrão
+antigo. Não se versionaram downloads completos nem caches.
+
+`font_coverage_check.py` confere os intervalos de MareNotebookStyle.h contra os três arquivos resultantes:
+**1.626 pontos SC, 1.129 JP e 880 KR exigidos; zero glifos CJK ausentes**. Evidência com hashes dos TTF em
+[PACOTE7_FONTES_QA.json](PACOTE7_FONTES_QA.json). Isto comprova cobertura dos arquivos, não a seleção/renderização Slate.
+
+Fontes-base: `https://github.com/google/fonts/tree/main/ofl/notosanssc`, `notosansjp` e `notosanskr`. Licenças copiadas
+junto aos recortes. Para reconstruir num cache fora do Windows (fontTools já é dependência do script):
+
+```sh
+python tools/ue58/i18n_fonts.py --source-dir /caminho/do/cache --families NotoSansSC NotoSansJP NotoSansKR --download
+python tools/ue58/qa/font_coverage_check.py
+```
+
+## Campanha e capítulos: conferência de todos os predicados
+
+MareSimulation.cpp:299–326 define MissionAmount; :330–366 define abertura/progresso/avanço dos capítulos; :432–443
+resgata a missão e avança stage. “serve” conta **produtos entregues**, não clientes únicos (:253–259). “sell” conta
+somente o item vendido durante a etapa ativa. Corrigidos os dois textos. Os textos de descoberta do bar são corretos
+em partida nova; saves legados também podem ter prog.disc, que soma ao contador (:350). Melhorias de receitas de
+campanha são a soma de RecipeLevel-1, e personalização conta tier-1 em uso, não compras históricas (:322–325).
+
+| Missão | Exigência real / contador | Demo |
+|---|---|---|
+| chegada: Uma nova maré | company.created (booleano); meta 1 | sim |
+| portas: Portas abertas | company.kiosk_open OU kiosk_n > 0; meta 1 | sim |
+| primeiros: O sabor da primeira manhã | kiosk_n, produtos entregues acumulados; meta 8 | sim |
+| mesas: Um lugar para ficar | unlocked.<id>; meta 1; item kiosk_tables | sim |
+| equipe: Uma parceria de verdade | staff.atendente (booleano); meta 1 | sim |
+| morro: O velho do morro | summit.met; meta 1 | sim |
+| oferendas: Três dias sem Onda | summit.count, entregas manuais; meta 3 | sim |
+| comunidade: O quiosque e o mar | prog.ch.<id> >= quantidade de steps; meta 1; item pier | sim |
+| encontro: O encontro dos viajantes | unlocked.<id>; meta 1; item bar | sim |
+| hospedar: Fique mais um dia | unlocked.<id>; meta 1; item pousada | sim |
+| verao: Um verão inesquecível | unlocked.<id>; meta 1; item pool | sim |
+| prainha_m: A prainha secreta | prog.ch.<id> >= quantidade de steps; meta 1; item prainha | sim |
+| sabores_m: Sabores da Dona Cecília | prog.ch.<id> >= quantidade de steps; meta 1; item sabores | sim |
+| carnaval_m: Carnaval na areia | prog.ch.<id> >= quantidade de steps; meta 1; item carnaval | sim |
+| marealta: A Maré Alta da vila | unlocked.<id>; meta 1; item grand_hotel | limite; não resgatada |
+| salao: O salão da vila | unlocked.<id>; meta 1; item salao_jogos | jogo completo |
+| chef: Cardápio de chef | soma RecipeLevel(dish)-1; meta 20 | jogo completo |
+| postal: Cartão-postal | soma max(0,tier-1) em State.custom; meta 40 | jogo completo |
+| lenda: Lenda da costa | FameLevel, teto 10; meta 10 | jogo completo |
+| fregueses: Sete mil vendas | kiosk_n, produtos entregues acumulados; meta 7000 | jogo completo |
+| festa: A Festa da Maré Alta | prog.campaign.finale após cena na praia; meta 1 | jogo completo |
+
+| Capítulo / etapa | Texto conferido | Contador real |
+|---|---|---|
+| pier / 1 | Levar 4 peixes para o almoço dos pescadores | stock.<item>; desconta qty ao concluir |
+| pier / 2 | Entregar 15 produtos no quiosque durante esta etapa | prog.ch.<id>_serve; por produto na etapa ativa |
+| pier / 3 | Doar R$ 150 para as tábuas novas | money >= qty; Book(-qty) |
+| prainha / 1 | Chegar à fama "Ponto da praia" | FameLevel |
+| prainha / 2 | Fotografar o farol (tecla P) | prog.chp.<item> (booleano) |
+| prainha / 3 | Levar 6 cocos para o mutirão | stock.<item>; desconta qty ao concluir |
+| sabores / 1 | Descobrir 2 drinks novos no Bar do Coqueiro | prog.disc + BarDiscoveries |
+| sabores / 2 | Vender 10 porções de petiscos durante esta etapa | prog.ch.<id>_sell; item na etapa ativa |
+| sabores / 3 | Pagar R$ 250 da reforma do food truck | money >= qty; Book(-qty) |
+| carnaval / 1 | Chegar à fama "Famoso na região" | FameLevel |
+| carnaval / 2 | Ter 2 negócios funcionando | quantidade de negócios comprados (lvl > 0) |
+| carnaval / 3 | Pagar R$ 400 da decoração | money >= qty; Book(-qty) |
+
+Os quatro story de capítulos continuam coerentes com os pedidos/givers. O unlock de carnaval foi corrigido: o evento
+segue events.party_calendar por Day%7 após party_from_day e o capítulo, **não o fim de cada verão** (MareEvents.cpp:20–26).
+
+A abertura passa a citar Dona Dilce viva no bingo e R$ 1.000.000; o marco marealta liga o Grand Hotel à dívida sem dizer
+que a etapa é da demo dentro da build completa. A festa deixa explícito que comemorar não quita dívida; sua janela é
+20h até antes de 23h30 (MareSummitWorld.cpp:292). A meta permanece **7.000 vendas**; o título virou “Sete mil vendas”.
+
+**Limite nativo importante:** MissionsPage mostra title/task, mas **não campaign.story**, e omite a missão bloqueada
+(MareGame.cpp:805–812). As histórias estão preparadas e traduzidas; exibi-las precisa da pequena alteração de UI abaixo.
+O gancho visível da demo já foi aplicado em events.end_of_content.text, lido por SMareEndScreen em MareGame.cpp:1756:
+“Grand Hotel e quitação da dívida de Dona Dilce” ficam no jogo completo. O próprio objetivo bloqueado não é resgatado.
+
+## Percurso da demo em Python
+
+[PACOTE7_DEMO_PERCURSO.json](PACOTE7_DEMO_PERCURSO.json) contém o rastro completo de uma partida lógica nova:
+empresa → placa → vendas → compras na expansion_order → atendente → Seu Tibúrcio → três oferendas manuais em dias
+subsequentes à cortesia → capítulos → negócios necessários → campanha parada em marealta → todas as oito expansões
+da demo e quatro capítulos → tela de agradecimento. Grand Hotel e salão permanecem trancados.
+
+O teste lê os JSON atuais, não injeta caixa, usa vendas repetíveis de coco com compra de insumos, recompensas e custos
+registrados. Reserva capital para financiar a próxima venda; nas noites das oferendas usa teto salarial conservador
+dos níveis. Não reproduz relógio/XP de funcionário, navmesh, estoques físicos de cena, tentativas/habilidade, eventos
+aleatórios ou as consequências visuais. É prova de **alcançabilidade dos predicados modelados**, não execução do C++
+nem medição de cerca de 2 horas. O código nativo foi a referência de leitura, não uma biblioteca executada em Python.
+
+Verifica pré-requisitos/ordem, IDs, itens entregáveis/vendáveis, fotos, limites booleanos/fama/descobertas/negócios,
+idiomas de missões/capítulos/dicas/final, bloqueio full_game antes do limite e condição da tela final. **13 mutações
+negativas são reprovadas**, incluindo pré-requisito falso/full_game, item ausente, fama 11, 999 descobertas, meta
+booleana 2, negócio impossível, tradução ausente, dica ausente, coco sem margem e final já marcado no save inicial.
+
+## Auditoria de números
+
+O inventário [PACOTE7_AUDITORIA_NUMEROS.json](PACOTE7_AUDITORIA_NUMEROS.json) lista textos numéricos extraídos dos
+JSON e do Source, com arquivos/campos/linhas. Classifica números mecânicos, formatos dinâmicos, atributos/numeração,
+humor e console/QA; não transforma nomes, tempos cômicos ou detalhes de material em regra de economia. A classificação
+é triagem contextual, não prova automática de cada regra nativa. O validador permanente cobre os vínculos mecânicos
+explícitos que podem ser comparados sem Unreal.
+
+| Conferência | Resultado / fonte |
+|---|---|
+| Expansões | bar R$ 900; pousada R$ 1.400; piscina R$ 1.100; passeios R$ 1.000; Grand Hotel R$ 45.000 — definitions.expansions; preservados |
+| Venda final | task, título e história em 7.000, com mesmo qty/reward/posição |
+| Dívida | principal R$ 1.000.000; marcos 25/50/75%, teto demo R$ 250.000; debt.json intacto e sem consumidor nativo |
+| Preços impressos | Confrontados com definitions.dishes.<id>.price; são preços-base, não preços personalizados de um save |
+| Estoque nas placas | Removidos “6 prontos”/“12 prontos” fixos de seis etiquetas de world.json: viraram “Produtos prontos”; estoque real é variável |
+| Chapa / maior preço | Petiscos custam 26 e porção de peixe 28. Removido “o prato mais caro” da descrição da expansão; preços não mudaram |
+| Camareira | Removido “a cada 20 minutos”: StaysHour processa tarefas por hora, orçamento 3×StaffSkill, não um relógio fixo de 20 min |
+| Pôr do sol | JSON [17.25,17.95] = 17h15–17h57; instrução antiga dizia 17h55; corrigida nas 12 traduções |
+| Minijogos | bolas/1,8 s, voltas 7/9, fritura 6–8 e 6,3–7,6 s, fitas 2/12 e 1,5/9 s conferidos com levels[].set |
+| Bônus | Balcão +10/20/30/40% e barco +1/2/3/4 vagas seguem efeitos × tier-1; funcionário 60%, bartender 85% e +15% conferidos |
+| Hotel | 32 quartos vem de PlaceRooms/MareStays.cpp:33; três tipos e três visitáveis em hotel_rooms.json; não chamar todos de suítes |
+| EA e duração | Cerca de 2 h é estimativa de progressão informada/simulada, não timer. Nenhuma duração total ou data garantida na copy |
+
+Números nativos atuais lidos e correspondências principais (nenhuma troca de preço fixo nativo foi necessária):
+
+| Texto/regra C++ | Fonte dos dados / regra | Arquivo:linha |
+|---|---|---|
+| Almoço 12h–15h, jantar 19h–22h | restaurant.services [[12,15],[19,22]] | MareGame.cpp:298; MareRestaurant.cpp:40 |
+| Hóspedes 10h–20h | janela nativa de StaysHour, não preço | MareStays.cpp:179–185; MareGame.cpp:590 |
+| Recepção após 2h | 120 minutos, oferta com quarto limpo | MareStays.cpp:191; MareGame.cpp:586 |
+| +15% bartender / +10% camareira | operations.hourly.bar.staff_bonus=.15; operations.pousada.maid_bonus=.1 | MareSimulation.cpp:837–839 |
+| Restaurante: 90%, sem garçom 45 min/70% | .9 e 15 min nativos; restaurant.crew_minutes=45/crew_share=.7 | MareRestaurant.cpp:159–161 |
+| Sinuca: oito jogadores / uma rodada ao dia | bracket de oito nativo; game_room.cup para taxa/prêmios/ciclo semanal | MarePoolCup.cpp:120; MareGame.cpp:423 |
+| Tênis de mesa: melhor de 3, 11 pontos | regra nativa (dois games vencidos, vantagem de dois pontos) | MareTableTennis.h:19–20 |
+| Três paradas / três rodadas | tours.stops com três escolhas; business_games.steps; consumidores de tour/minijogo | MareTours.cpp:228; MareBoatTourWorld.cpp:58 |
+| Cinco níveis de receitas/bar, três de negócios | recipes.levels e upgrades.prices têm cinco; base+levels dos negócios = três | MareSimulation.cpp:600; MareBizCommon.cpp:27 |
+
+Os números são corretos nesta base; alguns rótulos nativos ainda são literais e podem divergir se os dados mudarem.
+As linhas exatas de todas as ocorrências catalogadas estão no inventário. Tamanhos de TV, fios de roupa de cama,
+numeração de quartos/props, regra de bola 8 e exageros de pescaria foram mantidos em suas categorias; não são custos
+de expansão nem metas. A inspeção física de props e o comportamento de minijogos continuam sendo validação no editor.
+
+## Materiais da Steam prontos
+
+| Uso | pt-BR | en |
+|---|---|---|
+| Demo grátis | [loja_pt-BR.md](../steam/loja_pt-BR.md) | [loja_en.md](../steam/loja_en.md) |
+| Jogo principal / EA | [loja_completo_pt-BR.md](../steam/loja_completo_pt-BR.md) | [loja_completo_en.md](../steam/loja_completo_en.md) |
+| Notas 0.1 da demo | [patch_notes_demo_0_1_pt-BR.md](../steam/patch_notes_demo_0_1_pt-BR.md) | [patch_notes_demo_0_1_en.md](../steam/patch_notes_demo_0_1_en.md) |
+| FAQ de EA e comparação | [acesso_antecipado.md](../steam/acesso_antecipado.md) | Mesmo arquivo, seção English |
+
+Descrição curta e longa de cada produto, distinção demo/EA, por que EA, duração sem previsão inventada, diferenças
+pretendidas, conteúdo atual, preço sem compromisso e participação da comunidade estão incluídos. A copy do jogo
+principal que descreve pagar a dívida depende da implementação antes da publicação; a demo não anuncia botão de
+pagamento que não existe. Não se prometem migração de save, Steam Cloud, conquistas integradas, Deck, co-op, data ou
+requisitos de hardware sem teste. Materiais de planejamento/presskit anteriores não substituem estas páginas finais.
+
+## Para o Claude — somente C++ ou editor
+
+1. **Mostrar campaign.story** em MissionsPage (MareGame.cpp:805–810) além de title/task, respeitando o limite da demo;
+   traduzir via MareLoc o valor já localizado em Data. As 21 histórias já estão completas nos 12 mapas: nenhum texto
+   novo precisa ser inventado. O gancho final visível de SMareEndScreen já vem de events.json; não duplicar a tela.
+2. **Ligar as nove dicas de gestão** abaixo a ShowTip e tornar a dica visível na seção apropriada do celular. Não chamar
+   em cada Rebuild, marcar como vista antes de aparecer ou deixar o timeout vencer escondido. O comportamento atual
+   é MareGame.cpp:2500 e :2760–2761; manter o sistema existente, sem novo tutorial/onboarding.
+3. **Trocar três rótulos/instruções nativos** na tabela abaixo, migrando as chaves e os 12 idiomas junto do Source.
+4. **Integrar dívida/final/Steam** já entregues no Pacote 6: DIVIDA_DA_AVO.md, debt.json, achievements.json,
+   PACOTE6_TEXTOS_CPP.json. Permanecem tarefas nativas, não um motivo para adiar dados/traduções. Os pagamentos e
+   o final precisam existir antes de publicar a copy do jogo principal que os descreve.
+5. **Editor/build:** confirmar wrapping/DPI/fallback dos 12 idiomas, duas dicas novas em portas/carta, timings reais,
+   navegação, chegada/campanha/continuidade da demo e texto final. Rodar qa_gate.py e capturar evidências reais.
+   Medir as cerca de 2 h com jogadores; os testes Python não foram apresentados como esse playtest.
+
+### Três textos nativos — colar com as traduções
+
+Versão estruturada: [PACOTE7_TEXTOS_CPP.json](PACOTE7_TEXTOS_CPP.json). No item bar_pick, o formato C++ continua usando
+`%s` e `%d`; as chaves de localização usam {0}/{1}. Nenhuma destas substituições foi aplicada ao Source ou antecipada
+nos catálogos ativos.
+
+| ID | Arquivo:linha | Atual | Novo |
+|---|---|---|---|
+| bar_help | unreal/MareAlta/Source/MareAlta/MareGame.cpp:548 | Pegue os ingredientes na bancada do fundo (E) e coloque no copo (E). Depois use o copo para socar, bater e servir. | Use E nos ingredientes para colocá-los direto no copo. Depois use E no copo para preparar e servir. |
+| bar_pick | unreal/MareAlta/Source/MareAlta/MareBarWorld.cpp:177 | {0} · pegar ({1}) | {0} · adicionar ao copo ({1}) |
+| demo_hook | unreal/MareAlta/Source/MareAlta/MareGame.cpp:812 | Fim da demo: a história continua no jogo completo, com o Grand Hotel. | Fim da demo: o Grand Hotel e a quitação da dívida de Dona Dilce continuam no jogo completo. |
+
+| ID | Idioma | Tradução nova |
+|---|---|---|
+| bar_help | en | Use E on ingredients to add them straight to the glass. Then use E on the glass to prepare and serve. |
+| bar_help | es | Usa E en los ingredientes para añadirlos al vaso. Luego usa E en el vaso para preparar y servir. |
+| bar_help | de | Mit E auf Zutaten kommen sie direkt ins Glas. Danach mit E am Glas zubereiten und servieren. |
+| bar_help | fr | E sur les ingrédients les ajoute au verre. Puis E sur le verre pour préparer et servir. |
+| bar_help | zh-Hans | 对原料按E即可直接加入杯中，然后对杯子按E完成调制并供应。 |
+| bar_help | ja | 材料にEを押すと直接グラスへ。続いてグラスでEを押し、仕上げて提供します。 |
+| bar_help | ru | Нажмите E на ингредиентах: они попадут в бокал. Затем E на бокале, чтобы приготовить и подать. |
+| bar_help | ko | 재료에 E를 누르면 바로 잔에 들어갑니다. 그다음 잔에 E를 눌러 준비하고 서빙하세요. |
+| bar_help | it | Usa E sugli ingredienti per metterli nel bicchiere. Poi E sul bicchiere per preparare e servire. |
+| bar_help | pl | Użyj E na składnikach, by dodać je do szklanki. Potem E na szklance, by przygotować i podać. |
+| bar_help | nl | Gebruik E op ingrediënten om ze in het glas te doen. Gebruik daarna E op het glas om te bereiden en serveren. |
+| bar_help | pt-PT | Use E nos ingredientes para colocá-los direto no copo. Depois use E no copo para preparar e servir. |
+| bar_pick | en | {0} · add to glass ({1}) |
+| bar_pick | es | {0} · añadir al vaso ({1}) |
+| bar_pick | de | {0} · ins Glas geben ({1}) |
+| bar_pick | fr | {0} · ajouter au verre ({1}) |
+| bar_pick | zh-Hans | {0} · 加入杯中（{1}） |
+| bar_pick | ja | {0} · グラスに加える（{1}） |
+| bar_pick | ru | {0} · добавить в бокал ({1}) |
+| bar_pick | ko | {0} · 잔에 넣기 ({1}) |
+| bar_pick | it | {0} · aggiungi al bicchiere ({1}) |
+| bar_pick | pl | {0} · dodaj do szklanki ({1}) |
+| bar_pick | nl | {0} · in het glas doen ({1}) |
+| bar_pick | pt-PT | {0} · adicionar ao copo ({1}) |
+| demo_hook | en | End of demo: the Grand Hotel and paying off Dona Dilce's debt continue in the full game. |
+| demo_hook | es | Fin de la demo: el Grand Hotel y liquidar la deuda de Dona Dilce continúan en el juego completo. |
+| demo_hook | de | Ende der Demo: Grand Hotel und Tilgung von Dona Dilces Schulden gehen im vollständigen Spiel weiter. |
+| demo_hook | fr | Fin de la démo : le Grand Hotel et le remboursement de la dette de Dona Dilce continuent dans le jeu complet. |
+| demo_hook | zh-Hans | 试玩版结束：Grand Hotel和还清Dona Dilce债务的目标将在完整版继续。 |
+| demo_hook | ja | デモ終了。Grand HotelとDona Dilceの借金完済は製品版へ続きます。 |
+| demo_hook | ru | Конец демо: Grand Hotel и погашение долга Dona Dilce продолжаются в полной игре. |
+| demo_hook | ko | 데모 끝: Grand Hotel과 Dona Dilce의 빚 청산은 전체 게임에서 이어집니다. |
+| demo_hook | it | Fine demo: Grand Hotel e rimborso del debito di Dona Dilce continuano nel gioco completo. |
+| demo_hook | pl | Koniec dema: Grand Hotel i spłata długu Dona Dilce czekają w pełnej grze. |
+| demo_hook | nl | Einde demo: het Grand Hotel en het aflossen van Dona Dilce's schuld gaan verder in de volledige game. |
+| demo_hook | pt-PT | Fim da demo: o Grand Hotel e a quitação da dívida de Dona Dilce continuam no jogo completo. |
+
+### Dicas de gestão preparadas — gatilhos ainda pendentes
+
+As 12 traduções de cada linha já estão em tutorial.json/Localization e no JSON acima, prontas para uso após os gatilhos.
+
+| Chave | Ponto sugerido no C++ | Texto pt-BR |
+|---|---|---|
+| phone:stock | unreal/MareAlta/Source/MareAlta/MareGame.cpp:940 | Reponha produtos pelo celular. Confira o custo antes de comprar. |
+| phone:staff | unreal/MareAlta/Source/MareAlta/MareGame.cpp:941 | Confira contratação, salário e turno antes de contratar. |
+| phone:finance | unreal/MareAlta/Source/MareAlta/MareGame.cpp:942 | Veja o caixa e os lançamentos. A dívida é o objetivo da história. |
+| phone:expansions | unreal/MareAlta/Source/MareAlta/MareGame.cpp:943 | Confira os requisitos e o preço da próxima expansão. |
+| phone:missions | unreal/MareAlta/Source/MareAlta/MareGame.cpp:944 | Confira a tarefa atual e resgate as recompensas já liberadas. |
+| phone:custom | unreal/MareAlta/Source/MareAlta/MareGame.cpp:945 | Compare preço e efeito das melhorias antes de comprar. |
+| phone:recipes | unreal/MareAlta/Source/MareAlta/MareGame.cpp:876 | Melhore receitas para valorizar os produtos. Veja o custo do próximo nível. |
+| phone:events | unreal/MareAlta/Source/MareAlta/MareGame.cpp:747 | Veja a previsão de amanhã e prepare o resort para o evento. |
+| phone:debt | unreal/MareAlta/Source/MareAlta/MareGame.cpp:732 | Pague quando puder, sem juros. Confira o caixa antes de confirmar. |
+
+phone:recipes fica na seção de receitas dentro de CustomizePage; phone:events, no cartão de previsão/preparativos de
+ResortPage. phone:debt só deve disparar depois que o cartão da dívida existir. Não expor essas dicas como promessa de
+funcionalidade antes da integração. As dicas genéricas phone e as ações físicas existentes continuam ativas.
+
+## Como conferir
+
+```sh
+python tools/ue58/i18n_extract.py
+python tools/ue58/qa/data_lint.py
+python tools/ue58/qa/demo_walkthrough.py
+python tools/ue58/qa/demo_walkthrough.py --self-test
+python tools/ue58/qa/number_text_check.py --self-test
+python tools/ue58/qa/test_i18n_extract.py
+python tools/ue58/qa/font_coverage_check.py
+python tools/ue58/qa/glossary_check.py --self-test
+python tools/ue58/qa/achievements_check.py
+python tools/ue58/balance/test_debt_vectors.py
+python tools/ue58/balance/test_debt.py
+python tools/ue58/balance_model.py --self-test
+```
+
+Resultado observado: 12 catálogos completos; 49 JSON, 796 referências de modelos e **zero erros no data_lint**,
+incluindo glossário, conquistas, percurso e vínculos numéricos. 13 mutações de percurso e cinco de números rejeitadas;
+regressões do extrator, cobertura CJK e testes herdados passam. O teste de fontes exige fontTools; o data_lint permanece sem dependências externas. Sem C++, .uasset, alteração de meta/valor ou arquivo todo no commit.
+O índice de packages mantém a origem dos nomes na árvore Git e apenas renova hashes dos JSON textuais alterados.
+
+Para reproduzir os relatórios de dados:
+
+```sh
+python tools/ue58/qa/demo_walkthrough.py --json > docs/ue58/PACOTE7_DEMO_PERCURSO.json
+python tools/ue58/qa/number_text_check.py --inventory > docs/ue58/PACOTE7_AUDITORIA_NUMEROS.json
+```
+
+O extrator cria todo_*.json vazios como intermediários; não versioná-los. O relatório de tamanho é estimativa estática,
+não captura da Unreal. O diff dos dados foi comparado estruturalmente: apenas os 62 campos textuais existentes e as
+11 entradas de dicas foram alterados/adicionados; listas e números preexistentes são idênticos à base.
