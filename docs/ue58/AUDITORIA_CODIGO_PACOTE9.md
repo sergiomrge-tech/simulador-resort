@@ -130,3 +130,22 @@ Referências: https://www.unrealengine.com/eula/unreal e https://www.fab.com/eul
 5. Rodar `python tools/ue58/i18n_extract.py`, checar 12 catálogos e `python tools/ue58/qa/data_lint.py --json`; testes nativos Unreal/PIE/package continuam indispensáveis.
 
 **Limite:** leitura estática não comprova ausência de outros problemas. O Pacote 9 não altera código, binários nem áudios.
+
+## Cobertura completa da inspeção
+
+A leitura estática foi estendida aos **69 arquivos `unreal/MareAlta/Source/MareAlta/*.cpp`** presentes no commit base, inclusive testes/QA, com atenção ao fluxo de dinheiro, saves, estados, divisores, índices, formatação e relógios. Achados não observados ou casos que dependem de dados ausentes não foram classificados como bugs comprovados; exemplos de guardas preventivas incluem divisores configuráveis de natação e pool.
+
+**Correções anteriores verificadas na base:** `MareGame.cpp:2881` — `SaveClock+=DeltaSeconds` agora está fora do comentário e salva a cada 30s; `MareSimulation.cpp:424-429` — XP negativo reduz fama com piso do nível; `MareStays.cpp:102` — limpa `vip_asked` e `vip_done` por estadia. Esses pontos não devem ser reintroduzidos como bugs sem novo cenário.
+
+**Observação adicional P2:** `MarePoolWorld.cpp:41` divide a sujeira por `PoolDefs.scoop`; os dados padrão precisam manter `scoop > 0`. Se for zero em config, o número de folhas não é válido. Correção proposta (endurecimento):
+
+```diff
+--- a/unreal/MareAlta/Source/MareAlta/MarePoolWorld.cpp
++++ b/unreal/MareAlta/Source/MareAlta/MarePoolWorld.cpp
+@@ Tick(float DeltaSeconds)
+-const int32 Clusters=bOwned?FMath::CeilToInt(UMareSimulation::Number(P,TEXT("dirt"))/UMareSimulation::Number(Defs,TEXT("scoop"),25)):0;
++const double Scoop=FMath::Max(1.,UMareSimulation::Number(Defs,TEXT("scoop"),25));
++const int32 Clusters=bOwned?FMath::CeilToInt(UMareSimulation::Number(P,TEXT("dirt"))/Scoop):0;
+```
+
+Conferir no linter `scoop > 0`. **Sem crash observado** e sem alteração C++ neste PR.
