@@ -475,6 +475,66 @@ def retarget_clips(name='Lani', clips=None):
     return paths
 
 
+UAL_SRC = '/Game/People/AnimSource/UAL'
+
+
+def import_ual(glb='D:/Projetos/MareAltaUE58/assets/models/ual/guest.glb', clips='Swim_Fwd_Loop,Jump_Start,Jump_Loop'):
+    """Clips of the Quaternius Universal Animation Library (CC0) that the exported Human_0 does not carry: import the
+    glb's animations onto the Human_0 skeleton (same UAL rig) into /Game/People/AnimSource/UAL, keep only `clips`,
+    and retarget them onto the MetaHuman body (/Game/People/Animations/MH_<clip without _Loop>)."""
+    row = _catalog()['Human_0']
+    src_mesh = unreal.load_asset(row['skeletal_meshes'][0])
+    skeleton = src_mesh.get_editor_property('skeleton')
+    p = unreal.InterchangeGenericAssetsPipeline()
+    p.material_pipeline.set_editor_property('import_materials', False)
+    p.mesh_pipeline.set_editor_property('create_physics_asset', False)
+    props = p.common_skeletal_meshes_and_animations_properties
+    props.set_editor_property('skeleton', skeleton)
+    props.set_editor_property('import_only_animations', True)
+    p.animation_pipeline.set_editor_property('frame_alignment', unreal.InterchangeFrameAlignment.SNAP_TO_CLOSEST)
+    task = unreal.AssetImportTask()
+    task.filename = glb
+    task.destination_path = UAL_SRC
+    task.automated = True
+    task.replace_existing = True
+    task.save = False
+    task.options = p
+    unreal.AssetToolsHelpers.get_asset_tools().import_asset_tasks([task])
+    wanted = [c.strip() for c in clips.split(',') if c.strip()]
+    keep, found = [], []
+    for path in unreal.EditorAssetLibrary.list_assets(UAL_SRC, True, False):
+        asset = unreal.load_asset(path)
+        if not isinstance(asset, unreal.AnimSequence):
+            continue
+        found.append(asset.get_name())
+        if any(asset.get_name().endswith(c) for c in wanted):
+            keep.append(asset)
+        else:
+            unreal.EditorAssetLibrary.delete_asset(path)
+    tgt_mesh = unreal.load_asset(f'{FOLDER}/Lani/MH_Lani/Body/SKM_MH_Lani_BodyMesh')
+    rtg = unreal.load_asset(f'{RETARGET}/RTG_UAL_to_MH')
+    registry = unreal.AssetRegistryHelpers.get_asset_registry()
+    assets = [registry.get_asset_by_object_path(a.get_path_name()) for a in keep]
+    out = unreal.IKRetargetBatchOperation.duplicate_and_retarget(assets, src_mesh, tgt_mesh, rtg, '', '', '', '', ANIMS, False, False, True)
+    done = []
+    for a in out:
+        old = str(a.package_name)
+        clip = old.rsplit('/', 1)[-1]
+        for c in wanted:
+            if clip.endswith(c):
+                clip = 'MH_' + c.replace('_Loop', '')
+        new = f'{ANIMS}/{clip}'
+        if old != new:
+            if unreal.EditorAssetLibrary.does_asset_exist(new):
+                unreal.EditorAssetLibrary.delete_asset(new)
+            unreal.EditorAssetLibrary.rename_asset(old, new)
+        unreal.EditorAssetLibrary.save_asset(new, False)
+        done.append(new)
+    for a in keep:
+        unreal.EditorAssetLibrary.save_asset(a.get_path_name(), False)
+    return {'found': found, 'retargeted': done}
+
+
 MOCAP = '/Game/People/AnimSource/Mocap'
 
 
@@ -772,6 +832,8 @@ def run(action, arg=''):
     if action == 'rtclip':
         # Extra UAL clips onto the MetaHuman skeleton: "Swim_Idle,Crouch_Idle"
         return retarget_clips('Lani', arg.split(','))
+    if action == 'ualimport':
+        return import_ual(clips=arg or 'Swim_Fwd_Loop,Jump_Start,Jump_Loop')
     if action == 'rtclips':
         return retarget_clips(arg or 'Lani')
     if action == 'fixhands':

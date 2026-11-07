@@ -77,7 +77,8 @@ def scan_code():
             if ns:
                 for key, src in LOCTEXT.findall(line):
                     loc[f'{ns},{key}'] = unescape(src)
-            if 'UE_LOG' in line or line.strip().startswith('//') or 'LOCTEXT' in line:
+            # 'i18n:skip' in a line comment: identifiers/debug text on that line are never shown to the player.
+            if 'UE_LOG' in line or line.strip().startswith('//') or 'LOCTEXT' in line or 'i18n:skip' in line:
                 continue
             for s in LIT.findall(line):
                 s = unescape(s)

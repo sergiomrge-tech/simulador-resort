@@ -319,7 +319,9 @@ bool AMarePerson::SetMetaHuman(const FString& Name)
  GetMesh()->SetSkeletalMeshAsset(Body);GetMesh()->SetAnimInstanceClass(UMareServiceAnimInstance::StaticClass());
  // The last three are free Fab mocap clips (mare_metahuman.import_mocap; local only, like the outfits; mare.Mocap 0
  // turns them off); missing ones fall back to the base clips.
- TArray<FString> Wanted={TEXT("Idle"),TEXT("Idle_Talking"),TEXT("Walk"),TEXT("Sitting_Idle"),TEXT("Interact"),TEXT("Swim_Idle")};
+ TArray<FString> Wanted={TEXT("Idle"),TEXT("Idle_Talking"),TEXT("Walk"),TEXT("Sitting_Idle"),TEXT("Interact"),TEXT("Swim_Idle"),
+  // Pool swimmers (UMarePoolSwimWorld): UAL swim stroke and jump (mare_metahuman.import_ual).
+  TEXT("Swim_Fwd"),TEXT("Jump_Start"),TEXT("Jump")};
  if(CVarMareMocap.GetValueOnGameThread())Wanted.Append({TEXT("SitTalk"),TEXT("DanceHip"),TEXT("Cheer")});
  for(const FString& Clip:Wanted)
   if(auto Anim=LoadObject<UAnimSequence>(nullptr,*FString::Printf(TEXT("/Game/People/Animations/MH_%s.MH_%s"),*Clip,*Clip)))Clips.Add(Clip,Anim);
