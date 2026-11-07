@@ -737,3 +737,7 @@ O swim do UAL (`Swim_Fwd`) deixa o corpo deitado ~90 cm abaixo do ator: medir os
 de calibrar alturas. Desvio entre nadadores: corpo é um segmento cabeça-pés (90 cm à frente, 85 atrás), não um ponto.
 O editor em segundo plano roda o PIE a ~3 quadros/s: QA que espera gente aparecer precisa de tempo ou do modo forçado.
 Texto interno em C++ (nomes de campo JSON, depuração) vira chave de tradução se não tiver `// i18n:skip` na linha.
+O tobogã da UE é o modelo próprio `mare_water_slide` (`tools/ue58/gen_water_slide.py`: o de `gen_hotel.py` com a reta de
+saída de 4,5 m, materiais com prefixo, textura do Poly Haven da biblioteca), girado 18,66° em volta da torre para a saída
+terminar ~2 m dentro da piscina; girar sozinho não bastava (a ponta já estava no ponto mais distante da torre e a hélice
+encosta na borda). `pool_swim.json` → `slide` (`yaw`, `run`) tem de acompanhar o nível. Conferir a saída com foto DE CIMA.

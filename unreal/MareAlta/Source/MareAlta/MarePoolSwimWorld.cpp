@@ -149,7 +149,7 @@ FVector UMarePoolSwimWorld::SlideChute(const TSharedPtr<FJsonObject>& Slide,floa
  const float Ht=Num(Slide,TEXT("height"),6.5),R=2.6f,Cx=3.2f,Turns=1.75f;T=FMath::Clamp(T,0.f,1.f);   // i18n:skip
  FVector B;
  if(T<.9f){const float U=T/.9f,A=PI+2*PI*Turns*U;B=FVector(Cx+R*FMath::Cos(A),R*FMath::Sin(A),Ht+.15f-(Ht-.9f)*U);}
- else{const float U=(T-.9f)/.1f,A=PI+2*PI*Turns;B=FVector(Cx+R*FMath::Cos(A),R*FMath::Sin(A),1.05f)+FVector(U*3.f,0,-.7f*U);}
+ else{const float U=(T-.9f)/.1f,A=PI+2*PI*Turns;B=FVector(Cx+R*FMath::Cos(A),R*FMath::Sin(A),1.05f)+FVector(U*Num(Slide,TEXT("run"),3),0,-.7f*U);}   // i18n:skip
  // The centre line of the U is 30 cm above its floor: ride on the floor.
  return SlideWorld(Slide,B)-FVector(0,0,30);
 }
