@@ -1,0 +1,17 @@
+{
+ "seed": "20261108",
+ "clusters": 83,
+ "instances": {
+  "rock_face_01": 31,
+  "rock_face_02": 50,
+  "coast_line_01": 9,
+  "coast_land_rocks_03": 18,
+  "coast_rocks_01": 14,
+  "coast_rocks_02": 7,
+  "coast_land_rocks_04": 18
+ },
+ "total": 147,
+ "rejected": {
+  "band": 4
+ }
+}
