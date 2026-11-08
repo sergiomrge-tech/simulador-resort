@@ -2581,6 +2581,11 @@ static FAutoConsoleCommandWithWorldAndArgs MareQACommand(TEXT("mare.QA"),TEXT("Q
    bool bEA=false;S->Definitions->TryGetBoolField(TEXT("demo"),bEA);S->Definitions->SetBoolField(TEXT("demo"),false);
    bOk=S->BuyExpansion(Arg);S->Definitions->SetBoolField(TEXT("demo"),bEA);}
   else if(Verb==TEXT("biz"))bOk=S->BuyBusiness(Arg);
+  // HUD QA (08/11): "mare.QA order <dish>" adds a kiosk order, "mare.QA barorder <drink|any>" a bar order.
+  else if(Verb==TEXT("company"))bOk=S->CreateCompany(Arg);
+  else if(Verb==TEXT("open")){S->SetOpen(Arg!=TEXT("0"));bOk=true;}
+  else if(Verb==TEXT("order"))bOk=!S->AddOrder(TEXT("Cliente QA"),{Arg}).IsEmpty();   // i18n:skip
+  else if(Verb==TEXT("barorder"))bOk=!S->AddBarOrder(Arg==TEXT("any")?FString():Arg).IsEmpty();
   else if(Verb==TEXT("vip")){   // the first open kiosk order becomes a VIP ("mare.QA vip <title index>")
    for(const auto& Pair:UMareSimulation::Object(S->State,TEXT("ue_orders"))->Values){bOk=S->MakeVip(FString(Pair.Key.ToView()),FCString::Atoi(*Arg),0);break;}}
   else if(Verb==TEXT("fame")){for(int32 I=0;I<600 && S->FameLevel()<FCString::Atoi(*Arg);++I)S->AddFame(50);bOk=S->FameLevel()>=FCString::Atoi(*Arg) && S->Save();}
@@ -2692,6 +2697,8 @@ struct FMareHudModel
  TArray<TPair<FString,int32>> Compass;
  FString InteractKey=TEXT("E"),PhoneKey=TEXT("B"),PauseKey=TEXT("Esc"); // remapped keys, or gamepad buttons after gamepad input
  FString PadHint; // gamepad help over the open phone
+ /** Reference tip 2 (08/11): the controls that matter right now, key + action, in the bottom-right corner. */
+ TArray<TPair<FString,FString>> Controls;
  int32 StarsFlash=0; // 1 up (green), -1 down (red)
  TArray<TPair<FString,FString>> Tickets;
  TArray<TPair<FString,int32>> Note; // text, style: 0 heading, 1 main goal, 2 secondary, 3 guidance
@@ -2700,7 +2707,7 @@ struct FMareHudModel
  int32 PoolTable=-1,PoolGroups=0,PoolTurn=0;FString PoolOpp;
  FString Signature()const
  {
-  FString S=Money+Day+Fame+Notice+Prompt+Carry+Hint+Stars+Rooms+Served+TipTitle+TipText+FString::FromInt(Compass.Num())+InteractKey+PhoneKey+PauseKey+PadHint+FString::FromInt(StarsFlash)+(bPhone?TEXT("P"):TEXT(""));
+  FString S=Money+Day+Fame+Notice+Prompt+Carry+Hint+Stars+Rooms+Served+TipTitle+TipText+FString::FromInt(Compass.Num())+InteractKey+PhoneKey+PauseKey+PadHint+[this](){FString C;for(const auto& P:Controls)C+=P.Key+P.Value;return C;}()+FString::FromInt(StarsFlash)+(bPhone?TEXT("P"):TEXT(""));
   S+=FString::Printf(TEXT("|%d|%d|%d|"),PoolTable,PoolGroups,PoolTurn)+PoolOpp;
   for(const auto& T:Tickets)S+=T.Key+T.Value;
   for(const auto& C:Compass)S+=C.Key+FString::FromInt(C.Value);
@@ -2774,15 +2781,6 @@ public:
    +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(0,0,M.Rooms.IsEmpty()?0:24,0)[Txt(M.Rooms,15,Paper,true)]
    +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(0,0,6,0)[SNew(SImage).Image(&Icon(TEXT("Person"))).ColorAndOpacity(Paper)]
    +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center)[Txt(M.Served,15,Paper,true)]]];
-  // Order tickets, slightly tilted like paper slips.
-  if(M.Tickets.Num()){
-   auto Row=SNew(SHorizontalBox);
-   for(int32 I=0;I<M.Tickets.Num();++I)Row->AddSlot().AutoWidth().Padding(7,0)[SNew(SBox).WidthOverride(150).RenderTransform(Tilt(I%2?1.6f:-1.6f)).RenderTransformPivot(FVector2D(.5f,.5f))[SNew(SBorder).BorderImage(&Ticket()).Padding(0)[SNew(SVerticalBox)
-    +SVerticalBox::Slot().AutoHeight()[SNew(SBox).HeightOverride(5)[SNew(SBorder).BorderImage(&TicketStrip())]]
-    +SVerticalBox::Slot().AutoHeight().Padding(10,6,10,0)[Txt(M.Tickets[I].Key,13,Accent,true,130)]
-    +SVerticalBox::Slot().AutoHeight().Padding(10,2,10,9)[Txt(M.Tickets[I].Value,12,Ink,false,130)]]]];
-   Root->AddSlot().VAlign(VAlign_Top).HAlign(HAlign_Center).Padding(0,62,0,0)[Row];
-  }
   // Pool scoreboard at the top centre: each side with its group's balls (potted ones faded) and the 8 once it is
   // their target; » marks the side to play.
   if(M.PoolTable>=0){
@@ -2812,13 +2810,25 @@ public:
    // Top right, where the mission note sits outside a match (the notice card takes the top left).
    Root->AddSlot().VAlign(VAlign_Top).HAlign(HAlign_Right).Padding(0,66,22,0)[SNew(SBorder).BorderImage(&Ticket()).Padding(FMargin(14,8))[List]];}
   // Mission note pinned on the right; the side-tab phone covers the centre-left instead.
+  // Right column (reference tip 3, 08/11): the mission note, then the order tickets of the kiosk and the bar in a fixed
+  // list under it (they used to sit in a row at the top centre).
+  auto RightCol=SNew(SVerticalBox);
   if(M.Note.Num()){
    auto List=SNew(SVerticalBox);
    for(const auto& N:M.Note)List->AddSlot().AutoHeight().Padding(0,N.Value==0?0:4,0,0)[Txt(N.Key,N.Value==0?15:N.Value==1?13:12,N.Value==3?Accent:Ink,N.Value<=1,250)];
-   Root->AddSlot().VAlign(VAlign_Top).HAlign(HAlign_Right).Padding(0,70,26,0)[SNew(SBox).WidthOverride(280).RenderTransform(Tilt(1.f)).RenderTransformPivot(FVector2D(.5f,0))[SNew(SOverlay)
+   RightCol->AddSlot().AutoHeight().Padding(0,0,0,10)[SNew(SBox).WidthOverride(280).RenderTransform(Tilt(1.f)).RenderTransformPivot(FVector2D(.5f,0))[SNew(SOverlay)
     +SOverlay::Slot()[SNew(SBorder).BorderImage(&Note()).Padding(FMargin(16,18,16,16))[List]]
     +SOverlay::Slot().HAlign(HAlign_Center).VAlign(VAlign_Top).Padding(0,-7,0,0)[SNew(SBox).WidthOverride(16).HeightOverride(16)[SNew(SBorder).BorderImage(&Pin())]]]];
   }
+  if(M.Tickets.Num()){
+   auto Wrap=SNew(SWrapBox).PreferredSize(290.f);
+   for(int32 I=0;I<M.Tickets.Num();++I)Wrap->AddSlot().Padding(4,4)[SNew(SBox).WidthOverride(136).RenderTransform(Tilt(I%2?1.4f:-1.4f)).RenderTransformPivot(FVector2D(.5f,.5f))[SNew(SBorder).BorderImage(&Ticket()).Padding(0)[SNew(SVerticalBox)
+    +SVerticalBox::Slot().AutoHeight()[SNew(SBox).HeightOverride(5)[SNew(SBorder).BorderImage(&TicketStrip())]]
+    +SVerticalBox::Slot().AutoHeight().Padding(9,5,9,0)[Txt(M.Tickets[I].Key,12,Accent,true,118)]
+    +SVerticalBox::Slot().AutoHeight().Padding(9,2,9,8)[Txt(M.Tickets[I].Value,11,Ink,false,118)]]]];
+   RightCol->AddSlot().AutoHeight()[SNew(SBox).WidthOverride(290)[Wrap]];
+  }
+  if(M.Note.Num() || M.Tickets.Num())Root->AddSlot().VAlign(VAlign_Top).HAlign(HAlign_Right).Padding(0,70,22,0)[RightCol];
   // Temporary notice (sleep summary, chapter, fame) as a light card under the plank.
   if(!M.Notice.IsEmpty() && !M.bPhone)Root->AddSlot().VAlign(VAlign_Top).HAlign(HAlign_Left).Padding(22,62,0,0)[SNew(SBox).MaxDesiredWidth(380)[SNew(SBorder).BorderImage(&Toast()).Padding(FMargin(14,9))[Txt(M.Notice,13,Hex(20,60,56),false,350)]]];
   // Interaction sign and carried product at the bottom centre.
@@ -2829,12 +2839,13 @@ public:
    +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center)[Txt(M.Prompt,15,Hex(90,58,30),true)]]];
   if(!M.PadHint.IsEmpty())Bottom->AddSlot().AutoHeight().HAlign(HAlign_Center).Padding(0,6,0,0)[SNew(SBorder).BorderImage(&Toast()).Padding(FMargin(12,5))[Txt(M.PadHint,13,Hex(20,60,56),true)]];
   Root->AddSlot().VAlign(VAlign_Bottom).HAlign(HAlign_Center).Padding(0,0,0,58)[Bottom];
-  if(!M.bPhone)Root->AddSlot().VAlign(VAlign_Bottom).HAlign(HAlign_Left).Padding(22,0,0,16)[SNew(SHorizontalBox)
-   +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(0,0,6,0)[Key(M.PhoneKey)]
-   +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(0,0,16,0)[Txt(TEXT("Celular"),12,FLinearColor::White,true)]
-   +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(0,0,6,0)[Key(M.PauseKey)]
-   +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(0,0,16,0)[Txt(TEXT("Pausa"),12,FLinearColor::White,true)]
-   +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center)[Txt(M.Hint,12,FLinearColor::White,true)]];
+  if(!M.bPhone && !M.Hint.IsEmpty())Root->AddSlot().VAlign(VAlign_Bottom).HAlign(HAlign_Left).Padding(22,0,0,16)[Txt(M.Hint,12,FLinearColor::White,true)];
+  // Reference tip 2 (08/11): the controls of the moment, each key with its action, in a soft card at the bottom right.
+  if(!M.bPhone && M.Controls.Num()){auto List=SNew(SVerticalBox);
+   for(const auto& C:M.Controls)List->AddSlot().AutoHeight().Padding(0,2)[SNew(SHorizontalBox)
+    +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(0,0,8,0)[SNew(SBox).MinDesiredWidth(34).HAlign(HAlign_Center)[Key(C.Key)]]
+    +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center)[Txt(C.Value,12,FLinearColor::White,true)]];
+   Root->AddSlot().VAlign(VAlign_Bottom).HAlign(HAlign_Right).Padding(0,0,22,16)[SNew(SBorder).BorderImage(FCoreStyle::Get().GetBrush("WhiteBrush")).BorderBackgroundColor(FLinearColor(0,0,0,.32f)).Padding(FMargin(12,8))[List]];}
   ChildSlot[SNew(SDPIScaler).DPIScale_Lambda([](){return MareTropical::Scale();})[Root]];
  }
 private:
@@ -2996,8 +3007,20 @@ void AMareHUD::DrawHUD()
    M.Tickets.Add({bVip?FString::Printf(TEXT("#%d VIP · %s%s"),Number,*UMareSimulation::String(Order,TEXT("vip_title")),Feel)
     :FString::Printf(TEXT("#%d %s%s"),Number,*UMareSimulation::String(Order,TEXT("name")),Feel),Text});
   }
+  // The bar's orders join the list while the player is at the Bar do Coqueiro (reference tip 3).
+  if(const APawn* Near=PC?PC->GetPawn():nullptr)if(FVector::Dist2D(Near->GetActorLocation(),FVector(1300,-1300,0))<1600.f){
+   const TArray<TSharedPtr<FJsonValue>>* BarOrders=nullptr;int32 Shown=0;
+   if(UMareSimulation::Object(S->State,TEXT("bar"))->TryGetArrayField(TEXT("orders"),BarOrders))for(const auto& V:*BarOrders){if(++Shown>4)break;
+    const auto O=V->AsObject();M.Tickets.Add({TEXT("Bar · ")+UMareSimulation::String(O,TEXT("name")),S->BarBubble(O)});}}
  }
  if(!S->Carry().IsEmpty())M.Carry=Dish(S->Carry());
+ // Controls of the moment (reference tip 2), shown while the tutorial tips are on.
+ if(FMareOptions::Get().bTips && PC && !M.bPhone){
+  const ACharacter* Hero=Cast<ACharacter>(PC->GetPawn());const bool bSwim=Hero && Hero->GetCharacterMovement()->IsSwimming();
+  if(!M.Carry.IsEmpty())M.Controls.Add({M.InteractKey,TEXT("Entregar: mire no cliente")});
+  if(bSwim){M.Controls.Add({KeyName(TEXT("Jump")),TEXT("Subir")});M.Controls.Add({KeyName(TEXT("Dive")),TEXT("Mergulhar")});M.Controls.Add({KeyName(TEXT("Sprint")),TEXT("Nadar rápido")});}
+  else{M.Controls.Add({KeyName(TEXT("Sprint")),TEXT("Correr")});M.Controls.Add({KeyName(TEXT("Jump")),TEXT("Pular")});}
+  M.Controls.Add({M.PhoneKey,TEXT("Celular")});M.Controls.Add({M.PauseKey,TEXT("Pausa")});}
  if(auto Hero=Cast<AMareCharacter>(GetOwningPawn()))if(Hero->GetCharacterMovement()->IsSwimming())M.Hint=bPad?FText::Format(LOCTEXT("SwimPad","Nadando · {0} sobe · {1} mergulha"),MareLoc::Text(KeyName(TEXT("Jump"))),MareLoc::Text(KeyName(TEXT("Dive")))).ToString()
   :FString::Printf(TEXT("Nadando · %s sobe · %s/%s mergulha"),*KeyName(TEXT("Jump")),*KeyName(TEXT("Dive")),*KeyName(TEXT("Sprint")));
  if(auto BoatTour=GetWorld()->GetSubsystem<UMareBoatTourWorld>())if(BoatTour->IsActive())M.Hint=BoatTour->Status();
