@@ -50,13 +50,18 @@ Pedido do Sergio: "após corrigir tudo, rode uma simulação de toda a demo e fa
 
 ## B. Correções pendentes
 
+Atualização (madrugada de 08/11): feitos B5 (tábuas internas do balcão de 0,12 para 0,28 de fator de cor: madeira escura,
+não preta), B19 `void_recovery` (resgate quando o herói cai mais de 6 m abaixo do chão daquele ponto; testado: volta ao
+último chão seguro em 3 s), C5 (balões "Quero pedir!" e o prato que falta sobre os clientes do balcão), C9 (valor livre
+na dívida) e C10 (dica dos centavos na maquininha).
+
 | # | Prio | Item | Origem | Próximo passo |
 |---|---|---|---|---|
 | B1 | P0 | Som ambiente não muda nem desliga na demo | Sergio | Aguardando: qual som (música de fundo ou mar/vento) e onde (Opções › Ambiente ou rádio do celular). O código liga mar, vento, grilos, mata, pássaros e chuva ao controle "Ambiente"; a música de fundo segue "Música" |
 | B2 | P0 | Primeira imagem da chegada é um close de estofado (simulação 01) | Simulação | Conferir no .exe os 2 primeiros segundos da câmera do ônibus; afastar a câmera do banco |
 | B3 | P1 | 54 textos novos sem tradução (pagamento, abertura, título, faixas) | i18n_extract | Pacote para o GPT: `docs/ue58/I18N_TODO_2026-11-07.json` |
 | B4 | P1 | Moradores Aoi e Jorge deslizando em dois momentos na vila | Simulação (marcha) | Reproduzir com a auditoria de marcha; ver se é o pedestre parado por um evento cômico (`HoldPedestrianNear`) |
-| B5 | P1 | Interior do quiosque ainda escuro com sol a pino (madeira do balcão muito escura) | Fotos | Clarear o material interno do balcão ou um preenchimento suave sob o telhado |
+| B5 | ✅ | Interior do quiosque ainda escuro com sol a pino (madeira do balcão muito escura) | Fotos | Clarear o material interno do balcão ou um preenchimento suave sob o telhado |
 | B6 | P1 | Mar ao pôr do sol verde e "gramado" ao longe | Fotos | Conferir de novo com o capim marinho mais fundo; se continuar, ajustar a cor de espalhamento da água com o sol baixo |
 | B7 | P1 | Telhado de palha do bar com textura esticada/borrada de perto | Simulação 10_bar | Reprojetar UV ou textura de palha em escala menor |
 | B8 | P2 | Ilhota de pedra lisa (laje marrom) na baía | Simulação | Trocar por rochas reais (Poly Haven) ou relevo com detalhe |
@@ -69,7 +74,7 @@ Pedido do Sergio: "após corrigir tudo, rode uma simulação de toda a demo e fa
 | B15 | P2 | "Preparando shaders" aparece na tela inicial | Fotos | Cache de PSO no empacotamento (precache) |
 | B16 | P2 | Pacote com 6,7 GB para uma demo | Build | Limitar texturas não vistas na demo e tirar o que é só do hotel |
 | B17 | QA | Roteiro da simulação: fama 9 para o Grand Hotel; fechar a tela de fim da demo (`mare.ShowUI close`) depois das compras; comparar o save sem a fila dos negócios | Simulação | Ajustar `simulate_game.py` |
-| B19 | P1 | QA do executável (106 checagens): 5 reprovações que já existiam antes desta noite: `void_recovery` (quem cai abaixo do mapa não volta ao chão seguro: o herói ficou caindo a -104 m), `village_walkers_active`, `rain_mix`, `grass_coverage_cooked`, `grass_nonblocking_culled` (`hotel_lobby_guests` é esperado na demo, sem hotel) | `test_preview_package.ps1` | Corrigir `void_recovery` primeiro (jogador preso); depois as outras |
+| B19 | P1 (void ✅) | QA do executável (106 checagens): 5 reprovações que já existiam antes desta noite: `void_recovery` (quem cai abaixo do mapa não volta ao chão seguro: o herói ficou caindo a -104 m), `village_walkers_active`, `rain_mix`, `grass_coverage_cooked`, `grass_nonblocking_culled` (`hotel_lobby_guests` é esperado na demo, sem hotel) | `test_preview_package.ps1` | Corrigir `void_recovery` primeiro (jogador preso); depois as outras |
 | B18 | QA | Auditoria de assento acusa o Seu Tibúrcio no ar (o banco do cume não tem colisão) | Simulação | Falso positivo: dar colisão de consulta ao banco ou ensinar a auditoria |
 
 ## C. Melhorias (jogabilidade e apresentação)
@@ -80,12 +85,12 @@ Pedido do Sergio: "após corrigir tudo, rode uma simulação de toda a demo e fa
 | C2 | P1 | Dicas de controle no canto com ícone da tecla ou do botão ("E: anotar pedido", "Clique: dar troco") | Referência |
 | C3 | P1 | Lista de pedidos fixa à direita, também na estação e no bar | Referência |
 | C4 | P1 | Partículas de retorno: brilho ao limpar a mesa, moedinha subindo ao receber, espuma ao arrumar o quarto | Referência |
-| C5 | P1 | Ícone sobre a cabeça de quem espera para pedir ("!" ou balão) | Referência e simulação (clientes parados em ORDER) |
+| C5 | ✅ | Ícone sobre a cabeça de quem espera para pedir ("!" ou balão) | Referência e simulação (clientes parados em ORDER) |
 | C6 | P1 | Música própria na tela inicial (tema da praia) e fade para o jogo | Plano de apresentação |
 | C7 | P1 | Tela de carregamento com arte e dica (Novo jogo, Carregar) | Plano de apresentação |
 | C8 | P1 | Logo desenhado (Canva) no lugar do logo de texto; mesmo logo na cápsula da Steam | Plano de apresentação |
-| C9 | P1 | Dívida: digitar um valor livre além dos botões R$ 1.000 / 10.000 / 50.000 / máximo | Contrato da dívida |
-| C10 | P1 | Pagamento: dica "digite 1850 para R$ 18,50" na maquininha; som de caixa ao confirmar | Revisão |
+| C9 | ✅ | Dívida: digitar um valor livre além dos botões R$ 1.000 / 10.000 / 50.000 / máximo | Contrato da dívida |
+| C10 | ✅ (dica) | Pagamento: dica "digite 1850 para R$ 18,50" na maquininha; som de caixa ao confirmar | Revisão |
 | C11 | P2 | Animações: sentar e levantar com transição (UAL `Sitting_Enter`/`Sitting_Exit`), andar variado, conversar em grupo | Referência |
 | C12 | P2 | Pedestres em grupos de 2–3 e alguns com sacolas | Referência |
 | C13 | P2 | Banhistas variados: de bruços, sentados na toalha lendo | Revisão |

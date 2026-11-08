@@ -248,3 +248,16 @@ void UMareKioskWorld::Tick(float DeltaSeconds)
  }
  UpdateAttendant(DeltaSeconds);
 }
+
+TArray<TPair<FVector,FString>> UMareKioskWorld::Bubbles()const
+{
+ TArray<TPair<FVector,FString>> Out;auto S=const_cast<UMareKioskWorld*>(this)->Sim();if(!S)return Out;
+ auto Dishes=UMareSimulation::Object(S->Definitions,TEXT("dishes"));   // i18n:skip
+ for(const auto& P:Guests){if(!IsValid(P) || P->CounterIndex<0)continue;
+  FString Line;
+  if(P->Stage==EMarePersonStage::Order)Line=TEXT("Quero pedir!");
+  else if(P->Stage==EMarePersonStage::Products){TArray<FString> Missing=P->Plan;for(const FString& D:P->Delivered)Missing.RemoveSingle(D);
+   if(Missing.Num())Line=UMareSimulation::String(UMareSimulation::Object(Dishes,Missing[0]),TEXT("name"))+(Missing.Num()>1?FString::Printf(TEXT(" +%d"),Missing.Num()-1):FString());}   // i18n:skip
+  if(!Line.IsEmpty())Out.Add({P->GetActorLocation()+FVector(0,0,112),Line});}
+ return Out;
+}

@@ -12,6 +12,9 @@ class MAREALTA_API UMareKioskWorld : public UTickableWorldSubsystem
 {
  GENERATED_BODY()
 public:
+ /** Speech bubbles over the counter customers (07/11, reference game: who is waiting reads at a glance): "Quero pedir!"
+  *  before the order is taken, the dish still missing while they wait for it. Drawn by the HUD like the bar's. */
+ TArray<TPair<FVector,FString>> Bubbles()const;
  virtual void Initialize(FSubsystemCollectionBase& Collection) override;
  virtual void Deinitialize() override;
  virtual void Tick(float DeltaSeconds) override;

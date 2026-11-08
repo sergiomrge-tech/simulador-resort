@@ -35,3 +35,15 @@ def run(arg='/Game/Custom/Beach/rock_07/rock_07'):
     errors = list(MEL.recompile_material(mat))
     unreal.EditorAssetLibrary.save_loaded_asset(mat, False)
     return json.dumps({'src': src.get_class().get_name(), 'out': out_name, 'errors': [str(e) for e in errors]})
+
+
+def mic_vector(arg=''):
+    """'path|Param|r,g,b' : set a vector parameter on a material instance constant and save (PIE stopped).
+    07/11: the kiosk's inner counter boards (World_1213) are dark-stained; BaseColorFactor lifts them a little."""
+    path, param, rgb = arg.split('|')
+    r, g, b = (float(v) for v in rgb.split(','))
+    mic = unreal.load_asset(path)
+    old = unreal.MaterialEditingLibrary.get_material_instance_vector_parameter_value(mic, param)
+    unreal.MaterialEditingLibrary.set_material_instance_vector_parameter_value(mic, param, unreal.LinearColor(r, g, b, 1))
+    unreal.EditorAssetLibrary.save_loaded_asset(mic, False)
+    return json.dumps({'old': [old.r, old.g, old.b], 'new': [r, g, b]})

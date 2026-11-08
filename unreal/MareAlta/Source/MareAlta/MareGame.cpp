@@ -1105,7 +1105,12 @@ void AMareCharacter::Tick(float DeltaSeconds)
  // The sand planes offshore have no collision: the swimmer stops on the sea floor profile (reef.json floor_fill).
  if(bSwimming && GetActorLocation().Y<-5450){const float Floor=UMareReefWorld::SeabedZ(GetActorLocation().Y)+GetCapsuleComponent()->GetScaledCapsuleHalfHeight()+15.f;
   if(GetActorLocation().Z<Floor){SetActorLocation(FVector(GetActorLocation().X,GetActorLocation().Y,Floor));if(Movement->Velocity.Z<0)Movement->Velocity.Z=0;}}
- if(GetActorLocation().Z<-12000){SetActorLocation(SafeLandLocation);Movement->StopMovementImmediately();VerticalSwimInput=0;}
+ // Fell through the world: back to the last safe ground. 07/11 (QA void_recovery): with the -100 m sea floor the old
+ // -120 m line left someone who slipped under the beach falling for a long time; now anyone falling (not swimming) more
+ // than 6 m below the ground profile under them (the beach/land is at about 0, the sea floor at SeabedZ) is brought back.
+ {const float Ground=GetActorLocation().Y<-5450?UMareReefWorld::SeabedZ(GetActorLocation().Y):-100.f;
+  if(GetActorLocation().Z<-12000 || (Movement->IsFalling() && !bSwimming && GetActorLocation().Z<Ground-600.f)){
+   SetActorLocation(SafeLandLocation);Movement->StopMovementImmediately();VerticalSwimInput=0;}}
 }
 
 #define LOCTEXT_NAMESPACE "MareMenu"
@@ -2808,6 +2813,7 @@ void AMareHUD::DrawHUD()
    if(auto BoatTour=GetWorld()->GetSubsystem<UMareBoatTourWorld>())All.Append(BoatTour->Bubbles());
    if(auto Snorkel=GetWorld()->GetSubsystem<UMareSnorkelWorld>())All.Append(Snorkel->Bubbles());
    if(auto Trail=GetWorld()->GetSubsystem<UMareTrailWorld>())All.Append(Trail->Bubbles());
+   if(auto Kiosk=GetWorld()->GetSubsystem<UMareKioskWorld>())All.Append(Kiosk->Bubbles());   // 07/11: who waits at the counter
    for(const auto& G:All){const FVector D=G.Key-Eye;const float Dist=D.Size();if(Dist>1400 || FVector::DotProduct(D,Fwd)<=0)continue;
     FHitResult Hit;FCollisionQueryParams Q(TEXT("MareBubble"),false,GetOwningPawn());
     if(GetWorld()->LineTraceSingleByChannel(Hit,Eye,G.Key,ECC_Visibility,Q) && Hit.Distance<Dist-60)continue;
