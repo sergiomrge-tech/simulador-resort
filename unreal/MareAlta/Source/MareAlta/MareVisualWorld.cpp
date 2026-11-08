@@ -268,7 +268,10 @@ void UMareVisualWorld::Tick(float DeltaSeconds)
  }
 }
 
-static TAutoConsoleVariable<float> CVarMareSeaSwell(TEXT("mare.SeaSwell"),.25f,TEXT("Everyday sea roughness floor (MPC_MareTime.Storm), 0..1."));
+// 08/11 (Sergio: "diminua as ondas; ondas fortes só quando estiver chovendo"): on fair days the sea's Storm sits below
+// zero (heights scale with 1+Storm*k in M_CoastalWater and AMarePerson::SeaHeight: about half of the old everyday sea);
+// rain lifts it to .8, a storm to 1.
+static TAutoConsoleVariable<float> CVarMareSeaCalm(TEXT("mare.SeaCalm"),-.45f,TEXT("Sea roughness on fair days (MPC_MareTime.Storm, below 0 = calmer)."));
 void UMareVisualWorld::UpdateWeather(float DeltaSeconds,UMareSimulation* Sim)
 {
  // Today's weather: rain from the save; storm = the "tempestade" event; rough sea (maré alta) also lifts the waves.
@@ -291,8 +294,9 @@ void UMareVisualWorld::UpdateWeather(float DeltaSeconds,UMareSimulation* Sim)
  const float Erupt=GetWorld()->GetSubsystem<UMareMarineWorld>()?GetWorld()->GetSubsystem<UMareMarineWorld>()->VolcanoGlowValue():0.f;
  StormNow=FMath::Lerp(StormNow,bStorm?1.f:bRough?.45f:0.f,Ease);
  // Only the sea follows the eruption; the clouds (StormClouds) keep the weather, or the night sky filled with flakes.
- // A livelier everyday sea (Sergio, 04/11: "o mar está muito calmo"): a base swell under every weather.
- float SeaStorm=FMath::Max(FMath::Max(FMath::Max(StormNow,.85f*Erupt),CVarMareSeaSwell.GetValueOnGameThread()),1.9f*SummitOmen);
+ const float Rough=FMath::Max3(StormNow,.85f*Erupt,1.9f*SummitOmen);
+ const float Weather=FMath::Lerp(CVarMareSeaCalm.GetValueOnGameThread(),.8f,FMath::Clamp(RainNow/.7f,0.f,1.f));
+ float SeaStorm=Weather+FMath::Max(0.f,Rough-Weather)*FMath::SmoothStep(0.f,.2f,Rough);
  // Tsunami: Storm below zero flattens M_CoastalWater's swell (its heights scale with 1+Storm*k) - the sea goes still.
  TsunamiCalm=FMath::FInterpTo(TsunamiCalm,bTsunami?1.f:0.f,DeltaSeconds,.6f);SeaStorm=FMath::Lerp(SeaStorm,-.9f,TsunamiCalm);
  if(TimeCollection){UKismetMaterialLibrary::SetScalarParameterValue(this,TimeCollection,TEXT("Rain"),RainNow);
