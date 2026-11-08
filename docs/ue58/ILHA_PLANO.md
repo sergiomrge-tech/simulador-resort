@@ -73,11 +73,19 @@ todas as construções, o restante é vegetação e árvores". Pedido de 08/11: 
      - a praia sul sem mudança: ondas, nado e recife medidos antes e depois.
    - Fotos aéreas dos 4 lados, de dia e no pôr do sol, mais uma de perto de cada praia nova.
 
+## Chegada de barco (Sergio, 08/11)
+
+"herói chega de barco, n de ônibus na ilha": a abertura (`MareIntro`, hoje o ônibus com motorista) passa a ser um
+barco de linha que encosta no píer. O ônibus, a estrada e o ponto de ônibus saem da abertura (e do mapa, se só servirem
+a ela). Os cartões-postais da história e o texto da missão inicial mudam junto. Fica para depois do mar e do terreno
+(etapas 1–4), porque o barco precisa do mar em volta.
+
 ## Ordem
 
 Faço uma peça por vez, cada uma com portão PASS e foto:
 
-1. contorno + SDF;
+1. contorno + SDF (feito em 08/11: `tools/ue58/gen_island.py`, `Content/Data/island.json`, `island_sdf.bin`,
+   `MareIsland::ShoreDistance`, teste `MareAlta.World.IslandField`);
 2. fundo radial;
 3. mar;
 4. terreno;

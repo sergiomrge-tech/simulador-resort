@@ -1,0 +1,57 @@
+{
+ "_doc": "The full island (08/11/2026, Sergio: 'morro no meio, praia em volta, uma ilha pequena, preservando a vila e todas as construções, o restante é vegetação e árvores'; docs/ue58/ILHA_PLANO.md). tools/ue58/gen_island.py reads the survey of the existing land (mare_island.land: first blocking surface on a 5 m grid; land = above the water level 'water_z') and grows new land only where nothing exists yet (the void past the walls of the summit range and around the headlands; the bay's sea floor stays sea). Margin from an existing edge = base + per_height x height of that edge, capped at max, wobbled by noise (amplitude cm, size cm), then the new coast is smoothed (smooth cm); no new land within sea_clear cm of the existing sea floor, so the bay stays open. Outputs: island_sdf.bin + 'sdf' below (signed distance to the coast in cm, negative on land, positive at sea; row-major float16, rows along y from origin) for C++ (UMareIsland::ShoreDistance) and SourceArt/Island/T_IslandSDF.png (16-bit, the same field clamped to +-range for the sea material). All in world cm. bay_waterline_y: where the bay's water meets the sand along the old straight beach; MareIsland::BayEquivalentY maps a coast distance D to the old y = bay_waterline_y - D, so formulas written along y follow the coast all round.",
+ "water_z": -30,
+ "survey": "SourceArt/Island/land_survey.json",
+ "margin": {
+  "base": 6000,
+  "per_height": 1.6,
+  "max": 26000,
+  "noise": 3000,
+  "noise_size": 26000,
+  "seed": 7,
+  "smooth": 3000,
+  "sea_clear": 12000
+ },
+ "texture": {
+  "size": 1024,
+  "range": 40000,
+  "domain": [
+   -160000.0,
+   -110000.0,
+   160000.0,
+   210000.0
+  ]
+ },
+ "domain": [
+  -160000,
+  -110000,
+  160000,
+  210000
+ ],
+ "sdf": {
+  "file": "island_sdf.bin",
+  "unit": "m",
+  "origin": [
+   -160000.0,
+   -110000.0
+  ],
+  "cell": 500.0,
+  "size": [
+   641,
+   641
+  ]
+ },
+ "summary": {
+  "island_x": [
+   -46500.0,
+   53000.0
+  ],
+  "island_y": [
+   -10500.0,
+   112000.0
+  ],
+  "area_km2": 0.707,
+  "new_land_km2": 0.265
+ },
+ "bay_waterline_y": -2950
+}
