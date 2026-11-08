@@ -1139,8 +1139,11 @@ void AMareCharacter::Tick(float DeltaSeconds)
  // Fell through the world: back to the last safe ground. 07/11 (QA void_recovery): with the -100 m sea floor the old
  // -120 m line left someone who slipped under the beach falling for a long time; now anyone falling (not swimming) more
  // than 6 m below the ground profile under them (the beach/land is at about 0, the sea floor at SeabedZ) is brought back.
- {const float Ground=MareIsland::ShoreDistance(GetActorLocation().X,GetActorLocation().Y)>2500.f?UMareReefWorld::SeabedZ(GetActorLocation().X,GetActorLocation().Y,nullptr):-100.f;
-  if(GetActorLocation().Z<-12000 || (Movement->IsFalling() && !bSwimming && GetActorLocation().Z<Ground-600.f)){
+ // 08/11 (island all round): the swimming volume now reaches under the beaches, so someone under the sand "swam"
+ // inside the ground forever; swimmers too come back when 6 m below the ground there (sea floor at sea, land on the island).
+ {const float Shore=MareIsland::ShoreDistance(GetActorLocation().X,GetActorLocation().Y);
+  const float Ground=Shore>0.f?UMareReefWorld::SeabedZ(GetActorLocation().X,GetActorLocation().Y,nullptr):-100.f;
+  if(GetActorLocation().Z<-12000 || ((Movement->IsFalling() || bSwimming) && GetActorLocation().Z<Ground-600.f)){
    SetActorLocation(SafeLandLocation);Movement->StopMovementImmediately();VerticalSwimInput=0;}}
 }
 

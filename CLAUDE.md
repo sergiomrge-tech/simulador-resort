@@ -754,3 +754,21 @@ Plantas de jardim (pervinca) não vão na areia da praia; capim marinho em água
 com o sol baixo. Sem `r.Streaming.PoolSize` por nível de textura o executável avisava "Video memory has been exhausted"
 numa placa de 8 GB (`Config/DefaultScalability.ini`). Cliente saindo do quiosque: o ponto de saída único caía fora da
 navegação e ele ficava parado na pose de andar até sumir na frente do jogador (`UMareKioskWorld::WalkAway`).
+
+## UE5.8 — ilha completa e chegada de barco (08/11)
+
+Pedestres longe do herói ficam escondidos e PAUSADOS (`bHiddenByDistance`): quando a chegada passou a terminar no píer
+(85 m da vila), o portão viu "0 andando" de dia e parecia defeito dos pedestres. Antes de culpar o sistema, ver onde o
+herói está; o portão encerra a chegada (`mare.ShowUI close`) e põe o herói na vila antes de medir a marcha. Perfil de
+save usado pela minha própria QA (chegada já vista) faz a checagem do barqueiro falhar: reiniciar o editor (perfil novo).
+`i18n_extract.py` grava chaves VAZIAS em todos os `<idioma>.json` e o portão reprova ("tradução ausente"): desfazer os
+arquivos de idioma (`git checkout`) e mandar os textos novos ao GPT pelo `I18N_TODO_<data>.json`. Frases de teste em
+C++ precisam de `// i18n:skip` (viraram chave de tradução). Barco que passa pela costa em y −52 m atravessava o píer:
+rota de barco/ator móvel conferida contra o píer e o campo da costa (`island_sdf.bin`), não só contra a praia.
+Lancha: costado que termina a 1,5 cm do eixo deixa a proa aberta; a última seção do casco fecha no eixo e as tábuas do
+convés são cortadas pela largura do casco na altura do convés (passavam pelo costado e apareciam pela água).
+Câmera a bordo atrás da capota só vê a capota: câmera e desembarque começam na proa. Corpo do herói fica visível no
+mundo durante a cena (estava em pé no píer nas fotos): esconder até o desembarque.
+Vegetação rasteira de ~440 mil touceiras (HISM, sem sombra, culling 25–40 m) gerada por traços com o PIE parado leva
+~30 s; o editor não ficou mais lento a ponto de travar o tempo de jogo (`mare_title_probe.state` compara segundos de jogo
+e reais).

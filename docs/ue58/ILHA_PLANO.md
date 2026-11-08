@@ -86,12 +86,15 @@ Faço uma peça por vez, cada uma com portão PASS e foto:
 
 1. contorno + SDF (feito em 08/11: `tools/ue58/gen_island.py`, `Content/Data/island.json`, `island_sdf.bin`,
    `MareIsland::ShoreDistance`, teste `MareAlta.World.IslandField`);
-2. fundo radial;
-3. mar;
-4. terreno;
-5. vegetação;
-6. código;
-7. fotos.
+2. fundo radial (feito, 7c9873bb);
+3. mar (feito, 2f653f5d);
+4. terreno (feito, 9fe34fe2; depois: planície baixa e o domo do norte removido, "não faça tudo montanha");
+5. vegetação (feito, 35faa11f): floresta, coqueiros, pedras assentadas, três trilhas sinuosas
+   (`plan_island_trails.py`, `gen_island_trails.py`) e vegetação rasteira (`mare_island.ground_cover`);
+6. código (feito, 455d1b38): `MareIsland::CoastY`, som, gaivotas, pegadas, guarda-sol, mata, passos; chegada de barco
+   (`MareIntro`), barcos da costa além do píer, proa da lancha fechada;
+7. fotos (feito em 08/11: 4 lados de dia e fim de tarde, chegada, trilhas). Próximos passos em
+   `docs/ue58/PLANO_E_CHECKLIST_2026-11-08.md`.
 
 Estimativa: 2 a 3 dias de trabalho.
 
