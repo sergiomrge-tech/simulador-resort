@@ -100,6 +100,8 @@ public:
  /** Fame level 1..10 from prog.fame_xp using the original thresholds. */
  int32 FameLevel() const;
  FString FameName() const;
+ /** 0..1 toward the next fame level (HUD XP bar). */
+ float FameProgress() const;
  void AddFame(int32 Xp);
  /** Average guest rating (1..5) over the saved ratings list. */
  double Stars() const;

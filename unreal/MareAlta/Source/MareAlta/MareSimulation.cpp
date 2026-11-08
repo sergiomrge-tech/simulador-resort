@@ -421,6 +421,13 @@ int32 UMareSimulation::FameLevel() const
  return Level;
 }
 FString UMareSimulation::FameName() const{return FameNames[FMath::Clamp(FameLevel()-1,0,9)];}
+float UMareSimulation::FameProgress() const
+{
+ // Share of the way to the next fame level (1 at the top level), for the HUD's XP bar.
+ const double Xp=Number(Object(State,TEXT("prog")),TEXT("fame_xp"));const int32 L=FameLevel();
+ if(L>=int32(UE_ARRAY_COUNT(FameThresholds)))return 1.f;
+ const double A=FameThresholds[L-1],B=FameThresholds[L];return B>A?float(FMath::Clamp((Xp-A)/(B-A),0.,1.)):1.f;
+}
 double UMareSimulation::Stars() const
 {
  const TArray<TSharedPtr<FJsonValue>>* Ratings=nullptr;if(!State->TryGetArrayField(TEXT("ratings"),Ratings) || Ratings->IsEmpty())return 3;

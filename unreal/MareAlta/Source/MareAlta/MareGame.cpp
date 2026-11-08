@@ -2722,6 +2722,7 @@ struct FMareHudModel
  TArray<TPair<FString,int32>> Compass;
  FString InteractKey=TEXT("E"),PhoneKey=TEXT("B"),PauseKey=TEXT("Esc"); // remapped keys, or gamepad buttons after gamepad input
  FString PadHint; // gamepad help over the open phone
+ float FameXp=0; // 0..1 toward the next fame level
  /** Reference tip 2 (08/11): the controls that matter right now, key + action, in the bottom-right corner. */
  TArray<TPair<FString,FString>> Controls;
  int32 StarsFlash=0; // 1 up (green), -1 down (red)
@@ -2732,7 +2733,7 @@ struct FMareHudModel
  int32 PoolTable=-1,PoolGroups=0,PoolTurn=0;FString PoolOpp;
  FString Signature()const
  {
-  FString S=Money+Day+Fame+Notice+Prompt+Carry+Hint+Stars+Rooms+Served+TipTitle+TipText+FString::FromInt(Compass.Num())+InteractKey+PhoneKey+PauseKey+PadHint+[this](){FString C;for(const auto& P:Controls)C+=P.Key+P.Value;return C;}()+FString::FromInt(StarsFlash)+(bPhone?TEXT("P"):TEXT(""));
+  FString S=Money+Day+Fame+Notice+Prompt+Carry+Hint+Stars+Rooms+Served+TipTitle+TipText+FString::FromInt(Compass.Num())+InteractKey+PhoneKey+PauseKey+PadHint+[this](){FString C=FString::SanitizeFloat(FameXp);for(const auto& P:Controls)C+=P.Key+P.Value;return C;}()+FString::FromInt(StarsFlash)+(bPhone?TEXT("P"):TEXT(""));
   S+=FString::Printf(TEXT("|%d|%d|%d|"),PoolTable,PoolGroups,PoolTurn)+PoolOpp;
   for(const auto& T:Tickets)S+=T.Key+T.Value;
   for(const auto& C:Compass)S+=C.Key+FString::FromInt(C.Value);
@@ -2793,19 +2794,24 @@ public:
    [SNew(SBorder).BorderImage(&Ticket()).Padding(FMargin(14,10))[SNew(SVerticalBox)
     +SVerticalBox::Slot().AutoHeight()[Txt(TEXT("Dica · ")+M.TipTitle,14,Accent,true)]
     +SVerticalBox::Slot().AutoHeight().Padding(0,4,0,0)[Txt(M.TipText,12.5f,Ink,false,370)]]]];
-  // Wood plank: coin + money, day/time, fame.
-  Root->AddSlot().VAlign(VAlign_Top).HAlign(HAlign_Fill)[SNew(SBorder).BorderImage(&Plank()).Padding(FMargin(22,9))[SNew(SHorizontalBox)
+  // Reference tip 12 (08/11): a lean HUD. Top left a small plank with the fame level, its XP bar, the stars and today's
+  // customers; top right the money and the clock. The compass stays in the middle (it used to be one plank end to end).
+  Root->AddSlot().VAlign(VAlign_Top).HAlign(HAlign_Left).Padding(FMargin(14,8,0,0))[SNew(SBorder).BorderImage(&Plank()).Padding(FMargin(16,7))[SNew(SHorizontalBox)
+   +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(0,0,18,0)[SNew(SVerticalBox)
+    +SVerticalBox::Slot().AutoHeight()[Txt(M.Fame,14,Paper,true)]
+    +SVerticalBox::Slot().AutoHeight().Padding(0,3,0,0)[SNew(SBox).WidthOverride(140).HeightOverride(6)[SNew(SOverlay)
+     +SOverlay::Slot()[SNew(SBorder).BorderImage(FCoreStyle::Get().GetBrush("WhiteBrush")).BorderBackgroundColor(FLinearColor(0,0,0,.35f))]
+     +SOverlay::Slot().HAlign(HAlign_Left)[SNew(SBox).WidthOverride(FMath::Max(2.f,140.f*M.FameXp))[SNew(SBorder).BorderImage(FCoreStyle::Get().GetBrush("WhiteBrush")).BorderBackgroundColor(Hex(255,207,92))]]]]]
+   +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(0,0,5,0)[SNew(SImage).Image(&Icon(TEXT("Star"))).ColorAndOpacity(Hex(255,207,92))]
+   +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(0,0,16,0)[Txt(M.Stars,15,M.StarsFlash>0?Hex(140,230,140):M.StarsFlash<0?Hex(255,130,110):Paper,true)]
+   +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(0,0,5,0)[M.Rooms.IsEmpty()?SNullWidget::NullWidget:SNew(SImage).Image(&Icon(TEXT("Bed"))).ColorAndOpacity(Paper)]
+   +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(0,0,M.Rooms.IsEmpty()?0:16,0)[Txt(M.Rooms,14,Paper,true)]
+   +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(0,0,5,0)[SNew(SImage).Image(&Icon(TEXT("Person"))).ColorAndOpacity(Paper)]
+   +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center)[Txt(M.Served,14,Paper,true)]]];
+  Root->AddSlot().VAlign(VAlign_Top).HAlign(HAlign_Right).Padding(FMargin(0,8,14,0))[SNew(SBorder).BorderImage(&Plank()).Padding(FMargin(16,7))[SNew(SHorizontalBox)
    +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(0,0,8,0)[SNew(SBox).WidthOverride(18).HeightOverride(18)[SNew(SBorder).BorderImage(&Coin())]]
-   +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(0,0,34,0)[Txt(M.Money,17,Hex(255,215,106),true)]
-   +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(0,0,34,0)[Txt(M.Day,15,Paper,true)]
-   +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(0,0,34,0)[Txt(M.Fame,15,Paper,true)]
-   // Reputation, always visible: star average, rooms occupied (when there are rooms) and sales today.
-   +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(0,0,6,0)[SNew(SImage).Image(&Icon(TEXT("Star"))).ColorAndOpacity(Hex(255,207,92))]
-   +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(0,0,24,0)[Txt(M.Stars,15,M.StarsFlash>0?Hex(140,230,140):M.StarsFlash<0?Hex(255,130,110):Paper,true)]
-   +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(0,0,6,0)[M.Rooms.IsEmpty()?SNullWidget::NullWidget:SNew(SImage).Image(&Icon(TEXT("Bed"))).ColorAndOpacity(Paper)]
-   +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(0,0,M.Rooms.IsEmpty()?0:24,0)[Txt(M.Rooms,15,Paper,true)]
-   +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(0,0,6,0)[SNew(SImage).Image(&Icon(TEXT("Person"))).ColorAndOpacity(Paper)]
-   +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center)[Txt(M.Served,15,Paper,true)]]];
+   +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(0,0,20,0)[Txt(M.Money,17,Hex(255,215,106),true)]
+   +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center)[Txt(M.Day,15,Paper,true)]]];
   // Pool scoreboard at the top centre: each side with its group's balls (potted ones faded) and the 8 once it is
   // their target; » marks the side to play.
   if(M.PoolTable>=0){
@@ -2923,7 +2929,7 @@ void AMareHUD::DrawHUD()
  const int32 Minutes=UMareSimulation::Number(S->State,TEXT("minutes"));
  M.Money=FString::Printf(TEXT("R$ %.0f"),S->Money());
  M.Day=FString::Printf(TEXT("Dia %.0f · %02d:%02d"),UMareSimulation::Number(S->State,TEXT("day"),1),Minutes/60,Minutes%60);
- M.Fame=TEXT("Fama: ")+S->FameName();
+ M.Fame=FString::Printf(TEXT("Fama %d · "),S->FameLevel())+S->FameName();M.FameXp=FMath::RoundToFloat(S->FameProgress()*50.f)/50.f;
  const double Now=GetWorld()->GetRealTimeSeconds();
  const double Stars=FMath::RoundToDouble(S->Stars()*10)/10;
  if(ShownStars>=0 && Stars!=ShownStars){bStarsUp=Stars>ShownStars;StarsFlashUntil=Now+1.5;}
