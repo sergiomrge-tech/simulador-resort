@@ -44,10 +44,12 @@ def texture(name,normal=False):
     unreal.EditorAssetLibrary.save_loaded_asset(tex)
     return tex
 
-def build_ground(seabed=False):
+def build_ground(seabed=False,island=False):
     # 08/11 (the full island): seabed=True builds M_IslandSeabed_PBR, the same sand all wet (no grass, no dry band):
     # the old wet/inland bands follow the straight beach along y and painted the new sea floor green.
-    mat=material('M_IslandSeabed_PBR' if seabed else 'M_CoastGround_PBR')
+    # island=True builds M_IslandGround_PBR for the new land of the full island (gen_island_terrain.py, step 4): the
+    # wet sand, dry sand and grass bands follow the distance to the coast (T_IslandSDF) instead of the straight y.
+    mat=material('M_IslandSeabed_PBR' if seabed else 'M_IslandGround_PBR' if island else 'M_CoastGround_PBR')
     pos=expression(mat,unreal.MaterialExpressionWorldPosition)
     uv=custom(mat,'return Position.xy * 0.0022;',unreal.CustomMaterialOutputType.CMOT_FLOAT2,{'Position':pos})
     inputs={'Position':pos}
@@ -80,10 +82,14 @@ def build_ground(seabed=False):
     blend='float edge=sin(Position.x*.0017)*90+sin(Position.x*.0041)*35; float wet=1-smoothstep(-3400,-2400,Position.y+edge); float inland=smoothstep(-1200,-500,Position.y+edge*.6); '
     if seabed:
         blend='float edge=0; float wet=1; float inland=0; '
+    if island:
+        coast=custom(mat,'float2 uv=(Position.xy-float2(-160000,-110000))/320000.0; return -2950-(Texture2DSampleLevel(Tex,TexSampler,uv,0).r-.5)*80000.0;',unreal.CustomMaterialOutputType.CMOT_FLOAT1,{'Position':pos,'Tex':expression(mat,unreal.MaterialExpressionTextureObject,texture=island_sdf_texture())})
+        inputs['Coast']=coast
+        blend=blend.replace('Position.y+edge','Coast+edge')
     color=custom(mat,blend+'float l=dot(Grass.rgb,float3(.2126,.7152,.0722)); float macro=.94+.06*sin(Position.x*.0013)*sin(Position.y*.0011); float detail=clamp(l*2.4,.65,1.25); float3 turf=lerp(Grass.rgb,float3(.10,.24,.045)*detail,.78)*macro; float mixb=.5+.35*sin(Position.x*.00031+sin(Position.y*.00047)*2.1)*sin(Position.y*.00027); float3 sand=lerp(Sand.rgb,SandB.rgb,mixb); float sl=dot(sand,float3(.2126,.7152,.0722)); float mt=.5+.4*sin(Position.x*.00021+sin(Position.y*.00033)*1.7); float lt=dot(lerp(Tr.rgb,Tr2.rgb,mt),float3(.2126,.7152,.0722)); float lf=dot(Fine.rgb,float3(.2126,.7152,.0722)); float ao=lerp(TrAO.r,Tr2AO.r,mt)*lerp(.82,1.0,FineAO.r); float shade=clamp(lt/.42,.78,1.12)*clamp(lf/.45,.9,1.08); float3 dry=float3(.95,.88,.74)*shade*lerp(.58,1.0,ao); float wl=dot(Wet.rgb,float3(.2126,.7152,.0722)); float3 damp=min(lerp(Wet.rgb,float3(wl,wl,wl),.3)*float3(1.35,1.3,1.2),float3(.66,.61,.53)); float sea=1-smoothstep(-4900,-4300,Position.y+edge); float2 c=Position.xy*.011; float cw=sin(c.x+sin(c.y*1.3+Time*.7)*1.6)+sin(c.y*1.1+sin(c.x*1.2-Time*.6)*1.6); float caustic=pow(saturate(1-abs(cw)*.6),5); float3 bed=dry*float3(.9,.93,.92)*(1+caustic*.55); return lerp(lerp(lerp(dry,damp,wet),bed,sea),turf,inland);',unreal.CustomMaterialOutputType.CMOT_FLOAT3,dict({k:v for k,v in inputs.items() if 'Normal' not in k},Time=expression(mat,unreal.MaterialExpressionTime)))
     for key in ('TrAO','Tr2AO','FineAO'):MEL.connect_material_expressions(inputs[key],'R',color,key)
-    normal=custom(mat,blend+'float mixb=.5+.35*sin(Position.x*.00031+sin(Position.y*.00047)*2.1)*sin(Position.y*.00027); float mt=.5+.4*sin(Position.x*.00021+sin(Position.y*.00033)*1.7); float3 tn=lerp(TrNormal.xyz,Tr2Normal.xyz,mt); float3 sn=normalize(float3(tn.xy*1.7+FineNormal.xy*.6,tn.z)); return normalize(lerp(lerp(sn,WetNormal.xyz,wet),GrassNormal.xyz,inland));',unreal.CustomMaterialOutputType.CMOT_FLOAT3,{k:v for k,v in inputs.items() if k=='Position' or 'Normal' in k})
-    rough=custom(mat,blend+'return lerp(lerp(.9,.45,wet),.96,inland);',unreal.CustomMaterialOutputType.CMOT_FLOAT1,{'Position':pos})
+    normal=custom(mat,blend+'float mixb=.5+.35*sin(Position.x*.00031+sin(Position.y*.00047)*2.1)*sin(Position.y*.00027); float mt=.5+.4*sin(Position.x*.00021+sin(Position.y*.00033)*1.7); float3 tn=lerp(TrNormal.xyz,Tr2Normal.xyz,mt); float3 sn=normalize(float3(tn.xy*1.7+FineNormal.xy*.6,tn.z)); return normalize(lerp(lerp(sn,WetNormal.xyz,wet),GrassNormal.xyz,inland));',unreal.CustomMaterialOutputType.CMOT_FLOAT3,{k:v for k,v in inputs.items() if k in ('Position','Coast') or 'Normal' in k})
+    rough=custom(mat,blend+'return lerp(lerp(.9,.45,wet),.96,inland);',unreal.CustomMaterialOutputType.CMOT_FLOAT1,{k:v for k,v in inputs.items() if k in ('Position','Coast')})
     for node,prop in [(color,unreal.MaterialProperty.MP_BASE_COLOR),(normal,unreal.MaterialProperty.MP_NORMAL),(rough,unreal.MaterialProperty.MP_ROUGHNESS)]:MEL.connect_material_property(node,'',prop)
     errors=list(MEL.recompile_material(mat))
     if errors:raise RuntimeError(str(errors))

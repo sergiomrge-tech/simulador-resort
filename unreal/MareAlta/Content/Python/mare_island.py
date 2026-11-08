@@ -198,3 +198,35 @@ def sea(_=''):
         vol.set_actor_scale3d(unreal.Vector(1300, 2241, 50))
     unreal.get_editor_subsystem(unreal.LevelEditorSubsystem).save_current_level()
     return json.dumps({'ocean': ocean, 'water': water, 'volume': str(vol.get_actor_location()) if vol else None}, default=str)
+
+
+def terrain(_=''):
+    """Step 4 (08/11): the new land of the island (tools/ue58/gen_island_terrain.py) with the coast-aware ground
+    material (sand at the coast, grass inland), walkable (complex collision). PIE stopped; saves the level."""
+    import importlib
+    import mare_hotel_lobby as hl
+    import mare_materials
+    importlib.reload(mare_materials)
+    if unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world():
+        raise RuntimeError('Stop PIE first')
+    folder = '/Game/World/Island/IslandTerrain'
+    if unreal.EditorAssetLibrary.does_directory_exist(folder):
+        unreal.EditorAssetLibrary.delete_directory(folder)
+    src = Path(unreal.Paths.project_dir()).resolve() / 'SourceArt/Island/IslandTerrain.gltf'
+    mesh = hl._import(src, folder, 'IslandTerrain', False, search=False)
+    mat = mare_materials.build_ground(island=True)
+    mesh.set_material(0, mat)
+    hl._complex_collision(mesh)
+    unreal.EditorAssetLibrary.save_loaded_asset(mesh, False)
+    actors = unreal.get_editor_subsystem(unreal.EditorActorSubsystem)
+    for a in actors.get_all_level_actors():
+        if 'MareIslandTerrain' in [str(t) for t in a.tags]:
+            actors.destroy_actor(a)
+    a = actors.spawn_actor_from_class(unreal.StaticMeshActor, unreal.Vector(0, 0, 0), unreal.Rotator(0, 0, 0))
+    a.set_actor_label('Ilha · terreno novo')
+    a.tags = ['MareGenerated', 'MareIslandTerrain']
+    a.static_mesh_component.set_static_mesh(mesh)
+    unreal.get_editor_subsystem(unreal.LevelEditorSubsystem).save_current_level()
+    b = mesh.get_bounds()
+    return json.dumps({'mesh': mesh.get_path_name(), 'tris': mesh.get_num_triangles(0), 'material': mat.get_path_name(),
+                       'origin': [round(b.origin.x), round(b.origin.y), round(b.origin.z)], 'extent': [round(b.box_extent.x), round(b.box_extent.y), round(b.box_extent.z)]})
