@@ -120,6 +120,14 @@ A ilha agora é grande e bonita, mas ainda é cenário. Propostas para dar uso a
 
 ## Textos e traduções (GPT, em paralelo)
 
+- [x] 08/11 (GPT fora do ar, feito pelo Claude): os 96 textos novos nos 12 idiomas; 4151/4151 em todos; glossário PASS.
+- [ ] Textos montados por partes que o tradutor não reconhece (auditoria `-culture=en -MareLocAudit` no executável, 08/11):
+  passos das missões com "
+
+", resumo do dia ("Bom dia! Dia 1 encerrado · vendas..."), "Próximo desbloqueio: ...",
+  horário "8h às 18h", número do pedido "#1 Thiago", placas 3D ("PISCINA<br>duche antes de entrar"), rótulo
+  "Dormir e encerrar o dia", "Food truck do Pastel", nomes de tecla ("Left Shift"). A fama do HUD já foi corrigida.
+
 - [ ] GPT: `docs/ue58/I18N_TODO_2026-11-07.json` e `I18N_TODO_2026-11-08.json` (dicas da referência, pagamento, chegada de
   barco: "Barqueiro", o cartão "Você pegou o primeiro barco para a ilha." e a carta da dívida com "barco").
 - [ ] 👤 Revisão nativa e nomes próprios em chinês/japonês/russo.

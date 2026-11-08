@@ -2941,7 +2941,7 @@ void AMareHUD::DrawHUD()
  const int32 Minutes=UMareSimulation::Number(S->State,TEXT("minutes"));
  M.Money=FString::Printf(TEXT("R$ %.0f"),S->Money());
  M.Day=FString::Printf(TEXT("Dia %.0f · %02d:%02d"),UMareSimulation::Number(S->State,TEXT("day"),1),Minutes/60,Minutes%60);
- M.Fame=FString::Printf(TEXT("Fama %d · "),S->FameLevel())+S->FameName();M.FameXp=FMath::RoundToFloat(S->FameProgress()*50.f)/50.f;
+ M.Fame=MareLoc::Tr(FString::Printf(TEXT("Fama %d · "),S->FameLevel()))+MareLoc::Tr(S->FameName());   // 08/11: each part translated (the whole was never found: "Fama 10 · Lenda da costa" in English)M.FameXp=FMath::RoundToFloat(S->FameProgress()*50.f)/50.f;
  const double Now=GetWorld()->GetRealTimeSeconds();
  const double Stars=FMath::RoundToDouble(S->Stars()*10)/10;
  if(ShownStars>=0 && Stars!=ShownStars){bStarsUp=Stars>ShownStars;StarsFlashUntil=Now+1.5;}
