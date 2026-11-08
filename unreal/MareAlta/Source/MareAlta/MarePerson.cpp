@@ -327,7 +327,7 @@ bool AMarePerson::SetMetaHuman(const FString& Name)
   // Pool swimmers (UMarePoolSwimWorld): UAL swim stroke and jump (mare_metahuman.import_ual).
   TEXT("Swim_Fwd"),TEXT("Jump_Start"),TEXT("Jump"),
   // 07/11 (reference game: lively people): taking from a counter and driving (mare_metahuman.import_ual).
-  TEXT("PickUp_Table"),TEXT("Driving"),
+  TEXT("PickUp_Table"),TEXT("Driving"),   // i18n:skip
   // 08/11 (reference tip 9): sitting down and getting up (mare_metahuman.import_ual).
   TEXT("Sitting_Enter"),TEXT("Sitting_Exit")};   // i18n:skip
  if(CVarMareMocap.GetValueOnGameThread())Wanted.Append({TEXT("SitTalk"),TEXT("DanceHip"),TEXT("Cheer")});

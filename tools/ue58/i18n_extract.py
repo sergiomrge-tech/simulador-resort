@@ -103,7 +103,9 @@ def scan_data():
     for f in sorted(glob.glob(str(ROOT / 'Content' / 'Data' / '*.json'))):
         name = Path(f).name
         if name in ('actors.json', 'imported_meshes.json', 'deduplication.json', 'stacked_origin_removed.json', 'intro_import_hashes.json',
-                    'actor_material_audit.json', 'model_aliases.json', 'map_build.json', 'nanite_architecture.json', 'grass_coverage.json'):
+                    'actor_material_audit.json', 'model_aliases.json', 'map_build.json', 'nanite_architecture.json', 'grass_coverage.json',
+                    # 08/11: internal reports and fixture names (the 198 trail lamps 'Trilha · poste ...' are never shown)
+                    'lighting.json', 'island_cover.json', 'island_forest.json', 'island_debris.json', 'island_coast_rocks.json', 'island_trails.json'):
             continue
         try:
             doc = json.loads(Path(f).read_text(encoding='utf-8'))

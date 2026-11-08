@@ -50,14 +50,14 @@ static TAutoConsoleVariable<float> CVarMareInteriorNightEV(TEXT("mare.InteriorNi
 // 08/11: in the island forest at night (no lamp in view) the eye opened to the -1.9 floor and the woods looked like day;
 // the village keeps its lamps in view and sits near the -0.9 top of the night range.
 static TAutoConsoleVariable<float> CVarMareNightMinEV(TEXT("mare.NightMinEV"),-1.9f,TEXT("Lowest outdoor exposure (EV100) at night: how far the eye may open where no light is in view (the night top stays -0.9)."));
-static TAutoConsoleVariable<float> CVarMareNightDarken(TEXT("mare.NightDarken"),1.3f,TEXT("Stops of exposure removed at night (0 = old night)"));
+static TAutoConsoleVariable<float> CVarMareNightDarken(TEXT("mare.NightDarken"),1.3f,TEXT("Stops of exposure removed at night (0 = old night)"));   // i18n:skip
 
 static TAutoConsoleVariable<float> CVarMareBounceLightReach(TEXT("mare.BounceLightReach"),1.f,TEXT("Draw distance of the bounce (fill) lights, times mare.LightDrawDistance (04/11: x2.5 cost the beach 4 FPS)."));
 static TAutoConsoleVariable<float> CVarMareLightShadowMinRadius(TEXT("mare.LightShadowMinRadius"),1000.f,TEXT("Local lights with a smaller attenuation radius (cm) cast no shadow (04/11: 99 of 134 lights cast shadows; under 10 m off = kiosk 56 -> 61 FPS); 0 = keep the authored shadows."));
 // 08/11 (bench, village at night: 19 lights lit, 1124 shadow draw calls, lights 2.6 ms + shadows 1.1 ms of GPU; all
 // local lights off = 58 -> 66 FPS): only the nearest few lamps cast shadows, the others light without one.
-static TAutoConsoleVariable<int32> CVarMareLightShadowBudget(TEXT("mare.LightShadowBudget"),4,TEXT("At most this many local lights cast shadows, the nearest to the camera within mare.LightShadowReach (0 = no budget: every eligible light keeps its shadow)."));
-static TAutoConsoleVariable<float> CVarMareLightShadowReach(TEXT("mare.LightShadowReach"),2500.f,TEXT("Local lights farther than this from the camera (cm) cast no shadow (with mare.LightShadowBudget)."));
+static TAutoConsoleVariable<int32> CVarMareLightShadowBudget(TEXT("mare.LightShadowBudget"),4,TEXT("At most this many local lights cast shadows, the nearest to the camera within mare.LightShadowReach (0 = no budget: every eligible light keeps its shadow)."));   // i18n:skip
+static TAutoConsoleVariable<float> CVarMareLightShadowReach(TEXT("mare.LightShadowReach"),2500.f,TEXT("Local lights farther than this from the camera (cm) cast no shadow (with mare.LightShadowBudget)."));   // i18n:skip
 static TAutoConsoleVariable<float> CVarMareLightDrawDistance(TEXT("mare.LightDrawDistance"),3000.f,TEXT("Local lights (interiors, bounce, lamps, shops) fade out beyond this distance from the camera (cm), with a 15 m fade (04/11 EXE: with all local lights off the beach went 46 -> 56 FPS and the kiosk 49 -> 63: about 150 lights of the whole map were drawn every frame, day included; 50 m gave beach 53, 30 m 59). 0 = never culled; set on lights that have no distance of their own."));
 
 static TAutoConsoleVariable<int32> CVarMareWalkTest(TEXT("mare.WalkTest"),0,TEXT("QA: the player walks straight ahead (footprint capture)."));
@@ -110,12 +110,12 @@ void UMareVisualWorld::BuildLamps()
     Light->SetAttenuationRadius(F->GetNumberField(TEXT("radius")));Light->SetUseTemperature(true);Light->SetTemperature(F->GetNumberField(TEXT("kelvin")));
     Light->SetCastShadows(true);Light->ContactShadowLength=.08f;Light->SetSourceRadius(6);Light->SetVisibility(false);
     FString Unlock;F->TryGetStringField(TEXT("unlock"),Unlock);if(!Unlock.IsEmpty())Fix->SetActorHiddenInGame(true);
-    bool bWorkFix=false;F->TryGetBoolField(TEXT("work"),bWorkFix);
+    bool bWorkFix=false;F->TryGetBoolField(TEXT("work"),bWorkFix);   // i18n:skip
     Lamps.Add({Light,Fix,float(F->GetNumberField(TEXT("candela"))),Unlock,bWorkFix});
     auto Glow=NewObject<UPointLightComponent>(LampHolder);Glow->SetupAttachment(LampHolder->GetRootComponent());Glow->RegisterComponent();
     Glow->SetWorldLocation(Light->GetComponentLocation()+FVector(0,0,20));Glow->SetIntensityUnits(ELightUnits::Candelas);Glow->SetIntensity(0);
     Glow->SetAttenuationRadius(F->GetNumberField(TEXT("radius"))*.6f);Glow->SetUseTemperature(true);Glow->SetTemperature(F->GetNumberField(TEXT("kelvin")));
-    Glow->SetCastShadows(false);Glow->SetVisibility(false);double GlowShare=.15;F->TryGetNumberField(TEXT("glow"),GlowShare);Lamps.Add({Glow,Fix,float(F->GetNumberField(TEXT("candela"))*GlowShare),Unlock,bWorkFix});}}}
+    Glow->SetCastShadows(false);Glow->SetVisibility(false);double GlowShare=.15;F->TryGetNumberField(TEXT("glow"),GlowShare);Lamps.Add({Glow,Fix,float(F->GetNumberField(TEXT("candela"))*GlowShare),Unlock,bWorkFix});}}}   // i18n:skip
  for(TActorIterator<AActor> It(GetWorld());It;++It){if(*It==LampHolder || Fixtures.Contains(*It))continue;
   TArray<UStaticMeshComponent*> Parts;It->GetComponents(Parts);
   for(auto Part:Parts){if(!Part->GetStaticMesh())continue;const FString Mesh=Part->GetStaticMesh()->GetName();
@@ -280,7 +280,7 @@ void UMareVisualWorld::Tick(float DeltaSeconds)
 // 08/11 (Sergio: "diminua as ondas; ondas fortes só quando estiver chovendo"): on fair days the sea's Storm sits below
 // zero (heights scale with 1+Storm*k in M_CoastalWater and AMarePerson::SeaHeight: about half of the old everyday sea);
 // rain lifts it to .8, a storm to 1.
-static TAutoConsoleVariable<float> CVarMareSeaCalm(TEXT("mare.SeaCalm"),-.45f,TEXT("Sea roughness on fair days (MPC_MareTime.Storm, below 0 = calmer)."));
+static TAutoConsoleVariable<float> CVarMareSeaCalm(TEXT("mare.SeaCalm"),-.45f,TEXT("Sea roughness on fair days (MPC_MareTime.Storm, below 0 = calmer)."));   // i18n:skip
 void UMareVisualWorld::UpdateWeather(float DeltaSeconds,UMareSimulation* Sim)
 {
  // Today's weather: rain from the save; storm = the "tempestade" event; rough sea (maré alta) also lifts the waves.

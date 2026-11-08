@@ -248,6 +248,8 @@ void UMareSummitWorld::ShowGameOver()
  auto Button=[Weak](const FText& Label,bool bRestart){return SNew(SMarePadButton).ButtonStyle(&MareNotebook::InkButton()).ContentPadding(FMargin(18,6))
    .OnClicked_Lambda([Weak,bRestart](){if(Weak.IsValid())Weak->RestoreMorning(bRestart);return FReply::Handled();})
    [SNew(STextBlock).Text(Label).Font(MareNotebook::Hand(26)).ColorAndOpacity(FLinearColor(.95f,.93f,.88f))];};
+ // 08/11: the focus goes to the first button (the border cannot take it: "Attempting to focus Non-Focusable widget SBorder").
+ TSharedRef<SWidget> Restart=Button(MareLoc::Text(TEXT("Recomeçar o dia")),true);
  OverWidget=SNew(SBorder).BorderImage(FCoreStyle::Get().GetBrush("WhiteBrush"))
   .BorderBackgroundColor_Lambda([Weak](){const float T=Weak.IsValid()?Weak->OverTime:2.f;return FLinearColor(0,0,0,FMath::Clamp(T/1.4f,0.f,1.f));})
   .HAlign(HAlign_Center).VAlign(VAlign_Center)
@@ -257,10 +259,10 @@ void UMareSummitWorld::ShowGameOver()
    +SVerticalBox::Slot().AutoHeight().HAlign(HAlign_Center).Padding(0,6,0,30)[SNew(STextBlock).Text(MareLoc::Text(TEXT("A Onda levou tudo. Seu Tibúrcio bem que avisou.")))
     .Font(MareNotebook::Body(22)).ColorAndOpacity_Lambda([Weak](){const float T=Weak.IsValid()?Weak->OverTime:3.f;return FSlateColor(FLinearColor(.9f,.88f,.84f,FMath::Clamp((T-1.8f)/1.f,0.f,1.f)));})]
    +SVerticalBox::Slot().AutoHeight().HAlign(HAlign_Center)[SNew(SHorizontalBox)
-    +SHorizontalBox::Slot().AutoWidth().Padding(12,0)[Button(MareLoc::Text(TEXT("Recomeçar o dia")),true)]
+    +SHorizontalBox::Slot().AutoWidth().Padding(12,0)[Restart]
     +SHorizontalBox::Slot().AutoWidth().Padding(12,0)[Button(MareLoc::Text(TEXT("Menu principal")),false)]]];
  GEngine->GameViewport->AddViewportWidgetContent(OverWidget.ToSharedRef(),80);
- if(PC){PC->bShowMouseCursor=true;PC->SetInputMode(FInputModeUIOnly().SetWidgetToFocus(OverWidget));PC->SetIgnoreMoveInput(true);PC->SetIgnoreLookInput(true);}
+ if(PC){PC->bShowMouseCursor=true;PC->SetInputMode(FInputModeUIOnly().SetWidgetToFocus(Restart));PC->SetIgnoreMoveInput(true);PC->SetIgnoreLookInput(true);}
  if(auto Hero=UGameplayStatics::GetPlayerCharacter(this,0))Hero->GetCharacterMovement()->DisableMovement();
  if(Roar)Roar->FadeOut(3.f,0.f);
  UE_LOG(LogTemp,Display,TEXT("MARE_TSUNAMI_GAME_OVER t=%.1f"),WaveTime);

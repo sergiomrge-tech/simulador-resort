@@ -26,8 +26,8 @@ bool IsVessel(UStaticMeshComponent* Part)
 // the neck forward (measured with mare_title_probe.posture: chest->head 25-30 deg forward walking, ~0 standing).
 // While walking the upper back and the neck straighten by these degrees (blended in and out with the clip): 14/14 left
 // walkers at ~7 deg overall lean (chest->head 12, neck->head 5, standing 12), measured and checked side-on (08/11).
-static TAutoConsoleVariable<float> CVarMareWalkChest(TEXT("mare.WalkUprightChest"),14.f,TEXT("Degrees the upper back (spine_04) straightens while walking."));
-static TAutoConsoleVariable<float> CVarMareWalkNeck(TEXT("mare.WalkUprightNeck"),14.f,TEXT("Degrees the neck (neck_01 + neck_02, split 60/40) straightens while walking."));
+static TAutoConsoleVariable<float> CVarMareWalkChest(TEXT("mare.WalkUprightChest"),14.f,TEXT("Degrees the upper back (spine_04) straightens while walking."));   // i18n:skip
+static TAutoConsoleVariable<float> CVarMareWalkNeck(TEXT("mare.WalkUprightNeck"),14.f,TEXT("Degrees the neck (neck_01 + neck_02, split 60/40) straightens while walking."));   // i18n:skip
 struct FServiceProxy : FAnimSingleNodeInstanceProxy
 {
  explicit FServiceProxy(UAnimInstance* Instance):FAnimSingleNodeInstanceProxy(Instance){}

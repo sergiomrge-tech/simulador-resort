@@ -56,24 +56,24 @@ namespace MareIsland
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FMareIslandFieldTest,"MareAlta.World.IslandField",EAutomationTestFlags::EditorContext|EAutomationTestFlags::EngineFilter)
 bool FMareIslandFieldTest::RunTest(const FString&)
 {
- if(!TestTrue(TEXT("island_sdf.bin loads"),MareIsland::IsLoaded()))return false;
+ if(!TestTrue(TEXT("island_sdf.bin loads"),MareIsland::IsLoaded()))return false;   // i18n:skip
  // The bay keeps its old straight beach: the waterline near y -29.5 m, the old shore band 25 m out at y -54.5 m,
  // the reef shelf 100 m out (y -130 m); the village, the kiosk and the summit are on land; open sea all round.
- TestTrue(TEXT("bay waterline"),FMath::Abs(MareIsland::ShoreDistance(0,-2950))<500.f);
- TestTrue(TEXT("old shore line 25 m out"),FMath::Abs(MareIsland::ShoreDistance(0,-5450)-2500.f)<300.f);
- TestTrue(TEXT("reef 100 m out"),FMath::Abs(MareIsland::ShoreDistance(0,-13000)-10000.f)<400.f);
- TestTrue(TEXT("kiosk on land"),MareIsland::ShoreDistance(3600,-1500)<0.f);
- TestTrue(TEXT("village on land"),MareIsland::ShoreDistance(4000,2500)<-3000.f);
- TestTrue(TEXT("summit on land"),MareIsland::ShoreDistance(4000,38900)<-10000.f);
- TestTrue(TEXT("sea to the north"),MareIsland::ShoreDistance(0,125000)>0.f);
- TestTrue(TEXT("sea to the west"),MareIsland::ShoreDistance(-60000,30000)>0.f);
- TestTrue(TEXT("sea to the east"),MareIsland::ShoreDistance(65000,30000)>0.f);
- TestTrue(TEXT("far sea keeps growing"),MareIsland::ShoreDistance(0,-900000)>MareIsland::ShoreDistance(0,-100000));
+ TestTrue(TEXT("bay waterline"),FMath::Abs(MareIsland::ShoreDistance(0,-2950))<500.f);   // i18n:skip
+ TestTrue(TEXT("old shore line 25 m out"),FMath::Abs(MareIsland::ShoreDistance(0,-5450)-2500.f)<300.f);   // i18n:skip
+ TestTrue(TEXT("reef 100 m out"),FMath::Abs(MareIsland::ShoreDistance(0,-13000)-10000.f)<400.f);   // i18n:skip
+ TestTrue(TEXT("kiosk on land"),MareIsland::ShoreDistance(3600,-1500)<0.f);   // i18n:skip
+ TestTrue(TEXT("village on land"),MareIsland::ShoreDistance(4000,2500)<-3000.f);   // i18n:skip
+ TestTrue(TEXT("summit on land"),MareIsland::ShoreDistance(4000,38900)<-10000.f);   // i18n:skip
+ TestTrue(TEXT("sea to the north"),MareIsland::ShoreDistance(0,125000)>0.f);   // i18n:skip
+ TestTrue(TEXT("sea to the west"),MareIsland::ShoreDistance(-60000,30000)>0.f);   // i18n:skip
+ TestTrue(TEXT("sea to the east"),MareIsland::ShoreDistance(65000,30000)>0.f);   // i18n:skip
+ TestTrue(TEXT("far sea keeps growing"),MareIsland::ShoreDistance(0,-900000)>MareIsland::ShoreDistance(0,-100000));   // i18n:skip
  TestTrue(TEXT("coast y in the bay"),FMath::Abs(MareIsland::CoastY(3600,-5000)+5000.f)<400.f);   // i18n:skip
  {float North=60000.f;while(North<200000.f && MareIsland::ShoreDistance(0,North)<0.f)North+=500.f;   // the north waterline
   TestTrue(TEXT("north shore found"),North<200000.f);   // i18n:skip
   TestTrue(TEXT("10 m off the north shore reads like 10 m off the bay"),FMath::Abs(MareIsland::CoastY(0,North+1000.f)-MareIsland::BayEquivalentY(1000.f))<600.f);}   // i18n:skip
- TestTrue(TEXT("bay-equivalent y"),FMath::IsNearlyEqual(MareIsland::BayEquivalentY(2500.f),-5450.f,1.f));
+ TestTrue(TEXT("bay-equivalent y"),FMath::IsNearlyEqual(MareIsland::BayEquivalentY(2500.f),-5450.f,1.f));   // i18n:skip
  return true;
 }
 #endif
