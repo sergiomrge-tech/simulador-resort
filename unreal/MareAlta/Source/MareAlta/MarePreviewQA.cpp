@@ -188,7 +188,11 @@ void AMarePreviewQA::Tick(float DeltaSeconds)
   else Check(TEXT("home_door_fits_frame"),false);break;}
 
  case 17:{Capture(TEXT("house-day"));Audio->SetRadioStation(TEXT("music_bossa"));AMareServiceTarget* Door=nullptr;for(TActorIterator<AMareServiceTarget> It(GetWorld());It;++It)if(It->Action==TEXT("Door") && It->bAutoClose){Door=*It;break;}Check(TEXT("home_door_opens_after_fit"),Door && Door->IsOpen());if(Door)Door->Use(PC);break;}
- case 18:Check(TEXT("radio_bossa_plays"),Audio->LoopLevel(TEXT("music_bossa"))>.01f);Audio->SetRadioStation(TEXT("music_relax"));Hero->SetActorLocation(FVector(3800,-1200,100));PC->SetControlRotation(FRotator(-6,-90,0));Sim->AdvanceMinutes(InitialMinutes-UMareSimulation::Number(Sim->State,TEXT("minutes")));break;
+ case 18:Check(TEXT("radio_bossa_plays"),Audio->LoopLevel(TEXT("music_bossa"))>.01f);
+  // 08/11 (demo: the music could not be lowered from the options): a new Music volume applies at once, even paused.
+  {const float Music=Audio->GetVolume(TEXT("Music")),Loud=Audio->LoopLevel(TEXT("music_bossa"));UGameplayStatics::SetGamePaused(this,true);
+   Audio->SetVolume(TEXT("Music"),Music*.25f);const float Low=Audio->LoopLevel(TEXT("music_bossa"));Audio->SetVolume(TEXT("Music"),Music);UGameplayStatics::SetGamePaused(this,false);
+   Check(TEXT("music_volume_applies_paused"),Loud>.01f && Low<Loud*.5f && Audio->LoopLevel(TEXT("music_bossa"))>Low);}Audio->SetRadioStation(TEXT("music_relax"));Hero->SetActorLocation(FVector(3800,-1200,100));PC->SetControlRotation(FRotator(-6,-90,0));Sim->AdvanceMinutes(InitialMinutes-UMareSimulation::Number(Sim->State,TEXT("minutes")));break;
  case 19:{
   AMareServiceTarget* Door=nullptr;for(TActorIterator<AMareServiceTarget> It(GetWorld());It;++It)if(It->Action==TEXT("Door") && It->bAutoClose){Door=*It;break;}Check(TEXT("home_door_closes_after_fit"),Door && !Door->IsOpen());
   Check(TEXT("radio_relax_plays"),Audio->LoopLevel(TEXT("music_relax"))>.01f);Audio->SetRadioStation(TEXT("off"));

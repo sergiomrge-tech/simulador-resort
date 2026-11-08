@@ -56,6 +56,11 @@ private:
  UPROPERTY() TObjectPtr<USoundSubmix> MasterMix;
  UPROPERTY() TMap<FName,TObjectPtr<UAudioComponent>> Stereos;
  TMap<FName,FName> StereoTracks;
+ /** Last level of each loop before the bus volumes, and which loops are music (the Music bus) rather than ambience. */
+ TMap<FName,float> LoopBase;TSet<FName> MusicLoops;
+ float MusicBus()const;
+ /** Sets every playing sound from the current bus volumes at once (works while the game is paused). */
+ void ApplyVolumes();
  TMap<FName,float> Volumes;
  FName RadioStation=TEXT("radio_havaiana");
  TMap<FName,double> LastCue;

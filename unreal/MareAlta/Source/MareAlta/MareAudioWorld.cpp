@@ -84,7 +84,7 @@ void UMareAudioWorld::SetStereo(FName Id,FName Track,FVector Position)
    Local->Attenuation.AttenuationShapeExtents=FVector(150);Local->Attenuation.FalloffDistance=650;
    Set=UGameplayStatics::SpawnSoundAtLocation(this,Wave,Position,FRotator::ZeroRotator,.001f,1,0,Local,nullptr,false);
    if(Set){Set->SetUISound(false);Stereos.Add(Id,Set);}}}
- if(Set){Set->SetWorldLocation(Position);Set->SetVolumeMultiplier(!Track.IsNone() && GetVolume(TEXT("Master"))>0?GetVolume(TEXT("Music"))*.24f*(MasterMix?1.f:GetVolume(TEXT("Master"))):0.f);}
+ if(Set){Set->SetWorldLocation(Position);Set->SetVolumeMultiplier(!Track.IsNone() && GetVolume(TEXT("Master"))>0?MusicBus()*.24f:0.f);}
 }
 float UMareAudioWorld::Gain(bool bAmbient)const{return (MasterMix?1.f:GetVolume(TEXT("Master")))*GetVolume(TEXT("Effects"))*(bAmbient?GetVolume(TEXT("Ambient")):1.f);}
 void UMareAudioWorld::SetVolume(FName Bus,float Value)
@@ -92,9 +92,19 @@ void UMareAudioWorld::SetVolume(FName Bus,float Value)
  if(!Volumes.Contains(Bus))return;Value=FMath::Clamp(Value,0.f,1.f);Volumes[Bus]=Value;
  GConfig->SetFloat(TEXT("MareAudio"),*Bus.ToString(),Value,GGameUserSettingsIni);GConfig->Flush(false,GGameUserSettingsIni);
  if(Bus==TEXT("Master") && MasterMix)MasterMix->SetSubmixOutputVolume(this,Value);
- for(auto Pair:Stereos)if(IsValid(Pair.Value) && (GetVolume(TEXT("Master"))==0 || GetVolume(TEXT("Music"))==0))Pair.Value->SetVolumeMultiplier(0);
- for(auto& Voice:Voices)if(IsValid(Voice.Key))Voice.Key->SetVolumeMultiplier(GetVolume(TEXT("Master"))==0?0:Voice.Value*Gain(Voice.Key->ComponentHasTag(TEXT("Ambient"))));
- for(auto Pair:Loops)if(IsValid(Pair.Value) && (GetVolume(TEXT("Master"))==0 || (IsRadioStation(Pair.Key)?GetVolume(TEXT("Music"))==0:GetVolume(TEXT("Effects"))*GetVolume(TEXT("Ambient"))==0)))Pair.Value->SetVolumeMultiplier(0);
+ ApplyVolumes();
+}
+// 08/11 (Sergio, demo: the background music could not be changed nor turned off): the sliders live in the options of
+// the pause menu, and the loops only followed the buses in Tick, which stops while paused, so nothing changed until
+// the game resumed (only an exact zero muted). Now every playing sound is set from its last level right away.
+float UMareAudioWorld::MusicBus()const{return (MasterMix?1.f:GetVolume(TEXT("Master")))*GetVolume(TEXT("Music"));}
+void UMareAudioWorld::ApplyVolumes()
+{
+ const bool bMuted=GetVolume(TEXT("Master"))==0;
+ for(auto Pair:Stereos)if(IsValid(Pair.Value))Pair.Value->SetVolumeMultiplier(bMuted || StereoTracks.FindRef(Pair.Key).IsNone()?0.f:MusicBus()*.24f);
+ for(auto& Voice:Voices)if(IsValid(Voice.Key))Voice.Key->SetVolumeMultiplier(bMuted?0:Voice.Value*Gain(Voice.Key->ComponentHasTag(TEXT("Ambient"))));
+ for(auto Pair:Loops)if(IsValid(Pair.Value)){const float* Base=LoopBase.Find(Pair.Key);
+  Pair.Value->SetVolumeMultiplier(bMuted || !Base?0.f:*Base*(MusicLoops.Contains(Pair.Key)?MusicBus():Gain(true)));}
 }
 void UMareAudioWorld::StartSoundscape(UMareSimulation* Sim)
 {
@@ -162,23 +172,27 @@ void UMareAudioWorld::UpdateLayers(float DeltaSeconds,UMareSimulation* Sim,FVect
   for(auto Pair:Loops){const int32 Index=RadioStations().IndexOfByKey(Pair.Key);
    if(Index>=Kept && Pair.Key!=RadioStation && IsValid(Pair.Value) && Pair.Value->VolumeMultiplier<=.002f){Pair.Value->Stop();Drop.Add(Pair.Key);}}
   for(FName Name:Drop)Loops.Remove(Name);}
- for(auto Pair:Loops){const FName Name=Pair.Key;float Target=0;
-  if(Name==ZoneTrack)Target=(MasterMix?1.f:GetVolume(TEXT("Master")))*GetVolume(TEXT("Music"))*ZoneLevel*(bIndoors?.8f:1.f);
+ for(auto Pair:Loops){const FName Name=Pair.Key;float Target=0;bool bMusic=false;
+  // Base level without the bus volumes (kept in LoopBase so the options can apply a new volume while paused).
+  if(Name==ZoneTrack){bMusic=true;Target=ZoneLevel*(bIndoors?.8f:1.f);}
   // Per-station trim so every track plays at the same loudness (reggae_praia is mastered 3.6 dB softer).
-  else if(Name==RadioStation && IsRadioStation(Name))Target=(Name==TEXT("reggae_praia")?1.5f:1.f)*Duck*(MasterMix?1.f:GetVolume(TEXT("Master")))*GetVolume(TEXT("Music"))*(bNight?.22f:.32f)*(bIndoors?.65f:1.f)*StereoDuck;
-  if(Name==TEXT("ocean_loop"))Target=Gain(true)*Beach*(bIndoors?.1f:.4f);
+  else if(Name==RadioStation && IsRadioStation(Name)){bMusic=true;Target=(Name==TEXT("reggae_praia")?1.5f:1.f)*Duck*(bNight?.22f:.32f)*(bIndoors?.65f:1.f)*StereoDuck;}
+  else if(IsRadioStation(Name))bMusic=true;
+  if(Name==TEXT("ocean_loop"))Target=Beach*(bIndoors?.1f:.4f);
   // Mix 03/11 (tools/ue58/measure_mix.py): the rain sat 18 dB over the sea and over the music; now ~3 dB above the sea.
-  if(Name==TEXT("rain_loop"))Target=Gain(true)*(bRain?(bIndoors?.025f:.08f):0.f);
-  if(Name==TEXT("wind_loop"))Target=Gain(true)*(bRain?.16f:.055f)*(bIndoors?.15f:1.f);
-  if(Name==TEXT("crickets_loop"))Target=Gain(true)*(bNight && !bRain?.22f:0.f)*(bIndoors?.25f:1.f);
-  if(Name==TEXT("leaves_soft"))Target=Gain(true)*(!bRain && Position.Y>-1100?.2f:0.f)*(bIndoors?.2f:1.f);
-  if(Name==TEXT("underwater_loop"))Target=Gain(true)*(bUnderwater?.28f:0.f);
+  if(Name==TEXT("rain_loop"))Target=(bRain?(bIndoors?.025f:.08f):0.f);
+  if(Name==TEXT("wind_loop"))Target=(bRain?.16f:.055f)*(bIndoors?.15f:1.f);
+  if(Name==TEXT("crickets_loop"))Target=(bNight && !bRain?.22f:0.f)*(bIndoors?.25f:1.f);
+  if(Name==TEXT("leaves_soft"))Target=(!bRain && Position.Y>-1100?.2f:0.f)*(bIndoors?.2f:1.f);
+  if(Name==TEXT("underwater_loop"))Target=(bUnderwater?.28f:0.f);
   // 04/11 (Sergio: "som de mata fechada na trilha"): the forest past the back of the village and on the summit trail
   // (OpenGameArt CC0 birds + forest ambience), softer at night when the crickets take over, almost gone in the rain.
-  if(Name==TEXT("forest_loop"))Target=Gain(true)*.24f*FMath::Clamp((Position.Y-8400.f)/1600.f,0.f,1.f)*(bNight?.35f:1.f)*(bRain?.25f:1.f)*(bIndoors?.2f:1.f);
+  if(Name==TEXT("forest_loop"))Target=.24f*FMath::Clamp((Position.Y-8400.f)/1600.f,0.f,1.f)*(bNight?.35f:1.f)*(bRain?.25f:1.f)*(bIndoors?.2f:1.f);
   auto Component=Pair.Value;if(!IsValid(Component))continue;
   // The silence before the tsunami (UMareSummitWorld): every ambience and the radio fall silent.
   if(auto Summit=GetWorld()->GetSubsystem<UMareSummitWorld>())if(Summit->IsWaveRunning())Target=0;
+  LoopBase.Add(Name,Target);if(bMusic)MusicLoops.Add(Name);else MusicLoops.Remove(Name);
+  Target*=bMusic?MusicBus():Gain(true);
   if(GetVolume(TEXT("Master"))==0)Target=0;
   Component->SetVolumeMultiplier(FMath::FInterpTo(Component->VolumeMultiplier,Target,DeltaSeconds,3));
   Component->SetLowPassFilterEnabled(bUnderwater);Component->SetLowPassFilterFrequency(bUnderwater?650:18000);
