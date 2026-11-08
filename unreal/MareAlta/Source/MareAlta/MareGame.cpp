@@ -68,6 +68,13 @@
 #include "Widgets/SNullWidget.h"
 #include "Brushes/SlateRoundedBoxBrush.h"
 #include "Widgets/Images/SImage.h"
+#include "Widgets/Layout/SScaleBox.h"
+#include "UObject/StrongObjectPtr.h"
+#include "Misc/PackageName.h"
+#include "Engine/Texture2D.h"
+#if WITH_EDITOR
+#include "TextureCompiler.h"
+#endif
 #include "MareGameRoom.h"
 #include "MareTableTennis.h"
 #include "MareFoosball.h"
@@ -1839,6 +1846,28 @@ public:
 private:
  TWeakObjectPtr<AMareController> Owner;TSharedPtr<SWidget> Continue;
 };
+// Title art (08/11): UI textures named in title.json, kept loaded with their brushes for the whole session.
+static const FSlateBrush* TitleBrush(const FString& Path)
+{
+ static TMap<FString,TSharedPtr<FSlateBrush>> Brushes;static TArray<TStrongObjectPtr<UTexture2D>> Keep;
+ if(Path.IsEmpty())return nullptr;
+ if(const TSharedPtr<FSlateBrush>* Found=Brushes.Find(Path))return Found->Get();
+ TSharedPtr<FSlateBrush> Brush;
+ if(FPackageName::DoesPackageExist(FPackageName::ObjectPathToPackageName(Path)))if(UTexture2D* Tex=LoadObject<UTexture2D>(nullptr,*Path)){
+#if WITH_EDITOR
+  // In the editor a texture may still be compiling, and its size is then the square placeholder's (the logo came out
+  // stretched into a square, 08/11): finish it first.
+  FTextureCompilingManager::Get().FinishCompilation({Tex});
+#endif
+  Keep.Emplace(Tex);Brush=MakeShared<FSlateBrush>();Brush->SetResourceObject(Tex);Brush->ImageSize=FVector2D(Tex->GetSizeX(),Tex->GetSizeY());Brush->DrawAs=ESlateBrushDrawType::Image;}
+ Brushes.Add(Path,Brush);return Brush.Get();
+}
+static bool MareTitleHasArt()
+{
+ FString Text,ArtPath;TSharedPtr<FJsonObject> T;FFileHelper::LoadFileToString(Text,*(FPaths::ProjectContentDir()/TEXT("Data/title.json")));   // i18n:skip
+ if(FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Text),T) && T.IsValid())T->TryGetStringField(TEXT("art"),ArtPath);   // i18n:skip
+ return TitleBrush(ArtPath)!=nullptr;
+}
 class SMareMainMenu : public SCompoundWidget
 {
 public:
@@ -1916,25 +1945,41 @@ private:
    Back();break;
   }
   if(bTitleMode){
-   // Title screen (07/11): the logo and the menu in a column on the left, the living bay behind (AMareTitleCamera).
-   FString Logo=TEXT("Coconut Simulator"),Sub=TEXT("Maré Alta Resort");
+   // Title screen. 07/11: the logo and the menu in a column on the left, the living bay behind (AMareTitleCamera).
+   // 08/11 (Sergio: "tela inicial em 2d", "use o canva para fazer algo bastante detalhado"): a detailed 2D painting of
+   // the island fills the screen (title.json "art", cover-fitted) and the painted Canva logo ("logo_image") replaces the
+   // text logo; while the art is up the 3D world is not drawn at all (AMareController::OpenMainMenu).
+   FString Logo=TEXT("Coconut Simulator"),Sub=TEXT("Maré Alta Resort"),ArtPath,LogoPath;
    {FString Text;TSharedPtr<FJsonObject> T;FFileHelper::LoadFileToString(Text,*(FPaths::ProjectContentDir()/TEXT("Data/title.json")));   // i18n:skip
-    if(FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Text),T) && T.IsValid()){T->TryGetStringField(TEXT("logo"),Logo);T->TryGetStringField(TEXT("subtitle"),Sub);}}   // i18n:skip
+    if(FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Text),T) && T.IsValid()){T->TryGetStringField(TEXT("logo"),Logo);T->TryGetStringField(TEXT("subtitle"),Sub);   // i18n:skip
+     T->TryGetStringField(TEXT("art"),ArtPath);T->TryGetStringField(TEXT("logo_image"),LogoPath);}}   // i18n:skip
+   const FSlateBrush* Art=TitleBrush(ArtPath);const FSlateBrush* LogoArt=TitleBrush(LogoPath);
+   // red rubber stamp over the painted logo (the pale yellow one vanished against the sunset sky)
+   const TSharedRef<SWidget> Stamp=S->IsDemo()?MareNotebook::Stamp(TEXT("DEMO"),LogoArt?MareNotebook::Hex(214,52,40):MareNotebook::Hex(255,236,150)):SNullWidget::NullWidget;
    auto Shadowed=[](const FString& V,float Size,const FLinearColor& C){return SNew(STextBlock).Text(FText::FromString(V)).Font(MareNotebook::Hand(Size)).ColorAndOpacity(C)
     .ShadowOffset(FVector2D(2.5f,2.5f)).ShadowColorAndOpacity(FLinearColor(0,0,0,.55f));};
-   auto Head=SNew(SVerticalBox)
+   TSharedRef<SWidget> Head=SNullWidget::NullWidget;
+   if(LogoArt){const FVector2D Size=LogoArt->ImageSize;const float W=520.f,H=W*Size.Y/FMath::Max(1.f,float(Size.X));
+    Head=SNew(SOverlay)
+     +SOverlay::Slot()[SNew(SBox).WidthOverride(W).HeightOverride(H)[SNew(SImage).Image(LogoArt)]]
+     // the DEMO stamp pinned at the end of the logo's wooden sign
+     +SOverlay::Slot().HAlign(HAlign_Right).VAlign(VAlign_Bottom).Padding(0,0,-34,H*.05f)[SNew(SBox).RenderTransformPivot(FVector2D(.5f,.5f)).RenderTransform(FSlateRenderTransform(FQuat2D(FMath::DegreesToRadians(-8.f))))[Stamp]];}
+   else Head=SNew(SVerticalBox)
     +SVerticalBox::Slot().AutoHeight()[Shadowed(Logo,78,MareNotebook::Hex(255,246,214))]
     +SVerticalBox::Slot().AutoHeight().Padding(6,-10,0,0)[SNew(SHorizontalBox)
      +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center)[Shadowed(Sub,30,MareNotebook::Hex(255,214,150))]
-     +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(18,0,0,0)[S->IsDemo()?MareNotebook::Stamp(TEXT("DEMO"),MareNotebook::Hex(255,236,150)):SNullWidget::NullWidget]];
-   // a soft dark wash fading to the right (strips of falling opacity), so the column reads over the bright scene
+     +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(18,0,0,0)[Stamp]];
+   // a soft dark wash fading to the right (strips of falling opacity), so the column reads over the bright picture
    auto Wash=SNew(SHorizontalBox);
-   for(int32 K=0;K<12;++K)Wash->AddSlot().AutoWidth()[SNew(SBox).WidthOverride(70)[SNew(SBorder).BorderImage(FCoreStyle::Get().GetBrush("WhiteBrush")).BorderBackgroundColor(FLinearColor(0,0,0,.34f*(1.f-K/12.f)))]];
+   // (fine strips: 12 wide ones showed as stripes over the painting)
+   for(int32 K=0;K<56;++K)Wash->AddSlot().AutoWidth()[SNew(SBox).WidthOverride(15)[SNew(SBorder).BorderImage(FCoreStyle::Get().GetBrush("WhiteBrush")).BorderBackgroundColor(FLinearColor(0,0,0,(Art?.38f:.34f)*FMath::Square(1.f-K/56.f)))]];
    ChildSlot[SNew(SOverlay)
+    +SOverlay::Slot()[Art?StaticCastSharedRef<SWidget>(SNew(SScaleBox).Stretch(EStretch::ScaleToFill)[SNew(SImage).Image(Art)]):SNullWidget::NullWidget]
     +SOverlay::Slot().HAlign(HAlign_Left)[Wash]
-    +SOverlay::Slot().HAlign(HAlign_Left).VAlign(VAlign_Top).Padding(70,60,0,0)[Head]
-    +SOverlay::Slot().HAlign(HAlign_Left).VAlign(VAlign_Center).Padding(80,170,0,0)[SNew(SBox).WidthOverride(Page==EPage::Options?560:400)[MareNotebook::Page(Box)]]
-    +SOverlay::Slot().HAlign(HAlign_Right).VAlign(VAlign_Bottom).Padding(0,0,28,18)[Shadowed(LOCTEXT("TitleFoot","Demo · versão de teste").ToString(),18,FLinearColor(1,1,1,.8f))]];
+    +SOverlay::Slot().HAlign(HAlign_Left).VAlign(VAlign_Fill).Padding(56,36,0,24)[SNew(SVerticalBox)
+     +SVerticalBox::Slot().AutoHeight()[Head]
+     +SVerticalBox::Slot().AutoHeight().Padding(LogoArt?60.f:24.f,LogoArt?4.f:40.f,0,0)[SNew(SBox).WidthOverride(Page==EPage::Options?560:400)[MareNotebook::Page(Box)]]]
+    +SOverlay::Slot().HAlign(HAlign_Right).VAlign(VAlign_Bottom).Padding(0,0,28,18)[Shadowed(LOCTEXT("TitleFoot","Demo · versão de teste").ToString(),18,FLinearColor(1,1,1,.85f))]];
   }
   else ChildSlot[SNew(SBorder).BorderBackgroundColor(FLinearColor(0,0,0,.55f)).HAlign(HAlign_Center).VAlign(VAlign_Center)[SNew(SBox).WidthOverride(Page==EPage::Options?540:440)[MareNotebook::Page(Box)]]];
   MareGamepad::FocusSoon(AsShared(),0);
@@ -2160,7 +2205,8 @@ void AMareController::OpenMainMenu()
  if(bTitle){S->bTitleOpen=true;S->bHoldSaves=true;TitleSavedMinutes=UMareSimulation::Number(S->State,TEXT("minutes"));
   S->State->SetNumberField(TEXT("minutes"),AMareTitleCamera::TitleMinutes());
   FActorSpawnParameters P;P.SpawnCollisionHandlingOverride=ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-  TitleCamera=GetWorld()->SpawnActor<AMareTitleCamera>(P);if(TitleCamera)SetViewTarget(TitleCamera);}
+  TitleCamera=GetWorld()->SpawnActor<AMareTitleCamera>(P);if(TitleCamera)SetViewTarget(TitleCamera);
+  if(MareTitleHasArt())GEngine->GameViewport->bDisableWorldRendering=true;}   // the 2D title art covers the screen: draw nothing behind it
  else SetPause(true);
  {const TSharedRef<SMareMainMenu> Menu=SNew(SMareMainMenu).Controller(this);MainMenuWidget=Menu;const TWeakPtr<SMareMainMenu> Weak=Menu;
   MareGamepad::PushMenu(Menu,[Weak](){if(const auto Pinned=Weak.Pin())Pinned->Back();});}
@@ -2179,6 +2225,7 @@ void AMareController::CloseMainMenu()
   if(auto S=GetSimulation()){S->bTitleOpen=false;S->bHoldSaves=false;if(TitleSavedMinutes>=0)S->State->SetNumberField(TEXT("minutes"),TitleSavedMinutes);}
   TitleSavedMinutes=-1;
   if(IsValid(TitleCamera)){TitleCamera->Destroy();}TitleCamera=nullptr;
+  if(GEngine && GEngine->GameViewport)GEngine->GameViewport->bDisableWorldRendering=false;
   if(GetPawn())SetViewTarget(GetPawn());}
 }
 void AMareController::ReloadWorld()

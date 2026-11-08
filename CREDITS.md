@@ -708,3 +708,9 @@ Os seis registros `radio_*` pré-existentes de `unreal/MareAlta/Content/Data/aud
 - **Feel Good Island Loop** — OpenGameArt (CC0) — https://opengameart.org/content/feel-good-island-loop — CC0 1.0 (`radio_up_03`)
 - **Tropical Loop** — wipics — https://opengameart.org/content/tropical-loop — CC0 1.0 (`radio_up_01`)
 - **Beach Sports Theme** — OpenGameArt (CC0) — https://opengameart.org/content/beach-sports-theme-loop — CC0 1.0 (`radio_up_04`)
+
+### Tela inicial 2D (UE5.8) — 08/11/2026
+
+- Ilustração da ilha (`/Game/UI/Title/T_TitleArt`) e logo "Coconut Simulator" (`T_TitleLogo`) gerados com a IA do Canva na
+  conta do projeto (designs `DAHaUSX0sQM` e `DAHaUQBvy84`). O fundo xadrez pintado no logo foi recortado por script.
+  Fontes em `SourceArt/UI/Title`.
