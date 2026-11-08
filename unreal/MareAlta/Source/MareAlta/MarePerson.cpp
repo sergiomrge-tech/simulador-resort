@@ -1,4 +1,5 @@
 #include "MarePerson.h"
+#include "MareIsland.h"
 #include "MareOptions.h"
 #include "Camera/PlayerCameraManager.h"
 #include "Misc/PackageName.h"
@@ -98,16 +99,19 @@ float AMarePerson::SeaHeight(const FVector2D& P,float T,float Storm)
  // The vertical offset of the ocean material's WPO (mare_materials.build_water, 04/11: long ~85 cm swell, mid waves
  // 60/40/22, fade out to ~300 m). Keep in sync with that formula: swimmers and the tour boat ride on it.
  auto Smooth=[](float A,float B,float X){const float U=FMath::Clamp((X-A)/(B-A),0.f,1.f);return U*U*(3-2*U);};
+ // 08/11 (the full island): the coast terms follow the distance to the nearest coast, as Yc = the old bay y at that
+ // distance (MareIsland, clamped to +-400 m like T_IslandSDF in the material); the wave phases keep x and y.
+ const float Yc=MareIsland::BayEquivalentY(FMath::Clamp(MareIsland::ShoreDistance(P.X,P.Y),-40000.f,40000.f));
  const float A=P.X*.003f+P.Y*.0017f-T*(.55f+Storm*.35f),B=P.Y*.004f-P.X*.0012f-T*(.38f+Storm*.3f),C=P.X*.011f+P.Y*.007f-T*1.9f;
- const float Shore=Smooth(-6500,-4300,P.Y)*(1-Smooth(-3000,-2300,P.Y));
- const float Swell=FMath::Sin(P.Y*.009f+FMath::Sin(P.X*.0025f)*.7f-T*(.8f+Storm*.4f));
- const FVector2D Outside(FMath::Max(FMath::Abs(P.X-4000)-40000,0.f),FMath::Max(-30000-P.Y,0.f));
- const float Fade=1-Smooth(4000,20000,Outside.Size())*.6f,Offshore=Smooth(-2600,-6500,P.Y);
+ const float Shore=Smooth(-6500,-4300,Yc)*(1-Smooth(-3000,-2300,Yc));
+ const float Swell=FMath::Sin(Yc*.009f+FMath::Sin(P.X*.0025f)*.7f-T*(.8f+Storm*.4f));
+ const FVector2D Outside(0.f,FMath::Max(-30000-Yc,0.f));
+ const float Fade=1-Smooth(4000,20000,Outside.Size())*.6f,Offshore=Smooth(-2600,-6500,Yc);
  const float D=P.X*.0069f-P.Y*.0052f-T*1.15f;
- const float Sw=P.Y*.00105f+P.X*.00028f-T*.42f;const float Swell2=(FMath::Sin(Sw)*.75f+.25f*FMath::Sin(Sw*2+1.1f))*85;
+ const float Sw=Yc*.00105f+P.X*.00028f-T*.42f;const float Swell2=(FMath::Sin(Sw)*.75f+.25f*FMath::Sin(Sw*2+1.1f))*85;
  const float H=Swell2*(1+Storm*.7f)+(FMath::Sin(A)*60+FMath::Sin(B)*40+FMath::Sin(D)*22)*(1+Storm*1.1f)+FMath::Sin(C)*(12+Storm*10)+FMath::Sin(P.X*.019f-P.Y*.013f-T*2.6f)*6;
  // 05/11 (Sergio: 'ondas próximo da praia muito altas'): the swell builds up over ~40 m from the shore, not ~15 m.
- const float Coast=FMath::Lerp(.35f,1.f,Smooth(-5500,-11000,P.Y));
+ const float Coast=FMath::Lerp(.35f,1.f,Smooth(-5500,-11000,Yc));
  const FVector2D Q(FMath::Max(FMath::Abs(P.X-6780)-450,0.f),FMath::Max(FMath::Abs(P.Y+4300)-1100,0.f));
  const float Pier=FMath::Lerp(.2f,1.f,Smooth(0,900,Q.Size()));
  // The sheltered snorkel reef (05/11): the swell drops to 8% around it.

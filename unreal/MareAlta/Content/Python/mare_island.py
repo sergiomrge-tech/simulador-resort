@@ -157,3 +157,44 @@ def seabed(_=''):
     b = mesh.get_bounds()
     return json.dumps({'removed': removed, 'mesh': mesh.get_path_name(), 'tris': mesh.get_num_triangles(0),
                        'origin': [round(b.origin.x), round(b.origin.y), round(b.origin.z)]}, ensure_ascii=False)
+
+
+def sea_info(_=''):
+    """Ocean plane and swim volume actors: transform and the mesh's own bounds (step 3 survey)."""
+    out = []
+    for a in unreal.get_editor_subsystem(unreal.EditorActorSubsystem).get_all_level_actors():
+        l = a.get_actor_label()
+        if 'Oceano' in l or 'nata' in l or 'Ocean' in l:
+            row = {'label': l, 'class': a.get_class().get_name(), 'loc': str(a.get_actor_location()), 'scale': str(a.get_actor_scale3d())}
+            if isinstance(a, unreal.StaticMeshActor):
+                m = a.static_mesh_component.static_mesh
+                row['mesh'] = m.get_path_name()
+                row['verts'] = m.get_num_vertices(0)
+                bb = m.get_bounding_box()
+                row['mesh_box'] = [str(bb.min), str(bb.max)]
+            out.append(row)
+    return json.dumps(out, ensure_ascii=False)
+
+
+def sea(_=''):
+    """Step 3 (08/11): the ocean all round the island. Re-imports the graded grid (tools/ue58/gen_ocean.py), rebuilds
+    M_CoastalWater_PBR on the coast distance (T_IslandSDF) and stretches the swim volume over the whole ring of sea
+    (x +-1300 m, y -2432..+2050 m, below the water level as before). PIE stopped; saves the level."""
+    import importlib
+    import mare_beach
+    import mare_materials
+    importlib.reload(mare_materials)
+    importlib.reload(mare_beach)
+    if unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world():
+        raise RuntimeError('Stop PIE first')
+    ocean = mare_beach.reimport_ocean()
+    water = mare_materials.build_water().get_path_name()
+    vol = None
+    for a in unreal.get_editor_subsystem(unreal.EditorActorSubsystem).get_all_level_actors():
+        if isinstance(a, unreal.PhysicsVolume) and 'nata' in a.get_actor_label():
+            vol = a
+    if vol:
+        vol.set_actor_location(unreal.Vector(0, -19100, -5030), False, False)
+        vol.set_actor_scale3d(unreal.Vector(1300, 2241, 50))
+    unreal.get_editor_subsystem(unreal.LevelEditorSubsystem).save_current_level()
+    return json.dumps({'ocean': ocean, 'water': water, 'volume': str(vol.get_actor_location()) if vol else None}, default=str)
