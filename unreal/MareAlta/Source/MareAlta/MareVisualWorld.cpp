@@ -47,6 +47,9 @@
 // interior volume, so it took the outdoor night eye (EV100 -1.9..-0.9, made for moonlight), which blew 38 cd lamps up to
 // daylight; the interiors with a volume used EV 4.4..5.2 and were nearly black. One night eye for every room (house included).
 static TAutoConsoleVariable<float> CVarMareInteriorNightEV(TEXT("mare.InteriorNightEV"),2.6f,TEXT("Night EV100 floor of the eye inside the MareInterior volumes (the ceiling is +0.8); lower = brighter rooms."));
+// 08/11: in the island forest at night (no lamp in view) the eye opened to the -1.9 floor and the woods looked like day;
+// the village keeps its lamps in view and sits near the -0.9 top of the night range.
+static TAutoConsoleVariable<float> CVarMareNightMinEV(TEXT("mare.NightMinEV"),-1.9f,TEXT("Lowest outdoor exposure (EV100) at night: how far the eye may open where no light is in view (the night top stays -0.9)."));
 static TAutoConsoleVariable<float> CVarMareNightDarken(TEXT("mare.NightDarken"),1.3f,TEXT("Stops of exposure removed at night (0 = old night)"));
 
 static TAutoConsoleVariable<float> CVarMareBounceLightReach(TEXT("mare.BounceLightReach"),1.f,TEXT("Draw distance of the bounce (fill) lights, times mare.LightDrawDistance (04/11: x2.5 cost the beach 4 FPS)."));
@@ -213,7 +216,7 @@ void UMareVisualWorld::Tick(float DeltaSeconds)
  for(auto Volume:Interiors)if(Volume){auto& S=Volume->Settings;S.bOverride_AutoExposureMinBrightness=S.bOverride_AutoExposureMaxBrightness=true;
   const float NightEV=CVarMareInteriorNightEV.GetValueOnGameThread();
   S.AutoExposureMinBrightness=FMath::Lerp(NightEV,5.f,Day);S.AutoExposureMaxBrightness=FMath::Lerp(NightEV+.8f,9.f,Day);}
- if(Exposure){Exposure->Settings.bOverride_AutoExposureMinBrightness=true;Exposure->Settings.bOverride_AutoExposureMaxBrightness=true;Exposure->Settings.AutoExposureMinBrightness=FMath::Lerp(-1.9f,5.f,Day);Exposure->Settings.AutoExposureMaxBrightness=FMath::Lerp(-.9f,14.f,Day);}
+ if(Exposure){Exposure->Settings.bOverride_AutoExposureMinBrightness=true;Exposure->Settings.bOverride_AutoExposureMaxBrightness=true;Exposure->Settings.AutoExposureMinBrightness=FMath::Lerp(FMath::Min(CVarMareNightMinEV.GetValueOnGameThread(),-.9f),5.f,Day);Exposure->Settings.AutoExposureMaxBrightness=FMath::Lerp(-.9f,14.f,Day);}
  // Overcast light: the sun fades out with the rain (no hard shadows) and the diffuse sky light doubles.
  if(Sky)Sky->GetLightComponent()->SetIntensity(FMath::Lerp(.035f,1.f,Day)*(1.f+2.5f*RainNow));
  if(Sun){Sun->SetActorRotation(FRotator(-Solar*58.f,-65.f+(Hour-12.f)*12.f,0));Sun->GetLightComponent()->SetIntensity(FMath::Max(0.f,Solar)*65000.f*(1.f-.998f*RainNow));

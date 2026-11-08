@@ -277,3 +277,40 @@ def ism_census(arg=''):
     multi.sort(reverse=True)
     return json.dumps({'ism_components': total, 'instances_per_component': sorted(sizes.items()), 'groups': len(groups),
                        'components_in_shared_groups': sum(m[0] for m in multi), 'top': multi[:20]})
+
+
+def volumes_at(arg='20413,62458,445'):
+    """QA (PIE): post-process volumes (and their exposure overrides) that contain a point, unbound ones included."""
+    x, y, z = [float(v) for v in arg.split(',')]
+    world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world() or \
+        unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_editor_world()
+    out = []
+    for v in unreal.GameplayStatics.get_all_actors_of_class(world, unreal.PostProcessVolume):
+        o, e = v.get_actor_bounds(False)
+        inside = abs(x - o.x) <= e.x and abs(y - o.y) <= e.y and abs(z - o.z) <= e.z
+        if v.unbound or inside:
+            s = v.settings
+            out.append([v.get_name(), v.unbound, v.priority, v.blend_weight, s.auto_exposure_min_brightness if s.override_auto_exposure_min_brightness else None,
+                        s.auto_exposure_max_brightness if s.override_auto_exposure_max_brightness else None, s.auto_exposure_bias if s.override_auto_exposure_bias else None,
+                        [round(o.x), round(o.y), round(e.x), round(e.y)]])
+    return json.dumps(out)
+
+
+def tagged(arg='MareIslandDebris'):
+    """QA (PIE or editor): actors with a tag, their HISM components, instance counts, visibility and the mesh's Nanite."""
+    world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world() or unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_editor_world()
+    out = []
+    for a in unreal.GameplayStatics.get_all_actors_of_class(world, unreal.Actor):
+        if arg in [str(t) for t in a.tags]:
+            for c in a.get_components_by_class(unreal.InstancedStaticMeshComponent):
+                m = c.static_mesh
+                out.append([a.get_name(), m.get_name() if m else None, c.get_instance_count(), c.is_visible(), bool(m and m.get_editor_property('nanite_settings').enabled),
+                            [str(x.get_name()) if x else None for x in c.get_materials()][:3]])
+    return json.dumps(out)
+
+
+def bounds(arg=''):
+    """QA: a mesh's bounding box (cm): origin and extent."""
+    m = unreal.load_asset(arg)
+    b = m.get_bounds()
+    return json.dumps({'origin': [round(b.origin.x, 1), round(b.origin.y, 1), round(b.origin.z, 1)], 'extent': [round(b.box_extent.x, 1), round(b.box_extent.y, 1), round(b.box_extent.z, 1)]})

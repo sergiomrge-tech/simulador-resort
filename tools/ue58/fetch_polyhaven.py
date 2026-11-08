@@ -24,6 +24,9 @@ SETS = {
                  'mountainside', 'coastal_cliff_01', 'coastal_cliff_02', 'coastal_cliff_04'],
     'beach': ['coast_rocks_01', 'coast_rocks_02', 'coast_rocks_03', 'coast_rocks_05', 'sand_rocks_small_01',
               'lambis_shell', 'grass_bermuda_01'],
+    # 08/11 (Sergio: "galhos e folhas no chão da mata para ficar mais natural"): the island forest floor.
+    'forest_floor': ['dry_branches_medium_01', 'bark_debris_01', 'dead_tree_trunk', 'dead_tree_trunk_02', 'tree_stump_01',
+                     'tree_stump_02', 'root_cluster_01', 'root_cluster_02'],
     'lawn': ['grass_medium_01', 'grass_medium_02', 'wild_rooibos_bush', 'shrub_sorrel_01', 'flower_gazania', 'periwinkle_plant'],
 }
 

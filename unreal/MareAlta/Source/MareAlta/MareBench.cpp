@@ -31,6 +31,8 @@ namespace
   {TEXT("praia"),780,FVector(3000,-3600,260),FRotator(-8,90,0)},
   {TEXT("quiosque"),860,FVector(3750,-2600,200),FRotator(-6,90,0)},
   {TEXT("saguao_hotel"),940,FVector(-2100,5800,170),FRotator(-2,90,0)},
+  // 08/11: inside the island forest on the North trail (forest, ground cover, the new terrain); the clock only moves on.
+  {TEXT("ilha_trilha"),1000,FVector(20413,62458,445),FRotator(-6,123,0)},
   {TEXT("vila_noite"),1260,FVector(4300,2900,100),FRotator(-4,180,0)},
  };
 }

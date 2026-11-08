@@ -153,7 +153,11 @@ void UMareAudioWorld::UpdateLayers(float DeltaSeconds,UMareSimulation* Sim,FVect
  const float Beach=FMath::Clamp(1.f-(CoastY+3200.f)/7000.f,.08f,1.f);
  // The forest: north of the village as before, and now everywhere inland outside the village (mare_island.forest).
  const bool InVillage=Position.X>-15000.f && Position.X<20000.f && Position.Y<12000.f;
- const float Woods=FMath::Max(FMath::Clamp((Position.Y-8400.f)/1600.f,0.f,1.f),InVillage?0.f:FMath::Clamp((-MareIsland::ShoreDistance(Position.X,Position.Y)-4500.f)/2500.f,0.f,1.f));
+ // 08/11: only by the distance inland (the old "north of y 84 m" rule made the new north beaches woods: no sea there).
+ const float Woods=InVillage?0.f:FMath::Clamp((-MareIsland::ShoreDistance(Position.X,Position.Y)-4500.f)/2500.f,0.f,1.f);
+ // 08/11 (Sergio: "somente ambiente noturno na trilha à noite, como grilos"): in the island forest at night the music
+ // and the sea step back and the night takes over (crickets up, the day birds of the forest loop silent).
+ const float NightWoods=bNight?Woods:0.f;
  // Music by place and time (Content/Data/audio_zones.json): the zone's track rises inside it and the radio ducks.
  static TSharedPtr<FJsonObject> Zones;
  if(!Zones.IsValid()){FString Text;FFileHelper::LoadFileToString(Text,*(FPaths::ProjectContentDir()/TEXT("Data/audio_zones.json")));
@@ -180,20 +184,20 @@ void UMareAudioWorld::UpdateLayers(float DeltaSeconds,UMareSimulation* Sim,FVect
   for(FName Name:Drop)Loops.Remove(Name);}
  for(auto Pair:Loops){const FName Name=Pair.Key;float Target=0;bool bMusic=false;
   // Base level without the bus volumes (kept in LoopBase so the options can apply a new volume while paused).
-  if(Name==ZoneTrack){bMusic=true;Target=ZoneLevel*(bIndoors?.8f:1.f);}
+  if(Name==ZoneTrack){bMusic=true;Target=ZoneLevel*(bIndoors?.8f:1.f)*(1.f-NightWoods);}
   // Per-station trim so every track plays at the same loudness (reggae_praia is mastered 3.6 dB softer).
-  else if(Name==RadioStation && IsRadioStation(Name)){bMusic=true;Target=(Name==TEXT("reggae_praia")?1.5f:1.f)*Duck*(bNight?.22f:.32f)*(bIndoors?.65f:1.f)*StereoDuck;}
+  else if(Name==RadioStation && IsRadioStation(Name)){bMusic=true;Target=(Name==TEXT("reggae_praia")?1.5f:1.f)*Duck*(bNight?.22f:.32f)*(bIndoors?.65f:1.f)*StereoDuck*(1.f-NightWoods);}
   else if(IsRadioStation(Name))bMusic=true;
-  if(Name==TEXT("ocean_loop"))Target=Beach*(bIndoors?.1f:.4f);
+  if(Name==TEXT("ocean_loop"))Target=Beach*(bIndoors?.1f:.4f)*(1.f-.7f*NightWoods);
   // Mix 03/11 (tools/ue58/measure_mix.py): the rain sat 18 dB over the sea and over the music; now ~3 dB above the sea.
   if(Name==TEXT("rain_loop"))Target=(bRain?(bIndoors?.025f:.08f):0.f);
   if(Name==TEXT("wind_loop"))Target=(bRain?.16f:.055f)*(bIndoors?.15f:1.f);
-  if(Name==TEXT("crickets_loop"))Target=(bNight && !bRain?.22f:0.f)*(bIndoors?.25f:1.f);
+  if(Name==TEXT("crickets_loop"))Target=(bNight && !bRain?.22f+.12f*NightWoods:0.f)*(bIndoors?.25f:1.f);
   if(Name==TEXT("leaves_soft"))Target=(!bRain && CoastY>-1100?.2f:0.f)*(bIndoors?.2f:1.f);
   if(Name==TEXT("underwater_loop"))Target=(bUnderwater?.28f:0.f);
   // 04/11 (Sergio: "som de mata fechada na trilha"): the forest past the back of the village and on the summit trail
   // (OpenGameArt CC0 birds + forest ambience), softer at night when the crickets take over, almost gone in the rain.
-  if(Name==TEXT("forest_loop"))Target=.24f*Woods*(bNight?.35f:1.f)*(bRain?.25f:1.f)*(bIndoors?.2f:1.f);
+  if(Name==TEXT("forest_loop"))Target=.24f*Woods*(bNight?.08f:1.f)*(bRain?.25f:1.f)*(bIndoors?.2f:1.f);
   auto Component=Pair.Value;if(!IsValid(Component))continue;
   // The silence before the tsunami (UMareSummitWorld): every ambience and the radio fall silent.
   if(auto Summit=GetWorld()->GetSubsystem<UMareSummitWorld>())if(Summit->IsWaveRunning())Target=0;

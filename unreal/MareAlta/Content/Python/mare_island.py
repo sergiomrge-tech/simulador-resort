@@ -641,6 +641,8 @@ def ground_cover(seed='20261108'):
                 else:
                     keep = .25 + .5 * (1 - patch) * fine
                 keep *= min(1.0, (-d - 2200) / 1500.0)               # thins out towards the beach sand
+                if layer == 'grass':   # 08/11 (Sergio, photo: "galhos e folhas no chão"): under the canopy (60 m+ inland)
+                    keep *= .25 + .75 * (1 - min(1.0, max(0.0, (-d - 6000) / 3000.0)))   # the grass gives way to the leaf litter
                 if rng.random() > keep:
                     continue
                 if (px - 4000) ** 2 + (py - 38900) ** 2 < 1500 ** 2:
@@ -707,3 +709,20 @@ def ground_cover(seed='20261108'):
     report = {'seed': seed, 'instances': summary, 'total': sum(summary.values()), 'rejected': rejected}
     (DATA / 'island_cover.json').write_text(json.dumps(report, indent=1), encoding='utf-8')
     return json.dumps(report)
+
+
+def forest_lumen(arg='0'):
+    """08/11: the island forest (33k trees, shrubs, palms, rocks) out of the Lumen surface cache ('0') or back in ('1').
+    With them in, the woods first seen at night showed the daylight still cached on their cards (the cache only updates
+    near the camera): bright green at 22h. Out, they still receive Lumen GI; the terrain keeps its cards. Saves."""
+    on = arg.strip() == '1'
+    actors = unreal.get_editor_subsystem(unreal.EditorActorSubsystem)
+    n = 0
+    for a in actors.get_all_level_actors():
+        if a.get_actor_label() in (FOREST_LABEL, COVER_LABEL):
+            for c in a.get_components_by_class(unreal.HierarchicalInstancedStaticMeshComponent):
+                c.set_editor_property('affect_dynamic_indirect_lighting', on)
+                c.set_editor_property('affect_distance_field_lighting', on and a.get_actor_label() == FOREST_LABEL)
+                n += 1
+    unreal.get_editor_subsystem(unreal.LevelEditorSubsystem).save_current_level()
+    return json.dumps({'components': n, 'lumen': on})

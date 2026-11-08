@@ -723,3 +723,17 @@ Os seis registros `radio_*` pré-existentes de `unreal/MareAlta/Content/Data/aud
   oak_wood_planks do Poly Haven (CC0).
 - Cardboard Box 01 — Rahul Chaudhary, Poly Haven, CC0 1.0 (https://polyhaven.com/a/cardboard_box_01): caixa de
   reposição levada na mão até a geladeira (`/Game/Custom/Kiosk/cardboard_box_01`).
+
+## Chão da mata da ilha — Poly Haven (CC0), 08/11/2026
+
+Galhos, cascas, troncos, tocos e raízes espalhados pela mata (`mare_forest_floor.py`) e folhas secas no chão (`mare_materials.build_ground(island=True)`):
+
+- Dry Branches Medium 01 (`dry_branches_medium_01`) — Rico Cilliers — https://polyhaven.com/a/dry_branches_medium_01 — CC0 1.0
+- Bark Debris 01 (`bark_debris_01`) — Greg Zaal, Jenelle van Heerden — https://polyhaven.com/a/bark_debris_01 — CC0 1.0
+- Dead Tree Trunk (`dead_tree_trunk`) — Rob Tuytel — https://polyhaven.com/a/dead_tree_trunk — CC0 1.0
+- Dead Tree Trunk 02 (`dead_tree_trunk_02`) — Jenelle van Heerden, Rico Cilliers — https://polyhaven.com/a/dead_tree_trunk_02 — CC0 1.0
+- Tree Stump 01 (`tree_stump_01`) — Rob Tuytel — https://polyhaven.com/a/tree_stump_01 — CC0 1.0
+- Tree Stump 02 (`tree_stump_02`) — Rob Tuytel — https://polyhaven.com/a/tree_stump_02 — CC0 1.0
+- Root Cluster 01 (`root_cluster_01`) — Jenelle van Heerden, Rico Cilliers — https://polyhaven.com/a/root_cluster_01 — CC0 1.0
+- Root Cluster 02 (`root_cluster_02`) — Jenelle van Heerden — https://polyhaven.com/a/root_cluster_02 — CC0 1.0
+- Leaves Forest Ground (`leaves_forest_ground`) — Dario Barresi, Dimitrios Savva — https://polyhaven.com/a/leaves_forest_ground — CC0 1.0
