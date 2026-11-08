@@ -101,7 +101,10 @@ void AMareServiceTarget::Use(APlayerController* Controller)
  if(Action==TEXT("Elder")){if(auto Summit=GetWorld()->GetSubsystem<UMareSummitWorld>())Summit->Talk(Controller);return;}
  if(Action==TEXT("Comic")){if(auto Comic=GetWorld()->GetSubsystem<UMareComicEvents>())Comic->Interact(Controller);return;}
  if(Action==TEXT("KioskSign")){bool Requested=false;UMareSimulation::Object(Sim->State,TEXT("company"))->TryGetBoolField(TEXT("kiosk_open"),Requested);Sim->SetOpen(!Requested);return;}
- if(Action==TEXT("Fridge") || Action==TEXT("Cupboard")){GetWorld()->GetSubsystem<UMareAudioWorld>()->PlayCue(TEXT("kiosk_fridge"),.3f);PC->OpenStation(Action);return;}
+ if(Action==TEXT("Fridge") || Action==TEXT("Cupboard")){GetWorld()->GetSubsystem<UMareAudioWorld>()->PlayCue(TEXT("kiosk_fridge"),.3f);
+  // A restock box in hand: each E stores one unit (reference tip 7); otherwise the station opens.
+  if(!Sim->RestockBoxDish().IsEmpty()){if(Sim->StoreFromBox(Action))MareFx::Spawn(GetWorld(),GetActorTransform().TransformPosition(FocusOffset),MareFx::EKind::Sparkle);return;}
+  PC->OpenStation(Action);return;}
  if(Action==TEXT("Customer")){if(auto Person=Cast<AMarePerson>(GetOwner()))Person->Interact(PC);return;}
  if(Action==TEXT("Clean")){GetWorld()->GetSubsystem<UMareKioskWorld>()->CleanTable(DataIndex);GetWorld()->GetSubsystem<UMareAudioWorld>()->PlayCue(TEXT("clean"),.3f);return;}
  if(Action==TEXT("Bed")){GetWorld()->GetSubsystem<UMareHomeWorld>()->StartSleep();return;}

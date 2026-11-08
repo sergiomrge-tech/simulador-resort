@@ -50,6 +50,13 @@ public:
  double RestockCost(const FString& Dish, int32 Quantity=10) const;
  UFUNCTION(BlueprintCallable,Category="Maré Alta")
  bool Restock(const FString& Dish, int32 Quantity=10);
+ /** Restock box (08/11, Resort Simulator reference tip 7): bought at a station like "+10" (same cost), then carried and
+  *  stored one unit per E at its station (fridge, or the cupboard for hot dishes) with a count on screen. */
+ bool TakeRestockBox(const FString& Dish);
+ bool StoreFromBox(FName Station);
+ FString RestockBoxDish() const;
+ int32 RestockBoxLeft() const;
+ int32 RestockBoxTotal() const;
  UFUNCTION(BlueprintCallable,Category="Maré Alta")
  bool Pickup(const FString& Dish,bool bStaff=false);
  UFUNCTION(BlueprintCallable,Category="Maré Alta")

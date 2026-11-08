@@ -721,3 +721,5 @@ Os seis registros `radio_*` pré-existentes de `unreal/MareAlta/Content/Data/aud
   luminária no teto do quiosque (`/Game/Custom/Lighting/hanging_industrial_lamp`).
 - Vara de pescar com balde de isca na ponta do píer: modelo próprio (`tools/ue58/gen_fishing_spot.py`), textura
   oak_wood_planks do Poly Haven (CC0).
+- Cardboard Box 01 — Rahul Chaudhary, Poly Haven, CC0 1.0 (https://polyhaven.com/a/cardboard_box_01): caixa de
+  reposição levada na mão até a geladeira (`/Game/Custom/Kiosk/cardboard_box_01`).

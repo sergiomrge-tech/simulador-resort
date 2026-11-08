@@ -38,3 +38,19 @@ def fishing(_=''):
     return json.dumps({'mesh': mesh.get_path_name(), 'origin': [round(b.origin.x), round(b.origin.y), round(b.origin.z)],
                        'size': [round(b.box_extent.x * 2), round(b.box_extent.y * 2), round(b.box_extent.z * 2)],
                        'usage': bt.fix_usage('/Game/Custom/Leisure')})
+
+
+def box(_=''):
+    """Restock box carried to the fridge (08/11, reference tip 7): Poly Haven cardboard_box_01 (CC0, Rahul Chaudhary)
+    -> /Game/Custom/Kiosk/cardboard_box_01, shown in the hero's hand while a restock box is carried."""
+    import mare_hotel_lobby as hl
+    import mare_boat_tour as bt
+    src = Path(unreal.Paths.project_dir()) / 'SourceArt/Models/Kiosk/cardboard_box_01/cardboard_box_01_1k.gltf'
+    folder = '/Game/Custom/Kiosk/cardboard_box_01'
+    if unreal.EditorAssetLibrary.does_directory_exist(folder):
+        unreal.EditorAssetLibrary.delete_directory(folder)
+    mesh = hl._import(src, folder, 'cardboard_box_01', True, search=False)
+    b = mesh.get_bounds()
+    return json.dumps({'mesh': mesh.get_path_name(), 'origin': [round(b.origin.x), round(b.origin.y), round(b.origin.z)],
+                       'size': [round(b.box_extent.x * 2), round(b.box_extent.y * 2), round(b.box_extent.z * 2)],
+                       'usage': bt.fix_usage('/Game/Custom/Kiosk')})

@@ -133,19 +133,24 @@ void UMarePlayerPresentation::UpdateAnimation()
 void UMarePlayerPresentation::UpdateCarry()
 {
  auto Hero=Cast<AMareCharacter>(GetOwner());if(!Hero || !ViewBody)return;
- auto Sim=Hero->GetGameInstance()->GetSubsystem<UMareSimulation>();const FString Dish=Sim?Sim->Carry():TEXT("");
+ auto Sim=Hero->GetGameInstance()->GetSubsystem<UMareSimulation>();FString Dish=Sim?Sim->Carry():TEXT("");
+ // A restock box (reference tip 7) is carried like a product: the cardboard box in front of the camera.
+ const bool bBox=Dish.IsEmpty() && Sim && !Sim->RestockBoxDish().IsEmpty();if(bBox)Dish=TEXT("__box");   // i18n:skip
  if(Dish!=HeldDish){if(HeldProduct){HeldProduct->DestroyComponent();HeldProduct=nullptr;}HeldDish=Dish;
-  if(!Dish.IsEmpty())if(auto Asset=AMarePerson::ProductMesh(Dish)){
+  UStaticMesh* BoxMesh=bBox?LoadObject<UStaticMesh>(nullptr,TEXT("/Game/Custom/Kiosk/cardboard_box_01/cardboard_box_011.cardboard_box_011")):nullptr;   // i18n:skip
+  if(!Dish.IsEmpty())if(auto Asset=bBox?BoxMesh:AMarePerson::ProductMesh(Dish)){
    HeldProduct=NewObject<UStaticMeshComponent>(Hero);Hero->AddInstanceComponent(HeldProduct);
    HeldProduct->SetStaticMesh(Asset);HeldProduct->SetCollisionEnabled(ECollisionEnabled::NoCollision);
    HeldProduct->AttachToComponent(ViewBody,FAttachmentTransformRules::SnapToTargetNotIncludingScale,TEXT("hand_r"));
    HeldProduct->SetUsingAbsoluteRotation(true);HeldProduct->SetUsingAbsoluteScale(true);HeldProduct->RegisterComponent();
+   if(bBox)HeldProduct->SetWorldScale3D(FVector(.35f));
   }
  }
  if(HeldProduct && HeldProduct->GetStaticMesh()){
   const auto B=HeldProduct->GetStaticMesh()->GetBounds();const FRotator Rotation(0,Hero->GetActorRotation().Yaw,0);
   const bool Vessel=HeldDish==TEXT("suco") || HeldDish==TEXT("coco_gelado") || HeldDish==TEXT("caipirinha") || HeldDish==TEXT("batida") || HeldDish==TEXT("guarana");
-  const FVector Grip(B.Origin.X,Vessel?B.BoxExtent.Y*.65f:0,Vessel?B.Origin.Z*.75f:B.Origin.Z-B.BoxExtent.Z);
+  FVector Grip(B.Origin.X,Vessel?B.BoxExtent.Y*.65f:0,Vessel?B.Origin.Z*.75f:B.Origin.Z-B.BoxExtent.Z);
+  if(HeldDish==TEXT("__box"))Grip=B.Origin*.35f+FVector(0,8,-9);   // i18n:skip
   HeldProduct->SetWorldLocationAndRotation(ViewBody->GetSocketLocation(TEXT("hand_r"))-Rotation.RotateVector(Grip),Rotation);
  }
 }

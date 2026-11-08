@@ -195,6 +195,38 @@ bool UMareSimulation::Restock(const FString& Dish,int32 Quantity)
  if(Cost>0) Book(-Cost,TEXT("Reposição: ")+Dish);
  LastMessage=TEXT("Estoque reposto."); return Save();
 }
+bool UMareSimulation::TakeRestockBox(const FString& Dish)
+{
+ if(!Carry().IsEmpty() || !RestockBoxDish().IsEmpty())return Fail(TEXT("Suas mãos já estão ocupadas."));
+ const int32 Units=FMath::Max(0,10-Available(Dish));
+ if(Units<=0)return Fail(TEXT("Esse produto já está com 10 unidades."));
+ const double Cost=RestockCost(Dish,10);
+ if(Cost<0)return Fail(TEXT("Produto ou quantidade inválida."));
+ if(Money()<Cost)return Fail(TEXT("Saldo insuficiente. Nenhum insumo foi cobrado."));
+ if(Cost>0)Book(-Cost,TEXT("Reposição: ")+Dish);
+ auto Box=MakeShared<FJsonObject>();Box->SetStringField(TEXT("dish"),Dish);Box->SetNumberField(TEXT("left"),Units);Box->SetNumberField(TEXT("total"),Units);
+ Object(State,TEXT("company"))->SetObjectField(TEXT("box"),Box);
+ LastMessage=FString::Printf(TEXT("Caixa com %d unidades: leve até a %s e aperte E para guardar uma por vez."),Units,IsHotDish(Dish)?TEXT("estante"):TEXT("geladeira"));
+ return Save();
+}
+bool UMareSimulation::StoreFromBox(FName Station)
+{
+ auto Company=Object(State,TEXT("company"));const TSharedPtr<FJsonObject>* Box=nullptr;
+ if(!Company->TryGetObjectField(TEXT("box"),Box) || !Box->IsValid())return false;
+ const FString Dish=String(*Box,TEXT("dish"));const bool bHot=IsHotDish(Dish);
+ if((Station==TEXT("Cupboard"))!=bHot)return Fail(bHot?TEXT("Essa caixa vai na estante."):TEXT("Essa caixa vai na geladeira."));
+ int32 Left=int32(Number(*Box,TEXT("left")));const int32 Total=int32(Number(*Box,TEXT("total")));
+ // Unit by unit up to the same stock "+10" would leave (only what was paid for: the units missing at purchase).
+ const int32 Stored=Total-Left+1,Units=10-Total+Stored;
+ auto Uses=Object(Object(Object(Definitions,TEXT("dishes")),Dish),TEXT("uses"));auto Stock=Object(State,TEXT("stock"));
+ for(const auto& Pair:Uses->Values)Stock->SetNumberField(FString(Pair.Key.ToView()),FMath::Max(Number(Stock,FString(Pair.Key.ToView())),Units*Pair.Value->AsNumber()));
+ if(--Left<=0){Company->RemoveField(TEXT("box"));LastMessage=TEXT("Caixa vazia: estoque completo!");}
+ else{(*Box)->SetNumberField(TEXT("left"),Left);LastMessage=FString::Printf(TEXT("Guardado: %d/%d"),Stored,Total);}
+ return Save();
+}
+FString UMareSimulation::RestockBoxDish() const{return String(Object(Object(State,TEXT("company")),TEXT("box")),TEXT("dish"));}
+int32 UMareSimulation::RestockBoxLeft() const{return int32(Number(Object(Object(State,TEXT("company")),TEXT("box")),TEXT("left")));}
+int32 UMareSimulation::RestockBoxTotal() const{return int32(Number(Object(Object(State,TEXT("company")),TEXT("box")),TEXT("total")));}
 bool UMareSimulation::Pickup(const FString& Dish,bool bStaff)
 {
  if(!CanSupplyDish(Dish))return Fail(TEXT("Compre a expansão que libera este produto no celular."));

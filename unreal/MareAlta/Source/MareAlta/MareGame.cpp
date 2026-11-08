@@ -702,7 +702,9 @@ private:
    auto Dish=UMareSimulation::Object(UMareSimulation::Object(S->Definitions,TEXT("dishes")),Id);auto Card=TagBody(FString::Printf(TEXT("%d disponíveis"),S->Available(Id)),UMareSimulation::String(Dish,TEXT("name")));
    if(!S->CanSupplyDish(Id))Card->AddSlot().AutoHeight()[MareNotebook::HandText(TEXT("libere em Resort"),16,MareNotebook::Pencil)];
    else{if(bPickup)Card->AddSlot().AutoHeight().HAlign(HAlign_Left).Padding(0,0,0,4)[Button(TEXT("Pegar pronto"),[S,Id](){S->Pickup(Id);})];
-    Card->AddSlot().AutoHeight().HAlign(HAlign_Left)[Button(FString::Printf(TEXT("+10 · R$ %.0f"),S->RestockCost(Id)),[S,Id](){S->Restock(Id);})];}
+    Card->AddSlot().AutoHeight().HAlign(HAlign_Left)[Button(FString::Printf(TEXT("+10 · R$ %.0f"),S->RestockCost(Id)),[S,Id](){S->Restock(Id);})];
+    // Reference tip 7: or carry the box and store it unit by unit (same cost).
+    if(bPickup && S->Available(Id)<10)Card->AddSlot().AutoHeight().HAlign(HAlign_Left).Padding(0,4,0,0)[Button(TEXT("Levar caixa"),[S,Id](){S->TakeRestockBox(Id);})];}
    G->AddSlot(I%Columns,I/Columns)[MareNotebook::PriceTag(Card,TiltOf(I))];++I;}
  }
  void StaffPage()
@@ -2585,6 +2587,8 @@ static FAutoConsoleCommandWithWorldAndArgs MareQACommand(TEXT("mare.QA"),TEXT("Q
   // HUD QA (08/11): "mare.QA order <dish>" adds a kiosk order, "mare.QA barorder <drink|any>" a bar order.
   else if(Verb==TEXT("company"))bOk=S->CreateCompany(Arg);
   else if(Verb==TEXT("open")){S->SetOpen(Arg!=TEXT("0"));bOk=true;}
+  else if(Verb==TEXT("box"))bOk=S->TakeRestockBox(Arg);   // "mare.QA box <dish>", "mare.QA store Fridge|Cupboard"
+  else if(Verb==TEXT("store"))bOk=S->StoreFromBox(FName(*Arg));
   else if(Verb==TEXT("order"))bOk=!S->AddOrder(TEXT("Cliente QA"),{Arg}).IsEmpty();   // i18n:skip
   else if(Verb==TEXT("barorder"))bOk=!S->AddBarOrder(Arg==TEXT("any")?FString():Arg).IsEmpty();
   else if(Verb==TEXT("vip")){   // the first open kiosk order becomes a VIP ("mare.QA vip <title index>")
@@ -3022,10 +3026,13 @@ void AMareHUD::DrawHUD()
     const auto O=V->AsObject();M.Tickets.Add({TEXT("Bar · ")+UMareSimulation::String(O,TEXT("name")),S->BarBubble(O)});}}
  }
  if(!S->Carry().IsEmpty())M.Carry=Dish(S->Carry());
+ const FString BoxDish=S->RestockBoxDish();
+ if(!BoxDish.IsEmpty())M.Carry=FString::Printf(TEXT("caixa de %s · guardados %d/%d"),*Dish(BoxDish),S->RestockBoxTotal()-S->RestockBoxLeft(),S->RestockBoxTotal());
  // Controls of the moment (reference tip 2), shown while the tutorial tips are on.
  if(FMareOptions::Get().bTips && PC && !M.bPhone){
   const ACharacter* Hero=Cast<ACharacter>(PC->GetPawn());const bool bSwim=Hero && Hero->GetCharacterMovement()->IsSwimming();
-  if(!M.Carry.IsEmpty())M.Controls.Add({M.InteractKey,TEXT("Entregar: mire no cliente")});
+  if(!BoxDish.IsEmpty())M.Controls.Add({M.InteractKey,S->IsHotDish(BoxDish)?TEXT("Guardar 1 na estante"):TEXT("Guardar 1 na geladeira")});
+  else if(!M.Carry.IsEmpty())M.Controls.Add({M.InteractKey,TEXT("Entregar: mire no cliente")});
   if(bSwim){M.Controls.Add({KeyName(TEXT("Jump")),TEXT("Subir")});M.Controls.Add({KeyName(TEXT("Dive")),TEXT("Mergulhar")});M.Controls.Add({KeyName(TEXT("Sprint")),TEXT("Nadar rápido")});}
   else{M.Controls.Add({KeyName(TEXT("Sprint")),TEXT("Correr")});M.Controls.Add({KeyName(TEXT("Jump")),TEXT("Pular")});}
   M.Controls.Add({M.PhoneKey,TEXT("Celular")});M.Controls.Add({M.PauseKey,TEXT("Pausa")});}
