@@ -58,6 +58,7 @@ foreach($variant in $Variants){
  Write-Output "== $(if($variant){$variant}else{'completo'}) $(if($Fullscreen){'[tela cheia]'}) $Exec $(if($NoShadow){"sem sombra: $NoShadow"}) $(if($Hide){"escondido: $Hide"})  ($qa)"
  (Get-Content "$qa/bench.json" -Raw | ConvertFrom-Json).sectors | ForEach-Object {
   "{0,-13} fps {1,5:N1}  p99 {2,5:N1} | jogo {3,5:N1} render {4,5:N1} gpu {5,5:N1} | pessoas {6}/{7} | na tela {8,5:N1}" -f $_.sector,$_.avg_fps,$_.p99_ms,$_.game_ms,$_.render_ms,$_.gpu_ms,$_.people_rendered,$_.people,$_.presented_fps }
- $bad=@(Select-String -LiteralPath "$qa/runtime.log" -Pattern 'Failed to find object|Nanite static mesh|overflow|Error:|Fatal')
+ # Shipping writes no log: nothing to scan then.
+ $bad=@(if(Test-Path "$qa/runtime.log"){Select-String -LiteralPath "$qa/runtime.log" -Pattern 'Failed to find object|Nanite static mesh|overflow|Error:|Fatal'})
  if($bad.Count){Write-Output "  avisos no log: $($bad.Count)"}
 }

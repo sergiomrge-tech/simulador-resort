@@ -224,3 +224,56 @@ def mesh_info(arg=''):
             continue
         out.append([m.get_name(), m.get_num_triangles(0), m.get_num_lods(), bool(m.get_editor_property('nanite_settings').enabled)])
     return json.dumps(out)
+
+
+def primitives(arg=''):
+    """QA (PIE stopped): census of the level's primitive components: per class, single static mesh components grouped by
+    mesh (copies, Nanite, shadow, movable), and actors with many components (what a merge into instances would save)."""
+    world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_editor_world()
+    by_class, by_mesh, heavy = {}, {}, []
+    n_actors = 0
+    for a in unreal.GameplayStatics.get_all_actors_of_class(world, unreal.Actor):
+        n_actors += 1
+        comps = a.get_components_by_class(unreal.PrimitiveComponent)
+        if len(comps) > 40:
+            heavy.append([a.get_actor_label()[:40], len(comps)])
+        for c in comps:
+            k = c.get_class().get_name()
+            by_class[k] = by_class.get(k, 0) + 1
+            if type(c) is unreal.StaticMeshComponent and c.static_mesh:
+                m = c.static_mesh
+                r = by_mesh.setdefault(m.get_name(), [0, bool(m.get_editor_property('nanite_settings').enabled), 0, 0])
+                r[0] += 1
+                r[2] += int(c.cast_shadow)
+                r[3] += int(c.mobility != unreal.ComponentMobility.STATIC)
+    top = sorted(([v[0], k, v[1], v[2], v[3]] for k, v in by_mesh.items()), reverse=True)
+    single = sum(v[0] for v in by_mesh.values())
+    repeated = sum(v[0] for v in by_mesh.values() if v[0] > 1)
+    non_nanite = sum(v[0] for v in by_mesh.values() if not v[1])
+    return json.dumps({'actors': n_actors, 'by_class': sorted(by_class.items(), key=lambda x: -x[1])[:12],
+                       'static_mesh_components': single, 'in_meshes_used_2plus': repeated, 'non_nanite': non_nanite,
+                       'distinct_meshes': len(by_mesh), 'top_meshes': top[:25], 'heavy_actors': sorted(heavy, key=lambda x: -x[1])[:15]})
+
+
+def ism_census(arg=''):
+    """QA (PIE stopped): instanced components (ISM, not HISM) grouped by mesh+materials+shadow: how many components and
+    instances each group has (components of one group could be one component)."""
+    world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_editor_world()
+    groups, sizes = {}, {}
+    total = 0
+    for a in unreal.GameplayStatics.get_all_actors_of_class(world, unreal.Actor):
+        for c in a.get_components_by_class(unreal.InstancedStaticMeshComponent):
+            if isinstance(c, unreal.HierarchicalInstancedStaticMeshComponent) or not c.static_mesh:
+                continue
+            total += 1
+            n = c.get_instance_count()
+            sizes[min(n, 10)] = sizes.get(min(n, 10), 0) + 1
+            mats = tuple(m.get_name() if m else '' for m in c.get_materials())
+            key = (c.static_mesh.get_name(), mats, bool(c.cast_shadow), str(c.mobility).split('.')[-1], a.get_class().get_name())
+            g = groups.setdefault(key, [0, 0, bool(c.static_mesh.get_editor_property('nanite_settings').enabled)])
+            g[0] += 1
+            g[1] += n
+    multi = [(v[0], v[1], k[0], v[2], k[3], k[4]) for k, v in groups.items() if v[0] > 1]
+    multi.sort(reverse=True)
+    return json.dumps({'ism_components': total, 'instances_per_component': sorted(sizes.items()), 'groups': len(groups),
+                       'components_in_shared_groups': sum(m[0] for m in multi), 'top': multi[:20]})

@@ -95,7 +95,10 @@ void AMareBench::Tick(float DeltaSeconds)
  if(FParse::Param(FCommandLine::Get(),TEXT("MareBenchSweep"))){Sweep();return;}
  if(Stage==0){if(FPlatformTime::Seconds()<Next)return;Stage=1;Next=FPlatformTime::Seconds()+20;
   // Per-scope timings of the same 20 s (CSV profiler: animation, skinning, shadows...), csv/<sector>.csv.
-  FCsvProfiler::Get()->BeginCapture(-1,Root/TEXT("csv"),FString(Sectors[Sector].Name)+TEXT(".csv"));return;}
+#if CSV_PROFILER   // Shipping has no CSV profiler: the bench then measures the frame times only
+  FCsvProfiler::Get()->BeginCapture(-1,Root/TEXT("csv"),FString(Sectors[Sector].Name)+TEXT(".csv"));
+#endif
+  return;}
  if(Stage==0 || Stage==1)Strip();
  if(Stage==1){
   Frames.Add(FApp::GetDeltaTime()*1000.f);Game.Add(FPlatformTime::ToMilliseconds(GGameThreadTime));Render.Add(FPlatformTime::ToMilliseconds(GRenderThreadTime));
@@ -103,7 +106,9 @@ void AMareBench::Tick(float DeltaSeconds)
   // With DLSS frame generation the engine's frame time counts only rendered frames; Streamline reports what reached the screen.
   Presented.Add(FMareOptions::PresentedFrameRate());
   if(FPlatformTime::Seconds()<Next)return;
+#if CSV_PROFILER
   FCsvProfiler::Get()->EndCapture();
+#endif
   FScreenshotRequest::RequestScreenshot(Root/(FString(TEXT("bench-"))+Sectors[Sector].Name+TEXT(".png")),true,false);
   TArray<float> Sorted=Frames;Sorted.Sort();double Sum=0;for(float F:Frames)Sum+=F;
   auto Pct=[&Sorted](double P){return Sorted.Num()?Sorted[FMath::Clamp(int32(P*(Sorted.Num()-1)),0,Sorted.Num()-1)]:0.f;};

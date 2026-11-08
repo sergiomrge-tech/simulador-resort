@@ -40,11 +40,14 @@ Meta: uma demo de ~2 h, estável, bonita, pronta para a Next Fest.
   placa: −2,8 ms), só as 4 luzes mais próximas com sombra (sombras à noite 1.124 → 580 chamadas), Nanite nos coqueiros,
   no fundo e no terreno da ilha e nas peças do fundo do mar, peças do fundo fora do campo de distância. Medição por
   parte (`bench_package.ps1 -Hide`): mar, fundo, floresta e vegetação rasteira custam pouco nas vistas do benchmark.
-- [ ] **Desempenho, 2ª rodada (P0):** o limite agora é o processador de render (~14–16 ms, ~4,8 ms sem categoria, igual a
-  04/11); sem nenhuma pessoa o jogo fica em 67–72 FPS. Caminhos: juntar as milhares de peças soltas da vila exportadas do
-  Godot (2.584 atores) em instâncias/HLOD, menos MetaHumans perto ao mesmo tempo ou LOD mais simples para os de longe,
-  e o mar em ladrilhos (2,3 M triângulos desenhados quando aparece). Com a geração de quadros do DLSS (padrão em RTX 40)
-  o FPS na tela praticamente dobra.
+- [x] **Desempenho, 2ª rodada (08/11):** juntar as peças da vila foi medido antes de fazer: com TODAS as peças do mundo
+  exportado do Godot escondidas o ganho seria só +2,5–4 FPS (o render quase não muda) — não compensa. Lumen desligado:
+  +3–6. O custo fixo grande era o próprio pacote de teste (Development, com estatísticas). **Pacote Shipping** (o que o
+  jogador recebe; compila agora, `package_preview.ps1 -Config Shipping`): praia 81,4 FPS, quiosque 73,1, saguão 64,9,
+  vila à noite 63,7 (Development: 63,5 / 66,7 / 67 / 61,3). Com a geração de quadros do DLSS (padrão em RTX 40) o FPS na
+  tela praticamente dobra.
+- [ ] Desempenho, próximos: vila à noite e saguão (~64 FPS no Shipping, limite no processador do jogo ~12 ms e do render
+  ~14 ms): pessoas MetaHuman (4–7 FPS) e luzes; e o mar em ladrilhos para as vistas do mar.
 - [x] Fotos aéreas dos 4 lados, de dia e no fim da tarde (08/11).
 - [ ] Árvores vistas de muito longe (~1 km, do alto ou do barco) perdem as folhas e parecem secas: corrigir a máscara
   das folhas na distância (mip da opacidade / LOD com folhagem cheia).

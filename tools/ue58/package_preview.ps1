@@ -1,7 +1,8 @@
-param(
+﻿param(
  [string]$Engine='D:/UE_5.8',
  [string]$Output='D:/Builds/MareAltaUE58_AudioVisual_2026-10-28',
- [string]$Log='D:/CodexTemp/ue58-package-audiovisual-20261028.log'
+ [string]$Log='D:/CodexTemp/ue58-package-audiovisual-20261028.log',
+ [ValidateSet('Development','Shipping')][string]$Config='Development'
 )
 $ErrorActionPreference='Stop'
 $repo=Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
@@ -15,6 +16,6 @@ $env:TMP=$env:TEMP
 Set-Item Env:UE-LocalDataCachePath 'D:/CodexTemp/ue58-ddc'
 New-Item -ItemType Directory -Path $env:TEMP,$Output -Force | Out-Null
 $buildLog=$Log
-& "$Engine/Engine/Build/BatchFiles/RunUAT.bat" BuildCookRun "-project=$project" -noP4 -platform=Win64 -clientconfig=Development -build -cook -iterativecooking -map=Coast -stage -pak -iostore -archive "-archivedirectory=$Output" -utf8output 2>&1 | Tee-Object -FilePath $buildLog | Out-Null
+& "$Engine/Engine/Build/BatchFiles/RunUAT.bat" BuildCookRun "-project=$project" -noP4 -platform=Win64 "-clientconfig=$Config" -build -cook -iterativecooking -map=Coast -stage -pak -iostore -archive "-archivedirectory=$Output" -utf8output 2>&1 | Tee-Object -FilePath $buildLog | Out-Null
 if($LASTEXITCODE -ne 0){throw "Empacotamento falhou: $LASTEXITCODE"}
-Write-Output "Empacotamento concluído: $Output. Log: $buildLog"
+Write-Output "Empacotamento concluÃ­do: $Output. Log: $buildLog"

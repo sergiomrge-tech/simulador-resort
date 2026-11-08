@@ -15,6 +15,7 @@
 #include "Misc/Paths.h"
 #include "HAL/FileManager.h"
 #include "Serialization/JsonSerializer.h"
+#include "MareGameRoom.h"   // the pool table tests (Shipping's unity grouping does not bring it in)
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FMareEconomyTest,"MareAlta.Migration.NativeEconomy",EAutomationTestFlags::EditorContext|EAutomationTestFlags::EngineFilter)
 bool FMareEconomyTest::RunTest(const FString& Parameters)
@@ -623,7 +624,7 @@ bool FMareSaveSlotsTest::RunTest(const FString& Parameters)
  Other->RemoveFromRoot();Sim->RemoveFromRoot();Instance->RemoveFromRoot();
  IFileManager::Get().DeleteDirectory(*Dir,false,true);return true;
 }
-#endif
+// (the WITH_DEV_AUTOMATION_TESTS block runs to the end of the file: the tests below need the includes above, 08/11 Shipping)
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FMareBarDrinksTest,"MareAlta.Gameplay.BarDrinks",EAutomationTestFlags::EditorContext|EAutomationTestFlags::EngineFilter)
 bool FMareBarDrinksTest::RunTest(const FString& Parameters)
@@ -2096,3 +2097,4 @@ bool FMareArcadeTest::RunTest(const FString& Parameters)
  TestEqual(TEXT("hits: 3 at most"),UMareArcade::HitsFor(0,5000,Defs),3);
  return true;
 }
+#endif

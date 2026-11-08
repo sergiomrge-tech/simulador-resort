@@ -42,10 +42,18 @@ void AMareGraphicsQA::Tick(float DeltaSeconds)
  }
  if(FPlatformTime::Seconds()<Next)return;
  static const TCHAR* Names[]={TEXT("all-enabled"),TEXT("without-pcg"),TEXT("nanite-off"),TEXT("lumen-off"),TEXT("hotel-legacy")};
- if(Stage==0){FCsvProfiler::Get()->BeginCapture(-1,Root,Names[Variant]);Stage=1;Next=FPlatformTime::Seconds()+12;return;}
- if(Stage==1){Capture=FCsvProfiler::Get()->EndCapture();FScreenshotRequest::RequestScreenshot(Root/(FString(Names[Variant])+TEXT(".png")),true,false);Stage=2;Next=FPlatformTime::Seconds()+3;return;}
- if(!Capture.IsReady()){Next=FPlatformTime::Seconds()+1;return;}
- auto Row=MakeShared<FJsonObject>();Row->SetStringField(TEXT("variant"),Names[Variant]);Row->SetStringField(TEXT("csv"),Capture.Get());FVector2D Size;GEngine->GameViewport->GetViewportSize(Size);
+ if(Stage==0){
+#if CSV_PROFILER
+ FCsvProfiler::Get()->BeginCapture(-1,Root,Names[Variant]);
+#endif
+ Stage=1;Next=FPlatformTime::Seconds()+12;return;}
+ if(Stage==1){
+#if CSV_PROFILER
+ Capture=FCsvProfiler::Get()->EndCapture();
+#endif
+FScreenshotRequest::RequestScreenshot(Root/(FString(Names[Variant])+TEXT(".png")),true,false);Stage=2;Next=FPlatformTime::Seconds()+3;return;}
+ if(Capture.IsValid() && !Capture.IsReady()){Next=FPlatformTime::Seconds()+1;return;}
+ auto Row=MakeShared<FJsonObject>();Row->SetStringField(TEXT("variant"),Names[Variant]);Row->SetStringField(TEXT("csv"),Capture.IsValid()?Capture.Get():FString());FVector2D Size;GEngine->GameViewport->GetViewportSize(Size);
  Row->SetNumberField(TEXT("viewport_x"),Size.X);Row->SetNumberField(TEXT("viewport_y"),Size.Y);Row->SetNumberField(TEXT("screen_percentage"),RenderPercentage);
  int32 Instances=0;for(TActorIterator<AActor> It(GetWorld());It;++It)if(It->ActorHasTag(TEXT("MareGraphicsPCG"))){TArray<UInstancedStaticMeshComponent*> Cs;It->GetComponents(Cs);for(auto C:Cs)Instances+=C->GetInstanceCount();}
  Row->SetNumberField(TEXT("pcg_instances"),Instances);
