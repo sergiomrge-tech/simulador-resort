@@ -1,9 +1,10 @@
-﻿param(
+param(
  [string]$Package='D:/Builds/MareAltaUE58_Pessoas_2026-11-04/Windows',
  [string[]]$Variants=@(''),
  [string]$Exec='',
  [int]$Soak=0,
  [string]$NoShadow='',
+ [string]$Hide='',
  [switch]$Fullscreen,
  [switch]$Focus,
  [int]$ResX=1920,
@@ -23,6 +24,7 @@ foreach($variant in $Variants){
  if($Exec){$args+="-MareBenchExec=`"$Exec`""}
  if($Soak){$args+="-MareBenchSoak=$Soak"}
  if($NoShadow){$args+="-MareBenchNoShadow=$NoShadow"}
+ if($Hide){$args+="-MareBenchHide=$Hide"}
  $p=Start-Process -FilePath "$Package/MareAlta.exe" -WorkingDirectory $Package -ArgumentList $args -PassThru
  # -Focus: DLSS Frame Generation only runs while the game window has focus (StreamlineDLSSG.cpp: FApp::HasFocus), and a
  # window started from a script stays behind the terminal.
@@ -53,7 +55,7 @@ foreach($variant in $Variants){
  $start=Get-Date
  while(-not $p.HasExited){if(((Get-Date)-$start).TotalSeconds -gt (420+$Soak*1.2)){Stop-Process -Id $p.Id;throw "Timeout: $qa"};Start-Sleep 3;$p.Refresh()}
  if(-not (Test-Path "$qa/bench.json")){throw "Sem bench.json: $qa"}
- Write-Output "== $(if($variant){$variant}else{'completo'}) $(if($Fullscreen){'[tela cheia]'}) $Exec $(if($NoShadow){"sem sombra: $NoShadow"})  ($qa)"
+ Write-Output "== $(if($variant){$variant}else{'completo'}) $(if($Fullscreen){'[tela cheia]'}) $Exec $(if($NoShadow){"sem sombra: $NoShadow"}) $(if($Hide){"escondido: $Hide"})  ($qa)"
  (Get-Content "$qa/bench.json" -Raw | ConvertFrom-Json).sectors | ForEach-Object {
   "{0,-13} fps {1,5:N1}  p99 {2,5:N1} | jogo {3,5:N1} render {4,5:N1} gpu {5,5:N1} | pessoas {6}/{7} | na tela {8,5:N1}" -f $_.sector,$_.avg_fps,$_.p99_ms,$_.game_ms,$_.render_ms,$_.gpu_ms,$_.people_rendered,$_.people,$_.presented_fps }
  $bad=@(Select-String -LiteralPath "$qa/runtime.log" -Pattern 'Failed to find object|Nanite static mesh|overflow|Error:|Fatal')

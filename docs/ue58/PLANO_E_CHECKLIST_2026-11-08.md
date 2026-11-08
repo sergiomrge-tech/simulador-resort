@@ -35,10 +35,16 @@ Meta: uma demo de ~2 h, estável, bonita, pronta para a Next Fest.
 - [x] Empacotado e instalado (08/11, `D:\Games\MareAltaResort_Demo`). Abertura no executável: natural 13/13 e pulada
   12/12. QA do executável: 102 de 107; as 5 reprovações já existiam (item 1.2). `void_recovery` voltou a passar (quem
   ficava "nadando" dentro da terra sob a praia agora volta ao chão). 17 materiais sem a marca Nanite corrigidos.
-- [ ] **Desempenho (P0):** medido em 08/11 a 1080p: praia 57,6 FPS, quiosque 60,2, saguão 70,1, vila à noite 58,5
-  (em 04/11: 64,4 / 70,6 / 72,3 / 85,3). A placa subiu 2,5–4,4 ms por quadro. Separar o custo da ilha (mar em volta com
-  1,08 M triângulos, floresta com sombra, ~230 mil peças do fundo, ~440 mil touceiras) do resto que entrou desde 04/11, e
-  voltar a ter folga acima de 60 FPS: sombra só nas árvores perto, mar distante mais simples, fundo do mar longe sem peças.
+- [x] **Desempenho, 1ª rodada (08/11, executável 1080p, sem geração de quadros):** praia 57,6 → 63,5 FPS, quiosque
+  59,8 → 66,7, vila à noite 57,6 → 61,3. Feito: Nanite a 2 pixels por aresta (a folhagem recortada era o grosso da
+  placa: −2,8 ms), só as 4 luzes mais próximas com sombra (sombras à noite 1.124 → 580 chamadas), Nanite nos coqueiros,
+  no fundo e no terreno da ilha e nas peças do fundo do mar, peças do fundo fora do campo de distância. Medição por
+  parte (`bench_package.ps1 -Hide`): mar, fundo, floresta e vegetação rasteira custam pouco nas vistas do benchmark.
+- [ ] **Desempenho, 2ª rodada (P0):** o limite agora é o processador de render (~14–16 ms, ~4,8 ms sem categoria, igual a
+  04/11); sem nenhuma pessoa o jogo fica em 67–72 FPS. Caminhos: juntar as milhares de peças soltas da vila exportadas do
+  Godot (2.584 atores) em instâncias/HLOD, menos MetaHumans perto ao mesmo tempo ou LOD mais simples para os de longe,
+  e o mar em ladrilhos (2,3 M triângulos desenhados quando aparece). Com a geração de quadros do DLSS (padrão em RTX 40)
+  o FPS na tela praticamente dobra.
 - [x] Fotos aéreas dos 4 lados, de dia e no fim da tarde (08/11).
 - [ ] Árvores vistas de muito longe (~1 km, do alto ou do barco) perdem as folhas e parecem secas: corrigir a máscara
   das folhas na distância (mip da opacidade / LOD com folhagem cheia).

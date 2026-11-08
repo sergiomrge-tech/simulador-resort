@@ -51,6 +51,10 @@ static TAutoConsoleVariable<float> CVarMareNightDarken(TEXT("mare.NightDarken"),
 
 static TAutoConsoleVariable<float> CVarMareBounceLightReach(TEXT("mare.BounceLightReach"),1.f,TEXT("Draw distance of the bounce (fill) lights, times mare.LightDrawDistance (04/11: x2.5 cost the beach 4 FPS)."));
 static TAutoConsoleVariable<float> CVarMareLightShadowMinRadius(TEXT("mare.LightShadowMinRadius"),1000.f,TEXT("Local lights with a smaller attenuation radius (cm) cast no shadow (04/11: 99 of 134 lights cast shadows; under 10 m off = kiosk 56 -> 61 FPS); 0 = keep the authored shadows."));
+// 08/11 (bench, village at night: 19 lights lit, 1124 shadow draw calls, lights 2.6 ms + shadows 1.1 ms of GPU; all
+// local lights off = 58 -> 66 FPS): only the nearest few lamps cast shadows, the others light without one.
+static TAutoConsoleVariable<int32> CVarMareLightShadowBudget(TEXT("mare.LightShadowBudget"),4,TEXT("At most this many local lights cast shadows, the nearest to the camera within mare.LightShadowReach (0 = no budget: every eligible light keeps its shadow)."));
+static TAutoConsoleVariable<float> CVarMareLightShadowReach(TEXT("mare.LightShadowReach"),2500.f,TEXT("Local lights farther than this from the camera (cm) cast no shadow (with mare.LightShadowBudget)."));
 static TAutoConsoleVariable<float> CVarMareLightDrawDistance(TEXT("mare.LightDrawDistance"),3000.f,TEXT("Local lights (interiors, bounce, lamps, shops) fade out beyond this distance from the camera (cm), with a 15 m fade (04/11 EXE: with all local lights off the beach went 46 -> 56 FPS and the kiosk 49 -> 63: about 150 lights of the whole map were drawn every frame, day included; 50 m gave beach 53, 30 m 59). 0 = never culled; set on lights that have no distance of their own."));
 
 static TAutoConsoleVariable<int32> CVarMareWalkTest(TEXT("mare.WalkTest"),0,TEXT("QA: the player walks straight ahead (footprint capture)."));
@@ -170,6 +174,7 @@ void UMareVisualWorld::Tick(float DeltaSeconds)
  // scene (sun, lamps, signs) refreshes every 2 s below.
  if(auto WeatherSim=GetWorld()->GetGameInstance()->GetSubsystem<UMareSimulation>())UpdateWeather(DeltaSeconds,WeatherSim);
  UpdateFootprints();
+ ShadowClock-=DeltaSeconds;if(ShadowClock<=0){ShadowClock=.5f;BudgetLightShadows();}
  Clock-=DeltaSeconds;if(Clock>0)return;Clock=2.f;
  RefreshExpansions();
  AddGlassCompanions();
@@ -396,9 +401,26 @@ void UMareVisualWorld::CullLocalLights()
   Light->MaxDrawDistance=D;Light->MaxDistanceFadeRange=FMath::Min(1500.f,D*.3f);
   // A fill light needs no shadow; small lights (lanterns, interiors) keep at most a contact shadow.
   const bool bShadow=State->bShadow && !bBounce && Light->AttenuationRadius>=MinShadow;
-  if(Light->CastShadows!=bShadow)Light->SetCastShadows(bShadow);
+  State->bEligible=bShadow;   // whether it casts one now is BudgetLightShadows' call (the nearest few)
+  if(CVarMareLightShadowBudget.GetValueOnGameThread()<=0 && Light->CastShadows!=bShadow)Light->SetCastShadows(bShadow);
   Shadowed+=bShadow;++Set;Light->MarkRenderStateDirty();}
  if(Set)UE_LOG(LogTemp,Display,TEXT("MARE_LIGHT_CULL lights=%d shadowed=%d reach=%.0f bounce=x%.1f min_shadow_radius=%.0f"),Set,Shadowed,Reach,Bounce,MinShadow);
+}
+
+void UMareVisualWorld::BudgetLightShadows()
+{
+ const int32 Budget=CVarMareLightShadowBudget.GetValueOnGameThread();if(Budget<=0)return;
+ const float Reach=CVarMareLightShadowReach.GetValueOnGameThread();
+ auto PC=GetWorld()->GetFirstPlayerController();if(!PC || !PC->PlayerCameraManager)return;
+ const FVector Eye=PC->PlayerCameraManager->GetCameraLocation();
+ struct FCand{ULocalLightComponent* L;float D;};TArray<FCand> Cands;
+ for(auto It=LightCull.CreateIterator();It;++It){ULocalLightComponent* L=It.Key().Get();if(!L){It.RemoveCurrent();continue;}
+  float D=FVector::Dist(L->GetComponentLocation(),Eye);
+  if(!It.Value().bEligible || !L->IsVisible() || L->Intensity<=0.f || D>Reach){if(L->CastShadows)L->SetCastShadows(false);continue;}
+  if(L->CastShadows)D-=300.f;   // hysteresis: a lamp already shadowed keeps it until another is clearly nearer
+  Cands.Add({L,D});}
+ Cands.Sort([](const FCand& A,const FCand& B){return A.D<B.D;});
+ for(int32 I=0;I<Cands.Num();++I){const bool b=I<Budget;if(Cands[I].L->CastShadows!=b)Cands[I].L->SetCastShadows(b);}
 }
 
 void UMareVisualWorld::AddGlassCompanions()

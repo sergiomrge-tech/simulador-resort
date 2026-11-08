@@ -188,3 +188,39 @@ def walkers(arg=''):
         out.append([a.get_editor_property('person_name') if hasattr(a, 'person_name') else a.get_name(), round(a.get_velocity().length()), st,
                     [round(l.x), round(l.y), round(l.z)], a.is_hidden_ed() if hasattr(a, 'is_hidden_ed') else None])
     return json.dumps(out[:40])
+
+
+def nanite_of_instances(arg=''):
+    """QA (PIE stopped): every instanced component of the level grouped by mesh: instance count, Nanite on, shadow,
+    cull distances, material blend modes (what is drawn by the CPU-culled path)."""
+    world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_editor_world()
+    rows = {}
+    for a in unreal.GameplayStatics.get_all_actors_of_class(world, unreal.Actor):
+        for c in a.get_components_by_class(unreal.InstancedStaticMeshComponent):
+            m = c.static_mesh
+            if not m:
+                continue
+            k = m.get_path_name()
+            r = rows.setdefault(k, [0, None, False, 0, set(), a.get_actor_label()[:30]])
+            r[0] += c.get_instance_count()
+            r[1] = bool(m.get_editor_property('nanite_settings').enabled)
+            r[2] = r[2] or c.cast_shadow
+            r[3] = c.get_editor_property('instance_end_cull_distance')
+            for i in range(len(m.static_materials)):
+                mi = c.get_material(i)
+                if mi:
+                    r[4].add(str(mi.get_blend_mode()).split('.')[-1][:12])
+    out = sorted(([v[0], k.split('/')[-1], v[1], v[2], v[3], sorted(v[4]), v[5]] for k, v in rows.items()), reverse=True)
+    return json.dumps(out[:60])
+
+
+def mesh_info(arg=''):
+    """QA: triangles (LOD0), LOD count and Nanite of meshes by path (comma separated)."""
+    out = []
+    for p in [x for x in arg.split(',') if x]:
+        m = unreal.load_asset(p)
+        if not m:
+            out.append([p, 'missing'])
+            continue
+        out.append([m.get_name(), m.get_num_triangles(0), m.get_num_lods(), bool(m.get_editor_property('nanite_settings').enabled)])
+    return json.dumps(out)

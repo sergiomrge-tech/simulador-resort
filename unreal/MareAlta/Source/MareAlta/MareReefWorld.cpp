@@ -93,7 +93,7 @@ void UMareReefWorld::Dress()
  // reef is ~9 m down: nothing of it shows from the beach).
  const auto D=ReefDefs();UWorld* World=GetWorld();if(!World)return;
  FActorSpawnParameters P;P.SpawnCollisionHandlingOverride=ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
- Dressing=World->SpawnActor<AActor>(FVector::ZeroVector,FRotator::ZeroRotator,P);if(!Dressing)return;
+ Dressing=World->SpawnActor<AActor>(FVector::ZeroVector,FRotator::ZeroRotator,P);if(!Dressing)return;Dressing->Tags.Add(TEXT("MareReefDressing"));
  Dressing->SetRootComponent(NewObject<USceneComponent>(Dressing,TEXT("Root")));Dressing->GetRootComponent()->RegisterComponent();
  FRandomStream R(int32(UMareSimulation::Number(D,TEXT("seed"),5150)));
  const float Floor=UMareSimulation::Number(D,TEXT("floor_below"),-860),Cull=UMareSimulation::Number(D,TEXT("cull_cm"),6500);
@@ -185,6 +185,9 @@ void UMareReefWorld::FillFloor(FRandomStream& R,const FBox2D& Reef)
   if(!Mesh){UE_LOG(LogTemp,Warning,TEXT("REEF_MISSING %s"),*UMareSimulation::String(E,TEXT("mesh")));continue;}
   auto C=NewObject<UHierarchicalInstancedStaticMeshComponent>(Dressing);C->SetMobility(EComponentMobility::Movable);C->SetStaticMesh(Mesh);
   C->SetCollisionEnabled(ECollisionEnabled::NoCollision);bool bShadow=false;E->TryGetBoolField(TEXT("shadow"),bShadow);C->SetCastShadow(bShadow);
+  // 08/11 (bench: GlobalDistanceFieldUpdate 0.85 ms every frame): ~230k movable instances under the water kept the global
+  // distance field busy; nothing down there needs it (no Lumen GI of note, no DF shadows through the water).
+  C->bAffectDistanceFieldLighting=false;C->bAffectDynamicIndirectLighting=false;
   const float Cull=UMareSimulation::Number(E,TEXT("cull"),6000);C->SetCullDistances(int32(Cull*.8f),int32(Cull));
   C->SetupAttachment(Dressing->GetRootComponent());C->RegisterComponent();Dressing->AddInstanceComponent(C);Parts.Add(C);
   const FVector2D Z=Pair(E,TEXT("depth"),FVector2D(-12000,-100)),S=Pair(E,TEXT("scale"),FVector2D(1,1));

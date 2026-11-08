@@ -81,6 +81,15 @@ void AMareBench::Tick(float DeltaSeconds)
   // -MareBenchNoShadow=<mesh name part>: those meshes stop casting shadows (cost split between their shadows and their pixels).
   FString NoShadow;if(FParse::Value(FCommandLine::Get(),TEXT("MareBenchNoShadow="),NoShadow))
    for(TObjectIterator<UStaticMeshComponent> It;It;++It)if(It->GetWorld()==GetWorld() && It->GetStaticMesh() && It->GetStaticMesh()->GetName().Contains(NoShadow))It->SetCastShadow(false);
+  // -MareBenchHide=<part,part>: actors whose tag or name contains a part, and mesh components whose static mesh name
+  // contains it, are hidden (08/11: cost split of the island: Ocean, mare_island_seabed, MareReefDressing,
+  // MareIslandForest, MareIslandCover, IslandTerrain...).
+  FString Hide;if(FParse::Value(FCommandLine::Get(),TEXT("MareBenchHide="),Hide)){TArray<FString> Parts;Hide.ParseIntoArray(Parts,TEXT(","));
+   for(TActorIterator<AActor> It(GetWorld());It;++It){bool bHit=false;
+    for(const FString& Part:Parts){if(It->GetName().Contains(Part))bHit=true;for(const FName& Tag:It->Tags)if(Tag.ToString().Contains(Part))bHit=true;}
+    if(bHit)It->SetActorHiddenInGame(true);}
+   for(TObjectIterator<UStaticMeshComponent> It;It;++It)if(It->GetWorld()==GetWorld() && It->GetStaticMesh())
+    for(const FString& Part:Parts)if(It->GetStaticMesh()->GetName().Contains(Part))It->SetVisibility(false);}
   Hero->GetCharacterMovement()->SetMovementMode(MOVE_Flying);Started=FPlatformTime::Seconds();Sector=0;Enter(PC);return;
  }
  if(FParse::Param(FCommandLine::Get(),TEXT("MareBenchSweep"))){Sweep();return;}
@@ -111,7 +120,8 @@ void AMareBench::Tick(float DeltaSeconds)
   Row->SetBoolField(TEXT("frame_generation_supported"),FMareOptions::FrameGenerationSupported());Row->SetBoolField(TEXT("focus"),FApp::HasFocus());
   Row->SetNumberField(TEXT("clock"),UMareSimulation::Number(PC->GetSimulation()->State,TEXT("minutes")));
   {FString Extra;FParse::Value(FCommandLine::Get(),TEXT("MareBenchExec="),Extra,false);Row->SetStringField(TEXT("exec"),Extra);
-   FString NoShadow;FParse::Value(FCommandLine::Get(),TEXT("MareBenchNoShadow="),NoShadow);Row->SetStringField(TEXT("no_shadow"),NoShadow);}
+   FString NoShadow;FParse::Value(FCommandLine::Get(),TEXT("MareBenchNoShadow="),NoShadow);Row->SetStringField(TEXT("no_shadow"),NoShadow);
+   FString Hidden;FParse::Value(FCommandLine::Get(),TEXT("MareBenchHide="),Hidden);Row->SetStringField(TEXT("hidden"),Hidden);}
   Row->SetStringField(TEXT("variant"),FParse::Param(FCommandLine::Get(),TEXT("MareBenchNoPeople"))?TEXT("sem_pessoas"):FParse::Param(FCommandLine::Get(),TEXT("MareBenchNoGroom"))?TEXT("sem_cabelo"):TEXT("completo"));
   Row->SetNumberField(TEXT("people"),People);Row->SetNumberField(TEXT("people_rendered"),Seen);Row->SetNumberField(TEXT("viewport_x"),Size.X);Row->SetNumberField(TEXT("viewport_y"),Size.Y);
   Row->SetNumberField(TEXT("ram_mb"),double(FPlatformMemory::GetStats().UsedPhysical)/(1024.0*1024.0));
