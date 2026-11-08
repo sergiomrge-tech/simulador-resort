@@ -1,9 +1,9 @@
 """New land of the island (08/11, docs/ue58/ILHA_PLANO.md step 4): the slopes and beaches grown around the existing
 land (the summit walls, the headlands), from Content/Data/island.json (coast distance) and the land survey.
 
-Height of a new-land point: from the height of the nearest existing edge it goes down to a beach that rises from the
-water level (-30 cm) at the coast to +80 cm 40 m inland, with an S-curve between the two (t = distance from the old
-edge / (that + distance to the coast)); soft hills (up to 4 m, zero at both ends) keep it from looking like a ramp.
+Height of a new-land point: a short slope (20-80 m) from the height of the nearest existing edge down to a low
+coastal plain: the beach rises from the water level (-30 cm) at the coast to +80 cm 40 m inland, then the plain to
+1-4 m with soft swells (08/11, Sergio: "não faça tudo montanha": the hill stays the old summit in the middle).
 It reaches 2 cells (10 m) under the old land's edge 40 cm below it (no gap at the seam) and 15 m out to sea, down to
 -1.2 m, where the sea floor mesh takes over. 5 m grid, glTF in the Godot axes like gen_ocean.py (x, up, UE y / 100).
   python tools/ue58/gen_island_terrain.py -> unreal/MareAlta/SourceArt/Island/IslandTerrain.gltf + .bin
@@ -33,6 +33,13 @@ def main():
     grid = np.full((h, w), np.nan)
     gx0, gy0 = int(round((sx0 - ox) / step)), int(round((sy0 - oy) / step))
     grid[gy0:gy0 + z.shape[0], gx0:gx0 + z.shape[1]] = z
+    # 08/11 (Sergio: "essa parte marcada vira planície e floresta"): the dome tiles 1877-1936 north of the summit house
+    # were removed from the level (mare_island.remove_dome); their ground counts as new land to fill.
+    who = np.full((h, w), -1)
+    who[gy0:gy0 + z.shape[0], gx0:gx0 + z.shape[1]] = np.array(survey['who'])
+    dome_ids = [k for k, name in enumerate(survey['labels']) if '@MeshInstance3D@' in name and name.rsplit('@', 1)[-1].isdigit()
+                and 1877 <= int(name.rsplit('@', 1)[-1]) <= 1936]
+    grid[np.isin(who, dome_ids)] = np.nan
     land = grid > cfg['water_z']
     land |= np.isnan(grid) & ndimage.binary_closing(land, iterations=3)
     old_z = np.where(land, np.nan_to_num(grid, nan=0.0), 0.0)
@@ -51,14 +58,16 @@ def main():
     def beach(a):                               # a = cm inland of the waterline (negative = at sea)
         return np.where(a >= 0, -30.0 + np.minimum(a, 4000.0) / 4000.0 * 110.0, -30.0 + a / 1500.0 * 90.0)
 
-    t = np.clip(d_old / np.maximum(d_old + inland, 1.0), 0.0, 1.0)
-    st = t * t * (3 - 2 * t)
-    b_edge = beach(inland)
-    height = b_edge + (edge_h - b_edge) * (1.0 - st)
+    # 08/11 (Sergio: "não faça tudo montanha"): the old edge drops over a short slope (20-80 m, steeper under the high
+    # walls) to a low coastal plain (beach, then 1-4 m with soft swells), instead of one long slope down to the sea.
     rng = np.random.default_rng(11)
-    hills = ndimage.gaussian_filter(rng.standard_normal((h, w)), 9000.0 / step / 2.5)
-    hills /= np.abs(hills).max() or 1
-    height += hills * 400.0 * 4 * t * (1 - t) * (inland > 4000)
+    swell = ndimage.gaussian_filter(rng.standard_normal((h, w)), 6000.0 / step / 2.5)
+    swell /= np.abs(swell).max() or 1
+    plain = np.where(inland < 4000, beach(inland), 80.0 + np.clip((inland - 4000.0) / 6000.0, 0, 1) * (220.0 + swell * 140.0))
+    reach = np.clip(edge_h * .9, 2000.0, 8000.0)
+    t = np.clip(d_old / reach, 0.0, 1.0)
+    st = t * t * (3 - 2 * t)
+    height = np.where(edge_h > plain, plain + (edge_h - plain) * (1.0 - st), plain)
     height = np.where(D > 0, beach(-D), height)  # at sea: on down to -1.2 m at 15 m out
 
     new_land = (D < 0) & ~land
