@@ -30,7 +30,10 @@ public:
  int32 HotelGuestCount()const{return HotelGuests.Num();}
  int32 SunbatherCount()const;
 private:
- struct FWalker{TWeakObjectPtr<AMarePerson> Person;int32 Route=0,Point=0,Direction=1,BlockedAttempts=0;float Wait=0,Stuck=0;FVector Previous;};
+ struct FWalker{TWeakObjectPtr<AMarePerson> Person;int32 Route=0,Point=0,Direction=1,BlockedAttempts=0;float Wait=0,Stuck=0;FVector Previous;
+  /** Reference tip 9 (08/11): walking in company. A follower keeps beside its leader (Side cm to the right, a little
+   *  behind) and stops and chats when the leader stops. */
+  TWeakObjectPtr<AMarePerson> Leader;float Side=0;FVector LastGoal=FVector::ZeroVector;};
  TArray<TArray<FVector>> Routes;
  TArray<FWalker> Pedestrians;
  UPROPERTY() TArray<TObjectPtr<AMarePerson>> Residents;

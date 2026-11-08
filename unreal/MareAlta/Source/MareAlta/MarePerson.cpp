@@ -323,7 +323,9 @@ bool AMarePerson::SetMetaHuman(const FString& Name)
   // Pool swimmers (UMarePoolSwimWorld): UAL swim stroke and jump (mare_metahuman.import_ual).
   TEXT("Swim_Fwd"),TEXT("Jump_Start"),TEXT("Jump"),
   // 07/11 (reference game: lively people): taking from a counter and driving (mare_metahuman.import_ual).
-  TEXT("PickUp_Table"),TEXT("Driving")};   // i18n:skip
+  TEXT("PickUp_Table"),TEXT("Driving"),
+  // 08/11 (reference tip 9): sitting down and getting up (mare_metahuman.import_ual).
+  TEXT("Sitting_Enter"),TEXT("Sitting_Exit")};   // i18n:skip
  if(CVarMareMocap.GetValueOnGameThread())Wanted.Append({TEXT("SitTalk"),TEXT("DanceHip"),TEXT("Cheer")});
  for(const FString& Clip:Wanted)
   if(auto Anim=LoadObject<UAnimSequence>(nullptr,*FString::Printf(TEXT("/Game/People/Animations/MH_%s.MH_%s"),*Clip,*Clip)))Clips.Add(Clip,Anim);
@@ -420,7 +422,17 @@ bool AMarePerson::SetMetaHuman(const FString& Name)
 }
 void AMarePerson::PlayPose(const FString& Name,bool bLoop)
 {
- if(Playing==Name || !Clips.Contains(Name))return;Playing=Name;
+ if(Playing==Name || !Clips.Contains(Name))return;
+ // 08/11 (reference tip 9, C11): sitting down and standing up go through the UAL transition clips. Sitting_Enter
+ // plays once the person is on the seat (SitOn) and was standing; the pelvis alignment waits for it to end.
+ // Sitting_Exit only when the person stands still (Tick drops it as soon as they walk, or they would glide).
+ auto Transition=[this](const TCHAR* Clip){UAnimSequence* Anim=Clips.FindRef(Clip);if(!Anim)return false;
+  if(auto Instance=Cast<UMareServiceAnimInstance>(GetMesh()->GetAnimInstance())){Instance->SetAnimationAsset(Anim,false);Instance->SetPlaying(true);}
+  Playing=Clip;GestureLeft=Anim->GetPlayLength()*.95f;return true;};
+ if(Name==TEXT("Sitting_Idle") && !Playing.IsEmpty() && Playing!=TEXT("Sitting_Enter") && Elapsed>2.f && !SeatPelvis.IsZero() && Transition(TEXT("Sitting_Enter"))){
+  SeatAlignIn=FMath::Max(SeatAlignIn,GestureLeft+.2f);return;}
+ if(Playing==TEXT("Sitting_Idle") && (Name==TEXT("Idle") || Name==TEXT("Idle_Talking")) && GetVelocity().SizeSquared2D()<25 && Transition(TEXT("Sitting_Exit")))return;
+ Playing=Name;
  // Variety: half of the guests (fixed per person) talk with their hands while seated. Staff and anyone riding
  // something (the bus driver) keep the calm base clip.
  FString Clip=Name;
@@ -632,6 +644,7 @@ void AMarePerson::Tick(float DeltaSeconds)
   // The root 32 cm under the surface: the water reaches the shoulders, the head (bone ~12 cm up) stays out.
   SetActorLocationAndRotation(SwimAt+FVector(0,0,88-32+Wave),FRotator(0,GetActorRotation().Yaw+FMath::Sin(Elapsed*.35f+SwimAt.X*.01f)*6.f*DeltaSeconds,0));}
  else if(bLying)UpdateLying(DeltaSeconds);
+ else if(GestureLeft>0 && Playing==TEXT("Sitting_Exit") && GetVelocity().SizeSquared2D()>25){GestureLeft=0;PlayPose(TEXT("Walk"));}   // already walking off
  else if(GestureLeft>0)GestureLeft-=DeltaSeconds;   // a one-shot gesture is playing (PlayGesture)
  else if(!HoldPose.IsEmpty())PlayPose(HoldPose);
  else if(GetVelocity().SizeSquared2D()>25)PlayPose(TEXT("Walk"));else if(!WorkPose.IsEmpty())PlayPose(WorkPose==TEXT("Skim") || WorkPose==TEXT("Sweep")?TEXT("Idle"):WorkPose);else if(bAmbient)PlayPose(bSeated?TEXT("Sitting_Idle"):bConversing?TEXT("Idle_Talking"):TEXT("Idle"));else if(Stage!=EMarePersonStage::Eating)PlayPose(TEXT("Idle"));

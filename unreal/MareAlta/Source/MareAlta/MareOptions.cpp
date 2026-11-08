@@ -242,7 +242,8 @@ bool FMareOptions::IsCustomPreset()const
  return false;
 }
 void FMareOptions::SetPreset(int32 Level){Preset=Shadows=GlobalIllumination=Reflections=PostProcess=Textures=Foliage=AntiAliasing=ViewDistance=Effects=Shading=ModelDetail=FMath::Clamp(Level,0,3);}
-int32 FMareOptions::CrowdWalkers()const{static const int32 Walkers[]={3,6,12};return Walkers[FMath::Clamp(Crowd,0,2)];}
+// 08/11 (reference tip 13, busier streets): 4 / 8 / 16 in pairs and trios (was 3 / 6 / 12); distant ones still hide.
+int32 FMareOptions::CrowdWalkers()const{static const int32 Walkers[]={4,8,16};return Walkers[FMath::Clamp(Crowd,0,2)];}
 float FMareOptions::CrowdDrawDistance()const{static const float Reach[]={3500.f,5000.f,8000.f};return Reach[FMath::Clamp(Crowd,0,2)];}
 FKey FMareOptions::Key(FName Action)const
 {

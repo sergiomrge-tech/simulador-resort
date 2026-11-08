@@ -70,14 +70,36 @@ void UMareVillageWorld::UpdateWalkers(float Dt)
  // "Pessoas" graphics option: 3 / 6 / 12 walkers (04/11: halved from 12 for 60 FPS, every MetaHuman costs render-thread time).
  const int32 Budget=FMareOptions::Get().CrowdWalkers();
  if(Pedestrians.Num()<Budget && Routes.Num()){
-  const int32 Index=Pedestrians.Num(),Route=Index%Routes.Num();const auto& Points=Routes[Route];const int32 Start=(Index/Routes.Num())%Points.Num();
-  if(auto Person=SpawnPerson(Points[Start],Index%4,TEXT("Morador"))){FWalker Walker;Walker.Person=Person;Walker.Route=Route;Walker.Point=FMath::Min(Start+1,Points.Num()-1);Walker.Previous=Person->GetActorLocation();
-   Person->WalkTo(Points[Walker.Point]);Pedestrians.Add(Walker);}
+  const int32 Index=Pedestrians.Num();
+  // Groups (reference tip 9): in every five, a pair (leader + 1) and a trio (leader + 2). Followers spawn beside the
+  // last leader and walk with it.
+  const int32 Slot=Index%5;const bool bFollower=Slot==1 || Slot==3 || Slot==4;
+  AMarePerson* Lead=nullptr;for(int32 K=Pedestrians.Num()-1;K>=0 && bFollower;--K)if(Pedestrians[K].Side==0){Lead=Pedestrians[K].Person.Get();break;}
+  if(bFollower && Lead){const float Side=Slot==4?-80.f:80.f;
+   if(auto Person=SpawnPerson(Lead->GetActorLocation()+Lead->GetActorRightVector()*Side,Index%4,TEXT("Morador"))){FWalker Walker;Walker.Person=Person;Walker.Leader=Lead;Walker.Side=Side;Walker.Previous=Person->GetActorLocation();Pedestrians.Add(Walker);}}
+  else{int32 Leaders=0;for(const auto& Other:Pedestrians)if(Other.Side==0)++Leaders;const int32 Route=Leaders%Routes.Num();const auto& Points=Routes[Route];const int32 Start=(Index/Routes.Num())%Points.Num();
+   if(auto Person=SpawnPerson(Points[Start],Index%4,TEXT("Morador"))){FWalker Walker;Walker.Person=Person;Walker.Route=Route;Walker.Point=FMath::Min(Start+1,Points.Num()-1);Walker.Previous=Person->GetActorLocation();
+    Person->WalkTo(Points[Walker.Point]);Pedestrians.Add(Walker);}}
  }
  for(int32 I=Pedestrians.Num()-1;I>=0;--I){auto& W=Pedestrians[I];auto P=W.Person.Get();if(!P){Pedestrians.RemoveAt(I);continue;}
   if(I>=Budget){P->Destroy();Pedestrians.RemoveAt(I);continue;}
   P->GetMesh()->SetComponentTickInterval(FVector::DistSquared(P->GetActorLocation(),Hero->GetActorLocation())>FMath::Square(3000.f)?.15f:0.f);
   if(P->bHiddenByDistance){W.Stuck=0;continue;}   // out of the scene: paused where it is (AMarePerson::SetDistanceHidden)
+  if(W.Leader.IsValid() || W.Side!=0){
+   // A follower: beside its leader, a little behind; stops and chats when the leader stops; alone it just idles.
+   AMarePerson* L=W.Leader.Get();if(!L){P->bConversing=false;continue;}
+   const bool bStill=L->GetVelocity().Size2D()<10;
+   FVector Goal=L->GetActorLocation()+L->GetActorRightVector()*W.Side-L->GetActorForwardVector()*(bStill?0.f:45.f);
+   // on walkable ground (not inside a planter or a bench beside the path); else right behind the leader
+   if(auto Nav=FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld())){FNavLocation On;
+    if(Nav->ProjectPointToNavigation(Goal,On,FVector(40,40,200)))Goal=FVector(On.Location.X,On.Location.Y,Goal.Z);
+    else Goal=L->GetActorLocation()-L->GetActorForwardVector()*90.f;}
+   const float Far=FVector::Dist2D(P->GetActorLocation(),Goal);
+   if(Far>650.f){P->SetActorLocation(Goal,false,nullptr,ETeleportType::TeleportPhysics);W.LastGoal=Goal;continue;}   // fell far behind (blocked): rejoin
+   if(Far>110.f && FVector::Dist2D(Goal,W.LastGoal)>90.f){P->WalkTo(Goal);W.LastGoal=Goal;P->bConversing=false;}
+   else if(Far<=110.f && bStill){if(auto AI=Cast<AAIController>(P->GetController()))AI->StopMovement();
+    P->SetActorRotation(FRotator(0,(L->GetActorLocation()-P->GetActorLocation()).Rotation().Yaw,0));P->bConversing=true;}
+   continue;}
   if(W.Wait>0){W.Wait-=Dt;P->bConversing=W.Wait>1;if(W.Wait<=0)P->WalkTo(Routes[W.Route][W.Point]);continue;}P->bConversing=false;
   const auto& Points=Routes[W.Route];
   if(P->AtGoal()){

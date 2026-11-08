@@ -107,3 +107,24 @@ def hit(arg='4385,1750,184,4385,1960,70'):
     mesh = comp.static_mesh.get_path_name() if isinstance(comp, unreal.StaticMeshComponent) and comp.static_mesh else ''
     n = comp.get_instance_count() if isinstance(comp, unreal.InstancedStaticMeshComponent) else -1
     return json.dumps([str(t[4]), t[9].get_actor_label() if t[9] else None, comp.get_name() if comp else None, comp.get_class().get_name() if comp else None, mesh, n])
+
+
+def people(arg='Morador'):
+    """QA: name, position and speed of the people whose name contains arg (PIE)."""
+    world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()
+    out = []
+    for p in unreal.ObjectIterator(unreal.MarePerson):
+        if p.get_world() != world:
+            continue
+        name = str(p.get_editor_property('person_name')) if hasattr(p, 'person_name') else p.get_name()
+        l = p.get_actor_location()
+        out.append([name[:18], round(l.x), round(l.y), round(l.z), round(p.get_velocity().length())])
+    return json.dumps(out)
+
+
+def ual_sit(_=''):
+    """08/11 (reference tip 9, C11): the UAL sit-down and stand-up clips, retargeted to the MetaHumans."""
+    import importlib
+    import mare_metahuman
+    importlib.reload(mare_metahuman)
+    return str(mare_metahuman.import_ual(clips='Sitting_Enter,Sitting_Exit'))
