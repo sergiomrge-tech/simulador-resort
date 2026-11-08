@@ -1,0 +1,14 @@
+{
+ "_doc": "Paying at the kiosk counter (07/11, Sergio, pointing at the reference game: 'sistema de pagamento assim'): when the player completes an order themselves, the customer pays in cash (cash_share) or by card. The price is already charged on delivery (UMareSimulation::Deliver); this screen is the skill on top: cash -> the player builds the change from the drawer (notes and coins in reais), card -> types the total on the terminal. Exact change: tip_exact of the total and 5 stars; short change: the customer complains (stars_short); too much change: the extra leaves the cash and stars_over. Card typed right: tip_card. Esc lets the customer pay without a tip (stars_skip). The attendant still charges by himself. given: the notes a customer may hand over (the smallest that covers the total, or a bigger one, given_bigger odds).",
+ "cash_share": 0.6,
+ "given": [5, 10, 20, 50, 100],
+ "given_bigger": 0.45,
+ "notes": [100, 50, 20, 10, 5, 2],
+ "coins": [1, 0.5, 0.25, 0.1, 0.05],
+ "tip_exact": 0.1,
+ "tip_card": 0.05,
+ "stars_exact": 5,
+ "stars_short": 2,
+ "stars_over": 4,
+ "stars_skip": 3.5
+}

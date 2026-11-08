@@ -91,12 +91,19 @@ public:
   *  green), "liquidificar" (pulses in the zone). The score goes to UMareSimulation::BarPrepStep. */
  UFUNCTION(BlueprintCallable,Category="Maré Alta") void StartBarPrep(const FString& Step);
  /** Early Access end screen (once per save, when everything is bought and the village stories are done). */
- UFUNCTION(BlueprintCallable,Category="Maré Alta") void ShowEndOfContent();
+ UFUNCTION(BlueprintCallable,Category="Maré Alta") void ShowEndOfContent(bool bDebt=false);
+ /** Main menu straight on its credits page (debt finale). */
+ void OpenCredits();
  /** Photo mode (P / D-pad down): screenshot to Saved/Album and the subjects in frame to the album. */
  UFUNCTION(BlueprintCallable,Category="Maré Alta") void TakePhoto();
  void CloseBusinessGame();
+ /** Kiosk payment screen (MarePayment.cpp): cash change or card after the player completes an order. */
+ void OpenPayment(const FString& Customer,double Total);
+ /** QA scripts that drive the kiosk themselves (mare.Pay off). */
+ bool bSkipPaymentForQA=false;
  void OpenMainMenu();
  bool IsMainMenuOpen()const{return MainMenuWidget.IsValid();}
+ bool IsTitle()const{return bTitle;}
  /** Continue/Load: the slot already behind the menu just resumes, another slot reloads the level. */
  bool MenuLoadSlot(int32 Slot);
  /** New game in a slot (an occupied slot keeps its old file as .bak), then the arrival intro. */
@@ -114,6 +121,8 @@ private:
  TSharedPtr<SMarePhone> PhoneWidget;
  TSharedPtr<SWidget> PauseWidget;
  TSharedPtr<SWidget> MainMenuWidget;
+ /** Title screen state (MareTitle.cpp): the menu at start-up flies over the bay instead of pausing. */
+ bool bTitle=false;double TitleSavedMinutes=-1;UPROPERTY() TObjectPtr<class AMareTitleCamera> TitleCamera=nullptr;
  TSharedPtr<SWidget> GameWidget;
  /** Slot whose state the current world was built from, and whether that state came from a file. */
  int32 WorldSlot=1;

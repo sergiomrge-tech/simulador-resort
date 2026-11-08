@@ -1,4 +1,5 @@
 #include "MareGame.h"
+#include "MareTitle.h"
 #include "MareLoc.h"
 #include "MareNotebookStyle.h"
 #include "Fonts/FontMeasure.h"
@@ -173,6 +174,7 @@ public:
 private:
  TWeakObjectPtr<AMareController> Owner;
  TSharedPtr<SVerticalBox> Body;
+ int64 DebtPick=0;   // debt payment waiting for "Confirmar" (cents)
  TSharedPtr<SEditableTextBox> CompanyName;
  int32 Tab=0;
  FName Station;
@@ -742,10 +744,45 @@ private:
   if(S->State->HasTypedField<EJson::Object>(TEXT("ue_last_day"))){auto Last=UMareSimulation::Object(S->State,TEXT("ue_last_day"));const double Profit=UMareSimulation::Number(Last,TEXT("income"))-UMareSimulation::Number(Last,TEXT("expense"));
    G->AddSlot(2,0)[MareNotebook::PriceTag(Big(FString::Printf(TEXT("Dia %.0f"),UMareSimulation::Number(Last,TEXT("day"))),FString::Printf(TEXT("R$ %.0f"),Profit),Profit<0?MareNotebook::Red:MareNotebook::Green,
     FString::Printf(TEXT("%.0f vendas · salários R$ %.0f"),UMareSimulation::Number(Last,TEXT("sales")),UMareSimulation::Number(Last,TEXT("wages")))),TiltOf(2))];}
+  DebtCard();   // item 10: Dona Dilce's debt, before the ledger
   Heading(TEXT("Últimos lançamentos"));const TArray<TSharedPtr<FJsonValue>>* Ledger=nullptr;
   if(S->State->TryGetArrayField(TEXT("ledger"),Ledger))for(int32 I=Ledger->Num()-1;I>=FMath::Max(0,Ledger->Num()-14);--I){auto Row=(*Ledger)[I]->AsObject();const double Amount=UMareSimulation::Number(Row,TEXT("amount"));
    Body->AddSlot().AutoHeight().Padding(0,1)[SNew(SHorizontalBox)+SHorizontalBox::Slot().FillWidth(1).VAlign(VAlign_Center)[MareNotebook::BodyText(UMareSimulation::String(Row,TEXT("label")),11.5f)]
     +SHorizontalBox::Slot().AutoWidth().Padding(12,0,0,0)[MareNotebook::HandText(FString::Printf(TEXT("%sR$ %.0f"),Amount<0?TEXT("-"):TEXT("+"),FMath::Abs(Amount)),18,Amount<0?MareNotebook::Red:MareNotebook::Green)]];}
+ }
+ /** Dona Dilce's debt (MareDebt.cpp): balance, what was paid, a pencil progress line and the payment buttons.
+  *  A value is picked first and only charged after "Confirmar" (debt.json phone.confirm shows the cash left). */
+ void DebtCard()
+ {
+  auto S=Sim();bool bCreated=false;UMareSimulation::Object(S->State,TEXT("company"))->TryGetBoolField(TEXT("created"),bCreated);if(!bCreated)return;
+  const auto Phone=UMareSimulation::Object(S->DebtDefs(),TEXT("phone"));
+  auto R=[](int64 C){return FString::Printf(TEXT("%.0f"),C/100.0);};
+  const int64 Principal=S->DebtPrincipalCents(),Paid=S->DebtPaidCents(),Left=S->DebtBalanceCents(),Max=S->DebtMaxPayCents();
+  Heading(UMareSimulation::String(Phone,TEXT("title")));
+  auto Card=SNew(SVerticalBox);
+  if(Left<=0)Card->AddSlot().AutoHeight()[MareNotebook::Stamp(UMareSimulation::String(Phone,TEXT("settled")),MareNotebook::Green)];
+  else Card->AddSlot().AutoHeight()[MareNotebook::HandText(UMareSimulation::String(Phone,TEXT("balance")).Replace(TEXT("{0}"),*R(Left)),24,MareNotebook::Brown)];
+  Card->AddSlot().AutoHeight().Padding(0,2)[MareNotebook::BodyText(UMareSimulation::String(Phone,TEXT("paid")).Replace(TEXT("{0}"),*R(Paid)).Replace(TEXT("{1}"),*R(Principal)),11.5f,MareNotebook::Ink)];
+  {const float F=Principal>0?float(double(Paid)/double(Principal)):0.f;   // pencil progress line (0..100 %)
+   Card->AddSlot().AutoHeight().Padding(0,4).HAlign(HAlign_Left)[SNew(SBox).WidthOverride(360).HeightOverride(10)[SNew(SOverlay)
+    +SOverlay::Slot()[SNew(SBorder).BorderImage(FCoreStyle::Get().GetBrush("WhiteBrush")).BorderBackgroundColor(MareNotebook::Faded.CopyWithNewOpacity(.25f))]
+    +SOverlay::Slot().HAlign(HAlign_Left)[SNew(SBox).WidthOverride(FMath::Max(2.f,360.f*F))[SNew(SBorder).BorderImage(FCoreStyle::Get().GetBrush("WhiteBrush")).BorderBackgroundColor(MareNotebook::Green)]]]];}
+  if(Left>0 && S->IsDemo())Card->AddSlot().AutoHeight().Padding(0,2)[MareNotebook::BodyText(UMareSimulation::String(Phone,TEXT("demo_limit")).Replace(TEXT("{0}"),*R(S->DebtLimitCents())),10.5f,MareNotebook::Faded)];
+  if(Left>0 && !S->IsDebtDemoCapped()){
+   if(DebtPick>0 && DebtPick<=Max){
+    Card->AddSlot().AutoHeight().Padding(0,6,0,2)[MareNotebook::HandText(UMareSimulation::String(Phone,TEXT("confirm")).Replace(TEXT("{0}"),*R(DebtPick)).Replace(TEXT("{1}"),*R(int64(FMath::RoundToDouble(S->Money()*100))-DebtPick)),17,MareNotebook::Ink)];
+    Card->AddSlot().AutoHeight().HAlign(HAlign_Left)[SNew(SHorizontalBox)
+     +SHorizontalBox::Slot().AutoWidth()[Button(TEXT("Confirmar"),[this,S](){const int64 V=DebtPick;DebtPick=0;S->PayDebt(V);})]
+     +SHorizontalBox::Slot().AutoWidth().Padding(12,0,0,0).VAlign(VAlign_Center)[Link(TEXT("cancelar"),[this](){DebtPick=0;})]];}
+   else{
+    DebtPick=0;
+    Card->AddSlot().AutoHeight().Padding(0,6,0,2)[MareNotebook::BodyText(UMareSimulation::String(Phone,TEXT("pay")),11.5f,MareNotebook::Faded)];
+    auto Row=SNew(SWrapBox).UseAllottedSize(true).InnerSlotPadding(FVector2D(8,4));
+    for(const int64 Amount:{int64(100000),int64(1000000),int64(5000000)})
+     Row->AddSlot()[Button(TEXT("R$ ")+R(Amount),[this,Amount](){DebtPick=Amount;},Amount<=Max)];
+    Row->AddSlot()[Button(TEXT("o máximo que der · R$ ")+R(Max),[this,Max](){DebtPick=Max;},Max>0)];
+    Card->AddSlot().AutoHeight()[Row];}}
+  Body->AddSlot().AutoHeight().Padding(0,4)[MareNotebook::PriceTag(Card,TiltOf(3))];
  }
  void ResortPage()
  {
@@ -902,12 +939,15 @@ private:
   const bool bPhone=Station.IsNone();const bool bIndex=bPhone && Tab==6;
   SAssignNew(Body,SVerticalBox);
   // Status line in pencil: day, clock, weather and cash.
-  auto Status=SNew(SHorizontalBox)
-   +SHorizontalBox::Slot().FillWidth(1)[SNew(STextBlock).Font(MareNotebook::Hand(16)).ColorAndOpacity(Faded).Text_Lambda([S](){const int32 M=UMareSimulation::Number(S->State,TEXT("minutes"));
-    return MareLoc::Text(FString::Printf(TEXT("Dia %.0f · %02d:%02d · %s"),UMareSimulation::Number(S->State,TEXT("day"),1),M/60,M%60,UMareSimulation::String(S->State,TEXT("weather"))==TEXT("rain")?TEXT("Chuva"):TEXT("Sol")));})]
-   +SHorizontalBox::Slot().FillWidth(2).HAlign(HAlign_Center).Padding(8,0)[SNew(SBox).Visibility(S->LastMessage.IsEmpty()?EVisibility::Collapsed:EVisibility::Visible)[SNew(SBorder).BorderImage(&MarkerBrush()).Padding(FMargin(6,0))
-    [SNew(STextBlock).Text(MareLoc::Text(S->LastMessage)).Font(MareNotebook::Hand(15)).ColorAndOpacity(Ink).OverflowPolicy(ETextOverflowPolicy::Ellipsis).ToolTipText(MareLoc::Text(S->LastMessage))]]]
-   +SHorizontalBox::Slot().AutoWidth()[SNew(STextBlock).Font(MareNotebook::Hand(16)).ColorAndOpacity(Faded).Text_Lambda([S](){return MareLoc::Text(FString::Printf(TEXT("Caixa: R$ %.0f"),S->Money()));})];
+  // 07/11 (Sergio's photo: "Entregue ou devolva o pro..." cut at the station): the message gets its own wrapped line
+  // under day and cash instead of an ellipsis between them.
+  auto Status=SNew(SVerticalBox)
+   +SVerticalBox::Slot().AutoHeight()[SNew(SHorizontalBox)
+    +SHorizontalBox::Slot().FillWidth(1)[SNew(STextBlock).Font(MareNotebook::Hand(16)).ColorAndOpacity(Faded).Text_Lambda([S](){const int32 M=UMareSimulation::Number(S->State,TEXT("minutes"));
+     return MareLoc::Text(FString::Printf(TEXT("Dia %.0f · %02d:%02d · %s"),UMareSimulation::Number(S->State,TEXT("day"),1),M/60,M%60,UMareSimulation::String(S->State,TEXT("weather"))==TEXT("rain")?TEXT("Chuva"):TEXT("Sol")));})]
+    +SHorizontalBox::Slot().AutoWidth()[SNew(STextBlock).Font(MareNotebook::Hand(16)).ColorAndOpacity(Faded).Text_Lambda([S](){return MareLoc::Text(FString::Printf(TEXT("Caixa: R$ %.0f"),S->Money()));})]]
+   +SVerticalBox::Slot().AutoHeight().HAlign(HAlign_Left).Padding(0,2,0,0)[SNew(SBox).Visibility(S->LastMessage.IsEmpty()?EVisibility::Collapsed:EVisibility::Visible)[SNew(SBorder).BorderImage(&MarkerBrush()).Padding(FMargin(6,0))
+    [SNew(STextBlock).Text(MareLoc::Text(S->LastMessage)).Font(MareNotebook::Hand(15)).ColorAndOpacity(Ink).AutoWrapText(true)]]];
   // Divider tabs: pastel paper, the open one is the white page itself; "fechar" sits at the end.
   auto Tabs=SNew(SHorizontalBox);
   if(bPhone)for(int32 I=0;I<Titles.Num();++I){const bool bOn=I==Tab;
@@ -1732,11 +1772,27 @@ private:
 class SMareEndScreen : public SCompoundWidget
 {
 public:
- SLATE_BEGIN_ARGS(SMareEndScreen){} SLATE_ARGUMENT(TWeakObjectPtr<AMareController>,Owner) SLATE_END_ARGS()
+ SLATE_BEGIN_ARGS(SMareEndScreen){} SLATE_ARGUMENT(TWeakObjectPtr<AMareController>,Owner) SLATE_ARGUMENT(bool,Debt) SLATE_END_ARGS()
  void Construct(const FArguments& Args)
  {
   using namespace MareNotebook;Owner=Args._Owner;auto S=Owner.IsValid()?Owner->GetSimulation():nullptr;if(!S){ChildSlot[SNullWidget::NullWidget];return;}
   const auto End=UMareSimulation::Object(S->EventDefs(),TEXT("end_of_content"));
+  if(Args._Debt){
+   // Item 10: the debt is paid (full game only). Dona Dilce's words, the credits and back to the same resort.
+   const auto Fin=UMareSimulation::Object(S->DebtDefs(),TEXT("finale"));
+   auto Buttons=SNew(SHorizontalBox)+SHorizontalBox::Slot().AutoWidth()[SAssignNew(Continue,SMarePadButton).ButtonStyle(&InkButton()).ContentPadding(FMargin(14,4))
+     .OnClicked_Lambda([this](){if(Owner.IsValid())Owner->CloseBusinessGame();return FReply::Handled();})
+     [SNew(STextBlock).Text(MareLoc::Text(UMareSimulation::String(Fin,TEXT("continue")))).Font(Hand(20)).ColorAndOpacity(MareNotebook::Tag)]]
+    +SHorizontalBox::Slot().AutoWidth().Padding(12,0,0,0)[SNew(SMarePadButton).ButtonStyle(&InkButton()).ContentPadding(FMargin(14,4))
+     .OnClicked_Lambda([this](){if(Owner.IsValid()){auto O=Owner;O->CloseBusinessGame();O->OpenCredits();}return FReply::Handled();})
+     [SNew(STextBlock).Text(MareLoc::Text(UMareSimulation::String(Fin,TEXT("credits")))).Font(Hand(20)).ColorAndOpacity(MareNotebook::Tag)]];
+   ChildSlot.HAlign(HAlign_Center).VAlign(VAlign_Center)[SNew(SBorder).BorderImage(FCoreStyle::Get().GetBrush("WhiteBrush")).BorderBackgroundColor(Paper).Padding(FMargin(34,26))
+    [SNew(SBox).WidthOverride(640)[SNew(SVerticalBox)
+     +SVerticalBox::Slot().AutoHeight()[HandText(UMareSimulation::String(Fin,TEXT("title")),34,Brown)]
+     +SVerticalBox::Slot().AutoHeight().Padding(0,10)[BodyText(UMareSimulation::String(Fin,TEXT("text")),14,Ink)]
+     +SVerticalBox::Slot().AutoHeight().Padding(0,6)[HandText(UMareSimulation::String(Fin,TEXT("grandma")),20,Green)]
+     +SVerticalBox::Slot().AutoHeight().HAlign(HAlign_Left).Padding(0,14,0,0)[Buttons]]]];
+   return;}
   const TArray<TSharedPtr<FJsonValue>>* Album=nullptr;UMareSimulation::Object(S->State,TEXT("prog"))->TryGetArrayField(TEXT("album"),Album);
   const int32 Days=int32(UMareSimulation::Number(S->State,TEXT("day"),1));
   const FString Stats=FString::Printf(TEXT("%d %s · R$ %.0f em caixa · fama: %s · %.1f estrelas · %d drinks descobertos · %d fotos no álbum"),
@@ -1780,6 +1836,7 @@ public:
  virtual bool SupportsKeyboardFocus()const override{return true;}
  /** Gamepad B: the previous page (the main page stays). */
  void Back(){switch(Current){case EPage::Main:break;case EPage::Confirm:Show(EPage::New);break;default:Show(EPage::Main);}}
+ void ShowCredits(){Show(EPage::Credits);}
 private:
  enum class EPage:uint8{Main,Load,New,Confirm,Options,Credits};
  EPage Current=EPage::Main;
@@ -1802,7 +1859,8 @@ private:
   auto Box=SNew(SVerticalBox);
   auto Button=[&Box](const FText& Label,TFunction<void()> Callback,bool bEnabled){Box->AddSlot().AutoHeight().Padding(0,5)[SNew(SMarePadButton).IsEnabled(bEnabled).ButtonStyle(&MareUI::ActionButton).ContentPadding(FMargin(14,8)).OnClicked_Lambda([Callback](){Callback();return FReply::Handled();})[MareUI::Text(Label.ToString(),14,FLinearColor::White)]];};
   auto Back=[this,&Button](){Button(LOCTEXT("Back","Voltar"),[this](){Show(EPage::Main);},true);};
-  Box->AddSlot().AutoHeight().Padding(0,0,0,4)[MareUI::Text(TEXT("Maré Alta Resort"),24)];
+  const bool bTitleMode=Controller.IsValid() && Controller->IsTitle();
+  if(!bTitleMode)Box->AddSlot().AutoHeight().Padding(0,0,0,4)[MareUI::Text(TEXT("Maré Alta Resort"),24)];
   switch(Page){
   case EPage::Main:{
    Box->AddSlot().AutoHeight().Padding(0,0,0,12)[MareUI::Text(LOCTEXT("Subtitle","O quiosque da avó Dilce espera por você.").ToString(),12)];
@@ -1845,7 +1903,28 @@ private:
     "Obrigado por jogar!").ToString(),12)]]];
    Back();break;
   }
-  ChildSlot[SNew(SBorder).BorderBackgroundColor(FLinearColor(0,0,0,.55f)).HAlign(HAlign_Center).VAlign(VAlign_Center)[SNew(SBox).WidthOverride(Page==EPage::Options?540:440)[MareNotebook::Page(Box)]]];
+  if(bTitleMode){
+   // Title screen (07/11): the logo and the menu in a column on the left, the living bay behind (AMareTitleCamera).
+   FString Logo=TEXT("Coconut Simulator"),Sub=TEXT("Maré Alta Resort");
+   {FString Text;TSharedPtr<FJsonObject> T;FFileHelper::LoadFileToString(Text,*(FPaths::ProjectContentDir()/TEXT("Data/title.json")));
+    if(FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Text),T) && T.IsValid()){T->TryGetStringField(TEXT("logo"),Logo);T->TryGetStringField(TEXT("subtitle"),Sub);}}
+   auto Shadowed=[](const FString& V,float Size,const FLinearColor& C){return SNew(STextBlock).Text(FText::FromString(V)).Font(MareNotebook::Hand(Size)).ColorAndOpacity(C)
+    .ShadowOffset(FVector2D(2.5f,2.5f)).ShadowColorAndOpacity(FLinearColor(0,0,0,.55f));};
+   auto Head=SNew(SVerticalBox)
+    +SVerticalBox::Slot().AutoHeight()[Shadowed(Logo,78,MareNotebook::Hex(255,246,214))]
+    +SVerticalBox::Slot().AutoHeight().Padding(6,-10,0,0)[SNew(SHorizontalBox)
+     +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center)[Shadowed(Sub,30,MareNotebook::Hex(255,214,150))]
+     +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(18,0,0,0)[S->IsDemo()?MareNotebook::Stamp(TEXT("DEMO"),MareNotebook::Hex(255,236,150)):SNullWidget::NullWidget]];
+   // a soft dark wash fading to the right (strips of falling opacity), so the column reads over the bright scene
+   auto Wash=SNew(SHorizontalBox);
+   for(int32 K=0;K<12;++K)Wash->AddSlot().AutoWidth()[SNew(SBox).WidthOverride(70)[SNew(SBorder).BorderImage(FCoreStyle::Get().GetBrush("WhiteBrush")).BorderBackgroundColor(FLinearColor(0,0,0,.34f*(1.f-K/12.f)))]];
+   ChildSlot[SNew(SOverlay)
+    +SOverlay::Slot().HAlign(HAlign_Left)[Wash]
+    +SOverlay::Slot().HAlign(HAlign_Left).VAlign(VAlign_Top).Padding(70,60,0,0)[Head]
+    +SOverlay::Slot().HAlign(HAlign_Left).VAlign(VAlign_Center).Padding(80,170,0,0)[SNew(SBox).WidthOverride(Page==EPage::Options?560:400)[MareNotebook::Page(Box)]]
+    +SOverlay::Slot().HAlign(HAlign_Right).VAlign(VAlign_Bottom).Padding(0,0,28,18)[Shadowed(LOCTEXT("TitleFoot","Demo · versão de teste").ToString(),18,FLinearColor(1,1,1,.8f))]];
+  }
+  else ChildSlot[SNew(SBorder).BorderBackgroundColor(FLinearColor(0,0,0,.55f)).HAlign(HAlign_Center).VAlign(VAlign_Center)[SNew(SBox).WidthOverride(Page==EPage::Options?540:440)[MareNotebook::Page(Box)]]];
   MareGamepad::FocusSoon(AsShared(),0);
  }
 };
@@ -2047,11 +2126,12 @@ void AMareController::TakePhoto()
  if(auto Trail=GetWorld()->GetSubsystem<UMareTrailWorld>())Trail->OnPhoto();
  S->RecordPhoto(Subjects,File);UMareAudioWorld::Action(this,TEXT("reception_checkin"),nullptr,.7f);S->ShowTip(TEXT("photo"));
 }
-void AMareController::ShowEndOfContent()
+void AMareController::ShowEndOfContent(bool bDebt)
 {
  auto S=GetSimulation();if(!S || !GEngine || !GEngine->GameViewport || GameWidget.IsValid() || bPhoneOpen || IsMainMenuOpen())return;
- S->MarkEndOfContentShown();SetPause(true);
- const TSharedRef<SMareEndScreen> Screen=SNew(SMareEndScreen).Owner(this);GameWidget=Screen;
+ if(bDebt){if(!S->AckDebt())return;}else S->MarkEndOfContentShown();
+ SetPause(true);
+ const TSharedRef<SMareEndScreen> Screen=SNew(SMareEndScreen).Owner(this).Debt(bDebt);GameWidget=Screen;
  GEngine->GameViewport->AddViewportWidgetContent(Screen,45);bShowMouseCursor=true;
  SetInputMode(FInputModeUIOnly().SetWidgetToFocus(Screen));SetIgnoreMoveInput(true);SetIgnoreLookInput(true);
  UMareAudioWorld::Action(this,TEXT("deal_accept"));
@@ -2060,16 +2140,34 @@ void AMareController::OpenMainMenu()
 {
  auto S=GetSimulation();if(!GEngine || !GEngine->GameViewport || !S || MainMenuWidget.IsValid())return;
  WorldSlot=S->ActiveSlot;bWorldFromFile=S->SlotInfo(WorldSlot).bExists;
- SetPause(true);MareGamepad::Startup();
+ MareGamepad::Startup();
+ // 07/11 (Sergio: "precisa ter uma tela inicial", "o menu inicial já é a tela do jogo"): at start-up (and back from the
+ // pause menu) the menu is a title screen over a living bay at golden hour, seen by AMareTitleCamera; the clock and the
+ // save stand still (AMareGameMode::Tick). In-game openings (credits after the debt finale) keep the pause.
+ bTitle=!S->bMainMenuDone;
+ if(bTitle){S->bTitleOpen=true;S->bHoldSaves=true;TitleSavedMinutes=UMareSimulation::Number(S->State,TEXT("minutes"));
+  S->State->SetNumberField(TEXT("minutes"),AMareTitleCamera::TitleMinutes());
+  FActorSpawnParameters P;P.SpawnCollisionHandlingOverride=ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+  TitleCamera=GetWorld()->SpawnActor<AMareTitleCamera>(P);if(TitleCamera)SetViewTarget(TitleCamera);}
+ else SetPause(true);
  {const TSharedRef<SMareMainMenu> Menu=SNew(SMareMainMenu).Controller(this);MainMenuWidget=Menu;const TWeakPtr<SMareMainMenu> Weak=Menu;
   MareGamepad::PushMenu(Menu,[Weak](){if(const auto Pinned=Weak.Pin())Pinned->Back();});}
  GEngine->GameViewport->AddViewportWidgetContent(MainMenuWidget.ToSharedRef(),50);bShowMouseCursor=true;
  SetInputMode(FInputModeUIOnly().SetWidgetToFocus(MainMenuWidget));SetIgnoreMoveInput(true);SetIgnoreLookInput(true);
 }
+void AMareController::OpenCredits()
+{
+ OpenMainMenu();if(MainMenuWidget.IsValid())StaticCastSharedPtr<SMareMainMenu>(MainMenuWidget)->ShowCredits();
+}
 void AMareController::CloseMainMenu()
 {
  if(MainMenuWidget.IsValid() && GEngine && GEngine->GameViewport)GEngine->GameViewport->RemoveViewportWidgetContent(MainMenuWidget.ToSharedRef());
  MainMenuWidget.Reset();
+ if(bTitle){bTitle=false;
+  if(auto S=GetSimulation()){S->bTitleOpen=false;S->bHoldSaves=false;if(TitleSavedMinutes>=0)S->State->SetNumberField(TEXT("minutes"),TitleSavedMinutes);}
+  TitleSavedMinutes=-1;
+  if(IsValid(TitleCamera)){TitleCamera->Destroy();}TitleCamera=nullptr;
+  if(GetPawn())SetViewTarget(GetPawn());}
 }
 void AMareController::ReloadWorld()
 {
@@ -2506,10 +2604,13 @@ void AMareController::OpenPhone(int32 Tab)
  {const TWeakObjectPtr<AMareController> Weak(this);MareGamepad::PushMenu(PhoneWidget.ToSharedRef(),[Weak](){if(Weak.IsValid())Weak->ClosePhone();});}
  bShowMouseCursor=true;SetInputMode(FInputModeGameAndUI().SetWidgetToFocus(PhoneWidget).SetHideCursorDuringCapture(false));SetIgnoreMoveInput(true);SetIgnoreLookInput(true);
 }
+/** A station panel (fridge, cupboard, kitchen) is open: the phone frame, but the order tickets stay on screen. */
+static bool GMareStationOpen=false;
 void AMareController::OpenStation(FName Station)
 {
  if(!GEngine || !GEngine->GameViewport)return;
  if(bPhoneOpen)ClosePhone();bPhoneOpen=true;
+ GMareStationOpen=true;
  SAssignNew(PhoneWidget,SMarePhone).Owner(this).Tab(0).Station(Station);GEngine->GameViewport->AddViewportWidgetContent(PhoneWidget.ToSharedRef(),20);
  {const TWeakObjectPtr<AMareController> Weak(this);MareGamepad::PushMenu(PhoneWidget.ToSharedRef(),[Weak](){if(Weak.IsValid())Weak->ClosePhone();});}
  bShowMouseCursor=true;SetInputMode(FInputModeGameAndUI().SetWidgetToFocus(PhoneWidget).SetHideCursorDuringCapture(false));SetIgnoreMoveInput(true);SetIgnoreLookInput(true);
@@ -2520,7 +2621,7 @@ void AMareController::ClosePhone()
  if(PhoneWidget.IsValid() && GEngine && GEngine->GameViewport)GEngine->GameViewport->RemoveViewportWidgetContent(PhoneWidget.ToSharedRef());
  // A furniture preview ends with the phone: show what is really in use again.
  if(auto Custom=GetWorld()->GetSubsystem<UMareCustomWorld>())if(Custom->IsPreviewing())Custom->ApplyAll();
- PhoneWidget.Reset();bPhoneOpen=false;bShowMouseCursor=false;SetInputMode(FInputModeGameOnly());ResetIgnoreMoveInput();ResetIgnoreLookInput();
+ PhoneWidget.Reset();bPhoneOpen=false;GMareStationOpen=false;bShowMouseCursor=false;SetInputMode(FInputModeGameOnly());ResetIgnoreMoveInput();ResetIgnoreLookInput();
 }
 void AMareController::EndPlay(const EEndPlayReason::Type Reason){CloseMainMenu();if(PauseWidget.IsValid() && GEngine && GEngine->GameViewport)GEngine->GameViewport->RemoveViewportWidgetContent(PauseWidget.ToSharedRef());PauseWidget.Reset();ClosePhone();Super::EndPlay(Reason);}
 /** Everything the tropical HUD shows; Signature() decides when Slate must rebuild. */
@@ -2759,6 +2860,12 @@ void AMareHUD::DrawHUD()
    for(int32 Row=0;Row<2;Row++){bool bFree=true;for(const FVector2D& U:Used[Row])if(FMath::Abs(U.X-X)<U.Y+HalfWidth){bFree=false;break;}
     if(bFree){Used[Row].Add(FVector2D(X,HalfWidth));M.Compass.Add({Name,X+1000*Row});break;}}}
  }
+ // Item 10, Dona Dilce's debt: her letter once the company exists, then each milestone (25/50/75 %) once, after the phone
+ // closes and no other tip is on screen; the full-game finale uses the end screen.
+ if(!M.bPhone && S->PendingTipTitle.IsEmpty() && Now>=TipUntil){
+  if(!S->ShowDebtIntro()){const TArray<FString> Crossed=S->DebtPendingMilestones();
+   if(Crossed.Num()){FString Text;const FString Title=S->DebtMilestoneTitle(Crossed.Last(),&Text);S->PendingTipTitle=Title;S->PendingTipText=Text;S->AckDebt();}}}
+ if(!M.bPhone && S->IsDebtFinalePending())if(auto DebtPC=Cast<AMareController>(GetOwningPlayerController()))DebtPC->ShowEndOfContent(true);
  // First-time tips (tutorial.json): taken from the simulation and kept on screen for a while.
  if(!S->PendingTipTitle.IsEmpty()){TipTitle=S->PendingTipTitle;TipText=S->PendingTipText;S->PendingTipTitle.Reset();TipUntil=Now+14;}
  if(Now<TipUntil && !M.bPhone){M.TipTitle=TipTitle;M.TipText=TipText;}
@@ -2770,7 +2877,12 @@ void AMareHUD::DrawHUD()
   if(IntroStage==1)M.Note.Add({TEXT("Entre na casa e leia a carta da avó Dilce"),3});
   bool bCreated=false;UMareSimulation::Object(S->State,TEXT("company"))->TryGetBoolField(TEXT("created"),bCreated);
   if(!bCreated && IntroStage>=2)M.Note.Add({TEXT("Comece aqui: ")+M.PhoneKey+TEXT(" · Celular → Quiosque → Criar empresa"),3});
-  else if(bCreated && !S->IsOpen())M.Note.Add({bPad?FText::Format(LOCTEXT("OpenSignPad","Mire na placa FECHADO do balcão e aperte {0} para abrir"),MareLoc::Text(M.InteractKey)).ToString():FString(TEXT("Clique na placa FECHADO do balcão para abrir")),3});
+  else if(bCreated && !S->IsOpen()){
+   // 07/11 (Sergio: "tutorial precisa dizer como e onde abrir o quiosque"): where it is, which sign and which key; once
+   // the opening is booked before 8h, say when it opens instead of asking again (pressing again would cancel it).
+   bool bRequested=false;UMareSimulation::Object(S->State,TEXT("company"))->TryGetBoolField(TEXT("kiosk_open"),bRequested);
+   if(bRequested)M.Note.Add({FString::Printf(TEXT("Abertura marcada: o quiosque abre às %.0fh"),UMareSimulation::Number(UMareSimulation::Object(UMareSimulation::Object(S->State,TEXT("company")),TEXT("sim")),TEXT("start"),8)),3});
+   else M.Note.Add({FString::Printf(TEXT("Abra o quiosque: vá até a praia (siga \"Quiosque\" na bússola) e aperte %s na placa vermelha FECHADO do balcão"),*M.InteractKey),3});}
   const auto Campaign=UMareSimulation::Object(UMareSimulation::Object(S->State,TEXT("prog")),TEXT("campaign"));
   const TArray<TSharedPtr<FJsonValue>>* Missions=nullptr;const int32 Stage=UMareSimulation::Number(Campaign,TEXT("stage"));
   if(S->IsCampaignAtFullGame())M.Note.Add({TEXT("Uma nova maré · a história continua no jogo completo"),2});   // Demo (06/11)
@@ -2832,7 +2944,8 @@ void AMareHUD::DrawHUD()
  if(auto Rental=GetWorld()->GetSubsystem<UMareRentalWorld>())if(Rental->IsActive())M.Hint=Rental->Status();
  if(auto Trail=GetWorld()->GetSubsystem<UMareTrailWorld>())if(Trail->IsActive())M.Hint=Trail->Status();
  // The mission note would sit on top of the held phone.
- if(M.bPhone){M.Note.Empty();M.Tickets.Empty();}
+ // 07/11 (Sergio: "o pedido some da tela"): at a station the tickets stay (top centre, clear of the panel on the left).
+ if(M.bPhone){M.Note.Empty();if(!GMareStationOpen)M.Tickets.Empty();}
  // Table tennis match: the score line instead of the crosshair and the mission note.
  if(auto TT=GetWorld()->GetSubsystem<UMareTableTennis>())if(TT->IsPlaying()){M.Note.Empty();M.Tickets.Empty();M.Hint=TT->Status();Overlay->Refresh(M);return;}
  // Arcade game: the controls instead of the crosshair and the mission note.
@@ -2863,7 +2976,20 @@ void AMareHUD::DrawHUD()
  Overlay->Refresh(M);
 }
 AMareGameMode::AMareGameMode(){PrimaryActorTick.bCanEverTick=true;DefaultPawnClass=AMareCharacter::StaticClass();PlayerControllerClass=AMareController::StaticClass();HUDClass=AMareHUD::StaticClass();}
-void AMareGameMode::StartSession(){GetWorld()->SpawnActor<AMareIntro>();}
+void AMareGameMode::StartSession()
+{
+ // 07/11 (Sergio: "apresentação inicial do jogo"): a new game opens with the story postcards (MareTitle.cpp), then the
+ // bus arrival. Loaded games and QA runs go straight on.
+ auto Sim=GetGameInstance()->GetSubsystem<UMareSimulation>();auto PC=Cast<AMareController>(GetWorld()->GetFirstPlayerController());
+ const TCHAR* Cmd=FCommandLine::Get();
+ // QA profiles (-MareSaveRoot under D:/CodexTemp, the gate checks the bus driver right away) skip it; mare.Story shows it.
+ const bool bQA=GIsAutomationTesting || FParse::Param(Cmd,TEXT("MarePreviewQA")) || FParse::Param(Cmd,TEXT("MareIntroQA")) || FParse::Param(Cmd,TEXT("MareGraphicsQA")) || FParse::Param(Cmd,TEXT("MareBench")) || FParse::Param(Cmd,TEXT("MareSkipMenu"))
+  || FString(Cmd).Contains(TEXT("MareSaveRoot=D:/CodexTemp/"));
+ if(!bQA && Sim && PC && UMareSimulation::Number(Sim->State,TEXT("ue_intro_stage"),2)==0){
+  const TWeakObjectPtr<AMareGameMode> Weak(this);
+  if(MareStory::Show(PC,[Weak](){if(Weak.IsValid() && Weak->GetWorld())Weak->GetWorld()->SpawnActor<AMareIntro>();}))return;}
+ GetWorld()->SpawnActor<AMareIntro>();
+}
 void AMareGameMode::BeginPlay()
 {
  Super::BeginPlay();auto Sim=GetGameInstance()->GetSubsystem<UMareSimulation>();if(Sim)Sim->bHoldSaves=false;
@@ -2878,6 +3004,7 @@ void AMareGameMode::BeginPlay()
 void AMareGameMode::Tick(float DeltaSeconds)
 {
  Super::Tick(DeltaSeconds);auto Sim=GetGameInstance()->GetSubsystem<UMareSimulation>();if(!Sim)return;
+ if(Sim->bTitleOpen)return;   // title screen: the clock and the autosave wait (MareTitle.cpp)
  Sim->AdvanceMinutes(DeltaSeconds*1.0);SaveClock+=DeltaSeconds;if(SaveClock>=30){Sim->Save();SaveClock=0;}   // 1 game minute per real second: a day 08-24h lasts 16 min (balance_model.py, 04/11); autosave every 30 s (the comment used to swallow it, GPT report 06/11)
 }
 

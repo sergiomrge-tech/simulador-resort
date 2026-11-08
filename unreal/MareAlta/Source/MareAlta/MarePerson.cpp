@@ -173,9 +173,9 @@ void AMarePerson::UpdateLying(float DeltaSeconds)
  // first 0.17 s of the Cheer capture stands square with the hands on the chest: played slowly back and forth it is a
  // person resting on the back with the hands on the belly, breathing. Without the mocap clips, the idle.
  if(!Clips.Contains(TEXT("Cheer")))PlayPose(TEXT("Idle"));
- else{PlayPose(TEXT("Cheer"),false);
+ else{PlayPose(TEXT("Cheer"),false);   // hands on the chest at the start; the arm IK lays them on the belly
   if(auto Instance=Cast<UMareServiceAnimInstance>(GetMesh()->GetAnimInstance())){Instance->SetPlaying(false);
-   Instance->SetPosition(.085f+.085f*FMath::Sin(Elapsed*.9f+FCrc::StrCrc32(*SaveId)%7),false);}}
+   Instance->SetPosition(.03f+.025f*FMath::Sin(Elapsed*.9f+FCrc::StrCrc32(*SaveId)%7),false);}}
  if(LieAlignIn>0 && (LieAlignIn-=DeltaSeconds)<=0 && GetMesh()->GetBoneIndex(TEXT("head"))!=INDEX_NONE){
   // Centre the body (head to mid-feet) on the towel and rest the pelvis 11 cm above it (the back of the hips on the cloth).
   const FVector Mid=(GetMesh()->GetSocketLocation(TEXT("foot_l"))+GetMesh()->GetSocketLocation(TEXT("foot_r")))/2;
@@ -321,7 +321,9 @@ bool AMarePerson::SetMetaHuman(const FString& Name)
  // turns them off); missing ones fall back to the base clips.
  TArray<FString> Wanted={TEXT("Idle"),TEXT("Idle_Talking"),TEXT("Walk"),TEXT("Sitting_Idle"),TEXT("Interact"),TEXT("Swim_Idle"),
   // Pool swimmers (UMarePoolSwimWorld): UAL swim stroke and jump (mare_metahuman.import_ual).
-  TEXT("Swim_Fwd"),TEXT("Jump_Start"),TEXT("Jump")};
+  TEXT("Swim_Fwd"),TEXT("Jump_Start"),TEXT("Jump"),
+  // 07/11 (reference game: lively people): taking from a counter and driving (mare_metahuman.import_ual).
+  TEXT("PickUp_Table"),TEXT("Driving")};
  if(CVarMareMocap.GetValueOnGameThread())Wanted.Append({TEXT("SitTalk"),TEXT("DanceHip"),TEXT("Cheer")});
  for(const FString& Clip:Wanted)
   if(auto Anim=LoadObject<UAnimSequence>(nullptr,*FString::Printf(TEXT("/Game/People/Animations/MH_%s.MH_%s"),*Clip,*Clip)))Clips.Add(Clip,Anim);
@@ -425,6 +427,11 @@ void AMarePerson::PlayPose(const FString& Name,bool bLoop)
  const bool bVaried=!bEmployee && !GetAttachParentActor() && FCrc::StrCrc32(*(SaveId+PersonName))%2;
  if(bVaried && Name==TEXT("Sitting_Idle") && Clips.Contains(TEXT("SitTalk")))Clip=TEXT("SitTalk");
  if(auto Instance=Cast<UMareServiceAnimInstance>(GetMesh()->GetAnimInstance())){Instance->SetAnimationAsset(Clips[Clip],bLoop);Instance->SetPlaying(true);}
+}
+void AMarePerson::PlayGesture(const FString& Name,float Seconds)
+{
+ if(!Clips.Contains(Name))return;
+ Playing.Empty();PlayPose(Name,false);GestureLeft=Seconds;
 }
 bool AMarePerson::WalkTo(const FVector& Goal)
 {
@@ -625,6 +632,7 @@ void AMarePerson::Tick(float DeltaSeconds)
   // The root 32 cm under the surface: the water reaches the shoulders, the head (bone ~12 cm up) stays out.
   SetActorLocationAndRotation(SwimAt+FVector(0,0,88-32+Wave),FRotator(0,GetActorRotation().Yaw+FMath::Sin(Elapsed*.35f+SwimAt.X*.01f)*6.f*DeltaSeconds,0));}
  else if(bLying)UpdateLying(DeltaSeconds);
+ else if(GestureLeft>0)GestureLeft-=DeltaSeconds;   // a one-shot gesture is playing (PlayGesture)
  else if(!HoldPose.IsEmpty())PlayPose(HoldPose);
  else if(GetVelocity().SizeSquared2D()>25)PlayPose(TEXT("Walk"));else if(!WorkPose.IsEmpty())PlayPose(WorkPose==TEXT("Skim") || WorkPose==TEXT("Sweep")?TEXT("Idle"):WorkPose);else if(bAmbient)PlayPose(bSeated?TEXT("Sitting_Idle"):bConversing?TEXT("Idle_Talking"):TEXT("Idle"));else if(Stage!=EMarePersonStage::Eating)PlayPose(TEXT("Idle"));
  UpdateTool(DeltaSeconds);

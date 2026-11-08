@@ -29,6 +29,10 @@ public:
  /** Roster role (staff, hotel, pousada, village, beach) picking clothes colours and footwear. */
  FString MetaRole;
  UFUNCTION(BlueprintCallable,Category="Presentation") void PlayPose(const FString& Name,bool bLoop=true);
+ /** A short one-shot gesture (07/11, reference game: people that visibly take and hand things): the clip plays once for
+  *  Seconds while the automatic pose choice waits; ignored when the clip is not loaded. */
+ void PlayGesture(const FString& Name,float Seconds);
+ float GestureLeft=0;
  UFUNCTION(BlueprintCallable,Category="Presentation") bool WalkTo(const FVector& Goal);
  bool AtGoal()const;
  UFUNCTION(BlueprintCallable,Category="Presentation") void HoldProduct(const FString& Dish);

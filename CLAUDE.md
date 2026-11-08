@@ -741,3 +741,16 @@ O tobogã da UE é o modelo próprio `mare_water_slide` (`tools/ue58/gen_water_s
 saída de 4,5 m, materiais com prefixo, textura do Poly Haven da biblioteca), girado 18,66° em volta da torre para a saída
 terminar ~2 m dentro da piscina; girar sozinho não bastava (a ponta já estava no ponto mais distante da torre e a hélice
 encosta na borda). `pool_swim.json` → `slide` (`yaw`, `run`) tem de acompanhar o nível. Conferir a saída com foto DE CIMA.
+
+## UE5.8 — noite de 07/11 (demo jogada pelo Sergio)
+
+Antes de gravar um arquivo novo, confira se o nome já existe (de novo: `mare_mountains.py` era a vegetação dos morros e
+foi sobrescrito; restaurado do git, a serra do horizonte virou `mare_serra.py`). `LiveCoding.Compile` pelo console do
+editor travou o editor e o MCP (o console do Live Coding ficou esperando): feche o editor e use `restart_editor.ps1 -Build`.
+Reimportar um modelo no MESMO asset (`mare_custom inplace`) não cria materiais para slots novos: eles caem no
+WorldGridMaterial cinza; duplique um material existente por cor e ligue os slots (`mare_slide_colors.py`). Calha ou
+qualquer superfície aberta de face única some vista por trás e vira "caixa fechada": dê espessura (Solidify) no bpy.
+Plantas de jardim (pervinca) não vão na areia da praia; capim marinho em água rasa (< 2,5 m) faz o mar parecer gramado
+com o sol baixo. Sem `r.Streaming.PoolSize` por nível de textura o executável avisava "Video memory has been exhausted"
+numa placa de 8 GB (`Config/DefaultScalability.ini`). Cliente saindo do quiosque: o ponto de saída único caía fora da
+navegação e ele ficava parado na pose de andar até sumir na frente do jogador (`UMareKioskWorld::WalkAway`).

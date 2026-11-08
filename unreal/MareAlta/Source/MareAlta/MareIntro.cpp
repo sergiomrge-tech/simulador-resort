@@ -81,7 +81,7 @@ bool AMareIntro::LoadBus()
   // 06/11 (CHECKLIST 0, photo of the seated driver): with no role he took the beach roster and drove the bus in a bikini.
   // A seated villager (village roster, casual clothes); seated keeps the events from making him dance.
   BusDriver->PersonName=TEXT("Motorista");BusDriver->bAmbient=true;BusDriver->bSeated=true;
-  BusDriver->Stage=EMarePersonStage::Eating;BusDriver->bConsumed=true;BusDriver->HoldPose=TEXT("Sitting_Idle");BusDriver->PlayPose(TEXT("Sitting_Idle"));BusDriver->AttachToActor(Bus,FAttachmentTransformRules::KeepWorldTransform);}
+  BusDriver->Stage=EMarePersonStage::Eating;BusDriver->bConsumed=true;BusDriver->HoldPose=BusDriver->Clips.Contains(TEXT("Driving"))?TEXT("Driving"):TEXT("Sitting_Idle");BusDriver->PlayPose(BusDriver->HoldPose);/* hands on the wheel (UAL Driving) */BusDriver->AttachToActor(Bus,FAttachmentTransformRules::KeepWorldTransform);}
  return ExitSteps.Num()>=5;
 }
 FVector AMareIntro::BusPoint(const FVector& Local)const{return Bus?Bus->GetActorTransform().TransformPosition(Local):StopPosition+FRotator(0,180,0).RotateVector(Local);}

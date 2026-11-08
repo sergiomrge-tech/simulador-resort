@@ -29,6 +29,10 @@ private:
  UPROPERTY() TObjectPtr<AMarePerson> Barman;
  UPROPERTY() TMap<FString,TObjectPtr<AMarePerson>> Guests;
  TMap<FString,int32> Stools;
+ /** Served guests who stay on their stool with the drink (key "d:<order>" in Guests/Stools) until this time. */
+ TMap<FString,double> DrinkUntil;
+ /** The bartender's hand-over gesture ends at this time. */
+ double BarmanGestureUntil=0;
  /** Guests seated before their stool had collision (right after buying the bar): placed again once the trace finds it. */
  TSet<FString> Untraced;
  bool StoolTop(int32 Stool,FVector& Top,float& Yaw,AActor* Ignore)const;

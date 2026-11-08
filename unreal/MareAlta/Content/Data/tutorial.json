@@ -3,7 +3,8 @@
  "seconds": 14,
  "tips": {
   "phone": {"title": "Celular", "text": "Estoque, equipe, receitas e finanças no celular. Veja as metas em Missões."},
-  "KioskSign": {"title": "Abrir o quiosque", "text": "A placa abre e fecha o quiosque. Dormir o deixa fechado."},
+  "payment": {"title": "Cobrar o cliente", "text": "Em dinheiro, monte o troco clicando nas notas e moedas e confirme; no cartão, digite o total na maquininha. Troco certo rende gorjeta e estrelas. Esc deixa o cliente pagar sozinho, sem gorjeta."},
+  "KioskSign": {"title": "Abrir o quiosque", "text": "Esta placa vermelha abre e fecha o atendimento, das 8h às 18h (até 21h com o letreiro neon). Antes das 8h, a abertura fica marcada. Dormir fecha o quiosque."},
   "Customer": {"title": "Atender no balcão", "text": "Anote com E, pegue pronto e entregue. O cliente paga na entrega."},
   "Fridge": {"title": "Geladeira", "text": "Pegue o produto pronto. Reponha aqui ou pelo celular."},
   "Cupboard": {"title": "Armário de porções", "text": "Pegue a porção pronta. Reponha aqui ou pelo celular."},

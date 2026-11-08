@@ -235,14 +235,25 @@ void UMareBarWorld::Tick(float DeltaSeconds)
  for(auto It=Untraced.CreateIterator();It;++It){AMarePerson* Person=Guests.FindRef(*It);const int32 Stool=StoolOf(*It);FVector Top;float Yaw=0;
   if(!IsValid(Person) || Stool==INDEX_NONE){It.RemoveCurrent();continue;}
   if(StoolTop(Stool,Top,Yaw,Person)){Person->SitOn(Top,Yaw);It.RemoveCurrent();}}
+ if(IsValid(Barman) && BarmanGestureUntil>0 && Now>BarmanGestureUntil){BarmanGestureUntil=0;Barman->PlayPose(TEXT("Idle"));}
+ struct FDrinker{FString Key;AMarePerson* Person;int32 Stool;};TArray<FDrinker> Drinkers;
  for(auto It=Guests.CreateIterator();It;++It){if(Open.Contains(It->Key))continue;AMarePerson* Person=It->Value;
   if(IsValid(Person)){
-   if(bJustServed){const FString Last=UMareSimulation::String(UMareSimulation::Object(S->State,TEXT("bar")),TEXT("last"));
-    Person->HoldProduct(UMareSimulation::String(S->BarRecipe(Last),TEXT("mesh")));}
+   if(bJustServed && !It->Key.StartsWith(TEXT("d:"))){const FString Last=UMareSimulation::String(UMareSimulation::Object(S->State,TEXT("bar")),TEXT("last"));
+    Person->HoldProduct(UMareSimulation::String(S->BarRecipe(Last),TEXT("mesh")));
+    // 07/11 (reference game: "bar assim"): the guest stays on the stool with the drink, sipping, then leaves; the
+    // bartender turns to them and hands it over.
+    const FString Key=TEXT("d:")+It->Key;const int32 Stool=Stools.FindRef(It->Key);
+    Drinkers.Add({Key,Person,Stool});DrinkUntil.Add(Key,Now+FMath::FRandRange(25.f,40.f));
+    if(IsValid(Barman)){const FVector To=Person->GetActorLocation()-Barman->GetActorLocation();Barman->SetActorRotation(FRotator(0,To.Rotation().Yaw,0));
+     Barman->PlayPose(TEXT("Interact"),false);BarmanGestureUntil=Now+1.6;}
+    Stools.Remove(It->Key);It.RemoveCurrent();continue;}
+   if(It->Key.StartsWith(TEXT("d:"))){if(Now<DrinkUntil.FindRef(It->Key))continue;DrinkUntil.Remove(It->Key);}
    Person->bSeated=false;Person->SetActorEnableCollision(true);Person->GetCharacterMovement()->SetMovementMode(MOVE_Walking);
    const FVector Away=Person->GetActorLocation()+Person->GetActorForwardVector()*-900+FVector(0,-600,0);
    Leaving.Add(Person,Now+(Person->WalkTo(Away)?25.:4.));}
   Stools.Remove(It->Key);It.RemoveCurrent();}
+ for(const FDrinker& D:Drinkers){Guests.Add(D.Key,D.Person);Stools.Add(D.Key,D.Stool);}   // after the loop: no map edits while iterating
  const TArray<TSharedPtr<FJsonValue>>* Seats=nullptr;const int32 Count=Defs->TryGetArrayField(TEXT("stools"),Seats)?Seats->Num():0;
  for(const auto& V:Orders?*Orders:TArray<TSharedPtr<FJsonValue>>()){const auto O=V->AsObject();const FString Id=UMareSimulation::String(O,TEXT("id"));
   if(Guests.Contains(Id))continue;

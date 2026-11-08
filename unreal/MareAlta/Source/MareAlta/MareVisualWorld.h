@@ -39,7 +39,7 @@ private:
  UPROPERTY() TObjectPtr<class UMaterialParameterCollection> TimeCollection;
  UPROPERTY() TObjectPtr<class ASkyLight> Sky;
  /** Night lamps: one shadowless point light per street-lamp globe, bulb, lantern and pool light. */
- struct FLamp{TWeakObjectPtr<class UPointLightComponent> Light;TWeakObjectPtr<AActor> Source;float Candela=0;FString Unlock;};
+ struct FLamp{TWeakObjectPtr<class UPointLightComponent> Light;TWeakObjectPtr<AActor> Source;float Candela=0;FString Unlock;bool bWork=false;};
  UPROPERTY() TArray<TObjectPtr<class APointLight>> BareLights;
  TArray<FLamp> Lamps;bool bLampsLogged=false;
  UPROPERTY() TObjectPtr<AActor> LampHolder;

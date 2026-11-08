@@ -1,4 +1,6 @@
 #include "MareKioskWorld.h"
+#include "Kismet/GameplayStatics.h"
+#include "Camera/PlayerCameraManager.h"
 #include "MarePerson.h"
 #include "MareServiceTarget.h"
 #include "MareSimulation.h"
@@ -39,11 +41,14 @@ void UMareKioskWorld::SpawnCustomer()
  const FVector Start=CounterPoints[Counter]+FVector(FMath::RandBool()?650:-650,-180,0);
  auto Person=GetWorld()->SpawnActor<AMarePerson>(Start,FRotator::ZeroRotator);if(!Person)return;
  Person->Variant=FMath::RandRange(0,3);if(!Person->SetAppearance(Person->Variant)){Person->Destroy();return;}
- const TArray<FString> Names=Person->Variant==2?TArray<FString>{TEXT("Charbele"),TEXT("Yasmin"),TEXT("Ayla"),TEXT("Luiza"),TEXT("Ana Clara"),TEXT("Jéssica"),TEXT("Thaís"),TEXT("Dona Neide"),TEXT("Kelly"),TEXT("Raíssa"),TEXT("Fernanda"),TEXT("Tia Socorro")}
+ // 07/11 (Sergio: a man called "Luiza"): the MetaHuman picked for the look decides, not the old Godot variant number.
+ const TArray<FString> Names=Person->IsWoman()?TArray<FString>{TEXT("Charbele"),TEXT("Yasmin"),TEXT("Ayla"),TEXT("Luiza"),TEXT("Ana Clara"),TEXT("Jéssica"),TEXT("Thaís"),TEXT("Dona Neide"),TEXT("Kelly"),TEXT("Raíssa"),TEXT("Fernanda"),TEXT("Tia Socorro")}
   :TArray<FString>{TEXT("João"),TEXT("Pedro"),TEXT("Rafael"),TEXT("Bruno"),TEXT("Thiago"),TEXT("Wesley"),TEXT("Seu Raimundo"),TEXT("Juninho"),TEXT("Cleber"),TEXT("Marcão"),TEXT("Davi"),TEXT("Tio Zeca")};   // Brazilian names only (Sergio, 04/11)
  Person->PersonName=Names[FMath::RandRange(0,Names.Num()-1)];Person->CounterIndex=Counter;Person->TableIndex=Table;
+ // No path to the counter from this side (07/11, stuck customers): never leave someone frozen in the walk pose.
+ if(!Person->WalkTo(CounterPoints[Counter])){Person->Destroy();return;}
  if(Table!=INDEX_NONE)ReservedTables.Add(Table);
- Guests.Add(Person);Person->WalkTo(CounterPoints[Counter]);
+ Guests.Add(Person);
  CreateInteraction(Person);
 }
 void UMareKioskWorld::CreateInteraction(AMarePerson* Person)
@@ -69,7 +74,12 @@ bool UMareKioskWorld::Serve(AMarePerson* Person,bool bStaff)
  const FString Dish=S->Carry(bStaff);if(Dish.IsEmpty())return false;
  if(!S->Deliver(Person->OrderId,Dish,bStaff))return false;
  Person->Delivered.Add(Dish);Person->HoldProduct(Dish);Person->Elapsed=0;Person->Express(TEXT("smile"),4.f);   // served: a smile
- if(!UMareSimulation::Object(S->State,TEXT("ue_orders"))->HasField(Person->OrderId))FinishCounter(Person);
+ Person->PlayGesture(TEXT("PickUp_Table"),1.1f);   // takes it from the counter (UAL clip, MarePerson::PlayGesture)
+ if(!UMareSimulation::Object(S->State,TEXT("ue_orders"))->HasField(Person->OrderId)){
+  FinishCounter(Person);
+  // 07/11 (reference game: "sistema de pagamento assim"): the player who served the whole order takes the payment.
+  if(!bStaff){double Total=0;for(const FString& Id:Person->Delivered)Total+=S->SalePrice(Id);
+   if(auto PC=Cast<AMareController>(UGameplayStatics::GetPlayerController(GetWorld(),0)))PC->OpenPayment(Person->PersonName,Total);}}
  return true;
 }
 void UMareKioskWorld::FinishCounter(AMarePerson* Person)
@@ -95,7 +105,26 @@ void UMareKioskWorld::Leave(AMarePerson* Person)
     Person->SetActorLocation(Standing.Location+FVector(0,0,Person->GetCapsuleComponent()->GetScaledCapsuleHalfHeight()));
  }
  Person->CounterIndex=-1;Person->Stage=EMarePersonStage::Leaving;Person->Elapsed=0;
- Person->WalkTo(Person->GetActorLocation()+FVector(850,-60,0));
+ WalkAway(Person);
+}
+/** 07/11 (Sergio: "clientes travados"): the exit used to be one fixed point 8.5 m east; when it fell off the navmesh
+ *  (the deck, the water) WalkTo failed silently and the guest stood in the walk pose until vanishing in sight. Try the
+ *  beach both ways and inland; with no path at all, stand idle (removed once out of the player's view). */
+bool UMareKioskWorld::WalkAway(AMarePerson* Person)
+{
+ const FVector At=Person->GetActorLocation();
+ const FVector Tries[]={FVector(850,-60,0),FVector(-850,-60,0),FVector(700,500,0),FVector(-700,500,0),FVector(450,-350,0),FVector(-450,-350,0)};
+ const int32 Start=FMath::RandRange(0,1);   // half go east, half west: not a parade in one direction
+ for(int32 I=0;I<UE_ARRAY_COUNT(Tries);++I){const FVector Off=Tries[(I+Start)%UE_ARRAY_COUNT(Tries)];if(Person->WalkTo(At+Off))return true;}
+ if(auto AI=Cast<AAIController>(Person->GetController()))AI->StopMovement();
+ Person->PlayPose(TEXT("Idle"));return false;
+}
+/** Somebody the player is looking at, close enough to notice a pop. */
+static bool SeenByPlayer(UWorld* World,const FVector& At)
+{
+ APlayerController* PC=UGameplayStatics::GetPlayerController(World,0);if(!PC || !PC->PlayerCameraManager)return false;
+ const FVector Eye=PC->PlayerCameraManager->GetCameraLocation(),To=At-Eye;
+ return To.Size()<3500.f && FVector::DotProduct(To.GetSafeNormal(),PC->PlayerCameraManager->GetCameraRotation().Vector())>.35f;
 }
 void UMareKioskWorld::MakeDirty(AMarePerson* Person)
 {
@@ -161,7 +190,11 @@ void UMareKioskWorld::UpdateCustomer(AMarePerson* P)
   P->Stage=EMarePersonStage::Eating;P->Elapsed=0;
  }
  else if(P->Stage==EMarePersonStage::Eating){if(P->Elapsed>8 && !P->bConsumed){P->bConsumed=true;P->ClearProducts();MakeDirty(P);}if(P->Elapsed>18)Leave(P);}
- else if(P->Stage==EMarePersonStage::Leaving && (P->Elapsed>25 || P->AtGoal()))P->Destroy();
+ else if(P->Stage==EMarePersonStage::Leaving){
+  // Keep walking while the player watches (a new leg further on); vanish only out of sight, or after a minute anyway.
+  const bool bStill=P->GetVelocity().SizeSquared2D()<100.f && P->Elapsed>3.f;
+  if(P->Elapsed>60.f || ((P->AtGoal() || bStill || P->Elapsed>25.f) && !SeenByPlayer(GetWorld(),P->GetActorLocation()+FVector(0,0,80))))P->Destroy();
+  else if(P->AtGoal() || (bStill && FMath::Fmod(P->Elapsed,4.f)<.05f))WalkAway(P);}
 }
 void UMareKioskWorld::UpdateAttendant(float DeltaSeconds)
 {
@@ -184,7 +217,7 @@ void UMareKioskWorld::UpdateAttendant(float DeltaSeconds)
   if(S->Carry(true).IsEmpty()){
    const FVector Storage=Dish==TEXT("batata_frita") || Dish==TEXT("porcao_peixe")?FVector(3800,-1240,98):FVector(3920,-1240,98);
    if(FVector::DistSquared2D(Attendant->GetActorLocation(),Storage)>FMath::Square(95.f)){Attendant->WalkTo(Storage);return;}
-   if(S->Pickup(Dish,true)){Attendant->ClearProducts();Attendant->HoldProduct(Dish);}return;
+   if(S->Pickup(Dish,true)){Attendant->ClearProducts();Attendant->HoldProduct(Dish);Attendant->PlayGesture(TEXT("PickUp_Table"),1.1f);}return;
   }
   if(Serve(P,true))Attendant->ClearProducts();return;
  }

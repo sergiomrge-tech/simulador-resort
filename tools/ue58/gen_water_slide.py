@@ -29,6 +29,7 @@ def export(_name):
 
 
 gen_hotel.SLIDE_RUN = RUN
+gen_hotel.SLIDE_COLORS = True   # 07/11: colourful sections like a water park
 # The deck's oak planks (Poly Haven CC0): the Godot asset folders are not on this disk, the library copy is.
 _tex = gen_hotel.tex
 gen_hotel.tex = lambda n: 'D:/Assets/PolyHaven/oak_wood_planks/oak_wood_planks_diff_1k.jpg' if n.startswith('oak_wood_planks_diff') else _tex(n)

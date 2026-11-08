@@ -1,5 +1,5 @@
 {
-  "_doc": "Contrato proposto para a tela de créditos do menu e a conclusão da dívida. Os campos iniciados por _ são metadados editoriais; nenhum C++ consome credits.json nesta base. Não anunciar integração até implementar com o Claude. As 12 traduções são propostas; exibir com localização e compatibilidade com Steam.",
+  "_doc": "Contrato proposto para a tela de créditos do menu e a conclusão da dívida. Os campos iniciados por _ são metadados editoriais; nenhum C++ consome credits.json nesta base. Não anunciar integração até implementar. As 12 traduções são propostas; exibir com localização e compatibilidade com Steam.",
   "_schema_version": 1,
   "_status": "proposta_nao_integrada",
   "_product": "Coconut Coast: Resort Simulator",

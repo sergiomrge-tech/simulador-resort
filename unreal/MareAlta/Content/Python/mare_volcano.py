@@ -127,11 +127,13 @@ def ash_material():
     nrm = mm.expression(mat, unreal.MaterialExpressionVertexNormalWS)
     cam = mm.expression(mat, unreal.MaterialExpressionCameraVectorWS)
     # Billowing ash: scrolling 3D value noise (rises and drifts with the wind), thicker near the crater,
+    # 07/11 (Sergio: "fumaça parada"): it rose ~0.8 m/s, invisible from kilometres away. Now ~7 m/s up, a wind drift,
+    # and each octave moves at its own speed so the ash churns instead of sliding as one block.
     # thinning and fading at the top and at the silhouette edges (no hard tube outline).
     code = (
-        'float3 p=(P-O)*0.00028-float3(T*0.010,0,T*0.022);'
+        'float3 p=(P-O)*0.00028-float3(T*0.045,0,T*0.19);'
         'float n=0,amp=.55,f=1;'
-        '[unroll] for(int i=0;i<3;i++){float3 q=p*f; float3 c=floor(q),w=frac(q); w=w*w*(3-2*w);'
+        '[unroll] for(int i=0;i<3;i++){float3 q=p*f+float3(sin(T*.05+i*1.7)*.6,T*.06*i,-T*.09*i); float3 c=floor(q),w=frac(q); w=w*w*(3-2*w);'
         ' float h=frac(sin(dot(c,float3(12.99,78.23,37.72)))*43758.55);'
         ' float hx=frac(sin(dot(c+float3(1,0,0),float3(12.99,78.23,37.72)))*43758.55);'
         ' float hy=frac(sin(dot(c+float3(0,1,0),float3(12.99,78.23,37.72)))*43758.55);'
@@ -276,3 +278,9 @@ def ocean_probe(_=''):
             out.append({'mesh': path, 'verts': m.get_num_vertices(0), 'tris': m.get_num_triangles(0),
                         'bounds': str(m.get_bounds().box_extent)})
     return json.dumps(out)
+
+
+def ash(_=''):
+    """Rebuild only the ash material (07/11: faster, churning plume). Editor, PIE stopped."""
+    ash_material()
+    return 'ok'

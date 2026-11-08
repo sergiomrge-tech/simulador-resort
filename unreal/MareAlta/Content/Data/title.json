@@ -1,0 +1,73 @@
+{
+ "_doc": "Title screen (07/11, Sergio: 'precisa ter uma tela inicial'; AMareTitleCamera, MareTitle.cpp): the camera glides through points [x, y, z, pitch, yaw] (world cm, degrees) in a loop of loop_seconds while the main menu is up, at hour (game hours; mid-afternoon: the low sun turned the sea a grassy green in the first try; the clock stands still and the save is not touched). The world keeps living: people walk, the sea moves, boats sail. logo/subtitle are the texts of the title (the commercial name is Coconut Simulator; Maré Alta is the resort inside the game). story: the postcards of a new game before the bus arrival (image = captured in-game, /Game/UI/Intro, always cooked; text is translated).",
+ "hour": 16.2,
+ "loop_seconds": 90,
+ "logo": "Coconut Simulator",
+ "subtitle": "Maré Alta Resort",
+ "points": [
+  [
+   3000,
+   -2900,
+   520,
+   -7,
+   30
+  ],
+  [
+   3600,
+   -3200,
+   560,
+   -7,
+   55
+  ],
+  [
+   5200,
+   -3000,
+   520,
+   -8,
+   120
+  ],
+  [
+   5600,
+   -2500,
+   700,
+   -12,
+   95
+  ],
+  [
+   4400,
+   -2300,
+   850,
+   -16,
+   70
+  ],
+  [
+   3300,
+   -2600,
+   640,
+   -10,
+   40
+  ]
+ ],
+ "story": [
+  {
+   "image": "/Game/UI/Intro/T_Story_1.T_Story_1",
+   "text": "Por quarenta verões, Dona Dilce abriu o quiosque da praia antes do sol."
+  },
+  {
+   "image": "/Game/UI/Intro/T_Story_2.T_Story_2",
+   "text": "Um dia chegou uma carta: \"Meu bem, o quiosque agora é seu.\""
+  },
+  {
+   "image": "/Game/UI/Intro/T_Story_3.T_Story_3",
+   "text": "Você pegou o primeiro ônibus para a costa."
+  },
+  {
+   "image": "/Game/UI/Intro/T_Story_4.T_Story_4",
+   "text": "A vila parecia menor... e o mar, do tamanho das lembranças."
+  },
+  {
+   "image": "/Game/UI/Intro/T_Story_5.T_Story_5",
+   "text": "Bem-vinda, bem-vindo à Maré Alta."
+  }
+ ]
+}

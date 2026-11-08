@@ -8,9 +8,14 @@
 #include "Components/StaticMeshComponent.h"
 #include "Engine/StaticMesh.h"
 #include "TwoBoneIK.h"
+#include "HAL/IConsoleManager.h"
 #include "BonePose.h"
 #include "AnimNodes/AnimNode_CopyPoseFromMesh.h"
 
+// Sunbather on a towel, raised knee (degrees about the body's side axis; tuned by eye on the beach, 07/11).
+static TAutoConsoleVariable<float> CVarLieThigh(TEXT("mare.LieThigh"),50.f,TEXT("Lying on a towel: thigh flexion of the raised knee (degrees)."));
+static TAutoConsoleVariable<float> CVarLieCalf(TEXT("mare.LieCalf"),-100.f,TEXT("Lying on a towel: shin fold of the raised knee (degrees)."));
+static TAutoConsoleVariable<float> CVarLieFoot(TEXT("mare.LieFoot"),50.f,TEXT("Lying on a towel: foot correction so the sole rests flat (degrees)."));
 namespace MareServiceAnimation
 {
 bool IsVessel(UStaticMeshComponent* Part)
@@ -26,10 +31,13 @@ struct FServiceProxy : FAnimSingleNodeInstanceProxy
  float BlendTime=.2f;bool bNewClip=false;
  bool bOpenSwimmingHands=false;
  float Recline=0;
+ /** Face up on a towel (not a lounger): which knee is raised, 0 none, 1 right, 2 left (07/11, Sergio: "deitado todo duro"). */
+ bool bTowel=false;int32 LieKnee=0;
  virtual void PreUpdate(UAnimInstance* Instance,float DeltaSeconds) override
  {
   FAnimSingleNodeInstanceProxy::PreUpdate(Instance,DeltaSeconds);
-  if(auto Owner=Cast<AMarePerson>(Instance->GetOwningActor()))Recline=Owner->bLying?Owner->Recline:0.f;
+  if(auto Owner=Cast<AMarePerson>(Instance->GetOwningActor())){Recline=Owner->bLying?Owner->Recline:0.f;
+   bTowel=Owner->bLying && Owner->Recline<=0;LieKnee=int32(FCrc::StrCrc32(*Owner->SaveId)%3u);}
   auto Single=Cast<UAnimSingleNodeInstance>(Instance);
   if(Single && Single->GetCurrentAsset()!=PreviousAsset.Get()){PreviousAsset=Single->GetCurrentAsset();BlendTime=0;bNewClip=true;}
   BlendTime+=DeltaSeconds;
@@ -59,6 +67,15 @@ struct FServiceProxy : FAnimSingleNodeInstanceProxy
     continue;}
    const float Side=Hand==0?1.f:-1.f;
    FVector Grip=Person->GetActorLocation()+Person->GetActorForwardVector()*32+Person->GetActorRightVector()*Side*18+FVector(0,0,22);
+   if(bTowel && !bHolding && !bSelfie){
+    // Lying on the back: the free hand rests on the belly, the elbow out to the side on the towel. The actor's X axis
+    // points at the sky and its Z axis runs from the feet to the head (AMarePerson::LieOn).
+    const FVector Sky=Person->GetActorForwardVector(),Head=Person->GetActorUpVector(),Out=Person->GetActorRightVector()*(Hand==0?1.f:-1.f);
+    const FVector Pelvis=Mesh->GetSocketLocation(TEXT("pelvis"));
+    Strength[Hand]=FMath::FInterpTo(Strength[Hand],1.f,DeltaSeconds,4.f);
+    Targets[Hand]=ToComponent.TransformPosition(Pelvis+Head*(Hand==0?24.f:16.f)+Sky*15+Out*7);
+    Elbows[Hand]=ToComponent.TransformPosition(Pelvis+Head*30+Out*34-Sky*4);
+    continue;}
    if(bSelfie){   // arm half stretched, the phone a little above the eyes and to the right
     Grip=Mesh->GetSocketLocation(TEXT("Head"))+Person->GetActorForwardVector()*40+Person->GetActorRightVector()*16+FVector(0,0,6);
     Targets[Hand]=ToComponent.TransformPosition(Grip);
@@ -94,6 +111,21 @@ struct FServiceProxy : FAnimSingleNodeInstanceProxy
     const FQuat Parent=Pose.GetComponentSpaceTransform(Pelvis).GetRotation();
     const FQuat Bend(FVector(1,0,0),FMath::DegreesToRadians(-Recline));
     auto& Local=Output.Pose[Spine];Local.SetRotation((Parent.Inverse()*Bend*Parent*Local.GetRotation()).GetNormalized());}
+  }
+  if(bTowel && LieKnee>0){
+   // One knee up, the sole flat on the towel: the thigh flexes toward the sky (component +Y is the face side, X the
+   // body's side axis) and the shin folds back twice as much. Both bends are about the same axis, so each is expressed
+   // in its parent's original frame.
+   const auto& Bones=Output.Pose.GetBoneContainer();const auto& Ref=Bones.GetReferenceSkeleton();
+   const TCHAR* Side=LieKnee==1?TEXT("_r"):TEXT("_l");
+   const FCompactPoseBoneIndex Thigh=Bones.GetCompactPoseIndexFromSkeletonIndex(Ref.FindBoneIndex(FName(FString(TEXT("thigh"))+Side)));
+   const FCompactPoseBoneIndex Calf=Bones.GetCompactPoseIndexFromSkeletonIndex(Ref.FindBoneIndex(FName(FString(TEXT("calf"))+Side)));
+   const FCompactPoseBoneIndex Foot=Bones.GetCompactPoseIndexFromSkeletonIndex(Ref.FindBoneIndex(FName(FString(TEXT("foot"))+Side)));
+   if(Thigh!=INDEX_NONE && Calf!=INDEX_NONE){FCSPose<FCompactPose> Pose;Pose.InitPose(Output.Pose);
+    auto Bend=[&](FCompactPoseBoneIndex Bone,float Degrees){const FCompactPoseBoneIndex Parent=Bones.GetParentBoneIndex(Bone);if(Parent==INDEX_NONE)return;
+     const FQuat P=Pose.GetComponentSpaceTransform(Parent).GetRotation();auto& Local=Output.Pose[Bone];
+     Local.SetRotation((P.Inverse()*FQuat(FVector(1,0,0),FMath::DegreesToRadians(Degrees))*P*Local.GetRotation()).GetNormalized());};
+    Bend(Thigh,CVarLieThigh.GetValueOnAnyThread());Bend(Calf,CVarLieCalf.GetValueOnAnyThread());if(Foot!=INDEX_NONE)Bend(Foot,CVarLieFoot.GetValueOnAnyThread());}
   }
   if(bOpenSwimmingHands){
    const auto& Bones=Output.Pose.GetBoneContainer();const auto& Ref=Bones.GetReferenceSkeleton();

@@ -16,6 +16,7 @@
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Camera/PlayerCameraManager.h"
 #include "HAL/IConsoleManager.h"
 #include "Misc/FileHelper.h"
 #include "Misc/Paths.h"
@@ -44,6 +45,13 @@ static FAutoConsoleCommandWithWorldAndArgs ComicDinerCommand(TEXT("mare.ComicDin
 
 TStatId UMareComicEvents::GetStatId()const{RETURN_QUICK_DECLARE_CYCLE_STAT(UMareComicEvents,STATGROUP_Tickables);}
 
+/** 07/11 (Sergio: "só vi o texto, a animação não apareceu"): a rolled event only starts where the player is looking. */
+static bool InPlayerView(UWorld* World,const FVector& At,float MaxDistance=2200.f)
+{
+ APlayerController* PC=UGameplayStatics::GetPlayerController(World,0);if(!PC || !PC->PlayerCameraManager)return false;
+ const FVector Eye=PC->PlayerCameraManager->GetCameraLocation(),To=At-Eye;
+ return To.Size()<MaxDistance && FVector::DotProduct(To.GetSafeNormal(),PC->PlayerCameraManager->GetCameraRotation().Vector())>.6f;
+}
 bool UMareComicEvents::IsDue(const TSharedPtr<FJsonObject>& Comic,const FString& Id,double Now,double Cooldown,double GlobalGap)
 {
  if(!Comic.IsValid())return true;
@@ -288,7 +296,7 @@ bool UMareComicEvents::StartUmbrella(const TSharedPtr<FJsonObject>& Def,bool bFo
   for(UActorComponent* AC:It->GetComponents())if(auto SM=Cast<UStaticMeshComponent>(AC))if(SM->GetStaticMesh() && SM->IsVisible() && SM->GetStaticMesh()->GetName()==PoleName){
    const float Low=SM->GetStaticMesh()->GetBoundingBox().Min.Z;
    auto Add=[&](const FTransform& T,int32 I){if(T.GetScale3D().Z<.01f)return;const FVector B=T.TransformPosition(FVector(0,0,Low));const float D=FVector::Dist2D(B,Hero->GetActorLocation());
-    if(D>=(bForced?150.f:400.f) && D<=2500.f)Poles.Add({SM,I,B,D});};
+    if(D>=(bForced?150.f:400.f) && D<=2500.f && (bForced || InPlayerView(World,B+FVector(0,0,150))))Poles.Add({SM,I,B,D});};
    if(auto ISM=Cast<UInstancedStaticMeshComponent>(SM)){for(int32 I=0;I<ISM->GetInstanceCount();++I){FTransform T;ISM->GetInstanceTransform(I,T,true);Add(T,I);}}
    else Add(SM->GetComponentTransform(),-1);}}
  Poles.Sort([](const FPole& A,const FPole& B){return A.Dist<B.Dist;});
@@ -397,7 +405,7 @@ bool UMareComicEvents::StartClumsy(const TSharedPtr<FJsonObject>& Def,bool bForc
  const FString Role=UMareSimulation::String(Def,TEXT("role"));AMarePerson* Target=nullptr;
  for(TActorIterator<AMarePerson> It(World);It;++It)
   if(It->StaffRole==Role && !It->CarriedMeshes.IsEmpty() && IsValid(It->CarriedMeshes[0]) && (bForced || It->GetVelocity().Size2D()>40.f)
-   && FVector::Dist2D(It->GetActorLocation(),Hero->GetActorLocation())<2500.f){Target=*It;break;}
+   && FVector::Dist2D(It->GetActorLocation(),Hero->GetActorLocation())<2500.f && (bForced || InPlayerView(World,It->GetActorLocation()+FVector(0,0,90)))){Target=*It;break;}
  if(!Target)return false;
  // Training: level 1 trips at the full odds, each level up makes it rarer (level 5: a fifth).
  double Level=1;const TArray<TSharedPtr<FJsonValue>>* Team=nullptr;
@@ -417,16 +425,16 @@ bool UMareComicEvents::StartClumsy(const TSharedPtr<FJsonObject>& Def,bool bForc
 void UMareComicEvents::UpdateClumsy(float DeltaSeconds)
 {
  AMarePerson* P=Clumsy.Get();ClumsyTime+=DeltaSeconds;
- static const float Length=1.6f;
+ static const float Length=2.4f;   // 07/11: was 1.6 s with a 9-degree lean, too small to be seen
  if(!P || ClumsyTime>=Length){Finish(true);return;}
  const float U=ClumsyTime/Length;
  // A trip: lean forward, a side-to-side wobble that settles, the tray dipping and tilting before it is caught.
- const float Lean=9.f*FMath::Sin(PI*FMath::Clamp(U*2.2f,0.f,1.f)),Settle=1.f-U;
- const float Sway=7.f*FMath::Sin(ClumsyTime*12.f)*Settle*FMath::Min(U*4.f,1.f);
+ const float Lean=24.f*FMath::Sin(PI*FMath::Clamp(U*2.2f,0.f,1.f)),Settle=1.f-U;
+ const float Sway=13.f*FMath::Sin(ClumsyTime*12.f)*Settle*FMath::Min(U*4.f,1.f);
  P->GetMesh()->SetRelativeRotation((FRotator(-Lean,0,Sway).Quaternion()*ClumsyMesh.Quaternion()).Rotator());
  const float Dip=FMath::Sin(PI*FMath::Clamp((U-.08f)/.5f,0.f,1.f));
  for(const auto& Part:ClumsyTray)if(USceneComponent* C=Part.Key.Get())
-  C->SetRelativeTransform(FTransform(FRotator(14.f*Dip*FMath::Sin(ClumsyTime*15.f),0,24.f*Dip),FVector(0,0,-7.f*Dip))*Part.Value);
+  C->SetRelativeTransform(FTransform(FRotator(20.f*Dip*FMath::Sin(ClumsyTime*15.f),0,38.f*Dip),FVector(0,0,-14.f*Dip))*Part.Value);
  if(U>.35f && Line.Len() && !bTalking){bTalking=true;Notice();}   // the "phew" once the tray is caught
 }
 

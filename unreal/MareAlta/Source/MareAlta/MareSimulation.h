@@ -2,6 +2,7 @@
 #include "CoreMinimal.h"
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "Dom/JsonObject.h"
+#include "MarePayment.h"
 #include "MareSimulation.generated.h"
 
 /** Summary of one save slot for the main menu (read straight from slotN.json). */
@@ -125,6 +126,8 @@ public:
  bool bMainMenuDone=false;
  /** While the world reloads into another slot, the old world must not write its actors into the new state. */
  bool bHoldSaves=false;
+ /** The title screen is up: the clock and the autosave stand still (MareTitle.cpp). */
+ bool bTitleOpen=false;
  FString SaveFolder() const;
  FString SlotPath(int32 Slot) const;
  FMareSlotInfo SlotInfo(int32 Slot) const;
@@ -652,6 +655,47 @@ public:
  int32 BarmanLevel();
  /** Regular guests: name -> their usual drink. */
  TMap<FString,FString> BarRegulars() const;
+ // --- Kiosk payment (MarePayment.cpp, Content/Data/payment.json): cash change or card after the player serves an order.
+ TSharedPtr<FJsonObject> PaymentDefs() const;
+ /** How this customer pays a Total (reais): card, or cash with the note(s) they hand over. */
+ FMarePay MakePayment(const FString& Customer,double Total,FRandomStream& Rng) const;
+ /** Settles the payment screen: Answer = change handed back (cash) or amount typed (card), in cents; bSkip = the
+  *  player let the customer pay alone (Esc). Books the tip or the extra change, rates the service; returns the stars. */
+ double SettlePayment(const FMarePay& Pay,int64 Answer,bool bSkip);
+ // --- Grandma's debt (MareDebt.cpp, Content/Data/debt.json, docs/ue58/DIVIDA_DA_AVO.md). prog.debt in cents:
+ // principal_cents (frozen), paid_cents, created_day, last_payment_day, last_reminder_day, intro_seen, finale_seen,
+ // milestones_seen. No interest and no compulsory instalment; the demo pays up to demo_payment_cap.
+ TSharedPtr<FJsonObject> DebtDefs() const;
+ /** definitions.json "demo": the free demo build. */
+ bool IsDemo() const;
+ bool HasDebt() const;
+ /** Creates prog.debt once (company created / old save loaded) and repairs broken fields; never recreates it. */
+ bool EnsureDebt();
+ int64 DebtPrincipalCents() const;
+ int64 DebtPaidCents() const;
+ int64 DebtBalanceCents() const;
+ /** Total that may ever be paid: the principal, or the demo cap. */
+ int64 DebtLimitCents() const;
+ /** Most that can be paid right now (balance, demo cap and cash). */
+ int64 DebtMaxPayCents() const;
+ bool IsDebtDemoCapped() const;
+ /** A JSON value that is a whole number of cents (tests and the contract vectors); false for anything else. */
+ static bool DebtCentsFromJson(const TSharedPtr<FJsonValue>& Value,int64& Cents);
+ /** Pays from the cash: all or nothing, undone when the save fails. LastMessage holds the receipt or the reason. */
+ bool PayDebt(int64 Cents);
+ /** Milestones (25/50/75 %) crossed and not acknowledged yet, in order. */
+ TArray<FString> DebtPendingMilestones() const;
+ /** Full game only: the debt is paid and the finale was not shown. */
+ bool IsDebtFinalePending() const;
+ /** Marks the pending milestones and the finale as seen (after they were shown); false when the save failed. */
+ bool AckDebt();
+ /** Bank note after reminder_every_days without payment (one per interval); sets PendingTip. */
+ bool DebtReminder(int32 Day);
+ /** Dona Dilce's letter about the million, once after the company exists; sets PendingTip. */
+ bool ShowDebtIntro();
+ FString DebtMilestoneTitle(const FString& Id,FString* Text=nullptr) const;
+ /** Tests: the next WriteState fails as if the disk refused it. */
+ bool bFailNextSaveForTest=false;
  /** Bets and prizes from minigames (game room): books the amount with a label, like any other income or expense. */
  void SettleBet(double Amount,const FString& Label){Book(Amount,Label);}
  int32 FreeCleanRooms(const FString& Place=TEXT("pousada")) const;
@@ -674,5 +718,6 @@ private:
  mutable TSharedPtr<FJsonObject> CustomCatalog;
  /** Hour being operated by OperateHour (staff shifts are checked against it), -1 = the clock's hour. */
  int32 DutyHour=-1;
+ bool bPayingDebt=false;
  TArray<TSharedPtr<FJsonValue>>& TeamList(const FString& Role);
 };

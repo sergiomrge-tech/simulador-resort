@@ -776,6 +776,48 @@ Para cada item:
 Não me pergunte a cada passo: decida pelo bom senso e anote as decisões no checklist. Só pare para perguntar se algo for irreversível ou mudar o rumo do jogo. Responda sempre em português.
 ```
 
+## 11. Teste da demo pelo Sergio (07/11/2026, noite) — corrigir tudo
+
+- [ ] Som ambiente não muda nem desliga (confirmar qual som: música ou mar/vento).
+- [x] Tela inicial e abertura de verdade (plano em `docs/ue58/APRESENTACAO_PLANO.md`; nome: **Coconut Simulator**).
+- [x] Plantas flutuando (arbusto de flores roxas na trilha de areia) e florzinhas nascendo na areia/toalha.
+- [x] Fumaça do vulcão parada (material: subida mais rápida e camadas em velocidades diferentes).
+- [x] Banhista deitado "todo duro" (pose nova: mãos na barriga, joelho dobrado, respiração leve).
+- [x] Tutorial: dizer como e onde abrir o quiosque (missão, mensagem e dica da placa).
+- [x] Quiosque escuro por dentro de dia: lâmpada acesa durante o expediente.
+- [x] Clientes travados na frente do quiosque.
+- [x] Nome feminino em cliente homem ("Luiza").
+- [x] O pedido some da tela quando a estação (geladeira/armário) está aberta: deve continuar visível.
+- [x] Evento cômico: o texto aparece, a animação não.
+- [ ] Músicas mais animadas: buscar na web músicas gratuitas (uso comercial e streaming) e trocar/ampliar o rádio.
+- [x] Banhista com o celular flutuando acima das mãos; blocos vermelho-escuros na areia parecendo tijolo/carne; forro do quiosque todo preto.
+- [x] Tobogã: a saída reta parecia uma caixa fechada ("como a pessoa vai escorregar assim?") → calha com parede de verdade.
+- [x] Montanhas ao fundo, do outro lado do mar (serra azulada e enevoada no horizonte, como na referência).
+- [x] Fundo do mar como na referência: muito coral e planta, cáusticas no chão, água azul clara perto da superfície e azul profundo ao fundo.
+- [x] Tobogã colorido como na referência (trechos rosa, verde, amarelo, lilás).
+- [x] Bar como na referência: cliente sentado no banquinho do balcão, bartender entregando o drink na mão, garrafas atrás.
+- [x] Sistema de pagamento como na referência: tela com total/recebido/troco, gaveta com notas e moedas para dar o troco
+  e maquininha de cartão (cliente paga em dinheiro ou cartão).
+- [x] Mar ao pôr do sol perto da praia parece gramado verde (algas do fundo vistas através da água).
+- [x] Arbusto vermelho "Bush_Common" (bola vermelha) e folhas de samambaia chapadas na borda da praia.
+- [ ] Depois de tudo: simulação da demo inteira e lista longa de correções e melhorias.
+- [ ] **Referência (Sergio, 07/11): "Resort Simulator" da Fishleaf Games (Steam 4319390) — "é assim que o nosso deveria ser, pelo menos
+  na jogabilidade e animação das pessoas".** Plano: mais clipes gratuitos de animação (andar natural, fila, pegar produto, pagar,
+  sentar, deitar), clientes que nunca travam, gestos ao interagir. Não copiar nome, arte, interface nem conteúdo.
+- [x] Aviso "Video memory has been exhausted" no executável; faixa de status cortada ("Entregue ou devolva o pro...").
+
+> **Feito na noite de 07/11 (Claude):** dívida (`MareDebt.cpp`, cartão em Finanças, carta, marcos, recado do banco, final
+> só no jogo completo, teste com os 20 vetores); tela inicial viva com o logo "Coconut Simulator" (`MareTitle.cpp`,
+> `title.json`) e a abertura em 5 cartões-postais no Novo jogo (capturas do jogo em `/Game/UI/Intro`); pagamento com troco
+> e maquininha (`MarePayment.cpp`, `payment.json`, teste); saída dos clientes que não trava (`WalkAway`); nome pelo sexo
+> do MetaHuman; pedido visível na estação; lâmpadas do quiosque acesas no expediente; banhista com mãos na barriga e joelho
+> dobrado; fumaça do vulcão subindo; tobogã com calha de verdade e colorido; serra no horizonte (`gen_mountains.py`,
+> `mare_serra.py`); pervincas fora da areia, arbusto vermelho trocado por arbusto real, pedras sem cor de carne; mais
+> corais e capim marinho só no fundo; bar com o cliente bebendo no banquinho e o bartender entregando; gestos de pegar no
+> balcão e motorista dirigindo (clipes UAL); eventos cômicos só na vista do jogador; pool de texturas por qualidade;
+> mensagem do painel sem corte; letreiro sem o quadradinho. Pendente: som ambiente (aguardando o Sergio dizer qual som),
+> músicas animadas no rádio (11 faixas CC0 baixadas e normalizadas), traduções dos textos novos (GPT), simulação da demo.
+
 ## 10. Dívida da avó — objetivo final (Sergio, 06–07/11/2026)
 
 - [ ] Implementar a dívida de **R$ 1.000.000** que Dona Dilce deixou junto com o quiosque, pelo desenho do GPT

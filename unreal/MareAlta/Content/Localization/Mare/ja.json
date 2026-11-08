@@ -4197,6 +4197,9 @@
   "ímã de geladeira de jangada": "jangada の冷蔵庫マグネット",
   "óôõ": "óôõ",
   "Čeština": "Čeština",
-  "‹ folha anterior": "‹ 前のページ"
+  "‹ folha anterior": "‹ 前のページ",
+  "Esta placa vermelha abre e fecha o atendimento, das 8h às 18h (até 21h com o letreiro neon). Antes das 8h, a abertura fica marcada. Dormir fecha o quiosque.": "この赤い看板で営業を開始・終了します。営業時間は8時〜18時（ネオン看板があれば21時まで）。8時前は開店予約になります。寝ると売店は閉まります。",
+  "Cobrar o cliente": "お会計",
+  "Em dinheiro, monte o troco clicando nas notas e moedas e confirme; no cartão, digite o total na maquininha. Troco certo rende gorjeta e estrelas. Esc deixa o cliente pagar sozinho, sem gorjeta.": "現金なら紙幣と硬貨をクリックしてお釣りを作り、確定します。カードなら端末に合計金額を入力します。お釣りが正確ならチップと星がもらえます。Escでお客さんが自分で払います（チップなし）。"
  }
 }

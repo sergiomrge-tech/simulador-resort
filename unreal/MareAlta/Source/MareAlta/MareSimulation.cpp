@@ -117,7 +117,8 @@ bool UMareSimulation::CreateCompany(const FString& Name)
  if(Clean.IsEmpty()) return Fail(TEXT("Dê um nome ao quiosque."));
  auto Company=Object(State,TEXT("company")); Company->SetBoolField(TEXT("created"),true);
  Company->SetStringField(TEXT("name"),Clean); Company->SetBoolField(TEXT("physical"),true);
- LastMessage=TEXT("Empresa criada. Abra o quiosque para receber clientes."); return Save();
+ EnsureDebt();   // Dona Dilce's debt comes with the company (letter on the next phone close)
+ LastMessage=TEXT("Empresa criada! Para abrir, vá ao quiosque na praia e use a placa vermelha FECHADO do balcão."); return Save();
 }
 bool UMareSimulation::SetOpen(bool bOpen)
 {
@@ -486,6 +487,7 @@ void UMareSimulation::Sleep()
  if(Money()<0)LastMessage+=TEXT(" Caixa negativo: venda mais antes de repor estoque.");
  {const FString Note=String(Object(State,TEXT("ue_last_day")),TEXT("staff_note"));if(!Note.IsEmpty())LastMessage+=TEXT(" Equipe: ")+Note;}
  State->SetNumberField(TEXT("day"),Day+1);State->SetNumberField(TEXT("minutes"),480);StartDayEvent();
+ DebtReminder(Day+1);   // a light bank note after a week without payment
  State->SetObjectField(TEXT("ue_orders"),MakeShared<FJsonObject>());
  // End of day autosave in the active slot.
  if(Save())LastMessage+=FString::Printf(TEXT(" Jogo salvo no slot %d."),ActiveSlot);
@@ -498,6 +500,7 @@ bool UMareSimulation::Save()
 }
 bool UMareSimulation::WriteState()
 {
+ if(bFailNextSaveForTest){bFailNextSaveForTest=false;return Fail(TEXT("Falha ao salvar."));}
  FString Text;if(!State.IsValid() || !FJsonSerializer::Serialize(State.ToSharedRef(),TJsonWriterFactory<>::Create(&Text))) return false;
  const FString Path=SavePath(),Temp=Path+TEXT(".tmp");IFileManager::Get().MakeDirectory(*FPaths::GetPath(Path),true);
  if(!FFileHelper::SaveStringToFile(Text,*Temp,FFileHelper::EEncodingOptions::ForceUTF8WithoutBOM)) return Fail(TEXT("Falha ao salvar."));

@@ -51,6 +51,7 @@ private:
  void UpdateAttendant(float DeltaSeconds);
  void FinishCounter(AMarePerson* Person);
  void Leave(AMarePerson* Person);
+ bool WalkAway(AMarePerson* Person);
  void MakeDirty(AMarePerson* Person);
  void CreateInteraction(AMarePerson* Person);
  void SpawnDirtyTable(int32 Table,const TArray<FString>& Items);

@@ -37,7 +37,7 @@
    "credits": "Botão abre créditos existentes.",
    "continue": "Retoma o mesmo save e resort, sem reset."
   },
-  "campaign_texts": "Propostas de substituição apenas de story em definitions.campaign pelos ids chegada/marealta/festa. Claude aplica; não modificar kind/item/qty nem adicionar requisito de dívida à festa."
+  "campaign_texts": "Propostas de substituição apenas de story em definitions.campaign pelos ids chegada/marealta/festa. O código aplica; não modificar kind/item/qty nem adicionar requisito de dívida à festa."
  },
  "schema_version": 1,
  "currency": "R$",

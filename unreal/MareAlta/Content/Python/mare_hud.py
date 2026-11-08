@@ -2309,6 +2309,12 @@ def run(action, arg=''):
         out['curtains'] = [[a.get_actor_label(), str(a.get_actor_location()), a.is_hidden_ed(), a.is_temporarily_hidden_in_editor()] for a in unreal.GameplayStatics.get_all_actors_with_tag(world, 'MareRain')]
         out['hidden_game'] = [a.get_editor_property('hidden') for a in unreal.GameplayStatics.get_all_actors_with_tag(world, 'MareRain')]
         return out
+    if action == 'edcmd':
+        # Editor-world console command(s), ';'-separated (LiveCoding.Compile, cvars) with PIE stopped or running.
+        world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_editor_world()
+        for c in arg.split(';'):
+            unreal.SystemLibrary.execute_console_command(world, c.strip())
+        return 'ok'
     if action == 'cmd':
         # PIE console command(s), separated by ';' (QA: mare.PoolAutoPlay 1; mare.PoolQA).
         world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()

@@ -253,7 +253,7 @@
   "shy": 350
  },
  "floor_fill": {
-  "_doc": "05/11 (Sergio: 'faça um gerador com rochas, corais e algas marinhas, preencha todo fundo'; 'fundo precisa ser bem fundo, uns 100m'). The whole sea floor in front of the island gets dressed by depth (MareReefWorld::FillFloor), cell by cell over x and y (cm). profile: floor height z along y after the beach terrain ends (terrain_until; up to there a trace finds the terrain): the ramp to the reef shelf at -9 m, the shelf (FLAT at -900 under the reef: the reef corals rest at -902; a 60 cm tilt left 37 of them floating, qa_gate 06/11), the drop-off and the deep floor at -100 m. mare_water.ensure_seabed builds the sand planes on the same profile. Each kind: density per 100 m2 where the floor z is inside 'depth' [lowest, highest], uniform scale in [scale], sunk 'sink' cm (x scale), random lean 'tilt' degrees, 'align' 0..1 to the slope, optional 'patch' (noise size, cm) keeping only the patches above patch_cut, culled past 'cull' cm. The reef strip itself (dressing above) is skipped, plus reef_pad cm.",
+  "_doc": "05/11 (Sergio: 'faça um gerador com rochas, corais e algas marinhas, preencha todo fundo'; 'fundo precisa ser bem fundo, uns 100m'). The whole sea floor in front of the island gets dressed by depth (MareReefWorld::FillFloor), cell by cell over x and y (cm). profile: floor height z along y after the beach terrain ends (terrain_until; up to there a trace finds the terrain): the ramp to the reef shelf at -9 m, the shelf (FLAT at -900 under the reef: the reef corals rest at -902; a 60 cm tilt left 37 of them floating, qa_gate 06/11), the drop-off and the deep floor at -100 m. mare_water.ensure_seabed builds the sand planes on the same profile. Each kind: density per 100 m2 where the floor z is inside 'depth' [lowest, highest], uniform scale in [scale], sunk 'sink' cm (x scale), random lean 'tilt' degrees, 'align' 0..1 to the slope, optional 'patch' (noise size, cm) keeping only the patches above patch_cut, culled past 'cull' cm. The reef strip itself (dressing above) is skipped, plus reef_pad cm. 07/11 (Sergio: 'nosso fundo do mar precisa ser assim', a reference full of corals; and the shallow sea read as a lawn at sunset): seagrass only from 2.5 m down at half the density, corals x4, sponges and anemones x3 in wider patches.",
   "profile": [
    [
     -5450,
@@ -290,10 +290,10 @@
   "kinds": [
    {
     "mesh": "/Game/Custom/Seafloor/Sea_seagrass/Sea_seagrass.Sea_seagrass",
-    "per_100m2": 15,
+    "per_100m2": 8,
     "depth": [
      -1500,
-     -60
+     -250
     ],
     "scale": [
      0.8,
@@ -432,7 +432,7 @@
    },
    {
     "mesh": "/Game/World/Models/World_0537/World_0537.World_0537",
-    "per_100m2": 0.6,
+    "per_100m2": 2.4,
     "depth": [
      -2200,
      -450
@@ -445,13 +445,13 @@
     "tilt": 12,
     "align": 0.7,
     "patch": 1800,
-    "patch_cut": 0.5,
-    "cull": 5000,
+    "patch_cut": 0.35,
+    "cull": 7000,
     "shadow": true
    },
    {
     "mesh": "/Game/World/Models/World_0540/World_0540.World_0540",
-    "per_100m2": 0.6,
+    "per_100m2": 2.4,
     "depth": [
      -2200,
      -450
@@ -464,13 +464,13 @@
     "tilt": 12,
     "align": 0.7,
     "patch": 1800,
-    "patch_cut": 0.5,
-    "cull": 5000,
+    "patch_cut": 0.35,
+    "cull": 7000,
     "shadow": true
    },
    {
     "mesh": "/Game/World/Models/World_0541/World_0541.World_0541",
-    "per_100m2": 0.5,
+    "per_100m2": 2.0,
     "depth": [
      -2200,
      -450
@@ -483,13 +483,13 @@
     "tilt": 8,
     "align": 0.8,
     "patch": 1800,
-    "patch_cut": 0.5,
-    "cull": 5000,
+    "patch_cut": 0.35,
+    "cull": 7000,
     "shadow": true
    },
    {
     "mesh": "/Game/World/Models/World_0550/World_0550/StaticMeshes/World_0550.World_0550",
-    "per_100m2": 0.5,
+    "per_100m2": 2.0,
     "depth": [
      -2200,
      -450
@@ -502,13 +502,13 @@
     "tilt": 10,
     "align": 0.3,
     "patch": 1800,
-    "patch_cut": 0.5,
-    "cull": 5000,
+    "patch_cut": 0.35,
+    "cull": 7000,
     "shadow": true
    },
    {
     "mesh": "/Game/World/Models/World_0554/World_0554/StaticMeshes/World_0554.World_0554",
-    "per_100m2": 0.5,
+    "per_100m2": 2.0,
     "depth": [
      -2200,
      -450
@@ -521,13 +521,13 @@
     "tilt": 12,
     "align": 0.7,
     "patch": 1800,
-    "patch_cut": 0.5,
-    "cull": 5000,
+    "patch_cut": 0.35,
+    "cull": 7000,
     "shadow": true
    },
    {
     "mesh": "/Game/Custom/Seafloor/Sea_sponge/Sea_sponge.Sea_sponge",
-    "per_100m2": 0.5,
+    "per_100m2": 1.5,
     "depth": [
      -4000,
      -500
@@ -540,13 +540,13 @@
     "tilt": 10,
     "align": 0.7,
     "patch": 2200,
-    "patch_cut": 0.5,
+    "patch_cut": 0.35,
     "cull": 4500,
     "shadow": true
    },
    {
     "mesh": "/Game/Custom/Seafloor/Sea_anemone/Sea_anemone.Sea_anemone",
-    "per_100m2": 0.5,
+    "per_100m2": 1.5,
     "depth": [
      -2000,
      -400
@@ -559,7 +559,7 @@
     "tilt": 8,
     "align": 0.7,
     "patch": 2200,
-    "patch_cut": 0.5,
+    "patch_cut": 0.35,
     "cull": 4000,
     "shadow": false
    },

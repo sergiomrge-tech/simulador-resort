@@ -63,6 +63,7 @@ bool UMareVisualWorld::UnlockMatches(const TSharedPtr<FJsonObject>& Owned,const 
   bool bOwned=false;if(Owned.IsValid())Owned->TryGetBoolField(Term,bOwned);if(bOwned==bNot)return false;}
  return true;
 }
+static TAutoConsoleVariable<float> CVarMareKioskDayLight(TEXT("mare.KioskDayLight"),25.f,TEXT("Kiosk work lights by day: multiple of their night candela (they must read against the daylight exposure)."));
 void UMareVisualWorld::BuildLamps()
 {
  // Light sources exported from Godot (their glow materials were lost): mesh, glass centre above the
@@ -119,12 +120,15 @@ void UMareVisualWorld::BuildLamps()
     Light->SetAttenuationRadius(Kind->Radius);Light->SetUseTemperature(true);Light->SetTemperature(Kind->Kelvin);
     // Street lamps and lanterns cast shadows at night (03/11, Sergio: "nada tem sombra"); the small lamps only a contact shadow.
     Light->SetCastShadows(Kind->Radius>=500);Light->ContactShadowLength=.08f;
-    Light->SetSourceRadius(4);Light->SetVisibility(false);Lamps.Add({Light,*It,Kind->Candela});
+    // 07/11 (Sergio: "escuro, precisa ter lâmpada de luz dentro do quiosque"): the kiosk's pendants and lantern are work
+    // lights, on during the opening hours by day too.
+    const bool bWork=Mesh==TEXT("World_1211") || Mesh==TEXT("World_1229") || Mesh==TEXT("World_0199");
+    Light->SetSourceRadius(4);Light->SetVisibility(false);Lamps.Add({Light,*It,Kind->Candela,FString(),bWork});
     // A hanging ceiling lamp also lights the ceiling around it a little (like the lighting.json fixtures).
     if(Kind->bDown && Kind->Up>0){auto Glow=NewObject<UPointLightComponent>(LampHolder);Glow->SetupAttachment(LampHolder->GetRootComponent());Glow->RegisterComponent();
      Glow->SetWorldLocation(Light->GetComponentLocation()+FVector(0,0,20));Glow->SetIntensityUnits(ELightUnits::Candelas);Glow->SetIntensity(0);
      Glow->SetAttenuationRadius(Kind->Radius*.6f);Glow->SetUseTemperature(true);Glow->SetTemperature(Kind->Kelvin);Glow->SetCastShadows(false);Glow->SetVisibility(false);
-     Lamps.Add({Glow,*It,Kind->Candela*.15f});}}
+     Lamps.Add({Glow,*It,Kind->Candela*.15f,FString(),bWork});}}
   }
  }
 }
@@ -217,8 +221,13 @@ void UMareVisualWorld::Tick(float DeltaSeconds)
  for(const auto& Lamp:Lamps)if(!Lamp.Unlock.IsEmpty() && Lamp.Source.IsValid()){const bool b=UnlockMatches(Owned,Lamp.Unlock);if(Lamp.Source->IsHidden()==b)Lamp.Source->SetActorHiddenInGame(!b);}
  // Bare lights without a fixture (the suite's): a soft fill by day, off at night, the ceiling lamps take over.
  for(auto Bare:BareLights)if(IsValid(Bare))Bare->GetLightComponent()->SetIntensity(FMath::Lerp(0.f,700.f,FMath::Square(Day)));
- for(const auto& Lamp:Lamps)if(auto Light=Lamp.Light.Get()){const bool bOn=Dark>.01f && Lamp.Source.IsValid() && !Lamp.Source->IsHidden();
-  Light->SetVisibility(bOn);Light->SetIntensity(bOn?Lamp.Candela*Dark:0.f);}
+ // Kiosk work lights: from 7h to the closing hour once the company exists; by day several times brighter so they read
+ // against the daylight exposure under the roof (CVar mare.KioskDayLight).
+ bool bCompany=false;UMareSimulation::Object(Sim->State,TEXT("company"))->TryGetBoolField(TEXT("created"),bCompany);
+ const float HourNow=UMareSimulation::Number(Sim->State,TEXT("minutes"))/60.f;
+ const float Work=bCompany && HourNow>=7.f && HourNow<Sim->KioskCloseHour()+.5f?FMath::Lerp(1.f,CVarMareKioskDayLight.GetValueOnGameThread(),1.f-Dark):0.f;
+ for(const auto& Lamp:Lamps)if(auto Light=Lamp.Light.Get()){const float Level=Lamp.bWork?FMath::Max(Dark,Work):Dark;const bool bOn=Level>.01f && Lamp.Source.IsValid() && !Lamp.Source->IsHidden();
+  Light->SetVisibility(bOn);Light->SetIntensity(bOn?Lamp.Candela*Level:0.f);}
  if(Dark>.5f && !bLampsLogged){bLampsLogged=true;int32 On=0,Hidden=0,Gone=0;for(const auto& Lamp:Lamps){if(!Lamp.Source.IsValid())++Gone;else if(Lamp.Source->IsHidden())++Hidden;else ++On;}
   UE_LOG(LogTemp,Display,TEXT("MARE_LAMPS total=%d on=%d hidden_source=%d lost_source=%d"),Lamps.Num(),On,Hidden,Gone);}
  // Facade windows glow at night through MPC_MareTime.Night (M_WindowPane_PBR).
@@ -249,7 +258,10 @@ void UMareVisualWorld::Tick(float DeltaSeconds)
   // Fixed signs saved in the level ("Casa", street names) keep their Portuguese text as the source for the translation.
   if(Text.IsEmpty())if(const FString* Source=SignSource.Find(Sign))Text=*Source;
   // The sign font is Latin only: a Cyrillic or CJK translation would draw empty boxes, so those keep the Portuguese.
-  if(!Text.IsEmpty()){FText Shown=MareLoc::Text(Text);if(!MareLoc::LatinOnly(Shown.ToString()))Shown=FText::FromString(Text);if(!Sign->GetTextRender()->Text.EqualTo(Shown))Sign->GetTextRender()->SetText(Shown);}
+  // 07/11 (the kiosk sign read "QUIOSQUE ▯ SABORES DA PRAIA"): the sign font has no bullet; draw a dash instead.
+  if(!Text.IsEmpty()){FText Shown=MareLoc::Text(Text);if(!MareLoc::LatinOnly(Shown.ToString()))Shown=FText::FromString(Text);
+   FString Drawn=Shown.ToString();if(Drawn.Contains(TEXT("•"))){Drawn.ReplaceInline(TEXT("•"),TEXT("-"));Shown=FText::FromString(Drawn);}
+   if(!Sign->GetTextRender()->Text.EqualTo(Shown))Sign->GetTextRender()->SetText(Shown);}
  }
 }
 
