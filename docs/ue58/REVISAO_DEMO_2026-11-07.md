@@ -81,23 +81,23 @@ na dívida) e C10 (dica dos centavos na maquininha).
 
 | # | Prio | Melhoria | De onde |
 |---|---|---|---|
-| C1 | P1 | Contorno colorido no objeto mirado (como na referência) | Referência |
-| C2 | P1 | Dicas de controle no canto com ícone da tecla ou do botão ("E: anotar pedido", "Clique: dar troco") | Referência |
-| C3 | P1 | Lista de pedidos fixa à direita, também na estação e no bar | Referência |
-| C4 | P1 | Partículas de retorno: brilho ao limpar a mesa, moedinha subindo ao receber, espuma ao arrumar o quarto | Referência |
+| C1 | ✅ | Contorno colorido no objeto mirado (como na referência) (feito 08/11: outline dourado pulsante no alvo do E (MareOutline, 00c42601)) | Referência |
+| C2 | ✅ | Dicas de controle no canto com ícone da tecla ou do botão ("E: anotar pedido", "Clique: dar troco") (feito 08/11: quadro de controles no canto inferior direito (791f15ad)) | Referência |
+| C3 | ✅ | Lista de pedidos fixa à direita, também na estação e no bar (feito 08/11: pedidos fixos à direita abaixo das Missões, bar incluso (791f15ad)) | Referência |
+| C4 | ✅ | Partículas de retorno: brilho ao limpar a mesa, moedinha subindo ao receber, espuma ao arrumar o quarto (feito 08/11: moeda +R$, brilho e espuma (MareFx, 78e04a30)) | Referência |
 | C5 | ✅ | Ícone sobre a cabeça de quem espera para pedir ("!" ou balão) | Referência e simulação (clientes parados em ORDER) |
 | C6 | P1 | Música própria na tela inicial (tema da praia) e fade para o jogo | Plano de apresentação |
 | C7 | P1 | Tela de carregamento com arte e dica (Novo jogo, Carregar) | Plano de apresentação |
-| C8 | P1 | Logo desenhado (Canva) no lugar do logo de texto; mesmo logo na cápsula da Steam | Plano de apresentação |
+| C8 | ✅ | Logo desenhado (Canva) no lugar do logo de texto; mesmo logo na cápsula da Steam (feito 08/11: logo e tela inicial 2D do Canva (e39e5e7e)) | Plano de apresentação |
 | C9 | ✅ | Dívida: digitar um valor livre além dos botões R$ 1.000 / 10.000 / 50.000 / máximo | Contrato da dívida |
 | C10 | ✅ (dica) | Pagamento: dica "digite 1850 para R$ 18,50" na maquininha; som de caixa ao confirmar | Revisão |
-| C11 | P2 | Animações: sentar e levantar com transição (UAL `Sitting_Enter`/`Sitting_Exit`), andar variado, conversar em grupo | Referência |
-| C12 | P2 | Pedestres em grupos de 2–3 e alguns com sacolas | Referência |
+| C11 | ✅ | Animações: sentar e levantar com transição (UAL `Sitting_Enter`/`Sitting_Exit`), andar variado, conversar em grupo (feito 08/11: Sitting_Enter/Exit da UAL ao sentar e levantar (2a268425)) | Referência |
+| C12 | ✅ | Pedestres em grupos de 2–3 e alguns com sacolas (feito 08/11: duplas e trios andando juntos, 4/8/16 pessoas (2a268425)) | Referência |
 | C13 | P2 | Banhistas variados: de bruços, sentados na toalha lendo | Revisão |
 | C14 | P2 | Bartender ocioso limpando o balcão entre os pedidos | Referência |
-| C15 | P2 | Repor com caixa e contador (3/8) além do "Repor 10" | Referência |
+| C15 | ✅ | Repor com caixa e contador (3/8) além do "Repor 10" (feito 08/11: caixa de reposição com contador (5b42d3ce)) | Referência |
 | C16 | P2 | Entrega no quarto da pousada: hóspede abre a porta e recebe | Referência |
-| C17 | P2 | HUD mais enxuto: nível, XP e estrelas num cartão no alto à esquerda | Referência |
+| C17 | ✅ | HUD mais enxuto: nível, XP e estrelas num cartão no alto à esquerda (feito 08/11: HUD em duas tábuas: fama+XP+estrelas / dinheiro+relógio (f6fd6e70)) | Referência |
 | C18 | P2 | Eventos cômicos genéricos (turista perdido, influenciador) com gesto (acenar) e não só a fala | Revisão |
 | C19 | P2 | Cáusticas no fundo do mar mais fortes no raso e raios de sol embaixo d'água | Referência |
 | C20 | P3 | Troco também no bar e nos negócios | Ideia |
@@ -112,3 +112,9 @@ na dívida) e C10 (dica dos centavos na maquininha).
 | D4 | Músicas CC0 do OpenGameArt: conferir se alguma está registrada no Content ID antes de liberar streaming |
 | D5 | Créditos do jogo (`credits.json`) com as faixas novas e o "IA nas músicas e na imagem" já decidido |
 | D6 | Preset Baixo medido com `bench_package.ps1` para os requisitos mínimos |
+
+
+## Rodada de 08/11 — dicas do Resort Simulator
+
+Feitas: C1, C2, C3, C4, C8, C11, C12, C15, C17, e o celular com +/- e carrinho (dica 8). Também: luminária no teto do quiosque, vara de pescar marcando o ponto de pesca, ondas calmas no tempo bom e fortes só com chuva, música/ambiente ajustáveis com o jogo pausado.
+Falta: C16 (hóspede abre a porta no serviço de quarto): é do Grand Hotel (jogo completo) e os quartos visitáveis não têm portas nos dados; fazer junto com a próxima rodada do hotel.
