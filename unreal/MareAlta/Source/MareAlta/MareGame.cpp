@@ -175,6 +175,7 @@ private:
  TWeakObjectPtr<AMareController> Owner;
  TSharedPtr<SVerticalBox> Body;
  int64 DebtPick=0;   // debt payment waiting for "Confirmar" (cents)
+ TSharedPtr<SEditableTextBox> DebtAmount;
  TSharedPtr<SEditableTextBox> CompanyName;
  int32 Tab=0;
  FName Station;
@@ -755,33 +756,39 @@ private:
  void DebtCard()
  {
   auto S=Sim();bool bCreated=false;UMareSimulation::Object(S->State,TEXT("company"))->TryGetBoolField(TEXT("created"),bCreated);if(!bCreated)return;
-  const auto Phone=UMareSimulation::Object(S->DebtDefs(),TEXT("phone"));
+  const auto Phone=UMareSimulation::Object(S->DebtDefs(),TEXT("phone"));   // i18n:skip
   auto R=[](int64 C){return FString::Printf(TEXT("%.0f"),C/100.0);};
   const int64 Principal=S->DebtPrincipalCents(),Paid=S->DebtPaidCents(),Left=S->DebtBalanceCents(),Max=S->DebtMaxPayCents();
-  Heading(UMareSimulation::String(Phone,TEXT("title")));
+  Heading(UMareSimulation::String(Phone,TEXT("title")));   // i18n:skip
   auto Card=SNew(SVerticalBox);
-  if(Left<=0)Card->AddSlot().AutoHeight()[MareNotebook::Stamp(UMareSimulation::String(Phone,TEXT("settled")),MareNotebook::Green)];
-  else Card->AddSlot().AutoHeight()[MareNotebook::HandText(UMareSimulation::String(Phone,TEXT("balance")).Replace(TEXT("{0}"),*R(Left)),24,MareNotebook::Brown)];
-  Card->AddSlot().AutoHeight().Padding(0,2)[MareNotebook::BodyText(UMareSimulation::String(Phone,TEXT("paid")).Replace(TEXT("{0}"),*R(Paid)).Replace(TEXT("{1}"),*R(Principal)),11.5f,MareNotebook::Ink)];
+  if(Left<=0)Card->AddSlot().AutoHeight()[MareNotebook::Stamp(UMareSimulation::String(Phone,TEXT("settled")),MareNotebook::Green)];   // i18n:skip
+  else Card->AddSlot().AutoHeight()[MareNotebook::HandText(UMareSimulation::String(Phone,TEXT("balance")).Replace(TEXT("{0}"),*R(Left)),24,MareNotebook::Brown)];   // i18n:skip
+  Card->AddSlot().AutoHeight().Padding(0,2)[MareNotebook::BodyText(UMareSimulation::String(Phone,TEXT("paid")).Replace(TEXT("{0}"),*R(Paid)).Replace(TEXT("{1}"),*R(Principal)),11.5f,MareNotebook::Ink)];   // i18n:skip
   {const float F=Principal>0?float(double(Paid)/double(Principal)):0.f;   // pencil progress line (0..100 %)
    Card->AddSlot().AutoHeight().Padding(0,4).HAlign(HAlign_Left)[SNew(SBox).WidthOverride(360).HeightOverride(10)[SNew(SOverlay)
     +SOverlay::Slot()[SNew(SBorder).BorderImage(FCoreStyle::Get().GetBrush("WhiteBrush")).BorderBackgroundColor(MareNotebook::Faded.CopyWithNewOpacity(.25f))]
     +SOverlay::Slot().HAlign(HAlign_Left)[SNew(SBox).WidthOverride(FMath::Max(2.f,360.f*F))[SNew(SBorder).BorderImage(FCoreStyle::Get().GetBrush("WhiteBrush")).BorderBackgroundColor(MareNotebook::Green)]]]];}
-  if(Left>0 && S->IsDemo())Card->AddSlot().AutoHeight().Padding(0,2)[MareNotebook::BodyText(UMareSimulation::String(Phone,TEXT("demo_limit")).Replace(TEXT("{0}"),*R(S->DebtLimitCents())),10.5f,MareNotebook::Faded)];
+  if(Left>0 && S->IsDemo())Card->AddSlot().AutoHeight().Padding(0,2)[MareNotebook::BodyText(UMareSimulation::String(Phone,TEXT("demo_limit")).Replace(TEXT("{0}"),*R(S->DebtLimitCents())),10.5f,MareNotebook::Faded)];   // i18n:skip
   if(Left>0 && !S->IsDebtDemoCapped()){
    if(DebtPick>0 && DebtPick<=Max){
-    Card->AddSlot().AutoHeight().Padding(0,6,0,2)[MareNotebook::HandText(UMareSimulation::String(Phone,TEXT("confirm")).Replace(TEXT("{0}"),*R(DebtPick)).Replace(TEXT("{1}"),*R(int64(FMath::RoundToDouble(S->Money()*100))-DebtPick)),17,MareNotebook::Ink)];
+    Card->AddSlot().AutoHeight().Padding(0,6,0,2)[MareNotebook::HandText(UMareSimulation::String(Phone,TEXT("confirm")).Replace(TEXT("{0}"),*R(DebtPick)).Replace(TEXT("{1}"),*R(int64(FMath::RoundToDouble(S->Money()*100))-DebtPick)),17,MareNotebook::Ink)];   // i18n:skip
     Card->AddSlot().AutoHeight().HAlign(HAlign_Left)[SNew(SHorizontalBox)
      +SHorizontalBox::Slot().AutoWidth()[Button(TEXT("Confirmar"),[this,S](){const int64 V=DebtPick;DebtPick=0;S->PayDebt(V);})]
      +SHorizontalBox::Slot().AutoWidth().Padding(12,0,0,0).VAlign(VAlign_Center)[Link(TEXT("cancelar"),[this](){DebtPick=0;})]];}
    else{
     DebtPick=0;
-    Card->AddSlot().AutoHeight().Padding(0,6,0,2)[MareNotebook::BodyText(UMareSimulation::String(Phone,TEXT("pay")),11.5f,MareNotebook::Faded)];
+    Card->AddSlot().AutoHeight().Padding(0,6,0,2)[MareNotebook::BodyText(UMareSimulation::String(Phone,TEXT("pay")),11.5f,MareNotebook::Faded)];   // i18n:skip
     auto Row=SNew(SWrapBox).UseAllottedSize(true).InnerSlotPadding(FVector2D(8,4));
     for(const int64 Amount:{int64(100000),int64(1000000),int64(5000000)})
      Row->AddSlot()[Button(TEXT("R$ ")+R(Amount),[this,Amount](){DebtPick=Amount;},Amount<=Max)];
     Row->AddSlot()[Button(TEXT("o máximo que der · R$ ")+R(Max),[this,Max](){DebtPick=Max;},Max>0)];
-    Card->AddSlot().AutoHeight()[Row];}}
+    Card->AddSlot().AutoHeight()[Row];
+    // 07/11 (debt contract: "o botão abre valor livre"): any amount in reais, capped by what can be paid now.
+    Card->AddSlot().AutoHeight().HAlign(HAlign_Left).Padding(0,6,0,0)[SNew(SHorizontalBox)
+     +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center)[MareNotebook::BodyText(TEXT("outro valor: R$"),11.5f,MareNotebook::Faded)]
+     +SHorizontalBox::Slot().AutoWidth().Padding(6,0)[SNew(SBox).WidthOverride(120)[SAssignNew(DebtAmount,SEditableTextBox).Font(MareNotebook::Hand(18)).HintText(MareLoc::Text(TEXT("ex.: 2500")))]]
+     +SHorizontalBox::Slot().AutoWidth()[Button(TEXT("pagar este valor"),[this,Max](){const FString V=DebtAmount.IsValid()?DebtAmount->GetText().ToString().Replace(TEXT("."),TEXT("")).Replace(TEXT(","),TEXT(".")):FString();
+      const int64 C=(int64)FMath::RoundToDouble(FCString::Atod(*V)*100.0);if(C>0)DebtPick=FMath::Min(C,Max);},Max>0)]];}}
   Body->AddSlot().AutoHeight().Padding(0,4)[MareNotebook::PriceTag(Card,TiltOf(3))];
  }
  void ResortPage()
@@ -1779,18 +1786,18 @@ public:
   const auto End=UMareSimulation::Object(S->EventDefs(),TEXT("end_of_content"));
   if(Args._Debt){
    // Item 10: the debt is paid (full game only). Dona Dilce's words, the credits and back to the same resort.
-   const auto Fin=UMareSimulation::Object(S->DebtDefs(),TEXT("finale"));
+   const auto Fin=UMareSimulation::Object(S->DebtDefs(),TEXT("finale"));   // i18n:skip
    auto Buttons=SNew(SHorizontalBox)+SHorizontalBox::Slot().AutoWidth()[SAssignNew(Continue,SMarePadButton).ButtonStyle(&InkButton()).ContentPadding(FMargin(14,4))
      .OnClicked_Lambda([this](){if(Owner.IsValid())Owner->CloseBusinessGame();return FReply::Handled();})
-     [SNew(STextBlock).Text(MareLoc::Text(UMareSimulation::String(Fin,TEXT("continue")))).Font(Hand(20)).ColorAndOpacity(MareNotebook::Tag)]]
+     [SNew(STextBlock).Text(MareLoc::Text(UMareSimulation::String(Fin,TEXT("continue")))).Font(Hand(20)).ColorAndOpacity(MareNotebook::Tag)]]   // i18n:skip
     +SHorizontalBox::Slot().AutoWidth().Padding(12,0,0,0)[SNew(SMarePadButton).ButtonStyle(&InkButton()).ContentPadding(FMargin(14,4))
      .OnClicked_Lambda([this](){if(Owner.IsValid()){auto O=Owner;O->CloseBusinessGame();O->OpenCredits();}return FReply::Handled();})
-     [SNew(STextBlock).Text(MareLoc::Text(UMareSimulation::String(Fin,TEXT("credits")))).Font(Hand(20)).ColorAndOpacity(MareNotebook::Tag)]];
+     [SNew(STextBlock).Text(MareLoc::Text(UMareSimulation::String(Fin,TEXT("credits")))).Font(Hand(20)).ColorAndOpacity(MareNotebook::Tag)]];   // i18n:skip
    ChildSlot.HAlign(HAlign_Center).VAlign(VAlign_Center)[SNew(SBorder).BorderImage(FCoreStyle::Get().GetBrush("WhiteBrush")).BorderBackgroundColor(Paper).Padding(FMargin(34,26))
     [SNew(SBox).WidthOverride(640)[SNew(SVerticalBox)
-     +SVerticalBox::Slot().AutoHeight()[HandText(UMareSimulation::String(Fin,TEXT("title")),34,Brown)]
-     +SVerticalBox::Slot().AutoHeight().Padding(0,10)[BodyText(UMareSimulation::String(Fin,TEXT("text")),14,Ink)]
-     +SVerticalBox::Slot().AutoHeight().Padding(0,6)[HandText(UMareSimulation::String(Fin,TEXT("grandma")),20,Green)]
+     +SVerticalBox::Slot().AutoHeight()[HandText(UMareSimulation::String(Fin,TEXT("title")),34,Brown)]   // i18n:skip
+     +SVerticalBox::Slot().AutoHeight().Padding(0,10)[BodyText(UMareSimulation::String(Fin,TEXT("text")),14,Ink)]   // i18n:skip
+     +SVerticalBox::Slot().AutoHeight().Padding(0,6)[HandText(UMareSimulation::String(Fin,TEXT("grandma")),20,Green)]   // i18n:skip
      +SVerticalBox::Slot().AutoHeight().HAlign(HAlign_Left).Padding(0,14,0,0)[Buttons]]]];
    return;}
   const TArray<TSharedPtr<FJsonValue>>* Album=nullptr;UMareSimulation::Object(S->State,TEXT("prog"))->TryGetArrayField(TEXT("album"),Album);
@@ -1906,8 +1913,8 @@ private:
   if(bTitleMode){
    // Title screen (07/11): the logo and the menu in a column on the left, the living bay behind (AMareTitleCamera).
    FString Logo=TEXT("Coconut Simulator"),Sub=TEXT("Maré Alta Resort");
-   {FString Text;TSharedPtr<FJsonObject> T;FFileHelper::LoadFileToString(Text,*(FPaths::ProjectContentDir()/TEXT("Data/title.json")));
-    if(FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Text),T) && T.IsValid()){T->TryGetStringField(TEXT("logo"),Logo);T->TryGetStringField(TEXT("subtitle"),Sub);}}
+   {FString Text;TSharedPtr<FJsonObject> T;FFileHelper::LoadFileToString(Text,*(FPaths::ProjectContentDir()/TEXT("Data/title.json")));   // i18n:skip
+    if(FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Text),T) && T.IsValid()){T->TryGetStringField(TEXT("logo"),Logo);T->TryGetStringField(TEXT("subtitle"),Sub);}}   // i18n:skip
    auto Shadowed=[](const FString& V,float Size,const FLinearColor& C){return SNew(STextBlock).Text(FText::FromString(V)).Font(MareNotebook::Hand(Size)).ColorAndOpacity(C)
     .ShadowOffset(FVector2D(2.5f,2.5f)).ShadowColorAndOpacity(FLinearColor(0,0,0,.55f));};
    auto Head=SNew(SVerticalBox)

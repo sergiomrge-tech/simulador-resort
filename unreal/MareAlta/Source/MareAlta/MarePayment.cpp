@@ -35,7 +35,7 @@ namespace
 TSharedPtr<FJsonObject> UMareSimulation::PaymentDefs() const
 {
  static TSharedPtr<FJsonObject> Defs;
- if(!Defs.IsValid()){FString Text;FFileHelper::LoadFileToString(Text,*(FPaths::ProjectContentDir()/TEXT("Data/payment.json")));
+ if(!Defs.IsValid()){FString Text;FFileHelper::LoadFileToString(Text,*(FPaths::ProjectContentDir()/TEXT("Data/payment.json")));   // i18n:skip
   FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Text),Defs);if(!Defs.IsValid())Defs=MakeShared<FJsonObject>();}
  return Defs;
 }
@@ -47,7 +47,7 @@ FMarePay UMareSimulation::MakePayment(const FString& Customer,double Total,FRand
  if(Rng.FRand()>=Number(D,TEXT("cash_share"),.6)){Pay.bCard=true;return Pay;}
  // The smallest note that covers the total, sometimes a bigger one (a R$ 50 note for a R$ 18 coconut).
  TArray<int64> Notes;const TArray<TSharedPtr<FJsonValue>>* L=nullptr;
- if(D->TryGetArrayField(TEXT("given"),L))for(const auto& V:*L)Notes.Add(Cents(V->AsNumber()));
+ if(D->TryGetArrayField(TEXT("given"),L))for(const auto& V:*L)Notes.Add(Cents(V->AsNumber()));   // i18n:skip
  if(Notes.IsEmpty())Notes={500,1000,2000,5000,10000};
  Notes.Sort();
  int32 First=Notes.IndexOfByPredicate([&](int64 N){return N>=Pay.Total;});
@@ -109,14 +109,14 @@ public:
     Pad->AddSlot()[Key_(Key,[this,Key](){if(Typed.Len()<7)Typed+=Key;})];}
    Pad->AddSlot()[Key_(TEXT("apagar"),[this](){Typed.LeftChopInline(1);})];}
   else{
-   TArray<double> Units;for(const TCHAR* F:{TEXT("notes"),TEXT("coins")}){const TArray<TSharedPtr<FJsonValue>>* L=nullptr;if(D->TryGetArrayField(F,L))for(const auto& V:*L)Units.Add(V->AsNumber());}
+   TArray<double> Units;for(const TCHAR* F:{TEXT("notes"),TEXT("coins")}){const TArray<TSharedPtr<FJsonValue>>* L=nullptr;if(D->TryGetArrayField(F,L))for(const auto& V:*L)Units.Add(V->AsNumber());}   // i18n:skip
    if(Units.IsEmpty())Units={100,50,20,10,5,2,1,.5,.25,.1,.05};
    for(double U:Units){const int64 C=Cents(U);Pad->AddSlot()[Key_(U>=2?FString::Printf(TEXT("R$ %.0f"),U):Reais(C),[this,C](){Given.Add(C);},U>=2)];}
    Pad->AddSlot()[Key_(TEXT("desfazer"),[this](){if(Given.Num())Given.Pop();})];}
   ChildSlot.HAlign(HAlign_Center).VAlign(VAlign_Center)[SNew(SBorder).BorderImage(FCoreStyle::Get().GetBrush("WhiteBrush")).BorderBackgroundColor(Paper).Padding(FMargin(28,22))
    [SNew(SBox).WidthOverride(620)[SNew(SVerticalBox)
     +SVerticalBox::Slot().AutoHeight()[HandText(TEXT("Pagamento · ")+Pay.Customer,30,Brown)]
-    +SVerticalBox::Slot().AutoHeight().Padding(0,4,0,10)[BodyText(Pay.bCard?TEXT("Pagamento no cartão: digite o valor total na maquininha e confirme."):TEXT("Pagamento em dinheiro: monte o troco com as notas e moedas da gaveta e confirme."),12.5f,Faded)]
+    +SVerticalBox::Slot().AutoHeight().Padding(0,4,0,10)[BodyText(Pay.bCard?TEXT("Pagamento no cartão: digite o total na maquininha, com os centavos (R$ 18,50 = 1850), e confirme."):TEXT("Pagamento em dinheiro: monte o troco com as notas e moedas da gaveta e confirme."),12.5f,Faded)]
     +SVerticalBox::Slot().AutoHeight()[SNew(SBorder).BorderImage(&ScreenBrush()).Padding(FMargin(18,12))[Screen]]
     +SVerticalBox::Slot().AutoHeight().Padding(0,14,0,0)[Pad]
     +SVerticalBox::Slot().AutoHeight().Padding(0,16,0,0)[SNew(SHorizontalBox)
@@ -138,12 +138,12 @@ public:
  FString QA(const FString& Cmd)
  {
   FString Verb,Arg;if(!Cmd.Split(TEXT(":"),&Verb,&Arg))Verb=Cmd;
-  if(Verb==TEXT("give"))Given.Add(FCString::Atoi64(*Arg));
-  else if(Verb==TEXT("undo") && Given.Num())Given.Pop();
-  else if(Verb==TEXT("type"))Typed=Arg;
+  if(Verb==TEXT("give"))Given.Add(FCString::Atoi64(*Arg));   // i18n:skip
+  else if(Verb==TEXT("undo") && Given.Num())Given.Pop();   // i18n:skip
+  else if(Verb==TEXT("type"))Typed=Arg;   // i18n:skip
   else if(Verb==TEXT("ok")){Finish(false);return LastResult;}
-  else if(Verb==TEXT("skip")){Finish(true);return LastResult;}
-  return FString::Printf(TEXT("card=%d total=%lld given=%lld due=%lld giving=%lld typed=%s"),Pay.bCard?1:0,Pay.Total,Pay.Given,Pay.ChangeDue(),Giving(),*Typed);
+  else if(Verb==TEXT("skip")){Finish(true);return LastResult;}   // i18n:skip
+  return FString::Printf(TEXT("card=%d total=%lld given=%lld due=%lld giving=%lld typed=%s"),Pay.bCard?1:0,Pay.Total,Pay.Given,Pay.ChangeDue(),Giving(),*Typed);   // i18n:skip
  }
 private:
  TWeakObjectPtr<AMareController> Owner;FMarePay Pay;TArray<int64> Given;FString Typed;FString LastResult;bool bDone=false;
@@ -179,7 +179,7 @@ namespace MarePayment
   const TSharedRef<SMarePayment> W=SNew(SMarePayment).Owner(Owner).Pay(Pay);GPayment=W;return W;
  }
  bool IsOpen(){return GPayment.IsValid();}
- FString QA(const FString& Cmd){const auto P=GPayment.Pin();return P.IsValid()?P->QA(Cmd):FString(TEXT("closed"));}
+ FString QA(const FString& Cmd){const auto P=GPayment.Pin();return P.IsValid()?P->QA(Cmd):FString(TEXT("closed"));}   // i18n:skip
 }
 
 void AMareController::OpenPayment(const FString& Customer,double Total)
@@ -193,11 +193,11 @@ void AMareController::OpenPayment(const FString& Customer,double Total)
  const TSharedRef<SWidget> W=MarePayment::Make(this,Pay);GameWidget=W;
  GEngine->GameViewport->AddViewportWidgetContent(W,40);bShowMouseCursor=true;
  SetInputMode(FInputModeUIOnly().SetWidgetToFocus(W));SetIgnoreMoveInput(true);SetIgnoreLookInput(true);
- S->ShowTip(TEXT("payment"));
+ S->ShowTip(TEXT("payment"));   // i18n:skip
 }
 
-static FAutoConsoleCommandWithWorldAndArgs MarePayQA(TEXT("mare.Pay"),TEXT("QA payment: 'open <total>' opens the screen, else give:<cents> | undo | type:<n> | ok | skip | state."),
+static FAutoConsoleCommandWithWorldAndArgs MarePayQA(TEXT("mare.Pay"),TEXT("QA payment: 'open <total>' opens the screen, else give:<cents> | undo | type:<n> | ok | skip | state."),   // i18n:skip
  FConsoleCommandWithWorldAndArgsDelegate::CreateLambda([](const TArray<FString>& Args,UWorld* World){
   if(!World || Args.IsEmpty())return;
-  if(Args[0]==TEXT("open") && Args.Num()>1){if(auto PC=Cast<AMareController>(UGameplayStatics::GetPlayerController(World,0)))PC->OpenPayment(TEXT("Cliente QA"),FCString::Atod(*Args[1]));}
+  if(Args[0]==TEXT("open") && Args.Num()>1){if(auto PC=Cast<AMareController>(UGameplayStatics::GetPlayerController(World,0)))PC->OpenPayment(TEXT("Cliente QA"),FCString::Atod(*Args[1]));}   // i18n:skip
   UE_LOG(LogTemp,Display,TEXT("MARE_PAY %s"),*MarePayment::QA(Args[0]));}));

@@ -63,7 +63,7 @@ bool UMareVisualWorld::UnlockMatches(const TSharedPtr<FJsonObject>& Owned,const 
   bool bOwned=false;if(Owned.IsValid())Owned->TryGetBoolField(Term,bOwned);if(bOwned==bNot)return false;}
  return true;
 }
-static TAutoConsoleVariable<float> CVarMareKioskDayLight(TEXT("mare.KioskDayLight"),25.f,TEXT("Kiosk work lights by day: multiple of their night candela (they must read against the daylight exposure)."));
+static TAutoConsoleVariable<float> CVarMareKioskDayLight(TEXT("mare.KioskDayLight"),25.f,TEXT("Kiosk work lights by day: multiple of their night candela (they must read against the daylight exposure)."));   // i18n:skip
 void UMareVisualWorld::BuildLamps()
 {
  // Light sources exported from Godot (their glow materials were lost): mesh, glass centre above the

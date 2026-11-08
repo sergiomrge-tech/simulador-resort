@@ -10,12 +10,12 @@
 static TSharedPtr<FJsonObject> TitleDefs()
 {
  static TSharedPtr<FJsonObject> Defs;
- if(!Defs.IsValid()){FString Text;FFileHelper::LoadFileToString(Text,*(FPaths::ProjectContentDir()/TEXT("Data/title.json")));
+ if(!Defs.IsValid()){FString Text;FFileHelper::LoadFileToString(Text,*(FPaths::ProjectContentDir()/TEXT("Data/title.json")));   // i18n:skip
   FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Text),Defs);if(!Defs.IsValid())Defs=MakeShared<FJsonObject>();}
  return Defs;
 }
 
-double AMareTitleCamera::TitleMinutes(){double H=17.3;TitleDefs()->TryGetNumberField(TEXT("hour"),H);return H*60.0;}
+double AMareTitleCamera::TitleMinutes(){double H=17.3;TitleDefs()->TryGetNumberField(TEXT("hour"),H);return H*60.0;}   // i18n:skip
 
 AMareTitleCamera::AMareTitleCamera()
 {
@@ -27,9 +27,9 @@ AMareTitleCamera::AMareTitleCamera()
 void AMareTitleCamera::BeginPlay()
 {
  Super::BeginPlay();
- const auto D=TitleDefs();double Seconds=80;D->TryGetNumberField(TEXT("loop_seconds"),Seconds);Loop=FMath::Max(10.f,float(Seconds));
+ const auto D=TitleDefs();double Seconds=80;D->TryGetNumberField(TEXT("loop_seconds"),Seconds);Loop=FMath::Max(10.f,float(Seconds));   // i18n:skip
  const TArray<TSharedPtr<FJsonValue>>* List=nullptr;
- if(D->TryGetArrayField(TEXT("points"),List))for(const auto& V:*List){const auto& A=V->AsArray();if(A.Num()<5)continue;
+ if(D->TryGetArrayField(TEXT("points"),List))for(const auto& V:*List){const auto& A=V->AsArray();if(A.Num()<5)continue;   // i18n:skip
   Points.Add(FVector(A[0]->AsNumber(),A[1]->AsNumber(),A[2]->AsNumber()));Angles.Add(FRotator(A[3]->AsNumber(),A[4]->AsNumber(),0));}
  if(Points.Num()<2){Points={FVector(3000,-3600,500),FVector(5000,-3400,500)};Angles={FRotator(-6,60,0),FRotator(-6,120,0)};}
  Place(0);
@@ -80,9 +80,9 @@ public:
  {
   Done=Args._OnDone;
   const TArray<TSharedPtr<FJsonValue>>* List=nullptr;
-  if(TitleDefs()->TryGetArrayField(TEXT("story"),List))for(const auto& V:*List){const auto O=V->AsObject();auto P=MakeShared<FPanel>();
-   P->Text=O->GetStringField(TEXT("text"));
-   if(UTexture2D* T=LoadObject<UTexture2D>(nullptr,*O->GetStringField(TEXT("image")))){P->Tex.Reset(T);P->Brush.SetResourceObject(T);P->Brush.ImageSize=FVector2D(1920,1080);}
+  if(TitleDefs()->TryGetArrayField(TEXT("story"),List))for(const auto& V:*List){const auto O=V->AsObject();auto P=MakeShared<FPanel>();   // i18n:skip
+   P->Text=O->GetStringField(TEXT("text"));   // i18n:skip
+   if(UTexture2D* T=LoadObject<UTexture2D>(nullptr,*O->GetStringField(TEXT("image")))){P->Tex.Reset(T);P->Brush.SetResourceObject(T);P->Brush.ImageSize=FVector2D(1920,1080);}   // i18n:skip
    Panels.Add(P);}
   Shown=FPlatformTime::Seconds();
   ChildSlot[SNew(SBorder).BorderImage(FCoreStyle::Get().GetBrush("WhiteBrush")).BorderBackgroundColor(FLinearColor(.02f,.02f,.03f,1)).Padding(0)
@@ -123,7 +123,7 @@ namespace MareStory
  bool IsOpen(){return GStory.IsValid();}
  bool Show(AMareController* Owner,TFunction<void()> OnDone)
  {
-  if(!Owner || !GEngine || !GEngine->GameViewport || !TitleDefs()->HasField(TEXT("story")))return false;
+  if(!Owner || !GEngine || !GEngine->GameViewport || !TitleDefs()->HasField(TEXT("story")))return false;   // i18n:skip
   TWeakObjectPtr<AMareController> Weak(Owner);
   TSharedPtr<SMareStory> Holder;
   const TSharedRef<SMareStory> W=SNew(SMareStory).OnDone([Weak,OnDone](){
@@ -137,6 +137,6 @@ namespace MareStory
  }
 }
 
-static FAutoConsoleCommandWithWorldAndArgs MareStoryQA(TEXT("mare.Story"),TEXT("QA: shows the new-game story postcards now."),
+static FAutoConsoleCommandWithWorldAndArgs MareStoryQA(TEXT("mare.Story"),TEXT("QA: shows the new-game story postcards now."),   // i18n:skip
  FConsoleCommandWithWorldAndArgsDelegate::CreateLambda([](const TArray<FString>&,UWorld* World){
   if(auto PC=Cast<AMareController>(World?World->GetFirstPlayerController():nullptr))MareStory::Show(PC,nullptr);}));

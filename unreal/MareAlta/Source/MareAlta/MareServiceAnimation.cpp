@@ -13,9 +13,9 @@
 #include "AnimNodes/AnimNode_CopyPoseFromMesh.h"
 
 // Sunbather on a towel, raised knee (degrees about the body's side axis; tuned by eye on the beach, 07/11).
-static TAutoConsoleVariable<float> CVarLieThigh(TEXT("mare.LieThigh"),50.f,TEXT("Lying on a towel: thigh flexion of the raised knee (degrees)."));
-static TAutoConsoleVariable<float> CVarLieCalf(TEXT("mare.LieCalf"),-100.f,TEXT("Lying on a towel: shin fold of the raised knee (degrees)."));
-static TAutoConsoleVariable<float> CVarLieFoot(TEXT("mare.LieFoot"),50.f,TEXT("Lying on a towel: foot correction so the sole rests flat (degrees)."));
+static TAutoConsoleVariable<float> CVarLieThigh(TEXT("mare.LieThigh"),50.f,TEXT("Lying on a towel: thigh flexion of the raised knee (degrees)."));   // i18n:skip
+static TAutoConsoleVariable<float> CVarLieCalf(TEXT("mare.LieCalf"),-100.f,TEXT("Lying on a towel: shin fold of the raised knee (degrees)."));   // i18n:skip
+static TAutoConsoleVariable<float> CVarLieFoot(TEXT("mare.LieFoot"),50.f,TEXT("Lying on a towel: foot correction so the sole rests flat (degrees)."));   // i18n:skip
 namespace MareServiceAnimation
 {
 bool IsVessel(UStaticMeshComponent* Part)
@@ -118,9 +118,9 @@ struct FServiceProxy : FAnimSingleNodeInstanceProxy
    // in its parent's original frame.
    const auto& Bones=Output.Pose.GetBoneContainer();const auto& Ref=Bones.GetReferenceSkeleton();
    const TCHAR* Side=LieKnee==1?TEXT("_r"):TEXT("_l");
-   const FCompactPoseBoneIndex Thigh=Bones.GetCompactPoseIndexFromSkeletonIndex(Ref.FindBoneIndex(FName(FString(TEXT("thigh"))+Side)));
-   const FCompactPoseBoneIndex Calf=Bones.GetCompactPoseIndexFromSkeletonIndex(Ref.FindBoneIndex(FName(FString(TEXT("calf"))+Side)));
-   const FCompactPoseBoneIndex Foot=Bones.GetCompactPoseIndexFromSkeletonIndex(Ref.FindBoneIndex(FName(FString(TEXT("foot"))+Side)));
+   const FCompactPoseBoneIndex Thigh=Bones.GetCompactPoseIndexFromSkeletonIndex(Ref.FindBoneIndex(FName(FString(TEXT("thigh"))+Side)));   // i18n:skip
+   const FCompactPoseBoneIndex Calf=Bones.GetCompactPoseIndexFromSkeletonIndex(Ref.FindBoneIndex(FName(FString(TEXT("calf"))+Side)));   // i18n:skip
+   const FCompactPoseBoneIndex Foot=Bones.GetCompactPoseIndexFromSkeletonIndex(Ref.FindBoneIndex(FName(FString(TEXT("foot"))+Side)));   // i18n:skip
    if(Thigh!=INDEX_NONE && Calf!=INDEX_NONE){FCSPose<FCompactPose> Pose;Pose.InitPose(Output.Pose);
     auto Bend=[&](FCompactPoseBoneIndex Bone,float Degrees){const FCompactPoseBoneIndex Parent=Bones.GetParentBoneIndex(Bone);if(Parent==INDEX_NONE)return;
      const FQuat P=Pose.GetComponentSpaceTransform(Parent).GetRotation();auto& Local=Output.Pose[Bone];

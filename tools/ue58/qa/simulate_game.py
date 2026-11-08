@@ -145,16 +145,17 @@ if not START or START < '40':
         'pool': '-500,-300,300,-15,45', 'passeios': '6780,-2680,250,-12,-50',
     }
     for exp, cam in areas.items():
-        stage('10_' + exp, [f'mare.QA buy {exp}'], cam, wait=6, audits=exp in ('bar', 'pousada', 'pool'))
+        # 07/11: the last demo purchase opens the end-of-demo screen, which pauses the game (every later photo froze).
+        stage('10_' + exp, [f'mare.QA buy {exp}', 'mare.ShowUI close'], cam, wait=6, audits=exp in ('bar', 'pousada', 'pool'))
     # 3. The chapters (and the businesses the carnival asks for).
     for chapter in ('pier', 'prainha', 'sabores', 'carnaval'):
-        stage('20_' + chapter, [f'mare.QA step {chapter}'] * 3, None, wait=2, audits=False)
+        stage('20_' + chapter, [f'mare.QA step {chapter}'] * 3 + ['mare.ShowUI close'], None, wait=2, audits=False)
     for biz, cam in (('sorveteria', '4365,-2190,250,-12,45'), ('aluguel', '6310,-2300,250,-12,45'), ('food_truck', '2630,2600,100,4,90'),
                      ('souvenir', '7860,3630,300,-12,45'), ('surfe', '-4990,-2380,250,-12,45')):
         stage('30_' + biz, [], cam, wait=3, audits=False)
 # 4. Grand Hotel and the game room.
 cmd('mare.QA money 60000')
-stage('40_grand_hotel', ['mare.QA fame 8', 'mare.QA buy grand_hotel'], '-1800,5000,250,-10,90', wait=10)
+stage('40_grand_hotel', ['mare.QA fame 9', 'mare.QA buy grand_hotel', 'mare.ShowUI close'], '-1800,5000,250,-10,90', wait=10)
 stage('41_restaurante', [], '-1420,3780,250,-12,45', wait=3, audits=False)
 stage('42_salao_jogos', ['mare.QA buy salao_jogos'], '-1800,5600,250,-12,90', wait=8)
 # 5. Night, then save and reload.
@@ -178,7 +179,8 @@ if root.is_dir():
         return json.loads(raw.decode('utf-16') if raw[:2] in (b'\xff\xfe', b'\xfe\xff') else raw.decode('utf-8-sig'))
     b, a2 = dump('qa-before-reload.json'), dump('qa-after-reload.json')
     # Businesses the game room registers on load arrive as empty entries: not owned, so not a difference.
-    clean = lambda d: {**d, 'biz': {k: v for k, v in d.get('biz', {}).items() if v}}
+    # Businesses keep serving between the two dumps (the clerk's queue and report move on): compare the rest.
+    clean = lambda d: {**d, 'biz': {k: {kk: vv for kk, vv in v.items() if kk not in ('queue', 'report', 'next_customer')} for k, v in d.get('biz', {}).items() if v}}
     report['reload'] = {'same': clean(b) == clean(a2), 'before': b, 'after': a2}
     print('reload keeps the save:', clean(b) == clean(a2))
 stage('60_recarregado_hotel', [], '-1800,5000,250,-10,90', wait=4)

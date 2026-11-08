@@ -16,7 +16,7 @@ namespace
 TSharedPtr<FJsonObject> UMareSimulation::DebtDefs() const
 {
  static TSharedPtr<FJsonObject> Defs;
- if(!Defs.IsValid()){FString Text;FFileHelper::LoadFileToString(Text,*(FPaths::ProjectContentDir()/TEXT("Data/debt.json")));
+ if(!Defs.IsValid()){FString Text;FFileHelper::LoadFileToString(Text,*(FPaths::ProjectContentDir()/TEXT("Data/debt.json")));   // i18n:skip
   FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Text),Defs);if(!Defs.IsValid())Defs=MakeShared<FJsonObject>();}
  return Defs;
 }
@@ -25,17 +25,17 @@ bool UMareSimulation::IsDemo() const{bool bDemo=false;if(Definitions.IsValid())D
 
 bool UMareSimulation::HasDebt() const
 {
- return State.IsValid() && Object(State,TEXT("prog"))->HasTypedField<EJson::Object>(TEXT("debt"));
+ return State.IsValid() && Object(State,TEXT("prog"))->HasTypedField<EJson::Object>(TEXT("debt"));   // i18n:skip
 }
 
 bool UMareSimulation::EnsureDebt()
 {
  auto Prog=Object(State,TEXT("prog"));
  const int32 Day=FMath::Max(1,int32(Number(State,TEXT("day"),1)));
- if(Prog->HasTypedField<EJson::Object>(TEXT("debt"))){
+ if(Prog->HasTypedField<EJson::Object>(TEXT("debt"))){   // i18n:skip
   // An existing debt is never recreated: the principal stays frozen even if debt.json changes. Only repair broken fields.
-  auto D=Prog->GetObjectField(TEXT("debt"));bool bFixed=false;
-  if(Int(D,TEXT("principal_cents"))<=0){D->SetNumberField(TEXT("principal_cents"),double(Cents(Number(DebtDefs(),TEXT("principal"),1000000))));bFixed=true;}
+  auto D=Prog->GetObjectField(TEXT("debt"));bool bFixed=false;   // i18n:skip
+  if(Int(D,TEXT("principal_cents"))<=0){D->SetNumberField(TEXT("principal_cents"),double(Cents(Number(DebtDefs(),TEXT("principal"),1000000))));bFixed=true;}   // i18n:skip
   const int64 Paid=Int(D,TEXT("paid_cents"));
   if(Paid<0 || Paid>Int(D,TEXT("principal_cents"))){D->SetNumberField(TEXT("paid_cents"),double(FMath::Clamp<int64>(Paid,0,Int(D,TEXT("principal_cents")))));bFixed=true;}
   if(!D->HasTypedField<EJson::Array>(TEXT("milestones_seen"))){D->SetArrayField(TEXT("milestones_seen"),{});bFixed=true;}
@@ -43,16 +43,16 @@ bool UMareSimulation::EnsureDebt()
  }
  auto D=MakeShared<FJsonObject>();
  D->SetNumberField(TEXT("version"),1);
- D->SetNumberField(TEXT("principal_cents"),double(Cents(Number(DebtDefs(),TEXT("principal"),1000000))));
+ D->SetNumberField(TEXT("principal_cents"),double(Cents(Number(DebtDefs(),TEXT("principal"),1000000))));   // i18n:skip
  D->SetNumberField(TEXT("paid_cents"),0);
  D->SetNumberField(TEXT("created_day"),Day);D->SetNumberField(TEXT("last_payment_day"),Day);D->SetNumberField(TEXT("last_reminder_day"),0);
  D->SetBoolField(TEXT("intro_seen"),false);D->SetBoolField(TEXT("finale_seen"),false);D->SetArrayField(TEXT("milestones_seen"),{});
- Prog->SetObjectField(TEXT("debt"),D);
+ Prog->SetObjectField(TEXT("debt"),D);   // i18n:skip
  return Save();
 }
 
-int64 UMareSimulation::DebtPrincipalCents() const{return HasDebt()?Int(Object(Object(State,TEXT("prog")),TEXT("debt")),TEXT("principal_cents")):Cents(Number(DebtDefs(),TEXT("principal"),1000000));}
-int64 UMareSimulation::DebtPaidCents() const{return HasDebt()?Int(Object(Object(State,TEXT("prog")),TEXT("debt")),TEXT("paid_cents")):0;}
+int64 UMareSimulation::DebtPrincipalCents() const{return HasDebt()?Int(Object(Object(State,TEXT("prog")),TEXT("debt")),TEXT("principal_cents")):Cents(Number(DebtDefs(),TEXT("principal"),1000000));}   // i18n:skip
+int64 UMareSimulation::DebtPaidCents() const{return HasDebt()?Int(Object(Object(State,TEXT("prog")),TEXT("debt")),TEXT("paid_cents")):0;}   // i18n:skip
 int64 UMareSimulation::DebtBalanceCents() const{return FMath::Max<int64>(0,DebtPrincipalCents()-DebtPaidCents());}
 int64 UMareSimulation::DebtLimitCents() const
 {
@@ -81,18 +81,18 @@ bool UMareSimulation::PayDebt(int64 PayCents)
  if(bPayingDebt)return false;   // a second click while the first payment is still being saved
  if(!HasDebt()){bool bCreated=false;Object(State,TEXT("company"))->TryGetBoolField(TEXT("created"),bCreated);
   if(!bCreated || !EnsureDebt())return Fail(TEXT("Crie sua empresa primeiro."));}   // old save: the debt arrives now
- const auto Phone=Object(DebtDefs(),TEXT("phone"));
- if(PayCents<=0 || PayCents>Cents(Money()) || PayCents>DebtBalanceCents())return Fail(String(Phone,TEXT("invalid")));
+ const auto Phone=Object(DebtDefs(),TEXT("phone"));   // i18n:skip
+ if(PayCents<=0 || PayCents>Cents(Money()) || PayCents>DebtBalanceCents())return Fail(String(Phone,TEXT("invalid")));   // i18n:skip
  if(PayCents>DebtLimitCents()-DebtPaidCents())
-  return Fail(String(Phone,TEXT("demo_limit")).Replace(TEXT("{0}"),*FString::Printf(TEXT("%.0f"),DebtLimitCents()/100.0)));
+  return Fail(String(Phone,TEXT("demo_limit")).Replace(TEXT("{0}"),*FString::Printf(TEXT("%.0f"),DebtLimitCents()/100.0)));   // i18n:skip
  bPayingDebt=true;
  // Everything the payment changes, to undo it if the save fails (no money leaves without a saved receipt).
- auto Prog=Object(State,TEXT("prog"));auto D=Prog->GetObjectField(TEXT("debt"));
+ auto Prog=Object(State,TEXT("prog"));auto D=Prog->GetObjectField(TEXT("debt"));   // i18n:skip
  const auto DebtCopy=MakeShared<FJsonObject>(*D);
  const double OldMoney=Number(State,TEXT("money")),OldOut=Number(State,TEXT("day_out"));
  TArray<TSharedPtr<FJsonValue>> OldLedger;{const TArray<TSharedPtr<FJsonValue>>* L=nullptr;if(State->TryGetArrayField(TEXT("ledger"),L))OldLedger=*L;}
  const bool bHadLedger=State->HasField(TEXT("ledger")),bHadOut=State->HasField(TEXT("day_out"));
- Book(-PayCents/100.0,String(Phone,TEXT("pay")));
+ Book(-PayCents/100.0,String(Phone,TEXT("pay")));   // i18n:skip
  D->SetNumberField(TEXT("paid_cents"),double(DebtPaidCents()+PayCents));
  D->SetNumberField(TEXT("last_payment_day"),Number(State,TEXT("day"),1));
  bool bSaved=Save();
@@ -100,11 +100,11 @@ bool UMareSimulation::PayDebt(int64 PayCents)
   State->SetNumberField(TEXT("money"),OldMoney);
   if(bHadOut)State->SetNumberField(TEXT("day_out"),OldOut);else State->RemoveField(TEXT("day_out"));
   if(bHadLedger)State->SetArrayField(TEXT("ledger"),OldLedger);else State->RemoveField(TEXT("ledger"));
-  Prog->SetObjectField(TEXT("debt"),DebtCopy);
+  Prog->SetObjectField(TEXT("debt"),DebtCopy);   // i18n:skip
   bPayingDebt=false;return Fail(TEXT("Falha ao salvar: o pagamento não foi feito."));
  }
  bPayingDebt=false;
- LastMessage=String(Phone,TEXT("receipt")).Replace(TEXT("{0}"),*FString::Printf(TEXT("%.2f"),PayCents/100.0).Replace(TEXT(".00"),TEXT("")))
+ LastMessage=String(Phone,TEXT("receipt")).Replace(TEXT("{0}"),*FString::Printf(TEXT("%.2f"),PayCents/100.0).Replace(TEXT(".00"),TEXT("")))   // i18n:skip
   .Replace(TEXT("{1}"),*FString::Printf(TEXT("%.0f"),DebtBalanceCents()/100.0));
  return true;
 }
@@ -112,25 +112,25 @@ bool UMareSimulation::PayDebt(int64 PayCents)
 TArray<FString> UMareSimulation::DebtPendingMilestones() const
 {
  TArray<FString> Pending;if(!HasDebt())return Pending;
- const auto D=Object(Object(State,TEXT("prog")),TEXT("debt"));
+ const auto D=Object(Object(State,TEXT("prog")),TEXT("debt"));   // i18n:skip
  TSet<FString> Seen;{const TArray<TSharedPtr<FJsonValue>>* L=nullptr;if(D->TryGetArrayField(TEXT("milestones_seen"),L))for(const auto& V:*L)Seen.Add(V->AsString());}
  const int64 Principal=DebtPrincipalCents(),Paid=DebtPaidCents();
  const TArray<TSharedPtr<FJsonValue>>* List=nullptr;
- if(DebtDefs()->TryGetArrayField(TEXT("milestones"),List))for(const auto& V:*List){const auto M=V->AsObject();const FString Id=String(M,TEXT("id"));
-  if(!Seen.Contains(Id) && Paid>=(int64)FMath::RoundToDouble(Principal*Number(M,TEXT("fraction"))))Pending.Add(Id);}
+ if(DebtDefs()->TryGetArrayField(TEXT("milestones"),List))for(const auto& V:*List){const auto M=V->AsObject();const FString Id=String(M,TEXT("id"));   // i18n:skip
+  if(!Seen.Contains(Id) && Paid>=(int64)FMath::RoundToDouble(Principal*Number(M,TEXT("fraction"))))Pending.Add(Id);}   // i18n:skip
  return Pending;
 }
 
 bool UMareSimulation::IsDebtFinalePending() const
 {
  if(!HasDebt() || IsDemo() || DebtBalanceCents()>0)return false;
- bool bSeen=false;Object(Object(State,TEXT("prog")),TEXT("debt"))->TryGetBoolField(TEXT("finale_seen"),bSeen);return !bSeen;
+ bool bSeen=false;Object(Object(State,TEXT("prog")),TEXT("debt"))->TryGetBoolField(TEXT("finale_seen"),bSeen);return !bSeen;   // i18n:skip
 }
 
 bool UMareSimulation::AckDebt()
 {
  if(!HasDebt())return false;
- auto D=Object(Object(State,TEXT("prog")),TEXT("debt"));
+ auto D=Object(Object(State,TEXT("prog")),TEXT("debt"));   // i18n:skip
  const TArray<FString> Pending=DebtPendingMilestones();const bool bFinale=IsDebtFinalePending();
  if(!Pending.Num() && !bFinale)return true;
  const auto Previous=MakeShared<FJsonObject>(*D);
@@ -138,17 +138,17 @@ bool UMareSimulation::AckDebt()
  for(const FString& Id:Pending)Seen.Add(MakeShared<FJsonValueString>(Id));
  D->SetArrayField(TEXT("milestones_seen"),Seen);if(bFinale)D->SetBoolField(TEXT("finale_seen"),true);
  if(Save())return true;
- Object(State,TEXT("prog"))->SetObjectField(TEXT("debt"),Previous);return false;   // shown again next time
+ Object(State,TEXT("prog"))->SetObjectField(TEXT("debt"),Previous);return false;   // shown again next time   // i18n:skip
 }
 
 bool UMareSimulation::DebtReminder(int32 Day)
 {
  if(!HasDebt() || DebtBalanceCents()<=0 || (IsDemo() && DebtPaidCents()>=DebtLimitCents()))return false;
- auto D=Object(Object(State,TEXT("prog")),TEXT("debt"));
+ auto D=Object(Object(State,TEXT("prog")),TEXT("debt"));   // i18n:skip
  const int32 Since=FMath::Max3(int32(Int(D,TEXT("created_day"))),int32(Int(D,TEXT("last_payment_day"))),int32(Int(D,TEXT("last_reminder_day"))));
  if(Day-Since<int32(Number(DebtDefs(),TEXT("reminder_every_days"),7)))return false;
  D->SetNumberField(TEXT("last_reminder_day"),Day);
- const auto R=Object(DebtDefs(),TEXT("reminder"));PendingTipTitle=String(R,TEXT("title"));PendingTipText=String(R,TEXT("text"));
+ const auto R=Object(DebtDefs(),TEXT("reminder"));PendingTipTitle=String(R,TEXT("title"));PendingTipText=String(R,TEXT("text"));   // i18n:skip
  Save();return true;
 }
 
@@ -157,17 +157,17 @@ bool UMareSimulation::ShowDebtIntro()
  // The letter that reveals the million: once, after the company exists (the arrival letter in the house stays as it is).
  bool bCreated=false;Object(State,TEXT("company"))->TryGetBoolField(TEXT("created"),bCreated);if(!bCreated)return false;
  if(!HasDebt())EnsureDebt();if(!HasDebt())return false;
- auto D=Object(Object(State,TEXT("prog")),TEXT("debt"));bool bSeen=false;D->TryGetBoolField(TEXT("intro_seen"),bSeen);if(bSeen)return false;
- const auto I=Object(DebtDefs(),TEXT("intro"));
- PendingTipTitle=String(I,TEXT("title"));
- PendingTipText=String(I,TEXT("letter"))+TEXT("\n")+String(I,TEXT("comfort"))+TEXT("\n")+String(I,TEXT("signature"));
+ auto D=Object(Object(State,TEXT("prog")),TEXT("debt"));bool bSeen=false;D->TryGetBoolField(TEXT("intro_seen"),bSeen);if(bSeen)return false;   // i18n:skip
+ const auto I=Object(DebtDefs(),TEXT("intro"));   // i18n:skip
+ PendingTipTitle=String(I,TEXT("title"));   // i18n:skip
+ PendingTipText=String(I,TEXT("letter"))+TEXT("\n")+String(I,TEXT("comfort"))+TEXT("\n")+String(I,TEXT("signature"));   // i18n:skip
  D->SetBoolField(TEXT("intro_seen"),true);Save();return true;
 }
 
 FString UMareSimulation::DebtMilestoneTitle(const FString& Id,FString* Text) const
 {
  const TArray<TSharedPtr<FJsonValue>>* List=nullptr;
- if(DebtDefs()->TryGetArrayField(TEXT("milestones"),List))for(const auto& V:*List){const auto M=V->AsObject();
-  if(String(M,TEXT("id"))==Id){if(Text)*Text=String(M,TEXT("text"));return String(M,TEXT("title"));}}
+ if(DebtDefs()->TryGetArrayField(TEXT("milestones"),List))for(const auto& V:*List){const auto M=V->AsObject();   // i18n:skip
+  if(String(M,TEXT("id"))==Id){if(Text)*Text=String(M,TEXT("text"));return String(M,TEXT("title"));}}   // i18n:skip
  return FString();
 }

@@ -944,5 +944,82 @@
   "duration": 213,
   "loop": true,
   "group": "radio"
+ },
+ {
+  "id": "radio_up_01",
+  "path": "/Game/Audio/Radio/radio_up_01.radio_up_01",
+  "duration": 18,
+  "loop": true,
+  "group": "radio"
+ },
+ {
+  "id": "radio_up_02",
+  "path": "/Game/Audio/Radio/radio_up_02.radio_up_02",
+  "duration": 69,
+  "loop": true,
+  "group": "radio"
+ },
+ {
+  "id": "radio_up_03",
+  "path": "/Game/Audio/Radio/radio_up_03.radio_up_03",
+  "duration": 52,
+  "loop": true,
+  "group": "radio"
+ },
+ {
+  "id": "radio_up_04",
+  "path": "/Game/Audio/Radio/radio_up_04.radio_up_04",
+  "duration": 32,
+  "loop": true,
+  "group": "radio"
+ },
+ {
+  "id": "radio_up_05",
+  "path": "/Game/Audio/Radio/radio_up_05.radio_up_05",
+  "duration": 96,
+  "loop": true,
+  "group": "radio"
+ },
+ {
+  "id": "radio_up_06",
+  "path": "/Game/Audio/Radio/radio_up_06.radio_up_06",
+  "duration": 113,
+  "loop": true,
+  "group": "radio"
+ },
+ {
+  "id": "radio_up_07",
+  "path": "/Game/Audio/Radio/radio_up_07.radio_up_07",
+  "duration": 182,
+  "loop": true,
+  "group": "radio"
+ },
+ {
+  "id": "radio_up_08",
+  "path": "/Game/Audio/Radio/radio_up_08.radio_up_08",
+  "duration": 136,
+  "loop": true,
+  "group": "radio"
+ },
+ {
+  "id": "radio_up_09",
+  "path": "/Game/Audio/Radio/radio_up_09.radio_up_09",
+  "duration": 64,
+  "loop": true,
+  "group": "radio"
+ },
+ {
+  "id": "radio_up_10",
+  "path": "/Game/Audio/Radio/radio_up_10.radio_up_10",
+  "duration": 238,
+  "loop": true,
+  "group": "radio"
+ },
+ {
+  "id": "radio_up_11",
+  "path": "/Game/Audio/Radio/radio_up_11.radio_up_11",
+  "duration": 105,
+  "loop": true,
+  "group": "radio"
  }
 ]

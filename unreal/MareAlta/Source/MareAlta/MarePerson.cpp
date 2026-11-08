@@ -323,7 +323,7 @@ bool AMarePerson::SetMetaHuman(const FString& Name)
   // Pool swimmers (UMarePoolSwimWorld): UAL swim stroke and jump (mare_metahuman.import_ual).
   TEXT("Swim_Fwd"),TEXT("Jump_Start"),TEXT("Jump"),
   // 07/11 (reference game: lively people): taking from a counter and driving (mare_metahuman.import_ual).
-  TEXT("PickUp_Table"),TEXT("Driving")};
+  TEXT("PickUp_Table"),TEXT("Driving")};   // i18n:skip
  if(CVarMareMocap.GetValueOnGameThread())Wanted.Append({TEXT("SitTalk"),TEXT("DanceHip"),TEXT("Cheer")});
  for(const FString& Clip:Wanted)
   if(auto Anim=LoadObject<UAnimSequence>(nullptr,*FString::Printf(TEXT("/Game/People/Animations/MH_%s.MH_%s"),*Clip,*Clip)))Clips.Add(Clip,Anim);

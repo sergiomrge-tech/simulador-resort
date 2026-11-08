@@ -694,3 +694,17 @@ comercial (as espigas do Fab são estátua ou só licença pessoal paga para com
 - Essas faixas têm ambientação tropical/lo-fi, mas **não representam axé, forró, ijexá, samba-reggae ou pagode baiano autênticos**. Precisam de avaliação de gênero, prova de ausência de Content ID, duração e BPM medidos, aprovação formal e integração real no editor.
 
 Os seis registros `radio_*` pré-existentes de `unreal/MareAlta/Content/Data/audio.json` **não receberam nova atribuição de licença nesta etapa**; a origem e os termos dos arquivos de áudio efetivamente usados devem continuar documentados conforme suas fontes existentes.
+
+## Rádio — faixas animadas (CC0 1.0, OpenGameArt) — 07/11/2026
+
+- **Feel Good Summer Tune** — Skrjablin — https://opengameart.org/content/feel-good-summer-tune — CC0 1.0 (`radio_up_07`)
+- **Reggae** — pro-sensory — https://opengameart.org/content/reggae — CC0 1.0 (`radio_up_10`)
+- **Happy Ukulele Island** — Tarush Singhal — https://opengameart.org/content/happy-ukelele-island-surfing-theme — CC0 1.0 (`radio_up_08`)
+- **Bossa Town** — Karate Studios — https://opengameart.org/content/bossa-town — CC0 1.0 (`radio_up_05`)
+- **Funky House** — Of Far Different Nature — https://opengameart.org/content/funky-house — CC0 1.0 (`radio_up_02`)
+- **Mad Bossa** — spring-spring — https://opengameart.org/content/mad-bossa — CC0 1.0 (`radio_up_11`)
+- **Vintage Hawaii** — OpenGameArt (CC0) — https://opengameart.org/content/vintage-hawaii — CC0 1.0 (`radio_up_06`)
+- **Summer Sunday** — celestialghost8 — https://opengameart.org/content/summer-sunday — CC0 1.0 (`radio_up_09`)
+- **Feel Good Island Loop** — OpenGameArt (CC0) — https://opengameart.org/content/feel-good-island-loop — CC0 1.0 (`radio_up_03`)
+- **Tropical Loop** — wipics — https://opengameart.org/content/tropical-loop — CC0 1.0 (`radio_up_01`)
+- **Beach Sports Theme** — OpenGameArt (CC0) — https://opengameart.org/content/beach-sports-theme-loop — CC0 1.0 (`radio_up_04`)
