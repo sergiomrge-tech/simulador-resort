@@ -103,7 +103,7 @@ namespace MareOutline
 #include "HAL/IConsoleManager.h"
 static FAutoConsoleCommandWithWorldAndArgs MareOutlineQA(TEXT("mare.OutlineQA"),TEXT("QA: logs the outlined target and its meshes."),   // i18n:skip
  FConsoleCommandWithWorldAndArgsDelegate::CreateLambda([](const TArray<FString>&,UWorld*){
-  FString Names;for(const auto& W:GLit)if(W.IsValid())Names+=W->GetOwner()->GetActorLabel()+TEXT("/")+W->GetName()+TEXT(" ");   // i18n:skip
+  FString Names;for(const auto& W:GLit)if(W.IsValid())Names+=W->GetOwner()->GetName()+TEXT("/")+W->GetName()+TEXT(" ");   // i18n:skip
   UE_LOG(LogTemp,Display,TEXT("MARE_OUTLINE target=%s meshes=%d %s"),GLast.IsValid()?*GLast->Label:TEXT("none"),MareOutline::Count(),*Names);}));   // i18n:skip
 
 static FAutoConsoleCommandWithWorldAndArgs MareOutlineAudit(TEXT("mare.OutlineAudit"),TEXT("QA: every visible interaction target and how many meshes its outline would take."),   // i18n:skip
