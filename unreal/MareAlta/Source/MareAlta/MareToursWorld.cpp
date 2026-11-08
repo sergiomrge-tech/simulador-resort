@@ -62,7 +62,14 @@ void UMareToursWorld::Tick(float DeltaSeconds)
  if(!Fishing && S->LeisureDefs()->TryGetArrayField(TEXT("fishing_spot"),F) && F->Num()==4){
   const FVector At=Ground(FVector((*F)[0]->AsNumber(),(*F)[1]->AsNumber(),0));
   Fishing=GetWorld()->SpawnActor<AMareServiceTarget>(At+FVector(0,0,90),FRotator(0,(*F)[3]->AsNumber(),0));
-  if(Fishing){Fishing->Action=TEXT("Fishing");Fishing->Label=TEXT("Pescar na ponta do píer");Fishing->Reach=250;Fishing->OcclusionTolerance=90;}}
+  if(Fishing){Fishing->Action=TEXT("Fishing");Fishing->Label=TEXT("Pescar na ponta do píer");Fishing->Reach=250;Fishing->OcclusionTolerance=90;}
+  // 08/11 (Sergio: "tudo que for clicável precisa ter essa borda"): a rod resting on a bait bucket marks the spot (and
+  // takes the outline); tools/ue58/gen_fishing_spot.py, the rod points out to sea.
+  if(auto Mesh=LoadObject<UStaticMesh>(nullptr,TEXT("/Game/Custom/Leisure/mare_fishing_spot/mare_fishing_spot.mare_fishing_spot"))){   // i18n:skip
+   const FRotator Out(0,(*F)[3]->AsNumber()-180.f,0);
+   FishingModel=GetWorld()->SpawnActor<AStaticMeshActor>(Ground(FVector((*F)[0]->AsNumber(),(*F)[1]->AsNumber(),0)-Out.Vector()*40.f),Out);
+   if(FishingModel){FishingModel->SetMobility(EComponentMobility::Movable);FishingModel->GetStaticMeshComponent()->SetStaticMesh(Mesh);
+    FishingModel->GetStaticMeshComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);}}}
  if(Booth)Booth->SetActorHiddenInGame(!bOwned);
  if(BoothModel){BoothModel->SetActorHiddenInGame(!bOwned);BoothModel->SetActorEnableCollision(bOwned);}
  if(!bOwned)return;

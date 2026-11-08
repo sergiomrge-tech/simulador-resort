@@ -102,11 +102,12 @@ void UMareVisualWorld::BuildLamps()
     Light->SetAttenuationRadius(F->GetNumberField(TEXT("radius")));Light->SetUseTemperature(true);Light->SetTemperature(F->GetNumberField(TEXT("kelvin")));
     Light->SetCastShadows(true);Light->ContactShadowLength=.08f;Light->SetSourceRadius(6);Light->SetVisibility(false);
     FString Unlock;F->TryGetStringField(TEXT("unlock"),Unlock);if(!Unlock.IsEmpty())Fix->SetActorHiddenInGame(true);
-    Lamps.Add({Light,Fix,float(F->GetNumberField(TEXT("candela"))),Unlock});
+    bool bWorkFix=false;F->TryGetBoolField(TEXT("work"),bWorkFix);
+    Lamps.Add({Light,Fix,float(F->GetNumberField(TEXT("candela"))),Unlock,bWorkFix});
     auto Glow=NewObject<UPointLightComponent>(LampHolder);Glow->SetupAttachment(LampHolder->GetRootComponent());Glow->RegisterComponent();
     Glow->SetWorldLocation(Light->GetComponentLocation()+FVector(0,0,20));Glow->SetIntensityUnits(ELightUnits::Candelas);Glow->SetIntensity(0);
     Glow->SetAttenuationRadius(F->GetNumberField(TEXT("radius"))*.6f);Glow->SetUseTemperature(true);Glow->SetTemperature(F->GetNumberField(TEXT("kelvin")));
-    Glow->SetCastShadows(false);Glow->SetVisibility(false);Lamps.Add({Glow,Fix,float(F->GetNumberField(TEXT("candela")))*.15f,Unlock});}}}
+    Glow->SetCastShadows(false);Glow->SetVisibility(false);double GlowShare=.15;F->TryGetNumberField(TEXT("glow"),GlowShare);Lamps.Add({Glow,Fix,float(F->GetNumberField(TEXT("candela"))*GlowShare),Unlock,bWorkFix});}}}
  for(TActorIterator<AActor> It(GetWorld());It;++It){if(*It==LampHolder || Fixtures.Contains(*It))continue;
   TArray<UStaticMeshComponent*> Parts;It->GetComponents(Parts);
   for(auto Part:Parts){if(!Part->GetStaticMesh())continue;const FString Mesh=Part->GetStaticMesh()->GetName();
@@ -221,11 +222,13 @@ void UMareVisualWorld::Tick(float DeltaSeconds)
  for(const auto& Lamp:Lamps)if(!Lamp.Unlock.IsEmpty() && Lamp.Source.IsValid()){const bool b=UnlockMatches(Owned,Lamp.Unlock);if(Lamp.Source->IsHidden()==b)Lamp.Source->SetActorHiddenInGame(!b);}
  // Bare lights without a fixture (the suite's): a soft fill by day, off at night, the ceiling lamps take over.
  for(auto Bare:BareLights)if(IsValid(Bare))Bare->GetLightComponent()->SetIntensity(FMath::Lerp(0.f,700.f,FMath::Square(Day)));
- // Kiosk work lights: from 7h to the closing hour once the company exists; by day several times brighter so they read
+ // Kiosk work lights: from 7h to the closing hour; by day several times brighter so they read
  // against the daylight exposure under the roof (CVar mare.KioskDayLight).
  bool bCompany=false;UMareSimulation::Object(Sim->State,TEXT("company"))->TryGetBoolField(TEXT("created"),bCompany);
  const float HourNow=UMareSimulation::Number(Sim->State,TEXT("minutes"))/60.f;
- const float Work=bCompany && HourNow>=7.f && HourNow<Sim->KioskCloseHour()+.5f?FMath::Lerp(1.f,CVarMareKioskDayLight.GetValueOnGameThread(),1.f-Dark):0.f;
+ // 08/11 (Sergio: "quiosque continua escuro"): on from 7h even before the company exists (the kiosk is there all along).
+ (void)bCompany;
+ const float Work=HourNow>=7.f && HourNow<Sim->KioskCloseHour()+.5f?FMath::Lerp(1.f,CVarMareKioskDayLight.GetValueOnGameThread(),1.f-Dark):0.f;
  for(const auto& Lamp:Lamps)if(auto Light=Lamp.Light.Get()){const float Level=Lamp.bWork?FMath::Max(Dark,Work):Dark;const bool bOn=Level>.01f && Lamp.Source.IsValid() && !Lamp.Source->IsHidden();
   Light->SetVisibility(bOn);Light->SetIntensity(bOn?Lamp.Candela*Level:0.f);}
  if(Dark>.5f && !bLampsLogged){bLampsLogged=true;int32 On=0,Hidden=0,Gone=0;for(const auto& Lamp:Lamps){if(!Lamp.Source.IsValid())++Gone;else if(Lamp.Source->IsHidden())++Hidden;else ++On;}

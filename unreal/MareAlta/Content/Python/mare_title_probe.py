@@ -14,3 +14,96 @@ def run(_=''):
     scale = unreal.WidgetLayoutLibrary.get_viewport_scale(unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world())
     out['viewport'] = [vp.x, vp.y, scale]
     return json.dumps(out, default=str)
+
+
+def outline(arg=''):
+    """QA: blendables on the hero camera; with arg 'label' also outlines that actor's meshes."""
+    world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()
+    pawn = unreal.GameplayStatics.get_player_pawn(world, 0)
+    cam = pawn.get_component_by_class(unreal.CameraComponent)
+    pp = cam.get_editor_property('post_process_settings')
+    blend = pp.get_editor_property('weighted_blendables').get_editor_property('array')
+    out = {'blendables': [str(b.get_editor_property('object')) for b in blend],
+           'cvar': unreal.SystemLibrary.get_console_variable_int_value('r.CustomDepth')}
+    if arg:
+        for a in unreal.GameplayStatics.get_all_actors_of_class(world, unreal.Actor):
+            if arg in a.get_actor_label():
+                for c in a.get_components_by_class(unreal.PrimitiveComponent):
+                    c.set_render_custom_depth(True)
+                out['lit'] = a.get_actor_label()
+                break
+    return json.dumps(out)
+
+
+def cameras(arg=''):
+    world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()
+    pawn = unreal.GameplayStatics.get_player_pawn(world, 0)
+    pc = unreal.GameplayStatics.get_player_controller(world, 0)
+    out = {'view_target': str(pc.get_view_target().get_name()) if pc.get_view_target() else None,
+           'cams': [[c.get_name(), c.is_active(), c.get_editor_property('post_process_blend_weight'),
+                     len(c.get_editor_property('post_process_settings').get_editor_property('weighted_blendables').get_editor_property('array'))]
+                    for c in pawn.get_components_by_class(unreal.CameraComponent)]}
+    vols = [a.get_actor_label() for a in unreal.GameplayStatics.get_all_actors_of_class(world, unreal.PostProcessVolume)]
+    out['volumes'] = vols[:20]
+    return json.dumps(out)
+
+
+def ceiling(arg='3650,-1450,150'):
+    """QA: first hit straight up and down from points (x,y,z;...) in the PIE world."""
+    world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()
+    out = []
+    for spec in arg.split(';'):
+        x, y, z = [float(v) for v in spec.split(',')]
+        row = [spec]
+        for dz in (2000, -2000):
+            hit = unreal.SystemLibrary.line_trace_single(world, unreal.Vector(x, y, z), unreal.Vector(x, y, z + dz),
+                                                         unreal.TraceTypeQuery.TRACE_TYPE_QUERY1, True, [], unreal.DrawDebugTrace.NONE, True)
+            t = hit.to_tuple() if hit else None
+            row.append([round(t[4].z), t[9].get_actor_label()] if t and len(t) > 9 and t[9] else None)
+        out.append(row)
+    lamps = []
+    for a in unreal.GameplayStatics.get_all_actors_of_class(world, unreal.Actor):
+        for c in a.get_components_by_class(unreal.StaticMeshComponent):
+            m = c.static_mesh
+            if m and m.get_name() in ('World_1211', 'World_1229', 'World_0199'):
+                l = c.get_world_location()
+                lamps.append([m.get_name(), a.get_actor_label(), round(l.x), round(l.y), round(l.z)])
+    return json.dumps({'traces': out, 'lamps': lamps[:12]}, ensure_ascii=False)
+
+
+def near(arg='4385,1945,90,150'):
+    """QA: mesh components whose bounds come within r of a point (x,y,z,r)."""
+    x, y, z, r = [float(v) for v in arg.split(',')]
+    p = unreal.Vector(x, y, z)
+    world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()
+    out = []
+    for a in unreal.GameplayStatics.get_all_actors_of_class(world, unreal.Actor):
+        for c in a.get_components_by_class(unreal.StaticMeshComponent):
+            o, e = c.get_local_bounds()
+            tr = c.get_world_transform()
+            lo, hi = tr.transform_location(o), tr.transform_location(e)
+            o = unreal.Vector((lo.x + hi.x) / 2, (lo.y + hi.y) / 2, (lo.z + hi.z) / 2)
+            e = unreal.Vector(abs(hi.x - lo.x) / 2, abs(hi.y - lo.y) / 2, abs(hi.z - lo.z) / 2)
+            rad = (e.x * e.x + e.y * e.y + e.z * e.z) ** .5
+            dx = max(abs(p.x - o.x) - e.x, 0); dy = max(abs(p.y - o.y) - e.y, 0); dz = max(abs(p.z - o.z) - e.z, 0)
+            d = (dx * dx + dy * dy + dz * dz) ** .5
+            if d < r:
+                n = c.get_instance_count() if isinstance(c, unreal.InstancedStaticMeshComponent) else -1
+                mesh = c.static_mesh.get_name() if isinstance(c, unreal.StaticMeshComponent) and c.static_mesh else c.get_class().get_name()
+                out.append([round(d), a.get_actor_label()[:30], mesh, round(rad), n, c.is_visible()])
+    return json.dumps(sorted(out)[:25], ensure_ascii=False)
+
+
+def hit(arg='4385,1750,184,4385,1960,70'):
+    """QA: line trace a->b (visibility, complex) in PIE; the component hit and its class/mesh."""
+    v = [float(x) for x in arg.split(',')]
+    world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()
+    h = unreal.SystemLibrary.line_trace_single(world, unreal.Vector(*v[:3]), unreal.Vector(*v[3:]), unreal.TraceTypeQuery.TRACE_TYPE_QUERY1,
+                                               True, [unreal.GameplayStatics.get_player_pawn(world, 0)], unreal.DrawDebugTrace.NONE, True)
+    if not h:
+        return 'no hit'
+    t = h.to_tuple()
+    comp = t[10] if len(t) > 10 else None
+    mesh = comp.static_mesh.get_path_name() if isinstance(comp, unreal.StaticMeshComponent) and comp.static_mesh else ''
+    n = comp.get_instance_count() if isinstance(comp, unreal.InstancedStaticMeshComponent) else -1
+    return json.dumps([str(t[4]), t[9].get_actor_label() if t[9] else None, comp.get_name() if comp else None, comp.get_class().get_name() if comp else None, mesh, n])

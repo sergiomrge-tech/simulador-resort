@@ -1,5 +1,5 @@
 {
- "_doc": "Light fixtures added where a room had light but no lamp (05/11, Sergio: 'a luz precisa vir das lâmpadas'; MareVisualWorld::BuildLamps). Each fixture spawns the mesh at 'at' (world cm, the mesh pivot) with yaw, and a warm point light 'light_up' cm above the pivot that turns on at dusk like the other lamps (candela at full night, reach in cm, colour temperature). The lamps already in the scene (lanterns, street lamps, the kiosk pendants, the house oil lamp and ceiling fan) are listed in BuildLamps by mesh. 'unlock' (optional): the fixture only shows once that expansion is bought (the Grand Hotel suite: ceiling 1151, so at = 1151 - 117; its six old bare lights, tag MareSuitePart, go off at night).",
+ "_doc": "Light fixtures added where a room had light but no lamp (05/11, Sergio: 'a luz precisa vir das lâmpadas'; MareVisualWorld::BuildLamps). Each fixture spawns the mesh at 'at' (world cm, the mesh pivot) with yaw, and a warm point light 'light_up' cm above the pivot that turns on at dusk like the other lamps (candela at full night, reach in cm, colour temperature). The lamps already in the scene (lanterns, street lamps, the kiosk pendants, the house oil lamp and ceiling fan) are listed in BuildLamps by mesh. 'unlock' (optional): the fixture only shows once that expansion is bought (the Grand Hotel suite: ceiling 1151, so at = 1151 - 117; its six old bare lights, tag MareSuitePart, go off at night). 'work': true (08/11, Sergio: 'quiosque continua escuro, coloque uma lâmpada no teto'): a kiosk work lamp, also on by day during the opening hours, several times brighter (mare.KioskDayLight) to read against the daylight exposure under the roof. 'glow' (optional, default 0.15): share of the candela for the faint point light that lights the ceiling around the lamp.",
  "fixtures": [
   {
    "name": "Salão de jogos · luminária da sinuca",
@@ -283,6 +283,22 @@
    "radius": 600,
    "kelvin": 4000,
    "unlock": "grand_hotel"
+  },
+  {
+   "name": "Quiosque · luminária do teto",
+   "mesh": "/Game/Custom/Lighting/hanging_industrial_lamp/hanging_industrial_lamp1.hanging_industrial_lamp1",
+   "at": [
+    3620,
+    -1340,
+    366
+   ],
+   "yaw": 0,
+   "light_up": -118,
+   "candela": 150,
+   "radius": 900,
+   "kelvin": 3000,
+   "work": true,
+   "glow": 0.5
   }
  ]
 }

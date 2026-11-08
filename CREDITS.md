@@ -714,3 +714,10 @@ Os seis registros `radio_*` pré-existentes de `unreal/MareAlta/Content/Data/aud
 - Ilustração da ilha (`/Game/UI/Title/T_TitleArt`) e logo "Coconut Simulator" (`T_TitleLogo`) gerados com a IA do Canva na
   conta do projeto (designs `DAHaUSX0sQM` e `DAHaUQBvy84`). O fundo xadrez pintado no logo foi recortado por script.
   Fontes em `SourceArt/UI/Title`.
+
+### Luminária do quiosque e ponto de pesca (UE5.8) — 08/11/2026
+
+- Hanging Industrial Lamp — Kuutti Siitonen, Poly Haven, CC0 1.0 (https://polyhaven.com/a/hanging_industrial_lamp):
+  luminária no teto do quiosque (`/Game/Custom/Lighting/hanging_industrial_lamp`).
+- Vara de pescar com balde de isca na ponta do píer: modelo próprio (`tools/ue58/gen_fishing_spot.py`), textura
+  oak_wood_planks do Poly Haven (CC0).

@@ -33,6 +33,7 @@
 #include "MareSimulation.h"
 #include "Engine/GameInstance.h"
 #include "MareServiceTarget.h"
+#include "MareOutline.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Engine/Canvas.h"
@@ -3028,11 +3029,13 @@ void AMareHUD::DrawHUD()
   Overlay->Refresh(M);return;}
  if(PC && !PC->bPhoneOpen && !GetWorld()->IsPaused()){
   const auto Target=AMareServiceTarget::FindFocused(GetOwningPlayerController());
+  MareOutline::Update(GetOwningPlayerController(),Target);   // reference tip 1: outline what E would use
   const FLinearColor FocusColor=Target?FLinearColor(1.f,.88f,.56f):FLinearColor(.9f,.9f,.9f,.8f);
   const float CX=Canvas->ClipX*.5f,CY=Canvas->ClipY*.5f;
   DrawLine(CX-3,CY,CX+3,CY,FocusColor,1.f);DrawLine(CX,CY-3,CX,CY+3,FocusColor,1.f);
   if(Target)M.Prompt=Target->Prompt();
  }
+ else MareOutline::Update(GetOwningPlayerController(),nullptr);
  Overlay->Refresh(M);
 }
 AMareGameMode::AMareGameMode(){PrimaryActorTick.bCanEverTick=true;DefaultPawnClass=AMareCharacter::StaticClass();PlayerControllerClass=AMareController::StaticClass();HUDClass=AMareHUD::StaticClass();}
