@@ -43,6 +43,10 @@ public:
  /** Sea floor height (cm) offshore of the modelled beach, from reef.json floor_fill.profile (the sand planes of
   *  mare_water.ensure_seabed follow the same profile). */
  static float SeabedZ(float Y,float* Slope=nullptr);
+ /** The full island (08/11, ILHA_PLANO step 2): the same profile along the distance to the nearest coast
+  *  (MareIsland::ShoreDistance mapped to the old bay y), so the floor slopes away from every beach; within 25 m of
+  *  the waterline it runs from the water level down to the profile's first point. Normal optional. */
+ static float SeabedZ(float X,float Y,FVector* Normal);
  int32 FloorFillCount() const{return FloorFilled;}
  /** QA: "state" (instances per mesh), "sharks", "hold:x,y,z,pitch,yaw,seconds" (keeps the player there), "watch:i". */
  FString QA(const FString& Cmd);

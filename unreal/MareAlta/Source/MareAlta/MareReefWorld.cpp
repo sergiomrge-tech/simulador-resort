@@ -1,4 +1,5 @@
 #include "MareReefWorld.h"
+#include "MareIsland.h"
 #include "MareGame.h"
 #include "Components/InstancedStaticMeshComponent.h"
 #include "Components/HierarchicalInstancedStaticMeshComponent.h"
@@ -155,6 +156,18 @@ float UMareReefWorld::SeabedZ(float Y,float* Slope)
  return Pts.Last().Y;
 }
 
+float UMareReefWorld::SeabedZ(float X,float Y,FVector* Normal)
+{
+ auto At=[](float PX,float PY){
+  const float D=MareIsland::ShoreDistance(PX,PY);
+  const float Near=SeabedZ(MareIsland::BayEquivalentY(2500.f));   // the profile at 25 m out
+  if(D<2500.f)return FMath::Lerp(-30.f,Near,FMath::Clamp(D/2500.f,0.f,1.f));
+  return SeabedZ(MareIsland::BayEquivalentY(D));};
+ const float Z=At(X,Y);
+ if(Normal){const float Dx=At(X+200.f,Y)-At(X-200.f,Y),Dy=At(X,Y+200.f)-At(X,Y-200.f);*Normal=FVector(-Dx/400.f,-Dy/400.f,1.f).GetSafeNormal();}
+ return Z;
+}
+
 void UMareReefWorld::FillFloor(FRandomStream& R,const FBox2D& Reef)
 {
  // 05/11 (Sergio: "faça um gerador com rochas, corais e algas marinhas, preencha todo fundo"): the whole sea floor,
@@ -164,7 +177,7 @@ void UMareReefWorld::FillFloor(FRandomStream& R,const FBox2D& Reef)
  // GPU: one HISM per kind built in one batch, culled by distance; no collision (swimming is unaffected).
  const auto F=UMareSimulation::Object(ReefDefs(),TEXT("floor_fill"));UWorld* World=GetWorld();if(!World || !F->HasField(TEXT("kinds")))return;
  const FVector2D XR=Pair(F,TEXT("x"),FVector2D(-19500,27500)),YR=Pair(F,TEXT("y"),FVector2D(-3300,-40000));
- const float Cell=UMareSimulation::Number(F,TEXT("cell"),500),TerrainEnd=UMareSimulation::Number(F,TEXT("terrain_until"),-5450),ReefPad=UMareSimulation::Number(F,TEXT("reef_pad"),300);
+ const float Cell=UMareSimulation::Number(F,TEXT("cell"),500),ReefPad=UMareSimulation::Number(F,TEXT("reef_pad"),300);
  const FBox2D Skip(Reef.Min-FVector2D(ReefPad),Reef.Max+FVector2D(ReefPad));
  struct FKindRow{UHierarchicalInstancedStaticMeshComponent* C;float Dens,ZLo,ZHi,SLo,SHi,Sink,Tilt,Align,Patch,Cut,Seed;TArray<FTransform> Out;};
  TArray<FKindRow> Kinds;const TArray<TSharedPtr<FJsonValue>>* List=nullptr;F->TryGetArrayField(TEXT("kinds"),List);
@@ -180,16 +193,25 @@ void UMareReefWorld::FillFloor(FRandomStream& R,const FBox2D& Reef)
    float(UMareSimulation::Number(E,TEXT("patch_cut"),.5)),float(R.FRandRange(0.f,1000.f)),{}});}
  const float CellArea=Cell*Cell/1e6f;   // in units of 100 m2
  for(float Y=YR.X;Y>YR.Y;Y-=Cell)for(float X=XR.X;X<XR.Y;X+=Cell){
+  // the full island (08/11): whole cells on land or past the deep floor are skipped; past 120 m from the coast the
+  // floor (seen from far above, through deep water) thins out to a quarter (27.6k -> 252k instances at full density)
+  const float CellShore=MareIsland::ShoreDistance(X+Cell*.5f,Y-Cell*.5f);
+  if(CellShore<-Cell || CellShore>30000.f+Cell)continue;
+  const float Thin=FMath::Lerp(1.f,.25f,FMath::SmoothStep(12000.f,27000.f,CellShore));
   for(auto& K:Kinds){
-   float N=K.Dens*CellArea;
+   float N=K.Dens*CellArea*Thin;
    if(K.Patch>0){const float Noise=.5f+.5f*FMath::PerlinNoise2D(FVector2D(X,Y)/K.Patch+FVector2D(K.Seed));N*=FMath::SmoothStep(K.Cut-.08f,K.Cut+.08f,Noise)*2.f;}
    const int32 Count=FMath::FloorToInt(N)+(R.FRand()<FMath::Frac(N)?1:0);
    for(int32 I=0;I<Count;++I){const FVector2D W(X+R.FRandRange(0.f,Cell),Y-R.FRandRange(0.f,Cell));if(Skip.IsInside(W))continue;
-    float Z,Slope=0;FVector Normal=FVector::UpVector;
-    if(W.Y>TerrainEnd){FHitResult Hit;FCollisionQueryParams Q(TEXT("MareFloorFill"),false);
-     if(!World->LineTraceSingleByChannel(Hit,FVector(W.X,W.Y,200),FVector(W.X,W.Y,-1500),ECC_WorldStatic,Q) || Hit.ImpactNormal.Z<.8f)continue;
+    float Z;FVector Normal=FVector::UpVector;
+    // 08/11 (the full island): all round the island by the distance to the coast; near a modelled beach (the bay) its
+    // real ground under the water, elsewhere the radial profile. Land and the far deep floor (> 300 m out) are skipped.
+    const float Shore=MareIsland::ShoreDistance(W.X,W.Y);
+    if(Shore<=0.f || Shore>30000.f)continue;
+    FHitResult Hit;FCollisionQueryParams Q(TEXT("MareFloorFill"),false);
+    if(Shore<2500.f && World->LineTraceSingleByChannel(Hit,FVector(W.X,W.Y,200),FVector(W.X,W.Y,-1500),ECC_WorldStatic,Q) && Hit.ImpactNormal.Z>=.8f && Hit.ImpactPoint.Z<-30.f){
      Z=Hit.ImpactPoint.Z;Normal=Hit.ImpactNormal;}
-    else{Z=SeabedZ(W.Y,&Slope);Normal=FVector(0,-Slope,1).GetSafeNormal();}
+    else Z=SeabedZ(W.X,W.Y,&Normal);
     if(Z<K.ZLo || Z>K.ZHi)continue;
     const float Sc=R.FRandRange(K.SLo,K.SHi);
     const FQuat Lean=FQuat::Slerp(FQuat::Identity,FQuat::FindBetweenNormals(FVector::UpVector,Normal),K.Align);

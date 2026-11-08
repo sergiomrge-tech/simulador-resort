@@ -253,7 +253,7 @@
   "shy": 350
  },
  "floor_fill": {
-  "_doc": "05/11 (Sergio: 'faça um gerador com rochas, corais e algas marinhas, preencha todo fundo'; 'fundo precisa ser bem fundo, uns 100m'). The whole sea floor in front of the island gets dressed by depth (MareReefWorld::FillFloor), cell by cell over x and y (cm). profile: floor height z along y after the beach terrain ends (terrain_until; up to there a trace finds the terrain): the ramp to the reef shelf at -9 m, the shelf (FLAT at -900 under the reef: the reef corals rest at -902; a 60 cm tilt left 37 of them floating, qa_gate 06/11), the drop-off and the deep floor at -100 m. mare_water.ensure_seabed builds the sand planes on the same profile. Each kind: density per 100 m2 where the floor z is inside 'depth' [lowest, highest], uniform scale in [scale], sunk 'sink' cm (x scale), random lean 'tilt' degrees, 'align' 0..1 to the slope, optional 'patch' (noise size, cm) keeping only the patches above patch_cut, culled past 'cull' cm. The reef strip itself (dressing above) is skipped, plus reef_pad cm. 07/11 (Sergio: 'nosso fundo do mar precisa ser assim', a reference full of corals; and the shallow sea read as a lawn at sunset): seagrass only from 2.5 m down at half the density, corals x4, sponges and anemones x3 in wider patches.",
+  "_doc": "05/11 (Sergio: 'faça um gerador com rochas, corais e algas marinhas, preencha todo fundo'; 'fundo precisa ser bem fundo, uns 100m'). The whole sea floor in front of the island gets dressed by depth (MareReefWorld::FillFloor), cell by cell over x and y (cm). profile: floor height z along y after the beach terrain ends (terrain_until; up to there a trace finds the terrain): the ramp to the reef shelf at -9 m, the shelf (FLAT at -900 under the reef: the reef corals rest at -902; a 60 cm tilt left 37 of them floating, qa_gate 06/11), the drop-off and the deep floor at -100 m. mare_water.ensure_seabed builds the sand planes on the same profile. Each kind: density per 100 m2 where the floor z is inside 'depth' [lowest, highest], uniform scale in [scale], sunk 'sink' cm (x scale), random lean 'tilt' degrees, 'align' 0..1 to the slope, optional 'patch' (noise size, cm) keeping only the patches above patch_cut, culled past 'cull' cm. The reef strip itself (dressing above) is skipped, plus reef_pad cm. 07/11 (Sergio: 'nosso fundo do mar precisa ser assim', a reference full of corals; and the shallow sea read as a lawn at sunset): seagrass only from 2.5 m down at half the density, corals x4, sponges and anemones x3 in wider patches. 08/11 (the full island): x/y now cover the whole island and its ring of sea (island.json); each cell's floor comes from the distance to the nearest coast (UMareReefWorld::SeabedZ(X,Y), the same profile mapped to the old bay y), skipping land and the deep floor beyond 300 m; terrain_until is no longer used.",
   "profile": [
    [
     -5450,
@@ -278,12 +278,12 @@
   ],
   "terrain_until": -5450,
   "x": [
-   -19500,
-   27500
+   -76500,
+   83000
   ],
   "y": [
-   -3300,
-   -40000
+   142000,
+   -40500
   ],
   "cell": 500,
   "reef_pad": 300,

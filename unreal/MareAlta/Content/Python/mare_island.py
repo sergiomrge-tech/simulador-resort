@@ -121,3 +121,39 @@ def land(arg='-45000,45000,-20000,60000,500'):
     OUT.mkdir(parents=True, exist_ok=True)
     (OUT / 'land.json').write_text(json.dumps({'arg': arg, 'z': zs, 'who': who, 'labels': labels}, ensure_ascii=False), encoding='utf-8')
     return json.dumps({'rows': len(zs), 'cols': len(zs[0]) if zs else 0, 'labels': len(labels)})
+
+
+def seabed(_=''):
+    """Step 2 (08/11): the island's sand floor (tools/ue58/gen_island_seabed.py) in place of the four straight
+    planes of mare_water.ensure_seabed (same tag MareSeabed, same wet-sand material, no collision: swimming uses
+    UMareReefWorld::SeabedZ). PIE stopped; saves the level."""
+    import mare_hotel_lobby as hl
+    if unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world():
+        raise RuntimeError('Stop PIE first')
+    folder = '/Game/World/Island/mare_island_seabed'
+    if unreal.EditorAssetLibrary.does_directory_exist(folder):
+        unreal.EditorAssetLibrary.delete_directory(folder)
+    mesh = hl._import(Path('D:/Assets/Mare/mare_island_seabed/mare_island_seabed.glb'), folder, 'mare_island_seabed', False, search=False)
+    import importlib
+    import mare_materials
+    importlib.reload(mare_materials)
+    ground = mare_materials.build_ground(seabed=True)   # M_IslandSeabed_PBR: all wet sand
+    mesh.set_material(0, ground)
+    unreal.EditorAssetLibrary.save_loaded_asset(mesh, False)
+    actors = unreal.get_editor_subsystem(unreal.EditorActorSubsystem)
+    removed = []
+    for a in actors.get_all_level_actors():
+        if 'MareSeabed' in [str(t) for t in a.tags]:
+            removed.append(a.get_actor_label())
+            actors.destroy_actor(a)
+    a = actors.spawn_actor_from_class(unreal.StaticMeshActor, unreal.Vector(0, 0, 0), unreal.Rotator(0, 0, 0))
+    a.set_actor_label('Mar · fundo de areia · ilha')
+    a.tags = ['MareGenerated', 'MareSeabed']
+    c = a.static_mesh_component
+    c.set_static_mesh(mesh)
+    c.set_collision_enabled(unreal.CollisionEnabled.NO_COLLISION)
+    c.set_editor_property('cast_shadow', False)
+    unreal.get_editor_subsystem(unreal.LevelEditorSubsystem).save_current_level()
+    b = mesh.get_bounds()
+    return json.dumps({'removed': removed, 'mesh': mesh.get_path_name(), 'tris': mesh.get_num_triangles(0),
+                       'origin': [round(b.origin.x), round(b.origin.y), round(b.origin.z)]}, ensure_ascii=False)

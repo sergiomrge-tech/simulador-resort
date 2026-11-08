@@ -34,6 +34,7 @@
 #include "Engine/GameInstance.h"
 #include "MareServiceTarget.h"
 #include "MareOutline.h"
+#include "MareIsland.h"
 #include "MareFx.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -1133,12 +1134,12 @@ void AMareCharacter::Tick(float DeltaSeconds)
   Eyes->PostProcessSettings.SceneColorTint=Tint;Eyes->PostProcessSettings.bOverride_ColorGain=true;Eyes->PostProcessSettings.ColorGain=FVector4(1,1,1,Gain);}
  if(Movement->IsMovingOnGround() && !bSwimming && GetActorLocation().Z>-100)SafeLandLocation=GetActorLocation();
  // The sand planes offshore have no collision: the swimmer stops on the sea floor profile (reef.json floor_fill).
- if(bSwimming && GetActorLocation().Y<-5450){const float Floor=UMareReefWorld::SeabedZ(GetActorLocation().Y)+GetCapsuleComponent()->GetScaledCapsuleHalfHeight()+15.f;
+ if(bSwimming && MareIsland::ShoreDistance(GetActorLocation().X,GetActorLocation().Y)>2500.f){const float Floor=UMareReefWorld::SeabedZ(GetActorLocation().X,GetActorLocation().Y,nullptr)+GetCapsuleComponent()->GetScaledCapsuleHalfHeight()+15.f;
   if(GetActorLocation().Z<Floor){SetActorLocation(FVector(GetActorLocation().X,GetActorLocation().Y,Floor));if(Movement->Velocity.Z<0)Movement->Velocity.Z=0;}}
  // Fell through the world: back to the last safe ground. 07/11 (QA void_recovery): with the -100 m sea floor the old
  // -120 m line left someone who slipped under the beach falling for a long time; now anyone falling (not swimming) more
  // than 6 m below the ground profile under them (the beach/land is at about 0, the sea floor at SeabedZ) is brought back.
- {const float Ground=GetActorLocation().Y<-5450?UMareReefWorld::SeabedZ(GetActorLocation().Y):-100.f;
+ {const float Ground=MareIsland::ShoreDistance(GetActorLocation().X,GetActorLocation().Y)>2500.f?UMareReefWorld::SeabedZ(GetActorLocation().X,GetActorLocation().Y,nullptr):-100.f;
   if(GetActorLocation().Z<-12000 || (Movement->IsFalling() && !bSwimming && GetActorLocation().Z<Ground-600.f)){
    SetActorLocation(SafeLandLocation);Movement->StopMovementImmediately();VerticalSwimInput=0;}}
 }
