@@ -338,3 +338,13 @@ def posture(arg=''):
             return round(ang * sign, 1)
         out.append([p.get_editor_property('person_name'), round(p.get_velocity().length()), lean(pel, hd), lean(pel, sp), lean(sp, hd), lean(nk, hd)])
     return json.dumps(out)
+
+
+def mat_flags(arg=''):
+    """QA: blend mode and the Nanite/ISM usage flags of materials by path (comma separated)."""
+    out = []
+    for p in [x for x in arg.split(',') if x]:
+        m = unreal.load_asset(p)
+        out.append([p.split('/')[-1], type(m).__name__, str(m.get_editor_property('blend_mode')) if isinstance(m, unreal.Material) else None,
+                    m.get_editor_property('used_with_nanite') if isinstance(m, unreal.Material) else None])
+    return json.dumps(out)

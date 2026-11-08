@@ -18,7 +18,8 @@ def fix_usage(folder):
     fixed = []
     for p in unreal.EditorAssetLibrary.list_assets(folder, recursive=True):
         a = unreal.load_asset(p)
-        if not isinstance(a, unreal.Material) or a.get_editor_property('blend_mode') != unreal.BlendMode.BLEND_OPAQUE:
+        # opaque and masked (08/11: the masked forest debris kept the default checker in the cooked game)
+        if not isinstance(a, unreal.Material) or a.get_editor_property('blend_mode') not in (unreal.BlendMode.BLEND_OPAQUE, unreal.BlendMode.BLEND_MASKED):
             continue
         changed = False
         for flag in ('used_with_nanite', 'used_with_instanced_static_meshes'):

@@ -116,6 +116,10 @@ def _mesh(slug):
     info = json.loads((LIB / slug / 'info.json').read_text(encoding='utf-8'))
     mesh = mare_hotel_lobby._import(LIB / slug / info['gltf'], dest, slug, True)
     unreal.EditorAssetLibrary.save_loaded_asset(mesh, False)
+    # 08/11: the import turns Nanite on, but its materials lacked the usage flag: the cooked game drew the default
+    # checker (packaged QA). Flag them right away.
+    import mare_boat_tour
+    mare_boat_tour.fix_usage(dest)
     return mesh
 
 
