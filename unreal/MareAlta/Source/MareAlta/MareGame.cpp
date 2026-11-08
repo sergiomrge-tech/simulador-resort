@@ -191,6 +191,8 @@ private:
  FString Place=TEXT("kiosk");
  /** Reception: the nightly price the player is about to ask each waiting guest (starts at the guest's offer). */
  TMap<FString,double> Ask;
+ /** Shopping cart of the Compras page (reference tip 8): units each product should have on the shelf after buying. */
+ TMap<FString,int32> Cart;
  /** Tours booth: the tour being guided and the choice made at each stop (0 good, 1 ok, 2 bad). */
  FString GuideTourId;
  TArray<int32> GuideChoices;
@@ -695,17 +697,34 @@ private:
  /** Restock cards; at a station also the "take it ready" button for what that station keeps. */
  void StockPage(bool bPickup)
  {
-  auto S=Sim();auto G=Grid();int32 I=0;const int32 Columns=bPickup?2:4;
+  auto S=Sim();
+  if(!bPickup){
+   // the cart: total of every stepper, bought in one go (each product only pays what is missing)
+   double Total=0;int32 Items=0;for(const auto& Pair:Cart)if(Pair.Value>S->Available(Pair.Key)){Total+=FMath::Max(0.,S->RestockCost(Pair.Key,Pair.Value));++Items;}
+   Body->AddSlot().AutoHeight().Padding(0,0,0,8)[SNew(SHorizontalBox)
+    +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(0,0,10,0)[MareNotebook::BodyText(FString::Printf(TEXT("Carrinho: %d produto(s) · R$ %.0f"),Items,Total),13.f,MareNotebook::Ink,true)]
+    +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center)[Button(TEXT("Comprar"),[this,S](){for(const auto& Pair:Cart)if(Pair.Value>S->Available(Pair.Key))S->Restock(Pair.Key,Pair.Value);Cart.Empty();},Items>0 && S->Money()>=Total)]];}
+  auto G=Grid();int32 I=0;const int32 Columns=bPickup?2:4;
   for(const auto& Id:Products()){
    if(bPickup && Station==TEXT("Cupboard") && !S->IsHotDish(Id))continue;
    if(bPickup && Station==TEXT("Fridge") && S->IsHotDish(Id))continue;
    auto Dish=UMareSimulation::Object(UMareSimulation::Object(S->Definitions,TEXT("dishes")),Id);auto Card=TagBody(FString::Printf(TEXT("%d disponíveis"),S->Available(Id)),UMareSimulation::String(Dish,TEXT("name")));
    if(!S->CanSupplyDish(Id))Card->AddSlot().AutoHeight()[MareNotebook::HandText(TEXT("libere em Resort"),16,MareNotebook::Pencil)];
+   else if(!bPickup){
+    // Reference tip 8: a - / + stepper per card (units to have on the shelf) and one cart for everything.
+    const int32 Have=S->Available(Id);int32& Want=Cart.FindOrAdd(Id);if(Want && Want<=Have)Want=0;
+    const double Price=Want?S->RestockCost(Id,Want):0.;
+    Card->AddSlot().AutoHeight().HAlign(HAlign_Left)[SNew(SHorizontalBox)
+     +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center)[Button(TEXT("-"),[this,Id,Have](){int32& W=Cart.FindOrAdd(Id);W=W<=Have+5?0:W-5;},Want>0)]
+     +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(6,0)[MareNotebook::BodyText(Want?FString::Printf(TEXT("ter %d"),Want):FString(TEXT("—")),12.f,MareNotebook::Ink,true)]
+     +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center)[Button(TEXT("+"),[this,Id,Have](){int32& W=Cart.FindOrAdd(Id);W=FMath::Min(40,FMath::Max(W,Have)+5);},Want<40)]];
+    Card->AddSlot().AutoHeight().Padding(0,3,0,0)[MareNotebook::BodyText(Want?FString::Printf(TEXT("R$ %.0f"),Price):FString(TEXT("fora do carrinho")),11.f,Want?MareNotebook::Ink:MareNotebook::Faded)];}
    else{if(bPickup)Card->AddSlot().AutoHeight().HAlign(HAlign_Left).Padding(0,0,0,4)[Button(TEXT("Pegar pronto"),[S,Id](){S->Pickup(Id);})];
     Card->AddSlot().AutoHeight().HAlign(HAlign_Left)[Button(FString::Printf(TEXT("+10 · R$ %.0f"),S->RestockCost(Id)),[S,Id](){S->Restock(Id);})];
     // Reference tip 7: or carry the box and store it unit by unit (same cost).
     if(bPickup && S->Available(Id)<10)Card->AddSlot().AutoHeight().HAlign(HAlign_Left).Padding(0,4,0,0)[Button(TEXT("Levar caixa"),[S,Id](){S->TakeRestockBox(Id);})];}
    G->AddSlot(I%Columns,I/Columns)[MareNotebook::PriceTag(Card,TiltOf(I))];++I;}
+
  }
  void StaffPage()
  {
@@ -999,7 +1018,7 @@ private:
   if(!bPhone){StockPage(true);if(!S->Carry().IsEmpty())Body->AddSlot().AutoHeight().HAlign(HAlign_Left).Padding(0,6)[Button(TEXT("Devolver produto"),[S](){S->ReturnCarry();})];return;}
   switch(Tab){
    case 0:KioskPage();break;
-   case 1:Title(TEXT("Compras"),TEXT("reposição imediata · o produto chega pronto"));StockPage(false);break;
+   case 1:Title(TEXT("Compras"),TEXT("- / + escolhe quantos ter na prateleira · o carrinho compra tudo"));StockPage(false);break;
    case 2:StaffPage();break;
    case 3:FinancePage();break;
    case 4:ResortPage();break;
@@ -2589,6 +2608,7 @@ static FAutoConsoleCommandWithWorldAndArgs MareQACommand(TEXT("mare.QA"),TEXT("Q
   else if(Verb==TEXT("open")){S->SetOpen(Arg!=TEXT("0"));bOk=true;}
   else if(Verb==TEXT("box"))bOk=S->TakeRestockBox(Arg);   // "mare.QA box <dish>", "mare.QA store Fridge|Cupboard"
   else if(Verb==TEXT("store"))bOk=S->StoreFromBox(FName(*Arg));
+  else if(Verb==TEXT("phone")){PC->OpenPhone(FCString::Atoi(*Arg));bOk=true;}   // "mare.QA phone <tab>" (1 = Compras)
   else if(Verb==TEXT("order"))bOk=!S->AddOrder(TEXT("Cliente QA"),{Arg}).IsEmpty();   // i18n:skip
   else if(Verb==TEXT("barorder"))bOk=!S->AddBarOrder(Arg==TEXT("any")?FString():Arg).IsEmpty();
   else if(Verb==TEXT("vip")){   // the first open kiosk order becomes a VIP ("mare.QA vip <title index>")
