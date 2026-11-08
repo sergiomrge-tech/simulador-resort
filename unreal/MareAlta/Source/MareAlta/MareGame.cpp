@@ -2550,7 +2550,7 @@ struct FMareUIQA
   else if(What.StartsWith(TEXT("phone")))PC->OpenPhone(FCString::Atoi(*What.RightChop(5)));   // "phone4" = Resort tab
   else if(What==TEXT("play")){   // QA gate in PIE: like Continue on the main menu (the paused menu kept the village from ever spawning)
    if(PC->IsMainMenuOpen() && !PC->MenuLoadSlot(PC->WorldSlot))PC->MenuNewGame(PC->WorldSlot);}
-  else if(What==TEXT("close")){   // like E: ends the bus arrival, closes the letter, the pause menu
+  else if(What==TEXT("close")){   // like E: ends the boat arrival, closes the letter, the pause menu
    for(TActorIterator<AMareIntro> It(World);It;++It){if(It->IsLetterOpen())It->CloseLetter();else if(It->IsArrival())It->FinishArrival();}
    // 06/11: the end-of-Early-Access screen (shows once everything is bought) pauses the game: every night photo of the
    // light audit came out identical, frozen at the house door. Close it (and any open minigame) like "Continuar jogando".
@@ -2560,6 +2560,10 @@ struct FMareUIQA
    // Old QA saves have no intro stage and the intro actor removes itself: mark the letter as read (it stays readable).
    if(!Intro){if(auto Sim=PC->GetSimulation())if(!Sim->State->HasField(TEXT("ue_intro_stage")))Sim->State->SetNumberField(TEXT("ue_intro_stage"),2);Intro=World->SpawnActor<AMareIntro>();}
    if(Intro)Intro->ReadLetter();}
+  else if(What==TEXT("arrival")){   // QA: replay the boat arrival from the open sea (marks the save as a new game's)
+   for(TActorIterator<AMareIntro> It(World);It;++It)It->Destroy();
+   if(auto Sim=PC->GetSimulation())Sim->State->SetNumberField(TEXT("ue_intro_stage"),0);
+   World->SpawnActor<AMareIntro>();}
  }
 };
 // QA: screenshot with the UI after N real seconds (works while paused, e.g. "mare.ShowUI options, mare.ShotLater 4":
@@ -3111,7 +3115,7 @@ AMareGameMode::AMareGameMode(){PrimaryActorTick.bCanEverTick=true;DefaultPawnCla
 void AMareGameMode::StartSession()
 {
  // 07/11 (Sergio: "apresentação inicial do jogo"): a new game opens with the story postcards (MareTitle.cpp), then the
- // bus arrival. Loaded games and QA runs go straight on.
+ // boat arrival. Loaded games and QA runs go straight on.
  auto Sim=GetGameInstance()->GetSubsystem<UMareSimulation>();auto PC=Cast<AMareController>(GetWorld()->GetFirstPlayerController());
  const TCHAR* Cmd=FCommandLine::Get();
  // QA profiles (-MareSaveRoot under D:/CodexTemp, the gate checks the bus driver right away) skip it; mare.Story shows it.

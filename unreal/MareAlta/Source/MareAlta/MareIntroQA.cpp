@@ -35,12 +35,15 @@ void AMareIntroQA::Tick(float DeltaSeconds)
  const bool Natural=FParse::Param(FCommandLine::Get(),TEXT("MareIntroNaturalQA"));
  auto Capture=[this](const FString& Name){FScreenshotRequest::RequestScreenshot(Root/(Name+TEXT(".png")),true,false);};
  switch(Phase++){
- case 0:Check(TEXT("new_save_arrival_active"),Intro && Intro->IsArrival() && UMareSimulation::Number(Sim->State,TEXT("ue_intro_stage"),2)==0);Check(TEXT("refined_bus_loaded"),Intro && Intro->HasRefinedBus());Capture(TEXT("intro-bus"));Next=FPlatformTime::Seconds()+3.2;break;
- case 1:Capture(TEXT("intro-interior"));if(!Natural){if(Intro)Intro->FinishArrival();Phase=4;}Next=FPlatformTime::Seconds()+(Natural?4.4:1);break;
- case 2:Check(TEXT("bus_door_opens"),Intro && Intro->DoorFraction()>.1f);Capture(TEXT("intro-door"));Next=FPlatformTime::Seconds()+2;break;
- case 3:Capture(TEXT("intro-stairs"));Next=FPlatformTime::Seconds()+4;break;
+ case 0:Check(TEXT("new_save_arrival_active"),Intro && Intro->IsArrival() && UMareSimulation::Number(Sim->State,TEXT("ue_intro_stage"),2)==0);Check(TEXT("arrival_boat_loaded"),Intro && Intro->HasArrivalBoat());Capture(TEXT("intro-boat"));Next=FPlatformTime::Seconds()+3.2;break;
+ case 1:Capture(TEXT("intro-aboard"));if(!Natural){if(Intro)Intro->FinishArrival();Phase=4;}Next=FPlatformTime::Seconds()+(Natural?14.5:1);break;
+ case 2:Check(TEXT("boat_docks_at_pier"),Intro && Intro->DockFraction()>.1f);Capture(TEXT("intro-dock"));Next=FPlatformTime::Seconds()+2;break;
+ case 3:Capture(TEXT("intro-pier"));Next=FPlatformTime::Seconds()+4;break;
  case 4:
   Check(Natural?TEXT("arrival_finishes_naturally"):TEXT("arrival_can_be_skipped"),Intro && !Intro->IsArrival() && UMareSimulation::Number(Sim->State,TEXT("ue_intro_stage"),2)==1 && !PC->IsMoveInputIgnored());Capture(TEXT("intro-after-arrival"));
+  // 08/11: the arrival ends on the pier; the walk from the pier to the village is not part of this test.
+  Check(TEXT("arrival_ends_on_the_pier"),Hero->GetActorLocation().Y<-3000.f);
+  Hero->SetActorLocation(FVector(5000,2775,100),false,nullptr,ETeleportType::TeleportPhysics);
   Hero->GetCharacterMovement()->MaxWalkSpeed=170;if(Door)WalkTo(Door->GetActorTransform().TransformPosition(FVector(-57.5,210,90)));else{Check(TEXT("home_door_exists"),false);Phase=8;}break;
  case 5:{
   const FVector Focus=Door?Door->GetActorTransform().TransformPosition(Door->FocusOffset):FVector::ZeroVector;PC->SetControlRotation((Focus-Eyes->GetComponentLocation()).Rotation());Next=FPlatformTime::Seconds()+.5;break;}

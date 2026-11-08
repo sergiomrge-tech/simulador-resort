@@ -13,4 +13,7 @@ namespace MareIsland
  /** The old straight-beach y that matches a distance from the coast in the bay (waterline at y -29.5 m): lets formulas
   *  written along y (the sea floor profile, the sea material) follow the coast all round the island. */
  MAREALTA_API float BayEquivalentY(float Distance);
+ /** BayEquivalentY of the point's own coast distance (clamped to +-400 m): "how far up the beach", the way the old
+  *  code read Position.Y (beach sounds, gulls, sand footprints, the beach umbrella), now on every shore. */
+ MAREALTA_API float CoastY(float X,float Y);
 }

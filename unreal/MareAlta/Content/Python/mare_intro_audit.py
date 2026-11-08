@@ -1,6 +1,6 @@
 """Intro checks for the QA gate (06/11/2026, CHECKLIST 0 A4).
 
-driver(arg) - what the bus driver wears during the arrival: {'driver': bool, 'meshes': [...], 'swim': bool}. With no role he
+driver(arg) - what the arrival's attached person wears (the boatman since 08/11; was the bus driver): {'driver': bool, 'meshes': [...], 'swim': bool}. With no role he
               took the beach roster and drove the bus in a bikini; he is a seated villager now (MareIntro.cpp).
 """
 import json

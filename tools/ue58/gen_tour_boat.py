@@ -36,7 +36,9 @@ def hull_surface(L, W, D, m_hull, m_band, m_inside):
         t = i / n_sec
         bow = max(0.0, (t - .5) / .5)
         half = W / 2 * (1 - bow ** 2.2) * (.96 + .04 * math.sin(math.pi * min(t * 2, 1)))
-        half = max(half, .015)
+        # 08/11 (Sergio, photo of the bow: "junção está aberta"): the two sides met 3 cm apart at the stem and the seam
+        # stayed open; the last section closes to the centre line so the sides weld into one stem.
+        half = 0.0 if i == n_sec else max(half, .015)
         keel = -.38 * (1 - t ** 4) + .1 * t ** 6
         sheer = D - .38 + .22 * t ** 2.5
         pts = []
@@ -93,11 +95,13 @@ def hull_surface(L, W, D, m_hull, m_band, m_inside):
     obj(bm, 'band', m_band)
     rail = bpy.data.curves.new('rail', 'CURVE')
     rail.dimensions = '3D'
-    for side in (1, -1):
-        sp = rail.splines.new('POLY')
-        sp.points.add(len(band_pts) - 1)
-        for p_, (y, x, z0, z1) in zip(sp.points, band_pts):
-            p_.co = (side * (x + .01), y, z1 + .02, 1)
+    # One rail from the port quarter round the stem to the starboard quarter (two rails left a notch at the bow).
+    sp = rail.splines.new('POLY')
+    loop = [(-(x + .01), y, z1 + .02) for y, x, z0, z1 in band_pts[:-1]] + [(0.0, band_pts[-1][0], band_pts[-1][3] + .02)] + \
+        [((x + .01), y, z1 + .02) for y, x, z0, z1 in reversed(band_pts[:-1])]
+    sp.points.add(len(loop) - 1)
+    for p_, co in zip(sp.points, loop):
+        p_.co = (*co, 1)
     rail.bevel_depth = .025
     ro = bpy.data.objects.new('rail', rail)
     bpy.context.collection.objects.link(ro)
@@ -125,12 +129,23 @@ def lancha():
     m_black = mat(f'{P}_Black', None, (.05, .05, .06), .45)
     m_glass = mat(f'{P}_Screen', None, (.35, .45, .5), .05, .3)
     m_engine = mat(f'{P}_Engine', None, (.92, .93, .95), .3)
-    hull_surface(L, W, D, m_hull, m_band, m_in)
+    hull_secs = hull_surface(L, W, D, m_hull, m_band, m_in)
     deck_z = .12
     # Teak deck inside the hull (planks), clear of the bow.
+    # 08/11: each plank only where the hull is wide enough at deck height (the outer ones poked through the topsides
+    # near the stern and showed through the water).
+    secs = hull_secs
+    def width_at(pts, z):
+        for (x0, z0), (x1, z1) in zip(pts, pts[1:]):
+            if z0 <= z <= z1 and z1 > z0:
+                return x0 + (x1 - x0) * (z - z0) / (z1 - z0)
+        return 0.0
+    widths = [(y, width_at(pts, deck_z + .015) - .03) for y, pts in secs]
     for i in range(9):
         x = -1.0 + i * .25
-        rbox((.24, 5.6, .03), (x, 3.1, deck_z), m_deck, .004, 'plank', uvscale=1.5)
+        ys = [y for y, w in widths if w > abs(x) + .12 and .3 <= y <= 5.9]
+        if len(ys) >= 2:
+            rbox((.24, max(ys) - min(ys), .03), (x, (max(ys) + min(ys)) / 2, deck_z), m_deck, .004, 'plank', uvscale=1.5)
     seats = []
     # Side benches with cushions: four per side between y 1.6 and 5.0.
     for side in (1, -1):

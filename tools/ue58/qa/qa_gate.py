@@ -7,7 +7,7 @@ What it checks, with data (PASS only if all hard checks pass):
      lights            - no room light shines at night without a lamp/fixture (mare_light_audit.bare_check);
      decor             - game room decoration defects stay fixed (mare_game_room.check);
      cameras           - minigame cameras turn off the 16:9 letterbox (HUD projections land on the balls);
-     driver            - the bus driver of the intro is seated and dressed, not in swimwear (mare_intro_audit.driver);
+     driver            - the boatman of the arrival (08/11: by boat, was the bus driver) is dressed, not in swimwear (mare_intro_audit.driver);
   3. natural movement  - PIE gait audit by day and by night: nobody moving while feet/hands stay put; also on every
                          visible skeletal mesh (MetaHuman bodies): no glider, nobody frozen without idle motion;
   4. clean log         - no Error / Ensure / missing usage flag / default material lines during the PIE run
@@ -81,8 +81,8 @@ def pie(on):
         time.sleep(45)
         # A new PIE opens the main menu, which pauses the game (no village, no walkers): continue past it.
         hud('cmd', 'mare.ShowUI play')
-        # 06/11 (CHECKLIST 0 A4): the fresh profile starts with the bus arrival; the driver must be a dressed villager
-        # (with no role he took the beach roster and drove in a bikini). Checked while the bus is still on screen.
+        # 06/11 (CHECKLIST 0 A4): the fresh profile starts with the arrival (by boat since 08/11); the boatman must be a dressed villager
+        # (with no role the bus driver took the beach roster and drove in a bikini). Checked while the boat is still coming in.
         time.sleep(3)
         got = ret(hud('module', 'mare_intro_audit.driver|'))
         DRIVER.update(json.loads(got) if isinstance(got, str) else got)
@@ -362,6 +362,12 @@ def main():
     pie(True)
     coast('clock', '690')
     hud('cmd', 'mare.Weather 1')
+    # 08/11: the arrival (by boat) ends on the pier, ~85 m from the village, where the walkers are paused out of sight
+    # (AMarePerson::SetDistanceHidden): measure them with the hero in the village, where the bus arrival used to end.
+    # The arrival may still be playing here (it ends by putting the hero on the pier): end it first, like E.
+    hud('cmd', 'mare.ShowUI close')
+    time.sleep(1)
+    coast('pie', 'gait,5000,2775,170,-5,-150')
     time.sleep(20)
     # The gait audit samples everyone, on screen or not: it checks the walk itself, so off-screen people animate here
     # (mare.OffscreenPose 0, and nobody hidden by distance or by being out of view, mare.PeopleHideOffscreen /

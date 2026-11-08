@@ -1,5 +1,5 @@
 {
- "_doc": "Textos novos de 08/11 (dicas do Resort Simulator) para o GPT traduzir nos 12 idiomas, como o I18N_TODO_2026-11-07.json. Placeholders %d/%s/%.0f ficam como estão.",
+ "_doc": "Textos novos de 08/11 (dicas do Resort Simulator) para o GPT traduzir nos 12 idiomas, como o I18N_TODO_2026-11-07.json. Placeholders %d/%s/%.0f ficam como estão. 08/11 (chegada de barco): \"Barqueiro\", o cartão da história e a carta da dívida trocaram \"ônibus\" por \"barco\" (as chaves antigas com \"ônibus\" ficam sem uso).",
  "pt": [
   "Entregar: mire no cliente",
   "Subir",
@@ -30,6 +30,9 @@
   "Fama %d · ",
   "Bar · ",
   "Pescar na ponta do píer",
-  "Quiosque · luminária do teto"
+  "Quiosque · luminária do teto",
+  "Barqueiro",
+  "Você pegou o primeiro barco para a ilha.",
+  "Meu bem, o quiosque é seu. A dívida também: R$ 1.000.000. Eu ia contar no almoço, mas o barco chegou primeiro."
  ]
 }

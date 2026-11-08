@@ -15,6 +15,9 @@
 #include "Serialization/JsonSerializer.h"
 #include "MareServiceTarget.h"
 #include "Camera/CameraActor.h"
+#include "Camera/CameraComponent.h"
+#include "Kismet/KismetMaterialLibrary.h"
+#include "Materials/MaterialParameterCollection.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/TextRenderComponent.h"
 #include "Engine/StaticMeshActor.h"
@@ -50,96 +53,151 @@ void AMareIntro::BeginPlay()
  LetterTarget=GetWorld()->SpawnActor<AMareServiceTarget>(FVector(4435,2237,58),FRotator::ZeroRotator,Params);
  if(LetterTarget){LetterTarget->Action=TEXT("IntroLetter");LetterTarget->Label=TEXT("Carta da avó Dilce");LetterTarget->Reach=275;LetterTarget->OcclusionTolerance=100;LetterTarget->SetOwner(this);}
  if(UMareSimulation::Number(Sim->State,TEXT("ue_intro_stage"),2)!=0)return;
- if(!LoadBus()){FinishArrival();return;}
- Camera=GetWorld()->SpawnActor<ACameraActor>(FVector(5950,2580,235),FRotator::ZeroRotator,Params);
+ if(!LoadBoat()){FinishArrival();return;}
+ // The opening shot from the pier: the boat coming in from the open sea, then the view from the passenger bench.
+ Camera=GetWorld()->SpawnActor<ACameraActor>(FVector(PierX+280,PierEndY+650,PierZ+260),FRotator::ZeroRotator,Params);   // clear of the fisherman
  if(!Camera){FinishArrival();return;}
- Camera->SetActorRotation((BusPoint(FVector(100,0,120))-Camera->GetActorLocation()).Rotation());
+ Camera->GetCameraComponent()->SetConstraintAspectRatio(false);   // no letterbox in a non-16:9 window (lesson 06/11)
+ Camera->SetActorRotation((BoatPoint(FVector(0,-430,120))-Camera->GetActorLocation()).Rotation());
  Hero->GetCharacterMovement()->StopMovementImmediately();Hero->GetCharacterMovement()->DisableMovement();
  Hero->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
  PC->SetViewTarget(Camera);PC->SetIgnoreMoveInput(true);PC->SetIgnoreLookInput(true);bArrival=true;
+ Hero->SetActorHiddenInGame(true);   // the hero's body waits out of sight (it stood on the pier in the shots) until going ashore
 }
-bool AMareIntro::LoadBus()
+// 08/11 (Sergio: "herói chega de barco, não de ônibus, na ilha"): the hero arrives by sea, on the tour boat (the lancha of
+// Content/Data/tours.json boat_tour, which also gives the waterline, freeboard, helm and benches), docking bow-on at the far
+// end of the pier; the boatman stays at the helm and takes the boat back out once the hero is ashore.
+bool AMareIntro::LoadBoat()
 {
- FString Text;TSharedPtr<FJsonObject> Data;
- if(!FFileHelper::LoadFileToString(Text,*(FPaths::ProjectContentDir()/TEXT("Data/intro_refined_bus.json"))) || !FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Text),Data))return false;
- const auto Vector=[](const TSharedPtr<FJsonObject>& Row,const FString& Key){const auto& A=Row->GetArrayField(Key);return FVector(A[0]->AsNumber(),A[1]->AsNumber(),A[2]->AsNumber());};
- auto Parts=UMareSimulation::Object(Data,TEXT("parts"));
- auto Cabin=LoadObject<UStaticMesh>(nullptr,*UMareSimulation::String(UMareSimulation::Object(Parts,TEXT("Bus_Cabin")),TEXT("mesh")));
- if(!Cabin)return false;
- Bus=GetWorld()->SpawnActor<AStaticMeshActor>();auto Root=Bus->GetStaticMeshComponent();Root->SetMobility(EComponentMobility::Movable);
- Root->SetStaticMesh(Cabin);Root->SetCollisionEnabled(ECollisionEnabled::NoCollision);Bus->SetActorLocationAndRotation(StartPosition,FRotator(0,180,0));
- for(const FString Name:{TEXT("Bus_Door"),TEXT("wheelFL"),TEXT("wheelFR"),TEXT("wheelLR"),TEXT("wheelRR")}){
-  auto Row=UMareSimulation::Object(Parts,Name);auto Mesh=LoadObject<UStaticMesh>(nullptr,*UMareSimulation::String(Row,TEXT("mesh")));if(!Mesh){Bus->Destroy();Bus=nullptr;return false;}
-  auto Part=NewObject<UStaticMeshComponent>(Bus);Bus->AddInstanceComponent(Part);Part->SetupAttachment(Root);Part->SetMobility(EComponentMobility::Movable);
-  Part->SetStaticMesh(Mesh);Part->SetCollisionEnabled(ECollisionEnabled::NoCollision);Part->SetRelativeLocation(Vector(Row,TEXT("position")));Part->RegisterComponent();
-  if(Name==TEXT("Bus_Door"))BusDoor=Part;else BusWheels.Add(Part);
- }
- InteriorCamera=Vector(Data,TEXT("interior_camera"));FrontLook=Vector(Data,TEXT("front_look"));DoorYaw=UMareSimulation::Number(Data,TEXT("door_swing_yaw"),-85);
- for(const auto& Item:Data->GetArrayField(TEXT("steps"))){const auto& A=Item->AsArray();ExitSteps.Add(FVector(A[0]->AsNumber(),A[1]->AsNumber(),A[2]->AsNumber()));}
- BusDriver=GetWorld()->SpawnActor<AMarePerson>(BusPoint(FVector(390,-53,150)),Bus->GetActorRotation());
- if(BusDriver){BusDriver->SetAppearance(2);BusDriver->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);BusDriver->GetCharacterMovement()->DisableMovement();
-  // 06/11 (CHECKLIST 0, photo of the seated driver): with no role he took the beach roster and drove the bus in a bikini.
-  // A seated villager (village roster, casual clothes); seated keeps the events from making him dance.
-  BusDriver->PersonName=TEXT("Motorista");BusDriver->bAmbient=true;BusDriver->bSeated=true;
-  BusDriver->Stage=EMarePersonStage::Eating;BusDriver->bConsumed=true;BusDriver->HoldPose=BusDriver->Clips.Contains(TEXT("Driving"))?TEXT("Driving"):TEXT("Sitting_Idle");BusDriver->PlayPose(BusDriver->HoldPose);/* hands on the wheel (UAL Driving) */BusDriver->AttachToActor(Bus,FAttachmentTransformRules::KeepWorldTransform);}   // i18n:skip
- return ExitSteps.Num()>=5;
+ auto Sim=GetGameInstance()->GetSubsystem<UMareSimulation>();if(!Sim)return false;
+ BoatDefs=UMareSimulation::Object(Sim->ToursDefs(),TEXT("boat_tour"));
+ auto Mesh=LoadObject<UStaticMesh>(nullptr,*FString::Printf(TEXT("/Game/Custom/TourBoat/%s/%s.%s"),*UMareSimulation::String(BoatDefs,TEXT("mesh")),*UMareSimulation::String(BoatDefs,TEXT("mesh")),*UMareSimulation::String(BoatDefs,TEXT("mesh"))));
+ if(!Mesh)return false;
+ // The pier, measured: its far end and deck height along x = PierX (the sea itself has no collision).
+ FCollisionQueryParams Q(TEXT("MareIntroPier"),true);FHitResult Hit;PierEndY=0;
+ for(float Y=-4600.f;Y>-9000.f;Y-=50.f){
+  if(GetWorld()->LineTraceSingleByChannel(Hit,FVector(PierX,Y,500),FVector(PierX,Y,-300),ECC_Visibility,Q) && Hit.ImpactPoint.Z>-5.f){PierEndY=Y;PierZ=Hit.ImpactPoint.Z;}
+  else if(PierEndY!=0)break;}
+ if(PierEndY==0)return false;
+ // Transom (the model's origin) 80 cm plus a hull length short of the pier, bow to the island; the run in curves from the open sea.
+ Dock=FVector(PierX,PierEndY-80.f-BoatLength,0);
+ PathA=Dock+FVector(3600,-15000,0);PathB=Dock+FVector(0,-7000,0);
+ FActorSpawnParameters P;P.SpawnCollisionHandlingOverride=ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+ Boat=GetWorld()->SpawnActor<AStaticMeshActor>(PathA,FRotator::ZeroRotator,P);if(!Boat)return false;
+ auto Root=Boat->GetStaticMeshComponent();Root->SetMobility(EComponentMobility::Movable);Root->SetStaticMesh(Mesh);Root->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+ SailTo(0.f);
+ const FVector Helm=Vec3(BoatDefs,TEXT("helm"),FVector(45,-30,100));
+ Boatman=GetWorld()->SpawnActor<AMarePerson>(BoatPoint(Helm),Boat->GetActorRotation(),P);
+ if(Boatman){Boatman->SetAppearance(1);Boatman->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);Boatman->GetCharacterMovement()->DisableMovement();
+  // A villager with a role (lesson 06/11: no role = beach roster in swimwear), standing at the helm facing the bow.
+  Boatman->PersonName=TEXT("Barqueiro");Boatman->bAmbient=true;Boatman->bSeated=true;Boatman->Stage=EMarePersonStage::Eating;Boatman->bConsumed=true;
+  Boatman->HoldPose=TEXT("Idle");Boatman->PlayPose(Boatman->HoldPose);   // i18n:skip
+  const float Half=Boatman->GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
+  Boatman->SetActorLocationAndRotation(BoatPoint(FVector(Helm.X,Helm.Y,12))+FVector(0,0,Half),FRotator(0,Heading,0));
+  Boatman->AttachToActor(Boat,FAttachmentTransformRules::KeepWorldTransform);}
+ return true;
 }
-FVector AMareIntro::BusPoint(const FVector& Local)const{return Bus?Bus->GetActorTransform().TransformPosition(Local):StopPosition+FRotator(0,180,0).RotateVector(Local);}
-void AMareIntro::AnimateBus(float Distance)
+FVector AMareIntro::Vec3(const TSharedPtr<FJsonObject>& O,const FString& Key,const FVector& Fallback)
 {
- WheelAngle+=FMath::RadiansToDegrees(Distance/35.6f);
- for(auto Wheel:BusWheels)if(IsValid(Wheel))Wheel->SetRelativeRotation(FRotator(WheelAngle,0,0));
- if(IsValid(BusDoor))BusDoor->SetRelativeRotation(FRotator(0,DoorYaw*DoorOpen,0));
- if(IsValid(BusDriver))BusDriver->AddActorWorldOffset(BusPoint(FVector(390,-53,106))-BusDriver->GetMesh()->GetSocketLocation(TEXT("pelvis")));
+ const TArray<TSharedPtr<FJsonValue>>* A=nullptr;if(!O.IsValid() || !O->TryGetArrayField(Key,A) || A->Num()<3)return Fallback;
+ return FVector((*A)[0]->AsNumber(),(*A)[1]->AsNumber(),(*A)[2]->AsNumber());
+}
+FVector AMareIntro::BoatPoint(const FVector& Local)const{return Boat?Boat->GetActorTransform().TransformPosition(Local):Dock;}
+void AMareIntro::SailTo(float Travel)
+{
+ // Quadratic curve from the open sea to the dock; the heading follows the curve.
+ const float T=FMath::Clamp(Travel,0.f,1.f);
+ const FVector At=(1-T)*(1-T)*PathA+2*(1-T)*T*PathB+T*T*Dock;
+ const FVector Tangent=2*(1-T)*(PathB-PathA)+2*T*(Dock-PathB);
+ RideWaves(At,Tangent.Rotation().Yaw);
+}
+void AMareIntro::RideWaves(const FVector& At2D,float NewHeading)
+{
+ if(!Boat)return;Heading=NewHeading;
+ // Like the playable tour (MareBoatTourWorld): heave, pitch and roll from the real sea surface (AMarePerson::SeaHeight),
+ // and the sea goes flat inside the hull (ocean material, MPC Boat*).
+ static UMaterialParameterCollection* TimeMPC=LoadObject<UMaterialParameterCollection>(nullptr,TEXT("/Game/World/Materials/MPC_MareTime.MPC_MareTime"));
+ const float Storm=TimeMPC?UKismetMaterialLibrary::GetScalarParameterValue(this,TimeMPC,TEXT("Storm")):0.f;const float Time=GetWorld()->GetTimeSeconds();
+ const FVector F=FRotator(0,Heading,0).Vector(),Rgt(-F.Y,F.X,0);
+ auto H=[&](const FVector& P){return AMarePerson::SeaHeight(FVector2D(P.X,P.Y),Time,Storm);};
+ const float HBow=H(At2D+F*760),HStern=H(At2D),HPort=H(At2D+F*380-Rgt*120),HStar=H(At2D+F*380+Rgt*120);
+ const float SeaZ=UMareSimulation::Number(BoatDefs,TEXT("sea_z"),-30);
+ const FVector At(At2D.X,At2D.Y,SeaZ+(HBow+HStern+HPort+HStar)*.25f+UMareSimulation::Number(BoatDefs,TEXT("freeboard"),10));
+ const float Pitch=FMath::RadiansToDegrees(FMath::Atan2(HBow-HStern,760.f)),Roll=FMath::RadiansToDegrees(FMath::Atan2(HStar-HPort,240.f))*.7f;
+ const FRotator Base=FRotationMatrix::MakeFromYZ(-F,FVector::UpVector).Rotator();   // the model's front is its -Y
+ Boat->SetActorLocationAndRotation(At,FRotator(Roll,Base.Yaw,Pitch));
+ if(TimeMPC){const FVector Mid=At+F*UMareSimulation::Number(BoatDefs,TEXT("centre"),430);
+  UKismetMaterialLibrary::SetScalarParameterValue(this,TimeMPC,TEXT("BoatX"),Mid.X);UKismetMaterialLibrary::SetScalarParameterValue(this,TimeMPC,TEXT("BoatY"),Mid.Y);
+  UKismetMaterialLibrary::SetScalarParameterValue(this,TimeMPC,TEXT("BoatYaw"),Heading);UKismetMaterialLibrary::SetScalarParameterValue(this,TimeMPC,TEXT("BoatOn"),1);
+  const float BowDeck=BoatPoint(FVector(0,-780,12)).Z,SternDeck=BoatPoint(FVector(0,-40,12)).Z;
+  UKismetMaterialLibrary::SetScalarParameterValue(this,TimeMPC,TEXT("BoatH"),FMath::Min(BowDeck,SternDeck)-SeaZ-30);}
+}
+void AMareIntro::RemoveBoat()
+{
+ if(BoatSound)BoatSound->Stop();BoatSound=nullptr;
+ if(Boatman)Boatman->Destroy();Boatman=nullptr;
+ if(Boat)Boat->Destroy();Boat=nullptr;bBoatLeaving=false;
+ if(auto MPC=LoadObject<UMaterialParameterCollection>(nullptr,TEXT("/Game/World/Materials/MPC_MareTime.MPC_MareTime")))UKismetMaterialLibrary::SetScalarParameterValue(this,MPC,TEXT("BoatOn"),0);
 }
 void AMareIntro::AdvanceArrival(float Dt)
 {
  auto PC=UGameplayStatics::GetPlayerController(this,0);auto Hero=PC?PC->GetCharacter():nullptr;if(!Hero){FinishArrival();return;}
- const float PreviousTime=ArrivalTime;ArrivalTime+=Dt;
+ ArrivalTime+=Dt;
  auto Audio=GetWorld()->GetSubsystem<UMareAudioWorld>();
- if(ArrivalTime>.25f && !BusSound){const FVector Position=Bus->GetActorLocation();BusSound=Audio->PlayCue(TEXT("bus_engine"),.20f,&Position);}
- if(BusSound)BusSound->SetWorldLocation(Bus->GetActorLocation());
- if(PreviousTime<7.6f && ArrivalTime>=7.6f)Audio->PlayCue(TEXT("bus_brake"),.17f);
- if(ArrivalTime<=8.f){
-  const float T=FMath::Clamp(ArrivalTime/8.f,0.f,1.f),Travel=1-FMath::Square(1-T);
-  const FVector Before=Bus->GetActorLocation();Bus->SetActorLocation(FMath::Lerp(StartPosition,StopPosition,Travel));AnimateBus(FVector::Dist(Before,Bus->GetActorLocation()));
-  if(ArrivalTime>2.f){Camera->SetActorLocation(BusPoint(InteriorCamera));Camera->SetActorRotation((BusPoint(FrontLook)-Camera->GetActorLocation()).Rotation());}
-  else Camera->SetActorRotation((BusPoint(FVector(100,0,120))-Camera->GetActorLocation()).Rotation());
+ // No outboard recording yet: the bus diesel, lower and softer, reads as the boat's engine.
+ if(ArrivalTime>.25f && !BoatSound){const FVector Position=Boat->GetActorLocation();BoatSound=Audio->PlayCue(TEXT("bus_engine"),.16f,&Position);if(BoatSound)BoatSound->SetPitchMultiplier(.72f);}
+ if(BoatSound){BoatSound->SetWorldLocation(Boat->GetActorLocation());if(ArrivalTime>SailSeconds)BoatSound->SetVolumeMultiplier(FMath::Max(.06f,.16f*(1.f-(ArrivalTime-SailSeconds)/2.f)));}
+ const float T=FMath::Clamp(ArrivalTime/SailSeconds,0.f,1.f);SailTo(1-FMath::Square(1-T));
+ Docked=FMath::Clamp((ArrivalTime-SailSeconds)/1.f,0.f,1.f);
+ if(ArrivalTime<SailSeconds+1.f){
+  if(ArrivalTime>3.f){   // aboard: standing in the bow, ahead of the canopy (from the bench it filled the view), looking at the island
+   Camera->SetActorLocation(BoatPoint(FVector(0,-690,150)));
+   const FRotator Ahead(-3.f,Heading,Boat->GetActorRotation().Roll*.5f);   // level: the boat's own roll only in part
+   Camera->SetActorRotation(ArrivalTime<3.2f?Ahead:FMath::RInterpTo(Camera->GetActorRotation(),Ahead,Dt,5.f));}
+  else Camera->SetActorRotation((BoatPoint(FVector(0,-430,120))-Camera->GetActorLocation()).Rotation());
   return;
  }
- Bus->SetActorLocation(StopPosition);DoorOpen=FMath::Clamp((ArrivalTime-8.f)/1.2f,0.f,1.f);AnimateBus(0);
- if(ArrivalTime<9.2f)return;
- if(!bDisembarking){bDisembarking=true;PC->SetViewTarget(Hero);if(auto Body=Hero->FindComponentByClass<UMarePlayerPresentation>())Body->SetScriptedWalking(true);}
- DisembarkTime+=Dt;const float Progress=FMath::Clamp(DisembarkTime/4.5f,0.f,1.f)*(ExitSteps.Num()-1);
- const int32 Index=FMath::Min(FMath::FloorToInt(Progress),ExitSteps.Num()-2);const float T=Progress-Index;
- const FVector Foot=BusPoint(FMath::Lerp(ExitSteps[Index],ExitSteps[Index+1],T));
- Hero->SetActorLocation(Foot+FVector(0,0,88),false,nullptr,ETeleportType::TeleportPhysics);
- Hero->SetActorRotation(FRotator(0,-90,0));PC->SetControlRotation(FRotator(-12,-90,0));
- StepClock-=Dt;if(StepClock<=0){GetWorld()->GetSubsystem<UMareAudioWorld>()->PlayCue(TEXT("footstep_concrete_002"),.15f);StepClock=.55f;}
- if(DisembarkTime>=4.5f)FinishArrival();
+ if(!bDisembarking){bDisembarking=true;Hero->SetActorHiddenInGame(false);PC->SetViewTarget(Hero);if(auto Body=Hero->FindComponentByClass<UMarePlayerPresentation>())Body->SetScriptedWalking(true);}
+ // From the bow (ahead of the canopy, which filled the view from the bench) up onto the pier and along it.
+ const FVector Steps[5]={BoatPoint(FVector(0,-640,14)),BoatPoint(FVector(0,-760,20)),FVector(PierX,PierEndY-40,PierZ),
+  FVector(PierX,PierEndY-10,PierZ),FVector(PierX,PierEndY+450,PierZ)};
+ DisembarkTime+=Dt;const float Progress=FMath::Clamp(DisembarkTime/DisembarkSeconds,0.f,1.f)*4.f;
+ const int32 Index=FMath::Min(FMath::FloorToInt(Progress),3);const float S=Progress-Index;
+ Hero->SetActorLocation(FMath::Lerp(Steps[Index],Steps[Index+1],S)+FVector(0,0,Hero->GetCapsuleComponent()->GetScaledCapsuleHalfHeight()),false,nullptr,ETeleportType::TeleportPhysics);
+ Hero->SetActorRotation(FRotator(0,90,0));PC->SetControlRotation(FRotator(-8,90,0));
+ StepClock-=Dt;if(StepClock<=0){Audio->PlayCue(*FString::Printf(TEXT("footstep_wood_%03d"),FMath::RandRange(0,4)),.15f);StepClock=.55f;}
+ if(DisembarkTime>=DisembarkSeconds)FinishArrival();
 }
 void AMareIntro::Tick(float DeltaSeconds)
 {
  Super::Tick(DeltaSeconds);
- if(bBusDeparting && Bus){
-  DepartureTime+=DeltaSeconds;DoorOpen=FMath::Max(0.f,1.f-DepartureTime/1.2f);const float Distance=FMath::Max(0.f,DepartureTime-1.2f)*42.f*DeltaSeconds;
-  Bus->AddActorWorldOffset(Bus->GetActorForwardVector()*Distance);AnimateBus(Distance);
-  if(BusSound)BusSound->SetWorldLocation(Bus->GetActorLocation());
-  if(DepartureTime>13.f){if(BusSound)BusSound->Stop();if(BusDriver)BusDriver->Destroy();Bus->Destroy();Bus=nullptr;bBusDeparting=false;}return;
+ if(bBoatLeaving && Boat){
+  // Back out from the pier, then turn round and head out to sea.
+  LeaveTime+=DeltaSeconds;
+  if(LeaveTime<4.f)SailTo(1.f-.12f*FMath::SmoothStep(0.f,1.f,LeaveTime/4.f));
+  else{if(LeavePos.IsZero()){LeavePos=Boat->GetActorLocation();LeavePos.Z=0;}
+   const float NewHeading=FMath::FixedTurn(Heading,-90.f,22.f*DeltaSeconds);LeaveSpeed=FMath::Min(700.f,LeaveSpeed+160.f*DeltaSeconds);
+   LeavePos+=FRotator(0,NewHeading,0).Vector()*LeaveSpeed*DeltaSeconds;RideWaves(LeavePos,NewHeading);}
+  if(BoatSound)BoatSound->SetWorldLocation(Boat->GetActorLocation());
+  if(LeaveTime>20.f)RemoveBoat();
+  return;
  }
- if(bArrival && Bus)AdvanceArrival(DeltaSeconds);
+ if(bArrival && Boat)AdvanceArrival(DeltaSeconds);
 }
 void AMareIntro::FinishArrival()
 {
  auto PC=UGameplayStatics::GetPlayerController(this,0);auto Hero=PC?PC->GetCharacter():nullptr;
  if(PC && Hero){
-  PC->SetViewTarget(Hero);Hero->SetActorLocation(FVector(5000,2775,100),false,nullptr,ETeleportType::TeleportPhysics);
+  // Ashore at the pier, facing the village (skipping the scene lands there too).
+  PC->SetViewTarget(Hero);Hero->SetActorHiddenInGame(false);
+  const FVector Ashore=PierEndY!=0?FVector(PierX,PierEndY+450,PierZ):FVector(7200,-4700,32);
+  Hero->SetActorLocation(Ashore+FVector(0,0,Hero->GetCapsuleComponent()->GetScaledCapsuleHalfHeight()+2),false,nullptr,ETeleportType::TeleportPhysics);
   Hero->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);Hero->GetCharacterMovement()->StopMovementImmediately();Hero->GetCharacterMovement()->SetMovementMode(MOVE_Walking);
   if(auto Body=Hero->FindComponentByClass<UMarePlayerPresentation>())Body->SetScriptedWalking(false);
-  PC->SetControlRotation(FRotator(0,-150,0));PC->ResetIgnoreMoveInput();PC->ResetIgnoreLookInput();
+  PC->SetControlRotation(FRotator(0,90,0));PC->ResetIgnoreMoveInput();PC->ResetIgnoreLookInput();
  }
  bArrival=false;bDisembarking=false;
- if(Bus){if(ArrivalTime<9.f){if(BusSound)BusSound->Stop();if(BusDriver)BusDriver->Destroy();Bus->Destroy();Bus=nullptr;}else bBusDeparting=true;}
+ if(Boat){if(ArrivalTime<SailSeconds)RemoveBoat();else{bBoatLeaving=true;LeaveTime=0;LeaveSpeed=0;LeavePos=FVector::ZeroVector;}}
  if(Camera){Camera->Destroy();Camera=nullptr;}
  if(auto Sim=GetGameInstance()->GetSubsystem<UMareSimulation>()){Sim->State->SetNumberField(TEXT("ue_intro_stage"),1);Sim->Save();}
 }

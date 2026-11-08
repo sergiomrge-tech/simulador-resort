@@ -2,6 +2,7 @@
 #include "MareGame.h"
 #include "MarePerson.h"
 #include "MareSimulation.h"
+#include "MareIsland.h"
 #include "MareServiceTarget.h"
 #include "MareVillageWorld.h"
 #include "MarePreviewQA.h"
@@ -308,7 +309,7 @@ bool UMareComicEvents::StartUmbrella(const TSharedPtr<FJsonObject>& Def,bool bFo
    const FVector Wind=FVector(1,0,0).RotateAngleAxis(Angle,FVector::UpVector);FVector Rest=Pole.Base+Wind*Run;FHitResult Floor;
    if(!World->LineTraceSingleByChannel(Floor,Rest+FVector(0,0,150),Rest-FVector(0,0,200),ECC_Visibility,Query) || !Floor.GetComponent())continue;
    UMaterialInterface* Under=Floor.GetComponent()->GetMaterial(0);
-   if(!Under || !Under->GetName().Contains(TEXT("CoastGround")) || Floor.ImpactPoint.Y>-1050.f || FMath::Abs(Floor.ImpactPoint.Z-Pole.Base.Z)>60.f)continue;
+   if(!Under || !(Under->GetName().Contains(TEXT("CoastGround")) || Under->GetName().Contains(TEXT("IslandGround"))) || MareIsland::CoastY(Floor.ImpactPoint.X,Floor.ImpactPoint.Y)>-1050.f || FMath::Abs(Floor.ImpactPoint.Z-Pole.Base.Z)>60.f)continue;
    Rest=Floor.ImpactPoint;
    // Not into a Grand Hotel event being set up on the beach (its ghost pieces have no collision to stop it).
    if(InHotelEventArea(Rest))continue;

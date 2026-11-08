@@ -2,6 +2,7 @@
 #include "MareSummitWorld.h"
 #include "MareGame.h"
 #include "MareSimulation.h"
+#include "MareIsland.h"
 #include "Engine/GameInstance.h"
 #include "Components/AudioComponent.h"
 #include "Sound/SoundWave.h"
@@ -147,7 +148,12 @@ void UMareAudioWorld::UpdateLayers(float DeltaSeconds,UMareSimulation* Sim,FVect
  auto Hero=Cast<AMareCharacter>(UGameplayStatics::GetPlayerCharacter(this,0));auto Eyes=Hero?Hero->FindComponentByClass<UCameraComponent>():nullptr;
  bUnderwater=Hero && Hero->GetCharacterMovement()->IsSwimming() && Eyes && Eyes->GetComponentLocation().Z<-38;
  IndoorClock-=DeltaSeconds;if(IndoorClock<=0 && Eyes){IndoorClock=.5f;FHitResult Hit;FCollisionQueryParams Query;Query.AddIgnoredActor(Hero);bIndoors=GetWorld()->LineTraceSingleByChannel(Hit,Eyes->GetComponentLocation(),Eyes->GetComponentLocation()+FVector(0,0,350),ECC_Visibility,Query);}
- const float Beach=FMath::Clamp(1.f-(Position.Y+3200.f)/7000.f,.08f,1.f);
+ // 08/11 (island all round): distances to the nearest coast, read as the old bay's y (MareIsland::CoastY).
+ const float CoastY=MareIsland::CoastY(Position.X,Position.Y);
+ const float Beach=FMath::Clamp(1.f-(CoastY+3200.f)/7000.f,.08f,1.f);
+ // The forest: north of the village as before, and now everywhere inland outside the village (mare_island.forest).
+ const bool InVillage=Position.X>-15000.f && Position.X<20000.f && Position.Y<12000.f;
+ const float Woods=FMath::Max(FMath::Clamp((Position.Y-8400.f)/1600.f,0.f,1.f),InVillage?0.f:FMath::Clamp((-MareIsland::ShoreDistance(Position.X,Position.Y)-4500.f)/2500.f,0.f,1.f));
  // Music by place and time (Content/Data/audio_zones.json): the zone's track rises inside it and the radio ducks.
  static TSharedPtr<FJsonObject> Zones;
  if(!Zones.IsValid()){FString Text;FFileHelper::LoadFileToString(Text,*(FPaths::ProjectContentDir()/TEXT("Data/audio_zones.json")));
@@ -183,11 +189,11 @@ void UMareAudioWorld::UpdateLayers(float DeltaSeconds,UMareSimulation* Sim,FVect
   if(Name==TEXT("rain_loop"))Target=(bRain?(bIndoors?.025f:.08f):0.f);
   if(Name==TEXT("wind_loop"))Target=(bRain?.16f:.055f)*(bIndoors?.15f:1.f);
   if(Name==TEXT("crickets_loop"))Target=(bNight && !bRain?.22f:0.f)*(bIndoors?.25f:1.f);
-  if(Name==TEXT("leaves_soft"))Target=(!bRain && Position.Y>-1100?.2f:0.f)*(bIndoors?.2f:1.f);
+  if(Name==TEXT("leaves_soft"))Target=(!bRain && CoastY>-1100?.2f:0.f)*(bIndoors?.2f:1.f);
   if(Name==TEXT("underwater_loop"))Target=(bUnderwater?.28f:0.f);
   // 04/11 (Sergio: "som de mata fechada na trilha"): the forest past the back of the village and on the summit trail
   // (OpenGameArt CC0 birds + forest ambience), softer at night when the crickets take over, almost gone in the rain.
-  if(Name==TEXT("forest_loop"))Target=.24f*FMath::Clamp((Position.Y-8400.f)/1600.f,0.f,1.f)*(bNight?.35f:1.f)*(bRain?.25f:1.f)*(bIndoors?.2f:1.f);
+  if(Name==TEXT("forest_loop"))Target=.24f*Woods*(bNight?.35f:1.f)*(bRain?.25f:1.f)*(bIndoors?.2f:1.f);
   auto Component=Pair.Value;if(!IsValid(Component))continue;
   // The silence before the tsunami (UMareSummitWorld): every ambience and the radio fall silent.
   if(auto Summit=GetWorld()->GetSubsystem<UMareSummitWorld>())if(Summit->IsWaveRunning())Target=0;
@@ -207,7 +213,7 @@ void UMareAudioWorld::UpdateEvents(float DeltaSeconds,UMareSimulation* Sim,FVect
  if(Swimming && Hero->GetVelocity().Size()>35 && StepClock<=0){PlayCue(TEXT("swim_stroke"),.18f);StepClock=1.1f;}
  if(Hero->GetCharacterMovement()->IsMovingOnGround() && Hero->GetVelocity().Size2D()>45 && StepClock<=0){
   const bool Wood=(Position.X>3500 && Position.X<4150 && Position.Y>-1650 && Position.Y<-900);
-  const FString Surface=Wood?TEXT("wood"):Position.Y>900?TEXT("concrete"):TEXT("carpet");
+  const FString Surface=Wood?TEXT("wood"):(Position.Y>900 && Position.Y<12000 && Position.X>-15000 && Position.X<20000)?TEXT("concrete"):TEXT("carpet");   // village streets; the island ground is soft
   // The concrete steps were recorded 8 dB softer than the carpet ones (measure_mix.py): even them out per surface.
   const float Trim=Surface==TEXT("concrete")?2.f:Surface==TEXT("wood")?1.25f:1.f;
   PlayCue(FName(FString::Printf(TEXT("footstep_%s_%03d"),*Surface,FMath::RandRange(0,4))),.18f*Trim);StepClock=Hero->GetVelocity().Size2D()>300?.3f:.46f;
@@ -222,7 +228,7 @@ void UMareAudioWorld::UpdateEvents(float DeltaSeconds,UMareSimulation* Sim,FVect
   FVector Nearest=Trees[0];for(auto Tree:Trees)if(FVector::Dist(Position,Tree)<FVector::Dist(Position,Nearest))Nearest=Tree;
   if(FVector::Dist(Position,Nearest)<3500)PlayCue(FMath::RandBool()?TEXT("bird1"):TEXT("bird2"),.035f,&Nearest,true);   // the bird clips are ~25 dB hotter than the gulls'
  }
- if(GullClock<=0){GullClock=FMath::FRandRange(28.f,55.f);FVector Spot=Position+FVector(700,-1200,800);if(!bNight && !bRain && Position.Y<-500){const bool bFirst=FMath::RandBool();PlayCue(bFirst?TEXT("seagull1"):TEXT("seagull2"),bFirst?.3f:.75f,&Spot,true);}}   // seagull2 is recorded 8 dB softer
+ if(GullClock<=0){GullClock=FMath::FRandRange(28.f,55.f);FVector Spot=Position+FVector(700,-1200,800);if(!bNight && !bRain && MareIsland::CoastY(Position.X,Position.Y)<-500){const bool bFirst=FMath::RandBool();PlayCue(bFirst?TEXT("seagull1"):TEXT("seagull2"),bFirst?.3f:.75f,&Spot,true);}}   // seagull2 is recorded 8 dB softer
  if(ThunderClock<=0){ThunderClock=FMath::FRandRange(22.f,45.f);if(bRain && UMareSimulation::String(Sim->State,TEXT("day_event"))==TEXT("tempestade"))PlayCue(TEXT("thunder"),.25f,nullptr,true);}
  const int32 Hour=UMareSimulation::Number(Sim->State,TEXT("minutes"))/60;
  if(LastBell<0)LastBell=Hour;if(Hour!=LastBell){LastBell=Hour;FVector Church(7000,3000,700);if(Hour>=7 && Hour<=21)PlayCue(TEXT("bell"),.2f,&Church,true);}

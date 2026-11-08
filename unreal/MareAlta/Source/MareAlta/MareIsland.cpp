@@ -48,6 +48,7 @@ namespace MareIsland
   return M*100.f+Outside;
  }
  float BayEquivalentY(float Distance){return Field().BayWaterline-Distance;}
+ float CoastY(float X,float Y){return BayEquivalentY(FMath::Clamp(ShoreDistance(X,Y),-40000.f,40000.f));}
 }
 
 #if WITH_DEV_AUTOMATION_TESTS
@@ -68,6 +69,10 @@ bool FMareIslandFieldTest::RunTest(const FString&)
  TestTrue(TEXT("sea to the west"),MareIsland::ShoreDistance(-60000,30000)>0.f);
  TestTrue(TEXT("sea to the east"),MareIsland::ShoreDistance(65000,30000)>0.f);
  TestTrue(TEXT("far sea keeps growing"),MareIsland::ShoreDistance(0,-900000)>MareIsland::ShoreDistance(0,-100000));
+ TestTrue(TEXT("coast y in the bay"),FMath::Abs(MareIsland::CoastY(3600,-5000)+5000.f)<400.f);   // i18n:skip
+ {float North=60000.f;while(North<200000.f && MareIsland::ShoreDistance(0,North)<0.f)North+=500.f;   // the north waterline
+  TestTrue(TEXT("north shore found"),North<200000.f);   // i18n:skip
+  TestTrue(TEXT("10 m off the north shore reads like 10 m off the bay"),FMath::Abs(MareIsland::CoastY(0,North+1000.f)-MareIsland::BayEquivalentY(1000.f))<600.f);}   // i18n:skip
  TestTrue(TEXT("bay-equivalent y"),FMath::IsNearlyEqual(MareIsland::BayEquivalentY(2500.f),-5450.f,1.f));
  return true;
 }

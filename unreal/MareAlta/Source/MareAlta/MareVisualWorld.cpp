@@ -9,6 +9,7 @@
 #include "MareMarineWorld.h"
 #include "MareLoc.h"
 #include "MareSimulation.h"
+#include "MareIsland.h"
 #include "MareGame.h"
 #include "MareServiceTarget.h"
 #include "Engine/GameInstance.h"
@@ -365,9 +366,10 @@ void UMareVisualWorld::UpdateFootprints()
  const FVector At=Feet+Right*Side*11.f;
  FHitResult Hit;FCollisionQueryParams Q(TEXT("MareFootprint"),true,Hero);
  if(!World->LineTraceSingleByChannel(Hit,At+FVector(0,0,60),At-FVector(0,0,90),ECC_Visibility,Q) || !Hit.GetComponent())return;
- // Sand only: the coast ground material on the beach side of the lawn (grass starts around y -1050).
+ // Sand only: the coast ground materials (the bay and the island's new land) on the beach side of the lawn (grass starts
+ // around the old bay's y -1050, measured all round the island as the distance to the coast).
  UMaterialInterface* Under=Hit.GetComponent()->GetMaterial(0);
- if(!Under || !Under->GetName().Contains(TEXT("CoastGround")) || Hit.ImpactPoint.Y>-1050.f)return;
+ if(!Under || !(Under->GetName().Contains(TEXT("CoastGround")) || Under->GetName().Contains(TEXT("IslandGround"))) || MareIsland::CoastY(Hit.ImpactPoint.X,Hit.ImpactPoint.Y)>-1050.f)return;
  const FTransform T(FRotationMatrix::MakeFromZX(Hit.ImpactNormal,Dir).Rotator(),Hit.ImpactPoint+Hit.ImpactNormal*.6f,FVector(1,Side,1));   // the mesh is a right foot
  if(Footprints->GetInstanceCount()<MaxPrints){NextFootprint=Footprints->AddInstance(T,true);FootprintBorn.Add(Now);}
  else{Footprints->UpdateInstanceTransform(NextFootprint,T,true,true,true);FootprintBorn[NextFootprint]=Now;}

@@ -2,6 +2,7 @@
 #include "MareGame.h"
 #include "MareSimulation.h"
 #include "MareAudioWorld.h"
+#include "MareIntro.h"
 #include "Components/InstancedStaticMeshComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Engine/StaticMeshActor.h"
@@ -73,8 +74,12 @@ void UMareMarineWorld::UpdateLife(float Time,bool bDay)
   const float Span=26000.f;const float U=FMath::Fmod(Offset+Time*FMath::Abs(Speed),Span);
   Boat->SetActorLocation(FVector(Speed>0?-9000.f+U:17000.f-U,Y,-30.f+12.f*FMath::Sin(Time*1.1f+Offset)));
   Boat->SetActorRotation(FRotator(2.2f*FMath::Sin(Time*.9f+Offset),Yaw,3.5f*FMath::Sin(Time*.7f+Offset*.5f)));};
- Pass(PassingBoat,-5200.f,320.f,0.f,90.f);
- Pass(PassingRaft,-7500.f,-260.f,9000.f,-90.f);
+ // 08/11: the lanes run beyond the end of the pier (y -58 m) and its berth: at y -52 m the boat sailed through the
+ // pier, and it crossed the arrival boat's run in. During the arrival the coast traffic keeps out of sight.
+ bool bArrival=false;for(TActorIterator<AMareIntro> It(GetWorld());It;++It)if(It->IsArrival())bArrival=true;
+ Pass(PassingBoat,-9500.f,320.f,0.f,90.f);
+ Pass(PassingRaft,-12000.f,-260.f,9000.f,-90.f);
+ if(bArrival){if(IsValid(PassingBoat))PassingBoat->SetActorHiddenInGame(true);if(IsValid(PassingRaft))PassingRaft->SetActorHiddenInGame(true);}
  // Seagulls: the exported gliding gulls circle around where they were placed, rising and dipping, banking into
  // the turn. Their model faces local +Y (Blender front -Y), so the heading is the tangent minus 90 degrees.
  if(!bGullsIndexed){bGullsIndexed=true;int32 N=0;

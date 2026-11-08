@@ -139,3 +139,52 @@ def use(arg='RoomDoor'):
             t.use(pc)
             return json.dumps({'used': str(t.get_editor_property('label')), 'at': str(t.get_actor_location())})
     return 'none'
+
+
+def state(arg=''):
+    """QA: is the PIE game paused, its time dilation and game seconds (to tell a frozen world from slow walkers)."""
+    world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()
+    if not world:
+        return 'no pie'
+    return json.dumps({'paused': unreal.GameplayStatics.is_game_paused(world),
+                       'dilation': unreal.GameplayStatics.get_global_time_dilation(world),
+                       'seconds': unreal.GameplayStatics.get_time_seconds(world),
+                       'real': unreal.GameplayStatics.get_real_time_seconds(world)})
+
+
+def navpath(arg='2000,3000,100,9000,6000,100'):
+    """QA (PIE stopped): path on the saved navigation between two points: points count and length, or 'no path'."""
+    v = [float(x) for x in arg.split(',')]
+    world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_editor_world()
+    p = unreal.NavigationSystemV1.find_path_to_location_synchronously(world, unreal.Vector(*v[:3]), unreal.Vector(*v[3:]))
+    if not p:
+        return 'no path object'
+    pts = p.get_editor_property('path_points')
+    return json.dumps({'points': len(pts), 'partial': p.is_partial(), 'valid': p.is_valid()})
+
+
+def navactors(arg=''):
+    """QA (PIE stopped): the navigation actors of the editor level (RecastNavMesh, NavMeshBoundsVolume) with bounds."""
+    world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_editor_world()
+    out = []
+    for a in unreal.GameplayStatics.get_all_actors_of_class(world, unreal.Actor):
+        c = a.get_class().get_name()
+        if 'Nav' in c or 'Recast' in c:
+            o, e = a.get_actor_bounds(False)
+            out.append([c, a.get_actor_label(), a.get_name(), [round(o.x), round(o.y), round(o.z)], [round(e.x), round(e.y), round(e.z)]])
+    return json.dumps(out)
+
+
+def walkers(arg=''):
+    """QA (PIE): every MarePerson with its speed, AI move status and location (why nobody walks by day)."""
+    world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()
+    out = []
+    for a in unreal.GameplayStatics.get_all_actors_of_class(world, unreal.Character):
+        if a.get_class().get_name() != 'MarePerson':
+            continue
+        c = a.get_controller()
+        st = str(c.get_move_status()) if isinstance(c, unreal.AIController) else '-'
+        l = a.get_actor_location()
+        out.append([a.get_editor_property('person_name') if hasattr(a, 'person_name') else a.get_name(), round(a.get_velocity().length()), st,
+                    [round(l.x), round(l.y), round(l.z)], a.is_hidden_ed() if hasattr(a, 'is_hidden_ed') else None])
+    return json.dumps(out[:40])
