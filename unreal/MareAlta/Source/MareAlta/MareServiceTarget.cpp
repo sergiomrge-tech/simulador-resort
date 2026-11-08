@@ -18,6 +18,7 @@
 #include "MareSimulation.h"
 #include "Engine/GameInstance.h"
 #include "MarePerson.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "MareKioskWorld.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/SceneComponent.h"
@@ -48,7 +49,7 @@ AMareServiceTarget* AMareServiceTarget::FindFocused(APlayerController* Controlle
   if(Target->IsHidden() || (Target->GetOwner() && Target->GetOwner()->IsHidden()))continue;
   FVector Focus=Target->GetActorTransform().TransformPosition(Target->FocusOffset);
   // Select the visible leaf/mattress surface, not a single point hidden inside it.
-  if(Target->Action==TEXT("Door") && Target->DoorMesh->GetStaticMesh()){
+  if((Target->Action==TEXT("Door") || Target->Action==TEXT("RoomDoor")) && Target->DoorMesh->GetStaticMesh()){
    const FTransform Frame=Target->DoorMesh->GetComponentTransform();
    const FBox Box=Target->DoorMesh->GetStaticMesh()->GetBoundingBox();
    const FVector Center=Frame.TransformPosition(Box.GetCenter());
@@ -70,6 +71,9 @@ AMareServiceTarget* AMareServiceTarget::FindFocused(APlayerController* Controlle
 FString AMareServiceTarget::Prompt()const
 {
  if(Action==TEXT("Door"))return Label+(bOpened?TEXT(" · fechar"):TEXT(" · abrir"));
+ if(Action==TEXT("RoomDoor")){auto Sim=GetGameInstance()->GetSubsystem<UMareSimulation>();
+  if(!bOpened && Sim && Sim->HasRoomServiceTray(DataIndex))return Label+TEXT(" · bater e entregar o serviço de quarto");
+  return Label+(bOpened?TEXT(" · fechar"):TEXT(" · abrir"));}
  if(Action==TEXT("KioskSign")){auto Sim=GetGameInstance()->GetSubsystem<UMareSimulation>();bool Requested=false;UMareSimulation::Object(Sim->State,TEXT("company"))->TryGetBoolField(TEXT("kiosk_open"),Requested);return Requested?(Sim->IsOpen()?TEXT("Fechar quiosque"):TEXT("Abertura programada · cancelar")):TEXT("Abrir quiosque");}
  return Label;
 }
@@ -82,6 +86,7 @@ void AMareServiceTarget::RestoreDoorState(bool bOpen)
 bool AMareServiceTarget::CanClose(const FVector& PlayerLocation)const
 {
  const FVector P=GetActorTransform().InverseTransformPosition(PlayerLocation);
+ if(Action==TEXT("RoomDoor"))return !(P.X>-100 && P.X<15 && P.Y>-20 && P.Y<105);   // the hotel leaf sweeps 0.9 m into the room
  return !(P.X>-150 && P.X<40 && P.Y>-45 && P.Y<155);
 }
 void AMareServiceTarget::Use(APlayerController* Controller)
@@ -130,7 +135,7 @@ void AMareServiceTarget::Use(APlayerController* Controller)
  if(Action==TEXT("TourBooth")){const FVector Bell=GetActorLocation();UMareAudioWorld::Action(this,TEXT("reception_bell"),&Bell);PC->OpenStation(TEXT("Tours"));return;}
  if(Action==TEXT("RestaurantTable")){if(Sim->UseTable(DataIndex))UMareAudioWorld::Action(this,TEXT("reception_checkin"));return;}
  if(Action==TEXT("RestaurantPass")){if(Sim->PickUpPass()>0)UMareAudioWorld::Action(this,TEXT("bar_ice_glass"));PC->OpenStation(TEXT("Restaurant"));return;}
- if(Action==TEXT("RoomService")){if(Sim->DeliverRoomService()>0)UMareAudioWorld::Action(this,TEXT("money_coins"));return;}
+ if(Action==TEXT("RoomService")){if(Sim->DeliverRoomService(-1)>0)UMareAudioWorld::Action(this,TEXT("money_coins"));return;}
  if(Action==TEXT("Fishing")){PC->StartFishing();return;}
  if(Action==TEXT("BarCounter")){PC->OpenStation(TEXT("Bar"));return;}
  if(Action==TEXT("BarIngredient")){for(const FName& Tag:Tags){const FString T=Tag.ToString();
@@ -145,7 +150,19 @@ void AMareServiceTarget::Use(APlayerController* Controller)
  if(Action==TEXT("TourSpecies")){if(auto Tour=GetWorld()->GetSubsystem<UMareSnorkelWorld>())Tour->Present(DataIndex);return;}
  if(Action==TEXT("TourStory")){if(auto Tour=GetWorld()->GetSubsystem<UMareBoatTourWorld>())Tour->TellStory();return;}
  if(Action==TEXT("HotelReception")){const FVector Bell=GetActorLocation();UMareAudioWorld::Action(this,TEXT("reception_bell"),&Bell);PC->OpenStation(TEXT("ReceptionHotel"));return;}
- if(Action==TEXT("Door")){
+ // C16 (reference tip 11): with a room-service tray ready, knocking on 302 brings the guest to the door: it opens,
+ // the guest steps into the doorway, takes the tray (gesture) and pays; then goes back in, the door stays open.
+ if(Action==TEXT("RoomDoor") && !bOpened && Sim->HasRoomServiceTray(DataIndex)){
+  bOpened=true;const FVector Spot=GetActorLocation();GetWorld()->GetSubsystem<UMareAudioWorld>()->PlayCue(TEXT("door"),.24f,&Spot);
+  const FVector Doorway=GetActorTransform().TransformPosition(FVector(-45.f*DoorMesh->GetRelativeScale3D().X,0,0))-GetActorRightVector()*0.f;
+  FActorSpawnParameters SP;SP.SpawnCollisionHandlingOverride=ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+  const FVector Inside=Doorway+FVector(0,-55,90);   // just inside the room (the room is to the south, -Y)
+  if(auto Guest=GetWorld()->SpawnActor<AMarePerson>(Inside,FRotator(0,90,0),SP)){Guest->PersonName=FString::Printf(TEXT("Hóspede do %d"),DataIndex);Guest->SaveId=FString::Printf(TEXT("room%d_guest"),DataIndex);
+   Guest->Tags.Add(TEXT("MareHotelGuest"));Guest->bAmbient=true;Guest->SetAppearance(2);Guest->GetCharacterMovement()->DisableMovement();
+   Guest->PlayGesture(TEXT("Interact"),2.4f);DoorGuest=Guest;GuestLeft=5.f;}
+  if(Sim->DeliverRoomService(DataIndex)>0)UMareAudioWorld::Action(this,TEXT("money_coins"));
+  return;}
+ if(Action==TEXT("Door") || Action==TEXT("RoomDoor")){
   if(bOpened && !CanClose(PC->GetPawn()->GetActorLocation())){Sim->LastMessage=TEXT("Afaste-se do arco da porta para fechar.");return;}
   bOpened=!bOpened;
   const FVector Spot=GetActorLocation();GetWorld()->GetSubsystem<UMareAudioWorld>()->PlayCue(TEXT("door"),.24f,&Spot);
@@ -153,12 +170,17 @@ void AMareServiceTarget::Use(APlayerController* Controller)
 }
 void AMareServiceTarget::Tick(float DeltaSeconds)
 {
- Super::Tick(DeltaSeconds);if(Action!=TEXT("Door"))return;
+ Super::Tick(DeltaSeconds);if(Action!=TEXT("Door") && Action!=TEXT("RoomDoor"))return;
+ if(Action==TEXT("RoomDoor")){
+  // the guest of 302 waits behind a closed door while a room-service dish is on its way; after the hand-over they go in
+  if(GuestLeft>0 && (GuestLeft-=DeltaSeconds)<=0 && DoorGuest.IsValid())DoorGuest->Destroy();
+  auto Sim=GetGameInstance()->GetSubsystem<UMareSimulation>();auto Player=UGameplayStatics::GetPlayerPawn(this,0);
+  if(bOpened && GuestLeft<=0 && Sim && Sim->HasRoomServiceTray(DataIndex) && Player && CanClose(Player->GetActorLocation()))bOpened=false;}
  const float Target=bOpened?-90.f:0.f;
  const bool bMoving=!FMath::IsNearlyEqual(DoorAngle,Target,.1f);
  DoorMesh->SetCollisionEnabled(bMoving?ECollisionEnabled::NoCollision:ECollisionEnabled::QueryAndPhysics);
  DoorAngle=FMath::FInterpConstantTo(DoorAngle,Target,DeltaSeconds,200.f);DoorMesh->SetRelativeRotation(FRotator(0,DoorAngle,0));
- FocusOffset=FRotator(0,DoorAngle,0).RotateVector(FVector(-57.5,0,110));
+ FocusOffset=FRotator(0,DoorAngle,0).RotateVector(FVector(Action==TEXT("RoomDoor")?-45.f*DoorMesh->GetRelativeScale3D().X:-57.5f,0,110));
  if(!bAutoClose)return;auto Player=UGameplayStatics::GetPlayerPawn(this,0);if(!Player)return;
  const FVector P=GetActorTransform().InverseTransformPosition(Player->GetActorLocation());
  if(P.X>-580 && P.X<120 && P.Y>-700 && P.Y<-40)bWasInside=true;

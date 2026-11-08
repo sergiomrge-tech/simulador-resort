@@ -37,5 +37,7 @@ public:
 private:
  bool bOpened=false;
  bool bWasInside=false;
+ /** RoomDoor (C16): the guest who opened for room service, and how long until they go back in. */
+ TWeakObjectPtr<class AMarePerson> DoorGuest;float GuestLeft=0;
  float DoorAngle=0.f;
 };

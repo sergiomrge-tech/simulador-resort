@@ -115,12 +115,22 @@ int32 UMareSimulation::PickUpPass()
  LastMessage=FString::Printf(TEXT("%d prato(s) na bandeja."),Got);Save();return Got;
 }
 
-int32 UMareSimulation::DeliverRoomService()
+bool UMareSimulation::HasRoomServiceTray(int32 Suite) const
+{
+ const TArray<TSharedPtr<FJsonValue>>* Room=nullptr;
+ if(Object(State,TEXT("restaurant"))->TryGetArrayField(TEXT("room"),Room))for(const auto& V:*Room)
+  if(String(V->AsObject(),TEXT("stage"))==TEXT("tray") && (Suite<=0 || int32(Number(V->AsObject(),TEXT("suite")))==Suite))return true;
+ return false;
+}
+int32 UMareSimulation::DeliverRoomService(int32 Suite)
 {
  auto& Room=List(Restaurant(),TEXT("room"));int32 N=0;double Paid=0;
  for(int32 I=Room.Num()-1;I>=0;--I){auto O=Room[I]->AsObject();if(String(O,TEXT("stage"))!=TEXT("tray"))continue;
+  const int32 Of=int32(Number(O,TEXT("suite")));
+  if(Suite>0 && Of!=Suite)continue;
+  if(Suite<0 && (Of==302 || Of==303))continue;   // the elevator (other floors): the visitable rooms get theirs at the door
   Paid+=FMath::RoundToDouble(MenuPrice(String(O,TEXT("dish")))*(1+Number(RestaurantDefs(),TEXT("room_fee"),.15)));Room.RemoveAt(I);++N;}
- if(!N){Fail(TEXT("Nenhum serviço de quarto na bandeja."));return 0;}
+ if(!N){Fail(Suite<0 && HasRoomServiceTray()?TEXT("Esse pedido é de um quarto do 3º andar: entregue na porta do quarto."):TEXT("Nenhum serviço de quarto na bandeja."));return 0;}
  Book(Paid,FString::Printf(TEXT("Serviço de quarto: %d entrega(s)"),N));AddFame(N);
  LastMessage=FString::Printf(TEXT("Serviço de quarto entregue: R$ %.0f."),Paid);Save();return N;
 }
@@ -173,7 +183,8 @@ void UMareSimulation::RestaurantHour(int32 Hour)
   if(Day>=Due && int32(Number(R,TEXT("critic_day"),-1))!=Day && FMath::FRand()<Number(C,TEXT("chance_per_hour"),.4))SeatCritic();}
  if(RestaurantDefs()->TryGetArrayField(TEXT("tables"),Tables))for(int32 I=0;I<Tables->Num();++I)if(FMath::FRand()<.5f)SeatDiners(I);
  if(FMath::FRand()<.7f){auto O=MakeShared<FJsonObject>();O->SetStringField(TEXT("dish"),RandomDish(this));O->SetStringField(TEXT("stage"),TEXT("cooking"));
-  O->SetNumberField(TEXT("suite"),FMath::RandRange(301,332));O->SetNumberField(TEXT("since"),Now);O->SetNumberField(TEXT("ready"),Now+Number(RestaurantDefs(),TEXT("cook_minutes"),20));
+  // half the orders come from the visitable rooms 302/303, handed over at their door (C16); the rest via the elevator
+  O->SetNumberField(TEXT("suite"),FMath::FRand()<.5f?FMath::RandRange(302,303):FMath::RandRange(301,332));O->SetNumberField(TEXT("since"),Now);O->SetNumberField(TEXT("ready"),Now+Number(RestaurantDefs(),TEXT("cook_minutes"),20));
   List(R,TEXT("room")).Add(MakeShared<FJsonValueObject>(O));}
 }
 

@@ -344,8 +344,8 @@ def rooms():
         box(f'plaque_{nm}', (.16, .015, .11), B(cx + w / 2 + .2, YC + T / 2 + .008, 1.5), brass, uv=.3)
     # Room doors open inwards against the hall walls; the bathroom doors open into the bathroom.
     door_leaf('door_lin', (D_LIN - .45, YC - T / 2), .9, (0, -1), teak, brass)
-    door_leaf('door_std', (D_STD - .45, YC - T / 2), .9, (0, -1), teak, brass)
-    door_leaf('door_lux', (D_LUX - .475, YC - T / 2), .95, (0, -1), teak, brass)
+    # 08/11 (C16): the standard and luxury room leaves are separate swinging doors now (gen_hotel_door.py,
+    # AMareServiceTarget "RoomDoor"), so the guest can open them for room service.
     casing('cas_stdbath', -2.28, 2.4, False, .8, teak)
     door_leaf('door_stdbath', (-2.28 - T / 2, 2.8), .8, (-1, 0), pale, brass)
     casing('cas_luxbath', 3.36, 2.6, False, .9, teak)

@@ -128,3 +128,14 @@ def ual_sit(_=''):
     import mare_metahuman
     importlib.reload(mare_metahuman)
     return str(mare_metahuman.import_ual(clips='Sitting_Enter,Sitting_Exit'))
+
+
+def use(arg='RoomDoor'):
+    """QA: uses the first visible interaction target whose action (or label) contains arg, as the player would (PIE)."""
+    world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()
+    pc = unreal.GameplayStatics.get_player_controller(world, 0)
+    for t in unreal.GameplayStatics.get_all_actors_of_class(world, unreal.MareServiceTarget):
+        if arg in str(t.get_editor_property('action')) or arg in str(t.get_editor_property('label')):
+            t.use(pc)
+            return json.dumps({'used': str(t.get_editor_property('label')), 'at': str(t.get_actor_location())})
+    return 'none'

@@ -20,6 +20,8 @@ private:
  float Clock=0;
  UPROPERTY() TObjectPtr<AMareServiceTarget> Pass;
  UPROPERTY() TObjectPtr<AMareServiceTarget> RoomService;
+ /** Guest-room doors of 302 and 303 (C16): room service is handed over there, the guest opens. */
+ UPROPERTY() TArray<TObjectPtr<AMareServiceTarget>> RoomDoors;
  UPROPERTY() TMap<int32,TObjectPtr<AMareServiceTarget>> Tables;
  UPROPERTY() TMap<int32,TObjectPtr<AMarePerson>> Diners;
 };

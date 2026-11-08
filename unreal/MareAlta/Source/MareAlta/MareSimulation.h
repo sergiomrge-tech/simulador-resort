@@ -354,7 +354,9 @@ public:
  /** E at the kitchen pass: every cooked dish (tables and room service) goes on the tray; returns how many. */
  int32 PickUpPass();
  /** E at the lift: delivers the room service on the tray (price + room fee). */
- int32 DeliverRoomService();
+ /** A room-service dish waits on the tray (picked up at the pass, not yet delivered); Suite > 0: for that room only. */
+ bool HasRoomServiceTray(int32 Suite=0) const;
+ int32 DeliverRoomService(int32 Suite=0);   // Suite > 0: that room's door; -1: the elevator (all but 302/303)
  /** Books an event (restaurant.json "events") for tomorrow's event hour; pays the preparation now. */
  bool BookEvent(const FString& Id);
  /** Hourly: event of the day, crew serving long waits, new diners and room service while open. */

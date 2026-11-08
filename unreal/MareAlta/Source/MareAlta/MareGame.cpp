@@ -2609,6 +2609,10 @@ static FAutoConsoleCommandWithWorldAndArgs MareQACommand(TEXT("mare.QA"),TEXT("Q
   else if(Verb==TEXT("box"))bOk=S->TakeRestockBox(Arg);   // "mare.QA box <dish>", "mare.QA store Fridge|Cupboard"
   else if(Verb==TEXT("store"))bOk=S->StoreFromBox(FName(*Arg));
   else if(Verb==TEXT("phone")){PC->OpenPhone(FCString::Atoi(*Arg));bOk=true;}   // "mare.QA phone <tab>" (1 = Compras)
+  else if(Verb==TEXT("roomtray")){   // "mare.QA roomtray <suite>": a room-service dish ready on the tray (C16 QA)
+   auto R=UMareSimulation::Object(S->State,TEXT("restaurant"));TArray<TSharedPtr<FJsonValue>> Room;const TArray<TSharedPtr<FJsonValue>>* Old=nullptr;if(R->TryGetArrayField(TEXT("room"),Old))Room=*Old;
+   auto O=MakeShared<FJsonObject>();O->SetStringField(TEXT("dish"),TEXT("salada"));O->SetStringField(TEXT("stage"),TEXT("tray"));O->SetNumberField(TEXT("suite"),FCString::Atoi(*Arg));
+   Room.Add(MakeShared<FJsonValueObject>(O));R->SetArrayField(TEXT("room"),Room);S->State->SetObjectField(TEXT("restaurant"),R);bOk=true;}
   else if(Verb==TEXT("order"))bOk=!S->AddOrder(TEXT("Cliente QA"),{Arg}).IsEmpty();   // i18n:skip
   else if(Verb==TEXT("barorder"))bOk=!S->AddBarOrder(Arg==TEXT("any")?FString():Arg).IsEmpty();
   else if(Verb==TEXT("vip")){   // the first open kiosk order becomes a VIP ("mare.QA vip <title index>")

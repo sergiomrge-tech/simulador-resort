@@ -54,3 +54,19 @@ def box(_=''):
     return json.dumps({'mesh': mesh.get_path_name(), 'origin': [round(b.origin.x), round(b.origin.y), round(b.origin.z)],
                        'size': [round(b.box_extent.x * 2), round(b.box_extent.y * 2), round(b.box_extent.z * 2)],
                        'usage': bt.fix_usage('/Game/Custom/Kiosk')})
+
+
+def hotel_door(_=''):
+    """Hotel guest-room door leaf (tools/ue58/gen_hotel_door.py) -> /Game/Custom/HotelRooms/mare_hotel_door, hinged by
+    AMareServiceTarget "RoomDoor" (UMareRestaurantWorld places one per visitable room)."""
+    import mare_hotel_lobby as hl
+    import mare_boat_tour as bt
+    src = Path('D:/Assets/Mare/mare_hotel_door/mare_hotel_door.glb')
+    folder = '/Game/Custom/HotelRooms/mare_hotel_door'
+    if unreal.EditorAssetLibrary.does_directory_exist(folder):
+        unreal.EditorAssetLibrary.delete_directory(folder)
+    mesh = hl._import(src, folder, 'mare_hotel_door', True, search=False)
+    b = mesh.get_bounds()
+    return json.dumps({'mesh': mesh.get_path_name(), 'origin': [round(b.origin.x), round(b.origin.y), round(b.origin.z)],
+                       'size': [round(b.box_extent.x * 2), round(b.box_extent.y * 2), round(b.box_extent.z * 2)],
+                       'usage': bt.fix_usage('/Game/Custom/HotelRooms/mare_hotel_door')})

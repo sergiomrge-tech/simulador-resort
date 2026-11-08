@@ -53,7 +53,7 @@ namespace
  void Pick(const APawn* Player,const FVector& Eye,AMareServiceTarget* Target,TArray<UPrimitiveComponent*>& Out)
  {
   UWorld* World=Target->GetWorld();
-  if(Target->Action==TEXT("Door") && Target->DoorMesh && Target->DoorMesh->GetStaticMesh()){Out.Add(Target->DoorMesh);return;}   // i18n:skip
+  if((Target->Action==TEXT("Door") || Target->Action==TEXT("RoomDoor")) && Target->DoorMesh && Target->DoorMesh->GetStaticMesh()){Out.Add(Target->DoorMesh);return;}   // i18n:skip
   // A target owned by a person (a customer, a guest): the person.
   if(AActor* Owner=Target->GetOwner())if(Owner->IsA<ACharacter>()){AddActorMeshes(Owner,Out,Player);return;}
   const FVector Focus=Target->GetActorTransform().TransformPosition(Target->FocusOffset);
