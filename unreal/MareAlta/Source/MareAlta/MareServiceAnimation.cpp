@@ -22,6 +22,12 @@ bool IsVessel(UStaticMeshComponent* Part)
 {
  return Part->ComponentHasTag(TEXT("MareVessel"));
 }
+// 08/11 (Sergio: "as pessoas na vila andam um pouco curvadas como idosos"): the walk clip bends the upper back and
+// the neck forward (measured with mare_title_probe.posture: chest->head 25-30 deg forward walking, ~0 standing).
+// While walking the upper back and the neck straighten by these degrees (blended in and out with the clip): 14/14 left
+// walkers at ~7 deg overall lean (chest->head 12, neck->head 5, standing 12), measured and checked side-on (08/11).
+static TAutoConsoleVariable<float> CVarMareWalkChest(TEXT("mare.WalkUprightChest"),14.f,TEXT("Degrees the upper back (spine_04) straightens while walking."));
+static TAutoConsoleVariable<float> CVarMareWalkNeck(TEXT("mare.WalkUprightNeck"),14.f,TEXT("Degrees the neck (neck_01 + neck_02, split 60/40) straightens while walking."));
 struct FServiceProxy : FAnimSingleNodeInstanceProxy
 {
  explicit FServiceProxy(UAnimInstance* Instance):FAnimSingleNodeInstanceProxy(Instance){}
@@ -31,6 +37,7 @@ struct FServiceProxy : FAnimSingleNodeInstanceProxy
  float BlendTime=.2f;bool bNewClip=false;
  bool bOpenSwimmingHands=false;
  float Recline=0;
+ float Upright=0;   // 0..1 while the walk clip plays
  /** Face up on a towel (not a lounger): which knee is raised, 0 none, 1 right, 2 left (07/11, Sergio: "deitado todo duro"). */
  bool bTowel=false;int32 LieKnee=0;
  virtual void PreUpdate(UAnimInstance* Instance,float DeltaSeconds) override
@@ -41,6 +48,8 @@ struct FServiceProxy : FAnimSingleNodeInstanceProxy
   auto Single=Cast<UAnimSingleNodeInstance>(Instance);
   if(Single && Single->GetCurrentAsset()!=PreviousAsset.Get()){PreviousAsset=Single->GetCurrentAsset();BlendTime=0;bNewClip=true;}
   BlendTime+=DeltaSeconds;
+  {const UAnimationAsset* Clip=Single?Single->GetCurrentAsset():nullptr;const bool bWalk=Clip && Clip->GetName()==TEXT("MH_Walk");   // i18n:skip
+   Upright=FMath::FInterpTo(Upright,bWalk?1.f:0.f,DeltaSeconds,6.f);}
   auto Person=Cast<AMarePerson>(Instance->GetOwningActor());
   if(!Person){if(auto Hero=Cast<AMareCharacter>(Instance->GetOwningActor()))if(auto Presentation=Hero->FindComponentByClass<UMarePlayerPresentation>()){
    bOpenSwimmingHands=Hero->GetCharacterMovement()->IsSwimming() && Instance->GetSkelMeshComponent()==Presentation->ViewBody;
@@ -101,6 +110,16 @@ struct FServiceProxy : FAnimSingleNodeInstanceProxy
    for(int32 I=0;I<Count;++I){auto& Local=Output.Pose[FCompactPoseBoneIndex(I)];const auto Target=Local;Local.Blend(BlendFrom[I],Target,Alpha);}
   }
   LastLocals.SetNumUninitialized(Count);for(int32 I=0;I<Count;++I)LastLocals[I]=Output.Pose[FCompactPoseBoneIndex(I)];
+  if(Upright>.01f){
+   // Walking upright: the bends about the body's side axis (component X), each in its parent's frame (as the lounger).
+   const auto& Bones=Output.Pose.GetBoneContainer();const auto& Ref=Bones.GetReferenceSkeleton();
+   FCSPose<FCompactPose> Pose;Pose.InitPose(Output.Pose);
+   const TPair<const TCHAR*,float> Fix[]={{TEXT("spine_04"),CVarMareWalkChest.GetValueOnAnyThread()},{TEXT("neck_01"),CVarMareWalkNeck.GetValueOnAnyThread()*.6f},{TEXT("neck_02"),CVarMareWalkNeck.GetValueOnAnyThread()*.4f}};   // i18n:skip
+   for(const auto& F:Fix){const FCompactPoseBoneIndex Bone=Bones.GetCompactPoseIndexFromSkeletonIndex(Ref.FindBoneIndex(F.Key));if(Bone==INDEX_NONE)continue;
+    const FCompactPoseBoneIndex Parent=Bones.GetParentBoneIndex(Bone);if(Parent==INDEX_NONE)continue;
+    const FQuat P=Pose.GetComponentSpaceTransform(Parent).GetRotation();const FQuat Bend(FVector(1,0,0),FMath::DegreesToRadians(F.Value*Upright));
+    auto& Local=Output.Pose[Bone];Local.SetRotation((P.Inverse()*Bend*P*Local.GetRotation()).GetNormalized());}
+  }
   if(Recline>0){
    // Lounger: bend the torso up at the waist (spine_01 flexes forward about the body's side axis, component X), the
    // rotation expressed in the pelvis frame so everything above follows.

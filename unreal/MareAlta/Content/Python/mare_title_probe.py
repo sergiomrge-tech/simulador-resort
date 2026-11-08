@@ -314,3 +314,27 @@ def bounds(arg=''):
     m = unreal.load_asset(arg)
     b = m.get_bounds()
     return json.dumps({'origin': [round(b.origin.x, 1), round(b.origin.y, 1), round(b.origin.z, 1)], 'extent': [round(b.box_extent.x, 1), round(b.box_extent.y, 1), round(b.box_extent.z, 1)]})
+
+
+def posture(arg=''):
+    """QA (PIE): forward lean of every person: angle (deg) of pelvis->head from vertical, of pelvis->spine_05 and of
+    spine_05->head, plus speed and the playing pose (why villagers look hunched walking)."""
+    import math
+    world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()
+    out = []
+    for p in unreal.GameplayStatics.get_all_actors_of_class(world, unreal.MarePerson):
+        rig = p.get_editor_property('mesh')
+        try:
+            pel, sp, nk, hd = [rig.get_socket_location(b) for b in ('pelvis', 'spine_05', 'neck_01', 'head')]
+        except Exception:
+            continue
+        fwd = p.get_actor_forward_vector()
+
+        def lean(a, b):
+            v = b - a
+            l = math.sqrt(v.x * v.x + v.y * v.y + v.z * v.z) or 1
+            ang = math.degrees(math.acos(max(-1, min(1, v.z / l))))
+            sign = 1 if (v.x * fwd.x + v.y * fwd.y) >= 0 else -1
+            return round(ang * sign, 1)
+        out.append([p.get_editor_property('person_name'), round(p.get_velocity().length()), lean(pel, hd), lean(pel, sp), lean(sp, hd), lean(nk, hd)])
+    return json.dumps(out)
