@@ -1,4 +1,5 @@
 #include "MareServiceTarget.h"
+#include "MareFx.h"
 #include "MareBoatTourWorld.h"
 #include "MareSnorkelWorld.h"
 #include "MareTrailWorld.h"
@@ -85,6 +86,10 @@ bool AMareServiceTarget::CanClose(const FVector& PlayerLocation)const
 }
 void AMareServiceTarget::Use(APlayerController* Controller)
 {
+ // Reference tip 4 (08/11): a sparkle where something is cleaned, foam where a room or towel is tidied.
+ {const FVector Focus=GetActorTransform().TransformPosition(FocusOffset);
+  if(Action==TEXT("Clean") || Action==TEXT("PoolLeaves"))MareFx::Spawn(GetWorld(),Focus,MareFx::EKind::Sparkle);
+  else if(Action==TEXT("RoomTask") || Action==TEXT("HotelTask") || Action==TEXT("PoolTowel") || Action==TEXT("HotelFix"))MareFx::Spawn(GetWorld(),Focus,MareFx::EKind::Foam);}
  auto PC=Cast<AMareController>(Controller);if(!PC)return;
  if(auto Presentation=PC->GetPawn()?PC->GetPawn()->FindComponentByClass<UMarePlayerPresentation>():nullptr)Presentation->ReachFor(GetActorTransform().TransformPosition(FocusOffset));
  auto Sim=PC->GetGameInstance()->GetSubsystem<UMareSimulation>();

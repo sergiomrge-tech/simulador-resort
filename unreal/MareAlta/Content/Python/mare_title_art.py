@@ -32,3 +32,24 @@ def run(_=''):
         unreal.EditorAssetLibrary.save_loaded_asset(tex, False)
         out[name] = [tex.blueprint_get_size_x(), tex.blueprint_get_size_y()]
     return json.dumps(out)
+
+
+def fx(_=''):
+    """HUD feedback sprites (08/11, reference tip 4): coin and soft puff from SourceArt/UI/Fx -> /Game/UI/Icons (cooked)."""
+    out = {}
+    for name in ['T_Fx_Coin', 'T_Fx_Soft']:
+        task = unreal.AssetImportTask()
+        task.filename = str(ROOT / 'SourceArt/UI/Fx' / (name + '.png'))
+        task.destination_path = '/Game/UI/Icons'
+        task.destination_name = name
+        task.automated = True
+        task.save = True
+        task.replace_existing = True
+        unreal.AssetToolsHelpers.get_asset_tools().import_asset_tasks([task])
+        tex = unreal.load_asset('/Game/UI/Icons/' + name)
+        tex.set_editor_property('lod_group', unreal.TextureGroup.TEXTUREGROUP_UI)
+        tex.set_editor_property('compression_settings', unreal.TextureCompressionSettings.TC_EDITOR_ICON)
+        tex.set_editor_property('never_stream', True)
+        unreal.EditorAssetLibrary.save_loaded_asset(tex, False)
+        out[name] = [tex.blueprint_get_size_x(), tex.blueprint_get_size_y()]
+    return json.dumps(out)

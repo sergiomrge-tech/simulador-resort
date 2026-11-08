@@ -34,6 +34,7 @@
 #include "Engine/GameInstance.h"
 #include "MareServiceTarget.h"
 #include "MareOutline.h"
+#include "MareFx.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Engine/Canvas.h"
@@ -2863,6 +2864,13 @@ void AMareHUD::DrawHUD()
  if(!Overlay.IsValid() && GEngine && GEngine->GameViewport){SAssignNew(Overlay,SMareHud);GEngine->GameViewport->AddViewportWidgetContent(Overlay.ToSharedRef(),10);}
  const auto PC=Cast<AMareController>(GetOwningPlayerController());
  if(Overlay.IsValid())Overlay->SetVisibility(PC && PC->IsMainMenuOpen()?EVisibility::Collapsed:EVisibility::Visible);
+ // Reference tip 4 (08/11): feedback pops; money coming in shows a coin rising with the amount, just under the view.
+ {static TWeakObjectPtr<UWorld> MoneyWorld;static double LastMoney=0;const double Money=S->Money();
+  if(MoneyWorld.Get()!=GetWorld()){MoneyWorld=GetWorld();LastMoney=Money;}
+  if(Money-LastMoney>=1. && PC && !PC->IsMainMenuOpen()){FVector Eye;FRotator View;PC->GetPlayerViewPoint(Eye,View);
+   MareFx::Spawn(GetWorld(),Eye+View.Vector()*130.f-FVector(0,0,28),MareFx::EKind::Coin,FString::Printf(TEXT("+R$ %.0f"),Money-LastMoney));}
+  LastMoney=Money;
+  if(PC && !PC->IsMainMenuOpen())MareFx::Draw(Canvas,PC);}
  if(!Bubbles.IsValid() && GEngine && GEngine->GameViewport){SAssignNew(Bubbles,SMareBubbles);GEngine->GameViewport->AddViewportWidgetContent(Bubbles.ToSharedRef(),9);}
  if(Bubbles.IsValid()){TArray<SMareBubbles::FBubble> List;
   const bool bShow=PC && !PC->IsMainMenuOpen() && !PC->bPhoneOpen && !GetWorld()->IsPaused() && PC->PlayerCameraManager;
