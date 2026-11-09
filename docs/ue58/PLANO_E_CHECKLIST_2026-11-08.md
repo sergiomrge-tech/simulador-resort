@@ -71,7 +71,7 @@ Meta: uma demo de ~2 h, estável, bonita, pronta para a Next Fest.
   `M_ThatchRoof` (`mare_thatch.py`) projeta a palha do Poly Haven a cada 1,2 m com os fios descendo a inclinação, tingida
   de dourado; vale também para o guarda-sol de palha do quiosque.
 - [x] B15 (09/11): na demo Shipping instalada, 40 capturas da abertura (60 s) sem o aviso "Preparando shaders"; ele vinha do pacote de teste.
-- [ ] B16 (09/11, parcial): o pacote tinha 6,1 GB; as MetaHumans tinham 39 texturas de 8K e 31 de 4K (~4 GB). As 70 ganharam
+- [x] B16 (09/11): decisão do Sergio: até 7 GB está bom; pacote atual 5,87 GB. O pacote tinha 6,1 GB; as MetaHumans tinham 39 texturas de 8K e 31 de 4K (~4 GB). As 70 ganharam
   `MaxTextureSize` 2048 (`mare_probe_near.cap_textures`). Resultado medido: 6,12 → 5,87 GB (só -250 MB; a estimativa
   por texturas estava errada). Próximo passo: medir o que pesa no .ucas (malhas MetaHuman, groom, roupas) antes de cortar.
 
