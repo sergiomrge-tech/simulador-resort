@@ -175,6 +175,7 @@ def point_boulders(seed='20261109'):
     root.set_actor_label(POINT_LABEL)
     root.tags = [unreal.Name('MareGenerated'), unreal.Name('MareCoastRocks')]
     root.set_folder_path('Nature/Island')
+    root.root_component.set_mobility(unreal.ComponentMobility.STATIC)   # the cook warned: static HISM on a movable root
     summary = {}
     for slug, items in rows.items():
         mesh = mm._mesh(slug)

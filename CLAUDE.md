@@ -818,3 +818,8 @@ apontam para dentro do chão. Desligue-os para quem está de bruços e confira d
 MetaHumans (~4 GB do pacote): `MaxTextureSize` 2048 por textura (`mare_probe_near.cap_textures`) reduz o cozido sem
 mexer no grupo de LOD do resto do jogo. A tela de troco (`OpenPayment`) só lança gorjeta/diferença: a venda já foi
 lançada, então ela pode ser reaproveitada em outros balcões sem contar dinheiro em dobro.
+Pente fino (09/11): material de terreno com muitas texturas pode passar do limite de 16 amostradores do SM5 sem erro
+no editor (SM6) e o jogo cozido acusa "material resource None with an invalid ShaderMap"; o log de cozimento diz qual
+("Cooking a material resource (in X hierarchy) that doesn't have a valid ShaderMap"). Variação extra: procedural, sem
+textura nova. Volta de fotos de todo o mapa: `D:/CodexTemp/claude/ue/tour.py` (46 poses); câmera dentro de parede ou
+terreno é pose ruim, não defeito; confirme com `pie_pick`.
