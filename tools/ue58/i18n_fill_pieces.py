@@ -34,6 +34,23 @@ T = {
     'Dica': ['Tipp', 'Tip', 'Consejo', 'Astuce', 'Suggerimento', 'ヒント', '팁', 'Tip', 'Wskazówka', 'Dica', 'Совет', '提示'],
     'Carregando...': ['Lädt...', 'Loading...', 'Cargando...', 'Chargement...', 'Caricamento...', '読み込み中...', '불러오는 중...',
                       'Laden...', 'Ładowanie...', 'A carregar...', 'Загрузка...', '加载中...'],
+    # 09/11 shader warm-up page
+    'Preparando os gráficos': ['Grafik wird vorbereitet', 'Preparing the graphics', 'Preparando los gráficos', 'Préparation des graphismes',
+                               'Preparazione della grafica', 'グラフィックを準備中', '그래픽 준비 중', 'Graphics voorbereiden',
+                               'Przygotowywanie grafiki', 'A preparar os gráficos', 'Подготовка графики', '正在准备图形'],
+    'Na primeira vez o jogo prepara os efeitos visuais para a sua placa de vídeo. Nas próximas vezes isso é rápido.': [
+        'Beim ersten Start bereitet das Spiel die visuellen Effekte für deine Grafikkarte vor. Danach geht es schnell.',
+        'The first time, the game prepares its visual effects for your graphics card. After that it is quick.',
+        'La primera vez, el juego prepara los efectos visuales para tu tarjeta gráfica. Las siguientes veces es rápido.',
+        'La première fois, le jeu prépare ses effets visuels pour votre carte graphique. Ensuite, c\'est rapide.',
+        'La prima volta il gioco prepara gli effetti visivi per la tua scheda video. Le volte successive è veloce.',
+        '初回はお使いのグラフィックカード向けに視覚効果を準備します。次回からはすぐに終わります。',
+        '처음에는 그래픽 카드에 맞춰 시각 효과를 준비합니다. 다음부터는 금방 끝나요.',
+        'De eerste keer bereidt het spel de visuele effecten voor je videokaart voor. Daarna gaat het snel.',
+        'Za pierwszym razem gra przygotowuje efekty wizualne dla twojej karty graficznej. Później idzie to szybko.',
+        'Na primeira vez, o jogo prepara os efeitos visuais para a sua placa gráfica. Das próximas vezes é rápido.',
+        'При первом запуске игра готовит визуальные эффекты для вашей видеокарты. В следующий раз это будет быстро.',
+        '首次运行时，游戏会为你的显卡准备视觉效果。之后就会很快。'],
 }
 # Derived from existing translations of the same words
 DERIVED = {'Fama {0}': ('Fama {0} · ', lambda v: v.rstrip().rstrip('·').rstrip()),

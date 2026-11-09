@@ -1,4 +1,5 @@
 #include "MareGame.h"
+#include "MareLoading.h"
 #include "Engine/DirectionalLight.h"
 #include "Components/DirectionalLightComponent.h"
 #include "EngineUtils.h"
@@ -1930,13 +1931,30 @@ private:
   auto S=Sim();if(!S)return;
   Current=Page;
   auto Box=SNew(SVerticalBox);
-  auto Button=[&Box](const FText& Label,TFunction<void()> Callback,bool bEnabled){Box->AddSlot().AutoHeight().Padding(0,5)[SNew(SMarePadButton).IsEnabled(bEnabled).ButtonStyle(&MareUI::ActionButton).ContentPadding(FMargin(14,8)).OnClicked_Lambda([Callback](){Callback();return FReply::Handled();})[MareUI::Text(Label.ToString(),14,FLinearColor::White)]];};
-  auto Back=[this,&Button](){Button(LOCTEXT("Back","Voltar"),[this](){Show(EPage::Main);},true);};
   const bool bTitleMode=Controller.IsValid() && Controller->IsTitle();
+  // 09/11 (Sergio: "os botões do menu precisam ser muito maiores e tira o caderno de trás do menu inicial"): on the title's
+  // first page the buttons stand alone over the art, big (handwriting 30, 70 px tall, 470 wide) with a cream outline.
+  const bool bBig=bTitleMode && Page==EPage::Main;
+  static const FButtonStyle BigStyle=FButtonStyle()
+   .SetNormal(FSlateRoundedBoxBrush(MareNotebook::Hex(122,59,28,.94f),16.f,MareNotebook::Hex(255,236,190,.9f),2.5f))
+   .SetHovered(FSlateRoundedBoxBrush(MareNotebook::Hex(170,88,42),16.f,MareNotebook::Hex(255,246,214),3.5f))
+   .SetPressed(FSlateRoundedBoxBrush(MareNotebook::Hex(92,42,18),16.f,MareNotebook::Hex(255,246,214),3.5f))
+   .SetDisabled(FSlateRoundedBoxBrush(MareNotebook::Hex(70,52,40,.72f),16.f,MareNotebook::Hex(255,236,190,.35f),2.f));
+  auto Button=[&Box,bBig](const FText& Label,TFunction<void()> Callback,bool bEnabled){
+   if(bBig && !bEnabled)return;   // no save yet: no greyed-out Continuar/Carregar over the art
+   const TSharedRef<SWidget> Content=bBig
+    ?StaticCastSharedRef<SWidget>(SNew(STextBlock).Text(Label).Font(MareNotebook::Hand(30)).ColorAndOpacity(bEnabled?MareNotebook::Hex(255,246,214):MareNotebook::Hex(255,246,214,.5f)).Justification(ETextJustify::Center))
+    :StaticCastSharedRef<SWidget>(MareUI::Text(Label.ToString(),14,FLinearColor::White));
+   Box->AddSlot().AutoHeight().Padding(0,bBig?7:5)[SNew(SBox).MinDesiredWidth(bBig?470.f:0.f).MinDesiredHeight(bBig?70.f:0.f)
+    [SNew(SMarePadButton).IsEnabled(bEnabled).ButtonStyle(bBig?&BigStyle:&MareUI::ActionButton).ContentPadding(bBig?FMargin(30,10):FMargin(14,8))
+     .HAlign(bBig?HAlign_Center:HAlign_Fill).VAlign(VAlign_Center).OnClicked_Lambda([Callback](){Callback();return FReply::Handled();})[Content]]];};
+  auto Back=[this,&Button](){Button(LOCTEXT("Back","Voltar"),[this](){Show(EPage::Main);},true);};
   if(!bTitleMode)Box->AddSlot().AutoHeight().Padding(0,0,0,4)[MareUI::Text(TEXT("Maré Alta Resort"),24)];
   switch(Page){
   case EPage::Main:{
-   Box->AddSlot().AutoHeight().Padding(0,0,0,12)[MareUI::Text(LOCTEXT("Subtitle","O quiosque da avó Dilce espera por você.").ToString(),12)];
+   if(bBig)Box->AddSlot().AutoHeight().Padding(4,0,0,10)[SNew(STextBlock).Text(LOCTEXT("Subtitle","O quiosque da avó Dilce espera por você.")).Font(MareNotebook::Hand(24))
+     .ColorAndOpacity(MareNotebook::Hex(255,246,214)).ShadowOffset(FVector2D(2.f,2.f)).ShadowColorAndOpacity(FLinearColor(0,0,0,.7f)).AutoWrapText(true)];
+   else Box->AddSlot().AutoHeight().Padding(0,0,0,12)[MareUI::Text(LOCTEXT("Subtitle","O quiosque da avó Dilce espera por você.").ToString(),12)];
    const int32 Last=S->LastSlot();const FMareSlotInfo LastInfo=S->SlotInfo(Last);
    Button(LOCTEXT("NewGame","Novo jogo"),[this](){Error=FText::GetEmpty();Show(EPage::New);},true);
    Button(LastInfo.bExists?FText::Format(LOCTEXT("ContinueSlot","Continuar · slot {0}, dia {1}"),Last,LastInfo.Day):LOCTEXT("Continue","Continuar"),[this,Last](){if(!Controller.IsValid() || !Controller->MenuLoadSlot(Last))Fail();},LastInfo.bExists);
@@ -1944,7 +1962,8 @@ private:
    Button(LOCTEXT("Options","Opções"),[this](){Show(EPage::Options);},true);
    Button(LOCTEXT("Credits","Créditos"),[this](){Show(EPage::Credits);},true);
    Button(LOCTEXT("Quit","Sair"),[this](){if(Controller.IsValid())UKismetSystemLibrary::QuitGame(Controller.Get(),Controller.Get(),EQuitPreference::Quit,false);},true);
-   if(!Error.IsEmpty())Box->AddSlot().AutoHeight().Padding(0,10,0,0)[MareUI::Text(Error.ToString(),12,FLinearColor(.7f,.15f,.1f))];
+   if(!Error.IsEmpty())Box->AddSlot().AutoHeight().Padding(0,10,0,0)[bBig?StaticCastSharedRef<SWidget>(SNew(STextBlock).Text(Error).Font(MareNotebook::Body(16,true))
+     .ColorAndOpacity(MareNotebook::Hex(255,190,170)).ShadowOffset(FVector2D(1.5f,1.5f)).ShadowColorAndOpacity(FLinearColor(0,0,0,.8f)).AutoWrapText(true)):StaticCastSharedRef<SWidget>(MareUI::Text(Error.ToString(),12,FLinearColor(.7f,.15f,.1f)))];
    break;}
   case EPage::Load:case EPage::New:{
    const bool bNew=Page==EPage::New;
@@ -2010,7 +2029,8 @@ private:
     +SOverlay::Slot().HAlign(HAlign_Left)[Wash]
     +SOverlay::Slot().HAlign(HAlign_Left).VAlign(VAlign_Fill).Padding(56,36,0,24)[SNew(SVerticalBox)
      +SVerticalBox::Slot().AutoHeight()[Head]
-     +SVerticalBox::Slot().AutoHeight().Padding(LogoArt?60.f:24.f,LogoArt?4.f:40.f,0,0)[SNew(SBox).WidthOverride(Page==EPage::Options?560:400)[MareNotebook::Page(Box)]]]
+     +SVerticalBox::Slot().AutoHeight().Padding(LogoArt?40.f:24.f,LogoArt?4.f:40.f,0,0)[bBig?StaticCastSharedRef<SWidget>(SNew(SBox).WidthOverride(470)[Box])
+      :StaticCastSharedRef<SWidget>(SNew(SBox).WidthOverride(Page==EPage::Options?560:400)[MareNotebook::Page(Box)])]]
     +SOverlay::Slot().HAlign(HAlign_Right).VAlign(VAlign_Bottom).Padding(0,0,28,18)[Shadowed(LOCTEXT("TitleFoot","Demo · versão de teste").ToString(),18,FLinearColor(1,1,1,.85f))]];
   }
   else ChildSlot[SNew(SBorder).BorderBackgroundColor(FLinearColor(0,0,0,.55f)).HAlign(HAlign_Center).VAlign(VAlign_Center)[SNew(SBox).WidthOverride(Page==EPage::Options?540:440)[MareNotebook::Page(Box)]]];
@@ -2078,7 +2098,7 @@ void AMareCharacter::UpdateSunShafts(bool bUnderwater,float DeltaSeconds)
   FVector ToEye=(Eye-Mid);ToEye-=Ray*FVector::DotProduct(ToEye,Ray);if(ToEye.IsNearlyZero())ToEye=FVector::RightVector;
   C->SetWorldLocationAndRotation(Mid,FRotationMatrix::MakeFromXZ(Ray,ToEye.GetSafeNormal()).Rotator());
   C->SetWorldScale3D(FVector(Len/100.f,Width/100.f,1.f));
-  if(auto D=Cast<UMaterialInstanceDynamic>(C->GetMaterial(0)))D->SetScalarParameterValue(TEXT("Strength"),Fade);}
+  if(auto D=Cast<UMaterialInstanceDynamic>(C->GetMaterial(0)))D->SetScalarParameterValue(TEXT("Strength"),Fade);}   // i18n:skip
 }
 void AMareController::CloseBusinessGame()
 {
@@ -2288,6 +2308,7 @@ void AMareController::OpenCredits()
 }
 void AMareController::CloseMainMenu()
 {
+ MareLoading::EndWarmup();
  if(MainMenuWidget.IsValid() && GEngine && GEngine->GameViewport)GEngine->GameViewport->RemoveViewportWidgetContent(MainMenuWidget.ToSharedRef());
  MainMenuWidget.Reset();
  if(bTitle){bTitle=false;
@@ -3179,6 +3200,7 @@ void AMareGameMode::BeginPlay()
  const bool bQA=FParse::Param(Cmd,TEXT("MareGraphicsQA")) || FParse::Param(Cmd,TEXT("MareIntroQA")) || FParse::Param(Cmd,TEXT("MarePreviewQA")) || FParse::Param(Cmd,TEXT("MareBench")) || FParse::Param(Cmd,TEXT("MareSkipMenu")) || GIsAutomationTesting;
  auto PC=Cast<AMareController>(GetWorld()->GetFirstPlayerController());
  if(Sim && !Sim->bMainMenuDone && !bQA && PC)PC->OpenMainMenu();
+ MareLoading::ShaderWarmup(PC && PC->IsMainMenuOpen());   // 09/11: compile the world's shaders before letting the player in
  if(!PC || !PC->IsMainMenuOpen()){if(Sim)Sim->bMainMenuDone=true;StartSession();}
  if(FParse::Param(FCommandLine::Get(),TEXT("MareGraphicsQA")))GetWorld()->SpawnActor<AMareGraphicsQA>();if(FParse::Param(FCommandLine::Get(),TEXT("MareIntroQA")))GetWorld()->SpawnActor<AMareIntroQA>();if(FParse::Param(FCommandLine::Get(),TEXT("MarePreviewQA")))GetWorld()->SpawnActor<AMarePreviewQA>();if(FParse::Param(FCommandLine::Get(),TEXT("MareBench")))GetWorld()->SpawnActor<AMareBench>();}
 
