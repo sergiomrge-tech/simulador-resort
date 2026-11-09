@@ -70,7 +70,7 @@ Meta: uma demo de ~2 h, estável, bonita, pronta para a Next Fest.
 - [x] B7: palha do telhado do bar (09/11): uma única foto de palha esticada por água do telhado e cumeeira com UV radial.
   `M_ThatchRoof` (`mare_thatch.py`) projeta a palha do Poly Haven a cada 1,2 m com os fios descendo a inclinação, tingida
   de dourado; vale também para o guarda-sol de palha do quiosque.
-- [ ] B15: "Preparando shaders" na tela inicial (precache de PSO no pacote).
+- [x] B15 (09/11): na demo Shipping instalada, 40 capturas da abertura (60 s) sem o aviso "Preparando shaders"; ele vinha do pacote de teste.
 - [ ] B16 (09/11, parcial): o pacote tinha 6,1 GB; as MetaHumans tinham 39 texturas de 8K e 31 de 4K (~4 GB). As 70 ganharam
   `MaxTextureSize` 2048 (`mare_probe_near.cap_textures`). Resultado medido: 6,12 → 5,87 GB (só -250 MB; a estimativa
   por texturas estava errada). Próximo passo: medir o que pesa no .ucas (malhas MetaHuman, groom, roupas) antes de cortar.
@@ -108,12 +108,13 @@ A ilha agora é grande e bonita, mas ainda é cenário. Propostas para dar uso a
 
 ## Fase 3 — Melhorias de jogabilidade e acabamento (P2)
 
-- [x] C13 (09/11, parte): um em cada três banhistas da toalha deita de bruços (pés juntos, mãos sob o peito; sem o joelho
-  dobrado nem as mãos na barriga dos que estão de costas). Falta "sentado lendo" (pede livro na mão e pose nova).
+- [x] C13 (09/11): um em cada três banhistas da toalha deita de bruços (pés juntos, mãos sob o peito; sem o joelho
+  dobrado nem as mãos na barriga dos que estão de costas). Um em cada três lê um livro aberto (`tools/ue58/gen_open_book.py`, modelado no bpy) segurado sobre o rosto.
 - [x] C14 (09/11): sem pedido, o atendente do bar se volta para o balcão e mexe no tampo a cada 7-12 s (clipe PickUp_Table).
 - [x] C18 (09/11): quem chama no evento cômico gesticula enquanto espera (TalkGesture e Cheer alternados a cada 3,5-6 s).
-- [x] C19 (09/11, parte): cáusticas do fundo raso mais nítidas e com o dobro do brilho (`build_ground`). Faltam os raios de sol embaixo d'água.
-- [x] C20 (09/11, parte): drink entregue pelo jogador no bar abre a tela de troco (gorjeta e estrelas pelo troco). Faltam os negócios.
+- [x] C19 (09/11): cáusticas do fundo raso mais nítidas e com o dobro do brilho; raios de sol embaixo d'água (10 faixas aditivas na direção do sol,
+  `AMareCharacter::UpdateSunShafts`, `M_UnderwaterShaft`), discretos na água rasa clara.
+- [x] C20 (09/11): tela de troco no bar e nos negócios (ao fechar o minijogo do balcão, com o total atendido).
 - [x] B8 (09/11): a ponta de pedra do píer é a laje `coast_rocks_02` do Poly Haven (46 × 50 m, 1,6 m) com a foto esticada:
   material de rocha projetado no mundo (`rock_face`, 2,6 m) e 11 rochas `rock_face_01/02` em dois grupos (`mare_coast_rocks.point_boulders`).
 - [x] B9: conferido em 09/11 de dia e à noite: a faixa turquesa sumiu com a iluminação dos interiores de 06/11.
@@ -183,3 +184,13 @@ A ilha agora é grande e bonita, mas ainda é cenário. Propostas para dar uso a
 - Asset gratuito antes de modelar (Poly Haven, Kenney, Quaternius, ambientCG…), com crédito em `CREDITS.md`.
 - Pesado no drive D:; repositório é clone parcial (`GIT_NO_LAZY_FETCH=1`, commit por `commit-tree`).
 - Máximo de trabalho na placa de vídeo; medir CPU x GPU no executável antes de concluir.
+
+## Pente fino visual de 09/11 (46 fotos de todos os locais, `D:/CodexTemp/claude/ue/tour.py`)
+- [x] Faixas escuras na água perto do píer: o terreno novo da ilha acabava 15 m mar adentro a -1,2 m, 1,5-2 m acima do fundo;
+  agora desce até -4,5 m e passa por baixo do fundo (`gen_island_terrain.py`).
+- [x] Ponta de pedra do farol: rochas menores e assentadas; a laje fica areia molhada embaixo d'água.
+- [x] Ponta do píer: vara solta (apoiada em nada) e boia de pé atravessada pelo poste deitadas nas tábuas; ponto de pesca na borda do mar.
+- [x] Encosta norte com listras laranja (textura de cima esticada na parede íngreme): rocha projetada de lado nas encostas íngremes.
+- [x] Cume: o banco do Seu Tibúrcio olhava para copas de árvore; 40 árvores à frente removidas, agora vê o vulcão e o mar.
+- [x] Casa do herói: faixa vermelha no alto da parede da sala (peça terracota do export do Godot) escondida; rodaforro creme.
+- [x] B11: a beira da praia já não tem samambaias achatadas (limpeza do gramado).

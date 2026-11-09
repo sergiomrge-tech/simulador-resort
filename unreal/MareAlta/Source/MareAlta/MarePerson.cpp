@@ -185,6 +185,16 @@ void AMarePerson::UpdateLying(float DeltaSeconds)
  else{PlayPose(TEXT("Cheer"),false);   // hands on the chest at the start; the arm IK lays them on the belly
   if(auto Instance=Cast<UMareServiceAnimInstance>(GetMesh()->GetAnimInstance())){Instance->SetPlaying(false);
    Instance->SetPosition(.03f+.025f*FMath::Sin(Elapsed*.9f+FCrc::StrCrc32(*SaveId)%7),false);}}
+ // 09/11 (C13): a reader holds an open paperback over the chest, tilted towards the eyes, the spine along the body.
+ if(bReading && !bProne && Recline<=0 && LieAlignIn<=0 && !ReadingBook)
+  if(UStaticMesh* BookMesh=LoadObject<UStaticMesh>(nullptr,TEXT("/Game/Custom/Leisure/mare_open_book/mare_open_book.mare_open_book"))){
+   const FVector Sky=GetActorForwardVector(),Head=GetActorUpVector(),Side=GetActorRightVector();
+   const FVector Pelvis=GetMesh()->GetSocketLocation(TEXT("pelvis"));
+   const FVector Normal=(-Sky+Head*.3f).GetSafeNormal(),Spine=(Head-Normal*FVector::DotProduct(Head,Normal)).GetSafeNormal();
+   ReadingBook=NewObject<UStaticMeshComponent>(this);ReadingBook->SetStaticMesh(BookMesh);ReadingBook->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+   ReadingBook->SetMobility(EComponentMobility::Movable);ReadingBook->SetupAttachment(GetRootComponent());ReadingBook->RegisterComponent();
+   ReadingBook->SetWorldLocationAndRotation(Pelvis+Head*62.f+Sky*36.f,FRotationMatrix::MakeFromZY(Normal,Spine).Rotator());
+   (void)Side;}
  if(LieAlignIn>0 && (LieAlignIn-=DeltaSeconds)<=0 && GetMesh()->GetBoneIndex(TEXT("head"))!=INDEX_NONE){
   // Centre the body (head to mid-feet) on the towel and rest the pelvis 11 cm above it (the back of the hips on the cloth).
   const FVector Mid=(GetMesh()->GetSocketLocation(TEXT("foot_l"))+GetMesh()->GetSocketLocation(TEXT("foot_r")))/2;

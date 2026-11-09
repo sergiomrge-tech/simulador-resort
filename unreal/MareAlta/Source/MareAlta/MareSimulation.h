@@ -135,6 +135,9 @@ public:
  bool bMainMenuDone=false;
  /** While the world reloads into another slot, the old world must not write its actors into the new state. */
  bool bHoldSaves=false;
+ /** C20 (09/11): what the player took at a business counter since its minigame opened; the change screen opens with it
+  *  when the minigame closes (AMareController::CloseBusinessGame). */
+ double PendingBizPay=0;FString PendingBizName;
  /** The title screen is up: the clock and the autosave stand still (MareTitle.cpp). */
  bool bTitleOpen=false;
  FString SaveFolder() const;

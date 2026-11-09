@@ -57,6 +57,7 @@ double UMareSimulation::PlayBusiness(const FString& Id,int32 Hits)
  Book(Reward,FString::Printf(TEXT("%s: atendimento (%d/3)"),*String(Def,TEXT("name")),Hits));
  AddFame(int32(Number(BusinessGames(),TEXT("fame_per_hit"),2))*Hits);
  if(!bMachine)BizServed(Id,false,Reward,Hits,int32(Number(BusinessGames(),TEXT("fame_per_hit"),2))*Hits);
+ if(!bMachine && Reward>0){PendingBizPay+=Reward;PendingBizName=String(Def,TEXT("name"));}
  LastMessage=Hits==3?FString::Printf(TEXT("Perfeito! Cliente encantado: R$ %.0f."),Reward):Hits>0?FString::Printf(TEXT("Cliente atendido: R$ %.0f."),Reward)
   :FString::Printf(TEXT("Saiu meio torto... R$ %.0f."),Reward);
  Save();return Reward;

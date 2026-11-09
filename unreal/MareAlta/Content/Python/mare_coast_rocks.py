@@ -126,7 +126,10 @@ def slab_material(_=''):
     import mare_materials
     importlib.reload(mare_materials)
     mat_path = mare_materials._custom_pbr('M_Custom_CoastSlab', 'rock_face', 260,
-                                     'float3 c=A.rgb; float l=dot(c,float3(.3,.59,.11)); return lerp(c,float3(.40,.37,.33)*clamp(l*2.2,.55,1.3),.45);')
+                                     'float3 c=A.rgb; float l=dot(c,float3(.3,.59,.11)); float3 rock=lerp(c,float3(.40,.37,.33)*clamp(l*2.2,.55,1.3),.45);'
+                                     # 09/11 (Sergio's photo): under the water the shelf's steps read as black bands: below the
+                                     # waterline it turns into the wet sand of the sea floor around it.
+                                     'float3 sand=float3(.62,.55,.42)*clamp(l*2.0,.7,1.2); return lerp(rock,sand,smoothstep(5,-45,P.z));')
     mat = unreal.load_asset(mat_path)
     mesh = unreal.load_asset('/Game/World/Models/World_2019/World_2019.World_2019')
     mesh.set_material(0, mat)
@@ -167,7 +170,7 @@ def point_boulders(seed='20261109'):
             else:
                 continue
             slug = rng.choice(('rock_face_01', 'rock_face_02'))
-            rows.setdefault(slug, []).append((t[4].x, t[4].y, t[4].z, rng.uniform(-180, 180), rng.uniform(220, 400), rng.uniform(-6, 6), rng.uniform(-6, 6)))
+            rows.setdefault(slug, []).append((t[4].x, t[4].y, t[4].z, rng.uniform(-180, 180), rng.uniform(160, 260), rng.uniform(-3, 3), rng.uniform(-3, 3)))
     root = actors.spawn_actor_from_class(unreal.Actor, unreal.Vector())
     root.set_actor_label(POINT_LABEL)
     root.tags = [unreal.Name('MareGenerated'), unreal.Name('MareCoastRocks')]
@@ -185,8 +188,42 @@ def point_boulders(seed='20261109'):
         tr = []
         for x, y, z, yaw, size, pitch, roll in items:
             s = size / tall
-            tr.append(unreal.Transform(unreal.Vector(x, y, z - base * s - .18 * tall * s), unreal.Rotator(roll=roll, pitch=pitch, yaw=yaw), unreal.Vector(s, s, s)))
+            # wider than tall (x1.5 across): a rounded boulder sitting deep in the shelf, not a standing flake
+            tr.append(unreal.Transform(unreal.Vector(x, y, z - base * s * .8 - .35 * tall * s * .8), unreal.Rotator(roll=roll, pitch=pitch, yaw=yaw), unreal.Vector(s * 1.5, s * 1.5, s * .8)))
         comp.add_instances(tr, False, True)
         summary[slug] = len(items)
     unreal.get_editor_subsystem(unreal.LevelEditorSubsystem).save_current_level()
     return json.dumps(summary)
+
+
+def drop_slab(_=''):
+    """B8 (09/11, Sergio's photo): the coast_rocks_02 shelf scaled to 46 x 50 m by the Godot export reads as a flat brown
+    slab whatever its material. It is hidden in game and loses its collision (kept in the level, reversible); the rocky
+    point is the beach, the coast rocks and the boulders of point_boulders (re-run after this). PIE stopped; saves."""
+    world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_editor_world()
+    n = []
+    for a in unreal.GameplayStatics.get_all_actors_of_class(world, unreal.Actor):
+        for c in a.get_components_by_class(unreal.StaticMeshComponent):
+            if c.static_mesh and c.static_mesh.get_name() == 'World_2019':
+                c.set_visibility(False)
+                c.set_hidden_in_game(True)
+                c.set_collision_enabled(unreal.CollisionEnabled.NO_COLLISION)
+                n.append([a.get_actor_label(), c.get_name(), c.get_class().get_name()])
+    unreal.get_editor_subsystem(unreal.LevelEditorSubsystem).save_current_level()
+    return json.dumps(n, ensure_ascii=False)
+
+
+def restore_slab(_=''):
+    """09/11: without the shelf the old Godot ground under it showed stepped, square-edged sand at the waterline. The
+    shelf comes back (rock above the water, wet sand below it: slab_material); point_boulders is re-run on it."""
+    world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_editor_world()
+    n = []
+    for a in unreal.GameplayStatics.get_all_actors_of_class(world, unreal.Actor):
+        for c in a.get_components_by_class(unreal.StaticMeshComponent):
+            if c.static_mesh and c.static_mesh.get_name() == 'World_2019':
+                c.set_visibility(True)
+                c.set_hidden_in_game(False)
+                c.set_collision_enabled(unreal.CollisionEnabled.QUERY_AND_PHYSICS)
+                n.append(a.get_actor_label())
+    unreal.get_editor_subsystem(unreal.LevelEditorSubsystem).save_current_level()
+    return json.dumps(n, ensure_ascii=False)

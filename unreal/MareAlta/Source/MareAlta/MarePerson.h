@@ -118,6 +118,9 @@ public:
  void LieOn(const FVector& TowelCentre,float AxisYaw,float InRecline=0.f,bool bInProne=false);
  /** Lying face down on the towel (C13, 09/11): feet together, hands folded under the chest, the back to the sun. */
  bool bProne=false;
+ /** Reading on the towel (C13, 09/11): an open paperback over the chest, both hands on its covers. */
+ bool bReading=false;
+ UPROPERTY() TObjectPtr<UStaticMeshComponent> ReadingBook;
  bool bLying=false;
  /** Degrees the torso bends up at the hips while lying (a lounger backrest); 0 = flat on a towel. The pelvis is
   *  then anchored at the given point (just in front of the backrest hinge) instead of centring the body. */

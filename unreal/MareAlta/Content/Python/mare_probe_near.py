@@ -237,7 +237,7 @@ def pie_pick(arg=''):
         u, v = (float(t) for t in spec.split(','))
         r = unreal.GameplayStatics.deproject_screen_to_world(pc, unreal.Vector2D(u * size.x, v * size.y))
         origin, direction = (r[-2], r[-1]) if isinstance(r, tuple) else (r.world_position, r.world_direction)
-        hit = unreal.SystemLibrary.line_trace_single(world, origin, origin + direction * 20000, unreal.TraceTypeQuery.TRACE_TYPE_QUERY1,
+        hit = unreal.SystemLibrary.line_trace_single(world, origin, origin + direction * 300000, unreal.TraceTypeQuery.TRACE_TYPE_QUERY1,
                                                      True, [unreal.GameplayStatics.get_player_pawn(world, 0)], unreal.DrawDebugTrace.NONE, True)
         t = hit.to_tuple() if hit else None
         out.append([u, v, [round(t[4].x), round(t[4].y), round(t[4].z)] if t else None, t[9].get_actor_label()[:40] if t and t[9] else None,
@@ -317,3 +317,264 @@ def cap_textures(arg=''):
         done.append(p.split('/')[-1])
     left = sum(1 for p in todo) - len(done)
     return json.dumps({'over_limit': len(todo), 'capped_now': done, 'dry': max_n == 0})
+
+
+def import_book(_=''):
+    """C13 (09/11): the open paperback (tools/ue58/gen_open_book.py) for the sunbathers reading on their towels."""
+    import mare_hotel_lobby
+    from pathlib import Path
+    src = Path(unreal.Paths.project_dir()).resolve() / 'SourceArt/Models/Leisure/mare_open_book.glb'
+    mesh = mare_hotel_lobby._import(src, '/Game/Custom/Leisure/mare_open_book', 'mare_open_book', False, search=False)
+    unreal.EditorAssetLibrary.save_directory('/Game/Custom/Leisure/mare_open_book')
+    b = mesh.get_bounds()
+    return json.dumps({'mesh': mesh.get_path_name(), 'extent': [round(b.box_extent.x, 1), round(b.box_extent.y, 1), round(b.box_extent.z, 1)]})
+
+
+def shaft_material(_=''):
+    """C19 (09/11): M_UnderwaterShaft, additive unlit light shaft for the sun rays under water (AMareCharacter spawns a
+    few long planes along the sun direction around the eyes while they are under the surface). U across the shaft,
+    V along it (0 = surface end); soft edges, fading with depth, flickering slowly. Parameter Strength (0..1)."""
+    import mare_materials as mm
+    MEL = unreal.MaterialEditingLibrary
+    path = '/Game/World/Materials/M_UnderwaterShaft'
+    mat = unreal.load_asset(path) or unreal.AssetToolsHelpers.get_asset_tools().create_asset('M_UnderwaterShaft', '/Game/World/Materials', unreal.Material, unreal.MaterialFactoryNew())
+    for old in list(MEL.get_material_expressions(mat)):
+        MEL.delete_material_expression(mat, old)
+    mat.set_editor_property('blend_mode', unreal.BlendMode.BLEND_ADDITIVE)
+    mat.set_editor_property('shading_model', unreal.MaterialShadingModel.MSM_UNLIT)
+    mat.set_editor_property('two_sided', True)
+    mat.set_editor_property('used_with_nanite', False)
+    uv = mm.expression(mat, unreal.MaterialExpressionTextureCoordinate)
+    t = mm.expression(mat, unreal.MaterialExpressionTime)
+    pos = mm.expression(mat, unreal.MaterialExpressionWorldPosition)
+    strength = mm.expression(mat, unreal.MaterialExpressionScalarParameter, parameter_name='Strength', default_value=1.0)
+    e = mm.custom(mat, 'float a=pow(saturate(1-abs(UV.y*2-1)),2.2); float l=smoothstep(0,.08,UV.x)*(1-smoothstep(.25,1,UV.x));'
+                       'float f=.55+.45*sin(T*.6+P.x*.004+P.y*.003)*sin(T*.37+UV.y*5);'
+                       'return float3(.6,.9,.85)*a*l*f*.32*S;', unreal.CustomMaterialOutputType.CMOT_FLOAT3,
+                  {'UV': uv, 'T': t, 'P': pos, 'S': strength})
+    MEL.connect_material_property(e, '', unreal.MaterialProperty.MP_EMISSIVE_COLOR)
+    errors = list(MEL.recompile_material(mat))
+    if errors:
+        raise RuntimeError(str(errors))
+    unreal.EditorAssetLibrary.save_loaded_asset(mat)
+    return mat.get_path_name()
+
+
+def hero_shafts(_=''):
+    world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()
+    hero = unreal.GameplayStatics.get_player_pawn(world, 0)
+    out = {'hero_z': round(hero.get_actor_location().z), 'swimming': hero.get_movement_component().is_swimming()}
+    rows = []
+    for c in hero.get_components_by_class(unreal.StaticMeshComponent):
+        if c.static_mesh and c.static_mesh.get_name() == 'Plane':
+            l = c.get_world_location()
+            rows.append([round(l.x), round(l.y), round(l.z), c.is_visible()])
+    out['shafts'] = rows
+    cam = hero.get_component_by_class(unreal.CameraComponent)
+    out['eye_z'] = round(cam.get_world_location().z) if cam else None
+    return json.dumps(out)
+
+
+def show_shafts(arg='1'):
+    world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()
+    hero = unreal.GameplayStatics.get_player_pawn(world, 0)
+    n = 0
+    for c in hero.get_components_by_class(unreal.StaticMeshComponent):
+        if c.static_mesh and c.static_mesh.get_name() == 'Plane':
+            c.set_visibility(arg == '1')
+            m = c.get_material(0)
+            if isinstance(m, unreal.MaterialInstanceDynamic):
+                m.set_scalar_parameter_value('Strength', 1.0)
+            n += 1
+    return n
+
+
+def hero_swim(arg='4000,-7600,-300,10,90'):
+    """PIE: put the hero in the sea really swimming (movement mode) at x,y,z looking pitch,yaw."""
+    x, y, z, pitch, yaw = (float(v) for v in arg.split(','))
+    world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()
+    pc = unreal.GameplayStatics.get_player_controller(world, 0)
+    hero = unreal.GameplayStatics.get_player_pawn(world, 0)
+    for c in world.get_all_actors_of_class(unreal.CameraActor) if hasattr(world, 'get_all_actors_of_class') else []:
+        pass
+    pc.set_view_target_with_blend(hero, 0.0)
+    hero.set_actor_location(unreal.Vector(x, y, z), False, True)
+    mv = hero.get_movement_component()
+    mv.set_movement_mode(unreal.MovementMode.MOVE_SWIMMING)
+    pc.set_control_rotation(unreal.Rotator(pitch=pitch, yaw=yaw, roll=0))
+    return json.dumps({'swimming': mv.is_swimming(), 'z': round(hero.get_actor_location().z)})
+
+
+def ground_tiles(arg=''):
+    """Editor: instances of the 'Maré · Ground' ISM: count, z range, and how many have their top under the water
+    (bounds max z < arg, default -40 cm)."""
+    limit = float(arg or -40)
+    world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_editor_world()
+    out = {}
+    for a in unreal.GameplayStatics.get_all_actors_of_class(world, unreal.Actor):
+        if a.get_actor_label() != 'Maré · Ground':
+            continue
+        for c in a.get_components_by_class(unreal.InstancedStaticMeshComponent):
+            b = c.static_mesh.get_bounds()
+            n = c.get_instance_count()
+            zs, under = [], []
+            for i in range(n):
+                t = c.get_instance_transform(i, True)
+                top = t.translation.z + (b.origin.z + b.box_extent.z) * t.scale3d.z
+                zs.append(top)
+                if top < limit:
+                    under.append([i, round(t.translation.x), round(t.translation.y), round(top)])
+            out[c.get_name()] = {'mesh': c.static_mesh.get_name(), 'n': n, 'extent': [round(b.box_extent.x), round(b.box_extent.y), round(b.box_extent.z)],
+                                 'top_min': round(min(zs)) if zs else None, 'top_max': round(max(zs)) if zs else None, 'under': len(under), 'sample': under[:8]}
+    return json.dumps(out)
+
+
+def two_floors(arg=''):
+    """Editor: at points 'x,y;...' the island terrain's z and the sea floor planes' z (traced separately)."""
+    world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_editor_world()
+    every = unreal.GameplayStatics.get_all_actors_of_class(world, unreal.Actor)
+    terrain = [a for a in every if 'terreno novo' in a.get_actor_label()]
+    others = [a for a in every if 'fundo de areia' not in a.get_actor_label() and 'terreno novo' not in a.get_actor_label()]
+    out = []
+    for spec in arg.split(';'):
+        x, y = (float(v) for v in spec.split(','))
+        row = [x, y]
+        for ignore in (others + [a for a in every if 'fundo de areia' in a.get_actor_label()], others + terrain):
+            hit = unreal.SystemLibrary.line_trace_single(world, unreal.Vector(x, y, 2000), unreal.Vector(x, y, -3000),
+                                                         unreal.TraceTypeQuery.TRACE_TYPE_QUERY1, True, ignore, unreal.DrawDebugTrace.NONE, True)
+            row.append(round(hit.to_tuple()[4].z) if hit else None)
+        out.append(row)
+    return json.dumps(out)
+
+
+def comps_near(arg=''):
+    """PIE or editor ('pie|x,y,r' / 'x,y,r'): non-instanced static mesh components near x,y with mesh, location,
+    rotation, world bounds extent; also instances of ISMs."""
+    use_pie = arg.startswith('pie|')
+    x, y, r = (float(v) for v in arg.replace('pie|', '').split(','))
+    sub = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem)
+    world = sub.get_game_world() if use_pie else sub.get_editor_world()
+    out = []
+    for a in unreal.GameplayStatics.get_all_actors_of_class(world, unreal.Actor):
+        for c in a.get_components_by_class(unreal.StaticMeshComponent):
+            if not c.static_mesh:
+                continue
+            if isinstance(c, unreal.InstancedStaticMeshComponent):
+                for i in range(min(c.get_instance_count(), 3000)):
+                    t = c.get_instance_transform(i, True)
+                    l = t.translation
+                    if (l.x - x) ** 2 + (l.y - y) ** 2 < r * r:
+                        rr = t.rotation.rotator()
+                        out.append([a.get_actor_label()[:34], c.static_mesh.get_name(), 'inst%d' % i, [round(l.x), round(l.y), round(l.z)], [round(rr.pitch), round(rr.yaw), round(rr.roll)]])
+                continue
+            l = c.get_world_location()
+            if (l.x - x) ** 2 + (l.y - y) ** 2 < r * r:
+                o, e, _ = unreal.SystemLibrary.get_component_bounds(c)
+                rr = c.get_world_rotation()
+                out.append([a.get_actor_label()[:34], c.static_mesh.get_name(), c.get_name()[:20], [round(l.x), round(l.y), round(l.z)], [round(rr.pitch), round(rr.yaw), round(rr.roll)], [round(e.x), round(e.y), round(e.z)]])
+    return json.dumps(out, ensure_ascii=False)
+
+
+def _settle(c, i, rot, xy, floor):
+    """Give ISM instance i of component c a new rotation and xy, then lift/lower it so its lowest corner is on floor."""
+    import itertools
+    m = c.static_mesh
+    b = m.get_bounds()
+    t = c.get_instance_transform(i, True)
+    nt = unreal.Transform(unreal.Vector(xy[0], xy[1], 0), rot, t.scale3d)
+    lo = min(nt.transform_location(unreal.Vector(b.origin.x + sx * b.box_extent.x, b.origin.y + sy * b.box_extent.y, b.origin.z + sz * b.box_extent.z)).z
+             for sx, sy, sz in itertools.product((-1, 1), repeat=3))
+    nt = unreal.Transform(unreal.Vector(xy[0], xy[1], floor - lo), rot, t.scale3d)
+    c.update_instance_transform(i, nt, True, True, True)
+    return [round(xy[0]), round(xy[1]), round(floor - lo)]
+
+
+def pier_props(_=''):
+    """09/11 (Sergio's photos of the pier end): the loose fishing rod (World_2013, 2.2 m) stood leaning at 52 degrees
+    against nothing: it lies on the boards now; the lifebuoy stood on its edge through the lamp post: it lies flat on
+    the deck beside the post. Deck top z 37. PIE stopped; saves the level."""
+    world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_editor_world()
+    done = {}
+    for a in unreal.GameplayStatics.get_all_actors_of_class(world, unreal.Actor):
+        for c in a.get_components_by_class(unreal.InstancedStaticMeshComponent):
+            if not c.static_mesh:
+                continue
+            name = c.static_mesh.get_name()
+            for i in range(c.get_instance_count()):
+                l = c.get_instance_transform(i, True).translation
+                if name == 'World_2013' and abs(l.x - 7080) < 30 and abs(l.y + 4830) < 30:
+                    done['rod'] = _settle(c, i, unreal.Rotator(roll=-89, pitch=0, yaw=-8), (7085, -4775), 37.5)
+                if name == 'World_0095' and abs(l.x - 7340) < 30 and abs(l.y + 4660) < 30:
+                    done['lifebuoy'] = _settle(c, i, unreal.Rotator(roll=90, pitch=0, yaw=-23), (7365, -4735), 37.5)
+    unreal.get_editor_subsystem(unreal.LevelEditorSubsystem).save_current_level()
+    return json.dumps(done)
+
+
+def moulding_fix(_=''):
+    """09/11 (photo tour): the hero house's back wall moulding pieces carried another material and one read as a
+    red-brown bar across the wall; they take the cream crown moulding material of the rest of the room."""
+    reg = unreal.AssetRegistryHelpers.get_asset_registry()
+    hits = [str(a.package_name) + '.' + str(a.asset_name) for a in reg.get_assets_by_package_name('', False)] if False else []
+    cream = None
+    for p in unreal.EditorAssetLibrary.list_assets('/Game/World/Models', recursive=True):
+        if p.endswith('MA_771fc049788c61dd623d8e61.MA_771fc049788c61dd623d8e61') or p.split('/')[-1].startswith('MA_771fc049788c61dd623d8e61'):
+            cream = unreal.load_asset(p)
+            break
+    world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_editor_world()
+    done = []
+    for a in unreal.GameplayStatics.get_all_actors_of_class(world, unreal.Actor):
+        if 'Back wall moulding' in a.get_actor_label():
+            for c in a.get_components_by_class(unreal.StaticMeshComponent):
+                for k in range(c.get_num_materials()):
+                    c.set_material(k, cream)
+                done.append(a.get_actor_label())
+    unreal.get_editor_subsystem(unreal.LevelEditorSubsystem).save_current_level()
+    return json.dumps({'material': cream.get_path_name() if cream else None, 'actors': done}, ensure_ascii=False)
+
+
+def summit_view(arg=''):
+    """09/11 (photo tour): Seu Tiburcio's bench on the summit (4000,37900, facing -Y, the sea) looked into tree crowns.
+    Tree instances in a 70 degree wedge in front of the bench out to 45 m are removed (instanced foliage of the forest
+    and mountain vegetation; shrubs and ferns stay). arg 'dry' counts. PIE stopped; saves."""
+    import math
+    bx, by, bz = 4000.0, 37900.0, 10720.0
+    world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_editor_world()
+    trees = ('tree', 'jacaranda', 'World_0504', 'World_0505', 'World_0507', 'World_1206', 'palm', 'Palm')
+    out = {}
+    for a in unreal.GameplayStatics.get_all_actors_of_class(world, unreal.Actor):
+        for c in a.get_components_by_class(unreal.InstancedStaticMeshComponent):
+            if not c.static_mesh or not any(t in c.static_mesh.get_name() or t in c.get_name() for t in trees):
+                continue
+            drop = []
+            for i in range(c.get_instance_count()):
+                l = c.get_instance_transform(i, True).translation
+                dx, dy = l.x - bx, l.y - by
+                d = math.hypot(dx, dy)
+                if d < 300 or d > 4500:
+                    continue
+                ang = math.degrees(math.atan2(dx, -dy))   # 0 = straight towards -Y
+                if abs(ang) < 35:
+                    drop.append(i)
+            if drop:
+                out[a.get_actor_label()[:30] + '|' + c.static_mesh.get_name()] = len(drop)
+                if arg != 'dry':
+                    c.remove_instances(drop)
+    if arg != 'dry':
+        unreal.get_editor_subsystem(unreal.LevelEditorSubsystem).save_current_level()
+    return json.dumps(out, ensure_ascii=False)
+
+
+def hide_red_beam(_=''):
+    """09/11 (photo tour): a terracotta 3.7 m piece of the Godot export (World_1141, '@MeshInstance3D@2942') hung at the
+    ceiling of the hero's living room and read as a red bar across the back wall. Hidden in game, no collision."""
+    world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_editor_world()
+    n = []
+    for a in unreal.GameplayStatics.get_all_actors_of_class(world, unreal.Actor):
+        if a.get_actor_label() == 'Maré · @MeshInstance3D@2942':
+            for c in a.get_components_by_class(unreal.StaticMeshComponent):
+                c.set_visibility(False)
+                c.set_hidden_in_game(True)
+                c.set_collision_enabled(unreal.CollisionEnabled.NO_COLLISION)
+            n.append(a.get_actor_label())
+    unreal.get_editor_subsystem(unreal.LevelEditorSubsystem).save_current_level()
+    return json.dumps(n, ensure_ascii=False)

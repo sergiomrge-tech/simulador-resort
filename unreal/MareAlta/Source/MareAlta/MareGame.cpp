@@ -1,4 +1,8 @@
 #include "MareGame.h"
+#include "Engine/DirectionalLight.h"
+#include "Components/DirectionalLightComponent.h"
+#include "EngineUtils.h"
+#include "Materials/MaterialInstanceDynamic.h"
 #include "MareTitle.h"
 #include "MareLoc.h"
 #include "MareNotebookStyle.h"
@@ -1128,6 +1132,7 @@ void AMareCharacter::Tick(float DeltaSeconds)
  if(bSwimming && (Vertical<=0 || GetActorLocation().Z<-78))AddMovementInput(FVector::UpVector,Vertical);
  const bool bUnderwater=bSwimming && Eyes->GetComponentLocation().Z<-38;
  Eyes->PostProcessBlendWeight=FMath::FInterpTo(Eyes->PostProcessBlendWeight,bUnderwater?1.f:0.f,DeltaSeconds,5);
+ UpdateSunShafts(bUnderwater,DeltaSeconds);
  // 05/11 (Sergio: "conforme vai afundando vai ficando escuro, como no oceano de verdade, sem luz"): the sunlight dies
  // with depth: green-blue near the surface, deep blue by ~25 m, almost black on the -100 m floor.
  {FLinearColor Tint;float Gain=1.f;MareUnderwaterGrade(float(Eyes->GetComponentLocation().Z),Tint,Gain);
@@ -2045,10 +2050,44 @@ void AMareController::StartBusinessGame(const FString& Biz)
  GEngine->GameViewport->AddViewportWidgetContent(Game,40);bShowMouseCursor=true;
  SetInputMode(FInputModeUIOnly().SetWidgetToFocus(Game));SetIgnoreMoveInput(true);SetIgnoreLookInput(true);
 }
+void AMareCharacter::UpdateSunShafts(bool bUnderwater,float DeltaSeconds)
+{
+ // 09/11 (C19): the water surface is opaque from below for the sun's own light shafts, so the rays are drawn: ten long
+ // additive planes (M_UnderwaterShaft) hanging from the surface along the sun direction around the eyes, turned to face
+ // them, faded in and out with the dive. Each keeps a fixed spot on a 4 m grid so they do not swim with the camera.
+ static UStaticMesh* Plane=LoadObject<UStaticMesh>(nullptr,TEXT("/Engine/BasicShapes/Plane.Plane"));
+ static UMaterialInterface* Mat=LoadObject<UMaterialInterface>(nullptr,TEXT("/Game/World/Materials/M_UnderwaterShaft.M_UnderwaterShaft"));
+ if(!Plane || !Mat || !Eyes)return;
+ if(SunShafts.IsEmpty()){if(!bUnderwater)return;
+  for(int32 I=0;I<10;++I){auto C=NewObject<UStaticMeshComponent>(this);C->SetStaticMesh(Plane);C->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+   C->SetCastShadow(false);C->SetMobility(EComponentMobility::Movable);C->SetUsingAbsoluteLocation(true);C->SetUsingAbsoluteRotation(true);C->SetUsingAbsoluteScale(true);
+   C->SetupAttachment(GetRootComponent());C->RegisterComponent();C->SetMaterial(0,UMaterialInstanceDynamic::Create(Mat,this));SunShafts.Add(C);}}
+ static float Fade=0.f;Fade=FMath::FInterpTo(Fade,bUnderwater?1.f:0.f,DeltaSeconds,2.5f);
+ FVector Ray=FVector(.35f,-.2f,-1.f);   // fallback: the midday sun
+ for(TActorIterator<ADirectionalLight> It(GetWorld());It;++It){Ray=It->GetActorForwardVector();break;}
+ if(Ray.Z>-.25f)Ray.Z=-.25f;Ray.Normalize();
+ const FVector Eye=Eyes->GetComponentLocation();const float Surface=-30.f;
+ for(int32 I=0;I<SunShafts.Num();++I){UStaticMeshComponent* C=SunShafts[I];if(!C)continue;
+  C->SetVisibility(Fade>.01f);if(Fade<=.01f)continue;
+  // a spot on a 4 m grid near the eyes (stable while swimming), offset per shaft
+  const float A=I*2.39996f,R=250.f+I*95.f;FVector Spot=Eye+FVector(FMath::Cos(A)*R,FMath::Sin(A)*R,0);
+  Spot.X=FMath::GridSnap(Spot.X,400.f)+(I%3)*60.f;Spot.Y=FMath::GridSnap(Spot.Y,400.f)+(I%4)*45.f;
+  const FVector Top=FVector(Spot.X,Spot.Y,Surface)-Ray*(Surface-Eye.Z<0?0.f:0.f);const float Len=2200.f,Width=120.f+(I%4)*28.f;
+  const FVector Mid=Top+Ray*Len*.5f;
+  // the plane's normal faces the eyes, its long side (local X) runs along the ray
+  FVector ToEye=(Eye-Mid);ToEye-=Ray*FVector::DotProduct(ToEye,Ray);if(ToEye.IsNearlyZero())ToEye=FVector::RightVector;
+  C->SetWorldLocationAndRotation(Mid,FRotationMatrix::MakeFromXZ(Ray,ToEye.GetSafeNormal()).Rotator());
+  C->SetWorldScale3D(FVector(Len/100.f,Width/100.f,1.f));
+  if(auto D=Cast<UMaterialInstanceDynamic>(C->GetMaterial(0)))D->SetScalarParameterValue(TEXT("Strength"),Fade);}
+}
 void AMareController::CloseBusinessGame()
 {
  if(GameWidget.IsValid() && GEngine && GEngine->GameViewport)GEngine->GameViewport->RemoveViewportWidgetContent(GameWidget.ToSharedRef());
  GameWidget.Reset();SetPause(false);bShowMouseCursor=false;SetInputMode(FInputModeGameOnly());ResetIgnoreMoveInput();ResetIgnoreLookInput();
+ // 09/11 (C20): the customers served at a business counter pay like at the kiosk: the change screen with the total
+ // (tip and stars by the change; the sales are already booked by PlayBusiness).
+ if(auto S=GetSimulation())if(S->PendingBizPay>0){const double Total=S->PendingBizPay;const FString Name=S->PendingBizName;
+  S->PendingBizPay=0;S->PendingBizName.Reset();OpenPayment(Name.IsEmpty()?FString(TEXT("Cliente")):Name,Total);}
 }
 void AMareController::StartFishing()
 {

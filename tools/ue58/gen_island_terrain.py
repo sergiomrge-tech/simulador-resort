@@ -69,11 +69,15 @@ def main():
     st = t * t * (3 - 2 * t)
     height = np.where(edge_h > plain, plain + (edge_h - plain) * (1.0 - st), plain)
     height = np.where(D > 0, beach(-D), height)  # at sea: on down to -1.2 m at 15 m out
+    # 09/11 (Sergio's photo, a dark strip in the water by the pier): the terrain stopped 15 m out at -1.2 m, 1.5-2 m
+    # above the sea floor planes (-2.7 to -3.5 m there): its stepped edge cast a dark line seen through the clear water.
+    # It now keeps going down to -4.5 m at 60 m out, ending under the sea floor, which it meets without a step.
+    height = np.where(D > 1500, -120.0 - np.clip((D - 1500.0) / 4500.0, 0, 1) * 330.0, height)
 
     new_land = (D < 0) & ~land
     seam = land & ndimage.binary_dilation(new_land, iterations=2)
     height = np.where(seam, old_z - 40.0, height)
-    use = new_land | seam | ((D > 0) & (D < 1500) & ~land)
+    use = new_land | seam | ((D > 0) & (D < 6000) & ~land)
     use = ndimage.binary_dilation(use, iterations=1) & ~(land & ~seam)
 
     # vertices for every used cell corner (the grid points themselves), quads where all four are used

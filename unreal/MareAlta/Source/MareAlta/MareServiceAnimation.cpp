@@ -78,6 +78,15 @@ struct FServiceProxy : FAnimSingleNodeInstanceProxy
    FVector Grip=Person->GetActorLocation()+Person->GetActorForwardVector()*32+Person->GetActorRightVector()*Side*18+FVector(0,0,22);
    // 09/11 (C13): face down the hands stay folded under the chest as the pose has them (no IK into the towel).
    if(bProne && !bHolding && !bSelfie){Strength[Hand]=FMath::FInterpTo(Strength[Hand],0.f,DeltaSeconds,4.f);continue;}
+   // 09/11 (C13): a reader's hands hold the open paperback by its covers (about 11 cm each side of the spine).
+   if(bTowel && !bProne && !bHolding && !bSelfie && Person->ReadingBook){
+    const FVector Sky=Person->GetActorForwardVector(),Head=Person->GetActorUpVector(),Out=Person->GetActorRightVector()*(Hand==0?1.f:-1.f);
+    const FTransform B=Person->ReadingBook->GetComponentTransform();
+    const FVector Pelvis=Mesh->GetSocketLocation(TEXT("pelvis"));
+    Strength[Hand]=FMath::FInterpTo(Strength[Hand],1.f,DeltaSeconds,4.f);
+    Targets[Hand]=ToComponent.TransformPosition(B.GetLocation()+Out*11.f-B.GetRotation().GetUpVector()*1.5f);
+    Elbows[Hand]=ToComponent.TransformPosition(Pelvis+Head*36.f+Out*28.f+Sky*6.f);
+    continue;}
    if(bTowel && !bHolding && !bSelfie){
     // Lying on the back: the free hand rests on the belly, the elbow out to the side on the towel. The actor's X axis
     // points at the sky and its Z axis runs from the feet to the head (AMarePerson::LieOn).

@@ -1,6 +1,6 @@
 {
  "_doc": "Fishing at the pier and the photo mode (village chapters). Fishing: E at the spot casts; after a random wait the fish bites and the player has bite_window seconds to strike (E, Space, click or A); a strike gives one fish of a species drawn by weight, which goes to the stock as 'peixe' (Seu Severino's chapter asks for 4). Photo mode: P takes a picture (saved in Saved/Album); every subject inside the frame, closer than its max distance and not hidden behind a wall, is recorded in the album (prog.album) and flags its chapter step (prog.chp). A subject with sun = true is the sun itself: low (elevation under max_elevation degrees), within angle degrees of the view, at the given hours (the sunset). World cm.",
- "fishing_spot": [7200, -4650, 0, 90],
+ "fishing_spot": [7200, -4890, 0, 90],
  "bite_wait": [2.0, 6.0],
  "bite_window": 1.1,
  "species": [

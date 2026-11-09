@@ -30,6 +30,9 @@ public:
  bool PhoneScreenRect(FVector2D& Min,FVector2D& Max)const;
 private:
  UPROPERTY() TObjectPtr<UCameraComponent> Eyes;
+ /** C19 (09/11): sun rays under water, long additive planes along the sun direction around the eyes. */
+ UPROPERTY() TArray<TObjectPtr<class UStaticMeshComponent>> SunShafts;
+ void UpdateSunShafts(bool bUnderwater,float DeltaSeconds);
  UPROPERTY() TObjectPtr<class UStaticMeshComponent> PhoneModel;
  float VerticalSwimInput=0.f;
  bool bSprint=false;
