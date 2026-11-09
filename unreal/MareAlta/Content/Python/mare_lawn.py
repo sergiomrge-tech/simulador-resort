@@ -38,7 +38,7 @@ REGION = (-20000, 22500, -1000, 15500)  # x0, x1, y0, y1 (cm): resort, village, 
 MAX_Z = 1500                              # up into the lower edge of the hill forest (trees start at 600)
 CENTRE, CORE = (3000, 3000), 9000         # outside this radius grass clumps are a bit larger
 # slug, weight, scale range (real-size understorey; mountain_vegetation uses 2-3x for the far hills)
-SHRUBS = [('shrub_01', 3, (0.8, 1.3)), ('shrub_02', 3, (0.8, 1.3)), ('shrub_03', 2, (0.7, 1.1)), ('shrub_04', 2, (0.7, 1.1)),
+SHRUBS = [('shrub_01', 4, (0.8, 1.3)), ('shrub_03', 3, (0.7, 1.1)),   # 09/11: shrub_02/04 read as dry brown clumps (B12)
           ('fern_02', 3, (0.9, 1.5))]   # wild_rooibos_bush / shrub_sorrel_01 read as black blots at mid range
 FLOWERS = [('flower_gazania', 1, (0.9, 1.3)), ('periwinkle_plant', 1, (0.9, 1.3))]
 # Full green clumps (Poly Haven grass_medium) over every open lawn; the older inland PCG wisps stay as variety.
@@ -239,3 +239,116 @@ def run(action, arg=''):
     if action == 'populate':
         return populate()
     raise ValueError(action)
+
+
+def fix_0911(arg=''):
+    """B12 (09/11): the pousada lawn showed dry brown clumps and plants on the concrete path. shrub_02 and shrub_04
+    have grey-brown leaves and red stems (dry from a distance): their instances become shrub_01 / shrub_03. Plants
+    placed under an expansion's floor, path or deck (populate traces through the Region_ buildings so a lot keeps its
+    lawn until bought) are removed. arg 'dry' only counts. PIE stopped; saves the level."""
+    from editor_toolset.toolsets.actor import ActorTools
+    if unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world():
+        raise RuntimeError('Stop PIE first')
+    dry = arg == 'dry'
+    world = _world()
+    swap = {'shrub_02': 'shrub_01', 'shrub_04': 'shrub_03'}
+    removed, swapped, kept = {}, {}, 0
+    every = unreal.get_editor_subsystem(unreal.EditorActorSubsystem).get_all_level_actors()
+    soft = [a for a in every if any(t in a.get_actor_label().lower() for t in ('grass', 'gramado', 'bush', 'fern', 'palm', 'tree', 'plant', 'pcg', 'galhos', 'arbust'))]
+    terrain = {a.get_actor_label() for a in every if a.get_actor_label() == 'Maré · Ground' or
+               a.get_actor_label().startswith('Maré · Preenchimento costeiro') or
+               (a.get_actor_label().startswith('Maré · @MeshInstance3D') and a.get_actor_bounds(False)[1].z > 1500)}
+    over = {}
+    # Flat built pieces without collision (the pousada path): plants inside their footprint go too.
+    flat = []
+    for a in every:
+        if a in soft or a.get_actor_label() in terrain or not isinstance(a, unreal.StaticMeshActor):
+            continue
+        o, e = a.get_actor_bounds(False)
+        if e.z < 20 and e.x * e.y > 20000 and e.x * e.y < 4.0e6:
+            flat.append((o.x - e.x, o.x + e.x, o.y - e.y, o.y + e.y, o.z - e.z - 30, o.z + e.z + 10, a.get_actor_label()[:40]))
+    half = {}
+
+    def over_paving(kind, tr):
+        import math
+        if kind not in half:
+            b = _mesh(kind).get_bounds()
+            half[kind] = max(b.box_extent.x, b.box_extent.y) * .8
+        r = half[kind] * tr.scale3d.x
+        l = tr.translation
+        for k in range(8):
+            a = k * math.pi / 4
+            px, py = l.x + math.cos(a) * r, l.y + math.sin(a) * r
+            hit = unreal.SystemLibrary.line_trace_single(world, unreal.Vector(px, py, l.z + 120), unreal.Vector(px, py, l.z - 60),
+                                                         unreal.TraceTypeQuery.TRACE_TYPE_QUERY1, True, soft, unreal.DrawDebugTrace.NONE, True)
+            if hit:
+                t = hit.to_tuple()
+                if t[10] and t[10].get_num_materials() and t[10].get_material(0) and t[10].get_material(0).get_name() in PAVED_ALL:
+                    return True
+        return False
+    PAVED_ALL = ('MA_0707ebbc10476ed7b24d2463',)
+    for root in [a for a in unreal.get_editor_subsystem(unreal.EditorActorSubsystem).get_all_level_actors() if a.get_actor_label().startswith(LABEL)]:
+        comps = {c.get_name().replace('HISM_', ''): c for c in root.get_components_by_class(unreal.HierarchicalInstancedStaticMeshComponent)}
+        # A lot's own lawn (tag Lot_<id>) is hidden with the lot once bought: only the open lawn can poke through floors.
+        open_lawn = not _tag_ids(root, 'Lot_')
+        PAVED = ('MA_0707ebbc10476ed7b24d2463',)   # the village's concrete paths (World_0002/0004)
+        for kind, comp in list(comps.items()):
+            drop, move = [], []
+            for i in range(comp.get_instance_count()):
+                tr = comp.get_instance_transform(i, True)
+                l = tr.translation
+                # A path, deck or floor right over the plant's base (3-80 cm above it; roofs and canopies are higher
+                # and plants are ignored): the plant pokes through it. The pousada path is not a Region_ piece.
+                hit = unreal.SystemLibrary.line_trace_single(world, unreal.Vector(l.x, l.y, l.z + 80), unreal.Vector(l.x, l.y, l.z - 30),
+                                                             unreal.TraceTypeQuery.TRACE_TYPE_QUERY1, True, soft, unreal.DrawDebugTrace.NONE, True)
+                if hit:
+                    t = hit.to_tuple()
+                    # Paved paths are instances in the same Godot ISM actors as the hill tiles (counted as terrain by
+                    # populate): their concrete material marks them.
+                    paved = t[10] and t[10].get_num_materials() and t[10].get_material(0) and t[10].get_material(0).get_name() in PAVED
+                    if t[9] and (paved or t[9].get_actor_label() not in terrain) and t[4].z > l.z + 3 and (open_lawn or not _tag_ids(t[9], 'Region_')):
+                        drop.append(i)
+                        k = ('caminho · ' if paved else '') + t[9].get_actor_label()[:40]
+                        over[k] = over.get(k, 0) + 1
+                        continue
+                # Shrubs, ferns and flowers spread: a 1.5x fern rooted 1.2 m from the pousada path covered it. Test the
+                # crown's edge (the mesh's half width at this scale) for paving too.
+                if kind not in ('grass_medium_01', 'grass_medium_02') and over_paving(kind, tr):
+                    drop.append(i)
+                    over['copa sobre o caminho'] = over.get('copa sobre o caminho', 0) + 1
+                    continue
+                inside = next((f for f in flat if f[0] < l.x < f[1] and f[2] < l.y < f[3] and f[4] < l.z < f[5]), None)
+                if inside:
+                    drop.append(i)
+                    over[inside[6]] = over.get(inside[6], 0) + 1
+                    continue
+                if kind in swap:
+                    move.append(tr)
+            removed[kind] = removed.get(kind, 0) + len(drop)
+            kept += comp.get_instance_count() - len(drop)
+            if kind in swap:
+                swapped[kind] = swapped.get(kind, 0) + len(move)
+            if dry:
+                continue
+            if kind in swap:
+                comp.clear_instances()
+                target = comps.get(swap[kind])
+                if not target:
+                    target = ActorTools.add_component(root, unreal.HierarchicalInstancedStaticMeshComponent.static_class(), 'HISM_' + swap[kind])
+                    target.set_mobility(unreal.ComponentMobility.STATIC)
+                    target.set_collision_enabled(unreal.CollisionEnabled.NO_COLLISION)
+                    target.set_static_mesh(_mesh(swap[kind]))
+                    target.set_editor_property('instance_start_cull_distance', 10000)
+                    target.set_editor_property('instance_end_cull_distance', 14000)
+                    comps[swap[kind]] = target
+                # same pivot height rule as populate: base of the new mesh on the ground
+                old_b, new_b = _mesh(kind).get_bounds(), _mesh(swap[kind]).get_bounds()
+                d = (old_b.origin.z - old_b.box_extent.z) - (new_b.origin.z - new_b.box_extent.z)
+                target.add_instances([unreal.Transform(unreal.Vector(t.translation.x, t.translation.y, t.translation.z + d * t.scale3d.z),
+                                                       t.rotation.rotator(), t.scale3d) for t in move], False, True)
+            elif drop:
+                comp.remove_instances(drop)
+    if not dry:
+        unreal.get_editor_subsystem(unreal.LevelEditorSubsystem).save_current_level()
+    return json.dumps({'removed_under_buildings': removed, 'swapped': swapped, 'kept': kept, 'dry': dry,
+                       'over': dict(sorted(over.items(), key=lambda kv: -kv[1])[:25])}, ensure_ascii=False)

@@ -111,7 +111,7 @@ def texts(arg=''):
             if arg.lower() in t.lower():
                 l = c.get_world_location()
                 out.append({'actor': actor.get_actor_label(), 'comp': c.get_name(), 'text': t, 'at': [round(l.x), round(l.y), round(l.z)]})
-    return json.dumps(out, ensure_ascii=False)
+    return json.dumps(out, ensure_ascii=False, default=str)
 
 
 def pool_sign(_=''):
@@ -126,3 +126,153 @@ def pool_sign(_=''):
     if n:
         unreal.get_editor_subsystem(unreal.LevelEditorSubsystem).save_current_level()
     return n
+
+
+def count_near(arg=''):
+    """Instances per (actor, mesh) within radius of x,y (any z). arg 'x,y,r'."""
+    x, y, r = (float(v) for v in arg.split(','))
+    world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_editor_world()
+    out = {}
+    for actor in unreal.GameplayStatics.get_all_actors_of_class(world, unreal.Actor):
+        for c in actor.get_components_by_class(unreal.InstancedStaticMeshComponent):
+            if not c.static_mesh:
+                continue
+            n = 0
+            for i in range(c.get_instance_count()):
+                l = c.get_instance_transform(i, True).translation
+                if (l.x - x) ** 2 + (l.y - y) ** 2 < r * r:
+                    n += 1
+            if n:
+                out[actor.get_actor_label()[:50] + ' | ' + c.static_mesh.get_name()] = n
+    return json.dumps(out, ensure_ascii=False, default=str)
+
+
+def mesh_mats(arg=''):
+    m = unreal.load_asset(arg)
+    out = []
+    for sm in m.get_editor_property('static_materials'):
+        mi = sm.material_interface
+        row = {'slot': str(sm.material_slot_name), 'mat': mi.get_path_name() if mi else None}
+        if isinstance(mi, unreal.MaterialInstance):
+            row['tex'] = [p.parameter_value.get_path_name() for p in mi.get_editor_property('texture_parameter_values') if p.parameter_value]
+            row['vec'] = [[str(p.parameter_info.name), str(p.parameter_value)] for p in mi.get_editor_property('vector_parameter_values')]
+        out.append(row)
+    b = m.get_bounds()
+    return json.dumps({'mats': out, 'extent': [round(b.box_extent.x), round(b.box_extent.y), round(b.box_extent.z)]})
+
+
+def pie_hide(arg=''):
+    """PIE: hide/show actors whose label contains a text. arg 'text|1' hides, 'text|0' shows. Returns how many."""
+    text, on = (arg.split('|') + ['1'])[:2]
+    world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()
+    n = 0
+    for a in unreal.GameplayStatics.get_all_actors_of_class(world, unreal.Actor):
+        if text in a.get_actor_label():
+            a.set_actor_hidden_in_game(on == '1')
+            n += 1
+    return n
+
+
+def covering(arg=''):
+    """Primitive components whose world bounds contain the point x,y (any z <= 300): name, actor, extent, collision."""
+    x, y = (float(v) for v in arg.split(','))
+    world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_editor_world()
+    out = []
+    for a in unreal.GameplayStatics.get_all_actors_of_class(world, unreal.Actor):
+        for c in a.get_components_by_class(unreal.StaticMeshComponent):
+            if isinstance(c, unreal.InstancedStaticMeshComponent) or not c.static_mesh:
+                continue
+            o, e, _r = unreal.SystemLibrary.get_component_bounds(c)
+            if abs(x - o.x) < e.x and abs(y - o.y) < e.y and o.z - e.z < 300:
+                out.append([a.get_actor_label()[:40], c.static_mesh.get_name(), [round(o.z), round(e.x), round(e.y), round(e.z)], str(c.get_collision_enabled()).split('.')[-1], [str(t) for t in a.tags][:3]])
+    return json.dumps(out, ensure_ascii=False, default=str)
+
+
+def trace(arg=''):
+    """Editor trace down at x,y: actor, component, mesh, hit z, instance index (ISM)."""
+    out = []
+    world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_editor_world()
+    for spec in arg.split(';'):
+        x, y = (float(v) for v in spec.split(','))
+        hit = unreal.SystemLibrary.line_trace_single(world, unreal.Vector(x, y, 3000), unreal.Vector(x, y, -500),
+                                                     unreal.TraceTypeQuery.TRACE_TYPE_QUERY1, True, [], unreal.DrawDebugTrace.NONE, True)
+        if not hit:
+            out.append([x, y, None])
+            continue
+        t = hit.to_tuple()
+        comp = t[10]
+        mesh = comp.static_mesh.get_name() if isinstance(comp, unreal.StaticMeshComponent) and comp.static_mesh else None
+        mat = comp.get_material(0).get_name() if comp and comp.get_num_materials() else None
+        out.append([x, y, round(t[4].z), t[9].get_actor_label()[:40] if t[9] else None, comp.get_name() if comp else None, mesh, mat, t[11] if len(t) > 11 else None])
+    return json.dumps(out, ensure_ascii=False, default=str)
+
+
+def lawn_at(arg=''):
+    """Lawn instances within r of x,y with their z and what a short trace finds over them."""
+    x, y, r = (float(v) for v in arg.split(','))
+    world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_editor_world()
+    out = []
+    for a in unreal.GameplayStatics.get_all_actors_of_class(world, unreal.Actor):
+        if 'Gramado' not in a.get_actor_label():
+            continue
+        for c in a.get_components_by_class(unreal.InstancedStaticMeshComponent):
+            for i in range(c.get_instance_count()):
+                l = c.get_instance_transform(i, True).translation
+                if (l.x - x) ** 2 + (l.y - y) ** 2 < r * r:
+                    hit = unreal.SystemLibrary.line_trace_single(world, unreal.Vector(l.x, l.y, l.z + 80), unreal.Vector(l.x, l.y, l.z - 30),
+                                                                 unreal.TraceTypeQuery.TRACE_TYPE_QUERY1, True, [], unreal.DrawDebugTrace.NONE, True)
+                    t = hit.to_tuple() if hit else None
+                    out.append([a.get_actor_label()[-14:], c.get_name(), [round(l.x), round(l.y), round(l.z)],
+                                [round(t[4].z), t[9].get_actor_label()[:30] if t[9] else None, t[10].get_material(0).get_name() if t[10] and t[10].get_num_materials() else None] if t else None])
+    return json.dumps(out[:40], ensure_ascii=False, default=str)
+
+
+def pie_pick(arg=''):
+    """PIE: what is under screen points given as fractions 'u,v;u,v' (0..1): world hit, actor, component, material."""
+    world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()
+    pc = unreal.GameplayStatics.get_player_controller(world, 0)
+    size = unreal.WidgetLayoutLibrary.get_viewport_size(world)
+    out = []
+    for spec in arg.split(';'):
+        u, v = (float(t) for t in spec.split(','))
+        r = unreal.GameplayStatics.deproject_screen_to_world(pc, unreal.Vector2D(u * size.x, v * size.y))
+        origin, direction = (r[-2], r[-1]) if isinstance(r, tuple) else (r.world_position, r.world_direction)
+        hit = unreal.SystemLibrary.line_trace_single(world, origin, origin + direction * 20000, unreal.TraceTypeQuery.TRACE_TYPE_QUERY1,
+                                                     True, [unreal.GameplayStatics.get_player_pawn(world, 0)], unreal.DrawDebugTrace.NONE, True)
+        t = hit.to_tuple() if hit else None
+        out.append([u, v, [round(t[4].x), round(t[4].y), round(t[4].z)] if t else None, t[9].get_actor_label()[:40] if t and t[9] else None,
+                    t[10].get_material(0).get_name() if t and t[10] and t[10].get_num_materials() else None])
+    return json.dumps(out, ensure_ascii=False, default=str)
+
+
+def by_label(arg=''):
+    """Editor actors whose label contains arg: location, scale, mesh, materials, bounds."""
+    world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_editor_world()
+    out = []
+    for a in unreal.GameplayStatics.get_all_actors_of_class(world, unreal.Actor):
+        if arg in a.get_actor_label():
+            l, s = a.get_actor_location(), a.get_actor_scale3d()
+            o, e = a.get_actor_bounds(False)
+            c = a.get_component_by_class(unreal.StaticMeshComponent)
+            out.append({'label': a.get_actor_label(), 'at': [round(l.x), round(l.y), round(l.z)], 'scale': [round(s.x, 2), round(s.y, 2), round(s.z, 2)],
+                        'extent': [round(e.x), round(e.y), round(e.z)], 'mesh': c.static_mesh.get_path_name() if c and c.static_mesh else None,
+                        'mats': [c.get_material(i).get_path_name() for i in range(c.get_num_materials())] if c else []})
+    return json.dumps(out, ensure_ascii=False)
+
+
+def tex_groups(arg='/Game/People/MetaHumans'):
+    """Texture2D under a path from the asset registry (no loading): count and approximate MB by LOD group and by size."""
+    reg = unreal.AssetRegistryHelpers.get_asset_registry()
+    flt = unreal.ARFilter(package_paths=[arg], recursive_paths=True, class_paths=[unreal.TopLevelAssetPath('/Script/Engine', 'Texture2D')])
+    by = {}
+    for ad in reg.get_assets(flt):
+        dims = str(ad.get_tag_value('Dimensions') or '')
+        group = str(ad.get_tag_value('LODGroup') or '?')
+        try:
+            w, h = (int(v) for v in dims.split('x')[:2])
+        except Exception:
+            w = h = 0
+        key = f'{group} {max(w, h)}'
+        n, mb = by.get(key, (0, 0.0))
+        by[key] = (n + 1, mb + w * h * 1.33 / 1048576)   # ~1 byte/texel compressed with mips
+    return json.dumps(dict(sorted(by.items(), key=lambda kv: -kv[1][1])[:25]))

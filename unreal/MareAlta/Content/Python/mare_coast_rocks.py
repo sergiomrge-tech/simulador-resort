@@ -113,3 +113,80 @@ def run(seed='20261108'):
     report = {'seed': seed, 'clusters': len(centres), 'instances': summary, 'total': sum(summary.values()), 'rejected': rejected}
     (mi.DATA / 'island_coast_rocks.json').write_text(json.dumps(report, indent=1), encoding='utf-8')
     return json.dumps(report)
+
+
+def slab_material(_=''):
+    """B8 (09/11): the rocky point between the pier and the lighthouse (World_2019, coast_rocks_02 from the Godot export,
+    a 46 x 50 m slab only 1.6 m high) carried one rock picture stretched over all of it and read as a smooth brown
+    ledge. It now takes the CC0 Poly Haven rock_face maps projected in world space every 2.6 m, slightly warmer.
+    PIE stopped; saves the mesh."""
+    import importlib
+    import json
+    import unreal
+    import mare_materials
+    importlib.reload(mare_materials)
+    mat_path = mare_materials._custom_pbr('M_Custom_CoastSlab', 'rock_face', 260,
+                                     'float3 c=A.rgb; float l=dot(c,float3(.3,.59,.11)); return lerp(c,float3(.40,.37,.33)*clamp(l*2.2,.55,1.3),.45);')
+    mat = unreal.load_asset(mat_path)
+    mesh = unreal.load_asset('/Game/World/Models/World_2019/World_2019.World_2019')
+    mesh.set_material(0, mat)
+    unreal.EditorAssetLibrary.save_loaded_asset(mesh, False)
+    return json.dumps({'mesh': mesh.get_path_name(), 'material': mat.get_path_name()})
+
+
+POINT_LABEL = 'Ilha · rochas da ponta do píer'
+
+
+def point_boulders(seed='20261109'):
+    """B8 (09/11): the rocky point between the pier and the lighthouse is the Poly Haven coast_rocks_02 shelf (46 x 50 m,
+    1.6 m high) from the Godot export: real, but flat, it read as a smooth brown slab. Rounded rock_face boulders
+    (2.2-4 m, as the coast rocks) stand on it in two loose groups, so it reads as a rocky point. Re-runnable; PIE
+    stopped; saves."""
+    import random
+    import mare_mountains as mm
+    from editor_toolset.toolsets.actor import ActorTools
+    if unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world():
+        raise RuntimeError('Stop PIE first')
+    world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_editor_world()
+    actors = unreal.get_editor_subsystem(unreal.EditorActorSubsystem)
+    for a in actors.get_all_level_actors():
+        if a.get_actor_label() == POINT_LABEL:
+            actors.destroy_actor(a)
+    rng = random.Random(int(seed))
+    groups = [(9000, -4500, 900, 5), (9900, -4950, 700, 4), (8600, -4100, 500, 2)]   # centre x, y, spread, count
+    rows = {}
+    for gx, gy, spread, count in groups:
+        for _ in range(count):
+            for _try in range(8):
+                x, y = gx + rng.uniform(-spread, spread), gy + rng.uniform(-spread, spread)
+                hit = unreal.SystemLibrary.line_trace_single(world, unreal.Vector(x, y, 3000), unreal.Vector(x, y, -500),
+                                                             unreal.TraceTypeQuery.TRACE_TYPE_QUERY1, True, [], unreal.DrawDebugTrace.NONE, True)
+                t = hit.to_tuple() if hit else None
+                if t and t[4].z > -60:   # on the shelf or the sand, not in the water
+                    break
+            else:
+                continue
+            slug = rng.choice(('rock_face_01', 'rock_face_02'))
+            rows.setdefault(slug, []).append((t[4].x, t[4].y, t[4].z, rng.uniform(-180, 180), rng.uniform(220, 400), rng.uniform(-6, 6), rng.uniform(-6, 6)))
+    root = actors.spawn_actor_from_class(unreal.Actor, unreal.Vector())
+    root.set_actor_label(POINT_LABEL)
+    root.tags = [unreal.Name('MareGenerated'), unreal.Name('MareCoastRocks')]
+    root.set_folder_path('Nature/Island')
+    summary = {}
+    for slug, items in rows.items():
+        mesh = mm._mesh(slug)
+        comp = ActorTools.add_component(root, unreal.HierarchicalInstancedStaticMeshComponent.static_class(), 'HISM_point_' + slug)
+        comp.set_static_mesh(mesh)
+        comp.set_mobility(unreal.ComponentMobility.STATIC)
+        comp.set_collision_enabled(unreal.CollisionEnabled.QUERY_AND_PHYSICS)
+        comp.set_collision_profile_name('BlockAll')
+        b = mesh.get_bounds()
+        base, tall = b.origin.z - b.box_extent.z, 2 * b.box_extent.z or 1.0
+        tr = []
+        for x, y, z, yaw, size, pitch, roll in items:
+            s = size / tall
+            tr.append(unreal.Transform(unreal.Vector(x, y, z - base * s - .18 * tall * s), unreal.Rotator(roll=roll, pitch=pitch, yaw=yaw), unreal.Vector(s, s, s)))
+        comp.add_instances(tr, False, True)
+        summary[slug] = len(items)
+    unreal.get_editor_subsystem(unreal.LevelEditorSubsystem).save_current_level()
+    return json.dumps(summary)

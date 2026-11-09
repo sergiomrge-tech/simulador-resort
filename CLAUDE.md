@@ -804,3 +804,11 @@ com cor fixa apagou os fios). Tradução: pedaços que o código cola em tempo d
 (o extrator apaga chave que não está no código nem nos dados); `tools/ue58/loc_emulate.py` repete o `MareLoc` em Python e
 diz qual pedaço falta. Valor de modelo nunca contém outra frase (o resumo do dia engolia "Jogo salvo..." no `{3}`).
 Patch de C++/Python com `\n`, `\r\n` ou `\d` dentro de heredoc + `python -c` corrompe a string: grave o script com Write.
+Lote 2 (09/11): planta "em cima do caminho" pode estar plantada na BEIRA, com a copa (escala 1,5) por cima do cimento;
+teste a borda da copa, não só o pivô (`mare_lawn.fix_0911`). Os caminhos de cimento são instâncias nos mesmos atores ISM
+do Godot que os blocos dos morros (caixa alta = "terreno" para o gerador): reconheça pelo material de cimento. Para
+achar o que está num pixel da foto, `mare_probe_near.pie_pick` projeta o ponto da tela no mundo do PIE; para isolar um
+defeito, esconda um grupo por vez (`pie_hide`). "Laje lisa" pode ser um modelo real do Poly Haven ampliado
+(`coast_rocks_02` é uma plataforma de 30 x 21 m e 1,6 m): material novo não muda a forma; rochas por cima, sim. Voo de
+câmera (tela inicial): fotografe 16 pontos do percurso com a mesma interpolação do jogo (`title_path.py`); copas de
+coqueiro e mastros não têm colisão, então traços não acham o raspão. `coast pie` posiciona o PAWN (olho ~70 cm acima).

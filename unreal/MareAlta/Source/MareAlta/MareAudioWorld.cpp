@@ -172,7 +172,12 @@ void UMareAudioWorld::UpdateLayers(float DeltaSeconds,UMareSimulation* Sim,FVect
   const double Dist=FVector::Dist2D(Position,FVector((*C)[0]->AsNumber(),(*C)[1]->AsNumber(),0)),Radius=UMareSimulation::Number(Z,TEXT("radius"));
   if(Dist>=Radius)continue;
   ZoneTrack=FName(UMareSimulation::String(Z,TEXT("track")));ZoneLevel=float(UMareSimulation::Number(Z,TEXT("volume"),.25)*FMath::Clamp((Radius-Dist)/Fade,0.,1.));break;}
- const float Duck=ZoneTrack.IsNone()?1.f:FMath::Lerp(1.f,float(UMareSimulation::Number(Zones,TEXT("radio_duck"),.2)),FMath::Clamp(ZoneLevel/.15f,0.f,1.f));
+ // 09/11 (C6): the title screen has its own theme (music_tema) over the living bay; the radio waits. Starting the
+ // game fades it out with the usual loop interpolation and the place's music and the radio come back.
+ const bool bTitleTheme=Sim && Sim->bTitleOpen;
+ if(bTitleTheme){ZoneTrack=TEXT("music_tema");ZoneLevel=.34f;
+  if(!Loops.Contains(ZoneTrack))if(auto Wave=Sounds.FindRef(ZoneTrack))if(auto Component=UGameplayStatics::SpawnSound2D(this,Wave,.001f,1,0,nullptr,false,false)){Component->SetUISound(false);Loops.Add(ZoneTrack,Component);}}
+ const float Duck=bTitleTheme?0.f:ZoneTrack.IsNone()?1.f:FMath::Lerp(1.f,float(UMareSimulation::Number(Zones,TEXT("radio_duck"),.2)),FMath::Clamp(ZoneLevel/.15f,0.f,1.f));
  // Near a radio set that is playing, the background radio steps back.
  float StereoDuck=1.f;for(auto Pair:Stereos)if(IsValid(Pair.Value) && !StereoTracks.FindRef(Pair.Key).IsNone())StereoDuck=FMath::Min(StereoDuck,FMath::Clamp(FVector::Dist(Position,Pair.Value->GetComponentLocation())/800.f,.12f,1.f));
  // A station past the always-loaded ones: start it when tuned, drop it once faded out after another is chosen.
@@ -180,7 +185,7 @@ void UMareAudioWorld::UpdateLayers(float DeltaSeconds,UMareSimulation* Sim,FVect
   if(auto Component=UGameplayStatics::SpawnSound2D(this,Wave,.001f,1,0,nullptr,false,false)){Component->SetUISound(false);Loops.Add(RadioStation,Component);}
  {TArray<FName> Drop;const int32 Kept=AlwaysLoadedStations();
   for(auto Pair:Loops){const int32 Index=RadioStations().IndexOfByKey(Pair.Key);
-   if(Index>=Kept && Pair.Key!=RadioStation && IsValid(Pair.Value) && Pair.Value->VolumeMultiplier<=.002f){Pair.Value->Stop();Drop.Add(Pair.Key);}}
+   if(Index>=Kept && Pair.Key!=RadioStation && Pair.Key!=ZoneTrack && IsValid(Pair.Value) && Pair.Value->VolumeMultiplier<=.002f){Pair.Value->Stop();Drop.Add(Pair.Key);}}
   for(FName Name:Drop)Loops.Remove(Name);}
  for(auto Pair:Loops){const FName Name=Pair.Key;float Target=0;bool bMusic=false;
   // Base level without the bus volumes (kept in LoopBase so the options can apply a new volume while paused).

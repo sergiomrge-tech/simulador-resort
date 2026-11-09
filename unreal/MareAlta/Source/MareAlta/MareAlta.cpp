@@ -2,6 +2,7 @@
 #include "Misc/CoreDelegates.h"
 #include "Containers/Ticker.h"
 #include "MareOptions.h"
+#include "MareLoading.h"
 
 /** Game module: once the engine is up, the DLSS / frame generation choice is applied again with the real support
  *  answer. The NVIDIA Blueprint libraries initialize in their own PostEngineInit step, so the query waits one more
@@ -11,6 +12,7 @@ class FMareAltaModule : public FDefaultGameModuleImpl
 public:
  virtual void StartupModule() override
  {
+  MareLoading::Register();
   FCoreDelegates::OnPostEngineInit.AddLambda([](){
    FTSTicker::GetCoreTicker().AddTicker(FTickerDelegate::CreateLambda([](float){FMareOptions::bEngineReady=true;FMareOptions::ApplyNvidia();return false;}));});
  }

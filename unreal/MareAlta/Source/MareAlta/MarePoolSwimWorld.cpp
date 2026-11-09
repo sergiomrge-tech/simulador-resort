@@ -232,7 +232,10 @@ void UMarePoolSwimWorld::Step(int32 I,float Dt)
   const float A=FMath::Clamp(Gone/Flight,0.f,1.f);
   const FVector From=S.JumpFrom+FVector(0,0,88),To=S.Target+FVector(0,0,SwimZ);
   S.Pos=FMath::Lerp(S.JumpFrom,S.Target,A);
-  Person->SetActorLocationAndRotation(FMath::Lerp(From,To,A)+FVector(0,0,Num(D,TEXT("jump_height"),70)*4*A*(1-A)),FRotator(0,S.Yaw,0),false,nullptr,ETeleportType::TeleportPhysics);
+  // 09/11 (B10, a swimmer 'jumping standing up' over the water): a head-first dive, the body leaning forward through
+  // the arc (pool_swim.json dive_pitch) so it reaches the water lying down, as the swim pose that follows.
+  const float Dive=float(Num(D,TEXT("dive_pitch"),78))*FMath::SmoothStep(.1f,.85f,A);
+  Person->SetActorLocationAndRotation(FMath::Lerp(From,To,A)+FVector(0,0,Num(D,TEXT("jump_height"),70)*4*A*(1-A)),FRotator(-Dive,S.Yaw,0),false,nullptr,ETeleportType::TeleportPhysics);
   if(A>=1){const FVector Splash=S.Target;UMareAudioWorld::Action(this,TEXT("swim_splash"),&Splash,.7f);StartSwim();}
   break;}
  case EState::Climb:{

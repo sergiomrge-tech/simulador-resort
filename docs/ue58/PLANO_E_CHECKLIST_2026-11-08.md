@@ -74,10 +74,14 @@ Meta: uma demo de ~2 h, estável, bonita, pronta para a Next Fest.
 - [ ] B16: pacote de 6,7 GB para uma demo (tirar o que é só do hotel, limitar texturas).
 
 ### 1.3 Apresentação
-- [ ] C6: música própria na tela inicial e fade para o jogo.
-- [ ] C7: tela de carregamento com arte e dica.
+- [x] C6 (09/11): na tela inicial toca o "Tema Maré Alta" (`music_tema`) no lugar do rádio; ao começar, baixa suavemente e a
+  música do lugar e o rádio voltam (`MareAudioWorld`, `Sim->bTitleOpen`).
+- [x] C7 (09/11): tela de carregamento do jogo empacotado (`MareLoading.cpp`, MoviePlayer): arte da tela inicial, folha de
+  caderno com uma dica sorteada do `tutorial.json` traduzida e "Carregando..."; em toda troca de mapa (abertura, Carregar,
+  Novo jogo em outro slot, voltar ao menu). Só aparece no executável.
 - [x] Músicas mais animadas no rádio: as 11 faixas CC0 (`radio_up_01..11`) estão na lista logo depois da Aloha FM (conferido 09/11).
-- [ ] B13: câmera da tela inicial raspando folhas/telhado (vale para a tela 3D de reserva).
+- [x] B13 (09/11): voo da tela inicial (`title.json`) refeito com 16 fotos do percurso: passava a 1 m dos guarda-sóis, do
+  telhado do quiosque, das copas dos coqueiros e do mastro do barco a vela; pontos 3-6 mais para o mar e acima do mastro.
 
 ### 1.4 Build para a Steam
 - [ ] Build **Shipping** Win64 e teste num PC sem a Unreal.
@@ -107,10 +111,13 @@ A ilha agora é grande e bonita, mas ainda é cenário. Propostas para dar uso a
 - [ ] C18: eventos cômicos com gesto, não só fala.
 - [ ] C19: cáusticas mais fortes no raso e raios de sol embaixo d'água.
 - [ ] C20: troco também no bar e nos negócios.
-- [ ] B8: ilhota de pedra lisa na baía → rochas reais.
-- [ ] B9: faixa turquesa no teto da cozinha à noite.
-- [ ] B10: banhista pulando "em pé" na piscina.
-- [ ] B12: manchas de mato seco no gramado da pousada.
+- [x] B8 (09/11): a ponta de pedra do píer é a laje `coast_rocks_02` do Poly Haven (46 × 50 m, 1,6 m) com a foto esticada:
+  material de rocha projetado no mundo (`rock_face`, 2,6 m) e 11 rochas `rock_face_01/02` em dois grupos (`mare_coast_rocks.point_boulders`).
+- [x] B9: conferido em 09/11 de dia e à noite: a faixa turquesa sumiu com a iluminação dos interiores de 06/11.
+- [x] B10 (09/11): o salto na piscina virou mergulho de cabeça: o corpo inclina até 78° no arco e chega à água deitado (`dive_pitch`).
+- [x] B12 (09/11): `shrub_02/04` (folhas cinza e caules vermelhos, pareciam secos) viraram `shrub_01/03`; tirados ~4.600
+  tufos enterrados sob o terreno novo da ilha ou sobre as trilhas e 76 arbustos cuja copa cobria o caminho de cimento
+  (`mare_lawn.fix_0911`).
 - [ ] B14: fim do plano do mar visto do mirante.
 - [ ] Animações da referência (Resort Simulator): mais clipes gratuitos (fila, pegar produto, pagar, deitar), gestos ao interagir.
 - [ ] Pesca com isca, briga com o peixe e livro de espécies; desafios no modo foto.
