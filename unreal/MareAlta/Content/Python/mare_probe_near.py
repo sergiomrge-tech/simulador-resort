@@ -654,3 +654,26 @@ def lights_near(arg='7300,-4300,1500'):
                             round(c.get_editor_property('attenuation_radius')), [round(l.x), round(l.y), round(l.z)],
                             [str(t) for t in a.tags][:3]])
     return json.dumps(out, ensure_ascii=False)
+
+
+def island_ground(_=''):
+    """Editor, PIE stopped: rebuild M_IslandGround_PBR from mare_materials (reloaded first: modules stay cached)."""
+    import importlib
+    import mare_materials
+    importlib.reload(mare_materials)
+    return mare_materials.build_ground(island=True).get_path_name()
+
+
+def hide_entrada(_=''):
+    """09/11 (detail survey): the two Godot 'ENTRADA' labels of the kiosk sides (y -1225, z 145) now sit on the stove
+    and the fridge fronts: the new kitchen stands where the side entrances were. Hidden in game, saved."""
+    world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_editor_world()
+    n = []
+    for a in unreal.GameplayStatics.get_all_actors_of_class(world, unreal.Actor):
+        if a.get_actor_label() == 'Letreiro · ENTRADA':
+            a.set_actor_hidden_in_game(True)
+            for c in a.get_components_by_class(unreal.TextRenderComponent):
+                c.set_visibility(False)
+            n.append(a.get_actor_label())
+    unreal.get_editor_subsystem(unreal.LevelEditorSubsystem).save_current_level()
+    return json.dumps(n, ensure_ascii=False)

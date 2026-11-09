@@ -29,6 +29,7 @@
 #include "Components/SkyLightComponent.h"
 #include "Engine/SkyLight.h"
 #include "Engine/StaticMeshActor.h"
+#include "Engine/CollisionProfile.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -191,9 +192,14 @@ void UMareVisualWorld::UpdateMoonDisc()
  if(!MoonDisc){for(TActorIterator<AStaticMeshActor> It(GetWorld());It;++It)if(It->ActorHasTag(TEXT("MareMoonDisc"))){MoonDisc=*It;break;}
   if(!MoonDisc)return;
   MoonDisc->GetStaticMeshComponent()->SetMobility(EComponentMobility::Movable);
+  // No collision at all: the dome is a sphere round the camera, and with the engine sphere's collision it swallowed
+  // every aim trace (TV, sofa, bed, people) in the packaged QA (09/11).
+  auto NoCollision=[](AStaticMeshActor* A){A->SetActorEnableCollision(false);A->GetStaticMeshComponent()->SetCollisionProfileName(UCollisionProfile::NoCollision_ProfileName);
+   A->GetStaticMeshComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);A->GetStaticMeshComponent()->SetGenerateOverlapEvents(false);};
+  NoCollision(MoonDisc);
   MoonMaterial=MoonDisc->GetStaticMeshComponent()->CreateDynamicMaterialInstance(0);
   for(TActorIterator<AStaticMeshActor> It(GetWorld());It;++It)if(It->ActorHasTag(TEXT("MareStarDome"))){StarDome=*It;break;}
-  if(StarDome){StarDome->GetStaticMeshComponent()->SetMobility(EComponentMobility::Movable);StarMaterial=StarDome->GetStaticMeshComponent()->CreateDynamicMaterialInstance(0);}}
+  if(StarDome){NoCollision(StarDome);StarDome->GetStaticMeshComponent()->SetMobility(EComponentMobility::Movable);StarMaterial=StarDome->GetStaticMeshComponent()->CreateDynamicMaterialInstance(0);}}
  auto Sim=GetWorld()->GetGameInstance()->GetSubsystem<UMareSimulation>();APlayerCameraManager* Cam=UGameplayStatics::GetPlayerCameraManager(this,0);
  if(!Sim || !Cam)return;
  const float Hour=UMareSimulation::Number(Sim->State,TEXT("minutes"))/60.f;

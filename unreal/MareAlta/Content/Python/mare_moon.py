@@ -198,7 +198,10 @@ def _place(label, tag, mesh, mat):
     comp.set_static_mesh(mesh)
     comp.set_material(0, mat)
     comp.set_cast_shadow(False)
+    comp.set_collision_profile_name('NoCollision')
     comp.set_collision_enabled(unreal.CollisionEnabled.NO_COLLISION)
+    comp.set_editor_property('generate_overlap_events', False)
+    actor.set_actor_enable_collision(False)
     comp.set_editor_property('affect_distance_field_lighting', False)
     comp.set_editor_property('affect_dynamic_indirect_lighting', False)
     return actor
