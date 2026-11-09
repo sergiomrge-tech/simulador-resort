@@ -787,3 +787,20 @@ Mar inteiro subindo (drawback negativo) mostra as bordas retas da malha da água
 Ondulações de normal muito esticadas numa face de onda viram "riscas"; manter proporção ~1:2. Para julgar uma quebra,
 congele a onda (`mare.TsunamiFreeze 1`) e force `mare.TsunamiBreakQA` de 0 a 1, fotografando de praia, lado e perfil
 (`tsu_break.py`).
+
+## UE5.8 — mar no horizonte, folhas de longe, palha e tradução (09/11)
+
+Árvore Nanite com folha de máscara precisa de `shape_preservation = PRESERVE_AREA`: com "nenhuma", a 1 km a Nanite
+simplifica os cartões de folha até sumirem e a mata vira galho seco. Malha do mar tem de chegar ao horizonte: depois da
+borda aparece o chão azul-marinho da atmosfera (a "borda reta" vista do alto); o anel distante (`gen_ocean.py`) é plano e
+as ondas zeram nos últimos 150 m do mar detalhado (material e `AMarePerson::SeaHeight` juntos). Água com espalhamento
+verde ≥ azul fica esmeralda com o sol amarelo da tarde; em ângulo rasante o espalhamento some (só o reflexo). Para julgar
+cor ao fim da tarde, fixe o relógio antes de CADA foto (1 min de jogo por segundo: em 30 s o sol já se pôs).
+`HighResShot` deixa faixas verticais nas bordas (~6% da largura) ao entardecer: é da captura, compare com `mare.Shot`.
+A simulação (`simulate_game.py`) media marcha com a pose de quem está fora da tela parada (`mare.OffscreenPose`) e acusava
+moradores "deslizando": meça como o portão, com todos animados. Textura exportada do Godot esticada (uma foto por água do
+telhado): material próprio com projeção por face (`mare_thatch.py`) e tinta por multiplicação, não por mistura (a mistura
+com cor fixa apagou os fios). Tradução: pedaços que o código cola em tempo de execução vão em `Data/i18n_pieces.json`
+(o extrator apaga chave que não está no código nem nos dados); `tools/ue58/loc_emulate.py` repete o `MareLoc` em Python e
+diz qual pedaço falta. Valor de modelo nunca contém outra frase (o resumo do dia engolia "Jogo salvo..." no `{3}`).
+Patch de C++/Python com `\n`, `\r\n` ou `\d` dentro de heredoc + `python -c` corrompe a string: grave o script com Write.

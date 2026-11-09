@@ -6,6 +6,7 @@ class AStaticMeshActor;
 class AMarePerson;
 class AMareServiceTarget;
 class APlayerController;
+class UAudioComponent;
 
 /** Playable boat tour (CHECKLIST_EXPANSOES 2.2): the player pilots the tour boat with the passengers seated aboard
  *  through the buoys of tours.json "boat_tour" to three stops, each an action (vests on every passenger, dolphins
@@ -40,6 +41,8 @@ private:
  UPROPERTY() TArray<TObjectPtr<AStaticMeshActor>> Buoys;
  UPROPERTY() TArray<TObjectPtr<AStaticMeshActor>> Dolphins;
  UPROPERTY() TObjectPtr<AMareServiceTarget> StoryTarget;
+ /** Engine loop on the boat (09/11): pitch and volume follow the throttle. */
+ UPROPERTY() TObjectPtr<UAudioComponent> EngineSound;
  TWeakObjectPtr<APlayerController> PC;
  FString TourId;
  float Heading=0,Speed=0,Throttle=0,Time=0,RoughTime=0,DolphinWatch=0,DolphinTime=0,ShallowTimer=0;

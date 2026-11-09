@@ -62,3 +62,26 @@ def import_radio_cc0(folder='D:/Assets/Audio/radio/wav'):
         unreal.EditorAssetLibrary.save_loaded_asset(wave,False)
         out[source.stem]=round(wave.get_editor_property('duration'),1)
     return out
+
+
+CRLF='\r\n'
+
+
+def import_loop(name=''):
+    """Import one looping sound from SourceArt/Audio and add/refresh its row in audio.json without rebuilding the
+    catalogue (build() rewrites it and would drop the radio rows). 09/11: boat_engine."""
+    path='/Game/Audio/'+name
+    task=unreal.AssetImportTask();task.filename=str(ROOT/'SourceArt/Audio'/(name+'.wav'));task.destination_path='/Game/Audio'
+    task.destination_name=name;task.automated=True;task.save=True;task.replace_existing=True
+    unreal.AssetToolsHelpers.get_asset_tools().import_asset_tasks([task]);wave=unreal.load_asset(path)
+    if not isinstance(wave,unreal.SoundWave):raise RuntimeError('Sound import failed: '+name)
+    wave.set_editor_property('looping',True);wave.set_editor_property('virtualization_mode',unreal.VirtualizationMode.PLAY_WHEN_SILENT)
+    unreal.EditorAssetLibrary.save_loaded_asset(wave,False)
+    data=ROOT/'Content/Data/audio.json'
+    rows=json.loads(data.read_text(encoding='utf-8-sig'))
+    row={'id':name,'path':wave.get_path_name(),'duration':wave.get_editor_property('duration'),'loop':True}
+    ids=[r['id'] for r in rows]
+    if name in ids:rows[ids.index(name)]=row
+    else:rows.append(row)
+    with open(data,'w',encoding='utf-8',newline=CRLF) as f:f.write(json.dumps(rows,indent=1))
+    return json.dumps(row)

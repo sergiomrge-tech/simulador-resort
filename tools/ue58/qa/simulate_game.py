@@ -74,9 +74,16 @@ def shot(name, spec):
 
 
 def gait():
+    # 09/11: people nobody sees hold their pose on purpose (mare.OffscreenPose); sampling them like that reported
+    # residents walking off screen as "gliding" (B4). Animate everyone while sampling, as the QA gate does.
+    for c_ in ('mare.OffscreenPose 0', 'mare.PeopleHideOffscreen 0', 'mare.PeopleDrawDistance 0'):
+        cmd(c_)
+    time.sleep(1)
     a = hud('gait')
     time.sleep(.6)
     b = hud('gait')
+    for c_ in ('mare.OffscreenPose 1', 'mare.PeopleHideOffscreen 1', 'mare.PeopleDrawDistance -1'):
+        cmd(c_)
     pa = {x[0]: x for x in a}
     moving, gliding = 0, []
     for x in b:

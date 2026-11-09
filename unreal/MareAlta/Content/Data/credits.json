@@ -103,6 +103,12 @@
           "url": "https://github.com/btahir/open-lofi",
           "license": "CC0 1.0 — Content ID não verificado",
           "status": "hold"
+        },
+        {
+          "name": "Work With Sounds — Wikimedia Commons",
+          "role_pt_BR": "Som do motor do barco (gravação de um motor Seffle de 1950, trecho em loop)",
+          "url": "https://commons.wikimedia.org/wiki/File:WWS_Seffleboatengine.ogg",
+          "license": "CC BY 4.0 — atribuição obrigatória"
         }
       ]
     },

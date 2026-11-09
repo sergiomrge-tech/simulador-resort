@@ -49,25 +49,34 @@ Meta: uma demo de ~2 h, estável, bonita, pronta para a Next Fest.
 - [ ] Desempenho, próximos: vila à noite e saguão (~64 FPS no Shipping, limite no processador do jogo ~12 ms e do render
   ~14 ms): pessoas MetaHuman (4–7 FPS) e luzes; e o mar em ladrilhos para as vistas do mar.
 - [x] Fotos aéreas dos 4 lados, de dia e no fim da tarde (08/11).
-- [ ] Árvores vistas de muito longe (~1 km, do alto ou do barco) perdem as folhas e parecem secas: corrigir a máscara
-  das folhas na distância (mip da opacidade / LOD com folhagem cheia).
-- [ ] B14: borda reta do mar distante vista do alto (fim da malha do mar detalhado).
+- [x] Árvores vistas de muito longe perdem as folhas (09/11): as 6 árvores da mata são Nanite com "preservação de forma:
+  nenhuma"; ao simplificar, a Nanite apagava as folhas. Ligado "Preserve Area" (feito para folhagem): a 1 km a copa fica cheia.
+- [x] B14: borda reta do mar vista do alto (09/11): a malha do mar acabava a 1,3–2,4 km; depois dela aparecia o chão azul
+  da atmosfera. Um anel de quadrados grandes leva o mar até 40 km (`gen_ocean.py`) e as ondas zeram nos últimos 150 m do
+  mar detalhado (material e `SeaHeight`), sem fresta na junção.
 - [ ] Conferir as frestas escuras entre as peças antigas do morro (vistas no levantamento de 05/11).
-- [ ] Som de motor de barco de verdade (gratuito, uso comercial) no lugar do motor do ônibus com tom mais grave.
+- [x] Som de motor de barco de verdade (09/11): gravação real de um motor Seffle de 1950 (Wikimedia Commons, Work With
+  Sounds, CC BY 4.0, créditos no CREDITS.md e no credits.json), 12 s em loop emendado; na chegada e no passeio pilotado
+  (tom e volume seguem o acelerador).
 - [ ] Tirar do mapa o que só servia ao ônibus (estrada/ponto), se existir.
 
 ### 1.2 Defeitos que já existiam (QA do executável)
-- [ ] `village_walkers_active`, `rain_mix`, `grass_coverage_cooked`, `grass_nonblocking_culled` (reprovam desde antes de 07/11).
-- [ ] B4: moradores Aoi e Jorge deslizando em dois momentos.
-- [ ] B6: mar verde ao pôr do sol ao longe (conferir de novo com o mar novo).
-- [ ] B7: palha do telhado do bar esticada de perto.
+- [x] `village_walkers_active`, `rain_mix`, `grass_coverage_cooked`, `grass_nonblocking_culled`: passam no executável desde 08/11 (107/107).
+- [x] B4: moradores Aoi e Jorge "deslizando" (09/11): alarme falso da simulação, que media a marcha de quem estava fora da tela
+  (pose parada de propósito, `mare.OffscreenPose`). Com todos animados, 0 deslizando; `simulate_game.py` mede como o portão.
+- [x] B6: mar verde ao pôr do sol (09/11): a água espalhava mais verde que azul e, com a luz amarela das 16h30–17h30, o mar
+  inteiro ficava esmeralda; na praia ainda havia uma faixa verde-limão no horizonte (ângulo rasante). Espalhamento mais azul,
+  um pouco mais de absorção do verde e espalhamento reduzido em ângulo rasante. A água rasa continua verde-turquesa.
+- [x] B7: palha do telhado do bar (09/11): uma única foto de palha esticada por água do telhado e cumeeira com UV radial.
+  `M_ThatchRoof` (`mare_thatch.py`) projeta a palha do Poly Haven a cada 1,2 m com os fios descendo a inclinação, tingida
+  de dourado; vale também para o guarda-sol de palha do quiosque.
 - [ ] B15: "Preparando shaders" na tela inicial (precache de PSO no pacote).
 - [ ] B16: pacote de 6,7 GB para uma demo (tirar o que é só do hotel, limitar texturas).
 
 ### 1.3 Apresentação
 - [ ] C6: música própria na tela inicial e fade para o jogo.
 - [ ] C7: tela de carregamento com arte e dica.
-- [ ] Músicas mais animadas no rádio (11 faixas CC0 já baixadas e normalizadas: conferir e ligar).
+- [x] Músicas mais animadas no rádio: as 11 faixas CC0 (`radio_up_01..11`) estão na lista logo depois da Aloha FM (conferido 09/11).
 - [ ] B13: câmera da tela inicial raspando folhas/telhado (vale para a tela 3D de reserva).
 
 ### 1.4 Build para a Steam
@@ -105,7 +114,7 @@ A ilha agora é grande e bonita, mas ainda é cenário. Propostas para dar uso a
 - [ ] B14: fim do plano do mar visto do mirante.
 - [ ] Animações da referência (Resort Simulator): mais clipes gratuitos (fila, pegar produto, pagar, deitar), gestos ao interagir.
 - [ ] Pesca com isca, briga com o peixe e livro de espécies; desafios no modo foto.
-- [ ] Rádio do quiosque com troca de faixas (fim da fila).
+- [x] Rádio do quiosque com troca de faixas: aparelho no quiosque, na casa e no hotel (`radio.json` stereos; conferido 09/11).
 
 ---
 
@@ -121,7 +130,11 @@ A ilha agora é grande e bonita, mas ainda é cenário. Propostas para dar uso a
 ## Textos e traduções (GPT, em paralelo)
 
 - [x] 08/11 (GPT fora do ar, feito pelo Claude): os 96 textos novos nos 12 idiomas; 4151/4151 em todos; glossário PASS.
-- [ ] Textos montados por partes que o tradutor não reconhece (auditoria `-culture=en -MareLocAudit` no executável, 08/11):
+- [x] (09/11) Textos montados por partes: o `MareLoc` agora separa frases e contadores "(0/4)", reconhece texto já
+  traduzido e número de pedido com nome; 12 pedaços novos (`Data/i18n_pieces.json`) nos 12 idiomas; `tools/ue58/loc_emulate.py`
+  repete o tradutor em Python para achar o pedaço que falta. Placa da piscina com "ducha" (estava "duche"). pt-PT: 28
+  frases corrigidas ("Pode paga", "Pode pode", "com você" → "consigo", "no ementa", "pra", "frigobar" → "minibar").
+- [x] (resolvido em 09/11) Textos montados por partes que o tradutor não reconhece (auditoria `-culture=en -MareLocAudit` no executável, 08/11):
   passos das missões com "
 
 ", resumo do dia ("Bom dia! Dia 1 encerrado · vendas..."), "Próximo desbloqueio: ...",

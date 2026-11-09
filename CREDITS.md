@@ -737,3 +737,10 @@ Galhos, cascas, troncos, tocos e raízes espalhados pela mata (`mare_forest_floo
 - Root Cluster 01 (`root_cluster_01`) — Jenelle van Heerden, Rico Cilliers — https://polyhaven.com/a/root_cluster_01 — CC0 1.0
 - Root Cluster 02 (`root_cluster_02`) — Jenelle van Heerden — https://polyhaven.com/a/root_cluster_02 — CC0 1.0
 - Leaves Forest Ground (`leaves_forest_ground`) — Dario Barresi, Dimitrios Savva — https://polyhaven.com/a/leaves_forest_ground — CC0 1.0
+
+## Som do motor do barco — Wikimedia Commons (CC BY 4.0), 09/11/2026
+
+- WWS Seffleboatengine (motor de cabeça quente Seffle de 1950, gravado num passeio de barco em Jäders bruk) — Work With
+  Sounds — https://commons.wikimedia.org/wiki/File:WWS_Seffleboatengine.ogg — CC BY 4.0. Trecho de 12 s (284,5 s em
+  diante) recortado em 97 batidas do motor, emendado em loop e com o volume igualado (`SourceArt/Audio/boat_engine.wav`,
+  feito por um script numpy). Usado no barco da chegada e no passeio de barco pilotado.

@@ -145,8 +145,8 @@ void AMareIntro::AdvanceArrival(float Dt)
  ArrivalTime+=Dt;
  auto Audio=GetWorld()->GetSubsystem<UMareAudioWorld>();
  // No outboard recording yet: the bus diesel, lower and softer, reads as the boat's engine.
- if(ArrivalTime>.25f && !BoatSound){const FVector Position=Boat->GetActorLocation();BoatSound=Audio->PlayCue(TEXT("bus_engine"),.16f,&Position);if(BoatSound)BoatSound->SetPitchMultiplier(.72f);}
- if(BoatSound){BoatSound->SetWorldLocation(Boat->GetActorLocation());if(ArrivalTime>SailSeconds)BoatSound->SetVolumeMultiplier(FMath::Max(.06f,.16f*(1.f-(ArrivalTime-SailSeconds)/2.f)));}
+ if(ArrivalTime>.25f && !BoatSound){const FVector Position=Boat->GetActorLocation();BoatSound=Audio->PlayCue(TEXT("boat_engine"),.2f,&Position);}   // 09/11: a real boat engine (was the bus engine pitched down)
+ if(BoatSound){BoatSound->SetWorldLocation(Boat->GetActorLocation());if(ArrivalTime>SailSeconds)BoatSound->SetVolumeMultiplier(FMath::Max(.06f,.2f*(1.f-(ArrivalTime-SailSeconds)/2.f)));}
  const float T=FMath::Clamp(ArrivalTime/SailSeconds,0.f,1.f);SailTo(1-FMath::Square(1-T));
  Docked=FMath::Clamp((ArrivalTime-SailSeconds)/1.f,0.f,1.f);
  if(ArrivalTime<SailSeconds+1.f){

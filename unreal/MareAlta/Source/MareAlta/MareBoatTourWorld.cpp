@@ -19,6 +19,7 @@
 #include "InputCoreTypes.h"
 #include "Kismet/KismetMaterialLibrary.h"
 #include "Materials/MaterialParameterCollection.h"
+#include "Components/AudioComponent.h"
 
 namespace
 {
@@ -66,6 +67,7 @@ void UMareBoatTourWorld::Deinitialize()
  auto Kill=[](auto& List){for(auto& A:List)if(IsValid(A))A->Destroy();List.Empty();};
  Kill(Passengers);Kill(VestTargets);Kill(Vests);Kill(Buoys);Kill(Dolphins);
  if(IsValid(StoryTarget))StoryTarget->Destroy();if(IsValid(Boat))Boat->Destroy();Boat=nullptr;
+ if(IsValid(EngineSound))EngineSound->Stop();EngineSound=nullptr;
  Super::Deinitialize();
 }
 
@@ -219,6 +221,9 @@ void UMareBoatTourWorld::UpdateBoat(float Dt)
    Say(Sick,UMareSimulation::String(UMareSimulation::Object(D,TEXT("lines")),TEXT("seasick")),6);++Sick;
    if(S)S->LastMessage=TEXT("Um turista ficou enjoado: devagar com o acelerador!");}}
  else RoughTime=FMath::Max(0.f,RoughTime-Dt*.5f);
+ // 09/11: the boat's own engine (boat_engine, a real hot-bulb boat engine recording, CC BY 4.0); the tour was silent.
+ if(!IsValid(EngineSound))if(auto Audio=GetWorld()->GetSubsystem<UMareAudioWorld>())EngineSound=Audio->PlayCue(TEXT("boat_engine"),.22f,&At);
+ if(IsValid(EngineSound)){EngineSound->SetWorldLocation(At);EngineSound->SetPitchMultiplier(.82f+.42f*SpeedFrac);EngineSound->SetVolumeMultiplier(.13f+.14f*SpeedFrac);}
  // Buoys bob on the swell and are nudged aside by the hull (never inside the boat).
  const FVector Mid=At+F*UMareSimulation::Number(D,TEXT("centre"),430);
  for(int32 I=0;I<Buoys.Num();++I)if(IsValid(Buoys[I])){FVector B=Buoys[I]->GetActorLocation();
@@ -283,6 +288,7 @@ void UMareBoatTourWorld::Finish()
  Kill(Passengers);Kill(VestTargets);Kill(Vests);Kill(Buoys);Kill(Dolphins);
  if(IsValid(StoryTarget))StoryTarget->Destroy();StoryTarget=nullptr;
  if(IsValid(Boat))Boat->Destroy();Boat=nullptr;Says.Reset();
+ if(IsValid(EngineSound))EngineSound->Stop();EngineSound=nullptr;
  if(auto MPC=LoadObject<UMaterialParameterCollection>(nullptr,TEXT("/Game/World/Materials/MPC_MareTime.MPC_MareTime")))UKismetMaterialLibrary::SetScalarParameterValue(this,MPC,TEXT("BoatOn"),0);
  UMareAudioWorld::Action(this,TEXT("money_coins"));
 }

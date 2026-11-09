@@ -116,6 +116,10 @@ def scan_data():
                 # Contrato: somente os textos visíveis. Condições/ids/enums nunca viram traduções.
                 doc = {'achievements': [{'name': a['name'], 'description': a['description']} for a in doc['achievements']],
                        'rich_presence': [p['text'] for p in doc['rich_presence']]}
+            if name == 'i18n_pieces.json':
+                # 09/11: pieces the code glues together at runtime (MareLoc splits them back), kept whatever shown() says
+                strings.update(doc.get('pieces', []))
+                continue
             if name == 'world.json':   # only the painted texts and the residents' names are shown
                 doc = {'texts': doc.get('texts', []), 'residents': doc.get('residents', [])}
             walk(doc)

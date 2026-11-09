@@ -1,0 +1,17 @@
+{
+ "_doc": "Pieces of text the C++ glues together at runtime (MareLoc splits composed texts at sentences, line breaks and the HUD separators, and translates each piece). tools/ue58/i18n_extract.py always keeps these keys; the executable audit (-MareLocAudit, MARE_LOC_MISSING) and tools/ue58/loc_emulate.py find new ones. 09/11.",
+ "pieces": [
+  "{0}h às {1}h",
+  "Dormir e encerrar o dia",
+  "Fama {0}",
+  "Food truck do Pastel",
+  "Jogo salvo no slot {0}.",
+  "Left Shift",
+  "Left Ctrl",
+  "Right Shift",
+  "Right Ctrl",
+  "passo {0}/{1}",
+  "faltam R$ {0}",
+  "ducha antes de entrar"
+ ]
+}

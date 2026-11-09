@@ -34,6 +34,9 @@ namespace MareLocData
   FCaseMap Cache;     // resolved results (formatted strings repeat every frame)
   TSet<FString,FCaseSetFuncs> Logged;
   TSet<FString,FCaseSetFuncs> Translated; // translation values: a text already translated passes through unchanged
+  // 09/11: translation values with placeholders ("Resting on the sofa · {0} or move to get up"): a LOCTEXT formatted
+  // in English and passed through Tr again is already translated (the audit listed it as missing).
+  TArray<FTemplate> TranslatedTemplates;
  };
  FTable& Table(){static FTable T;return T;}
  TSet<FString> Registered;          // polyglot keys already registered (all languages loaded once)
@@ -108,7 +111,11 @@ namespace MareLocData
    if(I==T.Parts.Num()-1){if(Part.IsEmpty())Next=Text.Len();else{if(!Text.EndsWith(Part,ESearchCase::CaseSensitive))return false;Next=Text.Len()-Part.Len();}}
    else{if(Part.IsEmpty())return false;Next=Text.Find(Part,ESearchCase::CaseSensitive,ESearchDir::FromStart,Pos);}
    if(Next==INDEX_NONE || Next<Pos)return false;
-   Values.Add(Text.Mid(Pos,Next-Pos));Pos=Next+Part.Len();}
+   const FString Value=Text.Mid(Pos,Next-Pos);
+   // 09/11: a value is a number or a name, never more sentences (the day summary with "Jogo salvo no slot 1. O
+   // quiosque..." after it was matched by the summary template, the rest left in Portuguese inside {3}).
+   if(Value.Contains(TEXT(". ")) || Value.Contains(TEXT("! ")) || Value.Contains(TEXT("? ")) || Value.Contains(TEXT("\n")))return false;
+   Values.Add(Value);Pos=Next+Part.Len();}
   return Pos==Text.Len();
  }
  void RegisterLocText()
@@ -168,6 +175,11 @@ void MareLoc::Reload()
  for(const auto& Pair:ReadSection(T.Language,TEXT("strings"))){const FString& Key=Pair.Key;const FString& Value=Pair.Value;if(Value.IsEmpty())continue;
   FTemplate Tpl;if(SplitTemplate(Key,Tpl.Parts)){Tpl.Key=Key;Tpl.Translation=Value;T.Templates.Add(MoveTemp(Tpl));}else T.Exact.Add(Key,Value);}
  for(const auto& Pair:T.Exact)T.Translated.Add(Pair.Value);
+ {auto AddTranslated=[&T](const FString& Value){FTemplate Tpl;int32 Literal=0;if(!SplitTemplate(Value,Tpl.Parts))return;for(const FString& P:Tpl.Parts)Literal+=P.Len();
+   if(Literal>=6){Tpl.Key=Value;T.TranslatedTemplates.Add(MoveTemp(Tpl));}};
+  for(const auto& Pair:ReadSection(T.Language,TEXT("strings")))if(!Pair.Value.IsEmpty())AddTranslated(Pair.Value);
+  const TSharedPtr<FJsonObject>* LocValues=nullptr;if(Json->TryGetObjectField(TEXT("loctext"),LocValues))
+   for(const auto& Pair:(*LocValues)->Values){FString Value;if(Pair.Value->TryGetString(Value))AddTranslated(Value);}}
  auto Literal=[](const FTemplate& X){int32 N=0;for(const FString& P:X.Parts)N+=P.Len();return N;};
  T.Templates.Sort([&](const FTemplate& A,const FTemplate& B){return Literal(A)>Literal(B);});
  UE_LOG(LogTemp,Display,TEXT("MARE_LOC %s exact=%d templates=%d"),*T.Language,T.Exact.Num(),T.Templates.Num());
@@ -178,6 +190,9 @@ namespace MareLocData
  /** Numbers, prices, keys and symbols ("0/12", "R$ 14", "Esc", "80%") have nothing to translate. */
  bool NothingToTranslate(const FString& Text)
  {
+  // 09/11: an order number and a first name ("#1 Thiago") are shown as they are.
+  if(Text.StartsWith(TEXT("#"))){int32 I=1;while(I<Text.Len() && FChar::IsDigit(Text[I]))++I;
+   if(I>1 && I<Text.Len() && Text[I]==TEXT(' ') && !Text.Mid(I+1).Contains(TEXT(" ")))return true;}
   int32 Run=0,Longest=0;
   for(TCHAR C:Text.Replace(TEXT("R$"),TEXT(""))){if(FChar::IsAlpha(C))Longest=FMath::Max(Longest,++Run);else Run=0;}
   return Longest<2 || Text.Len()<=3;
@@ -194,11 +209,25 @@ namespace MareLocData
    // A value can itself be translatable (a dish or place name inside a sentence).
    for(int32 I=0;I<Values.Num();++I){const FString* Inner=T.Exact.Find(Values[I]);Result.ReplaceInline(*FString::Printf(TEXT("{%d}"),I),Inner?**Inner:*Values[I],ESearchCase::CaseSensitive);}
    return Result;}
+  // Already translated (a formatted English LOCTEXT passed through Tr again).
+  for(const FTemplate& Tpl:T.TranslatedTemplates)if(MatchTemplate(Tpl,Portuguese,Values))return Portuguese;
+  // 09/11: a counter at the end of a mission step ("Levar 4 peixes para o almoço dos pescadores (0/4)").
+  if(Portuguese.EndsWith(TEXT(")"))){const int32 Open=Portuguese.Find(TEXT(" ("),ESearchCase::CaseSensitive,ESearchDir::FromEnd);
+   if(Open>0){const FString Inner=Portuguese.Mid(Open+2,Portuguese.Len()-Open-3);FString A,B;
+    if(Inner.Split(TEXT("/"),&A,&B) && A.IsNumeric() && B.IsNumeric())return Translate(T,Portuguese.Left(Open),bFound)+Portuguese.Mid(Open);}}
   // Composed texts ("Uma nova maré — 0/1", "Coco gelado<br>12 prontos", "Fama: Desconhecido", "| Quiosque", menus with
   // several lines): split at the first separator the HUD uses and translate each side; a piece may be listed together
   // with its separator ("Fama: ").
   static const TCHAR* Seps[]={TEXT("\n"),TEXT("<br>"),TEXT(" — "),TEXT(" · "),TEXT("   "),TEXT(": "),TEXT("| ")};
-  for(const TCHAR* Sep:Seps){const int32 At=Portuguese.Find(Sep,ESearchCase::CaseSensitive);if(At==INDEX_NONE)continue;
+  for(int32 S=0;S<UE_ARRAY_COUNT(Seps);++S){const TCHAR* Sep=Seps[S];
+   // 09/11: after the line breaks, several sentences ("Bom dia! Dia 1 encerrado ... Jogo salvo no slot 1. O quiosque
+   // está fechado; ..."): each sentence on its own, before the HUD separators (the summary's own " · " would split it
+   // in the wrong place).
+   if(S==2)for(int32 I=3;I+2<Portuguese.Len();++I){const TCHAR C=Portuguese[I];
+    if((C==TEXT('.') || C==TEXT('!') || C==TEXT('?')) && Portuguese[I+1]==TEXT(' ') && FChar::IsUpper(Portuguese[I+2])){
+     bool bLeft=true,bRight=true;const FString Joined=Translate(T,Portuguese.Left(I+1),bLeft)+TEXT(" ")+Translate(T,Portuguese.Mid(I+2),bRight);
+     bFound=bLeft && bRight;return Joined;}}
+   const int32 At=Portuguese.Find(Sep,ESearchCase::CaseSensitive);if(At==INDEX_NONE)continue;
    const FString Left=Portuguese.Left(At),Right=Portuguese.Mid(At+FCString::Strlen(Sep));
    bool bLeft=true,bRight=true;
    const FString* WithSep=T.Exact.Find(Left+Sep);
