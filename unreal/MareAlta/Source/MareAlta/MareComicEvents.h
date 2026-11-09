@@ -38,6 +38,8 @@ private:
  TSharedPtr<FJsonObject> Defs;
  FRandomStream Rng;
  float Clock=0,Waited=0;
+ /** Seconds to the caller's next gesture while waiting for the player (C18). */
+ float GestureClock=0;int32 Gestures=0;
  FString Active,LastResolved,Line,SpeakerName;
  TArray<FString> Replies,Reactions;
  FString SavedName;

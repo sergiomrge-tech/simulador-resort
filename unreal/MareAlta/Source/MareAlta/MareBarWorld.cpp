@@ -220,7 +220,7 @@ void UMareBarWorld::Tick(float DeltaSeconds)
  for(auto It=Leaving.CreateIterator();It;++It)if(!IsValid(It->Key) || Now>It->Value){if(IsValid(It->Key))It->Key->Destroy();It.RemoveCurrent();}
  // Bartender behind the counter while one is hired and the bar is open.
  const bool bBarman=bOwned && S->HasStaff(TEXT("bartender")) && S->IsBarOpen();
- if(bBarman && !Barman){double Yaw=0;const FVector At=Point(Defs,TEXT("barman"),&Yaw);
+ if(bBarman && !Barman){double Yaw=0;const FVector At=Point(Defs,TEXT("barman"),&Yaw);BarmanYaw=float(Yaw);
   FActorSpawnParameters Params;Params.SpawnCollisionHandlingOverride=ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
   Barman=GetWorld()->SpawnActor<AMarePerson>(At+FVector(0,0,88),FRotator(0,Yaw,0),Params);
   if(Barman){Barman->SaveId=TEXT("bar_bartender");Barman->PersonName=TEXT("Bartender");Barman->bEmployee=true;Barman->StaffRole=TEXT("bartender");Barman->bAmbient=true;
@@ -235,7 +235,12 @@ void UMareBarWorld::Tick(float DeltaSeconds)
  for(auto It=Untraced.CreateIterator();It;++It){AMarePerson* Person=Guests.FindRef(*It);const int32 Stool=StoolOf(*It);FVector Top;float Yaw=0;
   if(!IsValid(Person) || Stool==INDEX_NONE){It.RemoveCurrent();continue;}
   if(StoolTop(Stool,Top,Yaw,Person)){Person->SitOn(Top,Yaw);It.RemoveCurrent();}}
- if(IsValid(Barman) && BarmanGestureUntil>0 && Now>BarmanGestureUntil){BarmanGestureUntil=0;Barman->PlayPose(TEXT("Idle"));}
+ if(IsValid(Barman) && BarmanGestureUntil>0 && Now>BarmanGestureUntil){BarmanGestureUntil=0;Barman->PlayPose(TEXT("Idle"));BarmanTidyAt=Now+FMath::FRandRange(7.f,12.f);}
+ // 09/11 (C14, reference game): between orders the bartender is not a statue: facing his counter he tidies and wipes
+ // it (the reach-to-the-counter clip) every 7-12 s.
+ if(IsValid(Barman) && BarmanGestureUntil<=0){if(BarmanTidyAt<=0)BarmanTidyAt=Now+FMath::FRandRange(4.f,8.f);
+  else if(Now>BarmanTidyAt && Barman->Clips.Contains(TEXT("PickUp_Table"))){Barman->SetActorRotation(FRotator(0,BarmanYaw,0));
+   Barman->PlayGesture(TEXT("PickUp_Table"),2.4f);BarmanGestureUntil=Now+2.4;}}
  struct FDrinker{FString Key;AMarePerson* Person;int32 Stool;};TArray<FDrinker> Drinkers;
  for(auto It=Guests.CreateIterator();It;++It){if(Open.Contains(It->Key))continue;AMarePerson* Person=It->Value;
   if(IsValid(Person)){

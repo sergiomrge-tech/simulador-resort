@@ -2179,6 +2179,9 @@ void AMareController::UseBarGlass()
  if(S->BarGlass().IsEmpty()){S->LastMessage=TEXT("Pegue os ingredientes na bancada e coloque no copo.");return;}
  const auto Result=S->ServeGlass(S->BarServing());
  if(Result.bServed)UMareAudioWorld::Action(this,TEXT("money_coins"));
+ // 09/11 (C20): the drink is paid like a kiosk order: the change screen (tip and stars by the change; the price is
+ // already booked by ServeGlass).
+ if(Result.bServed && Result.Paid>0)OpenPayment(TEXT("Cliente do bar"),Result.Paid);
  if(Result.bDiscovered)UMareAudioWorld::Action(this,TEXT("deal_accept"));
  if(!Result.bServed && !Result.Recipe.IsEmpty())UMareAudioWorld::Action(this,TEXT("deal_decline"));
 }

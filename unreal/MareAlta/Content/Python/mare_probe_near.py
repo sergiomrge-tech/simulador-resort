@@ -276,3 +276,44 @@ def tex_groups(arg='/Game/People/MetaHumans'):
         n, mb = by.get(key, (0, 0.0))
         by[key] = (n + 1, mb + w * h * 1.33 / 1048576)   # ~1 byte/texel compressed with mips
     return json.dumps(dict(sorted(by.items(), key=lambda kv: -kv[1][1])[:25]))
+
+
+def rebuild_grounds(_=''):
+    """Rebuild the three ground materials (village, island, seabed) from mare_materials.build_ground (PIE stopped)."""
+    import importlib
+    import mare_materials
+    importlib.reload(mare_materials)
+    out = []
+    for kw in ({}, {'island': True}, {'seabed': True}):
+        m = mare_materials.build_ground(**kw)
+        out.append(m.get_path_name() if hasattr(m, 'get_path_name') else str(m))
+    return json.dumps(out)
+
+
+def cap_textures(arg=''):
+    """B16 (09/11): MetaHuman textures above 2048 (39 at 8K, ~30 at 4K: ~4 GB of the 6 GB demo package) get
+    MaxTextureSize 2048 (the cook drops the larger mips). arg 'path|limit|max_n' (dry: 'path|limit|0'). Saves each one."""
+    path, limit, max_n = (arg.split('|') + ['/Game/People/MetaHumans', '2048', '12'])[:3] if arg else ('/Game/People/MetaHumans', '2048', '12')
+    limit, max_n = int(limit), int(max_n)
+    reg = unreal.AssetRegistryHelpers.get_asset_registry()
+    flt = unreal.ARFilter(package_paths=[path], recursive_paths=True, class_paths=[unreal.TopLevelAssetPath('/Script/Engine', 'Texture2D')])
+    todo = []
+    for ad in reg.get_assets(flt):
+        try:
+            w, h = (int(v) for v in str(ad.get_tag_value('Dimensions')).split('x')[:2])
+        except Exception:
+            continue
+        if max(w, h) > limit:
+            todo.append(str(ad.package_name) + '.' + str(ad.asset_name))
+    done = []
+    for p in todo:
+        if len(done) >= max_n:
+            break
+        t = unreal.load_asset(p)
+        if t.get_editor_property('max_texture_size') == limit:
+            continue
+        t.set_editor_property('max_texture_size', limit)
+        unreal.EditorAssetLibrary.save_loaded_asset(t, False)
+        done.append(p.split('/')[-1])
+    left = sum(1 for p in todo) - len(done)
+    return json.dumps({'over_limit': len(todo), 'capped_now': done, 'dry': max_n == 0})

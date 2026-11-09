@@ -190,7 +190,7 @@ void UMareVillageWorld::UpdateSunbathers()
   // The pool is 1.32 m deep: people stand on its floor chatting with the water at the chest; at sea they tread water.
   if(Spot.Water==1){P->bConversing=true;P->GetCharacterMovement()->DisableMovement();P->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
    P->SetActorLocation(Spot.Centre+FVector(0,0,88));}
-  else if(Spot.Water==2)P->TreadWater(Spot.Centre,true);else P->LieOn(Spot.Centre,Spot.Yaw,Spot.Recline);
+  else if(Spot.Water==2)P->TreadWater(Spot.Centre,true);else P->LieOn(Spot.Centre,Spot.Yaw,Spot.Recline,I%3==1);   // 09/11 (C13): one in three face down
   Sunbathers[I]=P;}
 }
 void UMareVillageWorld::Tick(float Dt)

@@ -39,12 +39,12 @@ struct FServiceProxy : FAnimSingleNodeInstanceProxy
  float Recline=0;
  float Upright=0;   // 0..1 while the walk clip plays
  /** Face up on a towel (not a lounger): which knee is raised, 0 none, 1 right, 2 left (07/11, Sergio: "deitado todo duro"). */
- bool bTowel=false;int32 LieKnee=0;
+ bool bTowel=false,bProne=false;int32 LieKnee=0;
  virtual void PreUpdate(UAnimInstance* Instance,float DeltaSeconds) override
  {
   FAnimSingleNodeInstanceProxy::PreUpdate(Instance,DeltaSeconds);
   if(auto Owner=Cast<AMarePerson>(Instance->GetOwningActor())){Recline=Owner->bLying?Owner->Recline:0.f;
-   bTowel=Owner->bLying && Owner->Recline<=0;LieKnee=int32(FCrc::StrCrc32(*Owner->SaveId)%3u);}
+   bTowel=Owner->bLying && Owner->Recline<=0;bProne=bTowel && Owner->bProne;LieKnee=int32(FCrc::StrCrc32(*Owner->SaveId)%3u);}
   auto Single=Cast<UAnimSingleNodeInstance>(Instance);
   if(Single && Single->GetCurrentAsset()!=PreviousAsset.Get()){PreviousAsset=Single->GetCurrentAsset();BlendTime=0;bNewClip=true;}
   BlendTime+=DeltaSeconds;
@@ -76,6 +76,8 @@ struct FServiceProxy : FAnimSingleNodeInstanceProxy
     continue;}
    const float Side=Hand==0?1.f:-1.f;
    FVector Grip=Person->GetActorLocation()+Person->GetActorForwardVector()*32+Person->GetActorRightVector()*Side*18+FVector(0,0,22);
+   // 09/11 (C13): face down the hands stay folded under the chest as the pose has them (no IK into the towel).
+   if(bProne && !bHolding && !bSelfie){Strength[Hand]=FMath::FInterpTo(Strength[Hand],0.f,DeltaSeconds,4.f);continue;}
    if(bTowel && !bHolding && !bSelfie){
     // Lying on the back: the free hand rests on the belly, the elbow out to the side on the towel. The actor's X axis
     // points at the sky and its Z axis runs from the feet to the head (AMarePerson::LieOn).
@@ -131,7 +133,7 @@ struct FServiceProxy : FAnimSingleNodeInstanceProxy
     const FQuat Bend(FVector(1,0,0),FMath::DegreesToRadians(-Recline));
     auto& Local=Output.Pose[Spine];Local.SetRotation((Parent.Inverse()*Bend*Parent*Local.GetRotation()).GetNormalized());}
   }
-  if(bTowel && LieKnee>0){
+  if(bTowel && LieKnee>0 && !bProne){   // face down a knee 'to the sky' would go into the sand
    // One knee up, the sole flat on the towel: the thigh flexes toward the sky (component +Y is the face side, X the
    // body's side axis) and the shin folds back twice as much. Both bends are about the same axis, so each is expressed
    // in its parent's original frame.

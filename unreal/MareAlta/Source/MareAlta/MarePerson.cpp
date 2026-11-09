@@ -84,14 +84,15 @@ void AMarePerson::SitOn(const FVector& SeatTop,float Yaw)
  SeatAlignIn=.6f;
 }
 
-void AMarePerson::LieOn(const FVector& TowelCentre,float AxisYaw,float InRecline)
+void AMarePerson::LieOn(const FVector& TowelCentre,float AxisYaw,float InRecline,bool bInProne)
 {
- Recline=InRecline;
+ Recline=InRecline;bProne=bInProne && InRecline<=0;
  // Face up on the towel (03/11, Sergio: "deitadas de barriga para cima"): the calm standing idle laid on its back,
  // the actor's forward (the face) pointing at the sky and its up axis (feet to head) along the towel.
  LieCentre=TowelCentre;LieYaw=AxisYaw;bLying=true;LieAlignIn=.8f;
  GetCharacterMovement()->DisableMovement();GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
- SetActorLocationAndRotation(TowelCentre+FVector(0,0,12),FRotationMatrix::MakeFromXZ(FVector::UpVector,FRotator(0,AxisYaw,0).Vector()).Rotator());
+ // 09/11 (C13): face down, the face (forward) to the towel and the same feet-to-head axis.
+ SetActorLocationAndRotation(TowelCentre+FVector(0,0,12),FRotationMatrix::MakeFromXZ(bProne?FVector::DownVector:FVector::UpVector,FRotator(0,AxisYaw,0).Vector()).Rotator());
 }
 
 float AMarePerson::SeaDrawback=0.f;
@@ -180,7 +181,7 @@ void AMarePerson::UpdateLying(float DeltaSeconds)
  // The standing idles stand with one foot 37 cm behind the other, which laid down sinks a heel into the sand. The
  // first 0.17 s of the Cheer capture stands square with the hands on the chest: played slowly back and forth it is a
  // person resting on the back with the hands on the belly, breathing. Without the mocap clips, the idle.
- if(!Clips.Contains(TEXT("Cheer")))PlayPose(TEXT("Idle"));
+ if(!Clips.Contains(TEXT("Cheer")))PlayPose(TEXT("Idle"));   // face down too: the idle's staggered feet sank a leg into the sand
  else{PlayPose(TEXT("Cheer"),false);   // hands on the chest at the start; the arm IK lays them on the belly
   if(auto Instance=Cast<UMareServiceAnimInstance>(GetMesh()->GetAnimInstance())){Instance->SetPlaying(false);
    Instance->SetPosition(.03f+.025f*FMath::Sin(Elapsed*.9f+FCrc::StrCrc32(*SaveId)%7),false);}}
@@ -333,7 +334,9 @@ bool AMarePerson::SetMetaHuman(const FString& Name)
   // 07/11 (reference game: lively people): taking from a counter and driving (mare_metahuman.import_ual).
   TEXT("PickUp_Table"),TEXT("Driving"),   // i18n:skip
   // 08/11 (reference tip 9): sitting down and getting up (mare_metahuman.import_ual).
-  TEXT("Sitting_Enter"),TEXT("Sitting_Exit")};   // i18n:skip
+  TEXT("Sitting_Enter"),TEXT("Sitting_Exit"),
+  // 09/11 (C18): comic event callers gesture while they wait; (C14) the idle bartender busies himself at the counter.
+  TEXT("TalkGesture"),TEXT("Cheer")};   // i18n:skip
  if(CVarMareMocap.GetValueOnGameThread())Wanted.Append({TEXT("SitTalk"),TEXT("DanceHip"),TEXT("Cheer")});
  for(const FString& Clip:Wanted)
   if(auto Anim=LoadObject<UAnimSequence>(nullptr,*FString::Printf(TEXT("/Game/People/Animations/MH_%s.MH_%s"),*Clip,*Clip)))Clips.Add(Clip,Anim);

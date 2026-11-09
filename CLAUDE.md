@@ -812,3 +812,9 @@ defeito, esconda um grupo por vez (`pie_hide`). "Laje lisa" pode ser um modelo r
 (`coast_rocks_02` é uma plataforma de 30 x 21 m e 1,6 m): material novo não muda a forma; rochas por cima, sim. Voo de
 câmera (tela inicial): fotografe 16 pontos do percurso com a mesma interpolação do jogo (`title_path.py`); copas de
 coqueiro e mastros não têm colisão, então traços não acham o raspão. `coast pie` posiciona o PAWN (olho ~70 cm acima).
+Lote 3 (09/11): virar uma pose deitada de costas para de bruços não é só girar o ator: a postura em pé com um pé à
+frente enterrou uma perna na areia, e os ajustes feitos para quem está de costas (mãos na barriga, joelho "para o céu")
+apontam para dentro do chão. Desligue-os para quem está de bruços e confira de perto, de lado. Texturas de 8K/4K das
+MetaHumans (~4 GB do pacote): `MaxTextureSize` 2048 por textura (`mare_probe_near.cap_textures`) reduz o cozido sem
+mexer no grupo de LOD do resto do jogo. A tela de troco (`OpenPayment`) só lança gorjeta/diferença: a venda já foi
+lançada, então ela pode ser reaproveitada em outros balcões sem contar dinheiro em dobro.

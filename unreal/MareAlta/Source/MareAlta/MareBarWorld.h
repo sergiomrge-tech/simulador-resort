@@ -33,6 +33,8 @@ private:
  TMap<FString,double> DrinkUntil;
  /** The bartender's hand-over gesture ends at this time. */
  double BarmanGestureUntil=0;
+ /** C14 (09/11): the idle bartender tidies the counter now and then; his post's yaw (facing the counter). */
+ double BarmanTidyAt=0;float BarmanYaw=0;
  /** Guests seated before their stool had collision (right after buying the bar): placed again once the trace finds it. */
  TSet<FString> Untraced;
  bool StoolTop(int32 Stool,FVector& Top,float& Yaw,AActor* Ignore)const;

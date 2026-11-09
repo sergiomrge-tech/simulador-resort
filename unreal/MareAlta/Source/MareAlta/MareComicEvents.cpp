@@ -99,6 +99,9 @@ void UMareComicEvents::Tick(float DeltaSeconds)
   AMarePerson* P=Caller.Get();if(!P){Finish(false);return;}
   if(!bTalking){   // keep facing the player and calling; ignored for long enough, the caller moves on
    FVector To=Hero->GetActorLocation()-P->GetActorLocation();To.Z=0;if(!To.IsNearlyZero())P->SetActorRotation(To.Rotation());
+   // 09/11 (C18): the caller does not only talk: every few seconds a gesture (arms up, beckoning) to catch the eye.
+   GestureClock-=DeltaSeconds;if(GestureClock<=0){GestureClock=FMath::FRandRange(3.5f,6.f);
+    const TCHAR* G=(Gestures++%2)?TEXT("Cheer"):TEXT("TalkGesture");if(P->Clips.Contains(G))P->PlayGesture(G,2.2f);}
    Waited+=DeltaSeconds;if(Waited>UMareSimulation::Number(EventDef(Active),TEXT("wait_seconds"),40) || FVector::Dist2D(P->GetActorLocation(),Hero->GetActorLocation())>2500)Finish(false);}
   return;}
  Clock-=DeltaSeconds;if(Clock>0)return;Clock=UMareSimulation::Number(Defs,TEXT("check_seconds"),10);
@@ -153,7 +156,7 @@ bool UMareComicEvents::Start(const TSharedPtr<FJsonObject>& Def,bool bForced)
   Prop->SetupAttachment(P->GetMesh(),FName(*UMareSimulation::String(*PropDef,TEXT("socket"))));
   Prop->SetRelativeTransform(FTransform(FRotator(R.X,R.Y,R.Z),V3(TEXT("location")),FVector(UMareSimulation::Number(*PropDef,TEXT("scale"),1))));Prop->RegisterComponent();
   bool bSelfie=false;(*PropDef)->TryGetBoolField(TEXT("selfie"),bSelfie);if(bSelfie)P->SelfiePhone=Prop;}
- Active=Id;Caller=P;Waited=0;bTalking=false;
+ Active=Id;Caller=P;Waited=0;bTalking=false;GestureClock=.8f;Gestures=0;
  UE_LOG(LogTemp,Display,TEXT("Maré comic event %s started (%s)"),*Id,bForced?TEXT("forced"):TEXT("roll"));
  return true;
 }

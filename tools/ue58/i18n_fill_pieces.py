@@ -27,6 +27,9 @@ T = {
                       'stap {0}/{1}', 'krok {0}/{1}', 'passo {0}/{1}', 'шаг {0}/{1}', '第 {0}/{1} 步'],
     'faltam R$ {0}': ['noch R$ {0}', 'R$ {0} to go', 'faltan R$ {0}', 'encore R$ {0}', 'mancano R$ {0}', 'あと R$ {0}', 'R$ {0} 남음',
                       'nog R$ {0}', 'brakuje R$ {0}', 'faltam R$ {0}', 'осталось R$ {0}', '还差 R$ {0}'],
+    # 09/11 (C20) bar payment
+    'Cliente do bar': ['Bargast', 'Bar customer', 'Cliente del bar', 'Client du bar', 'Cliente del bar', 'バーのお客さん', '바 손님',
+                       'Bargast', 'Klient baru', 'Cliente do bar', 'Посетитель бара', '酒吧顾客'],
     # 09/11 (C7) loading screen
     'Dica': ['Tipp', 'Tip', 'Consejo', 'Astuce', 'Suggerimento', 'ヒント', '팁', 'Tip', 'Wskazówka', 'Dica', 'Совет', '提示'],
     'Carregando...': ['Lädt...', 'Loading...', 'Cargando...', 'Chargement...', 'Caricamento...', '読み込み中...', '불러오는 중...',

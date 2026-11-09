@@ -71,7 +71,8 @@ Meta: uma demo de ~2 h, estável, bonita, pronta para a Next Fest.
   `M_ThatchRoof` (`mare_thatch.py`) projeta a palha do Poly Haven a cada 1,2 m com os fios descendo a inclinação, tingida
   de dourado; vale também para o guarda-sol de palha do quiosque.
 - [ ] B15: "Preparando shaders" na tela inicial (precache de PSO no pacote).
-- [ ] B16: pacote de 6,7 GB para uma demo (tirar o que é só do hotel, limitar texturas).
+- [x] B16 (09/11): o pacote tinha 6,1 GB; as MetaHumans tinham 39 texturas de 8K e 31 de 4K (~4 GB). As 70 ganharam
+  `MaxTextureSize` 2048 (`mare_probe_near.cap_textures`): o cozimento descarta os mips maiores. Tamanho novo no pacote abaixo.
 
 ### 1.3 Apresentação
 - [x] C6 (09/11): na tela inicial toca o "Tema Maré Alta" (`music_tema`) no lugar do rádio; ao começar, baixa suavemente e a
@@ -106,11 +107,12 @@ A ilha agora é grande e bonita, mas ainda é cenário. Propostas para dar uso a
 
 ## Fase 3 — Melhorias de jogabilidade e acabamento (P2)
 
-- [ ] C13: banhistas variados (de bruços, sentados lendo).
-- [ ] C14: bartender limpando o balcão quando está ocioso.
-- [ ] C18: eventos cômicos com gesto, não só fala.
-- [ ] C19: cáusticas mais fortes no raso e raios de sol embaixo d'água.
-- [ ] C20: troco também no bar e nos negócios.
+- [x] C13 (09/11, parte): um em cada três banhistas da toalha deita de bruços (pés juntos, mãos sob o peito; sem o joelho
+  dobrado nem as mãos na barriga dos que estão de costas). Falta "sentado lendo" (pede livro na mão e pose nova).
+- [x] C14 (09/11): sem pedido, o atendente do bar se volta para o balcão e mexe no tampo a cada 7-12 s (clipe PickUp_Table).
+- [x] C18 (09/11): quem chama no evento cômico gesticula enquanto espera (TalkGesture e Cheer alternados a cada 3,5-6 s).
+- [x] C19 (09/11, parte): cáusticas do fundo raso mais nítidas e com o dobro do brilho (`build_ground`). Faltam os raios de sol embaixo d'água.
+- [x] C20 (09/11, parte): drink entregue pelo jogador no bar abre a tela de troco (gorjeta e estrelas pelo troco). Faltam os negócios.
 - [x] B8 (09/11): a ponta de pedra do píer é a laje `coast_rocks_02` do Poly Haven (46 × 50 m, 1,6 m) com a foto esticada:
   material de rocha projetado no mundo (`rock_face`, 2,6 m) e 11 rochas `rock_face_01/02` em dois grupos (`mare_coast_rocks.point_boulders`).
 - [x] B9: conferido em 09/11 de dia e à noite: a faixa turquesa sumiu com a iluminação dos interiores de 06/11.
