@@ -566,7 +566,8 @@ def summit_view(arg=''):
 
 def hide_red_beam(_=''):
     """09/11 (photo tour): a terracotta 3.7 m piece of the Godot export (World_1141, '@MeshInstance3D@2942') hung at the
-    ceiling of the hero's living room and read as a red bar across the back wall. Hidden in game, no collision."""
+    ceiling of the hero's living room and read as a red bar across the back wall. Hidden in game, no collision.
+    SUPERSEDED (09/11 16:30): it is the bathroom annex roof; do not run this, see annex_roof."""
     world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_editor_world()
     n = []
     for a in unreal.GameplayStatics.get_all_actors_of_class(world, unreal.Actor):
@@ -578,3 +579,78 @@ def hide_red_beam(_=''):
             n.append(a.get_actor_label())
     unreal.get_editor_subsystem(unreal.LevelEditorSubsystem).save_current_level()
     return json.dumps(n, ensure_ascii=False)
+
+
+def find_labels(arg='bangal,hero'):
+    """Editor: level actors whose label contains any of the comma-separated words, with their location (tour poses)."""
+    import unreal
+    keys = [k.strip().lower() for k in arg.split(',') if k.strip()]
+    out = []
+    for a in unreal.get_editor_subsystem(unreal.EditorActorSubsystem).get_all_level_actors():
+        label = a.get_actor_label()
+        if any(k in label.lower() for k in keys):
+            p = a.get_actor_location()
+            out.append('%s %d %d %d' % (label, p.x, p.y, p.z))
+    return '\n'.join(out[:80]) + '\n#%d' % len(out)
+
+
+def ground(arg=''):
+    """Editor: at points 'x,y;...' the highest hit from 30 km down (terrain, hills, roofs): label and z (tour poses)."""
+    world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_editor_world()
+    out = []
+    for spec in arg.split(';'):
+        x, y = (float(v) for v in spec.split(','))
+        hit = unreal.SystemLibrary.line_trace_single(world, unreal.Vector(x, y, 30000), unreal.Vector(x, y, -3000),
+                                                     unreal.TraceTypeQuery.TRACE_TYPE_QUERY1, True, [], unreal.DrawDebugTrace.NONE, True)
+        t = hit.to_tuple() if hit else None
+        out.append([x, y, round(t[4].z) if t else None, (t[9].get_actor_label()[:30] if t and t[9] else None)])
+    return json.dumps(out, ensure_ascii=False)
+
+
+def annex_roof(arg='info'):
+    """09/11 16:30: the hero house's bathroom annex roof (World_1141, '@MeshInstance3D@2942') was hidden in the morning as
+    a 'red bar' in the living room: it is the annex roof, 3.7 m long, poking ~27 cm through the house's south wall
+    (y ~1748) under the living room ceiling. arg 'info' reports it; 'fix:<dy>:<sx>' shows it again at y 1590+dy with its length along y scaled by sx (fix:-14:0.925 keeps
+    the south eave and ends the north edge at the wall)."""
+    world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_editor_world()
+    out = []
+    for a in unreal.GameplayStatics.get_all_actors_of_class(world, unreal.Actor):
+        if a.get_actor_label() != 'Maré · @MeshInstance3D@2942':
+            continue
+        for c in a.get_components_by_class(unreal.StaticMeshComponent):
+            o, e, _ = unreal.SystemLibrary.get_component_bounds(c)
+            row = {'comp': c.get_name(), 'mesh': c.static_mesh.get_name() if c.static_mesh else None, 'visible': c.is_visible(),
+                   'center': [round(o.x), round(o.y), round(o.z)], 'extent': [round(e.x), round(e.y), round(e.z)],
+                   'mesh_box': str(c.static_mesh.get_bounding_box()) if c.static_mesh else None}
+            if isinstance(c, unreal.InstancedStaticMeshComponent):
+                t = c.get_instance_transform(0, True)
+                row['inst'] = [round(t.translation.x), round(t.translation.y), round(t.translation.z), str(t.rotation.rotator()), str(t.scale3d)]
+                if arg.startswith('fix:'):
+                    dy, sx = (float(v) for v in arg[4:].split(':'))
+                    t.translation = unreal.Vector(4775, 1590 + dy, t.translation.z)
+                    t.scale3d = unreal.Vector(sx, 1, 1)   # local X runs along world Y (yaw -90)
+                    c.update_instance_transform(0, t, True, True, True)
+            if arg.startswith('fix:'):
+                c.set_visibility(True)
+                c.set_hidden_in_game(False)
+                c.set_collision_enabled(unreal.CollisionEnabled.QUERY_AND_PHYSICS)
+            out.append(row)
+    if arg.startswith('fix:'):
+        unreal.get_editor_subsystem(unreal.LevelEditorSubsystem).save_current_level()
+    return json.dumps(out, ensure_ascii=False)
+
+
+def lights_near(arg='7300,-4300,1500'):
+    """Editor: light components within r of x,y: owner label, class, color, intensity, radius, location."""
+    x, y, r = (float(v) for v in arg.split(','))
+    world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_editor_world()
+    out = []
+    for a in unreal.GameplayStatics.get_all_actors_of_class(world, unreal.Actor):
+        for c in a.get_components_by_class(unreal.LocalLightComponent):
+            l = c.get_world_location()
+            if (l.x - x) ** 2 + (l.y - y) ** 2 < r * r:
+                col = c.get_editor_property('light_color')
+                out.append([a.get_actor_label()[:36], c.get_class().get_name(), [col.r, col.g, col.b], round(c.intensity, 1),
+                            round(c.get_editor_property('attenuation_radius')), [round(l.x), round(l.y), round(l.z)],
+                            [str(t) for t in a.tags][:3]])
+    return json.dumps(out, ensure_ascii=False)

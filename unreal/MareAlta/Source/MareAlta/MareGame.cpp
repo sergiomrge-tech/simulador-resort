@@ -1119,6 +1119,7 @@ void MareUnderwaterGrade(float EyeZ,FLinearColor& Tint,float& Gain)
  const FLinearColor Hue=FMath::Lerp(FMath::Lerp(Surface,FLinearColor(.16f,.3f,.48f),Blue),FLinearColor(.006f,.014f,.03f),Black);
  Gain=FMath::Max(Hue.GetLuminance(),1e-4f)/Surface.GetLuminance();Tint=Hue*(1.f/Gain);
 }
+float MareUnderwaterMaxEV(float EyeZ){return 10.f+5.f*(1.f-FMath::SmoothStep(300.f,2500.f,-EyeZ));}
 void AMareCharacter::SwimVertical(float Value){VerticalSwimInput=FMath::Clamp(Value,-1.f,1.f);}
 void AMareCharacter::Tick(float DeltaSeconds)
 {
@@ -1137,7 +1138,12 @@ void AMareCharacter::Tick(float DeltaSeconds)
  // 05/11 (Sergio: "conforme vai afundando vai ficando escuro, como no oceano de verdade, sem luz"): the sunlight dies
  // with depth: green-blue near the surface, deep blue by ~25 m, almost black on the -100 m floor.
  {FLinearColor Tint;float Gain=1.f;MareUnderwaterGrade(float(Eyes->GetComponentLocation().Z),Tint,Gain);
-  Eyes->PostProcessSettings.SceneColorTint=Tint;Eyes->PostProcessSettings.bOverride_ColorGain=true;Eyes->PostProcessSettings.ColorGain=FVector4(1,1,1,Gain);}
+  Eyes->PostProcessSettings.SceneColorTint=Tint;Eyes->PostProcessSettings.bOverride_ColorGain=true;Eyes->PostProcessSettings.ColorGain=FVector4(1,1,1,Gain);
+  // 09/11 (photo tour, 3 m down on the sand bank at noon: the sand pure white): VisualizeHDR read a scene average of
+  // EV100 15.5 against the under-water cap of 10, 5.5 stops over. The cap keeps the deep dark; in the shallows (where
+  // the sun still reaches) it rises with the light, up to 15 near the surface.
+  const float EyeZ=float(Eyes->GetComponentLocation().Z);
+  Eyes->PostProcessSettings.AutoExposureMaxBrightness=MareUnderwaterMaxEV(EyeZ);Eyes->PostProcessSettings.AutoExposureMinBrightness=4.f;}   // (the floor stays 4: at night the shallows went black with 9)
  if(Movement->IsMovingOnGround() && !bSwimming && GetActorLocation().Z>-100)SafeLandLocation=GetActorLocation();
  // The sand planes offshore have no collision: the swimmer stops on the sea floor profile (reef.json floor_fill).
  if(bSwimming && MareIsland::ShoreDistance(GetActorLocation().X,GetActorLocation().Y)>2500.f){const float Floor=UMareReefWorld::SeabedZ(GetActorLocation().X,GetActorLocation().Y,nullptr)+GetCapsuleComponent()->GetScaledCapsuleHalfHeight()+15.f;

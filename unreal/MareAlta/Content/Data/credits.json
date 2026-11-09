@@ -79,6 +79,12 @@
           "role_pt_BR": "Modelos, figurinos e objetos integrados",
           "url": "https://www.fab.com/eula",
           "license": "Fab Standard License / licença individual, verificar a fonte"
+        },
+        {
+          "name": "NASA Scientific Visualization Studio — CGI Moon Kit",
+          "role_pt_BR": "Mapa de cores da superfície da Lua (mosaico LRO/LROC) na lua cheia do céu noturno",
+          "url": "https://svs.gsfc.nasa.gov/4720/",
+          "license": "Domínio público (NASA)"
         }
       ]
     },

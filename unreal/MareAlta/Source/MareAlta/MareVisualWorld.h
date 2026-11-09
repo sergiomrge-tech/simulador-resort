@@ -28,6 +28,13 @@ private:
  UPROPERTY() TArray<TObjectPtr<APostProcessVolume>> Interiors;
  UPROPERTY() TObjectPtr<ALight> Sun;
  UPROPERTY() TObjectPtr<ALight> Moon;
+ /** 09/11 full moon: the disc in the sky (level actor tagged MareMoonDisc, mare_moon.py) and its material. */
+ UPROPERTY() TObjectPtr<class AStaticMeshActor> MoonDisc;
+ UPROPERTY() TObjectPtr<class UMaterialInstanceDynamic> MoonMaterial;
+ /** 09/11 night sky dome (stars, Milky Way, aurora; tag MareStarDome) and its material. */
+ UPROPERTY() TObjectPtr<class AStaticMeshActor> StarDome;
+ UPROPERTY() TObjectPtr<class UMaterialInstanceDynamic> StarMaterial;
+ void UpdateMoonDisc();
  UPROPERTY() TObjectPtr<AExponentialHeightFog> Fog;
  UPROPERTY() TArray<TObjectPtr<ALight>> Practical;
  UPROPERTY() TArray<TObjectPtr<ATextRenderActor>> Signs;

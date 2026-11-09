@@ -744,3 +744,9 @@ Galhos, cascas, troncos, tocos e raízes espalhados pela mata (`mare_forest_floo
   Sounds — https://commons.wikimedia.org/wiki/File:WWS_Seffleboatengine.ogg — CC BY 4.0. Trecho de 12 s (284,5 s em
   diante) recortado em 97 batidas do motor, emendado em loop e com o volume igualado (`SourceArt/Audio/boat_engine.wav`,
   feito por um script numpy). Usado no barco da chegada e no passeio de barco pilotado.
+
+## Lua cheia do céu noturno — NASA (domínio público), 09/11/2026
+
+- CGI Moon Kit, mapa de cores `lroc_color_2k.jpg` (mosaico da Lunar Reconnaissance Orbiter, LROC) — NASA's Scientific
+  Visualization Studio — https://svs.gsfc.nasa.gov/4720/ — domínio público. Em `SourceArt/Sky/T_MoonColor.jpg`; o disco da
+  lua (`mare_moon.py`) lê o mapa como a face visível de uma esfera. Estrelas, Via Láctea e aurora são procedurais.

@@ -11,6 +11,8 @@ class UCameraComponent;
 /** Under-water colour by eye height: Tint = hue at the surface luminance (SceneColorTint feeds the pre-exposure), Gain = darkness
  *  for ColorGain.W (grading LUT, after the exposure). */
 void MareUnderwaterGrade(float EyeZ,FLinearColor& Tint,float& Gain);
+/** Under-water eye cap (EV100): 15 in the sunlit shallows, 10 from ~25 m down (09/11). */
+float MareUnderwaterMaxEV(float EyeZ);
 
 UCLASS()
 class MAREALTA_API AMareCharacter : public ACharacter

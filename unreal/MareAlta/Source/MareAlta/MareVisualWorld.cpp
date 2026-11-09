@@ -1,5 +1,6 @@
 #include "MareVisualWorld.h"
 #include "Components/RectLightComponent.h"
+#include "Components/DirectionalLightComponent.h"
 #include "Components/SpotLightComponent.h"
 #include "Engine/PointLight.h"
 #include "Engine/StaticMesh.h"
@@ -177,6 +178,41 @@ void UMareVisualWorld::RefreshExpansions()
   RegionVisibility.Add(Region.Key,bVisible);
  }
 }
+static TAutoConsoleVariable<float> CVarMareMoonLux(TEXT("mare.MoonLux"),1.1f,TEXT("Full moon light at night (lux)."));   // i18n:skip
+static TAutoConsoleVariable<float> CVarMareStars(TEXT("mare.Stars"),1.f,TEXT("Brightness of the night sky (stars, Milky Way, aurora)."));   // i18n:skip
+static TAutoConsoleVariable<float> CVarMareAurora(TEXT("mare.Aurora"),1.f,TEXT("Aurora strength in the night sky (0 = none)."));   // i18n:skip
+static TAutoConsoleVariable<float> CVarMareMoonGlow(TEXT("mare.MoonGlow"),1.f,TEXT("Brightness of the moon disc in the sky."));   // i18n:skip
+/** The full moon's light direction at a game hour: opposite the sun (same arc, half a day apart). */
+static FRotator MareMoonRotation(float Hour){const float Solar=FMath::Sin((Hour-6.f)/12.f*PI);return FRotator(Solar*58.f,-65.f+(Hour-12.f)*12.f+180.f,0);}
+void UMareVisualWorld::UpdateMoonDisc()
+{
+ // Every frame, so the disc stays put in the sky while the camera moves: far along the moon's direction (30 km, beyond
+ // the island and the sea, inside the infinite far plane), facing the camera, ~2 degrees wide (3.5 with the halo).
+ if(!MoonDisc){for(TActorIterator<AStaticMeshActor> It(GetWorld());It;++It)if(It->ActorHasTag(TEXT("MareMoonDisc"))){MoonDisc=*It;break;}
+  if(!MoonDisc)return;
+  MoonDisc->GetStaticMeshComponent()->SetMobility(EComponentMobility::Movable);
+  MoonMaterial=MoonDisc->GetStaticMeshComponent()->CreateDynamicMaterialInstance(0);
+  for(TActorIterator<AStaticMeshActor> It(GetWorld());It;++It)if(It->ActorHasTag(TEXT("MareStarDome"))){StarDome=*It;break;}
+  if(StarDome){StarDome->GetStaticMeshComponent()->SetMobility(EComponentMobility::Movable);StarMaterial=StarDome->GetStaticMeshComponent()->CreateDynamicMaterialInstance(0);}}
+ auto Sim=GetWorld()->GetGameInstance()->GetSubsystem<UMareSimulation>();APlayerCameraManager* Cam=UGameplayStatics::GetPlayerCameraManager(this,0);
+ if(!Sim || !Cam)return;
+ const float Hour=UMareSimulation::Number(Sim->State,TEXT("minutes"))/60.f;
+ const float Solar=FMath::Sin((Hour-6.f)/12.f*PI);const float Day=FMath::SmoothStep(-.04f,.18f,Solar);
+ // 09/11 (Sergio: "coloque nuvens de estrela no céu a noite, tipo aurora boreal"): the night sky dome around the camera
+ // (28 km, inside the moon's 30 km): stars, the Milky Way and an aurora over the sea, fading in at dusk, gone in rain.
+ if(StarDome){const float Night=FMath::Clamp((1.f-FMath::SmoothStep(-.1f,.12f,Solar))*(1.f-.95f*RainNow)*(1.f-GloomNow),0.f,1.f);
+  const bool bOff=Night<.01f;if(StarDome->IsHidden()!=bOff)StarDome->SetActorHiddenInGame(bOff);
+  if(!bOff){StarDome->SetActorLocation(Cam->GetCameraLocation());StarDome->SetActorScale3D(FVector(2800000.0/50.0));
+   if(StarMaterial){StarMaterial->SetScalarParameterValue(TEXT("Night"),Night*CVarMareStars.GetValueOnGameThread());StarMaterial->SetScalarParameterValue(TEXT("Aurora"),CVarMareAurora.GetValueOnGameThread());}}}   // i18n:skip
+ const FVector Up=-MareMoonRotation(Hour).Vector();
+ const float Show=FMath::Clamp((1.f-Day)*FMath::SmoothStep(-.03f,.04f,float(Up.Z))*(1.f-.9f*RainNow)*(1.f-GloomNow),0.f,1.f);
+ const bool bHide=Show<.01f;if(MoonDisc->IsHidden()!=bHide)MoonDisc->SetActorHiddenInGame(bHide);
+ if(bHide)return;
+ constexpr double Distance=3000000.0;
+ MoonDisc->SetActorLocationAndRotation(Cam->GetCameraLocation()+Up*Distance,FRotationMatrix::MakeFromZY(-Up,FVector::UpVector).Rotator());
+ MoonDisc->SetActorScale3D(FVector(Distance*.0611*2.2/100.0));   // 1 degree read too small next to the trees: ~2.2
+ if(MoonMaterial)MoonMaterial->SetScalarParameterValue(TEXT("Bright"),Show*CVarMareMoonGlow.GetValueOnGameThread());   // i18n:skip
+}
 void UMareVisualWorld::Tick(float DeltaSeconds)
 {
  if(!GetWorld()->IsGameWorld() || !Cast<AMareGameMode>(GetWorld()->GetAuthGameMode()))return;
@@ -184,6 +220,7 @@ void UMareVisualWorld::Tick(float DeltaSeconds)
  // scene (sun, lamps, signs) refreshes every 2 s below.
  if(auto WeatherSim=GetWorld()->GetGameInstance()->GetSubsystem<UMareSimulation>())UpdateWeather(DeltaSeconds,WeatherSim);
  UpdateFootprints();
+ UpdateMoonDisc();
  ShadowClock-=DeltaSeconds;if(ShadowClock<=0){ShadowClock=.5f;BudgetLightShadows();}
  // While the tsunami sky changes the light refreshes every 0.25 s, so the darkening is smooth, not in 2 s steps.
  Clock-=DeltaSeconds;if(Clock>0)return;Clock=GloomNow>.001f && GloomNow<.99f?.25f:2.f;
@@ -231,7 +268,13 @@ void UMareVisualWorld::Tick(float DeltaSeconds)
  if(Sky)Sky->GetLightComponent()->SetIntensity(FMath::Lerp(.035f,1.f,Day)*(1.f+2.5f*RainNow+1.2f*GloomNow*(1.f-RainNow)));
  if(Sun){Sun->SetActorRotation(FRotator(-Solar*58.f,-65.f+(Hour-12.f)*12.f,0));Sun->GetLightComponent()->SetIntensity(FMath::Max(0.f,Solar)*65000.f*FMath::Lerp(1.f-.998f*RainNow,CVarMareGloomSun.GetValueOnGameThread(),GloomNow));
   Sun->GetLightComponent()->SetLightColor(FLinearColor(1.f,FMath::Lerp(.95f,.99f,Day),FMath::Lerp(.88f,.975f,Day)),false);}
- if(Moon){Moon->GetLightComponent()->SetIntensity((1-Day)*.45f);Moon->GetLightComponent()->SetLightColor(FLinearColor(.62f,.72f,1.f),false);}
+ // 09/11 (Sergio: "coloque uma lua cheia nas noites", "lua que gera luz noturna"): a full moon rises opposite the sun and
+ // lights the night (it was a faint fixed light of .45 lux); no light while it is under the horizon.
+ if(Moon){const FRotator MoonRot=MareMoonRotation(Hour);Moon->SetActorRotation(MoonRot);
+  // the sky atmosphere drew its own small white disc for this light in the middle of the textured moon
+  if(auto Directional=Cast<UDirectionalLightComponent>(Moon->GetLightComponent()))if(Directional->GetAtmosphereSunDiskColorScale()!=FLinearColor::Black)Directional->SetAtmosphereSunDiskColorScale(FLinearColor::Black);
+  const float Above=FMath::SmoothStep(-.03f,.08f,float(-MoonRot.Vector().Z));
+  Moon->GetLightComponent()->SetIntensity((1-Day)*Above*CVarMareMoonLux.GetValueOnGameThread()*(1.f-.85f*RainNow));Moon->GetLightComponent()->SetLightColor(FLinearColor(.62f,.72f,1.f),false);}
  // Lamps switch on at dusk and only where the area is built (region actors hidden until bought).
  // FMath::SmoothStep needs A<B (with .55,.05 the lamps were lit by day and off at night).
  const float Dark=1.f-FMath::SmoothStep(.05f,.55f,Day);
