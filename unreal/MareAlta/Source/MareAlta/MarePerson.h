@@ -134,6 +134,9 @@ public:
  /** Vertical offset of the sea surface at a point (cm) at world time Seconds, as M_Ocean's world position offset
   *  (mare_materials.build_water); Storm 0..1 is MPC_MareTime.Storm. */
  static float SeaHeight(const FVector2D& P,float Seconds,float Storm);
+ /** 08/11: the tsunami's draw-back in cm (MPC_MareTime.Drawback, UMareSummitWorld): the sea sinks by it within ~150 m
+  *  of every coast, fading out by ~400 m; negative = the surge after the wave. Same term in M_CoastalWater's WPO. */
+ static float SeaDrawback;
  /** Clothing style, applied on the first tick once role flags are set (employees keep the uniform). */
  enum class EOutfit:uint8{Auto,Uniform,Casual,Beach,Swim,Social};
  EOutfit Outfit=EOutfit::Auto;

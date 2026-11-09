@@ -134,6 +134,17 @@ A ilha agora é grande e bonita, mas ainda é cenário. Propostas para dar uso a
 
 ---
 
+## Tsunami refeito (08/11, pedido do Sergio com imagens de referência)
+
+- [x] Evento de dia: lembretes 12h e 13h30, presságio 14h, onda 16h (textos "antes das 16h" nos 12 idiomas).
+- [x] Céu de tempestade cinza que escurece em ~15 s, sem virar noite e sem chuva (as cortinas desenhavam riscas).
+- [x] O mar recua ~3,8 m em todas as praias antes da onda (MPC `Drawback`, mesmo termo em `AMarePerson::SeaHeight`).
+- [x] Onda nova: parede escura, verde translúcido sob a crista, espuma por ruído (sem listras), borrifo; cresce de 22 a 60 m.
+- [x] Quebra perto da praia (`Break` no WPO): a crista tomba para a frente e vira espuma branca que sobe a areia.
+- [x] Mar do dia a dia mais calmo (`mare.SeaCalm` −0,45 → −0,75).
+- [x] Defeito antigo: `mare.TsunamiNow` não zerava (prioridade do console) e cada PIE novo disparava a onda.
+- QA/filmagem: `mare.TsunamiFreeze 1` segura a onda; `mare.TsunamiBreakQA 0..1` força a quebra.
+
 ## Decisões que só o Sergio pode tomar (👤)
 
 - [ ] Conta Steamworks (US$ 100, dados fiscais), App ID do jogo e da demo.

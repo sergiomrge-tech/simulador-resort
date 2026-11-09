@@ -772,3 +772,18 @@ mundo durante a cena (estava em pé no píer nas fotos): esconder até o desemba
 Vegetação rasteira de ~440 mil touceiras (HISM, sem sombra, culling 25–40 m) gerada por traços com o PIE parado leva
 ~30 s; o editor não ficou mais lento a ponto de travar o tempo de jogo (`mare_title_probe.state` compara segundos de jogo
 e reais).
+
+## UE5.8 — tsunami de dia (08/11)
+
+Comando de QA que o código zera com `Set(0,ECVF_SetByCode)` depois de o console ter gravado um valor NÃO zera: a
+prioridade de código é menor que a do console e a escrita é ignorada em silêncio. O `mare.TsunamiNow 2` ficou preso e
+cada PIE novo disparava a onda sozinho ~50 s depois de abrir; as "fotos estranhas" eram o pós-game-over. Zere com
+`ECVF_SetByConsole`. Antes de concluir que um visual está errado, confira no log (`MARE_TSUNAMI`, `GAME_OVER`) em que
+estado o jogo estava na hora da foto. Teste com relógio acelerado passa das 16h e dispara a onda de verdade (perfil que
+já conheceu o Seu Tibúrcio): use `mare.Tsunami 0`. Céu azul-marinho "de noite" no temporal não se resolve com nuvens:
+era o sol quase apagado (`.998*Rain`) escurecendo a atmosfera; o céu cinza de tempestade vem de pouco Rayleigh (.006) e
+muita Mie (.12) com o sol a ~45% (`mare.Gloom*`). As nuvens volumetricas com cobertura alta SOMEM em vez de cobrir.
+Mar inteiro subindo (drawback negativo) mostra as bordas retas da malha da água sobre a praia: só abaixar o mar.
+Ondulações de normal muito esticadas numa face de onda viram "riscas"; manter proporção ~1:2. Para julgar uma quebra,
+congele a onda (`mare.TsunamiFreeze 1`) e force `mare.TsunamiBreakQA` de 0 a 1, fotografando de praia, lado e perfil
+(`tsu_break.py`).

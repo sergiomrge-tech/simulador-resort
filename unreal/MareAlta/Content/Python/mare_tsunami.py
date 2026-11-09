@@ -478,10 +478,33 @@ def summit_props(arg=''):
     return json.dumps(out, ensure_ascii=False)
 
 
+# 08/11 (Sergio: "o tsunami ficou umas linhas... quando chegar perto da praia, tem que dar uma quebrada"; references: a
+# dark water wall, white crest, spray, breaking over the beach). Shared by the wave and its spray: the break (scalar
+# 'Break' 0..1 and 'Height' in cm, set by UMareSummitWorld) bends the upper part of the wave (UV1.y = height / crest)
+# forward (+Y, towards the beach) and down until the crest collapses; each stretch of the 3 km front breaks a little
+# earlier or later; the spray (S = 0..1 up its curtain) rides on the crest and bursts upwards at the break.
+_BREAK_HLSL = ('float hn=L.y; float u=UV.x; float nx=sin(u*.9+1.7)*.5+.5; nx=nx*.6+.4*(sin(u*2.3+4.1)*.5+.5); '
+               'float bl=saturate(B*1.45-.45*nx); float c=smoothstep(.45,1.0,min(hn,1.0)); ')
+_WPO = _BREAK_HLSL + ('float fw=H*(.34*c*smoothstep(0,.55,bl)+.12*L.x*bl); float dn=H*(.8*c*c*smoothstep(.2,1.0,bl)); '
+                      'float burst=smoothstep(0,.3,bl)*(1-.55*smoothstep(.7,1,bl)); '
+                      'float churn=H*.035*bl*c*sin(u*6.0+T*1.4+hn*5.0); '
+                      'return float3(0, fw + H*.14*S*burst, -dn + H*.5*S*burst + churn);')
+# Value noise / fbm inside a Custom node (a local struct: Custom nodes cannot declare free functions).
+_NOISE = ('struct NZ{ float h(float2 p){return frac(sin(dot(p,float2(127.1,311.7)))*43758.5453);} '
+          'float v(float2 p){float2 i=floor(p); float2 f=frac(p); f=f*f*(3-2*f); '
+          'return lerp(lerp(h(i),h(i+float2(1,0)),f.x),lerp(h(i+float2(0,1)),h(i+float2(1,1)),f.x),f.y);} '
+          'float fbm(float2 p){float s=0; float a=.5; for(int k=0;k<5;k++){s+=a*v(p); p=p*2.07+float2(17.1,9.3); a*=.5;} return s;} }; NZ nz; ')
+
+
+def _scalar(mat, name, default):
+    import mare_materials as mm
+    return mm.expression(mat, unreal.MaterialExpressionScalarParameter, parameter_name=name, default_value=default)
+
+
 def wave_material():
-    """M_TsunamiWave: dark deep water at the feet, a lighter see-through teal high on the face (fake light through the
-    crest), foam on the lip (UV1.x) and foam streaks running down the face, scrolling ripples; a faint glow of its own
-    so the wall reads at night under the storm (it comes at 22h)."""
+    """M_TsunamiWave (08/11): a dark storm-sea wall (deep blue-green, a little light through the water just under the
+    lip), glossy, ripples running up the face; foam from a value-noise fbm (no regular stripes) on the lip, in blotches
+    on the face, at the foot and over the whole upper wave once it breaks. No glow (it comes by day now)."""
     import mare_materials as mm
     MEL = unreal.MaterialEditingLibrary
     mat = mm.material('M_TsunamiWave')
@@ -489,25 +512,79 @@ def wave_material():
     uv0 = mm.expression(mat, unreal.MaterialExpressionTextureCoordinate, coordinate_index=0)
     uv1 = mm.expression(mat, unreal.MaterialExpressionTextureCoordinate, coordinate_index=1)
     time = mm.expression(mat, unreal.MaterialExpressionTime)
+    brk = _scalar(mat, 'Break', 0.0)
+    height = _scalar(mat, 'Height', 6000.0)
+    zero = mm.expression(mat, unreal.MaterialExpressionConstant, r=0.0)
     water_n = unreal.load_asset('/Engine/Functions/Engine_MaterialFunctions02/ExampleContent/Textures/water_n')
-    ruv = mm.custom(mat, 'return float2(UV.x*1.7+sin(UV.y*9.0)*.2, UV.y*6.0 - T*0.5);', unreal.CustomMaterialOutputType.CMOT_FLOAT2, {'UV': uv0, 'T': time})
+    ruv = mm.custom(mat, 'return float2(UV.x*3.0+sin(UV.y*31.0)*.15, UV.y*18.0 + T*0.22);', unreal.CustomMaterialOutputType.CMOT_FLOAT2, {'UV': uv0, 'T': time})
     tex = mm.expression(mat, unreal.MaterialExpressionTextureSample, texture=water_n, sampler_type=unreal.MaterialSamplerType.SAMPLERTYPE_NORMAL)
     mm.connect(ruv, '', tex, 'UVs')
-    code = ('float v=UV.y; float lip=L.x; '
-            'float2 p=float2(UV.x*4.0, v*9.0 - T*.35); '
-            'float n=sin(p.x*3.1+sin(p.y*2.3)*1.7)*.5+.5; n=n*.6+.4*(sin(p.x*7.3-p.y*4.1+T)*.5+.5); '
-            'float patches=smoothstep(.62,.86,n)*smoothstep(.35,.55,v)*(1-smoothstep(.85,.97,v)); '
-            'float face=smoothstep(.2,.5,v)*(1-smoothstep(.72,.95,v)); '
-            'float3 deep=float3(.01,.05,.06); float3 lit=float3(.06,.36,.36); '
-            'float3 c=lerp(deep,lit,face*(.7+.3*n)); '
-            'float foam=saturate(lip*(.8+.2*n)+patches*.7+smoothstep(.92,1.0,v)*.9); '
-            'return lerp(c,float3(.9,.93,.93),foam);')
-    color = mm.custom(mat, code, unreal.CustomMaterialOutputType.CMOT_FLOAT3, {'UV': uv0, 'L': uv1, 'T': time})
-    glow = mm.custom(mat, 'return C*float3(.22,.30,.30);', unreal.CustomMaterialOutputType.CMOT_FLOAT3, {'C': color})
-    rough = mm.custom(mat, 'return lerp(.12,.7,saturate(L.x+smoothstep(.93,1,UV.y)));', unreal.CustomMaterialOutputType.CMOT_FLOAT1, {'L': uv1, 'UV': uv0})
-    normal = mm.custom(mat, 'return normalize(float3(N.xy*1.4,N.z));', unreal.CustomMaterialOutputType.CMOT_FLOAT3, {'N': tex})
-    for node, prop in ((color, unreal.MaterialProperty.MP_BASE_COLOR), (glow, unreal.MaterialProperty.MP_EMISSIVE_COLOR),
-                       (rough, unreal.MaterialProperty.MP_ROUGHNESS), (normal, unreal.MaterialProperty.MP_NORMAL)):
+    ruv2 = mm.custom(mat, 'return float2(UV.x*8.0-UV.y*3.0, UV.y*45.0 + T*0.45);', unreal.CustomMaterialOutputType.CMOT_FLOAT2, {'UV': uv0, 'T': time})
+    tex2 = mm.expression(mat, unreal.MaterialExpressionTextureSample, texture=water_n, sampler_type=unreal.MaterialSamplerType.SAMPLERTYPE_NORMAL)
+    mm.connect(ruv2, '', tex2, 'UVs')
+    # foam 0..1 (x) and a thin-water light mask (y)
+    code = (_NOISE + _BREAK_HLSL +
+            'float v=UV.y; float lip=L.x; float front=smoothstep(.70,.76,v); float crestband=smoothstep(.60,.70,v); '
+            'float2 p=float2(UV.x*3.0, v*40.0); float f1=nz.fbm(p+float2(0,T*.25)); float f2=nz.fbm(p*2.3+float2(T*.04,T*.5)); '
+            'float st=nz.fbm(float2(UV.x*7.0, v*22.0+T*.3)); '
+            'float lipF=saturate(lip*1.6)*smoothstep(.15,.4,f1*.6+lip*.5); '
+            'float faceF=front*smoothstep(.58,.74,st)*smoothstep(.35,.9,hn)*(.4+.6*smoothstep(.6,1,hn)); '
+            'float topF=crestband*smoothstep(.9,.985,hn)*smoothstep(.35,.6,f1); '
+            'float footF=0; '
+            'float brkF=bl*crestband*smoothstep(.1,.4,hn)*smoothstep(.62,.40,f1*.8+.25-bl*.4); '
+            'float foam=saturate(max(max(lipF,faceF),max(max(topF,footF),brkF))); '
+            'float thin=front*smoothstep(.6,.85,hn)*(1-smoothstep(.93,1.0,hn))*(.35+.65*f2); '
+            'float shade=.62+.38*smoothstep(.2,.8,f2*.6+st*.4); '
+            'return float3(foam,thin,shade);')
+    fm = mm.custom(mat, code, unreal.CustomMaterialOutputType.CMOT_FLOAT3, {'UV': uv0, 'L': uv1, 'T': time, 'B': brk})
+    color = mm.custom(mat, 'float v=UV.y; float hollow=smoothstep(.745,.77,v)*(1-smoothstep(.80,.84,v)); '
+                           'float3 deep=float3(.003,.014,.019); float3 body=float3(.006,.034,.04); float3 lit=float3(.02,.15,.12); '
+                           'float3 c=lerp(deep,body,smoothstep(.0,.7,L.y)*(1-.6*smoothstep(.70,.78,v))); c=lerp(c,lit,F.y); c*=1-.55*hollow; '
+                           'return lerp(c,float3(.86,.89,.9)*F.z,F.x);',
+                      unreal.CustomMaterialOutputType.CMOT_FLOAT3, {'F': fm, 'L': uv1, 'UV': uv0})
+    rough = mm.custom(mat, 'return lerp(.26,.8,F.x);', unreal.CustomMaterialOutputType.CMOT_FLOAT1, {'F': fm})
+    normal = mm.custom(mat, 'float3 n=float3(A.xy*1.5+C.xy*.7,A.z*C.z); return normalize(lerp(n,float3(0,0,1),F.x*.7));',
+                       unreal.CustomMaterialOutputType.CMOT_FLOAT3, {'A': tex, 'C': tex2, 'F': fm})
+    wpo = mm.custom(mat, _WPO, unreal.CustomMaterialOutputType.CMOT_FLOAT3, {'UV': uv0, 'L': uv1, 'T': time, 'B': brk, 'H': height, 'S': zero})
+    spec = mm.expression(mat, unreal.MaterialExpressionConstant, r=.28)
+    for node, prop in ((color, unreal.MaterialProperty.MP_BASE_COLOR), (rough, unreal.MaterialProperty.MP_ROUGHNESS),
+                       (normal, unreal.MaterialProperty.MP_NORMAL), (wpo, unreal.MaterialProperty.MP_WORLD_POSITION_OFFSET),
+                       (spec, unreal.MaterialProperty.MP_SPECULAR)):
+        MEL.connect_material_property(node, '', prop)
+    errors = list(MEL.recompile_material(mat))
+    if errors:
+        raise RuntimeError(str(errors))
+    unreal.EditorAssetLibrary.save_loaded_asset(mat)
+    return mat
+
+
+def spray_material():
+    """M_TsunamiSpray (08/11): the spray curtains over the crest: translucent white mist from the fbm, fading at the
+    crest and at the top, light before the break and bursting with it."""
+    import mare_materials as mm
+    MEL = unreal.MaterialEditingLibrary
+    mat = mm.material('M_TsunamiSpray')
+    mat.set_editor_property('two_sided', True)
+    mat.set_editor_property('blend_mode', unreal.BlendMode.BLEND_TRANSLUCENT)
+    mat.set_editor_property('used_with_nanite', False)
+    uv0 = mm.expression(mat, unreal.MaterialExpressionTextureCoordinate, coordinate_index=0)
+    uv1 = mm.expression(mat, unreal.MaterialExpressionTextureCoordinate, coordinate_index=1)
+    time = mm.expression(mat, unreal.MaterialExpressionTime)
+    brk = _scalar(mat, 'Break', 0.0)
+    height = _scalar(mat, 'Height', 6000.0)
+    s = mm.custom(mat, 'return UV.y;', unreal.CustomMaterialOutputType.CMOT_FLOAT1, {'UV': uv0})
+    opacity = mm.custom(mat, _NOISE + _BREAK_HLSL +
+                        'float sv=UV.y; float burst=smoothstep(0,.3,bl)*(1-.55*smoothstep(.7,1,bl)); '
+                        'float n=nz.fbm(float2(UV.x*5.0+T*.05, sv*3.0-T*.7)); float n2=nz.fbm(float2(UV.x*13.0, sv*7.0-T*1.3)); '
+                        'float m=smoothstep(.42-.18*burst,.75,n*.75+n2*.35); '
+                        'float fade=smoothstep(0,.18,sv)*(1-smoothstep(.55,1,sv)); '
+                        'return saturate(m*fade*(.5+.45*burst));',
+                        unreal.CustomMaterialOutputType.CMOT_FLOAT1, {'UV': uv0, 'L': uv1, 'T': time, 'B': brk})
+    color = mm.expression(mat, unreal.MaterialExpressionConstant3Vector, constant=unreal.LinearColor(.82, .86, .87, 1))
+    rough = mm.expression(mat, unreal.MaterialExpressionConstant, r=.9)
+    wpo = mm.custom(mat, _WPO, unreal.CustomMaterialOutputType.CMOT_FLOAT3, {'UV': uv0, 'L': uv1, 'T': time, 'B': brk, 'H': height, 'S': s})
+    for node, prop in ((color, unreal.MaterialProperty.MP_BASE_COLOR), (rough, unreal.MaterialProperty.MP_ROUGHNESS),
+                       (opacity, unreal.MaterialProperty.MP_OPACITY), (wpo, unreal.MaterialProperty.MP_WORLD_POSITION_OFFSET)):
         MEL.connect_material_property(node, '', prop)
     errors = list(MEL.recompile_material(mat))
     if errors:
@@ -525,14 +602,20 @@ def wave(arg=''):
                  if isinstance(m, unreal.StaticMesh)), None) if unreal.EditorAssetLibrary.does_directory_exist(f'{FOLDER}/TsunamiWave') else None
     if not mesh or arg == 'reimport':
         mesh = hl._import(src, f'{FOLDER}/TsunamiWave', 'TsunamiWave', False, search=False)
-    mat = wave_material()
-    mesh.set_material(0, mat)
+    mesh.set_material(0, wave_material())
+    if len(mesh.static_materials) > 1:
+        mesh.set_material(1, spray_material())
+    # the spray is translucent: no Nanite (it would not draw)
+    ns = mesh.get_editor_property('nanite_settings')
+    if ns.enabled:
+        ns.enabled = False
+        mesh.set_editor_property('nanite_settings', ns)
     body = mesh.get_editor_property('body_setup')
     if body:
         body.set_editor_property('collision_trace_flag', unreal.CollisionTraceFlag.CTF_USE_SIMPLE_AS_COMPLEX)
     unreal.EditorAssetLibrary.save_loaded_asset(mesh, False)
     b = mesh.get_bounds()
-    return json.dumps({'mesh': mesh.get_path_name(), 'extent': [round(b.box_extent.x), round(b.box_extent.y), round(b.box_extent.z)]})
+    return json.dumps({'mesh': mesh.get_path_name(), 'slots': len(mesh.static_materials), 'extent': [round(b.box_extent.x), round(b.box_extent.y), round(b.box_extent.z)]})
 
 
 def rain_material(arg=''):
@@ -579,3 +662,49 @@ def hold_food(arg=''):
         l = p.get_actor_location()
         out.append([dish, p.get_editor_property('person_name'), round(l.x), round(l.y), round(l.z)])
     return json.dumps(out, ensure_ascii=False)
+
+
+def sea(arg=''):
+    """Rebuild MPC_MareTime (adds Drawback) and M_CoastalWater (mare_materials.build_water) from the hud module call."""
+    import importlib
+    import mare_materials
+    importlib.reload(mare_materials)
+    mare_materials.time_collection()
+    return mare_materials.build_water().get_path_name()
+
+
+def cloud_info(arg=''):
+    """Probe: the level's volumetric cloud material, its parent chain and scalar parameters (08/11, storm sky)."""
+    out = []
+    world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world() or unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_editor_world()
+    for a in unreal.GameplayStatics.get_all_actors_of_class(world, unreal.Actor):
+        c = a.get_component_by_class(unreal.VolumetricCloudComponent)
+        if not c:
+            continue
+        m = c.get_editor_property('material')
+        info = {'actor': a.get_name(), 'material': m.get_path_name() if m else None,
+                'layer_bottom': c.get_editor_property('layer_bottom_altitude'), 'layer_height': c.get_editor_property('layer_height')}
+        chain = []
+        while m:
+            chain.append(m.get_path_name())
+            if isinstance(m, unreal.MaterialInstance):
+                info.setdefault('scalars', {})
+                for p in m.get_editor_property('scalar_parameter_values'):
+                    info['scalars'][str(p.parameter_info.name)] = p.parameter_value
+                m = m.get_editor_property('parent')
+            else:
+                info['params'] = [str(n) for n in unreal.MaterialEditingLibrary.get_scalar_parameter_names(m)]
+                m = None
+        info['chain'] = chain
+        out.append(info)
+    return json.dumps(out)
+
+
+def hero(arg=''):
+    """Probe (PIE): the hero's location and movement mode."""
+    world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()
+    h = unreal.GameplayStatics.get_player_pawn(world, 0)
+    m = h.get_component_by_class(unreal.CharacterMovementComponent)
+    l = h.get_actor_location()
+    cam = unreal.GameplayStatics.get_player_camera_manager(world, 0).get_camera_location()
+    return json.dumps({'hero': [round(l.x), round(l.y), round(l.z)], 'cam': [round(cam.x), round(cam.y), round(cam.z)], 'mode': str(m.movement_mode)})

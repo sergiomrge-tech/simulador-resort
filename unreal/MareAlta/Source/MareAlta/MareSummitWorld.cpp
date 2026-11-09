@@ -8,6 +8,10 @@
 #include "MareSimulation.h"
 #include "MareVillageWorld.h"
 #include "MareAudioWorld.h"
+#include "MareIsland.h"
+#include "Kismet/KismetMaterialLibrary.h"
+#include "Materials/MaterialInstanceDynamic.h"
+#include "Materials/MaterialParameterCollection.h"
 #include "Components/AudioComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Engine/Engine.h"
@@ -34,6 +38,8 @@
 
 static TAutoConsoleVariable<int32> CVarMareTsunami(TEXT("mare.Tsunami"),1,TEXT("Daily offering / tsunami rule: 1 on, 0 off."));
 static TAutoConsoleVariable<int32> CVarMareTsunamiNow(TEXT("mare.TsunamiNow"),0,TEXT("QA: 1 starts the omen now, 2 starts the wave now (resets to 0)."));
+static TAutoConsoleVariable<int32> CVarMareTsunamiFreeze(TEXT("mare.TsunamiFreeze"),0,TEXT("QA/film: 1 holds the running wave where it is."));   // i18n:skip
+static TAutoConsoleVariable<float> CVarMareTsunamiBreakQA(TEXT("mare.TsunamiBreakQA"),-1.f,TEXT("QA/film: >=0 forces the wave's break (0..1)."));   // i18n:skip
 static TAutoConsoleVariable<int32> CVarMareElderMet(TEXT("mare.ElderMet"),0,TEXT("QA: 1 marks Seu Tibúrcio as met (the rule becomes active)."));
 
 static const TCHAR* ElderName=TEXT("Seu Tibúrcio");
@@ -81,7 +87,7 @@ void UMareSummitWorld::Tick(float DeltaSeconds)
  if(!bReady){Setup();if(!bReady)return;}
  if(bOver){OverTime+=DeltaSeconds;return;}
  auto Summit=SummitState(Sim);
- if(CVarMareElderMet.GetValueOnGameThread()){Summit->SetBoolField(TEXT("met"),true);CVarMareElderMet->Set(0,ECVF_SetByCode);}
+ if(CVarMareElderMet.GetValueOnGameThread()){Summit->SetBoolField(TEXT("met"),true);CVarMareElderMet->Set(0,ECVF_SetByConsole);}
  const int32 Day=int32(UMareSimulation::Number(Sim->State,TEXT("day"),1));
  const double Minutes=UMareSimulation::Number(Sim->State,TEXT("minutes"));
  bool bMet=false;Summit->TryGetBoolField(TEXT("met"),bMet);
@@ -89,21 +95,23 @@ void UMareSummitWorld::Tick(float DeltaSeconds)
  // Morning snapshot: "restart the day" after a game over goes back to the state of this morning.
  if(Day!=SeenDay && !bWave){SeenDay=Day;FString Text;auto Writer=TJsonWriterFactory<>::Create(&Text);FJsonSerializer::Serialize(Sim->State.ToSharedRef(),Writer);MorningState=Text;}
  if(bWave){UpdateWave(DeltaSeconds);return;}
+ if(Drawback!=0.f)SetDrawback(0.f);
  UpdateFinale(DeltaSeconds,Sim,Minutes);
  if(bFinale){Summit->SetNumberField(TEXT("last_day"),Day);return;}   // the whole village brings tonight's offering
  const int32 Forced=CVarMareTsunamiNow.GetValueOnGameThread();
- if(Forced){CVarMareTsunamiNow->Set(0,ECVF_SetByCode);if(Forced==1)StartOmen();else{StartOmen();StartWave();}return;}
+ if(Forced){CVarMareTsunamiNow->Set(0,ECVF_SetByConsole);   // 08/11: SetByCode is below the console priority and was ignored (every new PIE re-ran the wave)
+ bForcedOmen=true;if(Forced==1)StartOmen();else{StartOmen();StartWave();}return;}
  // Before the first meeting the residents point the way (from day 2, once a day in the morning).
  if(!bMet && Day>=2 && Hinted!=Day && Minutes>=9*60 && Minutes<18*60){Hinted=Day;
   Sim->LastMessage=TEXT("Dizem que um velho lá no alto do morro, atrás da vila, quer muito falar com você. Tem uma trilha.");}
  const bool bActive=bMet && CVarMareTsunami.GetValueOnGameThread()!=0;
  const bool bDone=OfferingDone(bMet,Last,Day);
  const int32 Phase=bActive && !bDone?PhaseAt(Minutes):0;
- if(Phase==1 && Reminded!=Day*10+1 && Minutes<18*60){Reminded=Day*10+1;Sim->LastMessage=TEXT("Hoje ainda falta a oferenda do Seu Tibúrcio. O vulcão anda resmungando.");}
- if(Phase==1 && Minutes>=18*60 && Reminded!=Day*10+2){Reminded=Day*10+2;Sim->LastMessage=TEXT("O céu está ficando esquisito... a oferenda do Seu Tibúrcio!");}
+ if(Phase==1 && Reminded!=Day*10+1 && Minutes<13.5*60){Reminded=Day*10+1;Sim->LastMessage=TEXT("Hoje ainda falta a oferenda do Seu Tibúrcio. O vulcão anda resmungando.");}
+ if(Phase==1 && Minutes>=13.5*60 && Reminded!=Day*10+2){Reminded=Day*10+2;Sim->LastMessage=TEXT("O céu está ficando esquisito... a oferenda do Seu Tibúrcio!");}
  if(Phase>=2 && !bOmenOn)StartOmen();
- if(Phase<2 && bOmenOn)EndOmen();
- Omen=FMath::FInterpTo(Omen,bOmenOn?1.f:0.f,DeltaSeconds,.35f);
+ if(Phase<2 && bOmenOn && !bForcedOmen)EndOmen();   // a forced omen (QA, trailers) lasts until the wave or an offering
+ Omen=FMath::FInterpTo(Omen,bOmenOn?1.f:0.f,DeltaSeconds,.1f);   // ~10 s to build up (08/11: it was sudden)
  if(bOmenOn){ThunderClock-=DeltaSeconds;if(ThunderClock<=0){ThunderClock=FMath::FRandRange(6.f,14.f);Thunder(.35f);}}
  UpdateLightning(DeltaSeconds);
  if(Phase==3)StartWave();
@@ -119,7 +127,7 @@ void UMareSummitWorld::StartOmen()
 void UMareSummitWorld::EndOmen()
 {
  if(!bOmenOn)return;auto Sim=GetWorld()->GetGameInstance()->GetSubsystem<UMareSimulation>();
- bOmenOn=false;Sim->State->SetStringField(TEXT("weather"),PrevWeather.IsEmpty()?TEXT("sun"):PrevWeather);
+ bOmenOn=false;bForcedOmen=false;Sim->State->SetStringField(TEXT("weather"),PrevWeather.IsEmpty()?TEXT("sun"):PrevWeather);
 }
 
 void UMareSummitWorld::Offer(const FString& Gift,bool bCount)
@@ -151,10 +159,10 @@ void UMareSummitWorld::Talk(APlayerController* Controller)
    {TEXT("Cem metros?!"),TEXT("Que tipo de oferenda?"),TEXT("Isso é sério?")},
    [](int32 I)->FString{
     if(I==0)return TEXT("Cem. Contei com a régua do meu avô, que media tudo em palmos. Deu muitos palmos.");
-    if(I==1)return TEXT("Qualquer coisa gostosa do seu quiosque: uma água de coco, um petisco... O vulcão é guloso, igual a mim. Traz aqui em cima, nas mãos, e deixa no cesto. Todo dia, antes das dez da noite.");
+    if(I==1)return TEXT("Qualquer coisa gostosa do seu quiosque: uma água de coco, um petisco... O vulcão é guloso, igual a mim. Traz aqui em cima, nas mãos, e deixa no cesto. Todo dia, antes das quatro da tarde.");
     return TEXT("Seríssimo. Em 1987 esqueceram uma vez e a Onda levou a praia, o bar e o meu bigode. O bigode nunca mais cresceu igual.");},
    [Weak](){if(Weak.IsValid()){Weak->Offer(FString(),false);
-    if(auto S=Weak->GetWorld()->GetGameInstance()->GetSubsystem<UMareSimulation>())S->LastMessage=TEXT("Hoje Seu Tibúrcio já deu um coco dele, por conta da casa. A partir de amanhã, a oferenda é com você: todo dia, antes das 22h.");}});
+    if(auto S=Weak->GetWorld()->GetGameInstance()->GetSubsystem<UMareSimulation>())S->LastMessage=TEXT("Hoje Seu Tibúrcio já deu um coco dele, por conta da casa. A partir de amanhã, a oferenda é com você: todo dia, antes das 16h.");}});
   return;
  }
  if(bDone){
@@ -201,21 +209,39 @@ void UMareSummitWorld::UpdateLightning(float DeltaSeconds)
  Lightning->GetLightComponent()->SetIntensity(FMath::Max(Flash,0.f)*(bOmenOn||bWave?3.f:0.f));
 }
 
+void UMareSummitWorld::SetDrawback(float Cm)
+{
+ Drawback=Cm;AMarePerson::SeaDrawback=Cm;
+ if(!TimeCollection)TimeCollection=LoadObject<UMaterialParameterCollection>(nullptr,TEXT("/Game/World/Materials/MPC_MareTime.MPC_MareTime"));
+ if(TimeCollection)UKismetMaterialLibrary::SetScalarParameterValue(this,TimeCollection,TEXT("Drawback"),Cm);   // i18n:skip
+}
+
+FString UMareSummitWorld::WaveReport()const
+{
+ return FString::Printf(TEXT("{\"wave\":%d,\"t\":%.2f,\"y\":%.0f,\"front_shore\":%.0f,\"height\":%.0f,\"break\":%.3f,\"drawback\":%.1f,\"omen\":%.2f}"),   // i18n:skip
+  bWave?1:0,WaveTime,WaveY,FrontShore,WaveHeight,WaveBreak,Drawback,Omen);
+}
+
 void UMareSummitWorld::StartWave()
 {
  if(bWave)return;auto Sim=GetWorld()->GetGameInstance()->GetSubsystem<UMareSimulation>();
- bWave=true;WaveTime=0;Sim->bHoldSaves=true;   // the doomed evening is never written to the slot
- // Sergio 04/11: "quando começa o tsunami as ondas param... silêncio antes do fim": the sea draws back flat, the rain,
+ bWave=true;WaveTime=0;WaveBreak=0;Sim->bHoldSaves=true;   // the doomed afternoon is never written to the slot
+ // Sergio 04/11: "quando começa o tsunami as ondas param... silêncio antes do fim": the sea goes flat, the rain,
  // thunder and lightning stop and the ambience falls silent (MareVisualWorld/MareAudioWorld read IsWaveRunning).
+ // 08/11: "quando tem tsunami, a água recua um pouco, aí depois vem": the sea draws back from the beaches first.
  EndOmen();
  if(auto Village=GetWorld()->GetSubsystem<UMareVillageWorld>())Village->CloseDialogue();
  Sim->LastMessage=TEXT("De repente, silêncio. O mar recuou... e lá longe, no horizonte, ele está subindo.");
  auto Mesh=LoadObject<UStaticMesh>(nullptr,TEXT("/Game/Summit/TsunamiWave/TsunamiWave.TsunamiWave"));
  auto Hero=UGameplayStatics::GetPlayerCharacter(this,0);const float X=Hero?Hero->GetActorLocation().X:4000.f;
- Wave=GetWorld()->SpawnActor<AStaticMeshActor>(FVector(X,-80000,-400),FRotator::ZeroRotator);
- if(Wave){Wave->SetMobility(EComponentMobility::Movable);Wave->GetStaticMeshComponent()->SetStaticMesh(Mesh);
-  Wave->GetStaticMeshComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);Wave->GetStaticMeshComponent()->SetCastShadow(true);
-  Wave->SetActorScale3D(FVector(1,.15f,.15f));}
+ WaveY=-80000.f;WaveHeight=2200.f;
+ Wave=GetWorld()->SpawnActor<AStaticMeshActor>(FVector(X,WaveY,-300),FRotator::ZeroRotator);
+ if(Wave){Wave->SetMobility(EComponentMobility::Movable);auto C=Wave->GetStaticMeshComponent();C->SetStaticMesh(Mesh);
+  C->SetCollisionEnabled(ECollisionEnabled::NoCollision);C->SetCastShadow(true);
+  // The break bends the crest forward and down by tens of metres in the material (WPO): keep it from being culled.
+  C->SetBoundsScale(1.6f);
+  if(Mesh){WaveWater=C->CreateDynamicMaterialInstance(0);if(Mesh->GetStaticMaterials().Num()>1)WaveSpray=C->CreateDynamicMaterialInstance(1);}
+  Wave->SetActorScale3D(FVector(1,WaveHeight/10000.f,WaveHeight/10000.f));}
  if(auto Sound=LoadObject<USoundWave>(nullptr,TEXT("/Game/Audio/ocean_loop.ocean_loop"))){auto Audio=GetWorld()->GetSubsystem<UMareAudioWorld>();
   const float Gain=Audio?Audio->GetVolume(TEXT("Master"))*Audio->GetVolume(TEXT("Effects")):.6f;
   Roar=UGameplayStatics::SpawnSound2D(this,Sound,.001f*Gain,.42f,0,nullptr,false,false);}
@@ -224,19 +250,36 @@ void UMareSummitWorld::StartWave()
 void UMareSummitWorld::UpdateWave(float DeltaSeconds)
 {
  WaveTime+=DeltaSeconds;auto Hero=UGameplayStatics::GetPlayerCharacter(this,0);
- // 0-35 s: grows from 15 m to 100 m far out while closing in at ~18 m/s; then runs in at 30 m/s over the beach and
- // up the hill. Its front reaching the hero ends the game (the island is never shown devastated).
- const float Grow=FMath::Clamp(WaveTime/35.f,0.f,1.f);const float Scale=FMath::Lerp(.15f,1.f,FMath::SmoothStep(0.f,1.f,Grow));
- const float Y=-80000.f+FMath::Min(WaveTime,35.f)*1800.f+FMath::Max(WaveTime-35.f,0.f)*3000.f;
- if(Wave){Wave->SetActorLocation(FVector(Wave->GetActorLocation().X,Y,-400));Wave->SetActorScale3D(FVector(1,Scale,Scale));}
+ // 08/11 (Sergio: lines, sudden night, "quando chegar perto da praia, tem que dar uma quebrada", references of a dark
+ // wall with a white crest breaking over the beach): the wave starts ~750 m out at ~22 m tall, runs in at ~26 m/s and
+ // slows to ~15 m/s as it shoals while growing to ~60 m; from ~140 m off the coast it breaks (WaveBreak 0..1 drives
+ // M_TsunamiWave's WPO: the crest pitches forward and collapses, foam spreads, spray bursts), then the white water runs
+ // up the beach. The front foot is ~60 m ahead of the actor at scale 1.
+ const float X=Wave?Wave->GetActorLocation().X:(Hero?Hero->GetActorLocation().X:4000.f);
+ const float Scale=WaveHeight/10000.f;
+ const float Front=WaveY+6000.f*Scale;
+ FrontShore=MareIsland::ShoreDistance(X,Front);
+ const float Speed=FMath::Lerp(1500.f,2600.f,FMath::SmoothStep(6000.f,40000.f,FrontShore));
+ const bool bFreeze=CVarMareTsunamiFreeze.GetValueOnGameThread()!=0;
+ if(bFreeze)WaveTime-=DeltaSeconds;else WaveY+=Speed*DeltaSeconds;
+ WaveHeight=FMath::FInterpTo(WaveHeight,FMath::Lerp(2200.f,6000.f,1.f-FMath::SmoothStep(9000.f,60000.f,FrontShore)),DeltaSeconds,.8f);
+ WaveBreak=FMath::Max(WaveBreak,FMath::Clamp((14000.f-FrontShore)/12500.f,0.f,1.f));
+ if(CVarMareTsunamiBreakQA.GetValueOnGameThread()>=0)WaveBreak=FMath::Clamp(CVarMareTsunamiBreakQA.GetValueOnGameThread(),0.f,1.f);
+ if(Wave){Wave->SetActorLocation(FVector(X,WaveY,-300));Wave->SetActorScale3D(FVector(1,WaveHeight/10000.f,WaveHeight/10000.f));}
+ for(auto M:{WaveWater.Get(),WaveSpray.Get()})if(M){M->SetScalarParameterValue(TEXT("Break"),WaveBreak);M->SetScalarParameterValue(TEXT("Height"),WaveHeight);}   // i18n:skip
+ // The draw-back: ~3.8 m within 10 s while the wall is still far; gone when the white water reaches the coast.
+ const float Arrive=FMath::SmoothStep(-2000.f,8000.f,FrontShore);
+ SetDrawback(380.f*FMath::SmoothStep(0.f,10.f,WaveTime)*Arrive);   // no surge above sea level: the raised sea plane showed its straight edges over the beach
  Omen=FMath::FInterpTo(Omen,0.f,DeltaSeconds,1.5f);
  // Silence; only in the last seconds the low roar of the wall arrives.
+ const float HeroGap=Hero?Hero->GetActorLocation().Y-Front:50000.f;
  if(Roar){auto Audio=GetWorld()->GetSubsystem<UMareAudioWorld>();const float Gain=Audio?Audio->GetVolume(TEXT("Master"))*Audio->GetVolume(TEXT("Effects")):.6f;
-  Roar->SetVolumeMultiplier(FMath::Lerp(.001f,1.3f,FMath::Clamp((WaveTime-28.f)/10.f,0.f,1.f))*Gain);}
+  Roar->SetVolumeMultiplier(FMath::Lerp(.001f,1.3f,1.f-FMath::Clamp((HeroGap-4000.f)/30000.f,0.f,1.f))*Gain);}
  FlashTime=10.f;UpdateLightning(DeltaSeconds);
- const float Front=Y+3000.f*Scale;   // the lip reaches ~30 m ahead of the actor origin at full size
- if(Hero && Front>=Hero->GetActorLocation().Y)ShowGameOver();
- if(WaveTime>140.f)ShowGameOver();
+ static double LastLog=0;if(FPlatformTime::Seconds()-LastLog>1.0){LastLog=FPlatformTime::Seconds();UE_LOG(LogTemp,Display,TEXT("MARE_TSUNAMI %s"),*WaveReport());}
+ if(bFreeze)return;
+ if(Hero && HeroGap<=0)ShowGameOver();
+ if(WaveTime>150.f)ShowGameOver();
 }
 
 void UMareSummitWorld::ShowGameOver()
@@ -290,7 +333,7 @@ void UMareSummitWorld::UpdateFinale(float DeltaSeconds,UMareSimulation* Sim,doub
   if(Sim->Definitions->TryGetArrayField(TEXT("campaign"),Missions)){const int32 Stage=int32(UMareSimulation::Number(Campaign,TEXT("stage")));
    if(Missions->IsValidIndex(Stage))Current=UMareSimulation::String((*Missions)[Stage]->AsObject(),TEXT("id"));}
   auto Hero=UGameplayStatics::GetPlayerCharacter(this,0);
-  const bool bForced=CVarMareFinaleNow.GetValueOnGameThread()!=0;if(bForced)CVarMareFinaleNow->Set(0,ECVF_SetByCode);
+  const bool bForced=CVarMareFinaleNow.GetValueOnGameThread()!=0;if(bForced)CVarMareFinaleNow->Set(0,ECVF_SetByConsole);
   const bool bTime=Current==TEXT("festa") && !bDone && Minutes>=20*60 && Minutes<23.5*60 && Hero && Hero->GetActorLocation().Y<2500.f && !bWave;
   if(!bTime && !bForced)return;
   bFinale=true;FinaleTime=0;FinaleLine=-1;EndOmen();
@@ -354,7 +397,7 @@ void UMareSummitWorld::Deinitialize()
  if(GEngine && GEngine->GameViewport && OverWidget.IsValid())GEngine->GameViewport->RemoveViewportWidgetContent(OverWidget.ToSharedRef());OverWidget.Reset();
  if(GEngine && GEngine->GameViewport && CreditsWidget.IsValid())GEngine->GameViewport->RemoveViewportWidgetContent(CreditsWidget.ToSharedRef());CreditsWidget.Reset();
  if(bFinale)if(auto Erupt=IConsoleManager::Get().FindConsoleVariable(TEXT("mare.VolcanoErupt")))Erupt->Set(-1,ECVF_SetByCode);
- if(Roar)Roar->Stop();Super::Deinitialize();
+ if(Roar)Roar->Stop();AMarePerson::SeaDrawback=0.f;Super::Deinitialize();
 }
 
 #undef LOCTEXT_NAMESPACE

@@ -51,6 +51,13 @@ static TAutoConsoleVariable<float> CVarMareInteriorNightEV(TEXT("mare.InteriorNi
 // the village keeps its lamps in view and sits near the -0.9 top of the night range.
 static TAutoConsoleVariable<float> CVarMareNightMinEV(TEXT("mare.NightMinEV"),-1.9f,TEXT("Lowest outdoor exposure (EV100) at night: how far the eye may open where no light is in view (the night top stays -0.9)."));
 static TAutoConsoleVariable<float> CVarMareNightDarken(TEXT("mare.NightDarken"),1.3f,TEXT("Stops of exposure removed at night (0 = old night)"));   // i18n:skip
+static TAutoConsoleVariable<float> CVarMareGloomSun(TEXT("mare.GloomSun"),.45f,TEXT("Tsunami storm sky: sun intensity kept (0..1)."));   // i18n:skip
+static TAutoConsoleVariable<float> CVarMareGloomEV(TEXT("mare.GloomEV"),-.45f,TEXT("Tsunami storm sky: exposure bias."));   // i18n:skip
+static TAutoConsoleVariable<float> CVarMareGloomCover(TEXT("mare.GloomCover"),.6f,TEXT("Tsunami storm sky: cloud coverage."));   // i18n:skip
+static TAutoConsoleVariable<float> CVarMareGloomDensity(TEXT("mare.GloomDensity"),.03f,TEXT("Tsunami storm sky: cloud density."));   // i18n:skip
+static TAutoConsoleVariable<float> CVarMareGloomRayleigh(TEXT("mare.GloomRayleigh"),.006f,TEXT("Tsunami storm sky: Rayleigh scattering (less = less blue)."));   // i18n:skip
+static TAutoConsoleVariable<float> CVarMareGloomMie(TEXT("mare.GloomMie"),.12f,TEXT("Tsunami storm sky: Mie scattering (grey haze)."));   // i18n:skip
+static TAutoConsoleVariable<float> CVarMareGloomStorm(TEXT("mare.GloomStorm"),0.f,TEXT("Tsunami storm sky: StormClouds of the volumetric clouds."));   // i18n:skip
 
 static TAutoConsoleVariable<float> CVarMareBounceLightReach(TEXT("mare.BounceLightReach"),1.f,TEXT("Draw distance of the bounce (fill) lights, times mare.LightDrawDistance (04/11: x2.5 cost the beach 4 FPS)."));
 static TAutoConsoleVariable<float> CVarMareLightShadowMinRadius(TEXT("mare.LightShadowMinRadius"),1000.f,TEXT("Local lights with a smaller attenuation radius (cm) cast no shadow (04/11: 99 of 134 lights cast shadows; under 10 m off = kiosk 56 -> 61 FPS); 0 = keep the authored shadows."));
@@ -178,7 +185,8 @@ void UMareVisualWorld::Tick(float DeltaSeconds)
  if(auto WeatherSim=GetWorld()->GetGameInstance()->GetSubsystem<UMareSimulation>())UpdateWeather(DeltaSeconds,WeatherSim);
  UpdateFootprints();
  ShadowClock-=DeltaSeconds;if(ShadowClock<=0){ShadowClock=.5f;BudgetLightShadows();}
- Clock-=DeltaSeconds;if(Clock>0)return;Clock=2.f;
+ // While the tsunami sky changes the light refreshes every 0.25 s, so the darkening is smooth, not in 2 s steps.
+ Clock-=DeltaSeconds;if(Clock>0)return;Clock=GloomNow>.001f && GloomNow<.99f?.25f:2.f;
  RefreshExpansions();
  AddGlassCompanions();
  CullLocalLights();
@@ -217,9 +225,11 @@ void UMareVisualWorld::Tick(float DeltaSeconds)
   const float NightEV=CVarMareInteriorNightEV.GetValueOnGameThread();
   S.AutoExposureMinBrightness=FMath::Lerp(NightEV,5.f,Day);S.AutoExposureMaxBrightness=FMath::Lerp(NightEV+.8f,9.f,Day);}
  if(Exposure){Exposure->Settings.bOverride_AutoExposureMinBrightness=true;Exposure->Settings.bOverride_AutoExposureMaxBrightness=true;Exposure->Settings.AutoExposureMinBrightness=FMath::Lerp(FMath::Min(CVarMareNightMinEV.GetValueOnGameThread(),-.9f),5.f,Day);Exposure->Settings.AutoExposureMaxBrightness=FMath::Lerp(-.9f,14.f,Day);}
+ // 08/11 (Sergio: "o tempo ficou escuro, muito de repente. O dia virou noite"): the tsunami's storm sky builds up over
+ // ~15 s and stays a grey day: a dim veiled sun, heavy dark clouds, haze (GloomNow eases every frame in UpdateWeather).
  // Overcast light: the sun fades out with the rain (no hard shadows) and the diffuse sky light doubles.
- if(Sky)Sky->GetLightComponent()->SetIntensity(FMath::Lerp(.035f,1.f,Day)*(1.f+2.5f*RainNow));
- if(Sun){Sun->SetActorRotation(FRotator(-Solar*58.f,-65.f+(Hour-12.f)*12.f,0));Sun->GetLightComponent()->SetIntensity(FMath::Max(0.f,Solar)*65000.f*(1.f-.998f*RainNow));
+ if(Sky)Sky->GetLightComponent()->SetIntensity(FMath::Lerp(.035f,1.f,Day)*(1.f+2.5f*RainNow+1.2f*GloomNow*(1.f-RainNow)));
+ if(Sun){Sun->SetActorRotation(FRotator(-Solar*58.f,-65.f+(Hour-12.f)*12.f,0));Sun->GetLightComponent()->SetIntensity(FMath::Max(0.f,Solar)*65000.f*FMath::Lerp(1.f-.998f*RainNow,CVarMareGloomSun.GetValueOnGameThread(),GloomNow));
   Sun->GetLightComponent()->SetLightColor(FLinearColor(1.f,FMath::Lerp(.95f,.99f,Day),FMath::Lerp(.88f,.975f,Day)),false);}
  if(Moon){Moon->GetLightComponent()->SetIntensity((1-Day)*.45f);Moon->GetLightComponent()->SetLightColor(FLinearColor(.62f,.72f,1.f),false);}
  // Lamps switch on at dusk and only where the area is built (region actors hidden until bought).
@@ -257,8 +267,8 @@ void UMareVisualWorld::Tick(float DeltaSeconds)
   Light->GetLightComponent()->SetIntensity(Overcast*(bPanel?FMath::Lerp(0.f,Light->ActorHasTag(TEXT("MareVisualExtra"))?600.f:2600.f,FMath::Square(Day))
   :Light->ActorHasTag(TEXT("MareHomeLight"))?FMath::Lerp(90.f,180.f,Day):Light->ActorHasTag(TEXT("MareBounce"))?FMath::Lerp(120.f,6500.f,Day):FMath::Lerp(350.f,2600.f,Day)));}
  // Overcast: denser fog with the rain (greys the horizon and the sky), a little darker exposure.
- if(Fog)Fog->GetComponent()->SetFogDensity(FMath::Lerp(.00065f,.0042f,RainNow));
- if(Exposure){Exposure->Settings.bOverride_AutoExposureBias=true;Exposure->Settings.AutoExposureBias=-.3f*RainNow-CVarMareNightDarken.GetValueOnGameThread()*FMath::Clamp(1.f-Day,0.f,1.f);}
+ if(Fog)Fog->GetComponent()->SetFogDensity(FMath::Lerp(.00065f,.0042f,FMath::Max(RainNow,.35f*GloomNow)));
+ if(Exposure){Exposure->Settings.bOverride_AutoExposureBias=true;Exposure->Settings.AutoExposureBias=-.3f*RainNow*(1.f-GloomNow)+CVarMareGloomEV.GetValueOnGameThread()*GloomNow-CVarMareNightDarken.GetValueOnGameThread()*FMath::Clamp(1.f-Day,0.f,1.f);}
  auto Dishes=UMareSimulation::Object(Sim->Definitions,TEXT("dishes"));
  auto Price=[&](const FString& Id){return UMareSimulation::String(UMareSimulation::Object(Dishes,Id),TEXT("name"))+FString::Printf(TEXT("   R$ %.0f"),Sim->SalePrice(Id));};
  for(auto Sign:Signs){if(!IsValid(Sign))continue;FString Text;
@@ -280,9 +290,14 @@ void UMareVisualWorld::Tick(float DeltaSeconds)
 // 08/11 (Sergio: "diminua as ondas; ondas fortes só quando estiver chovendo"): on fair days the sea's Storm sits below
 // zero (heights scale with 1+Storm*k in M_CoastalWater and AMarePerson::SeaHeight: about half of the old everyday sea);
 // rain lifts it to .8, a storm to 1.
-static TAutoConsoleVariable<float> CVarMareSeaCalm(TEXT("mare.SeaCalm"),-.45f,TEXT("Sea roughness on fair days (MPC_MareTime.Storm, below 0 = calmer)."));   // i18n:skip
+// 08/11 (Sergio: "deixe as ondas mais calmas"): -.45 -> -.75 (swell x.48, mid waves x.18).
+static TAutoConsoleVariable<float> CVarMareSeaCalm(TEXT("mare.SeaCalm"),-.75f,TEXT("Sea roughness on fair days (MPC_MareTime.Storm, below 0 = calmer)."));   // i18n:skip
 void UMareVisualWorld::UpdateWeather(float DeltaSeconds,UMareSimulation* Sim)
 {
+ // The tsunami's storm sky, eased every frame (08/11: inside the 2 s refresh it only advanced one frame's time per
+ // refresh, and in slow motion the sky never darkened).
+ {auto Summit=GetWorld()->GetSubsystem<UMareSummitWorld>();const float Target=Summit?Summit->GloomTarget():0.f;
+  GloomNow=FMath::Lerp(GloomNow,Target,1.f-FMath::Exp(-DeltaSeconds*.07f));if(GloomNow<.001f && Target==0.f)GloomNow=0.f;}
  // Today's weather: rain from the save; storm = the "tempestade" event; rough sea (maré alta) also lifts the waves.
  bool bRain=UMareSimulation::String(Sim->State,TEXT("weather"))==TEXT("rain");
  bool bStorm=UMareSimulation::String(Sim->State,TEXT("day_event"))==TEXT("tempestade");
@@ -297,13 +312,13 @@ void UMareVisualWorld::UpdateWeather(float DeltaSeconds,UMareSimulation* Sim)
  // About 4 s to settle; a QA override applies at once (PIE in the background ticks a few times a second).
  const float Ease=CVarMareWeather.GetValueOnGameThread()!=0?1.f:1.f-FMath::Exp(-DeltaSeconds*.25f);
  RainNow=FMath::Lerp(RainNow,bRain?(bStorm?1.f:.7f):0.f,Ease);
- if(SummitOmen>.05f)RainNow=FMath::Min(RainNow,.72f);   // the omen's rain must not hide the wave
+ if(SummitOmen>.05f)RainNow=0.f;   // 08/11: a dry storm (Sergio's reference; the rain drew streaks)
  WindNow=FMath::Lerp(WindNow,bStorm?1.f:bRain?.5f:.2f,Ease);
  // Volcano eruption nights (Sergio, 04/11): the sea gets very rough while the lava glows.
  const float Erupt=GetWorld()->GetSubsystem<UMareMarineWorld>()?GetWorld()->GetSubsystem<UMareMarineWorld>()->VolcanoGlowValue():0.f;
  StormNow=FMath::Lerp(StormNow,bStorm?1.f:bRough?.45f:0.f,Ease);
  // Only the sea follows the eruption; the clouds (StormClouds) keep the weather, or the night sky filled with flakes.
- const float Rough=FMath::Max3(StormNow,.85f*Erupt,1.9f*SummitOmen);
+ const float Rough=FMath::Max3(StormNow,.85f*Erupt,1.1f*SummitOmen);   // 08/11: 1.9 drew a regular grid of crests (Sergio: linhas)
  const float Weather=FMath::Lerp(CVarMareSeaCalm.GetValueOnGameThread(),.8f,FMath::Clamp(RainNow/.7f,0.f,1.f));
  float SeaStorm=Weather+FMath::Max(0.f,Rough-Weather)*FMath::SmoothStep(0.f,.2f,Rough);
  // Tsunami: Storm below zero flattens M_CoastalWater's swell (its heights scale with 1+Storm*k) - the sea goes still.
@@ -316,10 +331,12 @@ void UMareVisualWorld::UpdateWeather(float DeltaSeconds,UMareSimulation* Sim)
   for(TActorIterator<AActor> It(GetWorld());It;++It){
    if(auto Cloud=It->FindComponentByClass<UVolumetricCloudComponent>())if(UMaterialInterface* CloudBase=Cloud->Material.LoadSynchronous()){CloudMaterial=UMaterialInstanceDynamic::Create(CloudBase,this);Cloud->SetMaterial(CloudMaterial);}
    if(auto SkyAtmo=It->FindComponentByClass<USkyAtmosphereComponent>())Atmosphere=SkyAtmo;}}
- if(CloudMaterial){CloudMaterial->SetScalarParameterValue(TEXT("Cloud_GlobalCoverage"),FMath::Lerp(-.2f,.35f,RainNow));
-  CloudMaterial->SetScalarParameterValue(TEXT("Cloud_GlobalDensity"),FMath::Lerp(.008f,.02f,RainNow));
-  CloudMaterial->SetScalarParameterValue(TEXT("StormClouds"),StormNow);}
- if(Atmosphere){Atmosphere->SetRayleighScatteringScale(FMath::Lerp(.0331f,.024f,RainNow));Atmosphere->SetMieScatteringScale(FMath::Lerp(.004f,.05f,RainNow));}
+ if(CloudMaterial){CloudMaterial->SetScalarParameterValue(TEXT("Cloud_GlobalCoverage"),FMath::Lerp(FMath::Lerp(-.2f,.35f,RainNow),CVarMareGloomCover.GetValueOnGameThread(),GloomNow));
+  CloudMaterial->SetScalarParameterValue(TEXT("Cloud_GlobalDensity"),FMath::Lerp(FMath::Lerp(.008f,.02f,RainNow),CVarMareGloomDensity.GetValueOnGameThread(),GloomNow));
+  CloudMaterial->SetScalarParameterValue(TEXT("StormClouds"),FMath::Lerp(StormNow,CVarMareGloomStorm.GetValueOnGameThread(),GloomNow));}
+ // The tsunami's grey storm day: far less blue scattering and a grey haze (the volumetric clouds alone left a navy sky).
+ if(Atmosphere){Atmosphere->SetRayleighScatteringScale(FMath::Lerp(FMath::Lerp(.0331f,.024f,RainNow),CVarMareGloomRayleigh.GetValueOnGameThread(),GloomNow));
+  Atmosphere->SetMieScatteringScale(FMath::Lerp(FMath::Lerp(.004f,.05f,RainNow),CVarMareGloomMie.GetValueOnGameThread(),GloomNow));}
  // Rain curtains: two open cylinders (3.5 m and 9 m) centred on the camera, hidden under a roof.
  if(RainCurtains.IsEmpty()){
   UStaticMesh* Cylinder=LoadObject<UStaticMesh>(nullptr,TEXT("/Engine/BasicShapes/Cylinder.Cylinder"));
@@ -334,7 +351,7 @@ void UMareVisualWorld::UpdateWeather(float DeltaSeconds,UMareSimulation* Sim)
  const FVector Eye=Cam->GetCameraLocation();
  FHitResult Roof;FCollisionQueryParams Q(TEXT("MareRainRoof"),false);if(APawn* Pawn=UGameplayStatics::GetPlayerPawn(GetWorld(),0))Q.AddIgnoredActor(Pawn);
  const bool bCovered=GetWorld()->LineTraceSingleByChannel(Roof,Eye,Eye+FVector(0,0,2500),ECC_Visibility,Q);
- for(auto A:RainCurtains)if(IsValid(A)){A->SetActorLocation(FVector(Eye.X,Eye.Y,Eye.Z+250));A->SetActorHiddenInGame(RainNow<.02f || bCovered);}
+ for(auto A:RainCurtains)if(IsValid(A)){A->SetActorLocation(FVector(Eye.X,Eye.Y,Eye.Z+250));A->SetActorHiddenInGame(RainNow<.02f || bCovered || GloomNow>.05f);}   // 08/11: the tsunami sky is a dry storm (the curtains drew streaks over the whole view)
 }
 
 int32 UMareVisualWorld::FootprintCount()const{return Footprints?Footprints->GetInstanceCount():0;}

@@ -243,7 +243,9 @@ void UMareAudioWorld::Tick(float DeltaSeconds)
  auto Sim=GetWorld()->GetGameInstance()->GetSubsystem<UMareSimulation>();if(!Sim)return;if(!bReady)StartSoundscape(Sim);
  auto Hero=UGameplayStatics::GetPlayerCharacter(this,0);if(!Hero)return;
  const double Minutes=UMareSimulation::Number(Sim->State,TEXT("minutes"));const bool Night=Minutes<360 || Minutes>=1110;
- const bool Rain=UMareSimulation::String(Sim->State,TEXT("weather"))==TEXT("rain");
+ // 08/11: the tsunami omen is a dry storm (no rain on screen), so no rain sound either; the thunder stays.
+ const auto Summit=GetWorld()->GetSubsystem<UMareSummitWorld>();
+ const bool Rain=UMareSimulation::String(Sim->State,TEXT("weather"))==TEXT("rain") && !(Summit && Summit->GloomTarget()>0.f);
  UpdateLayers(DeltaSeconds,Sim,Hero->GetActorLocation(),Rain,Night);UpdateEvents(DeltaSeconds,Sim,Hero->GetActorLocation(),Rain,Night);
  for(auto It=Voices.CreateIterator();It;++It){if(!IsValid(It.Key()) || !It.Key()->IsPlaying())It.RemoveCurrent();else{It.Key()->SetVolumeMultiplier(GetVolume(TEXT("Master"))==0?0:It.Value()*Gain(It.Key()->ComponentHasTag(TEXT("Ambient"))));It.Key()->SetLowPassFilterEnabled(bUnderwater);It.Key()->SetLowPassFilterFrequency(bUnderwater?900:18000);if((Rain || Night) && It.Key()->ComponentHasTag(TEXT("Ambient")) && It.Key()->Sound && It.Key()->Sound->GetName().StartsWith(TEXT("bird")))It.Key()->Stop();}}
 }

@@ -94,6 +94,8 @@ void AMarePerson::LieOn(const FVector& TowelCentre,float AxisYaw,float InRecline
  SetActorLocationAndRotation(TowelCentre+FVector(0,0,12),FRotationMatrix::MakeFromXZ(FVector::UpVector,FRotator(0,AxisYaw,0).Vector()).Rotator());
 }
 
+float AMarePerson::SeaDrawback=0.f;
+
 float AMarePerson::SeaHeight(const FVector2D& P,float T,float Storm)
 {
  // The vertical offset of the ocean material's WPO (mare_materials.build_water, 04/11: long ~85 cm swell, mid waves
@@ -116,7 +118,7 @@ float AMarePerson::SeaHeight(const FVector2D& P,float T,float Storm)
  const float Pier=FMath::Lerp(.2f,1.f,Smooth(0,900,Q.Size()));
  // The sheltered snorkel reef (05/11): the swell drops to 8% around it.
  const FVector2D Rq(P.X-4200,(P.Y+13100)*1.8f);const float Calm=FMath::Lerp(.08f,1.f,Smooth(2200,5200,Rq.Size()));
- return H*Fade*Offshore*Coast*Pier*Calm+Shore*(Swell*15*(1+Storm*.8f)+7+Storm*5)*Pier;
+ return H*Fade*Offshore*Coast*Pier*Calm+Shore*(Swell*15*(1+Storm*.8f)+7+Storm*5)*Pier-SeaDrawback*(1-Smooth(-17950,-42950,Yc));
 }
 
 void AMarePerson::UpdateTool(float DeltaSeconds)
