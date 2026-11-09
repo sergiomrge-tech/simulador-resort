@@ -677,3 +677,73 @@ def hide_entrada(_=''):
             n.append(a.get_actor_label())
     unreal.get_editor_subsystem(unreal.LevelEditorSubsystem).save_current_level()
     return json.dumps(n, ensure_ascii=False)
+
+
+def coast_rocks(arg='info'):
+    """09/11 (map survey): the 'coast_line_01' scans of 'Ilha · rochas da costa' are slabs with a flat cut top and
+    straight cut sides; laid flat on the beach they read as brown boxes. 'info' lists the instances (mesh bounds, scale,
+    z); 'apply' sinks each one by 40 % of its height and tilts it a little (deterministic per index), so the cut
+    faces go under the sand and the top reads as a weathered rock."""
+    import math
+    world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_editor_world()
+    out = []
+    for a in unreal.GameplayStatics.get_all_actors_of_class(world, unreal.Actor):
+        if a.get_actor_label() != 'Ilha · rochas da costa':
+            continue
+        done = 'MareRocksSunk' in [str(t) for t in a.tags]   # applied once only
+        if arg == 'apply' and done:
+            out.append(['already sunk'])
+            continue
+        if arg == 'apply':
+            a.tags = list(a.tags) + ['MareRocksSunk']
+        for c in a.get_components_by_class(unreal.InstancedStaticMeshComponent):
+            if not c.static_mesh or 'coast_line' not in c.static_mesh.get_name():
+                continue
+            box = c.static_mesh.get_bounding_box()
+            h = box.max.z - box.min.z
+            for i in range(c.get_instance_count()):
+                t = c.get_instance_transform(i, True)
+                row = [c.static_mesh.get_name(), i, round(t.translation.x), round(t.translation.y), round(t.translation.z),
+                       round(t.scale3d.z, 2), round(h * t.scale3d.z)]
+                if arg == 'apply':
+                    r = t.rotation.rotator()
+                    tilt = 6.0 + 5.0 * abs(math.sin(i * 12.9898))
+                    r = unreal.Rotator(roll=r.roll + tilt * math.cos(i * 2.3), pitch=r.pitch + tilt * math.sin(i * 1.7), yaw=r.yaw)
+                    t.rotation = r.quaternion()
+                    t.translation = unreal.Vector(t.translation.x, t.translation.y, t.translation.z - 0.4 * h * t.scale3d.z)
+                    c.update_instance_transform(i, t, True, True, True)
+                out.append(row)
+    if arg == 'apply':
+        unreal.get_editor_subsystem(unreal.LevelEditorSubsystem).save_current_level()
+    return json.dumps(out[:60] + [['total', len(out)]], ensure_ascii=False)
+
+
+def mesh_dims(arg=''):
+    """Static mesh bounding box sizes (cm) for ';'-separated asset paths."""
+    out = []
+    for p in arg.split(';'):
+        m = unreal.load_asset(p)
+        if not isinstance(m, unreal.StaticMesh):
+            out.append([p, type(m).__name__ if m else None])
+            continue
+        b = m.get_bounding_box()
+        out.append([p, round(b.max.x - b.min.x), round(b.max.y - b.min.y), round(b.max.z - b.min.z)])
+    return json.dumps(out)
+
+
+def ism_info(arg=''):
+    """Editor: 'actor label|component name': component world scale and the first instances' world transforms."""
+    label, comp = arg.split('|')
+    world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_editor_world()
+    for a in unreal.GameplayStatics.get_all_actors_of_class(world, unreal.Actor):
+        if a.get_actor_label() != label:
+            continue
+        for c in a.get_components_by_class(unreal.InstancedStaticMeshComponent):
+            if c.get_name() == comp:
+                rows = []
+                for i in range(min(4, c.get_instance_count())):
+                    t = c.get_instance_transform(i, True)
+                    l = c.get_instance_transform(i, False)
+                    rows.append([[round(t.translation.x), round(t.translation.y), round(t.translation.z)], str(t.scale3d), str(l.scale3d)])
+                return json.dumps({'comp_scale': str(c.get_world_scale()), 'actor_scale': str(a.get_actor_scale3d()), 'mesh': c.static_mesh.get_name(), 'inst': rows})
+    return 'none'

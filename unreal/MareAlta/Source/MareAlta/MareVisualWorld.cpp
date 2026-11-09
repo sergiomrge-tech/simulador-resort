@@ -136,6 +136,9 @@ void UMareVisualWorld::BuildLamps()
     if(auto Spot=Cast<USpotLightComponent>(Light)){Spot->SetInnerConeAngle(40.f);Spot->SetOuterConeAngle(70.f);Spot->SetWorldRotation(FRotator(-90,0,0));}
     Light->SetWorldLocation(T.TransformPosition(FVector(0,0,Kind->Up)));Light->SetIntensityUnits(ELightUnits::Candelas);Light->SetIntensity(0);
     Light->SetAttenuationRadius(Kind->Radius);Light->SetUseTemperature(true);Light->SetTemperature(Kind->Kelvin);
+    // 09/11 (night photo tour: the water round the pier glowed neon green): the sea's blue-green scattering under the warm
+    // 2900 K posts turned green; the pier and the beach posts over the water burn a cooler 4300 K.
+    {const FVector At=T.GetLocation();if(At.Y<-2400 && At.X>5600 && Kind->Radius>=1500)Light->SetTemperature(4300);}
     // Street lamps and lanterns cast shadows at night (03/11, Sergio: "nada tem sombra"); the small lamps only a contact shadow.
     Light->SetCastShadows(Kind->Radius>=500);Light->ContactShadowLength=.08f;
     // 07/11 (Sergio: "escuro, precisa ter lâmpada de luz dentro do quiosque"): the kiosk's pendants and lantern are work

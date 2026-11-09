@@ -18,12 +18,15 @@ Legenda: [x] corrigido hoje · [ ] falta corrigir · (A) alta, (M) média, (B) b
   procedural feita de manhã com senos. Agora é ruído em 5 camadas: rocha escura com fendas e manchas de musgo.
 - [ ] (M) Face do morro vista do mar ao norte ainda clara demais (cone bege acima da mata). Escurecer ou cobrir com
   vegetação na encosta.
-- [ ] (A) Praia norte, lado oeste (x -150 m, y 880 m): duas placas marrons quadradas e planas na beira d'água, parecendo
-  caixa crua. Identificar a peça e trocar ou remover.
-- [ ] (M) Enseada oeste (x -150 m, y -80 m): retângulos brancos lisos, um dentro d'água rasa e outro na areia.
-- [ ] (M) Costa sudeste (x 300 m, y -80 m): água rasa com manchas escuras irregulares.
-- [ ] (M) Gramados da costa (sudoeste e sudeste): verde muito saturado e uniforme, sem variação, com pedras pousadas
-  como peças soltas.
+- [x] (A) Praia norte e outras 8 praias: placas marrons quadradas na beira d'água. Eram fatias de 54 m da rocha
+  `coast_line_01` achatadas. Testei pedregulho e conjunto de rochas (ficaram escuros ou flutuando) e escondi o grupo; as
+  outras rochas de arenito ficam.
+- [ ] (M) Enseada oeste e costa sudoeste: retângulos lisos sob a água rasa. São a base reta dos blocos de morro antigos
+  do Godot (`M_HillGround`, ex.: `@MeshInstance3D@1937`) entrando no mar. Recortar a parte submersa de cada bloco.
+- [ ] (M) Enseada oeste: a beira da água rasa forma degraus (borda em escada do fundo).
+- [x] (M) Costa sudeste: água rasa com manchas escuras. O chão da ilha mostrava grama e folhas debaixo d'água; agora
+  vira areia abaixo do nível do mar. As manchas que sobraram são capim marinho (natural).
+- [x] (M) Gramados da costa: verde muito saturado e uniforme. Agora com tom menos neon e mais variação.
 - [ ] (M) Chão da mata em alguns trechos (x 0, y 400 m): verde-claro liso, quase sem folhas nem textura.
 - [ ] (B) Água rasa com a malha de cáusticas muito regular, vista do alto.
 
@@ -36,7 +39,8 @@ Legenda: [x] corrigido hoje · [ ] falta corrigir · (A) alta, (M) média, (B) b
 - [x] (A) Estrelas, Via Láctea e aurora sobre o mar à noite.
 - [x] (A) A cúpula do céu tinha colisão e bloqueava a mira (TV, sofá, cama, conversas) no teste do executável.
   Colisão desligada.
-- [ ] (M) Água em volta do píer à noite verde-neon sob os postes.
+- [x] (M) Água em volta do píer à noite verde-neon. Postes sobre o mar com luz mais fria (4300 K). Falta conferir em
+  foto noturna.
 - [ ] (B) Costa oeste vista do alto à noite: retângulo escuro de sombra recortada (limite de distância das sombras).
 - [ ] (B) Ponta do farol à noite: lajes de pedra parecem recortes pretos chapados.
 
@@ -51,27 +55,31 @@ Sondagem das coisas pequenas: 33 vistas de perto, com tudo liberado (`D:/CodexTe
 `D:/CodexTemp/claude/ue/detail.py`).
 
 **Bar do Coqueiro**
-- [ ] (A) Uma mão saindo do tampo do balcão ao lado do prato de pastel (braço de cliente sentado atravessando o
-  balcão).
+- [x] (A) Mão no tampo do balcão: não é defeito. Era a mão do cliente sentado no banco de x 1000, apoiada no balcão,
+  com a câmera entre os dois bancos.
 
 **Quiosque**
-- [ ] (A) A palavra "ENTRADA" escrita na porta do armário do fogão (texto de placa fora do lugar).
-- [ ] (M) Bloco creme liso no fim do balcão, sem detalhe (parece caixa crua).
+- [x] (A) "ENTRADA" escrito no armário do fogão e na geladeira: letreiros antigos das entradas laterais, escondidos.
+- [x] (M) Bloco creme liso no fim do balcão: não é defeito. É a estante de salgados (prateleiras creme, combinando
+  com a geladeira e o azulejo) vista por trás. A primeira tentativa (madeira do balcão) deixou a estante de duas cores
+  e foi desfeita.
 
 **Pousada**
-- [ ] (M) Placa azul em branco num poste na frente da recepção (sem texto nem desenho).
+- [x] (M) Placa azul em branco na frente da recepção: escondida no componente (a compra da pousada reexibia o ator).
 - [ ] (B) Os três bangalôs são idênticos por dentro (mesmo quadro, mesma cama, mesmas cores).
 
 **Casa do herói**
-- [ ] (M) Banheiro: o toalheiro está pregado sobre o batente e atravessa a porta.
-- [ ] (B) Cozinha: vasinho de planta no chão, no canto.
+- [x] (M) Banheiro: toalha e suporte cruzando o batente. Afastados 55 cm da porta.
+- [x] (B) Cozinha: vasinho de planta no chão. Conferido: é decoração de chão, fica.
 
 **Grand Hotel**
 - [ ] (M) Saguão, lado oeste: três "portas" que são só placas marrons na parede, sem batente nem maçaneta.
-- [ ] (M) Suíte: parede divisória (a da TV) com textura de reboco manchado, como pintas cinza.
+- [x] (M) Suíte: parede da TV, pia, banheira e bancada com reboco de pedrinhas (pintas cinza). Agora pedra clara lisa
+  (`M_SuiteStone`).
 - [ ] (M) Suíte: quarto grande quase vazio; a cama fica sozinha num piso enorme.
 - [ ] (B) Suíte: sofá antigo de tecido estampado destoa do estilo moderno do hotel.
-- [ ] (B) Quartos 302 e 303: painel branco liso encostado na parede do banheiro (toalheiro sem detalhe).
+- [ ] (B) Quartos 302 e 303: painel branco liso no banheiro. É o quadro do quarto (`mare_hotel_rooms_Painting`),
+  visto de lado ou de trás; conferir de frente.
 
 **Vila**
 - [ ] (A) Caminhão vermelho parado no meio da rua principal: um caixote vermelho liso, sem portas nem lanternas, com um
