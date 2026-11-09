@@ -1,5 +1,7 @@
 # Maré Alta Resort — Palácio de Memória
 
+> **Checkpoint mais recente: [`docs/ue58/CHECKPOINT_2026-11-09.md`](docs/ue58/CHECKPOINT_2026-11-09.md).**
+
 > **Para continuar o trabalho (outra IA ou pessoa): leia primeiro [`docs/CONTINUAR.md`](docs/CONTINUAR.md).**
 
 > Instruções comuns a todas as IAs: [AGENTS.md](AGENTS.md). Este arquivo guarda
