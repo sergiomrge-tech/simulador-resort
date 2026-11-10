@@ -774,3 +774,10 @@ Galhos, cascas, troncos, tocos e raízes espalhados pela mata (`mare_forest_floo
 - Mapa de profundidade da pintura do título (`SourceArt/UI/Title/T_TitleDepth.png`): gerado localmente com o modelo
   Depth Anything V2 Small (Apache-2.0, https://github.com/DepthAnything/Depth-Anything-V2) pelo script
   `tools/ue58/gen_title_depth.py`. O modelo não acompanha o jogo; só o mapa resultante.
+
+## Rochas ao redor do farol — Poly Haven (CC0), 10/11/2026
+
+- namaqualand_boulder_02, namaqualand_boulder_03, namaqualand_boulder_04 e boulder_01 — https://polyhaven.com (CC0 1.0),
+  glTF 2k com cor, normal e aspereza, baixados por `curl` para `D:/Assets/PolyHaven/<slug>` e importados em
+  `/Game/Nature/Mountain/<slug>`. Usados nas pedras da ponta do farol e na beirada das lajes
+  (`mare_coast_rocks.point_boulders` e `point_rim`).

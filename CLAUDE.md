@@ -845,3 +845,15 @@ linha real no fonte: gravar o script de patch com Write. Tela nova de Slate que 
 da cultura `ja` vêm da fonte chinesa recortada, então `i18n_fonts.py` precisa incluir os textos japoneses dessa tela.
 `ApplyCulture` não roda no editor: testar no exe com `-MareLangQA=<cultura>` (escolhe e confirma sozinho; log
 `MARE_LANGUAGE chosen=... now=... loading_text=...`). Páginas de espera: `mare.ShowUI loading|warmup|language[:cultura]`.
+
+## UE5.8 — rochas do farol e bordas do terreno (10/11)
+
+Laje "flutuando" pode ser uma laje fina com beiral oco: o traço de cima para baixo só acha o topo, e o traço de baixo
+para cima não acerta a face de baixo. Meça com traços horizontais em várias alturas (`mare_probe_near.side_hits`): se a
+uma altura abaixo do topo o traço atravessa metros sem bater, há vão. Grade de 5 m não segue laje: o gerador troca as
+células em volta por uma malha de 50 cm com a borda casando com as vizinhas (`shelf_dune`); sobrepor uma malha fina ao
+terreno grosso na mesma malha deu triângulos pretos. No mínimo por vizinhança, conte só a MESMA laje (alturas
+próximas): uma laje baixa ao lado puxava a areia para baixo da beirada da alta. Linha fina e reta na água vista do
+alto = borda de malha cortada numa linha da grade acima do fundo; fazer a borda mergulhar sob o fundo. Antes de mexer
+num material para corrigir uma linha, descasque as camadas no pixel (`cam_pick`): mudei o WPO do morro à toa.
+`mare_island.terrain` recusa importar com o PIE aberto ("Stop PIE first") e o `shots.py` deixa o PIE ligado.

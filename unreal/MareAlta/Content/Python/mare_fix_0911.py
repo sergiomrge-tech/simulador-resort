@@ -696,7 +696,11 @@ def farol_slab_base(arg=''):
     comp = slab.get_components_by_class(unreal.InstancedStaticMeshComponent)[0]
     t = comp.get_instance_transform(0, True)
     rot = t.rotation.rotator()
-    base = actors.spawn_actor_from_class(unreal.StaticMeshActor, t.translation, unreal.Rotator(roll=rot.roll, pitch=rot.pitch, yaw=rot.yaw + 180))
+    # 10/11 (second photo from Sergio, "flutuando": an arm of the slab lying over the beach sand with a dark gap under
+    # it): the base is now the slab itself, same place and turn, 2% narrower and twice as thick downwards, its top 40 cm
+    # under the slab's top. Doubling the thickness doubles the relief of its top downwards only, so it never shows
+    # above the slab; under every edge and arm of the slab there is rock down to the sand or the sea floor.
+    base = actors.spawn_actor_from_class(unreal.StaticMeshActor, t.translation, rot)
     base.set_actor_label(label)
     base.set_folder_path(slab.get_folder_path())
     base.tags = [x for x in slab.tags]
@@ -706,15 +710,17 @@ def farol_slab_base(arg=''):
         c.set_material(k, comp.get_material(k))
     c.set_collision_enabled(unreal.CollisionEnabled.NO_COLLISION)
     s = t.scale3d
-    base.set_actor_scale3d(unreal.Vector(s.x * 1.06, s.y * 1.06, s.z * 1.6))
+    so, se = slab.get_actor_bounds(False)
+    slab_top = so.z + se.z
+    base.set_actor_scale3d(unreal.Vector(s.x * .98, s.y * .98, s.z * 2.0))
     o, e = base.get_actor_bounds(False)
-    base.add_actor_world_offset(unreal.Vector(0, 0, -45 - (o.z + e.z)), False, False)
+    base.add_actor_world_offset(unreal.Vector(0, 0, slab_top - 40 - (o.z + e.z)), False, False)
     o2, e2 = base.get_actor_bounds(False)
     out = {'slab': [round(t.translation.x), round(t.translation.y), round(t.translation.z)], 'base_top': round(o2.z + e2.z),
            'base_bottom': round(o2.z - e2.z), 'base_extent': [round(e2.x), round(e2.y)]}
     # the stone hanging past the edge
     centre = t.translation
-    for a, cc, i, rt, box in _all_rocks([8500, 8800, -4900, -4600]):
+    for a, cc, i, rt, box in _all_rocks([8604, 8664, -4788, -4728]):   # its old place only: running again moves nothing
         if 'ponta do p' not in a.get_actor_label() or i < 0:
             continue
         l = rt.translation
@@ -725,3 +731,68 @@ def farol_slab_base(arg=''):
         out['moved'] = [round(l.x), round(l.y), '->', round(rt.translation.x), round(rt.translation.y)]
     unreal.get_editor_subsystem(unreal.LevelEditorSubsystem).save_current_level()
     return json.dumps(out)
+
+
+def waterline_ground(arg='list:7500,12500,-7000,-1000'):
+    """10/11 checklist (lighthouse cove: pale flat patches with straight edges on the sand). The old Godot ground
+    'Maré · Ground' (ISM tiles) lies flat at -21..-31 cm there, right at the sea level (-30), over the island terrain
+    (-56..-68): the water shows and vanishes on it in straight-edged patches. 'list:x0,x1,y0,y1' reports the tiles in
+    the region (top, bottom, size); 'apply:...' shrinks to epsilon (keeps the bounds, lesson of 27/10) every tile whose
+    top is under -5 cm, i.e. at or under the waterline, where the island terrain and the sea floor already are."""
+    mode, _, rest = arg.partition(':')
+    x0, x1, y0, y1 = (float(v) for v in rest.split(','))
+    out, hidden = [], 0
+    for a in _actors('Maré · Ground'):
+        for c in a.get_components_by_class(unreal.InstancedStaticMeshComponent):
+            b = c.static_mesh.get_bounding_box()
+            for i in range(c.get_instance_count()):
+                t = c.get_instance_transform(i, True)
+                l, s = t.translation, t.scale3d
+                if s.z < .01:
+                    continue
+                lo = unreal.MathLibrary.transform_location(t, b.min)
+                hi = unreal.MathLibrary.transform_location(t, b.max)
+                bx0, bx1, by0, by1 = min(lo.x, hi.x), max(lo.x, hi.x), min(lo.y, hi.y), max(lo.y, hi.y)
+                if bx1 < x0 or bx0 > x1 or by1 < y0 or by0 > y1:
+                    continue
+                top, bottom = max(lo.z, hi.z), min(lo.z, hi.z)
+                row = [i, round(l.x), round(l.y), round(top), round(bottom), round(bx1 - bx0), round(by1 - by0)]
+                if mode == 'apply' and top < -5:
+                    t.scale3d = unreal.Vector(.001, .001, .001)
+                    c.update_instance_transform(i, t, True, True, True)
+                    row.append('hidden')
+                    hidden += 1
+                out.append(row)
+    if hidden:
+        unreal.get_editor_subsystem(unreal.LevelEditorSubsystem).save_current_level()
+    return json.dumps({'tiles': len(out), 'hidden': hidden, 'rows': out[:40]})
+
+
+def slab_gap(arg='8600,10200,-4300,-3100,50'):
+    """'x0,x1,y0,y1,step': under the big lighthouse slab, the air between its underside and the ground below (points where
+    the slab covers the ground): x, y, ground z, slab underside z, gap (cm). Written to D:/CodexTemp/slab_gap.json."""
+    x0, x1, y0, y1, step = (float(v) for v in arg.split(','))
+    world = _world()
+    slab = _actors('Maré · coast_rocks_02')
+    rocks = [a for a in unreal.GameplayStatics.get_all_actors_of_class(world, unreal.Actor)
+             if 'rocha' in a.get_actor_label() or 'rock' in a.get_actor_label().lower() or a.get_actor_label() == 'Maré · farol']
+    out = []
+    y = y0
+    while y <= y1:
+        x = x0
+        while x <= x1:
+            g = _ground_under(world, x, y, rocks)
+            if g:
+                up = unreal.SystemLibrary.line_trace_single(world, unreal.Vector(x, y, g[0] - 2), unreal.Vector(x, y, g[0] + 400),
+                                                            unreal.TraceTypeQuery.TRACE_TYPE_QUERY1, True, [a for a in rocks if a not in slab],
+                                                            unreal.DrawDebugTrace.NONE, False)
+                t = up.to_tuple() if up else None
+                if t and t[0] and t[9] in slab:
+                    out.append([round(x), round(y), round(g[0]), round(t[4].z), round(t[4].z - g[0]), g[2][:20]])
+            x += step
+        y += step
+    import pathlib
+    pathlib.Path('D:/CodexTemp/slab_gap.json').write_text(json.dumps(out, ensure_ascii=False), encoding='utf-8')
+    gaps = [r[4] for r in out]
+    return json.dumps({'points': len(out), 'gap>15': sum(1 for v in gaps if v > 15), 'max': max(gaps) if gaps else None,
+                       'worst': sorted(out, key=lambda r: -r[4])[:15]}, ensure_ascii=False)

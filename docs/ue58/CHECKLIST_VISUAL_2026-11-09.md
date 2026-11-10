@@ -60,8 +60,17 @@ Legenda: [x] corrigido hoje · [ ] falta corrigir · (A) alta, (M) média, (B) b
   `coast_rocks_02` (0 com a base no ar, medido com `mare_fix_0911.rocks_anywhere`); o que flutuava era a própria laje: a
   beirada avançava sobre a água com ~2 m de vão até a areia do fundo. Ganhou uma base de pedra submersa até o fundo
   (`farol_slab_base`) e a pedra que passava 2 m da beirada foi para dentro. Conferido em foto (`D:/CodexTemp/farolrocks2`).
-- [ ] (B) Ponta do farol: a enseadinha rasa ao lado da casinha tem a beira d'água em linhas retas (terreno com malha de
-  5 m bem no nível do mar, z −7 a −55 cm). Suavizar o terreno ali.
+- [x] (A) "Todas as rochas ao redor do farol estão erradas" (Sergio, 10/11, foto de um braço de laje flutuando). Refeito:
+  a base submersa de 09/11 saiu; as pedras da ponta viraram matacões do Poly Haven (`point_boulders`), 34 matacões na
+  beirada das lajes (`mare_coast_rocks.point_rim`), e a areia sobe até as lajes: os topos delas foram medidos
+  (`mare_probe_near.shelf_map` → `SourceArt/Island/shelf_tops.json`) e o gerador do terreno troca as células de 5 m em volta
+  por uma malha de 50 cm com a borda casando com as vizinhas (`gen_island_terrain.shelf_dune`). Vão sob a beirada medido
+  com traços laterais: de até 60 cm para ~10 cm. Antes/depois em `D:/CodexTemp/farol_antes_depois.jpg`.
+- [x] (B) Ponta do farol: faixas de água reta na praia entre o píer e o farol (o chão antigo `Maré · Ground` fica a −24..−31 cm,
+  no nível do mar). O terreno cobre essa praia a −12 cm no mínimo (`gen_island_terrain`, caixa x 75–105 m, y −32,6..−23 m);
+  o mapa `mare_probe_near.low_ground` só mostra mar de verdade.
+- [x] (B) Costa oeste vista do alto: linha escura fina e reta na água. Era a borda do terreno novo no mar (−0,6 a −0,9 m)
+  cortada numa linha da grade junto ao fundo a −1,9 m; os pontos da borda agora descem a −2,6 m, por baixo do fundo.
 
 ## 3. Coisas pequenas (casas, quiosque, hotel, móveis e decoração)
 

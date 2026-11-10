@@ -169,8 +169,10 @@ def point_boulders(seed='20261109'):
                     break
             else:
                 continue
-            slug = rng.choice(('rock_face_01', 'rock_face_02'))
-            rows.setdefault(slug, []).append((t[4].x, t[4].y, t[4].z, rng.uniform(-180, 180), rng.uniform(160, 260), rng.uniform(-3, 3), rng.uniform(-3, 3)))
+            # 10/11 (Sergio: "todas as rochas ao redor do farol estão erradas"): rounded boulders in their own shape (the
+            # squashed rock_face flakes read as flat cakes)
+            slug = rng.choice(('namaqualand_boulder_02', 'namaqualand_boulder_03', 'namaqualand_boulder_04', 'boulder_01'))
+            rows.setdefault(slug, []).append((t[4].x, t[4].y, t[4].z, rng.uniform(-180, 180), rng.uniform(110, 210), rng.uniform(-8, 8), rng.uniform(-8, 8)))
     root = actors.spawn_actor_from_class(unreal.Actor, unreal.Vector())
     root.set_actor_label(POINT_LABEL)
     root.tags = [unreal.Name('MareGenerated'), unreal.Name('MareCoastRocks')]
@@ -189,8 +191,8 @@ def point_boulders(seed='20261109'):
         tr = []
         for x, y, z, yaw, size, pitch, roll in items:
             s = size / tall
-            # wider than tall (x1.5 across): a rounded boulder sitting deep in the shelf, not a standing flake
-            tr.append(unreal.Transform(unreal.Vector(x, y, z - base * s * .8 - .35 * tall * s * .8), unreal.Rotator(roll=roll, pitch=pitch, yaw=yaw), unreal.Vector(s * 1.5, s * 1.5, s * .8)))
+            # its own proportions, sunk a quarter of its height into the shelf
+            tr.append(unreal.Transform(unreal.Vector(x, y, z - base * s - .25 * tall * s), unreal.Rotator(roll=roll, pitch=pitch, yaw=yaw), unreal.Vector(s, s, s)))
         comp.add_instances(tr, False, True)
         summary[slug] = len(items)
     unreal.get_editor_subsystem(unreal.LevelEditorSubsystem).save_current_level()
@@ -228,3 +230,152 @@ def restore_slab(_=''):
                 n.append(a.get_actor_label())
     unreal.get_editor_subsystem(unreal.LevelEditorSubsystem).save_current_level()
     return json.dumps(n, ensure_ascii=False)
+
+
+RIM_LABEL = 'Ilha · rochas da beirada do farol'
+BOULDERS = ('namaqualand_boulder_02', 'namaqualand_boulder_03', 'namaqualand_boulder_04', 'boulder_01')
+RIM_SHELVES = ('Maré · coast_rocks_02', 'Maré · coast_rocks_03', 'Maré · coast_rocks_05', 'Maré · coast_land_rocks_02')
+RIM_REGION = (7700, 13500, -8000, -1500)
+TRAIL = [(7750, -2500), (8740, -3629), (9960, -3930), (10150, -3880), (10430, -3860)]
+
+
+def _seg_dist(px, py, ax, ay, bx, by):
+    dx, dy = bx - ax, by - ay
+    L = dx * dx + dy * dy or 1.0
+    t = max(0.0, min(1.0, ((px - ax) * dx + (py - ay) * dy) / L))
+    return ((px - ax - t * dx) ** 2 + (py - ay - t * dy) ** 2) ** .5
+
+
+def point_rim(arg='apply:20261110'):
+    """10/11, Sergio: "todas as rochas ao redor do farol estão erradas, corrigir". The lighthouse stands on the Godot
+    coast shelves (coast_rocks_02/03/05, coast_land_rocks_02: Poly Haven rock shelves scaled to tens of metres). Their
+    thin edges hang over the sand and the clear water, so from the beach and from the sea they read as boards lying on
+    the ground (and dropping the shelf showed the old stepped ground, 09/11). Their whole outline gets a ring of big
+    rounded rocks (rock_face_01/02, coast_land_rocks_03/04) wherever the edge stands more than 35 cm over the ground
+    under it: each from below the sand or the sea floor up to a little over the shelf top, half outside the edge, so
+    the point reads as a rocky headland. Keeps 3.5 m off the lighthouse trail and the pier. 'dry:' counts only;
+    'apply:<seed>' builds (re-runnable). Also removes mare_fix_0911.farol_slab_base's copy. PIE stopped; saves."""
+    import random
+    import mare_mountains as mm
+    from editor_toolset.toolsets.actor import ActorTools
+    mode, _, seed = arg.partition(':')
+    world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_editor_world()
+    actors = unreal.get_editor_subsystem(unreal.EditorActorSubsystem)
+    if mode == 'apply':   # the old copy and the old rim go first: a destroyed actor in the ignore list breaks the traces
+        import mare_fix_0911
+        mare_fix_0911.farol_slab_base('revert')
+        for a in actors.get_all_level_actors():
+            if a.get_actor_label() == RIM_LABEL:
+                actors.destroy_actor(a)
+    every = unreal.GameplayStatics.get_all_actors_of_class(world, unreal.Actor)
+    shelves = [a for a in every if a.get_actor_label() in RIM_SHELVES]
+    comps = []
+    for a in shelves:
+        for c in a.get_components_by_class(unreal.StaticMeshComponent):
+            o, e, _ = unreal.SystemLibrary.get_component_bounds(c)
+            if RIM_REGION[0] - e.x < o.x < RIM_REGION[1] + e.x and RIM_REGION[2] - e.y < o.y < RIM_REGION[3] + e.y:
+                comps.append(c)
+    rockish = [a for a in every if 'rocha' in a.get_actor_label() or 'rock' in a.get_actor_label().lower()
+               or a.get_actor_label() in ('Maré · farol', 'Ilha · base submersa da laje do farol')]
+
+    per_comp = {}
+
+    def shelf_top(x, y):
+        best, who = None, None
+        for c in comps:
+            r = c.line_trace_component(unreal.Vector(x, y, 3000), unreal.Vector(x, y, -800), True, False, False)
+            hit = r[0] if isinstance(r, tuple) else r
+            if hit:
+                z = r[1].z
+                if best is None or z > best:
+                    best, who = z, c.get_owner().get_actor_label() + '/' + c.get_name()
+        if who:
+            per_comp[who] = per_comp.get(who, 0) + 1
+        return best
+
+    def ground(x, y):
+        hit = unreal.SystemLibrary.line_trace_single(world, unreal.Vector(x, y, 3000), unreal.Vector(x, y, -800),
+                                                     unreal.TraceTypeQuery.TRACE_TYPE_QUERY1, True, rockish, unreal.DrawDebugTrace.NONE, True)
+        t = hit.to_tuple() if hit else None
+        return t[4].z if t and t[0] else None
+
+    step = 100.0
+    x0, x1, y0, y1 = RIM_REGION
+    nx, ny = int((x1 - x0) / step) + 1, int((y1 - y0) / step) + 1
+    top = {}
+    for j in range(ny):
+        for i in range(nx):
+            z = shelf_top(x0 + i * step, y0 + j * step)
+            if z is not None:
+                top[(i, j)] = z
+    edge = []
+    for (i, j), z in top.items():
+        out = [(di, dj) for di, dj in ((1, 0), (-1, 0), (0, 1), (0, -1)) if (i + di, j + dj) not in top]
+        if not out:
+            continue
+        x, y = x0 + i * step, y0 + j * step
+        if x < 7700:   # the pier
+            continue
+        nxo = sum(d[0] for d in out)
+        nyo = sum(d[1] for d in out)
+        n = (nxo * nxo + nyo * nyo) ** .5 or 1.0
+        # ground just outside the edge: how high the edge stands
+        g = ground(x + nxo / n * 150, y + nyo / n * 150)
+        if g is None or z - g < 20:
+            continue
+        trail = min(_seg_dist(x, y, *TRAIL[k], *TRAIL[k + 1]) for k in range(len(TRAIL) - 1))
+        edge.append((x, y, z, g, nxo / n, nyo / n, trail))
+    rng = random.Random(int(seed or 20261110))
+    rng.shuffle(edge)
+    picked = []
+    for p in edge:
+        if all((p[0] - q[0]) ** 2 + (p[1] - q[1]) ** 2 > 220 ** 2 for q in picked):
+            picked.append(p)
+    if mode == 'dry':
+        return json.dumps({'shelf_cells': len(top), 'per_shelf': per_comp, 'edge_cells': len(edge), 'rocks': len(picked),
+                           'near_trail': sum(1 for p in picked if p[6] < 350), 'tallest_edge': max([p[2] - p[3] for p in picked] or [0])}, ensure_ascii=False)
+    # Rounded boulders (Poly Haven CC0, namaqualand_boulder_02/03/04 and boulder_01, about as tall as they are wide):
+    # the coast_land_rocks are long low shelves (scaled by height they became 20 m carpets) and the rock_face are thin
+    # cliff flakes (they stood round the slab like blades, 10/11 photos).
+    slugs = BOULDERS
+    rows = {}
+    for x, y, z, g, ox, oy, trail in picked:
+        slug = rng.choice(slugs)
+        need = (z - g) + rng.uniform(40, 90)             # from under the ground to a little over the shelf top
+        size = max(150.0, min(420.0, need / .75))       # sinks 25% of its height into the ground
+        push = .22
+        if trail < 350:
+            # by the lighthouse trail: smaller, just reaching the shelf top, pushed out past the edge so the path stays free
+            size = max(110.0, min(size, (z - g + 25) / .75, 200.0))
+            push = .5
+            if trail + push * size < size * .6 + 120:
+                continue
+        cx, cy = x + ox * size * push, y + oy * size * push  # half outside the edge (all of it by the trail)
+        gz = ground(cx, cy)
+        rows.setdefault(slug, []).append((cx, cy, gz if gz is not None else g, size, rng.uniform(-180, 180), rng.uniform(-6, 6), rng.uniform(-6, 6)))
+    root = actors.spawn_actor_from_class(unreal.Actor, unreal.Vector())
+    root.set_actor_label(RIM_LABEL)
+    root.tags = [unreal.Name('MareGenerated'), unreal.Name('MareCoastRocks')]
+    root.set_folder_path('Nature/Island')
+    root.root_component.set_mobility(unreal.ComponentMobility.STATIC)
+    summary = {}
+    for slug, items in rows.items():
+        mesh = mm._mesh(slug)
+        comp = ActorTools.add_component(root, unreal.HierarchicalInstancedStaticMeshComponent.static_class(), 'HISM_rim_' + slug)
+        comp.set_static_mesh(mesh)
+        comp.set_mobility(unreal.ComponentMobility.STATIC)
+        comp.set_collision_enabled(unreal.CollisionEnabled.QUERY_AND_PHYSICS)
+        comp.set_collision_profile_name('BlockAll')
+        b = mesh.get_bounds()
+        base, tall = b.origin.z - b.box_extent.z, 2 * b.box_extent.z or 1.0
+        wide = 2 * max(b.box_extent.x, b.box_extent.y) or 1.0
+        tr = []
+        for x, y, gz, size, yaw, pitch, roll in items:
+            s = size / tall
+            sxy = min(s * 1.1, size * 1.6 / wide)   # never wider than 1.6 times its height
+            tr.append(unreal.Transform(unreal.Vector(x, y, gz - base * s - .25 * size), unreal.Rotator(roll=roll, pitch=pitch, yaw=yaw),
+                                       unreal.Vector(sxy, sxy, s)))
+        comp.add_instances(tr, False, True)
+        summary[slug] = len(items)
+    unreal.get_editor_subsystem(unreal.LevelEditorSubsystem).save_current_level()
+    return json.dumps({'rocks': summary, 'edge_cells': len(edge)})

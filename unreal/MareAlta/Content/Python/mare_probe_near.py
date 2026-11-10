@@ -852,3 +852,145 @@ def delete_dir(arg=''):
     if not arg.startswith('/Game/Custom/'):
         raise ValueError(arg)
     return unreal.EditorAssetLibrary.delete_directory(arg) if unreal.EditorAssetLibrary.does_directory_exist(arg) else False
+
+
+def low_ground(arg='8600,10200,-3400,-2200,50,-27'):
+    """Editor: 'x0,x1,y0,y1,step,level': points whose highest ground (terrain, old ground, rocks) is under level cm,
+    i.e. where the sea surface shows. Returns the bounding box and a coarse ASCII map (# = under water)."""
+    x0, x1, y0, y1, step, level = (float(v) for v in arg.split(','))
+    world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_editor_world()
+    rows, pts = [], []
+    y = y1
+    while y >= y0:
+        line = ''
+        x = x0
+        while x <= x1:
+            hit = unreal.SystemLibrary.line_trace_single(world, unreal.Vector(x, y, 3000), unreal.Vector(x, y, -800),
+                                                         unreal.TraceTypeQuery.TRACE_TYPE_QUERY1, True, [], unreal.DrawDebugTrace.NONE, True)
+            t = hit.to_tuple() if hit else None
+            z = t[4].z if t and t[0] else -999
+            under = z < level
+            line += '#' if under else '.'
+            if under:
+                pts.append((x, y, round(z)))
+            x += step
+        rows.append(line)
+        y -= step
+    xs = [p[0] for p in pts] or [0]
+    ys = [p[1] for p in pts] or [0]
+    return json.dumps({'n': len(pts), 'box': [min(xs), max(xs), min(ys), max(ys)], 'map': rows})
+
+
+def lip_scan(arg='9900,10500,-4000,-3400,25,coast_rocks_02'):
+    """Editor: 'x0,x1,y0,y1,step,label': for each row y, the first x (from x0 towards x1) where the top hit is the
+    labelled actor (a shelf's edge), with the shelf z there and the ground z just before it."""
+    x0, x1, y0, y1, step, label = arg.split(',')
+    x0, x1, y0, y1, step = float(x0), float(x1), float(y0), float(y1), float(step)
+    world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_editor_world()
+
+    def top(x, y):
+        hit = unreal.SystemLibrary.line_trace_single(world, unreal.Vector(x, y, 3000), unreal.Vector(x, y, -800),
+                                                     unreal.TraceTypeQuery.TRACE_TYPE_QUERY1, True, [], unreal.DrawDebugTrace.NONE, True)
+        t = hit.to_tuple() if hit else None
+        if not t or not t[0]:
+            return -999, ''
+        a = t[9] if len(t) > 9 else None
+        return round(t[4].z), (a.get_actor_label() if a else '')
+    out = []
+    y = y0
+    while y <= y1:
+        prev = None
+        x = x0
+        while x <= x1:
+            z, lab = top(x, y)
+            if label in lab:
+                out.append([y, x, z, prev])
+                break
+            prev = [z, lab[:20]]
+            x += step
+        y += 50
+    return json.dumps(out)
+
+
+def col_line(arg='9900,-3720,10200,-3780,15'):
+    """Editor: 'xa,ya,xb,yb,n': n points on the segment, each peeled top-down (up to 3 layers: z, label)."""
+    xa, ya, xb, yb, n = (float(v) for v in arg.split(','))
+    world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_editor_world()
+    out = []
+    for k in range(int(n)):
+        f = k / max(1, n - 1)
+        x, y = xa + (xb - xa) * f, ya + (yb - ya) * f
+        ign, layers = [], []
+        for _ in range(3):
+            hit = unreal.SystemLibrary.line_trace_single(world, unreal.Vector(x, y, 3000), unreal.Vector(x, y, -800),
+                                                         unreal.TraceTypeQuery.TRACE_TYPE_QUERY1, True, ign, unreal.DrawDebugTrace.NONE, True)
+            t = hit.to_tuple() if hit else None
+            if not t or not t[0]:
+                break
+            a = t[9]
+            layers.append([round(t[4].z), a.get_actor_label()[7:27] if a else ''])
+            if not a:
+                break
+            ign.append(a)
+        out.append([round(x), round(y), layers])
+    return json.dumps(out)
+
+
+def side_hits(arg='9950,-3765,10300,-3765,60;80;100;120'):
+    """Editor: 'xa,ya,xb,yb,z1;z2;...': horizontal traces from a to b at each height: first hit (x, y, label)."""
+    seg, zs = arg.split(',', 4)[:4], arg.split(',', 4)[4]
+    xa, ya, xb, yb = (float(v) for v in seg)
+    world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_editor_world()
+    out = []
+    for z in zs.split(';'):
+        z = float(z)
+        hit = unreal.SystemLibrary.line_trace_single(world, unreal.Vector(xa, ya, z), unreal.Vector(xb, yb, z),
+                                                     unreal.TraceTypeQuery.TRACE_TYPE_QUERY1, True, [], unreal.DrawDebugTrace.NONE, True)
+        t = hit.to_tuple() if hit else None
+        if t and t[0]:
+            out.append([z, round(t[4].x), round(t[4].y), t[9].get_actor_label()[7:27] if t[9] else ''])
+        else:
+            out.append([z, None])
+    return json.dumps(out)
+
+
+SHELF_WORDS = ('coast_rocks_0', 'coast_land_rocks')
+
+
+def shelf_map(arg='7700,11600,-5200,-2400,50'):
+    """Editor (10/11, the lighthouse shelves hovering over the sand): the top height of the rock shelves around the
+    lighthouse on a grid, peeling anything on top of them (boulders, props), written to
+    SourceArt/Island/shelf_tops.json for gen_island_terrain.py (the sand rises to meet them)."""
+    x0, x1, y0, y1, step = (float(v) for v in arg.split(','))
+    world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_editor_world()
+    rows, n = [], 0
+    y = y0
+    while y <= y1:
+        row = []
+        x = x0
+        while x <= x1:
+            ign, top = [], None
+            for _ in range(4):
+                hit = unreal.SystemLibrary.line_trace_single(world, unreal.Vector(x, y, 3000), unreal.Vector(x, y, -800),
+                                                             unreal.TraceTypeQuery.TRACE_TYPE_QUERY1, True, ign,
+                                                             unreal.DrawDebugTrace.NONE, True)
+                t = hit.to_tuple() if hit else None
+                if not t or not t[0] or not t[9]:
+                    break
+                lab = t[9].get_actor_label()
+                if any(w in lab for w in SHELF_WORDS):
+                    top = round(t[4].z)
+                    break
+                if 'terreno' in lab or 'Ground' in lab or 'fundo' in lab:
+                    break
+                ign.append(t[9])
+            row.append(top)
+            n += top is not None
+            x += step
+        rows.append(row)
+        y += step
+    path = unreal.Paths.project_dir() + 'SourceArt/Island/shelf_tops.json'
+    with open(path, 'w', encoding='utf-8') as f:
+        json.dump({'origin': [x0, y0], 'step': step, 'tops': rows,
+                   '_doc': 'mare_probe_near.shelf_map: top z (cm) of the rock shelves around the lighthouse, null = none'}, f)
+    return json.dumps({'cells': n, 'path': path})
