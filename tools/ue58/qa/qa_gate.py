@@ -192,8 +192,12 @@ def seats():
     rests = [l for l in LOG.read_bytes().decode('utf-8', 'ignore').splitlines() if 'MARE_RESTS' in l]
     r = re.search(r'checked=(\d+) off=(\d+) worst=(\d+)', rests[-1]) if rests else None
     lying = {'checked': int(r.group(1)), 'off': int(r.group(2)), 'worst': int(r.group(3))} if r else {'checked': 0, 'off': -1, 'worst': -1}
-    return {'pass': int(m.group(1)) > 0 and int(m.group(2)) == 0 and lying['off'] == 0, 'checked': int(m.group(1)), 'off': int(m.group(2)), 'worst': m.group(3),
-            'lying': lying}
+    # Nobody in a conversation pose with a wall in front of the face (MARE_TALKERS).
+    talk = [l for l in LOG.read_bytes().decode('utf-8', 'ignore').splitlines() if 'MARE_TALKERS' in l]
+    w = re.search(r'checked=(\d+) wall=(\d+) who=(.*)$', talk[-1].strip()) if talk else None
+    walls = {'checked': int(w.group(1)), 'wall': int(w.group(2)), 'who': w.group(3)} if w else {'checked': 0, 'wall': -1, 'who': ''}
+    return {'pass': int(m.group(1)) > 0 and int(m.group(2)) == 0 and lying['off'] == 0 and walls['wall'] == 0, 'checked': int(m.group(1)), 'off': int(m.group(2)),
+            'worst': m.group(3), 'lying': lying, 'talkers': walls}
 
 
 def log_since(offset, allow):
@@ -435,7 +439,7 @@ def main():
     print(' camera ', 'ok' if report['cameras']['pass'] else report['cameras']['letterboxed'])
     print(' gait   day', day['moving'], 'moving', len(day['gliding']), 'gliding | night', night['moving'], 'moving', len(night['gliding']), 'gliding')
     print(' seats  ', report['seats']['checked'], 'seated |', report['seats']['off'], 'off the seat | worst', report['seats']['worst'],
-          '| lying', report['seats'].get('lying'))
+          '| lying', report['seats'].get('lying'), '| talking to a wall', report['seats'].get('talkers'))
     v = report['visible']
     print(' visible', v['actors'], 'rigs seen |', len(v['gliding']), 'gliding', len(v['frozen']), 'frozen', (v['gliding'] + v['frozen'])[:6])
     print(' log    ', report['log']['count'], 'bad lines')

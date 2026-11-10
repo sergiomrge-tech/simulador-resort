@@ -114,6 +114,9 @@ public:
   *  settled on an evaluated pose. 10/11: sunbathers only arrive while the hero is 25 m away, so they always lay down
   *  unseen and came out half off the towel (Sergio's photo). */
  float LieError();
+ /** QA: in a conversation pose with a wall 60 cm in front of the face (10/11: a lobby guest talked to the glass front,
+  *  his partner on the other side). */
+ bool TalksToWall()const;
  /** Keeps the (hidden) rig animating for real for this long, seen or not: pose-based alignments and QA measurements. */
  void KeepPoseAwake(float Seconds){PoseAwake=FMath::Max(PoseAwake,Seconds);}
  bool IsSeatedOnPoint()const{return !SeatPelvis.IsZero() || bLying;}

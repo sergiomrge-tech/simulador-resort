@@ -889,3 +889,7 @@ Material em malha instanciada: `TransformPosition` para LOCAL é o espaço do AT
 virou uma velinha: o recorte por altura comeu o resto); use INSTANCE. Emissivo à noite (EV100 -1 a -2): 26 sai branco
 chapado, 1 sai marrom; meça os pixels da foto antes de ajustar outra vez. Banhistas nascem só com o herói a mais de 25 m:
 tudo que depende da pose deles acontece fora da tela (medida `MARE_RESTS`).
+Posição fixa de gente no código (`UpdateHotelGuests`) não acompanha o cenário: um par de conversa ficou com a fachada de
+vidro entre os dois ("homem falando com parede"). Antes de pôr alguém num ponto, traço entre ele e o interlocutor e
+`mare_rest_audit.near` (móveis sem colisão a menos de 1 m). Medida permanente: `MARE_TALKERS`. Dinheiro e fama de QA
+aparecem nas telas que o Sergio vê (fim da demo com R$ 189.630): avisar quando a foto usa números de teste.

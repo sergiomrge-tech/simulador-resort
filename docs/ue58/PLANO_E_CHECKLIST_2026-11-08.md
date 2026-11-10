@@ -115,8 +115,19 @@ Meta: uma demo de ~2 h, estável, bonita, pronta para a Next Fest.
 - [x] Olhar para baixo a pé limitado a −66° (`UMarePlayerPresentation`): de −70° em diante o peito facetado do herói e a
   borda dos braços escondidos tomavam a tela; a −60/−65° só o sapato e a perna. Nadando o limite continua livre (recife).
   Fotos `D:/CodexTemp/uichk/look_m.jpg` e `v2_m.jpg`.
-- [ ] Desempenho: pessoas na praia (processador do jogo 11,5 ms com 6 na tela, 7,1 ms sem ninguém): medir onde vão os
-  ~4 ms e reduzir.
+- [x] Desempenho: pessoas na praia. Medido em 6 rodadas na demo instalada (10/11, `D:/CodexTemp/claude/bench_people.txt`):
+  duas rodadas completas deram 77,9 e 75,5 FPS (ruído de ±4); sem ninguém, 83 (as pessoas custam 5–7 FPS no total); sem
+  cabelo, sem animação de rosto e sem sombra das pessoas ficaram dentro do ruído (70–78). O limite da praia é a placa
+  (~11,5 ms), não o processador. Todos os setores acima de 70 FPS em todas as rodadas, sem geração de quadros. Sem ganho
+  barato nas pessoas: nada alterado.
+- [x] "Homem falando com parede" (foto do Sergio, 10/11, saguão do Grand Hotel no benchmark): o par de conversa do
+  saguão ficava em y 5760 e 5880 com a fachada de vidro da torre em y 5773 entre os dois (medido por traço), um do lado
+  de fora com o rosto no vidro. Os dois agora ficam dentro (y 5940 e 6060, 1,1 m livres em volta). Checagem nova
+  `MARE_TALKERS` (`AMarePerson::TalksToWall`: com alguém à frente, a linha entre as duas cabeças tem de estar livre; sem
+  ninguém, nada sólido a 60 cm do rosto) no portão e na simulação. Fotos `D:/CodexTemp/lobbyqa/m2.jpg`.
+- [x] Bar da Piscina do hotel com um guarda-sol e duas espreguiçadeiras montados na frente do balcão (achado pela checagem
+  nova): a copa cobria a cabeça dos hóspedes e os encostos encostavam nas pernas. O conjunto do meio saiu (9 peças,
+  `mare_fix_1110.bar_front`); os dois dos lados ficam.
 - [ ] Duração da demo no perfil casual: 2,7 h para um teto de 2,5 h; decidir se ajusta.
 - [ ] 👤 Botão "Lista de desejos na Steam" na tela de fim: só aparece com o endereço da loja (`events.json`
   `review_url`), que depende da conta Steamworks.

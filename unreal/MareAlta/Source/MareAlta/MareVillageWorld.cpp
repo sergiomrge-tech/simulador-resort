@@ -130,7 +130,9 @@ void UMareVillageWorld::UpdateHotelGuests()
  // Terrace venues follow the Godot hotel_world.gd layout: restaurant floor 155, gym floor 148, pool bar 120.
  struct FSpot{FVector At;float Yaw;int32 Look;bool bTalk,bSeat;const TCHAR* Name;};
  TArray<FSpot> Spots={{FVector(-1390,6565,133),-90,2,true,false,TEXT("Recepcionista")},{FVector(-1390,6330,133),90,0,true,false,TEXT("Hóspede")},
-  {FVector(-1560,5760,133),90,3,true,false,TEXT("Hóspede")},{FVector(-1560,5880,133),-90,2,true,false,TEXT("Hóspede")},
+  // 10/11 (Sergio's photo: "homem falando com parede"): this pair stood at y 5760 and 5880 with the tower's glass front
+  // at y 5773 between them, one outside with his nose on the glass. Both inside now (traced: 1.1 m clear around each).
+  {FVector(-1560,5940,133),90,3,true,false,TEXT("Hóspede")},{FVector(-1560,6060,133),-90,2,true,false,TEXT("Hóspede")},
   {FVector(-2660,4520,208),90,3,true,false,TEXT("Hóspede")},{FVector(-2530,4510,208),110,2,true,false,TEXT("Hóspede")},{FVector(-2600,4760,208),-90,0,false,false,TEXT("Barman")}};
  // Restaurant diners sit on the real chairs (Content/Data/hotel_seats.json, measured from the chair meshes by
  // mare_hud.chair_seats): the old fixed offsets from the table left them in the air or on the backrest. For seats

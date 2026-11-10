@@ -2745,7 +2745,10 @@ static FAutoConsoleCommandWithWorldAndArgs MareQACommand(TEXT("mare.QA"),TEXT("Q
    UE_LOG(LogTemp,Display,TEXT("MARE_SEATS checked=%d off=%d worst=%s:%.0f"),Checked,Off,*Worst,WorstCm);
    int32 Lying=0,LyingOff=0;float WorstLie=0;
    for(TActorIterator<AMarePerson> It(World);It;++It){const float Cm=It->LieError();if(Cm<0)continue;++Lying;if(Cm>15.f)++LyingOff;WorstLie=FMath::Max(WorstLie,Cm);}
-   UE_LOG(LogTemp,Display,TEXT("MARE_RESTS checked=%d off=%d worst=%.0f"),Lying,LyingOff,WorstLie);bOk=true;}
+   UE_LOG(LogTemp,Display,TEXT("MARE_RESTS checked=%d off=%d worst=%.0f"),Lying,LyingOff,WorstLie);
+   int32 Talkers=0,AtWall=0;FString WallWho;
+   for(TActorIterator<AMarePerson> It(World);It;++It)if(It->bConversing){++Talkers;if(It->TalksToWall()){++AtWall;WallWho+=It->PersonName+TEXT(" ")+It->GetActorLocation().ToCompactString()+TEXT("; ");}}
+   UE_LOG(LogTemp,Display,TEXT("MARE_TALKERS checked=%d wall=%d who=%s"),Talkers,AtWall,*WallWho);bOk=true;}
   else if(Verb==TEXT("buy")){   // QA buys the full-game expansions too (the demo lock is for the player)
    bool bEA=false;S->Definitions->TryGetBoolField(TEXT("demo"),bEA);S->Definitions->SetBoolField(TEXT("demo"),false);
    bOk=S->BuyExpansion(Arg);S->Definitions->SetBoolField(TEXT("demo"),bEA);}

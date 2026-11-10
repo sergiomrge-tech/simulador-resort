@@ -91,6 +91,23 @@ float AMarePerson::SeatError()
  return FVector::Dist(SeatPelvis,GetMesh()->GetSocketLocation(TEXT("pelvis")));
 }
 
+bool AMarePerson::TalksToWall()const
+{
+ // Standing in a conversation pose. With someone ahead (3 m, 40 degrees): the line between the two heads must be free
+ // (the lobby pair had the glass front between them; a counter between two people is lower and is fine). With nobody
+ // ahead: nothing solid 60 cm in front of the face. People who sit, walk or lie are not measured.
+ if(!bConversing || bSeated || bLying || !SeatPelvis.IsZero() || GetVelocity().SizeSquared2D()>25)return false;
+ const FVector Eye=GetActorLocation()+FVector(0,0,55),Forward=GetActorForwardVector();
+ const APawn* Partner=nullptr;float Best=300.f;
+ for(TActorIterator<APawn> It(GetWorld());It;++It){if(*It==this || It->IsHidden())continue;
+  const FVector To=It->GetActorLocation()-GetActorLocation();const float D=To.Size2D();
+  if(D<Best && D>1.f && FVector::DotProduct(To.GetSafeNormal2D(),Forward)>.766f){Best=D;Partner=*It;}}
+ FHitResult Hit;FCollisionQueryParams Q(TEXT("MareTalkWall"),true,this);
+ if(Partner){Q.AddIgnoredActor(Partner);
+  return GetWorld()->LineTraceSingleByChannel(Hit,Eye,Partner->GetActorLocation()+FVector(0,0,55),ECC_Visibility,Q) && !Cast<APawn>(Hit.GetActor());}
+ return GetWorld()->LineTraceSingleByChannel(Hit,Eye,Eye+Forward*60.f,ECC_Visibility,Q) && !Cast<APawn>(Hit.GetActor());
+}
+
 float AMarePerson::LieError()
 {
  // Towel: the body (head to mid-feet) centred on it; lounger: the pelvis on the given point. Horizontal cm. People a

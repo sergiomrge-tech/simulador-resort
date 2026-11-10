@@ -76,3 +76,53 @@ def look(arg='-85'):
     pc.set_control_rotation(unreal.Rotator(roll=0, pitch=float(arg), yaw=r.yaw))
     loc = hero.get_actor_location()
     return json.dumps({'pitch': float(arg), 'hero': [round(loc.x), round(loc.y), round(loc.z)]})
+
+
+def trace(arg):
+    """Editor or PIE world: what stands between two points "x1,y1,z1,x2,y2,z2" (complex trace, every hit)."""
+    x1, y1, z1, x2, y2, z2 = [float(v) for v in arg.split(',')]
+    sub = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem)
+    world = sub.get_game_world() or sub.get_editor_world()
+    hits = unreal.SystemLibrary.line_trace_multi(world, unreal.Vector(x1, y1, z1), unreal.Vector(x2, y2, z2), unreal.TraceTypeQuery.TRACE_TYPE_QUERY1,
+                                                 True, [], unreal.DrawDebugTrace.NONE, True) or []
+    rows = []
+    for h in hits:
+        t = h.to_tuple()
+        loc, actor, comp = t[4], t[9], t[10]
+        mesh = comp.get_editor_property('static_mesh') if comp and isinstance(comp, unreal.StaticMeshComponent) else None
+        rows.append({'at': [round(loc.x), round(loc.y), round(loc.z)], 'actor': actor.get_actor_label() if actor else None, 'mesh': mesh.get_name() if mesh else None})
+    return json.dumps(rows, ensure_ascii=False)
+
+
+def near(arg):
+    """Static mesh parts whose bounds come within `r` cm (horizontal) of "x,y,z,r" and overlap the height of a person
+    standing there (z .. z+180): name, bounds centre, half size, gap to the point."""
+    x, y, z, r = [float(v) for v in arg.split(',')]
+    sub = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem)
+    world = sub.get_game_world() or sub.get_editor_world()
+    rows = []
+    for a in unreal.GameplayStatics.get_all_actors_of_class(world, unreal.Actor):
+        if a.is_hidden_ed() or a.get_editor_property('hidden'):
+            continue
+        for c in a.get_components_by_class(unreal.StaticMeshComponent):
+            m = c.get_editor_property('static_mesh')
+            if not m or not c.is_visible():
+                continue
+            bb = m.get_bounding_box()
+            ts = ([c.get_instance_transform(i, True) for i in range(c.get_instance_count())]
+                  if isinstance(c, unreal.InstancedStaticMeshComponent) else [c.get_world_transform()])
+            for t in ts:
+                ctr = t.transform_location((bb.min + bb.max) * .5)
+                if abs(ctr.x - x) > 1500 or abs(ctr.y - y) > 1500:
+                    continue
+                half = (bb.max - bb.min) * t.scale3d * .5
+                hx, hy, hz = abs(half.x), abs(half.y), abs(half.z)
+                rad = max(hx, hy)   # rotation unknown here: the wider half as a circle
+                if max(hx, hy) > 400:   # floors, walls, the tower: not furniture
+                    continue
+                gap = math.hypot(ctr.x - x, ctr.y - y) - rad
+                if gap < r and ctr.z + hz > z and ctr.z - hz < z + 180:
+                    rows.append({'mesh': m.get_name(), 'actor': a.get_actor_label(), 'centre': [round(ctr.x), round(ctr.y), round(ctr.z)],
+                                 'half': [round(hx), round(hy), round(hz)], 'gap_cm': round(gap)})
+    rows.sort(key=lambda k: k['gap_cm'])
+    return json.dumps(rows[:14], ensure_ascii=False)
