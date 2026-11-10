@@ -39,6 +39,7 @@
 #include "MareSimulation.h"
 #include "Engine/GameInstance.h"
 #include "MareServiceTarget.h"
+#include "MarePerson.h"
 #include "MareOutline.h"
 #include "MareIsland.h"
 #include "MareFx.h"
@@ -2733,6 +2734,13 @@ static FAutoConsoleCommandWithWorldAndArgs MareQACommand(TEXT("mare.QA"),TEXT("Q
   auto PC=World?Cast<AMareController>(UGameplayStatics::GetPlayerController(World,0)):nullptr;auto S=PC?PC->GetSimulation():nullptr;
   if(!S || Args.Num()<2 || !Profile.StartsWith(TEXT("D:/CodexTemp/")))return;const FString Verb=Args[0],Arg=Args[1];bool bOk=false;
   if(Verb==TEXT("money")){S->State->SetNumberField(TEXT("money"),FCString::Atod(*Arg));bOk=S->Save();}
+  // 10/11 "mare.QA seats wake", a few seconds later "mare.QA seats all": everyone seated and settled against the seat point they were aligned to (people who sat
+  // while nobody looked were shifted by their standing pose: behind the bench, on the floor beside the chair).
+  else if(Verb==TEXT("seats") && Arg==TEXT("wake")){for(TActorIterator<AMarePerson> It(World);It;++It)if(It->IsSeatedOnPoint())It->KeepPoseAwake(6.f);bOk=true;}
+  else if(Verb==TEXT("seats")){int32 Checked=0,Off=0;FString Worst;float WorstCm=0;
+   for(TActorIterator<AMarePerson> It(World);It;++It){const float Cm=It->SeatError();if(Cm<0)continue;++Checked;if(Cm>12.f)++Off;
+    if(Cm>WorstCm){WorstCm=Cm;Worst=It->PersonName;}}
+   UE_LOG(LogTemp,Display,TEXT("MARE_SEATS checked=%d off=%d worst=%s:%.0f"),Checked,Off,*Worst,WorstCm);bOk=true;}
   else if(Verb==TEXT("buy")){   // QA buys the full-game expansions too (the demo lock is for the player)
    bool bEA=false;S->Definitions->TryGetBoolField(TEXT("demo"),bEA);S->Definitions->SetBoolField(TEXT("demo"),false);
    bOk=S->BuyExpansion(Arg);S->Definitions->SetBoolField(TEXT("demo"),bEA);}

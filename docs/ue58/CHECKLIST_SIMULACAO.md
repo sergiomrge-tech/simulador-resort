@@ -55,3 +55,53 @@ Em todas as 30 etapas: **0 linhas de erro no log** e **0 pessoas deslizando**; e
   pousada (recepção e bangalô), piscina (mural de orca intencional), píer dos passeios, sorveteria, aluguel de
   pranchas, food truck (letreiro pintado nas laterais), escolinha de surfe, quiosque e vila à noite.
 - Tronco caído de madeira clara no morro: parecia dourado só com a luz do fim de tarde.
+
+---
+
+## Simulação da demo — 10/11/2026
+
+Roteiro `tools/ue58/qa/simulate_game.py` adaptado à demo (`"demo": true`): chegada de barco, carta, empresa, 1º dia do
+quiosque com atendente, sono, as 8 expansões da demo, os 4 capítulos, os 5 negócios, fim da demo, terreno do hotel
+bloqueado, noite e recarregamento. Três rodadas em perfil novo; a última é `D:/CodexTemp/qa/sim/20261110-181735`
+(perfil `claude-sim-qa-20261110-1816`). O dia do quiosque e o sono correm 4× mais rápido (`SIM_SPEED`).
+
+Resultado da última rodada, nas 30 etapas: **0 linhas de erro no log, 0 pessoas deslizando, 0 em pé dentro de móvel,
+0 fora do assento**; o save recarregado é idêntico ao de antes; Grand Hotel e salão de jogos continuam bloqueados com
+fama e dinheiro; `ea_end_shown` gravado (a tela de fim abriu).
+
+### Defeito do jogo
+- [x] P1 **Quem senta sem ninguém olhando fica fora do assento.** Seu Tibúrcio atrás do encosto do banco do cume, com
+  os braços atravessando a madeira (em todas as etapas, já na rodada de 07/11); os 4 clientes do Bar do Coqueiro à
+  noite; os hóspedes do restaurante do hotel sentados no chão ao lado da cadeira. Todos com a mesma medida: 28 cm
+  abaixo e 35 cm atrás do assento (52–55 cm). Causa medida no log (`hidden=1 rendered=0 tick=0`, bacia = pose em pé):
+  o alinhamento desloca o corpo para a bacia animada cair no assento, mas quem não está sendo visto tem o esqueleto
+  pausado (`mare.OffscreenPose`, `SetDistanceHidden`) e a bacia lida era a da pose em pé. Forçar
+  `TickAnimation`/`RefreshBoneTransforms` não muda nada num esqueleto pausado. Correção: enquanto há alinhamento
+  pendente (sentar ou deitar na toalha) o esqueleto anima de verdade (`PoseAwake`) e o deslocamento espera três
+  quadros avaliados. Depois: Seu Tibúrcio 0–2 cm, clientes do bar à noite 3–5 cm; fotos `D:/CodexTemp/seatqa/fix_m.jpg`.
+  Checagem permanente: `mare.QA seats wake` + `mare.QA seats all` (`AMarePerson::SeatError`, linha `MARE_SEATS`),
+  no portão (`seats`) e em cada etapa da simulação.
+
+### Não são defeitos (conferidos)
+- Recarregamento "diferente" da rodada de 07/11: não se repete; o save volta igual.
+- Aoi e Jorge "deslizando" (07/11): alarme falso resolvido em 09/11.
+- Quiosque branco "de dia" às 21h30: foto tirada logo depois do pulo do relógio com a câmera em outro lugar; parado no
+  quiosque por 40 s a noite sai certa (`D:/CodexTemp/simchk/noite_quiosque_40s.png`).
+- Atendente curvado sobre a bancada em fotos seguidas: é o gesto de arrumar o balcão; duas fotos com 4 s de intervalo
+  mostram posturas diferentes.
+- Fila da sorveteria "colada": 95 cm por pessoa no código, achatada pelo ângulo da foto.
+- Painel branco com letras sobre o toldo do aluguel: é o telhado branco do quiosque com a placa em pé na borda.
+- Cleber (comendo) apontado uma vez pela auditoria antiga: medido no meio da transição de sentar.
+
+### Roteiro (para a próxima rodada valer)
+- [x] O comando `mare.QA buy` compra também o que é do jogo completo (de propósito): na demo o roteiro não compra mais
+  o hotel; a recusa da compra do jogador é o teste "Hotel not for sale".
+- [x] Dia 1 sem atendimento (a reposição zerava o caixa e a contratação era recusada): caixa para contratar antes.
+- [x] Câmeras: bar (estava dentro do telhado) e souvenir (de cara para a parede).
+- [x] Noite: 30 s depois do pulo do relógio.
+- [x] Tela de fim da demo fotografada quando abre (o fechamento da etapa anterior a escondia).
+- [x] A auditoria antiga de assento (`seataudit`) só mede móveis do tamanho de cadeira: bancos ficam para a medida nova.
+
+### Melhorias pequenas anotadas
+- [ ] Tochas tiki do quiosque apagadas à noite (ficariam melhores acesas).
+- [ ] Folhinhas verde-escuras espalhadas na areia da praia (foto do benchmark): conferir de perto.

@@ -93,7 +93,13 @@ Meta: uma demo de ~2 h, estável, bonita, pronta para a Next Fest.
 - [ ] Build **Shipping** Win64 e teste num PC sem a Unreal.
 - [ ] Preset **Baixo** medido para os requisitos mínimos.
 - [ ] Integração Steam (Online Subsystem, conquistas da dívida, Steam Cloud, Rich Presence).
-- [ ] Simulação da demo inteira do zero até o fim (roteiro `simulate_game.py`) e lista de correções.
+- [x] Simulação da demo inteira do zero até o fim (10/11, `simulate_game.py` adaptado à demo, três rodadas em perfil novo;
+  detalhe em `CHECKLIST_SIMULACAO.md`). Última rodada, 30 etapas: 0 erros no log, 0 pessoas deslizando, 0 fora do assento,
+  save recarregado idêntico, hotel bloqueado na demo, tela de fim aberta.
+  - [x] Defeito achado e corrigido: quem senta sem ninguém olhando ficava 52–55 cm fora do assento (Seu Tibúrcio atrás
+    do encosto do banco do cume, clientes do bar à noite, hóspedes do restaurante no chão). Checagem nova no portão (`seats`).
+  - [x] Roteiro: chegada de barco, fim da demo, hotel bloqueado, atendente no dia 1, tempo 4× mais rápido (`SIM_SPEED`).
+  - [ ] Melhorias pequenas anotadas: tochas tiki acesas à noite; folhinhas verdes na areia da praia.
 
 ---
 

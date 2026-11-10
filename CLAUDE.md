@@ -867,3 +867,21 @@ uma faixa na cava e inundava a areia atrás na crista. Descasque a geometria pri
 Subir o terreno por cima do chão antigo criou uma barra igual; afundar o chão pelo material criou um contorno novo. A
 mudança certa foi no mar (6 cm, 2–4 cm de subida), com `AMarePerson::SeaHeight` junto. O `shots.py` força tempo bom
 (`mare.Weather 1`), que zera as ondas: para ver maré alta ou tempestade use `PRECMD="mare.Weather 0|mare.Event mare"`.
+
+## UE5.8 — mata clara e quem senta sem ninguém ver (10/11)
+
+Mata "muito clara, sem sombras": tirar a floresta do Lumen (`forest_lumen 0`) tirou junto o campo de distância e a luz do
+céu passou a atravessar as copas; as árvores que projetam sombra ficam no campo de distância mesmo fora dos cartões
+(`mare_forest_light.canopy_df`). E o olho abria igual à praia: sob copa densa fecha 0,7 stop de dia (`mare.ForestEV`,
+árvores contadas em volta da câmera). Testar exposição com `r.ExposureOffset` antes de escrever código.
+Alinhamento por pose (sentar, deitar) feito com a pessoa fora da tela lê a pose EM PÉ: o esqueleto de quem ninguém vê
+fica pausado (`mare.OffscreenPose`, `SetDistanceHidden`) e `TickAnimation(0)`/`RefreshBoneTransforms` forçados não
+mudam nada (medido: bacia antes = depois). Acordar o esqueleto de verdade enquanto o alinhamento está pendente
+(`PoseAwake`) e esperar quadros avaliados. Assinatura do defeito: várias pessoas com o MESMO erro (28 cm abaixo, 35 cm
+atrás): quando o número se repete igual em gente diferente, a causa é o código comum, não cada cadeira.
+A auditoria `seataudit` só enxerga móveis do tamanho de cadeira (banco = "sentado no ar") e lê vértices (perigo em
+malha Nanite): a medida que vale é `mare.QA seats wake` + `seats all` (bacia contra o ponto do assento).
+`mare.QA buy` compra também o que é do jogo completo: na demo não use para testar bloqueio. Foto noturna: esperar 30 s
+com a câmera JÁ no lugar (a luz indireta só se atualiza perto da câmera). `restart_editor.ps1` pelo Bash é recusado
+(política de execução): `powershell -ExecutionPolicy Bypass -File ...` pela ferramenta PowerShell. O portão reprova
+`driver` em perfil de save já usado nas minhas fotos: reiniciar o editor antes do portão.

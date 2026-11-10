@@ -164,7 +164,6 @@ void AMareBench::Sweep()
   TMap<FString,int32> Index;
   for(TObjectIterator<UStaticMeshComponent> It;It;++It){UStaticMeshComponent* C=*It;
    if(C->GetWorld()!=GetWorld() || !C->IsVisible() || !C->GetStaticMesh() || C->GetOwner()==nullptr || C->GetOwner()->IsHidden())continue;
-   if(Cast<USkeletalMeshComponent>(C))continue;
    const FString Mesh=C->GetStaticMesh()->GetName();int32* At=Index.Find(Mesh);
    if(!At){At=&Index.Add(Mesh,Groups.Num());Groups.AddDefaulted();Groups.Last().Mesh=Mesh;Groups.Last().Sections=C->GetStaticMesh()->GetNumSections(0);}
    FSweepGroup& G=Groups[*At];G.Parts.Add(C);auto ISM=Cast<UInstancedStaticMeshComponent>(C);G.Instances+=ISM?ISM->GetInstanceCount():1;}

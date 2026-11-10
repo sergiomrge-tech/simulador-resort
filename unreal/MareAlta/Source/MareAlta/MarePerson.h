@@ -107,6 +107,13 @@ public:
  static bool HotelSeat(int32 Table,int32 Index,FVector& SeatTop,float& Yaw);
  /** Places a seated person on a seat: rough actor transform now, exact pelvis alignment once the clip plays. */
  void SitOn(const FVector& SeatTop,float Yaw);
+ /** QA (mare.QA seats, the gate): cm between the animated pelvis and the seat point it was aligned to; -1 when not
+  *  seated and settled, or while the rig has not evaluated three frames (KeepPoseAwake first: unseen people are paused). */
+ float SeatError();
+ /** Keeps the (hidden) rig animating for real for this long, seen or not: pose-based alignments and QA measurements. */
+ void KeepPoseAwake(float Seconds){PoseAwake=FMath::Max(PoseAwake,Seconds);}
+ bool IsSeatedOnPoint()const{return !SeatPelvis.IsZero();}
+ float PoseAwake=0;int32 AwakeFrames=0;
  /** A pose kept whatever the person does (the bus driver riding the bus): survives the MetaHuman swap. */
  FString HoldPose;
  /** Already placed on a seat (kiosk table points): find the seat top straight below the sitting pelvis (trace) and

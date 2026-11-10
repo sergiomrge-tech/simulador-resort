@@ -84,6 +84,13 @@ void AMarePerson::SitOn(const FVector& SeatTop,float Yaw)
  SeatAlignIn=.6f;
 }
 
+float AMarePerson::SeatError()
+{
+ // Measured on a pose the rig really evaluated: "mare.QA seats wake" first (KeepPoseAwake), then "seats all".
+ if(SeatPelvis.IsZero() || SeatAlignIn>0 || AwakeFrames<3 || Playing!=TEXT("Sitting_Idle") || GetMesh()->GetBoneIndex(TEXT("pelvis"))==INDEX_NONE)return -1.f;
+ return FVector::Dist(SeatPelvis,GetMesh()->GetSocketLocation(TEXT("pelvis")));
+}
+
 void AMarePerson::LieOn(const FVector& TowelCentre,float AxisYaw,float InRecline,bool bInProne)
 {
  Recline=InRecline;bProne=bInProne && InRecline<=0;
@@ -195,6 +202,7 @@ void AMarePerson::UpdateLying(float DeltaSeconds)
    ReadingBook->SetMobility(EComponentMobility::Movable);ReadingBook->SetupAttachment(GetRootComponent());ReadingBook->RegisterComponent();
    ReadingBook->SetWorldLocationAndRotation(Pelvis+Head*62.f+Sky*36.f,FRotationMatrix::MakeFromZY(Normal,Spine).Rotator());
    (void)Side;}
+ if(LieAlignIn>0 && LieAlignIn<=DeltaSeconds && AwakeFrames<3)LieAlignIn=DeltaSeconds+.01f;   // 10/11: wait for the lying pose (see the seat alignment in Tick)
  if(LieAlignIn>0 && (LieAlignIn-=DeltaSeconds)<=0 && GetMesh()->GetBoneIndex(TEXT("head"))!=INDEX_NONE){
   // Centre the body (head to mid-feet) on the towel and rest the pelvis 11 cm above it (the back of the hips on the cloth).
   const FVector Mid=(GetMesh()->GetSocketLocation(TEXT("foot_l"))+GetMesh()->GetSocketLocation(TEXT("foot_r")))/2;
@@ -590,10 +598,17 @@ void AMarePerson::Tick(float DeltaSeconds)
 {
  if(PreTick)PreTick(DeltaSeconds);
  Super::Tick(DeltaSeconds);Elapsed+=DeltaSeconds;
+ // 10/11: a pose-based alignment (seat, towel) needs the pose. Nobody looking = the rig is paused (mare.OffscreenPose,
+ // SetDistanceHidden) and holds whatever it had, usually standing. While one is pending the rig animates for real.
+ if(SeatAlignIn>0 || LieAlignIn>0)PoseAwake=FMath::Max(PoseAwake,.3f);
+ if(PoseAwake>0){
+  if(GetMesh()->VisibilityBasedAnimTickOption==EVisibilityBasedAnimTickOption::AlwaysTickPoseAndRefreshBones && GetMesh()->IsComponentTickEnabled())AwakeFrames=FMath::Min(AwakeFrames+1,1000);
+  else{GetMesh()->VisibilityBasedAnimTickOption=EVisibilityBasedAnimTickOption::AlwaysTickPoseAndRefreshBones;GetMesh()->SetComponentTickEnabled(true);AwakeFrames=0;}
+  if((PoseAwake-=DeltaSeconds)<=0){AwakeFrames=0;if(bHiddenByDistance)GetMesh()->SetComponentTickEnabled(false);}}
  // The hidden rig must animate always while the person is seen (03/11: OnlyTickPoseWhenRendered on it froze everyone,
  // since the rig itself is never drawn). Off screen it may stop: the parts that follow it then also stop sending bones
  // to the GPU. Seen = any visible part drawn in the last 0.6 s, shadows included; checked a few times a second.
- if((SeenCheck-=DeltaSeconds)<=0){SeenCheck=FMath::FRandRange(.25f,.35f);bool bSeen=!CVarMareOffscreenPose.GetValueOnGameThread();
+ if((SeenCheck-=DeltaSeconds)<=0){SeenCheck=FMath::FRandRange(.25f,.35f);bool bSeen=!CVarMareOffscreenPose.GetValueOnGameThread() || PoseAwake>0;
   TArray<UPrimitiveComponent*> Parts;GetComponents(Parts);
   if(MetaHumanBody && MetaHumanBody->GetChildActor()){TArray<UPrimitiveComponent*> Body;MetaHumanBody->GetChildActor()->GetComponents(Body);Parts.Append(Body);}
   for(auto Part:Parts)if(!bSeen && Part!=GetMesh() && Part->IsVisible() && Part->WasRecentlyRendered(.6f))bSeen=true;
@@ -617,8 +632,15 @@ void AMarePerson::Tick(float DeltaSeconds)
   else if(!bOut && bHiddenByDistance)SetDistanceHidden(false);}
  if(MoodLeft>0)MoodLeft-=DeltaSeconds;
  if(Elapsed>=NextBlink){BlinkAt=Elapsed;NextBlink=Elapsed+FMath::FRandRange(2.8f,6.f);}
+ if(SeatAlignIn>0 && SeatAlignIn<=DeltaSeconds && AwakeFrames<3)SeatAlignIn=DeltaSeconds+.01f;   // the sitting pose is not evaluated yet
  if(SeatAlignIn>0 && (SeatAlignIn-=DeltaSeconds)<=0 && Playing==TEXT("Sitting_Idle") && GetMesh()->GetBoneIndex(TEXT("pelvis"))!=INDEX_NONE){
   // Shift the whole actor so the animated pelvis sits on the seat point (heights and proportions differ per body).
+  // 10/11 (demo simulation: Seu Tibúrcio behind the backrest of the summit bench, bar patrons at night and hotel diners
+  // on the floor beside their chairs, all 28 cm low and 35 cm back): nobody was looking when they sat, so the rig held
+  // its standing pose (mare.OffscreenPose, hidden by distance) and the shift was measured against the standing pelvis.
+  // A forced TickAnimation/RefreshBoneTransforms changes nothing on a paused rig (logged: hidden=1 tick=0, pelvis before
+  // = after = the standing pose): the rig is woken for real while an alignment is pending (PoseAwake, top of Tick) and
+  // the shift waits for three evaluated frames.
   AddActorWorldOffset(SeatPelvis-GetMesh()->GetSocketLocation(TEXT("pelvis")));}
  else if(SeatAlignIn<=0 && !SeatPelvis.IsZero() && !Playing.IsEmpty() && Playing!=TEXT("Sitting_Idle"))SeatPelvis=FVector::ZeroVector;   // stood up
  if(SeatPelvis.IsZero())bTableAhead=false;

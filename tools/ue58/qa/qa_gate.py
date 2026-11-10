@@ -7,7 +7,8 @@ What it checks, with data (PASS only if all hard checks pass):
      lights            - no room light shines at night without a lamp/fixture (mare_light_audit.bare_check);
      decor             - game room decoration defects stay fixed (mare_game_room.check);
      cameras           - minigame cameras turn off the 16:9 letterbox (HUD projections land on the balls);
-     driver            - the boatman of the arrival (08/11: by boat, was the bus driver) is dressed, not in swimwear (mare_intro_audit.driver);
+     seats             - everyone seated sits on the seat point they were aligned to, seen or not ("mare.QA seats all");
+    driver            - the boatman of the arrival (08/11: by boat, was the bus driver) is dressed, not in swimwear (mare_intro_audit.driver);
   3. natural movement  - PIE gait audit by day and by night: nobody moving while feet/hands stay put; also on every
                          visible skeletal mesh (MetaHuman bodies): no glider, nobody frozen without idle motion;
   4. clean log         - no Error / Ensure / missing usage flag / default material lines during the PIE run
@@ -172,6 +173,22 @@ def visible(rounds=2):
         if k < rounds - 1:
             time.sleep(1.5)
     return {'actors': total, 'gliding': glide, 'frozen': frozen, 'pass': not glide and not frozen and total > 0}
+
+
+def seats():
+    """10/11 (demo simulation): everyone seated and settled sits on the seat point they were aligned to
+    (AMarePerson::SeatError, "mare.QA seats all" -> MARE_SEATS in the log). People who sat while nobody looked took the
+    shift from their standing pose: Seu Tibúrcio behind the backrest of the summit bench, bar patrons at night and hotel
+    diners on the floor beside their chairs. The hero is in the village here, so the old man on the summit is unseen."""
+    hud('cmd', 'mare.QA seats wake')   # unseen people are paused: their rigs animate for a few seconds, then the measure
+    time.sleep(3)
+    hud('cmd', 'mare.QA seats all')
+    time.sleep(1.5)
+    rows = [l for l in LOG.read_bytes().decode('utf-8', 'ignore').splitlines() if 'MARE_SEATS' in l]
+    m = re.search(r'checked=(\d+) off=(\d+) worst=(.*)$', rows[-1].strip()) if rows else None
+    if not m:
+        return {'pass': False, 'checked': 0, 'off': -1, 'worst': 'no MARE_SEATS line'}
+    return {'pass': int(m.group(1)) > 0 and int(m.group(2)) == 0, 'checked': int(m.group(1)), 'off': int(m.group(2)), 'worst': m.group(3)}
 
 
 def log_since(offset, allow):
@@ -378,6 +395,7 @@ def main():
     hud('cmd', 'mare.OffscreenPose 1'); hud('cmd', 'mare.PeopleHideOffscreen 1'); hud('cmd', 'mare.PeopleDrawDistance -1')
     time.sleep(2)
     report['visible'] = visible()
+    report['seats'] = seats()
     report['ui_shot'] = ui_shot()
     if with_shots:
         report['shots'] = shots(stamp)
@@ -391,7 +409,7 @@ def main():
     pie(False)
     report['untracked'] = untracked(base)
     report['driver'] = dict(DRIVER, **{'pass': bool(DRIVER.get('driver')) and not DRIVER.get('swim')})
-    report['pass'] = all(report[k]['pass'] for k in ('data', 'tests', 'floating', 'cook', 'lights', 'decor', 'cameras', 'gait', 'visible', 'log', 'untracked', 'driver', 'ui_shot'))
+    report['pass'] = all(report[k]['pass'] for k in ('data', 'tests', 'floating', 'cook', 'lights', 'decor', 'cameras', 'gait', 'visible', 'seats', 'log', 'untracked', 'driver', 'ui_shot'))
     OUT.mkdir(parents=True, exist_ok=True)
     (OUT / 'report.json').write_text(json.dumps(report, indent=1, ensure_ascii=False), encoding='utf-8')
     if accept:
@@ -411,6 +429,7 @@ def main():
     print(' decor  ', 'ok' if report['decor']['pass'] else report['decor'])
     print(' camera ', 'ok' if report['cameras']['pass'] else report['cameras']['letterboxed'])
     print(' gait   day', day['moving'], 'moving', len(day['gliding']), 'gliding | night', night['moving'], 'moving', len(night['gliding']), 'gliding')
+    print(' seats  ', report['seats']['checked'], 'seated |', report['seats']['off'], 'off the seat | worst', report['seats']['worst'])
     v = report['visible']
     print(' visible', v['actors'], 'rigs seen |', len(v['gliding']), 'gliding', len(v['frozen']), 'frozen', (v['gliding'] + v['frozen'])[:6])
     print(' log    ', report['log']['count'], 'bad lines')
