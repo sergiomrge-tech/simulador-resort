@@ -36,6 +36,9 @@ private:
   TWeakObjectPtr<AMarePerson> Leader;float Side=0;FVector LastGoal=FVector::ZeroVector;};
  TArray<TArray<FVector>> Routes;
  TArray<FWalker> Pedestrians;
+ /** 10/11: failed walker spawns so far; each one moves the next try to another point of the route (a potted plant stood on
+  *  a route's first point and the same spawn failed 3 times a second for the whole session). */
+ int32 SpawnMisses=0;
  UPROPERTY() TArray<TObjectPtr<AMarePerson>> Residents;
  /** Receptionist, lobby guests, restaurant diners, gym and pool-bar regulars of the Grand Hotel, present only once it is owned. */
  UPROPERTY() TArray<TObjectPtr<AMarePerson>> HotelGuests;

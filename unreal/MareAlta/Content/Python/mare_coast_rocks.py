@@ -125,11 +125,19 @@ def slab_material(_=''):
     import unreal
     import mare_materials
     importlib.reload(mare_materials)
+    # 10/11 (after the lighthouse rework, photos fy/fz): the flat top read as dull brown sand with a hard edge against the
+    # white beach. The rock is greyer, and beach sand blown over it settles on the flat, low parts and in its hollows
+    # (dark texels), in loose patches, so the slab fades into the beach at its edges and stays rock where it rises.
     mat_path = mare_materials._custom_pbr('M_Custom_CoastSlab', 'rock_face', 260,
-                                     'float3 c=A.rgb; float l=dot(c,float3(.3,.59,.11)); float3 rock=lerp(c,float3(.40,.37,.33)*clamp(l*2.2,.55,1.3),.45);'
+                                     'float3 c=A.rgb; float l=dot(c,float3(.3,.59,.11)); float3 rock=lerp(c,float3(.37,.35,.32)*clamp(l*2.4,.5,1.35),.5);'
+                                     'float up=saturate(N.z); float pn=.5+.5*sin(P.x*.0031+sin(P.y*.0023)*2.0)*sin(P.y*.0027+sin(P.x*.0019)*1.7);'
+                                     'float low=1.0-smoothstep(40.0,120.0,P.z);'
+                                     'float cov=smoothstep(.85,.98,up)*saturate(low*.75+pn*.6-.35)*smoothstep(.3,.7,(1.0-l)*.7+pn*.5);'
+                                     'float3 beach=float3(.60,.55,.46)*(.9+.2*pn)*clamp(l*1.6+.3,.85,1.1); float3 o=lerp(rock,beach,saturate(cov));'
                                      # 09/11 (Sergio's photo): under the water the shelf's steps read as black bands: below the
                                      # waterline it turns into the wet sand of the sea floor around it.
-                                     'float3 sand=float3(.62,.55,.42)*clamp(l*2.0,.7,1.2); return lerp(rock,sand,smoothstep(5,-45,P.z));')
+                                     'float3 sand=float3(.62,.55,.42)*clamp(l*2.0,.7,1.2); return lerp(o,sand,smoothstep(5,-45,P.z));',
+                                     extra={'N': lambda m: mare_materials.expression(m, unreal.MaterialExpressionVertexNormalWS)})
     mat = unreal.load_asset(mat_path)
     mesh = unreal.load_asset('/Game/World/Models/World_2019/World_2019.World_2019')
     mesh.set_material(0, mat)

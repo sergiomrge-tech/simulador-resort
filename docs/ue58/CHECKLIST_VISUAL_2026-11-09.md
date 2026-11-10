@@ -27,7 +27,8 @@ Legenda: [x] corrigido hoje · [ ] falta corrigir · (A) alta, (M) média, (B) b
   até −2,2 m. Agora o fundo é areia clara com cáusticas em toda a volta, o terreno novo não cobre os blocos de morro
   (`gen_island_terrain.py`) e o morro vira areia debaixo d'água, levantado no material (−2,2 m vira −1,15 m).
   Conferido em foto nas duas costas e na baía (`D:/CodexTemp/hill10`).
-- [ ] (B) Costa oeste: alguns riscos escuros finos na água rasa, nas emendas entre o morro e o terreno novo.
+- [x] (B) Costa oeste: alguns riscos escuros finos na água rasa, nas emendas entre o morro e o terreno novo. Feito em 10/11
+  (a borda do terreno novo no mar mergulha sob o fundo; ver o item da costa oeste no fim da seção 2).
 - [x] (A) Rochas flutuando nas encostas do oeste (foto do Sergio). Assentadas com `mare_mountains.seat_rocks`: 31 pedras
   em cima das trilhas e 25 enterradas retiradas, medição final com 0 pedras flutuando mais de 30 cm; 621 árvores que
   atravessavam 646 pedras retiradas (`clear_trunks`). Conferido em foto (`D:/CodexTemp/rocks2`).
@@ -71,6 +72,17 @@ Legenda: [x] corrigido hoje · [ ] falta corrigir · (A) alta, (M) média, (B) b
   o mapa `mare_probe_near.low_ground` só mostra mar de verdade.
 - [x] (B) Costa oeste vista do alto: linha escura fina e reta na água. Era a borda do terreno novo no mar (−0,6 a −0,9 m)
   cortada numa linha da grade junto ao fundo a −1,9 m; os pontos da borda agora descem a −2,6 m, por baixo do fundo.
+
+- [x] (M) Manchas de "areia escura" de borda nítida perto do farol (10/11): eram o topo da laje `coast_rocks_02` (a
+  textura de rocha esticada lia como terra). A laje ficou mais cinza e a areia da praia cobre as partes planas e baixas e os
+  vãos (`mare_coast_rocks.slab_material`); fotos `D:/CodexTemp/slab2`.
+- [x] (B) Costa oeste de perto: faixa clara de cantos retos na beira d'água (10/11). Era o morro submerso levantado pelo
+  material até −0,8 m, terminando num degrau de 1 m sobre o fundo atual (−2,1 m). O levantamento foi zerado
+  (`M_HillGround_PBR`); comparação com e sem em `D:/CodexTemp/lift_a` e `lift_b`.
+- [x] (M) Fogueira da festa junina sem chamas (10/11): o fogo de fluido 2D estava deitado no chão. Duas folhas em pé e
+  cruzadas; e os esportes de praia não acontecem em dia de festa (a festa usa o mesmo trecho da praia).
+- [x] (B) Log: um pedestre da vila tentava nascer 3 vezes por segundo no mesmo ponto bloqueado por um vaso (3.451 avisos
+  numa sessão). O ponto é ajustado para fora do obstáculo, e quem não cabe ao lado do líder vira pedestre de outra rota.
 
 ## 3. Coisas pequenas (casas, quiosque, hotel, móveis e decoração)
 

@@ -25,6 +25,8 @@ private:
  UPROPERTY() TObjectPtr<APointLight> Fire;
  /** Simulated flames of the junina bonfire (Niagara Fluids smoke-fire template). */
  UPROPERTY() TObjectPtr<class UNiagaraComponent> Flames;
+ /** Second sheet of the 2D gas fire, turned 90 degrees, so the column of fire reads from every side (10/11). */
+ UPROPERTY() TObjectPtr<class UNiagaraComponent> Flames2;
  /** Villagers and walkers standing near the party dance (mocap clips); released when they leave or it ends. */
  TArray<TWeakObjectPtr<class AMarePerson>> Dancers;
  FVector PartyCentre=FVector::ZeroVector;

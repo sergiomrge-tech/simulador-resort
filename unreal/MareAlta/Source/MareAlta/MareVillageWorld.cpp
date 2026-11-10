@@ -35,7 +35,9 @@ AMarePerson* UMareVillageWorld::SpawnPerson(FVector Position,int32 Variant,const
 {
  auto Nav=FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld());FNavLocation Ground;
  if(!Nav || !Nav->ProjectPointToNavigation(Position,Ground,FVector(90,90,180)))return nullptr;
- auto Person=GetWorld()->SpawnActor<AMarePerson>(Ground.Location+FVector(0,0,88),FRotator::ZeroRotator);
+ // 10/11: nudged out of a prop standing on the point (a potted plant on a route start blocked the spawn for good).
+ FActorSpawnParameters Params;Params.SpawnCollisionHandlingOverride=ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
+ auto Person=GetWorld()->SpawnActor<AMarePerson>(Ground.Location+FVector(0,0,88),FRotator::ZeroRotator,Params);
  if(!Person)return nullptr;if(!Person->SetAppearance(Variant)){Person->Destroy();return nullptr;}
  Person->PersonName=Name;Person->bAmbient=true;Person->GetCharacterMovement()->MaxWalkSpeed=105+Variant*7;
  Person->GetCapsuleComponent()->SetCapsuleRadius(34);
@@ -75,10 +77,14 @@ void UMareVillageWorld::UpdateWalkers(float Dt)
   // last leader and walk with it.
   const int32 Slot=Index%5;const bool bFollower=Slot==1 || Slot==3 || Slot==4;
   AMarePerson* Lead=nullptr;for(int32 K=Pedestrians.Num()-1;K>=0 && bFollower;--K)if(Pedestrians[K].Side==0){Lead=Pedestrians[K].Person.Get();break;}
-  if(bFollower && Lead){const float Side=Slot==4?-80.f:80.f;
-   if(auto Person=SpawnPerson(Lead->GetActorLocation()+Lead->GetActorRightVector()*Side,Index%4,TEXT("Morador"))){FWalker Walker;Walker.Person=Person;Walker.Leader=Lead;Walker.Side=Side;Walker.Previous=Person->GetActorLocation();Pedestrians.Add(Walker);}}
-  else{int32 Leaders=0;for(const auto& Other:Pedestrians)if(Other.Side==0)++Leaders;const int32 Route=Leaders%Routes.Num();const auto& Points=Routes[Route];const int32 Start=(Index/Routes.Num())%Points.Num();
-   if(auto Person=SpawnPerson(Points[Start],Index%4,TEXT("Morador"))){FWalker Walker;Walker.Person=Person;Walker.Route=Route;Walker.Point=FMath::Min(Start+1,Points.Num()-1);Walker.Previous=Person->GetActorLocation();
+  // A follower that cannot be placed beside its leader (a leader standing still by a prop) becomes a walker on its own
+  // route on every third try, instead of trying the same blocked spot for the whole session (10/11).
+  if(bFollower && Lead && SpawnMisses%3!=2){const float Side=Slot==4?-80.f:80.f;
+   auto Person=SpawnPerson(Lead->GetActorLocation()+Lead->GetActorRightVector()*Side,Index%4,TEXT("Morador"));if(!Person)++SpawnMisses;
+   if(Person){FWalker Walker;Walker.Person=Person;Walker.Leader=Lead;Walker.Side=Side;Walker.Previous=Person->GetActorLocation();Pedestrians.Add(Walker);}}
+  else{int32 Leaders=0;for(const auto& Other:Pedestrians)if(Other.Side==0)++Leaders;const int32 Route=Leaders%Routes.Num();const auto& Points=Routes[Route];const int32 Start=(Index/Routes.Num()+SpawnMisses)%Points.Num();
+   auto Person=SpawnPerson(Points[Start],Index%4,TEXT("Morador"));if(!Person)++SpawnMisses;
+   if(Person){FWalker Walker;Walker.Person=Person;Walker.Route=Route;Walker.Point=FMath::Min(Start+1,Points.Num()-1);Walker.Previous=Person->GetActorLocation();
     Person->WalkTo(Points[Walker.Point]);Pedestrians.Add(Walker);}}
  }
  for(int32 I=Pedestrians.Num()-1;I>=0;--I){auto& W=Pedestrians[I];auto P=W.Person.Get();if(!P){Pedestrians.RemoveAt(I);continue;}

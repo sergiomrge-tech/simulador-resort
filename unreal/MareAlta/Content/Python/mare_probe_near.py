@@ -994,3 +994,71 @@ def shelf_map(arg='7700,11600,-5200,-2400,50'):
         json.dump({'origin': [x0, y0], 'step': step, 'tops': rows,
                    '_doc': 'mare_probe_near.shelf_map: top z (cm) of the rock shelves around the lighthouse, null = none'}, f)
     return json.dumps({'cells': n, 'path': path})
+
+
+def gap_scan(arg='-20000,25000,15000,70000,300,800'):
+    """Editor: 'x0,x1,y0,y1,step,drop': top-down traces from 30 km on a grid; reports points whose ground lies more than
+    'drop' cm under the lowest of their 4 neighbours (a slit or hole between ground pieces), with what was hit."""
+    x0, x1, y0, y1, step, drop = (float(v) for v in arg.split(','))
+    world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_editor_world()
+    nx, ny = int((x1 - x0) // step) + 1, int((y1 - y0) // step) + 1
+    Z, L = {}, {}
+    for j in range(ny):
+        for i in range(nx):
+            x, y = x0 + i * step, y0 + j * step
+            hit = unreal.SystemLibrary.line_trace_single(world, unreal.Vector(x, y, 30000), unreal.Vector(x, y, -1500),
+                                                         unreal.TraceTypeQuery.TRACE_TYPE_QUERY1, True, [], unreal.DrawDebugTrace.NONE, True)
+            t = hit.to_tuple() if hit else None
+            if t and t[0]:
+                Z[(j, i)] = t[4].z
+                L[(j, i)] = t[9].get_actor_label() if t[9] else ''
+    out = []
+    for (j, i), z in Z.items():
+        nb = [Z.get(k) for k in ((j - 1, i), (j + 1, i), (j, i - 1), (j, i + 1))]
+        if z < -40 or any(v is None for v in nb):
+            continue
+        if min(nb) - z > drop:
+            out.append([x0 + i * step, y0 + j * step, round(z), round(min(nb)), L[(j, i)][:30]])
+    return json.dumps({'n': len(out), 'pts': out[:60]})
+
+
+def pie_niagara(arg='2600,-2550,1500'):
+    """PIE: Niagara components within r of x,y: system, active, location, bounds, scale, visibility."""
+    x, y, r = (float(v) for v in arg.split(','))
+    world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()
+    if not world:
+        return 'no PIE'
+    out = []
+    for c in unreal.ObjectIterator(unreal.NiagaraComponent):
+        try:
+            if c.get_world() != world:
+                continue
+            p = c.get_world_location()
+            if (p.x - x) ** 2 + (p.y - y) ** 2 > r * r:
+                continue
+            o, e = c.get_bounds() if hasattr(c, 'get_bounds') else (None, None)
+            asset = c.get_asset()
+            out.append({'system': asset.get_path_name() if asset else None, 'active': c.is_active(), 'at': [round(p.x), round(p.y), round(p.z)],
+                        'scale': [round(v, 2) for v in (c.get_world_scale().x, c.get_world_scale().y, c.get_world_scale().z)],
+                        'visible': c.is_visible(), 'paused': c.is_paused() if hasattr(c, 'is_paused') else None})
+        except Exception as ex:
+            out.append(str(ex)[:120])
+    return json.dumps(out)
+
+
+def pie_niagara_rot(arg='2600,-2550,500|0,0,90'):
+    """PIE: sets the world rotation (pitch,yaw,roll) of the Niagara components within r of x,y (QA only)."""
+    where, rot = arg.split('|')
+    x, y, r = (float(v) for v in where.split(','))
+    p_, y_, r_ = (float(v) for v in rot.split(','))
+    world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()
+    n = 0
+    for c in unreal.ObjectIterator(unreal.NiagaraComponent):
+        if c.get_world() != world or not c.get_asset():
+            continue
+        p = c.get_world_location()
+        if (p.x - x) ** 2 + (p.y - y) ** 2 <= r * r:
+            c.set_world_rotation(unreal.Rotator(pitch=p_, yaw=y_, roll=r_), False, False)
+            c.reinitialize_system() if hasattr(c, 'reinitialize_system') else None
+            n += 1
+    return json.dumps({'rotated': n})

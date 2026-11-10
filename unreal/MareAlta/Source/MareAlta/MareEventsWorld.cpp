@@ -25,7 +25,7 @@ void UMareEventsWorld::Clear()
 {
  for(auto& P:Props)if(IsValid(P))P->Destroy();Props.Empty();
  if(IsValid(Fire))Fire->Destroy();Fire=nullptr;
- if(IsValid(Flames))Flames->DestroyComponent();Flames=nullptr;
+ if(IsValid(Flames))Flames->DestroyComponent();Flames=nullptr;if(IsValid(Flames2))Flames2->DestroyComponent();Flames2=nullptr;
  for(auto& D:Dancers)if(D.IsValid())D->WorkPose.Reset();
  Dancers.Empty();PartyCentre=FVector::ZeroVector;
 }
@@ -81,7 +81,11 @@ void UMareEventsWorld::Tick(float DeltaSeconds)
   static UStaticMesh* Scan=LoadObject<UStaticMesh>(nullptr,TEXT("/Game/Custom/Festival/festa_campfire_scan/festa_campfire_scan.festa_campfire_scan"));
   static UNiagaraSystem* FireFx=LoadObject<UNiagaraSystem>(nullptr,TEXT("/NiagaraFluids/Templates/Gas/2D/Systems/Grid2D_Gas_SmokeFire.Grid2D_Gas_SmokeFire"));
   if(Scan)Put(TEXT("festa_campfire_scan"),0,0,0,0,2.0f);else Put(TEXT("festa_campfire_logs"),0,0,0,0,2.4f);
-  if(FireFx)Flames=UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(),FireFx,Ground(Centre)+FVector(0,0,10),FRotator::ZeroRotator,FVector(1.1f),false,true);
+  // 10/11: the template's 2D grid lies in its local XY plane: unturned it spread over the sand as a carpet of embers (no
+  // rising fire in the photos). Stood up (pitch 90) it is a rising column of fire and smoke facing one way; a second sheet
+  // turned 90 degrees covers the side views (a single sheet vanishes edge-on).
+  if(FireFx){Flames=UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(),FireFx,Ground(Centre)+FVector(0,0,10),FRotator(90,0,0),FVector(1.1f),false,true);
+   Flames2=UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(),FireFx,Ground(Centre)+FVector(0,0,10),FRotator(90,90,0),FVector(1.1f),false,true);}
   else Put(TEXT("festa_fire"),0,0,0,5,1.5f);
   Put(TEXT("festa_stall"),0,4,0);
   Put(TEXT("festa_bunting"),-3.5,0,90);Put(TEXT("festa_bunting"),3.5,0,90);

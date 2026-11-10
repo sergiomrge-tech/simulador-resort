@@ -475,8 +475,11 @@ void UMareBeachSportsWorld::Tick(float DeltaSeconds)
     const auto Weather=IConsoleManager::Get().FindConsoleVariable(TEXT("mare.Weather"));const int32 Sky=Weather?Weather->GetInt():0;   // i18n:skip
     const bool bRain=Sky==2 || Sky==3 || (Sky==0 && UMareSimulation::String(Sim->State,TEXT("weather"))==TEXT("rain"));   // i18n:skip
     const double Start=(*Hours)[0]->AsNumber(),End=(*Hours)[1]->AsNumber();
-    if(!bRain && Hour>=Start && Hour<End)Want=SportOfDay(int32(UMareSimulation::Number(Sim->State,TEXT("day"),1)));   // i18n:skip
-    bLate=bRain || Hour>=End+1 || Hour<Start-1;}}
+    // 10/11: a party day sets up the stall and the bonfire on the same stretch of beach (events.json party_spot) all day:
+    // no game there that day (the players would run through the fire).
+    bool bParty=false;if(auto Ev=Sim->EventDef(Sim->TodayEvent()))Ev->TryGetBoolField(TEXT("party"),bParty);   // i18n:skip
+    if(!bRain && !bParty && Hour>=Start && Hour<End)Want=SportOfDay(int32(UMareSimulation::Number(Sim->State,TEXT("day"),1)));   // i18n:skip
+    bLate=bRain || bParty || Hour>=End+1 || Hour<Start-1;}}
   // Nobody pops in or out in front of the player: only far away, in the first seconds of the session, or an hour late.
   const bool bFree=Forced>=0 || W->GetTimeSeconds()<10 || !HeroNear(Num(Defs(),TEXT("unseen"),3500));   // i18n:skip
   if(Want!=Sport && (bFree || (Want==ESport::None && bLate))){if(Want==ESport::None)ClearAll();else Begin(Want);}

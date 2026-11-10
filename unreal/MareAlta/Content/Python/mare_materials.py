@@ -641,8 +641,11 @@ def build_hill_ground():
     MEL.connect_material_property(expression(mat, unreal.MaterialExpressionConstant, r=.92), '', unreal.MaterialProperty.MP_ROUGHNESS)
     # The underwater slope and skirt of a hill tile drop to -2.2 m within a few metres while the island floor beside it
     # stays at -0.8..-1.2 m: through the water the deeper hill read as a dark band with the floor's straight edge next to
-    # it. Below the waterline the hill is lifted, its depth squeezed to 45% (-2.2 m -> -1.15 m), so the floors meet.
-    lift = custom(mat, 'return float3(0, 0, P.z < -30.0 ? (-30.0 - P.z) * .55 : 0.0);', unreal.CustomMaterialOutputType.CMOT_FLOAT3, {'P': pos})
+    # it. Below the waterline the hill was lifted, its depth squeezed to 45% (-2.2 m -> -1.15 m), so the floors met.
+    # 10/11: the island floor no longer covers the hill tiles (gen_island_terrain) and the sea floor beside them is now at
+    # -1.9..-2.3 m, so the lifted hill ended in a 1 m step: a pale shelf with angular corners along the west coast's
+    # waterline. The lift factor is 0 (photos with and without: D:/CodexTemp/lift_a, lift_b); the node stays for tuning.
+    lift = custom(mat, 'return float3(0, 0, P.z < -30.0 ? (-30.0 - P.z) * 0.0 : 0.0);', unreal.CustomMaterialOutputType.CMOT_FLOAT3, {'P': pos})
     MEL.connect_material_property(lift, '', unreal.MaterialProperty.MP_WORLD_POSITION_OFFSET)
     try:
         mat.set_editor_property('max_world_position_offset_displacement', 130.0)   # Nanite bounds for the lift
@@ -749,7 +752,7 @@ def _custom_texture(file, normal=False, linear=False):
     return tex
 
 
-def _custom_pbr(name, slug, size_cm, color_code='return A.rgb;', emissive_code=None, two_sided=False, rough_const=None):
+def _custom_pbr(name, slug, size_cm, color_code='return A.rgb;', emissive_code=None, two_sided=False, rough_const=None, extra=None):
     """World-aligned (tri-planar) PBR so any exported mesh UV works; color_code may recolour A (diffuse)."""
     path = '/Game/Custom/Materials/' + name
     mat = unreal.load_asset(path)
@@ -772,6 +775,8 @@ def _custom_pbr(name, slug, size_cm, color_code='return A.rgb;', emissive_code=N
     diff = projected(_custom_texture(slug + '_diff_1k.jpg'))
     nor = projected(_custom_texture(slug + '_nor_1k.jpg', normal=True))
     inputs = {'A': diff, 'P': expression(mat, unreal.MaterialExpressionWorldPosition), 'O': expression(mat, unreal.MaterialExpressionObjectPositionWS)}
+    for key, make in (extra or {}).items():   # more inputs for color_code: {name: fn(mat) -> expression}
+        inputs[key] = make(mat)
     color = custom(mat, color_code, unreal.CustomMaterialOutputType.CMOT_FLOAT3, inputs)
     MEL.connect_material_property(color, '', unreal.MaterialProperty.MP_BASE_COLOR)
     MEL.connect_material_property(nor, 'XYZ Texture', unreal.MaterialProperty.MP_NORMAL)

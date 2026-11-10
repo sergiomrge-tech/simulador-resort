@@ -857,3 +857,7 @@ próximas): uma laje baixa ao lado puxava a areia para baixo da beirada da alta.
 alto = borda de malha cortada numa linha da grade acima do fundo; fazer a borda mergulhar sob o fundo. Antes de mexer
 num material para corrigir uma linha, descasque as camadas no pixel (`cam_pick`): mudei o WPO do morro à toa.
 `mare_island.terrain` recusa importar com o PIE aberto ("Stop PIE first") e o `shots.py` deixa o PIE ligado.
+Fogo de fluido 2D da Niagara (`Grid2D_Gas_SmokeFire`): a grade fica no plano XY local, deitada no chão, e lia como um
+tapete de brasas. Em pé com pitch 90, e duas folhas cruzadas (uma some de perfil). `HighResShot` pode não mostrar efeito
+de fluido: confira com `mare.Shot`. Pessoa que nasce ao lado de outra (grupo) herda o ponto bloqueado do líder parado:
+toda criação que pode falhar precisa mudar de ponto na tentativa seguinte, senão o aviso de spawn enche o log a cada tique.

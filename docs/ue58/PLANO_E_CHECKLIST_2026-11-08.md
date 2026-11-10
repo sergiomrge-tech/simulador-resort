@@ -54,11 +54,12 @@ Meta: uma demo de ~2 h, estável, bonita, pronta para a Next Fest.
 - [x] B14: borda reta do mar vista do alto (09/11): a malha do mar acabava a 1,3–2,4 km; depois dela aparecia o chão azul
   da atmosfera. Um anel de quadrados grandes leva o mar até 40 km (`gen_ocean.py`) e as ondas zeram nos últimos 150 m do
   mar detalhado (material e `SeaHeight`), sem fresta na junção.
-- [ ] Conferir as frestas escuras entre as peças antigas do morro (vistas no levantamento de 05/11).
+- [x] Conferir as frestas escuras entre as peças antigas do morro (vistas no levantamento de 05/11). 10/11: varredura do
+  morro inteiro por traços (`mare_probe_near.gap_scan`, 3 m e 1 m em volta do cume): 0 buracos; fotos em `D:/CodexTemp/hillgap*`.
 - [x] Som de motor de barco de verdade (09/11): gravação real de um motor Seffle de 1950 (Wikimedia Commons, Work With
   Sounds, CC BY 4.0, créditos no CREDITS.md e no credits.json), 12 s em loop emendado; na chegada e no passeio pilotado
   (tom e volume seguem o acelerador).
-- [ ] Tirar do mapa o que só servia ao ônibus (estrada/ponto), se existir.
+- [x] Tirar do mapa o que só servia ao ônibus (estrada/ponto), se existir. 10/11: nenhum ator nem dado do ônibus no mapa.
 
 ### 1.2 Defeitos que já existiam (QA do executável)
 - [x] `village_walkers_active`, `rain_mix`, `grass_coverage_cooked`, `grass_nonblocking_culled`: passam no executável desde 08/11 (107/107).
@@ -122,7 +123,7 @@ A ilha agora é grande e bonita, mas ainda é cenário. Propostas para dar uso a
 - [x] B12 (09/11): `shrub_02/04` (folhas cinza e caules vermelhos, pareciam secos) viraram `shrub_01/03`; tirados ~4.600
   tufos enterrados sob o terreno novo da ilha ou sobre as trilhas e 76 arbustos cuja copa cobria o caminho de cimento
   (`mare_lawn.fix_0911`).
-- [ ] B14: fim do plano do mar visto do mirante.
+- [x] B14: fim do plano do mar visto do mirante. 10/11: do cume o mar vai até o horizonte (anel de 40 km de 09/11).
 - [ ] Animações da referência (Resort Simulator): mais clipes gratuitos (fila, pegar produto, pagar, deitar), gestos ao interagir.
 - [ ] Pesca com isca, briga com o peixe e livro de espécies; desafios no modo foto.
 - [x] Rádio do quiosque com troca de faixas: aparelho no quiosque, na casa e no hotel (`radio.json` stereos; conferido 09/11).
