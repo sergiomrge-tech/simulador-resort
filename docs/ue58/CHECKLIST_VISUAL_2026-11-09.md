@@ -56,6 +56,10 @@ Legenda: [x] corrigido hoje · [ ] falta corrigir · (A) alta, (M) média, (B) b
   (faixas verticais a ~17% e ~83% da largura, também de dia); na captura da própria janela do jogo (`mare.Shot`) não existe.
 - [x] (B) Ponta do farol à noite: lajes de pedra pretas. Conferido (10/11): são as rochas escuras da costa sob o luar, com
   a areia mais clara em volta; leitura natural, não é defeito.
+- [x] (M) Rochas flutuando perto do farol (pergunta do Sergio, 10/11). As pedras estão apoiadas na laje grande
+  `coast_rocks_02` (0 com a base no ar, medido com `mare_fix_0911.rocks_anywhere`); o que flutuava era a própria laje: a
+  beirada avançava sobre a água com ~2 m de vão até a areia do fundo. Ganhou uma base de pedra submersa até o fundo
+  (`farol_slab_base`) e a pedra que passava 2 m da beirada foi para dentro. Conferido em foto (`D:/CodexTemp/farolrocks2`).
 - [ ] (B) Ponta do farol: a enseadinha rasa ao lado da casinha tem a beira d'água em linhas retas (terreno com malha de
   5 m bem no nível do mar, z −7 a −55 cm). Suavizar o terreno ali.
 
@@ -126,6 +130,12 @@ fachadas e ruas da vila.
 - [x] Tela de idioma antes do menu (bandeiras, 13 idiomas), só na primeira abertura (`MareLanguage.cpp`).
 - [x] Dicas passando no carregamento (10/11): a tela de carregamento e a de preparo dos gráficos trocam de dica a cada
   6 s, com um esmaecer curto (`MareLoading.cpp`, QA `mare.ShowUI loading` / `warmup`).
+
+- [x] Esportes na praia (10/11): vôlei 2 x 2 com rede, peteca em roda de três e futebol de areia 2 x 2 com traves; um
+  por dia, sorteado pelo número do dia e nunca igual ao da véspera, das 9h às 17h em dia sem chuva
+  (`MareBeachSports.cpp`, `Content/Data/beach_sports.json`, QA `mare.Sport volei|peteca|futebol|hold|go|auto`).
+- [x] Tela inicial em 2.5D (10/11): a pintura do título desliza por profundidade (palmeira, barco, vila e céu em
+  velocidades diferentes) com um balanço lento e o movimento do mouse (`M_Title25D`, `T_TitleDepth`).
 
 ## Não são defeitos do jogo
 

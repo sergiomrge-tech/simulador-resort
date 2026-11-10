@@ -825,3 +825,23 @@ no editor (SM6) e o jogo cozido acusa "material resource None with an invalid Sh
 ("Cooking a material resource (in X hierarchy) that doesn't have a valid ShaderMap"). Variação extra: procedural, sem
 textura nova. Volta de fotos de todo o mapa: `D:/CodexTemp/claude/ue/tour.py` (46 poses); câmera dentro de parede ou
 terreno é pose ruim, não defeito; confirme com `pie_pick`.
+
+## UE5.8 — lote visual de 09–10/11 (água rasa, quiosque, idioma, dicas)
+
+"Retângulos em degrau" na água rasa tinham TRÊS causas e só o teste de esconder um ator por vez (`pie_hide` + foto) separou:
+o fundo de areia (`M_IslandSeabed_PBR`) ainda usava a máscara `sea` da praia reta antiga (fora da baía era areia molhada
+escura, sem cáusticas), o terreno novo fazia prateleiras sobre os blocos de morro submersos e a saia desses blocos descia a
+-2,2 m. Recortar a saia (máscara) e costurar o terreno no morro pioraram; medir camadas com `mare_probe_near.cam_pick`
+(raios da própria câmera da foto, descascando ator por ator) antes de mexer. `pie_pick` só vale com o pawn na pose
+(`coast pie nome,x,y,z,pitch,yaw` exige o nome). Nó Custom de material: nome de variável repetido ("cw" float2 e float)
+só aparece no erro do shader; `recompile_material` devolve a lista de erros, ler. Material novo em tudo muda a ilha vista de
+longe (folhas secas deixaram os morros marrons do alto): restringir por distância da costa (T_IslandSDF) e da câmera.
+`HighResShot` também faz faixas verticais a ~17% e ~83% da largura (de dia e de noite): conferir com `mare.Shot` antes de
+tratar como sombra. Trocar material de ~35 malhas em sequência travou o editor uma vez em "InternalPromptForCheckoutAndSave"
+(processo vivo, sem resposta): reiniciar e repetir; a função deve ser reexecutável e ter um `revert`.
+Poly Haven recusa o `urllib` do Python (403): baixar com `curl -A`. Texto C++ com `
+` gravado por heredoc vira quebra de
+linha real no fonte: gravar o script de patch com Write. Tela nova de Slate que mostra o nome de cada idioma: os kanji fora
+da cultura `ja` vêm da fonte chinesa recortada, então `i18n_fonts.py` precisa incluir os textos japoneses dessa tela.
+`ApplyCulture` não roda no editor: testar no exe com `-MareLangQA=<cultura>` (escolhe e confirma sozinho; log
+`MARE_LANGUAGE chosen=... now=... loading_text=...`). Páginas de espera: `mare.ShowUI loading|warmup|language[:cultura]`.

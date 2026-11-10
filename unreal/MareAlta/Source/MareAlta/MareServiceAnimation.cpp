@@ -32,6 +32,8 @@ struct FServiceProxy : FAnimSingleNodeInstanceProxy
 {
  explicit FServiceProxy(UAnimInstance* Instance):FAnimSingleNodeInstanceProxy(Instance){}
  FVector Targets[2],Elbows[2];float Strength[2]={0,0};
+ FVector LegTarget=FVector::ZeroVector,LegKnee=FVector::ZeroVector;float LegStrength=0;   // right leg (a kick)
+ float SquatNow=0,LeanNow=0;   // half squat (AMarePerson::Squat / Lean)
  TWeakObjectPtr<UAnimationAsset> PreviousAsset;
  TArray<FTransform> LastLocals,BlendFrom;
  float BlendTime=.2f;bool bNewClip=false;
@@ -58,8 +60,11 @@ struct FServiceProxy : FAnimSingleNodeInstanceProxy
     Strength[Hand]=FMath::FInterpTo(Strength[Hand],Weight,DeltaSeconds,12.f);Targets[Hand]=Inverse.TransformPosition(Target);Elbows[Hand]=Inverse.TransformPosition(Elbow);}
   }return;}
   auto Mesh=Person->GetMesh();const auto ToComponent=Mesh->GetComponentTransform().Inverse();
-  if(Person->bHandGoals){   // a tool held in both hands (pool skimmer): the hands follow it
-   for(int32 Hand=0;Hand<2;++Hand){Strength[Hand]=FMath::FInterpTo(Strength[Hand],1.f,DeltaSeconds,6.f);
+  LegStrength=FMath::FInterpTo(LegStrength,Person->FootGoalWeight,DeltaSeconds,14.f);
+  SquatNow=FMath::FInterpTo(SquatNow,Person->Squat,DeltaSeconds,8.f);LeanNow=FMath::FInterpTo(LeanNow,Person->Lean,DeltaSeconds,8.f);
+  if(Person->FootGoalWeight>0){LegTarget=ToComponent.TransformPosition(Person->FootGoal);LegKnee=ToComponent.TransformPosition(Person->KneeGoal);}
+  if(Person->bHandGoals){   // a tool held in both hands (pool skimmer) or a ball being reached: the hands follow it
+   for(int32 Hand=0;Hand<2;++Hand){Strength[Hand]=FMath::FInterpTo(Strength[Hand],Person->HandGoalWeight[Hand],DeltaSeconds,Person->HandGoalSpeed);
     Targets[Hand]=ToComponent.TransformPosition(Person->HandGoal[Hand]);Elbows[Hand]=ToComponent.TransformPosition(Person->ElbowGoal[Hand]);}
    return;}
   for(int32 Hand=0;Hand<2;++Hand){
@@ -131,6 +136,35 @@ struct FServiceProxy : FAnimSingleNodeInstanceProxy
     const FQuat P=Pose.GetComponentSpaceTransform(Parent).GetRotation();const FQuat Bend(FVector(1,0,0),FMath::DegreesToRadians(F.Value*Upright));
     auto& Local=Output.Pose[Bone];Local.SetRotation((P.Inverse()*Bend*P*Local.GetRotation()).GetNormalized());}
   }
+  if(SquatNow>.5f){
+   // Half squat: the pelvis drops, each leg is solved again so the foot stays where the clip had it, knees forward
+   // (component +Y is the face side). The legs are read first: FCSPose keeps them in component space while the pelvis
+   // moves, so the thigh is moved by hand and everything else (spine, arms, head) follows the pelvis.
+   const auto& Bones=Output.Pose.GetBoneContainer();const auto& Ref=Bones.GetReferenceSkeleton();
+   auto Index=[&](const TCHAR* Name){return Bones.GetCompactPoseIndexFromSkeletonIndex(Ref.FindBoneIndex(Name));};
+   const FCompactPoseBoneIndex Pelvis=Index(TEXT("pelvis"));   // i18n:skip
+   const FCompactPoseBoneIndex Leg[2][3]={{Index(TEXT("thigh_r")),Index(TEXT("calf_r")),Index(TEXT("foot_r"))},{Index(TEXT("thigh_l")),Index(TEXT("calf_l")),Index(TEXT("foot_l"))}};   // i18n:skip
+   bool bValid=Pelvis!=INDEX_NONE;for(const auto& L:Leg)for(const auto& B:L)bValid&=B!=INDEX_NONE;
+   if(bValid){FCSPose<FCompactPose> Pose;Pose.InitPose(Output.Pose);const FVector Drop(0,0,-SquatNow);
+    FTransform Old[2][3];for(int32 S=0;S<2;++S)for(int32 I=0;I<3;++I)Old[S][I]=Pose.GetComponentSpaceTransform(Leg[S][I]);
+    FTransform Hip=Pose.GetComponentSpaceTransform(Pelvis);Hip.AddToTranslation(Drop);Pose.SetComponentSpaceTransform(Pelvis,Hip);
+    for(int32 S=0;S<2;++S){FTransform Upper=Old[S][0],Lower=Old[S][1],End=Old[S][2];
+     Upper.AddToTranslation(Drop);Lower.AddToTranslation(Drop);End.AddToTranslation(Drop);
+     AnimationCore::SolveTwoBoneIK(Upper,Lower,End,Old[S][1].GetLocation()+FVector(0,90,0),Old[S][2].GetLocation(),false,1.,1.);
+     End.SetRotation(Old[S][2].GetRotation());   // the sole stays flat
+     Pose.SetComponentSpaceTransform(Leg[S][0],Upper);Pose.SetComponentSpaceTransform(Leg[S][1],Lower);Pose.SetComponentSpaceTransform(Leg[S][2],End);}
+    FCSPose<FCompactPose>::ConvertComponentPosesToLocalPosesSafe(Pose,Output.Pose);}
+  }
+  if(LeanNow>.5f){
+   // Torso leaning forward at the waist (as the lounger bend, in the pelvis frame).
+   const auto& Bones=Output.Pose.GetBoneContainer();const auto& Ref=Bones.GetReferenceSkeleton();
+   const FCompactPoseBoneIndex Spine=Bones.GetCompactPoseIndexFromSkeletonIndex(Ref.FindBoneIndex(TEXT("spine_01")));   // i18n:skip
+   const FCompactPoseBoneIndex Pelvis=Bones.GetCompactPoseIndexFromSkeletonIndex(Ref.FindBoneIndex(TEXT("pelvis")));   // i18n:skip
+   if(Spine!=INDEX_NONE && Pelvis!=INDEX_NONE){FCSPose<FCompactPose> Pose;Pose.InitPose(Output.Pose);
+    const FQuat Parent=Pose.GetComponentSpaceTransform(Pelvis).GetRotation();
+    const FQuat Bend(FVector(1,0,0),FMath::DegreesToRadians(-LeanNow));
+    auto& Local=Output.Pose[Spine];Local.SetRotation((Parent.Inverse()*Bend*Parent*Local.GetRotation()).GetNormalized());}
+  }
   if(Recline>0){
    // Lounger: bend the torso up at the waist (spine_01 flexes forward about the body's side axis, component X), the
    // rotation expressed in the pelvis frame so everything above follows.
@@ -164,8 +198,17 @@ struct FServiceProxy : FAnimSingleNodeInstanceProxy
     if(Name.StartsWith(TEXT("index_")) || Name.StartsWith(TEXT("middle_")) || Name.StartsWith(TEXT("ring_")) || Name.StartsWith(TEXT("pinky_")) || Name.StartsWith(TEXT("thumb_")))Output.Pose[Index].SetRotation(Ref.GetRefBonePose()[SkeletonIndex].GetRotation());
    }
   }
-  if(Strength[0]<.001f && Strength[1]<.001f)return true;
+  if(Strength[0]<.001f && Strength[1]<.001f && LegStrength<.001f)return true;
   FCSPose<FCompactPose> Pose;Pose.InitPose(Output.Pose);const auto& Bones=Output.Pose.GetBoneContainer();
+  if(LegStrength>=.001f){   // the right foot swings to the ball
+   const FName Names[3]={TEXT("thigh_r"),TEXT("calf_r"),TEXT("foot_r")};FCompactPoseBoneIndex Indices[3]={FCompactPoseBoneIndex(INDEX_NONE),FCompactPoseBoneIndex(INDEX_NONE),FCompactPoseBoneIndex(INDEX_NONE)};bool bValid=true;   // i18n:skip
+   for(int32 I=0;I<3;++I){Indices[I]=Bones.GetCompactPoseIndexFromSkeletonIndex(Bones.GetReferenceSkeleton().FindBoneIndex(Names[I]));bValid&=Indices[I]!=INDEX_NONE;}
+   if(bValid){FTransform Upper=Pose.GetComponentSpaceTransform(Indices[0]),Lower=Pose.GetComponentSpaceTransform(Indices[1]),End=Pose.GetComponentSpaceTransform(Indices[2]);
+    const FTransform Original[3]={Upper,Lower,End};
+    AnimationCore::SolveTwoBoneIK(Upper,Lower,End,LegKnee,LegTarget,false,1.,1.);
+    const FTransform Solved[3]={Upper,Lower,End};
+    for(int32 I=0;I<3;++I){FTransform Blended;Blended.Blend(Original[I],Solved[I],LegStrength);Blended.NormalizeRotation();Pose.SetComponentSpaceTransform(Indices[I],Blended);}}
+  }
   for(int32 Hand=0;Hand<2;++Hand){if(Strength[Hand]<.001f)continue;
    const FName Names[3]={Hand==0?TEXT("upperarm_r"):TEXT("upperarm_l"),Hand==0?TEXT("lowerarm_r"):TEXT("lowerarm_l"),Hand==0?TEXT("hand_r"):TEXT("hand_l")};
    FCompactPoseBoneIndex Indices[3];bool bValid=true;

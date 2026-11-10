@@ -134,6 +134,16 @@ public:
   *  slow arc; "Sweep" (housekeeper) the Poly Haven plastic broom brushing the floor in short strokes. */
  UPROPERTY() TObjectPtr<UStaticMeshComponent> Tool;
  bool bHandGoals=false;FVector HandGoal[2],ElbowGoal[2];   // [0] right hand, [1] left hand (world)
+ /** How much each hand follows its goal (1 = fully) and how fast the reach blends in and out; the beach sports reach
+  *  for the ball with one or both hands for a fraction of a second (UMareBeachSportsWorld). */
+ float HandGoalWeight[2]={1.f,1.f},HandGoalSpeed=6.f;
+ /** The hand goals belong to another system (beach sports): UpdateTool leaves bHandGoals alone. */
+ bool bHandGoalsHeld=false;
+ /** Right foot reaching a world point by leg IK (a kick): weight 0..1, the foot and knee goals. */
+ float FootGoalWeight=0;FVector FootGoal=FVector::ZeroVector,KneeGoal=FVector::ZeroVector;
+ /** Half squat made in the pose (10/11, volleyball bump: the UAL crouch is a stealth crouch, far too low): the hips
+  *  drop Squat cm while both feet stay where they are (leg IK, knees forward) and the torso leans Lean degrees. */
+ float Squat=0,Lean=0;
  void UpdateTool(float DeltaSeconds);
  bool bTreading=false,bSeaSwim=false;FVector SwimAt=FVector::ZeroVector;
  /** Vertical offset of the sea surface at a point (cm) at world time Seconds, as M_Ocean's world position offset

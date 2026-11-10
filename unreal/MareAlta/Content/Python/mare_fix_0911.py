@@ -605,3 +605,123 @@ def rocks_float(arg='list'):
     import pathlib
     pathlib.Path('D:/CodexTemp/rocks_float.json').write_text(json.dumps({'summary': summary, 'rows': worst}, ensure_ascii=False, indent=0), encoding='utf-8')
     return json.dumps({'summary': summary, 'worst': worst[:12]}, ensure_ascii=False)
+
+
+ROCK_WORDS = ('rock', 'boulder', 'stone', 'coast_land', 'cliff')
+
+
+def _all_rocks(region):
+    """(actor, component, index or -1, world transform, mesh box) of every rock-like mesh in region [x0, x1, y0, y1],
+    any actor (the Godot export groups too: coast_rocks_05, coast_land_rocks_02, sand_rocks...), at least 25 cm tall."""
+    for a in unreal.GameplayStatics.get_all_actors_of_class(_world(), unreal.Actor):
+        for c in a.get_components_by_class(unreal.StaticMeshComponent):
+            m = c.static_mesh
+            if not m or not any(w in m.get_name().lower() or w in a.get_actor_label().lower() for w in ROCK_WORDS):
+                continue
+            box = m.get_bounding_box()
+            if isinstance(c, unreal.InstancedStaticMeshComponent):
+                items = [(i, c.get_instance_transform(i, True)) for i in range(c.get_instance_count())]
+            else:
+                items = [(-1, c.get_world_transform())]
+            for i, t in items:
+                l = t.translation
+                if not (region[0] <= l.x <= region[1] and region[2] <= l.y <= region[3]):
+                    continue
+                if (box.max.z - box.min.z) * t.scale3d.z < 25:
+                    continue
+                yield a, c, i, t, box
+
+
+def rocks_anywhere(arg='list:8000,13500,-7500,-1500'):
+    """10/11, Sergio: "corrigiu as rochas flutuando perto do farol?". The 09/11 fix only measured the two generated rock
+    actors; the lighthouse point has the Godot export rocks. 'list:x0,x1,y0,y1' measures every rock-like mesh there:
+    gap between the bottom of its box (centre and four corners inset 20%) and the ground under it, every rock actor
+    ignored (a rock on a rock is not ground). 'apply:...' lowers each rock whose WHOLE bottom is in the air (smallest gap
+    > 6 cm) by that gap + 6 cm, so it sits in the sand. PIE stopped for apply (saves the level)."""
+    mode, _, rest = arg.partition(':')
+    region = [float(v) for v in rest.split(',')]
+    world = _world()
+    rocks = list(_all_rocks(region))
+    rows, moved = [], 0
+    hidden = [x for x in unreal.GameplayStatics.get_all_actors_of_class(world, unreal.StaticMeshActor)
+              if x.get_editor_property('hidden') or not x.static_mesh_component.is_visible()]
+    for a, c, i, t, box in rocks:
+        # 10/11: only the rock's own group is ignored; a rock resting on a visible slab of another group is seated
+        # (ignoring every rock group called the pier-point stones 'floating' 3 m over the sea floor under the slab).
+        ignore = [a] + hidden
+        gaps = []
+        for fx, fy in ((.5, .5), (.2, .2), (.8, .2), (.8, .8), (.2, .8)):
+            p = unreal.MathLibrary.transform_location(t, unreal.Vector(box.min.x + (box.max.x - box.min.x) * fx,
+                                                                         box.min.y + (box.max.y - box.min.y) * fy, box.min.z))
+            g = _ground_under(world, p.x, p.y, ignore)
+            gaps.append(round(p.z - g[0]) if g else None)
+        real = [v for v in gaps if v is not None]
+        low = min(real) if real else None
+        l = t.translation
+        row = {'label': a.get_actor_label()[:36], 'mesh': c.static_mesh.get_name()[:28], 'i': i,
+               'at': [round(l.x), round(l.y), round(l.z)], 'h': round((box.max.z - box.min.z) * t.scale3d.z), 'gaps': gaps, 'min': low}
+        rows.append(row)
+        if mode == 'apply' and low is not None and low > 6:
+            t.translation = unreal.Vector(l.x, l.y, l.z - (low + 6))
+            if i >= 0:
+                c.update_instance_transform(i, t, True, True, True)
+            else:
+                c.set_world_location(t.translation, False, False)
+            row['lowered'] = low + 6
+            moved += 1
+    if mode == 'apply' and moved:
+        unreal.get_editor_subsystem(unreal.LevelEditorSubsystem).save_current_level()
+    rows.sort(key=lambda r: -(r['min'] if r['min'] is not None else -999))
+    import pathlib
+    pathlib.Path('D:/CodexTemp/rocks_anywhere.json').write_text(json.dumps(rows, ensure_ascii=False, indent=0), encoding='utf-8')
+    return json.dumps({'rocks': len(rows), 'floating>6': sum(1 for r in rows if (r['min'] or 0) > 6),
+                       'floating>20': sum(1 for r in rows if (r['min'] or 0) > 20), 'moved': moved, 'worst': rows[:10]}, ensure_ascii=False)
+
+
+def farol_slab_base(arg=''):
+    """10/11, Sergio: "rochas flutuando perto do farol". The rocks there rest on the big slab 'Maré · coast_rocks_02'
+    (a 30 x 21 m platform); its edges hang over clear water with ~2 m of air down to the sand floor, so from the sea the
+    slab and its rocks read as floating. A second copy of the slab, turned 180 degrees and 6% wider, goes under it with
+    its top 15 cm under the water (-45), its sides reaching the sea floor: the slab now rises out of the sea. No
+    collision (static navigation; it is under water). The pier-point stone that hung 2 m past the edge (x 8634) moves
+    120 cm towards the middle of the slab and is seated again. 'revert' removes the base. PIE stopped; saves the level."""
+    actors = unreal.get_editor_subsystem(unreal.EditorActorSubsystem)
+    label = 'Ilha · base submersa da laje do farol'
+    for a in _actors(label):
+        actors.destroy_actor(a)
+    if arg == 'revert':
+        unreal.get_editor_subsystem(unreal.LevelEditorSubsystem).save_current_level()
+        return 'reverted'
+    slab = _actors('Maré · coast_rocks_02')[0]
+    comp = slab.get_components_by_class(unreal.InstancedStaticMeshComponent)[0]
+    t = comp.get_instance_transform(0, True)
+    rot = t.rotation.rotator()
+    base = actors.spawn_actor_from_class(unreal.StaticMeshActor, t.translation, unreal.Rotator(roll=rot.roll, pitch=rot.pitch, yaw=rot.yaw + 180))
+    base.set_actor_label(label)
+    base.set_folder_path(slab.get_folder_path())
+    base.tags = [x for x in slab.tags]
+    c = base.static_mesh_component
+    c.set_static_mesh(comp.static_mesh)
+    for k in range(comp.get_num_materials()):
+        c.set_material(k, comp.get_material(k))
+    c.set_collision_enabled(unreal.CollisionEnabled.NO_COLLISION)
+    s = t.scale3d
+    base.set_actor_scale3d(unreal.Vector(s.x * 1.06, s.y * 1.06, s.z * 1.6))
+    o, e = base.get_actor_bounds(False)
+    base.add_actor_world_offset(unreal.Vector(0, 0, -45 - (o.z + e.z)), False, False)
+    o2, e2 = base.get_actor_bounds(False)
+    out = {'slab': [round(t.translation.x), round(t.translation.y), round(t.translation.z)], 'base_top': round(o2.z + e2.z),
+           'base_bottom': round(o2.z - e2.z), 'base_extent': [round(e2.x), round(e2.y)]}
+    # the stone hanging past the edge
+    centre = t.translation
+    for a, cc, i, rt, box in _all_rocks([8500, 8800, -4900, -4600]):
+        if 'ponta do p' not in a.get_actor_label() or i < 0:
+            continue
+        l = rt.translation
+        d = unreal.Vector(centre.x - l.x, centre.y - l.y, 0)
+        n = (d.x ** 2 + d.y ** 2) ** .5 or 1
+        rt.translation = unreal.Vector(l.x + d.x / n * 120, l.y + d.y / n * 120, l.z)
+        cc.update_instance_transform(i, rt, True, True, True)
+        out['moved'] = [round(l.x), round(l.y), '->', round(rt.translation.x), round(rt.translation.y)]
+    unreal.get_editor_subsystem(unreal.LevelEditorSubsystem).save_current_level()
+    return json.dumps(out)

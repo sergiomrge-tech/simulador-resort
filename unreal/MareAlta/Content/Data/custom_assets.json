@@ -127,5 +127,10 @@
  "mare_truck_rear": "/Game/Custom/mare_truck_rear/mare_truck_rear.mare_truck_rear",
  "mare_lobby_slat_panel": "/Game/Custom/mare_lobby_slat_panel/mare_lobby_slat_panel.mare_lobby_slat_panel",
  "mare_annex_dress": "/Game/Custom/mare_annex_dress/mare_annex_dress.mare_annex_dress",
- "mare_manhole": "/Game/Custom/mare_manhole/mare_manhole.mare_manhole"
+ "mare_manhole": "/Game/Custom/mare_manhole/mare_manhole.mare_manhole",
+ "mare_volley_net": "/Game/Custom/mare_volley_net/mare_volley_net.mare_volley_net",
+ "mare_volleyball": "/Game/Custom/mare_volleyball/mare_volleyball.mare_volleyball",
+ "mare_soccer_ball": "/Game/Custom/mare_soccer_ball/mare_soccer_ball.mare_soccer_ball",
+ "mare_peteca": "/Game/Custom/mare_peteca/mare_peteca.mare_peteca",
+ "mare_beach_goal": "/Game/Custom/mare_beach_goal/mare_beach_goal.mare_beach_goal"
 }

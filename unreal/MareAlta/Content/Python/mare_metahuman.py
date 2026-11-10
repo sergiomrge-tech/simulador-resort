@@ -1267,3 +1267,9 @@ def run(action, arg=''):
     if action in ('rig', 'tex'):
         return cloud(arg or 'Lani', action)
     raise ValueError(action)
+
+
+def sport_clips(_=''):
+    """Beach sports (10/11, Sergio: "pessoas jogando vôlei, peteca, futebol de praia"): more clips of the Quaternius UAL
+    (CC0) retargeted onto the MetaHuman body: jog, landing, two arm strikes, the crouched ready stance and a roll."""
+    return import_ual(clips='Jog_Fwd_Loop,Jump_Land,Punch_Jab,Punch_Cross,Crouch_Idle_Loop,Roll')

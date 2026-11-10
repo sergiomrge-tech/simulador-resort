@@ -1908,6 +1908,36 @@ static bool MareTitleHasArt()
  if(FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Text),T) && T.IsValid())T->TryGetStringField(TEXT("art"),ArtPath);   // i18n:skip
  return TitleBrush(ArtPath)!=nullptr;
 }
+/** 2.5D title (10/11, Sergio: "a tela em 2.5d faça você"): the painting drawn through M_Title25D (title.json
+ *  "art_material"; mare_title_art.material25d), which slides every pixel by its depth (T_TitleDepth). The menu sets the
+ *  material's Shift every frame: a slow sway plus a little of the mouse position, so the palm in front, the boat, the
+ *  village and the sky move at different speeds. Null when the material is missing (the flat painting is drawn). */
+struct FMareTitle25D
+{
+ TStrongObjectPtr<UMaterialInstanceDynamic> Material;FSlateBrush Brush;FVector2D Mouse=FVector2D::ZeroVector;double Start=0;
+ static FMareTitle25D& Get(){static FMareTitle25D T;return T;}
+ const FSlateBrush* Make(const FString& Path,const FSlateBrush* Art)
+ {
+  if(Path.IsEmpty() || !Art)return nullptr;
+  if(!Material.IsValid()){
+   if(!FPackageName::DoesPackageExist(FPackageName::ObjectPathToPackageName(Path)))return nullptr;
+   UMaterialInterface* Base=LoadObject<UMaterialInterface>(nullptr,*Path);if(!Base)return nullptr;
+   Material.Reset(UMaterialInstanceDynamic::Create(Base,GetTransientPackage()));Start=FPlatformTime::Seconds();}
+  Brush.SetResourceObject(Material.Get());Brush.ImageSize=Art->ImageSize;Brush.DrawAs=ESlateBrushDrawType::Image;
+  return &Brush;
+ }
+ /** Cursor is -1..1 across the menu (zero when unknown). */
+ void Update(const FVector2D& Cursor,float Dt)
+ {
+  if(!Material.IsValid())return;
+  Mouse=FMath::Vector2DInterpTo(Mouse,Cursor,Dt,2.5f);
+  const double T=FPlatformTime::Seconds()-Start;
+  // UV units: the nearest things travel about 1.5% of the width, the far ones a little the other way
+  const float X=FMath::Sin(T*.31)*.014f+FMath::Sin(T*.13+1.3)*.006f+Mouse.X*.012f;
+  const float Y=FMath::Sin(T*.23+.7)*.005f+Mouse.Y*.006f;
+  Material->SetVectorParameterValue(TEXT("Shift"),FLinearColor(X,Y,0,0));   // i18n:skip
+ }
+};
 class SMareMainMenu : public SCompoundWidget
 {
 public:
@@ -1918,6 +1948,15 @@ public:
  /** Gamepad B: the previous page (the main page stays). */
  void Back(){switch(Current){case EPage::Main:break;case EPage::Confirm:Show(EPage::New);break;default:Show(EPage::Main);}}
  void ShowCredits(){Show(EPage::Credits);}
+ virtual void Tick(const FGeometry& Geometry,const double Time,const float Dt) override
+ {
+  SCompoundWidget::Tick(Geometry,Time,Dt);
+  FVector2D Cursor=FVector2D::ZeroVector;const FVector2D Size=Geometry.GetLocalSize();
+  if(Size.X>1 && Size.Y>1 && FSlateApplication::IsInitialized()){
+   const FVector2D Local=Geometry.AbsoluteToLocal(FSlateApplication::Get().GetCursorPos());
+   Cursor=FVector2D(FMath::Clamp(Local.X/Size.X*2-1,-1.,1.),FMath::Clamp(Local.Y/Size.Y*2-1,-1.,1.));}
+  FMareTitle25D::Get().Update(Cursor,FMath::Min(Dt,.1f));
+ }
  /** Rebuilds the current page (texts in the language just chosen on the language page). */
  void Refresh(){Show(Current);}
 private:
@@ -2009,11 +2048,13 @@ private:
    // 08/11 (Sergio: "tela inicial em 2d", "use o canva para fazer algo bastante detalhado"): a detailed 2D painting of
    // the island fills the screen (title.json "art", cover-fitted) and the painted Canva logo ("logo_image") replaces the
    // text logo; while the art is up the 3D world is not drawn at all (AMareController::OpenMainMenu).
-   FString Logo=TEXT("Coconut Simulator"),Sub=TEXT("Maré Alta Resort"),ArtPath,LogoPath;
+   FString Logo=TEXT("Coconut Simulator"),Sub=TEXT("Maré Alta Resort"),ArtPath,LogoPath,ArtMaterial;
    {FString Text;TSharedPtr<FJsonObject> T;FFileHelper::LoadFileToString(Text,*(FPaths::ProjectContentDir()/TEXT("Data/title.json")));   // i18n:skip
     if(FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Text),T) && T.IsValid()){T->TryGetStringField(TEXT("logo"),Logo);T->TryGetStringField(TEXT("subtitle"),Sub);   // i18n:skip
-     T->TryGetStringField(TEXT("art"),ArtPath);T->TryGetStringField(TEXT("logo_image"),LogoPath);}}   // i18n:skip
+     T->TryGetStringField(TEXT("art"),ArtPath);T->TryGetStringField(TEXT("logo_image"),LogoPath);T->TryGetStringField(TEXT("art_material"),ArtMaterial);}}   // i18n:skip
    const FSlateBrush* Art=TitleBrush(ArtPath);const FSlateBrush* LogoArt=TitleBrush(LogoPath);
+   // 10/11: the painting in 2.5D (parallax by depth) when its material exists; the flat painting otherwise.
+   const FSlateBrush* Art25=FMareTitle25D::Get().Make(ArtMaterial,Art);
    // red rubber stamp over the painted logo (the pale yellow one vanished against the sunset sky)
    const TSharedRef<SWidget> Stamp=S->IsDemo()?MareNotebook::Stamp(TEXT("DEMO"),LogoArt?MareNotebook::Hex(214,52,40):MareNotebook::Hex(255,236,150)):SNullWidget::NullWidget;
    auto Shadowed=[](const FString& V,float Size,const FLinearColor& C){return SNew(STextBlock).Text(FText::FromString(V)).Font(MareNotebook::Hand(Size)).ColorAndOpacity(C)
@@ -2034,7 +2075,7 @@ private:
    // (fine strips: 12 wide ones showed as stripes over the painting)
    for(int32 K=0;K<56;++K)Wash->AddSlot().AutoWidth()[SNew(SBox).WidthOverride(15)[SNew(SBorder).BorderImage(FCoreStyle::Get().GetBrush("WhiteBrush")).BorderBackgroundColor(FLinearColor(0,0,0,(Art?.38f:.34f)*FMath::Square(1.f-K/56.f)))]];
    ChildSlot[SNew(SOverlay)
-    +SOverlay::Slot()[Art?StaticCastSharedRef<SWidget>(SNew(SScaleBox).Stretch(EStretch::ScaleToFill)[SNew(SImage).Image(Art)]):SNullWidget::NullWidget]
+    +SOverlay::Slot()[Art?StaticCastSharedRef<SWidget>(SNew(SScaleBox).Stretch(EStretch::ScaleToFill)[SNew(SImage).Image(Art25?Art25:Art)]):SNullWidget::NullWidget]
     +SOverlay::Slot().HAlign(HAlign_Left)[Wash]
     +SOverlay::Slot().HAlign(HAlign_Left).VAlign(VAlign_Fill).Padding(56,36,0,24)[SNew(SVerticalBox)
      +SVerticalBox::Slot().AutoHeight()[Head]

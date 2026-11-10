@@ -763,3 +763,14 @@ Galhos, cascas, troncos, tocos e raízes espalhados pela mata (`mare_forest_floo
   cor, normal e aspereza em `SourceArt/Textures/Custom`. Recoloridos por material no quiosque (`mare_kiosk_wear.py`):
   tábuas da parede e postes, tinta verde-água e creme descascando, balcão de carvalho escuro, coifa e geladeira com tinta
   rachada, azulejos com craquelado, inox com riscos e sujeira junto ao chão.
+
+## Esportes na praia e tela inicial em 2.5D — 10/11/2026
+
+- Rede de vôlei, bola de vôlei, bola de futebol, peteca e trave de praia: modelos próprios feitos no bpy
+  (`tools/ue58/gen_beach_sports.py`), com texturas CC0 do Poly Haven (oak_wood_planks, rough_linen, leather_white,
+  brown_leather, painted_plaster_wall).
+- Animações de corrida, agachado, aterrissagem e golpes de braço: Universal Animation Library (Quaternius, CC0), já
+  listada acima; clipes Jog_Fwd, Crouch_Idle, Jump_Land, Punch_Jab, Punch_Cross e Roll reaproveitados para os jogadores.
+- Mapa de profundidade da pintura do título (`SourceArt/UI/Title/T_TitleDepth.png`): gerado localmente com o modelo
+  Depth Anything V2 Small (Apache-2.0, https://github.com/DepthAnything/Depth-Anything-V2) pelo script
+  `tools/ue58/gen_title_depth.py`. O modelo não acompanha o jogo; só o mapa resultante.

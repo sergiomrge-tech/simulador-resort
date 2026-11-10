@@ -819,3 +819,36 @@ def pie_pick_face(arg=''):
                 mat = 'err ' + str(e)[:60]
         out.append([u, v, [round(t[4].x), round(t[4].y), round(t[4].z)] if t else None, t[9].get_actor_label()[:30] if t and t[9] else None, t[13] if t else None, mat])
     return json.dumps(out, ensure_ascii=False, default=str)
+
+
+def rect_things(arg=''):
+    """Editor: every static mesh (actor or ISM instance) whose pivot lies in the rectangle 'x0,y0,x1,y1' and between z -60
+    and 400: label, mesh, x, y, z, mesh height. Written to D:/CodexTemp/rect_things.json (free-space surveys)."""
+    x0, y0, x1, y1 = (float(v) for v in arg.split(','))
+    world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_editor_world()
+    out = []
+    for a in unreal.GameplayStatics.get_all_actors_of_class(world, unreal.Actor):
+        for c in a.get_components_by_class(unreal.StaticMeshComponent):
+            m = c.static_mesh
+            if not m:
+                continue
+            h = round(m.get_bounds().box_extent.z * 2)
+            if isinstance(c, unreal.InstancedStaticMeshComponent):
+                for i in range(c.get_instance_count()):
+                    t = c.get_instance_transform(i, True)
+                    l = t.translation
+                    if x0 <= l.x <= x1 and y0 <= l.y <= y1 and -60 <= l.z <= 400:
+                        out.append([a.get_actor_label(), m.get_name(), round(l.x), round(l.y), round(l.z), round(h * t.scale3d.z)])
+            else:
+                l = c.get_world_location()
+                if x0 <= l.x <= x1 and y0 <= l.y <= y1 and -60 <= l.z <= 400:
+                    out.append([a.get_actor_label(), m.get_name(), round(l.x), round(l.y), round(l.z), h])
+    open('D:/CodexTemp/rect_things.json', 'w', encoding='utf-8').write(json.dumps(out, ensure_ascii=False))
+    return len(out)
+
+
+def delete_dir(arg=''):
+    """Editor: deletes a /Game/Custom/... folder (before importing a model again from scratch)."""
+    if not arg.startswith('/Game/Custom/'):
+        raise ValueError(arg)
+    return unreal.EditorAssetLibrary.delete_directory(arg) if unreal.EditorAssetLibrary.does_directory_exist(arg) else False

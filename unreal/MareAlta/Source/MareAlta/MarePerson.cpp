@@ -128,7 +128,7 @@ void AMarePerson::UpdateTool(float DeltaSeconds)
 {
  const bool bStill=GetVelocity().SizeSquared2D()<25;
  const bool bSkim=WorkPose==TEXT("Skim") && bStill,bSweep=WorkPose==TEXT("Sweep") && bStill;
- if(!bSkim && !bSweep){bHandGoals=false;if(Tool)Tool->SetVisibility(false);return;}
+ if(!bSkim && !bSweep){if(!bHandGoalsHeld)bHandGoals=false;if(Tool)Tool->SetVisibility(false);return;}
  const TCHAR* Path=bSkim?TEXT("/Game/Custom/PoolStaff/pool_skimmer/pool_skimmer.pool_skimmer"):TEXT("/Game/Custom/Housekeeping/plastic_broom/plastic_broom1.plastic_broom1");
  if(!Tool){Tool=NewObject<UStaticMeshComponent>(this);AddInstanceComponent(Tool);Tool->SetupAttachment(GetRootComponent());
   Tool->SetCollisionEnabled(ECollisionEnabled::NoCollision);Tool->SetCastShadow(true);Tool->RegisterComponent();}
@@ -346,7 +346,9 @@ bool AMarePerson::SetMetaHuman(const FString& Name)
   // 08/11 (reference tip 9): sitting down and getting up (mare_metahuman.import_ual).
   TEXT("Sitting_Enter"),TEXT("Sitting_Exit"),
   // 09/11 (C18): comic event callers gesture while they wait; (C14) the idle bartender busies himself at the counter.
-  TEXT("TalkGesture"),TEXT("Cheer")};   // i18n:skip
+  TEXT("TalkGesture"),TEXT("Cheer"),   // i18n:skip
+  // 10/11 (beach sports, UMareBeachSportsWorld): jog, landing, arm strikes and the crouched ready stance (mare_metahuman.sport_clips).
+  TEXT("Jog_Fwd"),TEXT("Jump_Land"),TEXT("Punch_Cross"),TEXT("Punch_Jab"),TEXT("Crouch_Idle")};   // i18n:skip
  if(CVarMareMocap.GetValueOnGameThread())Wanted.Append({TEXT("SitTalk"),TEXT("DanceHip"),TEXT("Cheer")});
  for(const FString& Clip:Wanted)
   if(auto Anim=LoadObject<UAnimSequence>(nullptr,*FString::Printf(TEXT("/Game/People/Animations/MH_%s.MH_%s"),*Clip,*Clip)))Clips.Add(Clip,Anim);

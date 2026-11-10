@@ -1,0 +1,15 @@
+{
+ "_doc": "People playing on the beach (UMareBeachSportsWorld, MareBeachSports.cpp). One sport a day, drawn from the day number and never the same two days running: volleyball (2 x 2 over a net), peteca (three in a ring) or beach soccer (2 x 2 between two small goals). On dry days during 'hours' (game hours, start inclusive, end exclusive); players, net and goals appear and leave when the player is more than 'unseen' cm away. 'court': world cm centre on the sand [x, y, z] and the yaw of the long axis; the free strip of sand west of the kiosk, between the driftwood trunk at x 1857 and the sand castle at x 3300 (measured with mare_probe_near.rect_things; no walker route, no towel; the goals' backs end at x 2070 and 3210). 'half': half length and half width of the play area in cm. Props come from custom_assets.json (tools/ue58/gen_beach_sports.py).",
+ "hours": [9, 17],
+ "court": [2640, -2500, -5],
+ "yaw": 0,
+ "half": [500, 340],
+ "unseen": 3500,
+ "props": {
+  "net": "mare_volley_net",
+  "volleyball": "mare_volleyball",
+  "soccer_ball": "mare_soccer_ball",
+  "peteca": "mare_peteca",
+  "goal": "mare_beach_goal"
+ }
+}
