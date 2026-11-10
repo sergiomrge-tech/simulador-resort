@@ -12,4 +12,6 @@ namespace MareLoading
  void ShaderWarmup(bool bOverlay);
  /** The title closed: drops the page (the warm-up keeps running in the background until it ends). */
  void EndWarmup();
+ /** QA ("mare.ShowUI loading" / "mare.ShowUI warmup"): shows or hides that page over the viewport, also in the editor. */
+ void QAShow(bool bWarmup);
 }

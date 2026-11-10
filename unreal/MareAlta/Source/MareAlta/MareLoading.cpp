@@ -42,31 +42,54 @@ namespace MareLoading
    Brush.SetResourceObject(Art().Get());Brush.ImageSize=FVector2D(Art()->GetSizeX(),Art()->GetSizeY());Brush.DrawAs=ESlateBrushDrawType::Image;
    return &Brush;
   }
-  /** A tip at random from Content/Data/tutorial.json (title and text, translated). */
-  void Tip(FString& Title,FString& Text)
+  /** The tips of Content/Data/tutorial.json (title and text, translated), in random order, for the pages that wait:
+   *  10/11 (Sergio: "no carregamento as dicas precisam ficar passando"): the loading screen and the shader warm-up page
+   *  showed one tip for the whole wait; now a new one comes every few seconds, with a short fade. The texts are
+   *  translated here, on the game thread; the movie player's own thread only reads them (and the clock). */
+  constexpr double TipSeconds=6.0;
+  struct FTips{TArray<FText> Titles,Texts;double Start=FPlatformTime::Seconds();
+   int32 Index()const{return Texts.IsEmpty()?0:int32((FPlatformTime::Seconds()-Start)/TipSeconds)%Texts.Num();}
+   float Alpha()const{const double T=FMath::Fmod(FPlatformTime::Seconds()-Start,TipSeconds);return float(FMath::Clamp(FMath::Min(T,TipSeconds-T)/.35,0.,1.));}};
+  TSharedRef<FTips> AllTips();
+  /** Title ("Dica · ...") and text of the tip on show, changing every TipSeconds. */
+  TSharedRef<SWidget> TipBlock()
   {
+   const TSharedRef<FTips> Tips=AllTips();
+   auto Fade=[Tips](const FLinearColor& C){return TAttribute<FSlateColor>::CreateLambda([Tips,C](){FLinearColor Out=C;Out.A*=Tips->Alpha();return FSlateColor(Out);});};
+   return SNew(SVerticalBox)
+    +SVerticalBox::Slot().AutoHeight()[SNew(STextBlock).Text_Lambda([Tips](){return Tips->Titles.IsValidIndex(Tips->Index())?Tips->Titles[Tips->Index()]:FText::GetEmpty();})
+      .Font(MareNotebook::Hand(26)).ColorAndOpacity(Fade(MareNotebook::Brown))]
+    // room for three lines, so the page does not jump when a longer tip comes
+    +SVerticalBox::Slot().AutoHeight().Padding(0,8,0,10)[SNew(SBox).MinDesiredHeight(68)[SNew(STextBlock)
+      .Text_Lambda([Tips](){return Tips->Texts.IsValidIndex(Tips->Index())?Tips->Texts[Tips->Index()]:FText::GetEmpty();})
+      .Font(MareNotebook::Body(15)).ColorAndOpacity(Fade(MareNotebook::Ink)).AutoWrapText(true)]];
+  }
+  /** Every tip the demo can show, shuffled. */
+  TSharedRef<FTips> AllTips()
+  {
+   const TSharedRef<FTips> Out=MakeShared<FTips>();
    FString Json;TSharedPtr<FJsonObject> Doc;const TSharedPtr<FJsonObject>* Tips=nullptr;
-   if(!FFileHelper::LoadFileToString(Json,*(FPaths::ProjectContentDir()/TEXT("Data/tutorial.json"))) ||
-      !FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Json),Doc) || !Doc.IsValid() || !Doc->TryGetObjectField(TEXT("tips"),Tips))return;
-   // Only tips about what the demo has (09/11: the first boot drew the Grand Hotel's elevator).
-   static const TCHAR* Skip[]={TEXT("Hotel"),TEXT("Elevator"),TEXT("Restaurant"),TEXT("Room"),TEXT("Pool"),TEXT("TableTennis"),TEXT("Rental")};   // i18n:skip
-   TArray<TSharedPtr<FJsonObject>> List;
-   for(const auto& Pair:(*Tips)->Values){const FString Id(Pair.Key.ToView());bool bOut=false;for(const TCHAR* S:Skip)bOut|=Id.Contains(S);
-    if(!bOut && Pair.Value->Type==EJson::Object)List.Add(Pair.Value->AsObject());}
-   if(List.IsEmpty())return;
-   const auto Pick=List[FMath::RandRange(0,List.Num()-1)];
-   Title=MareLoc::Tr(Pick->GetStringField(TEXT("title")));Text=MareLoc::Tr(Pick->GetStringField(TEXT("text")));
+   const FString Label=MareLoc::Tr(TEXT("Dica"));
+   if(FFileHelper::LoadFileToString(Json,*(FPaths::ProjectContentDir()/TEXT("Data/tutorial.json"))) &&
+      FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Json),Doc) && Doc.IsValid() && Doc->TryGetObjectField(TEXT("tips"),Tips)){
+    // Only tips about what the demo has (09/11: the first boot drew the Grand Hotel's elevator).
+    static const TCHAR* Skip[]={TEXT("Hotel"),TEXT("Elevator"),TEXT("Restaurant"),TEXT("Room"),TEXT("Pool"),TEXT("TableTennis"),TEXT("Rental")};   // i18n:skip
+    for(const auto& Pair:(*Tips)->Values){const FString Id(Pair.Key.ToView());bool bOut=false;for(const TCHAR* S:Skip)bOut|=Id.Contains(S);
+     if(bOut || Pair.Value->Type!=EJson::Object)continue;
+     const auto Tip=Pair.Value->AsObject();const FString Title=MareLoc::Tr(Tip->GetStringField(TEXT("title"))),Text=MareLoc::Tr(Tip->GetStringField(TEXT("text")));
+     if(Text.IsEmpty())continue;
+     Out->Titles.Add(FText::FromString(Label+(Title.IsEmpty()?FString():TEXT(" · ")+Title)));Out->Texts.Add(FText::FromString(Text));}}
+   for(int32 I=Out->Texts.Num()-1;I>0;--I){const int32 J=FMath::RandRange(0,I);Out->Titles.Swap(I,J);Out->Texts.Swap(I,J);}
+   if(Out->Texts.IsEmpty()){Out->Titles.Add(FText::FromString(Label));Out->Texts.Add(FText::GetEmpty());}
+   return Out;
   }
   TSharedRef<SWidget> Widget()
   {
    // The player's language before any text (09/11: on the first boot the tip came out in the system's language).
    {const FMareOptions& O=FMareOptions::Get();if(!GIsEditor && FInternationalization::Get().GetCurrentCulture()->GetName()!=O.Culture)O.ApplyCulture();}
    const FSlateBrush* Brush=TitleArt();
-   FString Title,Text;Tip(Title,Text);
    const TSharedRef<SVerticalBox> Page=SNew(SVerticalBox)
-    +SVerticalBox::Slot().AutoHeight()[SNew(STextBlock).Text(FText::FromString(MareLoc::Tr(TEXT("Dica")) + (Title.IsEmpty()?FString():TEXT(" · ")+Title)))
-      .Font(MareNotebook::Hand(26)).ColorAndOpacity(MareNotebook::Brown)]
-    +SVerticalBox::Slot().AutoHeight().Padding(0,8,0,10)[SNew(STextBlock).Text(FText::FromString(Text)).Font(MareNotebook::Body(15)).ColorAndOpacity(MareNotebook::Ink).AutoWrapText(true)]
+    +SVerticalBox::Slot().AutoHeight()[TipBlock()]
     +SVerticalBox::Slot().AutoHeight().HAlign(HAlign_Right)[SNew(STextBlock).Text(FText::FromString(MareLoc::Tr(TEXT("Carregando...")))).Font(MareNotebook::Hand(20)).ColorAndOpacity(MareNotebook::Brown)];
    return SNew(SOverlay)
     +SOverlay::Slot()[SNew(SBorder).BorderImage(FCoreStyle::Get().GetBrush("WhiteBrush")).BorderBackgroundColor(MareNotebook::Hex(24,36,44))]
@@ -125,7 +148,9 @@ namespace MareLoading
        [SNew(SBorder).BorderImage(&Fill)]]]]
      +SHorizontalBox::Slot().FillWidth(1).HAlign(HAlign_Right).VAlign(VAlign_Center)[SNew(STextBlock)
       .Text_Lambda([](){return FText::FromString(FString::Printf(TEXT("%d%%"),FMath::RoundToInt(Warm().Progress*100.f)));})   // i18n:skip
-      .Font(MareNotebook::Hand(20)).ColorAndOpacity(MareNotebook::Brown)]];
+      .Font(MareNotebook::Hand(20)).ColorAndOpacity(MareNotebook::Brown)]]
+    // the first warm-up can take a minute or two: tips pass under the bar meanwhile
+    +SVerticalBox::Slot().AutoHeight().Padding(0,16,0,0)[TipBlock()];
    return SNew(SOverlay)
     +SOverlay::Slot()[SNew(SBorder).BorderImage(FCoreStyle::Get().GetBrush("WhiteBrush")).BorderBackgroundColor(MareNotebook::Hex(24,36,44))]
     +SOverlay::Slot()[SNew(SScaleBox).Stretch(EStretch::ScaleToFill)[SNew(SImage).Image(TitleArt())]]
@@ -159,6 +184,15 @@ namespace MareLoading
  void EndWarmup()
  {
   FWarm& W=Warm();W.bTitleGone=true;DropPage();
+ }
+
+ void QAShow(bool bWarmup)
+ {
+  static TSharedPtr<SWidget> Page;
+  if(!GEngine || !GEngine->GameViewport)return;
+  if(Page.IsValid()){GEngine->GameViewport->RemoveViewportWidgetContent(Page.ToSharedRef());Page.Reset();return;}
+  if(bWarmup)Warm().Progress=.42f;
+  Page=bWarmup?WarmWidget():Widget();GEngine->GameViewport->AddViewportWidgetContent(Page.ToSharedRef(),70);
  }
 
  void Register()

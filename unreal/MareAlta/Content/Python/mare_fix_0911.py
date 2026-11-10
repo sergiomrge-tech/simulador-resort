@@ -466,6 +466,73 @@ def manholes(arg=''):
     return json.dumps({'mesh': mesh.get_path_name(), 'instances': comp.get_instance_count()})
 
 
+def floor_mats(arg=''):
+    """Rebuilds the three sea-floor materials that share the caustics (island ground, island seabed, hill ground).
+    PIE stopped."""
+    import importlib
+    import mare_materials
+    importlib.reload(mare_materials)
+    out = [mare_materials.build_ground(island=True).get_path_name(), mare_materials.build_ground(seabed=True).get_path_name(),
+           mare_materials.build_hill_ground().get_path_name()]
+    return json.dumps(out)
+
+
+BUNGALOW_LOOKS = {
+    # actor label: (painting texture file, wainscot texture file) in SourceArt/Textures/Custom
+    'Bangalô 2': ('bungalow_art_pier.png', 'bungalow_wainscot_sand.png'),
+    'Bangalô 3': ('bungalow_art_kiosk.png', 'bungalow_wainscot_sky.png'),
+}
+
+
+def _material_variant(src_path, name, old_fragment, new_tex):
+    """Copy of an imported glTF material with one colour texture swapped."""
+    MEL = unreal.MaterialEditingLibrary
+    dst = src_path.rsplit('/', 1)[0] + '/' + name
+    if not unreal.EditorAssetLibrary.does_asset_exist(dst):
+        unreal.EditorAssetLibrary.duplicate_asset(src_path, dst)
+    mat = unreal.load_asset(dst)
+    swapped = 0
+    for e in MEL.get_material_expressions(mat) if hasattr(MEL, 'get_material_expressions') else []:
+        try:
+            tex = e.get_editor_property('texture')
+        except Exception:
+            continue
+        if tex and (old_fragment in tex.get_name() or tex.get_name().startswith('bungalow_')):
+            e.set_editor_property('texture', new_tex)
+            swapped += 1
+    errors = list(MEL.recompile_material(mat))
+    if errors or not swapped:
+        raise RuntimeError(f'{name}: swapped {swapped}, {errors}')
+    unreal.EditorAssetLibrary.save_loaded_asset(mat)
+    return mat
+
+
+def bungalow_variety(arg=''):
+    """09/11 checklist ("os três bangalôs são idênticos por dentro"): bungalows 2 and 3 get their own painting
+    (watercolours made from photos of the game: the pier, the kiosk) and their own wainscot colour (sand, sky blue);
+    bungalow 1 keeps the beach watercolour and the sage. Material overrides on the level actors; PIE stopped."""
+    import importlib
+    import mare_materials
+    importlib.reload(mare_materials)
+    base = '/Game/Custom/mare_bungalow_m5/mare_bungalow_'
+    out = {}
+    for label, (art, wain) in BUNGALOW_LOOKS.items():
+        actor = _actors(label)[0]
+        comp = actor.static_mesh_component
+        tag = art.split('_')[-1].split('.')[0]
+        looks = {
+            'mare_bungalow_Painting': _material_variant(base + 'Painting', 'mare_bungalow_Painting_' + tag, 'beach_watercolor', mare_materials._custom_texture(art)),
+            'mare_bungalow_Wainscot': _material_variant(base + 'Wainscot', 'mare_bungalow_Wainscot_' + wain.split('_')[-1].split('.')[0],
+                                                        'distressed_painted_planks_153', mare_materials._custom_texture(wain)),
+        }
+        names = [str(n) for n in comp.get_material_slot_names()]
+        for slot, mat in looks.items():
+            comp.set_material(names.index(slot), mat)
+        out[label] = [m.get_name() for m in looks.values()]
+    unreal.get_editor_subsystem(unreal.LevelEditorSubsystem).save_current_level()
+    return json.dumps(out, ensure_ascii=False)
+
+
 ROCK_ACTORS = ('Mare · Vegetação das montanhas', 'Ilha · rochas da costa')
 
 

@@ -2632,6 +2632,7 @@ struct FMareUIQA
   auto PC=World?Cast<AMareController>(UGameplayStatics::GetPlayerController(World,0)):nullptr;if(!PC)return;
   if(What==TEXT("pause") || What==TEXT("options")){if(!PC->PauseWidget.IsValid())PC->TogglePauseMenu();PC->BuildPauseMenu(What==TEXT("options"));}
   else if(What==TEXT("menu"))PC->OpenMainMenu();
+  else if(What==TEXT("loading") || What==TEXT("warmup"))MareLoading::QAShow(What==TEXT("warmup"));   // i18n:skip
   else if(What.StartsWith(TEXT("language"))){if(!PC->IsMainMenuOpen())PC->OpenMainMenu();if(!MareLanguage::IsOpen())PC->ShowLanguagePage();   // i18n:skip
    if(What.Contains(TEXT(":")))MareLanguage::QASelect(What.RightChop(9));}   // "language:en" selects English
   else if(What.StartsWith(TEXT("phone")))PC->OpenPhone(FCString::Atoi(*What.RightChop(5)));   // "phone4" = Resort tab

@@ -12,6 +12,7 @@
 #include "ImageUtils.h"
 #include "Internationalization/Culture.h"
 #include "Internationalization/Internationalization.h"
+#include "Containers/Ticker.h"
 #include "HAL/PlatformTime.h"
 #include "Misc/CommandLine.h"
 #include "Misc/FileHelper.h"
@@ -166,6 +167,8 @@ namespace MareLanguage
  public:
   /** QA: selects a tile as a click would ("mare.ShowUI language:en"). */
   void Select(const FString& Culture){if(FMareOptions::Cultures().Contains(Culture))Selected=Culture;}
+  /** QA: the Confirm button. */
+  void QAConfirm(){Confirm();}
  };
 
  namespace
@@ -194,7 +197,8 @@ namespace MareLanguage
   const TSharedRef<SMareLanguagePage> W=SNew(SMareLanguagePage).OnConfirm([OnDone](const FString& Culture){
    FMareOptions Options=FMareOptions::Get();Options.Culture=Culture;Options.bLanguageChosen=true;FMareOptions::Set(Options);
    FMareOptions::Get().ApplyCulture();
-   UE_LOG(LogTemp,Display,TEXT("MARE_LANGUAGE chosen=%s now=%s"),*Culture,*FInternationalization::Get().GetCurrentCulture()->GetName());   // i18n:skip
+   UE_LOG(LogTemp,Display,TEXT("MARE_LANGUAGE chosen=%s now=%s loading_text=%s saved=%d"),*Culture,*FInternationalization::Get().GetCurrentCulture()->GetName(),   // i18n:skip
+    *MareLoc::Tr(TEXT("Carregando...")),FMareOptions::Get().bLanguageChosen?1:0);
    const TFunction<void()> Done=OnDone;   // the page (and this lambda) goes away in Close
    Close();if(Done)Done();});
   Page()=W;
@@ -204,5 +208,10 @@ namespace MareLanguage
   PC->SetInputMode(FInputModeUIOnly().SetWidgetToFocus(Focus.IsValid()?Focus:StaticCastSharedRef<SWidget>(W)));
   PC->bShowMouseCursor=true;
   UE_LOG(LogTemp,Display,TEXT("MARE_LANGUAGE page selected=%s os=%s"),*W->Selected,*FInternationalization::Get().GetDefaultLanguage()->GetName());   // i18n:skip
+  // QA of the packaged game (the editor never applies a culture): -MareLangQA=en picks that language and presses Confirm
+  // three seconds after the page shows.
+  FString QA;
+  if(FParse::Value(FCommandLine::Get(),TEXT("MareLangQA="),QA))FTSTicker::GetCoreTicker().AddTicker(FTickerDelegate::CreateLambda([QA](float){
+   if(Page().IsValid()){Page()->Select(QA);Page()->QAConfirm();}return false;}),3.f);
  }
 }

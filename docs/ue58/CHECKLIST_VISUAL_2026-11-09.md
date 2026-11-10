@@ -16,8 +16,8 @@ Legenda: [x] corrigido hoje · [ ] falta corrigir · (A) alta, (M) média, (B) b
 
 - [x] (A) Encostas íngremes e a face do morro com uma textura cinza em zigue-zague, parecendo calçada. Era a rocha
   procedural feita de manhã com senos. Agora é ruído em 5 camadas: rocha escura com fendas e manchas de musgo.
-- [ ] (M) Face do morro vista do mar ao norte ainda clara demais (cone bege acima da mata). Escurecer ou cobrir com
-  vegetação na encosta.
+- [x] (M) Face do morro vista do mar ao norte clara demais (cone bege acima da mata). A rocha das encostas íngremes ficou
+  mais escura e com manchas grandes de vegetação verde-escura; do mar o cume agora se junta à mata (`D:/CodexTemp/forest2`).
 - [x] (A) Praia norte e outras 8 praias: placas marrons quadradas na beira d'água. Eram fatias de 54 m da rocha
   `coast_line_01` achatadas. Testei pedregulho e conjunto de rochas (ficaram escuros ou flutuando) e escondi o grupo; as
   outras rochas de arenito ficam.
@@ -34,8 +34,12 @@ Legenda: [x] corrigido hoje · [ ] falta corrigir · (A) alta, (M) média, (B) b
 - [x] (M) Costa sudeste: água rasa com manchas escuras. O chão da ilha mostrava grama e folhas debaixo d'água; agora
   vira areia abaixo do nível do mar. As manchas que sobraram são capim marinho (natural).
 - [x] (M) Gramados da costa: verde muito saturado e uniforme. Agora com tom menos neon e mais variação.
-- [ ] (M) Chão da mata em alguns trechos (x 0, y 400 m): verde-claro liso, quase sem folhas nem textura.
-- [ ] (B) Água rasa com a malha de cáusticas muito regular, vista do alto.
+- [x] (M) Chão da mata nos morros: verde-claro liso. Agora tem folhas secas em manchas (a mesma textura do terreno novo),
+  só na mata (a mais de ~35 m da costa) e perto da câmera; a primeira versão, em tudo, deixou as encostas abertas marrons
+  vistas do alto e foi restringida.
+- [x] (B) Água rasa com a malha de cáusticas muito regular, vista do alto. A rede única de senos (repetia a cada ~5,7 m)
+  agora é entortada por uma ondulação larga, soma uma segunda rede girada 37° e some em manchas. Conferido
+  (`D:/CodexTemp/caust2`).
 
 ## 2. Luz, céu e noite
 
@@ -46,10 +50,14 @@ Legenda: [x] corrigido hoje · [ ] falta corrigir · (A) alta, (M) média, (B) b
 - [x] (A) Estrelas, Via Láctea e aurora sobre o mar à noite.
 - [x] (A) A cúpula do céu tinha colisão e bloqueava a mira (TV, sofá, cama, conversas) no teste do executável.
   Colisão desligada.
-- [x] (M) Água em volta do píer à noite verde-neon. Postes sobre o mar com luz mais fria (4300 K). Falta conferir em
-  foto noturna.
-- [ ] (B) Costa oeste vista do alto à noite: retângulo escuro de sombra recortada (limite de distância das sombras).
-- [ ] (B) Ponta do farol à noite: lajes de pedra parecem recortes pretos chapados.
+- [x] (M) Água em volta do píer à noite verde-neon. Postes sobre o mar com luz mais fria (4300 K). Conferido em foto
+  noturna (10/11): a água junto aos postes fica verde-esmeralda, sem o neon de antes.
+- [x] (B) Costa oeste vista do alto à noite: retângulo escuro recortado. Conferido (10/11): é da captura `HighResShot`
+  (faixas verticais a ~17% e ~83% da largura, também de dia); na captura da própria janela do jogo (`mare.Shot`) não existe.
+- [x] (B) Ponta do farol à noite: lajes de pedra pretas. Conferido (10/11): são as rochas escuras da costa sob o luar, com
+  a areia mais clara em volta; leitura natural, não é defeito.
+- [ ] (B) Ponta do farol: a enseadinha rasa ao lado da casinha tem a beira d'água em linhas retas (terreno com malha de
+  5 m bem no nível do mar, z −7 a −55 cm). Suavizar o terreno ali.
 
 ## 3. Coisas pequenas (casas, quiosque, hotel, móveis e decoração)
 
@@ -80,7 +88,9 @@ Sondagem das coisas pequenas: 33 vistas de perto, com tudo liberado (`D:/CodexTe
 
 **Pousada**
 - [x] (M) Placa azul em branco na frente da recepção: escondida no componente (a compra da pousada reexibia o ator).
-- [ ] (B) Os três bangalôs são idênticos por dentro (mesmo quadro, mesma cama, mesmas cores).
+- [x] (B) Os três bangalôs eram idênticos por dentro. O 2 ganhou aquarela do píer e lambri cor de areia; o 3, aquarela
+  do quiosque e lambri azul-céu (aquarelas feitas de fotos do próprio jogo; `mare_fix_0911.bungalow_variety`). A cama
+  continua igual (é o nível de quarto comprado).
 
 **Casa do herói**
 - [x] (M) Banheiro: toalha e suporte cruzando o batente. Afastados 55 cm da porta.
@@ -110,6 +120,12 @@ Sondagem das coisas pequenas: 33 vistas de perto, com tudo liberado (`D:/CodexTe
 **Conferido e ok:** saguão (sinuca, pingue-pongue, placar, poltronas, plantas), recepção do hotel, corredor dos
 quartos, cômodos da casa (sala, quarto, cozinha), cozinha e geladeira do quiosque, mesas do bar, quarto dos bangalôs,
 fachadas e ruas da vila.
+
+## Pedidos novos durante a correção
+
+- [x] Tela de idioma antes do menu (bandeiras, 13 idiomas), só na primeira abertura (`MareLanguage.cpp`).
+- [x] Dicas passando no carregamento (10/11): a tela de carregamento e a de preparo dos gráficos trocam de dica a cada
+  6 s, com um esmaecer curto (`MareLoading.cpp`, QA `mare.ShowUI loading` / `warmup`).
 
 ## Não são defeitos do jogo
 

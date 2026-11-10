@@ -247,6 +247,10 @@ def place_bungalows():
     # Trees exported under generic names (@MeshInstance3D@...) escape the name filter above.
     import mare_fab
     removed += len(mare_fab.clear_rooms(True))
+    import importlib
+    import mare_fix_0911
+    importlib.reload(mare_fix_0911)
+    mare_fix_0911.bungalow_variety()   # each bungalow its own painting and wainscot colour (09/11)
     unreal.get_editor_subsystem(unreal.LevelEditorSubsystem).save_current_level()
     return {'bungalows': report, 'vegetation_removed': removed}
 
