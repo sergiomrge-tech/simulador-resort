@@ -134,8 +134,9 @@ fachadas e ruas da vila.
 - [x] Esportes na praia (10/11): vôlei 2 x 2 com rede, peteca em roda de três e futebol de areia 2 x 2 com traves; um
   por dia, sorteado pelo número do dia e nunca igual ao da véspera, das 9h às 17h em dia sem chuva
   (`MareBeachSports.cpp`, `Content/Data/beach_sports.json`, QA `mare.Sport volei|peteca|futebol|hold|go|auto`).
-- [x] Tela inicial em 2.5D (10/11): a pintura do título desliza por profundidade (palmeira, barco, vila e céu em
-  velocidades diferentes) com um balanço lento e o movimento do mouse (`M_Title25D`, `T_TitleDepth`).
+- [x] Fundo da tela inicial (10/11): primeiro a pintura em 2.5D (desliza por profundidade, `M_Title25D`); depois, a
+  pedido do Sergio, o próprio jogo: uma câmera girando devagar ao redor da ilha, longe no mar (`title.json` "orbit",
+  `AMareTitleCamera`, QA `mare.TitleAt 0..1`). A pintura ficou só na tela de carregamento e na de idioma.
 
 ## Não são defeitos do jogo
 

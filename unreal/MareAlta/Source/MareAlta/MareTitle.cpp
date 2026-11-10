@@ -7,6 +7,8 @@
 #include "Misc/Paths.h"
 #include "Serialization/JsonSerializer.h"
 
+static TAutoConsoleVariable<float> CVarMareTitleAt(TEXT("mare.TitleAt"),-1.f,TEXT("QA: puts the title camera at this fraction of its loop (0..1); -1 = runs on its own."));   // i18n:skip
+
 static TSharedPtr<FJsonObject> TitleDefs()
 {
  static TSharedPtr<FJsonObject> Defs;
@@ -32,11 +34,27 @@ void AMareTitleCamera::BeginPlay()
  if(D->TryGetArrayField(TEXT("points"),List))for(const auto& V:*List){const auto& A=V->AsArray();if(A.Num()<5)continue;   // i18n:skip
   Points.Add(FVector(A[0]->AsNumber(),A[1]->AsNumber(),A[2]->AsNumber()));Angles.Add(FRotator(A[3]->AsNumber(),A[4]->AsNumber(),0));}
  if(Points.Num()<2){Points={FVector(3000,-3600,500),FVector(5000,-3400,500)};Angles={FRotator(-6,60,0),FRotator(-6,120,0)};}
+ const TSharedPtr<FJsonObject>* Orbit=nullptr;
+ if(D->TryGetObjectField(TEXT("orbit"),Orbit)){const TArray<TSharedPtr<FJsonValue>>* C=nullptr;   // i18n:skip
+  if((*Orbit)->TryGetArrayField(TEXT("centre"),C) && C->Num()>=2){bOrbit=true;OrbitCentre=FVector((*C)[0]->AsNumber(),(*C)[1]->AsNumber(),0);   // i18n:skip
+   double V=0;(*Orbit)->TryGetNumberField(TEXT("radius"),V);OrbitRadius=V;V=0;(*Orbit)->TryGetNumberField(TEXT("height"),V);OrbitHeight=V;   // i18n:skip
+   V=0;(*Orbit)->TryGetNumberField(TEXT("look_z"),V);OrbitLook=V;V=0;(*Orbit)->TryGetNumberField(TEXT("start_deg"),V);OrbitStart=V;   // i18n:skip
+   V=0;(*Orbit)->TryGetNumberField(TEXT("yaw_offset"),V);OrbitYaw=V;   // i18n:skip
+   V=240;(*Orbit)->TryGetNumberField(TEXT("seconds"),V);Loop=FMath::Max(30.f,float(V));}}   // i18n:skip
  Place(0);
 }
 
 void AMareTitleCamera::Place(float T)
 {
+ if(bOrbit){
+  // Round the island, far out at sea: the distance and the height breathe a little so it does not feel mechanical.
+  const float A=FMath::DegreesToRadians(OrbitStart)+UE_TWO_PI*T/Loop;
+  const float R=OrbitRadius*(1.f+.06f*FMath::Sin(A*2.f+.7f)),H=OrbitHeight*(1.f+.15f*FMath::Sin(A*3.f));
+  const FVector Pos=OrbitCentre+FVector(FMath::Cos(A)*R,FMath::Sin(A)*R,H);
+  const FVector Look(OrbitCentre.X,OrbitCentre.Y,OrbitLook);
+  // looking a little to the left of the island puts it on the right of the screen, clear of the menu column
+  FRotator View=(Look-Pos).Rotation();View.Yaw+=OrbitYaw;
+  SetActorLocationAndRotation(Pos,View);return;}
  const int32 N=Points.Num();const float U=FMath::Fmod(T/Loop,1.f)*N;const int32 I=FMath::FloorToInt(U)%N;const float F=U-FMath::FloorToFloat(U);
  auto P=[&](int32 K){return Points[(K%N+N)%N];};
  const FVector P0=P(I-1),P1=P(I),P2=P(I+1),P3=P(I+2);
@@ -50,7 +68,9 @@ void AMareTitleCamera::Place(float T)
 
 void AMareTitleCamera::Tick(float DeltaSeconds)
 {
- Super::Tick(DeltaSeconds);Time+=DeltaSeconds;Place(Time);
+ Super::Tick(DeltaSeconds);Time+=DeltaSeconds;
+ const float At=CVarMareTitleAt.GetValueOnGameThread();if(At>=0)Time=At*Loop;
+ Place(Time);
 }
 
 // ---------------------------------------------------------------------------------------------------------------------

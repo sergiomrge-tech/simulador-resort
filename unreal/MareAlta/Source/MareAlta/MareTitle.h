@@ -29,5 +29,8 @@ public:
  static double TitleMinutes();
 private:
  TArray<FVector> Points;TArray<FRotator> Angles;float Loop=80.f,Time=0.f;
+ /** 10/11 (Sergio: "mude a tela de fundo pela do jogo, pode ser uma vista à distância rodando ao redor da ilha"):
+  *  title.json "orbit" = a slow circle round the island, far out at sea, always looking at it (used instead of the points). */
+ bool bOrbit=false;FVector OrbitCentre=FVector::ZeroVector;float OrbitRadius=0,OrbitHeight=0,OrbitLook=0,OrbitStart=0,OrbitYaw=0;
  void Place(float T);
 };
