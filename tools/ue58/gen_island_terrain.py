@@ -79,6 +79,12 @@ def main():
     height = np.where(seam, old_z - 40.0, height)
     use = new_land | seam | ((D > 0) & (D < 6000) & ~land)
     use = ndimage.binary_dilation(use, iterations=1) & ~(land & ~seam)
+    # 09/11 (checklist: stair-step rectangles in the west cove): where the survey found an old hill tile under the sea, the
+    # hill itself is the sea floor (its material turns to sand and is lifted under the water, M_HillGround_PBR); new-land
+    # sea cells over it made flat shelves with the grid's straight edges. No new sea floor over a hill tile.
+    hill_ids = [k for k, name in enumerate(survey['labels']) if name.rsplit('@', 1)[-1] in
+                {'1869', '1870', '1871', '1872', '1873', '1874', '1875', '1876', '1937', '1938'}]
+    use &= ~(np.isin(who, hill_ids) & ~land & (D > 0))
 
     # vertices for every used cell corner (the grid points themselves), quads where all four are used
     ys, xs = np.nonzero(use)

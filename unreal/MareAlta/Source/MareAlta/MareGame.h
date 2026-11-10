@@ -107,6 +107,8 @@ public:
  /** QA scripts that drive the kiosk themselves (mare.Pay off). */
  bool bSkipPaymentForQA=false;
  void OpenMainMenu();
+ /** Language page over the title menu (first start; QA "mare.ShowUI language"); the menu rebuilds its texts after Confirm. */
+ void ShowLanguagePage();
  bool IsMainMenuOpen()const{return MainMenuWidget.IsValid();}
  bool IsTitle()const{return bTitle;}
  /** Continue/Load: the slot already behind the menu just resumes, another slot reloads the level. */

@@ -86,7 +86,11 @@ def main():
                 urllib.request.urlretrieve(GF + rel.rsplit('/',1)[0] + '/OFL.txt', license_path)
     latin = ''.join(chr(c) for c in range(0x20, 0x17F))
     zh, ja, ko, ru = texts('zh-Hans'), texts('ja'), texts('ko'), texts('ru')
-    if 'NotoSansSC' in args.families:build('NotoSansSC', latin + PUNCT + NAMES + zh, 500)
+    # 09/11: the language page before the menu shows each language's own texts in any culture; out of 'ja' the kanji are
+    # drawn by the Chinese font (MareNotebookStyle.h), so it also carries the Japanese page texts (選択, 変更, 確定).
+    page = ('Escolha seu idioma', 'Você pode mudar depois em Opções.', 'Confirmar')
+    ja_page = ''.join(json.loads((LOC / 'ja.json').read_text(encoding='utf-8')).get('strings', {}).get(k, '') for k in page) if (LOC / 'ja.json').exists() else ''
+    if 'NotoSansSC' in args.families:build('NotoSansSC', latin + PUNCT + NAMES + zh + ja_page, 500)
     if 'NotoSansJP' in args.families:build('NotoSansJP', latin + PUNCT + NAMES + ja, 500)
     if 'NotoSansKR' in args.families:build('NotoSansKR', latin + PUNCT + NAMES + ko, 500)
     cyr = ''.join(c for c in ru + NAMES if 0x400 <= ord(c) <= 0x52F) + ''.join(chr(c) for c in range(0x410, 0x450)) + 'Ёё'

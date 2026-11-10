@@ -28,7 +28,7 @@ namespace MareOptionsData
   {TEXT("frame_generation"),&FMareOptions::FrameGeneration},{TEXT("view_distance"),&FMareOptions::ViewDistance},{TEXT("effects"),&FMareOptions::Effects},
   {TEXT("shading"),&FMareOptions::Shading},{TEXT("model_detail"),&FMareOptions::ModelDetail},{TEXT("crowd"),&FMareOptions::Crowd}};
  const TPair<const TCHAR*,float FMareOptions::*> Floats[]={{TEXT("resolution_scale"),&FMareOptions::ResolutionScale},{TEXT("field_of_view"),&FMareOptions::FieldOfView},{TEXT("mouse_sensitivity"),&FMareOptions::MouseSensitivity},{TEXT("gamepad_sensitivity"),&FMareOptions::GamepadSensitivity},{TEXT("text_scale"),&FMareOptions::TextScale}};
- const TPair<const TCHAR*,bool FMareOptions::*> Bools[]={{TEXT("vsync"),&FMareOptions::bVSync},{TEXT("invert_y"),&FMareOptions::bInvertY},{TEXT("tips"),&FMareOptions::bTips},{TEXT("color_safe"),&FMareOptions::bColorSafe}};
+ const TPair<const TCHAR*,bool FMareOptions::*> Bools[]={{TEXT("vsync"),&FMareOptions::bVSync},{TEXT("invert_y"),&FMareOptions::bInvertY},{TEXT("tips"),&FMareOptions::bTips},{TEXT("color_safe"),&FMareOptions::bColorSafe},{TEXT("language_chosen"),&FMareOptions::bLanguageChosen}};
  /** Legacy mappings (DefaultInput.ini) driven by each remappable action; axes carry their scale. */
  struct FBinding{FName Name;bool bAxis;float Scale;};
  TArray<FBinding> Bindings(FName Action)

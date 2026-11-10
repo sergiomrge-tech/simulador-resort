@@ -747,3 +747,75 @@ def ism_info(arg=''):
                     rows.append([[round(t.translation.x), round(t.translation.y), round(t.translation.z)], str(t.scale3d), str(l.scale3d)])
                 return json.dumps({'comp_scale': str(c.get_world_scale()), 'actor_scale': str(a.get_actor_scale3d()), 'mesh': c.static_mesh.get_name(), 'inst': rows})
     return 'none'
+
+
+def cam_pick(arg=''):
+    """Editor: rays from a photo camera 'x,y,z,pitch,yaw[,fov]|u,v;u,v' (screen fractions, 16:9): every layer each ray
+    crosses (label, z, material), peeling one actor at a time. Matches shots.py/tour.py poses."""
+    import math
+    world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_editor_world()
+    cam, pts = arg.split('|')
+    c = [float(v) for v in cam.split(',')]
+    x, y, z, pitch, yaw = c[:5]
+    fov = c[5] if len(c) > 5 else 90.0
+    rot = unreal.Rotator(roll=0, pitch=pitch, yaw=yaw)
+    f, r, u_ = rot.get_forward_vector(), rot.get_right_vector(), rot.get_up_vector()
+    t = math.tan(math.radians(fov / 2))
+    out = []
+    for spec in pts.split(';'):
+        u, v = (float(k) for k in spec.split(','))
+        d = f + r * ((2 * u - 1) * t) + u_ * ((1 - 2 * v) * t * 9 / 16)
+        d = d.normal()
+        o = unreal.Vector(x, y, z)
+        ignore, layers = [], []
+        for _ in range(4):
+            hit = unreal.SystemLibrary.line_trace_single(world, o, o + d * 200000, unreal.TraceTypeQuery.TRACE_TYPE_QUERY1, True, ignore,
+                                                         unreal.DrawDebugTrace.NONE, True)
+            h = hit.to_tuple() if hit else None
+            if not h or not h[9]:
+                break
+            comp = h[10]
+            layers.append([round(h[4].x), round(h[4].y), round(h[4].z), h[9].get_actor_label()[:34],
+                           comp.get_material(0).get_name() if comp and comp.get_num_materials() else None])
+            ignore.append(h[9])
+        out.append([u, v, layers])
+    return json.dumps(out, ensure_ascii=False)
+
+
+def nanite_info(arg=''):
+    """Editor: Nanite settings of a static mesh asset path."""
+    m = unreal.load_asset(arg)
+    n = m.get_editor_property('nanite_settings')
+    out = {}
+    for k in ('enabled', 'keep_percent_triangles', 'trim_relative_error', 'fallback_percent_triangles', 'fallback_relative_error',
+              'position_precision', 'shape_preservation', 'max_edge_length_factor'):
+        try:
+            out[k] = str(n.get_editor_property(k))
+        except Exception:
+            out[k] = '?'
+    return json.dumps(out)
+
+
+def pie_pick_face(arg=''):
+    """PIE: like pie_pick, but the material of the face hit (complex trace + collision face index)."""
+    world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()
+    pc = unreal.GameplayStatics.get_player_controller(world, 0)
+    size = unreal.WidgetLayoutLibrary.get_viewport_size(world)
+    out = []
+    for spec in arg.split(';'):
+        u, v = (float(t) for t in spec.split(','))
+        r = unreal.GameplayStatics.deproject_screen_to_world(pc, unreal.Vector2D(u * size.x, v * size.y))
+        origin, direction = (r[-2], r[-1]) if isinstance(r, tuple) else (r.world_position, r.world_direction)
+        hit = unreal.SystemLibrary.line_trace_single(world, origin, origin + direction * 300000, unreal.TraceTypeQuery.TRACE_TYPE_QUERY1,
+                                                     True, [unreal.GameplayStatics.get_player_pawn(world, 0)], unreal.DrawDebugTrace.NONE, True)
+        t = hit.to_tuple() if hit else None
+        mat = None
+        if t and t[10]:
+            try:
+                res = t[10].get_material_from_collision_face_index(t[13])
+                m = res[0] if isinstance(res, tuple) else res
+                mat = m.get_path_name() if m else None
+            except Exception as e:
+                mat = 'err ' + str(e)[:60]
+        out.append([u, v, [round(t[4].x), round(t[4].y), round(t[4].z)] if t else None, t[9].get_actor_label()[:30] if t and t[9] else None, t[13] if t else None, mat])
+    return json.dumps(out, ensure_ascii=False, default=str)

@@ -1,4 +1,5 @@
 #include "MareGame.h"
+#include "MareLanguage.h"
 #include "MareLoading.h"
 #include "Engine/DirectionalLight.h"
 #include "Components/DirectionalLightComponent.h"
@@ -1917,6 +1918,8 @@ public:
  /** Gamepad B: the previous page (the main page stays). */
  void Back(){switch(Current){case EPage::Main:break;case EPage::Confirm:Show(EPage::New);break;default:Show(EPage::Main);}}
  void ShowCredits(){Show(EPage::Credits);}
+ /** Rebuilds the current page (texts in the language just chosen on the language page). */
+ void Refresh(){Show(Current);}
 private:
  enum class EPage:uint8{Main,Load,New,Confirm,Options,Credits};
  EPage Current=EPage::Main;
@@ -2307,6 +2310,16 @@ void AMareController::OpenMainMenu()
   MareGamepad::PushMenu(Menu,[Weak](){if(const auto Pinned=Weak.Pin())Pinned->Back();});}
  GEngine->GameViewport->AddViewportWidgetContent(MainMenuWidget.ToSharedRef(),50);bShowMouseCursor=true;
  SetInputMode(FInputModeUIOnly().SetWidgetToFocus(MainMenuWidget));SetIgnoreMoveInput(true);SetIgnoreLookInput(true);
+ // 09/11 (Sergio: "na tela inicial quero algo assim, antes de chegar no menu"): the first start asks for the language first.
+ if(bTitle && MareLanguage::ShouldAsk())ShowLanguagePage();
+}
+void AMareController::ShowLanguagePage()
+{
+ const TWeakObjectPtr<AMareController> Weak(this);
+ MareLanguage::Show(this,[Weak](){
+  if(!Weak.IsValid() || !Weak->MainMenuWidget.IsValid())return;
+  StaticCastSharedPtr<SMareMainMenu>(Weak->MainMenuWidget)->Refresh();
+  Weak->SetInputMode(FInputModeUIOnly().SetWidgetToFocus(Weak->MainMenuWidget));});
 }
 void AMareController::OpenCredits()
 {
@@ -2314,7 +2327,7 @@ void AMareController::OpenCredits()
 }
 void AMareController::CloseMainMenu()
 {
- MareLoading::EndWarmup();
+ MareLoading::EndWarmup();MareLanguage::Close();
  if(MainMenuWidget.IsValid() && GEngine && GEngine->GameViewport)GEngine->GameViewport->RemoveViewportWidgetContent(MainMenuWidget.ToSharedRef());
  MainMenuWidget.Reset();
  if(bTitle){bTitle=false;
@@ -2619,6 +2632,8 @@ struct FMareUIQA
   auto PC=World?Cast<AMareController>(UGameplayStatics::GetPlayerController(World,0)):nullptr;if(!PC)return;
   if(What==TEXT("pause") || What==TEXT("options")){if(!PC->PauseWidget.IsValid())PC->TogglePauseMenu();PC->BuildPauseMenu(What==TEXT("options"));}
   else if(What==TEXT("menu"))PC->OpenMainMenu();
+  else if(What.StartsWith(TEXT("language"))){if(!PC->IsMainMenuOpen())PC->OpenMainMenu();if(!MareLanguage::IsOpen())PC->ShowLanguagePage();   // i18n:skip
+   if(What.Contains(TEXT(":")))MareLanguage::QASelect(What.RightChop(9));}   // "language:en" selects English
   else if(What.StartsWith(TEXT("phone")))PC->OpenPhone(FCString::Atoi(*What.RightChop(5)));   // "phone4" = Resort tab
   else if(What==TEXT("play")){   // QA gate in PIE: like Continue on the main menu (the paused menu kept the village from ever spawning)
    if(PC->IsMainMenuOpen() && !PC->MenuLoadSlot(PC->WorldSlot))PC->MenuNewGame(PC->WorldSlot);}

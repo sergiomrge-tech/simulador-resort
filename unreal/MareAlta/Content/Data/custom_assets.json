@@ -123,5 +123,9 @@
  "mare_event_lectern": "/Game/Custom/mare_event_lectern/mare_event_lectern.mare_event_lectern",
  "mare_event_screen": "/Game/Custom/mare_event_screen/mare_event_screen.mare_event_screen",
  "mare_event_gifts": "/Game/Custom/mare_event_gifts/mare_event_gifts.mare_event_gifts",
- "mare_water_slide": "/Game/Custom/mare_water_slide/mare_water_slide.mare_water_slide"
+ "mare_water_slide": "/Game/Custom/mare_water_slide/mare_water_slide.mare_water_slide",
+ "mare_truck_rear": "/Game/Custom/mare_truck_rear/mare_truck_rear.mare_truck_rear",
+ "mare_lobby_slat_panel": "/Game/Custom/mare_lobby_slat_panel/mare_lobby_slat_panel.mare_lobby_slat_panel",
+ "mare_annex_dress": "/Game/Custom/mare_annex_dress/mare_annex_dress.mare_annex_dress",
+ "mare_manhole": "/Game/Custom/mare_manhole/mare_manhole.mare_manhole"
 }

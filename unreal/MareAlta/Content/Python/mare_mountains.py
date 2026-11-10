@@ -232,10 +232,199 @@ def populate(seed=20261101):
                                                unreal.Rotator(roll=roll, pitch=pitch, yaw=yaw), unreal.Vector(s, s, s)))
         comp.add_instances(transforms, False, True)
         summary[slug] = len(rows)
-    unreal.get_editor_subsystem(unreal.LevelEditorSubsystem).save_current_level()
-    report = {'region': REGION, 'min_z': MIN_Z, 'seed': seed, 'instances': summary, 'total': sum(summary.values()), 'rejected': rejected}
+    seated = json.loads(seat_rocks('apply'))   # beds the rocks in the slope and saves the level
+    seated['trunks'] = json.loads(clear_trunks('apply'))   # no tree growing out of a rock
+    report = {'region': REGION, 'min_z': MIN_Z, 'seed': seed, 'instances': summary, 'seated': seated, 'total': sum(summary.values()), 'rejected': rejected}
     (DATA / 'mountain_vegetation.json').write_text(json.dumps(report, indent=1), encoding='utf-8')
     return report
+
+
+TERRAIN = ('Maré · @MeshInstance3D', 'Maré · Ground', 'Maré · Preenchimento costeiro', 'Ilha · terreno novo', 'Mar · fundo')
+TRAILS = 'Ilha · trilhas'
+SEAT_POINTS = ((.5, .5), (.2, .2), (.8, .2), (.8, .8), (.2, .8))
+
+
+def _seat(world, t, box, ignore, sink=.35):
+    """Beds one rock in the slope. 09/11, Sergio: "rochas flutuando": the rocks were tilted at random (±12°) and sunk a
+    quarter of their height whatever the slope, so on 45–60° hillsides the downhill corners of wide slabs hung metres
+    in the air. Here the rock takes the plane of the ground under its own footprint (flat slabs fully, tall boulders
+    60%), keeps yaw and size, sinks `sink` of its height along the normal and is then lowered until no footprint
+    sample has air under it. Returns (transform, state): state 'ok', 'trail' (sits on a path), 'buried' (bedding it
+    hides it), 'other' (not on terrain: left alone, transform None)."""
+    ml = unreal.MathLibrary
+    s = t.scale3d
+    cx, cy = (box.min.x + box.max.x) / 2, (box.min.y + box.max.y) / 2
+    wx, wy, h = (box.max.x - box.min.x) * s.x, (box.max.y - box.min.y) * s.y, (box.max.z - box.min.z) * s.z
+    p0 = ml.transform_location(t, unreal.Vector(cx, cy, box.min.z))
+
+    def ground(x, y):
+        g = _hit(world, x, y, ignore)
+        if not g or not g[2]:
+            return None
+        label = g[2].get_actor_label()
+        if label.startswith(TRAILS):
+            return 'trail'
+        return (g[0].z, g[1]) if label.startswith(TERRAIN) else None
+
+    g0 = ground(p0.x, p0.y)
+    if g0 == 'trail':
+        return None, 'trail'
+    if not g0:
+        return None, 'other'
+    yaw = math.radians(t.rotation.rotator().yaw)
+    fx, fy = math.cos(yaw), math.sin(yaw)
+    pts = []
+    for ax, ay in ((1, 1), (-1, -1), (-1, 1), (1, -1)):
+        dx, dy = ax * .3 * wx, ay * .3 * wy
+        x, y = p0.x + dx * fx - dy * fy, p0.y + dx * fy + dy * fx
+        g = ground(x, y)
+        if g == 'trail':
+            return None, 'trail'
+        pts.append(unreal.Vector(x, y, g[0]) if g else None)
+    n = g0[1]
+    if all(pts):
+        c = ml.cross_vector_vector(pts[0] - pts[1], pts[2] - pts[3])
+        if c.z < 0:
+            c = c * -1
+        if c.length() > 1 and c.z / c.length() > .15:
+            n = c / c.length()
+    k = 1.0 if h < .25 * min(wx, wy) else .6          # a tall boulder leaning 50° with the slope looks toppled
+    n = unreal.Vector(n.x * k, n.y * k, n.z * k + (1 - k))
+    n = n / n.length()
+    fwd = unreal.Vector(fx, fy, 0)
+    d = fwd.x * n.x + fwd.y * n.y
+    rot = ml.make_rot_from_zx(n, unreal.Vector(fwd.x - n.x * d, fwd.y - n.y * d, -n.z * d))
+    depth = max(4.0, sink * h)
+    target = unreal.Vector(p0.x - n.x * depth, p0.y - n.y * depth, g0[0] - n.z * depth)
+    off = ml.transform_location(unreal.Transform(unreal.Vector(), rot, s), unreal.Vector(cx, cy, box.min.z))
+    new = unreal.Transform(target - off, rot, s)
+    worst = 0.0
+    for u, v in SEAT_POINTS:
+        p = ml.transform_location(new, unreal.Vector(box.min.x + (box.max.x - box.min.x) * u, box.min.y + (box.max.y - box.min.y) * v, box.min.z))
+        g = ground(p.x, p.y)
+        if g == 'trail':
+            return None, 'trail'
+        if g:
+            worst = max(worst, p.z - g[0])
+    if worst > 3:
+        new = unreal.Transform(target - off - unreal.Vector(0, 0, worst - 3), rot, s)
+    top = ml.transform_location(new, unreal.Vector(cx, cy, box.max.z))
+    g = ground(top.x, top.y)
+    if g and g != 'trail' and top.z - g[0] < .22 * h * n.z:
+        return None, 'buried'
+    return new, 'ok'
+
+
+def seat_rocks(arg='dry'):
+    """'dry' | 'apply' [':' label ['!' only rocks whose footprint floats more than 30 cm]]: beds every rock instance of
+    the actor (default: the mountain vegetation) with `_seat`; rocks on a trail or that bedding would hide are
+    removed. Run with the PIE stopped; 'apply' saves the level."""
+    mode, _, rest = arg.partition(':')
+    label, only_floating = (rest[:-1], True) if rest.endswith('!') else (rest or LABEL, False)
+    world = _world()
+    actors = unreal.get_editor_subsystem(unreal.EditorActorSubsystem)
+    ignore = [a for a in actors.get_all_level_actors() if a.get_actor_label() in (LABEL, 'Ilha · rochas da costa')]
+    ml = unreal.MathLibrary
+    out = {}
+    for a in ignore:
+        if a.get_actor_label() != label:
+            continue
+        for c in a.get_components_by_class(unreal.InstancedStaticMeshComponent):
+            m = c.static_mesh
+            if not m or 'rock' not in m.get_name().lower():
+                continue
+            box = m.get_bounding_box()
+            stat = {'n': c.get_instance_count(), 'ok': 0, 'trail': 0, 'buried': 0, 'other': 0, 'skipped': 0, 'tilt': []}
+            moves, drop = [], []
+            for i in range(c.get_instance_count()):
+                t = c.get_instance_transform(i, True)
+                if only_floating:
+                    gap = 0.0
+                    for u, v in SEAT_POINTS:
+                        p = ml.transform_location(t, unreal.Vector(box.min.x + (box.max.x - box.min.x) * u, box.min.y + (box.max.y - box.min.y) * v, box.min.z))
+                        g = _hit(world, p.x, p.y, ignore)
+                        if g:
+                            gap = max(gap, p.z - g[0].z)
+                    if gap <= 30:
+                        stat['skipped'] += 1
+                        continue
+                new, state = _seat(world, t, box, ignore)
+                stat[state] += 1
+                if state == 'ok':
+                    moves.append((i, new))
+                    up = ml.get_up_vector(new.rotation.rotator())
+                    stat['tilt'].append(round(math.degrees(math.acos(max(-1.0, min(1.0, up.z))))))
+                elif state in ('trail', 'buried'):
+                    drop.append(i)
+            tilt = sorted(stat.pop('tilt'))
+            stat['tilt_med'] = tilt[len(tilt) // 2] if tilt else None
+            stat['tilt_max'] = tilt[-1] if tilt else None
+            if mode == 'apply':
+                for j, (i, new) in enumerate(moves):
+                    c.update_instance_transform(i, new, True, j == len(moves) - 1, True)
+                for i in sorted(drop, reverse=True):
+                    c.remove_instance(i)
+                stat['left'] = c.get_instance_count()
+            out[m.get_name()] = stat
+    if mode == 'apply':
+        unreal.get_editor_subsystem(unreal.LevelEditorSubsystem).save_current_level()
+    return json.dumps(out, ensure_ascii=False)
+
+
+def clear_trunks(arg='dry'):
+    """'dry' | 'apply': removes the trees whose trunk comes up through a rock (09/11, photo of the west slope: a trunk
+    growing out of the middle of a flat slab). A tree counts when its base falls inside the central 70% of a rock's
+    footprint and below the rock's top. The rock stays (outcrops are rarer than trees). PIE stopped; 'apply' saves."""
+    ml = unreal.MathLibrary
+    actors = unreal.get_editor_subsystem(unreal.EditorActorSubsystem)
+    root = next((a for a in actors.get_all_level_actors() if a.get_actor_label() == LABEL), None)
+    if not root:
+        return json.dumps({'error': 'no actor'})
+    tree_names = set()
+    for slug, _, _ in TREES:
+        m = _mesh(slug)
+        if m:
+            tree_names.add(m.get_name())
+    comps = root.get_components_by_class(unreal.InstancedStaticMeshComponent)
+    cell = 1000.0
+    grid = {}
+    for c in comps:
+        m = c.static_mesh
+        if not m or m.get_name() not in tree_names:
+            continue
+        for i in range(c.get_instance_count()):
+            p = c.get_instance_transform(i, True).translation
+            grid.setdefault((int(p.x // cell), int(p.y // cell)), []).append((c, i, p))
+    hit = {}
+    rocks = 0
+    for c in comps:
+        m = c.static_mesh
+        if not m or 'rock' not in m.get_name().lower():
+            continue
+        box = m.get_bounding_box()
+        dx, dy = box.max.x - box.min.x, box.max.y - box.min.y
+        for i in range(c.get_instance_count()):
+            t = c.get_instance_transform(i, True)
+            r = .5 * max(dx * t.scale3d.x, dy * t.scale3d.y)
+            inv = t.inverse()
+            found = False
+            for gx in range(int((t.translation.x - r) // cell), int((t.translation.x + r) // cell) + 1):
+                for gy in range(int((t.translation.y - r) // cell), int((t.translation.y + r) // cell) + 1):
+                    for tc, ti, p in grid.get((gx, gy), ()):
+                        q = ml.transform_location(inv, p)
+                        if (box.min.x + .15 * dx < q.x < box.max.x - .15 * dx and box.min.y + .15 * dy < q.y < box.max.y - .15 * dy
+                                and q.z < box.max.z):
+                            hit.setdefault(tc, set()).add(ti)
+                            found = True
+            rocks += found
+    out = {'rocks_with_trunk': rocks, 'trees': {c.static_mesh.get_name(): len(v) for c, v in hit.items()}}
+    if arg == 'apply':
+        for c, ids in hit.items():
+            for i in sorted(ids, reverse=True):
+                c.remove_instance(i)
+        out['left'] = {c.static_mesh.get_name(): c.get_instance_count() for c in hit}
+        unreal.get_editor_subsystem(unreal.LevelEditorSubsystem).save_current_level()
+    return json.dumps(out, ensure_ascii=False)
 
 
 VIEWS = {'village-north': ((3800, 2500, 600), (8, 95)), 'beach-back': ((3800, -2600, 300), (6, 95)),
@@ -250,6 +439,10 @@ def view(name):
 def run(action, arg=''):
     if action == 'populate':
         return populate()
+    if action == 'seat':
+        return seat_rocks(arg or 'dry')
+    if action == 'trunks':
+        return clear_trunks(arg or 'dry')
     if action == 'view':
         return view(arg)
     if action == 'big':

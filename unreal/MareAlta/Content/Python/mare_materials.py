@@ -82,7 +82,10 @@ def build_ground(seabed=False,island=False):
             inputs[key+{'diff':'','nor':'Normal','ao':'AO'}[kind]]=node
     blend='float edge=sin(Position.x*.0017)*90+sin(Position.x*.0041)*35; float wet=1-smoothstep(-3400,-2400,Position.y+edge); float inland=smoothstep(-1200,-500,Position.y+edge*.6); '
     if seabed:
-        blend='float edge=0; float wet=1; float inland=0; '
+        # 09/11 (checklist: dark bands with straight edges in the west cove): 'sea' still followed the old bay's straight
+        # beach (y < -43 m), so all round the rest of the island the floor was dark wet sand without the caustics, next to
+        # the bright island floor. The sea floor is the lit bed everywhere.
+        blend='float edge=-1000000; float wet=1; float inland=0; '
     if island:
         coast=custom(mat,'float2 uv=(Position.xy-float2(-160000,-110000))/320000.0; return -2950-(Texture2DSampleLevel(Tex,TexSampler,uv,0).r-.5)*80000.0;',unreal.CustomMaterialOutputType.CMOT_FLOAT1,{'Position':pos,'Tex':expression(mat,unreal.MaterialExpressionTextureObject,texture=island_sdf_texture())})
         inputs['Coast']=coast
@@ -603,6 +606,10 @@ def build_hill_ground():
     mat = material('M_HillGround_PBR')
     mat.set_editor_property('used_with_nanite', True)
     mat.set_editor_property('used_with_instanced_static_meshes', True)
+    # 09/11: the tiles end in a flat skirt 2.2 m under the sea; through the shallow water it showed as pale stair-step
+    # rectangles. Under the water the hill turns to the island floor's sand (with its caustics) and is lifted (below).
+    # (Cutting the skirt out was tried: the sea floor 2.5 m down then showed as a dark band through the water.)
+    mat.set_editor_property('blend_mode', unreal.BlendMode.BLEND_OPAQUE)
     fn = unreal.load_asset('/Engine/Functions/Engine_MaterialFunctions01/Texturing/WorldAlignedTexture')
     def projected(tex, size):
         obj = expression(mat, unreal.MaterialExpressionTextureObject, texture=tex)
@@ -612,12 +619,23 @@ def build_hill_ground():
         connect(expression(mat, unreal.MaterialExpressionConstant3Vector, constant=unreal.LinearColor(size, size, size, 1)), '', call, 'TextureSize')
         return call
     near, far, nrm = projected(diff, 900.0), projected(diff, 4100.0), projected(nor, 900.0)
-    pos = expression(mat, unreal.MaterialExpressionWorldPosition)
-    color = custom(mat, 'float m=.5+.5*sin(P.x*.00021+sin(P.y*.00017)*2.0); float3 c=lerp(A.rgb,B.rgb,.45*m); float l=dot(c,float3(.2126,.7152,.0722)); float3 turf=float3(.11,.22,.05)*clamp(l*2.6,.55,1.35); return lerp(c,turf,.55)*(.9+.12*sin(P.x*.0009)*sin(P.y*.0007));',
-                   unreal.CustomMaterialOutputType.CMOT_FLOAT3, {'A': near, 'B': far, 'P': pos})
+    # Colour, cut and lift all read the tile's own height (without the lift below).
+    pos = expression(mat, unreal.MaterialExpressionWorldPosition,
+                     world_position_shader_offset=unreal.WorldPositionIncludedOffsets.WPT_EXCLUDE_ALL_SHADER_OFFSETS)
+    color = custom(mat, 'float m=.5+.5*sin(P.x*.00021+sin(P.y*.00017)*2.0); float3 c=lerp(A.rgb,B.rgb,.45*m); float l=dot(c,float3(.2126,.7152,.0722)); float3 turf=float3(.11,.22,.05)*clamp(l*2.6,.55,1.35); float3 o=lerp(c,turf,.55)*(.9+.12*sin(P.x*.0009)*sin(P.y*.0007)); float2 q=P.xy*.011; float cw=sin(q.x+sin(q.y*1.3+T*.7)*1.6)+sin(q.y*1.1+sin(q.x*1.2-T*.6)*1.6); float caustic=pow(saturate(1-abs(cw)*.6),4); float3 bed=float3(.95,.88,.74)*.88*float3(.9,.93,.92)*(.95+.1*m)*(1+caustic*1.05); return lerp(o,bed,1-smoothstep(-80.0,-15.0,P.z));',
+                   unreal.CustomMaterialOutputType.CMOT_FLOAT3, {'A': near, 'B': far, 'P': pos, 'T': expression(mat, unreal.MaterialExpressionTime)})
     MEL.connect_material_property(color, '', unreal.MaterialProperty.MP_BASE_COLOR)
     MEL.connect_material_property(nrm, 'XYZ Texture', unreal.MaterialProperty.MP_NORMAL)
     MEL.connect_material_property(expression(mat, unreal.MaterialExpressionConstant, r=.92), '', unreal.MaterialProperty.MP_ROUGHNESS)
+    # The underwater slope and skirt of a hill tile drop to -2.2 m within a few metres while the island floor beside it
+    # stays at -0.8..-1.2 m: through the water the deeper hill read as a dark band with the floor's straight edge next to
+    # it. Below the waterline the hill is lifted, its depth squeezed to 45% (-2.2 m -> -1.15 m), so the floors meet.
+    lift = custom(mat, 'return float3(0, 0, P.z < -30.0 ? (-30.0 - P.z) * .55 : 0.0);', unreal.CustomMaterialOutputType.CMOT_FLOAT3, {'P': pos})
+    MEL.connect_material_property(lift, '', unreal.MaterialProperty.MP_WORLD_POSITION_OFFSET)
+    try:
+        mat.set_editor_property('max_world_position_offset_displacement', 130.0)   # Nanite bounds for the lift
+    except Exception:
+        pass
     errors = list(MEL.recompile_material(mat))
     if errors: raise RuntimeError(str(errors))
     unreal.EditorAssetLibrary.save_loaded_asset(mat)

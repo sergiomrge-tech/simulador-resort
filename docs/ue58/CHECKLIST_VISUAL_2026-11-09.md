@@ -21,9 +21,16 @@ Legenda: [x] corrigido hoje · [ ] falta corrigir · (A) alta, (M) média, (B) b
 - [x] (A) Praia norte e outras 8 praias: placas marrons quadradas na beira d'água. Eram fatias de 54 m da rocha
   `coast_line_01` achatadas. Testei pedregulho e conjunto de rochas (ficaram escuros ou flutuando) e escondi o grupo; as
   outras rochas de arenito ficam.
-- [ ] (M) Enseada oeste e costa sudoeste: retângulos lisos sob a água rasa. São a base reta dos blocos de morro antigos
-  do Godot (`M_HillGround`, ex.: `@MeshInstance3D@1937`) entrando no mar. Recortar a parte submersa de cada bloco.
-- [ ] (M) Enseada oeste: a beira da água rasa forma degraus (borda em escada do fundo).
+- [x] (M) Enseada oeste e costa sudoeste: retângulos lisos e degraus sob a água rasa. Eram três coisas juntas: o fundo de
+  areia da ilha ainda seguia a reta da praia antiga da baía e, fora dela, ficava areia molhada escura sem cáusticas; o
+  terreno novo da ilha deixava prateleiras retas por cima dos blocos de morro submersos; e a saia desses blocos descia
+  até −2,2 m. Agora o fundo é areia clara com cáusticas em toda a volta, o terreno novo não cobre os blocos de morro
+  (`gen_island_terrain.py`) e o morro vira areia debaixo d'água, levantado no material (−2,2 m vira −1,15 m).
+  Conferido em foto nas duas costas e na baía (`D:/CodexTemp/hill10`).
+- [ ] (B) Costa oeste: alguns riscos escuros finos na água rasa, nas emendas entre o morro e o terreno novo.
+- [x] (A) Rochas flutuando nas encostas do oeste (foto do Sergio). Assentadas com `mare_mountains.seat_rocks`: 31 pedras
+  em cima das trilhas e 25 enterradas retiradas, medição final com 0 pedras flutuando mais de 30 cm; 621 árvores que
+  atravessavam 646 pedras retiradas (`clear_trunks`). Conferido em foto (`D:/CodexTemp/rocks2`).
 - [x] (M) Costa sudeste: água rasa com manchas escuras. O chão da ilha mostrava grama e folhas debaixo d'água; agora
   vira areia abaixo do nível do mar. As manchas que sobraram são capim marinho (natural).
 - [x] (M) Gramados da costa: verde muito saturado e uniforme. Agora com tom menos neon e mais variação.
@@ -48,8 +55,10 @@ Legenda: [x] corrigido hoje · [ ] falta corrigir · (A) alta, (M) média, (B) b
 
 - [x] (A) Anexo do banheiro da casa do herói sem telhado. O "cilindro vermelho" escondido de manhã era o telhado dele,
   que atravessava 27 cm da parede da sala. Voltou, encurtado até a parede.
-- [ ] (M) Anexo do banheiro: parede lisa, sem janela nem detalhe, parecendo caixa.
-- [ ] (B) Janela da casa do herói: moldura pequena (espelho ou quadro do banheiro) colada no vidro, vista de fora.
+- [x] (M) Anexo do banheiro: parede lisa, parecendo caixa. Ganhou janela basculante de vidro fosco com peitoril de pedra
+  e o barrado cinza da casa nos três lados (`tools/ue58/gen_annex_dress.py`, `mare_fix_0911.annex_dress`).
+- [x] (B) Janela da casa do herói: "moldura pequena colada no vidro". Medido: é a janela da parede oeste da sala
+  (x 42,5 m), vista de viés pela janela sul. Não é defeito.
 
 Sondagem das coisas pequenas: 33 vistas de perto, com tudo liberado (`D:/CodexTemp/detail`, script
 `D:/CodexTemp/claude/ue/detail.py`).
@@ -59,6 +68,11 @@ Sondagem das coisas pequenas: 33 vistas de perto, com tudo liberado (`D:/CodexTe
   com a câmera entre os dois bancos.
 
 **Quiosque**
+- [x] (A) Tudo liso, sem textura (foto do Sergio: "tudo precisa ter sinais de desgaste"). Metade dos materiais era só uma
+  cor. Agora cada superfície tem textura real do Poly Haven (CC0) recolorida e desgaste: tábuas gastas na parede e nos
+  postes, tinta verde-água e creme descascando, balcão de carvalho com veio, coifa e geladeira com tinta rachada, armário
+  esmaltado arranhado, azulejos com craquelado, inox com riscos e sujeira perto do chão (`mare_kiosk_wear.py`). Conferido
+  em foto (`D:/CodexTemp/kiosk2`, `kiosk3`).
 - [x] (A) "ENTRADA" escrito no armário do fogão e na geladeira: letreiros antigos das entradas laterais, escondidos.
 - [x] (M) Bloco creme liso no fim do balcão: não é defeito. É a estante de salgados (prateleiras creme, combinando
   com a geladeira e o azulejo) vista por trás. A primeira tentativa (madeira do balcão) deixou a estante de duas cores
@@ -73,18 +87,25 @@ Sondagem das coisas pequenas: 33 vistas de perto, com tudo liberado (`D:/CodexTe
 - [x] (B) Cozinha: vasinho de planta no chão. Conferido: é decoração de chão, fica.
 
 **Grand Hotel**
-- [ ] (M) Saguão, lado oeste: três "portas" que são só placas marrons na parede, sem batente nem maçaneta.
+- [x] (M) Saguão, lado oeste: "portas" que eram só placas marrons na parede. Eram 4 placas da malha da torre, de 0,9 a
+  1,2 m x 2 m e a 60 cm do chão (altas demais para portas). Cada uma ganhou um painel ripado de carvalho por cima
+  (`tools/ue58/gen_lobby_slat_panel.py`, `mare_fix_0911.lobby_panels`).
 - [x] (M) Suíte: parede da TV, pia, banheira e bancada com reboco de pedrinhas (pintas cinza). Agora pedra clara lisa
   (`M_SuiteStone`).
-- [ ] (M) Suíte: quarto grande quase vazio; a cama fica sozinha num piso enorme.
-- [ ] (B) Suíte: sofá antigo de tecido estampado destoa do estilo moderno do hotel.
-- [ ] (B) Quartos 302 e 303: painel branco liso no banheiro. É o quadro do quarto (`mare_hotel_rooms_Painting`),
-  visto de lado ou de trás; conferir de frente.
+- [x] (M) Suíte: quarto grande quase vazio. Agora com mesa de jantar para seis, aparador com vaso e planta no canto
+  sudeste, mesinhas ao lado do sofá, pufe ao pé da cama e poltrona de leitura com mesinha no quarto
+  (`mare_fix_0911.suite_extra`, chamado também por `mare_beach.place_suite`).
+- [x] (B) Suíte: sofá antigo estampado, e ainda de lado para a TV. Trocado pelo `Sofa_01` de frente para a TV.
+- [x] (B) Quartos 302 e 303: painel branco liso no banheiro. Conferido de frente: é a toalha de banho dobrada no
+  suporte cromado ao lado da banheira, não é defeito.
 
 **Vila**
-- [ ] (A) Caminhão vermelho parado no meio da rua principal: um caixote vermelho liso, sem portas nem lanternas, com um
-  galão azul ao lado (sobra do ônibus ou do food truck).
-- [ ] (B) Tampas de bueiro redondas e lisas no calçamento.
+- [x] (A) Caminhão vermelho parado no meio da rua principal: um caixote vermelho liso, sem portas nem lanternas, com um
+  galão azul ao lado. É o food truck (negócio da vila) visto por trás; o "galão" é o botijão de gás dele. A traseira
+  ganhou um modelo próprio (`mare_truck_rear`): duas portas com travas cromadas, dobradiças, lanternas de três lentes,
+  luzes de teto, placa e degrau.
+- [x] (B) Tampas de bueiro redondas e lisas. As 24 viraram tampas de ferro fundido com aro, anéis em relevo e
+  textura antiderrapante (`tools/ue58/gen_manhole.py`, `mare_fix_0911.manholes`).
 
 **Conferido e ok:** saguão (sinuca, pingue-pongue, placar, poltronas, plantas), recepção do hotel, corredor dos
 quartos, cômodos da casa (sala, quarto, cozinha), cozinha e geladeira do quiosque, mesas do bar, quarto dos bangalôs,

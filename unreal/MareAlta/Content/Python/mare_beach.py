@@ -254,7 +254,8 @@ def place_bungalows():
 # Grand Hotel suite on the 3rd floor (tools/ue58/gen_suite.py); furniture in suite metres, facing in world axes.
 SUITE_ORIGIN = (-2800.0, 6342.0, 851.0)
 SUITE_FURNITURE = [
-    ('sofa_03', -0.5, 1.6, (0, -1)), ('modern_coffee_table_01', -0.5, .45, (0, -1)),
+    # 09/11: the carved sofa_03 (side-on to the TV) gave way to Sofa_01, added with the rest by mare_fix_0911.suite_extra
+    ('modern_coffee_table_01', -0.5, .45, (0, -1)),
     ('ArmChair_01', -2.6, -4.4, (1, .4)), ('fab:114', 1.6, -4.4, (-1, .4)),
     ('modern_coffee_table_02', -.5, -4.5, (0, 1)), ('ClassicNightstand_01', -7.85, -1.65, (1, 0)),
     ('ClassicNightstand_01', -7.85, .55, (1, 0)), ('fab:145', -7.8, -4.9, (1, 0)),
@@ -323,6 +324,9 @@ def place_suite():
         c.set_editor_property('contact_shadow_length', .08)   # 03/11, Sergio: "nada tem sombra, fica artificial"
         light.tags = tags
         light.set_folder_path('Hotel/Suite')
+    import mare_fix_0911
+    importlib.reload(mare_fix_0911)
+    mare_fix_0911.suite_extra()   # sofa, dining corner, bedroom ottoman and reading chair (09/11)
     unreal.get_editor_subsystem(unreal.LevelEditorSubsystem).save_current_level()
     return {'suite': True, 'furniture': placed, 'lights': len(SUITE_LIGHTS)}
 

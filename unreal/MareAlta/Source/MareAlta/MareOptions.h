@@ -49,6 +49,8 @@ struct MAREALTA_API FMareOptions
  TMap<FName,FKey> Keys;
  // Language (culture name).
  FString Culture=TEXT("pt-BR");
+ /** The language page before the title menu (MareLanguage.cpp) was confirmed once: it is not asked again. */
+ bool bLanguageChosen=false;
 
  struct FAction{FName Id;FText Label;FKey Default;};
  /** Remappable actions, in menu order. */

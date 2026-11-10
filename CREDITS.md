@@ -750,3 +750,16 @@ Galhos, cascas, troncos, tocos e raízes espalhados pela mata (`mare_forest_floo
 - CGI Moon Kit, mapa de cores `lroc_color_2k.jpg` (mosaico da Lunar Reconnaissance Orbiter, LROC) — NASA's Scientific
   Visualization Studio — https://svs.gsfc.nasa.gov/4720/ — domínio público. Em `SourceArt/Sky/T_MoonColor.jpg`; o disco da
   lua (`mare_moon.py`) lê o mapa como a face visível de uma esfera. Estrelas, Via Láctea e aurora são procedurais.
+
+## Bandeiras da tela de idioma — flagcdn.com (domínio público), 09/11/2026
+
+- 13 bandeiras (Brasil, Reino Unido, Espanha, China, Rússia, Alemanha, França, Japão, Coreia do Sul, Itália, Polônia,
+  Países Baixos, Portugal) — https://flagcdn.com (w320, PNG) — bandeiras nacionais, domínio público. Redimensionadas para
+  300×200 em `Content/UI/Flags/<cultura>.png`, lidas pela página de idioma antes do menu (`MareLanguage.cpp`).
+
+## Desgaste do quiosque — Poly Haven (CC0), 09/11/2026
+
+- old_planks_02, distressed_painted_planks, dark_planks e peeling_painted_wall — https://polyhaven.com (CC0), mapas 1k de
+  cor, normal e aspereza em `SourceArt/Textures/Custom`. Recoloridos por material no quiosque (`mare_kiosk_wear.py`):
+  tábuas da parede e postes, tinta verde-água e creme descascando, balcão de carvalho escuro, coifa e geladeira com tinta
+  rachada, azulejos com craquelado, inox com riscos e sujeira junto ao chão.
