@@ -6,7 +6,7 @@ antigas continuam como histórico e detalhe: `CHECKLIST_EXPANSOES.md`, `REVISAO_
 `PENDENCIAS_100.md`, `ROADMAP_STEAM.md`).
 
 Como usar: trabalhar de cima para baixo. Cada item entra com portão de QA PASS, commit, push e foto. Itens marcados
-👤 dependem do Sergio. Itens marcados GPT são do GPT (texto, traduções, balanceamento: `gpt-division-of-work`).
+👤 dependem do Sergio. 10/11 (Sergio: "Esquece gpt, faça vc"): textos, traduções e balanceamento agora são do Claude.
 
 ---
 
@@ -134,12 +134,12 @@ A ilha agora é grande e bonita, mas ainda é cenário. Propostas para dar uso a
 
 - [ ] Grand Hotel inteiro (quartos, VIPs, eventos, restaurante, salão de jogos) revisado com o mapa novo.
 - [ ] Lojinha de souvenires: revisão final (3.5, "por último").
-- [ ] Balanceamento de 6–10 h (GPT simula; Claude ajusta números no jogo).
+- [ ] Balanceamento de 6–10 h (Claude simula e ajusta os números no jogo).
 - [ ] Final da dívida (só no jogo completo).
 
 ---
 
-## Textos e traduções (GPT, em paralelo)
+## Textos e traduções (Claude)
 
 - [x] 08/11 (GPT fora do ar, feito pelo Claude): os 96 textos novos nos 12 idiomas; 4151/4151 em todos; glossário PASS.
 - [x] (09/11) Textos montados por partes: o `MareLoc` agora separa frases e contadores "(0/4)", reconhece texto já
@@ -153,7 +153,7 @@ A ilha agora é grande e bonita, mas ainda é cenário. Propostas para dar uso a
   horário "8h às 18h", número do pedido "#1 Thiago", placas 3D ("PISCINA<br>duche antes de entrar"), rótulo
   "Dormir e encerrar o dia", "Food truck do Pastel", nomes de tecla ("Left Shift"). A fama do HUD já foi corrigida.
 
-- [ ] GPT: `docs/ue58/I18N_TODO_2026-11-07.json` e `I18N_TODO_2026-11-08.json` (dicas da referência, pagamento, chegada de
+- [x] 10/11: textos pendentes de 07 e 08/11 conferidos: os 12 idiomas estão completos (4170/4170, glossário PASS), inclusive as 21 falas do mar no lugar do vulcão. Antes: GPT: `docs/ue58/I18N_TODO_2026-11-07.json` e `I18N_TODO_2026-11-08.json` (dicas da referência, pagamento, chegada de
   barco: "Barqueiro", o cartão "Você pegou o primeiro barco para a ilha." e a carta da dívida com "barco").
 - [ ] 👤 Revisão nativa e nomes próprios em chinês/japonês/russo.
 

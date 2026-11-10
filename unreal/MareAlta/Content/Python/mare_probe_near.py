@@ -1062,3 +1062,11 @@ def pie_niagara_rot(arg='2600,-2550,500|0,0,90'):
             c.reinitialize_system() if hasattr(c, 'reinitialize_system') else None
             n += 1
     return json.dumps({'rotated': n})
+
+
+def mesh_stats(path='/Game/World/Models/World_0000/World_0000/StaticMeshes/World_0000.World_0000'):
+    """Editor: LOD0 vertex count, Nanite flag and material slots of a static mesh."""
+    m = unreal.load_asset(path)
+    return json.dumps({'verts': m.get_num_vertices(0), 'lods': m.get_num_lods(),
+                       'nanite': bool(m.get_editor_property('nanite_settings').enabled),
+                       'mats': [s.material_interface.get_name() if s.material_interface else None for s in m.static_materials]})

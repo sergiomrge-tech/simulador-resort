@@ -121,7 +121,7 @@ float AMarePerson::SeaHeight(const FVector2D& P,float T,float Storm)
  const FVector2D Rq(P.X-4200,(P.Y+13100)*1.8f);const float Calm=FMath::Lerp(.08f,1.f,Smooth(2200,5200,Rq.Size()));
  // 09/11 (B14): flat over the last 150 m of the detailed ocean grid, where the far ring of large quads begins.
  const float Rim=Smooth(0,15000,FMath::Min(FMath::Min(P.X+130000,135000-P.X),FMath::Min(P.Y+243200,205000-P.Y)));
- return (H*Fade*Offshore*Coast*Pier*Calm+Shore*(Swell*15*(1+Storm*.8f)+7+Storm*5)*Pier-SeaDrawback*(1-Smooth(-17950,-42950,Yc)))*Rim;
+ return (H*Fade*Offshore*Coast*Pier*Calm+Shore*(Swell*6*(1+Storm*.8f)+2+Storm*2)*Pier-SeaDrawback*(1-Smooth(-17950,-42950,Yc)))*Rim;
 }
 
 void AMarePerson::UpdateTool(float DeltaSeconds)

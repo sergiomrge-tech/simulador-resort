@@ -861,3 +861,9 @@ Fogo de fluido 2D da Niagara (`Grid2D_Gas_SmokeFire`): a grade fica no plano XY 
 tapete de brasas. Em pé com pitch 90, e duas folhas cruzadas (uma some de perfil). `HighResShot` pode não mostrar efeito
 de fluido: confira com `mare.Shot`. Pessoa que nasce ao lado de outra (grupo) herda o ponto bloqueado do líder parado:
 toda criação que pode falhar precisa mudar de ponto na tentativa seguinte, senão o aviso de spawn enche o log a cada tique.
+Faixa de areia reta com água dos dois lados na beira da praia (foto do Sergio, 10/11) não era o chão: o "swell de costa"
+do material do mar (faixas paralelas à praia a cada ~7 m, 15–20 cm, mais 7–12 cm de subida) numa praia de 1:30 expunha
+uma faixa na cava e inundava a areia atrás na crista. Descasque a geometria primeiro (`cam_pick`): era um declive liso.
+Subir o terreno por cima do chão antigo criou uma barra igual; afundar o chão pelo material criou um contorno novo. A
+mudança certa foi no mar (6 cm, 2–4 cm de subida), com `AMarePerson::SeaHeight` junto. O `shots.py` força tempo bom
+(`mare.Weather 1`), que zera as ondas: para ver maré alta ou tempestade use `PRECMD="mare.Weather 0|mare.Event mare"`.

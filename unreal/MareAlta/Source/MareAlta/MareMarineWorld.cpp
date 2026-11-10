@@ -56,7 +56,9 @@ void UMareMarineWorld::Tick(float DeltaSeconds)
   // A night belongs to the day it started on: after midnight it is still the previous evening's eruption.
   const int32 NightDay=Minutes<360?GameDay-1:GameDay;
   const int32 EruptMode=CVarMareVolcanoErupt.GetValueOnGameThread();
-  const bool bErupt=!Day && (EruptMode==1 || (EruptMode<0 && VolcanoEruptsOnNight(NightDay)));
+  // 10/11 (Sergio: "tire o vulcão"): the island left the level (mare_volcano.remove); with no plume there is no
+  // eruption, so no glow and no eruption-night rough sea (MareVisualWorld) and no "fireworks" in the tsunami finale.
+  const bool bErupt=VolcanoPlume!=nullptr && !Day && (EruptMode==1 || (EruptMode<0 && VolcanoEruptsOnNight(NightDay)));
   const float Target=bErupt?1.f:0.f;VolcanoGlow=FMath::FInterpTo(VolcanoGlow,Target,DeltaSeconds,.5f);
   if(!VolcanoCollection)VolcanoCollection=LoadObject<UMaterialParameterCollection>(nullptr,TEXT("/Game/World/Materials/MPC_MareTime.MPC_MareTime"));
   if(VolcanoCollection)UKismetMaterialLibrary::SetScalarParameterValue(World,VolcanoCollection,TEXT("Volcano"),VolcanoGlow);

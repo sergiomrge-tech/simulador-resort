@@ -796,3 +796,21 @@ def slab_gap(arg='8600,10200,-4300,-3100,50'):
     gaps = [r[4] for r in out]
     return json.dumps({'points': len(out), 'gap>15': sum(1 for v in gaps if v > 15), 'max': max(gaps) if gaps else None,
                        'worst': sorted(out, key=lambda r: -r[4])[:15]}, ensure_ascii=False)
+
+
+def coast_ground(arg=''):
+    """10/11 (maré alta photos): rebuilds M_CoastGround_PBR, whose underwater plate now sinks under the island floor (see
+    mare_materials.build_ground). PIE stopped."""
+    import importlib
+    import mare_materials
+    importlib.reload(mare_materials)
+    return mare_materials.build_ground().get_path_name()
+
+
+def sea_water(arg=''):
+    """10/11 ('erro na agua'): rebuilds M_CoastalWater_PBR with the lower shore swell (AMarePerson::SeaHeight matches).
+    PIE stopped."""
+    import importlib
+    import mare_materials
+    importlib.reload(mare_materials)
+    return mare_materials.build_water().get_path_name()

@@ -716,7 +716,7 @@ Sem esta parte, as expansões ficam soltas. Cada atividade precisa alimentar din
 
 ### 6.4 Eventos do calendário
 
-- [ ] Conferir no jogo, com foto, cada evento de `events.json`: calor, lua cheia, maré alta, tempestade, quermesse, junina, DJ e carnaval. Cada um deve mudar algo **visível** e **jogável**: decoração, prato especial no quiosque, clientes fantasiados.
+- [x] Conferir no jogo, com foto, cada evento de `events.json`: calor, lua cheia, maré alta, tempestade, quermesse, junina, DJ e carnaval. Cada um deve mudar algo **visível** e **jogável**: decoração, prato especial no quiosque, clientes fantasiados. 10/11: fotos de todos (`D:/CodexTemp/events1..7`): calor (piscina/vendas), lua (bar lotado), maré alta (ondas e espuma na beira), tempestade (chuva, céu cinza, mar bravo) e as 4 festas montadas. Corrigido: fogueira em pé, sem esportes em dia de festa, swell de costa que fazia barra de areia com canal. Pendente: o disco da lua é igual em toda noite; as festas não têm produtos nas barracas.
 - [ ] Preparativos comprados na véspera aparecem no mapa.
 
 ### 6.5 Fim do Acesso Antecipado

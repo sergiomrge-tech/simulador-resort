@@ -103,10 +103,10 @@
     "bad": "Balançar a jangada para animar"
    },
    {
-    "text": "A ilha vulcânica aparece ao longe, soltando fumaça.",
-    "good": "Contar a lenda da ilha e mostrar a fumaça de longe",
-    "ok": "Apontar a ilha e seguir",
-    "bad": "Prometer chegar perto da cratera"
+    "text": "O farol aparece na ponta da praia, branco e vermelho.",
+    "good": "Contar a lenda do farol e da Onda grande",
+    "ok": "Apontar o farol e seguir",
+    "bad": "Prometer subir no farol"
    },
    {
     "text": "O sol encosta no mar.",
@@ -681,9 +681,9 @@
     "Balançaram tanto que fiquei enjoado."
    ],
    [
-    "A lenda da ilha vulcânica arrepiou!",
-    "Vimos a ilha de longe.",
-    "Prometeram ir à cratera e nada..."
+    "A lenda do farol arrepiou!",
+    "Vimos o farol de longe.",
+    "Prometeram subir no farol e nada..."
    ],
    [
     "Silêncio total no pôr do sol. Perfeito.",

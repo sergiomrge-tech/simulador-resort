@@ -107,7 +107,7 @@ void UMareSummitWorld::Tick(float DeltaSeconds)
  const bool bActive=bMet && CVarMareTsunami.GetValueOnGameThread()!=0;
  const bool bDone=OfferingDone(bMet,Last,Day);
  const int32 Phase=bActive && !bDone?PhaseAt(Minutes):0;
- if(Phase==1 && Reminded!=Day*10+1 && Minutes<13.5*60){Reminded=Day*10+1;Sim->LastMessage=TEXT("Hoje ainda falta a oferenda do Seu Tibúrcio. O vulcão anda resmungando.");}
+ if(Phase==1 && Reminded!=Day*10+1 && Minutes<13.5*60){Reminded=Day*10+1;Sim->LastMessage=TEXT("Hoje ainda falta a oferenda do Seu Tibúrcio. O mar anda resmungando.");}
  if(Phase==1 && Minutes>=13.5*60 && Reminded!=Day*10+2){Reminded=Day*10+2;Sim->LastMessage=TEXT("O céu está ficando esquisito... a oferenda do Seu Tibúrcio!");}
  if(Phase>=2 && !bOmenOn)StartOmen();
  if(Phase<2 && bOmenOn && !bForcedOmen)EndOmen();   // a forced omen (QA, trailers) lasts until the wave or an offering
@@ -155,34 +155,34 @@ void UMareSummitWorld::Talk(APlayerController* Controller)
  const TWeakObjectPtr<UMareSummitWorld> Weak(this);
  if(!bMet){
   Village->Quip(Elder,Controller,ElderName,
-   TEXT("Finalmente alguém subiu! Faz três semanas que eu grito daqui de cima e só o eco responde. Escuta: aquele vulcão lá no mar é temperamental. Todo santo dia alguém precisa deixar uma oferenda neste cesto, senão ele se zanga e manda a Onda. A grande. A de cem metros."),
+   TEXT("Finalmente alguém subiu! Faz três semanas que eu grito daqui de cima e só o eco responde. Escuta: este mar aqui é temperamental. Todo santo dia alguém precisa deixar uma oferenda neste cesto, senão ele se zanga e manda a Onda. A grande. A de cem metros."),
    {TEXT("Cem metros?!"),TEXT("Que tipo de oferenda?"),TEXT("Isso é sério?")},
    [](int32 I)->FString{
     if(I==0)return TEXT("Cem. Contei com a régua do meu avô, que media tudo em palmos. Deu muitos palmos.");
-    if(I==1)return TEXT("Qualquer coisa gostosa do seu quiosque: uma água de coco, um petisco... O vulcão é guloso, igual a mim. Traz aqui em cima, nas mãos, e deixa no cesto. Todo dia, antes das quatro da tarde.");
+    if(I==1)return TEXT("Qualquer coisa gostosa do seu quiosque: uma água de coco, um petisco... O mar é guloso, igual a mim. Traz aqui em cima, nas mãos, e deixa no cesto. Todo dia, antes das quatro da tarde.");
     return TEXT("Seríssimo. Em 1987 esqueceram uma vez e a Onda levou a praia, o bar e o meu bigode. O bigode nunca mais cresceu igual.");},
    [Weak](){if(Weak.IsValid()){Weak->Offer(FString(),false);
     if(auto S=Weak->GetWorld()->GetGameInstance()->GetSubsystem<UMareSimulation>())S->LastMessage=TEXT("Hoje Seu Tibúrcio já deu um coco dele, por conta da casa. A partir de amanhã, a oferenda é com você: todo dia, antes das 16h.");}});
   return;
  }
  if(bDone){
-  static const TCHAR* Lines[]={TEXT("O vulcão está de barriga cheia hoje. Pode descer tranquilo. Devagar, que a trilha é traiçoeira."),
-   TEXT("Volta amanhã. E traz coco gelado, que o de ontem chegou morno. O vulcão reclamou. Eu também."),
+  static const TCHAR* Lines[]={TEXT("O mar está de barriga cheia hoje. Pode descer tranquilo. Devagar, que a trilha é traiçoeira."),
+   TEXT("Volta amanhã. E traz coco gelado, que o de ontem chegou morno. O mar reclamou. Eu também."),
    TEXT("Sabia que eu já fui surfista? Peguei a Onda uma vez. Ela que me pegou, na verdade."),
-   TEXT("Daqui de cima dá pra ver tudo: o mar, o vulcão, e você esquecendo a oferenda amanhã. Brincadeira. Ou não.")};
+   TEXT("Daqui de cima dá pra ver tudo: o mar, a vila, e você esquecendo a oferenda amanhã. Brincadeira. Ou não.")};
   Village->Quip(Elder,Controller,ElderName,Lines[(Day+int32(FPlatformTime::Seconds()))%4],{},nullptr,nullptr);return;
  }
  if(!Gift.IsEmpty() || !bKiosk){
-  const FString Line=!Gift.IsEmpty()?FString::Printf(TEXT("Opa! Trouxe %s? O vulcão vai adorar. Pode deixar no cesto, com carinho."),*UMareSimulation::String(UMareSimulation::Object(UMareSimulation::Object(Sim->Definitions,TEXT("dishes")),Gift),TEXT("name")).ToLower())
-   :FString(TEXT("Sem quiosque ainda, né? Tá bom, hoje vale um abraço. No vulcão não dá, então vai em mim mesmo."));
+  const FString Line=!Gift.IsEmpty()?FString::Printf(TEXT("Opa! Trouxe %s? O mar vai adorar. Pode deixar no cesto, com carinho."),*UMareSimulation::String(UMareSimulation::Object(UMareSimulation::Object(Sim->Definitions,TEXT("dishes")),Gift),TEXT("name")).ToLower())
+   :FString(TEXT("Sem quiosque ainda, né? Tá bom, hoje vale um abraço. O mar não abraça, então vai em mim mesmo."));
   Village->Quip(Elder,Controller,ElderName,Line,{!Gift.IsEmpty()?TEXT("Deixar no cesto"):TEXT("Dar um abraço")},
    [Weak,Gift](int32)->FString{if(Weak.IsValid())Weak->Offer(Gift);
-    return TEXT("Pronto! O vulcão agradece. Ouviu esse arroto lá longe? Foi ele. Até amanhã!");},nullptr);
+    return TEXT("Pronto! O mar agradece. Ouviu esse arroto lá longe? Foi a maré. Até amanhã!");},nullptr);
   return;
  }
  Village->Quip(Elder,Controller,ElderName,
   bOmenOn?TEXT("Tá vendo esse mar?! CORRE no quiosque, pega qualquer coisa e traz aqui! A Onda está acordando!")
-   :TEXT("Veio de mão abanando? O vulcão não aceita visita, aceita petisco! Pega qualquer coisa no quiosque e traz aqui em cima."),
+   :TEXT("Veio de mão abanando? O mar não aceita visita, aceita petisco! Pega qualquer coisa no quiosque e traz aqui em cima."),
   {TEXT("Vou buscar"),TEXT("E se eu cantar pra ele?")},
   [](int32 I)->FString{return I==0?TEXT("Vai! E não demora, que hoje ele está com fome."):TEXT("Já tentei. Ele odeia pagode. Odeia mais ainda o meu pagode.");},nullptr);
 }
@@ -343,7 +343,7 @@ void UMareSummitWorld::UpdateFinale(float DeltaSeconds,UMareSimulation* Sim,doub
   PartyElder=GetWorld()->SpawnActor<AMarePerson>(At,FRotator(0,Hero?Hero->GetActorRotation().Yaw+180.f:90.f,0),Params);
   if(PartyElder){PartyElder->Tags.Add(TEXT("MareElder"));PartyElder->PersonName=ElderName;PartyElder->bAmbient=true;PartyElder->SaveId=TEXT("summit_elder");
    if(!PartyElder->SetAppearance(1)){PartyElder->Destroy();PartyElder=nullptr;}else PartyElder->Express(TEXT("smile"),40.f);}
-  if(auto Erupt=IConsoleManager::Get().FindConsoleVariable(TEXT("mare.VolcanoErupt")))Erupt->Set(1,ECVF_SetByCode);   // the volcano's "fireworks"
+  if(auto Erupt=IConsoleManager::Get().FindConsoleVariable(TEXT("mare.VolcanoErupt")))Erupt->Set(1,ECVF_SetByCode);   // the volcano's "fireworks" (10/11: the volcano left the level; no effect)
   UE_LOG(LogTemp,Display,TEXT("MARE_FINALE_START"));
  }
  FinaleTime+=DeltaSeconds;
@@ -351,7 +351,7 @@ void UMareSummitWorld::UpdateFinale(float DeltaSeconds,UMareSimulation* Sim,doub
   TEXT("A vila inteira desceu para a praia. E olha quem veio junto: Seu Tibúrcio, de chinelo novo!"),
   TEXT("Seu Tibúrcio: \"Trinta anos sem descer esse morro. A trilha encolheu ou fui eu que cresci?\""),
   TEXT("Prefeita Tuanny anuncia a Festa da Maré Alta. Seu Severino chora. Diz que é cebola. Não tem cebola."),
-  TEXT("E o vulcão... está soltando fogos? Seu Tibúrcio: \"Ele adora festa. Quem não adora?\""),
+  TEXT("E o mar... calminho, calminho. Seu Tibúrcio: \"Barriga cheia. Ele adora festa. Quem não adora?\""),
   TEXT("Vovó Dilce mandou um áudio de sete minutos. Resumo: está muito orgulhosa e quer o quarto com vista.")};
  const int32 Line=FMath::Min(int32(FinaleTime/7.f),4);
  if(Line!=FinaleLine && FinaleTime<35.f){FinaleLine=Line;Sim->LastMessage=Lines[Line];}
@@ -375,7 +375,7 @@ void UMareSummitWorld::ShowCredits()
    +SVerticalBox::Slot().AutoHeight().HAlign(HAlign_Center).Padding(0,2)[Line(TEXT("Ideia, direção e muita paciência: Sergio"),17,Soft)]
    +SVerticalBox::Slot().AutoHeight().HAlign(HAlign_Center).Padding(0,2)[Line(TEXT("Modelos e texturas: Poly Haven, Quaternius, Fab e colaboradores (veja CREDITS.md)"),17,Soft)]
    +SVerticalBox::Slot().AutoHeight().HAlign(HAlign_Center).Padding(0,2)[Line(TEXT("Elenco: Vovó Dilce, Seu Severino, Padre Robson, Dona Cecília, Prefeita Tuanny e Seu Tibúrcio"),17,Soft)]
-   +SVerticalBox::Slot().AutoHeight().HAlign(HAlign_Center).Padding(0,2,0,30)[Line(TEXT("E o vulcão, no papel de si mesmo."),17,Soft)]
+   +SVerticalBox::Slot().AutoHeight().HAlign(HAlign_Center).Padding(0,2,0,30)[Line(TEXT("E o mar, no papel de si mesmo."),17,Soft)]
    +SVerticalBox::Slot().AutoHeight().HAlign(HAlign_Center)[SNew(SMarePadButton).ButtonStyle(&MareNotebook::InkButton()).ContentPadding(FMargin(18,6))
     .OnClicked_Lambda([Weak](){if(Weak.IsValid())Weak->CloseCredits();return FReply::Handled();})
     [SNew(STextBlock).Text(MareLoc::Text(TEXT("Continuar na praia"))).Font(MareNotebook::Hand(26)).ColorAndOpacity(Cream)]]];

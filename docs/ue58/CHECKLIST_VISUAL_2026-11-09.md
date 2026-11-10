@@ -84,6 +84,12 @@ Legenda: [x] corrigido hoje · [ ] falta corrigir · (A) alta, (M) média, (B) b
 - [x] (B) Log: um pedestre da vila tentava nascer 3 vezes por segundo no mesmo ponto bloqueado por um vaso (3.451 avisos
   numa sessão). O ponto é ajustado para fora do obstáculo, e quem não cabe ao lado do líder vira pedestre de outra rota.
 
+- [x] (A) "Erro na água" (Sergio, 10/11, foto): faixa de areia reta com água dos dois lados na beira da praia. Era o swell
+  de costa do mar (faixas a cada ~7 m) sobre a praia rasa; reduzido no material e em `SeaHeight` (`D:/CodexTemp/events7`).
+- [x] (A) "Tire o vulcão" (Sergio, 10/11): ilha, cinzas e fagulhas saíram do mapa (`mare_volcano.remove`), sem erupção nem
+  mar bravo de erupção; as falas do Seu Tibúrcio, do fim e do passeio falam do mar e do farol. Tradução das 21 falas novas
+  em `docs/ue58/I18N_TODO_2026-11-10.json` para o GPT.
+
 ## 3. Coisas pequenas (casas, quiosque, hotel, móveis e decoração)
 
 - [x] (A) Anexo do banheiro da casa do herói sem telhado. O "cilindro vermelho" escondido de manhã era o telhado dele,

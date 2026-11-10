@@ -195,7 +195,7 @@
 			"kind": "offerings",
 			"qty": 3,
 			"reward": 200,
-			"story": "Seu Tibúrcio jura que o vulcão está de olho em você. O vulcão não confirmou, mas também não negou. Leve a oferenda do dia até o cesto dele.",
+			"story": "Seu Tibúrcio jura que o mar está de olho em você. O mar não confirmou, mas também não negou. Leve a oferenda do dia até o cesto dele.",
 			"task": "Levar 3 oferendas ao cesto do Seu Tibúrcio",
 			"title": "Três dias sem Onda"
 		},
@@ -255,7 +255,7 @@
 			"kind": "chapter",
 			"qty": 1,
 			"reward": 200,
-			"story": "Dona Cecília garante que tem receitas que fariam o vulcão chorar de emoção. Ajude a colocá-las no cardápio.",
+			"story": "Dona Cecília garante que tem receitas que fariam o mar chorar de emoção. Ajude a colocá-las no cardápio.",
 			"task": "Concluir Os sabores da Dona Cecília em Histórias da vila",
 			"title": "Sabores da Dona Cecília"
 		},

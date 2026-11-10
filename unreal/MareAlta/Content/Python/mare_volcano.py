@@ -284,3 +284,19 @@ def ash(_=''):
     """Rebuild only the ash material (07/11: faster, churning plume). Editor, PIE stopped."""
     ash_material()
     return 'ok'
+
+
+def remove(_=''):
+    """10/11 (Sergio: "tire o vulcão"): deletes the volcanic island and its plume and sparks from the level and saves it.
+    The story now speaks of the sea (MareSummitWorld, definitions.json, tours.json); without the plume actor the
+    eruption glow stays off (UMareMarineWorld). PIE stopped. build() puts it back."""
+    if unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world():
+        raise RuntimeError('Stop PIE first')
+    actors = unreal.get_editor_subsystem(unreal.EditorActorSubsystem)
+    gone = []
+    for a in actors.get_all_level_actors():
+        if a.get_actor_label().startswith(LABEL):
+            gone.append(a.get_actor_label())
+            actors.destroy_actor(a)
+    unreal.get_editor_subsystem(unreal.LevelEditorSubsystem).save_current_level()
+    return json.dumps({'removed': gone})
