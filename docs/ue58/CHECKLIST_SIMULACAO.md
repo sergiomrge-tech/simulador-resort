@@ -102,6 +102,21 @@ fama e dinheiro; `ea_end_shown` gravado (a tela de fim abriu).
 - [x] Tela de fim da demo fotografada quando abre (o fechamento da etapa anterior a escondia).
 - [x] A auditoria antiga de assento (`seataudit`) só mede móveis do tamanho de cadeira: bancos ficam para a medida nova.
 
+### Achado do Sergio durante a simulação
+- [x] Banhista de bruços fora da toalha, com as pernas sobre a esteira vizinha (foto do Sergio, 10/11). Mesmo defeito
+  dos assentos: os banhistas só nascem com o herói a mais de 25 m, então sempre deitam sem ninguém olhar e eram
+  alinhados com o esqueleto pausado. Os dados das toalhas batem com as toalhas do cenário (0–1 cm,
+  `mare_rest_audit.towels`). Com a correção: 3 banhistas a 3–8 cm do centro da toalha, bacia 11–13 cm acima do pano
+  (`mare_rest_audit.bathers`), fotos `D:/CodexTemp/restqa/fix_m.jpg`. Checagem permanente: `AMarePerson::LieError`,
+  linha `MARE_RESTS` do `mare.QA seats all`, no portão (`seats ... lying`) e na simulação.
+
 ### Melhorias pequenas anotadas
-- [ ] Tochas tiki do quiosque apagadas à noite (ficariam melhores acesas).
-- [ ] Folhinhas verde-escuras espalhadas na areia da praia (foto do benchmark): conferir de perto.
+- [x] Tochas tiki do quiosque apagadas à noite (10/11). A chama (`World_1273`, 11 no mapa: 4 no quiosque, 7 no terraço da
+  piscina do hotel) era um cone laranja sem brilho, de dia e de noite. Material `M_TorchFlame` (`mare_torch.py`): fogo que
+  brilha e tremula, miolo amarelo e ponta laranja, cada tocha fora de fase; de dia a tocha fica apagada (sem chama). Uma
+  luz quente por tocha (`BuildLamps`, 38 cd, 1900 K). Duas armadilhas medidas: o espaço "local" de uma instância é o do
+  ator (a chama virava uma velinha de 10 cm; usar INSTANCE) e brilho 26 saía branco, 1–4,5 saía marrom (ficou 3–12).
+  Fotos `D:/CodexTemp/torchqa/v4_m.jpg`.
+- [x] Folhinhas verde-escuras espalhadas na areia da praia (foto do benchmark): conferido de perto (10/11). São as algas
+  de enfeite da praia, com uma estrela-do-mar e pedrinhas ao lado, apoiadas na areia e na escala certa; não é defeito
+  (`D:/CodexTemp/simchk/areia_zoom.jpg`).

@@ -133,6 +133,7 @@ def stage(name, actions, camera=None, wait=6, audits=True):
     row['log_bad'] = sorted({re.sub(r'^\[[^\]]*\]\[[^\]]*\]', '', l.strip())[-200:] for l in text.splitlines() if BAD.search(l)})[:20]
     row['qa'] = [l.strip()[-160:] for l in text.splitlines() if 'mare.QA' in l or 'comic event' in l][-12:]
     row['seats'] = ([l.split('MARE_SEATS ')[-1].strip() for l in text.splitlines() if 'MARE_SEATS' in l] or [None])[-1]
+    row['rests'] = ([l.split('MARE_RESTS ')[-1].strip() for l in text.splitlines() if 'MARE_RESTS' in l] or [None])[-1]
     st = probe()
     if isinstance(st, dict):
         row['cash'] = st.get('cash')

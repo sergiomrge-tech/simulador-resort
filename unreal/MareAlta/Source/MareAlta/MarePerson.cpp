@@ -91,6 +91,16 @@ float AMarePerson::SeatError()
  return FVector::Dist(SeatPelvis,GetMesh()->GetSocketLocation(TEXT("pelvis")));
 }
 
+float AMarePerson::LieError()
+{
+ // Towel: the body (head to mid-feet) centred on it; lounger: the pelvis on the given point. Horizontal cm. People a
+ // system moves every frame (PreTick: pool floaters, slide riders) are not measured.
+ if(!bLying || PreTick || LieAlignIn>0 || AwakeFrames<3 || GetMesh()->GetBoneIndex(TEXT("head"))==INDEX_NONE)return -1.f;
+ const FVector Pelvis=GetMesh()->GetSocketLocation(TEXT("pelvis"));
+ const FVector Centre=Recline>0?Pelvis:(GetMesh()->GetSocketLocation(TEXT("head"))+(GetMesh()->GetSocketLocation(TEXT("foot_l"))+GetMesh()->GetSocketLocation(TEXT("foot_r")))/2)/2;
+ return FVector::Dist2D(LieCentre,Centre);
+}
+
 void AMarePerson::LieOn(const FVector& TowelCentre,float AxisYaw,float InRecline,bool bInProne)
 {
  Recline=InRecline;bProne=bInProne && InRecline<=0;

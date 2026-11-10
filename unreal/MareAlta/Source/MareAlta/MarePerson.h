@@ -110,9 +110,13 @@ public:
  /** QA (mare.QA seats, the gate): cm between the animated pelvis and the seat point it was aligned to; -1 when not
   *  seated and settled, or while the rig has not evaluated three frames (KeepPoseAwake first: unseen people are paused). */
  float SeatError();
+ /** QA: horizontal cm between a lying body and its towel centre (lounger: pelvis and its point); -1 when not lying and
+  *  settled on an evaluated pose. 10/11: sunbathers only arrive while the hero is 25 m away, so they always lay down
+  *  unseen and came out half off the towel (Sergio's photo). */
+ float LieError();
  /** Keeps the (hidden) rig animating for real for this long, seen or not: pose-based alignments and QA measurements. */
  void KeepPoseAwake(float Seconds){PoseAwake=FMath::Max(PoseAwake,Seconds);}
- bool IsSeatedOnPoint()const{return !SeatPelvis.IsZero();}
+ bool IsSeatedOnPoint()const{return !SeatPelvis.IsZero() || bLying;}
  float PoseAwake=0;int32 AwakeFrames=0;
  /** A pose kept whatever the person does (the bus driver riding the bus): survives the MetaHuman swap. */
  FString HoldPose;

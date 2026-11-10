@@ -188,7 +188,12 @@ def seats():
     m = re.search(r'checked=(\d+) off=(\d+) worst=(.*)$', rows[-1].strip()) if rows else None
     if not m:
         return {'pass': False, 'checked': 0, 'off': -1, 'worst': 'no MARE_SEATS line'}
-    return {'pass': int(m.group(1)) > 0 and int(m.group(2)) == 0, 'checked': int(m.group(1)), 'off': int(m.group(2)), 'worst': m.group(3)}
+    # Lying on towels and loungers (MARE_RESTS): the body centred on the towel. Sunbathers always lie down unseen.
+    rests = [l for l in LOG.read_bytes().decode('utf-8', 'ignore').splitlines() if 'MARE_RESTS' in l]
+    r = re.search(r'checked=(\d+) off=(\d+) worst=(\d+)', rests[-1]) if rests else None
+    lying = {'checked': int(r.group(1)), 'off': int(r.group(2)), 'worst': int(r.group(3))} if r else {'checked': 0, 'off': -1, 'worst': -1}
+    return {'pass': int(m.group(1)) > 0 and int(m.group(2)) == 0 and lying['off'] == 0, 'checked': int(m.group(1)), 'off': int(m.group(2)), 'worst': m.group(3),
+            'lying': lying}
 
 
 def log_since(offset, allow):
@@ -429,7 +434,8 @@ def main():
     print(' decor  ', 'ok' if report['decor']['pass'] else report['decor'])
     print(' camera ', 'ok' if report['cameras']['pass'] else report['cameras']['letterboxed'])
     print(' gait   day', day['moving'], 'moving', len(day['gliding']), 'gliding | night', night['moving'], 'moving', len(night['gliding']), 'gliding')
-    print(' seats  ', report['seats']['checked'], 'seated |', report['seats']['off'], 'off the seat | worst', report['seats']['worst'])
+    print(' seats  ', report['seats']['checked'], 'seated |', report['seats']['off'], 'off the seat | worst', report['seats']['worst'],
+          '| lying', report['seats'].get('lying'))
     v = report['visible']
     print(' visible', v['actors'], 'rigs seen |', len(v['gliding']), 'gliding', len(v['frozen']), 'frozen', (v['gliding'] + v['frozen'])[:6])
     print(' log    ', report['log']['count'], 'bad lines')

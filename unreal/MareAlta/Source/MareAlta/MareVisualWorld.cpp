@@ -101,7 +101,10 @@ void UMareVisualWorld::BuildLamps()
   {TEXT("World_0960"),-45,32,750,4000,true},
   // 06/11 (CHECKLIST 0: "luz sem luminária" in the Grand Hotel lobby): the ten ceiling lamps of the lobby light it (the six
   // bare 2500 cd lights of mare_hotel_lobby.py were removed). Plain static mesh actors, matched below like the instances.
-  {TEXT("modern_ceiling_lamp_011"),40,250,1100,3500,true}};
+  {TEXT("modern_ceiling_lamp_011"),40,250,1100,3500,true},
+  // 10/11 (demo simulation: the kiosk's tiki torches stood dark at night): the flame mesh of each torch (kiosk, hotel
+  // pool terrace) lights the sand around it, fire-coloured; the flame itself glows through M_TorchFlame (mare_torch.py).
+  {TEXT("World_1273"),20,38,620,1900}};
  LampHolder=GetWorld()->SpawnActor<AActor>();if(!LampHolder)return;
  LampHolder->SetRootComponent(NewObject<USceneComponent>(LampHolder,TEXT("LampRoot")));LampHolder->GetRootComponent()->RegisterComponent();
  // Fixtures added where a room had light but no lamp (Content/Data/lighting.json).

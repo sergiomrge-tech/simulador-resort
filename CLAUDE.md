@@ -885,3 +885,7 @@ malha Nanite): a medida que vale é `mare.QA seats wake` + `seats all` (bacia co
 com a câmera JÁ no lugar (a luz indireta só se atualiza perto da câmera). `restart_editor.ps1` pelo Bash é recusado
 (política de execução): `powershell -ExecutionPolicy Bypass -File ...` pela ferramenta PowerShell. O portão reprova
 `driver` em perfil de save já usado nas minhas fotos: reiniciar o editor antes do portão.
+Material em malha instanciada: `TransformPosition` para LOCAL é o espaço do ATOR, não da instância (a chama da tocha
+virou uma velinha: o recorte por altura comeu o resto); use INSTANCE. Emissivo à noite (EV100 -1 a -2): 26 sai branco
+chapado, 1 sai marrom; meça os pixels da foto antes de ajustar outra vez. Banhistas nascem só com o herói a mais de 25 m:
+tudo que depende da pose deles acontece fora da tela (medida `MARE_RESTS`).

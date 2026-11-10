@@ -99,7 +99,9 @@ Meta: uma demo de ~2 h, estável, bonita, pronta para a Next Fest.
   - [x] Defeito achado e corrigido: quem senta sem ninguém olhando ficava 52–55 cm fora do assento (Seu Tibúrcio atrás
     do encosto do banco do cume, clientes do bar à noite, hóspedes do restaurante no chão). Checagem nova no portão (`seats`).
   - [x] Roteiro: chegada de barco, fim da demo, hotel bloqueado, atendente no dia 1, tempo 4× mais rápido (`SIM_SPEED`).
-  - [ ] Melhorias pequenas anotadas: tochas tiki acesas à noite; folhinhas verdes na areia da praia.
+  - [x] Banhista de bruços fora da toalha (foto do Sergio): mesmo defeito, corrigido; checagem `lying` no portão.
+  - [x] Tochas tiki acesas à noite (chama que tremula e uma luz quente por tocha); as "folhinhas verdes" na areia são as
+    algas de enfeite da praia (conferido, não é defeito).
 
 ---
 
