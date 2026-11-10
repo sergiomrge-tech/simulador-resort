@@ -128,7 +128,8 @@ Meta: uma demo de ~2 h, estável, bonita, pronta para a Next Fest.
 - [x] Bar da Piscina do hotel com um guarda-sol e duas espreguiçadeiras montados na frente do balcão (achado pela checagem
   nova): a copa cobria a cabeça dos hóspedes e os encostos encostavam nas pernas. O conjunto do meio saiu (9 peças,
   `mare_fix_1110.bar_front`); os dois dos lados ficam.
-- [ ] Duração da demo no perfil casual: 2,7 h para um teto de 2,5 h; decidir se ajusta.
+- [x] Duração da demo no perfil casual: 2,7 h para um teto de 2,5 h. Decisão do Sergio (10/11): "pode ficar 2.7h"; nada
+  a ajustar nos preços.
 - [ ] 👤 Botão "Lista de desejos na Steam" na tela de fim: só aparece com o endereço da loja (`events.json`
   `review_url`), que depende da conta Steamworks.
 
