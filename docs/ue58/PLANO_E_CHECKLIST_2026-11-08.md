@@ -46,8 +46,11 @@ Meta: uma demo de ~2 h, estável, bonita, pronta para a Next Fest.
   jogador recebe; compila agora, `package_preview.ps1 -Config Shipping`): praia 81,4 FPS, quiosque 73,1, saguão 64,9,
   vila à noite 63,7 (Development: 63,5 / 66,7 / 67 / 61,3). Com a geração de quadros do DLSS (padrão em RTX 40) o FPS na
   tela praticamente dobra.
-- [ ] Desempenho, próximos: vila à noite e saguão (~64 FPS no Shipping, limite no processador do jogo ~12 ms e do render
-  ~14 ms): pessoas MetaHuman (4–7 FPS) e luzes; e o mar em ladrilhos para as vistas do mar.
+- [x] Desempenho da vila à noite e do saguão. 10/11, demo Shipping instalada (build de 10/11 11h37), 1080p sem geração de
+  quadros: praia 72,5 FPS, quiosque 82,9, saguão 102,5 (era 64,9), trilha 102,8, vila à noite 85,3 (era 63,7); tudo acima
+  de 60. Sem pessoas a praia vai a 84 (as 6 pessoas na tela custam ~4 ms do processador do jogo). Uma segunda rodada na
+  sequência deu 47–69 FPS com a placa a 15–17 ms: outra carga na máquina ao mesmo tempo, descartada.
+- [ ] Desempenho, próximo (opcional): pessoas na praia (processador do jogo 11,5 ms com 6 na tela) e o mar em ladrilhos.
 - [x] Fotos aéreas dos 4 lados, de dia e no fim da tarde (08/11).
 - [x] Árvores vistas de muito longe perdem as folhas (09/11): as 6 árvores da mata são Nanite com "preservação de forma:
   nenhuma"; ao simplificar, a Nanite apagava as folhas. Ligado "Preserve Area" (feito para folhagem): a 1 km a copa fica cheia.

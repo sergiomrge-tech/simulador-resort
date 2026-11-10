@@ -722,7 +722,9 @@ def forest_lumen(arg='0'):
         if a.get_actor_label() in (FOREST_LABEL, COVER_LABEL):
             for c in a.get_components_by_class(unreal.HierarchicalInstancedStaticMeshComponent):
                 c.set_editor_property('affect_dynamic_indirect_lighting', on)
-                c.set_editor_property('affect_distance_field_lighting', on and a.get_actor_label() == FOREST_LABEL)
+                # 10/11: the shadow casters (trees, palms, rocks) keep the distance field even out of the cards, or the
+                # sky light passes through every canopy (mare_forest_light.canopy_df).
+                c.set_editor_property('affect_distance_field_lighting', a.get_actor_label() == FOREST_LABEL and (on or c.get_editor_property('cast_shadow')))
                 n += 1
     unreal.get_editor_subsystem(unreal.LevelEditorSubsystem).save_current_level()
     return json.dumps({'components': n, 'lumen': on})

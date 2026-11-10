@@ -42,6 +42,14 @@ Legenda: [x] corrigido hoje · [ ] falta corrigir · (A) alta, (M) média, (B) b
   agora é entortada por uma ondulação larga, soma uma segunda rede girada 37° e some em manchas. Conferido
   (`D:/CodexTemp/caust2`).
 
+- [x] (A) Mata da trilha "muito clara" e "sem sombras" (Sergio, 10/11, foto da trilha). Duas causas medidas: a floresta
+  saiu do Lumen em 08/11 (`mare_island.forest_lumen 0`, para a mata não ficar verde à noite) e, junto, do campo de
+  distância, então a luz do céu atravessava todas as copas; e o olho abria de dia tanto quanto na praia (EV100 5–14).
+  Árvores, coqueiros, rochas e troncos voltaram ao campo de distância sem voltar aos cartões
+  (`mare_forest_light.canopy_df`): as copas escurecem por dentro, verde natural. Sob copa densa (árvores contadas num
+  raio de 12 m da câmera) o olho fecha 0,7 stop de dia (`mare.ForestEV`, `UMareVisualWorld::UpdateCanopy`); -1,2 ficou
+  escuro demais. Fora da mata (praia, vila) a exposição não muda. Fotos: `D:/CodexTemp/forestlight` (`antes_`, `df_`, `ev`, `cmp_final.jpg`).
+
 ## 2. Luz, céu e noite
 
 - [x] (A) Água rasa embaixo d'água estourada de branco ao meio-dia: exposição travada em EV 10 contra cena em 15,5.

@@ -60,6 +60,15 @@ private:
  float RainNow=0,WindNow=.2f,StormNow=0;
  /** 08/11: the tsunami's grey storm sky (omen and wave), eased over ~15 s; daylight stays (UMareSummitWorld::GloomTarget). */
  float GloomNow=0;
+ /** 10/11 forest eye: 0 in the open, 1 under a dense canopy (trees of the island forest and the mountain woods counted
+  *  around the camera twice a second), eased; by day it closes the eye mare.ForestEV stops. */
+ float CanopyNow=0,CanopyTarget=0,CanopyClock=0;
+ bool bCanopyIndexed=false;
+ TArray<TWeakObjectPtr<class UInstancedStaticMeshComponent>> CanopyTrees;
+ void UpdateCanopy(float DeltaSeconds);
+public:
+ float CanopyFactor()const{return CanopyNow;}
+private:
  UPROPERTY() TArray<TObjectPtr<class AStaticMeshActor>> RainCurtains;
  /** Overcast sky: the volumetric cloud material (dynamic copy) and the atmosphere follow the rain/storm. */
  UPROPERTY() TObjectPtr<class UMaterialInstanceDynamic> CloudMaterial;

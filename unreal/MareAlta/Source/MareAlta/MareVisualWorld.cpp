@@ -55,6 +55,10 @@ static TAutoConsoleVariable<float> CVarMareNightMinEV(TEXT("mare.NightMinEV"),-1
 static TAutoConsoleVariable<float> CVarMareNightDarken(TEXT("mare.NightDarken"),1.3f,TEXT("Stops of exposure removed at night (0 = old night)"));   // i18n:skip
 static TAutoConsoleVariable<float> CVarMareGloomSun(TEXT("mare.GloomSun"),.45f,TEXT("Tsunami storm sky: sun intensity kept (0..1)."));   // i18n:skip
 static TAutoConsoleVariable<float> CVarMareGloomEV(TEXT("mare.GloomEV"),-.45f,TEXT("Tsunami storm sky: exposure bias."));   // i18n:skip
+// 10/11 (Sergio on the trail: "muito claras", "sem sombras"): under the canopy the eye opened as wide as on the beach
+// (daylight EV100 5..14) and the shaded woods came out as bright as a clearing. Measured on the trail: -0.7 stop reads
+// as shade with the sun spots kept; -1.2 lost the floor in the dark.
+static TAutoConsoleVariable<float> CVarMareForestEV(TEXT("mare.ForestEV"),-.7f,TEXT("Exposure bias by day under a dense forest canopy (0 = same as in the open)."));   // i18n:skip
 static TAutoConsoleVariable<float> CVarMareGloomCover(TEXT("mare.GloomCover"),.6f,TEXT("Tsunami storm sky: cloud coverage."));   // i18n:skip
 static TAutoConsoleVariable<float> CVarMareGloomDensity(TEXT("mare.GloomDensity"),.03f,TEXT("Tsunami storm sky: cloud density."));   // i18n:skip
 static TAutoConsoleVariable<float> CVarMareGloomRayleigh(TEXT("mare.GloomRayleigh"),.006f,TEXT("Tsunami storm sky: Rayleigh scattering (less = less blue)."));   // i18n:skip
@@ -226,6 +230,28 @@ void UMareVisualWorld::UpdateMoonDisc()
  MoonDisc->SetActorScale3D(FVector(Distance*.0611*2.2*(1.f+.5f*Super)/100.0));   // 1 degree read too small next to the trees: ~2.2
  if(MoonMaterial)MoonMaterial->SetScalarParameterValue(TEXT("Bright"),Show*CVarMareMoonGlow.GetValueOnGameThread()*(1.f+.7f*Super));   // i18n:skip
 }
+void UMareVisualWorld::UpdateCanopy(float DeltaSeconds)
+{
+ // The trees of the woods (mare_mountains.TREES: no palms, rocks or shrubs) in the island forest and the mountain woods.
+ if(!bCanopyIndexed){bCanopyIndexed=true;
+  static const TCHAR* TreeMeshes[]={TEXT("World_0504"),TEXT("World_0505"),TEXT("World_1206"),TEXT("tree_small_02"),TEXT("jacaranda_tree")};
+  for(TActorIterator<AActor> It(GetWorld());It;++It)if(It->ActorHasTag(TEXT("MareIslandForest")) || It->ActorHasTag(TEXT("MareMountainVegetation"))){
+   TArray<UInstancedStaticMeshComponent*> Comps;It->GetComponents(Comps);
+   for(auto C:Comps)if(C && C->GetStaticMesh()){const FString Name=C->GetStaticMesh()->GetName();
+    for(const TCHAR* Tree:TreeMeshes)if(Name.StartsWith(Tree)){CanopyTrees.Add(C);break;}}}
+  UE_LOG(LogTemp,Display,TEXT("MARE_CANOPY tree_components=%d"),CanopyTrees.Num());}
+ CanopyClock-=DeltaSeconds;
+ if(CanopyClock<=0.f){CanopyClock=.5f;
+  const APlayerCameraManager* Cam=UGameplayStatics::GetPlayerCameraManager(GetWorld(),0);
+  int32 Count=0;
+  if(Cam){const FVector At=Cam->GetCameraLocation();
+   for(const auto& C:CanopyTrees)if(C.IsValid())Count+=C->GetInstancesOverlappingSphere(At,1200.f,true).Num();}
+  // Woods are ~1 tree per 40 m2 (step 6.2 m): ~10 inside 12 m; clearings, trail edges and the open slopes fewer.
+  const float Before=CanopyTarget;CanopyTarget=FMath::SmoothStep(2.f,8.f,float(Count));
+  if((Before>=.5f)!=(CanopyTarget>=.5f))UE_LOG(LogTemp,Display,TEXT("MARE_CANOPY under=%d trees=%d"),CanopyTarget>=.5f?1:0,Count);}
+ CanopyNow=FMath::FInterpTo(CanopyNow,CanopyTarget,DeltaSeconds,.8f);
+}
+
 void UMareVisualWorld::Tick(float DeltaSeconds)
 {
  if(!GetWorld()->IsGameWorld() || !Cast<AMareGameMode>(GetWorld()->GetAuthGameMode()))return;
@@ -233,6 +259,7 @@ void UMareVisualWorld::Tick(float DeltaSeconds)
  // scene (sun, lamps, signs) refreshes every 2 s below.
  if(auto WeatherSim=GetWorld()->GetGameInstance()->GetSubsystem<UMareSimulation>())UpdateWeather(DeltaSeconds,WeatherSim);
  UpdateFootprints();
+ UpdateCanopy(DeltaSeconds);
  UpdateMoonDisc();
  ShadowClock-=DeltaSeconds;if(ShadowClock<=0){ShadowClock=.5f;BudgetLightShadows();}
  // While the tsunami sky changes the light refreshes every 0.25 s, so the darkening is smooth, not in 2 s steps.
@@ -324,7 +351,7 @@ void UMareVisualWorld::Tick(float DeltaSeconds)
   :Light->ActorHasTag(TEXT("MareHomeLight"))?FMath::Lerp(90.f,180.f,Day):Light->ActorHasTag(TEXT("MareBounce"))?FMath::Lerp(120.f,6500.f,Day):FMath::Lerp(350.f,2600.f,Day)));}
  // Overcast: denser fog with the rain (greys the horizon and the sky), a little darker exposure.
  if(Fog)Fog->GetComponent()->SetFogDensity(FMath::Lerp(.00065f,.0042f,FMath::Max(RainNow,.35f*GloomNow)));
- if(Exposure){Exposure->Settings.bOverride_AutoExposureBias=true;Exposure->Settings.AutoExposureBias=-.3f*RainNow*(1.f-GloomNow)+CVarMareGloomEV.GetValueOnGameThread()*GloomNow-CVarMareNightDarken.GetValueOnGameThread()*FMath::Clamp(1.f-Day,0.f,1.f);}
+ if(Exposure){Exposure->Settings.bOverride_AutoExposureBias=true;Exposure->Settings.AutoExposureBias=-.3f*RainNow*(1.f-GloomNow)+CVarMareGloomEV.GetValueOnGameThread()*GloomNow-CVarMareNightDarken.GetValueOnGameThread()*FMath::Clamp(1.f-Day,0.f,1.f)+CVarMareForestEV.GetValueOnGameThread()*CanopyNow*FMath::Clamp(Day,0.f,1.f);}
  auto Dishes=UMareSimulation::Object(Sim->Definitions,TEXT("dishes"));
  auto Price=[&](const FString& Id){return UMareSimulation::String(UMareSimulation::Object(Dishes,Id),TEXT("name"))+FString::Printf(TEXT("   R$ %.0f"),Sim->SalePrice(Id));};
  for(auto Sign:Signs){if(!IsValid(Sign))continue;FString Text;
