@@ -1070,3 +1070,43 @@ def mesh_stats(path='/Game/World/Models/World_0000/World_0000/StaticMeshes/World
     return json.dumps({'verts': m.get_num_vertices(0), 'lods': m.get_num_lods(),
                        'nanite': bool(m.get_editor_property('nanite_settings').enabled),
                        'mats': [s.material_interface.get_name() if s.material_interface else None for s in m.static_materials]})
+
+
+def pie_top_grid(arg='2150,2450,-2700,-2400,25'):
+    """PIE: 'x0,x1,y0,y1,step': top hit z (cm) on a grid in the game world, rows from y0, as text (actor of the first hit too)."""
+    x0, x1, y0, y1, step = (float(v) for v in arg.split(','))
+    world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()
+    if not world:
+        return 'no PIE'
+    rows, names = [], set()
+    y = y0
+    while y <= y1:
+        row = []
+        x = x0
+        while x <= x1:
+            hit = unreal.SystemLibrary.line_trace_single(world, unreal.Vector(x, y, 1000), unreal.Vector(x, y, -300),
+                                                         unreal.TraceTypeQuery.TRACE_TYPE_QUERY1, True, [], unreal.DrawDebugTrace.NONE, True)
+            t = hit.to_tuple() if hit else None
+            row.append(round(t[4].z) if t and t[0] else None)
+            if t and t[0] and t[9]:
+                names.add(t[9].get_name()[:40])
+            x += step
+        rows.append(row)
+        y += step
+    return json.dumps({'rows': rows, 'actors': sorted(names)[:20]})
+
+
+def pie_collide(arg='festa_stall'):
+    """PIE (QA only): turns query collision on for static mesh actors whose mesh name contains arg (props spawned with no
+    collision), so traces can measure them. Returns their locations and yaw."""
+    world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()
+    out = []
+    for a in unreal.GameplayStatics.get_all_actors_of_class(world, unreal.StaticMeshActor):
+        c = a.static_mesh_component
+        m = c.static_mesh
+        if m and arg in m.get_name():
+            c.set_collision_enabled(unreal.CollisionEnabled.QUERY_ONLY)
+            c.set_collision_response_to_all_channels(unreal.CollisionResponseType.ECR_BLOCK)
+            p = a.get_actor_location()
+            out.append([m.get_name(), round(p.x), round(p.y), round(p.z), round(a.get_actor_rotation().yaw), round(a.get_actor_scale3d().x, 2)])
+    return json.dumps(out)

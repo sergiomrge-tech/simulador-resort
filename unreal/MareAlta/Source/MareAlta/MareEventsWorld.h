@@ -29,6 +29,8 @@ private:
  UPROPERTY() TObjectPtr<class UNiagaraComponent> Flames2;
  /** Villagers and walkers standing near the party dance (mocap clips); released when they leave or it ends. */
  TArray<TWeakObjectPtr<class AMarePerson>> Dancers;
+ /** Villagers who come to the party and dance there (10/11: the village routes never pass the beach party, so it stood empty). */
+ TArray<TWeakObjectPtr<class AMarePerson>> Goers;
  FVector PartyCentre=FVector::ZeroVector;
  void UpdateDancers();
  void Clear();

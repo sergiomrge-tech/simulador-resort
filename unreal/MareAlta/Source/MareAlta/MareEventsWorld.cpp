@@ -27,6 +27,7 @@ void UMareEventsWorld::Clear()
  if(IsValid(Fire))Fire->Destroy();Fire=nullptr;
  if(IsValid(Flames))Flames->DestroyComponent();Flames=nullptr;if(IsValid(Flames2))Flames2->DestroyComponent();Flames2=nullptr;
  for(auto& D:Dancers)if(D.IsValid())D->WorkPose.Reset();
+ for(auto& G:Goers)if(G.IsValid())G->Destroy();Goers.Empty();
  Dancers.Empty();PartyCentre=FVector::ZeroVector;
 }
 
@@ -65,6 +66,9 @@ void UMareEventsWorld::Tick(float DeltaSeconds)
  const FVector Centre((*Spot)[0]->AsNumber(),(*Spot)[1]->AsNumber(),(*Spot)[2]->AsNumber());PartyCentre=Centre;
  auto Ground=[this](FVector At){FHitResult Hit;if(GetWorld()->LineTraceSingleByChannel(Hit,At+FVector(0,0,600),At-FVector(0,0,800),ECC_Visibility))At.Z=Hit.ImpactPoint.Z;return At;};
  // Local layout in metres around the centre (x east, y north), yaw in degrees.
+ // 10/11: the Fab stall (festa_stall_fab) is open on its local -X side, with the serving counter there (75 cm up, ~80 cm
+ // out; a shelf at 108 cm runs along the bamboo back wall on +X). yaw = direction from the centre to the stall, so the
+ // open front faces the party (with the yaws of the old generated stall they served sideways or away).
  auto Put=[&](const TCHAR* Name,float X,float Y,float Yaw,float Lift=0,float Scale=1){
   // A model from Fab (<name>_fab, tools/ue58/prep_fab_food.py) replaces the generated one when it exists.
   auto Load=[](const FString& N){return LoadObject<UStaticMesh>(nullptr,*FString::Printf(TEXT("/Game/Custom/Festival/%s/%s.%s"),*N,*N,*N));};
@@ -73,7 +77,7 @@ void UMareEventsWorld::Tick(float DeltaSeconds)
    auto A=GetWorld()->SpawnActor<AStaticMeshActor>(Ground(Centre+FVector(X*100,Y*100,0))+FVector(0,0,Lift),FRotator(0,Yaw,0));
    A->SetMobility(EComponentMobility::Movable);A->SetActorScale3D(FVector(Scale));A->GetStaticMeshComponent()->SetStaticMesh(Mesh);A->GetStaticMeshComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);Props.Add(A);}};
  const bool bDeco=Want.EndsWith(TEXT("+deco"));
- if(Event==TEXT("quermesse")){Put(TEXT("festa_stall"),-3,0,90);Put(TEXT("festa_stall"),0,2,0);Put(TEXT("festa_stall"),3,0,-90);
+ if(Event==TEXT("quermesse")){Put(TEXT("festa_stall"),-3,0,180);Put(TEXT("festa_stall"),0,2,90);Put(TEXT("festa_stall"),3,0,0);
   Put(TEXT("festa_bunting"),-1.5,-1.5,0);Put(TEXT("festa_bunting"),1.5,-1.5,0);}
  else if(Event==TEXT("junina")){
   // Bonfire: the scanned Quixel campfire (logs, ashes, stones; tools/ue58/prep_fab_food.py campfire) with simulated
@@ -87,12 +91,35 @@ void UMareEventsWorld::Tick(float DeltaSeconds)
   if(FireFx){Flames=UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(),FireFx,Ground(Centre)+FVector(0,0,10),FRotator(90,0,0),FVector(1.1f),false,true);
    Flames2=UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(),FireFx,Ground(Centre)+FVector(0,0,10),FRotator(90,90,0),FVector(1.1f),false,true);}
   else Put(TEXT("festa_fire"),0,0,0,5,1.5f);
-  Put(TEXT("festa_stall"),0,4,0);
+  Put(TEXT("festa_stall"),0,4,90);
   Put(TEXT("festa_bunting"),-3.5,0,90);Put(TEXT("festa_bunting"),3.5,0,90);
   Fire=GetWorld()->SpawnActor<APointLight>(Ground(Centre)+FVector(0,0,120),FRotator::ZeroRotator);
   if(Fire){Fire->PointLightComponent->SetLightColor(FLinearColor(1.f,.55f,.2f));Fire->PointLightComponent->SetAttenuationRadius(1400);Fire->PointLightComponent->SetMobility(EComponentMobility::Movable);}}
  else if(Event==TEXT("show_dj")){Put(TEXT("festa_dj"),0,2,180);Put(TEXT("festa_bunting"),0,-1,0);}
- else if(Event==TEXT("carnaval")){Put(TEXT("festa_dj"),0,2,180);Put(TEXT("festa_bunting"),-3,-1,0);Put(TEXT("festa_bunting"),3,-1,0);Put(TEXT("festa_stall"),-5,1,90);}
+ else if(Event==TEXT("carnaval")){Put(TEXT("festa_dj"),0,2,180);Put(TEXT("festa_bunting"),-3,-1,0);Put(TEXT("festa_bunting"),3,-1,0);Put(TEXT("festa_stall"),-5,1,169);}
  // Paid decoration: the party banner at the entrance and an extra row of bunting.
  if(bDeco){Put(TEXT("festa_banner"),0,-8,0);Put(TEXT("festa_bunting"),0,-5.5f,0);}
+ // 10/11 (event photos): the stalls stood empty. Brazilian party food on each stall's counter (measured on festa_stall_fab:
+ // serving counter 75 cm above the stall's origin, 80 cm out on its open -X side, 2.2 m wide): espetinho, milho verde,
+ // queijo coalho and guaraná, from the BrazilFood models.
+ {auto Food=[](const TCHAR* N){return LoadObject<UStaticMesh>(nullptr,*FString::Printf(TEXT("/Game/Custom/BrazilFood/%s/%s.%s"),N,N,N));};   // i18n:skip
+  UStaticMesh* Kinds[4]={Food(TEXT("Dish_espetinho")),Food(TEXT("Dish_milho_verde")),Food(TEXT("Dish_queijo_coalho")),Food(TEXT("Dish_guarana"))};   // i18n:skip
+  static const float Along[]={-85,-52,-18,16,50,76,90};static const int32 Kind[]={0,0,1,2,1,3,3};
+  const int32 Stalls=Props.Num();
+  for(int32 I=0;I<Stalls;++I){AStaticMeshActor* Stall=Props[I];UStaticMesh* M=IsValid(Stall)?Stall->GetStaticMeshComponent()->GetStaticMesh():nullptr;
+   if(!M || !M->GetName().StartsWith(TEXT("festa_stall")))continue;   // i18n:skip
+   const FTransform T=Stall->GetActorTransform();
+   for(int32 K=0;K<7;++K){UStaticMesh* Dish=Kinds[Kind[K]];if(!Dish)continue;
+    auto G=GetWorld()->SpawnActor<AStaticMeshActor>(T.TransformPosition(FVector(-80,Along[K],75)),FRotator(0,T.Rotator().Yaw+(Kind[K]==3?0.f:90.f)+K*9.f,0));if(!G)continue;
+    G->SetMobility(EComponentMobility::Movable);G->GetStaticMeshComponent()->SetStaticMesh(Dish);G->GetStaticMeshComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);Props.Add(G);}}}
+ // ...and nobody came: five villagers stand round the south side (the stalls and the stage are on the north side) and
+ // dance there (UpdateDancers), facing the centre.
+ {FActorSpawnParameters Params;Params.SpawnCollisionHandlingOverride=ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+  static const float Angle[]={-160,-125,-90,-55,-20};
+  for(int32 I=0;I<5;++I){const float A=FMath::DegreesToRadians(Angle[I]);const float R=I%2?520.f:420.f;
+   const FVector At=Ground(Centre+FVector(FMath::Cos(A),FMath::Sin(A),0)*R)+FVector(0,0,90);
+   auto P=GetWorld()->SpawnActor<AMarePerson>(At,FRotator(0,(Centre-At).Rotation().Yaw,0),Params);if(!P)continue;
+   P->bAmbient=true;P->PersonName=TEXT("Morador");P->SaveId=FString::Printf(TEXT("party_goer_%d"),I);   // i18n:skip
+   if(!P->SetAppearance(I%4)){P->Destroy();continue;}
+   Goers.Add(P);}}
 }

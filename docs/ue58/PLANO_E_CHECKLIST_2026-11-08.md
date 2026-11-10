@@ -132,7 +132,8 @@ A ilha agora é grande e bonita, mas ainda é cenário. Propostas para dar uso a
 
 ## Fase 4 — Jogo completo (Acesso Antecipado pago, depois da demo)
 
-- [ ] Grand Hotel inteiro (quartos, VIPs, eventos, restaurante, salão de jogos) revisado com o mapa novo.
+- [x] Grand Hotel inteiro (quartos, VIPs, eventos, restaurante, salão de jogos) revisado com o mapa novo. 10/11: saguão,
+  recepção, sinuca, sofás, torre vista de cima, piscina, corredor e suíte fotografados (`D:/CodexTemp/hotel1`), sem defeito.
 - [ ] Lojinha de souvenires: revisão final (3.5, "por último").
 - [ ] Balanceamento de 6–10 h (Claude simula e ajusta os números no jogo).
 - [ ] Final da dívida (só no jogo completo).

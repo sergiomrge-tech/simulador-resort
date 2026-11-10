@@ -186,6 +186,9 @@ static TAutoConsoleVariable<float> CVarMareMoonLux(TEXT("mare.MoonLux"),1.1f,TEX
 static TAutoConsoleVariable<float> CVarMareStars(TEXT("mare.Stars"),1.f,TEXT("Brightness of the night sky (stars, Milky Way, aurora)."));   // i18n:skip
 static TAutoConsoleVariable<float> CVarMareAurora(TEXT("mare.Aurora"),1.f,TEXT("Aurora strength in the night sky (0 = none)."));   // i18n:skip
 static TAutoConsoleVariable<float> CVarMareMoonGlow(TEXT("mare.MoonGlow"),1.f,TEXT("Brightness of the moon disc in the sky."));   // i18n:skip
+/** 10/11 (event photos: "Noite de lua cheia" looked like any night, the moon is full every night since 09/11): on the
+ *  "lua" event day the moon is a super moon, larger, brighter and lighting the beach more. 0..1. */
+static float MareSuperMoon(const UMareSimulation* Sim){return Sim && UMareSimulation::String(Sim->State,TEXT("day_event"))==TEXT("lua")?1.f:0.f;}   // i18n:skip
 /** The full moon's light direction at a game hour: opposite the sun (same arc, half a day apart). */
 static FRotator MareMoonRotation(float Hour){const float Solar=FMath::Sin((Hour-6.f)/12.f*PI);return FRotator(Solar*58.f,-65.f+(Hour-12.f)*12.f+180.f,0);}
 void UMareVisualWorld::UpdateMoonDisc()
@@ -219,8 +222,9 @@ void UMareVisualWorld::UpdateMoonDisc()
  if(bHide)return;
  constexpr double Distance=3000000.0;
  MoonDisc->SetActorLocationAndRotation(Cam->GetCameraLocation()+Up*Distance,FRotationMatrix::MakeFromZY(-Up,FVector::UpVector).Rotator());
- MoonDisc->SetActorScale3D(FVector(Distance*.0611*2.2/100.0));   // 1 degree read too small next to the trees: ~2.2
- if(MoonMaterial)MoonMaterial->SetScalarParameterValue(TEXT("Bright"),Show*CVarMareMoonGlow.GetValueOnGameThread());   // i18n:skip
+ const float Super=MareSuperMoon(Sim);
+ MoonDisc->SetActorScale3D(FVector(Distance*.0611*2.2*(1.f+.5f*Super)/100.0));   // 1 degree read too small next to the trees: ~2.2
+ if(MoonMaterial)MoonMaterial->SetScalarParameterValue(TEXT("Bright"),Show*CVarMareMoonGlow.GetValueOnGameThread()*(1.f+.7f*Super));   // i18n:skip
 }
 void UMareVisualWorld::Tick(float DeltaSeconds)
 {
@@ -283,7 +287,7 @@ void UMareVisualWorld::Tick(float DeltaSeconds)
   // the sky atmosphere drew its own small white disc for this light in the middle of the textured moon
   if(auto Directional=Cast<UDirectionalLightComponent>(Moon->GetLightComponent()))if(Directional->GetAtmosphereSunDiskColorScale()!=FLinearColor::Black)Directional->SetAtmosphereSunDiskColorScale(FLinearColor::Black);
   const float Above=FMath::SmoothStep(-.03f,.08f,float(-MoonRot.Vector().Z));
-  Moon->GetLightComponent()->SetIntensity((1-Day)*Above*CVarMareMoonLux.GetValueOnGameThread()*(1.f-.85f*RainNow));Moon->GetLightComponent()->SetLightColor(FLinearColor(.62f,.72f,1.f),false);}
+  Moon->GetLightComponent()->SetIntensity((1-Day)*Above*CVarMareMoonLux.GetValueOnGameThread()*(1.f+.8f*MareSuperMoon(Sim))*(1.f-.85f*RainNow));Moon->GetLightComponent()->SetLightColor(FLinearColor(.62f,.72f,1.f),false);}
  // Lamps switch on at dusk and only where the area is built (region actors hidden until bought).
  // FMath::SmoothStep needs A<B (with .55,.05 the lamps were lit by day and off at night).
  const float Dark=1.f-FMath::SmoothStep(.05f,.55f,Day);
