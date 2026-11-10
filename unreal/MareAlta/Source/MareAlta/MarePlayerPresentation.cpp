@@ -6,6 +6,8 @@
 #include "MareHomeWorld.h"
 #include "Animation/AnimSequence.h"
 #include "Camera/CameraComponent.h"
+#include "Camera/PlayerCameraManager.h"
+#include "GameFramework/PlayerController.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Engine/GameInstance.h"
@@ -110,6 +112,10 @@ void UMarePlayerPresentation::UpdateAnimation()
  auto Hero=Cast<AMareCharacter>(GetOwner());if(!Hero || !ViewBody)return;
  const bool bSwimming=Hero->GetCharacterMovement()->IsSwimming();
  const bool bSeated=GetWorld()->GetSubsystem<UMareHomeWorld>()->IsSeated();
+ // 10/11 (demo simulation, photos at -60..-80): looking down, the shoe and the leg come into view at -60/-65 (fine); from
+ // -70 the belt and then the chest fill the bottom of the screen, in large facets with the torn rim of the hidden arms.
+ // On foot the look stops at -66 (at -68 a sliver of the belt still showed). Swimming keeps the full range (looking down at the reef).
+ if(auto PC=Cast<APlayerController>(Hero->GetController()))if(PC->PlayerCameraManager)PC->PlayerCameraManager->ViewPitchMin=bSwimming?-89.9f:-66.f;
  const FString Clip=bSeated?TEXT("Sitting_Idle"):bSwimming?TEXT("Swim_Idle"):ReachRemaining>0?TEXT("Interact"):(bScriptedWalking || Hero->GetVelocity().SizeSquared2D()>25)?TEXT("Walk"):TEXT("Idle");
  if(Playing!=Clip && Clips.Contains(Clip)){
   Playing=Clip;for(auto Body:{Hero->GetMesh(),ViewBody.Get()})if(auto Instance=Cast<UMareServiceAnimInstance>(Body->GetAnimInstance())){

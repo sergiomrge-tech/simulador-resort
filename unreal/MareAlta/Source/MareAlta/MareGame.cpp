@@ -1869,13 +1869,15 @@ public:
    Buttons->AddSlot().AutoWidth().Padding(12,0,0,0)[SNew(SMarePadButton).ButtonStyle(&InkButton()).ContentPadding(FMargin(14,4))
      .OnClicked_Lambda([Review](){FPlatformProcess::LaunchURL(*Review,nullptr,nullptr);return FReply::Handled();})
      [SNew(STextBlock).Text(MareLoc::Text(TEXT("Lista de desejos na Steam"))).Font(Hand(20)).ColorAndOpacity(MareNotebook::Tag)]];}
-  ChildSlot.HAlign(HAlign_Center).VAlign(VAlign_Center)[SNew(SBorder).BorderImage(FCoreStyle::Get().GetBrush("WhiteBrush")).BorderBackgroundColor(Paper).Padding(FMargin(34,26))
-   [SNew(SBox).WidthOverride(640)[SNew(SVerticalBox)
+  // 10/11 (demo simulation): the end screen was a plain cream card; every screen is a notebook sheet (lined paper, red
+  // margin, pin: MareNotebook::Page), like the grandmother's letter.
+  ChildSlot.HAlign(HAlign_Center).VAlign(VAlign_Center)[SNew(SBox).WidthOverride(720)
+   [MareNotebook::Page(SNew(SVerticalBox)
     +SVerticalBox::Slot().AutoHeight()[HandText(UMareSimulation::String(End,TEXT("title")),34,Brown)]
     +SVerticalBox::Slot().AutoHeight().Padding(0,10)[BodyText(UMareSimulation::String(End,TEXT("text")),14,Ink)]
     +SVerticalBox::Slot().AutoHeight().Padding(0,6)[HandText(Stats,18,Green)]
     +SVerticalBox::Slot().AutoHeight()[Next]
-    +SVerticalBox::Slot().AutoHeight().HAlign(HAlign_Left).Padding(0,14,0,0)[Buttons]]]];
+    +SVerticalBox::Slot().AutoHeight().HAlign(HAlign_Left).Padding(0,14,0,0)[Buttons])]];
  }
  virtual bool SupportsKeyboardFocus()const override{return true;}
  virtual FReply OnKeyDown(const FGeometry&,const FKeyEvent& Event) override

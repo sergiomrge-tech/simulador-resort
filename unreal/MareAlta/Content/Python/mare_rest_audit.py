@@ -64,3 +64,15 @@ def bathers(arg=''):
                      'body_cm': round((head - mid).length()), 'centre_off_cm': round(math.hypot(ctr.x - s[0], ctr.y - s[1])),
                      'pelvis_above_towel_cm': round(pel.z - s[2]), 'hidden': bool(p.get_editor_property('hidden'))})
     return json.dumps(rows, ensure_ascii=False)
+
+
+def look(arg='-85'):
+    """PIE: the hero looks down/up by `arg` degrees of pitch, walking (the player's own view, for a mare.Shot)."""
+    world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()
+    pc = unreal.GameplayStatics.get_player_controller(world, 0)
+    hero = unreal.GameplayStatics.get_player_pawn(world, 0)
+    hero.get_component_by_class(unreal.CharacterMovementComponent).set_movement_mode(unreal.MovementMode.MOVE_WALKING)
+    r = pc.get_control_rotation()
+    pc.set_control_rotation(unreal.Rotator(roll=0, pitch=float(arg), yaw=r.yaw))
+    loc = hero.get_actor_location()
+    return json.dumps({'pitch': float(arg), 'hero': [round(loc.x), round(loc.y), round(loc.z)]})

@@ -103,6 +103,24 @@ Meta: uma demo de ~2 h, estável, bonita, pronta para a Next Fest.
   - [x] Tochas tiki acesas à noite (chama que tremula e uma luz quente por tocha); as "folhinhas verdes" na areia são as
     algas de enfeite da praia (conferido, não é defeito).
 
+### 1.5 Jogabilidade e desempenho (pedido do Sergio, 10/11, depois da simulação)
+- [x] Caixa do jogador no fim da demo (Sergio viu R$ 189.630 na tela de fim: era o dinheiro de teste do QA). Modelo
+  econômico com as fórmulas atuais, modo demo, 30 sementes por perfil (`D:/CodexTemp/claude/demo_cash.py` sobre
+  `tools/ue58/balance_model.py`): fim da demo no dia 10 / 8,5 / 7 (2,7 h / 2,3 h / 1,9 h: casual, médio, dedicado) com
+  R$ 871 / 850 / 1.031 em caixa (P10–P90: R$ 350–1.500). Não sobra dinheiro: o jogador gasta em expansões, equipe e
+  decoração conforme ganha. O modelo só não roda direto porque 5 arquivos .cpp mudaram de assinatura; as fórmulas
+  extraídas são idênticas às auditadas.
+- [x] Tela "Obrigado por jogar a demo!" em folha de caderno (era um cartão creme liso): papel pautado, margem, alfinete
+  (`MareNotebook::Page`); foto `D:/CodexTemp/uichk/v3_fim.jpg`. A carta da avó também foi conferida em foto (abre certa).
+- [x] Olhar para baixo a pé limitado a −66° (`UMarePlayerPresentation`): de −70° em diante o peito facetado do herói e a
+  borda dos braços escondidos tomavam a tela; a −60/−65° só o sapato e a perna. Nadando o limite continua livre (recife).
+  Fotos `D:/CodexTemp/uichk/look_m.jpg` e `v2_m.jpg`.
+- [ ] Desempenho: pessoas na praia (processador do jogo 11,5 ms com 6 na tela, 7,1 ms sem ninguém): medir onde vão os
+  ~4 ms e reduzir.
+- [ ] Duração da demo no perfil casual: 2,7 h para um teto de 2,5 h; decidir se ajusta.
+- [ ] 👤 Botão "Lista de desejos na Steam" na tela de fim: só aparece com o endereço da loja (`events.json`
+  `review_url`), que depende da conta Steamworks.
+
 ---
 
 ## Fase 2 — Ilha viva (depois da demo fechada)
