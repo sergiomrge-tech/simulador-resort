@@ -43,6 +43,9 @@ private:
  /** Receptionist, lobby guests, restaurant diners, gym and pool-bar regulars of the Grand Hotel, present only once it is owned. */
  UPROPERTY() TArray<TObjectPtr<AMarePerson>> HotelGuests;
  void UpdateHotelGuests();
+ /** People seated in the church's pews at mass time (Content/Data/church.json). */
+ UPROPERTY() TArray<TObjectPtr<AMarePerson>> Faithful;
+ void UpdateChurch();
  /** Sunbathers lying on the beach towels by day when it is dry (Content/Data/sunbathers.json). */
  UPROPERTY() TArray<TObjectPtr<AMarePerson>> Sunbathers;
  void UpdateSunbathers();

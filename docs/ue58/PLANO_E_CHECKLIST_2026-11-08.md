@@ -123,6 +123,11 @@ Meta: uma demo de ~2 h, estável, bonita, pronta para a Next Fest.
   azul / creme. Pilastras nos vãos entre as janelas e vitrais góticos ornamentados nas duas laterais (3 no oeste, 2 no
   leste, onde a torre ocupa o trecho do terceiro), acesos por dentro à noite. Conferido no editor e no executável.
   Na primeiríssima execução de um pacote os vitrais levam alguns segundos para aparecer (shader compilando).
+- [x] Interior da igreja (pedido do Sergio, 11/11, referências da Catedral da Sé, tamanho atual): entra-se andando pela
+  porta; nave de três naves com pilares em feixe, arcada, abóbadas de tijolo com nervuras, rosácea sobre a porta, vitrais
+  por dentro (acesos de dia) e três novos no fundo (dentro e fora), piso xadrez, 10 bancos, altar elevado, cruz, estante,
+  castiçais, três lustres de velas (acesos à noite) e fiéis sentados na missa (7–8h e 17h30–19h). Passagens provadas
+  com varredura de cápsula; assentos medidos (0–1 cm). Falta: padre no altar durante a missa; som de igreja (eco, órgão).
 - [ ] Integração Steam (Online Subsystem, conquistas da dívida, Steam Cloud, Rich Presence).
 - [x] Simulação da demo inteira do zero até o fim (10/11, `simulate_game.py` adaptado à demo, três rodadas em perfil novo;
   detalhe em `CHECKLIST_SIMULACAO.md`). Última rodada, 30 etapas: 0 erros no log, 0 pessoas deslizando, 0 fora do assento,

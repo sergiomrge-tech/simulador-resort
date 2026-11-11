@@ -148,6 +148,29 @@ void UMareVillageWorld::UpdateHotelGuests()
   if(S.bSeat)P->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);else P->GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Pawn,ECR_Block);
   P->Tags.Add(TEXT("MareHotelGuest"));HotelGuests.Add(P);}
 }
+// 11/11 church interior: at mass time (Content/Data/church.json) a few villagers sit in the pews, facing the altar.
+void UMareVillageWorld::UpdateChurch()
+{
+ static TSharedPtr<FJsonObject> Defs;
+ if(!Defs.IsValid()){FString Text;FFileHelper::LoadFileToString(Text,*(FPaths::ProjectContentDir()/TEXT("Data/church.json")));
+  if(!FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Text),Defs) || !Defs.IsValid())Defs=MakeShared<FJsonObject>();}
+ auto Sim=GetWorld()->GetGameInstance()->GetSubsystem<UMareSimulation>();if(!Sim)return;
+ const double Hour=FMath::Fmod(UMareSimulation::Number(Sim->State,TEXT("minutes")),1440.0)/60.;
+ const TArray<TSharedPtr<FJsonValue>>* Hours=nullptr;const TArray<TSharedPtr<FJsonValue>>* Seats=nullptr;
+ if(!Defs->TryGetArrayField(TEXT("masses"),Hours) || !Defs->TryGetArrayField(TEXT("seats"),Seats))return;
+ bool bMass=false;for(const auto& H:*Hours){const auto& R=H->AsArray();if(R.Num()==2 && Hour>=R[0]->AsNumber() && Hour<R[1]->AsNumber())bMass=true;}
+ if(!bMass){for(auto P:Faithful)if(IsValid(P))P->Destroy();Faithful.Empty();return;}
+ if(Faithful.Num())return;
+ int32 I=0;
+ for(const auto& V:*Seats){const auto& A=V->AsArray();if(A.Num()!=4)continue;
+  const FVector Top(A[0]->AsNumber(),A[1]->AsNumber(),A[2]->AsNumber());const float Yaw=A[3]->AsNumber();
+  FActorSpawnParameters Params;Params.SpawnCollisionHandlingOverride=ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+  auto P=GetWorld()->SpawnActor<AMarePerson>(Top+FVector(0,0,60),FRotator(0,Yaw,0),Params);if(!P)continue;
+  P->SaveId=FString::Printf(TEXT("church_%d"),I);P->SitOn(Top,Yaw);
+  if(!P->SetAppearance(I%4)){P->Destroy();continue;}
+  P->PersonName=TEXT("Morador");P->bAmbient=true;P->bSeated=true;P->GetCharacterMovement()->DisableMovement();
+  P->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);Faithful.Add(P);++I;}
+}
 int32 UMareVillageWorld::SunbatherCount()const{int32 N=0;for(const auto& P:Sunbathers)N+=IsValid(P.Get());return N;}
 void UMareVillageWorld::UpdateSunbathers()
 {
@@ -205,7 +228,7 @@ void UMareVillageWorld::Tick(float Dt)
 {
  if(!GetWorld()->IsGameWorld() || !Cast<AMareGameMode>(GetWorld()->GetAuthGameMode()) || UGameplayStatics::IsGamePaused(this))return;
  Clock-=Dt;if(Clock>0)return;Clock=.25f;if(!bReady){Setup();if(!bReady)return;}
- UpdateWalkers(.25f);UpdateHotelGuests();UpdateSunbathers();
+ UpdateWalkers(.25f);UpdateHotelGuests();UpdateSunbathers();UpdateChurch();
 }
 void UMareVillageWorld::Speak(AMarePerson* Person,APlayerController* Controller)
 {
@@ -288,4 +311,4 @@ AMarePerson* UMareVillageWorld::HoldPedestrianNear(FVector At,float MinDist,floa
  return nullptr;
 }
 void UMareVillageWorld::ReleasePedestrian(AMarePerson* Person){for(auto& W:Pedestrians)if(W.Person.Get()==Person)W.Wait=FMath::Min(W.Wait,.5f);}
-void UMareVillageWorld::Deinitialize(){CloseDialogue();Residents.Empty();HotelGuests.Empty();Sunbathers.Empty();Pedestrians.Empty();Super::Deinitialize();}
+void UMareVillageWorld::Deinitialize(){CloseDialogue();Residents.Empty();HotelGuests.Empty();Sunbathers.Empty();Faithful.Empty();Pedestrians.Empty();Super::Deinitialize();}

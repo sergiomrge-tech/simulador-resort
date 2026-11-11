@@ -922,3 +922,23 @@ do vitral, a UE descartou a face de costas e a prévia do Blender (dois lados) e
 longo de uma parede (pilastras a cada 2,8 m, janelas a cada 3,6 m) coincidem em algum ponto: conferir os dois passos
 juntos, e o que mais ocupa a parede (a torre do sino cobre o trecho da 1ª janela leste). `mare_church.fix` é
 reexecutável (`dry`/`apply`).
+
+## UE5.8 — interior da igreja (11/11, referências da Sé)
+
+A igreja era um bloco maciço do Godot (`World_1176`, 10 x 12 x 7 m). Para entrar andando: o bloco e o barrado viram
+placas de 30 cm feitas da MESMA malha esticada (`mare_church.interior`, guarda material e tags), com o vão da porta; o
+miolo é um modelo só (`mare_church_nave`, `tools/ue58/gen_church_nave.py`) com colisão complexa. As chapas da cornija
+do bloco antigo ficam a 6,7 m e cobrem tudo: o interior inteiro cabe abaixo de 6,62 m (o telhado de quatro águas
+desce nas pontas, então abóbada alta só caberia no meio). Arco ogival só existe com flecha maior que meio vão
+(`arch_pts`: c = (h² − a²) / 2a): vãos largos e pouca altura dão arco quase redondo.
+Bancos compridos + pilares fecham as passagens sem ninguém notar na foto: `mare_church.walk` varre uma cápsula do
+tamanho do herói (raio 34, 176 de altura, 25 cm acima do piso) pelos caminhos; achou também a maçaneta da porta antiga
+pendurada no vão e vitrais com colisão (`set_collision_enabled` sozinho não bastou no editor: usar também o perfil
+`NoCollision`). Passagem mínima: 68 cm de cápsula; deixei 90.
+Vidro visto por dentro acende de DIA (material próprio, `M_ChurchStainedGlassDay`), o de fora acende de noite.
+Captura do viewport do editor mostra textura borrada (mip baixo) e sem as luzes do jogo: julgar vidro e luz no PIE.
+Gente por horário (`church.json`, campo `masses`: o portão exige que todo `hours` seja um par só; missa 7–8h e 17h30–19h): a 1 min de jogo por segundo a sessão de fotos passa da hora
+e as pessoas somem no meio da medição; medir primeiro, fotografar depois. A pose sentada padrão inclina o tronco 20–28 cm
+para a frente (parece "fora do assento" na foto): conferir pela bacia (`mare_church.faithful`), não pelo olho.
+JSON lido com `static` no C++ só é relido ao reiniciar o editor (de novo): não testar mudando o arquivo com o editor aberto.
+

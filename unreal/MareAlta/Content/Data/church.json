@@ -1,0 +1,51 @@
+{
+ "_doc": "Village church interior (11/11): people seated in the pews at mass time. masses = [from, to] hours of the day, one pair per mass; seats = [x, y, seat top z, yaw] in world cm on the pews of mare_church_nave (rows at y 4628, 4716, 4910, 4998, 5076; seat top 67 cm; facing the altar = yaw 90).",
+ "masses": [
+  [
+   7,
+   8
+  ],
+  [
+   17.5,
+   19
+  ]
+ ],
+ "seats": [
+  [
+   7380,
+   5076,
+   67,
+   90
+  ],
+  [
+   7640,
+   5076,
+   67,
+   90
+  ],
+  [
+   7730,
+   4998,
+   67,
+   90
+  ],
+  [
+   7240,
+   4910,
+   67,
+   90
+  ],
+  [
+   7610,
+   4716,
+   67,
+   90
+  ],
+  [
+   7350,
+   4628,
+   67,
+   90
+  ]
+ ]
+}

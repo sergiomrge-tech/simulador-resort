@@ -104,7 +104,10 @@ void UMareVisualWorld::BuildLamps()
   {TEXT("modern_ceiling_lamp_011"),40,250,1100,3500,true},
   // 10/11 (demo simulation: the kiosk's tiki torches stood dark at night): the flame mesh of each torch (kiosk, hotel
   // pool terrace) lights the sand around it, fire-coloured; the flame itself glows through M_TorchFlame (mare_torch.py).
-  {TEXT("World_1273"),20,38,620,1900}};
+  {TEXT("World_1273"),20,38,620,1900},
+  // 11/11 church interior (references: the Se cathedral): three candle chandeliers hang in the nave (Poly Haven
+  // Chandelier_03 at 130%, pivot at the top of its rod, the candles about 1 m below: 75 cm in the mesh).
+  {TEXT("Chandelier_031"),-75,170,1100,3200}};
  LampHolder=GetWorld()->SpawnActor<AActor>();if(!LampHolder)return;
  LampHolder->SetRootComponent(NewObject<USceneComponent>(LampHolder,TEXT("LampRoot")));LampHolder->GetRootComponent()->RegisterComponent();
  // Fixtures added where a room had light but no lamp (Content/Data/lighting.json).
