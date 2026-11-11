@@ -2747,7 +2747,8 @@ static FAutoConsoleCommandWithWorldAndArgs MareQACommand(TEXT("mare.QA"),TEXT("Q
   UE_LOG(LogTemp,Display,TEXT("mare.QA %s %s -> %s (%s)"),*Verb,*Arg,bOk?TEXT("ok"):TEXT("refused"),*S->LastMessage);}));
 static FAutoConsoleCommandWithWorldAndArgs MareArcadeCommand(TEXT("mare.Arcade"),TEXT("QA: start:0|1, play:seconds, end, state (game room arcades, 5.4)."),
  FConsoleCommandWithWorldAndArgsDelegate::CreateLambda([](const TArray<FString>& Args,UWorld* World){
-  if(!World)return;if(auto Arc=World->GetSubsystem<UMareArcade>())UE_LOG(LogTemp,Display,TEXT("mare.Arcade %s -> %s"),*FString::Join(Args,TEXT(" ")),*Arc->QA(FString::Join(Args,TEXT(" "))));}));
+  if(!World)return;if(auto Arc=World->GetSubsystem<UMareArcade>()){const FString Result=Arc->QA(FString::Join(Args,TEXT(" ")));   // outside UE_LOG: Shipping compiles the log and its arguments away
+   UE_LOG(LogTemp,Display,TEXT("mare.Arcade %s -> %s"),*FString::Join(Args,TEXT(" ")),*Result);}}));
 static FAutoConsoleCommandWithWorldAndArgs MareHotelEventCommand(TEXT("mare.HotelEvent"),TEXT("QA: offer[:kind], accept, today, decline, critic (5.3), state, placeall[:extras], place:i, start (Grand Hotel events, 5.2)."),
  FConsoleCommandWithWorldAndArgsDelegate::CreateLambda([](const TArray<FString>& Args,UWorld* World){
   if(!World || !World->GetGameInstance())return;auto S=World->GetGameInstance()->GetSubsystem<UMareSimulation>();auto W=World->GetSubsystem<UMareHotelEventsWorld>();if(!S || !W)return;

@@ -200,4 +200,5 @@ static FAutoConsoleCommandWithWorldAndArgs MarePayQA(TEXT("mare.Pay"),TEXT("QA p
  FConsoleCommandWithWorldAndArgsDelegate::CreateLambda([](const TArray<FString>& Args,UWorld* World){
   if(!World || Args.IsEmpty())return;
   if(Args[0]==TEXT("open") && Args.Num()>1){if(auto PC=Cast<AMareController>(UGameplayStatics::GetPlayerController(World,0)))PC->OpenPayment(TEXT("Cliente QA"),FCString::Atod(*Args[1]));}   // i18n:skip
-  UE_LOG(LogTemp,Display,TEXT("MARE_PAY %s"),*MarePayment::QA(Args[0]));}));
+  const FString Result=MarePayment::QA(Args[0]);   // outside UE_LOG: Shipping compiles the log and its arguments away
+  UE_LOG(LogTemp,Display,TEXT("MARE_PAY %s"),*Result);}));

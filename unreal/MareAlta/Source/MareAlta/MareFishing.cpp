@@ -244,4 +244,7 @@ FString MareFishing::QA(const FString& Cmd)
 static FAutoConsoleCommandWithWorldAndArgs MareFishCommand(TEXT("mare.Fish"),TEXT("QA: drives the pier fishing panel (bait:<i>, bite, strike, hold:<0|1>, step:<s>, book, state)."),   // i18n:skip
  FConsoleCommandWithWorldAndArgsDelegate::CreateLambda([](const TArray<FString>& Args,UWorld* World){
   if(Args.Num() && Args[0]==TEXT("start"))if(auto PC=World?Cast<AMareController>(UGameplayStatics::GetPlayerController(World,0)):nullptr)PC->StartFishing();   // i18n:skip
-  UE_LOG(LogTemp,Display,TEXT("MARE_FISH %s"),*MareFishing::QA(Args.Num()?Args[0]:FString(TEXT("state"))));}));
+  // The call stays outside UE_LOG: Shipping compiles the log line away together with whatever its arguments would do
+  // (11/11: in the packaged game only "start" had any effect).
+  const FString Result=MareFishing::QA(Args.Num()?Args[0]:FString(TEXT("state")));
+  UE_LOG(LogTemp,Display,TEXT("MARE_FISH %s"),*Result);}));

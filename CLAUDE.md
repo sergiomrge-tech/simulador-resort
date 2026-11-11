@@ -966,4 +966,8 @@ ignorado com o livro aberto ou a linha sendo relançada) e a foto de UI leva 4 s
 inteira não casa com nenhum modelo de tradução. Nome de campo JSON e literal de teste em C++ viram chave de tradução:
 `// i18n:skip` na linha. Não editar código-fonte nem dados enquanto um pacote está sendo gerado (o de 11/11d saiu com os
 dados novos da pesca e o código antigo; descartado).
+Chamada com efeito dentro de `UE_LOG(...)` some no Shipping (o log e a avaliação dos argumentos são removidos): no pacote
+de 11/11e o `mare.Fish` só obedecia ao `start`. Guardar o resultado numa variável e só então registrar. Vale para
+qualquer comando de QA que precise funcionar no executável. `python tools/ue58/qa/data_lint.py --json` roda sozinho
+(glossário e espaços das traduções) e deve dar 0 erros antes de gastar 5 minutos de portão.
 
