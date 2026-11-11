@@ -69,6 +69,89 @@ def pose(arm):
     rot_world(arm, 'foot_l', Z, -6)
 
 
+def emaciate(arm, meshes):
+    """11/11 (Sergio: "mais detalhes no tórax, como as costelas, peito; detalhes dos ossos nos braços e pernas; como
+    pessoa magra"). In the rest pose (A pose, facing -Y), on a once-subdivided skin: the limbs lose flesh round their
+    bones (the joints keep their width, so knees, elbows, wrists and ankles stand out), the belly sinks under the
+    costal arch, the ribs are carved as ridges that slope down from the breastbone, the breastbone, the collarbones
+    and the hip bones stand proud. The weights are untouched: the pose still drives it."""
+    bpy.context.view_layer.update()
+    mw = arm.matrix_world
+    bones = {b.name: (mw @ b.head_local, mw @ b.tail_local) for b in arm.data.bones}
+    for o in meshes:
+        if len(o.data.vertices) < 8000 or o.vertex_groups.get('pelvis') is None:       # only the body skin
+            continue
+        bpy.context.view_layer.objects.active = o
+        sub = o.modifiers.new('fine', 'SUBSURF')
+        sub.levels = 2          # 8.5k vertices in the Medium build: two levels give ~7 mm on the chest, enough for ribs 3 cm apart
+        while o.modifiers[0] != sub:
+            bpy.ops.object.modifier_move_to_index(modifier='fine', index=0)
+        bpy.ops.object.modifier_apply(modifier='fine')
+        me = o.data
+        gi = {g.name: g.index for g in o.vertex_groups}
+        wm = o.matrix_world
+        inv = wm.inverted()
+        cos = [wm @ v.co for v in me.vertices]
+        nrm = [(wm.to_3x3() @ v.normal).normalized() for v in me.vertices]
+        top = max(c.z for c in cos if abs(c.x) < .05)
+        crotch = min((c for c in cos if abs(c.x) < .015 and .55 < c.z < 1.0), key=lambda c: c.z).z
+        front = min(c.y for c in cos if abs(c.x) < .05 and top - .3 < c.z < top - .15)       # breastbone plane
+        limb = {'thigh': .76, 'calf': .80, 'upperarm': .76, 'lowerarm': .82}
+        new = []
+        for v, c, n in zip(me.vertices, cos, nrm):
+            w = {o.vertex_groups[g.group].name: g.weight for g in v.groups}
+            q = c.copy()
+            # limbs: towards the bone axis, least at the two ends of each bone (the joints)
+            for name, keep in limb.items():
+                for side in ('l', 'r'):
+                    # the MetaHuman skin is weighted to helper bones (thigh_in_l, calf_kneeBack_l, upperarm_bicep_l...), not to the limb bone itself
+                    bw = sum(x for k, x in w.items() if k.startswith(name) and k.endswith(f'_{side}'))
+                    if bw < .05 or f'{name}_{side}' not in bones:
+                        continue
+                    a, b = bones[f'{name}_{side}']
+                    d = b - a
+                    t = max(0.0, min(1.0, (c - a).dot(d) / d.length_squared))
+                    axis = a + d * t
+                    joint = math.sin(math.pi * t) ** .7                     # 0 at the joints, 1 mid-bone
+                    f = 1 - (1 - keep) * joint * min(1.0, bw * 1.3)
+                    q = axis + (q - axis) * f
+            torso = sum(x for k, x in w.items() if k.startswith('spine') or k.startswith('pelvis') or k.startswith('clavicle'))
+            if torso > .3 and n.y < .35:
+                dz = top - c.z
+                ax = abs(c.x)
+                # the costal arch: an inverted V whose apex is 30 cm under the neck on the axis, 47 cm at the flanks
+                arch = .30 + .9 * ax
+                belly = max(0.0, min(1.0, (dz - arch) / .05)) * max(0.0, min(1.0, (top - .02 - crotch - dz + .12) / .1))
+                if n.y < 0:
+                    q.y += .030 * belly * (1 - min(1.0, ax / .17) ** 2)                      # sunken belly
+                    q.x *= 1 - .07 * belly                                                    # a narrower waist
+                # ribs: between the collarbone and the arch; ridges 2.7 cm apart sloping down and out from the breastbone
+                cage = max(0.0, min(1.0, (dz - .10) / .04)) * max(0.0, min(1.0, (arch + .012 - dz) / .03))
+                if cage > 0:
+                    s_ = dz - .30 * ax
+                    ridge = math.cos(2 * math.pi * (s_ + .004 * math.sin(c.x * 40 + dz * 23)) / .031)      # not ruler-straight
+                    side_gain = .45 + .55 * min(1.0, ax / .10)                               # shallower over the breastbone and the pectorals
+                    upper = .5 + .5 * min(1.0, max(0.0, (dz - .16) / .08))                   # the chest muscle hides the upper ribs
+                    q += n * (.0048 * ridge * cage * side_gain * upper - .0035 * cage * side_gain)
+                # the lower edge of the rib cage stands out over the belly
+                edge = math.exp(-((dz - arch) / .012) ** 2)
+                q += n * (.0032 * edge * min(1.0, ax / .04)) if n.y < .2 else Vector()
+                # breastbone and collarbones
+                if n.y < -.3:
+                    q += n * (.004 * math.exp(-(ax / .014) ** 2) * max(0.0, min(1.0, (dz - .06) / .03)) * max(0.0, min(1.0, (.27 - dz) / .03)))
+                    q += n * (.006 * math.exp(-((dz - .055 - .12 * ax) / .011) ** 2) * min(1.0, ax / .03) * max(0.0, min(1.0, (.2 - ax) / .03)))
+                # hip bones
+                hip = math.exp(-((ax - .115) / .03) ** 2) * math.exp(-((c.z - (crotch + .17)) / .035) ** 2)
+                if n.y < 0:
+                    q += n * (.009 * hip)
+            new.append(inv @ q)
+        moved = [(wm @ q - c).length for q, c in zip(new, cos)]
+        print('EMACIATE', o.name, 'verts', len(new), 'moved>1mm', sum(1 for d in moved if d > .001), 'max', round(max(moved), 4), 'top', round(top, 3), 'crotch', round(crotch, 3))
+        for v, q in zip(me.vertices, new):
+            v.co = q
+        me.update()
+
+
 def load(path):
     known = set(bpy.data.objects)
     bpy.ops.import_scene.fbx(filepath=path)
@@ -140,6 +223,7 @@ def main():
     rnd = random.Random(33)
     arm_b, body = load(BODY)
     arm_f, face = load(FACE)
+    emaciate(arm_b, body)
     for arm in (arm_b, arm_f):
         pose(arm)
     skin_bm = frozen(body + face)
@@ -169,8 +253,16 @@ def main():
     skin.diffuse_color = (.9, .89, .86, 1)
     hair_m = linen = thorn = skin
     wood = plain('Wood', (.10, .055, .03), .5)
+    vine_green = plain('VineGreen', (.13, .22, .07), .6)        # 11/11 (Sergio): the crown "verde com cor madeira, como vinhas com espinhos"
+    vine_wood = plain('VineWood', (.26, .15, .07), .65)
+    copper = plain('Copper', (.95, .48, .28), .32, 1.0)          # "nas mãos pregos cor de cobre"
     gold = plain('Gold', (1.0, .76, .33), .28, 1.0)
-    parts = [new_obj('corpus', skin_bm.copy(), skin)]
+    corpus = new_obj('corpus', skin_bm.copy(), skin)
+    bpy.context.view_layer.objects.active = corpus
+    dc = corpus.modifiers.new('light', 'DECIMATE')          # the sculpting mesh (190k vertices) down to what the statue needs
+    dc.ratio = .16
+    bpy.ops.object.modifier_apply(modifier='light')
+    parts = [corpus]
 
     def surf(p):
         q, n = tree.find_nearest(p)[:2]
@@ -182,7 +274,7 @@ def main():
         a = rnd.uniform(0, 2 * math.pi)
         e = rnd.uniform(-.25, 1.0)                       # elevation on the skull: back and sides more than the front
         d = Vector((math.sin(a) * math.cos(e * 1.3), math.cos(a) * math.cos(e * 1.3), math.sin(e * 1.3)))
-        if d.y < -.2 and d.z < .8:                       # nothing grows on the face or the forehead: the hair is parted
+        if d.y < .12 and d.z < .86:                      # nothing grows on the face, the forehead or the temples: the hair is parted
             continue                                     # on top and falls behind the ears and down the back
         start, n = surf(head_c + d * .2)
         if start.z < top - .2:
@@ -196,8 +288,8 @@ def main():
         for k in range(1, 12):
             t = k / 11
             p = start + side * (.012 + .034 * t + amp * .5 * math.sin(t * 9 + ph + 1.3)) + tang * (amp * math.sin(t * 9 + ph)) + Vector((0, 0, -length * t))
-            if p.y < head_c.y - .035:                    # never in front of the face
-                p.y = head_c.y - .035
+            if p.y < head_c.y + .015:                    # never in front of the ears
+                p.y = head_c.y + .015
                 p.x += math.copysign(.02 * t, p.x - head_c.x)
             q, qn = surf(p)
             if (p - q).dot(qn) < .008:
@@ -211,7 +303,7 @@ def main():
         tube(hb, [start + n * .002, start + n * .012 + Vector((0, -.004, -.014)), start + n * .012 + Vector((0, -.004, -.03 - rnd.uniform(0, .012)))], .0095, .005, 5)
     # the scalp under the locks: the head's own skin lifted 9 mm where hair grows, so no skull shows between them
     cap = skin_bm.copy()
-    bmesh.ops.delete(cap, geom=[f for f in cap.faces if not (f.calc_center_median().z > top - .17 and f.calc_center_median().y > head_c.y - .045
+    bmesh.ops.delete(cap, geom=[f for f in cap.faces if not (f.calc_center_median().z > top - .17 and f.calc_center_median().y > head_c.y - .005
                                                               and (f.calc_center_median() - head_c).length < .16)], context='FACES')
     for v in cap.verts:
         v.co += v.normal * .009
@@ -233,10 +325,14 @@ def main():
     sm.iterations = 6
     sm.lambda_factor = .35
     bpy.ops.object.modifier_apply(modifier='polish')
+    dc = hair_o.modifiers.new('light', 'DECIMATE')
+    dc.ratio = .22
+    bpy.ops.object.modifier_apply(modifier='light')
     parts.append(hair_o)
 
     # crown of thorns: three twisted strands round the brow, with spikes
     cb = bmesh.new()
+    cw = bmesh.new()                                             # the woody strand and the thorns
     for strand in range(3):
         pts = []
         for k in range(41):
@@ -244,14 +340,15 @@ def main():
             d = Vector((math.sin(a), math.cos(a), 0))
             q, n = surf(head_c + d * .25 + Vector((0, 0, .055 + .012 * math.sin(a * 3 + strand * 2.1))))
             pts.append(q + n * (.014 + .006 * math.sin(a * 7 + strand)))
-        tube(cb, pts, .0045, .0045, 5)
+        tube(cw if strand == 1 else cb, pts, .0048, .0048, 6)
     for k in range(34):
         a = 2 * math.pi * k / 34 + rnd.uniform(-.05, .05)
         d = Vector((math.sin(a), math.cos(a), 0))
         q, n = surf(head_c + d * .25 + Vector((0, 0, .055)))
         o = q + n * .016
-        tube(cb, [o, o + (n + Vector((rnd.uniform(-.6, .6), rnd.uniform(-.6, .6), rnd.uniform(-.2, .8)))).normalized() * .028], .0028, .0004, 4)
-    parts.append(new_obj('thorns', cb, thorn))
+        tube(cw, [o, o + (n + Vector((rnd.uniform(-.6, .6), rnd.uniform(-.6, .6), rnd.uniform(-.2, .8)))).normalized() * .03], .003, .0004, 4)
+    crown_parts = [new_obj('vine', cb, vine_green), new_obj('thorns', cw, vine_wood)]
+    parts += crown_parts
 
     # loincloth: rings round the hips following the body, a knot and a fall on the figure's right
     crotch = min((v.co for v in skin_bm.verts if abs(v.co.x) < .03 and top - 1.05 < v.co.z < top - .7), key=lambda c: c.z)
@@ -282,17 +379,15 @@ def main():
     for j in range(5):
         s = Vector((rnd.uniform(-.02, .0), rnd.uniform(-.015, .01), 0))
         tube(lb, [kq + kn * .02, kq + kn * .035 + s + Vector((-.01, 0, -.08)), kq + kn * .03 + s * 2 + Vector((-.015, 0, -.2 - .03 * j))], .02, .012, 6)
+    # (a voxel remesh of this open, single-wall cloth returned NOTHING: the figure came out without it. It keeps its
+    # own rings, with a real thickness.)
     cloth_o = new_obj('loincloth', lb, linen)
     bpy.context.view_layer.objects.active = cloth_o
-    rm = cloth_o.modifiers.new('fuse', 'REMESH')
-    rm.mode = 'VOXEL'
-    rm.voxel_size = .004
-    rm.use_smooth_shade = True
-    bpy.ops.object.modifier_apply(modifier='fuse')
-    sm = cloth_o.modifiers.new('polish', 'LAPLACIANSMOOTH')
-    sm.iterations = 3
-    sm.lambda_factor = .3
-    bpy.ops.object.modifier_apply(modifier='polish')
+    so = cloth_o.modifiers.new('thick', 'SOLIDIFY')
+    so.thickness = .008
+    so.offset = 1
+    bpy.ops.object.modifier_apply(modifier='thick')
+    assert len(cloth_o.data.polygons) > 3000, 'the loincloth is missing'
     parts.append(cloth_o)
 
     # scale the figure, hang it on the cross: hands at the arms of the cross, back of the figure 2 cm off the wood
@@ -300,15 +395,16 @@ def main():
     bpy.context.view_layer.update()
     allv = [o.matrix_world @ v.co for o in fig for v in o.data.vertices]
     back = max(v.y for v in allv if v.z > top - .9 and abs(v.x) < .2)
-    hands_z = sum(v.z for v in allv if abs(v.x) > max(abs(w.x) for w in allv) - .06) / max(1, sum(1 for v in allv if abs(v.x) > max(abs(w.x) for w in allv) - .06))
     span = max(abs(w.x) for w in allv)
+    hands = [v.z for v in allv if abs(v.x) > span - .06]
+    hands_z = sum(hands) / max(1, len(hands))
     H = 1.9
     arm_z = 1.48                                   # height of the cross arm on the post
     m = Matrix.Translation(Vector((0, -.045, arm_z))) @ Matrix.Scale(FIGURE, 4) @ Matrix.Translation(Vector((-0.0, -back, -hands_z)))
     for o in fig:
         o.data.transform(m)
     span *= FIGURE
-    for o in fig:                                     # the marble picture, seen from the front (1.3 m across)
+    for o in [o for o in fig if o not in crown_parts]:   # the marble picture, seen from the front (1.3 m across)
         uv = o.data.uv_layers.get('UVMap') or o.data.uv_layers.new(name='UVMap')
         for other in [l for l in o.data.uv_layers if l != uv]:
             o.data.uv_layers.remove(other)
@@ -341,10 +437,22 @@ def main():
     for k in range(3):
         stroke(.022 + k * .006, tz - .006 - k * .007, .008, .009)
     stroke(.066, tz, .008, lh)                                      # I
-    for c in ((span - .035, -.075, arm_z + .005), (-span + .035, -.075, arm_z + .005)):   # nails
-        box(gb, c, (.014, .03, .014))
-    feet = min((o.matrix_world @ v.co for o in fig[:1] for v in o.data.vertices), key=lambda c: c.z)
-    box(gb, (feet.x, feet.y - .012, feet.z + .05), (.014, .03, .014))
+    # copper nails: a domed head on a square shank, through each palm and through the crossed feet
+    body_v = [fig[0].matrix_world @ v.co for v in fig[0].data.vertices]
+    nb = bmesh.new()
+
+    def nail(c):
+        box(nb, (c.x, c.y - .004, c.z), (.007, .05, .007))
+        for k, (r, dy) in enumerate(((.012, -.026), (.010, -.031), (.006, -.034))):
+            box(nb, (c.x, c.y + dy, c.z), (2 * r, .005, 2 * r))
+    for side in (1, -1):
+        hand = [v for v in body_v if v.x * side > span - .075]
+        palm = sum(hand, Vector()) / len(hand)
+        nail(Vector((palm.x - side * .015, min(v.y for v in hand) + .012, palm.z - .01)))
+    feet = min(body_v, key=lambda c: c.z)
+    foot = [v for v in body_v if v.z < feet.z + .09]
+    nail(Vector((sum(v.x for v in foot) / len(foot), min(v.y for v in foot) + .012, feet.z + .06)))
+    parts.append(new_obj('nails', nb, copper, smooth=False))
     parts.append(new_obj('gilt', gb, gold, smooth=False))
     # the foot rest under the feet
     sb = bmesh.new()
@@ -362,7 +470,7 @@ def main():
         sc.collection.objects.link(cam)
         sc.camera = cam
         cam.data.lens = 70
-        for name, az, dist, h in (('frente', 0, 4.2, 1.0), ('tq', 35, 4.2, 1.0), ('lado', 90, 4.2, 1.0), ('rosto', 12, 1.3, 1.5)):
+        for name, az, dist, h in (('frente', 0, 4.2, 1.0), ('tq', 35, 4.2, 1.0), ('torax', 18, 1.5, 1.22), ('rosto', 12, 1.3, 1.5)):
             a = math.radians(az)
             cam.location = Vector((math.sin(a) * dist, -math.cos(a) * dist, h))
             cam.rotation_euler = (math.radians(90), 0, a)

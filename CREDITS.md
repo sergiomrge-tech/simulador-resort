@@ -677,6 +677,7 @@ comercial (as espigas do Fab são estátua ou só licença pessoal paga para com
 | Mourão da corda do píer `mare_pier_post` (11/11, as cordas do último trecho terminavam no ar): modelo próprio (`tools/ue58/gen_pier_post.py`, bpy); casca `bark_brown_02` | Poly Haven (textura) | CC0 |
 | Paramento do Padre Robson (casula, túnica, cruz peitoral; 11/11): peça própria gerada sobre o corpo MetaHuman (`tools/ue58/gen_mh_swimwear.py chasuble`) | próprio do projeto | — |
 | Crucifixo da igreja `mare_church_crucifix` (11/11): figura em mármore a partir de um corpo MetaHuman posado, cabelo, coroa de espinhos, perizônio, cruz e placa INRI modelados (`tools/ue58/gen_crucifix.py`); mármores com veios e piso da nave desenhados em código (`gen_church_nave.py`) | próprio do projeto | — |
+| Revestimento em mármore da recepção do Grand Hotel `mare_lobby_marble` (11/11): modelo e todos os mármores (creme, vermelho, verde, preto, amarelo) e o piso com rosas dos ventos desenhados em código (`tools/ue58/gen_hotel_lobby_marble.py`) | próprio do projeto | — |
 | Tecido do paramento: `quatrefoil_jacquard_fabric` (cor, relevo, rugosidade) | Poly Haven | CC0 |
 | Clipes `LayToIdle` (levantar da toalha) e `Idle_Rail_Call`, Universal Animation Library 2 Standard, redirecionados para o corpo MetaHuman | Quaternius | CC0 |
 | Vaso `potted_plant_02` no lugar das duas calateias do saguão (já usado no saguão) | https://polyhaven.com/a/potted_plant_02 — Poly Haven | CC0 1.0 |
