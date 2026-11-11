@@ -15,21 +15,87 @@ TSharedPtr<FJsonObject> UMareSimulation::LeisureDefs() const
  return Defs;
 }
 
-FString UMareSimulation::CatchFish()
+int32 UMareSimulation::BaitCount(const FString& Bait) const
 {
- const TArray<TSharedPtr<FJsonValue>>* Species=nullptr;if(!LeisureDefs()->TryGetArrayField(TEXT("species"),Species) || Species->IsEmpty())return FString();
- double Total=0;for(const auto& V:*Species)Total+=Number(V->AsObject(),TEXT("weight"),1);
+ if(Bait.IsEmpty() || Bait==TEXT("massa"))return 9999;   // bread dough: free and endless   // i18n:skip
+ return int32(Number(Object(Object(State,TEXT("prog")),TEXT("bait")),Bait));   // i18n:skip
+}
+
+bool UMareSimulation::BuyBait(const FString& Bait)
+{
+ const TArray<TSharedPtr<FJsonValue>>* Baits=nullptr;if(!LeisureDefs()->TryGetArrayField(TEXT("baits"),Baits))return false;   // i18n:skip
+ for(const auto& V:*Baits){const auto B=V->AsObject();if(String(B,TEXT("id"))!=Bait)continue;
+  const double Cost=Number(B,TEXT("cost"));const int32 Pack=int32(Number(B,TEXT("pack")));   // i18n:skip
+  if(Pack<=0){LastMessage=TEXT("Essa isca não precisa comprar.");return false;}
+  if(Money()<Cost){LastMessage=FString::Printf(TEXT("Faltam R$ %.0f para a isca."),Cost-Money());return false;}
+  Book(-Cost,TEXT("Isca de pesca"));
+  auto Store=Object(Object(State,TEXT("prog")),TEXT("bait"));Store->SetNumberField(Bait,Number(Store,Bait)+Pack);   // i18n:skip
+  LastMessage=FString::Printf(TEXT("Comprou %d iscas: %s."),Pack,*String(B,TEXT("name")));Save();return true;}
+ return false;
+}
+
+TSharedPtr<FJsonObject> UMareSimulation::HookFish(const FString& InBait,bool& bOk)
+{
+ const FString Bait=InBait.IsEmpty()?FString(TEXT("massa")):InBait;bOk=false;   // i18n:skip
+ const TArray<TSharedPtr<FJsonValue>>* Species=nullptr;if(!LeisureDefs()->TryGetArrayField(TEXT("species"),Species) || Species->IsEmpty())return nullptr;
+ if(BaitCount(Bait)<=0){LastMessage=TEXT("Acabou essa isca.");return nullptr;}
+ if(Bait!=TEXT("massa")){auto Store=Object(Object(State,TEXT("prog")),TEXT("bait"));Store->SetNumberField(Bait,FMath::Max(0.,Number(Store,Bait)-1));}   // i18n:skip
+ const double Hour=FMath::Fmod(Number(State,TEXT("minutes")),1440.)/60.;
+ auto Weight=[&](const TSharedPtr<FJsonObject>& F){
+  const TArray<TSharedPtr<FJsonValue>>* Hours=nullptr;
+  if(F->TryGetArrayField(TEXT("hours"),Hours) && Hours->Num()==2 && (Hour<(*Hours)[0]->AsNumber() || Hour>=(*Hours)[1]->AsNumber()))return 0.;
+  const TSharedPtr<FJsonObject>* Mult=nullptr;double M=1;if(F->TryGetObjectField(TEXT("bait"),Mult))M=Number(*Mult,Bait,1);   // i18n:skip
+  return Number(F,TEXT("weight"),1)*M;};
+ double Total=0;for(const auto& V:*Species)Total+=Weight(V->AsObject());
  double Roll=FMath::FRand()*Total;TSharedPtr<FJsonObject> Fish=(*Species)[0]->AsObject();
- for(const auto& V:*Species){Roll-=Number(V->AsObject(),TEXT("weight"),1);if(Roll<=0){Fish=V->AsObject();break;}}
- const TArray<TSharedPtr<FJsonValue>>* Size=nullptr;double Cm=30;
- if(Fish->TryGetArrayField(TEXT("cm"),Size) && Size->Num()==2)Cm=FMath::RoundToDouble(FMath::FRandRange((*Size)[0]->AsNumber(),(*Size)[1]->AsNumber()));
+ for(const auto& V:*Species){const double W=Weight(V->AsObject());if(W<=0)continue;Roll-=W;if(Roll<=0){Fish=V->AsObject();break;}}
+ const TArray<TSharedPtr<FJsonValue>>* Size=nullptr;double Cm=30,Big=.5;
+ if(Fish->TryGetArrayField(TEXT("cm"),Size) && Size->Num()==2){const double Lo=(*Size)[0]->AsNumber(),Hi=(*Size)[1]->AsNumber();
+  Cm=FMath::RoundToDouble(FMath::FRandRange(Lo,Hi));Big=Hi>Lo?(Cm-Lo)/(Hi-Lo):.5;}
+ auto Hooked=MakeShared<FJsonObject>();Hooked->SetStringField(TEXT("id"),String(Fish,TEXT("id")));Hooked->SetStringField(TEXT("name"),String(Fish,TEXT("name")));
+ Hooked->SetNumberField(TEXT("cm"),Cm);Hooked->SetNumberField(TEXT("strength"),FMath::Clamp(Number(Fish,TEXT("strength"),.3)+.15*Big,0.,1.));   // i18n:skip
+ bOk=true;return Hooked;
+}
+
+int32 UMareSimulation::SpeciesTotal() const
+{
+ const TArray<TSharedPtr<FJsonValue>>* Species=nullptr;return LeisureDefs()->TryGetArrayField(TEXT("species"),Species)?Species->Num():0;
+}
+
+int32 UMareSimulation::SpeciesCaught() const
+{
+ int32 N=0;const auto Log=Object(Object(State,TEXT("prog")),TEXT("fish"));const TArray<TSharedPtr<FJsonValue>>* Species=nullptr;
+ if(LeisureDefs()->TryGetArrayField(TEXT("species"),Species))for(const auto& V:*Species)N+=Number(Log,String(V->AsObject(),TEXT("id")))>0;
+ return N;
+}
+
+bool UMareSimulation::LandFish(const TSharedPtr<FJsonObject>& Fish)
+{
+ if(!Fish.IsValid())return false;
  // The catch goes to the stock as 'peixe' (the chapter delivers from there) and into the fishing log.
  auto Stock=Object(State,TEXT("stock"));Stock->SetNumberField(TEXT("peixe"),Number(Stock,TEXT("peixe"))+1);
- auto Log=Object(Object(State,TEXT("prog")),TEXT("fish"));const FString Id=String(Fish,TEXT("id"));
+ auto Log=Object(Object(State,TEXT("prog")),TEXT("fish"));const FString Id=String(Fish,TEXT("id"));const double Cm=Number(Fish,TEXT("cm"),30);
+ const bool bNew=Number(Log,Id)<=0;const bool bRecord=!bNew && Cm>Number(Log,TEXT("best_")+Id);const int32 Before=SpeciesCaught();
  Log->SetNumberField(Id,Number(Log,Id)+1);Log->SetNumberField(TEXT("best_")+Id,FMath::Max(Number(Log,TEXT("best_")+Id),Cm));
- AddFame(Id==TEXT("garoupa")?10:2);
+ AddFame((Id==TEXT("garoupa")?10:2)+(bNew?int32(Number(LeisureDefs(),TEXT("first_fame"),5)):0));
  LastMessage=FString::Printf(TEXT("Pegou um(a) %s de %.0f cm! (peixes no estoque: %.0f)"),*String(Fish,TEXT("name")),Cm,Number(Stock,TEXT("peixe")));
- Save();return Id;
+ if(bNew)LastMessage+=TEXT(" Espécie nova no livro!");else if(bRecord)LastMessage+=TEXT(" Novo recorde!");
+ // The whole book: a one-time prize from the fishermen.
+ if(bNew && Before+1==SpeciesTotal() && SpeciesTotal()>0){const double Prize=Number(LeisureDefs(),TEXT("book_reward"),300);
+  Book(Prize,TEXT("Livro de espécies completo"));LastMessage+=FString::Printf(TEXT(" Livro de espécies completo: os pescadores deram R$ %.0f!"),Prize);}
+ Save();return bNew;
+}
+
+FString UMareSimulation::CatchFish()
+{
+ // The old one-step catch (tests, chapter QA): bread dough, no fight.
+ bool bOk=false;const auto Fish=HookFish(TEXT("massa"),bOk);if(!bOk || !Fish.IsValid())return FString();   // i18n:skip
+ LandFish(Fish);return String(Fish,TEXT("id"));
+}
+
+bool UMareSimulation::PhotoChallengeDone(const FString& Id) const
+{
+ bool bDone=false;Object(Object(State,TEXT("prog")),TEXT("photo_ch"))->TryGetBoolField(Id,bDone);return bDone;
 }
 
 int32 UMareSimulation::RecordPhoto(const TArray<FString>& Subjects,const FString& File)
@@ -46,6 +112,19 @@ int32 UMareSimulation::RecordPhoto(const TArray<FString>& Subjects,const FString
  Album.Add(MakeShared<FJsonValueObject>(Photo));while(Album.Num()>200)Album.RemoveAt(0);Prog->SetArrayField(TEXT("album"),Album);
  if(New)AddFame(3*New);
  LastMessage=Names.Num()?TEXT("Foto salva no álbum: ")+FString::Join(Names,TEXT(", "))+(New?TEXT(" (novo!)"):TEXT("")):TEXT("Foto salva no álbum.");
+ // 11/11 photo challenges: one-time goals met by a single photo (all the listed subjects, or `count` different ones).
+ {const TArray<TSharedPtr<FJsonValue>>* Challenges=nullptr;auto Done=Object(Prog,TEXT("photo_ch"));
+  if(LeisureDefs()->TryGetArrayField(TEXT("photo_challenges"),Challenges))for(const auto& V:*Challenges){const auto C=V->AsObject();const FString Id=String(C,TEXT("id"));
+   bool bHad=false;Done->TryGetBoolField(Id,bHad);if(bHad)continue;
+   bool bMet=true;const TArray<TSharedPtr<FJsonValue>>* All=nullptr;
+   if(C->TryGetArrayField(TEXT("all"),All)){for(const auto& A:*All)bMet&=Subjects.Contains(A->AsString());bMet&=All->Num()>0;}   // i18n:skip
+   else bMet=Subjects.Num()>=int32(Number(C,TEXT("count"),99));
+   if(!bMet)continue;
+   Done->SetBoolField(Id,true);const double Prize=Number(C,TEXT("money"));if(Prize>0)Book(Prize,TEXT("Desafio de foto"));AddFame(int32(Number(C,TEXT("fame"))));
+   LastMessage+=FString::Printf(TEXT(" Desafio de foto cumprido: %s (+R$ %.0f)"),*String(C,TEXT("text")),Prize);}
+  // The player learns the challenges by taking photos: every photo names the next one still open.
+  if(Challenges)for(const auto& V:*Challenges){bool bHad=false;Done->TryGetBoolField(String(V->AsObject(),TEXT("id")),bHad);
+   if(!bHad){LastMessage+=FString::Printf(TEXT(" Próximo desafio de foto: %s."),*String(V->AsObject(),TEXT("text")));break;}}}
  Save();return New;
 }
 

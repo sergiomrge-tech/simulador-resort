@@ -591,6 +591,20 @@ public:
  TSharedPtr<FJsonObject> LeisureDefs() const;
  /** A fish on the hook: species drawn by weight, +1 'peixe' in the stock, fishing log (prog.fish) and fame. */
  UFUNCTION(BlueprintCallable,Category="Maré Alta|Leisure") FString CatchFish();
+ /** 11/11 bait, fight and species book. Baits: "massa" is free and endless, the others come in packs (prog.bait). */
+ int32 BaitCount(const FString& Bait) const;
+ bool BuyBait(const FString& Bait);
+ /** The fish that takes this bait now: species by weight x bait multiplier, inside its hours; size and fight strength.
+  *  Uses one bait (bOk false when there is none). Nothing is caught yet. */
+ TSharedPtr<FJsonObject> HookFish(const FString& Bait,bool& bOk);
+ /** The hooked fish is landed: stock, fishing log with the record size, fame (more for a first of its species), the
+  *  book reward when the last species is caught. Returns true when the species is new. */
+ bool LandFish(const TSharedPtr<FJsonObject>& Fish);
+ /** Species caught at least once / all species. */
+ int32 SpeciesCaught() const;
+ int32 SpeciesTotal() const;
+ /** Photo challenges already done (prog.photo_ch; the list is leisure.json photo_challenges). */
+ bool PhotoChallengeDone(const FString& Id) const;
  /** A photo with these subjects in frame: album entry (prog.album), chapter flags (prog.chp), fame for new subjects. */
  int32 RecordPhoto(const TArray<FString>& Subjects,const FString& File);
  /** Bar recipes found by mixing, i.e. not on the starting menu. */

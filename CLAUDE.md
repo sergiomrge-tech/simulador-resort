@@ -4,6 +4,11 @@
 
 > **Para continuar o trabalho (outra IA ou pessoa): leia primeiro [`docs/CONTINUAR.md`](docs/CONTINUAR.md).**
 
+> **Direção (11/11/2026, regra do Sergio):** a sessão principal (Fable 5.2) é o diretor geral e coordena agentes mais
+> baratos (`batedor`, `artesao-bpy`, `programador`, `tradutor`, `inspetor`, `operador`, em `.claude/agents/`). Quem faz o
+> quê, o que nunca se delega, os recursos de uso exclusivo e o molde do pedido estão em
+> [`docs/ue58/DIRECAO.md`](docs/ue58/DIRECAO.md). Leia antes de começar um lote de trabalho.
+
 > Instruções comuns a todas as IAs: [AGENTS.md](AGENTS.md). Este arquivo guarda
 > lições de várias versões; referências antigas a preparo, óculos, cores muito
 > saturadas, versão 1.0.x e entrega obrigatória por NSIS não substituem o guia
@@ -948,4 +953,17 @@ Gesto de despedida antes de andar: `Leave(P, atraso)` (tocar gesto e andar ao me
 Script de fotos que usa o `u.py`: `c` é o cliente MCP; não reusar o nome (`c, v = ...` derrubou o roteiro).
 Tarefa em segundo plano morre aos 10 min: cinco rodadas de benchmark (3 min cada) só couberam porque cada uma grava o
 seu arquivo ao terminar.
+
+## UE5.8 — pesca com isca, briga e livro (11/11)
+
+Painel novo = arquivo próprio (`MareFishing.cpp`) com fábrica, modelo puro testável (`FMareFishFight::Step`) e comando de
+QA (`mare.Fish start|bait:1|bite|strike|auto:1|book|state`). Antes de ligar no jogo, rodar o MESMO modelo em Python por
+30 s de conta: a primeira versão não deixava pegar a garoupa nem jogando certo (perdia mais linha nas arrancadas do que
+ganhava entre elas). Teste de minijogo pelo MCP reage com ~1 s de atraso: um "jogador" remoto perde brigas que um humano
+ganha; o modo `auto` joga dentro do próprio jogo. Comando de QA tem de valer em qualquer estado do painel (o `bite` era
+ignorado com o livro aberto ou a linha sendo relançada) e a foto de UI leva 4 s: não fotografar dentro de uma janela de
+1 s. Linha de texto montada de pedaços (iscas, livro): traduzir cada pedaço e mostrar com `FText::FromString`; a linha
+inteira não casa com nenhum modelo de tradução. Nome de campo JSON e literal de teste em C++ viram chave de tradução:
+`// i18n:skip` na linha. Não editar código-fonte nem dados enquanto um pacote está sendo gerado (o de 11/11d saiu com os
+dados novos da pesca e o código antigo; descartado).
 

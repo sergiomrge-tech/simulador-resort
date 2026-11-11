@@ -157,7 +157,7 @@ void UMareVillageWorld::UpdateChurch()
  auto Sim=GetWorld()->GetGameInstance()->GetSubsystem<UMareSimulation>();if(!Sim)return;
  const double Hour=FMath::Fmod(UMareSimulation::Number(Sim->State,TEXT("minutes")),1440.0)/60.;
  const TArray<TSharedPtr<FJsonValue>>* Hours=nullptr;const TArray<TSharedPtr<FJsonValue>>* Seats=nullptr;
- if(!Defs->TryGetArrayField(TEXT("masses"),Hours) || !Defs->TryGetArrayField(TEXT("seats"),Seats))return;
+ if(!Defs->TryGetArrayField(TEXT("masses"),Hours) || !Defs->TryGetArrayField(TEXT("seats"),Seats))return;   // i18n:skip
  bool bMass=false;for(const auto& H:*Hours){const auto& R=H->AsArray();if(R.Num()==2 && Hour>=R[0]->AsNumber() && Hour<R[1]->AsNumber())bMass=true;}
  if(!bMass){for(auto P:Faithful)if(IsValid(P))P->Destroy();Faithful.Empty();return;}
  if(Faithful.Num())return;

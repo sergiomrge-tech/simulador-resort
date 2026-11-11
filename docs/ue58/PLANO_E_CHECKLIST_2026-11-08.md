@@ -242,7 +242,15 @@ A ilha agora é grande e bonita, mas ainda é cenário. Propostas para dar uso a
   antes de sair (`Idle_No`, UAL 2); atendimento, fila de braços cruzados e pegar no balcão já estavam (10/11).
   Falta: telefone (precisa do aparelho na mão), encostar no corrimão do píer, levantar da toalha. Pendência vista:
   as duas hóspedes de uma mesa do restaurante do hotel são a mesma MetaHuman com a mesma roupa.
-- [ ] Pesca com isca, briga com o peixe e livro de espécies; desafios no modo foto.
+- [x] Pesca com isca, briga com o peixe e livro de espécies; desafios no modo foto (11/11, `MareFishing.cpp`, `leisure.json`).
+  Iscas: massa de pão (livre), camarão (R$ 20 por 5) e lula (R$ 45 por 5), compradas no próprio painel (teclas 1, 2, 3).
+  8 espécies, cada uma com isca preferida, força e, em três casos, horário (xaréu no fim da tarde, peixe-espada à noite).
+  Briga: segurar recolhe a linha e sobe a tensão; o peixe puxa em arrancadas; a linha arrebenta no vermelho e o peixe
+  se solta com a linha frouxa (sardinha ~5 s, a maior garoupa ~40 s jogando certo; só segurar arrebenta em 1,6 s).
+  Livro (tecla L): contagem e recorde de cada espécie, dica para as que faltam; espécie nova dá mais fama e o livro
+  completo paga R$ 300. Desafios de foto: 5 metas de uma foto só (farol + píer, pôr do sol, pôr do sol com o farol,
+  quiosque + bar, três pontos); cada foto diz qual é o próximo. Testes `FishingFight` e `FishingBook`; 48 textos novos
+  nos 12 idiomas. Conferido no jogo (`mare.Fish`): compra de isca, briga na tela, 3 peixes pegos, livro preenchido.
 - [x] Rádio do quiosque com troca de faixas: aparelho no quiosque, na casa e no hotel (`radio.json` stereos; conferido 09/11).
 
 ---

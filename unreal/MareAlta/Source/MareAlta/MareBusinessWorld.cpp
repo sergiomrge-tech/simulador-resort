@@ -47,7 +47,7 @@ void UMareBusinessWorld::Tick(float DeltaSeconds)
   // whose data has a "vendor" point [x,y,z,yaw] shows its employee there while it is owned, from 8h to 22h.
   {const TArray<TSharedPtr<FJsonValue>>* V=nullptr;AMarePerson* Vendor=Vendors.FindRef(Id);
    const double Minute=FMath::Fmod(UMareSimulation::Number(S->State,TEXT("minutes")),1440.0);
-   const bool bVendor=bOwned && Def->TryGetArrayField(TEXT("vendor"),V) && V->Num()==4 && Minute>=480 && Minute<1320;
+   const bool bVendor=bOwned && Def->TryGetArrayField(TEXT("vendor"),V) && V->Num()==4 && Minute>=480 && Minute<1320;   // i18n:skip
    if(bVendor && !IsValid(Vendor)){FActorSpawnParameters Params;Params.SpawnCollisionHandlingOverride=ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
     // The floor under the vendor is looked for from chest height down: from 3 m up (Ground) the trace lands on the
     // roof of a booth or on a parasol.
