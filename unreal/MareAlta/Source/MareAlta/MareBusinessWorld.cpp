@@ -15,6 +15,7 @@ void UMareBusinessWorld::Deinitialize()
 {
  for(auto& Pair:Counters)if(IsValid(Pair.Value))Pair.Value->Destroy();
  for(auto& Pair:Waiting)if(IsValid(Pair.Value))Pair.Value->Destroy();
+ for(auto& Pair:Vendors)if(IsValid(Pair.Value))Pair.Value->Destroy();Vendors.Empty();
  for(auto& P:IceLine)if(IsValid(P))P->Destroy();IceLine.Empty();for(auto& P:PastelLine)if(IsValid(P))P->Destroy();PastelLine.Empty();
  for(auto& M:Machines)if(IsValid(M))M->Destroy();for(auto& P:NightPlayers)if(IsValid(P))P->Destroy();
  Counters.Empty();Waiting.Empty();Machines.Empty();NightPlayers.Empty();Super::Deinitialize();
@@ -42,6 +43,17 @@ void UMareBusinessWorld::Tick(float DeltaSeconds)
     :UMareSimulation::String(Def,TEXT("title"));
    Counters.Add(Id,Counter);}
   if(Counter)Counter->SetActorHiddenInGame(!bOwned);
+  // 11/11 (photos of the packaged game: customers queued at a pastel stall with nobody behind the counter): a business
+  // whose data has a "vendor" point [x,y,z,yaw] shows its employee there while it is owned, from 8h to 22h.
+  {const TArray<TSharedPtr<FJsonValue>>* V=nullptr;AMarePerson* Vendor=Vendors.FindRef(Id);
+   const double Minute=FMath::Fmod(UMareSimulation::Number(S->State,TEXT("minutes")),1440.0);
+   const bool bVendor=bOwned && Def->TryGetArrayField(TEXT("vendor"),V) && V->Num()==4 && Minute>=480 && Minute<1320;
+   if(bVendor && !IsValid(Vendor)){FActorSpawnParameters Params;Params.SpawnCollisionHandlingOverride=ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+    const FVector At=Ground(FVector((*V)[0]->AsNumber(),(*V)[1]->AsNumber(),0))+FVector(0,0,88+(*V)[2]->AsNumber());
+    Vendor=GetWorld()->SpawnActor<AMarePerson>(At,FRotator(0,(*V)[3]->AsNumber(),0),Params);
+    if(Vendor){Vendor->SaveId=TEXT("biz_vendor_")+Id;Vendor->PersonName=TEXT("Vendedor");Vendor->bEmployee=true;Vendor->bAmbient=true;
+     Vendor->GetCharacterMovement()->DisableMovement();Vendor->SetActorEnableCollision(false);Vendors.Add(Id,Vendor);}}
+   else if(!bVendor && IsValid(Vendor)){Vendor->Destroy();Vendors.Remove(Id);}}
   // A customer waits at the counter while this hour's task is available.
   // The souvenir shop always opens for managing; a tourist waits at its counter only while someone wants a gift wrapped.
   FString Reason;const bool bDue=bOwned && S->CanPlayBusiness(Id,Reason) && (Id!=TEXT("souvenir") || S->SouvenirQueue().Num()>0);AMarePerson* Guest=Waiting.FindRef(Id);

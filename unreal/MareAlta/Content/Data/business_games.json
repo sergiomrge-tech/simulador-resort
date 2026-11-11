@@ -335,6 +335,7 @@
   },
   "food_truck": {
    "title": "Fritar o pastel",
+   "vendor": [2705, 2945, 0, 90],
    "steps": [
     "Massa na chapa!",
     "Recheio de camarão!",
