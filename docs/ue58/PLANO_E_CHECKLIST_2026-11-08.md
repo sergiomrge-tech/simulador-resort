@@ -96,6 +96,8 @@ Meta: uma demo de ~2 h, estável, bonita, pronta para a Next Fest.
   `intro-letter-settled` no teste de abertura). Os scripts de teste param na leitura do `runtime.log`, que o Shipping não
   grava: o resultado vale pelo `preview-qa.json` / `intro-qa.json`.
 - [ ] 👤 Teste do build Shipping num PC sem a Unreal.
+- [x] Demo Shipping de 11/11 instalada (`D:\Builds\MareAltaUE58_Shipping_2026-11-11b`, 6,21 GB; QA do executável 107/107,
+  abertura 13/13): igreja com vitrais, vendedor na barraca do pastel, modo de teste por roteiro.
 - [x] Preset **Baixo** medido para os requisitos mínimos (11/11, executável Shipping, jogo completo liberado, janela
   1920×1080, escala 3D 80%, RTX 4060 Ti + Ryzen 7 5700G; `bench_package.ps1 -Exec "sg.* 0;..."`):
 
@@ -112,6 +114,15 @@ Meta: uma demo de ~2 h, estável, bonita, pronta para a Next Fest.
   **Proposta para a página (estimativa por escala de placa; só o teste num PC fraco confirma):** mínimo GTX 1060 6 GB /
   RX 580 8 GB, Ryzen 5 1600 / i5-8400, 12 GB de RAM, 8 GB de disco, DirectX 12 (Baixo, ~40 FPS em 1080p, ~60 em 720p);
   recomendado RTX 3060 / RX 6600 XT, Ryzen 5 5600 / i5-12400, 16 GB (Padrão, 60 FPS em 1080p).
+- [x] Conferido no executável (11/11, `script_package.ps1`, roteiro de poses e fotos novo): atendimento do quiosque (a
+  atendente vira para o cliente, traz o copo, estende o braço e entrega, +R$ 14), barraca do pastel de dia e de noite com
+  fila, minijogo do pastel na barraca (recheio, borda, fritura, entrega paga), tochas acesas, quiosque às 23h normal.
+- [x] Barraca do pastel com vendedor (os clientes compravam de um balcão vazio): ponto `vendor` em `business_games.json`.
+  Os outros negócios da vila (sorveteria, aluguel, surfe, lojinha) continuam sem vendedor visível: pôr o ponto de cada um.
+- [x] Igreja (foto do Sergio, 11/11): a pilastra do meio cruzava a janela central e as janelas eram caixas lisas rosa /
+  azul / creme. Pilastras nos vãos entre as janelas e vitrais góticos ornamentados nas duas laterais (3 no oeste, 2 no
+  leste, onde a torre ocupa o trecho do terceiro), acesos por dentro à noite. Conferido no editor e no executável.
+  Na primeiríssima execução de um pacote os vitrais levam alguns segundos para aparecer (shader compilando).
 - [ ] Integração Steam (Online Subsystem, conquistas da dívida, Steam Cloud, Rich Presence).
 - [x] Simulação da demo inteira do zero até o fim (10/11, `simulate_game.py` adaptado à demo, três rodadas em perfil novo;
   detalhe em `CHECKLIST_SIMULACAO.md`). Última rodada, 30 etapas: 0 erros no log, 0 pessoas deslizando, 0 fora do assento,
