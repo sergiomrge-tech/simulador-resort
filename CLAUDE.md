@@ -903,3 +903,7 @@ Foto noturna depois de pular o relógio do dia para a noite: o brilho médio da 
 45, 90 e 135 s parado no lugar; antes de 2 minutos a foto sai "de dia" e NÃO é defeito do jogo. Trocar um negócio de
 forma (caminhão -> barraca): manter o id interno (saves, conquistas, missões), a tag `Region_Biz_<id>` nas peças novas e
 os pontos de atendimento do `business_games.json`; texto de letreiro é TextRender traduzido, nunca gravado na malha.
+Filmar uma ação do jogo: câmera FIXA de dentro do quiosque (`coast pie k,3990,-1290,70,-6,212` de lado; `3800,-1150,100,-10,-90`
+por trás), `slomo 0.4` e uma foto a cada 2,6 s; câmera "de lado" chutada caiu em cima do balcão, colada num abacaxi. Gesto de
+funcionário tem de durar menos que o intervalo entre dois passos dele (1,5 s no atendente), senão a caminhada seguinte
+começa na pose do gesto.

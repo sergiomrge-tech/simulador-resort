@@ -43,6 +43,8 @@ private:
  TSet<int32> DirtyTables;
  float Arrival=15;
  float StaffClock=0;
+ /** 10/11 hand-over: the product stays in the attendant's reaching hand for this long, then shows in the customer's. */
+ float HandoverLeft=0;TWeakObjectPtr<class AMarePerson> HandoverTo;
  int32 LastDay=-1;
  bool bRestored=false;
  bool bRestoring=false;

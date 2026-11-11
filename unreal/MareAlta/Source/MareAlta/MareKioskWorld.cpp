@@ -204,11 +204,17 @@ void UMareKioskWorld::UpdateAttendant(float DeltaSeconds)
  auto S=Sim();bool bHired=false;UMareSimulation::Object(S->State,TEXT("staff"))->TryGetBoolField(TEXT("atendente"),bHired);
  if(!bHired){if(IsValid(Attendant)){Attendant->Destroy();Attendant=nullptr;}return;}
  if(!IsValid(Attendant)){Attendant=GetWorld()->SpawnActor<AMarePerson>(FVector(3700,-1230,98),FRotator::ZeroRotator);Attendant->bEmployee=true;Attendant->Variant=3;Attendant->SetAppearance(3);Attendant->PersonName=TEXT("Atendente");Attendant->StaffRole=TEXT("atendente");}
+ if(HandoverLeft>0 && (HandoverLeft-=DeltaSeconds)<=0){Attendant->ClearProducts();
+  if(HandoverTo.IsValid())for(auto Part:HandoverTo->CarriedMeshes)if(Part)Part->SetVisibility(true);HandoverTo.Reset();}
  StaffClock+=DeltaSeconds;if(StaffClock<1.5)return;StaffClock=0;
+ // 10/11 (Sergio: "faça animação de atendimento"; reference tip 9): the attendant turns to who is being served,
+ // talks while taking the order, reaches out to hand the product over and to clear a table, like the bartender
+ // (MareBarWorld). Gestures stay under the 1.5 s between two steps, or the next walk would start in the gesture pose.
+ auto Turn=[this](const FVector& At){const FVector To=At-Attendant->GetActorLocation();if(To.SizeSquared2D()>1.f)Attendant->SetActorRotation(FRotator(0,To.Rotation().Yaw,0));};
  for(auto P:Guests){if(!IsValid(P) || P->CounterIndex<0)continue;
   const FVector Goal=CounterStaffPoints[P->CounterIndex];
   if((P->Stage==EMarePersonStage::Order || !S->Carry(true).IsEmpty()) && FVector::DistSquared2D(Attendant->GetActorLocation(),Goal)>FMath::Square(80.f)){if(FVector::DistSquared2D(Attendant->Destination,Goal)>100)Attendant->WalkTo(Goal);return;}
-  if(P->Stage==EMarePersonStage::Order){Serve(P,true);return;}
+  if(P->Stage==EMarePersonStage::Order){if(Serve(P,true)){Turn(P->GetActorLocation());Attendant->PlayGesture(TEXT("Idle_Talking"),1.3f);}return;}
   if(P->Stage!=EMarePersonStage::Products)continue;
   auto Order=UMareSimulation::Object(UMareSimulation::Object(S->State,TEXT("ue_orders")),P->OrderId);const TArray<TSharedPtr<FJsonValue>>* Items=nullptr;
   if(!Order->TryGetArrayField(TEXT("remaining"),Items) || Items->IsEmpty())continue;
@@ -222,11 +228,14 @@ void UMareKioskWorld::UpdateAttendant(float DeltaSeconds)
    if(FVector::DistSquared2D(Attendant->GetActorLocation(),Storage)>FMath::Square(95.f)){Attendant->WalkTo(Storage);return;}
    if(S->Pickup(Dish,true)){Attendant->ClearProducts();Attendant->HoldProduct(Dish);Attendant->PlayGesture(TEXT("PickUp_Table"),1.1f);}return;
   }
-  if(Serve(P,true))Attendant->ClearProducts();return;
+  if(Serve(P,true)){   // the product leaves the attendant's hand half-way through the reach and shows in the customer's
+   if(P->CarriedMeshes.Num() && P->CarriedMeshes.Last())P->CarriedMeshes.Last()->SetVisibility(false);   // only the one just handed
+   HandoverTo=P;HandoverLeft=.55f;Turn(P->GetActorLocation());Attendant->PlayGesture(TEXT("Interact"),1.2f);}return;
  }
  if(!S->Carry(true).IsEmpty()){S->ReturnCarry(true);Attendant->ClearProducts();}
  if(!DirtyTables.IsEmpty()){const int32 Table=*DirtyTables.CreateConstIterator();
   if(FVector::DistSquared2D(Attendant->GetActorLocation(),TableApproaches[Table])>FMath::Square(100.f)){Attendant->WalkTo(TableApproaches[Table]);return;}
+  if(TablePoints.IsValidIndex(Table)){Turn(TablePoints[Table]);Attendant->PlayGesture(TEXT("PickUp_Table"),1.1f);}
   CleanTable(Table);
  }
 }

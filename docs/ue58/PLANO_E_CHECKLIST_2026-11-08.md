@@ -150,8 +150,12 @@ Meta: uma demo de ~2 h, estável, bonita, pronta para a Next Fest.
   tacho, jarra, tábua e botijão do Poly Haven (CC0, créditos no CREDITS.md); letreiros "Barraca do Pastel". Nome e textos
   nos 13 idiomas (7 chaves novas × 12 traduções, 4170/4170, glossário PASS). O id interno continua `food_truck` (saves,
   conquistas e missões não mudam). Conferido no jogo: rua vazia antes da compra, barraca e fila de clientes depois, noite certa (fotos `D:/CodexTemp/stallqa/g_m.jpg`, `n_m.jpg`); portão PASS.
-- [ ] Atendente carregando o produto com as duas mãos (`Walk_Carry`) e gesto de entrega na mesa: conferir o encaixe do
-  produto na mão antes de ligar.
+- [x] Animação de atendimento no quiosque (Sergio, 10/11: "faça animação de atendimento"; referência, item 9). O atendente
+  vira de frente para quem atende, gesticula ao anotar o pedido (`Idle_Talking`), estende o braço ao entregar (`Interact`) e
+  faz o gesto de recolher ao limpar a mesa; o produto fica meio segundo na mão dele durante o gesto e só então aparece na
+  mão do cliente, que já está pegando (`UMareKioskWorld::UpdateAttendant`, `HandoverLeft`). Filmado quadro a quadro de lado e
+  por trás (`D:/CodexTemp/serviceqa3/zoom.jpg`, `serviceqa2/zoom.jpg`): postura ereta, mãos relaxadas, nada atravessando o balcão.
+  `Walk_Carry` (andar agachado de quem leva peso) não foi usado: o produto já vai na mão à frente do corpo.
 
 ---
 
