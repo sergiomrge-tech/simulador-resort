@@ -1,7 +1,7 @@
 """Small triangle bikini (or swim trunks) fitted to an exported MetaHuman body, skinned to its skeleton.
 
 Run with the isolated bpy 5.0.1 venv (Blender is not installed):
-  D:/CodexTemp/claude/bpy-env/Scripts/python.exe -I tools/ue58/gen_mh_swimwear.py -- <body.fbx> <out.fbx> bikini|trunks|tank|boardshorts|coverup
+  D:/CodexTemp/claude/bpy-env/Scripts/python.exe -I tools/ue58/gen_mh_swimwear.py -- <body.fbx> <out.fbx> bikini|trunks|tank|boardshorts|coverup|chasuble
 
 The body comes from mare_metahuman.export (UE FBX, metres in Blender, front = -Y, up = +Z). Every piece is a
 surface patch: a regular grid of guide points is ray cast onto the body (front pieces along +Y, back pieces
@@ -521,6 +521,137 @@ def coverup(bm_out, tree, m):
             bm_out.faces.new((ra[i], rb[i], rb[(i + 1) % n], ra[(i + 1) % n]))
 
 
+def skirt_rings(bm_out, tree, top, bottom, lift, grow=.0045, n=96, cx=0.0, cy=-.01):
+    """A tube of regular rings from top down to bottom that follows the convex outline of the hips and both legs
+    (arms ignored), never narrows and opens at most `grow` per 1.2 cm ring. Returns its faces."""
+    angles = [2 * math.pi * i / n for i in range(n)]
+    rows = int((top - bottom) / .012) + 1
+    table, last = [], None
+    for k in range(rows):
+        z = top - k * .012
+        hits = [hull_radius(tree, z, a, cx, cy) for a in angles]
+        pts = [(cx + math.sin(a) * r, cy - math.cos(a) * r) for a, r in zip(angles, hits) if r is not None]
+        hull = convex_radii(pts, angles, cx, cy) or hits
+        row = []
+        for i in range(n):
+            r = (hull[i] if hull[i] is not None else (last[i] - lift if last else .15)) + lift
+            if last:
+                r = max(last[i], min(r, last[i] + grow))
+            row.append(r)
+        table.append(row)
+        last = row
+    for _ in range(4):
+        table = [[(row[i - 1] + 2 * row[i] + row[(i + 1) % n]) / 4 for i in range(n)] for row in table]
+    for _ in range(2):
+        table = [[(table[max(k - 1, 0)][i] + 2 * table[k][i] + table[min(k + 1, len(table) - 1)][i]) / 4 for i in range(n)] for k in range(len(table))]
+    rings = [[bm_out.verts.new(Vector((cx + math.sin(a) * r, cy - math.cos(a) * r, top - k * .012))) for a, r in zip(angles, row)]
+             for k, row in enumerate(table)]
+    faces = []
+    for ra, rb in zip(rings, rings[1:]):
+        for i in range(n):
+            faces.append(bm_out.faces.new((ra[i], rb[i], rb[(i + 1) % n], ra[(i + 1) % n])))
+    return faces
+
+
+def chasuble(bm_out, tree, m):
+    """Mass vestments of the village priest (11/11, Sergio's reference photo): a loose red chasuble from the shoulders
+    to mid-shin with wide sleeves to the forearm, the white alb showing at the neck, the forearms and the hem, and a
+    silver pectoral cross on its chain. Material slots: 0 red, 1 white, 2 metal."""
+    cz, neck = m['crotch'].z, m['neck']
+    waist = cz + .10
+
+    def tag(start, index):
+        bm_out.faces.ensure_lookup_table()
+        for f in bm_out.faces[start:]:
+            f.material_index = index
+
+    # forearm extent per side (A pose: the wrist is the low end)
+    fore = {}
+    for f in BODY.faces:
+        b = DOM_FACE[f.index]
+        if 'lowerarm' in b:
+            c = f.calc_center_median()
+            lo, hi = fore.get(c.x > 0, (9, -9))
+            fore[c.x > 0] = (min(lo, c.z), max(hi, c.z))
+
+    def bone_of(q):
+        return DOM_FACE[tree.find_nearest(q)[2]]
+
+    # 1. the alb (white): neck and upper chest, whole forearms, and a skirt from the knee to the ankle
+    n0 = len(bm_out.faces)
+
+    def alb_neck(f):
+        bones = face_bones(f)
+        c = f.calc_center_median()
+        return not any(is_arm(b) or 'head' in b for b in bones) and abs(c.x) < .15
+    skin_piece(bm_out, tree, neck - .004, neck - .17, alb_neck, lambda q: LIFT + .010, rounds=12)
+
+    def alb_sleeve(f):
+        bones = face_bones(f)
+        return all('lowerarm' in b for b in bones)
+    skin_piece(bm_out, tree, neck, .3, alb_sleeve, lambda q: LIFT + .008, rounds=8)
+    skirt_rings(bm_out, tree, cz - .28, .085, LIFT + .014, grow=.0016)
+    tag(n0, 1)
+
+    # 2. the chasuble (red): torso and arms down to 45 % of the forearm, a round neckline, then the skirt
+    n1 = len(bm_out.faces)
+
+    def red_keep(f):
+        bones = face_bones(f)
+        c = f.calc_center_median()
+        if any(w in b for b in bones for w in ('hand', 'thumb', 'index_', 'middle_', 'ring_', 'pinky', 'neck', 'head')):
+            return False
+        if any('lowerarm' in b for b in bones):
+            lo, hi = fore.get(c.x > 0, (0, 1))
+            return c.z > lo + .55 * (hi - lo)
+        front = 1.0 if c.y < -.02 else 0.0
+        if math.hypot(c.x, 0) < .085 and c.z > neck - .045 - .055 * front:
+            return False
+        return True
+
+    def red_offset(q):
+        b = bone_of(q)
+        if 'lowerarm' in b:
+            return LIFT + .045
+        if 'upperarm' in b:
+            return LIFT + .034
+        return LIFT + .024
+    verts = skin_piece(bm_out, tree, neck - .012, waist, red_keep, red_offset, rounds=26)
+    convexify([v for v in verts if abs(v.co.x) < .2], cz + .30, waist + .02)
+    skirt_rings(bm_out, tree, waist + .03, .30, LIFT + .026, grow=.0030)
+    tag(n1, 0)
+
+    # 3. pectoral cross and chain (metal), lying on the chasuble
+    n2 = len(bm_out.faces)
+
+    def on_cloth(x, z, lift):
+        hit = tree.ray_cast(Vector((x, -1.0, z)), Vector((0, 1, 0)))[0]
+        return Vector((x, (hit.y if hit else -.12) - lift, z))
+    cx_z = neck - .30
+    top = on_cloth(0, cx_z + .045, .034)
+
+    def slab(c, sx, sy, sz):
+        vs = [bm_out.verts.new(c + Vector((dx * sx / 2, dy * sy / 2, dz * sz / 2))) for dz in (-1, 1) for dy in (-1, 1) for dx in (-1, 1)]
+        for a, b, c2, d in ((0, 1, 3, 2), (4, 6, 7, 5), (0, 4, 5, 1), (2, 3, 7, 6), (0, 2, 6, 4), (1, 5, 7, 3)):
+            bm_out.faces.new((vs[a], vs[b], vs[c2], vs[d]))
+    body_c = on_cloth(0, cx_z, .034)
+    slab(body_c, .016, .006, .088)
+    slab(body_c + Vector((0, 0, .014)), .056, .006, .016)
+    for side in (-1, 1):
+        prev = None
+        for k in range(15):
+            t = k / 14
+            x = side * (.082 * (1 - t) + .004 * t)
+            z = (neck - .05) * (1 - t) + (cx_z + .046) * t - .02 * math.sin(math.pi * t)
+            c = on_cloth(x, z, .031)
+            pair = (bm_out.verts.new(c + Vector((-.002, 0, 0))), bm_out.verts.new(c + Vector((.002, 0, 0))))
+            if prev:
+                bm_out.faces.new((prev[0], prev[1], pair[1], pair[0]))
+            prev = pair
+    del top
+    tag(n2, 2)
+
+
 def smooth_skirt_weights(garment, below_z, rounds=12):
     """Skirt below the crotch: weights averaged with the neighbours so the cloth spans both legs instead of tearing
     between them when walking."""
@@ -563,7 +694,7 @@ def main():
     DOM_FACE = [max((DOM[v.index] for v in f.verts), key=lambda b: sum(1 for v in f.verts if DOM[v.index] == b)) for f in bm.faces]
     m = measure(bm)
     out = bmesh.new()
-    {'bikini': bikini, 'trunks': trunks, 'tank': tank, 'boardshorts': boardshorts, 'coverup': coverup}[KIND](out, tree, m)
+    {'bikini': bikini, 'trunks': trunks, 'tank': tank, 'boardshorts': boardshorts, 'coverup': coverup, 'chasuble': chasuble}[KIND](out, tree, m)
     bmesh.ops.remove_doubles(out, verts=out.verts, dist=.0008)
     # One consistent outward winding for pieces built separately (the cover-up's top and its skirt rings).
     bmesh.ops.recalc_face_normals(out, faces=out.faces[:])
@@ -576,6 +707,9 @@ def main():
         poly.use_smooth = True
     mat = bpy.data.materials.new(f'MI_MH_{KIND.capitalize()}')
     mesh.materials.append(mat)
+    if KIND == 'chasuble':   # slots 1 and 2: the white alb and the metal of the cross (face material_index set while building)
+        for extra in ('White', 'Metal'):
+            mesh.materials.append(bpy.data.materials.new(f'MI_MH_{KIND.capitalize()}_{extra}'))
     # Thickness, then the body's weights (nearest face, interpolated) and the same armature deform.
     sol = garment.modifiers.new('Solidify', 'SOLIDIFY')
     sol.thickness = .0016
@@ -598,7 +732,7 @@ def main():
     garment.parent = body.parent
     garment.matrix_world = body.matrix_world.copy()
     bpy.ops.object.modifier_apply(modifier='Weights')
-    if KIND == 'coverup':
+    if KIND in ('coverup', 'chasuble'):
         smooth_skirt_weights(garment, m['crotch'].z + .02)
     am = garment.modifiers.new('Armature', 'ARMATURE')
     am.object = arm

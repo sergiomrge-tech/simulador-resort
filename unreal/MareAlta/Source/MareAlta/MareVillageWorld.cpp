@@ -160,6 +160,16 @@ void UMareVillageWorld::UpdateChurch()
  const TArray<TSharedPtr<FJsonValue>>* Hours=nullptr;const TArray<TSharedPtr<FJsonValue>>* Seats=nullptr;
  if(!Defs->TryGetArrayField(TEXT("masses"),Hours) || !Defs->TryGetArrayField(TEXT("seats"),Seats))return;   // i18n:skip
  bool bMass=false;for(const auto& H:*Hours){const auto& R=H->AsArray();if(R.Num()==2 && Hour>=R[0]->AsNumber() && Hour<R[1]->AsNumber())bMass=true;}
+ // 11/11 (open list, "padre no altar durante a missa"): the priest of the village stories says it.
+ {AMarePerson* Priest=nullptr;for(auto P:Residents)if(IsValid(P) && P->PersonName==TEXT("Padre Robson"))Priest=P;
+  const TArray<TSharedPtr<FJsonValue>>* At=nullptr;
+  if(Priest && bMass!=bPriestAtAltar && Defs->TryGetArrayField(TEXT("priest"),At) && At->Num()==4){   // i18n:skip
+   const FVector Altar((*At)[0]->AsNumber(),(*At)[1]->AsNumber(),(*At)[2]->AsNumber()+Priest->GetCapsuleComponent()->GetScaledCapsuleHalfHeight()+2);
+   if(!bPriestAtAltar)PriestHome=Priest->GetActorTransform();
+   const FVector To=bMass?Altar:PriestHome.GetLocation();auto Hero=UGameplayStatics::GetPlayerPawn(this,0);
+   const bool bSeen=Hero && GetWorld()->GetTimeSeconds()>10 && (FVector::Dist2D(Hero->GetActorLocation(),To)<2500 || FVector::Dist2D(Hero->GetActorLocation(),Priest->GetActorLocation())<2500);
+   if(!bSeen){Priest->SetActorLocationAndRotation(To,bMass?FRotator(0,(*At)[3]->AsNumber(),0):PriestHome.Rotator(),false,nullptr,ETeleportType::TeleportPhysics);
+    Priest->bConversing=bMass;bPriestAtAltar=bMass;}}}
  if(!bMass){for(auto P:Faithful)if(IsValid(P))P->Destroy();Faithful.Empty();return;}
  if(Faithful.Num())return;
  int32 I=0;

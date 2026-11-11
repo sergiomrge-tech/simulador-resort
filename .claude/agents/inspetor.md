@@ -22,3 +22,4 @@ Limites
 
 Relatório ao diretor
 - Por imagem: o que está certo, o que está errado (com a posição na imagem), e o grau de certeza. No fim: lista única de defeitos por gravidade e o que precisaria de outra foto para confirmar.
+- Olhe o quadro inteiro, não só o alvo do pedido: objetos no chão que deviam estar em móvel, pontas de corda ou fio sem apoio, roupa que não combina com o papel da pessoa, coisas atravessando outras.

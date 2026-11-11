@@ -26,3 +26,4 @@ Antes de entregar
 
 Relatório ao diretor
 - Caminho do gerador, do GLB e das prévias; medidas finais; triângulos; materiais; o que ficou aquém e por quê.
+- Peça que vai num lugar do nível: peça ao diretor o que existe no ponto e em volta (postes, vasos, letreiros, alturas de apoio) antes de modelar, e diga no relatório o que não pôde conferir fora do Blender (o diretor confere no jogo).

@@ -50,7 +50,8 @@ vale.** Os outros documentos (`PENDENCIAS_100.md`, `ROADMAP_STEAM.md`, `CHECKLIS
   de cabelo só liga no preset Épico e a pose sentada inclina a cabeça ~40°. Opções: ligar a simulação só para quem está
   sentado e perto, ou reduzir a inclinação do pescoço nas poses sentadas. Medir o custo antes.
 - [x] Pesca e foto, resto do plano antigo (11/11): o peixe pescado já vai para a cozinha do restaurante (prato "peixe fresco do píer", sem pagar fornecedor) e as fotos do álbum já viram cartões-postais na lojinha; faltavam só os filtros de foto, feitos: O / direcional para cima troca entre natural, verão, sépia, preto e branco e desbotado (prévia de 4 s, aplicado só na foto; `MarePhotoFilter.cpp`, QA `mare.PhotoFilter <i> [s]`).
-- [ ] Sinuca: uma partida jogada até o fim no jogo.
+- [x] Igreja: Padre Robson reza a missa atrás do altar, de frente para os bancos (11/11, `church.json` → `priest`; troca de lugar só com o jogador a 25 m). Falta: roupa de padre (não há no acervo) e som da igreja (eco, órgão).
+- [x] Sinuca: uma partida jogada até o fim no jogo (11/11, `mare.PoolAutoPlay 1` + `mare.PoolQA` com o salão comprado: 16 tacadas, 7 × 4 para o Seu Bené, a mesa é rearrumada e o jogo volta ao normal; roteiro `sinuca_match.py`).
 - [ ] Roupas: vestir os papéis que faltam com as 11 roupas gratuitas já baixadas; móveis e louças do Fab baixados e sem uso.
 - [ ] Recife: peixes com cara de desenho; horizonte subaquático vazio.
 - [ ] Reteste: 2 h seguidas sem travar, incluindo o hotel (um documento diz feito, outro pede reteste).

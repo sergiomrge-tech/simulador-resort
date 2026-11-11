@@ -56,6 +56,20 @@ Todo pedido a um agente leva, em texto próprio do diretor (nunca "com base no q
 4. **Pronto é**: critério verificável (teste que passa, prévia de 3 ângulos, `strings N/N`, PASS do portão).
 5. **Formato do retorno**: caminhos, números, dúvidas. Curto.
 
+## Contra retrabalho (regra do Sergio, 11/11/2026: "refazer trabalho custa caro")
+
+Casos do dia: banca nova com um poste do cenário dentro dela, jardineira encostada e letreiro enterrado na testeira;
+cordas do píer terminando no ar; padre de camiseta na missa; castiçais no chão do presbitério. Nenhum apareceu nas
+prévias, todos apareceram na foto no jogo.
+
+- **Antes de pedir**, o diretor mede o lugar no nível e põe no pedido: o que existe no ponto (postes, vasos, letreiros),
+  alturas de apoio, o que a peça precisa tocar ou livrar, quem usa (papel da pessoa pede roupa do papel).
+- **Lista de aceite no pedido**, conferida pelo próprio agente antes de devolver: apoia em superfície, nada atravessa,
+  nada termina no ar, serve ao papel, lê à distância de jogo. O que o agente não conseguir conferir, ele diz.
+- **Antes de mostrar ao Sergio**, o diretor passa o quadro INTEIRO item a item, inclusive o que não mexeu (objetos no
+  chão, roupa de quem aparece, pontas soltas ao fundo). Foto com defeito conhecido não vai sem o defeito anotado.
+- **Erro que voltou** vira linha no arquivo do agente (`.claude/agents/*.md`) ou neste documento, não só correção pontual.
+
 ## Como receber
 
 - Ler o relatório e conferir o essencial: abrir o diff, rodar o teste, olhar a prévia. Divergência entre o relatório e

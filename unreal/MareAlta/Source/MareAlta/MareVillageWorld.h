@@ -46,6 +46,9 @@ private:
  /** People seated in the church's pews at mass time (Content/Data/church.json). */
  UPROPERTY() TArray<TObjectPtr<AMarePerson>> Faithful;
  void UpdateChurch();
+ /** Padre Robson says the mass behind the altar (church.json "priest": [x, y, floor z, yaw]) and goes back to his spot
+  *  by the church afterwards; he only changes place while the player is 25 m from both spots. */
+ bool bPriestAtAltar=false;FTransform PriestHome;
  /** People passing time on the pier (Data/pier_people.json): leaning on a post of the rope rail, on the phone. */
  UPROPERTY() TArray<TObjectPtr<AMarePerson>> PierPeople;
  void UpdatePier();
