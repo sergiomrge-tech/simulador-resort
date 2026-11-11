@@ -907,3 +907,18 @@ Filmar uma ação do jogo: câmera FIXA de dentro do quiosque (`coast pie k,3990
 por trás), `slomo 0.4` e uma foto a cada 2,6 s; câmera "de lado" chutada caiu em cima do balcão, colada num abacaxi. Gesto de
 funcionário tem de durar menos que o intervalo entre dois passos dele (1,5 s no atendente), senão a caminhada seguinte
 começa na pose do gesto.
+
+## UE5.8 — teste por roteiro no executável e vitrais da igreja (11/11)
+
+O que só foi visto no editor se confere no pacote com `tools/ue58/script_package.ps1 -Script D:/CodexTemp/<roteiro>.txt`
+(`AMareScriptQA`: `pose`, `clock`, `wait`, `shot`, `people`, `hire`, `pastel ...` e comandos de console; fotos e
+`script-qa.json` numa pasta nova). No roteiro a `pose` VOA na altura dada: as poses do editor (`coast pie`) deixam o
+herói cair no piso, então z 60 do editor vira câmera na altura do tampo; use z ~100 dentro do quiosque. Dinheiro ANTES
+de `mare.Restock` (com R$ 150 a reposição é recusada e o estoque acaba no meio da filmagem). Foto noturna: começar às 20h
+(1 min de jogo por segundo: esperas de 2 min por pose passam da meia-noite e o dia fecha).
+Preset Baixo no executável: `bench_package.ps1 -Exec "sg.ViewDistanceQuality 0;...;r.SkeletalMeshLODBias 2"`.
+Face nova do bmesh (`bm.faces.new`) não tem normal até `normal_update()`: o teste `face.normal.y > 0` não virou o vidro
+do vitral, a UE descartou a face de costas e a prévia do Blender (dois lados) escondeu. Peças repetidas em passo fixo ao
+longo de uma parede (pilastras a cada 2,8 m, janelas a cada 3,6 m) coincidem em algum ponto: conferir os dois passos
+juntos, e o que mais ocupa a parede (a torre do sino cobre o trecho da 1ª janela leste). `mare_church.fix` é
+reexecutável (`dry`/`apply`).

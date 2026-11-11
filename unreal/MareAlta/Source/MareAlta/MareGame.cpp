@@ -30,6 +30,7 @@
 #include "EngineUtils.h"
 #include "MarePreviewQA.h"
 #include "MareBench.h"
+#include "MareScriptQA.h"
 #include "MareAudioWorld.h"
 #include "MareCustomWorld.h"
 #include "MareKioskWorld.h"
@@ -3281,7 +3282,8 @@ void AMareGameMode::BeginPlay()
  if(Sim && !Sim->bMainMenuDone && !bQA && PC)PC->OpenMainMenu();
  MareLoading::ShaderWarmup(PC && PC->IsMainMenuOpen());   // 09/11: compile the world's shaders before letting the player in
  if(!PC || !PC->IsMainMenuOpen()){if(Sim)Sim->bMainMenuDone=true;StartSession();}
- if(FParse::Param(FCommandLine::Get(),TEXT("MareGraphicsQA")))GetWorld()->SpawnActor<AMareGraphicsQA>();if(FParse::Param(FCommandLine::Get(),TEXT("MareIntroQA")))GetWorld()->SpawnActor<AMareIntroQA>();if(FParse::Param(FCommandLine::Get(),TEXT("MarePreviewQA")))GetWorld()->SpawnActor<AMarePreviewQA>();if(FParse::Param(FCommandLine::Get(),TEXT("MareBench")))GetWorld()->SpawnActor<AMareBench>();}
+ if(FParse::Param(FCommandLine::Get(),TEXT("MareGraphicsQA")))GetWorld()->SpawnActor<AMareGraphicsQA>();if(FParse::Param(FCommandLine::Get(),TEXT("MareIntroQA")))GetWorld()->SpawnActor<AMareIntroQA>();if(FParse::Param(FCommandLine::Get(),TEXT("MarePreviewQA")))GetWorld()->SpawnActor<AMarePreviewQA>();if(FParse::Param(FCommandLine::Get(),TEXT("MareBench")))GetWorld()->SpawnActor<AMareBench>();
+ if(FString(FCommandLine::Get()).Contains(TEXT("MareScriptQA=")))GetWorld()->SpawnActor<AMareScriptQA>();}
 
 void AMareGameMode::Tick(float DeltaSeconds)
 {

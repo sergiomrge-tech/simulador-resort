@@ -96,7 +96,22 @@ Meta: uma demo de ~2 h, estável, bonita, pronta para a Next Fest.
   `intro-letter-settled` no teste de abertura). Os scripts de teste param na leitura do `runtime.log`, que o Shipping não
   grava: o resultado vale pelo `preview-qa.json` / `intro-qa.json`.
 - [ ] 👤 Teste do build Shipping num PC sem a Unreal.
-- [ ] Preset **Baixo** medido para os requisitos mínimos.
+- [x] Preset **Baixo** medido para os requisitos mínimos (11/11, executável Shipping, jogo completo liberado, janela
+  1920×1080, escala 3D 80%, RTX 4060 Ti + Ryzen 7 5700G; `bench_package.ps1 -Exec "sg.* 0;..."`):
+
+  | setor | Padrão 1080p | Baixo 1080p | Baixo 720p | placa (ms) padrão / baixo 1080 / baixo 720 |
+  |---|---|---|---|---|
+  | praia | 81 | 111 | 110 | 11,2 / 6,9 / 4,8 |
+  | quiosque | 83 | 128 | 132 | 11,0 / 6,9 / 4,8 |
+  | saguão do hotel | 103 | 149 | 143 | 7,8 / 3,8 / 2,8 |
+  | trilha da ilha | 106 | 143 | 151 | 8,7 / 6,1 / 4,2 |
+  | vila à noite | 89 | 142 | 139 | 10,2 / 5,1 / 3,4 |
+
+  Memória de vídeo em uso (sistema inteiro): 4,5 GB no padrão, 3,4 GB no Baixo. RAM do jogo: 4,3 GB. No Baixo o limite
+  passa a ser o processador (jogo 6–8,5 ms), por isso 720p não rende mais que 1080p nesta máquina.
+  **Proposta para a página (estimativa por escala de placa; só o teste num PC fraco confirma):** mínimo GTX 1060 6 GB /
+  RX 580 8 GB, Ryzen 5 1600 / i5-8400, 12 GB de RAM, 8 GB de disco, DirectX 12 (Baixo, ~40 FPS em 1080p, ~60 em 720p);
+  recomendado RTX 3060 / RX 6600 XT, Ryzen 5 5600 / i5-12400, 16 GB (Padrão, 60 FPS em 1080p).
 - [ ] Integração Steam (Online Subsystem, conquistas da dívida, Steam Cloud, Rich Presence).
 - [x] Simulação da demo inteira do zero até o fim (10/11, `simulate_game.py` adaptado à demo, três rodadas em perfil novo;
   detalhe em `CHECKLIST_SIMULACAO.md`). Última rodada, 30 etapas: 0 erros no log, 0 pessoas deslizando, 0 fora do assento,
