@@ -9,6 +9,7 @@
  "fame_per_hit": 2,
  "businesses": {
   "sorveteria": {
+   "vendor": [4672, -1955, 0, 67],
    "title": "Montar a casquinha",
    "steps": [
     "Bola de baunilha na casquinha!",
@@ -206,6 +207,7 @@
    ]
   },
   "aluguel": {
+   "vendor": [6730, -2040, 0, 90],
    "title": "Encerar a prancha",
    "steps": [
     "Passe a parafina na prancha!",
@@ -296,6 +298,7 @@
    ]
   },
   "surfe": {
+   "vendor": [-4490, -2060, 0, 79],
    "title": "Aula na areia",
    "steps": [
     "Remada! (aluno deitado na prancha)",
@@ -460,6 +463,7 @@
    ]
   },
   "souvenir": {
+   "vendor": [8310, 4008, 0, -90],
    "title": "Lojinha de souvenires",
    "steps": [
     "Dobre as laterais do papel!",

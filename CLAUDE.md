@@ -941,4 +941,11 @@ Gente por horário (`church.json`, campo `masses`: o portão exige que todo `hou
 e as pessoas somem no meio da medição; medir primeiro, fotografar depois. A pose sentada padrão inclina o tronco 20–28 cm
 para a frente (parece "fora do assento" na foto): conferir pela bacia (`mare_church.faithful`), não pelo olho.
 JSON lido com `static` no C++ só é relido ao reiniciar o editor (de novo): não testar mudando o arquivo com o editor aberto.
+Vendedor de negócio (`vendor` em `business_games.json`): `Ground()` traça de 3 m para baixo e pousa no telhado da cabana
+ou no guarda-sol; para quem fica dentro de algo, traçar da altura do peito. Clipe novo de pose sentada: NÃO trocar o
+nome da pose ("Sitting_Idle" comanda alinhamento no assento, sentar e levantar); trocar só o clipe dentro do `PlayPose`.
+Gesto de despedida antes de andar: `Leave(P, atraso)` (tocar gesto e andar ao mesmo tempo faz a pessoa deslizar).
+Script de fotos que usa o `u.py`: `c` é o cliente MCP; não reusar o nome (`c, v = ...` derrubou o roteiro).
+Tarefa em segundo plano morre aos 10 min: cinco rodadas de benchmark (3 min cada) só couberam porque cada uma grava o
+seu arquivo ao terminar.
 

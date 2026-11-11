@@ -49,7 +49,11 @@ void UMareBusinessWorld::Tick(float DeltaSeconds)
    const double Minute=FMath::Fmod(UMareSimulation::Number(S->State,TEXT("minutes")),1440.0);
    const bool bVendor=bOwned && Def->TryGetArrayField(TEXT("vendor"),V) && V->Num()==4 && Minute>=480 && Minute<1320;
    if(bVendor && !IsValid(Vendor)){FActorSpawnParameters Params;Params.SpawnCollisionHandlingOverride=ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-    const FVector At=Ground(FVector((*V)[0]->AsNumber(),(*V)[1]->AsNumber(),0))+FVector(0,0,88+(*V)[2]->AsNumber());
+    // The floor under the vendor is looked for from chest height down: from 3 m up (Ground) the trace lands on the
+    // roof of a booth or on a parasol.
+    FVector At((*V)[0]->AsNumber(),(*V)[1]->AsNumber(),0);FHitResult Floor;
+    if(GetWorld()->LineTraceSingleByChannel(Floor,At+FVector(0,0,140),At-FVector(0,0,400),ECC_Visibility))At.Z=Floor.ImpactPoint.Z;
+    At.Z+=88+(*V)[2]->AsNumber();
     Vendor=GetWorld()->SpawnActor<AMarePerson>(At,FRotator(0,(*V)[3]->AsNumber(),0),Params);
     if(Vendor){Vendor->SaveId=TEXT("biz_vendor_")+Id;Vendor->PersonName=TEXT("Vendedor");Vendor->bEmployee=true;Vendor->bAmbient=true;
      Vendor->GetCharacterMovement()->DisableMovement();Vendor->SetActorEnableCollision(false);Vendors.Add(Id,Vendor);}}

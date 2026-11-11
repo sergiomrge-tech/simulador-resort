@@ -396,7 +396,9 @@ bool AMarePerson::SetMetaHuman(const FString& Name)
   // 10/11 (beach sports, UMareBeachSportsWorld): jog, landing, arm strikes and the crouched ready stance (mare_metahuman.sport_clips).
   TEXT("Jog_Fwd"),TEXT("Jump_Land"),TEXT("Punch_Cross"),TEXT("Punch_Jab"),TEXT("Crouch_Idle"),   // i18n:skip
   // 10/11 (reference tip 9): waiting and service, Quaternius UAL 2 Standard, CC0 (mare_metahuman.service_clips).
-  TEXT("Idle_FoldArms"),TEXT("Idle_TalkingPhone"),TEXT("Idle_Rail"),TEXT("Yes"),TEXT("Walk_Carry"),TEXT("Consume")};   // i18n:skip
+  TEXT("Idle_FoldArms"),TEXT("Idle_TalkingPhone"),TEXT("Idle_Rail"),TEXT("Yes"),TEXT("Walk_Carry"),TEXT("Consume"),   // i18n:skip
+  // 11/11 (Fase 3, more clips of the reference kind): seated people talk with their hands, a customer who gives up shakes the head.
+  TEXT("Sitting_Talking"),TEXT("Idle_No")};   // i18n:skip
  if(CVarMareMocap.GetValueOnGameThread())Wanted.Append({TEXT("SitTalk"),TEXT("DanceHip"),TEXT("Cheer")});
  for(const FString& Clip:Wanted)
   if(auto Anim=LoadObject<UAnimSequence>(nullptr,*FString::Printf(TEXT("/Game/People/Animations/MH_%s.MH_%s"),*Clip,*Clip)))Clips.Add(Clip,Anim);
@@ -509,6 +511,9 @@ void AMarePerson::PlayPose(const FString& Name,bool bLoop)
  FString Clip=Name;
  const bool bVaried=!bEmployee && !GetAttachParentActor() && FCrc::StrCrc32(*(SaveId+PersonName))%2;
  if(bVaried && Name==TEXT("Sitting_Idle") && Clips.Contains(TEXT("SitTalk")))Clip=TEXT("SitTalk");
+ // 11/11: seated and in a conversation, the seated pose is the talking one (same pose name: the seat alignment and the
+ // sit-down / stand-up transitions key on "Sitting_Idle").
+ if(Name==TEXT("Sitting_Idle") && bSeated && bConversing && Clips.Contains(TEXT("Sitting_Talking")))Clip=TEXT("Sitting_Talking");   // i18n:skip
  if(auto Instance=Cast<UMareServiceAnimInstance>(GetMesh()->GetAnimInstance())){Instance->SetAnimationAsset(Clips[Clip],bLoop);Instance->SetPlaying(true);}
 }
 void AMarePerson::PlayGesture(const FString& Name,float Seconds)

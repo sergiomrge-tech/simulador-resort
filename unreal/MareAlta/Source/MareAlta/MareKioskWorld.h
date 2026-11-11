@@ -55,7 +55,7 @@ private:
  void UpdateCustomer(AMarePerson* Person);
  void UpdateAttendant(float DeltaSeconds);
  void FinishCounter(AMarePerson* Person);
- void Leave(AMarePerson* Person);
+ void Leave(AMarePerson* Person,float Delay=0.f);
  bool WalkAway(AMarePerson* Person);
  void MakeDirty(AMarePerson* Person);
  void CreateInteraction(AMarePerson* Person);

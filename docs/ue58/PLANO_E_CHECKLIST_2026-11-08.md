@@ -50,7 +50,10 @@ Meta: uma demo de ~2 h, estável, bonita, pronta para a Next Fest.
   quadros: praia 72,5 FPS, quiosque 82,9, saguão 102,5 (era 64,9), trilha 102,8, vila à noite 85,3 (era 63,7); tudo acima
   de 60. Sem pessoas a praia vai a 84 (as 6 pessoas na tela custam ~4 ms do processador do jogo). Uma segunda rodada na
   sequência deu 47–69 FPS com a placa a 15–17 ms: outra carga na máquina ao mesmo tempo, descartada.
-- [ ] Desempenho, próximo (opcional): pessoas na praia (processador do jogo 11,5 ms com 6 na tela) e o mar em ladrilhos.
+- [x] Desempenho, próximo (opcional): pessoas na praia (medido em 10/11: sem ganho barato) e o mar em ladrilhos. 11/11,
+  executável Shipping, cinco rodadas (`bench_package.ps1 -Hide`): praia com tudo 81,9 e 77,7 FPS (ruído ±4); sem o mar
+  84,7 (placa 10,9 ms contra 11,1–11,3); sem a mata 82,5; sem a vegetação rasteira 78,4. O mar custa ~0,3 ms: dividir
+  em ladrilhos não paga. Nada alterado.
 - [x] Fotos aéreas dos 4 lados, de dia e no fim da tarde (08/11).
 - [x] Árvores vistas de muito longe perdem as folhas (09/11): as 6 árvores da mata são Nanite com "preservação de forma:
   nenhuma"; ao simplificar, a Nanite apagava as folhas. Ligado "Preserve Area" (feito para folhagem): a 1 km a copa fica cheia.
@@ -121,7 +124,8 @@ Meta: uma demo de ~2 h, estável, bonita, pronta para a Next Fest.
   atendente vira para o cliente, traz o copo, estende o braço e entrega, +R$ 14), barraca do pastel de dia e de noite com
   fila, minijogo do pastel na barraca (recheio, borda, fritura, entrega paga), tochas acesas, quiosque às 23h normal.
 - [x] Barraca do pastel com vendedor (os clientes compravam de um balcão vazio): ponto `vendor` em `business_games.json`.
-  Os outros negócios da vila (sorveteria, aluguel, surfe, lojinha) continuam sem vendedor visível: pôr o ponto de cada um.
+  11/11: sorveteria (atrás do carrinho), aluguel (dentro da cabana), surfe (sob a tenda) e lojinha (entre o balcão e as
+  prateleiras) também têm vendedor; o piso é procurado da altura do peito para baixo (de 3 m o traço caía no telhado).
 - [x] Igreja (foto do Sergio, 11/11): a pilastra do meio cruzava a janela central e as janelas eram caixas lisas rosa /
   azul / creme. Pilastras nos vãos entre as janelas e vitrais góticos ornamentados nas duas laterais (3 no oeste, 2 no
   leste, onde a torre ocupa o trecho do terceiro), acesos por dentro à noite. Conferido no editor e no executável.
@@ -233,7 +237,11 @@ A ilha agora é grande e bonita, mas ainda é cenário. Propostas para dar uso a
   tufos enterrados sob o terreno novo da ilha ou sobre as trilhas e 76 arbustos cuja copa cobria o caminho de cimento
   (`mare_lawn.fix_0911`).
 - [x] B14: fim do plano do mar visto do mirante. 10/11: do cume o mar vai até o horizonte (anel de 40 km de 09/11).
-- [ ] Animações da referência (Resort Simulator): mais clipes gratuitos (fila, pegar produto, pagar, deitar), gestos ao interagir.
+- [~] Animações da referência (Resort Simulator): mais clipes gratuitos (fila, pegar produto, pagar, deitar), gestos ao interagir.
+  11/11: quem conversa sentado gesticula (`Sitting_Talking`, UAL 1) e o cliente que cansa de esperar balança a cabeça
+  antes de sair (`Idle_No`, UAL 2); atendimento, fila de braços cruzados e pegar no balcão já estavam (10/11).
+  Falta: telefone (precisa do aparelho na mão), encostar no corrimão do píer, levantar da toalha. Pendência vista:
+  as duas hóspedes de uma mesa do restaurante do hotel são a mesma MetaHuman com a mesma roupa.
 - [ ] Pesca com isca, briga com o peixe e livro de espécies; desafios no modo foto.
 - [x] Rádio do quiosque com troca de faixas: aparelho no quiosque, na casa e no hotel (`radio.json` stereos; conferido 09/11).
 

@@ -94,7 +94,7 @@ void UMareKioskWorld::FinishCounter(AMarePerson* Person)
  const FVector Goal=Person->TableIndex!=INDEX_NONE?TableApproaches[Person->TableIndex]:Person->GetActorLocation()+FVector(160,-170,0);
  Person->WalkTo(Goal);
 }
-void UMareKioskWorld::Leave(AMarePerson* Person)
+void UMareKioskWorld::Leave(AMarePerson* Person,float Delay)
 {
  if(Person->Interaction){Person->Interaction->Destroy();Person->Interaction=nullptr;}
  if(Person->TableIndex!=INDEX_NONE && !DirtyTables.Contains(Person->TableIndex))ReservedTables.Remove(Person->TableIndex);
@@ -107,8 +107,8 @@ void UMareKioskWorld::Leave(AMarePerson* Person)
    if(Nav->ProjectPointToNavigation(TableApproaches[Person->TableIndex],Standing,FVector(150,150,150)))
     Person->SetActorLocation(Standing.Location+FVector(0,0,Person->GetCapsuleComponent()->GetScaledCapsuleHalfHeight()));
  }
- Person->CounterIndex=-1;Person->Stage=EMarePersonStage::Leaving;Person->Elapsed=0;
- WalkAway(Person);
+ Person->CounterIndex=-1;Person->Stage=EMarePersonStage::Leaving;Person->Elapsed=-Delay;
+ if(Delay<=0)WalkAway(Person);   // with a delay (a parting gesture) the Leaving stage starts the walk once it is over
 }
 /** 07/11 (Sergio: "clientes travados"): the exit used to be one fixed point 8.5 m east; when it fell off the navmesh
  *  (the deck, the water) WalkTo failed silently and the guest stood in the walk pose until vanishing in sight. Try the
@@ -176,7 +176,9 @@ void UMareKioskWorld::UpdateCustomer(AMarePerson* P)
  }
  else if((P->Stage==EMarePersonStage::Order || P->Stage==EMarePersonStage::Products) && P->Elapsed>80*S->KioskPatienceFactor()){
   // Gave up waiting: one star and a grumble (the stars move tomorrow's traffic, UMareSimulation::KioskArrivalFactor).
-  S->AddRating(1.);P->Express(TEXT("annoyed"),3.f);S->LastMessage=P->PersonName+TEXT(" cansou de esperar e foi embora resmungando. Uma estrela.");Leave(P);}
+  S->AddRating(1.);P->Express(TEXT("annoyed"),3.f);S->LastMessage=P->PersonName+TEXT(" cansou de esperar e foi embora resmungando. Uma estrela.");
+  // 11/11 (reference: lively people): shakes the head before walking off (UAL 2 Idle_No, CC0).
+  const bool bShake=P->Clips.Contains(TEXT("Idle_No"));if(bShake)P->PlayGesture(TEXT("Idle_No"),1.7f);Leave(P,bShake?1.7f:0.f);}
  else if(P->Stage==EMarePersonStage::ToTable && P->TableIndex!=INDEX_NONE && !P->AtGoal() && P->Elapsed<35 && P->GetVelocity().SizeSquared2D()<100
   && (FMath::IsNearlyEqual(P->Elapsed,12.f,.6f) || FMath::IsNearlyEqual(P->Elapsed,24.f,.6f))){
   // Stuck behind a chair or another guest: ask for the path again, the goal nudged a little around the approach.
@@ -194,6 +196,7 @@ void UMareKioskWorld::UpdateCustomer(AMarePerson* P)
  }
  else if(P->Stage==EMarePersonStage::Eating){if(P->Elapsed>8 && !P->bConsumed){P->bConsumed=true;P->ClearProducts();MakeDirty(P);}if(P->Elapsed>18)Leave(P);}
  else if(P->Stage==EMarePersonStage::Leaving){
+  if(P->Elapsed<0)return;   // still shaking the head at the counter
   // Keep walking while the player watches (a new leg further on); vanish only out of sight, or after a minute anyway.
   const bool bStill=P->GetVelocity().SizeSquared2D()<100.f && P->Elapsed>3.f;
   if(P->Elapsed>60.f || ((P->AtGoal() || bStill || P->Elapsed>25.f) && !SeenByPlayer(GetWorld(),P->GetActorLocation()+FVector(0,0,80))))P->Destroy();

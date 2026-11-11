@@ -1281,6 +1281,13 @@ def service_clips(_=''):
                       'Idle_FoldArms_Loop,Idle_TalkingPhone_Loop,Idle_Rail_Loop,Yes,Walk_Carry_Loop,Consume', UAL_SRC + '2')
 
 
+def phase3_clips(_=''):
+    """Fase 3 (11/11, more clips of the reference kind, Quaternius UAL 1 and 2, CC0): seated people talking with their
+    hands (Sitting_Talking) and the head shake of a customer who gives up waiting (Idle_No)."""
+    return {'ual': import_ual(clips='Sitting_Talking_Loop'),
+            'ual2': import_ual('D:/Projetos/MareAltaUE58/assets/models/ual2/UAL2_Standard.glb', 'Idle_No_Loop', UAL_SRC + '2')}
+
+
 def sport_clips(_=''):
     """Beach sports (10/11, Sergio: "pessoas jogando vôlei, peteca, futebol de praia"): more clips of the Quaternius UAL
     (CC0) retargeted onto the MetaHuman body: jog, landing, two arm strikes, the crouched ready stance and a roll."""
