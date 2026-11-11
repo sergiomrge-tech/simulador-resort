@@ -146,6 +146,7 @@ void UMareVillageWorld::UpdateHotelGuests()
   if(!P->SetAppearance(S.Look)){P->Destroy();continue;}
   P->PersonName=S.Name;P->bAmbient=true;P->bConversing=S.bTalk;P->bSeated=S.bSeat;P->GetCharacterMovement()->DisableMovement();
   if(S.bSeat)P->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);else P->GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Pawn,ECR_Block);
+  P->RosterIndex=HotelGuests.Num();   // neighbours take different people of the roster in turn
   P->Tags.Add(TEXT("MareHotelGuest"));HotelGuests.Add(P);}
 }
 // 11/11 church interior: at mass time (Content/Data/church.json) a few villagers sit in the pews, facing the altar.

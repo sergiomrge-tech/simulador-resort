@@ -82,6 +82,9 @@ public:
  FString StaffRole;
  /** Pose held while standing still at work (UMareStaffWorld), e.g. Interact while cleaning; Walk while gliding. */
  FString WorkPose;
+ /** 11/11: 0 or more = take this place of the role's MetaHuman roster in turn, instead of the hash of the save id (the
+  *  hotel guests have no save id: two diners of one table came out as the same person in the same dress). */
+ int32 RosterIndex=-1;
  /** Name badge on the uniform's left chest (staff with a role), following the spine. */
  UPROPERTY() TObjectPtr<UStaticMeshComponent> Badge;
  /** Distance from spine_05 to the shirt surface in front (cm), per body. */

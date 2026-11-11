@@ -710,7 +710,7 @@ void AMarePerson::Tick(float DeltaSeconds)
    if(Tags.Contains(TEXT("MareBather")) && MetaHumanRoster()->TryGetArrayField(RoleKey,List)){
     for(const auto& V:*List)if(V->AsString().Contains(TEXT("_Swim")))Swimmers.Add(V);if(Swimmers.Num())List=&Swimmers;}
    if((List || MetaHumanRoster()->TryGetArrayField(RoleKey,List)) && List->Num())
-    Wanted=(*List)[int32(FCrc::StrCrc32(*(SaveId+PersonName))%uint32(List->Num()))]->AsString();
+    Wanted=(*List)[RosterIndex>=0?RosterIndex%List->Num():int32(FCrc::StrCrc32(*(SaveId+PersonName))%uint32(List->Num()))]->AsString();
    MetaRole=RoleKey;
    // 10/11: villagers with a name and a story wear their own MetaHuman (metahumans.json "named"), in the clothes of
    // their role: the hash pick from the mixed village roster made Dona Roberta a bearded man.

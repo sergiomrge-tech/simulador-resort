@@ -40,7 +40,12 @@ vale.** Os outros documentos (`PENDENCIAS_100.md`, `ROADMAP_STEAM.md`, `CHECKLIS
 - [ ] Banca de jornal verde ao lado da lojinha (vila): é uma caixa lisa do Godot, fora do padrão "nada de caixas";
   trocar por modelo de verdade (procurar gratuito, senão modelar).
 - [ ] Animações que faltam: telefone (precisa do aparelho na mão), encostar no corrimão do píer, levantar da toalha.
-- [ ] As duas hóspedes de uma mesa do restaurante do hotel são a mesma MetaHuman com a mesma roupa.
+- [x] As duas hóspedes de uma mesa do restaurante do hotel eram a mesma MetaHuman com a mesma roupa: os hóspedes não têm
+  identificador e o sorteio do corpo caía igual por acaso. Agora pegam a lista do hotel em sequência (`RosterIndex`);
+  conferido no jogo (mesa com Celeste e Lorenzo).
+- [ ] Cabelo comprido de quem senta inclinado (mesa do restaurante, bancos) fica esticado para trás, rígido: a simulação
+  de cabelo só liga no preset Épico e a pose sentada inclina a cabeça ~40°. Opções: ligar a simulação só para quem está
+  sentado e perto, ou reduzir a inclinação do pescoço nas poses sentadas. Medir o custo antes.
 - [ ] Pesca e foto, resto do plano antigo: vender peixe ao restaurante; filtros de foto; mandar foto para a lojinha.
 - [ ] Sinuca: uma partida jogada até o fim no jogo.
 - [ ] Roupas: vestir os papéis que faltam com as 11 roupas gratuitas já baixadas; móveis e louças do Fab baixados e sem uso.
