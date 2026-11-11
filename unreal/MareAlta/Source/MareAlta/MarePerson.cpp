@@ -239,6 +239,17 @@ void AMarePerson::UpdateLying(float DeltaSeconds)
   AddActorWorldOffset(FVector(LieCentre.X-Centre.X,LieCentre.Y-Centre.Y,LieCentre.Z+11-Pelvis.Z));}
 }
 
+// QA: "mare.Pose <clip|off> [metres=12]" holds a clip on everyone near the player (to photograph a new clip on the
+// MetaHuman bodies before using it in the game); "off" lets them go back to their own poses.
+static FAutoConsoleCommandWithWorldAndArgs GMarePose(TEXT("mare.Pose"),TEXT("mare.Pose <clip|off> [radius m=12]"),   // i18n:skip
+ FConsoleCommandWithWorldAndArgsDelegate::CreateLambda([](const TArray<FString>& Args,UWorld* World){
+  if(!World || Args.IsEmpty())return;const float Radius=(Args.Num()>1?FCString::Atof(*Args[1]):12.f)*100.f;
+  const auto Hero=UGameplayStatics::GetPlayerPawn(World,0);int32 Posed=0,Missing=0;
+  for(TActorIterator<AMarePerson> It(World);It;++It){if(Hero && FVector::Dist(Hero->GetActorLocation(),It->GetActorLocation())>Radius)continue;
+   if(Args[0]==TEXT("off")){It->HoldPose.Reset();++Posed;continue;}
+   if(!It->Clips.Contains(Args[0])){++Missing;continue;}
+   It->HoldPose=Args[0];It->KeepPoseAwake(30.f);++Posed;}
+  UE_LOG(LogTemp,Display,TEXT("MARE_POSE %s posed=%d without_clip=%d"),*Args[0],Posed,Missing);}));
 // QA: "mare.Express smile|annoyed [seconds] [metres]" puts a mood on everyone near the player (face captures).
 static FAutoConsoleCommandWithWorldAndArgs GMareExpress(TEXT("mare.Express"),TEXT("mare.Express <smile|annoyed> [seconds=6] [radius m=8]"),
  FConsoleCommandWithWorldAndArgsDelegate::CreateLambda([](const TArray<FString>& Args,UWorld* World){
@@ -383,7 +394,9 @@ bool AMarePerson::SetMetaHuman(const FString& Name)
   // 09/11 (C18): comic event callers gesture while they wait; (C14) the idle bartender busies himself at the counter.
   TEXT("TalkGesture"),TEXT("Cheer"),   // i18n:skip
   // 10/11 (beach sports, UMareBeachSportsWorld): jog, landing, arm strikes and the crouched ready stance (mare_metahuman.sport_clips).
-  TEXT("Jog_Fwd"),TEXT("Jump_Land"),TEXT("Punch_Cross"),TEXT("Punch_Jab"),TEXT("Crouch_Idle")};   // i18n:skip
+  TEXT("Jog_Fwd"),TEXT("Jump_Land"),TEXT("Punch_Cross"),TEXT("Punch_Jab"),TEXT("Crouch_Idle"),   // i18n:skip
+  // 10/11 (reference tip 9): waiting and service, Quaternius UAL 2 Standard, CC0 (mare_metahuman.service_clips).
+  TEXT("Idle_FoldArms"),TEXT("Idle_TalkingPhone"),TEXT("Idle_Rail"),TEXT("Yes"),TEXT("Walk_Carry"),TEXT("Consume")};   // i18n:skip
  if(CVarMareMocap.GetValueOnGameThread())Wanted.Append({TEXT("SitTalk"),TEXT("DanceHip"),TEXT("Cheer")});
  for(const FString& Clip:Wanted)
   if(auto Anim=LoadObject<UAnimSequence>(nullptr,*FString::Printf(TEXT("/Game/People/Animations/MH_%s.MH_%s"),*Clip,*Clip)))Clips.Add(Clip,Anim);
@@ -719,7 +732,8 @@ void AMarePerson::Tick(float DeltaSeconds)
  else if(GestureLeft>0 && Playing==TEXT("Sitting_Exit") && GetVelocity().SizeSquared2D()>25){GestureLeft=0;PlayPose(TEXT("Walk"));}   // already walking off
  else if(GestureLeft>0)GestureLeft-=DeltaSeconds;   // a one-shot gesture is playing (PlayGesture)
  else if(!HoldPose.IsEmpty())PlayPose(HoldPose);
- else if(GetVelocity().SizeSquared2D()>25)PlayPose(TEXT("Walk"));else if(!WorkPose.IsEmpty())PlayPose(WorkPose==TEXT("Skim") || WorkPose==TEXT("Sweep")?TEXT("Idle"):WorkPose);else if(bAmbient)PlayPose(bSeated?TEXT("Sitting_Idle"):bConversing?TEXT("Idle_Talking"):TEXT("Idle"));else if(Stage!=EMarePersonStage::Eating)PlayPose(TEXT("Idle"));
+ else if(GetVelocity().SizeSquared2D()>25)PlayPose(TEXT("Walk"));else if(!WorkPose.IsEmpty())PlayPose(WorkPose==TEXT("Skim") || WorkPose==TEXT("Sweep")?TEXT("Idle"):WorkPose);else{const FString Still=!WaitPose.IsEmpty() && CarriedMeshes.Num()==0 && Clips.Contains(WaitPose)?WaitPose:FString(TEXT("Idle"));
+  if(bAmbient)PlayPose(bSeated?FString(TEXT("Sitting_Idle")):bConversing?FString(TEXT("Idle_Talking")):Still);else if(Stage!=EMarePersonStage::Eating)PlayPose(Still);}
  UpdateTool(DeltaSeconds);
 }
 void AMarePerson::AttachBadge()

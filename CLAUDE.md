@@ -893,3 +893,9 @@ Posição fixa de gente no código (`UpdateHotelGuests`) não acompanha o cenár
 vidro entre os dois ("homem falando com parede"). Antes de pôr alguém num ponto, traço entre ele e o interlocutor e
 `mare_rest_audit.near` (móveis sem colisão a menos de 1 m). Medida permanente: `MARE_TALKERS`. Dinheiro e fama de QA
 aparecem nas telas que o Sergio vê (fim da demo com R$ 189.630): avisar quando a foto usa números de teste.
+Mãos "do avesso": o retarget UAL -> MetaHuman gira os ossos da palma (64-179 graus) em todo clipe importado por
+`import_ual`; a mão relaxada passa despercebida e a fechada vira garra. Medir com `mare_metahuman.finger_report` (0 = mão
+relaxada) depois de importar qualquer clipe; `relax_fingers` corrige. Clipe novo se confere num corpo PARADO no editor
+(`clip_sheet.py`: prévia da MetaHuman no céu + CaptureViewport, corpo e mãos), não em pedestre andando; e o nome do clipe
+não diz o gesto ("Yes" é braço erguido): olhar antes de ligar ao jogo. Baixar do itch.io: o POST do arquivo vai sem
+`key` (com `key` dá "invalid key").

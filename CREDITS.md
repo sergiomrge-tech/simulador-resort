@@ -87,6 +87,7 @@ glTF 1k em `assets/models/` (normal/ARM reduzidos para 512) e glTF 2k em `assets
 | Asset | Fonte | Licença |
 |---|---|---|
 | Universal Animation Library (manequim + animações), `assets/models/ual/guest.glb` (zonas de cor adicionadas com `tools/color_zones.py`; incluído no repositório) | https://quaternius.com/packs/universalanimationlibrary.html | CC0 |
+| Universal Animation Library 2 Standard (animações de espera e serviço: braços cruzados, telefone, apoiar, carregar), `assets/models/ual2/UAL2_Standard.glb` (incluído no repositório) | https://quaternius.itch.io/universal-animation-library-2 | CC0 |
 | Universal Base Characters [Standard] (corpos Superhero masculino/feminino e cabelos), `assets/models/ubc/`, baixado por `tools/fetch_assets.py`; texturas principais incluídas no repositório | https://quaternius.com/packs/universalbasecharacters.html | CC0 |
 
 ## Áudio — OpenGameArt (CC0), incluído em `assets/audio/`

@@ -132,6 +132,20 @@ Meta: uma demo de ~2 h, estável, bonita, pronta para a Next Fest.
   a ajustar nos preços.
 - [ ] 👤 Botão "Lista de desejos na Steam" na tela de fim: só aparece com o endereço da loja (`events.json`
   `review_url`), que depende da conta Steamworks.
+- [x] "As mãos estão muito estranhas, parece do avesso" (Sergio, 10/11, vendo as pessoas no jogo). Medido em todos os
+  clipes (`mare_metahuman.finger_report`): os 5 clipes originais têm os dedos na pose relaxada (0°); os 19 que entraram
+  pelo importador da Quaternius (sentar e levantar, pegar do balcão, correr, pular, golpes do vôlei, dirigir, nadar parado
+  e os novos) tinham os ossos da palma girados 64–179° depois da adaptação ao corpo MetaHuman: mão virada, dedos em
+  garra. Estava no jogo desde 07/11. Os dedos desses clipes agora usam a mão relaxada do clipe parado
+  (`relax_fingers`, braços e punhos mantêm o movimento); o importador faz isso sozinho daqui em diante. Depois: 0° nos 19.
+  Folha de conferência num corpo parado: `D:/CodexTemp/clipsheet/m.jpg` (`D:/CodexTemp/claude/ue/clip_sheet.py`).
+- [x] Espera com mais vida (referência, item 9): biblioteca Quaternius UAL 2 Standard (CC0, mesmo esqueleto, crédito no
+  CREDITS.md). Metade dos clientes que aguardam o pedido no quiosque e das pessoas nas filas dos negócios espera de
+  braços cruzados (`AMarePerson::WaitPose`). Importados e ainda sem uso: telefone (falta o celular na mão), apoiar no
+  corrimão, carregar com as duas mãos. "Yes" é um braço erguido (não é aceno) e "Consume" leva a mão acima da cabeça:
+  conferidos em foto e não usados. Comando de teste `mare.Pose <clipe> [raio]`.
+- [ ] Atendente carregando o produto com as duas mãos (`Walk_Carry`) e gesto de entrega na mesa: conferir o encaixe do
+  produto na mão antes de ligar.
 
 ---
 

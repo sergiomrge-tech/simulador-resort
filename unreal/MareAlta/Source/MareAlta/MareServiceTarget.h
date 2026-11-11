@@ -13,6 +13,10 @@ class MAREALTA_API AMareServiceTarget : public AActor
 public:
  AMareServiceTarget();
  virtual void BeginPlay() override;
+ /** 10/11: the door leaf is fitted to its frame here too, so the level shows it in the editor as it is in the game
+  *  (Sergio saw the gap over the home door in the editor viewport and took it for the old defect back). */
+ virtual void OnConstruction(const FTransform& Transform) override;
+ void FitDoorLeaf();
  virtual void Tick(float DeltaSeconds) override;
  UPROPERTY(EditAnywhere,BlueprintReadWrite,Category="Interaction") FName Action=TEXT("Fridge");
  UPROPERTY(EditAnywhere,BlueprintReadWrite,Category="Interaction") FString Label=TEXT("Geladeira");

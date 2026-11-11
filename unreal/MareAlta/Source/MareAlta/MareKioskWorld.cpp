@@ -68,6 +68,9 @@ bool UMareKioskWorld::Serve(AMarePerson* Person,bool bStaff)
   Person->Plan={PickDish()};if(FMath::RandRange(0,3)==0)Person->Plan.Add(PickDish());
   Person->OrderId=S->AddOrder(Person->PersonName,Person->Plan);if(Person->OrderId.IsEmpty())return false;
   S->RollVip(Person->OrderId);Person->Express(TEXT("hmm"),1.6f);   // choosing from the menu: a thinking "hmm"
+  // 10/11 (reference tip 9): while the order is being prepared, about half of the customers wait with their arms
+  // folded (the same person always the same way). The UAL 2 "Yes" clip is a raised arm, not a nod: not used here.
+  if(FCrc::StrCrc32(*(Person->SaveId+Person->PersonName))%2==0)Person->WaitPose=TEXT("Idle_FoldArms");   // i18n:skip
   Person->Stage=EMarePersonStage::Products;Person->Elapsed=0;return true;
  }
  if(Person->Stage!=EMarePersonStage::Products)return false;

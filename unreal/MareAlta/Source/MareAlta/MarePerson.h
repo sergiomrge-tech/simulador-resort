@@ -123,6 +123,10 @@ public:
  float PoseAwake=0;int32 AwakeFrames=0;
  /** A pose kept whatever the person does (the bus driver riding the bus): survives the MetaHuman swap. */
  FString HoldPose;
+ /** 10/11 (reference tip 9, "pessoas vivas"): how this person stands while waiting (kiosk counter, business queue):
+  *  a clip of the Quaternius UAL 2 (Idle_FoldArms...) instead of the plain Idle; empty = Idle. Not used while the hands
+  *  carry something. */
+ FString WaitPose;
  /** Already placed on a seat (kiosk table points): find the seat top straight below the sitting pelvis (trace) and
   *  align on it, so taller and shorter bodies all sit on the stool instead of above or inside it. */
  void AlignToSeatBelow();

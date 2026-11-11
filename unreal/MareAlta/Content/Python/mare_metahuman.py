@@ -478,7 +478,7 @@ def retarget_clips(name='Lani', clips=None):
 UAL_SRC = '/Game/People/AnimSource/UAL'
 
 
-def import_ual(glb='D:/Projetos/MareAltaUE58/assets/models/ual/guest.glb', clips='Swim_Fwd_Loop,Jump_Start,Jump_Loop'):
+def import_ual(glb='D:/Projetos/MareAltaUE58/assets/models/ual/guest.glb', clips='Swim_Fwd_Loop,Jump_Start,Jump_Loop', dest=None):
     """Clips of the Quaternius Universal Animation Library (CC0) that the exported Human_0 does not carry: import the
     glb's animations onto the Human_0 skeleton (same UAL rig) into /Game/People/AnimSource/UAL, keep only `clips`,
     and retarget them onto the MetaHuman body (/Game/People/Animations/MH_<clip without _Loop>)."""
@@ -494,7 +494,8 @@ def import_ual(glb='D:/Projetos/MareAltaUE58/assets/models/ual/guest.glb', clips
     p.animation_pipeline.set_editor_property('frame_alignment', unreal.InterchangeFrameAlignment.SNAP_TO_CLOSEST)
     task = unreal.AssetImportTask()
     task.filename = glb
-    task.destination_path = UAL_SRC
+    dest = dest or UAL_SRC   # the clips not wanted are deleted from this folder: another library gets its own
+    task.destination_path = dest
     task.automated = True
     task.replace_existing = True
     task.save = False
@@ -502,7 +503,7 @@ def import_ual(glb='D:/Projetos/MareAltaUE58/assets/models/ual/guest.glb', clips
     unreal.AssetToolsHelpers.get_asset_tools().import_asset_tasks([task])
     wanted = [c.strip() for c in clips.split(',') if c.strip()]
     keep, found = [], []
-    for path in unreal.EditorAssetLibrary.list_assets(UAL_SRC, True, False):
+    for path in unreal.EditorAssetLibrary.list_assets(dest, True, False):
         asset = unreal.load_asset(path)
         if not isinstance(asset, unreal.AnimSequence):
             continue
@@ -532,7 +533,10 @@ def import_ual(glb='D:/Projetos/MareAltaUE58/assets/models/ual/guest.glb', clips
         done.append(new)
     for a in keep:
         unreal.EditorAssetLibrary.save_asset(a.get_path_name(), False)
-    return {'found': found, 'retargeted': done}
+    # 10/11: this retarget turns the metacarpals 64-179 degrees (the hand comes out inside out, a claw: measured with
+    # finger_report on the 19 clips imported this way); the fingers take the relaxed hand of MH_Idle.
+    relaxed = relax_fingers(','.join(d.rsplit('/MH_', 1)[-1] for d in done))
+    return {'found': found, 'retargeted': done, 'relaxed_fingers': relaxed}
 
 
 MOCAP = '/Game/People/AnimSource/Mocap'
@@ -1269,7 +1273,82 @@ def run(action, arg=''):
     raise ValueError(action)
 
 
+def service_clips(_=''):
+    """Service and waiting (10/11, reference tip 9 "pessoas vivas"): clips of the Quaternius Universal Animation Library 2
+    Standard (CC0, same rig as the first library; assets/models/ual2) retargeted onto the MetaHuman body: waiting with the
+    arms folded, on the phone, leaning on a rail, a nod, walking with something in both hands, eating/drinking standing."""
+    return import_ual('D:/Projetos/MareAltaUE58/assets/models/ual2/UAL2_Standard.glb',
+                      'Idle_FoldArms_Loop,Idle_TalkingPhone_Loop,Idle_Rail_Loop,Yes,Walk_Carry_Loop,Consume', UAL_SRC + '2')
+
+
 def sport_clips(_=''):
     """Beach sports (10/11, Sergio: "pessoas jogando vôlei, peteca, futebol de praia"): more clips of the Quaternius UAL
     (CC0) retargeted onto the MetaHuman body: jog, landing, two arm strikes, the crouched ready stance and a roll."""
     return import_ual(clips='Jog_Fwd_Loop,Jump_Land,Punch_Jab,Punch_Cross,Crouch_Idle_Loop,Roll')
+
+
+FINGERS = ('thumb', 'index', 'middle', 'ring', 'pinky')
+
+
+def _finger_bones(anim):
+    names = [str(n) for n in unreal.AnimationLibrary.get_animation_track_names(anim)]
+    return [n for n in names if any(f in n for f in FINGERS) and (n.endswith('_l') or n.endswith('_r'))]
+
+
+def finger_report(_=''):
+    """10/11 (Sergio: "as mãos estão muito estranhas, parece do avesso"): the UAL -> MetaHuman retarget turns a closed
+    hand into a claw (fingers bent the wrong way), while a relaxed hand comes through fine. For every MH_ clip: how far
+    (degrees, worst finger bone over the clip) the fingers leave the relaxed hand of MH_Idle's first frame."""
+    import math
+    idle = unreal.load_asset(f'{ANIMS}/MH_Idle')
+    bones = _finger_bones(idle)
+    rest = {b: unreal.AnimationLibrary.get_bone_pose_for_frame(idle, b, 0, False).rotation for b in bones}
+    out = {}
+    for path in unreal.EditorAssetLibrary.list_assets(ANIMS, False, False):
+        anim = unreal.load_asset(path)
+        if not isinstance(anim, unreal.AnimSequence):
+            continue
+        frames = unreal.AnimationLibrary.get_num_frames(anim)
+        tracks = set(_finger_bones(anim))
+        worst, who = 0.0, ''
+        for f in range(0, frames + 1, max(1, frames // 12)):
+            for b in bones:
+                if b not in tracks:
+                    continue
+                q = unreal.AnimationLibrary.get_bone_pose_for_frame(anim, b, f, False).rotation
+                r = rest[b]
+                dot = abs(q.x * r.x + q.y * r.y + q.z * r.z + q.w * r.w)
+                ang = math.degrees(2 * math.acos(min(1.0, dot)))
+                if ang > worst:
+                    worst, who = ang, b
+        out[anim.get_name()] = [round(worst), who, len(tracks)]
+    return dict(sorted(out.items(), key=lambda kv: -kv[1][0]))
+
+
+def relax_fingers(clips=''):
+    """The fingers of these MH_ clips take the relaxed hand of MH_Idle's first frame for the whole clip (the arms and
+    wrists keep the clip's motion). For clips whose closed or pointing hand came out as a claw after the retarget."""
+    idle = unreal.load_asset(f'{ANIMS}/MH_Idle')
+    bones = _finger_bones(idle)
+    rest = {b: unreal.AnimationLibrary.get_bone_pose_for_frame(idle, b, 0, False) for b in bones}
+    out = {}
+    for clip in [c.strip() for c in clips.split(',') if c.strip()]:
+        anim = unreal.load_asset(f'{ANIMS}/MH_{clip}')
+        if not anim:
+            out[clip] = 'missing'
+            continue
+        frames = unreal.AnimationLibrary.get_num_frames(anim)
+        tracks = set(_finger_bones(anim))
+        ctrl = anim.get_editor_property('controller')
+        ctrl.open_bracket('Mare relaxed fingers', False)
+        n = 0
+        for b in bones:
+            if b not in tracks:
+                continue
+            t = rest[b]
+            ctrl.set_bone_track_keys(b, [t.translation] * (frames + 1), [t.rotation] * (frames + 1), [t.scale3d] * (frames + 1), False)
+            n += 1
+        ctrl.close_bracket(False)
+        unreal.EditorAssetLibrary.save_loaded_asset(anim, False)
+        out[clip] = n
+    return out

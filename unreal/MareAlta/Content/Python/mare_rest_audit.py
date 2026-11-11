@@ -126,3 +126,19 @@ def near(arg):
                                  'half': [round(hx), round(hy), round(hz)], 'gap_cm': round(gap)})
     rows.sort(key=lambda k: k['gap_cm'])
     return json.dumps(rows[:14], ensure_ascii=False)
+
+
+def people(arg='3000'):
+    """PIE: people within `arg` cm of the hero: name, location, yaw, seated, speed (nearest first)."""
+    world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()
+    hero = unreal.GameplayStatics.get_player_pawn(world, 0).get_actor_location()
+    rows = []
+    for p in unreal.GameplayStatics.get_all_actors_of_class(world, unreal.MarePerson):
+        loc = p.get_actor_location()
+        d = math.hypot(loc.x - hero.x, loc.y - hero.y)
+        if d > float(arg):
+            continue
+        rows.append({'name': str(p.get_editor_property('person_name')), 'at': [round(loc.x), round(loc.y), round(loc.z)], 'yaw': round(p.get_actor_rotation().yaw),
+                     'seated': bool(p.get_editor_property('seated')), 'speed': round(p.get_velocity().length()), 'd': round(d), 'hidden': bool(p.get_editor_property('hidden'))})
+    rows.sort(key=lambda r: r['d'])
+    return json.dumps(rows[:12], ensure_ascii=False)
