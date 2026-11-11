@@ -172,6 +172,34 @@ void UMareVillageWorld::UpdateChurch()
   P->PersonName=TEXT("Morador");P->bAmbient=true;P->bSeated=true;P->GetCharacterMovement()->DisableMovement();
   P->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);Faithful.Add(P);++I;}
 }
+void UMareVillageWorld::UpdatePier()
+{
+ static TSharedPtr<FJsonObject> Defs;
+ if(!Defs.IsValid()){FString Text;FFileHelper::LoadFileToString(Text,*(FPaths::ProjectContentDir()/TEXT("Data/pier_people.json")));
+  if(!FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Text),Defs) || !Defs.IsValid())Defs=MakeShared<FJsonObject>();}
+ auto Sim=GetWorld()->GetGameInstance()->GetSubsystem<UMareSimulation>();if(!Sim)return;
+ const double Hour=FMath::Fmod(UMareSimulation::Number(Sim->State,TEXT("minutes")),1440.0)/60.;
+ const TArray<TSharedPtr<FJsonValue>>* Hours=nullptr;const TArray<TSharedPtr<FJsonValue>>* Spots=nullptr;
+ if(!Defs->TryGetArrayField(TEXT("hours"),Hours) || Hours->Num()!=2 || !Defs->TryGetArrayField(TEXT("spots"),Spots))return;   // i18n:skip
+ const auto Weather=IConsoleManager::Get().FindConsoleVariable(TEXT("mare.Weather"));const int32 Forced=Weather?Weather->GetInt():0;
+ const bool bRain=Forced==2 || Forced==3 || (Forced==0 && UMareSimulation::String(Sim->State,TEXT("weather"))==TEXT("rain"));
+ const bool bOut=!bRain && Hour>=(*Hours)[0]->AsNumber() && Hour<(*Hours)[1]->AsNumber();
+ auto Hero=UGameplayStatics::GetPlayerPawn(this,0);const bool bLoading=GetWorld()->GetTimeSeconds()<10;
+ PierPeople.SetNum(Spots->Num());
+ for(int32 I=0;I<Spots->Num();++I){const auto& A=(*Spots)[I]->AsArray();if(A.Num()!=5)continue;
+  const FVector At(A[0]->AsNumber(),A[1]->AsNumber(),A[2]->AsNumber());
+  // Nobody pops in or out in front of the player (same rule as the sunbathers).
+  const bool bFar=bLoading || !Hero || FVector::Dist2D(Hero->GetActorLocation(),At)>2500;
+  AMarePerson* Present=PierPeople[I];
+  if(!bOut){if(IsValid(Present) && bFar){Present->Destroy();PierPeople[I]=nullptr;}continue;}
+  if(IsValid(Present) || !bFar)continue;
+  FActorSpawnParameters Params;Params.SpawnCollisionHandlingOverride=ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+  auto P=GetWorld()->SpawnActor<AMarePerson>(At+FVector(0,0,90),FRotator(0,A[3]->AsNumber(),0),Params);if(!P)continue;
+  if(!P->SetAppearance((I+2)%4)){P->Destroy();continue;}
+  P->SaveId=FString::Printf(TEXT("pier_%d"),I);P->PersonName=TEXT("Morador");P->bAmbient=true;P->Tags.Add(TEXT("MarePierPerson"));
+  P->GetCharacterMovement()->DisableMovement();P->HoldPose=A[4]->AsString();
+  PierPeople[I]=P;}
+}
 int32 UMareVillageWorld::SunbatherCount()const{int32 N=0;for(const auto& P:Sunbathers)N+=IsValid(P.Get());return N;}
 void UMareVillageWorld::UpdateSunbathers()
 {
@@ -213,7 +241,11 @@ void UMareVillageWorld::UpdateSunbathers()
  for(int32 I=0;I<Spots.Num();++I){const FSpot& Spot=Spots[I];
   const bool bFar=bLoading || !Hero || FVector::Dist2D(Hero->GetActorLocation(),Spot.Centre)>2500;
   AMarePerson* Present=Sunbathers[I];
-  if(!bOut){if(IsValid(Present) && (bFar || Hour>=End+1 || Hour<Start-1)){Present->Destroy();Sunbathers[I]=nullptr;}continue;}
+  if(!bOut){if(IsValid(Present) && (bFar || Hour>=End+1 || Hour<Start-1)){Present->Destroy();Sunbathers[I]=nullptr;}
+   // 11/11: with the player near, whoever lies face up on a towel gets up and walks inland (a few seconds apart);
+   // they are removed like before, once the towel is 25 m away or an hour later.
+   else if(IsValid(Present) && Present->bLying && FMath::FRand()<.05f)Present->GetUpFromTowel(Spot.Centre+FVector(0,1800,0));
+   continue;}
   if(IsValid(Present) || !bFar)continue;
   FActorSpawnParameters Params;Params.SpawnCollisionHandlingOverride=ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
   auto P=GetWorld()->SpawnActor<AMarePerson>(Spot.Centre+FVector(0,0,90),FRotator(0,Spot.Yaw,0),Params);if(!P)continue;
@@ -229,7 +261,7 @@ void UMareVillageWorld::Tick(float Dt)
 {
  if(!GetWorld()->IsGameWorld() || !Cast<AMareGameMode>(GetWorld()->GetAuthGameMode()) || UGameplayStatics::IsGamePaused(this))return;
  Clock-=Dt;if(Clock>0)return;Clock=.25f;if(!bReady){Setup();if(!bReady)return;}
- UpdateWalkers(.25f);UpdateHotelGuests();UpdateSunbathers();UpdateChurch();
+ UpdateWalkers(.25f);UpdateHotelGuests();UpdateSunbathers();UpdateChurch();UpdatePier();
 }
 void UMareVillageWorld::Speak(AMarePerson* Person,APlayerController* Controller)
 {

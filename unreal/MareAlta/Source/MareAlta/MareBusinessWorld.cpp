@@ -85,6 +85,7 @@ void UMareBusinessWorld::Tick(float DeltaSeconds)
     const FVector At=Ground(First+Dir*(95.f*(I+1)))+FVector(0,0,90);
     FActorSpawnParameters Params;Params.SpawnCollisionHandlingOverride=ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
     if(auto P=GetWorld()->SpawnActor<AMarePerson>(At,Face,Params)){P->SaveId=FString::Printf(TEXT("%s_line_%d_%d"),*Id,I,int32(UMareSimulation::Number(S->State,TEXT("day"),1)));
+     if(I%4==1)P->WaitPose=TEXT("Idle_TalkingPhone");   // i18n:skip  11/11: one in four waits on the phone (AMarePerson::UpdatePhoneProp)
      if(I%2==0)P->WaitPose=TEXT("Idle_FoldArms");   // i18n:skip  10/11: every other person in the line waits with the arms folded
      P->PersonName=TEXT("Cliente");P->SetAppearance(FCrc::StrCrc32(*P->SaveId)%4);P->bAmbient=true;P->GetCharacterMovement()->DisableMovement();Line.Add(P);}}}
  }

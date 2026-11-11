@@ -142,5 +142,7 @@
  "mare_church_nave": "/Game/Custom/mare_church_nave_m5/mare_church_nave.mare_church_nave",
  "mare_church_rose": "/Game/Custom/mare_church_rose_m5/mare_church_rose.mare_church_rose",
  "Chandelier_03": "/Game/Custom/Chandelier_03_m5/Chandelier_031.Chandelier_031",
- "brass_candleholders": "/Game/Custom/brass_candleholders_m5/brass_candleholders.brass_candleholders"
+ "brass_candleholders": "/Game/Custom/brass_candleholders_m5/brass_candleholders.brass_candleholders",
+ "mare_newsstand": "/Game/Custom/mare_newsstand/mare_newsstand.mare_newsstand",
+ "mare_pier_post": "/Game/Custom/mare_pier_post/mare_pier_post.mare_pier_post"
 }

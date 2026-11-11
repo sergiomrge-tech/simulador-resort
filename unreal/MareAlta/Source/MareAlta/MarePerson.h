@@ -143,6 +143,16 @@ public:
  bool bReading=false;
  UPROPERTY() TObjectPtr<UStaticMeshComponent> ReadingBook;
  bool bLying=false;
+ /** The phone of whoever waits talking on it (11/11, open list "telefone precisa do aparelho na mão"): the smartphone of
+  *  the library in the right hand, at the ear, only while the Idle_TalkingPhone clip plays standing still. */
+ void UpdatePhoneProp();
+ UPROPERTY() TObjectPtr<UStaticMeshComponent> PhoneProp;
+ /** Getting up from the towel (11/11, open list "levantar da toalha"): the UAL 2 LayToIdle clip (CC0) played upright
+  *  where the body lies (face up, flat on a towel only), then the person walks to Goal. The clip's first frame is laid
+  *  over the lying body: a first guess from the head-to-feet line, corrected once the rig has evaluated the clip. */
+ bool GetUpFromTowel(const FVector& Goal);
+ void UpdateGetUp(float DeltaSeconds);
+ bool bGettingUp=false;int32 GetUpFrames=0;float GetUpLeft=0;FVector GetUpHead=FVector::ZeroVector,GetUpFeet=FVector::ZeroVector,LeaveGoal=FVector::ZeroVector;
  /** Degrees the torso bends up at the hips while lying (a lounger backrest); 0 = flat on a towel. The pelvis is
   *  then anchored at the given point (just in front of the backrest hinge) instead of centring the body. */
  float Recline=0;

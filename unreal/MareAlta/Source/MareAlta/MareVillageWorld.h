@@ -46,6 +46,9 @@ private:
  /** People seated in the church's pews at mass time (Content/Data/church.json). */
  UPROPERTY() TArray<TObjectPtr<AMarePerson>> Faithful;
  void UpdateChurch();
+ /** People passing time on the pier (Data/pier_people.json): leaning on a post of the rope rail, on the phone. */
+ UPROPERTY() TArray<TObjectPtr<AMarePerson>> PierPeople;
+ void UpdatePier();
  /** Sunbathers lying on the beach towels by day when it is dry (Content/Data/sunbathers.json). */
  UPROPERTY() TArray<TObjectPtr<AMarePerson>> Sunbathers;
  void UpdateSunbathers();

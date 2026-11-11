@@ -129,6 +129,70 @@ void AMarePerson::LieOn(const FVector& TowelCentre,float AxisYaw,float InRecline
  SetActorLocationAndRotation(TowelCentre+FVector(0,0,12),FRotationMatrix::MakeFromXZ(bProne?FVector::DownVector:FVector::UpVector,FRotator(0,AxisYaw,0).Vector()).Rotator());
 }
 
+bool AMarePerson::GetUpFromTowel(const FVector& Goal)
+{
+ UAnimSequence* Anim=Clips.FindRef(TEXT("LayToIdle"));
+ if(!bLying || bProne || Recline>0 || LieAlignIn>0 || !Anim || GetMesh()->GetBoneIndex(TEXT("head"))==INDEX_NONE){
+  if(bLying && LieAlignIn>0)KeepPoseAwake(3.f);   // the lying pose was never evaluated (unseen rig, paused): wake it, the caller asks again
+  UE_LOG(LogTemp,Display,TEXT("MARE_GETUP refused %s lying=%d prone=%d recline=%.0f align=%.2f clip=%d clips=%d"),*SaveId,bLying?1:0,bProne?1:0,Recline,LieAlignIn,Anim?1:0,Clips.Num());return false;}
+ GetUpHead=GetMesh()->GetSocketLocation(TEXT("head"));GetUpFeet=(GetMesh()->GetSocketLocation(TEXT("foot_l"))+GetMesh()->GetSocketLocation(TEXT("foot_r")))/2;
+ if(ReadingBook){ReadingBook->DestroyComponent();ReadingBook=nullptr;}
+ bLying=false;bReading=false;bGettingUp=true;GetUpFrames=0;GetUpLeft=Anim->GetPlayLength();LeaveGoal=Goal;KeepPoseAwake(GetUpLeft+4.f);
+ // First guess: in the clip's first frame the body lies on its back along the actor's forward axis, the feet in front.
+ const FVector Mid=(GetUpHead+GetUpFeet)/2;
+ SetActorLocationAndRotation(FVector(Mid.X,Mid.Y,LieCentre.Z+GetCapsuleComponent()->GetScaledCapsuleHalfHeight()),FRotator(0,(GetUpFeet-GetUpHead).Rotation().Yaw,0));
+ Playing.Empty();PlayPose(TEXT("LayToIdle"),false);
+ if(auto Instance=Cast<UMareServiceAnimInstance>(GetMesh()->GetAnimInstance())){Instance->SetPlaying(false);Instance->SetPosition(0.f,false);}
+ return true;
+}
+
+void AMarePerson::UpdateGetUp(float DeltaSeconds)
+{
+ auto Instance=Cast<UMareServiceAnimInstance>(GetMesh()->GetAnimInstance());
+ if(GetUpFrames>=0){
+  // The clip's first frame held for a few evaluated frames, then laid exactly over where the person was lying.
+  KeepPoseAwake(2.f);if(++GetUpFrames<4)return;
+  const FVector Head=GetMesh()->GetSocketLocation(TEXT("head")),Feet=(GetMesh()->GetSocketLocation(TEXT("foot_l"))+GetMesh()->GetSocketLocation(TEXT("foot_r")))/2;
+  const float Turn=FRotator::NormalizeAxis((GetUpFeet-GetUpHead).Rotation().Yaw-(Feet-Head).Rotation().Yaw);
+  const FVector Here=GetActorLocation();const FVector Mid=Here+FRotator(0,Turn,0).RotateVector((Head+Feet)/2-Here),Want=(GetUpHead+GetUpFeet)/2;
+  const FVector Slide(Want.X-Mid.X,Want.Y-Mid.Y,0);
+  SetActorLocationAndRotation(Here+Slide,FRotator(0,GetActorRotation().Yaw+Turn,0));
+  UE_LOG(LogTemp,Display,TEXT("MARE_GETUP %s turn=%.1f slide=%.0f,%.0f head_z=%.0f was=%.0f"),*SaveId,Turn,Slide.X,Slide.Y,Head.Z,GetUpHead.Z);
+  GetUpFrames=-1;if(Instance)Instance->SetPlaying(true);return;}
+ if((GetUpLeft-=DeltaSeconds)>0)return;
+ bGettingUp=false;Playing.Empty();
+ GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);GetCharacterMovement()->SetMovementMode(MOVE_Walking);
+ if(LeaveGoal.IsZero() || !WalkTo(LeaveGoal))PlayPose(TEXT("Idle"));
+}
+
+// QA: "mare.GetUp [metres=30]" makes the sunbathers near the player get up from their towels now.
+static FAutoConsoleCommandWithWorldAndArgs GMareGetUp(TEXT("mare.GetUp"),TEXT("mare.GetUp [radius m=30]"),   // i18n:skip
+ FConsoleCommandWithWorldAndArgsDelegate::CreateLambda([](const TArray<FString>& Args,UWorld* World){
+  if(!World)return;const float Radius=(Args.Num()?FCString::Atof(*Args[0]):30.f)*100.f;auto Hero=UGameplayStatics::GetPlayerPawn(World,0);int32 Up=0,Lying=0;
+  for(TActorIterator<AMarePerson> It(World);It;++It){if(!It->bLying || (Hero && FVector::Dist2D(Hero->GetActorLocation(),It->GetActorLocation())>Radius))continue;
+   ++Lying;const bool bUp=It->GetUpFromTowel(It->GetActorLocation()+FVector(0,1800,0));if(bUp)++Up;}
+  UE_LOG(LogTemp,Display,TEXT("MARE_GETUP_QA lying=%d up=%d"),Lying,Up);}));
+
+// QA: "mare.PhoneProp x y z pitch yaw roll" moves the phone in the hand_r frame while tuning (empty = the built-in pose).
+static TAutoConsoleVariable<FString> CVarMarePhoneProp(TEXT("mare.PhoneProp"),TEXT(""),TEXT("x y z pitch yaw roll of the phone in hand_r"));   // i18n:skip
+void AMarePerson::UpdatePhoneProp()
+{
+ const bool bOn=Playing==TEXT("Idle_TalkingPhone") && GetVelocity().SizeSquared2D()<25 && !IsHidden();
+ if(!bOn){if(PhoneProp)PhoneProp->SetVisibility(false);return;}
+ if(!PhoneProp){
+  UStaticMesh* PhoneMesh=GetMesh()->DoesSocketExist(TEXT("hand_r"))?LoadObject<UStaticMesh>(nullptr,TEXT("/Game/Custom/realistic_smartphone/realistic_smartphone.realistic_smartphone")):nullptr;
+  if(!PhoneMesh)return;
+  PhoneProp=NewObject<UStaticMeshComponent>(this);PhoneProp->SetMobility(EComponentMobility::Movable);PhoneProp->SetStaticMesh(PhoneMesh);
+  PhoneProp->SetCollisionEnabled(ECollisionEnabled::NoCollision);PhoneProp->AttachToComponent(GetMesh(),FAttachmentTransformRules::SnapToTargetNotIncludingScale,TEXT("hand_r"));
+  PhoneProp->RegisterComponent();}
+ // 15 cm on its longest side, whatever the model's own scale; placed by its centre.
+ const FBoxSphereBounds B=PhoneProp->GetStaticMesh()->GetBounds();const float Scale=7.5f/FMath::Max(1.f,B.BoxExtent.GetMax());
+ FVector Loc(-9.f,3.5f,0.f);FRotator Rot(90.f,0.f,0.f);   // upright in the palm, the back to the outside (tuned on photos, 4 sides)
+ TArray<FString> V;CVarMarePhoneProp.GetValueOnGameThread().ParseIntoArrayWS(V);
+ if(V.Num()==6){Loc=FVector(FCString::Atof(*V[0]),FCString::Atof(*V[1]),FCString::Atof(*V[2]));Rot=FRotator(FCString::Atof(*V[3]),FCString::Atof(*V[4]),FCString::Atof(*V[5]));}
+ PhoneProp->SetWorldScale3D(FVector(Scale));PhoneProp->SetRelativeLocationAndRotation(Loc-Rot.RotateVector(B.Origin*Scale),Rot);PhoneProp->SetVisibility(true);
+}
+
 float AMarePerson::SeaDrawback=0.f;
 
 float AMarePerson::SeaHeight(const FVector2D& P,float T,float Storm)
@@ -398,7 +462,9 @@ bool AMarePerson::SetMetaHuman(const FString& Name)
   // 10/11 (reference tip 9): waiting and service, Quaternius UAL 2 Standard, CC0 (mare_metahuman.service_clips).
   TEXT("Idle_FoldArms"),TEXT("Idle_TalkingPhone"),TEXT("Idle_Rail"),TEXT("Yes"),TEXT("Walk_Carry"),TEXT("Consume"),   // i18n:skip
   // 11/11 (Fase 3, more clips of the reference kind): seated people talk with their hands, a customer who gives up shakes the head.
-  TEXT("Sitting_Talking"),TEXT("Idle_No")};   // i18n:skip
+  TEXT("Sitting_Talking"),TEXT("Idle_No"),   // i18n:skip
+  // 11/11 (open list, missing animations): getting up from the towel (mare_metahuman.leisure_clips).
+  TEXT("LayToIdle")};   // i18n:skip
  if(CVarMareMocap.GetValueOnGameThread())Wanted.Append({TEXT("SitTalk"),TEXT("DanceHip"),TEXT("Cheer")});
  for(const FString& Clip:Wanted)
   if(auto Anim=LoadObject<UAnimSequence>(nullptr,*FString::Printf(TEXT("/Game/People/Animations/MH_%s.MH_%s"),*Clip,*Clip)))Clips.Add(Clip,Anim);
@@ -737,13 +803,14 @@ void AMarePerson::Tick(float DeltaSeconds)
    Wave=SeaHeight(FVector2D(SwimAt.X,SwimAt.Y),GetWorld()->GetTimeSeconds(),Storm);}
   // The root 32 cm under the surface: the water reaches the shoulders, the head (bone ~12 cm up) stays out.
   SetActorLocationAndRotation(SwimAt+FVector(0,0,88-32+Wave),FRotator(0,GetActorRotation().Yaw+FMath::Sin(Elapsed*.35f+SwimAt.X*.01f)*6.f*DeltaSeconds,0));}
+ else if(bGettingUp)UpdateGetUp(DeltaSeconds);
  else if(bLying)UpdateLying(DeltaSeconds);
  else if(GestureLeft>0 && Playing==TEXT("Sitting_Exit") && GetVelocity().SizeSquared2D()>25){GestureLeft=0;PlayPose(TEXT("Walk"));}   // already walking off
  else if(GestureLeft>0)GestureLeft-=DeltaSeconds;   // a one-shot gesture is playing (PlayGesture)
  else if(!HoldPose.IsEmpty())PlayPose(HoldPose);
  else if(GetVelocity().SizeSquared2D()>25)PlayPose(TEXT("Walk"));else if(!WorkPose.IsEmpty())PlayPose(WorkPose==TEXT("Skim") || WorkPose==TEXT("Sweep")?TEXT("Idle"):WorkPose);else{const FString Still=!WaitPose.IsEmpty() && CarriedMeshes.Num()==0 && Clips.Contains(WaitPose)?WaitPose:FString(TEXT("Idle"));
   if(bAmbient)PlayPose(bSeated?FString(TEXT("Sitting_Idle")):bConversing?FString(TEXT("Idle_Talking")):Still);else if(Stage!=EMarePersonStage::Eating)PlayPose(Still);}
- UpdateTool(DeltaSeconds);
+ UpdateTool(DeltaSeconds);UpdatePhoneProp();
 }
 void AMarePerson::AttachBadge()
 {

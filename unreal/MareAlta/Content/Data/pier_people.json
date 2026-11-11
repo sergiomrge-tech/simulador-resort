@@ -1,0 +1,9 @@
+{
+ "_doc": "People passing time on the pier (11/11, open list of missing animations). The pier has only rope rails between posts 78 cm tall (deck z 37); the UAL 2 Idle_Rail clip holds the wrists 92-95 cm above the floor, so on this pier the hands hover 14 cm over the post (measured, mare_pier.hands): nobody leans here. Two people watch the sea with their arms folded and one talks on the phone at the pier end. spots: [x, y, deck z, yaw, clip]. They come and go only while the player is 25 m away.",
+ "hours": [8, 18],
+ "spots": [
+  [7125, -3400, 37, 180, "Idle_FoldArms"],
+  [7275, -4000, 37, 0, "Idle_FoldArms"],
+  [7160, -4560, 37, -90, "Idle_TalkingPhone"]
+ ]
+}

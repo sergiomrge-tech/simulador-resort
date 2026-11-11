@@ -1288,6 +1288,12 @@ def phase3_clips(_=''):
             'ual2': import_ual('D:/Projetos/MareAltaUE58/assets/models/ual2/UAL2_Standard.glb', 'Idle_No_Loop', UAL_SRC + '2')}
 
 
+def leisure_clips(_=''):
+    """11/11 (open list, "animações que faltam"): getting up from the towel (LayToIdle) and a call from the rail
+    (Idle_Rail_Call), Quaternius UAL 2 Standard, CC0. Phone and rail idles were already imported by service_clips."""
+    return import_ual('D:/Projetos/MareAltaUE58/assets/models/ual2/UAL2_Standard.glb', 'LayToIdle,Idle_Rail_Call', UAL_SRC + '2')
+
+
 def sport_clips(_=''):
     """Beach sports (10/11, Sergio: "pessoas jogando vôlei, peteca, futebol de praia"): more clips of the Quaternius UAL
     (CC0) retargeted onto the MetaHuman body: jog, landing, two arm strikes, the crouched ready stance and a roll."""

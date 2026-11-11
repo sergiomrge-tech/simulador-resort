@@ -39,7 +39,10 @@ vale.** Os outros documentos (`PENDENCIAS_100.md`, `ROADMAP_STEAM.md`, `CHECKLIS
   `D:/CodexTemp/lojinhaqa`. Ajustes de gosto ficam para quando o Sergio jogar.
 - [ ] Banca de jornal verde ao lado da lojinha (vila): é uma caixa lisa do Godot, fora do padrão "nada de caixas";
   trocar por modelo de verdade (procurar gratuito, senão modelar).
-- [ ] Animações que faltam: telefone (precisa do aparelho na mão), encostar no corrimão do píer, levantar da toalha.
+- [x] Animações que faltavam (11/11): **telefone** com o aparelho na mão direita junto à orelha (parte de quem espera nas filas dos negócios e do quiosque, e uma pessoa na ponta do píer; `AMarePerson::UpdatePhoneProp`); **levantar da toalha** (clipe LayToIdle do UAL 2, CC0: quem está de costas na toalha se levanta e vai embora ao fim do horário de praia ou na chuva, com o jogador por perto; QA `mare.GetUp`); **píer** com três pessoas de dia (`Data/pier_people.json`). Encostar no corrimão ficou de fora por medida: o píer só tem corda entre estacas de 78 cm e o gesto põe os punhos a 92–95 cm (as mãos pairavam 14 cm acima da estaca); os dois do píer olham o mar de braços cruzados.
+- [ ] Gesto de apoiar no corrimão (clipe `Idle_Rail` já importado): precisa de um guarda-corpo de ~93 cm ao alcance da rua (hoje só existem nas sacadas dos sobrados).
+- [x] Cordas do píer "sem base" (foto do Sergio, 11/11): as cordas do último trecho iam até uma estaca que a plataforma da ponta não tem; dois mourões novos (`mare_pier_post`, `mare_pier.posts`) com as cordas amarradas.
+- [x] Banca de jornal da vila (11/11): a caixa verde lisa virou modelo próprio (`mare_newsstand`), com o poste que ficava dentro dela e a jardineira reposicionados e o letreiro na testeira.
 - [x] As duas hóspedes de uma mesa do restaurante do hotel eram a mesma MetaHuman com a mesma roupa: os hóspedes não têm
   identificador e o sorteio do corpo caía igual por acaso. Agora pegam a lista do hotel em sequência (`RosterIndex`);
   conferido no jogo (mesa com Celeste e Lorenzo).
