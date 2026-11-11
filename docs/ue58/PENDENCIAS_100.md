@@ -1,3 +1,6 @@
+> **Documento histórico (11/11/2026).** Os itens em aberto daqui foram cruzados e consolidados em
+> [`PLANO_E_CHECKLIST_2026-11-08.md`](PLANO_E_CHECKLIST_2026-11-08.md), seção "Pendências reais — lista única".
+> Vários itens marcados como abertos abaixo já estão feitos; não use este arquivo como lista de tarefas.
 ﻿# Pendências para o jogo ficar 100%
 
 02/11/2026. Lista única de tudo que falta para o Maré Alta Resort ficar completo, por área, com prioridade.

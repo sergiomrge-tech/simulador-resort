@@ -69,4 +69,28 @@ bool FMareDebtVectorsTest::RunTest(const FString& Parameters)
  Instance->RemoveFromRoot();
  return true;
 }
+
+// 11/11: the whole debt paid in one go (a milestone crossed and the balance cleared by the same payment).
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FMareDebtOnePaymentTest,"MareAlta.Gameplay.DebtOnePayment",EAutomationTestFlags::EditorContext|EAutomationTestFlags::EngineFilter)
+bool FMareDebtOnePaymentTest::RunTest(const FString& Parameters)
+{
+ auto LoadJson=[](const FString& Path,TSharedPtr<FJsonObject>& Out){FString Text;return FFileHelper::LoadFileToString(Text,*Path) && FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Text),Out) && Out.IsValid();};
+ auto Instance=NewObject<UGameInstance>();Instance->AddToRoot();
+ auto Sim=NewObject<UMareSimulation>(Instance);Sim->AddToRoot();
+ Sim->SaveDirectory=FPaths::ProjectSavedDir()/TEXT("Automation/DebtOnePayment")/FGuid::NewGuid().ToString(EGuidFormats::Digits);
+ if(!LoadJson(FPaths::ProjectContentDir()/TEXT("Data/definitions.json"),Sim->Definitions) || !LoadJson(FPaths::ProjectContentDir()/TEXT("Data/default_save.json"),Sim->State)){
+  AddError(TEXT("definitions/default_save"));Sim->RemoveFromRoot();Instance->RemoveFromRoot();return false;}
+ Sim->Definitions->SetBoolField(TEXT("demo"),false);   // the finale only exists in the full game
+ TestTrue(TEXT("Company"),Sim->CreateCompany(TEXT("Teste")));
+ const int64 Balance=Sim->DebtBalanceCents();TestTrue(TEXT("There is a debt"),Balance>0);
+ Sim->State->SetNumberField(TEXT("money"),Balance/100.0+10);
+ TestTrue(TEXT("Paid in one go"),Sim->PayDebt(Balance));TestEqual(TEXT("Nothing left"),Sim->DebtBalanceCents(),int64(0));
+ TestTrue(TEXT("Milestones were crossed"),Sim->DebtPendingMilestones().Num()>0);
+ TestTrue(TEXT("The finale is pending"),Sim->IsDebtFinalePending());
+ TestFalse(TEXT("No milestone tip in front of the finale"),Sim->DebtMilestoneTipDue());
+ TestTrue(TEXT("The end screen acknowledges"),Sim->AckDebt());
+ TestFalse(TEXT("Finale seen"),Sim->IsDebtFinalePending());TestEqual(TEXT("No milestone left"),Sim->DebtPendingMilestones().Num(),0);
+ Sim->RemoveFromRoot();Instance->RemoveFromRoot();
+ return true;
+}
 #endif

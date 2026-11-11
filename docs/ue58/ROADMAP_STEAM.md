@@ -1,5 +1,9 @@
 # Rumo à Steam: tudo o que falta, por prioridade
 
+> **Documento histórico (11/11/2026).** Os itens em aberto daqui foram cruzados e consolidados em
+> [`PLANO_E_CHECKLIST_2026-11-08.md`](PLANO_E_CHECKLIST_2026-11-08.md), seção "Pendências reais — lista única".
+> Vários itens marcados como abertos abaixo já estão feitos; não use este arquivo como lista de tarefas.
+
 02/11/2026. Jogo para **PC (Steam), Unreal 5.8**, lançamento em **Acesso Antecipado**. Base: `docs/STEAM_PLAN.md`,
 o plano de gameplay (`docs/ue58/GAMEPLAY_PLANO_2026-11-02.md`), o checklist de pedidos e o estado real do
 código. Marque `[x]` ao concluir; `👤` = só o Sergio pode fazer (contas, pagamentos, decisões).

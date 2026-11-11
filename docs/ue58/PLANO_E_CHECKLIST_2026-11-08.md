@@ -10,6 +10,48 @@ Como usar: trabalhar de cima para baixo. Cada item entra com portão de QA PASS,
 
 ---
 
+## Pendências reais — lista única (levantamento de 11/11)
+
+Pedido do Sergio (11/11): "consulte o planejamento e o checklist e veja as pendências". Sete documentos tinham 149
+linhas em aberto; a maioria era repetição do mesmo assunto ou item já feito que ninguém marcou. **Esta é a lista que
+vale.** Os outros documentos (`PENDENCIAS_100.md`, `ROADMAP_STEAM.md`, `CHECKLIST_EXPANSOES.md`,
+`HUMOR_EVENTOS_COMICOS.md`, `AUDITORIA_GERAL.md`, `docs/CHECKLIST_PEDIDOS.md`) ficam como histórico. O cruzamento
+"já feito" veio do texto dos documentos e do que se sabe do projeto, não de um teste item a item.
+
+### Depende do Sergio 👤
+- [ ] Conta Steamworks (US$ 100, dados fiscais) e App ID do jogo e da demo. Trava: página "Em breve", botão de lista de
+  desejos, integração Steam (nuvem, conquistas, Rich Presence), classificação etária, página nos 12 idiomas.
+- [ ] Teste do build Shipping num PC sem a Unreal.
+- [ ] Nome do jogo: `CHECKLIST_EXPANSOES.md` ainda cita "Coconut Coast: Resort Simulator"; o vigente é "Coconut Simulator". Confirmar.
+- [ ] HUD/celular mais comercial: `CHECKLIST_PEDIDOS.md` diz opção B escolhida e feita em 01/11; aqui e no `PENDENCIAS_100` ainda se pedem três propostas. Dizer se está resolvido.
+- [ ] Controle (Xbox/PlayStation): código pronto, falta teste com controle físico no executável.
+- [ ] Geração de quadros (DLSS): precisa do Sergio clicando na janela durante o teste.
+- [ ] Qual item da Fase 2 vem primeiro (lista na Fase 2, abaixo).
+- [ ] Crianças e famílias: comprar pacote pago ou seguir sem.
+- [ ] Traduções: revisão nativa; transliterar ou não os nomes próprios em chinês, japonês e russo; mais idiomas (cs, hu, ro, da, fi)?
+- [ ] Divulgação: preço (US$ 12,99 no roadmap), trailer, playtest fechado, Next Fest.
+- [ ] Som ambiente "que não muda nem desliga" (teste da demo): dizer qual som.
+
+### Com o Claude, prontas para fazer
+- [ ] Lojinha de souvenires: revisão final.
+- [ ] Animações que faltam: telefone (precisa do aparelho na mão), encostar no corrimão do píer, levantar da toalha.
+- [ ] As duas hóspedes de uma mesa do restaurante do hotel são a mesma MetaHuman com a mesma roupa.
+- [ ] Pesca e foto, resto do plano antigo: vender peixe ao restaurante; filtros de foto; mandar foto para a lojinha.
+- [ ] Sinuca: uma partida jogada até o fim no jogo.
+- [ ] Roupas: vestir os papéis que faltam com as 11 roupas gratuitas já baixadas; móveis e louças do Fab baixados e sem uso.
+- [ ] Recife: peixes com cara de desenho; horizonte subaquático vazio.
+- [ ] Reteste: 2 h seguidas sem travar, incluindo o hotel (um documento diz feito, outro pede reteste).
+- [ ] Sem registro em nenhum documento: acessibilidade básica (texto, legendas, daltonismo), calçados variados, preparativos de festa aparecendo no mapa, cada expansão com horário de pico próprio.
+- [ ] Final da dívida no executável do jogo completo (a demo nunca chega lá): só foi visto no editor.
+
+### Já feito que os documentos antigos ainda listam como aberto
+Pacote Shipping; menu principal, opções e 3 slots de save; desempenho medido no executável; preset Baixo; eventos
+cômicos (`MareComicEvents.cpp`, `comic_events.json`); ilha completa; tradução em 12 idiomas; rádio com troca de faixas;
+bar, negócios da vila, restaurante e salão de jogos; pesca com isca, briga e livro; desafios de foto; balanceamento
+(fechado em 20 h de campanha); demo de ~2,7 h (os antigos dizem "3 dias").
+
+---
+
 ## Onde estamos
 
 **Ilha completa (feita entre 08/11 manhã e tarde, commits 7c9873bb … 35faa11f e 455d1b38):**
@@ -266,8 +308,13 @@ A ilha agora é grande e bonita, mas ainda é cenário. Propostas para dar uso a
 - [x] Grand Hotel inteiro (quartos, VIPs, eventos, restaurante, salão de jogos) revisado com o mapa novo. 10/11: saguão,
   recepção, sinuca, sofás, torre vista de cima, piscina, corredor e suíte fotografados (`D:/CodexTemp/hotel1`), sem defeito.
 - [ ] Lojinha de souvenires: revisão final (3.5, "por último").
-- [ ] Balanceamento de 6–10 h (Claude simula e ajusta os números no jogo).
-- [ ] Final da dívida (só no jogo completo).
+- [x] Balanceamento de 6–10 h: **fechado por decisão do Sergio (11/11): "Campanha deixa com 20h"**. A simulação dá ~20 h
+  para concluir a campanha e quitar a dívida (`BALANCEAMENTO.md`); acelerar ~2,3x encurtaria também a demo (2,7 h).
+  Nada alterado nos números.
+- [x] Final da dívida (só no jogo completo). 11/11, conferido jogando no editor com `mare.QA paydebt <reais>|all`: carta da
+  Dona Dilce ao criar a empresa, marcos de 25 / 50 / 75 % como dica, e com o saldo zero (celular fechado) a tela "Maré Alta,
+  dívida baixa: zero!" com a fala dela e os botões Continuar no resort / Créditos; fotos em `D:/CodexTemp/debtqa`. A tela
+  passou a usar a folha de caderno (era o cartão creme liso). Falta ver no executável do jogo completo (a demo nunca chega lá).
 
 ---
 

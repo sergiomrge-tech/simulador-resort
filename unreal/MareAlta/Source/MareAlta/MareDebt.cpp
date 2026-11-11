@@ -127,6 +127,8 @@ bool UMareSimulation::IsDebtFinalePending() const
  bool bSeen=false;Object(Object(State,TEXT("prog")),TEXT("debt"))->TryGetBoolField(TEXT("finale_seen"),bSeen);return !bSeen;   // i18n:skip
 }
 
+bool UMareSimulation::DebtMilestoneTipDue() const{return DebtPendingMilestones().Num()>0 && !IsDebtFinalePending();}
+
 bool UMareSimulation::AckDebt()
 {
  if(!HasDebt())return false;

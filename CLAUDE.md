@@ -970,4 +970,9 @@ Chamada com efeito dentro de `UE_LOG(...)` some no Shipping (o log e a avaliaç�
 de 11/11e o `mare.Fish` só obedecia ao `start`. Guardar o resultado numa variável e só então registrar. Vale para
 qualquer comando de QA que precise funcionar no executável. `python tools/ue58/qa/data_lint.py --json` roda sozinho
 (glossário e espaços das traduções) e deve dar 0 erros antes de gastar 5 minutos de portão.
+Final da dívida: quem quitava com UM pagamento que também cruzava um marco (25/50/75 %) via a dica do marco e nunca a
+tela final, porque o `AckDebt` da dica marcava o final como visto. O final tem precedência
+(`DebtMilestoneTipDue`, teste `DebtOnePayment`). Só apareceu ao testar o caminho "tudo de uma vez" (`mare.QA paydebt
+all`); o caminho em parcelas passava. Testar os dois extremos de todo fluxo com marcos. A tela final só abre com o
+celular fechado. Lista única de pendências: seção "Pendências reais" do plano de 08/11; os outros checklists são histórico.
 

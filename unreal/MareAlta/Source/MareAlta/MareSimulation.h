@@ -717,6 +717,10 @@ public:
  bool IsDebtFinalePending() const;
  /** Marks the pending milestones and the finale as seen (after they were shown); false when the save failed. */
  bool AckDebt();
+ /** A milestone tip (25 / 50 / 75 %) is due: some milestone was crossed and the finale is NOT pending. 11/11: a single
+  *  payment that crossed a milestone and cleared the debt showed the milestone tip, whose acknowledgement also marked
+  *  the finale as seen: the player never got Dona Dilce's end screen. The finale takes precedence and acknowledges both. */
+ bool DebtMilestoneTipDue() const;
  /** Bank note after reminder_every_days without payment (one per interval); sets PendingTip. */
  bool DebtReminder(int32 Day);
  /** Dona Dilce's letter about the million, once after the company exists; sets PendingTip. */

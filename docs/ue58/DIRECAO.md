@@ -83,4 +83,4 @@ tabela abaixo, para o sistema melhorar com o uso.
 |---|---|---|---|
 | 11/11 | batedor (Haiku) | Procurar modelos gratuitos e realistas das 8 espécies da pescaria | Em 1 minuto: 0 de 8 (só low poly, cartum, esqueletos de museu e pagos). Decisão: modelar todos. Admitiu o que não verificou (busca por nome científico), o que é o comportamento certo. |
 | 11/11 | artesão (Sonnet) | Modelar os 8 peixes no bpy com textura própria e renderizar as figuras de perfil | 3 rodadas (14 + 18 + 1,5 min): a primeira saiu com cores e garoupa fracas; com a lista de 10 correções do diretor ficou boa; garoupa precisou de uma terceira. Lição: o pedido já deve trazer cores em números e o defeito típico a evitar; a autocrítica dele foi honesta e bateu com a revisão. |
-
+| 11/11 | batedor (Haiku) | Compilar os itens abertos de 7 documentos de planejamento, com arquivo e linha | 149 itens em poucos minutos, com repetições e conflitos entre documentos apontados e a ressalva de que "provavelmente feito" é só cruzamento de texto. Bom uso: leitura larga que eu só precisei conferir e organizar. |

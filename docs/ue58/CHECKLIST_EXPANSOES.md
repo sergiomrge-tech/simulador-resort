@@ -1,5 +1,9 @@
 # Maré Alta Resort — Checklist das expansões
 
+> **Documento histórico (11/11/2026).** Os itens em aberto daqui foram cruzados e consolidados em
+> [`PLANO_E_CHECKLIST_2026-11-08.md`](PLANO_E_CHECKLIST_2026-11-08.md), seção "Pendências reais — lista única".
+> Vários itens marcados como abertos abaixo já estão feitos; não use este arquivo como lista de tarefas.
+
 04/11/2026. Fonte editável: Claude Doc "Maré Alta Resort — Checklist das expansões" (https://claude.ai/artifact/TGeQ8bPALzs2X7tCLSjivN).
 
 ## Como usar
@@ -716,7 +720,8 @@ Sem esta parte, as expansões ficam soltas. Cada atividade precisa alimentar din
 
 ### 6.4 Eventos do calendário
 
-- [x] Conferir no jogo, com foto, cada evento de `events.json`: calor, lua cheia, maré alta, tempestade, quermesse, junina, DJ e carnaval. Cada um deve mudar algo **visível** e **jogável**: decoração, prato especial no quiosque, clientes fantasiados. 10/11: fotos de todos (`D:/CodexTemp/events1..7`): calor (piscina/vendas), lua (bar lotado), maré alta (ondas e espuma na beira), tempestade (chuva, céu cinza, mar bravo) e as 4 festas montadas. Corrigido: fogueira em pé, sem esportes em dia de festa, swell de costa que fazia barra de areia com canal. Depois (10/11): no dia de lua cheia a lua fica maior e mais clara e ilumina mais a praia; as barracas abrem para o centro da festa com espetinho, milho, queijo coalho e guaraná no balcão; 5 moradores vêm dançar na festa.
+- [x] Conferir no jogo, com foto, cada evento de `events.json`: calor, lua cheia, maré alta, tempestade, quermesse, junina, DJ e carnaval. Cada um deve mudar algo **visível** e **jogável**: decoração, prato especial no quiosque, clientes fantasiados.
+ 10/11: fotos de todos (`D:/CodexTemp/events1..7`): calor (piscina/vendas), lua (bar lotado), maré alta (ondas e espuma na beira), tempestade (chuva, céu cinza, mar bravo) e as 4 festas montadas. Corrigido: fogueira em pé, sem esportes em dia de festa, swell de costa que fazia barra de areia com canal. Depois (10/11): no dia de lua cheia a lua fica maior e mais clara e ilumina mais a praia; as barracas abrem para o centro da festa com espetinho, milho, queijo coalho e guaraná no balcão; 5 moradores vêm dançar na festa.
 - [ ] Preparativos comprados na véspera aparecem no mapa.
 
 ### 6.5 Fim do Acesso Antecipado

@@ -1,3 +1,6 @@
+> **Documento histórico (11/11/2026).** Os itens em aberto daqui foram cruzados e consolidados em
+> [`PLANO_E_CHECKLIST_2026-11-08.md`](ue58/PLANO_E_CHECKLIST_2026-11-08.md), seção "Pendências reais — lista única".
+> Vários itens marcados como abertos abaixo já estão feitos; não use este arquivo como lista de tarefas.
 ﻿# Checklist de pedidos do usuário
 
 Toda solicitação do usuário entra aqui no momento em que é feita e só é marcada quando estiver

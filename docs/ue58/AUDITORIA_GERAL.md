@@ -1,5 +1,9 @@
 # Auditoria geral do jogo — checklist de correções
 
+> **Documento histórico (11/11/2026).** Os itens em aberto daqui foram cruzados e consolidados em
+> [`PLANO_E_CHECKLIST_2026-11-08.md`](PLANO_E_CHECKLIST_2026-11-08.md), seção "Pendências reais — lista única".
+> Vários itens marcados como abertos abaixo já estão feitos; não use este arquivo como lista de tarefas.
+
 Pedido do usuário (01/11): andar por todo o jogo, listar o que precisa ser corrigido e corrigir.
 Tour automático pelo MCP (`game_tour`: 26 câmeras — vila, casas, quiosque, praia, píer, farol,
 hotel e uma por região de expansão/negócio) + capturas no PIE. Pranchas em `D:/CodexTemp/tour`.

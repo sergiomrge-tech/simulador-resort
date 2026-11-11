@@ -1,5 +1,9 @@
 # Maré Alta Resort — Eventos cômicos e NPCs memoráveis
 
+> **Documento histórico (11/11/2026).** Os itens em aberto daqui foram cruzados e consolidados em
+> [`PLANO_E_CHECKLIST_2026-11-08.md`](PLANO_E_CHECKLIST_2026-11-08.md), seção "Pendências reais — lista única".
+> Vários itens marcados como abertos abaixo já estão feitos; não use este arquivo como lista de tarefas.
+
 **Registro de ideias aprovado pelo usuário em 31/10/2026.**
 **Status: PLANEJADO, NÃO IMPLEMENTADO.**
 **Ramo de referência:** `codex/ue58-migration` (Unreal Engine 5.8).

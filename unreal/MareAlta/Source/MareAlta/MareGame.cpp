@@ -1796,12 +1796,13 @@ public:
     +SHorizontalBox::Slot().AutoWidth().Padding(12,0,0,0)[SNew(SMarePadButton).ButtonStyle(&InkButton()).ContentPadding(FMargin(14,4))
      .OnClicked_Lambda([this](){if(Owner.IsValid()){auto O=Owner;O->CloseBusinessGame();O->OpenCredits();}return FReply::Handled();})
      [SNew(STextBlock).Text(MareLoc::Text(UMareSimulation::String(Fin,TEXT("credits")))).Font(Hand(20)).ColorAndOpacity(MareNotebook::Tag)]];   // i18n:skip
-   ChildSlot.HAlign(HAlign_Center).VAlign(VAlign_Center)[SNew(SBorder).BorderImage(FCoreStyle::Get().GetBrush("WhiteBrush")).BorderBackgroundColor(Paper).Padding(FMargin(34,26))
-    [SNew(SBox).WidthOverride(640)[SNew(SVerticalBox)
+   // 11/11: the same notebook sheet as the demo's end screen (it was still the plain cream card).
+   ChildSlot.HAlign(HAlign_Center).VAlign(VAlign_Center)[SNew(SBox).WidthOverride(700)
+    [MareNotebook::Page(SNew(SVerticalBox)
      +SVerticalBox::Slot().AutoHeight()[HandText(UMareSimulation::String(Fin,TEXT("title")),34,Brown)]   // i18n:skip
      +SVerticalBox::Slot().AutoHeight().Padding(0,10)[BodyText(UMareSimulation::String(Fin,TEXT("text")),14,Ink)]   // i18n:skip
      +SVerticalBox::Slot().AutoHeight().Padding(0,6)[HandText(UMareSimulation::String(Fin,TEXT("grandma")),20,Green)]   // i18n:skip
-     +SVerticalBox::Slot().AutoHeight().HAlign(HAlign_Left).Padding(0,14,0,0)[Buttons]]]];
+     +SVerticalBox::Slot().AutoHeight().HAlign(HAlign_Left).Padding(0,14,0,0)[Buttons])]];
    return;}
   const TArray<TSharedPtr<FJsonValue>>* Album=nullptr;UMareSimulation::Object(S->State,TEXT("prog"))->TryGetArrayField(TEXT("album"),Album);
   const int32 Days=int32(UMareSimulation::Number(S->State,TEXT("day"),1));
@@ -2703,6 +2704,11 @@ static FAutoConsoleCommandWithWorldAndArgs MareQACommand(TEXT("mare.QA"),TEXT("Q
    bool bEA=false;S->Definitions->TryGetBoolField(TEXT("demo"),bEA);S->Definitions->SetBoolField(TEXT("demo"),false);
    bOk=S->BuyExpansion(Arg);S->Definitions->SetBoolField(TEXT("demo"),bEA);}
   else if(Verb==TEXT("biz"))bOk=S->BuyBusiness(Arg);
+  // 11/11 "mare.QA paydebt all|<reais>": the full game's debt paid now (the demo flag is lifted for this session, the
+  // money is given first), to see Dona Dilce's finale without playing 20 hours.
+  else if(Verb==TEXT("paydebt")){S->Definitions->SetBoolField(TEXT("demo"),false);   // i18n:skip
+   const int64 Cents=Arg==TEXT("all")?S->DebtBalanceCents():FMath::Min<int64>(S->DebtBalanceCents(),int64(FCString::Atod(*Arg)*100.0));   // i18n:skip
+   S->State->SetNumberField(TEXT("money"),S->Money()+Cents/100.0+1);bOk=S->PayDebt(Cents);}
   // HUD QA (08/11): "mare.QA order <dish>" adds a kiosk order, "mare.QA barorder <drink|any>" a bar order.
   else if(Verb==TEXT("company"))bOk=S->CreateCompany(Arg);
   else if(Verb==TEXT("open")){S->SetOpen(Arg!=TEXT("0"));bOk=true;}
@@ -3079,7 +3085,7 @@ void AMareHUD::DrawHUD()
  // closes and no other tip is on screen; the full-game finale uses the end screen.
  if(!M.bPhone && S->PendingTipTitle.IsEmpty() && Now>=TipUntil){
   if(!S->ShowDebtIntro()){const TArray<FString> Crossed=S->DebtPendingMilestones();
-   if(Crossed.Num()){FString Text;const FString Title=S->DebtMilestoneTitle(Crossed.Last(),&Text);S->PendingTipTitle=Title;S->PendingTipText=Text;S->AckDebt();}}}
+   if(Crossed.Num() && S->DebtMilestoneTipDue()){FString Text;const FString Title=S->DebtMilestoneTitle(Crossed.Last(),&Text);S->PendingTipTitle=Title;S->PendingTipText=Text;S->AckDebt();}}}
  if(!M.bPhone && S->IsDebtFinalePending())if(auto DebtPC=Cast<AMareController>(GetOwningPlayerController()))DebtPC->ShowEndOfContent(true);
  // First-time tips (tutorial.json): taken from the simulation and kept on screen for a while.
  if(!S->PendingTipTitle.IsEmpty()){TipTitle=S->PendingTipTitle;TipText=S->PendingTipText;S->PendingTipTitle.Reset();TipUntil=Now+14;}
