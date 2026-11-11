@@ -18,6 +18,8 @@ vale.** Os outros documentos (`PENDENCIAS_100.md`, `ROADMAP_STEAM.md`, `CHECKLIS
 `HUMOR_EVENTOS_COMICOS.md`, `AUDITORIA_GERAL.md`, `docs/CHECKLIST_PEDIDOS.md`) ficam como histórico. O cruzamento
 "já feito" veio do texto dos documentos e do que se sabe do projeto, não de um teste item a item.
 
+> **Demo instalada (11/11, noite): pacote `MareAltaUE58_Shipping_2026-11-11g`** em `D:\Games\MareAltaResort_Demo`, 6,3 GB. Teste do executável 107/107, introdução 13/13, cozimento sem aviso de material. Conferido no executável, de dia, por roteiro (`D:/CodexTemp/roteiro_1111g2.txt`): casa do jogador, padre, igreja e crucifixo, canteiros, banca, recepção do hotel com o teto pintado, rocha do farol. Lição: no roteiro, `clock` avança o relógio; chamado duas vezes vira o dia e todas as fotos saem à meia-noite.
+
 ### Depende do Sergio 👤
 - [ ] Conta Steamworks (US$ 100, dados fiscais) e App ID do jogo e da demo. Trava: página "Em breve", botão de lista de
   desejos, integração Steam (nuvem, conquistas, Rich Presence), classificação etária, página nos 12 idiomas.
