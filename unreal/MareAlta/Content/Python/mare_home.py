@@ -222,3 +222,54 @@ def plaster(arg='dry'):
     if apply:
         unreal.get_editor_subsystem(unreal.LevelEditorSubsystem).save_current_level()
     return json.dumps(out, ensure_ascii=False)
+
+
+def openings(_=''):
+    """Sill and lintel heights of the wall openings: vertical traces inside each opening, on the wall's mid plane."""
+    w = _world()
+    out = {}
+    for name, (x, y) in {'west': (4250, 2100), 'south_win': (4460, 1750), 'south_door': (4770, 1750), 'north_win': (4430, 2450), 'north_door': (4770, 2450)}.items():
+        row = []
+        for a, b in ((175, 0), (175, 345)):
+            hit = unreal.SystemLibrary.line_trace_single(w, unreal.Vector(x, y, a), unreal.Vector(x, y, b), unreal.TraceTypeQuery.TRACE_TYPE_QUERY1,
+                                                         True, [], unreal.DrawDebugTrace.NONE, True)
+            row.append(round(hit.to_tuple()[4].z) if hit else None)
+        # width: horizontal traces along the wall at mid height
+        mid = (row[0] + row[1]) / 2 if None not in row else 175
+        side = []
+        for d in (-1, 1):
+            e = (x, y + d * 400) if name == 'west' else (x + d * 400, y)
+            hit = unreal.SystemLibrary.line_trace_single(w, unreal.Vector(x, y, mid), unreal.Vector(e[0], e[1], mid), unreal.TraceTypeQuery.TRACE_TYPE_QUERY1,
+                                                         True, [], unreal.DrawDebugTrace.NONE, True)
+            p = hit.to_tuple()[4] if hit else None
+            side.append(round(p.y if name == 'west' else p.x) if p else None)
+        out[name] = {'sill_lintel': row, 'sides': side}
+    hit = unreal.SystemLibrary.line_trace_single(w, unreal.Vector(4000, 2100, 300), unreal.Vector(4000, 2100, -100), unreal.TraceTypeQuery.TRACE_TYPE_QUERY1, True, [], unreal.DrawDebugTrace.NONE, True)
+    out['ground_west'] = round(hit.to_tuple()[4].z, 1) if hit else None
+    for nm, (x, y) in {'eave_w': (4200, 2100), 'eave_s': (4600, 1700), 'eave_w_out': (4170, 2100), 'annex_eave_s': (4775, 1410)}.items():
+        hit = unreal.SystemLibrary.line_trace_single(w, unreal.Vector(x, y, 200), unreal.Vector(x, y, 600), unreal.TraceTypeQuery.TRACE_TYPE_QUERY1, True, [], unreal.DrawDebugTrace.NONE, True)
+        out[nm] = round(hit.to_tuple()[4].z, 1) if hit else None
+    return json.dumps(out)
+
+
+def dress(arg='dry'):
+    """Step 2: places the volumes model (tools/ue58/gen_home_dress.py) at the house's centre; no collision. Re-runnable."""
+    from pathlib import Path
+    data = json.loads((Path(unreal.Paths.project_content_dir()) / 'Data' / 'custom_assets.json').read_text(encoding='utf-8'))
+    mesh = unreal.load_asset(data.get('mare_home_dress', ''))
+    actors = unreal.get_editor_subsystem(unreal.EditorActorSubsystem)
+    mine = [a for a in unreal.GameplayStatics.get_all_actors_of_class(_world(), unreal.StaticMeshActor) if 'MareHomeDress' in [str(t) for t in a.tags]]
+    if arg.strip() != 'apply' or not mesh:
+        return json.dumps({'mesh': bool(mesh), 'mine': len(mine)})
+    for a in mine:
+        actors.destroy_actor(a)
+    a = actors.spawn_actor_from_object(mesh, unreal.Vector(4600, 2100, 0), unreal.Rotator(roll=0, pitch=0, yaw=0))
+    a.set_actor_label('Casa · beiral, calhas e janelas')
+    a.tags = [unreal.Name('MareGenerated'), unreal.Name('MareHomeDress')]
+    a.set_folder_path('Vila/Casa')
+    c = a.static_mesh_component
+    c.set_mobility(unreal.ComponentMobility.STATIC)
+    c.set_collision_profile_name('NoCollision')
+    c.set_collision_enabled(unreal.CollisionEnabled.NO_COLLISION)
+    unreal.get_editor_subsystem(unreal.LevelEditorSubsystem).save_current_level()
+    return json.dumps({'placed': True})
