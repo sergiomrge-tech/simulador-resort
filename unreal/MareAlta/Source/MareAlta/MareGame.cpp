@@ -2271,6 +2271,7 @@ void AMareController::TakePhoto()
   if(GetWorld()->LineTraceSingleByChannel(Hit,Eye,Point,ECC_Visibility,Query) && FVector::Dist(Hit.ImpactPoint,Point)>UMareSimulation::Number(Sub,TEXT("radius"),400))continue;
   Subjects.Add(UMareSimulation::String(Sub,TEXT("id")));}
  const FString File=FPaths::ProjectSavedDir()/TEXT("Album")/FString::Printf(TEXT("foto_dia%02d_%04.0f_%d.png"),int32(UMareSimulation::Number(S->State,TEXT("day"),1)),UMareSimulation::Number(S->State,TEXT("minutes")),int32(GFrameNumber%100000));
+ ShowPhotoFilter(.6f);   // the chosen look is on screen for the frame the screenshot reads (no-op with the natural look)
  FScreenshotRequest::RequestScreenshot(File,false,false);
  // The lighthouse trail: a photo at a viewpoint is the group photo of that stop.
  if(auto Trail=GetWorld()->GetSubsystem<UMareTrailWorld>())Trail->OnPhoto();
@@ -2601,6 +2602,7 @@ void AMareController::SetupInputComponent()
 {
  Super::SetupInputComponent();InputComponent->BindAction(TEXT("Pause"),IE_Pressed,this,&AMareController::TogglePauseMenu).bExecuteWhenPaused=true;
  InputComponent->BindKey(EKeys::P,IE_Pressed,this,&AMareController::TakePhoto);InputComponent->BindKey(EKeys::Gamepad_DPad_Down,IE_Pressed,this,&AMareController::TakePhoto);
+ InputComponent->BindKey(EKeys::O,IE_Pressed,this,&AMareController::CyclePhotoFilter);InputComponent->BindKey(EKeys::Gamepad_DPad_Up,IE_Pressed,this,&AMareController::CyclePhotoFilter);
  MareGamepad::Startup();
  FMareOptions::Get().ApplyKeys(PlayerInput);
 }

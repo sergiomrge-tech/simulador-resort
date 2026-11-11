@@ -22,7 +22,7 @@
   "RestaurantPass": {"title": "Balcão de retirada da cozinha", "text": "Retire os pratos prontos aqui, inclusive os pedidos dos quartos."},
   "RoomService": {"title": "Serviço de quarto", "text": "Entregue aqui no elevador os pratos das suítes que estão na sua bandeja."},
   "PoolTable": {"title": "Sinuca", "text": "Mouse mira; segure o clique e solte para tacar. Q sai."},
-  "photo": {"title": "Modo foto", "text": "P fotografa sem a interface. Enquadre o farol para a missão da vila."},
+  "photo": {"title": "Modo foto", "text": "P fotografa sem a interface e O troca o filtro da foto. Enquadre o farol para a missão da vila."},
   "Bed": {"title": "Dormir", "text": "Dormir encerra o dia, paga salários e salva. Confira o resumo no celular."},
   "BarIngredient": {"title": "Bancada do bar", "text": "Use E no ingrediente: ele vai direto ao copo. A ordem não importa."},
   "BarGlass": {"title": "Copo de preparo", "text": "Com os ingredientes no copo, siga o passo pedido e sirva."},

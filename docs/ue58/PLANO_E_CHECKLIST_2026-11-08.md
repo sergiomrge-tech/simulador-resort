@@ -46,7 +46,7 @@ vale.** Os outros documentos (`PENDENCIAS_100.md`, `ROADMAP_STEAM.md`, `CHECKLIS
 - [ ] Cabelo comprido de quem senta inclinado (mesa do restaurante, bancos) fica esticado para trás, rígido: a simulação
   de cabelo só liga no preset Épico e a pose sentada inclina a cabeça ~40°. Opções: ligar a simulação só para quem está
   sentado e perto, ou reduzir a inclinação do pescoço nas poses sentadas. Medir o custo antes.
-- [ ] Pesca e foto, resto do plano antigo: vender peixe ao restaurante; filtros de foto; mandar foto para a lojinha.
+- [x] Pesca e foto, resto do plano antigo (11/11): o peixe pescado já vai para a cozinha do restaurante (prato "peixe fresco do píer", sem pagar fornecedor) e as fotos do álbum já viram cartões-postais na lojinha; faltavam só os filtros de foto, feitos: O / direcional para cima troca entre natural, verão, sépia, preto e branco e desbotado (prévia de 4 s, aplicado só na foto; `MarePhotoFilter.cpp`, QA `mare.PhotoFilter <i> [s]`).
 - [ ] Sinuca: uma partida jogada até o fim no jogo.
 - [ ] Roupas: vestir os papéis que faltam com as 11 roupas gratuitas já baixadas; móveis e louças do Fab baixados e sem uso.
 - [ ] Recife: peixes com cara de desenho; horizonte subaquático vazio.

@@ -101,6 +101,15 @@ public:
  void OpenCredits();
  /** Photo mode (P / D-pad down): screenshot to Saved/Album and the subjects in frame to the album. */
  UFUNCTION(BlueprintCallable,Category="Maré Alta") void TakePhoto();
+ /** Photo filters (MarePhotoFilter.cpp): O / D-pad up cycles the look of the next photos; it previews for a few seconds
+  *  and comes back on the frame of each photo. 0 = natural. */
+ void CyclePhotoFilter();
+ void SetPhotoFilter(int32 Index,float PreviewSeconds);
+ void ShowPhotoFilter(float Seconds);
+ static int32 PhotoFilterCount();
+ int32 PhotoFilter=0;
+ UPROPERTY() TObjectPtr<class APostProcessVolume> PhotoFilterVolume;
+ FTimerHandle PhotoFilterTimer;
  void CloseBusinessGame();
  /** Kiosk payment screen (MarePayment.cpp): cash change or card after the player completes an order. */
  void OpenPayment(const FString& Customer,double Total);
