@@ -251,6 +251,9 @@ A ilha agora é grande e bonita, mas ainda é cenário. Propostas para dar uso a
   completo paga R$ 300. Desafios de foto: 5 metas de uma foto só (farol + píer, pôr do sol, pôr do sol com o farol,
   quiosque + bar, três pontos); cada foto diz qual é o próximo. Testes `FishingFight` e `FishingBook`; 48 textos novos
   nos 12 idiomas. Conferido no jogo (`mare.Fish`): compra de isca, briga na tela, 3 peixes pegos, livro preenchido.
+  Figuras dos 8 peixes (pedido do Sergio: procurar asset gratuito, senão modelar): busca na web sem nenhum modelo
+  gratuito realista com licença comercial; os oito foram modelados no bpy (`gen_fish.py`) e a figura de perfil de cada
+  um aparece no livro (silhueta escura até pescar) e no aviso de peixe pescado (`mare_fish.icons`, `/Game/UI/Fish`).
 - [x] Rádio do quiosque com troca de faixas: aparelho no quiosque, na casa e no hotel (`radio.json` stereos; conferido 09/11).
 
 ---

@@ -11,8 +11,13 @@
 #include "Widgets/SOverlay.h"
 #include "Widgets/Layout/SBorder.h"
 #include "Widgets/Layout/SBox.h"
+#include "Widgets/SBoxPanel.h"
 #include "Widgets/Layout/SWidgetSwitcher.h"
 #include "Widgets/Text/STextBlock.h"
+#include "Widgets/Images/SImage.h"
+#include "Engine/Texture2D.h"
+#include "UObject/StrongObjectPtr.h"
+#include "Misc/PackageName.h"
 #include "HAL/IConsoleManager.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -38,6 +43,18 @@ void FMareFishFight::Step(float Dt,bool bReel,float Rand01)
 namespace
 {
  const float BarWidth=520.f;
+ /** Profile picture of a species (rendered from the bpy model, 2:1). The texture is held for as long as the game runs:
+  *  a brush that only points at it would not keep it from the garbage collector. */
+ const FSlateBrush* FishBrush(const FString& Id)
+ {
+  struct FPicture{TStrongObjectPtr<UTexture2D> Texture;FSlateBrush Brush;};
+  static TMap<FString,TSharedPtr<FPicture>> Pictures;
+  if(const auto Found=Pictures.Find(Id))return (*Found)->Texture.IsValid()?&(*Found)->Brush:nullptr;
+  auto Picture=MakeShared<FPicture>();const FString Path=FString::Printf(TEXT("/Game/UI/Fish/T_Fish_%s"),*Id);
+  if(FPackageName::DoesPackageExist(Path))if(auto Texture=LoadObject<UTexture2D>(nullptr,*(Path+TEXT(".T_Fish_")+Id))){
+   Picture->Texture.Reset(Texture);Picture->Brush.SetResourceObject(Texture);Picture->Brush.ImageSize=FVector2D(256,128);Picture->Brush.DrawAs=ESlateBrushDrawType::Image;}
+  Pictures.Add(Id,Picture);return Picture->Texture.IsValid()?&Picture->Brush:nullptr;
+ }
  class SMareFishingGame;
  TWeakPtr<SMareFishingGame> GFishing;
 
@@ -59,15 +76,22 @@ namespace
    TSharedRef<SVerticalBox> Book=SNew(SVerticalBox);
    if(auto S=Sim()){const TArray<TSharedPtr<FJsonValue>>* List=nullptr;
     if(S->LeisureDefs()->TryGetArrayField(TEXT("species"),List))for(const auto& V:*List){const auto F=V->AsObject();
-     Book->AddSlot().AutoHeight().Padding(0,2)[SNew(STextBlock).Font(Hand(19)).AutoWrapText(true)
-      .ColorAndOpacity_Lambda([this,F](){return FSlateColor(Count(F)>0?MareNotebook::Ink:MareNotebook::Pencil);})
-      .Text_Lambda([this,F](){return FText::FromString(BookLine(F));})];}}
+     const FSlateBrush* Picture=FishBrush(UMareSimulation::String(F,TEXT("id")));
+     Book->AddSlot().AutoHeight().Padding(0,1)[SNew(SHorizontalBox)
+      +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(0,0,10,0)[SNew(SBox).WidthOverride(84).HeightOverride(42)
+       [Picture?StaticCastSharedRef<SWidget>(SNew(SImage).Image(Picture).ColorAndOpacity_Lambda([this,F](){return FSlateColor(Count(F)>0?FLinearColor::White:FLinearColor(.03f,.03f,.03f,.5f));})):StaticCastSharedRef<SWidget>(SNew(SBox))]]
+      +SHorizontalBox::Slot().FillWidth(1).VAlign(VAlign_Center)[SNew(STextBlock).Font(Hand(19)).AutoWrapText(true)
+       .ColorAndOpacity_Lambda([this,F](){return FSlateColor(Count(F)>0?MareNotebook::Ink:MareNotebook::Pencil);})
+       .Text_Lambda([this,F](){return FText::FromString(BookLine(F));})]];}}
    ChildSlot.HAlign(HAlign_Center).VAlign(VAlign_Bottom).Padding(0,0,0,70)[SNew(SBorder).BorderImage(FCoreStyle::Get().GetBrush("WhiteBrush")).BorderBackgroundColor(Paper).Padding(FMargin(26,16))
     [SNew(SBox).WidthOverride(BarWidth+40)[SNew(SWidgetSwitcher).WidgetIndex_Lambda([this](){return bBook?1:0;})
      +SWidgetSwitcher::Slot()[SNew(SVerticalBox)
       +SVerticalBox::Slot().AutoHeight()[HandText(TEXT("Pescaria no píer"),30,Brown)]
       +SVerticalBox::Slot().AutoHeight().Padding(0,4)[SNew(STextBlock).Font(Hand(24)).AutoWrapText(true).ColorAndOpacity_Lambda([this](){return FSlateColor(bBite || (bFight && Fight.IsPulling())?MareNotebook::Red:MareNotebook::Ink);})
        .Text_Lambda([this](){return MareLoc::Text(Status);})]
+      +SVerticalBox::Slot().AutoHeight().HAlign(HAlign_Center).Padding(0,2)[SNew(SBox).WidthOverride(256).HeightOverride(128)
+       .Visibility_Lambda([this](){return !bFight && !LandedId.IsEmpty() && FishBrush(LandedId)?EVisibility::Visible:EVisibility::Collapsed;})
+       [SNew(SImage).Image_Lambda([this](){return FishBrush(LandedId);})]]
       // The fight: tension (keep it under the mark) and the line already reeled in.
       +SVerticalBox::Slot().AutoHeight().Padding(0,6,0,0)[SNew(SVerticalBox).Visibility_Lambda([this](){return bFight?EVisibility::Visible:EVisibility::Collapsed;})
        +SVerticalBox::Slot().AutoHeight()[HandText(TEXT("Tensão da linha"),16,Faded)]
@@ -153,7 +177,7 @@ namespace
   bool bBook=false,bAuto=false;
  private:
   TWeakObjectPtr<AMareController> Owner;TArray<TSharedPtr<FJsonObject>> Baits;TSharedPtr<FJsonObject> Hooked;FMareFishFight Fight;
-  FString Status;double Last=0;float Timer=0,Window=1.1f;bool bBite=false,bRecast=false,bFight=false,bHeld=false,bWasPulling=false;int32 Caught=0,Bait=0;
+  FString Status,LandedId;double Last=0;float Timer=0,Window=1.1f;bool bBite=false,bRecast=false,bFight=false,bHeld=false,bWasPulling=false;int32 Caught=0,Bait=0;
   UMareSimulation* Sim()const{return Owner.IsValid()?Owner->GetSimulation():nullptr;}
   static bool IsAction(const FKey& K){return K==EKeys::E || K==EKeys::SpaceBar || K==EKeys::Enter || K==EKeys::Gamepad_FaceButton_Bottom || K==EKeys::Gamepad_FaceButton_Left;}
   FString BaitId()const{return Baits.IsValidIndex(Bait)?UMareSimulation::String(Baits[Bait],TEXT("id")):FString(TEXT("massa"));}   // i18n:skip
@@ -183,16 +207,16 @@ namespace
    if(S){const TArray<TSharedPtr<FJsonValue>>* Wait=nullptr;if(S->LeisureDefs()->TryGetArrayField(TEXT("bite_wait"),Wait) && Wait->Num()==2){Low=(*Wait)[0]->AsNumber();High=(*Wait)[1]->AsNumber();}
     Window=UMareSimulation::Number(S->LeisureDefs(),TEXT("bite_window"),1.1);
     if(S->BaitCount(BaitId())<=0)Bait=0;}   // the paid bait ran out: back to bread dough
-   Timer=FMath::FRandRange(Low,High);Status=TEXT("Linha na água... espere.");bBite=false;
+   Timer=FMath::FRandRange(Low,High);Status=TEXT("Linha na água... espere.");bBite=false;LandedId.Reset();
    if(Owner.IsValid())UMareAudioWorld::Action(Owner.Get(),TEXT("bar_pour"),nullptr,.5f);
   }
   void EndFight()
   {
    bFight=false;bHeld=false;auto S=Sim();
-   if(Fight.Result==1 && S){S->LandFish(Hooked);++Caught;Status=S->LastMessage;if(Owner.IsValid())UMareAudioWorld::Action(Owner.Get(),TEXT("deal_accept"));}
+   if(Fight.Result==1 && S){S->LandFish(Hooked);++Caught;Status=S->LastMessage;LandedId=UMareSimulation::String(Hooked,TEXT("id"));if(Owner.IsValid())UMareAudioWorld::Action(Owner.Get(),TEXT("deal_accept"));}
    else{Status=Fight.Result==-1?FString::Printf(TEXT("A linha arrebentou! %s foi embora com a isca."),*FishName()):FString::Printf(TEXT("%s se soltou do anzol."),*FishName());
     if(Owner.IsValid())UMareAudioWorld::Action(Owner.Get(),TEXT("deal_decline"),nullptr,.6f);}
-   Hooked.Reset();Timer=2.4f;bRecast=true;
+   Hooked.Reset();Timer=Fight.Result==1?4.2f:2.4f;bRecast=true;   // a catch stays on show a little longer (its picture)
   }
  };
 }
