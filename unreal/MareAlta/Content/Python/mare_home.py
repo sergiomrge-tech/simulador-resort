@@ -273,3 +273,173 @@ def dress(arg='dry'):
     c.set_collision_enabled(unreal.CollisionEnabled.NO_COLLISION)
     unreal.get_editor_subsystem(unreal.LevelEditorSubsystem).save_current_level()
     return json.dumps({'placed': True})
+
+
+SURFACES = {   # mesh name -> kind
+    'World_0925': 'roof', 'World_1141': 'roof', 'World_0891': 'floor', 'World_1137': 'floor', 'World_0923': 'ceiling'}
+# (World_0924 is hidden inside the ceiling slab; World_1140, the annex ceiling, wears the wall plaster: restore() puts it back)
+CODE = {
+    'roof': ('float moss = saturate(W.r * 1.3 + V.r * .7 - .45);\n'
+             'float3 col = B * lerp(.78, 1.12, V.r);\n'                               # tiles of uneven tone
+             'col = lerp(col, col * float3(.42, .58, .26) + float3(.012, .03, .0), moss * .8);\n'   # moss and lichen
+             'col *= 1.0 - .4 * saturate(W.g * 1.5 + V.g);\n'                         # dark runs of rain down the slope
+             'col = lerp(col, float3(.20, .19, .17), saturate(WA * VA * 2.0) * .5);\n'  # soot-black patches
+             'return float4(col, .9);'),
+    'floor': ('float2 d2 = min(P.xy - R.xy, R.zw - P.xy);\n'
+              'float edge = saturate(1.0 - min(d2.x, d2.y) / 55.0);\n'                # grime gathers along the walls
+              'float dirt = saturate(W.r * .7 + V.r * .5);\n'
+              'float3 col = B * lerp(1.0, .70, saturate(dirt * .55 + edge * .6));\n'
+              'col = lerp(col, col * float3(.80, .74, .62), dirt * .35);\n'
+              'col *= 1.0 - .55 * saturate(W.b * 1.5 + V.b);\n'                       # cracked tiles
+              'return float4(col, lerp(.45, .85, saturate(dirt + edge)));'),
+    'ceiling': ('float stain = saturate(W.r * 1.6 + V.r * .5 - .75);\n'
+                'float ring = saturate(1.0 - abs(W.r * 1.6 + V.r * .5 - .78) / .05);\n'   # the darker rim of a water stain
+                'float3 col = B * lerp(1.0, .93, V.r);\n'
+                'col = lerp(col, col * float3(.84, .74, .55), stain * .7);\n'
+                'col = lerp(col, col * float3(.66, .56, .40), ring * .45);\n'
+                'col *= 1.0 - .5 * saturate(W.b * 1.3 + V.b * .8);\n'
+                'return float4(col, .92);')}
+
+
+def surfaces(arg='dry'):
+    """Step 3: roof, floor and ceiling of the house and its annex keep their own pictures (BaseColor / Normal of the
+    imported material, by the mesh's UVs) and take wear from the same masks as the walls, read from above (world XY):
+    roof = uneven tiles, moss and lichen, dark rain runs, soot patches; floor = grime along the walls, dull worn
+    patches, a few cracked tiles; ceiling = water stains with a darker rim, hairline cracks. One material per kind
+    (M_HomeWorn_<kind>), one instance per old material (its textures). 'apply' assigns and saves."""
+    apply = arg.strip() == 'apply'
+    mel = unreal.MaterialEditingLibrary
+    tools = unreal.AssetToolsHelpers.get_asset_tools()
+    wear = unreal.load_asset(f'{HOME}/T_HomeWear')
+    white = unreal.load_asset('/Engine/EngineResources/WhiteSquareTexture')
+    flat = unreal.load_asset('/Engine/EngineMaterials/DefaultNormal')
+
+    def parent(kind):
+        path = f'{HOME}/M_HomeWorn_{kind}'
+        mat = unreal.load_asset(path) if unreal.EditorAssetLibrary.does_asset_exist(path) else tools.create_asset(f'M_HomeWorn_{kind}', HOME, unreal.Material, unreal.MaterialFactoryNew())
+        mel.delete_all_material_expressions(mat)
+
+        def custom(code, out, names, x, y):
+            e = mel.create_material_expression(mat, unreal.MaterialExpressionCustom, x, y)
+            e.set_editor_property('output_type', out)
+            e.set_editor_property('code', code)
+            ins = []
+            for name in names:
+                i = unreal.CustomInput()
+                i.set_editor_property('input_name', name)
+                ins.append(i)
+            e.set_editor_property('inputs', ins)
+            return e
+        pos = mel.create_material_expression(mat, unreal.MaterialExpressionWorldPosition, -1400, 200)
+        base = mel.create_material_expression(mat, unreal.MaterialExpressionTextureSampleParameter2D, -900, -400)
+        base.set_editor_property('parameter_name', 'Base')
+        base.set_editor_property('texture', white)
+        nor = mel.create_material_expression(mat, unreal.MaterialExpressionTextureSampleParameter2D, -900, -150)
+        nor.set_editor_property('parameter_name', 'Normal')
+        nor.set_editor_property('texture', flat)
+        nor.set_editor_property('sampler_type', unreal.MaterialSamplerType.SAMPLERTYPE_NORMAL)
+        tint = mel.create_material_expression(mat, unreal.MaterialExpressionVectorParameter, -900, -600)
+        tint.set_editor_property('parameter_name', 'Tint')
+        tint.set_editor_property('default_value', unreal.LinearColor(1, 1, 1, 1))
+        mul = mel.create_material_expression(mat, unreal.MaterialExpressionMultiply, -650, -450)
+        mel.connect_material_expressions(base, 'RGB', mul, 'A')
+        mel.connect_material_expressions(tint, '', mul, 'B')
+        ws = []
+        for scale, y in ((430.0, 100), (173.0, 350)):
+            u = custom(f'return P.xy / {scale:.1f};', unreal.CustomMaterialOutputType.CMOT_FLOAT2, ('P',), -1100, y)
+            mel.connect_material_expressions(pos, '', u, 'P')
+            e = mel.create_material_expression(mat, unreal.MaterialExpressionTextureSample, -900, y)
+            e.set_editor_property('texture', wear)
+            e.set_editor_property('sampler_type', unreal.MaterialSamplerType.SAMPLERTYPE_MASKS)
+            mel.connect_material_expressions(u, '', e, 'UVs')
+            ws.append(e)
+        room = mel.create_material_expression(mat, unreal.MaterialExpressionVectorParameter, -1400, 600)
+        room.set_editor_property('parameter_name', 'Room')
+        room.set_editor_property('default_value', unreal.LinearColor(4263, 1763, 4937, 2437))
+        ap = mel.create_material_expression(mat, unreal.MaterialExpressionAppendVector, -1100, 600)
+        mel.connect_material_expressions(room, '', ap, 'A')
+        mel.connect_material_expressions(room, 'A', ap, 'B')
+        c = custom(CODE[kind], unreal.CustomMaterialOutputType.CMOT_FLOAT4, ('P', 'B', 'W', 'WA', 'V', 'VA', 'R'), -350, 0)
+        mel.connect_material_expressions(pos, '', c, 'P')
+        mel.connect_material_expressions(mul, '', c, 'B')
+        mel.connect_material_expressions(ws[0], 'RGB', c, 'W')
+        mel.connect_material_expressions(ws[0], 'A', c, 'WA')
+        mel.connect_material_expressions(ws[1], 'RGB', c, 'V')
+        mel.connect_material_expressions(ws[1], 'A', c, 'VA')
+        mel.connect_material_expressions(ap, '', c, 'R')
+        rgb = mel.create_material_expression(mat, unreal.MaterialExpressionComponentMask, -100, 0)
+        rgb.set_editor_property('r', True); rgb.set_editor_property('g', True); rgb.set_editor_property('b', True); rgb.set_editor_property('a', False)
+        al = mel.create_material_expression(mat, unreal.MaterialExpressionComponentMask, -100, 150)
+        al.set_editor_property('r', False); al.set_editor_property('g', False); al.set_editor_property('b', False); al.set_editor_property('a', True)
+        mel.connect_material_expressions(c, '', rgb, '')
+        mel.connect_material_expressions(c, '', al, '')
+        mel.connect_material_property(rgb, '', unreal.MaterialProperty.MP_BASE_COLOR)
+        mel.connect_material_property(al, '', unreal.MaterialProperty.MP_ROUGHNESS)
+        mel.connect_material_property(nor, 'RGB', unreal.MaterialProperty.MP_NORMAL)
+        for flag in ('used_with_instanced_static_meshes', 'used_with_nanite'):
+            mat.set_editor_property(flag, True)
+        errors = mel.recompile_material(mat)
+        unreal.EditorAssetLibrary.save_loaded_asset(mat, False)
+        return mat, [str(e) for e in errors] if errors else []
+    out = {'errors': {}, 'done': []}
+    parents = {}
+    for kind in CODE:
+        parents[kind], out['errors'][kind] = parent(kind)
+    made = {}
+    for a in unreal.GameplayStatics.get_all_actors_of_class(_world(), unreal.Actor):
+        for comp in a.get_components_by_class(unreal.StaticMeshComponent):
+            m = comp.static_mesh
+            kind = SURFACES.get(m.get_name()) if m else None
+            if not kind:
+                continue
+            n_inst = comp.get_instance_count() if isinstance(comp, unreal.InstancedStaticMeshComponent) else 1
+            locs = [(comp.get_instance_transform(i, True) if isinstance(comp, unreal.InstancedStaticMeshComponent) else comp.get_world_transform()).translation for i in range(n_inst)]
+            if not locs or not all(BOX[0] < l.x < BOX[1] and BOX[2] < l.y < BOX[3] for l in locs):
+                continue
+            for k in range(comp.get_num_materials()):
+                old = comp.get_material(k)
+                if not old or old.get_name().startswith('MI_HomeWorn'):
+                    continue
+                key = (kind, old.get_name())
+                if key not in made:
+                    name = f'MI_HomeWorn_{kind}_{old.get_name()[-6:]}'
+                    ipath = f'{HOME}/{name}'
+                    mi = unreal.load_asset(ipath) if unreal.EditorAssetLibrary.does_asset_exist(ipath) else \
+                        tools.create_asset(name, HOME, unreal.MaterialInstanceConstant, unreal.MaterialInstanceConstantFactoryNew())
+                    mel.set_material_instance_parent(mi, parents[kind])
+                    info = {'base': None, 'normal': None}
+                    if isinstance(old, unreal.MaterialInstanceConstant):
+                        tb = mel.get_material_instance_texture_parameter_value(old, 'BaseColorTexture')
+                        tn = mel.get_material_instance_texture_parameter_value(old, 'NormalTexture')
+                        if tb:
+                            mel.set_material_instance_texture_parameter_value(mi, 'Base', tb)
+                            info['base'] = tb.get_name()
+                        if tn:
+                            mel.set_material_instance_texture_parameter_value(mi, 'Normal', tn)
+                            info['normal'] = tn.get_name()
+                        f = mel.get_material_instance_vector_parameter_value(old, 'BaseColorFactor')
+                        mel.set_material_instance_vector_parameter_value(mi, 'Tint', unreal.LinearColor(f.r, f.g, f.b, 1))
+                        info['tint'] = [round(f.r, 2), round(f.g, 2), round(f.b, 2)]
+                    mel.update_material_instance(mi)
+                    unreal.EditorAssetLibrary.save_loaded_asset(mi, False)
+                    made[key] = (mi, info)
+                out['done'].append([m.get_name(), kind, made[key][1]])
+                if apply:
+                    comp.set_material(k, made[key][0])
+    if apply:
+        unreal.get_editor_subsystem(unreal.LevelEditorSubsystem).save_current_level()
+    return json.dumps(out, ensure_ascii=False)
+
+
+def restore(_=''):
+    """The annex ceiling slab (World_1140) was given a ceiling instance with no colour (black): back to the wall plaster."""
+    wall = unreal.load_asset(f'{HOME}/MI_HomePlaster_Wall')
+    n = 0
+    for a in unreal.GameplayStatics.get_all_actors_of_class(_world(), unreal.Actor):
+        for comp in a.get_components_by_class(unreal.StaticMeshComponent):
+            if comp.static_mesh and comp.static_mesh.get_name() == 'World_1140':
+                for k in range(comp.get_num_materials()):
+                    comp.set_material(k, wall)
+                    n += 1
+    unreal.get_editor_subsystem(unreal.LevelEditorSubsystem).save_current_level()
+    return n
