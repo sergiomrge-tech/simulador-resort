@@ -246,13 +246,17 @@ private:
   for(const auto& C:List(D,TEXT("crafts"))){
    const FString Id=UMareSimulation::String(C,TEXT("id")),Chapter=UMareSimulation::String(C,TEXT("chapter"));const bool bLocked=!Chapter.IsEmpty() && !S->IsChapterDone(Chapter);
    const int32 Left=S->SouvenirMakerLeft(Id),Back=S->SouvenirBackStock(Id);
+   // 11/11 (final review): the piece and its maker on one line, prices and stock on a second, smaller one (the single
+   // long line broke wherever it happened to end: "nos / fundos: 4").
    const FString Line=bLocked?FString::Printf(TEXT("%s · %s (termine a história na vila)"),*UMareSimulation::String(C,TEXT("name")),*UMareSimulation::String(C,TEXT("maker")))
-    :FString::Printf(TEXT("%s · %s · paga R$ %.0f, vende R$ %.0f · hoje ainda: %d · nos fundos: %d"),*UMareSimulation::String(C,TEXT("name")),*UMareSimulation::String(C,TEXT("maker")),
-     UMareSimulation::Number(C,TEXT("cost")),S->SouvenirPrice(C),Left,Back);
+    :MareLoc::Text(UMareSimulation::String(C,TEXT("name"))).ToString()+TEXT(" · ")+MareLoc::Text(UMareSimulation::String(C,TEXT("maker"))).ToString();
+   const FString Detail=bLocked?FString():FString::Printf(TEXT("paga R$ %.0f, vende R$ %.0f · hoje ainda: %d · nos fundos: %d"),UMareSimulation::Number(C,TEXT("cost")),S->SouvenirPrice(C),Left,Back);
    ShelfBox->AddSlot().AutoHeight().Padding(0,1)[SNew(SHorizontalBox)
     +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(0,0,6,0)[SNew(SBox).WidthOverride(14).HeightOverride(14)[SNew(SBorder).BorderImage(&Round4()).Padding(0).BorderBackgroundColor(JsonColor(C))]]
-    +SHorizontalBox::Slot().FillWidth(1).VAlign(VAlign_Center)[SNew(STextBlock).Font(Hand(16)).ColorAndOpacity(bLocked?Faded:Ink).AutoWrapText(true).Text(MareLoc::Text(Line))]
-    +SHorizontalBox::Slot().AutoWidth().Padding(4,0)[SNew(SButton).ButtonStyle(&TagButton()).ContentPadding(FMargin(8,1)).IsEnabled(!bLocked && Left>0)
+    +SHorizontalBox::Slot().FillWidth(1).VAlign(VAlign_Center)[SNew(SVerticalBox)
+     +SVerticalBox::Slot().AutoHeight()[SNew(STextBlock).Font(Hand(16)).ColorAndOpacity(bLocked?Faded:Ink).AutoWrapText(true).Text(bLocked?MareLoc::Text(Line):FText::FromString(Line))]
+     +SVerticalBox::Slot().AutoHeight()[SNew(STextBlock).Font(Hand(14)).ColorAndOpacity(Faded).AutoWrapText(true).Visibility(bLocked?EVisibility::Collapsed:EVisibility::Visible).Text(MareLoc::Text(Detail))]]
+    +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(4,0)[SNew(SButton).ButtonStyle(&TagButton()).ContentPadding(FMargin(8,1)).IsEnabled(!bLocked && Left>0)
      .OnClicked_Lambda([this,Id](){if(auto S=Sim()){S->BuySouvenirCraft(Id);Status=S->LastMessage;Sound(TEXT("deal_accept"),.4f);}RebuildShelf();return FReply::Handled();})
      [SNew(STextBlock).Font(Hand(15)).ColorAndOpacity(Ink).Text(MareLoc::Text(bLocked?FString(TEXT("bloqueado")):Left>0?FString::Printf(TEXT("comprar %d"),FMath::Min(Batch,Left)):FString(TEXT("esgotado hoje"))))]]
     +SHorizontalBox::Slot().AutoWidth()[SNew(SButton).ButtonStyle(&TagButton()).ContentPadding(FMargin(8,1)).IsEnabled(Back>0)
@@ -278,8 +282,8 @@ private:
    ThumbBrushes.Add(Brush);
    int32 Stock=0;for(const auto& C:S->SouvenirCards())if(UMareSimulation::String(C,TEXT("file"))==File)Stock=int32(UMareSimulation::Number(C,TEXT("qty")));
    Row->AddSlot().AutoWidth().Padding(0,0,10,0)[SNew(SVerticalBox)
-    +SVerticalBox::Slot().AutoHeight()[SNew(SBorder).BorderImage(FCoreStyle::Get().GetBrush("WhiteBrush")).BorderBackgroundColor(FLinearColor::White).Padding(4)
-     [SNew(SBox).WidthOverride(184).HeightOverride(104)[SNew(SImage).Image(Brush.Get())]]]
+    +SVerticalBox::Slot().AutoHeight().HAlign(HAlign_Left)[SNew(SBorder).BorderImage(FCoreStyle::Get().GetBrush("WhiteBrush")).BorderBackgroundColor(FLinearColor::White).Padding(4)
+     [SNew(SBox).WidthOverride(184).HeightOverride(104)[SNew(SImage).Image(Brush.Get())]]]   // 11/11: left-aligned, or the caption below stretched the photo
     +SVerticalBox::Slot().AutoHeight()[SNew(STextBlock).Font(Hand(15)).ColorAndOpacity(Faded).Text(MareLoc::Text(FString::Printf(TEXT("dia %.0f · %d atração(ões) · R$ %.0f cada · no expositor: %d"),
      UMareSimulation::Number(P,TEXT("day"),1),N,S->SouvenirCardPrice(N),Stock)))]
     +SVerticalBox::Slot().AutoHeight().HAlign(HAlign_Left)[SNew(SButton).ButtonStyle(&TagButton()).ContentPadding(FMargin(8,1))

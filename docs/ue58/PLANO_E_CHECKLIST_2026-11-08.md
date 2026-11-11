@@ -33,7 +33,12 @@ vale.** Os outros documentos (`PENDENCIAS_100.md`, `ROADMAP_STEAM.md`, `CHECKLIS
 - [ ] Som ambiente "que não muda nem desliga" (teste da demo): dizer qual som.
 
 ### Com o Claude, prontas para fazer
-- [ ] Lojinha de souvenires: revisão final.
+- [x] Lojinha de souvenires: revisão final (11/11): as três páginas jogadas no editor (embrulho perfeito e amassado, compra
+  de artesanato, prateleira vendendo por hora, foto -> cartões). Corrigido: linha do artesão quebrava no meio da frase
+  (agora duas linhas planejadas) e a miniatura do cartão-postal saía achatada (a legenda esticava a caixa). Fotos em
+  `D:/CodexTemp/lojinhaqa`. Ajustes de gosto ficam para quando o Sergio jogar.
+- [ ] Banca de jornal verde ao lado da lojinha (vila): é uma caixa lisa do Godot, fora do padrão "nada de caixas";
+  trocar por modelo de verdade (procurar gratuito, senão modelar).
 - [ ] Animações que faltam: telefone (precisa do aparelho na mão), encostar no corrimão do píer, levantar da toalha.
 - [ ] As duas hóspedes de uma mesa do restaurante do hotel são a mesma MetaHuman com a mesma roupa.
 - [ ] Pesca e foto, resto do plano antigo: vender peixe ao restaurante; filtros de foto; mandar foto para a lojinha.
@@ -42,7 +47,8 @@ vale.** Os outros documentos (`PENDENCIAS_100.md`, `ROADMAP_STEAM.md`, `CHECKLIS
 - [ ] Recife: peixes com cara de desenho; horizonte subaquático vazio.
 - [ ] Reteste: 2 h seguidas sem travar, incluindo o hotel (um documento diz feito, outro pede reteste).
 - [ ] Sem registro em nenhum documento: acessibilidade básica (texto, legendas, daltonismo), calçados variados, preparativos de festa aparecendo no mapa, cada expansão com horário de pico próprio.
-- [ ] Final da dívida no executável do jogo completo (a demo nunca chega lá): só foi visto no editor.
+- [ ] Final da dívida no executável do jogo completo (a demo nunca chega lá): só foi visto no editor. 11/11: corrigido o
+  caso do pagamento único que pulava a tela final; tela em folha de caderno.
 
 ### Já feito que os documentos antigos ainda listam como aberto
 Pacote Shipping; menu principal, opções e 3 slots de save; desempenho medido no executável; preset Baixo; eventos
@@ -307,7 +313,7 @@ A ilha agora é grande e bonita, mas ainda é cenário. Propostas para dar uso a
 
 - [x] Grand Hotel inteiro (quartos, VIPs, eventos, restaurante, salão de jogos) revisado com o mapa novo. 10/11: saguão,
   recepção, sinuca, sofás, torre vista de cima, piscina, corredor e suíte fotografados (`D:/CodexTemp/hotel1`), sem defeito.
-- [ ] Lojinha de souvenires: revisão final (3.5, "por último").
+- [x] Lojinha de souvenires: revisão final (3.5, "por último"). Feita em 11/11 (ver "Pendências reais").
 - [x] Balanceamento de 6–10 h: **fechado por decisão do Sergio (11/11): "Campanha deixa com 20h"**. A simulação dá ~20 h
   para concluir a campanha e quitar a dívida (`BALANCEAMENTO.md`); acelerar ~2,3x encurtaria também a demo (2,7 h).
   Nada alterado nos números.
