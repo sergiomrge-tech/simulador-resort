@@ -7,6 +7,7 @@ probe(arg): every mesh part against the two side walls (mesh, actor, instance, c
 fix(arg): 'dry' lists, 'apply' shrinks the old window parts and the middle pilaster to nothing, moves the pilasters
 next to it to the middle of the bays (y +-180) and places the cathedral windows (mare_church_window); saves the level."""
 import json
+from pathlib import Path
 import unreal
 
 CX, CY = 7500.0, 5000.0     # Godot CHURCH_C (75, 0, 50)
@@ -291,6 +292,35 @@ def _place(actors, mesh, label, loc, yaw=0.0, scale=1.0, collide=False, tags=())
 ALTAR_TOP = 144.0     # world z of the altar cloth (chancel floor 50 + slab top 92.7 + cloth 1.2)
 
 
+def highaltar(arg='dry'):
+    """11/11 (Sergio: "mármore com traços de raio, detalhes em ouro, imponente, no altar Jesus na cruz"): swaps the nave
+    for its marble-and-gold generation (a fresh import folder: new material slots do not survive an in-place
+    re-import), hangs the crucifix (mare_church_crucifix) on the reredos with the crossing on the sunburst centre
+    (z 328), and moves the candle sets with the altar table. 'apply' saves; PIE stopped; re-runnable."""
+    data = json.loads((Path(unreal.Paths.project_content_dir()) / 'Data' / 'custom_assets.json').read_text(encoding='utf-8'))
+    world = _world()
+    actors = unreal.get_editor_subsystem(unreal.EditorActorSubsystem)
+    nave = unreal.load_asset(data['mare_church_nave'])
+    cross = unreal.load_asset(data.get('mare_church_crucifix', ''))
+    out = {'nave': data['mare_church_nave'], 'cross': bool(cross), 'swapped': 0}
+    if arg.strip() != 'apply':
+        return json.dumps(out)
+    for a in unreal.GameplayStatics.get_all_actors_of_class(world, unreal.StaticMeshActor):
+        label = a.get_actor_label()
+        if label == 'Igreja · nave' and a.static_mesh_component.static_mesh != nave:
+            a.static_mesh_component.set_static_mesh(nave)
+            out['swapped'] += 1
+        if label == 'Igreja · crucifixo':
+            actors.destroy_actor(a)
+    if cross:
+        # crossing 148 cm above the cross foot; reredos face at y CY + 550; the model faces +Y after import: turned to the nave
+        c = _place(actors, cross, 'Igreja · crucifixo', (CX, CY + 549, 328 - 148), 180.0, 1.0, tags=[IN_TAG])
+        out['crucifix'] = [round(v) for v in (c.get_actor_location().x, c.get_actor_location().y, c.get_actor_location().z)]
+    unreal.get_editor_subsystem(unreal.LevelEditorSubsystem).save_current_level()
+    out['candles'] = json.loads(candles('apply'))
+    return json.dumps(out, ensure_ascii=False)
+
+
 def candles(arg='dry'):
     """11/11 (Sergio: "vi castiçais no chão, coloque sobre a mesa"): the two brass candleholder sets stood on the chancel
     floor beside the altar; they go onto the altar, one near each end. The height is traced on the altar itself.
@@ -302,7 +332,7 @@ def candles(arg='dry'):
         if 'castiçais' not in label:
             continue
         x = CX + (-78 if 'esq' in label else 78)
-        y = CY + 435
+        y = CY + 395
         hit = unreal.SystemLibrary.line_trace_single(world, unreal.Vector(x, y, 300), unreal.Vector(x, y, 40), unreal.TraceTypeQuery.TRACE_TYPE_QUERY1,
                                                      True, [a], unreal.DrawDebugTrace.NONE, True)
         z = hit.to_tuple()[4].z if hit else ALTAR_TOP
@@ -409,8 +439,8 @@ def interior(arg='dry'):
         a.static_mesh_component.set_cast_shadow(False)   # its own light sits among the arms
     candles = _asset('brass_candleholders')
     # 11/11 (Sergio: "vi castiçais no chão, coloque sobre a mesa"): table candleholders belong ON the altar
-    _place(actors, candles, 'Igreja · castiçais esq', (CX - 78, CY + 435, ALTAR_TOP), 20.0, 1.0, tags=tags)
-    _place(actors, candles, 'Igreja · castiçais dir', (CX + 78, CY + 435, ALTAR_TOP), 160.0, 1.0, tags=tags)
+    _place(actors, candles, 'Igreja · castiçais esq', (CX - 78, CY + 395, ALTAR_TOP), 20.0, 1.0, tags=tags)
+    _place(actors, candles, 'Igreja · castiçais dir', (CX + 78, CY + 395, ALTAR_TOP), 160.0, 1.0, tags=tags)
     for k, w in enumerate((-240.0, 240.0)):   # daylight fill (UMareVisualWorld drives MareBareLight: on by day, off at night)
         light = actors.spawn_actor_from_class(unreal.PointLight, unreal.Vector(CX, CY + w, 400))
         light.set_actor_label('Igreja · luz do dia %d' % (k + 1))

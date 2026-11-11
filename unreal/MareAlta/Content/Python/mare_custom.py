@@ -125,6 +125,11 @@ def run(action, arg=''):
     if action == 'fresh':
         # New folder per model generation, so its materials/textures are created fresh (v2: unique names).
         return import_all(True, [arg], '_m5')
+    if action == 'freshto':
+        # "slug@_m6": a new generation of a model whose material slots changed (an in-place re-import keeps the old
+        # materials and leaves new slots on the grey default); the level then swaps to the new mesh.
+        slug, _, suffix = arg.partition('@')
+        return import_all(True, [slug], suffix or '_m6')
     if action == 'reimport':
         # Replace an existing model in place (level references stay valid).
         return import_all(True, [arg])

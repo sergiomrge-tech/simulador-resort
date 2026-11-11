@@ -256,6 +256,114 @@ def _bind_swim_material(mesh):
     return [str(m.get_editor_property('material_interface').get_path_name()) for m in mesh.get_editor_property('materials')]
 
 
+def vestment_material(arg=''):
+    """M_MH_Vestment (11/11, Sergio: "cor brilhante, precisa ter textura de tecido"): woven cloth for the priest's
+    vestments. The garment has no UVs, so the Poly Haven quatrefoil jacquard (CC0: colour, normal, roughness) is
+    projected from the PRE-SKINNED position (it stays glued to the cloth when the body moves): front/back faces read
+    it in XZ, side faces in YZ, one 40 cm tile (a motif every 3.3 cm). The weave shades the Tint tone on tone (a damask), the normal
+    map gives the threads, the roughness stays high (cloth, no plastic shine). Params: Tint, Roughness, Metallic
+    (the cross). 'bind' also puts it on every slot of the chasuble meshes."""
+    mel = unreal.MaterialEditingLibrary
+    tools = unreal.AssetToolsHelpers.get_asset_tools()
+    src = 'D:/Assets/PolyHaven/quatrefoil_jacquard_fabric/quatrefoil_jacquard_fabric_%s_1k.jpg'
+    tex = {}
+    for kind in ('diff', 'nor', 'rough'):
+        path = f'{SWIM}/T_Vestment_{kind}'
+        if not unreal.EditorAssetLibrary.does_asset_exist(path):
+            task = unreal.AssetImportTask()
+            task.filename = src % kind
+            task.destination_path = SWIM
+            task.destination_name = f'T_Vestment_{kind}'
+            task.automated = True
+            task.replace_existing = True
+            task.save = True
+            tools.import_asset_tasks([task])
+        t = unreal.load_asset(path)
+        if kind == 'nor':
+            t.set_editor_property('compression_settings', unreal.TextureCompressionSettings.TC_NORMALMAP)
+            t.set_editor_property('srgb', False)
+        if kind == 'rough':
+            t.set_editor_property('srgb', False)
+        unreal.EditorAssetLibrary.save_loaded_asset(t, False)
+        tex[kind] = t
+    path = f'{SWIM}/M_MH_Vestment'
+    mat = unreal.load_asset(path) if unreal.EditorAssetLibrary.does_asset_exist(path) else \
+        tools.create_asset('M_MH_Vestment', SWIM, unreal.Material, unreal.MaterialFactoryNew())
+    mel.delete_all_material_expressions(mat)
+
+    def custom(code, out, names, x, y):
+        e = mel.create_material_expression(mat, unreal.MaterialExpressionCustom, x, y)
+        e.set_editor_property('output_type', out)
+        e.set_editor_property('code', code)
+        ins = []
+        for name in names:
+            i = unreal.CustomInput()
+            i.set_editor_property('input_name', name)
+            ins.append(i)
+        e.set_editor_property('inputs', ins)
+        return e
+    pos = mel.create_material_expression(mat, unreal.MaterialExpressionPreSkinnedPosition, -1200, 0)
+    nrm = mel.create_material_expression(mat, unreal.MaterialExpressionPreSkinnedNormal, -1200, 200)
+    uv = custom('float w = step(abs(N.x), abs(N.y)); return lerp(P.yz, P.xz, w) / 40.0;', unreal.CustomMaterialOutputType.CMOT_FLOAT2, ('P', 'N'), -900, 0)
+    # pre-skinned data exists only in the vertex shader: carried to the pixel through interpolators
+    ip = mel.create_material_expression(mat, unreal.MaterialExpressionVertexInterpolator, -1050, 0)
+    inn = mel.create_material_expression(mat, unreal.MaterialExpressionVertexInterpolator, -1050, 200)
+    mel.connect_material_expressions(pos, '', ip, '')
+    mel.connect_material_expressions(nrm, '', inn, '')
+    mel.connect_material_expressions(ip, '', uv, 'P')
+    mel.connect_material_expressions(inn, '', uv, 'N')
+
+    def sample(t, y, sampler):
+        e = mel.create_material_expression(mat, unreal.MaterialExpressionTextureSample, -600, y)
+        e.set_editor_property('texture', t)
+        e.set_editor_property('sampler_type', sampler)
+        mel.connect_material_expressions(uv, '', e, 'UVs')
+        return e
+    d = sample(tex['diff'], 0, unreal.MaterialSamplerType.SAMPLERTYPE_COLOR)
+    n = sample(tex['nor'], 260, unreal.MaterialSamplerType.SAMPLERTYPE_NORMAL)
+    r = sample(tex['rough'], 520, unreal.MaterialSamplerType.SAMPLERTYPE_LINEAR_COLOR)
+    tint = mel.create_material_expression(mat, unreal.MaterialExpressionVectorParameter, -600, -260)
+    tint.set_editor_property('parameter_name', 'Tint')
+    tint.set_editor_property('default_value', unreal.LinearColor(.30, .012, .016, 1))
+    rough = mel.create_material_expression(mat, unreal.MaterialExpressionScalarParameter, -600, 780)
+    rough.set_editor_property('parameter_name', 'Roughness')
+    rough.set_editor_property('default_value', .85)
+    metal = mel.create_material_expression(mat, unreal.MaterialExpressionScalarParameter, -600, 900)
+    metal.set_editor_property('parameter_name', 'Metallic')
+    metal.set_editor_property('default_value', 0.0)
+    # tone on tone: the woven motif darkens and lifts the tint (a damask), never changes its hue
+    shade = custom('float l = saturate((D.g - .61) / .27); return T * lerp(.6, 1.4, l);',   # the motif is in the roughness map (the colour map is flat)
+                  
+                   unreal.CustomMaterialOutputType.CMOT_FLOAT3, ('D', 'T'), -250, -100)
+    mel.connect_material_expressions(r, 'RGB', shade, 'D')
+    mel.connect_material_expressions(tint, '', shade, 'T')
+    rr = custom('return saturate(R * lerp(.85, 1.1, T.g));', unreal.CustomMaterialOutputType.CMOT_FLOAT1, ('R', 'T'), -250, 600)
+    mel.connect_material_expressions(rough, '', rr, 'R')
+    mel.connect_material_expressions(r, 'RGB', rr, 'T')
+    mel.connect_material_property(shade, '', unreal.MaterialProperty.MP_BASE_COLOR)
+    mel.connect_material_property(n, 'RGB', unreal.MaterialProperty.MP_NORMAL)
+    mel.connect_material_property(rr, '', unreal.MaterialProperty.MP_ROUGHNESS)
+    mel.connect_material_property(metal, '', unreal.MaterialProperty.MP_METALLIC)
+    mat.set_editor_property('used_with_skeletal_mesh', True)
+    errors = mel.recompile_material(mat)
+    unreal.EditorAssetLibrary.save_loaded_asset(mat, False)
+    bound = []
+    if arg.strip() == 'bind':
+        for q in unreal.EditorAssetLibrary.list_assets(SWIM, False, False):
+            mesh = unreal.load_asset(q)
+            if isinstance(mesh, unreal.SkeletalMesh) and 'Chasuble' in mesh.get_name():
+                slots = []
+                for old in mesh.get_editor_property('materials'):
+                    new = unreal.SkeletalMaterial()
+                    new.set_editor_property('material_interface', mat)
+                    new.set_editor_property('material_slot_name', old.get_editor_property('material_slot_name'))
+                    slots.append(new)
+                mesh.set_editor_property('materials', slots)
+                unreal.EditorAssetLibrary.save_loaded_asset(mesh, False)
+                bound.append(mesh.get_name())
+    return {'material': mat.get_path_name(), 'errors': [str(e) for e in errors] if errors else [], 'bound': bound}
+
+
 def export_face(arg):
     """'<name>@<dir>': the face skeletal mesh (head, neck and upper chest) as FBX, for garments that close round the
     neck (11/11, the priest's collar: the body mesh ends at the base of the neck)."""

@@ -140,7 +140,7 @@ def pier(name, x, v, stone, pale, engaged=0):
     for k in range(8):
         a = math.radians(22.5 + 45 * k)
         sx, sv = x + .27 * math.cos(a), v + .27 * math.sin(a)
-        tb(f'{name}_shaft{k}', (sx, sv, FL + .46), (sx, sv, CAP - .34), .07, pale, 10)
+        tb(f'{name}_shaft{k}', (sx, sv, FL + .46), (sx, sv, CAP - .34), .07, SHAFT[0] or pale, 10)
     lathe(f'{name}_neck', [(0, 0), (.36, 0), (.375, .025), (.36, .05), (0, .05)], B(x, v, CAP - .36), pale, 24)
     lathe(f'{name}_bell', [(0, 0), (.33, 0), (.34, .06), (.37, .13), (.42, .19), (.45, .22), (0, .22)], B(x, v, CAP - .31), pale, 24)
     lathe(f'{name}_abacus', [(0, 0), (.47, 0), (.49, .03), (.49, .07), (.46, .09), (0, .09)], B(x, v, CAP - .09), stone, 8)
@@ -195,6 +195,86 @@ def _pic_material(name, im, rough):
     nt.links.new(tex.outputs['Color'], bsdf.inputs['Base Color'])
     bsdf.inputs['Roughness'].default_value = rough
     return m
+
+
+def _fft_noise(n, beta, seed):
+    """Periodic smooth noise in -1..1 (random phases under a 1/f^beta spectrum): tiles without a seam."""
+    rng = np.random.default_rng(seed)
+    fx = np.fft.fftfreq(n)[:, None]
+    fy = np.fft.rfftfreq(n)[None, :]
+    f = np.hypot(fx, fy)
+    f[0, 0] = 1
+    spec = (rng.normal(size=f.shape) + 1j * rng.normal(size=f.shape)) / f ** beta
+    spec[0, 0] = 0
+    out = np.fft.irfft2(spec, s=(n, n)).astype(np.float32)
+    return out / np.abs(out).max()
+
+
+def marble_image(base, vein, seed, n=2048, second=None, veins=1.0):
+    """Polished marble with lightning veins (11/11, Sergio: "mármore com traços de raio"): the veins are the zero lines
+    of a smooth field read through a strong domain warp, so they run long, fork and break like cracks; a finer second
+    family crosses them (in `second` colour: gold in the white marble); soft clouds vary the ground."""
+    ii, jj = np.meshgrid(np.arange(n), np.arange(n), indexing='ij')
+    wx, wy = _fft_noise(n, 2.4, seed), _fft_noise(n, 2.4, seed + 1)
+
+    def warped(field, amp):
+        return field[(ii + (wx * amp).astype(np.int32)) % n, (jj + (wy * amp).astype(np.int32)) % n]
+    f1 = warped(_fft_noise(n, 1.9, seed + 2), n * .11)
+    f2 = warped(_fft_noise(n, 1.6, seed + 3), n * .06)
+    f3 = warped(_fft_noise(n, 1.7, seed + 6), n * .09)
+    cloud = _fft_noise(n, 2.6, seed + 4)
+    thick = .008 + .010 * np.clip(_fft_noise(n, 2.2, seed + 5), 0, 1)             # veins swell and thin out
+    # several vein families: the level lines of one warped field at different heights run side by side and never cross,
+    # like the bedding of real marble; a second field cuts across them (the forks), a third gives the hair veins
+    v1 = np.zeros((n, n), np.float32)
+    for level, strength, width in ((0, 1.0, 1.0), (.2, .75, .7), (-.23, .7, .7), (.42, .5, .5), (-.47, .5, .5), (.62, .35, .4), (-.68, .35, .4)):
+        v1 = np.maximum(v1, strength * np.clip(1 - np.abs(f1 - level) / (thick * width), 0, 1) ** 1.4)
+    for level, strength in ((0, .7), (.3, .45), (-.33, .45)):
+        v1 = np.maximum(v1, strength * np.clip(1 - np.abs(f3 - level) / (thick * .55), 0, 1) ** 1.4)
+    v2 = np.zeros((n, n), np.float32)
+    for level in (0, .25, -.27, .5, -.52):
+        v2 = np.maximum(v2, np.clip(1 - np.abs(f2 - level) / .005, 0, 1) ** 2 * .7)
+    halo = np.zeros((n, n), np.float32)
+    for level in (0, .2, -.23):
+        halo = np.maximum(halo, np.clip(1 - np.abs(f1 - level) / (thick * 7), 0, 1) * .16)   # the stone is stained along a vein
+    img = np.asarray(base, np.float32)[None, None, :] * (.90 + .10 * cloud)[:, :, None]
+    for mask, col in ((halo * veins, vein), (np.clip(v1, 0, 1) * veins, vein), (v2 * veins, second if second is not None else vein)):
+        img = img * (1 - mask[:, :, None]) + np.asarray(col, np.float32)[None, None, :] * mask[:, :, None]
+    return np.clip(img, 0, 1)
+
+
+def marble_floor_image(n=2048):
+    """One 1.6 m tile of the paving in polished marble: white and black squares set on the diagonal, each cut from its
+    own slab (veins do not run across the joints), gold-veined black; a thin dark joint."""
+    white = marble_image((.90, .89, .86), (.36, .37, .40), 21, n, second=(.70, .58, .34))
+    black = marble_image((.035, .035, .04), (.82, .80, .74), 22, n, second=(.72, .56, .24), veins=.8)
+    u, v = np.meshgrid((np.arange(n) + .5) / n * 4, (np.arange(n) + .5) / n * 4)
+    a, b = (u + v) / 2 * 2, (u - v) / 2 * 2                    # diagonal lattice: 28 cm squares
+    ca, cb = np.floor(a), np.floor(b)
+    fa, fb = a - ca, b - cb
+    dark = ((ca + cb) % 2 == 0)
+    # each square reads the slab at its own offset
+    off = ((ca * 37 + cb * 91) % 13).astype(np.int32) * (n // 13)
+    ii, jj = np.meshgrid(np.arange(n), np.arange(n), indexing='ij')
+    w2 = white[(ii + off) % n, (jj + off * 3) % n]
+    b2 = black[(ii + off * 5) % n, (jj + off) % n]
+    img = np.where(dark[:, :, None], b2, w2)
+    joint = (np.minimum(fa, 1 - fa) < .012) | (np.minimum(fb, 1 - fb) < .012)
+    img[joint] *= .55
+    return np.clip(img, 0, 1)
+
+
+def _gold():
+    m = bpy.data.materials.new('Gold')
+    m.use_nodes = True
+    p = m.node_tree.nodes['Principled BSDF']
+    p.inputs['Base Color'].default_value = (1.0, .74, .30, 1)
+    p.inputs['Metallic'].default_value = 1.0
+    p.inputs['Roughness'].default_value = .26
+    return m
+
+
+SHAFT = [None]     # material of the slender shafts (set in nave(): dark green marble)
 
 
 def floor_image(n=1024):
@@ -294,16 +374,21 @@ def nave():
     slug = 'mare_church_nave'
     out = OUT / slug
     out.mkdir(parents=True, exist_ok=True)
-    stone = _pic_material('Stone', _save(f'{slug}_Cantaria', ashlar_image(), out), .8)             # ashlar: walls, piers (uv 2.4 m)
-    pale = material('Pale', 'painted_plaster_wall', (.80, .77, .70), rough=.8, out=out)            # dressed stone: shafts, ribs, mouldings
-    brick = material('Brick', 'brown_brick_02', (.52, .27, .16), rough=.85, out=out)               # vault webs
-    marble = material('Marble', 'marble_01', (.90, .89, .86), rough=.3, out=out)
+    # 11/11 (Sergio: "mármore com traços de raio, com detalhes em ouro, precisa ser imponente"): walls, piers, altar and
+    # chancel in white marble with lightning veins, the slender shafts in dark green marble, every moulding, capital, rib
+    # and boss gilded, the vault webs in ivory plaster, the paving in polished black and white marble.
+    stone = _pic_material('Stone', _save(f'{slug}_Marmore', marble_image((.90, .89, .86), (.36, .37, .40), 11, second=(.74, .60, .32)), out), .22)
+    pale = _gold()                                                                                 # mouldings, capitals, ribs, bosses
+    SHAFT[0] = _pic_material('Verde', _save(f'{slug}_MarmoreVerde', marble_image((.10, .24, .17), (.86, .88, .80), 12, second=(.80, .64, .30), veins=.9), out), .18)
+    shaft = SHAFT[0]
+    brick = material('Vault', 'painted_plaster_wall', (.90, .86, .76), rough=.75, out=out)         # vault webs: ivory plaster
+    marble = _pic_material('Marble', _save(f'{slug}_MarmoreAltar', marble_image((.93, .92, .90), (.42, .42, .45), 13, second=(.78, .62, .30)), out), .15)
     wood = material('Wood', 'oak_wood_planks', (.24, .11, .06), rough=.5, out=out)
     dark = material('WoodDark', 'oak_wood_planks', (.13, .06, .035), rough=.45, out=out)
     cloth = material('Cloth', 'rough_linen', (.95, .94, .90), rough=.9, out=out)
     iron = material('Iron', 'metal_plate', (.09, .09, .10), rough=.5, out=out)
     brass = material('Brass', 'metal_plate', (.72, .52, .18), rough=.35, out=out)
-    floor = _pic_material('Floor', _save(f'{slug}_Piso', floor_image(), out), .35)
+    floor = _pic_material('Floor', _save(f'{slug}_Piso', marble_floor_image(), out), .14)
 
     # floor and chancel
     bx('floor', (2 * HW, 2 * HV, FL), (0, 0, FL / 2), floor, uv=1.6, bevel=0)
@@ -320,7 +405,7 @@ def nave():
     # the front wall around the door: the old box wall is rebuilt in slabs that leave x -1..1 open up to 4.62 m; this
     # stone fills between the round door arch (radius 1 m, springing 3.6 m) and that height, through the whole wall
     semi = [(math.cos(math.pi - math.pi * i / 16), 3.6 + math.sin(math.pi * i / 16)) for i in range(17)]
-    band('door_spandrel', semi, [(p, 4.62) for p, q in semi], -HV - .30, -HV + T, pale, xz(0), uv=1.2)
+    band('door_spandrel', semi, [(p, 4.62) for p, q in semi], -HV - .30, -HV + T, stone, xz(0), uv=2.4)
     bx('lining_overdoor', (2.0, T, TOP - 4.62), (0, -HV + T / 2, (TOP + 4.62) / 2), stone, uv=2.4, bevel=0)
     # door arch moulding inside and a threshold
     ring_in = [(.99 * (p), 3.6 + (q - 3.6) * .99) for p, q in semi]
@@ -354,16 +439,16 @@ def nave():
             lo, hi = max(v - .28, -HV + T), min(v + .28, HV - T)
             bx(f'arcade_over{sx}{v}', (2 * WALL, hi - lo, TOP - CAP), (sx * PX, (lo + hi) / 2, (TOP + CAP) / 2), stone, uv=2.4, bevel=0)
             # vaulting shaft from the capital to the nave springing, with its own small capital
-            tb(f'vshaft{sx}{v}', (sx * (PX - WALL - .06), (lo + hi) / 2, CAP), (sx * (PX - WALL - .06), (lo + hi) / 2, NAVE_SPRING - .12), .07, pale, 10)
+            tb(f'vshaft{sx}{v}', (sx * (PX - WALL - .06), (lo + hi) / 2, CAP), (sx * (PX - WALL - .06), (lo + hi) / 2, NAVE_SPRING - .12), .07, shaft, 10)
             lathe(f'vcap{sx}{v}', [(0, 0), (.08, 0), (.10, .05), (.15, .10), (.15, .13), (0, .13)], B(sx * (PX - WALL - .06), (lo + hi) / 2, NAVE_SPRING - .13), pale, 14)
         bx(f'string{sx}', (.05, 2 * HV - 2 * T, .07), (sx * (PX - WALL - .02), 0, NAVE_SPRING - .06), pale, uv=1.0, bevel=.01)
         # responds on the side walls and their capitals at the aisle springing
         for v in LINES:
             vv = max(min(v, HV - .14), -HV + .14)
-            tb(f'respond{sx}{v}', (sx * (HW - T - .07), vv, FL), (sx * (HW - T - .07), vv, AISLE_SPRING - .12), .08, pale, 10)
+            tb(f'respond{sx}{v}', (sx * (HW - T - .07), vv, FL), (sx * (HW - T - .07), vv, AISLE_SPRING - .12), .08, shaft, 10)
             lathe(f'rcap{sx}{v}', [(0, 0), (.09, 0), (.11, .05), (.16, .10), (.16, .13), (0, .13)], B(sx * (HW - T - .07), vv, AISLE_SPRING - .13), pale, 14)
             lathe(f'rbase{sx}{v}', [(0, 0), (.14, 0), (.14, .12), (.10, .18), (0, .18)], B(sx * (HW - T - .07), vv, FL), pale, 14)
-            tb(f'respond_in{sx}{v}', (sx * (PX + WALL + .06), vv, CAP), (sx * (PX + WALL + .06), vv, AISLE_SPRING - .12), .07, pale, 10)
+            tb(f'respond_in{sx}{v}', (sx * (PX + WALL + .06), vv, CAP), (sx * (PX + WALL + .06), vv, AISLE_SPRING - .12), .07, shaft, 10)
             lathe(f'rcap_in{sx}{v}', [(0, 0), (.08, 0), (.10, .05), (.15, .10), (.15, .13), (0, .13)], B(sx * (PX + WALL + .06), vv, AISLE_SPRING - .13), pale, 14)
 
     # vaults: brick webs, transverse ribs on the pier lines, diagonal ribs and a boss in every bay, a ridge rib
@@ -385,7 +470,7 @@ def nave():
         tb(f'{name}_ridge', (cx, -HV + T, spring + rise - .04), (cx, HV - T, spring + rise - .04), .045, pale, 8)
 
     # chancel: marble altar under a cloth, two steps up; a standing brass cross and a lectern
-    av = 4.35
+    av = 3.95      # (4.35 before the reredos: the priest stands between the table and the gradine, 77 cm)
     for sx in (-1, 1):
         bx(f'altar_leg{sx}', (.34, .62, .82), (sx * .72, av, CH + .41), marble, uv=1.0, bevel=.03)
     bx('altar_base', (2.1, .8, .08), (0, av, CH + .04), marble, uv=1.0, bevel=.015)
@@ -393,6 +478,47 @@ def nave():
     bx('altar_cloth', (2.36, 1.01, .012), (0, av, CH + .927), cloth, uv=.6, bevel=.004)
     for sx in (-1, 1):
         bx(f'altar_fall{sx}', (.012, 1.01, .34), (sx * 1.18, av, CH + .76), cloth, uv=.6, bevel=.004)
+    # altar frontal: a gilded panel with a cross in a ring, gilt edges on the slab
+    bx('altar_frontal', (1.06, .02, .62), (0, av - .32, CH + .43), pale, bevel=.004)
+    bx('altar_front_field', (.96, .012, .52), (0, av - .336, CH + .43), SHAFT[0], uv=1.2, bevel=.002)
+    bx('altar_cross_v', (.05, .014, .34), (0, av - .345, CH + .43), pale, bevel=.004)
+    bx('altar_cross_h', (.22, .014, .05), (0, av - .345, CH + .48), pale, bevel=.004)
+    bx('altar_edge', (2.32, .97, .02), (0, av, CH + .815), pale, bevel=.004)
+    # reredos against the east wall: a green marble field in a gilded frame under a gable, gilded columns, a sunburst
+    # behind the crucifix (its own model, hung in the level at RC), the tabernacle on a marble shelf
+    rv = HV - T - .07                      # centre of the 14 cm thick panel
+    RW, RH = 1.45, 3.55                    # half width, height above the chancel floor
+    bx('reredos_field', (2 * RW, .14, RH), (0, rv, CH + RH / 2), SHAFT[0], uv=2.0, bevel=.004)
+    for sx in (-1, 1):
+        bx(f'reredos_frame{sx}', (.10, .18, RH), (sx * (RW + .05), rv, CH + RH / 2), pale, bevel=.01)
+        tb(f'reredos_col{sx}', (sx * (RW + .26), rv - .08, CH + .32), (sx * (RW + .26), rv - .08, CH + RH - .5), .085, marble, 16)
+        lathe(f'reredos_colbase{sx}', [(0, 0), (.15, 0), (.15, .1), (.11, .16), (.13, .22), (.10, .32), (0, .32)], B(sx * (RW + .26), rv - .08, CH), pale, 20)
+        lathe(f'reredos_colcap{sx}', [(0, 0), (.095, 0), (.11, .05), (.15, .14), (.17, .2), (.17, .26), (0, .26)], B(sx * (RW + .26), rv - .08, CH + RH - .5), pale, 20)
+        lathe(f'reredos_finial{sx}', [(0, 0), (.08, 0), (.10, .06), (.05, .14), (.07, .2), (.02, .32), (0, .34)], B(sx * (RW + .26), rv - .08, CH + RH - .24), pale, 16)
+    bx('reredos_sill', (2 * RW + .9, .26, .09), (0, rv - .04, CH + RH - .045 - .0), pale, bevel=.012)
+    gx = [(-RW - .15 + (2 * RW + .3) * i / 16) for i in range(17)]
+    band('reredos_gable', [(x, CH + RH) for x in gx], [(x, CH + RH + .78 * (1 - abs(x) / (RW + .15))) for x in gx], rv - .09, rv + .07, SHAFT[0], xz(0), uv=2.0, bevel=.004)
+    band('reredos_gable_rim', [(x, CH + RH + .78 * (1 - abs(x) / (RW + .15))) for x in gx],
+         [(x, CH + RH + .09 + .78 * (1 - abs(x) / (RW + .15))) for x in gx], rv - .12, rv + .07, pale, xz(0), bevel=.006)
+    lathe('reredos_top', [(0, 0), (.07, 0), (.09, .05), (.04, .12), (.06, .18), (.015, .3), (0, .31)], B(0, rv - .02, CH + RH + .86), pale, 16)
+    RC = CH + 2.78                         # centre of the sunburst = the crossing of the crucifix
+    for i in range(36):
+        a = 2 * math.pi * i / 36
+        r0, r1 = .50, (1.18 if i % 2 == 0 else .86)
+        if abs(math.cos(a)) * r1 > RW - .06:      # the rays stay inside the frame
+            r1 = (RW - .06) / abs(math.cos(a))
+        tb(f'ray{i}', (math.cos(a) * r0, rv - .08, RC + math.sin(a) * r0), (math.cos(a) * r1, rv - .08, RC + math.sin(a) * r1), .026 if i % 2 == 0 else .016, pale, 6)
+    ring = [(math.cos(2 * math.pi * i / 40) * .47, RC + math.sin(2 * math.pi * i / 40) * .47) for i in range(41)]
+    ring2 = [(math.cos(2 * math.pi * i / 40) * .52, RC + math.sin(2 * math.pi * i / 40) * .52) for i in range(41)]
+    band('ray_ring', ring, ring2, rv - .095, rv - .07, pale, xz(0), bevel=.003)
+    # gradine (the shelf behind the altar table) and the tabernacle on it
+    bx('gradine', (2.5, .30, .22), (0, rv - .22, CH + 1.03), marble, uv=1.2, bevel=.012)
+    bx('gradine_foot', (2.3, .26, .92), (0, rv - .22, CH + .46), marble, uv=1.2, bevel=.01)
+    bx('tabernacle', (.42, .26, .40), (0, rv - .22, CH + 1.34), pale, bevel=.012)
+    bx('tabernacle_door', (.26, .012, .30), (0, rv - .355, CH + 1.33), SHAFT[0], uv=1.0, bevel=.003)
+    bx('tabernacle_cross_v', (.03, .012, .2), (0, rv - .362, CH + 1.33), pale, bevel=.003)
+    bx('tabernacle_cross_h', (.12, .012, .03), (0, rv - .362, CH + 1.36), pale, bevel=.003)
+    lathe('tabernacle_dome', [(0, 0), (.20, 0), (.20, .03), (.14, .08), (.05, .11), (0, .12)], B(0, rv - .22, CH + 1.54), pale, 20)
     cx_, cv_ = -1.75, 3.75
     lathe('cross_foot', [(0, 0), (.16, 0), (.17, .03), (.10, .07), (.04, .12), (.03, .2), (0, .2)], B(cx_, cv_, CH), brass, 18)
     tb('cross_staff', (cx_, cv_, CH + .2), (cx_, cv_, CH + 2.05), .018, brass, 10)

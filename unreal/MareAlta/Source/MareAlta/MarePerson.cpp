@@ -528,7 +528,7 @@ bool AMarePerson::SetMetaHuman(const FString& Name)
    for(int32 I=0;I<Part->GetNumMaterials();++I)if(auto M=Part->CreateDynamicMaterialInstance(I)){const FString Slot=Part->GetMaterialSlotNames().IsValidIndex(I)?Part->GetMaterialSlotNames()[I].ToString():FString();
     const bool bWhite=Slot.Contains(TEXT("White")),bMetal=Slot.Contains(TEXT("Metal"));   // i18n:skip
     M->SetVectorParameterValue(TEXT("Tint"),bWhite?FLinearColor(.80f,.78f,.72f):bMetal?FLinearColor(.62f,.62f,.66f):FLinearColor(.30f,.012f,.016f));
-    M->SetScalarParameterValue(TEXT("Roughness"),bMetal?.28f:bWhite?.8f:.62f);}   // i18n:skip
+    M->SetScalarParameterValue(TEXT("Roughness"),bMetal?.3f:bWhite?.92f:.85f);M->SetScalarParameterValue(TEXT("Metallic"),bMetal?1.f:0.f);}   // i18n:skip
    Overwear.Add(Part);}}
  const bool bSwim=Name.EndsWith(TEXT("_Swim"));const FString RoleKey=bSwim?TEXT("swim"):MetaRole.IsEmpty()?TEXT("village"):MetaRole;
  auto Pick=[this](const TArray<TSharedPtr<FJsonValue>>& List,const TCHAR* Salt,int32 First=0){
