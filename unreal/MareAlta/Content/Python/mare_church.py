@@ -288,6 +288,33 @@ def _place(actors, mesh, label, loc, yaw=0.0, scale=1.0, collide=False, tags=())
     return a
 
 
+ALTAR_TOP = 144.0     # world z of the altar cloth (chancel floor 50 + slab top 92.7 + cloth 1.2)
+
+
+def candles(arg='dry'):
+    """11/11 (Sergio: "vi castiçais no chão, coloque sobre a mesa"): the two brass candleholder sets stood on the chancel
+    floor beside the altar; they go onto the altar, one near each end. The height is traced on the altar itself.
+    'apply' moves the existing actors and saves (PIE stopped). Re-runnable."""
+    world = _world()
+    out = []
+    for a in unreal.GameplayStatics.get_all_actors_of_class(world, unreal.StaticMeshActor):
+        label = a.get_actor_label()
+        if 'castiçais' not in label:
+            continue
+        x = CX + (-78 if 'esq' in label else 78)
+        y = CY + 435
+        hit = unreal.SystemLibrary.line_trace_single(world, unreal.Vector(x, y, 300), unreal.Vector(x, y, 40), unreal.TraceTypeQuery.TRACE_TYPE_QUERY1,
+                                                     True, [a], unreal.DrawDebugTrace.NONE, True)
+        z = hit.to_tuple()[4].z if hit else ALTAR_TOP
+        l = a.get_actor_location()
+        out.append([label, [round(l.x), round(l.y), round(l.z)], [round(x), round(y), round(z, 1)]])
+        if arg.strip() == 'apply':
+            a.set_actor_location(unreal.Vector(x, y, z), False, False)
+    if arg.strip() == 'apply':
+        unreal.get_editor_subsystem(unreal.LevelEditorSubsystem).save_current_level()
+    return json.dumps(out, ensure_ascii=False)
+
+
 def interior(arg='dry'):
     """The church becomes a building you walk into: the solid box and its base band are rebuilt as wall slabs that
     leave the door open (x 7400..7600 up to 4.62 m), the old door parts go, and the nave model, the rose, the windows
@@ -381,8 +408,9 @@ def interior(arg='dry'):
         a = _place(actors, lamp, 'Igreja · lustre %d' % (k + 1), (CX, CY + w, 495), 30.0 * k, 1.3, tags=tags)
         a.static_mesh_component.set_cast_shadow(False)   # its own light sits among the arms
     candles = _asset('brass_candleholders')
-    _place(actors, candles, 'Igreja · castiçais esq', (CX - 215, CY + 455, FLOOR + 30), 20.0, 1.0, tags=tags)
-    _place(actors, candles, 'Igreja · castiçais dir', (CX + 215, CY + 455, FLOOR + 30), 160.0, 1.0, tags=tags)
+    # 11/11 (Sergio: "vi castiçais no chão, coloque sobre a mesa"): table candleholders belong ON the altar
+    _place(actors, candles, 'Igreja · castiçais esq', (CX - 78, CY + 435, ALTAR_TOP), 20.0, 1.0, tags=tags)
+    _place(actors, candles, 'Igreja · castiçais dir', (CX + 78, CY + 435, ALTAR_TOP), 160.0, 1.0, tags=tags)
     for k, w in enumerate((-240.0, 240.0)):   # daylight fill (UMareVisualWorld drives MareBareLight: on by day, off at night)
         light = actors.spawn_actor_from_class(unreal.PointLight, unreal.Vector(CX, CY + w, 400))
         light.set_actor_label('Igreja · luz do dia %d' % (k + 1))

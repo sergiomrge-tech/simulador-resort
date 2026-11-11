@@ -518,6 +518,18 @@ bool AMarePerson::SetMetaHuman(const FString& Name)
      for(int32 I=0;I<Part->GetNumMaterials();++I)if(auto M=Part->CreateDynamicMaterialInstance(I))M->SetVectorParameterValue(TEXT("Tint"),FLinearColor(C));}
     if(Kind==TEXT("boardshorts") && Swimwear && Swimwear->GetSkeletalMeshAsset() && Swimwear->GetSkeletalMeshAsset()->GetName().Contains(TEXT("Trunks")))Swimwear->SetVisibility(false);
     Overwear.Add(Part);}}}
+ // 11/11 (Sergio: the priest in mass vestments): metahumans.json "named_wear" {person name: garment kind} puts a garment
+ // of tools/ue58/gen_mh_swimwear.py (fitted to this body: /Game/People/Swimwear/SKM_<Kind>_<Name>) over the person;
+ // the MetaHuman's own clothes stay on underneath (a clothed build has no skin under them). Slots: red cloth, "White" alb, "Metal" cross.
+ {const TSharedPtr<FJsonObject>* Named=nullptr;const TSharedPtr<FJsonObject>* Row=nullptr;FString Kind;
+  if(!PersonName.IsEmpty() && MetaHumanRoster()->TryGetObjectField(TEXT("named_wear"),Named) && (*Named)->TryGetObjectField(PersonName,Row) && (*Row)->TryGetStringField(TEXT("kind"),Kind))if(auto Piece=SwimwearPiece(Kind.Left(1).ToUpper()+Kind.Mid(1),Name)){
+   auto Part=NewObject<USkeletalMeshComponent>(this);AddInstanceComponent(Part);Part->SetupAttachment(GetMesh());Part->SetSkeletalMeshAsset(Piece);
+   Part->SetCollisionEnabled(ECollisionEnabled::NoCollision);Part->RegisterComponent();Part->SetLeaderPoseComponent(GetMesh());
+   for(int32 I=0;I<Part->GetNumMaterials();++I)if(auto M=Part->CreateDynamicMaterialInstance(I)){const FString Slot=Part->GetMaterialSlotNames().IsValidIndex(I)?Part->GetMaterialSlotNames()[I].ToString():FString();
+    const bool bWhite=Slot.Contains(TEXT("White")),bMetal=Slot.Contains(TEXT("Metal"));   // i18n:skip
+    M->SetVectorParameterValue(TEXT("Tint"),bWhite?FLinearColor(.80f,.78f,.72f):bMetal?FLinearColor(.62f,.62f,.66f):FLinearColor(.30f,.012f,.016f));
+    M->SetScalarParameterValue(TEXT("Roughness"),bMetal?.28f:bWhite?.8f:.62f);}   // i18n:skip
+   Overwear.Add(Part);}}
  const bool bSwim=Name.EndsWith(TEXT("_Swim"));const FString RoleKey=bSwim?TEXT("swim"):MetaRole.IsEmpty()?TEXT("village"):MetaRole;
  auto Pick=[this](const TArray<TSharedPtr<FJsonValue>>& List,const TCHAR* Salt,int32 First=0){
   return FLinearColor(FColor::FromHex(List[First+int32(FCrc::StrCrc32(*(SaveId+Salt))%uint32(List.Num()-First))]->AsString()));};

@@ -19,6 +19,7 @@ from mathutils.bvhtree import BVHTree
 
 args = sys.argv[sys.argv.index('--') + 1:]
 SRC, DST, KIND = args[0], args[1], (args[2] if len(args) > 2 else 'bikini')
+FACE = args[3] if len(args) > 3 else ''   # optional: the face mesh FBX (head, neck, upper chest) for collars
 LIFT = .0032
 STEP = .0035
 BODY = None   # body skin (world space bmesh), set in main
@@ -397,7 +398,7 @@ def boardshorts(bm_out, tree, m):
                lambda q: LIFT + .006 + .018 * min(1.0, max(0.0, (cz - q.z) / (cz - hem))))
 
 
-def hull_radius(tree, z, a, cx, cy):
+def hull_radius(tree, z, a, cx, cy, with_arms=False):
     """Outer silhouette of the body at height z in direction a (0 = front): a ray from outside inward, passing
     through the arms and hands (they hang beside the hips in the A pose)."""
     d = Vector((math.sin(a), -math.cos(a), 0))
@@ -406,7 +407,7 @@ def hull_radius(tree, z, a, cx, cy):
         hit = tree.ray_cast(o, -d)
         if hit[0] is None:
             return None
-        if not is_arm(DOM_FACE[hit[2]]):
+        if with_arms or not is_arm(DOM_FACE[hit[2]]):
             return Vector((hit[0].x - cx, hit[0].y - cy, 0)).length
         o = hit[0] - d * .002
     return None
@@ -521,7 +522,7 @@ def coverup(bm_out, tree, m):
             bm_out.faces.new((ra[i], rb[i], rb[(i + 1) % n], ra[(i + 1) % n]))
 
 
-def skirt_rings(bm_out, tree, top, bottom, lift, grow=.0045, n=96, cx=0.0, cy=-.01):
+def skirt_rings(bm_out, tree, top, bottom, lift, grow=.0045, n=96, cx=0.0, cy=-.01, arms_above=None):
     """A tube of regular rings from top down to bottom that follows the convex outline of the hips and both legs
     (arms ignored), never narrows and opens at most `grow` per 1.2 cm ring. Returns its faces."""
     angles = [2 * math.pi * i / n for i in range(n)]
@@ -529,14 +530,14 @@ def skirt_rings(bm_out, tree, top, bottom, lift, grow=.0045, n=96, cx=0.0, cy=-.
     table, last = [], None
     for k in range(rows):
         z = top - k * .012
-        hits = [hull_radius(tree, z, a, cx, cy) for a in angles]
+        hits = [hull_radius(tree, z, a, cx, cy, arms_above is not None and z > arms_above) for a in angles]   # arms_above: the shoulder caps count
         pts = [(cx + math.sin(a) * r, cy - math.cos(a) * r) for a, r in zip(angles, hits) if r is not None]
         hull = convex_radii(pts, angles, cx, cy) or hits
         row = []
         for i in range(n):
             r = (hull[i] if hull[i] is not None else (last[i] - lift if last else .15)) + lift
             if last:
-                r = max(last[i], min(r, last[i] + grow))
+                r = max(last[i], min(r, last[i] + (grow(z) if callable(grow) else grow)))
             row.append(r)
         table.append(row)
         last = row
@@ -565,60 +566,85 @@ def chasuble(bm_out, tree, m):
         for f in bm_out.faces[start:]:
             f.material_index = index
 
-    # forearm extent per side (A pose: the wrist is the low end)
-    fore = {}
-    for f in BODY.faces:
-        b = DOM_FACE[f.index]
-        if 'lowerarm' in b:
-            c = f.calc_center_median()
-            lo, hi = fore.get(c.x > 0, (9, -9))
-            fore[c.x > 0] = (min(lo, c.z), max(hi, c.z))
-
     def bone_of(q):
         return DOM_FACE[tree.find_nearest(q)[2]]
 
-    # 1. the alb (white): neck and upper chest, whole forearms, and a skirt from the knee to the ankle
+    # neck axis (the body mesh ends at the neck cut) and the forearm axis per side
+    top_ring = [v.co for v in BODY.verts if v.co.z > neck - .012]
+    ncx, ncy = sum(c.x for c in top_ring) / len(top_ring), sum(c.y for c in top_ring) / len(top_ring)
+    ends = {}
+    for side in (False, True):
+        cs = [f.calc_center_median() for f in BODY.faces if 'lowerarm' in DOM_FACE[f.index] and (f.calc_center_median().x > 0) == side]
+        cs.sort(key=lambda c: c.z)
+        k = max(1, len(cs) // 12)
+        wrist = sum(cs[:k], Vector()) / k
+        elbow = sum(cs[-k:], Vector()) / k
+        ends[side] = (wrist, elbow)
+
+    def along(q):          # 0 at the wrist, 1 at the elbow
+        wrist, elbow = ends[q.x > 0]
+        d = elbow - wrist
+        return (q - wrist).dot(d) / d.length_squared
+
+    # 1. the alb (white): a collar up the neck, the whole forearms, and a skirt from the knee to the ankle
     n0 = len(bm_out.faces)
 
-    def alb_neck(f):
-        bones = face_bones(f)
-        c = f.calc_center_median()
-        return not any(is_arm(b) or 'head' in b for b in bones) and abs(c.x) < .15
-    skin_piece(bm_out, tree, neck - .004, neck - .17, alb_neck, lambda q: LIFT + .010, rounds=12)
+    # the collar (amice): rings round the neck (face mesh) that spread over the base of the shoulders
+    skirt_rings(bm_out, tree, neck + .062, neck - .07, LIFT + .013, grow=.02, cx=ncx, cy=ncy - .012)
 
     def alb_sleeve(f):
-        bones = face_bones(f)
-        return all('lowerarm' in b for b in bones)
+        return all('lowerarm' in b for b in face_bones(f))
     skin_piece(bm_out, tree, neck, .3, alb_sleeve, lambda q: LIFT + .008, rounds=8)
     skirt_rings(bm_out, tree, cz - .28, .085, LIFT + .014, grow=.0016)
     tag(n0, 1)
 
-    # 2. the chasuble (red): torso and arms down to 45 % of the forearm, a round neckline, then the skirt
+    # 2. the chasuble (red): a yoke over the shoulders with a small round neckline, bell sleeves to the middle of the
+    # forearm, and one loose tube from the chest to mid-shin (never narrowing: no waist, nothing of the body shows)
     n1 = len(bm_out.faces)
+    yoke = neck - .27
+    CUT = .5
 
-    def red_keep(f):
+    def red_keep(f):          # the yoke: shoulders, chest and back; the neckline is a small round hole
+        c = f.calc_center_median()
+        if any(is_arm(b) or 'head' in b for b in face_bones(f)):
+            return False
+        return math.hypot(c.x - ncx, c.y - ncy) > .068 or c.z < neck - .06
+
+    def sleeve_keep(f):       # the arms down to the middle of the forearm (their own piece: no horizontal cut)
         bones = face_bones(f)
         c = f.calc_center_median()
-        if any(w in b for b in bones for w in ('hand', 'thumb', 'index_', 'middle_', 'ring_', 'pinky', 'neck', 'head')):
+        if any(w in b for b in bones for w in ('hand', 'thumb', 'index_', 'middle_', 'ring_', 'pinky')):
             return False
         if any('lowerarm' in b for b in bones):
-            lo, hi = fore.get(c.x > 0, (0, 1))
-            return c.z > lo + .55 * (hi - lo)
-        front = 1.0 if c.y < -.02 else 0.0
-        if math.hypot(c.x, 0) < .085 and c.z > neck - .045 - .055 * front:
-            return False
-        return True
+            return along(c) > CUT - .06
+        return any('upperarm' in b for b in bones)
 
     def red_offset(q):
         b = bone_of(q)
         if 'lowerarm' in b:
-            return LIFT + .045
+            return LIFT + .034 + .03 * max(0.0, min(1.0, (1 - along(q)) / (1 - CUT)))   # the bell opens toward the hem
         if 'upperarm' in b:
             return LIFT + .034
-        return LIFT + .024
-    verts = skin_piece(bm_out, tree, neck - .012, waist, red_keep, red_offset, rounds=26)
-    convexify([v for v in verts if abs(v.co.x) < .2], cz + .30, waist + .02)
-    skirt_rings(bm_out, tree, waist + .03, .30, LIFT + .026, grow=.0030)
+        return LIFT + (.03 if abs(q.x) < .13 else .02)     # thinner at the armholes: their edge hides under the sleeves
+    # a red lining over the shoulders and upper chest, under the outer cloth: wherever the sleeve and the body of the
+    # chasuble do not quite meet (the shoulder tips), red shows instead of the person's own shirt
+    skin_piece(bm_out, tree, neck - .004, neck - .2,
+               lambda f: not any(w in b for b in face_bones(f) for w in ('lowerarm', 'hand', 'thumb', 'index_', 'middle_', 'ring_', 'pinky', 'head')),
+               lambda q: LIFT + .022, rounds=12)
+    arms = skin_piece(bm_out, tree, neck + .05, .3, sleeve_keep, red_offset, rounds=14)
+    # a straight sleeve hem: whatever of the sleeve lies beyond CUT along the forearm goes back onto that plane
+    for v in arms:
+        if not v.is_valid:
+            continue
+        wrist, elbow = ends[v.co.x > 0]
+        d = elbow - wrist
+        t = along(v.co)
+        if t < CUT and ((v.co - wrist) - d * t).length < .2:
+            v.co += d * (CUT - t)
+    # the body of the chasuble: ONE surface of rings from a short stand round the neck down to mid-shin. It opens fast
+    # over the shoulders (2 cm per ring down to 12 cm under the neck) and then hangs almost straight, never narrowing:
+    # the cloth falls from the shoulders and nothing of the body's shape shows (three stacked pieces read as barrels).
+    skirt_rings(bm_out, tree, neck + .028, .30, LIFT + .034, grow=lambda z: .02 if z > neck - .12 else .0022, cx=ncx, cy=ncy - .006, arms_above=neck - .10)
     tag(n1, 0)
 
     # 3. pectoral cross and chain (metal), lying on the chasuble
@@ -628,13 +654,13 @@ def chasuble(bm_out, tree, m):
         hit = tree.ray_cast(Vector((x, -1.0, z)), Vector((0, 1, 0)))[0]
         return Vector((x, (hit.y if hit else -.12) - lift, z))
     cx_z = neck - .30
-    top = on_cloth(0, cx_z + .045, .034)
+    top = on_cloth(0, cx_z + .045, .056)
 
     def slab(c, sx, sy, sz):
         vs = [bm_out.verts.new(c + Vector((dx * sx / 2, dy * sy / 2, dz * sz / 2))) for dz in (-1, 1) for dy in (-1, 1) for dx in (-1, 1)]
         for a, b, c2, d in ((0, 1, 3, 2), (4, 6, 7, 5), (0, 4, 5, 1), (2, 3, 7, 6), (0, 2, 6, 4), (1, 5, 7, 3)):
             bm_out.faces.new((vs[a], vs[b], vs[c2], vs[d]))
-    body_c = on_cloth(0, cx_z, .034)
+    body_c = on_cloth(0, cx_z, .056)
     slab(body_c, .016, .006, .088)
     slab(body_c + Vector((0, 0, .014)), .056, .006, .016)
     for side in (-1, 1):
@@ -643,7 +669,7 @@ def chasuble(bm_out, tree, m):
             t = k / 14
             x = side * (.082 * (1 - t) + .004 * t)
             z = (neck - .05) * (1 - t) + (cx_z + .046) * t - .02 * math.sin(math.pi * t)
-            c = on_cloth(x, z, .031)
+            c = on_cloth(x, z, .052)
             pair = (bm_out.verts.new(c + Vector((-.002, 0, 0))), bm_out.verts.new(c + Vector((.002, 0, 0))))
             if prev:
                 bm_out.faces.new((prev[0], prev[1], pair[1], pair[0]))
@@ -693,6 +719,29 @@ def main():
     bm.faces.ensure_lookup_table()
     DOM_FACE = [max((DOM[v.index] for v in f.verts), key=lambda b: sum(1 for v in f.verts if DOM[v.index] == b)) for f in bm.faces]
     m = measure(bm)
+    if FACE:
+        # The body mesh ends at the base of the neck; the neck belongs to the face mesh. Ray casts and nearest-surface
+        # lookups then run on body + neck (the faces up to 13 cm above the body's top); skin pieces still come from the body.
+        known = set(bpy.data.objects)
+        bpy.ops.import_scene.fbx(filepath=FACE)
+        deps = bpy.context.evaluated_depsgraph_get()
+        both = bm.copy()
+        for o in [o for o in bpy.data.objects if o not in known and o.type == 'MESH']:
+            part = bmesh.new()
+            part.from_object(o, deps)
+            part.transform(o.matrix_world)
+            bmesh.ops.delete(part, geom=[f for f in part.faces if f.calc_center_median().z > m['neck'] + .13], context='FACES')
+            tmp = bpy.data.meshes.new('neck_tmp')
+            part.to_mesh(tmp)
+            part.free()
+            both.from_mesh(tmp)
+            bpy.data.meshes.remove(tmp)
+        for o in [o for o in bpy.data.objects if o not in known]:
+            bpy.data.objects.remove(o, do_unlink=True)
+        both.normal_update()
+        both.faces.ensure_lookup_table()
+        DOM_FACE = DOM_FACE + [''] * (len(both.faces) - len(DOM_FACE))
+        tree = BVHTree.FromBMesh(both)
     out = bmesh.new()
     {'bikini': bikini, 'trunks': trunks, 'tank': tank, 'boardshorts': boardshorts, 'coverup': coverup, 'chasuble': chasuble}[KIND](out, tree, m)
     bmesh.ops.remove_doubles(out, verts=out.verts, dist=.0008)

@@ -256,9 +256,31 @@ def _bind_swim_material(mesh):
     return [str(m.get_editor_property('material_interface').get_path_name()) for m in mesh.get_editor_property('materials')]
 
 
+def export_face(arg):
+    """'<name>@<dir>': the face skeletal mesh (head, neck and upper chest) as FBX, for garments that close round the
+    neck (11/11, the priest's collar: the body mesh ends at the base of the neck)."""
+    import os
+    name, _, out_dir = arg.partition('@')
+    os.makedirs(out_dir, exist_ok=True)
+    task = unreal.AssetExportTask()
+    task.object = unreal.load_asset(f'{FOLDER}/{name}/MH_{name}/Face/SKM_MH_{name}_FaceMesh')
+    if not task.object:
+        return 'no face mesh'
+    task.filename = f'{out_dir}/SKM_MH_{name}_FaceMesh.fbx'
+    task.automated = True
+    task.replace_identical = True
+    task.prompt = False
+    opts = unreal.FbxExportOption()
+    opts.export_morph_targets = False
+    opts.level_of_detail = False
+    task.options = opts
+    return [task.filename, unreal.Exporter.run_asset_export_task(task)]
+
+
 def import_garment(name, fbx, kind):
-    """Blender swim garment for <name>_Swim -> /Game/People/Swimwear/SKM_<Kind>_<name> on that body's skeleton."""
-    body = unreal.load_asset(f'{FOLDER}/{name}_Swim/MH_{name}_Swim/Body/SKM_MH_{name}_Swim_BodyMesh')
+    """Blender garment -> /Game/People/Swimwear/SKM_<Kind>_<name> on that body's skeleton: for <name>_Swim (swimwear,
+    beachwear), or, when there is no swim build, for the clothed build <name> itself (11/11: the priest's vestments)."""
+    body = unreal.load_asset(f'{FOLDER}/{name}_Swim/MH_{name}_Swim/Body/SKM_MH_{name}_Swim_BodyMesh')         or unreal.load_asset(f'{FOLDER}/{name}/MH_{name}/Body/SKM_MH_{name}_BodyMesh')
     asset = f'SKM_{kind.capitalize()}_{name}'
     task = unreal.AssetImportTask()
     task.filename = fbx

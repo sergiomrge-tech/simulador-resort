@@ -343,5 +343,7 @@
   "Walter"
  ],
  "_named_doc": "10/11: the villagers with a name and a story (village_routes.json) always wear the same MetaHuman, of the right sex: picked by hash from the mixed village roster, Dona Roberta came out a bearded man in the packaged demo.",
+ "_named_wear_doc": "11/11: a garment of gen_mh_swimwear.py worn over a named villager (person name -> {kind}; mesh SKM_<Kind>_<MetaHuman> in /Game/People/Swimwear). Padre Robson: the red chasuble over the white alb with the pectoral cross.",
+ "named_wear": {"Padre Robson": {"kind": "chasuble"}},
  "named": {"Dona Roberta": "Ada", "Dona Cecília": "Celeste", "Alana": "Tuya", "Seu Severino": "Omari", "Padre Robson": "Lorenzo"}
 }
