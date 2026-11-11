@@ -149,7 +149,10 @@ def fresco_picture(w=4096):
     mag = np.hypot(gx, gy)
     # the brush drawing: thin lines where the tone changes sharply (only the crest of each edge)
     crest = (mag >= np.roll(mag, 1, 0)) & (mag >= np.roll(mag, -1, 0)) | (mag >= np.roll(mag, 1, 1)) & (mag >= np.roll(mag, -1, 1))
-    line = np.clip((mag - .018) / .035, 0, 1) * crest
+    # only where the tone changes MORE than around it: a smooth gradient (deep water against shallow) is not a line
+    # (with a plain threshold the sea came out ruled with vertical dashes)
+    local = _box(mag[:, :, None], 7)[:, :, 0]
+    line = np.clip((mag - 1.7 * local - .006) / .03, 0, 1) * crest
     line = np.clip(_box(line[:, :, None], 1)[:, :, 0] * 2.2, 0, 1)
     sepia = np.array((.30, .20, .12), np.float32)
     paint = paint * (1 - .55 * line[:, :, None]) + sepia[None, None, :] * (.55 * line[:, :, None])
@@ -166,7 +169,7 @@ def fresco_picture(w=4096):
     horizontal, vertical = streak(0, 9), streak(9, 0)
     sg = _box(np.stack((np.abs(gx), np.abs(gy)), 2), 6)
     upright = np.clip((sg[:, :, 0] - sg[:, :, 1]) / (sg[:, :, 0] + sg[:, :, 1] + 1e-4) * 2 + .3, 0, 1)   # 1 where edges run vertically
-    upright *= np.clip((sg[:, :, 0] + sg[:, :, 1] - .004) / .01, 0, 1)      # calm areas (sea, sky, sand) have no direction: horizontal strokes
+    upright *= np.clip((sg[:, :, 0] + sg[:, :, 1] - .03) / .03, 0, 1)      # calm areas (sea, sky, sand) have no direction: horizontal strokes
     hatch = vertical * upright + horizontal * (1 - upright)
     paint *= (1 + .07 * hatch)[:, :, None]
     # fresco
@@ -216,7 +219,9 @@ def ceiling_uv(name, x0, x1, y0, y1, z, mat):
     if f.normal.z > 0:
         bmesh.ops.reverse_faces(bm, faces=[f])
     for loop in f.loops:
-        loop[uv].uv = ((loop.vert.co.x - x0) / (x1 - x0), (loop.vert.co.y - y0) / (y1 - y0))
+        # seen from below walking in from the entrance (-Y): the picture's top is at the back wall, its left on the
+        # viewer's left (in the level it hung upside down with v = y)
+        loop[uv].uv = (1 - (loop.vert.co.x - x0) / (x1 - x0), 1 - (loop.vert.co.y - y0) / (y1 - y0))
     o = mesh_obj(name, bm)
     o.data.materials.append(mat)
     return o

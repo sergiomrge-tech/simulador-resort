@@ -146,5 +146,10 @@
  "mare_newsstand": "/Game/Custom/mare_newsstand/mare_newsstand.mare_newsstand",
  "mare_pier_post": "/Game/Custom/mare_pier_post/mare_pier_post.mare_pier_post",
  "mare_church_crucifix": "/Game/Custom/mare_church_crucifix/mare_church_crucifix.mare_church_crucifix",
- "mare_lobby_marble": "/Game/Custom/mare_lobby_marble/mare_lobby_marble.mare_lobby_marble"
+ "mare_lobby_marble": "/Game/Custom/mare_lobby_marble/mare_lobby_marble.mare_lobby_marble",
+ "mare_rock_base_0": "/Game/Custom/mare_rock_base_0/mare_rock_base_0.mare_rock_base_0",
+ "mare_rock_base_1": "/Game/Custom/mare_rock_base_1/mare_rock_base_1.mare_rock_base_1",
+ "mare_rock_base_2": "/Game/Custom/mare_rock_base_2/mare_rock_base_2.mare_rock_base_2",
+ "mare_rock_base_3": "/Game/Custom/mare_rock_base_3/mare_rock_base_3.mare_rock_base_3",
+ "mare_rock_base_4": "/Game/Custom/mare_rock_base_4/mare_rock_base_4.mare_rock_base_4"
 }
