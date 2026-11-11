@@ -92,51 +92,118 @@ def floor_picture(w=4096):
     return np.clip(img, 0, 1)
 
 
-FRESCO_SRC = Path('D:/Assets/Mare/mare_lobby_marble/fresco_src.png')
+FRESCO_SRC = Path(__file__).resolve().parents[2] / 'unreal/MareAlta/SourceArt/lobby_fresco_source.png'
+
+
+def _box(a, r):
+    """Mean over a (2r+1)^2 window (edges clamped), by cumulative sums."""
+    pad = np.pad(a, ((r + 1, r), (r + 1, r)) + ((0, 0),) * (a.ndim - 2), mode='edge')
+    c = pad.cumsum(0).cumsum(1)
+    n = 2 * r + 1
+    return (c[n:, n:] - c[:-n, n:] - c[n:, :-n] + c[:-n, :-n]) / (n * n)
+
+
+def kuwahara(img, r):
+    """Painterly filter: every pixel takes the mean colour of the calmest of the four (r+1)^2 windows that meet at it.
+    Flat areas become strokes of one colour, edges stay crisp: the look of paint laid with a brush."""
+    lum = img @ np.array((.3, .59, .11), np.float32)
+    h, w = lum.shape
+    m, m2, mc = _box(lum, r), _box(lum * lum, r), _box(img, r)
+    var = m2 - m * m
+    best = np.full((h, w), np.inf, np.float32)
+    out = np.zeros_like(img)
+    half = max(1, r // 2 + 1)
+    for dy in (-half, half):
+        for dx in (-half, half):
+            ys = np.clip(np.arange(h) + dy, 0, h - 1)
+            xs = np.clip(np.arange(w) + dx, 0, w - 1)
+            v = var[ys][:, xs]
+            c = mc[ys][:, xs]
+            take = v < best
+            best = np.where(take, v, best)
+            out[take] = c[take]
+    return out
 
 
 def fresco_picture(w=4096):
-    """11/11 (Sergio: "no teto da recepção faça uma pintura estilo afresco da paisagem do mar com a vila"): the ceiling
-    painting. The subject is the game's own village seen from the sea (a screenshot taken in the level, FRESCO_SRC);
-    here it becomes a fresco: the detail is brushed out into flat patches of colour, the palette goes chalky (lifted
-    darks, lower saturation, a warm lime-plaster cast), the pigment has faded in blotches, the plaster shows its grain
-    and a net of fine cracks, and the picture dies into bare plaster towards the frame."""
-    from PIL import Image, ImageFilter
+    """11/11 (Sergio: "no teto da recepção faça uma pintura estilo afresco da paisagem do mar com a vila"). Third
+    version: the flat drawing "parece desenho de criança", the broad Kuwahara patches were still not it: "quero como se
+    fosse pintado à mão, traços finos". The subject is the game's own village photographed in the level from over
+    the sea (FRESCO_SRC). Hand-painted look with FINE strokes:
+     - the dark forest is opened up and the photo is simplified only a little (Kuwahara radius 3: the drawing of
+       houses, boats and palms survives);
+     - a thin sepia line is drawn along every edge, like the brush drawing under a fresco;
+     - fine hatching follows the forms: short strokes along the edges' direction, a few per cent lighter or darker;
+     - then the fresco: chalky warm palette, slight fading in blotches, plaster grain, hair cracks, bare plaster at
+       the frame. Returns sRGB floats."""
+    from PIL import Image
     h = w // 2
     src = Image.open(FRESCO_SRC).convert('RGB')
-    # the ceiling is 31 x 11 m: take the widest 2.82 : 1 band of the photo, then fit it to the 2 : 1 picture
-    sw, sh = src.size
-    band = min(sh, int(sw / ((X1 - X0) / (Y1 - Y0))))
-    top = max(0, int((sh - band) * .45))
-    src = src.crop((0, top, sw, top + band))
-    small = src.resize((w // 5, h // 5), Image.LANCZOS)
-    for _ in range(2):                                   # brush the detail out
-        small = small.filter(ImageFilter.ModeFilter(7)).filter(ImageFilter.MedianFilter(5))
-    paint = np.asarray(small.resize((w, h), Image.BICUBIC).filter(ImageFilter.GaussianBlur(1.2))).astype(np.float32) / 255
-    # brush strokes: the colour is nudged along a smooth noise direction
-    ii, jj = np.meshgrid(np.arange(h), np.arange(w), indexing='ij')
-    n1 = np.kron(N._fft_noise(1024, 2.0, 71), np.ones((4, 4), np.float32))[:h, :w]
-    n2 = np.kron(N._fft_noise(1024, 2.0, 72), np.ones((4, 4), np.float32))[:h, :w]
-    paint = paint[(ii + (n1 * 9).astype(np.int32)) % h, (jj + (n2 * 14).astype(np.int32)) % w]
+    paint = np.asarray(src.resize((w, h), Image.LANCZOS)).astype(np.float32) / 255
     lum = paint @ np.array((.3, .59, .11), np.float32)
-    paint = lum[:, :, None] + (paint - lum[:, :, None]) * .78                     # less saturated
-    paint = .10 + paint * .84                                                    # chalky: no deep darks
-    paint *= np.array((1.04, 1.0, .92), np.float32)                              # the warm cast of lime plaster
-    plaster = np.array((.86, .82, .72), np.float32)
-    fade = np.clip(N._fft_noise(1024, 2.6, 73), 0, 1)
-    fade = np.kron(fade, np.ones((4, 4), np.float32))[:h, :w] * .38              # blotches where the pigment has gone
+    paint = paint ** .72
+    paint += (.20 * (1 - lum) ** 3)[:, :, None] * np.array((.9, 1.0, .85), np.float32)
+    paint = kuwahara(np.clip(paint, 0, 1), 3)
+    lum = _box((paint @ np.array((.3, .59, .11), np.float32))[:, :, None], 1)[:, :, 0]
+    gy, gx = np.gradient(lum)
+    mag = np.hypot(gx, gy)
+    # the brush drawing: thin lines where the tone changes sharply (only the crest of each edge)
+    crest = (mag >= np.roll(mag, 1, 0)) & (mag >= np.roll(mag, -1, 0)) | (mag >= np.roll(mag, 1, 1)) & (mag >= np.roll(mag, -1, 1))
+    line = np.clip((mag - .018) / .035, 0, 1) * crest
+    line = np.clip(_box(line[:, :, None], 1)[:, :, 0] * 2.2, 0, 1)
+    sepia = np.array((.30, .20, .12), np.float32)
+    paint = paint * (1 - .55 * line[:, :, None]) + sepia[None, None, :] * (.55 * line[:, :, None])
+    # hatching: streaks of noise drawn along the local edge direction (vertical forms get vertical strokes)
+    rng = np.random.default_rng(77)
+    noise = rng.normal(size=(h, w, 1)).astype(np.float32)
+
+    def streak(ry, rx):
+        pad = np.pad(noise, ((ry + 1, ry), (rx + 1, rx), (0, 0)), mode='wrap')
+        c = pad.cumsum(0).cumsum(1)
+        ny, nx = 2 * ry + 1, 2 * rx + 1
+        out = (c[ny:, nx:] - c[:-ny, nx:] - c[ny:, :-nx] + c[:-ny, :-nx]) / (ny * nx)
+        return (out / out.std())[:, :, 0]
+    horizontal, vertical = streak(0, 9), streak(9, 0)
+    sg = _box(np.stack((np.abs(gx), np.abs(gy)), 2), 6)
+    upright = np.clip((sg[:, :, 0] - sg[:, :, 1]) / (sg[:, :, 0] + sg[:, :, 1] + 1e-4) * 2 + .3, 0, 1)   # 1 where edges run vertically
+    upright *= np.clip((sg[:, :, 0] + sg[:, :, 1] - .004) / .01, 0, 1)      # calm areas (sea, sky, sand) have no direction: horizontal strokes
+    hatch = vertical * upright + horizontal * (1 - upright)
+    paint *= (1 + .07 * hatch)[:, :, None]
+    # fresco
+    lum = paint @ np.array((.3, .59, .11), np.float32)
+    paint = lum[:, :, None] + (paint - lum[:, :, None]) * .88
+    paint = .08 + paint * .90
+    paint *= np.array((1.04, 1.0, .93), np.float32)
+    plaster = np.array((.90, .86, .76), np.float32)
+    fade = np.kron(np.clip(N._fft_noise(1024, 2.6, 73), 0, 1), np.ones((4, 4), np.float32))[:h, :w] * .15
     paint = paint * (1 - fade[:, :, None]) + plaster[None, None, :] * fade[:, :, None]
     grain = np.kron(N._fft_noise(1024, 1.1, 74), np.ones((4, 4), np.float32))[:h, :w]
-    paint *= (1 + .05 * grain)[:, :, None]
+    paint *= (1 + .03 * grain)[:, :, None]
     crack = N._fft_noise(1024, 1.7, 75)
-    cw_ = np.kron(np.clip(1 - np.abs(crack) / .006, 0, 1) + .6 * np.clip(1 - np.abs(crack - .3) / .004, 0, 1), np.ones((4, 4), np.float32))[:h, :w]
-    paint *= (1 - .32 * np.clip(cw_, 0, 1))[:, :, None]
-    # towards the frame the painting gives way to bare plaster
+    cw_ = np.kron(np.clip(1 - np.abs(crack) / .004, 0, 1), np.ones((4, 4), np.float32))[:h, :w]
+    paint *= (1 - .10 * np.clip(cw_, 0, 1))[:, :, None]
+    ii, jj = np.meshgrid(np.arange(h), np.arange(w), indexing='ij')
     u, v = (jj + .5) / w, (ii + .5) / h
-    edge = np.minimum(np.minimum(u, 1 - u) * (X1 - X0), np.minimum(v, 1 - v) * (Y1 - Y0))      # metres from the frame
-    keep = np.clip(edge / .55, 0, 1) ** .8
-    paint = paint * keep[:, :, None] + (plaster * (1 + .04 * grain[:, :, None])) * (1 - keep[:, :, None])
-    return np.clip(paint, 0, 1)
+    edge = np.minimum(np.minimum(u, 1 - u) * (X1 - X0), np.minimum(v, 1 - v) * (Y1 - Y0))
+    keep = (np.clip(edge / .3, 0, 1) ** .8).astype(np.float32)
+    paint = paint * keep[:, :, None] + (plaster * (1 + .03 * grain[:, :, None])) * (1 - keep[:, :, None])
+    return np.clip(paint, 0, 1).astype(np.float32)
+
+
+def fresco_material(out):
+    """The painting is written as a plain sRGB PNG and loaded from the file (N._save linearises: right for flat
+    colours drawn here, far too dark for a picture)."""
+    from PIL import Image
+    path = out / f'{SLUG}_Fresco.png'
+    Image.fromarray((fresco_picture() * 255).astype(np.uint8)).save(path)
+    m = bpy.data.materials.new('Fresco')
+    m.use_nodes = True
+    tex = m.node_tree.nodes.new('ShaderNodeTexImage')
+    tex.image = bpy.data.images.load(str(path))
+    bsdf = m.node_tree.nodes['Principled BSDF']
+    m.node_tree.links.new(tex.outputs['Color'], bsdf.inputs['Base Color'])
+    bsdf.inputs['Roughness'].default_value = .92
+    return m
 
 
 def ceiling_uv(name, x0, x1, y0, y1, z, mat):
@@ -196,8 +263,8 @@ def main():
     plane_uv('floor', X0, X1, Y0, Y1, Z0 + .012, floor)
 
     # ---- the painted ceiling between the wood ribs (their underside is at 4.5, the plaster at 4.62), in a gilded frame
-    if FRESCO_SRC.exists():
-        fres = pic_mat('Fresco', fresco_picture(), out, .92)
+    if True:
+        fres = fresco_material(out)
         ceiling_uv('ceiling_fresco', X0 + .16, X1 - .16, Y0 + .02, Y1 - .16, 4.612, fres)
         for sx in (-1, 1):
             box(f'fresco_frame_x{sx}', (.10, Y1 - Y0 - .2, .05), (sx * (X1 - .2), (Y0 + Y1) / 2, 4.59), g, bevel=.012)
