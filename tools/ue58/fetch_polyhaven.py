@@ -12,7 +12,7 @@ from pathlib import Path
 
 LIB = Path('D:/Assets/PolyHaven')
 API = 'https://api.polyhaven.com'
-HEADERS = {'User-Agent': 'MareAltaResort-asset-fetch/1.0'}
+HEADERS = {'User-Agent': 'asset-fetch/1.0'}   # generic client name: nothing about the project goes out
 SETS = {
     'lobby': ['sofa_03', 'Sofa_01', 'ArmChair_01', 'mid_century_lounge_chair', 'modern_arm_chair_01', 'Ottoman_01',
               'modern_coffee_table_01', 'modern_coffee_table_02', 'side_table_tall_01', 'modern_ceiling_lamp_01',

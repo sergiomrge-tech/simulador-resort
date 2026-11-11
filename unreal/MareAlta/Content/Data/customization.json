@@ -3543,7 +3543,7 @@
    ]
   },
   "biz_food_truck": {
-   "name": "Food truck",
+   "name": "Barraca do pastel",
    "business": "food_truck",
    "effects": {
     "income_per_point": 0.06

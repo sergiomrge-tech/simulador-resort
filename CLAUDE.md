@@ -899,3 +899,7 @@ relaxada) depois de importar qualquer clipe; `relax_fingers` corrige. Clipe novo
 (`clip_sheet.py`: prévia da MetaHuman no céu + CaptureViewport, corpo e mãos), não em pedestre andando; e o nome do clipe
 não diz o gesto ("Yes" é braço erguido): olhar antes de ligar ao jogo. Baixar do itch.io: o POST do arquivo vai sem
 `key` (com `key` dá "invalid key").
+Foto noturna depois de pular o relógio do dia para a noite: o brilho médio da mesma vista caiu de 168 para 117 e 80 em
+45, 90 e 135 s parado no lugar; antes de 2 minutos a foto sai "de dia" e NÃO é defeito do jogo. Trocar um negócio de
+forma (caminhão -> barraca): manter o id interno (saves, conquistas, missões), a tag `Region_Biz_<id>` nas peças novas e
+os pontos de atendimento do `business_games.json`; texto de letreiro é TextRender traduzido, nunca gravado na malha.

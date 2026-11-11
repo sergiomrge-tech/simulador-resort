@@ -664,6 +664,10 @@ comercial (as espigas do Fab são estátua ou só licença pessoal paga para com
 | Relógio de parede `wall_clock` | https://polyhaven.com/a/wall_clock — Poly Haven | CC0 1.0 |
 | Quadro `hanging_picture_frame_02` (vidro trocado por um material próprio transparente) | https://polyhaven.com/a/hanging_picture_frame_02 — Poly Haven | CC0 1.0 |
 | Cavalete de giz `standing_chalkboard_01` | https://polyhaven.com/a/standing_chalkboard_01 — Poly Haven | CC0 1.0 |
+| Barraca do pastel (10/11, no lugar do food truck): tacho `brass_pan_01` (Rico Cilliers) | https://polyhaven.com/a/brass_pan_01 — Poly Haven | CC0 1.0 |
+| Barraca do pastel: botijão `propane_tank` (Slinc) | https://polyhaven.com/a/propane_tank — Poly Haven | CC0 1.0 |
+| Barraca do pastel: jarra `jug_01` (Kuutti Siitonen) | https://polyhaven.com/a/jug_01 — Poly Haven | CC0 1.0 |
+| Barraca do pastel: tábua `wooden_cutting_board` (Kuutti Siitonen) | https://polyhaven.com/a/wooden_cutting_board — Poly Haven | CC0 1.0 |
 | Vaso `potted_plant_02` no lugar das duas calateias do saguão (já usado no saguão) | https://polyhaven.com/a/potted_plant_02 — Poly Haven | CC0 1.0 |
 | Parede ripada com reboco azul-petróleo, letreiros "SALÃO DE JOGOS" e "FICHAS", luminária da sinuca de 3 cúpulas, balcão de fichas, porta-tacos e tapete — `tools/ue58/gen_game_room_decor.py` (bpy; texturas `painted_plaster_wall`, `teak_veneer`, `velour_velvet`, `marble_01`, `metal_plate`, `poly_wool_herringbone` do Poly Haven, CC0). Busca feita antes: o Poly Haven não tem porta-tacos, luminária de sinuca nem balcão; a caixa registradora `CashRegister_01` (60 × 62 cm) não cabia no tampo de 61 cm | próprio do projeto | — |
 | Pebolim jogável (móvel, campo, contadores, 8 barras com bonecos e bola) — `tools/ue58/gen_foosball.py` (bpy; texturas `teak_veneer` e `metal_plate` do Poly Haven, CC0; estampa do campo desenhada no script). Busca feita antes: a mesa de pebolim pronta do projeto (`foosball_table`) é uma peça só, sem barras separadas para girar | próprio do projeto | — |

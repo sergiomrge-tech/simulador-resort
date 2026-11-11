@@ -118,12 +118,13 @@ def hip_roof(name, w, d, z, rise, overhang, mat):
     return obj
 
 
-def stall(slug, sign):
+def stall(slug, sign, pastel=False):
     reset()
     out = OUT / slug
     out.mkdir(parents=True, exist_ok=True)
     wood = material('Wood', 'oak_wood_planks', None, rough=.6)
-    teal = material('Teal', 'distressed_painted_planks', (.12, .52, .50), rough=.7, out=out)
+    # 10/11 pastel stall (replaces the village food truck): the truck's warm red on the plank fronts.
+    teal = material('Teal', 'distressed_painted_planks', (.72, .20, .14) if pastel else (.12, .52, .50), rough=.7, out=out)
     cream = material('Cream', 'distressed_painted_planks', (.92, .86, .72), rough=.7, out=out)
     roof = material('Roof', 'clay_roof_tiles_02', None, rough=.75)
     coral = material('Coral', 'rough_linen', (.90, .38, .30), rough=.9, out=out)
@@ -141,8 +142,34 @@ def stall(slug, sign):
     for sx in (-1, 1):
         for i in range(9):
             box(f'louvre{sx}_{i}', (.03, D - .24, .14), (sx * (W / 2 - .06), 0, .3 + i * .21), cream, rot=(math.radians(25), 0, 0), uv=1)
+    if pastel:
+        # A frying station instead of the souvenir shelves: a tiled worktop between the two counters, a glass-fronted
+        # warmer with rows of fried pasteis (half-moons with a crimped edge), oil and sauce bottles on a high shelf.
+        steel = material('Steel', 'rough_linen', (.74, .75, .76), rough=.35, out=out)
+        dough = material('Dough', 'rough_linen', (.86, .62, .30), rough=.8, out=out)
+        box('worktop', (W - .5, .62, .05), (0, 0, 1.0), steel, uv=1)
+        for sx in (-1, 1):
+            box(f'workleg{sx}', (.05, .58, .88), (sx * (W / 2 - .32), 0, .56), steel, uv=1)
+        # warmer: steel base, four slim posts, a steel top; the pasteis lie on two tilted trays inside
+        box('warmer_base', (1.1, .5, .06), (-.55, 0, 1.06), steel, uv=1)
+        box('warmer_top', (1.1, .5, .04), (-.55, 0, 1.52), steel, uv=1)
+        for sx in (-1, 1):
+            for sy in (-1, 1):
+                box(f'warmer_post{sx}{sy}', (.03, .03, .44), (-.55 + sx * .53, sy * .23, 1.3), steel, uv=1)
+        for k, z in enumerate((1.14, 1.32)):
+            box(f'tray{k}', (1.0, .4, .02), (-.55, 0, z), steel, rot=(math.radians(10), 0, 0), uv=1)
+            for i in range(5):
+                x = -.95 + i * .2
+                # half-moon: a flattened disc cut by the tray, with a raised crimped rim
+                lathe(f'pastel{k}{i}', [(0, 0), (.085, 0), (.095, .012), (.085, .028), (.03, .036), (0, .036)], (x, .02, z + .03), dough, 14)
+        # fryer vat place: a round stand on the worktop (the Poly Haven brass pan sits on it in the level)
+        lathe('burner', [(0, 0), (.17, 0), (.17, .05), (.13, .07), (0, .07)], (.65, 0, 1.025), steel, 20)
+        box('shelf_hi', (W - .5, .26, .04), (0, 0, 1.9), wood, uv=1)
+        for i in range(6):
+            x = -.95 + i * .38
+            lathe(f'bottle{i}', [(0, 0), (.04, 0), (.045, .04), (.045, .17), (.018, .22), (.018, .27), (0, .27)], (x, 0, 1.92), [coral, sand, dough][i % 3], 14)
     # Back shelves in the middle with souvenirs: jars, shells, folded shirts, tiny boats.
-    for k, z in enumerate((1.35, 1.75)):
+    for k, z in enumerate(() if pastel else (1.35, 1.75)):
         box(f'shelf{k}', (W - .5, .3, .04), (0, 0, z), wood, uv=1)
         for i in range(7):
             x = -1.05 + i * .35
@@ -156,7 +183,7 @@ def stall(slug, sign):
                 box(f'boat{k}{i}', (.22, .07, .06), (x, 0, z + .05), colour, uv=.4)
                 tube(f'mast{k}{i}', (x, 0, z + .08), (x, 0, z + .22), .006, wood, 6)
     tube('rod', (-(W / 2 - .1), 0, 2.2), ((W / 2 - .1), 0, 2.2), .02, wood, 8)
-    for i in range(8):
+    for i in range(0 if pastel else 8):
         x = -1.15 + i * .33
         cushion(f'hang{i}', (.18, .02, .26), (x, 0, 2.02), [coral, sand, teal][i % 3], puff=.006)
     # Hip roof with clay tiles, fascia and a striped scalloped valance along both long eaves.
@@ -168,6 +195,13 @@ def stall(slug, sign):
             cushion(f'valance{sy}_{i}', ((W + .6) / 12 - .01, .015, .2), (x, sy * (D / 2 + .37), 2.26), coral if i % 2 else sand, puff=.004)
     for sx in (-1, 1):
         box(f'fasciaX{sx}', (.04, D + .76, .14), (sx * (W / 2 + .35), 0, 2.42), cream, uv=1)
+    if pastel:
+        # Sign boards over both long eaves, in the red of the counters: the name is a game text (white, translated) put
+        # on them in the level, not baked into the mesh.
+        for sy in (-1, 1):
+            box(f'signboard{sy}', (2.1, .06, .42), (0, sy * (D / 2 + .32), 2.98), teal, uv=1)
+            for post in (-.85, .85):
+                tube(f'signpost{sy}{post}', (post, sy * (D / 2 + .32), 2.55), (post, sy * (D / 2 + .32), 2.8), .02, wood, 8)
     if sign:
         box('signboard', (1.7, .06, .38), (0, -(D / 2 + .32), 2.98), cream, uv=1)
         bpy.ops.object.text_add(location=(0, -(D / 2 + .36), 2.98), rotation=(math.pi / 2, 0, 0))
@@ -181,13 +215,14 @@ def stall(slug, sign):
         txt.data.materials.append(teal)
         for post in (-.7, .7):
             tube(f'signpost{post}', (post, -(D / 2 + .32), 2.6), (post, -(D / 2 + .32), 2.8), .02, wood, 8)
-    export(slug, 'Barraca de lembrancinhas' if sign else 'Barraca de madeira')
+    export(slug, 'Barraca do pastel' if pastel else 'Barraca de lembrancinhas' if sign else 'Barraca de madeira')
 
 
 BUILD = {
     'mare_lighthouse': lighthouse,
     'mare_stall_souvenir': lambda: stall('mare_stall_souvenir', True),
     'mare_stall_plain': lambda: stall('mare_stall_plain', False),
+    'mare_stall_pastel': lambda: stall('mare_stall_pastel', False, True),
 }
 
 if __name__ == '__main__':

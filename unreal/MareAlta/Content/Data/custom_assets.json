@@ -132,5 +132,10 @@
  "mare_volleyball": "/Game/Custom/mare_volleyball/mare_volleyball.mare_volleyball",
  "mare_soccer_ball": "/Game/Custom/mare_soccer_ball/mare_soccer_ball.mare_soccer_ball",
  "mare_peteca": "/Game/Custom/mare_peteca/mare_peteca.mare_peteca",
- "mare_beach_goal": "/Game/Custom/mare_beach_goal/mare_beach_goal.mare_beach_goal"
+ "mare_beach_goal": "/Game/Custom/mare_beach_goal/mare_beach_goal.mare_beach_goal",
+ "mare_stall_pastel": "/Game/Custom/mare_stall_pastel_m5/mare_stall_pastel.mare_stall_pastel",
+ "brass_pan_01": "/Game/Custom/brass_pan_01_m5/brass_pan_011.brass_pan_011",
+ "propane_tank": "/Game/Custom/propane_tank_m5/propane_tank1.propane_tank1",
+ "jug_01": "/Game/Custom/jug_01_m5/jug_011.jug_011",
+ "wooden_cutting_board": "/Game/Custom/wooden_cutting_board_m5/wooden_cutting_board1.wooden_cutting_board1"
 }

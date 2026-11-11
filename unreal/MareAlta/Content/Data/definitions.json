@@ -36,7 +36,7 @@
 			"fame": 4,
 			"game": "Fritar o pastel",
 			"hour": 26,
-			"name": "Food truck do pastel",
+			"name": "Barraca do pastel",
 			"open": [
 				11.0,
 				23.0
@@ -407,12 +407,12 @@
 				{
 					"kind": "pay",
 					"qty": 250,
-					"text": "Pagar R$ 250 da reforma do food truck"
+					"text": "Pagar R$ 250 da reforma da barraca do pastel"
 				}
 			],
 			"story": "Dona Cecília quer resgatar as receitas da avó e levar comida boa até a rua principal.",
 			"title": "Sabores da vila",
-			"unlock": "Food truck do pastel + dica da moqueca"
+			"unlock": "Barraca do pastel + dica da moqueca"
 		},
 		{
 			"giver": "Prefeita Tuanny",

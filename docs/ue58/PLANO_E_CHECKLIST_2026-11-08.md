@@ -144,6 +144,12 @@ Meta: uma demo de ~2 h, estável, bonita, pronta para a Next Fest.
   braços cruzados (`AMarePerson::WaitPose`). Importados e ainda sem uso: telefone (falta o celular na mão), apoiar no
   corrimão, carregar com as duas mãos. "Yes" é um braço erguido (não é aceno) e "Consume" leva a mão acima da cabeça:
   conferidos em foto e não usados. Comando de teste `mare.Pose <clipe> [raio]`.
+- [x] "Excluir esse food truck" (Sergio, 10/11, foto do caminhão vermelho na rua da vila). Decisão dele: o negócio do
+  pastel continua e vira barraca. Caminhão e traseira saíram do nível; `mare_stall_pastel` (gerador de barracas, variante
+  com estufa de pastéis, bancada e tabuletas vermelhas) no mesmo ponto, balcão do lado onde era a janela do caminhão, com
+  tacho, jarra, tábua e botijão do Poly Haven (CC0, créditos no CREDITS.md); letreiros "Barraca do Pastel". Nome e textos
+  nos 13 idiomas (7 chaves novas × 12 traduções, 4170/4170, glossário PASS). O id interno continua `food_truck` (saves,
+  conquistas e missões não mudam). Conferido no jogo: rua vazia antes da compra, barraca e fila de clientes depois, noite certa (fotos `D:/CodexTemp/stallqa/g_m.jpg`, `n_m.jpg`); portão PASS.
 - [ ] Atendente carregando o produto com as duas mãos (`Walk_Carry`) e gesto de entrega na mesa: conferir o encaixe do
   produto na mão antes de ligar.
 

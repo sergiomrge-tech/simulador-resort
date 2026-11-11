@@ -62,10 +62,10 @@ void UMareSimulation::PastelHour(int32 Hour)
  // The clerk (3.6) fries for whoever the player left in line, at clerk_share of the bill and no fame.
  if(HasBizClerk(TEXT("food_truck")) && Queue.Num()){double Sum=0;const int32 N=Queue.Num();
   for(const auto& V:Queue){const double Paid=FMath::RoundToDouble(PastelOrderPrice(V->AsObject())*BizClerkShare());Sum+=Paid;BizServed(TEXT("food_truck"),true,Paid,0,0);}
-  Queue.Empty();if(Sum>0)Book(Sum,FString::Printf(TEXT("Food truck: funcionário atendeu %d cliente(s)"),N));}
+  Queue.Empty();if(Sum>0)Book(Sum,FString::Printf(TEXT("Barraca do pastel: funcionário atendeu %d cliente(s)"),N));}
  for(int32 I=Queue.Num()-1;I>=0;--I)if(!bOpen || Now(State)-Number(Queue[I]->AsObject(),TEXT("since"))>Number(D,TEXT("patience_minutes"),40)){Queue.RemoveAt(I);++Gone;}
  BizLost(TEXT("food_truck"),Gone);
- if(Gone && bOpen)LastMessage=FString::Printf(TEXT("Food truck: %d cliente(s) cansaram de esperar o pastel."),Gone);
+ if(Gone && bOpen)LastMessage=FString::Printf(TEXT("Barraca do pastel: %d cliente(s) cansaram de esperar o pastel."),Gone);
  if(!bOpen)return;
  // A party day (quermesse, festa junina, show) fills the street.
  const TArray<TSharedPtr<FJsonValue>>* Range=nullptr;int32 Lo=1,Hi=2;if(D->TryGetArrayField(TEXT("arrivals"),Range) && Range->Num()==2){Lo=int32((*Range)[0]->AsNumber());Hi=int32((*Range)[1]->AsNumber());}
@@ -90,7 +90,7 @@ FMareIceResult UMareSimulation::ServePastel(const FString& Filling,bool bSealed,
  // A burnt pastel is not sold at all; the juice is paid when it was asked for and pressed.
  const bool bBurnt=FrySeconds>Burnt;const double Juice=bWantsCana && bCana?FMath::RoundToDouble(Number(D,TEXT("cana_price"),6)*BizSaleMult(TEXT("food_truck"))):0;
  R.Paid=(bBurnt?0:FMath::RoundToDouble(Price*Factor))+Juice+(R.Hits==3 && (!bWantsCana || bCana)?Number(D,TEXT("tip_perfect"),4):0);
- const FString Who=String(O,TEXT("name"));if(R.Paid>0)Book(R.Paid,FString::Printf(TEXT("Food truck: pastel de %s (%d/3)"),*Who,R.Hits));
+ const FString Who=String(O,TEXT("name"));if(R.Paid>0)Book(R.Paid,FString::Printf(TEXT("Barraca do pastel: pastel de %s (%d/3)"),*Who,R.Hits));
  AddFame(int32(Number(D,TEXT("fame_per_hit"),1))*R.Hits);Biz->SetNumberField(TEXT("games"),Number(Biz,TEXT("games"))+1);
  BizServed(TEXT("food_truck"),false,R.Paid,R.Hits,int32(Number(D,TEXT("fame_per_hit"),1))*R.Hits);
  Queue.RemoveAt(0);R.bServed=true;
