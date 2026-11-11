@@ -98,6 +98,9 @@ Meta: uma demo de ~2 h, estável, bonita, pronta para a Next Fest.
 - [ ] 👤 Teste do build Shipping num PC sem a Unreal.
 - [x] Demo Shipping de 11/11 instalada (`D:\Builds\MareAltaUE58_Shipping_2026-11-11b`, 6,21 GB; QA do executável 107/107,
   abertura 13/13): igreja com vitrais, vendedor na barraca do pastel, modo de teste por roteiro.
+- [x] Demo Shipping de 11/11 (segunda do dia) instalada com o interior da igreja (`..._2026-11-11c`; QA do executável
+  107/107, abertura 13/13; interior fotografado no executável de dia, de noite e na missa). Na primeiríssima execução
+  de um pacote a nave leva ~50 s para aparecer (shader compilando); depois não se repete.
 - [x] Preset **Baixo** medido para os requisitos mínimos (11/11, executável Shipping, jogo completo liberado, janela
   1920×1080, escala 3D 80%, RTX 4060 Ti + Ryzen 7 5700G; `bench_package.ps1 -Exec "sg.* 0;..."`):
 
