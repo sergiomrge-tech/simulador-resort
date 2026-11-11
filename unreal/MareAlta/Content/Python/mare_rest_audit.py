@@ -142,3 +142,23 @@ def people(arg='3000'):
                      'seated': bool(p.get_editor_property('seated')), 'speed': round(p.get_velocity().length()), 'd': round(d), 'hidden': bool(p.get_editor_property('hidden'))})
     rows.sort(key=lambda r: r['d'])
     return json.dumps(rows[:12], ensure_ascii=False)
+
+
+def who(arg=''):
+    """PIE: where the people called `arg` (comma list) are, their yaw and the MetaHuman body they wear."""
+    world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_game_world()
+    names = [n.strip() for n in arg.split(',') if n.strip()]
+    rows = []
+    for p in unreal.GameplayStatics.get_all_actors_of_class(world, unreal.MarePerson):
+        n = str(p.get_editor_property('person_name'))
+        if n not in names:
+            continue
+        loc = p.get_actor_location()
+        body = ''
+        for a in [p] + list(p.get_attached_actors() or []):
+            for c in a.get_components_by_class(unreal.SkeletalMeshComponent):
+                m = c.get_skeletal_mesh_asset()
+                if m and 'BodyMesh' in m.get_name():
+                    body = m.get_name()
+        rows.append({'name': n, 'at': [round(loc.x), round(loc.y), round(loc.z)], 'yaw': round(p.get_actor_rotation().yaw), 'body': body})
+    return json.dumps(rows, ensure_ascii=False)

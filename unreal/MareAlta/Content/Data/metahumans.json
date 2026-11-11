@@ -74,7 +74,7 @@
   "Omari",
   "Trey",
   "Walter"
- ],
+ , "Aoi"],
  "beach": [
   "Ada_Swim",
   "Asha_Swim",
@@ -341,5 +341,7 @@
  ],
  "elder": [
   "Walter"
- ]
+ ],
+ "_named_doc": "10/11: the villagers with a name and a story (village_routes.json) always wear the same MetaHuman, of the right sex: picked by hash from the mixed village roster, Dona Roberta came out a bearded man in the packaged demo.",
+ "named": {"Dona Roberta": "Ada", "Dona Cecília": "Celeste", "Alana": "Tuya", "Seu Severino": "Omari", "Padre Robson": "Lorenzo"}
 }

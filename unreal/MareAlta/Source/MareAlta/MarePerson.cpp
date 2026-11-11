@@ -707,6 +707,10 @@ void AMarePerson::Tick(float DeltaSeconds)
    if((List || MetaHumanRoster()->TryGetArrayField(RoleKey,List)) && List->Num())
     Wanted=(*List)[int32(FCrc::StrCrc32(*(SaveId+PersonName))%uint32(List->Num()))]->AsString();
    MetaRole=RoleKey;
+   // 10/11: villagers with a name and a story wear their own MetaHuman (metahumans.json "named"), in the clothes of
+   // their role: the hash pick from the mixed village roster made Dona Roberta a bearded man.
+   if(!bEmployee){const TSharedPtr<FJsonObject>* Named=nullptr;
+    if(MetaHumanRoster()->TryGetObjectField(TEXT("named"),Named))(*Named)->TryGetStringField(PersonName,Wanted);}   // i18n:skip
   }
   if(!Wanted.IsEmpty())SetMetaHuman(Wanted);
  }

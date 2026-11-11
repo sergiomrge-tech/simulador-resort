@@ -156,6 +156,11 @@ Meta: uma demo de ~2 h, estável, bonita, pronta para a Next Fest.
   mão do cliente, que já está pegando (`UMareKioskWorld::UpdateAttendant`, `HandoverLeft`). Filmado quadro a quadro de lado e
   por trás (`D:/CodexTemp/serviceqa3/zoom.jpg`, `serviceqa2/zoom.jpg`): postura ereta, mãos relaxadas, nada atravessando o balcão.
   `Walk_Carry` (andar agachado de quem leva peso) não foi usado: o produto já vai na mão à frente do corpo.
+- [x] Moradores com nome e história com o sexo trocado (achado nas capturas do executável, 10/11): "Dona Roberta" era um
+  homem de barba. O corpo vinha de um sorteio na lista mista da vila. Agora cada um tem corpo fixo (`metahumans.json` "named":
+  Dona Roberta = Ada, Dona Cecília = Celeste, Alana = Tuya, Seu Severino = Omari, Padre Robson = Lorenzo), escolhidos numa folha
+  com todas as mulheres (`D:/CodexTemp/womensheet/m.jpg`; Etta tem a cabeça raspada e lê como homem). Aoi (homem de barba)
+  entrou na lista `men`: era tratado como mulher (calçado). Fotos `D:/CodexTemp/namedqa/m2.jpg`.
 
 ---
 
