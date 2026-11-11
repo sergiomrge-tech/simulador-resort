@@ -54,6 +54,9 @@ void AMareIntroQA::Tick(float DeltaSeconds)
  case 10:{
   auto Target=AMareServiceTarget::FindFocused(PC);Check(TEXT("letter_can_be_aimed"),Target && Target->Action==TEXT("IntroLetter"));if(Target && Target->Action==TEXT("IntroLetter"))Target->Use(PC);Check(TEXT("letter_opens"),Intro && Intro->IsLetterOpen() && PC->IsMoveInputIgnored());Capture(TEXT("intro-letter"));Next=FPlatformTime::Seconds()+2;break;}
  case 11:
+  // 10/11: the first photo is taken the frame the letter opens, before SMareFit sizes the text (at 1280x720 it showed the
+  // text cut mid-sentence). A second one two seconds later shows what the player reads; it needs its own frame.
+  if(!bLetterSettledShot){bLetterSettledShot=true;Capture(TEXT("intro-letter-settled"));--Phase;Next=FPlatformTime::Seconds()+.4;break;}
   if(Intro)Intro->CloseLetter();Check(TEXT("letter_closes_and_saves"),Intro && !Intro->IsLetterOpen() && !PC->IsMoveInputIgnored() && UMareSimulation::Number(Sim->State,TEXT("ue_intro_stage"),0)==2 && Sim->Save());
   if(Intro)Intro->ReadLetter();Check(TEXT("letter_can_be_read_again"),Intro && Intro->IsLetterOpen());if(Intro)Intro->CloseLetter();
   {auto Report=MakeShared<FJsonObject>();Report->SetArrayField(TEXT("checks"),Checks);Report->SetBoolField(TEXT("finished"),true);FString Out;FJsonSerializer::Serialize(Report,TJsonWriterFactory<>::Create(&Out));FFileHelper::SaveStringToFile(Out,*(Root/TEXT("intro-qa.json")));}

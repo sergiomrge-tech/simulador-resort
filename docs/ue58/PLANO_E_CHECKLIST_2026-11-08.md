@@ -90,7 +90,12 @@ Meta: uma demo de ~2 h, estável, bonita, pronta para a Next Fest.
   telhado do quiosque, das copas dos coqueiros e do mastro do barco a vela; pontos 3-6 mais para o mar e acima do mastro.
 
 ### 1.4 Build para a Steam
-- [ ] Build **Shipping** Win64 e teste num PC sem a Unreal.
+- [x] Demo Shipping de 10/11 instalada (`D:\Builds\MareAltaUE58_Shipping_2026-11-10k` → `D:\Games\MareAltaResort_Demo`, 6,20 GB,
+  atalho "Coconut Simulator - Demo" na área de trabalho). No executável: QA 107/107; abertura na cópia instalada 13/13. A carta
+  da avó em 1280×720 aparece cortada só no quadro em que abre; 2 s depois o texto inteiro cabe (captura nova
+  `intro-letter-settled` no teste de abertura). Os scripts de teste param na leitura do `runtime.log`, que o Shipping não
+  grava: o resultado vale pelo `preview-qa.json` / `intro-qa.json`.
+- [ ] 👤 Teste do build Shipping num PC sem a Unreal.
 - [ ] Preset **Baixo** medido para os requisitos mínimos.
 - [ ] Integração Steam (Online Subsystem, conquistas da dívida, Steam Cloud, Rich Presence).
 - [x] Simulação da demo inteira do zero até o fim (10/11, `simulate_game.py` adaptado à demo, três rodadas em perfil novo;
