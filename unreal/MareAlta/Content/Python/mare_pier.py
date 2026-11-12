@@ -70,3 +70,34 @@ def posts(arg='dry'):
         a.static_mesh_component.set_mobility(unreal.ComponentMobility.STATIC)
     unreal.get_editor_subsystem(unreal.LevelEditorSubsystem).save_current_level()
     return json.dumps({'placed': 2})
+
+
+def rail(arg='dry'):
+    """11/11: the timber guard rail on the sea side of the end platform (tools/ue58/gen_pier_rail.py), where one of the
+    pier people leans (pier_people.json, clip Idle_Rail). The deck height and the free edge are traced first.
+    'apply' places and saves (PIE stopped). Re-runnable."""
+    from pathlib import Path
+    data = json.loads((Path(unreal.Paths.project_content_dir()) / 'Data' / 'custom_assets.json').read_text(encoding='utf-8'))
+    mesh = unreal.load_asset(data.get('mare_pier_rail', ''))
+    w = _world()
+    out = {'mesh': bool(mesh), 'deck': []}
+    for y in (-4800, -4820, -4840, -4850, -4860, -4870, -4880):
+        hit = unreal.SystemLibrary.line_trace_single(w, unreal.Vector(7200, y, 200), unreal.Vector(7200, y, -50), unreal.TraceTypeQuery.TRACE_TYPE_QUERY1,
+                                                     True, [], unreal.DrawDebugTrace.NONE, True)
+        out['deck'].append([y, round(hit.to_tuple()[4].z, 1) if hit else None])
+    actors = unreal.get_editor_subsystem(unreal.EditorActorSubsystem)
+    mine = [a for a in unreal.GameplayStatics.get_all_actors_of_class(w, unreal.StaticMeshActor) if 'MarePierRail' in [str(t) for t in a.tags]]
+    if arg.strip() != 'apply' or not mesh:
+        return json.dumps(out)
+    for a in mine:
+        actors.destroy_actor(a)
+    # west half of the sea edge: the player's fishing spot (bucket and rod) is at x 7200; 2 m long (x scale .8) to stay on the platform (x 6971..)
+    a = actors.spawn_actor_from_object(mesh, unreal.Vector(7075, -4890, 37), unreal.Rotator(roll=0, pitch=0, yaw=0))
+    a.set_actor_scale3d(unreal.Vector(.8, 1, 1))
+    a.set_actor_label('Píer · guarda-corpo da ponta')
+    a.tags = ['MarePierRail']
+    a.set_folder_path('Praia/Pier')
+    a.static_mesh_component.set_mobility(unreal.ComponentMobility.STATIC)
+    unreal.get_editor_subsystem(unreal.LevelEditorSubsystem).save_current_level()
+    out['placed'] = True
+    return json.dumps(out)
