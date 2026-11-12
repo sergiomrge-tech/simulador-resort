@@ -104,8 +104,13 @@ bool UMareSimulation::PayDebt(int64 PayCents)
   bPayingDebt=false;return Fail(TEXT("Falha ao salvar: o pagamento não foi feito."));
  }
  bPayingDebt=false;
- LastMessage=String(Phone,TEXT("receipt")).Replace(TEXT("{0}"),*FString::Printf(TEXT("%.2f"),PayCents/100.0).Replace(TEXT(".00"),TEXT("")))   // i18n:skip
-  .Replace(TEXT("{1}"),*FString::Printf(TEXT("%.0f"),DebtBalanceCents()/100.0));
+ // 11/11 (seen in the exe: "Pagamento de R$ 740000 recebido"): thousands grouped with a space, like the finale's
+ // "R$ 1 000 000" (a space reads the same in the twelve languages; a dot or a comma would not).
+ auto Grouped=[](double Reais){FString Whole=FString::Printf(TEXT("%.0f"),FMath::FloorToDouble(Reais));
+  for(int32 I=Whole.Len()-3;I>0;I-=3)Whole.InsertAt(I,TEXT(" "));   // i18n:skip
+  const int32 Cents=FMath::RoundToInt32((Reais-FMath::FloorToDouble(Reais))*100);return Cents?Whole+FString::Printf(TEXT(",%02d"),Cents):Whole;};   // i18n:skip
+ LastMessage=String(Phone,TEXT("receipt")).Replace(TEXT("{0}"),*Grouped(PayCents/100.0))   // i18n:skip
+  .Replace(TEXT("{1}"),*Grouped(DebtBalanceCents()/100.0));
  return true;
 }
 

@@ -74,7 +74,7 @@ vale.** Os outros documentos (`PENDENCIAS_100.md`, `ROADMAP_STEAM.md`, `CHECKLIS
 - [x] Reteste longo no executável 11/11g, encurtado para 31 min a pedido do Sergio ("acelerar esse teste"): 13 dias de jogo (cada volta dorme até o dia seguinte), 62 medições em praia, quiosque, saguão do hotel, trilha e vila à noite; sem travar, memória 3,7–4,5 GB caindo, FPS 76–136 sem piora, pior quadro 173 ms (trilha). Limite: vazamento abaixo de ~200 MB/h não apareceria em 30 min. Com o jogo rodando o editor não abre (disputa da placa): não rodar os dois juntos.
 - [x] Acessibilidade básica: conferido em 11/11 que já existe (Opções: tamanho da interface e do texto 85–150%, modo para daltonismo com +/- nas variações, dicas liga/desliga, teclas remapeáveis, volumes separados; o jogo não tem fala, legendas não se aplicam).
 - [ ] Sem registro em nenhum documento: calçados variados, preparativos de festa aparecendo no mapa, cada expansão com horário de pico próprio.
-- [ ] Final da dívida no executável do jogo completo (a demo nunca chega lá): só foi visto no editor. 11/11: corrigido o
+- [x] Final da dívida no executável (11/11, pacote 11/11g, roteiro `D:/CodexTemp/roteiro_divida.txt`; o comando `mare.QA paydebt` desliga a trava da demo): carta de abertura, dica do marco de 25 %, tela final com Continuar e Créditos, jogo segue, celular com "Restam R$ 0". Visto: o recibo escrevia "R$ 740000" sem separar os milhares; corrigido (espaço, como na tela final). 11/11: corrigido o
   caso do pagamento único que pulava a tela final; tela em folha de caderno.
 
 ### Já feito que os documentos antigos ainda listam como aberto
