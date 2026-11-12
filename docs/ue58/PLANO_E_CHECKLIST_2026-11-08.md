@@ -18,7 +18,7 @@ vale.** Os outros documentos (`PENDENCIAS_100.md`, `ROADMAP_STEAM.md`, `CHECKLIS
 `HUMOR_EVENTOS_COMICOS.md`, `AUDITORIA_GERAL.md`, `docs/CHECKLIST_PEDIDOS.md`) ficam como histórico. O cruzamento
 "já feito" veio do texto dos documentos e do que se sabe do projeto, não de um teste item a item.
 
-> **Demo instalada (11/11, noite): pacote `MareAltaUE58_Shipping_2026-11-11g`** em `D:\Games\MareAltaResort_Demo`, 6,3 GB. Teste do executável 107/107, introdução 13/13, cozimento sem aviso de material. Conferido no executável, de dia, por roteiro (`D:/CodexTemp/roteiro_1111g2.txt`): casa do jogador, padre, igreja e crucifixo, canteiros, banca, recepção do hotel com o teto pintado, rocha do farol. Lição: no roteiro, `clock` avança o relógio; chamado duas vezes vira o dia e todas as fotos saem à meia-noite.
+> **Demo instalada (11/11, 23h): pacote `MareAltaUE58_Shipping_2026-11-11i`** em `D:/Games/MareAltaResort_Demo`, 6,3 GB. Teste do executável 107/107. FPS a 1280x720 (2ª execução; a 1ª de um pacote novo sai 15-25 FPS abaixo nos primeiros setores): praia 92, quiosque 106, saguão do hotel 117, trilha 129, vila à noite 107. Em relação ao 11/11g entraram: pedras na beirada do farol, órgão na missa, recibo da dívida com milhares, guarda-corpo do píer. O 11/11h (física do cabelo no nível Alto) foi descartado por custar ~12 FPS.
 
 ### Depende do Sergio 👤
 - [ ] Conta Steamworks (US$ 100, dados fiscais) e App ID do jogo e da demo. Trava: página "Em breve", botão de lista de
@@ -77,7 +77,7 @@ vale.** Os outros documentos (`PENDENCIAS_100.md`, `ROADMAP_STEAM.md`, `CHECKLIS
 - [x] Final da dívida no executável (11/11, pacote 11/11g, roteiro `D:/CodexTemp/roteiro_divida.txt`; o comando `mare.QA paydebt` desliga a trava da demo): carta de abertura, dica do marco de 25 %, tela final com Continuar e Créditos, jogo segue, celular com "Restam R$ 0". Visto: o recibo escrevia "R$ 740000" sem separar os milhares; corrigido (espaço, como na tela final). 11/11: corrigido o
   caso do pagamento único que pulava a tela final; tela em folha de caderno.
 
-- [x] Cabelo comprido de quem senta inclinado ficava rígido, espetado para trás (11/11, noite): a física do cabelo, antes só no nível Épico de efeitos, liga também no Alto, mas apenas em quem está sentado ou deitado a até 10 m da câmera (`AMarePerson::ApplyHairSimulation`). Comparado no restaurante do hotel, com e sem. Falta medir o custo em FPS no executável (próximo pacote) e ver se o casal da mesa não está debruçado demais.
+- [ ] Cabelo comprido de quem senta inclinado fica rígido, espetado para trás (só no nível Alto ou abaixo; no Épico a física resolve). 11/11: tentado ligar a física também no Alto só para quem senta perto da câmera; o visual resolve (comparado no restaurante do hotel), mas **medido no executável 11/11h o motor de física ligado custa ~12 FPS em todo lugar**, com ou sem cabeleiras simuladas (praia 70 × 82, quiosque 82 × 95, saguão 92 × 102, trilha 99 × 113). Desfeito. Caminhos que restam: diminuir a inclinação da cabeça nas poses sentadas, ou aceitar. Lição: `r.HairStrands.Simulation` é custo global; medir no executável antes de dar por feito.
 
 ### Já feito que os documentos antigos ainda listam como aberto
 Pacote Shipping; menu principal, opções e 3 slots de save; desempenho medido no executável; preset Baixo; eventos
