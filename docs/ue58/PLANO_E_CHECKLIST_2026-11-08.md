@@ -77,6 +77,8 @@ vale.** Os outros documentos (`PENDENCIAS_100.md`, `ROADMAP_STEAM.md`, `CHECKLIS
 - [x] Final da dívida no executável (11/11, pacote 11/11g, roteiro `D:/CodexTemp/roteiro_divida.txt`; o comando `mare.QA paydebt` desliga a trava da demo): carta de abertura, dica do marco de 25 %, tela final com Continuar e Créditos, jogo segue, celular com "Restam R$ 0". Visto: o recibo escrevia "R$ 740000" sem separar os milhares; corrigido (espaço, como na tela final). 11/11: corrigido o
   caso do pagamento único que pulava a tela final; tela em folha de caderno.
 
+- [x] Cabelo comprido de quem senta inclinado ficava rígido, espetado para trás (11/11, noite): a física do cabelo, antes só no nível Épico de efeitos, liga também no Alto, mas apenas em quem está sentado ou deitado a até 10 m da câmera (`AMarePerson::ApplyHairSimulation`). Comparado no restaurante do hotel, com e sem. Falta medir o custo em FPS no executável (próximo pacote) e ver se o casal da mesa não está debruçado demais.
+
 ### Já feito que os documentos antigos ainda listam como aberto
 Pacote Shipping; menu principal, opções e 3 slots de save; desempenho medido no executável; preset Baixo; eventos
 cômicos (`MareComicEvents.cpp`, `comic_events.json`); ilha completa; tradução em 12 idiomas; rádio com troca de faixas;

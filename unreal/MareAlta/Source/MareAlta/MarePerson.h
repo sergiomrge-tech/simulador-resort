@@ -205,6 +205,10 @@ public:
  /** Hair strands physics on/off (groom SetEnableSimulation): off while riding something fast (the water slide), where
   *  the simulated strands stayed metres behind and the head looked bald. */
  void SetHairSimulation(bool bOn);
+ /** Hair physics by need (Tick, with the visibility check): everyone on Epic effects; on High only who sits or lies
+  *  near the camera. bHairHeldOff: a system asked for rigid hair (the water slide) and nobody turns it back on. */
+ bool bHairSim=true,bHairHeldOff=false;
+ void ApplyHairSimulation(bool bOn);
  /** Riding a water slide lying back, feet first (07/11, Sergio: legs went through the chute with the chair pose): the
   *  lying pose with the torso raised Recline degrees, head pointing HeadYaw, the pelvis placed on PelvisAt every frame. */
  void RideReclined(const FVector& PelvisAt,float HeadYaw,float InRecline);

@@ -289,7 +289,9 @@ void FMareOptions::ApplyDetail()const
  MareOptionsData::SetFloat(TEXT("r.StaticMeshLODDistanceScale"),MeshScale[FMath::Clamp(ModelDetail,0,3)]);
  MareOptionsData::SetVar(TEXT("r.SkeletalMeshLODBias"),SkinBias[FMath::Clamp(ModelDetail,0,3)]);
  // MetaHuman hair physics (Niagara strand solver) only on Epic effects: 04/11 EXE, off = beach 59 -> 62, kiosk 56 -> 61 FPS.
- MareOptionsData::SetVar(TEXT("r.HairStrands.Simulation"),Effects>=3?1:0);
+ // 11/11 (seated people with long hair: the rigid groom stuck out behind a leaning head): the solver is also on at
+ // High, where AMarePerson simulates only who sits or lies within 10 m of the camera (one or two grooms, not the beach).
+ MareOptionsData::SetVar(TEXT("r.HairStrands.Simulation"),Effects>=2?1:0);
 }
 bool FMareOptions::ApplyDisplay()const
 {

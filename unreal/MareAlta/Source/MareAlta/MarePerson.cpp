@@ -693,8 +693,10 @@ void AMarePerson::RideReclined(const FVector& PelvisAt,float HeadYaw,float InRec
  else SetActorLocation(PelvisAt+FVector(0,0,12),false,nullptr,ETeleportType::TeleportPhysics);
 }
 
-void AMarePerson::SetHairSimulation(bool bOn)
+void AMarePerson::SetHairSimulation(bool bOn){bHairHeldOff=!bOn;ApplyHairSimulation(bOn);}
+void AMarePerson::ApplyHairSimulation(bool bOn)
 {
+ bHairSim=bOn;
  AActor* Child=MetaHumanBody?MetaHumanBody->GetChildActor():nullptr;if(!Child)return;
  TArray<USceneComponent*> Parts;Child->GetComponents(Parts);
  struct{bool bInEnableSimulation;} Params{bOn};
@@ -740,7 +742,11 @@ void AMarePerson::Tick(float DeltaSeconds)
   const float Reach=CVarMarePeopleShadowDistance.GetValueOnGameThread();auto Camera=UGameplayStatics::GetPlayerCameraManager(this,0);
   const bool bShadow=Reach<=0 || !Camera || FVector::DistSquared(Camera->GetCameraLocation(),GetActorLocation())<Reach*Reach;
   if(bShadow!=bCastsShadow){bCastsShadow=bShadow;for(auto Part:Parts)if(Part!=GetMesh() && Part->IsVisible())Part->SetCastShadow(bShadow);}
-  GetMesh()->VisibilityBasedAnimTickOption=bSeen?EVisibilityBasedAnimTickOption::AlwaysTickPoseAndRefreshBones:EVisibilityBasedAnimTickOption::OnlyTickMontagesWhenNotRendered;}
+  GetMesh()->VisibilityBasedAnimTickOption=bSeen?EVisibilityBasedAnimTickOption::AlwaysTickPoseAndRefreshBones:EVisibilityBasedAnimTickOption::OnlyTickMontagesWhenNotRendered;
+  if(!bHairHeldOff && MetaHumanBody){const int32 Effects=FMareOptions::Get().Effects;
+   const bool bNear=bSeen && Camera && FVector::DistSquared(Camera->GetCameraLocation(),GetActorLocation())<FMath::Square(1000.f);
+   const bool bWant=Effects>=3 || (Effects==2 && bNear && (bSeated || bLying || IsSeatedOnPoint()));
+   if(bWant!=bHairSim)ApplyHairSimulation(bWant);}}
  // Every frame (cheap): far away (with 5 m of hysteresis so nobody flickers at the edge) or outside the view cone
  // (the screen plus 20 degrees, so a person is back before the camera turns to them; nobody within 6 m) the person is
  // not drawn at all. 04/11 EXE: people out of the frame still cost ~4 FPS on the beach and kiosk.
