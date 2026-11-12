@@ -5,6 +5,8 @@ Este arquivo é a lista de trabalho a partir de agora. Ele substitui as listas a
 antigas continuam como histórico e detalhe: `CHECKLIST_EXPANSOES.md`, `REVISAO_DEMO_2026-11-07.md`,
 `PENDENCIAS_100.md`, `ROADMAP_STEAM.md`).
 
+> **12/11: a ordem de trabalho agora é [`CHECKLIST_100.md`](CHECKLIST_100.md)** (tudo o que falta para o jogo ficar 100%, sem a Steam). Este arquivo fica como histórico e detalhe.
+
 Como usar: trabalhar de cima para baixo. Cada item entra com portão de QA PASS, commit, push e foto. Itens marcados
 👤 dependem do Sergio. 10/11 (Sergio: "Esquece gpt, faça vc"): textos, traduções e balanceamento agora são do Claude.
 
@@ -25,7 +27,7 @@ vale.** Os outros documentos (`PENDENCIAS_100.md`, `ROADMAP_STEAM.md`, `CHECKLIS
   desejos, integração Steam (nuvem, conquistas, Rich Presence), classificação etária, página nos 12 idiomas.
 - [ ] Teste do build Shipping num PC sem a Unreal.
 - [ ] Nome do jogo: `CHECKLIST_EXPANSOES.md` ainda cita "Coconut Coast: Resort Simulator"; o vigente é "Coconut Simulator". Confirmar.
-- [ ] HUD/celular mais comercial: `CHECKLIST_PEDIDOS.md` diz opção B escolhida e feita em 01/11; aqui e no `PENDENCIAS_100` ainda se pedem três propostas. Dizer se está resolvido.
+- [x] (12/11, Sergio: "HUD atual está ok") HUD/celular mais comercial: `CHECKLIST_PEDIDOS.md` diz opção B escolhida e feita em 01/11; aqui e no `PENDENCIAS_100` ainda se pedem três propostas. Dizer se está resolvido.
 - [ ] Controle (Xbox/PlayStation): código pronto, falta teste com controle físico no executável.
 - [ ] Geração de quadros (DLSS): precisa do Sergio clicando na janela durante o teste.
 - [ ] Qual item da Fase 2 vem primeiro (lista na Fase 2, abaixo).
@@ -39,7 +41,7 @@ vale.** Os outros documentos (`PENDENCIAS_100.md`, `ROADMAP_STEAM.md`, `CHECKLIS
   de artesanato, prateleira vendendo por hora, foto -> cartões). Corrigido: linha do artesão quebrava no meio da frase
   (agora duas linhas planejadas) e a miniatura do cartão-postal saía achatada (a legenda esticava a caixa). Fotos em
   `D:/CodexTemp/lojinhaqa`. Ajustes de gosto ficam para quando o Sergio jogar.
-- [ ] Banca de jornal verde ao lado da lojinha (vila): é uma caixa lisa do Godot, fora do padrão "nada de caixas";
+- [x] Banca de jornal verde ao lado da lojinha (vila): é uma caixa lisa do Godot, fora do padrão "nada de caixas";
   trocar por modelo de verdade (procurar gratuito, senão modelar).
 - [x] Animações que faltavam (11/11): **telefone** com o aparelho na mão direita junto à orelha (parte de quem espera nas filas dos negócios e do quiosque, e uma pessoa na ponta do píer; `AMarePerson::UpdatePhoneProp`); **levantar da toalha** (clipe LayToIdle do UAL 2, CC0: quem está de costas na toalha se levanta e vai embora ao fim do horário de praia ou na chuva, com o jogador por perto; QA `mare.GetUp`); **píer** com três pessoas de dia (`Data/pier_people.json`). Encostar no corrimão ficou de fora por medida: o píer só tem corda entre estacas de 78 cm e o gesto põe os punhos a 92–95 cm (as mãos pairavam 14 cm acima da estaca); os dois do píer olham o mar de braços cruzados.
 - [x] Gesto de apoiar no corrimão (11/11, noite): guarda-corpo de madeira de 2 m, 93 cm de altura, na ponta do píer do lado do mar (`tools/ue58/gen_pier_rail.py`, `mare_pier.rail`); uma das pessoas do píer apoia os antebraços nele (`pier_people.json`). 1ª posição caiu em cima do ponto de pesca do jogador (balde e vara em x 7200): deslocado para a metade oeste.
@@ -389,7 +391,7 @@ A ilha agora é grande e bonita, mas ainda é cenário. Propostas para dar uso a
 - [ ] Conta Steamworks (US$ 100, dados fiscais), App ID do jogo e da demo.
 - [ ] Nome final na loja: "Coconut Simulator" (conferir que está livre na Steam e no Google antes de registrar).
 - [ ] Qual proposta da Fase 2 vem primeiro.
-- [ ] Três propostas de HUD/celular mais comercial (pedido antigo).
+- [x] Três propostas de HUD/celular mais comercial (pedido antigo). 12/11: o HUD atual fica.
 
 ---
 
