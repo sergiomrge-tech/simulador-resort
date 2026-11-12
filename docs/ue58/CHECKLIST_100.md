@@ -39,15 +39,72 @@ Sete eventos existem no código (gaivota ladra de batatas, influenciador exigent
 perdido, atendente atrapalhado, Seu Arnaldo reclama, pescador e o peixe). O cachorro ladrão de chinelo do desenho
 original não existe (cachorros saíram do jogo em 03/11). Os 10 critérios de aceite de `HUMOR_EVENTOS_COMICOS.md` nunca
 foram marcados.
-- [~] B1. Filmar os 7 eventos no jogo, do começo ao fim, e analisar quadro a quadro.
-- [ ] B2. O comando de teste `mare.Comic` falha em silêncio sem pedestre por perto: devolver o motivo no log.
-- [ ] B3. Animação própria por evento: hoje quem chama alterna dois gestos genéricos. Cada evento precisa de um gesto
-  que conte a piada sem ler o texto.
-- [ ] B4. Corrigir o que a filmagem reprovar (postura, mãos, objeto na mão, gaivota, guarda-sol, bandeja).
-- [ ] B5. Evento novo no lugar do cachorro, e mais variedade para a piada não se repetir.
-- [ ] B6. Seu Arnaldo e Seu Bené deixam de existir só por sorteio: viram moradores com lugar fixo (Arnaldo entra na campanha, Bloco C).
-- [ ] B7. Os 10 critérios de aceite do documento, incluindo 100 ciclos sem travar pessoa, fila ou navegação.
-- [ ] B8. Cada evento visto no executável e gravado em clipe para divulgação.
+- [x] B1. Os 7 eventos filmados no jogo e analisados quadro a quadro (12/11; folhas em `D:/CodexTemp/comicqa`, roteiros de filmagem em `D:/CodexTemp/comicqa/py`). Todos disparam e terminam. Só o guarda-sol e o influenciador têm animação à altura; os outros cinco funcionam com animação fraca.
+- [ ] B2. **Gaivota (HUM-001):** asas rígidas (malha parada do começo ao fim); atravessa o tronco e o braço do cliente; o cliente não reage; a batata do prato não diminui.
+- [ ] B3. **Atendente atrapalhado (HUM-006):** o corpo inteiro inclina rígido (não é um tropeço); o cabelo descola e a cabeça fica careca durante o giro; os pratos flutuam ao lado das mãos e um atravessa o tronco. Falta ver com o atendente andando com pedido de verdade.
+- [ ] B4. **Seu Arnaldo (HUM-007) e Seu Bené (HUM-008) caem em qualquer pedestre:** nas filmagens os dois foram mulheres jovens de vestido. Viram personagens fixos, homens mais velhos com corpo e lugar próprios (Arnaldo entra na campanha, Bloco C).
+- [ ] B5. **Gesto que conta a piada** nos quatro eventos de conversa: hoje alternam dois clipes genéricos e a pessoa fica curvada de braços caídos. Turista perdido olhando em volta com um mapa; Arnaldo de braços cruzados, apontando e balançando a cabeça; Bené abrindo as mãos para mostrar o tamanho do peixe, maior a cada conversa; influenciador já tem a selfie.
+- [ ] B6. **Guarda-sol (HUM-004):** o dono não corre atrás (só o aviso de texto); conferir a copa que aparece azul caída e amarela em pé.
+- [ ] B7. **Influenciador (HUM-002):** contorno amarelo de interação em volta do celular; no primeiro quadro o celular aparece de lado na cintura.
+- [ ] B8. **Telas:** o aviso "Dica" e o prompt "E · ..." ficam por cima ou atrás do diálogo aberto.
+- [ ] B9. **Sem testar ainda:** as respostas do diálogo e a página de reação (clique nos botões); o comando `mare.Comic` falha em silêncio sem pedestre por perto e o gestor fica preso com diálogo aberto por comando (dar o motivo no log e um comando de QA para responder).
+- [ ] B10. Evento novo no lugar do cachorro, e mais variedade para a piada não se repetir.
+- [ ] B11. Os 10 critérios de aceite do documento, incluindo 100 ciclos sem travar pessoa, fila ou navegação, pausa, save no meio do evento e presets baixo/alto.
+- [ ] B12. Cada evento visto no executável e gravado em clipe para divulgação.
+- Achados de roupa nas filmagens (vão para o Bloco E): maiô vermelho com a calcinha azul aparecendo por baixo; vestidos com a faixa da cintura translúcida (branco, amarelo, roxo); cabelo escuro cobrindo o queixo de quem olha para baixo.
+
+### B-novos. Cenas aleatórias novas (ideias de 12/11; o Sergio escolhe quais entram)
+
+Pedido do Sergio (12/11): "aleatoriedade no jogo eu acho muito importante, o jogo não ficar chato". Regras: curtas,
+opcionais, sem prejuízo que irrite; quem participa ganha gorjeta, fama ou a risada; sem cachorro, gato nem criança.
+Só começam depois de B2–B9 (consertar os sete atuais). ★ = primeira leva sugerida (8).
+
+**Regras de frequência (valem para todos)**
+- [ ] Um evento a cada poucos minutos; nunca o mesmo duas vezes no dia; cada lugar (quiosque, praia, vila, hotel) com a sua lista.
+- [ ] Personagens fixos (prefeita, Bené, Arnaldo, gaivota) voltam com fala nova a cada vez, em sequência.
+- [ ] 👤 Sergio marca quais das 32 ideias entram e quais corta.
+
+**Quiosque**
+- [ ] N1. Coco teimoso: escapa rolando pela areia; o jogador pode buscar e devolver.
+- [ ] N2. Pedido impossível ("água de coco sem coco"), com três respostas.
+- [ ] N3. Casal que não decide: trocam o pedido um do outro; a fila suspira.
+- [ ] N4. ★ O freguês do fiado: "põe na conta da Dona Dilce" (liga com a dívida).
+- [ ] N5. Siri no balcão: fregueses levantam os pés, o atendente sobe na banqueta.
+- [ ] N6. Brinde errado: um copo voa e todos fingem que nada aconteceu.
+- [ ] N7. Turista torrado: vermelho, andando duro, pede "qualquer coisa gelada".
+- [ ] N8. O sommelier de água de coco: "notas de... coco."
+
+**Praia**
+- [ ] N9. ★ Maré na toalha: a onda leva o chinelo e a pessoa corre atrás.
+- [ ] N10. Castelo de areia ambicioso: um adulto constrói, outro tropeça.
+- [ ] N11. ★ Bola de vôlei perdida: cai na mesa, no mar ou no colo do jogador.
+- [ ] N12. Dormiu no sol: acorda com a marca do livro no peito.
+- [ ] N13. Fotógrafos do pôr do sol: param tudo às 17h30; quem passa na frente leva bronca.
+- [ ] N14. Guarda-sol que fecha sozinho em cima do dono.
+
+**Vila**
+- [ ] N15. Procissão do santo errado: o andor entra na rua errada e a vila dá meia-volta.
+- [ ] N16. ★ A prefeita inaugura qualquer coisa: corta fita num banco, num poste, numa lixeira.
+- [ ] N17. Fofoca em cadeia: a história volta aumentada por outro morador.
+- [ ] N18. ★ Seu Bené e Seu Severino discutindo o tamanho do peixe, cada um abrindo mais os braços.
+- [ ] N19. Serenata desafinada: a janela fecha.
+- [ ] N20. O sino fora de hora: a vila confere o relógio.
+- [ ] N21. Bandeirinhas ao vento: o varal enrola num pedestre.
+
+**Hotel**
+- [ ] N22. ★ Hóspede de roupão no lugar errado (saguão, restaurante).
+- [ ] N23. A mala que abre na recepção.
+- [ ] N24. Elevador indeciso: abre, fecha, abre; o hóspede vai de escada.
+- [ ] N25. O VIP disfarçado que todo mundo reconhece.
+- [ ] N26. Noivos atrasados: o noivo chega correndo pela praia, de terno e descalço.
+- [ ] N27. ★ Bombinha na piscina: molha quem lê na espreguiçadeira.
+- [ ] N28. Campeão de sinuca: comemora uma tacada como final de campeonato.
+
+**O mar e o tempo**
+- [ ] N29. ★ Chuva de verão de cinco minutos: todos correm para um teto; para de repente.
+- [ ] N30. Golfinhos ao largo: a praia aponta; vira desafio de foto.
+- [ ] N31. Arco-íris depois da chuva.
+- [ ] N32. Gaivota no letreiro do quiosque, virando mascote (a mesma da batata).
 
 ## Bloco C — Campanha v2 (aprovada em 12/11; contrato em `CAMPANHA_V2.md`)
 
@@ -64,8 +121,8 @@ diária obrigatória até o fim do jogo; Dona Dilce nunca aparece; sem epílogo;
 - [~] Testes de automação da fila inteira, da demo, da migração e da delegação.
 
 **C2. Textos**
-- [~] Piloto: P.S. da carta da casa, carta de 25 %, capítulo da Dona Roberta (duas versões) → 👤 Sergio julga a voz.
-- [ ] Lote: cartas de 50, 75 e 100 %, quatro capítulos, missões novas, falas por passo e despedidas dos 9 capítulos, falas da Dona Dilce no epílogo.
+- [x] Piloto (12/11): P.S. da carta, carta de 25 %, capítulo da Dona Roberta, em [`CAMPANHA_TEXTOS_PILOTO.md`](CAMPANHA_TEXTOS_PILOTO.md). Voz aprovada pelo diretor para seguir (P.S. engraçado, cartas de marco ternas com uma piada, morador que "sempre soube"); o Sergio ainda pode pedir ajuste ao ler.
+- [~] Lote: cartas de 50, 75 e 100 %, quatro capítulos, missões novas, falas por passo e despedidas dos 9 capítulos, falas da Dona Dilce no epílogo.
 - [ ] Reescrever o que conflita com o final único (missões `chegada`, `marealta`, `fregueses`, `festa`, falas da festa, tela final, créditos).
 - [ ] Tratamento único "Meu bem" (hoje: "Meu neto", "Meu bem", "Bem-vinda, bem-vindo", "Vó"/"Vovó").
 - [ ] Tradução nos 12 idiomas, glossário e auditoria no executável.
@@ -81,6 +138,8 @@ diária obrigatória até o fim do jogo; Dona Dilce nunca aparece; sem epílogo;
 - [ ] Recompensa de missão: hoje só entra ao tocar "Concluir" no celular e o HUD mal avisa; tornar o aviso claro.
 
 **C4. Pessoas e lugares (editor)**
+- [ ] Prefeita Tuanny de **terno ou roupa social** (Sergio, 12/11: "em um cargo executivo, precisa de roupa adequada"): procurar entre as roupas já baixadas e as gratuitas do Fab; senão gerar a peça.
+  12/11: nenhuma das 12 roupas baixadas é social e não há roupa social gratuita para MetaHuman no Fab (todas pagas, R$ 28–110 na busca). 👤 Sergio decide: comprar um conjunto feminino e um masculino paramétricos, ou piloto de terninho gerado aqui. Roupa de senhora para a Dona Dilce não apareceu nem paga: sai gerada.
 - [ ] Prefeita Tuanny na praça (A1) e depois na **prefeitura** (prédio novo na vila; decisão do Sergio em 12/11).
 - [ ] Seu Arnaldo como morador (quiosque; depois restaurante do hotel).
 - [ ] Dona Dilce: levantar se há corpo de senhora idosa; cena da chegada de barco; lugar no hotel e no quiosque.
@@ -124,6 +183,7 @@ degrau reto na areia e um objeto listrado vermelho e azul boiando.
 - [ ] E1. Cabelo comprido de quem senta fica rígido no nível Alto: reduzir a inclinação da cabeça nas poses sentadas (a física foi descartada: custa ~12 FPS).
 - [ ] E2. Vestir os papéis que faltam com as 11 roupas gratuitas já baixadas.
 - [ ] E3. Calçados variados; ninguém descalço fora da areia.
+- [ ] E3b. Maiô com a roupa de baixo aparecendo; vestidos do Fab com a cintura translúcida; cabelo cobrindo o queixo de quem olha para baixo (vistos nas filmagens dos eventos, 12/11).
 - [ ] E4. Camiseta azul-escura da Dona Roberta parece lisa na sombra; biquínis conferidos de perto.
 - [ ] E5. Casal da mesa do restaurante do hotel inclina o tronco demais.
 - [?] E6. Conversa em pé com gesto melhor; variedade de moradores e turistas sem a mesma pessoa lado a lado.
@@ -170,6 +230,8 @@ Ordem proposta, do mais barato para o mais caro; cada uma pode virar expansão p
 - [ ] I10. Limpeza do repositório: `todo_*.json` soltos, documentos antigos marcados como histórico.
 
 ## Bloco J — Só o Sergio 👤 (fora a Steam)
+- [ ] Roupa social da prefeita: comprar no Fab ou gerar (ver C4).
+- [ ] Escolher quais das 32 cenas aleatórias entram (bloco B-novos).
 
 - [ ] Julgar a voz do piloto dos textos da campanha (C2).
 - [ ] Ouvir o órgão numa missa (7h–8h ou 17h30–19h): timbre e volume.

@@ -92,6 +92,7 @@ primeira estrela do restaurante, livro de pesca completo, desafios de foto, 5 dr
 é o que dá objetivo a quem continua.
 
 ## 6. Pessoas e lugares novos (editor)
+- **Roupa adequada ao cargo (Sergio, 12/11):** a prefeita em exercício usa terno ou roupa social (blazer, calça ou saia social, sapato fechado), nunca vestido de praia. Vale para todo personagem com cargo: roupa do papel.
 - **Prefeita Tuanny** na praça da vila (já: destrava o carnaval) e depois dentro/na porta da **prefeitura** (prédio novo na vila).
 - **Seu Arnaldo** como morador fixo (mesa do quiosque de dia; restaurante do hotel depois de `descanso`).
 - **Dona Dilce**: precisa de um corpo de senhora idosa (não há MetaHuman idosa no projeto: levantar o que existe antes).
