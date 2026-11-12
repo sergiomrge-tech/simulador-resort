@@ -90,3 +90,86 @@ def place(arg='dry'):
         out['placed'].append(r['name'])
     unreal.get_editor_subsystem(unreal.LevelEditorSubsystem).save_current_level()
     return json.dumps(out)
+
+
+def boulders(arg='dry'):
+    """11/11: the generated foot still read as a smooth embankment with a saw-toothed rim. Real boulders (the Poly
+    Haven rocks already lying on the slabs: rock_07, rock_09, boulder_01) are piled along every stretch of rim that
+    stands over water, half in the sea, random size and turn: they hide the seam like a natural rock fall.
+    One actor (tag MareRockBoulders), one HISM per rock, no collision. 'apply' places and saves; re-runnable."""
+    import math
+    import random
+    from editor_toolset.toolsets.actor import ActorTools
+    world = _world()
+    rows = json.loads(OUT.read_text(encoding='utf-8'))
+    reg = unreal.AssetRegistryHelpers.get_asset_registry()
+    meshes = []
+    for name in ('rock_071', 'rock_091', 'boulder_011'):
+        for d in reg.get_assets_by_class(unreal.TopLevelAssetPath('/Script/Engine', 'StaticMesh'), False):
+            if str(d.asset_name) == name:
+                meshes.append(unreal.load_asset(str(d.package_name)))
+                break
+    actors = unreal.get_editor_subsystem(unreal.EditorActorSubsystem)
+    every = unreal.GameplayStatics.get_all_actors_of_class(world, unreal.Actor)
+    mine = [a for a in every if 'MareRockBoulders' in [str(t) for t in a.tags]]
+    ignore = mine + [a for a in every if TAG in [str(t) for t in a.tags] or any(a.get_actor_label().endswith(s) for s in SLABS)]
+    rng = random.Random(1111)
+    spots = []
+    for r in rows:
+        g = r['grid']
+        ny, nx = len(g), len(g[0])
+        step = r['step']
+        last = None
+        for j in range(ny):
+            for i in range(nx):
+                if g[j][i] is None:
+                    continue
+                out_x = out_y = 0
+                for dj, di in ((0, 1), (0, -1), (1, 0), (-1, 0)):
+                    jj, ii = j + dj, i + di
+                    if not (0 <= jj < ny and 0 <= ii < nx) or g[jj][ii] is None:
+                        out_x += di
+                        out_y += dj
+                if not (out_x or out_y):
+                    continue
+                n = math.hypot(out_x, out_y)
+                x, y = r['x0'] + i * step, r['y0'] + j * step
+                if any((x - sx) ** 2 + (y - sy) ** 2 < 150 ** 2 for sx, sy, _ in spots[-400:]):
+                    continue
+                px, py = x + out_x / n * 120, y + out_y / n * 120
+                hit = unreal.SystemLibrary.line_trace_single(world, unreal.Vector(px, py, 300), unreal.Vector(px, py, -600), unreal.TraceTypeQuery.TRACE_TYPE_QUERY1,
+                                                             True, ignore, unreal.DrawDebugTrace.NONE, True)
+                ground = hit.to_tuple()[4].z if hit else -400
+                if ground > -15:          # dry land beside the slab: nothing hangs there
+                    continue
+                spots.append((x + out_x / n * rng.uniform(20, 90), y + out_y / n * rng.uniform(20, 90), g[j][i]))
+    out = {'meshes': [m.get_name() for m in meshes], 'spots': len(spots)}
+    if arg.strip() != 'apply' or not meshes:
+        return json.dumps(out)
+    for a in mine:
+        actors.destroy_actor(a)
+    root = actors.spawn_actor_from_class(unreal.Actor, unreal.Vector())
+    root.set_actor_label('Farol · pedras da beirada')
+    root.tags = [unreal.Name('MareGenerated'), unreal.Name('MareRockBoulders')]
+    root.set_folder_path('Praia/Farol')
+    per = {m: [] for m in meshes}
+    for x, y, top in spots:
+        for k in range(rng.randint(1, 2)):
+            m = rng.choice(meshes)
+            b = m.get_bounds()
+            size = max(b.box_extent.x, b.box_extent.y, b.box_extent.z) * 2
+            want = rng.uniform(110, 230) if k == 0 else rng.uniform(60, 120)
+            s = want / max(size, 1)
+            z = rng.uniform(-70, -10) if k == 0 else rng.uniform(-40, 20)
+            per[m].append(unreal.Transform(unreal.Vector(x + rng.uniform(-50, 50), y + rng.uniform(-50, 50), z),
+                                           unreal.Rotator(roll=rng.uniform(-25, 25), pitch=rng.uniform(-25, 25), yaw=rng.uniform(-180, 180)),
+                                           unreal.Vector(s * rng.uniform(.85, 1.2), s * rng.uniform(.85, 1.2), s * rng.uniform(.7, 1.0))))
+    for m, ts in per.items():
+        comp = ActorTools.add_component(root, unreal.HierarchicalInstancedStaticMeshComponent.static_class(), 'HISM_' + m.get_name())
+        comp.set_mobility(unreal.ComponentMobility.STATIC)
+        comp.set_collision_enabled(unreal.CollisionEnabled.NO_COLLISION)
+        comp.set_static_mesh(m)
+        comp.add_instances(ts, False, True)
+        out[m.get_name()] = len(ts)
+    unreal.get_editor_subsystem(unreal.LevelEditorSubsystem).save_current_level()
+    return json.dumps(out)

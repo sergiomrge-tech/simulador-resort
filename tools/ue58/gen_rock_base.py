@@ -76,7 +76,15 @@ def build(k, row):
     rough = noise(g.shape, 100 + k) * .45 + noise(g.shape, 200 + k, 1.0) * .12
     # a ledge just under the rim, then the fall: steeper where the noise says so (buttresses and gullies)
     fall = SLOPE * (1 + .45 * noise(g.shape, 300 + k, 2.2))
-    z = np.where(inside, g - .08, rim - .08 - fall * np.maximum(dist - .6, 0) * step + rough * np.minimum(dist, 4) / 4)
+    smooth = rim - .08 - fall * np.maximum(dist - .6, 0) * step
+    # 11/11: the first foot was a smooth embankment. Rock breaks in beds: half of the fall is taken in ledges about
+    # 45 cm tall (their height wanders with a slow noise), with ridged noise for the broken faces between them
+    bed = .45 * (1 + .3 * noise(g.shape, 400 + k, 2.4))
+    ledged = np.round(smooth / bed) * bed
+    ridged = (1 - np.abs(noise(g.shape, 500 + k, 1.3))) * .28 - .14
+    z = np.where(inside, g - .08, (smooth * .45 + ledged * .55) + (rough + ridged) * np.minimum(dist, 4) / 4)
+    z = np.where(inside, z, np.minimum(z, rim - .06))      # never above the slab's rim
+    jx, jy = noise(g.shape, 600 + k, 1.4) * .22, noise(g.shape, 700 + k, 1.4) * .22     # the wall is not ruled in plan either
     keep = (inside & (inner <= INNER)) | (~inside & np.isfinite(dist) & (dist <= PAD))
     z = np.maximum(z, FLOOR)
     bm = bmesh.new()
@@ -87,6 +95,10 @@ def build(k, row):
             if keep[j, i]:
                 x = (row['x0'] / 100) + (i - PAD) * step
                 y = (row['y0'] / 100) + (j - PAD) * step
+                if not inside[j, i]:
+                    w = min(1.0, dist[j, i] / 2)
+                    x += float(jx[j, i]) * w
+                    y += float(jy[j, i]) * w
                 verts[(j, i)] = bm.verts.new((x, -y, float(z[j, i])))
     for j in range(ny - 1):
         for i in range(nx - 1):
